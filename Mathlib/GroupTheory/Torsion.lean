@@ -511,10 +511,11 @@ end CommGroup
 
 open CommGroup (torsion)
 
-/-- Quotienting a group by its torsion subgroup yields a torsion-free group. -/
+/-- Quotienting a group by its torsion subgroup yields a group with unique roots. In particular,
+it is torsion-free. -/
 @[to_additive _root_.QuotientAddGroup.instHasUniqueDiv
-/-- Quotienting an additive group by its torsion additive subgroup yields a torsion-free additive
-group. -/]
+/-- Quotienting an additive group by its torsion additive subgroup yields an additive group with
+unique divisibility. In particular, it is torsion-free. -/]
 instance _root_.QuotientGroup.instHasUniqueRoots : HasUniqueRoots <| G ⧸ torsion G := by
   suffices IsMulTorsionFree (G ⧸ torsion G) from
     ⟨fun _ hn _ _ ↦ eq_of_pow_eq_pow_of_commute hn (.all _ _)⟩
