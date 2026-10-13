@@ -59,8 +59,6 @@ Angelo Vistoli
 
 -/
 
-set_option backward.defeqAttrib.useBackward true
-
 @[expose] public section
 
 namespace CategoryTheory.Pseudofunctor
@@ -357,6 +355,7 @@ def map (α : F ⟶ G) : ∫ᶜ F ⥤ ∫ᶜ G where
       simp only [assoc, ← reassoc_of% Cat.Hom.comp_map,
         Cat.Hom.comp_toFunctor, Functor.comp_obj, NatTrans.naturality_assoc]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma map_id_map {x y : ∫ᶜ F} (f : x ⟶ y) : (map (𝟙 F)).map f = f := by
@@ -379,6 +378,7 @@ lemma map_id_eq : map (𝟙 F) = 𝟭 (∫ᶜ F) :=
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism witnessing the pseudo-functoriality of `CoGrothendieck.map`. -/
 def mapCompIso (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ≅ map α ⋙ map β :=

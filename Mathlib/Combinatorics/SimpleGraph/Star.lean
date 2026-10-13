@@ -31,7 +31,7 @@ star graph
 
 namespace SimpleGraph
 
-variable {V W : Type*} (G : SimpleGraph V) (r : V)
+variable {V W : Type*} {G : SimpleGraph V} (r : V)
 
 /-- The star graph on `V` centered at `r`: every non-center vertex is adjacent to `r`. -/
 def starGraph (r : V) : SimpleGraph V :=
@@ -48,6 +48,10 @@ lemma starGraph_adj {r x y : V} : (starGraph r).Adj x y ↔ x ≠ y ∧ (x = r �
 lemma isUniversal_starGraph_self {r : V} : (starGraph r).IsUniversal r := by
   intro _ _
   simpa
+
+theorem starGraph_le_iff {r : V} : starGraph r ≤ G ↔ G.IsUniversal r := by
+  refine ⟨fun h u hne ↦ h <| by simpa, fun h a b hadj ↦ ?_⟩
+  grind [IsUniversal, Adj.symm]
 
 /-- On (starGraph r), r is adjacent to v iff v ≠ r. -/
 lemma starGraph_adj_center_iff {r v : V} : (starGraph r).Adj r v ↔ r ≠ v := by simp
@@ -103,6 +107,23 @@ lemma degree_starGraph_center [Fintype V] [DecidableEq V] {r : V} :
     (starGraph r).degree r = Fintype.card V - 1 := by
   simp
 
+theorem cliqueFree_starGraph_three (r : V) : starGraph r |>.CliqueFree 3 :=
+  isAcyclic_starGraph r |>.cliqueFree_three
+
+theorem eq_starGraph_of_isUniversal_of_cliqueFree_three {v : V} (hv : G.IsUniversal v)
+    (h3 : G.CliqueFree 3) : G = starGraph v := by
+  by_contra! hne
+  have := hne.lt_of_le' <| starGraph_le_iff.mpr hv
+  obtain ⟨⟨a, b⟩, he, he'⟩ := Set.exists_of_ssubset <| edgeSet_strict_mono this
+  classical
+  refine h3 {v, a, b} <| is3Clique_triple_iff.mpr ⟨hv ?_, hv ?_, he⟩ <;>
+    intro rfl <;> simp [he.ne] at he'
+
+theorem IsUniversal.isAcyclic_iff_cliqueFree_three {v : V} (hv : G.IsUniversal v) :
+    G.IsAcyclic ↔ G.CliqueFree 3 where
+  mp := IsAcyclic.cliqueFree_three
+  mpr h3 := eq_starGraph_of_isUniversal_of_cliqueFree_three hv h3 ▸ isAcyclic_starGraph v
+
 @[simp]
 theorem maxDegree_starGraph [Fintype V] [DecidableEq V] (r : V) :
     (starGraph r).maxDegree = Fintype.card V - 1 :=
@@ -157,6 +178,7 @@ theorem nonempty_starGraph_iso_starGraph {v : V} {w : W} :
   classical
   exact ⟨(⟨·.some⟩), fun ⟨f⟩ ↦ ⟨f.trans <| .swap w (f v), by grind [f.injective]⟩⟩
 
+variable (G) in
 /-- There's a copy of the star graph centered at every vertex. -/
 @[simps toHom]
 def starGraphCopyNeighborSet (v : V) : Copy (starGraph (none : Option (G.neighborSet v))) G where
@@ -166,6 +188,7 @@ def starGraphCopyNeighborSet (v : V) : Copy (starGraph (none : Option (G.neighbo
   toHom.map_rel' := by grind [mem_neighborSet, adj_symm]
   injective' _ := by grind [RelHom.coeFn_mk, notMem_neighborSet_self]
 
+variable (G) in
 @[simp]
 theorem coe_starGraphCopyNeighborSet (v : V) :
     ⇑(G.starGraphCopyNeighborSet v) = (·.map (↑) |>.getD v) := by
@@ -178,7 +201,6 @@ theorem starGraph_isContained_of_card_le_degree_add_one [Finite W] (r : W) {v : 
   have := Fintype.ofFinite W
   exact Function.Embedding.nonempty_of_card_le <| by simpa using h
 
-variable {G} in
 theorem starGraph_isContained_iff_card_le_maxDegree_add_one [Nonempty V] [Fintype V] [Finite W]
     [DecidableRel G.Adj] {r : W} : starGraph r ⊑ G ↔ Nat.card W ≤ G.maxDegree + 1 := by
   have ⟨v, hv⟩ := G.exists_maximal_degree_vertex
