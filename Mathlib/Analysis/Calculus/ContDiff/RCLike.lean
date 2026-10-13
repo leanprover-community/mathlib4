@@ -42,7 +42,7 @@ theorem HasFTaylorSeriesUpToOn.hasStrictFDerivAt {n : WithTop ℕ∞}
 
 /-- If a function is `C^n` with `n ≠ 0` around a point, and its derivative at that point is given to
 us as `f'`, then `f'` is also a strict derivative. -/
-theorem ContDiffAt.hasStrictFDerivAt' {f : E' → F'} {f' : E' →L[𝕂] F'} {x : E'}
+theorem ContDiffAt.hasStrictFDerivAt {f : E' → F'} {f' : E' →L[𝕂] F'} {x : E'}
     (hf : ContDiffAt 𝕂 n f x) (hf' : HasFDerivAt f f' x) (hn : n ≠ 0) :
     HasStrictFDerivAt f f' x := by
   rcases hf.of_le (ENat.one_le_iff_ne_zero_withTop.mpr hn) 1 le_rfl with ⟨u, H, p, hp⟩
@@ -52,16 +52,16 @@ theorem ContDiffAt.hasStrictFDerivAt' {f : E' → F'} {f' : E' →L[𝕂] F'} {x
 
 /-- If a function is `C^n` with `1 ≤ n` around a point, and its derivative at that point is given to
 us as `f'`, then `f'` is also a strict derivative. -/
-theorem ContDiffAt.hasStrictDerivAt' {f : 𝕂 → F'} {f' : F'} {x : 𝕂} (hf : ContDiffAt 𝕂 n f x)
+theorem ContDiffAt.hasStrictDerivAt {f : 𝕂 → F'} {f' : F'} {x : 𝕂} (hf : ContDiffAt 𝕂 n f x)
     (hf' : HasDerivAt f f' x) (hn : n ≠ 0) : HasStrictDerivAt f f' x :=
-  hf.hasStrictFDerivAt' hf' hn
+  hf.hasStrictFDerivAt hf' hn
 
 /-- If a function is `C^n` with `1 ≤ n` around a point, then the derivative of `f` at this point
 is also a strict derivative. -/
 theorem ContDiffAt.hasStrictFDerivAt_fderiv
     {f : E' → F'} {x : E'} (hf : ContDiffAt 𝕂 n f x) (hn : n ≠ 0) :
     HasStrictFDerivAt f (fderiv 𝕂 f x) x :=
-  hf.hasStrictFDerivAt' (hf.differentiableAt hn).hasFDerivAt hn
+  hf.hasStrictFDerivAt (hf.differentiableAt hn).hasFDerivAt hn
 
 /-- If a function is `C^n` with `1 ≤ n` around a point, then the derivative of `f` at this point
 is also a strict derivative. -/
@@ -71,9 +71,9 @@ theorem ContDiffAt.hasStrictDerivAt_deriv
   (hf.hasStrictFDerivAt_fderiv hn).hasStrictDerivAt
 
 @[deprecated (since := "2026-10-13")] alias
-ContDiffAt.hasStrictFDerivAt := ContDiffAt.hasStrictFDerivAt_fderiv
+ContDiffAt.hasStrictFDerivAt' := ContDiffAt.hasStrictFDerivAt
 @[deprecated (since := "2026-10-13")] alias
-ContDiffAt.hasStrictDerivAt := ContDiffAt.hasStrictDerivAt_deriv
+ContDiffAt.hasStrictDerivAt' := ContDiffAt.hasStrictDerivAt
 
 /-- If a function is `C^n` with `1 ≤ n`, then the derivative of `f` is also a strict derivative. -/
 theorem ContDiff.hasStrictFDerivAt {f : E' → F'} {x : E'} (hf : ContDiff 𝕂 n f) (hn : n ≠ 0) :
