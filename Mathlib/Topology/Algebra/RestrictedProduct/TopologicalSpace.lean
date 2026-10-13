@@ -5,9 +5,10 @@ Authors: Anatole Dedecker
 -/
 module
 
-import Mathlib.Topology.Algebra.Group.Pointwise
 public import Mathlib.Topology.Algebra.RestrictedProduct.Basic
 public import Mathlib.Topology.Algebra.Ring.Basic
+
+import Mathlib.Topology.Algebra.Group.Pointwise
 
 /-!
 # Restricted products of topological spaces, topological groups and rings

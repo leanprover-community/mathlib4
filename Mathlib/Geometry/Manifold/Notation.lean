@@ -5,8 +5,9 @@ Authors: Patrick Massot, Michael Rothgang, Thomas Murrills
 -/
 module
 
-import Mathlib.Geometry.Manifold.ContMDiff.Defs
 public import Mathlib.Geometry.Manifold.MFDeriv.Defs
+
+import Mathlib.Geometry.Manifold.ContMDiff.Defs
 
 /-!
 # Elaborators for differential geometry

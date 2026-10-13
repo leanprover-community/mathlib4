@@ -9,6 +9,7 @@ public import Mathlib.FieldTheory.Galois.IsGaloisGroup
 public import Mathlib.RingTheory.Flat.TorsionFree
 public import Mathlib.RingTheory.RamificationInertia.Inertia
 public import Mathlib.RingTheory.RamificationInertia.Ramification
+
 import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 
 /-!

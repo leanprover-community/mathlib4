@@ -5,9 +5,9 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Kaehler.Polynomial
 public import Mathlib.Algebra.Module.FinitePresentation
 public import Mathlib.RingTheory.Extension.Presentation.Basic
+public import Mathlib.RingTheory.Kaehler.Polynomial
 
 /-!
 
