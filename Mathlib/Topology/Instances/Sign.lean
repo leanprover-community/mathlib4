@@ -8,6 +8,9 @@ module
 public import Mathlib.Basic.Sign.Defs
 public import Mathlib.Topology.Order.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topology on `SignType`
 

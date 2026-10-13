@@ -12,6 +12,9 @@ public import Mathlib.Init
 
 import all Lean.Elab.Tactic.Induction -- for `getElimNameInfo`
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Backward compatible implementation of lean 3 `cases` tactic
 

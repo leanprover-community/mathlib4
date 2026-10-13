@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Algebra.UniformMulAction
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Completion of topological groups:
 

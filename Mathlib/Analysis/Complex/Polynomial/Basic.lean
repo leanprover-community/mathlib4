@@ -11,6 +11,9 @@ public import Mathlib.FieldTheory.PolynomialGaloisGroup
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 public import Mathlib.Topology.Algebra.Polynomial
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The fundamental theorem of algebra
 

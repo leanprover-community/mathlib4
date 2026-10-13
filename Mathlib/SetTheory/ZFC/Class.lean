@@ -7,6 +7,9 @@ module
 
 public import Mathlib.SetTheory.ZFC.Ordinal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # ZFC classes
 

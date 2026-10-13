@@ -9,6 +9,9 @@ public import Mathlib.Algebra.QuadraticAlgebra.Discriminant
 public import Mathlib.Data.Rat.Lemmas
 public import Mathlib.RingTheory.Localization.FractionRing
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Quadratic algebras over `ℤ`
 

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Unsigned Hahn decomposition theorem
 

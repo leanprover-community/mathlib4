@@ -11,6 +11,9 @@ public import Batteries.Logic  -- shake: keep (Qq dependency)
 public import Mathlib.Init
 public import Qq
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Expansion of products of list matrices
 

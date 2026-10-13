@@ -13,6 +13,9 @@ import Mathlib.Analysis.Normed.Module.RieszLemma
 import Mathlib.Analysis.Normed.Operator.Banach
 import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Spectral theory of compact operators
 

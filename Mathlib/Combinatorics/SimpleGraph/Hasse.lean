@@ -11,6 +11,9 @@ public import Mathlib.Combinatorics.SimpleGraph.Prod
 import Mathlib.Order.SuccPred.Fin
 import Mathlib.Order.SuccPred.Relation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Hasse diagram as a graph
 

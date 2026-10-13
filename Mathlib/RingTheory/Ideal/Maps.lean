@@ -9,6 +9,9 @@ public import Mathlib.Data.DFinsupp.Module
 public import Mathlib.Order.KrullDimension
 public import Mathlib.RingTheory.Ideal.Operations
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Maps on modules and ideals
 

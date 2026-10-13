@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Finsupp
 public import Mathlib.Algebra.Group.Submonoid.Basic
 public import Mathlib.Algebra.Group.TypeTags.Hom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extensionality for maps on `Finsupp`
 

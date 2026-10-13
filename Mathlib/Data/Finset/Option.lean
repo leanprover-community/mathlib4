@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Finset.Card
 public import Mathlib.Data.Finset.Union
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite sets in `Option α`
 

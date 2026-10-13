@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Action.Faithful
 public import Mathlib.Data.Sigma.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sigma instances for additive and multiplicative actions
 

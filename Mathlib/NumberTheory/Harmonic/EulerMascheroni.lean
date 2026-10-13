@@ -10,6 +10,9 @@ public import Mathlib.NumberTheory.Harmonic.Defs
 
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Euler-Mascheroni constant `γ`
 

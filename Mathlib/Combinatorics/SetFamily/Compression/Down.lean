@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Finset.Lattice.Fold
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Down-compressions
 

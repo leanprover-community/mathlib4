@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.Regular.IsSMulRegular
 
 import Mathlib.RingTheory.Nakayama
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Regular sequences and weakly regular sequences
 

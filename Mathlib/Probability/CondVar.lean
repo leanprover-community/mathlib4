@@ -11,6 +11,9 @@ public import Mathlib.Probability.Moments.Variance
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.PullOut
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.Real
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Conditional variance
 

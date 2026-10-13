@@ -8,6 +8,9 @@ module
 public import Aesop.Frontend.Command
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bound Rule Set
 

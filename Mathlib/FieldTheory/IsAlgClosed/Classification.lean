@@ -13,6 +13,9 @@ import Mathlib.Algebra.Algebra.ZMod
 import Mathlib.Algebra.MvPolynomial.Cardinal
 import Mathlib.RingTheory.Algebraic.Cardinality
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Classification of Algebraically closed fields
 

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Geometry.Manifold.HasGroupoid
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Local properties invariant under a groupoid
 

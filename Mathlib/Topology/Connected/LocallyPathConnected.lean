@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.AlexandrovDiscrete
 public import Mathlib.Topology.Connected.PathConnected
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Locally path-connected spaces
 

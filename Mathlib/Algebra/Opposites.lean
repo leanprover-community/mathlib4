@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.DivInvMonoid
 public import Mathlib.Algebra.Notation.Defs
 public import Mathlib.Logic.Equiv.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Multiplicative opposite and algebraic operations on it
 

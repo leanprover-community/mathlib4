@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Group.Arithmetic
 public import Mathlib.Topology.GDelta.MetrizableSpace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Borel (measurable) space
 

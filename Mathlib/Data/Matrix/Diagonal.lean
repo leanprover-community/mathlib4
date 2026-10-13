@@ -11,6 +11,9 @@ public import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.LinearAlgebra.Matrix.Defs
 public import Mathlib.Logic.Embedding.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Diagonal matrices
 

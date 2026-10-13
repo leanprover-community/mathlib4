@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Nat.Notation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Definition of `Stream'` and functions on streams
 

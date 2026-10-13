@@ -14,6 +14,9 @@ public import Mathlib.Topology.Order.Real
 
 import Mathlib.Tactic.Basify.Attr
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # (Semi)normed groups: definitions
 

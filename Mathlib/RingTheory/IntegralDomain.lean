@@ -12,6 +12,9 @@ public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.Algebra.Ring.GeomSum
 import Mathlib.Tactic.FieldSimp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integral domains
 

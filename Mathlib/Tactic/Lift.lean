@@ -11,6 +11,9 @@ public meta import Lean.Elab.Tactic.RCases
 
 import Mathlib.Tactic.TypeStar
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # lift tactic
 

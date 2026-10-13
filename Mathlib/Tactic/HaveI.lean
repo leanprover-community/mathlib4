@@ -6,6 +6,9 @@ Authors: Gabriel Ebner
 module
 
 public import Mathlib.Init
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Variants of `haveI`/`letI` for use in do-notation.
 

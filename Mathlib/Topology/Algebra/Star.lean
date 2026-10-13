@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Star.Basic
 public import Mathlib.Topology.Algebra.Constructions
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuity of `star`
 

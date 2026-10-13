@@ -7,6 +7,9 @@ module
 
 public import Mathlib.NumberTheory.ModularForms.LevelOne.DimensionFormula
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The graded ring of level-1 modular forms
 

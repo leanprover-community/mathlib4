@@ -11,6 +11,9 @@ public meta import Mathlib.Tactic.ToAdditive
 public import Mathlib.Data.Ineq
 public import Mathlib.Data.Nat.Cast.Order.Ring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas for `linarith`.
 

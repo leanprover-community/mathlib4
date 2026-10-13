@@ -11,6 +11,9 @@ public meta import Lean.Elab.Tactic.ElabTerm
 public import Lean.Elab.ConfigEval
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `applyWith` tactic
 

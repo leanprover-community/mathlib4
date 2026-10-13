@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Data.Nat.Cast.Order.Basic
 public import Mathlib.Data.Nat.Choose.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Inequalities for binomial coefficients
 

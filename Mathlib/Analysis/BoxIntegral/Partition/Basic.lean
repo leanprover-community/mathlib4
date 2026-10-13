@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.BoxIntegral.Box.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Partitions of rectangular boxes in `ℝⁿ`
 

@@ -9,6 +9,9 @@ public import Mathlib.LinearAlgebra.Alternating.Basic
 public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 public import Mathlib.Topology.Algebra.Module.Multilinear.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuous alternating multilinear maps
 

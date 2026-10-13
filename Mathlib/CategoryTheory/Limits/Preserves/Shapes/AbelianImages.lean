@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Abelian.Images
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Preservation of coimage-image comparisons
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.GroupTheory.Perm.Cycle.Type
 public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # p-groups
 

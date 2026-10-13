@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Set.Function
 public import Mathlib.Order.Bounds.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Well-founded relations
 

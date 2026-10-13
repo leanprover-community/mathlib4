@@ -9,6 +9,9 @@ public import Mathlib.GroupTheory.PGroup
 public import Mathlib.GroupTheory.Rank
 public import Mathlib.LinearAlgebra.Quotient.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Torsion groups
 

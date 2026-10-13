@@ -12,6 +12,9 @@ import Mathlib.Algebra.MonoidAlgebra.Ideal
 import Mathlib.Algebra.MvPolynomial.Division
 import Mathlib.Algebra.Order.Group.Pointwise.Interval
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about ideals of `MvPolynomial`
 

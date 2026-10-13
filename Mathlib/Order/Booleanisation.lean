@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.BooleanAlgebra.Basic
 public import Mathlib.Order.Hom.Lattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adding complements to a generalized Boolean algebra
 

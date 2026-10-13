@@ -13,6 +13,9 @@ public import Mathlib.Tactic.ArithMult
 
 import Mathlib.Algebra.Module.BigOperators
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Arithmetic Functions and Dirichlet Convolution
 

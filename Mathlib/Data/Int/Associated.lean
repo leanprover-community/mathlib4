@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.GroupWithZero.Associated
 public import Mathlib.Algebra.Ring.Int.Units
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Associated elements and the integers
 

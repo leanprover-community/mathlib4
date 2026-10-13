@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.Matrix.Notation
 public import Mathlib.Tactic.Matrix.ListMatrix
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Matrices from lists of rows
 

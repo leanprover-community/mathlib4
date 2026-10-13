@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Polynomial.Degree.Operations
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Univariate polynomials form a domain
 
