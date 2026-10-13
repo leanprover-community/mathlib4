@@ -238,9 +238,6 @@ def functor :
     rw [Presheaf.isSheaf_of_iso_iff (functorToPresheavesIso P hs X)]
     exact ((TopCat.discrete.obj X).toSheafCompHausLike P hs).property)
 
-@[deprecated (since := "2026-03-20")] alias functor_obj_obj := functor_obj_obj_obj
-@[deprecated (since := "2026-03-20")] alias functor_map_hom := functor_map_hom_app
-
 /--
 `CompHausLike.LocallyConstant.functor` is naturally isomorphic to the restriction of
 `topCatToSheafCompHausLike` to discrete topological spaces.
@@ -293,7 +290,7 @@ noncomputable def counit [HasExplicitFiniteCoproducts.{u} P] : haveI := CompHaus
     rw [this]
     apply congrArg
     symm
-    convert! (b.preimage).prop
+    convert (b.preimage).prop
     exact (mem_iff_eq_image (g.hom.app _ ∘ f) _ _).symm
 
 /--

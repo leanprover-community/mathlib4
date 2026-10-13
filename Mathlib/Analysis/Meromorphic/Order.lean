@@ -5,8 +5,8 @@ Authors: David Loeffler, Stefan Kebekus
 -/
 module
 
-public import Mathlib.Analysis.Meromorphic.Basic
 public import Mathlib.Algebra.Order.WithTop.Untop0
+public import Mathlib.Analysis.Meromorphic.Basic
 
 /-!
 # Orders of Meromorphic Functions
@@ -407,7 +407,7 @@ The order of a constant function is `⊤` if the constant is zero and `0` otherw
 /-- The order of `(· - x) ^ n` at `x` is `n`. -/
 @[simp, to_fun] theorem meromorphicOrderAt_pow_id_sub_const {n : ℕ} :
     meromorphicOrderAt ((· - x) ^ n) x = n := by
-  convert! meromorphicOrderAt_zpow_id_sub_const
+  convert meromorphicOrderAt_zpow_id_sub_const
   simp only [zpow_natCast]
 
 /-- The order of `· - x` at `x` is `1`. -/
@@ -762,8 +762,7 @@ theorem isClopen_setOfPred_meromorphicOrderAt_eq_top (hf : MeromorphicOn f U) :
     use t' \ {z.1}, fun y h₁y _ ↦ h₁t' y (mem_of_mem_sdiff h₁y) (mem_of_mem_inter_right h₁y)
     constructor
     · exact h₂t'.sdiff isClosed_singleton
-    · apply (mem_sdiff w).1
-      exact ⟨hw, mem_singleton_iff.not.1 (Subtype.coe_ne_coe.2 h₁w)⟩
+    · exact ⟨hw, mem_singleton_iff.not.1 (Subtype.coe_ne_coe.2 h₁w)⟩
 
 @[deprecated (since := "2026-07-09")]
 alias isClopen_setOf_meromorphicOrderAt_eq_top := isClopen_setOfPred_meromorphicOrderAt_eq_top
@@ -903,7 +902,7 @@ function has zero or infinite order is codiscrete within its domain of meromorph
 theorem codiscreteWithin_setOfPred_meromorphicOrderAt_eq_zero_or_top (h₁f : MeromorphicOn f U)
     (h₂f : ∀ u ∈ U, meromorphicOrderAt f u ≠ ⊤) :
     {u ∈ U | meromorphicOrderAt f u = 0 ∨ meromorphicOrderAt f u = ⊤} ∈ codiscreteWithin U := by
-  convert!
+  convert
     mem_codiscrete_subtype_iff_mem_codiscreteWithin.1
       h₁f.codiscrete_setOfPred_meromorphicOrderAt_eq_zero_or_top
   aesop

@@ -7,10 +7,11 @@ module
 
 public import Mathlib.NumberTheory.Padics.AddChar
 public import Mathlib.NumberTheory.Padics.Measure.Monoid
-public import Mathlib.RingTheory.PowerSeries.Basic
-public import Mathlib.Topology.Algebra.InfiniteSum.Module
-public import Mathlib.Algebra.Order.Field.Power
 public import Mathlib.NumberTheory.Padics.MahlerBasis
+public import Mathlib.RingTheory.PowerSeries.Basic
+
+import Mathlib.Algebra.Order.Field.Power
+import Mathlib.Topology.Algebra.InfiniteSum.Module
 
 /-!
 # The Amice transform
@@ -262,7 +263,7 @@ def amiceTransformEquivₐ : D(Multiplicative ℤ_[p], ℤ_[p]) ≃ₐ[ℤ_[p]] 
       simp only [coeff_amiceTransformₐ, ofAddDistEquiv, AbstractMeasure.coe_arrowCongrLeft,
         amiceTransformEquiv_apply, coeff_amiceTransform, smul_eq_mul, mul_one,
         AbstractMeasure.map_apply]
-      congr 1 with x
+      congr with x
       simp [mulMahler_apply]
     right_inv F := by
       suffices amiceTransformₐ (ofAddDistEquiv.symm (amiceTransformEquiv.symm F)) = F by simpa
@@ -272,7 +273,7 @@ def amiceTransformEquivₐ : D(Multiplicative ℤ_[p], ℤ_[p]) ≃ₐ[ℤ_[p]] 
       rw [show F = amiceTransformEquiv (amiceTransformEquiv.symm F) by simp]
       generalize amiceTransformEquiv.symm F = μ
       simp only [coeff_amiceTransformEquiv, LinearEquiv.symm_apply_apply]
-      congr 1 with x
+      congr with x
       simp [mulMahler_apply] }
 
 end multiplicative

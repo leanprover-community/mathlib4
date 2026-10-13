@@ -6,10 +6,11 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.FieldTheory.Finite.Basic
-public import Mathlib.GroupTheory.Abelianization.Finite
 public import Mathlib.GroupTheory.Nilpotent
-public import Mathlib.GroupTheory.SchurZassenhaus
 public import Mathlib.GroupTheory.SemidirectProduct
+
+import Mathlib.GroupTheory.Abelianization.Finite
+import Mathlib.GroupTheory.SchurZassenhaus
 
 /-!
 # Z-Groups

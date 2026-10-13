@@ -357,6 +357,9 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `M`
   [Elab.DiffGeo.MDiff] `ContinuousLinearMap id' E'' E'''` is a space of continuous (semi-)linear maps
   [Elab.DiffGeo.MDiff] Failed with error:
       Coefficients `Real` and `RealCopy` of `ContinuousLinearMap id' E'' E'''` are not reducibly definitionally equal
+[Elab.DiffGeo.MDiff] 💥️ ContinuousAlternatingMap
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `ContinuousLinearMap id' E'' E'''` is not a space of continuous alternating maps
 [Elab.DiffGeo.MDiff] 💥️ RealInterval
   [Elab.DiffGeo.MDiff] Failed with error:
       `ContinuousLinearMap id' E'' E'''` is not a coercion of a set to a type
@@ -459,6 +462,9 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `M`
   [Elab.DiffGeo.MDiff] `ContinuousLinearMap σ E'' E''''` is a space of continuous (semi-)linear maps
   [Elab.DiffGeo.MDiff] Failed with error:
       `ContinuousLinearMap σ E'' E''''` is a space of continuous (semi-)linear maps over `σ`, which is not the identity
+[Elab.DiffGeo.MDiff] 💥️ ContinuousAlternatingMap
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `ContinuousLinearMap σ E'' E''''` is not a space of continuous alternating maps
 [Elab.DiffGeo.MDiff] 💥️ RealInterval
   [Elab.DiffGeo.MDiff] Failed with error:
       `ContinuousLinearMap σ E'' E''''` is not a coercion of a set to a type
@@ -494,6 +500,27 @@ set_option trace.Elab.DiffGeo.MDiff true in
 end
 
 end ContinuousLinearMap
+
+section ContinuousAlternatingMap
+
+variable {f : M → E [⋀^Unit]→L[𝕜] E} in
+/-- info: ContMDiff I (modelWithCornersSelf 𝕜 (ContinuousAlternatingMap 𝕜 E E Unit)) 2 f : Prop -/
+#guard_msgs in
+#check CMDiff 2 f
+
+variable {f : E [⋀^Unit]→L[𝕜] F → M} in
+/-- info: ContMDiff (modelWithCornersSelf 𝕜 (ContinuousAlternatingMap 𝕜 E F Unit)) I 2 f : Prop -/
+#guard_msgs in
+#check CMDiff 2 f
+
+variable {f : (E [⋀^Unit]→L[𝕜] F) → M × M} {φ : E [⋀^Unit]→L[𝕜] F} in
+/--
+info: ContMDiffAt (modelWithCornersSelf 𝕜 (ContinuousAlternatingMap 𝕜 E F Unit)) (I.prod I) 2 f φ : Prop
+-/
+#guard_msgs in
+#check CMDiffAt 2 f φ
+
+end ContinuousAlternatingMap
 
 /-! Inferring a model with corners on a real interval -/
 section RealInterval
@@ -663,6 +690,9 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `↑(Set.Icc x y)`
 [Elab.DiffGeo.MDiff] 💥️ ContinuousLinearMap
   [Elab.DiffGeo.MDiff] Failed with error:
       `↑(Set.Icc x y)` is not a space of continuous linear maps
+[Elab.DiffGeo.MDiff] 💥️ ContinuousAlternatingMap
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `↑(Set.Icc x y)` is not a space of continuous alternating maps
 [Elab.DiffGeo.MDiff] 💥️ RealInterval
   [Elab.DiffGeo.MDiff] Failed with error:
       `Set.Icc x y` is a closed interval of type `RealCopy'`, which is not reducibly definitionally equal to ℝ
