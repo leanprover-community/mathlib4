@@ -228,7 +228,7 @@ Version for `ContMDiffAt`. We also give a version for `ContMDiffWithinAt`, but n
 a point.
 
 For a version with `B₁ = B₂` and `b₁ = b₂`, in which smoothness can be expressed without
-`inCoordinates`, see `ContMDiffAt.clm_bundle_apply`.
+`inCoordinates`, see `ContMDiffAt.continuousAlternatingMap_bundle_apply`.
 -/
 lemma ContMDiffAt.continuousAlternatingMap_apply_of_inCoordinates
     (hϕ : CMDiffAt n
