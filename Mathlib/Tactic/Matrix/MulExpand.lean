@@ -5,12 +5,11 @@ Authors: Rao Xiaojia
 -/
 module
 
+public meta import Mathlib.Tactic.Matrix.ListMatrix
+public meta import Mathlib.Util.Qq
 public import Batteries.Logic  -- shake: keep (Qq dependency)
 public import Mathlib.Init
 public import Qq
-
-public meta import Mathlib.Tactic.Matrix.ListMatrix
-public meta import Mathlib.Util.Qq
 
 /-!
 # Expansion of products of list matrices

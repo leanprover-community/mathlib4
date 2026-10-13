@@ -6,10 +6,11 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Calculus.AddTorsor.AffineMap
-import Mathlib.Analysis.SpecialFunctions.SmoothTransition
 public import Mathlib.Geometry.Manifold.Instances.Icc
 public import Mathlib.MeasureTheory.Constructions.UnitInterval
 public import Mathlib.MeasureTheory.Function.JacobianOneDim
+
+import Mathlib.Analysis.SpecialFunctions.SmoothTransition
 
 /-! # Lengths of paths in manifolds
 

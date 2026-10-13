@@ -7,8 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.LebesgueBochner
 public import Mathlib.MeasureTheory.Measure.AddContent
-import Mathlib.MeasureTheory.Measure.MeasuredSets
 public import Mathlib.MeasureTheory.VectorMeasure.SetIntegral
+
+import Mathlib.MeasureTheory.Measure.MeasuredSets
 
 /-!
 # Constructing a vector measure from an additive content

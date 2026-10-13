@@ -6,8 +6,9 @@ Authors: Judith Ludwig, Christian Merten
 module
 
 public import Mathlib.RingTheory.Extension.Presentation.Core
-import Mathlib.RingTheory.MvPolynomial.Homogeneous
 public import Mathlib.RingTheory.Smooth.StandardSmoothOfFree
+
+import Mathlib.RingTheory.MvPolynomial.Homogeneous
 
 /-!
 # Smooth algebras have Noetherian models
