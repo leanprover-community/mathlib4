@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 public import Mathlib.Data.ENat.Lattice
-public import Mathlib.Order.CompletePartialOrder
 
 /-!
 # Edge Connectivity
@@ -110,9 +109,10 @@ lemma IsEdgeConnected.le_degree [Fintype (G.neighborSet u)] [Nontrivial V]
   obtain ⟨v, hv⟩ := exists_ne u
   exact (h u v).le_degree hv.symm
 
+variable {k : ℕ} in
 theorem IsEdgeConnected.le_minDegree [Fintype V] [Nontrivial V] [DecidableRel G.Adj]
     (h : G.IsEdgeConnected k) : k ≤ G.minDegree :=
-  le_minDegree_of_forall_le_degree G k fun _ ↦ le_degree h
+  le_minDegree_of_forall_le_degree G k fun _ ↦ (ENat.natCast_le_natCast.mp (le_degree h))
 
 lemma isEdgeReachable_add_one (hk : k ≠ 0) :
     G.IsEdgeReachable (k + 1) u v ↔ ∀ e, (G.deleteEdges {e}).IsEdgeReachable k u v := by
@@ -190,6 +190,7 @@ The edge connectivity number of a graph `G` is the largest `k` such that `G` is 
 noncomputable def edgeConnectivity (G : SimpleGraph V) : ℕ∞ :=
   ⨆ (k : ℕ) (_ : G.IsEdgeConnected k), k
 
+variable {k : ℕ} in
 theorem IsEdgeReachable.le_edgeReachability (h : G.IsEdgeReachable k u v) :
     k ≤ G.edgeReachability u v :=
   le_iSup₂_of_le k h le_rfl
@@ -197,6 +198,7 @@ theorem IsEdgeReachable.le_edgeReachability (h : G.IsEdgeReachable k u v) :
 theorem Reachable.edgeReachability_ne_zero (h : G.Reachable u v) : G.edgeReachability u v ≠ 0 := by
   simpa [← Order.one_le_iff_ne_zero] using isEdgeReachable_one.mpr h |>.le_edgeReachability
 
+variable {k : ℕ} in
 theorem IsEdgeConnected.le_edgeConnectivity (h : G.IsEdgeConnected k) : k ≤ G.edgeConnectivity :=
   le_iSup₂_of_le k h le_rfl
 
