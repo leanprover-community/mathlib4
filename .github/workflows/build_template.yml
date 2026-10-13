@@ -643,8 +643,9 @@ jobs:
           for attempt in 1 2; do
             if timeout 10m env LEAN_ABORT_ON_PANIC=1 stdbuf -oL lake lint -- --trace 2>&1 | tee ".lake/lint_output_attempt_${attempt}.txt"; then
               break
+            else
+              status=$?
             fi
-            status=${PIPESTATUS[0]}
             if grep -qE "cannot parse arguments|no lint driver configured" ".lake/lint_output_attempt_${attempt}.txt"; then
               echo ""
               echo "=============================================================================="

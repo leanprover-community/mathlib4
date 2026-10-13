@@ -48,3 +48,13 @@ This linter can be disabled with `@[nolint tacticDocs]`. -/
 -/
 #guard_msgs in
 #lint
+
+-- Documentation can come entirely from a later extension.
+syntax (name := extensionOnly) "extensionOnly" : tactic
+
+/-- This tactic is documented through an extension. -/
+tactic_extension extensionOnly
+
+run_meta do
+  unless (← tacticDocs.test ``extensionOnly).isNone do
+    throwError "the linter ignored the documentation extension"

@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 module
 
+public meta import Lean.DocString
 public meta import Lean.Elab.Tactic.Doc
 public meta import Lean.Parser.Tactic.Doc
 public import Batteries.Tactic.Lint.Basic
@@ -38,20 +39,10 @@ meta def isNonemptyDoc (doc : TacticDoc) : Bool :=
     if !isTactic env tac || (alternativeOfTactic env tac).isSome then
       return none
 
-    -- Find the associated documentation.
-    let docs ← Tactic.Doc.allTacticDocs
-    let docMap : NameMap _ := docs.foldl (init := {}) fun m doc =>
-      m.insert doc.internalName doc
-    -- This `get?` should not return `none` for normally declared tactics,
-    -- but if we do environment manipulation it might give us weird results.
-    -- So we should allow the case of `none`.
-    let doc := docMap.get? tac
-    let name := (doc.map (·.userName)).getD tac.toString
+    if (← findDocString? env tac).isSome || (getTacticExtensions env tac).any (! ·.isEmpty) then
+      return none
 
-    if let some doc := doc then
-      if isNonemptyDoc doc then
-        return none
-
+    let name := (← firstTacticTokens).getD tac tac.toString
     return m!"tactic `{name}` missing documentation string"
 
 /-- Check tactics with the same user-facing name (usually: first syntax token) get a `@[tactic_alt]`
@@ -65,14 +56,16 @@ attribute. -/
       return none
     -- Find duplicates, those with the same user-facing name but that aren't declared
     -- to be alternatives.
-    let docs ← Tactic.Doc.allTacticDocs
-    let some doc := docs.find? fun doc => doc.internalName == tac | return none
-    let name := doc.userName
-    let tacs := docs.filter fun doc =>
-      (doc.userName == name && (alternativeOfTactic env doc.internalName).isNone)
+    let some tactics := (Lean.Parser.parserExtension.getState env).categories.find? `tactic
+      | return none
+    let names ← firstTacticTokens
+    let name := names.getD tac tac.toString
+    let tacNames := tactics.kinds.foldl (init := #[]) fun acc other _ =>
+      if names.getD other other.toString == name && (alternativeOfTactic env other).isNone then
+        acc.push other
+      else acc
     -- If we have duplicates, complain.
-    if tacs.size <= 1 then return none
-    let tacNames := tacs.map (·.internalName)
-    return m!"tactic `{doc.userName}` has multiple declarations {tacNames} one of which should \
+    if tacNames.size <= 1 then return none
+    return m!"tactic `{name}` has multiple declarations {tacNames} one of which should \
     be marked as `@[tactic_alt]` of the other(s).\n\
     Hint: you can use the `tactic_extension` command to extend the documentation."
