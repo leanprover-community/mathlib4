@@ -53,11 +53,9 @@ only when the workflow's identity — stamped by GitHub from the repo, event
 type, and ref — matches a pre-registered grant. The credential's scope is
 fixed when it is issued and cannot be widened afterward.
 
-Two credential mechanisms implement this. Azure writes mint an OIDC-federated
-bearer token whose RBAC role covers exactly one container. Only builds that write to
-the `master` container write to Azure. An S3-compatible destination takes a short-lived
-credential pair scoped to one container's namespace, and the tool signs each
-request with it (SigV4); CI mints the pair per job the same OIDC-gated way.
+The credential is a short-lived S3-compatible credential pair scoped to one
+container's namespace, and the tool signs each request with it (SigV4). CI
+mints the pair per job, gated on the workflow's OIDC identity.
 
 The nightly-testing credential is narrower than one container: it reaches only
 the namespace of the commit being built.
@@ -165,7 +163,7 @@ The trust model does not attempt to defend against:
 | Where files live: the URLs of reads and uploads | [`Cache/Location.lean`](Location.lean) (`Location`)             |
 | Read-fallback resolution, dispatch             | [`Cache/Requests.lean`](Requests.lean) (`effectiveGetBases`, `readLocations`) |
 | Backend selection, location arbitration        | [`Cache/Upload/Defs.lean`](Upload/Defs.lean) (`UploadBackend`, `uploadLocation`), [`Cache/Upload.lean`](Upload.lean) (`runPut`) |
-| Upload backends: credentials, location, signing, transfer | [`Cache/Upload/Azure.lean`](Upload/Azure.lean), [`Cache/Upload/S3.lean`](Upload/S3.lean) |
+| Upload backends: credentials, signing, transfer | [`Cache/Upload/Azure.lean`](Upload/Azure.lean), [`Cache/Upload/S3.lean`](Upload/S3.lean) |
 | Transfer tool mechanics                        | [`Cache/Upload/Curl.lean`](Upload/Curl.lean), [`Cache/Upload/Rclone.lean`](Upload/Rclone.lean) |
 | Trust property tests                           | [`Cache/Test.lean`](Test.lean)                                   |
 | User-facing CLI surface, env vars              | [`Cache/Main.lean`](Main.lean), [`Cache/README.md`](README.md), [`Cache/CI.md`](CI.md) |

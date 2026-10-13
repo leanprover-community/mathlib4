@@ -245,7 +245,7 @@ initialize cacheFromOverride : IO.Ref (Option (List Container)) ← IO.mkRef non
 keeps the chain's trust order. -/
 private def chainWithGetBases (containers : List Container) :
     BaseIO (List (Option Container × String)) :=
-  containers.mapM fun c => do return (some c, ← getBaseURL c)
+  containers.mapM fun c => do return (some c, ← getBaseURL)
 
 /--
 Resolve the read bases for a GitHub repo. Each base carries its container

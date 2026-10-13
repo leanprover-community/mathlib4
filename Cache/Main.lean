@@ -93,10 +93,6 @@ Valid arguments are:
 # Environment variables
 
 * MATHLIB_CACHE_DIR       Local cache directory (default: ~/.cache/mathlib)
-* MATHLIB_CACHE_DEBUG_USE_LEGACY
-                          Set to 1 or true to read from the Azure storage
-                          account instead of https://cache.mathlib.org.
-                          For troubleshooting only.
 * MATHLIB_CACHE_GET_URL   Download from this single URL as a flat namespace.
                           Allows third parties to use their own cache endpoint.
                           An empty value means unset.
@@ -127,9 +123,6 @@ def main (args : List String) : IO Unit := do
       IO.eprintln help
       Process.exit 1
 
-  -- Resolve the legacy switch once, before anything builds a read URL.
-  useLegacy.set (← getEnvFlag "MATHLIB_CACHE_DEBUG_USE_LEGACY" (ifUnset := false))
-
   let repo? ← parseNamedOpt "repo" options
   let stagingDir? ← parseNamedOpt "staging-dir" options
   let cacheFromStr? ← parseNamedOpt "cache-from" options
@@ -139,9 +132,9 @@ def main (args : List String) : IO Unit := do
   let unsafeWindowStr? ← parseNamedOpt "unsafe-window" options
   let backendStr? ← parseNamedOpt "backend" options
 
-  -- Parse `--backend=NAME`; `azure` is the default.
+  -- Parse `--backend=NAME`; `s3` is the default.
   let backend ← match backendStr? with
-    | none => pure UploadBackend.azure
+    | none => pure UploadBackend.s3
     | some s => match UploadBackend.parse? s with
       | some b => pure b
       | none =>

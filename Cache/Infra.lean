@@ -59,9 +59,6 @@ inductive Container where
   | forks
   deriving DecidableEq, Repr, BEq, Inhabited
 
-/-- Base URL of the `lakecache` Azure Blob Storage account. -/
-def azureAccountURL : String := "https://lakecache.blob.core.windows.net"
-
 namespace Container
 
 /-- Canonical short name for a container, used in CLI flags and URLs. -/
@@ -95,10 +92,6 @@ or an upload base that serves the `/{container}/{key}` namespace. -/
 def urlUnder (c : Container) (base : String) : String :=
   s!"{base}/{c.pathSegment}"
 
-/-- Public Azure Blob Storage base URL for a container. -/
-def azureURL (c : Container) : String :=
-  c.urlUnder azureAccountURL
-
 /--
 Whether file lookups in this container use the flat `/f/<hash>` layout, or
 namespace under `/f/<repo>/<hash>`.
@@ -122,34 +115,15 @@ def flatPath : Container → Bool
 end Container
 
 /--
-The public Mathlib cache endpoint. It serves the same `/{container}/{key}`
-namespace as the storage account and caches artifacts at its edge, so reads
-cost the project less and land nearer the reader.
+The public Mathlib cache endpoint. It serves the `/{container}/{key}`
+namespace and caches artifacts at its edge, so reads cost the project less
+and land nearer the reader.
 -/
 def publicCacheEndpoint : String := "https://cache.mathlib.org"
 
 /--
-Whether reads of the `master` container address the Azure storage account
-instead of `publicCacheEndpoint`. `main` sets this from
-`MATHLIB_CACHE_DEBUG_USE_LEGACY` at startup. Every other container reads from
-`publicCacheEndpoint` either way.
-
-The variable is a troubleshooting fallback for the transition to the public
-endpoint, enabled in September 2026, and it should be retired together with
-direct reads from the storage account.
--/
-initialize useLegacy : IO.Ref Bool ← IO.mkRef false
-
-/--
-Default base URL for reads of container `c`: `publicCacheEndpoint`, or
-`azureAccountURL` for the `master` container when `useLegacy` is set.
--/
-def defaultGetBaseURL (c : Container) (useLegacy : Bool) : String :=
-  if useLegacy && c == .master then azureAccountURL else publicCacheEndpoint
-
-/--
-Base URL for reads of container `c`: `MATHLIB_CACHE_BASE_URL` if set,
-otherwise `defaultGetBaseURL c useLegacy`. `normalizeBaseURL` reads the value, so it
+Base URL for reads: `MATHLIB_CACHE_BASE_URL` if set,
+otherwise `publicCacheEndpoint`. `normalizeBaseURL` reads the value, so it
 arrives trimmed, free of trailing slashes, and unset when empty.
 
 A read URL is `{base}/{pathSegment}/{key}`, the namespace every cache
@@ -160,18 +134,18 @@ lookup chain. `MATHLIB_CACHE_BASE_URL` serves internal consumers, that is,
 CI and contributors to the mathlib4 repository. It keeps the lookup chain and
 rebases each container read under the given host.
 
-Only reads follow this base. Uploads and marker writes use the location of
-the selected backend (`uploadLocation`).
+Only reads follow this base. Uploads and marker writes use the upload
+location (`uploadLocation`).
 -/
-def getBaseURLFrom (c : Container) (envValue? : Option String) (useLegacy : Bool) : String :=
-  (normalizeBaseURL envValue?).getD (defaultGetBaseURL c useLegacy)
+def getBaseURLFrom (envValue? : Option String) : String :=
+  (normalizeBaseURL envValue?).getD publicCacheEndpoint
 
 /--
-Base URL for reads of container `c`, resolved from the environment.
+Base URL for reads, resolved from the environment.
 Written on top of the pure function above, which is separate to be testable.
 -/
-def getBaseURL (c : Container) : BaseIO String := do
-  return getBaseURLFrom c (← IO.getEnv "MATHLIB_CACHE_BASE_URL") (← useLegacy.get)
+def getBaseURL : BaseIO String := do
+  return getBaseURLFrom (← IO.getEnv "MATHLIB_CACHE_BASE_URL")
 
 /--
 Comma-separated list parser for `--cache-from=a,b,c`.

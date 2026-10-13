@@ -10,14 +10,12 @@ public import Cache.Upload.Curl
 /-!
 # The Azure Blob Storage backend
 
-The complete azure upload path: the location resolution
-(`azureUploadLocationFrom`), the credential resolution (`azureAuthFrom`), the
+The azure upload path: the credential resolution (`azureAuthFrom`), the
 request signing (`azureBearerCurlArgs`), and the transfer entry point
-(`azurePutStaged`). rclone signs only S3 requests, so the backend always
-transfers with the curl tool.
-
-The storage account URL and the container model live in `Cache/Infra.lean`,
-because the read side uses them too.
+(`azurePutStaged`). The backend uploads only to the endpoint that
+`MATHLIB_CACHE_PUT_URL` names (`uploadLocationFrom`): it has no default
+account and no container layout. rclone signs only S3 requests, so the
+backend always transfers with the curl tool.
 -/
 
 public section
@@ -25,22 +23,6 @@ public section
 namespace Cache.Requests
 
 open System (FilePath)
-
-/--
-The upload location for the azure backend: the chosen `--container` on the
-`lakecache` Azure storage account, or on the base
-`MATHLIB_CACHE_PUT_BASE_URL` names (`putBase?`), as `MATHLIB_CACHE_BASE_URL`
-rebases reads. A missing container errors: an upload targets exactly one
-container.
--/
-def azureUploadLocationFrom (putBase? : Option String) (container? : Option Container)
-    (repo : String) (scope? : Option String) : Except String Location :=
-  match container? with
-  | some c => .ok (c.location (putBase?.getD azureAccountURL) repo scope?)
-  | none => .error
-      s!"an upload targets one container: pass --container=NAME (known: \
-      {", ".intercalate (Container.all.map Container.name)}), or set \
-      MATHLIB_CACHE_PUT_URL for a flat upload"
 
 /-- The api-version header that every bearer-authenticated Azure request
 sends. Bearer authentication requires an api-version that supports OAuth. -/
@@ -76,9 +58,8 @@ def azureAuthFrom (bearer? : Option String) : Except String String :=
   match bearer? with
   | some token => .ok token
   | none => .error
-      "the azure backend (the default) uploads with an Azure OIDC bearer token: \
-      set MATHLIB_CACHE_AZURE_BEARER_TOKEN, or pass --backend=s3 to upload \
-      with the S3 credential pair"
+      "the azure backend uploads with an Azure OIDC bearer token: \
+      set MATHLIB_CACHE_AZURE_BEARER_TOKEN"
 
 /-- Retrieves the azure upload credential from the environment via
 `azureAuthFrom`. -/
