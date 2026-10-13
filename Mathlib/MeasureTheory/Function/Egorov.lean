@@ -70,8 +70,7 @@ theorem measure_inter_notConvergentSeq_eq_zero [SemilatticeSup ι] [Nonempty ι]
 theorem measurableSet_notConvergentSeq [Preorder ι] [Countable ι]
     (hf : ∀ n, Measurable (fun a ↦ edist (f n a) (g a))) :
     MeasurableSet (notConvergentSeq f g n j) :=
-  MeasurableSet.iUnion fun k ↦ MeasurableSet.iUnion fun _ ↦
-      measurableSet_lt measurable_const <| hf k
+  .iUnion fun k ↦ .iUnion fun _ ↦ measurableSet_lt measurable_const (hf k)
 
 @[deprecated (since := "2026-10-13")] alias notConvergentSeq_measurableSet :=
   measurableSet_notConvergentSeq
@@ -85,11 +84,8 @@ theorem measure_notConvergentSeq_tendsto_zero [SemilatticeSup ι] [Countable ι]
     (hf : ∀ n, AEMeasurable (fun a ↦ edist (f n a) (g a)) μ) (hsm : NullMeasurableSet s μ)
     (hs : μ s ≠ ∞) (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) (n : ℕ) :
     Tendsto (fun j => μ (s ∩ notConvergentSeq f g n j)) atTop (𝓝 0) := by
-  rcases isEmpty_or_nonempty ι with h | h
-  · have : (fun j => μ (s ∩ notConvergentSeq f g n j)) = fun j => 0 := by
-      simp only [eq_iff_true_of_subsingleton]
-    rw [this]
-    exact tendsto_const_nhds
+  rcases isEmpty_or_nonempty ι with h| h
+  · exact tendsto_of_isEmpty
   rw [← measure_inter_notConvergentSeq_eq_zero hfg n, Set.inter_iInter]
   refine tendsto_measure_iInter_atTop
     (fun n ↦ hsm.inter (nullMeasurableSet_notConvergentSeq hf))
@@ -142,7 +138,7 @@ theorem measurableSet_iUnionNotConvergentSeq (hε : 0 < ε)
     (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) :
     MeasurableSet
       (iUnionNotConvergentSeq hε (fun n ↦ (hf n).aemeasurable) hsm.nullMeasurableSet hs hfg) :=
-  MeasurableSet.iUnion fun _ ↦ hsm.inter <| measurableSet_notConvergentSeq hf
+  MeasurableSet.iUnion fun _ ↦ hsm.inter (measurableSet_notConvergentSeq hf)
 
 @[deprecated (since := "2026-10-13")] alias iUnionNotConvergentSeq_measurableSet :=
   measurableSet_iUnionNotConvergentSeq
@@ -152,7 +148,7 @@ theorem nullMeasurableSet_iUnionNotConvergentSeq (hε : 0 < ε)
     (hsm : NullMeasurableSet s μ) (hs : μ s ≠ ∞)
     (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) :
     NullMeasurableSet (iUnionNotConvergentSeq hε hf hsm hs hfg) μ :=
-  MeasurableSet.iUnion fun _ ↦ hsm.inter (nullMeasurableSet_notConvergentSeq hf)
+  NullMeasurableSet.iUnion fun _ ↦ hsm.inter (nullMeasurableSet_notConvergentSeq hf)
 
 theorem measure_iUnionNotConvergentSeq (hε : 0 < ε)
     (hf : ∀ n, AEMeasurable (fun a ↦ edist (f n a) (g a)) μ)
