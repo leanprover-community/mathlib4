@@ -234,7 +234,6 @@ section Transpose
 variable (n)
 
 /-- The equivalence between `GL n R` and `(GL n R)ᵐᵒᵖ`. -/
-@[simps! apply symm_apply]
 def transposeMulEquiv : GL n R ≃* (GL n R)ᵐᵒᵖ :=
   (Units.mapEquiv (Matrix.transposeRingEquiv n R).toMulEquiv).trans Units.opEquiv
 
@@ -253,10 +252,25 @@ universe w
 
 variable (n) (R)
 
-/-- `GL n (ULift R)` is isomorphic to `GL n R`. -/
-@[simps! apply symm_apply]
+/-- The equivalence between `GL n (ULift R)` and `GL n R`. -/
 def uliftMulEquiv : GL n (ULift.{w} R) ≃* GL n R :=
   mapEquiv n ULift.ringEquiv
+
+@[simp] lemma uliftMulEquiv_apply (a : GL n (ULift.{w} R)) :
+    uliftMulEquiv n R a = a.map ULift.ringEquiv.toRingHom := rfl
+
+@[simp] lemma uliftMulEquiv_symm (a : GL n R) :
+    (uliftMulEquiv n R).symm a  =
+      a.map ULift.ringEquiv.symm.toRingHom := rfl
+
+@[simp] lemma uliftMulEquiv_apply_coe (a : GL n (ULift.{w} R)) :
+    uliftMulEquiv n R a = (a : Matrix n n (ULift.{w} R)).map ULift.down := rfl
+
+@[simp] lemma uliftMulEquiv_symm_apply_coe (a : GL n R) :
+    (uliftMulEquiv n R).symm a = (a : Matrix n n R).map ULift.up := rfl
+
+@[simp] lemma uliftMulEquiv_entry_coe (a : GL n (ULift.{w} R)) {i j : n} :
+    uliftMulEquiv n R a i j = (a i j).down := rfl
 
 end ULift
 
