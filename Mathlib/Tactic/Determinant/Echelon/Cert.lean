@@ -72,7 +72,8 @@ def certifyPermSign {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α)) (m : Na
     let ⟨σ, s, h⟩ ← certifyPermSign rα m rest
     let aQ : Q(Fin $m) ← mkFinLitQ m a
     let bQ : Q(Fin $m) ← mkFinLitQ m b
-    let hab : Q($aQ ≠ $bQ) ← mkDecideProofQ q($aQ ≠ $bQ)
+    let hd : Q(decide ($aQ = $bQ) = false) := (q(Eq.refl false) : Expr)
+    let hab : Q($aQ ≠ $bQ) := q(of_decide_eq_false $hd)
     return ⟨q((Equiv.swap $aQ $bQ).trans $σ), q(-$s), q(intCast_sign_swap_trans $h $hab)⟩
 
 /-- The value of the determinant read off the decomposition `data`, computed by `s * u / l`,
