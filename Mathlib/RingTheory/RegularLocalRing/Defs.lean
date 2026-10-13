@@ -5,8 +5,9 @@ Authors: Nailin Guan
 -/
 module
 
-import Mathlib.Algebra.Module.SpanRankOperations
 public import Mathlib.RingTheory.DedekindDomain.Dvr
+
+import Mathlib.Algebra.Module.SpanRankOperations
 import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
 import Mathlib.RingTheory.KrullDimension.Field
 import Mathlib.RingTheory.KrullDimension.PID

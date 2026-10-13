@@ -47,7 +47,7 @@ universe v' v u' u
 
 variable {R : Type u} [CommRing R]
 
-open RingTheory.Sequence IsLocalRing ModuleCat
+open RingTheory.Sequence IsLocalRing ModuleCat Pointwise
 
 /-- A `R`-module `M` is Cohen Macaulay if it is zero or
 `Module.supportDim R M = IsLocalRing.depth M`. -/
@@ -160,74 +160,6 @@ lemma quotient_regular_isCohenMacaulay_iff_isCohenMacaulay
   exact ENat.WithBot.add_natCast_cancel
 
 variable [p.IsPrime] {Rₚ : Type u'} [CommRing Rₚ] [Algebra R Rₚ] [IsLocalization.AtPrime Rₚ p]
-
-/-- Turn a `R`-linear map into `algebraMap R A`-semilinear map if its target is an `A`-module. -/
-abbrev SemiLinearMapAlgebraMapOfLinearMap {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
-    {M N : Type*} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N] [Module A N]
-    [IsScalarTower R A N] (f : M →ₗ[R] N) : M →ₛₗ[algebraMap R A] N where
-  __ := f
-  map_smul' m r := by simp
-
-/-- Turn a `algebraMap R A`-semilinear map into a `R`-linear map. -/
-abbrev LinearMapOfSemiLinearMapAlgebraMap {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
-    {M N : Type*} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N] [Module A N]
-    [IsScalarTower R A N] (f : M →ₛₗ[algebraMap R A] N) : M →ₗ[R] N where
-  __ := f
-  map_smul' m r := by simp
-
-variable (Rₚ) in
-/-- Given `R`-algebra `Rₚ`, `R`-module `M` and `Rₚ`-module `Mₚ` and `f : M →ₗ[R] Mₚ`,
-The linear map `QuotSMulTop x M →ₗ[R] QuotSMulTop ((algebraMap R Rₚ) x) Mₚ` lifted from `f`. -/
-abbrev quotSMulTopIsLocalizedModuleMap (x : R) (M : Type*) [AddCommGroup M] [Module R M]
-    (Mₚ : Type*) [AddCommGroup Mₚ] [Module R Mₚ] [Module Rₚ Mₚ] [IsScalarTower R Rₚ Mₚ]
-    (f : M →ₗ[R] Mₚ) :
-    QuotSMulTop x M →ₗ[R] QuotSMulTop ((algebraMap R Rₚ) x) Mₚ :=
-  LinearMapOfSemiLinearMapAlgebraMap (Submodule.mapQ _ _
-    (SemiLinearMapAlgebraMapOfLinearMap f)
-    (fun m hm ↦ by
-      rw [← Submodule.ideal_span_singleton_smul] at hm
-      simp only [Submodule.mem_comap, LinearMap.coe_mk, LinearMap.coe_toAddHom]
-      refine Submodule.smul_induction_on hm (fun r hr m hm ↦ ?_)
-        (fun m1 m2 hm1 hm2 ↦ by simpa using Submodule.add_mem _ hm1 hm2)
-      rcases Ideal.mem_span_singleton'.mp hr with ⟨r', hr'⟩
-      simpa only [← hr', map_smul, mul_comm r' x, ← smul_smul,
-        algebra_compatible_smul Rₚ x (r' • f m)]
-        using Submodule.smul_mem_pointwise_smul (r' • f m) ((algebraMap R Rₚ) x) ⊤ hm))
-
-variable (Rₚ) in
-omit [IsLocalRing R] [IsNoetherianRing R] [Small.{v, u} R] in
-lemma isLocalizedModule_quotSMulTopIsLocalizedModuleMap (x : R)
-    (M : Type*) [AddCommGroup M] [Module R M] (Mₚ : Type*) [AddCommGroup Mₚ] [Module R Mₚ]
-    [Module Rₚ Mₚ] [IsScalarTower R Rₚ Mₚ] (f : M →ₗ[R] Mₚ) [IsLocalizedModule.AtPrime p f] :
-    IsLocalizedModule.AtPrime p (quotSMulTopIsLocalizedModuleMap Rₚ x M Mₚ f) where
-  map_units r := by
-    let alg := (Algebra.algHom R Rₚ (Module.End Rₚ (QuotSMulTop ((algebraMap R Rₚ) x) Mₚ)))
-    rcases isUnit_iff_exists.mp (IsUnit.algebraMap_of_algebraMap (r := r.1) alg.toLinearMap
-      (map_one alg) (IsLocalization.map_units Rₚ r)) with ⟨s, hs1, hs2⟩
-    exact isUnit_iff_exists.mpr ⟨LinearMap.restrictScalars R s,
-      ⟨LinearMap.ext (fun x ↦ by simpa using DFunLike.congr hs1 (Eq.refl x)),
-        LinearMap.ext (fun x ↦ by simpa using DFunLike.congr hs2 (Eq.refl x))⟩⟩
-  surj y := by
-    induction y using Submodule.Quotient.induction_on
-    rename_i y
-    rcases IsLocalizedModule.surj (S := p.primeCompl) (f := f) y with ⟨z, hz⟩
-    use (Submodule.Quotient.mk z.1, z.2)
-    simp [← hz]
-  exists_of_eq {y1 y2} h := by
-    rcases Submodule.Quotient.mk_surjective _ y1 with ⟨y1, rfl⟩
-    rcases Submodule.Quotient.mk_surjective _ y2 with ⟨y2, rfl⟩
-    simp only [LinearMap.coe_mk, LinearMap.coe_toAddHom, Submodule.mapQ_apply] at h
-    have h := (Submodule.Quotient.mk_eq_zero _).mp (sub_eq_zero_of_eq h)
-    rcases (Submodule.mem_smul_pointwise_iff_exists _ _ _).mp h with ⟨m, _, hm⟩
-    rcases IsLocalizedModule.surj p.primeCompl f m with ⟨⟨z, s⟩, hz⟩
-    have eq : f (s • (y1 - y2)) = f (x • z) := by simp [← hm, ← hz, smul_comm s x m]
-    rcases IsLocalizedModule.exists_of_eq (S := p.primeCompl) eq with ⟨c, hc⟩
-    use c * s
-    apply sub_eq_zero.mp
-    have h : (0 : QuotSMulTop x M) = Submodule.Quotient.mk (c • s • (y1 - y2)) := by
-      simpa [hc] using! (smul_eq_zero_of_right c <| (Submodule.Quotient.mk_eq_zero _).mpr <|
-        Submodule.smul_mem_pointwise_smul z x ⊤ Submodule.mem_top).symm
-    simp [h, smul_sub, mul_smul]
 
 variable [Small.{v'} Rₚ] [IsNoetherianRing Rₚ]
   (M : ModuleCat.{v} R) (Mₚ : ModuleCat.{v'} Rₚ) [Module R Mₚ] [IsScalarTower R Rₚ Mₚ]
@@ -354,9 +286,12 @@ lemma isLocalize_at_prime_dim_eq_prime_depth_of_isCohenMacaulay
     have eq_succ : Module.supportDim Rₚ M'ₚ + 1 = Module.supportDim Rₚ Mₚ :=
       Module.supportDim_quotSMulTop_succ_eq_supportDim
         (reg.of_isLocalizedModule Rₚ p.primeCompl f) map_mem
-    have := isLocalizedModule_quotSMulTopIsLocalizedModuleMap p Rₚ a M Mₚ f
-    simp [← eq_succ, ← hn, depth_eq, ih M' M'ₚ (quotSMulTopIsLocalizedModuleMap Rₚ a M Mₚ f)
-      inferInstance ‹_› netop' depth_eq.symm]
+    have : Submodule.localized' Rₚ p.primeCompl f (a • (⊤ : Submodule R M)) =
+      (((algebraMap R Rₚ) a) • (⊤ : Submodule Rₚ Mₚ)) := by
+      simp [← Submodule.ideal_span_singleton_smul, Submodule.localized'_smul]
+    let g : M' →ₗ[R] M'ₚ := ((Submodule.quotEquivOfEq _ _ this).restrictScalars R).comp
+      (Submodule.toLocalizedQuotient' Rₚ p.primeCompl f (a • (⊤ : Submodule R M)))
+    simp [← eq_succ, ← hn, depth_eq, ih M' M'ₚ g inferInstance ‹_› netop' depth_eq.symm]
 
 lemma isLocalize_at_prime_isCohenMacaulay_of_isCohenMacaulay [IsLocalRing Rₚ] [Module.Finite R M]
     [M.IsCohenMacaulay] : Mₚ.IsCohenMacaulay := by

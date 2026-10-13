@@ -22,7 +22,7 @@ then `projectiveDimension M + IsLocalRing.depth M = IsLocalRing.depth R`.
 
 -/
 
-@[expose] public section
+public section
 
 section hom
 
@@ -34,7 +34,7 @@ variable {R M N : Type*} [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module 
 theorem smul_prod_of_smul {ι : Type*} [Finite ι] (x : ι → M)
     (h : ∀ i, x i ∈ I • (⊤ : Submodule R M)) : x ∈ I • (⊤ : Submodule R (ι → M)) := by
   classical
-  let _ : Fintype ι := Fintype.ofFinite ι
+  let : Fintype ι := Fintype.ofFinite ι
   rw [← Finset.univ_sum_single x]
   exact Submodule.sum_mem _ <| fun i hi ↦
     Submodule.smul_top_le_comap_smul_top I (LinearMap.single R (fun i ↦ M) i) (h i)
@@ -115,10 +115,6 @@ lemma basis_lift [IsLocalRing R] (M : Type*) [AddCommGroup M] [Module R M] [Modu
   rw [← hf, ← LinearMap.range_eq_top, LinearMap.range_comp] at this
   exact LinearMap.range_eq_top.mp (IsLocalRing.map_mkQ_eq_top.mp this)
 
-instance (I : Ideal R) (M : Type*) [AddCommGroup M] [Module R M]
-    [Module.Finite R M] : Module.Finite (R ⧸I) (M ⧸ I • (⊤ : Submodule R M)) :=
-  Module.Finite.of_restrictScalars_finite R _ _
-
 lemma basis_lift_ker_le [IsLocalRing R]
     (M : Type*) [AddCommGroup M] [Module R M] [Module.Finite R M] (ι : Type*)
     (b : Basis ι (R ⧸ maximalIdeal R) (M ⧸ maximalIdeal R • (⊤ : Submodule R M)))
@@ -126,7 +122,7 @@ lemma basis_lift_ker_le [IsLocalRing R]
     (LinearEquiv.restrictScalars R b.repr).symm ∘ₗ
     Finsupp.mapRange.linearMap (Submodule.mkQ (maximalIdeal R) ∘ₗ (Shrink.linearEquiv R R))) :
   LinearMap.ker f ≤ maximalIdeal R • (⊤ : Submodule R _) := by
-  let _ := Quotient.field (maximalIdeal R)
+  let := Quotient.field (maximalIdeal R)
   let fin := FiniteDimensional.fintypeBasisIndex b
   apply le_trans (LinearMap.ker_le_ker_comp f (maximalIdeal R • (⊤ : Submodule R M)).mkQ) _
   rw [hf]
@@ -172,7 +168,7 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
     (M : ModuleCat.{v} R) [Nontrivial M] [Module.Finite R M]
     (le1 : HasProjectiveDimensionLE M 1) (nle0 : ¬ HasProjectiveDimensionLE M 0) :
     1 + IsLocalRing.depth M = IsLocalRing.depth (ModuleCat.of R (Shrink.{v} R)) := by
-  let _ := Quotient.field (maximalIdeal R)
+  let := Quotient.field (maximalIdeal R)
   rcases Basis.exists_basis (R ⧸ maximalIdeal R) (M ⧸ maximalIdeal R • (⊤ : Submodule R M))
     with ⟨ι, ⟨B⟩⟩
   let fin := FiniteDimensional.fintypeBasisIndex B
