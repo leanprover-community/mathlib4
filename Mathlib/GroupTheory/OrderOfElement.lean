@@ -39,8 +39,6 @@ order of an element
 
 @[expose] public section
 
-set_option linter.style.longFile 1600
-
 assert_not_exists Field
 
 open Function Fintype Nat Pointwise Subgroup Submonoid
@@ -1455,23 +1453,13 @@ section NonAssocRing
 variable (R : Type*) [NonAssocRing R] (p : ℕ)
 
 lemma CharP.addOrderOf_one : CharP R (addOrderOf (1 : R)) where
-  cast_eq_zero_iff n := by rw [← Nat.smul_one_eq_cast, addOrderOf_dvd_iff_nsmul_eq_zero]
+  cast_eq_iff_mod_eq a b := by simp_rw [← Nat.smul_one_eq_cast, nsmul_eq_nsmul_iff_modEq, ModEq]
 
 variable [Fintype R]
 
 variable {R} in
-lemma charP_of_ne_zero (hn : card R = p) (hR : ∀ i < p, (i : R) = 0 → i = 0) : CharP R p where
-  cast_eq_zero_iff n := by
-    have H : (p : R) = 0 := by rw [← hn, Nat.cast_card_eq_zero]
-    constructor
-    · intro h
-      rw [← Nat.mod_add_div n p, Nat.cast_add, Nat.cast_mul, H, zero_mul, add_zero] at h
-      rw [Nat.dvd_iff_mod_eq_zero]
-      apply hR _ (Nat.mod_lt _ _) h
-      rw [← hn, Fintype.card_pos_iff]
-      exact ⟨0⟩
-    · rintro ⟨n, rfl⟩
-      rw [Nat.cast_mul, H, zero_mul]
+lemma charP_of_ne_zero (hn : card R = p) (hR : ∀ i < p, (i : R) = 0 → i = 0) : CharP R p :=
+  CharP.of_minimal_cast_eq_zero R (hn ▸ Fintype.card_ne_zero) (hn ▸ Nat.cast_card_eq_zero R) hR
 
 end NonAssocRing
 

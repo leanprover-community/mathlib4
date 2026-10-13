@@ -44,18 +44,18 @@ theorem CharP.of_ringHom_of_ne_zero [NonAssocSemiring R] [NoZeroDivisors R]
     [NonAssocSemiring A] [Nontrivial A]
     (f : R →+* A) (p : ℕ) (hp : p ≠ 0) [CharP R p] : CharP A p := by
   have := f.domain_nontrivial
-  have H := (CharP.char_is_prime_or_zero R p).resolve_right hp
-  obtain ⟨q, hq⟩ := CharP.exists A
-  obtain ⟨k, e⟩ := dvd_of_ringHom f p q
-  have := Nat.isUnit_iff.mp ((H.2 e).resolve_left (Nat.isUnit_iff.not.mpr (char_ne_one A q)))
-  rw [this, mul_one] at e
-  exact e ▸ hq
+  obtain ⟨q, hqp, hq⟩ := CharP.exists_CharP_dvd_of_cast_eq_zero A hp
+    (by rw [← map_natCast f, cast_eq_zero, map_zero])
+  have hp0 := (CharP.char_is_prime_or_zero R p).resolve_right hp
+  obtain rfl | rfl : q = 1 ∨ q = p :=
+    (Nat.dvd_prime <| (CharP.char_is_prime_or_zero R p).resolve_right hp).mp hqp
+  exacts [absurd rfl (char_ne_one A 1), hq]
 
 /-- If a ring homomorphism `R →+* A` is injective then `A` has the same characteristic as `R`. -/
 theorem charP_of_injective_ringHom [NonAssocSemiring R] [NonAssocSemiring A]
     {f : R →+* A} (h : Function.Injective f) (p : ℕ) [CharP R p] : CharP A p where
-  cast_eq_zero_iff x := by
-    rw [← CharP.cast_eq_zero_iff R p x, ← map_natCast f x, map_eq_zero_iff f h]
+  cast_eq_iff_mod_eq a b := by
+    rw [← map_natCast f, ← map_natCast f, h.eq_iff, CharP.cast_eq_iff_mod_eq']
 
 /-- If the algebra map `R →+* A` is injective then `A` has the same characteristic as `R`. -/
 theorem charP_of_injective_algebraMap [CommSemiring R] [Semiring A] [Algebra R A]
@@ -80,9 +80,9 @@ theorem charZero_of_injective_algebraMap [CommSemiring R] [Semiring A] [Algebra 
 /-- If `R →+* A` is injective, and `A` is of characteristic `p`, then `R` is also of
 characteristic `p`. Similar to `RingHom.charZero`. -/
 theorem RingHom.charP [NonAssocSemiring R] [NonAssocSemiring A] (f : R →+* A)
-    (H : Function.Injective f) (p : ℕ) [CharP A p] : CharP R p := by
-  obtain ⟨q, h⟩ := CharP.exists R
-  exact CharP.eq _ (charP_of_injective_ringHom H q) ‹CharP A p› ▸ h
+    (H : Function.Injective f) (p : ℕ) [CharP A p] : CharP R p where
+  cast_eq_iff_mod_eq a b := by
+    rw [← H.eq_iff, map_natCast, map_natCast, CharP.cast_eq_iff_mod_eq']
 
 /-- If `R →+* A` is injective, then `R` is of characteristic `p` if and only if `A` is also of
 characteristic `p`. Similar to `RingHom.charZero_iff`. -/
@@ -169,7 +169,7 @@ An algebra over a field has the same characteristic as the field.
 
 lemma RingHom.charP_iff_charP {K L : Type*} [DivisionRing K] [NonAssocSemiring L] [Nontrivial L]
     (f : K →+* L) (p : ℕ) : CharP K p ↔ CharP L p := by
-  simp only [charP_iff, ← f.injective.eq_iff, map_natCast f, map_zero f]
+  simp only [charP_iff, ← f.injective.eq_iff, map_natCast f]
 
 section
 
@@ -178,7 +178,7 @@ variable (K L : Type*) [Field K] [CommSemiring L] [Nontrivial L] [Algebra K L]
 protected theorem Algebra.charP_iff (p : ℕ) : CharP K p ↔ CharP L p :=
   (algebraMap K L).charP_iff_charP p
 
-theorem Algebra.ringChar_eq : ringChar K = ringChar L := by
+theorem Algebra.ringChar_eq [IsLeftCancelAdd L] : ringChar K = ringChar L := by
   rw [ringChar.eq_iff, Algebra.charP_iff K L]
   apply ringChar.charP
 

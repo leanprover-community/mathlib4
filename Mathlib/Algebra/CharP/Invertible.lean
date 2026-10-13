@@ -42,7 +42,7 @@ variable [Ring R] {p : ℕ} [CharP R p]
 
 theorem not_ringChar_dvd_of_invertible {t : ℕ} [Invertible (t : R)] [Nontrivial R] :
     ¬ringChar R ∣ t := by
-  rw [← ringChar.spec, ← Ne]
+  rw [← CharP.cast_eq_zero_iff R, ← Ne]
   exact Invertible.ne_zero (t : R)
 
 theorem CharP.intCast_mul_natCast_gcdA_eq_gcd (n : ℕ) :
@@ -94,8 +94,9 @@ variable [Semifield K]
 /-- A natural number `t` is invertible in a semifield `K` if the characteristic of `K` does not
 divide `t`. -/
 @[instance_reducible]
-def invertibleOfRingCharNotDvd {t : ℕ} (not_dvd : ¬ringChar K ∣ t) : Invertible (t : K) :=
-  invertibleOfNonzero fun h => not_dvd ((ringChar.spec K t).mp h)
+def invertibleOfRingCharNotDvd [IsLeftCancelAdd K] {t : ℕ} (not_dvd : ¬ringChar K ∣ t) :
+    Invertible (t : K) :=
+  invertibleOfNonzero fun h => not_dvd ((CharP.cast_eq_zero_iff K _ t).mp h)
 
 /-- A natural number `t` is invertible in a semifield `K` of characteristic `p` if `p` does not
 divide `t`. -/
