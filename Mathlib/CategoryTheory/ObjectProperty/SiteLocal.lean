@@ -5,8 +5,9 @@ Authors: Christian Merten
 -/
 module
 
-import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
 public import Mathlib.CategoryTheory.Sites.Hypercover.Zero
+
+import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
 
 /-!
 # Locality conditions on object properties

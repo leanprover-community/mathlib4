@@ -33,6 +33,7 @@ formula which is an important input in functional equations of (un-completed) Di
 
 open Filter Asymptotics Real Set MeasureTheory
 open Complex
+open scoped ComplexConjugate
 
 open scoped Topology
 
@@ -74,6 +75,26 @@ lemma Gammaℝ_ne_zero_of_re_pos {s : ℂ} (hs : 0 < re s) : Gammaℝ s ≠ 0 :=
 
 lemma Gammaℝ_eq_zero_iff {s : ℂ} : Gammaℝ s = 0 ↔ ∃ n : ℕ, s = -(2 * n) := by
   simp [Gammaℝ_def, Complex.Gamma_eq_zero_iff, pi_ne_zero, div_eq_iff (two_ne_zero' ℂ), mul_comm]
+
+/-- The Gamma factor `Γ_ℝ` commutes with complex conjugation. -/
+lemma Gammaℝ_conj (s : ℂ) : Gammaℝ (conj s) = conj (Gammaℝ s) := by
+  have hpi : (π : ℂ).arg ≠ π := by
+    rw [arg_ofReal_of_nonneg pi_pos.le]
+    exact pi_pos.ne
+  have h := cpow_conj (π : ℂ) (-s / 2) hpi
+  rw [conj_ofReal] at h
+  rw [Gammaℝ_def, Gammaℝ_def, map_mul, ← Gamma_conj, ← h]
+  congr 2 <;> simp [map_div₀, map_neg, map_ofNat]
+
+/-- The Gamma factor `Γ_ℂ` commutes with complex conjugation. -/
+lemma Gammaℂ_conj (s : ℂ) : Gammaℂ (conj s) = conj (Gammaℂ s) := by
+  have h2pi : ((2 : ℂ) * π).arg ≠ π := by
+    rw [show (2 : ℂ) * π = ((2 * π : ℝ) : ℂ) by push_cast; ring,
+      arg_ofReal_of_nonneg (by positivity)]
+    exact pi_pos.ne
+  have h := cpow_conj ((2 : ℂ) * π) (-s) h2pi
+  rw [map_mul, conj_ofReal, map_ofNat] at h
+  rw [Gammaℂ_def, Gammaℂ_def, map_mul, map_mul, ← Gamma_conj, ← h, map_neg, map_ofNat]
 
 @[simp]
 lemma Gammaℝ_one : Gammaℝ 1 = 1 := by

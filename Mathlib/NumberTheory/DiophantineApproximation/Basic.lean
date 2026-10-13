@@ -6,6 +6,7 @@ Authors: Michael Geißer, Michael Stoll
 module
 
 public import Mathlib.NumberTheory.Real.Irrational
+
 import Mathlib.RingTheory.Int.Basic
 
 /-!

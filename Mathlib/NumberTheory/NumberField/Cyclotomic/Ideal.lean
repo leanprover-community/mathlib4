@@ -7,6 +7,7 @@ module
 
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Basic
 public import Mathlib.NumberTheory.NumberField.Ideal.KummerDedekind
+
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Factorization
 import Mathlib.RingTheory.RootsOfUnity.CyclotomicUnits
 

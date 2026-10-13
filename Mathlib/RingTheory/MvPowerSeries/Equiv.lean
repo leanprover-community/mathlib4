@@ -9,9 +9,9 @@ public import Mathlib.RingTheory.AdicCompletion.Algebra
 public import Mathlib.RingTheory.MvPolynomial.Ideal
 public import Mathlib.RingTheory.MvPowerSeries.Rename
 public import Mathlib.RingTheory.PowerSeries.Substitution
+public import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 import Mathlib.RingTheory.PowerSeries.Ideal
-public import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-!
 # Equivalences related to power series rings

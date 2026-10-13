@@ -5,8 +5,9 @@ Authors: Sébastien Gouëzel, Pietro Monticone
 -/
 module
 
-import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 public import Mathlib.Analysis.SumIntegralComparisons
+
+import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 
 /-!
 # Bounds for sums and integrals of `x ^ k * exp (-c * x)`

@@ -5,8 +5,9 @@ Authors: James Sundstrom
 -/
 module
 
-import Mathlib.Order.WellFoundedSet
 public import Mathlib.Topology.EMetricSpace.Diam
+
+import Mathlib.Order.WellFoundedSet
 
 /-!
 # Oscillation

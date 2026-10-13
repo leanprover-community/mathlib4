@@ -6,8 +6,9 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Algebra.MonoidAlgebra.Basic
-import Mathlib.Algebra.MonoidAlgebra.Support
 public import Mathlib.RingTheory.GradedAlgebra.Basic
+
+import Mathlib.Algebra.MonoidAlgebra.Support
 
 /-!
 # Internal grading of an `AddMonoidAlgebra`
