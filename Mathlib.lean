@@ -2140,6 +2140,7 @@ public import Mathlib.Analysis.InnerProductSpace.l2Space
 public import Mathlib.Analysis.LConvolution
 public import Mathlib.Analysis.LocallyConvex.AbsConvex
 public import Mathlib.Analysis.LocallyConvex.AbsConvexOpen
+public import Mathlib.Analysis.LocallyConvex.Asymptotics
 public import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 public import Mathlib.Analysis.LocallyConvex.Barrelled
 public import Mathlib.Analysis.LocallyConvex.Basic
@@ -3833,6 +3834,7 @@ public import Mathlib.Combinatorics.SimpleGraph.FiveWheelLike
 public import Mathlib.Combinatorics.SimpleGraph.Girth
 public import Mathlib.Combinatorics.SimpleGraph.Hall
 public import Mathlib.Combinatorics.SimpleGraph.Hamiltonian
+public import Mathlib.Combinatorics.SimpleGraph.Hamiltonian.Perm
 public import Mathlib.Combinatorics.SimpleGraph.Hasse
 public import Mathlib.Combinatorics.SimpleGraph.IncMatrix
 public import Mathlib.Combinatorics.SimpleGraph.Init
@@ -4239,6 +4241,7 @@ public import Mathlib.Data.List.Indexes
 public import Mathlib.Data.List.Induction
 public import Mathlib.Data.List.Infix
 public import Mathlib.Data.List.InsertIdx
+public import Mathlib.Data.List.Interleave
 public import Mathlib.Data.List.Intervals
 public import Mathlib.Data.List.Iterate
 public import Mathlib.Data.List.Lattice
@@ -4798,6 +4801,7 @@ public import Mathlib.Geometry.Euclidean.BritishFlag
 public import Mathlib.Geometry.Euclidean.Circumcenter
 public import Mathlib.Geometry.Euclidean.Congruence
 public import Mathlib.Geometry.Euclidean.Incenter
+public import Mathlib.Geometry.Euclidean.Incenter.Basic
 public import Mathlib.Geometry.Euclidean.Inversion.Basic
 public import Mathlib.Geometry.Euclidean.Inversion.Calculus
 public import Mathlib.Geometry.Euclidean.Inversion.ImageHyperplane
@@ -5847,6 +5851,8 @@ public import Mathlib.MeasureTheory.Measure.Support
 public import Mathlib.MeasureTheory.Measure.Tight
 public import Mathlib.MeasureTheory.Measure.TightNormed
 public import Mathlib.MeasureTheory.Measure.Tilted
+public import Mathlib.MeasureTheory.Measure.TotalVariation.Basic
+public import Mathlib.MeasureTheory.Measure.TotalVariation.Defs
 public import Mathlib.MeasureTheory.Measure.Trim
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
 public import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
@@ -5892,6 +5898,7 @@ public import Mathlib.MeasureTheory.VectorMeasure.Order
 public import Mathlib.MeasureTheory.VectorMeasure.Prod
 public import Mathlib.MeasureTheory.VectorMeasure.Relations
 public import Mathlib.MeasureTheory.VectorMeasure.SetIntegral
+public import Mathlib.MeasureTheory.VectorMeasure.TotalVariation
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Basic
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Defs
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Semivariation
