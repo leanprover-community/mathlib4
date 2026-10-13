@@ -608,7 +608,7 @@ variable (α β M) in
 /-- `MulEquiv` version of `Equiv.curry`. -/
 @[to_additive /-- `AddEquiv` version of `Equiv.curry`. -/]
 protected def curry : (α × β → M) ≃* (α → β → M) where
-  __ := Equiv.curry α β M
+  toEquiv := .curry α β M
   map_mul' _ _ := by ext; simp
 
 @[to_additive (attr := simp)]
