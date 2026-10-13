@@ -105,9 +105,6 @@ defined later are allowed. Set the option {name}`doc.verso.libraryNote.warnOnMis
 def «library_note» (xs : TSyntaxArray `inline) : DocM (Inline ElabInline) := do
   let s ← Mathlib.VersoRoles.soleCode xs
   let label := s.getString
-  let labels := Mathlib.VersoRoles.libraryNoteLabels (← getEnv)
-  if !labels.contains label && (← doc.verso.libraryNote.warnOnMissing.getM) then
-    logWarningAt s m!"No library note with label `{label}`.\n\n\
   if ← doc.verso.libraryNote.warnOnMissing.getM then
     /- Note that `Batteries.Util.LibraryNote.libraryNoteExt` initializes its state by flattening
     all imported library notes into the state array. -/
