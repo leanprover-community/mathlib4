@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Groupoid.Grpd.Basic
 public import Mathlib.Topology.Category.TopCat.Basic
 public import Mathlib.Topology.Homotopy.Path
-public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Fundamental groupoid of a space
@@ -151,11 +150,7 @@ theorem trans_assoc_reparam {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : 
         (Subtype.ext transAssocReparamAux_zero) (Subtype.ext transAssocReparamAux_one) := by
   ext x
   simp only [transAssocReparamAux, Path.trans_apply, Function.comp_apply, Path.coe_reparam]
-  split_ifs
-  iterate 12 grind
-  · linarith
-  · linarith
-  · grind
+  grind
 
 /-- For paths `p q r`, we have a homotopy from `(p.trans q).trans r` to `p.trans (q.trans r)`. -/
 def transAssoc {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : Path x₁ x₂) (r : Path x₂ x₃) :
@@ -304,7 +299,7 @@ theorem id_eq_path_refl (x : FundamentalGroupoid X) : 𝟙 x = ⟦Path.refl x.as
   obj x := ⟨f x.as⟩
   map p := p.map f
   map_id _ := rfl
-  map_comp := by rintro _ _ _ ⟨p⟩ ⟨q⟩; exact congr_arg Quotient.mk'' (p.map_trans q f.continuous)
+  map_comp := by rintro _ _ _ ⟨p⟩ ⟨q⟩; congrm Quotient.mk'' $(p.map_trans q f.continuous)
 
 @[simp]
 protected theorem map_id : map (.id X) = 𝟭 _ := by

@@ -6,11 +6,12 @@ Authors: Chris Birkbeck
 module
 
 public import Mathlib.Algebra.DirectSum.Algebra
-public import Mathlib.Analysis.Calculus.FDeriv.Star
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
 public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 public import Mathlib.NumberTheory.ModularForms.BoundedAtCusp
 public import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
+
+import Mathlib.Analysis.Calculus.FDeriv.Star
 
 /-!
 # Modular forms
@@ -22,6 +23,8 @@ We begin by defining modular forms and cusp forms as extension of `SlashInvarian
 define the space of modular forms, cusp forms and prove that the product of two modular forms is a
 modular form.
 -/
+
+open scoped Finset
 
 @[expose] public noncomputable section
 
@@ -627,8 +630,8 @@ those indexed by `s : Finset ι` with weight `#s * k`. -/
 @[simps! -fullyApplied]
 def prodEqualWeights {ι : Type*} {s : Finset ι} {k : ℤ}
     {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
-    (F : (i : ι) → ModularForm Γ k) : ModularForm Γ (s.card * k) :=
-  prod (s := s) (s.card * k) (by simp) F
+    (F : (i : ι) → ModularForm Γ k) : ModularForm Γ (#s * k) :=
+  prod (s := s) (#s * k) (by simp) F
 
 end GradedRing
 

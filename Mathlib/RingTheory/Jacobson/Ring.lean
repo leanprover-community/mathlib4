@@ -291,7 +291,7 @@ theorem isIntegral_isLocalization_polynomial_quotient
     obtain ⟨q', hq', rfl⟩ := hq
     obtain ⟨q'', hq''⟩ := isUnit_iff_exists_inv'.1 (IsLocalization.map_units Rₘ (⟨q', hq'⟩ : M))
     refine (hp.symm ▸ this).of_mul_unit φ' p (algebraMap (R[X] ⧸ P) Sₘ (φ q')) q'' ?_
-    rw [← φ'.map_one, ← congr_arg φ' hq'', φ'.map_mul, ← φ'.comp_apply]
+    rw [← φ'.map_one, ← congr(φ' $hq''), φ'.map_mul, ← φ'.comp_apply]
     simp only [φ', IsLocalization.map_comp _, RingHom.comp_apply]
   dsimp at hp
   refine @IsIntegral.of_mem_closure'' Rₘ _ Sₘ _ φ'
@@ -657,7 +657,7 @@ theorem comp_C_integral_of_surjective_of_isJacobsonRing {R : Type*} [CommRing R]
     rw [← hfg, coe_comp] at hf'
     exact Function.Surjective.of_comp hf'
   rw [RingHom.comp_assoc] at this
-  convert! this
+  convert this
   refine RingHom.ext fun x => ?_
   exact ((renameEquiv R e).commutes' x).symm
 

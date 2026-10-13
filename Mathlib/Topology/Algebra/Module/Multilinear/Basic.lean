@@ -5,9 +5,10 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
 public import Mathlib.LinearAlgebra.Multilinear.Basic
-public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
+
+import Mathlib.Algebra.BigOperators.Fin
 
 /-!
 # Continuous multilinear maps
@@ -350,6 +351,35 @@ theorem zero_prod_zero :
     (0 : ContinuousMultilinearMap R M₁ M₂).prod (0 : ContinuousMultilinearMap R M₁ M₃) = 0 :=
   rfl
 
+/-- Associating to a continuous multilinear map in `0` variables the unique value it takes. -/
+def curry0 (f : ContinuousMultilinearMap R (fun _ : Fin 0 => M₂) M₃) : M₃ := f 0
+
+variable (R M₂) in
+/-- Associating to an element `x` of a vector space `M₃` the continuous multilinear map in `0`
+variables taking the (unique) value `x` -/
+def uncurry0 (x : M₃) : M₂ [×0]→L[R] M₃ :=
+  ContinuousMultilinearMap.constOfIsEmpty R _ x
+
+variable (R) in
+@[simp]
+theorem uncurry0_apply (x : M₃) (m : Fin 0 → M₂) :
+    ContinuousMultilinearMap.uncurry0 R M₂ x m = x :=
+  rfl
+
+@[simp]
+theorem curry0_apply (f : M₂ [×0]→L[R] M₃) : f.curry0 = f 0 :=
+  rfl
+
+@[simp]
+theorem apply_zero_uncurry0 (f : M₂ [×0]→L[R] M₃) {x : Fin 0 → M₂} : uncurry0 _ _ (f x) = f := by
+  ext m
+  simp [Subsingleton.elim x m]
+
+theorem uncurry0_curry0 (f : M₂ [×0]→L[R] M₃) : uncurry0 _ _ f.curry0 = f := by simp
+
+variable (R M₂) in
+theorem curry0_uncurry0 (x : M₃) : (uncurry0 R M₂ x).curry0 = x := rfl
+
 /-- `ContinuousMultilinearMap.pi` as an `Equiv`. -/
 @[simps]
 def piEquiv {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)]
@@ -359,7 +389,8 @@ def piEquiv {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)]
   invFun f i := (ContinuousLinearMap.proj i : _ →L[R] M' i).compContinuousMultilinearMap f
 
 /-- An equivalence of the index set defines an equivalence between the spaces of continuous
-multilinear maps. This is the forward map of this equivalence. -/
+multilinear maps. This is the forward map of this equivalence. See also `domDomCongrL` for the
+continuous linear map version, and `domDomCongrEquiv` for the equiv version. -/
 @[simps! toMultilinearMap apply]
 nonrec def domDomCongr {ι' : Type*} (e : ι ≃ ι')
     (f : ContinuousMultilinearMap R (fun _ : ι => M₂) M₃) :

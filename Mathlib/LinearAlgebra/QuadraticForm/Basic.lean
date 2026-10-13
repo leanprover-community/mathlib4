@@ -5,13 +5,9 @@ Authors: Anne Baanen, Kexing Ying, Eric Wieser
 -/
 module
 
-public import Mathlib.Data.Finset.Sym
-public import Mathlib.LinearAlgebra.SesquilinearForm.Orthogonal
-public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 public import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
-public import Mathlib.LinearAlgebra.Matrix.Symmetric
+public import Mathlib.LinearAlgebra.SesquilinearForm.Orthogonal
 
 /-!
 # Quadratic maps
@@ -198,7 +194,7 @@ theorem ext (H : ∀ x : M, Q x = Q' x) : Q = Q' :=
   DFunLike.ext _ _ H
 
 theorem congr_fun (h : Q = Q') (x : M) : Q x = Q' x :=
-  DFunLike.congr_fun h _
+  congr($h _)
 
 /-- Copy of a `QuadraticMap` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
