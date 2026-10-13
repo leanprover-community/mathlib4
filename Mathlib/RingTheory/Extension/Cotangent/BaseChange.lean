@@ -5,8 +5,8 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.CotangentBaseChange
 public import Mathlib.RingTheory.Extension.Cotangent.Basic
+public import Mathlib.RingTheory.Ideal.CotangentBaseChange
 
 import Mathlib.Algebra.FiveLemma
 import Mathlib.RingTheory.Kaehler.TensorProduct

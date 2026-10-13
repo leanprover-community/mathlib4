@@ -7,8 +7,8 @@ module
 
 public import Mathlib.RingTheory.RamificationInertia.Ramification
 
-import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients.Basic
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients.Basic
 
 /-!
 
