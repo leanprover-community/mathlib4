@@ -51,15 +51,12 @@ Extracts the single code literal from the contents of a role, such as the {lit}`
 in {lit}`` {role}`x` ``.
 -/
 def soleCode (xs : TSyntaxArray `inline) : DocM StrLit := do
-  let mut codes : Array StrLit := #[]
-  for stx in xs do
-    match stx with
-    | `(inline|code($s)) => codes := codes.push s
-    | `(inline|$s:str) =>
-      unless s.getString.all (·.isWhitespace) do throwErrorAt stx "Expected a code element"
+  if h : xs.size ≠ 1 then
+    throwError "Expected a single code element"
+  else
+    match xs[0] with
+    | `(inline|code($s)) => return s
     | other => throwErrorAt other "Expected a code element"
-  if h : codes.size = 1 then return codes[0]
-  else throwError "Expected a single code element"
 
 /-- The labels of all library notes available in the current environment. -/
 def libraryNoteLabels (env : Environment) : Array String :=
