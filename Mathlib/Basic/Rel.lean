@@ -370,6 +370,7 @@ lemma ball_iInter (R : ι → Set (α × β)) (b : β) : ball (⋂ i, R i) b = �
 
 variable {R R₁ R₂ : SetRel α α} {S : SetRel β β} {a b c : α}
 
+@[gcongr only]
 lemma ball_subset_ball_of_comp_subset (hab : a ~[R₁] b) (h : R₁ ○ R₁ ⊆ R₂) :
     R₁.ball a ⊆ R₂.ball b := fun _c hc ↦ h ⟨a, hc, hab⟩
 
@@ -491,8 +492,8 @@ instance isSymm_inv_comp : (R.inv ○ R).IsSymm := isSymm_comp_inv
 
 instance isSymm_comp_self [R.IsSymm] : (R ○ R).IsSymm := by simpa using R.isSymm_comp_inv
 
-lemma mem_comp_comp {U V W : SetRel α α} [U.IsSymm] {p : α × α} :
-    p ∈ U ○ V ○ W ↔ (U.ball p.1 ×ˢ W.ball p.2 ∩ V).Nonempty := by
+lemma mem_comp_comp {U : SetRel α β} {V : SetRel β γ} {W : SetRel γ δ} {p : α × δ} :
+    p ∈ U ○ V ○ W ↔ (U.inv.ball p.1 ×ˢ W.ball p.2 ∩ V).Nonempty := by
   grind [Set.nonempty_def, Prod.exists]
 
 lemma prod_subset_comm [R.IsSymm] : s₁ ×ˢ s₂ ⊆ R ↔ s₂ ×ˢ s₁ ⊆ R := by
