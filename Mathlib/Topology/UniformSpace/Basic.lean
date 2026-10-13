@@ -508,9 +508,11 @@ lemma ball_preimage {f : α → β} {U : SetRel β β} {x : α} :
   simp only [UniformSpace.ball, mem_preimage, Prod.map_apply]
 
 @[simp]
-theorem uniformSpace_comap_id {α : Type*} : UniformSpace.comap (id : α → α) = id := by
+theorem UniformSpace.comap_id {α : Type*} : UniformSpace.comap (id : α → α) = id := by
   ext : 2
   rw [uniformity_comap, Prod.map_id, comap_id]
+
+@[deprecated (since := "2026-10-13")] alias uniformSpace_comap_id := UniformSpace.comap_id
 
 theorem UniformSpace.comap_comap {α β γ} {uγ : UniformSpace γ} {f : α → β} {g : β → γ} :
     UniformSpace.comap (g ∘ f) uγ = UniformSpace.comap f (UniformSpace.comap g uγ) := by
@@ -526,9 +528,11 @@ theorem UniformSpace.comap_iInf {ι α γ} {u : ι → UniformSpace γ} {f : α 
   ext : 1
   simp [uniformity_comap, iInf_uniformity]
 
-theorem UniformSpace.comap_mono {α γ} {f : α → γ} :
+theorem UniformSpace.comap_monotone {α γ} {f : α → γ} :
     Monotone fun u : UniformSpace γ => u.comap f := fun _ _ hu =>
   Filter.comap_mono hu
+
+@[deprecated (since := "2026-10-13")] alias UniformSpace.comap_mono := UniformSpace.comap_monotone
 
 theorem uniformContinuous_iff_le_comap {α β} {uα : UniformSpace α} {uβ : UniformSpace β}
     {f : α → β} : UniformContinuous f ↔ uα ≤ uβ.comap f :=
@@ -564,7 +568,7 @@ theorem UniformSpace.gc_map_comap (f : α → β) :
       gc_generateFilter_uniformity).le_iff_le
 
 @[simp]
-theorem uniformSpace_map_id {α : Type*} : UniformSpace.map (id : α → α) = id := by
+theorem UniformSpace.map_id {α : Type*} : UniformSpace.map (id : α → α) = id := by
   funext u
   apply (UniformSpace.gc_map_comap id).l_unique GaloisConnection.id
   simp
@@ -583,7 +587,7 @@ theorem UniformSpace.map_iSup {ι α γ} {u : ι → UniformSpace α} {f : α �
     (⨆ i, u i).map f = ⨆ i, (u i).map f :=
   (UniformSpace.gc_map_comap f).l_iSup
 
-theorem UniformSpace.map_mono {α γ} {f : α → γ} :
+theorem UniformSpace.map_monotone {α γ} {f : α → γ} :
     Monotone fun u : UniformSpace α => u.map f :=
   (UniformSpace.gc_map_comap f).monotone_l
 
