@@ -351,7 +351,6 @@ partial def guessBaseFieldForNormedSpace (e : Expr) : TermElabM <| Option Expr :
   | Prod E _F =>
     guessBaseFieldForNormedSpace E
   | _ =>
-    -- TODO: can/should this just take the field k / R instead of recursing?
     try
       let (k, _E, _F) ← isCLMReduciblyDefeqCoefficients e
       return k
