@@ -359,7 +359,7 @@ private def toRatVec : (ι → ℕ) →+ (ι → ℚ) :=
 private theorem toRatVec_inj (x y : ι → ℕ) : toRatVec x = toRatVec y ↔ x = y := by
   refine ⟨fun h => ?_, congr_arg toRatVec⟩
   ext i
-  simpa [toRatVec] using congr_fun h i
+  simpa [toRatVec] using congr($h i)
 
 private theorem toRatVec_mono (x y : ι → ℕ) : toRatVec x ≤ toRatVec y ↔ x ≤ y := by
   apply forall_congr'
@@ -430,7 +430,7 @@ private theorem span_basisSet : span ℚ (toRatVec '' hs.basisSet) = ⊤ := by
     ← top_le_iff]
   apply (span_mono (image_mono subset_union_right)).trans'
   rw [top_le_iff]
-  convert! (Pi.basisFun ℚ ι).span_eq
+  convert (Pi.basisFun ℚ ι).span_eq
   ext
   simp only [mem_image, mem_range, exists_exists_eq_and]
   congr!
@@ -616,7 +616,7 @@ private theorem isSemilinearSet_setOfFractNe : IsSemilinearSet hs.setOfFractNe :
       · exact sum_mem fun i _ => nsmul_mem (mem_closure_of_mem i.2) _
       · exact hs.add_floor_neg_toNat_sum_eq x
     · rintro ⟨u, ⟨hu, hu'⟩, y, hy, y', hy', heq⟩
-      apply congr_arg hs.fract at heq
+      replace heq := congr(hs.fract $heq)
       rw [hs.fract_add_of_mem_closure hy', hs.fract_add_of_mem_closure hy,
         hs.fract_eq_self_of_mem_fundamentalDomain hu] at heq
       rwa [heq]
@@ -763,7 +763,7 @@ end IsProperLinearSet
 
 private lemma Nat.isSemilinearSet_compl_of_isProperLinearSet [Finite ι] {s : Set (ι → ℕ)}
     (hs : IsProperLinearSet s) : IsSemilinearSet sᶜ := by
-  convert!
+  convert
     hs.isSemilinearSet_setOfFractNe.union <|
       hs.isSemilinearSet_setOfFloorNeg.union hs.isSemilinearSet_setOfFloorPos using 1
   ext

@@ -110,7 +110,7 @@ protected theorem congr_arg {f : A ≃ₐ[R] B} {x x' : A} : x = x' → f x = f 
   DFunLike.congr_arg f
 
 protected theorem congr_fun {f g : A ≃ₐ[R] B} (h : f = g) (x : A) : f x = g x :=
-  DFunLike.congr_fun h x
+  congr($h x)
 
 @[simp]
 theorem coe_mk {toEquiv map_mul map_add commutes} :
