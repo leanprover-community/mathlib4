@@ -393,9 +393,9 @@ theorem contMDiffWithinAt_pi_iff :
 
 theorem contMDiffWithinAt_pi_module_iff :
     ContMDiffWithinAt I 𝓘(𝕜, Π i, Ei i) n φ s x ↔
-      ∀ i, ContMDiffWithinAt I 𝓘(𝕜, Ei i) n (fun x => φ x i) s x := by
-  simp only [contMDiffWithinAt_iff, continuousWithinAt_pi, contDiffWithinAt_pi, forall_and,
-    extChartAt_model_space_eq_id, Function.comp_def, PartialEquiv.refl_coe, id]
+      ∀ i, ContMDiffWithinAt I 𝓘(𝕜, Ei i) n (fun x ↦ φ x i) s x := by
+  simp [contMDiffWithinAt_iff, continuousWithinAt_pi, contDiffWithinAt_pi, forall_and,
+    Function.comp_def]
 
 @[deprecated (since := "2026-10-13")]
 alias contMDiffWithinAt_pi_space := contMDiffWithinAt_pi_module_iff
@@ -406,9 +406,9 @@ theorem contMDiffOn_pi_iff :
     fun h x hx ↦ contMDiffWithinAt_pi_iff.2 (fun i ↦ h i x hx)⟩
 
 theorem contMDiffOn_pi_module_iff :
-    ContMDiffOn I 𝓘(𝕜, Π i, Ei i) n φ s ↔ ∀ i, ContMDiffOn I 𝓘(𝕜, Ei i) n (fun x => φ x i) s :=
-  ⟨fun h i x hx => contMDiffWithinAt_pi_module_iff.1 (h x hx) i, fun h x hx =>
-    contMDiffWithinAt_pi_module_iff.2 fun i => h i x hx⟩
+    ContMDiffOn I 𝓘(𝕜, Π i, Ei i) n φ s ↔ ∀ i, ContMDiffOn I 𝓘(𝕜, Ei i) n (fun x ↦ φ x i) s :=
+  ⟨fun h i x hx ↦ contMDiffWithinAt_pi_module_iff.1 (h x hx) i, fun h x hx ↦
+    contMDiffWithinAt_pi_module_iff.2 fun i ↦ h i x hx⟩
 
 @[deprecated (since := "2026-10-13")] alias contMDiffOn_pi_space := contMDiffOn_pi_module_iff
 
@@ -417,7 +417,7 @@ theorem contMDiffAt_pi_iff :
   contMDiffWithinAt_pi_iff
 
 theorem contMDiffAt_pi_module_iff :
-    ContMDiffAt I 𝓘(𝕜, Π i, Ei i) n φ x ↔ ∀ i, ContMDiffAt I 𝓘(𝕜, Ei i) n (fun x => φ x i) x :=
+    ContMDiffAt I 𝓘(𝕜, Π i, Ei i) n φ x ↔ ∀ i, ContMDiffAt I 𝓘(𝕜, Ei i) n (fun x ↦ φ x i) x :=
   contMDiffWithinAt_pi_module_iff
 
 @[deprecated (since := "2026-10-13")] alias contMDiffAt_pi_space := contMDiffAt_pi_module_iff
@@ -427,9 +427,9 @@ theorem contMDiff_pi_iff :
   ⟨fun h i x ↦ contMDiffAt_pi_iff.1 (h x) i, fun h x ↦ contMDiffAt_pi_iff.2 (fun i ↦ h i x)⟩
 
 theorem contMDiff_pi_module_iff :
-    ContMDiff I 𝓘(𝕜, Π i, Ei i) n φ ↔ ∀ i, ContMDiff I 𝓘(𝕜, Ei i) n fun x => φ x i :=
-  ⟨fun h i x => contMDiffAt_pi_module_iff.1 (h x) i,
-    fun h x => contMDiffAt_pi_module_iff.2 fun i => h i x⟩
+    ContMDiff I 𝓘(𝕜, Π i, Ei i) n φ ↔ ∀ i, ContMDiff I 𝓘(𝕜, Ei i) n fun x ↦ φ x i :=
+  ⟨fun h i x ↦ contMDiffAt_pi_module_iff.1 (h x) i,
+    fun h x ↦ contMDiffAt_pi_module_iff.2 fun i ↦ h i x⟩
 
 @[deprecated (since := "2026-10-13")] alias contMDiff_pi_space := contMDiff_pi_module_iff
 
