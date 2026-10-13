@@ -5,14 +5,14 @@ Authors: Yaël Dillies, Vladimir Ivanov
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Intervals
-public import Mathlib.Algebra.BigOperators.Ring.Finset
-public import Mathlib.Algebra.Order.BigOperators.Group.Finset
-public import Mathlib.Algebra.Order.Field.Basic
 public import Mathlib.Data.Finset.Sups
-public import Mathlib.Tactic.FieldSimp
 public import Mathlib.Tactic.Positivity
-public import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
+
+import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
+import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Tactic.FieldSimp
 
 /-!
 # The Ahlswede-Zhang identity
@@ -406,7 +406,7 @@ lemma infSum_compls_add_supSum (𝒜 : Finset (Finset α)) :
 
 lemma supSum_of_univ_notMem (h𝒜₁ : 𝒜.Nonempty) (h𝒜₂ : univ ∉ 𝒜) :
     supSum 𝒜 = card α * ∑ k ∈ range (card α), (k : ℚ)⁻¹ := by
-  set m := 𝒜.card with hm
+  set m := #𝒜 with hm
   clear_value m
   induction m using Nat.strongRecOn generalizing 𝒜 with | ind m ih => _
   replace ih := fun 𝒜 h𝒜 h𝒜₁ h𝒜₂ ↦ @ih _ h𝒜 𝒜 h𝒜₁ h𝒜₂ rfl

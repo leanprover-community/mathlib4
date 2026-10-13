@@ -6,9 +6,10 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Filtered.Final
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
-public import Mathlib.CategoryTheory.Limits.Types.Equalizers
 public import Mathlib.CategoryTheory.Subfunctor.Basic
+
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
+import Mathlib.CategoryTheory.Limits.Types.Equalizers
 
 /-!
 # Type-valued flat functors

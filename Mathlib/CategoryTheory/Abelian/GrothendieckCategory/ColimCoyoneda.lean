@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Subobject
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
-public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
 # Morphisms to a colimit in a Grothendieck abelian category
@@ -86,7 +85,6 @@ lemma hf (j : Under j₀) :
     colimit.ι (kernel (g y)) j ≫ f y = (kernel.ι (g y)).app j :=
   (IsColimit.ι_map _ _ _ _).trans (by simp)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 variable {y} in
 include hc hy in
@@ -181,7 +179,6 @@ lemma hf (j : J) :
 include hc
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma isIso_f [IsFiltered J] : IsIso (f z) := by
   refine ((MorphismProperty.isomorphisms C).arrow_mk_iso_iff ?_).1
     (MorphismProperty.of_isPullback

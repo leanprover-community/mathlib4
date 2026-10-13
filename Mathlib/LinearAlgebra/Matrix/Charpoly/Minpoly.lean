@@ -5,8 +5,6 @@ Authors: Aaron Anderson, Jalex Stark, Eric Wieser
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
-public import Mathlib.LinearAlgebra.Matrix.ToLin
 public import Mathlib.RingTheory.PowerBasis
 
 /-!
@@ -17,8 +15,6 @@ This also includes some miscellaneous results about `minpoly` on matrices.
 
 public section
 
-
-noncomputable section
 
 open Matrix Module Polynomial
 

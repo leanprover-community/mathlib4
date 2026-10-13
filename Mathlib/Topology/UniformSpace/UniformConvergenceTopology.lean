@@ -7,9 +7,7 @@ module
 
 public import Mathlib.Topology.Coherent
 public import Mathlib.Topology.UniformSpace.Equiv
-public import Mathlib.Topology.UniformSpace.Pi
 public import Mathlib.Topology.UniformSpace.UniformApproximation
-public import Mathlib.Tactic.ApplyFun
 
 /-!
 # Topology and uniform structure of uniform convergence
@@ -1081,7 +1079,7 @@ protected def uniformEquivProdArrow [UniformSpace γ] :
       have H := @UniformOnFun.inf_eq α (β × γ) 𝔖
         (UniformSpace.comap Prod.fst ‹_›) (UniformSpace.comap Prod.snd ‹_›)
       apply_fun (fun u ↦ @uniformity (α →ᵤ[𝔖] β × γ) u) at H
-      convert! H.symm using 1
+      convert H.symm using 1
       rw [UniformOnFun.comap_eq, UniformOnFun.comap_eq]
       erw [inf_uniformity]
       rw [uniformity_comap, uniformity_comap]

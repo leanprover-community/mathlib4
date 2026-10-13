@@ -6,12 +6,9 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Group.Irreducible.Defs
-public import Mathlib.Algebra.Group.Subgroup.Lattice
 public import Mathlib.Algebra.Group.Subgroup.Pointwise
-public import Mathlib.Algebra.Group.Submonoid.Basic
-public import Mathlib.Algebra.Order.Group.Defs
-public import Mathlib.Algebra.Order.Monoid.Defs
-public import Mathlib.Order.Preorder.Finite
+
+import Mathlib.Algebra.Order.Group.Defs
 
 /-!
 # Indecomposable elements of monoids
@@ -32,8 +29,7 @@ def IsMulIndecomposable (v : ι → M) (s : Set ι) (i : ι) : Prop :=
 
 @[to_additive]
 protected lemma IsMulIndecomposable.subset (v : ι → M) (s : Set ι) :
-    {i | IsMulIndecomposable v s i} ⊆ s := by
-  aesop
+    {i | IsMulIndecomposable v s i} ⊆ s := fun _ hi ↦ hi.1
 
 @[to_additive]
 lemma isMulIndecomposable_id_univ [Subsingleton Mˣ] {x : M} (hx : x ≠ 1) :

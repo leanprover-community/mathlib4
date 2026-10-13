@@ -152,7 +152,7 @@ instance (X Y : FintypeCat) : Finite (X ≅ Y) :=
   Finite.of_injective _ (fun _ _ h ↦ Iso.ext h)
 
 instance (X : FintypeCat) : Finite (Aut X) :=
-  inferInstanceAs <| Finite (X ≅ X)
+  Finite.of_equiv _ (Aut.isoEquiv (X := X)).symm
 
 universe u
 
@@ -240,7 +240,7 @@ attribute [local instance] FintypeCat.fintype in
 @[simp]
 theorem incl_mk_nat_card (n : ℕ) :
     Fintype.card (incl.obj (mk n)) = n := by
-  convert! Finset.card_fin n
+  convert Finset.card_fin n
   dsimp [incl, mk, len]
   convert! (Fintype.ofEquiv_card Equiv.ulift).symm
 
