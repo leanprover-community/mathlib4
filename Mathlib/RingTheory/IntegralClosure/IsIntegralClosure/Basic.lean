@@ -193,7 +193,7 @@ theorem integralClosure.isIntegral (x : integralClosure R A) : IsIntegral R x :=
     Subtype.ext <| by
       rwa [← aeval_def, ← Subalgebra.val_apply, aeval_algHom_apply] at hpx⟩
 
-instance : Algebra.IsIntegral R (integralClosure R A) :=
+instance integralClosure.algebraIsIntegral : Algebra.IsIntegral R (integralClosure R A) :=
   ⟨integralClosure.isIntegral⟩
 
 theorem IsIntegral.of_mul_unit {x y : B} {r : R} (hr : algebraMap R B r * y = 1)
