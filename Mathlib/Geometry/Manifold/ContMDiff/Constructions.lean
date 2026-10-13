@@ -384,44 +384,45 @@ theorem contMDiff_apply {i : ι} :
     ContMDiff (ModelWithCorners.pi Ii) (Ii i) n (fun (x : Π i, Mi i) ↦ x i) :=
   fun _ ↦ contMDiffAt_apply
 
-theorem contMDiffWithinAt_pi :
+theorem contMDiffWithinAt_pi_iff :
     ContMDiffWithinAt I (ModelWithCorners.pi Ii) n f s x ↔
       ∀ i, ContMDiffWithinAt I (Ii i) n (fun x ↦ f x i) s x := by
   refine ⟨fun h i ↦ contMDiffAt_apply.comp_contMDiffWithinAt _ h, fun h ↦ ?_⟩
   simp only [contMDiffWithinAt_iff] at *
   exact ⟨continuousWithinAt_pi.2 (fun i ↦ (h i).1), contDiffWithinAt_pi.2 (fun i ↦ (h i).2)⟩
 
-theorem contMDiffWithinAt_pi_module :
+theorem contMDiffWithinAt_pi_module_iff :
     ContMDiffWithinAt I 𝓘(𝕜, Π i, Ei i) n φ s x ↔
       ∀ i, ContMDiffWithinAt I 𝓘(𝕜, Ei i) n (fun x => φ x i) s x := by
   simp only [contMDiffWithinAt_iff, continuousWithinAt_pi, contDiffWithinAt_pi, forall_and,
     extChartAt_model_space_eq_id, Function.comp_def, PartialEquiv.refl_coe, id]
 
-theorem contMDiffOn_pi :
+theorem contMDiffOn_pi_iff :
     ContMDiffOn I (ModelWithCorners.pi Ii) n f s ↔ ∀ i, ContMDiffOn I (Ii i) n (fun x ↦ f x i) s :=
-  ⟨fun h i x hx ↦ contMDiffWithinAt_pi.1 (h x hx) i,
-    fun h x hx ↦ contMDiffWithinAt_pi.2 (fun i ↦ h i x hx)⟩
+  ⟨fun h i x hx ↦ contMDiffWithinAt_pi_iff.1 (h x hx) i,
+    fun h x hx ↦ contMDiffWithinAt_pi_iff.2 (fun i ↦ h i x hx)⟩
 
-theorem contMDiffOn_pi_module :
+theorem contMDiffOn_pi_module_iff :
     ContMDiffOn I 𝓘(𝕜, Π i, Ei i) n φ s ↔ ∀ i, ContMDiffOn I 𝓘(𝕜, Ei i) n (fun x => φ x i) s :=
-  ⟨fun h i x hx => contMDiffWithinAt_pi_module.1 (h x hx) i, fun h x hx =>
-    contMDiffWithinAt_pi_module.2 fun i => h i x hx⟩
+  ⟨fun h i x hx => contMDiffWithinAt_pi_module_iff.1 (h x hx) i, fun h x hx =>
+    contMDiffWithinAt_pi_module_iff.2 fun i => h i x hx⟩
 
-theorem contMDiffAt_pi :
+theorem contMDiffAt_pi_iff :
     ContMDiffAt I (ModelWithCorners.pi Ii) n f x ↔ ∀ i, ContMDiffAt I (Ii i) n (fun x ↦ f x i) x :=
-  contMDiffWithinAt_pi
+  contMDiffWithinAt_pi_iff
 
-theorem contMDiffAt_pi_module :
+theorem contMDiffAt_pi_module_iff :
     ContMDiffAt I 𝓘(𝕜, Π i, Ei i) n φ x ↔ ∀ i, ContMDiffAt I 𝓘(𝕜, Ei i) n (fun x => φ x i) x :=
-  contMDiffWithinAt_pi_module
+  contMDiffWithinAt_pi_module_iff
 
 theorem contMDiff_pi :
     ContMDiff I (ModelWithCorners.pi Ii) n f ↔ ∀ i, ContMDiff I (Ii i) n (fun x ↦ f x i) :=
-  ⟨fun h i x ↦ contMDiffAt_pi.1 (h x) i, fun h x ↦ contMDiffAt_pi.2 (fun i ↦ h i x)⟩
+  ⟨fun h i x ↦ contMDiffAt_pi_iff.1 (h x) i, fun h x ↦ contMDiffAt_pi_iff.2 (fun i ↦ h i x)⟩
 
-theorem contMDiff_pi_module :
+theorem contMDiff_pi_module_iff :
     ContMDiff I 𝓘(𝕜, Π i, Ei i) n φ ↔ ∀ i, ContMDiff I 𝓘(𝕜, Ei i) n fun x => φ x i :=
-  ⟨fun h i x => contMDiffAt_pi_module.1 (h x) i, fun h x => contMDiffAt_pi_module.2 fun i => h i x⟩
+  ⟨fun h i x => contMDiffAt_pi_module_iff.1 (h x) i,
+    fun h x => contMDiffAt_pi_module_iff.2 fun i => h i x⟩
 
 end PiSpace
 
