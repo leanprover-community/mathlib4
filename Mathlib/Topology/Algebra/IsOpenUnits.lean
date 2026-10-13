@@ -6,9 +6,10 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.Jacobson.Ideal
-import Mathlib.Topology.Algebra.Group.Units
 public import Mathlib.Topology.Algebra.GroupWithZero
 public import Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology
+
+import Mathlib.Topology.Algebra.Group.Units
 
 /-!
 

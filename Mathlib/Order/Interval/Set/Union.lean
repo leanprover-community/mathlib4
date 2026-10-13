@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Finset.Range
 public import Mathlib.Data.Set.Lattice.Indexed
+
 import Mathlib.Order.Interval.Set.LinearOrder
 
 /-!

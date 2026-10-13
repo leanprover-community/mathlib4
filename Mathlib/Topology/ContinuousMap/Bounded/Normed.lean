@@ -6,8 +6,8 @@ Authors: Sébastien Gouëzel, Mario Carneiro, Yury Kudryashov, Heather Macbeth
 module
 
 public import Mathlib.Algebra.Module.MinimalAxioms
-public import Mathlib.Analysis.Normed.Order.Lattice
 public import Mathlib.Analysis.Normed.Operator.Basic
+public import Mathlib.Analysis.Normed.Order.Lattice
 public import Mathlib.Topology.ContinuousMap.Bounded.Basic
 
 /-!

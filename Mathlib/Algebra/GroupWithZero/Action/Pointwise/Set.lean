@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 public import Mathlib.Algebra.GroupWithZero.Action.Basic
-import Mathlib.Algebra.GroupWithZero.Action.Units
 public import Mathlib.Algebra.GroupWithZero.Pointwise.Set.Basic
+
+import Mathlib.Algebra.GroupWithZero.Action.Units
 
 /-!
 # Pointwise operations of sets in a group with zero

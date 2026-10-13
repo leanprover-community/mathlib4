@@ -8,9 +8,10 @@ module
 public import Mathlib.Data.PNat.Prime
 public import Mathlib.NumberTheory.Cyclotomic.Basic
 public import Mathlib.RingTheory.Adjoin.PowerBasis
-import Mathlib.RingTheory.Norm.Transitivity
 public import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
 public import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
+
+import Mathlib.RingTheory.Norm.Transitivity
 
 /-!
 # Primitive roots in cyclotomic fields

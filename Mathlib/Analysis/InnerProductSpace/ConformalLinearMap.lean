@@ -5,8 +5,8 @@ Authors: Yourong Zang
 -/
 module
 
-public import Mathlib.Analysis.Normed.Operator.Conformal
 public import Mathlib.Analysis.InnerProductSpace.LinearMap
+public import Mathlib.Analysis.Normed.Operator.Conformal
 
 /-!
 # Conformal maps between inner product spaces
