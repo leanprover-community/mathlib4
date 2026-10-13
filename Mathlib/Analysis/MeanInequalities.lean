@@ -32,9 +32,10 @@ $$
 $$
 The classical version is a special case of this inequality for $w_i=\frac{1}{n}$.
 
-We prove a few versions of this inequality. Each of the following lemmas comes in two versions:
-a version for real-valued non-negative functions is in the `Real` namespace, and a version for
-`NNReal`-valued functions is in the `NNReal` namespace.
+We prove a few versions of this inequality. Each of the following lemmas comes in three versions:
+a version for real-valued non-negative functions is in the `Real` namespace, a version for
+`NNReal`-valued functions is in the `NNReal` namespace, and a version for `ENNReal`-valued functions
+is in the `ENNReal` namespace.
 
 - `geom_mean_le_arith_mean_weighted` : weighted version for functions on `Finset`s;
 - `geom_mean_le_arith_mean2_weighted` : weighted version for two numbers;
