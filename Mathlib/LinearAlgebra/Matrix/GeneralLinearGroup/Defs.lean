@@ -210,9 +210,11 @@ section Equiv
 variable (n) (f : R ≃+* S) (g : S ≃+* T)
 
 /-- The equivalence between `GL n R` and `GL n S` given by `f : R ≃+* S`. -/
-@[simps! apply]
 def mapEquiv : GL n R ≃* GL n S :=
   Units.mapEquiv f.mapMatrix.toMulEquiv
+
+@[simp] lemma coe_mapEquiv_apply (a : GL n R) :
+    (mapEquiv n f a) = f.mapMatrix (a : Matrix n n R):= rfl
 
 @[simp] lemma mapEquiv_refl : mapEquiv n (.refl R) = .refl (GL n R) := rfl
 
@@ -226,6 +228,37 @@ def mapEquiv : GL n R ≃* GL n S :=
     (mapEquiv n f : GL n R →* GL n S) = map (f : R →+* S) := rfl
 
 end Equiv
+
+section Transpose
+
+variable (n)
+
+/-- The equivalence between `GL n R` and `(GL n R)ᵐᵒᵖ`. -/
+@[simps! apply symm_apply]
+def transposeMulEquiv : GL n R ≃* (GL n R)ᵐᵒᵖ :=
+  (Units.mapEquiv (Matrix.transposeRingEquiv n R).toMulEquiv).trans Units.opEquiv
+
+@[simp] lemma coe_transposeMulEquiv (a : GL n R) :
+    ((transposeMulEquiv n a).unop : Matrix n n R) = aᵀ := rfl
+
+open MulOpposite in
+@[simp] lemma transposeMulEquiv_symm_apply_op (a : GL n R) :
+    (transposeMulEquiv n).symm (op a) = ((transposeMulEquiv n) a).unop := rfl
+
+end Transpose
+
+section ULift
+
+universe w
+
+variable (n) (R)
+
+/-- `GL n (ULift R)` is isomorphic to `GL n R`. -/
+@[simps! apply symm_apply]
+def uliftMulEquiv : GL n (ULift.{w} R) ≃* GL n R :=
+  mapEquiv n ULift.ringEquiv
+
+end ULift
 
 section Reindex
 
@@ -249,18 +282,6 @@ theorem reindexMulEquiv_trans_reindexMulEquiv (e : m ≃ n) (e' : n ≃ o) :
 theorem reindexMulEquiv_refl : reindexMulEquiv R (.refl n) = .refl (GL n R) := rfl
 
 end Reindex
-
-section Pi
-
-variable {ι : Type*} (R : ι → Type*)
-
-/-- The monoid equivalence between `GL n` of a product of rings,
-and the product of the `GL n` of each ring. -/
-@[simps! apply symm_apply]
-def piEquiv [Π i, CommRing (R i)] : GL n (Π i, R i) ≃* Π i, GL n (R i) :=
-  (Units.mapEquiv piRingEquiv.toMulEquiv).trans MulEquiv.piUnits
-
-end Pi
 
 variable (f : R →+* S)
 
