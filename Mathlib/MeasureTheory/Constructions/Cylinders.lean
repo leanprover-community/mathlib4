@@ -69,12 +69,6 @@ theorem squareCylinders_eq_iUnion_image' {C : ∀ i, Set (Set (α i))} (hC : ∀
     squareCylinders C = ⋃ s : Finset ι, (s : Set ι).pi '' (s : Set ι).pi C := by
   simp_rw [squareCylinders_eq_iUnion_image, pi_image_pi_of_subset hC (subset_univ _)]
 
-lemma squareCylinders_subset_image_pi_insert_univ (C : ∀ i, Set (Set (α i))) :
-    squareCylinders C ⊆ univ.pi '' univ.pi (fun i ↦ insert univ (C i)) := by
-  rintro _ ⟨s, t, ht, rfl⟩
-  classical
-  exact ⟨fun i ↦ if i ∈ s then t i else univ, by grind⟩
-
 theorem isPiSystem_squareCylinders {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsPiSystem (C i))
     (hC_univ : ∀ i, univ ∈ C i) :
     IsPiSystem (squareCylinders C) := by

@@ -216,7 +216,7 @@ protected theorem pi {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsCompactSystem 
   obtain rfl : S = fun n ↦ univ.pi (x n) := funext fun n ↦ (hxS n).symm
   obtain ⟨i, hi⟩ := (iInter_univ_pi_eq_empty_iff x).mp h_empty
   obtain ⟨n, hn⟩ := hC i (fun n ↦ x n i) (fun n ↦ hx n i (mem_univ i)) hi
-  exact ⟨n, (biInter_univ_pi_eq_empty_iff x _).mpr ⟨i, hn⟩⟩
+  exact ⟨n, biInter_univ_pi_eq_empty_iff.mpr ⟨i, hn⟩⟩
 
 end IsCompactSystem
 
@@ -231,8 +231,10 @@ def compactClosedSquareCylinders : Set (Set (Π i, α i)) :=
 
 /-- Compact and closed square cylinders form a compact system. -/
 theorem isCompactSystem_compactClosedSquareCylinders :
-    IsCompactSystem (compactClosedSquareCylinders α) :=
-  (isCompactSystem_pi_insert_univ_isCompact_isClosed α).mono
-    (MeasureTheory.squareCylinders_subset_image_pi_insert_univ _)
+    IsCompactSystem (compactClosedSquareCylinders α) := by
+  refine (IsCompactSystem.pi fun i ↦ isCompactSystem_insert_univ_isCompact_isClosed (α i)).mono ?_
+  rintro _ ⟨s, t, ht, rfl⟩
+  classical
+  exact ⟨fun i ↦ if i ∈ s then t i else univ, by grind⟩
 
 end CompactClosedSquareCylinders
