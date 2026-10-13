@@ -141,4 +141,16 @@ theorem jacobsthal_2310_value : jacobsthal 2310 = 14 :=
       · intro k hk1 hk2
         interval_cases k <;> norm_num)
 
+
+/-- **`jacobsthal 30030 = 22`** for the primorial 30030 = 2·3·5·7·11·13.
+  Attained after 20569: the next coprime to 30030 is 20591. -/
+theorem jacobsthal_30030 : jacobsthal 30030 = 22 :=
+  jacobsthal_eq_of_window (hwin 30030 22 (by norm_num : 0 < 30030) (by native_decide))
+    (by
+      refine ⟨20569, ?_, ?_, ?_⟩
+      · native_decide
+      · native_decide
+      · intro k hk1 hk2
+        interval_cases k <;> norm_num)
+
 end Nat
