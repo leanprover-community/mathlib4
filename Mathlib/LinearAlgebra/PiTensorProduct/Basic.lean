@@ -731,7 +731,7 @@ theorem reindex_reindex (e : ι ≃ ι₂) (e' : ι₂ ≃ ι₃) (x : ⨂[R] i,
     reindex R _ e' (reindex R s e x) = reindex R s (e.trans e') x :=
   congr($((reindex_trans e e' : _ = reindex R s (e.trans e'))) x)
 
-/-- This lemma is impractical to state in the dependent case. Instead see `reindex_symm_tprod`. -/
+/-- This lemma is impractical to state in the dependent case, instead see `reindex_symm_tprod`. -/
 @[simp]
 theorem reindex_symm (e : ι ≃ ι₂) :
     (reindex R (fun _ ↦ M) e).symm = reindex R (fun _ ↦ M) e.symm := by
