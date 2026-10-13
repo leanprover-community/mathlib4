@@ -1347,11 +1347,14 @@ def splitSupport (l : (Σ i, αs i) →₀ M) : Finset ι :=
   l.support.image Sigma.fst
 
 set_option backward.isDefEq.respectTransparency false in
-theorem mem_splitSupport_iff_nonzero (i : ι) : i ∈ splitSupport l ↔ split l i ≠ 0 := by
+theorem mem_splitSupport_iff_ne_zero (i : ι) : i ∈ splitSupport l ↔ split l i ≠ 0 := by
   classical rw [splitSupport, mem_image, Ne, ← support_eq_empty, ← Ne,
     ← Finset.nonempty_iff_ne_empty, split, comapDomain, Finset.Nonempty]
   simp only [Finset.mem_preimage, exists_and_right, exists_eq_right, mem_support_iff,
     Sigma.exists, Ne]
+
+@[deprecated (since := "2026-10-13")]
+alias mem_splitSupport_iff_nonzero := mem_splitSupport_iff_ne_zero
 
 /-- Given `l`, a finitely supported function from the sigma type `Σ i, αs i` to `β` and
 an `ι`-indexed family `g` of functions from `(αs i →₀ β)` to `γ`, `split_comp` defines a
@@ -1362,7 +1365,7 @@ def splitComp [Zero N] (g : ∀ i, (αs i →₀ M) → N) (hg : ∀ i x, x = 0 
   toFun i := g i (split l i)
   mem_support_toFun := by
     intro i
-    rw [mem_splitSupport_iff_nonzero, not_iff_not, hg]
+    rw [mem_splitSupport_iff_ne_zero, not_iff_not, hg]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem sigma_support : l.support = l.splitSupport.sigma fun i => (l.split i).support := by

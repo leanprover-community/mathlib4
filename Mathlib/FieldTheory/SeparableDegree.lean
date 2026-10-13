@@ -396,10 +396,13 @@ theorem natSepDegree_C_mul {x : F} (hx : x ≠ 0) :
   simp only [natSepDegree_eq_of_isAlgClosed (AlgebraicClosure F), aroots_C_mul _ hx]
 
 @[simp]
-theorem natSepDegree_smul_nonzero {x : F} (hx : x ≠ 0) :
+theorem natSepDegree_smul_of_ne_zero {x : F} (hx : x ≠ 0) :
     (x • f).natSepDegree = f.natSepDegree := by
   classical
-  simp only [natSepDegree_eq_of_isAlgClosed (AlgebraicClosure F), aroots_smul_nonzero _ hx]
+  simp only [natSepDegree_eq_of_isAlgClosed (AlgebraicClosure F), aroots_smul_of_ne_zero _ hx]
+
+@[deprecated (since := "2026-10-13")]
+alias natSepDegree_smul_nonzero := natSepDegree_smul_of_ne_zero
 
 @[simp]
 theorem natSepDegree_pow {n : ℕ} : (f ^ n).natSepDegree = if n = 0 then 0 else f.natSepDegree := by

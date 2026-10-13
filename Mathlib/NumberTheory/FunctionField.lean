@@ -155,8 +155,8 @@ alias InftyValuation.map_mul' := RatFunc.InftyValuation.map_mul'
 @[deprecated RatFunc.InftyValuation.map_add_le_max' (since := "2026-04-14")]
 alias InftyValuation.map_add_le_max' := RatFunc.InftyValuation.map_add_le_max'
 
-@[deprecated RatFunc.inftyValuation_of_nonzero (since := "2026-04-14")]
-alias inftyValuation_of_nonzero := RatFunc.inftyValuation_of_nonzero
+@[deprecated RatFunc.inftyValuation_of_ne_zero (since := "2026-04-14")]
+alias inftyValuation_of_ne_zero := RatFunc.inftyValuation_of_ne_zero
 
 @[deprecated RatFunc.inftyValuation (since := "2026-04-14")]
 alias inftyValuation := RatFunc.inftyValuation

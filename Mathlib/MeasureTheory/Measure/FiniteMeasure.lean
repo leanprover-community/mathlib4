@@ -213,8 +213,10 @@ theorem mass_zero_iff (μ : FiniteMeasure Ω) : μ.mass = 0 ↔ μ = 0 := by
   apply Measure.measure_univ_eq_zero.mp
   rwa [← ennreal_mass, ENNReal.coe_eq_zero]
 
-theorem mass_nonzero_iff (μ : FiniteMeasure Ω) : μ.mass ≠ 0 ↔ μ ≠ 0 :=
+theorem mass_ne_zero_iff (μ : FiniteMeasure Ω) : μ.mass ≠ 0 ↔ μ ≠ 0 :=
   not_iff_not.mpr <| FiniteMeasure.mass_zero_iff μ
+
+@[deprecated (since := "2026-10-13")] alias mass_nonzero_iff := mass_ne_zero_iff
 
 @[ext]
 theorem eq_of_forall_toMeasure_apply_eq (μ ν : FiniteMeasure Ω)
@@ -327,8 +329,10 @@ lemma restrict_biUnion_finset {ι : Type*} {μ : FiniteMeasure Ω} {T : Finset �
 theorem restrict_eq_zero_iff (μ : FiniteMeasure Ω) (A : Set Ω) : μ.restrict A = 0 ↔ μ A = 0 := by
   rw [← mass_zero_iff, restrict_mass]
 
-theorem restrict_nonzero_iff (μ : FiniteMeasure Ω) (A : Set Ω) : μ.restrict A ≠ 0 ↔ μ A ≠ 0 := by
+theorem restrict_ne_zero_iff (μ : FiniteMeasure Ω) (A : Set Ω) : μ.restrict A ≠ 0 ↔ μ A ≠ 0 := by
   simp
+
+@[deprecated (since := "2026-10-13")] alias restrict_nonzero_iff := restrict_ne_zero_iff
 
 /-- The type of finite measures is a measurable space when equipped with the Giry monad. -/
 instance : MeasurableSpace (FiniteMeasure Ω) :=
