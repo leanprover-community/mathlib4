@@ -9,12 +9,12 @@ public import Mathlib.Data.Subtype
 public import Mathlib.Order.Defs.LinearOrder
 public import Mathlib.Order.Defs.Prop
 public import Mathlib.Order.Notation
-public import Mathlib.Tactic.Spread
 public import Mathlib.Tactic.Convert
+public import Mathlib.Tactic.FastInstance
+public import Mathlib.Tactic.GCongr
 public import Mathlib.Tactic.Inhabit
 public import Mathlib.Tactic.SimpRw
-public import Mathlib.Tactic.GCongr
-public import Mathlib.Tactic.FastInstance
+public import Mathlib.Tactic.Spread
 
 /-!
 # Basic definitions about `≤` and `<`
@@ -858,8 +858,8 @@ end Subtype
 /-!
 ### Pointwise order on `α × β`
 
-The lexicographic order is defined in `Data.Prod.Lex`, and the instances are available via the
-type synonym `α ×ₗ β = α × β`.
+The lexicographic order is defined in `Order.Prod.Lex.Basic`, and the instances are available via
+the type synonym `α ×ₗ β = α × β`.
 -/
 
 
@@ -966,17 +966,8 @@ class DenselyOrdered (α : Type*) [LT α] : Prop where
   /-- An order is dense if there is an element between any pair of distinct elements. -/
   dense : ∀ a₁ a₂ : α, a₁ < a₂ → ∃ a, a₁ < a ∧ a < a₂
 
-@[to_dual existing dense]
-theorem DenselyOrdered.dense' [LT α] [DenselyOrdered α] :
-    ∀ a₁ a₂ : α, a₁ < a₂ → ∃ a, a < a₂ ∧ a₁ < a := by
-  simp_rw [and_comm]; exact dense
-
-/-- `DenselyOrdered.mk'` is the dual of `DenselyOrdered.mk`, which we need for `to_dual`.
-Please avoid using this directly. -/
-@[to_dual existing mk]
-lemma DenselyOrdered.mk' [LT α] (dense : ∀ a₁ a₂ : α, a₁ < a₂ → ∃ a, a < a₂ ∧ a₁ < a) :
-    DenselyOrdered α where
-  dense := by simpa [and_comm] using dense
+to_dual_for DenselyOrdered.dense := by simpa [and_comm] using DenselyOrdered.dense a₂ a₁
+to_dual_for DenselyOrdered.mk := ⟨by simpa [and_comm] using forall_comm.mp dense⟩
 
 @[to_dual exists_between']
 theorem exists_between [LT α] [DenselyOrdered α] {a₁ a₂ : α} : a₁ < a₂ → ∃ a, a₁ < a ∧ a < a₂ :=

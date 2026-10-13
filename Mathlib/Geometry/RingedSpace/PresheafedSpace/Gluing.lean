@@ -5,8 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Topology.Gluing
 public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace.HasColimits
+public import Mathlib.Topology.Gluing
 
 /-!
 # Gluing structured spaces
@@ -163,7 +163,7 @@ theorem f_invApp_f_app (i j k : D.J) (U : Opens (D.V (i, j)).carrier) :
   erw [(π₁ i, j, k).c.naturality_assoc, reassoc_of% this, ← Functor.map_comp_assoc,
     IsOpenImmersion.inv_naturality_assoc, IsOpenImmersion.app_invApp_assoc, ←
     (D.V (i, k)).presheaf.map_comp, ← (D.V (i, k)).presheaf.map_comp]
-  convert! (Category.comp_id _).symm
+  convert (Category.comp_id _).symm
   erw [(D.V (i, k)).presheaf.map_id]
   rfl
 
@@ -279,13 +279,13 @@ theorem opensImagePreimageMap_app' (i j k : D.J) (U : Opens (D.U i).carrier) :
   · delta opensImagePreimageMap
     simp_rw [Category.assoc]
     rw [(D.f j k).c.naturality, f_invApp_f_app_assoc]
-    · erw [← (D.V (j, k)).presheaf.map_comp]
-      · simp_rw [← Category.assoc]
-        erw [← comp_c_app, ← comp_c_app]
-        · simp_rw [Category.assoc]
-          dsimp only [Functor.op, unop_op, Quiver.Hom.unop_op]
-          rw [eqToHom_map (Opens.map _), eqToHom_op, eqToHom_trans]
-          congr
+    erw [← (D.V (j, k)).presheaf.map_comp]
+    simp_rw [← Category.assoc]
+    erw [← comp_c_app, ← comp_c_app]
+    simp_rw [Category.assoc]
+    dsimp only [Functor.op, unop_op, Quiver.Hom.unop_op]
+    rw [eqToHom_map (Opens.map _), eqToHom_op, eqToHom_trans]
+    congr
 
 /-- The red and the blue arrows in ![this diagram](https://i.imgur.com/mBzV1Rx.png) commute. -/
 theorem opensImagePreimageMap_app (i j k : D.J) (U : Opens (D.U i).carrier) :
@@ -398,7 +398,7 @@ theorem ιInvApp_π {i : D.J} (U : Opens (D.U i).carrier) :
     simp only [SetLike.mem_coe, unop_op, Set.mem_preimage, Set.mem_image]
     refine ⟨fun h => ⟨_, h, rfl⟩, ?_⟩
     rintro ⟨y, h1, h2⟩
-    convert! h1 using 1
+    convert h1 using 1
     delta ι Multicoequalizer.π at h2
     apply_fun (D.ι _).base
     · exact h2.symm
