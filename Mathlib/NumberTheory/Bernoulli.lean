@@ -666,7 +666,7 @@ theorem vonStaudt_clausen (k : ℕ) :
   rcases Nat.eq_zero_or_pos k with rfl | hk
   · exact ⟨1, by decide +kernel⟩
   · rw [Set.mem_range]
-    refine ⟨_, Rat.coe_int_num_of_den_eq_one ?_⟩
+    refine ⟨_, Rat.intCast_num_of_den_eq_one ?_⟩
     by_contra h
     obtain ⟨p, hp, hdvd⟩ := ne_one_iff_exists_prime_dvd.mp h
     exact (let : Fact p.Prime := ⟨hp⟩; not_dvd_den_vonStaudt_sum hk) hdvd
