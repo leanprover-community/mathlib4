@@ -211,15 +211,15 @@ protected theorem IsCompactSystem.supClosure (hS : IsCompactSystem S) :
     exact ⟨a, ha, hx.1, hxa⟩
   choose! f hfL hf using step
   -- build the sequence `K n = f n (A n)`, where `A n = ⋂ k < n, K k` is the running intersection
-  let A : ℕ → Set α := fun n ↦ Nat.rec (motive := fun _ ↦ Set α) univ (fun n A ↦ A ∩ f n A) n
+  let A : ℕ → Set α := fun n ↦ Nat.rec univ (fun n A ↦ A ∩ f n A) n
   let K : ℕ → Set α := fun n ↦ f n (A n)
   have hA : ∀ n, ∃ᶠ x in F, x ∈ A n := fun n ↦ by
     induction n with
     | zero =>
       have : F.NeBot := hFb.neBot_iff.2 fun _ ↦ hne _
-      exact ((frequently_true_iff_neBot F).2 this).mono fun x _ ↦ mem_univ x
+      exact (frequently_true_iff_neBot F).2 this
     | succ n ih => exact hf n (A n) ih
-  have hAK : ∀ n, A (n + 1) = dissipate K n := fun n ↦ by
+  have hAK n : A (n + 1) = dissipate K n := by
     induction n with
     | zero => simp [A, K]
     | succ n ih => rw [dissipate_succ, ← ih]
