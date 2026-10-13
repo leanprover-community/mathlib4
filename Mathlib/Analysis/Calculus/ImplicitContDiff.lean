@@ -55,35 +55,36 @@ variable {u : E₁ × E₂} {f : E₁ × E₂ → F} {n : ℕ∞ω}
 noncomputable def implicitFunction
     (cdf : ContDiffAt 𝕜 n f u) (pn : n ≠ 0) (if₂ : (fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
     E₁ → E₂ :=
-  (cdf.hasStrictFDerivAt pn).implicitFunctionOfProdDomain if₂
+  (cdf.hasStrictFDerivAt_fderiv pn).implicitFunctionOfProdDomain if₂
 
 theorem implicitFunction_def
     (cdf : ContDiffAt 𝕜 n f u) (pn : n ≠ 0) (if₂ : (fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
-    cdf.implicitFunction pn if₂ = (cdf.hasStrictFDerivAt pn).implicitFunctionOfProdDomain if₂ := by
+    cdf.implicitFunction pn if₂ =
+      (cdf.hasStrictFDerivAt_fderiv pn).implicitFunctionOfProdDomain if₂ := by
   rfl
 
 /-- At the base point `u.1`, the implicit function evaluates to `u.2`. -/
 theorem implicitFunction_apply_self
     (cdf : ContDiffAt 𝕜 n f u) (pn : n ≠ 0) (if₂ : (fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
     cdf.implicitFunction pn if₂ u.1 = u.2 :=
-  eq_of_tendsto_nhds ((cdf.hasStrictFDerivAt pn).tendsto_implicitFunctionOfProdDomain if₂)
+  eq_of_tendsto_nhds ((cdf.hasStrictFDerivAt_fderiv pn).tendsto_implicitFunctionOfProdDomain if₂)
 
 /-- `implicitFunction` is indeed the (local) implicit function defined by `f`. -/
 theorem eventually_apply_implicitFunction
     (cdf : ContDiffAt 𝕜 n f u) (pn : n ≠ 0) (if₂ : (fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
     ∀ᶠ x in 𝓝 u.1, f (x, cdf.implicitFunction pn if₂ x) = f u :=
-  (cdf.hasStrictFDerivAt pn).eventually_apply_implicitFunctionOfProdDomain if₂
+  (cdf.hasStrictFDerivAt_fderiv pn).eventually_apply_implicitFunctionOfProdDomain if₂
 
 theorem eventually_apply_eq_iff_implicitFunction
     (cdf : ContDiffAt 𝕜 n f u) (pn : n ≠ 0) (if₂ : (fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
     ∀ᶠ v in 𝓝 u, f v = f u ↔ cdf.implicitFunction pn if₂ v.1 = v.2 :=
-  (cdf.hasStrictFDerivAt pn).eventually_apply_eq_iff_implicitFunctionOfProdDomain if₂
+  (cdf.hasStrictFDerivAt_fderiv pn).eventually_apply_eq_iff_implicitFunctionOfProdDomain if₂
 
 theorem hasStrictFDerivAt_implicitFunction
     (cdf : ContDiffAt 𝕜 n f u) (pn : n ≠ 0) (if₂ : (fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
     HasStrictFDerivAt (cdf.implicitFunction pn if₂)
       (-(fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).inverse ∘L (fderiv 𝕜 f u ∘L .inl 𝕜 E₁ E₂)) u.1 :=
-  (cdf.hasStrictFDerivAt pn).hasStrictFDerivAt_implicitFunctionOfProdDomain if₂
+  (cdf.hasStrictFDerivAt_fderiv pn).hasStrictFDerivAt_implicitFunctionOfProdDomain if₂
 
 /-- If the implicit equation `f` is $C^n$ at `(u₁, u₂)`, then its implicit function `ψ` around `u₁`
 is also $C^n$ at `u₁`. -/
@@ -91,7 +92,7 @@ theorem contDiffAt_implicitFunction
     (cdf : ContDiffAt 𝕜 n f u) (pn : n ≠ 0) (if₂ : (fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
     ContDiffAt 𝕜 n (cdf.implicitFunction pn if₂) u.1 := by
   rw [ContDiffAt.implicitFunction_def, HasStrictFDerivAt.implicitFunctionOfProdDomain_def]
-  set φ := (cdf.hasStrictFDerivAt pn).implicitFunctionDataOfProdDomain if₂
+  set φ := (cdf.hasStrictFDerivAt_fderiv pn).implicitFunctionDataOfProdDomain if₂
   have : ContDiffAt 𝕜 n φ.implicitFunction.uncurry (f u, u.1) := by
     simpa [φ] using φ.contDiffAt_implicitFunction
       (by simpa [φ] using cdf) (by simpa [φ] using contDiffAt_fst) pn
