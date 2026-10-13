@@ -5,8 +5,8 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
 public import Mathlib.Analysis.SpecialFunctions.Gamma.BohrMollerup
+public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
 
 import Mathlib.MeasureTheory.Group.GeometryOfNumbers
 import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls

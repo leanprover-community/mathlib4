@@ -5,12 +5,12 @@ Authors: Rémy Degenne, Etienne Marion
 -/
 module
 
-public import Mathlib.Analysis.Matrix.Order
 public import Mathlib.Analysis.Matrix.MeasurableSpace
+public import Mathlib.Analysis.Matrix.Order
 public import Mathlib.Probability.Distributions.Gaussian.CharFun
 
-import Mathlib.Probability.Distributions.Gaussian.Fernique
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Measurable
+import Mathlib.Probability.Distributions.Gaussian.Fernique
 
 /-!
 # Multivariate Gaussian distributions

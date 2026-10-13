@@ -5,8 +5,8 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.Trim
 public import Mathlib.MeasureTheory.MeasurableSpace.CountablyGenerated
+public import Mathlib.MeasureTheory.Measure.Trim
 
 /-!
 # Almost everywhere measurable functions
@@ -502,15 +502,30 @@ lemma AEMeasurable.const_eq [MeasurableSingletonClass β] (hf : AEMeasurable f �
   conv => enter [1, x]; rw [eq_comm]
   exact .eq_const hf a
 
+omit [MeasurableSpace β] [MeasurableSpace γ] in
+lemma aemeasurable_comap_iff {mγ : MeasurableSpace γ} {g : β → γ} (hg : g.Bijective) :
+    @AEMeasurable α β (mγ.comap g) m0 f μ ↔ AEMeasurable (g ∘ f) μ := by
+  let := mγ.comap g
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · exact ⟨g ∘ h.mk f, measurable_comap_iff.1 h.measurable_mk,
+      h.ae_eq_mk.mono fun x hx ↦ congrArg g hx⟩
+  · refine ⟨Function.surjInv hg.2 ∘ h.mk _, measurable_comap_iff.2 ?_, ?_⟩
+    · convert h.measurable_mk
+      ext x
+      exact Function.surjInv_eq hg.2 _
+    · refine h.ae_eq_mk.mono fun x hx ↦ ?_
+      simp only [comp_apply] at hx ⊢
+      rw [← hx, Function.leftInverse_surjInv hg]
+
 section Set
 
 variable {β : Type*} {f g : α → Set β}
 
-lemma AEMeasurable.mem (hf : AEMeasurable f μ) (b : β) : AEMeasurable (b ∈ f ·) μ :=
-    hf.eval b
-
 lemma aemeasurable_set_iff [Countable β] : AEMeasurable f μ ↔ ∀ b, AEMeasurable (b ∈ f ·) μ :=
-  aemeasurable_pi_iff
+  (aemeasurable_comap_iff Set.mem_bijective).trans aemeasurable_pi_iff
+
+lemma AEMeasurable.mem (hf : AEMeasurable f μ) {b : β} : AEMeasurable (b ∈ f ·) μ :=
+  ((aemeasurable_comap_iff Set.mem_bijective).1 hf).eval b
 
 alias ⟨_, AEMeasurable.of_mem⟩ := aemeasurable_set_iff
 

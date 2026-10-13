@@ -761,8 +761,8 @@ theorem MeasureTheory.Measure.hausdorffMeasure_smul₀ {𝕜 E : Type*} [NormedA
   rw [← le_inv_smul_iff_of_pos]
   · dsimp
     rw [← NNReal.inv_rpow, ← nnnorm_inv]
-    · refine Eq.trans_le ?_ (this (r • s))
-      rw [inv_smul_smul₀ hr]
+    refine Eq.trans_le ?_ (this (r • s))
+    rw [inv_smul_smul₀ hr]
   · simp [pos_iff_ne_zero, hr]
 
 /-!

@@ -943,10 +943,13 @@ instance Set.instMeasurableSpace : MeasurableSpace (Set α) :=
 @[deprecated (since := "2026-07-09")]
 alias measurable_setOf := measurable_setOfPred
 
-lemma measurable_set_iff : Measurable g ↔ ∀ a, Measurable fun x ↦ a ∈ g x :=
+lemma measurable_set_iff : Measurable f ↔ ∀ a, Measurable fun x ↦ a ∈ f x :=
   measurable_comap_iff.trans measurable_pi_iff
 
-alias ⟨Measurable.mem, Measurable.of_mem⟩ := measurable_set_iff
+lemma Measurable.mem (hf : Measurable f) {a : α} : Measurable fun x ↦ a ∈ f x :=
+  measurable_set_iff.1 hf _
+
+alias ⟨_, Measurable.of_mem⟩ := measurable_set_iff
 
 @[fun_prop]
 lemma measurable_set_mem (a : α) : Measurable fun s : Set α ↦ a ∈ s :=
@@ -969,20 +972,20 @@ lemma measurableSet_notMem (a : α) : MeasurableSet {s : Set α | a ∉ s} :=
 @[fun_prop]
 lemma Measurable.inter (hf : Measurable f) (hg : Measurable g) :
     Measurable fun a ↦ f a ∩ g a :=
-  .of_eval fun _ ↦ hf.eval.and hg.eval
+  .of_mem fun _ ↦ hf.mem.and hg.mem
 
 lemma measurable_inter : Measurable (fun p : (Set α) × (Set α) ↦ p.1 ∩ p.2) := by fun_prop
 
 @[fun_prop]
 lemma Measurable.union (hf : Measurable f) (hg : Measurable g) :
     Measurable fun a ↦ f a ∪ g a :=
-  .of_eval fun _ ↦ hf.eval.or hg.eval
+  .of_mem fun _ ↦ hf.mem.or hg.mem
 
 lemma measurable_union : Measurable (fun p : (Set α) × (Set α) ↦ p.1 ∪ p.2) := by fun_prop
 
 @[fun_prop]
 lemma Measurable.compl (hf : Measurable f) : Measurable fun a ↦ (f a)ᶜ :=
-  .of_eval fun _ ↦ hf.eval.not
+  .of_mem fun _ ↦ hf.mem.not
 
 lemma measurable_compl : Measurable ((·ᶜ) : Set α → Set α) := by fun_prop
 

@@ -5,8 +5,8 @@ Authors: Reid Barton
 -/
 module
 
-public import Mathlib.Topology.Hom.ContinuousEval
 public import Mathlib.Topology.ContinuousMap.Basic
+public import Mathlib.Topology.Hom.ContinuousEval
 public import Mathlib.Topology.Separation.Regular
 
 /-!

@@ -5,8 +5,8 @@ Authors: Henry Swanson
 -/
 module
 
-public import Mathlib.GroupTheory.Perm.Option
 public import Mathlib.Dynamics.FixedPoints.Defs
+public import Mathlib.GroupTheory.Perm.Option
 
 import Mathlib.Tactic.ApplyFun
 

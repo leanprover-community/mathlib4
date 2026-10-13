@@ -322,12 +322,12 @@ theorem stdPart_inv (x : K) : stdPart x⁻¹ = (stdPart x)⁻¹ := by
   · unfold stdPart
     have hx' : 0 ≤ mk x⁻¹ := by simp_all
     rw [dite_eq_left hx.ge, dite_eq_left hx']
-    · apply eq_inv_of_mul_eq_one_left
-      suffices FiniteElement.mk x⁻¹ hx' * .mk x hx.ge = 1 by
-        rw [← map_mul, this, map_one]
-      ext
-      apply inv_mul_cancel₀
-      aesop
+    apply eq_inv_of_mul_eq_one_left
+    suffices FiniteElement.mk x⁻¹ hx' * .mk x hx.ge = 1 by
+      rw [← map_mul, this, map_one]
+    ext
+    apply inv_mul_cancel₀
+    aesop
   · rw [stdPart_of_mk_ne_zero hx, stdPart_of_mk_ne_zero, inv_zero]
     rwa [mk_inv, neg_ne_zero]
 

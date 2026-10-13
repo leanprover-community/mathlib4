@@ -141,9 +141,6 @@ theorem mem_omegaLimit_singleton_iff_mapClusterPt (x : α) (y : β) :
   simp_rw [mem_omegaLimit_iff_frequently, mapClusterPt_iff_frequently, singleton_inter_nonempty,
     mem_preimage]
 
-@[deprecated (since := "2026-03-31")]
-alias mem_omegaLimit_singleton_iff_map_cluster_point := mem_omegaLimit_singleton_iff_mapClusterPt
-
 /-!
 ### Set operations and omega limits
 -/
@@ -198,9 +195,6 @@ theorem omegaLimit_subset_closure_image2 {u : Set τ} (hu : u ∈ f) :
   intro _ hx
   rw [mem_iInter] at hx
   exact hx ⟨u, hu⟩
-
-@[deprecated (since := "2026-03-31")]
-alias omegaLimit_subset_closure_fw_image := omegaLimit_subset_closure_image2
 
 -- An instance with better keys
 instance : Inhabited f.sets := Filter.inhabitedMem

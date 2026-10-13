@@ -273,10 +273,6 @@ lemma succ_natCast (n : ℕ) : Order.succ (n : Cardinal) = n + 1 := by
   rw [← Nat.cast_succ]
   exact Nat.cast_lt.2 (Nat.lt_succ_self _)
 
-@[deprecated succ_natCast +typeChanged (since := "2026-03-21")]
-theorem nat_succ (n : ℕ) : (n.succ : Cardinal) = succ ↑n := by
-  simp
-
 @[simp]
 lemma natCast_add_one_le_iff {n : ℕ} {c : Cardinal} : n + 1 ≤ c ↔ n < c := by
   rw [← Order.succ_le_iff, succ_natCast]
@@ -327,9 +323,6 @@ protected theorem one_le_iff_ne_zero {c : Cardinal} : 1 ≤ c ↔ c ≠ 0 := by
 @[simp]
 protected theorem lt_one_iff {c : Cardinal} : c < 1 ↔ c = 0 := by
   simpa using lt_succ_bot_iff (a := c)
-
-@[deprecated (since := "2026-03-24")]
-alias lt_one_iff_zero := Cardinal.lt_one_iff
 
 protected theorem le_one_iff {c : Cardinal} : c ≤ 1 ↔ c = 0 ∨ c = 1 := by
   simpa using le_succ_bot_iff (a := c)

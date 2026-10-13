@@ -5,8 +5,8 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 public import Mathlib.Analysis.LocallyConvex.Bounded
+public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 public import Mathlib.Analysis.RCLike.Basic
 
 import Mathlib.Analysis.Convex.Topology
