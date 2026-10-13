@@ -397,6 +397,9 @@ theorem contMDiffWithinAt_pi_module_iff :
   simp only [contMDiffWithinAt_iff, continuousWithinAt_pi, contDiffWithinAt_pi, forall_and,
     extChartAt_model_space_eq_id, Function.comp_def, PartialEquiv.refl_coe, id]
 
+@[deprecated (since := "2026-10-13")]
+alias contMDiffWithinAt_pi_space := contMDiffWithinAt_pi_module_iff
+
 theorem contMDiffOn_pi_iff :
     ContMDiffOn I (ModelWithCorners.pi Ii) n f s ↔ ∀ i, ContMDiffOn I (Ii i) n (fun x ↦ f x i) s :=
   ⟨fun h i x hx ↦ contMDiffWithinAt_pi_iff.1 (h x hx) i,
@@ -407,6 +410,8 @@ theorem contMDiffOn_pi_module_iff :
   ⟨fun h i x hx => contMDiffWithinAt_pi_module_iff.1 (h x hx) i, fun h x hx =>
     contMDiffWithinAt_pi_module_iff.2 fun i => h i x hx⟩
 
+@[deprecated (since := "2026-10-13")] alias contMDiffOn_pi_space := contMDiffOn_pi_module_iff
+
 theorem contMDiffAt_pi_iff :
     ContMDiffAt I (ModelWithCorners.pi Ii) n f x ↔ ∀ i, ContMDiffAt I (Ii i) n (fun x ↦ f x i) x :=
   contMDiffWithinAt_pi_iff
@@ -415,7 +420,9 @@ theorem contMDiffAt_pi_module_iff :
     ContMDiffAt I 𝓘(𝕜, Π i, Ei i) n φ x ↔ ∀ i, ContMDiffAt I 𝓘(𝕜, Ei i) n (fun x => φ x i) x :=
   contMDiffWithinAt_pi_module_iff
 
-theorem contMDiff_pi :
+@[deprecated (since := "2026-10-13")] alias contMDiffAt_pi_space := contMDiffAt_pi_module_iff
+
+theorem contMDiff_pi_iff :
     ContMDiff I (ModelWithCorners.pi Ii) n f ↔ ∀ i, ContMDiff I (Ii i) n (fun x ↦ f x i) :=
   ⟨fun h i x ↦ contMDiffAt_pi_iff.1 (h x) i, fun h x ↦ contMDiffAt_pi_iff.2 (fun i ↦ h i x)⟩
 
@@ -423,6 +430,8 @@ theorem contMDiff_pi_module_iff :
     ContMDiff I 𝓘(𝕜, Π i, Ei i) n φ ↔ ∀ i, ContMDiff I 𝓘(𝕜, Ei i) n fun x => φ x i :=
   ⟨fun h i x => contMDiffAt_pi_module_iff.1 (h x) i,
     fun h x => contMDiffAt_pi_module_iff.2 fun i => h i x⟩
+
+@[deprecated (since := "2026-10-13")] alias contMDiff_pi_space := contMDiff_pi_module_iff
 
 end PiSpace
 
