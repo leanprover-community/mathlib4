@@ -23,3 +23,5 @@ theorem WithBot.range_eq (f : WithBot α → β) :
 theorem WithTop.range_eq (f : WithTop α → β) :
     range f = insert (f ⊤) (range (f ∘ WithBot.some : α → β)) :=
   Option.range_eq f
+
+-- CI experiment (parallel steps, round 2, 2026-10-13): a leaf-module edit with no semantic change.
