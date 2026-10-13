@@ -377,7 +377,7 @@ theorem ContMDiffWithinAt.continuousAlternatingMap_apply
     (g := fun x : (F₁ [⋀^ι]→L[𝕜] F₂) × (ι → F₁) => x.1 x.2)
     (f := fun x : M ↦ (g x, fun i ↦ f i x))
     ContinuousAlternatingMap.cpolynomialAt_apply.contDiffAt
-    (hg.prodMk_space (contMDiffWithinAt_pi_space.mpr hf)) (by simp)
+    (hg.prodMk_space (contMDiffWithinAt_pi_module_iff.mpr hf)) (by simp)
 
 /-- Applying an alternating map to a family of vectors is smooth. Version in vector spaces. For
 versions in nontrivial vector bundles, see
