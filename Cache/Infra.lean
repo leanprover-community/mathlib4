@@ -116,8 +116,7 @@ end Container
 
 /--
 The public Mathlib cache endpoint. It serves the `/{container}/{key}`
-namespace and caches artifacts at its edge, so reads cost the project less
-and land nearer the reader.
+namespace and caches artifacts at its edge.
 -/
 def publicCacheEndpoint : String := "https://cache.mathlib.org"
 

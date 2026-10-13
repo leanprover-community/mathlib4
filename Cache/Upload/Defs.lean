@@ -30,7 +30,6 @@ namespace Cache.Requests
 open System (FilePath)
 
 /-- The storage backend an upload targets, selected with `--backend=NAME`.
-Each backend implements the credentials and the transfer in its own module.
 `runPut` dispatches on this type. -/
 inductive UploadBackend where
   /-- Azure Blob Storage (`Cache/Upload/Azure.lean`). -/

@@ -171,9 +171,7 @@ def test_envValueNormalization : IO Unit := do
   assertEq "a slash-only value reads as unset" "<unset>" (shown (normalizeBaseURL (some "/")))
 
 /-- The read base follows `MATHLIB_CACHE_BASE_URL` when the variable is set. Without
-it, reads address `publicCacheEndpoint`. `getBaseURLFrom` is pure, so this test
-covers every branch; the environment-reading wrapper (`getBaseURL`) adds no
-logic of its own. -/
+it, reads address `publicCacheEndpoint`. -/
 def test_getBaseURLFrom : IO Unit := do
   IO.println "getBaseURLFrom:"
   assertEq "no override → the read endpoint"
@@ -1080,7 +1078,6 @@ def test_parseFlagOpt : IO Unit := do
 
 /-- A boolean environment variable is on for `1` and `true`, off for `0` and
 `false`, and `ifUnset` for an absent or blank value.
-`MATHLIB_CACHE_PUT_FORCE_CURL` reads this way with `ifUnset := false`.
 
 `ifUnset` decides the unset case alone: a variable that defaults on still reads
 `0` as off, and a value the parser cannot read warns and falls back to
@@ -1407,8 +1404,6 @@ def test_uploadLocationFrom : IO Unit := do
   assertTrue "s3: a PUT_URL without a bucket path errors"
     (uploadLocationFrom .s3 (some "https://my.example.org") none none MATHLIBREPO none
       matches .error _)
-  -- Each backend errors when the configuration is incomplete for it: a
-  -- missing PUT_URL on azure, or a missing container or base on s3.
   assertTrue "azure: no PUT_URL errors"
     (uploadLocationFrom .azure none none none "alice/mathlib4" none
       matches .error _)
@@ -1442,7 +1437,7 @@ def test_uploadLocationFrom : IO Unit := do
       some "https://s3.example.org/bucket-prefix/mathlib4-forks")
 
 /-- Flat locations have no commit scope. Repo-namespaced locations take the
-supplied SHA. The azure backend resolves only a flat endpoint. -/
+supplied SHA. -/
 def test_uploadLocationScope : IO Unit := do
   IO.println "uploadLocationScope:"
   for scope? in [none, some "abc1"] do
