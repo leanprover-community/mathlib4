@@ -6,8 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Functor.KanExtension.Dense
-public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 public import Mathlib.CategoryTheory.Presentable.Finite
+public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 
 /-!
 # `κ`-presentable objects form a dense subcategory

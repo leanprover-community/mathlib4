@@ -13,6 +13,7 @@ public import Mathlib.RingTheory.TensorProduct.Free
 
 import Mathlib.LinearAlgebra.GeneralLinearGroup.AlgEquiv
 import Mathlib.RingTheory.SimpleRing.Matrix
+import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
 # Trace of a linear map

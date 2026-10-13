@@ -6,8 +6,8 @@ Authors: Jeremy Tan
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Clique
-public import Mathlib.Combinatorics.SimpleGraph.Extremal.Basic
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
+public import Mathlib.Combinatorics.SimpleGraph.Extremal.Basic
 public import Mathlib.Order.Partition.Equipartition
 
 /-!

@@ -24,6 +24,8 @@ define the space of modular forms, cusp forms and prove that the product of two 
 modular form.
 -/
 
+open scoped Finset
+
 @[expose] public noncomputable section
 
 open Complex UpperHalfPlane Matrix.SpecialLinearGroup
@@ -628,8 +630,8 @@ those indexed by `s : Finset ι` with weight `#s * k`. -/
 @[simps! -fullyApplied]
 def prodEqualWeights {ι : Type*} {s : Finset ι} {k : ℤ}
     {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
-    (F : (i : ι) → ModularForm Γ k) : ModularForm Γ (s.card * k) :=
-  prod (s := s) (s.card * k) (by simp) F
+    (F : (i : ι) → ModularForm Γ k) : ModularForm Γ (#s * k) :=
+  prod (s := s) (#s * k) (by simp) F
 
 end GradedRing
 

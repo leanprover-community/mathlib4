@@ -5,10 +5,10 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Fintype.Option
-public import Mathlib.Data.Fintype.Prod
-public import Mathlib.Data.Fintype.Pi
 public import Mathlib.Computability.TuringMachine.PostTuringMachine
+public import Mathlib.Data.Fintype.Option
+public import Mathlib.Data.Fintype.Pi
+public import Mathlib.Data.Fintype.Prod
 
 /-!
 # Turing machines
