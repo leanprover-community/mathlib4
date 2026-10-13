@@ -5,8 +5,8 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
 public import Mathlib.LinearAlgebra.Multilinear.Basic
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
 
 import Mathlib.Algebra.BigOperators.Fin
 

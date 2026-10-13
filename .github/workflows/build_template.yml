@@ -54,6 +54,7 @@ env:
   # not necessarily satisfy this property.
   LAKE_NO_CACHE: true
   MATHLIB_CACHE_BASE_URL: ${{ vars.MATHLIB_CACHE_BASE_URL }}
+  MATHLIB_CACHE_PARALLEL_MAX: ${{ vars.MATHLIB_CACHE_PARALLEL_MAX }}
 
 jobs:
   build:
@@ -236,7 +237,7 @@ jobs:
 
       - name: fetch archive, counterexamples and wanted cache
         # Same sandbox as "Fetch cache from remote" in get-cache.
-        shell: landrun --unrestricted-network --rox /usr --rox /etc --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rwx /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env CI --env TERM --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX --env MATHLIB_CACHE_FROM --env MATHLIB_CACHE_REPO_SCOPE --env MATHLIB_CACHE_GET_URL --env MATHLIB_CACHE_BASE_URL -- bash -euxo pipefail {0}
+        shell: landrun --unrestricted-network --rox /usr --rox /etc --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rwx /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env CI --env TERM --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX --env MATHLIB_CACHE_FROM --env MATHLIB_CACHE_REPO_SCOPE --env MATHLIB_CACHE_GET_URL --env MATHLIB_CACHE_BASE_URL --env MATHLIB_CACHE_PARALLEL_MAX -- bash -euxo pipefail {0}
         run: |
           # Use the trusted toolchain's `lean`/`leantar` (see setup-build-env).
           export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
@@ -245,29 +246,39 @@ jobs:
           ../tools-branch/.lake/build/bin/cache get Counterexamples.lean
           ../tools-branch/.lake/build/bin/cache get Wanted.lean
 
-      - name: build archive
+      # One `lake build` builds the three libraries, so their modules share one
+      # scheduler, and Lake keeps building the other targets when one fails.
+      # The three checks below ask Lake whether each target is up to date and
+      # free of warnings, so each target reports its own outcome to the staging
+      # gates, the test gate and the nightly-testing comment.
+      - name: build archive, counterexamples and wanted
+        id: libraries
+        continue-on-error: true
+        run: |
+          cd pr-branch
+          ../tools-branch/scripts/lake-build-with-retry.sh Archive Counterexamples Wanted
+          # results of build at pr-branch/.lake/build_summary_Archive_Counterexamples_Wanted.json
+
+      - name: check that Archive built
         id: archive
         continue-on-error: true
         run: |
           cd pr-branch
-          ../tools-branch/scripts/lake-build-with-retry.sh Archive
-          # results of build at pr-branch/.lake/build_summary_Archive.json
+          lake build --no-build --wfail Archive
 
-      - name: build counterexamples
+      - name: check that Counterexamples built
         id: counterexamples
         continue-on-error: true
         run: |
           cd pr-branch
-          ../tools-branch/scripts/lake-build-with-retry.sh Counterexamples
-          # results of build at pr-branch/.lake/build_summary_Counterexamples.json
+          lake build --no-build --wfail Counterexamples
 
-      - name: build wanted
+      - name: check that Wanted built
         id: wanted
         continue-on-error: true
         run: |
           cd pr-branch
-          ../tools-branch/scripts/lake-build-with-retry.sh Wanted
-          # results of build at pr-branch/.lake/build_summary_Wanted.json
+          lake build --no-build --wfail Wanted
 
       # Runs in the build job because it only needs the freshly-built Mathlib/
       # Archive/Counterexamples/Wanted oleans, which are present here; keeping it in
@@ -394,10 +405,10 @@ jobs:
         if: steps.archive.outcome == 'failure' || steps.counterexamples.outcome == 'failure'
         run: |
           if [ "${{ steps.archive.outcome }}" == "failure" ]; then
-            echo "❌ The \"build archive\" step above failed; please check its logs."
+            echo "❌ Archive did not build; check the logs of the \"build archive, counterexamples and wanted\" step above."
           fi
           if [ "${{ steps.counterexamples.outcome }}" == "failure" ]; then
-            echo "❌ The \"build counterexamples\" step above failed; please check its logs."
+            echo "❌ Counterexamples did not build; check the logs of the \"build archive, counterexamples and wanted\" step above."
           fi
           exit 1
 
@@ -524,7 +535,7 @@ jobs:
         if: ${{ env.RUN_TESTS == 'true' }}
         continue-on-error: true
         # Same sandbox as "Fetch cache from remote" in get-cache.
-        shell: landrun --unrestricted-network --rox /usr --rox /etc --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rwx /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env CI --env TERM --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX --env MATHLIB_CACHE_FROM --env MATHLIB_CACHE_REPO_SCOPE --env MATHLIB_CACHE_GET_URL --env MATHLIB_CACHE_BASE_URL --env CACHE_REPO -- bash -euxo pipefail {0}
+        shell: landrun --unrestricted-network --rox /usr --rox /etc --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rwx /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env CI --env TERM --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX --env MATHLIB_CACHE_FROM --env MATHLIB_CACHE_REPO_SCOPE --env MATHLIB_CACHE_GET_URL --env MATHLIB_CACHE_BASE_URL --env MATHLIB_CACHE_PARALLEL_MAX --env CACHE_REPO -- bash -euxo pipefail {0}
         env:
           CACHE_REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
         run: |

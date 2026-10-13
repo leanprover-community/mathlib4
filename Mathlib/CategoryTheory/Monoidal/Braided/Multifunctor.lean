@@ -5,8 +5,8 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 public import Mathlib.CategoryTheory.Functor.CurryingThree
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 
 /-!
 
@@ -18,8 +18,6 @@ phrased as equalities of natural transformations between trifunctors
 `(-₁ ⊗ -₂) ⊗ -₃ ⟶ -₂ ⊗ (-₃ ⊗ -₁)` and `-₁ ⊗ (-₂ ⊗ -₃) ⟶ (-₃ ⊗ -₁) ⊗ -₂`.
 
 -/
-
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -125,6 +123,7 @@ firstMap₂ |            |secondMap₂            |             |
 def firstMap₂ (β : curriedTensor C ≅ (curriedTensor C).flip) : functor₁₂₃' C ⟶ functor₂₃₁ C :=
   (bifunctorComp₂₃Functor.map β.hom).app _
 
+set_option backward.defeqAttrib.useBackward true in
 variable (C) in
 /-- The bottom left map in the forward hexagon identity. -/
 @[simps!]
@@ -139,6 +138,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 def secondMap₁ (β : curriedTensor C ≅ (curriedTensor C).flip) : functor₁₂₃ C ⟶ functor₂₁₃ C :=
   (bifunctorComp₁₂Functor.map β.hom).app _
 
+set_option backward.defeqAttrib.useBackward true in
 variable (C) in
 /-- The middle right map in the forward hexagon identity. -/
 @[simps!]
@@ -205,6 +205,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 def secondMap₁ (β : curriedTensor C ≅ (curriedTensor C).flip) : functor₁₂₃' C ⟶ functor₁₃₂' C :=
   (bifunctorComp₂₃Functor.obj _).map β.hom
 
+set_option backward.defeqAttrib.useBackward true in
 variable (C) in
 /-- The middle right map in the reverse hexagon identity. -/
 @[simps!]
