@@ -74,7 +74,7 @@ theorem tail_pmap {p : α → Prop} (f : (a : α) → p a → β) (v : Vector α
     (hp : ∀ x ∈ v.toList, p x) :
     (v.pmap f hp).tail = v.tail.pmap f (fun x hx ↦ hp _ (v.mem_of_mem_tail x hx)) := by
   obtain ⟨a, v', h⟩ := Vector.exists_eq_cons v
-  simp_rw [h, pmap_cons, tail_cons, Nat.add_one_sub_one]
+  simp_rw [h, pmap_cons, tail_cons]
 
 theorem mem_map_iff (b : β) (v : Vector α n) (f : α → β) :
     b ∈ (v.map f).toList ↔ ∃ a : α, a ∈ v.toList ∧ f a = b := by
