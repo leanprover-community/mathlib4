@@ -6,6 +6,7 @@ Authors: Jovan Gerbscheid, Newell Jensen
 module
 
 public import Mathlib.Topology.MetricSpace.Congruence
+
 import Mathlib.Tactic.FinCases
 
 /-!

@@ -509,13 +509,13 @@ previous assumptions. -/
       LinearMap.add_apply, LinearMap.sub_apply, LinearMap.coe_comp, Function.comp_apply,
       lsingle_apply, sum_add, sum_sub, mul_inv_cancel_left, ← add_assoc, add_sub_cancel, e]
     intro w hw
-    · obtain (hl | hr) := Finset.mem_union.1 (support_add hw)
+    obtain (hl | hr) := Finset.mem_union.1 (support_add hw)
     /- The first sum clearly has support in `S`: -/
-      · obtain ⟨t, _, ht⟩ := Finset.mem_biUnion.1 (support_sum hl)
-        apply support_single_subset at ht
-        simp_all [← QuotientGroup.eq]
+    · obtain ⟨t, _, ht⟩ := Finset.mem_biUnion.1 (support_sum hl)
+      apply support_single_subset at ht
+      simp_all [← QuotientGroup.eq]
     /- The third sum is 0, by `hv`. -/
-      · simp_all [mapDomain]
+    · simp_all [mapDomain]
   /- Now `v + d(ve)` has support in `S` and agrees with `x` in `H₁(G, A)`: -/
   use H1π _ ⟨comapDomain Subtype.val (v + d₂₁ _ ve) <|
     Set.injOn_of_injective Subtype.val_injective, ?_⟩

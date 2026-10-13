@@ -6,6 +6,7 @@ Authors: Peter Nelson, Junyan Xu
 module
 
 public import Mathlib.Combinatorics.Matroid.Rank.ENat
+
 import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-!

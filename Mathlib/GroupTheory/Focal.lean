@@ -5,8 +5,9 @@ Authors: Boyang Hu
 -/
 module
 
-import Mathlib.GroupTheory.Abelianization.Defs
 public import Mathlib.GroupTheory.Transfer
+
+import Mathlib.GroupTheory.Abelianization.Defs
 
 /-!
 # Focal Subgroup Theorem

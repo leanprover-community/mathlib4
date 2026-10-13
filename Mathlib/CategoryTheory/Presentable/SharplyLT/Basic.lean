@@ -114,7 +114,7 @@ variable (h₀ : κ₁ < κ₂)
   {X : Type w} [PartialOrder X]
   -- The variables `Y`, `hY` and `hY'` below can be obtained by applying
   -- the `choose` tactic to an assumption of the form
-  -- `∃ (Y : Set (SetCardinalLT κ₁ X)), HasCardinalLT Y κ₂ ∧ IsCofinal Y)`
+  -- `∃ (Y : Set (SetCardinalLT κ₁ X)), HasCardinalLT Y κ₂ ∧ IsCofinal Y`
   -- e.g. when the condition (iii) in the docstring of this file is satisfied
   (Y : ∀ (B : Set X) (_ : HasCardinalLT B κ₂), Set (SetCardinalLT κ₁ B))
   (hY : ∀ (B : Set X) (hB : HasCardinalLT B κ₂), HasCardinalLT (Y B hB) κ₂)

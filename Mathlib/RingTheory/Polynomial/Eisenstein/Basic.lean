@@ -5,9 +5,10 @@ Authors: Riccardo Brasca
 -/
 module
 
-import Mathlib.RingTheory.Ideal.BigOperators
 public import Mathlib.RingTheory.Polynomial.Eisenstein.Criterion
 public import Mathlib.RingTheory.Polynomial.ScaleRoots
+
+import Mathlib.RingTheory.Ideal.BigOperators
 
 /-!
 # Eisenstein polynomials

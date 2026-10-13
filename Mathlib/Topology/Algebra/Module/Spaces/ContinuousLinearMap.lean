@@ -5,9 +5,9 @@ Authors: Anatole Dedecker, Yury Kudryashov
 -/
 module
 
+public import Mathlib.Topology.Algebra.Algebra.Equiv
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.RestrictScalars
 public import Mathlib.Topology.Algebra.Module.Spaces.UniformConvergenceCLM
-public import Mathlib.Topology.Algebra.Algebra.Equiv
 
 /-!
 # Topology of bounded convergence on the space of continuous linear map
