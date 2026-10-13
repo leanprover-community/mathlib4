@@ -156,11 +156,11 @@ def lift : (∀ i, M i →* N) ≃ (CoprodI M →* N) where
 
 @[simp]
 theorem lift_comp_of {N} [Monoid N] (fi : ∀ i, M i →* N) i : (lift fi).comp of = fi i :=
-  congr_fun (lift.symm_apply_apply fi) i
+  congr($(lift.symm_apply_apply fi) i)
 
 @[simp]
 theorem lift_of {N} [Monoid N] (fi : ∀ i, M i →* N) {i} (m : M i) : lift fi (of m) = fi i m :=
-  DFunLike.congr_fun (lift_comp_of ..) m
+  congr($(lift_comp_of ..) m)
 
 @[simp]
 theorem lift_comp_of' {N} [Monoid N] (f : CoprodI M →* N) :

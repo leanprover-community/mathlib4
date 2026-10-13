@@ -6,8 +6,9 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Algebra.MonoidAlgebra.Division
-public import Mathlib.Data.Finsupp.Weight
 public import Mathlib.Algebra.MvPolynomial.Basic
+
+import Mathlib.Data.Finsupp.Weight
 
 /-!
 # Division of `MvPolynomial` by monomials
@@ -236,7 +237,7 @@ instance [IsLeftCancelAdd R] :
     AddCommMagma.IsLeftCancelAdd.toIsCancelAdd _
   refine { add_left_cancel := fun f g h H ↦ ?_ }
   ext d
-  simpa using congr_arg ((·.coeff d)) H
+  simpa using congr($(H).coeff d)
 
 theorem eq_modMonomial_single [IsLeftCancelAdd R]
     {σ : Type*} {i : σ} {p q r : MvPolynomial σ R}

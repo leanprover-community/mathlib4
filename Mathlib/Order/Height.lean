@@ -88,7 +88,7 @@ theorem finite_of_chainHeight_ne_top {r} {s : Set α} (hc : IsChain r s) (h : s.
 
 theorem not_isChain_of_chainHeight_lt_encard (s t : Set α) (ht : t ⊆ s)
     (he : s.chainHeight r < t.encard) : ¬ IsChain r t := by
-  by_contra! hh
+  by_contra hh
   grw [encard_le_chainHeight_of_isChain _ _ ht hh] at he
   exact (lt_self_iff_false _).mp he
 

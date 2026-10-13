@@ -5,8 +5,8 @@ Authors: Matteo Cipollina
 -/
 module
 
-public import Mathlib.Combinatorics.Quiver.Path
 public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Combinatorics.Quiver.Path
 
 
 /-!

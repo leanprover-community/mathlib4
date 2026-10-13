@@ -146,7 +146,7 @@ theorem toTopologicalSpace_sInf (s : Set (GroupTopology α)) :
 @[to_additive (attr := simp)]
 theorem toTopologicalSpace_iInf {ι} (s : ι → GroupTopology α) :
     (⨅ i, s i).toTopologicalSpace = ⨅ i, (s i).toTopologicalSpace :=
-  congr_arg sInf (range_comp _ _).symm
+  congr(sInf $((range_comp ..).symm))
 
 /-- Group topologies on `γ` form a complete lattice, with `⊥` the discrete topology and `⊤` the
 indiscrete topology.

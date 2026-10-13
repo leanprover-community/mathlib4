@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Calculus.ContDiff.Comp
 public import Mathlib.Analysis.Calculus.Deriv.Inverse
 public import Mathlib.Topology.OpenPartialHomeomorph.IsImage
+
 import Mathlib.Analysis.Calculus.FDeriv.OfCompLeft
 
 /-!
@@ -139,22 +140,28 @@ theorem contDiff_single [DecidableEq ι] (k : ℕ∞ω) (i : ι) :
     ContDiff 𝕜 k (Pi.single i : F' i → ∀ i, F' i) :=
   contDiff_update k 0 i
 
-variable (𝕜 E)
+variable (𝕜 F')
 
 @[fun_prop]
-theorem contDiff_apply (i : ι) : ContDiff 𝕜 n fun f : ι → E => f i :=
+theorem contDiff_apply (i : ι) : ContDiff 𝕜 n fun (f : Π i, F' i) => f i :=
   contDiff_pi.mp contDiff_id i
 
 @[fun_prop]
-theorem contDiffAt_apply (i : ι) (f : ι → E) : ContDiffAt 𝕜 n (fun f : ι → E => f i) f :=
-  (contDiff_apply 𝕜 E i).contDiffAt
+theorem contDiffAt_apply (i : ι) (f : Π i, F' i) : ContDiffAt 𝕜 n (fun (f : Π i, F' i) => f i) f :=
+  (contDiff_apply 𝕜 F' i).contDiffAt
 
 @[fun_prop]
-theorem contDiffOn_apply (i : ι) (s : Set (ι → E)) : ContDiffOn 𝕜 n (fun f : ι → E => f i) s :=
-  (contDiff_apply 𝕜 E i).contDiffOn
+theorem contDiffWithinAt_apply (i : ι) (s : Set (Π i, F' i)) (f : Π i, F' i) :
+    ContDiffWithinAt 𝕜 n (fun (f : Π i, F' i) => f i) s f :=
+  (contDiffAt_apply 𝕜 F' i f).contDiffWithinAt
+
+@[fun_prop]
+theorem contDiffOn_apply (i : ι) (s : Set (Π i, F' i)) :
+    ContDiffOn 𝕜 n (fun (f : Π i, F' i) => f i) s :=
+  (contDiff_apply 𝕜 F' i).contDiffOn
 
 theorem contDiff_apply_apply (i : ι) (j : ι') : ContDiff 𝕜 n fun f : ι → ι' → E => f i j :=
-  contDiff_pi.mp (contDiff_apply 𝕜 (ι' → E) i) j
+  contDiff_pi.mp (contDiff_apply 𝕜 _ i) j
 
 end Pi
 
@@ -855,7 +862,7 @@ theorem contDiffAt_map_inverse [CompleteSpace E] (e : E ≃L[𝕜] F) :
   have h₁ : ContDiff 𝕜 n O₁ := contDiff_id.clm_comp contDiff_const
   have h₂ : ContDiff 𝕜 n O₂ := contDiff_const.clm_comp contDiff_id
   refine h₁.contDiffAt.comp _ (ContDiffAt.comp _ ?_ h₂.contDiffAt)
-  convert! contDiffAt_ringInverse 𝕜 (1 : (E →L[𝕜] E)ˣ)
+  convert contDiffAt_ringInverse 𝕜 (1 : (E →L[𝕜] E)ˣ)
   simp [O₂, one_def]
 
 /-- At an invertible map `e : M →L[R] M₂` between Banach spaces, the operation of
@@ -917,7 +924,7 @@ theorem OpenPartialHomeomorph.contDiffAt_symm [CompleteSpace E] (f : OpenPartial
         have h_deriv : HasFDerivAt f (e : E →L[𝕜] F) (f.symm x) := by
           rw [he]
           exact hff' (f.symm x) hxu
-        convert! f.hasFDerivAt_symm hx.1 h_deriv
+        convert f.hasFDerivAt_symm hx.1 h_deriv
         simp [← he]
       · -- Then we check that the formula, being a composition of `ContDiff` pieces, is
         -- itself `ContDiff`

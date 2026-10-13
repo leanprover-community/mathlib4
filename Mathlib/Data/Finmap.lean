@@ -5,8 +5,8 @@ Authors: Sean Leather, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.List.AList
 public import Mathlib.Data.Finset.Sigma
+public import Mathlib.Data.List.AList
 public import Mathlib.Data.Part
 
 /-!

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Group.Pi.Units
 public import Mathlib.Algebra.Group.Submonoid.Units
-public import Mathlib.Topology.Algebra.Constructions
 public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 public import Mathlib.Topology.Algebra.Monoid
 
@@ -100,7 +99,7 @@ variable [Monoid α] [TopologicalSpace α] [Monoid β] [TopologicalSpace β]
 
 @[to_additive]
 instance [ContinuousMul α] : IsTopologicalGroup αˣ where
-  continuous_inv := Units.continuous_iff.2 <| ⟨continuous_coe_inv, continuous_val⟩
+  continuous_inv := Units.continuous_iff.2 ⟨continuous_coe_inv, continuous_val⟩
 
 @[to_additive]
 theorem isClosedEmbedding_embedProduct [T1Space α] [ContinuousMul α] :

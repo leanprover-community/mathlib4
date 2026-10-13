@@ -5,12 +5,13 @@ Authors: Kalle Kytölä, Yury Kudryashov, Michał Świętek
 -/
 module
 
-public import Mathlib.Analysis.Normed.Module.Dual
-public import Mathlib.Analysis.Normed.Operator.Completeness
-public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
-public import Mathlib.Topology.MetricSpace.PiNat
-public import Mathlib.Analysis.Normed.Operator.BanachSteinhaus
 public import Mathlib.Analysis.LocallyConvex.WeakDual
+public import Mathlib.Analysis.Normed.Module.Dual
+public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
+
+import Mathlib.Analysis.Normed.Operator.BanachSteinhaus
+import Mathlib.Analysis.Normed.Operator.Completeness
+import Mathlib.Topology.MetricSpace.PiNat
 
 /-!
 # Weak dual of normed space
@@ -173,7 +174,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem dual_norm_topology_le_weak_dual_topology :
     (UniformSpace.toTopologicalSpace : TopologicalSpace (StrongDual 𝕜 E)) ≤
       (instTopologicalSpaceWeakDual .. : TopologicalSpace (WeakDual 𝕜 E)) := by
-  convert! (@toWeakDual_continuous _ _ _ _ (by assumption)).le_induced
+  convert (@toWeakDual_continuous _ _ _ _ (by assumption)).le_induced
   exact induced_id.symm
 
 end Dual

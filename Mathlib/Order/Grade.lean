@@ -5,8 +5,8 @@ Authors: Yaël Dillies, Violeta Hernández Palacios, Grayson Burton, Vladimir Iv
 -/
 module
 
-public import Mathlib.Data.Int.SuccPred
 public import Mathlib.Order.Fin.Basic
+public import Mathlib.Order.SuccPred.Int
 
 /-!
 # Graded orders

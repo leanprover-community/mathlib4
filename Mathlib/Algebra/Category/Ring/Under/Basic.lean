@@ -5,7 +5,6 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.Algebra.Category.Ring.Colimits
 public import Mathlib.Algebra.Category.Ring.Constructions
 public import Mathlib.CategoryTheory.Comma.Over.Pullback
 
@@ -143,7 +142,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma pushout_inl_tensorProdObjIsoPushoutObj_inv_right (A : Under R) :
     pushout.inl A.hom (ofHom <| algebraMap R S) ≫ (tensorProdObjIsoPushoutObj S A).inv.right =
-      (ofHom <| Algebra.TensorProduct.includeRight.toRingHom) := by
+      (ofHom Algebra.TensorProduct.includeRight.toRingHom) := by
   simp [tensorProdObjIsoPushoutObj]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -151,7 +150,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma pushout_inr_tensorProdObjIsoPushoutObj_inv_right (A : Under R) :
     pushout.inr A.hom (ofHom <| algebraMap R S) ≫
       (tensorProdObjIsoPushoutObj S A).inv.right =
-      (CommRingCat.ofHom <| Algebra.TensorProduct.includeLeftRingHom) := by
+      (CommRingCat.ofHom Algebra.TensorProduct.includeLeftRingHom) := by
   simp [tensorProdObjIsoPushoutObj]
 
 set_option backward.defeqAttrib.useBackward true in

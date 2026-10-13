@@ -5,8 +5,8 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Order.Ring.Rat
 public import Mathlib.Algebra.Order.Nonneg.Ring
+public import Mathlib.Algebra.Order.Ring.Rat
 public import Mathlib.Data.NNRat.Defs
 
 /-!

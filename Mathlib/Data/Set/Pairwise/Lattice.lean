@@ -191,8 +191,8 @@ theorem Pairwise.subset_of_biUnion_subset_biUnion (h₀ : Pairwise (Disjoint on 
 
 theorem Pairwise.biUnion_injective (h₀ : Pairwise (Disjoint on f)) (h₁ : ∀ i, (f i).Nonempty) :
     Injective fun s : Set ι => ⋃ i ∈ s, f i := fun _s _t h =>
-  ((h₀.subset_of_biUnion_subset_biUnion fun _ _ => h₁ _) <| h.subset).antisymm <|
-    (h₀.subset_of_biUnion_subset_biUnion fun _ _ => h₁ _) <| h.superset
+  ((h₀.subset_of_biUnion_subset_biUnion fun _ _ => h₁ _) h.subset).antisymm <|
+    (h₀.subset_of_biUnion_subset_biUnion fun _ _ => h₁ _) h.superset
 
 /-- In a disjoint union we can identify the unique set an element belongs to. -/
 theorem pairwiseDisjoint_unique {y : α}

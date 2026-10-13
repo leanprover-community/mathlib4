@@ -125,7 +125,7 @@ instance {Γ : Subgroup (GL (Fin 2) ℝ)} [h : Γ.IsArithmetic] : HasDetPlusMinu
     IsArithmetic.is_commensurable.2.relIndex_ne_zero hg
   suffices |(g.det ^ n).val| = 1 by simpa [← abs_pow, abs_pow_eq_one _ (Nat.ne_zero_of_lt hn)]
   obtain ⟨t, ht⟩ := hgn.1
-  have := congr_arg Matrix.GeneralLinearGroup.det ht.symm
+  have := congr(Matrix.GeneralLinearGroup.det $ht.symm)
   rw [Matrix.SpecialLinearGroup.det_mapGL, map_pow] at this
   simp [this]
 
@@ -231,9 +231,9 @@ variable {R : Type*} [CommRing R]
   rintro g (hg | hg)
   · exact HasDetPlusMinusOne.det_eq hg
   · by_cases hn : Even (Fintype.card n)
-    · convert! HasDetPlusMinusOne.det_eq hg using 1 <;>
+    · convert HasDetPlusMinusOne.det_eq hg using 1 <;>
         simp [Units.ext_iff, det_neg, hn]
-    · convert! (HasDetPlusMinusOne.det_eq hg).symm using 1 <;>
+    · convert (HasDetPlusMinusOne.det_eq hg).symm using 1 <;>
         simp [Units.ext_iff, det_neg, Nat.not_even_iff_odd.mp hn, neg_eq_iff_eq_neg]
 
 lemma Subgroup.hasDetOne_adjoinNegOne_iff {𝒢 : Subgroup (GL n R)} (hn : Even (Fintype.card n)) :

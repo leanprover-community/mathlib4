@@ -5,7 +5,6 @@ Authors: Anatole Dedecker, Patrick Massot
 -/
 module
 
-public import Mathlib.Geometry.Manifold.Notation
 public import Mathlib.Geometry.Manifold.PartitionOfUnity
 
 /-!
@@ -66,8 +65,6 @@ public section
 
 open Set Function
 open scoped Topology ContDiff Manifold
-
-noncomputable section
 
 section Manifold
 

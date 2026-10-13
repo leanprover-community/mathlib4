@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.BigOperators.Pi
 public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-public import Mathlib.Algebra.Group.Pi.Basic
 public import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 
 /-!

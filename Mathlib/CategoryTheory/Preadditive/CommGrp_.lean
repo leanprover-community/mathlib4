@@ -72,11 +72,11 @@ def commGrpEquivalenceAux : CommGrp.forget C ⋙ toCommGrp C ≅
       mul_def, Iso.refl_hom, Category.comp_id, tensorHom_id, id_whiskerRight, Category.id_comp]
     apply monoidal_hom_ext
     · simp only [comp_add, lift_fst, lift_snd, add_zero]
-      convert! (MonObj.lift_comp_one_right _ 0).symm
+      convert (MonObj.lift_comp_one_right _ 0).symm
       · simp
       · infer_instance
     · simp only [comp_add, lift_fst, lift_snd, zero_add]
-      convert! (MonObj.lift_comp_one_left 0 _).symm
+      convert (MonObj.lift_comp_one_left 0 _).symm
       · simp
       · infer_instance
   · cat_disch

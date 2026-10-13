@@ -5,7 +5,7 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Init
+import Mathlib.Init
 
 /-!
 # Basic lemmas about division and modulo for integers

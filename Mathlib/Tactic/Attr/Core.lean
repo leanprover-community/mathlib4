@@ -5,8 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-import Mathlib.Tactic.Attr.Register
 public import Std.Data.DTreeMap.Internal.Operations
+
+import Mathlib.Tactic.Attr.Register
 
 /-!
 # Simp tags for core lemmas

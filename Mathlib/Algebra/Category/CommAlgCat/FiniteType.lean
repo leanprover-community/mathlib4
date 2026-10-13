@@ -91,7 +91,7 @@ instance : EssentiallySmall.{u} (FGAlgCat.{v} R) := by
     refine small_of_injective (f := f) fun u v h ↦ ?_
     ext a
     obtain ⟨a, rfl⟩ := eA.symm.surjective a
-    exact eB.injective (congr_fun h a)
+    exact eB.injective congr($h a)
 
 section Under
 

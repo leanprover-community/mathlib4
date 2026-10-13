@@ -65,9 +65,6 @@ theorem coe_toDualBotEquiv [LE α] :
     (WithTop.toDualBotEquiv : WithTop αᵒᵈ → (WithBot α)ᵒᵈ) = toDual ∘ WithTop.ofDual := by
   ext (- | x) <;> rfl
 
-@[deprecated (since := "2026-03-27")]
-alias _root_.WithBot.coe_toDualTopEquiv_eq := WithBot.coe_toDualTopEquiv
-
 /-- Embedding into `WithTop α`. -/
 @[to_dual (attr := simps) /-- Embedding into `WithBot α`. -/]
 def _root_.Function.Embedding.coeWithTop : α ↪ WithTop α where

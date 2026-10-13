@@ -203,7 +203,7 @@ def kroneckerMapBilinear [Semiring S] [Semiring R]
     [Module R α] [Module R γ] [Module S β] [Module S γ] [SMulCommClass S R γ]
     (f : α →ₗ[R] β →ₗ[S] γ) :
     Matrix l m α →ₗ[R] Matrix n p β →ₗ[S] Matrix (l × n) (m × p) γ :=
-  LinearMap.mk₂' R S (kroneckerMap fun r s => f r s) (kroneckerMap_add_left _ <| f.map_add₂)
+  LinearMap.mk₂' R S (kroneckerMap fun r s => f r s) (kroneckerMap_add_left _ f.map_add₂)
     (fun _ => kroneckerMap_smul_left _ _ <| f.map_smul₂ _)
     (kroneckerMap_add_right _ fun a => (f a).map_add) fun r =>
     kroneckerMap_smul_right _ _ fun a => (f a).map_smul r

@@ -5,9 +5,9 @@ Authors: Yakov Pechersky
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.Group.List.Basic
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
-public import Mathlib.Algebra.BigOperators.Group.List.Basic
 
 /-!
 # Big operators on a list in ordered groups

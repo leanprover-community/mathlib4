@@ -5,9 +5,9 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.Meta.Tactic.ElimInfo
 public meta import Lean.Meta.Tactic.Simp.RegisterCommand
+public import Mathlib.Init
 
 /-!
 # Attributes for the `basify` tactic

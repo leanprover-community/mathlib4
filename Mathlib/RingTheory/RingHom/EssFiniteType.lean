@@ -5,10 +5,8 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.RingTheory.EssentialFiniteness
-public import Mathlib.RingTheory.Localization.AtPrime.Basic
-public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 public import Mathlib.RingTheory.LocalProperties.Basic
+public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
 /-!
 # Meta properties of essentially of finite type ring homomorphisms
@@ -56,6 +54,6 @@ lemma residueFieldMap {f : R →+* S} [IsLocalRing R] [IsLocalRing S] [IsLocalHo
     (IsLocalRing.ResidueField.map f).EssFiniteType := by
   refine .of_comp (IsLocalRing.residue R) ?_
   rw [IsLocalRing.ResidueField.map_comp_residue]
-  exact .comp hf (FiniteType.of_surjective _ <| IsLocalRing.residue_surjective).essFiniteType
+  exact .comp hf (FiniteType.of_surjective _ IsLocalRing.residue_surjective).essFiniteType
 
 end RingHom.EssFiniteType

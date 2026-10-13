@@ -99,10 +99,6 @@ theorem hyperplane_separation' (C : ProperCone ℝ E) (hx₀ : x₀ ∉ C) :
   refine ⟨(InnerProductSpace.toDual ℝ E).symm f, ?_⟩
   simpa [← real_inner_comm _ ((InnerProductSpace.toDual ℝ E).symm f), *]
 
-@[deprecated (since := "2026-03-23")] alias
-  _root_.ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_notMem :=
-  hyperplane_separation'
-
 /-- The inner dual of inner dual of a proper cone is itself. -/
 @[simp] theorem innerDual_innerDual (C : ProperCone ℝ E) :
     innerDual (innerDual (C : Set E)) = C := by

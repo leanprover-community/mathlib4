@@ -87,7 +87,7 @@ lemma toOnePoint_mul [MulZeroClass R] [ContinuousMul R] (f g : C₀(X, R)) :
   ext x; induction x using OnePoint.rec <;> simp
 
 @[simp]
-lemma toOnePoint_smul [Zero R] [Zero S] [SMulWithZero S R] [ContinuousConstSMul S R]
+lemma toOnePoint_smul [Zero R] [SMulZeroClass S R] [ContinuousConstSMul S R]
     (s : S) (f : C₀(X, R)) :
     (s • f).toOnePoint = s • f.toOnePoint := by
   ext x; induction x using OnePoint.rec <;> simp

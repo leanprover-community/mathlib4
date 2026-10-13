@@ -6,7 +6,8 @@ Authors: Eric Rodriguez, Eric Wieser
 module
 
 public import Mathlib.Data.List.Chain
-public import Mathlib.Data.List.Dedup
+
+import Mathlib.Data.List.Dedup
 
 /-!
 # Destuttering of Lists

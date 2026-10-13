@@ -6,10 +6,7 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Order.CompleteLattice.Group
-public import Mathlib.Topology.ContinuousMap.Bounded.Basic
 public import Mathlib.Topology.ContinuousMap.Compact
-public import Mathlib.Topology.MetricSpace.Lipschitz
-public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 
 /-! # Metric structure on `α →ᵤ β` and `α →ᵤ[𝔖] β` for finite `𝔖`
 
@@ -304,7 +301,7 @@ noncomputable instance [BoundedSpace β] : PseudoMetricSpace (α →ᵤ[𝔖] β
 
 noncomputable instance [BoundedSpace β] : BoundedSpace (α →ᵤ[𝔖] β) where
   bounded_univ := by
-    convert! lipschitzWith_one_ofFun_toFun (𝔖 := 𝔖) (β := β) |>.isBounded_image (.all Set.univ)
+    convert lipschitzWith_one_ofFun_toFun (𝔖 := 𝔖) (β := β) |>.isBounded_image (.all Set.univ)
     ext f
     simp only [Set.mem_univ, Function.comp_apply, Set.image_univ, Set.mem_range, true_iff]
     exact ⟨UniformFun.ofFun (toFun 𝔖 f), by simp⟩

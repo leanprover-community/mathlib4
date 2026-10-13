@@ -5,10 +5,10 @@ Authors: Floris van Doorn
 -/
 module
 
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Order.Kleene
 public import Mathlib.Algebra.Order.Ring.Canonical
 public import Mathlib.Data.Set.BooleanAlgebra
-public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Sets as a semiring under union

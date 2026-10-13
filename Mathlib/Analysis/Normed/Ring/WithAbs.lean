@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Algebra.TransferInstance
 public import Mathlib.Algebra.Module.TransferInstance
 public import Mathlib.Analysis.Normed.Ring.TransferInstance
-public import Mathlib.Topology.Algebra.Ring.Basic
 
 /-!
 # `WithAbs` type synonym
@@ -135,29 +134,6 @@ theorem congr_symm : (congr v w f).symm = congr w v f.symm := rfl
 @[simp] theorem congr_symm_apply (x : WithAbs w) :
     (congr v w f).symm x = toAbs v (f.symm x.ofAbs) := rfl
 
-/-- The canonical (semiring) equivalence between `WithAbs v` and `WithAbs w`, for any two
-absolute values `v` and `w` on `R`. -/
-@[deprecated "Use `WithAbs.congr` instead." (since := "2026-03-02")]
-def equivWithAbs (v w : AbsoluteValue R S) : WithAbs v ≃+* WithAbs w :=
-    congr v w (.refl R)
-
-@[deprecated "Use `WithAbs.congr_symm` instead." (since := "2026-03-02")]
-theorem equivWithAbs_symm (v w : AbsoluteValue R S) :
-    (congr v w (.refl R)).symm = (congr w v (RingEquiv.refl R).symm) :=
-  congr_symm _ _ _
-
-@[deprecated "Use `simp`." (since := "2026-03-02")]
-theorem equiv_equivWithAbs_symm_apply {v w : AbsoluteValue R S} {x : WithAbs w} :
-    equiv v ((congr v w (.refl R)).symm x) = equiv w x := by simp
-
-@[deprecated "Use `simp`." (since := "2026-03-02")]
-theorem equivWithAbs_equiv_symm_apply {v w : AbsoluteValue R S} {x : R} :
-    congr v w (.refl R) ((equiv v).symm x) = (equiv w).symm x := by simp
-
-@[deprecated "Use `simp`." (since := "2026-03-02")]
-theorem equivWithAbs_symm_equiv_symm_apply {v w : AbsoluteValue R S} {x : R} :
-    (congr v w (.refl R)).symm ((equiv w).symm x) = (equiv v).symm x := by simp
-
 end Semiring
 
 section CommSemiring
@@ -180,9 +156,6 @@ noncomputable instance normedRing (v : AbsoluteValue R ℝ) : NormedRing (WithAb
 
 lemma norm_eq_apply_ofAbs (v : AbsoluteValue R ℝ) (x : WithAbs v) : ‖x‖ = v x.ofAbs := rfl
 lemma norm_toAbs_eq (v : AbsoluteValue R ℝ) (x : R) : ‖toAbs v x‖ = v x := rfl
-
-@[deprecated (since := "2026-03-02")] alias norm_eq_abv := norm_eq_apply_ofAbs
-@[deprecated (since := "2026-03-02")] alias norm_eq_abv' := norm_toAbs_eq
 
 variable (v : AbsoluteValue R S)
 
@@ -239,12 +212,8 @@ instance {P : Type*} [SMul P R] [SMul P T] [SMul R T]
 instance moduleLeft [AddCommMonoid T] [Module R T] : Module (WithAbs v) T :=
   fast_instance% .compHom T (equiv v).toRingHom
 
-@[deprecated (since := "2026-03-02")] alias instModule_left := moduleLeft
-
 instance [Semiring T] [Module T R] : Module T (WithAbs v) :=
   fast_instance% (equiv v).toAddEquiv.module T
-
-@[deprecated (since := "2026-03-02")] alias instModule_right := instModule
 
 variable [Semiring T] [Module R T] (v : AbsoluteValue T S)
 
@@ -288,9 +257,6 @@ theorem algebraMap_right_injective (v : AbsoluteValue T S)
 
 theorem ofAbs_algebraMap (v : AbsoluteValue R S) (w : AbsoluteValue T S) (x : WithAbs v) :
     (algebraMap (WithAbs v) (WithAbs w) x).ofAbs = algebraMap R T x.ofAbs := rfl
-
-@[deprecated (since := "2026-03-02")] alias instAlgebra_left := algebraLeft
-@[deprecated (since := "2026-03-02")] alias instAlgebra_right := instAlgebra
 
 variable (R) in
 /-- The canonical algebra isomorphism from an `R`-algebra `R'` with an absolute value `v`

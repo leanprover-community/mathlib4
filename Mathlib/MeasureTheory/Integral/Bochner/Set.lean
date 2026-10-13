@@ -82,8 +82,6 @@ theorem setIntegral_union₀ (hst : AEDisjoint μ s t) (ht : NullMeasurableSet t
     ∫ x in s ∪ t, f x ∂μ = ∫ x in s, f x ∂μ + ∫ x in t, f x ∂μ := by
   simp only [Measure.restrict_union₀ hst ht, integral_add_measure hfs hft]
 
-@[deprecated (since := "2026-03-04")] alias integral_union_ae := setIntegral_union₀
-
 theorem setIntegral_union (hst : Disjoint s t) (ht : MeasurableSet t) (hfs : IntegrableOn f s μ)
     (hft : IntegrableOn f t μ) : ∫ x in s ∪ t, f x ∂μ = ∫ x in s, f x ∂μ + ∫ x in t, f x ∂μ :=
   setIntegral_union₀ hst.aedisjoint ht.nullMeasurableSet hfs hft
@@ -100,8 +98,6 @@ theorem setIntegral_sdiff (ht : MeasurableSet t) (hfs : IntegrableOn f s μ) (ht
   setIntegral_sdiff₀ ht.nullMeasurableSet hfs hts
 
 @[deprecated (since := "2026-06-03")] alias setIntegral_diff := setIntegral_sdiff
-
-@[deprecated (since := "2026-03-04")] alias integral_diff := setIntegral_sdiff
 
 theorem integral_inter_add_sdiff₀ (ht : NullMeasurableSet t μ) (hfs : IntegrableOn f s μ) :
     ∫ x in s ∩ t, f x ∂μ + ∫ x in s \ t, f x ∂μ = ∫ x in s, f x ∂μ := by
@@ -167,26 +163,24 @@ theorem setIntegral_compl (hs : MeasurableSet s) (hfi : Integrable f μ) :
     ∫ x in sᶜ, f x ∂μ = ∫ x, f x ∂μ - ∫ x in s, f x ∂μ :=
   setIntegral_compl₀ hs.nullMeasurableSet hfi
 
-/-- For a function `f` and a measurable set `s`, the integral of `indicator s f`
-over the whole space is equal to `∫ x in s, f x ∂μ` defined as `∫ x, f x ∂(μ.restrict s)`. -/
-theorem integral_indicator (hs : MeasurableSet s) :
+theorem integral_indicator₀ (hs : NullMeasurableSet s μ) :
     ∫ x, indicator s f x ∂μ = ∫ x in s, f x ∂μ := by
   by_cases hfi : IntegrableOn f s μ; swap
   · rw [integral_undef hfi, integral_undef]
-    rwa [integrable_indicator_iff hs]
+    rwa [integrable_indicator_iff₀ hs]
   calc
     ∫ x, indicator s f x ∂μ = ∫ x in s, indicator s f x ∂μ + ∫ x in sᶜ, indicator s f x ∂μ :=
-      (integral_add_compl hs (hfi.integrable_indicator hs)).symm
+      (integral_add_compl₀ hs (hfi.integrable_indicator₀ hs)).symm
     _ = ∫ x in s, f x ∂μ + ∫ x in sᶜ, 0 ∂μ :=
-      (congr_arg₂ (· + ·) (integral_congr_ae (indicator_ae_eq_restrict hs))
-        (integral_congr_ae (indicator_ae_eq_restrict_compl hs)))
+      congr_arg₂ (· + ·) (integral_congr_ae (indicator_ae_eq_restrict hs))
+        (integral_congr_ae (indicator_ae_eq_restrict_compl hs))
     _ = ∫ x in s, f x ∂μ := by simp
 
-theorem integral_indicator₀ (hs : NullMeasurableSet s μ) :
-    ∫ x, indicator s f x ∂μ = ∫ x in s, f x ∂μ := by
-  rw [← integral_congr_ae (indicator_ae_eq_of_ae_eq_set hs.toMeasurable_ae_eq),
-    integral_indicator (measurableSet_toMeasurable _ _),
-    Measure.restrict_congr_set hs.toMeasurable_ae_eq]
+/-- For a function `f` and a measurable set `s`, the integral of `indicator s f`
+over the whole space is equal to `∫ x in s, f x ∂μ` defined as `∫ x, f x ∂(μ.restrict s)`. -/
+theorem integral_indicator (hs : MeasurableSet s) :
+    ∫ x, indicator s f x ∂μ = ∫ x in s, f x ∂μ :=
+  integral_indicator₀ hs.nullMeasurableSet
 
 lemma integral_integral_indicator {mY : MeasurableSpace Y} {ν : Measure Y} (f : X → Y → E)
     {s : Set X} (hs : MeasurableSet s) :
@@ -306,7 +300,7 @@ theorem tendsto_setIntegral_of_antitone
   rcases hfi with ⟨i₀, hi₀⟩
   suffices Tendsto (∫ x in s i₀, f x ∂μ - ∫ x in s i₀ \ s ·, f x ∂μ) atTop
       (𝓝 (∫ x in s i₀, f x ∂μ - ∫ x in ⋃ i, s i₀ \ s i, f x ∂μ)) by
-    convert! this.congr' <| (eventually_ge_atTop i₀).mono fun i hi ↦ ?_
+    convert this.congr' <| (eventually_ge_atTop i₀).mono fun i hi ↦ ?_
     · rw [← sdiff_iInter, setIntegral_sdiff _ hi₀ (iInter_subset _ _), sub_sub_cancel]
       exact .iInter_of_antitone h_anti hsm
     · rw [setIntegral_sdiff (hsm i) hi₀ (h_anti hi), sub_sub_cancel]

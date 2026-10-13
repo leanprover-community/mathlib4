@@ -5,9 +5,10 @@ Authors: Moritz Firsching, Ashvni Narayanan, Michael Stoll
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Associated
 public import Mathlib.Data.ZMod.Basic
 public import Mathlib.RingTheory.Coprime.Lemmas
+
+import Mathlib.Algebra.BigOperators.Associated
 
 /-!
 # Lemmas about units in `ZMod`.
@@ -30,7 +31,7 @@ lemma unitsMap_comp {d : ℕ} (hm : n ∣ m) (hd : m ∣ d) :
     (unitsMap hm).comp (unitsMap hd) = unitsMap (dvd_trans hm hd) := by
   simp only [unitsMap_def]
   rw [← Units.map_comp]
-  exact congr_arg Units.map <| congr_arg RingHom.toMonoidHom <| castHom_comp hm hd
+  congrm Units.map (RingHom.toMonoidHom $(castHom_comp hm hd))
 
 @[simp]
 lemma unitsMap_self (n : ℕ) : unitsMap (dvd_refl n) = MonoidHom.id _ := by

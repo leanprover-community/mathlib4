@@ -32,6 +32,8 @@ instance : NNNorm ℝ≥0 where
 
 @[simp] lemma nnnorm_eq_self (x : ℝ≥0) : ‖x‖₊ = x := rfl
 
+@[simp] lemma enorm_eq_coe (x : ℝ≥0) : ‖x‖ₑ = x := rfl
+
 end NNReal
 
 instance : ENorm ℝ≥0∞ where

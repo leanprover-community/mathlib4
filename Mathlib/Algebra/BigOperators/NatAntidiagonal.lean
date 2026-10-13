@@ -5,8 +5,8 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.Data.Finset.NatAntidiagonal
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Data.Finset.NatAntidiagonal
 
 /-!
 # Big operators for `NatAntidiagonal`

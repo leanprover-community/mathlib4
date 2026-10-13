@@ -169,7 +169,7 @@ def toPreimages : J ⥤ Type v where
     rw [mem_iInter] at h ⊢
     intro f
     rw [← mem_preimage, preimage_preimage, mem_preimage]
-    convert! h (g ≫ f); rw [F.map_comp]; rfl)
+    convert h (g ≫ f); rw [F.map_comp]; rfl)
 
 instance toPreimages_finite [∀ j, Finite (F.obj j)] : ∀ j, Finite ((F.toPreimages s).obj j) :=
   fun _ => Subtype.finite
@@ -279,7 +279,7 @@ theorem thin_diagram_of_surjective
   apply ConcreteCategory.ext
   have := congrArg F.map hφ
   simp only [map_comp, ConcreteCategory.ext_iff, DFunLike.ext_iff, comp_apply, ← funext_iff] at this
-  simpa using (Fsur φ).injective_comp_right <| this
+  simpa using (Fsur φ).injective_comp_right this
 
 theorem toPreimages_nonempty_of_surjective [hFn : ∀ j : J, Nonempty (F.obj j)]
     (Fsur : ∀ ⦃i j : J⦄ (f : i ⟶ j), Function.Surjective (F.map f)) (hs : s.Nonempty) (j) :
@@ -315,10 +315,10 @@ theorem eval_section_surjective_of_surjective (i : J) :
   have := F.toPreimages_nonempty_of_surjective s Fsur (singleton_nonempty x)
   obtain ⟨sec, h⟩ := nonempty_sections_of_finite_cofiltered_system (F.toPreimages s)
   refine ⟨⟨fun j => (sec j).val, fun jk => by simpa [Subtype.ext_iff] using! h jk⟩, ?_⟩
-  · have := (sec i).prop
-    simp only [mem_iInter, mem_preimage] at this
-    have := this (𝟙 i)
-    rwa [map_id, id_apply] at this
+  have := (sec i).prop
+  simp only [mem_iInter, mem_preimage] at this
+  have := this (𝟙 i)
+  rwa [map_id, id_apply] at this
 
 theorem eventually_injective [Nonempty J] [Finite F.sections] :
     ∃ j, ∀ (i) (f : i ⟶ j), Function.Injective (F.map f) := by

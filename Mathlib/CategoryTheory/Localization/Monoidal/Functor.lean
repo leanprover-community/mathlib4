@@ -19,8 +19,6 @@ This file proves that, given a monoidal localization functor `L : C ⥤ D`, and 
 then `F` is monoidal. See `CategoryTheory.Localization.Monoidal.functorMonoidalOfComp`.
 -/
 
-set_option backward.defeqAttrib.useBackward true
-
 @[expose] public section
 
 universe u
@@ -83,6 +81,7 @@ lemma curriedTensorPreIsoPost_hom_app_app' {X₁ X₂ : C} {Y₁ Y₂ : D}
     tensorHom_comp_tensorHom, Iso.inv_hom_id, Iso.inv_hom_id, tensorHom_id, id_whiskerRight,
     Category.comp_id]
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 Monoidal structure on `F`, given that `F` lifts along `L` to a monoidal functor `G`,
 where `L` is a monoidal localization functor.

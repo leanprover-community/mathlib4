@@ -5,9 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Topology.Sheaves.Presheaf
-public import Mathlib.CategoryTheory.Sites.Sheaf
 public import Mathlib.CategoryTheory.Sites.Spaces
+public import Mathlib.Topology.Sheaves.Presheaf
 
 /-!
 # Sheaves

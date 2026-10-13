@@ -6,8 +6,9 @@ Authors: Dion Leijnse
 module
 
 public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
-public import Mathlib.RingTheory.Flat.Basic
 public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
+
+import Mathlib.RingTheory.Flat.Basic
 
 /-!
 # Geometrically reduced algebras

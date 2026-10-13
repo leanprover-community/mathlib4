@@ -41,7 +41,7 @@ def commaMapEquivalenceFunctor [IsIso β] (X : Comma L' R') :
         map₂_obj_hom, mk_hom_eq_self, Category.id_comp, Category.assoc, NatIso.isIso_inv_app,
         Functor.comp_obj, Comma.map_obj_right, Comma.map_obj_left, Comma.map_obj_hom,
         IsIso.hom_inv_id, Category.comp_id] using
-        congrFun (congrArg CategoryStruct.comp Y.hom.w) (inv (β.app Y.right.right) :))⟩
+        congr(CategoryStruct.comp $(Y.hom.w) ((inv (β.app Y.right.right) :))))⟩
   map {Y Z} f := ⟨homMk f.right.left (congrArg CommaMorphism.left (StructuredArrow.w f)),
     homMk f.right.right (congrArg CommaMorphism.right (StructuredArrow.w f)),
     by simp only [map₂_obj_right, mk_right, hom_eq_iff, comp_right,

@@ -343,7 +343,6 @@ noncomputable def ExtraDegeneracy.s (n : ℕ) :
     fun i => by
       cases i using Fin.cases <;> simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem ExtraDegeneracy.s_comp_π_0 (n : ℕ) :
     dsimp% ExtraDegeneracy.s f S n ≫ WidePullback.π _ 0 =
@@ -351,7 +350,6 @@ theorem ExtraDegeneracy.s_comp_π_0 (n : ℕ) :
         (arrows := fun _ ↦ f.hom) ≫ S.section_ := by
   simp [ExtraDegeneracy.s]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem ExtraDegeneracy.s_comp_π_succ (n : ℕ) (i : Fin (n + 1)) :
     dsimp% ExtraDegeneracy.s f S n ≫ WidePullback.π _ i.succ =

@@ -5,7 +5,6 @@ Authors: Michael Jendrusch, Kim Morrison, Bhavik Mehta, Jakob von Raumer
 -/
 module
 
-public import Mathlib.CategoryTheory.EqToHom
 public import Mathlib.CategoryTheory.Functor.Trifunctor
 public import Mathlib.CategoryTheory.Products.Basic
 
@@ -510,13 +509,13 @@ theorem dite_tensor {P : Prop} [Decidable P] {W X Y Z : C} (f : W ⟶ X) (g : P 
 
 @[simp]
 theorem whiskerLeft_eqToHom (X : C) {Y Z : C} (f : Y = Z) :
-    X ◁ eqToHom f = eqToHom (congr_arg₂ tensorObj rfl f) := by
+    X ◁ eqToHom f = eqToHom congr(tensorObj _ $f) := by
   cases f
   simp only [whiskerLeft_id, eqToHom_refl]
 
 @[simp]
 theorem eqToHom_whiskerRight {X Y : C} (f : X = Y) (Z : C) :
-    eqToHom f ▷ Z = eqToHom (congr_arg₂ tensorObj f rfl) := by
+    eqToHom f ▷ Z = eqToHom congr(tensorObj $f _) := by
   cases f
   simp only [id_whiskerRight, eqToHom_refl]
 
@@ -903,7 +902,7 @@ abbrev tensoringLeft : C ⥤ C ⥤ C := curriedTensor C
 instance : (tensoringLeft C).Faithful where
   map_injective {X} {Y} f g h := by
     injections h
-    replace h := congr_fun h (𝟙_ C)
+    replace h := congr($h (𝟙_ C))
     simpa using h
 
 /-- Tensoring on the right, as a functor from `C` into endofunctors of `C`.
@@ -916,7 +915,7 @@ set_option backward.defeqAttrib.useBackward true in
 instance : (tensoringRight C).Faithful where
   map_injective {X} {Y} f g h := by
     injections h
-    replace h := congr_fun h (𝟙_ C)
+    replace h := congr($h (𝟙_ C))
     simpa using h
 
 variable {C}

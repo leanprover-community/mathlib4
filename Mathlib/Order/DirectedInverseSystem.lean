@@ -300,7 +300,7 @@ then `piLT X i` is the limit of all `piLT X j` for `j < i`. -/
     ext j l
     set k := hi.mid (l.2.trans j.2)
     obtain le | le := le_total j ⟨k, k.2.2⟩
-    exacts [congr_fun (f.2 le) l, (congr_fun (f.2 le) ⟨l, _⟩).symm]
+    exacts [congr($(f.2 le) l), congr($(f.2 le) ⟨l, _⟩).symm]
 
 theorem piLTLim_symm_apply {f} (k : Iio i) {l : Iio i} (hl : l.1 < k.1) :
     (piLTLim (X := X) hi).symm f l = f.1 k ⟨l, hl⟩ := by

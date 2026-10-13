@@ -63,12 +63,8 @@ theorem Squarefree.ne_zero [MonoidWithZero R] [Nontrivial R] {m : R} (hm : Squar
   exact not_squarefree_zero hm
 
 @[simp]
-theorem Irreducible.squarefree [CommMonoid R] {x : R} (h : Irreducible x) : Squarefree x := by
-  rintro y ⟨z, hz⟩
-  rw [mul_assoc] at hz
-  rcases h.isUnit_or_isUnit hz with (hu | hu)
-  · exact hu
-  · apply isUnit_of_mul_isUnit_left hu
+theorem Irreducible.squarefree [CommMonoid R] {x : R} (h : Irreducible x) : Squarefree x :=
+  fun _ ↦ h.isUnit_of_mul_self_dvd
 
 @[simp]
 theorem Prime.squarefree [CommMonoidWithZero R] [IsCancelMulZero R] {x : R} (h : Prime x) :

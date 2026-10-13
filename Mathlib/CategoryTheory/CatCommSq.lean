@@ -21,8 +21,6 @@ Future work: using this notion in the development of the localization of categor
 
 -/
 
-set_option backward.defeqAttrib.useBackward true
-
 @[expose] public section
 
 namespace CategoryTheory

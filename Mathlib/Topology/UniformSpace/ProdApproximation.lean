@@ -6,9 +6,10 @@ Authors: David Loeffler
 module
 
 public import Mathlib.LinearAlgebra.TensorProduct.Basic
-public import Mathlib.Topology.Algebra.Indicator
 public import Mathlib.Topology.ContinuousMap.Algebra
-public import Mathlib.Topology.Separation.DisjointCover
+
+import Mathlib.Topology.Algebra.Indicator
+import Mathlib.Topology.Separation.DisjointCover
 
 /-!
 # Uniform approximation by products

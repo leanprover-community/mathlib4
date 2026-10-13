@@ -406,7 +406,7 @@ theorem Iso.homCongr_eq_arrowCongr (i : X ≅ X') (j : Y ≅ Y') (f : X ⟶ Y) :
   rfl
 
 theorem Iso.conj_eq_conj (i : X ≅ X') (f : End X) :
-    Iso.conj i f = ⟨LinearEquiv.conj i.toLinearEquivₛ f.hom⟩ :=
+    Iso.conj i f = .of ⟨LinearEquiv.conj i.toLinearEquivₛ f.asHom.hom⟩ :=
   rfl
 
 end

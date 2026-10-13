@@ -5,8 +5,9 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.LinearAlgebra.LinearIndependent.Basic
 public import Mathlib.Topology.Category.Profinite.Nobeling.Basic
+
+import Mathlib.LinearAlgebra.LinearIndependent.Basic
 
 /-!
 # The zero and limit cases in the induction for Nöbeling's theorem
@@ -94,8 +95,8 @@ instance : Unique { l // Products.isGood ({fun _ ↦ false} : Set (I → Bool)) 
     rw [Products.span_nil_eq_top]
     exact Submodule.mem_top
 
-instance (α : Type*) [TopologicalSpace α] : IsAddTorsionFree (LocallyConstant α ℤ) :=
-  LocallyConstant.coe_injective.isAddTorsionFree LocallyConstant.coeFnAddMonoidHom
+instance (α : Type*) [TopologicalSpace α] : HasUniqueDiv (LocallyConstant α ℤ) :=
+  LocallyConstant.coe_injective.hasUniqueDiv LocallyConstant.coeFnAddMonoidHom
 
 theorem GoodProducts.linearIndependentSingleton {I} [LinearOrder I] :
     LinearIndependent ℤ (eval ({fun _ ↦ false} : Set (I → Bool))) :=

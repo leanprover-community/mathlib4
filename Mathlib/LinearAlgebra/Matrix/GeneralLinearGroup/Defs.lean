@@ -5,10 +5,9 @@ Authors: Chris Birkbeck
 -/
 module
 
+public import Mathlib.Algebra.Ring.Subring.Units
 public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 public import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
-public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
-public import Mathlib.Algebra.Ring.Subring.Units
 
 /-!
 # The General Linear group $GL(n, R)$
@@ -185,7 +184,7 @@ variable {S T : Type*} [CommRing S] [CommRing T]
 
 /-- A ring homomorphism ``f : R →+* S`` induces a homomorphism ``GLₙ(f) : GLₙ(R) →* GLₙ(S)``. -/
 @[simps! apply_val]
-def map (f : R →+* S) : GL n R →* GL n S := Units.map <| (RingHom.mapMatrix f).toMonoidHom
+def map (f : R →+* S) : GL n R →* GL n S := Units.map (RingHom.mapMatrix f).toMonoidHom
 
 @[simp]
 theorem map_id : map (RingHom.id R) = MonoidHom.id (GL n R) :=
@@ -413,8 +412,8 @@ variable {n : Type u} [DecidableEq n] [Fintype n]
 /-- `Matrix.SpecialLinearGroup n R` embeds into `GL_pos n R` -/
 def toGLPos : SpecialLinearGroup n R →* GLPos n R where
   toFun A := ⟨(A : GL n R), show 0 < (↑A : Matrix n n R).det from A.prop.symm ▸ zero_lt_one⟩
-  map_one' := Subtype.ext <| Units.ext <| rfl
-  map_mul' _ _ := Subtype.ext <| Units.ext <| rfl
+  map_one' := Subtype.ext <| Units.ext rfl
+  map_mul' _ _ := Subtype.ext <| Units.ext rfl
 
 instance : Coe (SpecialLinearGroup n R) (GLPos n R) :=
   ⟨toGLPos⟩

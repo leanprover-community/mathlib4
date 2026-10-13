@@ -7,14 +7,12 @@ module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Algebra.Group.Subgroup.Lattice
+public import Mathlib.Algebra.Order.Archimedean.Defs
 public import Mathlib.Algebra.Order.Hom.Monoid
 public import Mathlib.Data.Finset.Max
-public import Mathlib.Order.Antisymmetrization
-public import Mathlib.Order.Hom.WithTopBot
-public import Mathlib.Order.UpperLower.CompleteLattice
-public import Mathlib.Order.UpperLower.Principal
-public import Mathlib.Algebra.Order.Archimedean.Defs
 public import Mathlib.Data.Rat.Floor
+public import Mathlib.Order.Hom.WithTopBot
+public import Mathlib.Order.UpperLower.Principal
 
 /-!
 # Archimedean classes of a linearly ordered group
@@ -680,7 +678,7 @@ theorem mem_closedBallSubgroup_iff {a : M} {c : MulArchimedeanClass M} :
 variable (M) in
 @[to_additive (attr := simp)]
 theorem ballSubgroup_top : ballSubgroup (M := M) ⊤ = ⊥ := by
-  convert! subgroup_eq_bot M
+  convert subgroup_eq_bot M
   simp
 
 variable (M) in

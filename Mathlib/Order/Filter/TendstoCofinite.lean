@@ -5,8 +5,8 @@ Authors: Riccardo Brasca, Bingyu Xia
 -/
 module
 
-public import Mathlib.Order.Filter.Cofinite
 public import Mathlib.Data.Finsupp.Weight
+public import Mathlib.Order.Filter.Cofinite
 
 /-!
 # Functions tending to the cofinite filter

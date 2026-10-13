@@ -144,7 +144,7 @@ lemma AQB_eq : ∠ s.A s.Q s.B = 2 * π / 3 - s.x := by
   grind
 
 /-- A macro for applying the bounds on `x`, `x_pos` and `x_lt_pi_div_three`. -/
-macro (name := bx) "bx" : tactic => `(tactic| linarith [s.x_pos, s.x_lt_pi_div_three])
+local macro (name := bx) "bx" : tactic => `(tactic| linarith [s.x_pos, s.x_lt_pi_div_three])
 
 /-! ### Trigonometric reduction using the law of sines -/
 

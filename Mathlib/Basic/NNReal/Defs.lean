@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Order.Archimedean.Real.Basic
 public import Mathlib.Algebra.Order.Nonneg.Module
 public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+
 import Mathlib.Tactic.Basify.Attr
 
 /-!
@@ -142,7 +143,7 @@ instance canLift : CanLift ℝ ℝ≥0 toReal fun r => 0 ≤ r :=
   Subtype.ext
 
 theorem ne_iff {x y : ℝ≥0} : (x : ℝ) ≠ (y : ℝ) ↔ x ≠ y :=
-  not_congr <| NNReal.eq_iff.symm
+  not_congr NNReal.eq_iff.symm
 
 protected theorem «forall» {p : ℝ≥0 → Prop} :
     (∀ x : ℝ≥0, p x) ↔ ∀ (x : ℝ) (hx : 0 ≤ x), p (.mk x hx) :=

@@ -5,8 +5,8 @@ Authors: Judith Ludwig, Christian Merten
 -/
 module
 
-public import Mathlib.LinearAlgebra.TensorProduct.Tower
 public import Mathlib.LinearAlgebra.Pi
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 /-!
 

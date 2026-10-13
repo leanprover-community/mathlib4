@@ -139,7 +139,7 @@ lemma isTightMeasureSet_of_forall_basis_tendsto (b : OrthonormalBasis ι 𝕜 E)
     IsTightMeasureSet S := by
   rcases subsingleton_or_nontrivial E with hE | hE
   · simp only [IsTightMeasureSet, cocompact_eq_bot, smallSets_bot]
-    convert! tendsto_pure_nhds (a := ∅) _
+    convert tendsto_pure_nhds (a := ∅) _
     simp
   have h_rank : (0 : ℝ) < Fintype.card ι := by
     simpa [← Module.finrank_eq_card_basis b.toBasis, Module.finrank_pos_iff]

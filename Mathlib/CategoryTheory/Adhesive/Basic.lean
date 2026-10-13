@@ -7,7 +7,8 @@ module
 
 public import Mathlib.CategoryTheory.Extensive
 public import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
-public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+
+import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 
 /-!
 
@@ -80,9 +81,9 @@ lemma IsPushout.IsVanKampen.exists_cube_filling {H : IsPushout f g h i} (H' : H.
   · refine (H' (pullback.fst αX f) l h' i' (pullback.snd αX f) αX αY αZ
       (IsPullback.of_hasPullback αX f) ?_
         hh.toCommSq hi.toCommSq ⟨by simp only [IsPullback.lift_fst, l]⟩).2 ⟨hh, hi⟩
-    · refine IsPullback.of_right' ?_ hi
-      rw [← H.w]
-      exact IsPullback.paste_horiz (IsPullback.of_hasPullback αX f) hh
+    refine IsPullback.of_right' ?_ hi
+    rw [← H.w]
+    exact IsPullback.paste_horiz (IsPullback.of_hasPullback αX f) hh
 
 theorem IsPushout.IsVanKampen.flip {H : IsPushout f g h i} (H' : H.IsVanKampen) :
     H.flip.IsVanKampen := by
@@ -108,8 +109,8 @@ theorem IsPushout.isVanKampen_iff (H : IsPushout f g h i) :
       · refine Cocone.ext (Iso.refl c'.pt) ?_
         rintro (_ | _ | _) <;> dsimp <;>
           simp only [c'.w, Category.id_comp, Category.comp_id]
-    · exact ⟨NatTrans.congr_app eα.symm _⟩
-    · exact ⟨NatTrans.congr_app eα.symm _⟩
+    · exact ⟨congr($(eα.symm).app _)⟩
+    · exact ⟨congr($(eα.symm).app _)⟩
     · exact ⟨by simp⟩
     constructor
     · rintro ⟨h₁, h₂⟩ (_ | _ | _)
@@ -164,9 +165,9 @@ theorem IsPushout.isVanKampen_iff' {H : IsPushout f g h i} :
       obtain ⟨W'', f'', g'', αW', hf', hg', hP⟩ := (H' h' i' αX αY αZ sq_h sq_i).1 ⟨hh, hi⟩
       refine hP.of_iso (IsPullback.isoIsPullback _ _ hf' hf)
         (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp) ?_ (by simp) (by simp)
-      · apply hi.hom_ext
-        · simp [← cs.w, hP.w]
-        · simp [hg.w, hg'.w]
+      apply hi.hom_ext
+      · simp [← cs.w, hP.w]
+      · simp [hg.w, hg'.w]
 
 lemma IsPushout.isVanKampen_isPullback_isPullback_hom_ext
     {H : IsPushout f g h i} (H' : H.IsVanKampen)
@@ -198,7 +199,7 @@ theorem is_coprod_iff_isPushout {X E Y YE : C} (c : BinaryCofan X E) (hc : IsCol
       · refine e₁.trans (Eq.symm ?_); exact h.fac _ _
   · refine fun H => ⟨?_⟩
     fapply Limits.BinaryCofan.isColimitMk
-    · exact fun s => H.isColimit.desc (PushoutCocone.mk s.inr _ <|
+    · exact fun s => H.isColimit.desc (PushoutCocone.mk s.inr _
         (hc.fac (BinaryCofan.mk (f ≫ s.inr) s.inl) ⟨WalkingPair.left⟩).symm)
     · intro s
       rw [Category.assoc]

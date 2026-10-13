@@ -5,7 +5,6 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Combinatorics.Matroid.IndepAxioms
 public import Mathlib.Combinatorics.Matroid.Rank.Cardinal
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
 public import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
@@ -92,7 +91,7 @@ theorem AlgebraicIndependent.isTranscendenceBasis_iff [Nontrivial R]
     use i
     intro w i' h
     specialize p w ((↑) : w → A) i' (fun i => ⟨x i, range_subset_iff.mp h i⟩) (by ext; simp)
-    have q := congr_arg (fun s => ((↑) : w → A) '' s) p.range_eq
+    have q := congr(((↑) : w → A) '' $p.range_eq)
     rw [← image_univ, image_image] at q
     simpa using q
 
@@ -184,7 +183,7 @@ theorem IsTranscendenceBasis.polynomial [Nonempty ι] [Subsingleton ι] :
   have := (nonempty_unique ι).some
   refine (isTranscendenceBasis_equiv (Equiv.equivPUnit.{_, 1} _).symm).mp <|
     (MvPolynomial.uniqueAlgEquiv R PUnit).symm.isTranscendenceBasis_iff.mp ?_
-  convert! IsTranscendenceBasis.mvPolynomial PUnit R
+  convert IsTranscendenceBasis.mvPolynomial PUnit R
   ext; simp
 
 variable {ι R}

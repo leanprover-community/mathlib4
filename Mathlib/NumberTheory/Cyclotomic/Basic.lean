@@ -5,10 +5,8 @@ Authors: Riccardo Brasca
 -/
 module
 
-public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
-public import Mathlib.NumberTheory.NumberField.Basic
-public import Mathlib.FieldTheory.SeparableClosure
 public import Mathlib.FieldTheory.Galois.Abelian
+public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 
 /-!
 # Cyclotomic extensions
@@ -163,9 +161,9 @@ theorem subsingleton_iff [Subsingleton B] :
   · refine subset_pair_iff.mpr fun s hs ↦ or_iff_not_imp_left.mpr fun hs' ↦ ?_
     obtain ⟨ζ, hζ⟩ := hprim hs hs'
     exact mod_cast hζ.unique (IsPrimitiveRoot.of_subsingleton ζ)
-  · refine ⟨fun {s} hs hs' ↦ ?_, fun x ↦ by convert! (mem_top (R := A) : x ∈ ⊤)⟩
-    · have : s = 1 := (subset_pair_iff.mp hS s hs).resolve_left hs'
-      exact ⟨0, this ▸ IsPrimitiveRoot.of_subsingleton 0⟩
+  · refine ⟨fun {s} hs hs' ↦ ?_, fun x ↦ by convert (mem_top (R := A) : x ∈ ⊤)⟩
+    have : s = 1 := (subset_pair_iff.mp hS s hs).resolve_left hs'
+    exact ⟨0, this ▸ IsPrimitiveRoot.of_subsingleton 0⟩
 
 /-- If `B` is a cyclotomic extension of `A` given by roots of unity of order in `S ∪ T`, then `B`
 is a cyclotomic extension of `adjoin A { b : B | ∃ a : ℕ, a ∈ S ∧ a ≠ 0 ∧ b ^ a = 1 }` given by
@@ -195,7 +193,7 @@ theorem union_left [h : IsCyclotomicExtension T A B] (hS : S ⊆ T) :
   · obtain ⟨b, hb⟩ := ((isCyclotomicExtension_iff _ _ _).1 h).1 (hS hn) hn'
     refine ⟨⟨b, subset_adjoin ⟨n, hn, hn', hb.pow_eq_one⟩⟩, ?_⟩
     rwa [← IsPrimitiveRoot.coe_submonoidClass_iff, Subtype.coe_mk]
-  · convert! mem_top (R := A) (x := b)
+  · convert mem_top (R := A) (x := b)
     rw [← adjoin_adjoin_coe_preimage, preimage_ofPred_eq]
     norm_cast
 
@@ -275,7 +273,7 @@ variable {A B}
 /-- If `(⊥ : SubAlgebra A B) = ⊤`, then `IsCyclotomicExtension {1} A B`. -/
 theorem singleton_one_of_bot_eq_top (h : (⊥ : Subalgebra A B) = ⊤) :
     IsCyclotomicExtension {1} A B := by
-  convert!
+  convert
     eq_self_sdiff_zero _ A B ▸ (iff_union_singleton_one _ A _).1 (singleton_zero_of_bot_eq_top h)
   simp
 
@@ -579,7 +577,7 @@ theorem isGalois [IsCyclotomicExtension S K L] : IsGalois K L := by
     use n, hn, h1
     rw [← map_pow, ← map_one f, h2]
   | algebraMap x =>
-    convert! IntermediateField.algebraMap_mem _ x
+    convert IntermediateField.algebraMap_mem _ x
     exact AlgHom.commutes _ x
   | add x y hx hy ihx ihy =>
     rw [map_add]
@@ -879,7 +877,7 @@ theorem isCyclotomicExtension_iff_eq_adjoin (C : Subalgebra A B)
     (hS : ∀ n ∈ S, n ≠ 0 → ∃ r : B, IsPrimitiveRoot r n) :
     IsCyclotomicExtension S A C ↔ C = Algebra.adjoin A {x : B | ∃ n ∈ S, n ≠ 0 ∧ x ^ n = 1} := by
   refine ⟨fun h ↦ ?_, fun h ↦ h ▸ isCyclotomicExtension_adjoin_of_exists_isPrimitiveRoot S A B hS⟩
-  have := congr_arg (Subalgebra.map C.val) ((IsCyclotomicExtension.iff_adjoin_eq_top _ _ _).mp h).2
+  have := congr(Subalgebra.map C.val $(((IsCyclotomicExtension.iff_adjoin_eq_top ..).mp h).2))
   rw [← Subalgebra.range_val C, ← Algebra.map_top, ← this, AlgHom.map_adjoin]
   congr; ext
   simp only [Subalgebra.coe_val, ne_eq, ← Subalgebra.coe_eq_one, SubmonoidClass.coe_pow,

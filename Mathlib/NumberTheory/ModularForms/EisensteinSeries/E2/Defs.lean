@@ -8,9 +8,10 @@ module
 
 public import Mathlib.Analysis.CStarAlgebra.Classes
 public import Mathlib.NumberTheory.LSeries.RiemannZeta
-public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
 public import Mathlib.Topology.Algebra.InfiniteSum.ConditionalInt
+
+import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
 
 /-!
 # Eisenstein Series E2

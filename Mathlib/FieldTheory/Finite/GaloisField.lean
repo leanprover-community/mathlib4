@@ -239,7 +239,7 @@ theorem unitsMap_norm_surjective : Function.Surjective (Units.map <| Algebra.nor
     simp_rw [Nat.card_units]
     classical
     have := Fintype.ofFinite K'ˣ
-    convert!
+    convert
       IsCyclic.card_pow_eq_one_le (α := K'ˣ) <|
         Nat.div_pos
             (Nat.sub_le_sub_right (Nat.card_le_card_of_injective _ (algebraMap K K').injective)
@@ -252,7 +252,7 @@ theorem norm_surjective : Function.Surjective (Algebra.norm K (S := K')) := fun 
   obtain rfl | ne := eq_or_ne k 0
   · exact ⟨0, Algebra.norm_zero ..⟩
   have ⟨x, eq⟩ := unitsMap_norm_surjective K K' (Units.mk0 k ne)
-  exact ⟨x, congr_arg (·.1) eq⟩
+  exact ⟨x, congr($(eq).1)⟩
 
 end norm
 

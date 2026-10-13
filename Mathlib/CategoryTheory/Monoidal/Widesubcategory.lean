@@ -7,9 +7,9 @@ Authors: Gaëtan Serré
 module
 
 public import Mathlib.CategoryTheory.Localization.Monoidal.Basic
-public import Mathlib.CategoryTheory.Widesubcategory
 public import Mathlib.CategoryTheory.Monoidal.Mon
 public import Mathlib.CategoryTheory.Monoidal.Transport
+public import Mathlib.CategoryTheory.Widesubcategory
 
 /-!
 # Monoidal structures on wide subcategories

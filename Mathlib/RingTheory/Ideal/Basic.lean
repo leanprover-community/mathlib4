@@ -10,7 +10,6 @@ public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Data.Nat.Choose.Sum
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 public import Mathlib.RingTheory.Ideal.Maximal
-public import Mathlib.Tactic.FinCases
 
 /-!
 

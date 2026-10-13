@@ -5,9 +5,9 @@ Authors: Florent Schaffhauser, Artie Khovanov
 -/
 module
 
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Ring.Subsemiring.Defs
 public import Mathlib.RingTheory.Ideal.Prime
-public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Ring orderings

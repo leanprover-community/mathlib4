@@ -5,10 +5,10 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Ring.InjSurj
-public import Mathlib.Data.Finsupp.SMulWithZero
 public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Algebra.Ring.InjSurj
 public import Mathlib.Algebra.Ring.Pi
+public import Mathlib.Data.Finsupp.SMulWithZero
 
 /-!
 # The pointwise product on `Finsupp`.

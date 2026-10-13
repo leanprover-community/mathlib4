@@ -5,9 +5,10 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
-public import Lean.Meta.DiscrTree
 public import Lean.Meta.LazyDiscrTree
+public import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
+
+import Lean.Meta.DiscrTree
 
 /-!
 # Encoding an `Expr` as a sequence of `Key`s

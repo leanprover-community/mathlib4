@@ -5,8 +5,8 @@ Authors: Joseph Myers, Yaël Dillies
 -/
 module
 
-public import Mathlib.Tactic.MkIffOfInductiveProp
-public import Batteries.Data.List.Lemmas
+import Batteries.Data.List.Lemmas
+import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
 # Triplewise predicates on list.

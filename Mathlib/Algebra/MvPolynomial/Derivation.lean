@@ -119,7 +119,7 @@ def mkDerivation (f : σ → A) : Derivation R (MvPolynomial σ R) A where
       rw [Finsupp.sum_single_index, Finsupp.sum_single_index] <;> [skip; simp; simp]
       rw [tsub_self, add_tsub_cancel_right, Nat.cast_one, ← C_apply, C_1, one_smul, add_comm,
         Finsupp.smul_sum]
-      refine congr_arg₂ (· + ·) rfl (Finset.sum_congr rfl fun j hj => ?_); dsimp only
+      congrm _ + $(Finset.sum_congr rfl fun j hj => ?_); dsimp only
       rw [smul_smul, monomial_mul_monomial, one_mul, add_comm s, add_tsub_assoc_of_le]
       rwa [Finsupp.single_le_iff, Nat.succ_le_iff, pos_iff_ne_zero, ← Finsupp.mem_support_iff]
 
@@ -134,7 +134,7 @@ theorem mkDerivation_monomial (f : σ → A) (s : σ →₀ ℕ) (r : R) :
 
 /-- `MvPolynomial.mkDerivation` as a linear equivalence. -/
 def mkDerivationEquiv : (σ → A) ≃ₗ[R] Derivation R (MvPolynomial σ R) A :=
-  LinearEquiv.symm <|
+  LinearEquiv.symm
     { invFun := mkDerivation R
       toFun := fun D i => D (X i)
       map_add' := fun _ _ => rfl

@@ -6,8 +6,8 @@ Authors: Andrew Yang, Antoine Chambert-Loir
 module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Basic
-public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.Algebra.Ring.Action.Submonoid
+public import Mathlib.RingTheory.Ideal.Maps
 
 /-!
 # More operations on subalgebras
@@ -109,5 +109,10 @@ def FixedPoints.subalgebra : Subalgebra A B' where
 
 instance : SMulCommClass G (FixedPoints.subalgebra A B' G) B' :=
   inferInstanceAs (SMulCommClass G (FixedPoints.subsemiring B' G) B')
+
+variable {A B' G} in
+theorem FixedPoints.mem_subalgebra {x : B'} :
+    x ∈ FixedPoints.subalgebra A B' G ↔ ∀ g : G, g • x = x :=
+  Iff.rfl
 
 end MulSemiringAction

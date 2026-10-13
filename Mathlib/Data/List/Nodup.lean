@@ -5,8 +5,8 @@ Authors: Mario Carneiro, Kenny Lau
 -/
 module
 
-public import Mathlib.Data.List.Forall2
 public import Mathlib.Data.List.Basic
+public import Mathlib.Data.List.Forall2
 
 /-!
 # Lists with no duplicates

@@ -6,11 +6,12 @@ Authors: Chris Birkbeck
 module
 
 public import Mathlib.Algebra.DirectSum.Algebra
-public import Mathlib.Analysis.Calculus.FDeriv.Star
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
 public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 public import Mathlib.NumberTheory.ModularForms.BoundedAtCusp
 public import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
+
+import Mathlib.Analysis.Calculus.FDeriv.Star
 
 /-!
 # Modular forms
@@ -22,6 +23,8 @@ We begin by defining modular forms and cusp forms as extension of `SlashInvarian
 define the space of modular forms, cusp forms and prove that the product of two modular forms is a
 modular form.
 -/
+
+open scoped Finset
 
 @[expose] public noncomputable section
 
@@ -200,7 +203,6 @@ instance add : Add (ModularForm Γ k) where add f g :=
     bdd_at_cusps' hc := by simpa using (f.bdd_at_cusps' hc).add (g.bdd_at_cusps' hc) }
 
 instance : IsAddApply (ModularForm Γ k) ℍ ℂ where
-  add_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-07-10")] alias coe_add := FunLike.coe_add
 
@@ -212,7 +214,6 @@ instance instZero : Zero (ModularForm Γ k) :=
       bdd_at_cusps' hc g hg := by simpa using zero_form_isBoundedAtImInfty } ⟩
 
 instance : IsZeroApply (ModularForm Γ k) ℍ ℂ where
-  zero_apply _ := rfl
 
 @[deprecated (since := "2026-07-10")] alias coe_zero := FunLike.coe_zero
 
@@ -247,7 +248,6 @@ instance instSMulℝ : SMul α (ModularForm Γ k) where
         using (f.bdd_at_cusps' hc g hg).const_smul_left _ }
 
 instance instIsSMulApplyℝ : IsSMulApply α (ModularForm Γ k) ℍ ℂ where
-  smul_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-07-10")] alias coe_smul := FunLike.coe_smul
 
@@ -269,7 +269,6 @@ instance instSMulℂ : SMul α (ModularForm Γ k) where
       exact (f.bdd_at_cusps' hc g hg).const_smul_left (σ g (c • (1 : ℂ))) }
 
 instance instIsSMulApplyℂ : IsSMulApply α (ModularForm Γ k) ℍ ℂ where
-  smul_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-07-10")] alias IsGLPos.coe_smul := FunLike.coe_smul
 
@@ -284,7 +283,6 @@ instance instNeg : Neg (ModularForm Γ k) :=
       bdd_at_cusps' hc g hg := by simpa using! (f.bdd_at_cusps' hc g hg).neg }⟩
 
 instance : IsNegApply (ModularForm Γ k) ℍ ℂ where
-  neg_apply _ _ := rfl
 
 @[deprecated (since := "2026-07-10")] alias coe_neg := FunLike.coe_neg
 
@@ -294,7 +292,6 @@ instance instSub : Sub (ModularForm Γ k) :=
   ⟨fun f g => f + -g⟩
 
 instance : IsSubApply (ModularForm Γ k) ℍ ℂ where
-  sub_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-07-10")] alias coe_sub := FunLike.coe_sub
 
@@ -385,7 +382,6 @@ instance hasAdd : Add (CuspForm Γ k) :=
       zero_at_cusps' A := by simpa using (f.zero_at_cusps' A).add (g.zero_at_cusps' A) }⟩
 
 instance : IsAddApply (CuspForm Γ k) ℍ ℂ where
-  add_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-07-10")] alias coe_add := FunLike.coe_add
 
@@ -397,7 +393,6 @@ instance instZero : Zero (CuspForm Γ k) :=
       zero_at_cusps' hc g hg := by simpa using! Filter.zero_zeroAtFilter _ } ⟩
 
 instance : IsZeroApply (CuspForm Γ k) ℍ ℂ where
-  zero_apply _ := rfl
 
 @[deprecated (since := "2026-07-10")] alias coe_zero := FunLike.coe_zero
 
@@ -420,7 +415,6 @@ instance instSMul : SMul α (CuspForm Γ k) where smul c f :=
       exact (f.zero_at_cusps' hc g hg).smul _ }
 
 instance instSMulApply : IsSMulApply α (CuspForm Γ k) ℍ ℂ where
-  smul_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-07-10")] alias coe_smul := FunLike.coe_smul
 
@@ -443,7 +437,6 @@ instance IsGLPos.instSMul : SMul α (CuspForm Γ k) where smul c f :=
       exact (f.zero_at_cusps' hc g hg).smul _ }
 
 instance IsGLPos.instSMulApply : IsSMulApply α (CuspForm Γ k) ℍ ℂ where
-  smul_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-07-10")] alias IsGLPos.coe_smul := FunLike.coe_smul
 
@@ -458,7 +451,6 @@ instance instNeg : Neg (CuspForm Γ k) :=
       zero_at_cusps' hc g hg := by simpa using! (f.zero_at_cusps' hc g hg).neg }⟩
 
 instance : IsNegApply (CuspForm Γ k) ℍ ℂ where
-  neg_apply _ _ := rfl
 
 @[deprecated (since := "2026-07-10")] alias coe_neg := FunLike.coe_neg
 
@@ -468,7 +460,6 @@ instance instSub : Sub (CuspForm Γ k) :=
   ⟨fun f g => f + -g⟩
 
 instance : IsSubApply (CuspForm Γ k) ℍ ℂ where
-  sub_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-07-10")] alias coe_sub := FunLike.coe_sub
 
@@ -639,8 +630,8 @@ those indexed by `s : Finset ι` with weight `#s * k`. -/
 @[simps! -fullyApplied]
 def prodEqualWeights {ι : Type*} {s : Finset ι} {k : ℤ}
     {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
-    (F : (i : ι) → ModularForm Γ k) : ModularForm Γ (s.card * k) :=
-  prod (s := s) (s.card * k) (by simp) F
+    (F : (i : ι) → ModularForm Γ k) : ModularForm Γ (#s * k) :=
+  prod (s := s) (#s * k) (by simp) F
 
 end GradedRing
 

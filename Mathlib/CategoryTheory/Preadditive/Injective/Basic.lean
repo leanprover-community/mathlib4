@@ -366,6 +366,7 @@ lemma Retract.injective {X Y : C} (h : Retract X Y) [i : Injective Y] : Injectiv
   refine Injective.mk (fun {A B} f e _ ↦ ?_)
   rcases i.factors (f ≫ h.i) e with ⟨g, hg⟩
   use g ≫ h.r
-  simp [Category.assoc', hg]
+  rw [← Category.assoc, hg]
+  simp
 
 end CategoryTheory

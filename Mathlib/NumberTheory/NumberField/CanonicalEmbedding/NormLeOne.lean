@@ -668,9 +668,9 @@ theorem normAtAllPlaces_normLeOne_eq_image :
       pow_le_one_iff_of_nonneg (Real.exp_nonneg _) Module.finrank_pos.ne', Real.exp_le_one_iff,
       ne_eq, pow_eq_zero_iff', Real.exp_ne_zero, false_and, not_false_eq_true, Set.mem_univ_pi]
     refine ⟨fun ⟨h₁, h₂⟩ w ↦ ?_, fun h ↦ ⟨fun w hw ↦ by simpa [hw] using h w, by simpa using h w₀⟩⟩
-    · split_ifs with hw
-      · exact hw ▸ h₂
-      · exact h₁ w hw
+    split_ifs with hw
+    · exact hw ▸ h₂
+    · exact h₁ w hw
   · refine ⟨?_, ?_⟩
     · rintro ⟨a, ⟨ha, _⟩, rfl⟩
       exact (hx fun w ↦ fundamentalCone.normAtPlace_pos_of_mem ha w).elim

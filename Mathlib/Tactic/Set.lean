@@ -5,8 +5,8 @@ Authors: Ian Benway
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.Elab.Tactic.ElabTerm
+public import Mathlib.Init
 
 /-!
 # The `set` tactic

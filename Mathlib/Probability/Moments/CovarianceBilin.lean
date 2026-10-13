@@ -8,8 +8,9 @@ module
 public import Mathlib.Analysis.InnerProductSpace.Positive
 public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
 public import Mathlib.MeasureTheory.SpecificCodomains.WithLp
-public import Mathlib.Probability.Moments.Basic
 public import Mathlib.Probability.Moments.CovarianceBilinDual
+
+import Mathlib.Probability.Moments.Basic
 
 /-!
 # Covariance in Hilbert spaces
@@ -136,7 +137,7 @@ lemma covarianceBilin_map_const_add [CompleteSpace E] [IsProbabilityMeasure μ] 
     rw [covarianceBilin_of_not_memLp, covarianceBilin_of_not_memLp h]
     rw [(measurableEmbedding_addLeft _).memLp_map_measure_iff.not]
     contrapose h
-    convert! (memLp_const (-c)).add h
+    convert (memLp_const (-c)).add h
     ext; simp
 
 lemma covarianceBilin_apply_basisFun {ι Ω : Type*} [Fintype ι] {mΩ : MeasurableSpace Ω}

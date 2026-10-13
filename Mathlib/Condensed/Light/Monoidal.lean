@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
 public import Mathlib.CategoryTheory.Monoidal.Braided.Reflection
+public import Mathlib.CategoryTheory.Sites.CartesianMonoidal
 public import Mathlib.CategoryTheory.Sites.Monoidal
 public import Mathlib.Condensed.Light.Module
-public import Mathlib.CategoryTheory.Sites.CartesianMonoidal
 
 /-!
 

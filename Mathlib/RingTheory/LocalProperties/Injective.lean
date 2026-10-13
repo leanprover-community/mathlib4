@@ -5,11 +5,11 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.Algebra.Module.FinitePresentation
 public import Mathlib.Algebra.Module.Injective
-public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.RingTheory.LocalProperties.Basic
-public import Mathlib.RingTheory.LocalProperties.Exactness
+
+import Mathlib.Algebra.Module.FinitePresentation
+import Mathlib.RingTheory.LocalProperties.Exactness
 
 /-!
 
@@ -127,12 +127,11 @@ theorem Module.injective_of_localization_maximal' [Small.{v} R] [IsNoetherianRin
     { __ := IsLocalizedModule.linearEquiv P.primeCompl (f P)
         (LocalizedModule.mkLinearMap P.primeCompl M)
       map_smul' := ?_ }
-  · intro r m
-    obtain ⟨r, s, rfl⟩ := IsLocalization.exists_mk'_eq P.primeCompl r
-    apply ((Module.End.isUnit_iff _).mp
-      (IsLocalizedModule.map_units (LocalizedModule.mkLinearMap P.primeCompl M) s)).1
-    dsimp
-    simp only [← map_smul, ← smul_assoc, IsLocalization.smul_mk'_self, algebraMap_smul,
-      IsLocalization.map_id_mk']
+  intro r m
+  obtain ⟨r, s, rfl⟩ := IsLocalization.exists_mk'_eq P.primeCompl r
+  apply ((Module.End.isUnit_iff _).mp
+    (IsLocalizedModule.map_units (LocalizedModule.mkLinearMap P.primeCompl M) s)).1
+  dsimp
+  simp [← map_smul, ← smul_assoc]
 
 end

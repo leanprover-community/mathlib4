@@ -5,8 +5,8 @@ Authors: Yuma Mizuno
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 public import Mathlib.CategoryTheory.Bicategory.Kan.IsKan
+public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
 # Existence of Kan extensions and Kan lifts in bicategories

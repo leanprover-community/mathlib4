@@ -5,13 +5,12 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 module
 
+public import Mathlib.Algebra.Module.LocalizedModule.Submodule
 public import Mathlib.GroupTheory.MonoidLocalization.Away
 public import Mathlib.RingTheory.Ideal.IsPrimary
 public import Mathlib.RingTheory.Ideal.Over
 public import Mathlib.RingTheory.Localization.Defs
 public import Mathlib.RingTheory.Spectrum.Prime.Defs
-
-import Mathlib.Algebra.Module.LocalizedModule.Submodule
 
 /-!
 # Ideals in localizations of commutative rings
@@ -51,6 +50,11 @@ This definition is only meant to be used in proving `mem_map_algebraMap_iff`,
 and any proof that needs to refer to the explicit carrier set should use that theorem. -/
 private def map_ideal (I : Ideal R) : Ideal S :=
   Submodule.localized' S M (Algebra.linearMap R S) I
+
+theorem _root_.Ideal.localized'_eq_map (S : Type*) {R : Type*} [CommSemiring R] [CommSemiring S]
+    [Algebra R S] (p : Submonoid R) [IsLocalization p S] (I : Ideal R) :
+    Submodule.localized' S p (Algebra.linearMap R S) I = I.map (algebraMap R S) := by
+  rw [Ideal.map, Ideal.span, Submodule.localized'_eq_span, Algebra.coe_linearMap]
 
 theorem mem_map_algebraMap_iff {I : Ideal R} {z} : z ∈ Ideal.map (algebraMap R S) I ↔
     ∃ x : I × M, z * algebraMap R S x.2 = algebraMap R S x.1 := by
@@ -260,7 +264,7 @@ lemma map_radical (I : Ideal R) :
   obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq M x
   simp only [← IsLocalization.mk'_pow, IsLocalization.mk'_mem_map_algebraMap_iff M] at hn ⊢
   obtain ⟨s, hs, h⟩ := hn
-  refine ⟨s, hs, n + 1, by convert! I.mul_mem_left (s ^ n * x) h; ring⟩
+  refine ⟨s, hs, n + 1, by convert I.mul_mem_left (s ^ n * x) h; ring⟩
 
 theorem ideal_eq_iInf_under_map_away {S : Finset R} (hS : Ideal.span (α := R) S = ⊤) (I : Ideal R) :
     I = ⨅ f ∈ S, (I.map (algebraMap R (Localization.Away f))).under R := by
@@ -312,7 +316,7 @@ theorem surjective_quotientMap_of_maximal_of_localization {I : Ideal S} [I.IsPri
   · have : I = ⊤ := by
       rw [Ideal.eq_top_iff_one]
       rw [Ideal.Quotient.eq_zero_iff_mem, Ideal.mem_comap] at hM
-      convert! I.mul_mem_right (mk' S (1 : R) ⟨m, hm⟩) hM
+      convert I.mul_mem_right (mk' S (1 : R) ⟨m, hm⟩) hM
       rw [← mk'_eq_mul_mk'_one, mk'_self]
     exact ⟨0, eq_comm.1 (by simp [Ideal.Quotient.eq_zero_iff_mem, this])⟩
   · rw [Ideal.Quotient.maximal_ideal_iff_isField_quotient] at hI
@@ -320,7 +324,7 @@ theorem surjective_quotientMap_of_maximal_of_localization {I : Ideal S} [I.IsPri
     obtain ⟨rn, rfl⟩ := Ideal.Quotient.mk_surjective n
     refine ⟨(Ideal.Quotient.mk J) (r * rn), ?_⟩
     -- The rest of the proof is essentially just algebraic manipulations to prove the equality
-    replace hn := congr_arg (Ideal.quotientMap I (algebraMap R S) le_rfl) hn
+    replace hn := congr(Ideal.quotientMap I (algebraMap R S) le_rfl $hn)
     rw [map_one, map_mul] at hn
     rw [Ideal.quotientMap_mk, ← sub_eq_zero, ← map_sub, Ideal.Quotient.eq_zero_iff_mem, ←
       Ideal.Quotient.eq_zero_iff_mem, map_sub, sub_eq_zero, mk'_eq_mul_mk'_one]
@@ -386,7 +390,7 @@ lemma of_surjective {R' S' : Type*} [CommRing R'] [CommRing S'] [Algebra R' S']
     obtain ⟨z, rfl⟩ := hg z
     obtain ⟨⟨r, s⟩, e⟩ := IsLocalization.surj M z
     refine ⟨⟨f r, _, s.1, s.2, rfl⟩, ?_⟩
-    simpa only [map_mul, ← RingHom.comp_apply, H] using DFunLike.congr_arg g e
+    simpa only [map_mul, ← RingHom.comp_apply, H] using congr(g $e)
   exists_of_eq := by
     intro x y e
     obtain ⟨x, rfl⟩ := hf x

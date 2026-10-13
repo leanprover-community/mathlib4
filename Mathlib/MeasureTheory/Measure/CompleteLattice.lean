@@ -97,7 +97,7 @@ theorem sInf_caratheodory (s : Set α) (hs : MeasurableSet s) :
   exact add_le_add (hm <| inter_subset_inter_left _ htu) (hm <| sdiff_subset_sdiff_left htu)
 
 instance : InfSet (Measure α) :=
-  ⟨fun m => (sInf (toOuterMeasure '' m)).toMeasure <| sInf_caratheodory⟩
+  ⟨fun m => (sInf (toOuterMeasure '' m)).toMeasure sInf_caratheodory⟩
 
 theorem sInf_apply (hs : MeasurableSet s) : sInf m s = sInf (toOuterMeasure '' m) s :=
   toMeasure_apply _ _ hs

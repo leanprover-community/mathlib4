@@ -6,7 +6,6 @@ Authors: Anne Baanen, Yury Kudryashov, Joseph Myers, Heather Macbeth, Kim Morris
 module
 
 public import Mathlib.Algebra.Module.Torsion.Free
-public import Mathlib.Tactic.Contrapose
 
 /-!
 # `NoZeroSMulDivisors`
@@ -65,12 +64,18 @@ theorem noZeroSMulDivisors_iff_right_eq_zero_of_smul [Zero R] [Zero M] [SMul R M
   simp_rw [noZeroSMulDivisors_iff, or_iff_not_imp_left]
   exact ⟨fun h r hr m eq ↦ h eq hr, fun h r m eq hr ↦ h r hr m eq⟩
 
-instance IsAddTorsionFree.to_noZeroSMulDivisors_nat [AddMonoid M] [IsAddTorsionFree M] :
+instance HasUniqueDiv.to_noZeroSMulDivisors_nat [AddMonoid M] [HasUniqueDiv M] :
     NoZeroSMulDivisors ℕ M where
   eq_zero_or_eq_zero_of_smul_eq_zero {n x} hx := by
     contrapose! hx; simpa using (nsmul_right_injective hx.1).ne hx.2
 
-instance IsAddTorsionFree.to_noZeroSMulDivisors_int [AddGroup G] [IsAddTorsionFree G] :
+@[deprecated (since := "2026-09-29")] alias IsAddTorsionFree.to_noZeroSMulDivisors_nat :=
+  HasUniqueDiv.to_noZeroSMulDivisors_nat
+
+instance HasUniqueDiv.to_noZeroSMulDivisors_int [AddGroup G] [HasUniqueDiv G] :
     NoZeroSMulDivisors ℤ G where
   eq_zero_or_eq_zero_of_smul_eq_zero {n x} hx := by
     contrapose! hx; simpa using (zsmul_right_injective hx.1).ne hx.2
+
+@[deprecated (since := "2026-09-29")] alias IsAddTorsionFree.to_noZeroSMulDivisors_int :=
+  HasUniqueDiv.to_noZeroSMulDivisors_int

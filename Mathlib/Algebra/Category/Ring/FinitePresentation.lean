@@ -7,10 +7,11 @@ module
 
 public import Mathlib.Algebra.Category.Ring.FilteredColimits
 public import Mathlib.CategoryTheory.Limits.Preserves.Over
-public import Mathlib.CategoryTheory.Limits.Shapes.FiniteMultiequalizer
 public import Mathlib.CategoryTheory.Presentable.Finite
 public import Mathlib.RingTheory.EssentialFiniteness
 public import Mathlib.RingTheory.FinitePresentation
+
+import Mathlib.CategoryTheory.Limits.Shapes.FiniteMultiequalizer
 
 /-!
 

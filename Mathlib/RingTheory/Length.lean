@@ -5,11 +5,10 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Exact.Basic
-public import Mathlib.LinearAlgebra.Basis.VectorSpace
-public import Mathlib.Order.KrullDimension
-public import Mathlib.RingTheory.FiniteLength
 public import Mathlib.LinearAlgebra.Dimension.Free
+public import Mathlib.RingTheory.FiniteLength
+
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
 

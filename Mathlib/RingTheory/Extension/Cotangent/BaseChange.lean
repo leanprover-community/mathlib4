@@ -5,10 +5,11 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.CotangentBaseChange
 public import Mathlib.RingTheory.Extension.Cotangent.Basic
-public import Mathlib.Algebra.FiveLemma
-public import Mathlib.RingTheory.Kaehler.TensorProduct
+public import Mathlib.RingTheory.Ideal.CotangentBaseChange
+
+import Mathlib.Algebra.FiveLemma
+import Mathlib.RingTheory.Kaehler.TensorProduct
 
 /-!
 # Base change for the naive cotangent complex

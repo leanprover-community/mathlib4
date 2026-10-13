@@ -65,6 +65,7 @@ theorem toSignedMeasure_congr {μ ν : Measure α} [IsFiniteMeasure μ] [IsFinit
     (h : μ = ν) : μ.toSignedMeasure = ν.toSignedMeasure := by
   congr
 
+@[simp]
 theorem toSignedMeasure_eq_toSignedMeasure_iff {μ ν : Measure α} [IsFiniteMeasure μ]
     [IsFiniteMeasure ν] : μ.toSignedMeasure = ν.toSignedMeasure ↔ μ = ν := by
   refine ⟨fun h => ?_, fun h => ?_⟩
@@ -542,7 +543,7 @@ def trim {m n : MeasurableSpace α} (v : VectorMeasure α M) (hle : m ≤ n) :
     (fun i hi => by rw [ite_eq_right hi])
     (fun f hf₁ hf₂ => by
       have hf₁' : ∀ k, MeasurableSet[n] (f k) := fun k => hle _ (hf₁ k)
-      convert! v.m_iUnion hf₁' hf₂ using 1
+      convert v.m_iUnion hf₁' hf₂ using 1
       · ext n
         rw [ite_eq_left (hf₁ n)]
       · rw [ite_eq_left (@MeasurableSet.iUnion _ _ m _ _ hf₁)])

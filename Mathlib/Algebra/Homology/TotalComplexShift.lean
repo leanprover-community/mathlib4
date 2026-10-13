@@ -394,6 +394,6 @@ lemma totalShift₁Iso_hom_totalShift₂Iso_hom :
           (((shiftFunctor₁ C x).obj K).totalShift₂Iso y).hom ≫
           (K.totalShift₁Iso x).hom⟦y⟧' ≫
           (shiftFunctorComm (CochainComplex C ℤ) x y).hom.app _) :=
-  congr_arg Iso.hom (totalShift₁Iso_trans_totalShift₂Iso K x y)
+  congr($(totalShift₁Iso_trans_totalShift₂Iso K x y).hom)
 
 end HomologicalComplex₂

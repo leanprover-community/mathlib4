@@ -6,9 +6,8 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.CategoryTheory.Functor.Flat
-public import Mathlib.CategoryTheory.Sites.Continuous
-public import Mathlib.Tactic.ApplyFun
 public import Mathlib.CategoryTheory.Sites.Closed
+public import Mathlib.CategoryTheory.Sites.Continuous
 /-!
 # Cover-preserving functors between sites.
 
@@ -40,8 +39,6 @@ public section
 
 
 universe w v₁ v₂ v₃ u₁ u₂ u₃
-
-noncomputable section
 
 open CategoryTheory Opposite CategoryTheory.Presieve.FamilyOfElements CategoryTheory.Presieve
   CategoryTheory.Limits

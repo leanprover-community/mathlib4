@@ -5,8 +5,9 @@ Authors: Louis (Yiyang) Liu
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
+
+import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 
 /-!
 # Frullani's integral

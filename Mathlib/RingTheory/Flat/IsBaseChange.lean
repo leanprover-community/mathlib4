@@ -5,8 +5,9 @@ Authors: Jingting Wang, Nailin Guan
 -/
 module
 
-public import Mathlib.Algebra.FiveLemma
 public import Mathlib.RingTheory.Flat.Basic
+
+import Mathlib.Algebra.FiveLemma
 
 /-!
 

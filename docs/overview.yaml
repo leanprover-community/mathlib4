@@ -264,7 +264,7 @@ Topology:
     Lipschitz continuity: 'LipschitzWith'
     Hölder continuity: 'HolderWith'
     contraction mapping theorem: 'ContractingWith.exists_fixedPoint'
-    Baire theorem: 'dense_iInter_of_isOpen'
+    Baire theorem: 'BaireSpace.of_completelyPseudoMetrizable'
     Arzela-Ascoli theorem: 'BoundedContinuousFunction.arzela_ascoli'
     Hausdorff distance: 'Metric.hausdorffEDist'
     Gromov-Hausdorff space: 'GromovHausdorff.GHSpace'

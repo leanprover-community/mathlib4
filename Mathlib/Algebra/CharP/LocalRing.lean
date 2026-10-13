@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.IsPrimePow
-public import Mathlib.Data.Nat.Factorization.Basic
 public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
+
+import Mathlib.Data.Nat.Factorization.Basic
 
 /-!
 # Characteristics of local rings

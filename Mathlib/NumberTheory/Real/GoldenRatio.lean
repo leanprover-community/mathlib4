@@ -5,9 +5,7 @@ Authors: Anatole Dedecker, Alexey Soloyev, Junyan Xu, Kamila Szewczyk
 -/
 module
 
-public import Mathlib.Algebra.EuclideanDomain.Basic
 public import Mathlib.Algebra.LinearRecurrence
-public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Data.Int.Fib.Basic
 public import Mathlib.NumberTheory.Real.Irrational
 public import Mathlib.Tactic.NormNum.NatFib
@@ -120,7 +118,7 @@ theorem neg_one_lt_goldenConj : -1 < ψ := by
 theorem goldenRatio_irrational : Irrational φ := by
   have := Nat.Prime.irrational_sqrt (show Nat.Prime 5 by norm_num)
   have := this.ratCast_add 1
-  convert! this.ratCast_mul (show (0.5 : ℚ) ≠ 0 by norm_num)
+  convert this.ratCast_mul (show (0.5 : ℚ) ≠ 0 by norm_num)
   simp
   ring
 
@@ -128,7 +126,7 @@ theorem goldenRatio_irrational : Irrational φ := by
 theorem goldenConj_irrational : Irrational ψ := by
   have := Nat.Prime.irrational_sqrt (show Nat.Prime 5 by norm_num)
   have := this.ratCast_sub 1
-  convert! this.ratCast_mul (show (0.5 : ℚ) ≠ 0 by norm_num)
+  convert this.ratCast_mul (show (0.5 : ℚ) ≠ 0 by norm_num)
   simp
   ring
 

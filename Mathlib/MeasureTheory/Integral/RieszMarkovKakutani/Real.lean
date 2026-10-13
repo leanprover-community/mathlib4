@@ -8,7 +8,8 @@ module
 public import Mathlib.MeasureTheory.Integral.Bochner.Set
 public import Mathlib.MeasureTheory.Integral.CompactlySupported
 public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Basic
-public import Mathlib.Order.Interval.Set.Union
+
+import Mathlib.Order.Interval.Set.Union
 
 /-!
 # Riesz–Markov–Kakutani representation theorem for real-linear functionals
@@ -286,7 +287,7 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
         _ ≤ _ := by
           rw [← ENNReal.toReal_ofReal (div_nonneg (le_of_lt hε'.1) (Nat.cast_nonneg _))]
           apply ENNReal.toReal_le_add (hV n).2.2 (hE' n)
-          · finiteness
+          finiteness
   · -- Use that `μ K ≤ Λ (∑ n, g n)`
     gcongr
     rw [← map_sum Λ g _]
@@ -482,7 +483,7 @@ lemma _root_.MeasureTheory.Measure.exists_innerRegular_eq_of_isCompact
     by infer_instance, ?_, fun g ↦ ?_⟩
   · rw [Measure.map_apply (by fun_prop) hK.measurableSet.compl]
     simp
-  convert! hν' (g.compContinuous ⟨Subtype.val, by fun_prop⟩)
+  convert hν' (g.compContinuous ⟨Subtype.val, by fun_prop⟩)
   · simp only [BoundedContinuousFunction.compContinuous_apply, ContinuousMap.coe_mk]
     rw [← integral_map (φ := Subtype.val) (by fun_prop) (by fun_prop)]
     simp only [map_comap_subtype_coe hK.measurableSet, μ', Measure.restrict_eq_self_of_ae_mem h]

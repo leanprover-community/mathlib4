@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.NeZero
-public import Mathlib.Data.Nat.Cast.Defs
 public import Mathlib.Data.Fin.Rev
+public import Mathlib.Data.Nat.Cast.Defs
 
 /-!
 # Fin is a group

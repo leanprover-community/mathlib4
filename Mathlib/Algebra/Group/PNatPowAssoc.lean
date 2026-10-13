@@ -6,7 +6,6 @@ Authors: Scott Carnahan
 module
 
 public import Mathlib.Data.PNat.Basic
-public import Mathlib.Algebra.Notation.Prod
 
 /-!
 # Typeclasses for power-associative structures

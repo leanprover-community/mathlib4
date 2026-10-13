@@ -5,10 +5,8 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Group.Units.Hom
 public import Mathlib.Data.ZMod.Basic
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-public import Mathlib.RingTheory.Ideal.Maps
 
 /-!
 
@@ -128,7 +126,7 @@ alias _root_.Function.Surjective.isLocalHom := _root_.IsLocalHom.of_surjective
 /-- If `f : R →+* S` is a surjective local ring hom, then the induced units map is surjective. -/
 theorem surjective_units_map_of_local_ringHom [Semiring R] [Semiring S] (f : R →+* S)
     (hf : Function.Surjective f) (h : IsLocalHom f) :
-    Function.Surjective (Units.map <| f.toMonoidHom) := by
+    Function.Surjective (Units.map f.toMonoidHom) := by
   intro a
   obtain ⟨b, hb⟩ := hf (a : S)
   use (isUnit_of_map_unit f b (by rw [hb]; exact Units.isUnit _)).unit

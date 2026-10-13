@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Topology.Category.LightProfinite.EffectiveEpi
 public import Mathlib.CategoryTheory.Sites.Equivalence
+public import Mathlib.Topology.Category.LightProfinite.EffectiveEpi
 
 /-!
 # `HasSheafify` instances

@@ -6,8 +6,8 @@ Authors: Anne Baanen
 module
 
 public import Mathlib.Algebra.Field.Basic
-public import Mathlib.Algebra.Ring.Subring.Defs
 public import Mathlib.Algebra.Order.Ring.Unbundled.Rat
+public import Mathlib.Algebra.Ring.Subring.Defs
 
 /-!
 # Subfields

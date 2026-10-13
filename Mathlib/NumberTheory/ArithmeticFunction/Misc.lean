@@ -5,8 +5,8 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.NumberTheory.ArithmeticFunction.Zeta
 public import Mathlib.Data.Nat.Factorization.PrimePow
+public import Mathlib.NumberTheory.ArithmeticFunction.Zeta
 /-!
 # Miscellaneous arithmetic Functions
 

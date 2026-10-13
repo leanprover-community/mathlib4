@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 public import Mathlib.Analysis.SpecificLimits.Normed
-public import Mathlib.Topology.Algebra.InfiniteSum.Module
+
+import Mathlib.Topology.Algebra.InfiniteSum.Module
 
 /-!
 # Radius of convergence of a power series
@@ -365,7 +366,7 @@ theorem div_le_radius_compContinuousLinearMap (p : FormalMultilinearSeries 𝕜 
     _ = ‖p n‖ * r ^ n := by
       simp only [NNReal.coe_div, coe_nnnorm, div_pow, mul_assoc]
       rw [mul_div_cancel₀]
-      rw [← NNReal.coe_pos] at h_zero
+      rw [← NNReal.coe_pos, coe_nnnorm] at h_zero
       positivity
     _ ≤ C := hC n
 

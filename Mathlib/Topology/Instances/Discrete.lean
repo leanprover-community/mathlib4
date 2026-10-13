@@ -5,8 +5,8 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.Topology.Order.Basic
 public import Mathlib.Order.SuccPred.LinearLocallyFinite
+public import Mathlib.Topology.Order.Basic
 
 /-!
 # Instances related to the discrete topology
@@ -17,7 +17,7 @@ We prove that the discrete topology is
 * equal to the order topology in linear orders which are also `PredOrder` and `SuccOrder`,
 * metrizable.
 
-When importing this file and `Data.Nat.SuccPred`, the instances `SecondCountableTopology ℕ`
+When importing this file and `Order.SuccPred.Nat`, the instances `SecondCountableTopology ℕ`
 and `OrderTopology ℕ` become available.
 
 -/
@@ -46,10 +46,6 @@ theorem LinearOrder.bot_topologicalSpace_eq_preorderTopology {α} [LinearOrder �
   let _ := Preorder.topology α
   have : OrderTopology α := ⟨rfl⟩
   exact DiscreteTopology.of_predOrder_succOrder.eq_bot.symm
-
-@[deprecated (since := "2026-03-22")]
-alias LinearOrder.bot_topologicalSpace_eq_generateFrom :=
-  LinearOrder.bot_topologicalSpace_eq_preorderTopology
 
 theorem discreteTopology_iff_orderTopology_of_pred_succ [LinearOrder α] [PredOrder α]
     [SuccOrder α] : DiscreteTopology α ↔ OrderTopology α := by

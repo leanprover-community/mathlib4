@@ -140,7 +140,7 @@ theorem LinearMap.lTensor_range :
 /-- If `g` is surjective, then `g.baseChange A` is surjective. -/
 theorem LinearMap.baseChange_surjective (A : Type*) [Semiring A] [Algebra R A]
     (hg : Function.Surjective g) : Function.Surjective (g.baseChange A) := by
-  rw [LinearMap.baseChange_eq_ltensor]
+  rw [LinearMap.baseChange_eq_lTensor]
   exact lTensor_surjective _ hg
 
 /-- If `g` is surjective, then `rTensor Q g` is surjective -/
@@ -206,7 +206,7 @@ noncomputable def lTensor.toFun (hfg : Exact f g) :
 noncomputable def lTensor.inverse_of_rightInverse {h : P → N} (hfg : Exact f g)
     (hgh : Function.RightInverse h g) :
     Q ⊗[R] P →ₗ[R] Q ⊗[R] N ⧸ LinearMap.range (lTensor Q f) :=
-  TensorProduct.lift <| LinearMap.flip <| {
+  TensorProduct.lift <| LinearMap.flip {
     toFun := fun p ↦ Submodule.mkQ _ ∘ₗ ((TensorProduct.mk R _ _).flip (h p))
     map_add' := fun p p' => LinearMap.ext fun q => (Submodule.Quotient.eq _).mpr <| by
       change q ⊗ₜ[R] (h (p + p')) - (q ⊗ₜ[R] (h p) + q ⊗ₜ[R] (h p')) ∈ range (lTensor Q f)
@@ -409,7 +409,7 @@ lemma LinearMap.ker_tensorProductMk {I : Ideal R} :
     ker (TensorProduct.mk R (R ⧸ I) Q 1) = I • ⊤ := by
   apply comap_injective_of_surjective (TensorProduct.lid R Q).surjective
   rw [← ker_comp]
-  convert! rTensor_mkQ Q I
+  convert rTensor_mkQ Q I
   · ext; simp
   rw [comap_equiv_eq_map_symm, map_symm_eq_iff, map_range_rTensor_subtype_lid]
 

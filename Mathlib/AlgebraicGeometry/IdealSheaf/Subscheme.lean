@@ -5,10 +5,10 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
-public import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 public import Mathlib.AlgebraicGeometry.IdealSheaf.Basic
-public import Mathlib.CategoryTheory.Adjunction.Opposites
+public import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
+
+import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 
 /-!
 # Subscheme associated to an ideal sheaf
@@ -551,7 +551,7 @@ lemma subschemeι_app (U : X.affineOpens) : I.subschemeι.app U =
       Functor.op_map, unop_comp, unop_inv, Quiver.Hom.unop_op,
     Hom.app_appIso_inv_assoc, TopologicalSpace.Opens.carrier_eq_coe, TopologicalSpace.Opens.map_coe,
     homOfLE_leOfHom]
-  convert! (Category.comp_id _).symm
+  convert (Category.comp_id _).symm
   exact CategoryTheory.Functor.map_id _ _
 
 lemma subschemeι_app_surjective (U : X.affineOpens) :

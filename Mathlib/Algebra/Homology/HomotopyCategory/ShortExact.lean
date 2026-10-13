@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Algebra.Homology.HomologySequenceLemmas
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomologicalFunctor
 public import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
-public import Mathlib.Algebra.Homology.HomologySequenceLemmas
 public import Mathlib.Algebra.Homology.Refinements
 
 /-!
@@ -74,7 +74,7 @@ lemma map_descShortComplex : map S₁.f S₂.f f.τ₁ f.τ₂ f.comm₁₂.symm
     descShortComplex S₁ ≫ f.τ₃ := by
   ext i
   simpa [mappingCone.ext_from_iff _ _ _ rfl, map] using
-    congr_fun (congr_arg HomologicalComplex.Hom.f f.comm₂₃) i
+    congr($(f.comm₂₃).f i)
 
 end
 

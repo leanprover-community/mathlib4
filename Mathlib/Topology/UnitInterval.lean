@@ -170,12 +170,16 @@ example : CompactSpace I := by infer_instance
 theorem nonneg (x : I) : 0 ≤ (x : ℝ) :=
   x.2.1
 
-theorem one_minus_nonneg (x : I) : 0 ≤ 1 - (x : ℝ) := by simpa using x.2.2
+theorem one_sub_nonneg (x : I) : 0 ≤ 1 - (x : ℝ) := by simpa using x.2.2
+
+@[deprecated (since := "2026-10-06")] alias one_minus_nonneg := one_sub_nonneg
 
 theorem le_one (x : I) : (x : ℝ) ≤ 1 :=
   x.2.2
 
-theorem one_minus_le_one (x : I) : 1 - (x : ℝ) ≤ 1 := by simpa using x.2.1
+theorem one_sub_le_one (x : I) : 1 - (x : ℝ) ≤ 1 := by simpa using x.2.1
+
+@[deprecated (since := "2026-10-06")] alias one_minus_le_one := one_sub_nonneg
 
 theorem add_pos {t : I} {x : ℝ} (hx : 0 < x) : 0 < (x + t : ℝ) :=
   add_pos_of_pos_of_nonneg hx <| nonneg _
@@ -517,9 +521,9 @@ any expression `x : I`.
 macro "unit_interval" : tactic =>
   `(tactic| (first
   | apply unitInterval.nonneg
-  | apply unitInterval.one_minus_nonneg
+  | apply unitInterval.one_sub_nonneg
   | apply unitInterval.le_one
-  | apply unitInterval.one_minus_le_one))
+  | apply unitInterval.one_sub_le_one))
 
 example (x : unitInterval) : 0 ≤ (x : ℝ) := by unit_interval
 

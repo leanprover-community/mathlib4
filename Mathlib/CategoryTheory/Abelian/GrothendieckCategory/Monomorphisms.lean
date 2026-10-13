@@ -6,8 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
-public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Colim
 public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
+
+import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Colim
 
 /-!
 # Monomorphisms in Grothendieck abelian categories

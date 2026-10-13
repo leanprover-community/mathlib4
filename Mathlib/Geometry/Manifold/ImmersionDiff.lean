@@ -5,9 +5,8 @@ Authors: Michael Rothgang
 -/
 module
 
-public import Mathlib.Geometry.Manifold.LocalDiffeomorph
-public import Mathlib.Geometry.Manifold.Notation
 public import Mathlib.Analysis.Normed.Module.ContinuousInverse
+public import Mathlib.Geometry.Manifold.LocalDiffeomorph
 
 /-! # Immersions in the sense of differentials
 

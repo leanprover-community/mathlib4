@@ -222,7 +222,7 @@ lemma rpow_abs_le_mul_max_exp_of_pos (x : ℝ) {t p : ℝ} (hp : 0 ≤ p) (ht : 
   calc |x| ^ p
   _ ≤ ((t / p)⁻¹ * max (exp (t / p * x)) (exp (-t / p * x))) ^ p := by
     gcongr
-    convert! h_abs_le (t / p) (div_pos ht (hp.lt_of_ne' hp_zero)) using 5
+    convert h_abs_le (t / p) (div_pos ht (hp.lt_of_ne' hp_zero)) using 5
     rw [neg_div]
   _ = (p / t) ^ p * max (exp (t * x)) (exp (-t * x)) := by
     rw [mul_rpow (by positivity) (by positivity)]
@@ -236,7 +236,7 @@ lemma rpow_abs_le_mul_max_exp (x : ℝ) {t p : ℝ} (hp : 0 ≤ p) (ht : t ≠ 0
     |x| ^ p ≤ (p / |t|) ^ p * max (exp (t * x)) (exp (-t * x)) := by
   rcases lt_or_gt_of_ne ht with ht_neg | ht_pos
   · rw [abs_of_nonpos ht_neg.le, sup_comm]
-    convert! rpow_abs_le_mul_max_exp_of_pos x hp (t := -t) (by simp [ht_neg])
+    convert rpow_abs_le_mul_max_exp_of_pos x hp (t := -t) (by simp [ht_neg])
     simp
   · rw [abs_of_nonneg ht_pos.le]
     exact rpow_abs_le_mul_max_exp_of_pos x hp ht_pos
@@ -278,7 +278,7 @@ lemma integrable_rpow_abs_mul_exp_add_of_integrable_exp_mul {x : ℝ}
     nth_rw 2 [this]
     rw [add_mul, exp_add, ← mul_assoc]
     gcongr ?_ * _
-    convert! rpow_abs_le_mul_exp_abs (X a) hp (t := |t| - x) _ using 4
+    convert rpow_abs_le_mul_exp_abs (X a) hp (t := |t| - x) _ using 4
     · nth_rw 2 [abs_of_nonneg]
       simp [hx.le]
     · nth_rw 2 [abs_of_nonneg]
@@ -494,7 +494,7 @@ then `|X| ^ n` is integrable for all nonnegative `p : ℝ`. -/
 lemma integrable_rpow_abs_of_mem_interior_integrableExpSet
     (h : 0 ∈ interior (integrableExpSet X μ)) {p : ℝ} (hp : 0 ≤ p) :
     Integrable (fun ω ↦ |X ω| ^ p) μ := by
-  convert! integrable_rpow_abs_mul_exp_of_mem_interior_integrableExpSet h hp using 1
+  convert integrable_rpow_abs_mul_exp_of_mem_interior_integrableExpSet h hp using 1
   simp
 
 /-- If 0 belongs to the interior of the interval `integrableExpSet X μ`,
@@ -510,7 +510,7 @@ then `X ^ n` is integrable for all nonnegative `p : ℝ`. -/
 lemma integrable_rpow_of_mem_interior_integrableExpSet
     (h : 0 ∈ interior (integrableExpSet X μ)) {p : ℝ} (hp : 0 ≤ p) :
     Integrable (fun ω ↦ X ω ^ p) μ := by
-  convert! integrable_rpow_mul_exp_of_mem_interior_integrableExpSet h hp using 1
+  convert integrable_rpow_mul_exp_of_mem_interior_integrableExpSet h hp using 1
   simp
 
 /-- If 0 belongs to the interior of the interval `integrableExpSet X μ`,

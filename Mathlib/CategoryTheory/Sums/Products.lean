@@ -5,8 +5,8 @@ Authors: Robin Carlier
 -/
 module
 
-public import Mathlib.CategoryTheory.Sums.Associator
 public import Mathlib.CategoryTheory.Products.Associator
+public import Mathlib.CategoryTheory.Sums.Associator
 
 /-!
 # Functors out of sums of categories.

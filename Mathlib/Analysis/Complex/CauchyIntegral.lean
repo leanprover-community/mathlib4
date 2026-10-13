@@ -5,16 +5,14 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Analytic.Uniqueness
 public import Mathlib.Analysis.Calculus.DiffContOnCl
-public import Mathlib.Analysis.Calculus.DSlope
-public import Mathlib.Analysis.Calculus.FDeriv.Analytic
 public import Mathlib.Analysis.Calculus.ParametricIntervalIntegral
 public import Mathlib.Analysis.Complex.ReImTopology
-public import Mathlib.Analysis.Real.Cardinality
 public import Mathlib.MeasureTheory.Integral.CircleIntegral
 public import Mathlib.MeasureTheory.Integral.DivergenceTheorem
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
+
+import Mathlib.Analysis.Real.Cardinality
 
 /-!
 # Cauchy integral formula
@@ -164,8 +162,6 @@ public section
 open TopologicalSpace Set MeasureTheory intervalIntegral Metric Filter Function
 
 open scoped Interval Real NNReal ENNReal Topology
-
-noncomputable section
 
 universe u
 

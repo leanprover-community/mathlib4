@@ -6,10 +6,10 @@ Authors: Mario Carneiro, Chris Hughes, Floris van Doorn, Yaël Dillies
 module
 
 public import Mathlib.Data.Nat.Basic
+public import Mathlib.Tactic.Attr.Core
 public import Mathlib.Tactic.Common
 public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.Monotonicity.Attr
-public import Mathlib.Tactic.Attr.Core
 
 /-!
 # Factorial and variants

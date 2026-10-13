@@ -6,9 +6,9 @@ Authors: Frédéric Dupuis
 module
 
 public import Mathlib.Algebra.Order.Module.PositiveLinearMap
-public import Mathlib.Analysis.CStarAlgebra.Classes
-public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 public import Mathlib.Analysis.CStarAlgebra.SpecialFunctions.PosPart
+
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 
 /-! # Positive linear maps in C⋆-algebras
 

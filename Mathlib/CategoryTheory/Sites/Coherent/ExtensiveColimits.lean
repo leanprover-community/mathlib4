@@ -5,9 +5,10 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Preadditive.Biproducts
 public import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveSheaves
-public import Mathlib.CategoryTheory.Sites.Limits
+
+import Mathlib.CategoryTheory.Preadditive.Biproducts
+import Mathlib.CategoryTheory.Sites.Limits
 /-!
 
 # Colimits in categories of extensive sheaves

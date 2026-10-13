@@ -5,8 +5,8 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Pretopology
 public import Mathlib.CategoryTheory.Sites.IsSheafFor
+public import Mathlib.CategoryTheory.Sites.Pretopology
 
 /-!
 # Sheaves of types on a Grothendieck topology

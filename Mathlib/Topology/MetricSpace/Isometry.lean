@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.Fintype.Lattice
 public import Mathlib.Data.Fintype.Sum
-public import Mathlib.Topology.Homeomorph.Lemmas
 public import Mathlib.Topology.MetricSpace.Antilipschitz
 
 /-!
@@ -679,7 +678,7 @@ theorem diam_preimage (s : Set β) : Metric.diam (h ⁻¹' s) = Metric.diam s :=
 
 include h in
 theorem diam_univ : Metric.diam (univ : Set α) = Metric.diam (univ : Set β) :=
-  congr_arg ENNReal.toReal h.ediam_univ
+  congr($(h.ediam_univ).toReal)
 
 @[simp]
 theorem preimage_ball (h : α ≃ᵢ β) (x : β) (r : ℝ) :
@@ -760,6 +759,6 @@ instance : CoeOut F (α ≃ᵢ β) :=
   ⟨toIsometryEquiv⟩
 
 theorem toIsometryEquiv_injective : Function.Injective ((↑) : F → α ≃ᵢ β) :=
-  fun _ _ e ↦ DFunLike.ext _ _ fun a ↦ DFunLike.congr_fun e a
+  fun _ _ e ↦ DFunLike.ext _ _ fun a ↦ congr($e a)
 
 end IsometryClass

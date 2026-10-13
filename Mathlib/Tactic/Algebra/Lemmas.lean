@@ -6,9 +6,10 @@ Authors: Arend Mellendijk
 module
 
 public import Mathlib.Algebra.Algebra.Defs
-public import Mathlib.Data.Finset.Attr
 public import Mathlib.Tactic.Ring.Basic
-public import Mathlib.Tactic.SetLike
+
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.SetLike
 
 /-! # Lemmas for the `algebra` tactic.
 -/

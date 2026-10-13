@@ -188,7 +188,7 @@ lemma memLp_id (μ : Measure E) [IsGaussian μ] (p : ℝ≥0∞) (hp : p ≠ ∞
     rw [← memLp_norm_rpow_iff (q := 2) (by fun_prop) (by simp) (by simp)]
     simpa using this
   lift p to ℝ≥0 using hp
-  convert! memLp_of_mem_interior_integrableExpSet ?_ (p / 2)
+  convert memLp_of_mem_interior_integrableExpSet ?_ (p / 2)
   · simp
   obtain ⟨C, hC_pos, hC⟩ := exists_integrable_exp_sq μ
   have hC_neg : Integrable (fun x ↦ rexp (-C * ‖x‖ ^ 2)) μ := by -- `-C` could be any negative

@@ -5,10 +5,11 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Algebra.Module.Projective
-public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
-public import Mathlib.LinearAlgebra.Basis.VectorSpace
 public import Mathlib.LinearAlgebra.Dimension.RankNullity
+
+import Mathlib.Algebra.Module.Projective
+import Mathlib.LinearAlgebra.Basis.VectorSpace
+import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 
 /-!
 # The rank of a linear map
@@ -96,7 +97,6 @@ theorem rank_add_le (f g : V →ₗ[K] V') : rank (f + g) ≤ rank f + rank g :=
 
 theorem rank_finsetSum_le {η} (s : Finset η) (f : η → V →ₗ[K] V') :
     rank (∑ d ∈ s, f d) ≤ ∑ d ∈ s, rank (f d) :=
-  have := nontrivial_of_hasRankNullity K
   @Finset.sum_hom_rel _ _ _ _ _ (fun a b => rank a ≤ b) f (fun d => rank (f d)) s
     (le_of_eq rank_zero) fun _ _ _ h => le_trans (rank_add_le _ _) (by gcongr)
 
@@ -119,14 +119,14 @@ theorem le_rank_iff_exists_linearIndependent {c : Cardinal} {f : V →ₗ[K] V'}
     refine ⟨g '' s, Cardinal.mk_image_eq_lift _ _ fg.injective, ?_⟩
     replace fg : ∀ x, f (g x) = x := by
       intro x
-      convert! congr_arg Subtype.val (fg x)
+      convert! congr($(fg x).val)
     replace si : LinearIndepOn K (fun x => f (g x)) s := by
       simpa only [fg] using! si.map' _ (ker_subtype _)
     exact si.image_of_comp
   · rintro ⟨s, hsc, si⟩
     have : LinearIndepOn K f.rangeRestrict s :=
       LinearIndependent.of_comp (LinearMap.range f).subtype (by convert! si)
-    convert! this.id_image.cardinal_le_rank
+    convert this.id_image.cardinal_le_rank
     rw [← Cardinal.lift_inj, ← hsc, Cardinal.mk_image_eq_of_injOn_lift]
     exact injOn_iff_injective.2 this.injective
 

@@ -8,7 +8,8 @@ module
 public import Mathlib.CategoryTheory.Limits.Preorder
 public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 public import Mathlib.Order.Category.PartOrdEmb
-public import Mathlib.Order.Hom.WithTopBot
+
+import Mathlib.Order.Hom.WithTopBot
 
 /-!
 # The κ-accessible category of κ-directed posets
@@ -72,7 +73,7 @@ lemma isCardinalFiltered_pt (hF : ∀ j, IsCardinalFiltered (F.obj j) κ) :
   let j := IsCardinalFiltered.max j₀ hK
   let x₁ (k : K) : F.obj j := F.map (IsCardinalFiltered.toMax j₀ hK k) (x₀ k)
   have hx₁ (k : K) : c.ι.app j (x₁ k) = c.ι.app (j₀ k) (x₀ k) :=
-    ConcreteCategory.congr_hom (c.w (IsCardinalFiltered.toMax j₀ hK k)) _
+    congr($(c.w (IsCardinalFiltered.toMax j₀ hK k)) _)
   refine ⟨(cocone hc).ι.app j (IsCardinalFiltered.max x₁ hK),
     fun k ↦ ?_⟩
   rw [← hx₀, ← hx₁]
@@ -226,7 +227,7 @@ lemma isCardinalPresentable_of_hasCardinalLT_of_le (J : CardinalDirectedPoset κ
     {κ' : Cardinal.{u}} [Fact κ'.IsRegular] (hJ : HasCardinalLT J.obj κ') (h : κ ≤ κ') :
     IsCardinalPresentable J κ' where
   preservesColimitOfShape A _ _ := ⟨fun {F} ↦ ⟨fun {c} hc ↦ ⟨by
-  · have := isFiltered_of_isCardinalFiltered A κ'
+    have := isFiltered_of_isCardinalFiltered A κ'
     have := IsCardinalFiltered.of_le A h
     replace hc := isColimitOfPreserves (forget _) hc
     refine Types.FilteredColimit.isColimitOf' _ _ (fun f ↦ ?_) (fun j f g h ↦ ?_)
@@ -347,7 +348,7 @@ protected lemma isCardinalPresentable_iff (h : κ ≤ κ') :
       (ObjectProperty.homMk (PartOrdEmb.ofHom WithTop.coeOrderHom))
   replace hf : OrderEmbedding.subtype (· ∈ X.1) ∘ f = WithTop.coeOrderHom := by
     ext x
-    exact ConcreteCategory.congr_hom hf x
+    congrm $hf x
   refine X.2.1.of_injective f (Function.Injective.of_comp
     (f := OrderEmbedding.subtype (· ∈ X.1)) ?_)
   dsimp at hf ⊢

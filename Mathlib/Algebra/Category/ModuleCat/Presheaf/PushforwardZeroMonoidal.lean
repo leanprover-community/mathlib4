@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Monoidal
-public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Pushforward
 
 /-!
 # The pushforward functor is monoidal

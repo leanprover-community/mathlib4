@@ -6,10 +6,9 @@ Authors: Adam Topaz
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
-public import Mathlib.CategoryTheory.Comma.Arrow
-public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
-public import Mathlib.Tactic.ApplyFun
+
+import Mathlib.Tactic.ApplyFun
 
 /-!
 
@@ -50,7 +49,6 @@ namespace CategoryTheory.Arrow
 variable (f : Arrow C)
 variable [∀ n : ℕ, HasWidePullback.{0} f.right (fun _ : Fin (n + 1) => f.left) fun _ => f.hom]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Čech nerve associated to an arrow. -/
 @[simps, implicit_reducible]
 def cechNerve : SimplicialObject C where
@@ -59,7 +57,6 @@ def cechNerve : SimplicialObject C where
     (fun i => WidePullback.π _ (g.unop.toOrderHom i)) (by simp)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The morphism between Čech nerves associated to a morphism of arrows. -/
 @[simps]
 def mapCechNerve {f g : Arrow C}
@@ -70,8 +67,6 @@ def mapCechNerve {f g : Arrow C}
     WidePullback.lift (WidePullback.base _ ≫ F.right) (fun i => WidePullback.π _ i ≫ F.left)
       fun j => by simp
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The augmented Čech nerve associated to an arrow. -/
 @[simps]
 def augmentedCechNerve : SimplicialObject.Augmented C where
@@ -99,7 +94,6 @@ variable
   [∀ (n : ℕ) (f : Arrow C), HasWidePullback f.right (fun _ : Fin (n + 1) => f.left) fun _ => f.hom]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The Čech nerve construction, as a functor from `Arrow C`. -/
 @[simps]
 def cechNerve : Arrow C ⥤ SimplicialObject C where
@@ -107,7 +101,6 @@ def cechNerve : Arrow C ⥤ SimplicialObject C where
   map F := Arrow.mapCechNerve F
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The augmented Čech nerve construction, as a functor from `Arrow C`. -/
 @[simps!]
 def augmentedCechNerve : Arrow C ⥤ SimplicialObject.Augmented C where
@@ -188,7 +181,6 @@ namespace CategoryTheory.Arrow
 variable (f : Arrow C)
 variable [∀ n : ℕ, HasWidePushout f.left (fun _ : Fin (n + 1) => f.right) fun _ => f.hom]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Čech conerve associated to an arrow. -/
 @[simps]
 def cechConerve : CosimplicialObject C where
@@ -211,7 +203,6 @@ def mapCechConerve {f g : Arrow C}
     (fun i => (by rw [← Arrow.w_assoc F, ← WidePushout.arrow_ι]))
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The augmented Čech conerve associated to an arrow. -/
 @[simps]
 def augmentedCechConerve : CosimplicialObject.Augmented C where
@@ -240,7 +231,6 @@ variable
   [∀ (n : ℕ) (f : Arrow C), HasWidePushout f.left (fun _ : Fin (n + 1) => f.right) fun _ => f.hom]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The Čech conerve construction, as a functor from `Arrow C`. -/
 @[simps]
 def cechConerve : Arrow C ⥤ CosimplicialObject C where
@@ -248,7 +238,6 @@ def cechConerve : Arrow C ⥤ CosimplicialObject C where
   map F := Arrow.mapCechConerve F
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The augmented Čech conerve construction, as a functor from `Arrow C`. -/
 @[simps]
 def augmentedCechConerve : Arrow C ⥤ CosimplicialObject.Augmented C where
@@ -409,7 +398,6 @@ lemma wideCospan.limitIsoPi_hom_comp_pi [Finite ι] (X : C) (j : ι) :
     (wideCospan.limitIsoPi ι X).hom ≫ Pi.π _ j = WidePullback.π _ j := by
   rw [← wideCospan.limitIsoPi_inv_comp_pi, Iso.hom_inv_id_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given an object `X : C`, the Čech nerve of the hom to the terminal object `X ⟶ ⊤_ C` is
 naturally isomorphic to a simplicial object sending `⦋n⦌` to `Xⁿ⁺¹` (when `C` is `G-Set`, this is
 `EG`, the universal cover of the classifying space of `G`). -/

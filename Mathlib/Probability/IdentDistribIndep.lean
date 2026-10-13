@@ -6,6 +6,7 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Probability.IdentDistrib
+
 import Mathlib.Probability.Independence.InfinitePi
 
 /-!

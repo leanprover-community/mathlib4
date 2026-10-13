@@ -5,8 +5,8 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.RingTheory.Congruence.Basic
 public import Mathlib.GroupTheory.Congruence.Opposite
+public import Mathlib.RingTheory.Congruence.Basic
 
 /-!
 # Congruences on the opposite ring

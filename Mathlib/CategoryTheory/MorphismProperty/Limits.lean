@@ -5,12 +5,10 @@ Authors: Andrew Yang, Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Final
-public import Mathlib.CategoryTheory.Limits.Connected
 public import Mathlib.CategoryTheory.Filtered.Connected
+public import Mathlib.CategoryTheory.Limits.Connected
+public import Mathlib.CategoryTheory.Limits.Final
 public import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
-public import Mathlib.CategoryTheory.MorphismProperty.Composition
-public import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 
 /-!
 # Relation of morphism properties with limits
@@ -237,16 +235,10 @@ theorem pullbackLift_fst_snd [IsStableUnderBaseChange P] {S S' X Y : C} (f : S' 
   refine IsPullback.of_bot ?_ (by simp) (IsPullback.of_hasPullback v₂₂ f)
   simpa using IsPullback.of_hasPullback (g ≫ v₂₂) f
 
-@[deprecated (since := "2026-03-20")]
-alias baseChange_map' := pullbackLift_fst_snd
-
 theorem overPullbackMap [IsStableUnderBaseChange P] {S S' : C} (f : S' ⟶ S)
     [HasPullbacksAlong f] {X Y : Over S} (g : X ⟶ Y) (H : P g.left) :
     P ((Over.pullback f).map g).left :=
   pullbackLift_fst_snd f (g.w.symm) H
-
-@[deprecated (since := "2026-03-20")]
-alias baseChange_map := overPullbackMap
 
 attribute [local instance] hasPullback_symmetry_of_hasPullbacksAlong in
 theorem pullbackMap
@@ -268,9 +260,6 @@ theorem pullbackMap
   apply P.comp_mem <;> rw [P.cancel_left_of_respectsIso]
   exacts [overPullbackMap _ (Over.homMk _ e₂.symm : Over.mk g ⟶ Over.mk g') h₂,
     overPullbackMap _ (Over.homMk _ e₁.symm : Over.mk f ⟶ Over.mk f') h₁]
-
-@[deprecated (since := "2026-03-20")]
-alias pullback_map := pullbackMap
 
 instance IsStableUnderBaseChange.hasOfPostcompProperty_monomorphisms
     [P.IsStableUnderBaseChange] : P.HasOfPostcompProperty (MorphismProperty.monomorphisms C) where
@@ -448,7 +437,6 @@ lemma limitsOfShape_monotone {W₁ W₂ : MorphismProperty C} (h : W₁ ≤ W₂
   rintro _ _ _ ⟨_, _, _, _, h₁, _, f, hf⟩
   exact ⟨_, _, _, _, h₁, _, f, fun j ↦ h _ (hf j)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance : (W.limitsOfShape J).RespectsIso :=
   RespectsIso.of_respects_arrow_iso _ (by
     rintro ⟨_, _, f⟩ ⟨Y₁, Y₂, g⟩ e ⟨X₁, X₂, c₁, c₂, h₁, h₂, f, hf⟩
@@ -550,7 +538,6 @@ lemma colimitsOfShape_eq_of_equivalence {J' : Type*} [Category* J'] (e : J ≌ J
   le_antisymm (W.colimitsOfShape_le_of_final e.inverse)
     (W.colimitsOfShape_le_of_final e.functor)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : (W.colimitsOfShape J).RespectsIso :=
   RespectsIso.of_respects_arrow_iso _ (by
     rintro ⟨_, _, f⟩ ⟨Y₁, Y₂, g⟩ e ⟨X₁, X₂, c₁, c₂, h₁, h₂, f, hf⟩

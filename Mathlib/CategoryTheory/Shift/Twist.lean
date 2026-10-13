@@ -35,7 +35,7 @@ structure TwistShiftData where
   z (a b : A) : (CatCenter C)ˣ
   z_zero_zero : z 0 0 = 1 := by cat_disch
   assoc (a b c : A) : z (a + b) c * z a b = z a (b + c) * z b c := by cat_disch
-  commShift (a b : A) : NatTrans.CommShift (z a b).val A := by infer_instance
+  commShift (a b : A) : NatTrans.CommShift (z a b).val.asHom A := by infer_instance
 
 namespace TwistShiftData
 
@@ -55,7 +55,7 @@ set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma shift_z_app (a b c : A) (X : C) :
     ((t.z a b).val.app X)⟦c⟧' = (t.z a b).val.app (X⟦c⟧) := by
-  simpa using NatTrans.shift_app_comm (t.z a b).val c X
+  simpa using NatTrans.shift_app_comm (t.z a b).val.asHom c X
 
 /-- Given `t : TwistShiftData C A`, this is a type synonym for the category `C`,
 which the same shift functors as `C` but where the `shiftFunctorAdd` isomorphisms

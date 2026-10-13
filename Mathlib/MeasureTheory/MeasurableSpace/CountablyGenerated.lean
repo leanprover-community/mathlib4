@@ -5,8 +5,8 @@ Authors: Felix Weilacher, Yury Kudryashov, Rémy Degenne
 -/
 module
 
-public import Mathlib.MeasureTheory.MeasurableSpace.Embedding
 public import Mathlib.Data.Set.MemPartition
+public import Mathlib.MeasureTheory.MeasurableSpace.Embedding
 public import Mathlib.Order.Filter.CountableSeparatingOn
 
 /-!
@@ -72,7 +72,7 @@ lemma countable_countableGeneratingSet [MeasurableSpace α] [h : CountablyGenera
 
 lemma generateFrom_countableGeneratingSet [m : MeasurableSpace α] [h : CountablyGenerated α] :
     generateFrom (countableGeneratingSet α) = m :=
-  (generateFrom_insert_empty _).trans <| h.isCountablyGenerated.choose_spec.2.symm
+  (generateFrom_insert_empty _).trans h.isCountablyGenerated.choose_spec.2.symm
 
 lemma empty_mem_countableGeneratingSet [MeasurableSpace α] [CountablyGenerated α] :
     ∅ ∈ countableGeneratingSet α := mem_insert _ _
@@ -364,7 +364,7 @@ instance (priority := 50) MeasurableSingletonClass.of_separatesPoints [Measurabl
     [Countable α] [SeparatesPoints α] : MeasurableSingletonClass α where
   measurableSet_singleton x := by
     choose s hsm hxs hys using fun y (h : x ≠ y) ↦ exists_measurableSet_of_ne h
-    convert! MeasurableSet.iInter fun y ↦ .iInter fun h ↦ hsm y h
+    convert MeasurableSet.iInter fun y ↦ .iInter fun h ↦ hsm y h
     ext y
     rcases eq_or_ne x y with rfl | h
     · simpa
@@ -424,7 +424,7 @@ theorem injective_mapNatBool [MeasurableSpace α] [CountablyGenerated α]
   apply separating_of_generateFrom (range (natGeneratingSequence _))
   rintro - ⟨n, rfl⟩
   rw [← decide_eq_decide]
-  exact congr_fun hxy n
+  congrm $hxy n
 
 /-- If a measurable space is countably generated and separates points, it is measure equivalent
 to some subset of the Cantor space `ℕ → Bool` (equipped with the product sigma algebra).

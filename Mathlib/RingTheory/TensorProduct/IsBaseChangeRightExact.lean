@@ -5,9 +5,10 @@ Authors: Jingting Wang, Nailin Guan
 -/
 module
 
-public import Mathlib.Algebra.FiveLemma
 public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 public import Mathlib.RingTheory.IsTensorProduct
+
+import Mathlib.Algebra.FiveLemma
 
 /-!
 

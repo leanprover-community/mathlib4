@@ -5,8 +5,8 @@ Authors: Johan Commelin, Floris van Doorn
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Basic
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+public import Mathlib.Algebra.GroupWithZero.Basic
 
 /-!
 # Pointwise operations of sets in a group with zero

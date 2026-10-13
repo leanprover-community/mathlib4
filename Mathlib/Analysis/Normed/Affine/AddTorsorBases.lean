@@ -6,7 +6,8 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Analysis.Normed.Module.FiniteDimension
-public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
+
+import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 
 /-!
 # Bases in normed affine spaces.

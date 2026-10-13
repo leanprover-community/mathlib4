@@ -6,9 +6,9 @@ Authors: Christian Merten
 module
 
 public import Mathlib.CategoryTheory.Comma.Over.Basic
-public import Mathlib.CategoryTheory.ObjectProperty.Opposite
 public import Mathlib.CategoryTheory.MorphismProperty.Composition
 public import Mathlib.CategoryTheory.MorphismProperty.Factorization
+public import Mathlib.CategoryTheory.ObjectProperty.Opposite
 
 /-!
 # Subcategories of comma categories defined by morphism properties
@@ -340,7 +340,7 @@ def fullyFaithfulChangeProp :
   preimage f := ⟨f.toCommaMorphism, f.2, f.3⟩
 
 instance : (changeProp L R hP hQ hW).Faithful where
-  map_injective {X Y} f g h := by ext : 1; exact congr($(h).hom)
+  map_injective {X Y} f g h := by ext : 1; congrm $(h).hom
 
 instance : (changeProp (Q := Q) (W := W) L R hP le_rfl le_rfl).Full :=
   (fullyFaithfulChangeProp ..).full

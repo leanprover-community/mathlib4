@@ -577,7 +577,7 @@ def traceCrossRefs (db : Database) (verbose : Bool := false) :
     let cmt := parL ++ d.comment ++ parR
     msgs := msgs.push
       m!"[{db.label} {d.tag}]({db.url d.tag}) \
-        corresponds to declaration '{.ofConstName d.declName}'.{cmt}"
+        corresponds to declaration `{.ofConstName d.declName}`.{cmt}"
     if verbose then
       let dType := ((env.find? d.declName).getD default).type
       msgs := (msgs.push m!"{dType}").push ""

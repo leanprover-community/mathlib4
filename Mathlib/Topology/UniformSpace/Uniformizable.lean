@@ -6,6 +6,7 @@ Authors: Aaron Liu
 module
 
 public import Mathlib.Topology.Separation.CompletelyRegular
+public import Mathlib.Topology.UrysohnsLemma
 
 import Mathlib.Topology.UniformSpace.OfCompactT2
 

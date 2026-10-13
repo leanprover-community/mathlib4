@@ -5,12 +5,11 @@ Authors: Mario Carneiro
 -/
 module
 
+public meta import Lean.Meta.Tactic.Try.Collect
 public meta import Mathlib.Lean.Expr.Rat
-public import Mathlib.Tactic.Hint
-public import Mathlib.Tactic.NormNum.Result
 public meta import Mathlib.Util.Qq
 public import Lean.Elab.Tactic.Try  -- shake: keep (`register_try?_tactic` command dependency)
-public meta import Lean.Meta.Tactic.Try.Collect
+public import Mathlib.Tactic.NormNum.Result
 
 /-!
 ## `norm_num` core functionality

@@ -5,8 +5,8 @@ Authors: David Ledvinka
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.Meta.DiscrTree
+public import Mathlib.Init
 
 /-!
 # Discrimination-tree-indexed environment extensions

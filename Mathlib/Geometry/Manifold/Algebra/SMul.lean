@@ -21,7 +21,7 @@ structure on `Γ`, so it applies for example to actions of discrete groups by C�
 properly discontinuous actions used to construct quotient manifolds.
 
 TODO: For actions of Lie groups the two classes are close: a continuous action of a Lie group `G` on
-a finite-dimensional manifold `M` is `C^n` provided it is `C^n` in the second variable.)
+a finite-dimensional manifold `M` is `C^n` provided it is `C^n` in the second variable.
 
 We also provide `ContMDiffSMul` instances for scalar multiplication in normed spaces and for
 the action of the monoid `E →L[𝕜] E` of continuous linear maps on any normed space `E`.

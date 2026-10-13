@@ -5,8 +5,8 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.Topology.UniformSpace.Defs
 public import Mathlib.Topology.Bases
+public import Mathlib.Topology.UniformSpace.Defs
 
 /-!
 # Ultrametric (nonarchimedean) uniform spaces

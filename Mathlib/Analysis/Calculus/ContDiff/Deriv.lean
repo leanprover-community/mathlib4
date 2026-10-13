@@ -19,7 +19,7 @@ to use. In this file, we reformulate some higher smoothness results in terms of 
 derivative, differentiability, higher derivative, `C^n`, multilinear, Taylor series, formal series
 -/
 
-public noncomputable section
+public section
 
 open scoped ContDiff
 

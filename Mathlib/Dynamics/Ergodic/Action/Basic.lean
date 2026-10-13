@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.MeasureTheory.Group.AEStabilizer
 public import Mathlib.Dynamics.Ergodic.Ergodic
+public import Mathlib.MeasureTheory.Group.AEStabilizer
 
 /-!
 # Ergodic group actions

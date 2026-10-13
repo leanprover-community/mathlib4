@@ -5,13 +5,13 @@ Authors: Yaël Dillies, Vladimir Goryachev, Kyle Miller, Kim Morrison, Eric Rodr
 -/
 module
 
-public import Mathlib.Data.List.GetD
-public import Mathlib.Data.Nat.Count
-public import Mathlib.Data.Nat.SuccPred
-public import Mathlib.Order.Interval.Set.Monotone
-public import Mathlib.Order.OrderIsoNat
-public import Mathlib.Order.WellFounded
 public import Mathlib.Data.Finset.Sort
+public import Mathlib.Data.Nat.Count
+public import Mathlib.Order.OrderIsoNat
+public import Mathlib.Order.SuccPred.Nat
+
+import Mathlib.Data.List.GetD
+import Mathlib.Order.Interval.Set.Monotone
 
 /-!
 # The `n`th Number Satisfying a Predicate
@@ -230,7 +230,7 @@ theorem nth_eq_sInf (p : ℕ → Prop) (n : ℕ) : nth p n = sInf {x | p x ∧ �
   · exact (isLeast_nth hn).csInf_eq.symm
   · rcases hn with ⟨hf, hn⟩
     rw [nth_of_card_le _ hn]
-    refine ((congr_arg sInf <| Set.eq_empty_of_forall_notMem fun k hk => ?_).trans sInf_empty).symm
+    refine (congr(sInf $(Set.eq_empty_of_forall_notMem fun k hk => ?_)).trans sInf_empty).symm
     rcases exists_lt_card_nth_eq hk.1 with ⟨k, hlt, rfl⟩
     exact (hk.2 _ ((hlt hf).trans_le hn)).false
 
@@ -364,7 +364,7 @@ lemma nth_comp_of_strictMono {n : ℕ} {f : ℕ → ℕ} (hf : StrictMono f)
     rw [← hs h0', ← hf.monotone.map_csInf]
     · convert! rfl using 8 with k m' hm
       nth_rw 2 [← hf.lt_iff_lt]
-      convert! Iff.rfl using 2
+      convert Iff.rfl using 2
       exact ih m' (Nat.lt_add_one_iff.mp hm) fun hfi ↦ hm.trans (h hfi)
     · rcases h0 _ (nth_mem _ h) with ⟨t, ht⟩
       exact ⟨t, ht ▸ (nth_mem _ h), fun _ hk ↦ ht ▸ nth_lt_nth' hk h⟩
@@ -473,7 +473,7 @@ protected theorem count_eq_zero (h : ∃ n, p n) {n : ℕ} : count p n = 0 ↔ n
 
 variable (p) in
 theorem nth_count_eq_sInf (n : ℕ) : nth p (count p n) = sInf {i : ℕ | p i ∧ n ≤ i} := by
-  refine (nth_eq_sInf _ _).trans (congr_arg sInf ?_)
+  refine (nth_eq_sInf _ _).trans congr(sInf $(?_))
   refine Set.ext fun a => and_congr_right fun hpa => ?_
   refine ⟨fun h => not_lt.1 fun ha => ?_, fun hn k hk => lt_of_lt_of_le (nth_lt_of_lt_count hk) hn⟩
   have hn : nth p (count p a) < a := h _ (count_strict_mono hpa ha)
@@ -524,8 +524,8 @@ theorem nth_of_forall_not {n : ℕ} (hp : ∀ n' ≥ n, ¬p n') : nth p n = 0 :=
     contrapose! hp
     exact ⟨n', by simpa using hp, Set.mem_ofPred.mp hn'⟩
   rw [nth_of_card_le ((finite_toSet _).subset this)]
-  · refine (Finset.card_le_card ?_).trans_eq (Finset.card_range n)
-    exact Set.Finite.toFinset_subset.mpr this
+  refine (Finset.card_le_card ?_).trans_eq (Finset.card_range n)
+  exact Set.Finite.toFinset_subset.mpr this
 
 @[simp] theorem nth_false (n : ℕ) : nth (fun _ ↦ False) n = 0 := nth_of_forall_not fun _ _ ↦ id
 

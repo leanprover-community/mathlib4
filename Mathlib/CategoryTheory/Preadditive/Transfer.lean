@@ -5,7 +5,6 @@ Authors: Jakob von Raumer
 -/
 module
 
-public import Mathlib.Algebra.Group.TransferInstance
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!

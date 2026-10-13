@@ -5,10 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Localization.HasLocalization
-public import Mathlib.CategoryTheory.Center.Localization
 public import Mathlib.CategoryTheory.Center.Linear
+public import Mathlib.CategoryTheory.Center.Localization
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
+public import Mathlib.CategoryTheory.Localization.HasLocalization
 
 /-!
 # Localization of linear categories

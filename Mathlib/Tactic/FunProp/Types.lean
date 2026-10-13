@@ -6,10 +6,10 @@ Authors: Tomáš Skřivan
 module
 
 public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
-public import Mathlib.Tactic.FunProp.FunctionData
+public meta import Mathlib.Tactic.FunProp.FunctionData
 public import Lean.Meta.Tactic.Simp
 public import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
-public meta import Mathlib.Tactic.FunProp.FunctionData
+public import Mathlib.Tactic.FunProp.FunctionData
 
 /-!
 ## `funProp`

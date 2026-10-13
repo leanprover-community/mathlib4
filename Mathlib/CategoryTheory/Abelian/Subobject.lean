@@ -5,8 +5,8 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Subobject.Limits
 public import Mathlib.CategoryTheory.Abelian.Basic
+public import Mathlib.CategoryTheory.Subobject.Limits
 
 /-!
 # Equivalence between subobjects and quotients in an abelian category
@@ -68,5 +68,11 @@ instance wellPowered_opposite [Abelian C] [LocallySmall.{w} C] [WellPowered.{w} 
     WellPowered.{w} Cᵒᵖ where
   subobject_small X :=
     (small_congr (subobjectIsoSubobjectOp (unop X)).toEquiv).1 inferInstance
+
+/-- In an abelian category, the projection `Subobject.pullbackπ f B` from the pullback of a
+subobject `B` along an epimorphism `f` is an epimorphism. -/
+instance [Abelian C] {X Y : C} (f : X ⟶ Y) [Epi f] (B : Subobject Y) :
+    Epi (Subobject.pullbackπ f B) :=
+  epi_fst_of_isLimit _ _ (Subobject.isPullback f B).isLimit
 
 end CategoryTheory.Abelian

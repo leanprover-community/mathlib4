@@ -6,7 +6,6 @@ Authors: Etienne Marion
 module
 
 public import Mathlib.Probability.HasLaw
-public import Mathlib.Probability.Independence.Basic
 public import Mathlib.Probability.ProductMeasure
 
 /-!

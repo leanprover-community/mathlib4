@@ -1,4 +1,3 @@
-import Batteries.Tactic.Alias
 import Mathlib.Tactic.Linter.Lint
 import Mathlib.Tactic.ToAdditive
 /--

@@ -86,8 +86,16 @@ theorem coe_orderEmbedding : ⇑orderEmbedding = Real.toEReal := rfl
   | ⊤ => ⊤
   | .some x => x.1
 
-instance hasCoeENNReal : Coe ℝ≥0∞ EReal :=
+instance : Coe ℝ≥0∞ EReal :=
   ⟨ENNReal.toEReal⟩
+
+@[simp] lemma _root_.ENNReal.toEReal_natCast (n : ℕ) : ((n : ℝ≥0∞) : EReal) = n := rfl
+
+@[simp, norm_cast] lemma _root_.ENNReal.toEReal_zero : ((0 : ℝ≥0∞) : EReal) = 0 := rfl
+@[simp, norm_cast] lemma _root_.ENNReal.toEReal_one : ((1 : ℝ≥0∞) : EReal) = 1 := rfl
+
+lemma _root_.ENNReal.toEReal_ofNat (n : ℕ) [n.AtLeastTwo] :
+    ((ofNat(n) : ℝ) : EReal) = ofNat(n) := rfl
 
 instance : Inhabited EReal := ⟨0⟩
 
@@ -194,12 +202,12 @@ protected theorem mul_comm (x y : EReal) : x * y = y * x := by
 protected theorem one_mul : ∀ x : EReal, 1 * x = x
   | ⊤ => ite_eq_left one_pos
   | ⊥ => ite_eq_left one_pos
-  | (x : ℝ) => congr_arg Real.toEReal (one_mul x)
+  | (x : ℝ) => congr($(one_mul x).toEReal)
 
 protected theorem zero_mul : ∀ x : EReal, 0 * x = 0
   | ⊤ => (ite_eq_right (lt_irrefl _)).trans (ite_eq_left rfl)
   | ⊥ => (ite_eq_right (lt_irrefl _)).trans (ite_eq_left rfl)
-  | (x : ℝ) => congr_arg Real.toEReal (zero_mul x)
+  | (x : ℝ) => congr($(zero_mul x).toEReal)
 
 instance : MulZeroOneClass EReal where
   one_mul := EReal.one_mul
@@ -815,6 +823,22 @@ theorem natCast_lt_iff {m n : ℕ} : (m : EReal) < (n : EReal) ↔ m < n := by
 theorem natCast_mul (m n : ℕ) :
     (m * n : ℕ) = (m : EReal) * (n : EReal) := by
   rw [← coe_coe_eq_natCast, ← coe_coe_eq_natCast, ← coe_coe_eq_natCast, Nat.cast_mul, EReal.coe_mul]
+
+@[simp, norm_cast]
+lemma ennrealToEReal_le_natCast {r : ℝ≥0∞} {n : ℕ} : (r : EReal) ≤ n ↔ r ≤ n := by
+  rw [← EReal.coe_ennreal_le_coe_ennreal_iff, ENNReal.toEReal_natCast]
+
+@[simp, norm_cast]
+lemma natCast_le_ennrealToEReal {r : ℝ≥0∞} {n : ℕ} : n ≤ (r : EReal) ↔ n ≤ r := by
+  rw [← EReal.coe_ennreal_le_coe_ennreal_iff, ENNReal.toEReal_natCast]
+
+@[simp, norm_cast]
+lemma ennrealToEReal_lt_natCast {r : ℝ≥0∞} {n : ℕ} : (r : EReal) < n ↔ r < n := by
+  rw [← EReal.coe_ennreal_lt_coe_ennreal_iff, ENNReal.toEReal_natCast]
+
+@[simp, norm_cast]
+lemma natCast_lt_ennrealToEReal {r : ℝ≥0∞} {n : ℕ} : n < (r : EReal) ↔ n < r := by
+  rw [← EReal.coe_ennreal_lt_coe_ennreal_iff, ENNReal.toEReal_natCast]
 
 /-! ### Miscellaneous lemmas -/
 

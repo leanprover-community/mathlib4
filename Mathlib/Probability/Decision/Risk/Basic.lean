@@ -17,6 +17,9 @@ public import Mathlib.Probability.Kernel.Composition.MeasureComp
 * `bayesRisk_le_bayesRisk_comp`: data-processing inequality for the Bayes risk with respect to a
   prior: if we compose the data generating kernel `P` with a Markov kernel, then the Bayes risk
   increases.
+* `minimaxRisk_le_minimaxRisk_comp`, `minimaxRisk_le_minimaxRisk_map`,
+  `minimaxRisk_compProd_le_minimaxRisk`: analogous data-processing inequalities for the minimax
+  risk.
 * `bayesRisk_le_iInf`: for `P` a Markov kernel, the Bayes risk is less than `⨅ y, ∫⁻ θ, ℓ θ y ∂π`.
 
 In several cases, there is no information in the data about the parameter and the Bayes risk takes
@@ -256,6 +259,34 @@ lemma bayesRisk_compProd_le_bayesRisk (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Ke
     rw [Kernel.deterministic_comp_eq_map, ← Kernel.fst_eq, Kernel.fst_compProd]
   nth_rw 2 [this]
   exact bayesRisk_le_bayesRisk_comp _ _ _ _
+
+/-- **Data processing inequality** for the minimax risk: composition of the data generating
+kernel by a Markov kernel increases the risk. -/
+lemma minimaxRisk_le_minimaxRisk_comp (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧)
+    (η : Kernel 𝓧 𝓧') [IsMarkovKernel η] :
+    minimaxRisk ℓ P ≤ minimaxRisk ℓ (η ∘ₖ P) := by
+  simp only [minimaxRisk, le_iInf_iff]
+  intro κ hκ
+  rw [← κ.comp_assoc η]
+  exact iInf_le_of_le (κ ∘ₖ η) (iInf_le_of_le inferInstance le_rfl)
+
+/-- **Data processing inequality** for the minimax risk: taking the map of the data generating
+kernel by a function increases the risk. -/
+lemma minimaxRisk_le_minimaxRisk_map (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧)
+    {f : 𝓧 → 𝓧'} (hf : Measurable f) :
+    minimaxRisk ℓ P ≤ minimaxRisk ℓ (P.map f) := by
+  rw [← Kernel.deterministic_comp_eq_map hf]
+  exact minimaxRisk_le_minimaxRisk_comp _ _ _
+
+/-- Observing richer data cannot increase the minimax risk: the enriched experiment `P ⊗ₖ η` has
+minimax risk at most that of `P`. -/
+lemma minimaxRisk_compProd_le_minimaxRisk (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧)
+    [IsSFiniteKernel P] (η : Kernel (Θ × 𝓧) 𝓧') [IsMarkovKernel η] :
+    minimaxRisk ℓ (P ⊗ₖ η) ≤ minimaxRisk ℓ P := by
+  have : P = (Kernel.deterministic Prod.fst (by fun_prop)) ∘ₖ (P ⊗ₖ η) := by
+    rw [Kernel.deterministic_comp_eq_map, ← Kernel.fst_eq, Kernel.fst_compProd]
+  nth_rw 2 [this]
+  exact minimaxRisk_le_minimaxRisk_comp _ _ _
 
 end Compositions
 

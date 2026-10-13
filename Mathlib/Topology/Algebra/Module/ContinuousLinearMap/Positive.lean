@@ -137,7 +137,6 @@ lemma toContinuousLinearMap_zero : (0 : E₁ →P[R] E₂).toContinuousLinearMap
   rfl
 
 instance : IsZeroApply (E₁ →P[R] E₂) E₁ E₂ where
-  zero_apply _ := rfl
 
 variable (R E₁) in
 /-- The identity as a positive continuous linear map. -/
@@ -192,7 +191,6 @@ lemma toContinuousLinearMap_add (f g : E₁ →P[R] E₂) :
   rfl
 
 instance : IsAddApply (E₁ →P[R] E₂) E₁ E₂ where
-  add_apply _ _ _ := rfl
 
 instance : SMul ℕ (E₁ →P[R] E₂) where
   smul n f := .mk (n • f.toPositiveLinearMap) <|
@@ -209,7 +207,6 @@ lemma toContinuousLinearMap_nsmul (f : E₁ →P[R] E₂) (n : ℕ) :
   rfl
 
 instance : IsSMulApply ℕ (E₁ →P[R] E₂) E₁ E₂ where
-  smul_apply _ _ _ := rfl
 
 instance : AddCommMonoid (E₁ →P[R] E₂) := fast_instance% FunLike.addCommMonoid
 

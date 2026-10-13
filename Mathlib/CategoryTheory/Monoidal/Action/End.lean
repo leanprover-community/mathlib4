@@ -67,10 +67,10 @@ open MonoidalOpposite in
 composition monoidal structure. -/
 @[simps!]
 instance curriedActionMopMonoidal : (curriedActionMop C D).Monoidal where
-  ε := .mop <| (actionUnitNatIso C D).inv
-  μ _ _ := .mop <| { app _ := αₗ _ _ _ |>.inv }
-  δ _ _ := .mop <| { app _ := αₗ _ _ _ |>.hom }
-  η := .mop <| (actionUnitNatIso C D).hom
+  ε := .mop (actionUnitNatIso C D).inv
+  μ _ _ := .mop { app _ := αₗ _ _ _ |>.inv }
+  δ _ _ := .mop { app _ := αₗ _ _ _ |>.hom }
+  η := .mop (actionUnitNatIso C D).hom
   associativity c₁ c₂ c₃ := by
     apply (mopEquiv (D ⥤ D)).fullyFaithfulInverse.map_injective
     ext d

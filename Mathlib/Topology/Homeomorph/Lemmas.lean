@@ -6,10 +6,10 @@ Authors: Johannes Hölzl, Patrick Massot, Sébastien Gouëzel, Zhouhang Zhou, Re
 module
 
 public import Mathlib.Logic.Equiv.Fin.Basic
-public import Mathlib.Topology.Connected.LocallyConnected
-public import Mathlib.Topology.DenseEmbedding
-public import Mathlib.Topology.Connected.TotallyDisconnected
 public import Mathlib.Topology.Baire.Lemmas
+public import Mathlib.Topology.Connected.LocallyConnected
+public import Mathlib.Topology.Connected.TotallyDisconnected
+public import Mathlib.Topology.DenseEmbedding
 
 /-!
 # Further properties of homeomorphisms
@@ -114,7 +114,7 @@ protected lemma totallyDisconnectedSpace (h : X ≃ₜ Y) [tdc : TotallyDisconne
 
 @[simp]
 theorem map_punctured_nhds_eq (h : X ≃ₜ Y) (x : X) : map h (𝓝[≠] x) = 𝓝[≠] (h x) := by
-  convert! h.isEmbedding.map_nhdsWithin_eq ({ x }ᶜ) x
+  convert h.isEmbedding.map_nhdsWithin_eq ({ x }ᶜ) x
   rw [h.image_compl, Set.image_singleton]
 
 @[simp]
@@ -443,15 +443,15 @@ end Topology.IsEmbedding
 
 lemma Topology.IsEmbedding.uliftMap {f : X → Y} (hf : IsEmbedding f) :
     IsEmbedding (ULift.map f) :=
-  .comp Homeomorph.ulift.symm.isEmbedding (.comp hf <| Homeomorph.ulift.isEmbedding)
+  .comp Homeomorph.ulift.symm.isEmbedding (.comp hf Homeomorph.ulift.isEmbedding)
 
 lemma Topology.IsOpenEmbedding.uliftMap {f : X → Y} (hf : IsOpenEmbedding f) :
     IsOpenEmbedding (ULift.map f) :=
-  .comp Homeomorph.ulift.symm.isOpenEmbedding (.comp hf <| Homeomorph.ulift.isOpenEmbedding)
+  .comp Homeomorph.ulift.symm.isOpenEmbedding (.comp hf Homeomorph.ulift.isOpenEmbedding)
 
 lemma Topology.IsClosedEmbedding.uliftMap {f : X → Y} (hf : IsClosedEmbedding f) :
     IsClosedEmbedding (ULift.map f) :=
-  .comp Homeomorph.ulift.symm.isClosedEmbedding (.comp hf <| Homeomorph.ulift.isClosedEmbedding)
+  .comp Homeomorph.ulift.symm.isClosedEmbedding (.comp hf Homeomorph.ulift.isClosedEmbedding)
 
 end
 

@@ -5,8 +5,8 @@ Authors: Praneeth Kolichala
 -/
 module
 
-public import Mathlib.Topology.Homotopy.Path
 public import Mathlib.Topology.Homotopy.Equiv
+public import Mathlib.Topology.Homotopy.Path
 
 /-!
 # Contractible spaces

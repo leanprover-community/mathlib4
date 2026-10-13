@@ -5,7 +5,6 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.FreeAbelianGroup.Finsupp
 public import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
 public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 

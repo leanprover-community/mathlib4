@@ -5,10 +5,10 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Order.Compare
+public import Batteries.Data.List.Basic
 public import Mathlib.Data.Nat.PSub
 public import Mathlib.Data.Tree.Basic
-public import Batteries.Data.List.Basic
+public import Mathlib.Order.Compare
 
 /-!
 # Ordered sets

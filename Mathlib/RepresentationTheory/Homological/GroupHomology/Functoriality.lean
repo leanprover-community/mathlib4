@@ -451,7 +451,7 @@ noncomputable def H1CoresCoinfOfTrivial :
 
 instance map₁_quotientGroupMk'_epi :
     Epi (map (QuotientGroup.mk' S) (resOfQuotientIso A S).inv 1) := by
-  convert! epi_of_epi (H1π A) _
+  convert epi_of_epi (H1π A) _
   rw [H1π_comp_map]
   exact @epi_comp _ _ _ _ _ _ (mapCycles₁_quotientGroupMk'_epi A S) (H1π _) inferInstance
 
@@ -509,13 +509,13 @@ previous assumptions. -/
       LinearMap.add_apply, LinearMap.sub_apply, LinearMap.coe_comp, Function.comp_apply,
       lsingle_apply, sum_add, sum_sub, mul_inv_cancel_left, ← add_assoc, add_sub_cancel, e]
     intro w hw
-    · obtain (hl | hr) := Finset.mem_union.1 (support_add hw)
+    obtain (hl | hr) := Finset.mem_union.1 (support_add hw)
     /- The first sum clearly has support in `S`: -/
-      · obtain ⟨t, _, ht⟩ := Finset.mem_biUnion.1 (support_sum hl)
-        apply support_single_subset at ht
-        simp_all [← QuotientGroup.eq]
+    · obtain ⟨t, _, ht⟩ := Finset.mem_biUnion.1 (support_sum hl)
+      apply support_single_subset at ht
+      simp_all [← QuotientGroup.eq]
     /- The third sum is 0, by `hv`. -/
-      · simp_all [mapDomain]
+    · simp_all [mapDomain]
   /- Now `v + d(ve)` has support in `S` and agrees with `x` in `H₁(G, A)`: -/
   use H1π _ ⟨comapDomain Subtype.val (v + d₂₁ _ ve) <|
     Set.injOn_of_injective Subtype.val_injective, ?_⟩
@@ -668,7 +668,7 @@ equals `Z₁(π, π)(x) : Z₁(G ⧸ S, A_S)`. -/
         coe_mapCycles₁ (MonoidHom.id G)]
 /- Let `β` be `b` considered as an element of `C₁(G, I(S)(A))`, so that `C₁(Id, i)(β) = b`. -/
   let β : G →₀ Coinvariants.ker (A.ρ.comp S.subtype) :=
-    mapRange (Function.invFun <| (Coinvariants.ker (A.ρ.comp S.subtype)).subtype)
+    mapRange (Function.invFun (Coinvariants.ker (A.ρ.comp S.subtype)).subtype)
     (Function.leftInverse_invFun Subtype.val_injective (0 : Coinvariants.ker _)) b
   have hβb : mapRange Subtype.val rfl β = b := Finsupp.ext fun g => Subtype.ext_iff.1 <|
     Function.leftInverse_invFun Subtype.val_injective ⟨b g, hb g⟩

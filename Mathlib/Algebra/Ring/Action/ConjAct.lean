@@ -21,7 +21,7 @@ variable {R : Type*} [Semiring R]
 
 instance unitsMulSemiringAction : MulSemiringAction (ConjAct Rˣ) R :=
   { ConjAct.unitsMulDistribMulAction with
-    smul_zero := by simp [units_smul_def]
+    smul_zero := by simp
     smul_add := by simp [units_smul_def, mul_add, add_mul] }
 
 end ConjAct

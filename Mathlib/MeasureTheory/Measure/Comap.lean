@@ -5,8 +5,8 @@ Authors: Yury Kudryashov, Rémy Degenne
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.Map
 public import Mathlib.MeasureTheory.Measure.Filter
+public import Mathlib.MeasureTheory.Measure.Map
 
 /-!
 # Pullback of a measure

@@ -156,6 +156,18 @@ instance IsPrime.smul {I : Ideal R} [H : I.IsPrime] (g : M) : (g • I).IsPrime 
 theorem IsPrime.smul_iff {I : Ideal R} (g : M) : (g • I).IsPrime ↔ I.IsPrime :=
   ⟨fun H ↦ inv_smul_smul g I ▸ H.smul g⁻¹, fun H ↦ H.smul g⟩
 
+variable (M) in
+@[simp]
+theorem inertia_top (R : Type*) [Ring R] [MulSemiringAction M R] :
+    inertia M (⊤ : Ideal R) = ⊤ :=
+  AddSubgroup.inertia_top R M
+
+variable (M) in
+@[simp]
+theorem inertia_bot (R : Type*) [Ring R] [MulSemiringAction M R] [FaithfulSMul M R] :
+    inertia M (⊥ : Ideal R) = ⊥ :=
+  AddSubgroup.inertia_bot R M
+
 theorem inertia_smul {R : Type*} [Ring R] [MulSemiringAction M R]
     (g : M) (I : Ideal R) : (g • I).inertia M = (I.inertia M).map (MulAut.conj g) := by
   ext x

@@ -5,9 +5,9 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Topology.Algebra.ContinuousAffineMap.Topology
-public import Mathlib.Analysis.Normed.Operator.NormedSpace
 public import Mathlib.Analysis.Normed.Group.AddTorsor
+public import Mathlib.Analysis.Normed.Operator.NormedSpace
+public import Mathlib.Topology.Algebra.ContinuousAffineMap.Topology
 
 /-!
 # Norm on the continuous affine maps between normed vector spaces.
@@ -126,20 +126,6 @@ theorem decompLinearIsometryEquiv_symm_contLinear (p : W × (V →L[𝕜] W)) :
     ((decompLinearIsometryEquiv 𝕜 R V W).symm p).contLinear = p.2 := by
   rw [decompLinearIsometryEquiv, ← LinearIsometryEquiv.coe_symm_toLinearEquiv,
     decompLinearEquiv_symm_contLinear]
-
-@[deprecated decompLinearIsometryEquiv +typeChanged (since := "2026-03-03"),
-  inherit_doc decompLinearIsometryEquiv]
-abbrev toConstProdContinuousLinearMap := decompLinearIsometryEquiv 𝕜 𝕜 V W
-
-@[deprecated fst_decompLinearIsometryEquiv +typeChanged (since := "2026-03-03")]
-theorem toConstProdContinuousLinearMap_fst (f : V →ᴬ[𝕜] W) :
-    (toConstProdContinuousLinearMap 𝕜 V W f).fst = f 0 :=
-  rfl
-
-@[deprecated snd_decompLinearIsometryEquiv +typeChanged (since := "2026-03-03")]
-theorem toConstProdContinuousLinearMap_snd (f : V →ᴬ[𝕜] W) :
-    (toConstProdContinuousLinearMap 𝕜 V W f).snd = f.contLinear :=
-  rfl
 
 end Seminormed
 

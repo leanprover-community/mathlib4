@@ -5,8 +5,8 @@ Authors: Jeremy Avigad
 -/
 module
 
-public import Mathlib.Order.Filter.Tendsto
 public import Mathlib.Data.PFun
+public import Mathlib.Order.Filter.Tendsto
 
 /-!
 # `Tendsto` for relations and partial functions
@@ -64,7 +64,7 @@ def rmap (r : SetRel α β) (l : Filter α) : Filter β where
   sets_of_superset hs st := mem_of_superset hs (SetRel.core_mono st)
   inter_sets hs ht := by
     simp only [Set.mem_ofPred_eq]
-    convert! inter_mem hs ht
+    convert inter_mem hs ht
     rw [← SetRel.core_inter]
 
 theorem rmap_sets (r : SetRel α β) (l : Filter α) : (l.rmap r).sets = r.core ⁻¹' l.sets :=

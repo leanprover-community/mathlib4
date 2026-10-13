@@ -157,7 +157,7 @@ instance (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
     IsGaloisGroup H (FixedPoints.subalgebra R S H) S where
   faithful := have := hGKL.faithful; inferInstance
   commutes := inferInstance
-  isInvariant := ⟨fun x h ↦ ⟨⟨x, h⟩, rfl⟩⟩
+  isInvariant := inferInstance
 
 section Quotient
 

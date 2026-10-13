@@ -5,10 +5,11 @@ Authors: Chris Birkbeck, David Loeffler, Michael Stoll
 -/
 module
 
-public import Mathlib.Analysis.Complex.TaylorSeries
-public import Mathlib.Analysis.Complex.Positivity
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
 public import Mathlib.NumberTheory.LSeries.Deriv
+
+import Mathlib.Analysis.Complex.Positivity
+import Mathlib.Analysis.Complex.TaylorSeries
 
 /-!
 # Positivity of values of L-series
@@ -46,7 +47,7 @@ lemma iteratedDeriv_alternating {a : ℕ → ℂ} (hn : 0 ≤ a) {x : ℝ}
   rw [LSeries.term_def]
   split
   · exact le_rfl
-  · refine mul_nonneg ?_ <| (inv_natCast_cpow_ofReal_pos (by assumption) x).le
+  · refine mul_nonneg ?_ (inv_natCast_cpow_ofReal_pos (by assumption) x).le
     induction n with
     | zero => simpa only [Function.iterate_zero, id_eq] using! hn k
     | succ n IH =>

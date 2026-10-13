@@ -5,8 +5,8 @@ Authors: Floris van Doorn, Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Finset.NAry
 public import Mathlib.Algebra.Group.Pointwise.Set.Finite
+public import Mathlib.Data.Finset.NAry
 
 /-!
 # Pointwise operations of finsets
@@ -157,7 +157,7 @@ variable [DecidableEq β] [SMul α β] {s s₁ s₂ t : Finset β} {a : α} {b :
 /-- The scaling of a finset `s` by a scalar `a`: `a • s = {a • x | x ∈ s}`. -/
 @[to_additive (attr := instance_reducible)
   /-- The translation of a finset `s` by a vector `a`: `a +ᵥ s = {a +ᵥ x | x ∈ s}`. -/]
-protected def smulFinset : SMul α (Finset β) where smul a := image <| (a • ·)
+protected def smulFinset : SMul α (Finset β) where smul a := image (a • ·)
 
 scoped[Pointwise] attribute [instance] Finset.smulFinset Finset.vaddFinset
 

@@ -5,8 +5,9 @@ Authors: Alex J. Best
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.Elab.Tactic.Basic
+
+import Mathlib.Init
 
 /-!
 # Defines `sleep_heartbeats` tactic.
@@ -25,7 +26,7 @@ behaviour that is not guaranteed to function in the way that is relied upon here
 As such this function is not to be considered reliable, especially after future updates to Lean.
 This should be used with caution and basically only for demo / testing purposes
 and not in compiled code without further testing. -/
-def sleepAtLeastHeartbeats (n : Nat) : IO Unit := do
+def sleepAtLeastHeartbeats (n : Nat) : BaseIO Unit := do
   -- TODO: adjust docstring
   IO.addHeartbeats n
 

@@ -6,8 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.Embedding.IsSupported
-public import Mathlib.Algebra.Homology.Additive
-public import Mathlib.Algebra.Homology.Opposite
 
 /-!
 # The extension of a homological complex by an embedding of complex shapes
@@ -252,7 +250,6 @@ noncomputable def extendOpIso : K.op.extend e.op ≅ (K.extend e).op :=
     extend.XOpIso_hom_d_op _ _ _)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma extend_op_d (i' j' : ι') :
     (K.op.extend e.op).d i' j' =

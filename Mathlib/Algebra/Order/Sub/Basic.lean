@@ -5,11 +5,9 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
+public import Mathlib.Algebra.Group.Even
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Algebra.Order.Sub.Unbundled.Basic
-public import Mathlib.Algebra.Group.Equiv.Basic
-public import Mathlib.Algebra.Group.Even
 /-!
 # Lemmas about subtraction in unbundled canonically ordered monoids
 -/

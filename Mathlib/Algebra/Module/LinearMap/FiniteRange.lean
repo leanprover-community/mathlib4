@@ -5,8 +5,8 @@ Authors: Patrick Massot, Anatole Dedecker, Yongxi Lin
 -/
 module
 
-public import Mathlib.RingTheory.Finiteness.Cofinite
 public import Mathlib.Algebra.Module.Submodule.EqLocus
+public import Mathlib.RingTheory.Finiteness.Cofinite
 
 /-!
 # `HasFiniteRange` predicate on linear maps, and the associated equivalence relation

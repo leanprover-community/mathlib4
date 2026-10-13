@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Probability.Kernel.CompProdEqIff
 public import Mathlib.Probability.Kernel.Composition.Lemmas
-public import Mathlib.Probability.Kernel.Disintegration.StandardBorel
 public import Mathlib.Probability.Kernel.Deterministic
+public import Mathlib.Probability.Kernel.Disintegration.StandardBorel
 
 /-!
 
@@ -268,7 +268,7 @@ lemma rnDeriv_posterior_ae_prod (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ)
 lemma rnDeriv_posterior (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ) :
     ∀ᵐ ω ∂μ, ∀ᵐ x ∂(κ ∘ₘ μ),
       (κ†μ).rnDeriv (Kernel.const _ μ) x ω = κ.rnDeriv (Kernel.const _ (κ ∘ₘ μ)) ω x := by
-  convert!
+  convert
     Measure.ae_ae_of_ae_prod
       (rnDeriv_posterior_ae_prod h_ac) -- much faster than `exact`
          -- much faster than `exact`

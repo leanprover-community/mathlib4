@@ -5,7 +5,6 @@ Authors: Alex Kontorovich, David Loeffler, Heather Macbeth, Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Calculus.FDeriv.Analytic
 public import Mathlib.Analysis.Fourier.AddCircle
 public import Mathlib.Analysis.Fourier.FourierTransform
 
@@ -79,6 +78,10 @@ the namespace `Real` in the above statements.
 
 We also give specialized versions of the one-dimensional real derivative (and iterated derivative)
 in `Real.deriv_fourierIntegral` and `Real.iteratedDeriv_fourierIntegral`.
+
+Finally, `Real.one_add_pow_mul_norm_fourier_le` records the decay of the Fourier transform of a
+function on the real line whose first `n` derivatives are integrable: `𝓕 f u` decays like
+`|u| ^ (-n)`, with an explicit bound which is also nontrivial at `u = 0`.
 -/
 
 @[expose] public section
@@ -771,7 +774,7 @@ lemma hasDerivAt_fourier
     apply ContinuousLinearMap.ext_ring
     rw [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.flip_apply,
       ContinuousLinearMap.mul_apply', one_mul, map_smul]
-    exact congr_arg (fun x ↦ v • x) (one_smul ℝ (f v)).symm
+    congrm v • $((one_smul ℝ (f v)).symm)
   convert! (VectorFourier.hasFDerivAt_fourierIntegral L hf hf'' w).hasDerivAt using 1
   rw [fourierIntegral_continuousLinearMap_apply' h_int, VectorFourier.fourierIntegral,
     fourier_real_eq]
@@ -827,5 +830,35 @@ theorem fourier_iteratedDeriv {f : ℝ → E} {N : ℕ∞} {n : ℕ} (hf : ContD
   simp_rw [iteratedDeriv, ← fourier_continuousMultilinearMap_apply (A n hn),
     fourier_iteratedFDeriv hf A hn]
   simp [← coe_smul, smul_smul, ← mul_pow, innerSL_apply_apply ℝ]
+
+/-- If `f` and its first `n` derivatives are integrable, then the Fourier transform of `f` decays
+like `|u| ^ (-n)`, with an explicit bound that is also nontrivial at `u = 0`.
+
+TODO: a higher-dimensional analogue.  This requires a reverse bound for `fourierPowSMulRight`, for
+which Mathlib currently only has the ≤ direction.
+-/
+theorem one_add_pow_mul_norm_fourier_le {f : ℝ → E} {n : ℕ} (hf : ContDiff ℝ n f)
+    (h'f : ∀ k ≤ n, Integrable (iteratedDeriv k f)) (u : ℝ) :
+    (1 + |u| ^ n) * ‖𝓕 f u‖ ≤
+      (∫ v, ‖f v‖) + ((2 * π) ^ n)⁻¹ * ∫ v, ‖iteratedDeriv n f v‖ := by
+  rw [one_add_mul]
+  apply add_le_add (norm_fourier_le_integral_norm f u)
+  rw [inv_mul_eq_div, le_div_iff₀ (by positivity)]
+  calc
+    _ = (2 * π * |u|) ^ n * ‖𝓕 f u‖ := by rw [mul_pow]; ring
+    _ = ‖𝓕 (iteratedDeriv n f) u‖ := by
+      rw [fourier_iteratedDeriv hf (fun k hk ↦ h'f k (mod_cast hk)) le_rfl, norm_smul, norm_pow]
+      simp [abs_of_nonneg pi_nonneg]
+    _ ≤ _ := norm_fourier_le_integral_norm _ u
+
+/-- The Fourier transform of a function whose first two derivatives are integrable decays
+quadratically. -/
+theorem one_add_sq_mul_norm_fourier_le {f : ℝ → E} (hf : ContDiff ℝ 2 f)
+    (h'f : ∀ k ≤ 2, Integrable (iteratedDeriv k f)) (u : ℝ) :
+    (1 + u ^ 2) * ‖𝓕 f u‖ ≤
+      (∫ v, ‖f v‖) + (4 * π ^ 2)⁻¹ * ∫ v, ‖iteratedDeriv 2 f v‖ := by
+  convert one_add_pow_mul_norm_fourier_le hf h'f u using 3
+  · simp
+  · ring
 
 end Real

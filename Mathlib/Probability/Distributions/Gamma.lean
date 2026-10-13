@@ -5,8 +5,8 @@ Authors: Josha Dekker
 -/
 module
 
-public import Mathlib.Probability.CDF
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
+public import Mathlib.Probability.CDF
 
 /-! # Gamma distributions over ℝ
 

@@ -5,8 +5,6 @@ Authors: Jeremy Tan
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Finite
-public import Mathlib.Combinatorics.SimpleGraph.Maps
 public import Mathlib.Combinatorics.SimpleGraph.Subgraph
 
 /-!
@@ -175,8 +173,6 @@ lemma edgeSet_edge_subset {v w : V} : (edge v w).edgeSet ⊆ {s(v, w)} := by sim
 variable {s t}
 
 lemma edgeSet_edge_of_ne (h : s ≠ t) : (edge s t).edgeSet = {s(s, t)} := by simpa [edge]
-
-@[deprecated (since := "2026-03-18")] alias edge_edgeSet_of_ne := edgeSet_edge_of_ne
 
 lemma sup_edge_of_adj (h : G.Adj s t) : G ⊔ edge s t = G := by
   simp [h]

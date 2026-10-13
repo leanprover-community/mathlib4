@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.Order.OrderClosed
 public import Mathlib.Topology.Order.LocalExtr
+public import Mathlib.Topology.Order.OrderClosed
 
 /-!
 # Maximum/minimum on the closure of a set

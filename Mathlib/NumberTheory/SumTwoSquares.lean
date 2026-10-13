@@ -5,9 +5,10 @@ Authors: Chris Hughes, Michael Stoll
 -/
 module
 
-public import Mathlib.Data.Nat.Squarefree
 public import Mathlib.NumberTheory.Zsqrtd.QuadraticReciprocity
-public import Mathlib.NumberTheory.Padics.PadicVal.Basic
+
+import Mathlib.Data.Nat.Squarefree
+import Mathlib.NumberTheory.Padics.PadicVal.Basic
 
 /-!
 # Sums of two squares

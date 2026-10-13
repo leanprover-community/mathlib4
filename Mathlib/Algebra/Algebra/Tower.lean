@@ -351,7 +351,7 @@ theorem restrictScalars_span (hsur : Function.Surjective (algebraMap R A)) (X : 
 
 theorem coe_span_eq_span_of_surjective (h : Function.Surjective (algebraMap R A)) (s : Set M) :
     (Submodule.span A s : Set M) = Submodule.span R s :=
-  congr_arg ((↑) : Submodule R M → Set M) (Submodule.restrictScalars_span R A h s)
+  congr($(Submodule.restrictScalars_span R A h s))
 
 /--
 Given a commutative ring `R`, an `R`-algebra `S` and an `R`-module `M` with a scalar tower

@@ -1,4 +1,4 @@
-module
+module -- shake: keep-all
 
 public import Mathlib.MeasureTheory.Integral.SetToL1.ChangeMeasure
 public import Mathlib.MeasureTheory.Integral.SetToL1.DominatedConvergence

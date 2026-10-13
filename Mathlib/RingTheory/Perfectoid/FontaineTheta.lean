@@ -5,10 +5,11 @@ Authors: Jiedong Jiang
 -/
 module
 
-public import Mathlib.RingTheory.AdicCompletion.Functoriality
 public import Mathlib.RingTheory.AdicCompletion.RingHom
 public import Mathlib.RingTheory.Perfectoid.Untilt
 public import Mathlib.RingTheory.WittVector.TeichmullerSeries
+
+import Mathlib.RingTheory.AdicCompletion.Functoriality
 
 /-!
 # Fontaine's θ map

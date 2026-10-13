@@ -5,7 +5,6 @@ Authors: Andreas Swerdlow, Kexing Ying
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 public import Mathlib.LinearAlgebra.BilinearForm.Properties
 public import Mathlib.LinearAlgebra.SesquilinearForm.Orthogonal
 
@@ -49,43 +48,17 @@ namespace LinearMap
 
 namespace BilinForm
 
-/-- The proposition that two elements of a bilinear form space are orthogonal. For orthogonality
-of an indexed set of elements, use `BilinForm.iIsOrtho`. -/
-@[deprecated "Use `B x y = 0`." (since := "2026-03-30")]
-def IsOrtho (B : BilinForm R M) (x y : M) : Prop :=
-  B x y = 0
-
-@[deprecated "`BilinMap.IsOrtho` has been deprecated" (since := "2026-03-30")]
-theorem isOrtho_def {B : BilinForm R M} {x y : M} : B.IsOrtho x y ↔ B x y = 0 :=
-  Iff.rfl
-
-@[deprecated "`BilinMap.IsOrtho` has been deprecated" (since := "2026-03-30")]
-theorem isOrtho_zero_left (x : M) : IsOrtho B (0 : M) x := LinearMap.isOrtho_zero_left B x
-
-@[deprecated "`BilinMap.IsOrtho` has been deprecated" (since := "2026-03-30")]
-theorem isOrtho_zero_right (x : M) : IsOrtho B x (0 : M) :=
-  zero_right x
-
 theorem ne_zero_of_not_isOrtho_self {B : BilinForm K V} (x : V) (hx₁ : B x x ≠ 0) : x ≠ 0 := by
   by_contra; simp [this] at hx₁
 
 theorem IsRefl.eq_iff (H : B.IsRefl) {x y : M} : B x y = 0 ↔ B y x = 0 :=
   ⟨eq_zero H, eq_zero H⟩
 
-@[deprecated (since := "2026-03-31")]
-alias IsRefl.ortho_comm := IsRefl.eq_iff
-
 theorem IsAlt.eq_iff (H : B₁.IsAlt) {x y : M₁} : B₁ x y = 0 ↔ B₁ y x = 0 :=
   LinearMap.IsAlt.eq_iff H
 
-@[deprecated (since := "2026-03-31")]
-alias IsAlt.ortho_comm := IsAlt.eq_iff
-
 theorem IsSymm.eq_iff (H : B.IsSymm) {x y : M} : B x y = 0 ↔ B y x = 0 :=
   LinearMap.IsSymm.eq_iff (isSymm_iff.1 H)
-
-@[deprecated (since := "2026-03-31")]
-alias IsSymm.ortho_comm := IsSymm.eq_iff
 
 /-- A set of vectors `v` is orthogonal with respect to some bilinear form `B` if and only
 if for all `i ≠ j`, `B (v i) (v j) = 0`. -/
@@ -100,22 +73,6 @@ section
 
 variable {R₄ M₄ : Type*} [CommRing R₄] [IsDomain R₄]
 variable [AddCommGroup M₄] [Module R₄ M₄] {G : BilinForm R₄ M₄}
-
-@[deprecated "`BilinMap.IsOrtho` has been deprecated" (since := "2026-03-30")]
-theorem isOrtho_smul_left {x y : M₄} {a : R₄} (ha : a ≠ 0) :
-    IsOrtho G (a • x) y ↔ IsOrtho G x y := by
-  dsimp only [IsOrtho]
-  rw [map_smul]
-  simp only [LinearMap.smul_apply, smul_eq_mul, mul_eq_zero, or_iff_right_iff_imp]
-  exact fun a ↦ (ha a).elim
-
-@[deprecated "`BilinMap.IsOrtho` has been deprecated" (since := "2026-03-30")]
-theorem isOrtho_smul_right {x y : M₄} {a : R₄} (ha : a ≠ 0) :
-    IsOrtho G x (a • y) ↔ IsOrtho G x y := by
-  dsimp only [IsOrtho]
-  rw [map_smul]
-  simp only [smul_eq_mul, mul_eq_zero, or_iff_right_iff_imp]
-  exact fun a ↦ (ha a).elim
 
 /-- A set of orthogonal vectors `v` with respect to some bilinear form `B` is linearly independent
   if for all `i`, `B (v i) (v i) ≠ 0`. -/
@@ -244,9 +201,9 @@ lemma ker_restrict_eq_of_codisjoint {p q : Submodule R M} (hpq : Codisjoint p q)
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · ext w
     obtain ⟨x, y, hx, hy, rfl⟩ := Submodule.codisjoint_iff_exists_add_eq.mp hpq w
-    simpa [hB z hz y hy] using LinearMap.congr_fun h ⟨x, hx⟩
+    simpa [hB z hz y hy] using congr($h ⟨x, hx⟩)
   · ext ⟨x, hx⟩
-    simpa using LinearMap.congr_fun h x
+    simpa using congr($h x)
 
 lemma inf_orthogonal_self_le_ker_restrict {W : Submodule R M} (b₁ : B.IsRefl) :
     W ⊓ B.orthogonal W ≤ (LinearMap.ker <| B.restrict W).map W.subtype := by

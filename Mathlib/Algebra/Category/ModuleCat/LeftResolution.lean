@@ -6,8 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Adjunctions
-public import Mathlib.Algebra.Category.ModuleCat.EpiMono
 public import Mathlib.Algebra.Homology.LeftResolution.Basic
+
+import Mathlib.Algebra.Category.ModuleCat.EpiMono
 
 /-!
 # Functorial projective resolutions of modules

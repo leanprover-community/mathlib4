@@ -84,7 +84,7 @@ lemma geometricMeasure_real_singleton_pos (h1 : p ≠ 0) (h2 : p ≠ 1) n :
 
 lemma hasSum_one_geometricMeasure (hp : p ≠ 0) :
     HasSum (fun n ↦ (1 - p : ℝ) ^ n * p) 1 := by
-  convert! (hasSum_geometric_of_lt_one (r := 1 - p) (by grind) (by grind)).mul_right (p : ℝ)
+  convert (hasSum_geometric_of_lt_one (r := 1 - p) (by grind) (by grind)).mul_right (p : ℝ)
   grind
 
 instance isProbabilityMeasure_geometricMeasure :
@@ -141,56 +141,5 @@ lemma integral_geometricMeasure [FiniteDimensional ℝ E] (hp : p ≠ 0) (f : �
   rw [ENNReal.toReal_ofReal (geometricMeasure_nonneg p n)]
 
 end Integral
-
-section GeometricPMF
-
-variable {p : ℝ}
-
-/-- The pmf of the geometric distribution depending on its success probability. -/
-@[deprecated geometricMeasure +typeChanged (since := "2026-03-08")]
-noncomputable
-def geometricPMFReal (p : ℝ) (n : ℕ) : ℝ := (1 - p) ^ n * p
-
-@[deprecated hasSum_one_geometricMeasure +typeChanged (since := "2026-03-08")]
-lemma geometricPMFRealSum (hp_pos : 0 < p) (hp_le_one : p ≤ 1) :
-    HasSum (fun n ↦ geometricPMFReal p n) 1 := by
-  unfold geometricPMFReal
-  have := hasSum_geometric_of_lt_one (sub_nonneg.mpr hp_le_one) (sub_lt_self 1 hp_pos)
-  apply (hasSum_mul_right_iff (hp_pos.ne')).mpr at this
-  simp only [sub_sub_cancel] at this
-  rw [inv_mul_eq_div, div_self hp_pos.ne'] at this
-  exact this
-
-@[deprecated geometricMeasure_real_singleton_pos +typeChanged (since := "2026-03-08")]
-lemma geometricPMFReal_pos {n : ℕ} (hp_pos : 0 < p) (hp_lt_one : p < 1) :
-    0 < geometricPMFReal p n := by
-  rw [geometricPMFReal]
-  positivity [sub_pos.mpr hp_lt_one]
-
-@[deprecated measureReal_nonneg +typeChanged (since := "2026-03-08")]
-lemma geometricPMFReal_nonneg {n : ℕ} (hp_pos : 0 < p) (hp_le_one : p ≤ 1) :
-    0 ≤ geometricPMFReal p n := by
-  rw [geometricPMFReal]
-  positivity [sub_nonneg.mpr hp_le_one]
-
-/-- Geometric distribution with success probability `p`. -/
-@[deprecated geometricMeasure +typeChanged (since := "2026-03-08")]
-noncomputable
-def geometricPMF (hp_pos : 0 < p) (hp_le_one : p ≤ 1) : PMF ℕ :=
-  ⟨fun n ↦ ENNReal.ofReal (geometricPMFReal p n), by
-    apply ENNReal.hasSum_coe.mpr
-    rw [← toNNReal_one]
-    exact (geometricPMFRealSum hp_pos hp_le_one).toNNReal
-      (fun n ↦ geometricPMFReal_nonneg hp_pos hp_le_one)⟩
-
-@[deprecated Measurable.of_discrete +typeChanged (since := "2026-03-08")]
-lemma measurable_geometricPMFReal : Measurable (geometricPMFReal p) := by
-  fun_prop
-
-@[deprecated StronglyMeasurable.of_discrete +typeChanged (since := "2026-03-08")]
-lemma stronglyMeasurable_geometricPMFReal : StronglyMeasurable (geometricPMFReal p) :=
-  stronglyMeasurable_iff_measurable.mpr measurable_geometricPMFReal
-
-end GeometricPMF
 
 end ProbabilityTheory

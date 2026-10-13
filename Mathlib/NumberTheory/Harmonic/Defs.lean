@@ -5,8 +5,8 @@ Authors: Koundinya Vajjha, Thomas Browning
 -/
 module
 
-public import Mathlib.Data.Rat.Defs
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Data.Rat.Defs
 
 /-!
 

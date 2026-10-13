@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Extensive
 public import Mathlib.CategoryTheory.Sites.Coverage
-public import Mathlib.CategoryTheory.EffectiveEpi.Basic
 /-!
 
 # The Coherent, Regular and Extensive Grothendieck Topologies

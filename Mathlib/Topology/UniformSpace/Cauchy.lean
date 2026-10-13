@@ -5,10 +5,8 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Tactic.CrossRefAttribute
-public import Mathlib.Topology.Algebra.Constructions
-public import Mathlib.Topology.Bases
 public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Topology.Algebra.Constructions
 public import Mathlib.Topology.UniformSpace.DiscreteUniformity
 
 /-!
@@ -289,7 +287,7 @@ theorem cauchySeq_shift {u : ℕ → α} (k : ℕ) : CauchySeq (fun n ↦ u (n +
     obtain ⟨N, h⟩ := h V mV
     use N + k
     intro a ha b hb
-    convert! h (a - k) (Nat.le_sub_of_add_le ha) (b - k) (Nat.le_sub_of_add_le hb) <;> lia
+    convert h (a - k) (Nat.le_sub_of_add_le ha) (b - k) (Nat.le_sub_of_add_le hb) <;> lia
   · exact h.comp_tendsto (tendsto_add_atTop_nat k)
 
 theorem Filter.HasBasis.cauchySeq_iff {γ} [Nonempty β] [SemilatticeSup β] {u : β → α} {p : γ → Prop}
@@ -692,7 +690,7 @@ protected theorem Filter.totallyBounded_iff_filter {g : Filter α} :
     have hb : Antitone fun t : Finset α ↦ g ⊓ 𝓟 (d.preimage t)ᶜ :=
       fun s t (h : s ⊆ t) => by beta_reduce; gcongr
     have : Filter.NeBot f :=
-      (Filter.iInf_neBot_iff_of_directed' <| hb.directed_ge).mpr fun t =>
+      (Filter.iInf_neBot_iff_of_directed' hb.directed_ge).mpr fun t =>
         Filter.notMem_iff_inf_principal_compl.mp <| hd_cover t t.finite_toSet
     have : f ≤ g := iInf_le_of_le ∅ (by simp)
     refine ⟨f, ‹_›, ‹_›, fun c hcf hc => ?_⟩

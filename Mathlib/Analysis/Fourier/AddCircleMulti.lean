@@ -6,7 +6,8 @@ Authors: David Loeffler
 module
 
 public import Mathlib.Analysis.Fourier.AddCircle
-public import Mathlib.MeasureTheory.Integral.Pi
+
+import Mathlib.MeasureTheory.Integral.Pi
 
 /-!
 # Multivariate Fourier series
@@ -145,7 +146,7 @@ variable (a : d → ℝ) {ι : Type*} (b : ι → ℝ)
 
 /-- The measurable equivalence between `UnitAddTorus` and a product of `Ioc` intervals. -/
 def measurableEquivPiIoc : UnitAddTorus ι ≃ᵐ {x : ι → ℝ // ∀ i, x i ∈ Ioc (b i) (b i + 1)} :=
-  (MeasurableEquiv.piCongrRight fun i => AddCircle.measurableEquivIoc 1 (b i)).trans <|
+  (MeasurableEquiv.piCongrRight fun i => AddCircle.measurableEquivIoc 1 (b i)).trans
   MeasurableEquiv.subtypePiEquivPi.symm
 
 theorem coe_measurableEquivPiIoc :
@@ -176,11 +177,11 @@ lemma measurePreserving_equivPiIoc :
     measurable_subtype_coe (α := {x : d → ℝ // ∀ i, x i ∈ Ioc (a i) (a i + 1)})
   simp only [Function.comp_def] at this
   simp_rw [coe_symm_measurableEquivPiIoc, ← this]
-  convert! (measurePreserving_pi _ _ (fun i => AddCircle.measurePreserving_mk 1 (a i))).map_eq.symm
+  convert (measurePreserving_pi _ _ (fun i => AddCircle.measurePreserving_mk 1 (a i))).map_eq.symm
   · simp [volume, AddCircle.haarAddCircle]
   · convert!
     (map_comap_subtype_coe (MeasurableSet.univ_pi' (fun i => measurableSet_Ioc (a := a i))) volume)
-    convert! (Measure.restrict_pi_pi (fun i => volume) (fun i => Ioc (a i) (a i + 1))).symm
+    convert (Measure.restrict_pi_pi (fun i => volume) (fun i => Ioc (a i) (a i + 1))).symm
     grind
 
 theorem lintegral_preimage (f : UnitAddTorus d → ℝ≥0∞) (a : d → ℝ) :
@@ -234,7 +235,7 @@ theorem orthonormal_mFourier : Orthonormal ℂ (mFourierLp (d := d) 2) := by
   obtain ⟨i, hi⟩ := Function.ne_iff.mp h
   apply Finset.prod_eq_zero (Finset.mem_univ i)
   simpa only [eq_false_intro hi, ite_false, ContinuousMap.inner_toLp, ← fourier_neg,
-    ← fourier_add] using! (orthonormal_iff_ite.mp <| orthonormal_fourier) (m i) (n i)
+    ← fourier_add] using! (orthonormal_iff_ite.mp orthonormal_fourier) (m i) (n i)
 
 end Lp
 

@@ -8,8 +8,8 @@ module
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 public import Mathlib.Topology.CompactOpen
 
-import Mathlib.Topology.ContinuousMap.SecondCountableSpace
 import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Topology.ContinuousMap.SecondCountableSpace
 
 /-!
 # A measurable space structure on the type of continuous maps

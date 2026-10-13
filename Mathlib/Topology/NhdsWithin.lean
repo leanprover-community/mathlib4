@@ -597,7 +597,7 @@ lemma nhdsSetWithin_empty' {s : Set α} : 𝓝ˢ[s] ∅ = ⊥ := by
   simp [nhdsSetWithin]
 
 lemma principal_inter_le_nhdsSetWithin {s t : Set α} : 𝓟 (s ∩ t) ≤ 𝓝ˢ[t] s := by
-  simpa [nhdsSetWithin] using inf_le_of_left_le (b := 𝓟 t) <| principal_le_nhdsSet
+  simpa [nhdsSetWithin] using inf_le_of_left_le (b := 𝓟 t) principal_le_nhdsSet
 
 lemma nhdsSetWithin_prod_le {s s' : Set α} {t t' : Set β} :
     𝓝ˢ[s' ×ˢ t'] (s ×ˢ t) ≤ 𝓝ˢ[s'] s ×ˢ 𝓝ˢ[t'] t := by

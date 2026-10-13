@@ -80,7 +80,7 @@ instance (priority := 100) : Infinite α :=
 def mk' {α} (e : α ≃ ℕ) : Denumerable α where
   encode := e
   decode := some ∘ e.symm
-  encodek _ := congr_arg some (e.symm_apply_apply _)
+  encodek _ := congr(some $(e.symm_apply_apply _))
   decode_inv _ := ⟨_, rfl, e.apply_symm_apply _⟩
 
 /-- Denumerability is conserved by equivalences. This is transitivity of equivalence the denumerable
@@ -216,7 +216,7 @@ theorem le_succ_of_forall_lt_le {x y : s} (h : ∀ z < x, z ≤ y) : x ≤ succ 
   have hx : ∃ m, (y : ℕ) + m + 1 ∈ s := exists_succ _
   show (x : ℕ) ≤ (y : ℕ) + Nat.find hx + 1 from
     le_of_not_gt fun hxy =>
-      (h ⟨_, Nat.find_spec hx⟩ hxy).not_gt <|
+      (h ⟨_, Nat.find_spec hx⟩ hxy).not_gt
         (by lia : (y : ℕ) < (y : ℕ) + Nat.find hx + 1)
 
 theorem lt_succ_self (x : s) : x < succ x :=

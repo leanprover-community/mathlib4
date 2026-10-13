@@ -6,11 +6,12 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.Algebra.Pointwise.Stabilizer
-public import Mathlib.Data.Setoid.Partition
-public import Mathlib.GroupTheory.GroupAction.Pointwise
 public import Mathlib.GroupTheory.GroupAction.SubMulAction
 public import Mathlib.GroupTheory.Index
+public import Mathlib.Order.Setoid.Partition
 public import Mathlib.Tactic.IntervalCases
+
+import Mathlib.GroupTheory.GroupAction.Pointwise
 
 /-! # Blocks
 
@@ -158,7 +159,7 @@ theorem IsTrivialBlock.smul_iff {B : Set α} (g : M) :
     IsTrivialBlock (g • B) ↔ IsTrivialBlock B := by
   constructor
   · intro H
-    convert! IsTrivialBlock.smul H g⁻¹
+    convert IsTrivialBlock.smul H g⁻¹
     simp only [inv_smul_smul]
   · intro H
     exact IsTrivialBlock.smul H g

@@ -6,9 +6,7 @@ Authors: Aaron Anderson
 module
 
 public import Mathlib.Basic.Rel
-public import Mathlib.Data.SetLike.Basic
 public import Mathlib.ModelTheory.Semantics
-public import Mathlib.Tactic.FunProp
 
 /-!
 # Definable Sets
@@ -68,10 +66,8 @@ theorem Definable.map_expansion {L' : FirstOrder.Language} [L'.Structure M] (h :
 theorem definable_iff_exists_formula_sum :
     A.Definable L s ↔ ∃ φ : L.Formula (A ⊕ α), s = {v | φ.Realize (Sum.elim (↑) v)} := by
   rw [Definable, Equiv.exists_congr_left (BoundedFormula.constantsVarsEquiv)]
-  refine exists_congr (fun φ => iff_iff_eq.2 (congr_arg (s = ·) ?_))
-  ext
-  simp only [BoundedFormula.constantsVarsEquiv, constantsOn,
-    mem_ofPred_eq, Formula.Realize]
+  congr! with φ x
+  simp only [BoundedFormula.constantsVarsEquiv, constantsOn, Formula.Realize]
   refine BoundedFormula.realize_mapTermRel_id ?_ (fun _ _ _ => rfl)
   intros
   simp only [Term.constantsVarsEquivLeft_symm_apply, Term.realize_varsToConstants,
@@ -150,13 +146,13 @@ theorem definable_biUnion_finset {ι : Type*} {f : ι → Set (α → M)}
 theorem definable_iInter_of_finite {ι : Type*} [Finite ι] {f : ι → Set (α → M)}
     (hf : ∀ i, A.Definable L (f i)) : A.Definable L (⋂ i, f i) := by
   have := Fintype.ofFinite ι
-  convert! definable_finset_inf hf Finset.univ using 1
+  convert definable_finset_inf hf Finset.univ using 1
   simp
 
 theorem definable_iUnion_of_finite {ι : Type*} [Finite ι] {f : ι → Set (α → M)}
     (hf : ∀ i, A.Definable L (f i)) : A.Definable L (⋃ i, f i) := by
   have := Fintype.ofFinite ι
-  convert! definable_finset_sup hf Finset.univ using 1
+  convert definable_finset_sup hf Finset.univ using 1
   simp
 
 @[simp]
@@ -523,7 +519,7 @@ lemma _root_.Set.Definable.preimage_map
       (hF i).preimage_comp (fun | none => Sum.inr i | some j => Sum.inl j)
   have h_cyl : A.Definable L { w : α ⊕ β → M | w ∘ Sum.inr ∈ S } :=
     hS.preimage_comp Sum.inr
-  convert! Definable.exists_of_finite (Definable.inter h_graph h_cyl) using 1
+  convert Definable.exists_of_finite (Definable.inter h_graph h_cyl) using 1
   ext v
   simp [← funext_iff]
 
@@ -551,7 +547,7 @@ theorem DefinableFun.ite {p : (α → M) → Prop} {g} [DecidablePred p]
   let P : Set (Option α → M) := {w | p (w ∘ some)}
   have hP : A.Definable L P := hp.preimage_comp some
   simp only [DefinableFun]
-  convert! (hP.inter hf).union (hP.compl.inter hg)
+  convert (hP.inter hf).union (hP.compl.inter hg)
   ext w
   by_cases h : p (w ∘ some) <;> simp [tupleGraph, P, h]
 

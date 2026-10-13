@@ -5,11 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Group.Pi.Lemmas
-public import Mathlib.Algebra.Category.Grp.Preadditive
-public import Mathlib.CategoryTheory.Preadditive.Biproducts
 public import Mathlib.Algebra.Category.Grp.Limits
-public import Mathlib.Tactic.CategoryTheory.Elementwise
+public import Mathlib.CategoryTheory.Preadditive.Biproducts
 
 /-!
 # The category of abelian groups has finite biproducts
@@ -106,7 +103,7 @@ def productLimitCone : Limits.LimitCone (Discrete.functor f) where
       fac := fun _ _ => rfl
       uniq := fun s m w => by
         ext x j
-        exact CategoryTheory.congr_fun (w ⟨j⟩) x }
+        congrm $(w ⟨j⟩) x }
 
 end HasLimit
 

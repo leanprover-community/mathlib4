@@ -111,7 +111,7 @@ local instance : IsFractionRing T E :=
 instance : IsIntegrallyClosed T :=
   integralClosure.isIntegrallyClosedOfFiniteExtension L
 
-variable [PerfectField (FractionRing R)]
+variable [Algebra.IsSeparable (FractionRing R) (FractionRing S)]
 
 local instance : Algebra.IsSeparable L E :=
   Algebra.isSeparable_tower_top_of_isSeparable K L E

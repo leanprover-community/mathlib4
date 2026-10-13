@@ -5,8 +5,8 @@ Authors: Ralf Stephan
 -/
 module
 
-public import Mathlib.Data.Nat.Prime.Defs
 public import Mathlib.Data.Nat.Nth
+public import Mathlib.Data.Nat.Prime.Defs
 
 /-!
 # The Nth primes

@@ -5,11 +5,11 @@ Authors: Leonardo de Moura, Mario Carneiro
 -/
 module
 
+public import Mathlib.Data.Int.Notation
 public import Mathlib.Logic.Equiv.Option
 public import Mathlib.Logic.Equiv.Sum
 public import Mathlib.Logic.Function.Conjugate
 public import Mathlib.Tactic.Lift
-public import Mathlib.Data.Int.Notation
 
 /-!
 # Equivalence between types

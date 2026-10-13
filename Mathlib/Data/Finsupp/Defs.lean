@@ -195,8 +195,6 @@ theorem hasFiniteSupport (f : α →₀ M) : HasFiniteSupport f := by
   rw [HasFiniteSupport]
   exact f.fun_support_eq.symm ▸ f.support.finite_toSet
 
-@[deprecated (since := "2026-03-03")] alias finite_support := hasFiniteSupport
-
 theorem support_subset_iff {s : Set α} {f : α →₀ M} :
     ↑f.support ⊆ s ↔ ∀ a ∉ s, f a = 0 := by
   grind
@@ -313,7 +311,7 @@ bundled (defined in `Mathlib/Data/Finsupp/Basic.lean`):
 -/
 def mapRange (f : M → N) (hf : f 0 = 0) (g : α →₀ M) : α →₀ N :=
   onFinset g.support (f ∘ g) fun a => by
-    rw [mem_support_iff, not_imp_not]; exact fun H => (congr_arg f H).trans hf
+    rw [mem_support_iff, not_imp_not]; exact fun H => congr(f $H).trans hf
 
 @[simp, grind =]
 theorem mapRange_apply {f : M → N} {hf : f 0 = 0} {g : α →₀ M} {a : α} :

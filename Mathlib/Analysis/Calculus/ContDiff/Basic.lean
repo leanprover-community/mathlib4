@@ -19,7 +19,7 @@ constants, products, composition with linear maps, etc.
 derivative, differentiability, higher derivative, `C^n`, multilinear, Taylor series, formal series
 -/
 
-public noncomputable section
+public section
 
 open Set Fin Filter Function
 
@@ -57,9 +57,6 @@ theorem iteratedFDerivWithin_fun_zero {i : ℕ} :
     iteratedFDerivWithin 𝕜 i (fun (_ : E) ↦ (0 : F)) s = 0 := by
   apply iteratedFDerivWithin_zero
 
-@[deprecated (since := "2026-03-18")]
-alias iteratedFDerivWithin_zero_fun := iteratedFDerivWithin_fun_zero
-
 @[simp]
 theorem ftaylorSeriesWithin_zero :
     ftaylorSeriesWithin 𝕜 (0 : E → F) = 0 := by
@@ -80,8 +77,6 @@ theorem iteratedFDeriv_zero {n : ℕ} :
 theorem iteratedFDeriv_fun_zero {n : ℕ} :
     iteratedFDeriv 𝕜 n (fun (_ : E) ↦ (0 : F)) = 0 := by
   apply iteratedFDeriv_zero
-
-@[deprecated (since := "2026-03-18")] alias iteratedFDeriv_zero_fun := iteratedFDeriv_fun_zero
 
 @[simp]
 theorem ftaylorSeries_zero :
@@ -199,7 +194,7 @@ series whose `k`-th term is given by `g ∘ (p k)`. -/
 theorem HasFTaylorSeriesUpToOn.continuousLinearMap_comp {n : ℕ∞ω} (g : F →L[𝕜] G)
     (hf : HasFTaylorSeriesUpToOn n f p s) :
     HasFTaylorSeriesUpToOn n (g ∘ f) (fun x k => g.compContinuousMultilinearMap (p x k)) s where
-  zero_eq x hx := congr_arg g (hf.zero_eq x hx)
+  zero_eq x hx := congr(g $(hf.zero_eq x hx))
   fderivWithin m hm x hx := (ContinuousLinearMap.compContinuousMultilinearMapL 𝕜
     (fun _ : Fin m => E) F G g).hasFDerivAt.comp_hasFDerivWithinAt x (hf.fderivWithin m hm x hx)
   cont m hm := (ContinuousLinearMap.compContinuousMultilinearMapL 𝕜
@@ -650,7 +645,7 @@ theorem contDiff_prodAssoc {n : ℕ∞ω} : ContDiff 𝕜 n <| Equiv.prodAssoc E
 
 Warning: see remarks attached to `contDiff_prodAssoc`
 -/
-theorem contDiff_prodAssoc_symm {n : ℕ∞ω} : ContDiff 𝕜 n <| (Equiv.prodAssoc E F G).symm :=
+theorem contDiff_prodAssoc_symm {n : ℕ∞ω} : ContDiff 𝕜 n (Equiv.prodAssoc E F G).symm :=
   (LinearIsometryEquiv.prodAssoc 𝕜 E F G).symm.contDiff
 
 /-- The iterated derivatives up to order `m` of a smooth compactly supported function are

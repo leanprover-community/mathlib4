@@ -58,6 +58,11 @@ variable [ConditionallyCompleteLattice α] {s : Set α} {u : β → α}
 def limsSup (f : Filter α) : α :=
   sInf { a | ∀ᶠ n in f, n ≤ a }
 
+@[to_dual (attr := simp)]
+lemma limsSup_pure (a : α) : limsSup (pure a) = a := by
+  simp only [limsSup, eventually_pure]
+  exact csInf_Ici
+
 /-- The `limsup` of a function `u` along a filter `f` is the infimum of the `a` such that
 the inequality `u x ≤ a` eventually holds for `f`. -/
 @[to_dual
@@ -77,6 +82,10 @@ def blimsup (u : β → α) (f : Filter β) (p : β → Prop) :=
 section
 
 variable {f : Filter β} {u : β → α} {p : β → Prop}
+
+@[to_dual (attr := simp)]
+lemma limsup_pure (b : β) : limsup u (pure b) = u b := by
+  simp [limsup]
 
 @[to_dual]
 theorem limsup_eq : limsup u f = sInf { a | ∀ᶠ n in f, u n ≤ a } :=

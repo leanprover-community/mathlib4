@@ -5,14 +5,12 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.FieldTheory.Galois.Basic
 public import Mathlib.FieldTheory.Minpoly.MinpolyDiv
-public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 public import Mathlib.FieldTheory.PurelyInseparable.Basic
-public import Mathlib.LinearAlgebra.Determinant
-public import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
 public import Mathlib.LinearAlgebra.Vandermonde
 public import Mathlib.RingTheory.Trace.Defs
+
+import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
 
 /-!
 # Trace for (finite) ring extensions.
@@ -614,8 +612,8 @@ lemma Module.Basis.traceDual_powerBasis_eq (pb : PowerBasis K L) (i) :
   rw [← funext_iff, Basis.traceDual_eq_iff]
   intro i j
   apply (algebraMap K (AlgebraicClosure K)).injective
-  have := congr_arg (coeff · i) (sum_smul_minpolyDiv_eq_X_pow (AlgebraicClosure K)
-    pb.adjoin_gen_eq_top (r := j) (pb.finrank.symm ▸ j.prop))
+  have := congr(coeff $(sum_smul_minpolyDiv_eq_X_pow (AlgebraicClosure K)
+    pb.adjoin_gen_eq_top (r := j) (pb.finrank.symm ▸ j.prop)) i)
   simp only [Polynomial.map_smul, map_div₀, map_pow, RingHom.coe_coe, finsetSum_coeff, coeff_smul,
     coeff_map, smul_eq_mul, coeff_X_pow, ← Fin.ext_iff, @eq_comm _ i] at this
   rw [PowerBasis.coe_basis]
@@ -639,7 +637,6 @@ variable (R) in
 /-- Every element of a quadratic extension satisfies its characteristic equation. -/
 theorem IsQuadraticExtension.sq_sub_trace_smul_add_norm_eq_zero (a : A) :
     a ^ 2 - trace R A a • a + algebraMap R A (norm R a) = 0 := by
-  have : Nontrivial R := nontrivial_of_invariantBasisNumber R
   let b := Module.finBasisOfFinrankEq R A (IsQuadraticExtension.finrank_eq_two R A)
   simpa [Matrix.charpoly_fin_two, ← Algebra.trace_eq_matrix_trace b,
     ← Algebra.norm_eq_matrix_det b, smul_def] using Algebra.aeval_charpoly_leftMulMatrix b a

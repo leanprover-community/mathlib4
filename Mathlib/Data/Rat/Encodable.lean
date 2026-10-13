@@ -5,8 +5,8 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Logic.Encodable.Basic
 public import Mathlib.Data.Rat.Init
+public import Mathlib.Logic.Encodable.Basic
 
 /-! # The rationals are `Encodable`.
 

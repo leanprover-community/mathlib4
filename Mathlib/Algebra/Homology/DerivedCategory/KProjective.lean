@@ -7,14 +7,15 @@ module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.SmallShiftedHom
 public import Mathlib.Algebra.Homology.HomotopyCategory.KProjective
-public import Mathlib.Algebra.Homology.Embedding.ExtendHomotopy
+
+import Mathlib.Algebra.Homology.Embedding.ExtendHomotopy
 
 /-!
 # Morphisms from K-projective complexes in the derived category
 
 In this file, we show that if `K : CochainComplex C ℤ` is K-projective,
 then for any `L : HomotopyCategory C (.up ℤ)`, the functor `DerivedCategory.Qh`
-induces a bijection from the type of morphisms `(HomotopyCategory.quotient _ _).obj K) ⟶ L`
+induces a bijection from the type of morphisms `(HomotopyCategory.quotient _ _).obj K ⟶ L`
 (i.e. homotopy classes of morphisms of cochain complexes) to the type of
 morphisms in the derived category.
 We obtain that a morphism between `K`-projective cochain complexes is a quasi-isomorphism

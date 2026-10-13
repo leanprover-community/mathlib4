@@ -5,9 +5,7 @@ Authors: Bhavik Mehta, Olivia Röhrig
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Maps
 public import Mathlib.Combinatorics.SimpleGraph.Finite
-public import Mathlib.Data.Fintype.BigOperators
 
 /-!
 # Edge labelings
@@ -42,6 +40,12 @@ instance [DecidableEq V] [Fintype G.edgeSet] [Fintype K] : Fintype (EdgeLabeling
 
 instance [Finite G.edgeSet] [Finite K] : Finite (EdgeLabeling G K) :=
   Pi.finite
+
+instance [IsEmpty G.edgeSet] : Unique (EdgeLabeling G K) :=
+  Pi.uniqueOfIsEmpty _
+
+instance [Nonempty G.edgeSet] [IsEmpty K] : IsEmpty (EdgeLabeling G K) :=
+  instIsEmptyForallOfNonempty
 
 instance [Nonempty K] : Nonempty (EdgeLabeling G K) :=
   Pi.instNonempty
@@ -121,11 +125,8 @@ theorem compRight_get (f : K → K') (x y) (h : G.Adj x y) :
 /-- Construct an edge labeling from a symmetric function on adjacent vertices. -/
 def mk (f : ∀ x y : V, G.Adj x y → K)
     (f_symm : ∀ (x y : V) (H : G.Adj x y), f y x H.symm = f x y H) : EdgeLabeling G K
-  | ⟨e, he⟩ => by
-    revert he
-    refine Sym2.hrec f (fun a b ↦ ?_) e
-    apply Function.hfunext (by simp [adj_comm])
-    grind
+  | ⟨e, he⟩ =>
+    e.fromRelNdrec (sym := G.symm) he f (f_symm · · · |>.symm)
 
 theorem get_mk (f : ∀ x y : V, G.Adj x y → K) (f_symm) (x y : V) (h : G.Adj x y) :
     (mk f f_symm).get x y h = f x y h :=

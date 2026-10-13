@@ -5,8 +5,8 @@ Authors: Tim Baumann, Stephen Morgan, Kim Morrison, Floris van Doorn
 -/
 module
 
-public import Mathlib.CategoryTheory.NatTrans
 public import Mathlib.CategoryTheory.Iso
+public import Mathlib.CategoryTheory.NatTrans
 
 /-!
 # The category of functors and natural transformations between two fixed categories.
@@ -84,7 +84,7 @@ theorem app_naturality {F G : C ⥤ D ⥤ E} (T : F ⟶ G) (X : C) {Y Z : D} (f 
 @[to_dual none, map (attr := reassoc (attr := simp))]
 theorem naturality_app {F G : C ⥤ D ⥤ E} (T : F ⟶ G) (Z : D) {X Y : C} (f : X ⟶ Y) :
     (F.map f).app Z ≫ (T.app Y).app Z = (T.app X).app Z ≫ (G.map f).app Z :=
-  congr_fun (congr_arg app (T.naturality f)) Z
+  congr(app $(T.naturality f) Z)
 
 @[to_dual none, reassoc]
 theorem naturality_app_app {F G : C ⥤ D ⥤ E ⥤ E'}
@@ -130,10 +130,7 @@ theorem hcomp_app {H I : D ⥤ E} (α : F ⟶ G) (β : H ⟶ I) (X : C) :
     (α ◫ β).app X = β.app (F.obj X) ≫ I.map (α.app X) :=
   (rfl)
 
-@[to_dual existing hcomp_app]
-theorem hcomp_app' {H I : D ⥤ E} (α : F ⟶ G) (β : H ⟶ I) (X : C) :
-    (α ◫ β).app X = H.map (α.app X) ≫ β.app (G.obj X) := by
-  simp
+to_dual_for hcomp_app := by simp
 
 @[to_dual self]
 theorem hcomp_id_app {H : D ⥤ E} (α : F ⟶ G) (X : C) : (α ◫ 𝟙 H).app X = H.map (α.app X) := by

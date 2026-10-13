@@ -27,7 +27,7 @@ This file defines composition of profunctors. Given profunctors `P : C ⥤ Dᵒ�
 * `associator` : The associator isomorphism `(P.comp Q).comp R ≅ P.comp (Q.comp R)`.
 
 These satisfy the coherence laws for a bicategory, see the file
-`CategoryTheory.Profunctor.Bicategory` (to be added in a future PR: #39619).
+`Mathlib.CategoryTheory.Profunctor.Bicategory`.
 -/
 
 @[expose] public section

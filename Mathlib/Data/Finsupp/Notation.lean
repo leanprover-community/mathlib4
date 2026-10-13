@@ -15,6 +15,8 @@ This file provides `fun₀ | 3 => a | 7 => b` notation for `Finsupp`, which desu
 `singleton`.
 -/
 
+open scoped Finset
+
 public section
 
 namespace Finsupp
@@ -89,7 +91,7 @@ meta def updateUnexpander : Lean.PrettyPrinter.Unexpander
 /-- Display `Finsupp` using `fun₀` notation. -/
 unsafe instance instRepr {α β} [Repr α] [Repr β] [Zero β] : Repr (α →₀ β) where
   reprPrec f p :=
-    if f.support.card = 0 then
+    if #f.support = 0 then
       "0"
     else
       let ret : Std.Format := f!"fun₀" ++ .nest 2 (

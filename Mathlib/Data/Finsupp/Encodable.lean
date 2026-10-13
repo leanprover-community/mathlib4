@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Finsupp.ToDFinsupp
 public import Mathlib.Data.DFinsupp.Encodable
+public import Mathlib.Data.Finsupp.ToDFinsupp
 /-!
 # `Encodable` and `Countable` instances for `α →₀ β`
 

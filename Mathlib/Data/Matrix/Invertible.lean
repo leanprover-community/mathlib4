@@ -1,10 +1,5 @@
-module
+module -- shake: keep-all
 
-public import Mathlib.Data.Finset.Attr
-public import Mathlib.Tactic.Bound.Init
-public import Mathlib.Tactic.ContinuousFunctionalCalculus
-public import Mathlib.Tactic.Finiteness.Attr
-public import Mathlib.Tactic.NormNum.Basic
-public import Mathlib.Tactic.SetLike
+public import Mathlib.LinearAlgebra.Matrix.Invertible
 
 deprecated_module (since := "2026-06-05")

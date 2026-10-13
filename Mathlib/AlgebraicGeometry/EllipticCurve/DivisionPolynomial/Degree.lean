@@ -6,7 +6,6 @@ Authors: David Kurniadi Angdinata
 module
 
 public import Mathlib.AlgebraicGeometry.EllipticCurve.DivisionPolynomial.Basic
-public import Mathlib.Tactic.ComputeDegree
 
 /-!
 # Division polynomials of Weierstrass curves
@@ -393,7 +392,7 @@ private lemma natDegree_coeff_Φ_ofNat (n : ℕ) :
   let cm {m n p q} : _ → _ → (p * q : R[X]).coeff (m + n) = _ := coeff_mul_add_eq_of_natDegree_le
   let h {n} := W.natDegree_coeff_preΨ' n
   rcases n with _ | _ | n
-  iterate 2 simp [natDegree_X_le]
+  on_goal 1 2 => simp [natDegree_X_le]
   have hd : (n + 1 + 1) ^ 2 = 1 + 2 * expDegree (n + 2) + if Even (n + 1) then 0 else 3 := by
     push_cast [← @Nat.cast_inj ℤ, expDegree_cast (n + 1).succ_ne_zero, Nat.even_add_one, ite_not]
     split_ifs <;> ring1

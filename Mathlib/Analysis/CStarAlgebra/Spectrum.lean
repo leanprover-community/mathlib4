@@ -6,10 +6,10 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Analysis.CStarAlgebra.Unitization
-public import Mathlib.Analysis.Complex.Convex
 public import Mathlib.Analysis.Normed.Algebra.GelfandFormula
 public import Mathlib.Analysis.SpecialFunctions.Exponential
-public import Mathlib.Algebra.Star.StarAlgHom
+
+import Mathlib.Analysis.Complex.Convex
 
 /-! # Spectral properties in C⋆-algebras
 
@@ -142,7 +142,7 @@ theorem IsStarNormal.spectralRadius_eq_nnnorm (a : A) [IsStarNormal a] :
     ((ENNReal.continuous_pow 2).tendsto (spectralRadius ℂ a)).comp
       (spectrum.pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius a)
   rw [← heq] at h₂
-  convert! tendsto_nhds_unique h₂ (pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius (a⋆ * a))
+  convert tendsto_nhds_unique h₂ (pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius (a⋆ * a))
   rw [(IsSelfAdjoint.star_mul_self a).spectralRadius_eq_nnnorm, sq, nnnorm_star_mul_self, coe_mul]
 
 namespace CStarAlgebra
@@ -215,8 +215,8 @@ lemma IsSelfAdjoint.isConnected_spectrum_compl {a : A} (ha : IsSelfAdjoint a) :
     have := Filter.NeBot.nonempty_of_mem inferInstance <| Filter.mem_map.mp <|
       Complex.isometry_ofReal.antilipschitzWith.tendsto_cobounded (spectrum.isBounded a |>.compl)
     exact this.image Complex.ofReal |>.mono <| by simp
-  case' upper => apply Complex.isConnected_of_upperHalfPlane ?_ <| Set.inter_subset_right
-  case' lower => apply Complex.isConnected_of_lowerHalfPlane ?_ <| Set.inter_subset_right
+  case' upper => apply Complex.isConnected_of_upperHalfPlane ?_ Set.inter_subset_right
+  case' lower => apply Complex.isConnected_of_lowerHalfPlane ?_ Set.inter_subset_right
   all_goals
     refine Set.subset_inter (fun z hz hz' ↦ ?_) (fun _ ↦ by simpa using le_of_lt)
     rw [Set.mem_ofPred_eq, ha.im_eq_zero_of_mem_spectrum hz'] at hz
@@ -233,7 +233,7 @@ lemma coe_isUnit {a : S} : IsUnit (a : A) ↔ IsUnit a := by
   have ha₁ := ha.star.mul ha
   have ha₂ := ha.mul ha.star
   have spec_eq {x : S} (hx : IsSelfAdjoint x) : spectrum ℂ x = spectrum ℂ (x : A) :=
-    Subalgebra.spectrum_eq_of_isPreconnected_compl S _ <|
+    Subalgebra.spectrum_eq_of_isPreconnected_compl S _
       (hx.map S.subtype).isConnected_spectrum_compl.isPreconnected
   rw [← StarMemClass.coe_star, ← MulMemClass.coe_mul, ← spectrum.zero_notMem_iff ℂ, ← spec_eq,
     spectrum.zero_notMem_iff] at ha₁ ha₂
@@ -305,7 +305,7 @@ lemma nnnorm_map (φ : F) (a : A) : ‖φ a‖₊ = ‖a‖₊ :=
       (symm (ofClass φ : A ≃⋆ₐ[ℂ] B)) ((ofClass φ : A ≃⋆ₐ[ℂ] B) a)
 
 lemma norm_map (φ : F) (a : A) : ‖φ a‖ = ‖a‖ :=
-  congr_arg NNReal.toReal (nnnorm_map φ a)
+  congr($(nnnorm_map φ a).toReal)
 
 lemma isometry (φ : F) : Isometry φ :=
   AddMonoidHomClass.isometry_of_norm φ (norm_map φ)

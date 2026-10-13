@@ -6,7 +6,8 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Init
-public import Lean.Meta.Match.MatcherInfo
+
+import Lean.Meta.Match.MatcherInfo
 
 /-!
 # Additional functions on `Lean.Name`.
@@ -147,7 +148,7 @@ i.e. `(nm.splitAt n).2.getNumParts = n` (assuming `nm.getNumParts ≥ n`).
 Example: ``splitAt `foo.bar.baz.back.bat 1 = (`foo.bar.baz.back, `bat)``. -/
 def splitAt (nm : Name) (n : Nat) : Name × Name :=
   let (nm2, nm1) := nm.componentsRev.splitAt n
-  (.fromComponents <| nm1.reverse, .fromComponents <| nm2.reverse)
+  (.fromComponents nm1.reverse, .fromComponents nm2.reverse)
 
 /-- `isPrefixOf? pre nm` returns `some post` if `nm = pre ++ post`.
 Note that this includes the case where `nm` has multiple more namespaces.

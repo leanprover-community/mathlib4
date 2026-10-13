@@ -87,27 +87,27 @@ theorem borel_eq_generateFrom_Ici_rat : borel ℝ = .generateFrom (⋃ a : ℚ, 
 
 theorem isPiSystem_Ioo_rat :
     IsPiSystem (⋃ (a : ℚ) (b : ℚ) (_ : a < b), {Ioo (a : ℝ) (b : ℝ)}) := by
-  convert! isPiSystem_Ioo ((↑) : ℚ → ℝ) ((↑) : ℚ → ℝ)
+  convert isPiSystem_Ioo ((↑) : ℚ → ℝ) ((↑) : ℚ → ℝ)
   ext x
   simp [eq_comm]
 
 theorem isPiSystem_Iio_rat : IsPiSystem (⋃ a : ℚ, {Iio (a : ℝ)}) := by
-  convert! isPiSystem_image_Iio (((↑) : ℚ → ℝ) '' univ)
+  convert isPiSystem_image_Iio (((↑) : ℚ → ℝ) '' univ)
   ext x
   simp only [iUnion_singleton_eq_range, mem_range, image_univ, mem_image, exists_exists_eq_and]
 
 theorem isPiSystem_Ioi_rat : IsPiSystem (⋃ a : ℚ, {Ioi (a : ℝ)}) := by
-  convert! isPiSystem_image_Ioi (((↑) : ℚ → ℝ) '' univ)
+  convert isPiSystem_image_Ioi (((↑) : ℚ → ℝ) '' univ)
   ext x
   simp only [iUnion_singleton_eq_range, mem_range, image_univ, mem_image, exists_exists_eq_and]
 
 theorem isPiSystem_Iic_rat : IsPiSystem (⋃ a : ℚ, {Iic (a : ℝ)}) := by
-  convert! isPiSystem_image_Iic (((↑) : ℚ → ℝ) '' univ)
+  convert isPiSystem_image_Iic (((↑) : ℚ → ℝ) '' univ)
   ext x
   simp only [iUnion_singleton_eq_range, mem_range, image_univ, mem_image, exists_exists_eq_and]
 
 theorem isPiSystem_Ici_rat : IsPiSystem (⋃ a : ℚ, {Ici (a : ℝ)}) := by
-  convert! isPiSystem_image_Ici (((↑) : ℚ → ℝ) '' univ)
+  convert isPiSystem_image_Ici (((↑) : ℚ → ℝ) '' univ)
   ext x
   simp only [iUnion_singleton_eq_range, mem_range, image_univ, mem_image, exists_exists_eq_and]
 

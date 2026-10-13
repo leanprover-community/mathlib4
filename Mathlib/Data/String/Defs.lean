@@ -17,7 +17,7 @@ This file defines a bunch of functions for the `String` datatype.
 /-- Determine if a unicode character is part of the ASCII subset.
 
 ASCII characters have code points in the range U+0000-U+007F.
-(Note: [the Unicode standard](https://www.unicode.org/Public/draft/charts/CodeCharts.pdf)) does
+(Note: [the Unicode standard](https://www.unicode.org/Public/draft/charts/CodeCharts.pdf) does
 not mention ASCII and instead calls this subset "C0 Controls and Basic Latin".)
 -/
 def Char.isAscii (c : Char) : Bool := c.toNat < 0x80

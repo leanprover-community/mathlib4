@@ -43,7 +43,7 @@ scoped instance [IsTriangulated C] : IsTriangulated Cᵒᵖ where
       dsimp at eq₃
       rw [← Category.assoc, ← op_comp, ← Functor.map_comp,
         NatIso.cancel_natIso_inv_right (opShiftFunctorEquivalence C _).unitIso] at eq₃
-      exact congr($(Functor.map_injective _ congr($(eq₃).unop)).op)
+      congrm $(Functor.map_injective _ congr($(eq₃).unop)).op
     · have eq₂ := congr($(o.comm₂).op)
       dsimp at eq₂
       rw [← Category.assoc, ← op_comp, ← Functor.map_comp, Category.assoc,
@@ -53,7 +53,7 @@ scoped instance [IsTriangulated C] : IsTriangulated Cᵒᵖ where
       exact congr($(Functor.map_injective _ congr($(eq₂).unop)).op).symm
     · have := op_distinguished _ o.mem
       dsimp at this
-      convert! this using 2
+      convert this using 2
       rw [Category.assoc, Functor.map_comp, Functor.map_comp,
         ← opShiftFunctorEquivalence_counitIso_hom_app_shift,
         ← opShiftFunctorEquivalence_counitIso_inv_naturality_assoc, Iso.inv_hom_id_app_assoc]

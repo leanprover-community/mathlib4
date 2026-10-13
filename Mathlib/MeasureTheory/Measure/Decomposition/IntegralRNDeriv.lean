@@ -37,6 +37,10 @@ namespace MeasureTheory
 variable {𝓧 : Type*} {m𝓧 : MeasurableSpace 𝓧} {μ ν : Measure 𝓧} {f : ℝ → ℝ}
 
 @[fun_prop]
+lemma Measure.integrable_rnDeriv [IsFiniteMeasure μ] : Integrable (μ.rnDeriv ν) ν :=
+  ⟨(Measure.measurable_rnDeriv _ _).aestronglyMeasurable, Measure.lintegral_rnDeriv_lt_top _ _⟩
+
+@[fun_prop]
 lemma Measure.integrable_toReal_rnDeriv [IsFiniteMeasure μ] :
     Integrable (fun x ↦ (μ.rnDeriv ν x).toReal) ν :=
   integrable_toReal_of_lintegral_ne_top (Measure.measurable_rnDeriv _ _).aemeasurable
@@ -101,9 +105,8 @@ lemma mul_le_integral_rnDeriv_of_ac [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     filter_upwards [h_rnDeriv_eq] with x hx
     rw [hx]
   rw [h_eq, mul_comm, ← div_le_iff₀, div_eq_inv_mul, inv_inv] at h
-  · convert! h
-    · simp only [div_eq_inv_mul, Measure.smul_apply, smul_eq_mul, ENNReal.toReal_mul,
-      ENNReal.toReal_inv, μ', measureReal_def]
+  · convert h
+    simp [div_eq_inv_mul, μ', measureReal_def]
   · simp [ENNReal.toReal_pos_iff, hν, measureReal_def]
 
 section Integrable

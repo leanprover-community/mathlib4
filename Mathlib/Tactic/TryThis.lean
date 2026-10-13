@@ -5,8 +5,9 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.Meta.Tactic.TryThis
+
+import Mathlib.Init
 
 /-!
 # 'Try this' tactic macro

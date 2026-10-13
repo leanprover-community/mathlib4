@@ -5,8 +5,8 @@ Authors: David Ledvinka
 -/
 module
 
-public import Mathlib.Tactic.Inclusion.Core.ToSet
 public meta import Mathlib.Tactic.Inclusion.Core.Types
+public import Mathlib.Tactic.Inclusion.Core.ToSet
 
 /-!
 # Expr helpers for the `inclusion` tactic

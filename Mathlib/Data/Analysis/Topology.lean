@@ -94,7 +94,7 @@ theorem toTopsp_isTopologicalBasis (F : Ctop α σ) :
 theorem mem_nhds_toTopsp (F : Ctop α σ) {s : Set α} {a : α} :
     s ∈ @nhds _ F.toTopsp a ↔ ∃ b, a ∈ F b ∧ F b ⊆ s :=
   (@TopologicalSpace.IsTopologicalBasis.mem_nhds_iff _ F.toTopsp _ _ _
-        F.toTopsp_isTopologicalBasis).trans <|
+        F.toTopsp_isTopologicalBasis).trans
     ⟨fun ⟨_, ⟨x, rfl⟩, h⟩ ↦ ⟨x, h⟩, fun ⟨x, h⟩ ↦ ⟨_, ⟨x, rfl⟩, h⟩⟩
 
 end Ctop
@@ -174,7 +174,7 @@ protected def id : Realizer α :=
 def ofEquiv (F : Realizer α) (E : F.σ ≃ τ) : Realizer α :=
   ⟨τ, F.F.ofEquiv E,
     ext' fun a s ↦
-      F.mem_nhds.trans <|
+      F.mem_nhds.trans
         ⟨fun ⟨s, h⟩ ↦ ⟨E s, by simpa using h⟩, fun ⟨t, h⟩ ↦ ⟨E.symm t, by simpa using h⟩⟩⟩
 
 @[simp]
@@ -231,9 +231,7 @@ theorem locallyFinite_iff_exists_realizer [TopologicalSpace α] (F : Ctop.Realiz
           let ⟨h, _h'⟩ := h₁ x
           F.mem_nhds.1 h
     ⟨⟨fun x ↦ ⟨g₂ x, (h₂ x).1⟩, fun x ↦
-        Finite.fintype <|
-          let ⟨_h, h'⟩ := h₁ x
-          h'.subset fun _i hi ↦ hi.mono (inter_subset_inter_right _ (h₂ x).2)⟩⟩,
+        Finite.fintype <| by grw [(h₂ x).2]; exact (h₁ x).2⟩⟩,
     fun ⟨R⟩ ↦ R.to_locallyFinite⟩
 
 instance [TopologicalSpace α] [Finite β] (F : Ctop.Realizer α) (f : β → Set α) :

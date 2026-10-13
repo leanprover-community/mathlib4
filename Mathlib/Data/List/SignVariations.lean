@@ -5,8 +5,8 @@ Authors: Tomaz Mascarenhas
 -/
 module
 
-public import Mathlib.Data.List.Destutter
 public import Mathlib.Basic.Sign.Basic
+public import Mathlib.Data.List.Destutter
 
 /-!
 # Sign variations of a list

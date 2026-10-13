@@ -251,7 +251,7 @@ lemma UniformSpace.mem_uniformity_ofCore_iff {u : UniformSpace.Core α} {s : Set
 protected theorem UniformSpace.ext {u₁ u₂ : UniformSpace α} (h : 𝓤[u₁] = 𝓤[u₂]) : u₁ = u₂ := by
   have : u₁.toTopologicalSpace = u₂.toTopologicalSpace := TopologicalSpace.ext_nhds fun x ↦ by
     rw [u₁.nhds_eq_comap_uniformity, u₂.nhds_eq_comap_uniformity]
-    exact congr_arg (comap _) h
+    congrm comap _ $h
   cases u₁; cases u₂; congr
 
 protected theorem UniformSpace.ext_iff {u₁ u₂ : UniformSpace α} :

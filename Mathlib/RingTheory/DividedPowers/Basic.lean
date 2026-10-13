@@ -5,10 +5,9 @@ Authors: Antoine Chambert-Loir, María-Inés de Frutos—Fernández
 -/
 module
 
-public import Mathlib.RingTheory.PowerSeries.Basic
 public import Mathlib.Combinatorics.Enumerative.Bell
-public import Mathlib.Data.Nat.Choose.Multinomial
 public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.PowerSeries.Basic
 
 /-! # Divided powers
 
@@ -159,7 +158,7 @@ theorem DividedPowers.ext (hI : DividedPowers I) (hI' : DividedPowers I)
 theorem DividedPowers.coe_injective :
     Function.Injective (fun (h : DividedPowers I) ↦ (h : ℕ → A → A)) := fun hI hI' h ↦ by
   ext n x
-  exact congr_fun (congr_fun h n) x
+  congrm $h n x
 
 end DividedPowersDefinition
 
@@ -320,7 +319,7 @@ theorem dpow_sum' {M : Type*} [AddCommMonoid M] {I : AddSubmonoid M} (dpow : ℕ
       conv_lhs => rw [← m.fill_filterNe a]
       exact Sym.count_coe_fill_of_ne (ne_of_mem_of_not_mem hi ha)
     · intro m hm
-      convert! sym_filterNe_mem a hm
+      convert sym_filterNe_mem a hm
       rw [erase_insert ha]
 
 variable {ι : Type*} [DecidableEq ι]
@@ -351,11 +350,11 @@ theorem dpow_linearCombination {S : Type*} [CommSemiring S] [Algebra A S] {J : I
   rw [Algebra.smul_def, hJ.dpow_mul (hx i hi), ← map_pow, ← Algebra.smul_def]
 
 /-- Given a nonempty `s : Finset ι` and a family `r : ι → R` such that `r i ∈ I` for all `i ∈ S`,
-  one has `hI.dpow n (∏ i ∈ s, r i) = n.factorial ^ (s.card - 1) • (∏ i ∈ s, hI.dpow n (r i))`
+  one has `hI.dpow n (∏ i ∈ s, r i) = n.factorial ^ (#s - 1) • (∏ i ∈ s, hI.dpow n (r i))`
   for all `n : ℕ`. -/
 theorem dpow_prod {ι : Type*} {r : ι → A} {s : Finset ι} (hs : s.Nonempty)
     (hs' : ∀ i ∈ s, r i ∈ I) {n : ℕ} :
-    hI.dpow n (∏ i ∈ s, r i) = n.factorial ^ (s.card - 1) • (∏ i ∈ s, hI.dpow n (r i)) := by
+    hI.dpow n (∏ i ∈ s, r i) = n.factorial ^ (#s - 1) • (∏ i ∈ s, hI.dpow n (r i)) := by
   classical
   induction s using Finset.induction with
   | empty => simp_all

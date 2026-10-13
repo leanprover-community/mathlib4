@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Calculus.TangentCone.Defs
 public import Mathlib.LinearAlgebra.Prod
 public import Mathlib.Topology.Algebra.Monoid
+
 import Mathlib.Analysis.Calculus.TangentCone.Basic
 
 /-!

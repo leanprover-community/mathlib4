@@ -5,10 +5,11 @@ Authors: Chris Hughes, Aaron Anderson, Yakov Pechersky
 -/
 module
 
-public import Mathlib.Algebra.Group.Commute.Basic
 public import Mathlib.Algebra.Group.End
 public import Mathlib.Data.Finset.NoncommProd
 public import Mathlib.Data.Fintype.Card
+
+import Mathlib.Algebra.Group.Commute.Basic
 
 /-!
 # support of a permutation
@@ -167,7 +168,7 @@ theorem Disjoint.mul_apply_eq_iff {σ τ : Perm α} (hστ : Disjoint σ τ) {a 
   refine ⟨fun h => ?_, fun h => by rw [mul_apply, h.2, h.1]⟩
   rcases hστ a with hσ | hτ
   · exact ⟨hσ, σ.injective (h.trans hσ.symm)⟩
-  · exact ⟨(congr_arg σ hτ).symm.trans h, hτ⟩
+  · exact ⟨congr(σ $hτ).symm.trans h, hτ⟩
 
 theorem Disjoint.mul_eq_one_iff {σ τ : Perm α} (hστ : Disjoint σ τ) :
     σ * τ = 1 ↔ σ = 1 ∧ τ = 1 := by
@@ -395,7 +396,7 @@ theorem Disjoint.support_mul (h : Disjoint f g) : (f * g).support = f.support �
   rw [mem_union, mem_support, mem_support, mem_support, mul_apply, ← not_and_or, not_imp_not]
   exact
     (h a).elim (fun hf h => ⟨hf, f.apply_eq_iff_eq.mp (h.trans hf.symm)⟩) fun hg h =>
-      ⟨(congr_arg f hg).symm.trans h, hg⟩
+      ⟨congr(f $hg).symm.trans h, hg⟩
 
 theorem support_prod_of_pairwise_disjoint (l : List (Perm α)) (h : l.Pairwise Disjoint) :
     l.prod.support = (l.map support).foldr (· ⊔ ·) ⊥ := by
@@ -449,7 +450,7 @@ theorem support_swap_mul_swap {x y z : α} (h : List.Nodup [x, y, z]) :
     and_self_iff, List.nodup_nil] at h
   push Not at h
   apply le_antisymm
-  · convert! support_mul_le (swap x y) (swap y z) using 1
+  · convert support_mul_le (swap x y) (swap y z) using 1
     rw [support_swap h.left.left, support_swap h.right.left]
     simp [-Finset.union_singleton]
   · intro
@@ -578,7 +579,7 @@ theorem card_support_swap_mul {f : Perm α} {x : α} (hx : f x ≠ x) :
 
 theorem card_support_swap {x y : α} (hxy : x ≠ y) : #(swap x y).support = 2 :=
   show #(swap x y).support = #⟨x ::ₘ y ::ₘ 0, by simp [hxy]⟩ from
-    congr_arg card <| by simp [support_swap hxy, *, Finset.ext_iff]
+    congr(card $(by simp [support_swap hxy, *, Finset.ext_iff]))
 
 @[simp]
 theorem card_support_eq_two {f : Perm α} : #f.support = 2 ↔ IsSwap f := by

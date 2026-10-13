@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.PartitionOfUnity
 public import Mathlib.Analysis.Convex.Combination
+public import Mathlib.Topology.PartitionOfUnity
 
 /-!
 # Partition of unity and convex sets
