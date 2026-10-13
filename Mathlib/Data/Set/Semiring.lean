@@ -45,6 +45,9 @@ def toSet : SetSemiring α ≃ Set α := Equiv.refl _
 @[simp] lemma toSet_subset_toSet {s t : SetSemiring α} : s.toSet ⊆ t.toSet ↔ s ≤ t := Iff.rfl
 @[simp] lemma toSet_ssubset_toSet {s t : SetSemiring α} : s.toSet ⊂ t.toSet ↔ s < t := Iff.rfl
 
+@[simp] lemma symm_toSet : toSet (α := α).symm = ofSet := rfl
+@[simp] lemma symm_ofSet : ofSet (α := α).symm = toSet := rfl
+
 instance : Zero (SetSemiring α) where zero := ofSet ∅
 instance : Add (SetSemiring α) where add s t := ofSet (s.toSet ∪ t.toSet)
 
