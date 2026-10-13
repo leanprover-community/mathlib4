@@ -496,9 +496,8 @@ probes with a HEAD request (`Location.markerURL?`). The marker lives at
 all artifacts for the commit were uploaded. -/
 def test_markerURL : IO Unit := do
   IO.println "Location.markerURL?:"
-  let dest (backend : UploadBackend) (container? : Option Container)
-      (putBase? : Option String) : String :=
-    ((uploadLocationFrom backend none putBase? container? "alice/mathlib4"
+  let dest (container? : Option Container) (putBase? : Option String) : String :=
+    ((uploadLocationFrom .s3 none putBase? container? "alice/mathlib4"
       (some "abc123")).toOption.bind (·.markerURL?)).getD "(unresolved)"
   -- The marker lives under `/m/`, its own namespace, and is keyed by repo.
   assertEq "marker is under /m/, keyed by repo"
@@ -509,7 +508,7 @@ def test_markerURL : IO Unit := do
   -- location, rooted at `{base}/{container}` (`uploadLocationFrom`).
   assertEq "marker URL follows a rebased upload destination"
     "https://bucket.example.org/mirror/mathlib4-forks/m/alice/mathlib4/abc123"
-    (dest .s3 (some .forks) (some "https://bucket.example.org/mirror"))
+    (dest (some .forks) (some "https://bucket.example.org/mirror"))
   -- The repo segment is lowercased, so an upload and a probe for the same fork
   -- meet at one path regardless of how the owner name was capitalized.
   assertEq "marker repo is lowercased in the path"
@@ -1407,6 +1406,9 @@ def test_uploadLocationFrom : IO Unit := do
   assertTrue "azure: no PUT_URL errors"
     (uploadLocationFrom .azure none none none "alice/mathlib4" none
       matches .error _)
+  assertTrue "azure: a container with PUT_URL errors"
+    (uploadLocationFrom .azure (some "https://upload.example/bucket") none
+      (some .forks) MATHLIBREPO (some "abc1") matches .error _)
   assertTrue "s3: a put base without a container errors"
     (uploadLocationFrom .s3 none (some "https://s3.example.org/x") none MATHLIBREPO none
       matches .error _)
@@ -1422,9 +1424,9 @@ def test_uploadLocationFrom : IO Unit := do
   assertTrue "an empty PUT_URL still counts"
     ((uploadLocationFrom .azure (some "") none none MATHLIBREPO none).toOption.map (·.root) ==
       some "")
-  assertTrue "an empty PUT_URL does not select a configured fallback container"
-    ((uploadLocationFrom .azure (some "") (some putBase) (some .forks)
-      "alice/mathlib4" none).toOption.map (·.root) == some "")
+  assertTrue "azure: an empty PUT_URL does not allow a container"
+    (uploadLocationFrom .azure (some "") (some putBase) (some .forks)
+      "alice/mathlib4" none matches .error _)
   assertTrue "s3: an empty PUT_URL errors despite a valid fallback container"
     (uploadLocationFrom .s3 (some "") (some putBase) (some .forks)
       "alice/mathlib4" none matches .error _)
@@ -1454,6 +1456,19 @@ def test_uploadLocationScope : IO Unit := do
           (location.sha? == if putURL?.isSome || container? == some Container.master
             then none else scope?)
       | .error error => assertTrue s!"scope test resolves: {error}" false
+  let azureFlat := uploadLocationFrom .azure (some "https://upload.example/bucket")
+    none none MATHLIBREPO (some "abc1")
+  assertTrue "azure: the canonical repo stays flat and has no marker"
+    (azureFlat.toOption.map (fun location =>
+      (location.fileURL "x.ltar", location.markerURL?)) ==
+      some ("https://upload.example/bucket/f/x.ltar", none))
+  let azureScoped := uploadLocationFrom .azure (some "https://upload.example/bucket")
+    none none "alice/mathlib4" (some "abc1")
+  assertTrue "azure: another repo keeps its scope and marker"
+    (azureScoped.toOption.map (fun location =>
+      (location.fileURL "x.ltar", location.markerURL?)) ==
+      some ("https://upload.example/bucket/f/alice/mathlib4/abc1/x.ltar",
+        some "https://upload.example/bucket/m/alice/mathlib4/abc1"))
 
 /-- The curl arguments an s3 upload signs each request with (`s3CurlArgs`),
 and the `If-None-Match: *` guard the curl tool adds to a non-overwrite put on

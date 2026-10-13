@@ -123,6 +123,10 @@ def main (args : List String) : IO Unit := do
       IO.eprintln help
       Process.exit 1
 
+  if ← getEnvFlag "MATHLIB_CACHE_DEBUG_USE_LEGACY" (ifUnset := false) then
+    IO.eprintln "Warning: MATHLIB_CACHE_DEBUG_USE_LEGACY is retired; \
+      cache reads use https://cache.mathlib.org"
+
   let repo? ← parseNamedOpt "repo" options
   let stagingDir? ← parseNamedOpt "staging-dir" options
   let cacheFromStr? ← parseNamedOpt "cache-from" options

@@ -61,8 +61,10 @@ end UploadBackend
 /--
 Pure core of `uploadLocation`: resolve where a staged set uploads.
 
-`MATHLIB_CACHE_PUT_URL` (`putUrl?`) wins on every backend: a flat endpoint
-with the container policy off, while the selected backend signs the requests.
+`MATHLIB_CACHE_PUT_URL` (`putUrl?`) wins on every backend: an endpoint without
+a container segment. `Location.ofEndpoint` applies the repo's layout, and the
+selected backend signs the requests.
+The azure backend rejects `--container` because it always uses this endpoint.
 Any set value counts here, an empty one included: a misconfigured endpoint
 fails the upload and does not divert it to the backend's location. The
 read variables take the opposite rule, where an empty value means unset.
@@ -74,14 +76,16 @@ for the s3 backend, and an error for the azure backend.
 def uploadLocationFrom (backend : UploadBackend) (putUrl? putBase? : Option String)
     (container? : Option Container) (repo : String) (scope? : Option String) :
     Except String Location := do
+  if backend == .azure && container?.isSome then
+    throw "the azure backend uses MATHLIB_CACHE_PUT_URL without a container: \
+      remove --container"
   let dest ← if let some url := putUrl? then
       pure (.ofEndpoint url "MATHLIB_CACHE_PUT_URL" repo scope?)
     else
-      let putBase? := normalizeBaseURL putBase?
       match backend with
-      | .azure => .error "the azure backend needs a flat endpoint: \
+      | .azure => .error "the azure backend needs an endpoint: \
           set MATHLIB_CACHE_PUT_URL"
-      | .s3 => s3UploadLocationFrom putBase? container? repo scope?
+      | .s3 => s3UploadLocationFrom (normalizeBaseURL putBase?) container? repo scope?
   -- An s3 root must have the form `https://endpoint/bucket[/prefix]`.
   if backend == .s3 then discard (s3EndpointSplit dest.root)
   return dest
