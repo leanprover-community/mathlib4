@@ -173,36 +173,6 @@ instance isManifold_quotient_of_contMDiffConstSMul [ContMDiffConstSMul I n G M] 
       refine ⟨ha₁, Set.mem_univ _, ?_⟩
       simpa [← localInverseAt_symm_trans_eqOn_smul x y g ha₃] using ha₂
 
-/-- The projection map `M → M ⧸ G` is smooth. -/
-@[to_additive]
-lemma contMDiff_orbitRel_quotient : CMDiff n (Quotient.mk' (s := orbitRel G M)) := by
-  intro x
-  sorry
-
-/-- Suppose `f : M → N` is a `G`-invariant map between smooth manifolds. If the induced map
-`M ⧸ G → N` is `C^n`, then so is `f`. -/
-@[to_additive]
-lemma foo {f : M → N}
-    (hf : letI := orbitRel G M; ∀ p q, p ≈ q → f p = f q)
-    (hf' : ContMDiff I J n (Quotient.lift f hf)) :
-    CMDiff n f := by
-  apply (hf'.comp (contMDiff_orbitRel_quotient (M := M)) ).congr
-  intro y
-  rfl
-
-/-- Suppose `f : M → N` is `C^n` and `G`-invariant, the induced map `M ⧸ G → N` is also `C^n`. -/
-@[to_additive]
-lemma bar {f : M → N} (hf : letI := orbitRel G M; ∀ p q, p ≈ q → f p = f q)
-    (hf' : CMDiff n f) : ContMDiff I J n (Quotient.lift f hf) := by
-  sorry
-
-/-- Suppose `f : M → N` is `G`-invariant, then `f` is `C^n` if and only if the induced map
-`M ⧸ G → N` is. -/
-@[to_additive]
-lemma baz {f : M → N} (hf : letI := orbitRel G M; ∀ p q, p ≈ q → f p = f q) :
-    ContMDiff I J n (Quotient.lift f hf) ↔ CMDiff n f :=
-  ⟨fun h ↦ foo hf h, fun h ↦ bar hf h⟩
-
 end MulAction
 
 end
