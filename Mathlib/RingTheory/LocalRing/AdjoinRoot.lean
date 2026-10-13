@@ -57,7 +57,7 @@ lemma nilradical_eq_span_mk_radical (ne : p ≠ 0) [UniqueFactorizationMonoid R]
 
 lemma isMaximal_nilradical_of_isPrimePow_normalize (ne : f ≠ 0) [DecidableEq k]
     (h : IsPrimePow (normalize f)) : (nilradical (AdjoinRoot f)).IsMaximal := by
-  rw [← prime_radical_iff_isPrimePow_normalize ne] at h
+  rw [← prime_radical_iff_isPrimePow_normalize] at h
   rw [nilradical_eq_span_mk_radical ne, ← Set.image_singleton, ← map_span]
   exact h.isMaximal_span_singleton.map_of_surjective_of_ker_le mk_surjective
     (by simpa [mem_span_singleton] using radical_dvd_self)
@@ -72,7 +72,7 @@ theorem isLocalRing_iff_isPrimePow_normalize (ne : f ≠ 0) [DecidableEq k] :
       replace hI := hI.isMaximal (ne_of_mem_of_not_mem' f_in ne)
       have maximal := hI.map_of_surjective_of_ker_le (f := mk f) mk_surjective (by simpa)
       rw [← eq_maximalIdeal maximal, comap_map_eq_self_of_isMaximal _ maximal.ne_top]
-    rw [← prime_radical_iff_isPrimePow_normalize ne, ← prime_span_singleton_iff,
+    rw [← prime_radical_iff_isPrimePow_normalize, ← prime_span_singleton_iff,
       prime_iff_isPrime (by simp), ← radical_span_singleton_eq_span_radical ne,
       radical_eq_sInf, eq, sInf_singleton]
     exact comap_isPrime ..
