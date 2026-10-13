@@ -84,7 +84,7 @@ theorem measure_notConvergentSeq_tendsto_zero [SemilatticeSup ι] [Countable ι]
     (hf : ∀ n, AEMeasurable (fun a ↦ edist (f n a) (g a)) μ) (hsm : NullMeasurableSet s μ)
     (hs : μ s ≠ ∞) (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) (n : ℕ) :
     Tendsto (fun j => μ (s ∩ notConvergentSeq f g n j)) atTop (𝓝 0) := by
-  rcases isEmpty_or_nonempty ι with h| h
+  rcases isEmpty_or_nonempty ι with h | h
   · exact tendsto_of_isEmpty
   rw [← measure_inter_notConvergentSeq_eq_zero hfg n, Set.inter_iInter]
   refine tendsto_measure_iInter_atTop
