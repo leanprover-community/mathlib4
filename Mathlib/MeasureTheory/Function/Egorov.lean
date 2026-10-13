@@ -67,13 +67,16 @@ theorem measure_inter_notConvergentSeq_eq_zero [SemilatticeSup ι] [Nonempty ι]
   obtain ⟨n, hn₁, hn₂⟩ := hx N
   exact ⟨n, hn₁, hn₂.le⟩
 
-theorem notConvergentSeq_measurableSet [Preorder ι] [Countable ι]
+theorem measurableSet_notConvergentSeq [Preorder ι] [Countable ι]
     (hf : ∀ n, Measurable (fun a ↦ edist (f n a) (g a))) :
     MeasurableSet (notConvergentSeq f g n j) :=
   MeasurableSet.iUnion fun k ↦ MeasurableSet.iUnion fun _ ↦
       measurableSet_lt measurable_const <| hf k
 
-theorem notConvergentSeq_nullMeasurableSet [Preorder ι] [Countable ι]
+@[deprecated (since := "2026-10-13")] alias notConvergentSeq_measurableSet :=
+  measurableSet_notConvergentSeq
+
+theorem nullMeasurableSet_notConvergentSeq [Preorder ι] [Countable ι]
     (hf : ∀ n, AEMeasurable (fun a ↦ edist (f n a) (g a)) μ) :
     NullMeasurableSet (notConvergentSeq f g n j) μ :=
   .iUnion fun k ↦ .iUnion fun _ ↦ nullMeasurableSet_lt aemeasurable_const (hf k)
@@ -89,7 +92,7 @@ theorem measure_notConvergentSeq_tendsto_zero [SemilatticeSup ι] [Countable ι]
     exact tendsto_const_nhds
   rw [← measure_inter_notConvergentSeq_eq_zero hfg n, Set.inter_iInter]
   refine tendsto_measure_iInter_atTop
-    (fun n ↦ hsm.inter (notConvergentSeq_nullMeasurableSet hf))
+    (fun n ↦ hsm.inter (nullMeasurableSet_notConvergentSeq hf))
     (fun k l hkl => Set.inter_subset_inter_right _ <| notConvergentSeq_antitone hkl)
     ⟨h.some, ne_top_of_le_ne_top hs (measure_mono Set.inter_subset_left)⟩
 
@@ -133,20 +136,23 @@ def iUnionNotConvergentSeq (hε : 0 < ε)
     (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) : Set α :=
   ⋃ n, s ∩ notConvergentSeq f g n (notConvergentSeqLTIndex (ε.half_pos hε.ne') hf hsm hs hfg n)
 
-theorem iUnionNotConvergentSeq_measurableSet (hε : 0 < ε)
+theorem measurableSet_iUnionNotConvergentSeq (hε : 0 < ε)
     (hf : ∀ n, Measurable (fun a ↦ edist (f n a) (g a)))
     (hsm : MeasurableSet s) (hs : μ s ≠ ∞)
     (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) :
     MeasurableSet
       (iUnionNotConvergentSeq hε (fun n ↦ (hf n).aemeasurable) hsm.nullMeasurableSet hs hfg) :=
-  MeasurableSet.iUnion fun _ ↦ hsm.inter <| notConvergentSeq_measurableSet hf
+  MeasurableSet.iUnion fun _ ↦ hsm.inter <| measurableSet_notConvergentSeq hf
 
-theorem iUnionNotConvergentSeq_nullMeasurableSet (hε : 0 < ε)
+@[deprecated (since := "2026-10-13")] alias iUnionNotConvergentSeq_measurableSet :=
+  measurableSet_iUnionNotConvergentSeq
+
+theorem nullMeasurableSet_iUnionNotConvergentSeq (hε : 0 < ε)
     (hf : ∀ n, AEMeasurable (fun a ↦ edist (f n a) (g a)) μ)
     (hsm : NullMeasurableSet s μ) (hs : μ s ≠ ∞)
     (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) :
     NullMeasurableSet (iUnionNotConvergentSeq hε hf hsm hs hfg) μ :=
-  MeasurableSet.iUnion fun _ ↦ hsm.inter (notConvergentSeq_nullMeasurableSet hf)
+  MeasurableSet.iUnion fun _ ↦ hsm.inter (nullMeasurableSet_notConvergentSeq hf)
 
 theorem measure_iUnionNotConvergentSeq (hε : 0 < ε)
     (hf : ∀ n, AEMeasurable (fun a ↦ edist (f n a) (g a)) μ)
@@ -206,7 +212,7 @@ theorem tendstoUniformlyOn_of_ae_tendsto_of_measurable_edist
   have hsm' := hsm.nullMeasurableSet (μ := μ)
   refine ⟨Egorov.iUnionNotConvergentSeq hε hf' hsm' hs hfg, ?_, ?_, ?_, ?_⟩
   · exact Egorov.iUnionNotConvergentSeq_subset hε hf' hsm' hs hfg
-  · exact Egorov.iUnionNotConvergentSeq_measurableSet hε hf hsm hs hfg
+  · exact Egorov.measurableSet_iUnionNotConvergentSeq hε hf hsm hs hfg
   · exact Egorov.measure_iUnionNotConvergentSeq hε hf' hsm' hs hfg
   · exact Egorov.tendstoUniformlyOn_sdiff_iUnionNotConvergentSeq hε hf' hsm' hs hfg
 
@@ -225,7 +231,7 @@ theorem tendstoUniformlyOn_of_ae_tendsto_of_aemeasurable_edist
     ∃ t ⊆ s, NullMeasurableSet t μ ∧ μ t ≤ ε ∧ TendstoUniformlyOn f g atTop (s \ t) := by
   refine ⟨Egorov.iUnionNotConvergentSeq hε hf hsm hs hfg, ?_, ?_, ?_, ?_⟩
   · exact Egorov.iUnionNotConvergentSeq_subset hε hf hsm hs hfg
-  · exact Egorov.iUnionNotConvergentSeq_nullMeasurableSet hε hf hsm hs hfg
+  · exact Egorov.nullMeasurableSet_iUnionNotConvergentSeq hε hf hsm hs hfg
   · exact Egorov.measure_iUnionNotConvergentSeq hε hf hsm hs hfg
   · exact Egorov.tendstoUniformlyOn_sdiff_iUnionNotConvergentSeq hε hf hsm hs hfg
 
@@ -247,7 +253,7 @@ theorem tendstoUniformlyOn_of_ae_tendsto (hf : ∀ n, StronglyMeasurable (f n))
 Version with measurable distances. -/
 theorem tendstoUniformlyOn_of_ae_tendsto_of_aemeasurable_edist' [IsFiniteMeasure μ]
     (hf : ∀ n, AEMeasurable (fun a ↦ edist (f n a) (g a)) μ)
-    (hfg : ∀ᵐ x ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (g x))) (hε : 0 < ε) :
+    (hfg : ∀ᵐ x ∂μ, Tendsto (fun n ↦ f n x) atTop (𝓝 (g x))) (hε : 0 < ε) :
     ∃ t, MeasurableSet t ∧ μ t ≤ ε ∧ TendstoUniformlyOn f g atTop tᶜ := by
   obtain ⟨t, -, ht, htμ, htf⟩ :=
     tendstoUniformlyOn_of_ae_tendsto_of_aemeasurable_edist hf nullMeasurableSet_univ
@@ -261,9 +267,10 @@ theorem tendstoUniformlyOn_of_ae_tendsto_of_aemeasurable_edist' [IsFiniteMeasure
 
 /-- Egorov's theorem for finite measure spaces. -/
 theorem tendstoUniformlyOn_of_ae_tendsto' [IsFiniteMeasure μ]
-    (hf : ∀ n, AEStronglyMeasurable (f n) μ) (hg : AEStronglyMeasurable g μ)
+    (hf : ∀ n, AEStronglyMeasurable (f n) μ)
     (hfg : ∀ᵐ x ∂μ, Tendsto (fun n ↦ f n x) atTop (𝓝 (g x))) (hε : 0 < ε) :
-    ∃ t, MeasurableSet t ∧ μ t ≤ ε ∧ TendstoUniformlyOn f g atTop tᶜ :=
-  tendstoUniformlyOn_of_ae_tendsto_of_aemeasurable_edist' (fun n ↦ ((hf n).edist hg)) hfg hε
+    ∃ t, MeasurableSet t ∧ μ t ≤ ε ∧ TendstoUniformlyOn f g atTop tᶜ := by
+  have hg : AEStronglyMeasurable g μ := aestronglyMeasurable_of_tendsto_ae atTop hf hfg
+  exact tendstoUniformlyOn_of_ae_tendsto_of_aemeasurable_edist' (fun n ↦ ((hf n).edist hg)) hfg hε
 
 end MeasureTheory
