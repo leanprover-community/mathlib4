@@ -5,9 +5,10 @@ Authors: Snir Broshi
 -/
 module
 
-import Mathlib.Algebra.GCDMonoid.FinsetLemmas
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
 public import Mathlib.RingTheory.ZMod.UnitsCyclic
+
+import Mathlib.Algebra.GCDMonoid.FinsetLemmas
 
 /-!
 # The Carmichael function

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Free
 public import Mathlib.Topology.Category.Profinite.Nobeling.Span
+
 import Mathlib.Topology.Category.Profinite.Nobeling.Successor
 import Mathlib.Topology.Category.Profinite.Nobeling.ZeroLimit
 

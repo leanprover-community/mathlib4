@@ -5,10 +5,11 @@ Authors: Oliver Nash
 -/
 module
 
-import Mathlib.Algebra.Lie.Derivation.Killing
 public import Mathlib.Algebra.Lie.Killing
 public import Mathlib.Algebra.Lie.Sl2
 public import Mathlib.Algebra.Lie.Weights.Chain
+
+import Mathlib.Algebra.Lie.Derivation.Killing
 import Mathlib.LinearAlgebra.Eigenspace.Semisimple
 import Mathlib.LinearAlgebra.JordanChevalley
 

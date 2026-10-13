@@ -5,12 +5,13 @@ Authors: Nailin Guan
 -/
 module
 
-import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
 public import Mathlib.Algebra.Category.ModuleCat.Localization
-import Mathlib.Algebra.Module.LocalizedModule.Exact
 public import Mathlib.CategoryTheory.Abelian.Injective.Dimension
 public import Mathlib.CategoryTheory.Preadditive.Injective.Preserves
 public import Mathlib.RingTheory.LocalProperties.Injective
+
+import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
+import Mathlib.Algebra.Module.LocalizedModule.Exact
 
 /-!
 
