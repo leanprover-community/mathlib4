@@ -8,8 +8,8 @@ module
 public import Mathlib.Analysis.Normed.Operator.BanachSteinhaus
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 
-import Mathlib.Analysis.Normed.Group.InfiniteSum
 import Mathlib.Algebra.Order.Field.Power
+import Mathlib.Analysis.Normed.Group.InfiniteSum
 import Mathlib.Data.Nat.Totient
 import Mathlib.Data.Sym.Sym2
 import Mathlib.RingTheory.LocalRing.Basic

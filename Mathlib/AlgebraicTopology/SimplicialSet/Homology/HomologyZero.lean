@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SimplicialSet.PiZero
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.Basic
+public import Mathlib.AlgebraicTopology.SimplicialSet.PiZero
 public import Mathlib.CategoryTheory.Limits.Preserves.SigmaConst
 
 /-!
