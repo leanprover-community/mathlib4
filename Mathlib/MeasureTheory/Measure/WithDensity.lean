@@ -173,6 +173,10 @@ theorem withDensity_apply₀ (f : α → ℝ≥0∞) {s : Set α} (hs : NullMeas
   rw [← A, ← B]
   exact withDensity_apply _ (measurableSet_toMeasurable μ s)
 
+lemma withDensity_real_apply₀ (f : α → ℝ≥0∞) {s : Set α} (hs : NullMeasurableSet s μ) :
+    (μ.withDensity f).real s = (∫⁻ a in s, f a ∂μ).toReal := by
+  rw [Measure.real, withDensity_apply₀ f hs]
+
 instance nullSingletonClass_withDensity [NullSingletonClass μ] (f : α → ℝ≥0∞) :
     NullSingletonClass (μ.withDensity f) where
   measure_singleton _ := withDensity_absolutelyContinuous μ f (measure_singleton _)
