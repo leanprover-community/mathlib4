@@ -259,7 +259,7 @@ theorem finite_neighborSet_toSubgraph (p : G.Walk u v) : (p.toSubgraph.neighborS
 
 lemma toSubgraph_le_induce_support (p : G.Walk u v) :
     p.toSubgraph ≤ (⊤ : G.Subgraph).induce {v | v ∈ p.support} := by
-  convert Subgraph.le_induce_top_verts
+  convert Subgraph.le_induce_top_verts using 2
   exact p.verts_toSubgraph.symm
 
 theorem toSubgraph_adj_getVert {u v} (w : G.Walk u v) {i : ℕ} (hi : i < w.length) :
@@ -342,7 +342,8 @@ theorem map_mapToSubgraph_eq_induce (s : Set V) {u v : V} :
 to its support. -/
 theorem map_mapToSubgraph_eq_induce_id {u v : V} (w : G.Walk u v) :
     w.mapToSubgraph.map (⟨fun v ↦ ⟨v, w.mem_verts_toSubgraph.mp v.prop⟩, w.toSubgraph.adj_sub⟩ :
-      w.toSubgraph.coe →g G.induce _) = w.induce _ (fun _ ↦ id) :=
+      w.toSubgraph.coe →g G.induce {x | x ∈ w.support}) =
+      w.induce {x | x ∈ w.support} (fun _ ↦ id) :=
   w.map_mapToSubgraph_eq_induce ..
 
 theorem isInduced_toSubgraph {w : G.Walk u v} : w.toSubgraph.IsInduced ↔ w.IsChordless := by

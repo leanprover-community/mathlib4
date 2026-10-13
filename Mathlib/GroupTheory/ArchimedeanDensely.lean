@@ -47,14 +47,10 @@ This is the stronger version of `AddSubgroup.mem_closure_singleton`. -/]
 lemma Subgroup.mem_zpowers_iff_existsUnique_zpow {G : Type*}
     [CommGroup G] [LinearOrder G] [IsOrderedMonoid G] {a b : G} (ha : a ≠ 1) :
     b ∈ zpowers a ↔ ∃! k : ℤ, a ^ k = b := by
-  constructor
-  · suffices Function.Injective (a ^ · : ℤ → G) by
-      rintro ⟨m, rfl⟩
-      exact ⟨m, rfl, fun k hk ↦ this hk⟩
-    rcases ha.lt_or_gt with ha | ha
-    · exact (zpow_right_strictAnti ha).injective
-    · exact (zpow_right_strictMono ha).injective
-  · exact fun h ↦ h.exists
+  rw [mem_zpowers_iff]
+  rcases ha.lt_or_gt with ha | ha
+  · exact (zpow_right_strictAnti ha).injective.existsUnique_iff_exists.symm
+  · exact (zpow_right_strictMono ha).injective.existsUnique_iff_exists.symm
 
 @[to_additive (attr := deprecated (since := "2026-08-30"))]
 alias Subgroup.mem_closure_singleton_iff_existsUnique_zpow :=
