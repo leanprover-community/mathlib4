@@ -110,7 +110,7 @@ theorem openSegment_subset_iff_segment_subset (hx : x ∈ s) (hy : y ∈ s) :
 
 section Map
 
-variable {Y} [ConvexSpace R Y] (f : X → Y)
+variable {Y} [ConvexSpace R Y] {f : X → Y}
 
 @[simp]
 theorem image_segment (hf : IsAffineMap R f) (a b : X) :
