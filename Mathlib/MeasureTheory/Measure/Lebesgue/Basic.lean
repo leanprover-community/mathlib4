@@ -439,37 +439,34 @@ theorem map_linearMap_volume_pi_eq_smul_volume_pi {f : (ι → ℝ) →ₗ[ℝ] 
     apply map_matrix_volume_pi_eq_smul_volume_pi
     rwa [A] at hf
 
-open Pointwise in
+open scoped Pointwise in
 /-- One-dimensional **Brunn–Minkowski theorem** for compact sets. -/
 theorem volume_add_volume_le_of_isCompact {A B : Set ℝ} (hAn : A.Nonempty) (hAc : IsCompact A)
-    (hBn : B.Nonempty) (hBc : IsCompact B) :
-    volume A + volume B ≤ volume (A + B) :=
+    (hBn : B.Nonempty) (hBc : IsCompact B) : volume A + volume B ≤ volume (A + B) :=
   calc
-    _ ≤ volume (A + {-sSup A}) + volume (B + {-sInf B}) := by simp
+    _ = volume (A + {-sSup A}) + volume (B + {-sInf B}) := by simp
     _ = volume ((A + {-sSup A}) ∪ (B + {-sInf B})) +
         volume ((A + {-sSup A}) ∩ (B + {-sInf B})) := by
       rw [measure_union_add_inter _ (hBc.add isCompact_singleton).measurableSet]
     _ ≤ volume ((A + {-sSup A}) ∪ (B + {-sInf B})) := by
-      suffices (A + {-sSup A}) ∩ (B + {-sInf B}) ≤ {0} by
+      suffices (A + {-sSup A}) ∩ (B + {-sInf B}) ⊆ {0} by
         grw [this]
         simp
-      suffices ∀ x, x + sSup A ∈ A → x + sInf B ∈ B → x = 0 by simpa
-      intro x hA hB
-      apply le_antisymm
-      · exact nonpos_of_add_le_left (le_csSup hAc.bddAbove hA)
-      · exact nonneg_of_le_add_left (csInf_le hBc.bddBelow hB)
+      refine fun x ⟨hA, hB⟩ ↦ le_antisymm ?_ ?_
+      · exact nonpos_of_add_le_left <| le_csSup hAc.bddAbove <| by simpa using hA
+      · exact nonneg_of_le_add_left <| csInf_le hBc.bddBelow <| by simpa using hB
     _ ≤ volume ((A + {-sSup A}) + (B + {-sInf B})) := by
       refine measure_mono <| Set.union_subset_iff.mpr ⟨?_, ?_⟩
       · exact Set.subset_add_left _ (by simpa using hBc.sInf_mem hBn)
       · exact Set.subset_add_right _ (by simpa using hAc.sSup_mem hAn)
-    _ = volume (A + B + {-sSup A} + {-sInf B}) := congr(volume $(by abel))
-    _ ≤ _ := by simp
+    _ = _ := by
+      rw [add_add_add_comm]
+      simp
 
-open Pointwise in
+open scoped Pointwise in
 /-- One-dimensional **Brunn–Minkowski theorem** for measurable sets. -/
 theorem volume_add_volume_le {A B : Set ℝ} (hAn : A.Nonempty) (hAm : MeasurableSet A)
-    (hBn : B.Nonempty) (hBm : MeasurableSet B) :
-    volume A + volume B ≤ volume (A + B) := by
+    (hBn : B.Nonempty) (hBm : MeasurableSet B) : volume A + volume B ≤ volume (A + B) := by
   obtain ⟨a, ha⟩ := hAn
   obtain ⟨b, hb⟩ := hBn
   by_cases hA : volume A = ∞
@@ -492,7 +489,7 @@ theorem volume_add_volume_le {A B : Set ℝ} (hAn : A.Nonempty) (hAm : Measurabl
       refine ENNReal.biSup_add_biSup_le' ⟨∅, by simp⟩ ⟨∅, by simp⟩ fun K hK L hL ↦ ?_
       aesop (add safe [le_iSup_of_le])
     _ ≤ _ := by
-      refine iSup_le fun K ↦ iSup₂_le fun hKA hK ↦ iSup_le fun L ↦ iSup₂_le fun hLB hL ↦ ?_
+      refine iSup₂_le fun K hKA ↦ iSup₂_le fun hK L ↦ iSup₂_le fun hLB hL ↦ ?_
       trans volume (K ∪ {a}) + volume (L ∪ {b})
       · gcongr <;> simp
       grw [volume_add_volume_le_of_isCompact (by simp) (hK.union isCompact_singleton)
