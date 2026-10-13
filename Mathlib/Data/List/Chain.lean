@@ -440,8 +440,8 @@ theorem isChain_replicate_of_rel (n : ℕ) {a : α} (h : r a a) : IsChain r (rep
   induction n using Nat.twoStepInduction <;> grind
 
 /-- If `r a (f a)` holds for every `a`, then `List.iterate f a n` is a chain under `r`. -/
-protected theorem IsChain.iterate {f : α → α} (a : α) (h : ∀ x, r x (f x)) :
-    ∀ n, IsChain r (iterate f a n)
+protected theorem IsChain.iterate {f : α → α} {a : α} (h : ∀ x, r x (f x)) :
+    ∀ {n}, IsChain r (iterate f a n)
   | 0 => .nil
   | 1 => .singleton _
   | n + 2 => .cons_cons (h a) (IsChain.iterate (f a) h (n + 1))
