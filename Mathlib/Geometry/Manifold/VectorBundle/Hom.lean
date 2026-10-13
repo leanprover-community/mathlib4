@@ -5,8 +5,8 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.Topology.VectorBundle.Hom
 public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
+public import Mathlib.Topology.VectorBundle.Hom
 
 /-! # Homs of `C^n` vector bundles over the same base space
 

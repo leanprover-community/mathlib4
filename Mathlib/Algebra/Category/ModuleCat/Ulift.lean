@@ -5,12 +5,13 @@ Authors: Nailin Guan
 -/
 module
 
-import Mathlib.Algebra.Category.ModuleCat.Injective
-import Mathlib.Algebra.Category.ModuleCat.Projective
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
 public import Mathlib.CategoryTheory.Preadditive.Injective.Preserves
 public import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
+
+import Mathlib.Algebra.Category.ModuleCat.Injective
+import Mathlib.Algebra.Category.ModuleCat.Projective
 
 /-!
 

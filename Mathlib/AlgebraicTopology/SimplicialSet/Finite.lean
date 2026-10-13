@@ -7,6 +7,7 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Dimension
 public import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplices
+
 import Mathlib.Basic.Finite.Sigma
 
 /-!

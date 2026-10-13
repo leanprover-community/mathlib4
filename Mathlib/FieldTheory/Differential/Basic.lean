@@ -5,8 +5,8 @@ Authors: Daniel Weber
 -/
 module
 
-public import Mathlib.RingTheory.Derivation.MapCoeffs
 public import Mathlib.FieldTheory.PrimitiveElement
+public import Mathlib.RingTheory.Derivation.MapCoeffs
 
 /-!
 # Differential Fields

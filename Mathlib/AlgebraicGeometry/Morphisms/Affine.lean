@@ -5,8 +5,9 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 public import Mathlib.AlgebraicGeometry.Morphisms.IsIso
+public import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
+
 import Mathlib.AlgebraicGeometry.PullbackCarrier
 
 /-!

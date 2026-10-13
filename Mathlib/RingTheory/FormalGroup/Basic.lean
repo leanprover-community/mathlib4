@@ -6,6 +6,7 @@ Authors: Wenrong Zou
 module
 
 public import Mathlib.RingTheory.PowerSeries.Substitution
+
 import Mathlib.Tactic.Ring.NamePowerVars
 
 /-! # Formal group laws over commutative ring

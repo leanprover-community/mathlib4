@@ -8,8 +8,8 @@ module
 public import Mathlib.Algebra.Lie.Basis.Base
 public import Mathlib.Algebra.Lie.CartanExists  -- shake: keep (used in `example` only)
 public import Mathlib.Algebra.Lie.Weights.IsSimple
-public import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Semisimple
 public import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Relations
+public import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Semisimple
 
 /-!
 # Geck's construction is complete

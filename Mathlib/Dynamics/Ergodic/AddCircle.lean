@@ -5,10 +5,11 @@ Authors: Oliver Nash
 -/
 module
 
-import Mathlib.Dynamics.FixedPoints.Prufer
 public import Mathlib.Dynamics.Ergodic.Ergodic
-import Mathlib.MeasureTheory.Covering.DensityTheorem
 public import Mathlib.MeasureTheory.Group.AddCircle
+
+import Mathlib.Dynamics.FixedPoints.Prufer
+import Mathlib.MeasureTheory.Covering.DensityTheorem
 import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 /-!

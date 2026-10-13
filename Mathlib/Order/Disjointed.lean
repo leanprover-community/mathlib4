@@ -5,11 +5,12 @@ Authors: Johannes Hölzl, Yaël Dillies, David Loeffler
 -/
 module
 
-public import Mathlib.Order.PartialSups
 public import Mathlib.Order.Interval.Finset.Fin
+public import Mathlib.Order.PartialSups
 public import Mathlib.Order.SuccPred.LinearLocallyFinite
-import Mathlib.Order.Interval.Finset.SuccPred
+
 import Mathlib.Data.Finset.Lattice.Union
+import Mathlib.Order.Interval.Finset.SuccPred
 
 /-!
 # Making a sequence disjoint

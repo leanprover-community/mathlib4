@@ -6,6 +6,7 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
+
 import Mathlib.RingTheory.Localization.NormTrace
 import Mathlib.RingTheory.SimpleModule.Basic
 

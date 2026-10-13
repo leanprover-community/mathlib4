@@ -5,10 +5,10 @@ Authors: Ruize Chen
 -/
 module
 
+public import Mathlib.Analysis.Convex.Contractible
 public import Mathlib.Topology.Covering.AddCircle
 public import Mathlib.Topology.Homotopy.Lifting
 public import Mathlib.Topology.Instances.ZMultiples
-public import Mathlib.Analysis.Convex.Contractible
 
 /-!
 # The fundamental group of the circle
@@ -59,12 +59,12 @@ noncomputable def windingNumber {x : AddCircle p} (γ : FundamentalGroup (AddCir
 /-- The winding number of a loop in `AddCircle p` is `(f 1 - f 0) / p`, for any continuous lift
 `f` of the loop to `ℝ`. -/
 theorem windingNumber_eq_div {x : AddCircle p} (γ : Path x x) (f : C(I, ℝ)) (hf : (↑) ∘ f = γ) :
-    (windingNumber (.mk γ) : ℝ) = (f 1 - f 0) / p := by
+    (windingNumber (.of (.mk γ)) : ℝ) = (f 1 - f 0) / p := by
   have h0 : (f 0 : AddCircle p) = x := congr($hf 0).trans γ.source
   obtain ⟨n, hn⟩ : ∃ n : ℤ, n • p = f 1 - f 0 :=
     AddSubgroup.mem_zmultiples_iff.mp <| QuotientAddGroup.eq_iff_sub_mem.mp <|
       congr($hf 1).trans <| γ.target.trans h0.symm
-  have h : (isAddQuotientCoveringMap_coe p).fundamentalGroupEquiv (x := x) ⟨f 0, h0⟩ (.mk γ) =
+  have h : (isAddQuotientCoveringMap_coe p).fundamentalGroupEquiv (x := x) ⟨f 0, h0⟩ (.of (.mk γ)) =
       .op (.ofAdd ⟨n • p, n, rfl⟩) :=
     (isAddQuotientCoveringMap_coe p).fundamentalGroupToMulOpposite_apply_mk_eq hf rfl (by simp [hn])
   simp [windingNumber, windingNumberIso, AddSubgroup.zmultiplesEquivInt_apply_zsmul hp.out.ne' n,
@@ -73,7 +73,7 @@ theorem windingNumber_eq_div {x : AddCircle p} (γ : Path x x) (f : C(I, ℝ)) (
 
 /-- The loop `t ↦ n • (t * p) + x` has winding number `n`. -/
 theorem windingNumber_zsmulLoop (x : ℝ) (n : ℤ) :
-    windingNumber (x := x) (.mk (zsmulLoop p x n)) = n := by
+    windingNumber (x := x) (.of (.mk (zsmulLoop p x n))) = n := by
   simpa [hp.out.ne'] using windingNumber_eq_div (zsmulLoop p x n)
     ⟨fun t ↦ n • (t * p) + x, by fun_prop⟩ rfl
 
