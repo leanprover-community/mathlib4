@@ -513,7 +513,7 @@ theorem integral_sub_average (μ : Measure α) [IsFiniteMeasure μ] (f : α → 
   by_cases hf : Integrable f μ
   · rw [integral_sub hf (integrable_const _), integral_average, sub_self]
   refine integral_undef fun h => hf ?_
-  convert! h.add (integrable_const (⨍ a, f a ∂μ))
+  convert h.add (integrable_const (⨍ a, f a ∂μ))
   exact (sub_add_cancel _ _).symm
 
 theorem setAverage_sub_setAverage (hs : μ s ≠ ∞) (f : α → E) :
@@ -698,7 +698,7 @@ theorem measure_le_setLAverage_pos (hμ : μ s ≠ 0) (hμ₁ : μ s ≠ ∞)
   rw [← ofPred_inter_eq_sep, ← Measure.restrict_apply₀
     (hf.ennreal_toReal.aestronglyMeasurable.nullMeasurableSet_le aestronglyMeasurable_const),
     ← measure_sdiff_null (measure_eq_top_of_lintegral_ne_top hf h)] at this
-  refine this.trans_le (measure_mono ?_)
+  gconvert this
   rintro x ⟨hfx, hx⟩
   dsimp at hfx
   rwa [← toReal_laverage hf, toReal_le_toReal hx (setLAverage_lt_top h).ne] at hfx
@@ -719,7 +719,7 @@ theorem measure_setLAverage_le_pos (hμ : μ s ≠ 0) (hs : NullMeasurableSet s 
   simp_rw [← ofPred_inter_eq_sep, ← Measure.restrict_apply₀' hs, hfg']
   rw [← ofPred_inter_eq_sep, ← Measure.restrict_apply₀' hs, ←
     measure_sdiff_null (measure_eq_top_of_lintegral_ne_top hg.aemeasurable hint)] at this
-  refine this.trans_le (measure_mono ?_)
+  gconvert this
   rintro x ⟨hfx, hx⟩
   dsimp at hfx
   rw [← toReal_laverage hg.aemeasurable, toReal_le_toReal (setLAverage_lt_top hint).ne hx] at hfx

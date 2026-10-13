@@ -6,11 +6,10 @@ Authors: Kevin Buzzard, Johan Commelin, Patrick Massot, Filippo A. E. Nuccio
 module
 
 public import Mathlib.Algebra.Order.GroupWithZero.Range
-public import Mathlib.Algebra.Order.Hom.Monoid
-public import Mathlib.Algebra.Order.Ring.Basic
 public import Mathlib.Algebra.Ring.Torsion
 public import Mathlib.RingTheory.Ideal.Maps
-public import Mathlib.Tactic.TFAE
+
+import Mathlib.Algebra.Order.Ring.Basic
 
 /-!
 
@@ -471,7 +470,7 @@ open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 
 /-- The restriction of a valuation so that it takes values in its `valueGroup₀`. -/
 @[implicit_reducible]
-def restrict : Valuation R (ValueGroup₀ (v : R →*₀ Γ₀)) where
+def restrict : Valuation R v.ValueGroup₀ where
   __ := restrict₀ (v : R →*₀ Γ₀)
   map_add_le_max' x y := by
     by_cases H : v x ≠ 0 ∨ v y ≠ 0
@@ -720,7 +719,6 @@ theorem comap {S : Type*} [Ring S] (f : S →+* R) (h : v₁.IsEquiv v₂) :
 
 theorem eq_iff (h : v₁.IsEquiv v₂) {r s : R} : v₁ r = v₁ s ↔ v₂ r = v₂ s := by
   simpa only [le_antisymm_iff] using and_congr (h r s) (h s r)
-@[deprecated (since := "2026-03-05")] alias val_eq := eq_iff
 
 theorem eq_zero (h : v₁.IsEquiv v₂) {r : R} : v₁ r = 0 ↔ v₂ r = 0 := by
   have : v₁ r = v₁ 0 ↔ v₂ r = v₂ 0 := h.eq_iff
@@ -1358,7 +1356,7 @@ def toAddValuation : Valuation R Γ₀ ≃ AddValuation R (Additive Γ₀)ᵒᵈ
 /-- The `Valuation` associated to a `AddValuation`.
 -/
 def ofAddValuation : AddValuation R (Additive Γ₀)ᵒᵈ ≃ Valuation R Γ₀ :=
-  AddValuation.toValuation.trans <| congr <|
+  AddValuation.toValuation.trans <| congr
     { toFun := fun x ↦ x.toAdd.ofDual.ofDual.toMul
       invFun := fun x ↦ .ofAdd <| .toDual <| .toDual <| .ofMul x
       map_mul' := fun _x _y ↦ rfl

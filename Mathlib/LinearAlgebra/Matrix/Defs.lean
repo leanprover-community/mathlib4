@@ -8,7 +8,6 @@ module
 public import Batteries.Data.Fin.Lemmas
 public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Basic.Nontrivial.Basic
-public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.Attr.Core
 
 /-!
@@ -526,6 +525,14 @@ theorem submatrix_map (f : α → β) (e₁ : l → m) (e₂ : o → n) (A : Mat
     (A.map f).submatrix e₁ e₂ = (A.submatrix e₁ e₂).map f :=
   rfl
 
+/-- Surjective reindexing functions make `submatrix` injective. -/
+theorem submatrix_injective {r : l → m} {c : o → n} (hr : r.Surjective) (hc : c.Surjective) :
+    Function.Injective (submatrix (α := α) · r c) :=
+  fun A B hAB => ext fun i j => by
+    obtain ⟨i', rfl⟩ := hr i
+    obtain ⟨j', rfl⟩ := hc j
+    exact congr($hAB i' j')
+
 /-- The natural map that reindexes a matrix's rows and columns with equivalent types is an
 equivalence.
 
@@ -650,12 +657,12 @@ section
 /-- Two matrices agree if their rows agree. -/
 @[local ext]
 lemma ext_row {A B : Matrix m n α} (h : ∀ i, A.row i = B.row i) : A = B :=
-  ext fun i j => congr_fun (h i) j
+  ext fun i j => congr($(h i) j)
 
 /-- Two matrices agree if their columns agree. -/
 @[local ext]
 lemma ext_col {A B : Matrix m n α} (h : ∀ j, A.col j = B.col j) : A = B :=
-  ext fun i j => congr_fun (h j) i
+  ext fun i j => congr($(h j) i)
 
 end
 

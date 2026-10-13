@@ -6,10 +6,9 @@ Authors: Heather Macbeth
 module
 
 public meta import Lean.Meta.Tactic.NormCast
+public meta import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Tactic.Ring
-public import Mathlib.Util.AtomM
-public meta import Mathlib.Algebra.Algebra.Defs
 
 /-! # A tactic for normalization over modules
 
