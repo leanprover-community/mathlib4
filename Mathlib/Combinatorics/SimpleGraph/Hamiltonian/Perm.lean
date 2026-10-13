@@ -29,11 +29,9 @@ then the cycle graph on `#s` vertices is contained in `G`. -/
 theorem cycleGraph_isContained_of_isCycleOn {σ : Perm α} {s : Finset α} (hσ : σ.IsCycleOn s)
     (hadj : ∀ v, G.Adj v (σ v)) : cycleGraph #s ⊑ G := by
   obtain rfl | ⟨v, hv⟩ := s.eq_empty_or_nonempty
-  · rw [card_empty]
-    exact .of_isEmpty
+  · simp
   refine ⟨⟨fun i ↦ (σ ^ i.1) v, fun {i j} h ↦ ?_⟩,
     fun i j hij ↦ Fin.ext <| hσ.injOn_pow_apply hv i.2 j.2 hij⟩
-  wlog hij : i < j generalizing i j
   wlog hij : i < j
   · grind [Adj.symm]
   rcases cycleGraph_adj'.mp h with h | h
