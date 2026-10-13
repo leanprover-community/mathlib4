@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Order.WithBotTop
 public import Mathlib.CategoryTheory.Triangulated.TStructure.TruncLTGE
+public import Mathlib.Order.WithBotTop
 
 /-!
 # Truncations for a t-structure

@@ -298,7 +298,7 @@ theorem Measure.MeasureDense.of_generateFrom_isSetAlgebra_sigmaFinite (h𝒜 : I
       -- We can then use `t ∩ (S N)`, because `S N ∈ 𝒜` by hypothesis.
       -- `μ (s ∆ (t ∩ S N))`
       --   `≤ μ (s ∆ (s ∩ S N)) + μ ((s ∩ S N) ∆ (t ∩ S N))`
-      --   `= μ s - μ (s ∩ S N) + μ (s ∆ t) ∩ S N) < ε`.
+      --   `= μ s - μ (s ∩ S N) + μ ((s ∆ t) ∩ S N) < ε`.
       refine ⟨t ∩ T N, h𝒜.inter_mem t_mem (T_mem N), ?_⟩
       calc
         μ (s ∆ (t ∩ T N))

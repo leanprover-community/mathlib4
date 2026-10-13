@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Mul
 public import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
+
 import Mathlib.Geometry.Manifold.Notation
 
 /-!
@@ -22,8 +23,6 @@ In this file, we establish differentiability results for
 -/
 
 public section
-
-noncomputable section
 
 open scoped Manifold
 open Bundle Set Topology

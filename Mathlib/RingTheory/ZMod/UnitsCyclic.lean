@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Analysis.Normed.Ring.Lemmas
-import Mathlib.Data.Nat.Choose.Dvd
 public import Mathlib.Data.ZMod.Units
 public import Mathlib.FieldTheory.Finite.Basic
+
+import Mathlib.Data.Nat.Choose.Dvd
 
 /-! # Cyclicity of the units of `ZMod n`
 

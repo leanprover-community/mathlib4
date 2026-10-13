@@ -5,10 +5,11 @@ Authors: Kalle Kytölä
 -/
 module
 
-import Mathlib.Analysis.RCLike.Lemmas
-import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 public import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
 public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
+
+import Mathlib.Analysis.RCLike.Lemmas
+import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 import Mathlib.Topology.TietzeExtension
 
 /-!

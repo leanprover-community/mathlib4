@@ -5,8 +5,8 @@ Authors: Kim Morrison, Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Shift.Basic
 public import Mathlib.Algebra.Group.Int.Defs
+public import Mathlib.CategoryTheory.Shift.Basic
 
 /-!
 # The category of graded objects
