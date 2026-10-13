@@ -37,7 +37,7 @@ theorem cycleGraph_isContained_of_isCycleOn {σ : Perm α} {s : Finset α} (hσ 
   wlog hij : i < j
   · grind [Adj.symm]
   rcases cycleGraph_adj'.mp h with h | h
-  · obtain ⟨hi, hj⟩ : i.1 = 0 ∧ j.1 = #s - 1 := by grind [Fin.coe_sub_iff_lt]
+  · obtain ⟨hi, hj⟩ : i.1 = 0 ∧ j.1 = #s - 1 := by lia [Fin.coe_sub_iff_lt]
     rw [hi, hj, adj_comm]
     have := hadj ((σ ^ (#s - 1)) v)
     rwa [← mul_apply, ← pow_succ', Nat.sub_add_cancel (by lia), hσ.pow_card_apply hv] at this
