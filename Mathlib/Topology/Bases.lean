@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Data.Set.Constructions
 public import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
-import Mathlib.Topology.ContinuousOn
 public import Mathlib.Topology.NhdsWithin
+
+import Mathlib.Topology.ContinuousOn
 
 /-!
 # Bases of topologies. Countability axioms.
@@ -762,11 +763,6 @@ theorem _root_.MapClusterPt.exists_seq_tendsto {ι : Type*} {f : Filter ι} [IsC
 is the limit of some subsequence. -/
 theorem _root_.MapClusterPt.tendsto_subseq {u : ℕ → α} (hx : MapClusterPt x atTop u) :
     ∃ ψ : ℕ → ℕ, StrictMono ψ ∧ Tendsto (u ∘ ψ) atTop (𝓝 x) :=
-  subseq_tendsto_of_neBot hx
-
-@[deprecated MapClusterPt.tendsto_subseq (since := "2026-03-29")]
-theorem FirstCountableTopology.tendsto_subseq {x : α} {u : ℕ → α}
-    (hx : MapClusterPt x atTop u) : ∃ ψ : ℕ → ℕ, StrictMono ψ ∧ Tendsto (u ∘ ψ) atTop (𝓝 x) :=
   subseq_tendsto_of_neBot hx
 
 end FirstCountableTopology

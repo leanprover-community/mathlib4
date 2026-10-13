@@ -5,11 +5,12 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-import Mathlib.Analysis.Analytic.Linear
+public import Mathlib.Analysis.Analytic.ChangeOrigin
+
 import Mathlib.Analysis.Analytic.Composition
 import Mathlib.Analysis.Analytic.Constructions
+import Mathlib.Analysis.Analytic.Linear
 import Mathlib.Analysis.Normed.Module.Completion
-public import Mathlib.Analysis.Analytic.ChangeOrigin
 
 /-!
 # Uniqueness principle for analytic functions

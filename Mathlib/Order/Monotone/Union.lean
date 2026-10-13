@@ -6,6 +6,7 @@ Authors: Yury Kudryashov, Sébastien Gouëzel
 module
 
 public import Mathlib.Order.Bounds.Basic
+
 import Mathlib.Order.Interval.Set.LinearOrder
 
 /-!
