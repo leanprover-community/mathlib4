@@ -53,11 +53,10 @@ only when the workflow's identity — stamped by GitHub from the repo, event
 type, and ref — matches a pre-registered grant. The credential's scope is
 fixed when it is issued and cannot be widened afterward.
 
-Two credential mechanisms implement this. Azure writes mint an OIDC-federated
-bearer token whose RBAC role covers exactly one container. Only builds that write to
-the `master` container write to Azure. An S3-compatible destination takes a short-lived
-credential pair scoped to one container's namespace, and the tool signs each
-request with it (SigV4); CI mints the pair per job the same OIDC-gated way.
+The credential is an S3-compatible credential pair scoped to one container's
+namespace. CI mints the pair per job, and the tool signs each request with it
+(SigV4). The cache tool's azure backend signs with an OIDC bearer token
+instead, and CI does not use it.
 
 The nightly-testing credential is narrower than one container: it reaches only
 the namespace of the commit being built.
