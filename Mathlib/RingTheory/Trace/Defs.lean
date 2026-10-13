@@ -128,8 +128,8 @@ theorem _root_.LinearMap.trace_restrictScalars {M : Type*} [AddCommGroup M]
 theorem trace_trace [Algebra S T] [IsScalarTower R S T]
     [Module.Finite S T] [Module.Projective S T]
     [Module.Finite R T] [Module.Projective R T] (x : T) :
-    trace R S (trace S T x) = trace R T x := by
-  exact (LinearMap.trace_restrictScalars (R := R) (lmul S T x)).symm
+    trace R S (trace S T x) = trace R T x :=
+  (LinearMap.trace_restrictScalars (R := R) (lmul S T x)).symm
 
 /-- Let `T / S / R` be a tower of finite projective algebras. Then
 $\text{Trace}_{T/R} = \text{Trace}_{S/R} \circ \text{Trace}_{T/S}$. -/
@@ -142,8 +142,8 @@ theorem trace_comp_trace [Algebra S T] [IsScalarTower R S T]
 
 @[simp]
 theorem trace_prod_apply [Module.Projective R T] [Module.Finite R T]
-    (x : S × T) : trace R (S × T) x = trace R S x.fst + trace R T x.snd := by
-  exact trace_prodMap' (lmul R S x.1) (lmul R T x.2)
+    (x : S × T) : trace R (S × T) x = trace R S x.fst + trace R T x.snd :=
+  trace_prodMap' (lmul R S x.1) (lmul R T x.2)
 
 theorem trace_prod [Module.Projective R T] [Module.Finite R T] :
     trace R (S × T) = (trace R S).coprod (trace R T) :=

@@ -70,8 +70,8 @@ variable {M}
 variable {R} in
 @[simp]
 lemma trace_smulRight (f : M →ₗ[R] R) (x : M) :
-    trace R M (f.smulRight x) = f x := by
-  exact trace_eq_contract_apply R M (f ⊗ₜ[R] x)
+    trace R M (f.smulRight x) = f x :=
+  trace_eq_contract_apply R M (f ⊗ₜ[R] x)
 
 section Matrix
 
@@ -171,8 +171,8 @@ theorem trace_prodMap :
 
 variable {R M N} in
 theorem trace_prodMap' (f : M →ₗ[R] M) (g : N →ₗ[R] N) :
-    trace R (M × N) (prodMap f g) = trace R M f + trace R N g := by
-  exact congrArg (fun t => t (f, g)) (trace_prodMap R M N)
+    trace R (M × N) (prodMap f g) = trace R M f + trace R N g :=
+  congrArg (fun t => t (f, g)) (trace_prodMap R M N)
 
 open Function
 
@@ -200,12 +200,12 @@ theorem trace_transpose' (f : M →ₗ[R] M) :
   rw [← comp_apply, trace_transpose]
 
 theorem trace_tensorProduct' (f : M →ₗ[R] M) (g : N →ₗ[R] N) :
-    trace R (M ⊗ N) (map f g) = trace R M f * trace R N g := by
-  exact congrArg (fun t => t f g) (trace_tensorProduct R M N)
+    trace R (M ⊗ N) (map f g) = trace R M f * trace R N g :=
+  congrArg (fun t => t f g) (trace_tensorProduct R M N)
 
 theorem trace_comp_comm' (f : M →ₗ[R] N) (g : N →ₗ[R] M) :
-    trace R M (g ∘ₗ f) = trace R N (f ∘ₗ g) := by
-  exact congrArg (fun t => t g f) (trace_comp_comm R M N)
+    trace R M (g ∘ₗ f) = trace R N (f ∘ₗ g) :=
+  congrArg (fun t => t g f) (trace_comp_comm R M N)
 
 end
 
@@ -216,8 +216,8 @@ submodule, then its restriction has the same trace. -/
 lemma trace_restrict_eq_of_forall_mem (p : Submodule R M)
     [Module.Finite R p] [Module.Projective R p] (f : M →ₗ[R] M)
     (hf : ∀ x, f x ∈ p) (hf' : ∀ x ∈ p, f x ∈ p := fun x _ ↦ hf x) :
-    trace R p (f.restrict hf') = trace R M f := by
-  exact trace_comp_comm' p.subtype (f.codRestrict p hf)
+    trace R p (f.restrict hf') = trace R M f :=
+  trace_comp_comm' p.subtype (f.codRestrict p hf)
 
 omit [Module.Finite R M] [Module.Projective R M] in
 variable [Module.Projective R N] [Module.Finite R N] [Module.Projective R P] [Module.Finite R P] in
@@ -336,6 +336,6 @@ end LinearMap
 isomorphism. -/
 lemma Module.Free.bijective_algebraMap_of_finrank_eq_one {R S : Type*} [CommRing R] [Ring S]
     [Algebra R S] [Nontrivial R] [Free R S] (h : finrank R S = 1) :
-    Function.Bijective (algebraMap R S) := by
-  exact bijective_algebraMap_of_linearEquiv
+    Function.Bijective (algebraMap R S) :=
+  bijective_algebraMap_of_linearEquiv
     (Module.nonempty_linearEquiv_of_finrank_eq_one h).some

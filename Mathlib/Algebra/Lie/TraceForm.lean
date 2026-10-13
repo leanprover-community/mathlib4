@@ -340,8 +340,8 @@ variable (N : LieSubmodule R L M) [Module.Finite R N] [Module.Projective R N]
 
 lemma trace_eq_trace_restrict_of_le_idealizer
     (hy' : ∀ m ∈ N, (φ x ∘ₗ φ y) m ∈ N := fun m _ ↦ N.lie_mem (N.mem_idealizer.mp (h hy) m)) :
-    trace R M (φ x ∘ₗ φ y) = trace R N ((φ x ∘ₗ φ y).restrict hy') := by
-  exact (LinearMap.trace_restrict_eq_of_forall_mem N.toSubmodule (φ x ∘ₗ φ y)
+    trace R M (φ x ∘ₗ φ y) = trace R N ((φ x ∘ₗ φ y).restrict hy') :=
+  (LinearMap.trace_restrict_eq_of_forall_mem N.toSubmodule (φ x ∘ₗ φ y)
     (fun m ↦ N.lie_mem (h hy m)) hy').symm
 
 include h in
