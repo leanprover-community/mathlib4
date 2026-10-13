@@ -13,18 +13,23 @@ public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
 # Inverse function theorem for manifolds
 
 In this file, we derive the inverse function theorem for manifolds from the the inverse function
-theorem for normed vector spaces (`ContDiffAt.toOpenPartialHomeomorph` XXX TODO!).
+theorem for normed vector spaces.
 
 ## Main definitions and results
+
 * `extChartAtPartialDiffeomorph n hp`: we can restrict `extChartAt I p` to a `PartialDiffeomorph`
   between the manifold and its model vector space if `p` is an interior point.
 * `ContDiffOn.toPartialDiffeomorph` : a stronger version of `ContDiffAt.toOpenPartialHomeomorph`,
   currently stated somewhat unnaturally by viewing the normed vector spaces as trivial manifolds
   (since there is not a normed vector space version of `PartialDiffeomorph`)
-* `isLocalDiffeomorphAt_of_isInvertible_mfderiv`: if `f` is `C^n` on an open set `U` and has
-  bijective differential at an interior point `p ∈ U`, then `f` is a local diffeomorphism at `p`.
+* `isLocalDiffeomorphAt_of_isInvertible_mfderiv`: the **inverse function theorem** for manifolds
+  over arbitrary fields: if `f` is `C^n` on an open set `U` and has bijective differential at an
+  interior point `p ∈ U`, then `f` is a local diffeomorphism at `p`.
   This holds for any `n ≥ 1` if we work over real or complex manifolds, and if `n = ω`
   (i.e., for analytic maps between analytic manifolds) over arbitrary fields.
+* `isLocalDiffeomorphAt_of_isInvertible_mfderiv'`: the **inverse function theorem** for real or
+  complex manifolds: if `f` is `C^n` on an open set `U` (for `n ≠ 0`) and has invertible
+  differential at an interior point `p ∈ U`, then `f` is a local diffeomorphism at `p`.
 
 ## TODO
 * restate `ContDiffOn.toPartialDiffeomorph` using a normed vector space version of
@@ -169,6 +174,8 @@ lemma toPartialDiffeomorph_mem_source
 
 end ContDiffOn
 
+section
+
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E₁ : Type*} [NormedAddCommGroup E₁] [NormedSpace 𝕜 E₁] [CompleteSpace E₁]
   {E₂ : Type*} [NormedAddCommGroup E₂] [NormedSpace 𝕜 E₂]
@@ -181,7 +188,11 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 /-- The **inverse function theorem** for manifolds, at an interior point.
 If `f` is `C^n` on a neighborhood of an interior point `p` and has invertible differential at `p`,
-then `f` is a local diffeomorphism at `p`. -/
+then `f` is a local diffeomorphism at `p`.
+
+This version holds over arbitrary fields; see `isLocalDiffeomorphAt_of_isInvertible_mfderiv'`
+for a version specialized to real or complex manifolds and assuming only `n ≠ 0`.
+-/
 theorem isLocalDiffeomorphAt_of_isInvertible_mfderiv {p : M₁} (hp : I₁.IsInteriorPoint p)
     {A : Set M₁} (hA : IsOpen A) (hpA : p ∈ A) {f : M₁ → M₂} (hf : ContMDiffOn I₁ I₂ n f A)
     (hf' : ContinuousLinearMap.IsInvertible (mfderiv% f p)) (hn : minSmoothness 𝕜 1 ≤ n) :
@@ -214,13 +225,13 @@ theorem isLocalDiffeomorphAt_of_isInvertible_mfderiv {p : M₁} (hp : I₁.IsInt
   have hp' : extChartAt I₁ p p ∈ U :=
     mem_image_of_mem _ ⟨mem_extChartAtPartialDiffeomorph_source n hp,
       hpA, mem_extChartAtPartialDiffeomorph_source n hfp⟩
-  -- Use `hf'` to show that the derivative of `g` at `φ₀ p` is a continuous linear equivalence.
+  -- Use `hf'` to show that the derivative of `g` at `φ₀ p` is a continuous linear equivalence,
+  -- and in fact a strict derivative.
   obtain ⟨g', hg'⟩ := isInvertible_fderivWithin_writtenInExtChartAt hf'
   have hg' : HasFDerivAt g g'.toContinuousLinearMap (extChartAt I₁ p p) :=
     hg' ▸ mDiffAt_f_p.differentiableWithinAt_writtenInExtChartAt.hasFDerivWithinAt.hasFDerivAt
       (range_mem_nhds_isInteriorPoint hp)
-  replace hg' := ContDiffAt.hasStrictFDerivAt_of_minSmoothness_le
-    (hg.contDiffAt (U_open.mem_nhds hp')) hg' hn
+  replace hg' := (hg.contDiffAt (U_open.mem_nhds hp')).hasStrictFDerivAt_of_minSmoothness_le hg' hn
   /- Apply the inverse function theorem in normed spaces: obtain a local inverse for `g`.
   Compose with the charts to obtain the desired partial diffeomorphism `M₁ → M₂`. -/
   use (φ₁.trans (hg.toPartialDiffeomorph U_open hp' hg' (le_minSmoothness.trans hn))).trans ψ₁.symm
@@ -233,5 +244,35 @@ theorem isLocalDiffeomorphAt_of_isInvertible_mfderiv {p : M₁} (hp : I₁.IsInt
     have hfm := extChartAtPartialDiffeomorph_source_subset (n := n)
       (φ₁.injOn.mem_of_mem_image inter_subset_left hm₁ hm₂).2.2
     exact (extChartAt_symm_writtenInExtChartAt_extChartAt hm hfm).symm
+
+end
+
+section rclike
+
+variable {𝕜 : Type*} [RCLike 𝕜]
+  {E₁ : Type*} [NormedAddCommGroup E₁] [NormedSpace 𝕜 E₁] [CompleteSpace E₁]
+  {E₂ : Type*} [NormedAddCommGroup E₂] [NormedSpace 𝕜 E₂]
+  {H₁ : Type*} [TopologicalSpace H₁]
+  {H₂ : Type*} [TopologicalSpace H₂]
+  {I₁ : ModelWithCorners 𝕜 E₁ H₁} {I₂ : ModelWithCorners 𝕜 E₂ H₂}
+  {M₁ : Type*} [TopologicalSpace M₁] [ChartedSpace H₁ M₁]
+  {M₂ : Type*} [TopologicalSpace M₂] [ChartedSpace H₂ M₂]
+  {n : WithTop ℕ∞} [IsManifold I₁ n M₁] [IsManifold I₂ n M₂]
+
+/-- The **inverse function theorem** for manifolds, at an interior point.
+If `f` is `C^n` on a neighborhood of an interior point `p` and has invertible differential at `p`,
+then `f` is a local diffeomorphism at `p`.
+
+This version assumes a real or complex manifolds; see `isLocalDiffeomorphAt_of_isInvertible_mfderiv`
+for a version over arbitrary fields and assuming `minSmoothness 𝕜 1 ≤ n`.
+-/
+theorem isLocalDiffeomorphAt_of_isInvertible_mfderiv' {p : M₁} (hp : I₁.IsInteriorPoint p)
+    {A : Set M₁} (hA : IsOpen A) (hpA : p ∈ A) {f : M₁ → M₂} (hf : ContMDiffOn I₁ I₂ n f A)
+    (hf' : ContinuousLinearMap.IsInvertible (mfderiv% f p)) (hn : n ≠ 0) :
+    IsLocalDiffeomorphAt I₁ I₂ n f p := by
+  replace hn : 1 ≤ n := ENat.one_le_iff_ne_zero_withTop.mpr hn
+  apply isLocalDiffeomorphAt_of_isInvertible_mfderiv hp hA hpA hf hf' (by simpa)
+
+end rclike
 
 end ManifoldInverseFunctionTheorem
