@@ -5,6 +5,7 @@ Authors: Thomas Browning
 -/
 module
 
+public import Mathlib.Algebra.Order.Group.DenselyOrdered
 public import Mathlib.Analysis.Subadditive
 
 import Mathlib.Data.Fintype.Order
@@ -118,64 +119,47 @@ theorem gelfandRadius_le_norm_pow (a : A) {n : ℕ} (hn : n ≠ 0) :
   grw [← gelfandRadius_le_norm, gelfandRadius_pow_of_ne_zero a hn,
     ← Real.rpow_natCast_mul (by positivity), mul_inv_cancel₀ (by simpa), Real.rpow_one]
 
-theorem exists_le_gelfandRadius (a : A) (ε : ℝ) (hε0 : 0 < ε) :
-    ∃ C > 0, ∀ n, ‖a ^ n‖ ≤ C * (gelfandRadius a + ε) ^ n := by
-  obtain ⟨n, hn⟩ := eventually_atTop.mp ((tendsto_gelfandRadius a).eventually_le_const
-    ((lt_add_iff_pos_right (gelfandRadius a)).mpr hε0))
-  refine ⟨max 1 (⨆ k : Set.Iic n, ‖a ^ k.val‖ / (gelfandRadius a + ε) ^ k.val),
-    by positivity, fun k ↦ ?_⟩
-  rcases le_or_gt k n with hk | hk
-  · grw [← div_le_iff₀ (by positivity), ← le_max_right]
-    exact le_ciSup_of_le (Finite.bddAbove_range _) ⟨k, hk⟩ le_rfl
-  · grw [← le_max_left, one_mul, ← hn k hk.le, ← Real.rpow_mul_natCast (by positivity),
-      inv_mul_cancel₀ (by grind [Nat.cast_eq_zero]), Real.rpow_one]
+theorem gelfandRadius_pow_le_norm_pow (a : A) {n : ℕ} (hn : n ≠ 0) :
+    gelfandRadius a ^ n ≤ ‖a ^ n‖ :=
+  gelfandRadius_pow_of_ne_zero a hn ▸ gelfandRadius_le_norm (a ^ n)
 
-theorem exists_gelfandRadius_le (a : A) (ε : ℝ) (hε0 : 0 < ε) (hε : ε < gelfandRadius a) :
-    ∃ C > 0, ∀ n, C * (gelfandRadius a - ε) ^ n ≤ ‖a ^ n‖ := by
-  obtain ⟨n, hn⟩ := eventually_atTop.mp ((tendsto_gelfandRadius a).eventually_const_le
-    (sub_lt_self (gelfandRadius a) hε0))
-  refine ⟨min 1 (⨅ k : Set.Iic n, ‖a ^ k.val‖ / (gelfandRadius a - ε) ^ k.val), ?_, fun k ↦ ?_⟩
-  · have h : 0 < gelfandRadius a := hε0.trans hε
-    refine lt_min one_pos (Finite.lt_ciInf_iff.mpr fun x ↦ div_pos ?_ (by positivity))
-    contrapose! h
-    by_cases hx : x.val = 0
-    · rw [hx, pow_zero] at h
-      grw [gelfandRadius_le_norm, ← one_mul a, norm_mul_le, h, zero_mul]
-    · grw [gelfandRadius_le_norm_pow a hx, h, Real.zero_rpow (by simpa)]
-  · rcases le_or_gt k n with hk | hk
-    · grw [← le_div_iff₀ (by positivity), min_le_right]
-      exact ciInf_le_of_le (Finite.bddBelow_range _) ⟨k, hk⟩ le_rfl
-    · grw [min_le_left, one_mul, hn k hk.le, ← Real.rpow_mul_natCast (by positivity),
-        inv_mul_cancel₀ (by simp; grind), Real.rpow_one] <;> positivity
+/-- If `gelfandRadius a < r`, then there is some `C` for which `‖a ^ n‖ ≤ C * r ^ n` for all `n`.
+See `gelfandRadius_le_of_bound` for the converse. -/
+theorem norm_pow_le_mul_pow_of_gelfandRadius_lt (a : A) {r : ℝ} (hr : gelfandRadius a < r) :
+    ∃ C > 0, ∀ n, ‖a ^ n‖ ≤ C * r ^ n := by
+  have hr0 : 0 < r := (gelfandRadius_nonneg a).trans_lt hr
+  have h : ∀ᶠ n : ℕ in atTop, ‖a ^ n‖ / r ^ n ≤ 1 := by
+    filter_upwards [(tendsto_gelfandRadius a).eventually_le_const hr, eventually_ne_atTop 0]
+      with n hn hn0
+    rwa [div_le_one (by positivity), ← Real.rpow_natCast,
+      ← Real.rpow_inv_le_iff_of_pos (by positivity) hr0.le (by positivity)]
+  obtain ⟨C, hC⟩ := (isBoundedUnder_of_eventually_le h).bddAbove_range
+  exact ⟨max C 1, by positivity, fun n ↦ by
+    grw [← le_max_left, ← div_le_iff₀ (by positivity)]; exact hC ⟨n, rfl⟩⟩
+
+/-- If `‖a ^ n‖ ≤ C * r ^ n` for all `n`, then `gelfandRadius a ≤ r`.
+See `exists_le_gelfandRadius` for the converse. -/
+theorem gelfandRadius_le_of_bound {a : A} {C r : ℝ} (hr : 0 ≤ r)
+    (h : ∀ n, ‖a ^ n‖ ≤ C * r ^ n) : gelfandRadius a ≤ r := by
+  have hC : 0 < max C 1 := by positivity
+  replace h (n : ℕ) : ‖a ^ n‖ ≤ max C 1 * r ^ n := by grw [h n, ← le_max_left]
+  have hlim : Tendsto (fun n : ℕ ↦ max C 1 ^ (n : ℝ)⁻¹ * r) atTop (𝓝 r) := by
+    simpa using (((Real.continuous_const_rpow hC.ne').tendsto' 0 1 (Real.rpow_zero _)).comp
+      tendsto_inv_atTop_nhds_zero_nat).mul_const r
+  refine le_of_tendsto_of_tendsto (tendsto_gelfandRadius a) hlim ?_
+  filter_upwards [eventually_ne_atTop 0] with n hn
+  grw [h n, Real.mul_rpow hC.le (by positivity), Real.pow_rpow_inv_natCast hr hn]
 
 theorem Commute.gelfandRadius_add_le {a b : A} (h : Commute a b) :
     gelfandRadius (a + b) ≤ gelfandRadius a + gelfandRadius b := by
-  suffices ∀ ε > 0, ε / 3 < gelfandRadius (a + b) → gelfandRadius (a + b) - ε / 3 ≤
-      (gelfandRadius a + ε / 3) + (gelfandRadius b + ε / 3) from
-    le_of_forall_pos_le_add fun ε hε ↦ by grind [gelfandRadius_nonneg]
-  intro ε hε0 hε
-  obtain ⟨Cx, hCx, hx⟩ := exists_le_gelfandRadius a (ε / 3) (by positivity)
-  obtain ⟨Cy, hCy, hy⟩ := exists_le_gelfandRadius b (ε / 3) (by positivity)
-  obtain ⟨Cxy, hCxy, hxy⟩ := exists_gelfandRadius_le (a + b) (ε / 3) (by positivity) hε
-  let C := Cx * Cy * ‖(1 : A)‖
-  replace h (n : ℕ) : Cxy * (gelfandRadius (a + b) - ε / 3) ^ n ≤
-      C * ((gelfandRadius a + ε / 3) + (gelfandRadius b + ε / 3)) ^ n := by
-    specialize hxy n
-    grw [h.add_pow, norm_sum_le, norm_mul_le, norm_mul_le, hx, hy, Nat.norm_cast_le] at hxy
-    grind [Finset.mul_sum, _root_.add_pow]
-  have hC : 0 < C := hCxy.trans_le (by simpa using h 0)
-  replace h (n : ℕ) (hn : n ≠ 0) : Cxy ^ (n⁻¹ : ℝ) * (gelfandRadius (a + b) - ε / 3) ≤
-      C ^ (n⁻¹ : ℝ) * ((gelfandRadius a + ε / 3) + (gelfandRadius b + ε / 3)) := by
-    specialize h n
-    rwa [← pow_le_pow_iff_left₀ (by positivity) (by positivity) hn, _root_.mul_pow, _root_.mul_pow,
-      ← Cxy.rpow_mul_natCast (by positivity), ← C.rpow_mul_natCast (by positivity),
-      inv_mul_cancel₀ (by simpa), Cxy.rpow_one, C.rpow_one]
-  suffices ∀ C > (0 : ℝ), Tendsto (fun n : ℕ ↦ C ^ (n : ℝ)⁻¹) atTop (𝓝 1) from
-    le_of_tendsto_of_tendsto (by simpa using (this Cxy hCxy).mul_const _)
-      (by simpa using (this C hC).mul_const _) (eventually_atTop.mpr ⟨1, fun n hn ↦ h n (by grind)⟩)
-  intro C hC
-  rw [← C.rpow_zero]
-  exact (C.continuous_const_rpow hC.ne').continuousAt.tendsto.comp tendsto_inv_atTop_nhds_zero_nat
+  refine le_add_of_forall_lt fun x hx y hy ↦ ?_
+  have hx0 := (gelfandRadius_nonneg a).trans_lt hx
+  have hy0 := (gelfandRadius_nonneg b).trans_lt hy
+  obtain ⟨Ca, hCa, ha⟩ := norm_pow_le_mul_pow_of_gelfandRadius_lt a hx
+  obtain ⟨Cb, hCb, hb⟩ := norm_pow_le_mul_pow_of_gelfandRadius_lt b hy
+  refine gelfandRadius_le_of_bound (C := Ca * Cb * ‖(1 : A)‖) (by positivity) fun n ↦ ?_
+  grw [h.add_pow, norm_sum_le, norm_mul_le, norm_mul_le, ha, hb, Nat.norm_cast_le]
+  grind [Finset.mul_sum, _root_.add_pow]
 
 theorem Commute.gelfandRadius_mul_le {a b : A} (h : Commute a b) :
     gelfandRadius (a * b) ≤ gelfandRadius a * gelfandRadius b := by
