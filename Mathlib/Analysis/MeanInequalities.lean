@@ -454,7 +454,7 @@ theorem geom_mean_le_arith_mean_weighted (w : ι → ℝ≥0) (z : ι → ℝ≥
     congr! with i hi
     simp [coe_rpow_of_nonneg, h i (Finset.mem_filter.mp hi).1 (Finset.mem_filter.mp hi).2]
   · rw [ofNNReal_finsetSum]
-    refine sum_congr rfl fun i hi ↦ ?_
+    congr! with i hi
     simp [h i (Finset.mem_filter.mp hi).1 (Finset.mem_filter.mp hi).2]
 
 /-- **AM-GM inequality**: The geometric mean is less than or equal to the arithmetic mean, weighted
