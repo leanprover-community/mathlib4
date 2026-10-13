@@ -1086,7 +1086,7 @@ def insertNthEquiv (α : Fin (n + 1) → Type u) (p : Fin (n + 1)) :
 /- `@[simps]` over-applies, while `@[simps -fullyApplied]` under-applies, so this is manually
 written. -/
 @[simp]
-theorem insertNthEquiv_apply {n : ℕ} (α : Fin (n + 1) → Type*) (p : Fin (n + 1))
+theorem insertNthEquiv_apply (α : Fin (n + 1) → Type*) (p : Fin (n + 1))
     (f : α p × ∀ i, α (p.succAbove i)) :
     insertNthEquiv α p f = insertNth p f.1 f.2 :=
   rfl
