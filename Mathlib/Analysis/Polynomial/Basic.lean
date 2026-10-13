@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Devon Tuma
 -/
 module
+
 public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 public import Mathlib.Topology.Algebra.Order.Polynomial
