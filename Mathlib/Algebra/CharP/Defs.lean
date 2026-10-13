@@ -102,14 +102,16 @@ lemma _root_.CharP_iff_minimal_cast_eq_zero {p : ℕ} (hp : p ≠ 0) :
     Nat.eq_zero_of_dvd_of_lt ((cast_eq_zero_iff R p n).mp hn) hnp⟩,
   fun h => of_minimal_cast_eq_zero R hp h.1 h.2⟩
 
-lemma of_cast_eq_zero_iff_dvd {p : ℕ} (hp : p ≠ 0) (hp0 : ∀ x : ℕ, (x : R) = 0 ↔ p ∣ x) :
+/-- See `CharP.of_cast_eq_zero_iff_dvd` for a version that works for rings, even if `p = 0`. -/
+lemma of_cast_eq_zero_iff_dvd' {p : ℕ} (hp : p ≠ 0) (hp0 : ∀ x : ℕ, (x : R) = 0 ↔ p ∣ x) :
     CharP R p :=
   of_minimal_cast_eq_zero R hp ((hp0 p).mpr dvd_rfl) fun n hnp hn =>
     Nat.eq_zero_of_dvd_of_lt ((hp0 n).mp hn) hnp
 
-lemma _root_.CharP_iff_cast_eq_zero_iff_dvd {p : ℕ} (hp : p ≠ 0) :
+/-- See `CharP_iff_cast_eq_zero_iff_dvd` for a version that works for rings, even if `p = 0`. -/
+lemma _root_.CharP_iff_cast_eq_zero_iff_dvd' {p : ℕ} (hp : p ≠ 0) :
     CharP R p ↔ ∀ x : ℕ, (x : R) = 0 ↔ p ∣ x :=
-  ⟨fun _ => cast_eq_zero_iff R p, of_cast_eq_zero_iff_dvd R hp⟩
+  ⟨fun _ => cast_eq_zero_iff R p, of_cast_eq_zero_iff_dvd' R hp⟩
 
 lemma exists_of_exists_ne_zero_cast_eq_zero (h : ∃ p : ℕ, (p : R) = 0 ∧ p ≠ 0) :
     ∃ p ≠ 0, CharP R p :=
@@ -124,14 +126,24 @@ lemma exists_CharP_dvd_of_cast_eq_zero {p : ℕ} (hp : p ≠ 0) (hp0 : (p : R) =
   obtain ⟨q, -, Hq⟩ := exists_of_exists_ne_zero_cast_eq_zero R ⟨p, hp0, hp⟩
   exact ⟨q, (cast_eq_zero_iff R q p).mp hp0, Hq⟩
 
-lemma «exists» [IsLeftCancelAdd R] : ∃ p, CharP R p := by
+variable [IsLeftCancelAdd R]
+
+lemma of_cast_eq_zero_iff_dvd {p : ℕ} (hp : ∀ x : ℕ, (x : R) = 0 ↔ p ∣ x) : CharP R p := by
+  obtain rfl | hp0 := eq_or_ne p 0
+  exacts [(charP_zero_iff_charZero R).mpr (charZero_of_inj_zero fun n => by simp [hp]),
+    of_cast_eq_zero_iff_dvd' R hp0 hp]
+
+lemma _root_.CharP_iff_cast_eq_zero_iff_dvd {p : ℕ} : CharP R p ↔ ∀ x : ℕ, (x : R) = 0 ↔ p ∣ x :=
+  ⟨fun _ => cast_eq_zero_iff R p, of_cast_eq_zero_iff_dvd R⟩
+
+lemma «exists» : ∃ p, CharP R p := by
   let := Classical.decEq R
   by_cases! H : ∀ p : ℕ, (p : R) = 0 → p = 0
   · exact ⟨0, (charP_zero_iff_charZero R).mpr (charZero_of_inj_zero H)⟩
   · obtain ⟨p, -, Hp⟩ := exists_of_exists_ne_zero_cast_eq_zero R H
     exact ⟨p, Hp⟩
 
-lemma existsUnique [IsLeftCancelAdd R] : ∃! p, CharP R p :=
+lemma existsUnique : ∃! p, CharP R p :=
   let ⟨c, H⟩ := CharP.exists R
   ⟨c, H, fun _y H2 => CharP.eq R H2 H⟩
 
