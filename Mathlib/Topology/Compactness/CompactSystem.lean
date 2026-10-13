@@ -227,11 +227,4 @@ protected theorem IsCompactSystem.supClosure (hS : IsCompactSystem S) :
     (iInter_mono fun n ↦ ?_)
   · exact hAK n ▸ (hA (n + 1)).exists
   · exact hCL n ▸ subset_sUnion_of_mem (hfL n (A n) (hA n))
-
-/-- If `S` is a compact system, then so is the set of finite unions of sets in `S`, where the
-empty union `∅` is included. -/
-theorem IsCompactSystem.supClosure_insert_empty (hS : IsCompactSystem S) :
-    IsCompactSystem (supClosure (insert ∅ S)) :=
-  hS.insert_empty.supClosure
-
 end SupClosure
