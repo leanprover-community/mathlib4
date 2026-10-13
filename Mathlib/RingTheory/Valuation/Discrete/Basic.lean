@@ -5,11 +5,9 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Range
 public import Mathlib.Algebra.Order.Group.Cyclic
 public import Mathlib.RingTheory.DiscreteValuationRing.Basic
 public import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
-public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 public import Mathlib.RingTheory.Valuation.ValuationSubring
 
 /-!
@@ -130,7 +128,7 @@ lemma generator'_zpowers_eq_top : (zpowers (generator' v)) = ⊤ := by
 lemma generator'_lt_one : generator' v < 1 :=
   (exists_generator_lt_one v).choose_spec.2
 
-instance : IsCyclic <| v.valueGroup := by
+instance : IsCyclic v.valueGroup := by
   rw [← generator_zpowers_eq_valueGroup]
   exact isCyclic_zpowers (generator v)
 

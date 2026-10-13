@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Category.Grp.FiniteGrp
 public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
-public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 public import Mathlib.Topology.Category.Profinite.Basic
 public import Mathlib.Topology.Separation.Connected
 /-!
