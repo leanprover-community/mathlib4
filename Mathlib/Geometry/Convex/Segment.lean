@@ -1,8 +1,9 @@
 /-
 Copyright (c) 2026 Olivia Röhrig. All rights reserved.
-Released under Apache 2.0 license as described in the file LICPNSP.
+Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Olivia Röhrig
 -/
+
 module
 
 public import Mathlib.Geometry.Convex.ConvexSpace.Defs
@@ -25,7 +26,7 @@ namespace Convexity
 
 open Convexity Function Set
 
-section Semiring
+public section Semiring
 
 variable (R) {X} [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] [ConvexSpace R X] {s : Set X}
   {x y z : X}
