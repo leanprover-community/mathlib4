@@ -98,7 +98,7 @@ theorem jacobsthal_2 : jacobsthal 2 = 2 :=
       · native_decide
       · native_decide
       · intro k hk1 hk2
-        interval_cases k; native_decide)
+        interval_cases k <;> norm_num)
 
 /-- `jacobsthal 6 = 4`. -/
 theorem jacobsthal_6 : jacobsthal 6 = 4 :=
@@ -108,7 +108,7 @@ theorem jacobsthal_6 : jacobsthal 6 = 4 :=
       · native_decide
       · native_decide
       · intro k hk1 hk2
-        interval_cases k; native_decide)
+        interval_cases k <;> norm_num)
 
 /-- `jacobsthal 30 = 6`. -/
 theorem jacobsthal_30 : jacobsthal 30 = 6 :=
@@ -118,7 +118,7 @@ theorem jacobsthal_30 : jacobsthal 30 = 6 :=
       · native_decide
       · native_decide
       · intro k hk1 hk2
-        interval_cases k; native_decide)
+        interval_cases k <;> norm_num)
 
 /-- `jacobsthal 210 = 10`. -/
 theorem jacobsthal_210 : jacobsthal 210 = 10 :=
@@ -128,7 +128,7 @@ theorem jacobsthal_210 : jacobsthal 210 = 10 :=
       · native_decide
       · native_decide
       · intro k hk1 hk2
-        interval_cases k; native_decide)
+        interval_cases k <;> norm_num)
 
 /-- **`jacobsthal 2310 = 14`** for the primorial 2310 = 2·3·5·7·11.
   Attained after 113: the next coprime to 2310 is 127. -/
@@ -139,6 +139,6 @@ theorem jacobsthal_2310_value : jacobsthal 2310 = 14 :=
       · native_decide
       · native_decide
       · intro k hk1 hk2
-        interval_cases k; native_decide)
+        interval_cases k <;> norm_num)
 
 end Nat
