@@ -107,10 +107,10 @@ noncomputable instance : ((Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰))
 
 section FiniteFree
 
-/-! In this section we assume further that `R` has finite quotients and is infinite,
+/-! In this section we assume further that `R` has finite quotients,
 as holds for the ring of integers `𝓞 K` of a number field. -/
 
-variable [Ring.HasFiniteQuotients R] [Infinite R]
+variable [Ring.HasFiniteQuotients R]
 
 namespace HeightOneSpectrum
 
@@ -120,8 +120,8 @@ lemma one_lt_absNorm : 1 < absNorm v.asIdeal := by
   apply IsPrime.ne_top v.isPrime
   rw [← absNorm_eq_one_iff]
   have : 0 < absNorm v.asIdeal := by
-    rw [Nat.pos_iff_ne_zero, absNorm_ne_zero_iff]
-    exact Ring.HasFiniteQuotients.finiteQuotient v.ne_bot
+    rw [Nat.pos_iff_ne_zero, ne_eq, absNorm_eq_zero_iff']
+    exact v.ne_bot
   lia
 
 /-- The norm of a maximal ideal as an element of `ℝ≥0` is `> 1` -/

@@ -86,8 +86,8 @@ theorem absNorm_span_zeta_sub_one : absNorm (span {hζ.toInteger - 1}) = p := by
     span_singleton_eq_span_singleton.mpr <| associated_norm_zeta_sub_one p k hζ
 
 theorem p_mem_span_zeta_sub_one : (p : 𝓞 K) ∈ span {hζ.toInteger - 1} := by
-  convert absNorm_mem _
-  exact (absNorm_span_zeta_sub_one ..).symm
+  rw! [← absNorm_span_zeta_sub_one p k hζ]
+  exact absNorm_mem _
 
 theorem span_zeta_sub_one_ne_bot : span {hζ.toInteger - 1} ≠ ⊥ :=
   (Submodule.ne_bot_iff _).mpr ⟨p, p_mem_span_zeta_sub_one p k hζ, NeZero.natCast_ne p (𝓞 K)⟩
