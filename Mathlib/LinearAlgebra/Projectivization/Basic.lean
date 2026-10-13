@@ -135,9 +135,8 @@ units of `K`. -/
 theorem preimage_image_mk' (U : Set { v : V // v ≠ 0 }) :
     mk' K ⁻¹' (mk' K '' U) = ⋃ a : Kˣ, (a • ·) '' U := by
   ext v
-  simp only [Set.mem_preimage, Set.mem_image, mk'_eq_mk'_iff, Set.mem_iUnion]
-  exact ⟨fun ⟨w, hw, a, h⟩ ↦ ⟨a⁻¹, w, hw, by rw [← h, inv_smul_smul]⟩,
-    fun ⟨a, w, hw, h⟩ ↦ ⟨w, hw, a⁻¹, by rw [← h, inv_smul_smul]⟩⟩
+  simp only [Set.mem_image, Set.mem_iUnion]
+  grind [mk'_eq_mk'_iff]
 
 theorem exists_smul_eq_mk_rep (v : V) (hv : v ≠ 0) : ∃ a : Kˣ, a • v = (mk K v hv).rep :=
   (mk_eq_mk_iff K _ _ (rep_nonzero _) hv).1 (mk_rep _)
