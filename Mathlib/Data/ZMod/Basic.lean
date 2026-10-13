@@ -108,12 +108,11 @@ theorem val_unit' {n : ZMod 0} : IsUnit n ↔ n.val = 1 := by
 lemma eq_one_of_isUnit_natCast {n : ℕ} (h : IsUnit (n : ZMod 0)) : n = 1 := by
   rw [← Nat.mod_zero n, ← val_natCast, val_unit'.mp h]
 
-instance charP (n : ℕ) : CharP (ZMod n) n where
-  cast_eq_zero_iff := by
-    intro k
-    rcases n with - | n
-    · simp
-    · exact Fin.natCast_eq_zero
+instance charP (n : ℕ) : CharP (ZMod n) n := by
+  refine CharP.of_cast_eq_zero_iff_dvd _ fun k => ?_
+  rcases n with - | n
+  · simp
+  · exact Fin.natCast_eq_zero
 
 -- Verify that `grind` can see that `ZMod n` has characteristic `n`.
 example (n : ℕ) : Lean.Grind.IsCharP (ZMod n) n := inferInstance
