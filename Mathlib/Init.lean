@@ -36,6 +36,7 @@ public import Mathlib.Tactic.Linter.TacticDocumentation
 public import Mathlib.Tactic.Linter.UnusedTactic
 -- The following import contains the environment extension for the unused tactic linter.
 public import Mathlib.Tactic.Linter.UnusedTacticExtension
+public import Mathlib.Tactic.Linter.UnusedTraceClass
 public import Mathlib.Tactic.Linter.Whitespace
 -- This import makes the `#min_imports in` command available globally.
 public import Mathlib.Tactic.MinImports
@@ -114,6 +115,7 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.whitespace
   linter.unusedDecidableInType
   linter.unusedFintypeInType
+  linter.unusedTraceClass
   -- The `docPrime` linter is disabled: https://github.com/leanprover-community/mathlib4/issues/20560
 
 /-- Define a set of linters that are used in the `nightly-testing` branch
