@@ -20,6 +20,8 @@ file used by the library's own linters.
 ## Current scripts and their purpose
 
 **Repository analysis and reporting**
+- `tests` contains regression tests for scripts and workflow shell commands.
+  Run them with `python3 -m unittest discover -s scripts/tests`.
 - `bench` is mathlib's benchmark suite. View its [README.md](bench/README.md) for more details.
 - `user_activity_report.py`
   Generates a comprehensive report of all users with repository access and their last commit activity.
