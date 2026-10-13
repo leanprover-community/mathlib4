@@ -27,7 +27,7 @@ variable {α β γ : Type*}
 
 /-- An alias for `Set α`, which has a semiring structure given by `∪` as "addition" and pointwise
 multiplication `*` as "multiplication". -/
-def SetSemiring (α) := Set α
+def SetSemiring (α : Type*) : Type _ := Set α
 deriving Inhabited, CompleteAtomicBooleanAlgebra
 
 namespace SetSemiring
