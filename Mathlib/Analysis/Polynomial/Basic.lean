@@ -28,8 +28,7 @@ open scoped Topology
 namespace Polynomial
 
 variable {𝕜 : Type*} [NormedField 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] (P Q : 𝕜[X])
-
-variable [OrderTopology 𝕜]
+  [OrderTopology 𝕜]
 
 theorem isEquivalent_atTop_lead :
     (fun x => eval x P) ~[atTop] fun x => P.leadingCoeff * x ^ P.natDegree := by
