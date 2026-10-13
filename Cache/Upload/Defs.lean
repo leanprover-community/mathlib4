@@ -33,7 +33,7 @@ open System (FilePath)
 Each backend implements the credentials and the transfer in its own module.
 `runPut` dispatches on this type. -/
 inductive UploadBackend where
-  /-- Azure Blob Storage (`Cache/Upload/Azure.lean`), at a flat endpoint only. -/
+  /-- Azure Blob Storage (`Cache/Upload/Azure.lean`). -/
   | azure
   /-- An S3-compatible bucket (`Cache/Upload/S3.lean`); the default. -/
   | s3
