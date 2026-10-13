@@ -98,7 +98,7 @@ theorem abs_tendsto_atTop_iff : Tendsto (|P.eval ·|) atTop atTop ↔ 0 < P.degr
   ⟨fun h ↦ not_le.mp (mt isBoundedUnder_abs_atTop_iff.mpr
     (not_isBoundedUnder_of_tendsto_atTop h)), abs_tendsto_atTop⟩
 
-theorem tendsto_atTop_nhds_iff [TopologicalSpace F] [OrderTopology F] {c : F} :
+theorem tendsto_nhds_iff [TopologicalSpace F] [OrderTopology F] {c : F} :
     Tendsto P.eval atTop (𝓝 c) ↔ P.leadingCoeff = c ∧ P.degree ≤ 0 := by
   by_cases hz : P = 0
   · simp [hz]
