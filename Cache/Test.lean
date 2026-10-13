@@ -170,8 +170,8 @@ def test_envValueNormalization : IO Unit := do
     (shown (normalizeBaseURL (some "https://cache.example.org///")))
   assertEq "a slash-only value reads as unset" "<unset>" (shown (normalizeBaseURL (some "/")))
 
-/-- The read base follows `MATHLIB_CACHE_BASE_URL` when the variable is set. Without
-it, reads address `publicCacheEndpoint`. -/
+/-- `getBaseURLFrom` returns `MATHLIB_CACHE_BASE_URL` when the variable is set, and
+`publicCacheEndpoint` otherwise. -/
 def test_getBaseURLFrom : IO Unit := do
   IO.println "getBaseURLFrom:"
   assertEq "no override → the read endpoint"
@@ -517,8 +517,8 @@ def test_markerURL : IO Unit := do
     (((Container.forks.location "U" "Alice/Mathlib4" (some "abc123")).marker?.map
       (·.path)).getD "(no marker)")
 
-/-- Marker probes use the read base (`markerProbeURL`). Marker
-writes use the upload location (`Location.markerURL?`). -/
+/-- `markerProbeURL` builds the marker probe URL on the read base, and
+`Location.markerURL?` builds the marker write URL on the upload location. -/
 def test_markerProbeURL : IO Unit := do
   IO.println "markerProbeURL:"
   let base ← getBaseURL
@@ -1276,8 +1276,8 @@ def test_uploadBackendParse : IO Unit := do
   assertTrue "s3 parses, case-insensitively" (UploadBackend.parse? "S3" == some .s3)
   assertTrue "an unknown name is rejected" ((UploadBackend.parse? "gcs").isNone)
 
-/-- `azureAuthFrom` resolves the azure backend's credential: the bearer
-token. A missing bearer errors. -/
+/-- `azureAuthFrom` returns the bearer token, or an error when the token is
+missing. -/
 def test_azureAuthFrom : IO Unit := do
   IO.println "azureAuthFrom:"
   assertTrue "bearer token" (azureAuthFrom (some "bear") matches .ok "bear")

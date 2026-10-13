@@ -11,8 +11,8 @@ public import Cache.Upload.Curl
 # The Azure Blob Storage backend
 
 The azure upload path: the credential (`azureAuthFrom`), the request signing
-(`azureBearerCurlArgs`), and the transfer (`azurePutStaged`). The backend
-always transfers with curl, because rclone signs only S3 requests.
+(`azureBearerCurlArgs`), and the transfer (`azurePutStaged`). The tool always
+uploads with curl on this backend, because rclone signs only S3 requests.
 -/
 
 public section
@@ -55,7 +55,7 @@ def azureAuthFrom (bearer? : Option String) : Except String String :=
   match bearer? with
   | some token => .ok token
   | none => .error
-      "the azure backend uploads with an Azure OIDC bearer token: \
+      "the azure backend needs an Azure OIDC bearer token: \
       set MATHLIB_CACHE_AZURE_BEARER_TOKEN"
 
 /-- Retrieves the azure upload credential from the environment via

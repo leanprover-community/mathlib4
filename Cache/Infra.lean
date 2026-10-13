@@ -122,8 +122,8 @@ def publicCacheEndpoint : String := "https://cache.mathlib.org"
 
 /--
 Base URL for reads: `MATHLIB_CACHE_BASE_URL` if set, otherwise
-`publicCacheEndpoint`. `normalizeBaseURL` reads the value, so it arrives
-trimmed, free of trailing slashes, and unset when empty.
+`publicCacheEndpoint`. `normalizeBaseURL` reads the value: it trims it,
+removes trailing slashes, and treats an empty value as unset.
 
 A read URL is `{base}/{pathSegment}/{key}`, the namespace every cache
 host serves. Any host that mirrors that namespace is therefore a valid base.
@@ -133,7 +133,8 @@ lookup chain. `MATHLIB_CACHE_BASE_URL` serves internal consumers, that is,
 CI and contributors to the mathlib4 repository. It keeps the lookup chain and
 rebases each container read under the given host.
 
-Only reads follow this base. Uploads and marker writes use `uploadLocation`.
+The tool uses this base only for reads, and `uploadLocation` for uploads and
+marker writes.
 -/
 def getBaseURLFrom (envValue? : Option String) : String :=
   (normalizeBaseURL envValue?).getD publicCacheEndpoint

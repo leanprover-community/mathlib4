@@ -58,7 +58,7 @@ def s3AuthFrom (keyId? secret? session? : Option String) :
   | none, some _ => .error
       "MATHLIB_CACHE_S3_SECRET_ACCESS_KEY is set but MATHLIB_CACHE_S3_ACCESS_KEY_ID is not"
   | none, none => .error
-      "the s3 backend uploads with the S3 credential pair: set \
+      "the s3 backend needs the S3 credential pair: set \
       MATHLIB_CACHE_S3_ACCESS_KEY_ID and MATHLIB_CACHE_S3_SECRET_ACCESS_KEY"
 
 /-- Retrieves the s3 upload credentials from the environment via

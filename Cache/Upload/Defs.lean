@@ -14,7 +14,7 @@ public import Cache.Upload.S3
 The backend-neutral layer over the backend modules:
 
 * the backend selection (`UploadBackend`);
-* the location resolution that every upload uses (`uploadLocation`).
+* the location resolution for every upload (`uploadLocation`).
 
 `Cache/Upload.lean` runs the complete `put`, dispatching to the selected
 backend. `Cache/Location.lean` derives the marker. `Cache/Marker.lean`
@@ -67,9 +67,9 @@ Any set value counts here, an empty one included: a misconfigured endpoint
 fails the upload and does not divert it to the backend's location. The
 read variables take the opposite rule, where an empty value means unset.
 
-Without it, the s3 backend writes the container layout under the bucket that
-`MATHLIB_CACHE_PUT_BASE_URL` names (`putBase?`, where an empty value means
-unset), and the azure backend errors.
+Without it, the function returns the container layout under the bucket in
+`MATHLIB_CACHE_PUT_BASE_URL` (`putBase?`, where an empty value means unset)
+for the s3 backend, and an error for the azure backend.
 -/
 def uploadLocationFrom (backend : UploadBackend) (putUrl? putBase? : Option String)
     (container? : Option Container) (repo : String) (scope? : Option String) :
@@ -79,7 +79,7 @@ def uploadLocationFrom (backend : UploadBackend) (putUrl? putBase? : Option Stri
     else
       let putBase? := normalizeBaseURL putBase?
       match backend with
-      | .azure => .error "the azure backend uploads only to a flat endpoint: \
+      | .azure => .error "the azure backend needs a flat endpoint: \
           set MATHLIB_CACHE_PUT_URL"
       | .s3 => s3UploadLocationFrom putBase? container? repo scope?
   -- An s3 root must have the form `https://endpoint/bucket[/prefix]`.

@@ -26,7 +26,7 @@ The trust model behind the containers and the write credentials is in [`SECURITY
 
 ## Backends and transfer tools
 
-The backend selects the destination, the credential variables it reads (see
+The backend determines the destination, the credential variables (see
 [Environment variables](#environment-variables)), and the transfer tool:
 
 - `s3` writes to the bucket endpoint `MATHLIB_CACHE_PUT_BASE_URL` names
@@ -36,9 +36,9 @@ The backend selects the destination, the credential variables it reads (see
   environment (`RCLONE_S3_*`) and runs 16 transfers in parallel; a
   non-overwrite put passes `--ignore-existing` in place of
   `If-None-Match: *`. Both tools upload only the command's file list.
-- `azure` writes only to the flat endpoint `MATHLIB_CACHE_PUT_URL` names. It
-  uploads with curl: parallel PUTs signed with the OIDC bearer token. A
-  non-overwrite put skips objects the destination already holds
+- `azure` writes only to the flat endpoint in `MATHLIB_CACHE_PUT_URL`. The
+  tool uploads with curl: parallel PUTs signed with the OIDC bearer token. A
+  non-overwrite put skips objects that already exist at the destination
   (`If-None-Match: *`).
 
 The cache binary sets the rclone credentials, endpoint, provider (`Other`
@@ -56,9 +56,9 @@ The curl tool's non-overwrite guard relies on the store honoring
 | `MATHLIB_CACHE_S3_ACCESS_KEY_ID`, `MATHLIB_CACHE_S3_SECRET_ACCESS_KEY` | S3 credentials (SigV4), for `--backend=s3`. The pair must be set together. |
 | `MATHLIB_CACHE_S3_SESSION_TOKEN` | Session token of a temporary S3 credential; optional. |
 | `MATHLIB_CACHE_S3_REGION` | The SigV4 signing region the store expects, for `--backend=s3`. Required. |
-| `MATHLIB_CACHE_PUT_BASE_URL` | The upload base for `--backend=s3`: the bucket endpoint (`https://host/bucket`). The `--container` upload goes to `{base}/{container}/{key}` and keeps the container path policy. Required unless `MATHLIB_CACHE_PUT_URL` is set. |
-| `MATHLIB_CACHE_PUT_URL` | Upload to this single URL as a flat namespace, on either backend. On `--backend=s3` it must name the bucket by path (`https://host/bucket[/prefix]`). Required for `--backend=azure`. |
-| `MATHLIB_CACHE_PUT_FORCE_CURL` | Set to 1 or true to upload with curl on `--backend=s3`, which otherwise prefers rclone. |
+| `MATHLIB_CACHE_PUT_BASE_URL` | The upload base for `--backend=s3`: the bucket endpoint (`https://host/bucket`). The tool writes the `--container` files to `{base}/{container}/{key}` and keeps the container path policy. Required unless `MATHLIB_CACHE_PUT_URL` is set. |
+| `MATHLIB_CACHE_PUT_URL` | Upload to this single URL as a flat namespace, on either backend. On `--backend=s3` the URL must include the bucket in its path (`https://host/bucket[/prefix]`). Required for `--backend=azure`. |
+| `MATHLIB_CACHE_PUT_FORCE_CURL` | Set to 1 or true to upload with curl on `--backend=s3`. Otherwise the tool uses rclone when it is available. |
 | `MATHLIB_CACHE_REPO_SCOPE` | The per-commit namespace, for reads and `put` (see `--scope`, which takes precedence). |
 | `MATHLIB_CACHE_FROM` | Container list for reads, same shape as `--cache-from`, which takes precedence. CI sets it to widen reads per job. |
 
