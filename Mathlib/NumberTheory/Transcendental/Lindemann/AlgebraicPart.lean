@@ -171,7 +171,8 @@ theorem exists_sum_conjRootClass_eq_zero {F K S : Type*}
     (x : FixedPoints.subalgebra F F[K] Gal(K/F)) (x0 : x ≠ 0)
     (hx : AddMonoidAlgebra.lift F _ _ φ x = 0) :
     ∃ v : ConjRootClass F K →₀ F, v 0 ≠ 0 ∧
-      (v.sum fun c vc ↦ vc • ∑ x ∈ c.carrier, φ (.ofAdd x)) = 0 := by
+      Finsupp.linearCombination F
+        (fun c : ConjRootClass F K ↦ ∑ x ∈ c.carrier, φ (.ofAdd x)) v = 0 := by
   rw [← (classSumBasis F F K).repr.injective.ne_iff, map_zero] at x0
   obtain ⟨i, hi⟩ := Finsupp.support_nonempty_iff.mpr x0
   set x' := x * classSumBasis F F K (-i) with x'_def
@@ -181,7 +182,7 @@ theorem exists_sum_conjRootClass_eq_zero {F K S : Type*}
       (Nat.cast_ne_zero.mpr (card_pos.mpr (Set.toFinset_nonempty.mpr i.carrier_nonempty)).ne')
   have lift_x' : AddMonoidAlgebra.lift F _ _ φ x' = 0 := by
     rw [x'_def, Subalgebra.coe_mul, map_mul, hx, zero_mul]
-  exact ⟨_, hx', by rw [← lift_eq_sum_classSumBasis_repr, lift_x']⟩
+  exact ⟨_, hx', by rw [Finsupp.linearCombination_apply, ← lift_eq_sum_classSumBasis_repr, lift_x']⟩
 
 open Polynomial
 
@@ -262,9 +263,12 @@ public theorem exists_add_sum_map_aroots_eq_zero {S : Type*}
     (Algebra.IsIntegral.isIntegral (R := FixedPoints.subalgebra ℚ ℚ[K] Gal(K/ℚ)) f).isAlgebraic
     |>.exists_ne_zero_map_algebraMap_eq_zero _ f0 hf
   obtain ⟨v, v0, hv⟩ := exists_sum_conjRootClass_eq_zero _ f f0 hf
-  obtain ⟨v', hsupp, hv'⟩ := IsFractionRing.exists_sum_smul_eq_zero ℤ _ v hv
+  obtain ⟨b, hb, v', hbv, hv'⟩ := IsFractionRing.exists_linearCombination_eq_zero ℤ _ v hv
   obtain ⟨w', hw', h⟩ := exists_sum_conjRootClass_eq_add_sum_map_aroots ℤ φ v'
-  refine ⟨v' 0, by rwa [← Finsupp.mem_support_iff, hsupp, Finsupp.mem_support_iff], w', hw', ?_⟩
-  rwa [h, zsmul_one] at hv'
+  refine ⟨v' 0, fun h0 ↦ v0 ?_, w', hw', ?_⟩
+  · have := hbv 0
+    rw [h0, map_zero, eq_comm, smul_eq_zero] at this
+    exact this.resolve_left (nonZeroDivisors.ne_zero hb)
+  · rwa [Finsupp.linearCombination_apply, h, zsmul_one] at hv'
 
 end LindemannWeierstrass
