@@ -455,7 +455,7 @@ theorem lintegral_eq_lintegral_meas_le (μ : Measure α) (f_nn : 0 ≤ᵐ[μ] f)
   simp only [intervalIntegral.integral_const, sub_zero, smul_eq_mul, mul_one]
 
 /-- The standard case of the layer cake formula / Cavalieri's principle / tail probability formula
-for `ENNReal`-valued function. -/
+for an `ENNReal`-valued function. -/
 theorem lintegral_eq_lintegral_measure_ofReal_le (μ : Measure α) {f : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) :
     ∫⁻ x, f x ∂μ = ∫⁻ t in Ioi 0, μ {x | .ofReal t ≤ f x} := by
