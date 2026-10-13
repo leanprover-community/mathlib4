@@ -50,7 +50,7 @@ variable {𝓧 : Type*} {m𝓧 : MeasurableSpace 𝓧} {μ ν : Measure 𝓧}
 open Classical in
 /-- Total variation distance between two finite measures, with value in `ℝ≥0∞`.
 If one of the measures is not finite, it is defined to be `∞`. -/
-noncomputable def etvDist (μ ν : Measure 𝓧) : ℝ≥0∞ :=
+@[no_expose] noncomputable def etvDist (μ ν : Measure 𝓧) : ℝ≥0∞ :=
   if h : IsFiniteMeasure μ ∧ IsFiniteMeasure ν then
     haveI := h.1
     haveI := h.2
