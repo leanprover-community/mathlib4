@@ -5,8 +5,8 @@ Authors: Christian Merten, Andrew Yang
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Hypercover.Zero
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
+public import Mathlib.CategoryTheory.Sites.Hypercover.Zero
 
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
 
