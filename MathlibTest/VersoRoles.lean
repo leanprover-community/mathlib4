@@ -6,6 +6,7 @@ Authors: David Thrane Christiansen
 
 import Mathlib.Util.VersoRoles
 import Lean.Elab.GuardMsgs
+import Mathlib.Tactic.Simps
 
 /-! # Tests for Mathlib's custom Verso docstring roles. -/
 
@@ -23,11 +24,18 @@ set_option doc.verso true in
 /-- See {library_note}`migration role test`. -/
 def libraryNoteTest : Nat := 0
 
+-- The `{library_note}` role works for imported library notes.
+#guard_msgs in
+set_option doc.verso true in
+/-- See {library_note}`custom simps projection`. -/
+def libraryNoteImportedTest : Nat := 0
+
 -- The `{library_note}` role warns on an unknown label, hinting at typos but
 -- allowing forward references.
-/-- warning: No library note with label `does not exist`.
+/--
+warning: No library note with label `does not exist`.
 
-Note: set option `doc.verso.libraryNote.warnOnMissing` to `false` to disable this warning.
+Note: This warning can be disabled with `set_option doc.verso.libraryNote.warnOnMissing false`.
 -/
 #guard_msgs in
 set_option doc.verso true in
