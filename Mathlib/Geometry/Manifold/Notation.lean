@@ -263,7 +263,7 @@ private def isCLMReduciblyDefeqCoefficients (e : Expr) : TermElabM <| Expr × Ex
       which is not the identity"
   | _ => throwError "`{e}` is not a space of continuous linear maps"
 
-/-- Check if an expression `e` is a `ContinuousAlternatingMap` .
+/-- Check if an expression `e` is a space of `ContinuousAlternatingMap`s.
 If so, we return `(R, M, N, ι)`, where `R` is the coefficient ring, `ι → M` is the domain, and
 `N` is the codomain of the continuous alternating linear maps. Otherwise, we error.
 Assumes that `e` is already in `whnf` and has had metavariables instantiated. -/
