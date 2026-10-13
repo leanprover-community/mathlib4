@@ -364,26 +364,10 @@ lemma ContMDiffWithinAt.mvfderivWithin
   have aux := hf'.contMDiffWithinAt_tangentMapWithin hx hmn hs
   -- Compose the tangent map `Tf` with `X` to obtain a `C^n` map `M → TN`.
   -- In particular, the fiber component of this map is smooth, which is the desired conclusion.
-  -- XXX: remove the named argument for `f` confuses Lean.
-  obtain ⟨_, aux2'⟩ :=
-    Bundle.contMDiffWithinAt_totalSpace.mp (aux.comp _ hX (f := (T% X)) (by intro; simp))
+  obtain ⟨_, aux2'⟩ := Bundle.contMDiffWithinAt_totalSpace.mp (aux.comp x hX (by intro; simp))
   convert aux2'
   simp
   rfl
-
-/- For reference: the `On` version of the lemma above doesn't have the issue with specifying `f`:
-lemma ContMDiffOn.mvfderivWithin
-    (hs : UniqueMDiff[s])
-    (hf : CMDiff[s] n f) (hX : CMDiff[s] m (T% X)) (hmn : m + 1 ≤ n) :
-    CMDiff[s] m (fun (x : M) ↦ d[s] f x (X x)) := by
-  intro x hx
-  have aux := hf.contMDiffOn_tangentMapWithin hmn hs
-  -- Compose the tangent map `Tf` with `X` to obtain a `C^n` map `M → TN`.
-  -- In particular, the fiber component of this map is smooth, which is the desired conclusion.
-  obtain ⟨_, aux2'⟩ := contMDiffWithinAt_totalSpace.mp ((aux.comp hX) (by intro; simp) x hx)
-  convert aux2'
-  simp
-  rfl -/
 
 lemma ContMDiffAt.mvfderiv (hf : CMDiffAt n f x) (hX : CMDiffAt m (T% X) x) (hmn : m + 1 ≤ n) :
     CMDiffAt m (fun (x : M) ↦ d% f x (X x)) x := by
