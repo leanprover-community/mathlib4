@@ -131,7 +131,7 @@ runs:
           'rm -rf .lake/build/lib/lean/Mathlib; exec "${CACHE_BIN}" --repo="${CACHE_REPO}" get' \
           2>&1 | tee "${log}"
         # Warmth = how much the snapshot covered HEAD: files already cached locally
-        # (just decompressed) vs downloaded from the cache endpoint. Parsed best-effort from the log.
+        # (just decompressed) vs downloaded. Parsed best-effort from the log.
         warm=$(grep -oE 'Decompressing [0-9]+ already-cached' "${log}" | grep -oE '[0-9]+' | head -1 || true)
         cold=$(grep -oE 'Attempting to download [0-9]+' "${log}" | grep -oE '[0-9]+' | head -1 || true)
         echo "Cache warmth: ${warm:-0} already-cached (warm) / ${cold:-0} downloaded (cold)"

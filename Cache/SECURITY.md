@@ -53,10 +53,9 @@ only when the workflow's identity — stamped by GitHub from the repo, event
 type, and ref — matches a pre-registered grant. The credential's scope is
 fixed when it is issued and cannot be widened afterward.
 
-The credential is an S3-compatible credential pair scoped to one container's
-namespace. CI mints the pair per job, and the tool signs each request with it
-(SigV4). The cache tool's azure backend signs with an OIDC bearer token
-instead, and CI does not use it.
+CI mints the credential per job. It is an S3-compatible key pair scoped to
+one container's namespace, and the cache tool signs each request with it
+(SigV4).
 
 The nightly-testing credential is narrower than one container: it reaches only
 the namespace of the commit being built.
@@ -170,5 +169,4 @@ The trust model does not attempt to defend against:
 | User-facing CLI surface, env vars              | [`Cache/Main.lean`](Main.lean), [`Cache/README.md`](README.md), [`Cache/CI.md`](CI.md) |
 | OIDC mint + per-job dispatch                   | [`.github/workflows/build_template.yml`](../.github/workflows/build_template.yml) (`upload_cache` and `upload_test_cache` jobs) |
 | (repo, ref) → trust class policy table         | [`.github/actions/cache-trust-dispatch/action.yml`](../.github/actions/cache-trust-dispatch/action.yml) |
-| Caller `cache_application_id` wiring, the `master` writers | [`.github/workflows/build.yml`](../.github/workflows/build.yml), [`bors.yml`](../.github/workflows/bors.yml), [`release_cache.yml`](../.github/workflows/release_cache.yml) |
-| Caller `cache_environment` wiring, every caller | [`.github/workflows/build.yml`](../.github/workflows/build.yml), [`bors.yml`](../.github/workflows/bors.yml), [`build_fork.yml`](../.github/workflows/build_fork.yml), [`ci_dev.yml`](../.github/workflows/ci_dev.yml), [`release_cache.yml`](../.github/workflows/release_cache.yml) |
+| Caller `cache_environment` wiring              | [`.github/workflows/build.yml`](../.github/workflows/build.yml), [`bors.yml`](../.github/workflows/bors.yml), [`build_fork.yml`](../.github/workflows/build_fork.yml), [`ci_dev.yml`](../.github/workflows/ci_dev.yml), [`release_cache.yml`](../.github/workflows/release_cache.yml) |

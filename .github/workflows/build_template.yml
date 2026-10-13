@@ -380,8 +380,8 @@ jobs:
           ../tools-branch/.lake/build/bin/cache clean
 
       # Publish this run's pruned `.ltar` set as `cache-snapshot` for other runs to warm
-      # from. Already on disk and already zstd-compressed (skip
-      # recompression); retention covers how far back a PR's merge-base can be matched.
+      # from. The files are already zstd-compressed, so the upload skips compression.
+      # The retention covers how far back a PR's merge-base can be matched.
       - name: upload cache snapshot warming artifact
         if: ${{ inputs.publish_cache && steps.build.outcome == 'success' }}
         continue-on-error: true # best-effort; never fail the build
@@ -426,8 +426,8 @@ jobs:
     # It does not depend on `upload_cache`: it reconstitutes this run's oleans
     # from the `cache-staging` artifact `build` produces (this commit's
     # freshly-built delta) and warms the rest from the master `cache-snapshot`
-    # via the `get-cache` action. The `verify the Mathlib
-    # cache is complete` step below fails loudly if that reconstitution is incomplete,
+    # via the `get-cache` action. The `verify the Mathlib cache is complete`
+    # step below fails loudly if that reconstitution is incomplete,
     # rather than silently rebuilding under landrun (which has no network).
     #
     # Gating: runs when `build` succeeded or failed (not cancelled/skipped). Running
@@ -501,7 +501,7 @@ jobs:
       # Warm the unchanged bulk from the master `cache-snapshot` and fetch/unpack
       # this commit's oleans. The staged `.ltar` placed above are already local, so
       # `get-cache`'s `cache get` decompresses them and downloads only the missing
-      # files from the cache endpoint.
+      # files.
       - name: Get cache
         uses: ./workflow-actions/.github/actions/get-cache
         with:
