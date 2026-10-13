@@ -27,22 +27,22 @@ open Lean Elab Command Linter
 
 /-- Lints against `trace[<cls>]` invocations for which no such `cls` is registered by the
 end of the file. -/
-public meta register_option linter.unusedTraceClass : Bool := {
+public meta register_option linter.unregisteredTraceClass : Bool := {
   defValue := false
   descr := "Lints against `trace[<cls>]` invocations for which no such `cls` is registered by the \
     end of the file"
 }
 
 /-- Lints against unused trace classes from `trace[cls]` syntax. -/
-public meta unsafe def unusedTraceClass : ModuleLinter where
+public meta unsafe def unregisteredTraceClass : ModuleLinter where
   run cmds := do
-    unless getLinterValue linter.unusedTraceClass (← getLinterOptions) do
+    unless getLinterValue linter.unregisteredTraceClass (← getLinterOptions) do
       return
     let mut traceClasses : NameMap (Array Ident) := {}
     let optionDecls ← getOptionDecls
     for cmd in cmds do
       unless ← cmd |> withSetOptionIn fun _ =>
-        return getLinterValue linter.unusedTraceClass (← getLinterOptions)
+        return getLinterValue linter.unregisteredTraceClass (← getLinterOptions)
       do
         continue
       -- Most syntax never uses `trace[_]`, so let's use a faster compiled loop first
@@ -86,9 +86,9 @@ public meta unsafe def unusedTraceClass : ModuleLinter where
             obviously registered later in this file. Use\
             {indentD m!"initialize {.ofConstName ``registerTraceClass} `{cls}"}\n\
             to make the trace class available via `set_option trace.{cls}` in subsequent files.\n\n\
-            Or, use `set_option linter.unusedTraceClass false in` in front of this commmand to \
-            turn this linter off."
+            Or, use `set_option linter.unregisteredTraceClass false in` in front of this commmand \
+            to turn this linter off."
 
-meta unsafe initialize addModuleLinter unusedTraceClass
+meta unsafe initialize addModuleLinter unregisteredTraceClass
 
 end Mathlib.Linter

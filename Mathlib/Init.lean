@@ -115,7 +115,7 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.whitespace
   linter.unusedDecidableInType
   linter.unusedFintypeInType
-  linter.unusedTraceClass
+  linter.unregisteredTraceClass
   -- The `docPrime` linter is disabled: https://github.com/leanprover-community/mathlib4/issues/20560
 
 /-- Define a set of linters that are used in the `nightly-testing` branch
