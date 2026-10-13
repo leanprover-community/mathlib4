@@ -261,10 +261,8 @@ theorem inv_le_self : f⁻¹ ≤ f ↔ f⁻¹ = f :=
 theorem tendsto_iff_tendsto_inv_inv
     {m : α → β} {f₁ : Filter α} {f₂ : Filter β} :
     Tendsto m f₁ f₂ ↔ Tendsto (fun x ↦ m x⁻¹) f₁⁻¹ f₂ := by
-  simp_rw [tendsto_def, mem_inv]
-  convert Iff.rfl
-  ext
-  simp
+  change Tendsto m f₁ f₂ ↔ Tendsto (m ∘ Inv.inv) f₁⁻¹ f₂
+  simp [tendsto_def, mem_inv, preimage_comp]
 
 end InvolutiveInv
 
