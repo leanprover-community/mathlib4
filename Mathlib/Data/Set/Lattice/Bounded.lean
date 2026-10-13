@@ -604,7 +604,7 @@ theorem iInter_pi (t : ι → ∀ a, Set (π a)) (s : Set α) :
 
 /-- The intersection of a family of boxes `(s i).pi (t i)` is empty iff there is a coordinate `a`
 such that the intersection of the `t i a` over all `i` with `a ∈ s i` is empty. -/
-theorem iInter_pi_eq_empty_iff (s : ι → Set α) (t : ι → ∀ a, Set (π a)) :
+theorem iInter_pi_eq_empty_iff {s : ι → Set α} {t : ι → ∀ a, Set (π a)} :
     ⋂ i, (s i).pi (t i) = ∅ ↔ ∃ a, ⋂ (i) (_ : a ∈ s i), t i a = ∅ := by
   rw [iInter_eq_empty_iff, ← not_iff_not]
   push Not
@@ -617,7 +617,7 @@ theorem iInter_univ_pi_eq_empty_iff (t : ι → ∀ a, Set (π a)) :
     ⋂ i, pi univ (t i) = ∅ ↔ ∃ a, ⋂ i, t i a = ∅ := by
   rw [iInter_univ_pi, univ_pi_eq_empty_iff]
 
-theorem biInter_univ_pi_eq_empty_iff (t : ι → ∀ a, Set (π a)) (p : ι → Prop) :
+theorem biInter_univ_pi_eq_empty_iff {t : ι → ∀ a, Set (π a)} {p : ι → Prop} :
     ⋂ (i) (_ : p i), pi univ (t i) = ∅ ↔ ∃ a, ⋂ (i) (_ : p i), t i a = ∅ := by
   simp_rw [iInter_univ_pi, univ_pi_eq_empty_iff]
 

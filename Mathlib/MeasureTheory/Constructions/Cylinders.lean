@@ -65,7 +65,7 @@ theorem squareCylinders_eq_iUnion_image (C : ∀ i, Set (Set (α i))) :
   simp only [squareCylinders, mem_iUnion, mem_image, mem_univ_pi, mem_ofPred_eq,
     eq_comm (a := f)]
 
-theorem squareCylinders_eq_iUnion_image' (C : ∀ i, Set (Set (α i))) (hC : ∀ i, (C i).Nonempty) :
+theorem squareCylinders_eq_iUnion_image' {C : ∀ i, Set (Set (α i))} (hC : ∀ i, (C i).Nonempty) :
     squareCylinders C = ⋃ s : Finset ι, (s : Set ι).pi '' (s : Set ι).pi C := by
   simp_rw [squareCylinders_eq_iUnion_image, pi_image_pi_of_subset hC (subset_univ _)]
 
