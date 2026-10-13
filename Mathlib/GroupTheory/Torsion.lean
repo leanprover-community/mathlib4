@@ -512,10 +512,12 @@ end CommGroup
 open CommGroup (torsion)
 
 /-- Quotienting a group by its torsion subgroup yields a torsion-free group. -/
-@[to_additive
+@[to_additive _root_.QuotientAddGroup.instHasUniqueDiv
 /-- Quotienting an additive group by its torsion additive subgroup yields a torsion-free additive
 group. -/]
-instance _root_.QuotientGroup.instIsMulTorsionFree : IsMulTorsionFree <| G ⧸ torsion G := by
+instance _root_.QuotientGroup.instHasUniqueRoots : HasUniqueRoots <| G ⧸ torsion G := by
+  suffices IsMulTorsionFree (G ⧸ torsion G) from
+    ⟨fun _ hn _ _ ↦ eq_of_pow_eq_pow_of_commute hn (.all _ _)⟩
   refine .of_not_isOfFinOrder fun g hne hfin ↦ hne ?_
   obtain ⟨g⟩ := g
   obtain ⟨m, mpos, hm⟩ := hfin.exists_pow_eq_one
