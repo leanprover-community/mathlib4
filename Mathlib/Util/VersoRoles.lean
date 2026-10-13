@@ -58,13 +58,6 @@ def soleCode (xs : TSyntaxArray `inline) : DocM StrLit := do
     | `(inline|code($s)) => return s
     | other => throwErrorAt other "Expected a code element"
 
-/-- The labels of all library notes available in the current environment. -/
-def libraryNoteLabels (env : Environment) : Array String :=
-  let imported := (Batteries.Util.LibraryNote.libraryNoteExt.toEnvExtension.getState env)
-    |>.importedEntries.flatten
-  let local_ := Batteries.Util.LibraryNote.libraryNoteExt.getEntries env
-  (imported ++ local_).map fun (n : Name) ↦ n.toString (escape := false)
-
 /-- Whether {name}`bib` (the contents of {lit}`docs/references.bib`) contains an entry with
 the given key. -/
 def bibContainsKey (bib : String) (key : String) : Bool := Id.run do
@@ -115,7 +108,13 @@ def «library_note» (xs : TSyntaxArray `inline) : DocM (Inline ElabInline) := d
   let labels := Mathlib.VersoRoles.libraryNoteLabels (← getEnv)
   if !labels.contains label && (← doc.verso.libraryNote.warnOnMissing.getM) then
     logWarningAt s m!"No library note with label `{label}`.\n\n\
-      Note: set option `doc.verso.libraryNote.warnOnMissing` to `false` to disable this warning."
+  if ← doc.verso.libraryNote.warnOnMissing.getM then
+    /- Note that `Batteries.Util.LibraryNote.libraryNoteExt` initializes its state by flattening
+    all imported library notes into the state array. -/
+    let labels := Batteries.Util.LibraryNote.libraryNoteExt.getState (← getEnv)
+    if !labels.any (·.toString (escape := false) == label) then
+      logWarningAt s m!"No library note with label `{label}`.{.note m!"This warning can be \
+        disabled with `set_option {doc.verso.libraryNote.warnOnMissing.name} false`."}"
   return .code label
 
 attribute [nolint defsWithUnderscore] «library_note».getArgs
