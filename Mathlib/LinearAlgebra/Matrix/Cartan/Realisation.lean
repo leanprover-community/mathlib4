@@ -611,11 +611,11 @@ def rootPairingBaseEquiv :
   rfl
 
 @[simp] lemma rootPairingBase_cartanMatrix_eq :
-    letI e := rl.rootPairingBaseEquiv.symm
-    rl.rootPairingBase.cartanMatrix.reindex e e = rl.matrix := by
+    letI e := rl.rootPairingBaseEquiv
+    rl.rootPairingBase.cartanMatrix.submatrix e e = rl.matrix := by
   ext i j
   apply FaithfulSMul.algebraMap_injective ℤ R
-  rw [reindex_apply, submatrix_apply, RootPairing.Base.algebraMap_cartanMatrixIn_apply]
+  rw [submatrix_apply, RootPairing.Base.algebraMap_cartanMatrixIn_apply]
   simp [toRootPairing_pairing]
 
 end Realisation
@@ -672,8 +672,8 @@ def rootPairingBaseEquiv :
   (hA.toRealisation (hA.isUnit_map k).invertible).rootPairingBaseEquiv
 
 @[simp] lemma rootPairingBase_cartanMatrix_eq :
-    letI e := (hA.rootPairingBaseEquiv k).symm
-    (hA.rootPairingBase k).cartanMatrix.reindex e e = A :=
+    letI e := hA.rootPairingBaseEquiv k
+    (hA.rootPairingBase k).cartanMatrix.submatrix e e = A :=
   (hA.toRealisation (hA.isUnit_map k).invertible).rootPairingBase_cartanMatrix_eq
 
 end Matrix.IsFiniteCartan
