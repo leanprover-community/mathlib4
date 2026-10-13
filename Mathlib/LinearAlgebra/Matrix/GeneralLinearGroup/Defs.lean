@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Ring.Subring.Units
 public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 public import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
+public import Mathlib.Algebra.Group.Pi.Units
 
 /-!
 # The General Linear group $GL(n, R)$
@@ -281,6 +282,18 @@ theorem reindexMulEquiv_trans_reindexMulEquiv (e : m ≃ n) (e' : n ≃ o) :
 theorem reindexMulEquiv_refl : reindexMulEquiv R (.refl n) = .refl (GL n R) := rfl
 
 end Reindex
+
+section Pi
+
+variable {ι : Type*} (R : ι → Type*)
+
+/-- The monoid equivalence between `GL n` of a product of rings,
+and the product of the `GL n` of each ring. -/
+@[simps! apply symm_apply]
+def piEquiv [Π i, CommRing (R i)] : GL n (Π i, R i) ≃* Π i, GL n (R i) :=
+  (Units.mapEquiv piRingEquiv.toMulEquiv).trans MulEquiv.piUnits
+
+end Pi
 
 variable (f : R →+* S)
 
