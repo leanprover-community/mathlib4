@@ -167,18 +167,6 @@ instance lieQuotientLieAlgebra : LieAlgebra R (L ⧸ I) where
       | rw [← Submodule.Quotient.mk_smul (R := R) (M := L)]
     apply congr_arg; apply lie_smul
 
-/-- `LieSubmodule.Quotient.mk` as a `LieHom`. -/
-@[simps]
-def mk'' : L →ₗ⁅R⁆ L ⧸ I := {
-  toFun := I.toSubmodule.mkQ
-  map_add' := by simp only [Submodule.mkQ_apply, Submodule.Quotient.mk_add, implies_true]
-  map_smul' := by simp only [map_smul, Submodule.mkQ_apply, RingHom.id_apply, implies_true]
-  map_lie' := by simp only [Submodule.mkQ_apply, mk_bracket, implies_true]
-}
-
-@[simp]
-theorem surjective_mk'' : Function.Surjective (Quotient.mk'' I) := Quot.mk_surjective
-
 /-- `LieSubmodule.Quotient.mk` as a `LieModuleHom`. -/
 @[simps]
 def mk' : M →ₗ⁅R,L⁆ M ⧸ N :=
@@ -218,6 +206,26 @@ lemma toEnd_comp_mk' (x : L) :
     LieModule.toEnd R L (M ⧸ N) x ∘ₗ mk' N = mk' N ∘ₗ LieModule.toEnd R L M x :=
   rfl
 
+/-- `LieSubmodule.Quotient.mk` as a `LieHom`. -/
+@[simps]
+def mk'' : L →ₗ⁅R⁆ L ⧸ I := {
+  toFun := I.toSubmodule.mkQ
+  map_add' := by simp only [Submodule.mkQ_apply, Submodule.Quotient.mk_add, implies_true]
+  map_smul' := by simp only [map_smul, Submodule.mkQ_apply, RingHom.id_apply, implies_true]
+  map_lie' := by simp only [Submodule.mkQ_apply, mk_bracket, implies_true]
+}
+
+@[simp]
+theorem surjective_mk'' : Function.Surjective (Quotient.mk'' I) := Quot.mk_surjective
+
+@[simp]
+theorem range_mk'' : LieHom.range (mk'' I) = ⊤ := by simp [LieHom.range_eq_top]
+
+theorem mk''_eq_zero {x : L} : mk'' I x = 0 ↔ x ∈ I :=
+  Submodule.Quotient.mk_eq_zero I.toSubmodule
+
+@[simp]
+theorem mk''_ker : (mk'' I).ker = I := by ext; simp
 end Quotient
 
 end LieSubmodule
