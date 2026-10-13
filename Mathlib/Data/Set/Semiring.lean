@@ -32,9 +32,10 @@ deriving Inhabited, CompleteAtomicBooleanAlgebra
 
 namespace SetSemiring
 
-/-- The identity equivalence betweeen `Set α` and `SetSemiring α`. -/
+/-- The identity equivalence between `Set α` and `SetSemiring α`. -/
 def ofSet : Set α ≃ SetSemiring α := Equiv.refl _
-/-- The identity equivalence betweeen `SetSemiring α` and `Set α`. -/
+
+/-- The identity equivalence between `SetSemiring α` and `Set α`. -/
 def toSet : SetSemiring α ≃ Set α := Equiv.refl _
 
 @[simp] lemma toSet_ofSet (s : Set α) : (ofSet s).toSet = s := rfl
@@ -75,9 +76,9 @@ instance : NonUnitalNonAssocSemiring (SetSemiring α) where
   left_distrib _ _ _ := mul_union
   right_distrib _ _ _ := union_mul
 
-lemma mul_def (s t : SetSemiring α) : s * t = s.toSet * t.toSet := rfl
+lemma mul_def (s t : SetSemiring α) : s * t = ofSet (s.toSet * t.toSet) := rfl
 @[simp] lemma toSet_mul (s t : SetSemiring α) : (s * t).toSet = s.toSet * t.toSet := rfl
-@[simp] lemma ofSet_mul (s t : Set α) : ofSet (s * t) = s * t := rfl
+@[simp] lemma ofSet_mul (s t : Set α) : ofSet (s * t) = ofSet s * ofSet t := rfl
 
 instance : NoZeroDivisors (SetSemiring α) where
   eq_zero_or_eq_zero_of_mul_eq_zero {a b} ab :=
@@ -158,7 +159,7 @@ def imageHom : SetSemiring α →+* SetSemiring β where
 
 @[simp] lemma imageHom_apply (s : SetSemiring α) : imageHom f s = ofSet (f '' s.toSet) := rfl
 
-lemma imageHom_id : imageHom (MonoidHom.id α) = RingHom.id (SetSemiring α) := by
+@[simp] lemma imageHom_id : imageHom (MonoidHom.id α) = RingHom.id (SetSemiring α) := by
   simp [imageHom, RingHom.id]
 
 lemma imageHom_comp (g : β →* γ) : imageHom (g.comp f) = (imageHom g).comp (imageHom f) := by
@@ -168,24 +169,24 @@ lemma imageHom_comp (g : β →* γ) : imageHom (g.comp f) = (imageHom g).comp (
 
 end ImageHom
 
-@[deprecated (since := "2026-04-07")] alias _root_.Set.up := ofSet
-@[deprecated (since := "2026-04-07")] alias down := toSet
-@[deprecated (since := "2026-04-07")] alias down_up := toSet_ofSet
-@[deprecated (since := "2026-04-07")] alias up_down := ofSet_toSet
-@[deprecated (since := "2026-04-07")] alias up_le_up := ofSet_le_ofSet
-@[deprecated (since := "2026-04-07")] alias up_lt_up := ofSet_lt_ofSet
-@[deprecated (since := "2026-04-07")] alias down_subset_down := toSet_subset_toSet
-@[deprecated (since := "2026-04-07")] alias down_ssubset_down := toSet_ssubset_toSet
-@[deprecated (since := "2026-04-07")] alias down_zero := toSet_zero
-@[deprecated (since := "2026-04-07")] alias _root_.Set.up_empty := ofSet_empty
-@[deprecated (since := "2026-04-07")] alias down_add := toSet_add
-@[deprecated (since := "2026-04-07")] alias _root_.Set.up_union := ofSet_union
-@[deprecated (since := "2026-04-07")] alias down_mul := toSet_mul
-@[deprecated (since := "2026-04-07")] alias _root_.Set.up_mul := ofSet_mul
-@[deprecated (since := "2026-04-07")] alias down_one := toSet_one
-@[deprecated (since := "2026-04-07")] alias _root_.Set.up_one := ofSet_one
-@[deprecated (since := "2026-04-07")] alias imageHom_def := imageHom_apply
-@[deprecated (since := "2026-04-07")] alias down_imageHom := imageHom_apply
-@[deprecated (since := "2026-04-07")] alias _root_.Set.up_image := imageHom_apply
+@[deprecated (since := "2026-10-13")] alias _root_.Set.up := ofSet
+@[deprecated (since := "2026-10-13")] alias down := toSet
+@[deprecated (since := "2026-10-13")] alias down_up := toSet_ofSet
+@[deprecated (since := "2026-10-13")] alias up_down := ofSet_toSet
+@[deprecated (since := "2026-10-13")] alias up_le_up := ofSet_le_ofSet
+@[deprecated (since := "2026-10-13")] alias up_lt_up := ofSet_lt_ofSet
+@[deprecated (since := "2026-10-13")] alias down_subset_down := toSet_subset_toSet
+@[deprecated (since := "2026-10-13")] alias down_ssubset_down := toSet_ssubset_toSet
+@[deprecated (since := "2026-10-13")] alias down_zero := toSet_zero
+@[deprecated (since := "2026-10-13")] alias _root_.Set.up_empty := ofSet_empty
+@[deprecated (since := "2026-10-13")] alias down_add := toSet_add
+@[deprecated (since := "2026-10-13")] alias _root_.Set.up_union := ofSet_union
+@[deprecated (since := "2026-10-13")] alias down_mul := toSet_mul
+@[deprecated (since := "2026-10-13")] alias _root_.Set.up_mul := ofSet_mul
+@[deprecated (since := "2026-10-13")] alias down_one := toSet_one
+@[deprecated (since := "2026-10-13")] alias _root_.Set.up_one := ofSet_one
+@[deprecated (since := "2026-10-13")] alias imageHom_def := imageHom_apply
+@[deprecated (since := "2026-10-13")] alias down_imageHom := imageHom_apply
+@[deprecated (since := "2026-10-13")] alias _root_.Set.up_image := imageHom_apply
 
 end SetSemiring
