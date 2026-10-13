@@ -266,20 +266,20 @@ variable (R) {m o : Type*} [DecidableEq m] [Fintype m] [DecidableEq o] [Fintype 
 
 /-- The equivalence between `GL m R` and `GL n R` given by an equivalence `e : m ≃ n`. -/
 @[simps! apply]
-def reindexMulEquiv (e : m ≃ n) : GL m R ≃* GL n R := Units.mapEquiv (Matrix.reindexRingEquiv R e)
+def reindex (e : m ≃ n) : GL m R ≃* GL n R := Units.mapEquiv (Matrix.reindexRingEquiv R e)
 
 @[simp]
 theorem symm_reindexMulEquiv (e : m ≃ n) :
-    (reindexMulEquiv R e).symm = reindexMulEquiv R e.symm :=
+    (reindex R e).symm = reindex R e.symm :=
   rfl
 
 @[simp]
 theorem reindexMulEquiv_trans_reindexMulEquiv (e : m ≃ n) (e' : n ≃ o) :
-    .trans (reindexMulEquiv R e) (reindexMulEquiv R e') = reindexMulEquiv R (.trans e e') :=
+    .trans (reindex R e) (reindex R e') = reindex R (.trans e e') :=
   rfl
 
 @[simp]
-theorem reindexMulEquiv_refl : reindexMulEquiv R (.refl n) = .refl (GL n R) := rfl
+theorem reindexMulEquiv_refl : reindex R (.refl n) = .refl (GL n R) := rfl
 
 end Reindex
 
