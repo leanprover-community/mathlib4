@@ -41,7 +41,7 @@ theorem cycleGraph_isContained_of_isCycleOn {σ : Perm α} {s : Finset α} (hσ 
     rw [hi, hj, adj_comm]
     have := hadj ((σ ^ (#s - 1)) v)
     rwa [← mul_apply, ← pow_succ', Nat.sub_add_cancel (by lia), hσ.pow_card_apply hv] at this
-  · rw [show j.1 = i.1 + 1 by grind [Fin.sub_val_of_le], pow_succ', mul_apply]
+  · rw [show j.1 = i.1 + 1 by lia [Fin.sub_val_of_le], pow_succ', mul_apply]
     exact hadj _
 
 /-- If a cyclic permutation `σ` of a type with at least 3 elements is such that each vertex is
