@@ -54,6 +54,8 @@ lemma degenerate_zero : X.degenerate 0 = ∅ := by
 lemma nonDegenerate_zero : X.nonDegenerate 0 = Set.univ := by
   simp [nonDegenerate]
 
+@[deprecated (since := "2026-09-20")] alias SSet.nondegenerate_zero := SSet.nonDegenerate_zero
+
 variable {n : ℕ}
 
 lemma mem_nonDegenerate_iff_notMem_degenerate (x : X _⦋n⦌) :
