@@ -280,7 +280,7 @@ lemma IsLocalization.Away.exists_isIntegral_mul_of_isIntegral_mk'
     (hx : IsIntegral R (IsLocalization.mk' Sₘ x a)) : ∃ n, IsIntegral R (r ^ n * x) := by
   refine IsLocalization.Away.exists_isIntegral_mul_of_isIntegral_algebraMap (Sₘ := Sₘ) hr ?_
   obtain ⟨_, ⟨n, rfl⟩⟩ := a
-  convert! (hr.pow n).algebraMap.mul hx
+  convert (hr.pow n).algebraMap.mul hx
   exact (mk'_spec'_mk ..).symm
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -418,7 +418,7 @@ protected lemma IsLocalization.integralClosure
       (integralClosure Rf Sf) := by
   refine ⟨⟨?_, ?_, ?_⟩⟩
   · rintro ⟨_, f, hf, rfl⟩
-    convert!
+    convert
       (IsLocalization.map_units (S := Rf) ⟨f, hf⟩).map (algebraMap Rf (integralClosure Rf Sf))
     simp [← IsScalarTower.algebraMap_apply]
   · rintro ⟨s, hs⟩
@@ -431,9 +431,9 @@ protected lemma IsLocalization.integralClosure
         simp only [Algebra.smul_def, map_mul, ← IsScalarTower.algebraMap_apply, ← e, ← mul_assoc]
         exact hm₂s.mul (.algebraMap (Algebra.IsIntegral.isIntegral _))
     refine ⟨⟨⟨_, hm₃s⟩, _, _, mul_mem hm₁ (mul_mem hm₂ hm₃), rfl⟩, ?_⟩
-    · apply (FaithfulSMul.algebraMap_injective (integralClosure Rf Sf) Sf)
-      simp [← IsScalarTower.algebraMap_apply, e, ← mul_assoc, Algebra.smul_def]
-      ring
+    apply (FaithfulSMul.algebraMap_injective (integralClosure Rf Sf) Sf)
+    simp [← IsScalarTower.algebraMap_apply, e, ← mul_assoc, Algebra.smul_def]
+    ring
   · rintro ⟨a, ha⟩ ⟨b, hb⟩ e
     have := congr(algebraMap _ Sf $e)
     have : algebraMap S Sf a = algebraMap S Sf b := by
@@ -451,7 +451,7 @@ protected lemma IsLocalization.Away.integralClosure
     [IsScalarTower (integralClosure R S) (integralClosure Rf Sf) Sf]
     [IsScalarTower R (integralClosure R S) (integralClosure Rf Sf)] :
     IsLocalization.Away (algebraMap R (integralClosure R S) f) (integralClosure Rf Sf) := by
-  convert! IsLocalization.integralClosure (S := S) (Rf := Rf) (Sf := Sf) (.powers f)
+  convert IsLocalization.integralClosure (S := S) (Rf := Rf) (Sf := Sf) (.powers f)
   simp
 
 end

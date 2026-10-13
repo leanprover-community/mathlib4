@@ -9,6 +9,8 @@ public import Mathlib.Algebra.Field.Subfield.Defs
 public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 public import Mathlib.RingTheory.SimpleRing.Basic
 
+import Mathlib.Order.CompleteLattice.Finset
+
 /-!
 # Subfields
 
@@ -273,7 +275,7 @@ theorem sInf_toSubring (s : Set (Subfield K)) :
 theorem isGLB_sInf (S : Set (Subfield K)) : IsGLB S (sInf S) := by
   have : ∀ {s t : Subfield K}, (s : Set K) ≤ t ↔ s ≤ t := by simp [SetLike.coe_subset_coe]
   refine IsGLB.of_image this ?_
-  convert! isGLB_biInf (s := S) (f := SetLike.coe)
+  convert isGLB_biInf (s := S) (f := SetLike.coe)
   exact coe_sInf _
 
 /-- Subfields of a ring form a complete lattice. -/
@@ -428,6 +430,10 @@ theorem mem_sSup_of_directedOn {S : Set (Subfield K)} (Sne : S.Nonempty) (hS : D
 theorem coe_sSup_of_directedOn {S : Set (Subfield K)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) : (↑(sSup S) : Set K) = ⋃ s ∈ S, ↑s :=
   Set.ext fun x => by simp [mem_sSup_of_directedOn Sne hS]
+
+theorem coe_iSup_eq_iUnion_finset_coe_biSup {ι : Type*} (S : ι → Subfield K) :
+    ((⨆ i, S i : Subfield K) : Set K) = ⋃ s : Finset ι, (⨆ i ∈ s, S i : Subfield K) := by
+  rw [iSup_eq_iSup_finset, coe_iSup_of_directed <| Monotone.directed_le fun _ _ ↦ biSup_mono]
 
 end Subfield
 

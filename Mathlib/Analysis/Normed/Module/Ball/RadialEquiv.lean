@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Normed.Module.Basic
+
 import Mathlib.Algebra.Ring.Action.Pointwise.Set
 
 /-!

@@ -6,13 +6,14 @@ Authors: Yury Kudryashov, Patrick Massot
 module
 
 public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 public import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Group.MinMax
 public import Mathlib.Algebra.Order.Interval.Set.Monoid
-import Mathlib.Order.Interval.Set.OrderIso
 public import Mathlib.Order.Interval.Set.UnorderedInterval
-public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+
+import Mathlib.Algebra.Order.Group.MinMax
+import Mathlib.Order.Interval.Set.OrderIso
 
 /-!
 # (Pre)images of intervals
