@@ -25,11 +25,21 @@ def libraryNoteTest : Nat := 0
 
 -- The `{library_note}` role warns on an unknown label, hinting at typos but
 -- allowing forward references.
-/-- warning: No library note with label `does not exist`. -/
+/-- warning: No library note with label `does not exist`.
+
+Note: set option `doc.verso.libraryNote.warnOnMissing` to `false` to disable this warning.
+-/
 #guard_msgs in
 set_option doc.verso true in
 /-- See {library_note}`does not exist`. -/
 def libraryNoteFailTest : Nat := 0
+
+-- Check that we can disable the warning message.
+#guard_msgs in
+set_option doc.verso true in
+set_option doc.verso.libraryNote.warnOnMissing false in
+/-- See {library_note}`does not exist`. -/
+def libraryNoteSilenceTest : Nat := 0
 
 -- The `{cite}` role accepts a key present in `docs/references.bib` without emitting diagnostics.
 #guard_msgs in

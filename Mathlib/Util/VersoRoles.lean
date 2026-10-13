@@ -91,21 +91,31 @@ def url (xs : TSyntaxArray `inline) : DocM (Inline ElabInline) := do
   let target := s.getString
   return .link #[.text target] target
 
+/-- If {name}`doc.verso.libraryNote.warnOnMissing` is enabled, a {lit}`{library_note}`
+reference that is not in scope generates a warning.
+-/
+register_option doc.verso.libraryNote.warnOnMissing : Bool := {
+  defValue := true,
+  descr := "whether to warn if a `{library_note}` reference cannot be resolved"
+}
+
 /--
 A reference to a library note.
 
 The code literal contains the note's label, as
 in {lit}`` {library_note}`partially-applied ext lemmas` ``.
 A warning is reported when no library note with this label is in scope, so that references to notes
-defined later are allowed.
+defined later are allowed. Set the option {name}`doc.verso.libraryNote.warnOnMissing` to
+{lean}`false` to disable this warning.
 -/
 @[doc_role, nolint defsWithUnderscore] -- This name intentionally contains an underscore.
 def «library_note» (xs : TSyntaxArray `inline) : DocM (Inline ElabInline) := do
   let s ← Mathlib.VersoRoles.soleCode xs
   let label := s.getString
   let labels := Mathlib.VersoRoles.libraryNoteLabels (← getEnv)
-  unless labels.contains label do
-    logWarningAt s m!"No library note with label `{label}`."
+  if !labels.contains label && (← doc.verso.libraryNote.warnOnMissing.getM) then
+    logWarningAt s m!"No library note with label `{label}`.\n\n\
+      Note: set option `doc.verso.libraryNote.warnOnMissing` to `false` to disable this warning."
   return .code label
 
 attribute [nolint defsWithUnderscore] «library_note».getArgs
