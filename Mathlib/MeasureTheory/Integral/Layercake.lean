@@ -454,6 +454,28 @@ theorem lintegral_eq_lintegral_meas_le (μ : Measure α) (f_nn : 0 ≤ᵐ[μ] f)
   congr with ω
   simp only [intervalIntegral.integral_const, sub_zero, smul_eq_mul, mul_one]
 
+/-- The standard case of the layer cake formula / Cavalieri's principle / tail probability formula
+for `ENNReal`-valued function. -/
+theorem lintegral_eq_lintegral_measure_ofReal_le (μ : Measure α) {f : α → ℝ≥0∞}
+    (hf : AEMeasurable f μ) :
+    ∫⁻ x, f x ∂μ = ∫⁻ t in Ioi 0, μ {x | .ofReal t ≤ f x} := by
+  by_cases h : f =ᵐ[μ] fun x ↦ .ofReal (f x).toReal
+  · rw [lintegral_congr_ae h, lintegral_eq_lintegral_meas_le μ (.of_forall (by simp)) (by fun_prop)]
+    congr with t
+    apply measure_eq_measure_of_null_sdiff
+    · refine ofPred_subset_ofPred.mpr fun x hx ↦ ?_
+      grw [hx, ENNReal.ofReal_toReal_le]
+    · refine measure_mono_null (fun x ↦ ?_) (aeEq_iff.mp h)
+      simp only [Set.mem_sdiff, mem_ofPred_eq, not_le, ne_eq, and_imp]
+      rw [← ENNReal.ofReal_lt_ofReal_iff_of_nonneg (by simp)]
+      grind
+  · have h' : μ {x | f x = ∞} ≠ 0 := by grind [ENNReal.ofReal_toReal_eq_iff, aeEq_iff]
+    rw [lintegral_eq_top_of_measure_eq_top_ne_zero hf h', Eq.comm, ← top_le_iff]
+    trans ∫⁻ (t : ℝ) in Ioi 0, μ {x | f x = ∞}
+    · simp [h']
+    · gcongr
+      simp +contextual
+
 end Layercake
 
 section LayercakeLT
