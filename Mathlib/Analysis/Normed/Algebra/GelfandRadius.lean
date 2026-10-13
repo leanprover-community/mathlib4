@@ -5,10 +5,7 @@ Authors: Thomas Browning
 -/
 module
 
-<<<<<<< HEAD
-=======
 public import Mathlib.Algebra.Order.Group.DenselyOrdered
->>>>>>> master
 public import Mathlib.Analysis.Subadditive
 
 import Mathlib.Data.Fintype.Order
