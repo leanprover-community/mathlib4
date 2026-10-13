@@ -279,7 +279,7 @@ variable [RingHomIsometric σ₁₂] [IsTopologicalAddGroup F'] [IsTopologicalAd
 /-- The continuous semilinear map obtained by applying a continuous semilinear map at a given
 vector.
 
-This is the continuous version of `applyₗ'` (and the fully continuous version of
+This is the continuous version of `applyₗ` (and the fully continuous version of
 `LinearMap.applyₗ`). -/
 def apply' : E' →SL[σ₁₂] (E' →SL[σ₁₂] F') →L[𝕜₂] F' :=
   flip (.id 𝕜₂ (E' →SL[σ₁₂] F'))
@@ -290,7 +290,7 @@ variable {F' σ₁₂}
 theorem apply_apply' (v : E') (f : E' →SL[σ₁₂] F') : apply' F' σ₁₂ v f = f v :=
   rfl
 
-@[simp] lemma toLinearMap_apply' : (apply' (E' := E') F' σ₁₂).toLinearMap = applyₗ' F' σ₁₂ := rfl
+@[simp] lemma toLinearMap_apply' : (apply' (E' := E') F' σ₁₂).toLinearMap = applyₗ F' σ₁₂ := rfl
 
 variable (𝕜 Fₗ') in
 /-- The continuous semilinear map obtained by applying a continuous semilinear map at a given
@@ -304,7 +304,7 @@ def apply : E' →L[𝕜] (E' →L[𝕜] Fₗ') →L[𝕜] Fₗ' :=
 theorem apply_apply (v : E') (f : E' →L[𝕜] Fₗ') : apply 𝕜 Fₗ' v f = f v :=
   rfl
 
-@[simp] lemma toLinearMap_apply : (apply 𝕜 (E' := E') Fₗ').toLinearMap = applyₗ 𝕜 Fₗ' := rfl
+@[simp] lemma toLinearMap_apply : (apply 𝕜 (E' := E') Fₗ').toLinearMap = applyₗ Fₗ' (.id 𝕜) := rfl
 
 variable (σ₁₂ σ₂₃ E F G E' F' G')
 
