@@ -451,7 +451,7 @@ theorem geom_mean_le_arith_mean_weighted (w : ι → ℝ≥0) (z : ι → ℝ≥
   rw [← sum_filter_of_ne (p := (w · ≠ 0)) (by aesop)] at ⊢ hw
   convert coe_le_coe.mpr (NNReal.geom_mean_le_arith_mean_weighted _ w (fun i ↦ (z i).toNNReal) hw)
   · rw [ofNNReal_finsetProd]
-    refine prod_congr rfl fun i hi ↦ ?_
+    congr! with i hi
     simp [coe_rpow_of_nonneg, h i (Finset.mem_filter.mp hi).1 (Finset.mem_filter.mp hi).2]
   · rw [ofNNReal_finsetSum]
     refine sum_congr rfl fun i hi ↦ ?_
