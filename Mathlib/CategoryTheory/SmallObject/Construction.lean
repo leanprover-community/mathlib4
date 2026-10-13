@@ -5,8 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Products
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 public import Mathlib.AlgebraicTopology.RelativeCellComplex.AttachCells
 
 /-!
@@ -172,7 +170,7 @@ instance : Small.{t} (FunctorObjIndex f πX) := by
           ⟨eqToHom (by simp) ≫ x.t, eqToHom (by simp) ≫ x.b⟩⟩
   have hφ : Function.Injective φ := by
     rintro ⟨i₁, t₁, b₁, _⟩ ⟨i₂, t₂, b₂, _⟩ h
-    obtain rfl : i₁ = i₂ := by simpa [φ] using congr_arg Sigma.fst h
+    obtain rfl : i₁ = i₂ := by simpa [φ] using congr($(h).fst)
     simpa [cancel_epi, φ] using h
   exact small_of_injective hφ
 
