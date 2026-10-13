@@ -65,9 +65,10 @@ lemma tvDist_withDensity_self_eq_integral {f : 𝓧 → ℝ≥0∞} (hf : Measur
   have h_hahn : IsHahnDecomposition (μ.withDensity f) μ {x | f x ≤ 1} :=
     isHahnDecomposition_withDensity_le_one hf
   rw [h_hahn.tvDist_eq,
-    withDensity_real_apply_eq_integral (by fun_prop) ?_ (measurableSet_le hf measurable_const),
     withDensity_real_apply_eq_integral (by fun_prop) ?_
-      (measurableSet_le hf measurable_const).compl]
+      (measurableSet_le hf measurable_const).nullMeasurableSet,
+    withDensity_real_apply_eq_integral (by fun_prop) ?_
+      (measurableSet_le hf measurable_const).compl.nullMeasurableSet]
   rotate_left
   · filter_upwards [hf_top] with x hx _ using hx.lt_top
   · filter_upwards [hf_top] with x hx _ using hx.lt_top
