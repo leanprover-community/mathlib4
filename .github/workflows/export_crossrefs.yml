@@ -1,8 +1,8 @@
 name: Export cross-reference data
 
-# Generates a JSON dictionary of every declaration tagged with `@[wikidata]`,
-# `@[stacks]`, or `@[kerodon]` (name, file, line, and the referenced ids) and
-# pushes it to a versioned repository (`CROSSREFS_REPO`), where it is publicly
+# Generates a JSON dictionary of every declaration with a `CrossRef.Tag` attribute, e.g. `@[stacks]`,
+# with name, file, line, referenced ids and resolved urls.
+# Pushes it to a versioned repository (`CROSSREFS_REPO`), where it is publicly
 # available at `https://raw.githubusercontent.com/<CROSSREFS_REPO>/master/crossrefs.json`.
 #
 # The data is read from the fully-imported `Mathlib` environment by
