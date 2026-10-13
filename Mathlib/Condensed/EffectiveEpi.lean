@@ -5,10 +5,11 @@ Authors: Jonas van der Schaaf, Dagur Asgeirsson
 -/
 module
 
-import Mathlib.CategoryTheory.Sites.RegularEpi
-import Mathlib.Condensed.Epi
 public import Mathlib.Condensed.Functors
 public import Mathlib.Condensed.Limits  -- shake: keep (compHausToCondensed.PreservesEffectiveEpis), cf. lean#13417
+
+import Mathlib.CategoryTheory.Sites.RegularEpi
+import Mathlib.Condensed.Epi
 
 /-!
 

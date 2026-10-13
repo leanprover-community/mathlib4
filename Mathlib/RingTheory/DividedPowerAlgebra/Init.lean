@@ -6,8 +6,9 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos—Fernández
 module
 
 public import Mathlib.RingTheory.Congruence.Hom
-import Mathlib.RingTheory.Congruence.BigOperators
 public import Mathlib.RingTheory.DividedPowers.Basic
+
+import Mathlib.RingTheory.Congruence.BigOperators
 
 /-!
 # The universal divided power algebra
