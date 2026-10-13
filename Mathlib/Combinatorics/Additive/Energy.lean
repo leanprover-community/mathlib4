@@ -254,4 +254,3 @@ lemma mulEnergy_univ_right : Eₘ[s, univ] = s.dens ^ 2 := by
 
 end CommGroup
 end Finset
-#min_imports
