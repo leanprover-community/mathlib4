@@ -67,7 +67,7 @@ namespace Mathlib.Meta.Positivity
 open Lean Meta Qq Function
 /-- The `positivity` extension which identifies expressions of the form `gelfandRadius a`. -/
 @[positivity gelfandRadius _]
-meta def evalgelfandRadius : PositivityExt where eval {u α} _ pα? e :=
+meta def evalGelfandRadius : PositivityExt where eval {u α} _ pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@gelfandRadius $A $KA $a) =>
