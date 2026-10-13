@@ -24,8 +24,6 @@ right Kan extension along `L`.
 
 -/
 
-set_option backward.defeqAttrib.useBackward true
-
 @[expose] public section
 
 namespace CategoryTheory
@@ -119,6 +117,7 @@ theorem hasColimit_map_comp_ι_comp_grothendieckProj {X Y : D} (f : X ⟶ Y) :
       grothendieckProj L ⋙ F) :=
   hasColimit_of_iso (isoWhiskerRight (mapCompιCompGrothendieckProj L f) F)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The left Kan extension of `F : C ⥤ H` along a functor `L : C ⥤ D` is isomorphic to the
 fiberwise colimit of the projection functor on the Grothendieck construction of the costructured
@@ -229,6 +228,7 @@ noncomputable def colimitIsoColimitGrothendieck :
   _ ≅ colimit (CostructuredArrow.grothendieckProj L ⋙ G) :=
         colimitFiberwiseColimitIso _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ι_colimitIsoColimitGrothendieck_inv (X : Grothendieck (CostructuredArrow.functor L)) :
