@@ -453,7 +453,7 @@ variable (V V₂ R M)
 /-- Linear equivalence between a curried and uncurried function.
   Differs from `TensorProduct.curry`. -/
 protected def curry : (V × V₂ → M) ≃ₗ[R] V → V₂ → M where
-  __ := AddEquiv.curry V V₂ M
+  toAddEquiv := .curry V V₂ M
   map_smul' _ _ := rfl
 
 @[simp]
