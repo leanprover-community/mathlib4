@@ -13,13 +13,8 @@ public import Cache.Upload.S3
 
 The backend-neutral layer over the backend modules:
 
-* the backend selection (`UploadBackend`). The backends implement the upload
-  in `Cache/Upload/S3.lean` and `Cache/Upload/Azure.lean`: credentials,
-  transfer tool, and the transfer;
-* the location resolution that every upload uses (`uploadLocation`): the
-  `MATHLIB_CACHE_PUT_URL` endpoint, or the s3 container layout under
-  `MATHLIB_CACHE_PUT_BASE_URL`.
-  `Location` lives in `Cache/Location.lean`, and the reads use it too.
+* the backend selection (`UploadBackend`);
+* the location resolution that every upload uses (`uploadLocation`).
 
 `Cache/Upload.lean` runs the complete `put`, dispatching to the selected
 backend. `Cache/Location.lean` derives the marker. `Cache/Marker.lean`
@@ -35,9 +30,8 @@ namespace Cache.Requests
 open System (FilePath)
 
 /-- The storage backend an upload targets, selected with `--backend=NAME`.
-Each backend implements the upload in its own module: credential
-resolution, transfer tool, and the transfer. `runPut` dispatches on this
-type. -/
+Each backend implements the credentials and the transfer in its own module.
+`runPut` dispatches on this type. -/
 inductive UploadBackend where
   /-- Azure Blob Storage (`Cache/Upload/Azure.lean`), at a flat endpoint only. -/
   | azure
@@ -76,8 +70,7 @@ read variables take the opposite rule, where an empty value means unset.
 
 Without it, the s3 backend writes the container layout under the bucket that
 `MATHLIB_CACHE_PUT_BASE_URL` names (`putBase?`, where an empty value means
-unset), through `s3UploadLocationFrom`. The azure backend has no container
-layout and errors.
+unset), and the azure backend errors.
 -/
 def uploadLocationFrom (backend : UploadBackend) (putUrl? putBase? : Option String)
     (container? : Option Container) (repo : String) (scope? : Option String) :

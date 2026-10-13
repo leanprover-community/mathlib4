@@ -10,12 +10,11 @@ public import Cache.Upload.Curl
 /-!
 # The Azure Blob Storage backend
 
-The azure upload path: the credential resolution (`azureAuthFrom`), the
-request signing (`azureBearerCurlArgs`), and the transfer entry point
-(`azurePutStaged`). The backend uploads only to the endpoint that
-`MATHLIB_CACHE_PUT_URL` names (`uploadLocationFrom`): it has no default
-account and no container layout. rclone signs only S3 requests, so the
-backend always transfers with the curl tool.
+The azure upload path: the credential (`azureAuthFrom`), the request signing
+(`azureBearerCurlArgs`), and the transfer (`azurePutStaged`). The backend
+uploads only to the flat endpoint that `MATHLIB_CACHE_PUT_URL` names
+(`uploadLocationFrom`). It always transfers with curl, because rclone signs
+only S3 requests.
 -/
 
 public section

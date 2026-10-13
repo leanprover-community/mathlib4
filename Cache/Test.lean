@@ -1370,12 +1370,8 @@ def test_locationNormalization : IO Unit := do
     "https://cache.example/bucket/mathlib4-forks/f/alice/mathlib4/abc1/x.ltar"
     (container.fileURL "x.ltar")
 
-/-- `uploadLocationFrom` resolves the upload location per backend.
-`MATHLIB_CACHE_PUT_URL` names one endpoint on both backends
-(`Location.ofEndpoint`). Without it, the s3 backend writes the container
-layout under the base that `MATHLIB_CACHE_PUT_BASE_URL` names, which has no
-default, and the azure backend errors. Each case pins the URL of a file, the
-URL of the marker, and the label. -/
+/-- `uploadLocationFrom` resolves the upload location per backend. Each case
+pins the URL of a file, the URL of the marker, and the label. -/
 def test_uploadLocationFrom : IO Unit := do
   IO.println "uploadLocationFrom:"
   let urls (r : Except String Location) : Option (String × Option String × String) :=

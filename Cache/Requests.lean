@@ -241,11 +241,12 @@ all repos use `cs` instead.
 -/
 initialize cacheFromOverride : IO.Ref (Option (List Container)) ← IO.mkRef none
 
-/-- Pair each container in a lookup chain with the read base (`getBaseURL`). The result
-keeps the chain's trust order. -/
+/-- Pair each container in a lookup chain with the read base (`getBaseURL`), in
+the chain's trust order. -/
 private def chainWithGetBases (containers : List Container) :
-    BaseIO (List (Option Container × String)) :=
-  containers.mapM fun c => do return (some c, ← getBaseURL)
+    BaseIO (List (Option Container × String)) := do
+  let base ← getBaseURL
+  return containers.map (some ·, base)
 
 /--
 Resolve the read bases for a GitHub repo. Each base carries its container

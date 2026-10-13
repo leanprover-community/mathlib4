@@ -76,9 +76,9 @@ def headIsAncestorOfMaster : IO.CacheM Bool := do
   catch _ =>
     pure false
 
-/-- URL of the per-SHA marker of `sha` in `container` on the read
-base (`getBaseURL`), or `none` for a flat container. Marker writes
-use the upload location (`uploadLocation`). -/
+/-- URL of the per-SHA marker of `sha` in `container` on the read base
+(`getBaseURL`), or `none` for a flat container. Marker writes use
+`uploadLocation`. -/
 def markerProbeURL (container : Container) (repo sha : String) : IO (Option String) := do
   return (container.location (← getBaseURL) repo (some sha)).markerURL?
 
