@@ -1807,6 +1807,7 @@ public import Mathlib.Analysis.Calculus.ContDiff.Operations
 public import Mathlib.Analysis.Calculus.ContDiff.Polynomial
 public import Mathlib.Analysis.Calculus.ContDiff.RCLike
 public import Mathlib.Analysis.Calculus.ContDiff.RestrictScalars
+public import Mathlib.Analysis.Calculus.ContDiff.StrictFDerivAt
 public import Mathlib.Analysis.Calculus.ContDiff.WithLp
 public import Mathlib.Analysis.Calculus.ContDiffHolder.Pointwise
 public import Mathlib.Analysis.Calculus.DSlope
