@@ -9,7 +9,7 @@ integers coprime to `n`. This file defines `Nat.jacobsthal` and proves its exact
 the first primorials:
 
 > **`jacobsthal 2 = 2`, `jacobsthal 6 = 4`, `jacobsthal 30 = 6`,
-> `jacobsthal 210 = 10`, `jacobsthal 2310 = 14`, `jacobsthal 30030 = 22`.**
+> `jacobsthal 210 = 10`, `jacobsthal 2310 = 14`, `jacobsthal 30030 = 22`, `jacobsthal 510510 = 26`.**
 >
 > For `2310 = 2·3·5·7·11`: every interval of length 14 contains an integer coprime to
 > 2310, and the bound is attained (after `113` the next coprime is `127`).
@@ -148,6 +148,20 @@ theorem jacobsthal_30030 : jacobsthal 30030 = 22 :=
   jacobsthal_eq_of_window (hwin 30030 22 (by norm_num : 0 < 30030) (by native_decide))
     (by
       refine ⟨20569, ?_, ?_, ?_⟩
+      · native_decide
+      · native_decide
+      · intro k hk1 hk2
+        interval_cases k <;> norm_num)
+
+
+set_option maxHeartbeats 0 in
+
+/-- **`jacobsthal 510510 = 26`** for the primorial 510510 = 2·3·5·7·11·13·17.
+  Attained after 217127: the next coprime to 510510 is 217153. -/
+theorem jacobsthal_510510 : jacobsthal 510510 = 26 :=
+  jacobsthal_eq_of_window (hwin 510510 26 (by norm_num : 0 < 510510) (by native_decide))
+    (by
+      refine ⟨217127, ?_, ?_, ?_⟩
       · native_decide
       · native_decide
       · intro k hk1 hk2
