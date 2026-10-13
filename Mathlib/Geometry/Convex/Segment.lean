@@ -8,6 +8,7 @@ module
 
 public import Mathlib.Geometry.Convex.ConvexSpace.Defs
 public import Mathlib.Data.Set.Insert
+public import Mathlib.Geometry.Convex.ConvexSpace.Prod
 
 /-!
 # Segments in convex spaces
@@ -57,19 +58,19 @@ theorem openSegment_symm (x y : X) : openSegment R x y = openSegment R y x := by
   all_goals (rw [convexCombPair_symm] at hz; rw [add_comm] at hmn; use hmn)
 
 theorem openSegment_subset_segment (x y : X) : openSegment R x y ⊆ segment R x y :=
-  fun _ ⟨a, b, ha, hb, hab, hz⟩ => ⟨a, b, ha.le, hb.le, hab, hz⟩
+  fun _ ⟨a, b, ha, hb, hab, hz⟩ ↦ ⟨a, b, ha.le, hb.le, hab, hz⟩
 
 theorem segment_subset_iff :
     segment R x y ⊆ s ↔
     ∀ (a b : R) (ha : 0 ≤ a) (hb : 0 ≤ b) (hab : a + b = 1), convexCombPair a b ha hb hab x y ∈ s :=
-  ⟨fun H a b ha hb hab => H ⟨a, b, ha, hb, hab, rfl⟩, fun H _ ⟨a, b, ha, hb, hab, hz⟩ =>
+  ⟨fun H a b ha hb hab ↦ H ⟨a, b, ha, hb, hab, rfl⟩, fun H _ ⟨a, b, ha, hb, hab, hz⟩ ↦
     hz ▸ H a b ha hb hab⟩
 
 theorem openSegment_subset_iff :
     openSegment R x y ⊆ s ↔
     ∀ (a b : R) (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1),
       convexCombPair a b ha.le hb.le hab x y ∈ s :=
-  ⟨fun H a b ha hb hab => H ⟨a, b, ha, hb, hab, rfl⟩, fun H _ ⟨a, b, ha, hb, hab, hz⟩ =>
+  ⟨fun H a b ha hb hab ↦ H ⟨a, b, ha, hb, hab, rfl⟩, fun H _ ⟨a, b, ha, hb, hab, hz⟩ ↦
     hz ▸ H a b ha hb hab⟩
 
 theorem left_mem_segment (x y : X) : x ∈ segment R x y :=
@@ -80,17 +81,17 @@ theorem right_mem_segment (x y : X) : y ∈ segment R x y :=
 
 @[simp]
 theorem segment_same (x : X) : segment R x x = {x} :=
-  Set.ext fun z =>
-    ⟨fun ⟨a, b, _, _, hab, hz⟩ => by
+  Set.ext fun z ↦
+    ⟨fun ⟨a, b, _, _, hab, hz⟩ ↦ by
       simpa [(add_smul _ _ _).symm, mem_singleton_iff, hab, one_smul, eq_comm] using hz,
-      fun h => mem_singleton_iff.1 h ▸ left_mem_segment R z z⟩
+      fun h ↦ mem_singleton_iff.1 h ▸ left_mem_segment R z z⟩
 
 theorem insert_endpoints_openSegment (x y : X) :
     insert x (insert y (openSegment R x y)) = segment R x y := by
   simp only [subset_antisymm_iff, insert_subset_iff, left_mem_segment, right_mem_segment,
     openSegment_subset_segment, true_and]
   rintro z ⟨a, b, ha, hb, hab, rfl⟩
-  refine hb.eq_or_lt.imp ?_ fun hb' => ha.eq_or_lt.imp ?_ fun ha' => ?_
+  refine hb.eq_or_lt.imp ?_ fun hb' ↦ ha.eq_or_lt.imp ?_ fun ha' ↦ ?_
   · rintro rfl
     simp [add_zero a ▸ hab]
   · rintro rfl
@@ -124,6 +125,46 @@ theorem image_openSegment (hf : IsAffineMap R f) (a b : X) :
 
 end Map
 
+namespace Prod
+
+variable {Y} [ConvexSpace R Y]
+
+theorem segment_subset (x y : X × Y) : segment R x y ⊆ segment R x.1 y.1 ×ˢ segment R x.2 y.2 := by
+  rintro z ⟨a, b, ha, hb, hab, hz⟩
+  exact ⟨⟨a, b, ha, hb, hab, by subst hz; simp⟩, a, b, ha, hb, hab, by subst hz; simp⟩
+
+theorem openSegment_subset (x y : X × Y) :
+    openSegment R x y ⊆ openSegment R x.1 y.1 ×ˢ openSegment R x.2 y.2 := by
+  rintro z ⟨a, b, ha, hb, hab, hz⟩
+  exact ⟨⟨a, b, ha, hb, hab, by subst hz; simp⟩, a, b, ha, hb, hab, by subst hz; simp⟩
+
+theorem image_mk_segment_left (x₁ x₂ : X) (y : Y) :
+    (fun x ↦ (x, y)) '' segment R x₁ x₂ = segment R (x₁, y) (x₂, y) := by
+  have : IsAffineMap R (fun (x : X) ↦ (x, y)) :=
+    IsAffineMap.prodMk IsAffineMap.id (IsAffineMap.const y)
+  rw [← image_segment this]
+
+theorem image_mk_segment_right (x : X) (y₁ y₂ : Y) :
+    (fun y ↦ (x, y)) '' segment R y₁ y₂ = segment R (x, y₁) (x, y₂) := by
+  have : IsAffineMap R (fun (y : Y) ↦ (x, y)) :=
+    IsAffineMap.prodMk (IsAffineMap.const x) IsAffineMap.id
+  rw [← image_segment this]
+
+theorem image_mk_openSegment_left (x₁ x₂ : X) (y : Y) :
+    (fun x ↦ (x, y)) '' openSegment R x₁ x₂ = openSegment R (x₁, y) (x₂, y) := by
+  have : IsAffineMap R (fun (x : X) ↦ (x, y)) :=
+    IsAffineMap.prodMk IsAffineMap.id (IsAffineMap.const y)
+  rw [← image_openSegment this]
+
+@[simp]
+theorem image_mk_openSegment_right (x : X) (y₁ y₂ : Y) :
+    (fun y ↦ (x, y)) '' openSegment R y₁ y₂ = openSegment R (x, y₁) (x, y₂) := by
+  have : IsAffineMap R (fun (y : Y) ↦ (x, y)) :=
+    IsAffineMap.prodMk (IsAffineMap.const x) IsAffineMap.id
+  rw [← image_openSegment this]
+
+end Prod
+
 end Semiring
 
 section DenselyOrderedRing
@@ -133,10 +174,10 @@ variable (R) {X} [Ring R] [PartialOrder R] [IsStrictOrderedRing R] [ConvexSpace 
 
 @[simp]
 theorem openSegment_same (x : X) : openSegment R x x = {x} :=
-  Set.ext fun z =>
-    ⟨fun ⟨a, b, _, _, hab, hz⟩ => by
+  Set.ext fun z ↦
+    ⟨fun ⟨a, b, _, _, hab, hz⟩ ↦ by
       simpa only [convexCombPair_same, mem_singleton_iff, eq_comm] using hz,
-    fun h : z = x => by
+    fun h : z = x ↦ by
       obtain ⟨a, ha₀, ha₁⟩ := DenselyOrdered.dense (0 : R) 1 zero_lt_one
       refine ⟨a, 1 - a, ha₀, sub_pos_of_lt ha₁, add_sub_cancel _ _, ?_⟩
       rw [convexCombPair_same, h]⟩
