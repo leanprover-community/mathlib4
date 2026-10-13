@@ -65,7 +65,7 @@ instance : AddCommMonoid (SetSemiring α) where
   add_comm := union_comm
   nsmul := nsmulRec
 
-instance addLeftMono : AddLeftMono (SetSemiring α) where
+instance : AddLeftMono (SetSemiring α) where
   elim _ _ _ := union_subset_union_right _
 
 section Mul
@@ -89,10 +89,10 @@ instance : NoZeroDivisors (SetSemiring α) where
       b.eq_empty_or_nonempty.resolve_right fun hb ↦
         Nonempty.ne_empty ⟨_, mul_mem_mul ha.some_mem hb.some_mem⟩ ab
 
-instance mulLeftMono : MulLeftMono (SetSemiring α) where
+instance : MulLeftMono (SetSemiring α) where
   elim _ _ _ := mul_subset_mul_left
 
-instance mulRightMono : MulRightMono (SetSemiring α) where
+instance : MulRightMono (SetSemiring α) where
   elim _ _ _ := mul_subset_mul_right
 
 end Mul
