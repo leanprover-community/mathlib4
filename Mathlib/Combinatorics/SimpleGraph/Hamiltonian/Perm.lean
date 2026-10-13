@@ -34,7 +34,8 @@ theorem cycleGraph_isContained_of_isCycleOn {σ : Perm α} {s : Finset α} (hσ 
   refine ⟨⟨fun i ↦ (σ ^ i.1) v, fun {i j} h ↦ ?_⟩,
     fun i j hij ↦ Fin.ext <| hσ.injOn_pow_apply hv i.2 j.2 hij⟩
   wlog hij : i < j generalizing i j
-  · exact this h.symm (by grind [SimpleGraph.irrefl]) |>.symm
+  wlog hij : i < j
+  · grind [Adj.symm]
   rcases cycleGraph_adj'.mp h with h | h
   · obtain ⟨hi, hj⟩ : i.1 = 0 ∧ j.1 = #s - 1 := by grind [Fin.coe_sub_iff_lt]
     rw [hi, hj, adj_comm]
