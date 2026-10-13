@@ -503,29 +503,33 @@ lemma AEMeasurable.const_eq [MeasurableSingletonClass β] (hf : AEMeasurable f �
   exact .eq_const hf a
 
 omit [MeasurableSpace β] [MeasurableSpace γ] in
-lemma aemeasurable_comap_iff {mγ : MeasurableSpace γ} {g : β → γ} (hg : g.Bijective) :
+lemma aemeasurable_comap_iff {mγ : MeasurableSpace γ} {g : β → γ} (hg : g.Injective) :
     @AEMeasurable α β (mγ.comap g) m0 f μ ↔ AEMeasurable (g ∘ f) μ := by
   let := mγ.comap g
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · exact ⟨g ∘ h.mk f, measurable_comap_iff.1 h.measurable_mk,
-      h.ae_eq_mk.mono fun x hx ↦ congrArg g hx⟩
-  · refine ⟨Function.surjInv hg.2 ∘ h.mk _, measurable_comap_iff.2 ?_, ?_⟩
-    · convert h.measurable_mk
-      ext x
-      exact Function.surjInv_eq hg.2 _
-    · refine h.ae_eq_mk.mono fun x hx ↦ ?_
-      simp only [comp_apply] at hx ⊢
-      rw [← hx, Function.leftInverse_surjInv hg]
+      h.ae_eq_mk.mono fun x hx ↦ congr(g $hx)⟩
+  cases isEmpty_or_nonempty α
+  · fun_prop
+  have : Nonempty β := .map f ‹_›
+  obtain ⟨h', hh', hrange, hfh'⟩ :=
+    h.exists_ae_eq_range_subset (.of_forall fun x ↦ mem_range_self (f x)) (range_nonempty g)
+  refine ⟨invFun g ∘ h', measurable_comap_iff.2 ?_, hfh'.mono fun x hx ↦ ?_⟩
+  · convert hh'
+    ext x
+    exact invFun_eq (hrange <| mem_range_self x)
+  · simp only [comp_apply] at hx ⊢
+    rw [← hx, leftInverse_invFun hg]
 
 section Set
 
 variable {β : Type*} {f g : α → Set β}
 
 lemma aemeasurable_set_iff [Countable β] : AEMeasurable f μ ↔ ∀ b, AEMeasurable (b ∈ f ·) μ :=
-  (aemeasurable_comap_iff Set.mem_bijective).trans aemeasurable_pi_iff
+  (aemeasurable_comap_iff Set.mem_bijective.1).trans aemeasurable_pi_iff
 
 lemma AEMeasurable.mem (hf : AEMeasurable f μ) {b : β} : AEMeasurable (b ∈ f ·) μ :=
-  ((aemeasurable_comap_iff Set.mem_bijective).1 hf).eval b
+  ((aemeasurable_comap_iff Set.mem_bijective.1).1 hf).eval b
 
 alias ⟨_, AEMeasurable.of_mem⟩ := aemeasurable_set_iff
 
