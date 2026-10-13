@@ -241,7 +241,7 @@ all repos use `cs` instead.
 -/
 initialize cacheFromOverride : IO.Ref (Option (List Container)) ← IO.mkRef none
 
-/-- Pair each container in a lookup chain with its read base. The result
+/-- Pair each container in a lookup chain with the read base (`getBaseURL`). The result
 keeps the chain's trust order. -/
 private def chainWithGetBases (containers : List Container) :
     BaseIO (List (Option Container × String)) :=

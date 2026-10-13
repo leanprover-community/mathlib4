@@ -17,7 +17,8 @@ The backend-neutral layer over the backend modules:
   in `Cache/Upload/S3.lean` and `Cache/Upload/Azure.lean`: credentials,
   transfer tool, and the transfer;
 * the location resolution that every upload uses (`uploadLocation`): the
-  `MATHLIB_CACHE_PUT_URL` endpoint, or the location of the selected backend.
+  `MATHLIB_CACHE_PUT_URL` endpoint, or the s3 container layout under
+  `MATHLIB_CACHE_PUT_BASE_URL`.
   `Location` lives in `Cache/Location.lean`, and the reads use it too.
 
 `Cache/Upload.lean` runs the complete `put`, dispatching to the selected
@@ -74,9 +75,9 @@ fails the upload and does not divert it to the backend's location. The
 read variables take the opposite rule, where an empty value means unset.
 
 Without it, the s3 backend writes the container layout under the bucket that
-`MATHLIB_CACHE_PUT_BASE_URL` names (`putBase?`, empty means unset;
-`s3UploadLocationFrom`). The azure backend has no container layout, so it
-errors.
+`MATHLIB_CACHE_PUT_BASE_URL` names (`putBase?`, where an empty value means
+unset), through `s3UploadLocationFrom`. The azure backend has no container
+layout and errors.
 -/
 def uploadLocationFrom (backend : UploadBackend) (putUrl? putBase? : Option String)
     (container? : Option Container) (repo : String) (scope? : Option String) :

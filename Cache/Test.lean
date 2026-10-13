@@ -1446,8 +1446,7 @@ def test_uploadLocationFrom : IO Unit := do
       some "https://s3.example.org/bucket-prefix/mathlib4-forks")
 
 /-- Flat locations have no commit scope. Repo-namespaced locations take the
-supplied SHA, on either backend. The azure backend resolves only an
-endpoint. -/
+supplied SHA. The azure backend resolves only a flat endpoint. -/
 def test_uploadLocationScope : IO Unit := do
   IO.println "uploadLocationScope:"
   for scope? in [none, some "abc1"] do
