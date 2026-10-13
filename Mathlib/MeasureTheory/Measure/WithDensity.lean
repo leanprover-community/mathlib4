@@ -83,6 +83,10 @@ theorem withDensity_apply' [SFinite μ] (f : α → ℝ≥0∞) (s : Set α) :
   _ = ∫⁻ a in t, f a ∂μ := withDensity_apply f (measurableSet_toMeasurable μ s)
   _ = ∫⁻ a in s, f a ∂μ := by congr 1; exact restrict_toMeasurable_of_sfinite s
 
+lemma withDensity_real_apply' [SFinite μ] (f : α → ℝ≥0∞) (s : Set α) :
+    (μ.withDensity f).real s = (∫⁻ a in s, f a ∂μ).toReal := by
+  rw [Measure.real, withDensity_apply' f]
+
 @[simp]
 lemma withDensity_zero_left (f : α → ℝ≥0∞) : (0 : Measure α).withDensity f = 0 := by
   ext s hs
