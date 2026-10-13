@@ -38,14 +38,14 @@ The proof is the classical lifting argument. Write `n` for the number of summand
 1. `exists_eq_sum_of_mem_sum_convexHull` splits `x` as `∑ i, y i` with
    `y i ∈ convexHull 𝕜 (t i)`.
 2. The argument moves to the product space `E × (ι → 𝕜)`, where each point `z` of the `i`-th
-   summand is tagged with the `i`-th standard basis vector as `tag 𝕜 i z = (z, Pi.single i 1)`,
-   and `lifted 𝕜 t` collects all the tagged summands. Scaling by `n⁻¹` turns the decomposition
-   of `x` into a convex combination, placing `(n⁻¹ • x, fun _ ↦ n⁻¹)` in
-   `convexHull 𝕜 (lifted 𝕜 t)`; this is `lifted_mem_convexHull`.
+   summand is tagged with the `i`-th standard basis vector as `(z, Pi.single i 1)`, and
+   `L = ⋃ i, t i ×ˢ {Pi.single i 1}` collects all the tagged summands. Scaling by `n⁻¹` turns
+   the decomposition of `x` into a convex combination, placing `(n⁻¹ • x, fun _ ↦ n⁻¹)` in
+   `convexHull 𝕜 L`; this is `lifted_mem_convexHull`.
 3. Carathéodory's theorem, in the form `eq_pos_convex_span_of_mem_convexHull`, rewrites that
    point as a convex combination with positive weights of an affinely independent family drawn
-   from `lifted 𝕜 t`.
-4. The second component of every point of `lifted 𝕜 t` sums to `1`, so that family lies in an
+   from `L`.
+4. The second component of every point of `L` sums to `1`, so that family lies in an
    affine hyperplane of the `(d + n)`-dimensional space `E × (ι → 𝕜)` and hence has at most
    `d + n` members; this is `card_le_of_affineIndependent_of_sum_eq_one`.
 5. Grouping the family into fibers according to its tags, the second components force the
@@ -89,23 +89,6 @@ that a convex combination of tagged points records in its second coordinate the 
 it assigns to each summand.
 -/
 
-variable (𝕜) in
-/-- Tag a point `z`, viewed as an element of the `i`-th summand, with the `i`-th standard
-basis vector of `ι → 𝕜`. -/
-def tag [DecidableEq ι] (i : ι) (z : E) : E × (ι → 𝕜) :=
-  (z, Pi.single i 1)
-
-variable (𝕜) in
-/-- The union of the tagged copies of the summands `t i`, as a subset of `E × (ι → 𝕜)`. -/
-def lifted [DecidableEq ι] (t : ι → Set E) : Set (E × (ι → 𝕜)) :=
-  ⋃ i, tag 𝕜 i '' t i
-
-omit [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E] in
-/-- Membership in `lifted 𝕜 t`, unfolded. -/
-theorem mem_lifted_iff [DecidableEq ι] {t : ι → Set E} {p : E × (ι → 𝕜)} :
-    p ∈ lifted 𝕜 t ↔ ∃ i, ∃ z ∈ t i, tag 𝕜 i z = p := by
-  simp [lifted]
-
 omit [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] in
 /-- Evaluated at any index, the sum of all the standard basis vectors of `ι → 𝕜` is `1`. -/
 theorem sum_single_apply [Fintype ι] [DecidableEq ι] (j : ι) :
@@ -137,28 +120,22 @@ theorem inv_smul_sum_mem_convexHull {s : Set E} {κ : Type*} [Fintype κ] {w : �
   · exact subset_convexHull 𝕜 s (hz j)
 
 /-- If `y i ∈ convexHull 𝕜 (t i)` for every `i`, then scaling `∑ i, y i` and the all-ones tag
-by `n⁻¹`, where `n = Fintype.card ι`, gives a point of `convexHull 𝕜 (lifted 𝕜 t)`.
+by `n⁻¹`, where `n = Fintype.card ι`, gives a point of `convexHull 𝕜 (⋃ i, t i ×ˢ {Pi.single i 1})`.
 
-The tagged copy `tag 𝕜 i '' t i` is the product `t i ×ˢ {Pi.single i 1}`, whose convex hull is
+The convex hull of the tagged copy `t i ×ˢ {Pi.single i 1}` is
 `convexHull 𝕜 (t i) ×ˢ {Pi.single i 1}` and therefore contains `(y i, Pi.single i 1)`.
 Averaging those `n` points with equal weights `n⁻¹` stays inside the hull. -/
 theorem lifted_mem_convexHull [Fintype ι] [DecidableEq ι] [Nonempty ι] {t : ι → Set E}
     {y : ι → E} (hy : ∀ i, y i ∈ convexHull 𝕜 (t i)) :
     ((Fintype.card ι : 𝕜)⁻¹ • ∑ i, y i, fun _ ↦ (Fintype.card ι : 𝕜)⁻¹) ∈
-      convexHull 𝕜 (lifted 𝕜 t) := by
+      convexHull 𝕜 (⋃ i, t i ×ˢ ({Pi.single i 1} : Set (ι → 𝕜))) := by
   have hnpos : (0 : 𝕜) < Fintype.card ι := by exact_mod_cast Fintype.card_pos
-  have key : ∀ i, ((y i, Pi.single i 1) : E × (ι → 𝕜)) ∈ convexHull 𝕜 (lifted 𝕜 t) := by
+  have key : ∀ i, ((y i, Pi.single i 1) : E × (ι → 𝕜)) ∈
+      convexHull 𝕜 (⋃ i, t i ×ˢ ({Pi.single i 1} : Set (ι → 𝕜))) := by
     intro i
-    refine convexHull_mono (Set.subset_iUnion (fun i ↦ tag 𝕜 i '' t i) i) ?_
-    have himg : tag 𝕜 i '' t i = t i ×ˢ ({Pi.single i 1} : Set (ι → 𝕜)) := by
-      ext p
-      constructor
-      · rintro ⟨z, hz, rfl⟩
-        exact ⟨hz, rfl⟩
-      · rintro ⟨h1, h2⟩
-        rw [Set.mem_singleton_iff] at h2
-        exact ⟨p.1, h1, Prod.ext rfl h2.symm⟩
-    rw [himg, convexHull_prod, convexHull_singleton]
+    refine convexHull_mono
+      (Set.subset_iUnion (fun i ↦ t i ×ˢ ({Pi.single i 1} : Set (ι → 𝕜))) i) ?_
+    rw [convexHull_prod, convexHull_singleton]
     exact ⟨hy i, rfl⟩
   have hrw : (((Fintype.card ι : 𝕜)⁻¹ • ∑ i, y i, fun _ ↦ (Fintype.card ι : 𝕜)⁻¹) :
         E × (ι → 𝕜))
@@ -257,11 +234,13 @@ theorem shapley_folkman [Fintype ι] [FiniteDimensional 𝕜 E] {t : ι → Set 
   -- Componentwise `smul` on the product, as `rfl`-lemmas usable by `simp only`.
   have hsm1 : ∀ (c : 𝕜) (p : E × (ι → 𝕜)), (c • p).1 = c • p.1 := fun _ _ ↦ rfl
   have hsm2 : ∀ (c : 𝕜) (p : E × (ι → 𝕜)), (c • p).2 = c • p.2 := fun _ _ ↦ rfl
-  have hmem : ∀ j, ∃ i, ∃ z ∈ t i, tag 𝕜 i z = q j := fun j ↦
-    mem_lifted_iff.mp (hrange (Set.mem_range_self j))
+  have hmem : ∀ j, ∃ i, ∃ z ∈ t i, ((z, Pi.single i 1) : E × (ι → 𝕜)) = q j := fun j ↦ by
+    obtain ⟨i, h1, h2⟩ : ∃ i, (q j).1 ∈ t i ∧ (q j).2 = Pi.single i 1 := by
+      simpa using hrange (Set.mem_range_self j)
+    exact ⟨i, (q j).1, h1, Prod.ext rfl h2.symm⟩
   choose idx pt hpt hqeq using hmem
-  have hq1 : ∀ j, (q j).1 = pt j := fun j ↦ by rw [← hqeq j]; rfl
-  have hq2 : ∀ j, (q j).2 = Pi.single (idx j) 1 := fun j ↦ by rw [← hqeq j]; rfl
+  have hq1 : ∀ j, (q j).1 = pt j := fun j ↦ by rw [← hqeq j]
+  have hq2 : ∀ j, (q j).2 = Pi.single (idx j) 1 := fun j ↦ by rw [← hqeq j]
   set F : ι → Finset κ := fun i ↦ {j ∈ Finset.univ | idx j = i} with hF
   -- Reading the second coordinate at `i` shows the fiber over `i` has total weight `n⁻¹`.
   have hsnd : ∀ i, ∑ j ∈ F i, w j = (Fintype.card ι : 𝕜)⁻¹ := by
