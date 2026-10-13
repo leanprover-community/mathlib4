@@ -55,31 +55,32 @@ lemma IsHahnDecomposition.tvDist_eq {s : Set 𝓧} (h : IsHahnDecomposition μ �
   rw [← tvDist_restrict_add_compl h.measurableSet, tvDist_of_le h.le_on, tvDist_of_ge h.ge_on_compl]
   simp
 
-lemma tvDist_withDensity_self_eq_integral {f : 𝓧 → ℝ≥0∞} (hf : AEMeasurable f μ)
-    (hf_int : ∫⁻ x, f x ∂μ ≠ ∞) :
+lemma tvDist_withDensity_self_eq_integral {f : 𝓧 → ℝ≥0∞} (hf : Integrable f μ) :
     tvDist (μ.withDensity f) μ = ∫ x, |1 - (f x).toReal| ∂μ := by
-  have : IsFiniteMeasure (μ.withDensity f) := isFiniteMeasure_withDensity hf_int
+  have hf_meas : AEMeasurable f μ := hf.aemeasurable
+  have hf_lintegral : ∫⁻ x, f x ∂μ ≠ ∞ := hf.hasFiniteIntegral.ne
+  have : IsFiniteMeasure (μ.withDensity f) := isFiniteMeasure_withDensity hf_lintegral
   have hf_top : ∀ᵐ x ∂μ, f x ≠ ∞ := by
-    filter_upwards [ae_lt_top' hf hf_int] with x hx using hx.ne
+    filter_upwards [ae_lt_top' hf_meas hf_lintegral] with x hx using hx.ne
   obtain ⟨s, hs, hs_le, hs_ge⟩ : ∃ s, MeasurableSet s ∧ (∀ᵐ x ∂μ.restrict s, f x ≤ 1) ∧
       ∀ᵐ x ∂μ.restrict sᶜ, 1 ≤ f x := by
-    have hs : MeasurableSet {x | hf.mk f x ≤ 1} :=
-      measurableSet_le hf.measurable_mk measurable_const
-    refine ⟨{x | hf.mk f x ≤ 1}, hs, ?_, ?_⟩
-    · filter_upwards [ae_restrict_mem hs, ae_restrict_of_ae hf.ae_eq_mk] with x hxs hx
+    have hs : MeasurableSet {x | hf_meas.mk f x ≤ 1} :=
+      measurableSet_le hf_meas.measurable_mk measurable_const
+    refine ⟨{x | hf_meas.mk f x ≤ 1}, hs, ?_, ?_⟩
+    · filter_upwards [ae_restrict_mem hs, ae_restrict_of_ae hf_meas.ae_eq_mk] with x hxs hx
       rwa [hx]
-    · filter_upwards [ae_restrict_mem hs.compl, ae_restrict_of_ae hf.ae_eq_mk] with x hxs hx
+    · filter_upwards [ae_restrict_mem hs.compl, ae_restrict_of_ae hf_meas.ae_eq_mk] with x hxs hx
       grind
   have h_hahn : IsHahnDecomposition (μ.withDensity f) μ s :=
     isHahnDecomposition_withDensity_of_ae_le_one hs hs_le hs_ge
   rw [h_hahn.tvDist_eq,
-    withDensity_real_apply_eq_integral hf.restrict ?_ hs.nullMeasurableSet,
-    withDensity_real_apply_eq_integral hf.restrict ?_ hs.compl.nullMeasurableSet]
+    withDensity_real_apply_eq_integral hf_meas.restrict ?_ hs.nullMeasurableSet,
+    withDensity_real_apply_eq_integral hf_meas.restrict ?_ hs.compl.nullMeasurableSet]
   rotate_left
   · filter_upwards [hf_top] with x hx _ using hx.lt_top
   · filter_upwards [hf_top] with x hx _ using hx.lt_top
   have hf_toReal : Integrable (fun x ↦ (f x).toReal) μ :=
-    integrable_toReal_of_lintegral_ne_top hf hf_int
+    integrable_toReal_of_lintegral_ne_top hf_meas hf_lintegral
   have h1 : μ.real s - ∫ x in s, (f x).toReal ∂μ = ∫ x in s, 1 - (f x).toReal ∂μ := by
     rw [← setIntegral_one_eq_measureReal, ← integral_sub (by simp) hf_toReal.integrableOn]
   have h2 : ∫ x in sᶜ, (f x).toReal ∂μ - μ.real sᶜ = ∫ x in sᶜ, (f x).toReal - 1 ∂μ := by
@@ -104,28 +105,28 @@ lemma tvDist_withDensity_self_eq_integral {f : 𝓧 → ℝ≥0∞} (hf : AEMeas
     refine integral_add_compl hs ?_
     exact (Integrable.sub (by simp) hf_toReal).abs
 
-lemma etvDist_withDensity_self_eq_lintegral {f : 𝓧 → ℝ≥0∞} (hf : AEMeasurable f μ)
-    (hf_int : ∫⁻ x, f x ∂μ ≠ ∞) :
+lemma etvDist_withDensity_self_eq_lintegral {f : 𝓧 → ℝ≥0∞} (hf : Integrable f μ) :
     etvDist (μ.withDensity f) μ = ∫⁻ x, ‖1 - (f x).toReal‖ₑ ∂μ := by
-  have : IsFiniteMeasure (μ.withDensity f) := isFiniteMeasure_withDensity hf_int
-  rw [← ofReal_tvDist, tvDist_withDensity_self_eq_integral hf hf_int,
+  have hf_lintegral : ∫⁻ x, f x ∂μ ≠ ∞ := hf.hasFiniteIntegral.ne
+  have : IsFiniteMeasure (μ.withDensity f) := isFiniteMeasure_withDensity hf_lintegral
+  rw [← ofReal_tvDist, tvDist_withDensity_self_eq_integral hf,
     ofReal_integral_eq_lintegral_ofReal]
   · congr with x
     rw [← Real.norm_eq_abs, ofReal_norm]
   · refine (Integrable.sub (by simp) ?_).abs
-    exact integrable_toReal_of_lintegral_ne_top hf hf_int
+    exact integrable_toReal_of_lintegral_ne_top hf.aemeasurable hf_lintegral
   · filter_upwards with
     positivity
 
 lemma tvDist_eq_integral_abs_rnDeriv_of_ac (hμν : μ ≪ ν) :
     tvDist μ ν = ∫ x, |1 - (μ.rnDeriv ν x).toReal| ∂ν := by
   conv_lhs => rw! [← μ.withDensity_rnDeriv_eq ν hμν,
-    tvDist_withDensity_self_eq_integral (by fun_prop) (Measure.lintegral_rnDeriv_lt_top μ ν).ne]
+    tvDist_withDensity_self_eq_integral Measure.integrable_rnDeriv]
 
 lemma etvDist_eq_lintegral_enorm_rnDeriv_of_ac (hμν : μ ≪ ν) :
     etvDist μ ν = ∫⁻ x, ‖1 - (μ.rnDeriv ν x).toReal‖ₑ ∂ν := by
   conv_lhs => rw! [← μ.withDensity_rnDeriv_eq ν hμν,
-    etvDist_withDensity_self_eq_lintegral (by fun_prop) (Measure.lintegral_rnDeriv_lt_top μ ν).ne]
+    etvDist_withDensity_self_eq_lintegral Measure.integrable_rnDeriv]
 
 lemma tvDist_add_of_ac_of_mutuallySingular {μ' : Measure 𝓧} [IsFiniteMeasure μ']
     (hμν : μ ≪ ν) (hμ'ν : μ' ⟂ₘ ν) :
@@ -153,7 +154,7 @@ theorem tvDist_eq_integral_abs_rnDeriv_add_singularPart :
     simp_rw [Measure.rnDeriv_add_singularPart μ ν]
   rw [this, tvDist_add_of_ac_of_mutuallySingular
     (withDensity_absolutelyContinuous ν (μ.rnDeriv ν)) (μ.mutuallySingular_singularPart ν),
-    tvDist_withDensity_self_eq_integral (by fun_prop) (Measure.lintegral_rnDeriv_lt_top μ ν).ne]
+    tvDist_withDensity_self_eq_integral Measure.integrable_rnDeriv]
 
 theorem etvDist_eq_lintegral_enorm_rnDeriv_add_singularPart :
     etvDist μ ν = ∫⁻ x, ‖1 - (μ.rnDeriv ν x).toReal‖ₑ ∂ν + μ.singularPart ν Set.univ := by
