@@ -36,7 +36,7 @@ public import Mathlib.Tactic.Linter.TacticDocumentation
 public import Mathlib.Tactic.Linter.UnusedTactic
 -- The following import contains the environment extension for the unused tactic linter.
 public import Mathlib.Tactic.Linter.UnusedTacticExtension
-public import Mathlib.Tactic.Linter.UnusedTraceClass
+public import Mathlib.Tactic.Linter.UnregisteredTraceClass
 public import Mathlib.Tactic.Linter.Whitespace
 -- This import makes the `#min_imports in` command available globally.
 public import Mathlib.Tactic.MinImports
