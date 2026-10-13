@@ -5,11 +5,12 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.RingTheory.IntegralClosure.IsIntegral.AlmostIntegral
+public import Mathlib.RingTheory.Polynomial.RationalRoot
+
+import Mathlib.Algebra.MvPolynomial.Variables
 import Mathlib.Data.Multiset.Fintype
 import Mathlib.RingTheory.AdjoinRoot
-public import Mathlib.RingTheory.Polynomial.RationalRoot
-public import Mathlib.RingTheory.IntegralClosure.IsIntegral.AlmostIntegral
-import Mathlib.Algebra.MvPolynomial.Variables
 
 /-!
 

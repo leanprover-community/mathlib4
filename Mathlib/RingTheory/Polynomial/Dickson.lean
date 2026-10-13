@@ -5,13 +5,14 @@ Authors: Julian Kuelshammer
 -/
 module
 
+public import Mathlib.Algebra.Field.ZMod
+public import Mathlib.RingTheory.Polynomial.Chebyshev
+
 import Mathlib.Algebra.CharP.Algebra
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Algebra.CharP.Lemmas
 import Mathlib.Algebra.EuclideanDomain.Field
-public import Mathlib.Algebra.Field.ZMod
 import Mathlib.Algebra.Polynomial.Roots
-public import Mathlib.RingTheory.Polynomial.Chebyshev
 
 /-!
 # Dickson polynomials

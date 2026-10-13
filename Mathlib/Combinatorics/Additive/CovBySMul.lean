@@ -5,10 +5,11 @@ Authors: Yaël Dillies
 -/
 module
 
-import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 public import Mathlib.Basic.Real.Basic
+
+import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.Tactic.Positivity.Basic
 
 /-!

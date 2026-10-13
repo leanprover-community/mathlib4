@@ -188,9 +188,6 @@ noncomputable def constantCommuteCompose :
 lemma constantCommuteCompose_hom_app_hom (X : D) : ((constantCommuteCompose J U).hom.app X).hom =
     (sheafifyComposeIso J U ((const Cᵒᵖ).obj X)).inv ≫ sheafifyMap J (constComp Cᵒᵖ X U).hom := rfl
 
-@[deprecated (since := "2026-03-05")]
-alias constantCommuteCompose_hom_app_val := constantCommuteCompose_hom_app_hom
-
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The counit of `constantSheafAdj` factors through the isomorphism `constantCommuteCompose`. -/

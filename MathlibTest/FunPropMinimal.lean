@@ -395,9 +395,9 @@ example (f : β → γ) (g : α → β) (h : B) : Con (fun x => f (g x)) := by f
 end MultipleLambdaTheorems
 
 
-/-- info: `?m` is not a `fun_prop` goal! -/
+/-- error: `?m` is not a `fun_prop` goal! -/
 #guard_msgs in
-#check_failure ((by fun_prop) : ?m)
+#check ((by fun_prop) : ?m)
 
 /-- error: `Injective Nat.succ` is not a `fun_prop` goal!
 Consider marking `Function.Injective` with `@[fun_prop]`. -/
