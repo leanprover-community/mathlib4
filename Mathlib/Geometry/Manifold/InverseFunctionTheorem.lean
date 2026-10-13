@@ -167,32 +167,6 @@ lemma toPartialDiffeomorph_mem_source
     p ∈ (hf.toPartialDiffeomorph hU hpU hf' hn).source :=
   ⟨hf'.mem_toOpenPartialHomeomorph_source, hpU, f', Eq.symm (hf'.hasFDerivAt.fderiv)⟩
 
-/-- If `f` is `C^n` on an open set `U` and has invertible derivative at `p ∈ U`, then it is a
-local diffeomorphism near `p`. This is a stronger version of `ContDiffAt.toOpenPartialHomeomorph`
-with a slightly stronger differentiability hypothesis.
-
-This definition would ideally be located with the calculus API and not be stated in manifold terms,
-but there is not currently a normed vector space version of `PartialDiffeomorph`.
--/
-noncomputable def toPartialDiffeomorph'
-    (hf' : HasFDerivAt f (f' : E₁ →L[𝕜] E₂) p) (hn : minSmoothness 𝕜 1 ≤ n) :
-    PartialDiffeomorph 𝓘(𝕜, E₁) 𝓘(𝕜, E₂) E₁ E₂ n :=
-  hf.toPartialDiffeomorph hU hpU
-    ((hf.contDiffAt (hU.mem_nhds hpU)).hasStrictFDerivAt_of_minSmoothness_le hf' hn)
-    (le_minSmoothness.trans hn)
-
-@[simp] lemma toFun_toPartialDiffeomorph'
-    (hf' : HasFDerivAt f (f' : E₁ →L[𝕜] E₂) p) (hn : minSmoothness 𝕜 1 ≤ n) :
-    ⇑(hf.toPartialDiffeomorph' hU hpU hf' hn) = f := by
-  rfl
-
-lemma toPartialDiffeomorph'_mem_source
-    (hf' : HasFDerivAt f (f' : E₁ →L[𝕜] E₂) p) (hn : minSmoothness 𝕜 1 ≤ n) :
-    p ∈ (hf.toPartialDiffeomorph' hU hpU hf' hn).source :=
-  letI hf := hf.contDiffAt (hU.mem_nhds hpU)
-  ⟨(hf.hasStrictFDerivAt_of_minSmoothness_le hf' hn).mem_toOpenPartialHomeomorph_source,
-    hpU, f', hf'.fderiv.symm⟩
-
 end ContDiffOn
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
