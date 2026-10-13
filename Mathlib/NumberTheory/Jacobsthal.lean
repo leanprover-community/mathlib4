@@ -9,7 +9,7 @@ integers coprime to `n`. This file defines `Nat.jacobsthal` and proves its exact
 the first primorials:
 
 > **`jacobsthal 2 = 2`, `jacobsthal 6 = 4`, `jacobsthal 30 = 6`,
-> `jacobsthal 210 = 10`, `jacobsthal 2310 = 14`.**
+> `jacobsthal 210 = 10`, `jacobsthal 2310 = 14`, `jacobsthal 30030 = 22`.**
 >
 > For `2310 = 2·3·5·7·11`: every interval of length 14 contains an integer coprime to
 > 2310, and the bound is attained (after `113` the next coprime is `127`).
@@ -20,7 +20,7 @@ the first primorials:
   contains an integer coprime to `m` and a gap of exactly `j` is attained, then
   `jacobsthal m = j`.
 * `Nat.jacobsthal_2`, `Nat.jacobsthal_6`, `Nat.jacobsthal_30`, `Nat.jacobsthal_210`,
-  `Nat.jacobsthal_2310_value` — the values on the first five primorials.
+  `Nat.jacobsthal_2310_value`, `Nat.jacobsthal_30030` — the values on the first six primorials.
 
 ## Proof outline
 1. periodicity of coprimality mod `m` (`coprime_add_mul`), from
