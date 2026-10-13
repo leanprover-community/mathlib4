@@ -444,8 +444,8 @@ version for `NNReal`-valued weights and `ENNReal`-valued elements. -/
 theorem geom_mean_le_arith_mean_weighted (w : ι → ℝ≥0) (z : ι → ℝ≥0∞) (hw : ∑ i ∈ s, w i = 1) :
     ∏ i ∈ s, z i ^ (w i : ℝ) ≤ ∑ i ∈ s, w i * z i := by
   by_cases! h : ∃ i ∈ s, w i ≠ 0 ∧ z i = ∞
-  · obtain ⟨i, his, hzi, hwi⟩ := h
-    rw [sum_eq_top.mpr ⟨i, his, by simp [hzi, hwi]⟩]
+  · obtain ⟨i, his, hwi, hzi⟩ := h
+    rw [sum_eq_top.mpr ⟨i, his, by simp [hwi, hzi]⟩]
     exact le_top
   rw [← prod_filter_of_ne (p := (w · ≠ 0)) (by aesop)]
   rw [← sum_filter_of_ne (p := (w · ≠ 0)) (by aesop)] at ⊢ hw
