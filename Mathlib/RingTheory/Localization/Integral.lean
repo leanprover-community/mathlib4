@@ -431,9 +431,9 @@ protected lemma IsLocalization.integralClosure
         simp only [Algebra.smul_def, map_mul, ← IsScalarTower.algebraMap_apply, ← e, ← mul_assoc]
         exact hm₂s.mul (.algebraMap (Algebra.IsIntegral.isIntegral _))
     refine ⟨⟨⟨_, hm₃s⟩, _, _, mul_mem hm₁ (mul_mem hm₂ hm₃), rfl⟩, ?_⟩
-    · apply (FaithfulSMul.algebraMap_injective (integralClosure Rf Sf) Sf)
-      simp [← IsScalarTower.algebraMap_apply, e, ← mul_assoc, Algebra.smul_def]
-      ring
+    apply (FaithfulSMul.algebraMap_injective (integralClosure Rf Sf) Sf)
+    simp [← IsScalarTower.algebraMap_apply, e, ← mul_assoc, Algebra.smul_def]
+    ring
   · rintro ⟨a, ha⟩ ⟨b, hb⟩ e
     have := congr(algebraMap _ Sf $e)
     have : algebraMap S Sf a = algebraMap S Sf b := by

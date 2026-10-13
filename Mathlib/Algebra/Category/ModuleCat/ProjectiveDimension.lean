@@ -5,10 +5,11 @@ Authors: Nailin Guan
 -/
 module
 
+public import Mathlib.CategoryTheory.Abelian.Projective.Dimension
+
 import Mathlib.Algebra.Category.ModuleCat.Ext.DimensionShifting
 import Mathlib.Algebra.Category.ModuleCat.Projective
 import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-public import Mathlib.CategoryTheory.Abelian.Projective.Dimension
 
 /-!
 

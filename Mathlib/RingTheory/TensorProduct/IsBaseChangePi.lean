@@ -6,8 +6,9 @@ Authors: Christian Merten, Antoine Chambert-Loir
 module
 
 public import Mathlib.LinearAlgebra.TensorProduct.Pi
-import Mathlib.LinearAlgebra.TensorProduct.Prod
 public import Mathlib.RingTheory.Localization.BaseChange
+
+import Mathlib.LinearAlgebra.TensorProduct.Prod
 
 /-!
 # Base change properties
