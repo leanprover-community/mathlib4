@@ -142,14 +142,12 @@ protected theorem add (hf : UnifIntegrable f p μ) (hg : UnifIntegrable g p μ) 
       ⨆ (i : ι) (s : Set α) (_ : μ s ≤ ε), eLpNorm (g i) p (μ.restrict s)))
   · rw [bot_eq_zero]; nth_rw 2 [← mul_zero p.LpAddConst]
     apply ENNReal.Tendsto.const_mul _ (.inr p.LpAddConst_lt_top.ne)
-    nth_rw 2 [← zero_add 0]
-    exact Tendsto.add hf hg
-  · apply Eventually.of_forall fun ε ↦ ?_
+    simpa using Tendsto.add hf hg
+  · refine Eventually.of_forall fun ε ↦ ?_
     simp only [Pi.add_apply, iSup_le_iff]
     intro i s hs hsμ
-    apply (eLpNorm_add_le' p).trans
-    apply mul_le_mul_right (add_le_add _ _) <;>
-    apply (le_iSup _ i).trans' ((le_iSup _ s).trans' (by simp [hsμ]))
+    grw [eLpNorm_add_le' p, add_le_add] <;>
+    exact le_iSup₂_of_le i s (by simp [hsμ])
 
 protected theorem neg (hf : UnifIntegrable f p μ) : UnifIntegrable (-f) p μ := by
   refine ENNReal.tendsto_nhds_zero.2 fun ε hε ↦ ?_
@@ -633,9 +631,9 @@ theorem unifIntegrable_finite [Finite ι] (hp_one : 1 ≤ p) (hp_top : p ≠ ∞
 end
 
 /-- A sequence of uniformly integrable functions which converges μ-a.e. converges in Lp. -/
-theorem tendsto_Lp_finite_of_tendsto_ae_of_meas [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ ∞)
-    {f : ℕ → α → β} {g : α → β} (hf : ∀ n, StronglyMeasurable (f n)) (hg : StronglyMeasurable g)
-    (hg' : MemLp g p μ) (hui : UnifIntegrable f p μ)
+theorem tendsto_Lp_finite_of_tendsto_ae [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ ∞)
+    {f : ℕ → α → β} {g : α → β} (hf : ∀ n, AEStronglyMeasurable (f n) μ)
+    (hg : MemLp g p μ) (hui : UnifIntegrable f p μ)
     (hfg : ∀ᵐ x ∂μ, Tendsto (fun n ↦ f n x) atTop (𝓝 (g x))) :
     Tendsto (fun n ↦ eLpNorm (f n - g) p μ) atTop (𝓝 0) := by
   rw [ENNReal.tendsto_atTop_zero]
@@ -650,8 +648,9 @@ theorem tendsto_Lp_finite_of_tendsto_ae_of_meas [IsFiniteMeasure μ] (hp : 1 ≤
   have hpow : 0 < measureUnivNNReal μ ^ (1 / p.toReal) :=
     Real.rpow_pos_of_pos (measureUnivNNReal_pos hμ) _
   obtain ⟨δ₁, hδ₁, heLpNorm₁⟩ := unifIntegrable_iff.1 hui (ε / 3) hε'
-  obtain ⟨δ₂, hδ₂, heLpNorm₂⟩ := hg'.eLpNorm_indicator_le hp hp' hε'
-  obtain ⟨t, htm, ht₁, ht₂⟩ := tendstoUniformlyOn_of_ae_tendsto' hf hg hfg (lt_min hδ₁ hδ₂)
+  obtain ⟨δ₂, hδ₂, heLpNorm₂⟩ := hg.eLpNorm_indicator_le hp hp' hε'
+  obtain ⟨t, htm, ht₁, ht₂⟩ := tendstoUniformlyOn_of_ae_tendsto' hf hfg
+    (lt_min hδ₁ hδ₂)
   rw [Metric.tendstoUniformlyOn_iff] at ht₂
   specialize ht₂ (ε.toReal / (3 * measureUnivNNReal μ ^ (1 / p.toReal)))
     (div_pos (toReal_pos (gt_iff_lt.1 hε).ne' h.ne) (mul_pos (by simp) hpow))
@@ -672,7 +671,7 @@ theorem tendsto_Lp_finite_of_tendsto_ae_of_meas [IsFiniteMeasure μ] (hp : 1 ≤
       rw [ofReal_div_of_pos (show (0 : ℝ) < 3 by simp), ofReal_toReal h.ne]
       simp
     have := eLpNorm_indicator_sub_le_of_dist_bdd μ hp' htm.compl.nullMeasurableSet this
-      (((hf n).sub hg).indicator htm.compl).aestronglyMeasurable fun x hx =>
+      (((hf n).sub hg.aestronglyMeasurable).indicator htm.compl) fun x hx =>
       (dist_comm (g x) (f n x) ▸ (hN x hx).le :
         dist (f n x) (g x) ≤ ε.toReal / (3 * measureUnivNNReal μ ^ (1 / p.toReal)))
     refine this.trans ?_
@@ -690,28 +689,9 @@ theorem tendsto_Lp_finite_of_tendsto_ae_of_meas [IsFiniteMeasure μ] (hp : 1 ≤
   rw [eLpNorm_neg, ← add_thirds ε, ← sub_eq_add_neg]
   gcongr
 
-/-- A sequence of uniformly integrable functions which converges μ-a.e. converges in Lp. -/
-theorem tendsto_Lp_finite_of_tendsto_ae [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ ∞)
-    {f : ℕ → α → β} {g : α → β} (hf : ∀ n, AEStronglyMeasurable (f n) μ) (hg : MemLp g p μ)
-    (hui : UnifIntegrable f p μ) (hfg : ∀ᵐ x ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (g x))) :
-    Tendsto (fun n => eLpNorm (f n - g) p μ) atTop (𝓝 0) := by
-  have : ∀ n, eLpNorm (f n - g) p μ =
-      eLpNorm ((hf n).mk (f n) - hg.aestronglyMeasurable.mk g) p μ :=
-    fun n => eLpNorm_congr_ae ((hf n).ae_eq_mk.sub hg.aestronglyMeasurable.ae_eq_mk)
-  simp_rw [this]
-  refine tendsto_Lp_finite_of_tendsto_ae_of_meas hp hp' (fun n => (hf n).stronglyMeasurable_mk)
-    hg.aestronglyMeasurable.stronglyMeasurable_mk
-      (hg.ae_eq hg.aestronglyMeasurable.ae_eq_mk)
-      (hui.ae_eq fun n => (hf n).ae_eq_mk) ?_
-  have h_ae_forall_eq : ∀ᵐ x ∂μ, ∀ n, f n x = (hf n).mk (f n) x := by
-    rw [ae_all_iff]
-    exact fun n => (hf n).ae_eq_mk
-  filter_upwards [hfg, h_ae_forall_eq, hg.aestronglyMeasurable.ae_eq_mk]
-    with x hx_tendsto hxf_eq hxg_eq
-  rw [← hxg_eq]
-  convert hx_tendsto using 1
-  ext1 n
-  exact (hxf_eq n).symm
+@[deprecated "This lemma is superseded by `tendsto_Lp_finite_of_tendsto_ae`."
+  (since := "2026-10-12")] alias tendsto_Lp_finite_of_tendsto_ae_of_meas :=
+    tendsto_Lp_finite_of_tendsto_ae
 
 variable {f : ℕ → α → β} {g : α → β}
 
