@@ -47,31 +47,43 @@ public meta unsafe def unusedTraceClass : ModuleLinter where
         continue
       -- Most syntax never uses `trace[_]`, so let's use a faster compiled loop first
       let any? := cmd.find? fun
-        | `(doElem| trace[$_] $_)
-        | `(term| Macro.trace[$_] $_) => true
+        | `(doElem| trace[$a] $_)
+        | `(term| Macro.trace[$a] $_) => !a.raw.isAnyAntiquot
         | _ => false
       if any?.isSome then
         for stx in cmd.topDown do
           match stx with
           | `(doElem| trace[$cls] $_)
           | `(term| Macro.trace[$cls] $_) =>
+            if cls.raw.isAnyAntiquot then continue
             unless optionDecls.contains <| `trace ++ cls.getId do
               traceClasses := traceClasses.alter cls.getId fun refs? => refs?.getD #[] |>.push cls
           | _ => pure ()
     unless traceClasses.isEmpty do
       let env := (← getEnv).setExporting false
       let (inits, _) := regularInitAttr.ext.getState env
-      let inits := inits.filterMap fun decl => do
-        let value ← (← env.find? decl).value? (allowOpaque := true)
-        let_expr Lean.registerTraceClass cls _ _ := value | none
-        return cls
+      let rec gatherRegisteredClasses (acc : List Expr) (e : Expr) : List Expr :=
+        match_expr e with
+        | Lean.registerTraceClass cls _ _ =>
+          if cls.hasFVar || cls.hasLooseBVars then acc else
+            cls :: acc
+        | Bind.bind _ _ _ _ first second =>
+          let acc := gatherRegisteredClasses acc first
+          match second with
+          | Expr.lam _ _ body _ => gatherRegisteredClasses acc body
+          | _ => acc
+        | _ => acc
+      let inits := inits.foldl (init := []) fun acc decl => Id.run do
+        let some cinfo := env.find? decl | return acc
+        let some value := cinfo.value? (allowOpaque := true) | return acc
+        gatherRegisteredClasses acc value
       let inits ← inits.mapM fun cls =>
         liftTermElabM <| Meta.evalExpr' Name ``Name cls (checkMeta := false)
       for (cls, refs) in traceClasses do
         if inits.contains cls then continue
         for ref in refs do
           logWarningAt ref m!"The trace class `{cls}` is not already registered, nor is it \
-            registered later in this file. Use\
+            obviously registered later in this file. Use\
             {indentD m!"initialize {.ofConstName ``registerTraceClass} `{cls}"}\n\
             to make the trace class available via `set_option trace.{cls}` in subsequent files.\n\n\
             Or, use `set_option linter.unusedTraceClass false in` in front of this commmand to \
