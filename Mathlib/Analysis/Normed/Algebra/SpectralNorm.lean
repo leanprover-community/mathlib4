@@ -23,11 +23,6 @@ This file defines spectral norms and uses them to construct extensions of absolu
 
 section matrices
 
-theorem map_finset_sup'' {α β ι : Type*} [SemilatticeSup α] [SemilatticeSup β]
-    (f : α → β) (h : ∀ x y, f (x ⊔ y) = f x ⊔ f y) {s : Finset ι} (hs) (g : ι → α) :
-    f (s.sup' hs g) = s.sup' hs (f ∘ g) := by
-  refine hs.cons_induction ?_ ?_ <;> intros <;> simp [*]
-
 open scoped Matrix.Norms.Operator
 
 open Filter Topology in
@@ -61,6 +56,11 @@ theorem Matrix.gelfandRadius_conj {R m n : Type*}
   refine le_antisymm (Matrix.gelfandRadius_conj_le A B C hCA) ?_
   grw [← gelfandRadius_conj_le C (A * B * C) A hAC, Matrix.mul_assoc, Matrix.mul_assoc,
     hCA, Matrix.mul_one, ← Matrix.mul_assoc, hCA, Matrix.one_mul]
+
+theorem map_finset_sup'' {α β ι : Type*} [SemilatticeSup α] [SemilatticeSup β]
+    (f : α → β) (h : ∀ x y, f (x ⊔ y) = f x ⊔ f y) {s : Finset ι} (hs) (g : ι → α) :
+    f (s.sup' hs g) = s.sup' hs (f ∘ g) := by
+  refine hs.cons_induction ?_ ?_ <;> intros <;> simp [*]
 
 theorem Matrix.gelfandRadius_blockDiagonal_eq_sup {R m n : Type*} (M : n → Matrix m m R)
     [DecidableEq m] [DecidableEq n] [Fintype m] [Fintype n] [Nonempty n]
@@ -455,23 +455,23 @@ theorem isNonarchimedean_gelfandRadiusNorm {K L : Type*} [NormedField K] [Field 
   let T := Algebra.leftMulMatrix (Module.finBasis K L)
   let M := max (gelfandRadius (T x)) (gelfandRadius (T y))
   change gelfandRadius (T (x + y)) ≤ M
-  apply le_of_forall_pos_le_add
-  intro ε hε
-  obtain ⟨Cx, hCx0, hCx⟩ : ∃ C > 0, ∀ (n : ℕ), ‖T x ^ n‖ ≤ C * (M + ε) ^ n := by
-    obtain ⟨C, hC0, hC⟩ := exists_le_gelfandRadius (T x) ε hε
-    refine ⟨C, hC0, fun n ↦ (hC n).trans ?_⟩
-    gcongr
-    apply le_max_left
-  obtain ⟨Cy, hCy0, hCy⟩ : ∃ C > 0, ∀ (n : ℕ), ‖T y ^ n‖ ≤ C * (M + ε) ^ n := by
-    obtain ⟨C, hC0, hC⟩ := exists_le_gelfandRadius (T y) ε hε
-    refine ⟨C, hC0, fun n ↦ (hC n).trans ?_⟩
-    gcongr
-    apply le_max_right
+  suffices ∀ (c : ℝ), M < c → gelfandRadius (T (x + y)) ≤ c by
+    apply le_of_forall_pos_le_add
+    intro ε hε
+    apply this
+    simpa
+  intro r hr
+  rw [max_lt_iff] at hr
+  obtain ⟨Cx, hCx0, hCx⟩ : ∃ C > 0, ∀ (n : ℕ), ‖T x ^ n‖ ≤ C * r ^ n :=
+    norm_pow_le_mul_pow_of_gelfandRadius_lt (T x) hr.1
+  obtain ⟨Cy, hCy0, hCy⟩ : ∃ C > 0, ∀ (n : ℕ), ‖T y ^ n‖ ≤ C * r ^ n :=
+    norm_pow_le_mul_pow_of_gelfandRadius_lt (T y) hr.2
   let C := Cx * Cy * Module.finrank K L
   have : 0 < Module.finrank K L := Module.finrank_pos
-  have key n : ‖T (x + y) ^ n‖ ≤ C * (M + ε) ^ n := by
+  have : 0 < r := by grind [gelfandRadius_nonneg]
+  have key n : ‖T (x + y) ^ n‖ ≤ C * r ^ n := by
     grw [map_add, ((Commute.all x y).map T).add_pow]
-    grw [foobar _ _ (Cx * Cy * (M + ε) ^ n) (by positivity)]
+    grw [foobar _ _ (Cx * Cy * r ^ n) (by positivity)]
     · rw [Fintype.card_fin]
       grind
     intro k hk
@@ -482,8 +482,7 @@ theorem isNonarchimedean_gelfandRadiusNorm {K L : Type*} [NormedField K] [Field 
     rw [← nsmul_eq_mul', nsmul_eq_mul, key, ← Algebra.smul_def]
     grw [norm_smul_le, ← nsmul_one, IsUltrametricDist.norm_nsmul_le, norm_one, one_mul,
       norm_mul_le, hCx, hCy, mul_mul_mul_comm, ← pow_add, Nat.add_sub_cancel' hk]
-  replace key (n : ℕ) (hn : n ≠ 0) : ‖T (x + y) ^ n‖ ^ (n⁻¹ : ℝ) ≤
-      C ^ (n⁻¹ : ℝ) * (M + ε) := by
+  replace key (n : ℕ) (hn : n ≠ 0) : ‖T (x + y) ^ n‖ ^ (n⁻¹ : ℝ) ≤ C ^ (n⁻¹ : ℝ) * r := by
     specialize key n
     rwa [← pow_le_pow_iff_left₀ (by positivity) (by positivity) hn, mul_pow,
       ← Real.rpow_mul_natCast (by positivity), ← Real.rpow_mul_natCast (by positivity),
