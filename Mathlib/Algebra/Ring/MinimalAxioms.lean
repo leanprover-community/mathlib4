@@ -5,9 +5,9 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.MinimalAxioms
+public import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Minimal Axioms for a Ring

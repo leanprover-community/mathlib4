@@ -5,11 +5,12 @@ Authors: Vincent Beffara, Stefan Kebekus
 -/
 module
 
-import Mathlib.Analysis.Analytic.Constructions
-public import Mathlib.Analysis.Calculus.DSlope
-import Mathlib.Analysis.Calculus.FDeriv.Analytic
 public import Mathlib.Analysis.Analytic.Uniqueness
+public import Mathlib.Analysis.Calculus.DSlope
 public import Mathlib.Order.Filter.EventuallyConst
+
+import Mathlib.Analysis.Analytic.Constructions
+import Mathlib.Analysis.Calculus.FDeriv.Analytic
 
 /-!
 # Principle of isolated zeros

@@ -6,8 +6,8 @@ Authors: Dion Leijnse
 module
 
 public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
-public import Mathlib.RingTheory.TensorProduct.Maps
 public import Mathlib.RingTheory.Adjoin.FG
+public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
 # Finitely generated subalgebras of a base change obtained from an element

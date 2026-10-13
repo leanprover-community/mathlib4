@@ -5,9 +5,10 @@ Authors: Kexing Ying
 -/
 module
 
-import Mathlib.MeasureTheory.Measure.Decomposition.Hahn
 public import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
 public import Mathlib.MeasureTheory.Measure.Sub
+
+import Mathlib.MeasureTheory.Measure.Decomposition.Hahn
 
 /-!
 # Lebesgue decomposition

@@ -5,8 +5,8 @@ Authors: Johan Commelin, Kenny Lau
 -/
 module
 
-public import Mathlib.RingTheory.PowerSeries.Order
 public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.PowerSeries.Order
 
 /-!
 # Power series over rings with no zero divisors

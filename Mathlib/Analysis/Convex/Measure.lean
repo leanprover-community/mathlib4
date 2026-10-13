@@ -5,8 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-import Mathlib.Analysis.Normed.Affine.AddTorsorBases
 public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
+
+import Mathlib.Analysis.Normed.Affine.AddTorsorBases
 
 /-!
 # Convex sets are null-measurable
