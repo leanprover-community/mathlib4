@@ -1087,23 +1087,23 @@ lemma add_sub_of_mutuallySingular {ξ : Measure α} (h : μ ⟂ₘ ξ) : μ + (�
 
 end Measure
 
+lemma isHahnDecomposition_withDensity_of_ae_le_one {α : Type*} {_ : MeasurableSpace α}
+    {μ : Measure α} {f : α → ℝ≥0∞} {s : Set α} (hs : MeasurableSet s)
+    (h_le : ∀ᵐ x ∂μ.restrict s, f x ≤ 1) (h_ge : ∀ᵐ x ∂μ.restrict sᶜ, 1 ≤ f x) :
+    IsHahnDecomposition (μ.withDensity f) μ s where
+  measurableSet := hs
+  le_on := by
+    rw [restrict_withDensity hs]
+    exact (withDensity_mono h_le).trans_eq withDensity_one
+  ge_on_compl := by
+    rw [restrict_withDensity hs.compl]
+    exact withDensity_one.symm.trans_le (withDensity_mono h_ge)
+
 lemma isHahnDecomposition_withDensity_le_one {α : Type*} {_ : MeasurableSpace α} {μ : Measure α}
     {f : α → ℝ≥0∞} (hf : Measurable f) :
-    IsHahnDecomposition (μ.withDensity f) μ {x | f x ≤ 1} where
-  measurableSet := measurableSet_le hf measurable_const
-  le_on := by
-    refine Measure.le_intro fun t ht _ ↦ ?_
-    rw [Measure.restrict_apply ht, Measure.restrict_apply ht,
-      withDensity_apply _ (ht.inter (measurableSet_le hf measurable_const))]
-    calc ∫⁻ x in t ∩ {x | f x ≤ 1}, f x ∂μ
-    _ ≤ ∫⁻ x in t ∩ {x | f x ≤ 1}, 1 ∂μ := setLIntegral_mono measurable_const (by grind)
-    _ = μ (t ∩ {x | f x ≤ 1}) := by simp
-  ge_on_compl := by
-    refine Measure.le_intro fun t ht _ ↦ ?_
-    rw [Measure.restrict_apply ht, Measure.restrict_apply ht,
-      withDensity_apply _ (ht.inter (measurableSet_le hf measurable_const).compl)]
-    calc μ (t ∩ {x | f x ≤ 1}ᶜ)
-    _ = ∫⁻ x in t ∩ {x | f x ≤ 1}ᶜ, 1 ∂μ := by simp
-    _ ≤ ∫⁻ x in t ∩ {x | f x ≤ 1}ᶜ, f x ∂μ := setLIntegral_mono hf (by grind)
+    IsHahnDecomposition (μ.withDensity f) μ {x | f x ≤ 1} :=
+  have hs : MeasurableSet {x | f x ≤ 1} := measurableSet_le hf measurable_const
+  isHahnDecomposition_withDensity_of_ae_le_one hs (ae_restrict_of_forall_mem hs fun _ hx ↦ hx)
+    (ae_restrict_of_forall_mem hs.compl fun _ hx ↦ le_of_lt (by simpa using hx))
 
 end MeasureTheory

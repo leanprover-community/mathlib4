@@ -55,52 +55,56 @@ lemma IsHahnDecomposition.tvDist_eq {s : Set 𝓧} (h : IsHahnDecomposition μ �
   rw [← tvDist_restrict_add_compl h.measurableSet, tvDist_of_le h.le_on, tvDist_of_ge h.ge_on_compl]
   simp
 
-lemma tvDist_withDensity_self_eq_integral {f : 𝓧 → ℝ≥0∞} (hf : Measurable f)
+lemma tvDist_withDensity_self_eq_integral {f : 𝓧 → ℝ≥0∞} (hf : AEMeasurable f μ)
     (hf_int : ∫⁻ x, f x ∂μ ≠ ∞) :
     tvDist (μ.withDensity f) μ = ∫ x, |1 - (f x).toReal| ∂μ := by
   have : IsFiniteMeasure (μ.withDensity f) := isFiniteMeasure_withDensity hf_int
   have hf_top : ∀ᵐ x ∂μ, f x ≠ ∞ := by
-    filter_upwards [ae_lt_top hf hf_int] with x hx using hx.ne
-  have h_hahn : IsHahnDecomposition (μ.withDensity f) μ {x | f x ≤ 1} :=
-    isHahnDecomposition_withDensity_le_one hf
+    filter_upwards [ae_lt_top' hf hf_int] with x hx using hx.ne
+  obtain ⟨s, hs, hs_le, hs_ge⟩ : ∃ s, MeasurableSet s ∧ (∀ᵐ x ∂μ.restrict s, f x ≤ 1) ∧
+      ∀ᵐ x ∂μ.restrict sᶜ, 1 ≤ f x := by
+    have hs : MeasurableSet {x | hf.mk f x ≤ 1} :=
+      measurableSet_le hf.measurable_mk measurable_const
+    refine ⟨{x | hf.mk f x ≤ 1}, hs, ?_, ?_⟩
+    · filter_upwards [ae_restrict_mem hs, ae_restrict_of_ae hf.ae_eq_mk] with x hxs hx
+      rwa [hx]
+    · filter_upwards [ae_restrict_mem hs.compl, ae_restrict_of_ae hf.ae_eq_mk] with x hxs hx
+      grind
+  have h_hahn : IsHahnDecomposition (μ.withDensity f) μ s :=
+    isHahnDecomposition_withDensity_of_ae_le_one hs hs_le hs_ge
   rw [h_hahn.tvDist_eq,
-    withDensity_real_apply_eq_integral (by fun_prop) ?_
-      (measurableSet_le hf measurable_const).nullMeasurableSet,
-    withDensity_real_apply_eq_integral (by fun_prop) ?_
-      (measurableSet_le hf measurable_const).compl.nullMeasurableSet]
+    withDensity_real_apply_eq_integral hf.restrict ?_ hs.nullMeasurableSet,
+    withDensity_real_apply_eq_integral hf.restrict ?_ hs.compl.nullMeasurableSet]
   rotate_left
   · filter_upwards [hf_top] with x hx _ using hx.lt_top
   · filter_upwards [hf_top] with x hx _ using hx.lt_top
   have hf_toReal : Integrable (fun x ↦ (f x).toReal) μ :=
-    integrable_toReal_of_lintegral_ne_top hf.aemeasurable hf_int
-  have h1 : μ.real {x | f x ≤ 1} - ∫ x in {x | f x ≤ 1}, (f x).toReal ∂μ =
-      ∫ x in {x | f x ≤ 1}, 1 - (f x).toReal ∂μ := by
+    integrable_toReal_of_lintegral_ne_top hf hf_int
+  have h1 : μ.real s - ∫ x in s, (f x).toReal ∂μ = ∫ x in s, 1 - (f x).toReal ∂μ := by
     rw [← setIntegral_one_eq_measureReal, ← integral_sub (by simp) hf_toReal.integrableOn]
-  have h2 : ∫ x in {x | f x ≤ 1}ᶜ, (f x).toReal ∂μ - μ.real {x | f x ≤ 1}ᶜ =
-      ∫ x in {x | f x ≤ 1}ᶜ, (f x).toReal - 1 ∂μ := by
+  have h2 : ∫ x in sᶜ, (f x).toReal ∂μ - μ.real sᶜ = ∫ x in sᶜ, (f x).toReal - 1 ∂μ := by
     rw [← setIntegral_one_eq_measureReal, ← integral_sub hf_toReal.integrableOn (by simp)]
   rw [h1, h2]
-  calc ∫ x in {x | f x ≤ 1}, 1 - (f x).toReal ∂μ + ∫ x in {x | f x ≤ 1}ᶜ, (f x).toReal - 1 ∂μ
-  _ = ∫ x in {x | f x ≤ 1}, |1 - (f x).toReal| ∂μ +
-      ∫ x in {x | f x ≤ 1}ᶜ,|1 - (f x).toReal| ∂μ := by
+  calc ∫ x in s, 1 - (f x).toReal ∂μ + ∫ x in sᶜ, (f x).toReal - 1 ∂μ
+  _ = ∫ x in s, |1 - (f x).toReal| ∂μ + ∫ x in sᶜ, |1 - (f x).toReal| ∂μ := by
     congr 1
-    · refine setIntegral_congr_fun (measurableSet_le hf measurable_const) fun x hx ↦ ?_
+    · refine integral_congr_ae ?_
+      filter_upwards [hs_le] with x hx
       rw [abs_of_nonneg]
-      simp only [Set.mem_ofPred_eq, sub_nonneg] at hx ⊢
+      simp only [sub_nonneg]
       exact ENNReal.toReal_le_of_le_ofReal (by simp) (by simp [hx])
-    · refine setIntegral_congr_ae (measurableSet_le hf measurable_const).compl ?_
-      filter_upwards [hf_top] with x hx_top hx
+    · refine integral_congr_ae ?_
+      filter_upwards [hs_ge, ae_restrict_of_ae hf_top] with x hx hx_top
       rw [abs_of_nonpos]
       · simp
-      · simp only [Set.mem_compl_iff, Set.mem_ofPred_eq, not_le] at hx
-        simp only [tsub_le_iff_right, zero_add]
+      · simp only [tsub_le_iff_right, zero_add]
         rw [← ENNReal.toReal_one]
         gcongr
   _ = ∫ x, |1 - (f x).toReal| ∂μ := by
-    refine integral_add_compl (measurableSet_le hf measurable_const) ?_
+    refine integral_add_compl hs ?_
     exact (Integrable.sub (by simp) hf_toReal).abs
 
-lemma etvDist_withDensity_self_eq_lintegral {f : 𝓧 → ℝ≥0∞} (hf : Measurable f)
+lemma etvDist_withDensity_self_eq_lintegral {f : 𝓧 → ℝ≥0∞} (hf : AEMeasurable f μ)
     (hf_int : ∫⁻ x, f x ∂μ ≠ ∞) :
     etvDist (μ.withDensity f) μ = ∫⁻ x, ‖1 - (f x).toReal‖ₑ ∂μ := by
   have : IsFiniteMeasure (μ.withDensity f) := isFiniteMeasure_withDensity hf_int
@@ -109,7 +113,7 @@ lemma etvDist_withDensity_self_eq_lintegral {f : 𝓧 → ℝ≥0∞} (hf : Meas
   · congr with x
     rw [← Real.norm_eq_abs, ofReal_norm]
   · refine (Integrable.sub (by simp) ?_).abs
-    exact integrable_toReal_of_lintegral_ne_top hf.aemeasurable hf_int
+    exact integrable_toReal_of_lintegral_ne_top hf hf_int
   · filter_upwards with
     positivity
 
