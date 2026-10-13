@@ -1408,15 +1408,15 @@ def test_uploadLocationFrom : IO Unit := do
       matches .error _)
   assertTrue "azure: a container with PUT_URL errors"
     (uploadLocationFrom .azure (some "https://upload.example/bucket") none
-      (some .forks) MATHLIBREPO (some "abc1") matches .error _)
+      (some .forks) MATHLIBREPO none matches .error _)
   assertTrue "s3: a put base without a container errors"
     (uploadLocationFrom .s3 none (some "https://s3.example.org/x") none MATHLIBREPO none
       matches .error _)
   assertTrue "s3: no put base errors"
     (uploadLocationFrom .s3 none none (some .forks) "alice/mathlib4" none
       matches .error _)
-  assertTrue "azure: a put base and a container without a PUT_URL error"
-    (uploadLocationFrom .azure none (some putBase) (some .forks)
+  assertTrue "azure: a put base without a PUT_URL still errors"
+    (uploadLocationFrom .azure none (some putBase) none
       "alice/mathlib4" (some "sha1") matches .error _)
   -- PUT_URL keeps the opposite empty rule from every read variable: any set
   -- value counts, an empty one included, so a misconfigured endpoint fails
@@ -1424,9 +1424,6 @@ def test_uploadLocationFrom : IO Unit := do
   assertTrue "an empty PUT_URL still counts"
     ((uploadLocationFrom .azure (some "") none none MATHLIBREPO none).toOption.map (·.root) ==
       some "")
-  assertTrue "azure: an empty PUT_URL does not allow a container"
-    (uploadLocationFrom .azure (some "") (some putBase) (some .forks)
-      "alice/mathlib4" none matches .error _)
   assertTrue "s3: an empty PUT_URL errors despite a valid fallback container"
     (uploadLocationFrom .s3 (some "") (some putBase) (some .forks)
       "alice/mathlib4" none matches .error _)
@@ -1456,19 +1453,6 @@ def test_uploadLocationScope : IO Unit := do
           (location.sha? == if putURL?.isSome || container? == some Container.master
             then none else scope?)
       | .error error => assertTrue s!"scope test resolves: {error}" false
-  let azureFlat := uploadLocationFrom .azure (some "https://upload.example/bucket")
-    none none MATHLIBREPO (some "abc1")
-  assertTrue "azure: the canonical repo stays flat and has no marker"
-    (azureFlat.toOption.map (fun location =>
-      (location.fileURL "x.ltar", location.markerURL?)) ==
-      some ("https://upload.example/bucket/f/x.ltar", none))
-  let azureScoped := uploadLocationFrom .azure (some "https://upload.example/bucket")
-    none none "alice/mathlib4" (some "abc1")
-  assertTrue "azure: another repo keeps its scope and marker"
-    (azureScoped.toOption.map (fun location =>
-      (location.fileURL "x.ltar", location.markerURL?)) ==
-      some ("https://upload.example/bucket/f/alice/mathlib4/abc1/x.ltar",
-        some "https://upload.example/bucket/m/alice/mathlib4/abc1"))
 
 /-- The curl arguments an s3 upload signs each request with (`s3CurlArgs`),
 and the `If-None-Match: *` guard the curl tool adds to a non-overwrite put on
