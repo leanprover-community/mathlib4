@@ -769,6 +769,11 @@ theorem IsCycleOn.zpow_apply_eq_zpow_apply {s : Finset α} (hf : f.IsCycleOn s) 
   rw [Int.modEq_iff_dvd, ← hf.zpow_apply_eq ha]
   simp [sub_eq_neg_add, zpow_add, eq_symm_apply, eq_comm]
 
+/-- The map `n ↦ (f ^ n) a` is injective on `[0, #s)` when `f.IsCycleOn s` and `a ∈ s`. -/
+theorem IsCycleOn.injOn_pow_apply {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈ s) :
+    Set.InjOn (fun n ↦ (f ^ n) a) (.Iio #s) :=
+  fun _ hm _ hn h ↦ ((hf.pow_apply_eq_pow_apply ha).mp h).eq_of_lt_of_lt hm hn
+
 theorem IsCycleOn.pow_card_apply {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈ s) :
     (f ^ #s) a = a :=
   (hf.pow_apply_eq ha).2 dvd_rfl

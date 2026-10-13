@@ -92,23 +92,20 @@ When arguments are provided, only the specified files and their transitive impor
 | `--unsafe-window=N` | Number of cached fork commits `--unsafe` will try (default `1`). Implies `--unsafe`. |
 | `--staging-dir=DIR` | For `stage`/`stage!`/`unstage`/`unstage!`: the staging directory. |
 
-Container names (for `--cache-from`): `master`, `forks`, `nightly-testing`, `pr-toolchain-tests`.
-
 ## Trust-ordered containers
 
 The cache is split across multiple containers, logical namespaces in the URL
 contract `/{container}/{key}`. Container names accepted by `--cache-from=LIST`:
-`master`, `forks`, `nightly-testing`, `pr-toolchain-tests`.
+`master`, `forks`.
 
 `cache get` resolves a file by trying a default chain of containers in
 order, depending on the repo:
 
-| GitHub repo                                     | Container order tried       |
-|-------------------------------------------------|-----------------------------|
-| `leanprover-community/mathlib4`                 | `master`                    |
-| `leanprover-community/mathlib4-nightly-testing` | `nightly-testing`, `forks`  |
-| any fork (PRs)                                  | `master`, `forks`           |
-| downstream with mathlib as a dependency         | `master`                    |
+| GitHub repo                                         | Container order tried |
+|-----------------------------------------------------|-----------------------|
+| `leanprover-community/mathlib4`                     | `master`              |
+| any fork (PRs), `mathlib4-nightly-testing` included | `master`, `forks`     |
+| downstream with mathlib as a dependency             | `master`              |
 
 Override the read chain with `--cache-from=LIST`:
 
@@ -216,7 +213,7 @@ upstream and you want to avoid waiting for CI to build everything.
 # Find the most recent cached commit on the current branch
 lake exe cache query
 
-# Example output (on a fork checkout; the canonical repos have no
+# Example output (on a fork checkout; the canonical repo has no
 # per-commit namespace and `query` says so instead):
 # Most recent cached commit on this branch for fork alice/mathlib4: 5a3c7e9a...
 #

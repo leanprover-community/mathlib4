@@ -221,7 +221,7 @@ to module `Foo.Bar` (no `srcDir` indirection).
 
 **CI workflow**
 - `lake-build-with-retry.sh`
-  Runs `lake build` on a target until `lake build --no-build` succeeds. Used in the main build workflows.
+  Runs `lake build` on one or more targets until `lake build --no-build` succeeds. Used in the main build workflows.
 - `lake-build-wrapper.py`
   A wrapper script for `lake build` which collapses normal build into log groups and saves a build summary JSON file. See file for usage.
 - `mk_all.lean`

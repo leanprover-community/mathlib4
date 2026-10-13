@@ -6,8 +6,8 @@ Authors: Kalle Kytölä
 module
 
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
-public import Mathlib.Topology.ContinuousMap.Bounded.Normed
 public import Mathlib.Topology.Algebra.Order.LiminfLimsup
+public import Mathlib.Topology.ContinuousMap.Bounded.Normed
 
 /-!
 # Integration of bounded continuous functions

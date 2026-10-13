@@ -8,8 +8,8 @@ module
 public import Mathlib.Order.SetAccumulate
 public import Mathlib.Topology.Bornology.Basic
 public import Mathlib.Topology.ContinuousOn
-public import Mathlib.Topology.Ultrafilter
 public import Mathlib.Topology.Defs.Ultrafilter
+public import Mathlib.Topology.Ultrafilter
 
 /-!
 # Compact sets and compact spaces
