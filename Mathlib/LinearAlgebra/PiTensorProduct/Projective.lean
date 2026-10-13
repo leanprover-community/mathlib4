@@ -176,21 +176,21 @@ This is also a generalization of `PiTensorProduct.dualDistribEquiv` from
 `[∀ i, Module.Free R (P i)]` with `[∀ i, Module.Projective R (P i)]`.
 -/
 @[expose]
-noncomputable def dualDistribEquiv_of_Projective :
+noncomputable def dualDistribEquivOfProjective :
     (⨂[R] i, Dual R (P i)) ≃ₗ[R] Dual R (⨂[R] i, P i) :=
   have := Fintype.ofFinite ι
   piTensorHomEquiv R P _ ≪≫ₗ (LinearEquiv.congrRight (constantBaseRingEquiv ι R).toLinearEquiv)
 
 @[simp]
-lemma dualDistribEquiv_of_Projective_toLinearMap :
-    (dualDistribEquiv_of_Projective R P).toLinearMap = dualDistrib := rfl
+lemma dualDistribEquivOfProjective_toLinearMap :
+    (dualDistribEquivOfProjective R P).toLinearMap = dualDistrib := rfl
 
 variable {R P} in
 @[simp]
-lemma dualDistribEquiv_of_Projective_tprod_tprod (f : ∀ i, Dual R (P i)) (x : ∀ i, P i) :
-    dualDistribEquiv_of_Projective R P (⨂ₜ[R] i, f i) (⨂ₜ[R] i, x i) = ∏ᶠ i, f i (x i) := by
+lemma dualDistribEquivOfProjective_tprod_tprod (f : ∀ i, Dual R (P i)) (x : ∀ i, P i) :
+    dualDistribEquivOfProjective R P (⨂ₜ[R] i, f i) (⨂ₜ[R] i, x i) = ∏ᶠ i, f i (x i) := by
   let := Fintype.ofFinite ι
-  simp [dualDistribEquiv_of_Projective, finprod_eq_prod_of_fintype]
+  simp [dualDistribEquivOfProjective, finprod_eq_prod_of_fintype]
 
 end Projective
 

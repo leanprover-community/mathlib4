@@ -83,8 +83,10 @@ def eval : M →ₗ[R] Dual R (Dual R M) :=
 theorem eval_apply (v : M) (a : Dual R M) : eval R M v a = a v :=
   rfl
 
+/-- A linear equivalence `Dual R R ≃ₗ[R] R` (viewing `R` as a module over itself) whose underlying
+linear map is `LinearMap.applyₗ 1` with inverse given by `LinearMap.mulRight R` -/
 def dualBaseRingEquiv : Dual R R ≃ₗ[R] R := { LinearMap.applyₗ 1 with
-  invFun x := LinearMap.mulRight R x
+  invFun := LinearMap.mulRight R
   left_inv := by intro; ext; simp
   right_inv := by intro; simp
 }
