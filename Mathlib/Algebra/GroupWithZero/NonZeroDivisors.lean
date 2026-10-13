@@ -448,7 +448,7 @@ lemma Pi.mem_nonZeroDivisorsRight_iff :
   have h := hx (Pi.single i y) (funext fun j ↦ ?_)
   · simpa using congr($h i)
   · rcases eq_or_ne j i with rfl | hj <;> simp [*]
-  
+
 /-- An element of a product of monoids with zero is a non-zero-divisor iff each of its coordinates
 is a non-zero-divisor. -/
 lemma Pi.mem_nonZeroDivisors_iff :
