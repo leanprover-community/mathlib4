@@ -551,8 +551,8 @@ variable (R) in
 abbrev IsWellFounded : Prop := WellFounded (· ~[R] ·)
 
 variable (R S) in
-/-- A relation homomorphism with respect to a given pair of relations `R` and `S` s is a function
-`f : α → β` such that `a ~[R] b → f a ~[s] f b`. -/
+/-- A relation homomorphism with respect to a given pair of relations `R` and `S` is a function
+`f : α → β` such that `a ~[R] b → f a ~[S] f b`. -/
 abbrev Hom := (· ~[R] ·) →r (· ~[S] ·)
 
 end SetRel
