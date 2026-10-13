@@ -166,6 +166,9 @@ section NonAssocCommSemiring
 
 variable [NonAssocCommSemiring R] [CharP R 2]
 
+theorem add_mul_self (x y : R) : (x + y) * (x + y) = x * x + y * y := by
+  rw [mul_add, add_mul, add_mul, mul_comm y, add_assoc, CharTwo.add_cancel_left]
+
 /-- See `frobenius` for the Frobenius map. -/
 private def mulSelfAddMonoidHom : R →+ R where
   toFun x := x * x
