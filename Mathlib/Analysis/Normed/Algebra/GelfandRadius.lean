@@ -102,16 +102,15 @@ theorem gelfandRadius_pow_of_ne_zero (a : A) {n : ℕ} (hn : n ≠ 0) :
   rw [Function.comp_apply, Nat.cast_mul, mul_inv_rev,
     ← Real.rpow_mul_natCast (by positivity), inv_mul_cancel_right₀ (by simpa), pow_mul]
 
-theorem gelfandRadius_pow [NormOneClass A] (a : A) (n : ℕ) :
-    gelfandRadius (a ^ n) = gelfandRadius a ^ n := by
-  by_cases hn : n = 0
-  · symm
-    simpa [hn] using tendsto_gelfandRadius (1 : A)
-  · exact gelfandRadius_pow_of_ne_zero a hn
-
 @[simp]
-theorem gelfandRadius_one [NormOneClass A] : gelfandRadius (1 : A) = 1 := by
-  simpa using gelfandRadius_pow 1 0
+theorem gelfandRadius_one [Nontrivial A] : gelfandRadius (1 : A) = 1 :=
+  tendsto_nhds_unique (tendsto_gelfandRadius 1) (by simp)
+  
+theorem gelfandRadius_pow [Nontrivial A] (a : A) (n : ℕ) :
+    gelfandRadius (a ^ n) = gelfandRadius a ^ n := by
+  obtain rfl | hn := eq_or_ne n 0
+  · simp
+  · exact gelfandRadius_pow_of_ne_zero a hn
 
 theorem gelfandRadius_le_norm_pow (a : A) {n : ℕ} (hn : n ≠ 0) :
     gelfandRadius a ≤ ‖a ^ n‖ ^ (n : ℝ)⁻¹ := by
