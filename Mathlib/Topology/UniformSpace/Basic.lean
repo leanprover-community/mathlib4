@@ -510,7 +510,7 @@ lemma ball_preimage {f : α → β} {U : SetRel β β} {x : α} :
 @[simp]
 theorem UniformSpace.comap_id {α : Type*} : UniformSpace.comap (id : α → α) = id := by
   ext : 2
-  rw [uniformity_comap, Prod.map_id, comap_id]
+  rw [uniformity_comap, Prod.map_id, Filter.comap_id]
 
 @[deprecated (since := "2026-10-13")] alias uniformSpace_comap_id := UniformSpace.comap_id
 
@@ -543,7 +543,7 @@ alias uniformContinuous_iff := uniformContinuous_iff_le_comap
 
 theorem le_iff_uniformContinuous_id {u v : UniformSpace α} :
     u ≤ v ↔ @UniformContinuous _ _ u v id := by
-  rw [uniformContinuous_iff_le_comap, uniformSpace_comap_id, id]
+  rw [uniformContinuous_iff_le_comap, UniformSpace.comap_id, id]
 
 theorem uniformContinuous_comap {f : α → β} [u : UniformSpace β] :
     @UniformContinuous α β (UniformSpace.comap f u) u f :=
