@@ -156,7 +156,7 @@ theorem isUnit_iff {x : 𝔸[R, K]} : IsUnit x ↔ (∀ v, x.1 v ≠ 0) ∧ (∀
 
 variable [NumberField K] [Ring.HasFiniteQuotients R] [Infinite R]
 
-/-- The norm on the adele ring is the product of all the local norms. If a adele is
+/-- The norm on the adele ring is the product of all the local norms. If an adele is
 a unit, then this is a finite product in disguise. Otherwise, it is zero (and not the junk
 `tprod` value of `1`). -/
 instance : Norm 𝔸[R, K] where norm x := ‖x.1‖ * ‖x.2‖
