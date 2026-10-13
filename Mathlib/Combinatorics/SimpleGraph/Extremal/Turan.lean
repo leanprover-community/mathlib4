@@ -254,7 +254,8 @@ theorem nonempty_iso_turanGraph :
     Nonempty (G ≃g turanGraph (card V) r) := by
   classical
   obtain ⟨zm, zp⟩ := h.isEquipartition.exists_partPreservingEquiv
-  refine ⟨(Equiv.subtypeUnivEquiv mem_univ).symm.trans zm, fun {a b} ↦ ?_⟩
+  use (Equiv.subtypeUnivEquiv mem_univ).symm.trans zm
+  intro a b
   rw [turanGraph_adj]
   have := zp ⟨a, mem_univ a⟩ ⟨b, mem_univ b⟩
   rw [← h.not_adj_iff_part_eq] at this
