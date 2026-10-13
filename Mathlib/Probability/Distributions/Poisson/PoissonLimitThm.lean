@@ -5,8 +5,8 @@ Authors: Yi Yuan
 -/
 module
 
-public import Mathlib.Probability.Distributions.Poisson.Basic
 public import Mathlib.Probability.Distributions.Binomial
+public import Mathlib.Probability.Distributions.Poisson.Basic
 
 import Mathlib.Analysis.SpecialFunctions.Choose
 
@@ -73,7 +73,7 @@ theorem tendsto_choose_mul_pow_of_tendsto_mul_atTop (hr : Tendsto (fun n => n * 
   rw [mul_div_assoc, mul_comm]
   refine (tendsto_choose_mul_pow_atTop k hr).mul ?_
   have hp_lt_half : ∀ᶠ n in atTop, p n < 1 / 2 :=
-    (tendsto_zero_of_tendsto_mul_atTop hr).eventually (Iio_mem_nhds (by norm_num))
+    (tendsto_zero_of_tendsto_mul_atTop hr).eventually (Iio_mem_nhds (by simp))
   have hEq : (fun n => (1 - p n) ^ (n - k)) =ᶠ[atTop]
       (fun n => (1 - p n) ^ n * ((1 - p n) ^ k)⁻¹) := by
     filter_upwards [eventually_ge_atTop k, hp_lt_half] with n hn hne
@@ -84,22 +84,6 @@ theorem tendsto_choose_mul_pow_of_tendsto_mul_atTop (hr : Tendsto (fun n => n * 
   refine Tendsto.mul (Real.tendsto_one_add_pow_exp_of_tendsto ?_) ?_
   · simpa using hr.neg
   refine Tendsto.inv₀ (.pow ?_ k) (by simp)
-  · simpa using tendsto_const_nhds.sub (tendsto_zero_of_tendsto_mul_atTop hr)
-
-/--
-Another version of Poisson Limit Theorem: convergence of `PMF.binomial` to `poissonPMF` in `ℝ≥0∞`
-under the natural hypotheses (`∀ n, p n ≤ 1` and `r ≥ 0`).
--/
-@[deprecated tendsto_choose_mul_pow_of_tendsto_mul_atTop (since := "2026-03-08")]
-lemma binomial_tendsto_poissonPMFReal_atTop {r : ℝ≥0} {p : ℕ → unitInterval}
-    (hr : Tendsto (fun n => n * (p n : ℝ)) atTop (𝓝 r)) :
-    Tendsto (fun n ↦ Bin(n, p n) {k}) atTop (𝓝 (poissonMeasure r {k})) := by
-  have t1 : Tendsto (fun n => (ENNReal.ofReal (n.choose k * (p n) ^ k * (1 - p n) ^ (n - k) : ℝ)))
-      atTop (𝓝 (poissonMeasure r {k})) := by
-    simp_rw [poissonMeasure_singleton]
-    exact tendsto_ofReal (tendsto_choose_mul_pow_of_tendsto_mul_atTop k (by norm_cast))
-  refine Tendsto.congr' ?_ t1
-  simpa only [EventuallyEq, eventually_atTop, ge_iff_le] using
-    ⟨k, fun b hb ↦ (binomial_singleton b k (p b)).symm⟩
+  simpa using tendsto_const_nhds.sub (tendsto_zero_of_tendsto_mul_atTop hr)
 
 end ProbabilityTheory

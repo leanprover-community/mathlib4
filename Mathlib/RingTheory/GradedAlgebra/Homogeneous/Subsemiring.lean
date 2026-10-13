@@ -5,7 +5,6 @@ Authors: Jujian Zhang, Fangming Li
 -/
 module
 
-public import Mathlib.Algebra.DirectSum.Decomposition
 public import Mathlib.RingTheory.GradedAlgebra.Basic
 
 /-!
@@ -50,7 +49,7 @@ instance setLike : SetLike (HomogeneousSubsemiring 𝒜) A where
   coe x := x.carrier
   coe_injective _ _ h := toSubsemiring_injective <| SetLike.coe_injective h
 
-instance : PartialOrder (HomogeneousSubsemiring 𝒜) := .ofSetLike (HomogeneousSubsemiring 𝒜) A
+instance : PartialOrder (HomogeneousSubsemiring 𝒜) := .ofSetLike (HomogeneousSubsemiring 𝒜)
 
 theorem isHomogeneous (R : HomogeneousSubsemiring 𝒜) :
     IsHomogeneous 𝒜 R := R.is_homogeneous'

@@ -109,7 +109,7 @@ theorem support_sub_monomial_sub_monomial_subset [DecidableEq σ] (d d' : σ →
   rw [support_monomial] at h2
   split_ifs at h2
   · exact absurd h2 (Finset.notMem_empty _)
-  exact Finset.mem_union_right _ (by rwa [Finset.mem_singleton] at h2 ⊢)
+  exact Finset.mem_union_right _ (by rw [Finset.mem_singleton] at h2 ⊢; assumption)
 
 section Degrees
 
@@ -141,13 +141,13 @@ section Vars
 theorem vars_neg : (-p).vars = p.vars := by simp [vars, degrees_neg]
 
 theorem vars_sub_subset [DecidableEq σ] : (p - q).vars ⊆ p.vars ∪ q.vars := by
-  convert! vars_add_subset p (-q) using 2 <;> simp [sub_eq_add_neg]
+  convert vars_add_subset p (-q) using 2 <;> simp [sub_eq_add_neg]
 
 @[simp]
 theorem vars_sub_of_disjoint [DecidableEq σ] (hpq : Disjoint p.vars q.vars) :
     (p - q).vars = p.vars ∪ q.vars := by
   rw [← vars_neg q] at hpq
-  convert! vars_add_of_disjoint hpq using 2 <;> simp [sub_eq_add_neg]
+  convert vars_add_of_disjoint hpq using 2 <;> simp [sub_eq_add_neg]
 
 end Vars
 
