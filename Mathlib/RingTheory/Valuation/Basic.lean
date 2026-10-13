@@ -329,20 +329,19 @@ theorem map_sum_eq_of_lt {ι : Type*} [DecidableEq ι] {s : Finset ι} {f : ι �
   exact map_add_eq_of_lt_left _ (map_sum_lt _ h0 hf)
 
 theorem exists_map_eq_of_map_sum_eq_zero {ι : Type*} {s : Finset ι} {f : ι → R}
-    (hs : ∃ i ∈ s, v (f i) ≠ 0) (h : v (∑ i ∈ s, f i) = 0) :
+    {k : ι} (hk : k ∈ s) (hs : v (f k) ≠ 0) (h : v (∑ i ∈ s, f i) = 0) :
     ∃ i ∈ s, ∃ j ∈ s, i ≠ j ∧ v (f i) ≠ 0 ∧ v (f j) ≠ 0 ∧ v (f i) = v (f j) := by
   classical
   by_contra! hne
-  obtain ⟨u, hu, hfu⟩ := hs
-  obtain ⟨c, hcu, hc⟩ := Finset.exists_max_image s (fun i => v (f i)) ⟨u, hu⟩
-  have hvc : 0 < v (f c) := (zero_lt_iff.2 hfu).trans_le (hc u hu)
+  obtain ⟨c, hck, hc⟩ := Finset.exists_max_image s (fun i => v (f i)) ⟨k, hk⟩
+  have hvc : 0 < v (f c) := (zero_lt_iff.2 hs).trans_le (hc k hk)
   apply hvc.ne
   rw [← h]
-  refine map_sum_eq_of_lt v hcu fun i hi => ?_
+  refine map_sum_eq_of_lt v hck fun i hi => ?_
   rw [Finset.mem_sdiff, Finset.mem_singleton] at hi
   by_cases hfi : v (f i) = 0
   · rwa [hfi]
-  · exact lt_of_le_of_ne (hc i hi.1) (hne i hi.1 c hcu hi.2 hfi hvc.ne')
+  · exact lt_of_le_of_ne (hc i hi.1) (hne i hi.1 c hck hi.2 hfi hvc.ne')
 
 theorem map_sub_eq_of_lt_left (h : v y < v x) : v (x - y) = v x := by
   rw [sub_eq_add_neg, map_add_eq_of_lt_left]

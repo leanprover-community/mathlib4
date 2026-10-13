@@ -31,7 +31,7 @@ public theorem exists_map_pow_eq_map_algebraMap_of_isAlgebraic {x : A} (hx : IsA
   obtain ⟨p, hpm, hne⟩ := hx.isIntegral
   rw [← Polynomial.aeval_def, Polynomial.aeval_eq_sum_range] at hne
   obtain ⟨i, -, j, -, hij, hi0, hj0, hv⟩ :=
-    exists_map_eq_of_map_sum_eq_zero v ⟨p.natDegree, by simp [hpm, hx0]⟩
+    exists_map_eq_of_map_sum_eq_zero v (Finset.self_mem_range_succ p.natDegree) (by simp [hpm, hx0])
       ((congrArg v hne).trans (map_zero v))
   simp only [Algebra.smul_def, map_mul, map_pow] at hv
   wlog hji : j < i generalizing i j with ih
