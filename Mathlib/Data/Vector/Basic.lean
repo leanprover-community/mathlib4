@@ -101,7 +101,7 @@ theorem head_map {β : Type*} (v : Vector α (n + 1)) (f : α → β) : (v.map f
 theorem tail_map {β : Type*} (v : Vector α (n + 1)) (f : α → β) :
     (v.map f).tail = v.tail.map f := by
   obtain ⟨a, v', h⟩ := Vector.exists_eq_cons v
-  simp_rw [h, map_cons, tail_cons, Nat.add_one_sub_one]
+  simp_rw [h, map_cons, tail_cons]
 
 @[simp]
 theorem getElem_map {β : Type*} (v : Vector α n) (f : α → β) {i : ℕ} (hi : i < n) :
@@ -256,7 +256,7 @@ theorem get_cons_nil : ∀ {ix : Fin 1} (x : α), get (x ::ᵥ nil) ix = x
 
 @[simp]
 theorem get_cons_succ (a : α) (v : Vector α n) (i : Fin n) : get (a ::ᵥ v) i.succ = get v i := by
-  simp_rw [← get_tail_succ, tail_cons, Nat.succ_eq_add_one, Nat.add_one_sub_one]
+  simp_rw [← get_tail_succ, tail_cons]
 
 /-- The last element of a `Vector`, given that the vector is at least one element. -/
 def last (v : Vector α (n + 1)) : α :=
