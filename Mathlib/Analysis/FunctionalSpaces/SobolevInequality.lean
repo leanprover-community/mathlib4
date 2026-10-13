@@ -5,11 +5,12 @@ Authors: Floris van Doorn, Heather Macbeth
 -/
 module
 
-import Mathlib.Analysis.Calculus.Deriv.Pi
 public import Mathlib.Analysis.InnerProductSpace.EuclideanDist
+public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
+
+import Mathlib.Analysis.Calculus.Deriv.Pi
 import Mathlib.Analysis.InnerProductSpace.NormPow
 import Mathlib.Data.Finset.Interval
-public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 
 /-!
 # Gagliardo-Nirenberg-Sobolev inequality
@@ -224,7 +225,7 @@ theorem T_lmarginal_antitone [Fintype ι] [∀ i, SigmaFinite (μ i)]
   rw [Finset.antitone_iff_forall_insert_le]
   intro s i hi
   -- apply the lemma designed to encapsulate the inductive step
-  convert! T_insert_le_T_lmarginal_singleton μ hp₀ s ?_ i hi (hf.lmarginal μ) using 2
+  convert T_insert_le_T_lmarginal_singleton μ hp₀ s ?_ i hi (hf.lmarginal μ) using 2
   · rw [← lmarginal_union μ f hf]
     · rw [← insert_compl_insert hi]
       rfl
@@ -334,7 +335,7 @@ theorem lintegral_pow_le_pow_lintegral_fderiv_aux [Fintype ι]
   calc ‖u x‖ₑ
     _ ≤ ∫⁻ xᵢ in Iic (x i), ‖deriv (u ∘ update x i) xᵢ‖ₑ := by
         apply le_trans (by simp) (HasCompactSupport.enorm_le_lintegral_Ici_deriv _ _ _)
-        · exact hu.comp (by convert! contDiff_update 1 x i)
+        · exact hu.comp (by convert contDiff_update 1 x i)
         · exact h2u.comp_isClosedEmbedding (isClosedEmbedding_update x i)
     _ ≤ ∫⁻ xᵢ, ‖fderiv ℝ u (update x i xᵢ)‖ₑ := ?_
   gcongr with y
@@ -489,7 +490,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
   have hnp : (0 : ℝ) < n - p := by simp_rw [sub_pos]; exact h2p
   rcases hp.eq_or_lt with rfl | hp
   -- the case `p = 1`
-  · convert! eLpNorm_le_eLpNorm_fderiv_one μ hu h2u hn using 2
+  · convert eLpNorm_le_eLpNorm_fderiv_one μ hu h2u hn using 2
     · suffices (p' : ℝ) = n' by simpa using this
       rw [← inv_inj, hp']
       simp [field, n', NNReal.conjExponent, *]
@@ -686,7 +687,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_le [FiniteDimensional ℝ F]
         rw [eLpNorm_restrict_eq_of_support_subset hu.continuous.aestronglyMeasurable h2u]
     _ ≤ eLpNorm u p' (μ.restrict s) * t := by
         have hqpos : (0 : ℝ≥0∞) < q := ENNReal.coe_pos.2 (by positivity)
-        convert! eLpNorm_le_eLpNorm_mul_rpow_measure_univ_of_pos this hqpos
+        convert eLpNorm_le_eLpNorm_mul_rpow_measure_univ_of_pos this hqpos
         rw [ENNReal.coe_rpow_of_nonneg]
         · simp [ENNReal.coe_toNNReal hs.measure_lt_top.ne]
         · rw [one_div, one_div]

@@ -5,9 +5,10 @@ Authors: Shing Tak Lam
 -/
 module
 
-import Mathlib.Basic.Finite.Sum
 public import Mathlib.GroupTheory.GroupAction.CardCommute
 public import Mathlib.GroupTheory.SpecificGroups.KleinFour
+
+import Mathlib.Basic.Finite.Sum
 
 /-!
 # Dihedral Groups
@@ -217,9 +218,9 @@ theorem exponent : Monoid.exponent (DihedralGroup n) = lcm n 2 := by
     · rw [← orderOf_dvd_iff_pow_eq_one, orderOf_sr]
       exact dvd_lcm_right n 2
   · apply lcm_dvd
-    · convert! Monoid.order_dvd_exponent (r (1 : ZMod n))
+    · convert Monoid.order_dvd_exponent (r (1 : ZMod n))
       exact orderOf_r_one.symm
-    · convert! Monoid.order_dvd_exponent (sr (0 : ZMod n))
+    · convert Monoid.order_dvd_exponent (sr (0 : ZMod n))
       exact (orderOf_sr 0).symm
 
 lemma not_commutative : ∀ {n : ℕ}, n ≠ 1 → n ≠ 2 → ¬IsMulCommutative (DihedralGroup n)

@@ -5,10 +5,11 @@ Authors: Chris Birkbeck, David Loeffler, Michael Stoll
 -/
 module
 
-import Mathlib.Analysis.Complex.TaylorSeries
-import Mathlib.Analysis.Complex.Positivity
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
 public import Mathlib.NumberTheory.LSeries.Deriv
+
+import Mathlib.Analysis.Complex.Positivity
+import Mathlib.Analysis.Complex.TaylorSeries
 
 /-!
 # Positivity of values of L-series

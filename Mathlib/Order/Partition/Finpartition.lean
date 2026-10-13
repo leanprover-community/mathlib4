@@ -141,13 +141,13 @@ def map {β : Type*} [Lattice β] [OrderBot β] {a : α} (e : α ≃o β) (P : F
     have := P.supIndep hu hb (by simp [hbu]) (map_rel e.symm hx) ?_
     · rw [← e.symm.map_bot] at this
       exact e.symm.map_rel_iff.mp this
-    · convert! e.symm.map_rel_iff.mpr hxu
+    · convert e.symm.map_rel_iff.mpr hxu
       rw [map_finset_sup, sup_map]
       rfl
   sup_parts := by simp [← P.sup_parts]
   bot_notMem := by
     rw [mem_map_equiv]
-    convert! P.bot_notMem
+    convert P.bot_notMem
     exact e.symm.map_bot
 
 @[simp]
@@ -501,25 +501,17 @@ lemma sum_restrict (P : Finpartition a) (hb : b ≤ a) {M : Type*} [AddCommMonoi
 
 /-- A `Finpartition` constructor of `parts.sup id` from a finset `parts` of pairwise disjoint
 elements. Any `⊥` elements in `parts` are erased. -/
-@[simps]
+@[deprecated ofErase +typeChanged (since := "2026-10-01"), simps! parts]
 def ofPairwiseDisjoint (parts : Finset α) (hdisjoint : (parts : Set α).PairwiseDisjoint id) :
-    Finpartition (parts.sup id) where
-  parts := parts.erase ⊥
-  supIndep := Finset.supIndep_iff_pairwiseDisjoint.mpr fun _ ha _ hb hab =>
-    hdisjoint (Finset.erase_subset _ _ ha) (Finset.erase_subset _ _ hb) hab
-  sup_parts := Finset.sup_erase_bot parts
-  bot_notMem := Finset.notMem_erase _ _
+    Finpartition (parts.sup id) :=
+  ofErase parts hdisjoint.supIndep rfl
 
+@[deprecated Finset.sum_erase +typeChanged (since := "2026-10-01")]
 lemma sum_ofPairwiseDisjoint_eq_sum {parts : Finset α}
     (hdisjoint : (parts : Set α).PairwiseDisjoint id)
     {X : Type*} [AddCommMonoid X] {f : α → X} (hf : f ⊥ = 0) :
-    ∑ p ∈ (ofPairwiseDisjoint parts hdisjoint).parts, f p = ∑ p ∈ parts, f p := by
-  by_cases hbot : ⊥ ∈ parts
-  · simp only [Finpartition.ofPairwiseDisjoint]
-    rw [← erase_union_eq ⊥ parts hbot, union_comm, sum_union_eq_right]
-    · simp
-    grind
-  · simp_all
+    ∑ p ∈ (ofPairwiseDisjoint parts hdisjoint).parts, f p = ∑ p ∈ parts, f p :=
+  parts.sum_erase hf
 
 end DistribLattice
 

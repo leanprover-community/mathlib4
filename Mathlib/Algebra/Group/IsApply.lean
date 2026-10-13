@@ -8,8 +8,9 @@ module
 public import Mathlib.Algebra.Group.Monoid
 public import Mathlib.Algebra.Notation.Pi.Defs
 public import Mathlib.Basic.FunLike.Basic
+public import Mathlib.Data.Int.Cast.Pi
+public import Mathlib.Data.Nat.Cast.Pi
 public import Mathlib.Logic.Function.Iterate
-public import Mathlib.Data.Int.Notation
 
 /-! # Typeclasses for `FunLike` and algebraic operations
 In this file we provide typeclasses for the compatibility of algebraic structures and `FunLike`
@@ -22,16 +23,20 @@ the identity and multiplication acting as composition.
 The algebraic `FunLike` typeclasses provide a `simp` lemma of the form `add_apply` and a `norm_cast`
 lemma `coe_add`.
 
-The following `Is*Apply` typeclasses are available:
+The following pointwise `Is*Apply` typeclasses are available:
 * `IsZeroApply`, `IsOneApply`: `0 x = 0` and `1 x = 1`, respectively
-* `IsOneApplyEqSelf`: `1 x = x`
 * `IsAddApply`, `IsMulApply`: `(f + g) x = f x + g x` and `(f * g) x = f x * g x`, respectively
-* `IsMulApplyEqComp`: `(f * g) x = f (g x)`
 * `IsSubApply`, `IsDivApply`: `(f - g) x = f x - g x` and `(f / g) x = f x / g x`, respectively
 * `IsNegApply`, `IsInvApply`: `(-f) x = -(f x)` and `(f⁻¹) x = (f x)⁻¹`, respectively
 * `IsVAddApply`, `IsSMulApply` `IsPowApply`: `(n +ᵥ f) x = n +ᵥ f x`, `(n • f) x = n • f x`, and
   `(f ^ n) x = (f x) ^ n`, respectively
-* `IsNatCastApply`, `IsIntCastApply`: `(n : F) x = n • x` for `n : ℕ` and `n : ℤ`, respectively
+* `IsNatCastApply`, `IsIntCastApply`: `(n : F) x = n` for `n : ℕ` and `n : ℤ`, respectively
+
+For endomorphism-like objects, we have additionally:
+* `IsOneApplyEqSelf`: `1 x = x`
+* `IsMulApplyEqComp`: `(f * g) x = f (g x)`
+* `IsNatCastApplyEqSMul`, `IsIntCastApplyEqSMul`: `(n : F) x = n • x` for `n : ℕ` and `n : ℤ`,
+  respectively
 
 For every type that declares a `FunLike` instance and an `Add` instance, there should be generally
 an `IsAddApply` instance with the proof usually being solved automatically using `rfl`.
@@ -175,19 +180,37 @@ end SMul
 
 section Cast
 
-/-- `IsNatCastApply F α` states for all `n : ℕ` and `x : α`, `(n : F) x = n • x`. -/
-class IsNatCastApply (F : Type*) (α : outParam Type*) [FunLike F α α] [NatCast F] [SMul Nat α] where
-  natCast_apply (n : Nat) (x : α) : (n : F) x = n • x := by intros; rfl
+/-- `IsNatCastApply F α β` states for all `n : ℕ` and `x : α`, `(n : F) x = n`. -/
+class IsNatCastApply (F : Type*) (α β : outParam Type*) [FunLike F α β] [NatCast F]
+    [NatCast β] where
+  natCast_apply_eq_const (n : Nat) (x : α) : (n : F) x = n := by intros; rfl
 
 @[simp, grind =]
-alias natCast_apply := IsNatCastApply.natCast_apply
+alias natCast_apply_eq_const := IsNatCastApply.natCast_apply_eq_const
 
-/-- `IsIntCastApply F α` states for all `n : ℤ` and `x : α`, `(n : F) x = n • x`. -/
-class IsIntCastApply (F : Type*) (α : outParam Type*) [FunLike F α α] [IntCast F] [SMul Int α] where
-  intCast_apply (n : Int) (x : α) : (n : F) x = n • x := by intros; rfl
+/-- `IsIntCastApply F α` states for all `n : ℤ` and `x : α`, `(n : F) x = n`. -/
+class IsIntCastApply (F : Type*) (α β : outParam Type*) [FunLike F α β] [IntCast F]
+    [IntCast β] where
+  intCast_apply_eq_const (n : Int) (x : α) : (n : F) x = n := by intros; rfl
 
 @[simp, grind =]
-alias intCast_apply := IsIntCastApply.intCast_apply
+alias intCast_apply_eq_const := IsIntCastApply.intCast_apply_eq_const
+
+/-- `IsNatCastApplyEqSMul F α` states for all `n : ℕ` and `x : α`, `(n : F) x = n • x`. -/
+class IsNatCastApplyEqSMul (F : Type*) (α : outParam Type*) [FunLike F α α] [NatCast F]
+    [SMul Nat α] where
+  natCast_apply_eq_smul (n : Nat) (x : α) : (n : F) x = n • x := by intros; rfl
+
+@[simp, grind =]
+alias natCast_apply_eq_smul := IsNatCastApplyEqSMul.natCast_apply_eq_smul
+
+/-- `IsIntCastApplyEqSMul F α` states for all `n : ℤ` and `x : α`, `(n : F) x = n • x`. -/
+class IsIntCastApplyEqSMul (F : Type*) (α : outParam Type*) [FunLike F α α] [IntCast F]
+    [SMul Int α] where
+  intCast_apply_eq_smul (n : Int) (x : α) : (n : F) x = n • x := by intros; rfl
+
+@[simp, grind =]
+alias intCast_apply_eq_smul := IsIntCastApplyEqSMul.intCast_apply_eq_smul
 
 end Cast
 
@@ -252,23 +275,29 @@ lemma coe_pow_eq_iterate [Monoid F'] [IsMulApplyEqComp F' α] [IsOneApplyEqSelf 
 
 -- this lemma cannot be `simp` since this creates loops
 @[norm_cast]
+theorem coe_natCast [NatCast F] [NatCast β] [IsNatCastApply F α β] (n : Nat) :
+  ((n : F) : α → β) = n := by
+  funext x; simp
+
+@[norm_cast]
+theorem coe_intCast [IntCast F] [IntCast β] [IsIntCastApply F α β] (n : Int) :
+  ((n : F) : α → β) = n := by
+  funext x; simp
+
+@[norm_cast]
 theorem natCast_eq_nsmul_one [NatCast F'] [One F'] [SMul Nat α] [SMul Nat F']
-    [IsSMulApply Nat F' α α] [IsNatCastApply F' α] [IsOneApplyEqSelf F' α] (n : ℕ) :
+    [IsSMulApply Nat F' α α] [IsNatCastApplyEqSMul F' α] [IsOneApplyEqSelf F' α] (n : Nat) :
   (n : F') = n • (1 : F') := by
   apply DFunLike.ext
   simp
-
-@[deprecated (since := "2026-07-24")] alias coe_natCast := natCast_eq_nsmul_one
 
 -- this lemma cannot be `simp` since this creates loops
 @[norm_cast]
 theorem intCast_eq_zsmul_one [IntCast F'] [One F'] [SMul Int α] [SMul Int F']
-    [IsSMulApply Int F' α α] [IsIntCastApply F' α] [IsOneApplyEqSelf F' α] (n : ℤ) :
+    [IsSMulApply Int F' α α] [IsIntCastApplyEqSMul F' α] [IsOneApplyEqSelf F' α] (n : Int) :
   (n : F') = n • (1 : F') := by
   apply DFunLike.ext
   simp
-
-@[deprecated (since := "2026-07-24")] alias coe_intCast := intCast_eq_zsmul_one
 
 end Coercion
 

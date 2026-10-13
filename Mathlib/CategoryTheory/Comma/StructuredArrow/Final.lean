@@ -5,8 +5,9 @@ Authors: Jakob von Raumer
 -/
 module
 
-import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 public import Mathlib.CategoryTheory.Limits.Final
+
+import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 
 /-!
 # Finality on Costructured Arrow categories
@@ -58,7 +59,7 @@ private lemma final_of_final_costructuredArrowToOver_small (L : A ⥤ T) (R : B 
       _ ≅ colimit <| grothendieckProj (𝟭 T) ⋙ G :=
             Final.colimitIso _ _
       _ ≅ colimit G := (colimitIsoColimitGrothendieck (𝟭 T) G).symm
-  convert! Iso.isIso_hom i
+  convert Iso.isIso_hom i
   simp only [Iso.trans_def, comp_obj, grothendieckProj_obj, Grothendieck.pre_obj_base,
     Grothendieck.pre_obj_fiber, Iso.trans_assoc, Iso.trans_hom, Iso.symm_hom, i]
   rw [← Iso.inv_comp_eq, Iso.eq_inv_comp]

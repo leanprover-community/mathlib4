@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Shift.Induced
 public import Mathlib.CategoryTheory.Quotient
+public import Mathlib.CategoryTheory.Shift.Induced
 
 /-!
 # The shift on a quotient category

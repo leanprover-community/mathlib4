@@ -5,11 +5,11 @@ Authors: Heather Macbeth, Arend Mellendijk, Michael Rothgang
 -/
 module
 
+public meta import Mathlib.Util.Qq
 public import Mathlib.Algebra.BigOperators.Group.List.Basic
 public import Mathlib.Algebra.Field.Defs  -- shake: keep (Qq dependency)
 public import Mathlib.Algebra.Order.GroupWithZero.Basic
 public import Mathlib.Algebra.Ring.Int.Parity -- shake: keep (Qq dependency)
-public meta import Mathlib.Util.Qq
 
 /-! # Lemmas for the `field_simp` tactic
 

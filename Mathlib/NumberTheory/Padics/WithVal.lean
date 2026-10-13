@@ -5,11 +5,11 @@ Authors: Yakov Pechersky
 -/
 module
 
+public import Mathlib.Algebra.Order.BigOperators.Expect
+public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.NumberTheory.Padics.PadicIntegers
 public import Mathlib.Topology.Algebra.Valued.WithVal
 public import Mathlib.Topology.GDelta.MetrizableSpace
-public import Mathlib.Algebra.Order.BigOperators.Expect
-public import Mathlib.Analysis.Real.Sqrt
 
 /-!
 # Equivalence between `ℚ_[p]` and `(Rat.padicValuation p).Completion`

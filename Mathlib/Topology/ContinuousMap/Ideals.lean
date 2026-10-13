@@ -5,11 +5,12 @@ Authors: Jireh Loreaux
 -/
 module
 
-import Mathlib.Topology.ContinuousMap.Compact
-public import Mathlib.Topology.UrysohnsLemma
-public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Analysis.Normed.Ring.Units
+public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Topology.Algebra.Module.Spaces.CharacterSpace
+public import Mathlib.Topology.UrysohnsLemma
+
+import Mathlib.Topology.ContinuousMap.Compact
 
 /-!
 # Ideals of continuous functions
@@ -194,7 +195,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
   replace hε := show (0 : ℝ≥0) < ε from hε
   simp_rw [dist_nndist]
   norm_cast
-  -- Let `t := {x : X | ε / 2 ≤ ‖f x‖₊}}` which is closed and disjoint from `set_of_ideal I`.
+  -- Let `t := {x : X | ε / 2 ≤ ‖f x‖₊}` which is closed and disjoint from `set_of_ideal I`.
   set t := {x : X | ε / 2 ≤ ‖f x‖₊}
   have ht : IsClosed t := isClosed_le continuous_const (map_continuous f).nnnorm
   have htI : Disjoint t (setOfIdeal I)ᶜ := by
@@ -243,13 +244,13 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
   have : ∃ g' : C(X, ℝ≥0), (algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g' ∈ I ∧ ∀ x ∈ t, 0 < g' x := by
     refine ht.isCompact.induction_on ?_ ?_ ?_ ?_
     · refine ⟨0, ?_, fun x hx => False.elim hx⟩
-      convert! I.zero_mem
+      convert I.zero_mem
       ext
       simp only [comp_apply, zero_apply, ContinuousMap.coe_coe, map_zero]
     · rintro s₁ s₂ hs ⟨g, hI, hgt⟩; exact ⟨g, hI, fun x hx => hgt x (hs hx)⟩
     · rintro s₁ s₂ ⟨g₁, hI₁, hgt₁⟩ ⟨g₂, hI₂, hgt₂⟩
       refine ⟨g₁ + g₂, ?_, fun x hx => ?_⟩
-      · convert! I.add_mem hI₁ hI₂
+      · convert I.add_mem hI₁ hI₂
         ext y
         simp
       · rcases hx with (hx | hx)
@@ -265,7 +266,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
           mem_nhdsWithin_iff_exists_mem_nhds_inter.mpr ⟨_, this, Set.Subset.rfl⟩,
           ⟨⟨fun x => ‖g x‖₊ ^ 2, (map_continuous g).nnnorm.fun_pow 2⟩, ?_, fun x hx =>
             pow_pos (norm_pos_iff.mpr hx.1) 2⟩⟩
-      convert! I.mul_mem_left (star g) hI
+      convert I.mul_mem_left (star g) hI
       ext
       simp only [comp_apply, coe_mk, algebraMapCLM_apply, map_pow,
         mul_apply, star_apply, star_def]
@@ -282,7 +283,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
       ⟨g' x, hgt' x hx, hx'⟩
   obtain ⟨g, hg, hgc⟩ := exists_mul_le_one_eqOn_ge g' hc
   refine ⟨g * g', ?_, hg, hgc.mono hgc'⟩
-  convert! I.mul_mem_left ((algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g) hI'
+  convert I.mul_mem_left ((algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g) hI'
   ext
   simp only [coe_algebraMapCLM, comp_apply, mul_apply, ContinuousMap.coe_coe, map_mul]
 

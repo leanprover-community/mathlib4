@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 public import Mathlib.NumberTheory.Transcendental.Liouville.Basic
+
 import Mathlib.Topology.Instances.Irrational
 
 /-!
@@ -219,7 +220,7 @@ protected theorem neg (h : LiouvilleWith p x) : LiouvilleWith p (-x) := by
   refine ⟨C, hC.mono ?_⟩
   rintro n ⟨m, hne, hlt⟩
   refine ⟨-m, by simp [neg_div, hne], ?_⟩
-  convert! hlt using 1
+  convert hlt using 1
   rw [abs_sub_comm]
   congr! 1; push_cast; ring
 

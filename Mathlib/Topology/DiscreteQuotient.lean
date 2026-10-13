@@ -161,8 +161,6 @@ instance : OrderTop (DiscreteQuotient X) where
 
 instance : Inhabited (DiscreteQuotient X) := ⟨⊤⟩
 
-instance inhabitedQuotient [Inhabited X] : Inhabited S := ⟨S.proj default⟩
-
 -- TODO: add instances about `Nonempty (Quot _)`/`Nonempty (Quotient _)`
 instance [Nonempty X] : Nonempty S := Nonempty.map S.proj ‹_›
 
@@ -236,7 +234,7 @@ instance [LocallyConnectedSpace X] : OrderBot (DiscreteQuotient X) where
   bot :=
     { toSetoid := connectedComponentSetoid X
       isOpen_setOfPred_rel := fun x => by
-        convert! isOpen_connectedComponent (x := x)
+        convert isOpen_connectedComponent (x := x)
         ext y
         simpa only [connectedComponentSetoid, ← connectedComponent_eq_iff_mem] using! eq_comm }
   bot_le S := fun x y (h : connectedComponent x = connectedComponent y) =>
