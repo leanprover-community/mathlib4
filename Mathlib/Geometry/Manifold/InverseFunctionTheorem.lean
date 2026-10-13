@@ -5,7 +5,7 @@ Authors: Matthew Spillman
 -/
 module
 
-public import Mathlib.Analysis.Calculus.FDeriv.Symmetric
+public import Mathlib.Analysis.Calculus.ContDiff.HasStrictFDerivAt
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ContDiff
 public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
 
@@ -102,38 +102,6 @@ end DiffeoExtChartAt
 @[expose] public section ManifoldInverseFunctionTheorem
 
 open scoped ContDiff
-
-section aux
-
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E₁ : Type*} [NormedAddCommGroup E₁] [NormedSpace 𝕜 E₁]
-  {E₂ : Type*} [NormedAddCommGroup E₂] [NormedSpace 𝕜 E₂]
-  {n : ℕ∞ω} {f : E₁ → E₂} {p : E₁}
-
-#check ContDiffAt.hasStrictFDerivAt -- could rename to ...._fderiv
-#check ContDiffAt.hasStrictFDerivAt' -- could then deprime
-
--- TODO: move to appropriate place
--- TODO: mention the other version in each other's doc-strings
-
-lemma ContDiffAt.hasStrictFDerivAt_fderiv_of_minSmoothness_le (hf : ContDiffAt 𝕜 n f p)
-    (hn : minSmoothness 𝕜 1 ≤ n) :
-    HasStrictFDerivAt f (fderiv 𝕜 f p) p := by
-  by_cases! h : IsRCLikeNormedField 𝕜
-  · let : RCLike 𝕜:= h.rclike
-    rw [minSmoothness_of_isRCLikeNormedField] at hn
-    exact hf.hasStrictFDerivAt_fderiv (ENat.one_le_iff_ne_zero_withTop.mp hn)
-  · rw [eq_top_of_minSmoothness_le_of_not_isRCLikeNormedField h hn] at hf
-    exact hf.analyticAt.hasStrictFDerivAt
-
-/-- This version does not assume we're working over `ℝ` or `ℂ`. -/
-lemma ContDiffAt.hasStrictFDerivAt_of_minSmoothness_le {f' : E₁ →L[𝕜] E₂} (hf : ContDiffAt 𝕜 n f p)
-    (hf' : HasFDerivAt f f' p) (hn : minSmoothness 𝕜 1 ≤ n) :
-    HasStrictFDerivAt f f' p := by
-  rw [← hf'.fderiv]
-  exact hf.hasStrictFDerivAt_fderiv_of_minSmoothness_le hn
-
-end aux
 
 namespace ContDiffOn
 
