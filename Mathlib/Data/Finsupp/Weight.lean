@@ -5,11 +5,11 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.Data.Finsupp.Antidiagonal
 public import Mathlib.Data.Finsupp.Order
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 import Mathlib.Algebra.Group.TypeTags.Pointwise
+import Mathlib.Data.Finsupp.Antidiagonal
 
 /-! # weights of Finsupp functions
 
@@ -145,8 +145,6 @@ theorem le_weight (w : σ → ℕ) {s : σ} (hs : w s ≠ 0) (f : σ →₀ ℕ)
     apply zero_le
 
 variable [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M] (w : σ → M)
-  {R : Type*} [CommSemiring R] [PartialOrder R] [IsOrderedRing R]
-  [CanonicallyOrderedAdd R] [NoZeroDivisors R] [Module R M]
 
 variable {w} in
 theorem le_weight_of_ne_zero (hw : ∀ s, 0 ≤ w s) {s : σ} {f : σ →₀ ℕ} (hs : f s ≠ 0) :

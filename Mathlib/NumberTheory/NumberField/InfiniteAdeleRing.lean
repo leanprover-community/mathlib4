@@ -5,9 +5,10 @@ Authors: Salvatore Mercuri, María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.Algebra.Group.Pi.Units
 public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
 public import Mathlib.NumberTheory.NumberField.Completion.InfinitePlace
+
+import Mathlib.Algebra.Group.Pi.Units
 
 /-!
 # The infinite adele ring of a number field
@@ -49,6 +50,7 @@ infinite places. See `NumberField.InfinitePlace` for the definition of an infini
 -/
 
 /-- The infinite adele ring of a number field. -/
+@[implicit_reducible]
 def InfiniteAdeleRing (K : Type*) [Field K] := (v : InfinitePlace K) → v.Completion
 deriving CommRing, Inhabited, TopologicalSpace, IsTopologicalRing, Algebra K
 
@@ -128,6 +130,12 @@ theorem norm_eq_zero_of_not_isUnit [NumberField K] {x : K∞} (hx : ¬IsUnit x) 
 theorem coe_norm_eq_abs_norm [NumberField K] (x : K) :
     ‖algebraMap K K∞ x‖ = |Algebra.norm ℚ x| := by
   simpa [-Rat.cast_abs, norm_def] using! InfinitePlace.prod_eq_abs_norm x
+
+/-- The embedding of the completion `Kᵥ` at an infinite place `v` into the infinite adele ring. -/
+@[simps!]
+def ofCompletion (v : InfinitePlace K) : v.Completion →* InfiniteAdeleRing K :=
+  letI := Classical.decEq (InfinitePlace K)
+  MonoidHom.mulSingle Completion v
 
 end InfiniteAdeleRing
 

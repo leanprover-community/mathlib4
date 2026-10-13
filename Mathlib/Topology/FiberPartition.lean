@@ -5,9 +5,10 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.Topology.LocallyConstant.Basic
 public import Mathlib.Logic.Function.FiberPartition
+public import Mathlib.Topology.LocallyConstant.Basic
 /-!
+# Fibers of a map from a topological space
 
 This file provides some API surrounding `Function.Fiber` (see
 `Mathlib/Logic/Function/FiberPartition.lean`) in the presence of a topology on the domain of the

@@ -5,8 +5,8 @@ Authors: Patrick Massot, Anatole Dedecker, Yongxi Lin
 -/
 module
 
-public import Mathlib.RingTheory.Finiteness.Cofinite
 public import Mathlib.Algebra.Module.Submodule.EqLocus
+public import Mathlib.RingTheory.Finiteness.Cofinite
 
 /-!
 # `HasFiniteRange` predicate on linear maps, and the associated equivalence relation
@@ -43,7 +43,7 @@ open LinearMap Submodule Module
 
 namespace LinearMap
 
-variable {K V V' V₂ V₂' V₃ : Type*}
+variable {K V V₂ V₃ : Type*}
 
 section Semiring
 

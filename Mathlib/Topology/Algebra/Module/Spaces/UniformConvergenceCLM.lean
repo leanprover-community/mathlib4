@@ -6,14 +6,11 @@ Authors: Anatole Dedecker, Yury Kudryashov
 module
 
 public import Mathlib.Analysis.LocallyConvex.Bounded
-public import Mathlib.Analysis.Normed.Field.Basic
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 public import Mathlib.Topology.Hom.ContinuousEvalConst
-public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 
-import Mathlib.Topology.Algebra.Module.Equiv
-import Mathlib.Topology.Algebra.SeparationQuotient.Section
 import Mathlib.Topology.Algebra.Module.UniformConvergence
-public import Mathlib.Topology.Algebra.Module.Equiv
+import Mathlib.Topology.Algebra.SeparationQuotient.Section
 
 /-!
 # Topologies of uniform convergence on the space of continuous linear maps
@@ -105,6 +102,7 @@ namespace UniformConvergenceCLM
 def ofFun [TopologicalSpace F] (𝔖 : Set (Set E)) : (E →SL[σ] F) ≃ (E →SLᵤ[σ, 𝔖] F) :=
   ⟨fun x => x, fun x => x, fun _ => rfl, fun _ => rfl⟩
 
+@[macro_inline]
 instance instFunLike [TopologicalSpace F] (𝔖 : Set (Set E)) :
     FunLike (E →SLᵤ[σ, 𝔖] F) E F :=
   inferInstanceAs <| FunLike (E →SL[σ] F) E F
@@ -175,28 +173,24 @@ instance instAddCommGroup [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 :
   inferInstanceAs <| AddCommGroup (E →SL[σ] F)
 
 instance [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
-    IsNegApply (E →SLᵤ[σ, 𝔖] F) E F where
-  neg_apply _ _ := rfl
+    IsNegApply (E →SLᵤ[σ, 𝔖] F) where
 
 @[deprecated (since := "2026-06-10")] protected alias neg_apply := neg_apply
 
 instance [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
-    IsAddApply (E →SLᵤ[σ, 𝔖] F) E F where
-  add_apply _ _ _ := rfl
+    IsAddApply (E →SLᵤ[σ, 𝔖] F) where
 
 @[deprecated (since := "2026-06-10")] protected alias add_apply := add_apply
 
 @[deprecated (since := "2026-06-10")] protected alias sum_apply := sum_apply
 
 instance [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
-    IsSubApply (E →SLᵤ[σ, 𝔖] F) E F where
-  sub_apply _ _ _ := rfl
+    IsSubApply (E →SLᵤ[σ, 𝔖] F) where
 
 @[deprecated (since := "2026-06-10")] protected alias sub_apply := sub_apply
 
 instance [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
-    IsZeroApply (E →SLᵤ[σ, 𝔖] F) E F where
-  zero_apply _ := rfl
+    IsZeroApply (E →SLᵤ[σ, 𝔖] F) where
 
 @[deprecated (since := "2026-06-10")] protected alias coe_zero := FunLike.coe_zero
 
@@ -235,8 +229,7 @@ instance instDistribMulAction (M : Type*) [Monoid M] [DistribMulAction M F] [SMu
 
 instance {M : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
     [TopologicalSpace F] [ContinuousConstSMul M F] (𝔖 : Set (Set E)) :
-    IsSMulApply M (E →SLᵤ[σ, 𝔖] F) E F where
-  smul_apply _ _ _ := rfl
+    IsSMulApply M (E →SLᵤ[σ, 𝔖] F) where
 
 @[deprecated (since := "2026-06-10")] protected alias smul_apply := smul_apply
 
@@ -399,7 +392,7 @@ theorem completeSpace [UniformSpace F] [IsUniformAddGroup F] [ContinuousSMul �
   apply IsClosed.isComplete
   have H₁ : IsClosed {f : E →ᵤ[𝔖] F | Continuous ((UniformOnFun.toFun 𝔖) f)} :=
     UniformOnFun.isClosed_setOfPred_continuous h𝔖
-  convert!
+  convert
     H₁.inter <|
       (LinearMap.isClosed_range_coe E F σ).preimage
         (UniformOnFun.uniformContinuous_toFun h𝔖U).continuous

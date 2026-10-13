@@ -5,9 +5,9 @@ Authors: Sophie Morel
 -/
 module
 
-public import Mathlib.RingTheory.SimpleModule.Basic
 public import Mathlib.Algebra.Module.Injective
 public import Mathlib.Algebra.Module.Projective
+public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 If `R` is a semisimple ring, then any `R`-module is both injective and projective.

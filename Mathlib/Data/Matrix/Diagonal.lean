@@ -29,8 +29,8 @@ assert_not_exists Algebra TrivialStar
 
 universe u u' v w
 
-variable {l m n o : Type*} {m' : o → Type*} {n' : o → Type*}
-variable {R : Type*} {S : Type*} {α : Type v} {β : Type w} {γ : Type*}
+variable {l m n : Type*}
+variable {R : Type*} {S : Type*} {α : Type v} {β : Type w}
 
 namespace Matrix
 
@@ -41,7 +41,7 @@ variable [DecidableEq n]
 /-- `diagonal d` is the square matrix such that `(diagonal d) i i = d i` and `(diagonal d) i j = 0`
 if `i ≠ j`.
 
-Note that bundled versions exist as:
+This is available in bundled forms as:
 * `Matrix.diagonalAddMonoidHom`
 * `Matrix.diagonalLinearMap`
 * `Matrix.diagonalRingHom`
@@ -68,7 +68,7 @@ theorem diagonal_apply_ne' [Zero α] (d : n → α) {i j : n} (h : j ≠ i) : (d
 @[simp]
 theorem diagonal_eq_diagonal_iff [Zero α] {d₁ d₂ : n → α} :
     diagonal d₁ = diagonal d₂ ↔ ∀ i, d₁ i = d₂ i :=
-  ⟨fun h i => by simpa using congr_arg (fun m : Matrix n n α => m i i) h, fun h => by
+  ⟨fun h i => by simpa using congr($h i i), fun h => by
     rw [show d₁ = d₂ from funext h]⟩
 
 theorem diagonal_injective [Zero α] : Function.Injective (diagonal : (n → α) → Matrix n n α) :=
@@ -285,7 +285,12 @@ end Diagonal
 
 section Diag
 
-/-- The diagonal of a square matrix. -/
+/-- The diagonal of a square matrix.
+
+This is available in bundled forms as:
+* `Matrix.diagAddMonoidHom`
+* `Matrix.diagLinearMap`
+-/
 def diag (A : Matrix n n α) (i : n) : α :=
   A i i
 
@@ -400,6 +405,11 @@ theorem submatrix_one [Zero α] [One α] [DecidableEq m] [DecidableEq l] (e : l 
     (he : Function.Injective e) : (1 : Matrix m m α).submatrix e e = 1 :=
   submatrix_diagonal _ e he
 
+theorem submatrix_ofNat [Zero α] [NatCast α] [DecidableEq m] [DecidableEq l] (e : l → m)
+    (he : Function.Injective e) (k : ℕ) [k.AtLeastTwo] :
+    (ofNat(k) : Matrix m m α).submatrix e e = ofNat(k) :=
+  submatrix_diagonal _ e he
+
 theorem diag_submatrix (A : Matrix m m α) (e : l → m) : diag (A.submatrix e e) = A.diag ∘ e :=
   rfl
 
@@ -418,6 +428,15 @@ theorem submatrix_diagonal_equiv [Zero α] [DecidableEq m] [DecidableEq l] (d : 
   submatrix_diagonal d e e.injective
 
 @[simp]
+theorem submatrix_equiv_eq_diagonal_iff [Zero α] [DecidableEq m] [DecidableEq l]
+    {A : Matrix m m α} {e : l ≃ m} {d : l → α} :
+    A.submatrix e e = diagonal d ↔ A = diagonal (d ∘ e.symm) := by
+  trans A.reindex e.symm e.symm = diagonal d
+  · simp
+  · simp_rw [← Equiv.eq_symm_apply]
+    simp
+
+@[simp]
 theorem submatrix_one_embedding [Zero α] [One α] [DecidableEq m] [DecidableEq l] (e : l ↪ m) :
     (1 : Matrix m m α).submatrix e e = 1 :=
   submatrix_one e e.injective
@@ -426,5 +445,29 @@ theorem submatrix_one_embedding [Zero α] [One α] [DecidableEq m] [DecidableEq 
 theorem submatrix_one_equiv [Zero α] [One α] [DecidableEq m] [DecidableEq l] (e : l ≃ m) :
     (1 : Matrix m m α).submatrix e e = 1 :=
   submatrix_one e e.injective
+
+@[simp]
+theorem submatrix_equiv_eq_one_iff [Zero α] [One α] [DecidableEq m] [DecidableEq l]
+    {A : Matrix m m α} {e : l ≃ m} :
+    A.submatrix e e = 1 ↔ A = 1 :=
+  submatrix_equiv_eq_diagonal_iff
+
+@[simp]
+theorem submatrix_ofNat_embedding [Zero α] [NatCast α] [DecidableEq m] [DecidableEq l]
+    (e : l ↪ m) (k : ℕ) [k.AtLeastTwo] :
+    (ofNat(k) : Matrix m m α).submatrix e e = ofNat(k) :=
+  submatrix_ofNat e e.injective k
+
+@[simp]
+theorem submatrix_ofNat_equiv [Zero α] [NatCast α] [DecidableEq m] [DecidableEq l] (e : l ≃ m)
+    (k : ℕ) [k.AtLeastTwo] :
+    (ofNat(k) : Matrix m m α).submatrix e e = ofNat(k) :=
+  submatrix_ofNat e e.injective k
+
+@[simp]
+theorem submatrix_equiv_eq_ofNat_iff [Zero α] [NatCast α] [DecidableEq m] [DecidableEq l]
+    {A : Matrix m m α} {e : l ≃ m} (k : ℕ) [k.AtLeastTwo] :
+    A.submatrix e e = ofNat(k) ↔ A = ofNat(k) :=
+  submatrix_equiv_eq_diagonal_iff
 
 end Matrix

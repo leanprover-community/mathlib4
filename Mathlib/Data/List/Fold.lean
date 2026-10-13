@@ -5,7 +5,6 @@ Authors: Jeremy Tan
 -/
 module
 
-public import Batteries.Tactic.Alias
 public import Mathlib.Logic.OpClass
 
 /-!

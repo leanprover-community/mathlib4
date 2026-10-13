@@ -5,10 +5,9 @@ Authors: Boyang Hu
 -/
 module
 
-public import Mathlib.GroupTheory.Abelianization.Defs
-public import Mathlib.GroupTheory.Sylow
 public import Mathlib.GroupTheory.Transfer
-public import Mathlib.Data.ZMod.QuotientGroup
+
+import Mathlib.GroupTheory.Abelianization.Defs
 
 /-!
 # Focal Subgroup Theorem
@@ -186,9 +185,15 @@ lemma transferFocal_surjective : Surjective P.transferFocal := by
   exact ⟨x, P.transferFocal_eq_pow x⟩
 
 /-- Isomorphism theorem: `G / ker(V) ≅ P / P*`. -/
-noncomputable def transferFocal.quotientKerMulEquivQuotientFocalSubroupOf :
+noncomputable def transferFocal.quotientKerMulEquivQuotientFocalSubgroupOf :
     G ⧸ P.transferFocal.ker ≃* P ⧸ P.focalSubgroupOf :=
   QuotientGroup.quotientKerEquivOfSurjective P.transferFocal (transferFocal_surjective P)
+
+/-- Deprecated alias for `transferFocal.quotientKerMulEquivQuotientFocalSubgroupOf`. -/
+@[deprecated transferFocal.quotientKerMulEquivQuotientFocalSubgroupOf (since := "2026-10-13")]
+noncomputable abbrev transferFocal.quotientKerMulEquivQuotientFocalSubroupOf :
+    G ⧸ P.transferFocal.ker ≃* P ⧸ P.focalSubgroupOf :=
+  transferFocal.quotientKerMulEquivQuotientFocalSubgroupOf P
 
 lemma ker_restrict_transferFocal_eq_focalSubgroupOf :
     (P.transferFocal.domRestrict P).ker = P.focalSubgroupOf := by

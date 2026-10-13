@@ -5,12 +5,11 @@ Authors: Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Exponential
-public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
-public import Mathlib.Topology.ContinuousMap.ContinuousSqrt
-public import Mathlib.Analysis.SpecialFunctions.Log.Basic
+
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Continuity
+import Mathlib.Analysis.SpecialFunctions.Exponential
+import Mathlib.Topology.ContinuousMap.ContinuousSqrt
 
 /-!
 # The exponential and logarithm based on the continuous functional calculus
@@ -173,7 +172,7 @@ lemma exp_log [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A] (
   have ha₂ : ∀ x ∈ spectrum ℝ a, x ≠ 0 := by grind
   rw [← real_exp_eq_normedSpace_exp .log, log, ← cfc_comp' Real.exp Real.log a (by fun_prop)]
   conv_rhs => rw [← cfc_id (R := ℝ) a]
-  refine cfc_congr fun x hx => ?_
+  congr! 1 with x hx
   grind [Real.exp_log]
 
 lemma continuousOn_log {A : Type*} [NormedRing A] [StarRing A] [NormedAlgebra ℝ A]
