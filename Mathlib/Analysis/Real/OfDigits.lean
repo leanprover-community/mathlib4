@@ -227,14 +227,10 @@ theorem digits_fract {b : ℕ} [NeZero b] {x : ℝ} (hx : 0 ≤ x) :
     digits (Int.fract x) b = digits x b := by
   ext i
   simp only [digits, Fin.val_ofNat]
-  have hx' : x = Int.fract x + (⌊x⌋₊ : ℝ) := by
-    rw [natCast_floor_eq_intCast_floor hx, Int.fract_add_floor]
-  conv_rhs => rw [hx']
-  have hpow : ⌊x⌋₊ * b ^ (i + 1) = ⌊x⌋₊ * b ^ i * b := by
-    rw [pow_succ, Nat.mul_assoc]
+  conv_rhs => rw [← Int.fract_add_floor x, ← natCast_floor_eq_intCast_floor hx]
   rw [add_mul, ← Nat.cast_pow, ← Nat.cast_mul,
-    Nat.floor_add_natCast (mul_nonneg (Int.fract_nonneg x) (Nat.cast_nonneg _)), hpow,
-    Nat.add_mul_mod_self_right]
+    Nat.floor_add_natCast (mul_nonneg (Int.fract_nonneg x) (Nat.cast_nonneg _)),
+    pow_succ, ← Nat.mul_assoc, Nat.add_mul_mod_self_right]
 
 theorem val_digits_natCast_div {b : ℕ} [NeZero b] (r s n : ℕ) :
     (digits ((r : ℝ) / s) b n : ℕ) = r * b ^ n % s * b / s := by
