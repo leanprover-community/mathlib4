@@ -33,6 +33,17 @@ public meta register_option linter.unregisteredTraceClass : Bool := {
     end of the file"
 }
 
+/-- Which trace classes are exempted from the `unregisteredTraceClass` linter. If unnecessary, a
+warning is logged on the exempted `Ident`. -/
+public meta initialize allowedUnregisteredTraceClasses : EnvExtension (List Ident) ←
+  registerEnvExtension (pure [])
+
+/-- Allows exempting a specific trace class from the `unregisteredTraceClass` linter, meaning that
+`cls` can be used in `trace[cls]` in the current file (above or below this command) without being
+registered in this file. This does not persist across files. -/
+elab "allow_unregistered_trace_class " cls:ident : command =>
+  modifyEnv fun env => allowedUnregisteredTraceClasses.modifyState env (cls :: ·)
+
 /-- Lints against unused trace classes from `trace[cls]` syntax. -/
 public meta unsafe def unregisteredTraceClass : ModuleLinter where
   run cmds := do
@@ -59,6 +70,15 @@ public meta unsafe def unregisteredTraceClass : ModuleLinter where
             unless optionDecls.contains <| `trace ++ cls.getId do
               traceClasses := traceClasses.alter cls.getId fun refs? => refs?.getD #[] |>.push cls
           | _ => pure ()
+    let localAllowed := allowedUnregisteredTraceClasses.getState (← getEnv)
+    unless localAllowed.isEmpty do
+      for exemptCls in localAllowed do
+        if optionDecls.contains exemptCls.getId then
+          logWarningAt exemptCls m!"The trace class `{exemptCls.getId}` is already registered in \
+            an imported file." -- TODO: show which
+        else unless traceClasses.contains exemptCls.getId do
+          logWarningAt exemptCls m!"The trace class `{exemptCls.getId}` is not used in this file."
+      traceClasses := traceClasses.filter fun cls _ => localAllowed.all (·.getId != cls)
     unless traceClasses.isEmpty do
       let env := (← getEnv).setExporting false
       let (inits, _) := regularInitAttr.ext.getState env
@@ -79,6 +99,10 @@ public meta unsafe def unregisteredTraceClass : ModuleLinter where
         gatherRegisteredClasses acc value
       let inits ← inits.mapM fun cls =>
         liftTermElabM <| Meta.evalExpr' Name ``Name cls (checkMeta := false)
+      for exemptCls in localAllowed do
+        if inits.contains exemptCls.getId then
+          logWarningAt exemptCls m!"The trace class `{exemptCls.getId}` is registered in this file."
+          -- TODO: show where
       for (cls, refs) in traceClasses do
         if inits.contains cls then continue
         for ref in refs do
@@ -86,8 +110,9 @@ public meta unsafe def unregisteredTraceClass : ModuleLinter where
             obviously registered later in this file. Use\
             {indentD m!"initialize {.ofConstName ``registerTraceClass} `{cls}"}\n\
             to make the trace class available via `set_option trace.{cls}` in subsequent files.\n\n\
-            Or, use `set_option linter.unregisteredTraceClass false in` in front of this commmand \
-            to turn this linter off."
+            Or, use `allow_unregistered_trace_class <cls>` at some point in this file to exempt \
+            the class.\n\n\
+            Use `set_option linter.unregisteredTraceClass false` to disable this linter entirely."
 
 meta unsafe initialize addModuleLinter unregisteredTraceClass
 
