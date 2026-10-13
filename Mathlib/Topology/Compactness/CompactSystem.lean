@@ -227,4 +227,5 @@ protected theorem IsCompactSystem.supClosure (hS : IsCompactSystem S) :
     (iInter_mono fun n ↦ ?_)
   · exact hAK n ▸ (hA (n + 1)).exists
   · exact hCL n ▸ subset_sUnion_of_mem (hfL n (A n) (hA n))
+
 end SupClosure
