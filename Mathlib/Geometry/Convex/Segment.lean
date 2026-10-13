@@ -26,7 +26,7 @@ namespace Convexity
 
 open Convexity Function Set
 
-public section Semiring
+@[expose] public section Semiring
 
 variable (R) {X} [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] [ConvexSpace R X] {s : Set X}
   {x y z : X}
@@ -107,6 +107,22 @@ theorem mem_openSegment_of_ne_left_right (hx : x ≠ z) (hy : y ≠ z) (hz : z �
 theorem openSegment_subset_iff_segment_subset (hx : x ∈ s) (hy : y ∈ s) :
     openSegment R x y ⊆ s ↔ segment R x y ⊆ s := by
   simp only [← insert_endpoints_openSegment, insert_subset_iff, *, true_and]
+
+section Map
+
+variable {Y} [ConvexSpace R Y] (f : X → Y)
+
+@[simp]
+theorem image_segment (hf : IsAffineMap R f) (a b : X) :
+    f '' segment R a b = segment R (f a) (f b) :=
+  Set.ext fun _ ↦ by simp [segment, IsAffineMap.map_convexCombPair hf]
+
+@[simp]
+theorem image_openSegment (hf : IsAffineMap R f) (a b : X) :
+    f '' openSegment R a b = openSegment R (f a) (f b) :=
+  Set.ext fun _ ↦ by simp [openSegment, IsAffineMap.map_convexCombPair hf]
+
+end Map
 
 end Semiring
 
