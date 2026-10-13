@@ -33,7 +33,7 @@ modules over a ring to projective modules over a semiring.
 
   This is `homTensorHomEquiv` from `LinearAlgebra/Contraction` for an arbitrary family of modules.
 
-* `PiTensorProduct.dualDistribEquiv_of_Projective`: The linear map `PiTensorProduct.dualDistrib`
+* `PiTensorProduct.dualDistribEquivOfProjective`: The linear map `PiTensorProduct.dualDistrib`
   is an equivalence `⨂[R] i, Dual R (P i) ≃ₗ[R] Dual R (⨂[R] i, P i)` when all `P i` are finite
   projective modules and the index set is finite (implemented as a special case of
   `piTensorHomEquiv`).
