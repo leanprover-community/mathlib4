@@ -6,6 +6,7 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+
 import Mathlib.Dynamics.FixedPoints.Basic
 
 /-!

@@ -5,8 +5,8 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Topology.MetricSpace.Bounded
 public import Mathlib.Topology.Maps.Proper.CompactlyGenerated
+public import Mathlib.Topology.MetricSpace.Bounded
 
 /-!
 # Proper spaces

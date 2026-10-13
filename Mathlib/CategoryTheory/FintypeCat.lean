@@ -152,7 +152,7 @@ instance (X Y : FintypeCat) : Finite (X ≅ Y) :=
   Finite.of_injective _ (fun _ _ h ↦ Iso.ext h)
 
 instance (X : FintypeCat) : Finite (Aut X) :=
-  inferInstanceAs <| Finite (X ≅ X)
+  Finite.of_equiv _ (Aut.isoEquiv (X := X)).symm
 
 universe u
 

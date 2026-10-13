@@ -61,6 +61,12 @@ instance : ∀ {n : ℕ}, PredOrder (Fin n)
         obtain rfl : i = 0 := by simpa using! hi
         rfl)
 
+lemma orderSucc_lt_iff : ∀ {n : ℕ} {i j : Fin n}, Order.succ j < i ↔ (j : ℕ) + 1 < i
+  | n + 1, i, j => by
+    induction j using Fin.lastCases with
+    | last => rw [Fin.orderSucc_last]; grind
+    | cast j' => rw [Fin.orderSucc_castSucc]; grind
+
 lemma orderPred_eq {n : ℕ} :
     Order.pred = Fin.cases 0 Fin.castSucc (n := n) := rfl
 
@@ -76,5 +82,11 @@ lemma orderPred_zero (n : ℕ) :
 lemma orderPred_succ {n : ℕ} (i : Fin n) :
     Order.pred i.succ = i.castSucc :=
   rfl
+
+lemma lt_orderPred_iff : ∀ {n : ℕ} {i j : Fin n}, i < Order.pred j ↔ (i : ℕ) + 1 < j
+  | n + 1, i, j => by
+    induction j using Fin.cases with
+    | zero => rw [orderPred_zero]; grind
+    | succ j' => rw [Fin.orderPred_succ]; grind
 
 end Fin
