@@ -47,7 +47,7 @@ lemma ofDual_sConvexComb (w : StdSimplex R Xᵒᵈ) :
 @[simp]
 lemma toDual_sConvexComb (w : StdSimplex R X) :
     .toDual w.sConvexComb = w.iConvexComb OrderDual.toDual :=
-  OrderDual.ofDual.injective <| by simp
+  OrderDual.ofDual.injective <| by simp [iConvexComb, StdSimplex.map_map]
 
 @[fun_prop]
 lemma isAffineMap_ofDual : IsAffineMap R (OrderDual.ofDual : Xᵒᵈ → X) := ⟨fun _ ↦ rfl⟩
