@@ -1058,8 +1058,7 @@ theorem coeff_mem_coeffs {p : R[X]} {n : ℕ} (h : p.coeff n ≠ 0) : p.coeff n 
 
 @[simp]
 theorem coeffs_empty_iff {p : R[X]} : coeffs p = ∅ ↔ p = 0 := by
-  rw [← Finset.subset_empty, coeffs_subset_iff, Polynomial.ext_iff]
-  simp
+  simp [← Finset.subset_empty, coeffs_subset_iff, Polynomial.ext_iff]
 
 @[simp]
 theorem coeffs_nonempty_iff {p : R[X]} : p.coeffs.Nonempty ↔ p ≠ 0 := by
