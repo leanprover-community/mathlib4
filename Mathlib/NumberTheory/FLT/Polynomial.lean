@@ -153,11 +153,7 @@ private theorem Polynomial.flt_catalan_aux
   -- characteristic zero
   · obtain ⟨da, -, -⟩ := flt_catalan_deriv
       hp hq hr hineq chp chq chr ha hb hc hab hu hv hw heq
-    have czk : CharZero k := by
-      apply charZero_of_inj_zero
-      intro n
-      rw [ringChar.spec, ch0]
-      exact zero_dvd_iff.mp
+    have czk : CharZero k := (CharP.ringChar_zero_iff_CharZero k).mp ch0
     rw [eq_C_of_derivative_eq_zero da]
     exact natDegree_C _
   -- characteristic p > 0

@@ -44,12 +44,14 @@ variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
   element `x` that is not torsion, then the characteristic of `R` is equal to the
   characteristic of the `R`-linear endomorphisms of `M`. -/
 theorem charP_end {p : ℕ} [hchar : CharP R p]
-    (htorsion : ∃ x : M, Ideal.torsionOf R M x = ⊥) : CharP (M →ₗ[R] M) p where
-  cast_eq_zero_iff n := by
-    have exact : (n : M →ₗ[R] M) = (n : R) • 1 := by
+    (htorsion : ∃ x : M, Ideal.torsionOf R M x = ⊥) : CharP (M →ₗ[R] M) p := by
+  rcases htorsion with ⟨x, hx⟩
+  have : IsLeftCancelAdd (M →ₗ[R] M) := sorry
+  refine CharP.of_cast_eq_zero_iff_dvd _ fun n => ?_
+  have exact : (n : M →ₗ[R] M) = (n : R) • 1 := by
       simp only [Nat.cast_smul_eq_nsmul, nsmul_eq_mul, mul_one]
-    rw [exact, LinearMap.ext_iff, ← hchar.1]
-    exact ⟨fun h ↦ htorsion.casesOn fun x hx ↦ by simpa [← Ideal.mem_torsionOf_iff, hx] using h x,
+  rw [exact, LinearMap.ext_iff, ← hchar.cast_eq_zero_iff]
+  exact ⟨fun h ↦ by simpa [← Ideal.mem_torsionOf_iff, hx] using h x,
       fun h ↦ (congrArg (fun t ↦ ∀ x, t • x = 0) h).mpr fun x ↦ zero_smul R x⟩
 
 end Module
