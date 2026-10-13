@@ -58,6 +58,14 @@ theorem essInf_congr_ae {f g : α → β} (hfg : f =ᵐ[μ] g) : essInf f μ = e
   @essSup_congr_ae α βᵒᵈ _ _ _ _ _ hfg
 
 @[simp]
+lemma essSup_dirac [MeasurableSingletonClass α] (a : α) : essSup f (Measure.dirac a) = f a := by
+  simp [essSup]
+
+@[simp]
+lemma essInf_dirac [MeasurableSingletonClass α] (a : α) : essInf f (Measure.dirac a) = f a := by
+  simp [essInf]
+
+@[simp]
 theorem essSup_const' [NeZero μ] (c : β) : essSup (fun _ : α => c) μ = c :=
   limsup_const _
 

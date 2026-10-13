@@ -6,11 +6,11 @@ Authors: Anatole Dedecker, Yury Kudryashov
 module
 
 public import Mathlib.Analysis.LocallyConvex.Bounded
-public import Mathlib.Topology.Hom.ContinuousEvalConst
 public import Mathlib.Topology.Algebra.Module.Equiv.Basic
+public import Mathlib.Topology.Hom.ContinuousEvalConst
 
-import Mathlib.Topology.Algebra.SeparationQuotient.Section
 import Mathlib.Topology.Algebra.Module.UniformConvergence
+import Mathlib.Topology.Algebra.SeparationQuotient.Section
 
 /-!
 # Topologies of uniform convergence on the space of continuous linear maps

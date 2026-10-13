@@ -6,6 +6,7 @@ Authors: Floris van Doorn, Heather Macbeth
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Calculus
+
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 /-!

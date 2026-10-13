@@ -13,8 +13,9 @@ public import Mathlib.LinearAlgebra.FreeModule.Finite.CardQuotient
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 public import Mathlib.RingTheory.Ideal.Basis
 public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients.Basic
-import Mathlib.RingTheory.Norm.Basic
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicative
+
+import Mathlib.RingTheory.Norm.Basic
 
 /-!
 

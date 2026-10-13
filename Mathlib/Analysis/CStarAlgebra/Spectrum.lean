@@ -6,9 +6,10 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Analysis.CStarAlgebra.Unitization
-import Mathlib.Analysis.Complex.Convex
 public import Mathlib.Analysis.Normed.Algebra.GelfandFormula
 public import Mathlib.Analysis.SpecialFunctions.Exponential
+
+import Mathlib.Analysis.Complex.Convex
 
 /-! # Spectral properties in C⋆-algebras
 

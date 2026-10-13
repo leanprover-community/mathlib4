@@ -5,9 +5,10 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 public import Mathlib.Algebra.Category.AlgCat.Basic
+public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 public import Mathlib.CategoryTheory.Monoidal.Mon
+
 import Mathlib.Tactic.SuppressCompilation
 
 /-!

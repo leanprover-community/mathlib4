@@ -5,12 +5,13 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
-import Mathlib.Analysis.Convex.Contractible
-public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.Analysis.Complex.Convex
+public import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
+public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.Topology.Homotopy.Contractible
 public import Mathlib.Topology.OpenPartialHomeomorph.Basic
+
+import Mathlib.Analysis.Convex.Contractible
 
 /-!
 # Topology on the upper half plane
