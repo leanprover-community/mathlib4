@@ -399,13 +399,13 @@ theorem exists_lt_mem_ball_of_mem_ball (h : x ∈ ball y ε) : ∃ ε' < ε, x �
   simpa [mem_ball] using exists_between' h
 
 theorem ball_eq_ball (ε : ℝ) (x : α) :
-    SetRel.ball {p | dist p.2 p.1 < ε} x = Metric.ball x ε := by
-  ext
-  simp [dist_comm, SetRel.ball]
+    UniformSpace.ball x { p | dist p.2 p.1 < ε } = Metric.ball x ε :=
+  rfl
 
 theorem ball_eq_ball' (ε : ℝ) (x : α) :
-    SetRel.ball {p | dist p.1 p.2 < ε} x = Metric.ball x ε :=
-  rfl
+    UniformSpace.ball x { p | dist p.1 p.2 < ε } = Metric.ball x ε := by
+  ext
+  simp [dist_comm, UniformSpace.ball]
 
 @[simp]
 theorem iUnion_ball_nat (x : α) : ⋃ n : ℕ, ball x n = univ :=
