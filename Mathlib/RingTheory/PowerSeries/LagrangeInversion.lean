@@ -18,6 +18,8 @@ Let `P` and `Y` be formal power series satisfying
 
 `Y = X * P(Y)`.
 
+This condition implies that `Y` has zero constant coefficient.
+
 Then, for natural numbers `n` and `k`,
 
 `(n + k) * [X ^ (n + k)] Y ^ k = k * [X ^ n] P ^ (n + k)`.
