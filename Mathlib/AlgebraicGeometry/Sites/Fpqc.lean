@@ -5,9 +5,10 @@ Authors: Christian Merten
 -/
 module
 
-import Mathlib.AlgebraicGeometry.EffectiveEpi
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyOpen
 public import Mathlib.AlgebraicGeometry.Sites.SheafQuasiCompact
+
+import Mathlib.AlgebraicGeometry.EffectiveEpi
 import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
 
 /-!

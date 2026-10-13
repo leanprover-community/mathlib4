@@ -5,8 +5,8 @@ Authors: Mario Carneiro, Johannes Hölzl
 -/
 module
 
-public import Mathlib.MeasureTheory.Function.SimpleFunc
 public import Mathlib.Algebra.Order.Pi
+public import Mathlib.MeasureTheory.Function.SimpleFunc
 
 /-!
 # Lower Lebesgue integral for `ℝ≥0∞`-valued functions
@@ -467,7 +467,7 @@ theorem hasSum_lintegral_measure {ι} {_ : MeasurableSpace α} (f : α → ℝ�
 theorem lintegral_of_isEmpty {α} [MeasurableSpace α] [IsEmpty α] (μ : Measure α) (f : α → ℝ≥0∞) :
     ∫⁻ x, f x ∂μ = 0 := by
   have : Subsingleton (Measure α) := inferInstance
-  convert! lintegral_zero_measure f
+  convert lintegral_zero_measure f
 
 theorem setLIntegral_empty (f : α → ℝ≥0∞) : ∫⁻ x in ∅, f x ∂μ = 0 := by
   rw [Measure.restrict_empty, lintegral_zero_measure]
@@ -477,7 +477,7 @@ theorem setLIntegral_univ (f : α → ℝ≥0∞) : ∫⁻ x in univ, f x ∂μ 
 
 theorem setLIntegral_measure_zero (s : Set α) (f : α → ℝ≥0∞) (hs' : μ s = 0) :
     ∫⁻ x in s, f x ∂μ = 0 := by
-  convert! lintegral_zero_measure _
+  convert lintegral_zero_measure _
   exact Measure.restrict_eq_zero.2 hs'
 
 -- TODO: Need a better way of rewriting inside of an integral

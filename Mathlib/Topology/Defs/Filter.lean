@@ -5,9 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
 module
 
-public import Mathlib.Topology.Defs.Basic
-public import Mathlib.Data.Setoid.Basic
 public import Mathlib.Order.Filter.Defs
+public import Mathlib.Order.Setoid.Basic
+public import Mathlib.Topology.Defs.Basic
+
 import Mathlib.Tactic.IrreducibleDef
 
 /-!

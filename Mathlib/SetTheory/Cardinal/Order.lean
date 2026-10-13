@@ -8,10 +8,11 @@ module
 public import Mathlib.Algebra.Order.Ring.Canonical
 public import Mathlib.Data.Fintype.Option
 public import Mathlib.Order.InitialSeg
-import Mathlib.Order.Nat
 public import Mathlib.Order.SuccPred.CompleteLinearOrder
 public import Mathlib.SetTheory.Cardinal.Defs
 public import Mathlib.SetTheory.Cardinal.SchroederBernstein
+
+import Mathlib.Order.Nat
 
 /-!
 # Order on cardinal numbers
@@ -327,7 +328,7 @@ theorem power_le_power_left : ∀ {a b c : Cardinal}, a ≠ 0 → b ≤ c → a 
 theorem self_le_power (a : Cardinal) {b : Cardinal} (hb : 1 ≤ b) : a ≤ a ^ b := by
   rcases eq_or_ne a 0 with (rfl | ha)
   · exact zero_le
-  · convert! power_le_power_left ha hb
+  · convert power_le_power_left ha hb
     exact (power_one a).symm
 
 /-- **Cantor's theorem** -/
@@ -379,10 +380,6 @@ theorem sInf_empty : sInf (∅ : Set Cardinal.{u}) = 0 :=
 /-- Note that the successor of `c` is not the same as `c + 1` except in the case of finite `c`. -/
 @[no_expose] instance : SuccOrder Cardinal := .ofLinearWellFoundedLT _
 
-@[deprecated Order.succ_eq_csInf +typeChanged (since := "2026-03-21")]
-theorem succ_def (c : Cardinal) : succ c = sInf { c' | c < c' } :=
-  Order.succ_eq_csInf c
-
 theorem succ_pos : ∀ c : Cardinal, 0 < succ c := by simp
 
 @[simp]
@@ -397,10 +394,6 @@ theorem add_one_le_of_lt {a b : Cardinal} (h : a < b) : a + 1 ≤ b := by
   obtain ⟨b, hb⟩ := hf
   rw [← mk_option]
   exact (f.optionElim b hb).cardinal_le
-
-@[deprecated add_one_le_of_lt +typeChanged (since := "2026-03-21")]
-theorem add_one_le_succ (c : Cardinal) : c + 1 ≤ succ c :=
-  add_one_le_of_lt (lt_succ c)
 
 @[simp]
 theorem lift_succ (a) : lift.{v, u} (succ a) = succ (lift.{v, u} a) := by
@@ -439,9 +432,6 @@ See `IsStrongPrelimit` for a version including `0`. -/
 structure IsStrongLimit (c : Cardinal) : Prop where
   ne_zero : c ≠ 0
   protected isStrongPrelimit : IsStrongPrelimit c
-
-@[deprecated (since := "2026-03-31")]
-alias IsStrongLimit.two_power_lt := IsStrongLimit.isStrongPrelimit
 
 protected theorem IsStrongPrelimit.isSuccPrelimit {c} (hc : IsStrongPrelimit c) :
     IsSuccPrelimit c :=

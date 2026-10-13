@@ -5,9 +5,9 @@ Authors: Jujian Zhang, Eric Wieser
 -/
 module
 
+public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Submodule
 public import Mathlib.RingTheory.Ideal.BigOperators
 public import Mathlib.RingTheory.Ideal.Maps
-public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Submodule
 
 /-!
 # Homogeneous ideals of a graded algebra
@@ -198,7 +198,7 @@ theorem Ideal.IsHomogeneous.toIdeal_homogeneousCore_eq_self (h : I.IsHomogeneous
 theorem HomogeneousIdeal.toIdeal_homogeneousCore_eq_self (I : HomogeneousIdeal 𝒜) :
     I.toIdeal.homogeneousCore 𝒜 = I := by
   ext1
-  convert! Ideal.IsHomogeneous.toIdeal_homogeneousCore_eq_self I.isHomogeneous
+  convert Ideal.IsHomogeneous.toIdeal_homogeneousCore_eq_self I.isHomogeneous
 
 variable (𝒜 I)
 

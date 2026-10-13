@@ -5,10 +5,10 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Module.Submodule.Equiv
 public import Mathlib.Algebra.Module.Equiv.Basic
+public import Mathlib.Algebra.Module.FunLike
 public import Mathlib.Algebra.Module.Rat
-public import Mathlib.Data.FunLike.Module
+public import Mathlib.Algebra.Module.Submodule.Equiv
 public import Mathlib.Tactic.Abel
 
 /-!
@@ -42,7 +42,7 @@ Lie algebras are defined as modules with a compatible Lie ring structure and thu
 are partially unbundled.
 
 ## References
-* [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 1--3*](bourbaki1975)
+* [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 1--3*][bourbaki1975]
 
 ## Tags
 
