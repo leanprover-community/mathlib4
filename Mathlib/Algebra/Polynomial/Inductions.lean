@@ -163,6 +163,8 @@ theorem horner_induction {motive : R[X] → Prop}
       grind [p.divX_mul_X_add, mul_coeff_zero, coeff_divX, coeff_X_zero, natDegree_mul_X,
         divX_eq_zero_iff, eq_C_coeff_zero_iff_natDegree_eq_zero]
 
+-- TODO : better names for next two lemmas, and fix their statements to work with `induction`
+
 /-- A property holds for all polynomials of positive `degree` with coefficients in a semiring `R`
 if it holds for
 * `a * X`, with `a ∈ R`,
