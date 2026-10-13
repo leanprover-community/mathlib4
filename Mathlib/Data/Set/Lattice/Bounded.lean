@@ -597,8 +597,8 @@ theorem pi_iUnion_eq_iInter_pi {α' : Type*} (s : α' → Set α) (t : (a : α) 
   simp
   grind
 
-theorem iInter_univ_pi (t : ι → ∀ a, Set (π a)) :
-    ⋂ i, pi univ (t i) = pi univ fun a ↦ ⋂ i, t i a := by
+theorem iInter_pi (t : ι → ∀ a, Set (π a)) (s : Set α) :
+    ⋂ i, pi s (t i) = pi s fun a ↦ ⋂ i, t i a := by
   ext
   simp [forall_comm (α := ι)]
 
