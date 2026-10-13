@@ -16,8 +16,6 @@ import Mathlib.LinearAlgebra.Matrix.CharP
 public section
 
 
-noncomputable section
-
 open Polynomial Matrix
 
 open scoped Polynomial

@@ -263,7 +263,7 @@ private def isCLMReduciblyDefeqCoefficients (e : Expr) : TermElabM <| Expr × Ex
       which is not the identity"
   | _ => throwError "`{e}` is not a space of continuous linear maps"
 
-/-- Check if an expression `e` is a `ContinuousAlternatingMap` .
+/-- Check if an expression `e` is a space of `ContinuousAlternatingMap`s.
 If so, we return the coefficient ring `R`. Otherwise, we error.
 Assumes that `e` is already in `whnf` and has had metavariables instantiated. -/
 private def isContAlternatingMaps (e : Expr) : TermElabM Expr := do
@@ -351,6 +351,7 @@ partial def guessBaseFieldForNormedSpace (e : Expr) : TermElabM <| Option Expr :
   | Prod E _F =>
     guessBaseFieldForNormedSpace E
   | _ =>
+    -- TODO: can/should this just take the field k / R instead of recursing?
     try
       let (k, _E, _F) ← isCLMReduciblyDefeqCoefficients e
       return k
