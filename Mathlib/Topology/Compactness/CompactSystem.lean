@@ -219,13 +219,6 @@ protected theorem pi {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsCompactSystem 
 
 end IsCompactSystem
 
-/-- Products of two compact and closed sets form a compact system. -/
-theorem isCompactSystem_prod_isCompact_isClosed (α β : Type*) [TopologicalSpace α]
-    [TopologicalSpace β] :
-    IsCompactSystem (image2 (· ×ˢ ·) {s : Set α | IsCompact s ∧ IsClosed s}
-      {t : Set β | IsCompact t ∧ IsClosed t}) :=
-  (isCompactSystem_isCompact_isClosed α).prod (isCompactSystem_isCompact_isClosed β)
-
 section CompactClosedSquareCylinders
 
 variable {ι : Type*} (α : ι → Type*) [∀ i, TopologicalSpace (α i)]
@@ -234,17 +227,6 @@ variable {ι : Type*} (α : ι → Type*) [∀ i, TopologicalSpace (α i)]
 compact for all `i ∈ s`. -/
 def compactClosedSquareCylinders : Set (Set (Π i, α i)) :=
   MeasureTheory.squareCylinders fun i ↦ {t : Set (α i) | IsCompact t ∧ IsClosed t}
-
-/-- Boxes formed by compact and closed sets form a compact system. -/
-theorem isCompactSystem_pi_isCompact_isClosed :
-    IsCompactSystem (univ.pi '' univ.pi fun i ↦ {t : Set (α i) | IsCompact t ∧ IsClosed t}) :=
-  IsCompactSystem.pi fun i ↦ isCompactSystem_isCompact_isClosed (α i)
-
-/-- Boxes formed by sets that are either compact and closed, or `univ`, form a compact system. -/
-theorem isCompactSystem_pi_insert_univ_isCompact_isClosed :
-    IsCompactSystem
-      (univ.pi '' univ.pi fun i ↦ insert univ {t : Set (α i) | IsCompact t ∧ IsClosed t}) :=
-  IsCompactSystem.pi fun i ↦ isCompactSystem_insert_univ_isCompact_isClosed (α i)
 
 /-- Compact and closed square cylinders form a compact system. -/
 theorem isCompactSystem_compactClosedSquareCylinders :
