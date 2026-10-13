@@ -92,12 +92,6 @@ theorem derivative_coe (f : R[X]) : d⁄dX (f : R⟦X⟧) = Polynomial.derivativ
   ext
   rw [coeff_derivative, coeff_coe, coeff_coe, Polynomial.coeff_derivative]
 
-/-- Mapping coefficients commutes with formal differentiation. -/
-theorem map_derivative {S : Type*} [CommSemiring S] (f : R →+* S) (φ : R⟦X⟧) :
-    map f (d⁄dX φ) = d⁄dX (map f φ) := by
-  ext n
-  simp [coeff_map, coeff_derivative]
-
 @[simp] theorem derivative_X : d⁄dX (X : R⟦X⟧) = 1 :=
   MvPowerSeries.pderiv_X_self
 
