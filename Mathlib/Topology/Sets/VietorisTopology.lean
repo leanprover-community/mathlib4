@@ -762,8 +762,8 @@ theorem separableSpace_iff : SeparableSpace (Compacts α) ↔ SeparableSpace α 
 theorem isPreconnected_nonempty_finite_subsets {s : Set α} (hs : IsPreconnected s) :
     IsPreconnected {K : Compacts α | (K : Set α).Nonempty ∧ (K : Set α).Finite ∧ ↑K ⊆ s} := by
   rw [← isEmbedding_coe.isPreconnected_image]
-  have himg : SetLike.coe '' {K : Compacts α | (K : Set α).Nonempty ∧ (K : Set α).Finite ∧
-      ↑K ⊆ s} = {t : Set α | t.Nonempty ∧ t.Finite ∧ t ⊆ s} :=
+  have himg : SetLike.coe '' {K : Compacts α | (K : Set α).Nonempty ∧ (K : Set α).Finite ∧ ↑K ⊆ s} =
+      {t : Set α | t.Nonempty ∧ t.Finite ∧ t ⊆ s} :=
     subset_antisymm (image_subset_iff.mpr fun K hK => hK)
       (fun t ht => ⟨⟨t, ht.2.1.isCompact⟩, ht, rfl⟩)
   rw [himg]

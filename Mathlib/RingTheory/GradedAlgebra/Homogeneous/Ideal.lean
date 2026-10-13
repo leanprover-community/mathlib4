@@ -604,7 +604,7 @@ lemma irrelevant_eq_iSup : 𝒜₊.toAddSubmonoid = ⨆ i > 0, .ofClass (𝒜 i)
 open AddSubmonoid Set in
 lemma irrelevant_eq_closure : 𝒜₊.toAddSubmonoid = .closure (⋃ i > 0, 𝒜 i) := by
   rw [irrelevant_eq_iSup]
-  refine le_antisymm
+  exact le_antisymm
     (iSup_le fun i ↦ iSup_le fun hi _ hx ↦ subset_closure <| mem_iUnion₂_of_mem hi hx) <|
     closure_le.mpr <| iUnion_subset fun i ↦ iUnion_subset fun hi ↦
       SetLike.coe_subset_coe.mpr <| le_iSup₂ (f := fun i (_ : 0 < i) ↦ ofClass (𝒜 i)) i hi

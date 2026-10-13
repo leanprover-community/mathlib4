@@ -582,7 +582,7 @@ theorem gauge_ball (hr : 0 ≤ r) (x : E) : gauge (ball (0 : E) r) x = ‖x‖ /
 @[simp]
 theorem gauge_closure_zero : gauge (closure (0 : Set E)) = 0 := funext fun x ↦ by
   have (r : ℝ) : ¬ (0 < r ∧ r = 0) := by grind
-  obtain hx | hx := eq_or_ne (‖x‖) 0 <;>
+  obtain hx | hx := eq_or_ne ‖x‖ 0 <;>
     simp [*, ← singleton_zero, gauge_def', mem_closure_zero_iff_norm, norm_smul, Ioi_def]
 
 @[simp]

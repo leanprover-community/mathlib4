@@ -198,6 +198,7 @@ instance : Insert ZFSet Class :=
 set_option linter.deprecated false in
 /-- `Class` is treated as (the definitionally equal) `ZFSet → Prop`, so that `A x` means that the
 ZFC set `x` belongs to the class `A`. -/
+@[deprecated "without replacement" (since := "2026-09-25")]
 instance : CoeFun Class fun _ => ZFSet → Prop :=
   ⟨Set.Mem⟩
 

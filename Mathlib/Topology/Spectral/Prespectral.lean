@@ -104,10 +104,7 @@ variable (X) in
 lemma PrespectralSpace.isBasis_opens [PrespectralSpace X] :
     TopologicalSpace.Opens.IsBasis { U : Opens X | IsCompact (U : Set X) } := by
   dsimp only [TopologicalSpace.Opens.IsBasis]
-  suffices h : SetLike.coe '' {U : Opens X | IsCompact (U : Set X)} =
-      {U : Set X | IsOpen U ∧ IsCompact U} by
-    rw [h]; exact isTopologicalBasis (X := X)
-  ext s
+  convert isTopologicalBasis (X := X) with s
   exact ⟨fun ⟨V, hV, heq⟩ ↦ heq ▸ ⟨V.2, hV⟩, fun h ↦ ⟨⟨s, h.1⟩, h.2, rfl⟩⟩
 
 /-- In a prespectral space, the lattice of opens is determined by its lattice of compact opens. -/
