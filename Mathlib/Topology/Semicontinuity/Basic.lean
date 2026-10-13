@@ -946,6 +946,9 @@ theorem lowerSemicontinuousAt_inv_iff :
 @[deprecated (since := "2026-10-13")]
 alias lowerSemicontinuouAt_inv_iff := lowerSemicontinuousAt_inv_iff
 
+@[deprecated (since := "2026-10-13")]
+alias lowerSemicontinuouAt_neg_iff := lowerSemicontinuousAt_neg_iff
+
 @[to_additive]
 alias ⟨_, UpperSemicontinuousAt.inv⟩ := lowerSemicontinuousAt_inv_iff
 

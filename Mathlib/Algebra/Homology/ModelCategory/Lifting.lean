@@ -77,6 +77,9 @@ lemma comp_coe_cocycle₁'_v_eq_zero (n m : ℤ) (hnm : n + 1 = m := by lia) :
 @[deprecated (since := "2026-10-13")]
 alias comp_coe_cocyle₁'_v_eq_zero := comp_coe_cocycle₁'_v_eq_zero
 
+@[deprecated (since := "2026-10-13")]
+alias comp_coe_cocyle₁'_v_eq_zero_assoc := comp_coe_cocycle₁'_v_eq_zero_assoc
+
 set_option backward.defeqAttrib.useBackward true in
 include hQ hK in
 lemma exists_hom (n m : ℤ) (hnm : n + 1 = m := by lia) :
