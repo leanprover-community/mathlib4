@@ -18,23 +18,35 @@ This file proves results on the Gelfand radius of matrices.
 
 open scoped Matrix.Norms.Operator
 
-variable {R m n : Type*} [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [NormedCommRing R]
+variable {R m n : Type*} [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [SeminormedCommRing R]
 
 open Filter Topology in
 theorem Matrix.gelfandRadius_conj_le
     (A : Matrix m n R) (B : Matrix n n R) (C : Matrix n m R)
     (hCA : C * A = 1) : gelfandRadius (A * B * C) ≤ gelfandRadius B := by
-  cases subsingleton_or_nontrivial (Matrix n n R)
-  · simp [Subsingleton.elim B 0]
+  by_cases hB : ‖B‖ = 0
+  · rw [gelfandRadius_of_norm_eq_zero, gelfandRadius_of_norm_eq_zero hB]
+    refine le_antisymm ?_ (norm_nonneg (A * B * C))
+    grw [Matrix.linfty_opNorm_mul, Matrix.linfty_opNorm_mul, hB, mul_zero, zero_mul]
+  replace hB : ‖(1 : Matrix n n R)‖ ≠ 0 := by
+    contrapose! hB
+    refine le_antisymm ?_ (norm_nonneg B)
+    grw [← mul_one B, linfty_opNorm_mul, hB, mul_zero]
   have h k (hk : 1 ≤ k) : (A * B * C) ^ k = A * B ^ k * C := by
     refine Nat.le_induction (by simp) (fun k _ ih ↦ ?_) k hk
-    transitivity A * B ^ k * (C * A) * B * C
-    · simp_rw [pow_succ, ih, Matrix.mul_assoc]
-    · simp_rw [pow_succ, hCA, Matrix.mul_assoc, Matrix.one_mul]
-  have key {c : ℝ} (hc : c ≠ 0) : Tendsto (fun n : ℕ ↦ (c ^ ((n : ℝ)⁻¹))) atTop (𝓝 1) :=
+    transitivity A * B ^ k * (C * A) * B * C <;> grind [Matrix.mul_assoc]
+  have key {c : ℝ} (hc : c ≠ 0) : Tendsto (fun n : ℕ ↦ c ^ (n : ℝ)⁻¹) atTop (𝓝 1) :=
     ((c.continuous_const_rpow hc).tendsto' 0 1 c.rpow_zero).comp tendsto_inv_atTop_nhds_zero_nat
-  have hA : ‖A‖ ≠ 0 := by contrapose! hCA; simp_all
-  have hC : ‖C‖ ≠ 0 := by contrapose! hCA; simp_all
+  have hA : ‖A‖ ≠ 0 := by
+    apply_fun (‖·‖) at hCA
+    replace hCA := hCA.ge.trans (Matrix.linfty_opNorm_mul C A)
+    contrapose! hCA; simp_all
+    grind [norm_nonneg]
+  have hC : ‖C‖ ≠ 0 := by
+    apply_fun (‖·‖) at hCA
+    replace hCA := hCA.ge.trans (Matrix.linfty_opNorm_mul C A)
+    contrapose! hCA; simp_all
+    grind [norm_nonneg]
   replace key := ((key hA).mul (tendsto_gelfandRadius B)).mul (key hC)
   rw [one_mul, mul_one] at key
   refine le_of_tendsto_of_tendsto' (tendsto_gelfandRadius (A * B * C)) key fun k ↦ ?_
