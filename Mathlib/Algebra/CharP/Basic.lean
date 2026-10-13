@@ -97,14 +97,19 @@ lemma cast_ne_zero_of_ne_of_prime [Nontrivial R]
   · exact false_of_nontrivial_of_char_one (R := R)
   · exact hneq h
 
+lemma of_prime_eq_zero [Nontrivial R] {p : ℕ} (hp : Nat.Prime p) (hp0 : (p : R) = 0) :
+    CharP R p := by
+  obtain ⟨q, hqp, hq⟩ := exists_CharP_dvd_of_cast_eq_zero R hp.ne_zero hp0
+  obtain rfl | rfl : q = 1 ∨ q = p := (Nat.dvd_prime hp).mp hqp
+  exacts [absurd rfl (char_ne_one R 1), hq]
+
 lemma ringChar_of_prime_eq_zero [Nontrivial R] [IsLeftCancelAdd R] {p : ℕ} (hprime : Nat.Prime p)
     (hp0 : (p : R) = 0) : ringChar R = p :=
-  Or.resolve_left ((Nat.dvd_prime hprime).1 (ringChar.dvd hp0)) ringChar_ne_one
+  let := of_prime_eq_zero hprime hp0; ringChar.eq R p
 
-lemma charP_iff_prime_eq_zero [Nontrivial R] [IsLeftCancelAdd R] {p : ℕ} (hp : p.Prime) :
+lemma charP_iff_prime_eq_zero [Nontrivial R] {p : ℕ} (hp : p.Prime) :
     CharP R p ↔ (p : R) = 0 :=
-  ⟨fun _ => cast_eq_zero R p,
-   fun hp0 => (ringChar_of_prime_eq_zero hp hp0) ▸ inferInstance⟩
+  ⟨fun _ => cast_eq_zero R p, of_prime_eq_zero hp⟩
 
 end NonAssocSemiring
 end CharP
