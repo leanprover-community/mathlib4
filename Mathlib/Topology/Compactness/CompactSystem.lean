@@ -191,7 +191,8 @@ end IsCompactIsClosed
 namespace IsCompactSystem
 
 /-- Products of sets from two compact systems form a compact system. -/
-theorem prod {β : Type*} {T : Set (Set β)} (hS : IsCompactSystem S) (hT : IsCompactSystem T) :
+protected theorem prod {β : Type*} {T : Set (Set β)}
+    (hS : IsCompactSystem S) (hT : IsCompactSystem T) :
     IsCompactSystem (image2 (· ×ˢ ·) S T) := by
   intro u hu h_empty
   choose s hs t ht hst using hu
@@ -207,7 +208,7 @@ theorem prod {β : Type*} {T : Set (Set β)} (hS : IsCompactSystem S) (hT : IsCo
 variable {ι : Type*} {α : ι → Type*}
 
 /-- Boxes formed by compact systems form a compact system. -/
-theorem pi {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsCompactSystem (C i)) :
+protected theorem pi {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsCompactSystem (C i)) :
     IsCompactSystem (univ.pi '' univ.pi C) := by
   intro S hS h_empty
   choose x hx hxS using hS
