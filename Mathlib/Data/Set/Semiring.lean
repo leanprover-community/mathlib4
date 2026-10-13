@@ -120,8 +120,6 @@ instance [Semigroup α] : Semigroup (SetSemiring α) :=
 instance instNonUnitalSemiring [Semigroup α] : NonUnitalSemiring (SetSemiring α) where
 
 instance [Monoid α] : IdemSemiring (SetSemiring α) where
-  __ := instNonAssocSemiring
-  __ := instNonUnitalSemiring
 
 instance [CommSemigroup α] : CommSemigroup (SetSemiring α) :=
   inferInstanceAs <| CommSemigroup (Set α)
