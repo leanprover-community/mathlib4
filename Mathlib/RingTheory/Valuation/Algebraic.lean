@@ -13,8 +13,8 @@ import Mathlib.RingTheory.Algebraic.Integral
 /-!
 # Valuation of an algebraic element
 
-The valuation of an algebraic element is an n-th root of
-the valuation of an element in the base field.
+The valuation of an algebraic element is an `n`-th root, for some positive integer `n`, of
+the valuation of an element of the base field.
 -/
 
 namespace Valuation
