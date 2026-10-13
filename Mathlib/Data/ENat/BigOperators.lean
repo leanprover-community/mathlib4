@@ -5,10 +5,11 @@ Authors: Joachim Breitner, Yaël Dillies, Bhavik Mehta
 -/
 module
 
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.BigOperators.WithTop
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Data.ENat.Lattice
+
+import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Algebra.BigOperators.WithTop
 
 /-!
 # Sum of suprema in `ENat`

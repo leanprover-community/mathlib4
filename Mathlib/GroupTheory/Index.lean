@@ -6,8 +6,8 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
-public import Mathlib.Algebra.GroupWithZero.Subgroup
 public import Mathlib.Algebra.Group.Subgroup.Finite
+public import Mathlib.Algebra.GroupWithZero.Subgroup
 public import Mathlib.GroupTheory.Coset.Card
 public import Mathlib.GroupTheory.GroupAction.Quotient
 public import Mathlib.GroupTheory.QuotientGroup.Basic
