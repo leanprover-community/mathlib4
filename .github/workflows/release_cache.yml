@@ -67,9 +67,8 @@ jobs:
       concurrency_group: ${{ github.workflow }}-${{ github.ref }}
       pr_branch_ref: ${{ github.sha }}
       # Release tags publish to the `master` container under the master writer
-      # identity; see the trust note above and cache-trust-dispatch, which
+      # environment; see the trust note above and cache-trust-dispatch, which
       # routes `v4.*` tag refs to that container.
-      cache_application_id: ${{ vars.CACHE_MASTER_WRITER_AZURE_APP_ID }}
       cache_environment: cache-upload-master
       # The cache-snapshot warming artifact exists to seed master and PR
       # builds, which a release tag's snapshot cannot do.
