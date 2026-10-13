@@ -86,19 +86,7 @@ theorem isPGroup (P : Sylow p G) : IsPGroup p P :=
 
 @[deprecated (since := "2026-10-08")] alias isPGroup' := isPGroup
 
-theorem ge_of_isPGroup_of_le {P : Sylow p G} {H : Subgroup G} (h : IsPGroup p H) (hle : P ≤ H) :
-    H ≤ P :=
-  P.maximal_isPGroup.le_of_ge h hle
-
-theorem eq_of_isPGroup_of_le {P : Sylow p G} {H : Subgroup G} (h : IsPGroup p H) (hle : P ≤ H) :
-    P = H :=
-  P.maximal_isPGroup.eq_of_le h hle
-
-theorem eq_of_isPGroup_of_ge {P : Sylow p G} {H : Subgroup G} (h : IsPGroup p H) (hle : P ≤ H) :
-    H = P :=
-  P.maximal_isPGroup.eq_of_ge h hle
-
-@[deprecated (since := "2026-10-08")] alias is_maximal' := eq_of_isPGroup_of_ge
+@[deprecated (since := "2026-10-08")] alias is_maximal' := maximal_isPGroup
 
 /-- A `p`-subgroup with index indivisible by `p` is a Sylow subgroup. -/
 def _root_.IsPGroup.toSylow [Fact p.Prime] {P : Subgroup G} (hP1 : IsPGroup p P)
@@ -123,7 +111,7 @@ def _root_.IsPGroup.toSylow [Fact p.Prime] {P : Subgroup G} (hP1 : IsPGroup p P)
 
 theorem _root_.IsPGroup.le_sylow_of_normal {N : Subgroup G} [N.Normal] (h : IsPGroup p N)
     (H : Sylow p G) : N ≤ H :=
-  sup_eq_right.mp <| H.eq_of_isPGroup_of_ge (h.to_sup_of_normal_left H.isPGroup) le_sup_right
+  sup_eq_right.mp <| H.maximal_isPGroup.eq_of_ge (h.to_sup_of_normal_left H.isPGroup) le_sup_right
 
 /-- A subgroup with cardinality `p ^ n` is a Sylow subgroup
 where `n` is the multiplicity of `p` in the group order. -/
@@ -139,7 +127,7 @@ theorem coe_ofCard [Finite G] {p : ℕ} [Fact p.Prime] (H : Subgroup G)
   rfl
 
 theorem eq_top_of_zero (H : Sylow 0 G) : (H : Subgroup G) = ⊤ :=
-  H.eq_of_isPGroup_of_le (.zero _) le_top
+  H.maximal_isPGroup.eq_of_le (.zero _) le_top
 
 theorem eq_bot_of_one (H : Sylow 1 G) : (H : Subgroup G) = ⊥ :=
   have := isPGroup_one_iff_subsingleton.mp H.isPGroup
@@ -150,11 +138,11 @@ def equivProdPrimeFactors (h : p ≠ 0) : Sylow p G ≃ Sylow (p.primeFactors.pr
   toFun H := { H with
     maximal_isPGroup.left := isPGroup_iff_isPGroup_prod_primeFactors h |>.mp H.isPGroup
     maximal_isPGroup.right K hK :=
-      H.ge_of_isPGroup_of_le <| isPGroup_iff_isPGroup_prod_primeFactors h |>.mpr hK }
+      H.maximal_isPGroup.le_of_ge <| isPGroup_iff_isPGroup_prod_primeFactors h |>.mpr hK }
   invFun H := { H with
     maximal_isPGroup.left := isPGroup_iff_isPGroup_prod_primeFactors h |>.mpr H.isPGroup
     maximal_isPGroup.right K hK :=
-      H.ge_of_isPGroup_of_le <| isPGroup_iff_isPGroup_prod_primeFactors h |>.mp hK }
+      H.maximal_isPGroup.le_of_ge <| isPGroup_iff_isPGroup_prod_primeFactors h |>.mp hK }
 
 @[simp]
 theorem coe_equivProdPrimeFactors_apply (h : p ≠ 0) (H : Sylow p G) :
@@ -175,7 +163,7 @@ def comapOfKerIsPGroup (hϕ : IsPGroup p ϕ.ker) (h : P ≤ ϕ.range) : Sylow p 
   toSubgroup := P.comap ϕ
   maximal_isPGroup.left := P.isPGroup.comap_of_ker_isPGroup ϕ hϕ
   maximal_isPGroup.right Q hQ hle := by
-    rw [← P.eq_of_isPGroup_of_ge (hQ.map ϕ) <| (map_comap_eq_self h).ge.trans (map_mono hle),
+    rw [← P.maximal_isPGroup.eq_of_ge (hQ.map ϕ) <| (map_comap_eq_self h).ge.trans (map_mono hle),
       comap_map_eq_self <| (P.ker_le_comap ϕ).trans hle]
 
 @[simp]
@@ -236,7 +224,7 @@ noncomputable instance inhabited : Inhabited (Sylow p G) :=
 
 theorem exists_comap_eq_of_ker_isPGroup {H : Type*} [Group H] (P : Sylow p H) {f : H →* G}
     (hf : IsPGroup p f.ker) : ∃ Q : Sylow p G, Q.comap f = P :=
-  .imp (fun Q hQ ↦ P.eq_of_isPGroup_of_ge (Q.isPGroup.comap_of_ker_isPGroup f hf)
+  .imp (fun Q hQ ↦ P.maximal_isPGroup.eq_of_ge (Q.isPGroup.comap_of_ker_isPGroup f hf)
     (map_le_iff_le_comap.mp hQ)) (P.isPGroup.map f).exists_le_sylow
 
 theorem exists_comap_eq_of_injective {H : Type*} [Group H] (P : Sylow p H) {f : H →* G}
@@ -294,7 +282,7 @@ instance pointwiseMulAction {α : Type*} [Group α] [MulDistribMulAction α G] :
     MulAction α (Sylow p G) where
   smul g P :=
     ⟨g • P.toSubgroup, P.isPGroup.map _, fun Q hQ hS ↦ by
-      refine inv_smul_eq_iff.mp (P.eq_of_isPGroup_of_ge (hQ.map _) fun s hs ↦ ?_) |>.le
+      refine inv_smul_eq_iff.mp (P.maximal_isPGroup.eq_of_ge (hQ.map _) fun s hs ↦ ?_) |>.le
       apply congr($(inv_smul_smul g s) ∈ g⁻¹ • Q).mp
       exact smul_mem_pointwise_smul (g • s) g⁻¹ Q <| hS <| smul_mem_pointwise_smul s g P hs⟩
   one_smul P := ext (one_smul α P.toSubgroup)
@@ -347,7 +335,7 @@ theorem IsPGroup.inf_normalizer_sylow {P : Subgroup G} (hP : IsPGroup p P) (Q : 
     P ⊓ normalizer Q = P ⊓ Q := by
   refine le_antisymm ?_ <| inf_le_inf_left P le_normalizer
   refine le_inf inf_le_left <| sup_eq_right.mp ?_
-  refine Q.eq_of_isPGroup_of_ge ?_ le_sup_right
+  refine Q.maximal_isPGroup.eq_of_ge ?_ le_sup_right
   exact hP.to_inf_left.to_sup_of_normal_right' Q.isPGroup inf_le_right
 
 theorem IsPGroup.sylow_mem_fixedPoints_iff {P : Subgroup G} (hP : IsPGroup p P) {Q : Sylow p G} :
@@ -364,7 +352,7 @@ instance Sylow.isPretransitive_of_finite [hp : Fact p.Prime] [Finite (Sylow p G)
         S ∈ fixedPoints R (orbit G P) ↔ S.1 ∈ fixedPoints R (Sylow p G) :=
           forall_congr' fun a => Subtype.ext_iff
         _ ↔ R.1 ≤ S := R.isPGroup.sylow_mem_fixedPoints_iff
-        _ ↔ S.1.1 = R := ⟨R.eq_of_isPGroup_of_ge S.val.isPGroup, ge_of_eq⟩
+        _ ↔ S.1.1 = R := ⟨R.maximal_isPGroup.eq_of_ge S.val.isPGroup, ge_of_eq⟩
     suffices Set.Nonempty (fixedPoints Q (orbit G P)) by
       exact Exists.elim this fun R hR => by
         rw [← Sylow.ext (H.mp hR)]
@@ -391,7 +379,7 @@ theorem card_sylow_modEq_one [Fact p.Prime] [Finite (Sylow p G)] :
     Set.ext fun Q : Sylow p G =>
       calc
         Q ∈ fixedPoints P (Sylow p G) ↔ P ≤ Q := P.isPGroup.sylow_mem_fixedPoints_iff
-        _ ↔ Q.1 = P.1 := ⟨P.eq_of_isPGroup_of_ge Q.isPGroup, ge_of_eq⟩
+        _ ↔ Q.1 = P.1 := ⟨P.maximal_isPGroup.eq_of_ge Q.isPGroup, ge_of_eq⟩
         _ ↔ Q ∈ {P} := Sylow.ext_iff.symm.trans Set.mem_singleton_iff.symm
   grw [P.isPGroup.card_modEq_card_fixedPoints]
   simp [this, Nat.ModEq.refl]
@@ -489,7 +477,7 @@ private theorem not_dvd_index_aux [hp : Fact p.Prime] (P : Sylow p G) [P.Normal]
   rw [← zpowers_eq_bot, ← Ne, ← bot_lt_iff_ne_bot, ←
     comap_lt_comap_of_surjective (QuotientGroup.mk'_surjective _), MonoidHom.comap_bot,
     QuotientGroup.ker_mk'] at hp
-  exact hp.ne' (P.eq_of_isPGroup_of_ge hQ hp.le)
+  exact hp.ne' (P.maximal_isPGroup.eq_of_ge hQ hp.le)
 
 /-- A Sylow p-subgroup has index indivisible by `p`, assuming [N(P) : P] < ∞. -/
 theorem not_dvd_index' [hp : Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
@@ -516,7 +504,7 @@ def mapSurjective [Fact p.Prime] (P : Sylow p G) : Sylow p G' where
   toSubgroup := P.1.map f
   maximal_isPGroup.left := P.isPGroup.map f
   maximal_isPGroup.right _ hQ hPQ := by
-    refine (P.isPGroup.map f).toSylow ?_ |>.ge_of_isPGroup_of_le hQ hPQ
+    refine (P.isPGroup.map f).toSylow ?_ |>.maximal_isPGroup.le_of_ge hQ hPQ
     exact (P.not_dvd_index <| ·.trans <| P.index_map_dvd hf)
 
 @[simp] theorem coe_mapSurjective [Fact p.Prime] (P : Sylow p G) : P.mapSurjective hf = P.map f :=
@@ -535,7 +523,7 @@ theorem mapSurjective_surjective (p : ℕ) [Fact p.Prime] :
     exact Nat.Prime.not_dvd_mul Fact.out Q₀.not_dvd_index P.not_dvd_index
   use hpQ.toSylow hQ
   rw [Sylow.ext_iff, Sylow.coe_mapSurjective, eq_comm]
-  refine (hpQ.map f).toSylow ?_ |>.eq_of_isPGroup_of_ge P.isPGroup hPQ
+  refine (hpQ.map f).toSylow ?_ |>.maximal_isPGroup.eq_of_ge P.isPGroup hPQ
   exact (hQ <| ·.trans <| Q.index_map_dvd hf)
 
 end mapSurjective
