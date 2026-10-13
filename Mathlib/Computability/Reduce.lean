@@ -62,8 +62,6 @@ theorem ManyOneReducible.trans {α β γ} [Primcodable α] [Primcodable β] [Pri
 instance stdRefl_manyOneReducible {α} [Primcodable α] : Std.Refl (@ManyOneReducible α α _ _) where
   refl := manyOneReducible_refl
 
-@[deprecated (since := "2026-03-27")] alias reflexive_manyOneReducible := stdRefl_manyOneReducible
-
 instance isTrans_manyOneReducible {α} [Primcodable α] : IsTrans (α → Prop) ManyOneReducible where
   trans _ _ _ := ManyOneReducible.trans
 
@@ -102,12 +100,10 @@ theorem OneOneReducible.of_equiv {α β} [Primcodable α] [Primcodable β] {e : 
 
 theorem OneOneReducible.of_equiv_symm {α β} [Primcodable α] [Primcodable β] {e : α ≃ β}
     (q : β → Prop) (h : Computable e.symm) : q ≤₁ (q ∘ e) := by
-  convert! OneOneReducible.of_equiv _ h; funext; simp
+  convert OneOneReducible.of_equiv _ h; funext; simp
 
 instance stdRefl_oneOneReducible {α} [Primcodable α] : Std.Refl (@OneOneReducible α α _ _) where
   refl := oneOneReducible_refl
-
-@[deprecated (since := "2026-03-27")] alias reflexive_oneOneReducible := stdRefl_oneOneReducible
 
 instance isTrans_oneOneReducible {α} [Primcodable α] : IsTrans (α → Prop) OneOneReducible where
   trans _ _ _ := OneOneReducible.trans
@@ -366,31 +362,26 @@ theorem of_le_of {p : α → Prop} {q : β → Prop} : of p ≤ of q ↔ p ≤�
   manyOneReducible_toNat_toNat
 
 set_option backward.isDefEq.respectTransparency false in
-set_option backward.privateInPublic true in
 private theorem le_refl (d : ManyOneDegree) : d ≤ d := by
   induction d using ManyOneDegree.ind_on; simp; rfl
 
 set_option backward.isDefEq.respectTransparency false in
-set_option backward.privateInPublic true in
 private theorem le_antisymm {d₁ d₂ : ManyOneDegree} : d₁ ≤ d₂ → d₂ ≤ d₁ → d₁ = d₂ := by
   induction d₁ using ManyOneDegree.ind_on
   induction d₂ using ManyOneDegree.ind_on
   intro hp hq
   simp_all only [ManyOneEquiv, of_le_of, of_eq_of, true_and]
 
-set_option backward.privateInPublic true in
 private theorem le_trans {d₁ d₂ d₃ : ManyOneDegree} : d₁ ≤ d₂ → d₂ ≤ d₃ → d₁ ≤ d₃ := by
   induction d₁ using ManyOneDegree.ind_on
   induction d₂ using ManyOneDegree.ind_on
   induction d₃ using ManyOneDegree.ind_on
   apply ManyOneReducible.trans
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance instPartialOrder : PartialOrder ManyOneDegree where
-  le_refl := le_refl
-  le_trans _ _ _ := le_trans
-  le_antisymm _ _ := le_antisymm
+  le_refl := private le_refl
+  le_trans _ _ _ := private le_trans
+  le_antisymm _ _ := private le_antisymm
 
 /-- The join of two degrees, induced by the disjoint union of two underlying sets. -/
 instance instAdd : Add ManyOneDegree :=
