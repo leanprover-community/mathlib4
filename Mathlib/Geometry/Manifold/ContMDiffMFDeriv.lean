@@ -364,8 +364,7 @@ lemma ContMDiffWithinAt.mvfderivWithin
   have aux := hf'.contMDiffWithinAt_tangentMapWithin hx hmn hs
   -- Compose the tangent map `Tf` with `X` to obtain a `C^n` map `M → TN`.
   -- In particular, the fiber component of this map is smooth, which is the desired conclusion.
-  obtain ⟨_, aux2'⟩ := Bundle.contMDiffWithinAt_totalSpace.mp (aux.comp x hX (by intro; simp))
-  convert aux2'
+  convert (Bundle.contMDiffWithinAt_totalSpace.mp (aux.comp x hX (by intro; simp))).2
   simp
   rfl
 
