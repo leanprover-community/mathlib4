@@ -3831,6 +3831,7 @@ public import Mathlib.Combinatorics.SimpleGraph.FiveWheelLike
 public import Mathlib.Combinatorics.SimpleGraph.Girth
 public import Mathlib.Combinatorics.SimpleGraph.Hall
 public import Mathlib.Combinatorics.SimpleGraph.Hamiltonian
+public import Mathlib.Combinatorics.SimpleGraph.Hamiltonian.Perm
 public import Mathlib.Combinatorics.SimpleGraph.Hasse
 public import Mathlib.Combinatorics.SimpleGraph.IncMatrix
 public import Mathlib.Combinatorics.SimpleGraph.Init
@@ -4237,6 +4238,7 @@ public import Mathlib.Data.List.Indexes
 public import Mathlib.Data.List.Induction
 public import Mathlib.Data.List.Infix
 public import Mathlib.Data.List.InsertIdx
+public import Mathlib.Data.List.Interleave
 public import Mathlib.Data.List.Intervals
 public import Mathlib.Data.List.Iterate
 public import Mathlib.Data.List.Lattice
