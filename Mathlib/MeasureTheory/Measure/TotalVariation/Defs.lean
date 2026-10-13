@@ -138,7 +138,7 @@ lemma etvDist_self (μ : Measure 𝓧) [IsFiniteMeasure μ] : etvDist μ μ = 0 
   simp [etvDist_eq_etvDist_toSignedMeasure]
 
 @[simp]
-lemma etvDist_eq_zero_iff (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
+lemma etvDist_eq_zero_iff {μ ν : Measure 𝓧} [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     etvDist μ ν = 0 ↔ μ = ν := by
   simp [etvDist_eq_etvDist_toSignedMeasure]
 
@@ -211,7 +211,7 @@ lemma tvDist_self (μ : Measure 𝓧) : tvDist μ μ = 0 := by
   · exact tvDist_of_not_isFiniteMeasure_left hμ
 
 @[simp]
-lemma tvDist_eq_zero_iff (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
+lemma tvDist_eq_zero_iff {μ ν : Measure 𝓧} [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     tvDist μ ν = 0 ↔ μ = ν := by simp [tvDist, ENNReal.toReal_eq_zero_iff]
 
 lemma tvDist_comm (μ ν : Measure 𝓧) : tvDist μ ν = tvDist ν μ := by
