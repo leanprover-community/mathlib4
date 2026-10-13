@@ -206,29 +206,34 @@ lemma toEnd_comp_mk' (x : L) :
     LieModule.toEnd R L (M ⧸ N) x ∘ₗ mk' N = mk' N ∘ₗ LieModule.toEnd R L M x :=
   rfl
 
-/-- `LieSubmodule.Quotient.mk` as a `LieHom`. -/
-@[simps]
-def mk'' : L →ₗ⁅R⁆ L ⧸ I := {
-  toFun := I.toSubmodule.mkQ
-  map_add' := by simp only [Submodule.mkQ_apply, Submodule.Quotient.mk_add, implies_true]
-  map_smul' := by simp only [map_smul, Submodule.mkQ_apply, RingHom.id_apply, implies_true]
-  map_lie' := by simp only [Submodule.mkQ_apply, mk_bracket, implies_true]
-}
-
-@[simp]
-theorem surjective_mk'' : Function.Surjective (Quotient.mk'' I) := Quot.mk_surjective
-
-@[simp]
-theorem range_mk'' : LieHom.range (mk'' I) = ⊤ := by simp [LieHom.range_eq_top]
-
-theorem mk''_eq_zero {x : L} : mk'' I x = 0 ↔ x ∈ I :=
-  Submodule.Quotient.mk_eq_zero I.toSubmodule
-
-@[simp]
-theorem mk''_ker : (mk'' I).ker = I := by ext; simp
 end Quotient
 
 end LieSubmodule
+
+namespace LieIdeal
+
+open Function -- Move to top of file
+
+variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] (I : LieIdeal R L)
+
+/-- The map from a Lie algebra to its quotient by an ideal, as a morphism of Lie algebras. -/
+@[simps!]
+def mkQ : L →ₗ⁅R⁆ L ⧸ I :=
+  { __ := I.toSubmodule.mkQ
+    map_lie' := by simp }
+
+@[simp]
+theorem surjective_mkQ : Surjective I.mkQ := Quot.mk_surjective
+
+@[simp]
+theorem range_mkQ : I.mkQ.range = ⊤ := by simp [LieHom.range_eq_top]
+
+theorem mkQ_eq_zero {x : L} : I.mkQ x = 0 ↔ x ∈ I := Submodule.Quotient.mk_eq_zero I.toSubmodule
+
+@[simp]
+theorem mkQ_ker : I.mkQ.ker = I := by ext; simp
+
+end LieIdeal
 
 namespace LieHom
 
