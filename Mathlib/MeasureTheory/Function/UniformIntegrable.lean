@@ -133,7 +133,7 @@ protected theorem add (hf : UnifIntegrable f p μ) (hg : UnifIntegrable g p μ) 
     simp only [Pi.add_apply, iSup_le_iff]
     intro i s hs hsμ
     grw [eLpNorm_add_le' p, add_le_add] <;>
-    exact (le_iSup _ i).trans' ((le_iSup _ s).trans' (by simp [hsμ]))
+    exact le_iSup₂_of_le i s (by simp [hsμ])
 
 protected theorem neg (hf : UnifIntegrable f p μ) : UnifIntegrable (-f) p μ := by
   refine ENNReal.tendsto_nhds_zero.2 fun ε hε ↦ ?_
