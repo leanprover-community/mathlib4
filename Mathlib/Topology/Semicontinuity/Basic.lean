@@ -939,12 +939,15 @@ theorem upperSemicontinuousWithinAt_inv_iff :
 alias ⟨_, LowerSemicontinuousWithinAt.inv⟩ := upperSemicontinuousWithinAt_inv_iff
 
 @[to_additive (attr := simp)]
-theorem lowerSemicontinuouAt_inv_iff :
+theorem lowerSemicontinuousAt_inv_iff :
     LowerSemicontinuousAt f⁻¹ a ↔ UpperSemicontinuousAt f a := by
   simp [← lowerSemicontinuousWithinAt_univ_iff, ← upperSemicontinuousWithinAt_univ_iff]
 
+@[deprecated (since := "2026-10-13")]
+alias lowerSemicontinuouAt_inv_iff := lowerSemicontinuousAt_inv_iff
+
 @[to_additive]
-alias ⟨_, UpperSemicontinuousAt.inv⟩ := lowerSemicontinuouAt_inv_iff
+alias ⟨_, UpperSemicontinuousAt.inv⟩ := lowerSemicontinuousAt_inv_iff
 
 @[to_additive (attr := simp)]
 theorem upperSemicontinuousAt_inv_iff :
