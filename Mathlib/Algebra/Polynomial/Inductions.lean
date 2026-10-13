@@ -127,7 +127,7 @@ theorem degree_divX_lt (hp0 : p ≠ 0) : (divX p).degree < p.degree := by
         rw [degree_add_eq_left_of_degree_lt this]; exact degree_lt_degree_mul_X hXp0
     _ = degree p := congr_arg _ (divX_mul_X_add _)
 
-/-- An induction principle for polynomials, valued in Sort* instead of Prop. -/
+/-- A Horner induction principle for polynomials. -/
 @[elab_as_elim]
 noncomputable def recOnHorner {M : R[X] → Sort*} (p : R[X]) (M0 : M 0)
     (MC : ∀ p a, coeff p 0 = 0 → a ≠ 0 → M p → M (p + C a))
@@ -147,6 +147,21 @@ noncomputable def recOnHorner {M : R[X] → Sort*} (p : R[X]) (M0 : M 0)
           (if hpX0 : divX p = 0 then show M (divX p * X) by rw [hpX0, zero_mul]; exact M0
           else MX (divX p) hpX0 (recOnHorner _ M0 MC MX))
 termination_by p.degree
+
+/-- A variant of Horner induction, with constant polynomials as the base case. -/
+@[elab_as_elim]
+theorem horner_induction {motive : R[X] → Prop}
+    (hC : ∀ a, motive (C a))
+    (ha : ∀ p a, (hp : p.coeff 0 = 0) → (hdeg : 0 < p.natDegree) → (ha : a ≠ 0) →
+      (ih : motive p) → motive (p + C a))
+    (hX : ∀ p, (hp : p ≠ 0) → (ih : motive p) → motive (p * X)) (p : R[X]) : motive p := by
+  cases subsingleton_or_nontrivial R
+  · simp_all [Subsingleton.eq_zero]
+  induction _ : p.natDegree using Nat.strong_induction_on generalizing p with
+  | _ _ _ =>
+    by_cases p.coeff 0 = 0 <;>
+      grind [p.divX_mul_X_add, mul_coeff_zero, coeff_divX, coeff_X_zero, natDegree_mul_X,
+        divX_eq_zero_iff, eq_C_coeff_zero_iff_natDegree_eq_zero]
 
 /-- A property holds for all polynomials of positive `degree` with coefficients in a semiring `R`
 if it holds for
