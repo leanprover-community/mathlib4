@@ -7,8 +7,8 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexColimits
-public import Mathlib.CategoryTheory.Monoidal.Cartesian.FunctorCategory
 public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexOp
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.FunctorCategory
 
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 

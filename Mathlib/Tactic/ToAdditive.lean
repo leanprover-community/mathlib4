@@ -16,7 +16,6 @@ public meta section
 set_option linter.privateModule false
 
 attribute [to_additive_do_translate] Empty PEmpty Unit PUnit
-attribute [to_additive_ignore_args 2] Subtype
 
 attribute [to_additive] One
 attribute [to_additive existing Zero.toOfNat0] One.toOfNat1
