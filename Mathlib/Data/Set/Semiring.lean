@@ -112,12 +112,12 @@ end One
 instance [MulOneClass α] : MulOneClass (SetSemiring α) :=
   inferInstanceAs <| MulOneClass (Set α)
 
-instance instNonAssocSemiring [MulOneClass α] : NonAssocSemiring (SetSemiring α) where
+instance [MulOneClass α] : NonAssocSemiring (SetSemiring α) where
 
 instance [Semigroup α] : Semigroup (SetSemiring α) :=
   inferInstanceAs <| Semigroup (Set α)
 
-instance instNonUnitalSemiring [Semigroup α] : NonUnitalSemiring (SetSemiring α) where
+instance [Semigroup α] : NonUnitalSemiring (SetSemiring α) where
 
 instance [Monoid α] : IdemSemiring (SetSemiring α) where
 
