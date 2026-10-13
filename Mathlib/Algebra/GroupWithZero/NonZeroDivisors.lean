@@ -436,17 +436,17 @@ lemma Pi.mem_nonZeroDivisorsLeft_iff :
     x ∈ nonZeroDivisorsLeft (∀ i, M₀ i) ↔ ∀ i, x i ∈ nonZeroDivisorsLeft (M₀ i) := by
   refine ⟨fun hx i y hy ↦ ?_, fun hx _ h ↦ funext fun i ↦ hx i _ congr($h i)⟩
   classical
-  have h := hx (Function.update 0 i y) (funext fun j ↦ ?_)
+  have h := hx (Pi.single i y) (funext fun j ↦ ?_)
   · simpa using congr($h i)
-  · rcases eq_or_ne j i with rfl | hj <;> simp [Function.update_of_ne, *]
+  · rcases eq_or_ne j i with rfl | hj <;> simp [*]
 
 lemma Pi.mem_nonZeroDivisorsRight_iff :
     x ∈ nonZeroDivisorsRight (∀ i, M₀ i) ↔ ∀ i, x i ∈ nonZeroDivisorsRight (M₀ i) := by
   refine ⟨fun hx i y hy ↦ ?_, fun hx _ h ↦ funext fun i ↦ hx i _ congr($h i)⟩
   classical
-  have h := hx (Function.update 0 i y) (funext fun j ↦ ?_)
+  have h := hx (Pi.single i y) (funext fun j ↦ ?_)
   · simpa using congr($h i)
-  · rcases eq_or_ne j i with rfl | hj <;> simp [Function.update_of_ne, *]
+  · rcases eq_or_ne j i with rfl | hj <;> simp [*]
   
 /-- An element of a product of monoids with zero is a non-zero-divisor iff each of its coordinates
 is a non-zero-divisor. -/
