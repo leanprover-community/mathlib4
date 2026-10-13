@@ -124,16 +124,11 @@ theorem prod_mapRange_index {β₁ : ι → Type v₁} {β₂ : ι → Type v₂
     [CommMonoid γ] {f : ∀ i, β₁ i → β₂ i} {hf : ∀ i, f i 0 = 0} {g : Π₀ i, β₁ i} {h : ∀ i, β₂ i → γ}
     (h0 : ∀ i, h i 0 = 1) : (mapRange f hf g).prod h = g.prod fun i b => h i (f i b) := by
   rw [mapRange_def]
-  refine (Finset.prod_subset support_mk_subset ?_).trans ?_
-  · intro i h1 h2
-    simp only [mem_support_toFun, ne_eq] at h1
-    simp only [Finset.coe_sort_coe, mem_support_toFun, mk_apply, ne_eq, h1, not_false_iff,
-      dite_eq_ite, ite_true, not_not] at h2
-    simp [h2, h0]
-  · refine Finset.prod_congr rfl ?_
-    intro i h1
-    simp only [mem_support_toFun, ne_eq] at h1
-    simp [h1]
+  refine (Finset.prod_subset support_mk_subset fun _ _ h ↦ ?_).trans ?_
+  · simp only [Finset.coe_sort_coe, mem_support_toFun, not_not] at h
+    simp [h, h0]
+  · refine Finset.prod_congr rfl fun _ h ↦ ?_
+    simp [(mem_support_toFun _ _).mp h]
 
 @[to_additive]
 theorem prod_zero_index [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
@@ -143,10 +138,7 @@ theorem prod_zero_index [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decid
 @[to_additive]
 theorem prod_single_index [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMonoid γ]
     {i : ι} {b : β i} {h : ∀ i, β i → γ} (h_zero : h i 0 = 1) : (single i b).prod h = h i b := by
-  by_cases h : b = 0
-  · simp only [h, single_zero, h_zero]
-    rfl
-  · simp [prod, support_single h]
+  by_cases h : b = 0 <;> simp [prod, h_zero, h]
 
 @[to_additive]
 theorem prod_neg_index [∀ i, AddGroup (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMonoid γ]
@@ -257,10 +249,9 @@ def sumZeroHom [∀ i, Zero (β i)] [AddCommMonoid γ] (φ : ∀ i, ZeroHom (β 
     (f.support'.lift fun s => ∑ i ∈ Multiset.toFinset s.1, φ i (f i)) <| by
       rintro ⟨sx, hx⟩ ⟨sy, hy⟩
       dsimp only [Subtype.coe_mk, toFun_eq_coe] at *
-      have H1 : sx.toFinset ∩ sy.toFinset ⊆ sx.toFinset := Finset.inter_subset_left
-      have H2 : sx.toFinset ∩ sy.toFinset ⊆ sy.toFinset := Finset.inter_subset_right
-      refine (Finset.sum_subset H1 ?_).symm.trans
-        ((Finset.sum_congr rfl fun _ _ ↦ rfl).trans (Finset.sum_subset H2 ?_)) <;>
+      refine (Finset.sum_subset Finset.inter_subset_left ?_).symm.trans
+          ((Finset.sum_congr rfl fun _ _ ↦ rfl).trans
+          (Finset.sum_subset Finset.inter_subset_right ?_)) <;>
         intro i H1 H2 <;> rw [Finset.mem_inter] at H2 <;>
         simp only [Multiset.mem_toFinset] at H1 H2 <;> convert map_zero (φ i)
       · exact (hy i).resolve_left (H2 ⟨H1, ·⟩)
@@ -312,8 +303,7 @@ def sumAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (φ : ∀ i, β i 
     change (∑ i ∈ _, _) = (∑ i ∈ _, _) + ∑ i ∈ _, _
     simp only [AddMonoidHom.toZeroHom_coe, coe_add, coe_mk', Pi.add_apply, map_add,
       Finset.sum_add_distrib]
-    congr 1 <;> refine (Finset.sum_subset ?_ ?_).symm <;>
-      grind only [Finset.subset_iff, Multiset.mem_toFinset, Multiset.mem_add, map_zero]
+    congr 1 <;> refine (Finset.sum_subset ?_ ?_).symm <;> grind
 
 @[simp]
 theorem sumAddHom_single [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (φ : ∀ i, β i →+ γ) (i)
