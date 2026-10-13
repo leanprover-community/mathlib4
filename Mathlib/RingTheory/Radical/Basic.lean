@@ -373,14 +373,14 @@ theorem prime_radical_iff_isPrimePow_normalize : Prime (radical a) ↔ IsPrimePo
   · have ha : a ≠ 0 := by rintro rfl; simp at h
     obtain ⟨m, hm⟩ := exists_dvd_radical_self_pow ha
     obtain ⟨n, _, hn⟩ := (dvd_prime_pow h m).mp hm
-    have hn0 : n ≠ 0 := by
+    have : n ≠ 0 := by
       rintro rfl
       rw [pow_zero, associated_one_iff_isUnit] at hn
       simp [radical_of_isUnit hn] at h
-    refine ⟨radical a, n, h, Nat.pos_of_ne_zero hn0, ?_⟩
-    simpa only [map_pow, coe_normalizeHom, normalize_radical] using
-      (show normalizeHom (radical a ^ n) = normalize a from
-        (normalize_eq_normalize_iff_associated.mpr hn).symm)
+    refine ⟨radical a, n, h, by lia, ?_⟩
+    have : normalizeHom (radical a ^ n) = normalize a :=
+      (normalize_eq_normalize_iff_associated.mpr hn).symm
+    simpa [map_pow, coe_normalizeHom, normalize_radical]
   · rcases h with ⟨p, n, hp, hn, h⟩
     rwa [← radical_eq_of_associated (normalize_associated a), ← h,
       radical_pow_of_prime hp hn.ne', (normalize_associated p).prime_iff]
