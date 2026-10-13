@@ -2140,6 +2140,7 @@ public import Mathlib.Analysis.InnerProductSpace.l2Space
 public import Mathlib.Analysis.LConvolution
 public import Mathlib.Analysis.LocallyConvex.AbsConvex
 public import Mathlib.Analysis.LocallyConvex.AbsConvexOpen
+public import Mathlib.Analysis.LocallyConvex.Asymptotics
 public import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 public import Mathlib.Analysis.LocallyConvex.Barrelled
 public import Mathlib.Analysis.LocallyConvex.Basic
@@ -2192,6 +2193,7 @@ public import Mathlib.Analysis.Normed.Algebra.DualNumber
 public import Mathlib.Analysis.Normed.Algebra.Exponential
 public import Mathlib.Analysis.Normed.Algebra.GelfandFormula
 public import Mathlib.Analysis.Normed.Algebra.GelfandMazur
+public import Mathlib.Analysis.Normed.Algebra.GelfandRadius
 public import Mathlib.Analysis.Normed.Algebra.Logarithm
 public import Mathlib.Analysis.Normed.Algebra.MatrixExponential
 public import Mathlib.Analysis.Normed.Algebra.QuaternionExponential
@@ -3831,6 +3833,7 @@ public import Mathlib.Combinatorics.SimpleGraph.FiveWheelLike
 public import Mathlib.Combinatorics.SimpleGraph.Girth
 public import Mathlib.Combinatorics.SimpleGraph.Hall
 public import Mathlib.Combinatorics.SimpleGraph.Hamiltonian
+public import Mathlib.Combinatorics.SimpleGraph.Hamiltonian.Perm
 public import Mathlib.Combinatorics.SimpleGraph.Hasse
 public import Mathlib.Combinatorics.SimpleGraph.IncMatrix
 public import Mathlib.Combinatorics.SimpleGraph.Init
@@ -5847,6 +5850,8 @@ public import Mathlib.MeasureTheory.Measure.Support
 public import Mathlib.MeasureTheory.Measure.Tight
 public import Mathlib.MeasureTheory.Measure.TightNormed
 public import Mathlib.MeasureTheory.Measure.Tilted
+public import Mathlib.MeasureTheory.Measure.TotalVariation.Basic
+public import Mathlib.MeasureTheory.Measure.TotalVariation.Defs
 public import Mathlib.MeasureTheory.Measure.Trim
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
 public import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
@@ -5892,6 +5897,7 @@ public import Mathlib.MeasureTheory.VectorMeasure.Order
 public import Mathlib.MeasureTheory.VectorMeasure.Prod
 public import Mathlib.MeasureTheory.VectorMeasure.Relations
 public import Mathlib.MeasureTheory.VectorMeasure.SetIntegral
+public import Mathlib.MeasureTheory.VectorMeasure.TotalVariation
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Basic
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Defs
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Semivariation
