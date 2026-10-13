@@ -126,16 +126,6 @@ protected theorem add_cancel_left (a b : R) : a + (a + b) = b := by
 protected theorem add_cancel_right (a b : R) : a + b + b = a := by
   rw [add_assoc, add_self_eq_zero, add_zero]
 
--- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
-@[scoped simp]
-theorem add_add_add_left_eq_add (a b c : R) : c + a + (c + b) = a + b := by
-  rw [add_add_add_comm, add_self_eq_zero, zero_add]
-
--- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
-@[scoped simp]
-theorem add_add_add_right_eq_add (a b c : R) : a + c + (b + c) = a + b := by
-  rw [add_add_add_comm, add_self_eq_zero, add_zero]
-
 protected theorem add_eq_zero {a b : R} : a + b = 0 ↔ a = b := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rw [← CharTwo.add_cancel_left a b, h, add_zero]
@@ -146,16 +136,6 @@ theorem add_eq_iff_eq_add {a b c : R} : a + b = c ↔ a = c + b := by
 
 theorem eq_add_iff_add_eq {a b c : R} : a = b + c ↔ a + c = b := by
   rw [← CharTwo.add_eq_zero, ← add_assoc, add_right_comm, CharTwo.add_eq_zero]
-
-theorem add_mul_self_of_Commute {x y : R} (h : Commute x y) :
-    (x + y) * (x + y) = x * x + y * y := by
-  rw [add_mul, mul_add, mul_add, h, add_assoc, CharTwo.add_cancel_left]
-
-theorem add_one_mul_self (x : R) : (x + 1) * (x + 1) = x * x + 1 := by
-  rw [add_mul_self_of_Commute (Commute.one_right x), one_mul]
-
-theorem mul_self_eq_one_iff [NoZeroDivisors R] {x : R} : x * x = 1 ↔ x = 1 := by
-  rw [← CharTwo.add_eq_zero, ← add_one_mul_self, mul_self_eq_zero, CharTwo.add_eq_zero]
 
 end NonAssocSemiring
 
@@ -186,9 +166,6 @@ section NonAssocCommSemiring
 
 variable [NonAssocCommSemiring R] [CharP R 2]
 
-theorem add_mul_self (x y : R) : (x + y) * (x + y) = x * x + y * y :=
-  add_mul_self_of_Commute (mul_comm x y)
-
 /-- See `frobenius` for the Frobenius map. -/
 private def mulSelfAddMonoidHom : R →+ R where
   toFun x := x * x
@@ -215,27 +192,12 @@ theorem mul_self_inj [NoZeroDivisors R] {x y : R} : x * x = y * y ↔ x = y :=
 
 end NonAssocCommSemiring
 
-section Semiring
-
-variable [Semiring R] [CharP R 2]
-
-theorem add_sq_of_Commute {x y : R} (h : Commute x y) : (x + y) ^ 2 = x ^ 2 + y ^ 2 := by
-  rw [sq, add_mul_self_of_Commute h, sq, sq]
-
-theorem add_one_sq (x : R) : (x + 1) ^ 2 = x ^ 2 + 1 := by
-  rw [sq, add_one_mul_self, sq]
-
-theorem sq_eq_one_iff [NoZeroDivisors R] {x : R} : x ^ 2 = 1 ↔ x = 1 := by
-  rw [sq, CharTwo.mul_self_eq_one_iff]
-
-end Semiring
-
 section CommSemiring
 
 variable [CommSemiring R] [CharP R 2]
 
-theorem add_sq (x y : R) : (x + y) ^ 2 = x ^ 2 + y ^ 2 :=
-  add_sq_of_Commute (mul_comm x y)
+theorem add_sq (x y : R) : (x + y) ^ 2 = x ^ 2 + y ^ 2 := by
+  simp [add_pow_two]
 
 theorem list_sum_sq (l : List R) : l.sum ^ 2 = (l.map (· ^ 2)).sum := by
   simpa only [sq] using list_sum_mul_self l
