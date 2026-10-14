@@ -83,7 +83,7 @@ theorem not_strictAnti_of_wellFoundedLT {β : Type*} [Preorder α] [WellFoundedL
     [Preorder β] [Nonempty β] [NoMaxOrder β] (f : β → α) : ¬ StrictAnti f := by
   inhabit β
   choose m hm using exists_gt (α := β)
-  exact fun hf ↦ (RelEmbedding.natGT (f ∘ Nat.rec default (fun _ ↦ m))
+  exact fun hf ↦ (RelEmbedding.natGT (f ∘ Nat.rec default fun _ ↦ m)
     fun n ↦ hf (hm _)).not_wellFounded wellFounded_lt
 
 theorem not_strictMono_of_wellFoundedLT {β : Type*} [Preorder α] [WellFoundedLT α]
