@@ -5,9 +5,9 @@ Authors: Daniel Morrison, Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Data.ENat.Lattice
-public import Mathlib.Data.Set.Card
 public import Mathlib.SetTheory.Cardinal.NatCard
+
+import Mathlib.Data.ENat.Lattice
 
 /-! # Combinations
 
@@ -44,7 +44,7 @@ theorem mem_iff {s : Finset α} :
 
 instance : SetLike (powersetCard α n) α := SetLike.instSubtype
 
-instance : PartialOrder (Set.powersetCard α n) := .ofSetLike (Set.powersetCard α n) α
+instance : PartialOrder (Set.powersetCard α n) := .ofSetLike (Set.powersetCard α n)
 
 @[simp]
 theorem coe_coe {s : powersetCard α n} :
@@ -58,6 +58,14 @@ theorem card_eq (s : Set.powersetCard α n) : (s : Finset α).card = n := s.prop
 @[simp]
 theorem ncard_eq (s : Set.powersetCard α n) : (s : Set α).ncard = n := by
   rw [← coe_coe, Set.ncard_coe_finset, s.prop]
+
+theorem nonempty_iff [Fintype α] :
+    Nonempty (Set.powersetCard α n) ↔ n ≤ Fintype.card α := by
+  refine ⟨fun ⟨⟨s, hs⟩⟩ ↦ ?_, fun h ↦ ?_⟩
+  · obtain rfl : s.card = n := by simpa using hs
+    exact card_le_univ s
+  · obtain ⟨s, -, rfl⟩ := Finset.exists_subset_card_eq (s := (Finset.univ : Finset α)) (by simpa)
+    exact ⟨s, by simp⟩
 
 theorem coe_nonempty_iff {s : Set.powersetCard α n} :
     (s : Set α).Nonempty ↔ 1 ≤ n := by
@@ -73,8 +81,8 @@ theorem eq_iff_subset {s t : Set.powersetCard α n} : s = t ↔ (s : Finset α) 
 theorem exists_mem_notMem (hn : 1 ≤ n) (hα : n < ENat.card α) {a b : α} (hab : a ≠ b) :
     ∃ s : powersetCard α n, a ∈ s ∧ b ∉ s := by
   have ha' : n ≤ Set.encard {b}ᶜ := by
-    rwa [← (Set.encard_add_encard_compl {b}).trans (Set.encard_univ α), Set.encard_singleton,
-      add_comm, ENat.lt_add_one_iff' (ENat.natCast_ne_top n)] at hα
+    rwa [← encard_add_encard_compl, encard_singleton, add_comm,
+      ENat.lt_add_one_iff' (ENat.natCast_ne_top n)] at hα
   obtain ⟨s, has, has', hs⟩ :=
     Set.exists_superset_subset_encard_eq (s := {a}) (by simp [Ne.symm hab]) (by simpa) ha'
   have : Set.Finite s := Set.finite_of_encard_eq_coe hs
@@ -182,6 +190,11 @@ theorem mem_compl {s : powersetCard α n} {a : α} :
   Finset.mem_compl
 
 theorem compl_symm : (compl hm).symm = compl ((n.add_comm m).trans hm) := rfl
+
+variable (hm) in
+lemma disjoint_iff_eq_compl {s : powersetCard α m} {t : powersetCard α n} :
+    Disjoint s.val t.val ↔ s = powersetCard.compl hm t := by
+  rw [powersetCard.eq_iff_subset, powersetCard.coe_compl, Finset.subset_compl_iff_disjoint_right]
 
 end compl
 

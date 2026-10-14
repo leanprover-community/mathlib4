@@ -5,13 +5,14 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Vector.Defs
-public import Mathlib.Data.List.Nodup
+public import Mathlib.Algebra.BigOperators.Group.List.Basic
 public import Mathlib.Control.Applicative
 public import Mathlib.Control.Traversable.Basic
-public import Mathlib.Algebra.BigOperators.Group.List.Basic
-public import Batteries.Data.Fin.Lemmas
 public import Mathlib.Data.Fin.SuccPred
+public import Mathlib.Data.Vector.Defs
+
+import Batteries.Data.Fin.Lemmas
+import Mathlib.Data.List.Nodup
 
 /-!
 # Additional theorems and definitions about the `Vector` type
@@ -225,7 +226,7 @@ theorem empty_toList_eq_ff (v : Vector α (n + 1)) : v.toList.isEmpty = false :=
   | ⟨_ :: _, _⟩ => rfl
 
 theorem not_empty_toList (v : Vector α (n + 1)) : ¬v.toList.isEmpty := by
-  simp only [empty_toList_eq_ff, Bool.coe_sort_false, not_false_iff]
+  simp [empty_toList_eq_ff]
 
 /-- Mapping under `id` does not change a vector. -/
 @[simp]
@@ -553,8 +554,7 @@ theorem eraseIdx_insertIdx' {v : Vector α (n + 1)} :
     rw [Subtype.mk_eq_mk]
     simp only [Fin.lt_def]
     split_ifs with hij
-    · rcases Nat.exists_eq_succ_of_ne_zero
-        (Nat.pos_iff_ne_zero.1 (lt_of_le_of_lt (Nat.zero_le _) hij)) with ⟨j, rfl⟩
+    · rcases j.exists_eq_succ_of_ne_zero (Nat.ne_zero_of_lt hij) with ⟨j, rfl⟩
       rw [← List.insertIdx_eraseIdx_of_ge]
       · simp; rfl
       · simpa
@@ -600,7 +600,7 @@ theorem get_set_of_ne {v : Vector α n} {i j : Fin n} (h : i ≠ j) (a : α) :
   cases v; cases i; cases j
   simp only [get_eq_get_toList, toList_set, toList_mk, Fin.cast_mk, List.get_eq_getElem]
   rw [List.getElem_set_of_ne]
-  · simpa using h
+  simpa using h
 
 theorem get_set_eq_if {v : Vector α n} {i j : Fin n} (a : α) :
     (v.set i a).get j = if i = j then a else v.get j := by
