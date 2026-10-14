@@ -581,7 +581,7 @@ theorem intent_iInf (f : ι → Concept α β r) :
 instance : Inhabited (Concept α β r) :=
   ⟨⊥⟩
 
-/-- dflip the sets of a concept to make it a concept of the dual context. -/
+/-- Swap the sets of a concept to make it a concept of the dual context. -/
 @[simps]
 def dflip (c : Concept α β r) : Concept β α (dflip r) :=
   ⟨c.intent, c.extent, c.lowerPolar_intent, c.upperPolar_extent⟩

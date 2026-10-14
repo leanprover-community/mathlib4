@@ -124,8 +124,8 @@ instance LiftRel.refl (R : α → α → Prop) [Std.Refl R] : Std.Refl (LiftRel 
     apply Computation.LiftRel.refl _ |>.refl
 
 instance LiftRel.symm (R : α → α → Prop) [Std.Symm R] : Std.Symm (LiftRel R) where
-    symm s1 s2 (h : Function.dflip (LiftRel R) s2 s1) := by
-      rwa [LiftRel.dflip, Std.Symm.dflip_eq] at h
+  symm s1 s2 (h : Function.dflip (LiftRel R) s2 s1) := by
+    rwa [LiftRel.dflip, Std.Symm.dflip_eq] at h
 
 instance LiftRel.trans (R : α → α → Prop) [IsTrans α R] : IsTrans _ (LiftRel R) := by
   refine ⟨fun s t u h1 h2 ↦ ?_⟩
