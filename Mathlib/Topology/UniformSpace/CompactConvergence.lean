@@ -283,7 +283,8 @@ theorem isUniformEmbedding_comp (g : C(β, δ)) (hg : IsUniformEmbedding g) :
 theorem uniformContinuous_comp_left (g : C(α, γ)) :
     UniformContinuous (fun f ↦ f.comp g : C(γ, β) → C(α, β)) :=
   isUniformEmbedding_toUniformOnFunIsCompact.uniformContinuous_iff.mpr <|
-    UniformOnFun.precomp_uniformContinuous (fun _ hK ↦ hK.image g.continuous) |>.comp
+    UniformOnFun.precomp_uniformContinuous (𝔗 := {K : Set α | IsCompact K})
+      (fun _ hK ↦ hK.image g.continuous) |>.comp
       isUniformEmbedding_toUniformOnFunIsCompact.uniformContinuous
 
 /-- Any pair of a homeomorphism `X ≃ₜ Z` and an isomorphism `Y ≃ᵤ T` of uniform spaces gives rise
@@ -347,25 +348,33 @@ section ContinuousOnRestrict
 
 /-- Given functions `F i, f` which are continuous on a compact set `s`, `F` tends to `f`
 uniformly on `s` if and only if the restrictions (as elements of `C(s, β)`) converge. -/
-theorem _root_.ContinuousOn.tendsto_restrict_iff_tendstoUniformlyOn {s : Set α} [CompactSpace s]
+theorem _root_.ContinuousOn.tendsto_domRestrict_iff_tendstoUniformlyOn {s : Set α} [CompactSpace s]
     {f : α → β} (hf : ContinuousOn f s) {ι : Type*} {p : Filter ι}
     {F : ι → α → β} (hF : ∀ i, ContinuousOn (F i) s) :
-    Tendsto (fun i ↦ ⟨_, (hF i).restrict⟩ : ι → C(s, β)) p (𝓝 ⟨_, hf.restrict⟩) ↔
+    Tendsto (fun i ↦ ⟨_, (hF i).domRestrict⟩ : ι → C(s, β)) p (𝓝 ⟨_, hf.domRestrict⟩) ↔
       TendstoUniformlyOn F f p s := by
   rw [ContinuousMap.tendsto_iff_tendstoUniformly, tendstoUniformlyOn_iff_tendstoUniformly_comp_coe]
   congr!
+
+@[deprecated (since := "2026-07-19")]
+alias _root_.ContinuousOn.tendsto_restrict_iff_tendstoUniformlyOn :=
+  _root_.ContinuousOn.tendsto_domRestrict_iff_tendstoUniformlyOn
 
 open UniformOnFun in
 /-- A family `f : X → α → β`, each of which is continuous on a compact set `s : Set α` is
 continuous in the topology `X → α →ᵤ[{s}] β` if and only if the family of continuous restrictions
 `X → C(s, β)` is continuous. -/
-theorem _root_.ContinuousOn.continuous_restrict_iff_continuous_uniformOnFun
+theorem _root_.ContinuousOn.continuous_domRestrict_iff_continuous_uniformOnFun
     {X : Type*} [TopologicalSpace X] {f : X → α → β} {s : Set α}
     (hf : ∀ x, ContinuousOn (f x) s) [CompactSpace s] :
-    Continuous (fun x ↦ ⟨_, (hf x).restrict⟩ : X → C(s, β)) ↔
+    Continuous (fun x ↦ ⟨_, (hf x).domRestrict⟩ : X → C(s, β)) ↔
       Continuous (fun x ↦ ofFun {s} (f x)) := by
   rw [ContinuousMap.continuous_iff_continuous_uniformFun, UniformOnFun.continuous_rng_iff]
   simp [Function.comp_def]
+
+@[deprecated (since := "2026-07-19")]
+alias _root_.ContinuousOn.continuous_restrict_iff_continuous_uniformOnFun :=
+  _root_.ContinuousOn.continuous_domRestrict_iff_continuous_uniformOnFun
 
 end ContinuousOnRestrict
 

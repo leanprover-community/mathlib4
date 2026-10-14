@@ -170,7 +170,7 @@ lemma IsStable.locally_and_iff (hp : IsStable 𝓕 p) (hq : IsStable 𝓕 q) :
     simp_rw [inf_comm hpX.localSeq]
     exact this q p hq hp hqX hpX
   intro p q hp hq hpX hqX
-  convert!
+  convert
     hp _ (hpX.stoppedProcess_localSeq n) _ <|
       hqX.isLocalizingSequence_localSeq.isStoppingTime n using 1
   ext i ω
@@ -193,7 +193,8 @@ lemma IsPreLocalizingSequence.isLocalizingSequence_biInf
     IsLocalizingSequence 𝓕 (fun i ω ↦ ⨅ j ≥ i, τ j ω) P where
   isStoppingTime n := IsStoppingTime.biInf (Set.to_countable {j | j ≥ n})
     (fun j _ ↦ hτ.isStoppingTime j)
-  mono := ae_of_all _ <| fun ω n m hnm ↦ iInf_le_iInf_of_subset <| fun k hk ↦ hnm.trans hk
+  mono := ae_of_all _ <| fun ω n m hnm ↦
+    iInf_le_iInf_of_subset (s := {j | j ≥ m}) (t := {j | j ≥ n}) fun k hk ↦ hnm.trans hk
   tendsto_top := by
     filter_upwards [hτ.tendsto_top] with ω hω
     replace hω := hω.liminf_eq
@@ -215,7 +216,7 @@ lemma IsStable.locally_of_isPreLocalizingSequence
   rw [stoppedProcess_indicator_comm', ← stoppedProcess_stoppedProcess_of_le_right
     (τ := fun ω ↦ τ n ω) (fun _ ↦ (iInf_le _ n).trans <| iInf_le _ le_rfl),
     ← stoppedProcess_indicator_comm']
-  convert!
+  convert
     hp _ (hpτ n) (fun ω ↦ ⨅ j ≥ n, τ j ω) <| hτ.isLocalizingSequence_biInf.isStoppingTime n using 2
   ext i ω
   rw [stoppedProcess_indicator_comm', Set.indicator_indicator]
@@ -242,14 +243,13 @@ private lemma isPreLocalizingSequence_of_isLocalizingSequence_aux'
     simp only [Set.mem_iInter, Set.mem_ofPred_eq] at hmem
     obtain ⟨N, hN⟩ := hTop (T n)
     specialize hN N le_rfl
-    specialize hmem N
     grind
   rw [measure_iInter_of_ae_antitone, le_iInf_iff]
   · exact fun k ↦ (hn k).le
   · filter_upwards [(hσ n).mono] with ω hω
     intros i j hij
     specialize hω hij
-    simp [Set.ofPred] at *
+    simp at *
     grind
   · refine fun i ↦ .nullMeasurableSet ?_
     simp_rw [lt_inf_iff, Set.ofPred_and]
@@ -279,10 +279,10 @@ private lemma isPreLocalizingSequence_of_isLocalizingSequence_aux
   obtain ⟨T, hT, h⟩ := isPreLocalizingSequence_of_isLocalizingSequence_aux' hτ hσ
   choose nk hnk using h
   refine ⟨mkStrictMonoAux nk, T, mkStrictMonoAux_strictMono nk, hT,
-    fun n ↦ le_trans (EventuallyLE.measure_le ?_) (hnk n)⟩
+    fun n ↦ le_trans (EventuallySubset.measure_le ?_) (hnk n)⟩
   filter_upwards [(hσ n).mono] with ω hω
   specialize hω (le_mkStrictMonoAux nk n)
-  simp [Set.ofPred]
+  simp
   grind
 
 lemma IsLocalizingSequence.isPrelocalizingSequence_inf_extraction
@@ -311,7 +311,7 @@ lemma IsStable.locally_locally_iff [IsRightContinuous 𝓕] (hp : IsStable 𝓕 
   obtain ⟨nk, hnk, hpre⟩ :=
     hL.isLocalizingSequence_localSeq.isPrelocalizingSequence_inf_extraction hτ₁
   refine locally_of_isPreLocalizingSequence hp hpre <| fun n ↦ ?_
-  convert! hτ₂ n (nk n) using 1 with
+  convert hτ₂ n (nk n) using 1 with
   ext i ω
   rw [stoppedProcess_indicator_comm', stoppedProcess_indicator_comm',
     stoppedProcess_stoppedProcess, stoppedProcess_indicator_comm']

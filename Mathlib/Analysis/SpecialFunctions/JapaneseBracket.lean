@@ -30,11 +30,9 @@ than the dimension.
 public section
 
 
-noncomputable section
-
 open scoped NNReal Filter Topology ENNReal
 
-open Asymptotics Filter Set Real MeasureTheory Module
+open Filter Set Real MeasureTheory Module
 
 variable {E : Type*} [NormedAddCommGroup E]
 

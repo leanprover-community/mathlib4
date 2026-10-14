@@ -7,8 +7,6 @@ module
 
 public import Mathlib.AlgebraicGeometry.AffineScheme
 public import Mathlib.AlgebraicGeometry.Gluing
-public import Mathlib.CategoryTheory.Limits.Opposites
-public import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Over
 
 /-!
@@ -320,7 +318,6 @@ theorem gluedLift_p2 : gluedLift 𝒰 f g s ≫ p2 𝒰 f g = s.snd := by
   simp_rw [(Cover.ι_glueMorphisms <| 𝒰.pullback₁ s.fst)]
   simp [p2]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- (Implementation)
 The canonical map `(W ×[X] Uᵢ) ×[W] (Uⱼ ×[Z] Y) ⟶ (Uⱼ ×[Z] Y) ×[X] Uᵢ = V j i` where `W` is
 the glued fibred product.

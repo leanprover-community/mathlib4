@@ -5,9 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.SpectralObject.Basic
 public import Mathlib.Algebra.Homology.ExactSequenceFour
-public import Mathlib.CategoryTheory.Abelian.Exact
+public import Mathlib.Algebra.Homology.SpectralObject.Basic
+
+import Mathlib.CategoryTheory.Abelian.Exact
 
 /-!
 # Kernel and cokernel of the differential of a spectral object
@@ -302,7 +303,6 @@ lemma toCycles_i (n : ℤ) :
     X.toCycles f g fg h n ≫ X.iCycles f g n = (X.H n).map (twoδ₁Toδ₀ f g fg h) :=
   kernel.lift_ι ..
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma toCycles_cyclesMap (α : mk₂ f g ⟶ mk₂ f' g') (β : mk₁ fg ⟶ mk₁ fg') (n : ℤ)
@@ -334,7 +334,6 @@ lemma p_fromOpcycles (n : ℤ) :
       (X.H n).map (twoδ₂Toδ₁ f g fg h) :=
   cokernel.π_desc ..
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma opcyclesMap_fromOpcycles (α : mk₂ f g ⟶ mk₂ f' g') (β : mk₁ fg ⟶ mk₁ fg') (n : ℤ)
@@ -491,13 +490,16 @@ lemma pOpcycles_δFromOpcycles (hn₁ : n₀ + 1 = n₁) :
   simp only [δFromOpcycles, p_descOpcycles]
 
 @[reassoc (attr := simp)]
-lemma fromOpcyles_δ (hn₁ : n₀ + 1 = n₁ := by lia) :
+lemma fromOpcycles_δ (hn₁ : n₀ + 1 = n₁ := by lia) :
     X.fromOpcycles f₂ f₃ f₂₃ h₂₃ n₀ ≫ X.δ f₁ f₂₃ n₀ n₁ hn₁ =
       X.δFromOpcycles f₁ f₂ f₃ n₀ n₁ hn₁ := by
   rw [← cancel_epi (X.pOpcycles f₂ f₃ n₀),
     p_fromOpcycles_assoc, pOpcycles_δFromOpcycles,
     X.δ_naturality f₁ f₂ f₁ f₂₃ (𝟙 _) (twoδ₂Toδ₁ f₂ f₃ f₂₃ h₂₃) n₀ n₁,
     Functor.map_id, Category.comp_id]
+
+@[deprecated (since := "2026-10-05")] alias fromOpcyles_δ := fromOpcycles_δ
+@[deprecated (since := "2026-10-05")] alias fromOpcyles_δ_assoc := fromOpcycles_δ_assoc
 
 end
 

@@ -5,10 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Types.Filtered
-public import Mathlib.CategoryTheory.Limits.Yoneda
 public import Mathlib.CategoryTheory.Presentable.Basic
-public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
 
 /-!
 # Colimits of presentable objects
@@ -108,7 +105,6 @@ lemma surjective (x : c.pt.obj cX.pt) :
   rfl
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma injective (j : J) (x₁ x₂ : c.pt.obj (X.obj j))
     (h : c.pt.map (cX.ι.app j) x₁ = c.pt.map (cX.ι.app j) x₂) :
     ∃ (j' : J) (α : j ⟶ j'),

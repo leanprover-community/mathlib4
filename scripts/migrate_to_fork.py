@@ -30,7 +30,7 @@ Requirements:
   - GitHub CLI (gh) installed and authenticated with required scopes:
     gh auth login --scopes 'repo,workflow'
   - Git repository must be the mathlib4 repository
-  - User must be on a feature branch (not master, nightly-testing, or lean-pr-testing-*)
+  - User must be on a feature branch (not master or nightly-testing)
   - SSH access to GitHub is recommended but not required (will fallback to HTTPS)
 
 The script is safe to run multiple times and will skip already-completed migration steps.
@@ -438,8 +438,7 @@ def validate_branch_for_migration(branch: str, auto_accept: bool = False) -> Non
     # Check for system branches that shouldn't be migrated
     is_invalid_branch = (
         branch == 'master' or
-        branch == 'nightly-testing' or
-        re.match(r'^lean-pr-testing-\d+$', branch)
+        branch == 'nightly-testing'
     )
 
     if is_invalid_branch:
@@ -448,7 +447,6 @@ def validate_branch_for_migration(branch: str, auto_accept: bool = False) -> Non
         print("\nSystem branches that cannot be migrated:")
         print("  • master (main development branch)")
         print("  • nightly-testing (CI testing branch)")
-        print("  • lean-pr-testing-* (Lean PR testing branches)")
 
         print(f"\n{Colors.BOLD}What you should do:{Colors.END}")
         print("1. Switch to the feature branch you want to migrate:")

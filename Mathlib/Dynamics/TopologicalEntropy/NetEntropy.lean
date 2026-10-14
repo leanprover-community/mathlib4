@@ -54,8 +54,9 @@ Get versions of the topological entropy on (pseudo-e)metric spaces.
 
 @[expose] public section
 
-open Set Uniformity UniformSpace
-open scoped SetRel
+open Set UniformSpace
+
+open scoped Uniformity SetRel
 
 namespace Dynamics
 
@@ -102,8 +103,8 @@ noncomputable def netMaxcard (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ
   ⨆ (s : Finset X) (_ : IsDynNetIn T F U n s), (s.card : ℕ∞)
 
 lemma IsDynNetIn.card_le_netMaxcard {s : Finset X} (h : IsDynNetIn T F U n s) :
-    s.card ≤ netMaxcard T F U n :=
-  le_iSup₂ (α := ℕ∞) s h
+    s.card ≤ netMaxcard T F U n := by
+  grw [netMaxcard, ← le_iSup₂ s h]
 
 lemma netMaxcard_monotone_time (T : X → X) (F : Set X) (U : SetRel X X) :
     Monotone fun n : ℕ ↦ netMaxcard T F U n :=
@@ -134,7 +135,7 @@ lemma netMaxcard_finite_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ)
       intro s h
       rw [← ENat.natCast_le_natCast, k_max]
       apply le_sSup
-      exact Filter.frequently_principal.mp fun a ↦ a (by simpa using ⟨_, h, rfl⟩) rfl
+      exact mem_image_of_mem _ (mem_image_of_mem Finset.card h)
     have h_nemp : (Finset.card '' {s : Finset X | IsDynNetIn T F U n s}).Nonempty := by
       refine ⟨0, ?_⟩
       simp only [mem_image, mem_ofPred_eq, Finset.card_eq_zero, exists_eq_right, Finset.coe_empty]

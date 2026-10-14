@@ -53,7 +53,6 @@ lemma mapDomain_single : mapDomain f (single a r) = single (f a) r := by ext; si
 lemma mapDomain_injective (hf : Injective f) : Injective (mapDomain (R := R) f) :=
   ofCoeff_injective.comp <| (Finsupp.mapDomain_injective hf).comp coeff_injective
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := R) (attr := simp) mapDomain_one]
 theorem mapDomain_one [One M] [One N] {F : Type*} [FunLike F M N] [OneHomClass F M N] (f : F) :
     mapDomain f (1 : R[M]) = (1 : R[N]) := by
@@ -89,11 +88,9 @@ protected lemma map_sum (f : R →+ S) (s : Finset ι) (x : ι → R[M]) :
 @[to_additive (attr := simp)]
 lemma map_single (f : R →+ S) (r : R) (m : M) : map f (single m r) = single m (f r) := by ext; simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma map_id (x : R[M]) : map (.id R) x = x := by ext; simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma map_map (f : S →+ T) (g : R →+ S) (x : R[M]) : map f (map g x) = map (f.comp g) x := by
   ext; simp
@@ -143,8 +140,11 @@ lemma comapDomain_add (f : M → N) (hf) (x y : R[N]) :
   ext; simp [comapDomain_add_of_injective hf]
 
 @[simp]
-lemma comapDomain_single_of_not_mem_range {r : R} {n : N} (hn : n ∉ Set.range f) (hf) :
+lemma comapDomain_single_of_notMem_range {r : R} {n : N} (hn : n ∉ Set.range f) (hf) :
     comapDomain f hf (single n r) = 0 := by ext; simp [*]
+
+@[deprecated (since := "2026-09-28")]
+alias comapDomain_single_of_not_mem_range := comapDomain_single_of_notMem_range
 
 /-- `comapDomain` as an `AddMonoidHom`. -/
 @[to_additive (attr := simps) comapDomainAddMonoidHom /-- `comapDomain` as an `AddMonoidHom`. -/]
@@ -153,7 +153,6 @@ def comapDomainAddMonoidHom (f : M → N) (hf : Injective f) : R[N] →+ R[M] wh
   map_zero' := by simp
   map_add' := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma comapDomain_single_map (f : M → N) (hf) (m : M) (r : R) :
     comapDomain f hf (single (f m) r) = single m r := by ext; simp
@@ -182,18 +181,15 @@ def mapDomainNonUnitalRingHom (f : M →ₙ* N) : R[M] →ₙ+* R[N] where
   map_add' := mapDomain_add _
   map_mul' := mapDomain_mul f
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := R) (attr := simp)]
 lemma mapDomainNonUnitalRingHom_id : mapDomainNonUnitalRingHom R (.id M) = .id R[M] := by ext; simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := R) (attr := simp)]
 lemma mapDomainNonUnitalRingHom_comp (f : N →ₙ* O) (g : M →ₙ* N) :
     mapDomainNonUnitalRingHom R (f.comp g) =
       (mapDomainNonUnitalRingHom R f).comp (mapDomainNonUnitalRingHom R g) := by
-  ext; simp [Finsupp.mapDomain_comp]
+  ext; simp [Finsupp.mapDomain_fun_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 /-- Equivalent monoids have additively isomorphic monoid algebras.
 
@@ -209,14 +205,12 @@ def mapDomainAddEquiv (e : M ≃ N) : R[M] ≃+ R[N] where
   right_inv x := by ext; simp
   map_add' x y := by ext; simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma coeff_mapDomainAddEquiv (e : M ≃ N) (x : R[M]) :
     (mapDomainAddEquiv R e x).coeff = equivMapDomain e x.coeff := by ext; simp [mapDomainAddEquiv]
 
 @[deprecated (since := "2026-06-18")] alias mapDomainAddEquiv_apply := coeff_mapDomainAddEquiv
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma mapDomainAddEquiv_single (e : M ≃ N) (r : R) (m : M) :
     mapDomainAddEquiv R e (single m r) = single (e m) r := by simp [mapDomainAddEquiv]
@@ -245,36 +239,24 @@ def mapAddEquiv (e : R ≃+ S) : R[M] ≃+ S[M] where
   right_inv x := by ext; simp
   map_add' := MonoidAlgebra.map_add _
 
-@[deprecated (since := "2026-03-20")] alias mapRangeAddEquiv := mapAddEquiv
-
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma coeff_mapAddEquiv (e : R ≃+ S) (x : R[M]) (m : M) :
     (mapAddEquiv M e x).coeff m = e (x.coeff m) := by simp [mapAddEquiv]
 
 @[deprecated (since := "2026-06-18")] alias mapAddEquiv_apply := coeff_mapAddEquiv
 
-@[deprecated (since := "2026-03-20")] alias mapRangeAddEquiv_apply := coeff_mapAddEquiv
-
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma mapAddEquiv_single (e : R ≃+ S) (r : R) (m : M) :
     mapAddEquiv M e (single m r) = single m (e r) := by simp [mapAddEquiv]
-
-@[deprecated (since := "2026-03-20")] alias mapRangeAddEquiv_single := mapAddEquiv_single
 
 @[to_additive (attr := simp)]
 lemma symm_mapAddEquiv (e : R ≃+ S) :
     (mapAddEquiv M e).symm = mapAddEquiv M e.symm := rfl
 
-@[deprecated (since := "2026-03-20")] alias symm_mapRangeAddEquiv := symm_mapAddEquiv
-
 @[to_additive (attr := simp)]
 lemma mapAddEquiv_trans (e₁ : R ≃+ S) (e₂ : S ≃+ T) :
     mapAddEquiv M (e₁.trans e₂) = (mapAddEquiv M e₁).trans (mapAddEquiv M e₂) := by
   ext; simp
-
-@[deprecated (since := "2026-03-20")] alias mapRangeAddEquiv_trans := mapAddEquiv_trans
 
 @[to_additive (attr := simp) (dont_translate := R S) map_mul]
 protected lemma map_mul (f : R →+* S) (x y : R[M]) :
@@ -305,7 +287,6 @@ attribute [local ext high] ringHom_ext
 @[to_additive (dont_translate := R) (attr := simp)]
 lemma mapDomainRingHom_id : mapDomainRingHom R (.id M) = .id R[M] := by ext <;> simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := R) (attr := simp)]
 lemma mapDomainRingHom_comp (f : N →* O) (g : M →* N) :
     mapDomainRingHom R (f.comp g) = (mapDomainRingHom R f).comp (mapDomainRingHom R g) := by
@@ -326,49 +307,32 @@ noncomputable def mapRingHom (f : R →+* S) : R[M] →+* S[M] where
   map_one' := MonoidAlgebra.map_one _
   map_mul' := MonoidAlgebra.map_mul _
 
-@[deprecated (since := "2026-03-20")] alias mapRangeRingHom := mapRingHom
-
 @[to_additive]
 lemma coe_mapRingHom (f : R →+* S) : ⇑(mapRingHom M f) = map f := rfl
 
-@[deprecated (since := "2026-03-20")] alias coe_mapRangeRingHom := coe_mapRingHom
-
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma coeff_mapRingHom (f : R →+* S) (x : R[M]) (m : M) :
     (mapRingHom M f x).coeff m = f (x.coeff m) := by simp [mapRingHom]
 
 @[deprecated (since := "2026-06-18")] alias mapRingHom_apply := coeff_mapRingHom
 
-@[deprecated (since := "2026-03-20")] alias mapRangeRingHom_apply := coeff_mapRingHom
-
 @[to_additive (attr := simp)]
 lemma mapRingHom_single (f : R →+* S) (a : M) (b : R) :
     mapRingHom M f (single a b) = single a (f b) := by simp [mapRingHom]
 
-@[deprecated (since := "2026-03-20")] alias mapRangeRingHom_single := mapRingHom_single
-
 @[to_additive (dont_translate := R) (attr := simp)]
 lemma mapRingHom_id : mapRingHom M (.id R) = .id R[M] := by ext <;> simp
-
-@[deprecated (since := "2026-03-20")] alias mapRangeRingHom_id := mapRingHom_id
 
 @[to_additive (dont_translate := R S T) (attr := simp)]
 lemma mapRingHom_comp (f : S →+* T) (g : R →+* S) :
     mapRingHom M (f.comp g) = (mapRingHom M f).comp (mapRingHom M g) := by
   ext <;> simp
 
-@[deprecated (since := "2026-03-20")] alias mapRangeRingHom_comp := mapRingHom_comp
-
 @[to_additive (dont_translate := R S)]
 lemma mapRingHom_comp_mapDomainRingHom (f : R →+* S) (g : M →* N) :
     (mapRingHom N f).comp (mapDomainRingHom R g) =
       (mapDomainRingHom S g).comp (mapRingHom M f) := by aesop
 
-@[deprecated (since := "2026-03-20")]
-alias mapRangeRingHom_comp_mapDomainRingHom := mapRingHom_comp_mapDomainRingHom
-
-set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 /-- Isomorphic monoids have isomorphic monoid algebras. -/
 @[to_additive (dont_translate := R)
@@ -383,7 +347,6 @@ lemma coeff_mapDomainRingEquiv (e : M ≃* N) (x : R[M]) :
 
 @[deprecated (since := "2026-06-18")] alias mapDomainRingEquiv_apply := coeff_mapDomainRingEquiv
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma mapDomainRingEquiv_single (e : M ≃* N) (r : R) (m : M) :
     mapDomainRingEquiv R e (single m r) = single (e m) r := by simp [mapDomainRingEquiv]
@@ -409,41 +372,28 @@ def mapRingEquiv (e : R ≃+* S) : R[M] ≃+* S[M] :=
   .ofRingHom (MonoidAlgebra.mapRingHom M e) (MonoidAlgebra.mapRingHom M e.symm)
     (by apply MonoidAlgebra.ringHom_ext <;> simp) (by apply MonoidAlgebra.ringHom_ext <;> simp)
 
-@[deprecated (since := "2026-03-20")] alias mapRangeRingEquiv := mapRingEquiv
-
 @[to_additive (attr := simp)]
 lemma coeff_mapRingEquiv (e : R ≃+* S) (x : R[M]) (m : M) :
     (mapRingEquiv M e x).coeff m = e (x.coeff m) := by simp [mapRingEquiv]
 
 @[deprecated (since := "2026-06-18")] alias mapRingEquiv_apply := coeff_mapRingEquiv
 
-@[deprecated (since := "2026-03-20")] alias mapRangeRingEquiv_apply := coeff_mapRingEquiv
-
 @[to_additive (attr := simp)]
 lemma mapRingEquiv_single (e : R ≃+* S) (r : R) (m : M) :
     mapRingEquiv M e (single m r) = single m (e r) := by simp [mapRingEquiv]
-
-@[deprecated (since := "2026-03-20")] alias mapRangeRingEquiv_single := mapRingEquiv_single
 
 @[to_additive]
 lemma toRingHom_mapRingEquiv (e : R ≃+* S) :
     (mapRingEquiv M e).toRingHom = mapRingHom M e := rfl
 
-@[deprecated (since := "2026-03-20")]
-alias toRingHom_mapRangeRingEquiv := toRingHom_mapRingEquiv
-
 @[to_additive (attr := simp)]
 lemma symm_mapRingEquiv (e : R ≃+* S) :
     (mapRingEquiv M e).symm = mapRingEquiv M e.symm := rfl
-
-@[deprecated (since := "2026-03-20")] alias symm_mapRangeRingEquiv := symm_mapRingEquiv
 
 @[to_additive (attr := simp)]
 lemma mapRingEquiv_trans (e₁ : R ≃+* S) (e₂ : S ≃+* T) :
     mapRingEquiv M (e₁.trans e₂) =
       (mapRingEquiv M e₁).trans (mapRingEquiv M e₂) := by ext; simp
-
-@[deprecated (since := "2026-03-20")] alias mapRangeRingEquiv_trans := mapRingEquiv_trans
 
 /-- Nested monoid algebras can be taken in an arbitrary order. -/
 @[to_additive (dont_translate := R)
@@ -486,12 +436,14 @@ end MonoidAlgebra
 #### Conversions between `AddMonoidAlgebra` and `MonoidAlgebra`
 -/
 
-set_option backward.isDefEq.respectTransparency false in
-variable (k G) in
+namespace AddMonoidAlgebra
+variable [Semiring R] [Add M]
+
+variable (R M) in
 /-- The equivalence between `AddMonoidAlgebra` and `MonoidAlgebra` in terms of
 `Multiplicative` -/
-protected def AddMonoidAlgebra.toMultiplicative [Semiring k] [Add G] :
-    AddMonoidAlgebra k G ≃+* MonoidAlgebra k (Multiplicative G) where
+@[simps]
+def toMultiplicative : AddMonoidAlgebra R M ≃+* MonoidAlgebra R (Multiplicative M) where
   toFun x := .ofCoeff <| x.coeff.mapDomain .ofAdd
   invFun x := .ofCoeff <| x.coeff.mapDomain Multiplicative.toAdd
   left_inv x := by ext; simp
@@ -500,14 +452,22 @@ protected def AddMonoidAlgebra.toMultiplicative [Semiring k] [Add G] :
   map_mul' x y := by
     classical
     ext
-    simp [MonoidAlgebra.coeff_mul, AddMonoidAlgebra.coeff_mul, Finsupp.sum_mapDomain_index, add_mul,
-      mul_add, ite_add_zero, Multiplicative.ext_iff]
+    simp [MonoidAlgebra.coeff_mul, coeff_mul, sum_mapDomain_index, add_mul, mul_add, ite_add_zero,
+      Multiplicative.ext_iff]
 
-set_option backward.isDefEq.respectTransparency false in
-variable (k G) in
+@[simp]
+lemma toMultiplicative_single (m : M) (r : R) :
+    toMultiplicative R M (single m r) = .single (.ofAdd m) r := by simp [toMultiplicative]
+
+end AddMonoidAlgebra
+
+namespace MonoidAlgebra
+variable [Semiring R] [Mul M]
+
+variable (R M) in
 /-- The equivalence between `MonoidAlgebra` and `AddMonoidAlgebra` in terms of `Additive` -/
-protected def MonoidAlgebra.toAdditive [Semiring k] [Mul G] :
-    MonoidAlgebra k G ≃+* AddMonoidAlgebra k (Additive G) where
+@[simps]
+def toAdditive : MonoidAlgebra R M ≃+* AddMonoidAlgebra R (Additive M) where
   toFun x := .ofCoeff <| x.coeff.mapDomain .ofMul
   invFun x := .ofCoeff <| x.coeff.mapDomain Additive.toMul
   left_inv x := by ext; simp
@@ -516,5 +476,11 @@ protected def MonoidAlgebra.toAdditive [Semiring k] [Mul G] :
   map_mul' x y := by
     classical
     ext
-    simp [MonoidAlgebra.coeff_mul, AddMonoidAlgebra.coeff_mul, Finsupp.sum_mapDomain_index, add_mul,
-      mul_add, ite_add_zero, Additive.ext_iff]
+    simp [coeff_mul, AddMonoidAlgebra.coeff_mul, sum_mapDomain_index, add_mul, mul_add,
+      ite_add_zero, Additive.ext_iff]
+
+@[simp]
+lemma toAdditive_single (m : M) (r : R) : toAdditive R M (single m r) = .single (.ofMul m) r := by
+  ext; simp
+
+end MonoidAlgebra

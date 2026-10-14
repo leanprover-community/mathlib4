@@ -50,7 +50,9 @@ the only remaining results are about `Lipschitz` and `Antilipschitz`.
 
 @[expose] public section
 
-open Real Set Filter RCLike Bornology Uniformity Topology NNReal ENNReal
+open Real Set Filter Bornology NNReal ENNReal
+
+open scoped Uniformity
 
 noncomputable section
 
@@ -184,12 +186,12 @@ variable {p α β}
 theorem prod_edist_eq_card (f g : WithLp 0 (α × β)) :
     edist f g =
       (if edist f.fst g.fst = 0 then 0 else 1) + (if edist f.snd g.snd = 0 then 0 else 1) := by
-  convert! if_pos rfl
+  convert! ite_eq_left rfl
 
 theorem prod_edist_eq_add (hp : 0 < p.toReal) (f g : WithLp p (α × β)) :
     edist f g = (edist f.fst g.fst ^ p.toReal + edist f.snd g.snd ^ p.toReal) ^ (1 / p.toReal) :=
   let hp' := ENNReal.toReal_pos_iff.mp hp
-  (if_neg hp'.1.ne').trans (if_neg hp'.2.ne)
+  (ite_eq_right hp'.1.ne').trans (ite_eq_right hp'.2.ne)
 
 theorem prod_edist_eq_sup (f g : WithLp ∞ (α × β)) :
     edist f g = edist f.fst g.fst ⊔ edist f.snd g.snd := rfl
@@ -211,7 +213,7 @@ theorem prod_edist_self (f : WithLp p (α × β)) : edist f f = 0 := by
     simp
   · simp [prod_edist_eq_sup]
   · simp [prod_edist_eq_add h, ENNReal.zero_rpow_of_pos h,
-      ENNReal.zero_rpow_of_pos (inv_pos.2 <| h)]
+      ENNReal.zero_rpow_of_pos (inv_pos.2 h)]
 
 /-- The distance is symmetric.
 
@@ -249,12 +251,12 @@ variable {p α β}
 
 theorem prod_dist_eq_card (f g : WithLp 0 (α × β)) : dist f g =
     (if dist f.fst g.fst = 0 then 0 else 1) + (if dist f.snd g.snd = 0 then 0 else 1) := by
-  convert! if_pos rfl
+  convert! ite_eq_left rfl
 
 theorem prod_dist_eq_add (hp : 0 < p.toReal) (f g : WithLp p (α × β)) :
     dist f g = (dist f.fst g.fst ^ p.toReal + dist f.snd g.snd ^ p.toReal) ^ (1 / p.toReal) :=
   let hp' := ENNReal.toReal_pos_iff.mp hp
-  (if_neg hp'.1.ne').trans (if_neg hp'.2.ne)
+  (ite_eq_right hp'.1.ne').trans (ite_eq_right hp'.2.ne)
 
 theorem prod_dist_eq_sup (f g : WithLp ∞ (α × β)) :
     dist f g = dist f.fst g.fst ⊔ dist f.snd g.snd := rfl
@@ -285,14 +287,14 @@ variable {p α β}
 @[simp]
 theorem prod_norm_eq_card (f : WithLp 0 (α × β)) :
     ‖f‖ = (if ‖f.fst‖ = 0 then 0 else 1) + (if ‖f.snd‖ = 0 then 0 else 1) := by
-  convert! if_pos rfl
+  convert! ite_eq_left rfl
 
 theorem prod_norm_eq_sup (f : WithLp ∞ (α × β)) : ‖f‖ = ‖f.fst‖ ⊔ ‖f.snd‖ := rfl
 
 theorem prod_norm_eq_add (hp : 0 < p.toReal) (f : WithLp p (α × β)) :
     ‖f‖ = (‖f.fst‖ ^ p.toReal + ‖f.snd‖ ^ p.toReal) ^ (1 / p.toReal) :=
   let hp' := ENNReal.toReal_pos_iff.mp hp
-  (if_neg hp'.1.ne').trans (if_neg hp'.2.ne)
+  (ite_eq_right hp'.1.ne').trans (ite_eq_right hp'.2.ne)
 
 end Norm
 
@@ -762,7 +764,7 @@ theorem prod_nnnorm_eq_sup (f : WithLp ∞ (α × β)) : ‖f‖₊ = ‖f.fst�
   (prod_nnnorm_ofLp _).symm
 
 @[simp] lemma prod_norm_ofLp (f : WithLp ∞ (α × β)) : ‖ofLp f‖ = ‖f‖ :=
-  congr_arg NNReal.toReal <| prod_nnnorm_ofLp f
+  congr($(prod_nnnorm_ofLp f).toReal)
 
 @[simp] lemma prod_norm_toLp (f : α × β) : ‖toLp ⊤ f‖ = ‖f‖ :=
   (prod_norm_ofLp _).symm
@@ -812,7 +814,7 @@ theorem prod_nnnorm_eq_of_L2 (x : WithLp 2 (α × β)) :
 
 theorem prod_norm_sq_eq_of_L2 (x : WithLp 2 (α × β)) : ‖x‖ ^ 2 = ‖x.fst‖ ^ 2 + ‖x.snd‖ ^ 2 := by
   suffices ‖x‖₊ ^ 2 = ‖x.fst‖₊ ^ 2 + ‖x.snd‖₊ ^ 2 by
-    simpa only [NNReal.coe_sum] using! congr_arg ((↑) : ℝ≥0 → ℝ) this
+    simpa only [NNReal.coe_sum] using! congr(($this : ℝ))
   rw [prod_nnnorm_eq_of_L2, NNReal.sq_sqrt]
 
 theorem prod_dist_eq_of_L2 (x y : WithLp 2 (α × β)) :
@@ -855,11 +857,11 @@ section Single
 
 @[simp]
 lemma norm_toLp_fst (x : α) : ‖toLp p (x, (0 : β))‖ = ‖x‖ :=
-  congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_toLp_inl p α β x
+  congr($(nnnorm_toLp_inl p α β x))
 
 @[simp]
 lemma norm_toLp_snd (y : β) : ‖toLp p ((0 : α), y)‖ = ‖y‖ :=
-  congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_toLp_inr p α β y
+  congr($(nnnorm_toLp_inr p α β y))
 
 @[simp]
 lemma nndist_toLp_fst (x₁ x₂ : α) :
@@ -875,12 +877,12 @@ lemma nndist_toLp_snd (y₁ y₂ : β) :
 
 @[simp]
 lemma dist_toLp_fst (x₁ x₂ : α) : dist (toLp p (x₁, (0 : β))) (toLp p (x₂, 0)) = dist x₁ x₂ :=
-  congr_arg ((↑) : ℝ≥0 → ℝ) <| nndist_toLp_fst p α β x₁ x₂
+  congr($(nndist_toLp_fst p α β x₁ x₂))
 
 @[simp]
 lemma dist_toLp_snd (y₁ y₂ : β) :
     dist (toLp p ((0 : α), y₁)) (toLp p (0, y₂)) = dist y₁ y₂ :=
-  congr_arg ((↑) : ℝ≥0 → ℝ) <| nndist_toLp_snd p α β y₁ y₂
+  congr($(nndist_toLp_snd p α β y₁ y₂))
 
 @[simp]
 lemma edist_toLp_fst (x₁ x₂ : α) : edist (toLp p (x₁, (0 : β))) (toLp p (x₂, 0)) = edist x₁ x₂ := by

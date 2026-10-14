@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Shift.CommShift
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+public import Mathlib.CategoryTheory.Shift.CommShift
 
 /-! # Sequences of functors from a category equipped with a shift
 
@@ -26,8 +26,6 @@ for any `n : ℤ`, we may choose `F.shift n` to be the homology functor
 in degree `n`.
 
 -/
-
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -283,7 +281,6 @@ end
 namespace ShiftSequence
 
 variable {F} in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given an isomorphism `π ⋙ H ≅ F`, where `π` is a functor which commutes
 with the shift by `M` and `H` is equipped with a shift sequence,
 then this is the shift sequence for `F` induced by composition. -/

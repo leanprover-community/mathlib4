@@ -5,7 +5,7 @@ Authors: Simon Hudon, Edward Ayers, Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Algebra.Group.Monoid
 public import Mathlib.Logic.Equiv.Defs
 
 /-!
