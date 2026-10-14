@@ -6,8 +6,8 @@ Authors: Jireh Loreaux
 
 module
 
-public import Mathlib.Analysis.RCLike.ContinuousMap
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
+public import Mathlib.Analysis.RCLike.ContinuousMap
 
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Range
 import Mathlib.Analysis.CStarAlgebra.Hom

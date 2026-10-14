@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
 public import Mathlib.CategoryTheory.Functor.Derived.PointwiseLeftDerived
+public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
 
 import Mathlib.CategoryTheory.GuitartExact.KanExtension
 
@@ -82,7 +82,6 @@ lemma leftDerivedFunctorComparison_fac_app (X : C₁) :
 
 variable [Φ.IsLeftDerivabilityStructure]
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma hasPointwiseLeftDerivedFunctorAt_iff_of_isLeftDerivabilityStructure (X : C₁) :
     (Φ.functor ⋙ F).HasPointwiseLeftDerivedFunctorAt W₁ X ↔
       F.HasPointwiseLeftDerivedFunctorAt W₂ (Φ.functor.obj X) := by

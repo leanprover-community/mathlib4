@@ -112,6 +112,10 @@ instance [Normal K L] [DecidableEq L] [Fintype Gal(L/K)] (c : ConjRootClass K L)
       ((Finset.univ (α := Gal(L/K))).image (· x))
       (fun _ ↦ by simp [← isConjRoot_iff_exists_algEquiv, ← mk_eq_mk])
 
+theorem carrier_nonempty (c : ConjRootClass K L) : c.carrier.Nonempty := by
+  induction c with
+  | h a => exact ⟨a, mem_carrier.mpr rfl⟩
+
 open Polynomial
 
 /-- `c.minpoly` is the minimal polynomial of the conjugates. -/
