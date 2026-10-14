@@ -8,9 +8,8 @@ module
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Submonoid.Defs
 public import Mathlib.Data.Set.Inclusion
-public import Mathlib.Tactic.Common
-public import Mathlib.Tactic.FastInstance
 public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.Common
 
 /-!
 # Subgroups
@@ -322,7 +321,7 @@ instance : SetLike (Subgroup G) G where
     obtain ⟨⟨⟨hq, _⟩, _⟩, _⟩ := q
     congr
 
-@[to_additive] instance : PartialOrder (Subgroup G) := .ofSetLike (Subgroup G) G
+@[to_additive] instance : PartialOrder (Subgroup G) := .ofSetLike (Subgroup G)
 
 initialize_simps_projections Subgroup (carrier → coe, as_prefix coe)
 initialize_simps_projections AddSubgroup (carrier → coe, as_prefix coe)
@@ -640,7 +639,7 @@ namespace Normal
 @[to_additive]
 theorem conj_mem' (nH : H.Normal) (n : G) (hn : n ∈ H) (g : G) :
     g⁻¹ * n * g ∈ H := by
-  convert! nH.conj_mem n hn g⁻¹
+  convert nH.conj_mem n hn g⁻¹
   rw [inv_inv]
 
 @[to_additive]
@@ -676,11 +675,6 @@ def normalizer (S : Set G) : Subgroup G where
   inv_mem' {a} (ha : ∀ n, n ∈ S ↔ a * n * a⁻¹ ∈ S) n := by
     rw [ha (a⁻¹ * n * a⁻¹⁻¹)]
     simp only [inv_inv, mul_assoc, mul_inv_cancel_left, mul_inv_cancel, mul_one]
-
-@[deprecated (since := "2026-03-19")]
-alias setNormalizer := normalizer
-@[deprecated (since := "2026-03-19")]
-alias _root_.AddSubgroup.setNormalizer := AddSubgroup.normalizer
 
 variable {H} {S : Set G} {g : G}
 
@@ -719,11 +713,6 @@ end Normalizer
 @[to_additive (attr := deprecated inferInstance +typeChanged (since := "2026-04-09"))]
 theorem commGroup_isMulCommutative {G : Type*} [CommGroup G] (H : Subgroup G) :
     IsMulCommutative H := inferInstance
-
-@[to_additive (attr := deprecated setLike_mul_comm +typeChanged (since := "2026-03-09"))]
-lemma mul_comm_of_mem_isMulCommutative [IsMulCommutative H] {a b : G} (ha : a ∈ H) (hb : b ∈ H) :
-    a * b = b * a :=
-  setLike_mul_comm ha hb
 
 end Subgroup
 

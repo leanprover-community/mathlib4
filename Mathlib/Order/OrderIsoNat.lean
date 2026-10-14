@@ -6,9 +6,6 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Basic.Denumerable
-public import Mathlib.Data.Set.Subsingleton
-public import Mathlib.Logic.Function.Iterate
-public import Mathlib.Order.Hom.Basic
 public import Mathlib.Order.Lattice.Nat
 
 /-!
@@ -171,7 +168,7 @@ theorem exists_increasing_or_nonincreasing_subseq' (r : α → α → Prop) (f :
         simp only [bad, exists_prop, not_not, Set.mem_ofPred_eq, not_forall] at h
         obtain ⟨n', hn1, hn2⟩ := h
         refine ⟨n + n' - n - m, by lia, ?_⟩
-        convert! hn2
+        convert hn2
         lia
       let g' : ℕ → ℕ := @Nat.rec (fun _ => ℕ) m fun n gn => Nat.find (h gn)
       exact
@@ -309,7 +306,8 @@ theorem exists_covBy_seq_of_wellFoundedLT_wellFoundedGT (α) [Preorder α]
   have H : ∃ n, IsMax (a n) := by
     by_contra!
     exact (RelEmbedding.natGT a fun n ↦ (cov n (this n)).1).not_wellFounded wfg
-  exact ⟨_, wellFounded_lt.min_mem _ H, fun i h ↦ cov _ (wellFounded_lt.not_lt_min _ · h)⟩
+  exact ⟨_, wellFounded_lt.min_mem {n | IsMax (a n)} H,
+    fun i h ↦ cov _ (wellFounded_lt.not_lt_min {n | IsMax (a n)} · h)⟩
 
 theorem exists_covBy_seq_of_wellFoundedLT_wellFoundedGT_of_le {α : Type*} [PartialOrder α]
     [wfl : WellFoundedLT α] [wfg : WellFoundedGT α] {x y : α} (h : x ≤ y) :
