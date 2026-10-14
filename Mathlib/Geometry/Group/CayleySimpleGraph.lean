@@ -56,6 +56,7 @@ def cayleySimpleGraph : SimpleGraph G := mulCayley (Set.range P.val)
 /-- `g` is a letter of `P` if it is the value of a one-letter word. -/
 def IsLetter : Prop := ∃ x : ι × Bool, P.wordProd [x] = g
 
+variable {g} in
 /-- `g` is a letter of `P` if and only if it is a generator or the inverse of one. -/
 lemma isLetter_iff : P.IsLetter g ↔ g ∈ Set.range P.val ∨ g⁻¹ ∈ Set.range P.val := by
   constructor
