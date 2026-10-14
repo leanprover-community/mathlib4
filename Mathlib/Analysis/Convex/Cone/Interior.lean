@@ -11,8 +11,8 @@ public import Mathlib.Topology.Algebra.Group.Pointwise
 /-!
 # Interior of convex cones
 
-The interior of a convex cone is a convex cone. The coercion and membership API parallels
-`ConvexCone.closure`.
+We define the interior of a convex cone. The current API is basic and should be extended as
+necessary.
 -/
 
 @[expose] public section
