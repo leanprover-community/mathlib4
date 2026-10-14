@@ -19,7 +19,6 @@ If `S` generates `R` as a subring, then the support of `S` forms an ideal.
 ## Main definitions
 
 * `Subsemiring.supportIdeal`: the support of a subsemiring, as an ideal.
-
 -/
 
 public section
