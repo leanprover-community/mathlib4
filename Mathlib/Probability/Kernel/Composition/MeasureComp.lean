@@ -184,6 +184,27 @@ lemma absolutelyContinuous_comp_of_countable [Countable α] [MeasurableSingleton
 
 end AbsolutelyContinuous
 
+section ApplyPos
+
+variable {s : Set β}
+
+/-- The measure `η ∘ₘ μ` gives positive mass to a measurable set `s` iff the set of points `a`
+such that `η a s` is positive has positive `μ`-measure. -/
+lemma comp_apply_pos_iff (hs : MeasurableSet s) :
+    0 < (η ∘ₘ μ) s ↔ 0 < μ {a | 0 < η a s} := by
+  rw [Measure.bind_apply hs η.aemeasurable, lintegral_pos_iff_support (η.measurable_coe hs)]
+  congr! 2
+  ext a
+  simp [pos_iff_ne_zero]
+
+/-- The measure `η ∘ₘ μ` gives zero mass to a measurable set `s` iff the set of points `a`
+such that `η a s` is positive has `μ`-measure zero. -/
+lemma comp_apply_eq_zero_iff (hs : MeasurableSet s) :
+    (η ∘ₘ μ) s = 0 ↔ μ {a | 0 < η a s} = 0 := by
+  rw [← not_iff_not, ← Ne, ← Ne, ← pos_iff_ne_zero, ← pos_iff_ne_zero, comp_apply_pos_iff hs]
+
+end ApplyPos
+
 end MeasureTheory.Measure
 
 namespace ProbabilityTheory
@@ -217,5 +238,52 @@ lemma absolutelyContinuous_boolKernel_comp_right (μ ν : Measure α) (hπ : π 
   boolKernel_comp_measure _ _ _ ▸ (Measure.absolutelyContinuous_smul hπ).add_right _
 
 end BoolKernel
+
+namespace Kernel
+
+/-! ### Powers of a kernel -/
+
+variable {κ : Kernel α α} {μ : Measure α}
+
+lemma pow_add_apply (κ : Kernel α α) (m n : ℕ) (a : α) :
+    (κ ^ (m + n)) a = (κ ^ m) ∘ₘ (κ ^ n) a := by
+  rw [pow_add, comp_apply]
+
+lemma pow_succ_apply (κ : Kernel α α) (n : ℕ) (a : α) : (κ ^ (n + 1)) a = (κ ^ n) ∘ₘ κ a := by
+  rw [pow_add_apply, pow_one]
+
+lemma pow_succ_apply' (κ : Kernel α α) (n : ℕ) (a : α) : (κ ^ (n + 1)) a = κ ∘ₘ (κ ^ n) a := by
+  rw [add_comm, pow_add_apply, pow_one]
+
+lemma pow_add_comp (κ : Kernel α α) (m n : ℕ) (μ : Measure α) :
+    (κ ^ (m + n)) ∘ₘ μ = (κ ^ m) ∘ₘ ((κ ^ n) ∘ₘ μ) := by
+  rw [pow_add, Measure.comp_assoc]
+
+lemma pow_succ_comp (κ : Kernel α α) (n : ℕ) (μ : Measure α) :
+    (κ ^ (n + 1)) ∘ₘ μ = (κ ^ n) ∘ₘ (κ ∘ₘ μ) := by
+  rw [pow_add_comp, pow_one]
+
+lemma pow_succ_comp' (κ : Kernel α α) (n : ℕ) (μ : Measure α) :
+    (κ ^ (n + 1)) ∘ₘ μ = κ ∘ₘ ((κ ^ n) ∘ₘ μ) := by
+  rw [add_comm, pow_add_comp, pow_one]
+
+lemma pow_zero_comp (κ : Kernel α α) (μ : Measure α) : (κ ^ 0 : Kernel α α) ∘ₘ μ = μ := by
+  simp
+
+/-- A point `y` reaches the measurable set `C` with positive probability in `n + 1` steps iff
+its first step goes with positive probability to the set of points which reach `C` with positive
+probability in `n` steps. -/
+lemma pow_succ_apply_pos_iff {C : Set α} (hC : MeasurableSet C) {n : ℕ} {y : α} :
+    0 < (κ ^ (n + 1)) y C ↔ 0 < κ y {z | 0 < (κ ^ n) z C} := by
+  rw [pow_succ_apply, Measure.comp_apply_pos_iff hC]
+
+/-- The measurable set `C` is reached from the measure `μ` with positive probability in `n + m`
+steps iff after `m` steps, the set of points which reach `C` with positive probability in `n`
+steps has positive measure. -/
+lemma pow_add_comp_apply_pos_iff {C : Set α} (hC : MeasurableSet C) {m n : ℕ} :
+    0 < ((κ ^ (n + m)) ∘ₘ μ) C ↔ 0 < ((κ ^ m) ∘ₘ μ) {y | 0 < (κ ^ n) y C} := by
+  rw [pow_add_comp, Measure.comp_apply_pos_iff hC]
+
+end Kernel
 
 end ProbabilityTheory

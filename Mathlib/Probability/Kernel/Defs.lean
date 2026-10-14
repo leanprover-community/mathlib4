@@ -286,6 +286,11 @@ protected theorem measurable_coe (κ : Kernel α β) {s : Set β} (hs : Measurab
     Measurable fun a => κ a s :=
   (Measure.measurable_coe hs).comp κ.measurable
 
+/-- The set of points `a` such that `κ a s` is positive is measurable. -/
+lemma measurableSet_apply_pos (κ : Kernel α β) {s : Set β} (hs : MeasurableSet s) :
+    MeasurableSet {a | 0 < κ a s} :=
+  measurableSet_lt measurable_const (κ.measurable_coe hs)
+
 lemma apply_congr_of_mem_measurableAtom (κ : Kernel α β) {y' y : α} (hy' : y' ∈ measurableAtom y) :
     κ y' = κ y := by
   ext s hs
