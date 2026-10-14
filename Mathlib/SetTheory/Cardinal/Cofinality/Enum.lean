@@ -94,7 +94,7 @@ theorem type_eq_of_isCofinal {s : Set α} (hs : IsCofinal s) : typeLT s = typeLT
   exact cof_le hs
 
 /-- Enumerate the elements of a cofinal subset of `α` by `α` itself. This is a generalization of
-`Nat.nth`. -/
+`Subtype.orderIsoOfNat`. -/
 noncomputable def enum (s : Set α) (hs : IsCofinal s) : α ≃o s :=
   .ofRelIsoLT (type_eq.1 (type_eq_of_isCofinal hs).symm).some
 
