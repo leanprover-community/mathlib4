@@ -276,7 +276,7 @@ theorem StrictMono.le_apply [WellFoundedLT β] {f : β → β} (hf : StrictMono 
 
 @[to_dual]
 theorem StrictMono.isCofinal_range_of_wellFoundedLT {f : β → β} [WellFoundedLT β]
-    (hf : StrictMono f) : IsCofinal (Set.range f) :=
+    (hf : StrictMono f) : IsCofinal (.range f) :=
   fun x ↦ ⟨f x, Set.mem_range_self x, hf.le_apply⟩
 
 @[to_dual]
