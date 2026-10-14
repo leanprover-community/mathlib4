@@ -1,0 +1,70 @@
+name: Compare imported unfolding on Mathlib
+
+on:
+  push:
+    branches: [codex/bench-imported-unfold-mathlib]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: mathlib-unfold-benchmark-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  compare:
+    if: github.repository == 'marcelolynch/mathlib4'
+    name: Clean builds (${{ matrix.order }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      matrix:
+        order: [baseline-patched, patched-baseline]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Make space on the disposable runner
+        run: |
+          sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc /usr/local/.ghcup
+          df -h .
+
+      - name: Download the exact Lean baseline and PR release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/lean-baseline" "$RUNNER_TEMP/lean-patched" benchmark-results
+          gh api repos/leanprover/lean4/actions/artifacts/11835156485 > benchmark-results/baseline-artifact.json
+          jq -e '.expired == false and .workflow_run.head_sha == "daa56019e0ab113c164f5e13e6c9dae9d994c21b"' \
+            benchmark-results/baseline-artifact.json
+          gh run download 38439976971 --repo leanprover/lean4 --name 'build-Linux release' \
+            --dir "$RUNNER_TEMP/lean-baseline"
+          curl --fail --location --retry 3 \
+            https://github.com/leanprover/lean4-pr-releases/releases/download/pr-release-15670-f6b1bcc/lean-4.36.0-pre-linux.tar.zst \
+            --output "$RUNNER_TEMP/lean-patched/lean-4.36.0-pre-linux.tar.zst"
+          echo "58c6fbf981b7780ba8c8a61d9377a463c49aa2dbeb0524db946a4648468b126c  $RUNNER_TEMP/lean-patched/lean-4.36.0-pre-linux.tar.zst" | sha256sum --check
+          for variant in baseline patched; do
+            archive="$RUNNER_TEMP/lean-$variant/lean-4.36.0-pre-linux.tar.zst"
+            tar --zstd -xf "$archive" -C "$RUNNER_TEMP/lean-$variant" --strip-components=1
+            rm "$archive"
+          done
+
+      - name: Check dependencies and measure two clean builds
+        env:
+          BENCH_ORDER: ${{ matrix.order }}
+          BENCH_TOOLCHAINS: ${{ runner.temp }}
+          LEAN_NUM_THREADS: '4'
+        run: python3 .github/benchmarks/imported-unfold.py
+
+      - name: Upload measurements and build logs
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: mathlib-build-${{ matrix.order }}
+          path: benchmark-results/
+          if-no-files-found: warn
+          retention-days: 30
