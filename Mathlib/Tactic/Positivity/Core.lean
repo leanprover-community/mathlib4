@@ -437,7 +437,7 @@ def orElse {pα?} {e : Q($α)} (t₁ : Strictness zα e pα?) (t₂ : MetaM (Str
     | _ => pure (.nonzero p₁)
 
 /-- Run each registered `positivity` extension on an expression, returning a `NormNum.Result`. -/
-def core (pα? : Option Q(PartialOrder $α)) (e : Q($α)) : MetaM (Strictness zα e pα?) := 
+def core (pα? : Option Q(PartialOrder $α)) (e : Q($α)) : MetaM (Strictness zα e pα?) :=
   withReducible do
   withTraceNode `Tactic.positivity
     (fun
