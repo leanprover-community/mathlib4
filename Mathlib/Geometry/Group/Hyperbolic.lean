@@ -29,6 +29,8 @@ of `Group.Generators` satisfies the Gromov hyperbolicity condition.
 ## Implementation notes
 
 The hyperbolicity condition applies directly to the word metric, without requiring the Cayley graph.
+The `letI` in `Generators.IsHyperbolicWith` exposes `Metric.IsHyperbolicWith` directly.
+This follows the same pattern as `RingHom.Finite`, which uses `letI` for `f.toAlgebra`.
 
 ## Tags
 
