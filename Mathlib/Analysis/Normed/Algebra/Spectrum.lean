@@ -5,9 +5,9 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Analysis.Real.Spectrum
 public import Mathlib.Analysis.Normed.Algebra.Exponential
 public import Mathlib.Analysis.Normed.Algebra.UnitizationL1
+public import Mathlib.Analysis.Real.Spectrum
 public import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 public import Mathlib.Topology.Algebra.Module.Spaces.CharacterSpace
 

@@ -8,8 +8,8 @@ module
 public import Mathlib.Analysis.SpecificLimits.Normed
 
 import Mathlib.Analysis.Normed.Group.FunctionSeries
-import Mathlib.Tactic.Rify
 import Mathlib.Tactic.Qify
+import Mathlib.Tactic.Rify
 
 /-!
 # Representation of reals in positional system

@@ -268,19 +268,19 @@ section tangentMap
 
 variable [Is : IsManifold I 1 M] [I's : IsManifold I' 1 M']
 
-/-- If a function is `C^n` on a domain with unique derivatives, then its bundled derivative
-is `C^m` when `m+1 ≤ n`. -/
-theorem ContMDiffOn.contMDiffOn_tangentMapWithin
-    (hf : CMDiff[s] n f) (hmn : m + 1 ≤ n) (hs : UniqueMDiff[s]) :
-    CMDiff[(π E (TangentSpace I) ⁻¹' s)] m (tangentMap[s] f) := by
-  intro x₀ hx₀
+/-- If a function is `C^n` at `x` within a set with unique derivatives,
+its bundled derivative is `C^m` at each tangent vector in `TangentSpace I x`, when `m+1 ≤ n`. -/
+theorem ContMDiffWithinAt.contMDiffWithinAt_tangentMapWithin
+    {x₀ : TangentBundle I M} (hx₀ : x₀ ∈ TotalSpace.proj ⁻¹' s)
+    (hf : CMDiffAt[s] n f x₀.1) (hmn : m + 1 ≤ n) (hs : UniqueMDiff[s]) :
+    CMDiffAt[(π E (TangentSpace I) ⁻¹' s)] m (tangentMap[s] f) x₀ := by
   let s' : Set (TangentBundle I M) := (π E (TangentSpace I) ⁻¹' s)
   let b₁ : TangentBundle I M → M := fun p ↦ p.1
   let v : Π (y : TangentBundle I M), TangentSpace% (b₁ y) := fun y ↦ y.2
   have hv : CMDiffAt[s'] m (fun y ↦ (v y : TangentBundle I M)) x₀ := contMDiffWithinAt_id
   let b₂ : TangentBundle I M → M' := f ∘ b₁
   have hb₂ : CMDiffAt[s'] m b₂ x₀ :=
-    ((hf (b₁ x₀) hx₀).of_le (le_self_add.trans hmn)).comp _
+    (hf.of_le (le_self_add.trans hmn)).comp _
       (contMDiffWithinAt_proj (TangentSpace I)) (fun x h ↦ h)
   let ϕ : Π (y : TangentBundle I M), TangentSpace% (b₁ y) →L[𝕜] TangentSpace% (b₂ y) :=
     fun y ↦ mfderiv[s] f (b₁ y)
@@ -288,18 +288,51 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin
       (TangentSpace I' (M := M')) (b₁ x₀) (b₁ y) (b₂ x₀) (b₂ y) (ϕ y)) x₀ := by
     have A : CMDiffAt[s] m (fun y ↦ ContinuousLinearMap.inCoordinates E (TangentSpace I (M := M)) E'
         (TangentSpace I' (M := M')) (b₁ x₀) y (b₂ x₀) (f y) (mfderiv[s] f y)) (b₁ x₀) :=
-      .mfderivWithin_const (hf _ hx₀) hmn hx₀ hs
+      .mfderivWithin_const hf hmn hx₀ hs
     exact A.comp _ (contMDiffWithinAt_proj (TangentSpace I)) (fun x h ↦ h)
   exact ContMDiffWithinAt.clm_apply_of_inCoordinates hϕ hv hb₂
 
+/-- If a function is `C^n` at `x` on a domain with unique derivatives, with `1 ≤ n`,
+its bundled derivative is continuous there. -/
+theorem ContMDiffWithinAt.continuousWithinAt_tangentMapWithin
+    {x₀ : TangentBundle I M} (hx₀ : x₀ ∈ TotalSpace.proj ⁻¹' s)
+    (hf : CMDiffAt[s] n f x₀.1) (hn : 1 ≤ n) (hs : UniqueMDiff[s]) :
+    ContinuousWithinAt (tangentMap[s] f) ((π E (TangentSpace I) ⁻¹' s)) x₀ := by
+  have : CMDiffAt[π E (TangentSpace I) ⁻¹' s] 0 (tangentMap[s] f) x₀ :=
+    hf.contMDiffWithinAt_tangentMapWithin hx₀ hn hs
+  exact this.continuousWithinAt
+
+/-- If a function is `C^n` at `x`, then its bundled derivative is `C^m` at each tangent vector in
+`TangentSpace I x`, when `m+1 ≤ n`. -/
+theorem ContMDiffAt.contMDiffAt_tangentMap
+    {X : TangentBundle I M} (hf : CMDiffAt n f X.1) (hmn : m + 1 ≤ n) :
+    CMDiffAt m (tangentMap% f) X := by
+  rw [← contMDiffWithinAt_univ] at hf ⊢
+  rw [← tangentMapWithin_univ]
+  convert hf.contMDiffWithinAt_tangentMapWithin (by simp) hmn uniqueMDiffOn_univ
+  simp
+
+/-- If a function is `C^n` at `x`, with `1 ≤ n`, its bundled derivative is continuous there. -/
+theorem ContMDiffAt.continuousAt_tangentMap
+    {x₀ : TangentBundle I M} (hf : CMDiffAt n f x₀.1) (hn : 1 ≤ n) :
+    ContinuousAt (tangentMap% f) x₀ := by
+  rw [← contMDiffWithinAt_univ] at hf
+  rw [← continuousWithinAt_univ, ← tangentMapWithin_univ]
+  exact hf.continuousWithinAt_tangentMapWithin (by simp) hn uniqueMDiffOn_univ
+
+/-- If a function is `C^n` on a domain with unique derivatives, then its bundled derivative
+is `C^m` when `m+1 ≤ n`. -/
+theorem ContMDiffOn.contMDiffOn_tangentMapWithin
+    (hf : CMDiff[s] n f) (hmn : m + 1 ≤ n) (hs : UniqueMDiff[s]) :
+    CMDiff[(π E (TangentSpace I) ⁻¹' s)] m (tangentMap[s] f) :=
+  fun x₀ hx₀ ↦ (hf x₀.1 hx₀).contMDiffWithinAt_tangentMapWithin hx₀ hmn hs
+
 /-- If a function is `C^n` on a domain with unique derivatives, with `1 ≤ n`, then its bundled
 derivative is continuous there. -/
-theorem ContMDiffOn.continuousOn_tangentMapWithin (hf : CMDiff[s] n f) (hmn : 1 ≤ n)
+theorem ContMDiffOn.continuousOn_tangentMapWithin (hf : CMDiff[s] n f) (hn : 1 ≤ n)
     (hs : UniqueMDiff[s]) :
-    ContinuousOn (tangentMap[s] f) (π E (TangentSpace I) ⁻¹' s) := by
-  have : CMDiff[π E (TangentSpace I) ⁻¹' s] 0 (tangentMap[s] f) :=
-    hf.contMDiffOn_tangentMapWithin hmn hs
-  exact this.continuousOn
+    ContinuousOn (tangentMap[s] f) (π E (TangentSpace I) ⁻¹' s) :=
+  fun x hx ↦ (hf x.1 hx).continuousWithinAt_tangentMapWithin hx hn hs
 
 /-- If a function is `C^n`, then its bundled derivative is `C^m` when `m+1 ≤ n`. -/
 theorem ContMDiff.contMDiff_tangentMap (hf : CMDiff n f) (hmn : m + 1 ≤ n) :
@@ -309,12 +342,10 @@ theorem ContMDiff.contMDiff_tangentMap (hf : CMDiff n f) (hmn : m + 1 ≤ n) :
   rw [tangentMapWithin_univ]
 
 /-- If a function is `C^n`, with `1 ≤ n`, then its bundled derivative is continuous. -/
-theorem ContMDiff.continuous_tangentMap (hf : CMDiff n f) (hmn : 1 ≤ n) :
+theorem ContMDiff.continuous_tangentMap (hf : CMDiff n f) (hn : 1 ≤ n) :
     Continuous (tangentMap% f) := by
-  rw [← contMDiffOn_univ] at hf
-  rw [← continuousOn_univ]
-  convert! hf.continuousOn_tangentMapWithin hmn uniqueMDiffOn_univ
-  rw [tangentMapWithin_univ]
+  rw [continuous_iff_continuousAt]
+  exact fun x ↦ (hf x.1).continuousAt_tangentMap hn
 
 end tangentMap
 
