@@ -66,7 +66,7 @@ noncomputable def absoluteGaloisGroup.mapOfAlgebra : G_K L →ₜ* G_K K :=
       rw [ContinuousAt, map_one]
       intro U hU
       rw [Filter.mem_map]
-      erw [krullTopology_mem_nhds_one_iff] at hU ⊢
+      erw [AlgEquiv.mem_nhds_one_iff] at hU ⊢
       obtain ⟨F, fd, hF⟩ := hU
       refine ⟨adjoin L (F.map f), ?_, fun σ hσ => hF fun x => ?_⟩
       · suffices Algebra.EssFiniteType L (adjoin L (F.map f : Set (AlgebraicClosure L))) by

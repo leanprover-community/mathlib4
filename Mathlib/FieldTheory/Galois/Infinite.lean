@@ -132,7 +132,7 @@ lemma fixingSubgroup_fixedField (H : ClosedSubgroup Gal(K/k)) [IsGalois k K] :
   intro σ hσ
   by_contra h
   have nhds : H.carrierᶜ ∈ nhds σ := H.isClosed'.isOpen_compl.mem_nhds h
-  rw [← map_mul_left_nhds_one, Filter.mem_map, krullTopology_mem_nhds_one_iff] at nhds
+  rw [← map_mul_left_nhds_one, Filter.mem_map, AlgEquiv.mem_nhds_one_iff] at nhds
   rcases nhds with ⟨L, hL, sub⟩
   let L' : FiniteGaloisIntermediateField k K := {
     normalClosure k L K with
@@ -221,7 +221,7 @@ theorem isOpen_iff_finite (L : IntermediateField k K) [IsGalois k K] :
   refine ⟨fun h ↦ ?_, fun h ↦ IntermediateField.isOpen_fixingSubgroup L⟩
   have : (IntermediateFieldEquivClosedSubgroup.toFun L).carrier ∈ nhds 1 :=
     IsOpen.mem_nhds h (congrFun rfl)
-  rw [krullTopology_mem_nhds_one_iff] at this
+  rw [AlgEquiv.mem_nhds_one_iff] at this
   rcases this with ⟨M, hM, sub⟩
   let L' : FiniteGaloisIntermediateField k K := {
     normalClosure k M K with
