@@ -170,13 +170,13 @@ open scoped RightActions
   obtain rfl | ha := eq_or_ne a 0
   · obtain rfl | hs := s.eq_empty_or_nonempty <;> simp [*]
   · ext
-    simp [← inv_smul_mem_iff₀,  ha]
+    simp [← inv_smul_mem_iff₀, ha]
 
 lemma inv_op_smul_finset_distrib₀ (a : α) (s : Finset α) : (s <• a)⁻¹ = a⁻¹ • s⁻¹ := by
   obtain rfl | ha := eq_or_ne a 0
   · obtain rfl | hs := s.eq_empty_or_nonempty <;> simp [*]
   · ext
-    simp [← inv_smul_mem_iff₀,  ha]
+    simp [← inv_smul_mem_iff₀, ha]
 
 end GroupWithZero
 
