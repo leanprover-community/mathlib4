@@ -295,7 +295,6 @@ section Additive
 
 variable {C D} [Preadditive C] [Preadditive D]
 
-/-- A functor `Karoubi C ⥤ D` is additive if its restriction to `C` is. -/
 theorem additive_of_toKaroubi_comp (F : Karoubi C ⥤ D) [(toKaroubi C ⋙ F).Additive] :
     F.Additive where
   map_add {P Q f g} := by
