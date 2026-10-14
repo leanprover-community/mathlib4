@@ -840,6 +840,51 @@ jobs:
           echo "Uploading cache to R2 (container: $MATHLIB_CACHE_PRIMARY)..."
           lake env "$CACHE_BIN" put-staged --backend=s3 "${container_args[@]}" --staging-dir="cache-staging" --repo="$REPO"
 
+      - name: Probe rclone S3 operations (ci-dev experiment)
+        if: always() && steps.mint-r2.outputs.success == 'true'
+        continue-on-error: true
+        shell: bash
+        env:
+          AK: ${{ steps.mint-r2.outputs.access-key-id }}
+          SK: ${{ steps.mint-r2.outputs.secret-access-key }}
+          ST: ${{ steps.mint-r2.outputs.session-token }}
+          BASE: ${{ secrets.MATHLIB_CACHE_R2_DEVELOPER_PUT_BASE_URL }}
+          SHA: ${{ github.sha }}
+        run: |
+          set -u
+          endpoint="${BASE%/*}"
+          bucket="${BASE##*/}"
+          ns="mathlib4-forks/f/leanprover-community/mathlib4/$SHA"
+          work=$(mktemp -d)
+          curl -sSfL -o "$work/r.zip" https://github.com/rclone/rclone/releases/download/v1.75.0/rclone-v1.75.0-linux-amd64.zip
+          curl -sSfL -o "$work/SHA256SUMS" https://github.com/rclone/rclone/releases/download/v1.75.0/SHA256SUMS
+          (cd "$work" && grep ' rclone-v1.75.0-linux-amd64.zip$' SHA256SUMS | sha256sum -c - && unzip -q r.zip)
+          new="$work/rclone-v1.75.0-linux-amd64/rclone"
+          head -c 4096 /dev/urandom > "$work/probe.bin"
+          export RCLONE_S3_ENV_AUTH=false RCLONE_S3_ACCESS_KEY_ID="$AK" RCLONE_S3_SECRET_ACCESS_KEY="$SK" \
+            RCLONE_S3_SESSION_TOKEN="$ST" RCLONE_S3_ENDPOINT="$endpoint" RCLONE_S3_REGION=auto \
+            RCLONE_LOG_LEVEL=INFO
+          common=(--s3-no-check-bucket --retries 1 --low-level-retries 1)
+          op() { local tag=$1; shift; echo "::group::$tag"; "$@"; echo "== $tag: exit $?"; echo "::endgroup::"; }
+          for bin in /usr/bin/rclone "$new"; do
+            v=$("$bin" version | head -1 | awk '{print $2}')
+            for provider in Other Cloudflare; do
+              t="$v-$provider"
+              export RCLONE_S3_PROVIDER=$provider
+              op "$t copyto (PUT+HEAD)" "$bin" copyto "$work/probe.bin" ":s3:$bucket/$ns/probe/$t.bin" "${common[@]}"
+              op "$t copyto --s3-no-head" "$bin" copyto "$work/probe.bin" ":s3:$bucket/$ns/probe/$t-nohead.bin" "${common[@]}" --s3-no-head
+              op "$t lsjson --stat (HEAD)" "$bin" lsjson --stat ":s3:$bucket/$ns/probe/$t.bin" "${common[@]}"
+              op "$t lsf (LIST)" "$bin" lsf ":s3:$bucket/$ns/probe/" "${common[@]}"
+              mkdir -p "$work/src-$t" && cp "$work/probe.bin" "$work/src-$t/$t-tool.bin" && echo "$t-tool.bin" > "$work/ff-$t"
+              op "$t copy --files-from --ignore-existing (tool args)" "$bin" copy "$work/src-$t" ":s3:$bucket/$ns/probe" \
+                --files-from "$work/ff-$t" --transfers 16 --ignore-existing "${common[@]}"
+            done
+          done
+          echo "::group::raw HEAD via curl"
+          curl -sS -o /dev/null -I -w "HEAD %{http_code}\n" --aws-sigv4 "aws:amz:auto:s3" --user "$AK:$SK" \
+            -H "x-amz-security-token: $ST" "$endpoint/$bucket/$ns/probe/$v-Other.bin"
+          echo "::endgroup::"
+
       # Builds that write `master` also upload the staged set to Azure. A failed
       # upload fails the job.
       - name: Azure CLI OIDC login and mint storage bearer token
