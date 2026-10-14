@@ -23,7 +23,7 @@ Given a map `f` and measure `μ`, under the assumption of `QuasiMeasurePreservin
 
 public section
 
-namespace MeasureTheory.Measure.QuasiMeasurePreserving
+namespace MeasureTheory.QuasiMeasurePreserving
 
 open Filter
 
@@ -45,4 +45,11 @@ theorem birkhoffAverage_ae_eq_of_ae_eq (R : Type*) [DivisionSemiring R] [Module 
     birkhoffAverage R f φ n =ᵐ[μ] birkhoffAverage R f ψ n :=
   EventuallyEq.const_smul (birkhoffSum_ae_eq_of_ae_eq hf hφ n) (n : R)⁻¹
 
-end MeasureTheory.Measure.QuasiMeasurePreserving
+end MeasureTheory.QuasiMeasurePreserving
+
+@[deprecated (since := "2026-09-23")]
+protected alias MeasureTheory.Measure.QuasiMeasurePreserving.birkhoffSum_ae_eq_of_ae_eq :=
+  MeasureTheory.QuasiMeasurePreserving.birkhoffSum_ae_eq_of_ae_eq
+@[deprecated (since := "2026-09-23")]
+protected alias MeasureTheory.Measure.QuasiMeasurePreserving.birkhoffAverage_ae_eq_of_ae_eq :=
+  MeasureTheory.QuasiMeasurePreserving.birkhoffAverage_ae_eq_of_ae_eq

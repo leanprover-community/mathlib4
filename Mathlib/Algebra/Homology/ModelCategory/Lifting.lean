@@ -68,11 +68,17 @@ lemma coe_cocycle₁'_v_comp_eq_zero (n m : ℤ) (hnm : n + 1 = m := by lia) :
 
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
-lemma comp_coe_cocyle₁'_v_eq_zero (n m : ℤ) (hnm : n + 1 = m := by lia) :
+lemma comp_coe_cocycle₁'_v_eq_zero (n m : ℤ) (hnm : n + 1 = m := by lia) :
     i.f n ≫ (cocycle₁' sq hsq).1.v n m hnm = 0 := by
   have fac_left (k : ℤ) := (hsq k).fac_left
   dsimp at fac_left
   simp [cocycle₁', fac_left, reassoc_of% fac_left]
+
+@[deprecated (since := "2026-10-13")]
+alias comp_coe_cocyle₁'_v_eq_zero := comp_coe_cocycle₁'_v_eq_zero
+
+@[deprecated (since := "2026-10-13")]
+alias comp_coe_cocyle₁'_v_eq_zero_assoc := comp_coe_cocycle₁'_v_eq_zero_assoc
 
 set_option backward.defeqAttrib.useBackward true in
 include hQ hK in

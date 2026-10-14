@@ -33,7 +33,7 @@ jobs:
           token: ${{ steps.app-token.outputs.token }}
 
       - name: Configure Lean
-        uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1.5.0
+        uses: leanprover/lean-action@f061402b660e0c34644504b324e830f2991d4865 # v1.6.1
         with:
           auto-config: false
           use-github-cache: false
@@ -199,10 +199,12 @@ jobs:
           body: |
             This PR updates the Mathlib dependencies.
 
+            It is not merged automatically: a maintainer should look at what the new
+            dependency revisions bring in before sending it to bors.
+
             ---
 
             [workflow run for this PR](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
-          labels: "auto-merge-after-CI"
 
       - name: Send Zulip message (failure)
         if: ${{ failure() }}

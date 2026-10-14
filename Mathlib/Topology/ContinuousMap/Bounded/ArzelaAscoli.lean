@@ -6,7 +6,8 @@ Authors: Sébastien Gouëzel, Mario Carneiro, Yury Kudryashov, Heather Macbeth
 module
 
 public import Mathlib.Topology.ContinuousMap.Bounded.Basic
-public import Mathlib.Topology.MetricSpace.Equicontinuity
+
+import Mathlib.Topology.MetricSpace.Equicontinuity
 
 /-!
 # The Arzelà–Ascoli theorem for bounded continuous functions
@@ -77,7 +78,7 @@ theorem arzela_ascoli₁ [CompactSpace β] (A : Set (α →ᵇ β)) (closed : Is
       · exact (hU x').2.2 _ hx' _ (hU x').1 hf
       · exact (hU x').2.2 _ hx' _ (hU x').1 hg
       · have F_f_g : F (f x') = F (g x') :=
-          (congr_arg (fun f : tα → tβ => (f ⟨x', x'tα⟩ : β)) f_eq_g :)
+          congr($f_eq_g ⟨x', x'tα⟩)
         calc
           dist (f x') (g x') ≤ dist (f x') (F (f x')) + dist (g x') (F (f x')) :=
             dist_triangle_right _ _ _

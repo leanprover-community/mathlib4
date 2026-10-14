@@ -5,9 +5,8 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Paths
-public import Mathlib.Combinatorics.SimpleGraph.Subgraph
 public import Mathlib.Combinatorics.SimpleGraph.Operations
+public import Mathlib.Combinatorics.SimpleGraph.Paths
 
 /-!
 ## Main definitions
@@ -518,8 +517,8 @@ namespace Iso
 def connectedComponentEquiv (φ : G ≃g G') : G.ConnectedComponent ≃ G'.ConnectedComponent where
   toFun := ConnectedComponent.map φ
   invFun := ConnectedComponent.map φ.symm
-  left_inv C := C.ind (fun v => congr_arg G.connectedComponentMk (Equiv.left_inv φ.toEquiv v))
-  right_inv C := C.ind (fun v => congr_arg G'.connectedComponentMk (Equiv.right_inv φ.toEquiv v))
+  left_inv C := C.ind fun v => congr(G.connectedComponentMk $(φ.left_inv v))
+  right_inv C := C.ind fun v => congr(G'.connectedComponentMk $(φ.right_inv v))
 
 @[simp]
 theorem connectedComponentEquiv_refl :
@@ -786,9 +785,6 @@ theorem reachable_deleteEdges_iff_exists_walk {v w v' w' : V} :
     rw [edgeSet_deleteEdges]
     exact ⟨p.edges_subset_edgeSet ep, fun h' => h (h' ▸ ep)⟩
 
-@[deprecated (since := "2026-03-18")]
-alias reachable_delete_edges_iff_exists_walk := reachable_deleteEdges_iff_exists_walk
-
 theorem isBridge_iff_forall_walk_mem_edges {v w : V} :
     G.IsBridge s(v, w) ↔ ∀ p : G.Walk v w, s(v, w) ∈ p.edges := by
   rw [isBridge_iff, reachable_deleteEdges_iff_exists_walk, not_exists_not]
@@ -898,10 +894,6 @@ theorem IsBridge.anti {G' : SimpleGraph V} {e : Sym2 V} (hG : G ≤ G') (h : G'.
 theorem IsBridge.sup_edge_of_not_reachable {u v : V} (h : ¬G.Reachable u v) :
     (G ⊔ edge u v).IsBridge s(u, v) := isBridge_sup_edge.mpr (of_not_reachable h)
 
-set_option linter.deprecated.deprecatedTarget false in
-@[deprecated (since := "2026-03-18")]
-alias IsBridge.sup_fromEdgeSet_of_not_reachable := IsBridge.sup_edge_of_not_reachable
-
 /-- Connecting two unreachable vertices by an edge preserves existing bridges,
 provided the bridge is already an edge. -/
 theorem IsBridge.sup_edge_of_not_reachable_of_isBridge {u v : V} {e : Sym2 V}
@@ -913,10 +905,6 @@ theorem IsBridge.sup_edge_of_not_reachable_of_isBridge {u v : V} {e : Sym2 V}
   refine edgeSet_sup .. ▸ Walk.edges_subset_edgeSet _ he' |>.elim id fun h' ↦ h ?_ |>.elim
   exact .mono (sdiff_le_iff'.mpr le_rfl) <|
     adj_and_reachable_delete_edges_iff_exists_cycle.mpr ⟨_, p, by simp_all⟩ |>.right
-
-@[deprecated (since := "2026-03-18")]
-alias IsBridge.sup_fromEdgeSet_of_not_reachable_of_isBridge :=
-  IsBridge.sup_edge_of_not_reachable_of_isBridge
 
 end BridgeEdges
 
@@ -941,7 +929,7 @@ lemma mem_edges_of_not_reachable_deleteEdges (w : G.Walk u v) {e : Sym2 V}
 
 /-- A trail doesn't go through an edge that disconnects one of its endpoints from the endpoints of
 the trail. -/
-lemma IsTrail.not_mem_edges_of_not_reachable (hw : w.IsTrail)
+lemma IsTrail.notMem_edges_of_not_reachable (hw : w.IsTrail)
     (huy : ¬ (G.deleteEdges {s(x, y)}).Reachable u y)
     (hvy : ¬ (G.deleteEdges {s(x, y)}).Reachable v y) : s(x, y) ∉ w.edges := by
   classical
@@ -949,24 +937,34 @@ lemma IsTrail.not_mem_edges_of_not_reachable (hw : w.IsTrail)
     ((w.takeUntil y _).mem_edges_of_not_reachable_deleteEdges huy)
     (by simpa using (w.dropUntil y _).reverse.mem_edges_of_not_reachable_deleteEdges hvy)
 
+@[deprecated (since := "2026-09-28")]
+alias IsTrail.not_mem_edges_of_not_reachable := IsTrail.notMem_edges_of_not_reachable
+
 /-- A trail doesn't go through a vertex that is disconnected from its endpoints by an edge. -/
-lemma IsTrail.not_mem_support_of_not_reachable (hw : w.IsTrail)
+lemma IsTrail.notMem_support_of_not_reachable (hw : w.IsTrail)
     (huy : ¬ (G.deleteEdges {s(x, y)}).Reachable u y)
     (hvy : ¬ (G.deleteEdges {s(x, y)}).Reachable v y) : y ∉ w.support := by
   classical
-  exact fun hy ↦ hw.not_mem_edges_of_not_reachable huy hvy <| w.edges_takeUntil_subset_edges hy <|
+  exact fun hy ↦ hw.notMem_edges_of_not_reachable huy hvy <| w.edges_takeUntil_subset_edges hy <|
     mem_edges_of_not_reachable_deleteEdges (w.takeUntil y hy) huy
 
+@[deprecated (since := "2026-09-28")]
+alias IsTrail.not_mem_support_of_not_reachable := IsTrail.notMem_support_of_not_reachable
+
 /-- A trail doesn't go through any leaf vertex, except possibly at its endpoints. -/
-lemma IsTrail.not_mem_support_of_subsingleton_neighborSet (hw : w.IsTrail) (hxu : x ≠ u)
+lemma IsTrail.notMem_support_of_subsingleton_neighborSet (hw : w.IsTrail) (hxu : x ≠ u)
     (hxv : x ≠ v) (hx : (G.neighborSet x).Subsingleton) : x ∉ w.support := by
   rintro hxw
   obtain ⟨y, -, hxy⟩ := adj_of_mem_walk_support w (by rintro ⟨⟩; simp_all) hxw
-  refine hw.not_mem_support_of_not_reachable (x := y) ?_ ?_ hxw <;>
+  refine hw.notMem_support_of_not_reachable (x := y) ?_ ?_ hxw <;>
   · rintro ⟨p⟩
     obtain ⟨hx₂, -, hy₂⟩ : G.Adj x p.penultimate ∧ _ ∧ ¬p.penultimate = y := by
       simpa using p.reverse.adj_snd (not_nil_of_ne ‹_›)
     exact hy₂ <| hx hx₂ hxy
+
+@[deprecated (since := "2026-09-28")]
+alias IsTrail.not_mem_support_of_subsingleton_neighborSet :=
+  IsTrail.notMem_support_of_subsingleton_neighborSet
 
 end Walk
 
@@ -976,9 +974,9 @@ lemma Preconnected.induce_of_degree_eq_one (hG : G.Preconnected) {s : Set V}
   rintro ⟨u, hu⟩ ⟨v, hv⟩
   obtain ⟨p, hp⟩ := hG.exists_isPath u v
   constructor
-  convert! p.induce s _
+  convert p.induce s _
   rintro w hwp
   by_contra hws
-  exact hp.not_mem_support_of_subsingleton_neighborSet (by grind) (by grind) (hs _ hws) hwp
+  exact hp.notMem_support_of_subsingleton_neighborSet (by grind) (by grind) (hs _ hws) hwp
 
 end SimpleGraph
