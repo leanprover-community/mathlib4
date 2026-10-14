@@ -13,13 +13,9 @@ public import Mathlib.Geometry.Convex.ConvexSpace.Prod
 # Segments in convex spaces
 
 In an R-convex space, we define the following objects:
-* `segment R x y`: Closed segment joining `x` and `y`.
-* `openSegment R x y`: Open segment joining `x` and `y`.
-
-## TODO
-
-Should we rename `segment` and `openSegment` to `Convexity.Icc` and `Convexity.Ioo`? Should we also
-define `clopenSegment`/`Convexity.Ico`/`Convexity.Ioc`?
+* `Icc R x y`: Closed segment joining `x` and `y`.
+* `Ioo R x y`: Open segment joining `x` and `y`.
+* `Ico R x y`: Right-open segment joining `x` and `y`.
 -/
 
 namespace Convexity
@@ -31,134 +27,194 @@ open Convexity Function Set
 variable (R) {X} [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] [ConvexSpace R X] {s : Set X}
   {x y z : X}
 
-/-- Segments in a convex space. Denoted as `segment R x y` within the `Convex` namespace. -/
-def segment (x y : X) : Set X :=
+/-- Segments in a convex space. Denoted as `Icc R x y` within the `Convex` namespace. -/
+def Icc (x y : X) : Set X :=
   { z : X | ∃ (a b : R) (ha : 0 ≤ a) (hb : 0 ≤ b) (hab : a + b = 1),
     convexCombPair a b ha hb hab x y = z }
 
-/-- Open segment in a convex space. Note that `openSegment R x x = {x}` instead of being `∅` when
+/-- Open segments in a convex space. Note that `Ioo R x x = {x}` instead of being `∅` when
 the base semiring has some element between `0` and `1`. -/
-def openSegment (x y : X) : Set X :=
+def Ioo (x y : X) : Set X :=
   { z : X | ∃ (a b : R) (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1),
     convexCombPair a b ha.le hb.le hab x y = z }
 
+/-- Left-open segments in a convex space. Denoted as `Ico R x y` within the `Convex` namespace. -/
+def Ico (x y : X) : Set X :=
+  { z : X | ∃ (a b : R) (ha : 0 < a) (hb : 0 ≤ b) (hab : a + b = 1),
+    convexCombPair a b ha.le hb hab x y = z }
+
 /- [x,y] = [y,x] -/
-theorem segment_symm (x y : X) : segment R x y = segment R y x := by
+theorem Icc_symm (x y : X) : Icc R x y = Icc R y x := by
   ext z
   constructor
   all_goals (intro h; rcases h with ⟨m, n, hm , hn , hmn , hz⟩; use n, m, hn, hm)
   all_goals (rw [convexCombPair_symm] at hz; rw [add_comm] at hmn; use hmn)
 
 /- (x,y) = (y,x) -/
-theorem openSegment_symm (x y : X) : openSegment R x y = openSegment R y x := by
+theorem Ioo_symm (x y : X) : Ioo R x y = Ioo R y x := by
   ext z
   constructor
   all_goals (intro h; rcases h with ⟨m, n, hm , hn , hmn , hz⟩; use n, m, hn, hm)
   all_goals (rw [convexCombPair_symm] at hz; rw [add_comm] at hmn; use hmn)
 
-theorem openSegment_subset_segment (x y : X) : openSegment R x y ⊆ segment R x y :=
-  fun _ ⟨a, b, ha, hb, hab, hz⟩ ↦ ⟨a, b, ha.le, hb.le, hab, hz⟩
+theorem Ioo_subset_Ico (x y : X) : Ioo R x y ⊆ Ico R x y :=
+  fun _ ⟨a, b, ha, hb, hab, hz⟩ ↦ ⟨a, b, ha, hb.le, hab, hz⟩
+
+theorem Ico_subset_Icc (x y : X) : Ico R x y ⊆ Icc R x y :=
+  fun _ ⟨a, b, ha, hb, hab, hz⟩ ↦ ⟨a, b, ha.le, hb, hab, hz⟩
+
+theorem Ioo_subset_Icc (x y : X) : Ioo R x y ⊆ Icc R x y :=
+  le_trans (Ioo_subset_Ico R x y) (Ico_subset_Icc R x y)
 
 section
 
 variable {R}
 
-theorem convexCombPair_mem_segment {a b : R} (ha : 0 ≤ a) (hb : 0 ≤ b) (hab : a + b = 1) :
-    convexCombPair a b ha hb hab x y ∈ segment R x y := by
+theorem convexCombPair_mem_Icc {a b : R} (ha : 0 ≤ a) (hb : 0 ≤ b) (hab : a + b = 1) :
+    convexCombPair a b ha hb hab x y ∈ Icc R x y := by
   use a, b, ha, hb, hab
 
-theorem convexCombPair_mem_openSegment {a b : R} (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1) :
-    convexCombPair a b ha.le hb.le hab x y ∈ openSegment R x y := by
+theorem convexCombPair_mem_Ioo {a b : R} (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1) :
+    convexCombPair a b ha.le hb.le hab x y ∈ Ioo R x y := by
   use a, b, ha, hb, hab
 
-theorem mem_segment_iff : z ∈ segment R x y ↔ ∃ (a b : R) (ha : 0 ≤ a) (hb : 0 ≤ b)
+theorem convexCombPair_mem_Ico {a b : R} (ha : 0 < a) (hb : 0 ≤ b) (hab : a + b = 1) :
+    convexCombPair a b ha.le hb hab x y ∈ Ico R x y := by
+  use a, b, ha, hb, hab
+
+theorem mem_Icc_iff : z ∈ Icc R x y ↔ ∃ (a b : R) (ha : 0 ≤ a) (hb : 0 ≤ b)
     (hab : a + b = 1), convexCombPair a b ha hb hab x y = z := by
-  simp [segment]
+  simp [Icc]
 
-theorem mem_openSegment_iff : z ∈ openSegment R x y ↔ ∃ (a b : R) (ha : 0 < a) (hb : 0 < b)
+theorem mem_Ioo_iff : z ∈ Ioo R x y ↔ ∃ (a b : R) (ha : 0 < a) (hb : 0 < b)
     (hab : a + b = 1), convexCombPair a b ha.le hb.le hab x y = z := by
-  simp [openSegment]
+  simp [Ioo]
 
-theorem segment_subset_iff :
-  segment R x y ⊆ s ↔ ∀ {a b : R} (ha : 0 ≤ a) (hb : 0 ≤ b) (hab : a + b = 1),
+theorem mem_Ico_iff : z ∈ Ico R x y ↔ ∃ (a b : R) (ha : 0 < a) (hb : 0 ≤ b)
+    (hab : a + b = 1), convexCombPair a b ha.le hb hab x y = z := by
+  simp [Ico]
+
+theorem Icc_subset_iff :
+  Icc R x y ⊆ s ↔ ∀ {a b : R} (ha : 0 ≤ a) (hb : 0 ≤ b) (hab : a + b = 1),
   convexCombPair a b ha hb hab x y ∈ s := by
   constructor
   · intro h a b ha hb hab
-    exact h <| mem_segment_iff.mpr <| convexCombPair_mem_segment ha hb hab
+    exact h <| mem_Icc_iff.mpr <| convexCombPair_mem_Icc ha hb hab
   · intro h x hx
-    obtain ⟨a, b, ha, hb, hab, rfl⟩ := mem_segment_iff.mp hx
+    obtain ⟨a, b, ha, hb, hab, rfl⟩ := mem_Icc_iff.mp hx
     exact h ha hb hab
 
-theorem openSegment_subset_iff :
-    openSegment R x y ⊆ s ↔ ∀ {a b : R} (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1),
+theorem Ioo_subset_iff :
+    Ioo R x y ⊆ s ↔ ∀ {a b : R} (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1),
     convexCombPair a b ha.le hb.le hab x y ∈ s := by
   constructor
   · intro h _ _ ha hb hab
-    exact h <| mem_openSegment_iff.mpr <| convexCombPair_mem_openSegment ha hb hab
+    exact h <| mem_Ioo_iff.mpr <| convexCombPair_mem_Ioo ha hb hab
   · intro h _ hx
-    obtain ⟨a, b, ha, hb, hab, rfl⟩ := mem_openSegment_iff.mp hx
+    obtain ⟨a, b, ha, hb, hab, rfl⟩ := mem_Ioo_iff.mp hx
+    exact h ha hb hab
+
+theorem Ico_subset_iff :
+    Ico R x y ⊆ s ↔ ∀ {a b : R} (ha : 0 < a) (hb : 0 ≤ b) (hab : a + b = 1),
+    convexCombPair a b ha.le hb hab x y ∈ s := by
+  constructor
+  · intro h _ _ ha hb hab
+    exact h <| mem_Ico_iff.mpr <| convexCombPair_mem_Ico ha hb hab
+  · intro h _ hx
+    obtain ⟨a, b, ha, hb, hab, rfl⟩ := mem_Ico_iff.mp hx
     exact h ha hb hab
 
 end
 
-theorem left_mem_segment (x y : X) : x ∈ segment R x y :=
+theorem left_mem_Icc (x y : X) : x ∈ Icc R x y :=
   ⟨1, 0, zero_le_one, le_refl 0, add_zero 1, by rw [convexCombPair_one]⟩
 
-theorem right_mem_segment (x y : X) : y ∈ segment R x y :=
-  segment_symm R y x ▸ left_mem_segment R y x
+theorem right_mem_Icc (x y : X) : y ∈ Icc R x y :=
+  Icc_symm R y x ▸ left_mem_Icc R y x
+
+theorem left_mem_Ico (x y : X) : x ∈ Ico R x y :=
+  ⟨1, 0, zero_lt_one, le_refl 0, add_zero 1, convexCombPair_one⟩
 
 @[simp]
-theorem segment_same (x : X) : segment R x x = {x} :=
+theorem Icc_same (x : X) : Icc R x x = {x} :=
   Set.ext fun z ↦
     ⟨fun ⟨a, b, _, _, hab, hz⟩ ↦ by
       simpa [(add_smul _ _ _).symm, mem_singleton_iff, hab, one_smul, eq_comm] using hz,
-      fun h ↦ mem_singleton_iff.1 h ▸ left_mem_segment R z z⟩
+      fun h ↦ mem_singleton_iff.1 h ▸ left_mem_Icc R z z⟩
 
-theorem insert_endpoints_openSegment (x y : X) :
-    insert x (insert y (openSegment R x y)) = segment R x y := by
-  simp only [subset_antisymm_iff, insert_subset_iff, left_mem_segment, right_mem_segment,
-    openSegment_subset_segment, true_and]
+@[simp]
+theorem Ico_same (x : X) : Ico R x x = {x} := by
+  apply Subset.antisymm
+  · rw [← Icc_same R x]; exact Ico_subset_Icc R x x
+  · simp [left_mem_Ico]
+
+theorem insert_endpoint_Ioo_left (x y : X) : insert x (Ioo R x y) = Ico R x y := by
+  simp only [subset_antisymm_iff, insert_subset_iff, left_mem_Ico, Ioo_subset_Ico, and_self,
+    true_and]
+  rintro z ⟨a, b, ha, hb', hab, rfl⟩
+  by_cases hb : 0 < b
+  · exact mem_insert_of_mem x (convexCombPair_mem_Ioo ha hb hab)
+  · rw [← eq_of_le_of_not_lt hb' hb] at hab
+    simp [← eq_of_le_of_not_lt hb' hb, add_zero a ▸ hab]
+
+theorem insert_endpoint_Ico (x y : X) : insert y (Ico R x y) = Icc R x y := by
+  simp only [subset_antisymm_iff, insert_subset_iff, right_mem_Icc, Ico_subset_Icc, true_and]
   rintro z ⟨a, b, ha, hb, hab, rfl⟩
-  refine hb.eq_or_lt.imp ?_ fun hb' ↦ ha.eq_or_lt.imp ?_ fun ha' ↦ ?_
-  · rintro rfl
-    simp [add_zero a ▸ hab]
-  · rintro rfl
-    simp [zero_add b ▸ hab]
-  · exact ⟨a, b, ha', hb', hab, rfl⟩
+  refine ha.eq_or_lt.imp ?_ (fun hal ↦ convexCombPair_mem_Ico hal hb hab)
+  rintro rfl
+  simp [zero_add b ▸ hab]
+
+theorem insert_endpoints_Ioo (x y : X) : insert x (insert y (Ioo R x y)) = Icc R x y := by
+  rw [Ioo_symm, insert_endpoint_Ioo_left, insert_endpoint_Ico, Icc_symm]
 
 variable {R}
 
-theorem mem_openSegment_of_ne_left_right (hx : x ≠ z) (hy : y ≠ z) (hz : z ∈ segment R x y) :
-    z ∈ openSegment R x y := by
-  rw [← insert_endpoints_openSegment] at hz
+theorem mem_Ioo_of_ne_left_right (hx : x ≠ z) (hy : y ≠ z) (hz : z ∈ Icc R x y) :
+    z ∈ Ioo R x y := by
+  rw [← insert_endpoints_Ioo] at hz
   exact (hz.resolve_left hx.symm).resolve_left hy.symm
 
-theorem openSegment_subset_iff_segment_subset (hx : x ∈ s) (hy : y ∈ s) :
-    openSegment R x y ⊆ s ↔ segment R x y ⊆ s := by
-  simp only [← insert_endpoints_openSegment, insert_subset_iff, *, true_and]
+theorem mem_Ico_of_ne_right (hy : y ≠ z) (hz : z ∈ Icc R x y) : z ∈ Ico R x y := by
+  rw [← insert_endpoint_Ico] at hz
+  exact hz.resolve_left hy.symm
+
+theorem Ioo_subset_iff_Icc_subset (hx : x ∈ s) (hy : y ∈ s) : Ioo R x y ⊆ s ↔ Icc R x y ⊆ s := by
+  simp only [← insert_endpoints_Ioo, insert_subset_iff, *, true_and]
+
+theorem Ico_subset_iff_Icc_subset (hy : y ∈ s) : Ico R x y ⊆ s ↔ Icc R x y ⊆ s := by
+  simp only [← insert_endpoint_Ico, insert_subset_iff, *, true_and]
 
 namespace IsAffineMap
 
 variable {Y} [ConvexSpace R Y] {f : X → Y}
 
 @[simp]
-theorem image_segment (hf : IsAffineMap R f) (a b : X) :
-    f '' segment R a b = segment R (f a) (f b) :=
-  Set.ext fun _ ↦ by simp [segment, IsAffineMap.map_convexCombPair hf]
+theorem image_Icc (hf : IsAffineMap R f) (a b : X) :
+    f '' Icc R a b = Icc R (f a) (f b) :=
+  Set.ext fun _ ↦ by simp [Icc, IsAffineMap.map_convexCombPair hf]
 
-theorem mem_segment_image (hf : IsAffineMap R f) {a b c : X}
-    (h : c ∈ segment R a b) : f c ∈ segment R (f a) (f b) := by
-  simp only [← image_segment hf, mem_image]
+theorem mem_Icc_image (hf : IsAffineMap R f) {a b c : X}
+    (h : c ∈ Icc R a b) : f c ∈ Icc R (f a) (f b) := by
+  simp only [← image_Icc hf, mem_image]
   exact ⟨c, ⟨h, rfl⟩⟩
 
 @[simp]
-theorem image_openSegment (hf : IsAffineMap R f) (a b : X) :
-    f '' openSegment R a b = openSegment R (f a) (f b) :=
-  Set.ext fun _ ↦ by simp [openSegment, IsAffineMap.map_convexCombPair hf]
+theorem image_Ioo (hf : IsAffineMap R f) (a b : X) :
+    f '' Ioo R a b = Ioo R (f a) (f b) :=
+  Set.ext fun _ ↦ by simp [Ioo, IsAffineMap.map_convexCombPair hf]
 
-theorem mem_openSegment_image (hf : IsAffineMap R f) {a b c : X}
-    (h : c ∈ openSegment R a b) : f c ∈ openSegment R (f a) (f b) := by
-  simp only [← image_openSegment hf, mem_image]
+theorem mem_Ioo_image (hf : IsAffineMap R f) {a b c : X}
+    (h : c ∈ Ioo R a b) : f c ∈ Ioo R (f a) (f b) := by
+  simp only [← image_Ioo hf, mem_image]
+  exact ⟨c, ⟨h, rfl⟩⟩
+
+@[simp]
+theorem image_Ico (hf : IsAffineMap R f) (a b : X) : f '' Ico R a b = Ico R (f a) (f b) :=
+  Set.ext fun _ ↦ by simp [Ico, IsAffineMap.map_convexCombPair hf]
+
+theorem mem_Ico_image (hf : IsAffineMap R f) {a b c : X} (h : c ∈ Ico R a b) :
+    f c ∈ Ico R (f a) (f b) := by
+  simp only [← image_Ico hf, mem_image]
   exact ⟨c, ⟨h, rfl⟩⟩
 
 end IsAffineMap
@@ -167,30 +223,43 @@ namespace Prod
 
 variable {Y} [ConvexSpace R Y]
 
-theorem segment_subset (x y : X × Y) : segment R x y ⊆ segment R x.1 y.1 ×ˢ segment R x.2 y.2 := by
+theorem Icc_subset (x y : X × Y) : Icc R x y ⊆ Icc R x.1 y.1 ×ˢ Icc R x.2 y.2 := by
   rintro z ⟨a, b, ha, hb, hab, hz⟩
   exact ⟨⟨a, b, ha, hb, hab, by subst hz; simp⟩, a, b, ha, hb, hab, by subst hz; simp⟩
 
-theorem openSegment_subset (x y : X × Y) :
-    openSegment R x y ⊆ openSegment R x.1 y.1 ×ˢ openSegment R x.2 y.2 := by
+theorem Ioo_subset (x y : X × Y) :
+    Ioo R x y ⊆ Ioo R x.1 y.1 ×ˢ Ioo R x.2 y.2 := by
   rintro z ⟨a, b, ha, hb, hab, hz⟩
   exact ⟨⟨a, b, ha, hb, hab, by subst hz; simp⟩, a, b, ha, hb, hab, by subst hz; simp⟩
 
-theorem image_mk_segment_left (x₁ x₂ : X) (y : Y) :
-    (fun x ↦ (x, y)) '' segment R x₁ x₂ = segment R (x₁, y) (x₂, y) :=
-  (IsAffineMap.prodMk IsAffineMap.id (IsAffineMap.const y)).image_segment _ _
+theorem Ico_subset (x y : X × Y) :
+    Ico R x y ⊆ Ico R x.1 y.1 ×ˢ Ico R x.2 y.2 := by
+  rintro z ⟨a, b, ha, hb, hab, hz⟩
+  exact ⟨⟨a, b, ha, hb, hab, by subst hz; simp⟩, a, b, ha, hb, hab, by subst hz; simp⟩
 
-theorem image_mk_segment_right (x : X) (y₁ y₂ : Y) :
-    (fun y ↦ (x, y)) '' segment R y₁ y₂ = segment R (x, y₁) (x, y₂) :=
-  (IsAffineMap.prodMk (IsAffineMap.const x) IsAffineMap.id).image_segment _ _
+theorem image_mk_Icc_left (x₁ x₂ : X) (y : Y) :
+    (fun x ↦ (x, y)) '' Icc R x₁ x₂ = Icc R (x₁, y) (x₂, y) :=
+  (IsAffineMap.prodMk IsAffineMap.id (IsAffineMap.const y)).image_Icc _ _
 
-theorem image_mk_openSegment_left (x₁ x₂ : X) (y : Y) :
-    (fun x ↦ (x, y)) '' openSegment R x₁ x₂ = openSegment R (x₁, y) (x₂, y) :=
-  (IsAffineMap.prodMk IsAffineMap.id (IsAffineMap.const y)).image_openSegment _ _
+theorem image_mk_Icc_right (x : X) (y₁ y₂ : Y) :
+    (fun y ↦ (x, y)) '' Icc R y₁ y₂ = Icc R (x, y₁) (x, y₂) :=
+  (IsAffineMap.prodMk (IsAffineMap.const x) IsAffineMap.id).image_Icc _ _
 
-theorem image_mk_openSegment_right (x : X) (y₁ y₂ : Y) :
-    (fun y ↦ (x, y)) '' openSegment R y₁ y₂ = openSegment R (x, y₁) (x, y₂) :=
-  (IsAffineMap.prodMk (IsAffineMap.const x) IsAffineMap.id).image_openSegment _ _
+theorem image_mk_Ioo_left (x₁ x₂ : X) (y : Y) :
+    (fun x ↦ (x, y)) '' Ioo R x₁ x₂ = Ioo R (x₁, y) (x₂, y) :=
+  (IsAffineMap.prodMk IsAffineMap.id (IsAffineMap.const y)).image_Ioo _ _
+
+theorem image_mk_Ioo_right (x : X) (y₁ y₂ : Y) :
+    (fun y ↦ (x, y)) '' Ioo R y₁ y₂ = Ioo R (x, y₁) (x, y₂) :=
+  (IsAffineMap.prodMk (IsAffineMap.const x) IsAffineMap.id).image_Ioo _ _
+
+theorem image_mk_Ico_left (x₁ x₂ : X) (y : Y) :
+    (fun x ↦ (x, y)) '' Ico R x₁ x₂ = Ico R (x₁, y) (x₂, y) :=
+  (IsAffineMap.prodMk IsAffineMap.id (IsAffineMap.const y)).image_Ico _ _
+
+theorem image_mk_Ico_right (x : X) (y₁ y₂ : Y) :
+    (fun y ↦ (x, y)) '' Ico R y₁ y₂ = Ico R (x, y₁) (x, y₂) :=
+  (IsAffineMap.prodMk (IsAffineMap.const x) IsAffineMap.id).image_Ico _ _
 
 end Prod
 
@@ -202,7 +271,7 @@ variable (R) {X} [Ring R] [PartialOrder R] [IsStrictOrderedRing R] [ConvexSpace 
   [DenselyOrdered R]
 
 @[simp]
-theorem openSegment_same (x : X) : openSegment R x x = {x} :=
+theorem Ioo_same (x : X) : Ioo R x x = {x} :=
   Set.ext fun z ↦
     ⟨fun ⟨a, b, _, _, hab, hz⟩ ↦ by
       simpa only [convexCombPair_same, mem_singleton_iff, eq_comm] using hz,
