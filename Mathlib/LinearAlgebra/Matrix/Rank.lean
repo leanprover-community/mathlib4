@@ -427,7 +427,7 @@ variable [Field R]
 theorem rank_diagonal [Fintype m] [DecidableEq m] [DecidableEq R] (w : m → R) :
     (diagonal w).rank = Fintype.card {i // (w i) ≠ 0} := by
   rw [Matrix.rank, ← Matrix.toLin'_apply', Module.finrank, ← LinearMap.rank,
-    LinearMap.rank_diagonal, Cardinal.toNat_natCast]
+    LinearMap.rank_toLin'_diagonal, Cardinal.toNat_natCast]
 
 open TransvectionStruct in
 /-- Every square matrix over a field can be brought, by left and right multiplication by

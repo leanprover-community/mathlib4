@@ -160,7 +160,7 @@ lemma mapRange_finsuppAntidiagonal_subset {e : μ ≃+ μ'} {s : Finset ι} {n :
 @[deprecated (since := "2026-09-06")]
 alias mapRange_finsuppAntidiag_subset := mapRange_finsuppAntidiagonal_subset
 
-lemma mapRange_finsuppAntidiagonal_eq {e : μ ≃+ μ'} {s : Finset ι} {n : μ} :
+lemma map_finsuppAntidiagonal_mapRange_eq {e : μ ≃+ μ'} {s : Finset ι} {n : μ} :
     (finsuppAntidiagonal s n).map (mapRange.addEquiv e).toEmbedding =
       finsuppAntidiagonal s (e n) := by
   ext f
@@ -178,7 +178,7 @@ lemma mapRange_finsuppAntidiagonal_eq {e : μ ≃+ μ'} {s : Finset ι} {n : μ}
     apply Function.Embedding.equiv_symm_toEmbedding_trans_toEmbedding
 
 @[deprecated (since := "2026-09-06")]
-alias mapRange_finsuppAntidiag_eq := mapRange_finsuppAntidiagonal_eq
+alias mapRange_finsuppAntidiag_eq := map_finsuppAntidiagonal_mapRange_eq
 
 end AddCommMonoid
 

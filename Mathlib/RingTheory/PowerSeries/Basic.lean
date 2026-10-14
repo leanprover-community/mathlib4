@@ -637,7 +637,7 @@ theorem coeff_prod [DecidableEq ι] (f : ι → PowerSeries R) (d : ℕ) (s : Fi
     coeff d (∏ j ∈ s, f j) = ∑ l ∈ finsuppAntidiagonal s d, ∏ i ∈ s, coeff (l i) (f i) := by
   simp only [coeff]
   rw [MvPowerSeries.coeff_prod, ← Finsupp.uniqueAddEquiv_symm_apply _ d,
-    ← mapRange_finsuppAntidiagonal_eq, sum_map]
+    ← map_finsuppAntidiagonal_mapRange_eq, sum_map]
   rfl
 
 theorem prod_monomial (f : ι → ℕ) (g : ι → R) (s : Finset ι) :
