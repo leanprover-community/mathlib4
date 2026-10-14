@@ -37,6 +37,10 @@ theorem Subalgebra.isIntegral_iff (S : Subalgebra R B) :
   Algebra.isIntegral_def.trans <| .trans
     (forall_congr' fun _ ↦ (isIntegral_algHom_iff S.val Subtype.val_injective).symm) Subtype.forall
 
+instance Subalgebra.isIntegral [Algebra.IsIntegral R B] (S : Subalgebra R B) :
+    Algebra.IsIntegral R S :=
+  S.isIntegral_iff.mpr fun x _ => Algebra.IsIntegral.isIntegral x
+
 section
 
 variable {A B : Type*} [Ring A] [Ring B] [Algebra R A] [Algebra R B]
