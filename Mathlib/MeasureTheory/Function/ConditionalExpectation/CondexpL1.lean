@@ -5,8 +5,9 @@ Authors: Rémy Degenne
 -/
 module
 
-import Mathlib.MeasureTheory.Function.LpSpace.CompleteOfCompleteLp
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL2
+
+import Mathlib.MeasureTheory.Function.LpSpace.CompleteOfCompleteLp
 
 /-! # Conditional expectation in L1
 
