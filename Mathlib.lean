@@ -1574,6 +1574,7 @@ public import Mathlib.AlgebraicTopology.ModelCategory.RightHomotopy
 public import Mathlib.AlgebraicTopology.ModelCategory.Transport
 public import Mathlib.AlgebraicTopology.MooreComplex
 public import Mathlib.AlgebraicTopology.Quasicategory.Basic
+public import Mathlib.AlgebraicTopology.Quasicategory.CompStruct
 public import Mathlib.AlgebraicTopology.Quasicategory.InnerFibration
 public import Mathlib.AlgebraicTopology.Quasicategory.Nerve
 public import Mathlib.AlgebraicTopology.Quasicategory.StrictBicategory
@@ -1634,6 +1635,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.Finite
 public import Mathlib.AlgebraicTopology.SimplicialSet.FiniteColimits
 public import Mathlib.AlgebraicTopology.SimplicialSet.FiniteProd
 public import Mathlib.AlgebraicTopology.SimplicialSet.FundamentalGroupoid.Basic
+public import Mathlib.AlgebraicTopology.SimplicialSet.FundamentalGroupoid.Homotopy
 public import Mathlib.AlgebraicTopology.SimplicialSet.HoFunctorMonoidal
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.Basic
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.HomologyZero
@@ -4802,6 +4804,7 @@ public import Mathlib.Geometry.Euclidean.Circumcenter
 public import Mathlib.Geometry.Euclidean.Congruence
 public import Mathlib.Geometry.Euclidean.Incenter
 public import Mathlib.Geometry.Euclidean.Incenter.Basic
+public import Mathlib.Geometry.Euclidean.Incenter.SouthPole
 public import Mathlib.Geometry.Euclidean.Inversion.Basic
 public import Mathlib.Geometry.Euclidean.Inversion.Calculus
 public import Mathlib.Geometry.Euclidean.Inversion.ImageHyperplane
