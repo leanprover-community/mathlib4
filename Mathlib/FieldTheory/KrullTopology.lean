@@ -25,17 +25,17 @@ field between `L` and `K` such that `E/K` is finitely generated.
 
 ## Main Definitions
 
-- `krullTopology K L`. Given a field extension `L/K`, this is the topology on `Gal(L/K)`.
+We provide an instance of `UniformSpace Gal(L/K)`, which induces the Krull topology on `Gal(L/K)`.
 
 ## Main Results
 
-- `krullTopology_t2 K L`. For an integral field extension `L/K`, the topology `krullTopology K L`
-  is Hausdorff.
+- We show the Krull topology is a left-uniform group.
 
-- `krullTopology_isTotallySeparated K L`. For an integral field extension `L/K`, the topology
-  `krullTopology K L` is totally separated.
+- We show the Krull topology is zero-dimensional (that is, it has a basis of clopen sets).
 
-- `stabilizer_isOpen_of_isIntegral`: For an integral field extension `L/K`, the stabilizer
+- We show the Krull topology is a `T1Space`, which implies it is Hausdorff.
+
+- `AlgEquiv.isOpen_mulActionStabilizer`: For a field extension `L/K`, the stabilizer
   in `Gal(L/K)` of any element in `L` is open for the Krull topology.
 
 ## Notation
