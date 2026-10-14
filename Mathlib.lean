@@ -3736,7 +3736,6 @@ public import Mathlib.Combinatorics.Graph.Lattice
 public import Mathlib.Combinatorics.Graph.Maps
 public import Mathlib.Combinatorics.Graph.Simple
 public import Mathlib.Combinatorics.Graph.Subgraph
-public import Mathlib.Combinatorics.Graphoid.Markov
 public import Mathlib.Combinatorics.HalesJewett
 public import Mathlib.Combinatorics.Hall.Basic
 public import Mathlib.Combinatorics.Hall.Finite
@@ -3838,6 +3837,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Init
 public import Mathlib.Combinatorics.SimpleGraph.LapMatrix
 public import Mathlib.Combinatorics.SimpleGraph.LineGraph
 public import Mathlib.Combinatorics.SimpleGraph.Maps
+public import Mathlib.Combinatorics.SimpleGraph.Markov
 public import Mathlib.Combinatorics.SimpleGraph.Matching
 public import Mathlib.Combinatorics.SimpleGraph.Metric
 public import Mathlib.Combinatorics.SimpleGraph.Operations
