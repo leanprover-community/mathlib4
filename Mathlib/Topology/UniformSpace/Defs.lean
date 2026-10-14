@@ -528,8 +528,7 @@ theorem nhds_eq_comap_uniformity' {x : α} : 𝓝 x = (𝓤 α).comap fun y => (
   (nhds_basis_uniformity (𝓤 α).basis_sets).eq_of_same_basis <| (𝓤 α).basis_sets.comap _
 
 theorem UniformSpace.mem_nhds_iff {x : α} {s : Set α} : s ∈ 𝓝 x ↔ ∃ V ∈ 𝓤 α, ball x V ⊆ s := by
-  rw [nhds_eq_comap_uniformity, mem_comap]
-  rfl
+  simp [nhds_eq_comap_uniformity, ball, SetRel.ball, Set.preimage]
 
 theorem UniformSpace.ball_mem_nhds (x : α) ⦃V : SetRel α α⦄ (V_in : V ∈ 𝓤 α) : ball x V ∈ 𝓝 x := by
   rw [UniformSpace.mem_nhds_iff]
@@ -599,8 +598,8 @@ theorem tendsto_left_nhds_uniformity {a : α} : Tendsto (fun a' => (a, a')) (�
 
 theorem lift_nhds_left {x : α} {g : Set α → Filter β} (hg : Monotone g) :
     (𝓝 x).lift g = (𝓤 α).lift fun s : SetRel α α => g (ball x s) := by
-  rw [nhds_eq_comap_uniformity, comap_lift_eq2 hg]
-  rfl
+  simp [nhds_eq_comap_uniformity, comap_lift_eq2 hg, ball, SetRel.ball, Function.comp_def,
+    Set.preimage]
 
 theorem lift_nhds_right {x : α} {g : Set α → Filter β} (hg : Monotone g) :
     (𝓝 x).lift g = (𝓤 α).lift fun s : SetRel α α => g { y | (y, x) ∈ s } := by

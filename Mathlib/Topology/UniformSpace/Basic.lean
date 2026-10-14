@@ -791,8 +791,7 @@ theorem entourageProd_mem_uniformity [t₁ : UniformSpace α] [t₂ : UniformSpa
   rw [uniformity_prod]; exact inter_mem_inf (preimage_mem_comap hu) (preimage_mem_comap hv)
 
 theorem ball_entourageProd (u : SetRel α α) (v : SetRel β β) (x : α × β) :
-    ball x (entourageProd u v) = ball x.1 u ×ˢ ball x.2 v := by
-  ext p; rfl
+    ball x (entourageProd u v) = ball x.1 u ×ˢ ball x.2 v := rfl
 
 instance IsSymm_entourageProd {u : SetRel α α} {v : SetRel β β} [u.IsSymm] [v.IsSymm] :
     (entourageProd u v).IsSymm where
