@@ -5,6 +5,7 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
+public import Mathlib.Order.OrderIsoNat
 public import Mathlib.SetTheory.Cardinal.Cofinality.Basic
 public import Mathlib.SetTheory.Ordinal.Family
 public import Mathlib.SetTheory.Ordinal.Univ
@@ -29,7 +30,6 @@ function of the set. Note that if `α = ℕ`, then this definition matches `Nat.
 ## TODO
 
 - Deprecate `Ordinal.enumOrd` in favor of `Order.enum`.
-- Prove that `Order.enum` on the naturals coincides with `Nat.nth`.
 -/
 
 public section
@@ -97,6 +97,11 @@ theorem type_eq_of_isCofinal {s : Set α} (hs : IsCofinal s) : typeLT s = typeLT
 `Nat.nth`. -/
 noncomputable def enum (s : Set α) (hs : IsCofinal s) : α ≃o s :=
   .ofRelIsoLT (type_eq.1 (type_eq_of_isCofinal hs).symm).some
+
+theorem enum_eq_orderIsoOfNat (s : Set ℕ) (hs : IsCofinal s) :
+    letI : Infinite s := (infinite_of_not_bddAbove hs.not_bddAbove).to_subtype
+    enum s hs = Nat.Subtype.orderIsoOfNat s := by
+  subsingleton
 
 variable {s : Set α} {hs : IsCofinal s}
 
