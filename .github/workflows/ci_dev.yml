@@ -3,51 +3,108 @@ name: ci dev
 on:
   workflow_dispatch:
     inputs:
-      tools_branch_ref:
-        description: ref for tools checkout (defaults to 'this commit')
-        required: false
+      candidate_pr:
+        description: Lean PR number with a published release for commit 8001cf3
         type: string
-        default: ''
-      pr_branch_ref:
-        description: ref for building-branch checkout (defaults to 'this commit')
-        required: false
-        type: string
-        default: ''
-      run_post_ci:
-        description: Run the post-CI job?
-        required: false
-        type: boolean
-        default: false # We shouldn't need this job in typical experiments
-      mathlib_ci_ref:
-        description: ref for mathlib-ci checkout (defaults to 'master')
-        required: false
-        type: string
-        default: 'master'
+        required: true
+        default: '15693'
+      order:
+        description: First pair order; later pairs alternate
+        type: choice
+        options: [baseline-patched, patched-baseline]
+        default: baseline-patched
+      pairs:
+        description: Number of timing pairs (1 to 5)
+        type: choice
+        options: ['1', '2', '3', '4', '5']
+        default: '2'
+      mode:
+        description: Uninstrumented timings or a separate Lean profiler pair
+        type: choice
+        options: [timings, profile]
+        default: timings
 
-# Limit permissions for GITHUB_TOKEN for the entire workflow
 permissions:
   contents: read
-  id-token: write
-  actions: read  # read-only: download master artifacts (tools-bin, cache-snapshot)
-  # By default let's remove this permission (which is present in the other build pipelines)
-  # from the CI experimentation runs to avoid unwitting side effects
-  # pull-requests: write
+  actions: read
+
+concurrency:
+  group: mathlib-interp-symbol-cache-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  build:
-    name: ci (dev branch)
-    # For sanity and intentionality, let's only trigger this from branches ci-dev/*
-    if: ${{ github.repository == 'leanprover-community/mathlib4' && github.ref_type == 'branch' && startsWith(github.ref_name, 'ci-dev/') }}
-    uses: ./.github/workflows/build_template.yml
-    with:
-      concurrency_group: ${{ github.workflow }}-${{ github.ref }}
-      # Use the tools from 'this branch', as our changes in the tools might be relevant for experiments
-      tools_branch_ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || github.sha }}
-      pr_branch_ref: ${{ inputs.pr_branch_ref != '' && inputs.pr_branch_ref || github.sha }}
-      run_post_ci: ${{ inputs.run_post_ci }}
-      mathlib_ci_ref: ${{ inputs.mathlib_ci_ref }}
-      # The ref inputs choose the code that holds the upload credential, so
-      # the environment requires a CI admin to approve each run.
-      cache_environment: cache-upload-ci-dev
-      runs_on: pr
-    secrets: inherit
+  compare:
+    if: github.repository == 'leanprover-community/mathlib4' && github.ref_type == 'branch' && startsWith(github.ref_name, 'ci-dev/')
+    runs-on: pr
+    timeout-minutes: 360
+    steps:
+      - name: Checkout benchmark scripts
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          path: experiment
+
+      - name: Checkout the same Mathlib source for both compilers
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: leanprover-community/mathlib4-nightly-testing
+          ref: 9151b29138f46990b9502c758ed0567ea14843e6
+          persist-credentials: false
+          path: benchmark-source
+
+      - name: Download and verify the pinned toolchains
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CANDIDATE_PR: ${{ inputs.candidate_pr }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$CANDIDATE_PR" =~ ^[0-9]+$ ]]
+          command -v landrun
+          if ! command -v zstd >/dev/null; then
+            curl --fail --location --retry 3 \
+              https://github.com/facebook/zstd/releases/download/v1.5.7/zstd-1.5.7.tar.gz \
+              --output "$RUNNER_TEMP/zstd-1.5.7.tar.gz"
+            echo "eb33e51f49a15e023950cd7825ca74a4a2b43db8354825ac24fc1b7ee09e6fa3  $RUNNER_TEMP/zstd-1.5.7.tar.gz" | sha256sum --check
+            tar -xzf "$RUNNER_TEMP/zstd-1.5.7.tar.gz" -C "$RUNNER_TEMP"
+            make -s -C "$RUNNER_TEMP/zstd-1.5.7/programs" -j"$(nproc)" zstd
+            export PATH="$RUNNER_TEMP/zstd-1.5.7/programs:$PATH"
+          fi
+          mkdir -p "$RUNNER_TEMP/toolchains/lean-baseline" "$RUNNER_TEMP/toolchains/lean-patched" benchmark-results
+          gh api repos/leanprover/lean4/actions/artifacts/11902424333 > benchmark-results/baseline-artifact.json
+          jq -e '.expired == false and .workflow_run.head_sha == "baeedf0cbafeff325f77b76e540f09d291f6f038"' benchmark-results/baseline-artifact.json
+          gh api repos/leanprover/lean4/actions/artifacts/11902424333/zip > "$RUNNER_TEMP/baseline.zip"
+          echo "fa93ca88ff4338d5d49ed36e95778fa81f102efa6620f9967905a3fdcd883baa  $RUNNER_TEMP/baseline.zip" | sha256sum --check
+          unzip -q "$RUNNER_TEMP/baseline.zip" -d "$RUNNER_TEMP/toolchains/lean-baseline"
+          gh api "repos/leanprover/lean4-pr-releases/releases/tags/pr-release-${CANDIDATE_PR}-8001cf3" > benchmark-results/candidate-release.json
+          jq -e '[.assets[] | select(.name | endswith("-linux.tar.zst"))] | length == 1' benchmark-results/candidate-release.json
+          asset_url=$(jq -r '.assets[] | select(.name | endswith("-linux.tar.zst")) | .browser_download_url' benchmark-results/candidate-release.json)
+          digest=$(jq -er '.assets[] | select(.name | endswith("-linux.tar.zst")) | .digest | select(startswith("sha256:")) | ltrimstr("sha256:")' benchmark-results/candidate-release.json)
+          curl --fail --location --retry 3 "$asset_url" --output "$RUNNER_TEMP/toolchains/lean-patched/candidate.tar.zst"
+          echo "$digest  $RUNNER_TEMP/toolchains/lean-patched/candidate.tar.zst" | sha256sum --check
+          for variant in baseline patched; do
+            archive_dir="$RUNNER_TEMP/toolchains/lean-$variant"
+            mapfile -t archives < <(find "$archive_dir" -maxdepth 1 -name '*.tar.zst')
+            [[ ${#archives[@]} == 1 ]]
+            tar --zstd -xf "${archives[0]}" -C "$archive_dir" --strip-components=1
+          done
+
+      - name: Check compatibility and run paired full builds
+        working-directory: benchmark-source
+        env:
+          BENCH_TOOLCHAINS: ${{ runner.temp }}/toolchains
+          BENCH_OUTPUT: ${{ github.workspace }}/benchmark-results
+          BENCH_ORDER: ${{ inputs.order }}
+          BENCH_PAIRS: ${{ inputs.pairs }}
+          BENCH_MODE: ${{ inputs.mode }}
+          BENCH_LANDRUN: '1'
+        run: python3 ../experiment/.github/benchmarks/interp-symbol-cache.py
+
+      - name: Upload measurements, metadata, and logs
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: interp-symbol-cache-${{ inputs.mode }}-${{ inputs.order }}
+          path: benchmark-results/
+          if-no-files-found: warn
+          retention-days: 30
