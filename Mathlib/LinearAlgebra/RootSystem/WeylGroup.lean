@@ -116,19 +116,19 @@ lemma range_domRestrict_weylGroup {G : Type*} [Group G] {f : Aut P →* G} {g : 
 lemma range_weylGroup_weightHom :
     MonoidHom.range ((Equiv.weightHom P).domRestrict P.weylGroup) =
       Subgroup.closure (range P.reflection) :=
-  range_domRestrict_weylGroup fun i ↦ by simp
+  range_domRestrict_weylGroup (by simp)
 
 lemma range_weylGroup_coweightHom :
     MonoidHom.range ((Equiv.coweightHom P).domRestrict P.weylGroup) =
       Subgroup.closure (range (MulOpposite.op ∘ P.coreflection)) :=
-  range_domRestrict_weylGroup fun i ↦ by simp
+  range_domRestrict_weylGroup (by simp)
 
 /-- The permutation representation of the Weyl group induced by `reflectionPerm`. -/
 abbrev weylGroupToPerm := (Equiv.indexHom P).domRestrict P.weylGroup
 
 lemma range_weylGroupToPerm :
     P.weylGroupToPerm.range = Subgroup.closure (range P.reflectionPerm) :=
-  range_domRestrict_weylGroup fun i ↦ by simp
+  range_domRestrict_weylGroup (by simp)
 
 /-- The natural representation of the Weyl group on the root space. -/
 def weylGroupRootRep : Representation R P.weylGroup M :=
