@@ -252,8 +252,6 @@ theorem hasseDeriv_mul (f g : R[X]) :
   congr
   rw_mod_cast [← Nat.add_choose_eq]
 
-/-- If the Hasse derivatives of `f` of orders `0 < i ≤ k` vanish, then `hasseDeriv k` is
-`f`-linear: `hasseDeriv k (f * g) = f * hasseDeriv k g`. -/
 theorem hasseDeriv_mul_of_forall_hasseDeriv_eq_zero
     (hf : ∀ i, 0 < i → i ≤ k → hasseDeriv i f = 0) (g : R[X]) :
     hasseDeriv k (f * g) = f * hasseDeriv k g := by

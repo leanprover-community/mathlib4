@@ -49,8 +49,6 @@ theorem forall_hasseDeriv_eq_zero_iff {e : ℕ} {f : R[X]} :
   exact ⟨fun h n hn k hk hk' ↦ (h k hk hk' n).resolve_right hn,
     fun h k hk hk' n ↦ or_iff_not_imp_right.2 fun hn ↦ h n hn k hk hk'⟩
 
-/-- In characteristic `p`, `hasseDeriv k` commutes with multiplication by `X ^ (p ^ e)` for
-`k < p ^ e`. -/
 theorem hasseDeriv_X_pow_mul {e k : ℕ} (hk : k < p ^ e) (g : R[X]) :
     hasseDeriv k (X ^ p ^ e * g) = X ^ p ^ e * hasseDeriv k g := by
   refine hasseDeriv_mul_of_forall_hasseDeriv_eq_zero _ _ (fun i hi hik ↦ ?_) g
