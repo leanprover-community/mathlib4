@@ -721,8 +721,6 @@ section Pi
 variable {ι : Type*} (P : ι → Type*) [∀ i, AddCommGroup (P i)] [∀ i, Module R (P i)]
 
 variable (R) in
-/-- For `κ` finite, the canonical map `(κ → R) ⊗[R] (Π i, P i) → Π i, (κ → R) ⊗[R] P i` is
-bijective. See `Module.FinitePresentation.piRightHom_bijective` for the general statement. -/
 lemma Module.piRightHom_bijective_of_finite_free (κ : Type*) [Finite κ] :
     Function.Bijective (piRightHom R R (κ → R) P) := by
   classical
