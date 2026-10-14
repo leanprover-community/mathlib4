@@ -40,8 +40,6 @@ unnecessarily.
 
 public section
 
-noncomputable section
-
 open scoped CharZero Real RealInnerProductSpace
 
 namespace InnerProductGeometry

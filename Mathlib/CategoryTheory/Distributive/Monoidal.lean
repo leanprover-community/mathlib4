@@ -5,9 +5,9 @@ Authors: Sina Hazratpour
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 public import Mathlib.CategoryTheory.Monoidal.End
 public import Mathlib.CategoryTheory.Monoidal.Preadditive
 
@@ -101,7 +101,7 @@ end IsMonoidalLeftDistrib
 
 namespace Distributive
 
-/-- Notation for the forward direction morphism of the canonical left distributivity isomorphism -/
+/-- Notation for the canonical left distributivity isomorphism -/
 scoped notation "∂L" => leftDistrib
 
 end Distributive
@@ -158,8 +158,8 @@ end IsMonoidalRightDistrib
 
 namespace Distributive
 
-/-- Notation for the forward direction morphism of the canonical right distributivity isomorphism -/
-notation "∂R" => rightDistrib
+/-- Notation for the canonical right distributivity isomorphism -/
+scoped notation "∂R" => rightDistrib
 
 end Distributive
 

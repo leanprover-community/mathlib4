@@ -5,8 +5,8 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen, Wen Yang
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.Transvection
 public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+public import Mathlib.LinearAlgebra.Matrix.Transvection
 
 /-!
 # Block matrices and their determinant
@@ -399,6 +399,14 @@ theorem det_of_isLowerTriangular [LinearOrder m] (M : Matrix m m R) (h : M.IsLow
   exact det_of_isUpperTriangular h.transpose
 
 @[deprecated (since := "2026-07-30")] alias det_of_lowerTriangular := det_of_isLowerTriangular
+
+theorem IsUpperTriangular.det_ne_zero_iff [LinearOrder m] [IsDomain R] (hM : M.IsUpperTriangular) :
+    M.det ≠ 0 ↔ ∀ i, M.diag i ≠ 0 := by
+  simp [det_of_isUpperTriangular hM, prod_ne_zero_iff]
+
+theorem IsLowerTriangular.det_ne_zero_iff [LinearOrder m] [IsDomain R] (hM : M.IsLowerTriangular) :
+    M.det ≠ 0 ↔ ∀ i, M.diag i ≠ 0 := by
+  simp [det_of_isLowerTriangular M hM, prod_ne_zero_iff]
 
 open Polynomial
 

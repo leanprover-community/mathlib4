@@ -55,9 +55,6 @@ public initialize allowedRef : IO.Ref (Std.HashSet SyntaxNodeKind) ←
   IO.mkRef <| .ofArray #[
     `Mathlib.Tactic.Says.says,
     `Batteries.Tactic.«tacticOn_goal_=>_»,
-    `by,
-    `null,
-    `«]»,
     ``Lean.Parser.Tactic.show,
     -- the following `SyntaxNodeKind`s play a role in silencing `test`s
     `Mathlib.Tactic.successIfFailWithMsg,
@@ -117,6 +114,6 @@ The trailing underscore `_` makes the syntax valid, since `refine` expects somet
 -/
 elab "#show_kind " t:tactic : command => do
   let stx ← `(tactic| $t)
-  Lean.logInfoAt t m!"The `SyntaxNodeKind` is '{stx.raw.getKind}'."
+  Lean.logInfoAt t m!"The `SyntaxNodeKind` is `{stx.raw.getKind}`."
 
 end Mathlib.Linter.UnusedTactic
