@@ -3,51 +3,70 @@ name: ci dev
 on:
   workflow_dispatch:
     inputs:
-      tools_branch_ref:
-        description: ref for tools checkout (defaults to 'this commit')
-        required: false
-        type: string
-        default: ''
-      pr_branch_ref:
-        description: ref for building-branch checkout (defaults to 'this commit')
-        required: false
-        type: string
-        default: ''
-      run_post_ci:
-        description: Run the post-CI job?
-        required: false
-        type: boolean
-        default: false # We shouldn't need this job in typical experiments
-      mathlib_ci_ref:
-        description: ref for mathlib-ci checkout (defaults to 'master')
-        required: false
-        type: string
-        default: 'master'
+      order:
+        description: Order of the two clean builds on one runner
+        type: choice
+        options: [baseline-patched, patched-baseline]
+        default: baseline-patched
 
-# Limit permissions for GITHUB_TOKEN for the entire workflow
 permissions:
   contents: read
-  id-token: write
-  actions: read  # read-only: download master artifacts (tools-bin, cache-snapshot)
-  # By default let's remove this permission (which is present in the other build pipelines)
-  # from the CI experimentation runs to avoid unwitting side effects
-  # pull-requests: write
+  actions: read
+
+concurrency:
+  group: mathlib-unfold-benchmark-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build:
-    name: ci (dev branch)
-    # For sanity and intentionality, let's only trigger this from branches ci-dev/*
-    if: ${{ github.repository == 'leanprover-community/mathlib4' && github.ref_type == 'branch' && startsWith(github.ref_name, 'ci-dev/') }}
-    uses: ./.github/workflows/build_template.yml
-    with:
-      concurrency_group: ${{ github.workflow }}-${{ github.ref }}
-      # Use the tools from 'this branch', as our changes in the tools might be relevant for experiments
-      tools_branch_ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || github.sha }}
-      pr_branch_ref: ${{ inputs.pr_branch_ref != '' && inputs.pr_branch_ref || github.sha }}
-      run_post_ci: ${{ inputs.run_post_ci }}
-      mathlib_ci_ref: ${{ inputs.mathlib_ci_ref }}
-      # The ref inputs choose the code that holds the upload credential, so
-      # the environment requires a CI admin to approve each run.
-      cache_environment: cache-upload-ci-dev
-      runs_on: pr
-    secrets: inherit
+  compare:
+    if: github.repository == 'leanprover-community/mathlib4' && startsWith(github.ref_name, 'ci-dev/')
+    name: Clean builds (${{ inputs.order }})
+    runs-on: pr
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Check runner and sandbox
+        run: |
+          command -v landrun
+          nproc
+          lscpu
+          df -h .
+
+      - name: Download the exact Lean baseline and PR release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/lean-baseline" "$RUNNER_TEMP/lean-patched" benchmark-results
+          gh api repos/leanprover/lean4/actions/artifacts/11835156485 > benchmark-results/baseline-artifact.json
+          jq -e '.expired == false and .workflow_run.head_sha == "daa56019e0ab113c164f5e13e6c9dae9d994c21b"' \
+            benchmark-results/baseline-artifact.json
+          gh run download 38439976971 --repo leanprover/lean4 --name 'build-Linux release' \
+            --dir "$RUNNER_TEMP/lean-baseline"
+          curl --fail --location --retry 3 \
+            https://github.com/leanprover/lean4-pr-releases/releases/download/pr-release-15670-f6b1bcc/lean-4.36.0-pre-linux.tar.zst \
+            --output "$RUNNER_TEMP/lean-patched/lean-4.36.0-pre-linux.tar.zst"
+          echo "58c6fbf981b7780ba8c8a61d9377a463c49aa2dbeb0524db946a4648468b126c  $RUNNER_TEMP/lean-patched/lean-4.36.0-pre-linux.tar.zst" | sha256sum --check
+          for variant in baseline patched; do
+            archive="$RUNNER_TEMP/lean-$variant/lean-4.36.0-pre-linux.tar.zst"
+            tar --zstd -xf "$archive" -C "$RUNNER_TEMP/lean-$variant" --strip-components=1
+            rm "$archive"
+          done
+
+      - name: Check dependencies and measure two clean builds
+        env:
+          BENCH_ORDER: ${{ inputs.order }}
+          BENCH_TOOLCHAINS: ${{ runner.temp }}
+          BENCH_LANDRUN: '1'
+        run: python3 .github/benchmarks/imported-unfold.py
+
+      - name: Upload measurements and build logs
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: mathlib-build-${{ inputs.order }}
+          path: benchmark-results/
+          if-no-files-found: warn
+          retention-days: 30

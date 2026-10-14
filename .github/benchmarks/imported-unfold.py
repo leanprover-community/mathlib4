@@ -46,12 +46,14 @@ def environment(variant):
         LAKE_ARTIFACT_CACHE="false",
         LAKE_RESTORE_ARTIFACTS="false",
         MATHLIB_NO_CACHE_ON_UPDATE="1",
+        LEAN_ABORT_ON_PANIC="1",
+        TMPDIR=str(ROOT / ".lake/tmp"),
     )
     return env
 
 
 def lake(variant, args):
-    return [str(TOOLCHAINS / f"lean-{variant}" / "bin/lake"), *args]
+    return [str(TOOLCHAINS / f"lean-{variant}" / "bin/lake"), "-KCI", *args]
 
 
 def clear_builds():
@@ -73,6 +75,25 @@ def check_sources():
 
 def run_logged(variant, args, name, timed=False):
     command = lake(variant, args)
+    env = environment(variant)
+    (ROOT / ".lake/tmp").mkdir(parents=True, exist_ok=True)
+    if os.environ.get("BENCH_LANDRUN") == "1":
+        # Only dependency materialization has network access. Lake and Lean run
+        # without credentials and can only write job-local outputs and .lake.
+        sandbox = ["landrun"]
+        if name == "fetch-dependencies":
+            sandbox += ["--unrestricted-network", "--rox", "/etc"]
+        else:
+            sandbox += ["--ro", "/etc/timezone"]
+        sandbox += ["--rox", "/usr", "--rw", "/dev", "--rox", str(ROOT),
+                    "--rox", str(TOOLCHAINS / f"lean-{variant}"),
+                    "--rw", str(ROOT / ".lake"), "--rw", str(OUT)]
+        for key in ("PATH", "HOME", "CI", "LEAN_SYSROOT", "LEAN_NUM_THREADS", "LAKE_OVERRIDE_LEAN",
+                    "LAKE_NO_CACHE", "LAKE_ARTIFACT_CACHE", "LAKE_RESTORE_ARTIFACTS",
+                    "MATHLIB_NO_CACHE_ON_UPDATE", "LEAN_ABORT_ON_PANIC", "TMPDIR"):
+            if key in env:
+                sandbox += ["--env", key]
+        command = [*sandbox, "--", *command]
     if timed:
         command = [
             "/usr/bin/time", "-o", str(OUT / f"{name}.resources.json"),
@@ -81,13 +102,14 @@ def run_logged(variant, args, name, timed=False):
         ]
     started = time.monotonic()
     with (OUT / f"{name}.log").open("w") as log:
-        process = subprocess.Popen(command, env=environment(variant), stdout=log, stderr=log)
+        process = subprocess.Popen(command, env=env, stdout=log, stderr=log)
         while True:
             try:
                 code = process.wait(timeout=60)
                 break
             except subprocess.TimeoutExpired:
-                print(f"{name}: running for {time.monotonic() - started:.0f} seconds", flush=True)
+                count = len(list((ROOT / ".lake/build/lib/lean/Mathlib").rglob("*.olean")))
+                print(f"{name}: {time.monotonic() - started:.0f} seconds, {count} Mathlib modules", flush=True)
     seconds = time.monotonic() - started
     if code:
         print((OUT / f"{name}.log").read_text()[-20000:], flush=True)
@@ -107,7 +129,7 @@ def main():
         "lean_commits": COMMITS, "lean_versions": versions, "order": ORDER,
         "manifest_sha256": hashlib.sha256(MANIFEST).hexdigest(),
         "batteries_adaptation_sha256": hashlib.sha256(ADAPTATION.read_bytes()).hexdigest(),
-        "dependencies": PACKAGES, "threads": os.environ["LEAN_NUM_THREADS"],
+        "dependencies": PACKAGES, "threads": os.environ.get("LEAN_NUM_THREADS", "Lean default"),
         "uname": output(["uname", "-a"]), "cpu": output(["lscpu"]),
         "memory": Path("/proc/meminfo").read_text(),
         "runner_name": os.environ.get("RUNNER_NAME"),
@@ -139,7 +161,7 @@ def main():
         name = f"{index}-{variant}"
         print(f"Starting clean full Mathlib build: {name}", flush=True)
         save("status.json", {"status": "running", "variant": variant, "index": index})
-        seconds = run_logged(variant, ["build", "--no-cache", "--no-ansi", "Mathlib"], name, timed=True)
+        seconds = run_logged(variant, ["build", "--no-cache", "--no-ansi", "--wfail", "Mathlib"], name, timed=True)
         check_sources()
         build = ROOT / ".lake/build/lib/lean"
         modules = sorted(str(p.relative_to(build)) for p in build.rglob("*.olean"))
@@ -164,7 +186,7 @@ def main():
         summary += (f"| {r['variant']} | {r['wall_seconds']:.2f} | {r['user_seconds']:.2f} "
                     f"| {r['system_seconds']:.2f} | {r['modules']} |\n")
     summary += f"\nWall time reduction: {reduction:.2f}%. Order: {' then '.join(ORDER)}.\n"
-    summary += "Each pair runs on one runner. Compare both job orders before drawing conclusions.\n"
+    summary += "This pair runs on one runner. Repeat with the reverse order to check run-order effects.\n"
     (OUT / "summary.md").write_text(summary)
     if os.environ.get("GITHUB_STEP_SUMMARY"):
         with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as handle:
