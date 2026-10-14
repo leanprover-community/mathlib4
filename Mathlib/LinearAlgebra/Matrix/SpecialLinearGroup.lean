@@ -246,7 +246,6 @@ def prodEquiv :
 
 end Prod
 
-
 section center
 
 open Subgroup
