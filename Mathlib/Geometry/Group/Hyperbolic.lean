@@ -43,8 +43,8 @@ namespace Group
 
 variable {G ι : Type*} [Group G]
 
-/-- A group is `δ`-hyperbolic with respect to a generating set `P` if its induced metric space is
-`δ`-hyperbolic. -/
+/-- A group is `δ`-hyperbolic with respect to a generating family `P` if `G`, equipped with the
+word metric of `P`, is a `δ`-hyperbolic pseudometric space. -/
 def Generators.IsHyperbolicWith (P : Generators G ι) (δ : ℝ) : Prop :=
   letI := P.normedGroup
   Metric.IsHyperbolicWith G δ
