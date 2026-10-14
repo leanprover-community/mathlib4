@@ -19,7 +19,6 @@ The interior of a convex cone is a convex cone. The coercion and membership API 
 @[expose] public section
 
 open Set
-open scoped Pointwise
 
 namespace ConvexCone
 
