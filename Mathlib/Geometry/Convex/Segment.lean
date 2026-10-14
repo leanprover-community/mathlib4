@@ -6,7 +6,6 @@ Authors: Olivia Röhrig
 
 module
 
-public import Mathlib.Geometry.Convex.ConvexSpace.Defs
 public import Mathlib.Data.Set.Insert
 public import Mathlib.Geometry.Convex.ConvexSpace.Prod
 
@@ -60,18 +59,47 @@ theorem openSegment_symm (x y : X) : openSegment R x y = openSegment R y x := by
 theorem openSegment_subset_segment (x y : X) : openSegment R x y ⊆ segment R x y :=
   fun _ ⟨a, b, ha, hb, hab, hz⟩ ↦ ⟨a, b, ha.le, hb.le, hab, hz⟩
 
+section
+
+variable {R}
+
+theorem convexCombPair_mem_segment {a b : R} (ha : 0 ≤ a) (hb : 0 ≤ b) (hab : a + b = 1) :
+    convexCombPair a b ha hb hab x y ∈ segment R x y := by
+  use a, b, ha, hb, hab
+
+theorem convexCombPair_mem_openSegment {a b : R} (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1) :
+    convexCombPair a b ha.le hb.le hab x y ∈ openSegment R x y := by
+  use a, b, ha, hb, hab
+
+theorem mem_segment_iff : z ∈ segment R x y ↔ ∃ (a b : R) (ha : 0 ≤ a) (hb : 0 ≤ b)
+    (hab : a + b = 1), convexCombPair a b ha hb hab x y = z := by
+  simp [segment]
+
+theorem mem_openSegment_iff : z ∈ openSegment R x y ↔ ∃ (a b : R) (ha : 0 < a) (hb : 0 < b)
+    (hab : a + b = 1), convexCombPair a b ha.le hb.le hab x y = z := by
+  simp [openSegment]
+
 theorem segment_subset_iff :
-    segment R x y ⊆ s ↔
-    ∀ (a b : R) (ha : 0 ≤ a) (hb : 0 ≤ b) (hab : a + b = 1), convexCombPair a b ha hb hab x y ∈ s :=
-  ⟨fun H a b ha hb hab ↦ H ⟨a, b, ha, hb, hab, rfl⟩, fun H _ ⟨a, b, ha, hb, hab, hz⟩ ↦
-    hz ▸ H a b ha hb hab⟩
+  segment R x y ⊆ s ↔ ∀ {a b : R} (ha : 0 ≤ a) (hb : 0 ≤ b) (hab : a + b = 1),
+  convexCombPair a b ha hb hab x y ∈ s := by
+  constructor
+  · intro h a b ha hb hab
+    exact h <| mem_segment_iff.mpr <| convexCombPair_mem_segment ha hb hab
+  · intro h x hx
+    obtain ⟨a, b, ha, hb, hab, rfl⟩ := mem_segment_iff.mp hx
+    exact h ha hb hab
 
 theorem openSegment_subset_iff :
-    openSegment R x y ⊆ s ↔
-    ∀ (a b : R) (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1),
-      convexCombPair a b ha.le hb.le hab x y ∈ s :=
-  ⟨fun H a b ha hb hab ↦ H ⟨a, b, ha, hb, hab, rfl⟩, fun H _ ⟨a, b, ha, hb, hab, hz⟩ ↦
-    hz ▸ H a b ha hb hab⟩
+    openSegment R x y ⊆ s ↔ ∀ {a b : R} (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1),
+    convexCombPair a b ha.le hb.le hab x y ∈ s := by
+  constructor
+  · intro h _ _ ha hb hab
+    exact h <| mem_openSegment_iff.mpr <| convexCombPair_mem_openSegment ha hb hab
+  · intro h _ hx
+    obtain ⟨a, b, ha, hb, hab, rfl⟩ := mem_openSegment_iff.mp hx
+    exact h ha hb hab
+
+end
 
 theorem left_mem_segment (x y : X) : x ∈ segment R x y :=
   ⟨1, 0, zero_le_one, le_refl 0, add_zero 1, by rw [convexCombPair_one]⟩
@@ -109,7 +137,7 @@ theorem openSegment_subset_iff_segment_subset (hx : x ∈ s) (hy : y ∈ s) :
     openSegment R x y ⊆ s ↔ segment R x y ⊆ s := by
   simp only [← insert_endpoints_openSegment, insert_subset_iff, *, true_and]
 
-section Map
+namespace IsAffineMap
 
 variable {Y} [ConvexSpace R Y] {f : X → Y}
 
@@ -118,12 +146,22 @@ theorem image_segment (hf : IsAffineMap R f) (a b : X) :
     f '' segment R a b = segment R (f a) (f b) :=
   Set.ext fun _ ↦ by simp [segment, IsAffineMap.map_convexCombPair hf]
 
+theorem mem_segment_image (hf : IsAffineMap R f) {a b c : X}
+    (h : c ∈ segment R a b) : f c ∈ segment R (f a) (f b) := by
+  simp only [← image_segment hf, mem_image]
+  exact ⟨c, ⟨h, rfl⟩⟩
+
 @[simp]
 theorem image_openSegment (hf : IsAffineMap R f) (a b : X) :
     f '' openSegment R a b = openSegment R (f a) (f b) :=
   Set.ext fun _ ↦ by simp [openSegment, IsAffineMap.map_convexCombPair hf]
 
-end Map
+theorem mem_openSegment_image (hf : IsAffineMap R f) {a b c : X}
+    (h : c ∈ openSegment R a b) : f c ∈ openSegment R (f a) (f b) := by
+  simp only [← image_openSegment hf, mem_image]
+  exact ⟨c, ⟨h, rfl⟩⟩
+
+end IsAffineMap
 
 namespace Prod
 
@@ -139,29 +177,21 @@ theorem openSegment_subset (x y : X × Y) :
   exact ⟨⟨a, b, ha, hb, hab, by subst hz; simp⟩, a, b, ha, hb, hab, by subst hz; simp⟩
 
 theorem image_mk_segment_left (x₁ x₂ : X) (y : Y) :
-    (fun x ↦ (x, y)) '' segment R x₁ x₂ = segment R (x₁, y) (x₂, y) := by
-  have : IsAffineMap R (fun (x : X) ↦ (x, y)) :=
-    IsAffineMap.prodMk IsAffineMap.id (IsAffineMap.const y)
-  rw [← image_segment this]
+    (fun x ↦ (x, y)) '' segment R x₁ x₂ = segment R (x₁, y) (x₂, y) :=
+  (IsAffineMap.prodMk IsAffineMap.id (IsAffineMap.const y)).image_segment _ _
 
 theorem image_mk_segment_right (x : X) (y₁ y₂ : Y) :
-    (fun y ↦ (x, y)) '' segment R y₁ y₂ = segment R (x, y₁) (x, y₂) := by
-  have : IsAffineMap R (fun (y : Y) ↦ (x, y)) :=
-    IsAffineMap.prodMk (IsAffineMap.const x) IsAffineMap.id
-  rw [← image_segment this]
+    (fun y ↦ (x, y)) '' segment R y₁ y₂ = segment R (x, y₁) (x, y₂) :=
+  (IsAffineMap.prodMk (IsAffineMap.const x) IsAffineMap.id).image_segment _ _
 
 theorem image_mk_openSegment_left (x₁ x₂ : X) (y : Y) :
-    (fun x ↦ (x, y)) '' openSegment R x₁ x₂ = openSegment R (x₁, y) (x₂, y) := by
-  have : IsAffineMap R (fun (x : X) ↦ (x, y)) :=
-    IsAffineMap.prodMk IsAffineMap.id (IsAffineMap.const y)
-  rw [← image_openSegment this]
+    (fun x ↦ (x, y)) '' openSegment R x₁ x₂ = openSegment R (x₁, y) (x₂, y) :=
+  (IsAffineMap.prodMk IsAffineMap.id (IsAffineMap.const y)).image_openSegment _ _
 
 @[simp]
 theorem image_mk_openSegment_right (x : X) (y₁ y₂ : Y) :
-    (fun y ↦ (x, y)) '' openSegment R y₁ y₂ = openSegment R (x, y₁) (x, y₂) := by
-  have : IsAffineMap R (fun (y : Y) ↦ (x, y)) :=
-    IsAffineMap.prodMk (IsAffineMap.const x) IsAffineMap.id
-  rw [← image_openSegment this]
+    (fun y ↦ (x, y)) '' openSegment R y₁ y₂ = openSegment R (x, y₁) (x, y₂) :=
+  (IsAffineMap.prodMk (IsAffineMap.const x) IsAffineMap.id).image_openSegment _ _
 
 end Prod
 
