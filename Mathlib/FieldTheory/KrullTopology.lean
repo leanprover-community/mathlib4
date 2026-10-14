@@ -187,6 +187,9 @@ lemma AlgEquiv.mem_nhds_one_iff [Algebra.IsAlgebraic K L] {s : Set Gal(L/K)} :
   rw [← IntermediateField.essFiniteType_iff]
   exact ⟨fun _ => Algebra.finite_of_essFiniteType_of_isAlgebraic, fun _ => inferInstance⟩
 
+@[deprecated (since := "2026-10-14")]
+alias krullTopology_mem_nhds_one_iff := AlgEquiv.mem_nhds_one_iff
+
 open scoped Topology in
 lemma AlgEquiv.mem_nhds_one_iff_of_normal [Normal K L] {s : Set Gal(L/K)} :
     s ∈ 𝓝 1 ↔ ∃ E : IntermediateField K L,
@@ -196,6 +199,9 @@ lemma AlgEquiv.mem_nhds_one_iff_of_normal [Normal K L] {s : Set Gal(L/K)} :
   use (IntermediateField.normalClosure K E L)
   simp only [normalClosure.is_finiteDimensional K E L, normalClosure.normal K E L, true_and]
   exact le_trans (E.fixingSubgroup_antitone E.le_normalClosure) hE
+
+@[deprecated (since := "2026-10-14")]
+alias krullTopology_mem_nhds_one_iff_of_normal := AlgEquiv.mem_nhds_one_iff_of_normal
 
 /-- Let `L/E/K` be a tower of fields with `E/K` finitely generated.
 Then `Gal(L/E)` is an open subgroup of `Gal(L/K)`. -/
