@@ -7,7 +7,8 @@ module
 
 public import Mathlib.CategoryTheory.EffectiveEpi.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
-public import Mathlib.Tactic.ApplyFun
+
+import Mathlib.Tactic.ApplyFun
 /-!
 
 # Effective epimorphic families and coproducts
@@ -25,7 +26,6 @@ open Limits
 
 variable {C : Type*} [Category* C]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Given an `EffectiveEpiFamily X π` and a corresponding coproduct cocone, the family descends to an
 `EffectiveEpi` from the coproduct.
@@ -52,7 +52,6 @@ instance {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [Ha
 example {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [EffectiveEpiFamily X π]
     [HasCoproduct X] : Epi (Sigma.desc π) := inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 This is an auxiliary lemma used twice in the definition of  `EffectiveEpiFamilyOfEffectiveEpiDesc`.
 It is the `h` hypothesis of `EffectiveEpi.desc` and `EffectiveEpi.fac`.
@@ -91,7 +90,6 @@ theorem effectiveEpiFamilyStructOfEffectiveEpiDesc_aux {B : C} {α : Type*} {X :
   rw [(Category.assoc _ _ g₂), pullback.condition] at hg
   simpa using hg
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If a coproduct interacts well enough with pullbacks, then a family whose domains are the terms of
 the coproduct is effective epimorphic whenever `Sigma.desc` induces an effective epimorphism from

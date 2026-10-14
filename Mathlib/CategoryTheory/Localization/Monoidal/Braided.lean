@@ -62,6 +62,9 @@ lemma braidingNatIso_hom_app (X Y : C) :
   simp [braidingNatIso, lift₂NatIso]
   rfl
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma braidingNatIso_hom_app_naturality_μ_left (X Y Z : C) :
     ((braidingNatIso L W ε).hom.app ((L').obj X)).app ((L').obj Y ⊗ (L').obj Z) ≫
@@ -70,16 +73,18 @@ lemma braidingNatIso_hom_app_naturality_μ_left (X Y Z : C) :
           ((braidingNatIso L W ε).hom.app ((L').obj X)).app ((L').obj (Y ⊗ Z)) :=
   (((braidingNatIso L W ε).hom.app ((L').obj X)).naturality ((Functor.LaxMonoidal.μ (L') Y Z))).symm
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma braidingNatIso_hom_app_naturality_μ_right (X Y Z : C) :
     ((braidingNatIso L W ε).hom.app ((L').obj X ⊗ (L').obj Y)).app ((L').obj Z) ≫
       (L').obj Z ◁ (Functor.LaxMonoidal.μ (L') X Y) =
         (Functor.LaxMonoidal.μ (L') X Y) ▷ (L').obj Z ≫
           ((braidingNatIso L W ε).hom.app ((L').obj (X ⊗ Y))).app ((L').obj Z) :=
-  (NatTrans.congr_app ((braidingNatIso L W ε).hom.naturality
-    ((Functor.LaxMonoidal.μ (L') X Y))) ((L').obj Z)).symm
+  congr($((braidingNatIso L W ε).hom.naturality
+    (Functor.LaxMonoidal.μ (L') X Y)).app ((L').obj Z)).symm
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma map_hexagon_forward (X Y Z : C) :
     (α_ ((L').obj X) ((L').obj Y) ((L').obj Z)).hom ≫
@@ -97,7 +102,6 @@ lemma map_hexagon_forward (X Y Z : C) :
     rw [braidingNatIso_hom_app_naturality_μ_left, braidingNatIso_hom_app]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma map_hexagon_reverse (X Y Z : C) :
     (α_ ((L').obj X) ((L').obj Y) ((L').obj Z)).inv ≫

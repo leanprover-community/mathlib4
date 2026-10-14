@@ -6,9 +6,6 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Category.Pairwise
-public import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
-public import Mathlib.CategoryTheory.Limits.Final
-public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 public import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
 
 /-!
@@ -294,7 +291,7 @@ theorem isSheaf_iff_isSheafPreservesLimitPairwiseIntersections :
     F.IsSheaf ↔ F.IsSheafPreservesLimitPairwiseIntersections := by
   refine ⟨fun h U ↦ h.isSheafPreservesLimitPairwiseIntersections,
     fun h ↦ F.isSheaf_iff_isSheafPairwiseIntersections.mpr fun ι U ↦ ?_⟩
-  haveI := h U
+  have := h U
   exact ⟨isLimitOfPreserves _ (Pairwise.coconeIsColimit U).op⟩
 
 end TopCat.Presheaf

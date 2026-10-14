@@ -5,8 +5,10 @@ Authors: Stefan Kebekus
 -/
 module
 
-public import Mathlib.Analysis.Complex.Liouville
 public import Mathlib.Analysis.Complex.Harmonic.Analytic
+
+import Mathlib.Analysis.Complex.Liouville
+import Mathlib.Analysis.Normed.Module.HahnBanach
 
 /-!
 # Liouville's Theorem for Harmonic Functions on the Complex Plane

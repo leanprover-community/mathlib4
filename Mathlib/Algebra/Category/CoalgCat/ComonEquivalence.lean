@@ -7,11 +7,10 @@ module
 
 public import Mathlib.Algebra.Category.CoalgCat.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
-public import Mathlib.CategoryTheory.Monoidal.Braided.Opposite
 public import Mathlib.CategoryTheory.Monoidal.Comon_
-public import Mathlib.LinearAlgebra.TensorProduct.Tower
 public import Mathlib.RingTheory.Coalgebra.TensorProduct
-public import Mathlib.Tactic.SuppressCompilation
+
+import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # The category equivalence between `R`-coalgebras and comonoid objects in `R-Mod`
@@ -55,7 +54,7 @@ noncomputable instance (X : CoalgCat R) : ComonObj (ModuleCat.of R X) where
 
 /-- An `R`-coalgebra is a comonoid object in the category of `R`-modules. -/
 @[simps X]
-noncomputable def toComonObj (X : CoalgCat R) : Comon (ModuleCat R) := ⟨ModuleCat.of R X⟩
+noncomputable def toComonObj (X : CoalgCat R) : Comon (ModuleCat R) := ⟨↧X⟩
 
 variable (R) in
 /-- The natural functor from `R`-coalgebras to comonoid objects in the category of `R`-modules. -/
@@ -160,7 +159,7 @@ open TensorProduct
 set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] MonObj.tensorObj.one_def MonObj.tensorObj.mul_def in
 theorem comul_tensorObj :
-    Coalgebra.comul (R := R) (A := (CoalgCat.of R M ⊗ CoalgCat.of R N : CoalgCat R))
+    Coalgebra.comul (R := R) (A := (↧M ⊗ ↧N : CoalgCat R))
       = Coalgebra.comul (A := M ⊗[R] N) := by
   rw [ofComonObjCoalgebraStruct_comul]
   simp [tensorμ_eq_tensorTensorTensorComm, TensorProduct.comul_def,
@@ -170,8 +169,8 @@ theorem comul_tensorObj :
 set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] MonObj.tensorObj.one_def MonObj.tensorObj.mul_def in
 theorem comul_tensorObj_tensorObj_right :
-    Coalgebra.comul (R := R) (A := (CoalgCat.of R M ⊗
-      (CoalgCat.of R N ⊗ CoalgCat.of R P) : CoalgCat R))
+    Coalgebra.comul (R := R) (A := (↧M ⊗
+      (↧N ⊗ ↧P) : CoalgCat R))
       = Coalgebra.comul (A := M ⊗[R] (N ⊗[R] P)) := by
   rw [ofComonObjCoalgebraStruct_comul]
   simp only [Comon.monoidal_tensorObj_comon_comul]
@@ -184,18 +183,16 @@ set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] MonObj.tensorObj.one_def MonObj.tensorObj.mul_def in
 theorem comul_tensorObj_tensorObj_left :
     Coalgebra.comul (R := R)
-      (A := ((CoalgCat.of R M ⊗ CoalgCat.of R N) ⊗ CoalgCat.of R P : CoalgCat R))
+      (A := ((↧M ⊗ ↧N) ⊗ ↧P : CoalgCat R))
       = Coalgebra.comul (A := M ⊗[R] N ⊗[R] P) := by
   rw [ofComonObjCoalgebraStruct_comul]
-  dsimp +instances
-  simp +instances only [toComonObj]
   simp [tensorμ_eq_tensorTensorTensorComm, TensorProduct.comul_def,
     AlgebraTensorModule.tensorTensorTensorComm_eq]
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
 theorem counit_tensorObj :
-    Coalgebra.counit (R := R) (A := (CoalgCat.of R M ⊗ CoalgCat.of R N : CoalgCat R))
+    Coalgebra.counit (R := R) (A := (↧M ⊗ ↧N : CoalgCat R))
       = Coalgebra.counit (A := M ⊗[R] N) := by
   rw [ofComonObjCoalgebraStruct_counit]
   simp [TensorProduct.counit_def, TensorProduct.AlgebraTensorModule.rid_eq_rid, ← lid_eq_rid]
@@ -204,7 +201,7 @@ theorem counit_tensorObj :
 set_option backward.isDefEq.respectTransparency false in
 theorem counit_tensorObj_tensorObj_right :
     Coalgebra.counit (R := R)
-      (A := (CoalgCat.of R M ⊗ (CoalgCat.of R N ⊗ CoalgCat.of R P) : CoalgCat R))
+      (A := (↧M ⊗ (↧N ⊗ ↧P) : CoalgCat R))
       = Coalgebra.counit (A := M ⊗[R] (N ⊗[R] P)) := by
   rw [ofComonObjCoalgebraStruct_counit]
   simp [TensorProduct.counit_def, TensorProduct.AlgebraTensorModule.rid_eq_rid, ← lid_eq_rid]
@@ -213,7 +210,7 @@ theorem counit_tensorObj_tensorObj_right :
 set_option backward.isDefEq.respectTransparency false in
 theorem counit_tensorObj_tensorObj_left :
     Coalgebra.counit (R := R)
-      (A := ((CoalgCat.of R M ⊗ CoalgCat.of R N) ⊗ CoalgCat.of R P : CoalgCat R))
+      (A := ((↧M ⊗ ↧N) ⊗ ↧P : CoalgCat R))
       = Coalgebra.counit (A := (M ⊗[R] N) ⊗[R] P) := by
   rw [ofComonObjCoalgebraStruct_counit]
   simp [TensorProduct.counit_def, TensorProduct.AlgebraTensorModule.rid_eq_rid, ← lid_eq_rid]

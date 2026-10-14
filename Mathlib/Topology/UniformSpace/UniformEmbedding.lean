@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Topology.UniformSpace.Cauchy
 public import Mathlib.Topology.UniformSpace.Separation
-public import Mathlib.Topology.DenseEmbedding
 
 /-!
 # Uniform embeddings of uniform spaces.
@@ -88,9 +87,6 @@ theorem IsUniformInducing.uniformContinuous_iff {f : α → β} {g : β → γ} 
     UniformContinuous f ↔ UniformContinuous (g ∘ f) := by
   dsimp only [UniformContinuous, Tendsto]
   simp only [← hg.comap_uniformity, ← map_le_iff_le_comap, Filter.map_map, Function.comp_def]
-
-@[deprecated (since := "2026-03-17")]
-alias IsUniformInducing.isUniformInducing_comp_iff := IsUniformInducing.of_comp_iff
 
 theorem IsUniformInducing.uniformContinuousOn_iff {f : α → β} {g : β → γ} {S : Set α}
     (hg : IsUniformInducing g) :
@@ -405,7 +401,7 @@ instance CompleteSpace.sum [CompleteSpace α] [CompleteSpace β] : CompleteSpace
 theorem IsUniformEmbedding.discreteUniformity [DiscreteUniformity β] {f : α → β}
     (hf : IsUniformEmbedding f) : DiscreteUniformity α := by
   simp_rw [discreteUniformity_iff_eq_principal_setRelId, ← hf.comap_uniformity,
-    DiscreteUniformity.eq_principal_setRelId, comap_principal, SetRel.id, preimage_setOf_eq,
+    DiscreteUniformity.eq_principal_setRelId, comap_principal, SetRel.id, preimage_ofPred_eq,
     hf.injective.eq_iff]
 
 end
@@ -417,7 +413,7 @@ theorem isUniformEmbedding_comap {α : Type*} {β : Type*} {f : α → β} [u : 
 
 /-- Pull back a uniform space structure by an embedding, adjusting the new uniform structure to
 make sure that its topology is defeq to the original one. -/
-@[implicit_reducible]
+@[instance_reducible]
 def Topology.IsEmbedding.comapUniformSpace {α β} [TopologicalSpace α] [u : UniformSpace β]
     (f : α → β) (h : IsEmbedding f) : UniformSpace α :=
   (u.comap f).replaceTopology h.eq_induced
@@ -454,7 +450,7 @@ theorem uniform_extend_subtype [CompleteSpace γ] {p : α → Prop} {e : α → 
   have ue' : IsUniformEmbedding (IsDenseEmbedding.subtypeEmb p e) :=
     isUniformEmbedding_subtypeEmb _ he de
   have : b ∈ closure (e '' { x | p x }) :=
-    (closure_mono <| monotone_image <| hp) (mem_of_mem_nhds hb)
+    (closure_mono <| monotone_image hp) (mem_of_mem_nhds hb)
   let ⟨c, hc⟩ := uniformly_extend_exists ue'.isUniformInducing de'.dense hf ⟨b, this⟩
   replace hc : Tendsto (f ∘ Subtype.val (p := p)) (((𝓝 b).comap e).comap Subtype.val) (𝓝 c) := by
     simpa only [nhds_subtype_eq_comap, comap_comap, IsDenseEmbedding.subtypeEmb_coe] using! hc
@@ -476,7 +472,7 @@ theorem uniformContinuous_uniformly_extend [CompleteSpace γ] : UniformContinuou
       ((h_e.isDenseInducing h_dense).comap_nhds_neBot _).map _
     have :
       f '' (e ⁻¹' m) ∩ ({ c | (c, ψ a) ∈ s } ∩ { c | (ψ a, c) ∈ s }) ∈ map f (comap e (𝓝 a)) :=
-      inter_mem (image_mem_map <| preimage_mem_comap <| hm)
+      inter_mem (image_mem_map <| preimage_mem_comap hm)
         (uniformly_extend_spec h_e h_dense h_f _
           (inter_mem (mem_nhds_right _ hs) (mem_nhds_left _ hs)))
     nb.nonempty_of_mem this

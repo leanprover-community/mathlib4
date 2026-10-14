@@ -6,7 +6,6 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialCategory.Basic
-public import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
 /-!
 
 # The simplicial nerve of a simplicial category
@@ -116,6 +115,7 @@ def compFunctor {J : Type*} [LinearOrder J]
   obj x := x.1 ≫ x.2
   map f := ⟨⟨⟨Set.union_subset_union f.1.1.1.1 f.2.1.1.1⟩⟩⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 attribute [local ext (iff := false)] Functor.ext in
 attribute [local simp] types_tensorObj_def in
@@ -139,11 +139,9 @@ abbrev functorMap {J K : Type u} [LinearOrder J] [LinearOrder K]
     by rintro _ ⟨k, hk, rfl⟩; exact f.monotone (I.le_right k hk)⟩
   map f := ⟨⟨⟨Set.image_mono f.1.1.1⟩⟩⟩
 
-@[deprecated "No replacement, was using a bad instance" (since := "01-12-2026")]
-alias orderHom := functorMap
-
 attribute [local simp] nerveMap_app
 
+set_option backward.isDefEq.respectTransparency.types false in
 attribute [local simp] types_tensorObj_def in
 /--
 The simplicial thickening defines a functor from the category of linear orders to the category of

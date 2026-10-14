@@ -5,13 +5,14 @@ Authors: Arend Mellendijk
 -/
 module
 
+public meta import Mathlib.Tactic.Algebra.Basic
 public import Mathlib.Tactic.Algebra.Basic
 
 /-! # The `algebra_nf` tactic
 
 This file contains helper functions for the (currently unimplemented) `algebra_nf` tactic.
 
-The defnitions in this file are currently only used by `polynomial_nf`.
+The definitions in this file are currently only used by `polynomial_nf`.
 -/
 
 public meta section

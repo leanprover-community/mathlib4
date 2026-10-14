@@ -54,6 +54,12 @@ namespace LinearMap
 
 variable {R V : Type*}
 
+theorem mem_center_of_apply_eq_smul [Semiring R] [AddCommMonoid V]
+    [Module R V] {f : V →ₗ[R] V} {a : R}
+    (hf : ∀ x, f x = a • x) :
+    f ∈ center (End R V) := by
+  simp [mem_center_iff, isMulCentral_iff, commute_iff_eq, mul_assoc, LinearMap.ext_iff, hf]
+
 /-- A linear endomorphism of a free module of rank at least 2
 that commutes with transvections consists of homotheties with central ratio. -/
 theorem commute_transvections_iff_of_basis
@@ -76,7 +82,7 @@ theorem commute_transvections_iff_of_basis
   have h_allEq (i j : ι) : b.coord i (f (b i)) = b.coord j (f (b j)) := by
     by_cases hij : j = i
     · simp [hij]
-    simpa using congr_arg (b.coord i) (hcomm j i hij 1)
+    simpa using congr(b.coord i $(hcomm j i hij 1))
   replace hcomm (i : ι) (r : R) : r • f (b i) = b.coord i (f (b i)) • r • b i := by
     obtain ⟨j, hji⟩ := exists_ne i
     simpa [h_allEq j i] using hcomm j i hji r

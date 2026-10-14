@@ -6,13 +6,14 @@ Authors: Edison Xie
 module
 
 public import Mathlib.GroupTheory.GroupAction.Iwasawa
-public import Mathlib.GroupTheory.IsPerfect
 public import Mathlib.LinearAlgebra.Projectivization.PSL.Stabilizer
+
+import Mathlib.GroupTheory.IsPerfect
 
 /-!
 -/
 
-@[expose] public section
+public section
 
 variable {ι F : Type*} [Field F] [DecidableEq ι] [Fintype ι]
 
@@ -101,7 +102,7 @@ open Matrix.SpecialLinearGroup
 lemma PSL_commutator_eq_top (hF : ∃ a : F, a ≠ 0 ∧ a ^ 2 ≠ 1) :
     commutator PSL(2, F) = ⊤ := by
   obtain ⟨a, ha, hasq⟩ := hF
-  haveI : Group.IsPerfect SL(2, F) := ⟨SL2.commutator_eq_top ha hasq⟩
+  have : Group.IsPerfect SL(2, F) := ⟨SL2.commutator_eq_top ha hasq⟩
   have : Group.IsPerfect (Matrix.ProjectiveSpecialLinearGroup (Fin 2) F) := inferInstance
   exact this.commutator_eq_top
 

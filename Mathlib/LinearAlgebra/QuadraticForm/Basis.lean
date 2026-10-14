@@ -5,10 +5,11 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Sym
 public import Mathlib.Data.Finsupp.Pointwise
 public import Mathlib.Data.Sym.Sym2.Finsupp
 public import Mathlib.LinearAlgebra.QuadraticForm.Basic
+
+import Mathlib.Algebra.BigOperators.Sym
 
 /-!
 # Constructing a bilinear map from a quadratic map, given a basis
@@ -98,7 +99,7 @@ theorem toQuadraticMap_toBilin (Q : QuadraticMap R M N) (bm : Basis ι R M) :
       Finsupp.linearCombination_apply, Finsupp.sum]
   simp_rw [LinearMap.map_sum₂, map_sum, LinearMap.map_smul₂, map_smul, toBilin_apply,
     smul_ite, smul_zero, ← Finset.sum_product', ← Finset.diag_union_offDiag,
-    Finset.sum_union (Finset.disjoint_diag_offDiag _), Finset.sum_diag, if_true]
+    Finset.sum_union (Finset.disjoint_diag_offDiag _), Finset.sum_diag, ite_true]
   rw [Finset.sum_ite_of_false, QuadraticMap.map_sum, ← Finset.sum_filter]
   · simp_rw [← polar_smul_right _ (bm.repr x <| Prod.snd _),
       ← polar_smul_left _ (bm.repr x <| Prod.fst _)]
@@ -116,7 +117,7 @@ theorem _root_.LinearMap.BilinMap.toQuadraticMap_surjective [Module.Free R M] :
     Function.Surjective (LinearMap.BilinMap.toQuadraticMap : LinearMap.BilinMap R M N → _) := by
   intro Q
   obtain ⟨ι, b⟩ := Module.Free.exists_basis (R := R) (M := M)
-  letI : LinearOrder ι := IsWellOrder.linearOrder WellOrderingRel
+  let : LinearOrder ι := IsWellOrder.linearOrder WellOrderingRel
   exact ⟨_, toQuadraticMap_toBilin _ b⟩
 
 @[simp]

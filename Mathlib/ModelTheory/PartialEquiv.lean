@@ -10,6 +10,7 @@ public import Mathlib.Order.Ideal
 
 /-!
 # Partial Isomorphisms
+
 This file defines partial isomorphisms between first-order structures.
 
 ## Main Definitions
@@ -28,9 +29,9 @@ This file defines partial isomorphisms between first-order structures.
 - `FirstOrder.Language.embedding_from_cg` shows that if structures `M` and `N` form an equivalence
   pair with `M` countably-generated, then any finite-generated partial equivalence between them
   can be extended to an embedding `M ↪[L] N`.
-- `FirstOrder.Language.equiv_from_cg` shows that if countably-generated structures `M` and `N` form
-  an equivalence pair in both directions, then any finite-generated partial equivalence between them
-  can be extended to an isomorphism `M ↪[L] N`.
+- `FirstOrder.Language.equiv_between_cg` shows that if countably-generated structures `M` and `N`
+  form an equivalence pair in both directions, then any finite-generated partial equivalence between
+  them can be extended to an isomorphism `M ≃[L] N`.
 - The proofs of these results are adapted in part from David Wärn's approach to countable dense
   linear orders, a special case of this phenomenon in the case where `L = Language.order`.
 
@@ -160,6 +161,7 @@ instance : PartialOrder (M ≃ₚ[L] N) where
   le_trans := le_trans
   le_antisymm := private le_antisymm
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[gcongr] lemma symm_le_symm {f g : M ≃ₚ[L] N} (hfg : f ≤ g) : f.symm ≤ g.symm := by
   rw [le_iff]
   refine ⟨cod_le_cod hfg, dom_le_dom hfg, ?_⟩
@@ -366,7 +368,7 @@ end DirectLimit
 
 section FGEquiv
 
-open PartialEquiv Set DirectLimit
+open PartialEquiv Set Language.DirectLimit
 
 variable (M) (N) (L)
 
@@ -439,7 +441,7 @@ theorem isExtensionPair_iff_exists_embedding_closure_singleton_sup :
         and_self]
     · ext ⟨x, hx⟩
       rw [Embedding.subtype_equivRange] at ff'2
-      simp only [← ff'2, Embedding.comp_apply, Substructure.coe_inclusion, inclusion_mk,
+      simp only [← ff'2, Embedding.comp_apply, Substructure.coe_inclusion,
         Equiv.coe_toEmbedding, coe_subtype, PartialEquiv.toEmbedding_apply]
   · obtain ⟨f', eq_f'⟩ := h f.dom f_FG f.toEmbedding m
     refine ⟨⟨⟨closure L {m} ⊔ f.dom, f'.toHom.range, f'.equivRange⟩,

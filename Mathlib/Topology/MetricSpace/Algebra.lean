@@ -5,10 +5,10 @@ Authors: Heather Macbeth
 -/
 module
 
-public import Mathlib.Topology.Algebra.MulAction
 public import Mathlib.Topology.Algebra.SeparationQuotient.Basic
 public import Mathlib.Topology.Algebra.UniformMulAction
 public import Mathlib.Topology.MetricSpace.Lipschitz
+
 import Mathlib.Topology.Order.LiminfLimsup
 
 /-!
@@ -79,7 +79,7 @@ instance (priority := 100) LipschitzMul.continuousMul : ContinuousMul β :=
 instance Submonoid.lipschitzMul (s : Submonoid β) : LipschitzMul s where
   lipschitz_mul := ⟨LipschitzMul.C β, by
     rintro ⟨x₁, x₂⟩ ⟨y₁, y₂⟩
-    convert! lipschitzWith_lipschitz_const_mul_edist ⟨(x₁ : β), x₂⟩ ⟨y₁, y₂⟩ using 1⟩
+    convert lipschitzWith_lipschitz_const_mul_edist ⟨(x₁ : β), x₂⟩ ⟨y₁, y₂⟩ using 1⟩
 
 @[to_additive]
 instance MulOpposite.lipschitzMul : LipschitzMul βᵐᵒᵖ where
@@ -177,7 +177,7 @@ theorem TendstoLocallyUniformlyOn.smul₀_of_isBoundedUnder {X ι : Type*} [Topo
   filter_upwards [hF x hx (Metric.dist_mem_uniformity one_pos),
     hG x hx (Metric.dist_mem_uniformity one_pos), tendsto_snd hC] with ⟨n, y⟩ hFn hGn hfg
   simp only [mem_prod, Metric.mem_ball, Prod.dist_eq, Prod.fst_zero, Prod.snd_zero, sup_lt_iff,
-    mem_preimage, mem_setOf] at hFn hGn hfg ⊢
+    mem_preimage, mem_ofPred] at hFn hGn hfg ⊢
   grw [dist_triangle_left (F n y) 0 (f y), dist_triangle_left (G n y) 0 (g y)]
   constructor <;> constructor <;> linarith
 

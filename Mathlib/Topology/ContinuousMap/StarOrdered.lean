@@ -61,7 +61,7 @@ instance {R : Type*} [PartialOrder R] [NonUnitalSemiring R] [StarRing R]
   constructor
   · rw [ContinuousMap.le_def]
     intro h
-    use (mk _ ContinuousSqrt.continuousOn_sqrt.restrict).comp
+    use (mk _ ContinuousSqrt.continuousOn_sqrt.domRestrict).comp
       ⟨_, map_continuous (f.prodMk g) |>.codRestrict (s := {x | x.1 ≤ x.2}) (by exact h)⟩
     ext x
     simpa [IsSelfAdjoint.star_eq <| .of_nonneg (ContinuousSqrt.sqrt_nonneg (f x, g x) (h x))]
@@ -89,7 +89,7 @@ instance instStarOrderedRing {R : Type*}
       | add_left s s_mem p p_mem hp' =>
         obtain ⟨s, rfl⟩ := s_mem
         simp only at *
-        have h₀ : (star s * s + p) 0 = 0 := by simpa using congr($(hp) 0).symm
+        have h₀ : (star s * s + p) 0 = 0 := by simpa using congr($hp 0).symm
         rw [← add_assoc] at hp
         have p'₀ : 0 ≤ p 0 := by rw [← StarOrderedRing.nonneg_iff] at p_mem; exact p_mem 0
         have s₉ : (star s * s) 0 = 0 := le_antisymm ((le_add_of_nonneg_right p'₀).trans_eq h₀)

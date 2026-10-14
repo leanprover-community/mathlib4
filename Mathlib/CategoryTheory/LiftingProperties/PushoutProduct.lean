@@ -5,8 +5,9 @@ Authors: Jack McKoen
 -/
 module
 
-public import Mathlib.CategoryTheory.LiftingProperties.ParametrizedAdjunction
 public import Mathlib.CategoryTheory.Monoidal.PushoutProduct
+
+import Mathlib.CategoryTheory.LiftingProperties.ParametrizedAdjunction
 
 /-!
 # Lifting properties and pushout-products / pullback-homs
@@ -28,7 +29,7 @@ universe v u
 
 namespace CategoryTheory
 
-open Limits MonoidalCategory Functor PushoutObjObj
+open Limits MonoidalCategory CategoryTheory.Functor PushoutObjObj
 
 variable {C : Type u} [Category.{v} C]
 

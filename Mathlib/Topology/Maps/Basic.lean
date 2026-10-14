@@ -6,7 +6,8 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 module
 
 public import Mathlib.Topology.Order
-public import Mathlib.Topology.NhdsSet
+
+import Mathlib.Topology.NhdsSet
 
 /-!
 # Specific classes of maps between topological spaces
@@ -161,9 +162,11 @@ theorem image_eq_isOpen_inter_range (hf : IsInducing f) {s : Set X} (hs : IsOpen
   obtain ⟨c, hc, rfl⟩ := hf.isOpen_iff.1 hs
   exact ⟨c, hc, image_preimage_eq_inter_range⟩
 
-theorem setOf_isOpen (hf : IsInducing f) :
+theorem setOfPred_isOpen (hf : IsInducing f) :
     {s : Set X | IsOpen s} = preimage f '' {t | IsOpen t} :=
   Set.ext fun _ ↦ hf.isOpen_iff
+
+@[deprecated (since := "2026-07-09")] alias setOf_isOpen := setOfPred_isOpen
 
 theorem dense_iff (hf : IsInducing f) {s : Set X} :
     Dense s ↔ ∀ x, f x ∈ closure (f '' s) := by
@@ -176,7 +179,7 @@ theorem indiscreteTopology [IndiscreteTopology Y] {f : X → Y} (hf : IsInducing
     IndiscreteTopology X where
   eq_top := by
     cases IndiscreteTopology.eq_top Y
-    letI : TopologicalSpace Y := ⊤
+    let : TopologicalSpace Y := ⊤
     rw [hf.eq_induced, induced_top]
 
 theorem nontrivialTopology [NontrivialTopology X] {f : X → Y} (hf : IsInducing f) :
@@ -222,6 +225,13 @@ lemma of_leftInverse {f : X → Y} {g : Y → X} (h : LeftInverse f g) (hf : Con
     (hg : Continuous g) : IsEmbedding g := .of_comp hg hf <| h.comp_eq_id.symm ▸ .id
 
 alias _root_.Function.LeftInverse.isEmbedding := of_leftInverse
+
+lemma of_leftInverse_of_isInducing {f : X → Y} {g : Y → X}
+    (h : LeftInverse f g) (hf : IsInducing f) :
+    IsEmbedding g := by
+  apply of_leftInverse h hf.continuous <| continuous_def.mpr fun s hs ↦ ?_
+  obtain ⟨t, _, ts⟩ := hf.isOpen_iff.mp hs
+  rwa [← ts, h.preimage_preimage t]
 
 lemma map_nhds_eq (hf : IsEmbedding f) (x : X) : (𝓝 x).map f = 𝓝[range f] f x :=
   hf.1.map_nhds_eq x
@@ -334,9 +344,6 @@ protected theorem of_comp (hf : Continuous f) (hg : Continuous g)
 theorem of_comp_of_isCoinducing (hgf : IsQuotientMap (g ∘ f)) (hf : IsCoinducing f) :
     IsQuotientMap g :=
   ⟨hf.of_comp_iff.mp hgf.1, hgf.2.of_comp⟩
-
-@[deprecated (since := "2026-03-21")]
-alias of_comp_of_eq_coinduced := of_comp_of_isCoinducing
 
 protected theorem of_comp_iff (hf : IsQuotientMap f) :
     IsQuotientMap (g ∘ f) ↔ IsQuotientMap g := by
@@ -713,7 +720,7 @@ lemma IsOpenEmbedding.isOpen_iff_image_isOpen (hf : IsOpenEmbedding f) {s : Set 
     IsOpen s ↔ IsOpen (f '' s) where
   mp := hf.isOpenMap s
   mpr h := by
-    convert! ← h.preimage hf.isEmbedding.continuous
+    convert ← h.preimage hf.isEmbedding.continuous
     apply preimage_image_eq _ hf.injective
 
 theorem IsOpenEmbedding.tendsto_nhds_iff [TopologicalSpace Z] {f : ι → Y} {l : Filter ι} {y : Y}
@@ -865,7 +872,7 @@ protected lemma of_comp (hg : IsEmbedding g) (hgf : IsClosedEmbedding (g ∘ f))
     IsClosedEmbedding f where
   __ := hg.of_comp_iff.mp hgf.isEmbedding
   isClosed_range := by
-    convert! hg.isClosed_preimage _ hgf.isClosed_range
+    convert hg.isClosed_preimage _ hgf.isClosed_range
     rw [range_comp, hg.injective.preimage_image]
 
 theorem closure_image_eq (hf : IsClosedEmbedding f) (s : Set X) :

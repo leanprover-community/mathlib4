@@ -5,7 +5,6 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Idempotents
 public import Mathlib.RingTheory.Smooth.Basic
 
 /-!
@@ -37,7 +36,7 @@ theorem of_pi [FormallySmooth R (Π i, A i)] (i) :
         Ideal.Quotient.eq_zero_iff_mem]
       have : Pi.single i 1 - 1 ∈ RingHom.ker (Pi.evalAlgHom R A i).toRingHom := by
         simp [RingHom.mem_ker]
-      convert! neg_mem (Ideal.pow_mem_pow this 2) using 1
+      convert neg_mem (Ideal.pow_mem_pow this 2) using 1
       simp [pow_two, sub_mul, mul_sub, ← Pi.single_mul]
     · intro x y
       change Ideal.Quotient.mk _ _ = Ideal.Quotient.mk _ _ * Ideal.Quotient.mk _ _
@@ -46,6 +45,7 @@ theorem of_pi [FormallySmooth R (Π i, A i)] (i) :
     change (Pi.single i x) i = x
     simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem pi_iff [Finite I] :
     FormallySmooth R (Π i, A i) ↔ ∀ i, FormallySmooth R (A i) := by
   classical

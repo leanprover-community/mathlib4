@@ -5,8 +5,8 @@ Authors: Sean Leather, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.List.AList
 public import Mathlib.Data.Finset.Sigma
+public import Mathlib.Data.List.AList
 public import Mathlib.Data.Part
 
 /-!
@@ -80,6 +80,7 @@ def AList.toFinmap (s : AList β) : Finmap β :=
 -- for `Quotient.mk`
 local notation:arg "⟦" a "⟧" => AList.toFinmap a
 
+set_option backward.isDefEq.respectTransparency false in
 theorem AList.toFinmap_eq {s₁ s₂ : AList β} :
     toFinmap s₁ = toFinmap s₂ ↔ s₁.entries ~ s₂.entries := by
   cases s₁

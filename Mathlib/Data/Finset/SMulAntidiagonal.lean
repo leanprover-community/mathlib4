@@ -73,8 +73,7 @@ noncomputable def SMulAntidiagonal {s : Set G}
 theorem mem_smulAntidiagonal {s : Set G}
     {t : Set P} (a : P) (h : (s.smulAntidiagonal t a).Finite) {x : G × P} :
     x ∈ SMulAntidiagonal a h ↔ x.1 ∈ s ∧ x.2 ∈ t ∧ x.1 • x.2 = a := by
-  simp only [SMulAntidiagonal, Set.Finite.mem_toFinset]
-  exact Set.mem_sep_iff
+  simp [SMulAntidiagonal]
 
 @[to_additive]
 theorem smulAntidiagonal_mono_left {s u : Set G} {t : Set P} (a : P) (h : u ⊆ s)
@@ -96,8 +95,7 @@ theorem support_smulAntidiagonal_subset_smul {s : Set G}
   grind [mem_smul, mem_smulAntidiagonal]
 
 variable [PartialOrder G] [PartialOrder P] [IsOrderedCancelSMul G P] {s : Set G}
-    {t : Set P} (hs : s.IsPWO) (ht : t.IsPWO) (a : P) {u : Set G} {hu : u.IsPWO} {v : Set P}
-    {hv : v.IsPWO} {x : G × P}
+    {t : Set P} (hs : s.IsPWO) (ht : t.IsPWO) (a : P)
 
 @[to_additive]
 theorem isPWO_support_smulAntidiagonal :
