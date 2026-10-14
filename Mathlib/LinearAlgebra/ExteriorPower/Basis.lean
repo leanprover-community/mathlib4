@@ -239,7 +239,6 @@ theorem det_submatrix_mul (A : Matrix l ι R) (B : Matrix ι o R) (I : Fin n →
     ((A * B).submatrix I K).det = ∑ s : powersetCard ι n,
       (A.submatrix I (powersetCard.ofFinEmbEquiv.symm s)).det *
         (B.submatrix (powersetCard.ofFinEmbEquiv.symm s) K).det := by
-  rw [submatrix_mul A B I id K Function.bijective_id]
-  simpa using det_mul_eq_sum_powersetCard (A.submatrix I id) (B.submatrix id K)
+  simp [submatrix_mul A B I id K Function.bijective_id, det_mul_eq_sum_powersetCard]
 
 end Matrix
