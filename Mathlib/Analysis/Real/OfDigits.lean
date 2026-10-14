@@ -273,8 +273,8 @@ theorem exists_ratCast_eq_ofDigits_of_eventually_periodic {b : ℕ} (hb : 1 < b)
   set e : ℕ → Fin b := fun i ↦ a (i + N) with he_def
   have he : (fun i ↦ e (i + c)) = e := by
     ext1 i
-    simp only [e]
-    rw [show i + c + N = N + (i + c) by lia, show i + N = N + i by lia]
+    simp only [he_def]
+    rw [add_comm (i + c) N, add_comm i N]
     exact h i
   have ht : ((b : ℝ) ^ c)⁻¹ ≠ 1 :=
     (inv_lt_one_of_one_lt₀ (one_lt_pow₀ (by exact_mod_cast hb) hc.ne')).ne
@@ -298,7 +298,7 @@ theorem exists_ratCast_eq_iff_digits_eventually_periodic {b : ℕ} [NeZero b] (h
       ∃ N c, 0 < c ∧ Function.Periodic (fun d ↦ digits x b (N + d)) c := by
   constructor
   · rintro ⟨q, rfl⟩
-    exact digits_ratCast_eventually_periodic (by exact_mod_cast hx)
+    exact digits_ratCast_eventually_periodic (mod_cast hx)
   · rintro ⟨N, c, hc, h⟩
     rw [← digits_fract hx] at h
     obtain ⟨q, hq⟩ := exists_ratCast_eq_ofDigits_of_eventually_periodic hb hc h

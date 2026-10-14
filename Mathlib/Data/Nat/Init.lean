@@ -105,10 +105,11 @@ lemma mul_div_mod_eq_mod_mul_div (a b n : ℕ) : a * b / n % b = a % n * b / n :
   · simp
   rcases Nat.eq_zero_or_pos b with rfl | hb
   · simp
-  have h : a * b = a % n * b + n * (a / n * b) := by
-    rw [← Nat.mul_assoc, ← Nat.add_mul, Nat.mod_add_div]
-  rw [h, Nat.add_mul_div_left _ _ hn, Nat.add_mul_mod_self_right, Nat.mod_eq_of_lt]
-  exact Nat.div_lt_of_lt_mul (Nat.mul_lt_mul_of_pos_right (Nat.mod_lt a hn) hb)
+  conv =>
+    lhs
+    rw [← Nat.mod_add_div a n, Nat.add_mul, Nat.mul_assoc, Nat.add_mul_div_left _ _ hn,
+      Nat.add_mul_mod_self_right]
+  exact Nat.mod_eq_of_lt (Nat.div_lt_of_lt_mul (Nat.mul_lt_mul_of_pos_right (Nat.mod_lt a hn) hb))
 
 /-! ### `pow` -/
 
