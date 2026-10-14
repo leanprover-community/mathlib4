@@ -5,8 +5,9 @@ Authors: Sebastian Kumar
 -/
 module
 
-public import Batteries.Data.Fin.Fold
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
+
+import Batteries.Data.Fin.Fold
 
 /-!
 # Subpaths and concatenation of paths
@@ -38,18 +39,6 @@ namespace Path
 ## Subpaths
 -/
 
-@[deprecated (since := "2026-03-20")]
-alias subpathAux := Icc.convexComb
-
-@[deprecated (since := "2026-03-20")]
-alias subpathAux_zero := Icc.convexComb_zero
-
-@[deprecated (since := "2026-03-20")]
-alias subpathAux_one := Icc.convexComb_one
-
-@[deprecated (since := "2026-03-20")]
-alias subpathAux_continuous := Icc.continuous_convexComb_prod
-
 /-- The subpath of `γ` from `t₀` to `t₁`. -/
 def subpath (γ : Path a b) (t₀ t₁ : I) : Path (γ t₀) (γ t₁) where
   toFun := γ ∘ Icc.convexComb t₀ t₁
@@ -67,7 +56,7 @@ lemma range_subpathAux (t₀ t₁ : I) : range (Icc.convexComb t₀ t₁) = uIcc
   constructor
   · intro s
     exact convex_uIcc (t₀ : ℝ) t₁ left_mem_uIcc right_mem_uIcc
-      (one_minus_nonneg s) (nonneg s) (sub_add_cancel _ _)
+      (one_sub_nonneg s) (nonneg s) (sub_add_cancel _ _)
   · intro t (ht : (t : ℝ) ∈ uIcc (t₀ : ℝ) (t₁ : ℝ))
     rw [← segment_eq_uIcc, segment_eq_image] at ht
     obtain ⟨s, hs, hst⟩ := ht
@@ -157,7 +146,6 @@ lemma concat_succ (p : Fin (n + 2) → X) (F) :
   rw [concat, dfoldl_succ_last]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Concatenating the constant path at `x` with itself just yields the constant path at `x`. -/
 @[simp]
 theorem concat_refl (n : ℕ) (x : X) :
@@ -223,6 +211,20 @@ theorem concat_subpath (γ : Path a b) (t : Fin (n + 1) → I) :
       (concat (γ ∘ t) (fun k ↦ γ.subpath (t k.castSucc) (t k.succ)))
       (γ.subpath (t 0) (t (last n))) :=
   ⟨Homotopy.concatSubpath γ t⟩
+
+/-- Two consecutive subpaths are homotopic to the subpath between their outer endpoints. -/
+@[simp]
+theorem subpath_trans_subpath (γ : Path a b) (s t u : I) :
+    Homotopic ((γ.subpath s t).trans (γ.subpath t u)) (γ.subpath s u) :=
+  ⟨Homotopy.subpathTransSubpath γ s t u⟩
+
+/-- Composition of consecutive subpath classes is the class of the subpath between their outer
+endpoints. -/
+@[simp]
+theorem mk_subpath_trans_mk_subpath (γ : Path a b) (s t u : I) :
+    (Quotient.mk (γ.subpath s t)).trans (.mk (γ.subpath t u)) = .mk (γ.subpath s u) := by
+  rw [← Quotient.mk_trans]
+  exact Quotient.eq.mpr (Path.Homotopic.subpath_trans_subpath γ s t u)
 
 end Path.Homotopic
 

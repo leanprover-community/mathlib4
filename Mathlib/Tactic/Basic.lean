@@ -6,10 +6,10 @@ Authors: Mario Carneiro, Kyle Miller
 module  -- shake: keep-all, shake: keep-downstream
 
 public meta import Lean.Elab.BuiltinCommand
-public import Mathlib.Tactic.PPWithUniv
+public import Batteries.Util.LibraryNote -- For `library_note` command.
 public import Mathlib.Tactic.ExtendDoc
 public import Mathlib.Tactic.Linter.OldObtain
-public import Batteries.Util.LibraryNote -- For `library_note` command.
+public import Mathlib.Tactic.PPWithUniv
 
 /-!
 # Basic tactics and utilities for tactic writing
@@ -113,16 +113,6 @@ where
 
 /-- Try calling `assumption` on all goals; succeeds if it closes at least one goal. -/
 macro "assumption'" : tactic => `(tactic| any_goals assumption)
-
-/-- Deprecated: use `guard_target =~ t` instead. -/
-@[deprecated "Use `guard_target =~` instead." (since := "2025-12-11")]
-elab "match_target " t:term : tactic => do
-  logWarningAt t <|
-    m!"deprecation warning: replace `match_target {t}` with `guard_target =~ {t}`."
-  withMainContext do
-    let (val) ← elabTerm t (← inferType (← getMainTarget))
-    if not (← isDefEq val (← getMainTarget)) then
-      throwError "failed"
 
 /-- This tactic clears all auxiliary declarations from the context. -/
 elab (name := clearAuxDecl) "clear_aux_decl" : tactic => withMainContext do

@@ -6,7 +6,6 @@ Authors: Jz Pan
 module
 
 public import Mathlib.FieldTheory.Galois.Basic
-public import Mathlib.FieldTheory.SeparableClosure
 
 /-!
 # Separably Closed Field
@@ -65,9 +64,6 @@ see `IsSepClosed.splits_codomain` and `IsSepClosed.splits_domain`.
 -/
 class IsSepClosed : Prop where
   splits_of_separable : ∀ p : k[X], p.Separable → p.Splits
-
-@[deprecated (since := "2025-12-09")]
-alias IsSepClosed.factors_of_separable := IsSepClosed.splits_of_separable
 
 /-- An algebraically closed field is also separably closed. -/
 instance IsSepClosed.of_isAlgClosed [IsAlgClosed k] : IsSepClosed k :=
@@ -143,9 +139,11 @@ theorem exists_pow_nat_eq [IsSepClosed k] (x : k) (n : ℕ) [hn : NeZero (n : k)
     use z
     simpa [eval_C, eval_X, eval_pow, eval_sub, IsRoot.def, sub_eq_zero] using hz
 
-theorem exists_eq_mul_self [IsSepClosed k] (x : k) [h2 : NeZero (2 : k)] : ∃ z, x = z * z := by
+theorem isSquare [IsSepClosed k] (x : k) [h2 : NeZero (2 : k)] : IsSquare x := by
   rcases exists_pow_nat_eq x 2 with ⟨z, rfl⟩
   exact ⟨z, sq z⟩
+
+@[deprecated (since := "2026-09-28")] alias exists_eq_mul_self := isSquare
 
 theorem roots_eq_zero_iff [IsSepClosed k] {p : k[X]} (hsep : p.Separable) :
     p.roots = 0 ↔ p = Polynomial.C (p.coeff 0) := by
@@ -222,7 +220,7 @@ which is separable, then `L` is equal to `k`. A corollary of `IsSepClosed.algebr
 theorem IntermediateField.eq_bot_of_isSepClosed_of_isSeparable [IsSepClosed k] [Algebra k K]
     (L : IntermediateField k K) [Algebra.IsSeparable k L] : L = ⊥ := bot_unique fun x hx ↦ by
   obtain ⟨y, hy⟩ := IsSepClosed.algebraMap_surjective k L ⟨x, hx⟩
-  exact ⟨y, congr_arg (algebraMap L K) hy⟩
+  exact ⟨y, congr(algebraMap L K $hy)⟩
 
 variable (k) (K)
 
@@ -280,12 +278,15 @@ namespace IsSepClosed
 variable {K : Type u} (L : Type v) {M : Type w} [Field K] [Field L] [Algebra K L] [Field M]
   [Algebra K M] [IsSepClosed M]
 
-theorem surjective_restrictDomain_of_isSeparable {E : Type*}
+theorem surjective_domRestrict_of_isSeparable {E : Type*}
     [Field E] [Algebra K E] [Algebra L E] [IsScalarTower K L E] [Algebra.IsSeparable L E] :
-    Function.Surjective fun φ : E →ₐ[K] M ↦ φ.restrictDomain L :=
+    Function.Surjective fun φ : E →ₐ[K] M ↦ φ.domRestrict L :=
   fun f ↦ IntermediateField.exists_algHom_of_splits' (E := E) f
     fun s ↦ ⟨Algebra.IsSeparable.isIntegral L s,
       IsSepClosed.splits_codomain _ <| Algebra.IsSeparable.isSeparable L s⟩
+
+@[deprecated (since := "2026-07-19")]
+alias surjective_restrictDomain_of_isSeparable := surjective_domRestrict_of_isSeparable
 
 variable [Algebra.IsSeparable K L] {L}
 

@@ -16,8 +16,8 @@ the relation `IsConjRoot K`.
 
 @[expose] public section
 
-variable (K L S : Type*) [Field K] [Field L] [Field S]
-variable [Algebra K L] [Algebra K S] [Algebra L S] [IsScalarTower K L S]
+variable (K L : Type*) [Field K] [Field L]
+variable [Algebra K L]
 
 /-- `ConjRootClass K L` is the quotient of `L` by the relation `IsConjRoot K`. -/
 def ConjRootClass := Quotient (α := L) (IsConjRoot.setoid K L)
@@ -111,6 +111,10 @@ instance [Normal K L] [DecidableEq L] [Fintype Gal(L/K)] (c : ConjRootClass K L)
     .ofFinset
       ((Finset.univ (α := Gal(L/K))).image (· x))
       (fun _ ↦ by simp [← isConjRoot_iff_exists_algEquiv, ← mk_eq_mk])
+
+theorem carrier_nonempty (c : ConjRootClass K L) : c.carrier.Nonempty := by
+  induction c with
+  | h a => exact ⟨a, mem_carrier.mpr rfl⟩
 
 open Polynomial
 

@@ -5,12 +5,7 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.FreeAlgebra
-public import Mathlib.LinearAlgebra.Basis.Cardinality
 public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
-public import Mathlib.LinearAlgebra.Dimension.Subsingleton
-public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
-public import Mathlib.LinearAlgebra.FreeModule.Basic
 public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 /-!
@@ -37,7 +32,8 @@ variable [CommSemiring R]
 mapping `[x₁, x₂, ..., xₙ]` to the "monomial" `1 • x₁ * x₂ * ⋯ * xₙ` -/
 -- @[simps]
 noncomputable def basisFreeMonoid : Basis (FreeMonoid X) R (FreeAlgebra R X) :=
-  Finsupp.basisSingleOne.map equivMonoidAlgebraFreeMonoid.symm.toLinearEquiv
+  Finsupp.basisSingleOne.map
+    (equivMonoidAlgebraFreeMonoid.toLinearEquiv.trans <| MonoidAlgebra.coeffLinearEquiv _).symm
 
 instance : Module.Free R (FreeAlgebra R X) :=
   .of_equiv equivMonoidAlgebraFreeMonoid.symm.toLinearEquiv

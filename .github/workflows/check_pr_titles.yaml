@@ -6,6 +6,7 @@ on:
       - opened
       - reopened
       - edited
+      - ready_for_review
 
 # Limit permissions for GITHUB_TOKEN for the entire workflow
 permissions:
@@ -15,15 +16,15 @@ permissions:
 
 jobs:
   check_title:
-    if: (github.repository == 'leanprover-community/mathlib4') && (github.event.pull_request.state == 'open') && (github.event.action == 'opened' || github.event.action == 'reopened' || (github.event.action == 'edited' && github.event.changes.title))
+    if: (github.repository == 'leanprover-community/mathlib4') && (github.event.pull_request.state == 'open') && (github.event.action == 'opened' || github.event.action == 'reopened' || github.event.action == 'ready_for_review' || (github.event.action == 'edited' && github.event.changes.title))
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: master
       - name: Configure Lean
-        uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1.5.0
+        uses: leanprover/lean-action@f061402b660e0c34644504b324e830f2991d4865 # v1.6.1
         with:
           auto-config: false
           use-github-cache: false
@@ -70,7 +71,7 @@ jobs:
           fi
 
       - name: Add comment to fix PR title
-        uses: marocchino/sticky-pull-request-comment@0ea0beb66eb9baf113663a64ec522f60e49231c0 # v3.0.4
+        uses: marocchino/sticky-pull-request-comment@5770ad5eb8f42dd2c4f34da00c94c5381e49af88 # v3.0.5
         if: failure() && steps.pr-title-check.outputs.errors
         with:
           header: 'PR Title Check'
@@ -120,7 +121,7 @@ jobs:
 
       - name: Add comment that PR title is fixed
         if: steps.pr-title-check.outcome == 'success'
-        uses: marocchino/sticky-pull-request-comment@0ea0beb66eb9baf113663a64ec522f60e49231c0 # v3.0.4
+        uses: marocchino/sticky-pull-request-comment@5770ad5eb8f42dd2c4f34da00c94c5381e49af88 # v3.0.5
         with:
           header: 'PR Title Check'
           # should do nothing if a 'PR Title Check' comment does not exist

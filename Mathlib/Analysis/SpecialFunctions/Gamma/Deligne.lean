@@ -31,8 +31,11 @@ formula which is an important input in functional equations of (un-completed) Di
 
 @[expose] public section
 
-open Filter Topology Asymptotics Real Set MeasureTheory
+open Filter Asymptotics Real Set MeasureTheory
 open Complex
+open scoped ComplexConjugate
+
+open scoped Topology
 
 namespace Complex
 
@@ -73,6 +76,26 @@ lemma Gammaℝ_ne_zero_of_re_pos {s : ℂ} (hs : 0 < re s) : Gammaℝ s ≠ 0 :=
 lemma Gammaℝ_eq_zero_iff {s : ℂ} : Gammaℝ s = 0 ↔ ∃ n : ℕ, s = -(2 * n) := by
   simp [Gammaℝ_def, Complex.Gamma_eq_zero_iff, pi_ne_zero, div_eq_iff (two_ne_zero' ℂ), mul_comm]
 
+/-- The Gamma factor `Γ_ℝ` commutes with complex conjugation. -/
+lemma Gammaℝ_conj (s : ℂ) : Gammaℝ (conj s) = conj (Gammaℝ s) := by
+  have hpi : (π : ℂ).arg ≠ π := by
+    rw [arg_ofReal_of_nonneg pi_pos.le]
+    exact pi_pos.ne
+  have h := cpow_conj (π : ℂ) (-s / 2) hpi
+  rw [conj_ofReal] at h
+  rw [Gammaℝ_def, Gammaℝ_def, map_mul, ← Gamma_conj, ← h]
+  congr 2 <;> simp [map_div₀, map_neg, map_ofNat]
+
+/-- The Gamma factor `Γ_ℂ` commutes with complex conjugation. -/
+lemma Gammaℂ_conj (s : ℂ) : Gammaℂ (conj s) = conj (Gammaℂ s) := by
+  have h2pi : ((2 : ℂ) * π).arg ≠ π := by
+    rw [show (2 : ℂ) * π = ((2 * π : ℝ) : ℂ) by push_cast; ring,
+      arg_ofReal_of_nonneg (by positivity)]
+    exact pi_pos.ne
+  have h := cpow_conj ((2 : ℂ) * π) (-s) h2pi
+  rw [map_mul, conj_ofReal, map_ofNat] at h
+  rw [Gammaℂ_def, Gammaℂ_def, map_mul, map_mul, ← Gamma_conj, ← h, map_neg, map_ofNat]
+
 @[simp]
 lemma Gammaℝ_one : Gammaℝ 1 = 1 := by
   rw [Gammaℝ_def, Complex.Gamma_one_half_eq]
@@ -85,12 +108,19 @@ lemma Gammaℂ_one : Gammaℂ 1 = 1 / π := by
 
 section analyticity
 
+@[fun_prop]
 lemma differentiable_Gammaℝ_inv : Differentiable ℂ (fun s ↦ (Gammaℝ s)⁻¹) := by
   conv => enter [2, s]; rw [Gammaℝ, mul_inv]
-  refine Differentiable.mul (fun s ↦ .inv ?_ (by simp [pi_ne_zero])) ?_
+  refine Differentiable.mul (fun s ↦ .inv ?_ (by simp)) ?_
   · refine ((differentiableAt_id.neg.div_const (2 : ℂ)).const_cpow ?_)
     exact Or.inl (ofReal_ne_zero.mpr pi_ne_zero)
   · exact differentiable_one_div_Gamma.comp (differentiable_id.div_const _)
+
+@[fun_prop]
+lemma differentiable_Gammaℂ_inv : Differentiable ℂ (fun s ↦ (Gammaℂ s)⁻¹) := by
+  conv => enter [2, s]; rw [Gammaℂ, mul_inv]
+  refine (Differentiable.inv ?_ (by simp)).mul differentiable_one_div_Gamma
+  exact (differentiable_neg.const_cpow (by simp)).const_mul _
 
 lemma Gammaℝ_residue_zero : Tendsto (fun s ↦ s * Gammaℝ s) (𝓝[≠] 0) (𝓝 2) := by
   have h : Tendsto (fun z : ℂ ↦ z / 2 * Gamma (z / 2)) (𝓝[≠] 0) (𝓝 1) := by
@@ -187,7 +217,7 @@ lemma inv_Gammaℝ_two_sub {s : ℂ} (hs : ∀ (n : ℕ), s ≠ -n) :
     rcases n with - | m
     · rwa [Nat.cast_zero, neg_zero]
     · rw [Ne, sub_eq_iff_eq_add]
-      convert! hs m using 2
+      convert hs m using 2
       push_cast
       ring
   rw [(by ring : 2 - s = 1 - (s - 1)), inv_Gammaℝ_one_sub h',

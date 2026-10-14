@@ -281,7 +281,7 @@ theorem pointReflection_self (x : P) : pointReflection x x = x :=
   vsub_vadd _ _
 
 theorem pointReflection_involutive (x : P) : Involutive (pointReflection x : P → P) := fun y =>
-  (Equiv.apply_eq_iff_eq_symm_apply _).2 <| by rw [pointReflection_symm]
+  (Equiv.eq_symm_apply _).1 <| by rw [pointReflection_symm]
 
 end Equiv
 

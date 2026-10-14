@@ -5,8 +5,8 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.Topology.Order.LiminfLimsup
 public import Mathlib.Topology.Metrizable.Real
+public import Mathlib.Topology.Order.LiminfLimsup
 
 /-!
 # Limsup and liminf of reals
@@ -29,9 +29,9 @@ lemma limsSup_of_not_isCobounded {f : Filter ℝ} (hf : ¬ f.IsCobounded (· ≤
 
 @[simp]
 lemma limsSup_of_not_isBounded {f : Filter ℝ} (hf : ¬ f.IsBounded (· ≤ ·)) : limsSup f = 0 := by
-  rw [limsSup]
-  convert! sInf_empty
-  simpa [Set.eq_empty_iff_forall_notMem, IsBounded] using hf
+  have h : {a : ℝ | ∀ᶠ n in f, n ≤ a} = ∅ := by
+    simpa [Set.eq_empty_iff_forall_notMem, IsBounded] using hf
+  rw [limsSup, h, sInf_empty]
 
 @[simp]
 lemma limsInf_of_not_isCobounded {f : Filter ℝ} (hf : ¬ f.IsCobounded (· ≥ ·)) :
@@ -39,9 +39,9 @@ lemma limsInf_of_not_isCobounded {f : Filter ℝ} (hf : ¬ f.IsCobounded (· ≥
 
 @[simp]
 lemma limsInf_of_not_isBounded {f : Filter ℝ} (hf : ¬ f.IsBounded (· ≥ ·)) : limsInf f = 0 := by
-  rw [limsInf]
-  convert! sSup_empty
-  simpa [Set.eq_empty_iff_forall_notMem, IsBounded] using hf
+  have h : {a : ℝ | ∀ᶠ n in f, a ≤ n} = ∅ := by
+    simpa [Set.eq_empty_iff_forall_notMem, IsBounded] using hf
+  rw [limsInf, h, sSup_empty]
 
 @[simp]
 lemma limsup_of_not_isCoboundedUnder (hf : ¬ f.IsCoboundedUnder (· ≤ ·) u) : limsup u f = 0 :=
@@ -107,9 +107,9 @@ variable {ι : Type*} {f : Filter ι} {u : ι → ℝ≥0}
 
 @[simp]
 lemma limsSup_of_not_isBounded {f : Filter ℝ≥0} (hf : ¬ f.IsBounded (· ≤ ·)) : limsSup f = 0 := by
-  rw [limsSup, ← bot_eq_zero]
-  convert! sInf_empty
-  simpa [Set.eq_empty_iff_forall_notMem, IsBounded] using hf
+  have h : {a : ℝ≥0 | ∀ᶠ n in f, n ≤ a} = ∅ := by
+    simpa [Set.eq_empty_iff_forall_notMem, IsBounded] using hf
+  rw [limsSup, h, NNReal.sInf_empty]
 
 @[simp]
 lemma limsInf_of_not_isCobounded {f : Filter ℝ≥0} (hf : ¬ f.IsCobounded (· ≥ ·)) :
@@ -296,7 +296,7 @@ lemma toReal_limsup {u : α → ℝ≥0∞} (h₁ : ∀ᶠ a in f, u a ≠ ∞)
   obtain ⟨x, hx⟩ := h₂
   rw [eventually_map] at hx
   have hx₀ : 0 ≤ x := by obtain ⟨i, hi⟩ := hx.exists; exact toReal_nonneg.trans hi
-  simp only [limsup, limsSup, eventually_map, ne_eq, sInf_eq_top, Set.mem_setOf_eq, not_forall]
+  simp only [limsup, limsSup, eventually_map, ne_eq, sInf_eq_top, Set.mem_ofPred_eq, not_forall]
   refine ⟨.ofReal x, ?_, by simp⟩
   filter_upwards [h₁, hx] with i hi
   simp [le_ofReal_iff_toReal_le, *]

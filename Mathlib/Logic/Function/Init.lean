@@ -148,6 +148,16 @@ variable {α β γ δ : Type*} {ι κ : Sort*} (f : ι → α) (g : ι → β)
 theorem fst_comp (h : ι → α × β) : Prod.fst ∘ h = h₍₁₎ := rfl
 theorem snd_comp (h : ι → α × β) : Prod.snd ∘ h = h₍₂₎ := rfl
 
+theorem prod_ext_iff {h h' : ι → α × β} :
+    h = h' ↔ Prod.fst ∘ h = Prod.fst ∘ h' ∧ Prod.snd ∘ h = Prod.snd ∘ h' :=
+  fstComp_sndComp_ext_iff
+
+@[simp] theorem fst_comp_prod : Prod.fst ∘ (f ×ᶠ g) = f := rfl
+@[simp] theorem snd_comp_prod : Prod.snd ∘ (f ×ᶠ g) = g := rfl
+
+@[simp] theorem prod_fst_comp_snd_comp (h : ι → α × β) :
+    (Prod.fst ∘ h) ×ᶠ (Prod.snd ∘ h) = h := rfl
+
 @[simp] theorem fstComp_mk : (Prod.mk a : β → α × β)₍₁₎ = const β a := rfl
 @[simp] theorem sndComp_mk : (Prod.mk a : β → α × β)₍₂₎ = id := rfl
 
@@ -159,15 +169,21 @@ theorem snd_comp (h : ι → α × β) : Prod.snd ∘ h = h₍₂₎ := rfl
 
 @[simp] theorem const_prod_const : const ι a ×ᶠ const ι b = const ι (a, b) := rfl
 
-theorem const_of_prod : const ι p = (const ι p.1) ×ᶠ (const ι p.2) := rfl
+theorem const_prod : const ι p = (const ι p.1) ×ᶠ (const ι p.2) := rfl
 
 theorem prod_comp (h : κ → ι) : (f ×ᶠ g) ∘ h = (f ∘ h) ×ᶠ (g ∘ h) := rfl
 
 theorem comp_prod_comp (h : α → γ) (k : β → δ) :
     (h ∘ f) ×ᶠ (k ∘ g) = (h ∘ Prod.fst) ×ᶠ (k ∘ Prod.snd) ∘ f ×ᶠ g := rfl
 
-theorem map_comp_prod (h : α → γ) (k : β → δ) :
+@[simp] theorem prod_comp_fst_comp_snd {α₁ α₂ β₁ β₂} (f : α₁ → α₂) (g : β₁ → β₂) :
+    (f ∘ Prod.fst) ×ᶠ (g ∘ Prod.snd) = Prod.map f g := rfl
+
+@[simp] theorem map_comp_prod (h : α → γ) (k : β → δ) :
     Prod.map h k ∘ f ×ᶠ g = (h ∘ f) ×ᶠ (k ∘ g) := rfl
+
+theorem prod_comp_prod (h : α × β → γ) (k : α × β → δ) :
+    (h ×ᶠ k) ∘ (f ×ᶠ g) = (h ∘ (f ×ᶠ g)) ×ᶠ (k ∘ (f ×ᶠ g)) := rfl
 
 @[simp] theorem swap_comp_prod : Prod.swap ∘ (f ×ᶠ g) = g ×ᶠ f := rfl
 
@@ -176,25 +192,29 @@ end
 /- ### The diagonal map -/
 
 /-- The diagonal map into `Prod`. -/
-@[inline] def diag {α} : α → α × α := id ×ᶠ id
+@[inline] protected def diag {α} : α → α × α := fun a : α ↦ (a, a)
 
-@[inherit_doc] notation:max "△(" x:max ")" => diag x
+@[inherit_doc] notation:max "△(" x:max ")" => Function.diag x
 
 section
 
 variable {α β γ} (f : α → β) (g : α → γ) (a b : α)
 
+theorem diag_def : Function.diag = fun a : α ↦ (a, a) := rfl
+
 @[simp, grind =] theorem diag_apply : △(a) = (a, a) := rfl
 
-@[simp] theorem id_prod_id : id ×ᶠ id = diag (α := α) := rfl
-@[simp] theorem fstComp_diag : (diag (α := α))₍₁₎ = id := rfl
-@[simp] theorem sndComp_diag : (diag (α := α))₍₂₎ = id := rfl
+@[simp] theorem id_prod_id : id ×ᶠ id = Function.diag (α := α) := rfl
+@[simp] theorem fstComp_diag : (Function.diag (α := α))₍₁₎ = id := rfl
+@[simp] theorem sndComp_diag : (Function.diag (α := α))₍₂₎ = id := rfl
+@[simp] theorem fst_comp_diag : Prod.fst ∘ Function.diag = @id α := rfl
+@[simp] theorem snd_comp_diag : Prod.snd ∘ Function.diag = @id α := rfl
 
-@[simp] theorem diag_comp : diag ∘ f = f ×ᶠ f := rfl
+@[simp] theorem diag_comp : Function.diag ∘ f = f ×ᶠ f := rfl
 
-@[simp] theorem map_comp_diag : Prod.map f g ∘ diag = f ×ᶠ g := rfl
+@[simp] theorem map_comp_diag : Prod.map f g ∘ Function.diag = f ×ᶠ g := rfl
 
-theorem injective_diag : Injective (α := α) diag := fun _ _ => congrArg Prod.fst
+theorem diag_injective : Injective (α := α) Function.diag := fun _ _ => congrArg Prod.fst
 
 theorem fst_diag_eq_snd_diag : △(a).1 = △(a).2 := rfl
 
@@ -204,7 +224,7 @@ theorem eq_diag_fst_of_fst_eq_snd {p : α × α} (hp : p.1 = p.2) : p = △(p.1)
 theorem eq_diag_snd_of_fst_eq_snd {p : α × α} (hp : p.1 = p.2) : p = △(p.2) := by
   simp [Prod.ext_iff, hp]
 
-@[simp] theorem swap_comp_diag : Prod.swap ∘ diag = diag (α := α) := rfl
+@[simp] theorem swap_comp_diag : Prod.swap ∘ Function.diag = Function.diag (α := α) := rfl
 
 end
 

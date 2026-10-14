@@ -9,12 +9,13 @@ module
 public import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
 public import Mathlib.Algebra.FreeMonoid.Basic
 public import Mathlib.Algebra.Group.Idempotent
+public import Mathlib.Algebra.Group.Int.Defs
 public import Mathlib.Algebra.Group.Nat.Hom
 public import Mathlib.Algebra.Group.Submonoid.MulOpposite
 public import Mathlib.Algebra.Group.Submonoid.Operations
 public import Mathlib.Data.Fintype.EquivFin
-public import Mathlib.Data.Int.Basic
-public import Mathlib.Algebra.Group.Int.Defs
+
+import Mathlib.Data.Int.Basic
 
 /-!
 # Submonoids: membership criteria
@@ -88,7 +89,7 @@ theorem coe_iSup_of_directed {ι} [Nonempty ι] {S : ι → Submonoid M} (hS : D
 @[to_additive]
 theorem mem_sSup_of_directedOn {S : Set (Submonoid M)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) {x : M} : x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
-  haveI : Nonempty S := Sne.to_subtype
+  have : Nonempty S := Sne.to_subtype
   simp [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val]
 
 @[to_additive]
@@ -115,12 +116,12 @@ instance instIsMulCommutative_iSup {ι : Type*} [Nonempty ι] [Preorder ι]
 
 @[to_additive]
 theorem mem_sup_left {S T : Submonoid M} : ∀ {x : M}, x ∈ S → x ∈ S ⊔ T := by
-  rw [← SetLike.le_def]
+  rw [← IsConcreteLE.le_iff]
   exact le_sup_left
 
 @[to_additive]
 theorem mem_sup_right {S T : Submonoid M} : ∀ {x : M}, x ∈ T → x ∈ S ⊔ T := by
-  rw [← SetLike.le_def]
+  rw [← IsConcreteLE.le_iff]
   exact le_sup_right
 
 @[to_additive]
@@ -130,13 +131,13 @@ theorem mul_mem_sup {S T : Submonoid M} {x y : M} (hx : x ∈ S) (hy : y ∈ T) 
 @[to_additive]
 theorem mem_iSup_of_mem {ι : Sort*} {S : ι → Submonoid M} (i : ι) :
     ∀ {x : M}, x ∈ S i → x ∈ iSup S := by
-  rw [← SetLike.le_def]
+  rw [← IsConcreteLE.le_iff]
   exact le_iSup _ _
 
 @[to_additive]
 theorem mem_sSup_of_mem {S : Set (Submonoid M)} {s : Submonoid M} (hs : s ∈ S) :
     ∀ {x : M}, x ∈ s → x ∈ sSup S := by
-  rw [← SetLike.le_def]
+  rw [← IsConcreteLE.le_iff]
   exact le_sSup hs
 
 /-- An induction principle for elements of `⨆ i, S i`.
@@ -277,7 +278,7 @@ theorem closure_induction_left
   obtain ⟨l, rfl⟩ := h
   induction l using FreeMonoid.inductionOn' with
   | one => exact one
-  | mul_of x y ih =>
+  | of_mul x y ih =>
     simp only [map_mul, FreeMonoid.lift_eval_of]
     refine mul_left _ x.prop (FreeMonoid.lift Subtype.val y) _ (ih ?_)
     simp only [closure_eq_mrange, mem_mrange, exists_apply_eq_apply]

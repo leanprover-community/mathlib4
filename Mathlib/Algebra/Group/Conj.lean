@@ -230,6 +230,7 @@ theorem mk_injective : Function.Injective (@ConjClasses.mk α _) := fun _ _ =>
 theorem mk_bijective : Function.Bijective (@ConjClasses.mk α _) :=
   ⟨mk_injective, mk_surjective⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The bijection between a `CommGroup` and its `ConjClasses`. -/
 @[to_additive /-- The bijection between an `AddCommGroup` and its `AddConjClasses`. -/]
 def mkEquiv : α ≃ ConjClasses α :=

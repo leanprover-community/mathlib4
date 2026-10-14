@@ -72,6 +72,25 @@ def op {X Y : C} {f : X ⟶ Y} (hf : MapFactorizationData W₁ W₂ f) :
   hi := hf.hp
   hp := hf.hi
 
+/-- The factorization obtained from a factorization in the opposite category. -/
+@[simps]
+protected def unop {W₁ W₂ : MorphismProperty Cᵒᵖ} {X Y : Cᵒᵖ} {f : X ⟶ Y}
+    (φ : MapFactorizationData W₁ W₂ f) :
+    MapFactorizationData W₂.unop W₁.unop f.unop where
+  Z := φ.Z.unop
+  i := φ.p.unop
+  p := φ.i.unop
+  hi := φ.hp
+  hp := φ.hi
+  fac := by simp [← unop_comp]
+
+/-- The bijection between factorizations in `C` and factorizations in `Cᵒᵖ`. -/
+@[simps]
+def opEquiv {W₁ W₂ : MorphismProperty C} {X Y : C} {f : X ⟶ Y} :
+    MapFactorizationData W₁ W₂ f ≃ MapFactorizationData W₂.op W₁.op f.op where
+  toFun φ := φ.op
+  invFun φ := φ.unop
+
 end MapFactorizationData
 
 /-- The data of a term in `MapFactorizationData W₁ W₂ f` for any morphism `f`. -/
@@ -138,7 +157,6 @@ def ofLE {W₁' W₂' : MorphismProperty C} (le₁ : W₁ ≤ W₁') (le₂ : W�
   hi f := le₁ _ (data.hi f)
   hp f := le₂ _ (data.hp f)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The term in `FactorizationData W₁ W₂` that is deduced from a functorial factorization. -/
 def factorizationData : FactorizationData W₁ W₂ := fun f =>
   { Z := data.Z.obj (Arrow.mk f)
@@ -157,11 +175,17 @@ functoriality of the intermediate objects of the factorizations
 for `φ : Arrow.mk f ⟶ Arrow.mk g`. -/
 def mapZ : (data.factorizationData f).Z ⟶ (data.factorizationData g).Z := data.Z.map φ
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma i_mapZ :
     (data.factorizationData f).i ≫ data.mapZ φ = φ.left ≫ (data.factorizationData g).i :=
   (data.i.naturality φ).symm
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma mapZ_p :
     data.mapZ φ ≫ (data.factorizationData g).p = (data.factorizationData f).p ≫ φ.right :=

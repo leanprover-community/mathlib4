@@ -5,12 +5,13 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.DerivedCategory.TStructure
 public import Mathlib.Algebra.Homology.Factorizations.CM5b
-public import Mathlib.Algebra.Homology.HomologicalComplexLimitsEventuallyConstant
-public import Mathlib.Algebra.Homology.SingleHomology
-public import Mathlib.CategoryTheory.Category.Factorisation
-public import Mathlib.CategoryTheory.Functor.OfSequence
+
+import Mathlib.Algebra.Homology.DerivedCategory.TStructure
+import Mathlib.Algebra.Homology.HomologicalComplexLimitsEventuallyConstant
+import Mathlib.Algebra.Homology.SingleHomology
+import Mathlib.CategoryTheory.Category.Factorisation
+import Mathlib.CategoryTheory.Functor.OfSequence
 
 /-!
 # Factorization lemma
@@ -218,8 +219,7 @@ a factorisation of `f` as `ι f n ≫ π f n = f` where
 `ι f n : K ⟶ mid f n` is a monomorphism which is a quasi-isomorphism
 in degrees `≤ n`, `π f n` is a degreewise epimorphism with an injective kernel
 which also induces isomorphisms in degrees `≤ n`.
- -/
-
+-/
 
 open HomComplex
 
@@ -371,6 +371,7 @@ lemma quasiIso_truncGEπ [Mono f] [Mono (homologyMap f n)] :
   rw [quasiIso_πTruncGE_iff]
   exact isGE_cokernel f n hf
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 attribute [local instance] HasDerivedCategory.standard in
 lemma quasiIsoAt_ι [Mono f] [Mono (homologyMap f n)] (q : ℤ) (hq : q ≤ n) :
@@ -380,8 +381,8 @@ lemma quasiIsoAt_ι [Mono f] [Mono (homologyMap f n)] (q : ℤ) (hq : q ≤ n) :
     rw [← quasiIsoAt_iff_comp_right _ (π f n), mappingCocone.lift_fst]
     exact hf q hq
   · have := mono_homologyMap_π f n n (by lia)
-    have : Mono (homologyMap (mappingCocone.triangle (α f n)).mor₁ n) :=
-      by dsimp; infer_instance
+    have : Mono (homologyMap (mappingCocone.triangle (α f n)).mor₁ n) := by
+      dsimp; infer_instance
     have h₁ := (exact_homologyShortComplex f n).fIsKernel
     have h₂ := (CochainComplex.homologyMap_exact₂_of_distTriang _
       (DerivedCategory.mappingCocone_triangle_distinguished (α f n)) n).fIsKernel

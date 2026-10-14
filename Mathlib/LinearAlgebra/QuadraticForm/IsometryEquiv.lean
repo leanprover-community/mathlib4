@@ -5,7 +5,6 @@ Authors: Kexing Ying, Eric Wieser
 -/
 module
 
-public import Mathlib.LinearAlgebra.QuadraticForm.Basic
 public import Mathlib.LinearAlgebra.QuadraticForm.Isometry
 
 /-!
@@ -51,6 +50,7 @@ namespace IsometryEquiv
 
 variable {Q₁ : QuadraticMap R M₁ N} {Q₂ : QuadraticMap R M₂ N} {Q₃ : QuadraticMap R M₃ N}
 
+@[macro_inline]
 instance : EquivLike (Q₁.IsometryEquiv Q₂) M₁ M₂ where
   coe f := f.toLinearEquiv
   inv f := f.toLinearEquiv.symm
@@ -101,6 +101,14 @@ def toIsometry (g : Q₁.IsometryEquiv Q₂) : Q₁ →qᵢ Q₂ where
 
 @[simp] lemma symm_apply_apply (f : Q₁.IsometryEquiv Q₂) (x : M₁) : f.symm (f x) = x :=
   f.toEquiv.symm_apply_apply x
+
+theorem symm_apply_eq (f : Q₁.IsometryEquiv Q₂) {x y} :
+    f.symm x = y ↔ x = f y :=
+  f.toEquiv.symm_apply_eq
+
+theorem eq_symm_apply (f : Q₁.IsometryEquiv Q₂) {x y} :
+    y = f.symm x ↔ f y = x :=
+  f.toEquiv.eq_symm_apply
 
 @[simp] lemma coe_symm_toLinearEquiv (f : Q₁.IsometryEquiv Q₂) : f.toLinearEquiv.symm = f.symm :=
   rfl
@@ -154,7 +162,7 @@ noncomputable def isometryEquivWeightedSumSquares (Q : QuadraticForm K V)
     Q.IsometryEquiv (weightedSumSquares K fun i => Q (v i)) := by
   let iso := Q.isometryEquivBasisRepr v
   refine ⟨iso, fun m => ?_⟩
-  convert! iso.map_app m
+  convert iso.map_app m
   rw [basisRepr_eq_of_iIsOrtho _ _ hv₁]
 
 variable [FiniteDimensional K V]

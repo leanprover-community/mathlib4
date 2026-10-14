@@ -5,7 +5,6 @@ Authors: Peter Nelson, Jun Kwon
 -/
 module
 
-public import Mathlib.Data.Set.Basic
 public import Mathlib.Data.Sym.Sym2
 
 /-!
@@ -143,8 +142,11 @@ lemma isLink_comm : G.IsLink e x y ↔ G.IsLink e y x :=
 lemma exists_isLink_of_mem_edgeSet (h : e ∈ E(G)) : ∃ x y, G.IsLink e x y :=
   (edge_mem_iff_exists_isLink ..).1 h
 
-lemma edgeSet_eq_setOf_exists_isLink : E(G) = {e | ∃ x y, G.IsLink e x y} :=
+lemma edgeSet_eq_setOfPred_exists_isLink : E(G) = {e | ∃ x y, G.IsLink e x y} :=
   Set.ext G.edge_mem_iff_exists_isLink
+
+@[deprecated (since := "2026-07-09")]
+alias edgeSet_eq_setOf_exists_isLink := edgeSet_eq_setOfPred_exists_isLink
 
 lemma IsLink.left_eq_or_eq (h : G.IsLink e x y) (h' : G.IsLink e z w) : x = z ∨ x = w :=
   G.eq_or_eq_of_isLink_of_isLink h h'
@@ -354,10 +356,10 @@ to the definition of `Graph`, so it doesn't require equality of the edge sets.) 
 protected lemma ext {G₁ G₂ : Graph α β} (hV : V(G₁) = V(G₂))
     (h : ∀ e x y, G₁.IsLink e x y ↔ G₂.IsLink e x y) : G₁ = G₂ := by
   rw [← G₁.mk_eq_self G₁.edge_mem_iff_exists_isLink, ← G₂.mk_eq_self G₂.edge_mem_iff_exists_isLink]
-  convert! rfl using 2
+  convert rfl using 2
   · exact hV.symm
   · simp [funext_iff, h]
-  simp [edgeSet_eq_setOf_exists_isLink, h]
+  simp [edgeSet_eq_setOfPred_exists_isLink, h]
 
 /-- Two graphs with the same vertex set and unary incidences are equal. -/
 lemma ext_inc {G₁ G₂ : Graph α β} (hV : V(G₁) = V(G₂)) (h : ∀ e x, G₁.Inc e x ↔ G₂.Inc e x) :
