@@ -408,6 +408,6 @@ on the fundamental groupoid. -/
 @[simps!]
 def congrMapFundamentalGroupoidOfEq {f g : X ⟶ Y} (h : f = g) :
     mapFundamentalGroupoid f ≅ mapFundamentalGroupoid g :=
-  eqToIso (by rw[h])
+  eqToIso (by rw [h])
 
 end SSet
