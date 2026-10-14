@@ -1,53 +1,61 @@
 name: ci dev
 
+# Experiment: time `runLinter Mathlib` with four Batteries variants on one runner.
+# See scripts/lint-bench/run.sh.
 on:
   workflow_dispatch:
     inputs:
-      tools_branch_ref:
-        description: ref for tools checkout (defaults to 'this commit')
+      rounds:
+        description: Number of rounds of the four variants
         required: false
         type: string
-        default: ''
-      pr_branch_ref:
-        description: ref for building-branch checkout (defaults to 'this commit')
-        required: false
-        type: string
-        default: ''
-      run_post_ci:
-        description: Run the post-CI job?
-        required: false
-        type: boolean
-        default: false # We shouldn't need this job in typical experiments
-      mathlib_ci_ref:
-        description: ref for mathlib-ci checkout (defaults to 'master')
-        required: false
-        type: string
-        default: 'master'
+        default: '3'
 
-# Limit permissions for GITHUB_TOKEN for the entire workflow
 permissions:
   contents: read
-  id-token: write
-  actions: read  # read-only: download master artifacts (tools-bin, cache-snapshot)
-  # By default let's remove this permission (which is present in the other build pipelines)
-  # from the CI experimentation runs to avoid unwitting side effects
-  # pull-requests: write
+  actions: read
+
+env:
+  LAKE_NO_CACHE: true
+  MATHLIB_CACHE_BASE_URL: ${{ vars.MATHLIB_CACHE_BASE_URL }}
+  MATHLIB_CACHE_PARALLEL_MAX: ${{ vars.MATHLIB_CACHE_PARALLEL_MAX }}
 
 jobs:
-  build:
-    name: ci (dev branch)
-    # For sanity and intentionality, let's only trigger this from branches ci-dev/*
+  lint_bench:
+    name: lint benchmark
     if: ${{ github.repository == 'leanprover-community/mathlib4' && github.ref_type == 'branch' && startsWith(github.ref_name, 'ci-dev/') }}
-    uses: ./.github/workflows/build_template.yml
-    with:
-      concurrency_group: ${{ github.workflow }}-${{ github.ref }}
-      # Use the tools from 'this branch', as our changes in the tools might be relevant for experiments
-      tools_branch_ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || github.sha }}
-      pr_branch_ref: ${{ inputs.pr_branch_ref != '' && inputs.pr_branch_ref || github.sha }}
-      run_post_ci: ${{ inputs.run_post_ci }}
-      mathlib_ci_ref: ${{ inputs.mathlib_ci_ref }}
-      # The ref inputs choose the code that holds the upload credential, so
-      # the environment requires a CI admin to approve each run.
-      cache_environment: cache-upload-ci-dev
-      runs_on: pr
-    secrets: inherit
+    runs-on: pr
+    timeout-minutes: 150
+    steps:
+      - name: Checkout local actions
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 1
+          sparse-checkout: .github/actions
+          path: workflow-actions
+          persist-credentials: false
+
+      - name: Set up build environment
+        uses: ./workflow-actions/.github/actions/setup-build-env
+        with:
+          pr_branch_ref: ${{ github.sha }}
+          tools_branch_ref: ''
+
+      - name: Get cache
+        uses: ./workflow-actions/.github/actions/get-cache
+        with:
+          working_directory: pr-branch
+          cache_bin: ../tools-branch/.lake/build/bin/cache
+
+      - name: verify the Mathlib cache is complete
+        run: |
+          cd pr-branch
+          lake build --no-build Mathlib
+
+      - name: lint benchmark
+        env:
+          ROUNDS: ${{ inputs.rounds }}
+        run: |
+          cd pr-branch
+          scripts/lint-bench/run.sh "$ROUNDS"
