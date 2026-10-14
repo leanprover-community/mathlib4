@@ -295,11 +295,9 @@ lemma degree_strictMono {R : Type*}
     [AddCommMonoid R] [PartialOrder R] [CanonicallyOrderedAdd R] [IsOrderedCancelAddMonoid R] :
     StrictMono (Finsupp.degree (σ := σ) (R := R)) := by
   intro a b h
-  obtain ⟨i, hi⟩ : ∃ i, a i < b i := by
-    by_contra! h'
-    exact h.ne (ext fun i ↦ (h.le i).eq_of_not_lt (h' i))
-  simp_rw [degree_apply, Finset.sum_subset (support_mono h.le) fun _ _ ↦ notMem_support_iff.mp]
-  exact Finset.sum_lt_sum (fun _ ↦ h.le ·) ⟨i, mem_support_iff.mpr (zero_le.trans_lt hi).ne', hi⟩
+  obtain ⟨hle, i, hi⟩ := Finsupp.lt_def.mp h
+  simp_rw [degree_apply, Finset.sum_subset (support_mono hle) fun _ _ ↦ notMem_support_iff.mp]
+  exact Finset.sum_lt_sum (fun _ _ ↦ hle _) ⟨i, by simp [hi, ne_zero_of_lt hi]⟩
 
 lemma exists_le_degree_eq {σ : Type*} (f : σ →₀ ℕ) (n : ℕ) (hn : n ≤ f.degree) :
     ∃ g ≤ f, g.degree = n := by
