@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios, Nir Paz
 -/
 module
 
+public import Mathlib.SetTheory.Cardinal.Cofinality.Enum
 public import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
 
 import Mathlib.SetTheory.Cardinal.Ordinal
@@ -48,6 +49,15 @@ theorem IsRegular.cof_ord (H : c.IsRegular) : c.ord.cof = c :=
 
 theorem IsRegular.cof_omega_eq {o : Ordinal} (H : (ℵ_ o).IsRegular) : (ω_ o).cof = ℵ_ o := by
   rw [← ord_aleph, H.cof_ord]
+
+theorem IsRegular.isRegularCardinalOrder_toType {c : Cardinal} (hc : c.IsRegular) :
+    IsRegularCardinalOrder c.ord.ToType :=
+  ⟨by simp [hc.cof_ord]⟩
+
+theorem IsRegular.isRegularCardinalOrder_Iio {c : Cardinal} (hc : c.IsRegular) :
+    IsRegularCardinalOrder (Iio c.ord) := by
+  constructor
+  rw [cof_Iio, type_lt_Iio, ← lift_cof, ← lift_ord, hc.cof_ord]
 
 theorem IsRegular.pos (H : c.IsRegular) : 0 < c :=
   aleph0_pos.trans_le H.1
