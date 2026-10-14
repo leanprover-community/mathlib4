@@ -247,8 +247,8 @@ run_cmd
 
 /--
 info:
-[OEIS A123456](https://oeis.org/A123456) corresponds to declaration 'test''.
-[OEIS A123456](https://oeis.org/A123456) corresponds to declaration 'test'. (A vacuous comment)
+[OEIS A123456](https://oeis.org/A123456) corresponds to declaration `test'`.
+[OEIS A123456](https://oeis.org/A123456) corresponds to declaration `test`. (A vacuous comment)
 -/
 #guard_msgs in
 #oeis_tags
