@@ -461,7 +461,7 @@ end CartanMatrix
 structure Matrix.IsFiniteCartan {ι : Type*} [Fintype ι] [DecidableEq ι]
     (M : Matrix ι ι ℤ) : Prop where
   diag : ∀ i, M i i = 2
-  offDiagonal_nonpos : ∀ i j, i ≠ j → M i j ≤ 0
+  offDiag_nonpos : ∀ i j, i ≠ j → M i j ≤ 0
   zero_comm : ∀ i j, M i j = 0 ↔ M j i = 0
   exists_posDef : ∃ d : ι → ℤ, (∀ i, 0 < d i) ∧ (diagonal d * M).PosDef
 
@@ -490,7 +490,7 @@ protected lemma transpose :
   have hd'_pos (i : ι) : 0 < d' i := Finset.prod_pos fun j _ ↦ hd_pos j
   suffices (diagonal d' * Mᵀ).PosDef from
     { diag i := by simpa using hM.diag i
-      offDiagonal_nonpos i j hij := by simpa using hM.offDiagonal_nonpos j i hij.symm
+      offDiag_nonpos i j hij := by simpa using hM.offDiag_nonpos j i hij.symm
       zero_comm i j := by simpa using hM.zero_comm j i
       exists_posDef := ⟨d', hd'_pos, this⟩ }
   set C : ℤ := ∏ j, d j with hC

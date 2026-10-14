@@ -415,7 +415,7 @@ lemma cartanMatrix_isIndecomposable [P.IsReduced] [P.IsIrreducible] :
 lemma cartanMatrix_isFiniteCartan [DecidableEq ι] [P.IsRootSystem] :
     b.cartanMatrix.IsFiniteCartan where
   diag i := b.cartanMatrix_apply_same i
-  offDiagonal_nonpos i j hij := b.cartanMatrix_le_zero_of_ne i j hij
+  offDiag_nonpos i j hij := b.cartanMatrix_le_zero_of_ne i j hij
   zero_comm _ _ := b.cartanMatrix_apply_eq_zero_iff_symm
   exists_posDef := b.exists_cartanMatrix_diagonal_mul_posDef
 

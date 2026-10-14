@@ -586,7 +586,7 @@ def rootPairingBase : rl.toRootPairing.Base :=
     rw [Finite.coe_toFinset]
     rintro - ⟨i, rfl⟩ - ⟨j, rfl⟩ hij
     suffices P.pairingIn ℤ ⟨_, rl.sPair_mem_idx i⟩ ⟨_, rl.sPair_mem_idx j⟩ = rl.matrix i j by
-      simpa [this] using rl.isCartan.offDiagonal_nonpos i j (ne_of_apply_ne _ hij)
+      simpa [this] using rl.isCartan.offDiag_nonpos i j (ne_of_apply_ne _ hij)
     simpa [P, toRootPairing_pairing] using
       P.algebraMap_pairingIn ℤ ⟨_, rl.sPair_mem_idx i⟩ ⟨_, rl.sPair_mem_idx j⟩
   have : LinearIndepOn R P.root supp := by
