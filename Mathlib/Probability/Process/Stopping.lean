@@ -5,9 +5,9 @@ Authors: Kexing Ying, Rémy Degenne
 -/
 module
 
-public import Mathlib.Probability.Process.Adapted
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.WithTop
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Indicator
+public import Mathlib.Probability.Process.Adapted
 
 /-!
 # Stopping times, stopped processes and stopped values
@@ -266,7 +266,7 @@ theorem isStoppingTime_of_measurableSet_eq [Preorder ι] [Countable ι] {f : Fil
     | top => simp
     | coe a => norm_cast; simp
   rw [h_eq_iUnion]
-  refine MeasurableSet.biUnion (Set.to_countable _) fun k hk => ?_
+  refine MeasurableSet.biUnion (s := {k | k ≤ i}) (Set.to_countable _) fun k hk => ?_
   exact f.mono hk _ (hτ k)
 
 end Countable

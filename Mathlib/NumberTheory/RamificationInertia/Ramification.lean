@@ -5,8 +5,8 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 public import Mathlib.CategoryTheory.Category.Init
+public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 
 import Mathlib.Algebra.GroupWithZero.Torsion
 import Mathlib.Data.Nat.Totient
@@ -76,7 +76,7 @@ variable {p P}
 theorem ramificationIdx'_eq_find [DecidablePred fun n ↦ ∀ (k : ℕ), map f p ≤ P ^ k → k ≤ n]
     (h : ∃ n, ∀ k, map f p ≤ P ^ k → k ≤ n) :
     ramificationIdx' p P = Nat.find h := by
-  convert! Nat.sSup_def h
+  convert! Nat.sSup_def (s := {n | map f p ≤ P ^ n}) h
 
 @[deprecated (since := "2026-07-01")] alias ramificationIdx_eq_find := ramificationIdx'_eq_find
 

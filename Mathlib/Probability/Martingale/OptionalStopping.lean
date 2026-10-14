@@ -5,9 +5,9 @@ Authors: Kexing Ying
 -/
 module
 
+public import Mathlib.Probability.Martingale.Basic
 public import Mathlib.Probability.Notation
 public import Mathlib.Probability.Process.HittingTime
-public import Mathlib.Probability.Martingale.Basic
 
 /-! # Optional stopping theorem (fair game theorem)
 
@@ -122,7 +122,7 @@ theorem smul_le_stoppedValue_hittingBtwn [IsFiniteMeasure μ] (hsub : Submarting
       (ε : ℝ) ≤ 𝒢.stoppedValue f (fun ω ↦ (hittingBtwn f {y : ℝ | ε ≤ y} 0 n ω : ℕ)) μ ω := by
     intro x hx
     simp_rw [le_sup'_iff, mem_range, Nat.lt_succ_iff] at hx
-    refine stoppedValue_hittingBtwn_mem 𝒢 μ ?_
+    refine stoppedValue_hittingBtwn_mem 𝒢 μ (s := {y : ℝ | ε ≤ y}) ?_
     simp only [Set.mem_Icc, zero_le, true_and, Set.mem_ofPred_eq]
     exact
       let ⟨j, hj₁, hj₂⟩ := hx

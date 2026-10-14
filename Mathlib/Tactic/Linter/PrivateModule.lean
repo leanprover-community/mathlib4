@@ -23,8 +23,7 @@ adding `@[expose] public section` to expose every definition.
 ## Implementation notes
 
 `env.constants.map₂` contains all locally-defined constants, and accessing this waits until all
-declarations are added. By linting (only) the `eoi` token, we can capture all constants defined in
-the file.
+declarations are added.
 
 Note that private declarations from the current module are exactly those which satisfy
 `isPrivateName`, whether private due to an explicit `private` or due to not being made `public`.
@@ -73,33 +72,32 @@ public register_option linter.privateModule : Bool := {
 The `privateModule` linter lints against nonempty modules that have only private declarations,
 and suggests ways to make declarations in the module public.
 
-This linter only acts on the end-of-input `Parser.Command.eoi` token, and ignores all other syntax.
 It logs its message at the top of the file.
 -/
-def privateModule : Linter where run stx := do
-  if stx.isOfKind ``Parser.Command.eoi then
-    unless getLinterValue linter.privateModule (← getLinterOptions) do
-      return
-    if (← getEnv).header.isModule
-      -- If there are new initializers, this module has a downstream effect and is not private.
-      && (regularInitAttr.ext.getState (← getEnv)).1.isEmpty
-      -- Don't lint an imports-only module:
-      && !(← getEnv).constants.map₂.isEmpty
-    then
-      -- Exit if any declaration from the current module is public:
-      for (decl, _) in (← getEnv).constants.map₂ do
-        -- Ignore both private and reserved names; see implementation notes
-        if !isPrivateName decl && !isReservedName (← getEnv) decl then return
-      -- Lint if all names are private:
-      let topOfFileRef := Syntax.atom (.synthetic ⟨0⟩ ⟨0⟩) ""
-      logLint linter.privateModule topOfFileRef
-        "The current module only contains private declarations.\n\n\
-        Consider adding `public section` at the beginning of the module, \
-        or selectively marking declarations as `public`. Mark a `def` with \
-        `@[expose]` if downstream code needs it to be definitionally equal \
-        to its body (e.g. for `unfold`). Alternatively, \
-        add `@[expose] public section` to mark every definition as exposed."
+def privateModule : ModuleLinter where run _ := do
+  unless getLinterValue linter.privateModule (← getLinterOptions) do
+    return
+  let env ← getEnv
+  if env.header.isModule
+    -- If there are new initializers, this module has a downstream effect and is not private.
+    && (regularInitAttr.ext.getState env).1.isEmpty
+    -- Don't lint an imports-only module:
+    && !env.constants.map₂.isEmpty
+  then
+    -- Exit if any declaration from the current module is public:
+    for (decl, _) in env.constants.map₂ do
+      -- Ignore both private and reserved names; see implementation notes
+      if !isPrivateName decl && !isReservedName env decl then return
+    -- Lint if all names are private:
+    let topOfFileRef := Syntax.atom (.synthetic ⟨0⟩ ⟨0⟩) ""
+    logLint linter.privateModule topOfFileRef
+      "The current module only contains private declarations.\n\n\
+      Consider adding `public section` at the beginning of the module, \
+      or selectively marking declarations as `public`. Mark a `def` with \
+      `@[expose]` if downstream code needs it to be definitionally equal \
+      to its body (e.g. for `unfold`). Alternatively, \
+      add `@[expose] public section` to mark every definition as exposed."
 
-initialize addLinter privateModule
+initialize addModuleLinter privateModule
 
 end Mathlib.Linter
