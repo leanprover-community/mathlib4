@@ -253,7 +253,7 @@ theorem evalAt_eq (x : X) : ⟦H.evalAt x⟧ = hcast (H.apply_zero x).symm ≫
 
 set_option backward.isDefEq.respectTransparency false in
 -- Finally, we show `d = f(p) ≫ H₁ = H₀ ≫ g(p)`
-theorem eq_diag_path : (πₘ (TopCat.ofHom f)).map p ≫ ⟦H.evalAt x₁⟧ = H.diagonalPath' p ∧
+theorem eq_diagonalPath : (πₘ (TopCat.ofHom f)).map p ≫ ⟦H.evalAt x₁⟧ = H.diagonalPath' p ∧
     (⟦H.evalAt x₀⟧ ≫ (πₘ (TopCat.ofHom g)).map p :
     fromTop (f x₀) ⟶ fromTop (g x₁)) = H.diagonalPath' p := by
   rw [H.apply_zero_path, H.apply_one_path, H.evalAt_eq]
@@ -266,5 +266,7 @@ theorem eq_diag_path : (πₘ (TopCat.ofHom f)).map p ≫ ⟦H.evalAt x₁⟧ = 
   · slice_lhs 2 4 => rw [eqToHom_trans, eqToHom_refl] -- Porting note: this ↓ `simp` didn't do this
     slice_lhs 2 4 => simp [← CategoryTheory.Functor.map_comp]
     rfl
+
+@[deprecated (since := "2026-10-14")] alias eq_diag_path := eq_diagonalPath
 
 end ContinuousMap.Homotopy

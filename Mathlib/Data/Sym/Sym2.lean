@@ -623,8 +623,6 @@ alias diagSet_eq_univ_of_subsingleton := diagonalSet_eq_univ_of_subsingleton
 instance IsDiagonal.decidablePred (α : Type u) [DecidableEq α] : DecidablePred (@IsDiagonal α) :=
   fun z => z.recOnSubsingleton fun _ _ => decidable_of_iff' _ mk_isDiagonal_iff
 
-@[deprecated (since := "2026-09-06")] alias IsDiag.decidablePred := IsDiagonal.decidablePred
-
 instance decidablePred_mem_diagonalSet (α : Type u) [DecidableEq α] :
     DecidablePred (· ∈ @diagonalSet α) :=
   IsDiagonal.decidablePred _

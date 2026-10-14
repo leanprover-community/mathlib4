@@ -256,8 +256,6 @@ instance IsPoly₂.diagonal {f} [hf : IsPoly₂ p f] : IsPoly p fun _ _Rcr x => 
   ext ⟨i, k⟩
   fin_cases i <;> simp
 
-@[deprecated (since := "2026-09-06")] alias IsPoly₂.diag := IsPoly₂.diagonal
-
 /-- The additive negation is a polynomial function on Witt vectors. -/
 instance negIsPoly [Fact p.Prime] : IsPoly p fun R _ => @Neg.neg (𝕎 R) _ :=
   ⟨⟨fun n => rename Prod.snd (wittNeg p n), by

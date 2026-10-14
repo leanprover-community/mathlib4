@@ -323,9 +323,6 @@ instance [IsFilteredOrEmpty C] (X : C × C) : IsFiltered (StructuredArrow X (dia
 instance Functor.final_diagonal_of_isFiltered [IsFilteredOrEmpty C] : Final (Functor.diagonal C) :=
   final_of_isFiltered_structuredArrow _
 
-@[deprecated (since := "2026-09-06")]
-alias Functor.final_diag_of_isFiltered := Functor.final_diagonal_of_isFiltered
-
 -- Adding this instance causes performance problems elsewhere, even with low priority
 theorem IsFilteredOrEmpty.isSiftedOrEmpty [IsFilteredOrEmpty C] : IsSiftedOrEmpty C :=
   Functor.final_diagonal_of_isFiltered
@@ -346,9 +343,6 @@ instance [IsCofilteredOrEmpty C] (X : C × C) : IsCofiltered (CostructuredArrow 
 instance Functor.initial_diagonal_of_isFiltered [IsCofilteredOrEmpty C] :
     Initial (Functor.diagonal C) :=
   initial_of_isCofiltered_costructuredArrow _
-
-@[deprecated (since := "2026-09-06")]
-alias Functor.initial_diag_of_isFiltered := Functor.initial_diagonal_of_isFiltered
 
 /-- If `C` is filtered, then every functor `F : C ⥤ Discrete PUnit` is final. -/
 theorem Functor.final_of_isFiltered_of_pUnit [IsFiltered C] (F : C ⥤ Discrete PUnit) :
