@@ -122,7 +122,6 @@ lemma TensorProduct.sum_tmul_basis_right_eq_zero
   have := Classical.decEq κ
   (TensorProduct.equivFinsuppOfBasisRight 𝒞).symm.injective (a₂ := 0) <| by simpa
 
-/-- The coordinates of `M ⊗[R] N` with respect to a basis of `N` are natural in `M`. -/
 lemma TensorProduct.equivFinsuppOfBasisRight_rTensor {P : Type*} [AddCommMonoid P] [Module R P]
     (f : M →ₗ[R] P) (x : M ⊗[R] N) :
     equivFinsuppOfBasisRight 𝒞 (f.rTensor N x) =
