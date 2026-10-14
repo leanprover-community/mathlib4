@@ -168,8 +168,8 @@ variable [Semifield 𝕜] [LinearOrder 𝕜] [Module 𝕜 E]
 
 /-- The cone hull of an open set is open. -/
 lemma isOpen_hull {M : Type*} [AddCommGroup M] [TopologicalSpace M] [ContinuousAdd M] [Module 𝕜 M]
-    [ContinuousConstSMul 𝕜 M] {s : Set M} (hs : IsOpen s) : IsOpen (hull 𝕜 s : Set M) := by
-  exact subset_interior_iff_isOpen.1 <|
+    [ContinuousConstSMul 𝕜 M] {s : Set M} (hs : IsOpen s) : IsOpen (hull 𝕜 s : Set M) :=
+  subset_interior_iff_isOpen.1 <|
     hull_min (C := (hull 𝕜 s).interior) <| hs.subset_interior_iff.2 subset_hull
 
 variable [TopologicalSpace 𝕜] [OrderTopology 𝕜] [DenselyOrdered 𝕜] [NoMaxOrder 𝕜]
