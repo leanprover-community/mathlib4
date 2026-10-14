@@ -20,7 +20,7 @@ example : ¬(!![2, -1; 0, 2] : Matrix (Fin 2) (Fin 2) ℤ).IsIndecomposable := b
 example : (!![0] : Matrix (Fin 1) (Fin 1) ℤ).IsIndecomposable := by
   simp only [reduceIsIndecomposable]
 
-example : (0 : Matrix (Fin 0) (Fin 0) ℤ).IsIndecomposable := by
+example : (!![] : Matrix (Fin 0) (Fin 0) ℤ).IsIndecomposable := by
   simp only [reduceIsIndecomposable]
 
 example : (!![0, 1, 0; 0, 0, 1; 1, 0, 0] : Matrix (Fin 3) (Fin 3) ℤ).IsIndecomposable := by
