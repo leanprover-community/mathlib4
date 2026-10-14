@@ -329,7 +329,7 @@ theorem isTheta_deriv_ofReal_cpow_const_atTop {c : ℂ} (hc : c ≠ 0) :
 theorem isBigO_deriv_ofReal_cpow_const_atTop (c : ℂ) :
     deriv (fun (x : ℝ) => (x : ℂ) ^ c) =O[atTop] fun x => x ^ (c.re - 1) := by
   obtain rfl | hc := eq_or_ne c 0
-  · simp_rw [cpow_zero, deriv_const', Asymptotics.isBigO_zero]
+  · simp_rw [cpow_zero, deriv_const', Asymptotics.isBigO_fun_zero]
   · exact (isTheta_deriv_ofReal_cpow_const_atTop hc).1
 
 @[simp]

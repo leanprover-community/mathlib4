@@ -304,7 +304,7 @@ section ZeroConst
 
 variable (g g' l)
 
-@[to_fun (attr := simp)]
+@[to_fun (attr := simp) isLittleO_fun_zero]
 theorem isLittleO_zero : (0 : α → E') =o[l] g' :=
   IsLittleO.of_bound fun c hc =>
     univ_mem' fun x => by simpa using mul_nonneg hc.le (norm_nonneg <| g' x)
@@ -315,7 +315,7 @@ theorem isBigOWith_zero (hc : 0 ≤ c) : IsBigOWith c l (fun _x => (0 : E')) g' 
 theorem isBigOWith_zero' : IsBigOWith 0 l (fun _x => (0 : E')) g :=
   IsBigOWith.of_bound <| univ_mem' fun x => by simp
 
-@[to_fun (attr := simp)]
+@[to_fun (attr := simp) isBigO_fun_zero]
 theorem isBigO_zero : (0 : α → E') =O[l] g :=
   isBigO_iff_isBigOWith.2 ⟨0, isBigOWith_zero' _ _⟩
 
