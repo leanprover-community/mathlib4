@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Andrew Yang, Yaël Dillies
 -/
 module
+
 public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Algebra.Order.Interval.Set.Instances
 public import Mathlib.Data.Finsupp.Order
@@ -251,7 +252,7 @@ lemma mem_range_map_iff
         aesop
     · rw [Finsupp.notMem_support_iff] at hy
       rw [hy]
-      refine Finsupp.mapDomain_of_not_mem_image_support ?_
+      refine Finsupp.mapDomain_of_notMem_image_support ?_
       simp only [Finset.univ_eq_attach, Set.mem_image, SetLike.mem_coe, Finsupp.mem_support_iff,
         Finsupp.coe_finsetSum, Finset.sum_apply, ne_eq, not_exists, not_and]
       intro x hx rfl

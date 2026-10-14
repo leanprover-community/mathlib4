@@ -725,7 +725,7 @@ scoped instance faithfulSMul :
     letI := (inclusion h).toModule; FaithfulSMul S T :=
   letI := (inclusion h).toModule
   ⟨fun {x y} h ↦ Subtype.ext <| by
-    convert! Subtype.ext_iff.mp (h 1) using 1 <;> exact (mul_one _).symm⟩
+    convert Subtype.ext_iff.mp (h 1) using 1 <;> exact (mul_one _).symm⟩
 
 end inclusion
 

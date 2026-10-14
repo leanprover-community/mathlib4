@@ -615,7 +615,7 @@ lemma cfc_comp (g f : R → R) (a : A) (ha : p a := by cfc_tac)
     ext
     simp
   rw [cfc_apply .., cfc_apply f a,
-    cfc_apply _ _ (cfcHom_predicate (show p a from ha) _) (by convert! hg), ← cfcHom_comp _ _]
+    cfc_apply _ _ (cfcHom_predicate (show p a from ha) _) (by convert hg), ← cfcHom_comp _ _]
   swap
   · exact ContinuousMap.mk _ <| hf.domRestrict.codRestrict fun x ↦ by rw [sp_eq]; use x.1; simp
   · congr
@@ -731,14 +731,6 @@ protected lemma IsSelfAdjoint.cfc [ContinuousFunctionalCalculus R A IsSelfAdjoin
 lemma cfc_nonneg_of_predicate [LE A]
     [ContinuousFunctionalCalculus R A (0 ≤ ·)] {f : R → R} {a : A} : 0 ≤ cfc f a :=
   cfc_predicate _ _
-
-variable (R) in
-/-- In an `R`-algebra with a continuous functional calculus, every element satisfying the predicate
-has nonempty `R`-spectrum. -/
-@[deprecated "Use `ContinuousFunctionalCalculus.spectrum_nonempty a ha` instead."
-  (since := "2026-03-08")]
-lemma CFC.spectrum_nonempty [Nontrivial A] (a : A) (ha : p a := by cfc_tac) :
-    (spectrum R a).Nonempty := ContinuousFunctionalCalculus.spectrum_nonempty a ha
 
 end CFC
 
