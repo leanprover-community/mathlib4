@@ -64,7 +64,7 @@ def pseudofunctor : LocallyDiscrete SSet.{u} ⥤ᵖ Cat.{u, u} :=
   LocallyDiscrete.mkPseudofunctor (fun X ↦ .of (FundamentalGroupoid X))
     (fun f ↦ (mapFundamentalGroupoid f).toCatHom)
     (fun X ↦ Cat.Hom.isoMk (mapFundamentalGroupoidId X))
-    (fun f g ↦ Cat.Hom.isoMk ((mapFundamentalGroupoidComp f g).symm))
+    (fun f g ↦ Cat.Hom.isoMk (mapFundamentalGroupoidComp f g).symm)
 
 end FundamentalGroupoid
 
