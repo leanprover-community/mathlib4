@@ -39,6 +39,15 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          if ! command -v zstd >/dev/null; then
+            curl --fail --location --retry 3 \
+              https://github.com/facebook/zstd/releases/download/v1.5.7/zstd-1.5.7.tar.gz \
+              --output "$RUNNER_TEMP/zstd-1.5.7.tar.gz"
+            echo "eb33e51f49a15e023950cd7825ca74a4a2b43db8354825ac24fc1b7ee09e6fa3  $RUNNER_TEMP/zstd-1.5.7.tar.gz" | sha256sum --check
+            tar -xzf "$RUNNER_TEMP/zstd-1.5.7.tar.gz" -C "$RUNNER_TEMP"
+            make -s -C "$RUNNER_TEMP/zstd-1.5.7/programs" -j"$(nproc)" zstd
+            export PATH="$RUNNER_TEMP/zstd-1.5.7/programs:$PATH"
+          fi
           mkdir -p "$RUNNER_TEMP/lean-baseline" "$RUNNER_TEMP/lean-patched" benchmark-results
           gh api repos/leanprover/lean4/actions/artifacts/11835156485 > benchmark-results/baseline-artifact.json
           jq -e '.expired == false and .workflow_run.head_sha == "daa56019e0ab113c164f5e13e6c9dae9d994c21b"' \
