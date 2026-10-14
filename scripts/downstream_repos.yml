@@ -237,3 +237,12 @@
     build: make.yml
     release-tag: create-release.yml
     update: upgrade.yml
+- github: https://github.com/AnandGokhale/LeanForControl
+  default_branch: main
+  name: Lean for Control
+  zulip-contact: Anand Gokhale
+  workflows:
+    build: blueprint.yml
+    docs: blueprint.yml
+    release-tag: create-release.yml
+    update: update.yml
