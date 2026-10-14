@@ -5,9 +5,7 @@ Authors: Joachim Breitner
 -/
 module
 
-public import Mathlib.Probability.ProbabilityMassFunction.Basic
 public import Mathlib.Probability.ProbabilityMassFunction.Constructions
-public import Mathlib.MeasureTheory.Integral.Bochner.SumMeasure
 
 /-!
 # Integrals with a measure derived from probability mass functions.

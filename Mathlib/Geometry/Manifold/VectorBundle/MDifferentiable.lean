@@ -5,9 +5,7 @@ Authors: Sébastien Gouëzel, Patrick Massot, Michael Rothgang
 -/
 module
 
-public import Mathlib.Geometry.Manifold.VectorBundle.Basic
 public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
-public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 
 /-!
 # Differentiability of functions in vector bundles
@@ -109,7 +107,7 @@ theorem mdifferentiable_zeroSection : MDiff (zeroSection F E) := by
   apply (mdifferentiableAt_const (c := 0)).congr_of_eventuallyEq
   filter_upwards [(trivializationAt F E x).open_baseSet.mem_nhds
     (mem_baseSet_trivializationAt F E x)] with y hy
-    using congr_arg Prod.snd <| (trivializationAt F E x).zeroSection 𝕜 hy
+    using congr($((trivializationAt F E x).zeroSection 𝕜 hy).snd)
 
 theorem mdifferentiableOn_zeroSection {t : Set B} : MDiff[t] (zeroSection F E) :=
   (mdifferentiable_zeroSection _ _).mdifferentiableOn

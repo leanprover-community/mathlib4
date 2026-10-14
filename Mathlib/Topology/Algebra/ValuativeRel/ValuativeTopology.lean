@@ -96,6 +96,7 @@ variable {K : Type*} [DivisionRing K] [ValuativeRel K] {Γ₀ : Type*}
 section TopologicalSpace
 
 variable [TopologicalSpace R] (v : Valuation R Γ₀) [v.Compatible]
+
 namespace IsValuativeTopology
 
 /-- If the neighborhoods of every point for a given topology are defined by a valuation `v`
@@ -169,7 +170,7 @@ namespace Valuation
 
 lemma mem_nhds_iff {s : Set R} {x : R} : s ∈ 𝓝 x ↔
     ∃ γ : v.ValueGroup₀ˣ, { z | v.restrict (z - x) < γ.val } ⊆ s := by
-  convert! IsValuativeTopology.mem_nhds_iff (s := s) using 4
+  convert IsValuativeTopology.mem_nhds_iff (s := s) using 4
   simpa [neg_add_eq_sub] using v.exists_setOfPred_restrict_le_iff _ _
 
 lemma mem_nhds_zero_iff (s : Set R) : s ∈ 𝓝 0 ↔
@@ -223,6 +224,49 @@ end IsValuativeTopology
 
 end TopologicalSpace
 
+section IsInducing
+
+namespace IsValuativeTopology
+
+variable [TopologicalSpace R]
+variable {S : Type*} [Ring S] [ValuativeRel S] [TopologicalSpace S] [IsValuativeTopology S]
+
+open ValuativeRel Topology in
+/-- Transfer an `IsValuativeTopology` instance along a surjective and inducing ring homomorphism,
+which preserves the valuative ordering. -/
+theorem of_isInducing {F : Type*} [FunLike F R S] [RingHomClass F R S] {f : F}
+    (hsurj : Function.Surjective f) (hf : IsInducing f) (hv : ∀ a b, f a ≤ᵥ f b ↔ a ≤ᵥ b) :
+    IsValuativeTopology R where
+  mem_nhds_iff {s x} := by
+    have hvlt (a b : R) : f a <ᵥ f b ↔ a <ᵥ b := by simp [← not_vle, hv]
+    have hpos (a : R) : 0 <ᵥ f a ↔ 0 <ᵥ a := by simpa using hvlt 0 a
+    rw [hf.nhds_eq_comap, mem_comap]
+    refine ⟨fun ⟨t, ht, hts⟩ ↦ ?_, fun ⟨γ, hγ⟩ ↦ ?_⟩
+    · obtain ⟨γ, hγ⟩ := IsValuativeTopology.mem_nhds_iff'.1 ht
+      obtain ⟨⟨a, ha⟩, ⟨b, hb⟩, hab⟩ :=
+        exists_valuation_posSubmonoid_div_valuation_posSubmonoid_eq γ
+      obtain ⟨a, rfl⟩ := hsurj a
+      obtain ⟨b, rfl⟩ := hsurj b
+      refine ⟨.mk0 _ (div_ne_zero (valuation_posSubmonoid_ne_zero ⟨a, (hpos a).1 ha⟩)
+        (valuation_posSubmonoid_ne_zero ⟨b, (hpos b).1 hb⟩)), fun _ ⟨z, hz, hz'⟩ ↦ hts (hγ ?_)⟩
+      rw [Set.mem_ofPred_eq, ← hab, ← hz', map_add, add_sub_cancel_left, lt_div_iff_mul_vlt _ hb,
+        ← map_mul, hvlt]
+      rwa [Set.mem_ofPred_eq, Units.val_mk0, lt_div_iff_mul_vlt _ ((hpos b).1 hb)] at hz
+    · obtain ⟨⟨a, ha⟩, ⟨b, hb⟩, hab⟩ :=
+        exists_valuation_posSubmonoid_div_valuation_posSubmonoid_eq γ
+      refine ⟨{z | valuation S (z - f x) < valuation S (f a) / valuation S (f b)}, ?_,
+        fun y hy ↦ hγ ⟨y - x, ?_, by simp⟩⟩
+      · exact IsValuativeTopology.mem_nhds_iff'.2 ⟨.mk0 _ (div_ne_zero
+          (valuation_posSubmonoid_ne_zero ⟨_, (hpos a).2 ha⟩)
+          (valuation_posSubmonoid_ne_zero ⟨_, (hpos b).2 hb⟩)), subset_of_eq rfl⟩
+      · rw [Set.mem_preimage, Set.mem_ofPred_eq, ← _root_.map_sub,
+          lt_div_iff_mul_vlt _ ((hpos b).2 hb), ← map_mul, hvlt] at hy
+        rwa [Set.mem_ofPred_eq, ← hab, lt_div_iff_mul_vlt _ hb]
+
+end IsValuativeTopology
+
+end IsInducing
+
 namespace Valuation
 
 section UniformSpace
@@ -270,7 +314,7 @@ theorem toTopologicalSpace_eq :
   exact congrArg (fun u ↦ @UniformSpace.toTopologicalSpace R u) v.toUniformSpace_eq
 
 instance (priority := low) _root_.IsValuativeTopology.isTopologicalRing : IsTopologicalRing R := by
-  convert! (ValuativeRel.nonarchimedeanRing R).toIsTopologicalRing
+  convert (ValuativeRel.nonarchimedeanRing R).toIsTopologicalRing
   exact toTopologicalSpace_eq _
 
 section Discrete
@@ -440,14 +484,5 @@ instance [TopologicalSpace R] [IsValuativeTopology R] :
     IsLinearTopology (valuation R).integer R :=
   IsLinearTopology.mk_of_hasBasis _ (p := fun _ : (ValueGroupWithZero R)ˣ ↦ True)
     (s := (valuation R).ltSubmodule) (IsValuativeTopology.hasBasis_nhds_zero R)
-
-@[deprecated (since := "2026-03-17")] alias isOpen_ball := Valuation.isOpen_ball
-@[deprecated (since := "2026-03-17")] alias isClosed_ball := Valuation.isClosed_ball
-@[deprecated (since := "2026-03-17")] alias isClopen_ball := Valuation.isClopen_ball
-@[deprecated (since := "2026-03-17")] alias isOpen_closedBall := Valuation.isOpen_closedBall
-@[deprecated (since := "2026-03-17")] alias isClosed_closedBall := Valuation.isClosed_closedBall
-@[deprecated (since := "2026-03-17")] alias isClopen_closedBall := Valuation.isClopen_closedBall
-@[deprecated (since := "2026-03-17")] alias isClopen_sphere := Valuation.isClopen_sphere
-@[deprecated (since := "2026-03-17")] alias isOpen_sphere := Valuation.isOpen_sphere
 
 end IsValuativeTopology

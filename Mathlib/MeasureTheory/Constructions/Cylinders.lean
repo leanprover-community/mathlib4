@@ -120,7 +120,7 @@ theorem comap_eval_le_generateFrom_squareCylinders_singleton
   simp only [mem_ofPred_eq, mem_image, mem_univ_pi, forall_exists_index, and_imp]
   intro t ht h
   classical
-  refine ⟨fun j ↦ if hji : j = i then by convert! t else univ, fun j ↦ ?_, ?_⟩
+  refine ⟨fun j ↦ if hji : j = i then by convert t else univ, fun j ↦ ?_, ?_⟩
   · by_cases hji : j = i
     · simp only [hji, eq_mpr_eq_cast, dite_eq_left]
       convert! ht
@@ -322,7 +322,7 @@ theorem inter_mem_measurableCylinders (hs : s ∈ measurableCylinders α)
   classical
   refine ⟨s₁ ∪ s₂,
     Finset.restrict₂ Finset.subset_union_left ⁻¹' S₁ ∩
-      {f | Finset.restrict₂ Finset.subset_union_right f ∈ S₂}, ?_, ?_⟩
+      Finset.restrict₂ Finset.subset_union_right ⁻¹' S₂, ?_, ?_⟩
   · refine MeasurableSet.inter ?_ ?_
     · exact Measurable.of_eval (fun _ ↦ measurable_pi_apply _) hS₁
     · exact Measurable.of_eval (fun _ ↦ measurable_pi_apply _) hS₂
@@ -371,7 +371,8 @@ theorem generateFrom_measurableCylinders :
     simp only [singleton_pi, mem_image, mem_pi, mem_univ, mem_ofPred_eq,
       forall_true_left, mem_measurableCylinders, forall_exists_index, and_imp]
     rintro t ht rfl
-    refine ⟨{i}, {f | f ⟨i, Finset.mem_singleton_self i⟩ ∈ t i}, measurable_pi_apply _ (ht i), ?_⟩
+    refine ⟨{i}, {f | f ⟨i, Finset.mem_singleton_self i⟩ ∈ t i},
+      measurable_pi_apply (⟨i, by simp⟩ : ({i} : Finset ι)) (ht i), ?_⟩
     ext1 x
     simp only [mem_preimage, Function.eval, mem_cylinder, mem_ofPred_eq, Finset.restrict]
 

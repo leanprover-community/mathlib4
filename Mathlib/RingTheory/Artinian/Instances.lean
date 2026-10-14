@@ -5,10 +5,11 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.Algebra.Divisibility.Prod
-public import Mathlib.Algebra.Polynomial.FieldDivision
 public import Mathlib.LinearAlgebra.InvariantBasisNumber
 public import Mathlib.RingTheory.Artinian.Module
+
+import Mathlib.Algebra.Divisibility.Prod
+import Mathlib.Algebra.Polynomial.FieldDivision
 
 /-!
 # Instances related to Artinian rings

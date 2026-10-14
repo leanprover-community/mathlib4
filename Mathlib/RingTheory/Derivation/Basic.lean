@@ -102,7 +102,7 @@ theorem ext (H : ∀ a, D1 a = D2 a) : D1 = D2 :=
   DFunLike.ext _ _ H
 
 theorem congr_fun (h : D1 = D2) (a : A) : D1 a = D2 a :=
-  DFunLike.congr_fun h a
+  congr($h a)
 
 protected theorem map_add : D (a + b) = D a + D b :=
   map_add D a b
@@ -265,9 +265,9 @@ theorem coe_sum_linearMap {ι : Type*} (t : Finset ι) (f : ι → Derivation R 
     ∑ i ∈ t, f i = ∑ i ∈ t, (f i : A →ₗ[R] M) :=
   _root_.map_sum coeAddMonoidHom f t
 
-instance : IsZeroApply (Derivation R A M) A M where
+instance : IsZeroApply (Derivation R A M) where
 
-instance : IsAddApply (Derivation R A M) A M where
+instance : IsAddApply (Derivation R A M) where
 
 end Scalar
 

@@ -5,10 +5,8 @@ Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Opposite
 public import Mathlib.Algebra.Algebra.Pi
 public import Mathlib.Algebra.BigOperators.RingEquiv
-public import Mathlib.Basic.Finite.Prod
 public import Mathlib.Data.Matrix.Mul
 public import Mathlib.GroupTheory.DedekindFinite
 public import Mathlib.LinearAlgebra.Pi
@@ -70,7 +68,7 @@ end
 
 theorem sum_apply [AddCommMonoid α] (i : m) (j : n) (s : Finset β) (g : β → Matrix m n α) :
     (∑ c ∈ s, g c) i j = ∑ c ∈ s, g c i j :=
-  (congr_fun (s.sum_apply i g) j).trans (s.sum_apply j _)
+  congr($(s.sum_apply i g) j).trans (s.sum_apply j _)
 
 end Matrix
 
