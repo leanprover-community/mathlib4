@@ -26,7 +26,6 @@ All orderings are preorderings.
 ## References
 
 - [*An introduction to real algebra*, T.Y. Lam][lam_1984]
-
 -/
 
 @[expose] public section

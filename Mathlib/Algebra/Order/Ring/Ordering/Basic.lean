@@ -21,7 +21,6 @@ We prove basic properties of (pre)orderings on rings.
 ## References
 
 - [*An introduction to real algebra*, T.Y. Lam][lam_1984]
-
 -/
 
 @[expose] public section
