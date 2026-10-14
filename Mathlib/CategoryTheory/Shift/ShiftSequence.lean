@@ -27,8 +27,6 @@ in degree `n`.
 
 -/
 
-set_option backward.defeqAttrib.useBackward true
-
 @[expose] public section
 
 open CategoryTheory Category ZeroObject Limits
