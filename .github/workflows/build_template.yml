@@ -851,14 +851,14 @@ jobs:
           BASE: ${{ secrets.MATHLIB_CACHE_R2_DEVELOPER_PUT_BASE_URL }}
           SHA: ${{ github.sha }}
         run: |
-          set -u
+          set +e -u
           endpoint="${BASE%/*}"
           bucket="${BASE##*/}"
           ns="mathlib4-forks/f/leanprover-community/mathlib4/$SHA"
           work=$(mktemp -d)
-          curl -sSfL -o "$work/r.zip" https://github.com/rclone/rclone/releases/download/v1.75.0/rclone-v1.75.0-linux-amd64.zip
+          curl -sSfL -o "$work/rclone-v1.75.0-linux-amd64.zip" https://github.com/rclone/rclone/releases/download/v1.75.0/rclone-v1.75.0-linux-amd64.zip
           curl -sSfL -o "$work/SHA256SUMS" https://github.com/rclone/rclone/releases/download/v1.75.0/SHA256SUMS
-          (cd "$work" && grep ' rclone-v1.75.0-linux-amd64.zip$' SHA256SUMS | sha256sum -c - && unzip -q r.zip)
+          (cd "$work" && grep ' rclone-v1.75.0-linux-amd64.zip$' SHA256SUMS | sha256sum -c - && unzip -q rclone-v1.75.0-linux-amd64.zip) || exit 1
           new="$work/rclone-v1.75.0-linux-amd64/rclone"
           head -c 4096 /dev/urandom > "$work/probe.bin"
           export RCLONE_S3_ENV_AUTH=false RCLONE_S3_ACCESS_KEY_ID="$AK" RCLONE_S3_SECRET_ACCESS_KEY="$SK" \
