@@ -90,10 +90,12 @@ theorem not_strictMono_of_wellFoundedLT {β : Type*} [Preorder α] [WellFoundedL
     [Preorder β] [Nonempty β] [NoMinOrder β] (f : β → α) : ¬ StrictMono f := by
   simpa using not_strictAnti_of_wellFoundedLT (f ∘ OrderDual.ofDual)
 
+@[to_dual existing]
 theorem not_strictMono_of_wellFoundedGT {β : Type*} [Preorder α] [WellFoundedGT α]
     [Preorder β] [Nonempty β] [NoMaxOrder β] (f : β → α) : ¬ StrictMono f :=
   not_strictAnti_of_wellFoundedLT (α := αᵒᵈ) f
 
+@[to_dual existing]
 theorem not_strictAnti_of_wellFoundedGT {β : Type*} [Preorder α] [WellFoundedGT α]
     [Preorder β] [Nonempty β] [NoMinOrder β] (f : β → α) : ¬ StrictAnti f :=
   not_strictMono_of_wellFoundedLT (α := αᵒᵈ) f
