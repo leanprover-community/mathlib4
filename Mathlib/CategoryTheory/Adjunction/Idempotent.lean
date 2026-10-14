@@ -41,7 +41,6 @@ namespace CategoryTheory.Adjunction
 variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D]
   {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R)
 
-/-- If `f ≫ g = 𝟙 X`, then `f` is an isomorphism if and only if `g` is. -/
 private lemma isIso_iff_of_comp_eq_id {E : Type*} [Category* E] {X Y : E} {f : X ⟶ Y}
     {g : Y ⟶ X} (h : f ≫ g = 𝟙 X) : IsIso f ↔ IsIso g :=
   ⟨fun _ ↦ isIso_of_hom_comp_eq_id f h, fun _ ↦ isIso_of_comp_hom_eq_id g h⟩
@@ -85,7 +84,6 @@ theorem idempotent_tfae :
     simp
   tfae_finish
 
-/-- In an idempotent adjunction, `RLη_X = η_{RLX}`. -/
 theorem map_map_unit_app_of_idempotent (h : ∀ Y, IsIso (adj.unit.app (R.obj Y))) (X : C) :
     R.map (L.map (adj.unit.app X)) = adj.unit.app (R.obj (L.obj X)) := by
   have h' : ∀ Y, IsIso (R.map (adj.counit.app Y)) := (adj.idempotent_tfae.out 1 2).1 h
@@ -93,7 +91,6 @@ theorem map_map_unit_app_of_idempotent (h : ∀ Y, IsIso (adj.unit.app (R.obj Y)
   rw [← cancel_mono (R.map (adj.counit.app (L.obj X))), ← Functor.map_comp]
   simp
 
-/-- In an idempotent adjunction, `LRε_Y = ε_{LRY}`. -/
 theorem map_map_counit_app_of_idempotent (h : ∀ X, IsIso (adj.counit.app (L.obj X))) (Y : D) :
     L.map (R.map (adj.counit.app Y)) = adj.counit.app (L.obj (R.obj Y)) := by
   have h' : ∀ X, IsIso (L.map (adj.unit.app X)) := (adj.idempotent_tfae.out 3 4).1 h
@@ -158,14 +155,12 @@ lemma fixedRightCounitIso_hom (Y : adj.fixedRight.FullSubcategory) :
     (adj.fixedRightCounitIso Y).hom = adj.counit.app Y.obj :=
   rfl
 
-/-- An object of `D` is fixed if and only if it is isomorphic to `L.obj X` for some fixed `X`. -/
 lemma fixedRight_iff_exists {Y : D} :
     adj.fixedRight Y ↔ ∃ X, adj.fixedLeft X ∧ Nonempty (L.obj X ≅ Y) := by
   refine ⟨fun (h : IsIso _) ↦ ⟨R.obj Y, fixedLeft_obj h, ⟨asIso (adj.counit.app Y)⟩⟩, ?_⟩
   rintro ⟨X, hX, ⟨e⟩⟩
   exact adj.fixedRight.prop_of_iso e (fixedRight_obj hX)
 
-/-- An object of `C` is fixed if and only if it is isomorphic to `R.obj Y` for some fixed `Y`. -/
 lemma fixedLeft_iff_exists {X : C} :
     adj.fixedLeft X ↔ ∃ Y, adj.fixedRight Y ∧ Nonempty (R.obj Y ≅ X) := by
   refine ⟨fun (h : IsIso _) ↦ ⟨L.obj X, fixedRight_obj h, ⟨(asIso (adj.unit.app X)).symm⟩⟩, ?_⟩
