@@ -138,12 +138,7 @@ lemma sq_emod_four (b : ℤ) : b ^ 2 % 4 = b % 2 := by
   rcases even_or_odd' b with ⟨k, rfl | rfl⟩ <;> grind
 
 theorem sq_emod_four_eq_one_of_odd {x : ℤ} (hx : Odd x) : x ^ 2 % 4 = 1 := by
-  #adaptation_note /-- On nightly-2026-10-07, `grind [sq_emod_four]` fails here with
-  "`grind` internal error, ring term has not been internalized: `x ^ 2 / 4`".
-  This reproduces importing only `Mathlib.Algebra.Ring.Parity` and `Mathlib.Algebra.Ring.Int.Defs`:
-  `theorem t (b : ℤ) : b ^ 2 % 4 = b % 2 := sorry`
-  `example {x : ℤ} (hx : Odd x) : x ^ 2 % 4 = 1 := by grind [t]` -/
-  rw [sq_emod_four, Int.odd_iff.mp hx]
+  grind [sq_emod_four]
 
 lemma eight_dvd_sq_sub_one_of_odd {k : ℤ} (hk : Odd k) : 8 ∣ k ^ 2 - 1 := by
   obtain ⟨m, rfl⟩ := hk

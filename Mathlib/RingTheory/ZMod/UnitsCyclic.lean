@@ -361,12 +361,6 @@ theorem isCyclic_units_iff (n : ℕ) :
   apply iff_of_false
   · rw [← mul_assoc, show 2 * 2 = 4 from rfl, isCyclic_units_four_mul_iff]
     lia
-  #adaptation_note /-- On nightly-2026-10-07, `grind` fails here with
-  "`grind` internal error, ring term has not been internalized: `↑w ^ w_1 / 2`". -/
-  rintro (⟨p, m, -, odd, -, eq⟩ | ⟨p, m, -, odd, -, eq⟩)
-  · have := eq ▸ odd.pow
-    simp [← Nat.not_even_iff_odd] at this
-  · have : 2 * n = p ^ m := by lia
-    exact Nat.not_even_iff_odd.mpr (this ▸ odd.pow) hn
+  grind
 
 end ZMod

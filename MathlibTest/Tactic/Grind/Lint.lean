@@ -9,10 +9,6 @@ import Lean.Elab.Tactic.Grind.LintExceptions
 #grind_lint skip Path.symm_apply
 #grind_lint skip Set.Icc.convexComb_symm
 
-#adaptation_note /-- On nightly-2026-10-07, `#grind_lint` fails on `Nat.even_pow` with
-"`grind` internal error, ring term has not been internalized: `↑m ^ n / 2`". -/
-#grind_lint skip Nat.even_pow
-
 -- This check verifies that `grind` annotations in Mathlib do not trigger run-away instantiations.
 -- If this test fails, please follow the "Try this:" suggestions
 -- which will explain the excessive instantiations.

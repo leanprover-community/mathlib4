@@ -161,10 +161,7 @@ lemma isBonza : IsBonza fExample := by
         Nat.two_dvd_ne_zero]
       push_cast
       split_ifs with hb1 hb2
-      · #adaptation_note /-- On nightly-2026-10-07, `grind [sq_emod_four_eq_one_of_odd]` fails here
-        with "`grind` internal error, ring term has not been internalized: `↑b ^ 2`". -/
-        have := sq_emod_four_eq_one_of_odd (x := b) (by rw [Int.odd_iff]; lia)
-        lia
+      · grind [sq_emod_four_eq_one_of_odd]
       · simp [hb2]
       · refine dvd_sub ?_ ?_
         · have : 2 ∣ (b : ℤ) := by grind
@@ -180,10 +177,8 @@ lemma isBonza : IsBonza fExample := by
           exact padicValNat.pow_two_sub_one_ge (by lia) (two_dvd_ne_zero.mpr hb1) (by lia)
             (even_iff.mpr (by simpa using ch1))
         exact Int.dvd_trans (pow_dvd_pow 2 this) (padicValInt_dvd ((b : ℤ) ^ a - 1))
-      #adaptation_note /-- On nightly-2026-10-07, `grind [dvd_pow_sub]` fails in both cases below
-      with "`grind` internal error, ring term has not been internalized". -/
-      · exact dvd_pow_sub (by lia) (by lia) (by norm_num)
-      · exact dvd_pow_sub (by lia) (by lia) (dvd_pow_self 2 (by lia))
+      · grind [dvd_pow_sub]
+      · grind [dvd_pow_sub]
   · grind [fExample, Nat.two_pow_pos]
 
 theorem apply_le {f : ℕ → ℕ} (hf : IsBonza f) {n : ℕ} (hn : 0 < n) : f n ≤ 4 * n := by
