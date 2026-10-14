@@ -609,7 +609,7 @@ variable (α β M) in
 @[to_additive /-- `AddEquiv` version of `Equiv.curry`. -/]
 protected def curry : (α × β → M) ≃* (α → β → M) where
   toEquiv := .curry α β M
-  map_mul' _ _ := by ext; simp
+  map_mul' _ _ := rfl
 
 @[to_additive (attr := simp)]
 lemma toEquiv_curry :
