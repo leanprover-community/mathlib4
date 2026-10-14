@@ -59,7 +59,7 @@ theorem of_squarefree (hG : Squarefree (Nat.card G)) : IsZGroup G := by
   have : Finite G := Nat.finite_of_card_ne_zero hG.ne_zero
   refine ⟨fun p hp P ↦ ?_⟩
   have := Fact.mk hp
-  obtain ⟨k, hk⟩ := P.2.exists_card_eq
+  obtain ⟨k, hk⟩ := P.isPGroup.exists_card_eq
   exact isCyclic_of_card_dvd_prime ((hk ▸ hG.pow_dvd_of_pow_dvd) P.card_subgroup_dvd_card)
 
 theorem of_injective [hG' : IsZGroup G'] (hf : Function.Injective f) : IsZGroup G := by
@@ -235,7 +235,7 @@ variable [Finite G] (P : Sylow p G) [IsCyclic P]
   `⁅K, P⁆ = P`. -/
 theorem commutator_eq_bot_or_commutator_eq_self [P.Normal] {K : Subgroup G}
     (h : K.IsComplement' P) : ⁅K, P.1⁆ = ⊥ ∨ ⁅K, P.1⁆ = P :=
-  P.2.commutator_eq_bot_or_commutator_eq_self (P.normalizer_eq_top ▸ le_top)
+  P.isPGroup.commutator_eq_bot_or_commutator_eq_self (P.normalizer_eq_top ▸ le_top)
     (h.index_eq_card ▸ P.card_coprime_index)
 
 /-- A normal cyclic Sylow subgroup is either central or contained in the commutator subgroup. -/
@@ -303,7 +303,7 @@ theorem isZGroup_of_coprime [Finite G] [IsZGroup G] [IsZGroup G'']
   have := Fact.mk hp
   replace h_cop := (h_cop.of_dvd ((Subgroup.card_dvd_of_le h_le).trans
     (Subgroup.card_range_dvd f)) (Subgroup.index_ker f' ▸ f'.range.card_subgroup_dvd_card))
-  rcases P.2.le_or_disjoint_of_coprime h_cop with h | h
+  rcases P.isPGroup.le_or_disjoint_of_coprime h_cop with h | h
   · replace h_le : P ≤ f.range := h.trans h_le
     suffices IsCyclic (P.subgroupOf f.range) by
       have key := Subgroup.subgroupOfEquivOfLe h_le
@@ -311,7 +311,7 @@ theorem isZGroup_of_coprime [Finite G] [IsZGroup G] [IsZGroup G'']
     obtain ⟨Q, hQ⟩ := Sylow.mapSurjective_surjective f.rangeRestrict_surjective p (P.subtype h_le)
     rw [Sylow.ext_iff, Sylow.coe_mapSurjective, Sylow.coe_subtype] at hQ
     exact hQ ▸ isCyclic_of_surjective _ (f.rangeRestrict.subgroupMap_surjective Q)
-  · have := (P.2.map f').isCyclic_of_isZGroup
+  · have := (P.isPGroup.map f').isCyclic_of_isZGroup
     apply isCyclic_of_injective (f'.subgroupMap P)
     rwa [← MonoidHom.ker_eq_bot_iff, P.ker_subgroupMap f', Subgroup.subgroupOf_eq_bot]
 
