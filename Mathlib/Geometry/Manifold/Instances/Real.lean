@@ -5,9 +5,10 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-import Mathlib.Analysis.Calculus.ContDiff.WithLp
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
+
+import Mathlib.Analysis.Calculus.ContDiff.WithLp
 
 /-!
 # Constructing examples of manifolds over ℝ
@@ -118,7 +119,7 @@ instance : LocallyPathConnectedSpace (EuclideanQuadrant n) :=
 
 theorem range_euclideanHalfSpace (n : ℕ) [NeZero n] :
     range (Subtype.val : EuclideanHalfSpace n → _) = { y | 0 ≤ y 0 } :=
-  Subtype.range_val
+  Subtype.range_coe_subtype
 
 @[simp]
 theorem interior_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
@@ -153,7 +154,7 @@ theorem frontier_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
 
 theorem range_euclideanQuadrant (n : ℕ) :
     range (Subtype.val : EuclideanQuadrant n → _) = { y | ∀ i : Fin n, 0 ≤ y i } :=
-  Subtype.range_val
+  Subtype.range_coe_subtype
 
 @[simp]
 theorem interior_quadrant {n : ℕ} (p : ℝ≥0∞) (a : ℝ) :
@@ -295,16 +296,16 @@ lemma interior_range_modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
     interior (range (𝓡∂ n)) = { y | 0 < y 0 } := by
   calc interior (range (𝓡∂ n))
     _ = interior ({ y | 0 ≤ y 0}) := by
-      congr
-      apply range_euclideanHalfSpace
+      congr 1
+      exact range_euclideanHalfSpace n
     _ = { y | 0 < y 0 } := interior_halfSpace _ _ _
 
 lemma frontier_range_modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
     frontier (range (𝓡∂ n)) = { y | 0 = y 0 } := by
   calc frontier (range (𝓡∂ n))
     _ = frontier ({ y | 0 ≤ y 0 }) := by
-      congr
-      apply range_euclideanHalfSpace
+      congr 1
+      exact range_euclideanHalfSpace n
     _ = { y | 0 = y 0 } := frontier_halfSpace 2 _ _
 
 @[simp]
