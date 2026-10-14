@@ -6,9 +6,9 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.Polynomial.AlgebraMap
-public import Mathlib.Algebra.Polynomial.Degree.Lemmas
-public import Mathlib.Algebra.Polynomial.Eval.SMul
 public import Mathlib.Algebra.Polynomial.HasseDeriv
+
+import Mathlib.Algebra.Polynomial.Eval.SMul
 
 /-!
 # Taylor expansions of polynomials

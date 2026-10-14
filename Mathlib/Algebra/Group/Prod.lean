@@ -5,12 +5,8 @@ Authors: Simon Hudon, Patrick Massot, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Group.Equiv.Defs
-public import Mathlib.Algebra.Group.Hom.Basic
 public import Mathlib.Algebra.Group.Opposite
-public import Mathlib.Algebra.Group.Torsion
 public import Mathlib.Algebra.Group.Units.Hom
-public import Mathlib.Algebra.Notation.Pi.Defs
 public import Mathlib.Algebra.Notation.Prod
 public import Mathlib.Logic.Equiv.Prod
 public import Mathlib.Tactic.TermCongr
@@ -61,6 +57,10 @@ theorem fst_mul_snd [MulOneClass M] [MulOneClass N] (p : M × N) : (p.fst, 1) * 
   Prod.ext (mul_one p.1) (one_mul p.2)
 
 @[to_additive]
+theorem isSelfInv_iff [Inv M] [Inv N] {p : M × N} :
+    IsSelfInv p ↔ IsSelfInv p.fst ∧ IsSelfInv p.snd := Prod.ext_iff
+
+@[to_additive]
 instance [InvolutiveInv M] [InvolutiveInv N] : InvolutiveInv (M × N) :=
   { inv_inv := fun _ => Prod.ext (inv_inv _) (inv_inv _) }
 
@@ -101,6 +101,13 @@ instance instMonoid [Monoid M] [Monoid N] : Monoid (M × N) :=
 @[to_additive]
 instance instIsMulTorsionFree [Monoid M] [Monoid N] [IsMulTorsionFree M] [IsMulTorsionFree N] :
     IsMulTorsionFree (M × N) where
+  eq_of_pow_eq_pow_of_commute n hn a b h hab := by
+    rw [commute_iff_eq, Prod.ext_iff] at *
+    exact ⟨eq_of_pow_eq_pow_of_commute hn h.1 hab.1, eq_of_pow_eq_pow_of_commute hn h.2 hab.2⟩
+
+@[to_additive]
+instance [Monoid M] [Monoid N] [HasUniqueRoots M] [HasUniqueRoots N] :
+    HasUniqueRoots (M × N) where
   pow_left_injective n hn a b hab := by
     ext <;> apply pow_left_injective hn; exacts [congr(($hab).1), congr(($hab).2)]
 
@@ -116,8 +123,8 @@ instance [DivInvMonoid G] [DivInvMonoid H] : DivInvMonoid (G × H) where
 instance [DivisionMonoid G] [DivisionMonoid H] : DivisionMonoid (G × H) :=
   { mul_inv_rev := fun _ _ => Prod.ext (mul_inv_rev _ _) (mul_inv_rev _ _),
     inv_eq_of_mul := fun _ _ h =>
-      Prod.ext (inv_eq_of_mul_eq_one_right <| congr_arg fst h)
-        (inv_eq_of_mul_eq_one_right <| congr_arg snd h),
+      Prod.ext (inv_eq_of_mul_eq_one_right congr(fst $h))
+        (inv_eq_of_mul_eq_one_right congr(snd $h)),
     inv_inv := by simp }
 
 @[to_additive SubtractionCommMonoid]
@@ -517,6 +524,9 @@ theorem coe_prodComm : ⇑(prodComm : M × N ≃* N × M) = Prod.swap :=
 theorem coe_prodComm_symm : ⇑(prodComm : M × N ≃* N × M).symm = Prod.swap :=
   rfl
 
+@[to_additive (attr := simp) prodComm_trans_prodComm]
+theorem prodComm_trans_prodComm : (prodComm : M × N ≃* N × M).trans prodComm = .refl _ := rfl
+
 variable [MulOneClass P]
 
 /-- The equivalence between `(M × N) × P` and `M × (N × P)` is multiplicative. -/
@@ -642,7 +652,7 @@ def embedProduct (α : Type*) [Monoid α] : αˣ →* α × αᵐᵒᵖ where
 
 @[to_additive]
 theorem embedProduct_injective (α : Type*) [Monoid α] : Function.Injective (embedProduct α) :=
-  fun _ _ h => Units.ext <| (congr_arg Prod.fst h :)
+  fun _ _ h => Units.ext congr($(h).fst)
 
 end Units
 

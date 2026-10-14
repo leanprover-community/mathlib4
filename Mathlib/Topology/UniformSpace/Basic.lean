@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 module
 
-public import Mathlib.Basic.Rel
 public import Mathlib.Order.Filter.SmallSets
 public import Mathlib.Topology.ContinuousOn
 public import Mathlib.Topology.UniformSpace.Defs
@@ -333,39 +332,32 @@ def UniformSpace.generateFilter (f : Filter (α × α)) : UniformSpace α :=
       ∀ n, seq n ∈ f ⊔ map Prod.swap f ⊔ 𝓟 SetRel.id ∧ seq (n + 1) ○ seq (n + 1) ⊆ seq n }
     uniformity.univ_sets := ⟨fun _ => univ, by simp⟩
     uniformity.sets_of_superset := by
-      intro x y hx hxy
-      obtain ⟨seq, rfl, hseq⟩ := hx
+      rintro x y ⟨seq, rfl, hseq⟩ hxy
       refine ⟨fun n => Nat.casesOn n y (fun n => seq (n + 1)), rfl,
         fun n => Nat.casesOn n ⟨?_, ?_⟩ (fun n => hseq (n + 1))⟩
       · exact mem_of_superset (hseq 0).1 hxy
       · exact (hseq 0).2.trans hxy
     uniformity.inter_sets := by
-      intro x y hx hy
-      obtain ⟨seqx, rfl, hseqx⟩ := hx
-      obtain ⟨seqy, rfl, hseqy⟩ := hy
+      rintro x y ⟨seqx, rfl, hseqx⟩ ⟨seqy, rfl, hseqy⟩
       refine ⟨fun n => seqx n ∩ seqy n, rfl, fun n => ⟨?_, ?_⟩⟩
       · exact inter_mem (hseqx n).1 (hseqy n).1
       · apply subset_inter
         · exact subset_trans (SetRel.comp_subset_comp (by simp) (by simp)) (hseqx n).2
         · exact subset_trans (SetRel.comp_subset_comp (by simp) (by simp)) (hseqy n).2
     refl := by
-      intro U hU
-      obtain ⟨seq, rfl, hseq⟩ := hU
+      rintro U ⟨seq, rfl, hseq⟩
       exact (hseq 0).1.2
     symm := by
-      intro U hU
-      obtain ⟨seq, rfl, hseq⟩ := hU
+      rintro U ⟨seq, rfl, hseq⟩
       refine ⟨fun n => Prod.swap ⁻¹' seq n, rfl, fun n => ⟨?_, ?_⟩⟩
-      · rw [← mem_map, map_sup, map_principal, ← Equiv.coe_prodComm, Equiv.image_eq_preimage_symm,
-          Equiv.prodComm_symm, Equiv.coe_prodComm, ← SetRel.inv, SetRel.inv_id,
-          sup_comm f, map_sup, map_map, Prod.swap_swap_eq, map_id]
+      · rw [← mem_map, map_sup, map_principal, image_swap_eq_preimage_swap, ← SetRel.inv,
+          SetRel.inv_id, sup_comm f, map_sup, map_map, Prod.swap_swap_eq, map_id]
         exact (hseq n).1
       · beta_reduce
         rw [← SetRel.inv, ← SetRel.inv, ← SetRel.inv_comp]
         exact SetRel.inv_mono (hseq n).2
     comp := by
-      intro U hU
-      obtain ⟨seq, rfl, hseq⟩ := hU
+      rintro U ⟨seq, rfl, hseq⟩
       refine mem_of_superset ?_ (hseq 0).2
       apply mem_lift'
       exact ⟨fun n => seq (n + 1), rfl, fun n => hseq (n + 1)⟩ }
@@ -419,7 +411,7 @@ instance : InfSet (UniformSpace α) :=
         symm := le_iInf₂ fun u hu =>
           le_trans (map_mono <| iInf_le_of_le _ <| iInf_le _ hu) u.symm
         comp := le_iInf₂ fun u hu =>
-          le_trans (lift'_mono (iInf_le_of_le _ <| iInf_le _ hu) <| le_rfl) u.comp }⟩
+          le_trans (lift'_mono (iInf_le_of_le _ <| iInf_le _ hu) le_rfl) u.comp }⟩
 
 protected theorem UniformSpace.sInf_le {tt : Set (UniformSpace α)} {t : UniformSpace α}
     (h : t ∈ tt) : sInf tt ≤ t :=
@@ -516,9 +508,11 @@ lemma ball_preimage {f : α → β} {U : SetRel β β} {x : α} :
   simp only [UniformSpace.ball, mem_preimage, Prod.map_apply]
 
 @[simp]
-theorem uniformSpace_comap_id {α : Type*} : UniformSpace.comap (id : α → α) = id := by
+theorem UniformSpace.comap_id {α : Type*} : UniformSpace.comap (id : α → α) = id := by
   ext : 2
-  rw [uniformity_comap, Prod.map_id, comap_id]
+  rw [uniformity_comap, Prod.map_id, Filter.comap_id]
+
+@[deprecated (since := "2026-10-13")] alias uniformSpace_comap_id := UniformSpace.comap_id
 
 theorem UniformSpace.comap_comap {α β γ} {uγ : UniformSpace γ} {f : α → β} {g : β → γ} :
     UniformSpace.comap (g ∘ f) uγ = UniformSpace.comap f (UniformSpace.comap g uγ) := by
@@ -534,9 +528,11 @@ theorem UniformSpace.comap_iInf {ι α γ} {u : ι → UniformSpace γ} {f : α 
   ext : 1
   simp [uniformity_comap, iInf_uniformity]
 
-theorem UniformSpace.comap_mono {α γ} {f : α → γ} :
+theorem UniformSpace.comap_monotone {α γ} {f : α → γ} :
     Monotone fun u : UniformSpace γ => u.comap f := fun _ _ hu =>
   Filter.comap_mono hu
+
+@[deprecated (since := "2026-10-13")] alias UniformSpace.comap_mono := UniformSpace.comap_monotone
 
 theorem uniformContinuous_iff_le_comap {α β} {uα : UniformSpace α} {uβ : UniformSpace β}
     {f : α → β} : UniformContinuous f ↔ uα ≤ uβ.comap f :=
@@ -547,7 +543,7 @@ alias uniformContinuous_iff := uniformContinuous_iff_le_comap
 
 theorem le_iff_uniformContinuous_id {u v : UniformSpace α} :
     u ≤ v ↔ @UniformContinuous _ _ u v id := by
-  rw [uniformContinuous_iff_le_comap, uniformSpace_comap_id, id]
+  rw [uniformContinuous_iff_le_comap, UniformSpace.comap_id, id]
 
 theorem uniformContinuous_comap {f : α → β} [u : UniformSpace β] :
     @UniformContinuous α β (UniformSpace.comap f u) u f :=
@@ -560,7 +556,8 @@ theorem uniformContinuous_comap' {f : γ → β} {g : α → γ} [v : UniformSpa
 set_option warn.classDefReducibility false in
 /-- Given `f : α → β` and a uniformity `u` on `α`, the image of `u` under `f`
 is the finest uniformity on `β` making the map `f` uniformly continuous.
-It does not always agree with the coinduced topology. -/
+You almost *never* want to put this as an instance on a type,
+and it does not always agree with the coinduced topology. -/
 def UniformSpace.map (f : α → β) (u : UniformSpace α) : UniformSpace β :=
   UniformSpace.generateFilter (𝓤[u].map (Prod.map f f))
 
@@ -571,7 +568,7 @@ theorem UniformSpace.gc_map_comap (f : α → β) :
       gc_generateFilter_uniformity).le_iff_le
 
 @[simp]
-theorem uniformSpace_map_id {α : Type*} : UniformSpace.map (id : α → α) = id := by
+theorem UniformSpace.map_id {α : Type*} : UniformSpace.map (id : α → α) = id := by
   funext u
   apply (UniformSpace.gc_map_comap id).l_unique GaloisConnection.id
   simp
@@ -590,7 +587,7 @@ theorem UniformSpace.map_iSup {ι α γ} {u : ι → UniformSpace α} {f : α �
     (⨆ i, u i).map f = ⨆ i, (u i).map f :=
   (UniformSpace.gc_map_comap f).l_iSup
 
-theorem UniformSpace.map_mono {α γ} {f : α → γ} :
+theorem UniformSpace.map_monotone {α γ} {f : α → γ} :
     Monotone fun u : UniformSpace α => u.map f :=
   (UniformSpace.gc_map_comap f).monotone_l
 
@@ -861,6 +858,16 @@ theorem uniformContinuous_unop [UniformSpace α] : UniformContinuous (unop : α�
 theorem uniformContinuous_op [UniformSpace α] : UniformContinuous (op : α → αᵐᵒᵖ) :=
   uniformContinuous_comap' uniformContinuous_id
 
+@[to_additive (attr := fun_prop)]
+theorem isUniformEmbedding_unop [UniformSpace α] : IsUniformEmbedding (unop : αᵐᵒᵖ → α) where
+  injective := unop_injective
+  comap_uniformity := uniformity_mulOpposite.symm
+
+@[to_additive (attr := fun_prop)]
+theorem isUniformEmbedding_op [UniformSpace α] : IsUniformEmbedding (op : α → αᵐᵒᵖ) where
+  injective := op_injective
+  comap_uniformity := comap_uniformity_mulOpposite
+
 end MulOpposite
 
 section Prod
@@ -1092,8 +1099,6 @@ section Sum
 variable [UniformSpace α] [UniformSpace β]
 
 open Sum
-
--- Obsolete auxiliary definitions and lemmas
 
 /-- Uniformity on a disjoint union. Entourages of the diagonal in the union are obtained
 by taking independently an entourage of the diagonal in the first part, and an entourage of

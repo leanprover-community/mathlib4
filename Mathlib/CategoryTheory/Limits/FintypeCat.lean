@@ -5,15 +5,14 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.Basic.Finite.Prod
-public import Mathlib.Basic.Finite.Sigma
 public import Mathlib.CategoryTheory.FintypeCat
 public import Mathlib.CategoryTheory.Limits.Creates
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
-public import Mathlib.CategoryTheory.Limits.Types.Limits
 public import Mathlib.CategoryTheory.Limits.Types.Products
+
+import Mathlib.Basic.Finite.Sigma
 
 /-!
 # (Co)limits in the category of finite types
@@ -45,7 +44,7 @@ noncomputable instance finiteLimitOfFiniteDiagram {J : Type} [SmallCategory J] [
 noncomputable instance inclusionCreatesFiniteLimits {J : Type} [SmallCategory J] [FinCategory J] :
     CreatesLimitsOfShape J FintypeCat.incl.{u} where
   CreatesLimit {K} := createsLimitOfFullyFaithfulOfIso
-    (FintypeCat.of <| limit <| K ⋙ FintypeCat.incl) (Iso.refl _)
+    ↧(limit <| K ⋙ FintypeCat.incl) (Iso.refl _)
 
 /-- Help typeclass inference to infer creation of finite limits for the forgetful functor. -/
 noncomputable instance {J : Type} [SmallCategory J] [FinCategory J] :
@@ -119,7 +118,7 @@ noncomputable instance finiteColimitOfFiniteDiagram {J : Type} [SmallCategory J]
 noncomputable instance inclusionCreatesFiniteColimits {J : Type} [SmallCategory J] [FinCategory J] :
     CreatesColimitsOfShape J FintypeCat.incl.{u} where
   CreatesColimit {K} := createsColimitOfFullyFaithfulOfIso
-    (FintypeCat.of <| colimit <| K ⋙ FintypeCat.incl) (Iso.refl _)
+    ↧(colimit <| K ⋙ FintypeCat.incl) (Iso.refl _)
 
 /-- Help typeclass inference to infer creation of finite colimits for the forgetful functor. -/
 noncomputable instance {J : Type} [SmallCategory J] [FinCategory J] :

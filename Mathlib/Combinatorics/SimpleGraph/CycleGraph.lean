@@ -95,11 +95,15 @@ theorem pathGraph_le_cycleGraph {n : ℕ} : pathGraph n ≤ cycleGraph n := by
     | inl h | inr h =>
       simp [Fin.coe_sub_iff_le.mpr (Nat.lt_of_succ_le h.le).le, Nat.eq_sub_of_add_eq' h]
 
-theorem cycleGraph_preconnected {n : ℕ} : (cycleGraph n).Preconnected :=
-  (pathGraph_preconnected n).mono pathGraph_le_cycleGraph
+theorem preconnected_cycleGraph {n : ℕ} : (cycleGraph n).Preconnected :=
+  (preconnected_pathGraph n).mono pathGraph_le_cycleGraph
 
-theorem cycleGraph_connected {n : ℕ} : (cycleGraph (n + 1)).Connected :=
-  (pathGraph_connected n).mono pathGraph_le_cycleGraph
+@[deprecated (since := "2026-10-01")] alias cycleGraph_preconnected := preconnected_cycleGraph
+
+theorem connected_cycleGraph_add_one {n : ℕ} : (cycleGraph (n + 1)).Connected :=
+  (connected_pathGraph_add_one n).mono pathGraph_le_cycleGraph
+
+@[deprecated (since := "2026-10-01")] alias cycleGraph_connected := connected_cycleGraph_add_one
 
 section cycle
 
@@ -119,9 +123,6 @@ def cycleGraph.cycle (n : ℕ) : (cycleGraph (n + 3)).Walk 0 0 :=
     simp [cycleGraph_adj]
   Walk.cons hadj (cycleGraph.cycleCons n (Fin.last (n + 2)))
 
-@[deprecated (since := "2026-02-15")]
-alias cycleGraph_EulerianCircuit := cycleGraph.cycle
-
 private theorem cycleGraph.length_cycle_cons (n : ℕ) :
     ∀ m : Fin (n + 3), (cycleGraph.cycleCons n m).length = m.val
   | ⟨0, h⟩ => by
@@ -138,9 +139,6 @@ variable {n : ℕ}
 theorem cycleGraph.length_cycle : (cycleGraph.cycle n).length = n + 3 := by
   unfold cycleGraph.cycle
   simp [cycleGraph.length_cycle_cons]
-
-@[deprecated (since := "2026-02-15")]
-alias cycleGraph_EulerianCircuit_length := cycleGraph.length_cycle
 
 private theorem cycleGraph.getVert_cycleCons (m : Fin (n + 3)) (i : ℕ) (hi : i ≤ m.val) :
     (cycleGraph.cycleCons n m).getVert i = (m - i) % (n + 3) := by
