@@ -56,8 +56,6 @@ theorem isUnit_iff_nonZeroDivisor_of_isIntegral' [Algebra.IsIntegral R A] {a : A
 theorem isUnit_submonoid_eq_of_isIntegral [Algebra.IsIntegral R A] : IsUnit.submonoid A = A⁰ := by
   ext; simpa [IsUnit.mem_submonoid_iff] using isUnit_iff_nonZeroDivisor_of_isIntegral' (R := R)
 
-/-- Over an Artinian ring `R`, an element of an `R`-subalgebra `B` of `A` which is integral
-over `R` and a unit in `A` is a unit in `B`. -/
 theorem isUnit_of_isIntegral_of_isUnit {B : Subalgebra R A} {a : B} (hi : IsIntegral R (a : A))
     (ha : IsUnit (a : A)) : IsUnit a :=
   isUnit_of_isIntegral_of_nonZeroDivisor
