@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Reverse
-import Mathlib.Algebra.Polynomial.Inductions
 public import Mathlib.RingTheory.Localization.Away.Basic
+
+import Mathlib.Algebra.Polynomial.Inductions
 
 /-! # Laurent polynomials
 

@@ -9,9 +9,9 @@ public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Order.Interval.Finset.SuccPred
 public import Mathlib.Order.SuccPred.Nat
 public import Mathlib.Topology.EMetricSpace.Defs
+public import Mathlib.Topology.Metrizable.Basic
 public import Mathlib.Topology.UniformSpace.LocallyUniformConvergence
 public import Mathlib.Topology.UniformSpace.UniformEmbedding
-public import Mathlib.Topology.Metrizable.Basic
 
 import Mathlib.Topology.UniformSpace.Compact
 
