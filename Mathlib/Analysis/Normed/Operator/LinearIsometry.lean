@@ -11,7 +11,7 @@ public import Mathlib.Analysis.Normed.Group.Submodule
 public import Mathlib.Analysis.Normed.Group.Uniform
 public import Mathlib.LinearAlgebra.Basis.Defs
 public import Mathlib.LinearAlgebra.DFinsupp
-public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
 /-!
 # (Semi-)linear isometries
@@ -1035,6 +1035,10 @@ def prodComm [Module R E₂] : E × E₂ ≃ₗᵢ[R] E₂ × E :=
 @[simp]
 theorem symm_prodComm [Module R E₂] : (prodComm R E E₂).symm = prodComm R E₂ E :=
   rfl
+
+@[simp]
+theorem prodComm_trans_prodComm [Module R E₂] :
+    (prodComm R E E₂).trans (prodComm R E₂ E) = .refl _ _ := rfl
 
 variable (E₃)
 

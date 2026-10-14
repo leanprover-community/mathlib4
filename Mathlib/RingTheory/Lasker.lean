@@ -83,10 +83,10 @@ lemma isPrimary_decomposition_pairwise_ne_radical {N : Submodule R M}
     contrapose hIJ
     suffices (I'.colon Set.univ).radical = (J'.colon Set.univ).radical by
       rw [← hI, ← hJ, this]
-    · rw [← hI, colon_finsetInf,
-        radical_finset_inf (i := I') (by simp [hI']) (by simp), id_eq] at hIJ
-      rw [hIJ, ← hJ, colon_finsetInf,
-        radical_finset_inf (i := J') (by simp [hJ']) (by simp), id_eq]
+    rw [← hI, colon_finsetInf,
+      radical_finset_inf (i := I') (by simp [hI']) (by simp), id_eq] at hIJ
+    rw [hIJ, ← hJ, colon_finsetInf,
+      radical_finset_inf (i := J') (by simp [hJ']) (by simp), id_eq]
 
 lemma exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition
     {N : Submodule R M} {s : Finset (Submodule R M)}
@@ -137,7 +137,7 @@ lemma image_radical_eq_associated_primes
   ext p
   constructor
   · rintro ⟨q, hqt, rfl⟩
-    obtain ⟨x, hxt, hxq⟩ := SetLike.not_le_iff_exists.mp (ht.minimal hqt)
+    obtain ⟨x, hxt, hxq⟩ := IsConcreteLE.not_le_iff_exists.mp (ht.minimal hqt)
     use (ht.primary hqt).isPrime_radical_colon, x
     rw [h, ← Finset.insert_erase (Finset.mem_filter.mpr ⟨hqt, hxq⟩), Finset.inf_insert,
       eq_comm, inf_eq_left, Finset.le_inf_iff]
@@ -259,7 +259,7 @@ lemma _root_.InfIrred.isPrimary {N : Submodule R M} (h : InfIrred N) : N.IsPrima
   · refine le_antisymm (fun r ⟨h1, h2⟩ ↦ ?_) (le_inf (fun x ↦ N.smul_mem (a ^ n)) (by simp))
     simp only [add_eq_sup, SetLike.mem_coe, mem_sup, mem_smul_pointwise_iff_exists] at h2
     obtain ⟨x, hx, -, ⟨y, -, rfl⟩, rfl⟩ := h2
-    have h : (a ^ n • y ∈ N) = (a ^ (n + n) • y ∈ N) := congr_arg (y ∈ ·) (hn (n + n) le_add_self)
+    have h : (a ^ n • y ∈ N) = (a ^ (n + n) • y ∈ N) := congr(y ∈ $(hn (n + n) le_add_self))
     rw [pow_add, mul_smul] at h
     rwa [N.add_mem_iff_right hx, h, ← N.add_mem_iff_right (N.smul_mem (a ^ n) hx), ← smul_add]
   rw [add_eq_sup, sup_eq_left] at h

@@ -5,9 +5,9 @@ Authors: Michael Stoll
 -/
 module
 
+public import Mathlib.Algebra.CharP.CharAndCard
 public import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
 public import Mathlib.NumberTheory.LegendreSymbol.ZModChar
-public import Mathlib.Algebra.CharP.CharAndCard
 
 import Mathlib.NumberTheory.MulChar.Lemmas
 
@@ -356,7 +356,7 @@ theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringCha
     exact mt FFp.dvd_of_dvd_pow hFF
   -- there is a primitive additive character `ℤ/8ℤ → FF`, sending `a + 8ℤ ↦ τ^a`
   -- with a primitive eighth root of unity `τ`
-  let ψ₈ := primitiveZModChar 8 F (by convert! hp2 3 using 1; norm_cast)
+  let ψ₈ := primitiveZModChar 8 F (by convert hp2 3 using 1; norm_cast)
   -- We cast from `AddChar (ZMod (8 : ℕ+)) FF` to `AddChar (ZMod 8) FF`
   -- This is needed to make `simp_rw [← h₁]` below work.
   let ψ₈char : AddChar (ZMod 8) FF := ψ₈.char
