@@ -15,7 +15,7 @@ This file defines `Finset.intervalGapsWithin` that computes the complement of th
 collection of pairwise disjoint subintervals of `[a, b]`.
 
 If `LinearOrder α`, `F` is a finite subset of `α × α` such that for any `(x, y) ∈ F`,
-`a ≤ x ≤ y ≤ b` and all such `[x, y]`'s are pairwise disjoint, `h` is a proof of `F.card = k`,
+`a ≤ x ≤ y ≤ b` and all such `[x, y]`'s are pairwise disjoint, `h` is a proof of `#F = k`,
 `i` is in `Fin (k + 1)`, we order `F` from left to right as
 `(x 0, y 0), ..., (x (k - 1), y (k - 1))`, then `F.intervalGapsWithin h a b i` is
 - `(a, b)` if `0 = i = k`;
@@ -39,6 +39,8 @@ they are actually satisfied. If they are actually satisfied, then we show that
   for `j < k + 1`.
 -/
 
+open scoped Finset
+
 @[expose] public section
 
 open Fin Fin.NatCast Set
@@ -47,7 +49,7 @@ section IntervalGapsWithin
 
 namespace Finset
 
-variable {α : Type*} [LinearOrder α] (F : Finset (α × α)) {k : ℕ} (h : F.card = k) (a b : α)
+variable {α : Type*} [LinearOrder α] (F : Finset (α × α)) {k : ℕ} (h : #F = k) (a b : α)
   (j : ℕ)
 
 /-- We order `F` in the lexicographic order as `(x 0, y 0), ..., (x (k - 1), y (k - 1))`.

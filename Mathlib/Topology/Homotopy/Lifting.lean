@@ -103,10 +103,12 @@ theorem exists_lift_nhds {f : C(I × A, X)} {g : I × A → E} (g_lifts : p ∘ 
     rw [(q e).right_inv this, ← hpq e]; congrm $g'_lifts ta
   · rw [closure_le_eq continuous_fst continuous_const] at ht
     exact ⟨⟨hta.1.1, ht⟩, hta.2.2.1⟩
-  · simp_rw [not_le]; exact (ContinuousOn.congr ((q e).continuousOn_invFun.comp f.2.continuousOn
+  · simp_rw [not_le]
+    refine ContinuousOn.mono ?_
+      (Set.inter_subset_inter_right _ <| closure_lt_subset_le continuous_const continuous_fst)
+    exact ContinuousOn.congr ((q e).continuousOn_invFun.comp f.2.continuousOn
       fun _ h ↦ huv ⟨hu ⟨h.2, h.1.1.2⟩, h.1.2.1⟩)
-      fun _ h ↦ ite_eq_left <| huv ⟨hu ⟨h.2, h.1.1.2⟩, h.1.2.1⟩).mono
-        (Set.inter_subset_inter_right _ <| closure_lt_subset_le continuous_const continuous_fst)
+      fun _ h ↦ ite_eq_left <| huv ⟨hu ⟨h.2, h.1.1.2⟩, h.1.2.1⟩
   · ext ta; rw [Function.comp_apply]; split_ifs with _ hv
     · congrm $g'_lifts ta
     · rw [hpq e, (q e).right_inv hv]
@@ -444,7 +446,7 @@ theorem monodromy_trans_apply {x y z : X}
 /-- The monodromy action of the fundamental group at `x` on the fiber over `x`. -/
 @[reducible] def fundamentalGroupMulAction (x : X) :
     MulAction (FundamentalGroup X x) (p ⁻¹' {x}) :=
-  { smul := cov.monodromy (x := x) (y := x)
+  { smul γ z := cov.monodromy γ.asHom z
     mul_smul _ _ _ := cov.monodromy_trans_apply ..
     one_smul := congr_fun cov.monodromy_refl }
 
@@ -453,7 +455,7 @@ def monodromyPerm (x : X) : FundamentalGroup X x →* Equiv.Perm (p ⁻¹' {x}) 
   letI := cov.fundamentalGroupMulAction x
   MulAction.toPermHom _ _
 
-@[simp] theorem coe_monodromyPerm {x γ} : cov.monodromyPerm x γ = cov.monodromy γ := rfl
+@[simp] theorem coe_monodromyPerm {x γ} : cov.monodromyPerm x γ = cov.monodromy γ.asHom := rfl
 
 open CategoryTheory
 
@@ -478,7 +480,8 @@ lemma injective_path_homotopic_map (e₀ e₁ : E) :
   simp only [Path.Homotopic.Quotient.mk''_eq_mk]
   simp_rw [← Path.Homotopic.Quotient.mk_map]
   iterate 2 rw [Path.Homotopic.Quotient.eq]
-  exact (cov.homotopicRel_iff_comp ⟨0, .inl rfl, γ₀.source.trans γ₁.source.symm⟩).mpr
+  exact (cov.homotopicRel_iff_comp (S := {0, 1})
+    ⟨0, .inl rfl, γ₀.source.trans γ₁.source.symm⟩).mpr
 
 /-- A continuous map `f` from a simply-connected, locally path-connected space `A` to another
   space `X` lifts uniquely through a covering map `p : E → X`, after specifying any lift
@@ -499,7 +502,6 @@ theorem existsUnique_continuousMap_lifts [SimplyConnectedSpace A] [LocallyPathCo
     rw [eq_liftPath_iff']
   exacts [⟨Γ_lifts, Γ_0⟩, ⟨Γ'_lifts, Γ'_0⟩]
 
-set_option backward.isDefEq.respectTransparency.types false in
 open FundamentalGroup Path.Homotopic.Quotient in
 /-- A continuous map `f` from a path connected, locally path-connected space `A` to another
   space `X` lifts uniquely through a covering map `p : E → X` (such that `f a₀` is lifted to `e₀`)
@@ -525,9 +527,9 @@ theorem existsUnique_continuousMap_lifts_of_range_le
   conv_rhs => rw [← eq.2 ⟨.reflTransSymm _⟩, mk_refl, monodromy_refl]
   rw [Path.map_symm, ← Path.map_trans]
   set pγγ' : Path a₀ a₀ := pγ.trans pγ'.symm
-  obtain ⟨⟨pΓΓ'⟩, eq⟩ := le ⟨fromPath (.mk pγγ'), rfl⟩
-  rw [mapOfEq_apply, map_apply, ← mk_map] at eq
-  exact eq ▸ Subtype.ext congr($(cov.monodromy_map <| .mk _))
+  obtain ⟨⟨⟨pΓΓ'⟩⟩, eq⟩ := le ⟨fromPath (.mk pγγ'), rfl⟩
+  rw [End.ext_iff, mapOfEq_apply, map_apply_asHom, ← mk_map] at eq
+  exact eq ▸ Subtype.ext (congr($(cov.monodromy_map <| .mk pΓΓ').val))
 
 end homotopy_lifting
 
@@ -600,7 +602,7 @@ alias ⟨monodromy_ext, _⟩ := monodromy_ext_iff
 variable {x : X} (e : p ⁻¹' {x}) {γ : FundamentalGroup X x}
 
 theorem monodromy_eq_id_iff :
-    hp.isCoveringMap.monodromy γ = id ↔ hp.isCoveringMap.monodromy γ e = e where
+    hp.isCoveringMap.monodromy γ.asHom = id ↔ hp.isCoveringMap.monodromy γ.asHom e = e where
   mp := (congr($(·) _))
   mpr eq := (hp.monodromy_ext e (eq.trans congr($hp.isCoveringMap.monodromy_refl e).symm)).trans
     hp.isCoveringMap.monodromy_refl
@@ -610,13 +612,13 @@ theorem ker_monodromyPerm :
     (hp.isCoveringMap.monodromyPerm x).ker =
     (FundamentalGroup.mapOfEq ⟨p, hp.continuous⟩ e.2).range := by
   ext γ; constructor <;> intro h
-  · refine ⟨(hp.isCoveringMap.liftPathQuotient γ e).cast rfl congr($h.symm e), ?_⟩
+  · refine ⟨.of ((hp.isCoveringMap.liftPathQuotient γ.asHom e).cast rfl congr(($h.symm e).val)), ?_⟩
     rw [FundamentalGroup.mapOfEq_apply,
       Path.Homotopic.Quotient.map_cast, IsCoveringMap.map_liftPathQuotient]
     aesop
   · obtain ⟨γ, rfl⟩ := h
     refine DFunLike.ext' <|
-      (hp.monodromy_eq_id_iff e).mpr <| hp.isCoveringMap.monodromy_eq_of_map_eq γ ?_
+      (hp.monodromy_eq_id_iff e).mpr <| hp.isCoveringMap.monodromy_eq_of_map_eq γ.asHom ?_
     aesop (add simp FundamentalGroup.mapOfEq_apply)
 
 theorem monodromyPerm_injective [SimplyConnectedSpace E] :
@@ -634,7 +636,7 @@ open MulOpposite in
 with the `G`-action, so each monodromy must corresponds must correspond to a right multiplication.
 -/
 def fundamentalGroupToMulOpposite : FundamentalGroup X x →* Gᵐᵒᵖ where
-  toFun γ := op <| hp.fiberEquivGroup e (hp.isCoveringMap.monodromy γ e)
+  toFun γ := op <| hp.fiberEquivGroup e (hp.isCoveringMap.monodromy γ.asHom e)
   map_one' := by rw [FundamentalGroup.one_def, IsCoveringMap.monodromy_refl]; simp
   map_mul' γ γ' := by
     rw [FundamentalGroup.mul_def, IsCoveringMap.monodromy_trans_apply, ← op_mul, op_inj]
@@ -647,7 +649,8 @@ def fundamentalGroupToMulOpposite : FundamentalGroup X x →* Gᵐᵒᵖ where
 
 variable {e} in
 theorem fundamentalGroupToMulOpposite_apply_eq_iff {g : Gᵐᵒᵖ} :
-    hp.fundamentalGroupToMulOpposite e γ = g ↔ g.unop • e.1 = hp.isCoveringMap.monodromy γ e := by
+    hp.fundamentalGroupToMulOpposite e γ = g ↔ g.unop • e.1 =
+      hp.isCoveringMap.monodromy γ.asHom e := by
   rw [fundamentalGroupToMulOpposite, ← MulOpposite.unop_injective.eq_iff, iff_comm, eq_comm,
     ← hp.fiberEquivGroup_smul_self e]
   have := hp.isCancelSMul.right_cancel'
@@ -659,13 +662,13 @@ alias fundamentalGroupToMulOpposite_apply_eq_Iff := fundamentalGroupToMulOpposit
 variable {e} in
 theorem fundamentalGroupToMulOpposite_apply_mk_eq {γ : Path x x} {g : G} {Γ : C(I, E)}
     (hpΓ : p ∘ Γ = γ) (Γ_0 : Γ 0 = e) (Γ_1 : Γ 1 = g • e) :
-    hp.fundamentalGroupToMulOpposite e (.mk γ) = .op g :=
+    hp.fundamentalGroupToMulOpposite e (.of (.mk γ)) = .op g :=
   hp.fundamentalGroupToMulOpposite_apply_eq_iff.mpr <| by
     simp [hp.isCoveringMap.monodromy_eq_apply_one hpΓ Γ_0, Γ_1]
 
 variable {e} in
 theorem unop_fundamentalGroupToMulOpposite_smul :
-    (hp.fundamentalGroupToMulOpposite e γ).unop • e.1 = hp.isCoveringMap.monodromy γ e := by
+    (hp.fundamentalGroupToMulOpposite e γ).unop • e.1 = hp.isCoveringMap.monodromy γ.asHom e := by
   simp [fundamentalGroupToMulOpposite, fiberEquivGroup_smul_self]
 
 variable {e} in
@@ -689,7 +692,7 @@ theorem fundamentalGroupToMulOpposite_eq [IsMulCommutative G] (e' : p ⁻¹' {x}
 
 variable {e} in
 theorem fundamentalGroupToMulOpposite_eq_one_iff :
-    hp.fundamentalGroupToMulOpposite e γ = 1 ↔ hp.isCoveringMap.monodromy γ e = e where
+    hp.fundamentalGroupToMulOpposite e γ = 1 ↔ hp.isCoveringMap.monodromy γ.asHom e = e where
   mp h := Subtype.ext <| by rw [← hp.unop_fundamentalGroupToMulOpposite_smul, h]; apply one_smul
   mpr h := MulOpposite.unop_injective <| hp.isCancelSMul.right_cancel _ _ e.1 <| by
     simp [fundamentalGroupToMulOpposite, h]
@@ -762,7 +765,7 @@ alias ⟨monodromy_ext, _⟩ := monodromy_ext_iff
 variable {x : X} (e : p ⁻¹' {x}) {γ : FundamentalGroup X x}
 
 theorem monodromy_eq_id_iff :
-    hp.isCoveringMap.monodromy γ = id ↔ hp.isCoveringMap.monodromy γ e = e :=
+    hp.isCoveringMap.monodromy γ.asHom = id ↔ hp.isCoveringMap.monodromy γ.asHom e = e :=
   hp.toMultiplicative.monodromy_eq_id_iff e
 
 theorem ker_monodromyPerm :
@@ -783,7 +786,8 @@ def fundamentalGroupToMulOpposite : FundamentalGroup X x →* (Multiplicative G)
 
 variable {e} in
 theorem fundamentalGroupToMulOpposite_apply_eq_iff {g : (Multiplicative G)ᵐᵒᵖ} :
-    hp.fundamentalGroupToMulOpposite e γ = g ↔ g.unop • e.1 = hp.isCoveringMap.monodromy γ e :=
+    hp.fundamentalGroupToMulOpposite e γ = g ↔ g.unop • e.1 =
+      hp.isCoveringMap.monodromy γ.asHom e :=
   hp.toMultiplicative.fundamentalGroupToMulOpposite_apply_eq_iff
 
 @[deprecated (since := "2026-09-30")]
@@ -792,13 +796,13 @@ alias fundamentalGroupToMulOpposite_apply_eq_Iff := fundamentalGroupToMulOpposit
 variable {e} in
 theorem fundamentalGroupToMulOpposite_apply_mk_eq {γ : Path x x} {g : Multiplicative G}
     {Γ : C(I, E)} (hpΓ : p ∘ Γ = γ) (Γ_0 : Γ 0 = e) (Γ_1 : Γ 1 = g • e) :
-    hp.fundamentalGroupToMulOpposite e (.mk γ) = .op g :=
+    hp.fundamentalGroupToMulOpposite e (.of (.mk γ)) = .op g :=
   hp.fundamentalGroupToMulOpposite_apply_eq_iff.mpr <| by
     rw [hp.isCoveringMap.monodromy_eq_apply_one hpΓ Γ_0, Γ_1]; rfl
 
 variable {e} in
 theorem unop_fundamentalGroupToMulOpposite_smul :
-    (hp.fundamentalGroupToMulOpposite e γ).unop • e.1 = hp.isCoveringMap.monodromy γ e :=
+    (hp.fundamentalGroupToMulOpposite e γ).unop • e.1 = hp.isCoveringMap.monodromy γ.asHom e :=
   hp.toMultiplicative.unop_fundamentalGroupToMulOpposite_smul
 
 variable {e} in
@@ -818,7 +822,7 @@ theorem fundamentalGroupToMulOpposite_eq [IsAddCommutative G] (e' : p ⁻¹' {x}
 
 variable {e} in
 theorem fundamentalGroupToMulOpposite_eq_one_iff :
-    hp.fundamentalGroupToMulOpposite e γ = 1 ↔ hp.isCoveringMap.monodromy γ e = e :=
+    hp.fundamentalGroupToMulOpposite e γ = 1 ↔ hp.isCoveringMap.monodromy γ.asHom e = e :=
   hp.toMultiplicative.fundamentalGroupToMulOpposite_eq_one_iff
 
 theorem ker_fundamentalGroupToMulOpposite :

@@ -530,14 +530,21 @@ lemma IsPath.getVert_injOn_iff (p : G.Walk u v) : Set.InjOn p.getVert {i | i ≤
 
 theorem IsPath.eq_snd_of_mem_edges {p : G.Walk u v} (hp : p.IsPath) (hmem : s(u, w) ∈ p.edges) :
     w = p.snd := by
-  have hnil := edges_eq_nil.not.mp <| List.ne_nil_of_mem hmem
-  rw [← cons_tail_eq _ hnil, edges_cons, List.mem_cons, Sym2.eq, Sym2.rel_iff'] at hmem
   have : u ∉ p.tail.support := by induction p <;> simp_all
-  grind [fst_mem_support_of_mem_edges]
+  grind [cons_tail_eq, edges_cons, fst_mem_support_of_mem_edges, edges_eq_nil]
+
+theorem IsPath.mk_start_mem_edges_iff {p : G.Walk u v} (hp : p.IsPath) :
+    s(u, w) ∈ p.edges ↔ w = p.snd ∧ ¬p.Nil :=
+  ⟨fun h ↦ ⟨hp.eq_snd_of_mem_edges h, edges_eq_nil.not.mp <| List.ne_nil_of_mem h⟩,
+    fun ⟨heq, hnil⟩ ↦ heq ▸ mk_start_snd_mem_edges hnil⟩
 
 theorem IsPath.eq_penultimate_of_mem_edges {p : G.Walk u v} (hp : p.IsPath)
     (hmem : s(v, w) ∈ p.edges) : w = p.penultimate := by
-  simpa [hmem] using isPath_reverse_iff p |>.mpr hp |>.eq_snd_of_mem_edges (w := w)
+  simpa [hmem] using hp.reverse.eq_snd_of_mem_edges (w := w)
+
+theorem IsPath.mk_end_mem_edges_iff {p : G.Walk u v} (hp : p.IsPath) :
+    s(v, w) ∈ p.edges ↔ w = p.penultimate ∧ ¬p.Nil := by
+  simpa using hp.reverse.mk_start_mem_edges_iff
 
 theorem IsPath.injOn_support_of_isPath_map (h : (p.map f).IsPath) :
     Set.InjOn f {w | w ∈ p.support} := by

@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplices
+
 import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexColimits
 import Mathlib.CategoryTheory.Subfunctor.Equalizer
 

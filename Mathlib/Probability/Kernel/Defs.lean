@@ -92,11 +92,11 @@ noncomputable instance instAdd : Add (Kernel α β) where add κ η := ⟨κ + �
 noncomputable instance instSMulNat : SMul ℕ (Kernel α β) where
   smul n κ := ⟨n • κ, (measurable_const (a := n)).smul κ.2⟩
 
-instance : IsZeroApply (Kernel α β) α (Measure β) where
+instance : IsZeroApply (Kernel α β) where
 
-instance : IsAddApply (Kernel α β) α (Measure β) where
+instance : IsAddApply (Kernel α β) where
 
-instance : IsSMulApply ℕ (Kernel α β) α (Measure β) where
+instance : IsSMulApply ℕ (Kernel α β) where
 
 @[deprecated (since := "2026-06-30")] alias coe_zero := FunLike.coe_zero
 @[deprecated (since := "2026-06-30")] alias coe_add := FunLike.coe_add
@@ -372,7 +372,7 @@ instance isFiniteKernel_seq (κ : Kernel α β) [h : IsSFiniteKernel κ] (n : �
     IsFiniteKernel (Kernel.seq κ n) :=
   h.tsum_finite.choose_spec.1 n
 
-instance _root_.ProbabilityTheory.IsSFiniteKernel.sFinite [IsSFiniteKernel κ] (a : α) :
+instance _root_.ProbabilityTheory.IsSFiniteKernel.sfinite [IsSFiniteKernel κ] (a : α) :
     SFinite (κ a) :=
   ⟨⟨fun n ↦ seq κ n a, inferInstance, (measure_sum_seq κ a).symm⟩⟩
 
