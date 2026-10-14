@@ -5,10 +5,11 @@ Authors: Johannes Hölzl, Martin Zinkevich, Rémy Degenne
 -/
 module
 
-public import Mathlib.Logic.Encodable.Lattice
 public import Mathlib.MeasureTheory.MeasurableSpace.Defs
 public import Mathlib.Order.Disjointed
 public import Mathlib.Order.SetDissipate
+
+import Mathlib.Logic.Encodable.Lattice
 
 /-!
 # Induction principles for measurable sets, related to π-systems and λ-systems.
@@ -613,7 +614,7 @@ inductive GenerateHas (s : Set (Set α)) : Set α → Prop
 theorem generateHas_compl {C : Set (Set α)} {s : Set α} : GenerateHas C sᶜ ↔ GenerateHas C s := by
   refine ⟨?_, GenerateHas.compl⟩
   intro h
-  convert! GenerateHas.compl h
+  convert GenerateHas.compl h
   simp
 
 /-- The least Dynkin system containing a collection of basic sets. -/
@@ -640,7 +641,7 @@ def toMeasurableSpace (h_inter : ∀ s₁ s₂, d.Has s₁ → d.Has s₂ → d.
     rw [← iUnion_disjointed]
     exact
       d.has_iUnion (disjoint_disjointed _) fun n =>
-        disjointedRec (fun (t : Set α) i h => h_inter _ _ h <| d.has_compl <| hf i) (hf n)
+        disjointedRec (p := d.Has) (fun t i h => h_inter _ _ h <| d.has_compl <| hf i) (hf n)
 
 theorem ofMeasurableSpace_toMeasurableSpace
     (h_inter : ∀ s₁ s₂, d.Has s₁ → d.Has s₂ → d.Has (s₁ ∩ s₂)) :

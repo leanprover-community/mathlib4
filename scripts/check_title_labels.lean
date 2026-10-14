@@ -3,7 +3,6 @@ Copyright (c) 2024 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
-
 import Cli.Basic
 import Mathlib.Tactic.Linter.ValidatePRTitle
 
@@ -48,7 +47,7 @@ def checkTitleLabels : Cmd := `[Cli|
   If the inpupt title does not pass validation, output a list of errors."
 
   FLAGS:
-    "labels" : String; "newline-separated list of label names of this PR\
+    "labels" : String; "newline-separated list of label names of this PR\n\
       These are optional; we merely use a WIP label to skip any checks of the PR title"
 
   ARGS:

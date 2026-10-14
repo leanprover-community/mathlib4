@@ -6,7 +6,6 @@ Authors: María Inés de Frutos-Fernández
 module
 
 public import Mathlib.Analysis.Normed.Unbundled.AlgebraNorm
-public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
 
 /-!
 # SeminormFromConst
@@ -151,7 +150,7 @@ def seminormFromConst : RingSeminorm R where
       apply (tendsto_seminormFromConst_seq_atTop hc hpm (x * y)).comp
         (tendsto_atTop_atTop_of_monotone (fun _ _ hnm ↦ by
           simp only [mul_le_mul_iff_right₀, Nat.succ_pos', hnm]) _)
-      · rintro n; use n; lia
+      rintro n; use n; lia
     refine le_of_tendsto_of_tendsto' hlim ((tendsto_seminormFromConst_seq_atTop hc hpm x).mul
       (tendsto_seminormFromConst_seq_atTop hc hpm y)) (fun n ↦ ?_)
     simp only [seminormFromConst_seq]
@@ -186,9 +185,8 @@ theorem seminormFromConst_isPowMul : IsPowMul (seminormFromConst' c f) := fun x 
     apply (tendsto_seminormFromConst_seq_atTop hc hpm (x ^ m)).comp
       (tendsto_atTop_atTop_of_monotone (fun _ _ hnk ↦ mul_le_mul_right hnk m) _)
     rintro n; use n; exact le_mul_of_one_le_left' hm
-  apply tendsto_nhds_unique hlim
-  convert! (tendsto_seminormFromConst_seq_atTop hc hpm x).pow m using 1
-  ext n
+  refine tendsto_nhds_unique_of_forall hlim
+    ((tendsto_seminormFromConst_seq_atTop hc hpm x).pow m) fun n ↦ ?_
   simp only [seminormFromConst_seq, div_pow, ← hpm _ hm, ← pow_mul, mul_pow, mul_comm m n]
 
 /-- The function `seminormFromConst' c f` is bounded above by `f`. -/

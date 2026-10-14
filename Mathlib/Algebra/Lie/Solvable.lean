@@ -5,10 +5,7 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Lie.Abelian
 public import Mathlib.Algebra.Lie.BaseChange
-public import Mathlib.Algebra.Lie.IdealOperations
-public import Mathlib.Order.Hom.Basic
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 
 /-!
@@ -368,7 +365,7 @@ def radical :=
 /-- The radical of a Noetherian Lie algebra is solvable. -/
 instance radicalIsSolvable [IsNoetherian R L] : IsSolvable (radical R L) := by
   have hwf := LieSubmodule.wellFoundedGT_of_noetherian R L L
-  rw [← CompleteLattice.isSupClosedCompact_iff_wellFoundedGT] at hwf
+  rw [← isSupClosedCompact_iff_wellFoundedGT] at hwf
   refine hwf { I : LieIdeal R L | IsSolvable I } ⟨⊥, ?_⟩ fun I hI J hJ => ?_
   · exact LieAlgebra.isSolvableBot R L
   · rw [Set.mem_ofPred_eq] at hI hJ ⊢

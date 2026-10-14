@@ -5,9 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.Add
 public import Mathlib.Analysis.Calculus.Deriv.Linear
-public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
+
+import Mathlib.Analysis.Calculus.Deriv.Add
 /-!
 # Derivatives of affine maps
 

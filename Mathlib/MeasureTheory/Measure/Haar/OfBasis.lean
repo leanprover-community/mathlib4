@@ -5,8 +5,8 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.Haar.Basic
 public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.MeasureTheory.Measure.Haar.Basic
 
 /-!
 # Additive Haar measure constructed from a basis
@@ -99,7 +99,7 @@ theorem parallelepiped_orthonormalBasis_one_dim (b : OrthonormalBasis ι ℝ ℝ
     apply Fintype.equivFinOfCardEq
     simp only [← finrank_eq_card_basis b.toBasis, finrank_self]
   have B : parallelepiped (b.reindex e) = parallelepiped b := by
-    convert! parallelepiped_comp_equiv b e.symm
+    convert parallelepiped_comp_equiv b e.symm
     ext i
     simp only [OrthonormalBasis.coe_reindex]
   rw [← B]
