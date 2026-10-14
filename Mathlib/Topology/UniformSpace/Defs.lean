@@ -482,7 +482,7 @@ theorem mem_comp_comp {V W M : SetRel β β} [W.IsSymm] {p : β × β} :
 
 lemma isCover_iff_subset_iUnion_ball {U : SetRel β β} [U.IsSymm] {s N : Set β} :
     U.IsCover s N ↔ s ⊆ ⋃ y ∈ N, ball y U := by
-  simp [SetRel.IsCover, subset_def, ball, U.comm]
+  simp [SetRel.IsCover, subset_def, ball]
 
 end UniformSpace
 
