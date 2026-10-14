@@ -270,9 +270,6 @@ instance IsSFiniteKernel.pow (κ : Kernel α α) [IsSFiniteKernel κ] (n : ℕ) 
   | zero => rw [pow_zero, one_eq_id]; infer_instance
   | succ n ih => rw [pow_succ, mul_eq_comp]; infer_instance
 
-lemma pow_zero_apply (κ : Kernel α α) (a : α) : (κ ^ 0) a = Measure.dirac a := by
-  rw [pow_zero, one_eq_id, id_apply]
-
 /-! ### Chapman-Kolmogorov Equations -/
 
 /-- The **Chapman-Kolmogorov equation**, kernel composition version.
