@@ -355,7 +355,7 @@ open scoped ContDiff
 
 variable {f : M → F} {s : Set M} {x : M} {X : Π x : M, TangentSpace% x} [IsManifold I 1 M]
 
-lemma ContMDiffWithinAt.mvfderivWithin
+protected lemma ContMDiffWithinAt.mvfderivWithin
     (hf : CMDiffAt[s] n f x) (hX : CMDiffAt[s] m (T% X) x) (hmn : m + 1 ≤ n)
     (hs : UniqueMDiff[s]) (hx : x ∈ s) :
     CMDiffAt[s] m (fun (x : M) ↦ d[s] f x (X x)) x := by
@@ -368,18 +368,19 @@ lemma ContMDiffWithinAt.mvfderivWithin
   simp
   rfl
 
-lemma ContMDiffAt.mvfderiv (hf : CMDiffAt n f x) (hX : CMDiffAt m (T% X) x) (hmn : m + 1 ≤ n) :
+protected lemma ContMDiffAt.mvfderiv
+    (hf : CMDiffAt n f x) (hX : CMDiffAt m (T% X) x) (hmn : m + 1 ≤ n) :
     CMDiffAt m (fun (x : M) ↦ d% f x (X x)) x := by
   rw [← contMDiffWithinAt_univ] at hf hX ⊢
   rw [← mvfderivWithin_univ]
   exact hf.mvfderivWithin hX hmn uniqueMDiffOn_univ (by simp)
 
-lemma ContMDiffOn.mvfderivWithin
+protected lemma ContMDiffOn.mvfderivWithin
     (hf : CMDiff[s] n f) (hX : CMDiff[s] m (T% X)) (hmn : m + 1 ≤ n) (hs : UniqueMDiff[s]) :
     CMDiff[s] m (fun (x : M) ↦ d[s] f x (X x)) :=
   fun x hx ↦ ContMDiffWithinAt.mvfderivWithin (hf x hx) (hX x hx) hmn hs hx
 
-lemma ContMDiff.mvfderiv (hf : CMDiff n f) (hX : CMDiff m (T% X)) (hmn : m + 1 ≤ n) :
+protected lemma ContMDiff.mvfderiv (hf : CMDiff n f) (hX : CMDiff m (T% X)) (hmn : m + 1 ≤ n) :
     CMDiff m (fun (x : M) ↦ d% f x (X x)) :=
   fun x ↦ (hf x).mvfderiv (hX x) hmn
 
