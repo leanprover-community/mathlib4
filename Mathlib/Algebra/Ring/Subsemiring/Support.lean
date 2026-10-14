@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Submonoid.Support
 public import Mathlib.Algebra.Module.Submodule.Lattice
-public import Mathlib.Algebra.Ring.Subsemiring.Defs
+public import Mathlib.Algebra.Ring.Subsemiring.Basic
 public import Mathlib.RingTheory.Ideal.Defs
 
 /-!
@@ -54,8 +54,7 @@ def supportIdeal (hS : S.IsSpanning) : Ideal R where
 @[simp] theorem supportIdeal_toAddSubgroup {S : Subsemiring R} (hS : S.IsSpanning) :
     (S.supportIdeal hS).toAddSubgroup = S.support := rfl
 
-variable {R R' : Type*} [Ring R] [Ring R'] {f : R →+* R'}
-         {S T : Subsemiring R} {S' : Subsemiring R'} {s : Set (Subsemiring R)}
+variable {R' : Type*} [Ring R'] {f : R →+* R'} {S' : Subsemiring R'}
 
 variable (f) in
 theorem isSpanning_comap (hS' : S'.IsSpanning) : (S'.comap f).IsSpanning :=

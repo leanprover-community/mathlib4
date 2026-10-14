@@ -77,6 +77,8 @@ class NegMemClass (S : Type*) (G : outParam Type*) [Neg G] [SetLike S G] : Prop 
 
 export NegMemClass (neg_mem)
 
+-- TODO : deprecate `HasMemOrNegMem`
+
 /-- Typeclass for substructures `s` such that `s ∪ -s = G`. -/
 class HasMemOrNegMem {S G : Type*} [Neg G] [SetLike S G] (s : S) : Prop where
   mem_or_neg_mem (s) (a : G) : a ∈ s ∨ -a ∈ s
