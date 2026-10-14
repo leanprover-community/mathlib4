@@ -133,21 +133,30 @@ protected def B : CoxeterMatrix (Fin n) where
 
 The corresponding Coxeter-Dynkin diagram is:
 ```
-    o
-     \
-      o --- o ⬝ ⬝ ⬝ ⬝ o --- o
-     /
-    o
+                          o
+                         /
+    o --- o ⬝ ⬝ ⬝ ⬝ o --- o
+                         \
+                          o
 ```
+The nodes are labelled as in `CartanMatrix.D`: a chain `0 — 1 — ⋯ — (n - 3)`, with both `n - 2`
+and `n - 1` joined to `n - 3` (and not to each other). For `n ≤ 2` there are no edges.
 -/
 protected def D : CoxeterMatrix (Fin n) where
   M := Matrix.of fun i j : Fin n ↦
     if i = j then 1
-      else (if i = n - 1 ∧ j = n - 3 ∨ j = n - 1 ∧ i = n - 3 then 3
-        else (if (j : ℕ) + 1 = i ∨ (i : ℕ) + 1 = j then 3 else 2))
-  isSymm := by unfold Matrix.IsSymm; aesop
+      else (if (i : ℕ) + 3 = n ∧ ((j : ℕ) + 2 = n ∨ (j : ℕ) + 1 = n) ∨
+          (j : ℕ) + 3 = n ∧ ((i : ℕ) + 2 = n ∨ (i : ℕ) + 1 = n) then 3
+        else (if ((j : ℕ) + 1 = i ∨ (i : ℕ) + 1 = j) ∧ (i : ℕ) + 2 < n ∧ (j : ℕ) + 2 < n then 3
+          else 2))
+  isSymm := by
+    ext i j
+    simp only [Matrix.transpose_apply, Matrix.of_apply, eq_comm (a := i)]
+    split_ifs <;> first | rfl | (exfalso; omega)
   diagonal := by simp
-  off_diagonal := by aesop
+  off_diagonal i j hij := by
+    simp only [Matrix.of_apply, if_neg hij]
+    split_ifs <;> omega
 
 /-- The Coxeter matrix of type I₂(m).
 
