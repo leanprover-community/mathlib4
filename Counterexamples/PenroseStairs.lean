@@ -5,9 +5,10 @@ Authors: Antigravity
 -/
 module
 
-public import Mathlib.Data.Int.Basic
 public import Mathlib.Data.Fin.Basic
 public import Mathlib.Data.Finset.Max
+public import Mathlib.Data.Fintype.Basic
+public import Mathlib.Data.Int.Basic
 
 /-!
 # Penrose Stairs Paradox
@@ -27,7 +28,7 @@ This file formalizes the classical Penrose stairs impossible object:
    - The 4 vertices are strictly distinct in 4D (`Function.Injective`).
 -/
 
-@[expose] public section
+public section
 
 namespace Counterexample
 
@@ -37,11 +38,14 @@ variable {α : Type*} [LinearOrder α]
 space `α` cannot strictly increase at every step. -/
 theorem penrose_stairs_3d_impossible (n : ℕ) [NeZero n]
     (h : Fin n → α)
-    (h_asc : ∀ i : Fin n, h i < h ⟨(i.val + 1) % n, Nat.mod_lt _ (NeZero.pos n)⟩) : False := by
-  have h_nonempty : (Finset.univ : Finset (Fin n)).Nonempty := Finset.univ_nonempty
-  obtain ⟨m, _, hm⟩ := Finset.exists_max_image Finset.univ h h_nonempty
+    (h_asc : ∀ i : Fin n,
+      h i < h ⟨(i.val + 1) % n, Nat.mod_lt _ (Nat.pos_of_ne_zero (NeZero.ne n))⟩) : False := by
+  have h_nonempty : (Finset.univ : Finset (Fin n)).Nonempty :=
+    ⟨⟨0, Nat.pos_of_ne_zero (NeZero.ne n)⟩, Finset.mem_univ _⟩
+  obtain ⟨m, -, hm⟩ := Finset.exists_max_image Finset.univ h h_nonempty
   have h_step := h_asc m
-  have h_le := hm ⟨(m.val + 1) % n, Nat.mod_lt _ (NeZero.pos n)⟩ (Finset.mem_univ _)
+  have h_le :=
+    hm ⟨(m.val + 1) % n, Nat.mod_lt _ (Nat.pos_of_ne_zero (NeZero.ne n))⟩ (Finset.mem_univ _)
   exact not_le_of_gt h_step h_le
 
 /-- A point in 4-dimensional discrete space `Int⁴`. -/
