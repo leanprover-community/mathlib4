@@ -235,7 +235,7 @@ deriving Groupoid
 namespace FundamentalGroupoid
 
 /-- Constructor for objects of the fundamental groupoid of a simplicial set `X`. -/
-@[implicit_reducible, simps]
+@[implicit_reducible, simps -isSimp pt]
 def mk (x : X _⦋0⦌) : FundamentalGroupoid X := Truncated.FundamentalGroupoid.mk x
 
 lemma mk_surjective : Function.Surjective (mk (X := X)) :=

@@ -27,6 +27,8 @@ namespace SSet
 
 variable {X Y Z T : SSet.{u}}
 
+attribute [local simp] FundamentalGroupoid.mk_pt
+
 @[reassoc]
 lemma mapFundamentalGroupoid_id_comp (f : X ⟶ Y) :
     (mapFundamentalGroupoidComp (𝟙 X) f).inv ≫
