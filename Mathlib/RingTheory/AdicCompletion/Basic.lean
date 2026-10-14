@@ -877,7 +877,6 @@ protected theorem subsingleton (h : IsAdicComplete (⊤ : Ideal R) M) : Subsingl
 instance (priority := 100) of_subsingleton [Subsingleton M] : IsAdicComplete I M where
 
 variable {I} in
-/-- A module is complete and Hausdorff with respect to a nilpotent ideal. -/
 theorem of_isNilpotent (hI : IsNilpotent I) : IsAdicComplete I M := by
   obtain ⟨k, hk⟩ := hI
   have h {n : ℕ} (hn : k ≤ n) : (I ^ n • ⊤ : Submodule R M) = ⊥ := by
