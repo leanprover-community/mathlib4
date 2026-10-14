@@ -164,10 +164,10 @@ theorem prod_ext_iff {h h' : ι → α × β} :
 @[simp] theorem fstComp_mk_flip : ((Prod.mk · b) : α → α × β)₍₁₎ = id := rfl
 @[simp] theorem sndComp_mk_flip : ((Prod.mk · b) : α → α × β)₍₂₎ = const α b := rfl
 
-@[simp] theorem fst_prod_snd : (Prod.fst : _ → α) ×ᶠ (Prod.snd : _ → β) = id := rfl
-@[simp] theorem snd_prod_fst : (Prod.snd : _ → β) ×ᶠ (Prod.fst : _ → α) = .swap := rfl
+@[simp] theorem prod_fst_snd : (Prod.fst : _ → α) ×ᶠ (Prod.snd : _ → β) = id := rfl
+@[simp] theorem prod_snd_fst : (Prod.snd : _ → β) ×ᶠ (Prod.fst : _ → α) = .swap := rfl
 
-@[simp] theorem const_prod_const : const ι a ×ᶠ const ι b = const ι (a, b) := rfl
+@[simp] theorem prod_const_const : const ι a ×ᶠ const ι b = const ι (a, b) := rfl
 
 theorem const_prod : const ι p = (const ι p.1) ×ᶠ (const ι p.2) := rfl
 
@@ -204,7 +204,7 @@ theorem diag_def : Function.diag = fun a : α ↦ (a, a) := rfl
 
 @[simp, grind =] theorem diag_apply : △(a) = (a, a) := rfl
 
-@[simp] theorem id_prod_id : id ×ᶠ id = Function.diag (α := α) := rfl
+@[simp] theorem prod_id_id : id ×ᶠ id = Function.diag (α := α) := rfl
 @[simp] theorem fstComp_diag : (Function.diag (α := α))₍₁₎ = id := rfl
 @[simp] theorem sndComp_diag : (Function.diag (α := α))₍₂₎ = id := rfl
 @[simp] theorem fst_comp_diag : Prod.fst ∘ Function.diag = @id α := rfl

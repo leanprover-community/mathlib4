@@ -31,10 +31,10 @@ namespace Pi
 alias prod := Function.prod
 
 @[deprecated (since := "2026-04-21")]
-alias prod_fst_snd := Function.fst_prod_snd
+alias prod_fst_snd := Function.prod_fst_snd
 
 @[deprecated (since := "2026-04-21")]
-alias prod_snd_fst := Function.snd_prod_fst
+alias prod_snd_fst := Function.prod_snd_fst
 
 /-! `1`, `0`, `+`, `*`, `+ᵥ`, `•`, `^`, `-`, `⁻¹`, and `/` are defined pointwise. -/
 

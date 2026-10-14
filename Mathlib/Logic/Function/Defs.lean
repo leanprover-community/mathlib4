@@ -29,11 +29,6 @@ attribute [mfld_simps] id_comp comp_id
 theorem comp_assoc (f : φ → δ) (g : β → φ) (h : α → β) : (f ∘ g) ∘ h = f ∘ g ∘ h :=
   rfl
 
-@[deprecated (since := "2026-10-14")] alias prod_fst_snd := fst_prod_snd
-@[deprecated (since := "2026-10-14")] alias prod_snd_fst := snd_prod_fst
-@[deprecated (since := "2026-10-14")] alias prod_const_const := const_prod_const
-@[deprecated (since := "2026-10-14")] alias prod_id_id := id_prod_id
-
 /- ### `onFun` function -/
 
 /-- Given functions `f : β → β → φ` and `g : α → β`, produce a function `α → α → φ` that evaluates
