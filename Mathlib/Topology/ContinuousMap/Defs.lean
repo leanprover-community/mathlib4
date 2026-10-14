@@ -60,14 +60,15 @@ variable {F X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [FunLike F X 
 variable [ContinuousMapClass F X Y]
 
 /-- Coerce a bundled morphism with a `ContinuousMapClass` instance to a `ContinuousMap`. -/
-@[coe, reducible] def toContinuousMap (f : F) : C(X, Y) := ⟨f, map_continuous f⟩
+@[coe, reducible] def ContinuousMapClass.ofClass (f : F) : C(X, Y) := ⟨f, map_continuous f⟩
 
-instance : CoeTC F C(X, Y) := ⟨toContinuousMap⟩
+@[deprecated (since := "2026-10-14")] alias toContinuousMap := ContinuousMapClass.ofClass
+
+instance : CoeTC F C(X, Y) := ⟨ContinuousMapClass.ofClass⟩
 
 end ContinuousMapClass
 
 /-! ### Continuous maps -/
-
 
 namespace ContinuousMap
 
