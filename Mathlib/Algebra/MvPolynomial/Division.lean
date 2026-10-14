@@ -300,13 +300,16 @@ theorem X_dvd_mul_iff [IsCancelMulZero R] :
     · exact dvd_mul_of_dvd_left h q
     · exact dvd_mul_of_dvd_right h p
 
-theorem X_prime [IsCancelMulZero R] [Nontrivial R] : Prime (X i : MvPolynomial σ R) := by
+theorem prime_X [IsCancelMulZero R] [Nontrivial R] : Prime (X i : MvPolynomial σ R) := by
   refine ⟨X_ne_zero i, ?_, fun p q ↦ X_dvd_mul_iff.mp⟩
   intro h
   rw [isUnit_iff_exists] at h
   rcases h with ⟨u, hu, -⟩
   apply_fun constantCoeff at hu
   simp at hu
+
+@[deprecated (since := "2026-10-09")]
+alias X_prime := prime_X
 
 theorem dvd_X_mul_iff [IsCancelMulZero R] :
     p ∣ X i * q ↔ p ∣ q ∨ (X i ∣ p ∧ p.divMonomial (Finsupp.single i 1) ∣ q) := by
