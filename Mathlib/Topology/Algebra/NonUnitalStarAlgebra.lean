@@ -156,11 +156,11 @@ def elemental (x : A) : NonUnitalStarSubalgebra R A :=
 
 namespace elemental
 
-@[simp, aesop safe (rule_sets := [SetLike]), membership .]
+@[simp, aesop safe (rule_sets := [SetLike]), grind .]
 theorem self_mem (x : A) : x ∈ elemental R x :=
   le_topologicalClosure _ <| self_mem_adjoin_singleton R x
 
-@[simp, aesop safe (rule_sets := [SetLike]), membership .]
+@[simp, aesop safe (rule_sets := [SetLike]), grind .]
 theorem star_self_mem (x : A) : star x ∈ elemental R x :=
   le_topologicalClosure _ <| star_self_mem_adjoin_singleton R x
 

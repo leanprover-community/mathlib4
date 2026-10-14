@@ -22,51 +22,51 @@ end Delab
 
 example [Ring R] (S : Subring R) (hx : x ∈ S) (hy : y ∈ S) (hz : z ∈ S) (n m : ℕ) :
     n • x ^ 3 - 2 • y + z ^ m ∈ S := by
-  membership
+  grind
 
 example [Ring R] (S : Set R) (hx : x ∈ S) (hy : y ∈ S) (hz : z ∈ S) (n m : ℕ) :
     n • x ^ 3 - y + z ^ m ∈ Subring.closure S := by
-  membership
+  grind
 
 example [CommRing R] [Ring A] [Algebra R A]
     (r : R) (a b c : A) (n : ℕ) :
     -b + (algebraMap R A r) + a ^ n * c ∈ Algebra.adjoin R {a, b, c} := by
-  membership
+  grind
 
 example [CommRing R] [Ring A] [Algebra R A] [StarRing R] [StarRing A] [StarModule R A]
     (r : R) (a b c : A) (n : ℕ) :
     -b + star (algebraMap R A r) + a ^ n * c ∈ StarAlgebra.adjoin R {a, b, c} := by
-  membership
+  grind
 
 example [Monoid M] (x : M) (n : ℕ) : x ^ n ∈ Submonoid.closure {x} := by
-  membership
+  grind
 
 example [Monoid M] (x y z w : M) (n : ℕ) : (x * y) ^ n * w ∈ Submonoid.closure {x, y, z, w} := by
-  membership
+  grind
 
 example [Group M] (x : M) (n : ℤ) : x ^ n ∈ Subgroup.closure {x} := by
-  membership
+  grind
 
 example [Monoid M] (x y z : M) (S₁ S₂ : Submonoid M) (h : S₁ ≤ S₂) (hx : x ∈ S₁)
     (hy : y ∈ S₁) (hz : z ∈ S₂) :
     x * y * z ∈ S₂ := by
-  membership
+  grind
 
 -- TODO : make `membership` work here and remove `h`
 example [Monoid M] (x y z : M) (S₁ S₂ : Submonoid M) (h : S₁ ≤ S₂) (hx : x ∈ S₁)
     (hy : y ∈ S₁) (hz : z ∈ S₂) :
     x * y * z ∈ S₁ ⊔ S₂ := by
-  aesop
+  grind [sup_eq_right]
 
 example [Monoid M] (x y z : M) (S : Submonoid M) (hxy : x * y ∈ S) (hz : z ∈ S) :
     z * (x * y) ∈ S := by
-  membership
+  grind
 
 example [Field F] (S : Subfield F) (q : ℚ) : (q : F) ∈ S := by
-  membership
+  grind
 
 example [Field F] (S : Subfield F) : (1.2 : F) ∈ S := by
-  membership
+  grind
 
 example [Field F] (S : Subfield F) (x : F) (hx : x ∈ S) : ((12e-100 : F) * x⁻¹) ∈ S := by
-  membership
+  grind
