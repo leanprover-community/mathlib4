@@ -7,9 +7,7 @@ module
 
 public import Mathlib.Geometry.Euclidean.Angle.Bisector
 public import Mathlib.Geometry.Euclidean.Angle.Sphere
-public import Mathlib.Geometry.Euclidean.Circumcenter
-public import Mathlib.Geometry.Euclidean.Incenter.Basic
-public import Mathlib.Geometry.Euclidean.Sphere.SecondInter
+public import Mathlib.Geometry.Euclidean.Incenter.SouthPole
 public import Mathlib.Geometry.Euclidean.Triangle
 
 /-!
@@ -393,13 +391,12 @@ lemma angle_excenter_singleton_sub {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ 
       t.angle_excenter_singleton_eq_pi_sub_angle_div_two h₁₂ h₁₃ h₂₃, angle_comm]
   field
 
-/-- Auxiliary lemma for dist_secondInter_point_eq_dist_secondInter_excenter in an oriented
+/-- Auxiliary lemma for dist_nsPole_point_eq_dist_nsPole_excenter in an oriented
 two-dimensional space: affine independence sub-proof. -/
-private lemma dist_secondInter_point_eq_dist_secondInter_excenter_aux_indep [Fact (finrank ℝ V = 2)]
+private lemma dist_nsPole_point_eq_dist_nsPole_excenter_aux_indep [Fact (finrank ℝ V = 2)]
     [Module.Oriented ℝ V (Fin 2)] (signs : Finset (Fin 3)) {i₁ i₂ i₃ : Fin 3}
     (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
-    AffineIndependent ℝ ![t.excenter signs,
-      t.circumsphere.secondInter (t.points i₁) (t.excenter signs -ᵥ t.points i₁), t.points i₂] := by
+    AffineIndependent ℝ ![t.excenter signs, t.nsPole signs i₁, t.points i₂] := by
   let A := t.points i₁
   let B := t.points i₂
   let C := t.points i₃
@@ -468,15 +465,12 @@ private lemma dist_secondInter_point_eq_dist_secondInter_excenter_aux_indep [Fac
   simp_rw [← Set.image_univ, B, A, C, ← Set.image_singleton]
   grind
 
-/-- Auxiliary lemma for dist_secondInter_point_eq_dist_secondInter_excenter in an oriented
+/-- Auxiliary lemma for dist_nsPole_point_eq_dist_nsPole_excenter in an oriented
 two-dimensional space. -/
-private lemma dist_secondInter_point_eq_dist_secondInter_excenter_aux [Fact (finrank ℝ V = 2)]
+private lemma dist_nsPole_point_eq_dist_nsPole_excenter_aux [Fact (finrank ℝ V = 2)]
     [Module.Oriented ℝ V (Fin 2)] (signs : Finset (Fin 3)) {i₁ i₂ i₃ : Fin 3}
     (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
-    dist (t.circumsphere.secondInter (t.points i₁) (t.excenter signs -ᵥ t.points i₁))
-      (t.points i₂) =
-      dist (t.circumsphere.secondInter (t.points i₁) (t.excenter signs -ᵥ t.points i₁))
-        (t.excenter signs) := by
+    dist (t.nsPole signs i₁) (t.points i₂) = dist (t.nsPole signs i₁) (t.excenter signs) := by
   let A := t.points i₁
   let B := t.points i₂
   let C := t.points i₃
@@ -498,7 +492,7 @@ private lemma dist_secondInter_point_eq_dist_secondInter_excenter_aux [Fact (fin
     t.two_zsmul_oangle_excenter_eq h₂₃ h₁₂.symm h₁₃.symm signs
   have collinear_AIX : Collinear ℝ {A, I, X} := t.circumsphere.secondInter_collinear _ _
   have ha : AffineIndependent ℝ ![I, X, B] :=
-    t.dist_secondInter_point_eq_dist_secondInter_excenter_aux_indep signs h₁₂ h₁₃ h₂₃
+    t.dist_nsPole_point_eq_dist_nsPole_excenter_aux_indep signs h₁₂ h₁₃ h₂₃
   have X_ne_B : X ≠ B := ha.injective.ne (show 1 ≠ 2 by decide)
   have X_ne_I : X ≠ I := ha.injective.ne (show 1 ≠ 0 by decide)
   suffices (2 : ℤ) • ∡ X B I = (2 : ℤ) • ∡ B I X by
@@ -548,32 +542,32 @@ private lemma dist_secondInter_point_eq_dist_secondInter_excenter_aux [Fact (fin
 ABC, suppose an angle bisector from A through the incenter or excenter I meets the circumcircle
 again at X (including the case of an external bisector at A tangent to the circle, in which case
 X = A). Then XB = XI (= XC, by applying this lemma again). -/
-lemma dist_secondInter_point_eq_dist_secondInter_excenter (signs : Finset (Fin 3)) {i₁ i₂ : Fin 3}
+lemma dist_nsPole_point_eq_dist_nsPole_excenter (signs : Finset (Fin 3)) {i₁ i₂ : Fin 3}
     (h₁₂ : i₁ ≠ i₂) :
-    dist (t.circumsphere.secondInter (t.points i₁) (t.excenter signs -ᵥ t.points i₁))
-      (t.points i₂) =
-      dist (t.circumsphere.secondInter (t.points i₁) (t.excenter signs -ᵥ t.points i₁))
-        (t.excenter signs) := by
+    dist (t.nsPole signs i₁) (t.points i₂) = dist (t.nsPole signs i₁) (t.excenter signs) := by
   let S : AffineSubspace ℝ P := affineSpan ℝ (Set.range t.points)
   let t' : Triangle ℝ S := t.restrict S le_rfl
-  suffices dist ((t'.circumsphere.secondInter (t'.points i₁)
-        (t'.excenter signs -ᵥ t'.points i₁)) : P)
-      (t'.points i₂) =
-      dist ((t'.circumsphere.secondInter (t'.points i₁) (t'.excenter signs -ᵥ t'.points i₁)) : P)
-        (t'.excenter signs) by
-    simpa [t', Sphere.coe_secondInter, t.excenterExists] using! this
+  suffices dist (t'.nsPole signs i₁ : P) (t'.points i₂) =
+      dist (t'.nsPole signs i₁ : P) (t'.excenter signs) by
+    simpa [t', t.excenterExists] using! this
   simp_rw [← Subtype.dist_eq]
   obtain ⟨i₃, h₁₃, h₂₃⟩ : ∃ i₃, i₁ ≠ i₃ ∧ i₂ ≠ i₃ := by decide +revert
-  exact t'.dist_secondInter_point_eq_dist_secondInter_excenter_aux signs h₁₂ h₁₃ h₂₃
+  exact t'.dist_nsPole_point_eq_dist_nsPole_excenter_aux signs h₁₂ h₁₃ h₂₃
 
 /-- The **incenter-excenter lemma**, **trillium theorem** or **trident lemma**: given a triangle
-ABC, suppose the angle bisector from A through the incenter I meets the circumcircle again at X.
-Then XB = XI (= XC, by applying this lemma again). -/
-lemma dist_secondInter_point_eq_dist_secondInter_incenter {i₁ i₂ : Fin 3} (h₁₂ : i₁ ≠ i₂) :
-    dist (t.circumsphere.secondInter (t.points i₁) (t.incenter -ᵥ t.points i₁)) (t.points i₂) =
-      dist (t.circumsphere.secondInter (t.points i₁) (t.incenter -ᵥ t.points i₁))
-        (t.incenter) :=
-  t.dist_secondInter_point_eq_dist_secondInter_excenter ∅ h₁₂
+ABC, suppose the angle bisector from A through the incenter I meets the circumcircle again at S.
+Then SB = SI (= SC, by applying this lemma again). -/
+lemma dist_southPole_point_eq_dist_southPole_incenter {i₁ i₂ : Fin 3} (h₁₂ : i₁ ≠ i₂) :
+    dist (t.southPole i₁) (t.points i₂) = dist (t.southPole i₁) (t.incenter) :=
+  t.dist_nsPole_point_eq_dist_nsPole_excenter ∅ h₁₂
+
+/-- The **incenter-excenter lemma**, **trillium theorem** or **trident lemma**: given a triangle
+ABC, suppose the angle bisector from A through the excenters not opposite A meets the circumcircle
+again at N. Then NB = NI (= NC, by applying this lemma again). -/
+lemma dist_northPole_point_eq_dist_northPole_excenter {i₁ i₂ : Fin 3} (h₁₂ : i₁ ≠ i₂) :
+    dist (t.northPole i₁) (t.points i₂) = dist (t.northPole i₁) (t.excenter {i₂}) := by
+  rw [← t.nsPole_singleton_eq_northPole h₁₂]
+  exact t.dist_nsPole_point_eq_dist_nsPole_excenter _ h₁₂
 
 end Unoriented
 

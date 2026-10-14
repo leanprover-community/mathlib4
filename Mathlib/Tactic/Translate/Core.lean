@@ -243,18 +243,17 @@ def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
     throwError "`{t.attrName}` does not support mutually recursive declarations."
   let decl := srcDecl.updateName tgt
   let decl := decl.updateAll [tgt]
+  let mut type := decl.type
   let mut value := decl.value! (allowOpaque := true)
   if let some b := unfoldBoundaries? then
-    value ← b.cast (← b.insertBoundaries value t.attrName) decl.type t.attrName
+    type ← b.insertBoundaries type t.attrName
+    value ← b.cast (← b.insertBoundaries value t.attrName) type t.attrName
   trace[translate_detail] "Value before translation:{indentExpr value}"
   let (value', relevantArg₁) ← applyReplacementLambda t dont value
   value ← reorderLambda reorder value'
   if let some b := unfoldBoundaries? then
     value ← b.unfoldInsertions value
   let decl := decl.updateValue value
-  let mut type := decl.type
-  if let some b := unfoldBoundaries? then
-    type ← b.insertBoundaries decl.type t.attrName
   let (type', relevantArg₂) ← applyReplacementForall t dont <|
     GuessName.renameBinderNames (t.guessNameExt.getState (← getEnv)) rename type
   type ← reorderForall reorder type'
