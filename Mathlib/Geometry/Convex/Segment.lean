@@ -188,7 +188,6 @@ theorem image_mk_openSegment_left (x₁ x₂ : X) (y : Y) :
     (fun x ↦ (x, y)) '' openSegment R x₁ x₂ = openSegment R (x₁, y) (x₂, y) :=
   (IsAffineMap.prodMk IsAffineMap.id (IsAffineMap.const y)).image_openSegment _ _
 
-@[simp]
 theorem image_mk_openSegment_right (x : X) (y₁ y₂ : Y) :
     (fun y ↦ (x, y)) '' openSegment R y₁ y₂ = openSegment R (x, y₁) (x, y₂) :=
   (IsAffineMap.prodMk (IsAffineMap.const x) IsAffineMap.id).image_openSegment _ _
