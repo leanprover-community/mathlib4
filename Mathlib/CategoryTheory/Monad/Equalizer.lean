@@ -91,8 +91,7 @@ cofree coalgebras.
 -/
 def beckCoalgebraEqualizer : IsLimit (beckCoalgebraFork X) :=
   Fork.IsLimit.mk' _ fun s => by
-    have h₁ : s.ι.f ≫ (T : C ⥤ C).map X.a = s.ι.f ≫ T.δ.app X.A :=
-      congr_arg Comonad.Coalgebra.Hom.f s.condition
+    have h₁ : s.ι.f ≫ (T : C ⥤ C).map X.a = s.ι.f ≫ T.δ.app X.A := congr($(s.condition).f)
     have h₂ : s.pt.a ≫ (T : C ⥤ C).map s.ι.f = s.ι.f ≫ T.δ.app X.A := s.ι.h
     refine ⟨⟨s.ι.f ≫ T.ε.app _, ?_⟩, ?_, ?_⟩
     · dsimp

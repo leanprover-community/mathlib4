@@ -43,7 +43,7 @@ Example:
   let .app (.app (.app (.app f (p : Q(Prop))) (_ : Q(Decidable $p))) (a : Q($α))) (b : Q($α))
     ← withReducible (whnf e) | throwError "not ite"
   haveI' : $e =Q ite $p $a $b := ⟨⟩
-  guard <| ← withDefault <| withNewMCtxDepth <| isDefEq f q(ite (α := $α))
+  guard <| ← withNewMCtxDepth <| isDefEq f q(ite (α := $α))
   let ra ← core zα pα a; let rb ← core zα pα b
   ...
 ```
@@ -437,7 +437,8 @@ def orElse {pα?} {e : Q($α)} (t₁ : Strictness zα e pα?) (t₂ : MetaM (Str
     | _ => pure (.nonzero p₁)
 
 /-- Run each registered `positivity` extension on an expression, returning a `NormNum.Result`. -/
-def core (pα? : Option Q(PartialOrder $α)) (e : Q($α)) : MetaM (Strictness zα e pα?) := do
+def core (pα? : Option Q(PartialOrder $α)) (e : Q($α)) : MetaM (Strictness zα e pα?) := 
+  withReducible do
   withTraceNode `Tactic.positivity
     (fun
       | .ok .none =>

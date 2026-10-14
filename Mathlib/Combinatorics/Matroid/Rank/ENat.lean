@@ -5,10 +5,11 @@ Authors: Peter Nelson
 -/
 module
 
-public import Mathlib.Combinatorics.Matroid.Rank.Finite
 public import Mathlib.Combinatorics.Matroid.Loop
+public import Mathlib.Combinatorics.Matroid.Rank.Finite
 public import Mathlib.Data.ENat.Lattice
-public import Mathlib.Tactic.TautoSet
+
+import Mathlib.Tactic.TautoSet
 
 /-!
 # `ℕ∞`-valued rank

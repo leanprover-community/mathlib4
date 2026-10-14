@@ -32,7 +32,7 @@ class ToSet (Iα : Type*) (α : outParam Type*) where
   toSet : Iα → Set α
 
 instance {Iα α : Type*} [ToSet Iα α] : Membership α Iα where
-  mem s a := ToSet.toSet s a
+  mem s a := a ∈ ToSet.toSet s
 
 lemma ToSet.mem_def {Iα α : Type*} [ToSet Iα α] (a : α) (s : Iα) :
     a ∈ s ↔ a ∈ ToSet.toSet s := Iff.rfl
@@ -109,11 +109,11 @@ def IntervalBool.toPropSet : IntervalBool → Set Prop
 
 instance : ToSet IntervalBool Prop := ⟨IntervalBool.toPropSet⟩
 
-@[simp]
+@[simp, grind =]
 theorem IntervalBool.mem_true_iff {p : Prop} : p ∈ IntervalBool.true ↔ p := by
   simp [ToSet.mem_def, ToSet.toSet, IntervalBool.toPropSet]
 
-@[simp]
+@[simp, grind =]
 theorem IntervalBool.mem_false_iff {p : Prop} : p ∈ IntervalBool.false ↔ ¬p := by
   simp [ToSet.mem_def, ToSet.toSet, IntervalBool.toPropSet]
 
@@ -123,7 +123,7 @@ theorem IntervalBool.mem_true {p : Prop} (hp : p) : p ∈ IntervalBool.true :=
 theorem IntervalBool.mem_false {p : Prop} (hp : ¬p) : p ∈ IntervalBool.false :=
   IntervalBool.mem_false_iff.mpr hp
 
-@[simp]
+@[simp, grind ←]
 theorem IntervalBool.mem_undetermined (p : Prop) : p ∈ IntervalBool.undetermined := by
   simpa [ToSet.mem_def, ToSet.toSet, IntervalBool.toPropSet] using Classical.em p
 
