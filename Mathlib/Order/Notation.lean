@@ -5,11 +5,11 @@ Authors: Johannes Hölzl, Yury Kudryashov, Yaël Dillies
 -/
 module
 
-public import Qq
+public meta import Lean.PrettyPrinter.Delaborator.Builtins
 public meta import Mathlib.Lean.PrettyPrinter.Delaborator
 public import Mathlib.Tactic.Simps
 public import Mathlib.Tactic.ToDual
-public meta import Lean.PrettyPrinter.Delaborator.Builtins
+public import Qq
 
 /-!
 # Notation classes for lattice operations
@@ -37,7 +37,7 @@ Lemmas about the operators `⊔` and `⊓` should use the names `sup` and `inf` 
 
 -/
 
-@[expose] public section
+public section
 
 /-- Set / lattice complement -/
 @[notation_class]
