@@ -1,4 +1,5 @@
 name: ci dev
+run-name: interp symbol cache / ${{ inputs.mode }} / ${{ inputs.order }} / ${{ inputs.pairs }} pairs
 
 on:
   workflow_dispatch:
