@@ -325,10 +325,12 @@ theorem surjective_of_right_cancellable_Prop (h : ∀ g₁ g₂ : β → Prop, g
     Surjective f :=
   injective_comp_right_iff_surjective.mp h
 
+theorem Injective.existsUnique_iff_exists (hf : Injective f) {b : β} :
+    (∃! a, f a = b) ↔ ∃ a, f a = b :=
+  ⟨ExistsUnique.exists, fun ⟨a, ha⟩ ↦ ⟨a, ha, fun _ hx ↦ hf (hx.trans ha.symm)⟩⟩
+
 theorem bijective_iff_existsUnique (f : α → β) : Bijective f ↔ ∀ b : β, ∃! a : α, f a = b :=
-  ⟨fun hf b ↦
-      let ⟨a, ha⟩ := hf.surjective b
-      ⟨a, ha, fun _ ha' ↦ hf.injective (ha'.trans ha.symm)⟩,
+  ⟨fun hf b ↦ hf.injective.existsUnique_iff_exists.2 (hf.surjective b),
     fun he ↦ ⟨fun {_a a'} h ↦ (he (f a')).unique h rfl, fun b ↦ (he b).exists⟩⟩
 
 /-- Shorthand for using projection notation with `Function.bijective_iff_existsUnique`. -/
@@ -391,7 +393,7 @@ theorem not_surjective_Type {α : Type u} (f : α → Type max u v) : ¬Surjecti
     suffices cast hU (g s).2 = cast hU (g t).2 by
       simp only [g, cast_cast, cast_eq] at this
       assumption
-    · congr
+    congr
   exact cantor_injective g hg
 
 /-- `g` is a partial inverse to `f` (an injective but not necessarily
@@ -786,6 +788,17 @@ theorem update_comm {α} [DecidableEq α] {β : α → Sort*} {a b : α} (h : a 
 theorem update_idem {α} [DecidableEq α] {β : α → Sort*} {a : α} (v w : β a) (f : ∀ a, β a) :
     update (update f a v) a w = update f a w := by
   grind
+
+lemma update_eq_update_iff {ι : Sort*} {f : α → ι} {i j : α} {a b : ι} :
+    update f i a = update f j b ↔ i = j ∧ a = b ∨ a = f i ∧ b = f j :=
+  ⟨fun h ↦ by grind [congr_fun h i, congr_fun h j], by grind⟩
+
+lemma update_left_injective {ι : Sort*} {f : α → ι} {a : ι} (hf : ∀ i, f i ≠ a) :
+    Injective fun (i : α) ↦ update f i a := fun _ _ _ ↦ by
+  grind [update_eq_update_iff]
+
+lemma update_left_inj {ι : Sort*} {f : α → ι} {i j : α} {a : ι} (hf : ∀ i, f i ≠ a) :
+    update f i a = update f j a ↔ i = j := (update_left_injective hf).eq_iff
 
 @[simp]
 theorem _root_.Pi.map_update {ι : Sort*} [DecidableEq ι] {α β : ι → Sort*}
