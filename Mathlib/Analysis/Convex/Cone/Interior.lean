@@ -43,7 +43,7 @@ protected theorem mem_interior {C : ConvexCone 𝕜 E} {a : E} :
   Iff.rfl
 
 @[simp]
-theorem interior_eq {C D : ConvexCone 𝕜 E} : C.interior = D ↔ interior (C : Set E) = D :=
+theorem interior_eq {C₁ C₂ : ConvexCone 𝕜 E} : C₁.interior = C₂ ↔ interior (C₁ : Set E) = C₂ :=
   SetLike.ext'_iff
 
 end ConvexCone
