@@ -185,7 +185,6 @@ lemma edist_top_of_ne (h : u ≠ v) : (⊤ : SimpleGraph V).edist u v = 1 := by
 lemma edist_top [DecidableEq V] : (⊤ : SimpleGraph V).edist u v = (if u = v then 0 else 1) := by
   by_cases h : u = v <;> simp [h]
 
-/-- A graph homomorphism does not increase extended distance. -/
 theorem Hom.edist_le (f : G →g H) (u v : V) : H.edist (f u) (f v) ≤ G.edist u v := by
   refine le_iInf fun p ↦ ?_
   simpa using (p.map f).edist_le
