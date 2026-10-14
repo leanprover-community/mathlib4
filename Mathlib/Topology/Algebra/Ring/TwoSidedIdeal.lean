@@ -40,11 +40,13 @@ section NonUnitalNonAssocRing
 
 variable {R : Type*} [TopologicalSpace R] [NonUnitalNonAssocRing R] [IsTopologicalRing R]
 
+omit [TopologicalSpace R] [IsTopologicalRing R] in
 /-- Left-multiplication by `x` maps a two-sided ideal `I` into itself (as `Set.MapsTo`). -/
 theorem mapsTo_mul_left (I : TwoSidedIdeal R) (x : R) :
     Set.MapsTo (fun b => x * b) (I : Set R) (I : Set R) :=
   fun _ ha => I.mul_mem_left _ _ ha
 
+omit [TopologicalSpace R] [IsTopologicalRing R] in
 /-- Right-multiplication by `y` maps a two-sided ideal `I` into itself (as `Set.MapsTo`). -/
 theorem mapsTo_mul_right (I : TwoSidedIdeal R) (y : R) :
     Set.MapsTo (fun b => b * y) (I : Set R) (I : Set R) :=
