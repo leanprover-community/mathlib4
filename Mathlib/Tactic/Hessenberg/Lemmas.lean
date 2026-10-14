@@ -26,7 +26,7 @@ variable {R : Type*} [CommRing R] [IsDomain R] {n : ℕ} {A : Matrix (Fin n) (Fi
 theorem charpoly_eq_ofCoeffList (cert : Matrix.Hessenberg.Similarity A) :
     A.charpoly = ofCoeffList (coeffHessCharPoly n cert.H.toArray) :=
   cert.charpoly_eq.symm.trans <| (charpoly_eq_hessCharPoly cert.H cert.isUpperHessenberg).trans
-    (hessCharPoly_eq_ofCoeffList n _)
+    (ofCoeffList_coeffHessCharPoly n _).symm
 
 theorem charpoly_eq_ofCoeffList_of_eq (cert : Matrix.Hessenberg.Similarity A) {Harr : Array R}
     {cs : List R} (hH : cert.H.toArray = Harr)
