@@ -22,6 +22,7 @@ public import Counterexamples.NowhereDifferentiable
 public import Counterexamples.Omega1Space
 public import Counterexamples.OrderedCancelAddCommMonoidWithBounds
 public import Counterexamples.PeanoCurve
+public import Counterexamples.PenroseStairs
 public import Counterexamples.Phillips
 public import Counterexamples.PolynomialIsDomain
 public import Counterexamples.Pseudoelement
