@@ -38,9 +38,6 @@ family given by `Group.Generators`. The word length defines a norm on `G` induci
   has at least one word representing it.The definition of `wordLength` has no useful defeqs and is
   characterized by `wordLength_le_iff`, so we tag it with `@[no_expose]`.
 
-## TODO
-* Relate the word metric to the distance in the Cayley graph.
-
 ## Tags
 
 word metric, word length, geometric group theory
