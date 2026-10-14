@@ -349,6 +349,43 @@ theorem ContMDiff.continuous_tangentMap (hf : CMDiff n f) (hn : 1 ≤ n) :
 
 end tangentMap
 
+section
+
+open scoped ContDiff
+
+variable {f : M → F} {s : Set M} {x : M} {X : Π x : M, TangentSpace% x} [IsManifold I 1 M]
+
+protected lemma ContMDiffWithinAt.mvfderivWithin
+    (hf : CMDiffAt[s] n f x) (hX : CMDiffAt[s] m (T% X) x) (hmn : m + 1 ≤ n)
+    (hs : UniqueMDiff[s]) (hx : x ∈ s) :
+    CMDiffAt[s] m (fun (x : M) ↦ d[s] f x (X x)) x := by
+  let b₁ : TangentBundle I M → M := fun p ↦ p.1
+  replace hf' : CMDiffAt[s] n f (b₁ (X x)) := hf
+  have aux := hf'.contMDiffWithinAt_tangentMapWithin hx hmn hs
+  -- Compose the tangent map `Tf` with `X` to obtain a `C^n` map `M → TN`.
+  -- In particular, the fiber component of this map is smooth, which is the desired conclusion.
+  convert (Bundle.contMDiffWithinAt_totalSpace.mp (aux.comp x hX (by intro; simp))).2
+  simp
+  rfl
+
+protected lemma ContMDiffAt.mvfderiv
+    (hf : CMDiffAt n f x) (hX : CMDiffAt m (T% X) x) (hmn : m + 1 ≤ n) :
+    CMDiffAt m (fun (x : M) ↦ d% f x (X x)) x := by
+  rw [← contMDiffWithinAt_univ] at hf hX ⊢
+  rw [← mvfderivWithin_univ]
+  exact hf.mvfderivWithin hX hmn uniqueMDiffOn_univ (by simp)
+
+protected lemma ContMDiffOn.mvfderivWithin
+    (hf : CMDiff[s] n f) (hX : CMDiff[s] m (T% X)) (hmn : m + 1 ≤ n) (hs : UniqueMDiff[s]) :
+    CMDiff[s] m (fun (x : M) ↦ d[s] f x (X x)) :=
+  fun x hx ↦ ContMDiffWithinAt.mvfderivWithin (hf x hx) (hX x hx) hmn hs hx
+
+protected lemma ContMDiff.mvfderiv (hf : CMDiff n f) (hX : CMDiff m (T% X)) (hmn : m + 1 ≤ n) :
+    CMDiff m (fun (x : M) ↦ d% f x (X x)) :=
+  fun x ↦ (hf x).mvfderiv (hX x) hmn
+
+end
+
 namespace TangentBundle
 
 open Bundle

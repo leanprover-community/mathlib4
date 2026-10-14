@@ -92,11 +92,11 @@ noncomputable instance instAdd : Add (Kernel α β) where add κ η := ⟨κ + �
 noncomputable instance instSMulNat : SMul ℕ (Kernel α β) where
   smul n κ := ⟨n • κ, (measurable_const (a := n)).smul κ.2⟩
 
-instance : IsZeroApply (Kernel α β) α (Measure β) where
+instance : IsZeroApply (Kernel α β) where
 
-instance : IsAddApply (Kernel α β) α (Measure β) where
+instance : IsAddApply (Kernel α β) where
 
-instance : IsSMulApply ℕ (Kernel α β) α (Measure β) where
+instance : IsSMulApply ℕ (Kernel α β) where
 
 @[deprecated (since := "2026-06-30")] alias coe_zero := FunLike.coe_zero
 @[deprecated (since := "2026-06-30")] alias coe_add := FunLike.coe_add
