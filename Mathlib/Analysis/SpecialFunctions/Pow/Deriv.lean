@@ -725,7 +725,7 @@ lemma isBigO_deriv_rpow_const_atTop (p : ℝ) :
     deriv (fun (x : ℝ) => x ^ p) =O[atTop] fun x => x ^ (p - 1) := by
   rcases eq_or_ne p 0 with rfl | hp
   case inl =>
-    simp [zero_sub, Real.rpow_neg_one, Real.rpow_zero, deriv_const', Asymptotics.isBigO_zero]
+    simp [zero_sub, Real.rpow_neg_one, Real.rpow_zero, deriv_const']
   case inr =>
     exact (isTheta_deriv_rpow_const_atTop hp).1
 
