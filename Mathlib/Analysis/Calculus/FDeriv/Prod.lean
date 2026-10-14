@@ -29,16 +29,6 @@ open Filter Asymptotics ContinuousLinearMap Set
 section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type*} [AddCommGroup F] [TopologicalSpace F] [Module 𝕜 F] [ContinuousSMul 𝕜 F]
-variable {G : Type*} [AddCommGroup G] [TopologicalSpace G] [Module 𝕜 G] [ContinuousSMul 𝕜 G]
-variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
-variable {f f₀ f₁ g : E → F}
-variable {f' f₁' : E →L[𝕜] F}
-variable (e : E →L[𝕜] F)
-variable {x : E}
-variable {s : Set E}
-variable {L : Filter (E × E)}
 
 section CartesianProduct
 
@@ -46,6 +36,16 @@ section CartesianProduct
 
 
 section Prod
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {F : Type*} [AddCommGroup F] [TopologicalSpace F] [Module 𝕜 F] [ContinuousSMul 𝕜 F]
+variable {G : Type*} [AddCommGroup G] [TopologicalSpace G] [Module 𝕜 G] [ContinuousSMul 𝕜 G]
+variable {f f₀ f₁ g : E → F}
+variable {f' f₁' : E →L[𝕜] F}
+variable (e : E →L[𝕜] F)
+variable {x : E}
+variable {s : Set E}
+variable {L : Filter (E × E)}
 
 variable {f₂ : E → G} {f₂' : E →L[𝕜] G}
 
@@ -116,6 +116,16 @@ theorem DifferentiableWithinAt.fderivWithin_prodMk (hf₁ : DifferentiableWithin
 end Prod
 
 section Fst
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {f f₀ f₁ g : E → F}
+variable {f' f₁' : E →L[𝕜] F}
+variable (e : E →L[𝕜] F)
+variable {x : E}
+variable {s : Set E}
+variable {L : Filter (E × E)}
 
 variable {f₂ : E → F × G} {f₂' : E →L[𝕜] F × G} {p : E × F}
 
@@ -210,6 +220,16 @@ end Fst
 
 section Snd
 
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {f f₀ f₁ g : E → F}
+variable {f' f₁' : E →L[𝕜] F}
+variable (e : E →L[𝕜] F)
+variable {x : E}
+variable {s : Set E}
+variable {L : Filter (E × E)}
+
 variable {f₂ : E → F × G} {f₂' : E →L[𝕜] F × G} {p : E × F}
 
 theorem hasFDerivAtFilter_snd {L : Filter ((E × F) × (E × F))} :
@@ -303,29 +323,34 @@ end Snd
 
 section prodMap
 
-variable {f₂ : G → G'} {f₂' : G →L[𝕜] G'} (p : E × G)
+variable {E₁ F₁ E₂ F₂ : Type*} [NormedAddCommGroup E₁] [NormedSpace 𝕜 E₁]
+  [AddCommGroup F₁] [TopologicalSpace F₁] [Module 𝕜 F₁] [ContinuousSMul 𝕜 F₁] [ContinuousAdd F₁]
+  [NormedAddCommGroup E₂] [NormedSpace 𝕜 E₂]
+  [AddCommGroup F₂] [TopologicalSpace F₂] [Module 𝕜 F₂] [ContinuousSMul 𝕜 F₂] [ContinuousAdd F₂]
+
+variable {f₁ : E₁ → F₁} {f₁' : E₁ →L[𝕜] F₁} {f₂ : E₂ → F₂} {f₂' : E₂ →L[𝕜] F₂} (p : E₁ × E₂)
 
 @[fun_prop]
-protected theorem HasStrictFDerivAt.prodMap (hf : HasStrictFDerivAt f f' p.1)
-    (hf₂ : HasStrictFDerivAt f₂ f₂' p.2) : HasStrictFDerivAt (Prod.map f f₂) (f'.prodMap f₂') p :=
-  (hf.comp p hasStrictFDerivAt_fst).prodMk (hf₂.comp p hasStrictFDerivAt_snd)
+protected theorem HasStrictFDerivAt.prodMap (hf₁ : HasStrictFDerivAt f₁ f₁' p.1)
+    (hf₂ : HasStrictFDerivAt f₂ f₂' p.2) : HasStrictFDerivAt (Prod.map f₁ f₂) (f₁'.prodMap f₂') p :=
+  (hf₁.comp p hasStrictFDerivAt_fst).prodMk (hf₂.comp p hasStrictFDerivAt_snd)
 
 @[fun_prop]
-protected theorem HasFDerivWithinAt.prodMap {s : Set <| E × G}
-    (hf : HasFDerivWithinAt f f' (Prod.fst '' s) p.1)
+protected theorem HasFDerivWithinAt.prodMap {s : Set <| E₁ × E₂}
+    (hf₁ : HasFDerivWithinAt f₁ f₁' (Prod.fst '' s) p.1)
     (hf₂ : HasFDerivWithinAt f₂ f₂' (Prod.snd '' s) p.2) :
-    HasFDerivWithinAt (Prod.map f f₂) (f'.prodMap f₂') s p :=
-  (hf.comp _ hasFDerivWithinAt_fst mapsTo_fst_prod).prodMk
+    HasFDerivWithinAt (Prod.map f₁ f₂) (f₁'.prodMap f₂') s p :=
+  (hf₁.comp _ hasFDerivWithinAt_fst mapsTo_fst_prod).prodMk
     (hf₂.comp _ hasFDerivWithinAt_snd mapsTo_snd_prod) |>.mono (by grind)
 
 @[fun_prop]
-protected theorem HasFDerivAt.prodMap (hf : HasFDerivAt f f' p.1) (hf₂ : HasFDerivAt f₂ f₂' p.2) :
-    HasFDerivAt (Prod.map f f₂) (f'.prodMap f₂') p :=
+protected theorem HasFDerivAt.prodMap (hf : HasFDerivAt f₁ f₁' p.1) (hf₂ : HasFDerivAt f₂ f₂' p.2) :
+    HasFDerivAt (Prod.map f₁ f₂) (f₁'.prodMap f₂') p :=
   (hf.comp p hasFDerivAt_fst).prodMk (hf₂.comp p hasFDerivAt_snd)
 
 @[simp, fun_prop]
-protected theorem DifferentiableAt.prodMap (hf : DifferentiableAt 𝕜 f p.1)
-    (hf₂ : DifferentiableAt 𝕜 f₂ p.2) : DifferentiableAt 𝕜 (fun p : E × G => (f p.1, f₂ p.2)) p :=
+protected theorem DifferentiableAt.prodMap (hf : DifferentiableAt 𝕜 f₁ p.1)
+    (hf₂ : DifferentiableAt 𝕜 f₂ p.2) : DifferentiableAt 𝕜 (fun p ↦ (f₁ p.1, f₂ p.2)) p :=
   (hf.comp p differentiableAt_fst).prodMk (hf₂.comp p differentiableAt_snd)
 
 end prodMap
@@ -346,6 +371,11 @@ theorem:
   differentiability of `Φ`.
 -/
 
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {x : E}
+variable {s : Set E}
+variable {L : Filter (E × E)}
 
 variable {ι : Type*} {F' : ι → Type*} [∀ i, NormedAddCommGroup (F' i)]
   [∀ i, NormedSpace 𝕜 (F' i)] {φ : ∀ i, E → F' i} {φ' : ∀ i, E →L[𝕜] F' i} {Φ : E → ∀ i, F' i}
@@ -502,6 +532,9 @@ These can be used to prove results about functions of the form `fun x ↦ ![f x,
 as `Matrix.vecCons` is defeq to `Fin.cons`.
 -/
 section PiFin
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {x : E} {s : Set E}
 
 variable {n : Nat} {F' : Fin n.succ → Type*}
 variable [∀ i, NormedAddCommGroup (F' i)] [∀ i, NormedSpace 𝕜 (F' i)]
