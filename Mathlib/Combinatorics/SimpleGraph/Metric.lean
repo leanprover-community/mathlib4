@@ -188,7 +188,7 @@ lemma edist_top [DecidableEq V] : (⊤ : SimpleGraph V).edist u v = (if u = v th
 /-- A graph homomorphism does not increase extended distance. -/
 theorem Hom.edist_le (f : G →g H) (u v : V) : H.edist (f u) (f v) ≤ G.edist u v := by
   refine le_iInf fun p ↦ ?_
-  simpa only [Walk.length_map] using (p.map f).edist_le
+  simpa using (p.map f).edist_le
 
 /-- A graph isomorphism preserves extended distance. -/
 @[simp]
