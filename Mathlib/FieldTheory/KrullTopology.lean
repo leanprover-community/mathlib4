@@ -202,10 +202,6 @@ lemma krullTopology_mem_nhds_one_iff_of_normal [Normal K L] {s : Set Gal(L/K)} :
   simp only [normalClosure.is_finiteDimensional K E L, normalClosure.normal K E L, true_and]
   exact le_trans (E.fixingSubgroup_antitone E.le_normalClosure) hE
 
-section KrullT2
-
-open scoped Topology Filter
-
 /-- Let `L/E/K` be a tower of fields with `E/K` finitely generated.
 Then `Gal(L/E)` is an open subgroup of `Gal(L/K)`. -/
 theorem IntermediateField.isOpen_fixingSubgroup (E : IntermediateField K L)
@@ -231,10 +227,6 @@ theorem IntermediateField.isClosed_fixingSubgroup (E : IntermediateField K L) :
 
 @[deprecated (since := "2026-03-05")]
 alias IntermediateField.fixingSubgroup_isClosed := IntermediateField.isClosed_fixingSubgroup
-
-end KrullT2
-
-section TotallySeparated
 
 instance : ZeroDimensionalSpace Gal(L/K) := by
   rw [zeroDimensionalSpace_iff_nhds_hasBasis_isClopen]
@@ -280,8 +272,6 @@ instance : T1Space Gal(L/K) where
 theorem krullTopology_isTotallySeparated :
     IsTotallySeparated (Set.univ : Set Gal(L/K)) :=
   (totallySeparatedSpace_iff _).mp inferInstance
-
-end TotallySeparated
 
 variable (K L) in
 instance krullTopology_discreteUniformity_of_essFiniteType
@@ -451,12 +441,8 @@ open IntermediateField in
 instance [Algebra.IsIntegral K L] : CompactSpace Gal(L/K) where
   isCompact_univ := (AlgEquiv.totallyBounded_univ K L).isCompact_of_isComplete isComplete_univ
 
-section MulAction
-
 @[deprecated (since := "2026-10-14")]
 alias stabilizer_isOpen_of_isIntegral := AlgEquiv.isOpen_mulActionStabilizer_aut
-
-end MulAction
 
 section deprecated
 
