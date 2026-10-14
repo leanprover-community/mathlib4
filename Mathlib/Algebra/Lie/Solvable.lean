@@ -466,26 +466,13 @@ theorem abelian_of_solvable_ideal_eq_bot_iff (I : LieIdeal R L) [h : IsSolvable 
 theorem isSolvable_of_isSolvable_ideal_quotient
     (Isol : IsSolvable I) (quotsol : IsSolvable (L ⧸ I)) :
     IsSolvable L := by
-  rw [isSolvable_iff R] at *
-  obtain ⟨k₁, hk₁⟩ := quotsol
-  obtain ⟨k₂, hk₂⟩ := Isol
-  use k₂ + k₁
-  have : derivedSeries R L k₁ ≤ I := by
-    intro x hx
-    rw [← LieIdeal.derivedSeries_map_eq k₁ I.surjective_mkQ,
-      eq_bot_iff, LieIdeal.map_le] at hk₁
-    rw [← LieSubmodule.Quotient.mk_eq_zero']
-    apply hk₁
-    use x, hx
-    rfl
-  rw [derivedSeries_def, derivedSeriesOfIdeal_add, ← derivedSeries_def R L k₁, eq_bot_iff]
-  have h₁ : derivedSeriesOfIdeal R L k₂ (derivedSeries R L k₁) ≤ derivedSeriesOfIdeal R L k₂ I :=
-    derivedSeriesOfIdeal_le this (le_refl _)
-  have h₂ : derivedSeriesOfIdeal R L k₂ (derivedSeries R L k₁) ≤ I :=
-    le_trans h₁ (derivedSeriesOfIdeal_le_self I k₂)
-  rw [LieIdeal.derivedSeries_eq_derivedSeriesOfIdeal_comap] at hk₂
-  simp only [LieIdeal.comap_incl_eq_bot,Disjoint] at hk₂
-  exact hk₂ h₂ h₁
+  obtain ⟨k, hk⟩ := IsSolvable.solvable R (L ⧸ I)
+  obtain ⟨l, hl⟩ := IsSolvable.solvable R I
+  rw [← LieIdeal.derivedSeries_map_eq k I.surjective_mkQ, LieIdeal.map_eq_bot_iff, I.mkQ_ker] at hk
+  rw [LieIdeal.derivedSeries_eq_bot_iff] at hl
+  refine (isSolvable_iff R L).mpr ⟨l + k, le_bot_iff.mp ?_⟩
+  rw [derivedSeries_def, derivedSeriesOfIdeal_add, ← hl]
+  exact derivedSeriesOfIdeal_mono hk l
 
 example : IsSolvable I ∧ IsSolvable (L ⧸ I) ↔ IsSolvable L :=
   ⟨fun ⟨h₁, h₂⟩ ↦ isSolvable_of_isSolvable_ideal_quotient I h₁ h₂,

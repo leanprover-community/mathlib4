@@ -30,6 +30,7 @@ lie algebra, quotient
 
 @[expose] public section
 
+open Function
 
 universe u v w w₁ w₂
 
@@ -211,8 +212,6 @@ end Quotient
 end LieSubmodule
 
 namespace LieIdeal
-
-open Function -- Move to top of file
 
 variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] (I : LieIdeal R L)
 
