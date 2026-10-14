@@ -5,7 +5,7 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.Order.OrderIsoNat
+public import Mathlib.Data.Nat.Nth
 public import Mathlib.SetTheory.Cardinal.Cofinality.Basic
 public import Mathlib.SetTheory.Ordinal.Family
 public import Mathlib.SetTheory.Ordinal.Univ
@@ -98,10 +98,15 @@ theorem type_eq_of_isCofinal {s : Set α} (hs : IsCofinal s) : typeLT s = typeLT
 noncomputable def enum (s : Set α) (hs : IsCofinal s) : α ≃o s :=
   .ofRelIsoLT (type_eq.1 (type_eq_of_isCofinal hs).symm).some
 
-theorem enum_eq_orderIsoOfNat (s : Set ℕ) (hs : IsCofinal s) :
+theorem enum_eq_orderIsoOfNat {s : Set ℕ} (hs : IsCofinal s) :
     letI : Infinite s := (infinite_of_not_bddAbove hs.not_bddAbove).to_subtype
     enum s hs = Nat.Subtype.orderIsoOfNat s := by
   subsingleton
+
+theorem enum_eq_nth {s : Set ℕ} (hs : IsCofinal s) (n : ℕ) : enum s hs n = Nat.nth (· ∈ s) n := by
+  rw [enum_eq_orderIsoOfNat, ← Nat.nth_apply_eq_orderIsoOfNat]
+  · rfl
+  · exact infinite_of_not_bddAbove hs.not_bddAbove
 
 variable {s : Set α} {hs : IsCofinal s}
 
