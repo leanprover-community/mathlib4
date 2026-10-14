@@ -30,7 +30,7 @@ defines the limit value of an eventually-constant sequence.
 @[expose] public section
 
 
-variable {α : Type*}
+variable {α β : Type*}
 
 namespace RelEmbedding
 
@@ -79,26 +79,18 @@ theorem not_wellFounded (f : ((· > ·) : ℕ → ℕ → Prop) ↪r r) : ¬Well
 
 end RelEmbedding
 
-theorem not_strictAnti_of_wellFoundedLT {β : Type*} [Preorder α] [WellFoundedLT α]
+@[to_dual]
+theorem not_strictAnti_of_wellFoundedLT [Preorder α] [WellFoundedLT α]
     [Preorder β] [Nonempty β] [NoMaxOrder β] (f : β → α) : ¬ StrictAnti f := by
   inhabit β
   choose m hm using exists_gt (α := β)
-  exact fun hf ↦ (RelEmbedding.natGT (f ∘ Nat.rec default fun _ ↦ m)
-    fun n ↦ hf (hm _)).not_wellFounded wellFounded_lt
+  let g : ℕ → β := Nat.rec default fun _ ↦ m
+  exact fun hf ↦ (RelEmbedding.natGT (f ∘ g) fun n ↦ hf (hm _)).not_wellFounded wellFounded_lt
 
-theorem not_strictMono_of_wellFoundedLT {β : Type*} [Preorder α] [WellFoundedLT α]
+@[to_dual]
+theorem not_strictMono_of_wellFoundedLT [Preorder α] [WellFoundedLT α]
     [Preorder β] [Nonempty β] [NoMinOrder β] (f : β → α) : ¬ StrictMono f := by
   simpa using not_strictAnti_of_wellFoundedLT (f ∘ OrderDual.ofDual)
-
-@[to_dual existing]
-theorem not_strictMono_of_wellFoundedGT {β : Type*} [Preorder α] [WellFoundedGT α]
-    [Preorder β] [Nonempty β] [NoMaxOrder β] (f : β → α) : ¬ StrictMono f :=
-  not_strictAnti_of_wellFoundedLT (α := αᵒᵈ) f
-
-@[to_dual existing]
-theorem not_strictAnti_of_wellFoundedGT {β : Type*} [Preorder α] [WellFoundedGT α]
-    [Preorder β] [Nonempty β] [NoMinOrder β] (f : β → α) : ¬ StrictAnti f :=
-  not_strictMono_of_wellFoundedLT (α := αᵒᵈ) f
 
 namespace Nat
 
