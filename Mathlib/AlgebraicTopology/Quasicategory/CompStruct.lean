@@ -47,7 +47,7 @@ noncomputable def comp (e₀₁ : Edge x₀ x₁) (e₁₂ : Edge x₁ x₂) :
   Truncated.Edge.comp e₀₁ e₁₂
 
 /-- If `e₀₁ : Edge x₀ x₁` and `e₁₂ : Edge x₁ x₂` are edges in a quasicategory,
-this is a structure exhibiting the fact that `e₀₁.edge e₁₂` is a composition
+this is a structure exhibiting the fact that `e₀₁.comp e₁₂` is a composition
 of `e₀₁` and `e₁₂`. -/
 @[no_expose]
 noncomputable def compStruct (e₀₁ : Edge x₀ x₁) (e₁₂ : Edge x₁ x₂) :
