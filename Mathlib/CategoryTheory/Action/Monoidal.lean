@@ -6,13 +6,13 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.CategoryTheory.Action.Concrete
+public import Mathlib.CategoryTheory.Action.Limits
 public import Mathlib.CategoryTheory.Monoidal.Linear
 public import Mathlib.CategoryTheory.Monoidal.Rigid.FunctorCategory
 public import Mathlib.CategoryTheory.Monoidal.Rigid.OfEquivalence
 public import Mathlib.CategoryTheory.Monoidal.Transport
 public import Mathlib.CategoryTheory.Monoidal.Types.Basic
-public import Mathlib.CategoryTheory.Action.Concrete
-public import Mathlib.CategoryTheory.Action.Limits
 
 /-!
 # Induced monoidal structure on `Action V G`

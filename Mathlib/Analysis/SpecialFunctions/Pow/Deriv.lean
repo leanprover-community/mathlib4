@@ -10,10 +10,10 @@ public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 public import Mathlib.RingTheory.Polynomial.Pochhammer
 
-import Mathlib.Analysis.Calculus.FDeriv.Extend
 import Mathlib.Analysis.Calculus.Deriv.Prod
-import Mathlib.Analysis.SpecialFunctions.Log.Deriv
+import Mathlib.Analysis.Calculus.FDeriv.Extend
 import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
+import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 import Mathlib.Topology.GDelta.MetrizableSpace
 
 /-!

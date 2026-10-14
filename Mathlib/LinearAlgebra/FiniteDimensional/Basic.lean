@@ -5,10 +5,10 @@ Authors: Chris Hughes
 -/
 module
 
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 public import Mathlib.LinearAlgebra.Dimension.Finite
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 public import Mathlib.LinearAlgebra.Matrix.ToLin
-public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 import Mathlib.RingTheory.Finiteness.Lattice
 
