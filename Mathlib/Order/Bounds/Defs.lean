@@ -26,6 +26,11 @@ In this file we define:
   (exported to the root namespace).
 * `OrderSupSet α`, `OrderInfSet α`: typeclasses expressing that `sSup` (resp., `sInf`) returns
   the least upper bound (resp., the greatest lower bound) of a set whenever one exists.
+
+## Notation
+
+* `⨆₀ s` is `SupSet.sSup s`, the supremum of a set;
+* `⨅₀ s` is `InfSet.sInf s`, the infimum of a set.
 -/
 
 @[expose] public section
@@ -70,11 +75,17 @@ class SupSet (α : Type*) where
   /-- Supremum of a set -/
   sSup : Set α → α
 
+/-- Notation for `sSup`, the supremum of a set. -/
+prefix:110 "⨆₀ " => SupSet.sSup
+
 /-- Class for the `sInf` operator -/
 @[to_dual existing]
 class InfSet (α : Type*) where
   /-- Infimum of a set -/
   sInf : Set α → α
+
+/-- Notation for `sInf`, the infimum of a set. -/
+prefix:110 "⨅₀ " => InfSet.sInf
 
 export SupSet (sSup)
 
