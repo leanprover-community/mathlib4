@@ -36,7 +36,8 @@ It also defines the predicate that a matrix is a finite-type Cartan matrix `Matr
 ## References
 
 * [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 4--6*][bourbaki1968] plates I -- IX
-* [J. Humphreys, *Introduction to Lie Algebras and Representation Theory*] Chapter 11
+* [J. Humphreys, *Introduction to Lie Algebras and Representation Theory*][humphreys1972]
+  Chapter 11
 
 ## Tags
 

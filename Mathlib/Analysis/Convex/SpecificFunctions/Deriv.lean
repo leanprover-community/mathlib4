@@ -32,6 +32,8 @@ of these could also be switched to elementary proofs, like in
 
 -/
 
+open scoped Finset
+
 public section
 
 
@@ -59,7 +61,7 @@ theorem Even.strictConvexOn_pow {n : ℕ} (hn : Even n) (h : n ≠ 0) :
 
 theorem Finset.prod_nonneg_of_card_nonpos_even {α β : Type*}
     [CommRing β] [LinearOrder β] [IsStrictOrderedRing β] {f : α → β}
-    [DecidablePred fun x => f x ≤ 0] {s : Finset α} (h0 : Even (s.filter fun x => f x ≤ 0).card) :
+    [DecidablePred fun x => f x ≤ 0] {s : Finset α} (h0 : Even #(s.filter fun x => f x ≤ 0)) :
     0 ≤ ∏ x ∈ s, f x :=
   calc
     0 ≤ ∏ x ∈ s, (if f x ≤ 0 then (-1 : β) else 1) * f x :=
