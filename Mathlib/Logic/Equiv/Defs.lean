@@ -684,7 +684,7 @@ abbrev sigmaCongrRight {α} {β : α → Sort _} (F : ∀ a, Perm (β a)) : Perm
 
 end Perm
 
-@[deprecated (since := "2026-07-30")] alias _root_.Function.dflip_bijective := bijective_dflip
+@[deprecated (since := "2026-07-30")] alias _root_.Function.swap_bijective := bijective_dflip
 
 /-- An equivalence `f : α₁ ≃ α₂` generates an equivalence between `Σ a, β (f a)` and `Σ a, β a`. -/
 @[simps (attr := grind =) apply]

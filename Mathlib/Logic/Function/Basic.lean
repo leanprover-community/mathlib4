@@ -142,6 +142,11 @@ theorem dflip_le {α} [LE α] : dflip (· ≤ · : α → α → _) = (· ≥ ·
 theorem dflip_gt {α} [LT α] : dflip (· > · : α → α → _) = (· < ·) := rfl
 theorem dflip_ge {α} [LE α] : dflip (· ≥ · : α → α → _) = (· ≤ ·) := rfl
 
+@[deprecated (since := "2026-10-14")] alias swap_lt := dflip_lt
+@[deprecated (since := "2026-10-14")] alias swap_le := dflip_le
+@[deprecated (since := "2026-10-14")] alias swap_gt := dflip_gt
+@[deprecated (since := "2026-10-14")] alias swap_ge := dflip_ge
+
 variable (r : α → α → Prop)
 
 instance [Std.Refl r] : Std.Refl (dflip r) where

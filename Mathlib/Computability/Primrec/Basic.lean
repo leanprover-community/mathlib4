@@ -92,8 +92,12 @@ theorem casesOn' {f g} (hf : Nat.Primrec f) (hg : Nat.Primrec g) :
 protected theorem dflip : Nat.Primrec (unpaired (dflip Nat.pair)) :=
   (pair right left).of_eq fun n => by simp
 
+@[deprecated (since := "2026-10-14")] protected alias swap := Nat.Primrec.dflip
+
 theorem dflip' {f} (hf : Nat.Primrec (unpaired f)) : Nat.Primrec (unpaired (dflip f)) :=
   (hf.comp .dflip).of_eq fun n => by simp
+
+@[deprecated (since := "2026-10-14")] alias swap' := dflip'
 
 theorem pred : Nat.Primrec pred :=
   (casesOn1 0 Primrec.id).of_eq fun n => by cases n <;> simp [*]
@@ -463,9 +467,13 @@ open Nat.Primrec
 protected theorem dflip {f : α → β → σ} (h : Primrec₂ f) : Primrec₂ (dflip f) :=
   h.comp₂ Primrec₂.right Primrec₂.left
 
+@[deprecated (since := "2026-10-14")] protected alias swap := Primrec₂.dflip
+
 protected theorem _root_.PrimrecRel.dflip {r : α → β → Prop} (h : PrimrecRel r) :
     PrimrecRel (dflip r) :=
   h.comp₂ Primrec₂.right Primrec₂.left
+
+@[deprecated (since := "2026-10-14")] protected alias _root_.PrimrecRel.swap := PrimrecRel.dflip
 
 theorem nat_iff {f : α → β → σ} : Primrec₂ f ↔ Nat.Primrec
     (.unpaired fun m n => encode <| (@decode α _ m).bind fun a => (@decode β _ n).map (f a)) := by

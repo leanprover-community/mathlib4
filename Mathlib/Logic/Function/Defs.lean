@@ -182,6 +182,8 @@ in the reverse order. `swap f y x = f x y`. -/
 
 theorem dflip_def {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : dflip f = fun y x => f x y := rfl
 
+@[deprecated (since := "2026-10-14")] alias swap_def := dflip_def
+
 theorem dflip_dflip {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : dflip (dflip f) = f := rfl
 theorem dflip_comp_dflip {φ : α → β → Sort u₃} : dflip (φ := φ) ∘ dflip = id := rfl
 

@@ -99,13 +99,19 @@ protected theorem Std.Symm.iff [Std.Symm r] (x y : α) : r x y ↔ r y x :=
 @[simp] theorem Std.Symm.dflip_eq [Std.Symm r] : dflip r = r :=
   Std.Symm.flip_eq
 
-@[deprecated (since := "2026-06-10")] alias Symmetric.dflip_eq := Std.Symm.dflip_eq
+@[deprecated (since := "2026-10-14")] alias Std.Symm.swap_eq := Std.Symm.dflip_eq
+
+@[deprecated (since := "2026-06-10")] alias Symmetric.swap_eq := Std.Symm.dflip_eq
 
 theorem Std.Symm.flip_eq_iff : flip r = r ↔ Std.Symm r :=
   ⟨fun h ↦ ⟨fun _ _ ↦ congr_fun₂ h .. |>.mp⟩, fun _ ↦ Std.Symm.flip_eq⟩
 
+@[deprecated (since := "2026-10-14")] alias flip_eq_iff := Std.Symm.flip_eq_iff
+
 theorem Std.Symm.dflip_eq_iff : dflip r = r ↔ Std.Symm r :=
-  flip_eq_iff
+  Std.Symm.flip_eq_iff
+
+@[deprecated (since := "2026-10-14")] alias swap_eq_iff := Std.Symm.dflip_eq_iff
 
 end NeImp
 
@@ -444,6 +450,8 @@ theorem dflip (h : SymmGen r b a) : SymmGen (dflip r) a b := by
   | inl hba => exact of_rel hba
   | inr hab => exact of_rel_symm hab
 
+@[deprecated (since := "2026-10-14")] alias swap := dflip
+
 @[simp, refl]
 theorem refl (r : α → α → Prop) [Std.Refl r] (a : α) : SymmGen r a a :=
   .of_rel (_root_.refl _)
@@ -641,8 +649,12 @@ section SymmGen
 theorem symmGen_dflip (r : α → α → Prop) : SymmGen (dflip r) = SymmGen r :=
   funext₂ fun _ _ ↦ propext or_comm
 
+@[deprecated (since := "2026-10-14")] alias symmGen_swap := symmGen_dflip
+
 theorem symmGen_dflip_apply (r : α → α → Prop) : SymmGen (dflip r) a b ↔ SymmGen r a b :=
   or_comm
+
+@[deprecated (since := "2026-10-14")] alias symmGen_swap_apply := symmGen_dflip_apply
 
 theorem symmGen_comm {a b : α} : SymmGen r a b ↔ SymmGen r b a :=
   or_comm
@@ -706,8 +718,12 @@ theorem TransGen.dflip : dflip (TransGen r) ≤ TransGen (dflip r) := by
   | single h => exact TransGen.single h
   | tail _ hbc ih => exact ih.head hbc
 
+@[deprecated (since := "2026-10-14")] alias TransGen.swap := TransGen.dflip
+
 theorem transGen_dflip : TransGen (dflip r) a b ↔ TransGen r b a :=
   ⟨TransGen.dflip b a, TransGen.dflip a b⟩
+
+@[deprecated (since := "2026-10-14")] alias transGen_swap := transGen_dflip
 
 end TransGen
 
@@ -769,8 +785,12 @@ theorem ReflTransGen.dflip : dflip (ReflTransGen r) ≤ ReflTransGen (dflip r) :
   | refl => rfl
   | tail _ hbc ih => exact ih.head hbc
 
+@[deprecated (since := "2026-10-14")] alias ReflTransGen.swap := ReflTransGen.dflip
+
 theorem reflTransGen_dflip : ReflTransGen (dflip r) a b ↔ ReflTransGen r b a :=
   ⟨ReflTransGen.dflip b a, ReflTransGen.dflip a b⟩
+
+@[deprecated (since := "2026-10-14")] alias reflTransGen_swap := reflTransGen_dflip
 
 @[simp, grind =] lemma reflGen_transGen : ReflGen (TransGen r) = ReflTransGen r := by
   ext x y

@@ -61,7 +61,11 @@ def bipartiteAbove : Finset β := {b ∈ t | r a b}
 
 theorem bipartiteBelow_dflip : t.bipartiteBelow (dflip r) a = t.bipartiteAbove r a := rfl
 
+@[deprecated (since := "2026-10-14")] alias bipartiteBelow_swap := bipartiteBelow_dflip
+
 theorem bipartiteAbove_dflip : s.bipartiteAbove (dflip r) b = s.bipartiteBelow r b := rfl
+
+@[deprecated (since := "2026-10-14")] alias bipartiteAbove_swap := bipartiteAbove_dflip
 
 @[simp, norm_cast]
 theorem coe_bipartiteBelow : s.bipartiteBelow r b = ({a ∈ s | r a b} : Set α) := coe_filter _ _

@@ -477,6 +477,9 @@ instance covariant_div : CovariantClass (Filter α) (Filter α) (· / ·) (· �
 instance covariant_dflip_div : CovariantClass (Filter α) (Filter α) (dflip (· / ·)) (· ≤ ·) :=
   ⟨fun _ _ _ => map₂_mono_right⟩
 
+@[to_additive (attr := deprecated (since := "2026-10-14"))]
+alias covariant_swap_div := covariant_dflip_div
+
 end Div
 
 /-- Repeated pointwise multiplication (not the same as pointwise repeated multiplication!) of a

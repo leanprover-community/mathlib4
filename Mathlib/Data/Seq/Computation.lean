@@ -871,6 +871,8 @@ theorem LiftRel.dflip (R : α → β → Prop) (ca : Computation α) (cb : Compu
     LiftRel (dflip R) cb ca ↔ LiftRel R ca cb :=
   @and_comm _ _
 
+@[deprecated (since := "2026-10-14")] alias LiftRel.swap := LiftRel.dflip
+
 theorem lift_eq_iff_equiv (c₁ c₂ : Computation α) : LiftRel (· = ·) c₁ c₂ ↔ c₁ ~ c₂ :=
   ⟨fun ⟨h1, h2⟩ a =>
     ⟨fun a1 => by let ⟨b, b2, ab⟩ := h1 a1; rwa [ab],
@@ -1002,6 +1004,8 @@ theorem LiftRelAux.ret_left (R : α → β → Prop) (C : Computation α → Com
 theorem LiftRelAux.dflip (R : α → β → Prop) (C) (a b) :
     LiftRelAux (dflip R) (dflip C) b a = LiftRelAux R C a b := by
   rcases a with a | ca <;> rcases b with b | cb <;> simp only [LiftRelAux]
+
+@[deprecated (since := "2026-10-14")] alias LiftRelAux.swap := LiftRelAux.dflip
 
 @[simp]
 theorem LiftRelAux.ret_right (R : α → β → Prop) (C : Computation α → Computation β → Prop) (b ca) :

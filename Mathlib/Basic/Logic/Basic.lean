@@ -188,6 +188,8 @@ abbrev Function.dflip₂ {ι₁ ι₂ : Sort*} {κ₁ : ι₁ → Sort*} {κ₂ 
     {φ : ∀ i₁, κ₁ i₁ → ∀ i₂, κ₂ i₂ → Sort*} (f : ∀ i₁ j₁ i₂ j₂, φ i₁ j₁ i₂ j₂)
     (i₂ j₂ i₁ j₁) : φ i₁ j₁ i₂ j₂ := f i₁ j₁ i₂ j₂
 
+@[deprecated Function.dflip₂ (since := "2026-10-14")] abbrev Function.swap₂ := @Function.dflip₂
+
 end Miscellany
 
 /-!

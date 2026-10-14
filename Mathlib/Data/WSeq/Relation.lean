@@ -56,6 +56,8 @@ theorem LiftRelO.dflip (R : α → β → Prop) (C) :
   funext x y
   rcases x with ⟨⟩ | ⟨hx, jx⟩ <;> rcases y with ⟨⟩ | ⟨hy, jy⟩ <;> rfl
 
+@[deprecated (since := "2026-10-14")] alias LiftRelO.swap := LiftRelO.dflip
+
 /-- Definition of bisimilarity for weak sequences -/
 @[simp]
 def BisimO (R : WSeq α → WSeq α → Prop) : Option (α × WSeq α) → Option (α × WSeq α) → Prop :=
@@ -100,8 +102,12 @@ theorem LiftRel.dflip_lem {R : α → β → Prop} {s1 s2} (h : LiftRel R s1 s2)
   rw [← LiftRelO.dflip, Computation.LiftRel.dflip]
   apply liftRel_destruct h
 
+@[deprecated (since := "2026-10-14")] alias LiftRel.swap_lem := LiftRel.dflip_lem
+
 theorem LiftRel.dflip (R : α → β → Prop) : dflip (LiftRel R) = LiftRel (dflip R) :=
   funext fun _ => funext fun _ => propext ⟨LiftRel.dflip_lem, LiftRel.dflip_lem⟩
+
+@[deprecated (since := "2026-10-14")] alias LiftRel.swap := LiftRel.dflip
 
 instance LiftRelO.refl (R : α → α → Prop) [Std.Refl R] : Std.Refl <| LiftRelO R (· = ·) where
   refl a := by

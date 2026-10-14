@@ -157,11 +157,18 @@ theorem id_comp (f : r →r s) : (RelHom.id s).comp f = f := rfl
 protected def dflip (f : r →r s) : dflip r →r dflip s :=
   ⟨f, f.map_rel⟩
 
+@[deprecated (since := "2026-10-14")] protected alias swap := RelHom.dflip
+@[deprecated (since := "2026-10-14")] alias swap_apply := dflip_apply
+
 /-- `RelHom.dflip` as an `Equiv`. -/
 @[simps]
 protected def dflipEquiv : (r →r s) ≃ (dflip r →r dflip s) where
   toFun := RelHom.dflip
   invFun := RelHom.dflip
+
+@[deprecated (since := "2026-10-14")] protected alias swapEquiv := RelHom.dflipEquiv
+@[deprecated (since := "2026-10-14")] alias swapEquiv_apply := dflipEquiv_apply
+@[deprecated (since := "2026-10-14")] alias swapEquiv_symm_apply := dflipEquiv_symm_apply
 
 /-- A function is a relation homomorphism from the preimage relation of `s` to `s`. -/
 @[simps]
@@ -305,14 +312,22 @@ theorem refl_trans (f : r ↪r s) : .trans (.refl r) f = f := rfl
 protected def dflip (f : r ↪r s) : dflip r ↪r dflip s :=
   ⟨f.toEmbedding, f.map_rel_iff⟩
 
+@[deprecated (since := "2026-10-14")] protected alias swap := RelEmbedding.dflip
+
 /-- `RelEmbedding.dflip` as an `Equiv` -/
 @[simps]
 def dflipEquiv : (r ↪r s) ≃ (dflip r ↪r dflip s) where
   toFun := RelEmbedding.dflip
   invFun := RelEmbedding.dflip
 
+@[deprecated (since := "2026-10-14")] alias swapEquiv := dflipEquiv
+@[deprecated (since := "2026-10-14")] alias swapEquiv_apply := dflipEquiv_apply
+@[deprecated (since := "2026-10-14")] alias swapEquiv_symm_apply := dflipEquiv_symm_apply
+
 @[simp]
 theorem dflip_apply (f : r ↪r s) (a : α) : f.dflip a = f a := rfl
+
+@[deprecated (since := "2026-10-14")] alias swap_apply := dflip_apply
 
 /-- If `f` is injective, then it is a relation embedding from the
   preimage relation of `s` to `s`. -/
@@ -713,11 +728,19 @@ protected theorem cast_trans {α β γ : Type u} {r : α → α → Prop} {s : �
 protected def dflip (f : r ≃r s) : dflip r ≃r dflip s :=
   ⟨f, f.map_rel_iff⟩
 
+@[deprecated (since := "2026-10-14")] protected alias swap := RelIso.dflip
+@[deprecated (since := "2026-10-14")] alias swap_apply := dflip_apply
+@[deprecated (since := "2026-10-14")] alias swap_symm_apply := dflip_symm_apply
+
 /-- `RelIso.dflip` as an `Equiv`. -/
 @[simps]
 def dflipEquiv : (r ≃r s) ≃ (dflip r ≃r dflip s) where
   toFun := RelIso.dflip
   invFun := RelIso.dflip
+
+@[deprecated (since := "2026-10-14")] alias swapEquiv := dflipEquiv
+@[deprecated (since := "2026-10-14")] alias swapEquiv_apply := dflipEquiv_apply
+@[deprecated (since := "2026-10-14")] alias swapEquiv_symm_apply := dflipEquiv_symm_apply
 
 /-- A relation isomorphism is also a relation isomorphism between complemented relations. -/
 @[simps!]

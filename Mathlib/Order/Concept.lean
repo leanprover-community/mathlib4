@@ -78,8 +78,12 @@ theorem gc_lowerPolar_upperPolar :
 theorem upperPolar_dflip (t : Set β) : upperPolar (dflip r) t = lowerPolar r t :=
   rfl
 
+@[deprecated (since := "2026-10-14")] alias upperPolar_swap := upperPolar_dflip
+
 theorem lowerPolar_dflip (s : Set α) : lowerPolar (dflip r) s = upperPolar r s :=
   rfl
+
+@[deprecated (since := "2026-10-14")] alias lowerPolar_swap := lowerPolar_dflip
 
 @[simp]
 theorem upperPolar_empty : upperPolar r ∅ = univ :=
@@ -582,17 +586,27 @@ instance : Inhabited (Concept α β r) :=
 def dflip (c : Concept α β r) : Concept β α (dflip r) :=
   ⟨c.intent, c.extent, c.lowerPolar_intent, c.upperPolar_extent⟩
 
+@[deprecated (since := "2026-10-14")] alias swap := dflip
+@[deprecated (since := "2026-10-14")] alias extent_swap := extent_dflip
+@[deprecated (since := "2026-10-14")] alias intent_swap := intent_dflip
+
 @[simp]
 theorem dflip_dflip (c : Concept α β r) : c.dflip.dflip = c :=
   ext rfl
+
+@[deprecated (since := "2026-10-14")] alias swap_swap := dflip_dflip
 
 @[simp]
 theorem dflip_le_dflip_iff : c.dflip ≤ d.dflip ↔ d ≤ c :=
   intent_subset_intent_iff
 
+@[deprecated (since := "2026-10-14")] alias swap_le_swap_iff := dflip_le_dflip_iff
+
 @[simp]
 theorem dflip_lt_dflip_iff : c.dflip < d.dflip ↔ d < c :=
   intent_ssubset_intent_iff
+
+@[deprecated (since := "2026-10-14")] alias swap_lt_swap_iff := dflip_lt_dflip_iff
 
 /-- The dual of a concept lattice is isomorphic to the concept lattice of the dual context. -/
 @[simps]
@@ -602,5 +616,9 @@ def dflipEquiv : (Concept α β r)ᵒᵈ ≃o Concept β α (Function.dflip r) w
   left_inv := dflip_dflip
   right_inv := dflip_dflip
   map_rel_iff' := dflip_le_dflip_iff
+
+@[deprecated (since := "2026-10-14")] alias swapEquiv := dflipEquiv
+@[deprecated (since := "2026-10-14")] alias swapEquiv_apply := dflipEquiv_apply
+@[deprecated (since := "2026-10-14")] alias swapEquiv_symm_apply := dflipEquiv_symm_apply
 
 end Concept

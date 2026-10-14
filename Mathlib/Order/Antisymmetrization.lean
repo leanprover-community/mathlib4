@@ -42,8 +42,12 @@ def AntisymmRel (a b : α) : Prop :=
 theorem antisymmRel_dflip : AntisymmRel (dflip r) = AntisymmRel r :=
   funext₂ fun _ _ ↦ propext and_comm
 
+@[deprecated (since := "2026-10-14")] alias antisymmRel_swap := antisymmRel_dflip
+
 theorem antisymmRel_dflip_apply : AntisymmRel (dflip r) a b ↔ AntisymmRel r a b :=
   and_comm
+
+@[deprecated (since := "2026-10-14")] alias antisymmRel_swap_apply := antisymmRel_dflip_apply
 
 @[simp, refl]
 theorem AntisymmRel.refl [Std.Refl r] (a : α) : AntisymmRel r a a :=

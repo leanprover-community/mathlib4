@@ -284,13 +284,19 @@ theorem coe_foldr_dflip (f : α → β → β) [LeftCommutative f] (b : β) (l :
     foldr f b l = l.foldl (dflip f) b :=
   congr(foldr f b $(coe_reverse l)).symm.trans foldr_reverse
 
+@[deprecated (since := "2026-10-14")] alias coe_foldr_swap := coe_foldr_dflip
+
 theorem foldr_dflip (f : α → β → β) [LeftCommutative f] (b : β) (s : Multiset α) :
     foldr f b s = foldl (dflip f) b s :=
   Quot.inductionOn s fun _l => coe_foldr_dflip _ _ _
 
+@[deprecated (since := "2026-10-14")] alias foldr_swap := foldr_dflip
+
 theorem foldl_dflip (f : β → α → β) [RightCommutative f] (b : β) (s : Multiset α) :
     foldl f b s = foldr (dflip f) b s :=
   (foldr_dflip _ _ _).symm
+
+@[deprecated (since := "2026-10-14")] alias foldl_swap := foldl_dflip
 
 theorem foldr_induction' (f : α → β → β) [LeftCommutative f] (x : β) (q : α → Prop)
     (p : β → Prop) (s : Multiset α) (hpqf : ∀ a b, q a → p b → p (f a b)) (px : p x)

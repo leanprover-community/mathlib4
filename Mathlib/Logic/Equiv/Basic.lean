@@ -158,6 +158,8 @@ def piComm (φ : α → β → Sort*) : (∀ a b, φ a b) ≃ ∀ b a, φ a b wh
 
 @[deprecated (since := "2026-07-30")] alias functionSwap := piComm
 
+@[deprecated (since := "2026-10-14")] alias functionSwap_apply := piComm_apply
+
 @[simp]
 theorem piComm_symm {φ : α → β → Sort*} : (piComm φ).symm = (piComm (Function.dflip φ)) :=
   rfl

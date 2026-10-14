@@ -324,11 +324,17 @@ theorem Group.covariant_dflip_iff_contravariant_dflip [Group N] :
   · rw [← mul_inv_cancel_right b a, ← mul_inv_cancel_right c a] at bc
     exact h a⁻¹ bc
 
+@[to_additive (attr := deprecated (since := "2026-10-14"))]
+alias Group.covariant_swap_iff_contravariant_swap := Group.covariant_dflip_iff_contravariant_dflip
+
 
 @[to_additive]
 instance (priority := 100) Group.covconv_dflip [Group N] [CovariantClass N N (dflip (· * ·)) r] :
     ContravariantClass N N (dflip (· * ·)) r :=
   ⟨Group.covariant_dflip_iff_contravariant_dflip.mp CovariantClass.elim⟩
+
+@[to_additive (attr := deprecated (since := "2026-10-14"))]
+alias Group.covconv_swap := Group.covconv_dflip
 
 @[to_additive]
 instance Group.mulRightReflectLE_of_mulRightMono [Group N] [LE N] [MulRightMono N] :
@@ -508,6 +514,9 @@ instance (priority := 10) covariant_dflip_mul_of_covariant_mul [CommSemigroup N]
     [CovariantClass N N (· * ·) r] : CovariantClass N N (dflip (· * ·)) r where
   elim := (covariant_flip_iff N r (· * ·)).mpr CovariantClass.elim
 
+@[to_additive (attr := deprecated (since := "2026-10-14"))]
+alias covariant_swap_mul_of_covariant_mul := covariant_dflip_mul_of_covariant_mul
+
 @[to_additive]
 theorem mulRightMono_of_mulLeftMono [CommSemigroup N] [LE N] [MulLeftMono N] :
     MulRightMono N :=
@@ -524,6 +533,9 @@ theorem mulRightStrictMono_of_mulLeftStrictMono [CommSemigroup N] [LT N] [MulLef
 instance (priority := 10) contravariant_dflip_mul_of_contravariant_mul [CommSemigroup N]
     [ContravariantClass N N (· * ·) r] : ContravariantClass N N (dflip (· * ·)) r where
   elim := (contravariant_flip_iff N r (· * ·)).mpr ContravariantClass.elim
+
+@[to_additive (attr := deprecated (since := "2026-10-14"))]
+alias contravariant_swap_mul_of_contravariant_mul := contravariant_dflip_mul_of_contravariant_mul
 
 @[to_additive]
 instance mulRightReflectLE_of_mulLeftReflectLE [CommSemigroup N] [LE N] [MulLeftReflectLE N] :

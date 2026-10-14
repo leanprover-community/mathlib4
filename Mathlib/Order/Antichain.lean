@@ -85,6 +85,8 @@ protected theorem flip (hs : IsAntichain r s) : IsAntichain (flip r) s := fun _ 
 theorem dflip (hs : IsAntichain r s) : IsAntichain (dflip r) s :=
   hs.flip
 
+@[deprecated (since := "2026-10-14")] alias swap := dflip
+
 theorem image (hs : IsAntichain r s) (f : α → β) (h : ∀ ⦃a b⦄, r' (f a) (f b) → r a b) :
     IsAntichain r' (f '' s) := by
   rintro _ ⟨b, hb, rfl⟩ _ ⟨c, hc, rfl⟩ hbc hr
@@ -351,6 +353,8 @@ protected theorem flip [Std.Symm r] (hs : IsStrongAntichain r s) : IsStrongAntic
 
 theorem dflip [Std.Symm r] (hs : IsStrongAntichain r s) : IsStrongAntichain (dflip r) s :=
   hs.flip
+
+@[deprecated (since := "2026-10-14")] alias swap := dflip
 
 theorem image (hs : IsStrongAntichain r s) {f : α → β} (hf : Surjective f)
     (h : ∀ a b, r' (f a) (f b) → r a b) : IsStrongAntichain r' (f '' s) := by

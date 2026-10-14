@@ -224,6 +224,8 @@ theorem bitwise_dflip {f : Bool → Bool → Bool} :
     | zero => simp
     | bit bn n hn => rw [bitwise_bit' _ _ _ _ hm hn, bitwise_bit' _ _ _ _ hn hm, ihm]
 
+@[deprecated (since := "2026-10-14")] alias bitwise_swap := bitwise_dflip
+
 /-- If `f` is a commutative operation on bools such that `f false false = false`, then `bitwise f`
 is also commutative. -/
 theorem bitwise_comm {f : Bool → Bool → Bool} (hf : ∀ b b', f b b' = f b' b) (n m : ℕ) :

@@ -81,8 +81,12 @@ theorem incompRel_compl_apply : IncompRel rᶜ a b ↔ AntisymmRel r a b := by
 theorem incompRel_dflip : IncompRel (dflip r) = IncompRel r :=
   antisymmRel_dflip rᶜ
 
+@[deprecated (since := "2026-10-14")] alias incompRel_swap := incompRel_dflip
+
 theorem incompRel_dflip_apply : IncompRel (dflip r) a b ↔ IncompRel r a b :=
   antisymmRel_dflip_apply rᶜ
+
+@[deprecated (since := "2026-10-14")] alias incompRel_swap_apply := incompRel_dflip_apply
 
 @[simp, refl]
 theorem IncompRel.refl [Std.Irrefl r] (a : α) : IncompRel r a a :=
