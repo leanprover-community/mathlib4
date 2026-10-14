@@ -11,9 +11,12 @@ Mathlib elaboration, and the default library build outputs remain inside the tim
 Both runs use the same manifest pins. The script deletes every package's build
 directory before each measurement and disables Lake artifact caches.
 
-The script first checks `Batteries.Data.Float.Lemmas` with both toolchains. This
-module currently fails in nightly CI. A failed check stops the experiment before
-the full builds. A failed full build does not produce a speedup estimate.
+The script applies `batteries-float.patch` to both versions. This changes two proof
+steps from `unfold pack` to `dsimp -zeta only [pack]`. The new steps also reduce the
+match while they preserve the let bindings needed by `extract_lets`. Both unmodified
+versions fail on these steps in the initial CI run. The script checks the adapted
+module with both toolchains before the full builds and verifies that the source
+remains unchanged between measurements. A failed build does not produce a speedup estimate.
 
 Each job uploads logs, CPU and memory details, module lists, wall times, user CPU
 times, and system CPU times. Compare the two job summaries to check run-order effects.

@@ -21,6 +21,8 @@ assert sorted(ORDER) == ["baseline", "patched"]
 OUT.mkdir(exist_ok=True)
 MANIFEST = (ROOT / "lake-manifest.json").read_bytes()
 PACKAGES = json.loads(MANIFEST)["packages"]
+SOURCE_DIFFS = {p["name"]: "" for p in PACKAGES}
+ADAPTATION = ROOT / ".github/benchmarks/batteries-float.patch"
 
 
 def save(name, value):
@@ -66,7 +68,7 @@ def check_sources():
     for package in PACKAGES:
         path = ROOT / ".lake/packages" / package["name"]
         assert output(["git", "rev-parse", "HEAD"], cwd=path) == package["rev"]
-        assert not output(["git", "diff", "--name-only", "HEAD"], cwd=path)
+        assert output(["git", "diff", "HEAD"], cwd=path) == SOURCE_DIFFS[package["name"]]
 
 
 def run_logged(variant, args, name, timed=False):
@@ -104,6 +106,7 @@ def main():
         "mathlib_commit": output(["git", "rev-parse", "HEAD"]),
         "lean_commits": COMMITS, "lean_versions": versions, "order": ORDER,
         "manifest_sha256": hashlib.sha256(MANIFEST).hexdigest(),
+        "batteries_adaptation_sha256": hashlib.sha256(ADAPTATION.read_bytes()).hexdigest(),
         "dependencies": PACKAGES, "threads": os.environ["LEAN_NUM_THREADS"],
         "uname": output(["uname", "-a"]), "cpu": output(["lscpu"]),
         "memory": Path("/proc/meminfo").read_text(),
@@ -111,6 +114,13 @@ def main():
         "cpu_limit": Path("/sys/fs/cgroup/cpu.max").read_text()
         if Path("/sys/fs/cgroup/cpu.max").exists() else None,
     })
+    run_logged(ORDER[0], ["env", "true"], "fetch-dependencies")
+    check_sources()
+    batteries = ROOT / ".lake/packages/batteries"
+    subprocess.run(["git", "apply", "--check", str(ADAPTATION)], cwd=batteries, check=True)
+    subprocess.run(["git", "apply", str(ADAPTATION)], cwd=batteries, check=True)
+    SOURCE_DIFFS["batteries"] = output(["git", "diff", "HEAD"], cwd=batteries)
+    (OUT / "batteries-adaptation.diff").write_text(SOURCE_DIFFS["batteries"] + "\n")
     for variant in ORDER:
         # Materialize the manifest pins and compile configuration outside the timer.
         run_logged(variant, ["env", "true"], f"prepare-{variant}")

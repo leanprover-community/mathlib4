@@ -1,0 +1,20 @@
+--- a/Batteries/Data/Float/Lemmas.lean
++++ b/Batteries/Data/Float/Lemmas.lean
+@@ -75,7 +75,7 @@
+     simp only [hevec, unpackExponent_packComponents, BitVec.zero_eq_neg_one_iff,
+       Nat.ne_zero_of_lt spec.he, unpackMantissa_packComponents, ne_eq, false_and, decide_false,
+       Bool.false_eq_true, ↓reduceIte, evec]
+-    unfold pack
++    dsimp -zeta only [pack]
+     extract_lets mantbits biasedexp
+     simp only [BitVec.ofNat_toNat, BitVec.setWidth_eq, mvec]
+     rw [ite_eq_right, ite_eq_right]
+@@ -92,7 +92,7 @@
+     -- normal
+     simp only [unpackExponent_packComponents, hevec, unpackMantissa_packComponents, ne_eq,
+       false_and, decide_false, Bool.false_eq_true, ↓reduceIte, evec]
+-    unfold pack
++    dsimp -zeta only [pack]
+     extract_lets mantbits biasedexp
+     rw [ite_eq_right, ite_eq_left]
+     · congr 1
