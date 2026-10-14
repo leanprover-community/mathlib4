@@ -378,7 +378,7 @@ theorem Hom.dist_le (f : G →g H) (hr : G.Reachable u v) : H.dist (f u) (f v) �
 /-- A graph isomorphism preserves natural distance. -/
 @[simp]
 theorem Iso.dist_eq (f : G ≃g H) (u v : V) : H.dist (f u) (f v) = G.dist u v :=
-  congrArg ENat.toNat (f.edist_eq u v)
+  congr($(f.edist_eq u v).toNat)
 
 /-- Supergraphs have smaller or equal distances to their subgraphs. -/
 @[gcongr]
