@@ -68,9 +68,9 @@ instance : GeneralizedBooleanAlgebra (Finset α) where
     constructor
     · rintro (⟨h, -⟩ | ⟨h, -⟩) <;> exact h
     · intro h
-      rcases (inferInstance : Decidable (a ∈ t)) with ht | ht
-      · right; exact ⟨h, ht⟩
-      · left; exact ⟨h, ht⟩
+      cases (inferInstance : Decidable (a ∈ t)) with
+      | isFalse ht => right; exact ⟨h, ht⟩
+      | isTrue ht => left; exact ⟨h, ht⟩
   inf_inf_sdiff := by
     intro s t
     refine ext fun a ↦ ⟨fun h ↦ ?_, fun h ↦ ?_⟩
