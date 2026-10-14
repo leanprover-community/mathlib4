@@ -790,8 +790,16 @@ jobs:
           broker-url: ${{ vars.MATHLIB_CACHE_BROKER_URL }}
           audience: mathlib-cache-broker
 
+      - name: Install rclone (ci-dev experiment)
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq rclone
+          rclone version
+
       - name: Upload staged cache to R2
         shell: bash
+        # ci-dev experiment: rclone prints each copied object.
+        # (the cache tool picks rclone when it is on PATH)
         env:
           REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
           MATHLIB_CACHE_S3_ACCESS_KEY_ID: ${{ steps.mint-r2.outputs.access-key-id }}
@@ -799,6 +807,7 @@ jobs:
           MATHLIB_CACHE_S3_SESSION_TOKEN: ${{ steps.mint-r2.outputs.session-token }}
           # R2 signs every request in the region `auto`.
           MATHLIB_CACHE_S3_REGION: auto
+          RCLONE_LOG_LEVEL: INFO
           # The public cache bucket's master prefix, `https://<endpoint>/<bucket>/mathlib4`.
           # The flat write puts `{url}/f/{hash}.ltar` under it, which the cache
           # resolver serves.
