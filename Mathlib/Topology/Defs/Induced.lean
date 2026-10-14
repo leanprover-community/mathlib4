@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Set.Lattice.Image
 public import Mathlib.Topology.Basic
+
 /-!
 # Induced and coinduced topologies
 

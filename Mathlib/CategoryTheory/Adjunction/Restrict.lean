@@ -7,6 +7,8 @@ module
 
 public import Mathlib.CategoryTheory.Adjunction.Basic
 public import Mathlib.CategoryTheory.HomCongr
+
+/-!
 /-!
 
 # Restricting adjunctions

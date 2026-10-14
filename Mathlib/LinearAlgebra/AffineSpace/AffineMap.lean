@@ -12,6 +12,7 @@ public import Mathlib.LinearAlgebra.AffineSpace.Defs
 public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.Tactic.Abel
+
 /-!
 # Affine maps
 
