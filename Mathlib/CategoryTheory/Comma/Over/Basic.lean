@@ -1229,6 +1229,26 @@ def ofDiagonalEquivalence' (X : T × T) :
 alias ofDiagEquivalence.functor := ofDiagonalEquivalence.functor
 @[deprecated (since := "2026-09-06")]
 alias ofDiagEquivalence.inverse := ofDiagonalEquivalence.inverse
+@[deprecated (since := "2026-09-06")]
+alias ofDiagEquivalence.functor_map_right_right := ofDiagonalEquivalence.functor_map_right_right
+@[deprecated (since := "2026-09-06")]
+alias ofDiagEquivalence.functor_obj_hom := ofDiagonalEquivalence.functor_obj_hom
+@[deprecated (since := "2026-09-06")]
+alias ofDiagEquivalence.functor_obj_left_as := ofDiagonalEquivalence.functor_obj_left_as
+@[deprecated (since := "2026-09-06")]
+alias ofDiagEquivalence.functor_obj_right_hom := ofDiagonalEquivalence.functor_obj_right_hom
+@[deprecated (since := "2026-09-06")]
+alias ofDiagEquivalence.functor_obj_right_left_as := ofDiagonalEquivalence.functor_obj_right_left_as
+@[deprecated (since := "2026-09-06")]
+alias ofDiagEquivalence.functor_obj_right_right := ofDiagonalEquivalence.functor_obj_right_right
+@[deprecated (since := "2026-09-06")]
+alias ofDiagEquivalence.inverse_map_right := ofDiagonalEquivalence.inverse_map_right
+@[deprecated (since := "2026-09-06")]
+alias ofDiagEquivalence.inverse_obj_hom := ofDiagonalEquivalence.inverse_obj_hom
+@[deprecated (since := "2026-09-06")]
+alias ofDiagEquivalence.inverse_obj_left_as := ofDiagonalEquivalence.inverse_obj_left_as
+@[deprecated (since := "2026-09-06")]
+alias ofDiagEquivalence.inverse_obj_right := ofDiagonalEquivalence.inverse_obj_right
 @[deprecated (since := "2026-09-06")] alias ofDiagEquivalence := ofDiagonalEquivalence
 @[deprecated (since := "2026-09-06")] alias ofDiagEquivalence' := ofDiagonalEquivalence'
 
@@ -1347,6 +1367,26 @@ noncomputable def ofDiagonalEquivalence' (X : T × T) :
 alias ofDiagEquivalence.functor := ofDiagonalEquivalence.functor
 @[deprecated (since := "2026-09-06")]
 alias ofDiagEquivalence.inverse := ofDiagonalEquivalence.inverse
+@[deprecated (since := "2026-09-06")]
+alias ofDiagEquivalence.functor_map_left_left := ofDiagonalEquivalence.functor_map_left_left
+@[deprecated (since := "2026-09-06")]
+alias ofDiagEquivalence.functor_obj_hom := ofDiagonalEquivalence.functor_obj_hom
+@[deprecated (since := "2026-09-06")]
+alias ofDiagEquivalence.functor_obj_left_hom := ofDiagonalEquivalence.functor_obj_left_hom
+@[deprecated (since := "2026-09-06")]
+alias ofDiagEquivalence.functor_obj_left_left := ofDiagonalEquivalence.functor_obj_left_left
+@[deprecated (since := "2026-09-06")]
+alias ofDiagEquivalence.functor_obj_left_right_as := ofDiagonalEquivalence.functor_obj_left_right_as
+@[deprecated (since := "2026-09-06")]
+alias ofDiagEquivalence.functor_obj_right_as := ofDiagonalEquivalence.functor_obj_right_as
+@[deprecated (since := "2026-09-06")]
+alias ofDiagEquivalence.inverse_map_left := ofDiagonalEquivalence.inverse_map_left
+@[deprecated (since := "2026-09-06")]
+alias ofDiagEquivalence.inverse_obj_hom := ofDiagonalEquivalence.inverse_obj_hom
+@[deprecated (since := "2026-09-06")]
+alias ofDiagEquivalence.inverse_obj_left := ofDiagonalEquivalence.inverse_obj_left
+@[deprecated (since := "2026-09-06")]
+alias ofDiagEquivalence.inverse_obj_right_as := ofDiagonalEquivalence.inverse_obj_right_as
 @[deprecated (since := "2026-09-06")] alias ofDiagEquivalence := ofDiagonalEquivalence
 @[deprecated (since := "2026-09-06")] alias ofDiagEquivalence' := ofDiagonalEquivalence'
 

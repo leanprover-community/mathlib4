@@ -73,6 +73,10 @@ def externalProductCompDiagonalIso :
 
 @[deprecated (since := "2026-09-06")]
 alias externalProductCompDiagIso := externalProductCompDiagonalIso
+@[deprecated (since := "2026-09-06")]
+alias externalProductCompDiagIso_hom_app_app := externalProductCompDiagonalIso_hom_app_app
+@[deprecated (since := "2026-09-06")]
+alias externalProductCompDiagIso_inv_app_app := externalProductCompDiagonalIso_inv_app_app
 
 set_option backward.defeqAttrib.useBackward true in
 /-- When `C` is braided, there is an isomorphism `Prod.swap _ _ ⋙ F₁ ⊠ F₂ ≅ F₂ ⊠ F₁`, natural

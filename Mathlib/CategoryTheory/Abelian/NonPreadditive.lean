@@ -275,6 +275,7 @@ end
 theorem diagonal_σ {X : C} : prod.diagonal X ≫ σ = 0 := by rw [cokernel.condition_assoc, zero_comp]
 
 @[deprecated (since := "2026-09-06")] alias diag_σ := diagonal_σ
+@[deprecated (since := "2026-09-06")] alias diag_σ_assoc := diagonal_σ_assoc
 
 @[reassoc (attr := simp)]
 theorem lift_σ {X : C} : prod.lift (𝟙 X) 0 ≫ σ = 𝟙 X := by rw [← Category.assoc, IsIso.hom_inv_id]

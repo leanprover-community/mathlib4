@@ -249,7 +249,6 @@
  ["defsWithUnderscore", "Submodule.comap_equiv_self_of_inj_of_le"],
  ["defsWithUnderscore", "Submodule.submodule_torsionBy_orderIso"],
  ["defsWithUnderscore", "Sylow.unique_of_normal"],
- ["defsWithUnderscore", "Sym2.decidablePred_mem_diagSet"],
  ["defsWithUnderscore", "Sym2.decidablePred_mem_diagonalSet"],
  ["defsWithUnderscore", "Topology.Continuous_of"],
  ["defsWithUnderscore", "Topology.IsClopen_of"],

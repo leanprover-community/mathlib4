@@ -221,6 +221,8 @@ def diagonal : A →ₜ* (A × A) := prod (id A) (id A)
 
 @[to_additive (attr := deprecated (since := "2026-09-06"))]
 alias diag := diagonal
+@[to_additive (attr := deprecated (since := "2026-09-06"))]
+alias diag_toFun := diagonal_toFun
 
 /-- The continuous homomorphism given by swapping components. -/
 @[to_additive (attr := simps!) /-- The continuous homomorphism given by swapping components. -/]

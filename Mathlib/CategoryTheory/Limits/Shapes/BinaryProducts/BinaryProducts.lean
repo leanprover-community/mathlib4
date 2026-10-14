@@ -238,6 +238,8 @@ theorem prod.diagonal_map {X Y : C} (f : X ⟶ Y) [HasBinaryProduct X X] [HasBin
 
 @[deprecated (since := "2026-09-06")] alias prod.diag_map := prod.diagonal_map
 @[deprecated (since := "2026-09-06")] alias coprod.map_codiag := coprod.map_codiagonal
+@[deprecated (since := "2026-09-06")] alias prod.diag_map_assoc := prod.diagonal_map_assoc
+@[deprecated (since := "2026-09-06")] alias coprod.map_codiag_assoc := coprod.map_codiagonal_assoc
 
 @[to_dual (attr := reassoc) map_inl_inr_codiagonal]
 theorem prod.diagonal_map_fst_snd {X Y : C} [HasBinaryProduct X Y]
@@ -247,6 +249,10 @@ theorem prod.diagonal_map_fst_snd {X Y : C} [HasBinaryProduct X Y]
 @[deprecated (since := "2026-09-06")] alias prod.diag_map_fst_snd := prod.diagonal_map_fst_snd
 @[deprecated (since := "2026-09-06")]
 alias coprod.map_inl_inr_codiag := coprod.map_inl_inr_codiagonal
+@[deprecated (since := "2026-09-06")]
+alias prod.diag_map_fst_snd_assoc := prod.diagonal_map_fst_snd_assoc
+@[deprecated (since := "2026-09-06")]
+alias coprod.map_inl_inr_codiag_assoc := coprod.map_inl_inr_codiagonal_assoc
 
 @[to_dual (attr := reassoc) map_comp_inl_inr_codiagonal]
 theorem prod.diagonal_map_fst_snd_comp [HasLimitsOfShape (Discrete WalkingPair) C] {X X' Y Y' : C}
@@ -257,6 +263,10 @@ theorem prod.diagonal_map_fst_snd_comp [HasLimitsOfShape (Discrete WalkingPair) 
 alias prod.diag_map_fst_snd_comp := prod.diagonal_map_fst_snd_comp
 @[deprecated (since := "2026-09-06")]
 alias coprod.map_comp_inl_inr_codiag := coprod.map_comp_inl_inr_codiagonal
+@[deprecated (since := "2026-09-06")]
+alias prod.diag_map_fst_snd_comp_assoc := prod.diagonal_map_fst_snd_comp_assoc
+@[deprecated (since := "2026-09-06")]
+alias coprod.map_comp_inl_inr_codiag_assoc := coprod.map_comp_inl_inr_codiagonal_assoc
 
 @[to_dual]
 instance {X : C} [HasBinaryProduct X X] : IsSplitMono (prod.diagonal X) :=

@@ -295,6 +295,8 @@ def diagonal : C ⥤ C × C :=
 end
 
 @[deprecated (since := "2026-09-06")] alias diag := diagonal
+@[deprecated (since := "2026-09-06")] alias diag_obj := diagonal_obj
+@[deprecated (since := "2026-09-06")] alias diag_map := diagonal_map
 
 end Functor
 

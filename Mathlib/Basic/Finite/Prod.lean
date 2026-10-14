@@ -94,8 +94,6 @@ instance fintypeProd (s : Set α) (t : Set β) [Fintype s] [Fintype t] :
 instance fintypeOffDiagonal (s : Set α) [Fintype s] : Fintype s.offDiagonal :=
   Fintype.ofFinset s.toFinset.offDiagonal <| by simp
 
-@[deprecated (since := "2026-09-06")] alias fintypeOffDiag := fintypeOffDiagonal
-
 /-- `image2 f s t` is `Fintype` if `s` and `t` are. -/
 instance fintypeImage2 [DecidableEq γ] (f : α → β → γ) (s : Set α) (t : Set β) [hs : Fintype s]
     [ht : Fintype t] : Fintype (image2 f s t : Set γ) := by

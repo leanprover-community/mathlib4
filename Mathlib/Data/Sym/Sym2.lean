@@ -588,6 +588,9 @@ def diagonalElemEquiv : { a : Sym2 α // a.IsDiagonal } ≃ α where
   right_inv a := by simp [diagonal]
 
 @[deprecated (since := "2026-09-06")] alias diagElemEquiv := diagonalElemEquiv
+@[deprecated (since := "2026-09-06")] alias diagElemEquiv_apply := diagonalElemEquiv_apply
+@[deprecated (since := "2026-09-06")]
+alias diagElemEquiv_symm_apply_coe := diagonalElemEquiv_symm_apply_coe
 
 /-- The set of all `Sym2 α` elements on the diagonal. -/
 def diagonalSet : Set (Sym2 α) := {z | z.IsDiagonal}
@@ -625,9 +628,6 @@ instance IsDiagonal.decidablePred (α : Type u) [DecidableEq α] : DecidablePred
 instance decidablePred_mem_diagonalSet (α : Type u) [DecidableEq α] :
     DecidablePred (· ∈ @diagonalSet α) :=
   IsDiagonal.decidablePred _
-
-@[deprecated (since := "2026-09-06")]
-alias decidablePred_mem_diagSet := decidablePred_mem_diagonalSet
 
 theorem other_ne {a : α} {z : Sym2 α} (hd : ¬IsDiagonal z) (h : a ∈ z) : Mem.other h ≠ a := by
   contrapose hd

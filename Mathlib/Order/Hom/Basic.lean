@@ -407,6 +407,7 @@ def diagonal : α →o α × α :=
   id.prod id
 
 @[deprecated (since := "2026-09-06")] alias diag := diagonal
+@[deprecated (since := "2026-09-06")] alias diag_coe := diagonal_coe
 
 /-- Restriction of `f : α →o α →o β` to the diagonal. -/
 @[simps! +simpRhs]
@@ -414,6 +415,7 @@ def onDiagonal (f : α →o α →o β) : α →o β :=
   (curry.symm f).comp diagonal
 
 @[deprecated (since := "2026-09-06")] alias onDiag := onDiagonal
+@[deprecated (since := "2026-09-06")] alias onDiag_coe := onDiagonal_coe
 
 /-- `Prod.fst` as an `OrderHom`. -/
 @[simps]

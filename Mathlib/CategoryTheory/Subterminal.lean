@@ -113,6 +113,10 @@ def IsSubterminal.isoDiagonal (hA : IsSubterminal A) [HasBinaryProduct A A] : A 
   apply (asIso (prod.diagonal A)).symm
 
 @[deprecated (since := "2026-09-06")] alias IsSubterminal.isoDiag := IsSubterminal.isoDiagonal
+@[deprecated (since := "2026-09-06")]
+alias IsSubterminal.isoDiag_hom := IsSubterminal.isoDiagonal_hom
+@[deprecated (since := "2026-09-06")]
+alias IsSubterminal.isoDiag_inv := IsSubterminal.isoDiagonal_inv
 
 variable (C)
 

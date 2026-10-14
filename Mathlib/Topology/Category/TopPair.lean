@@ -118,6 +118,8 @@ def proj₁AdjDiagonal : proj₁ ⊣ diagonal where
   counit.app X := 𝟙 X
 
 @[deprecated (since := "2026-09-06")] alias proj₁AdjDiag := proj₁AdjDiagonal
+@[deprecated (since := "2026-09-06")] alias proj₁AdjDiag_unit_app := proj₁AdjDiagonal_unit_app
+@[deprecated (since := "2026-09-06")] alias proj₁AdjDiag_counit_app := proj₁AdjDiagonal_counit_app
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The unique morphism (X, ∅) ⟶ (X, A) that is the identity on X. -/

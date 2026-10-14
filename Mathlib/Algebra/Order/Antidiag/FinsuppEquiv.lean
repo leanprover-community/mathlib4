@@ -58,6 +58,11 @@ noncomputable def finsuppAntidiagonalEquivSubtype :
 
 @[deprecated (since := "2026-09-06")]
 alias finsuppAntidiagEquivSubtype := finsuppAntidiagonalEquivSubtype
+@[deprecated (since := "2026-09-06")]
+alias finsuppAntidiagEquivSubtype_apply_coe := finsuppAntidiagonalEquivSubtype_apply_coe
+@[deprecated (since := "2026-09-06")]
+alias finsuppAntidiagEquivSubtype_symm_apply_coe :=
+  finsuppAntidiagonalEquivSubtype_symm_apply_coe
 
 variable (s) in
 /-- The equivalence between `Finset.finsuppAntidiagonal s n` and `Sym s n`. -/
