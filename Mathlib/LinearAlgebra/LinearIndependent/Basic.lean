@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp, Anne Baanen
 module
 
 public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.Algebra.Regular.Basic
 public import Mathlib.LinearAlgebra.LinearIndependent.Defs
 public import Mathlib.Logic.Equiv.Fin.Rotate
 
@@ -201,7 +202,7 @@ theorem LinearIndependent.smul_of_isRightRegular {v : ι → M} (hv : LinearInde
 
 theorem LinearIndependent.units_smul {v : ι → M} (hv : LinearIndependent R v) (w : ι → Rˣ) :
     LinearIndependent R (w • v) :=
-  smul_of_isRightRegular hv fun i _ _ h ↦ (w i).mul_left_inj.mp h
+  smul_of_isRightRegular hv fun i ↦ (w i).isRegular.right
 
 @[simp]
 theorem LinearIndependent.units_smul_iff (v : ι → M) (w : ι → Rˣ) :
