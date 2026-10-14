@@ -429,9 +429,11 @@ theorem preimage_coe_coe_diagonal (s : Set α) :
   simp [Set.diagonal]
 
 @[simp]
-theorem range_diag : range Prod.diagonal = diagonal α := by
+theorem range_diagonal : range Prod.diagonal = diagonal α := by
   ext ⟨x, y⟩
   simp [diagonal, eq_comm]
+
+@[deprecated (since := "2026-10-14")] alias range_diag := range_diagonal
 
 theorem diagonal_subset_iff {s} : diagonal α ⊆ s ↔ ∀ x, (x, x) ∈ s := by grind
 
@@ -440,14 +442,20 @@ theorem prod_subset_compl_diagonal_iff_disjoint : s ×ˢ t ⊆ (diagonal α)ᶜ 
   prod_subset_iff.trans disjoint_iff_forall_ne.symm
 
 @[simp]
-theorem diag_preimage_prod (s t : Set α) : Prod.diagonal ⁻¹' s ×ˢ t = s ∩ t :=
+theorem diagonal_preimage_prod (s t : Set α) : Prod.diagonal ⁻¹' s ×ˢ t = s ∩ t :=
   rfl
 
-theorem diag_preimage_prod_self (s : Set α) : Prod.diagonal ⁻¹' s ×ˢ s = s :=
+@[deprecated (since := "2026-10-14")] alias diag_preimage_prod := diagonal_preimage_prod
+
+theorem diagonal_preimage_prod_self (s : Set α) : Prod.diagonal ⁻¹' s ×ˢ s = s :=
   inter_self s
 
-theorem diag_image (s : Set α) : Prod.diagonal '' s = diagonal α ∩ s ×ˢ s := by
-  rw [← range_diag, ← image_preimage_eq_range_inter, diag_preimage_prod_self]
+@[deprecated (since := "2026-10-14")] alias diag_preimage_prod_self := diagonal_preimage_prod_self
+
+theorem diagonal_image (s : Set α) : Prod.diagonal '' s = diagonal α ∩ s ×ˢ s := by
+  rw [← range_diagonal, ← image_preimage_eq_range_inter, diagonal_preimage_prod_self]
+
+@[deprecated (since := "2026-10-14")] alias diag_image := diagonal_image
 
 theorem diagonal_eq_univ_iff : diagonal α = univ ↔ Subsingleton α := by
   simp only [subsingleton_iff, eq_univ_iff_forall, Prod.forall, mem_diagonal_iff]
@@ -490,7 +498,10 @@ lemma Function.pullback_comm_sq (f : X → Y) (g : Z → Y) :
 
 /-- The diagonal map $\Delta: X \to X \times_Y X$. -/
 @[simps]
-def toPullbackDiag (f : X → Y) (x : X) : f.Pullback f := ⟨(x, x), rfl⟩
+def toPullbackDiagonal (f : X → Y) (x : X) : f.Pullback f := ⟨(x, x), rfl⟩
+
+@[deprecated (since := "2026-10-14")] alias toPullbackDiag := toPullbackDiagonal
+@[deprecated (since := "2026-10-14")] alias toPullbackDiag_coe := toPullbackDiagonal_coe
 
 /-- The diagonal $\Delta(X) \subseteq X \times_Y X$. -/
 def Function.pullbackDiagonal (f : X → Y) : Set (f.Pullback f) := {p | p.fst = p.snd}
@@ -528,8 +539,8 @@ theorem Function.Injective.preimage_pullbackDiagonal {f : X → Y} {g : Z → X}
     mapPullback g id g (by rfl) (by rfl) ⁻¹' pullbackDiagonal f = pullbackDiagonal (f ∘ g) :=
   ext fun _ ↦ inj.eq_iff
 
-theorem image_toPullbackDiag (f : X → Y) (s : Set X) :
-    toPullbackDiag f '' s = pullbackDiagonal f ∩ Subtype.val ⁻¹' s ×ˢ s := by
+theorem image_toPullbackDiagonal (f : X → Y) (s : Set X) :
+    toPullbackDiagonal f '' s = pullbackDiagonal f ∩ Subtype.val ⁻¹' s ×ˢ s := by
   ext x
   constructor
   · rintro ⟨x, hx, rfl⟩
@@ -538,11 +549,18 @@ theorem image_toPullbackDiag (f : X → Y) (s : Set X) :
     rintro ⟨rfl : x = y, h2x⟩
     exact mem_image_of_mem _ h2x.1
 
-theorem range_toPullbackDiag (f : X → Y) : range (toPullbackDiag f) = pullbackDiagonal f := by
-  rw [← image_univ, image_toPullbackDiag, univ_prod_univ, preimage_univ, inter_univ]
+@[deprecated (since := "2026-10-14")] alias image_toPullbackDiag := image_toPullbackDiagonal
 
-theorem injective_toPullbackDiag (f : X → Y) : (toPullbackDiag f).Injective :=
+theorem range_toPullbackDiagonal (f : X → Y) :
+    range (toPullbackDiagonal f) = pullbackDiagonal f := by
+  rw [← image_univ, image_toPullbackDiagonal, univ_prod_univ, preimage_univ, inter_univ]
+
+@[deprecated (since := "2026-10-14")] alias range_toPullbackDiag := range_toPullbackDiagonal
+
+theorem injective_toPullbackDiagonal (f : X → Y) : (toPullbackDiagonal f).Injective :=
   fun _ _ h ↦ congr_arg Prod.fst (congr_arg Subtype.val h)
+
+@[deprecated (since := "2026-10-14")] alias injective_toPullbackDiag := injective_toPullbackDiagonal
 
 end Pullback
 
