@@ -232,7 +232,7 @@ lemma sbtw_A_I_P : Sbtw ℝ cfg.A cfg.I cfg.P := by
 
 lemma PB_eq_PI : dist cfg.P cfg.B = dist cfg.P cfg.I := by
   rw [P_eq_secondInter, ← incenter_eq_I]
-  exact cfg.triangleABC.dist_secondInter_point_eq_dist_secondInter_incenter (i₁ := 0) (i₂ := 1)
+  exact cfg.triangleABC.dist_southPole_point_eq_dist_southPole_incenter (i₁ := 0) (i₂ := 1)
     (by decide)
 
 lemma X_ne_A' : cfg.X ≠ cfg.A' :=
