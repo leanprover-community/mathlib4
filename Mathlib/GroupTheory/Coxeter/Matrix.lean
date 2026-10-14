@@ -155,7 +155,7 @@ protected def D : CoxeterMatrix (Fin n) where
     split_ifs <;> first | rfl | (exfalso; omega)
   diagonal := by simp
   off_diagonal i j hij := by
-    simp only [Matrix.of_apply, if_neg hij]
+    simp only [Matrix.of_apply, show ¬i = j from hij, ite_false]
     split_ifs <;> omega
 
 /-- The Coxeter matrix of type I₂(m).
