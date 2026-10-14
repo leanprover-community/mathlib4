@@ -6,7 +6,6 @@ Authors: Damien Thomine, Pietro Monticone
 module
 
 public import Mathlib.Analysis.Asymptotics.ExpGrowth
-public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Dynamics.TopologicalEntropy.DynamicalEntourage
 
 /-!
@@ -63,8 +62,9 @@ Get versions of the topological entropy on (pseudo-e)metric spaces.
 
 @[expose] public section
 
-open Set SetRel Uniformity UniformSpace
-open scoped Finset
+open Set SetRel UniformSpace
+
+open scoped Uniformity Finset
 
 namespace Dynamics
 

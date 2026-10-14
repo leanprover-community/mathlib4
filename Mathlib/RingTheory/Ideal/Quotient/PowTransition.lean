@@ -6,10 +6,8 @@ Authors: Nailin Guan, Jiedong Jiang
 module
 
 public import Mathlib.LinearAlgebra.Quotient.Basic
-public import Mathlib.RingTheory.Ideal.Quotient.Defs
-public import Mathlib.Algebra.Algebra.Operations
-public import Mathlib.RingTheory.Ideal.Operations
 public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 /-!
 # The quotient map from `R ⧸ I ^ m` to `R ⧸ I ^ n` where `m ≥ n`
@@ -54,7 +52,6 @@ lemma Ideal.Quotient.factor_ker (H : I ≤ J) [I.IsTwoSided] [J.IsTwoSided] :
   · rcases mem_image_of_mem_map_of_surjective _ Ideal.Quotient.mk_surjective h with ⟨r, hr, eq⟩
     simpa [← eq, Ideal.Quotient.eq_zero_iff_mem] using hr
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Submodule.eq_factor_of_eq_factor_succ {p : ℕ → Submodule R M}
     (hp : Antitone p) (x : (n : ℕ) → M ⧸ (p n)) (h : ∀ m, x m = factor (hp m.le_succ) (x (m + 1)))
     {m n : ℕ} (g : m ≤ n) : x m = factor (hp g) (x n) := by

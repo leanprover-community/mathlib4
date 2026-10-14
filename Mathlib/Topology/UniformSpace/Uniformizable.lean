@@ -6,6 +6,7 @@ Authors: Aaron Liu
 module
 
 public import Mathlib.Topology.Separation.CompletelyRegular
+public import Mathlib.Topology.UrysohnsLemma
 
 import Mathlib.Topology.UniformSpace.OfCompactT2
 
@@ -34,7 +35,9 @@ Urysohn's lemma is reused in the proof of `UniformSpace.completelyRegularSpace`.
 
 variable {X : Type*}
 
-open Filter Set Uniformity UniformSpace SetRel
+open Filter Set UniformSpace SetRel
+
+open scoped Uniformity
 
 section UniformSpace
 variable [UniformSpace X]

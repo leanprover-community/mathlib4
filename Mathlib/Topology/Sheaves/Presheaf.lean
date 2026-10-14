@@ -5,9 +5,9 @@ Authors: Kim Morrison, Mario Carneiro, Reid Barton, Andrew Yang
 -/
 module
 
-public import Mathlib.Topology.Category.TopCat.Opens
 public import Mathlib.CategoryTheory.Adjunction.Unique
 public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
+public import Mathlib.Topology.Category.TopCat.Opens
 public import Mathlib.Topology.Sheaves.Init
 
 /-!
@@ -131,7 +131,6 @@ abbrev restrictOpen {F : X.Presheaf C}
 /-- restriction of a section to open subset -/
 scoped[AlgebraicGeometry] infixl:80 " |_ " => TopCat.Presheaf.restrictOpen
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem restrict_restrict
     {F : X.Presheaf C} {U V W : Opens X} (e₁ : U ≤ V) (e₂ : V ≤ W) (x : ToType (F.obj (op W))) :
     x |_ V |_ U = x |_ U := by
@@ -139,14 +138,12 @@ theorem restrict_restrict
   rw [← ConcreteCategory.comp_apply, ← Functor.map_comp]
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem map_restrict
     {F G : X.Presheaf C} (e : F ⟶ G) {U V : Opens X} (h : U ≤ V) (x : ToType (F.obj (op V))) :
     e.app _ (x |_ U) = e.app _ x |_ U := by
   delta restrictOpen restrict
   rw [← ConcreteCategory.comp_apply, NatTrans.naturality, ConcreteCategory.comp_apply]
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma restrict_self {F : X.Presheaf C} {U : Opens X} (x : ToType (F.obj (op U))) :
     x |_ U = x := by
@@ -220,7 +217,6 @@ def pushforwardEq {X Y : TopCat.{w}} {f g : X ⟶ Y} (h : f = g) (ℱ : X.Preshe
 theorem pushforward_eq' {X Y : TopCat.{w}} {f g : X ⟶ Y} (h : f = g) (ℱ : X.Presheaf C) :
     f _* ℱ = g _* ℱ := by rw [h]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem pushforwardEq_hom_app {X Y : TopCat.{w}} {f g : X ⟶ Y}
@@ -291,9 +287,6 @@ def pullback {X Y : TopCat.{v}} (f : X ⟶ Y) : Y.Presheaf C ⥤ X.Presheaf C :=
 def pullbackPushforwardAdjunction {X Y : TopCat.{v}} (f : X ⟶ Y) :
     pullback C f ⊣ pushforward C f :=
   Functor.lanAdjunction _ _
-
-@[deprecated (since := "2026-03-03")]
-alias pushforwardPullbackAdjunction := pullbackPushforwardAdjunction
 
 /-- Pulling back along a homeomorphism is the same as pushing forward along its inverse. -/
 def pullbackHomIsoPushforwardInv {X Y : TopCat.{v}} (H : X ≅ Y) :
@@ -396,7 +389,7 @@ lemma pullbackObjIso_hom_naturality {X Y : TopCat.{v}} {f : X ⟶ Y} (hf : IsOpe
       ((Opens.map f).op.leftKanExtensionUnit 𝒢)).coconeAt (op U)).ι.app j := by
     dsimp [pullback]
     simp only [Category.assoc, NatTrans.naturality]
-    have := NatTrans.congr_app ((Opens.map f).op.lanUnit.naturality u) j.left
+    have := congr($((Opens.map f).op.lanUnit.naturality u).app j.left)
     dsimp [lanUnit] at this
     rw [reassoc_of% this]
     rfl

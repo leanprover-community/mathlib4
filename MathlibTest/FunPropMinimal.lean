@@ -3,11 +3,11 @@ Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
-import Mathlib.Tactic.FunProp
-import Mathlib.Logic.Function.Basic
-import Mathlib.Data.FunLike.Basic
-import Mathlib.Tactic.SuccessIfFailWithMsg
 import Aesop
+import Mathlib.Basic.FunLike.Basic
+import Mathlib.Logic.Function.Basic
+import Mathlib.Tactic.FunProp
+import Mathlib.Tactic.SuccessIfFailWithMsg
 
 /-! # Tests for the `fun_prop` tactic
 
@@ -395,9 +395,9 @@ example (f : β → γ) (g : α → β) (h : B) : Con (fun x => f (g x)) := by f
 end MultipleLambdaTheorems
 
 
-/-- info: `?m` is not a `fun_prop` goal! -/
+/-- error: `?m` is not a `fun_prop` goal! -/
 #guard_msgs in
-#check_failure ((by fun_prop) : ?m)
+#check ((by fun_prop) : ?m)
 
 /-- error: `Injective Nat.succ` is not a `fun_prop` goal!
 Consider marking `Function.Injective` with `@[fun_prop]`. -/
