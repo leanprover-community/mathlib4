@@ -70,14 +70,14 @@ instance : UniformSpace Gal(L/K) := .ofCore
     comp := le_iInf fun x => lift'_le (mem_iInf_of_mem x (mem_principal_self _))
       (principal_mono.2 (SetRel.isTrans_iff_comp_subset_self.1 ⟨fun _ _ _ => Eq.trans⟩)) }
 
-theorem krullTopology_uniformity_def : 𝓤 Gal(L/K) = ⨅ x : L, 𝓟 {p | p.1 x = p.2 x} := (rfl)
+theorem AlgEquiv.uniformity_def : 𝓤 Gal(L/K) = ⨅ x : L, 𝓟 {p | p.1 x = p.2 x} := (rfl)
 
-theorem krullTopology_isOpen_ofPred_fst_eq_snd (x : L) :
+theorem AlgEquiv.isOpen_setOfPred_fst_eq_snd (x : L) :
     IsOpen {p : Gal(L/K) × Gal(L/K) | p.1 x = p.2 x} := by
   rw [isOpen_iff_nhds, Set.forall_mem_ofPred]
   intro p hp
   rw [nhds_prod_eq, nhds_eq_comap_uniformity', nhds_eq_comap_uniformity, le_principal_iff]
-  simp_rw [krullTopology_uniformity_def, comap_iInf, comap_principal, Set.preimage_ofPred_eq]
+  simp_rw [AlgEquiv.uniformity_def, comap_iInf, comap_principal, Set.preimage_ofPred_eq]
   rw [mem_prod_iff]
   refine ⟨{a | a x = p.1 x}, mem_iInf_of_mem x (mem_principal_self _),
     {a | p.2 x = a x}, mem_iInf_of_mem x (mem_principal_self _), fun c hc => ?_⟩
@@ -87,15 +87,15 @@ theorem krullTopology_isOpen_ofPred_fst_eq_snd (x : L) :
     p.2 x = c.2 x := hc.right
 
 /-- The stabilizer in `Gal(L/K)` of any element in `L` is open for the Krull topology. -/
-theorem AlgEquiv.isOpen_mulActionStabilizer_aut (x : L) :
+theorem AlgEquiv.isOpen_mulActionStabilizer (x : L) :
     IsOpen (MulAction.stabilizer Gal(L/K) x : Set Gal(L/K)) :=
-  (krullTopology_isOpen_ofPred_fst_eq_snd x).preimage
+  (AlgEquiv.isOpen_setOfPred_fst_eq_snd x).preimage
     (show Continuous (fun σ : Gal(L/K) => (σ, (1 : Gal(L/K)))) by fun_prop)
 
 open SetRel in
-theorem krullTopology_mem_uniformity_iff {s : SetRel Gal(L/K) Gal(L/K)} :
+theorem AlgEquiv.mem_uniformity_iff {s : SetRel Gal(L/K) Gal(L/K)} :
     s ∈ 𝓤 Gal(L/K) ↔ ∃ u : Finset L, ∀ σ τ : Gal(L/K), Set.EqOn σ τ u → σ ~[s] τ := by
-  rw [krullTopology_uniformity_def, Filter.mem_iInf_finite]
+  rw [AlgEquiv.uniformity_def, Filter.mem_iInf_finite]
   refine exists_congr fun u => ?_
   rw [Filter.iInf_principal_finset, Filter.mem_principal, Set.subset_def, Prod.forall]
   refine forall_congr' fun σ => forall_congr' fun τ => imp_congr_left ?_
@@ -103,10 +103,10 @@ theorem krullTopology_mem_uniformity_iff {s : SetRel Gal(L/K) Gal(L/K)} :
   rfl
 
 open SetRel IntermediateField in
-theorem krullTopology_mem_uniformity_iff_fg {s : SetRel Gal(L/K) Gal(L/K)} :
+theorem AlgEquiv.mem_uniformity_iff_fg {s : SetRel Gal(L/K) Gal(L/K)} :
     s ∈ 𝓤 Gal(L/K) ↔ ∃ F : IntermediateField K L,
     F.FG ∧ ∀ σ τ : Gal(L/K), Set.EqOn σ τ F → σ ~[s] τ := by
-  rw [krullTopology_mem_uniformity_iff]
+  rw [AlgEquiv.mem_uniformity_iff]
   simp_rw [FG, existsAndEq, true_and]
   refine exists_congr fun u => forall_congr' fun σ => forall_congr' fun τ => imp_congr_left ?_
   unfold Set.EqOn
@@ -124,11 +124,6 @@ theorem krullTopology_mem_uniformity_iff_fg {s : SetRel Gal(L/K) Gal(L/K)} :
     Set.ofPred_mem_eq, SetLike.coe_subset_coe, adjoin_le_iff]
 
 variable (K L) in
-/-- For a field extension `L/K`, `krullTopology K L` is the topological space structure on
-`Gal(L/K)` induced by the uniform structure. -/
-instance krullTopology : TopologicalSpace Gal(L/K) := inferInstance
-
-variable (K L) in
 /-- For a field extension `L/K`, the Krull topology on `Gal(L/K)` makes it a topological group. -/
 @[stacks 0BMJ "We define the Krull topology directly without proving the universal property"]
 instance : IsLeftUniformGroup Gal(L/K) where
@@ -136,7 +131,7 @@ instance : IsLeftUniformGroup Gal(L/K) where
     rw [Uniform.continuous_iff'_left]
     intro p
     rw [nhds_eq_comap_uniformity', uniformity_prod, comap_inf, comap_comap, comap_comap,
-      krullTopology_uniformity_def, comap_iInf, comap_iInf, tendsto_iInf]
+      AlgEquiv.uniformity_def, comap_iInf, comap_iInf, tendsto_iInf]
     intro x
     rw [tendsto_principal, eventually_inf]
     refine ⟨{στ | στ.1 (p.2 x) = p.1 (p.2 x)}, ?_, {στ | στ.2 x = p.2 x}, ?_, ?_⟩
@@ -146,7 +141,7 @@ instance : IsLeftUniformGroup Gal(L/K) where
   continuous_inv := by
     rw [Uniform.continuous_iff'_right]
     intro p
-    rw [nhds_eq_comap_uniformity', krullTopology_uniformity_def, comap_iInf, tendsto_iInf]
+    rw [nhds_eq_comap_uniformity', AlgEquiv.uniformity_def, comap_iInf, tendsto_iInf]
     intro x
     apply tendsto_iInf' (p.symm x)
     rw [comap_principal, tendsto_principal_principal]
@@ -154,16 +149,16 @@ instance : IsLeftUniformGroup Gal(L/K) where
     apply σ.eq_symm_apply.mpr
     simpa using hp
   uniformity_eq := by
-    rw [nhds_eq_comap_uniformity, comap_comap, krullTopology_uniformity_def, comap_iInf]
+    rw [nhds_eq_comap_uniformity, comap_comap, AlgEquiv.uniformity_def, comap_iInf]
     refine iInf_congr fun x => ?_
     simp [AlgEquiv.eq_symm_apply]
 
 open IntermediateField in
 open scoped Topology in
-lemma krullTopology_mem_nhds_one_iff' {s : Set Gal(L/K)} :
+lemma AlgEquiv.mem_nhds_one_iff' {s : Set Gal(L/K)} :
     s ∈ 𝓝 1 ↔ ∃ E : IntermediateField K L, E.FG ∧ (E.fixingSubgroup : Set Gal(L/K)) ⊆ s := by
   rw [nhds_eq_comap_uniformity', ← le_principal_iff, comap_le_iff_le_kernMap,
-    kernMap_principal, le_principal_iff, krullTopology_mem_uniformity_iff]
+    kernMap_principal, le_principal_iff, AlgEquiv.mem_uniformity_iff]
   simp_rw [← Prod.forall', ← Set.ofPred_subset_ofPred, Prod.eta, Set.ofPred_mem_eq,
     Set.subset_kernImage_iff, Set.preimage_ofPred_eq, Set.ofPred_subset,
     FG, existsAndEq, true_and, Set.subset_def, SetLike.mem_coe,
@@ -184,19 +179,19 @@ lemma krullTopology_mem_nhds_one_iff' {s : Set Gal(L/K)} :
 
 open IntermediateField in
 open scoped Topology in
-lemma krullTopology_mem_nhds_one_iff [Algebra.IsAlgebraic K L] {s : Set Gal(L/K)} :
+lemma AlgEquiv.mem_nhds_one_iff [Algebra.IsAlgebraic K L] {s : Set Gal(L/K)} :
     s ∈ 𝓝 1 ↔ ∃ E : IntermediateField K L,
     FiniteDimensional K E ∧ (E.fixingSubgroup : Set Gal(L/K)) ⊆ s := by
-  rw [krullTopology_mem_nhds_one_iff']
+  rw [AlgEquiv.mem_nhds_one_iff']
   refine exists_congr fun E => and_congr_left' ?_
   rw [← IntermediateField.essFiniteType_iff]
   exact ⟨fun _ => Algebra.finite_of_essFiniteType_of_isAlgebraic, fun _ => inferInstance⟩
 
 open scoped Topology in
-lemma krullTopology_mem_nhds_one_iff_of_normal [Normal K L] {s : Set Gal(L/K)} :
+lemma AlgEquiv.mem_nhds_one_iff_of_normal [Normal K L] {s : Set Gal(L/K)} :
     s ∈ 𝓝 1 ↔ ∃ E : IntermediateField K L,
     FiniteDimensional K E ∧ Normal K E ∧ (E.fixingSubgroup : Set Gal(L/K)) ⊆ s := by
-  rw [krullTopology_mem_nhds_one_iff]
+  rw [AlgEquiv.mem_nhds_one_iff]
   refine ⟨fun ⟨E, _, hE⟩ ↦ ?_, fun ⟨E, hE⟩ ↦ ⟨E, hE.1, hE.2.2⟩⟩
   use (IntermediateField.normalClosure K E L)
   simp only [normalClosure.is_finiteDimensional K E L, normalClosure.normal K E L, true_and]
@@ -206,7 +201,7 @@ lemma krullTopology_mem_nhds_one_iff_of_normal [Normal K L] {s : Set Gal(L/K)} :
 Then `Gal(L/E)` is an open subgroup of `Gal(L/K)`. -/
 theorem IntermediateField.isOpen_fixingSubgroup (E : IntermediateField K L)
     [Algebra.EssFiniteType K E] : IsOpen (E.fixingSubgroup : Set Gal(L/K)) :=
-  Subgroup.isOpen_of_mem_nhds _ (krullTopology_mem_nhds_one_iff'.2
+  Subgroup.isOpen_of_mem_nhds _ (AlgEquiv.mem_nhds_one_iff'.2
     ⟨E, essFiniteType_iff.1 ‹_›, subset_rfl⟩)
 
 @[deprecated (since := "2026-03-05")]
@@ -234,7 +229,7 @@ instance : ZeroDimensionalSpace Gal(L/K) := by
   constructor
   intro t
   constructor
-  · rw [nhds_eq_comap_uniformity, krullTopology_uniformity_def]
+  · rw [nhds_eq_comap_uniformity, AlgEquiv.uniformity_def]
     simp_rw [comap_iInf, comap_principal, Set.preimage_ofPred_eq, id_def]
     rw [Filter.mem_iInf]
     rintro ⟨I, hI, V, hV, rfl⟩
@@ -253,9 +248,9 @@ instance : ZeroDimensionalSpace Gal(L/K) := by
           exact ne_of_ne_of_eq hd hc
       rw [hcm]
       exact isOpen_iUnion fun d => isOpen_iUnion fun hd =>
-        (krullTopology_isOpen_ofPred_fst_eq_snd i.1).preimage
+        (AlgEquiv.isOpen_setOfPred_fst_eq_snd i.1).preimage
           (continuous_prodMk.2 ⟨continuous_const, continuous_id⟩)
-    · exact (krullTopology_isOpen_ofPred_fst_eq_snd i.1).preimage
+    · exact (AlgEquiv.isOpen_setOfPred_fst_eq_snd i.1).preimage
         (continuous_prodMk.2 ⟨continuous_const, continuous_id⟩)
   · rintro ⟨s, ⟨hs, hxs⟩, hst⟩
     exact mem_of_superset (hs.isOpen.mem_nhds hxs) hst
@@ -274,10 +269,9 @@ theorem krullTopology_isTotallySeparated :
   (totallySeparatedSpace_iff _).mp inferInstance
 
 variable (K L) in
-instance krullTopology_discreteUniformity_of_essFiniteType
-    [Algebra.EssFiniteType K L] : DiscreteUniformity Gal(L/K) := by
+instance [Algebra.EssFiniteType K L] : DiscreteUniformity Gal(L/K) := by
   rw [discreteUniformity_iff_eq_principal_setRelId, le_antisymm_iff,
-    and_iff_left refl_le_uniformity, krullTopology_uniformity_def]
+    and_iff_left refl_le_uniformity, AlgEquiv.uniformity_def]
   obtain ⟨s, hs⟩ := IntermediateField.fg_top K L
   rw [Filter.le_principal_iff, Filter.mem_iInf_finite]
   refine ⟨s, ?_⟩
@@ -317,7 +311,7 @@ theorem AlgEquiv.isComplete_fixingSubgroup (E : IntermediateField K L) [FinTrdeg
   replace hf (F : IntermediateField K L) (_ : F.FG) :
       ∃ σ : Gal(L/K), ∀ᶠ τ : Gal(L/K) in f, Set.EqOn σ τ F := by
     obtain ⟨t, hf, ht⟩ := hf {p | Set.EqOn p.1 p.2 F}
-      (krullTopology_mem_uniformity_iff_fg.2 ⟨F, ‹_›, fun _ _ h => h⟩)
+      (AlgEquiv.mem_uniformity_iff_fg.2 ⟨F, ‹_›, fun _ _ h => h⟩)
     obtain ⟨σ, hσ⟩ := Filter.nonempty_of_mem hf
     exact ⟨σ, Filter.eventually_of_mem hf fun τ hτ => @ht (σ, τ) ⟨hσ, hτ⟩⟩
   have h (x : L) : ∃ y, ∀ᶠ τ in f, y = τ x :=
@@ -378,7 +372,7 @@ theorem AlgEquiv.isComplete_fixingSubgroup (E : IntermediateField K L) [FinTrdeg
     rw [hττE, map_zero, Polynomial.map_aeval_eq_aeval_map h]
     simp
   refine ⟨E.fixingSubgroupEquiv.symm σ, (E.fixingSubgroupEquiv.symm σ).2, fun U hU => ?_⟩
-  rw [← map_mul_left_nhds_one, Filter.mem_map, krullTopology_mem_nhds_one_iff'] at hU
+  rw [← map_mul_left_nhds_one, Filter.mem_map, AlgEquiv.mem_nhds_one_iff'] at hU
   obtain ⟨F, fg, hF⟩ := hU
   rw [← Set.image_subset_iff] at hF
   refine Filter.mem_of_superset ?_ hF
@@ -393,7 +387,7 @@ theorem AlgEquiv.totallyBounded_fixingSubgroup
     (E : IntermediateField K L) [Algebra.IsAlgebraic E L] :
     TotallyBounded (E.fixingSubgroup : Set Gal(L/K)) := by
   intro U hU
-  rw [krullTopology_mem_uniformity_iff] at hU
+  rw [AlgEquiv.mem_uniformity_iff] at hU
   obtain ⟨s, hs⟩ := hU
   let F := IntermediateField.adjoin E (s : Set L)
   have : IsScalarTower K F L := ⟨fun a b c => smul_assoc a b.1 c⟩
@@ -429,7 +423,7 @@ instance [FinTrdeg K L] : LocallyCompactSpace Gal(L/K) := by
   · rw [Homeomorph.image_eq_preimage_symm]
     apply (Homeomorph.mulLeft σ).symm.continuous.continuousAt.preimage_mem_nhds
     simp_rw [Homeomorph.mulLeft_symm, Homeomorph.coe_mulLeft, inv_mul_cancel]
-    rw [krullTopology_mem_nhds_one_iff']
+    rw [AlgEquiv.mem_nhds_one_iff']
     exact ⟨F, fg, subset_rfl⟩
 
 variable (K L) in
@@ -442,7 +436,7 @@ instance [Algebra.IsIntegral K L] : CompactSpace Gal(L/K) where
   isCompact_univ := (AlgEquiv.totallyBounded_univ K L).isCompact_of_isComplete isComplete_univ
 
 @[deprecated (since := "2026-10-14")]
-alias stabilizer_isOpen_of_isIntegral := AlgEquiv.isOpen_mulActionStabilizer_aut
+alias stabilizer_isOpen_of_isIntegral := AlgEquiv.isOpen_mulActionStabilizer
 
 section deprecated
 

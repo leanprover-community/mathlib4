@@ -149,7 +149,7 @@ theorem restrictNormalHom_continuous (L : IntermediateField k K) [Normal k L] :
     Continuous (AlgEquiv.restrictNormalHom (F := k) (K₁ := K) L) := by
   apply continuous_of_continuousAt_one _ (continuousAt_def.mpr _)
   intro N hN
-  rw [map_one, krullTopology_mem_nhds_one_iff] at hN
+  rw [map_one, AlgEquiv.mem_nhds_one_iff] at hN
   obtain ⟨L', _, hO⟩ := hN
   have := Module.Finite.equiv <| AlgEquiv.toLinearEquiv <| IntermediateField.liftAlgEquiv L'
   apply mem_nhds_iff.mpr
@@ -291,7 +291,7 @@ noncomputable def mulEquivToLimit [IsGalois k K] :
 open scoped Topology in
 lemma krullTopology_mem_nhds_one_iff_of_isGalois [IsGalois k K] (A : Set Gal(K/k)) :
     A ∈ 𝓝 1 ↔ ∃ (L : FiniteGaloisIntermediateField k K), (L.fixingSubgroup : Set _) ⊆ A := by
-  rw [krullTopology_mem_nhds_one_iff_of_normal]
+  rw [AlgEquiv.mem_nhds_one_iff_of_normal]
   exact ⟨fun ⟨L, _, hL, hsub⟩ ↦ ⟨{ toIntermediateField := L, isGalois := ⟨⟩ }, hsub⟩,
     fun ⟨L, hL⟩ ↦ ⟨L, inferInstance, inferInstance, hL⟩⟩
 
