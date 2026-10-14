@@ -6,7 +6,6 @@ Authors: Vincent Quenneville-Belair
 module
 
 public import Mathlib.Geometry.Convex.Cone.Basic
-public import Mathlib.Topology.Algebra.ConstMulAction
 public import Mathlib.Topology.Algebra.Group.Pointwise
 
 /-!
