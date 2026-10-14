@@ -72,6 +72,20 @@ instance : UniformSpace Gal(L/K) := .ofCore
 
 theorem krullTopology_uniformity_def : 𝓤 Gal(L/K) = ⨅ x : L, 𝓟 {p | p.1 x = p.2 x} := (rfl)
 
+theorem krullTopology_isOpen_ofPred_fst_eq_snd (x : L) :
+    IsOpen {p : Gal(L/K) × Gal(L/K) | p.1 x = p.2 x} := by
+  rw [isOpen_iff_nhds, Set.forall_mem_ofPred]
+  intro p hp
+  rw [nhds_prod_eq, nhds_eq_comap_uniformity', nhds_eq_comap_uniformity, le_principal_iff]
+  simp_rw [krullTopology_uniformity_def, comap_iInf, comap_principal, Set.preimage_ofPred_eq]
+  rw [mem_prod_iff]
+  refine ⟨{a | a x = p.1 x}, mem_iInf_of_mem x (mem_principal_self _),
+    {a | p.2 x = a x}, mem_iInf_of_mem x (mem_principal_self _), fun c hc => ?_⟩
+  calc
+    c.1 x = p.1 x := hc.left
+    p.1 x = p.2 x := hp
+    p.2 x = c.2 x := hc.right
+
 open SetRel in
 theorem krullTopology_mem_uniformity_iff {s : SetRel Gal(L/K) Gal(L/K)} :
     s ∈ 𝓤 Gal(L/K) ↔ ∃ u : Finset L, ∀ σ τ : Gal(L/K), Set.EqOn σ τ u → σ ~[s] τ := by
@@ -216,24 +230,44 @@ end KrullT2
 
 section TotallySeparated
 
-instance : TotallySeparatedSpace Gal(L/K) := by
-  rw [totallySeparatedSpace_iff_exists_isClopen]
-  intro σ τ h_diff
-  have hστ : σ⁻¹ * τ ≠ 1 := by rwa [Ne, inv_mul_eq_one]
-  rcases DFunLike.exists_ne hστ with ⟨x, hx : (σ⁻¹ * τ) x ≠ x⟩
-  let E := IntermediateField.adjoin K ({x} : Set L)
-  have fg : Algebra.EssFiniteType K E :=
-    IntermediateField.essFiniteType_iff.2
-      (IntermediateField.fg_adjoin_of_finite (Set.finite_singleton _))
-  refine ⟨σ • E.fixingSubgroup,
-    ⟨E.isClosed_fixingSubgroup.leftCoset σ, E.isOpen_fixingSubgroup.leftCoset σ⟩,
-    ⟨1, E.fixingSubgroup.one_mem', mul_one σ⟩, ?_⟩
-  simp only [Set.mem_compl_iff, mem_leftCoset_iff, SetLike.mem_coe,
-    IntermediateField.mem_fixingSubgroup_iff, not_forall]
-  exact ⟨x, IntermediateField.mem_adjoin_simple_self K x, hx⟩
+instance : ZeroDimensionalSpace Gal(L/K) := by
+  rw [zeroDimensionalSpace_iff_nhds_hasBasis_isClopen]
+  intro x
+  constructor
+  intro t
+  constructor
+  · rw [nhds_eq_comap_uniformity, krullTopology_uniformity_def]
+    simp_rw [comap_iInf, comap_principal, Set.preimage_ofPred_eq, id_def]
+    rw [Filter.mem_iInf]
+    rintro ⟨I, hI, V, hV, rfl⟩
+    refine ⟨⋂ i : I, {c | x i = c i}, ⟨?_, Set.mem_iInter.2 fun i => rfl⟩, Set.iInter_mono hV⟩
+    have := hI.to_subtype
+    refine isClopen_iInter_of_finite (fun i => ⟨?_, ?_⟩)
+    · rw [← isOpen_compl_iff]
+      have hcm : {c : Gal(L/K) | x i = c i}ᶜ =
+          ⋃ d ∉ {c : Gal(L/K) | x i = c i}, {c | d i = c i} := by
+        apply subset_antisymm
+        · intro c hc
+          rw [Set.mem_iUnion₂]
+          exact ⟨c, hc, rfl⟩
+        · rw [Set.iUnion₂_subset_iff]
+          intro d hd c hc
+          exact ne_of_ne_of_eq hd hc
+      rw [hcm]
+      exact isOpen_iUnion fun d => isOpen_iUnion fun hd =>
+        (krullTopology_isOpen_ofPred_fst_eq_snd i.1).preimage
+          (continuous_prodMk.2 ⟨continuous_const, continuous_id⟩)
+    · exact (krullTopology_isOpen_ofPred_fst_eq_snd i.1).preimage
+        (continuous_prodMk.2 ⟨continuous_const, continuous_id⟩)
+  · rintro ⟨s, ⟨hs, hxs⟩, hst⟩
+    exact mem_of_superset (hs.isOpen.mem_nhds hxs) hst
 
-/-- The Krull topology on `Gal(L/K)` is Hausdorff. -/
-instance krullTopology_t2 : T2Space Gal(L/K) := TotallySeparatedSpace.t2Space
+instance : T1Space Gal(L/K) where
+  t1 x := by
+    suffices h1 : IsClosed {(1 : Gal(L/K))} by
+      simpa using (Homeomorph.mulLeft x).isClosed_image.mpr h1
+    rw [← Subgroup.coe_bot, ← IntermediateField.fixingSubgroup_top]
+    exact IntermediateField.isClosed_fixingSubgroup ⊤
 
 /-- The Krull topology on `Gal(L/K)` is totally separated. -/
 @[deprecated TotallySeparatedSpace.isTotallySeparated_univ +typeChanged (since := "2026-03-05")]
