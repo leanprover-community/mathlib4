@@ -220,11 +220,17 @@ def getSrcDir (sp : SearchPath) (mod : Name) : IO FilePath := do
 
   return srcDir
 
-/-- Runs a terminal command and retrieves its output, passing the lines to `processLine` -/
+/-- Runs `curl` and passes each line of its stdout to `processLine`. Returns the
+final state, curl's exit code, and curl's stderr. -/
 partial def runCurlStreaming (args : Array String) (init : α)
-    (processLine : α → String → IO α) : IO α := do
+    (processLine : α → String → IO α) : IO (α × UInt32 × String) := do
   let child ← IO.Process.spawn { cmd := ← getCurl, args, stdout := .piped, stderr := .piped }
-  loop child.stdout init
+  -- Drain stderr concurrently: a full stderr pipe blocks curl.
+  let stderr ← IO.asTask (prio := .dedicated) child.stderr.readToEnd
+  let a ← loop child.stdout init
+  let exitCode ← child.wait
+  let stderr ← IO.ofExcept stderr.get
+  return (a, exitCode, stderr)
 where
   loop (h : IO.FS.Handle) (a : α) : IO α := do
     let line ← h.getLine

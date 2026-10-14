@@ -68,7 +68,8 @@ def putFilesViaCurl
     -- A retry after a PUT that landed is safe: the server answers a
     -- non-overwrite retry with 409/412, which `classifyUpload` excuses, and
     -- an overwrite retry re-sends the same bytes.
-    let args := uploadPutArgs signArgs overwrite ++ #["-X", "PUT", "--parallel"] ++
+    let args := uploadPutArgs signArgs overwrite ++
+      #["-X", "PUT", "--parallel", "--silent", "--show-error"] ++
       curlRetryArgs (supportLegacyCurl := false) ++
       -- `%{json}` prints a JSON report for each finished transfer. The
       -- leading newline keeps each report on its own line even if something

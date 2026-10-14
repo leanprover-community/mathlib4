@@ -682,7 +682,7 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
       msg := msg ++ "\x1b[K"
     return msg
   let init : TransferState := { last := (← IO.monoMsNow), decomp := decompState }
-  let s ← IO.runCurlStreaming args init fun a line => do
+  let (s, exitCode, stderr) ← IO.runCurlStreaming args init fun a line => do
     let mut {last, success, failed, done, speed, decomp} := a
     let mut {pending, currentTask, lastBatchSize, decompressed, decompFailed} := decomp
     -- Classify each finished transfer: rename a delivered part file, report a
@@ -787,6 +787,13 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
     let decompNow : DecompState :=
       {pending, currentTask, lastBatchSize, decompressed, decompFailed}
     pure {last, success, failed, done, speed, decomp := decompNow}
+  -- curl reports each transfer it finishes. A transfer without a report did
+  -- not finish, so it counts as failed.
+  let s ← if s.done < size then do
+      IO.eprintln s!"\ncurl exited with code {exitCode} after it reported {s.done} of {size} transfers"
+      unless stderr.isEmpty do IO.eprintln stderr.trimAscii
+      pure { s with failed := s.failed + (size - s.done) }
+    else pure s
   if s.done > 0 then
     -- to avoid confusingly moving on without finishing the count
     IO.eprintln (mkStatus s)
@@ -806,7 +813,7 @@ private def downloadFilesFromLocation (location : Location)
   let size := hashMap.size
   if parallel then
     IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent location hashMap)
-    let args := #["--request", "GET", "--parallel", "--silent"] ++
+    let args := #["--request", "GET", "--parallel", "--silent", "--show-error"] ++
       (← curlParallelMaxArgs) ++
       -- Avoid passing `--fail` here: it slows parallel transfers on curl
       -- 8.13.0, and it makes `--retry-all-errors` retry every 404 miss.
