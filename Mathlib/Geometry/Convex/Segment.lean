@@ -94,35 +94,37 @@ theorem mem_Ico_iff : z ∈ Ico R x y ↔ ∃ (a b : R) (ha : 0 < a) (hb : 0 ≤
     (hab : a + b = 1), convexCombPair a b ha.le hb hab x y = z := by
   simp [Ico]
 
-theorem Icc_subset_iff :
-  Icc R x y ⊆ s ↔ ∀ {a b : R} (ha : 0 ≤ a) (hb : 0 ≤ b) (hab : a + b = 1),
-  convexCombPair a b ha hb hab x y ∈ s := by
-  constructor
-  · intro h a b ha hb hab
-    exact h <| mem_Icc_iff.mpr <| convexCombPair_mem_Icc ha hb hab
-  · intro h x hx
-    obtain ⟨a, b, ha, hb, hab, rfl⟩ := mem_Icc_iff.mp hx
-    exact h ha hb hab
+theorem forall_mem_Icc_iff (p : X → Prop) : (∀ z ∈ Icc R x y, p z) ↔
+    ∀ {a b : R} (ha : 0 ≤ a) (hb : 0 ≤ b) (hab : a + b = 1),
+    p (convexCombPair a b ha hb hab x y) where
+  mp := fun h _ _ _ _ _ ↦ h _ <| convexCombPair_mem_Icc ..
+  mpr := fun h _ hz => by rcases mem_Icc_iff.mp hz with ⟨_, _, _, _, _, rfl⟩; apply h
+
+theorem forall_mem_Ioo_iff (p : X → Prop) : (∀ z ∈ Ioo R x y, p z) ↔
+    ∀ {a b : R} (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1),
+    p (convexCombPair a b ha.le hb.le hab x y) where
+  mp := fun h _ _ ha hb _ ↦ h _ <| convexCombPair_mem_Ioo ha hb ..
+  mpr := fun h _ hz => by rcases mem_Ioo_iff.mp hz with ⟨_, _, ha, hb, _, rfl⟩; apply h ha hb
+
+theorem forall_mem_Ico_iff (p : X → Prop) : (∀ z ∈ Ico R x y, p z) ↔
+    ∀ {a b : R} (ha : 0 < a) (hb : 0 ≤ b) (hab : a + b = 1),
+    p (convexCombPair a b ha.le hb hab x y) where
+  mp := fun h _ _ ha hb _ ↦ h _ <| convexCombPair_mem_Ico ha ..
+  mpr := fun h _ hz => by rcases mem_Ico_iff.mp hz with ⟨_, _, ha, hb, _, rfl⟩; apply h ha hb
+
+theorem Icc_subset_iff : Icc R x y ⊆ s ↔ ∀ {a b : R} (ha : 0 ≤ a) (hb : 0 ≤ b) (hab : a + b = 1),
+    convexCombPair a b ha hb hab x y ∈ s :=
+  forall_mem_Icc_iff ..
 
 theorem Ioo_subset_iff :
     Ioo R x y ⊆ s ↔ ∀ {a b : R} (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1),
-    convexCombPair a b ha.le hb.le hab x y ∈ s := by
-  constructor
-  · intro h _ _ ha hb hab
-    exact h <| mem_Ioo_iff.mpr <| convexCombPair_mem_Ioo ha hb hab
-  · intro h _ hx
-    obtain ⟨a, b, ha, hb, hab, rfl⟩ := mem_Ioo_iff.mp hx
-    exact h ha hb hab
+    convexCombPair a b ha.le hb.le hab x y ∈ s :=
+  forall_mem_Ioo_iff ..
 
 theorem Ico_subset_iff :
     Ico R x y ⊆ s ↔ ∀ {a b : R} (ha : 0 < a) (hb : 0 ≤ b) (hab : a + b = 1),
-    convexCombPair a b ha.le hb hab x y ∈ s := by
-  constructor
-  · intro h _ _ ha hb hab
-    exact h <| mem_Ico_iff.mpr <| convexCombPair_mem_Ico ha hb hab
-  · intro h _ hx
-    obtain ⟨a, b, ha, hb, hab, rfl⟩ := mem_Ico_iff.mp hx
-    exact h ha hb hab
+    convexCombPair a b ha.le hb hab x y ∈ s :=
+  forall_mem_Ico_iff ..
 
 end
 
@@ -139,7 +141,7 @@ theorem left_mem_Ico (x y : X) : x ∈ Ico R x y :=
 theorem Icc_same (x : X) : Icc R x x = {x} :=
   Set.ext fun z ↦
     ⟨fun ⟨a, b, _, _, hab, hz⟩ ↦ by
-      simpa [(add_smul _ _ _).symm, mem_singleton_iff, hab, one_smul, eq_comm] using hz,
+      simpa [(add_smul ..).symm, mem_singleton_iff, hab, one_smul, eq_comm] using hz,
       fun h ↦ mem_singleton_iff.1 h ▸ left_mem_Icc R z z⟩
 
 @[simp]
@@ -239,27 +241,27 @@ theorem Ico_subset (x y : X × Y) :
 
 theorem image_mk_Icc_left (x₁ x₂ : X) (y : Y) :
     (fun x ↦ (x, y)) '' Icc R x₁ x₂ = Icc R (x₁, y) (x₂, y) :=
-  (IsAffineMap.prodMk IsAffineMap.id (IsAffineMap.const y)).image_Icc _ _
+  (IsAffineMap.prodMk IsAffineMap.id (IsAffineMap.const y)).image_Icc ..
 
 theorem image_mk_Icc_right (x : X) (y₁ y₂ : Y) :
     (fun y ↦ (x, y)) '' Icc R y₁ y₂ = Icc R (x, y₁) (x, y₂) :=
-  (IsAffineMap.prodMk (IsAffineMap.const x) IsAffineMap.id).image_Icc _ _
+  (IsAffineMap.prodMk (IsAffineMap.const x) IsAffineMap.id).image_Icc ..
 
 theorem image_mk_Ioo_left (x₁ x₂ : X) (y : Y) :
     (fun x ↦ (x, y)) '' Ioo R x₁ x₂ = Ioo R (x₁, y) (x₂, y) :=
-  (IsAffineMap.prodMk IsAffineMap.id (IsAffineMap.const y)).image_Ioo _ _
+  (IsAffineMap.prodMk IsAffineMap.id (IsAffineMap.const y)).image_Ioo ..
 
 theorem image_mk_Ioo_right (x : X) (y₁ y₂ : Y) :
     (fun y ↦ (x, y)) '' Ioo R y₁ y₂ = Ioo R (x, y₁) (x, y₂) :=
-  (IsAffineMap.prodMk (IsAffineMap.const x) IsAffineMap.id).image_Ioo _ _
+  (IsAffineMap.prodMk (IsAffineMap.const x) IsAffineMap.id).image_Ioo ..
 
 theorem image_mk_Ico_left (x₁ x₂ : X) (y : Y) :
     (fun x ↦ (x, y)) '' Ico R x₁ x₂ = Ico R (x₁, y) (x₂, y) :=
-  (IsAffineMap.prodMk IsAffineMap.id (IsAffineMap.const y)).image_Ico _ _
+  (IsAffineMap.prodMk IsAffineMap.id (IsAffineMap.const y)).image_Ico ..
 
 theorem image_mk_Ico_right (x : X) (y₁ y₂ : Y) :
     (fun y ↦ (x, y)) '' Ico R y₁ y₂ = Ico R (x, y₁) (x, y₂) :=
-  (IsAffineMap.prodMk (IsAffineMap.const x) IsAffineMap.id).image_Ico _ _
+  (IsAffineMap.prodMk (IsAffineMap.const x) IsAffineMap.id).image_Ico ..
 
 end Prod
 
@@ -277,7 +279,7 @@ theorem Ioo_same (x : X) : Ioo R x x = {x} :=
       simpa only [convexCombPair_same, mem_singleton_iff, eq_comm] using hz,
     fun h : z = x ↦ by
       obtain ⟨a, ha₀, ha₁⟩ := DenselyOrdered.dense (0 : R) 1 zero_lt_one
-      refine ⟨a, 1 - a, ha₀, sub_pos_of_lt ha₁, add_sub_cancel _ _, ?_⟩
+      refine ⟨a, 1 - a, ha₀, sub_pos_of_lt ha₁, add_sub_cancel .., ?_⟩
       rw [convexCombPair_same, h]⟩
 
 end DenselyOrderedRing
