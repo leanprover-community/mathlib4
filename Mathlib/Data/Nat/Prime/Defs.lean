@@ -340,7 +340,7 @@ def decidablePrime' (p : ℕ) : Decidable (Prime p) :=
   subsingleton
 
 theorem not_prime_iff_minFac_lt {n : ℕ} (n2 : 2 ≤ n) : ¬Prime n ↔ minFac n < n :=
-  (not_congr <| prime_def_minFac.trans <| and_iff_right n2).trans <|
+  (not_congr <| prime_def_minFac.trans <| and_iff_right n2).trans
     (lt_iff_le_and_ne.trans <| and_iff_right <| minFac_le <| le_of_succ_le n2).symm
 
 theorem minFac_le_div {n : ℕ} (pos : 0 < n) (np : ¬Prime n) : minFac n ≤ n / minFac n :=

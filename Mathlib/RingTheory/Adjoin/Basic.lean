@@ -9,7 +9,8 @@ public import Mathlib.Algebra.Algebra.Subalgebra.Prod
 public import Mathlib.Algebra.Algebra.Subalgebra.Tower
 public import Mathlib.LinearAlgebra.Basis.Basic
 public import Mathlib.LinearAlgebra.Prod
-public import Mathlib.Algebra.Order.Group.Nat
+
+import Mathlib.Algebra.Order.Group.Nat
 /-!
 # Adjoining elements to form subalgebras
 
@@ -52,12 +53,7 @@ theorem adjoin_inl_union_inr_eq_prod (s) (t) :
     adjoin R (LinearMap.inl R A B '' (s ∪ {1}) ∪ LinearMap.inr R A B '' (t ∪ {1})) =
       (adjoin R s).prod (adjoin R t) := by
   apply le_antisymm
-  · simp only [adjoin_le_iff, Set.insert_subset_iff, Subalgebra.zero_mem, Subalgebra.one_mem,
-      subset_adjoin, -- the rest comes from `squeeze_simp`
-      Set.union_subset_iff,
-      LinearMap.coe_inl, Set.mk_preimage_prod_right, Set.image_subset_iff, SetLike.mem_coe,
-      Set.mk_preimage_prod_left, LinearMap.coe_inr, and_self_iff, Set.union_singleton,
-      Subalgebra.coe_prod]
+  · simp [adjoin_le_iff, Set.insert_subset_iff]
   · rintro ⟨a, b⟩ ⟨ha, hb⟩
     let P := adjoin R (LinearMap.inl R A B '' (s ∪ {1}) ∪ LinearMap.inr R A B '' (t ∪ {1}))
     have Ha : (a, (0 : B)) ∈ adjoin R (LinearMap.inl R A B '' (s ∪ {1})) :=
@@ -133,7 +129,7 @@ algebra spanned over `R` by `s ∪ t`.
 theorem adjoin_eq_adjoin_union [CommSemiring B] [Algebra R B] [Algebra A B]
     [IsScalarTower R A B] (s : Set A) (t : Set B) (hS : adjoin R s = ⊤) :
     (adjoin A t).restrictScalars R = adjoin R ((algebraMap A B '' s) ∪ t) := by
-  have := congr_arg (Subalgebra.map (IsScalarTower.toAlgHom R A B)) hS
+  have := congr(Subalgebra.map (IsScalarTower.toAlgHom R A B) $hS)
   rw [Algebra.map_top, AlgHom.map_adjoin, IsScalarTower.coe_toAlgHom'] at this
   rw [adjoin_union_eq_adjoin_adjoin, this, ← IsScalarTower.adjoin_range_toAlgHom]
 
@@ -189,7 +185,7 @@ theorem Subalgebra.adjoin_eq_span_basis {ι : Type*} (bL : Basis ι F L) :
     toSubmodule (adjoin E (L : Set K)) = span E (Set.range fun i : ι ↦ (bL i).1) :=
   L.adjoin_eq_span_of_eq_span E <| by
     simpa only [← L.range_val, Submodule.map_span, Submodule.map_top, ← Set.range_comp]
-      using! congr_arg (Submodule.map (L.val : L →ₗ[F] K)) bL.span_eq.symm
+      using! congr(Submodule.map (L.val : L →ₗ[F] K) $bL.span_eq.symm)
 
 theorem Algebra.restrictScalars_adjoin (F : Type*) [CommSemiring F] {E : Type*} [CommSemiring E]
     [Algebra F E] (K : Subalgebra F E) (S : Set E) :
