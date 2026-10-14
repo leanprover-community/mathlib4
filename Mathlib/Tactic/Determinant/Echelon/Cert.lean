@@ -62,17 +62,13 @@ def certifyDiagProd {u : Level} {m : Nat} {α : Q(Type u)} (rα : Q(CommRing $α
   certifyDiagProdList rα 0 m M.lit
 
 /-- Compute the sign of the permutation from the swaps with the corresponding proof. -/
-def certifyPermSign {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α)) (m : Nat)
-    (swaps : Array (Nat × Nat)) :
-    MetaM ((σ : Q(Equiv.Perm (Fin $m))) × (s : Q($α)) ×
-      Q(((Equiv.Perm.sign $σ : Int) : $α) = $s)) := do
-  let l ← mkSwapsLitQ m swaps
-  have k : Nat := swaps.size
+def certifyPermSign {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α)) {m : Nat}
+    (swaps : Q(List (Fin $m × Fin $m))) (k : Nat) :
+    (s : Q($α)) × Q(((Equiv.Perm.sign (permOfSwaps $swaps) : Int) : $α) = $s) :=
   -- The decomposition producer only records swaps between distinct rows.
-  let hl : Q(($l).all (fun p ↦ p.1 != p.2) = true) := (q(Eq.refl true) : Expr)
-  let hk : Q(($l).length = $k) := (q(Eq.refl $k) : Expr)
-  return ⟨q((($l).map fun p ↦ Equiv.swap p.1 p.2).foldl (· * ·) 1), q((-1) ^ $k),
-    q(intCast_sign_foldl_swap $hl $hk)⟩
+  let hl : Q(($swaps).all (fun p ↦ p.1 != p.2) = true) := (q(Eq.refl true) : Expr)
+  let hk : Q(($swaps).length = $k) := (q(Eq.refl $k) : Expr)
+  ⟨q((-1) ^ $k), q(intCast_sign_permOfSwaps $hl $hk)⟩
 
 /-- The value of the determinant read off the decomposition `data`, computed by `s * u / l`,
 where `u` and `l` are the diagonal products of `U` and `L` and `s` is the sign of the swaps.
@@ -105,8 +101,9 @@ def proveEchelonDet {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α)) (iα : 
     MetaM (Option ((v : Q($α)) × Q(($A).det = $v))) := do
   let r ← mkBareissDecomposition rα A entries
   let some v ← detValue m r.model r.data | return none
-  let ⟨L, _, pivot, decomp, U, hmul⟩ := r.cert
-  let ⟨σ, s, hs⟩ ← certifyPermSign rα m r.data.swaps
+  let ⟨L, swaps, pivot, decomp, U, hmul⟩ := r.cert
+  let ⟨s, hs⟩ := certifyPermSign rα swaps r.data.swaps.size
+  let σ : Q(Equiv.Perm (Fin $m)) := q(permOfSwaps $swaps)
   have decomp : Q(Echelon.Decomposition $A (ofLists $m $m $(L.lit)) $σ $pivot) := decomp
   let ⟨diagL, hl⟩ ← certifyDiagProd rα L
   let ⟨diagU, hu⟩ ← certifyDiagProd rα U

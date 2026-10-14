@@ -15,8 +15,8 @@ import Mathlib.Algebra.BigOperators.Fin
 # Reflection certificates for determinants of echelon decompositions
 
 The diagonal product of a matrix given as a list of rows, with a bridge lemma to the product over
-`Fin m` of an `ofLists` matrix, and the sign of a permutation given as a chain of swaps. The
-determinant of a matrix follows from these pieces of an echelon decomposition.
+`Fin m` of an `ofLists` matrix. The determinant of a matrix follows from these pieces of an echelon
+decomposition.
 
 ## Main definitions
 
@@ -77,16 +77,6 @@ theorem prod_diag_ofLists (m : ℕ) (rows : List (List α)) :
   simp [diagProd_eq]
 
 end CommMonoid
-
-/-! ### Signs of chains of swaps -/
-
-theorem intCast_sign_foldl_swap [Ring α] {n : Type*} [DecidableEq n] [Fintype n]
-    {l : List (n × n)} {k : ℕ} (hl : l.all fun p ↦ p.1 != p.2) (hk : l.length = k) :
-    ((Equiv.Perm.sign ((l.map fun p ↦ Equiv.swap p.1 p.2).foldl (· * ·) 1) : ℤ) : α) =
-      (-1) ^ k := by
-  rw [← List.prod_eq_foldl, Equiv.Perm.sign_prod_list_swap]
-  · simp [hk]
-  · grind [Equiv.Perm.IsSwap]
 
 /-! ### Determinants from echelon decompositions -/
 
