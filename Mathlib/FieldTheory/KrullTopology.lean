@@ -86,6 +86,12 @@ theorem krullTopology_isOpen_ofPred_fst_eq_snd (x : L) :
     p.1 x = p.2 x := hp
     p.2 x = c.2 x := hc.right
 
+/-- The stabilizer in `Gal(L/K)` of any element in `L` is open for the Krull topology. -/
+theorem AlgEquiv.isOpen_mulActionStabilizer_aut (x : L) :
+    IsOpen (MulAction.stabilizer Gal(L/K) x : Set Gal(L/K)) :=
+  (krullTopology_isOpen_ofPred_fst_eq_snd x).preimage
+    (show Continuous (fun σ : Gal(L/K) => (σ, (1 : Gal(L/K)))) by fun_prop)
+
 open SetRel in
 theorem krullTopology_mem_uniformity_iff {s : SetRel Gal(L/K) Gal(L/K)} :
     s ∈ 𝓤 Gal(L/K) ↔ ∃ u : Finset L, ∀ σ τ : Gal(L/K), Set.EqOn σ τ u → σ ~[s] τ := by
@@ -447,16 +453,8 @@ instance [Algebra.IsIntegral K L] : CompactSpace Gal(L/K) where
 
 section MulAction
 
-/-- The stabilizer in `Gal(L/K)` of any element in `L` is open for the Krull topology. -/
-theorem stabilizer_isOpen_of_isIntegral (x : L) :
-    IsOpen (MulAction.stabilizer Gal(L/K) x : Set Gal(L/K)) := by
-  open IntermediateField in
-  let E := adjoin K {x}
-  have hL : Algebra.EssFiniteType K E := IntermediateField.essFiniteType_iff.2
-    (IntermediateField.fg_adjoin_of_finite (Set.finite_singleton _))
-  convert isOpen_fixingSubgroup E
-  ext g
-  simpa using (forall_mem_adjoin_smul_eq_self_iff K (S := {x}) g).symm
+@[deprecated (since := "2026-10-14")]
+alias stabilizer_isOpen_of_isIntegral := AlgEquiv.isOpen_mulActionStabilizer_aut
 
 end MulAction
 
