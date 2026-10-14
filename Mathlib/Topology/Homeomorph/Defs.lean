@@ -40,6 +40,7 @@ open Set Topology Filter
 variable {X Y Z : Type*}
 
 /-- Homeomorphism between `X` and `Y`, also called topological isomorphism -/
+@[wikidata Q202906]
 structure Homeomorph (X : Type*) (Y : Type*) [TopologicalSpace X] [TopologicalSpace Y]
     extends X ≃ Y where
   /-- The forward map of a homeomorphism is a continuous function. -/
@@ -539,6 +540,7 @@ Having both `Homeomorph` and `IsHomeomorph` is justified by the fact that so man
 properties are unbundled in the topology part of the library, and by the fact that a homeomorphism
 is not merely a continuous bijection, that is `IsHomeomorph f` is not equivalent to
 `Continuous f ∧ Bijective f` but to `Continuous f ∧ Bijective f ∧ IsOpenMap f`. -/
+@[wikidata Q202906]
 structure IsHomeomorph (f : X → Y) : Prop where
   continuous : Continuous f
   isOpenMap : IsOpenMap f
