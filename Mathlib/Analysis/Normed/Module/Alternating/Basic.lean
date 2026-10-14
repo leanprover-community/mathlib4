@@ -5,8 +5,8 @@ Authors: Sébastien Gouëzel, Yury Kudryashov, Heather Macbeth, Patrick Massot
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.Alternating.Topology
 public import Mathlib.Analysis.Normed.Module.Multilinear.Basic
+public import Mathlib.Topology.Algebra.Module.Alternating.Topology
 
 /-!
 # Operator norm on the space of continuous alternating maps
@@ -23,7 +23,7 @@ Most proofs just invoke the corresponding fact about continuous multilinear maps
 
 noncomputable section
 
-open scoped NNReal
+open scoped NNReal Nat
 open Finset
 
 /-!

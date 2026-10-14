@@ -5,10 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.Small
 public import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
 public import Mathlib.CategoryTheory.ObjectProperty.Retract
-public import Mathlib.CategoryTheory.Limits.Presentation
 
 import Mathlib.CategoryTheory.Adjunction.Limits
 
@@ -212,6 +210,13 @@ instance : IsClosedUnderColimitsOfShape (⊤ : ObjectProperty C) J where
 
 export IsClosedUnderColimitsOfShape (colimitsOfShape_le)
 
+instance {ι : Type*} (P : ι → ObjectProperty C) [∀ i, (P i).IsClosedUnderColimitsOfShape J] :
+    (⨅ i, P i).IsClosedUnderColimitsOfShape J where
+  colimitsOfShape_le := by
+    simp only [le_iInf_iff]
+    intro i
+    exact (colimitsOfShape_monotone _ (iInf_le _ _)).trans (colimitsOfShape_le (P i) J)
+
 section
 
 variable {J} [P.IsClosedUnderColimitsOfShape J]
@@ -263,7 +268,7 @@ lemma isClosedUnderColimitsOfShape_inverseImage_iff (P : ObjectProperty D)
     (P.inverseImage e.functor).IsClosedUnderColimitsOfShape J ↔
       P.IsClosedUnderColimitsOfShape J := by
   refine ⟨fun H ↦ ?_, fun _ ↦ inferInstance⟩
-  convert!
+  convert
     (inferInstance :
       ((P.inverseImage e.functor).inverseImage e.inverse).IsClosedUnderColimitsOfShape J)
   ext X

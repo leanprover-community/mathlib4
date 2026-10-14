@@ -6,7 +6,6 @@ Authors: Nailin Guan
 module
 
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.Grading
-public import Mathlib.LinearAlgebra.ExteriorPower.Basic
 public import Mathlib.LinearAlgebra.TensorProduct.Graded.Internal
 
 /-!

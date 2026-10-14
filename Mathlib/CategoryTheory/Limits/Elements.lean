@@ -5,11 +5,11 @@ Authors: Markus Himmel, Emily Riehl
 -/
 module
 
+public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 public import Mathlib.CategoryTheory.Elements
-public import Mathlib.CategoryTheory.Limits.Types.Limits
 public import Mathlib.CategoryTheory.Limits.Creates
 public import Mathlib.CategoryTheory.Limits.Preserves.Limits
-public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+public import Mathlib.CategoryTheory.Limits.Types.Limits
 
 /-!
 # Limits in the category of elements

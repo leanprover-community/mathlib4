@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
 public import Mathlib.GroupTheory.EckmannHilton
-public import Mathlib.Tactic.CategoryTheory.Reassoc
 /-!
 # Constructing a semiadditive structure from binary biproducts
 

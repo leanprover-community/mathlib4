@@ -8,8 +8,6 @@ module
 public import Mathlib.Algebra.MvPolynomial.Equiv
 public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
-public import Mathlib.SetTheory.Cardinal.Basic
-public import Mathlib.RingTheory.Ideal.Span
 
 /-!
 # Homogeneous polynomials
@@ -201,7 +199,7 @@ lemma homogeneousSubmodule_one_pow (n : ℕ) :
     | zero => simp
     | add p q _ _ hp hq => exact Submodule.add_mem _ hp hq
     | monomial d r hr =>
-      convert! monomial_mem_homogeneousSubmodule_pow_degree _ _
+      convert monomial_mem_homogeneousSubmodule_pow_degree _ _
       rw [Finsupp.degree_eq_weight_one, ← Pi.one_def, ← hr]
 
 end
@@ -331,13 +329,13 @@ theorem rename_isHomogeneous {f : σ → τ} (h : φ.IsHomogeneous n) :
   apply IsHomogeneous.sum _ _ _ fun d hd ↦ isHomogeneous_monomial _ _
   intro d hd
   apply (Finsupp.sum_mapDomain_index_addMonoidHom fun _ ↦ .id ℕ).trans
-  convert! h (mem_support_iff.mp hd)
+  convert h (mem_support_iff.mp hd)
   simp only [weight_apply, AddMonoidHom.id_apply, Pi.one_apply, smul_eq_mul, mul_one]
 
 theorem rename_isHomogeneous_iff {f : σ → τ} (hf : f.Injective) :
     (rename f φ).IsHomogeneous n ↔ φ.IsHomogeneous n := by
   refine ⟨fun h d hd ↦ ?_, rename_isHomogeneous⟩
-  convert! ← @h (d.mapDomain f) _
+  convert ← @h (d.mapDomain f) _
   · simp only [weight_apply, Pi.one_apply, smul_eq_mul, mul_one]
     exact Finsupp.sum_mapDomain_index_inj (h := fun _ ↦ id) hf
   · rwa [coeff_rename_mapDomain f hf]
@@ -368,7 +366,7 @@ lemma coeff_isHomogeneous_of_optionEquivLeft_symm
   have hφ : φ.IsHomogeneous n := hp.rename_isHomogeneous
   suffices IsHomogeneous (F (p.coeff i)) j by
     rwa [← (IsHomogeneous.rename_isHomogeneous_iff e.injective)]
-  convert! hφ.finSuccEquiv_coeff_isHomogeneous i j h using 1
+  convert hφ.finSuccEquiv_coeff_isHomogeneous i j h using 1
   dsimp only [φ, F', F, renameEquiv_apply]
   rw [finSuccEquiv_rename_finSuccEquiv, AlgEquiv.apply_symm_apply]
   simp
@@ -466,7 +464,7 @@ lemma eq_zero_of_forall_eval_eq_zero_of_le_card
   have hF₀ : F ≠ 0 := by rintro rfl; simp at h
   have hF : F.IsHomogeneous n := by rwa [rename_isHomogeneous_iff hf] at hF
   obtain ⟨r, hr⟩ := exists_eval_ne_zero_of_totalDegree_le_card_aux hF hF₀ hnR
-  obtain ⟨r, rfl⟩ := (Function.factorsThrough_iff _).mp <| (hf.factorsThrough r)
+  obtain ⟨r, rfl⟩ := (Function.factorsThrough_iff _).mp (hf.factorsThrough r)
   use r
   rwa [eval_rename]
 
