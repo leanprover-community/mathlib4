@@ -64,12 +64,19 @@ jobs:
             rm "$archive"
           done
 
-      - name: Check dependencies and measure two clean builds
+      - name: Check all dependencies with both toolchains
         env:
           BENCH_ORDER: ${{ inputs.order }}
           BENCH_TOOLCHAINS: ${{ runner.temp }}
           BENCH_LANDRUN: '1'
-        run: python3 .github/benchmarks/imported-unfold.py
+        run: python3 .github/benchmarks/imported-unfold.py prepare
+
+      - name: Measure two clean full Mathlib builds
+        env:
+          BENCH_ORDER: ${{ inputs.order }}
+          BENCH_TOOLCHAINS: ${{ runner.temp }}
+          BENCH_LANDRUN: '1'
+        run: python3 .github/benchmarks/imported-unfold.py measure
 
       - name: Upload measurements and build logs
         if: always()

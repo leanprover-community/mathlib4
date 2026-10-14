@@ -12,12 +12,16 @@ Mathlib elaboration, and the default library build outputs remain inside the tim
 Both runs use the same manifest pins. The script deletes every package's build
 directory before each measurement and disables Lake artifact caches.
 
-The script applies `batteries-float.patch` to both versions. This changes two proof
-steps from `unfold pack` to `dsimp -zeta only [pack]`. The new steps also reduce the
-match while they preserve the let bindings needed by `extract_lets`. Both unmodified
-versions fail on these steps in the initial CI run. The script checks the adapted
-module with both toolchains before the full builds and verifies that the source
-remains unchanged between measurements. A failed build does not produce a speedup estimate.
+The script applies `batteries-compat.patch` to both versions. The Float proofs use
+`dsimp -zeta only [pack]` to reduce the match and preserve the let bindings. The
+String proofs use the public order lemmas for Lean's current comparison function.
+These adaptations fix failures in the pinned dependency with the newer toolchains.
+
+The script checks all dependency libraries with both toolchains before either
+full build. It then deletes their build outputs before each timed run. Lake uses
+`--fail-fast` so a failed target stops new build jobs. The script verifies that
+the source remains unchanged between measurements. A failed build does not produce
+a speedup estimate.
 
 The job uploads logs, CPU and memory details, module lists, wall times, user CPU
 times, and system CPU times. Reverse the order in a second dispatch to check run-order effects.

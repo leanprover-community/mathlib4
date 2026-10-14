@@ -7,6 +7,7 @@ from pathlib import Path
 import resource
 import shutil
 import subprocess
+import sys
 import time
 
 
@@ -23,7 +24,9 @@ OUT.mkdir(exist_ok=True)
 MANIFEST = (ROOT / "lake-manifest.json").read_bytes()
 PACKAGES = json.loads(MANIFEST)["packages"]
 SOURCE_DIFFS = {p["name"]: "" for p in PACKAGES}
-ADAPTATION = ROOT / ".github/benchmarks/batteries-float.patch"
+ADAPTATION = ROOT / ".github/benchmarks/batteries-compat.patch"
+DEPENDENCY_TARGETS = ["Batteries", "Qq", "Aesop", "ProofWidgets", "ImportGraph",
+                      "LeanSearchClient", "Plausible", "Cli"]
 
 
 def save(name, value):
@@ -54,7 +57,7 @@ def environment(variant):
 
 
 def lake(variant, args):
-    return [str(TOOLCHAINS / f"lean-{variant}" / "bin/lake"), "-KCI", *args]
+    return [str(TOOLCHAINS / f"lean-{variant}" / "bin/lake"), "-KCI", "--fail-fast", *args]
 
 
 def clear_builds():
@@ -109,7 +112,14 @@ def run_logged(variant, args, name, timed=False):
     seconds = time.monotonic() - started
     usage_after = resource.getrusage(resource.RUSAGE_CHILDREN)
     if code:
-        print((OUT / f"{name}.log").read_text()[-20000:], flush=True)
+        log_text = (OUT / f"{name}.log").read_text()
+        lines = log_text.splitlines()
+        context = set()
+        for i, line in enumerate(lines):
+            if line.startswith(("error:", "warning:", "✖")):
+                context.update(range(max(0, i - 1), min(len(lines), i + 20)))
+        print("\n".join(lines[i] for i in sorted(context))[:20000], flush=True)
+        print(log_text[-4000:], flush=True)
         raise RuntimeError(f"{name} failed with exit code {code}; exclude its timing")
     if timed:
         save(f"{name}.resources.json", {
@@ -119,7 +129,7 @@ def run_logged(variant, args, name, timed=False):
     return seconds
 
 
-def main():
+def prepare():
     versions = {}
     for variant, commit in COMMITS.items():
         executable = TOOLCHAINS / f"lean-{variant}" / "bin/lean"
@@ -150,10 +160,23 @@ def main():
         run_logged(variant, ["env", "true"], f"prepare-{variant}")
         check_sources()
         clear_builds()
-        # Check a dependency that currently fails in the nightly CI before long builds.
-        run_logged(variant, ["build", "--no-cache", "--no-ansi", "Batteries.Data.Float.Lemmas"],
+        # Check all dependency libraries before either full Mathlib build.
+        run_logged(variant, ["build", "--no-cache", "--no-ansi", "--wfail", *DEPENDENCY_TARGETS],
                    f"preflight-{variant}")
+        print(f"All dependency libraries pass with {variant}", flush=True)
+    check_sources()
+    save("preflight.json", {"lean_commits": COMMITS,
+                            "manifest_sha256": hashlib.sha256(MANIFEST).hexdigest(),
+                            "adaptation_sha256": hashlib.sha256(ADAPTATION.read_bytes()).hexdigest()})
 
+
+def measure():
+    preflight = json.loads((OUT / "preflight.json").read_text())
+    assert preflight == {"lean_commits": COMMITS,
+                         "manifest_sha256": hashlib.sha256(MANIFEST).hexdigest(),
+                         "adaptation_sha256": hashlib.sha256(ADAPTATION.read_bytes()).hexdigest()}
+    SOURCE_DIFFS["batteries"] = (OUT / "batteries-adaptation.diff").read_text().strip()
+    check_sources()
     rows = []
     outputs = None
     for index, variant in enumerate(ORDER):
@@ -198,7 +221,12 @@ def main():
 
 if __name__ == "__main__":
     try:
-        main()
+        phase = sys.argv[1] if len(sys.argv) == 2 else "all"
+        assert phase in ("prepare", "measure", "all"), "Expected prepare or measure"
+        if phase in ("prepare", "all"):
+            prepare()
+        if phase in ("measure", "all"):
+            measure()
     except Exception as error:
         save("status.json", {"status": "failed", "error": str(error)})
         raise

@@ -18,3 +18,24 @@
      extract_lets mantbits biasedexp
      rw [ite_eq_right, ite_eq_left]
      · congr 1
+--- a/Batteries/Data/String/Lemmas.lean
++++ b/Batteries/Data/String/Lemmas.lean
+@@ -31,12 +31,10 @@
+ attribute [ext (iff := false)] ext
+-
++
+ theorem lt_antisymm {s₁ s₂ : String} (h₁ : ¬s₁ < s₂) (h₂ : ¬s₂ < s₁) : s₁ = s₂ := by
+-  simp at h₁ h₂
+-  exact String.le_antisymm h₂ h₁
+-
+-instance : Std.LawfulLTOrd String :=
+-  .compareOfLessAndEq_of_irrefl_of_trans_of_antisymm
+-    String.lt_irrefl String.lt_trans String.lt_antisymm
++  exact Std.le_antisymm (Std.not_lt.mp h₂) (Std.not_lt.mp h₁)
++
++instance : Std.LawfulLTOrd String where
++  eq_lt_iff_lt := Std.compare_eq_lt
+-
++
+ theorem Pos.Raw.offsetBy_eq {p q : Pos.Raw} : p.offsetBy q = ⟨q.byteIdx + p.byteIdx⟩ := by
+   ext
