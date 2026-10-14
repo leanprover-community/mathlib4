@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import resource
 import shutil
 import subprocess
 import time
@@ -94,12 +95,7 @@ def run_logged(variant, args, name, timed=False):
             if key in env:
                 sandbox += ["--env", key]
         command = [*sandbox, "--", *command]
-    if timed:
-        command = [
-            "/usr/bin/time", "-o", str(OUT / f"{name}.resources.json"),
-            "-f", '{"user_seconds":%U,"system_seconds":%S,"max_rss_kib":%M}',
-            *command,
-        ]
+    usage_before = resource.getrusage(resource.RUSAGE_CHILDREN)
     started = time.monotonic()
     with (OUT / f"{name}.log").open("w") as log:
         process = subprocess.Popen(command, env=env, stdout=log, stderr=log)
@@ -111,9 +107,15 @@ def run_logged(variant, args, name, timed=False):
                 count = len(list((ROOT / ".lake/build/lib/lean/Mathlib").rglob("*.olean")))
                 print(f"{name}: {time.monotonic() - started:.0f} seconds, {count} Mathlib modules", flush=True)
     seconds = time.monotonic() - started
+    usage_after = resource.getrusage(resource.RUSAGE_CHILDREN)
     if code:
         print((OUT / f"{name}.log").read_text()[-20000:], flush=True)
         raise RuntimeError(f"{name} failed with exit code {code}; exclude its timing")
+    if timed:
+        save(f"{name}.resources.json", {
+            "user_seconds": usage_after.ru_utime - usage_before.ru_utime,
+            "system_seconds": usage_after.ru_stime - usage_before.ru_stime,
+        })
     return seconds
 
 
