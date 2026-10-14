@@ -816,6 +816,53 @@ open Matrix
 
 namespace Matrix
 
+section Prod
+
+/-- Matrices over a product are in canonical bijection with product of matrices
+
+This is available in bundled forms as:
+* `Matrix.prodAddEquiv`
+* `Matrix.prodLinearEquiv`
+* `Matrix.prodRingEquiv`
+* `Matrix.prodAlgEquiv`
+-/
+@[simps!] def prodEquiv : Matrix m n (α × β) ≃ (Matrix m n α) × (Matrix m n β) where
+  toFun a := ⟨a.map Prod.fst, a.map Prod.snd⟩
+  invFun a := .of fun i j ↦ ⟨a.1 i j, a.2 i j⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+/-- `prodEquiv` as an `AddEquiv`. -/
+@[simps!] def prodAddEquiv [Add α] [Add β] :
+    Matrix m n (α × β) ≃+ (Matrix m n α) × (Matrix m n β) where
+  __ := prodEquiv
+  map_add' _ _ := rfl
+
+/-- `prodEquiv` as a `LinearEquiv`. -/
+@[simps!] def prodLinearEquiv (R) [Semiring R] [AddCommMonoid α] [AddCommMonoid β]
+    [Module R α] [Module R β] : Matrix m n (α × β) ≃ₗ[R] (Matrix m n α) × (Matrix m n β) where
+  __ := prodAddEquiv
+  map_smul' _ _ := rfl
+
+variable [Fintype n]
+
+/-- `prodEquiv` as a `RingEquiv`. -/
+@[simps!] def prodRingEquiv [AddCommMonoid α] [AddCommMonoid β] [Mul α] [Mul β] :
+    Matrix n n (α × β) ≃+* (Matrix n n α) × (Matrix n n β) where
+  __ := prodAddEquiv
+  map_mul' _ _ := by ext <;> simp [Matrix.mul_apply, Prod.fst_sum, Prod.snd_sum]
+
+variable (R) [CommSemiring R] [DecidableEq n]
+
+/-- `prodEquiv` as an `AlgEquiv`. -/
+@[simps!] def prodAlgEquiv [Semiring α] [Algebra R α] [Semiring β] [Algebra R β] :
+    Matrix n n (α × β) ≃ₐ[R] (Matrix n n α) × (Matrix n n β) where
+  __ := prodRingEquiv
+  commutes' := (AlgHom.mk' (prodRingEquiv (n := n) (α := α) (β := β)).toRingHom
+    fun _ _ ↦ rfl).commutes
+
+end Prod
+
 section Pi
 
 variable {ι : Type*} {β : ι → Type*}

@@ -230,6 +230,23 @@ def map (f : R →+* S) : SpecialLinearGroup n R →* SpecialLinearGroup n S whe
   map_one' := Subtype.ext f.mapMatrix.map_one
   map_mul' x y := Subtype.ext <| f.mapMatrix.map_mul ↑ₘx ↑ₘy
 
+section Prod
+
+variable (n)
+
+/-- The equivalence between `SL n (R × S)` and `SL n R × SL n S`. -/
+@[simps! apply symm_apply]
+def prodEquiv :
+    SpecialLinearGroup n (R × S) ≃* SpecialLinearGroup n R × SpecialLinearGroup n S where
+  __ := (map (RingHom.fst R S)).prod (map (RingHom.snd R S))
+  invFun A := ⟨(Matrix.prodRingEquiv).symm ⟨A.1, A.2⟩, by
+    rw [det_prodRingEquiv_symm, A.1.2, A.2.2, Prod.mk_one_one]⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+end Prod
+
+
 section center
 
 open Subgroup
