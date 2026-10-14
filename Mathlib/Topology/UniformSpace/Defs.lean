@@ -511,8 +511,7 @@ theorem nhdsWithin_eq_comap_uniformity {x : α} (S : Set α) :
 
 /-- See also `isOpen_iff_isOpen_ball_subset`. -/
 theorem isOpen_iff_ball_subset {s : Set α} : IsOpen s ↔ ∀ x ∈ s, ∃ V ∈ 𝓤 α, ball x V ⊆ s := by
-  simp_rw [isOpen_iff_mem_nhds, nhds_eq_comap_uniformity, mem_comap]
-  rfl
+  simp [isOpen_iff_mem_nhds, nhds_eq_comap_uniformity, ball, SetRel.ball, Set.preimage]
 
 theorem nhds_basis_uniformity' {p : ι → Prop} {s : ι → SetRel α α} (h : (𝓤 α).HasBasis p s)
     {x : α} : (𝓝 x).HasBasis p fun i => ball x (s i) := by

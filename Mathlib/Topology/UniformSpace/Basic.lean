@@ -425,9 +425,7 @@ theorem uniformity_comap {_ : UniformSpace β} (f : α → β) :
   rfl
 
 lemma ball_preimage {f : α → β} {U : SetRel β β} {x : α} :
-    UniformSpace.ball x (Prod.map f f ⁻¹' U) = f ⁻¹' UniformSpace.ball (f x) U := by
-  ext : 1
-  rfl
+    UniformSpace.ball x (Prod.map f f ⁻¹' U) = f ⁻¹' UniformSpace.ball (f x) U := rfl
 
 @[simp]
 theorem uniformSpace_comap_id {α : Type*} : UniformSpace.comap (id : α → α) = id := by
