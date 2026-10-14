@@ -6,10 +6,10 @@ Authors: Markus Himmel, Andrew Yang
 module
 
 public import Mathlib.Algebra.Category.MonCat.Limits
-public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
+public import Mathlib.Algebra.Group.IsCommutative
+public import Mathlib.CategoryTheory.ConcreteCategory.Representable
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 public import Mathlib.CategoryTheory.Monoidal.Mon
-public import Mathlib.CategoryTheory.ConcreteCategory.Representable
 
 /-!
 # Yoneda embedding of `Mon C`
@@ -50,8 +50,6 @@ instance Mon.uniqueHomToTrivial (A : Mon D) : Unique (A ⟶ Mon.trivial D) where
   default.hom := toUnit A.X
   default.isMonHom_hom.mul_hom := toUnit_unique _ _
   uniq f := Mon.Hom.ext (toUnit_unique _ _)
-
-@[deprecated (since := "2026-03-20")] alias uniqueHomToTrivial := Mon.uniqueHomToTrivial
 
 namespace Mon
 
@@ -315,7 +313,7 @@ variable (M) in
 @[to_additive (attr := simps)
 /-- If `M` is an additive monoid object, then `Hom(-, M)` is a presheaf of additive monoids. -/]
 def yonedaMonObj : Cᵒᵖ ⥤ MonCat.{v} where
-  obj X := MonCat.of (unop X ⟶ M)
+  obj X := ↧(unop X ⟶ M)
   map {X Y₂} φ := MonCat.ofHom
     { toFun := (φ.unop ≫ ·)
       map_one' := by
@@ -356,7 +354,7 @@ def yonedaMon : Mon C ⥤ Cᵒᵖ ⥤ MonCat.{v} where
   map ψ :=
   { app _ := MonCat.ofHom <| IsMonHom.monoidHom _ _
     naturality {_ _} φ := MonCat.hom_ext <| MonoidHom.ext fun f ↦ Category.assoc φ.unop f ψ.hom }
-  map_id _ := NatTrans.ext <| funext fun _ ↦ MonCat.hom_ext <| IsMonHom.monoidHom_id
+  map_id _ := NatTrans.ext <| funext fun _ ↦ MonCat.hom_ext IsMonHom.monoidHom_id
   map_comp _ _ := NatTrans.ext <| funext fun _ ↦ MonCat.hom_ext <| IsMonHom.monoidHom_comp _ _
 
 #adaptation_note

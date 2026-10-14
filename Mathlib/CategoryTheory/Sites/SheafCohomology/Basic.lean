@@ -5,14 +5,12 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Category.Grp.Abelian
 public import Mathlib.Algebra.Category.Grp.Adjunctions
-public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
-public import Mathlib.CategoryTheory.Sites.Abelian
-public import Mathlib.CategoryTheory.Sites.ConstantSheaf
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
-public import Mathlib.Algebra.Category.Grp.Zero
 public import Mathlib.CategoryTheory.Adjunction.Additive
+public import Mathlib.CategoryTheory.Sites.Abelian
+
+import Mathlib.Algebra.Category.Grp.Zero
 
 /-!
 # Sheaf cohomology
@@ -57,7 +55,7 @@ variable (F : Sheaf J AddCommGrpCat.{w})
 
 /-- The cohomology of an abelian sheaf in degree `n`. -/
 abbrev H (n : ℕ) : Type w' :=
-  Ext ((constantSheaf J AddCommGrpCat.{w}).obj (AddCommGrpCat.of (ULift ℤ))) F n
+  Ext ((constantSheaf J AddCommGrpCat.{w}).obj ↧(ULift ℤ)) F n
 
 end
 
@@ -153,7 +151,7 @@ variable (J) in
 /-- `H` as a functor. -/
 @[simps]
 noncomputable def functorH (n : ℕ) : Sheaf J AddCommGrpCat.{w} ⥤ AddCommGrpCat.{w'} where
-  obj F := .of (H F n)
+  obj F := ↧(H F n)
   map f := AddCommGrpCat.ofHom (H.map f n)
 
 instance (n : ℕ) : (functorH J n).Additive where

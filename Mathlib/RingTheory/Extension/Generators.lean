@@ -5,11 +5,10 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.Cotangent
+public import Mathlib.RingTheory.Extension.Basic
 public import Mathlib.RingTheory.Localization.Away.Basic
 public import Mathlib.RingTheory.MvPolynomial.Tower
 public import Mathlib.RingTheory.TensorProduct.MvPolynomial
-public import Mathlib.RingTheory.Extension.Basic
 
 /-!
 
@@ -17,10 +16,10 @@ public import Mathlib.RingTheory.Extension.Basic
 
 ## Main definition
 
-- `Algebra.Generators`: A family of generators of an `R`-algebra `S` consists of
-  1. `ι`: The type of variables.
-  2. `val : ι → S`: The assignment of each variable to a value.
-  3. `σ`: A set-theoretic section of the induced `R`-algebra homomorphism `R[X] → S`, where we
+- `Algebra.Generators`: Given a type `ι` of variables, a family of generators of an `R`-algebra
+  `S` consists of
+  1. `val : ι → S`: The assignment of each variable to a value.
+  2. `σ`: A set-theoretic section of the induced `R`-algebra homomorphism `R[X] → S`, where we
      write `R[X]` for `R[ι]`.
 
 - `Algebra.Generators.Hom`: Given a commuting square
@@ -38,15 +37,6 @@ public import Mathlib.RingTheory.Extension.Basic
 - `Algebra.Generators.mvPolynomial`: The canonical `R`-generators of the polynomial algebra
   `MvPolynomial ι R`, indexed by `ι` via the variables `X`.
 
-## TODOs
-
-Currently, Lean does not see through the `ι` field of terms of `Generators R S` obtained
-from constructions, e.g. composition. This causes fragile and cumbersome proofs, because
-`simp` and `rw` often don't work properly. `Generators R S` (and `Presentation R S`, etc.) should
-be refactored in a way that makes these equalities reducibly def-eq, for example
-by unbundling the `ι` field or making the field globally reducible in constructions using
-unification hints.
-
 -/
 
 @[expose] public section
@@ -57,10 +47,9 @@ open TensorProduct MvPolynomial
 
 variable (R : Type u) (S : Type v) (ι : Type w) [CommRing R] [CommRing S] [Algebra R S]
 
-/-- A family of generators of an `R`-algebra `S` consists of
-1. `ι`: The type of variables.
-2. `val : ι → S`: The assignment of each variable to a value in `S`.
-3. `σ`: A section of `R[X] → S`. -/
+/-- Given a type `ι` of variables, a family of generators of an `R`-algebra `S` consists of
+1. `val : ι → S`: The assignment of each variable to a value in `S`.
+2. `σ`: A section of `R[X] → S`, where we write `R[X]` for `R[ι]`. -/
 structure Algebra.Generators where
   /-- The assignment of each variable to a value in `S`. -/
   val : ι → S
@@ -188,7 +177,7 @@ noncomputable def ofAlgEquiv
   val := e ∘ P.val
   σ' := P.σ ∘ e.symm
   aeval_val_σ' t := by
-    rw [Function.comp_def, ← AlgHom.coe_coe e, ← MvPolynomial.comp_aeval_apply]
+    rw [Function.comp_def, ← AlgHom.coe_ofClass e, ← MvPolynomial.comp_aeval_apply]
     simp
 
 @[simp]
@@ -235,9 +224,13 @@ def comp [Algebra S T] [IsScalarTower R S T]
   aeval_val_σ' s := by
     have (x : P.Ring) : aeval (algebraMap S T ∘ P.val) x = algebraMap S T (aeval P.val x) := by
       rw [map_aeval, aeval_def, coe_eval₂Hom, ← IsScalarTower.algebraMap_eq, Function.comp_def]
+    have hfold (p : MvPolynomial ι' S) :
+        (∑ x ∈ support p, (algebraMap S T) (p.coeff x) * x.prod fun a b ↦ Q.val a ^ b) =
+          aeval Q.val p :=
+      ((aeval_def (f := Q.val) p).trans (eval₂_eq (algebraMap S T) Q.val p)).symm
     conv_rhs => rw [← Q.aeval_val_σ s, (Q.σ s).as_sum]
     simp [aeval_rename, this, aeval_monomial, Finsupp.prod_mapDomain_index_inj Sum.inl_injective,
-      Finsupp.sum, MvPolynomial.finsupp_support_eq_support, MvPolynomial.coeff]
+      Finsupp.sum, MvPolynomial.finsupp_support_eq_support, hfold]
 
 variable (S) in
 /-- If `R → S → T` is a tower of algebras, a family of generators `R[X] → T`
@@ -258,8 +251,7 @@ def baseChange (T) [CommRing T] [Algebra R T] (P : Generators R S ι) :
     Generators T (T ⊗[R] S) ι := by
   apply Generators.ofSurjective (fun x ↦ 1 ⊗ₜ[R] P.val x)
   intro x
-  induction x using TensorProduct.induction_on with
-  | zero => exact ⟨0, map_zero _⟩
+  induction x using TensorProduct.inductionOn with
   | tmul a b =>
     let X := P.σ b
     use a • MvPolynomial.map (algebraMap R T) X
@@ -425,7 +417,7 @@ lemma Hom.algebraMap_toAlgHom (f : Hom P P') (x) : MvPolynomial.aeval P'.val (f.
     algebraMap S S' (MvPolynomial.aeval P.val x) := by
   suffices ((MvPolynomial.aeval P'.val).restrictScalars R).comp f.toAlgHom =
       (IsScalarTower.toAlgHom R S S').comp (MvPolynomial.aeval P.val) from
-    DFunLike.congr_fun this x
+    congr($this x)
   apply MvPolynomial.algHom_ext
   intro i
   simp [Hom.toAlgHom]
@@ -551,15 +543,14 @@ lemma toComp_toAlgHom_monomial (Q : Generators S T ι') (P : Generators R S ι) 
   · ext f (i₁ | i₂)
     simp [rename_eq_aeval]
     rfl
-  · ext f (i₁ | i₂) <;>
-      simp [Finsupp.mapDomain_of_notMem_range, Finsupp.mapDomain_apply Sum.inr_injective]
+  · ext f (i₁ | i₂) <;> simp [Finsupp.mapDomain_of_notMem_range, Sum.inr_injective]
 
 @[simp]
 lemma toAlgHom_ofComp_rename (Q : Generators S T ι') (P : Generators R S ι) (p : P.Ring) :
     (Q.ofComp P).toAlgHom ((rename Sum.inr) p) = C (algebraMap _ _ p) :=
   have : (Q.ofComp P).toAlgHom.comp (rename Sum.inr) =
     (IsScalarTower.toAlgHom R S Q.Ring).comp (IsScalarTower.toAlgHom R P.Ring S) := by ext; simp
-  DFunLike.congr_fun this p
+  congr($this p)
 
 lemma toAlgHom_ofComp_surjective (Q : Generators S T ι') (P : Generators R S ι) :
     Function.Surjective (Q.ofComp P).toAlgHom := by
@@ -652,9 +643,9 @@ lemma ker_ofAlgHom {I : Type*} (f : MvPolynomial I R →ₐ[R] S) (h : Function.
 @[simp]
 lemma ker_ofAlgEquiv (P : Generators R S ι) {T : Type*} [CommRing T] [Algebra R T] (e : S ≃ₐ[R] T) :
     (P.ofAlgEquiv e).ker = P.ker := by
-  rw [ker_eq_ker_aeval_val, ofAlgEquiv_val, Function.comp_def, ← AlgHom.coe_coe,
+  rw [ker_eq_ker_aeval_val, ofAlgEquiv_val, Function.comp_def, ← AlgHom.coe_ofClass,
     ← MvPolynomial.comp_aeval, ← AlgHom.comap_ker, ← RingHom.ker_coe_toRingHom,
-    AlgHomClass.toRingHom_toAlgHom, AlgHom.ker_coe_equiv, ← RingHom.ker_eq_comap_bot,
+    AlgHomClass.toRingHom_ofClass, AlgHom.ker_coe_equiv, ← RingHom.ker_eq_comap_bot,
     ← ker_eq_ker_aeval_val]
 
 lemma map_toComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
@@ -671,32 +662,32 @@ lemma map_toComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
   · rintro x (h₂ : (Q.ofComp P).toAlgHom x = 0)
     let e : (ι' ⊕ ι →₀ ℕ) ≃+ (ι' →₀ ℕ) × (ι →₀ ℕ) :=
       Finsupp.sumFinsuppAddEquivProdFinsupp
-    suffices ∑ v ∈ (support x).map e, (monomial (e.symm v)) (coeff (e.symm v) x) ∈
+    suffices ∑ v ∈ (support x).map e, (monomial (e.symm v)) (x.coeff (e.symm v)) ∈
         Ideal.map (Q.toComp P).toAlgHom.toRingHom P.ker by
       simpa only [AlgHom.toRingHom_eq_coe, Finset.sum_map, Equiv.coe_toEmbedding,
         EquivLike.coe_coe, AddEquiv.symm_apply_apply, support_sum_monomial_coeff] using! this
     rw [← Finset.sum_fiberwise_of_maps_to (fun i ↦ Finset.mem_image_of_mem Prod.fst)]
     refine sum_mem fun i hi ↦ ?_
     convert_to monomial (e.symm (i, 0)) 1 * (Q.toComp P).toAlgHom.toRingHom
-      (∑ j ∈ (support x).map e.toEmbedding with j.1 = i, monomial j.2 (coeff (e.symm j) x)) ∈ _
+      (∑ j ∈ (support x).map e.toEmbedding with j.1 = i, monomial j.2 (x.coeff (e.symm j))) ∈ _
     · rw [map_sum, Finset.mul_sum]
       refine Finset.sum_congr rfl fun j hj ↦ ?_
       obtain rfl := (Finset.mem_filter.mp hj).2
       obtain ⟨i, j⟩ := j
       clear hj hi
-      have : (Q.toComp P).toAlgHom (monomial j (coeff (e.symm (i, j)) x)) =
-          monomial (e.symm (0, j)) (coeff (e.symm (i, j)) x) :=
+      have : (Q.toComp P).toAlgHom (monomial j (x.coeff (e.symm (i, j)))) =
+          monomial (e.symm (0, j)) (x.coeff (e.symm (i, j))) :=
         toComp_toAlgHom_monomial ..
       simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
           this]
-      rw [monomial_mul, ← map_add, Prod.mk_add_mk, add_zero, zero_add, one_mul]
+      rw [monomial_mul_monomial, ← map_add, Prod.mk_add_mk, add_zero, zero_add, one_mul]
     · apply Ideal.mul_mem_left
       refine Ideal.mem_map_of_mem _ ?_
       simp only [ker_eq_ker_aeval_val, AddEquiv.toEquiv_eq_coe, RingHom.mem_ker, map_sum]
-      rw [← coeff_zero i, ← h₂]
+      rw [show (0 : S) = ((Q.ofComp P).toAlgHom x).coeff i by rw [h₂]; simp]
       clear h₂ hi
       have (x : (Q.comp P).Ring) : (Function.support fun a ↦ if a.1 = i then aeval P.val
-          (monomial a.2 (coeff (e.symm a) x)) else 0) ⊆ SetLike.coe ((support x).map e) := by
+          (monomial a.2 (x.coeff (e.symm a))) else 0) ⊆ SetLike.coe ((support x).map e) := by
         rw [← Set.compl_subset_compl]
         intro j
         obtain ⟨j, rfl⟩ := e.surjective j
@@ -720,12 +711,12 @@ lemma map_toComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
         · simp only [*, map_zero, ite_self]
         · congr
       | add p q hp hq =>
-        simp only [coeff_add, map_add, ite_add_zero]
+        simp only [AddMonoidAlgebra.coeff_add, Finsupp.add_apply, map_add, ite_add_zero]
         rw [finsum_add_distrib, hp, hq]
         · refine (((support p).map e).finite_toSet.subset ?_)
-          convert! this p
+          convert this p
         · refine (((support q).map e).finite_toSet.subset ?_)
-          convert! this q
+          convert this q
 
 /--
 Given `R[X] → S` and `S[Y] → T`, this is the lift of an element in `ker(S[Y] → T)`
@@ -745,8 +736,7 @@ def kerCompPreimage (Q : Generators S T ι') (P : Generators R S ι) (x : Q.ker)
       Sum.elim_inr, aeval_monomial, map_one, Finsupp.prod_mapDomain_index_inj Sum.inl_injective,
       Sum.elim_inl, one_mul]
     congr! with v i
-    simp_rw [← IsScalarTower.toAlgHom_apply R, ← comp_aeval, AlgHom.comp_apply, P.aeval_val_σ,
-      coeff]
+    simp_rw [← IsScalarTower.toAlgHom_apply R, ← comp_aeval, AlgHom.comp_apply, P.aeval_val_σ]
 
 lemma ofComp_kerCompPreimage (Q : Generators S T ι') (P : Generators R S ι) (x : Q.ker) :
     (Q.ofComp P).toAlgHom (kerCompPreimage Q P x) = x := by
@@ -761,7 +751,6 @@ lemma ofComp_kerCompPreimage (Q : Generators S T ι') (P : Generators R S ι) (x
   congr 1
   rw [aeval_def, IsScalarTower.algebraMap_eq R S, ← MvPolynomial.algebraMap_eq,
     ← coe_eval₂Hom, ← map_aeval, P.aeval_val_σ]
-  simp [coeff]
 
 lemma map_ofComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
     Ideal.map (Q.ofComp P).toAlgHom (Q.comp P).ker = Q.ker := by

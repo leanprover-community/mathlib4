@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Shift.CommShift
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+public import Mathlib.CategoryTheory.Shift.CommShift
 
 /-! # Sequences of functors from a category equipped with a shift
 
@@ -26,8 +26,6 @@ for any `n : ℤ`, we may choose `F.shift n` to be the homology functor
 in degree `n`.
 
 -/
-
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

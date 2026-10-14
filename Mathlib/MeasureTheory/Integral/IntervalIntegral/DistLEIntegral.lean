@@ -6,8 +6,8 @@ Authors: Yury G. Kudryashov
 module
 
 public import Mathlib.Analysis.Calculus.DiffContOnCl
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 public import Mathlib.Analysis.Calculus.LineDeriv.Basic
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
@@ -53,8 +53,8 @@ lemma norm_sub_le_integral_of_norm_deriv_le_of_le {B : ℝ → ℝ} (hab : a ≤
       UniformSpace.Completion.toComplL.differentiable.comp_differentiableOn hfd
     have hdg t (ht : t ∈ Ioo a b) : deriv g t = deriv f t := by
       have : HasFDerivAt (𝕜 := ℝ) (↑) UniformSpace.Completion.toComplL (f t) := by
-        rw [← UniformSpace.Completion.coe_toComplL (𝕜 := ℝ)]
-        exact (UniformSpace.Completion.toComplL (E := E) (𝕜 := ℝ)).hasFDerivAt
+        rw [← UniformSpace.Completion.coe_toComplL (S := ℝ)]
+        exact (UniformSpace.Completion.toComplL (α := E) (S := ℝ)).hasFDerivAt
       have hdft : HasDerivAt f (deriv f t) t := hfd.hasDerivAt <| Ioo_mem_nhds ht.1 ht.2
       rw [hg, (this.comp_hasDerivAt t hdft).deriv, UniformSpace.Completion.coe_toComplL]
     have hgn : ∀ᵐ t, t ∈ Ioo a b → ‖deriv g t‖ ≤ B t :=
@@ -103,7 +103,7 @@ lemma norm_sub_le_mul_volume_of_norm_deriv_le_of_le {C : ℝ} (hab : a ≤ b)
         integral_indicator hsm, Measure.restrict_restrict hsm,
         setIntegral_const, smul_eq_mul, mul_comm]
       simp only [s, Measure.real,
-        Measure.measure_toMeasurable_inter_of_sFinite measurableSet_Ioo]
+        Measure.measure_toMeasurable_inter_of_sfinite measurableSet_Ioo]
       simp only [inter_def, mem_ofPred_eq, and_comm]
 
 end Line
@@ -134,7 +134,7 @@ lemma norm_sub_le_mul_volume_of_norm_lineDeriv_le
     have := (hfd t ht).hasLineDerivAt.scomp_of_eq (𝕜 := ℝ) t ((hasDerivAt_id t).sub_const t)
     simpa [g, lineMap_apply_module', Function.comp_def, sub_smul, add_comm _ a] using this
   suffices ‖g 1 - g 0‖ ≤ C * volume.real {t ∈ Ioo 0 1 | deriv g t ≠ 0} by
-    convert! this using 1
+    convert this using 1
     · simp [g]
     · congr 2 with t
       simp +contextual [(hdg _ _).deriv]
@@ -166,7 +166,7 @@ lemma norm_sub_le_mul_volume_of_norm_fderiv_le (hs : IsOpen s) (hf : DiffContOnC
     · exact hf.differentiableAt hs <| hmem_s t ht
   refine norm_sub_le_mul_volume_of_norm_lineDeriv_le hfc hfd (.of_forall hfC) |>.trans ?_
   gcongr
-  · refine ne_top_of_le_ne_top ?_ (measure_mono inter_subset_left)
+  · refine ne_top_of_le_ne_top ?_ (measure_mono fun t ht ↦ ht.1)
     simp
   · simp +contextual [(hf.differentiableAt hs <| hmem_s _ ‹_›).lineDeriv_eq_fderiv]
 

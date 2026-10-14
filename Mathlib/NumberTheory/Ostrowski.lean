@@ -9,8 +9,9 @@ module
 
 public import Mathlib.Analysis.AbsoluteValue.Equivalence
 public import Mathlib.Analysis.SpecialFunctions.Log.Base
-public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 public import Mathlib.NumberTheory.Padics.PadicNorm
+
+import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 
 /-!
 # Ostrowski’s Theorem
@@ -41,7 +42,9 @@ absolute value, Ostrowski's theorem
 
 @[expose] public section
 
-open Filter Nat Real Topology
+open Filter Nat Real
+
+open scoped Topology
 
 -- For any `C > 0`, the limit of `C ^ (1/k)` is 1 as `k → ∞`
 private lemma tendsto_const_rpow_inv {C : ℝ} (hC : 0 < C) :
@@ -94,7 +97,7 @@ lemma eq_on_nat_iff_eq : (∀ n : ℕ, f n = g n) ↔ f = g := by
 the natural numbers. -/
 lemma exists_nat_rpow_iff_isEquiv : (∃ c : ℝ, 0 < c ∧ ∀ n : ℕ, f n ^ c = g n) ↔ f.IsEquiv g := by
   rw [isEquiv_iff_exists_rpow_eq]
-  refine ⟨fun ⟨c, hc, h⟩ ↦ ⟨c, hc, ?_⟩, fun ⟨c, hc, h⟩ ↦ ⟨c, hc, (congrFun h ·)⟩⟩
+  refine ⟨fun ⟨c, hc, h⟩ ↦ ⟨c, hc, ?_⟩, fun ⟨c, hc, h⟩ ↦ ⟨c, hc, (congr($h ·))⟩⟩
   ext1 x
   rw [← Rat.num_div_den x, map_div₀, map_div₀, div_rpow (by positivity) (by positivity), h x.den,
     ← apply_natAbs_eq, ← apply_natAbs_eq, h (natAbs x.num)]

@@ -6,6 +6,7 @@ Authors: Jovan Gerbscheid
 module
 
 public meta import Lean.Meta.Hint
+public import Lean.Meta.TryThis
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public import Mathlib.Tactic.Linter.Header  -- shake: keep

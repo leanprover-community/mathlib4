@@ -102,12 +102,10 @@ instance : (opOp C).CommShift ℤ where
   commShiftIso := iso _
   commShiftIso_zero := by
     ext X
-    refine Quiver.Hom.unop_inj (Quiver.Hom.unop_inj ?_)
     simp [iso_hom_app X 0 0, shiftFunctorZero_op_inv_app,
       shiftFunctorZero_op_hom_app]
   commShiftIso_add p q := by
     ext X
-    refine Quiver.Hom.unop_inj (Quiver.Hom.unop_inj ?_)
     simp [← shiftFunctorAdd'_eq_shiftFunctorAdd, ← unop_comp_assoc, ← Functor.map_comp,
       fun X n ↦ iso_hom_app X n (-n) (add_neg_cancel n),
       shiftFunctor_op_map _ q (-q),
@@ -175,7 +173,6 @@ instance : (opOpEquivalence C).inverse.CommShift ℤ :=
   inferInstanceAs ((opOp C).CommShift ℤ)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance : (opOpEquivalence C).CommShift ℤ :=
   Equivalence.CommShift.mk'' _ _
     { shift_comm n := by

@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 module
 
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 public import Mathlib.Topology.Bornology.Constructions
 
 /-!

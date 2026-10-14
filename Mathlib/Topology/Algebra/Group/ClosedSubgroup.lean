@@ -5,7 +5,6 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Basic
 public import Mathlib.GroupTheory.Index
 public import Mathlib.Topology.Algebra.Group.Quotient
 
@@ -64,7 +63,7 @@ instance : SetLike (ClosedSubgroup G) G where
   coe U := U.1
   coe_injective _ _ h := toSubgroup_injective <| SetLike.ext' h
 
-@[to_additive] instance : PartialOrder (ClosedSubgroup G) := .ofSetLike (ClosedSubgroup G) G
+@[to_additive] instance : PartialOrder (ClosedSubgroup G) := .ofSetLike (ClosedSubgroup G)
 
 @[to_additive]
 instance : SubgroupClass (ClosedSubgroup G) G where

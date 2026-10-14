@@ -6,7 +6,6 @@ Authors: Kim Morrison, Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-public import Mathlib.CategoryTheory.Limits.Types.Yoneda
 public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 public import Mathlib.CategoryTheory.ShrinkYoneda
 

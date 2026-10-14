@@ -34,7 +34,7 @@ lemma memLp_pi_iff : MemLp f p μ ↔ ∀ i, MemLp (f · i) p μ where
     have : f = ∑ i, (Pi.single i) ∘ (f · i) := by ext; simp
     rw [this]
     refine memLp_finsetSum' _ fun i _ ↦ ?_
-    exact (Isometry.single i).lipschitz.comp_memLp (by simp) (hf i)
+    exact (Isometry.single i).lipschitzWith.comp_memLp (by simp) (hf i)
 
 alias ⟨MemLp.eval, MemLp.of_eval⟩ := memLp_pi_iff
 
@@ -65,8 +65,8 @@ lemma memLp_prod_iff :
         (AddMonoidHom.inr E F) ∘ (fun x ↦ (f x).snd) := by
       ext; all_goals simp
     rw [this]
-    exact MemLp.add (Isometry.inl.lipschitz.comp_memLp (by simp) h.1)
-      (Isometry.inr.lipschitz.comp_memLp (by simp) h.2)
+    exact MemLp.add (Isometry.inl.lipschitzWith.comp_memLp (by simp) h.1)
+      (Isometry.inr.lipschitzWith.comp_memLp (by simp) h.2)
 
 lemma MemLp.fst (h : MemLp f p μ) : MemLp (fun x ↦ (f x).fst) p μ :=
   memLp_prod_iff.1 h |>.1

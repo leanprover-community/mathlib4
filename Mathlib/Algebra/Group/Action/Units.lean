@@ -136,7 +136,7 @@ variable {M N : Type*} [Monoid M] [Monoid N] [MulDistribMulAction M N]
 /-- Note this has different defeqs than `Units.mulAction'`, but doesn't create a diamond
 with it in non-degenerate situations. Indeed, to get a diamond on `MulDistribMulAction G Mˣ`,
 we would need both instances to fire. But `Units.mulAction'` assumes `SMulCommClass G M M`,
-i.e. `∀ (g : G) (m₁ m₂ : M), g • (m₁ * m₂) = m₁ * g • m₂`), while
+i.e. `∀ (g : G) (m₁ m₂ : M), g • (m₁ * m₂) = m₁ * g • m₂`, while
 `Units.instMulDistribMulActionRight` assumes `MulDistribMulAction G M`,
 i.e. `∀ (g : G) (m₁ m₂ : M), g • (m₁ * m₂) = g • m₁ * g • m₂`.
 In particular, if `M` is cancellative, then we obtain `∀ (g : G) (m : M), g • m = m`,
