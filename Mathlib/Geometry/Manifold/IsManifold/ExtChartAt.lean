@@ -221,7 +221,7 @@ theorem map_extend_nhdsWithin_eq_image {y : M} (hy : y ∈ f.source) :
   set e := f.extend I
   calc
     map e (𝓝[s] y) = map e (𝓝[e.source ∩ s] y) :=
-      congr_arg (map e) (nhdsWithin_inter_of_mem (extend_source_mem_nhdsWithin f hy)).symm
+      congr(map e $((nhdsWithin_inter_of_mem (extend_source_mem_nhdsWithin f hy)).symm))
     _ = 𝓝[e '' (e.source ∩ s)] e y :=
       ((f.extend I).leftInvOn.mono inter_subset_left).map_nhdsWithin_eq
         ((f.extend I).left_inv <| by rwa [f.extend_source])
@@ -552,7 +552,7 @@ theorem isOpen_extChartAt_target [I.Boundaryless] (x : M) : IsOpen (extChartAt I
 /-- If we're boundaryless, `(extChartAt I x).target` is a neighborhood of the key point -/
 theorem extChartAt_target_mem_nhds [I.Boundaryless] (x : M) :
     (extChartAt I x).target ∈ 𝓝 (extChartAt I x x) := by
-  convert! extChartAt_target_mem_nhdsWithin x
+  convert extChartAt_target_mem_nhdsWithin x
   simp only [I.range_eq_univ, nhdsWithin_univ]
 
 /-- If we're boundaryless, `(extChartAt I x).target` is a neighborhood of any of its points -/
@@ -813,6 +813,22 @@ theorem writtenInExtChartAt_extChartAt {x : M} {y : E} (h : y ∈ (extChartAt I 
 theorem writtenInExtChartAt_extChartAt_symm {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
     writtenInExtChartAt 𝓘(𝕜, E) I (extChartAt I x x) (extChartAt I x).symm y = y := by
   simp_all only [mfld_simps]
+
+theorem writtenInExtChartAt_apply_extChartAt {x y : M} {f : M → M'}
+    (hy : y ∈ (extChartAt I x).source) :
+    writtenInExtChartAt I I' x f (extChartAt I x y) = extChartAt I' (f x) (f y) := by
+  simp only [writtenInExtChartAt, comp_apply, (extChartAt I x).left_inv hy]
+
+theorem extChartAt_symm_writtenInExtChartAt {x : M} {z : E} {f : M → M'}
+    (hz : f ((extChartAt I x).symm z) ∈ (extChartAt I' (f x)).source) :
+    (extChartAt I' (f x)).symm (writtenInExtChartAt I I' x f z) =
+      f ((extChartAt I x).symm z) := by
+  simp only [writtenInExtChartAt, comp_apply, (extChartAt I' (f x)).left_inv hz]
+
+theorem extChartAt_symm_writtenInExtChartAt_extChartAt {x y : M} {f : M → M'}
+    (hy : y ∈ (extChartAt I x).source) (hfy : f y ∈ (extChartAt I' (f x)).source) :
+    (extChartAt I' (f x)).symm (writtenInExtChartAt I I' x f (extChartAt I x y)) = f y := by
+  rw [writtenInExtChartAt_apply_extChartAt hy, (extChartAt I' (f x)).left_inv hfy]
 
 theorem writtenInExtChartAt_mapsTo {x : M} {f : M → M'} :
     MapsTo (writtenInExtChartAt I I' x f)

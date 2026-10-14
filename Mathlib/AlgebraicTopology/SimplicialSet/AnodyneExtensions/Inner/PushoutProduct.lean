@@ -6,12 +6,13 @@ Authors: Jack McKoen, Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Inner.Basic
-public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.UnionProd
-public import Mathlib.AlgebraicTopology.SimplicialSet.PushoutProduct
-public import Mathlib.CategoryTheory.LiftingProperties.ParametrizedAdjunction
 public import Mathlib.CategoryTheory.Monoidal.Braided.PushoutObjObj
-public import Mathlib.CategoryTheory.Monoidal.Closed.Braided
 public import Mathlib.CategoryTheory.Monoidal.Closed.FunctorToTypes
+
+import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.UnionProd
+import Mathlib.AlgebraicTopology.SimplicialSet.PushoutProduct
+import Mathlib.CategoryTheory.LiftingProperties.ParametrizedAdjunction
+import Mathlib.CategoryTheory.Monoidal.Closed.Braided
 
 /-!
 # Inner anodyne extensions and pushout-products, inner fibrations and pullbacks
