@@ -74,16 +74,15 @@ lemma cayleySimpleGraph_adj : P.cayleySimpleGraph.Adj g h ↔ g ≠ h ∧ P.IsLe
 
 /-! ### Words and walks -/
 
-/-- A word `l` gives a walk in the Cayley graph from `g` to `g * P.wordProd l`, of length at most
-the length of `l`. -/
+/-- A word `l` gives a walk in the Cayley graph from `g` to `g * P.wordProd l`,
+of length at most the length of `l`. -/
 lemma exists_walk_of_word (g : G) (l : List (ι × Bool)) :
     ∃ p : P.cayleySimpleGraph.Walk g (g * P.wordProd l), p.length ≤ l.length := by
-  induction l generalizing g with
-  | nil => simp
-  | cons head tail ih =>
-    obtain ⟨i, b⟩ := head
+  match l with
+  | [] => simp
+  | (i, b) :: tail =>
     let s := cond b (P.val i) (P.val i)⁻¹
-    obtain ⟨p, hp⟩ := ih (g * s)
+    obtain ⟨p, hp⟩ := exists_walk_of_word (g * s) tail
     have hprod : g * s * (P.wordProd tail) = g * P.wordProd ((i, b) :: tail) := by
       rw [wordProd_cons, mul_assoc]
     obtain heq | hne := eq_or_ne g (g * s)
@@ -96,17 +95,16 @@ lemma exists_walk_of_word (g : G) (l : List (ι × Bool)) :
       use (Walk.cons hadj p).copy rfl hprod
       simp [hp]
 
-variable {g h} in
 /-- A walk in the Cayley graph from `g` to `h` gives a word of the same length which evaluates to
 `g⁻¹ * h`. -/
-lemma exists_word_of_walk (p : P.cayleySimpleGraph.Walk g h) :
+lemma exists_word_of_walk {g h : G} (p : P.cayleySimpleGraph.Walk g h) :
     ∃ l, P.wordProd l = g⁻¹ * h ∧ l.length = p.length := by
-  induction p with
-  | nil =>
+  match p with
+  | .nil =>
     use []; simp
-  | @cons a b _ hadj p ih =>
-    obtain ⟨l, hprod, hl⟩ := ih
-    have hgen : P.IsLetter (a⁻¹ * b) := by
+  | .cons (v := b) hadj q =>
+    obtain ⟨l, hprod, hl⟩ := exists_word_of_walk q
+    have hgen : P.IsLetter (g⁻¹ * b) := by
       rw [cayleySimpleGraph_adj] at hadj
       exact hadj.right
     obtain ⟨x, hx⟩ := hgen
