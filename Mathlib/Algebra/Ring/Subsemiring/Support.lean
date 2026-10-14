@@ -18,11 +18,11 @@ If `S` generates `R` as a subring, then the support of `S` forms an ideal.
 
 ## Main definitions
 
-* `Subsemiring.support`: the support of a subsemiring, as an ideal.
+* `Subsemiring.supportIdeal`: the support of a subsemiring, as an ideal.
 
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*} [Ring R]
 
@@ -30,75 +30,38 @@ namespace Subsemiring
 
 variable {S : Subsemiring R}
 
-@[aesop safe forward (immediate := [hS, hx₁])]
-theorem eq_zero_of_mem_of_neg_mem (hS : S.IsPointed) {x : R}
-    (hx₁ : x ∈ S) (hx₂ : -x ∈ S) : x = 0 := hS.eq_zero_of_mem_of_neg_mem hx₁ hx₂
+theorem mem_support {x : R} : x ∈ S.support ↔ x ∈ S ∧ -x ∈ S := by simp
 
-@[aesop safe forward (immediate := [hS, hx₂])]
-alias eq_zero_of_mem_of_neg_mem₂ := eq_zero_of_mem_of_neg_mem -- for Aesop
+theorem isPointed_def : S.IsPointed ↔ ∀ {x}, x ∈ S → -x ∈ S → x = 0 := by
+  simp [AddSubmonoid.IsPointed]
 
-@[aesop safe forward]
-theorem mem_or_neg_mem (hS : S.IsSpanning) : ∀ a, a ∈ S ∨ -a ∈ S :=
-  hS.mem_or_neg_mem
+theorem isSpanning_def : S.IsSpanning ↔ ∀ a, a ∈ S ∨ -a ∈ S := by simp [AddSubmonoid.IsSpanning]
 
-variable (S) in
-/-- Typeclass to track when the support of a subsemiring forms an ideal. -/
-class HasIdealSupport : Prop where
-  smul_mem_support (x : R) {a : R} (ha : a ∈ S.support) :
-    x * a ∈ S.support := by aesop
+theorem _root_.AddSubmonoid.IsPointed.neg_one_notMem [Nontrivial R] (hS : S.IsPointed) :
+    -1 ∉ S := by grind [isPointed_def, one_mem, zero_ne_one']
 
-export HasIdealSupport (smul_mem_support)
+@[expose, simps!]
+def supportIdeal (hS : S.IsSpanning) : Ideal R where
+  __ : AddSubgroup R := S.toAddSubmonoid.support
+  smul_mem' x a ha := by
+    have : ∀ {x y}, -x ∈ S → -y ∈ S → x * y ∈ S := fun hx hy ↦ by simpa using mul_mem hx hy
+    simp_all [isSpanning_def]
+    grind [mul_mem, neg_mul_mem, mul_neg_mem]
 
-theorem hasIdealSupport_iff :
-    S.HasIdealSupport ↔ ∀ x a : R, a ∈ S → -a ∈ S → x * a ∈ S ∧ -(x * a) ∈ S where
-  mp _ := have := S.smul_mem_support; by aesop
-  mpr _ := { }
+@[simp] theorem mem_supportIdeal {S : Subsemiring R} (hS : S.IsSpanning) {x : R} :
+    x ∈ S.supportIdeal hS ↔ x ∈ S.support := .rfl
 
-section HasIdealSupport
+@[simp] theorem supportIdeal_toAddSubgroup {S : Subsemiring R} (hS : S.IsSpanning) :
+    (S.supportIdeal hS).toAddSubgroup = S.support := rfl
 
-variable [S.HasIdealSupport]
+variable {R R' : Type*} [Ring R] [Ring R'] {f : R →+* R'}
+         {S T : Subsemiring R} {S' : Subsemiring R'} {s : Set (Subsemiring R)}
 
-@[aesop 80% (rule_sets := [SetLike])]
-theorem smul_mem (x : R) {a : R} (h₁a : a ∈ S) (h₂a : -a ∈ S) : x * a ∈ S := by
-  have := S.smul_mem_support
-  aesop
+variable (f) in
+theorem isSpanning_comap (hS' : S'.IsSpanning) : (S'.comap f).IsSpanning :=
+  hS'.comap f.toAddMonoidHom
 
-@[aesop 80% (rule_sets := [SetLike])]
-theorem neg_smul_mem (x : R) {a : R} (h₁a : a ∈ S) (h₂a : -a ∈ S) : -(x * a) ∈ S := by
-  have := S.smul_mem_support
-  aesop
-
-variable (S) in
-/-- The support `S ∩ -S` of a subsemiring `S` of a ring `R`, as an ideal. -/
-@[simps!]
-def support : Ideal R where
-  __ := S.toAddSubmonoid.support
-  smul_mem' := by aesop
-
-@[aesop simp]
-theorem mem_support {x} : x ∈ S.support ↔ x ∈ S ∧ -x ∈ S := .rfl
-
-variable (S) in
-@[simp]
-theorem toAddSubmonoid_support : S.toAddSubmonoid.support = S.support.toAddSubgroup := rfl
-
-end HasIdealSupport
-
-@[aesop safe forward, aesop 50%]
-theorem _root_.AddSubmonoid.IsSpanning.hasIdealSupport (hS : S.IsSpanning) : S.HasIdealSupport where
-  smul_mem_support x a ha := by
-    have := S.mem_or_neg_mem hS x
-    have : ∀ x y, -x ∈ S → -y ∈ S → x * y ∈ S := fun _ _ hx hy ↦ by simpa using mul_mem hx hy
-    aesop (add 80% this)
-
-@[aesop safe forward, aesop 50%]
-theorem _root_.AddSubmonoid.IsPointed.hasIdealSupport (hS : S.IsPointed) : S.HasIdealSupport where
-
-@[simp]
-theorem support_eq_bot (hS : S.IsPointed) :
-    have := hS.hasIdealSupport
-    S.support = ⊥ := by
-  apply_fun Submodule.toAddSubgroup using Submodule.toAddSubgroup_injective
-  rw [← toAddSubmonoid_support, hS.support_eq_bot, Submodule.bot_toAddSubgroup]
+theorem isSpanning_map (hS : S.IsSpanning) (hf : Function.Surjective f) : (S.map f).IsSpanning :=
+  hS.map (f := f.toAddMonoidHom) hf
 
 end Subsemiring
