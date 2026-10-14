@@ -6,7 +6,7 @@ Authors: Joseph Myers
 module
 
 public import Mathlib.Geometry.Euclidean.Angle.Bisector
-public import Mathlib.Geometry.Euclidean.Incenter
+public import Mathlib.Geometry.Euclidean.Incenter.Basic
 
 /-!
 # Angles and incenters and excenters.
