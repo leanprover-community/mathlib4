@@ -196,7 +196,7 @@ instance : (inverse C).IsEquivalence := (equivalence C).isEquivalence_inverse
 
 instance {T : Type u} [Unique T] : Unique (ShrinkHoms.{u} T) where
   default := ShrinkHoms.toShrinkHoms (default : T)
-  uniq _ := congr_arg ShrinkHoms.fromShrinkHoms (Unique.uniq _ _)
+  uniq _ := congr(ShrinkHoms.fromShrinkHoms $(Unique.uniq ..))
 
 instance {T : Type u} [Category.{v} T] [IsDiscrete T] : IsDiscrete (ShrinkHoms.{u} T) where
   subsingleton _ _ := { allEq _ _ := Shrink.ext (Subsingleton.elim _ _) }
@@ -291,7 +291,7 @@ instance [Small.{w} C] [LocallySmall.{w} C] :
   let φ (f : Arrow C) : Σ (s t : C), s ⟶ t := ⟨_, _, f.hom⟩
   refine small_of_injective (f := φ) ?_
   rintro ⟨s, t, f⟩ ⟨s', t', f'⟩ h
-  obtain rfl : s = s' := congr_arg Sigma.fst h
+  obtain rfl : s = s' := congr($(h).fst)
   simp only [Sigma.mk.injEq, heq_eq_eq, true_and, φ] at h
   obtain rfl : t = t' := h.1
   obtain rfl : f = f' := by simpa using h
@@ -302,8 +302,8 @@ instance [Small.{w} C] [LocallySmall.{w} C]
     Small.{w} (C ⥤ D) := by
   refine small_of_injective (f := fun F (f : Arrow C) ↦ Arrow.mk (F.map f.hom))
     (fun F G h ↦ Functor.ext (fun X ↦ ?_) (fun X Y f ↦ ?_))
-  · exact congr_arg Comma.left (congr_fun h (Arrow.mk (𝟙 X)))
-  · have : Arrow.mk (F.map f) = Arrow.mk (G.map f) := congr_fun h (Arrow.mk f)
+  · congrm Comma.left ($h (Arrow.mk (𝟙 X)))
+  · have : Arrow.mk (F.map f) = Arrow.mk (G.map f) := congr($h (Arrow.mk f))
     rw [Arrow.mk_eq_mk_iff] at this
     tauto
 

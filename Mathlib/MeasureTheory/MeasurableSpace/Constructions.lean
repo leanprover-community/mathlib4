@@ -24,7 +24,7 @@ This file provides several ways to construct new measurable spaces and functions
 
 assert_not_exists Filter
 
-open Set Function
+open Set Function MeasureTheory
 
 universe uι
 
@@ -86,7 +86,7 @@ theorem measurable_to_nat {f : α → ℕ} : (∀ y, MeasurableSet (f ⁻¹' {f 
 theorem measurable_to_bool {f : α → Bool} (h : MeasurableSet (f ⁻¹' {true})) : Measurable f := by
   apply measurable_to_countable'
   rintro (- | -)
-  · convert! h.compl
+  · convert h.compl
     rw [← preimage_compl, Bool.compl_singleton, Bool.not_true]
   exact h
 
@@ -244,7 +244,7 @@ theorem MeasurableSet.image_inclusion' {s t : Set α} (h : s ⊆ t) {u : Set s}
     (hs : MeasurableSet (Subtype.val ⁻¹' s : Set t)) (hu : MeasurableSet u) :
     MeasurableSet (inclusion h '' u) := by
   rcases hu with ⟨u, hu, rfl⟩
-  convert! (measurable_subtype_coe hu).inter hs
+  convert (measurable_subtype_coe hu).inter hs
   ext ⟨x, hx⟩
   simpa [@and_comm _ (_ = x)] using and_comm
 
@@ -256,7 +256,7 @@ theorem MeasurableSet.image_inclusion {s t : Set α} (h : s ⊆ t) {u : Set s}
 theorem MeasurableSet.of_union_cover {s t u : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t)
     (h : univ ⊆ s ∪ t) (hsu : MeasurableSet (((↑) : s → α) ⁻¹' u))
     (htu : MeasurableSet (((↑) : t → α) ⁻¹' u)) : MeasurableSet u := by
-  convert! (hs.subtype_image hsu).union (ht.subtype_image htu)
+  convert (hs.subtype_image hsu).union (ht.subtype_image htu)
   simp [image_preimage_eq_inter_range, ← inter_union_distrib_left, univ_subset_iff.1 h]
 
 theorem measurable_of_measurable_union_cover {f : α → β} (s t : Set α) (hs : MeasurableSet s)
@@ -689,13 +689,13 @@ theorem Finset.measurable_restrict₂_apply {s t : Finset α} (hst : s ⊆ t)
     Measurable (restrict₂ (π := fun _ ↦ γ) hst f) := hf.comp (measurable_inclusion hst)
 
 variable (X) in
-theorem measurable_eq_mp {i i' : δ} (h : i = i') : Measurable (congr_arg X h).mp := by
+theorem measurable_eq_mp {i i' : δ} (h : i = i') : Measurable congr(X $h).mp := by
   cases h
   exact measurable_id
 
 variable (X) in
 theorem Measurable.eq_mp {β} [MeasurableSpace β] {i i' : δ} (h : i = i') {f : β → X i}
-    (hf : Measurable f) : Measurable fun x => (congr_arg X h).mp (f x) :=
+    (hf : Measurable f) : Measurable fun x => congr(X $h).mp (f x) :=
   (measurable_eq_mp X h).comp hf
 
 @[fun_prop]
@@ -726,7 +726,7 @@ theorem measurableSet_pi_of_nonempty {s : Set δ} {t : ∀ i, Set (X i)} (hs : s
   classical
     rcases h with ⟨f, hf⟩
     refine ⟨fun hst i hi => ?_, MeasurableSet.pi hs⟩
-    convert! measurable_update f (a := i) hst
+    convert measurable_update f (a := i) hst
     rw [update_preimage_pi hi]
     exact fun j hj _ => hf j hj
 
@@ -930,26 +930,35 @@ lemma Measurable.const_eq {_ : MeasurableSpace α} [MeasurableSpace β] [Measura
   exact .eq_const hf a
 
 section Set
-variable [MeasurableSpace β] {g : β → Set α}
+variable [MeasurableSpace β] {f g : β → Set α}
 
 /-- This instance is useful when talking about Bernoulli sequences of random variables or binomial
 random graphs. -/
 instance Set.instMeasurableSpace : MeasurableSpace (Set α) :=
-  inferInstanceAs <| MeasurableSpace (α → Prop)
-
-instance Set.instMeasurableSingletonClass [Countable α] : MeasurableSingletonClass (Set α) :=
-  inferInstanceAs <| MeasurableSingletonClass (α → Prop)
+  .comap (fun s ↦ (· ∈ s)) inferInstance
 
 @[simp, fun_prop] lemma measurable_setOfPred :
-    Measurable fun p : α → Prop ↦ {a | p a} := measurable_id
+    Measurable fun p : α → Prop ↦ {a | p a} := measurable_comap_iff.2 measurable_id
 
 @[deprecated (since := "2026-07-09")]
 alias measurable_setOf := measurable_setOfPred
 
-lemma measurable_set_iff : Measurable g ↔ ∀ a, Measurable fun x ↦ a ∈ g x := measurable_pi_iff
+lemma measurable_set_iff : Measurable f ↔ ∀ a, Measurable fun x ↦ a ∈ f x :=
+  measurable_comap_iff.trans measurable_pi_iff
+
+lemma Measurable.mem (hf : Measurable f) {a : α} : Measurable fun x ↦ a ∈ f x :=
+  measurable_set_iff.1 hf _
+
+alias ⟨_, Measurable.of_mem⟩ := measurable_set_iff
 
 @[fun_prop]
-lemma measurable_set_mem (a : α) : Measurable fun s : Set α ↦ a ∈ s := measurable_pi_apply _
+lemma measurable_set_mem (a : α) : Measurable fun s : Set α ↦ a ∈ s :=
+  (measurable_pi_apply a).comp (comap_measurable _)
+
+instance Set.instMeasurableSingletonClass [Countable α] : MeasurableSingletonClass (Set α) where
+  measurableSet_singleton s := by
+    have : MeasurableSet {t : Set α | ∀ a, a ∈ t ↔ a ∈ s} := by measurability
+    simpa [← Set.ext_iff] using this
 
 lemma measurable_set_notMem (a : α) : Measurable fun s : Set α ↦ a ∉ s :=
   (Measurable.of_discrete (f := Not)).comp <| measurable_set_mem a
@@ -960,8 +969,41 @@ lemma measurableSet_mem (a : α) : MeasurableSet {s : Set α | a ∈ s} :=
 lemma measurableSet_notMem (a : α) : MeasurableSet {s : Set α | a ∉ s} :=
   measurableSet_setOfPred.2 <| measurable_set_notMem _
 
-lemma measurable_compl : Measurable ((·ᶜ) : Set α → Set α) :=
-  measurable_set_iff.2 fun _ ↦ measurable_set_notMem _
+@[fun_prop]
+lemma Measurable.inter (hf : Measurable f) (hg : Measurable g) :
+    Measurable fun a ↦ f a ∩ g a :=
+  .of_mem fun _ ↦ hf.mem.and hg.mem
+
+lemma measurable_inter : Measurable (fun p : (Set α) × (Set α) ↦ p.1 ∩ p.2) := by fun_prop
+
+@[fun_prop]
+lemma Measurable.union (hf : Measurable f) (hg : Measurable g) :
+    Measurable fun a ↦ f a ∪ g a :=
+  .of_mem fun _ ↦ hf.mem.or hg.mem
+
+lemma measurable_union : Measurable (fun p : (Set α) × (Set α) ↦ p.1 ∪ p.2) := by fun_prop
+
+@[fun_prop]
+lemma Measurable.compl (hf : Measurable f) : Measurable fun a ↦ (f a)ᶜ :=
+  .of_mem fun _ ↦ hf.mem.not
+
+lemma measurable_compl : Measurable ((·ᶜ) : Set α → Set α) := by fun_prop
+
+@[fun_prop]
+lemma Measurable.sdiff (hf : Measurable f) (hg : Measurable g) :
+    Measurable fun a ↦ f a \ g a :=
+  hf.inter hg.compl
+
+lemma measurable_sdiff : Measurable (fun p : (Set α) × (Set α) ↦ p.1 \ p.2) := by fun_prop
+
+open scoped symmDiff in
+@[fun_prop]
+lemma Measurable.symmDiff (hf : Measurable f) (hg : Measurable g) :
+    Measurable fun a ↦ f a ∆ g a :=
+  (hf.sdiff hg).union (hg.sdiff hf)
+
+open scoped symmDiff in
+lemma measurable_symmDiff : Measurable (fun p : (Set α) × (Set α) ↦ p.1 ∆ p.2) := by fun_prop
 
 variable [Countable α]
 
@@ -993,7 +1035,7 @@ protected lemma Measurable.subset {s t : β → Set α} (hs : Measurable s) (hs 
 end Set
 
 section Finset
-variable [MeasurableSpace β] {g : β → Finset α}
+variable [MeasurableSpace β] {f g : β → Finset α}
 
 /-- We give `Finset α` the measurable structure inherited from `Set α`.
 
@@ -1001,6 +1043,9 @@ This is the smallest sigma-algebra generated by `(a ∈ ·)` for all `a : α`.
 See `measurable_finset_iff`. -/
 instance Finset.instMeasurableSpace : MeasurableSpace (Finset α) :=
   .comap SetLike.coe inferInstance
+
+@[fun_prop]
+lemma Finset.measurable_coe : Measurable ((↑) : Finset α → Set α) := comap_measurable _
 
 lemma measurable_finset_iff_measurable_set : Measurable g ↔ Measurable (fun x ↦ (g x : Set α)) :=
   measurable_comap_iff
@@ -1024,6 +1069,39 @@ lemma measurableSet_mem_finset (a : α) : MeasurableSet {s : Finset α | a ∈ s
 
 lemma measurableSet_notMem_finset (a : α) : MeasurableSet {s : Finset α | a ∉ s} :=
   measurableSet_setOfPred.2 <| measurable_finset_notMem _
+
+section DecidableEq
+
+variable [DecidableEq α]
+
+@[fun_prop]
+lemma Measurable.inter_finset (hf : Measurable f) (hg : Measurable g) :
+    Measurable fun a ↦ f a ∩ g a := by
+  simp_rw [measurable_finset_iff_measurable_set, Finset.coe_inter]
+  exact (measurable_finset_iff_measurable_set.1 hf).inter
+    (measurable_finset_iff_measurable_set.1 hg)
+
+@[fun_prop]
+lemma Measurable.union_finset (hf : Measurable f) (hg : Measurable g) :
+    Measurable fun a ↦ f a ∪ g a := by
+  simp_rw [measurable_finset_iff_measurable_set, Finset.coe_union]
+  exact (measurable_finset_iff_measurable_set.1 hf).union
+    (measurable_finset_iff_measurable_set.1 hg)
+
+@[fun_prop]
+lemma Measurable.sdiff_finset (hf : Measurable f) (hg : Measurable g) :
+    Measurable fun a ↦ f a \ g a := by
+  simp_rw [measurable_finset_iff_measurable_set, Finset.coe_sdiff]
+  exact (measurable_finset_iff_measurable_set.1 hf).sdiff
+    (measurable_finset_iff_measurable_set.1 hg)
+
+open scoped symmDiff in
+@[fun_prop]
+lemma Measurable.symmDiff_finset (hf : Measurable f) (hg : Measurable g) :
+    Measurable fun a ↦ f a ∆ g a :=
+  (hf.sdiff_finset hg).union_finset (hg.sdiff_finset hf)
+
+end DecidableEq
 
 variable [Countable α]
 
