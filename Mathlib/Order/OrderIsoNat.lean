@@ -79,13 +79,24 @@ theorem not_wellFounded (f : ((· > ·) : ℕ → ℕ → Prop) ↪r r) : ¬Well
 
 end RelEmbedding
 
-theorem not_strictAnti_of_wellFoundedLT [Preorder α] [WellFoundedLT α] (f : ℕ → α) :
-    ¬ StrictAnti f := fun hf ↦
-  (RelEmbedding.natGT f (fun n ↦ hf (by simp))).not_wellFounded wellFounded_lt
+theorem not_strictAnti_of_wellFoundedLT {β : Type*} [Preorder α] [WellFoundedLT α]
+    [Preorder β] [Nonempty β] [NoMaxOrder β] (f : β → α) : ¬ StrictAnti f := by
+  inhabit β
+  choose m hm using exists_gt (α := β)
+  exact fun hf ↦ (RelEmbedding.natGT (f ∘ Nat.rec default (fun _ ↦ m))
+    fun n ↦ hf (hm _)).not_wellFounded wellFounded_lt
 
-theorem not_strictMono_of_wellFoundedGT [Preorder α] [WellFoundedGT α] (f : ℕ → α) :
-    ¬ StrictMono f :=
+theorem not_strictMono_of_wellFoundedLT {β : Type*} [Preorder α] [WellFoundedLT α]
+    [Preorder β] [Nonempty β] [NoMinOrder β] (f : β → α) : ¬ StrictMono f := by
+  simpa using not_strictAnti_of_wellFoundedLT (f ∘ OrderDual.ofDual)
+
+theorem not_strictMono_of_wellFoundedGT {β : Type*} [Preorder α] [WellFoundedGT α]
+    [Preorder β] [Nonempty β] [NoMaxOrder β] (f : β → α) : ¬ StrictMono f :=
   not_strictAnti_of_wellFoundedLT (α := αᵒᵈ) f
+
+theorem not_strictAnti_of_wellFoundedGT {β : Type*} [Preorder α] [WellFoundedGT α]
+    [Preorder β] [Nonempty β] [NoMinOrder β] (f : β → α) : ¬ StrictAnti f :=
+  not_strictMono_of_wellFoundedLT (α := αᵒᵈ) f
 
 namespace Nat
 
