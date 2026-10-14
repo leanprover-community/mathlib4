@@ -10,8 +10,6 @@ public import Mathlib.CategoryTheory.Whiskering
 public import Mathlib.Tactic.CategoryTheory.Slice
 
 /-!
-/-!
-/-!
 # Equivalence of categories
 
 An equivalence of categories `C` and `D` is a pair of functors `F : C ⥤ D` and `G : D ⥤ C` such

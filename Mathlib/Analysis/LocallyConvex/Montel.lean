@@ -9,7 +9,6 @@ public import Mathlib.Analysis.Normed.Module.FiniteDimension
 public import Mathlib.Topology.Algebra.Module.Spaces.CompactConvergenceCLM
 
 /-!
-/-!
 # Montel spaces
 
 A Montel space is a topological vector space `E` that has the Heine-Borel property: every closed and
