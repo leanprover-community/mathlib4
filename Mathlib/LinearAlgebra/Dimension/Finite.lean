@@ -126,21 +126,29 @@ section
 variable [StrongRankCondition R]
 
 /-- If a module has a finite dimension, all bases are indexed by a finite type. -/
+theorem Module.Basis.finite_index_of_rank_lt_aleph0 {ι : Type*} (b : Basis ι R M)
+    (h : Module.rank R M < ℵ₀) : Finite ι := by
+  rwa [← Cardinal.lift_lt, ← b.mk_eq_rank, Cardinal.lift_aleph0, Cardinal.lift_lt_aleph0,
+    Cardinal.lt_aleph0_iff_finite] at h
+
+/-- If a module has a finite dimension, all bases are indexed by a finite type. -/
+@[deprecated Module.Basis.finite_index_of_rank_lt_aleph0 +typeChanged (since := "2026-10-11")]
 theorem Module.Basis.nonempty_fintype_index_of_rank_lt_aleph0 {ι : Type*} (b : Basis ι R M)
     (h : Module.rank R M < ℵ₀) : Nonempty (Fintype ι) := by
   rwa [← Cardinal.lift_lt, ← b.mk_eq_rank, Cardinal.lift_aleph0, Cardinal.lift_lt_aleph0,
     Cardinal.lt_aleph0_iff_fintype] at h
 
 /-- If a module has a finite dimension, all bases are indexed by a finite type. -/
-@[instance_reducible]
+@[instance_reducible,
+deprecated Module.Basis.finite_index_of_rank_lt_aleph0 +typeChanged (since := "2026-10-11")]
 noncomputable def Module.Basis.fintypeIndexOfRankLtAleph0 {ι : Type*} (b : Basis ι R M)
     (h : Module.rank R M < ℵ₀) : Fintype ι :=
   Classical.choice (b.nonempty_fintype_index_of_rank_lt_aleph0 h)
 
 /-- If a module has a finite dimension, all bases are indexed by a finite set. -/
-theorem Module.Basis.finite_index_of_rank_lt_aleph0 {ι : Type*} {s : Set ι} (b : Basis s R M)
+theorem Module.Basis.setFinite_index_of_rank_lt_aleph0 {ι : Type*} {s : Set ι} (b : Basis s R M)
     (h : Module.rank R M < ℵ₀) : s.Finite :=
-  Set.finite_def.2 (b.nonempty_fintype_index_of_rank_lt_aleph0 h)
+  Set.finite_coe_iff.1 (b.finite_index_of_rank_lt_aleph0 h)
 
 end
 
