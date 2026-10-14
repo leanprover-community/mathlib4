@@ -133,7 +133,7 @@ lemma hasSum_Λ (hs : k + 1 < s.re) :
 
 /-- The `L`-function of a modular form `f` of weight `k`: the completed `L`-function `ModularForm.Λ`
 without its Archimedean factor `Gammaℂ s / 2 = (2 * π) ^ (-s) * Gamma s`, i.e.
-`L hk f s = Λ hk f s * (2 / Gammaℂ s)` for `s ≠ 0` (`ModularForm.L_of_ne_zero`).
+`L hk f s = Λ hk f s * (2 / Gammaℂ s)` for `s ≠ 0` (`ModularForm.L_apply_of_ne_zero`).
 
 Normalization: for `k + 1 < re s`, `L hk f s = ∑ aₙ (n / h) ^ (-s)`, where `h = Γ.strictWidthInfty`
 is the strict width of the cusp `∞` and `aₙ` are the coefficients of `qExpansion h f`, the expansion
@@ -195,7 +195,7 @@ private lemma hasSum_L_of_hasSum_Λ (hs : 0 < s.re)
     have := Gamma_ne_zero_of_re_pos hs
     have := cpow_ne_zero_iff (y := s).mpr (.inl <| ofReal_ne_zero.mpr Γ.strictWidthInfty_pos.ne')
     field_simp
-  · rw [L_of_ne_zero hk f (ne_zero_of_re_pos hs), mul_rotate']
+  · rw [L_apply_of_ne_zero hk f (ne_zero_of_re_pos hs), mul_rotate']
 
 theorem hasSum_L (hs : k + 1 < s.re) :
     HasSum (fun n ↦ (qExpansion (h Γ) f).coeff n / n ^ s) (h Γ ^ (-s) * L hk f s) :=
