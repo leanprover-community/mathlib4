@@ -234,8 +234,6 @@ universe v
 
 variable {Q : Type v} [AddCommGroup Q] [Module A Q] [IsNoetherianRing A]
 
-/-- Over a Noetherian ring, a linear map from an ideal to a module `Q` with `Q(I) = Q` is killed
-by a single power of `I`. -/
 private lemma exists_pow_smul_eq_zero_of_primaryComponent_eq_top
     (hQ : primaryComponent Q I = ⊤) (J : Ideal A) (g : J →ₗ[A] Q) :
     ∃ n : ℕ, ∀ a ∈ I ^ n, ∀ x : J, a • g x = 0 := by
@@ -255,9 +253,6 @@ private lemma exists_pow_smul_eq_zero_of_primaryComponent_eq_top
   | add y z _ _ hy hz => rw [map_add, smul_add, hy, hz, add_zero]
   | smul c y _ hy => rw [map_smul, smul_comm, hy, smul_zero]
 
-/-- Over a Noetherian ring, a module `Q` with `Q(I) = Q` satisfies Baer's criterion as soon as
-linear maps into `Q` extend along the inclusions of submodules of `A ⧸ I ^ n`, for all `n`.
-The proof uses the Artin–Rees lemma. -/
 theorem baer_of_primaryComponent_eq_top (hQ : primaryComponent Q I = ⊤)
     (h : ∀ (n : ℕ) (N : Submodule A (A ⧸ I ^ n)) (f : N →ₗ[A] Q),
       ∃ g : A ⧸ I ^ n →ₗ[A] Q, ∀ x : N, g x = f x) :
