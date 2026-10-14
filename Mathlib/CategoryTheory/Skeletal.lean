@@ -177,9 +177,8 @@ set_option backward.defeqAttrib.useBackward true in
   counitIso := NatIso.ofComponents fromSkeletonToSkeletonIso
   functor_unitIso_comp _ := Iso.inv_hom_id _
 
-noncomputable instance toSkeletonFunctor.isEquivalence : (toSkeletonFunctor C).IsEquivalence := by
-  change (skeletonEquivalence C).inverse.IsEquivalence
-  infer_instance
+noncomputable instance toSkeletonFunctor.isEquivalence : (toSkeletonFunctor C).IsEquivalence :=
+  inferInstanceAs (skeletonEquivalence C).inverse.IsEquivalence
 
 set_option backward.isDefEq.respectTransparency.types false in
 theorem skeleton_skeletal : Skeletal (Skeleton C) := by
@@ -247,7 +246,7 @@ lemma mapSkeleton_injective [F.Full] [F.Faithful] : Function.Injective F.mapSkel
 lemma mapSkeleton_surjective [F.EssSurj] : Function.Surjective F.mapSkeleton.obj :=
   fun Y ↦ let ⟨X, h⟩ := EssSurj.mem_essImage F.mapSkeleton Y; ⟨X, skeleton_skeletal D h⟩
 
-instance mapSkeleton_isIso_of_isEquivalence [F.IsEquivalence] : F.mapSkeleton.IsIso where
+instance [F.IsEquivalence] : F.mapSkeleton.IsIso where
   bijective_obj := ⟨F.mapSkeleton_injective, F.mapSkeleton_surjective⟩
 
 /-- A functor is an equivalence if and only if its induced functor on skeletons is an isomorphism.
