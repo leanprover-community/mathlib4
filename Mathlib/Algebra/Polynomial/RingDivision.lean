@@ -229,13 +229,12 @@ theorem Monic.neg_one_pow_natDegree_mul_comp_neg_X {p : R[X]} (hp : p.Monic) :
 
 theorem isCoprime_X_sub_C_iff {p : R[X]} :
     IsCoprime (X - C a) p ↔ IsUnit (p.eval a) := by
-  refine ⟨fun ⟨u, v, h⟩ ↦ IsUnit.of_mul_eq_one_right (v.eval a) ?_, fun h ↦ ?_⟩
-  · simpa using congr_arg (eval a) h
-  · obtain ⟨q, hq⟩ := X_sub_C_dvd_sub_C_eval (a := a) (p := p)
-    refine ⟨-(C h.unit⁻¹.val * q), C h.unit⁻¹.val, ?_⟩
-    rw [← C_1, ← h.val_inv_mul, C_mul, neg_mul, mul_assoc, mul_comm q, ← hq, mul_sub, neg_sub,
-      sub_add_cancel]
+  refine ⟨fun h ↦ by simpa [isCoprime_zero_left] using h.map (evalRingHom a), fun h ↦ ?_⟩
+  have ⟨q, hq⟩ := X_sub_C_dvd_sub_C_eval (a := a) (p := p)
+  rw [eq_add_of_sub_eq' hq]
+  simp [isCoprime_one_right.of_isCoprime_of_dvd_right, isUnit_C, h]
 
+@[simp]
 theorem isCoprime_X_sub_C_iff_isUnit_sub :
     IsCoprime (X - C a) (X - C b) ↔ IsUnit (a - b) := by
   simp [isCoprime_X_sub_C_iff]
