@@ -190,7 +190,6 @@ theorem Hom.edist_le (f : G →g H) (u v : V) : H.edist (f u) (f v) ≤ G.edist 
   refine le_iInf fun p ↦ ?_
   simpa using (p.map f).edist_le
 
-/-- A graph isomorphism preserves extended distance. -/
 @[simp]
 theorem Iso.edist_eq (f : G ≃g H) (u v : V) : H.edist (f u) (f v) = G.edist u v := by
   apply le_antisymm (f.toHom.edist_le u v)
