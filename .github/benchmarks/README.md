@@ -4,8 +4,13 @@ This branch prepares a comparison of Lean `8001cf3a43a2de1350f6d1dcc0a51cd7e8f46
 with its master base, `baeedf0cbafeff325f77b76e540f09d291f6f038`.
 Both compilers build Mathlib nightly-testing commit
 `9151b29138f46990b9502c758ed0567ea14843e6` with the same dependency manifest.
-That source passes its own nightly CI. Compatibility with these two compilers must
-pass the experiment's preflight and full builds; it is not assumed.
+Both builds apply `batteries-compat.patch` to the pinned Batteries dependency.
+It replaces `unfold pack` with `dsimp -zeta only [pack]` in two Float proofs, so
+`extract_lets` can reach the local definitions after the match reduces. The patch
+changes no theorem statements. The script verifies the patched file's digest and
+rejects other tracked source changes. Artifacts include the patch and its digest.
+Preflight builds all of Batteries and `Mathlib.Data.String.Basic` with both compilers.
+The full builds must also pass; preflight alone does not establish compatibility.
 
 The baseline comes from Lean CI run 38580034934, Linux artifact 11902424333.
 The candidate comes from the commit-specific PR release tag

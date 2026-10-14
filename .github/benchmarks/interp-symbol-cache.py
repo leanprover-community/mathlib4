@@ -31,6 +31,9 @@ if not 1 <= PAIRS <= 5:
 OUT.mkdir(parents=True, exist_ok=True)
 MANIFEST = (ROOT / "lake-manifest.json").read_bytes()
 PACKAGES = json.loads(MANIFEST)["packages"]
+COMPAT_PATCH = Path(__file__).with_name("batteries-compat.patch").resolve()
+COMPAT_FILE = "Batteries/Data/Float/Lemmas.lean"
+COMPAT_FILE_SHA256 = "23b9e136777efacf960b138bc9a9010acdebb6d3b4248d355043cbd672f366b3"
 
 
 def save(name, value):
@@ -76,7 +79,7 @@ def clear_builds():
             shutil.rmtree(path)
 
 
-def check_sources(dependencies=True):
+def check_sources(dependencies=True, compatibility=True):
     if output(["git", "rev-parse", "HEAD"], cwd=ROOT) != MATHLIB:
         raise RuntimeError("Wrong Mathlib revision")
     if output(["git", "status", "--porcelain", "--untracked-files=no"], cwd=ROOT):
@@ -88,8 +91,21 @@ def check_sources(dependencies=True):
             path = ROOT / ".lake/packages" / package["name"]
             if output(["git", "rev-parse", "HEAD"], cwd=path) != package["rev"]:
                 raise RuntimeError(f"Wrong dependency revision: {package['name']}")
-            if output(["git", "status", "--porcelain", "--untracked-files=no"], cwd=path):
+            if package["name"] == "batteries" and compatibility:
+                changed = output(["git", "diff", "--name-only", "HEAD"], cwd=path)
+                digest = hashlib.sha256((path / COMPAT_FILE).read_bytes()).hexdigest()
+                if changed != COMPAT_FILE or digest != COMPAT_FILE_SHA256:
+                    raise RuntimeError("Batteries compatibility patch changed")
+            elif output(["git", "status", "--porcelain", "--untracked-files=no"], cwd=path):
                 raise RuntimeError(f"Dependency source changed: {package['name']}")
+
+
+def apply_compatibility_patch():
+    path = ROOT / ".lake/packages/batteries"
+    subprocess.run(["git", "apply", "--check", str(COMPAT_PATCH)], cwd=path, check=True)
+    subprocess.run(["git", "apply", str(COMPAT_PATCH)], cwd=path, check=True)
+    shutil.copyfile(COMPAT_PATCH, OUT / COMPAT_PATCH.name)
+    check_sources()
 
 
 def run_logged(variant, args, name, network=False, profile=False):
@@ -160,6 +176,8 @@ def main():
     save("metadata.json", {
         "mathlib_commit": MATHLIB, "lean_commits": COMMITS, "lean_versions": versions,
         "manifest_sha256": hashlib.sha256(MANIFEST).hexdigest(), "dependencies": PACKAGES,
+        "compatibility_patch_sha256": hashlib.sha256(COMPAT_PATCH.read_bytes()).hexdigest(),
+        "compatibility_file": COMPAT_FILE, "compatibility_file_sha256": COMPAT_FILE_SHA256,
         "mode": MODE, "first_order": ORDER, "pairs": PAIRS,
         "threads": os.environ.get("LEAN_NUM_THREADS", "Lean default"),
         "platform": platform.platform(), "cpu_count": os.cpu_count(),
@@ -169,12 +187,13 @@ def main():
         "affinity": sorted(os.sched_getaffinity(0)) if hasattr(os, "sched_getaffinity") else None,
     })
     run_logged(ORDER[0], ["env", "true"], "fetch-dependencies", network=True)
-    check_sources()
+    check_sources(compatibility=False)
+    apply_compatibility_patch()
     # Dependency compatibility fails early, before either full-build measurement.
     for variant in ORDER:
         clear_builds()
         run_logged(variant, ["env", "true"], f"configure-preflight-{variant}")
-        run_logged(variant, ["build", "--no-cache", "--no-ansi", "Mathlib.Data.String.Basic"],
+        run_logged(variant, ["build", "--no-cache", "--no-ansi", "Batteries", "Mathlib.Data.String.Basic"],
                    f"preflight-{variant}")
         check_sources()
     if MODE == "profile":
