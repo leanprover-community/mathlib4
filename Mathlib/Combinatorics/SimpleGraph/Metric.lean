@@ -191,6 +191,7 @@ theorem Hom.edist_le (f : G →g H) (u v : V) : H.edist (f u) (f v) ≤ G.edist 
   simpa only [Walk.length_map] using (p.map f).edist_le
 
 /-- A graph isomorphism preserves extended distance. -/
+@[simp]
 theorem Iso.edist_eq (f : G ≃g H) (u v : V) : H.edist (f u) (f v) = G.edist u v := by
   apply le_antisymm (f.toHom.edist_le u v)
   simpa using f.symm.toHom.edist_le (f u) (f v)
@@ -375,6 +376,7 @@ theorem Hom.dist_le (f : G →g H) (hr : G.Reachable u v) : H.dist (f u) (f v) �
   ENat.toNat_le_toNat (f.edist_le u v) (edist_ne_top_iff_reachable.mpr hr)
 
 /-- A graph isomorphism preserves natural distance. -/
+@[simp]
 theorem Iso.dist_eq (f : G ≃g H) (u v : V) : H.dist (f u) (f v) = G.dist u v :=
   congrArg ENat.toNat (f.edist_eq u v)
 
