@@ -69,7 +69,6 @@ theorem isRecurrent_def :
 
 theorem isRecurrent_iff_ae_iUnion :
     s.IsRecurrent f μ ↔ sᶜ ∪ ⋃ n ≠ 0, f^[n] ⁻¹' s =ᵐ[μ] univ := by
-  rw [isRecurrent_def, ae_iff, ae_eq_univ]
   congrm μ { x | ?_ } = 0
   simp
 
@@ -100,7 +99,7 @@ theorem isRecurrent_univ : IsRecurrent f μ univ := (mapsTo_univ f univ).isRecur
 theorem IsRecurrent.union {t : Set α} (hs : s.IsRecurrent f μ) (ht : t.IsRecurrent f μ) :
     (s ∪ t).IsRecurrent f μ := by
   simp only [isRecurrent_def] at hs ht ⊢
-  filter_upwards [hs, ht] with x xsn xtn xst
+  filter_upwards [hs, ht] with x hsn htn hst
   grind
 
 theorem isRecurrent_iUnion {ι : Type*} [Countable ι] {s : ι → Set α}
@@ -110,27 +109,26 @@ theorem isRecurrent_iUnion {ι : Type*} [Countable ι] {s : ι → Set α}
   apply (eventually_countable_forall.2 hs).mono
   grind [mem_iUnion]
 
-theorem _root_.Set.IsRecurrent.exists_mem_iterate_mem (hs : μ s ≠ 0) (hf : s.IsRecurrent f μ) :
+theorem IsRecurrent.exists_mem_iterate_mem (hs : s.IsRecurrent f μ) (h : μ s ≠ 0) :
     ∃ x ∈ s, ∃ m ≠ 0, f^[m] x ∈ s := by
-  rw [← frequently_ae_mem_iff] at hs
-  obtain ⟨x, x_s, hx⟩ := (hs.and_eventually (isRecurrent_def.1 hf)).exists
-  exact ⟨x, x_s, hx x_s⟩
+  rw [← frequently_ae_mem_iff] at h
+  obtain ⟨x, hxs, hx⟩ := (h.and_eventually (isRecurrent_def.1 hs)).exists
+  exact ⟨x, hxs, hx hxs⟩
 
 theorem isRecurrent_congr_set {t : Set α} (hf : QuasiMeasurePreserving f μ μ) (h : s =ᵐ[μ] t) :
     s.IsRecurrent f μ ↔ t.IsRecurrent f μ := by
-  suffices h' : (⋃ n ≠ 0, f^[n] ⁻¹' s : Set α) =ᵐ[μ] (⋃ n ≠ 0, f^[n] ⁻¹' t : Set α) by
-    exact eventuallyLE_congr h h'
-  refine EventuallyEqSet.countable_iUnion fun n ↦ ?_
-  exact EventuallyEqSet.countable_iUnion fun _ ↦ (hf.iterate n).preimage_ae_eq h
+  suffices h' : ⋃ n ≠ 0, f^[n] ⁻¹' s =ᵐ[μ] ⋃ n ≠ 0, f^[n] ⁻¹' t by
+    exact ⟨fun hyp ↦ hyp.congr h h', fun hyp ↦ hyp.congr h.symm h'.symm⟩
+  exact .countable_iUnion fun n ↦ .countable_iUnion fun _ ↦ (hf.iterate n).preimage_ae_eq h
 
 theorem isRecurrent_of_ae (hf : QuasiMeasurePreserving f μ μ) (hs : s ∈ ae μ) :
     s.IsRecurrent f μ := by
   rw [mem_ae_iff, ← ae_eq_univ] at hs
   simp [isRecurrent_congr_set hf hs]
 
-theorem _root_.Set.IsRecurrent.preimage (n : ℕ) (hf : QuasiMeasurePreserving f μ μ)
+theorem IsRecurrent.preimage (n : ℕ) (hf : QuasiMeasurePreserving f μ μ)
     (hs : s.IsRecurrent f μ) : (f^[n] ⁻¹' s).IsRecurrent f μ := by
-  apply ((hf.iterate n).preimage_mono_ae hs).congr ae_eq_rfl (Eq.eventuallyEq _)
+  refine ((hf.iterate n).preimage_mono_ae hs).congr ae_eq_rfl (Eq.eventuallyEqSet ?_)
   rw [preimage_iUnion₂]
   refine iUnion₂_congr fun m _ ↦ ?_
   rw [← preimage_comp, ← iterate_add, add_comm, iterate_add, preimage_comp]
@@ -141,10 +139,10 @@ theorem isRecurrent_iff_isReccurent_iUnion_preimage (s : Set α)
   constructor <;> intro hs
   · exact isRecurrent_iUnion fun n ↦ hs.preimage n hf
   rw [isRecurrent_def] at hs ⊢
-  filter_upwards [hs] with x hx xs; clear hf hs
+  filter_upwards [hs] with x hx hxs; clear hf hs
   simp only [mem_iUnion, mem_preimage, forall_exists_index] at hx
   specialize hx 0
-  simp only [iterate_zero, id_eq, xs, forall_const, ← iterate_add_apply] at hx
+  simp only [iterate_zero, id_eq, hxs, forall_const, ← iterate_add_apply] at hx
   grind
 
 theorem isRecurrent_of_ae_iUnion_preimage (hf : QuasiMeasurePreserving f μ μ)
@@ -159,7 +157,7 @@ theorem IsRecurrent.frequently_measure_inter_ne_zero {t : Set α} (hf : QuasiMea
   refine (infinite_iff_exists_gt_mem ht_nemp).2 fun n hn ↦ ?_
   let r := t ∩ f^[n] ⁻¹' s ∩ f^[n] ⁻¹' (sᶜ ∪ ⋃ m ≠ 0, f^[m] ⁻¹' s)
   have hrμ : μ r ≠ 0 := by
-    suffices h : r =ᵐ[μ] (t ∩ f^[n] ⁻¹' s : Set α) by rwa [measure_congr h]
+    suffices h : r =ᵐ[μ] t ∩ f^[n] ⁻¹' s by rwa [measure_congr h]
     apply inter_ae_eq_left_of_ae_eq_univ
     rw [← preimage_univ (f := f^[n])]
     exact (hf.iterate n).preimage_ae_eq (isRecurrent_iff_ae_iUnion.1 hs)
@@ -182,7 +180,7 @@ theorem IsRecurrent.ae_mem_imp_frequently_image_mem (hf : QuasiMeasurePreserving
   apply not_imp_not.1
     (hs.frequently_measure_inter_ne_zero hf (t := s ∩ ⋂ m ≥ n, f^[m] ⁻¹' sᶜ) inter_subset_left)
   simp only [preimage_compl, not_ne_iff, eventually_atTop]
-  refine ⟨n, fun m hnm ↦ ae_eq_empty.1 (Eq.eventuallyEq ?_)⟩
+  refine ⟨n, fun m hnm ↦ ae_eq_empty.1 (Eq.eventuallyEqSet ?_)⟩
   suffices h : (⋂ k ≥ n, (f^[k] ⁻¹' s)ᶜ) ∩ f^[m] ⁻¹' s = ∅ by simp [inter_assoc, h]
   rw [iInter_inter]
   apply iInter_eq_empty_of_eq_empty (i := m)
@@ -196,29 +194,29 @@ theorem preimage_limsup_preimage {α : Type*} {s : Set α} {f : α → α} {n : 
   constructor <;> intro h m
   · obtain ⟨k, _, _⟩ := h m
     refine ⟨n + k, by linarith, ?_⟩
-    rwa [add_comm, Function.iterate_add_apply]
+    rwa [add_comm, iterate_add_apply]
   · obtain ⟨k, hkm, hfk⟩ := h (m + n)
     refine ⟨k - n, Nat.le_sub_of_add_le hkm, ?_⟩
-    rwa [← Function.iterate_add_apply, Nat.sub_add_cancel (Nat.le_of_add_left_le hkm)]
+    rwa [← iterate_add_apply, Nat.sub_add_cancel (Nat.le_of_add_left_le hkm)]
 
 theorem isRecurrent_iff_ae_sub_limsup_preimage (s : Set α) (hf : QuasiMeasurePreserving f μ μ) :
     s.IsRecurrent f μ ↔ ⋃ n, f^[n] ⁻¹' s =ᵐ[μ] limsup (fun n ↦ f^[n] ⁻¹' s) atTop := by
   have hl : limsup (fun n ↦ f^[n] ⁻¹' s) atTop ≤ᵐ[μ] ⋃ n ≠ 0, f^[n] ⁻¹' s := by
-    refine (eventuallyLE_of_subset fun x hx ↦ ?_)
-    simp only [limsup_eq_iInf_iSup_of_nat, iSup_eq_iUnion, iInf_eq_iInter, mem_iInter,
-      mem_iUnion, mem_preimage, exists_prop] at hx ⊢
+    refine .of_subset fun x hx ↦ ?_
+    simp only [limsup_eq_iInf_iSup_of_nat, iSup_eq_iUnion, iInf_eq_iInter, mem_iInter, mem_iUnion]
+      at hx ⊢
     grind [hx 1]
   constructor <;> intro h
-  · apply EventuallyLE.antisymm _ (hl.trans (eventuallyLE_of_subset (iUnion₂_subset_iUnion _ _)))
-    refine EventuallySubset.countable_iUnion' fun n ↦ ?_
+  · apply EventuallySubset.antisymm _ (hl.trans (.of_subset (iUnion₂_subset_iUnion _ _)))
+    refine .countable_iUnion' fun n ↦ ?_
     rw [← preimage_limsup_preimage (n := n)]
     apply (hf.iterate n).preimage_mono_ae
-    apply (h.ae_mem_imp_frequently_image_mem hf).mono fun x hx ↦ ?_
-    simp only [limsup_eq_iInf_iSup_of_nat, iSup_eq_iUnion, iInf_eq_iInter]
-    refine fun x_s ↦ mem_iInter.2 fun n ↦ mem_iUnion₂.2 ?_
-    simp [frequently_atTop.1 (hx x_s) n]
-  · apply EventuallyLE.trans _ (h.trans_le hl)
-    exact eventuallyLE_of_subset (subset_iUnion_of_subset 0 (by simp))
+    filter_upwards [h.ae_mem_imp_frequently_image_mem hf] with x hx hxs
+    simp only [limsup_eq_iInf_iSup_of_nat, iSup_eq_iUnion, iInf_eq_iInter, mem_iInter,
+      mem_iUnion, exists_prop]
+    exact frequently_atTop.1 (hx hxs)
+  · apply EventuallySubset.trans _ (h.trans_le hl)
+    exact .of_subset (subset_iUnion_of_subset 0 (by simp))
 
 theorem _root_.MeasureTheory.MeasurePreserving.isRecurrent [IsFiniteMeasure μ]
     (hf : MeasurePreserving f μ μ) (hs : NullMeasurableSet s μ) : s.IsRecurrent f μ :=
