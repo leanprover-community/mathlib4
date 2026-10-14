@@ -5,9 +5,9 @@ Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp, Anne Baanen
 -/
 module
 
+public meta import Mathlib.Lean.Expr.ExtraRecognizers
 public import Mathlib.Algebra.Order.Sub.Basic
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-public meta import Mathlib.Lean.Expr.ExtraRecognizers
 
 /-!
 

@@ -51,7 +51,7 @@ universe v₁ v₂ v₃ u₁ u₁' u₂ u₃
 /-- A wrapper for promoting any type to a category,
 with the only morphisms being equalities.
 -/
-@[ext, aesop safe cases (rule_sets := [CategoryTheory])]
+@[ext, aesop safe cases (rule_sets := [CategoryTheory]), to_dual_do_translate]
 structure Discrete (α : Type u₁) where
   /-- A wrapper for promoting any type to a category,
   with the only morphisms being equalities. -/
@@ -77,7 +77,7 @@ instance {α : Type u₁} [DecidableEq α] : DecidableEq (Discrete α) :=
 
 set_option linter.translate.warnInvalid false in
 /-- The only morphisms in `Discrete α` are the identity morphisms. -/
-@[nolint structureInType, to_dual self (reorder := a b)]
+@[nolint structureInType, to_dual self (reorder := a b) (relevant_arg := _)]
 structure Discrete.Hom {α : Type u₁} (a b : α) : Type u₁ where
   eq : a = b
 
@@ -86,6 +86,7 @@ attribute [aesop (rule_sets := [builtin]) norm 0 destruct] Discrete.Hom.eq
 
 to_dual_for Discrete.Hom.eq := self.eq.symm
 to_dual_for Discrete.Hom.mk := ⟨eq.symm⟩
+to_dual_for Discrete.Hom.casesOn := t.casesOn (mk ·.symm)
 
 /-- The "Discrete" category on a type, whose morphisms are equalities.
 
