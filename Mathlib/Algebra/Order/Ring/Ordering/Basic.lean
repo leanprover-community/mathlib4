@@ -123,31 +123,31 @@ variable {R : Type*} [CommRing R]
 
 namespace RingPreordering
 
-@[deprecated "no replacement" (since := "2026-04-15"), gcongr]
+@[deprecated "no replacement" (since := "2026-10-14"), gcongr]
 theorem toSubsemiring_le_toSubsemiring {P₁ P₂ : RingPreordering R} :
     P₁.toSubsemiring ≤ P₂.toSubsemiring ↔ P₁ ≤ P₂ := .rfl
 
-@[deprecated "no replacement" (since := "2026-04-15"), gcongr]
+@[deprecated "no replacement" (since := "2026-10-14"), gcongr]
 theorem toSubsemiring_lt_toSubsemiring {P₁ P₂ : RingPreordering R} :
     P₁.toSubsemiring < P₂.toSubsemiring ↔ P₁ < P₂ := .rfl
 
-@[deprecated "no replacement" (since := "2026-04-15"), mono]
+@[deprecated "no replacement" (since := "2026-10-14"), mono]
 theorem toSubsemiring_mono : Monotone (toSubsemiring : RingPreordering R → _) :=
   fun _ _ => id
 
-@[deprecated "no replacement" (since := "2026-04-15"), mono]
+@[deprecated "no replacement" (since := "2026-10-14"), mono]
 theorem toSubsemiring_strictMono : StrictMono (toSubsemiring : RingPreordering R → _) :=
   fun _ _ => id
 
 set_option linter.deprecated false in
-@[deprecated Subsemiring.IsPreordering.unitsInv_mem +typeChanged (since := "2026-04-15"),
+@[deprecated Subsemiring.IsPreordering.unitsInv_mem +typeChanged (since := "2026-10-14"),
   aesop unsafe 90% apply (rule_sets := [SetLike])]
 theorem unitsInv_mem {P : RingPreordering R} {a : Rˣ} (ha : ↑a ∈ P) : ↑a⁻¹ ∈ P := by
   have : (a * (a⁻¹ * a⁻¹) : R) ∈ P := by aesop (config := { enableSimp := false })
   simp_all
 
 set_option linter.deprecated false in
-@[deprecated Subsemiring.IsPreordering.inv_mem +typeChanged (since := "2026-04-15"),
+@[deprecated Subsemiring.IsPreordering.inv_mem +typeChanged (since := "2026-10-14"),
   aesop unsafe 90% apply (rule_sets := [SetLike])]
 theorem inv_mem {F : Type*} [Field F] {P : RingPreordering F} {a : F} (ha : a ∈ P) :
     a⁻¹ ∈ P := by
@@ -156,7 +156,7 @@ theorem inv_mem {F : Type*} [Field F] {P : RingPreordering F} {a : F} (ha : a �
   simp_all
 
 set_option linter.deprecated false in
-@[deprecated Subsemiring.IsPreordering.mem_of_isSumSq +typeChanged (since := "2026-04-15"),
+@[deprecated Subsemiring.IsPreordering.mem_of_isSumSq +typeChanged (since := "2026-10-14"),
   aesop unsafe 80% apply (rule_sets := [SetLike])]
 theorem mem_of_isSumSq {P : RingPreordering R} {x : R} (hx : IsSumSq x) : x ∈ P := by
   induction hx using IsSumSq.rec' <;> aesop
@@ -166,7 +166,7 @@ section mk'
 variable {R : Type*} [CommRing R] {P : Set R} {add} {mul} {sq} {neg_one}
 
 /-- Construct a preordering from a minimal set of axioms. -/
-@[deprecated "no replacement" (since := "2026-04-15")]
+@[deprecated "no replacement" (since := "2026-10-14")]
 def mk' {R : Type*} [CommRing R] (P : Set R)
     (add : ∀ {x y : R}, x ∈ P → y ∈ P → x + y ∈ P)
     (mul : ∀ {x y : R}, x ∈ P → y ∈ P → x * y ∈ P)
@@ -179,35 +179,35 @@ def mk' {R : Type*} [CommRing R] (P : Set R)
   zero_mem' := by simpa using sq 0
   one_mem' := by simpa using sq 1
 
-@[deprecated "no replacement" (since := "2026-04-15"), simp]
+@[deprecated "no replacement" (since := "2026-10-14"), simp]
 theorem mem_mk' {x : R} : x ∈ mk' P add mul sq neg_one ↔ x ∈ P := .rfl
 
-@[deprecated "no replacement" (since := "2026-04-15"), simp, norm_cast]
+@[deprecated "no replacement" (since := "2026-10-14"), simp, norm_cast]
 theorem coe_mk' : mk' P add mul sq neg_one = P := rfl
 
 end mk'
 
 section ne_top
 
-@[deprecated Subsemiring.IsPreordering.one_notMem_support +typeChanged (since := "2026-04-15")]
+@[deprecated Subsemiring.IsPreordering.one_notMem_support +typeChanged (since := "2026-10-14")]
 theorem one_notMem_supportAddSubgroup (P : RingPreordering R) : 1 ∉ P.supportAddSubgroup :=
   fun h => RingPreordering.neg_one_notMem P h.2
 
-@[deprecated Subsemiring.IsPreordering.one_notMem_support +typeChanged (since := "2026-04-15")]
+@[deprecated Subsemiring.IsPreordering.one_notMem_support +typeChanged (since := "2026-10-14")]
 theorem one_notMem_support (P : RingPreordering R) [P.HasIdealSupport] : 1 ∉ P.support := by
   simpa using one_notMem_supportAddSubgroup P
 
-@[deprecated Subsemiring.IsPreordering.support_ne_top +typeChanged (since := "2026-04-15")]
+@[deprecated Subsemiring.IsPreordering.support_ne_top +typeChanged (since := "2026-10-14")]
 theorem supportAddSubgroup_ne_top (P : RingPreordering R) : P.supportAddSubgroup ≠ ⊤ :=
   fun h => RingPreordering.neg_one_notMem P (by simp [h] : 1 ∈ P.supportAddSubgroup).2
 
-@[deprecated Subsemiring.IsPreordering.support_ne_top +typeChanged (since := "2026-04-15")]
+@[deprecated Subsemiring.IsPreordering.support_ne_top +typeChanged (since := "2026-10-14")]
 theorem support_ne_top (P : RingPreordering R) [P.HasIdealSupport] : P.support ≠ ⊤ := by
   apply_fun Submodule.toAddSubgroup
   simpa using supportAddSubgroup_ne_top P
 
 @[deprecated
-"no replacement; use `Subsemiring.IsPreordering.support_ne_top`" (since := "2026-04-15")]
+"no replacement; use `Subsemiring.IsPreordering.support_ne_top`" (since := "2026-10-14")]
 theorem IsOrdering.mk' (P : RingPreordering R) [HasMemOrNegMem P]
     (h : ∀ {x y}, x * y ∈ P.support → x ∈ P.support ∨ y ∈ P.support) : P.IsOrdering where
   ne_top' := support_ne_top P
@@ -217,13 +217,13 @@ end ne_top
 
 namespace HasIdealSupport
 
-@[deprecated "no replacement" (since := "2026-04-15")]
+@[deprecated "no replacement" (since := "2026-10-14")]
 theorem smul_mem (P : RingPreordering R) [P.HasIdealSupport]
     (x : R) {a : R} (h₁a : a ∈ P) (h₂a : -a ∈ P) : x * a ∈ P := by
   rw [hasIdealSupport_iff] at ‹P.HasIdealSupport›
   simp [*]
 
-@[deprecated "no replacement" (since := "2026-04-15")]
+@[deprecated "no replacement" (since := "2026-10-14")]
 theorem neg_smul_mem (P : RingPreordering R) [P.HasIdealSupport]
     (x : R) {a : R} (h₁a : a ∈ P) (h₂a : -a ∈ P) : -(x * a) ∈ P := by
   rw [hasIdealSupport_iff] at ‹P.HasIdealSupport›
@@ -232,7 +232,7 @@ theorem neg_smul_mem (P : RingPreordering R) [P.HasIdealSupport]
 end HasIdealSupport
 
 @[deprecated
-Subsemiring.IsPreordering.smul_mem_support_of_isUnit_two +typeChanged (since := "2026-04-15")]
+Subsemiring.IsPreordering.smul_mem_support_of_isUnit_two +typeChanged (since := "2026-10-14")]
 theorem hasIdealSupport_of_isUnit_two {P : RingPreordering R} (h : IsUnit (2 : R)) :
     P.HasIdealSupport := by
   rw [hasIdealSupport_iff]
@@ -246,7 +246,7 @@ theorem hasIdealSupport_of_isUnit_two {P : RingPreordering R} (h : IsUnit (2 : R
   aesop (add simp sub_eq_add_neg)
 
 @[deprecated
-Subsemiring.IsPreordering.smul_mem_support_of_isUnit_two +typeChanged (since := "2026-04-15")]
+Subsemiring.IsPreordering.smul_mem_support_of_isUnit_two +typeChanged (since := "2026-10-14")]
 instance (P : RingPreordering R) [h : Fact (IsUnit (2 : R))] : P.HasIdealSupport :=
     hasIdealSupport_of_isUnit_two h.out
 
@@ -255,7 +255,7 @@ section Field
 variable {F : Type*} [Field F]
 
 set_option linter.deprecated false in
-@[deprecated "use `Subsemiring.IsPreordering.isPointed`" (since := "2026-04-15"),
+@[deprecated "use `Subsemiring.IsPreordering.isPointed`" (since := "2026-10-14"),
   aesop unsafe 70% apply]
 protected theorem eq_zero_of_mem_of_neg_mem
     {P : RingPreordering F} {x} (h : x ∈ P) (h2 : -x ∈ P) : x = 0 := by
@@ -264,24 +264,24 @@ protected theorem eq_zero_of_mem_of_neg_mem
   field_simp at mem
   exact RingPreordering.neg_one_notMem P mem
 
-@[deprecated "use `Subsemiring.IsPreordering.isPointed`" (since := "2026-04-15")]
+@[deprecated "use `Subsemiring.IsPreordering.isPointed`" (since := "2026-10-14")]
 theorem supportAddSubgroup_eq_bot (P : RingPreordering F) : P.supportAddSubgroup = ⊥ := by
   ext; aesop (add simp mem_supportAddSubgroup)
 
-@[deprecated "no replacement" (since := "2026-04-15")]
+@[deprecated "no replacement" (since := "2026-10-14")]
 instance (P : RingPreordering F) : P.HasIdealSupport where
   smul_mem_support := by simp [supportAddSubgroup_eq_bot]
 
-@[deprecated "use `Subsemiring.IsPreordering.isPointed`" (since := "2026-04-15"), simp]
+@[deprecated "use `Subsemiring.IsPreordering.isPointed`" (since := "2026-10-14"), simp]
 theorem support_eq_bot (P : RingPreordering F) : P.support = ⊥ := by
   simpa [← Submodule.toAddSubgroup_inj] using supportAddSubgroup_eq_bot P
 
-@[deprecated "no replacement" (since := "2026-04-15")]
+@[deprecated "no replacement" (since := "2026-10-14")]
 instance (P : RingPreordering F) : P.support.IsPrime := by simpa using Ideal.isPrime_bot
 
 end Field
 
-@[deprecated Subsemiring.IsPreordering.isOrdering_iff +typeChanged (since := "2026-04-15")]
+@[deprecated Subsemiring.IsPreordering.isOrdering_iff +typeChanged (since := "2026-10-14")]
 theorem isOrdering_iff {P : RingPreordering R} :
     P.IsOrdering ↔ ∀ a b : R, -(a * b) ∈ P → a ∈ P ∨ b ∈ P := by
   refine ⟨fun _ a b _ => ?_, fun h => ?_⟩
