@@ -25,12 +25,12 @@ variable {R : Type*} [CommRing R]
 /-- The Array version of `hessP`. -/
 @[expose]
 def coeffHessSum (n : ℕ) (H : Array R) (kcol : ℕ) :
-    (i : ℕ) → (beta : R) → Array (List R) → List R
-  | 0, beta, ps => (ps.getD 0 []).map (H.getD (n * 0 + kcol) 0 * beta * ·)
-  | i + 1, beta, ps =>
+    (i : ℕ) → (r : R) → Array (List R) → List R
+  | 0, r, ps => (ps.getD 0 []).map (H.getD (n * 0 + kcol) 0 * r * ·)
+  | i + 1, r, ps =>
     List.zipWithAll (fun a b => a.getD 0 + b.getD 0)
-      ((ps.getD (i + 1) []).map (H.getD (n * (i + 1) + kcol) 0 * beta * ·))
-      (coeffHessSum n H kcol i (beta * H.getD (n * (i + 1) + i) 0) ps)
+      ((ps.getD (i + 1) []).map (H.getD (n * (i + 1) + kcol) 0 * r * ·))
+      (coeffHessSum n H kcol i (r * H.getD (n * (i + 1) + i) 0) ps)
 
 /-- The Array version of one step of `hessP`. -/
 @[expose]
@@ -60,14 +60,14 @@ def coeffHessCharPoly (n : ℕ) (H : Array R) : List R :=
   (coeffHessAux n H n).getD n []
 
 theorem ofCoeffList_coeffHessSum (n : ℕ) (H : Array R) (kcol : ℕ) :
-    ∀ (i : ℕ) (beta : R) (ps : Array (List R)),
-      ofCoeffList (coeffHessSum n H kcol i beta ps) =
+    ∀ (i : ℕ) (r : R) (ps : Array (List R)),
+      ofCoeffList (coeffHessSum n H kcol i r ps) =
         ∑ t : Fin (i + 1),
           C (H.getD (n * (t : ℕ) + kcol) 0 *
-              (beta * ∏ j ∈ Finset.Ico (t : ℕ) i, H.getD (n * (j + 1) + j) 0)) *
+              (r * ∏ j ∈ Finset.Ico (t : ℕ) i, H.getD (n * (j + 1) + j) 0)) *
             ofCoeffList (ps.getD (t : ℕ) [])
-  | 0, beta, ps => by simp [coeffHessSum]
-  | i + 1, beta, ps => by
+  | 0, r, ps => by simp [coeffHessSum]
+  | i + 1, r, ps => by
     rw [Fin.sum_univ_castSucc, coeffHessSum, ofCoeffList_zipWithAll_add, ofCoeffList_map_mul,
       ofCoeffList_coeffHessSum, add_comm]
     simp only [Fin.val_castSucc, Fin.val_last, Finset.Ico_self, Finset.prod_empty, mul_one]
