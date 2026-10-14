@@ -487,7 +487,7 @@ alias not_isDiag_of_mem_edgeSet := not_isDiagonal_of_mem_edgeSet
 @[simp] lemma notMem_edgeSet_of_isDiagonal : e.IsDiagonal → e ∉ edgeSet G :=
   imp_not_comm.1 G.not_isDiagonal_of_mem_edgeSet
 
-@[deprecated (since := "2026-09-06")]
+@[deprecated (since := "2026-10-14")]
 alias notMem_edgeSet_of_isDiag := notMem_edgeSet_of_isDiagonal
 
 @[deprecated (since := "2026-09-28")]
@@ -495,7 +495,7 @@ alias not_mem_edgeSet_of_isDiag := notMem_edgeSet_of_isDiagonal
 
 alias _root_.Sym2.IsDiagonal.notMem_edgeSet := notMem_edgeSet_of_isDiagonal
 
-@[deprecated (since := "2026-09-06")]
+@[deprecated (since := "2026-10-14")]
 alias _root_.Sym2.IsDiag.notMem_edgeSet := Sym2.IsDiagonal.notMem_edgeSet
 
 @[deprecated (since := "2026-09-28")]

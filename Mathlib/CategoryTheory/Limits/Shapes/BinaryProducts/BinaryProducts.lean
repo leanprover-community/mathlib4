@@ -147,7 +147,7 @@ theorem prod.comp_diagonal {X Y : C} [HasBinaryProduct Y Y] (f : X ⟶ Y) :
     f ≫ prod.diagonal Y = prod.lift f f := by simp
 
 @[deprecated (since := "2026-09-06")] alias prod.comp_diag := prod.comp_diagonal
-@[deprecated (since := "2026-09-06")] alias coprod.codiag_comp := coprod.codiagonal_comp
+@[deprecated (since := "2026-10-14")] alias coprod.codiag_comp := coprod.codiagonal_comp
 @[deprecated (since := "2026-09-26")] alias coprod.diag_comp := coprod.codiagonal_comp
 
 @[to_dual (attr := reassoc (attr := simp)) inl_map]

@@ -577,7 +577,7 @@ theorem mk_fiber_of_isDiagonal (hz : z.IsDiagonal) :
   cases hz
   simp [mk_fiber]
 
-@[deprecated (since := "2026-09-06")] alias mk_fiber_of_isDiag := mk_fiber_of_isDiagonal
+@[deprecated (since := "2026-10-14")] alias mk_fiber_of_isDiag := mk_fiber_of_isDiagonal
 
 /-- `Sym2.diagonalElem` and `Sym2.diagonal` as an equivalence. -/
 @[simps]

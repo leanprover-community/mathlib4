@@ -42,7 +42,7 @@ theorem ncard_mk_fiber_of_isDiagonal {z : Sym2 α} (hz : z.IsDiagonal) :
     (Sym2.mk.uncurry ⁻¹' {z}).ncard = 1 := by
   simp [mk_fiber_of_isDiagonal hz]
 
-@[deprecated (since := "2026-09-06")]
+@[deprecated (since := "2026-10-14")]
 alias ncard_mk_fiber_of_isDiag := ncard_mk_fiber_of_isDiagonal
 
 theorem ncard_mk_fiber_of_not_isDiagonal {z : Sym2 α} (hz : ¬z.IsDiagonal) :
@@ -50,7 +50,7 @@ theorem ncard_mk_fiber_of_not_isDiagonal {z : Sym2 α} (hz : ¬z.IsDiagonal) :
   cases z
   simp [mk_fiber, mk_isDiagonal_iff.not.mp hz]
 
-@[deprecated (since := "2026-09-06")]
+@[deprecated (since := "2026-10-14")]
 alias ncard_mk_fiber_of_not_isDiag := ncard_mk_fiber_of_not_isDiagonal
 
 theorem ncard_mk_fiber [DecidableEq α] (z : Sym2 α) :
@@ -73,7 +73,7 @@ variable (α) in
 theorem cardinalMk_diagonalSet : #(@diagonalSet α) = #α :=
   Sym2.diagonalElemEquiv.cardinal_eq
 
-@[deprecated (since := "2026-09-06")] alias cardinalMk_diagSet := cardinalMk_diagonalSet
+@[deprecated (since := "2026-10-14")] alias cardinalMk_diagSet := cardinalMk_diagonalSet
 
 open scoped Classical in
 private noncomputable def diagonalSetComplEquiv :
@@ -92,7 +92,7 @@ theorem two_mul_cardinalMk_diagonalSet_compl_add_cardinalMk :
     2 * #(diagonalSetᶜ : Set (Sym2 α)) + #α = #α * #α := by
   simpa using diagonalSetComplEquiv.cardinal_eq
 
-@[deprecated (since := "2026-09-06")]
+@[deprecated (since := "2026-10-14")]
 alias two_mul_cardinalMk_diagSet_compl_add_cardinalMk :=
   two_mul_cardinalMk_diagonalSet_compl_add_cardinalMk
 
@@ -101,14 +101,14 @@ variable (α) in
 theorem encard_diagonalSet : (@diagonalSet α).encard = ENat.card α :=
   congrArg _ <| cardinalMk_diagonalSet α
 
-@[deprecated (since := "2026-09-06")] alias encard_diagSet := encard_diagonalSet
+@[deprecated (since := "2026-10-14")] alias encard_diagSet := encard_diagonalSet
 
 variable (α) in
 theorem two_mul_encard_diagonalSet_compl_add_enatCard :
     2 * (@diagonalSet α)ᶜ.encard + ENat.card α = ENat.card α * ENat.card α := by
   simpa [ENat.card] using congr($(two_mul_cardinalMk_diagonalSet_compl_add_cardinalMk α).toENat)
 
-@[deprecated (since := "2026-09-06")]
+@[deprecated (since := "2026-10-14")]
 alias two_mul_encard_diagSet_compl_add_enatCard := two_mul_encard_diagonalSet_compl_add_enatCard
 
 open scoped Classical in
