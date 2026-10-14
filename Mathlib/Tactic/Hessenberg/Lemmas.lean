@@ -7,7 +7,6 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.Hessenberg.Similarity
 public import Mathlib.Tactic.Hessenberg.CharPoly
-public import Mathlib.Tactic.Hessenberg.Coeffs
 
 /-!
 # The Hessenberg recurrence on similarity certificates
