@@ -371,7 +371,6 @@ lemma length_eq_dist_of_subwalk {u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk u
   have := dist_le r
   lia
 
-/-- A graph homomorphism does not increase distance between reachable vertices. -/
 theorem Hom.dist_le (f : G →g H) (hr : G.Reachable u v) : H.dist (f u) (f v) ≤ G.dist u v :=
   ENat.toNat_le_toNat (f.edist_le u v) (edist_ne_top_iff_reachable.mpr hr)
 
