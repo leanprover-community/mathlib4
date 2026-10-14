@@ -21,7 +21,7 @@ open Set
 
 namespace ConvexCone
 
-variable {𝕜 : Type*} [Semifield 𝕜] [LinearOrder 𝕜]
+variable {𝕜 : Type*} [DivisionSemiring 𝕜] [PartialOrder 𝕜]
 variable {E : Type*} [AddCommGroup E] [TopologicalSpace E] [ContinuousAdd E] [Module 𝕜 E]
   [ContinuousConstSMul 𝕜 E]
 
