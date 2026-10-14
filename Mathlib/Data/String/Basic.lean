@@ -9,8 +9,8 @@ public import Batteries.Data.String.Lemmas
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Data.Char
 public import Mathlib.Data.List.Lex
+public import Mathlib.Order.Std
 
-import all Init.Data.Ord.String  -- for unfolding `String.compare`
 import all Init.Data.String.Iterator  -- for unfolding `Iterator.curr`
 
 /-!
@@ -83,7 +83,7 @@ theorem ltb_cons_addChar (c : Char) (cs₁ cs₂ : List Char) (i₁ i₂ : Pos.R
   simp
 
 theorem lt_iff_toList_lt {s₁ s₂ : String} : s₁ < s₂ ↔ s₁.toList < s₂.toList :=
-  Iff.rfl
+  toList_lt_toList_iff_toByteArray_lt_toByteArray.symm
 
 @[simp]
 theorem lt_iff_ltb {s₁ s₂ : String} :
@@ -138,23 +138,7 @@ private theorem le_iff_not_lt {s₁ s₂ : String} : s₁ ≤ s₂ ↔ ¬ s₂ <
 theorem le_iff_toList_le {s₁ s₂ : String} : s₁ ≤ s₂ ↔ s₁.toList ≤ s₂.toList := by
   rw [String.le_iff_not_lt, lt_iff_toList_lt, not_lt]
 
-instance : LinearOrder String where
-  le_refl _ := le_iff_toList_le.mpr le_rfl
-  le_trans a b c := by
-    simp only [le_iff_toList_le]
-    apply le_trans
-  lt_iff_le_not_ge a b := by
-    simp only [lt_iff_toList_lt, le_iff_toList_le, lt_iff_le_not_ge]
-  le_antisymm a b := by
-    simp only [le_iff_toList_le, ← toList_inj]
-    apply le_antisymm
-  le_total a b := by
-    simp only [le_iff_toList_le]
-    apply le_total
-  toDecidableLE := inferInstance
-  toDecidableEq := inferInstance
-  toDecidableLT := String.decidableLT
-  compare_eq_compareOfLessAndEq a b := by simp [Ord.compare, String.compare]
+instance : LinearOrder String := .ofStd String
 
 theorem ofList_eq {l : List Char} {s : String} : ofList l = s ↔ l = s.toList := by
   simp [← toList_inj]

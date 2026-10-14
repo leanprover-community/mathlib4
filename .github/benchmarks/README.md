@@ -16,10 +16,12 @@ The script applies `batteries-compat.patch` to both versions. The Float proofs u
 `dsimp -zeta only [pack]` to reduce the match and preserve the let bindings. The
 String proofs use the public order lemmas for Lean's current comparison function.
 These adaptations fix failures in the pinned dependency with the newer toolchains.
+The Mathlib String order proofs also use the current core lemmas and the standard
+`LinearOrder.ofStd` factory. Both toolchains build this same adapted source.
 
-The script checks all dependency libraries with both toolchains before either
-full build. It then deletes their build outputs before each timed run. Lake uses
-`--fail-fast` so a failed target stops new build jobs. The script verifies that
+The script checks all dependency libraries and all Mathlib String modules with
+both toolchains before either full build. It then deletes their build outputs
+before each timed run. Lake uses `--fail-fast` so a failed target stops new build jobs. The script verifies that
 the source remains unchanged between measurements. A failed build does not produce
 a speedup estimate.
 

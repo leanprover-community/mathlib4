@@ -64,7 +64,7 @@ jobs:
             rm "$archive"
           done
 
-      - name: Check all dependencies with both toolchains
+      - name: Check dependencies and String modules with both toolchains
         env:
           BENCH_ORDER: ${{ inputs.order }}
           BENCH_TOOLCHAINS: ${{ runner.temp }}

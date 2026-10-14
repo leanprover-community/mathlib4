@@ -25,8 +25,11 @@ MANIFEST = (ROOT / "lake-manifest.json").read_bytes()
 PACKAGES = json.loads(MANIFEST)["packages"]
 SOURCE_DIFFS = {p["name"]: "" for p in PACKAGES}
 ADAPTATION = ROOT / ".github/benchmarks/batteries-compat.patch"
-DEPENDENCY_TARGETS = ["Batteries", "Qq", "Aesop", "ProofWidgets", "ImportGraph",
-                      "LeanSearchClient", "Plausible", "Cli"]
+PREFLIGHT_TARGETS = [
+    "Batteries", "Qq", "Aesop", "ProofWidgets", "ImportGraph",
+    "LeanSearchClient", "Plausible", "Cli", "Mathlib.Data.String.Basic",
+    "Mathlib.Data.String.Defs", "Mathlib.Data.String.Lemmas",
+]
 
 
 def save(name, value):
@@ -70,6 +73,7 @@ def clear_builds():
 
 
 def check_sources():
+    assert not output(["git", "diff", "HEAD"], cwd=ROOT), "Tracked Mathlib source changed"
     assert (ROOT / "lake-manifest.json").read_bytes() == MANIFEST
     for package in PACKAGES:
         path = ROOT / ".lake/packages" / package["name"]
@@ -160,10 +164,10 @@ def prepare():
         run_logged(variant, ["env", "true"], f"prepare-{variant}")
         check_sources()
         clear_builds()
-        # Check all dependency libraries before either full Mathlib build.
-        run_logged(variant, ["build", "--no-cache", "--no-ansi", "--wfail", *DEPENDENCY_TARGETS],
+        # Check dependencies and the adapted Mathlib modules before either full build.
+        run_logged(variant, ["build", "--no-cache", "--no-ansi", "--wfail", *PREFLIGHT_TARGETS],
                    f"preflight-{variant}")
-        print(f"All dependency libraries pass with {variant}", flush=True)
+        print(f"All dependency libraries and Mathlib String modules pass with {variant}", flush=True)
     check_sources()
     save("preflight.json", {"lean_commits": COMMITS,
                             "manifest_sha256": hashlib.sha256(MANIFEST).hexdigest(),
