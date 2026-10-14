@@ -18,6 +18,8 @@ public import Mathlib.Logic.Function.DependsOn
 * `Finset.pi`: Cartesian product of finsets indexed by a finset.
 -/
 
+open scoped Finset
+
 @[expose] public section
 
 open Function
@@ -135,7 +137,7 @@ theorem pi_disjoint_of_disjoint {δ : α → Type*} {s : Finset α} (t₁ t₂ :
     (ha : a ∈ s) (h : Disjoint (t₁ a) (t₂ a)) : Disjoint (s.pi t₁) (s.pi t₂) :=
   disjoint_iff_ne.2 fun f₁ hf₁ f₂ hf₂ eq₁₂ =>
     disjoint_iff_ne.1 h (f₁ a ha) (mem_pi.mp hf₁ a ha) (f₂ a ha) (mem_pi.mp hf₂ a ha) <|
-      congr_fun (congr_fun eq₁₂ a) ha
+      congr($eq₁₂ a ha)
 
 end
 
@@ -155,7 +157,7 @@ def piDiagonal (s : Finset α) (ι : Type*) [DecidableEq (ι → α)] : Finset (
 @[deprecated (since := "2026-09-06")] alias mem_piDiag := mem_piDiagonal
 
 @[simp] lemma card_piDiagonal (s : Finset α) (ι : Type*) [DecidableEq (ι → α)] [Nonempty ι] :
-    (s.piDiagonal ι).card = s.card := by rw [piDiagonal, card_image_of_injective _ const_injective]
+    #(s.piDiagonal ι) = #s := by rw [piDiagonal, card_image_of_injective _ const_injective]
 
 @[deprecated (since := "2026-09-06")] alias card_piDiag := card_piDiagonal
 

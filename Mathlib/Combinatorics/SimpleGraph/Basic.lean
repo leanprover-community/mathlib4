@@ -8,10 +8,8 @@ module
 public import Mathlib.Basic.Finite.Prod
 public import Mathlib.Basic.Rel
 public import Mathlib.Combinatorics.SimpleGraph.Init
-public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Data.Sym.Sym2
 public import Mathlib.Order.CompleteBooleanAlgebra
-public import Mathlib.Tactic.CrossRefAttribute
 
 import Mathlib.Data.Set.Lattice.Disjoint
 
@@ -112,7 +110,7 @@ def SimpleGraph.mk' {V : Type u} :
     simp only [mk.injEq, Subtype.mk.injEq]
     intro h
     funext v w
-    simpa [Bool.coe_iff_coe] using congr_fun₂ h v w
+    simpa [Bool.coe_iff_coe] using congr($h v w)
 
 /-- We can enumerate simple graphs by enumerating all functions `V → V → Bool`
 and filtering on whether they are symmetric and irreflexive. -/
@@ -211,12 +209,6 @@ instance [Infinite V] : Infinite (SimpleGraph V) := by
   simpa using congr(($h).Adj (f 0) (f (a + 1)))
 
 section Order
-
-/-- The relation that one `SimpleGraph` is a subgraph of another.
-Note that this should be spelled `≤`. -/
-@[deprecated "use `≤` instead" (since := "2026-03-25")]
-def IsSubgraph (x y : SimpleGraph V) : Prop :=
-  ∀ ⦃v w : V⦄, x.Adj v w → y.Adj v w
 
 /-- For graphs `G`, `H`, `G ≤ H` iff `∀ a b, G.Adj a b → H.Adj a b`. -/
 instance : LE (SimpleGraph V) where
@@ -438,7 +430,7 @@ theorem support_top_of_nontrivial [Nontrivial V] : (⊤ : SimpleGraph V).support
 /-- The support of the empty graph is empty. -/
 @[simp]
 theorem support_bot : (⊥ : SimpleGraph V).support = ∅ :=
-  SetRel.dom_eq_empty_iff.mpr <| Set.empty_def.symm
+  SetRel.dom_eq_empty_iff.mpr Set.empty_def.symm
 
 /-- Only the empty graph has empty support. -/
 @[simp]
@@ -492,16 +484,22 @@ theorem not_isDiagonal_of_mem_edgeSet : e ∈ edgeSet G → ¬e.IsDiagonal :=
 @[deprecated (since := "2026-09-06")]
 alias not_isDiag_of_mem_edgeSet := not_isDiagonal_of_mem_edgeSet
 
-@[simp] lemma not_mem_edgeSet_of_isDiagonal : e.IsDiagonal → e ∉ edgeSet G :=
+@[simp] lemma notMem_edgeSet_of_isDiagonal : e.IsDiagonal → e ∉ edgeSet G :=
   imp_not_comm.1 G.not_isDiagonal_of_mem_edgeSet
 
 @[deprecated (since := "2026-09-06")]
-alias not_mem_edgeSet_of_isDiag := not_mem_edgeSet_of_isDiagonal
+alias notMem_edgeSet_of_isDiag := notMem_edgeSet_of_isDiagonal
 
-alias _root_.Sym2.IsDiagonal.not_mem_edgeSet := not_mem_edgeSet_of_isDiagonal
+@[deprecated (since := "2026-09-28")]
+alias not_mem_edgeSet_of_isDiag := notMem_edgeSet_of_isDiagonal
+
+alias _root_.Sym2.IsDiagonal.notMem_edgeSet := notMem_edgeSet_of_isDiagonal
 
 @[deprecated (since := "2026-09-06")]
-alias _root_.Sym2.IsDiag.not_mem_edgeSet := not_mem_edgeSet_of_isDiagonal
+alias _root_.Sym2.IsDiag.notMem_edgeSet := Sym2.IsDiagonal.notMem_edgeSet
+
+@[deprecated (since := "2026-09-28")]
+alias _root_.Sym2.IsDiag.not_mem_edgeSet := Sym2.IsDiagonal.notMem_edgeSet
 
 theorem edgeSet_inj : G₁.edgeSet = G₂.edgeSet ↔ G₁ = G₂ := (edgeSetEmbedding V).eq_iff_eq
 
@@ -805,7 +803,7 @@ theorem incidenceSet_inter_incidenceSet_subset (h : a ≠ b) :
 
 theorem incidenceSet_inter_incidenceSet_of_adj (h : G.Adj a b) :
     G.incidenceSet a ∩ G.incidenceSet b = {s(a, b)} := by
-  refine (G.incidenceSet_inter_incidenceSet_subset <| h.ne).antisymm ?_
+  refine (G.incidenceSet_inter_incidenceSet_subset h.ne).antisymm ?_
   rintro _ (rfl : _ = s(a, b))
   exact ⟨G.mk'_mem_incidenceSet_left_iff.2 h, G.mk'_mem_incidenceSet_right_iff.2 h⟩
 
@@ -1034,6 +1032,10 @@ theorem isCompleteBetween_comm : G.IsCompleteBetween s t ↔ G.IsCompleteBetween
 
 alias ⟨IsCompleteBetween.symm, _⟩ := isCompleteBetween_comm
 
+theorem IsCompleteBetween.completeBipartiteGraph (V W : Type*) :
+    (completeBipartiteGraph V W).IsCompleteBetween (.range .inl) (.range .inr) := by
+  grind [IsCompleteBetween]
+
 end IsCompleteBetween
 
 section Subsingleton
@@ -1142,7 +1144,7 @@ theorem IsUniversal.not_isIsolated [Nontrivial V] (h : G.IsUniversal v) (w : V) 
 
 theorem IsIsolated.not_isUniversal [Nontrivial V] (h : G.IsIsolated v) (w : V) :
     ¬G.IsUniversal w := by
-  contrapose! h
+  contrapose h
   exact h.not_isIsolated v
 
 @[simp]

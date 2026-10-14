@@ -5,10 +5,10 @@ Authors: Adam Topaz
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Limits
-public import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
 public import Mathlib.CategoryTheory.Adhesive.Basic
+public import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
 public import Mathlib.CategoryTheory.Sites.ConcreteSheafification
+public import Mathlib.CategoryTheory.Sites.Limits
 
 /-!
 # Left exactness of sheafification
@@ -216,7 +216,7 @@ instance preservesLimitsOfShape_plusFunctor
     rw [← Category.assoc, ← NatTrans.comp_app, limit.lift_π]
     rfl
 
-instance preserveFiniteLimits_plusFunctor
+instance preservesFiniteLimits_plusFunctor
     [HasFiniteLimits D] [PreservesFiniteLimits (forget D)] [(forget D).ReflectsIsomorphisms] :
     PreservesFiniteLimits (J.plusFunctor D) := by
   apply preservesFiniteLimits_of_preservesFiniteLimitsOfSize.{t}

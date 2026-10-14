@@ -260,7 +260,6 @@ lemma preimage_id (A : X.Subcomplex) : A.preimage (𝟙 X) = A := rfl
 lemma preimage_comp {Z : SSet.{u}} (A : Z.Subcomplex) (f : X ⟶ Y) (g : Y ⟶ Z) :
     A.preimage (f ≫ g) = (A.preimage g).preimage f := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma preimage_ι (A : X.Subcomplex) : A.preimage A.ι = ⊤ := by aesop
 
@@ -365,8 +364,8 @@ lemma image_le_image_iff (f : X ⟶ Y) [Mono f] {S₁ S₂ : X.Subcomplex} :
 lemma preimage_image_of_isIso (f : X ⟶ Y) (B : Y.Subcomplex) [IsIso f] :
     (B.preimage f).image f = B := by
   apply le_antisymm (B.image_preimage_le f)
-  · intro n y hy
-    exact ⟨(inv f).app _ y, by simpa [← NatIso.isIso_inv_app, ← NatTrans.comp_app_apply]⟩
+  intro n y hy
+  exact ⟨(inv f).app _ y, by simpa [← NatIso.isIso_inv_app, ← NatTrans.comp_app_apply]⟩
 
 lemma preimage_inv {X Y : SSet.{u}} (A : Subcomplex X) (f : X ⟶ Y) [IsIso f] :
     A.preimage (inv f) = A.image f := by

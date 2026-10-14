@@ -6,7 +6,6 @@ Authors: Gabriel Moise, Yaël Dillies, Kyle Miller
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Finite
-public import Mathlib.Data.Finset.Sym
 public import Mathlib.Data.Matrix.Mul
 
 /-!
@@ -158,8 +157,8 @@ theorem incMatrix_mul_transpose_apply_of_adj (h : G.Adj a b) :
     (G.incMatrix R * (G.incMatrix R)ᵀ) a b = (1 : R) := by
   simp_rw [Matrix.mul_apply, Matrix.transpose_apply, incMatrix_apply_mul_incMatrix_apply,
     Set.indicator_apply, Pi.one_apply, sum_boole]
-  convert! @Nat.cast_one R _
-  convert! card_singleton s(a, b)
+  convert @Nat.cast_one R _
+  convert card_singleton s(a, b)
   rw [← coe_eq_singleton, coe_filter_univ]
   exact G.incidenceSet_inter_incidenceSet_of_adj h
 

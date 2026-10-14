@@ -219,11 +219,6 @@ lemma leRecOn_succ_left {C : ℕ → Sort*} {n m}
     (leRecOn h2 next (next x) : C m) = (leRecOn h1 next x : C m) :=
   leRec_succ_left (motive := fun n _ => C n) _ (fun _ _ => @next _) _ _
 
-@[deprecated (since := "2026-03-05")] alias strongRec' := Nat.strongRec
-@[deprecated (since := "2026-03-05")] alias strongRec'_spec := Nat.strongRec_eq
-@[deprecated (since := "2026-03-05")] alias strongRecOn' := Nat.strongRec
-@[deprecated (since := "2026-03-05")] alias strongRecOn'_beta := Nat.strongRec_eq
-
 /-- Induction principle starting at a non-zero number.
 To use in an induction proof, the syntax is `induction n, hn using Nat.le_induction` (or the same
 for `induction'`).

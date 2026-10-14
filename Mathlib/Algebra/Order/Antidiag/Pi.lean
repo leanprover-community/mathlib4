@@ -6,10 +6,10 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Eric Wieser, 
 -/
 module
 
+public import Mathlib.Algebra.Group.Pi.Torsion
 public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 public import Mathlib.Data.Fin.Tuple.NatAntidiagonal
 public import Mathlib.Data.Finset.Sym
-public import Mathlib.Algebra.Group.Pi.Torsion
 
 /-!
 # Antidiagonal of functions as finsets
@@ -110,7 +110,7 @@ def piAntidiagonal (s : Finset ι) (n : μ) : Finset (ι → μ) := by
   · rw [Injective]
     rintro f g hfg
     ext i
-    simpa using congr_fun hfg (e.symm i)
+    simpa using congr($hfg (e.symm i))
   · ext f
     simp only [mem_map, mem_finAntidiagonal]
     refine Equiv.exists_congr ((e₁.symm.trans e₂).arrowCongr <| .refl _) fun g ↦ ?_
@@ -179,7 +179,7 @@ lemma pairwiseDisjoint_piAntidiagonal_map_addRightEmbedding (hi : i ∉ s) (n : 
   simp only [ne_eq, HasAntidiagonal.antidiagonal_congr' hab hcd, disjoint_left, mem_map,
     mem_piAntidiagonal, addRightEmbedding_apply, not_exists, not_and, and_imp, forall_exists_index]
   rintro hfg _ f rfl - rfl g rfl - hgf
-  exact hfg <| by simpa [sum_add_distrib, hi] using congr_arg (∑ j ∈ s, · j) hgf.symm
+  exact hfg <| by simpa [sum_add_distrib, hi] using congr(∑ j ∈ s, $hgf.symm j)
 
 @[deprecated (since := "2026-09-06")]
 alias pairwiseDisjoint_piAntidiag_map_addRightEmbedding :=

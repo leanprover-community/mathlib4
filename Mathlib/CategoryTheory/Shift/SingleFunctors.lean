@@ -251,7 +251,6 @@ def postcompPostcompIso (G : D ⥤ E) (G' : E ⥤ E') [G.CommShift A] [G'.CommSh
     ext X
     simp [Functor.commShiftIso_comp_inv_app])
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism `F.postcomp G ≅ F.postcomp G'` induced by an isomorphism `e : G ≅ G'`
 which commutes with the shift. -/
 @[simps!]
