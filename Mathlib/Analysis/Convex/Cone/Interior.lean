@@ -28,7 +28,7 @@ variable {E : Type*} [AddCommGroup E] [TopologicalSpace E] [ContinuousAdd E] [Mo
 /-- The interior of a convex cone as a convex cone. -/
 protected def interior (C : ConvexCone 𝕜 E) : ConvexCone 𝕜 E where
   carrier := interior (C : Set E)
-  smul_mem' _c hc _ hx := interior_mono (smul_set_subset_iff.2 fun _ ↦ C.smul_mem hc)
+  smul_mem' _ hc _ hx := interior_mono (smul_set_subset_iff.2 fun _ ↦ C.smul_mem hc)
     ((interior_smul₀ hc.ne' (C : Set E)).ge (smul_mem_smul_set hx))
   add_mem' _ hx _ hy := interior_mono (add_subset_iff.2 fun _ h _ h' ↦ C.add_mem h h')
     (subset_interior_add (add_mem_add hx hy))
