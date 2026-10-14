@@ -64,12 +64,18 @@ def ListMatrixLit.ofArray {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (m n 
   let lit : Q(List (List $α)) := mkListLitQ (α := q(List $α)) (rows.map mkListLitQ)
   { matrix := q(ofLists $m $n $lit), lit, rows }
 
+/-- Build the list literal of the recorded swaps. -/
+def mkSwapsLitQ (m : Nat) (swaps : Array (Nat × Nat)) : MetaM Q(List (Fin $m × Fin $m)) := do
+  let pairs ← swaps.toList.mapM fun (a, b) => do
+    let aQ : Q(Fin $m) ← mkFinLitQ m a
+    let bQ : Q(Fin $m) ← mkFinLitQ m b
+    return q(($aQ, $bQ))
+  return mkListLitQ pairs
+
 /-- Build the permutation `σ = swap a₀ b₀ * swap a₁ b₁ * ⋯` from the recorded swaps. -/
 def mkPerm (m : Nat) (swaps : Array (Nat × Nat)) : MetaM Q(Equiv.Perm (Fin $m)) := do
-  let mut acc : Q(Equiv.Perm (Fin $m)) := q(Equiv.refl (Fin $m))
-  for (a, b) in swaps do
-    acc := q((Equiv.swap $(← mkFinLitQ m a) $(← mkFinLitQ m b)).trans $acc)
-  return acc
+  let l ← mkSwapsLitQ m swaps
+  return q((($l).map fun p ↦ Equiv.swap p.1 p.2).foldl (· * ·) 1)
 
 /-- The certifier that leaves each fact to the kernel's `decide`. -/
 def decideCertifier {u : Level} (α : Q(Type u)) : EntryCertifier α where

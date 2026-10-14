@@ -80,18 +80,13 @@ end CommMonoid
 
 /-! ### Signs of chains of swaps -/
 
-section AddGroupWithOne
-
-variable [AddGroupWithOne α] {n : Type*} [DecidableEq n] [Fintype n] {σ : Equiv.Perm n} {x y : n}
-
-theorem intCast_sign_refl : ((Equiv.Perm.sign (Equiv.refl n) : ℤ) : α) = 1 := by
-  simp
-
-theorem intCast_sign_swap_trans {s : α} (hxy : x ≠ y) (h : ((Equiv.Perm.sign σ : ℤ) : α) = s) :
-    ((Equiv.Perm.sign ((Equiv.swap x y).trans σ) : ℤ) : α) = -s := by
-  simp [hxy, ← h]
-
-end AddGroupWithOne
+theorem intCast_sign_foldl_swap [Ring α] {n : Type*} [DecidableEq n] [Fintype n]
+    {l : List (n × n)} {k : ℕ} (hl : l.all fun p ↦ p.1 != p.2) (hk : l.length = k) :
+    ((Equiv.Perm.sign ((l.map fun p ↦ Equiv.swap p.1 p.2).foldl (· * ·) 1) : ℤ) : α) =
+      (-1) ^ k := by
+  rw [← List.prod_eq_foldl, Equiv.Perm.sign_prod_list_swap]
+  · simp [hk]
+  · grind [Equiv.Perm.IsSwap]
 
 /-! ### Determinants from echelon decompositions -/
 
