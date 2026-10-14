@@ -110,7 +110,7 @@ theorem isUpperTriangular [LT m] [WellFoundedLT m] [Zero R] (hA : A.IsRowEchelon
   induction i using WellFoundedLT.induction with
   | ind i ih => exact fun j hji ↦ hA hji (ih j hji)
 
-theorem det_eq [Fintype m] [LinearOrder m] [CommRing R] (hA : A.IsRowEchelon) :
+theorem det_eq [DecidableEq m] [Fintype m] [LinearOrder m] [CommRing R] (hA : A.IsRowEchelon) :
     A.det = ∏ i, A i i :=
   det_of_isUpperTriangular hA.isUpperTriangular
 

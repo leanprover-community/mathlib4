@@ -53,7 +53,7 @@ structure Decomposition (A : Matrix m n R) (L : Matrix m m R) (σ : Equiv.Perm m
 
 variable {A : Matrix m n R} {L : Matrix m m R} {σ : Equiv.Perm m} {pivot : m → WithTop n}
 
-theorem Decomposition.prod_diag_mul_det {A : Matrix m m R} {pivot : m → WithTop m}
+theorem Decomposition.prod_diag_mul_det [DecidableEq m] {A : Matrix m m R} {pivot : m → WithTop m}
     (cert : Decomposition A L σ pivot) :
     (∏ i, L i i) * (Equiv.Perm.sign σ * A.det) = ∏ i, (L * A.submatrix σ id) i i := by
   rw [← Matrix.det_of_isLowerTriangular _ cert.L_lowerTriangular,

@@ -5,10 +5,11 @@ Authors: Rao Xiaojia
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.GroupTheory.Perm.Sign
 public import Mathlib.LinearAlgebra.Matrix.Echelon.Decomposition
 public import Mathlib.Tactic.Matrix.OfLists
+
+import Mathlib.Algebra.BigOperators.Fin
 
 /-!
 # Reflection certificates for determinants of echelon decompositions
@@ -86,7 +87,7 @@ variable [AddGroupWithOne α] {n : Type*} [DecidableEq n] [Fintype n] {σ : Equi
 theorem intCast_sign_refl : ((Equiv.Perm.sign (Equiv.refl n) : ℤ) : α) = 1 := by
   simp
 
-theorem intCast_sign_swap_trans {s : α} (h : ((Equiv.Perm.sign σ : ℤ) : α) = s) (hxy : x ≠ y) :
+theorem intCast_sign_swap_trans {s : α} (hxy : x ≠ y) (h : ((Equiv.Perm.sign σ : ℤ) : α) = s) :
     ((Equiv.Perm.sign ((Equiv.swap x y).trans σ) : ℤ) : α) = -s := by
   simp [hxy, ← h]
 

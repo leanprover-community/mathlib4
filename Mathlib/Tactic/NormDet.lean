@@ -67,11 +67,11 @@ private def entriesOfMatrixLiteral? {u : Level} {α : Q(Type u)} {n : Q(ℕ)}
     return entry
   return some entries.toArray
 
-/-- A fast path of determinant evaluation when an echelon form is derivable. -/
+/-- A fast path of determinant evaluation when an echelon form is available. -/
 private def normalizeDetByEchelon? {u : Level} {α : Q(Type u)} {n : Q(Nat)} (rα : Q(CommRing $α))
     (A : Q(Matrix (Fin $n) (Fin $n) $α)) (entries : Array Q($α)) :
     MetaM (Option Simp.Result) := do
-  if entries.any fun x ↦ x.hasFVar || x.hasMVar then return none
+  if A.hasFVar || A.hasMVar then return none
   let some m ← getNatValue? n | return none
   let some iα ← synthInstanceQ? q(IsDomain $α) | return none
   have A : Q(Matrix (Fin $m) (Fin $m) $α) := A

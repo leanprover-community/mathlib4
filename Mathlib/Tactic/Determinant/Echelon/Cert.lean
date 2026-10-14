@@ -72,9 +72,10 @@ def certifyPermSign {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α)) (m : Na
     let ⟨σ, s, h⟩ ← certifyPermSign rα m rest
     let aQ : Q(Fin $m) ← mkFinLitQ m a
     let bQ : Q(Fin $m) ← mkFinLitQ m b
+    -- The decomposition producer only records swaps between distinct rows.
     let hd : Q(decide ($aQ = $bQ) = false) := (q(Eq.refl false) : Expr)
     let hab : Q($aQ ≠ $bQ) := q(of_decide_eq_false $hd)
-    return ⟨q((Equiv.swap $aQ $bQ).trans $σ), q(-$s), q(intCast_sign_swap_trans $h $hab)⟩
+    return ⟨q((Equiv.swap $aQ $bQ).trans $σ), q(-$s), q(intCast_sign_swap_trans $hab $h)⟩
 
 /-- The value of the determinant read off the decomposition `data`, computed by `s * u / l`,
 where `u` and `l` are the diagonal products of `U` and `L` and `s` is the sign of the swaps.
@@ -90,14 +91,10 @@ def detValue {u : Level} {α : Q(Type u)} (m : Nat) {V : Type} (model : Model α
   let diagL := diagProduct data.L
   let diagU := diagProduct data.U
   let num := if data.swaps.size % 2 == 0 then diagU else ops.sub ops.zero diagU
-  -- Try the carrier's exact division first. It always succeeds when the model did not scale
-  -- the rows, and can fail for one that did. The fallback constructs a fractional result to
-  -- be returned. This requires a `DivisionRing` which exists in common cases of scaling.
-  -- In the edge case where the instance doesn't exist this isn't applicable, and we accept
-  -- the fallback to Bird determinant.
   let v := ops.divExact num diagL
   if ops.isZero (ops.sub (ops.mul v diagL) num) then
     return some (← model.mkEntry v)
+  -- The fraction needs a `DivisionRing`. Without one, `norm_det` falls back to Bird's algorithm.
   let some _dα ← synthInstanceQ? q(DivisionRing $α) | return none
   let frac : Q($α) := q($(← model.mkEntry num) / $(← model.mkEntry diagL))
   -- Normalize `frac` when it is `norm_num` evaluable
@@ -110,12 +107,12 @@ def proveEchelonDet {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α)) (iα : 
     (m : Nat) (A : Q(Matrix (Fin $m) (Fin $m) $α)) (entries : Array (Array Q($α))) :
     MetaM (Option ((v : Q($α)) × Q(($A).det = $v))) := do
   let r ← mkBareissDecomposition rα A entries
+  let some v ← detValue m r.model r.data | return none
   let ⟨L, _, pivot, decomp, U, hmul⟩ := r.cert
   let ⟨σ, s, hs⟩ ← certifyPermSign rα m r.data.swaps.toList.reverse
   have decomp : Q(Echelon.Decomposition $A (ofLists $m $m $(L.lit)) $σ $pivot) := decomp
   let ⟨diagL, hl⟩ ← certifyDiagProd rα L
   let ⟨diagU, hu⟩ ← certifyDiagProd rα U
-  let some v ← detValue m r.model r.data | return none
   let hv : Q($diagL * ($s * $v) = $diagU) ←
     (r.model.entryCertifier?.getD (decideCertifier α)).eq q($diagL * ($s * $v)) diagU
   have hmul : Q((ofLists $m $m $(L.lit)) * ($A).submatrix $σ id = ofLists $m $m $(U.lit)) :=
