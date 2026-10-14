@@ -246,12 +246,6 @@ alias ⟨_, isCoprime_X_sub_C_of_isUnit_sub⟩ := isCoprime_X_sub_C_iff_isUnit_s
 theorem isCoprime_X_iff {p : R[X]} : IsCoprime X p ↔ IsUnit (p.coeff 0) := by
   simpa [coeff_zero_eq_eval_zero] using isCoprime_X_sub_C_iff (a := 0) (p := p)
 
-theorem isCoprime_X_pow_of_isUnit_coeff_zero {p : R[X]}
-    (hp : IsUnit (p.coeff 0)) : IsCoprime (X ^ n) p := by
-  induction n with
-  | zero => simp [isCoprime_one_left]
-  | succ n ih => rw [pow_succ]; exact ih.mul_left (isCoprime_X_iff.2 hp)
-
 variable [IsDomain R] {p q : R[X]}
 
 theorem degree_eq_degree_of_associated (h : Associated p q) : degree p = degree q := by
