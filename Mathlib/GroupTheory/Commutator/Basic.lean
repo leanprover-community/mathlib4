@@ -295,7 +295,7 @@ end Normal
 
 @[to_additive]
 theorem commutator_le_sup : ⁅H₁, H₂⁆ ≤ H₁ ⊔ H₂ :=
-  commutator_le.mpr <| by grind [mul_assoc, mul_mem, mul_mem_sup, inv_mem]
+  commutator_le.mpr <| by grind [mul_assoc, mul_mem_sup]
 
 @[to_additive]
 theorem commutator_le_of_le (h₁ : K₁ ≤ K) (h₂ : K₂ ≤ K) : ⁅K₁, K₂⁆ ≤ K :=
