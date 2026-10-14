@@ -150,7 +150,8 @@ lemma isEdgeReachable_two : G.IsEdgeReachable 2 u v ↔ ∀ e, (G.deleteEdges {e
   simp [isEdgeReachable_add_one, ← one_add_one_eq_two]
 
 /-- A graph is 2-edge-connected iff it has no bridge. -/
-lemma isEdgeConnected_two_iff_forall_preconnected : G.IsEdgeConnected 2 ↔ ∀ e, (G.deleteEdges {e}).Preconnected := by
+lemma isEdgeConnected_two_iff_forall_preconnected :
+    G.IsEdgeConnected 2 ↔ ∀ e, (G.deleteEdges {e}).Preconnected := by
   simp [isEdgeConnected_add_one, ← one_add_one_eq_two]
 
 @[deprecated (since := "2026-10-01")]
