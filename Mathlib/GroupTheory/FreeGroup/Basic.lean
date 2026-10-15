@@ -327,18 +327,6 @@ protected theorem sublist : Red L₁ L₂ → L₂ <+ L₁ :=
 theorem length_le (h : Red L₁ L₂) : L₂.length ≤ L₁.length :=
   h.sublist.length_le
 
-@[to_additive (attr := deprecated "Should not be needed." (since := "2026-04-10"))]
-theorem sizeof_of_step : ∀ {L₁ L₂ : List (α × Bool)},
-    Step L₁ L₂ → sizeOf L₂ < sizeOf L₁
-  | _, _, @Step.not _ L1 L2 x b => by
-    induction L1 with
-    | nil =>
-      rw [nil_append, nil_append, cons.sizeOf_spec, cons.sizeOf_spec]
-      lia
-    | cons hd tl ih =>
-      dsimp
-      exact Nat.add_lt_add_left ih _
-
 @[to_additive]
 theorem length (h : Red L₁ L₂) : ∃ n, L₁.length = L₂.length + 2 * n := by
   induction h with

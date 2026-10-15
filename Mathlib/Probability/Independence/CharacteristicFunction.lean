@@ -156,9 +156,6 @@ lemma iIndepFun.charFunDual_map_finsetSum_eq_prod [NormedSpace ℝ E]
     · simp; grind
     · grind
 
-@[deprecated (since := "2026-04-08")]
-alias iIndepFun.charFunDual_map_finset_sum_eq_prod := iIndepFun.charFunDual_map_finsetSum_eq_prod
-
 lemma iIndepFun.charFunDual_map_sum_eq_prod [Fintype ι] [NormedSpace ℝ E]
     (mX : ∀ i, AEMeasurable (X i) P) (hX : iIndepFun X P) :
     charFunDual (P.map (∑ i, X i)) = ∏ i, charFunDual (P.map (X i)) :=
@@ -169,10 +166,6 @@ lemma iIndepFun.charFunDual_map_fun_finsetSum_eq_prod [NormedSpace ℝ E]
     charFunDual (P.map (fun ω ↦ ∑ i ∈ s, X i ω)) = ∏ i ∈ s, charFunDual (P.map (X i)) := by
   convert! hX.charFunDual_map_finsetSum_eq_prod mX
   simp
-
-@[deprecated (since := "2026-04-08")]
-alias iIndepFun.charFunDual_map_fun_finset_sum_eq_prod :=
-  iIndepFun.charFunDual_map_fun_finsetSum_eq_prod
 
 lemma iIndepFun.charFunDual_map_fun_sum_eq_prod [Fintype ι] [NormedSpace ℝ E]
     (mX : ∀ i, AEMeasurable (X i) P) (hX : iIndepFun X P) :
@@ -194,9 +187,6 @@ lemma iIndepFun.charFun_map_finsetSum_eq_prod [InnerProductSpace ℝ E]
   ext
   simp [charFun_eq_charFunDual_toDualMap, hX.charFunDual_map_finsetSum_eq_prod mX]
 
-@[deprecated (since := "2026-04-08")]
-alias iIndepFun.charFun_map_finset_sum_eq_prod := iIndepFun.charFun_map_finsetSum_eq_prod
-
 lemma iIndepFun.charFun_map_sum_eq_prod [Fintype ι] [InnerProductSpace ℝ E]
     (mX : ∀ i, AEMeasurable (X i) P) (hX : iIndepFun X P) :
     charFun (P.map (∑ i, X i)) = ∏ i, charFun (P.map (X i)) :=
@@ -207,9 +197,6 @@ lemma iIndepFun.charFun_map_fun_finsetSum_eq_prod [InnerProductSpace ℝ E]
     charFun (P.map (fun ω ↦ ∑ i ∈ s, X i ω)) = ∏ i ∈ s, charFun (P.map (X i)) := by
   convert! hX.charFun_map_finsetSum_eq_prod mX
   simp
-
-@[deprecated (since := "2026-04-08")]
-alias iIndepFun.charFun_map_fun_finset_sum_eq_prod := iIndepFun.charFun_map_fun_finsetSum_eq_prod
 
 lemma iIndepFun.charFun_map_fun_sum_eq_prod [Fintype ι] [InnerProductSpace ℝ E]
     (mX : ∀ i, AEMeasurable (X i) P) (hX : iIndepFun X P) :
