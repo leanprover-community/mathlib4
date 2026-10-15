@@ -76,7 +76,7 @@ theorem reflTransGen_of_testBit_reached {n : ℕ} {adj : Fin n → Fin n → Boo
   | nil => exact hs v hv
   | cons e es ih => exact ih (fun w hw ↦ by grind [Fin.ext_iff]) hv
 
-/-- The edges `es` reach every vertex of `adj` starting from `root`. -/
+/-- The edges `es` in order reach every vertex of `adj` starting from `root`. -/
 abbrev SpansFrom {n : ℕ} (adj : Fin n → Fin n → Bool) (es : List (Fin n × Fin n))
     (root : Fin n) : Prop :=
   reached adj (1 <<< (root : ℕ)) es = 2 ^ n - 1
