@@ -110,8 +110,7 @@ lemma rangeFactorization [One P] (h : MulExact f g) (hg : 1 ∈ Set.range g) :
 @[to_additive /-- A product of exact pairs is exact. -/]
 lemma piMap {ι : Type*} {α β γ : ι → Type*} [∀ i, One (γ i)] {f : ∀ i, α i → β i}
     {g : ∀ i, β i → γ i} (h : ∀ i, MulExact (f i) (g i)) : MulExact (Pi.map f) (Pi.map g) := by
-  intro y
-  refine ⟨fun hy ↦ ?_, ?_⟩
+  refine fun y ↦ ⟨fun hy ↦ ?_, ?_⟩
   · choose x hx using fun i ↦ (h i (y i)).1 (congrFun hy i)
     exact ⟨x, funext hx⟩
   · rintro ⟨x, rfl⟩
