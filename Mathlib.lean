@@ -4419,6 +4419,7 @@ public import Mathlib.Data.Nat.Periodic
 public import Mathlib.Data.Nat.Prime.Basic
 public import Mathlib.Data.Nat.Prime.Defs
 public import Mathlib.Data.Nat.Prime.Factorial
+public import Mathlib.Data.Nat.Prime.Gaps
 public import Mathlib.Data.Nat.Prime.Infinite
 public import Mathlib.Data.Nat.Prime.Int
 public import Mathlib.Data.Nat.Prime.Nth
