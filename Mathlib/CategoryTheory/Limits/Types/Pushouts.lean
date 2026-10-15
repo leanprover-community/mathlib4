@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
+public import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 
 /-!
 # Pushouts in `Type`
@@ -210,7 +210,7 @@ variable {f g}
 lemma pushoutCocone_inl_eq_inr_imp_of_iso {c c' : PushoutCocone f g} (e : c ≅ c')
     (x₁ : X₁) (x₂ : X₂) (h : c.inl x₁ = c.inr x₂) :
     c'.inl x₁ = c'.inr x₂ := by
-  convert! congr(e.hom.hom $h)
+  convert congr(e.hom.hom $h)
   · congrm $((e.hom.w WalkingSpan.left).symm) x₁
   · congrm $((e.hom.w WalkingSpan.right).symm) x₂
 

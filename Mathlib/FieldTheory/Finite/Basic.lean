@@ -9,10 +9,11 @@ public import Mathlib.Algebra.CharP.Algebra
 public import Mathlib.Algebra.Field.ZMod
 public import Mathlib.Data.Nat.Prime.Int
 public import Mathlib.Data.ZMod.ValMinAbs
-import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 public import Mathlib.FieldTheory.Finiteness
 public import Mathlib.FieldTheory.Galois.Notation
 public import Mathlib.FieldTheory.Perfect
+
+import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 
 /-!
 # Finite fields
@@ -463,7 +464,7 @@ theorem roots_X_pow_card_sub_X : roots (X ^ q - X : K[X]) = Finset.univ.val := b
     rw [← this, Multiset.toFinset_val, eq_comm, Multiset.dedup_eq_self]
     apply nodup_roots
     rw [separable_def]
-    convert! isCoprime_one_right.neg_right (R := K[X]) using 1
+    convert isCoprime_one_right.neg_right (R := K[X]) using 1
     rw [derivative_sub, derivative_X, derivative_X_pow, Nat.cast_card_eq_zero K, C_0,
       zero_mul, zero_sub]
 
@@ -642,7 +643,7 @@ theorem Int.ModEq.pow_card_sub_one_eq_one {p : ℕ} (hp : Nat.Prime p) {n : ℤ}
   have : Fact p.Prime := ⟨hp⟩
   have : ¬(n : ZMod p) = 0 := by
     rw [CharP.intCast_eq_zero_iff _ p, ← (Nat.prime_iff_prime_int.mp hp).coprime_iff_not_dvd]
-    · exact hpn.symm
+    exact hpn.symm
   simpa [← ZMod.intCast_eq_intCast_iff] using ZMod.pow_card_sub_one_eq_one this
 
 theorem Int.prime_dvd_pow_sub_one {p : ℕ} (hp : Nat.Prime p) {n : ℤ} (hpn : IsCoprime n p) :

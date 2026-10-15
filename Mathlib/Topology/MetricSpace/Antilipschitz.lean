@@ -5,9 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.UniformSpace.CompleteSeparated
 public import Mathlib.Topology.EMetricSpace.Lipschitz
 public import Mathlib.Topology.MetricSpace.Bounded
+public import Mathlib.Topology.UniformSpace.CompleteSeparated
 
 /-!
 # Antilipschitz functions
@@ -227,7 +227,7 @@ protected theorem properSpace {α : Type*} [MetricSpace α] {K : ℝ≥0} {f : �
   have A : IsClosed K := isClosed_closedBall.preimage f_cont
   have B : IsBounded K := hK.isBounded_preimage isBounded_closedBall
   have : IsCompact K := isCompact_iff_isClosed_bounded.2 ⟨A, B⟩
-  convert! this.image f_cont
+  convert this.image f_cont
   exact (hf.image_preimage _).symm
 
 theorem isBounded_of_image2_left (f : α → β → γ) {K₁ : ℝ≥0}

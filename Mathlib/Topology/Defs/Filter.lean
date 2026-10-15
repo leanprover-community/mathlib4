@@ -5,9 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
 module
 
-public import Mathlib.Topology.Defs.Basic
-public import Mathlib.Data.Setoid.Basic
 public import Mathlib.Order.Filter.Defs
+public import Mathlib.Order.Setoid.Basic
+public import Mathlib.Topology.Defs.Basic
+
 import Mathlib.Tactic.IrreducibleDef
 
 /-!
@@ -126,6 +127,7 @@ open scoped Topology
 /-- A set is called a neighborhood of `x` if it contains an open set around `x`. The set of all
 neighborhoods of `x` forms a filter, the neighborhood filter at `x`, is here defined as the
 infimum over the principal filters of all open sets containing `x`. -/
+@[wikidata Q3275652]
 irreducible_def nhds (x : X) : Filter X :=
   ⨅ s ∈ { s : Set X | x ∈ s ∧ IsOpen s }, 𝓟 s
 
