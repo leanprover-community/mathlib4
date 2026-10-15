@@ -62,7 +62,6 @@ theorem norm_add_eq (h : x.arg = y.arg) : ‖x + y‖ = ‖x‖ + ‖y‖ :=
 theorem norm_sub_eq (h : x.arg = y.arg) : ‖x - y‖ = ‖‖x‖ - ‖y‖‖ :=
   (sameRay_of_arg_eq h).norm_sub
 
-variable {z w : ℂ} {c : ℝ}
 
 lemma normalize_mul_star (z : ℂ) : NormedSpace.normalize z * star z = ‖z‖ := by
   rw [NormedSpace.normalize, real_smul, ofReal_inv, mul_assoc, ← div_eq_inv_mul, star_def,
