@@ -67,16 +67,6 @@ theorem norm_sub_eq (h : x.arg = y.arg) : ‖x - y‖ = ‖‖x‖ - ‖y‖‖ 
 
 variable {z w : ℂ} {c : ℝ}
 
-/-- A nonnegative real multiple of `w` lies on the same closed ray as `w`. -/
-lemma sameRay_ofReal_mul (hc : 0 ≤ c) : SameRay ℝ ((c : ℂ) * w) w := by
-  simpa using SameRay.sameRay_nonneg_smul_left w hc
-
-/-- A complex number on the same ray as a nonzero `w` is a nonnegative real multiple of `w`. -/
-lemma exists_nonneg_mul_of_sameRay (h : SameRay ℝ z w) (hw : w ≠ 0) :
-    ∃ k : ℝ, 0 ≤ k ∧ z = (k : ℂ) * w := by
-  obtain ⟨k, hk, hz⟩ := h.exists_nonneg_right hw
-  simpa using h.exists_nonneg_right hw
-
 /-- A positive real multiple of `w` has the same phase as `w`. -/
 lemma normalize_ofReal_mul (hc : 0 < c) (w : ℂ) :
     NormedSpace.normalize ((c : ℂ) * w) = NormedSpace.normalize w := by
