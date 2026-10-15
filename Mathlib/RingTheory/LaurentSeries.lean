@@ -432,7 +432,7 @@ set_option linter.style.whitespace false in -- manual alignment is not recognise
 /-- The prime ideal `(X)` of `K⟦X⟧`, when `K` is a field, as a term of the `HeightOneSpectrum`. -/
 def idealX : IsDedekindDomain.HeightOneSpectrum K⟦X⟧ where
   asIdeal := Ideal.span {X}
-  isPrime := PowerSeries.span_X_isPrime
+  isPrime := Ideal.isPrime_span_singleton_of_prime prime_X
   ne_bot  := by rw [ne_eq, Ideal.span_singleton_eq_bot]; exact X_ne_zero
 
 open IsDedekindDomain.HeightOneSpectrum WithZero
@@ -457,11 +457,12 @@ theorem intValuation_eq_of_coe (P : K[X]) :
       not_false_eq_true, true_and, (idealX K).3]
   classical
   rw [Ideal.count_associates_factors_eq span_ne_zero.1
-    (Ideal.span_singleton_prime Polynomial.X_ne_zero |>.mpr prime_X) span_ne_zero.2,
+    (Ideal.span_singleton_prime Polynomial.X_ne_zero |>.mpr Polynomial.prime_X) span_ne_zero.2,
     Ideal.count_associates_factors_eq]
   on_goal 1 => convert (normalized_count_X_eq_of_coe hP).symm
-  exacts [Ideal.count_span_normalizedFactors_eq_of_normUnit hP Polynomial.normUnit_X prime_X,
-    Ideal.count_span_normalizedFactors_eq_of_normUnit (by simp [hP]) normUnit_X X_prime,
+  exacts [
+    Ideal.count_span_normalizedFactors_eq_of_normUnit hP Polynomial.normUnit_X Polynomial.prime_X,
+    Ideal.count_span_normalizedFactors_eq_of_normUnit (by simp [hP]) normUnit_X prime_X,
     span_ne_zero'.1, (idealX K).isPrime, span_ne_zero'.2]
 
 /-- The integral valuation of the power series `X : K⟦X⟧` equals `(ofAdd -1) : ℤᵐ⁰`. -/
