@@ -11,7 +11,7 @@ public import Mathlib.Analysis.Normed.Module.DoubleDual
 /-!
 # Hilbert spaces are reflexive
 
-We prove that a Hilbert space `H` over `𝕜` is reflexive: the canonical map from `H` to its
+We prove that a Hilbert space `H` is reflexive: the canonical map from `H` to its
 double dual is surjective. This is a consequence of the Riesz representation theorem
 `InnerProductSpace.toDual`.
 -/
