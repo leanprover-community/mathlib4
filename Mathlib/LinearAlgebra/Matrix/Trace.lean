@@ -174,7 +174,7 @@ theorem trace_mul_pow_comm [DecidableEq m] [DecidableEq n] [CommSemiring R]
     trace ((A * B) ^ k) = trace ((B * A) ^ k) := by
   have hpow (j : ℕ) : (B * A) ^ (j + 1) = B * (A * B) ^ j * A := by
     induction j with
-    | zero => simp [Matrix.mul_assoc]
+    | zero => simp
     | succ j ih =>
         calc
           (B * A) ^ (j + 1 + 1) = (B * A) ^ (j + 1) * (B * A) := by rw [pow_succ]
