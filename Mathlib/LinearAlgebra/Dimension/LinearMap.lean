@@ -8,8 +8,8 @@ module
 public import Mathlib.LinearAlgebra.Dimension.RankNullity
 
 import Mathlib.Algebra.Module.Projective
-import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 import Mathlib.LinearAlgebra.Basis.VectorSpace
+import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 
 /-!
 # The rank of a linear map
@@ -97,7 +97,6 @@ theorem rank_add_le (f g : V →ₗ[K] V') : rank (f + g) ≤ rank f + rank g :=
 
 theorem rank_finsetSum_le {η} (s : Finset η) (f : η → V →ₗ[K] V') :
     rank (∑ d ∈ s, f d) ≤ ∑ d ∈ s, rank (f d) :=
-  have := nontrivial_of_hasRankNullity K
   @Finset.sum_hom_rel _ _ _ _ _ (fun a b => rank a ≤ b) f (fun d => rank (f d)) s
     (le_of_eq rank_zero) fun _ _ _ h => le_trans (rank_add_le _ _) (by gcongr)
 

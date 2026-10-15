@@ -8,9 +8,9 @@ module
 public import Mathlib.Algebra.BigOperators.Intervals
 public import Mathlib.Algebra.BigOperators.Ring.List
 public import Mathlib.Data.Int.ModEq
+public import Mathlib.Data.Nat.Digits.Defs
 public import Mathlib.Data.Nat.Log
 public import Mathlib.Tactic.IntervalCases
-public import Mathlib.Data.Nat.Digits.Defs
 
 /-!
 # Digits of a natural number
@@ -61,8 +61,6 @@ theorem length_digits (b n : ℕ) (hb : 1 < b) (hn : n ≠ 0) :
     refine Nat.succ_le_of_lt (log_pos hb ?_)
     contrapose! h
     exact div_eq_of_lt h
-
-@[deprecated (since := "2026-03-18")] alias digits_len := length_digits
 
 theorem digits_length_le_iff {b k : ℕ} (hb : 1 < b) (n : ℕ) :
     (b.digits n).length ≤ k ↔ n < b ^ k := by
@@ -122,13 +120,8 @@ theorem length_digits_le_length_digits_succ (b n : ℕ) :
   · interval_cases b <;> simp +arith [digits_zero_succ', hn]
   simpa [length_digits, hb, hn] using log_mono_right (le_succ _)
 
-@[deprecated (since := "2026-03-18")]
-alias digits_len_le_digits_len_succ := length_digits_le_length_digits_succ
-
 theorem le_length_digits_le (b n m : ℕ) (h : n ≤ m) : (digits b n).length ≤ (digits b m).length :=
   monotone_nat_of_le_succ (length_digits_le_length_digits_succ b) h
-
-@[deprecated (since := "2026-03-18")] alias le_digits_len_le := le_length_digits_le
 
 theorem pow_length_le_mul_ofDigits {b : ℕ} {l : List ℕ} (hl : l ≠ []) (hl2 : l.getLast hl ≠ 0) :
     (b + 2) ^ l.length ≤ (b + 2) * ofDigits (b + 2) l := by
@@ -420,9 +413,7 @@ This spelling can be helpful for some proofs.
 -/
 theorem _root_.Nat.bijOn_ofDigits' {b : ℕ} (hb : 1 < b) (l : ℕ) :
     Set.BijOn (ofDigits b) (fixedLengthDigits hb l) (Finset.range (b ^ l)) := by
-  rw [fixedLengthDigits, Set.coe_toFinset]
-  convert bijOn_ofDigits hb l
-  ext; simp
+  rw [fixedLengthDigits, Set.coe_toFinset, Finset.coe_range]; exact bijOn_ofDigits hb l
 
 /--
 The bijection `Nat.bijOn_digitsAppend` stated as a bijection between `Finset`.
@@ -430,9 +421,7 @@ This spelling can be helpful for some proofs.
 -/
 theorem _root_.Nat.bijOn_digitsAppend' {b : ℕ} (hb : 1 < b) (l : ℕ) :
     Set.BijOn (digitsAppend b l) (Finset.range (b ^ l)) (fixedLengthDigits hb l) := by
-  rw [fixedLengthDigits, Set.coe_toFinset]
-  convert bijOn_digitsAppend hb l
-  ext; simp
+  rw [fixedLengthDigits, Set.coe_toFinset, Finset.coe_range]; exact bijOn_digitsAppend hb l
 
 @[simp]
 theorem fixedLengthDigits_zero {b : ℕ} (hb : 1 < b) :

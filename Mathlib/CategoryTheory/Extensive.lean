@@ -5,12 +5,12 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Types.Coproducts
-public import Mathlib.CategoryTheory.Limits.Types.Products
-public import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
-public import Mathlib.CategoryTheory.Limits.VanKampen
 public import Mathlib.CategoryTheory.Limits.MonoCoprod
 public import Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
+public import Mathlib.CategoryTheory.Limits.Types.Coproducts
+public import Mathlib.CategoryTheory.Limits.Types.Products
+public import Mathlib.CategoryTheory.Limits.VanKampen
+public import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 
 import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 
@@ -442,8 +442,8 @@ theorem FinitaryPreExtensive.isUniversal_finiteCoproducts_Fin [FinitaryPreExtens
     refine IsUniversalColimit.of_iso (@isUniversalColimit_extendCofan _ _ _ _ _ _
       (IH _ (coproductIsCoproduct _)) (FinitaryPreExtensive.universal' _ (coprodIsCoprod _ _)) ?_)
       ((extendCofanIsColimit f (coproductIsCoproduct _) (coprodIsCoprod _ _)).uniqueUpToIso hc)
-    · dsimp
-      infer_instance
+    dsimp
+    infer_instance
 
 theorem FinitaryPreExtensive.isUniversal_finiteCoproducts [FinitaryPreExtensive C] {ι : Type*}
     [Finite ι] {F : Discrete ι ⥤ C} {c : Cocone F} (hc : IsColimit c) : IsUniversalColimit c := by
