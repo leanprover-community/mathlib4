@@ -179,7 +179,7 @@ theorem trace_mul_pow_comm [DecidableEq m] [DecidableEq n] [CommSemiring R]
         trace ((A * B) ^ (k + 1)) = trace ((A * B) ^ k * A * B) := by
           rw [pow_succ, ← Matrix.mul_assoc]
         _ = trace (B * (A * B) ^ k * A) := Matrix.trace_mul_cycle ((A * B) ^ k) A B
-        _ = trace ((B * A) ^ (k + 1)) := by rw [← mul_pow_succ_mul]
+        _ = trace ((B * A) ^ (k + 1)) := by rw [mul_pow_succ_mul]
 
 /-- For square matrices, the trace identity also holds at exponent zero. -/
 theorem trace_mul_pow_comm_of_square [DecidableEq n] [CommSemiring R]
