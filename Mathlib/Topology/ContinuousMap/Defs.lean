@@ -95,9 +95,11 @@ def Simps.apply (f : C(X, Y)) : X → Y := f
 initialize_simps_projections ContinuousMap (toFun → apply)
 
 @[simp]
-protected theorem coe_coe {F : Type*} [FunLike F X Y] [ContinuousMapClass F X Y] (f : F) :
+protected theorem coe_ofClass {F : Type*} [FunLike F X Y] [ContinuousMapClass F X Y] (f : F) :
     ⇑(f : C(X, Y)) = f :=
   rfl
+
+@[deprecated (since := "2026-10-15")] alias coe_coe := ContinuousMap.coe_ofClass
 
 protected theorem coe_apply {F : Type*} [FunLike F X Y] [ContinuousMapClass F X Y] (f : F) (x : X) :
     (f : C(X, Y)) x = f x :=
@@ -107,9 +109,12 @@ protected theorem coe_apply {F : Type*} [FunLike F X Y] [ContinuousMapClass F X 
 
 The unprimed version `ContinuousMap.coe_injective`
 is used for the coercion from `C(X, Y)` to `X → Y`. -/
-protected theorem coe_injective' {F : Type*} [FunLike F X Y] [ContinuousMapClass F X Y] :
-    Injective (toContinuousMap : F → C(X, Y)) :=
+protected theorem _root_.ContinuousMapClass.injective_ofClass
+    {F : Type*} [FunLike F X Y] [ContinuousMapClass F X Y] :
+    Injective (ContinuousMapClass.ofClass : F → C(X, Y)) :=
   .of_comp (f := DFunLike.coe) DFunLike.coe_injective
+
+@[deprecated (since := "2026-10-15")] alias coe_injective' := ContinuousMapClass.injective_ofClass
 
 @[ext]
 theorem ext {f g : C(X, Y)} (h : ∀ a, f a = g a) : f = g :=
