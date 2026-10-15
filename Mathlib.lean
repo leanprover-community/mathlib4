@@ -2126,6 +2126,7 @@ public import Mathlib.Analysis.InnerProductSpace.Projection.Minimal
 public import Mathlib.Analysis.InnerProductSpace.Projection.Reflection
 public import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
 public import Mathlib.Analysis.InnerProductSpace.Rayleigh
+public import Mathlib.Analysis.InnerProductSpace.Reflexive
 public import Mathlib.Analysis.InnerProductSpace.Reproducing
 public import Mathlib.Analysis.InnerProductSpace.Reproducing.Operations
 public import Mathlib.Analysis.InnerProductSpace.Semisimple
@@ -8016,6 +8017,7 @@ public import Mathlib.Topology.Algebra.Module.Spaces.CharacterSpace
 public import Mathlib.Topology.Algebra.Module.Spaces.CompactConvergenceCLM
 public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 public import Mathlib.Topology.Algebra.Module.Spaces.PointwiseConvergenceCLM
+public import Mathlib.Topology.Algebra.Module.Spaces.Reflexive
 public import Mathlib.Topology.Algebra.Module.Spaces.UniformConvergenceCLM
 public import Mathlib.Topology.Algebra.Module.Spaces.WeakBilin
 public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
