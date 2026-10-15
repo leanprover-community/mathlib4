@@ -86,21 +86,18 @@ theorem convexCombPair_mem_Ico {a b : R} (ha : 0 < a) (hb : 0 ≤ b) (hab : a + 
 
 theorem forall_mem_Icc_iff (p : X → Prop) : (∀ z ∈ Icc R x y, p z) ↔
     ∀ {a b : R} (ha : 0 ≤ a) (hb : 0 ≤ b) (hab : a + b = 1),
-    p (convexCombPair a b ha hb hab x y) where
-  mp := fun h _ _ _ _ _ ↦ h _ <| convexCombPair_mem_Icc ..
-  mpr := fun h _ hz => by rcases hz with ⟨_, _, _, _, _, rfl⟩; apply h
+    p (convexCombPair a b ha hb hab x y) := by
+  grind [Icc]
 
 theorem forall_mem_Ioo_iff (p : X → Prop) : (∀ z ∈ Ioo R x y, p z) ↔
     ∀ {a b : R} (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1),
-    p (convexCombPair a b ha.le hb.le hab x y) where
-  mp := fun h _ _ ha hb _ ↦ h _ <| convexCombPair_mem_Ioo ha hb ..
-  mpr := fun h _ hz => by rcases hz with ⟨_, _, ha, hb, _, rfl⟩; apply h ha hb
+    p (convexCombPair a b ha.le hb.le hab x y):= by
+  grind [Ioo]
 
 theorem forall_mem_Ico_iff (p : X → Prop) : (∀ z ∈ Ico R x y, p z) ↔
     ∀ {a b : R} (ha : 0 < a) (hb : 0 ≤ b) (hab : a + b = 1),
-    p (convexCombPair a b ha.le hb hab x y) where
-  mp := fun h _ _ ha hb _ ↦ h _ <| convexCombPair_mem_Ico ha ..
-  mpr := fun h _ hz => by rcases hz with ⟨_, _, ha, hb, _, rfl⟩; apply h ha hb
+    p (convexCombPair a b ha.le hb hab x y) := by
+  grind [Ico]
 
 theorem Icc_subset_iff : Icc R x y ⊆ s ↔ ∀ {a b : R} (ha : 0 ≤ a) (hb : 0 ≤ b) (hab : a + b = 1),
     convexCombPair a b ha hb hab x y ∈ s :=
@@ -118,21 +115,21 @@ theorem Ico_subset_iff :
 
 end
 
+@[simp]
 theorem left_mem_Icc (x y : X) : x ∈ Icc R x y :=
   ⟨1, 0, zero_le_one, le_refl 0, add_zero 1, by rw [convexCombPair_one]⟩
 
+@[simp]
 theorem right_mem_Icc (x y : X) : y ∈ Icc R x y :=
   Icc_symm R y x ▸ left_mem_Icc R y x
 
+@[simp]
 theorem left_mem_Ico (x y : X) : x ∈ Ico R x y :=
   ⟨1, 0, zero_lt_one, le_refl 0, add_zero 1, convexCombPair_one⟩
 
 @[simp]
 theorem Icc_same (x : X) : Icc R x x = {x} :=
-  Set.ext fun z ↦
-    ⟨fun ⟨a, b, _, _, hab, hz⟩ ↦ by
-      simpa [(add_smul ..).symm, Set.mem_singleton_iff, hab, one_smul, eq_comm] using hz,
-      fun h ↦ Set.mem_singleton_iff.1 h ▸ left_mem_Icc R z z⟩
+  Set.ext <| fun z ↦ ⟨by simp +contextual [Icc], by simp +contextual⟩
 
 @[simp]
 theorem Ico_same (x : X) : Ico R x x = {x} := by
@@ -140,6 +137,7 @@ theorem Ico_same (x : X) : Ico R x x = {x} := by
   · rw [← Icc_same R x]; exact Ico_subset_Icc R x x
   · simp [left_mem_Ico]
 
+@[simp]
 theorem Ioo_insert_left (x y : X) : insert x (Ioo R x y) = Ico R x y := by
   simp only [subset_antisymm_iff, Set.insert_subset_iff, left_mem_Ico, Ioo_subset_Ico, and_self,
     true_and]
@@ -149,6 +147,11 @@ theorem Ioo_insert_left (x y : X) : insert x (Ioo R x y) = Ico R x y := by
   · rw [← eq_of_le_of_not_lt hb' hb] at hab
     simp [← eq_of_le_of_not_lt hb' hb, add_zero a ▸ hab]
 
+@[simp]
+theorem Ioo_insert_right (x y : X) : insert y (Ioo R x y) = Ico R y x := by
+  rw [Ioo_symm]; simp
+
+@[simp]
 theorem Ico_insert (x y : X) : insert y (Ico R x y) = Icc R x y := by
   simp only [subset_antisymm_iff, Set.insert_subset_iff, right_mem_Icc, Ico_subset_Icc, true_and]
   rintro z ⟨a, b, ha, hb, hab, rfl⟩
@@ -156,6 +159,7 @@ theorem Ico_insert (x y : X) : insert y (Ico R x y) = Icc R x y := by
   rintro rfl
   simp [zero_add b ▸ hab]
 
+@[simp]
 theorem Ioo_insert (x y : X) : insert x (insert y (Ioo R x y)) = Icc R x y := by
   rw [Ioo_symm, Ioo_insert_left, Ico_insert, Icc_symm]
 
