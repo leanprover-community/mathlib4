@@ -1,25 +1,29 @@
 /-
 Copyright (c) 2020 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Heather Macbeth, Michał Świętek
+Authors: Heather Macbeth, Michał Świętek, Rémy Degenne
 -/
 module
 
 public import Mathlib.Analysis.Normed.Group.Quotient
 public import Mathlib.Analysis.Normed.Module.HahnBanach
 public import Mathlib.Analysis.Normed.Module.WeakDual
-public import Mathlib.Topology.Algebra.Module.Spaces.Reflexive
 
 /-!
-# The double dual of a normed space
+# The double dual of a normed space, and reflexive spaces
 
 In this file we define the inclusion of a normed space into its double strong dual,
 prove that it is an isometry (for `𝕜 = ℝ` or `𝕜 = ℂ`), and use the corresponding weak-topology
 embedding together with Banach–Alaoglu to transfer compactness from the weak-star bidual back to
-the weak topology.
+the weak topology. We also define reflexive topological vector spaces and study reflexive normed
+spaces.
 
 ## Main definitions
 
+* `StrongDual.inclusionInDoubleDualₗ`: the canonical map from a topological vector space to its
+  strong bidual, as a linear map.
+* `StrongDual.IsReflexive`: a topological vector space is reflexive if
+  `StrongDual.inclusionInDoubleDualₗ` is a homeomorphism.
 * `NormedSpace.inclusionInDoubleDual` is the inclusion of a normed space in its double
   `StrongDual`, considered as a bounded linear map.
 * `NormedSpace.inclusionInDoubleDualLi` is the same map as a linear isometry (for `𝕜 = ℝ` or
@@ -31,10 +35,20 @@ the weak topology.
 * `NormedSpace.isCompact_closure_of_isBounded` transfers compactness from the weak-star topology
   on the bidual back to the weak topology on `X`.
 
-## Reflexive normed spaces
+## Reflexive spaces
 
-A normed space `E` over `𝕜` is reflexive (`StrongDual.IsReflexive 𝕜 E`) if the canonical map
-`NormedSpace.inclusionInDoubleDual 𝕜 E` from `E` to its double dual is a homeomorphism. Since that
+A topological vector space `E` over a normed field `𝕜` is reflexive (`StrongDual.IsReflexive 𝕜 E`)
+if the canonical map `StrongDual.inclusionInDoubleDualₗ 𝕜 E` from `E` to its strong bidual
+`StrongDual 𝕜 (StrongDual 𝕜 E)`, which sends `x` to the evaluation at `x`, is a homeomorphism.
+The strong dual carries the topology of uniform convergence on bounded sets.
+
+This is a topological notion, different from the algebraic notion `Module.IsReflexive`, which asks
+for the canonical map to the algebraic double dual `Module.Dual 𝕜 (Module.Dual 𝕜 E)` to be
+bijective. For example, an infinite-dimensional Hilbert space is reflexive in the topological sense
+but not in the algebraic sense. A finite-dimensional normed space is reflexive in both senses: see
+`FiniteDimensional.isReflexive` and `Module.instIsReflexiveOfFiniteOfProjective`.
+
+For a normed space `E`, the canonical map is `NormedSpace.inclusionInDoubleDual 𝕜 E`. Since that
 map is an isometry, `E` is reflexive if and only if it is surjective.
 
 * `NormedSpace.isReflexive_iff_surjective_inclusionInDoubleDual`: a normed space is reflexive if
@@ -56,6 +70,7 @@ Hilbert spaces are reflexive: see `InnerProductSpace.isReflexive`.
 ## References
 
 * [Conway, John B., A course in functional analysis][conway1990]
+* [N. Bourbaki, *Topological Vector Spaces*][bourbaki1987]
 
 ## Tags
 
@@ -69,6 +84,31 @@ noncomputable section
 open Topology Bornology WeakDual
 
 universe u v
+
+namespace StrongDual
+
+variable (𝕜 E : Type*) [NormedField 𝕜] [AddCommGroup E] [TopologicalSpace E] [Module 𝕜 E]
+  [ContinuousSMul 𝕜 E]
+
+/-- The canonical map from a topological vector space `E` to its strong bidual, which sends `x` to
+the evaluation at `x`, as a linear map. This is the topological analogue of `Module.Dual.eval`.
+For a normed space, this is the linear map underlying `NormedSpace.inclusionInDoubleDual`. -/
+def inclusionInDoubleDualₗ : E →ₗ[𝕜] StrongDual 𝕜 (StrongDual 𝕜 E) :=
+  ContinuousLinearMap.applyₗ 𝕜 (.id 𝕜)
+
+variable {𝕜 E} in
+@[simp]
+lemma inclusionInDoubleDualₗ_apply (x : E) (f : StrongDual 𝕜 E) :
+    inclusionInDoubleDualₗ 𝕜 E x f = f x := rfl
+
+/-- A topological vector space `E` is reflexive if the canonical map
+`StrongDual.inclusionInDoubleDualₗ 𝕜 E` from `E` to its strong bidual is a homeomorphism.
+
+This is not the algebraic notion `Module.IsReflexive`, which concerns the algebraic double dual. -/
+class IsReflexive : Prop where
+  isHomeomorph_inclusionInDoubleDualₗ : IsHomeomorph (inclusionInDoubleDualₗ 𝕜 E)
+
+end StrongDual
 
 namespace NormedSpace
 
