@@ -22,7 +22,7 @@ spaces.
 
 * `StrongDual.inclusionInDoubleDualₗ`: the canonical map from a topological vector space to its
   strong bidual, as a linear map.
-* `StrongDual.IsReflexive`: a topological vector space is reflexive if
+* `TopologicalSpace.IsReflexive`: a topological vector space is reflexive if
   `StrongDual.inclusionInDoubleDualₗ` is a homeomorphism.
 * `NormedSpace.inclusionInDoubleDual` is the inclusion of a normed space in its double
   `StrongDual`, considered as a bounded linear map.
@@ -37,9 +37,10 @@ spaces.
 
 ## Reflexive spaces
 
-A topological vector space `E` over a normed field `𝕜` is reflexive (`StrongDual.IsReflexive 𝕜 E`)
-if the canonical map `StrongDual.inclusionInDoubleDualₗ 𝕜 E` from `E` to its strong bidual
-`StrongDual 𝕜 (StrongDual 𝕜 E)`, which sends `x` to the evaluation at `x`, is a homeomorphism.
+A topological vector space `E` over a normed field `𝕜` is reflexive
+(`TopologicalSpace.IsReflexive 𝕜 E`) if the canonical map `StrongDual.inclusionInDoubleDualₗ 𝕜 E`
+from `E` to its strong bidual `StrongDual 𝕜 (StrongDual 𝕜 E)`, which sends `x` to the evaluation
+at `x`, is a homeomorphism.
 The strong dual carries the topology of uniform convergence on bounded sets.
 
 This is a topological notion, different from the algebraic notion `Module.IsReflexive`, which asks
@@ -53,9 +54,9 @@ map is an isometry, `E` is reflexive if and only if it is surjective.
 
 * `NormedSpace.isReflexive_iff_surjective_inclusionInDoubleDual`: a normed space is reflexive if
   and only if the canonical map to its double dual is surjective.
-* `StrongDual.IsReflexive.completeSpace`: a reflexive normed space is complete.
-* `StrongDual.IsReflexive.submodule_of_isClosed`: a closed subspace of a reflexive normed space is
-  reflexive.
+* `TopologicalSpace.IsReflexive.completeSpace`: a reflexive normed space is complete.
+* `TopologicalSpace.IsReflexive.submodule_of_isClosed`: a closed subspace of a reflexive normed
+  space is reflexive.
 * `FiniteDimensional.isReflexive`: a finite-dimensional normed space is reflexive.
 * `NormedSpace.exists_norm_le_one_forall_apply_eq`: **Helly's theorem** in a reflexive space. If
   the scalars `g i` and the continuous linear forms `φ i` are such that
@@ -100,13 +101,6 @@ variable {𝕜 E} in
 @[simp]
 lemma inclusionInDoubleDualₗ_apply (x : E) (f : StrongDual 𝕜 E) :
     inclusionInDoubleDualₗ 𝕜 E x f = f x := rfl
-
-/-- A topological vector space `E` is reflexive if the canonical map
-`StrongDual.inclusionInDoubleDualₗ 𝕜 E` from `E` to its strong bidual is a homeomorphism.
-
-This is not the algebraic notion `Module.IsReflexive`, which concerns the algebraic double dual. -/
-class IsReflexive : Prop where
-  isHomeomorph_inclusionInDoubleDualₗ : IsHomeomorph (inclusionInDoubleDualₗ 𝕜 E)
 
 end StrongDual
 
@@ -229,6 +223,14 @@ end NormedSpace
 
 /-! ### Reflexive normed spaces -/
 
+/-- A topological vector space `E` is reflexive if the canonical map
+`StrongDual.inclusionInDoubleDualₗ 𝕜 E` from `E` to its strong bidual is a homeomorphism.
+
+This is not the algebraic notion `Module.IsReflexive`, which concerns the algebraic double dual. -/
+class TopologicalSpace.IsReflexive (𝕜 E : Type*) [NormedField 𝕜]
+    [AddCommGroup E] [TopologicalSpace E] [Module 𝕜 E] [ContinuousSMul 𝕜 E] : Prop where
+  isHomeomorph_inclusionInDoubleDualₗ : IsHomeomorph (StrongDual.inclusionInDoubleDualₗ 𝕜 E)
+
 open Function
 
 variable {𝕜 : Type*} [RCLike 𝕜]
@@ -263,14 +265,14 @@ open NormedSpace
 /-- A normed space is reflexive if and only if the canonical map to its double dual is
 surjective. -/
 theorem NormedSpace.isReflexive_iff_surjective_inclusionInDoubleDual :
-    StrongDual.IsReflexive 𝕜 E ↔ Surjective (inclusionInDoubleDual 𝕜 E) := by
+    TopologicalSpace.IsReflexive 𝕜 E ↔ Surjective (inclusionInDoubleDual 𝕜 E) := by
   have h_eq : ⇑(StrongDual.inclusionInDoubleDualₗ 𝕜 E) = inclusionInDoubleDual 𝕜 E := by
     rw [← toLinearMap_inclusionInDoubleDual 𝕜 E, ContinuousLinearMap.coe_coe]
   refine ⟨fun hE ↦ h_eq ▸ hE.isHomeomorph_inclusionInDoubleDualₗ.surjective, fun hE ↦ ⟨?_⟩⟩
   rw [h_eq]
   exact (LinearIsometryEquiv.ofSurjective (inclusionInDoubleDualLi 𝕜) hE).toHomeomorph.isHomeomorph
 
-namespace StrongDual.IsReflexive
+namespace TopologicalSpace.IsReflexive
 
 variable (𝕜 E) in
 /-- A reflexive normed space is complete. -/
@@ -303,11 +305,12 @@ theorem submodule_of_isClosed [IsReflexive 𝕜 E] (F : Submodule 𝕜 E) (hF : 
   rw [dual_def, ← hψ'_eq, ← hyψ]
   rfl
 
-end StrongDual.IsReflexive
+end TopologicalSpace.IsReflexive
 
 open Module in
 /-- A finite-dimensional normed space is reflexive. -/
-instance FiniteDimensional.isReflexive [FiniteDimensional 𝕜 E] : StrongDual.IsReflexive 𝕜 E := by
+instance FiniteDimensional.isReflexive [FiniteDimensional 𝕜 E] :
+    TopologicalSpace.IsReflexive 𝕜 E := by
   rw [isReflexive_iff_surjective_inclusionInDoubleDual]
   -- `inclusionInDoubleDual` is an injective linear map between spaces of the same dimension
   have h_inj : Injective (inclusionInDoubleDual 𝕜 E : E →ₗ[𝕜] StrongDual 𝕜 (StrongDual 𝕜 E)) :=
@@ -317,11 +320,11 @@ instance FiniteDimensional.isReflexive [FiniteDimensional 𝕜 E] : StrongDual.I
   rw [← LinearMap.toContinuousLinearMap.finrank_eq, Subspace.dual_finrank_eq,
     ← LinearMap.toContinuousLinearMap.finrank_eq, Subspace.dual_finrank_eq]
 
-/-- **Helly's theorem** in a reflexive space: if the scalars `g i` and the continuous linear forms
-`φ i` are such that `‖∑ i, c i * g i‖ ≤ ‖∑ i, c i • φ i‖` for all finitely supported families of
-scalars `c`, then there is a point `y` of norm at most `1` such that `φ i y = g i` for all `i`. -/
-theorem NormedSpace.exists_norm_le_one_forall_apply_eq [StrongDual.IsReflexive 𝕜 E] {ι : Type*}
-    (φ : ι → StrongDual 𝕜 E) (g : ι → 𝕜)
+/-- If the scalars `g i` and the continuous linear forms `φ i` are such that
+`‖∑ i, c i * g i‖ ≤ ‖∑ i, c i • φ i‖` for all finitely supported families of scalars `c`,
+then there is a point `y` of norm at most `1` such that `φ i y = g i` for all `i`. -/
+theorem NormedSpace.exists_norm_le_one_forall_apply_eq
+    {ι : Type*} [TopologicalSpace.IsReflexive 𝕜 E] (φ : ι → StrongDual 𝕜 E) (g : ι → 𝕜)
     (h : ∀ c : ι →₀ 𝕜, ‖Finsupp.linearCombination 𝕜 g c‖ ≤ ‖Finsupp.linearCombination 𝕜 φ c‖) :
     ∃ y : E, ‖y‖ ≤ 1 ∧ ∀ i, φ i y = g i := by
   obtain ⟨Λ, hΛ_norm, hΛ⟩ := exists_strongDual_forall_apply_eq_of_forall_norm_le _ _ h

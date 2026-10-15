@@ -24,7 +24,7 @@ variable {𝕜 : Type*} [RCLike 𝕜]
 
 /-- A Hilbert space is reflexive. -/
 instance InnerProductSpace.isReflexive {H : Type*} [NormedAddCommGroup H]
-    [InnerProductSpace 𝕜 H] [CompleteSpace H] : StrongDual.IsReflexive 𝕜 H := by
+    [InnerProductSpace 𝕜 H] [CompleteSpace H] : TopologicalSpace.IsReflexive 𝕜 H := by
   rw [NormedSpace.isReflexive_iff_surjective_inclusionInDoubleDual]
   intro Λ
   let T := InnerProductSpace.toDual 𝕜 H
