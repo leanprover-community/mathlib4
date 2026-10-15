@@ -428,7 +428,6 @@ end frobenius
 
 open Polynomial
 
--- TODO: move all of this out of the `FiniteField` namespace.
 section
 
 variable (K' : Type*) [Field K'] {p n : ℕ}
