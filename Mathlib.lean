@@ -1014,6 +1014,7 @@ public import Mathlib.Algebra.Order.Group.Pointwise.Bounds
 public import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
 public import Mathlib.Algebra.Order.Group.Pointwise.Interval
 public import Mathlib.Algebra.Order.Group.PosPart
+public import Mathlib.Algebra.Order.Group.Subgroup
 public import Mathlib.Algebra.Order.Group.Synonym
 public import Mathlib.Algebra.Order.Group.Unbundled.Abs
 public import Mathlib.Algebra.Order.Group.Unbundled.Basic
