@@ -132,8 +132,7 @@ theorem TopologicalSpace.IsSeparable.exists_seq_strongDual_eq_zero_of_forall_app
   -- `t` is contained in the closure of the range of a sequence `u`
   obtain ⟨c, hc, htc⟩ := ht
   obtain ⟨u, hu⟩ := (hc.insert 0).exists_eq_range (Set.insert_nonempty 0 c)
-  have htu : t ⊆ closure (Set.range u) :=
-    hu ▸ htc.trans (closure_mono (Set.subset_insert 0 c))
+  have htu : t ⊆ closure (Set.range u) := hu ▸ htc.trans (closure_mono (Set.subset_insert 0 c))
   -- `φ k` is a continuous linear form of norm at most `1` such that `φ k (u k) = ‖u k‖`
   choose φ hφ_norm hφ using fun k ↦ exists_dual_vector'' 𝕜 (u k)
   refine ⟨φ, fun y hyt hy ↦ ?_⟩

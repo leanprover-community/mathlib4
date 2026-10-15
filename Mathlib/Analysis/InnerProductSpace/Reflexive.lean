@@ -20,11 +20,11 @@ public section
 
 open scoped ComplexConjugate
 
-variable {𝕜 : Type*} [RCLike 𝕜]
+variable {𝕜 H : Type*} [RCLike 𝕜]
+  [NormedAddCommGroup H] [InnerProductSpace 𝕜 H] [CompleteSpace H]
 
 /-- A Hilbert space is reflexive. -/
-instance InnerProductSpace.isReflexive {H : Type*} [NormedAddCommGroup H]
-    [InnerProductSpace 𝕜 H] [CompleteSpace H] : TopologicalSpace.IsReflexive 𝕜 H := by
+instance : TopologicalSpace.IsReflexive 𝕜 H := by
   rw [NormedSpace.isReflexive_iff_surjective_inclusionInDoubleDual]
   intro Λ
   let T := InnerProductSpace.toDual 𝕜 H
