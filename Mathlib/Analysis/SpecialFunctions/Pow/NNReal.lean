@@ -1047,7 +1047,7 @@ lemma iInf_rpow_of_pos {ι : Sort*} {r : ℝ} (hr : 0 < r) (f : ι → ℝ≥0�
 
 lemma iInf_rpow_of_nonneg {ι : Sort*} [Nonempty ι] {r : ℝ} (hr : 0 ≤ r) (f : ι → ℝ≥0∞) :
     (⨅ i, f i) ^ r = ⨅ i, f i ^ r := by
-  rcases eq_or_lt_of_le' hr with rfl | hr
+  rcases eq_or_lt_of_le hr with rfl | hr
   · simp
   · exact iInf_rpow_of_pos hr f
 
