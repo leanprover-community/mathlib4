@@ -72,8 +72,8 @@ theorem mem_eraseIdx_of_two_le_count {x : α} {i : ℕ} (h : 2 ≤ l.count x) :
 
 /-- If `x` occurs at least twice in `l.dropLast`, then `x` occurs at some index of `l` which is
 neither the first nor the last one. This detects a duplicate strictly inside `l`. -/
-theorem exists_pos_get_of_two_le_count_dropLast {x : α} (h : 2 ≤ l.dropLast.count x) : 
-    ∃ (i : ℕ) (_ : 0 < i) (_ : i < l.length - 1), l[i] = x := 
+theorem exists_pos_get_of_two_le_count_dropLast {x : α} (h : 2 ≤ l.dropLast.count x) :
+    ∃ (i : ℕ) (_ : 0 < i) (_ : i < l.length - 1), l[i] = x :=
   (getElem_of_mem <| mem_tail_of_two_le_count h).imp' succ <| by grind
 
 end List
