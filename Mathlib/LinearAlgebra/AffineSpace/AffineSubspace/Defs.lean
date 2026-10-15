@@ -1234,14 +1234,17 @@ theorem toAffineSubspace_top : ((⊤ : Submodule k V) : AffineSubspace k V) = �
 theorem toAffineSubspace_bot : ((⊥ : Submodule k V) : AffineSubspace k V) = {0} :=
   rfl
 
+@[simp]
 theorem toAffineSubspace_inf (p q : Submodule k V) :
     ((p ⊓ q : Submodule k V) : AffineSubspace k V) = (p : AffineSubspace k V) ⊓ q :=
   rfl
 
+@[simp]
 theorem toAffineSubspace_sInf (s : Set (Submodule k V)) :
     ((sInf s : Submodule k V) : AffineSubspace k V) = ⨅ p ∈ s, (p : AffineSubspace k V) :=
   SetLike.coe_injective <| by simp
 
+@[simp]
 theorem toAffineSubspace_iInf {ι : Type*} (p : ι → Submodule k V) :
     ((⨅ i, p i : Submodule k V) : AffineSubspace k V) = ⨅ i, (p i : AffineSubspace k V) :=
   SetLike.coe_injective <| by simp
