@@ -746,7 +746,7 @@ theorem le_minDegree_induce_of_support_subset (h : G.support ⊆ s) :
   · simp [minDegree_eq_zero_iff_support_ne, Set.subset_empty_iff.mp h, Set.empty_ne_univ]
   have := hs.to_subtype
   suffices h : (G.minDegree : ℕ∞) ≤ ((induce s G).minDegree : ℕ∞) by
-      simp_all 
+      simp_all
   refine le_minDegree_of_forall_le_degree _ _ fun v ↦ ?_
   grw [G.minDegree_le_degree v, degree_induce_of_neighborSet_subset]
   grw [neighborSet_subset_support, h]
