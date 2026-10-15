@@ -56,32 +56,22 @@ theorem idempotent_tfae :
     isIso_iff_of_comp_eq_id (adj.right_triangle_components Y)
   tfae_have 3 ↔ 4 := forall_congr' fun X ↦
     (isIso_iff_of_comp_eq_id (adj.left_triangle_components X)).symm
-  tfae_have 1 → 3 := by
+  tfae_have 2 → 3 := by
     intro h X
-    have : IsIso (R.map (adj.counit.app (L.obj X))) :=
-      (isIso_iff_of_comp_eq_id (adj.right_triangle_components (L.obj X))).1 (h _)
     -- `RLη_X = η_{RLX}`: both are sections of the isomorphism `Rε_{LX}`.
     have key : R.map (L.map (adj.unit.app X)) = adj.unit.app (R.obj (L.obj X)) := by
       rw [← cancel_mono (R.map (adj.counit.app (L.obj X))), ← Functor.map_comp]
       simp
     refine ⟨L.map (adj.unit.app X), ?_, adj.left_triangle_components X⟩
-    have nat := adj.counit.naturality (L.map (adj.unit.app X))
-    dsimp at nat
-    rw [← nat, key]
-    simp
-  tfae_have 3 → 1 := by
+    simpa [key] using (adj.counit.naturality (L.map (adj.unit.app X))).symm
+  tfae_have 4 → 1 := by
     intro h Y
-    have : IsIso (L.map (adj.unit.app (R.obj Y))) :=
-      (isIso_iff_of_comp_eq_id (adj.left_triangle_components (R.obj Y))).2 (h _)
     -- `LRε_Y = ε_{LRY}`: both are retractions of the isomorphism `Lη_{RY}`.
     have key : L.map (R.map (adj.counit.app Y)) = adj.counit.app (L.obj (R.obj Y)) := by
       rw [← cancel_epi (L.map (adj.unit.app (R.obj Y))), ← Functor.map_comp]
       simp
     refine ⟨R.map (adj.counit.app Y), adj.right_triangle_components Y, ?_⟩
-    have nat := adj.unit.naturality (R.map (adj.counit.app Y))
-    dsimp at nat
-    rw [nat, key]
-    simp
+    simpa [key] using adj.unit.naturality (R.map (adj.counit.app Y))
   tfae_finish
 
 theorem map_map_unit_app_of_idempotent (h : ∀ Y, IsIso (adj.unit.app (R.obj Y))) (X : C) :
