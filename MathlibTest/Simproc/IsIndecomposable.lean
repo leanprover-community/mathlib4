@@ -26,15 +26,16 @@ example : (!![] : Matrix (Fin 0) (Fin 0) ℤ).IsIndecomposable := by
 example : (!![0, 1, 0; 0, 0, 1; 1, 0, 0] : Matrix (Fin 3) (Fin 3) ℤ).IsIndecomposable := by
   simp only [reduceIsIndecomposable]
 
-/-! ## Matrices given by definitions -/
+/-! ## Matrices given by functions or constants -/
 
--- an existing definition, after rewriting it to a literal
+example : (of fun i j : Fin 2 ↦ if i = j then (2 : ℤ) else -1).IsIndecomposable := by
+  simp only [reduceIsIndecomposable]
+
+-- an existing definition, without rewriting it to a literal
 example : (E 8).IsIndecomposable := by
-  rw [E_eight_eq]
   simp only [reduceIsIndecomposable]
 
 example : ¬(D 2).IsIndecomposable := by
-  rw [D_two]
   simp [reduceIsIndecomposable]
 
 /-! ## Other entry types -/
@@ -53,10 +54,10 @@ example : (!![1/2, 1/3; 1/5, 0] : Matrix (Fin 2) (Fin 2) ℚ).IsIndecomposable :
 example : (!![1, 2; 3, 4] : Matrix (Fin 2) (Fin 2) ℝ).IsIndecomposable := by
   simp only [reduceIsIndecomposable]
 
--- a matrix given by a function; this will be handled in a future PR
+-- the same, for a matrix that is not a literal
 /-- error: `simp` made no progress -/
 #guard_msgs in
-example : (of fun i j : Fin 2 ↦ if i = j then (2 : ℤ) else -1).IsIndecomposable := by
+example : (1 : Matrix (Fin 2) (Fin 2) ℝ).IsIndecomposable := by
   simp only [reduceIsIndecomposable]
 
 -- a free variable

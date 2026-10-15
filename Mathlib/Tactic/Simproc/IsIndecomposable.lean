@@ -5,19 +5,19 @@ Authors: Rao Xiaojia
 -/
 module
 
+public import Batteries.Data.Nat.Basic
 public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.Tactic.Matrix.OfLists
-public import Mathlib.Tactic.Matrix.Parsing
+public import Mathlib.Tactic.Matrix.View
 
-import Batteries.Data.Nat.Basic
 import Mathlib.Util.Qq
 
 /-!
 # Simproc deciding `Matrix.IsIndecomposable`
 
 `Matrix.reduceIsIndecomposable` rewrites `M.IsIndecomposable` to `True` or `False` for a closed
-square matrix literal `M` indexed by `Fin n`. This requires a kernel-decidable equality for the
-matrix entry type.
+square matrix `M` indexed by `Fin n`. This requires a kernel-decidable equality for the matrix
+entry type.
 
 This is equivalent to determining whether the directed graph corresponding to `M` is strongly
 connected.
@@ -29,6 +29,7 @@ connected.
 - `isClosed`: tests whether a set of vertices has no edges leaving it.
 - `packedAdj`: a Boolean adjacency matrix stored as the bits of a natural number computed from a
   matrix literal by `packRows`.
+- `adjOf`: the Boolean adjacency matrix of a matrix given by a function.
 - `decideStronglyConnected`: searches the graph from and to vertex `0`, returning two spanning
   trees or a closed set of vertices.
 
@@ -46,6 +47,14 @@ overkill.
 The Boolean adjacency matrix of a `!![…]` literal is packed into one natural number, with entry
 `(i, j)` at bit `i * n + j`, and both certificates are checked against that number, since reading
 the literal by position costs the kernel a walk per entry.
+
+The Boolean adjacency matrix of `M` has entry `(i, j)` true when `M i j ≠ 0`,
+currently evaluated by the kernel; for the functional representation this is the bottleneck.
+
+Two future optimisations are possible. Keeping one form of the adjacency matrix per view would let
+the search evaluate a function's rows only when it reaches them. Compiled evaluation of the
+function is faster, but in a `module` file the compiled code may only call definitions available
+at compile time, a set that depends on the importing file's whole import graph.
 -/
 
 @[expose] public section
@@ -128,7 +137,7 @@ theorem not_isIndecomposable_of_isClosed {n : ℕ} {M : Matrix (Fin n) (Fin n) R
     (by grind [isClosed, BlockTriangular, Bool.lt_iff])
   simp_all [funext_iff]
 
-/-! ### The Boolean adjacency matrix of a matrix literal -/
+/-! ### The Boolean adjacency matrix of a matrix literal or function -/
 
 variable [DecidableEq R]
 
@@ -155,9 +164,20 @@ theorem testBit_packRows {n : ℕ} (rows : List (List R)) (i : ℕ) {j : ℕ} (h
   | cons row rows ih =>
     cases i <;> simp_all [packRows, testBit_packRow, Nat.add_mul, Nat.add_right_comm _ n]
 
-theorem packedAdj_packRows_iff {n : ℕ} (rows : List (List R)) (i j : Fin n) :
-    packedAdj n (packRows n rows) i j ↔ ofLists n n rows i j ≠ 0 := by
+theorem packedAdj_packRows_iff_of_eq {n : ℕ} {M : Matrix (Fin n) (Fin n) R}
+    {rows : List (List R)} (hM : M = ofLists n n rows) (i j : Fin n) :
+    packedAdj n (packRows n rows) i j ↔ M i j ≠ 0 := by
+  subst hM
   simp [packedAdj, testBit_packRows]
+
+/-- The Boolean adjacency matrix of the function `f`, with an edge from `i` to `j` when
+`f i j ≠ 0`. -/
+def adjOf {n : ℕ} (f : Fin n → Fin n → R) (i j : Fin n) : Bool :=
+  decide (f i j ≠ 0)
+
+theorem adjOf_iff_of_eq {n : ℕ} {M : Matrix (Fin n) (Fin n) R} {f : Fin n → Fin n → R}
+    (hM : M = of f) (i j : Fin n) : adjOf f i j ↔ M i j ≠ 0 := by
+  rw [adjOf, hM, of_apply, decide_eq_true_iff]
 
 end Mathlib.Tactic.Matrix.IsIndecomposable
 
@@ -216,31 +236,63 @@ def decideStronglyConnected (adjMatrix : Array (Array Bool)) : StrongConnectivit
   if !toRoot.all id then .disconnected (toRoot.map not) else
   .connected outTree inTree
 
-/-- The Boolean adjacency matrix of the matrix with rows `lit` evaluated by the kernel. Returns
-`none` if the kernel cannot decide which entries are zero. -/
-def evalAdjMatrix? {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (dα : Q(DecidableEq $α)) (n : Nat)
-    (lit : Q(List (List $α))) : MetaM (Option (Array (Array Bool))) := do
-  let .ok (.lit (.natVal bits)) := Kernel.whnf (← getEnv) {} q(packRows $n $lit) | return none
-  return some <| Array.ofFn (n := n) fun i ↦ Array.ofFn (n := n) fun j ↦ bits.testBit (i * n + j)
+/-- The Boolean adjacency matrix of the matrix that `view` builds, evaluated by the kernel, or
+`none` when the kernel cannot decide which entries are zero. A literal is evaluated in one call to
+`packRows`, the number its certificates are checked against, and a function one row at a time. -/
+def evalAdjMatrix? {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (dα : Q(DecidableEq $α)) {n : Nat}
+    {M : Q(Matrix (Fin $n) (Fin $n) $α)} (view : MatrixView n n M) :
+    MetaM (Option (Array (Array Bool))) := do
+  let env ← getEnv
+  let eval (e : Q(Nat)) : Option Nat :=
+    match Kernel.whnf env {} e with
+    | .ok (.lit (.natVal m)) => some m
+    | _ => none
+  match view with
+  | .literal lit =>
+    let some bits := eval q(packRows $n $lit) | return none
+    return some <| Array.ofFn (n := n) fun i ↦ Array.ofFn (n := n) fun j ↦ bits.testBit (i * n + j)
+  | .functional f =>
+    OptionT.run <| Array.ofFnM (n := n) fun i ↦ do
+      -- `Kernel.whnf` checks neither heartbeats nor cancellation, so they are checked per row.
+      checkSystem "reduceIsIndecomposable"
+      let iQ : Q(Fin $n) ← mkFinLitQ n i
+      let some row := eval q(Nat.ofBits (adjOf $f $iQ)) | failure
+      return Array.ofFn (n := n) (row.testBit ·)
 
-/-- Prove that `lit` interpreted as an `n × n` matrix is indecomposable using the spanning
-out-tree `outTree` from vertex `0` and the in-tree `inTree` to it in its graph. -/
+/-- The Boolean adjacency matrix of `M` packed by `packRows`, with the proof that it is that of
+`M`. -/
+def certifyPackedAdj {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (dα : Q(DecidableEq $α))
+    (n : Nat) {M : Q(Matrix (Fin $n) (Fin $n) $α)} (lit : Q(List (List $α))) :
+    (bits : Q(Nat)) × Q(∀ i j, packedAdj $n $bits i j ↔ $M i j ≠ 0) :=
+  let pf := (MatrixView.literal (M := M) lit).proof zα
+  ⟨q(packRows $n $lit), q(packedAdj_packRows_iff_of_eq $pf)⟩
+
+/-- Prove `M.IsIndecomposable` from the spanning out-tree `outTree` from vertex `0` and in-tree
+`inTree` to it in the graph of the Boolean adjacency matrix of `M`. -/
 def certifyIsIndecomposable {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (dα : Q(DecidableEq $α))
-    (n : Nat) (lit : Q(List (List $α))) (outTree inTree : Array (Nat × Nat)) :
-    MetaM Q((ofLists $n $n $lit).IsIndecomposable) := do
+    {n : Nat} {M : Q(Matrix (Fin $n) (Fin $n) $α)} (view : MatrixView n n M)
+    (outTree inTree : Array (Nat × Nat)) : MetaM Q(($M).IsIndecomposable) := do
   let root : Q(Fin $n) ← mkFinLitQ n 0
   let outTreeQ ← mkEdgeListLitQ n outTree
   let inTreeQ ← mkEdgeListLitQ n inTree
-  let adj : Q(Fin $n → Fin $n → Bool) := q(packedAdj $n (packRows $n $lit))
+  let ⟨adj, hadj⟩ : (adj : Q(Fin $n → Fin $n → Bool)) × Q(∀ i j, $adj i j ↔ $M i j ≠ 0) :=
+    match view with
+    | .literal lit =>
+      let ⟨bits, hadj⟩ := certifyPackedAdj zα dα n (M := M) lit
+      ⟨q(packedAdj $n $bits), hadj⟩
+    | .functional f =>
+      let pf := (MatrixView.functional (M := M) f).proof zα
+      ⟨q(adjOf $f), q(adjOf_iff_of_eq $pf)⟩
   let hout ← mkDecideProofQ q(SpansFrom $adj $outTreeQ $root)
   let hin ← mkDecideProofQ q(SpansFrom (Function.swap $adj) $inTreeQ $root)
-  return q(isIndecomposable_of_spansFrom (packedAdj_packRows_iff $lit) $hout $hin)
+  return q(isIndecomposable_of_spansFrom $hadj $hout $hin)
 
-/-- Prove that `lit` interpreted as an `n × n` matrix is decomposable from a nonempty proper
-set `closedSet` of vertices that no edge of its graph leaves. -/
+/-- Prove `¬M.IsIndecomposable` from a nonempty proper set `closedSet` of vertices that no edge of
+the Boolean adjacency matrix of `M` leaves. -/
 def certifyNotIsIndecomposable {u : Level} {α : Q(Type u)} (zα : Q(Zero $α))
-    (dα : Q(DecidableEq $α)) (n : Nat) (lit : Q(List (List $α))) (closedSet : Array Bool) :
-    MetaM Q(¬(ofLists $n $n $lit).IsIndecomposable) := do
+    (dα : Q(DecidableEq $α)) {n : Nat} {M : Q(Matrix (Fin $n) (Fin $n) $α)}
+    (view : MatrixView n n M) (closedSet : Array Bool) :
+    MetaM Q(¬($M).IsIndecomposable) := do
   let (some i, some j) := (closedSet.findIdx? id, closedSet.findIdx? not)
     | throwError "reduceIsIndecomposable: the closed set {closedSet} is empty or full"
   let closedSetQ : Q(Nat) := mkNatLitQ (Nat.ofBits (n := n) (closedSet[·]!))
@@ -250,45 +302,49 @@ def certifyNotIsIndecomposable {u : Level} {α : Q(Type u)} (zα : Q(Zero $α))
     (q(Eq.refl false) : Expr)
   let hij : Q(Nat.testBit $closedSetQ $iQ ≠ Nat.testBit $closedSetQ $jQ) :=
     q(of_decide_eq_false $hd)
-  let hc ← mkDecideProofQ q(isClosedPacked $n (packRows $n $lit) $closedSetQ = true)
-  return q(not_isIndecomposable_of_isClosed (packedAdj_packRows_iff $lit)
-    (isClosed_of_isClosedPacked $hc) $hij)
+  match view with
+  | .literal lit =>
+    let ⟨bits, hadj⟩ := certifyPackedAdj zα dα n (M := M) lit
+    let hc ← mkDecideProofQ q(isClosedPacked $n $bits $closedSetQ = true)
+    return q(not_isIndecomposable_of_isClosed $hadj (isClosed_of_isClosedPacked $hc) $hij)
+  | .functional f =>
+    let pf := (MatrixView.functional (M := M) f).proof zα
+    let hc ← mkDecideProofQ q(isClosed (adjOf $f) $closedSetQ = true)
+    return q(not_isIndecomposable_of_isClosed (adjOf_iff_of_eq $pf) $hc $hij)
 
 /-- Core of the `Matrix.reduceIsIndecomposable` simproc. -/
 def reduceIsIndecomposableCore : Simp.Simproc := fun e ↦ do
   let e ← instantiateMVars e
   let_expr Matrix.IsIndecomposable finN R zR M := e | return .continue
-  let_expr Fin nE := finN | return .continue
-  let some n ← getNatValue? nE | return .continue
   let u ← getDecLevel R
   have α : Q(Type u) := R
   have zα : Q(Zero $α) := zR
+  have finN : Q(Type) := finN
+  have M : Q(Matrix $finN $finN $α) := M
+  let some ⟨n, l, M, view⟩ ← MatrixView.parse? M | return .continue
+  -- `M` is square, so `n` and `l` are read off the same index type.
+  let .isTrue h := decEq l n | return .continue
+  let ⟨M, view⟩ : (M : Q(Matrix (Fin $n) (Fin $n) $α)) × MatrixView n n M :=
+    h ▸ (⟨M, view⟩ : (M : Q(Matrix (Fin $n) (Fin $l) $α)) × MatrixView n l M)
   if n == 0 then
     have M : Q(Matrix (Fin 0) (Fin 0) $α) := M
     let pf : Q(($M).IsIndecomposable) := q((isIndecomposable_iff_reflTransGen $M).2 isEmptyElim)
     return .done { expr := q(True), proof? := q(eq_true $pf) }
-  let some (_, _, _, entries) ← matchMatrixLit? M | return .continue
   let .some dα ← trySynthInstanceQ q(DecidableEq $α) | return .continue
-  let rows : List (List Q($α)) := entries.toList.map Array.toList
-  let lit : Q(List (List $α)) := mkListLitQ (α := q(List $α)) (rows.map mkListLitQ)
-  let some adjMatrix ← evalAdjMatrix? zα dα n lit | return .continue
-  -- The certificates are stated on `ofLists n n lit`. The kernel checks that it is `M` when it
-  -- checks the hint.
+  let some adjMatrix ← evalAdjMatrix? zα dα view | return .continue
   match decideStronglyConnected adjMatrix with
   | .connected outTree inTree =>
-    let pf ← certifyIsIndecomposable zα dα n lit outTree inTree
-    let type ← mkEq e q(True)
-    return .done { expr := q(True), proof? := mkExpectedPropHint q(eq_true $pf) type }
+    let pf ← certifyIsIndecomposable zα dα view outTree inTree
+    return .done { expr := q(True), proof? := q(eq_true $pf) }
   | .disconnected closedSet =>
-    let pf ← certifyNotIsIndecomposable zα dα n lit closedSet
-    let type ← mkEq e q(False)
-    return .done { expr := q(False), proof? := mkExpectedPropHint q(eq_false $pf) type }
+    let pf ← certifyNotIsIndecomposable zα dα view closedSet
+    return .done { expr := q(False), proof? := q(eq_false $pf) }
 
 end Mathlib.Tactic.Matrix.IsIndecomposable
 
 open Mathlib.Tactic.Matrix.IsIndecomposable
 
-/-- `Matrix.reduceIsIndecomposable` decides `M.IsIndecomposable` for a closed matrix literal `M`
-indexed by `Fin n` with `n` a numeral, whose entry type has an equality the kernel can decide. -/
+/-- `Matrix.reduceIsIndecomposable` decides `M.IsIndecomposable` for a closed matrix `M` indexed
+by `Fin n` with `n` a numeral, whose entry type has an equality the kernel can decide. -/
 simproc_decl Matrix.reduceIsIndecomposable (Matrix.IsIndecomposable _) :=
   reduceIsIndecomposableCore
