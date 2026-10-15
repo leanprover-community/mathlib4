@@ -10,6 +10,8 @@ public import Mathlib.Order.Interval.Set.Pi
 public import Mathlib.Order.OrdContinuous
 public import Mathlib.Topology.Order.OrderClosed
 
+import Mathlib.Order.Filter.AtTopBot.Map
+
 /-!
 # Theory of topology on ordered spaces
 
@@ -704,10 +706,10 @@ theorem countable_image_gt_image_Ioi [LinearOrder β] (f : β → α)
   countable_image_lt_image_Ioi (α := αᵒᵈ) f
 
 @[to_dual]
-instance instIsCountablyGenerated_atTop [SeparableSpace α] :
-    IsCountablyGenerated (atTop : Filter α) := by
-  obtain (h | ⟨x, hx⟩) := Set.eq_empty_or_nonempty {x : α | IsTop x}
-  · obtain ⟨s, s_count, hs⟩ := exists_countable_dense α
+instance instIsCountablyGenerated_atTop_subtype {P : α → Prop} [SeparableSpace (Subtype P)] :
+    IsCountablyGenerated (atTop : Filter (Subtype P)) := by
+  obtain (h | ⟨x, hx⟩) := Set.eq_empty_or_nonempty {x : (Subtype P) | IsTop x}
+  · obtain ⟨s, s_count, hs⟩ := exists_countable_dense (Subtype P)
     have : atTop = generate (Ici '' s) := by
       refine atTop_eq_generate_of_not_bddAbove fun ⟨x, hx⟩ ↦ ?_
       simp only [eq_empty_iff_forall_notMem, IsTop, mem_ofPred_eq, not_forall, not_le] at h
@@ -717,6 +719,12 @@ instance instIsCountablyGenerated_atTop [SeparableSpace α] :
     exact ⟨_, s_count.image _, rfl⟩
   · rw [atTop_eq_pure_of_isTop hx]
     exact isCountablyGenerated_pure x
+
+@[to_dual]
+instance instIsCountablyGenerated_atTop [SeparableSpace α] :
+    IsCountablyGenerated (atTop : Filter α) := by
+  rw [← OrderIso.Set.univ.map_atTop]
+  apply Filter.map.isCountablyGenerated
 
 end OrderTopology
 
