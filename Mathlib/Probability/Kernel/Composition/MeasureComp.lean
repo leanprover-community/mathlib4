@@ -233,26 +233,4 @@ lemma absolutelyContinuous_boolKernel_comp_right (μ ν : Measure α) (hπ : π 
 
 end BoolKernel
 
-namespace Kernel
-
-/-! ### Powers of a kernel -/
-
-variable {κ : Kernel α α} {μ : Measure α}
-
-/-- A point `y` reaches the measurable set `C` with positive probability in `n + 1` steps iff
-its first step goes with positive probability to the set of points which reach `C` with positive
-probability in `n` steps. -/
-lemma pow_add_one_apply_pos_iff {C : Set α} (hC : MeasurableSet C) {n : ℕ} {y : α} :
-    0 < (κ ^ (n + 1)) y C ↔ 0 < κ y {z | 0 < (κ ^ n) z C} := by
-  rw [pow_add_one, comp_apply, Measure.comp_apply_pos_iff hC]
-
-/-- The measurable set `C` is reached from the measure `μ` with positive probability in `n + m`
-steps iff after `m` steps, the set of points which reach `C` with positive probability in `n`
-steps has positive measure. -/
-lemma pow_add_comp_apply_pos_iff {C : Set α} (hC : MeasurableSet C) {m n : ℕ} :
-    0 < ((κ ^ (n + m)) ∘ₘ μ) C ↔ 0 < ((κ ^ m) ∘ₘ μ) {y | 0 < (κ ^ n) y C} := by
-  rw [pow_add, ← Measure.comp_assoc, Measure.comp_apply_pos_iff hC]
-
-end Kernel
-
 end ProbabilityTheory
