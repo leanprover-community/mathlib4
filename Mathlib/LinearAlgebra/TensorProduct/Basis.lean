@@ -139,17 +139,8 @@ lemma TensorProduct.mem_range_rTensor_iff_equivFinsuppOfBasisRight {P : Type*} [
   · rintro ⟨y, rfl⟩ i
     simp [equivFinsuppOfBasisRight_rTensor]
   choose g hg using h
-  let y : κ →₀ M := ∑ i ∈ (equivFinsuppOfBasisRight 𝒞 x).support, Finsupp.single i (g i)
-  refine ⟨(equivFinsuppOfBasisRight 𝒞).symm y, (equivFinsuppOfBasisRight 𝒞).injective ?_⟩
-  ext j
-  rw [equivFinsuppOfBasisRight_rTensor, LinearEquiv.apply_symm_apply, Finsupp.mapRange_apply,
-    Finsupp.finsetSum_apply]
-  simp_rw [Finsupp.single_apply]
-  rw [Finset.sum_ite_eq']
-  split_ifs with hj
-  · exact hg j
-  · rw [map_zero, eq_comm, ← Finsupp.notMem_support_iff]
-    exact hj
+  rw [← (equivFinsuppOfBasisRight 𝒞).symm_apply_apply x, equivFinsuppOfBasisRight_symm_apply]
+  exact Submodule.sum_mem _ fun i _ ↦ ⟨g i ⊗ₜ 𝒞 i, by simp [hg]⟩
 
 /--
 If `{ℬᵢ}` is a basis for the module `M`, then every elements of `x ∈ M ⊗ N` can be uniquely written
