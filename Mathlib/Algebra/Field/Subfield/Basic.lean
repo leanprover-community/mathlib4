@@ -437,33 +437,14 @@ theorem coe_iSup_eq_iUnion_finset_coe_biSup {ι : Type*} (S : ι → Subfield K)
   rw [iSup_eq_iSup_finset, coe_iSup_of_directed <| Monotone.directed_le fun _ _ ↦ biSup_mono]
 
 theorem isMulCommutative_closure {s : Set K} (hs : s.Pairwise Commute) :
-    IsMulCommutative (closure s) where
-  is_comm.comm := by
-    intro ⟨a, ha⟩ ⟨b, hb⟩
-    simp_rw [Subtype.ext_iff, MulMemClass.coe_mul]
-    induction ha using Subfield.closure_induction with
-    | one => simp
-    | add x y hx hy ihx ihy => rw [add_mul, ihx, ihy, mul_add]
-    | neg x hx ih => rw [neg_mul, mul_neg, ih]
-    | mul x y hx hy ihx ihy => rw [mul_assoc, ihy, ← mul_assoc, ihx, mul_assoc]
-    | inv x hx ih =>
-      obtain rfl | hx0 := eq_or_ne x 0
-      · simp
-      · rw [inv_mul_eq_iff_eq_mul₀ hx0, ← mul_assoc, ih, mul_inv_cancel_right₀ hx0]
-    | mem a ha =>
-      induction hb using Subfield.closure_induction with
-      | one => simp
-      | add x y hx hy ihx ihy => rw [mul_add, ihx, ihy, add_mul]
-      | neg x hx ih => rw [neg_mul, mul_neg, ih]
-      | mul x y hx hy ihx ihy => rw [← mul_assoc, ihx, mul_assoc, ihy, ← mul_assoc]
-      | inv x hx ih =>
-        obtain rfl | hx0 := eq_or_ne x 0
-        · simp
-        · rw [mul_inv_eq_iff_eq_mul₀ hx0, mul_assoc, ih, inv_mul_cancel_left₀ hx0]
-      | mem b hb =>
-        obtain rfl | hne := eq_or_ne a b
-        · rfl
-        · exact hs ha hb hne
+    IsMulCommutative (closure s) :=
+  have : (closure s : Set K) ≤ s.centralizer.centralizer := fun _ hx ↦
+    closure_induction (fun _ h ↦ Set.subset_centralizer_centralizer h)
+      Set.one_mem_centralizer (fun _ _ _ _ ↦ Set.add_mem_centralizer)
+      (fun _ _ ↦ Set.neg_mem_centralizer) (fun _ _ ↦ Set.inv_mem_centralizer₀)
+      (fun _ _ _ _ ↦ Set.mul_mem_centralizer) hx
+  .of_setLike_mul_comm fun _ h₁ _ h₂ ↦
+    Set.centralizer_centralizer_comm_of_comm hs _ (this h₁) _ (this h₂)
 
 end Subfield
 
