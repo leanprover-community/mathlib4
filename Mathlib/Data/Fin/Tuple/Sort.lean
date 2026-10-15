@@ -261,6 +261,30 @@ theorem isStable_sort (f : Fin n → α) : IsStable f (sort f) :=
 theorem isStable_sortDesc (f : Fin n → α) : IsStable f (sortDesc f) :=
   (eq_sort_iff (f := OrderDual.toDual ∘ f) (σ := sortDesc f)).mp rfl |>.2
 
+/-- `IsStable f σ` says exactly that `σ⁻¹` reflects the order of any two indices sharing an
+`f`-value. -/
+theorem isStable_iff_imp {α γ : Type*} [Preorder α] (f : α → γ) (σ : Equiv.Perm α) :
+    IsStable f σ ↔ ∀ ⦃i j⦄, f i = f j → σ⁻¹ i ≤ σ⁻¹ j → i ≤ j := by
+  constructor
+  · intro h i j hfij hij
+    simpa using h hij (by simp [hfij])
+  · intro h i j hij hfij
+    exact h hfij (by simpa using hij)
+
+/-- `IsStable f σ` says exactly that `σ⁻¹` preserves the order of any two indices sharing an
+`f`-value. -/
+theorem isStable_iff {α γ : Type*} [LinearOrder α] (f : α → γ) (σ : Equiv.Perm α) :
+    IsStable f σ ↔ ∀ ⦃i j⦄, f i = f j → (i ≤ j ↔ σ⁻¹ i ≤ σ⁻¹ j) := by
+  rw [isStable_iff_imp]
+  constructor
+  · intro h i j hfij
+    refine ⟨fun hij => ?_, h hfij⟩
+    rcases le_total (σ⁻¹ i) (σ⁻¹ j) with hle | hle
+    · exact hle
+    · exact le_of_eq (congrArg _ (le_antisymm hij (h hfij.symm hle)))
+  · intro h i j hfij
+    exact (h hfij).mpr
+
 /-- `sort f ∘ Fin.rev` is a stable sort exactly when `f` is injective: on tied values it orders
 them by *decreasing* index, the opposite of the stable `sortDesc f`. -/
 theorem isStable_sort_comp_rev_iff :
