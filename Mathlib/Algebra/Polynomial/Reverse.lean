@@ -327,13 +327,15 @@ section Eval₂
 
 variable {S : Type*} [Semiring S]
 
-theorem eval₂_reverse_mul_pow (i : R →+* S) (x : S) [Invertible x] (f : R[X]) :
-    eval₂ i (⅟x) (reverse f) * x ^ f.natDegree = eval₂ i x f :=
+theorem eval₂_reverse_invOf_mul_pow (i : R →+* S) (x : S) [Invertible x] (f : R[X]) :
+    f.reverse.eval₂ i (⅟x) * x ^ f.natDegree = eval₂ i x f :=
   eval₂_reflect_mul_pow i _ _ f le_rfl
+
+@[deprecated (since := "2026-10-15")] alias eval₂_reverse_mul_pow := eval₂_reverse_invOf_mul_pow
 
 @[simp]
 theorem eval₂_reverse_eq_zero_iff (i : R →+* S) (x : S) [Invertible x] (f : R[X]) :
-    eval₂ i (⅟x) (reverse f) = 0 ↔ eval₂ i x f = 0 :=
+    f.reverse.eval₂ i (⅟x) = 0 ↔ eval₂ i x f = 0 :=
   eval₂_reflect_eq_zero_iff i x _ _ le_rfl
 
 end Eval₂
@@ -344,7 +346,7 @@ theorem eval_reverse_zero (f : R[X]) : f.reverse.eval 0 = f.leadingCoeff := by
 
 theorem eval_reverse_invOf_mul_pow (x : R) [Invertible x] (f : R[X]) :
     f.reverse.eval (⅟x) * x ^ f.natDegree = f.eval x := by
-  simpa using f.eval₂_reverse_mul_pow (.id _) x
+  simpa using f.eval₂_reverse_invOf_mul_pow (.id _) x
 
 end Semiring
 
