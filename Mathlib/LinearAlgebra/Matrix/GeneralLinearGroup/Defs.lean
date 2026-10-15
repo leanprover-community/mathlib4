@@ -214,7 +214,7 @@ def mapEquiv : GL n R ≃* GL n S :=
   Units.mapEquiv f.mapMatrix.toMulEquiv
 
 @[simp] lemma coe_mapEquiv_apply (a : GL n R) :
-    (mapEquiv n f a) = f.mapMatrix (a : Matrix n n R):= rfl
+    (mapEquiv n f a : Matrix n n S) = f.mapMatrix (a : Matrix n n R) := rfl
 
 @[simp] lemma mapEquiv_refl : mapEquiv n (.refl R) = .refl (GL n R) := rfl
 
