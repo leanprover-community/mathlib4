@@ -121,7 +121,7 @@ theorem convexHull_eq_union : convexHull 𝕜 s =
 
 /-- A more explicit version of `convexHull_eq_union`. -/
 theorem eq_pos_convex_span_of_mem_convexHull {x : E} (hx : x ∈ convexHull 𝕜 s) :
-    ∃ (ι : Sort (u + 1)) (_ : Fintype ι),
+    ∃ (ι : Type u) (_ : Fintype ι),
       ∃ (z : ι → E) (w : ι → 𝕜), Set.range z ⊆ s ∧ AffineIndependent 𝕜 z ∧ (∀ i, 0 < w i) ∧
         ∑ i, w i = 1 ∧ ∑ i, w i • z i = x := by
   rw [convexHull_eq_union] at hx
@@ -130,16 +130,14 @@ theorem eq_pos_convex_span_of_mem_convexHull {x : E} (hx : x ∈ convexHull 𝕜
   simp only [t.convexHull_eq, Set.mem_ofPred_eq] at ht₃
   obtain ⟨w, hw₁, hw₂, hw₃⟩ := ht₃
   let t' := {i ∈ t | w i ≠ 0}
-  refine ⟨t', t'.fintypeCoeSort, ((↑) : t' → E), w ∘ ((↑) : t' → E), ?_, ?_, ?_, ?_, ?_⟩
+  refine ⟨t', t'.fintypeCoeSort, ((↑) : t' → E), fun i ↦ w i, ?_, ?_, ?_, ?_, ?_⟩
   · rw [Subtype.range_coe_subtype]
     exact Subset.trans (Finset.filter_subset _ t) ht₁
   · exact ht₂.comp_embedding ⟨_, inclusion_injective (Finset.filter_subset (fun i => w i ≠ 0) t)⟩
   · exact fun i =>
       (hw₁ _ (Finset.mem_filter.mp i.2).1).lt_of_ne (Finset.mem_filter.mp i.property).2.symm
-  · simp only [univ_eq_attach, Function.comp_apply]
-    rw [Finset.sum_attach, Finset.sum_filter_ne_zero, hw₂]
-  · change (∑ i ∈ t'.attach, (fun e => w e • e) ↑i) = x
-    rw [Finset.sum_attach (f := fun e => w e • e), Finset.sum_filter_of_ne]
+  · rw [sum_coe_sort t' w, sum_filter_ne_zero, hw₂]
+  · rw [sum_coe_sort t' fun e ↦ w e • e, sum_filter_of_ne]
     · rw [t.centerMass_eq_of_sum_1 id hw₂] at hw₃
       exact hw₃
     · intro e _ hwe contra
