@@ -1,0 +1,37 @@
+name: Verify TracePow Lean proof
+
+on:
+  push:
+    branches:
+      - rft-sirm/trace-mul-pow-comm
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-tracepow-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  compile:
+    name: Compile TracePow.lean
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+
+      - name: Set up Lean
+        uses: leanprover/lean-action@f061402b660e0c34644504b324e830f2991d4865
+        with:
+          auto-config: false
+          use-github-cache: false
+          use-mathlib-cache: false
+          reinstall-transient-toolchain: true
+
+      - name: Fetch Mathlib cache for dependencies
+        run: lake exe cache get Mathlib/LinearAlgebra/Matrix/Trace.lean
+
+      - name: Compile proposed theorem
+        run: lake env lean Mathlib/LinearAlgebra/Matrix/TracePow.lean
