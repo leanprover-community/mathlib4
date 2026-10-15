@@ -82,8 +82,7 @@ is `(1 - p) / p ^ 2`. -/
 lemma variance_id_geometricMeasure :
     Var[fun n : ℕ ↦ (n : ℝ); geometricMeasure p] = (1 - p) / p ^ 2 := by
   rw [variance_eq_sub memLp_two_id_geometricMeasure]
-  simp only [Pi.pow_apply]
-  rw [integral_sq_geometricMeasure, integral_id_geometricMeasure]
+  simp only [Pi.pow_apply, integral_sq_geometricMeasure, integral_id_geometricMeasure]
   by_cases hp : (p : ℝ) = 0
   · simp [hp]
   field_simp
