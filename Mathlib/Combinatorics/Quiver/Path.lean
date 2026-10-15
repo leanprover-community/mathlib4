@@ -313,9 +313,11 @@ instance instDecidableEq [DecidableEq V] [∀ (v w : V), DecidableEq (v ⟶ w)] 
 
 end BoundedPath
 
-section Valuation
+end Path
 
-variable {α : Type*}
+namespace Path
+
+variable {V : Type u} [Quiver V] {α : Type*}
 
 /-- If a valuation `f : V → α` into a preorder is weakly monotonic along arrows,
 then it is weakly monotonic along any path. -/
@@ -346,8 +348,6 @@ the only closed path on a vertex is `nil`. -/
 theorem eq_nil_of_hom_lt [Preorder α] {f : V → α} (hf : ∀ {u v}, (u ⟶ v) → f u < f v)
     {a : V} (p : Path a a) : p = Path.nil :=
   p.eq_nil_of_length_zero (length_eq_zero_of_hom_lt hf p)
-
-end Valuation
 
 end Path
 
