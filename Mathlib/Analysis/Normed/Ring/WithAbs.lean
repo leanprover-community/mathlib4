@@ -288,6 +288,7 @@ theorem under_def (w : AbsoluteValue L S) :
     w.under K = w.comp (FaithfulSMul.algebraMap_injective K L) :=
   rfl
 
+@[simp]
 theorem under_apply (w : AbsoluteValue L S) (x : K) : w.under K x = w (algebraMap K L x) :=
   rfl
 
@@ -312,6 +313,7 @@ variable {M : Type*} [CommSemiring M] [Algebra K M] [Algebra M L] [IsScalarTower
   [FaithfulSMul K M] [FaithfulSMul M L]
 
 variable (K M) in
+@[simp]
 theorem under_under (w : AbsoluteValue L S) : (w.under M).under K = w.under K := by
   ext x
   rw [under_apply, under_apply, under_apply, ← IsScalarTower.algebraMap_apply]
