@@ -22,13 +22,20 @@ theorem trace_mul_pow_comm (A : Matrix m n R) (B : Matrix n m R) (k : ℕ) :
   have hpow : ∀ k : ℕ, (B * A) ^ (k + 1) = B * (A * B) ^ k * A := by
     intro k
     induction k with
-    | zero => simp
+    | zero =>
+        simp only [Nat.zero_add, pow_one, pow_zero, one_mul, mul_one]
     | succ k ih =>
-      rw [pow_succ, ih, pow_succ]
-      simp only [mul_assoc]
+        calc
+          (B * A) ^ (Nat.succ k + 1) = (B * A) ^ (k + 1) * (B * A) := by
+            congr 1
+            omega
+          _ = (B * (A * B) ^ k * A) * (B * A) := by rw [ih]
+          _ = B * ((A * B) ^ k * (A * B)) * A := by
+            simp only [mul_assoc]
+          _ = B * (A * B) ^ (k + 1) * A := by rw [pow_succ]
   calc
     trace ((A * B) ^ (k + 1)) = trace ((A * B) ^ k * A * B) := by
-      rw [pow_succ, ← mul_assoc]
+      rw [pow_succ, mul_assoc]
     _ = trace (B * (A * B) ^ k * A) := Matrix.trace_mul_cycle _ _ _
     _ = trace ((B * A) ^ (k + 1)) := by rw [← hpow k]
 
