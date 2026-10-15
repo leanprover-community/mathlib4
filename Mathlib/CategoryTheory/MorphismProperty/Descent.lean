@@ -129,7 +129,7 @@ lemma eq_of_isomorphisms_descendsAlong [(MorphismProperty.isomorphisms C).Descen
     ext <;> simp [pullback.condition]
   simpa [this] using equalizer.ι_of_eq H
 
-lemma faithful_overPullback_of_isomorphisms_descendAlong
+lemma faithful_overPullback_of_isomorphisms_descendsAlong
     [(MorphismProperty.isomorphisms C).DescendsAlong P] [P.IsStableUnderBaseChange]
     [HasPullbacks C] [HasEqualizers C] {S T : C} {f : T ⟶ S} (hf : P f) :
     (Over.pullback f).Faithful := by
@@ -137,6 +137,10 @@ lemma faithful_overPullback_of_isomorphisms_descendAlong
   ext
   apply P.eq_of_isomorphisms_descendsAlong (Over.w a) (Over.w b) f hf
   convert! congr($(hab).left) <;> ext <;> simp
+
+@[deprecated (since := "2026-10-08")]
+alias faithful_overPullback_of_isomorphisms_descendAlong :=
+  faithful_overPullback_of_isomorphisms_descendsAlong
 
 end DescendsAlong
 
@@ -166,9 +170,12 @@ lemma pushout_inl_iff [P.IsStableUnderCobaseChange] [P.CodescendsAlong Q] [HasPu
     (hf : Q f) : P (pushout.inl f g) ↔ P g :=
   iff_of_isPushout (.of_hasPushout f g) hf
 
-lemma of_pushout_inr_of_descendsAlong [P.CodescendsAlong Q] [HasPushout f g] (hg : Q g)
+lemma of_pushout_inr_of_codescendsAlong [P.CodescendsAlong Q] [HasPushout f g] (hg : Q g)
     (hinr : P (pushout.inr f g)) : P f :=
   of_isPushout_of_codescendsAlong (IsPushout.of_hasPushout f g).flip hg hinr
+
+@[deprecated (since := "2026-10-08")]
+alias of_pushout_inr_of_descendsAlong := of_pushout_inr_of_codescendsAlong
 
 lemma pushout_inr_iff [P.IsStableUnderCobaseChange] [P.CodescendsAlong Q] [HasPushout f g]
     (hg : Q g) : P (pushout.inr f g) ↔ P f :=
