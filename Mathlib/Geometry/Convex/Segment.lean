@@ -20,7 +20,7 @@ In an R-convex space, we define the following objects:
 
 namespace Convexity
 
-open Convexity Function Set
+open Convexity Function
 
 @[expose] public section Semiring
 
@@ -141,26 +141,26 @@ theorem left_mem_Ico (x y : X) : x ∈ Ico R x y :=
 theorem Icc_same (x : X) : Icc R x x = {x} :=
   Set.ext fun z ↦
     ⟨fun ⟨a, b, _, _, hab, hz⟩ ↦ by
-      simpa [(add_smul ..).symm, mem_singleton_iff, hab, one_smul, eq_comm] using hz,
-      fun h ↦ mem_singleton_iff.1 h ▸ left_mem_Icc R z z⟩
+      simpa [(add_smul ..).symm, Set.mem_singleton_iff, hab, one_smul, eq_comm] using hz,
+      fun h ↦ Set.mem_singleton_iff.1 h ▸ left_mem_Icc R z z⟩
 
 @[simp]
 theorem Ico_same (x : X) : Ico R x x = {x} := by
-  apply Subset.antisymm
+  apply Set.Subset.antisymm
   · rw [← Icc_same R x]; exact Ico_subset_Icc R x x
   · simp [left_mem_Ico]
 
 theorem insert_endpoint_Ioo_left (x y : X) : insert x (Ioo R x y) = Ico R x y := by
-  simp only [subset_antisymm_iff, insert_subset_iff, left_mem_Ico, Ioo_subset_Ico, and_self,
+  simp only [subset_antisymm_iff, Set.insert_subset_iff, left_mem_Ico, Ioo_subset_Ico, and_self,
     true_and]
   rintro z ⟨a, b, ha, hb', hab, rfl⟩
   by_cases hb : 0 < b
-  · exact mem_insert_of_mem x (convexCombPair_mem_Ioo ha hb hab)
+  · exact Set.mem_insert_of_mem x (convexCombPair_mem_Ioo ha hb hab)
   · rw [← eq_of_le_of_not_lt hb' hb] at hab
     simp [← eq_of_le_of_not_lt hb' hb, add_zero a ▸ hab]
 
 theorem insert_endpoint_Ico (x y : X) : insert y (Ico R x y) = Icc R x y := by
-  simp only [subset_antisymm_iff, insert_subset_iff, right_mem_Icc, Ico_subset_Icc, true_and]
+  simp only [subset_antisymm_iff, Set.insert_subset_iff, right_mem_Icc, Ico_subset_Icc, true_and]
   rintro z ⟨a, b, ha, hb, hab, rfl⟩
   refine ha.eq_or_lt.imp ?_ (fun hal ↦ convexCombPair_mem_Ico hal hb hab)
   rintro rfl
@@ -181,10 +181,10 @@ theorem mem_Ico_of_ne_right (hy : y ≠ z) (hz : z ∈ Icc R x y) : z ∈ Ico R 
   exact hz.resolve_left hy.symm
 
 theorem Ioo_subset_iff_Icc_subset (hx : x ∈ s) (hy : y ∈ s) : Ioo R x y ⊆ s ↔ Icc R x y ⊆ s := by
-  simp only [← insert_endpoints_Ioo, insert_subset_iff, *, true_and]
+  simp only [← insert_endpoints_Ioo, Set.insert_subset_iff, *, true_and]
 
 theorem Ico_subset_iff_Icc_subset (hy : y ∈ s) : Ico R x y ⊆ s ↔ Icc R x y ⊆ s := by
-  simp only [← insert_endpoint_Ico, insert_subset_iff, *, true_and]
+  simp only [← insert_endpoint_Ico, Set.insert_subset_iff, *, true_and]
 
 namespace IsAffineMap
 
@@ -197,7 +197,7 @@ theorem image_Icc (hf : IsAffineMap R f) (a b : X) :
 
 theorem mem_Icc_image (hf : IsAffineMap R f) {a b c : X}
     (h : c ∈ Icc R a b) : f c ∈ Icc R (f a) (f b) := by
-  simp only [← image_Icc hf, mem_image]
+  simp only [← image_Icc hf, Set.mem_image]
   exact ⟨c, ⟨h, rfl⟩⟩
 
 @[simp]
@@ -207,7 +207,7 @@ theorem image_Ioo (hf : IsAffineMap R f) (a b : X) :
 
 theorem mem_Ioo_image (hf : IsAffineMap R f) {a b c : X}
     (h : c ∈ Ioo R a b) : f c ∈ Ioo R (f a) (f b) := by
-  simp only [← image_Ioo hf, mem_image]
+  simp only [← image_Ioo hf, Set.mem_image]
   exact ⟨c, ⟨h, rfl⟩⟩
 
 @[simp]
@@ -216,7 +216,7 @@ theorem image_Ico (hf : IsAffineMap R f) (a b : X) : f '' Ico R a b = Ico R (f a
 
 theorem mem_Ico_image (hf : IsAffineMap R f) {a b c : X} (h : c ∈ Ico R a b) :
     f c ∈ Ico R (f a) (f b) := by
-  simp only [← image_Ico hf, mem_image]
+  simp only [← image_Ico hf, Set.mem_image]
   exact ⟨c, ⟨h, rfl⟩⟩
 
 end IsAffineMap
@@ -276,7 +276,7 @@ variable (R) {X} [Ring R] [PartialOrder R] [IsStrictOrderedRing R] [ConvexSpace 
 theorem Ioo_same (x : X) : Ioo R x x = {x} :=
   Set.ext fun z ↦
     ⟨fun ⟨a, b, _, _, hab, hz⟩ ↦ by
-      simpa only [convexCombPair_same, mem_singleton_iff, eq_comm] using hz,
+      simpa only [convexCombPair_same, Set.mem_singleton_iff, eq_comm] using hz,
     fun h : z = x ↦ by
       obtain ⟨a, ha₀, ha₁⟩ := DenselyOrdered.dense (0 : R) 1 zero_lt_one
       refine ⟨a, 1 - a, ha₀, sub_pos_of_lt ha₁, add_sub_cancel .., ?_⟩
