@@ -63,6 +63,32 @@ theorem tendsto_measure_Ici_atBot [(atBot : Filter α).IsCountablyGenerated]
     (μ : Measure α) : Tendsto (fun x => μ (Ici x)) atBot (𝓝 (μ univ)) :=
   tendsto_measure_Iic_atTop (α := αᵒᵈ) μ
 
+theorem measure_eq_iSup_inter_Iic (μ : Measure α) (S : Set α) [IsDirectedOrder S]
+    [(atTop : Filter S).IsCountablyGenerated] :
+    μ S = ⨆ x ∈ S, μ (S ∩ Iic x) := by
+  refine le_antisymm ?_ <| iSup₂_le fun _ _ ↦ measure_mono inter_subset_left
+  rcases isEmpty_or_nonempty S with h | h
+  · simp [isEmpty_coe_sort.mp h]
+  have : Tendsto (μ ∘ fun x : S ↦ S ∩ Iic x) atTop (𝓝 (μ (⋃ x : S, S ∩ Iic x))) :=
+    tendsto_measure_iUnion_atTop fun _ _ h ↦ inter_subset_inter_right _ <| Iic_subset_Iic.mpr h
+  rw [le_antisymm (iUnion_subset fun _ ↦ inter_subset_left)
+    fun x hx ↦ mem_iUnion.mpr ⟨⟨x, hx⟩, hx, le_rfl⟩] at this
+  exact le_of_tendsto' this (le_biSup (μ <| S ∩ Iic ·) ·.property)
+
+-- TODO: generate this using `@[to_dual]` once Monotone <-> Antitone is tagged with `@[to_dual]`
+@[to_dual existing measure_eq_iSup_inter_Iic]
+theorem measure_eq_iSup_inter_Ici (μ : Measure α) (S : Set α) [IsCodirectedOrder S]
+    [(atBot : Filter S).IsCountablyGenerated] :
+    μ S = ⨆ x ∈ S, μ (S ∩ Ici x) := by
+  refine le_antisymm ?_ <| iSup₂_le fun _ _ ↦ measure_mono inter_subset_left
+  rcases isEmpty_or_nonempty S with h | h
+  · simp [isEmpty_coe_sort.mp h]
+  have : Tendsto (μ ∘ fun x : S ↦ S ∩ Ici x) atBot (𝓝 (μ (⋃ x : S, S ∩ Ici x))) :=
+    tendsto_measure_iUnion_atBot fun _ _ h ↦ inter_subset_inter_right _ <| Ici_subset_Ici.mpr h
+  rw [le_antisymm (iUnion_subset fun _ ↦ inter_subset_left)
+    fun x hx ↦ mem_iUnion.mpr ⟨⟨x, hx⟩, hx, le_rfl⟩] at this
+  exact le_of_tendsto' this (le_biSup (μ <| S ∩ Ici ·) ·.property)
+
 end Preorder
 
 section PartialOrder
