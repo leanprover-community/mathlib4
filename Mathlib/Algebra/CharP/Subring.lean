@@ -16,38 +16,39 @@ public section
 
 universe u v
 
-namespace CharP
+section CharP
 
-instance subsemiring (R : Type u) [Semiring R] (p : ℕ) [CharP R p] (S : Subsemiring R) :
-    CharP S p :=
-  ⟨fun x =>
-    Iff.symm <|
-      (CharP.cast_eq_zero_iff R p x).symm.trans
-        ⟨fun h => Subtype.ext <| show S.subtype x = 0 by rw [map_natCast, h], fun h =>
-          map_natCast S.subtype x ▸ by rw [h, map_zero]⟩⟩
-
-instance subring (R : Type u) [Ring R] (p : ℕ) [CharP R p] (S : Subring R) : CharP S p :=
-  ⟨fun x =>
-    Iff.symm <|
-      (CharP.cast_eq_zero_iff R p x).symm.trans
-        ⟨fun h => Subtype.ext <| show S.subtype x = 0 by rw [map_natCast, h], fun h =>
-          map_natCast S.subtype x ▸ by rw [h, map_zero]⟩⟩
-
-instance subring' (R : Type u) [CommRing R] (p : ℕ) [CharP R p] (S : Subring R) : CharP S p :=
-  CharP.subring R p S
+theorem SubsemiringClass.charP_iff {R : Type u} {S : Type v} [SetLike S R]
+    [NonAssocSemiring R] [SubsemiringClass S R] {p : ℕ} {s : S} :
+    CharP s p ↔ CharP R p :=
+  (Subsemiring.subtype (.ofClass s)).charP_iff (Subsemiring.subtype_injective _) p
 
 /-- The characteristic of a division ring is equal to the characteristic
   of its center -/
-theorem charP_center_iff {R : Type u} [Ring R] {p : ℕ} :
-    CharP (Subring.center R) p ↔ CharP R p :=
-  (algebraMap (Subring.center R) R).charP_iff Subtype.val_injective p
+@[deprecated SubsemiringClass.charP_iff +typeChanged (since := "2026-10-15")]
+theorem CharP.charP_center_iff {R : Type u} [Ring R] {p : ℕ} :
+    CharP (Subring.center R) p ↔ CharP R p := SubsemiringClass.charP_iff
+
+instance SubsemiringClass.charP {R : Type u} {S : Type v} [SetLike S R]
+    [NonAssocSemiring R] [SubsemiringClass S R] {p : ℕ} [CharP R p] (s : S) :
+    CharP s p := SubsemiringClass.charP_iff.2 ‹_›
 
 end CharP
 
-namespace ExpChar
+section ExpChar
 
-theorem expChar_center_iff {R : Type u} [Ring R] {p : ℕ} :
+theorem SubsemiringClass.expChar_iff {R : Type u} {S : Type v} [SetLike S R]
+    [NonAssocSemiring R] [SubsemiringClass S R] {p : ℕ} {s : S} :
+    ExpChar s p ↔ ExpChar R p :=
+  (Subsemiring.subtype (.ofClass s)).expChar_iff (Subsemiring.subtype_injective _) p
+
+@[deprecated SubsemiringClass.expChar_iff +typeChanged (since := "2026-10-15")]
+theorem ExpChar.expChar_center_iff {R : Type u} [Ring R] {p : ℕ} :
     ExpChar (Subring.center R) p ↔ ExpChar R p :=
   (algebraMap (Subring.center R) R).expChar_iff Subtype.val_injective p
+
+instance SubsemiringClass.expChar {R : Type u} {S : Type v} [SetLike S R]
+    [NonAssocSemiring R] [SubsemiringClass S R] {p : ℕ} [ExpChar R p] (s : S) :
+    ExpChar s p := SubsemiringClass.expChar_iff.2 ‹_›
 
 end ExpChar
