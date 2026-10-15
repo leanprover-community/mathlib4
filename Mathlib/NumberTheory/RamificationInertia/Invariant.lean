@@ -26,6 +26,9 @@ The reusable ingredients are `Algebra.FormallyUnramified.equalizerIdempotent`,
 `Algebra.FormallyUnramified.linearize`, `Subgroup.relativeTrace`, and
 `Subgroup.inertiaIdempotent`. Relative trace is unnormalized and does not require normality
 of the subgroup; the inertia idempotent only requires that subgroup to be finite.
+
+The identity `Subgroup.linearize_descentTrace` explains the multiplier: linearizing
+`Subgroup.descentTrace` gives multiplication by `Subgroup.descentMultiplier`.
 -/
 
 @[expose] public section
@@ -140,9 +143,10 @@ lemma mk_equalizerIdempotent_eq_one_iff (f g : B →ₐ[A] C) (Q : Ideal C) :
 
 section Linearize
 
-variable {M N : Type*} [AddCommGroup M] [AddCommGroup N]
+variable {L M N : Type*} [AddCommGroup M] [AddCommGroup N] [AddCommGroup L]
   [Module A M] [Module B M] [IsScalarTower A B M]
   [Module A N] [Module B N] [IsScalarTower A B N]
+  [Module A L] [Module B L] [IsScalarTower A B L]
 
 variable (B) in
 /-- Separability turns a base-linear map into an algebra-linear map. -/
@@ -161,8 +165,7 @@ lemma le_comap_lineraize (f : M →ₗ[A] N) (P : Submodule B M) (Q : Submodule 
   | add t₁ t₂ h₁ h₂ => simpa using Q.add_mem h₁ h₂
 
 @[simp]
-lemma linearize_comp {L : Type*} [AddCommGroup L] [Module A L] [Module B L]
-    [IsScalarTower A B L] (f : M →ₗ[A] N) (g : L →ₗ[B] M) :
+lemma linearize_comp (f : M →ₗ[A] N) (g : L →ₗ[B] M) :
     linearize B (f.comp (g.restrictScalars A)) = (linearize B f).comp g := by
   ext x
   simp_rw [linearize_apply, sec, LinearMap.comp_apply, LinearMap.coe_mk]
@@ -172,13 +175,11 @@ lemma linearize_comp {L : Type*} [AddCommGroup L] [Module A L] [Module B L]
 
 @[simp]
 lemma linearize_comp_mulLeft (f : B →ₗ[A] N) (b : B) :
-    linearize B (f.comp (LinearMap.mulLeft A b)) =
-      (linearize B f).comp (LinearMap.mulLeft B b) :=
+    linearize B (f.comp (LinearMap.mulLeft A b)) = (linearize B f).comp (LinearMap.mulLeft B b) :=
   linearize_comp f (LinearMap.mulLeft B b)
 
 @[simp]
-lemma comp_linearize {P : Type*} [AddCommGroup P] [Module A P] [Module B P]
-    [IsScalarTower A B P] (g : N →ₗ[B] P) (f : M →ₗ[A] N) :
+lemma comp_linearize (g : N →ₗ[B] L) (f : M →ₗ[A] N) :
     linearize B ((g.restrictScalars A).comp f) = g.comp (linearize B f) := by
   rw [linearize_apply, linearize_apply, ← LinearMap.comp_assoc, LinearMap.liftBaseChange_comp]
 
@@ -206,8 +207,7 @@ end Algebra.FormallyUnramified
 open Algebra.FormallyUnramified
 
 variable {G : Type*} [Group G] (H : Subgroup G) (A : Type*) (B : Type*)
-  [CommRing A] [CommRing B] [Algebra A B]
-  [MulSemiringAction G B] [SMulCommClass G A B]
+  [CommRing A] [CommRing B] [Algebra A B] [MulSemiringAction G B] [SMulCommClass G A B]
   [Algebra.FormallyUnramified A B] [Algebra.EssFiniteType A B] [Finite H]
 
 namespace Subgroup
@@ -228,14 +228,15 @@ lemma inertiaIdempotent_mul_smul (h : H) (b : B) :
   classical
   let := Fintype.ofFinite H
   obtain ⟨w, hw⟩ : equalizerIdempotent (AlgHom.id A B)
-      (MulSemiringAction.toAlgHom A B (h : G)) ∣ H.inertiaIdempotent A B :=
+      (MulSemiringAction.toAlgHom A B h) ∣ H.inertiaIdempotent A B :=
     Finset.dvd_prod_of_mem _ (Finset.mem_univ h)
-  have he := equalizerIdempotent_mul (AlgHom.id A B) (MulSemiringAction.toAlgHom A B (h : G)) b
-  change _ * b  = _ * (h • b) at he
+  have he := equalizerIdempotent_mul (AlgHom.id A B) (MulSemiringAction.toAlgHom A B h) b
+  rw [AlgHom.id_apply, MulSemiringAction.toAlgHom_apply] at he
   rw [hw, mul_right_comm, ← he, mul_right_comm]
 
-@[simp] lemma smul_inertiaIdempotent (h : H) : h • (H.inertiaIdempotent A B) =
-    H.inertiaIdempotent A B := by
+@[simp]
+lemma smul_inertiaIdempotent (h : H) :
+    h • H.inertiaIdempotent A B = H.inertiaIdempotent A B := by
   have h₁ := (H.inertiaIdempotent_mul_smul A B h (H.inertiaIdempotent A B)).trans
     (H.isIdempotentElem_inertiaIdempotent A B).eq
   have h₂ : (h • H.inertiaIdempotent A B) * H.inertiaIdempotent A B =
@@ -266,49 +267,64 @@ lemma _root_.Ideal.mk_inertiaIdempotent_inertia_eq_one (Q : Ideal B) [Finite (Q.
     Ideal.Quotient.mk Q ((Q.inertia G).inertiaIdempotent A B) = 1 :=
   inertiaIdempotent_sub_one_mem_iff.mpr le_rfl
 
+open Classical in
+lemma _root_.Ideal.Quotient.mk_equalizerIdempotent (Q : Ideal B) [Q.IsPrime] (g : G) :
+    Ideal.Quotient.mk Q (equalizerIdempotent (AlgHom.id A B)
+      (MulSemiringAction.toAlgHom A B g)) = if g ∈ Q.inertia G then 1 else 0 := by
+  have h {u : B ⧸ Q} (hu : IsIdempotentElem u) : u = if u = 1 then 1 else 0 := by
+    grind [IsIdempotentElem.iff_eq_zero_or_one]
+  rw [h ((isIdempotentElem_equalizerIdempotent (AlgHom.id A B)
+    (MulSemiringAction.toAlgHom A B g)).map (Ideal.Quotient.mk Q))]
+  simp [mk_equalizerIdempotent_eq_one_iff, AlgHom.ext_iff,
+    Ideal.Quotient.mk_eq_mk_iff_sub_mem, Q.toAddSubgroup.sub_mem_comm_iff]
+
 omit [Finite H] in
+/-- Relative trace after multiplication by the inertia idempotent, viewed as a base-linear
+endomorphism. Its linearization is multiplication by `descentMultiplier`. -/
+noncomputable def descentTrace [Finite G] : B →ₗ[A] B := by
+  classical
+  letI := Fintype.ofFinite (G ⧸ H)
+  exact (∑ q : G ⧸ H, (MulSemiringAction.toAlgHom A B q.out).toLinearMap).comp
+    (LinearMap.mulLeft A (H.inertiaIdempotent A B))
+
+omit [Finite H] in
+/-- The multiplier representing the linearization of `descentTrace`. -/
 noncomputable def descentMultiplier [Finite G] : B := by
   classical
   letI := Fintype.ofFinite (G ⧸ H)
   exact ∑ q : G ⧸ H, equalizerIdempotent (AlgHom.id A B)
     (MulSemiringAction.toAlgHom A B q.out) * H.inertiaIdempotent A B
 
+/-- Linearizing the relative trace after multiplication by the inertia idempotent gives
+multiplication by the descent multiplier. -/
+@[simp]
+lemma linearize_descentTrace [Finite G] :
+    linearize B (H.descentTrace A B) = LinearMap.mulLeft B (H.descentMultiplier A B) := by
+  classical
+  apply LinearMap.ext_ring
+  simp [descentMultiplier, descentTrace]
+
 end Subgroup
 
 namespace Ideal
 
-open Classical in
-lemma Quotient.mk_equalizerIdempotent (Q : Ideal B) [Q.IsPrime] (g : G) :
-    Quotient.mk Q (equalizerIdempotent (AlgHom.id A B)
-      (MulSemiringAction.toAlgHom A B g)) = if g ∈ Q.inertia G then 1 else 0 := by
-  have h {u : B ⧸ Q} (hu : IsIdempotentElem u) : u = if u = 1 then 1 else 0 := by
-    grind [IsIdempotentElem.iff_eq_zero_or_one]
-  rw [h ((isIdempotentElem_equalizerIdempotent (AlgHom.id A B)
-    (MulSemiringAction.toAlgHom A B g)).map (Quotient.mk Q))]
-  simp [mk_equalizerIdempotent_eq_one_iff, AlgHom.ext_iff,
-    Quotient.mk_eq_mk_iff_sub_mem, Q.toAddSubgroup.sub_mem_comm_iff]
-
 private lemma descentMultiplier_mem_colon [Algebra.IsInvariant A B G]
-    (H : Subgroup G) [Finite G] (I : Ideal B)
-    (hI : ∀ g : G, g • I = I) : H.descentMultiplier A B ∈
-      ((I.comap (algebraMap A B)).map (algebraMap A B)).colon (I : Set B) := by
+    [Finite G] (I : Ideal B) (hI : ∀ g : G, g • I = I) :
+      H.descentMultiplier A B ∈ ((I.comap (algebraMap A B)).map (algebraMap A B)).colon I := by
   classical
   let := Fintype.ofFinite (G ⧸ H)
-  let J := (I.comap (algebraMap A B)).map (algebraMap A B)
-  let T : B →ₗ[A] B := (∑ q : G ⧸ H, (MulSemiringAction.toAlgHom A B q.out).toLinearMap).comp
-    (LinearMap.mulLeft A (H.inertiaIdempotent A B))
-  have hT : I.restrictScalars A ≤ (J.restrictScalars A).comap T := by
+  set J := (I.comap (algebraMap A B)).map (algebraMap A B)
+  have hT : I.restrictScalars A ≤ (J.restrictScalars A).comap (H.descentTrace A B) := by
     intro x hx
     let y : FixedPoints.addSubmonoid H B :=
       ⟨H.inertiaIdempotent A B * x, fun h ↦ H.smul_inertiaIdempotent_mul A B h x⟩
     have hy : (H.relativeTrace y : B) ∈ I := H.relativeTrace_mem I.toAddSubmonoid
-      (fun g x hx ↦ hI g ▸ Ideal.smul_mem_pointwise_smul g x I hx)
-      y (I.mul_mem_left _ hx)
+      (fun g x hx ↦ hI g ▸ Ideal.smul_mem_pointwise_smul g x I hx) y (I.mul_mem_left _ hx)
     obtain ⟨a, ha⟩ := Algebra.IsInvariant.isInvariant (A := A) _ (H.relativeTrace y).property
     have : algebraMap A B a ∈ J := Ideal.mem_map_of_mem _ (by simpa [ha] using hy)
-    simpa [T, Subgroup.relativeTrace_apply, y, ha] using this
-  simpa [Submodule.mem_colon, IsConcreteLE.le_iff, T, Subgroup.descentMultiplier,
-    Finset.sum_mul, mul_assoc] using le_comap_lineraize T I J hT
+    simpa [Subgroup.descentTrace, Subgroup.relativeTrace_apply, y, ha] using this
+  simpa [Submodule.mem_colon, IsConcreteLE.le_iff, Subgroup.linearize_descentTrace] using
+    le_comap_lineraize (H.descentTrace A B) I J hT
 
 lemma Quotient.mk_descentMultiplier_inertia (Q : Ideal B) [Q.IsPrime] [Finite G] :
     Quotient.mk Q ((Q.inertia G).descentMultiplier A B) = 1 := by
@@ -317,7 +333,6 @@ lemma Quotient.mk_descentMultiplier_inertia (Q : Ideal B) [Q.IsPrime] [Finite G]
     ← SetLike.mem_coe, ← QuotientGroup.preimage_mk_one] using
       (Q.mk_inertiaIdempotent_inertia_eq_one A)
 
-variable {A} in
 theorem map_comap_eq_of_isInvariant_of_unramified [Finite G] [Algebra.IsInvariant A B G]
     (I : Ideal B) (hI : ∀ g : G, g • I = I) :
     (I.comap (algebraMap A B)).map (algebraMap A B) = I := by
@@ -328,7 +343,7 @@ theorem map_comap_eq_of_isInvariant_of_unramified [Finite G] [Algebra.IsInvarian
   by_contra hJ
   obtain ⟨m, hm, hKm⟩ := Ideal.exists_le_maximal (J.colon (I : Set B)) hJ
   let : m.IsMaximal := hm
-  have := Quotient.eq_zero_iff_mem.mpr (hKm (descentMultiplier_mem_colon A B (m.inertia G) I hI))
+  have := Quotient.eq_zero_iff_mem.mpr (hKm (descentMultiplier_mem_colon (m.inertia G) A B I hI))
   rw [Quotient.mk_descentMultiplier_inertia A] at this
   exact one_ne_zero this
 
