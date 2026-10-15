@@ -134,16 +134,6 @@ theorem unifIntegrable_iff' :
 
 namespace UnifIntegrable
 
-protected theorem mk_iff :
-    UnifIntegrable f p μ ↔ Tendsto (fun ε ↦ ⨆ (i : ι) (s : Set α) (_ : MeasurableSet s)
-      (_ : μ s ≤ ε), eLpNorm (f i) p (μ.restrict s)) (𝓝 0) (𝓝 0) := by
-  rw [UnifIntegrable, iff_iff_eq]
-  congrm Tendsto (fun ε ↦ ⨆ i, ?_) _ _
-  refine le_antisymm (iSup₂_le fun s hsμ ↦ ?_) (iSup₂_le_iSup _ _)
-  obtain ⟨t, hst, ht, hμt⟩ := exists_measurable_superset μ s
-  grw [← le_iSup₂ t ht, ← le_iSup _ (hμt ▸ hsμ)]
-  exact eLpNorm_mono_measure _ (μ.restrict_mono_set hst)
-
 protected theorem add (hf : UnifIntegrable f p μ) (hg : UnifIntegrable g p μ) :
     UnifIntegrable (f + g) p μ := by
   rw [unifIntegrable_iff_tendsto]
