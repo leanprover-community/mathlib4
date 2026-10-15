@@ -47,7 +47,7 @@ noncomputable def comp (e₀₁ : Edge x₀ x₁) (e₁₂ : Edge x₁ x₂) :
   Truncated.Edge.comp e₀₁ e₁₂
 
 /-- If `e₀₁ : Edge x₀ x₁` and `e₁₂ : Edge x₁ x₂` are edges in a quasicategory,
-this is a structure exhibiting the fact that `e₀₁.edge e₁₂` is a composition
+this is a structure exhibiting the fact that `e₀₁.comp e₁₂` is a composition
 of `e₀₁` and `e₁₂`. -/
 @[no_expose]
 noncomputable def compStruct (e₀₁ : Edge x₀ x₁) (e₁₂ : Edge x₁ x₂) :
@@ -76,12 +76,12 @@ noncomputable def assoc'
     CompStruct e₀₁ e₁₃ e₀₃ :=
   Truncated.Edge.assoc' h₀₂ h₁₃ h
 
-/-- In quasicategory, two left homotopic edges are also right homotopic. -/
+/-- In a quasicategory, two left homotopic edges are also right homotopic. -/
 noncomputable def HomotopyL.homotopyR {e e' : Edge x₀ x₁} (h : HomotopyL e e') :
     HomotopyR e e' :=
   assoc' (.idComp e) (.compId e) h
 
-/-- In quasicategory, two right homotopic edges are also left homotopic. -/
+/-- In a quasicategory, two right homotopic edges are also left homotopic. -/
 noncomputable def HomotopyR.homotopyL {e e' : Edge x₀ x₁} (h : HomotopyR e e') :
     HomotopyL e e' :=
   assoc (.idComp e) (.compId e) h
