@@ -89,6 +89,9 @@ example : True := .intro
 /--
 info:
 [Stacks Tag A04Q](https://stacks.math.columbia.edu/tag/A04Q) corresponds to declaration `X.tagged`. (A comment)
+[Stacks Tag A04Q](https://stacks.math.columbia.edu/tag/A04Q) corresponds to declaration `X.taggedWithOwnDocstring`. (A comment)
+[Stacks Tag A04Q](https://stacks.math.columbia.edu/tag/A04Q) corresponds to declaration `X.versoTagged`. (A comment)
+[Stacks Tag A04Q](https://stacks.math.columbia.edu/tag/A04Q) corresponds to declaration `X.versoTaggedWithOwnDocstring`. (A comment)
 -/
 #guard_msgs in
 #stacks_tags
@@ -97,12 +100,30 @@ info:
 info:
 [Stacks Tag A04Q](https://stacks.math.columbia.edu/tag/A04Q) corresponds to declaration `X.tagged`. (A comment)
 True
+
+[Stacks Tag A04Q](https://stacks.math.columbia.edu/tag/A04Q) corresponds to declaration `X.taggedWithOwnDocstring`. (A comment)
+True
+
+[Stacks Tag A04Q](https://stacks.math.columbia.edu/tag/A04Q) corresponds to declaration `X.versoTagged`. (A comment)
+True
+
+[Stacks Tag A04Q](https://stacks.math.columbia.edu/tag/A04Q) corresponds to declaration `X.versoTaggedWithOwnDocstring`. (A comment)
+True
 -/
 #guard_msgs in
 #stacks_tags!
 
 /--
 info:
+[Kerodon Tag B15R](https://kerodon.net/tag/B15R) corresponds to declaration `X.taggedWithOwnDocstring`. (Also a comment)
+True
+
+[Kerodon Tag B15R](https://kerodon.net/tag/B15R) corresponds to declaration `X.versoTagged`. (Also a comment)
+True
+
+[Kerodon Tag B15R](https://kerodon.net/tag/B15R) corresponds to declaration `X.versoTaggedWithOwnDocstring`. (Also a comment)
+True
+
 [Kerodon Tag B15R](https://kerodon.net/tag/B15R) corresponds to declaration `X.tagged`. (Also a comment)
 True
 -/
