@@ -58,7 +58,7 @@ f.app _ y ---> g.app _ y
 ```
 The horizontal edges are obtained by `Edge.ofSimplicialObjectHomotopy`,
 the vertical edges are the images of `e` by `f` and `g`, and
-the diagonal edge is defined as `Edge.diagOfSimplicialObjectHomotopy h e`.
+the diagonal edge is defined as `Edge.diagonalOfSimplicialObjectHomotopy h e`.
 The commutativity of the lower left triangle is justified by
 `Edge.CompStruct.ofSimplicialObjectHomotopy`, and the commutativity
 of the upper right triangle is justified by
@@ -86,7 +86,7 @@ variable {x y : X _⦋0⦌} (e : Edge x y)
 this is the edge that is the diagonal of the "commutative square" involving
 `f.app _ x`, `g.app _ x`, `g.app _ y` and `f.app _ y`. -/
 @[no_expose]
-def diagOfSimplicialObjectHomotopy :
+def diagonalOfSimplicialObjectHomotopy :
     Edge (f.app _ x) (g.app _ y) :=
   Edge.mk (Y.δ 1 (h.h 1 e.edge)) (by
     rw [dsimp% congr_hom (h.h_succ_comp_δ_castSucc_succ (n := 0) 0) e.edge,
@@ -98,33 +98,40 @@ def diagOfSimplicialObjectHomotopy :
       dsimp% congr_hom (h.h_succ_comp_δ_castSucc_of_lt 0 0 (by simp)) e.edge,
       tgt_eq, dsimp% congr_hom (h.h_zero_comp_δ_zero 0) y])
 
-lemma diagOfSimplicialObjectHomotopy_edge :
-    (diagOfSimplicialObjectHomotopy h e).edge = Y.δ 1 (h.h 1 e.edge) := by rfl
+lemma diagonalOfSimplicialObjectHomotopy_edge :
+    (diagonalOfSimplicialObjectHomotopy h e).edge = Y.δ 1 (h.h 1 e.edge) := by rfl
 
-lemma diagOfSimplicialObjectHomotopy_edge' :
-    (diagOfSimplicialObjectHomotopy h e).edge = Y.δ 1 (h.h 0 e.edge) :=
+lemma diagonalOfSimplicialObjectHomotopy_edge' :
+    (diagonalOfSimplicialObjectHomotopy h e).edge = Y.δ 1 (h.h 0 e.edge) :=
   congr_hom (h.h_succ_comp_δ_castSucc_succ (n := 0) 0) e.edge
 
+@[deprecated (since := "2026-10-15")]
+alias diagOfSimplicialObjectHomotopy := diagonalOfSimplicialObjectHomotopy
+@[deprecated (since := "2026-10-15")]
+alias diagOfSimplicialObjectHomotopy_edge := diagonalOfSimplicialObjectHomotopy_edge
+@[deprecated (since := "2026-10-15")]
+alias diagOfSimplicialObjectHomotopy_edge' := diagonalOfSimplicialObjectHomotopy_edge'
+
 /-- The lower left triangle of the "commutative square" that
-`diagOfSimplicialObjectHomotopy h e` is part of,
+`diagonalOfSimplicialObjectHomotopy h e` is part of,
 when `h : SimplicialObject.Homotopy f g` and `e` is an edge. -/
 def CompStruct.ofSimplicialObjectHomotopy :
     Edge.CompStruct (e.map f) (.ofSimplicialObjectHomotopy h y)
-      (diagOfSimplicialObjectHomotopy h e) :=
+      (diagonalOfSimplicialObjectHomotopy h e) :=
   CompStruct.mk (h.h 1 e.edge) (by simp [← h.h_last_comp_δ_last 1])
     (by simpa using congr_hom (h.h_succ_comp_δ_castSucc_of_lt 0 0
-      (by simp)) e.edge) (by simp [diagOfSimplicialObjectHomotopy_edge])
+      (by simp)) e.edge) (by simp [diagonalOfSimplicialObjectHomotopy_edge])
 
 /-- The upper right triangle of the "commutative square" that
-`diagOfSimplicialObjectHomotopy h e` is part of,
+`diagonalOfSimplicialObjectHomotopy h e` is part of,
 when `h : SimplicialObject.Homotopy f g` and `e` is an edge. -/
 def CompStruct.ofSimplicialObjectHomotopy' :
     Edge.CompStruct (.ofSimplicialObjectHomotopy h x) (e.map g)
-      (diagOfSimplicialObjectHomotopy h e) :=
+      (diagonalOfSimplicialObjectHomotopy h e) :=
   CompStruct.mk (h.h 0 e.edge)
     (by simpa using congr_hom (h.h_castSucc_comp_δ_succ_of_lt 1 0 (by simp)) e.edge)
     (congr_hom (h.h_zero_comp_δ_zero 1) e.edge)
-    (by simp [diagOfSimplicialObjectHomotopy_edge'])
+    (by simp [diagonalOfSimplicialObjectHomotopy_edge'])
 
 end Edge
 
