@@ -47,8 +47,10 @@ def Ico (x y : X) : Set X :=
 theorem Icc_symm (x y : X) : Icc R x y = Icc R y x := by
   ext z
   constructor
-  all_goals (intro h; rcases h with ⟨m, n, hm , hn , hmn , hz⟩; use n, m, hn, hm)
-  all_goals (rw [convexCombPair_symm] at hz; rw [add_comm] at hmn; use hmn)
+  all_goals
+  · rintro ⟨m, n, hm , hn , hmn , hz⟩
+    rw [convexCombPair_symm] at hz
+    exact ⟨n, m, hn, hm, add_comm m n ▸ hmn, hz⟩
 
 /- (x,y) = (y,x) -/
 theorem Ioo_symm (x y : X) : Ioo R x y = Ioo R y x := by
@@ -71,8 +73,8 @@ section
 variable {R}
 
 theorem convexCombPair_mem_Icc {a b : R} (ha : 0 ≤ a) (hb : 0 ≤ b) (hab : a + b = 1) :
-    convexCombPair a b ha hb hab x y ∈ Icc R x y := by
-  use a, b, ha, hb, hab
+    convexCombPair a b ha hb hab x y ∈ Icc R x y :=
+  ⟨a, b, ha, hb, hab, rfl⟩
 
 theorem convexCombPair_mem_Ioo {a b : R} (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1) :
     convexCombPair a b ha.le hb.le hab x y ∈ Ioo R x y := by
@@ -197,8 +199,8 @@ namespace Prod
 variable {Y} [ConvexSpace R Y]
 
 theorem Icc_subset (x y : X × Y) : Icc R x y ⊆ Icc R x.1 y.1 ×ˢ Icc R x.2 y.2 := by
-  rintro z ⟨a, b, ha, hb, hab, hz⟩
-  exact ⟨⟨a, b, ha, hb, hab, by subst hz; simp⟩, a, b, ha, hb, hab, by subst hz; simp⟩
+  rintro z ⟨a, b, ha, hb, hab, rfl⟩
+  simp [convexCombPair_mem_Icc]
 
 theorem Ioo_subset (x y : X × Y) :
     Ioo R x y ⊆ Ioo R x.1 y.1 ×ˢ Ioo R x.2 y.2 := by
@@ -245,13 +247,11 @@ variable (R) {X} [Ring R] [PartialOrder R] [IsStrictOrderedRing R] [ConvexSpace 
 
 @[simp]
 theorem Ioo_same (x : X) : Ioo R x x = {x} :=
-  Set.ext fun z ↦
-    ⟨fun ⟨a, b, _, _, hab, hz⟩ ↦ by
-      simpa only [convexCombPair_same, Set.mem_singleton_iff, eq_comm] using hz,
-    fun h : z = x ↦ by
-      obtain ⟨a, ha₀, ha₁⟩ := DenselyOrdered.dense (0 : R) 1 zero_lt_one
-      refine ⟨a, 1 - a, ha₀, sub_pos_of_lt ha₁, add_sub_cancel .., ?_⟩
-      rw [convexCombPair_same, h]⟩
+  Set.ext <| fun _ ↦ by
+    refine ⟨by simp +contextual [Ioo], ?_⟩
+    obtain ⟨a, ha₀, ha₁⟩ := DenselyOrdered.dense (0 : R) 1 zero_lt_one
+    refine fun h ↦ ⟨a, 1 - a, ha₀, sub_pos_of_lt ha₁, add_sub_cancel .., ?_⟩
+    rw [convexCombPair_same, Set.mem_singleton_iff.mp h]
 
 end DenselyOrderedRing
 
