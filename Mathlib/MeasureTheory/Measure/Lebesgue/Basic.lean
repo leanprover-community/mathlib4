@@ -440,61 +440,41 @@ theorem map_linearMap_volume_pi_eq_smul_volume_pi {f : (ι → ℝ) →ₗ[ℝ] 
     rwa [A] at hf
 
 open scoped Pointwise in
-/-- One-dimensional **Brunn–Minkowski theorem** for compact sets. -/
-theorem volume_add_volume_le_of_isCompact {A B : Set ℝ} (hAn : A.Nonempty) (hAc : IsCompact A)
-    (hBn : B.Nonempty) (hBc : IsCompact B) : volume A + volume B ≤ volume (A + B) :=
+@[to_additive]
+private theorem _root_.PartialOrder.measure_add_measure_le_measure_mul_add_iSup {α : Type*}
+    [Mul α] [PartialOrder α] [MulLeftMono α] [MulRightMono α] [MeasurableSpace α]
+    (hIic : ∀ x : α, MeasurableSet (Iic x))
+    {μ : Measure α} (hl : ∀ a (s : Set α), μ s ≤ μ ((a * ·) '' s))
+    (hr : ∀ b (s : Set α), μ s ≤ μ ((· * b) '' s))
+    {A B : Set α} [IsDirectedOrder A] [(atTop : Filter A).IsCountablyGenerated]
+    [IsCodirectedOrder B] [(atBot : Filter B).IsCountablyGenerated]
+    (hA : A.Nonempty) (hB : B.Nonempty) : μ A + μ B ≤ μ (A * B) + ⨆ x ∈ A * B, μ {x} := by
+  rw [measure_eq_iSup_inter_Iic μ A, measure_eq_iSup_inter_Ici μ B]
+  refine ENNReal.biSup_add_biSup_le hA hB fun a ha b hb ↦ ?_
   calc
-    _ = volume (A + {-sSup A}) + volume (B + {-sInf B}) := by simp
-    _ = volume ((A + {-sSup A}) ∪ (B + {-sInf B})) +
-        volume ((A + {-sSup A}) ∩ (B + {-sInf B})) := by
-      rw [measure_union_add_inter _ (hBc.add isCompact_singleton).measurableSet]
-    _ ≤ volume ((A + {-sSup A}) ∪ (B + {-sInf B})) := by
-      suffices (A + {-sSup A}) ∩ (B + {-sInf B}) ⊆ {0} by
-        grw [this]
-        simp
-      refine fun x ⟨hA, hB⟩ ↦ le_antisymm ?_ ?_
-      · exact nonpos_of_add_le_left <| le_csSup hAc.bddAbove <| by simpa using hA
-      · exact nonneg_of_le_add_left <| csInf_le hBc.bddBelow <| by simpa using hB
-    _ ≤ volume ((A + {-sSup A}) + (B + {-sInf B})) := by
-      refine measure_mono <| Set.union_subset_iff.mpr ⟨?_, ?_⟩
-      · exact Set.subset_add_left _ (by simpa using hBc.sInf_mem hBn)
-      · exact Set.subset_add_right _ (by simpa using hAc.sSup_mem hAn)
-    _ = _ := by
-      rw [add_add_add_comm]
-      simp
+    _ ≤ μ ((· * b) '' (A ∩ Iic a)) + μ ((a * ·) '' (B ∩ Ici b)) := by
+      gcongr 1
+      · apply hr b
+      · apply hl a
+    _ ≤ μ (A * B ∩ Iic (a * b)) + μ ((A * B) \ Iio (a * b)) := by
+      gcongr
+      · rintro _ ⟨x, ⟨hx, hxa⟩, rfl⟩
+        exact ⟨mul_mem_mul hx hb, mul_le_mul_left hxa b⟩
+      · rintro _ ⟨y, ⟨hy, hyb⟩, rfl⟩
+        refine ⟨mul_mem_mul ha hy, (mul_le_mul_right hyb a).not_gt⟩
+    _ ≤ μ (A * B ∩ Iic (a * b)) + μ ((A * B) \ Iic (a * b)) + μ {a * b} := by
+      grw [add_assoc, ← measure_union_le _ {a * b}, ← Set.sdiff_sdiff_eq_sdiff_union ?_,
+        Set.Iic_sdiff_right]
+      simpa using Set.mul_mem_mul ha hb
+    _ ≤ _ := by
+      grw [measure_inter_add_sdiff _ (hIic _), le_biSup (μ {·}) (Set.mul_mem_mul ha hb)]
 
 open scoped Pointwise in
-/-- One-dimensional **Brunn–Minkowski theorem** for measurable sets. -/
-theorem volume_add_volume_le {A B : Set ℝ} (hAn : A.Nonempty) (hAm : MeasurableSet A)
-    (hBn : B.Nonempty) (hBm : MeasurableSet B) : volume A + volume B ≤ volume (A + B) := by
-  obtain ⟨a, ha⟩ := hAn
-  obtain ⟨b, hb⟩ := hBn
-  by_cases hA : volume A = ∞
-  · trans volume (A + {b})
-    · simp [hA]
-    · gcongr
-      simpa using hb
-  by_cases hB : volume B = ∞
-  · trans volume ({a} + B)
-    · simp [hB]
-    · gcongr
-      simpa using ha
-  calc
-    _ = (⨆ (K) (_ : K ⊆ A) (_ : IsCompact K), volume K) +
-        (⨆ (K) (_ : K ⊆ B) (_ : IsCompact K), volume K) := by
-      rw [hAm.measure_eq_iSup_isCompact_of_ne_top hA, hBm.measure_eq_iSup_isCompact_of_ne_top hB]
-    _ ≤ ⨆ (K) (_ : K ⊆ A) (_ : IsCompact K) (L) (_ : L ⊆ B) (_ : IsCompact L),
-        volume K + volume L := by
-      simp_rw [iSup_and']
-      refine ENNReal.biSup_add_biSup_le' ⟨∅, by simp⟩ ⟨∅, by simp⟩ fun K hK L hL ↦ ?_
-      aesop (add safe [le_iSup_of_le])
-    _ ≤ _ := by
-      refine iSup₂_le fun K hKA ↦ iSup₂_le fun hK L ↦ iSup₂_le fun hLB hL ↦ ?_
-      trans volume (K ∪ {a}) + volume (L ∪ {b})
-      · gcongr <;> simp
-      grw [volume_add_volume_le_of_isCompact (by simp) (hK.union isCompact_singleton)
-        (by simp) (hL.union isCompact_singleton), Set.union_subset hKA (by simpa using ha),
-        Set.union_subset hLB (by simpa using hb)]
+/-- One-dimensional **Brunn–Minkowski theorem**. -/
+theorem volume_add_volume_le {A B : Set ℝ} (hA : A.Nonempty) (hB : B.Nonempty) :
+    volume A + volume B ≤ volume (A + B) := by
+  grw [PartialOrder.measure_add_measure_le_measure_add_add_iSup (by simp) (by simp) (by simp) hA hB]
+  simp
 
 end Real
 
