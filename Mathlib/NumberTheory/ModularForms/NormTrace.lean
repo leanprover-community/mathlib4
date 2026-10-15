@@ -122,7 +122,7 @@ section restrictₗ -- do we want this for CuspForm etc? probably not so useful?
 
 variable (k) (R : Type*) [Semiring R] [SMul R ℂ]
   [Module R (ModularForm 𝒢 k)] [Module R (ModularForm ℋ k)]
-  [IsSMulApply R (ModularForm 𝒢 k) ℍ ℂ] [IsSMulApply R (ModularForm ℋ k) ℍ ℂ]
+  [IsSMulApply R (ModularForm 𝒢 k)] [IsSMulApply R (ModularForm ℋ k)]
 
 /-- Restriction bundled as a linear map. The typeclass assumptions will be satisfied for `R = ℝ`
 and any levels, or `R = ℂ` if `HasDetOne` is available. -/
@@ -275,8 +275,7 @@ lemma ModularForm.norm_eq_zero_iff [ℋ.HasDetPlusMinusOne] [ModularFormClass F 
   · contrapose! hn
     exact norm_ne_zero ℋ hn
   · ext τ
-    simpa [Finset.prod_eq_zero_iff, QuotientGroup.exists_mk]
-      using ⟨1, by simpa using congr_fun hf τ⟩
+    simpa [Finset.prod_eq_zero_iff, QuotientGroup.exists_mk] using ⟨1, by simpa using congr($hf τ)⟩
 
 section norm_trace_restrict
 

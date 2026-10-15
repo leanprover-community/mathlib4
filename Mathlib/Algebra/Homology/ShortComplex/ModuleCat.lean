@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.ShortComplex.ConcreteCategory
 public import Mathlib.Algebra.Category.ModuleCat.Colimits
+public import Mathlib.Algebra.Homology.ShortComplex.ConcreteCategory
 
 /-!
 # Homology and exactness of short complexes of modules
@@ -258,7 +258,7 @@ abbrev ModuleCat.shortComplexOfConj (eq0 : g ∘ₗ f = 0) :
   ModuleCat.shortComplexOfCompEqZero ((eN.symm.comp f).comp eM.toLinearMap)
     (eL.symm.comp (g.comp eN.toLinearMap)) (by
       ext x
-      simpa using LinearMap.congr_fun eq0 (eM x))
+      simpa using congr($eq0 (eM x)))
 
 private lemma exact_conj_of_exact (exact : Function.Exact f g) : Function.Exact
     ((eN.symm.comp f).comp eM.toLinearMap) (eL.symm.comp (g.comp eN.toLinearMap)) := by
