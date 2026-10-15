@@ -172,6 +172,15 @@ need not hold at exponent zero when the index types have different cardinalities
 theorem trace_mul_pow_comm [DecidableEq m] [DecidableEq n] [CommSemiring R]
     (A : Matrix m n R) (B : Matrix n m R) {k : ℕ} (hk : k ≠ 0) :
     trace ((A * B) ^ k) = trace ((B * A) ^ k) := by
+  have hpow (j : ℕ) : (B * A) ^ (j + 1) = B * (A * B) ^ j * A := by
+    induction j with
+    | zero => simp [Matrix.mul_assoc]
+    | succ j ih =>
+        calc
+          (B * A) ^ (j + 1 + 1) = (B * A) ^ (j + 1) * (B * A) := by rw [pow_succ]
+          _ = (B * (A * B) ^ j * A) * (B * A) := by rw [ih]
+          _ = B * ((A * B) ^ j * (A * B)) * A := by simp only [Matrix.mul_assoc]
+          _ = B * (A * B) ^ (j + 1) * A := by rw [pow_succ]
   cases k with
   | zero => exact (hk rfl).elim
   | succ k =>
@@ -179,7 +188,7 @@ theorem trace_mul_pow_comm [DecidableEq m] [DecidableEq n] [CommSemiring R]
         trace ((A * B) ^ (k + 1)) = trace ((A * B) ^ k * A * B) := by
           rw [pow_succ, ← Matrix.mul_assoc]
         _ = trace (B * (A * B) ^ k * A) := Matrix.trace_mul_cycle ((A * B) ^ k) A B
-        _ = trace ((B * A) ^ (k + 1)) := by rw [mul_pow_succ_mul]
+        _ = trace ((B * A) ^ (k + 1)) := by rw [hpow]
 
 /-- For square matrices, the trace identity also holds at exponent zero. -/
 theorem trace_mul_pow_comm_of_square [DecidableEq n] [CommSemiring R]
