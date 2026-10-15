@@ -17,16 +17,6 @@ kernel `μ.bind κ` is the same measure.
 
 * `ProbabilityTheory.Kernel.Invariant`: invariance of a given measure with respect to a kernel.
 
-## Main statements
-
-* `ProbabilityTheory.Kernel.Invariant.pow`: a measure invariant for `κ` is invariant for `κ ^ n`.
-* `ProbabilityTheory.Kernel.Invariant.ae_ae_pow`: if a property holds `μ`-almost everywhere for a
-  measure `μ` invariant for `κ`, then for `μ`-almost every `a` it holds `(κ ^ n) a`-almost
-  everywhere for all `n`.
-* `ProbabilityTheory.Kernel.Invariant.ae_apply_eq_zero_of_ae_absorbing`: if a measurable set of
-  finite measure is absorbing almost everywhere with respect to an invariant measure of a Markov
-  kernel, then so is its complement.
-
 -/
 
 @[expose] public section
@@ -77,8 +67,6 @@ theorem Invariant.ae_ae_pow (h : Invariant κ μ) {p : α → Prop} (hp : ∀ᵐ
   intro n
   rw [← (h.pow n).def] at hp
   exact Measure.ae_ae_of_ae_comp hp
-
-/-! ### Absorbing sets -/
 
 section Absorbing
 
