@@ -6,9 +6,10 @@ Authors: Jeremy Tan
 module
 
 public import Mathlib.Analysis.Complex.Basic
-public import Mathlib.Analysis.SpecificLimits.Normed
-public import Mathlib.Tactic.Peel
-public import Mathlib.Tactic.Positivity
+
+import Mathlib.Analysis.SpecificLimits.Normed
+import Mathlib.Tactic.Peel
+import Mathlib.Tactic.Positivity
 
 /-!
 # Abel's limit theorem
@@ -68,7 +69,7 @@ theorem nhdsWithin_lt_le_nhdsWithin_stolzSet {M : ℝ} (hM : 1 < M) :
   refine ⟨Set.Ioo 0 2, isOpen_Ioo, by simp, fun x hx ↦ ?_⟩
   push _ ∈ _ at hx
   simp only [Set.mem_ofPred_eq, stolzSet, ← ofReal_one, ← ofReal_sub, norm_real,
-    norm_of_nonneg hx.1.1.le, norm_of_nonneg <| (sub_pos.mpr hx.2).le]
+    norm_of_nonneg hx.1.1.le, norm_of_nonneg (sub_pos.mpr hx.2).le]
   exact ⟨hx.2, lt_mul_left (sub_pos.mpr hx.2) hM⟩
 
 -- An ugly technical lemma
@@ -98,7 +99,7 @@ private lemma stolzCone_subset_stolzSet_aux' (s : ℝ) :
 
 lemma stolzCone_subset_stolzSet_aux {s : ℝ} (hs : 0 < s) :
     ∃ M ε, 0 < M ∧ 0 < ε ∧ {z : ℂ | 1 - ε < z.re} ∩ stolzCone s ⊆ stolzSet M := by
-  peel stolzCone_subset_stolzSet_aux' s with M ε hM hε H
+  gconvert stolzCone_subset_stolzSet_aux' s with M ε hM hε H
   rintro z ⟨hzl, hzr⟩
   rw [Set.mem_ofPred_eq, sub_lt_comm, ← one_re, ← sub_re] at hzl
   rw [stolzCone, Set.mem_ofPred_eq, ← one_re, ← sub_re] at hzr
@@ -233,7 +234,7 @@ theorem tendsto_tsum_powerSeries_nhdsWithin_stolzSet
       _ = _ := by
         rw [← mul_rotate, mul_div_cancel_right₀ _ (by linarith only [zn]),
           div_mul_cancel₀ _ (by linarith only [hM])]
-  convert! add_lt_add S₁ S₂ using 1
+  convert add_lt_add S₁ S₂ using 1
   linarith only
 
 /-- **Abel's limit theorem**. Given a power series converging at 1, the corresponding function

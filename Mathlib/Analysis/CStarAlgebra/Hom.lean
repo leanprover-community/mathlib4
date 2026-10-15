@@ -32,7 +32,7 @@ lemma IsSelfAdjoint.map_spectrum_real {F 𝕜 A B : Type*} [RCLike 𝕜]
     {a : A} (ha : IsSelfAdjoint a) (φ : F) (hφ : Function.Injective φ)
     (hφ' : Continuous φ := by fun_prop) :
     spectrum ℝ (φ a) = spectrum ℝ a := by
-  have h_spec := AlgHom.spectrum_apply_subset ((φ : A →⋆ₐ[𝕜] B).restrictScalars ℝ) a
+  have h_spec := AlgHom.spectrum_apply_subset ((.ofClass φ : A →⋆ₐ[𝕜] B).restrictScalars ℝ) a
   refine Set.eq_of_subset_of_subset h_spec fun x hx ↦ ?_
   /- we prove the reverse inclusion by contradiction, so assume that `x ∈ spectrum ℝ a`, but
   `x ∉ spectrum ℝ (φ a)`. Then by Urysohn's lemma we can get a function for which `f x = 1`, but
@@ -59,7 +59,7 @@ lemma IsSelfAdjoint.map_quasispectrum_real {F A B : Type*}
     [FunLike F A B] [NonUnitalAlgHomClass F ℂ A B] [StarHomClass F A B]
     {a : A} (ha : IsSelfAdjoint a) (φ : F) (hφ : Function.Injective φ) :
     quasispectrum ℝ (φ a) = quasispectrum ℝ a := by
-  replace hφ : Function.Injective (φ : A →⋆ₙₐ[ℂ] B) := hφ
+  replace hφ : Function.Injective (.ofClass φ : A →⋆ₙₐ[ℂ] B) := hφ
   simpa [Unitization.starMap_inr, ← Unitization.quasispectrum_eq_spectrum_inr']
     using (ha.inr ℂ).map_spectrum_real _ (Unitization.starMap_injective hφ)
 
@@ -87,11 +87,11 @@ def NonUnitalStarAlgHom.toOrderEmbedding (φ : A →⋆ₙₐ[ℂ] B) (hφ : Fun
 /-- A non-unital star monomorphism between C⋆-algebras is an order embedding. -/
 protected lemma NonUnitalStarAlgHom.map_le_map_iff (f : F) (hf : Function.Injective f) {x y : A} :
     f x ≤ f y ↔ x ≤ y :=
-  (toOrderEmbedding (f : A →⋆ₙₐ[ℂ] B) hf).le_iff_le
+  (toOrderEmbedding (ofClass f) hf).le_iff_le
 
 protected lemma NonUnitalStarAlgHom.map_lt_map_iff (f : F) (hf : Function.Injective f) {x y : A} :
     f x < f y ↔ x < y :=
-  (toOrderEmbedding (f : A →⋆ₙₐ[ℂ] B) hf).lt_iff_lt
+  (toOrderEmbedding (ofClass f) hf).lt_iff_lt
 
 end OrderEmbedding
 namespace NonUnitalStarAlgHom
@@ -106,7 +106,7 @@ lemma norm_map (φ : F) (hφ : Function.Injective φ) (a : A) : ‖φ a‖ = ‖
   that `φ` is a unital star algebra monomorphism and that `A` and `B` are unital C⋆-algebras. -/
   suffices ∀ {ψ : Unitization ℂ A →⋆ₐ[ℂ] Unitization ℂ B} (_ : Function.Injective ψ)
       (a : Unitization ℂ A), ‖ψ a‖ = ‖a‖ by
-    simpa [norm_inr] using this (starMap_injective (φ := (φ : A →⋆ₙₐ[ℂ] B)) hφ) a
+    simpa [norm_inr] using this (starMap_injective (φ := ofClass φ) hφ) a
   intro ψ hψ a
   -- to show `‖ψ a‖ = ‖a‖`, by the C⋆-property it suffices to show `‖ψ (star a * a)‖ = ‖star a * a‖`
   rw [← sq_eq_sq₀ (by positivity) (by positivity)]
@@ -117,7 +117,7 @@ lemma norm_map (φ : F) (hφ : Function.Injective φ) (a : A) : ‖φ a‖ = ‖
   calc ‖ψ (star a * a)‖ = (spectralRadius ℝ (ψ (star a * a))).toReal :=
       ha.map ψ |>.toReal_spectralRadius_eq_norm.symm
     _ = (spectralRadius ℝ (star a * a)).toReal := by
-      simp only [spectralRadius, ha.map_spectrum_real ψ hψ]
+      simp only [spectralRadius_eq_of_unital, ha.map_spectrum_real ψ hψ]
     _ = ‖star a * a‖ := ha.toReal_spectralRadius_eq_norm
 
 /-- A non-unital star algebra monomorphism of complex C⋆-algebras is isometric. -/

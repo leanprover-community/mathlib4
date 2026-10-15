@@ -5,9 +5,10 @@ Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Analytic.Constructions
 public import Mathlib.Analysis.Calculus.FDeriv.Analytic
-public import Mathlib.Analysis.Calculus.FDeriv.Bilinear
+
+import Mathlib.Analysis.Analytic.Constructions
+import Mathlib.Analysis.Calculus.FDeriv.Bilinear
 
 /-!
 # Multiplicative operations on derivatives
@@ -24,8 +25,9 @@ This file contains the usual formulas (and existence assertions) for the derivat
 
 public section
 
-open scoped Ring
-open Asymptotics ContinuousLinearMap Topology
+open Asymptotics ContinuousLinearMap
+
+open scoped Ring Topology
 
 section
 

@@ -29,10 +29,9 @@ Uniform limit, uniform convergence, tends uniformly to
 
 public section
 
+open Filter SetRel Set Uniform
 
-noncomputable section
-
-open Topology Uniformity Filter SetRel Set Uniform
+open scoped Topology Uniformity
 
 variable {α β ι : Type*} [TopologicalSpace α] [UniformSpace β]
 variable {F : ι → α → β} {f : α → β} {s : Set α} {x : α} {p : Filter ι} {g : ι → α}

@@ -5,9 +5,7 @@ Authors: Sébastien Gouëzel, Patrick Massot, Michael Rothgang
 -/
 module
 
-public import Mathlib.Geometry.Manifold.VectorBundle.Basic
 public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
-public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 
 /-!
 # Differentiability of functions in vector bundles
@@ -109,7 +107,7 @@ theorem mdifferentiable_zeroSection : MDiff (zeroSection F E) := by
   apply (mdifferentiableAt_const (c := 0)).congr_of_eventuallyEq
   filter_upwards [(trivializationAt F E x).open_baseSet.mem_nhds
     (mem_baseSet_trivializationAt F E x)] with y hy
-    using congr_arg Prod.snd <| (trivializationAt F E x).zeroSection 𝕜 hy
+    using congr($((trivializationAt F E x).zeroSection 𝕜 hy).snd)
 
 theorem mdifferentiableOn_zeroSection {t : Set B} : MDiff[t] (zeroSection F E) :=
   (mdifferentiable_zeroSection _ _).mdifferentiableOn
@@ -373,11 +371,12 @@ lemma mdifferentiableWithinAt_add_section
   set e := trivializationAt F E x₀
   refine (hs.add ht).congr_of_eventuallyEq ?_ ?_
   · apply eventually_of_mem (U := e.baseSet)
-    · exact mem_nhdsWithin_of_mem_nhds <|
+    · exact mem_nhdsWithin_of_mem_nhds
         (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F E x₀)
     · exact fun x hx ↦ (e.linear 𝕜 hx).1 ..
   · exact (e.linear 𝕜 (FiberBundle.mem_baseSet_trivializationAt' x₀)).1 ..
 
+@[to_fun mdifferentiableAt_fun_add_section]
 lemma mdifferentiableAt_add_section
     (hs : MDiffAt (T% s) x₀) (ht : MDiffAt (T% t) x₀) :
     MDiffAt (T% (s + t)) x₀ := by
@@ -398,7 +397,7 @@ lemma mdifferentiableWithinAt_neg_section
   set e := trivializationAt F E x₀
   refine hs.neg.congr_of_eventuallyEq ?_ ?_
   · apply eventually_of_mem (U := e.baseSet)
-    · exact mem_nhdsWithin_of_mem_nhds <|
+    · exact mem_nhdsWithin_of_mem_nhds
         (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F E x₀)
     · exact fun x hx ↦ (e.linear 𝕜 hx).map_neg ..
   · exact (e.linear 𝕜 (FiberBundle.mem_baseSet_trivializationAt' x₀)).map_neg ..
@@ -441,11 +440,12 @@ lemma MDifferentiableWithinAt.smul_section
   set e := trivializationAt F E x₀
   refine (hf.smul hs).congr_of_eventuallyEq ?_ ?_
   · apply eventually_of_mem (U := e.baseSet)
-    · exact mem_nhdsWithin_of_mem_nhds <|
+    · exact mem_nhdsWithin_of_mem_nhds
         (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F E x₀)
     · exact fun x hx ↦ (e.linear 𝕜 hx).2 ..
   · apply (e.linear 𝕜 (FiberBundle.mem_baseSet_trivializationAt' x₀)).2
 
+@[to_fun]
 lemma MDifferentiableAt.smul_section
     (hf : MDiffAt f x₀) (hs : MDiffAt (T% s) x₀) : MDiffAt (T% (f • s)) x₀ := by
   rw [← mdifferentiableWithinAt_univ] at hs ⊢
@@ -746,11 +746,11 @@ lemma _root_.VectorBundle.injective_eval_mdifferentiableAt_sec [∀ x, Module �
   simpa using congr($h (extend F σ₀) (mdifferentiableAt_extend ..))
 
 variable (V) in
-lemma _root_.VectorBundle.injective_eval_contMDiffAt_sec {n : WithTop ℕ∞} [∀ x, Module 𝕜 (V x)]
+lemma _root_.VectorBundle.injective_eval_contMDiffAt_sec [∀ x, Module 𝕜 (V x)]
     (W : Type*) [AddCommGroup W] [Module 𝕜 W] [TopologicalSpace W] (x : M) :
     Function.Injective
       (fun A : V x →L[𝕜] W ↦
-        fun (Z : Π x, V x) (_ : CMDiffAt n (T% Z) x) ↦ A (Z x)) := by
+        fun (Z : Π x, V x) (_ : CMDiffAt k (T% Z) x) ↦ A (Z x)) := by
   intro X X' h
   ext σ₀
   simpa using congr($h (extend F σ₀) (contMDiffAt_extend ..))

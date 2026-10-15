@@ -5,8 +5,8 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 module
 
-public import Mathlib.Order.Hom.Basic
 public import Mathlib.Algebra.Group.Units.Defs
+public import Mathlib.Order.Hom.Basic
 
 /-!
 # Units in ordered monoids

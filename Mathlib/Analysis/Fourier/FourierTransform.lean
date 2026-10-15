@@ -5,14 +5,13 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.Algebra.Group.AddChar
 public import Mathlib.Analysis.Complex.Circle
 public import Mathlib.Analysis.Fourier.Notation
-public import Mathlib.MeasureTheory.Group.Integral
-public import Mathlib.MeasureTheory.Integral.Prod
 public import Mathlib.MeasureTheory.Integral.Bochner.Set
 public import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
-public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
+
+import Mathlib.MeasureTheory.Group.Integral
+import Mathlib.MeasureTheory.Integral.Prod
 
 /-!
 # The Fourier transform
@@ -206,7 +205,7 @@ theorem integral_fourierIntegral_swap
     apply hM.comp_aestronglyMeasurable A' -- `exact` works, but `apply` is 10x faster!
   · filter_upwards with ⟨ξ, x⟩
     simp only [Function.uncurry_apply_pair, norm_mul, norm_norm, ge_iff_le, ← mul_assoc]
-    convert! M.le_opNorm₂ (g ξ) (e (-L x ξ) • f x) using 2
+    convert M.le_opNorm₂ (g ξ) (e (-L x ξ) • f x) using 2
     simp
 
 variable [CompleteSpace E] [CompleteSpace F]
@@ -438,6 +437,10 @@ lemma fourier_eq (f : V → E) (w : V) :
 lemma fourier_eq' (f : V → E) (w : V) :
     𝓕 f w = ∫ v, Complex.exp ((↑(-2 * π * ⟪v, w⟫) * Complex.I)) • f v := by
   simp_rw [fourier_eq, Circle.smul_def, Real.fourierChar_apply, mul_neg, neg_mul]
+
+theorem norm_fourier_le_integral_norm (f : V → E) (w : V) :
+    ‖𝓕 f w‖ ≤ ∫ v, ‖f v‖ :=
+  VectorFourier.norm_fourierIntegral_le_integral_norm 𝐞 _ (innerₗ V) f w
 
 theorem fourier_congr_ae {f₁ f₂ : V → E} (hf : f₁ =ᵐ[volume] f₂) (x : V) : 𝓕 f₁ x = 𝓕 f₂ x := by
   apply integral_congr_ae
