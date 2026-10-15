@@ -459,8 +459,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation) The isomorphism between the subscheme and the glued scheme. -/
 noncomputable
 def subschemeIso : I.subscheme ≅ I.glueData.glued :=
-  letI F := I.glueData.glued.ofRestrict
-    (f := TopCat.ofHom (ContinuousMapClass.ofClass I.gluedHomeo.symm))
+  letI F := I.glueData.glued.ofRestrict (f := TopCat.ofHom (.ofClass I.gluedHomeo.symm))
     I.gluedHomeo.symm.isOpenEmbedding
   have : Epi F.base := ConcreteCategory.epi_of_surjective _ I.gluedHomeo.symm.surjective
   letI := IsOpenImmersion.isIso F
