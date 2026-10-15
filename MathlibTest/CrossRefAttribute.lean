@@ -10,6 +10,19 @@ namespace X
 @[stacks A04Q "A comment", kerodon B15R "Also a comment"]
 theorem tagged : True := .intro
 
+set_option doc.verso true in
+@[stacks A04Q "A comment", kerodon B15R "Also a comment"]
+theorem versoTagged : True := .intro
+
+/-- This docstring should appear before any Stacks or Kerodon references. -/
+@[stacks A04Q "A comment", kerodon B15R "Also a comment"]
+theorem taggedWithOwnDocstring : True := .intro
+
+set_option doc.verso true in
+/-- This docstring should appear before any Stacks or Kerodon references. -/
+@[stacks A04Q "A comment", kerodon B15R "Also a comment"]
+theorem versoTaggedWithOwnDocstring : True := .intro
+
 end X
 
 /--
@@ -20,6 +33,33 @@ info: some ([Stacks Tag A04Q](https://stacks.math.columbia.edu/tag/A04Q) (A comm
 #guard_msgs in
 run_cmd
   Lean.logInfo m!"{← Lean.findDocString? (← Lean.getEnv) `X.tagged}"
+
+/--
+info: some ([Stacks Tag A04Q](https://stacks.math.columbia.edu/tag/A04Q) \(A comment\)
+
+[Kerodon Tag B15R](https://kerodon.net/tag/B15R) \(Also a comment\))
+-/
+#guard_msgs in
+run_cmd
+  Lean.logInfo m!"{← Lean.findDocString? (← Lean.getEnv) `X.versoTagged}"
+
+-- Known issue: due to async elaboration, the stacks / kerodon tags get overwritten by
+-- the declaration's own docstring.
+/--
+info: some (This docstring should appear before any Stacks or Kerodon references. )
+-/
+#guard_msgs in
+run_cmd
+  Lean.logInfo m!"{← Lean.findDocString? (← Lean.getEnv) `X.taggedWithOwnDocstring}"
+
+-- Known issue: due to async elaboration, the stacks / kerodon tags get overwritten by
+-- the declaration's own docstring.
+/--
+info: some (This docstring should appear before any Stacks or Kerodon references. )
+-/
+#guard_msgs in
+run_cmd
+  Lean.logInfo m!"{← Lean.findDocString? (← Lean.getEnv) `X.versoTaggedWithOwnDocstring}"
 
 #guard_msgs in
 @[stacks 0BR2, kerodon 0X12]

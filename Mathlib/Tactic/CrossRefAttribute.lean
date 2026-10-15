@@ -143,12 +143,26 @@ def addTagEntry {m : Type → Type} [MonadEnv m]
     { declName := declName, database := db, tag := tag, comment := comment })
 
 /-- Append a cross-reference link to the docstring of `decl` and record it in `tagExt`.
-This is the database-agnostic core of every cross-reference attribute's `add` handler. -/
+This is the database-agnostic core of every cross-reference attribute's `add` handler.
+
+TODO: due to the docstring extension being `.async .asyncEnv`, this can only add new docstrings
+and not replace them. We do not know a good alternative.
+See Zulip: https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Cross-reference.20attributes.20don.27t.20change.20the.20docstring/with/631664323
+-/
 def addCrossRefDoc (db : Database) (decl : Name) (idStr comment : String) : CoreM Unit := do
   let oldDoc := (← findDocString? (← getEnv) decl).getD ""
   let commentInDoc := if comment.isEmpty then "" else s!" ({comment})"
   let link := s!"[{db.label} {idStr}]({db.url idStr}){commentInDoc}"
-  addDocStringCore decl <| "\n\n".intercalate ([oldDoc, link].filter (· != ""))
+  let newDoc := "\n\n".intercalate ([oldDoc, link].filter (· != ""))
+  if doc.verso.get (← getOptions) then Meta.MetaM.run' <| Term.TermElabM.run' <| do
+    -- Verso docstrings expect to be elaborated in the context of an existing declaration.
+    -- Since these attributes are elaborated async, the declaration won't be in the environment yet,
+    -- and so in that case we instead elaborate in the context of the current function.
+    let decl' := if (← getEnv).contains decl then decl else decl_name%
+    let { toVersoDocString, deferredChecks } ← versoDocStringOfText decl' (mkNullNode #[]) newDoc
+    addVersoDocStringCore decl toVersoDocString deferredChecks
+  else
+    addDocStringCore decl newDoc
   addTagEntry decl db idStr comment
 
 open Parser
