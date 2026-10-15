@@ -32,13 +32,16 @@ def Icc (x y : X) : Set X :=
   { z : X | ∃ (a b : R) (ha : 0 ≤ a) (hb : 0 ≤ b) (hab : a + b = 1),
     convexCombPair a b ha hb hab x y = z }
 
-/-- Open segments in a convex space. Note that `Ioo R x x = {x}` instead of being `∅` when
-the base semiring has some element between `0` and `1`. -/
+/-- Open segments in a convex space. Denoted as `Ioo R x y` within the `Convex` namespace.
+Note that `Ioo R x x = {x}` instead of being `∅` when the base semiring has some element between
+`0` and `1`. -/
 def Ioo (x y : X) : Set X :=
   { z : X | ∃ (a b : R) (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1),
     convexCombPair a b ha.le hb.le hab x y = z }
 
-/-- Left-open segments in a convex space. Denoted as `Ico R x y` within the `Convex` namespace. -/
+/-- Left-open segments in a convex space. Denoted as `Ico R x y` within the `Convex` namespace.
+Note that `Ioo R x x = {x}` instead of being `∅` when the base semiring has some element between
+`0` and `1`. -/
 def Ico (x y : X) : Set X :=
   { z : X | ∃ (a b : R) (ha : 0 < a) (hb : 0 ≤ b) (hab : a + b = 1),
     convexCombPair a b ha.le hb hab x y = z }
@@ -132,6 +135,10 @@ theorem Icc_same (x : X) : Icc R x x = {x} :=
   Set.ext <| fun z ↦ ⟨by simp +contextual [Icc], by simp +contextual⟩
 
 @[simp]
+theorem Ioo_same_subset_singleton (x : X) : Ioo R x x ⊆ {x} :=
+  fun _ ⟨_, _, _, _, _, h⟩ => h ▸ convexCombPair_same ..
+
+@[simp]
 theorem Ico_same (x : X) : Ico R x x = {x} := by
   apply Set.Subset.antisymm
   · rw [← Icc_same R x]; exact Ico_subset_Icc R x x
@@ -158,10 +165,6 @@ theorem Ico_insert (x y : X) : insert y (Ico R x y) = Icc R x y := by
   refine ha.eq_or_lt.imp ?_ (fun hal ↦ convexCombPair_mem_Ico hal hb hab)
   rintro rfl
   simp [zero_add b ▸ hab]
-
-@[simp]
-theorem Ioo_insert (x y : X) : insert x (insert y (Ioo R x y)) = Icc R x y := by
-  rw [Ioo_symm, Ioo_insert_left, Ico_insert, Icc_symm]
 
 namespace IsAffineMap
 
@@ -244,7 +247,7 @@ end Prod
 
 end Semiring
 
-section DenselyOrderedRing
+section DenselyOrdered
 
 variable (R) {X} [Ring R] [PartialOrder R] [IsStrictOrderedRing R] [ConvexSpace R X]
   [DenselyOrdered R]
@@ -253,10 +256,10 @@ variable (R) {X} [Ring R] [PartialOrder R] [IsStrictOrderedRing R] [ConvexSpace 
 theorem Ioo_same (x : X) : Ioo R x x = {x} :=
   Set.ext <| fun _ ↦ by
     refine ⟨by simp +contextual [Ioo], ?_⟩
-    obtain ⟨a, ha₀, ha₁⟩ := DenselyOrdered.dense (0 : R) 1 zero_lt_one
+    obtain ⟨a, ha₀, ha₁⟩ := exists_between (α := R) zero_lt_one
     refine fun h ↦ ⟨a, 1 - a, ha₀, sub_pos_of_lt ha₁, add_sub_cancel .., ?_⟩
     rw [convexCombPair_same, Set.mem_singleton_iff.mp h]
 
-end DenselyOrderedRing
+end DenselyOrdered
 
 end Convexity
