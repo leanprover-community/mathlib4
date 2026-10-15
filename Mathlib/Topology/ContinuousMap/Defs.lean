@@ -60,11 +60,11 @@ variable {F X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [FunLike F X 
 variable [ContinuousMapClass F X Y]
 
 /-- Coerce a bundled morphism with a `ContinuousMapClass` instance to a `ContinuousMap`. -/
-@[coe, reducible] def ContinuousMapClass.ofClass (f : F) : C(X, Y) := ⟨f, map_continuous f⟩
+@[coe, reducible] def ContinuousMap.ofClass (f : F) : C(X, Y) := ⟨f, map_continuous f⟩
 
-@[deprecated (since := "2026-10-14")] alias toContinuousMap := ContinuousMapClass.ofClass
+@[deprecated (since := "2026-10-14")] alias toContinuousMap := ContinuousMap.ofClass
 
-instance : CoeTC F C(X, Y) := ⟨ContinuousMapClass.ofClass⟩
+instance : CoeTC F C(X, Y) := ⟨ContinuousMap.ofClass⟩
 
 end ContinuousMapClass
 
@@ -99,7 +99,7 @@ protected theorem coe_ofClass {F : Type*} [FunLike F X Y] [ContinuousMapClass F 
     ⇑(f : C(X, Y)) = f :=
   rfl
 
-@[deprecated (since := "2026-10-15")] alias coe_coe := ContinuousMap.coe_ofClass
+@[deprecated (since := "2026-10-15")] protected alias coe_coe := ContinuousMap.coe_ofClass
 
 protected theorem coe_apply {F : Type*} [FunLike F X Y] [ContinuousMapClass F X Y] (f : F) (x : X) :
     (f : C(X, Y)) x = f x :=
@@ -109,12 +109,13 @@ protected theorem coe_apply {F : Type*} [FunLike F X Y] [ContinuousMapClass F X 
 
 The unprimed version `ContinuousMap.coe_injective`
 is used for the coercion from `C(X, Y)` to `X → Y`. -/
-protected theorem _root_.ContinuousMapClass.injective_ofClass
+protected theorem injective_ofClass
     {F : Type*} [FunLike F X Y] [ContinuousMapClass F X Y] :
-    Injective (ContinuousMapClass.ofClass : F → C(X, Y)) :=
+    Injective (ContinuousMap.ofClass : F → C(X, Y)) :=
   .of_comp (f := DFunLike.coe) DFunLike.coe_injective
 
-@[deprecated (since := "2026-10-15")] alias coe_injective' := ContinuousMapClass.injective_ofClass
+@[deprecated (since := "2026-10-15")]
+protected alias coe_injective' := ContinuousMap.injective_ofClass
 
 @[ext]
 theorem ext {f g : C(X, Y)} (h : ∀ a, f a = g a) : f = g :=

@@ -130,7 +130,7 @@ lemma toContinuousAffineMap_toAffineMap (e : P₁ ≃ᴬ[k] P₂) :
   rfl
 
 lemma toContinuousAffineMap_toContinuousMap (e : P₁ ≃ᴬ[k] P₂) :
-    e.toContinuousAffineMap.toContinuousMap = ContinuousMapClass.ofClass e.toHomeomorph :=
+    e.toContinuousAffineMap.toContinuousMap = ContinuousMap.ofClass e.toHomeomorph :=
   rfl
 
 end Basic
