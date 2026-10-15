@@ -5,10 +5,10 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos Fernández
 -/
 module
 
+public import Mathlib.Data.ENat.Lattice
 public import Mathlib.RingTheory.MvPowerSeries.Evaluation
 public import Mathlib.RingTheory.MvPowerSeries.LinearTopology
 public import Mathlib.RingTheory.Nilpotent.Basic
-public import Mathlib.Data.ENat.Lattice
 
 /-! # Substitutions in multivariate power series
 
@@ -491,7 +491,7 @@ theorem le_weightedOrder_subst (ha : HasSubst a) (f : MvPowerSeries σ R) :
   by_cases hfx : f.coeff x = 0
   · simp [hfx]
   rw [coeff_eq_zero_of_lt_weightedOrder w, smul_zero]
-  refine hd.trans_le (((biInf_le _ hfx).trans ?_).trans (le_weightedOrder_prod ..))
+  refine hd.trans_le (((iInf₂_le x hfx).trans ?_).trans (le_weightedOrder_prod ..))
   simp only [Finsupp.weight_apply, Finsupp.sum, Function.comp_apply]
   exact Finset.sum_le_sum fun i hi ↦ .trans (by simp) (le_weightedOrder_pow ..)
 

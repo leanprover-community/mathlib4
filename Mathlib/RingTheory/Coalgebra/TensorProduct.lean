@@ -8,8 +8,8 @@ module
 public import Mathlib.LinearAlgebra.TensorProduct.Tower
 public import Mathlib.RingTheory.Coalgebra.Equiv
 
-import Mathlib.RingTheory.Coalgebra.CoassocSimps
 import Mathlib.Algebra.Algebra.Bilinear
+import Mathlib.RingTheory.Coalgebra.CoassocSimps
 
 /-!
 # Tensor products of coalgebras

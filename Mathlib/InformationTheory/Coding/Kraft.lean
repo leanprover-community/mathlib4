@@ -5,9 +5,9 @@ Authors: Elazar Gershuni
 -/
 module
 
-public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 public import Mathlib.InformationTheory.Coding.PrefixFree
 public import Mathlib.Topology.Algebra.InfiniteSum.Defs
+public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 
 import Mathlib.InformationTheory.Coding.KraftMcMillan
 import Mathlib.Topology.Algebra.InfiniteSum.Real

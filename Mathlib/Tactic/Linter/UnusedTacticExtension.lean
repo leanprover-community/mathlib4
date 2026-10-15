@@ -55,9 +55,6 @@ public initialize allowedRef : IO.Ref (Std.HashSet SyntaxNodeKind) ←
   IO.mkRef <| .ofArray #[
     `Mathlib.Tactic.Says.says,
     `Batteries.Tactic.«tacticOn_goal_=>_»,
-    `by,
-    `null,
-    `«]»,
     ``Lean.Parser.Tactic.show,
     -- the following `SyntaxNodeKind`s play a role in silencing `test`s
     `Mathlib.Tactic.successIfFailWithMsg,
