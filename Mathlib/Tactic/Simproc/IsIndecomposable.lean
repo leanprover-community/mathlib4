@@ -5,11 +5,11 @@ Authors: Rao Xiaojia
 -/
 module
 
-public import Batteries.Data.Nat.Basic
 public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.Tactic.Matrix.OfLists
 public import Mathlib.Tactic.Matrix.View
 
+import Batteries.Data.Nat.Basic
 import Mathlib.Util.Qq
 
 /-!
@@ -51,10 +51,10 @@ the literal by position costs the kernel a walk per entry.
 The Boolean adjacency matrix of `M` has entry `(i, j)` true when `M i j ≠ 0`,
 currently evaluated by the kernel; for the functional representation this is the bottleneck.
 
-Two future optimisations are possible. Keeping one form of the adjacency matrix per view would let
-the search evaluate a function's rows only when it reaches them. Compiled evaluation of the
-function is faster, but in a `module` file the compiled code may only call definitions available
-at compile time, a set that depends on the importing file's whole import graph.
+Two future optimisations are possible. Reading a function's rows on demand would let the search
+evaluate only the rows it reaches. Compiled evaluation of the function is faster, but in a
+`module` file the compiled code may only call definitions available at compile time, a set that
+depends on the importing file's whole import graph.
 -/
 
 @[expose] public section
@@ -167,8 +167,7 @@ theorem testBit_packRows {n : ℕ} (rows : List (List R)) (i : ℕ) {j : ℕ} (h
 theorem packedAdj_packRows_iff_of_eq {n : ℕ} {M : Matrix (Fin n) (Fin n) R}
     {rows : List (List R)} (hM : M = ofLists n n rows) (i j : Fin n) :
     packedAdj n (packRows n rows) i j ↔ M i j ≠ 0 := by
-  subst hM
-  simp [packedAdj, testBit_packRows]
+  simp [hM, packedAdj, testBit_packRows]
 
 /-- The Boolean adjacency matrix of the function `f`, with an edge from `i` to `j` when
 `f i j ≠ 0`. -/
@@ -259,14 +258,6 @@ def evalAdjMatrix? {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (dα : Q(Dec
       let some row := eval q(Nat.ofBits (adjOf $f $iQ)) | failure
       return Array.ofFn (n := n) (row.testBit ·)
 
-/-- The Boolean adjacency matrix of `M` packed by `packRows`, with the proof that it is that of
-`M`. -/
-def certifyPackedAdj {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (dα : Q(DecidableEq $α))
-    (n : Nat) {M : Q(Matrix (Fin $n) (Fin $n) $α)} (lit : Q(List (List $α))) :
-    (bits : Q(Nat)) × Q(∀ i j, packedAdj $n $bits i j ↔ $M i j ≠ 0) :=
-  let pf := (MatrixView.literal (M := M) lit).proof zα
-  ⟨q(packRows $n $lit), q(packedAdj_packRows_iff_of_eq $pf)⟩
-
 /-- Prove `M.IsIndecomposable` from the spanning out-tree `outTree` from vertex `0` and in-tree
 `inTree` to it in the graph of the Boolean adjacency matrix of `M`. -/
 def certifyIsIndecomposable {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (dα : Q(DecidableEq $α))
@@ -276,13 +267,9 @@ def certifyIsIndecomposable {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (d�
   let outTreeQ ← mkEdgeListLitQ n outTree
   let inTreeQ ← mkEdgeListLitQ n inTree
   let ⟨adj, hadj⟩ : (adj : Q(Fin $n → Fin $n → Bool)) × Q(∀ i j, $adj i j ↔ $M i j ≠ 0) :=
-    match view with
-    | .literal lit =>
-      let ⟨bits, hadj⟩ := certifyPackedAdj zα dα n (M := M) lit
-      ⟨q(packedAdj $n $bits), hadj⟩
-    | .functional f =>
-      let pf := (MatrixView.functional (M := M) f).proof zα
-      ⟨q(adjOf $f), q(adjOf_iff_of_eq $pf)⟩
+    match view, view.proof zα with
+    | .literal lit, pf => ⟨q(packedAdj $n (packRows $n $lit)), q(packedAdj_packRows_iff_of_eq $pf)⟩
+    | .functional f, pf => ⟨q(adjOf $f), q(adjOf_iff_of_eq $pf)⟩
   let hout ← mkDecideProofQ q(SpansFrom $adj $outTreeQ $root)
   let hin ← mkDecideProofQ q(SpansFrom (Function.swap $adj) $inTreeQ $root)
   return q(isIndecomposable_of_spansFrom $hadj $hout $hin)
@@ -302,13 +289,12 @@ def certifyNotIsIndecomposable {u : Level} {α : Q(Type u)} (zα : Q(Zero $α))
     (q(Eq.refl false) : Expr)
   let hij : Q(Nat.testBit $closedSetQ $iQ ≠ Nat.testBit $closedSetQ $jQ) :=
     q(of_decide_eq_false $hd)
-  match view with
-  | .literal lit =>
-    let ⟨bits, hadj⟩ := certifyPackedAdj zα dα n (M := M) lit
-    let hc ← mkDecideProofQ q(isClosedPacked $n $bits $closedSetQ = true)
-    return q(not_isIndecomposable_of_isClosed $hadj (isClosed_of_isClosedPacked $hc) $hij)
-  | .functional f =>
-    let pf := (MatrixView.functional (M := M) f).proof zα
+  match view, view.proof zα with
+  | .literal lit, pf =>
+    let hc ← mkDecideProofQ q(isClosedPacked $n (packRows $n $lit) $closedSetQ = true)
+    return q(not_isIndecomposable_of_isClosed (packedAdj_packRows_iff_of_eq $pf)
+      (isClosed_of_isClosedPacked $hc) $hij)
+  | .functional f, pf =>
     let hc ← mkDecideProofQ q(isClosed (adjOf $f) $closedSetQ = true)
     return q(not_isIndecomposable_of_isClosed (adjOf_iff_of_eq $pf) $hc $hij)
 
@@ -320,12 +306,12 @@ def reduceIsIndecomposableCore : Simp.Simproc := fun e ↦ do
   have α : Q(Type u) := R
   have zα : Q(Zero $α) := zR
   have finN : Q(Type) := finN
-  have M : Q(Matrix $finN $finN $α) := M
-  let some ⟨n, l, M, view⟩ ← MatrixView.parse? M | return .continue
-  -- `M` is square, so `n` and `l` are read off the same index type.
-  let .isTrue h := decEq l n | return .continue
+  let M : Q(Matrix $finN $finN $α) := M
+  let some ⟨m, n, M, view⟩ ← MatrixView.parse? M | return .continue
+  -- `M` is square, so `m` and `n` are read off the same index type.
+  let .isTrue h := decEq m n | unreachable!
   let ⟨M, view⟩ : (M : Q(Matrix (Fin $n) (Fin $n) $α)) × MatrixView n n M :=
-    h ▸ (⟨M, view⟩ : (M : Q(Matrix (Fin $n) (Fin $l) $α)) × MatrixView n l M)
+    h ▸ (⟨M, view⟩ : (M : Q(Matrix (Fin $m) (Fin $n) $α)) × MatrixView m n M)
   if n == 0 then
     have M : Q(Matrix (Fin 0) (Fin 0) $α) := M
     let pf : Q(($M).IsIndecomposable) := q((isIndecomposable_iff_reflTransGen $M).2 isEmptyElim)
