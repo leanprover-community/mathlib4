@@ -6,7 +6,6 @@ Authors: Justus Springer
 module
 
 public import Mathlib.Geometry.Convex.Cone.Pointed
-public import Mathlib.LinearAlgebra.LinearIndependent.Defs
 
 /-!
 # Carathéodory's theorem for cones
