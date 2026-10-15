@@ -5,9 +5,9 @@ Authors: Eric Wieser, Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Algebra.Star.SelfAdjoint
 public import Mathlib.Algebra.Module.LinearMap.Star
 public import Mathlib.Algebra.Module.Rat
+public import Mathlib.Algebra.Star.SelfAdjoint
 public import Mathlib.LinearAlgebra.Prod
 
 /-!

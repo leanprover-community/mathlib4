@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
-public import Mathlib.CategoryTheory.Monoidal.End
 public import Mathlib.CategoryTheory.Monoidal.Discrete
+public import Mathlib.CategoryTheory.Monoidal.End
 
 /-!
 # Shift

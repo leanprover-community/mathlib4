@@ -6,8 +6,8 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Fréd�
 -/
 module
 
-public import Mathlib.Algebra.Module.Submodule.Lattice
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+public import Mathlib.Algebra.Module.Submodule.Lattice
 
 /-!
 # The span of a set of vectors, as a submodule
@@ -271,7 +271,7 @@ theorem span_empty : span R (∅ : Set M) = ⊥ :=
 
 @[simp]
 theorem span_univ : span R (univ : Set M) = ⊤ :=
-  eq_top_iff.2 <| IsConcreteLE.le_iff.2 subset_span
+  eq_top_iff.2 fun _ _ ↦ subset_span (mem_univ _)
 
 @[simp]
 theorem span_inter (S S' : Submodule R M) : span R (S ∩ S') = S ⊓ S' :=
