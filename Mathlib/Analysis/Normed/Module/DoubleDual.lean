@@ -75,9 +75,10 @@ namespace StrongDual
 variable (𝕜 E : Type*) [NormedField 𝕜] [AddCommGroup E] [TopologicalSpace E] [Module 𝕜 E]
   [ContinuousSMul 𝕜 E]
 
-/-- The canonical map from a topological vector space `E` to its strong bidual, which sends `x` to
-the evaluation at `x`, as a linear map. This is the topological analogue of `Module.Dual.eval`.
-For a normed space, this is the linear map underlying `NormedSpace.inclusionInDoubleDual`. -/
+/-- The inclusion from a topological vector space `E` into its strong bidual, which sends `x` to
+the evaluation at `x`, as a linear map.
+
+For a normed space, see the continuous linear map `NormedSpace.inclusionInDoubleDual`. -/
 def inclusionInDoubleDualₗ : E →ₗ[𝕜] StrongDual 𝕜 (StrongDual 𝕜 E) :=
   ContinuousLinearMap.applyₗ 𝕜 (.id 𝕜)
 
@@ -207,8 +208,8 @@ end NormedSpace
 
 /-! ### Reflexive normed spaces -/
 
-/-- A topological vector space `E` is reflexive if the canonical map
-`StrongDual.inclusionInDoubleDualₗ 𝕜 E` from `E` to its strong bidual is a homeomorphism.
+/-- A topological vector space `E` is reflexive if the inclusion
+`StrongDual.inclusionInDoubleDualₗ 𝕜 E` from `E` into its strong bidual is a homeomorphism.
 
 This is not the algebraic notion `Module.IsReflexive`, which concerns the algebraic double dual. -/
 class TopologicalSpace.IsReflexive (𝕜 E : Type*) [NormedField 𝕜]
@@ -249,12 +250,9 @@ open NormedSpace
 /-- A normed space is reflexive if and only if the canonical map to its double dual is
 surjective. -/
 theorem NormedSpace.isReflexive_iff_surjective_inclusionInDoubleDual :
-    TopologicalSpace.IsReflexive 𝕜 E ↔ Surjective (inclusionInDoubleDual 𝕜 E) := by
-  have h_eq : ⇑(StrongDual.inclusionInDoubleDualₗ 𝕜 E) = inclusionInDoubleDual 𝕜 E := by
-    rw [← toLinearMap_inclusionInDoubleDual 𝕜 E, ContinuousLinearMap.coe_coe]
-  refine ⟨fun hE ↦ h_eq ▸ hE.isHomeomorph_inclusionInDoubleDualₗ.surjective, fun hE ↦ ⟨?_⟩⟩
-  rw [h_eq]
-  exact (LinearIsometryEquiv.ofSurjective (inclusionInDoubleDualLi 𝕜) hE).toHomeomorph.isHomeomorph
+    TopologicalSpace.IsReflexive 𝕜 E ↔ Surjective (inclusionInDoubleDual 𝕜 E) :=
+  ⟨fun hE ↦ hE.isHomeomorph_inclusionInDoubleDualₗ.surjective, fun hE ↦
+    ⟨(LinearIsometryEquiv.ofSurjective (inclusionInDoubleDualLi 𝕜) hE).toHomeomorph.isHomeomorph⟩⟩
 
 namespace TopologicalSpace.IsReflexive
 
@@ -291,7 +289,6 @@ theorem submodule_of_isClosed [IsReflexive 𝕜 E] (F : Submodule 𝕜 E) (hF : 
 
 end TopologicalSpace.IsReflexive
 
-open Module in
 /-- A finite-dimensional normed space is reflexive. -/
 instance FiniteDimensional.isReflexive [FiniteDimensional 𝕜 E] :
     TopologicalSpace.IsReflexive 𝕜 E := by
