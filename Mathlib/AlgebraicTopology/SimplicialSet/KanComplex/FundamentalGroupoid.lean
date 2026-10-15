@@ -64,7 +64,6 @@ lemma exists_left_inverse : ∃ (e' : Edge y x), Nonempty (CompStruct e' e (.id 
   exact ⟨e'.unop, ⟨h.unop.ofEq rfl rfl (by simp)⟩⟩
 
 instance : Nonempty e.InvStruct := by
-  have : KanComplex X := inferInstance
   obtain ⟨e₁, ⟨h₁⟩⟩ := e.exists_left_inverse
   obtain ⟨e₂, ⟨h₂⟩⟩ := e.exists_right_inverse
   exact ⟨{
