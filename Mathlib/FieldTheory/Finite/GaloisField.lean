@@ -111,10 +111,8 @@ theorem finrank {n} (h : n ≠ 0) : Module.finrank (ZMod p) (GaloisField p n) = 
     simp [eq_comm, hp.ne_zero]
   · simp
   · simp +contextual [add_pow_char_pow, sub_eq_zero]
-  · intro x _ hx
-    simp only [g_poly, sub_eq_zero, aeval_X_pow, aeval_X, map_sub, sub_neg_eq_add] at *
-    rw [neg_pow, hx, neg_one_pow_char_pow]
-    simp
+  · intro x
+    simp +contextual [sub_eq_zero, neg_pow x, neg_one_pow_char_pow]
   · simp +contextual [mul_pow, sub_eq_zero]
 
 theorem card (h : n ≠ 0) : Nat.card (GaloisField p n) = p ^ n := by
