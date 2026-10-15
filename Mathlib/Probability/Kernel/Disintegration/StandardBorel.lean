@@ -5,10 +5,10 @@ Authors: Rémy Degenne
 -/
 module
 
+public import Mathlib.MeasureTheory.Constructions.Polish.EmbeddingReal
 public import Mathlib.Probability.Kernel.Disintegration.Basic
 public import Mathlib.Probability.Kernel.Disintegration.CondCDF
 public import Mathlib.Probability.Kernel.Disintegration.Density
-public import Mathlib.MeasureTheory.Constructions.Polish.EmbeddingReal
 
 /-!
 # Existence of disintegration of measures and kernels for standard Borel spaces

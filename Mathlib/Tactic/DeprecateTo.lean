@@ -5,8 +5,8 @@ Authors: Damiano Testa
 -/
 module
 
-public meta import Std.Time.Format
 public meta import Mathlib.Lean.Name
+public meta import Std.Time.Format
 
 import Mathlib.Init
 
