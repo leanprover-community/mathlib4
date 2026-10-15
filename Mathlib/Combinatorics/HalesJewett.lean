@@ -41,6 +41,8 @@ to `∑ i : ι, v i`, which sends a combinatorial line to a homothetic copy of `
 - `Combinatorics.Line.exists_mono_in_high_dimension`: The Hales-Jewett theorem.
 - `Combinatorics.Subspace.exists_mono_in_high_dimension`: The multidimensional Hales-Jewett theorem.
 - `Combinatorics.exists_mono_homothetic_copy`: A generalization of Van der Waerden's theorem.
+- `Combinatorics.van_der_waerden`: The finitary Van der Waerden theorem, proved via Rado's selection
+  lemma. See `Mathlib.Combinatorics.VanDerWaerden`.
 
 ## Implementation details
 
@@ -50,9 +52,6 @@ allows us to work directly with `α`, `Option α`, `(ι → α) → κ`, and `ι
 `Fin (n+1)`, `Fin (c^(n^H))`, and `Fin (H + H')`.
 
 ## TODO
-
-- Prove a finitary version of Van der Waerden's theorem (either by compactness or by modifying the
-  current proof).
 
 - One could reformulate the proof of Hales-Jewett to give explicit upper bounds on the number of
   coordinates needed.
