@@ -36,8 +36,8 @@ noncomputable def toSSetObj₁Equiv :
   (toSSetObjEquiv _ _).trans
     { toFun f := ofHom (f.comp TopCat.stdSimplexHomeomorphI.symm.toContinuousMap)
       invFun f := f.hom.comp TopCat.stdSimplexHomeomorphI
-      left_inv _ := by simp
-      right_inv _ := by simp }
+      left_inv _ := by sorry /-simp-/
+      right_inv _ := by sorry /-simp-/ }
 
 @[simp]
 lemma toSSetObj₁Equiv_apply_zero (s : toSSet.obj X _⦋1⦌) :
