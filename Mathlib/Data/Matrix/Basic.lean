@@ -829,8 +829,6 @@ This is available in bundled forms as:
 @[simps!] def prodEquiv : Matrix m n (α × β) ≃ Matrix m n α × Matrix m n β where
   toFun a := ⟨a.map Prod.fst, a.map Prod.snd⟩
   invFun a := .of fun i j ↦ ⟨a.1 i j, a.2 i j⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- `prodEquiv` as an `AddEquiv`. -/
 @[simps!] def prodAddEquiv [Add α] [Add β] :
@@ -872,6 +870,9 @@ variable (R) [CommSemiring R] [DecidableEq n]
 
 @[simp] theorem toprodAddEquiv_prodAlgEquiv [Semiring α] [Algebra R α] [Semiring β] [Algebra R β]
     {a : Matrix n n (α × β)} : prodAlgEquiv R a = prodRingEquiv a := rfl
+
+@[simp] theorem toprodAddEquiv_prodLinearEquiv [Semiring α] [Algebra R α] [Semiring β] [Algebra R β]
+    {a : Matrix n n (α × β)} : prodAlgEquiv R a = prodLinearEquiv R a := rfl
 
 end Prod
 
