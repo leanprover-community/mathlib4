@@ -826,7 +826,7 @@ This is available in bundled forms as:
 * `Matrix.prodRingEquiv`
 * `Matrix.prodAlgEquiv`
 -/
-@[simps!] def prodEquiv : Matrix m n (α × β) ≃ (Matrix m n α) × (Matrix m n β) where
+@[simps!] def prodEquiv : Matrix m n (α × β) ≃ Matrix m n α × Matrix m n β where
   toFun a := ⟨a.map Prod.fst, a.map Prod.snd⟩
   invFun a := .of fun i j ↦ ⟨a.1 i j, a.2 i j⟩
   left_inv _ := rfl
