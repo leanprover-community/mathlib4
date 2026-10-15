@@ -173,7 +173,6 @@ theorem Monotone.exists_tendsto_of_antitone_of_tendsto_div (hu : Monotone u) (hv
     obtain ⟨j, hij, hi₀j⟩ := exists_ge_ge i i₀
     exact (hu hij).trans ((hle j).trans (hv hi₀j))
   have hu' := tendsto_atTop_ciSup hu hbdd
-  refine ⟨_, hu', ?_⟩
-  simpa using h.mul hu'
+  exact ⟨_, hu', by simpa using h.mul hu'⟩
 
 end Adjacent
