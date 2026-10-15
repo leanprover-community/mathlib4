@@ -81,9 +81,7 @@ theorem Invariant.ae_pow_apply_compl_eq_zero (hπ : Invariant κ π) (hG : Measu
     filter_upwards [ae_all_iff.mpr this] with x hx hxG n using hx n hxG
   intro n
   induction n with
-  | zero =>
-    refine ae_of_all _ fun x hx ↦ ?_
-    simp [Kernel.id_apply, Measure.dirac_apply' _ hG.compl, hx]
+  | zero => simp [Kernel.id_apply, Measure.dirac_apply' _ hG.compl]
   | succ n ih =>
     have h1 : ∀ᵐ x ∂π, ∀ᵐ y ∂κ x, y ∈ G → (κ ^ n) y Gᶜ = 0 := by
       rw [← hπ.def] at ih
