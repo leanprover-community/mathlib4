@@ -160,6 +160,32 @@ theorem trace_mul_cycle [NonUnitalCommSemiring R] (A : Matrix m n R) (B : Matrix
     (C : Matrix p m R) : trace (A * B * C) = trace (C * A * B) := by
   rw [trace_mul_comm, Matrix.mul_assoc]
 
+theorem trace_mul_pow_comm [DecidableEq m] [DecidableEq n] [CommSemiring R]
+    (A : Matrix m n R) (B : Matrix n m R) (k : ℕ) :
+    trace ((A * B) ^ (k + 1)) = trace ((B * A) ^ (k + 1)) := by
+  have hpow : ∀ k : ℕ, (B * A) ^ (k + 1) = B * (A * B) ^ k * A := by
+    intro k
+    induction k with
+    | zero =>
+        simp only [Nat.zero_add, pow_one, pow_zero, Matrix.mul_one]
+    | succ k ih =>
+        calc
+          (B * A) ^ (Nat.succ k + 1) = (B * A) ^ (k + 1) * (B * A) := by rfl
+          _ = (B * (A * B) ^ k * A) * (B * A) := by rw [ih]
+          _ = (B * (A * B) ^ k) * (A * (B * A)) := by
+            rw [Matrix.mul_assoc (B * (A * B) ^ k) A (B * A)]
+          _ = (B * (A * B) ^ k) * ((A * B) * A) := by
+            rw [← Matrix.mul_assoc A B A]
+          _ = B * ((A * B) ^ k * (A * B)) * A := by
+            rw [← Matrix.mul_assoc (B * (A * B) ^ k) (A * B) A,
+              Matrix.mul_assoc B ((A * B) ^ k) (A * B)]
+          _ = B * (A * B) ^ (k + 1) * A := by rw [pow_succ]
+  calc
+    trace ((A * B) ^ (k + 1)) = trace ((A * B) ^ k * A * B) := by
+      rw [pow_succ, ← Matrix.mul_assoc]
+    _ = trace (B * (A * B) ^ k * A) := Matrix.trace_mul_cycle ((A * B) ^ k) A B
+    _ = trace ((B * A) ^ (k + 1)) := by rw [← hpow k]
+
 theorem trace_mul_cycle' [NonUnitalCommSemiring R] (A : Matrix m n R) (B : Matrix n p R)
     (C : Matrix p m R) : trace (A * (B * C)) = trace (C * (A * B)) := by
   rw [← Matrix.mul_assoc, trace_mul_comm]
