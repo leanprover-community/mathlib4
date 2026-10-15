@@ -161,6 +161,12 @@ public import Mathlib.Tactic.GuardGoalNums
 public import Mathlib.Tactic.GuardHypNums
 public import Mathlib.Tactic.Have
 public import Mathlib.Tactic.HaveI
+public import Mathlib.Tactic.Hessenberg.CharPoly
+public import Mathlib.Tactic.Hessenberg.Coeffs
+public import Mathlib.Tactic.Hessenberg.Lemmas
+public import Mathlib.Tactic.Hessenberg.Recurrence
+public import Mathlib.Tactic.Hessenberg.Reduce
+public import Mathlib.Tactic.Hessenberg.Similarity
 public import Mathlib.Tactic.HigherOrder
 public import Mathlib.Tactic.Hint
 public import Mathlib.Tactic.ITauto
@@ -259,6 +265,7 @@ public import Mathlib.Tactic.MoveAdd
 public import Mathlib.Tactic.NoncommRing
 public import Mathlib.Tactic.Nontriviality
 public import Mathlib.Tactic.Nontriviality.Core
+public import Mathlib.Tactic.NormCharpoly
 public import Mathlib.Tactic.NormDet
 public import Mathlib.Tactic.NormMatMul
 public import Mathlib.Tactic.NormNum
