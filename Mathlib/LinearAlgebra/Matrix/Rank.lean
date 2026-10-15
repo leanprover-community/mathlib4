@@ -45,6 +45,9 @@ identity block has size equal to the rank of the matrix.
 * `Matrix.rank_add_finrank_ker_mulVecLin`: rank–nullity for matrices.
 * `Matrix.rank_add_rank_le_rank_fromBlocks_zero₂₁`: the rank of a block upper triangular matrix is
 at least the sum of the ranks of its diagonal blocks.
+* `Matrix.cRank_add_le`, `Matrix.eRank_add_le`, `Matrix.cRank_add_cRank_le_cRank_fromBlocks_zero₂₁`,
+`Matrix.eRank_add_eRank_le_eRank_fromBlocks_zero₂₁`: the same statements for `cRank` and `eRank`,
+over rings with the rank–nullity property.
 -/
 
 @[expose] public section
@@ -55,7 +58,7 @@ namespace Matrix
 
 open Module Cardinal Set Submodule
 
-universe ul um um₀ un un₀ uo uR
+universe ul um um₀ un un₀ uo up uR
 variable {l : Type ul} {m : Type um} {m₀ : Type um₀} {n : Type un} {n₀ : Type un₀} {o : Type uo}
 variable {R : Type uR}
 
@@ -131,6 +134,176 @@ lemma eRank_le_card_height [StrongRankCondition R] (A : Matrix m n R) : A.eRank 
   exact A.cRank_le_card_height
 
 end Infinite
+
+section AddNeg
+
+variable [Ring R]
+
+@[simp]
+theorem cRank_neg (A : Matrix m n R) : (-A).cRank = A.cRank := by
+  have hc : ∀ j, (-A).col j = -A.col j := fun _ => rfl
+  have h : span R (range (-A).col) = span R (range A.col) := by
+    apply le_antisymm <;> rw [span_le] <;> rintro _ ⟨j, rfl⟩
+    · rw [hc]
+      exact neg_mem (subset_span ⟨j, rfl⟩)
+    · rw [← neg_neg (A.col j), ← hc]
+      exact neg_mem (subset_span ⟨j, rfl⟩)
+  rw [cRank, cRank, h]
+
+@[simp]
+theorem eRank_neg (A : Matrix m n R) : (-A).eRank = A.eRank := by
+  rw [eRank, eRank, cRank_neg]
+
+/-- Subadditivity of `cRank`. -/
+theorem cRank_add_le [HasRankNullity.{max um uR} R] (A B : Matrix m n R) :
+    (A + B).cRank ≤ A.cRank + B.cRank := by
+  refine (Submodule.rank_mono (span_le.2 ?_)).trans (Submodule.rank_add_le_rank_add_rank _ _)
+  rintro _ ⟨j, rfl⟩
+  rw [show (A + B).col j = A.col j + B.col j from rfl]
+  exact add_mem (mem_sup_left (subset_span ⟨j, rfl⟩)) (mem_sup_right (subset_span ⟨j, rfl⟩))
+
+theorem cRank_sub_le [HasRankNullity.{max um uR} R] (A B : Matrix m n R) :
+    (A - B).cRank ≤ A.cRank + B.cRank := by
+  simpa [sub_eq_add_neg] using cRank_add_le A (-B)
+
+/-- Subadditivity of `eRank`. -/
+theorem eRank_add_le [HasRankNullity.{max um uR} R] (A B : Matrix m n R) :
+    (A + B).eRank ≤ A.eRank + B.eRank := by
+  rw [eRank, eRank, eRank, ← map_add]
+  exact OrderHomClass.mono _ (cRank_add_le A B)
+
+theorem eRank_sub_le [HasRankNullity.{max um uR} R] (A B : Matrix m n R) :
+    (A - B).eRank ≤ A.eRank + B.eRank := by
+  simpa [sub_eq_add_neg] using eRank_add_le A (-B)
+
+section FromBlocks
+
+variable {p : Type ul} (A : Matrix l n R) (B : Matrix l o R) (D : Matrix p o R)
+
+/-- Extension by zero from the first block of coordinates. -/
+private def inlZero : (l → R) →ₗ[R] (l ⊕ p → R) :=
+  LinearMap.pi (Sum.elim (fun i => LinearMap.proj i) fun _ => 0)
+
+/-- Extension by zero from the second block of coordinates. -/
+private def inrZero : (p → R) →ₗ[R] (l ⊕ p → R) :=
+  LinearMap.pi (Sum.elim (fun _ => 0) fun i => LinearMap.proj i)
+
+private lemma col_fromBlocks_inl (j : n) :
+    (fromBlocks A B 0 D).col (Sum.inl j) = inlZero (p := p) (A.col j) := by
+  ext (i | i) <;> simp [inlZero, col_apply]
+
+private lemma col_fromBlocks_inr (k : o) :
+    (fromBlocks A B 0 D).col (Sum.inr k) = inlZero (p := p) (B.col k) + inrZero (D.col k) := by
+  ext (i | i) <;> simp [inlZero, inrZero, col_apply]
+
+/-- The rank of a block upper triangular matrix is at least the sum of the ranks of its diagonal
+blocks. -/
+theorem cRank_add_cRank_le_cRank_fromBlocks_zero₂₁ [HasRankNullity.{max ul uR} R] :
+    A.cRank + D.cRank ≤ (fromBlocks A B 0 D).cRank := by
+  set V := span R (range (fromBlocks A B 0 D).col)
+  let φ : V →ₗ[R] (p → R) := (LinearMap.funLeft R R Sum.inr).comp V.subtype
+  have hφ : ∀ v : V, φ v = (v : l ⊕ p → R) ∘ Sum.inr := fun _ => rfl
+  have hrange : LinearMap.range φ = span R (range D.col) := by
+    rw [LinearMap.range_comp, Submodule.range_subtype, Submodule.map_span]
+    apply le_antisymm <;> rw [span_le]
+    · rintro _ ⟨_, ⟨j | k, rfl⟩, rfl⟩
+      · have h0 : LinearMap.funLeft R R Sum.inr (inlZero (p := p) (A.col j)) = 0 := by
+          ext i
+          simp [inlZero]
+        rw [col_fromBlocks_inl, h0]
+        exact zero_mem _
+      · have hk : LinearMap.funLeft R R Sum.inr (inlZero (p := p) (B.col k) + inrZero (D.col k)) =
+            D.col k := by
+          ext i
+          simp [inlZero, inrZero]
+        rw [col_fromBlocks_inr, hk]
+        exact subset_span ⟨k, rfl⟩
+    · rintro _ ⟨k, rfl⟩
+      refine subset_span ⟨_, ⟨Sum.inr k, rfl⟩, ?_⟩
+      rw [col_fromBlocks_inr]
+      ext i
+      simp [inlZero, inrZero]
+  let ψ : LinearMap.ker φ →ₗ[R] (l → R) :=
+    (LinearMap.funLeft R R Sum.inl).comp (V.subtype.comp (LinearMap.ker φ).subtype)
+  have hψ : ∀ u : LinearMap.ker φ, ψ u = ((u : V) : l ⊕ p → R) ∘ Sum.inl := fun _ => rfl
+  have hinr : ∀ u : LinearMap.ker φ, ((u : V) : l ⊕ p → R) ∘ Sum.inr = 0 := by
+    intro u
+    rw [← hφ]
+    exact u.2
+  have hψinj : Function.Injective ψ := by
+    intro u u' hu
+    rw [hψ, hψ] at hu
+    apply Subtype.ext
+    apply Subtype.ext
+    funext s
+    rcases s with i | i
+    · exact congrFun hu i
+    · exact (congrFun (hinr u) i).trans (congrFun (hinr u') i).symm
+  have hA : A.cRank ≤ Module.rank R (LinearMap.ker φ) := by
+    rw [← rank_range_of_injective ψ hψinj]
+    refine Submodule.rank_mono (span_le.2 ?_)
+    rintro _ ⟨j, rfl⟩
+    have hV : (fromBlocks A B 0 D).col (Sum.inl j) ∈ V := subset_span ⟨Sum.inl j, rfl⟩
+    have hker : (⟨_, hV⟩ : V) ∈ LinearMap.ker φ := by
+      rw [LinearMap.mem_ker, hφ]
+      ext i
+      simp [col_fromBlocks_inl, inlZero]
+    refine ⟨⟨_, hker⟩, ?_⟩
+    rw [hψ]
+    ext i
+    simp [col_fromBlocks_inl, inlZero]
+  have hD : D.cRank = Module.rank R (LinearMap.range φ) := by rw [cRank, hrange]
+  calc A.cRank + D.cRank ≤ Module.rank R (LinearMap.ker φ) + Module.rank R (LinearMap.range φ) :=
+        hD ▸ add_le_add_left hA _
+    _ = (fromBlocks A B 0 D).cRank := by rw [add_comm, LinearMap.rank_range_add_rank_ker]; rfl
+
+theorem eRank_add_eRank_le_eRank_fromBlocks_zero₂₁ [HasRankNullity.{max ul uR} R] :
+    A.eRank + D.eRank ≤ (fromBlocks A B 0 D).eRank := by
+  rw [eRank, eRank, eRank, ← map_add]
+  exact OrderHomClass.mono _ (cRank_add_cRank_le_cRank_fromBlocks_zero₂₁ A B D)
+
+/-- The rank of `fromBlocks A B 0 D` is at most the rank of `A` plus the number of columns
+of `D`. -/
+theorem cRank_fromBlocks_zero₂₁_le_left [StrongRankCondition R] [HasRankNullity.{max ul uR} R]
+    [Fintype o] : (fromBlocks A B 0 D).cRank ≤ A.cRank + Fintype.card o := by
+  refine (Submodule.rank_mono (span_le.2 ?_)).trans <|
+    (Submodule.rank_add_le_rank_add_rank (span R (range A.col) |>.map (inlZero (p := p)))
+      (span R (range ((fromBlocks A B 0 D).col ∘ Sum.inr)))).trans <|
+    add_le_add (rank_map_le _ _) <| (rank_span_le _).trans <|
+      by simpa using Cardinal.mk_range_le_lift (f := (fromBlocks A B 0 D).col ∘ Sum.inr)
+  rintro _ ⟨j | k, rfl⟩
+  · rw [col_fromBlocks_inl]
+    exact mem_sup_left (mem_map_of_mem (subset_span ⟨j, rfl⟩))
+  · exact mem_sup_right (subset_span ⟨k, rfl⟩)
+
+theorem eRank_fromBlocks_zero₂₁_le_left [StrongRankCondition R] [HasRankNullity.{max ul uR} R]
+    [Fintype o] : (fromBlocks A B 0 D).eRank ≤ A.eRank + Fintype.card o := by
+  rw [eRank, eRank, ← map_natCast toENat, ← map_add]
+  exact OrderHomClass.mono _ (cRank_fromBlocks_zero₂₁_le_left A B D)
+
+/-- The rank of `fromBlocks A B 0 D` is at most the number of rows of `A` plus the rank
+of `D`. -/
+theorem cRank_fromBlocks_zero₂₁_le_right [StrongRankCondition R] [HasRankNullity.{max ul uR} R]
+    [Fintype l] : (fromBlocks A B 0 D).cRank ≤ Fintype.card l + D.cRank := by
+  refine (Submodule.rank_mono (span_le.2 ?_)).trans <|
+    (Submodule.rank_add_le_rank_add_rank (LinearMap.range (inlZero (p := p)))
+      (span R (range D.col) |>.map (inrZero (l := l)))).trans <|
+    add_le_add ((rank_range_le _).trans (rank_fun'.le)) (rank_map_le _ _)
+  rintro _ ⟨j | k, rfl⟩
+  · rw [col_fromBlocks_inl]
+    exact mem_sup_left (LinearMap.mem_range_self _ _)
+  · rw [col_fromBlocks_inr]
+    exact add_mem (mem_sup_left (LinearMap.mem_range_self _ _))
+      (mem_sup_right (mem_map_of_mem (subset_span ⟨k, rfl⟩)))
+
+theorem eRank_fromBlocks_zero₂₁_le_right [StrongRankCondition R] [HasRankNullity.{max ul uR} R]
+    [Fintype l] : (fromBlocks A B 0 D).eRank ≤ Fintype.card l + D.eRank := by
+  rw [eRank, eRank, ← map_natCast toENat, ← map_add]
+  exact OrderHomClass.mono _ (cRank_fromBlocks_zero₂₁_le_right A B D)
+
+end FromBlocks
+
+end AddNeg
 
 variable [Fintype n] [Fintype o]
 
@@ -636,33 +809,36 @@ lemma rank_add_rank_le_card_of_mul_eq_zero [Field R] [Finite l] [Fintype m]
 
 section RankAdd
 
-variable [Field R] {p : Type*}
-
-/-- Subadditivity of the rank of matrices. -/
-theorem rank_add_le (A B : Matrix m n R) : (A + B).rank ≤ A.rank + B.rank := by
-  rw [rank, mulVecLin_add]
-  exact (Submodule.finrank_mono (LinearMap.range_add_le _ _)).trans
-    (Submodule.finrank_add_le_finrank_add_finrank _ _)
+variable [CommRing R] {p : Type up}
 
 /-- Negating a matrix does not change its rank. -/
 @[simp]
 theorem rank_neg (A : Matrix m n R) : (-A).rank = A.rank := by
-  have h : (-A).mulVecLin = -A.mulVecLin := LinearMap.ext fun v => neg_mulVec v A
-  rw [rank, rank, h, LinearMap.range_neg]
+  rw [← cRank_toNat_eq_rank, cRank_neg, cRank_toNat_eq_rank]
+
+/-- Subadditivity of the rank of matrices. -/
+theorem rank_add_le [HasRankNullity.{max um uR} R] (A B : Matrix m n R) :
+    (A + B).rank ≤ A.rank + B.rank := by
+  have hA := A.cRank_le_card_width.trans_lt natCast_lt_aleph0
+  have hB := B.cRank_le_card_width.trans_lt natCast_lt_aleph0
+  rw [← cRank_toNat_eq_rank, ← cRank_toNat_eq_rank, ← cRank_toNat_eq_rank, ← toNat_add hA hB]
+  exact toNat_le_toNat (cRank_add_le A B) (add_lt_aleph0 hA hB)
 
 /-- The rank of a difference is at most the sum of the ranks. -/
-theorem rank_sub_le (A B : Matrix m n R) : (A - B).rank ≤ A.rank + B.rank := by
+theorem rank_sub_le [HasRankNullity.{max um uR} R] (A B : Matrix m n R) :
+    (A - B).rank ≤ A.rank + B.rank := by
   simpa [sub_eq_add_neg] using rank_add_le A (-B)
 
 /-- Rank–nullity for matrices: the rank plus the dimension of the kernel of `A.mulVecLin` is the
 number of columns. -/
-theorem rank_add_finrank_ker_mulVecLin (A : Matrix m n R) :
+theorem rank_add_finrank_ker_mulVecLin [HasRankNullity.{max un uR} R] (A : Matrix m n R) :
     A.rank + finrank R (LinearMap.ker A.mulVecLin) = Fintype.card n := by
   rw [rank, LinearMap.finrank_range_add_finrank_ker, Module.finrank_fintype_fun_eq_card]
 
 /-- If `U` is invertible, the nullity of `U + E` is at most the rank of `E`. -/
-theorem finrank_ker_mulVecLin_add_le [DecidableEq n] {U : Matrix n n R} (hU : IsUnit U)
-    (E : Matrix n n R) : finrank R (LinearMap.ker (U + E).mulVecLin) ≤ E.rank := by
+theorem finrank_ker_mulVecLin_add_le [DecidableEq n] [HasRankNullity.{max un uR} R]
+    {U : Matrix n n R} (hU : IsUnit U) (E : Matrix n n R) :
+    finrank R (LinearMap.ker (U + E).mulVecLin) ≤ E.rank := by
   have h1 := rank_add_finrank_ker_mulVecLin (U + E)
   have h2 : U.rank ≤ (U + E).rank + (-E).rank := by
     simpa using rank_add_le (U + E) (-E)
@@ -670,23 +846,24 @@ theorem finrank_ker_mulVecLin_add_le [DecidableEq n] {U : Matrix n n R} (hU : Is
   omega
 
 /-- If `U` is invertible, the nullity of `U - E` is at most the rank of `E`. -/
-theorem finrank_ker_mulVecLin_sub_le [DecidableEq n] {U : Matrix n n R} (hU : IsUnit U)
-    (E : Matrix n n R) : finrank R (LinearMap.ker (U - E).mulVecLin) ≤ E.rank := by
+theorem finrank_ker_mulVecLin_sub_le [DecidableEq n] [HasRankNullity.{max un uR} R]
+    {U : Matrix n n R} (hU : IsUnit U) (E : Matrix n n R) :
+    finrank R (LinearMap.ker (U - E).mulVecLin) ≤ E.rank := by
   rw [sub_eq_add_neg, ← rank_neg E]
   exact finrank_ker_mulVecLin_add_le hU (-E)
 
 /-- If `U` is invertible and `P` has columns indexed by `o`, the nullity of `U - P * Q` is at most
 `Fintype.card o`. -/
-theorem finrank_ker_mulVecLin_sub_mul_le [DecidableEq n] {U : Matrix n n R}
-    (hU : IsUnit U) (P : Matrix n o R) (Q : Matrix o n R) :
+theorem finrank_ker_mulVecLin_sub_mul_le [DecidableEq n] [HasRankNullity.{max un uR} R]
+    {U : Matrix n n R} (hU : IsUnit U) (P : Matrix n o R) (Q : Matrix o n R) :
     finrank R (LinearMap.ker (U - P * Q).mulVecLin) ≤ Fintype.card o :=
   (finrank_ker_mulVecLin_sub_le hU _).trans <|
     (rank_mul_le_left P Q).trans (rank_le_card_width P)
 
 /-- The nullity of a block upper triangular matrix is at most the sum of the nullities of its
 diagonal blocks. -/
-theorem finrank_ker_mulVecLin_fromBlocks_zero₂₁_le (A : Matrix l n R) (B : Matrix l o R)
-    (D : Matrix p o R) :
+theorem finrank_ker_mulVecLin_fromBlocks_zero₂₁_le [HasRankNullity.{max un uo uR} R]
+    (A : Matrix l n R) (B : Matrix l o R) (D : Matrix p o R) :
     finrank R (LinearMap.ker (fromBlocks A B 0 D).mulVecLin) ≤
       finrank R (LinearMap.ker A.mulVecLin) + finrank R (LinearMap.ker D.mulVecLin) := by
   set KM := LinearMap.ker (fromBlocks A B 0 D).mulVecLin
@@ -725,29 +902,54 @@ theorem finrank_ker_mulVecLin_fromBlocks_zero₂₁_le (A : Matrix l n R) (B : M
     rw [LinearMap.mem_ker, mulVecLin_apply, hg]
     have h := (hmem (u : KM)).1
     rwa [hinr u, mulVec_zero, add_zero] at h
-  have h1 := LinearMap.finrank_range_add_finrank_ker f
+  -- Over a ring with rank–nullity, submodules of `R ^ k` need not be finitely generated, so we
+  -- argue with cardinal ranks, all of which are finite here.
+  have hKM : Module.rank R KM < ℵ₀ := (Submodule.rank_le _).trans_lt (rank_lt_aleph0 _ _)
+  have hkerA : Module.rank R (LinearMap.ker A.mulVecLin) < ℵ₀ :=
+    (Submodule.rank_le _).trans_lt (rank_lt_aleph0 _ _)
+  have hkerD : Module.rank R (LinearMap.ker D.mulVecLin) < ℵ₀ :=
+    (Submodule.rank_le _).trans_lt (rank_lt_aleph0 _ _)
+  have h1 : finrank R (LinearMap.range f) + finrank R (LinearMap.ker f) = finrank R KM := by
+    have H := congrArg Cardinal.toNat f.lift_rank_range_add_rank_ker
+    rwa [toNat_lift_add_lift ((Submodule.rank_mono hfr).trans_lt hkerD)
+      ((Submodule.rank_le _).trans_lt hKM), toNat_lift] at H
   have h2 : finrank R (LinearMap.range f) ≤ finrank R (LinearMap.ker D.mulVecLin) :=
-    Submodule.finrank_mono hfr
+    toNat_le_toNat (Submodule.rank_mono hfr) hkerD
   have h3 : finrank R (LinearMap.ker f) ≤ finrank R (LinearMap.ker A.mulVecLin) := by
     rw [← LinearMap.finrank_range_of_inj hginj]
-    exact Submodule.finrank_mono hgr
+    exact toNat_le_toNat (Submodule.rank_mono hgr) hkerA
   omega
 
 /-- The rank of a block upper triangular matrix is at least the sum of the ranks of its diagonal
 blocks. -/
-theorem rank_add_rank_le_rank_fromBlocks_zero₂₁ (A : Matrix l n R) (B : Matrix l o R)
-    (D : Matrix p o R) : A.rank + D.rank ≤ (fromBlocks A B 0 D).rank := by
-  have h := finrank_ker_mulVecLin_fromBlocks_zero₂₁_le A B D
-  have hA := rank_add_finrank_ker_mulVecLin A
-  have hD := rank_add_finrank_ker_mulVecLin D
-  have hM := rank_add_finrank_ker_mulVecLin (fromBlocks A B 0 D)
+theorem rank_add_rank_le_rank_fromBlocks_zero₂₁ [HasRankNullity.{max un uR} R]
+    [HasRankNullity.{max uo uR} R] [HasRankNullity.{max un uo uR} R]
+    (A : Matrix l n R) (B : Matrix l o R) (D : Matrix p o R) :
+    A.rank + D.rank ≤ (fromBlocks A B 0 D).rank := by
+  -- Instance search does not tell apart local instances of `HasRankNullity` that differ only in
+  -- their universe, so each step clears the ones it does not use.
+  have h : finrank R (LinearMap.ker (fromBlocks A B 0 D).mulVecLin) ≤
+      finrank R (LinearMap.ker A.mulVecLin) + finrank R (LinearMap.ker D.mulVecLin) := by
+    clear ‹HasRankNullity.{max un uR} R› ‹HasRankNullity.{max uo uR} R›
+    exact finrank_ker_mulVecLin_fromBlocks_zero₂₁_le A B D
+  have hA : A.rank + finrank R (LinearMap.ker A.mulVecLin) = Fintype.card n := by
+    clear ‹HasRankNullity.{max uo uR} R› ‹HasRankNullity.{max un uo uR} R›
+    exact rank_add_finrank_ker_mulVecLin A
+  have hD : D.rank + finrank R (LinearMap.ker D.mulVecLin) = Fintype.card o := by
+    clear ‹HasRankNullity.{max un uR} R› ‹HasRankNullity.{max un uo uR} R›
+    exact rank_add_finrank_ker_mulVecLin D
+  have hM : (fromBlocks A B 0 D).rank +
+      finrank R (LinearMap.ker (fromBlocks A B 0 D).mulVecLin) = Fintype.card (n ⊕ o) := by
+    clear ‹HasRankNullity.{max un uR} R› ‹HasRankNullity.{max uo uR} R›
+    exact rank_add_finrank_ker_mulVecLin (fromBlocks A B 0 D)
   rw [Fintype.card_sum] at hM
   omega
 
 /-- The rank of `fromBlocks A B 0 D` is at most the rank of `A` plus the number of columns
 of `D`. -/
-theorem rank_fromBlocks_zero₂₁_le_left [Finite l] (A : Matrix l n R) (B : Matrix l o R)
-    (D : Matrix p o R) : (fromBlocks A B 0 D).rank ≤ A.rank + Fintype.card o := by
+theorem rank_fromBlocks_zero₂₁_le_left [Finite l] [HasRankNullity.{max ul up uR} R]
+    (A : Matrix l n R) (B : Matrix l o R) (D : Matrix p o R) :
+    (fromBlocks A B 0 D).rank ≤ A.rank + Fintype.card o := by
   classical
   have := Fintype.ofFinite l
   have hsplit : fromBlocks A B 0 D = fromBlocks A 0 0 0 + fromBlocks 0 B 0 D := by
@@ -772,8 +974,8 @@ theorem rank_fromBlocks_zero₂₁_le_left [Finite l] (A : Matrix l n R) (B : Ma
 
 /-- The rank of `fromBlocks A B 0 D` is at most the number of rows of `A` plus the rank
 of `D`. -/
-theorem rank_fromBlocks_zero₂₁_le_right [Fintype l] [Finite p] (A : Matrix l n R)
-    (B : Matrix l o R) (D : Matrix p o R) :
+theorem rank_fromBlocks_zero₂₁_le_right [Fintype l] [Finite p] [HasRankNullity.{max ul up uR} R]
+    (A : Matrix l n R) (B : Matrix l o R) (D : Matrix p o R) :
     (fromBlocks A B 0 D).rank ≤ Fintype.card l + D.rank := by
   classical
   have := Fintype.ofFinite p
