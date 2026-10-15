@@ -485,13 +485,4 @@ instance [TopologicalSpace R] [IsValuativeTopology R] :
   IsLinearTopology.mk_of_hasBasis _ (p := fun _ : (ValueGroupWithZero R)ˣ ↦ True)
     (s := (valuation R).ltSubmodule) (IsValuativeTopology.hasBasis_nhds_zero R)
 
-@[deprecated (since := "2026-03-17")] alias isOpen_ball := Valuation.isOpen_ball
-@[deprecated (since := "2026-03-17")] alias isClosed_ball := Valuation.isClosed_ball
-@[deprecated (since := "2026-03-17")] alias isClopen_ball := Valuation.isClopen_ball
-@[deprecated (since := "2026-03-17")] alias isOpen_closedBall := Valuation.isOpen_closedBall
-@[deprecated (since := "2026-03-17")] alias isClosed_closedBall := Valuation.isClosed_closedBall
-@[deprecated (since := "2026-03-17")] alias isClopen_closedBall := Valuation.isClopen_closedBall
-@[deprecated (since := "2026-03-17")] alias isClopen_sphere := Valuation.isClopen_sphere
-@[deprecated (since := "2026-03-17")] alias isOpen_sphere := Valuation.isOpen_sphere
-
 end IsValuativeTopology
