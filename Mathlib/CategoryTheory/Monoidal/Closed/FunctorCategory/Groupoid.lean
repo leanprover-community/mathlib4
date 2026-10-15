@@ -5,8 +5,8 @@ Authors: Antoine Labelle
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 public import Mathlib.CategoryTheory.Functor.Currying
+public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 
 /-!
@@ -14,8 +14,6 @@ public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 
 (Using the pointwise monoidal structure on the functor category.)
 -/
-
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -69,6 +67,7 @@ def closedCounit (F : D ⥤ C) : closedIhom F ⋙ tensorLeft F ⟶ 𝟭 (D ⥤ C
       rw [tensorHom_def]
       simp }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `C` is a monoidal closed category and `D` is a groupoid, then every functor `F : D ⥤ C` is
 closed in the functor category `F : D ⥤ C` with the pointwise monoidal structure. -/
 instance closed (F : D ⥤ C) : Closed F where

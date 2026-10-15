@@ -8,8 +8,8 @@ module
 public import Mathlib.NumberTheory.LSeries.Convergence
 
 import Mathlib.Analysis.Normed.Group.Tannery
-import Mathlib.NumberTheory.LSeries.Linearity
 import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
+import Mathlib.NumberTheory.LSeries.Linearity
 
 /-!
 # A converging L-series determines its coefficients

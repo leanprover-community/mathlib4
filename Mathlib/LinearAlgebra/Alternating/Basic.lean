@@ -210,7 +210,7 @@ instance instSMul : SMul S (M [⋀^ι]→ₗ[R] N) :=
     { c • (f : MultilinearMap R (fun _ : ι => M) N) with
       map_eq_zero_of_eq' := fun v i j h hij => by simp [f.map_eq_zero_of_eq v h hij] }⟩
 
-instance : IsSMulApply S (M [⋀^ι]→ₗ[R] N) (ι → M) N where
+instance : IsSMulApply S (M [⋀^ι]→ₗ[R] N) where
   smul_apply _ _ _ := rfl
 
 @[norm_cast]
@@ -277,7 +277,7 @@ instance instAdd : Add (M [⋀^ι]→ₗ[R] N) where
       map_eq_zero_of_eq' := fun v i j h hij => by
         simp [a.map_eq_zero_of_eq v h hij, b.map_eq_zero_of_eq v h hij] }
 
-instance : IsAddApply (M [⋀^ι]→ₗ[R] N) (ι → M) N where
+instance : IsAddApply (M [⋀^ι]→ₗ[R] N) where
   add_apply _ _ _ := rfl
 
 @[norm_cast]
@@ -292,7 +292,7 @@ instance instZero : Zero (M [⋀^ι]→ₗ[R] N) :=
   ⟨{ (0 : MultilinearMap R (fun _ : ι => M) N) with
       map_eq_zero_of_eq' := fun _ _ _ _ _ => by simp }⟩
 
-instance : IsZeroApply (M [⋀^ι]→ₗ[R] N) (ι → M) N where
+instance : IsZeroApply (M [⋀^ι]→ₗ[R] N) where
   zero_apply _ := rfl
 
 @[norm_cast]
@@ -318,7 +318,7 @@ instance instNeg : Neg (M [⋀^ι]→ₗ[R] N') :=
     { -(f : MultilinearMap R (fun _ : ι => M) N') with
       map_eq_zero_of_eq' := fun v i j h hij => by simp [f.map_eq_zero_of_eq v h hij] }⟩
 
-instance : IsNegApply (M [⋀^ι]→ₗ[R] N') (ι → M) N' where
+instance : IsNegApply (M [⋀^ι]→ₗ[R] N') where
   neg_apply _ _ := rfl
 
 @[norm_cast]
@@ -336,7 +336,7 @@ instance instSub : Sub (M [⋀^ι]→ₗ[R] N') :=
       map_eq_zero_of_eq' := fun v i j h hij => by
         simp [f.map_eq_zero_of_eq v h hij, g.map_eq_zero_of_eq v h hij] }⟩
 
-instance : IsSubApply (M [⋀^ι]→ₗ[R] N') (ι → M) N' where
+instance : IsSubApply (M [⋀^ι]→ₗ[R] N') where
   sub_apply _ _ _ := rfl
 
 @[norm_cast]
