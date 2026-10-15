@@ -18,12 +18,15 @@ embedding together with Banach–Alaoglu to transfer compactness from the weak-s
 the weak topology. We also define reflexive topological vector spaces and study reflexive normed
 spaces.
 
+A topological vector space `E` over a normed field `𝕜` is reflexive
+(`TopologicalSpace.IsReflexive 𝕜 E`) if the canonical map `StrongDual.inclusionInDoubleDualₗ 𝕜 E`
+from `E` to its strong bidual `StrongDual 𝕜 (StrongDual 𝕜 E)`, which sends `x` to the evaluation
+at `x`, is a homeomorphism.
+
 ## Main definitions
 
-* `StrongDual.inclusionInDoubleDualₗ`: the canonical map from a topological vector space to its
-  strong bidual, as a linear map.
-* `TopologicalSpace.IsReflexive`: a topological vector space is reflexive if
-  `StrongDual.inclusionInDoubleDualₗ` is a homeomorphism.
+* `StrongDual.inclusionInDoubleDualₗ`: the inclusion of a topological vector space into its
+  double `StrongDual`, as a linear map.
 * `NormedSpace.inclusionInDoubleDual` is the inclusion of a normed space in its double
   `StrongDual`, considered as a bounded linear map.
 * `NormedSpace.inclusionInDoubleDualLi` is the same map as a linear isometry (for `𝕜 = ℝ` or
@@ -34,23 +37,10 @@ spaces.
   a topological embedding.
 * `NormedSpace.isCompact_closure_of_isBounded` transfers compactness from the weak-star topology
   on the bidual back to the weak topology on `X`.
+* `TopologicalSpace.IsReflexive`: a topological vector space is reflexive if
+  `StrongDual.inclusionInDoubleDualₗ` is a homeomorphism.
 
-## Reflexive spaces
-
-A topological vector space `E` over a normed field `𝕜` is reflexive
-(`TopologicalSpace.IsReflexive 𝕜 E`) if the canonical map `StrongDual.inclusionInDoubleDualₗ 𝕜 E`
-from `E` to its strong bidual `StrongDual 𝕜 (StrongDual 𝕜 E)`, which sends `x` to the evaluation
-at `x`, is a homeomorphism.
-The strong dual carries the topology of uniform convergence on bounded sets.
-
-This is a topological notion, different from the algebraic notion `Module.IsReflexive`, which asks
-for the canonical map to the algebraic double dual `Module.Dual 𝕜 (Module.Dual 𝕜 E)` to be
-bijective. For example, an infinite-dimensional Hilbert space is reflexive in the topological sense
-but not in the algebraic sense. A finite-dimensional normed space is reflexive in both senses: see
-`FiniteDimensional.isReflexive` and `Module.instIsReflexiveOfFiniteOfProjective`.
-
-For a normed space `E`, the canonical map is `NormedSpace.inclusionInDoubleDual 𝕜 E`. Since that
-map is an isometry, `E` is reflexive if and only if it is surjective.
+## Main results
 
 * `NormedSpace.isReflexive_iff_surjective_inclusionInDoubleDual`: a normed space is reflexive if
   and only if the canonical map to its double dual is surjective.
@@ -58,15 +48,8 @@ map is an isometry, `E` is reflexive if and only if it is surjective.
 * `TopologicalSpace.IsReflexive.submodule_of_isClosed`: a closed subspace of a reflexive normed
   space is reflexive.
 * `FiniteDimensional.isReflexive`: a finite-dimensional normed space is reflexive.
-* `NormedSpace.exists_norm_le_one_forall_apply_eq`: **Helly's theorem** in a reflexive space. If
-  the scalars `g i` and the continuous linear forms `φ i` are such that
-  `‖∑ i, c i * g i‖ ≤ ‖∑ i, c i • φ i‖` for all finitely supported families of scalars `c`, then
-  there is a point `y` of norm at most `1` such that `φ i y = g i` for all `i`.
-* `Submodule.exists_strongDual_forall_apply_eq_zero_of_notMem_topologicalClosure`: a point which
-  does not belong to the closure of a subspace is separated from it by a continuous linear form
-  which vanishes on the subspace.
 
-Hilbert spaces are reflexive: see `InnerProductSpace.isReflexive`.
+Hilbert spaces are reflexive: see the file ` Mathlib/Analysis/InnerProductSpace/Reflexive.lean`.
 
 ## References
 
@@ -75,7 +58,7 @@ Hilbert spaces are reflexive: see `InnerProductSpace.isReflexive`.
 
 ## Tags
 
-double dual, inclusion, isometry, embedding, weak-star topology, reflexive space, Helly's theorem
+double dual, inclusion, isometry, embedding, weak-star topology, reflexive space
 -/
 
 @[expose] public section
