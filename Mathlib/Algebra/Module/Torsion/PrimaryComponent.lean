@@ -262,11 +262,10 @@ theorem baer_of_primaryComponent_eq_top (hQ : primaryComponent Q I = ⊤)
   -- `g` vanishes on `I ^ n • J`.
   have hgIJ (x : A) (hx : x ∈ I ^ n • J) : g ⟨x, smul_le_right hx⟩ = 0 := by
     induction hx using smul_induction_on' with
-    | smul a ha y hy =>
-      rw [show (⟨a • y, _⟩ : J) = a • ⟨y, hy⟩ from rfl, map_smul, hn a ha]
+    | smul a ha y hy => exact (map_smul g a ⟨y, hy⟩).trans (hn a ha _)
     | add x hx y hy hx' hy' =>
-      rw [show (⟨x + y, _⟩ : J) = ⟨x, smul_le_right hx⟩ + ⟨y, smul_le_right hy⟩ from rfl,
-        map_add, hx', hy', add_zero]
+      exact (map_add g ⟨x, smul_le_right hx⟩ ⟨y, smul_le_right hy⟩).trans
+        (by rw [hx', hy', add_zero])
   -- Artin–Rees: `J ⊓ I ^ (n + k) ≤ I ^ n • J`.
   obtain ⟨k, hk⟩ := Ideal.exists_pow_inf_eq_pow_smul I J
   have hAR (x : A) (hxJ : x ∈ J) (hxm : x ∈ I ^ (n + k)) : x ∈ I ^ n • J := by
