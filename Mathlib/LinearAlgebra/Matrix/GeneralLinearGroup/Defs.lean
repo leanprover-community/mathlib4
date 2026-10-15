@@ -237,7 +237,7 @@ variable (n)
 def transposeMulEquiv : GL n R ≃* (GL n R)ᵐᵒᵖ :=
   (Units.mapEquiv (Matrix.transposeRingEquiv n R).toMulEquiv).trans Units.opEquiv
 
-@[simp] lemma coe_transposeMulEquiv (a : GL n R) :
+@[simp] lemma coe_unop_transposeMulEquiv (a : GL n R) :
     ((transposeMulEquiv n a).unop : Matrix n n R) = aᵀ := rfl
 
 open MulOpposite in
