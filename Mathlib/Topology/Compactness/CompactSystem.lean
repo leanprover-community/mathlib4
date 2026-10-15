@@ -214,7 +214,7 @@ protected theorem pi {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsCompactSystem 
   intro S hS h_empty
   choose x hx hxS using hS
   obtain rfl : S = fun n ↦ univ.pi (x n) := funext fun n ↦ (hxS n).symm
-  obtain ⟨i, hi⟩ := (iInter_univ_pi_eq_empty_iff x).mp h_empty
+  obtain ⟨i, hi⟩ := iInter_univ_pi_eq_empty_iff.mp h_empty
   obtain ⟨n, hn⟩ := hC i (fun n ↦ x n i) (fun n ↦ hx n i (mem_univ i)) hi
   exact ⟨n, biInter_univ_pi_eq_empty_iff.mpr ⟨i, hn⟩⟩
 
