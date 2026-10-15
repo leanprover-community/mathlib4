@@ -36,12 +36,18 @@ def uploadPutArgs (signArgs : Array String) (overwrite : Bool) : Array String :=
   if overwrite then signArgs else signArgs ++ #["-H", "If-None-Match: *"]
 
 /-- Formats the curl config file that lists the files to upload: each staged
-file goes to `dest.fileURL`. The response body goes to the null device: stdout
-must carry only the per-transfer JSON reports that `monitorCurl` parses. -/
-def mkPutConfigContent (dest : Location) (files : Array FilePath) : String :=
+file goes to `dest.fileURL`. Every response body goes to `bodySink`: stdout
+must carry only the per-transfer JSON reports that `monitorCurl` parses.
+
+`bodySink` must be a regular file, not the null device. Before curl (below
+8.14.0) retries a transfer that received a body, it truncates the output file.
+It cannot truncate a character device, so it abandons the transfer without a
+retry or a report (curl issue #17371). -/
+def mkPutConfigContent (dest : Location) (files : Array FilePath) (bodySink : FilePath) :
+    String :=
   let l := files.toList.map fun file : FilePath =>
     s!"-T {file.toString}\nurl = {dest.fileURL file.fileName.get!}\n\
-      -o {IO.nullDevice}"
+      -o {bodySink.toString}"
   "\n".intercalate l
 
 /-- Calls `curl` to send a set of files to `dest`, the resolved upload location
@@ -53,7 +59,9 @@ def putFilesViaCurl
   -- TODO: reimplement using HEAD requests?
   let size := files.size
   if size > 0 then
-    IO.FS.writeFile tempConfigFilePath (mkPutConfigContent dest files)
+    -- All transfers share one sink. The tool never reads the response bodies.
+    let bodySink := tempConfigFilePath.withExtension "body"
+    IO.FS.writeFile tempConfigFilePath (mkPutConfigContent dest files bodySink)
     IO.println
       s!"Attempting to upload {size} file(s) under {dest.root}/{dest.filesDir} \
         (location: {dest.label})"
@@ -69,6 +77,7 @@ def putFilesViaCurl
     let (s, _) ← monitorCurl args size "Uploaded" "speed_upload"
       (classifyUpload · · !overwrite) (removeOnError := false) (decompConfig := none)
     IO.FS.removeFile tempConfigFilePath
+    if ← bodySink.pathExists then IO.FS.removeFile bodySink
     -- Surface genuine upload failures. `monitorCurl` excuses already-present
     -- blobs (409/412 on a non-overwrite put), so a re-upload of files the
     -- server already has does not trip this.
