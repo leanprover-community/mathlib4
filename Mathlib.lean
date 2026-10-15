@@ -4760,6 +4760,7 @@ public import Mathlib.FieldTheory.TranscendentalSeparable
 public import Mathlib.Geometry.Convex.AffineMap.Defs
 public import Mathlib.Geometry.Convex.AffineMap.Module
 public import Mathlib.Geometry.Convex.Cone.Basic
+public import Mathlib.Geometry.Convex.Cone.Caratheodory
 public import Mathlib.Geometry.Convex.Cone.Dual
 public import Mathlib.Geometry.Convex.Cone.DualFinite
 public import Mathlib.Geometry.Convex.Cone.Face.Basic
