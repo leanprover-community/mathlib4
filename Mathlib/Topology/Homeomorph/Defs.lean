@@ -504,16 +504,20 @@ variable {F α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [EquivLik
 /-- Turn an element of a type `F` satisfying `HomeomorphClass F α β` into an actual
 `Homeomorph`. This is declared as the default coercion from `F` to `α ≃ₜ β`. -/
 @[coe]
-def toHomeomorph [h : HomeomorphClass F α β] (f : F) : α ≃ₜ β :=
+def _root_.Homeomorph.ofClass [h : HomeomorphClass F α β] (f : F) : α ≃ₜ β :=
   { (f : α ≃ β) with
     continuous_toFun := h.map_continuous f
     continuous_invFun := h.inv_continuous f }
 
-@[simp]
-theorem coe_coe [h : HomeomorphClass F α β] (f : F) : ⇑(h.toHomeomorph f) = ⇑f := rfl
+@[deprecated (since := "2026-10-15")] alias toHomeomorph := Homeomorph.ofClass
 
-instance [HomeomorphClass F α β] : CoeOut F (α ≃ₜ β) :=
-  ⟨HomeomorphClass.toHomeomorph⟩
+@[simp]
+protected theorem coe_ofClass [h : HomeomorphClass F α β] (f : F) : ⇑(Homeomorph.ofClass f) = ⇑f :=
+  rfl
+
+@[deprecated (since := "2026-10-15")] protected alias coe_coe := HomeomorphClass.coe_ofClass
+
+instance [HomeomorphClass F α β] : CoeOut F (α ≃ₜ β) := ⟨Homeomorph.ofClass⟩
 
 theorem toHomeomorph_injective [HomeomorphClass F α β] : Function.Injective ((↑) : F → α ≃ₜ β) :=
   fun _ _ e ↦ DFunLike.ext _ _ fun a ↦ congr($e a)
