@@ -209,10 +209,8 @@ theorem squarefree_of_forall_zmod_pow_add_one_eq {m : ℕ} (hm : m ≠ 0)
     (h : ∀ a : ZMod n, a ^ (m + 1) = a) : Squarefree n := by
   rw [Nat.squarefree_iff_prime_squarefree]
   intro p hp hpp
-  have h1 : p ^ (m + 1) ≡ p [MOD p * p] := by
-    have := h p
-    rw [← Nat.cast_pow, ZMod.natCast_eq_natCast_iff] at this
-    exact this.of_dvd hpp
+  have h1 : p ^ (m + 1) ≡ p [MOD p * p] :=
+    ((ZMod.natCast_eq_natCast_iff _ _ _).1 (by exact_mod_cast h p)).of_dvd hpp
   have h2 : p ^ (m + 1) ≡ 0 [MOD p * p] :=
     Nat.modEq_zero_iff_dvd.2 (by rw [← sq]; exact pow_dvd_pow p (by lia))
   have h3 : p * p ≤ p := Nat.le_of_dvd hp.pos (Nat.modEq_zero_iff_dvd.1 (h1.symm.trans h2))
@@ -224,16 +222,14 @@ theorem squarefree_iff_forall_zmod_pow_carmichael_add_one (hn : n ≠ 0) :
     Squarefree n ↔ ∀ a : ZMod n, a ^ (carmichael n + 1) = a := by
   have : NeZero n := ⟨hn⟩
   refine ⟨fun h a ↦ by simpa using h.zmod_pow_mul_carmichael_add_one 1 a,
-    squarefree_of_forall_zmod_pow_add_one_eq ?_⟩
-  rw [carmichael_eq_exponent hn]
-  exact Monoid.exponent_ne_zero_of_finite
+    squarefree_of_forall_zmod_pow_add_one_eq
+      (carmichael_eq_exponent hn ▸ Monoid.exponent_ne_zero_of_finite)⟩
 
 /-- A Carmichael number `n` satisfies `a ^ n = a` for every `a : ZMod n`, including the residues
 that are not coprime to `n`. -/
 theorem IsCarmichael.zmod_pow_eq_self (h : n.IsCarmichael) (a : ZMod n) : a ^ n = a := by
   obtain ⟨d, hd⟩ := h.carmichael_dvd_sub_one
   have hn : n = d * carmichael n + 1 := by
-    rw [mul_comm, ← hd]
     have := h.two_lt
     lia
   have e := h.squarefree.zmod_pow_mul_carmichael_add_one d a
