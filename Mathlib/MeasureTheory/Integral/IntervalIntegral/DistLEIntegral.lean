@@ -6,8 +6,8 @@ Authors: Yury G. Kudryashov
 module
 
 public import Mathlib.Analysis.Calculus.DiffContOnCl
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 public import Mathlib.Analysis.Calculus.LineDeriv.Basic
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
@@ -103,7 +103,7 @@ lemma norm_sub_le_mul_volume_of_norm_deriv_le_of_le {C : ℝ} (hab : a ≤ b)
         integral_indicator hsm, Measure.restrict_restrict hsm,
         setIntegral_const, smul_eq_mul, mul_comm]
       simp only [s, Measure.real,
-        Measure.measure_toMeasurable_inter_of_sFinite measurableSet_Ioo]
+        Measure.measure_toMeasurable_inter_of_sfinite measurableSet_Ioo]
       simp only [inter_def, mem_ofPred_eq, and_comm]
 
 end Line
@@ -134,7 +134,7 @@ lemma norm_sub_le_mul_volume_of_norm_lineDeriv_le
     have := (hfd t ht).hasLineDerivAt.scomp_of_eq (𝕜 := ℝ) t ((hasDerivAt_id t).sub_const t)
     simpa [g, lineMap_apply_module', Function.comp_def, sub_smul, add_comm _ a] using this
   suffices ‖g 1 - g 0‖ ≤ C * volume.real {t ∈ Ioo 0 1 | deriv g t ≠ 0} by
-    convert! this using 1
+    convert this using 1
     · simp [g]
     · congr 2 with t
       simp +contextual [(hdg _ _).deriv]

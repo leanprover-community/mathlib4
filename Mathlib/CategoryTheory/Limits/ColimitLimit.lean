@@ -5,10 +5,10 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Types.Limits
-public import Mathlib.CategoryTheory.Functor.Currying
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
+
+import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
+import Mathlib.CategoryTheory.Limits.Types.Limits
 
 /-!
 # The morphism comparing a colimit of limits with the corresponding limit of colimits.
@@ -21,7 +21,7 @@ The prototypical example, proved in `CategoryTheory.Limits.FilteredColimitCommut
 is that when `C = Type`, filtered colimits commute with finite limits.
 
 ## References
-* Borceux, Handbook of categorical algebra 1, Section 2.13
+* [F. Borceux, *Handbook of Categorical Algebra 1*][borceux-vol1], Section 2.13
 * [Stacks: Filtered colimits](https://stacks.math.columbia.edu/tag/002W)
 -/
 

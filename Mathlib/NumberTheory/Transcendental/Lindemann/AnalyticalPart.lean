@@ -85,7 +85,7 @@ theorem P_le_aux (f : ℕ → ℂ[X]) (s : ℂ) (c : ℝ)
   rw [P_eq_integral_exp_mul_eval (f p) s, mul_comm s, norm_mul, norm_mul, norm_exp]
   gcongr
   rw [intervalIntegral.integral_of_le zero_le_one, ← mul_one (_ * _)]
-  convert! MeasureTheory.norm_setIntegral_le_of_norm_le_const _ _
+  convert MeasureTheory.norm_setIntegral_le_of_norm_le_const _ _
   · rw [Real.volume_real_Ioc_of_le zero_le_one, sub_zero]
   · rw [Real.volume_Ioc, sub_zero]; exact ENNReal.ofReal_lt_top
   intro x hx

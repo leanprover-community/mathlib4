@@ -38,8 +38,8 @@ def pseudofunctorOver : Pseudofunctor (LocallyDiscrete Cᵒᵖ) Cat :=
   LocallyDiscrete.mkPseudofunctor
     (fun X ↦ ↧(Sheaf (J.over X.unop) A))
     (fun f ↦ (J.overMapPullback A f.unop).toCatHom)
-    (fun X ↦ Cat.Hom.isoMk <| (J.overMapPullbackId A X.unop))
-    (fun f g ↦ Cat.Hom.isoMk <| (J.overMapPullbackComp A g.unop f.unop).symm)
+    (fun X ↦ Cat.Hom.isoMk (J.overMapPullbackId A X.unop))
+    (fun f g ↦ Cat.Hom.isoMk (J.overMapPullbackComp A g.unop f.unop).symm)
     (fun f g h ↦ by ext1; simpa [overMapPullbackCongr_eq_eqToIso] using!
       J.overMapPullback_assoc A h.unop g.unop f.unop)
     (fun f ↦ by ext1; simpa [overMapPullbackCongr_eq_eqToIso] using!

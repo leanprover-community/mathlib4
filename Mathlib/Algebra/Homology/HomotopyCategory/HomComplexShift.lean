@@ -562,6 +562,17 @@ lemma equivHomShift_symm_postcomp
     equivHomShift.symm (z.postcomp g) = equivHomShift.symm z ≫ g⟦n⟧' :=
   equivHomShift.injective (by simp [equivHomShift_comp_shift])
 
+@[simp]
+lemma equivHomShift_smul (r : R) (z : K ⟶ L⟦n⟧) :
+    equivHomShift (r • z) = r • equivHomShift z := by
+  ext : 1
+  simp [equivHomShift_apply]
+
+@[simp]
+lemma equivHomShift_symm_smul (r : R) (z : Cocycle K L n) :
+    equivHomShift.symm (r • z) = r • equivHomShift.symm z :=
+  equivHomShift.injective (by simp)
+
 /-- The additive equivalence `Cocycle K L n ≃+ Cocycle K⟦a⟧ L n'` when `n + a = n'`. -/
 @[simps]
 def leftShiftAddEquiv (n a n' : ℤ) (hn' : n + a = n') :

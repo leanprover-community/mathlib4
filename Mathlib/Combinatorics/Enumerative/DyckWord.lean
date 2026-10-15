@@ -366,7 +366,7 @@ lemma outsidePart_add : (p + q).outsidePart = p.outsidePart + q := by
 @[simp]
 lemma insidePart_nest : p.nest.insidePart = p := by
   simp_rw [insidePart, nest_ne_zero, dite_false, firstReturn_nest]
-  convert! p.denest_nest; rw [DyckWord.ext_iff]; apply take_of_length_le
+  convert p.denest_nest; rw [DyckWord.ext_iff]; apply take_of_length_le
   simp_rw [nest, length_append, length_singleton]; lia
 
 @[simp]
@@ -470,7 +470,7 @@ lemma strictMono_semilength : StrictMono semilength := fun p q pq ↦ by
   obtain ⟨plq, pnq⟩ := lt_iff_le_and_ne.mp pq
   apply lt_of_le_of_ne (monotone_semilength plq)
   contrapose pnq
-  replace pnq := congr(2 * $(pnq))
+  replace pnq := congr(2 * $pnq)
   simp_rw [two_mul_semilength_eq_length] at pnq
   exact DyckWord.ext ((infix_of_le plq).eq_of_length pnq)
 
@@ -545,7 +545,7 @@ instance {n : ℕ} : Fintype { p : DyckWord // p.semilength = n } :=
 theorem card_dyckWord_semilength_eq_catalan (n : ℕ) :
     Fintype.card { p : DyckWord // p.semilength = n } = catalan n := by
   rw [← Fintype.ofEquiv_card (equivTreesOfNumNodesEq n), ← treesOfNumNodesEq_card_eq_catalan]
-  convert! Fintype.card_coe _
+  convert Fintype.card_coe _
 
 end BinaryTree
 

@@ -45,7 +45,7 @@ Example:
   let .app (.app (.app (.app f (p : Q(Prop))) (_ : Q(Decidable $p))) (a : Q($α))) (b : Q($α))
     ← withReducible (whnf e) | throwError "not ite"
   haveI' : $e =Q ite $p $a $b := ⟨⟩
-  guard <| ← withDefault <| withNewMCtxDepth <| isDefEq f q(ite (α := $α))
+  guard <| ← withNewMCtxDepth <| isDefEq f q(ite (α := $α))
   let ra ← core zα pα a; let rb ← core zα pα b
   ...
 ```
@@ -749,7 +749,7 @@ partial def applyPositivityLemmas {u : Level} {α : Q(Type u)} (zα : Q(Zero $α
 /-- Run each registered `positivity` extension on an expression, returning a `NormNum.Result`. -/
 partial def core {u : Level} {α : Q(Type u)} (zα : Q(Zero $α))
     (pα? : Option Q(PartialOrder $α)) (e : Q($α)) :
-    PositivityM (Strictness zα e pα?) := do
+    PositivityM (Strictness zα e pα?) := withReducible do
   let mut result := .none
   trace[Tactic.positivity] "core: {e}"
   if e ∈ (← get).failureCache then return .none else
