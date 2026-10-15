@@ -834,32 +834,44 @@ This is available in bundled forms as:
 
 /-- `prodEquiv` as an `AddEquiv`. -/
 @[simps!] def prodAddEquiv [Add α] [Add β] :
-    Matrix m n (α × β) ≃+ (Matrix m n α) × (Matrix m n β) where
+    Matrix m n (α × β) ≃+ Matrix m n α × Matrix m n β where
   __ := prodEquiv
   map_add' _ _ := rfl
 
+@[simp] theorem toEquiv_prodAddEquiv [Add α] [Add β] {a : Matrix m n (α × β)} :
+    prodAddEquiv a = prodEquiv a := rfl
+
 /-- `prodEquiv` as a `LinearEquiv`. -/
 @[simps!] def prodLinearEquiv (R) [Semiring R] [AddCommMonoid α] [AddCommMonoid β]
-    [Module R α] [Module R β] : Matrix m n (α × β) ≃ₗ[R] (Matrix m n α) × (Matrix m n β) where
+    [Module R α] [Module R β] : Matrix m n (α × β) ≃ₗ[R] Matrix m n α × Matrix m n β where
   __ := prodAddEquiv
   map_smul' _ _ := rfl
+
+@[simp] theorem toAddEquiv_prodLineardEquiv (R) [Semiring R] [AddCommMonoid α] [AddCommMonoid β]
+    [Module R α] [Module R β] {a : Matrix m n (α × β)} : prodLinearEquiv R a = prodAddEquiv a := rfl
 
 variable [Fintype n]
 
 /-- `prodEquiv` as a `RingEquiv`. -/
 @[simps!] def prodRingEquiv [AddCommMonoid α] [AddCommMonoid β] [Mul α] [Mul β] :
-    Matrix n n (α × β) ≃+* (Matrix n n α) × (Matrix n n β) where
+    Matrix n n (α × β) ≃+* Matrix n n α × Matrix n n β where
   __ := prodAddEquiv
   map_mul' _ _ := by ext <;> simp [Matrix.mul_apply, Prod.fst_sum, Prod.snd_sum]
+
+@[simp] theorem toAddEquiv_prodRingEquiv [AddCommMonoid α] [AddCommMonoid β] [Mul α] [Mul β]
+    {a : Matrix n n (α × β)} : prodRingEquiv a = prodAddEquiv a := rfl
 
 variable (R) [CommSemiring R] [DecidableEq n]
 
 /-- `prodEquiv` as an `AlgEquiv`. -/
 @[simps!] def prodAlgEquiv [Semiring α] [Algebra R α] [Semiring β] [Algebra R β] :
-    Matrix n n (α × β) ≃ₐ[R] (Matrix n n α) × (Matrix n n β) where
+    Matrix n n (α × β) ≃ₐ[R] Matrix n n α × Matrix n n β where
   __ := prodRingEquiv
   commutes' := (AlgHom.mk' (prodRingEquiv (n := n) (α := α) (β := β)).toRingHom
     fun _ _ ↦ rfl).commutes
+
+@[simp] theorem toprodAddEquiv_prodAlgEquiv [Semiring α] [Algebra R α] [Semiring β] [Algebra R β]
+    {a : Matrix n n (α × β)} : prodAlgEquiv R a = prodRingEquiv a := rfl
 
 end Prod
 
