@@ -72,9 +72,7 @@ lemma infinitePi_bernoulliMeasure_map_sum (n : ℕ) :
     Measure.map_map (by fun_prop) (by fun_prop)]
   congr 1
   ext ω
-  have : {i | i ∈ Iio n ∧ ω i} = ↑((Finset.range n).filter fun i ↦ ω i) := by
-    ext i
-    simp
+  have : {i | i ∈ Iio n ∧ ω i} = ↑((Finset.range n).filter fun i ↦ ω i) := Set.ext fun i ↦ by simp
   simp only [Function.comp_apply]
   rw [this, Set.ncard_coe_finset]
   simp [Finset.sum_boole]
@@ -140,8 +138,7 @@ theorem tendstoInDistribution_binomial (hp₀ : p ≠ 0) (hp₁ : p ≠ 1)
     rw [← Finset.sum_div, Finset.sum_sub_distrib, Finset.sum_const, Finset.card_range,
       nsmul_eq_mul, show (n : ℝ) * p * (1 - p) = n * (p * (1 - p)) by ring,
       Real.sqrt_mul (Nat.cast_nonneg n), inv_mul_eq_div, div_div, mul_comm τ]
-  refine ⟨fun n ↦ by fun_prop, hY.aemeasurable, ?_⟩
-  exact hclt.tendsto.congr fun n ↦ Subtype.ext (hlaw n)
+  exact ⟨fun n ↦ by fun_prop, hY.aemeasurable, hclt.tendsto.congr fun n ↦ Subtype.ext (hlaw n)⟩
 
 /-- **de Moivre–Laplace theorem**, in terms of cumulative distribution functions: for `0 < p < 1`,
 the probability that a `Bin(n, p)` random variable `k` satisfies `(k - n p) / √(n p (1 - p)) ≤ x`
