@@ -789,30 +789,7 @@ def proc : Simp.Simproc := fun (t : Expr) ↦ do
   catch _ =>
     return .continue
 
-end FieldSimp
-
-namespace ClickSuggestions.Normalize
-
-/-- The entry for `field_simp` in `#click_suggestions`. -/
-def fieldSimp : NormTactic where
-  tacStx loc? := `(tactic| field_simp $[$loc?:location]?)
-  convStx := `(conv| field_simp)
-  run e := AtomM.run .reducible do
-    let ctx ← Simp.mkContext
-      (simpTheorems := #[← getSimpTheorems])
-      (congrTheorems := ← getSimpCongrTheorems)
-    let disch := fun e ↦ Prod.fst <$> (FieldSimp.discharge e).run ctx >>= Option.getM
-    if ← isProp e then
-      let cleanup e := return (← simpOnlyNames [] e).expr -- convert e.g. `x = x` to `True`
-      cleanup (← FieldSimp.reduceProp disch e).expr
-    else
-      return (← FieldSimp.reduceExpr disch e).expr
-
-initialize normTacticRef.modify (·.push fieldSimp)
-
-end ClickSuggestions.Normalize
-
-end Mathlib.Tactic
+end Mathlib.Tactic.FieldSimp
 
 open Mathlib.Tactic
 

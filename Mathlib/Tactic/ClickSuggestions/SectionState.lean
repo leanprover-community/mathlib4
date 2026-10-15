@@ -108,7 +108,7 @@ def renderSection (kind : SectionKind) (s : SectionState α) : Html := Id.run do
     | .hyp => " (local hypotheses)"
     | .currFile => " (current file)"
     | .imported => ""
-  let header := <span> Pattern {pattern} {.text suffix} </span>
+  let header := <span>Pattern {pattern}{.text suffix}</span>
   if kind matches .imported then
     return <FilterDetails summary={header} all={all} filtered={filtered} initiallyFiltered={true} />
   else

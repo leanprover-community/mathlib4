@@ -64,10 +64,10 @@ example {R : Type*} [Ring R] (a b c : R) : a * (b + c + c - b) = 2 * a * c := by
 ```
 -/
 syntax (name := noncomm_ring) "noncomm_ring" optConfig (discharger)?
-  (" [" ((simpStar <|> simpErase <|> simpLemma),*,?) "]")? (location)? : tactic
+  (" [" ((simpStar <|> simpErase <|> simpLemma),*,?) "]")? : tactic
 
 macro_rules
-  | `(tactic| noncomm_ring $cfg:optConfig $[$disch]? $[[$rules,*]]? $[$loc]?) => do
+  | `(tactic| noncomm_ring $cfg:optConfig $[$disch]? $[[$rules,*]]?) => do
     let rules' := rules.getD ⟨#[]⟩
     let tac ← `(tactic|
       (first | simp $cfg:optConfig $(disch)? only [
@@ -85,35 +85,14 @@ macro_rules
           -- Pull out negations.
           neg_mul, mul_neg,
           -- user-specified simp lemmas
-          $rules',*] $[$loc]? |
+          $rules',*] |
         fail "`noncomm_ring` simp lemmas don't apply; try `abel` instead") <;>
-      first | abel1 | abel_nf $[$loc]?)
+      first | abel1 | abel_nf)
     -- if a manual rewrite rule is provided, we repeat the tactic
     -- (since abel might simplify and allow the rewrite to apply again)
     if rules.isSome then `(tactic| repeat1 ($tac;)) else `(tactic| $tac)
 
-end NoncommRing
-
-namespace ClickSuggestions.Normalize
-
-open Lean
-
-/-- The entry for `noncomm_ring` in `#click_suggestions`.
-It is not suggested when `ring_nf` can be used instead. -/
-def noncommRing : NormTactic where
-  tacStx loc? := `(tactic| noncomm_ring $[$loc?:location]?)
-  -- `noncomm_ring` doesn't have a `conv` version.
-  convStx := failure
-  run e := do
-    guard !(← involvesClass e ``CommSemiring)
-    guard (← involvesClass e ``NonUnitalNonAssocSemiring)
-    runFromStx (← `(tactic| noncomm_ring)) e
-
-initialize normTacticRef.modify (·.push noncommRing)
-
-end ClickSuggestions.Normalize
-
-end Mathlib.Tactic
+end Mathlib.Tactic.NoncommRing
 
 /-!
 We register `noncomm_ring` with the `hint` tactic.

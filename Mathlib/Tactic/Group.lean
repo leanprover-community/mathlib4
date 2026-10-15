@@ -86,26 +86,7 @@ macro_rules
         <;> ring_nf (ifUnchanged := .silent) $[$loc]?)
     | fail "`group` made no progress")
 
-end Group
-
-namespace ClickSuggestions.Normalize
-
-open Lean
-
-/-- The entry for `group` in `#click_suggestions`. -/
-def group : NormTactic where
-  tacStx loc? := `(tactic| group $[$loc?]?)
-  -- `group` doesn't have a `conv` version.
-  convStx := failure
-  run e := do
-    guard (← involvesClass e ``Group)
-    runFromStx (← `(tactic| group)) e
-
-initialize normTacticRef.modify (·.push group)
-
-end ClickSuggestions.Normalize
-
-end Mathlib.Tactic
+end Mathlib.Tactic.Group
 
 /-!
 We register `group` with the `hint` tactic.

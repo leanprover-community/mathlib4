@@ -238,31 +238,37 @@ where
 section Meta
 
 /-- Determine whether the explicit parts of two expressions are equal,
-and the implicit parts are definitionally equal, up to `implicit` transparency.
+and the implicit parts are definitionally equal, up to `reducible_and_instances` transparency.
 This says whether two expressions are 'morally equal', and is used for deduplicating suggestions. -/
 partial def isExplicitEq (t s : Expr) : MetaM Bool := do
   let t := t.cleanupAnnotations; let s := s.cleanupAnnotations
   if t == s then
     return true
-  -- Unify lambdas and foralls
-  if t.isLambda && s.isLambda || t.isForall && s.isForall then
-    unless ← withNewMCtxDepth <| withImplicit <| isDefEq t.bindingDomain! s.bindingDomain! do
-      return false
-    return ← withLocalDeclD `_ t.bindingDomain! fun x ↦
-      isExplicitEq (t.bindingBody!.instantiate1 x) (s.bindingBody!.instantiate1 x)
-  -- Unify applications of the same head function.
-  unless t.isApp && t.getAppNumArgs == s.getAppNumArgs do
-    return false
-  unless ← isExplicitEq t.getAppFn s.getAppFn do
+  unless t.getAppNumArgs == s.getAppNumArgs && t.getAppFn == s.getAppFn do
     return false
   let tArgs := t.getAppArgs
   let sArgs := s.getAppArgs
-  let info ← getFunInfoNArgs t.getAppFn t.getAppNumArgs
-  t.getAppNumArgs.allM fun i _ => do
-    if info.paramInfo[i]!.isExplicit then
+  -- TODO: let's just use `getFunInfo`.
+  let bis ← getBinderInfos t.getAppFn tArgs
+  t.getAppNumArgs.allM fun i _ =>
+    if bis[i]!.isExplicit then
       isExplicitEq tArgs[i]! sArgs[i]!
     else
-      withNewMCtxDepth <| withImplicit <| isDefEq tArgs[i]! sArgs[i]!
+      withNewMCtxDepth <| withReducibleAndInstances <| isDefEq tArgs[i]! sArgs[i]!
+where
+  /-- Get the `BinderInfo`s for the arguments of `mkAppN fn args`. -/
+  getBinderInfos (fn : Expr) (args : Array Expr) : MetaM (Array BinderInfo) := do
+    let mut fnType ← inferType fn
+    let mut result := Array.mkEmpty args.size
+    let mut j := 0
+    for i in [:args.size] do
+      unless fnType.isForall do
+        fnType ← whnfD (fnType.instantiateRevRange j i args)
+        j := i
+      let .forallE _ _ b bi := fnType | throwError m! "expected function type {indentExpr fnType}"
+      fnType := b
+      result := result.push bi
+    return result
 
 end Meta
 
@@ -349,7 +355,9 @@ section Widget
 
 open Widget
 
-/-- Generate a suggestion for inserting `tac`, with message `html`. -/
+/-- Generate a suggestion for inserting `tac`, with message `html`.
+`buton` will be used as the text on the clickable button.
+If `solves := true`, then a `🎉️` emoji is added. -/
 def mkSuggestion (tac : TSyntax `tactic) (button : String) (html : Html) (solves : Bool) :
     ClickSuggestionsM Html := do
   let tac ← match (← read).onGoal with
@@ -358,12 +366,12 @@ def mkSuggestion (tac : TSyntax `tactic) (button : String) (html : Html) (solves
   let (range, newText) ← mkInsertion tac (← read)
   let buttonText := s!"{if solves then "🎉️" else ""}[{button}] "
   let button :=
-    .ofComponent MakeEditLink (.ofReplaceRange (← read).meta range newText) #[.text buttonText]
-  return <div
-    style={json% { "display" : "flex", "align-items" : "flex-start", "margin-bottom" : "1em",
-      "white-space" : "pre" }}
-    className="font-code">
-    {button} {html}
+    <span style={json% { "white-space" : "pre"}} className="font-code">
+    { .ofComponent MakeEditLink (.ofReplaceRange (← read).meta range newText) #[.text buttonText] }
+    </span>;
+  return <div display="flex"
+    style={json% { "display" : "flex", "align-items" : "flex-start", "margin-bottom" : "1em" }}>
+    {button}{html}
     </div>
 
 /-- Add suggestion `tac` to the list of tactics that solve the goal. -/
@@ -376,26 +384,6 @@ def addSolvingSuggestion (tac : TSyntax `tactic) : ClickSuggestionsM Unit := do
     </summary>
     {.element "div" #[] (← get).solvedSuggestions}
     </details>
-
-/-- Make a list of suggestions by running `k` in a separate thread,
-letting it add them one by one. -/
-def mkIncrementalSuggestions (title : String)
-    (k : (Html → ClickSuggestionsM Unit) → ClickSuggestionsM Unit) : ClickSuggestionsM Html :=
-  mkRefreshComponentM (.text "") fun token ↦ trackingComputation title do
-    let htmls ← IO.mkRef #[]
-    k fun html ↦ do
-      markProgress
-      htmls.modify (·.push html)
-      token.update <details «open»={true}>
-          <summary className="mv2 pointer"> {.text title} {.text "⏳️"} </summary>
-          {.element "div" #[] (← htmls.get)}
-        </details>
-    let htmls ← htmls.get
-    unless htmls.isEmpty do
-      token.update <details «open»={true}>
-          <summary className="mv2 pointer"> {.text title} </summary>
-          {.element "div" #[] htmls}
-        </details>
 
 end Widget
 
