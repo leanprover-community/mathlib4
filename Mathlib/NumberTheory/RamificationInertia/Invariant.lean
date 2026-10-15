@@ -108,14 +108,15 @@ noncomputable def linearize : (M →ₗ[A] N) →ₗ[B] (M →ₗ[B] N) :=
 lemma linearize_apply (f : M →ₗ[A] N) : linearize B f = (f.liftBaseChange B).comp (sec A B M) :=
   rfl
 
-/-- Separability linearization preserves conditions of mapping one submodule into another. -/
-lemma linearize_mem (f : M →ₗ[A] N) (P : Submodule B M) (Q : Submodule B N)
-    (hf : ∀ x ∈ P, f x ∈ Q) {x : M} (hx : x ∈ P) : linearize B f x ∈ Q := by
-  simp_rw [linearize_apply, sec, LinearMap.comp_apply, LinearMap.coe_mk]
+lemma le_comap_lineraize (f : M →ₗ[A] N) (P : Submodule B M) (Q : Submodule B N)
+    (hf : P.restrictScalars A ≤ (Q.restrictScalars A).comap f) : P ≤ Q.comap (linearize B f) := by
+  intro x hx
+  simp_rw [Submodule.mem_comap, linearize_apply, sec, LinearMap.comp_apply, LinearMap.coe_mk]
   induction elem A B using TensorProduct.inductionOn with
-  | tmul a b => exact Q.smul_mem a (hf _ (P.smul_mem b hx))
+  | tmul a b => exact Q.smul_mem a (hf (P.smul_mem b hx))
   | add t₁ t₂ h₁ h₂ => simpa using Q.add_mem h₁ h₂
 
+@[simp]
 lemma linearize_comp {L : Type*} [AddCommGroup L] [Module A L] [Module B L]
     [IsScalarTower A B L] (f : M →ₗ[A] N) (g : L →ₗ[B] M) :
     linearize B (f.comp (g.restrictScalars A)) = (linearize B f).comp g := by
@@ -161,7 +162,7 @@ variable {G M : Type*} [Group G] [AddCommMonoid M] [DistribMulAction G M]
 
 /-- The unnormalized relative trace from subgroup-fixed points to group-fixed points. -/
 noncomputable def relativeTrace : FixedPoints.addSubmonoid H M →+ FixedPoints.addSubmonoid G M where
-  toFun x := ⟨∑ q : G ⧸ H, q.out • (x : M), fun g ↦ by
+  toFun x := ⟨∑ q : G ⧸ H, q.out • x, fun g ↦ by
     rw [Finset.smul_sum]
     refine Fintype.sum_equiv (MulAction.toPerm g) _ _ fun q ↦ ?_
     obtain ⟨h, hh⟩ := QuotientGroup.mk_out_eq_mul H (g * q.out)
@@ -175,12 +176,11 @@ lemma relativeTrace_apply (x : FixedPoints.addSubmonoid H M) :
     (H.relativeTrace x : M) = ∑ q : G ⧸ H, q.out • (x : M) := rfl
 
 lemma relativeTrace_mem (P : AddSubmonoid M)
-    (hP : ∀ (g : G) (x : M), x ∈ P → g • x ∈ P)
+    (hP : ∀ (g : G) x, x ∈ P → g • x ∈ P)
     (x : FixedPoints.addSubmonoid H M) (hx : (x : M) ∈ P) :
     (H.relativeTrace x : M) ∈ P :=
   P.sum_mem fun q _ ↦ hP q.out _ hx
 
-/-- Relative trace is linear over scalars fixed by the ambient group. -/
 noncomputable def relativeTraceLinearMap {A B : Type*} [CommSemiring A] [Semiring B]
     [Algebra A B] [MulSemiringAction G B] [SMulCommClass G A B] :
     FixedPoints.subalgebra A B H →ₗ[A] FixedPoints.subalgebra A B G where
@@ -203,15 +203,13 @@ variable {G : Type*} [Group G] (H : Subgroup G) (A : Type*) {B : Type*}
   [Algebra.FormallyUnramified A B] [Algebra.EssFiniteType A B] [Finite H]
 
 /-- The idempotent whose multiples are fixed by a finite subgroup. -/
-noncomputable def inertiaIdempotent : B := by
-  classical
+noncomputable def inertiaIdempotent : B :=
   letI := Fintype.ofFinite H
-  exact ∏ h : H, equalizerIdempotent (AlgHom.id A B)
-    (MulSemiringAction.toAlgHom A B (h : G))
+  ∏ h : H, equalizerIdempotent (AlgHom.id A B) (MulSemiringAction.toAlgHom A B h)
 
 lemma isIdempotentElem_inertiaIdempotent : IsIdempotentElem (H.inertiaIdempotent A : B) := by
   classical
-  let := Fintype.ofFinite H
+  let := Fintype.ofFinite H -- missing IsIdempotentElem.prod?
   rw [IsIdempotentElem, inertiaIdempotent, ← Finset.prod_mul_distrib]
   exact Finset.prod_congr rfl fun h _ ↦ (isIdempotentElem_equalizerIdempotent _ _).eq
 
@@ -254,7 +252,7 @@ lemma inertiaIdempotent_sub_one_mem_iff {Q : Ideal B} :
     intro h hh
     rw [mk_equalizerIdempotent_eq_one_iff, eq_comm]
     ext b
-    simpa [Ideal.Quotient.mk_eq_mk_iff_sub_mem] using Q.mem_inertia.mp (hH h.prop) b
+    simpa [Ideal.Quotient.mk_eq_mk_iff_sub_mem, Subgroup.smul_def] using Q.mem_inertia.mp (hH h.2) b
 
 lemma _root_.Ideal.mk_inertiaIdempotent_inertia_eq_one (Q : Ideal B) [Finite (Q.inertia G)] :
     Ideal.Quotient.mk Q ((Q.inertia G).inertiaIdempotent A) = 1 :=
@@ -328,7 +326,7 @@ lemma descentMultiplier_mem_colon [Algebra.IsInvariant A B G]
     simp [Subgroup.descentMultiplier, linearize_comp, u, Finset.sum_mul, mul_assoc]
   rw [Submodule.mem_colon]
   intro x hx
-  simpa only [hF, smul_eq_mul] using linearize_mem T I J hT hx
+  simpa only [hF, smul_eq_mul, Submodule.mem_comap] using le_comap_lineraize T I J hT hx
 
 /-- Modulo a prime ideal, the descent multiplier for its inertia subgroup is one. -/
 lemma Quotient.mk_descentMultiplier_inertia (Q : Ideal B) [Q.IsPrime] [Finite G] :
