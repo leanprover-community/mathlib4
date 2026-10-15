@@ -9,9 +9,6 @@ public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.Tactic.Matrix.OfLists
 public import Mathlib.Tactic.Matrix.View
 
-import Batteries.Data.Nat.Basic
-import Mathlib.Util.Qq
-
 /-!
 # Simproc deciding `Matrix.IsIndecomposable`
 
