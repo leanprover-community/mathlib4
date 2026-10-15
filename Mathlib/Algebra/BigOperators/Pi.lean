@@ -9,9 +9,10 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Lemmas
 public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Algebra.Group.IsApply
 public import Mathlib.Algebra.Ring.Pi
+
 import Mathlib.Data.Fintype.Basic
-public import Mathlib.Data.FunLike.IsApply
 
 /-!
 # Big operators for Pi Types
@@ -225,7 +226,7 @@ end EqOn
 section FunLike
 
 variable {F α β ι : Type*} [FunLike F α β] [CommMonoid β] [CommMonoid F]
-  [IsOneApply F α β] [IsMulApply F α β]
+  [IsOneApply F] [IsMulApply F]
 
 @[to_additive (attr := simp, grind =)]
 theorem prod_apply (s : Finset ι) (f : ι → F) (x : α) : (∏ i ∈ s, f i) x = ∏ i ∈ s, f i x := by

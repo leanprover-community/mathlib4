@@ -228,12 +228,6 @@ protected theorem IsEmbedding.isSeparable_preimage {α : Type*} [TopologicalSpac
 
 end Topology
 
-/-- A compact set is separable. -/
-theorem IsCompact.isSeparable {α : Type*} [TopologicalSpace α] [PseudoMetrizableSpace α]
-    {s : Set α} (hs : IsCompact s) : IsSeparable s :=
-  haveI : CompactSpace s := isCompact_iff_compactSpace.mp hs
-  .of_subtype s
-
 namespace Metric
 
 section SecondCountable

@@ -6,9 +6,10 @@ Authors: Elazar Gershuni
 module
 
 public import Mathlib.Data.Subtype
+public import Mathlib.Util.CompileInductive
+
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.Push
-public import Mathlib.Util.CompileInductive
 
 /-!
 # Uniquely Decodable Codes
@@ -22,7 +23,7 @@ This file defines uniquely decodable codes and proves basic properties.
 
 ## Main results
 
-* `IsUniquelyDecodable.epsilon_not_mem`: Uniquely decodable codes cannot contain the empty
+* `IsUniquelyDecodable.epsilon_notMem`: Uniquely decodable codes cannot contain the empty
   string.
 * `IsUniquelyDecodable.flatten_injective`: The flatten function is injective on lists of
   codewords from a uniquely decodable code.
@@ -48,13 +49,16 @@ variable {S : Set (List α)}
 
 The empty string can be "decoded" as either zero or two copies of itself,
 violating unique decodability. -/
-lemma IsUniquelyDecodable.epsilon_not_mem
+lemma IsUniquelyDecodable.epsilon_notMem
     (h : IsUniquelyDecodable S) :
     [] ∉ S := by
   simpa using h [[]] [[], []]
 
+@[deprecated (since := "2026-09-28")]
+alias IsUniquelyDecodable.epsilon_not_mem := IsUniquelyDecodable.epsilon_notMem
+
 @[deprecated (since := "2026-08-16")]
-alias UniquelyDecodable.epsilon_not_mem := IsUniquelyDecodable.epsilon_not_mem
+alias UniquelyDecodable.epsilon_not_mem := IsUniquelyDecodable.epsilon_notMem
 
 lemma IsUniquelyDecodable.flatten_injective (h : IsUniquelyDecodable S) :
     Function.Injective (fun (L : {L : List (List α) // ∀ x ∈ L, x ∈ S}) => L.val.flatten) := by

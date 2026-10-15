@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Algebra.Order.Star.Prod
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Pi
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
 public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Pi
 
 /-!
 # Real powers defined via the continuous functional calculus
@@ -555,8 +556,7 @@ lemma isUnit_rpow_iff (a : A) (y : ℝ) (hy : y ≠ 0) (ha : 0 ≤ a := by cfc_t
     specialize h 0 h0
     simp only [ne_eq, NNReal.rpow_eq_zero_iff, true_and, Decidable.not_not] at h
     exact hy h
-  · rw [cfc_apply_of_not_continuousOn a hf] at h
-    exact False.elim <| not_isUnit_zero h
+  · grind [not_isUnit_zero]
 
 section prod
 

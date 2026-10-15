@@ -349,7 +349,7 @@ noncomputable nonrec def IsBaseChange.lift (g : M →ₗ[R] Q) : N →ₗ[S] Q :
 
 nonrec theorem IsBaseChange.lift_eq (g : M →ₗ[R] Q) (x : M) : h.lift g (f x) = g x := by
   have hF : ∀ (s : S) (m : M), h.lift g (s • f m) = s • g m := h.lift_eq _
-  convert! hF 1 x <;> rw [one_smul]
+  convert hF 1 x <;> rw [one_smul]
 
 theorem IsBaseChange.lift_comp (g : M →ₗ[R] Q) : ((h.lift g).restrictScalars R).comp f = g :=
   LinearMap.ext (h.lift_eq g)
@@ -384,7 +384,7 @@ variable (R M N S)
 
 theorem TensorProduct.isBaseChange : IsBaseChange S (TensorProduct.mk R S M 1) := by
   delta IsBaseChange
-  convert! TensorProduct.isTensorProduct R S M using 1
+  convert TensorProduct.isTensorProduct R S M using 1
   ext s x
   change s • (1 : S) ⊗ₜ[R] x = s ⊗ₜ[R] x
   rw [TensorProduct.smul_tmul']
@@ -432,11 +432,11 @@ lemma IsBaseChange.iff_of_equiv_comm (eM : M ≃ₗ[R] P) (eN : N ≃ₗ[S] Q)
   simp only [IsBaseChange]
   have (m : M) : f' (eM m) = eN (f m) := congr($comm m)
   refine ⟨fun ist ↦ ?_, fun ist ↦ ?_⟩
-  · convert! (ist.compl₂_linearEquiv eM.symm).compr₂_linearEquiv (eN.restrictScalars R)
+  · convert (ist.compl₂_linearEquiv eM.symm).compr₂_linearEquiv (eN.restrictScalars R)
     ext s m'
     obtain ⟨m, rfl⟩ := eM.surjective m'
     simp [this]
-  · convert! (ist.compl₂_linearEquiv eM).compr₂_linearEquiv (eN.symm.restrictScalars R)
+  · convert (ist.compl₂_linearEquiv eM).compr₂_linearEquiv (eN.symm.restrictScalars R)
     ext s m
     simp [this]
 
@@ -483,7 +483,7 @@ theorem IsBaseChange.of_lift_unique
       { f' with
         map_smul' := fun s x =>
           TensorProduct.inductionOn x (fun s' y => smul_assoc s s' _) fun x y hx hy => ?_ }
-    · dsimp at *; rw [smul_add, map_add, map_add, smul_add, hx, hy]
+    dsimp at *; rw [smul_add, map_add, map_add, smul_add, hx, hy]
   simp_rw [DFunLike.ext_iff, LinearMap.comp_apply, LinearMap.restrictScalars_apply] at hg
   let fe : S ⊗[R] M ≃ₗ[S] N :=
     LinearEquiv.ofLinearMap f'' (ULift.moduleEquiv.toLinearMap.comp g) ?_ ?_

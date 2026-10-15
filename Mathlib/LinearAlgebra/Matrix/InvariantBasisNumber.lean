@@ -5,9 +5,9 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.ToLin
-public import Mathlib.LinearAlgebra.Matrix.SemiringInverse
 public import Mathlib.LinearAlgebra.InvariantBasisNumber
+public import Mathlib.LinearAlgebra.Matrix.SemiringInverse
+public import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-!
 # Invertible matrices over a ring with invariant basis number are square.
@@ -75,7 +75,9 @@ protected theorem MulOpposite.invariantBasisNumber_iff :
   refine fun f ↦ .trans (forall_congr' fun g ↦ ?_) (transposeAddEquiv ..).forall_congr_right
   rw [← (transposeAddEquiv ..).injective.eq_iff, ← (transposeAddEquiv (Fin m) ..).injective.eq_iff]
   congrm (?_ = ?_ → ?_ = ?_ → _)
-  iterate 2 ext; simp [map, mul_apply]; simp
+  iterate 2
+  · ext; simp [map, mul_apply]
+  · simp
 
 instance [RankCondition R] : RankCondition Rᵐᵒᵖ := MulOpposite.rankCondition_iff.mpr ‹_›
 
