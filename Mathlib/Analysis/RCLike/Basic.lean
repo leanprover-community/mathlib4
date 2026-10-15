@@ -784,8 +784,7 @@ theorem sum_sum_norm_mul_sub_mul_sq_le {ι : Type*} (s : Finset ι) (a b : ι �
     ∑ i ∈ s, ∑ j ∈ s, ‖a i * b j - a j * b i‖ ^ 2 ≤
       2 * (∑ i ∈ s, ‖a i‖ ^ 2) * ∑ i ∈ s, ‖b i‖ ^ 2 := by
   rw [sum_sum_norm_mul_sub_mul_sq, mul_assoc]
-  have := sq_nonneg ‖∑ i ∈ s, conj (a i) * b i‖
-  linarith
+  linarith [sq_nonneg ‖∑ i ∈ s, conj (a i) * b i‖]
 
 end RCLike
 
