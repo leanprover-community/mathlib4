@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.Cartan.Basic
+public import Mathlib.LinearAlgebra.RootSystem.CartanMatrix
 public import Mathlib.LinearAlgebra.RootSystem.Irreducible
 public import Mathlib.LinearAlgebra.RootSystem.Reduced
 
@@ -566,6 +567,57 @@ lemma isIrreducible_toRootPairing [Nonempty n] {k V W : Type*} [Field k] [CharZe
       exact hΦker (f i) (hfΦ i) hx
     exact (LinearMap.IsPerfPair.bijective_left rl.pairing).injective <| by simp [hx]
 
+/-- The simple (co)roots are naturally parameterised by the index type of the Cartan matrix. -/
+def baseIdx : n ↪ rl.idx where
+  toFun i := (⟨(rl.sRoot i, rl.sCoroot i), rl.sPair_mem_idx i⟩ : rl.idx)
+  inj' i j h := by
+    simp only [Subtype.mk.injEq, Prod.mk.injEq] at h
+    exact rl.injective_sRoot h.1
+
+@[simp] lemma baseIdx_apply (i : n) :
+    rl.baseIdx i = ⟨(rl.sRoot i, rl.sCoroot i), rl.sPair_mem_idx i⟩ := by
+  rfl
+
+/-- The base carried by the root pairing associated to a realisation of a Cartan matrix. -/
+def rootPairingBase : rl.toRootPairing.Base :=
+  letI P := rl.toRootPairing
+  letI supp := (range rl.baseIdx).toFinite.toFinset
+  have : Set.Pairwise supp fun i j ↦ P.pairingIn ℤ i j ≤ 0 := by
+    rw [Finite.coe_toFinset]
+    rintro - ⟨i, rfl⟩ - ⟨j, rfl⟩ hij
+    suffices P.pairingIn ℤ ⟨_, rl.sPair_mem_idx i⟩ ⟨_, rl.sPair_mem_idx j⟩ = rl.matrix i j by
+      simpa [this] using rl.isCartan.offDiag_nonpos i j (ne_of_apply_ne _ hij)
+    simpa [P, toRootPairing_pairing] using
+      P.algebraMap_pairingIn ℤ ⟨_, rl.sPair_mem_idx i⟩ ⟨_, rl.sPair_mem_idx j⟩
+  have : LinearIndepOn R P.root supp := by
+    rw [Finite.coe_toFinset, linearIndepOn_range_iff rl.baseIdx.injective]
+    exact rl.lin_ind_sRoot
+  have (i : rl.idx) : P.root i ∈ span ℤ (P.root '' supp) := by
+    rw [Finite.coe_toFinset, ← range_comp]
+    exact (rl.idx_subset_span_int_sprod_span_int i.2).1
+  have (i : rl.idx) : P.coroot i ∈ span ℤ (P.coroot '' supp) := by
+    rw [Finite.coe_toFinset, ← range_comp]
+    exact (rl.idx_subset_span_int_sprod_span_int i.2).2
+  .mkOfPairwiseLEZero P (by assumption) (by assumption) (by assumption) (by assumption)
+
+/-- The indexing type of a Cartan matrix realisation bijects to the support of the base carried by
+the corresponding root pairing. -/
+def rootPairingBaseEquiv :
+    n ≃ rl.rootPairingBase.support :=
+  (Equiv.ofInjective _ rl.baseIdx.injective).trans <| .subtypeEquivRight (by simp [rootPairingBase])
+
+@[simp] lemma val_rootPairingBaseEquiv_apply (i : n) :
+    (rl.rootPairingBaseEquiv i : rl.idx) = ⟨(rl.sRoot i, rl.sCoroot i), rl.sPair_mem_idx i⟩ := by
+  rfl
+
+@[simp] lemma rootPairingBase_cartanMatrix_eq :
+    letI e := rl.rootPairingBaseEquiv
+    rl.rootPairingBase.cartanMatrix.submatrix e e = rl.matrix := by
+  ext i j
+  apply FaithfulSMul.algebraMap_injective ℤ R
+  rw [submatrix_apply, RootPairing.Base.algebraMap_cartanMatrixIn_apply]
+  simp [toRootPairing_pairing]
+
 end Realisation
 
 end CartanMatrix
@@ -609,5 +661,19 @@ instance : (hA.toRootPairing k).IsRootSystem :=
 lemma isIrreducible_toRootPairing [Nonempty n] (hA' : A.IsIndecomposable) :
     (hA.toRootPairing k).IsIrreducible :=
   CartanMatrix.Realisation.isIrreducible_toRootPairing _ (hA.span_range_sRoot_eq_top k) hA'
+
+/-- The base of the root system defined by a Cartan matrix. -/
+def rootPairingBase : (hA.toRootPairing k).Base :=
+  (hA.toRealisation (hA.isUnit_map k).invertible).rootPairingBase
+
+/-- The Cartan matrix indexing type indexes the elements of the support of the base. -/
+def rootPairingBaseEquiv :
+    n ≃ (hA.rootPairingBase k).support :=
+  (hA.toRealisation (hA.isUnit_map k).invertible).rootPairingBaseEquiv
+
+@[simp] lemma rootPairingBase_cartanMatrix_eq :
+    letI e := hA.rootPairingBaseEquiv k
+    (hA.rootPairingBase k).cartanMatrix.submatrix e e = A :=
+  (hA.toRealisation (hA.isUnit_map k).invertible).rootPairingBase_cartanMatrix_eq
 
 end Matrix.IsFiniteCartan
