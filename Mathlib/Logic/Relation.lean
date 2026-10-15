@@ -825,8 +825,7 @@ theorem EqvGen.mono {r p : α → α → Prop} (hrp : r ≤ p) : EqvGen r ≤ Eq
   | symm a b _ ih => exact EqvGen.symm _ _ ih
   | trans a b c _ _ hab hbc => exact EqvGen.trans _ _ _ hab hbc
 
-lemma eqvGen_le {r r' : α → α → Prop} [IsEquiv α r']
-    (h : r ≤ r') : EqvGen r ≤ r'
+lemma eqvGen_le {r r' : α → α → Prop} [IsEquiv α r'] (h : r ≤ r') : EqvGen r ≤ r'
   | _, _, .refl _ => _root_.refl _
   | _, _, .symm _ _ hxy => _root_.symm (eqvGen_le h _ _ hxy)
   | _, _, .trans _ _ _ hxy hyz => _root_.trans (eqvGen_le h _ _ hxy) (eqvGen_le h _ _ hyz)
