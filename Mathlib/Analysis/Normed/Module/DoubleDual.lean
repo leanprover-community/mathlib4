@@ -15,10 +15,10 @@ public import Mathlib.Analysis.Normed.Module.WeakDual
 In this file we define the inclusion of a normed space into its double strong dual,
 prove that it is an isometry (for `𝕜 = ℝ` or `𝕜 = ℂ`), and use the corresponding weak-topology
 embedding together with Banach–Alaoglu to transfer compactness from the weak-star bidual back to
-the weak topology. We also define reflexive topological vector spaces and study reflexive normed
-spaces.
+the weak topology.
 
-A topological vector space `E` over a normed field `𝕜` is reflexive
+We also define reflexive topological vector spaces and study reflexive normed
+spaces. A topological vector space `E` over a normed field `𝕜` is reflexive
 (`TopologicalSpace.IsReflexive 𝕜 E`) if the canonical map `StrongDual.inclusionInDoubleDualₗ 𝕜 E`
 from `E` to its strong bidual `StrongDual 𝕜 (StrongDual 𝕜 E)`, which sends `x` to the evaluation
 at `x`, is a homeomorphism.
