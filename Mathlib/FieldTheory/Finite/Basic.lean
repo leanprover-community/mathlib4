@@ -507,11 +507,9 @@ theorem sq_add_sq (p : ℕ) [hp : Fact p.Prime] (x : ZMod p) : ∃ a b : ZMod p,
   let f : (ZMod p)[X] := X ^ 2
   let g : (ZMod p)[X] := X ^ 2 - C x
   obtain ⟨a, b, hab⟩ : ∃ a b, f.eval a + g.eval b = 0 :=
-    @exists_root_sum_quadratic _ _ _ _ f g (degree_X_pow 2) (degree_X_pow_sub_C (by decide) _)
-      (by rw [ZMod.card, hp_odd])
+    exists_root_sum_quadratic (degree_X_pow 2) (degree_X_pow_sub_C two_pos x) (by simpa)
   refine ⟨a, b, ?_⟩
-  rw [← sub_eq_zero]
-  simpa only [f, g, eval_C, eval_X, eval_pow, eval_sub, ← add_sub_assoc] using hab
+  simpa [f, g, sub_eq_zero, ← add_sub_assoc] using hab
 
 end ZMod
 
