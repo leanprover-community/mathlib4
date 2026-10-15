@@ -293,12 +293,11 @@ theorem _root_.IsOpen.isClopenable [TopologicalSpace α] [PolishSpace α] {s : S
     (hs : IsOpen s) : IsClopenable s := by
   simpa using hs.isClosed_compl.isClopenable.compl
 
--- TODO: generalize for free to `[Countable ι] {s : ι → Set α}`
-theorem IsClopenable.iUnion [t : TopologicalSpace α] [PolishSpace α] {s : ℕ → Set α}
-    (hs : ∀ n, IsClopenable (s n)) : IsClopenable (⋃ n, s n) := by
+theorem IsClopenable.iUnion {ι : Type*} [Countable ι] [t : TopologicalSpace α] [PolishSpace α]
+    {s : ι → Set α} (hs : ∀ n, IsClopenable (s n)) : IsClopenable (⋃ n, s n) := by
   choose m mt m_polish _ m_open using hs
-  obtain ⟨t', t'm, -, t'_polish⟩ :
-      ∃ t' : TopologicalSpace α, (∀ n : ℕ, t' ≤ m n) ∧ t' ≤ t ∧ @PolishSpace α t' :=
+  obtain ⟨t', t'm, t't, t'_polish⟩ :
+      ∃ t' : TopologicalSpace α, (∀ n, t' ≤ m n) ∧ t' ≤ t ∧ @PolishSpace α t' :=
     exists_polishSpace_forall_le m mt m_polish
   have A : IsOpen[t'] (⋃ n, s n) := by
     apply isOpen_iUnion
@@ -308,6 +307,6 @@ theorem IsClopenable.iUnion [t : TopologicalSpace α] [PolishSpace α] {s : ℕ 
   obtain ⟨t'', t''_le, t''_polish, h1, h2⟩ : ∃ t'' : TopologicalSpace α,
       t'' ≤ t' ∧ @PolishSpace α t'' ∧ IsClosed[t''] (⋃ n, s n) ∧ IsOpen[t''] (⋃ n, s n) :=
     @IsOpen.isClopenable α t' t'_polish _ A
-  exact ⟨t'', t''_le.trans ((t'm 0).trans (mt 0)), t''_polish, h1, h2⟩
+  exact ⟨t'', t''_le.trans t't, t''_polish, h1, h2⟩
 
 end PolishSpace
