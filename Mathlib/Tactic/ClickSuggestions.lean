@@ -135,7 +135,8 @@ public def rpc (props : PanelWidgetProps) : RequestM (RequestTask Html) :=
       goals.contains loc.mvarId
     | return .text "#click_suggestions: Please reload the tactic state"
   let calcWidget? ← getCalcWidget? stx cmd props
-  goal.ctx.val.runMetaM {} do withConfig Elab.Term.setElabConfig do loc.mvarId.withContext do
+  let suggestionWidget ←
+    goal.ctx.val.runMetaM {} do withConfig Elab.Term.setElabConfig do loc.mvarId.withContext do
     let (statusHtml, statusToken) ← mkRefreshComponent
     let (solvedHtml, solvedToken) ← mkRefreshComponent
     let targetHtml ←
@@ -158,10 +159,10 @@ public def rpc (props : PanelWidgetProps) : RequestM (RequestTask Html) :=
       <summary className="mv2 pointer">
         Suggestions for {targetHtml}: {statusHtml}
       </summary>
-      {calcWidget?.getD (.text "")}
       {solvedHtml}
       {html}
     </details>
+  return <div>{calcWidget?.getD (.text "")}{suggestionWidget}</div>
 
 /-- The component called by the `#click_suggestions` command. -/
 @[widget_module]
