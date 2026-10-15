@@ -5,9 +5,9 @@ Authors: Rao Xiaojia
 -/
 module
 
+public meta import Mathlib.Util.Qq
 public import Mathlib.Tactic.Matrix.OfLists  -- shake: keep (Qq dependency)
 public import Mathlib.Tactic.Matrix.Parsing
-public import Mathlib.Util.Qq
 
 /-!
 # Views of matrix terms
