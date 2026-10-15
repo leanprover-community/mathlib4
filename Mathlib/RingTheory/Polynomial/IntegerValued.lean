@@ -106,19 +106,15 @@ theorem exists_eq_sum_intCast_smul_choose {P : ℚ[X]}
   conv_lhs => rw [P.eq_sum_fwdDiff_iter_smul_choose]
   refine sum_congr rfl fun k _ ↦ ?_
   congr 1
-  dsimp only
-  rw [fwdDiff_iter_eq_sum_shift, fwdDiff_iter_eq_sum_shift]
-  push_cast
-  simp [hf, zsmul_eq_mul]
+  simp [fwdDiff_iter_eq_sum_shift, hf, zsmul_eq_mul]
 
 theorem mem_intValued_iff_forall_natCast {P : ℚ[X]} :
     P ∈ intValued ↔ ∀ m : ℕ, P.eval (m : ℚ) ∈ Set.range ((↑) : ℤ → ℚ) := by
   refine ⟨fun h m ↦ by exact_mod_cast h m, fun h ↦ ?_⟩
   obtain ⟨c, hc⟩ := exists_eq_sum_intCast_smul_choose h
   rw [hc]
-  exact Subalgebra.sum_mem _ fun k _ ↦ by
-    rw [Int.cast_smul_eq_zsmul]
-    exact Subalgebra.zsmul_mem _ (choose_X_mem_intValued k) _
+  simp_rw [Int.cast_smul_eq_zsmul]
+  exact Subalgebra.sum_mem _ fun k _ ↦ Subalgebra.zsmul_mem _ (choose_X_mem_intValued k) _
 
 theorem linearIndependent_choose_X : LinearIndependent ℤ fun n ↦ Ring.choose (X : ℚ[X]) n := by
   classical
@@ -126,9 +122,8 @@ theorem linearIndependent_choose_X : LinearIndependent ℤ fun n ↦ Ring.choose
   intro s g hs i hi
   have hval : (fun m : ℕ ↦ ∑ k ∈ s, g k * (m.choose k : ℤ)) = 0 := by
     funext m
-    have := congrArg (eval (m : ℚ)) hs
-    rw [eval_finsetSum, eval_zero] at this
-    simp only [eval_smul, eval_natCast_choose_X] at this
+    have := congr(eval (m : ℚ) $hs)
+    simp only [eval_finsetSum, eval_zero, eval_smul, eval_natCast_choose_X] at this
     simp only [zsmul_eq_mul] at this
     simpa using (by exact_mod_cast this : ∑ k ∈ s, g k * (m.choose k : ℤ) = 0)
   have hf : (fun m : ℕ ↦ ∑ k ∈ s, g k * (m.choose k : ℤ)) =
