@@ -87,7 +87,7 @@ theorem has_min {α} {r : α → α → Prop} (H : WellFounded r) (s : Set α) :
     s.Nonempty → ∃ a ∈ s, ∀ x ∈ s, ¬r x a
   | ⟨a, ha⟩ => show ∃ b ∈ s, ∀ x ∈ s, ¬r x b from
     Acc.recOn (H.apply a) (fun x _ IH =>
-        not_imp_not.1 fun hne hx => hne <| ⟨x, hx, fun y hy hyx => hne <| IH y hyx hy⟩)
+        not_imp_not.1 fun hne hx => hne ⟨x, hx, fun y hy hyx => hne <| IH y hyx hy⟩)
       ha
 
 theorem not_rightTotal (wf : WellFounded r) [Nonempty α] : ¬ Relator.RightTotal r := by

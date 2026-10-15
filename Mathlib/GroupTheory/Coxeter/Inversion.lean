@@ -6,8 +6,9 @@ Authors: Mitchell Lee, Óscar Álvarez
 module
 
 public import Mathlib.GroupTheory.Coxeter.Length
-public import Mathlib.Data.List.GetD
-public import Mathlib.Tactic.Group
+
+import Mathlib.Data.List.GetD
+import Mathlib.Tactic.Group
 
 /-!
 # Reflections, inversions, and inversion sequences
@@ -41,7 +42,7 @@ inversions of $w$ in some order, but we do not prove that in this file.
 
 ## References
 
-* [A. Björner and F. Brenti, *Combinatorics of Coxeter Groups*](bjorner2005)
+* [A. Björner and F. Brenti, *Combinatorics of Coxeter Groups*][bjorner2005]
 
 -/
 
@@ -138,7 +139,7 @@ theorem isRightInversion_inv_iff {w t : W} :
 
 theorem isLeftInversion_inv_iff {w t : W} :
     cs.IsLeftInversion w⁻¹ t ↔ cs.IsRightInversion w t := by
-  convert! cs.isRightInversion_inv_iff.symm
+  convert cs.isRightInversion_inv_iff.symm
   simp
 
 namespace IsReflection

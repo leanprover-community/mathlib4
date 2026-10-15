@@ -112,7 +112,7 @@ theorem hasSum_expSeries_of_smul_comm
   have : HasSum (fun n => fst (expSeries 𝕜 (tsze R M) n fun _ => x)) e := by
     simpa [fst_expSeries] using h
   simpa only [inl_fst_add_inr_snd_eq] using
-    (hasSum_inl _ <| this).add (hasSum_inr _ <| hasSum_snd_expSeries_of_smul_comm 𝕜 x hx h)
+    (hasSum_inl _ this).add (hasSum_inr _ <| hasSum_snd_expSeries_of_smul_comm 𝕜 x hx h)
 
 variable [Algebra ℚ R] [Module ℚ M]
 variable [T2Space R] [T2Space M]
