@@ -161,6 +161,6 @@ theorem eq_sum_support_coeff_smul_of (a : FreeAbelianGroup X) :
 @[simp] lemma coeff_of_of_ne {x y : X} (h : x ≠ y) : coeff x (of y) = 0 := by simp [coeff, h]
 
 lemma coeff_of (x y : X) [Decidable (x = y)] : coeff x (of y) = if x = y then 1 else 0 := by
-  split_ifs <;> simp_all
+  aesop
 
 end FreeAbelianGroup
