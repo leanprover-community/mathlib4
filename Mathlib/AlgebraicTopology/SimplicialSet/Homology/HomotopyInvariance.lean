@@ -45,7 +45,7 @@ assert_not_exists TopologicalSpace
 
 universe v u w
 
-open CategoryTheory Limits AlgebraicTopology.SSet
+open CategoryTheory Limits
 
 variable {C : Type u} [Category.{v} C] [Preadditive C] [HasCoproducts.{w} C]
   {X Y : SSet.{w}} {f g : X ⟶ Y}
