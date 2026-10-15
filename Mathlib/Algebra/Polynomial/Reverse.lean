@@ -183,7 +183,7 @@ lemma natDegree_reflect_le {N : ℕ} {p : R[X]} :
 
 section Eval₂
 
-variable {S : Type*} [CommSemiring S]
+variable {S : Type*} [Semiring S]
 
 theorem eval₂_reflect_mul_pow (i : R →+* S) (x : S) [Invertible x] (N : ℕ) (f : R[X])
     (hf : f.natDegree ≤ N) : eval₂ i (⅟x) (reflect N f) * x ^ N = eval₂ i x f := by
@@ -192,9 +192,10 @@ theorem eval₂_reflect_mul_pow (i : R →+* S) (x : S) [Invertible x] (N : ℕ)
       ?_ f hf
   · simp
   · intro n r _ hnN
-    simp only [revAt_le hnN, reflect_C_mul_X_pow, eval₂_X_pow, eval₂_C, eval₂_mul]
-    conv in x ^ N => rw [← Nat.sub_add_cancel hnN]
-    rw [pow_add, ← mul_assoc, mul_assoc (i r), ← mul_pow, invOf_mul_self, one_pow, mul_one]
+    simp_rw [reflect_C_mul, reflect_monomial, C_mul_X_pow_eq_monomial, eval₂_monomial, revAt_le hnN]
+    conv in x ^ N => rw [show N = (N - n) + n by lia]
+    rw [pow_add, ← mul_assoc, ← invOf_pow]
+    grind [invOf_mul_self]
   · intros
     simp [*, add_mul]
 
@@ -205,7 +206,7 @@ theorem eval₂_reflect_eq_zero_iff (i : R →+* S) (x : S) [Invertible x] (N : 
   · intro h
     rw [h, zero_mul]
   · intro h
-    rw [← mul_one (eval₂ i (⅟x) _), ← one_pow N, ← mul_invOf_self x, mul_pow, ← mul_assoc, h,
+    rw [← mul_one (eval₂ i (⅟x) _), ← mul_invOf_self (x ^ N), invOf_pow, ← mul_assoc, h,
       zero_mul]
 
 end Eval₂
@@ -324,7 +325,7 @@ theorem coeff_one_reverse (f : R[X]) : coeff (reverse f) 1 = nextCoeff f := by
 
 section Eval₂
 
-variable {S : Type*} [CommSemiring S]
+variable {S : Type*} [Semiring S]
 
 theorem eval₂_reverse_mul_pow (i : R →+* S) (x : S) [Invertible x] (f : R[X]) :
     eval₂ i (⅟x) (reverse f) * x ^ f.natDegree = eval₂ i x f :=
@@ -338,21 +339,12 @@ theorem eval₂_reverse_eq_zero_iff (i : R →+* S) (x : S) [Invertible x] (f : 
 end Eval₂
 
 @[simp]
-theorem eval_reverse_zero
-    {R : Type*} [CommSemiring R] (f : R[X]) :
-    f.reverse.eval 0 = f.leadingCoeff := by
+theorem eval_reverse_zero (f : R[X]) : f.reverse.eval 0 = f.leadingCoeff := by
   simp [← coeff_zero_eq_eval_zero]
 
-theorem eval_reverse_mul_pow
-    {R : Type*} [CommSemiring R] (x : R) [Invertible x] (f : R[X]) :
+theorem eval_reverse_invOf_mul_pow (x : R) [Invertible x] (f : R[X]) :
     f.reverse.eval (⅟x) * x ^ f.natDegree = f.eval x := by
-  simpa using f.eval₂_reverse_mul_pow (RingHom.id _) x
-
-theorem eval_reverse_mul_pow₀
-    {F : Type*} [Field F] {x : F} (hx : x ≠ 0) (f : F[X]) :
-    f.reverse.eval x⁻¹ * x ^ f.natDegree = f.eval x := by
-  let := invertibleOfNonzero hx
-  simpa using f.eval_reverse_mul_pow x
+  simpa using f.eval₂_reverse_mul_pow (.id _) x
 
 end Semiring
 
@@ -373,5 +365,10 @@ theorem reverse_neg (f : R[X]) : reverse (-f) = -reverse f := by
   rw [reverse, reverse, reflect_neg, natDegree_neg]
 
 end Ring
+
+theorem eval_reverse_inv_mul_pow {F : Type*} [DivisionSemiring F] {x : F} (hx : x ≠ 0) (f : F[X]) :
+    f.reverse.eval x⁻¹ * x ^ f.natDegree = f.eval x := by
+  let := invertibleOfNonzero hx
+  simpa using f.eval_reverse_invOf_mul_pow x
 
 end Polynomial
