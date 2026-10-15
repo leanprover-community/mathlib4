@@ -24,17 +24,8 @@ theorem trace_mul_pow_comm (A : Matrix m n R) (B : Matrix n m R) (k : ℕ) :
     induction k with
     | zero => simp
     | succ k ih =>
-      rw [pow_succ, ih]
-      calc
-        (B * (A * B) ^ k * A) * (B * A) =
-            B * ((A * B) ^ k * (A * B)) * A := by
-              calc
-                ((B * (A * B) ^ k) * A) * (B * A) =
-                    (B * (A * B) ^ k) * (A * (B * A)) := by rw [mul_assoc]
-                _ = (B * (A * B) ^ k) * ((A * B) * A) := by rw [← mul_assoc]
-                _ = ((B * (A * B) ^ k) * (A * B)) * A := by rw [← mul_assoc]
-                _ = (B * ((A * B) ^ k * (A * B))) * A := by rw [← mul_assoc]
-        _ = B * (A * B) ^ (k + 1) * A := by rw [← pow_succ]
+      rw [pow_succ, ih, pow_succ]
+      simp only [mul_assoc]
   calc
     trace ((A * B) ^ (k + 1)) = trace ((A * B) ^ k * A * B) := by
       rw [pow_succ, ← mul_assoc]
