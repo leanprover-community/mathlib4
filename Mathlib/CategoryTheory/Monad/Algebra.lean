@@ -148,13 +148,12 @@ def isoMk {A B : Algebra T} (h : A.A ≅ B.A)
         rw [h.eq_comp_inv, Category.assoc, ← w, ← Functor.map_comp_assoc]
         simp }
 
-open Comonad in
 /--
 To construct an isomorphism of coalgebras, it suffices to give an isomorphism of the carriers which
 commutes with the structure morphisms.
 -/
 @[simps]
-def _root_.CategoryTheory.Comonad.Coalgebra.isoMk {T : Comonad C} {A B : Coalgebra T}
+def _root_.CategoryTheory.Comonad.Coalgebra.isoMk {T : Comonad C} {A B : T.Coalgebra}
     (h : A.A ≅ B.A) (w : A.a ≫ (T : C ⥤ C).map h.hom = h.hom ≫ B.a := by cat_disch) : A ≅ B where
   hom := { f := h.hom }
   inv :=
@@ -202,15 +201,13 @@ instance [Inhabited C] : Inhabited (Algebra T) :=
 @[simps! unit counit]
 def adj : T.free ⊣ T.forget :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun X Y =>
-        { toFun := fun f => T.η.app X ≫ f.f
+    { homEquiv X Y :=
+        { toFun f := T.η.app X ≫ f.f
           invFun := fun f =>
             { f := T.map f ≫ Y.a
               h := by simp [← Y.assoc, ← T.μ.naturality_assoc] }
-          left_inv := fun f => by
-            ext
-            simp
-          right_inv := fun f => by
+          left_inv f := by cat_disch
+          right_inv f := by
             dsimp only [forget_obj]
             rw [← T.η.naturality_assoc, Y.unit]
             apply Category.comp_id } }
@@ -222,18 +219,13 @@ for a comonad.
 @[simps! unit counit]
 def _root_.CategoryTheory.Comonad.adj (T : Comonad C) : T.forget ⊣ T.cofree :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun X Y =>
-        { toFun := fun f =>
+    { homEquiv X Y :=
+        { toFun f :=
             { f := X.a ≫ T.map f
               h := by simp [← Coalgebra.coassoc_assoc] }
-          invFun := fun g => g.f ≫ T.ε.app Y
-          left_inv := fun f => by
-            dsimp
-            rw [Category.assoc, T.ε.naturality, Functor.id_map, X.counit_assoc]
-          right_inv := fun g => by
-            ext1; dsimp
-            rw [Functor.map_comp, g.h_assoc, cofree_obj_a, Comonad.right_counit]
-            apply comp_id } }
+          invFun g := g.f ≫ T.ε.app Y
+          left_inv _ := by simp [X.counit_assoc]
+          right_inv g := by cat_disch } }
 
 /-- Given an algebra morphism whose carrier part is an isomorphism, we get an algebra isomorphism.
 -/

@@ -148,6 +148,8 @@ theorem MonadHom.comp_toNatTrans {T₁ T₂ T₃ : Monad C} (f : T₁ ⟶ T₂) 
     (f ≫ g).toNatTrans = ((f.toNatTrans : _ ⟶ (T₂ : C ⥤ C)) ≫ g.toNatTrans : (T₁ : C ⥤ C) ⟶ T₃) :=
   rfl
 
+@[deprecated (since := "2026-10-15")] alias comp_toNatTrans := ComonadHom.comp_toNatTrans
+
 insert_to_dual_translation CategoryTheory.MonadIso CategoryTheory.ComonadIso
 
 /-- Construct a monad isomorphism from a natural isomorphism of functors where the forward

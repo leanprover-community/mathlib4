@@ -39,7 +39,7 @@ structure Kleisli (T : Monad C) where mk (T) ::
 /-- The objects for the co-Kleisli category of the comonad `U : Comonad C`, which are the same
 thing as objects of the base category `C`.
 -/
-@[to_dual Kleisli]
+@[to_dual]
 structure Cokleisli (U : Comonad C) where mk (U) ::
   /-- The underlying object of the base category. -/
   of : C
@@ -96,7 +96,7 @@ lemma hom_ext {x y : Kleisli T} {f g : x ⟶ y} (h : f.of = g.of) : f = g :=
 namespace Adjunction
 
 /-- The left adjoint of the adjunction which induces the monad `(T, η_ T, μ_ T)`. -/
-@[to_dual (attr := simps, implicit_reducible) toCokleisli
+@[to_dual (attr := simps, implicit_reducible)
 /-- The right adjoint of the adjunction which induces the comonad `(T, ε_ T, δ_ T)`. -/]
 def toKleisli : C ⥤ Kleisli T where
   obj X := .mk T X
@@ -106,7 +106,7 @@ def toKleisli : C ⥤ Kleisli T where
     simp [← T.η.naturality g]
 
 /-- The right adjoint of the adjunction which induces the monad `(T, η_ T, μ_ T)`. -/
-@[to_dual (attr := simps, implicit_reducible) fromCokleisli
+@[to_dual (attr := simps, implicit_reducible)
 /-- The left adjoint of the adjunction which induces the comonad `(T, ε_ T, δ_ T)`. -/]
 def fromKleisli : Kleisli T ⥤ C where
   obj X := T.obj X.of
