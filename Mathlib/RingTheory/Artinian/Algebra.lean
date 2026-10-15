@@ -69,8 +69,7 @@ of `A` which lies in `B` and is integral over `R`. For instance, when `R = K` is
 theorem inv_mem_of_isIntegral {B : Subalgebra R A} {u : Aˣ} (hi : IsIntegral R (u : A))
     (hu : (u : A) ∈ B) : ((u⁻¹ : Aˣ) : A) ∈ B := by
   obtain ⟨v, hv⟩ := isUnit_of_isIntegral_of_isUnit (a := (⟨u, hu⟩ : B)) hi u.isUnit
-  have : Units.map (B.val : B →* A) v = u := Units.ext (congrArg Subtype.val hv)
-  rw [← this, ← map_inv]
+  rw [← (Units.ext (congrArg Subtype.val hv) : Units.map (B.val : B →* A) v = u)]
   exact (↑v⁻¹ : B).2
 
 end IsArtinianRing
