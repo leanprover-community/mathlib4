@@ -241,11 +241,8 @@ theorem prod_iff : Flat R (M × N) ↔ Flat R M ∧ Flat R N := by
         (Q.subtype.rTensor M).prodMap (Q.subtype.rTensor N) ∘ₗ
           (prodRight R R Q M N).toLinearMap := by
       ext <;> simp
-    rw [← EquivLike.comp_injective _ (prodRight R R P M N), ← LinearEquiv.coe_coe, ← coe_comp,
-      this, coe_comp, LinearEquiv.coe_coe, EquivLike.injective_comp, coe_prodMap,
-      Prod.map_injective]
-  simp_rw [iff_rTensor_injectiveₛ, key]
-  exact ⟨fun h ↦ ⟨fun _ _ _ Q ↦ (h Q).1, fun _ _ _ Q ↦ (h Q).2⟩, fun h _ _ _ Q ↦ ⟨h.1 Q, h.2 Q⟩⟩
+    simpa [coe_prodMap, Prod.map_injective] using congr(Function.Injective ⇑$this)
+  simp_rw [iff_rTensor_injectiveₛ, key, forall_and]
 
 /-- The product of two flat `R`-modules is flat. -/
 instance prod [Flat R M] [Flat R N] : Flat R (M × N) := prod_iff.mpr ⟨‹_›, ‹_›⟩
