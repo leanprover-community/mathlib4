@@ -521,6 +521,7 @@ theorem toHomeomorph_injective [HomeomorphClass F α β] : Function.Injective ((
 instance [HomeomorphClass F α β] : ContinuousMapClass F α β where
   map_continuous f := map_continuous f
 
+@[implicit_reducible, simps]
 def _root_.Homeomorph.toContinuousMap (e : α ≃ₜ β) : C(α, β) where
   toFun := e.toFun
   continuous_toFun := e.continuous_toFun

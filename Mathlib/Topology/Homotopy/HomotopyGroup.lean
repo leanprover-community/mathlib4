@@ -330,7 +330,7 @@ theorem fromLoop_apply (i : N) {p : Ω (Ω^ { j // j ≠ i } X x) const} {t : I^
 /-- Composition with `Cube.insertAt` as a continuous map. -/
 abbrev cCompInsert (i : N) : C(C(I^N, X), C(I × I^{ j // j ≠ i }, X)) :=
   ⟨fun f ↦ f.comp (Cube.insertAt i),
-    (ContinuousMap.ofClass <| Cube.insertAt i).continuous_precomp⟩
+    ((Cube.insertAt i).toContinuousMap).continuous_precomp⟩
 
 /-- A homotopy between `n+1`-dimensional loops `p` and `q` constant on the boundary
   seen as a homotopy between two paths in the space of `n`-dimensional paths. -/
