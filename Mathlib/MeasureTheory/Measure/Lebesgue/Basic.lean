@@ -440,36 +440,6 @@ theorem map_linearMap_volume_pi_eq_smul_volume_pi {f : (ι → ℝ) →ₗ[ℝ] 
     rwa [A] at hf
 
 open scoped Pointwise in
-@[to_additive]
-private theorem _root_.PartialOrder.measure_add_measure_le_measure_mul_add_iSup {α : Type*}
-    [Mul α] [PartialOrder α] [MulLeftMono α] [MulRightMono α] [MeasurableSpace α]
-    (hIic : ∀ x : α, MeasurableSet (Iic x))
-    {μ : Measure α} (hl : ∀ a (s : Set α), μ s ≤ μ ((a * ·) '' s))
-    (hr : ∀ b (s : Set α), μ s ≤ μ ((· * b) '' s))
-    {A B : Set α} [IsDirectedOrder A] [(atTop : Filter A).IsCountablyGenerated]
-    [IsCodirectedOrder B] [(atBot : Filter B).IsCountablyGenerated]
-    (hA : A.Nonempty) (hB : B.Nonempty) : μ A + μ B ≤ μ (A * B) + ⨆ x ∈ A * B, μ {x} := by
-  rw [measure_eq_iSup_inter_Iic μ A, measure_eq_iSup_inter_Ici μ B]
-  refine ENNReal.biSup_add_biSup_le hA hB fun a ha b hb ↦ ?_
-  calc
-    _ ≤ μ ((· * b) '' (A ∩ Iic a)) + μ ((a * ·) '' (B ∩ Ici b)) := by
-      gcongr 1
-      · apply hr b
-      · apply hl a
-    _ ≤ μ (A * B ∩ Iic (a * b)) + μ ((A * B) \ Iio (a * b)) := by
-      gcongr
-      · rintro _ ⟨x, ⟨hx, hxa⟩, rfl⟩
-        exact ⟨mul_mem_mul hx hb, mul_le_mul_left hxa b⟩
-      · rintro _ ⟨y, ⟨hy, hyb⟩, rfl⟩
-        refine ⟨mul_mem_mul ha hy, (mul_le_mul_right hyb a).not_gt⟩
-    _ ≤ μ (A * B ∩ Iic (a * b)) + μ ((A * B) \ Iic (a * b)) + μ {a * b} := by
-      grw [add_assoc, ← measure_union_le _ {a * b}, ← Set.sdiff_sdiff_eq_sdiff_union ?_,
-        Set.Iic_sdiff_right]
-      simpa using Set.mul_mem_mul ha hb
-    _ ≤ _ := by
-      grw [measure_inter_add_sdiff _ (hIic _), le_biSup (μ {·}) (Set.mul_mem_mul ha hb)]
-
-open scoped Pointwise in
 /-- One-dimensional **Brunn–Minkowski theorem**. -/
 theorem volume_add_volume_le {A B : Set ℝ} (hA : A.Nonempty) (hB : B.Nonempty) :
     volume A + volume B ≤ volume (A + B) := by
