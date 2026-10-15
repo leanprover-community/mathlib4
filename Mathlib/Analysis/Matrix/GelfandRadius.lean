@@ -46,11 +46,11 @@ private theorem gelfandRadius_mul_comm_le (A : Matrix m n R) (B : Matrix n m R) 
     refine le_of_tendsto_of_tendsto' this key fun k ↦ ?_
     grw [← Real.rpow_mul, ← mul_inv, mul_div_cancel₀, h, Real.mul_rpow, Real.mul_rpow] <;>
       positivity
-  have key' : Tendsto (fun n : ℕ ↦ (n / (n + 1) : ℝ)⁻¹) atTop (𝓝 1) := by
+  replace key : Tendsto (fun n : ℕ ↦ (n / (n + 1) : ℝ)⁻¹) atTop (𝓝 1) := by
     simpa using (tendsto_natCast_div_add_atTop (1 : ℝ)).inv₀ one_ne_zero
   simpa [Function.comp_def] using
     (Real.continuousAt_rpow_of_pos (gelfandRadius (A * B), 1) one_pos).tendsto.comp
-      (((tendsto_gelfandRadius (A * B)).comp (tendsto_add_atTop_nat 1)).prodMk_nhds key')
+      (((tendsto_gelfandRadius (A * B)).comp (tendsto_add_atTop_nat 1)).prodMk_nhds key)
 
 theorem gelfandRadius_mul_comm (A : Matrix m n R) (B : Matrix n m R) :
     gelfandRadius (A * B) = gelfandRadius (B * A) :=
