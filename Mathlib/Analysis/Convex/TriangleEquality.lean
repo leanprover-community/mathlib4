@@ -88,14 +88,6 @@ lemma normalize_eq_of_pairwise_sameRay (hp : (s : Set ι).Pairwise (SameRay ℝ 
     NormedSpace.normalize (v i) = NormedSpace.normalize (∑ j ∈ s, v j) :=
   (sameRay_sum_right_of_pairwise hp hi).normalize_eq hvi (sum_ne_zero_of_pairwise_sameRay hp hi hvi)
 
-/-- **Triangle equality** for nonzero summands: the norm of the sum equals the sum of the norms
-exactly when all the summands have the same normalization. -/
-theorem norm_sum_eq_iff_pairwise_normalize_eq (hv : ∀ i ∈ s, v i ≠ 0) :
-    ‖∑ i ∈ s, v i‖ = ∑ i ∈ s, ‖v i‖ ↔
-      ∀ i ∈ s, ∀ j ∈ s, NormedSpace.normalize (v i) = NormedSpace.normalize (v j) := by
-  simp [norm_sum_eq_iff_pairwise_sameRay, pairwise_sameRay_iff_pairwise_normalize_eq hv,
-    Set.pairwise_iff_of_refl]
-
 /-- **Triangle equality**: the norm of a finite sum equals the sum of the norms exactly when every
 summand is a nonnegative real multiple of a single vector. -/
 theorem norm_sum_eq_iff_exists_smul :
