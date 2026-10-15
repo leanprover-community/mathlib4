@@ -184,13 +184,9 @@ lemma absolutelyContinuous_comp_of_countable [Countable α] [MeasurableSingleton
 
 end AbsolutelyContinuous
 
-section ApplyPos
-
-variable {s : Set β}
-
 /-- The measure `η ∘ₘ μ` gives positive mass to a measurable set `s` iff the set of points `a`
 such that `η a s` is positive has positive `μ`-measure. -/
-lemma comp_apply_pos_iff (hs : MeasurableSet s) :
+lemma comp_apply_pos_iff {s : Set β} (hs : MeasurableSet s) :
     0 < (η ∘ₘ μ) s ↔ 0 < μ {a | 0 < η a s} := by
   rw [Measure.bind_apply hs η.aemeasurable, lintegral_pos_iff_support (η.measurable_coe hs)]
   congr! 2
@@ -199,11 +195,9 @@ lemma comp_apply_pos_iff (hs : MeasurableSet s) :
 
 /-- The measure `η ∘ₘ μ` gives zero mass to a measurable set `s` iff the set of points `a`
 such that `η a s` is positive has `μ`-measure zero. -/
-lemma comp_apply_eq_zero_iff (hs : MeasurableSet s) :
+lemma comp_apply_eq_zero_iff {s : Set β} (hs : MeasurableSet s) :
     (η ∘ₘ μ) s = 0 ↔ μ {a | 0 < η a s} = 0 := by
   rw [← not_iff_not, ← Ne, ← Ne, ← pos_iff_ne_zero, ← pos_iff_ne_zero, comp_apply_pos_iff hs]
-
-end ApplyPos
 
 end MeasureTheory.Measure
 
