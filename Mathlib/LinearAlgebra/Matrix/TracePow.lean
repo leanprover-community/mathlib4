@@ -8,7 +8,7 @@ This file contains trace identities for powers of products of rectangular matric
 
 namespace Matrix
 
-variable {m n : Type*} [Fintype m] [Fintype n]
+variable {m n : Type*} [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n]
 variable {R : Type*} [CommSemiring R]
 
 /-- The trace of a positive power of `A * B` is unchanged when the factors are reversed.
