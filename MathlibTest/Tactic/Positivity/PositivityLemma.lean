@@ -38,9 +38,6 @@ axiom m_pos {x y : α} : 0 < x → 0 < y → 0 < m x y
 @[positivity_lemma]
 axiom m_nonneg {x y : α} : 0 ≤ x → 0 ≤ y → 0 ≤ m x y
 
-set_option trace.Tactic.positivity true
-set_option trace.Tactic.positivity.failure true
-
 example : 0 < c := by positivity
 example {x : α} (hx : 0 < x) : 0 < f x := by positivity
 example {x : α} (hx : 0 ≤ x) : 0 ≤ f x := by positivity
@@ -153,8 +150,5 @@ The premise 0 < c does not refer to a direct argument of the conclusion 0 < a - 
 #guard_msgs in
 @[positivity_lemma]
 axiom not_direct_arg {a b c : ℤ} : 0 < c → 0 < a - b
-
--- TODO: support non-positivity premises via a discharger.
--- TODO: read `RunAutoParam` to support `(hx : 0 < x := by positivity)`
 
 end FailureCache

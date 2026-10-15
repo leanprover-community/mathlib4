@@ -52,9 +52,18 @@ Example:
 -/
 syntax (name := positivity) "positivity" ppSpace term,+ : attr
 
-/-- A theorem tagged with `@[positivity_lemma]` is used by `positivity` to prove that an
-expression is positive, nonnegative, or nonzero from corresponding facts about its arguments.
-TODO: shapes of the lemmas that can be applied, ... non-positivity hyps are not yet suppported
+/-- A theorem tagged with `@[positivity_lemma]` is used by `positivity` to
+prove `f x₁ ... xₙ > 0`, `f x₁ ... xₙ ≥ 0`, or `f x₁ ... xₙ ≠ 0`
+(or the forms `0 < f x₁ ... xₙ`, `0 ≤ f x₁ ... xₙ`, and `0 ≠ f x₁ ... xₙ`).
+The head `f` must be a constant.
+
+Each non-typeclass propositional premise must also have one of these positivity forms
+for a direct argument `xᵢ`.
+
+`positivity` tries to prove
+these premises recursively and may use a matching local hypothesis.
+
+Other propositional premises are not yet supported.
 -/
 syntax (name := positivityLemma) "positivity_lemma" (ppSpace prio)? : attr
 
