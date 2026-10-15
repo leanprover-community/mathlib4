@@ -93,9 +93,8 @@ exactly when all the summands have the same normalization. -/
 theorem norm_sum_eq_iff_pairwise_normalize_eq (hv : ∀ i ∈ s, v i ≠ 0) :
     ‖∑ i ∈ s, v i‖ = ∑ i ∈ s, ‖v i‖ ↔
       ∀ i ∈ s, ∀ j ∈ s, NormedSpace.normalize (v i) = NormedSpace.normalize (v j) := by
-  simp +contextual only [norm_sum_eq_iff_pairwise_sameRay,
-    ← NormedSpace.sameRay_iff_normalize_eq_of_ne (hv _ _) (hv _ _)]
-  exact ⟨fun h i hi j hj ↦ h.forall₂ hi hj, fun h i hi j hj hij ↦ h _ hi _ hj⟩
+  simp [norm_sum_eq_iff_pairwise_sameRay, pairwise_sameRay_iff_pairwise_normalize_eq hv,
+    Set.pairwise_iff_of_refl]
 
 /-- **Triangle equality**: the norm of a finite sum equals the sum of the norms exactly when every
 summand is a nonnegative real multiple of a single vector. -/
