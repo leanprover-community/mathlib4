@@ -13,7 +13,14 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.FundamentalGroupoid.Basic
 /-!
 # The fundamental groupoid of a Kan complex
 
-...
+In the file `Mathlib/AlgebraicTopology/SimplicialSet/FundamentalGroupoid/Basic.lean`,
+the fundamental groupoid of any simplicial set `X` was defined. In this category,
+morphisms can be represented by finite compositions of edges (i.e. paths in `X`).
+In this file, we show that if `X` is a Kan complex, then a morphism in `FundamentalGroupoid X`
+can be represented by a single edge (see `SSet.FundamentalGroupoid.homMk_surjective`),
+and commutative triangles in the fundamental groupoid of `X` all arise from
+`Edge.CompStruct` structures (i.e. `2`-simplices of `X`), see
+`SSet.FundamentalGroupoid.homMk_comp_iff`.
 
 -/
 
