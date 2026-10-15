@@ -391,11 +391,9 @@ theorem isEquivalence_comparison_iff : (Monad.comparison adj).IsEquivalence ↔
   · let _ : MonadicRightAdjoint G := ⟨F, adj, h⟩
     refine ⟨inferInstance, fun X Y u v _ ↦ ?_⟩
     have := createsGSplitCoequalizersOfMonadic G u v
-    have : HasColimit (parallelPair u v ⋙ G) := by
-      rw [hasColimit_iff_of_iso (diagramIsoParallelPair _)]
-      exact inferInstanceAs <| HasCoequalizer (G.map u) (G.map v)
-    have : HasCoequalizer u v := hasColimit_of_created (parallelPair u v) G
-    exact ⟨this, inferInstance⟩
+    have : HasColimit (parallelPair u v ⋙ G) :=
+      hasColimit_of_iso (F := parallelPair (G.map u) (G.map v)) (diagramIsoParallelPair _)
+    exact ⟨hasColimit_of_created (parallelPair u v) G, inferInstance⟩
   · have : HasCoequalizerOfIsSplitPair G := ⟨fun u v _ ↦ (h u v inferInstance).1⟩
     have : PreservesColimitOfIsSplitPair G := ⟨fun u v _ ↦ (h u v inferInstance).2⟩
     exact (monadicOfHasPreservesGSplitCoequalizersOfReflectsIsomorphisms adj).eqv

@@ -373,11 +373,10 @@ theorem isEquivalence_comparison_iff : (Comonad.comparison adj).IsEquivalence �
   · let _ : ComonadicLeftAdjoint F := ⟨G, adj, h⟩
     refine ⟨inferInstance, fun X Y u v _ ↦ ?_⟩
     have := createsFSplitEqualizersOfComonadic (F := F) u v
-    have : HasLimit (parallelPair u v ⋙ F) := by
-      rw [hasLimit_iff_of_iso (diagramIsoParallelPair _)]
-      exact inferInstanceAs <| HasEqualizer (F.map u) (F.map v)
-    have : HasEqualizer u v := hasLimit_of_created (parallelPair u v) F
-    exact ⟨this, inferInstance⟩
+    have : HasLimit (parallelPair u v ⋙ F) :=
+      hasLimit_of_iso (F := parallelPair (F.map u) (F.map v))
+        (diagramIsoParallelPair (parallelPair u v ⋙ F)).symm
+    exact ⟨hasLimit_of_created (parallelPair u v) F, inferInstance⟩
   · have : HasEqualizerOfIsCosplitPair F := ⟨fun u v _ ↦ (h u v inferInstance).1⟩
     have : PreservesLimitOfIsCosplitPair F := ⟨fun u v _ ↦ (h u v inferInstance).2⟩
     exact (comonadicOfHasPreservesFSplitEqualizersOfReflectsIsomorphisms adj).eqv
