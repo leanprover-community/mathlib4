@@ -19,8 +19,6 @@ For the fact that monads are "just" monoids in the category of endofunctors, see
 `CategoryTheory.Monad.EquivMon`.
 -/
 
-set_option backward.defeqAttrib.useBackward true
-
 @[expose] public section
 
 
@@ -211,8 +209,7 @@ def ComonadIso.mk {M N : Comonad C} (f : (M : C ⥤ C) ≅ N)
       app_δ := fun X => by
         rw [← NatIso.cancel_natIso_hom_left f]
         simp only [reassoc_of% (f_δ X), Iso.hom_inv_id_app_assoc, NatTrans.naturality_assoc]
-        rw [← Functor.map_comp, Iso.hom_inv_id_app, Functor.map_id]
-        apply (comp_id _).symm }
+        simp }
 
 variable (C)
 
