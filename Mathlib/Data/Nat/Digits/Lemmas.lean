@@ -437,7 +437,7 @@ theorem digitsAppend_eq_digits_iff {b l n : ℕ} (hn : n ≠ 0) :
 /-- The positional-value formula holds for `digitsAppend`: the sum `∑ aᵢ · bⁱ`, where the `aᵢ`
 are the base-`b` digits of `n`, equals `n`. -/
 @[simp]
-theorem eq_mapIdx_digitsAppend_sum (b l n : ℕ) :
+theorem mapIdx_digitsAppend_sum_eq (b l n : ℕ) :
     (List.mapIdx (fun i a ↦ a * b ^ i) (digitsAppend b l n)).sum = n := by
   simp [digitsAppend, List.mapIdx_append, List.sum_append, List.mapIdx_replicate]
 
