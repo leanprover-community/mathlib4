@@ -300,8 +300,7 @@ theorem additive_of_toKaroubi_comp (F : Karoubi C ⥤ D) [(toKaroubi C ⋙ F).Ad
   map_add {P Q f g} := by
     have key (h : P ⟶ Q) : F.map h =
         F.map P.decompId_i ≫ (toKaroubi C ⋙ F).map h.f ≫ F.map Q.decompId_p := by
-      conv_lhs => rw [Karoubi.hom_eq_decompId_i_comp h]
-      simp
+      simpa using congr(F.map $(Karoubi.hom_eq_decompId_i_comp h))
     rw [key, key f, key g, show (f + g).f = f.f + g.f from rfl, Functor.map_add,
       Preadditive.add_comp, Preadditive.comp_add]
 
@@ -315,9 +314,7 @@ functors. -/
 def whiskeringLeftToKaroubiAdditive : (Karoubi C ⥤+ D) ⥤ (C ⥤+ D) :=
   (additiveFunctor C D).lift
     (AdditiveFunctor.forget _ _ ⋙ (Functor.whiskeringLeft C (Karoubi C) D).obj (toKaroubi C))
-    (fun F ↦ by
-      change (toKaroubi C ⋙ F.obj).Additive
-      infer_instance)
+    (fun F ↦ inferInstanceAs (toKaroubi C ⋙ F.obj).Additive)
 
 /-- The precomposition with `toKaroubi C` on additive functors is fully faithful. -/
 def whiskeringLeftToKaroubiAdditiveFullyFaithful :
@@ -338,8 +335,7 @@ instance : (whiskeringLeftToKaroubiAdditive C D).EssSurj where
     let W := (Functor.whiskeringLeft C (Karoubi C) D).obj (toKaroubi C)
     let e : W.obj (W.objPreimage G.obj) ≅ G.obj := W.objObjPreimageIso G.obj
     have : (toKaroubi C ⋙ W.objPreimage G.obj).Additive := Functor.additive_of_iso e.symm
-    have := additive_of_toKaroubi_comp (W.objPreimage G.obj)
-    exact ⟨⟨W.objPreimage G.obj, this⟩, ⟨ObjectProperty.isoMk _ e⟩⟩
+    exact ⟨⟨_, additive_of_toKaroubi_comp (W.objPreimage G.obj)⟩, ⟨ObjectProperty.isoMk _ e⟩⟩
 
 instance : (whiskeringLeftToKaroubiAdditive C D).IsEquivalence where
 
