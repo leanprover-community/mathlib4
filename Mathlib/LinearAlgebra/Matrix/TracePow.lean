@@ -23,23 +23,23 @@ theorem trace_mul_pow_comm (A : Matrix m n R) (B : Matrix n m R) (k : ℕ) :
     intro k
     induction k with
     | zero =>
-        simp [mul_assoc]
+        simp only [Nat.zero_add, pow_one, pow_zero, Matrix.mul_one]
     | succ k ih =>
         calc
-          (B * A) ^ (Nat.succ k + 1) = (B * A) ^ (k + 1) * (B * A) := by
-            congr 1
-            omega
+          (B * A) ^ (Nat.succ k + 1) = (B * A) ^ (k + 1) * (B * A) := by rfl
           _ = (B * (A * B) ^ k * A) * (B * A) := by rw [ih]
+          _ = (B * (A * B) ^ k) * (A * (B * A)) := by
+            rw [Matrix.mul_assoc (B * (A * B) ^ k) A (B * A)]
+          _ = (B * (A * B) ^ k) * ((A * B) * A) := by
+            rw [← Matrix.mul_assoc A B A]
           _ = B * ((A * B) ^ k * (A * B)) * A := by
-            simpa only [mul_assoc]
-          _ = B * (A * B) ^ (k + 1) * A := by
-            rw [pow_succ]
+            rw [← Matrix.mul_assoc (B * (A * B) ^ k) (A * B) A,
+              Matrix.mul_assoc B ((A * B) ^ k) (A * B)]
+          _ = B * (A * B) ^ (k + 1) * A := by rw [pow_succ]
   calc
     trace ((A * B) ^ (k + 1)) = trace ((A * B) ^ k * A * B) := by
-      rw [pow_succ]
-      congr 1
-      exact (mul_assoc ((A * B) ^ k) A B).symm
-    _ = trace (B * (A * B) ^ k * A) := Matrix.trace_mul_cycle _ _ _
+      rw [pow_succ, ← Matrix.mul_assoc]
+    _ = trace (B * (A * B) ^ k * A) := Matrix.trace_mul_cycle ((A * B) ^ k) A B
     _ = trace ((B * A) ^ (k + 1)) := by rw [← hpow k]
 
 end Matrix
