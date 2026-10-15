@@ -63,7 +63,7 @@ theorem Invariant.comp (hκ : Invariant κ μ) (hη : Invariant η μ) :
 
 theorem Invariant.pow (h : Invariant κ μ) (n : ℕ) : Invariant (κ ^ n) μ := by
   induction n with
-  | zero => exact pow_zero_comp κ μ
+  | zero => simp [Invariant]
   | succ n ih => rw [pow_succ, mul_eq_comp]; exact ih.comp h
 
 theorem Invariant.smul (h : Invariant κ μ) (c : ℝ≥0∞) : Invariant κ (c • μ) := by
@@ -95,23 +95,22 @@ theorem Invariant.ae_pow_apply_compl_eq_zero (hπ : Invariant κ π) (hG : Measu
   induction n with
   | zero =>
     refine ae_of_all _ fun x hx ↦ ?_
-    rw [pow_zero_apply, Measure.dirac_apply' _ hG.compl]
-    simp [hx]
+    simp [Kernel.id_apply, Measure.dirac_apply' _ hG.compl, hx]
   | succ n ih =>
     have h1 : ∀ᵐ x ∂π, ∀ᵐ y ∂κ x, y ∈ G → (κ ^ n) y Gᶜ = 0 := by
       rw [← hπ.def] at ih
       exact Measure.ae_ae_of_ae_comp ih
     filter_upwards [h, h1] with x hx hx1 hxG
-    rw [pow_succ_apply, Measure.bind_apply hG.compl (κ ^ n).aemeasurable,
-      lintegral_eq_zero_iff ((κ ^ n).measurable_coe hG.compl)]
+    suffices (fun a ↦ (κ ^ n) a Gᶜ) =ᵐ[κ x] 0 by
+      rwa [pow_add_one, comp_apply, Measure.bind_apply hG.compl (κ ^ n).aemeasurable,
+        lintegral_eq_zero_iff ((κ ^ n).measurable_coe hG.compl)]
     have hxG' : ∀ᵐ y ∂κ x, y ∈ G := by
-      have := measure_eq_zero_iff_ae_notMem.mp (hx hxG)
-      filter_upwards [this] with y hy using by simpa using hy
+      simpa using measure_eq_zero_iff_ae_notMem.mp (hx hxG)
     filter_upwards [hx1, hxG'] with y hy hyG using hy hyG
 
 /-- If a measurable set `G` of finite measure is absorbing almost everywhere with respect to an
 invariant measure of a Markov kernel, then so is its complement. -/
-theorem Invariant.ae_apply_eq_zero_of_ae_absorbing [IsMarkovKernel κ] (hπ : Invariant κ π)
+theorem Invariant.ae_apply_eq_zero_of_compl [IsMarkovKernel κ] (hπ : Invariant κ π)
     (hG : MeasurableSet G) (hπG : π G ≠ ∞) (h : ∀ᵐ x ∂π, x ∈ G → κ x Gᶜ = 0) :
     ∀ᵐ x ∂π, x ∈ Gᶜ → κ x G = 0 := by
   have h1 : ∫⁻ x, κ x G ∂π = π G := by
