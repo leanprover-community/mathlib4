@@ -48,7 +48,7 @@ at `x`, is a homeomorphism.
 * `TopologicalSpace.IsReflexive.completeSpace`: a reflexive normed space is complete.
 * `TopologicalSpace.IsReflexive.submodule_of_isClosed`: a closed subspace of a reflexive normed
   space is reflexive.
-* `FiniteDimensional.isReflexive`: a finite-dimensional normed space is reflexive.
+* an instance stating that a finite-dimensional normed space is reflexive.
 
 Hilbert spaces are reflexive: see the file ` Mathlib/Analysis/InnerProductSpace/Reflexive.lean`.
 
@@ -290,8 +290,7 @@ theorem submodule_of_isClosed [IsReflexive 𝕜 E] (F : Submodule 𝕜 E) (hF : 
 end TopologicalSpace.IsReflexive
 
 /-- A finite-dimensional normed space is reflexive. -/
-instance FiniteDimensional.isReflexive [FiniteDimensional 𝕜 E] :
-    TopologicalSpace.IsReflexive 𝕜 E := by
+instance [FiniteDimensional 𝕜 E] : TopologicalSpace.IsReflexive 𝕜 E := by
   rw [isReflexive_iff_surjective_inclusionInDoubleDual]
   -- `inclusionInDoubleDual` is an injective linear map between spaces of the same dimension
   have h_inj : Injective (inclusionInDoubleDual 𝕜 E : E →ₗ[𝕜] StrongDual 𝕜 (StrongDual 𝕜 E)) :=
