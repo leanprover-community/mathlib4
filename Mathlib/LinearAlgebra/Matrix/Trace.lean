@@ -50,8 +50,8 @@ def trace (A : Matrix n n R) : R :=
 variable (n R)
 
 @[simp]
-theorem trace_zero : trace (0 : Matrix n n R) = 0 :=
-  (Finset.sum_const (0 : R)).trans <| smul_zero _
+theorem trace_zero : trace (0 : Matrix n n R) = 0 := by
+  simp [trace]
 
 variable {n R}
 
