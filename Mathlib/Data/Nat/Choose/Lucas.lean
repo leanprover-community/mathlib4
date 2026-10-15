@@ -150,20 +150,16 @@ theorem pow_dvd_iff_forall_dvd_choose {e : ℕ} :
       by_cases hkp : k % p = 0
       · obtain ⟨n, rfl⟩ := hpn
         obtain ⟨k, rfl⟩ := Nat.dvd_of_mod_eq_zero hkp
-        have hp0 := hp.pos
-        simp only [Nat.mul_div_cancel_left _ hp0]
-        rw [Nat.pow_succ', Nat.mul_dvd_mul_iff_left hp0] at hn
-        rw [Nat.pow_succ'] at hk'
-        exact dvd_mul_of_dvd_right (ih hn k (Nat.pos_of_ne_zero (by rintro rfl; simp at hk))
-          (Nat.lt_of_mul_lt_mul_left hk')) _
+        rw [Nat.pow_succ', Nat.mul_dvd_mul_iff_left hp.pos] at hn
+        rw [Nat.pow_succ', Nat.mul_lt_mul_left hp.pos] at hk'
+        rw [Nat.mul_div_cancel_left _ hp.pos, Nat.mul_div_cancel_left _ hp.pos]
+        exact dvd_mul_of_dvd_right (ih hn k (Nat.pos_of_mul_pos_left hk) hk') _
       · simp [Nat.choose_eq_zero_of_lt (Nat.pos_of_ne_zero hkp)]
   · intro h
     by_contra hn
     obtain ⟨v, m, hm, rfl⟩ := Nat.exists_eq_pow_mul_and_not_dvd (n := n)
       (by rintro rfl; exact hn (dvd_zero _)) p hp.ne_one
-    have hv : v < e := by
-      by_contra! hv
-      exact hn ((Nat.pow_dvd_pow p hv).trans (dvd_mul_right _ _))
+    have hv : v < e := lt_of_not_ge fun hv ↦ hn ((Nat.pow_dvd_pow p hv).trans (dvd_mul_right _ _))
     have := (choose_pow_mul_pow_mul_modEq_choose_nat (p := p) (k := v) (a := m) (b := 1)).dvd_iff
       dvd_rfl
     rw [mul_one, choose_one_right] at this
