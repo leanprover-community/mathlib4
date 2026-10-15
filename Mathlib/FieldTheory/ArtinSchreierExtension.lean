@@ -59,10 +59,9 @@ lemma artinSchreierPoly.isMonicOfDegree (p : ℕ) [ExpChar F p] [hp : Fact p.Pri
   have : CharP F p := (expChar_prime_iff F hp.elim).mp ‹ExpChar F p›
   have : Nontrivial F := CharP.nontrivial_of_char_ne_one hp.elim.ne_one
   rw [artinSchreierPoly.def p]
-  exact {
-    natDegree_eq := by compute_degree <;> grind [one_ne_zero, hp.elim.one_lt],
-    monic := by monicity <;> grind [hp.elim.one_lt]
-  }
+  constructor
+  · compute_degree <;> grind [one_ne_zero, hp.elim.one_lt]
+  · monicity <;> grind [hp.elim.one_lt]
 
 variable {F : Type u} (p : ℕ) [Field F] [ExpChar F p]
 
