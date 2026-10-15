@@ -233,10 +233,9 @@ theorem NoetherianSpace.isOpen_of_stableUnderGeneralization [NoetherianSpace α]
     (hE' : ∀ x ∈ E, ∃ W : Set α, IsOpen W ∧ x ∈ W ∧ W ∩ closure {x} ⊆ E) : IsOpen E := by
   -- By Noetherian induction: a closed set `Z` in which `Z \ E` is dense does not meet `E`.
   have key (Z : Closeds α) (hZ : (Z : Set α) ⊆ closure ((Z : Set α) ∩ Eᶜ)) :
-      (Z : Set α) ∩ E = ∅ := by
+      (Z : Set α) ⊆ Eᶜ := by
     induction Z using WellFoundedLT.induction with | _ Z IH => ?_
-    rw [Set.eq_empty_iff_forall_notMem]
-    rintro y ⟨hyZ, hyE⟩
+    intro y hyZ hyE
     by_cases hZirr : IsPreirreducible (Z : Set α)
     · have hirr : IsIrreducible (Z : Set α) := ⟨⟨y, hyZ⟩, hZirr⟩
       have hg := hirr.isGenericPoint_genericPoint Z.isClosed
@@ -247,24 +246,19 @@ theorem NoetherianSpace.isOpen_of_stableUnderGeneralization [NoetherianSpace α]
       obtain ⟨z₁, z₂, hz₁, hz₂, hZz, hz₁', hz₂'⟩ := hZirr
       -- `Z \ E` is dense in a closed subset of `Z ∩ zᵢ`, which is strictly smaller than `Z`.
       have piece (z : Set α) (hz : IsClosed z) (hz' : ¬(Z : Set α) ⊆ z) :
-          closure ((Z : Set α) ∩ z ∩ Eᶜ) ∩ E = ∅ := by
+          closure ((Z : Set α) ∩ z ∩ Eᶜ) ⊆ Eᶜ := by
         let Z' : Closeds α := ⟨closure ((Z : Set α) ∩ z ∩ Eᶜ), isClosed_closure⟩
         have sub : (Z' : Set α) ⊆ (Z : Set α) ∩ z :=
           closure_minimal (fun x hx ↦ hx.1) (Z.isClosed.inter hz)
-        have lt : Z' < Z := by
-          refine lt_of_le_of_ne (fun x hx ↦ (sub hx).1) fun e ↦ hz' fun x hx ↦ ?_
-          exact (sub (e ▸ hx : x ∈ (Z' : Set α))).2
+        have lt : Z' < Z := lt_of_le_of_ne (sub.trans Set.inter_subset_left) fun e ↦
+          hz' (e ▸ sub.trans Set.inter_subset_right)
         exact IH Z' lt (closure_mono fun x hx ↦ ⟨subset_closure hx, hx.2⟩)
       have hsplit : (Z : Set α) ∩ Eᶜ ⊆ ((Z : Set α) ∩ z₁ ∩ Eᶜ) ∪ ((Z : Set α) ∩ z₂ ∩ Eᶜ) := by
         rintro x ⟨hxZ, hxE⟩
         exact (hZz hxZ).imp (fun h ↦ ⟨⟨hxZ, h⟩, hxE⟩) fun h ↦ ⟨⟨hxZ, h⟩, hxE⟩
-      have hy := closure_mono hsplit (hZ hyZ)
-      rw [closure_union] at hy
-      rcases hy with h | h
-      · exact (Set.eq_empty_iff_forall_notMem.1 (piece z₁ hz₁ hz₁')) y ⟨h, hyE⟩
-      · exact (Set.eq_empty_iff_forall_notMem.1 (piece z₂ hz₂ hz₂')) y ⟨h, hyE⟩
-  have hT := key ⟨closure Eᶜ, isClosed_closure⟩ (closure_mono fun x hx ↦ ⟨subset_closure hx, hx⟩)
-  refine isClosed_compl_iff.1 (closure_subset_iff_isClosed.1 fun x hx hxE ↦ ?_)
-  exact (Set.eq_empty_iff_forall_notMem.1 hT) x ⟨hx, hxE⟩
+      rcases (closure_mono hsplit).trans closure_union.subset (hZ hyZ) with h | h
+      exacts [piece z₁ hz₁ hz₁' h hyE, piece z₂ hz₂ hz₂' h hyE]
+  exact isClosed_compl_iff.1 <| closure_subset_iff_isClosed.1 <|
+    key ⟨closure Eᶜ, isClosed_closure⟩ (closure_mono fun x hx ↦ ⟨subset_closure hx, hx⟩)
 
 end TopologicalSpace
