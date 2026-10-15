@@ -52,7 +52,8 @@ Linter that checks whether a structure should be in Prop.
   test declName := do
     let some info := Lean.Linter.deprecatedAttr.getParam? (← getEnv) declName | return none
     match info.since? with
-    | some _ => return none -- TODO: enforce `YYYY-MM-DD` format
+    -- Note: The `YYYY-MM-DD` format is checked by the `linter.style.deprecationDate` syntax linter
+    | some _ => return none
     | none => return m!"`deprecated` attribute without `since` date"
 
 end Batteries.Tactic.Lint

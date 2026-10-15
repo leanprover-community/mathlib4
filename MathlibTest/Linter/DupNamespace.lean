@@ -161,6 +161,7 @@ def Subgroup.AddSubgroup.foo := 42
 
 -- The linter works on deprecated decls: this is important
 -- since people can forget to add a `_root_` when adding deprecations.
+set_option linter.style.deprecationDate false in
 /--
 warning: The namespace `Foo` is duplicated in the declaration `Foo.Bar.Foo.baz'`.
 
