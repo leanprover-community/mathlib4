@@ -33,9 +33,9 @@ structure Reduction where
   /-- The row and column interchanges, in order. The permutation `σ` is their product. -/
   swaps : Array (ℕ × ℕ)
   /-- The unit lower triangular transform. -/
-  L : Array (Array Rat)
+  L : Array (Array ℚ)
   /-- The upper Hessenberg form. -/
-  H : Array (Array Rat)
+  H : Array (Array ℚ)
 
 /-- The row and column swaps of a `Reduction` represented as an indexed array. An entry `e` at index
 `i` means that row and column `e` of the original matrix move to position `i`. -/
@@ -44,10 +44,10 @@ def Reduction.perm (d : Reduction) : Array ℕ :=
 
 /-- Reduce the `n × n` matrix `A` over `ℚ`, given as an array of rows, to upper Hessenberg form by
 Gaussian elimination with row and column swaps. -/
-def reduce (n : ℕ) (A : Array (Array Rat)) : Reduction := Id.run do
-  let getEntry (M : Array (Array Rat)) (i j : ℕ) : Rat := (M.getD i #[]).getD j 0
+def reduce (n : ℕ) (A : Array (Array ℚ)) : Reduction := Id.run do
+  let getEntry (M : Array (Array ℚ)) (i j : ℕ) : ℚ := (M.getD i #[]).getD j 0
   let mut H := A
-  let mut L : Array (Array Rat) :=
+  let mut L : Array (Array ℚ) :=
     Array.ofFn (n := n) fun i => Array.ofFn (n := n) fun j => if i == j then 1 else 0
   let mut swaps : Array (ℕ × ℕ) := #[]
   for m in 1...(n - 1) do
