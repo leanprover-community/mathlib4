@@ -234,12 +234,20 @@ theorem mem_toAffineSubspace {p : Submodule k V} {x : V} :
 
 @[simp]
 theorem toAffineSubspace_le_toAffineSubspace {p q : Submodule k V} :
-    p.toAffineSubspace ≤ q.toAffineSubspace ↔ p ≤ q :=
+    (p : AffineSubspace k V) ≤ q ↔ p ≤ q :=
   .rfl
 
 @[gcongr]
 theorem monotone_toAffineSubspace : Monotone ((↑) : Submodule k V → AffineSubspace k V) :=
   fun _ _ => toAffineSubspace_le_toAffineSubspace.mpr
+
+theorem toAffineSubspace_injective :
+    Function.Injective ((↑) : Submodule k V → AffineSubspace k V) := by
+  simp [Function.Injective, le_antisymm_iff]
+
+@[simp]
+theorem toAffineSubspace_inj {p q : Submodule k V} : (p : AffineSubspace k V) = q ↔ p = q :=
+  toAffineSubspace_injective.eq_iff
 
 /-- Reinterprets `p : AffineSubspace k V` that includes `0` as a `Submodule k V`. -/
 def ofAffineSubspace (p : AffineSubspace k V) (hp : 0 ∈ p) : Submodule k V where
@@ -1227,19 +1235,19 @@ theorem toAffineSubspace_bot : ((⊥ : Submodule k V) : AffineSubspace k V) = {0
   rfl
 
 theorem toAffineSubspace_inf (p q : Submodule k V) :
-    (p ⊓ q : Submodule k V) = (p ⊓ q : AffineSubspace k V) :=
+    ((p ⊓ q : Submodule k V) : AffineSubspace k V) = (p : AffineSubspace k V) ⊓ q :=
   rfl
 
 theorem toAffineSubspace_sInf (s : Set (Submodule k V)) :
-    sInf s = ⨅ p ∈ s, (p : AffineSubspace k V) :=
+    ((sInf s : Submodule k V) : AffineSubspace k V) = ⨅ p ∈ s, (p : AffineSubspace k V) :=
   SetLike.coe_injective <| by simp
 
 theorem toAffineSubspace_iInf {ι : Type*} (p : ι → Submodule k V) :
-    ⨅ i, p i = ⨅ i, (p i : AffineSubspace k V) :=
+    ((⨅ i, p i : Submodule k V) : AffineSubspace k V) = ⨅ i, (p i : AffineSubspace k V) :=
   SetLike.coe_injective <| by simp
 
 theorem toAffineSubspace_sSup {s : Set (Submodule k V)} (hs : s.Nonempty) :
-    sSup s = ⨆ p ∈ s, (p : AffineSubspace k V) := by
+    ((sSup s : Submodule k V) : AffineSubspace k V) = ⨆ p ∈ s, (p : AffineSubspace k V) := by
   refine le_antisymm (le_of_forall_ge fun q hq => ?_) monotone_toAffineSubspace.le_map_sSup
   rw [iSup₂_le_iff] at hq
   obtain ⟨p, hp⟩ := hs
@@ -1247,11 +1255,11 @@ theorem toAffineSubspace_sSup {s : Set (Submodule k V)} (hs : s.Nonempty) :
   simpa using hq
 
 theorem toAffineSubspace_iSup {ι : Type*} [Nonempty ι] (p : ι → Submodule k V) :
-    ⨆ i, p i = ⨆ i, (p i : AffineSubspace k V) := by
+    ((⨆ i, p i : Submodule k V) : AffineSubspace k V) = ⨆ i, (p i : AffineSubspace k V) := by
   rw [← sSup_range, toAffineSubspace_sSup (range_nonempty _), iSup_range]
 
 theorem toAffineSubspace_sup (p q : Submodule k V) :
-    (p ⊔ q : Submodule k V) = (p ⊔ q : AffineSubspace k V) := by
+    ((p ⊔ q : Submodule k V) : AffineSubspace k V) = (p : AffineSubspace k V) ⊔ q := by
   simp_rw [sup_eq_iSup, toAffineSubspace_iSup, Bool.apply_cond]
 
 end Submodule
