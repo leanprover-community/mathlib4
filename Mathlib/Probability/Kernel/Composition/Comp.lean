@@ -278,6 +278,12 @@ Ref. *Meyn-Tweedie* Theorem 3.4.2, page 68 -/
 theorem pow_add (κ : Kernel α α) (m n : ℕ) :
     κ ^ (m + n) = (κ ^ m) ∘ₖ (κ ^ n) := _root_.pow_add κ m n
 
+lemma pow_add_one (κ : Kernel α α) (n : ℕ) : κ ^ (n + 1) = (κ ^ n) ∘ₖ κ := by
+  rw [pow_add, pow_one]
+
+lemma pow_add_one' (κ : Kernel α α) (n : ℕ) : κ ^ (n + 1) = κ ∘ₖ (κ ^ n) := by
+  rw [add_comm, pow_add, pow_one]
+
 /-- The **Chapman-Kolmogorov equation**, integral version. -/
 theorem pow_add_apply_eq_lintegral (κ : Kernel α α) (m n : ℕ) (a : α) {s : Set α}
     (hs : MeasurableSet s) :
