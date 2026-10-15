@@ -342,6 +342,8 @@ theorem Copy.minDegree_mono [Fintype V] [Fintype W] [DecidableRel G.Adj] [Decida
     {f : Copy G H} (hf : Function.Surjective f) : G.minDegree ≤ H.minDegree := by
   cases isEmpty_or_nonempty W
   · simp [Function.isEmpty f |>.subsingleton]
+  suffices h : (G.minDegree : ℕ∞) ≤ (H.minDegree : ℕ∞) by
+      simp_all 
   refine H.le_minDegree_of_forall_le_degree _ fun w ↦ ?_
   obtain ⟨v, rfl⟩ := hf w
   grw [← f.degree_le, ← minDegree_le_degree]
