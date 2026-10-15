@@ -17,17 +17,13 @@ Given a projective family of finite measures `P J` on the finite products `Π j 
 construct its projective limit, a measure on `Π i, α i`, when the spaces `α i` are
 second-countable and completely pseudo-metrizable (for example Polish spaces).
 
-If the measures `P J` are inner regular with respect to compact closed sets, the additive content
-`projectiveFamilyContent hP` on the measurable cylinders is inner regular with respect to a compact
-system of square cylinders, hence it is σ-additive and extends to a measure.
-
 ## Main definitions
 
 * `projectiveLimit P hP`: the projective limit of a projective family of finite measures.
 
 ## Main statements
 
-* `projectiveFamilyContent_sigma_additive_of_innerRegular`: the content `projectiveFamilyContent hP`
+* `projectiveFamilyContent_iUnion_eq_tsum_of_innerRegular`: the content `projectiveFamilyContent hP`
   is σ-additive if the measures `P J` are inner regular with respect to compact closed sets.
 * `isProjectiveLimit_projectiveLimit`: **Kolmogorov extension theorem**, `projectiveLimit P hP` is
   the projective limit of `P`.
@@ -68,7 +64,7 @@ lemma innerRegular_projectiveFamilyContent (hP : IsProjectiveMeasureFamily P)
 
 /-- If the measures `P J` are inner regular with respect to compact closed sets, then the content
 `projectiveFamilyContent hP` is σ-additive. -/
-theorem projectiveFamilyContent_sigma_additive_of_innerRegular (hP : IsProjectiveMeasureFamily P)
+theorem projectiveFamilyContent_iUnion_eq_tsum_of_innerRegular (hP : IsProjectiveMeasureFamily P)
     (hP_inner : ∀ J, (P J).InnerRegularWRT (fun s ↦ IsCompact s ∧ IsClosed s) MeasurableSet)
     ⦃f : ℕ → Set (Π i, α i)⦄ (hf : ∀ i, f i ∈ measurableCylinders α)
     (hf_Union : (⋃ i, f i) ∈ measurableCylinders α)
@@ -87,7 +83,7 @@ theorem isSigmaSubadditive_projectiveFamilyContent_of_innerRegular
     (hP_inner : ∀ J, (P J).InnerRegularWRT (fun s ↦ IsCompact s ∧ IsClosed s) MeasurableSet) :
     (projectiveFamilyContent hP).IsSigmaSubadditive :=
   isSigmaSubadditive_of_addContent_iUnion_eq_tsum isSetRing_measurableCylinders
-    (projectiveFamilyContent_sigma_additive_of_innerRegular hP hP_inner)
+    (projectiveFamilyContent_iUnion_eq_tsum_of_innerRegular hP hP_inner)
 
 end InnerRegular
 
@@ -98,12 +94,12 @@ variable [∀ i, TopologicalSpace (α i)] [∀ i, SecondCountableTopology (α i)
   [∀ I, IsFiniteMeasure (P I)]
 
 /-- The content `projectiveFamilyContent hP` is σ-additive. -/
-theorem projectiveFamilyContent_sigma_additive (hP : IsProjectiveMeasureFamily P)
+theorem projectiveFamilyContent_iUnion_eq_tsum (hP : IsProjectiveMeasureFamily P)
     ⦃f : ℕ → Set (Π i, α i)⦄
     (hf : ∀ i, f i ∈ measurableCylinders α) (hf_Union : (⋃ i, f i) ∈ measurableCylinders α)
     (h_disj : Pairwise (Function.onFun Disjoint f)) :
     projectiveFamilyContent hP (⋃ i, f i) = ∑' i, projectiveFamilyContent hP (f i) :=
-  projectiveFamilyContent_sigma_additive_of_innerRegular hP
+  projectiveFamilyContent_iUnion_eq_tsum_of_innerRegular hP
     (fun J ↦ innerRegular_isCompact_isClosed_measurableSet_of_finite (P J)) hf hf_Union h_disj
 
 /-- The content `projectiveFamilyContent hP` is σ-subadditive. -/
