@@ -5,7 +5,7 @@ Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
 module
 
-public import Mathlib.MeasureTheory.PiSystem
+public import Mathlib.MeasureTheory.Constructions.Cylinders
 public import Mathlib.Order.CountableSupClosed
 public import Mathlib.Topology.Separation.Hausdorff
 
@@ -18,6 +18,8 @@ This file defines compact systems of sets.
 
 * `IsCompactSystem`: A set of sets is a compact system if, whenever a countable subfamily has empty
   intersection, then finitely many of them already have empty intersection.
+* `compactClosedSquareCylinders`: The square cylinders in a product space whose sides are
+  compact and closed.
 
 ## Main results
 
@@ -27,6 +29,10 @@ This file defines compact systems of sets.
 * `isCompactSystem_isCompact`: In a `T2Space`, the set of compact sets is a compact system.
 * `IsCompactSystem.countableInfClosure`: If `S` is a compact system, then the set of countable
   intersections of sets in `S` is a compact system.
+* `IsCompactSystem.prod`, `IsCompactSystem.pi`: Products of sets from compact systems form a
+  compact system.
+* `isCompactSystem_compactClosedSquareCylinders`: Compact and closed square cylinders form a
+  compact system.
 -/
 
 @[expose] public section
@@ -168,7 +174,8 @@ theorem isCompactSystem_isCompact_isClosed (α : Type*) [TopologicalSpace α] :
   refine IsCompactSystem.of_nonempty_iInter fun C hC_cc h_nonempty ↦ ?_
   rw [← iInter_dissipate]
   refine IsCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed (Set.dissipate C)
-    (fun n ↦ ?_) h_nonempty ?_ (fun n ↦ isClosed_biInter (fun i _ ↦ (hC_cc i).2))
+    (fun n ↦ ?_) h_nonempty ?_
+    (fun n ↦ isClosed_biInter (s := {i | i ≤ n}) (fun i _ ↦ (hC_cc i).2))
   · exact Set.antitone_dissipate (by lia)
   · simpa using (hC_cc 0).1
 
@@ -185,9 +192,11 @@ theorem isCompactSystem_insert_univ_isCompact_isClosed (α : Type*) [Topological
 
 end IsCompactIsClosed
 
+namespace IsCompactSystem
+
 /-- If `S` is a compact system, then the set of countable intersections of sets in `S` is also a
 compact system. -/
-protected theorem IsCompactSystem.countableInfClosure (hS : IsCompactSystem S) :
+protected theorem countableInfClosure (hS : IsCompactSystem S) :
     IsCompactSystem (countableInfClosure S) := by
   intro D hD hD_empty
   simp only [mem_countableInfClosure_iff_iInf, iInf_eq_iInter] at hD
@@ -198,3 +207,51 @@ protected theorem IsCompactSystem.countableInfClosure (hS : IsCompactSystem S) :
   refine ⟨n, subset_eq_empty (fun x hx ↦ ?_) hn⟩
   simp only [mem_dissipate, mem_iInter] at hx ⊢
   exact fun k hk ↦ hx _ ((unpair_left_le k).trans hk) _
+
+/-- Products of sets from two compact systems form a compact system. -/
+protected theorem prod {β : Type*} {T : Set (Set β)}
+    (hS : IsCompactSystem S) (hT : IsCompactSystem T) :
+    IsCompactSystem (image2 (· ×ˢ ·) S T) := by
+  intro u hu h_empty
+  choose s hs t ht hst using hu
+  obtain rfl : u = fun n ↦ s n ×ˢ t n := funext fun n ↦ (hst n).symm
+  rw [← iInter_prod_iInter, prod_eq_empty_iff] at h_empty
+  simp_rw [dissipate, ← iInter_prod_iInter, prod_eq_empty_iff]
+  obtain h | h := h_empty
+  · obtain ⟨n, hn⟩ := hS s hs h
+    exact ⟨n, .inl hn⟩
+  · obtain ⟨n, hn⟩ := hT t ht h
+    exact ⟨n, .inr hn⟩
+
+variable {ι : Type*} {α : ι → Type*}
+
+/-- Boxes formed by compact systems form a compact system. -/
+protected theorem pi {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsCompactSystem (C i)) :
+    IsCompactSystem (univ.pi '' univ.pi C) := by
+  intro S hS h_empty
+  choose x hx hxS using hS
+  obtain rfl : S = fun n ↦ univ.pi (x n) := funext fun n ↦ (hxS n).symm
+  obtain ⟨i, hi⟩ := iInter_univ_pi_eq_empty_iff.mp h_empty
+  obtain ⟨n, hn⟩ := hC i (fun n ↦ x n i) (fun n ↦ hx n i (mem_univ i)) hi
+  exact ⟨n, biInter_univ_pi_eq_empty_iff.mpr ⟨i, hn⟩⟩
+
+end IsCompactSystem
+
+section CompactClosedSquareCylinders
+
+variable {ι : Type*} (α : ι → Type*) [∀ i, TopologicalSpace (α i)]
+
+/-- The set of sets of the form `s.pi t`, where `s : Finset ι` and `t i` is both closed and
+compact for all `i ∈ s`. -/
+def compactClosedSquareCylinders : Set (Set (Π i, α i)) :=
+  MeasureTheory.squareCylinders fun i ↦ {t : Set (α i) | IsCompact t ∧ IsClosed t}
+
+/-- Compact and closed square cylinders form a compact system. -/
+theorem isCompactSystem_compactClosedSquareCylinders :
+    IsCompactSystem (compactClosedSquareCylinders α) := by
+  refine (IsCompactSystem.pi fun i ↦ isCompactSystem_insert_univ_isCompact_isClosed (α i)).mono ?_
+  rintro _ ⟨s, t, ht, rfl⟩
+  classical
+  exact ⟨fun i ↦ if i ∈ s then t i else univ, by grind⟩
+
+end CompactClosedSquareCylinders

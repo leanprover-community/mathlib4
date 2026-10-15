@@ -9,7 +9,6 @@ public import Mathlib.Logic.Equiv.Set
 public import Mathlib.Order.Hom.Basic
 public import Mathlib.Order.Interval.Set.Defs
 public import Mathlib.Order.WellFounded
-public import Mathlib.Tactic.MinImports
 
 /-!
 # Order homomorphisms and sets
@@ -23,6 +22,12 @@ open OrderDual Set
 variable {α β γ : Type*}
 
 namespace Set
+
+/-- Membership as an order isomorphism between sets and predicates. -/
+@[simps!]
+def memOrderIso : Set α ≃o (α → Prop) where
+  toEquiv := memEquiv
+  map_rel_iff' := .rfl
 
 /-- Sets on sum types are order-equivalent to pairs of sets on each summand. -/
 @[simps apply]

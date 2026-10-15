@@ -6,7 +6,6 @@ Authors: Michael Stoll
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Log.PosLog
-public import Mathlib.Tactic.Positivity.Core
 
 import Mathlib.Algebra.FiniteSupport.Basic
 import Mathlib.Algebra.Order.Ring.IsNonarchimedean
@@ -89,9 +88,6 @@ class AdmissibleAbsValues (K : Type*) [Field K] where
       (archAbsVal.map (· x)).prod * ∏ᶠ v : nonarchAbsVal, v.val x = 1
 
 open AdmissibleAbsValues Real Function
-
-@[deprecated (since := "2026-03-03")] alias
-  AdmissibleAbsValues.mulSupport_finite := AdmissibleAbsValues.hasFiniteMulSupport
 
 attribute [fun_prop] hasFiniteMulSupport
 
@@ -438,7 +434,7 @@ lemma mulHeight_eq_one_of_subsingleton {ι : Type*} [Subsingleton ι] (x : ι �
   obtain ⟨i, hi⟩ := Function.ne_iff.mp hx
   have : Nonempty ι := .intro i
   rw [← mulHeight_smul_eq_mulHeight x (inv_ne_zero hi)]
-  convert! mulHeight_one
+  convert mulHeight_one
   ext1 j
   simpa [Subsingleton.elim j i] using inv_mul_cancel₀ hi
 

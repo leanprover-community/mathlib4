@@ -6,8 +6,9 @@ Authors: Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
-public import Mathlib.CategoryTheory.Functor.EpiMono
 public import Mathlib.CategoryTheory.HomCongr
+
+import Mathlib.CategoryTheory.Functor.EpiMono
 
 /-!
 # Reflective functors
