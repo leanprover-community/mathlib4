@@ -242,7 +242,7 @@ def transposeMulEquiv : GL n R ≃* (GL n R)ᵐᵒᵖ :=
 
 open MulOpposite in
 @[simp] lemma transposeMulEquiv_symm_apply_op (a : GL n R) :
-    (transposeMulEquiv n).symm (op a) = ((transposeMulEquiv n) a).unop := rfl
+    (transposeMulEquiv n).symm (op a) = (transposeMulEquiv n a).unop := rfl
 
 end Transpose
 
