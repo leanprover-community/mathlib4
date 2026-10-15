@@ -5,8 +5,8 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.Topology.UniformSpace.Defs
 public import Mathlib.Topology.Bases
+public import Mathlib.Topology.UniformSpace.Defs
 
 /-!
 # Ultrametric (nonarchimedean) uniform spaces
@@ -26,7 +26,7 @@ In this file we define `IsUltraUniformity`, a Prop mixin typeclass.
 
 ## Implementation notes
 
-As in the `Mathlib/Topology/UniformSpace/Defs.lean` file, we do not reuse `Mathlib/Data/Rel.lean`
+As in the `Mathlib/Topology/UniformSpace/Defs.lean` file, we do not reuse `Mathlib/Basic/Rel.lean`
 but rather extend the relation properties as needed.
 
 ## TODOs

@@ -5,8 +5,8 @@ Authors: Ruben Van de Velde, Stanislas Polu
 -/
 module
 
-public import Mathlib.Data.Real.Basic
 public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Basic.Real.Basic
 
 /-!
 # IMO 1972 Q5

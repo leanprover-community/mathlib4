@@ -68,10 +68,6 @@ noncomputable def sSetChainComplexMap
 alias singularChainComplexFunctorObjMap :=
   sSetChainComplexMap
 
-@[deprecated (since := "2026-03-24")]
-alias _root_.singularChainComplexFunctor_mapHomotopy_of_simplicialHomotopy :=
-  sSetChainComplexMap
-
 open HomologicalComplex in
 /--
 Simplicially homotopic maps of simplicial sets induce the same map on
@@ -84,10 +80,6 @@ theorem congr_sSetHomologyMap [CategoryWithHomology C]
     (H : SimplicialObject.Homotopy f g) (R : C) (n : ℕ) :
     SSet.homologyMap f R n = SSet.homologyMap g R n :=
   (H.sSetChainComplexMap R).homologyMap_eq n
-
-@[deprecated (since := "2026-03-24")]
-alias singularChainComplexFunctor_map_homology_eq_of_simplicialHomotopy :=
-  congr_sSetHomologyMap
 
 @[deprecated (since := "2026-04-05")] alias congr_homologyMap_singularChainComplexFunctor :=
   congr_sSetHomologyMap
