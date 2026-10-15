@@ -5,9 +5,10 @@ Authors: Heather Macbeth, Michał Świętek, Rémy Degenne
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Quotient
 public import Mathlib.Analysis.Normed.Module.HahnBanach
 public import Mathlib.Analysis.Normed.Module.WeakDual
+
+import Mathlib.Analysis.Normed.Group.Quotient
 
 /-!
 # The double dual of a normed space, and reflexive spaces
