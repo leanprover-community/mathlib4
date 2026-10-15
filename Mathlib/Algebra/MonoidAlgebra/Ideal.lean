@@ -5,8 +5,9 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.MonoidAlgebra.Defs
+public import Mathlib.Algebra.MonoidAlgebra.MapDomain
 public import Mathlib.RingTheory.Ideal.Span
+public import Mathlib.RingTheory.Ideal.Maps
 
 import Mathlib.RingTheory.Ideal.BigOperators
 
@@ -62,33 +63,11 @@ theorem AddMonoidAlgebra.mem_ideal_span_of'_image [AddMonoid A] [Semiring k] {s 
     {x : AddMonoidAlgebra k A} :
     x ∈ Ideal.span (AddMonoidAlgebra.of' k A '' s) ↔
       ∀ m ∈ x.coeff.support, ∃ m' ∈ s, ∃ d, m = d + m' := by
-  -- TODO: this proof is a direct copy of MonoidAlgebra.mem_ideal_span_of_image.
-  -- Alternatively, we could prove it via the equiv between `MonoidAlgebra` and `AddMonoidAlgebra`,
-  -- but that would require a lot more API.
   classical
-  let RHS : Ideal (AddMonoidAlgebra k A) := {
-    carrier := { p | ∀ m : A, m ∈ p.coeff.support → ∃ m' ∈ s, ∃ d, m = d + m' }
-    add_mem' {x y} hx hy m hm := (Finset.mem_union.1 <| Finsupp.support_add hm).elim (hx m) (hy m)
-    zero_mem' := by simp
-    smul_mem' x y hy m hm := by
-      simp only [smul_eq_mul, mul_def, coeff_finsuppSum] at hm
-      obtain ⟨xm, -, hm⟩ := Finset.mem_biUnion.mp <| Finsupp.support_sum hm
-      obtain ⟨ym, hym, hm⟩ := Finset.mem_biUnion.mp <| Finsupp.support_sum hm
-      obtain rfl := Finset.mem_singleton.mp <| Finsupp.support_single_subset hm
-      refine (hy _ hym).imp fun sm ↦ .imp_right ?_
-      rintro ⟨d, rfl⟩
-      exact ⟨xm + d, (add_assoc ..).symm⟩
-  }
-  change _ ↔ x ∈ RHS
-  constructor
-  · suffices Ideal.span (of' k A '' s) ≤ RHS from @this x
-    rw [Ideal.span_le]
-    rintro _ ⟨i, hi, rfl⟩ m hm
-    refine ⟨_, hi, 0, ?_⟩
-    simpa using Finsupp.support_single_subset hm
-  · intro hx
-    rw [← x.sum_coeff_single]
-    apply Ideal.sum_mem _ fun i hi ↦ ?_
-    obtain ⟨d, hd, d2, rfl⟩ := hx _ hi
-    simpa using Ideal.mul_mem_left _ (.single d2 <| x.coeff (d2 + d))
-      (b := of' k A d) (Ideal.subset_span <| Set.mem_image_of_mem _ hd)
+  convert (toMultiplicative _ _ x).mem_ideal_span_of_image (s := Multiplicative.ofAdd '' s)
+  · simp_rw [Set.image_image, MonoidAlgebra.of_apply, ← toMultiplicative_single, ← of'_apply,
+    ← Set.image_image, ← Ideal.map_span, Ideal.apply_mem_of_equiv_iff]
+  open Multiplicative in
+  simp_rw [ofAdd.surjective.forall, ofAdd.surjective.exists, ← ofAdd_add, ofAdd.apply_eq_iff_eq,
+    coeff_toMultiplicative_apply, Finsupp.mapDomain_support_of_injective ofAdd.injective,
+    ofAdd.injective.mem_finset_image, ofAdd.injective.mem_set_image]
