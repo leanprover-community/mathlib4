@@ -880,17 +880,12 @@ variable {I} in
 theorem of_isNilpotent (hI : IsNilpotent I) : IsAdicComplete I M := by
   obtain ⟨k, hk⟩ := hI
   have h {n : ℕ} (hn : k ≤ n) : (I ^ n • ⊤ : Submodule R M) = ⊥ := by
-    have : I ^ n = ⊥ := by
-      rw [eq_bot_iff, ← Ideal.zero_eq_bot, ← hk]
-      exact Ideal.pow_le_pow_right hn
-    rw [this, Submodule.bot_smul]
+    rw [le_bot_iff.1 ((Ideal.pow_le_pow_right hn).trans_eq hk), Submodule.bot_smul]
   refine { haus' x hx := ?_, prec' f hf := ⟨f k, fun n ↦ ?_⟩ }
   · simpa [h le_rfl, SModEq.zero] using hx k
   · rcases le_total n k with hn | hn
     · exact hf hn
-    · have := hf hn
-      rw [h le_rfl, SModEq.bot] at this
-      rw [this]
+    · rw [SModEq.bot.1 (h le_rfl ▸ hf hn : f k ≡ f n [SMOD (⊥ : Submodule R M)])]
 
 open Finset
 
