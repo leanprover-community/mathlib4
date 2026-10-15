@@ -836,8 +836,9 @@ This is available in bundled forms as:
   __ := prodEquiv
   map_add' _ _ := rfl
 
-@[simp] theorem toEquiv_prodAddEquiv [Add α] [Add β] {a : Matrix m n (α × β)} :
-    prodAddEquiv a = prodEquiv a := rfl
+@[simp] theorem toEquiv_prodAddEquiv [Add α] [Add β] :
+   (prodAddEquiv (m := m) (n := n) (α := α) (β := β) :
+      Matrix m n (α × β) ≃ Matrix m n α × Matrix m n β) = prodEquiv := rfl
 
 /-- `prodEquiv` as a `LinearEquiv`. -/
 @[simps!] def prodLinearEquiv (R) [Semiring R] [AddCommMonoid α] [AddCommMonoid β]
@@ -846,7 +847,8 @@ This is available in bundled forms as:
   map_smul' _ _ := rfl
 
 @[simp] theorem toAddEquiv_prodLineardEquiv (R) [Semiring R] [AddCommMonoid α] [AddCommMonoid β]
-    [Module R α] [Module R β] {a : Matrix m n (α × β)} : prodLinearEquiv R a = prodAddEquiv a := rfl
+    [Module R α] [Module R β] : (prodLinearEquiv (m := m) (n := n) (α := α) (β := β) R :
+      Matrix m n (α × β) ≃+ Matrix m n α × Matrix m n β) = prodAddEquiv := rfl
 
 variable [Fintype n]
 
@@ -868,11 +870,13 @@ variable (R) [CommSemiring R] [DecidableEq n]
   commutes' := (AlgHom.mk' (prodRingEquiv (n := n) (α := α) (β := β)).toRingHom
     fun _ _ ↦ rfl).commutes
 
-@[simp] theorem toprodAddEquiv_prodAlgEquiv [Semiring α] [Algebra R α] [Semiring β] [Algebra R β]
-    {a : Matrix n n (α × β)} : prodAlgEquiv R a = prodRingEquiv a := rfl
+@[simp] theorem toprodAddEquiv_prodAlgEquiv [Semiring α] [Algebra R α] [Semiring β] [Algebra R β] :
+    (prodAlgEquiv (n := n) (α := α) (β := β) R :
+      Matrix n n (α × β) ≃+* Matrix n n α × Matrix n n β) = prodRingEquiv  := rfl
 
-@[simp] theorem toprodLinearEquiv_prodAlgEquiv [Semiring α] [Algebra R α] [Semiring β] [Algebra R β]
-    {a : Matrix n n (α × β)} : prodAlgEquiv R a = prodLinearEquiv R a := rfl
+@[simp] theorem toprodLinearEquiv_prodAlgEquiv [Semiring α] [Algebra R α]
+  [Semiring β] [Algebra R β] : (prodAlgEquiv (n := n) (α := α) (β := β) R :
+      Matrix n n (α × β) ≃ₗ[R] Matrix n n α × Matrix n n β) = prodLinearEquiv R := rfl
 
 end Prod
 
@@ -891,8 +895,6 @@ This is available in bundled forms as:
 @[simps] def piEquiv : Matrix m n (Π i, β i) ≃ Π i, Matrix m n (β i) where
   toFun f i := f.map (· i)
   invFun f := .of fun j k i ↦ f i j k
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- `piEquiv` as an `AddEquiv`. -/
 @[simps!] def piAddEquiv [∀ i, Add (β i)] : Matrix m n (Π i, β i) ≃+ Π i, Matrix m n (β i) where
