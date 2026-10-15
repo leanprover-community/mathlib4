@@ -54,7 +54,7 @@ theorem continuousAt_sign_of_ne_zero {a : α} (h : a ≠ 0) : ContinuousAt SignT
 theorem IsPreconnected.sign_eq_of_continuousOn {X : Type*} [TopologicalSpace X] {f : X → α}
     {s : Set X} (hs : IsPreconnected s) (hf : ContinuousOn f s) (h0 : ∀ x ∈ s, f x ≠ 0) {x y : X}
     (hx : x ∈ s) (hy : y ∈ s) : SignType.sign (f x) = SignType.sign (f y) :=
-  hs.constant (f := fun z => SignType.sign (f z))
+  hs.constant (f := SignType.sign ∘ f)
     (fun z hz => (continuousAt_sign_of_ne_zero (h0 z hz)).comp_continuousWithinAt (hf z hz)) hx hy
 
 end LinearOrder
