@@ -294,17 +294,7 @@ end Filter
 
 section bernoulli
 
-/-- A `PMF` which assigns probability `p` to `true` and `1 - p` to `false`. -/
-@[deprecated ProbabilityTheory.bernoulliMeasure +typeChanged (since := "2026-04-07")]
-def bernoulli (p : ℝ≥0) (h : p ≤ 1) : PMF Bool :=
-  ofFintype (fun b => cond b p (1 - p)) (by simp [h])
-
 variable {p : ℝ≥0} (h : p ≤ 1) (b : Bool)
-
-@[deprecated ProbabilityTheory.bernoulliMeasure_apply +typeChanged (since := "2026-04-07")]
-theorem bernoulli_apply : bernoulli p h b = cond b p (1 - p) := by
-  simp only [bernoulli, ofFintype_apply]
-  exact Eq.symm (Bool.apply_cond ofNNReal)
 
 @[deprecated ProbabilityTheory.bernoulliMeasure_apply_of_notMem_of_notMem +typeChanged
   (since := "2026-05-29")]
