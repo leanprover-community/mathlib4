@@ -50,9 +50,8 @@ theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : StrongDual 𝕜 p) :
   exact f.opNorm_le_bound (norm_nonneg _) fun x => by simpa [hg x] using g.le_opNorm x
 
 /-- A linear form `A` which is dominated by the norm of a linear map `L` factors through `L`: there
-is a continuous linear form `Λ` of norm at most `1` such that `Λ (L c) = A c` for all `c`.
-This is a consequence of the Hahn-Banach theorem. -/
-theorem exists_strongDual_forall_apply_eq_of_forall_norm_le {V X : Type*}
+is a continuous linear form `Λ` of norm at most `1` such that `Λ (L c) = A c` for all `c`. -/
+lemma exists_strongDual_forall_apply_eq_of_forall_norm_le {V X : Type*}
     [AddCommGroup V] [Module 𝕜 V] [SeminormedAddCommGroup X] [NormedSpace 𝕜 X] (L : V →ₗ[𝕜] X)
     (A : V →ₗ[𝕜] 𝕜) (h : ∀ c, ‖A c‖ ≤ ‖L c‖) :
     ∃ Λ : StrongDual 𝕜 X, ‖Λ‖ ≤ 1 ∧ ∀ c, Λ (L c) = A c := by
