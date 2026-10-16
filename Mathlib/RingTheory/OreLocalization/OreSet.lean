@@ -5,7 +5,6 @@ Authors: Jakob von Raumer, Kevin Klinge
 -/
 module
 
-public import Mathlib.Algebra.Group.Submonoid.Defs
 public import Mathlib.Algebra.Ring.Regular
 public import Mathlib.GroupTheory.OreLocalization.OreSet
 
@@ -37,8 +36,6 @@ def oreSetOfIsCancelMulZero {R : Type*} [MonoidWithZero R] [IsCancelMulZero R]
     oreNum
     oreDenom
     ore_eq }
-
-@[deprecated (since := "2026-01-12")] alias oreSetOfCancelMonoidWithZero := oreSetOfIsCancelMulZero
 
 /-- In rings without zero divisors, the first (cancellability) condition is always fulfilled,
 it suffices to give a proof for the Ore condition itself. -/

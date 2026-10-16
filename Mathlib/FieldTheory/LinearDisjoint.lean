@@ -6,8 +6,9 @@ Authors: Jz Pan
 module
 
 public import Mathlib.FieldTheory.Galois.Basic
-public import Mathlib.RingTheory.AlgebraicIndependent.RankAndCardinality
 public import Mathlib.RingTheory.LinearDisjoint
+
+import Mathlib.RingTheory.AlgebraicIndependent.RankAndCardinality
 
 /-!
 
@@ -225,7 +226,7 @@ theorem map'' {L' : Type*} [Field L'] [Algebra F L'] [Algebra L' E] [IsScalarTow
   have := H.map (IsScalarTower.toAlgHom F E K) (RingHom.injective _)
   simp_rw [AlgHom.fieldRange_toSubalgebra, ← AlgHom.range_comp] at this
   rw [AlgHom.fieldRange_toSubalgebra]
-  convert! this <;> (ext; exact IsScalarTower.algebraMap_apply _ E K _)
+  convert this <;> (ext; exact IsScalarTower.algebraMap_apply _ E K _)
 
 variable (A) in
 theorem self_right : A.LinearDisjoint F := Subalgebra.LinearDisjoint.bot_right _
@@ -370,7 +371,7 @@ theorem of_le_right' (H : A.LinearDisjoint L) (L' : Type*) [Field L']
     [Algebra F L'] [Algebra L' L] [IsScalarTower F L' L]
     [Algebra L' E] [IsScalarTower F L' E] [IsScalarTower L' L E] : A.LinearDisjoint L' := by
   refine Subalgebra.LinearDisjoint.of_le_right_of_flat H ?_
-  convert! AlgHom.range_comp_le_range (IsScalarTower.toAlgHom F L' L) (IsScalarTower.toAlgHom F L E)
+  convert AlgHom.range_comp_le_range (IsScalarTower.toAlgHom F L' L) (IsScalarTower.toAlgHom F L E)
   ext; exact IsScalarTower.algebraMap_apply L' L E _
 
 /-- If `A` and `B` are linearly disjoint, `A'` and `B'` are contained in `A` and `B`,
@@ -410,7 +411,7 @@ theorem rank_sup (H : A.LinearDisjoint B) :
 /-- If `A` and `B` are linearly disjoint over `F`, then the `Module.finrank` of
 `A ⊔ B` is equal to the product of that of `A` and `B`. -/
 theorem finrank_sup (H : A.LinearDisjoint B) : finrank F ↥(A ⊔ B) = finrank F A * finrank F B := by
-  simpa only [map_mul] using! congr(Cardinal.toNat $(H.rank_sup))
+  simpa only [map_mul] using! congr($(H.rank_sup).toNat)
 
 /-- If `A` and `B` are finite extensions of `F`,
 such that rank of `A ⊔ B` is equal to the product of the rank of `A` and `B`,
@@ -461,7 +462,7 @@ theorem of_inf_eq_bot [IsGalois F A] [FiniteDimensional F A] [FiniteDimensional 
     rw [← lift_inj, lift_top, lift_sup, lift_restrict le_sup_left, lift_restrict le_sup_right]
   have h₂ : A' ⊓ B' = ⊥ := by
     rw [← lift_inj, lift_bot, lift_inf, lift_restrict le_sup_left, lift_restrict le_sup_right, h]
-  have : IsGalois F A' := IsGalois.of_algEquiv <| restrict_algEquiv ..
+  have : IsGalois F A' := IsGalois.of_algEquiv <| restrictAlgEquiv ..
   exact of_inf_eq_bot_aux h₁ h₂
 
 @[simp]
@@ -746,7 +747,7 @@ theorem trace_algebraMap [FiniteDimensional F E] (h₁ : A.LinearDisjoint B) (h�
     Algebra.trace A E (algebraMap B E x) = algebraMap F A (Algebra.trace F B x) := by
   rw [linearDisjoint_iff'] at h₁
   refine h₁.trace_algebraMap ?_ x
-  simpa [sup_toSubalgebra_of_isAlgebraic_right] using congr_arg toSubalgebra h₂
+  simpa [sup_toSubalgebra_of_isAlgebraic_right] using congr(toSubalgebra $h₂)
 
 /--
 If `A` and `B` are linearly disjoint, then `norm` and `algebraMap` commutes.
@@ -756,7 +757,7 @@ theorem norm_algebraMap [FiniteDimensional F E] (h₁ : A.LinearDisjoint B) (h�
     Algebra.norm A (algebraMap B E x) = algebraMap F A (Algebra.norm F x) := by
   rw [linearDisjoint_iff'] at h₁
   refine h₁.norm_algebraMap ?_ x
-  simpa [sup_toSubalgebra_of_isAlgebraic_right] using congr_arg toSubalgebra h₂
+  simpa [sup_toSubalgebra_of_isAlgebraic_right] using congr(toSubalgebra $h₂)
 
 end LinearDisjoint
 

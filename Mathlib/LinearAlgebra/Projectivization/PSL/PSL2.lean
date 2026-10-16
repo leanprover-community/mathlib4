@@ -6,13 +6,14 @@ Authors: Edison Xie
 module
 
 public import Mathlib.GroupTheory.GroupAction.Iwasawa
-public import Mathlib.GroupTheory.IsPerfect
 public import Mathlib.LinearAlgebra.Projectivization.PSL.Stabilizer
+
+import Mathlib.GroupTheory.IsPerfect
 
 /-!
 -/
 
-@[expose] public section
+public section
 
 variable {ι F : Type*} [Field F] [DecidableEq ι] [Fintype ι]
 

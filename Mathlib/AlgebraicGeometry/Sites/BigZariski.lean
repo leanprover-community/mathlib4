@@ -8,8 +8,9 @@ module
 public import Mathlib.AlgebraicGeometry.Cover.Sigma
 public import Mathlib.AlgebraicGeometry.Sites.Pretopology
 public import Mathlib.CategoryTheory.Sites.CoproductSheafCondition
-public import Mathlib.CategoryTheory.Sites.Preserves
 public import Mathlib.Topology.Category.TopCat.GrothendieckTopology
+
+import Mathlib.CategoryTheory.Sites.Preserves
 
 /-!
 # The big Zariski site of schemes
@@ -53,7 +54,6 @@ abbrev zariskiTopology : GrothendieckTopology Scheme.{u} :=
 lemma zariskiTopology_eq : zariskiTopology.{u} = zariskiPretopology.toGrothendieck :=
   Precoverage.toGrothendieck_toPretopology_eq_toGrothendieck.symm
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance subcanonical_zariskiTopology : zariskiTopology.Subcanonical := by
   apply GrothendieckTopology.Subcanonical.of_isSheaf_yoneda_obj
@@ -101,7 +101,6 @@ def affineOneHypercover (X : Scheme.{u}) : zariskiTopology.OneHypercover X :=
 
 end Scheme
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Zariski sheaves preserve products. -/
 lemma preservesLimitsOfShape_discrete_of_isSheaf_zariskiTopology {F : Scheme.{u}ᵒᵖ ⥤ Type v}
     {ι : Type*} [Small.{u} ι] [Small.{v} ι] (hF : Presieve.IsSheaf Scheme.zariskiTopology F) :
@@ -113,7 +112,7 @@ lemma preservesLimitsOfShape_discrete_of_isSheaf_zariskiTopology {F : Scheme.{u}
   refine Presieve.preservesProduct_of_isSheafFor F ?_ initialIsInitial
       (Sigma.cocone (Discrete.functor <| unop ∘ X)) (coproductIsCoproduct' _) ?_ ?_
   · apply hF.isSheafFor
-    convert! (⊥_ Scheme).bot_mem_grothendieckTopology
+    convert (⊥_ Scheme).bot_mem_grothendieckTopology
     rw [eq_bot_iff]
     rintro Y f ⟨g, _, _, ⟨i⟩, _⟩
     exact i.elim
