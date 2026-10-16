@@ -343,7 +343,8 @@ The cache system automatically downloads and manages:
 
 Downloads use a static curl on supported Linux architectures if the system version is too old.
 On other platforms, older curl versions use serial downloads.
-Uploads require curl >=8.20 on `PATH` and do not use the static binary. CI installs curl with Homebrew.
+Uploads require curl >=8.20 on `PATH`.
+CI installs a pinned release from [static-curl](https://github.com/leanprover-community/static-curl).
 
 ## File Locations
 
