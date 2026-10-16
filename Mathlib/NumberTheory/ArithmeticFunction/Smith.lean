@@ -51,7 +51,7 @@ open scoped ArithmeticFunction.sigma
 
 namespace Nat
 
-theorem sum_fin_dvd_dvd_eq_sum_divisors_gcd {M : Type*} [AddCommMonoid M] (n : ℕ)
+private theorem sum_fin_dvd_dvd_eq_sum_divisors_gcd {M : Type*} [AddCommMonoid M] (n : ℕ)
     (g : ℕ → M) (i j : Fin n) :
     (∑ k : Fin n, if (k : ℕ) + 1 ∣ (i : ℕ) + 1 ∧ (k : ℕ) + 1 ∣ (j : ℕ) + 1 then g ((k : ℕ) + 1)
       else 0) = ∑ d ∈ (Nat.gcd ((i : ℕ) + 1) ((j : ℕ) + 1)).divisors, g d := by
