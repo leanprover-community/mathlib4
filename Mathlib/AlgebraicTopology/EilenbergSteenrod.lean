@@ -231,7 +231,7 @@ lemma isAdditive_iff : isAdditive C c HP ↔ HP.IsAdditive := .rfl
 
 instance IsAdditive.preserves_coproducts_of_small
     [HP.IsAdditive] (J : Type*) [Small.{u} J] (i : ι) :
-      PreservesColimitsOfShape (Discrete J) (HP.H i) :=
+    PreservesColimitsOfShape (Discrete J) (HP.H i) :=
   preservesColimitsOfShape_of_equiv (Discrete.equivalence (equivShrink _).symm) _
 
 instance : IsClosedUnderIsomorphisms (isAdditive.{u} C c) where
@@ -321,8 +321,7 @@ abbrev isExtraordinaryEilenbergSteenrod : ObjectProperty (HomologyPretheory.{u} 
 lemma isExtraordinaryEilenbergSteenrod_iff :
     isExtraordinaryEilenbergSteenrod C c HP ↔ HP.IsExtraordinaryEilenbergSteenrod := .rfl
 
-instance : IsClosedUnderIsomorphisms (isExtraordinaryEilenbergSteenrod C c)
-    where
+instance : IsClosedUnderIsomorphisms (isExtraordinaryEilenbergSteenrod C c) where
   of_iso e _ := {
     isHomotopyInvariant := (isHomotopyInvariant _ _).prop_of_iso e inferInstance
     hasExcisionIso := (hasExcisionIso _ _).prop_of_iso e inferInstance
@@ -335,10 +334,10 @@ variable (HP HP' : HomologyPretheory.{u} C (ComplexShape.down ℕ))
 /-- A `HomologyPretheory` on `ComplexShape.down ℕ` has the dimension axiom if it is trivial on the
 terminal space for `n > 0`. -/
 class HasDimensionAxiom where
-  isZero_PUnit_of_gt_zero : ∀ (n : ℕ) (_ : n ≠ 0), IsZero ((HP.H n).obj (TopCat.of PUnit)) :=
-    by cat_disch
+  isZero_pUnit_of_gt_zero : ∀ (n : ℕ) (_ : n ≠ 0), IsZero ((HP.H n).obj (TopCat.of PUnit)) := by
+    cat_disch
 
-export HasDimensionAxiom (isZero_PUnit_of_gt_zero)
+export HasDimensionAxiom (isZero_pUnit_of_gt_zero)
 
 variable (C) in
 /-- An abbreviation for `HomologyPretheory.HasDimensionAxiom` as `ObjectProperty`. -/
@@ -352,7 +351,7 @@ lemma hasDimensionAxiom_iff :
 instance : IsClosedUnderIsomorphisms (hasDimensionAxiom.{u} C) where
   of_iso {HP HP'} e h := ⟨fun n hn ↦ (Iso.isZero_iff (((HP.iso _) ≪≫ Functor.isoWhiskerLeft incl
     ((hₚFunctor _).mapIso e) ≪≫ (HP'.iso _).symm).app
-    (TopCat.of PUnit))).mp (h.isZero_PUnit_of_gt_zero n hn)⟩
+    (TopCat.of PUnit))).mp (h.isZero_pUnit_of_gt_zero n hn)⟩
 
 /-- An Eilenberg-Steenrod homology theory is an extraordinary Eilenberg-Steenrod homology theory
 which additionally satisfies the dimension axiom. -/

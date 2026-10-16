@@ -59,7 +59,8 @@ abbrev ofTopCat (X : TopCat.{u}) : TopPair.{u} :=
   TopPair.of (TopCat.isInitialPEmpty.to X) (Topology.IsOpenEmbedding.of_isEmpty _).1
 
 /-- Construct a morphism in `TopPair` from its components. -/
-abbrev ofHom (f : X.fst ⟶ Y.fst) (g : X.snd ⟶ Y.snd) (w : g ≫ Y.map = X.map ≫ f := by cat_disch) :=
+abbrev ofHom (f : X.fst ⟶ Y.fst) (g : X.snd ⟶ Y.snd) (w : g ≫ Y.map = X.map ≫ f := by cat_disch) :
+    X ⟶ Y :=
   MorphismProperty.Arrow.homMk g f w
 
 variable {X Y Z : TopPair.{u}}
@@ -193,7 +194,7 @@ noncomputable def trans {f₀ f₁ f₂ : X ⟶ Y} (F : Homotopy f₀ f₁) (G :
 
 theorem symm_trans {f₀ f₁ f₂ : X ⟶ Y} (F : Homotopy f₀ f₁) (G : Homotopy f₁ f₂) :
     (F.trans G).symm = G.symm.trans F.symm := by
-      ext : 1 <;> exact ContinuousMap.Homotopy.symm_trans _ _
+  ext : 1 <;> exact ContinuousMap.Homotopy.symm_trans _ _
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If we have a `Homotopy g₀ g₁` and a `Homotopy f₀ f₁`, we can define a
@@ -222,7 +223,7 @@ section Embedding
 
 /-- A morphism `f : X ⟶ Y` in `TopPair` is an embedding if its first and second component are
 embeddings. -/
-structure IsEmbedding {X Y : TopPair} (f : X ⟶ Y)where
+structure IsEmbedding {X Y : TopPair} (f : X ⟶ Y) : Prop where
   fst : Topology.IsEmbedding (Hom.fst f)
   snd : Topology.IsEmbedding (Hom.snd f)
 
