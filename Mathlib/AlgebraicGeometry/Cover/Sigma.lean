@@ -24,7 +24,6 @@ namespace AlgebraicGeometry.Scheme.Cover
 variable {P : MorphismProperty Scheme.{u}} {S : Scheme.{u}} [IsZariskiLocalAtSource P]
   [UnivLE.{v, u}]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `𝒰` is a cover of `S`, this is the single object cover where the covering
 object is the disjoint union. -/
 @[simps]
@@ -66,6 +65,7 @@ noncomputable def Hom.sigma (f : 𝒰 ⟶ 𝒱) : 𝒰.sigma ⟶ 𝒱.sigma wher
   h₀ _ := Sigma.desc fun j ↦ f.h₀ j ≫ Sigma.ι _ (f.s₀ j)
   w₀ _ := Sigma.hom_ext _ _ (by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Collapsing a cover to a single object cover is functorial. -/
 @[simps]

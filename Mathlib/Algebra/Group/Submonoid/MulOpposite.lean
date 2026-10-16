@@ -5,9 +5,9 @@ Authors: Eric Wieser, Jujian Zhang
 -/
 module
 
-public import Mathlib.Algebra.Group.Subsemigroup.MulOpposite
-public import Mathlib.Algebra.Group.Submonoid.Basic
 public import Mathlib.Algebra.Group.Opposite
+public import Mathlib.Algebra.Group.Submonoid.Basic
+public import Mathlib.Algebra.Group.Subsemigroup.MulOpposite
 
 /-!
 # Submonoid of opposite monoids
@@ -170,7 +170,7 @@ theorem unop_iInf (S : ι → Submonoid Mᵐᵒᵖ) : (iInf S).unop = ⨅ i, (S 
 
 @[to_additive]
 theorem op_closure (s : Set M) : (closure s).op = closure (MulOpposite.unop ⁻¹' s) := by
-  simp_rw [closure, op_sInf, Set.preimage_setOf_eq, Submonoid.coe_unop]
+  simp_rw [closure, op_sInf, Set.preimage_ofPred_eq, Submonoid.coe_unop]
   congr with a
   exact MulOpposite.unop_surjective.forall
 

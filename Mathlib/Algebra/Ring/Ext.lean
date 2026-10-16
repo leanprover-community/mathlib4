@@ -6,7 +6,8 @@ Authors: Raghuram Sundararajan
 module
 
 public import Mathlib.Algebra.Ring.Defs
-public import Mathlib.Algebra.Group.Ext
+
+import Mathlib.Algebra.Group.Ext
 
 /-!
 # Extensionality lemmas for rings and similar structures
@@ -98,7 +99,6 @@ This section also includes results for `AddMonoidWithOne`, `AddCommMonoidWithOne
 as these are considered implementation detail of the ring classes.
 TODO consider relocating these lemmas.
 -/
-/- TODO consider relocating these lemmas. -/
 @[ext] theorem AddMonoidWithOne.ext ⦃inst₁ inst₂ : AddMonoidWithOne R⦄
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
     (h_one : (letI := inst₁; One.one : R) = (letI := inst₂; One.one : R)) :
@@ -129,7 +129,7 @@ theorem AddCommMonoidWithOne.toAddMonoidWithOne_injective :
 
 namespace NonAssocSemiring
 
-/- The best place to prove that the `NatCast` is determined by the other operations is probably in
+/-! The best place to prove that the `NatCast` is determined by the other operations is probably in
 an extensionality lemma for `AddMonoidWithOne`, in which case we may as well do the typeclasses
 defined in `Mathlib/Algebra/GroupWithZero/Defs.lean` as well. -/
 @[ext] theorem ext ⦃inst₁ inst₂ : NonAssocSemiring R⦄
@@ -142,7 +142,7 @@ defined in `Mathlib/Algebra/GroupWithZero/Defs.lean` as well. -/
     congrArg (fun inst => (inst.toMulZeroClass).toZero.zero) h
   have h_one' : (inst₁.toMulZeroOneClass).toMulOneClass.toOne
                 = (inst₂.toMulZeroOneClass).toMulOneClass.toOne := by
-    congr 2; ext : 1; exact h_mul
+    congr 1; ext : 1; exact h_mul
   have h_one : (inst₁.toMulZeroOneClass).toMulOneClass.toOne.one
                = (inst₂.toMulZeroOneClass).toMulOneClass.toOne.one :=
     congrArg (@One.one R) h_one'
@@ -202,10 +202,13 @@ theorem toNonUnitalSemiring_injective :
   · exact congrArg (·.toAdd.add x y) h
   · exact congrArg (·.toMul.mul x y) h
 
-theorem toNonUnitalNonAssocring_injective :
+theorem toNonUnitalNonAssocRing_injective :
     Function.Injective (@toNonUnitalNonAssocRing R) := by
   intro _ _ _
   ext <;> congr
+
+@[deprecated (since := "2026-09-17")]
+alias toNonUnitalNonAssocring_injective := toNonUnitalNonAssocRing_injective
 
 end NonUnitalRing
 
@@ -257,7 +260,7 @@ namespace NonAssocRing
   have h₃ : inst₁.toAddCommGroupWithOne = inst₂.toAddCommGroupWithOne :=
     AddCommGroupWithOne.ext h_add (congrArg (·.toOne.one) h₂)
   cases inst₁; cases inst₂
-  congr <;> solve | injection h₁ | injection h₂ | injection h₃
+  injection h₃; congr
 
 theorem toNonAssocSemiring_injective :
     Function.Injective (@toNonAssocSemiring R) := by
@@ -266,10 +269,13 @@ theorem toNonAssocSemiring_injective :
   · exact congrArg (·.toAdd.add x y) h
   · exact congrArg (·.toMul.mul x y) h
 
-theorem toNonUnitalNonAssocring_injective :
+theorem toNonUnitalNonAssocRing_injective :
     Function.Injective (@toNonUnitalNonAssocRing R) := by
   intro _ _ _
   ext <;> congr
+
+@[deprecated (since := "2026-09-17")]
+alias toNonUnitalNonAssocring_injective := toNonUnitalNonAssocRing_injective
 
 end NonAssocRing
 
@@ -282,7 +288,7 @@ namespace Semiring
     inst₁ = inst₂ := by
   -- Show that enough substructures are equal.
   have h₀ : inst₁.toAddCommMonoid = inst₂.toAddCommMonoid := by
-    ext : 1 <;> assumption
+    ext : 1; assumption
   have h₁ : inst₁.toNonUnitalSemiring = inst₂.toNonUnitalSemiring := by
     ext : 1 <;> assumption
   have h₂ : inst₁.toNonAssocSemiring = inst₂.toNonAssocSemiring := by
@@ -291,7 +297,7 @@ namespace Semiring
     ext : 1; exact h_mul
   -- Split into fields and prove they are equal using the above.
   cases inst₁; cases inst₂
-  congr <;> solve | injection h₁ | injection h₂
+  congr; solve | injection h₁ | injection h₂
 
 theorem toNonUnitalSemiring_injective :
     Function.Injective (@toNonUnitalSemiring R) := by
@@ -339,8 +345,10 @@ theorem toNonUnitalRing_injective :
 
 theorem toNonAssocRing_injective :
     Function.Injective (@toNonAssocRing R) := by
-  intro _ _ _
-  ext <;> congr
+  intro _ _ h
+  ext x y
+  · exact congrArg (·.toAdd.add x y) h
+  · exact congrArg (·.toMul.mul x y) h
 
 theorem toSemiring_injective :
     Function.Injective (@toSemiring R) := by

@@ -6,11 +6,10 @@ Authors: Heather Macbeth
 module
 
 public import Mathlib.Analysis.Complex.AbsMax
-public import Mathlib.Analysis.LocallyConvex.WithSeminorms
-public import Mathlib.Geometry.Manifold.MFDeriv.Basic
-import Mathlib.Geometry.Manifold.Notation
+public import Mathlib.Geometry.Manifold.MFDeriv.Defs
+
 import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
-public import Mathlib.Topology.LocallyConstant.Basic
+import Mathlib.Geometry.Manifold.Notation
 
 /-! # Holomorphic functions on complex manifolds
 
@@ -74,8 +73,8 @@ theorem Complex.norm_eventually_eq_of_mdifferentiableAt_of_isLocalMax {f : M →
       e.right_inv hyt] at hy₂
     exact hy₂.2
   convert! norm_eventually_eq_of_isLocalMax hd _
-  · exact congr_arg f (extChartAt_to_inv _).symm
-  · simpa only [e, IsLocalMax, IsMaxFilter, ← H₂, (· ∘ ·), extChartAt_to_inv] using hc
+  · congrm f $((extChartAt_to_inv _).symm)
+  · simpa only [e, IsLocalMax, IsMaxFilter, ← H₂, (· ∘ ·), extChartAt_to_inv] using! hc
 
 /-!
 ### Functions holomorphic on a set
@@ -89,7 +88,7 @@ that `‖f x‖` takes its maximum value on `U` at `c ∈ U`. Then `‖f x‖ = 
 theorem norm_eqOn_of_isPreconnected_of_isMaxOn {f : M → F} {U : Set M} {c : M}
     (hd : MDiff[U] f) (hc : IsPreconnected U) (ho : IsOpen U)
     (hcU : c ∈ U) (hm : IsMaxOn (norm ∘ f) U c) : EqOn (norm ∘ f) (const M ‖f c‖) U := by
-  set V := {z ∈ U | ‖f z‖ = ‖f c‖}
+  set V := U ∩ {z | ‖f z‖ = ‖f c‖}
   suffices U ⊆ V from fun x hx ↦ (this hx).2
   have hVo : IsOpen V := by
     refine isOpen_iff_mem_nhds.2 fun x hx ↦ inter_mem (ho.mem_nhds hx.1) ?_
@@ -125,7 +124,6 @@ theorem eqOn_of_isPreconnected_of_isMaxOn_norm [StrictConvexSpace ℝ F] {f : M 
 theorem apply_eq_of_isPreconnected_isCompact_isOpen {f : M → F} {U : Set M} {a b : M}
     (hd : MDiff[U] f) (hpc : IsPreconnected U) (hc : IsCompact U)
     (ho : IsOpen U) (ha : a ∈ U) (hb : b ∈ U) : f a = f b := by
-  refine ?_
   -- Subtract `f b` to avoid the assumption `[StrictConvexSpace ℝ F]`
   wlog hb₀ : f b = 0 generalizing f
   -- TODO: Add `MDifferentiableOn.sub` etc

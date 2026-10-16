@@ -5,12 +5,13 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Injective
-public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Connected
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Coseparator
 public import Mathlib.CategoryTheory.Preadditive.Injective.Preserves
-public import Mathlib.CategoryTheory.Preadditive.LiftToFinset
-public import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
+
+import Mathlib.Algebra.Category.ModuleCat.Injective
+import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Connected
+import Mathlib.CategoryTheory.Preadditive.LiftToFinset
+import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
 
 /-!
 # The Gabriel-Popescu theorem
@@ -67,12 +68,13 @@ noncomputable def d {G A : C} {M : ModuleCat (End G)ᵐᵒᵖ}
     (g : M ⟶ ModuleCat.of (End G)ᵐᵒᵖ (G ⟶ A)) : ∐ (fun (_ : M) => G) ⟶ A :=
   Sigma.desc fun (m : M) => g m
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem ι_d {G A : C} {M : ModuleCat (End G)ᵐᵒᵖ} (g : M ⟶ ModuleCat.of (End G)ᵐᵒᵖ (G ⟶ A)) (m : M) :
     Sigma.ι _ m ≫ d g = g.hom m := by
   simp [d]
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 attribute [local instance] IsFiltered.isConnected in
 /-- This is the "Lemma" in [mitchell1981]. -/
 theorem kernel_ι_d_comp_d {G : C} (hG : IsSeparator G) {A B : C} {M : ModuleCat (End G)ᵐᵒᵖ}
@@ -87,7 +89,7 @@ theorem kernel_ι_d_comp_d {G : C} (hG : IsSeparator G) {A B : C} {M : ModuleCat
   refine (Preadditive.isSeparator_iff G).1 hG _ (fun h => ?_)
   rw [Preadditive.comp_sum_assoc, Preadditive.comp_sum_assoc, Preadditive.sum_comp]
   simp only [Category.assoc, ι_d]
-  let r (x : F) : (End G)ᵐᵒᵖ := MulOpposite.op (h ≫ pullback.fst _ _ ≫ Sigma.π _ x)
+  let r (x : F) : (End G)ᵐᵒᵖ := MulOpposite.op (.of (h ≫ pullback.fst _ _ ≫ Sigma.π _ x))
   suffices ∑ x ∈ F.attach, r x • f.hom x.1.as = 0 by simpa [End.smul_left, r] using this
   simp only [← map_smul, ← map_sum]
   suffices ∑ x ∈ F.attach, r x • x.1.as = 0 by simp [this]
@@ -120,24 +122,27 @@ theorem GabrielPopescu.full (G : C) (hG : IsSeparator G) : (preadditiveCoyonedaO
     simp only [ModuleCat.hom_id, LinearMap.id_coe, id_eq, d] at h
     refine ⟨epiDesc _ _ h, ?_⟩
     ext q
-    simpa [-comp_epiDesc] using Sigma.ι _ q ≫= comp_epiDesc _ _ h
+    simpa [-comp_epiDesc] using! Sigma.ι _ q ≫= comp_epiDesc _ _ h
 
-set_option backward.isDefEq.respectTransparency false in
 theorem GabrielPopescu.preservesInjectiveObjects (G : C) (hG : IsSeparator G) :
     (preadditiveCoyonedaObj G).PreservesInjectiveObjects where
   injective_obj {B} hB := by
     rw [← Module.injective_iff_injective_object]
-    simp only [preadditiveCoyonedaObj_obj_carrier]
     refine Module.Baer.injective (fun M g => ?_)
-    have h := exists_d_comp_eq_d hG B (ModuleCat.ofHom
-      ⟨⟨fun i => i.1.unop, by cat_disch⟩, by cat_disch⟩) ?_ (ModuleCat.ofHom g)
-    · obtain ⟨l, hl⟩ := h
-      refine ⟨((preadditiveCoyonedaObj G).map l).hom ∘ₗ
-        (Preadditive.homSelfLinearEquivEndMulOpposite G).symm.toLinearMap, ?_⟩
-      intro f hf
-      simpa [d] using Sigma.ι _ ⟨f, hf⟩ ≫= hl
-    · rw [ModuleCat.mono_iff_injective]
-      cat_disch
+    let φ : M →ₗ[(End G)ᵐᵒᵖ] G ⟶ G :=
+      { toFun i := i.1.unop.asHom
+        map_add' := by simp
+        map_smul' := by cat_disch }
+    have : Mono (ModuleCat.ofHom φ) :=
+      (ModuleCat.mono_iff_injective _).2 (fun _ _ hf ↦ by
+        ext
+        apply MulOpposite.unop_injective
+        ext
+        exact hf)
+    obtain ⟨l, hl⟩ := exists_d_comp_eq_d hG B (ModuleCat.ofHom φ) inferInstance (ModuleCat.ofHom g)
+    exact ⟨((preadditiveCoyonedaObj G).map l).hom ∘ₗ
+      (Preadditive.homSelfLinearEquivEndMulOpposite G).symm.toLinearMap,
+      fun f hf ↦ by simpa [d] using! Sigma.ι _ ⟨f, hf⟩ ≫= hl⟩
 
 /-- `tensorObj G` is left exact: it is additive and preserves monomorphisms and cokernels,
 so it preserves homology and therefore finite limits. -/

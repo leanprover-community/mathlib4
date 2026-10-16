@@ -5,12 +5,14 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Adjunction.PartialAdjoint
 public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 public import Mathlib.CategoryTheory.Localization.BousfieldTransfiniteComposition
 public import Mathlib.CategoryTheory.MorphismProperty.IsSmall
+public import Mathlib.CategoryTheory.ObjectProperty.IsClosedUnderCardinalFilteredColimits
 public import Mathlib.CategoryTheory.Presentable.Adjunction
 public import Mathlib.CategoryTheory.SmallObject.TransfiniteIteration
+
+import Mathlib.CategoryTheory.Adjunction.PartialAdjoint
 
 /-!
 # The Orthogonal-reflection construction
@@ -71,13 +73,11 @@ open Limits Localization Opposite
 
 variable {C : Type u} [Category.{v} C] (W : MorphismProperty C)
 
-set_option backward.isDefEq.respectTransparency false in
-lemma MorphismProperty.isClosedUnderColimitsOfShape_isLocal
-    (J : Type u') [Category.{v'} J] [EssentiallySmall.{w} J]
-    (κ : Cardinal.{w}) [Fact κ.IsRegular] [IsCardinalFiltered J κ]
+lemma MorphismProperty.isClosedUnderCardinalFilteredColimits_isLocal
+    (κ : Cardinal.{w}) [Fact κ.IsRegular]
     (hW : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), W f → IsCardinalPresentable X κ ∧ IsCardinalPresentable Y κ) :
-    W.isLocal.IsClosedUnderColimitsOfShape J where
-  colimitsOfShape_le := fun Z ⟨p⟩ X Y f hf ↦ by
+    W.isLocal.IsClosedUnderCardinalFilteredColimits κ where
+  isCardinalClosedUnderColimitsOfShape' J _ _ := ⟨fun Z ⟨p⟩ X Y f hf ↦ by
     obtain ⟨_, _⟩ := hW f hf
     refine ⟨fun g₁ g₂ h ↦ ?_, fun g ↦ ?_⟩
     · obtain ⟨j₁, g₁, rfl⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ p.isColimit g₁
@@ -90,16 +90,24 @@ lemma MorphismProperty.isClosedUnderColimitsOfShape_isLocal
       rw [← p.w u, ← p.w v, reassoc_of% ((p.prop_diag_obj j₃ _ hf).1 huv)]
     · obtain ⟨j, g, rfl⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ p.isColimit g
       obtain ⟨g, rfl⟩ := (p.prop_diag_obj j _ hf).2 g
-      exact ⟨g ≫ p.ι.app j, by simp⟩
+      exact ⟨g ≫ p.ι.app j, by simp⟩⟩
+
+open ObjectProperty in
+@[deprecated isClosedUnderCardinalFilteredColimits_isLocal +typeChanged (since := "2026-09-20")]
+lemma MorphismProperty.isClosedUnderColimitsOfShape_isLocal
+    (J : Type u') [Category.{v'} J] [EssentiallySmall.{w} J]
+    (κ : Cardinal.{w}) [Fact κ.IsRegular] [IsCardinalFiltered J κ]
+    (hW : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), W f → IsCardinalPresentable X κ ∧ IsCardinalPresentable Y κ) :
+    W.isLocal.IsClosedUnderColimitsOfShape J := by
+  have := W.isClosedUnderCardinalFilteredColimits_isLocal κ hW
+  exact IsClosedUnderCardinalFilteredColimits.isCardinalClosedUnderColimitsOfShape W.isLocal κ J
 
 lemma MorphismProperty.isCardinalAccessible_ι_isLocal
-    (κ : Cardinal.{w}) [Fact κ.IsRegular]
-    [HasCardinalFilteredColimits C κ]
+    (κ : Cardinal.{w}) [Fact κ.IsRegular] [HasCardinalFilteredColimits C κ]
     (hW : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), W f → IsCardinalPresentable X κ ∧ IsCardinalPresentable Y κ) :
-    W.isLocal.ι.IsCardinalAccessible κ where
-  preservesColimitOfShape J _ _ := by
-    have := W.isClosedUnderColimitsOfShape_isLocal J κ hW
-    infer_instance
+    W.isLocal.ι.IsCardinalAccessible κ := by
+  have := W.isClosedUnderCardinalFilteredColimits_isLocal κ hW
+  infer_instance
 
 namespace OrthogonalReflection
 
@@ -151,7 +159,7 @@ variable {W Z} in
 @[reassoc]
 lemma D₁.ιLeft_comp_l {X Y : C} (f : X ⟶ Y) (hf : W f) (g : X ⟶ Z) :
     D₁.ιLeft f hf g ≫ D₁.l W Z = g :=
-  Sigma.ι_desc _ _
+  Sigma.ι_comp_desc _ _
 
 variable [HasCoproduct (D₁.obj₂ (W := W) (Z := Z))]
 
@@ -220,6 +228,7 @@ instance : Small.{w} (D₂ (W := W) (Z := Z)) := by
   dsimp [D₂]
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 instance : Small.{w} (D₂.multispanShape W Z).L := by dsimp; infer_instance
 
 attribute [local instance] essentiallySmall_of_small_of_locallySmall in
@@ -274,6 +283,7 @@ lemma toSucc_surjectivity {X Y : C} (f : X ⟶ Y) (hf : W f) (g : X ⟶ Z) :
   ⟨D₁.ιRight f hf g ≫ pushout.inl _ _ ≫ fromStep W Z, by
     simp [← D₁.ιLeft_comp_t_assoc, pushout.condition_assoc]⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma isLocal_isLocal_toSucc :
     W.isLocal.isLocal (toSucc W Z) := by
@@ -289,9 +299,7 @@ lemma isLocal_isLocal_toSucc :
     exact ⟨Multicoequalizer.desc _ _ (fun ⟨⟩ ↦ pushout.desc (Sigma.desc f) g)
       (fun d ↦ (hT d.1.1.hom d.1.2).1 (by simp [reassoc_of% d.2.2])), by simp⟩
 
-@[deprecated (since := "2025-11-20")] alias leftBousfieldW_isLocal_toSucc :=
-  isLocal_isLocal_toSucc
-
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma isIso_toSucc_iff :
     IsIso (toSucc W Z) ↔ W.isLocal Z := by
@@ -404,7 +412,7 @@ variable {W} {κ} [Fact κ.IsRegular]
 
 include hW
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 lemma isLocal_reflectionObj :
     W.isLocal (reflectionObj W Z κ) := by
   let H := transfiniteCompositionOfShapeReflection W Z κ
@@ -432,7 +440,6 @@ lemma isLocal_reflectionObj :
     obtain ⟨g', hg'⟩ := iteration_map_succ_surjectivity f hf g
     exact ⟨g' ≫ H.incl.app (Order.succ j), by simp [reassoc_of% hg']⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The morphism `reflection W Z κ : Z ⟶ reflectionObj W Z κ` exhibits `reflectionObj W Z κ`
 as the image of `Z` by the left adjoint of the inclusion `W.isLocal.ι`. -/
 noncomputable def corepresentableBy :
@@ -448,7 +455,7 @@ lemma isRightAdjoint_ι :
     W.isLocal.ι.IsRightAdjoint := by
   rw [Functor.isRightAdjoint_iff_leftAdjointObjIsDefined_eq_top]
   ext Z
-  simpa using (corepresentableBy Z hW).isCorepresentable
+  simpa using! (corepresentableBy Z hW).isCorepresentable
 
 end OrthogonalReflection
 

@@ -5,9 +5,10 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.FieldTheory.KrullTopology
 public import Mathlib.FieldTheory.Galois.GaloisClosure
+public import Mathlib.FieldTheory.KrullTopology
 public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
+
 /-!
 
 # The Fundamental Theorem of Infinite Galois Theory
@@ -63,20 +64,17 @@ open FiniteGaloisIntermediateField AlgEquiv
 lemma fixingSubgroup_isClosed (L : IntermediateField k K) [IsGalois k K] :
     IsClosed (L.fixingSubgroup : Set Gal(K/k)) where
   isOpen_compl := isOpen_iff_mem_nhds.mpr fun σ h => by
-    apply mem_nhds_iff.mpr
-    rcases Set.not_subset.mp ((mem_fixingSubgroup_iff Gal(K/k)).not.mp h) with ⟨y, yL, ne⟩
-    use σ • ((adjoin k {y}).1.fixingSubgroup : Set Gal(K/k))
-    constructor
-    · intro f hf
-      rcases (Set.mem_smul_set.mp hf) with ⟨g, hg, eq⟩
-      simp only [Set.mem_compl_iff, SetLike.mem_coe, ← eq]
-      apply (mem_fixingSubgroup_iff Gal(K/k)).not.mpr
+    obtain ⟨y, yL, ne⟩ : ∃ y ∈ L, σ y ≠ y := by
+      simpa using (mem_fixingSubgroup_iff Gal(K/k)).not.mp h
+    refine mem_nhds_iff.2 ⟨σ • (adjoin k {y}).1.fixingSubgroup, fun f hf ↦ ?_, ?_⟩
+    · rw [Set.mem_smul_set_iff_inv_smul_mem, smul_eq_mul] at hf
+      simp only [Set.mem_compl_iff, SetLike.mem_coe, IntermediateField.mem_fixingSubgroup_iff,
+        not_forall, exists_prop]
       push Not
-      use y
-      simp only [yL, smul_eq_mul, AlgEquiv.smul_def, AlgEquiv.mul_apply, ne_eq, true_and]
-      have : g y = y := (mem_fixingSubgroup_iff Gal(K/k)).mp hg y <|
-        adjoin_simple_le_iff.mp le_rfl
-      simpa only [this, ne_eq, AlgEquiv.smul_def] using ne
+      refine ⟨y, yL, ?_⟩
+      contrapose! ne
+      simpa [ne, AlgEquiv.eq_symm_apply, eq_comm] using
+        (mem_fixingSubgroup_iff Gal(K/k)).mp hf y <| adjoin_simple_le_iff.mp le_rfl
     · simp only [(IntermediateField.fixingSubgroup_isOpen (adjoin k {y}).1).smul σ, true_and]
       use 1
       simp only [SetLike.mem_coe, smul_eq_mul, mul_one, and_true, Subgroup.one_mem]
@@ -88,7 +86,7 @@ lemma fixedField_fixingSubgroup (L : IntermediateField k K) [IsGalois k K] :
     rw [IntermediateField.mem_fixedField_iff] at hx
     have mem : x ∈ (adjoin L {x}).1 := subset_adjoin _ _ rfl
     have : IntermediateField.fixedField (⊤ : Subgroup ((adjoin L {x}) ≃ₐ[L] (adjoin L {x}))) = ⊥ :=
-      (IsGalois.tfae.out 0 1).mp (by infer_instance)
+      (IsGalois.tfae.out 1 2).mp (by infer_instance)
     have : ⟨x, mem⟩ ∈ (⊥ : IntermediateField L (adjoin L {x})) := by
       rw [← this, IntermediateField.mem_fixedField_iff]
       intro f _
@@ -189,7 +187,7 @@ lemma fixingSubgroup_fixedField (H : ClosedSubgroup Gal(K/k)) [IsGalois k K] :
   apply Set.not_subset.mpr
   use h
   simpa only [this, Set.mem_compl_iff, Subsemigroup.mem_carrier, Submonoid.mem_toSubsemigroup,
-    Subgroup.mem_toSubmonoid, not_not, true_and] using mem
+    Subgroup.mem_toSubmonoid, not_not, true_and] using! mem
 
 /-- The Galois correspondence from intermediate fields to closed subgroups. -/
 def IntermediateFieldEquivClosedSubgroup [IsGalois k K] :

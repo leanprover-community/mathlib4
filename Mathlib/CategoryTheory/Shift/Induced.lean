@@ -29,7 +29,7 @@ used for both quotient and localized shifts.
 
 namespace CategoryTheory
 
-open Functor
+open CategoryTheory.Functor
 
 variable {C D : Type _} [Category* C] [Category* D]
   (F : C ⥤ D) {A : Type _} [AddMonoid A] [HasShift C A]
@@ -53,22 +53,25 @@ noncomputable def add (a b : A) : s (a + b) ≅ s a ⋙ s b :=
         isoWhiskerLeft _ (i b).symm ≪≫ (Functor.associator _ _ _).symm ≪≫
         isoWhiskerRight (i a).symm _ ≪≫ Functor.associator _ _ _)
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma zero_hom_app_obj (X : C) :
     (zero F s i).hom.app (F.obj X) =
       (i 0).hom.app X ≫ F.map ((shiftFunctorZero C A).hom.app X) := by
   have h : whiskerLeft F (zero F s i).hom = _ :=
     ((whiskeringLeft C D D).obj F).map_preimage _
-  exact (NatTrans.congr_app h X).trans (by simp)
+  exact congr($(h).app X).trans (by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma zero_inv_app_obj (X : C) :
     (zero F s i).inv.app (F.obj X) =
       F.map ((shiftFunctorZero C A).inv.app X) ≫ (i 0).inv.app X := by
   have h : whiskerLeft F (zero F s i).inv = _ :=
     ((whiskeringLeft C D D).obj F).map_preimage _
-  exact (NatTrans.congr_app h X).trans (by simp)
+  exact congr($(h).app X).trans (by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma add_hom_app_obj (a b : A) (X : C) :
     (add F s i a b).hom.app (F.obj X) =
@@ -76,8 +79,9 @@ lemma add_hom_app_obj (a b : A) (X : C) :
         (i b).inv.app ((shiftFunctor C a).obj X) ≫ (s b).map ((i a).inv.app X) := by
   have h : whiskerLeft F (add F s i a b).hom = _ :=
     ((whiskeringLeft C D D).obj F).map_preimage _
-  exact (NatTrans.congr_app h X).trans (by simp)
+  exact congr($(h).app X).trans (by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma add_inv_app_obj (a b : A) (X : C) :
     (add F s i a b).inv.app (F.obj X) =
@@ -85,16 +89,16 @@ lemma add_inv_app_obj (a b : A) (X : C) :
         F.map ((shiftFunctorAdd C a b).inv.app X) ≫ (i (a + b)).inv.app X := by
   have h : whiskerLeft F (add F s i a b).inv = _ :=
     ((whiskeringLeft C D D).obj F).map_preimage _
-  exact (NatTrans.congr_app h X).trans (by simp)
+  exact congr($(h).app X).trans (by simp)
 
 end Induced
 
 variable (A)
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- When `F : C ⥤ D` is a functor satisfying suitable technical assumptions,
 this is the induced term of type `HasShift D A` deduced from `[HasShift C A]`. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def induced : HasShift D A :=
   hasShiftMk D A
     { F := s
@@ -104,7 +108,7 @@ noncomputable def induced : HasShift D A :=
         suffices (Induced.add F s i 0 n).hom =
           eqToHom (by rw [zero_add]; rfl) ≫ whiskerRight (Induced.zero F s i).inv (s n) by
           intro X
-          simpa using NatTrans.congr_app this X
+          simpa using congr($(this).app X)
         apply ((whiskeringLeft C D D).obj F).map_injective
         ext X
         have eq := dcongr_arg (fun a => (i a).hom.app X) (zero_add n)
@@ -118,7 +122,7 @@ noncomputable def induced : HasShift D A :=
         suffices (Induced.add F s i n 0).hom =
             eqToHom (by rw [add_zero]; rfl) ≫ whiskerLeft (s n) (Induced.zero F s i).inv by
           intro X
-          simpa using NatTrans.congr_app this X
+          simpa using congr($(this).app X)
         apply ((whiskeringLeft C D D).obj F).map_injective
         ext X
         dsimp
@@ -135,7 +139,7 @@ noncomputable def induced : HasShift D A :=
             eqToHom (by rw [add_assoc]) ≫ (Induced.add F s i m₁ (m₂ + m₃)).hom ≫
               whiskerLeft (s m₁) (Induced.add F s i m₂ m₃).hom by
           intro X
-          simpa using NatTrans.congr_app this X
+          simpa using congr($(this).app X)
         apply ((whiskeringLeft C D D).obj F).map_injective
         ext X
         dsimp
@@ -207,11 +211,11 @@ lemma shiftFunctorAdd_inv_app_obj_of_induced (a b : A) (X : C) :
 
 variable (A)
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- When the target category of a functor `F : C ⥤ D` is equipped with
 the induced shift, this is the compatibility of `F` with the shifts on
 the categories `C` and `D`. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def Functor.CommShift.ofInduced :
     letI := HasShift.induced F A s i
     F.CommShift A := by

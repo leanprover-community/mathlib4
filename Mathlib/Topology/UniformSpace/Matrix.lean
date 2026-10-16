@@ -5,9 +5,8 @@ Authors: Eric Wieser, Heather Macbeth
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.Defs
-public import Mathlib.Topology.UniformSpace.Pi
 public import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
+public import Mathlib.Topology.Instances.Matrix
 
 /-!
 # Uniform space structure on matrices
@@ -16,7 +15,7 @@ public import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
 public section
 
 
-open Uniformity Topology
+open scoped Uniformity
 
 variable (m n 𝕜 : Type*) [UniformSpace 𝕜]
 
@@ -42,8 +41,5 @@ theorem uniformContinuous {β : Type*} [UniformSpace β] {f : β → Matrix m n 
 
 instance [CompleteSpace 𝕜] : CompleteSpace (Matrix m n 𝕜) :=
   inferInstanceAs <| CompleteSpace (m → n → 𝕜)
-
-instance [T0Space 𝕜] : T0Space (Matrix m n 𝕜) :=
-  inferInstanceAs (T0Space (m → n → 𝕜))
 
 end Matrix

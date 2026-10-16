@@ -5,9 +5,8 @@ Authors: Jeremy Avigad
 -/
 module
 
-public import Mathlib.Algebra.Ring.Parity
 public import Mathlib.Algebra.Ring.Int.Defs
-public import Mathlib.Algebra.Group.Int.Even
+public import Mathlib.Algebra.Ring.Parity
 
 /-!
 # Basic parity lemmas for the ring `ℤ`
@@ -134,6 +133,17 @@ theorem natCast_pow_pred (b p : ℕ) (w : 0 < b) : ((b ^ p - 1 : ℕ) : ℤ) = (
 
 theorem coe_nat_two_pow_pred (p : ℕ) : ((2 ^ p - 1 : ℕ) : ℤ) = (2 ^ p - 1 : ℤ) :=
   natCast_pow_pred 2 p (by decide)
+
+lemma sq_emod_four (b : ℤ) : b ^ 2 % 4 = b % 2 := by
+  rcases even_or_odd' b with ⟨k, rfl | rfl⟩ <;> grind
+
+theorem sq_emod_four_eq_one_of_odd {x : ℤ} (hx : Odd x) : x ^ 2 % 4 = 1 := by
+  grind [sq_emod_four]
+
+lemma eight_dvd_sq_sub_one_of_odd {k : ℤ} (hk : Odd k) : 8 ∣ k ^ 2 - 1 := by
+  obtain ⟨m, rfl⟩ := hk
+  obtain ⟨c, hc⟩ := two_dvd_mul_add_one m
+  exact ⟨c, by grind⟩
 
 end Int
 

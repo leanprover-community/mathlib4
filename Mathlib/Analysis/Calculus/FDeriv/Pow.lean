@@ -6,13 +6,12 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Mul
-public import Mathlib.Analysis.Calculus.FDeriv.Comp
 
 /-!
 # Fréchet Derivative of `f x ^ n`, `n : ℕ`
 
 In this file we prove that the Fréchet derivative of `fun x => f x ^ n`,
-where `n` is a natural number, is `n • f x ^ (n - 1)) • f'`.
+where `n` is a natural number, is `n • f x ^ (n - 1) • f'`.
 Additionally, we prove the case for non-commutative rings (with primed names like `fderiv_pow'`),
 where the result is instead `∑ i ∈ Finset.range n, f x ^ (n.pred - i) •> f' <• f x ^ i`.
 
@@ -50,7 +49,7 @@ theorem HasStrictFDerivAt.pow' (h : HasStrictFDerivAt f f' x) (n : ℕ) :
     HasStrictFDerivAt (f ^ n)
       (∑ i ∈ Finset.range n, f x ^ (n.pred - i) •> f' <• f x ^ i) x :=
   match n with
-  | 0 => by simpa using hasStrictFDerivAt_const 1 x
+  | 0 => by simpa using! hasStrictFDerivAt_const 1 x
   | 1 => by simpa using h
   | n + 1 + 1 => by
     have := h.mul' (h.pow' (n + 1))
@@ -67,7 +66,7 @@ theorem HasFDerivWithinAt.pow' (h : HasFDerivWithinAt f f' s x) (n : ℕ) :
     HasFDerivWithinAt (f ^ n)
       (∑ i ∈ Finset.range n, f x ^ (n.pred - i) •> f' <• f x ^ i) s x :=
   match n with
-  | 0 => by simpa using hasFDerivWithinAt_const 1 x s
+  | 0 => by simpa using! hasFDerivWithinAt_const 1 x s
   | 1 => by simpa using h
   | n + 1 + 1 => by
     have := h.mul' (h.pow' (n + 1))
@@ -83,7 +82,7 @@ theorem hasFDerivWithinAt_pow' (n : ℕ) {x : 𝔸} {s : Set 𝔸} :
 theorem HasFDerivAt.pow' (h : HasFDerivAt f f' x) (n : ℕ) :
     HasFDerivAt (f ^ n) (∑ i ∈ Finset.range n, f x ^ (n.pred - i) •> f' <• f x ^ i) x :=
   match n with
-  | 0 => by simpa using hasFDerivAt_const 1 x
+  | 0 => by simpa using! hasFDerivAt_const 1 x
   | 1 => by simpa using h
   | n + 1 + 1 => by
     have := h.mul' (h.pow' (n + 1))
