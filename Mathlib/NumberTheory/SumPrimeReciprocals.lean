@@ -5,9 +5,10 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Indicator
 public import Mathlib.Analysis.PSeries
 public import Mathlib.NumberTheory.SmoothNumbers
+
+import Mathlib.Algebra.Order.Group.Indicator
 
 /-!
 # The sum of the reciprocals of the primes diverges
@@ -25,17 +26,50 @@ See the sixth proof for the infinity of primes in Chapter 1 of [aigner1999proofs
 The proof is due to Erdős.
 -/
 
+open scoped Finset
+
 public section
 
 open Set Nat
 open scoped Topology
+
+section PrimeSums
+
+variable {M : Type*} [CommMonoid M] [TopologicalSpace M] (f : ℕ → M)
+
+omit [TopologicalSpace M] in
+@[to_additive]
+private lemma ite_prime_eq_mulIndicator :
+    (fun n : ℕ ↦ if n.Prime then f n else 1) = {n | n.Prime}.mulIndicator f := by
+  ext; simp [Set.mulIndicator_apply]
+
+/-- Reindex a product over `Nat.Primes` as a product over `ℕ`, extending `f` by `1`. -/
+@[to_additive /-- Reindex a sum over `Nat.Primes` as a sum over `ℕ`, extending `f` by `0`. -/]
+theorem Nat.Primes.tprod_eq_tprod_ite :
+    ∏' p : Primes, f p = ∏' n : ℕ, if n.Prime then f n else 1 := by
+  rw [ite_prime_eq_mulIndicator]; exact tprod_subtype {n | n.Prime} f
+
+/-- `Multipliable` over `Nat.Primes` iff over `ℕ` extending `f` by `1`. -/
+@[to_additive /-- `Summable` over `Nat.Primes` iff over `ℕ` extending `f` by `0`. -/]
+theorem Nat.Primes.multipliable_iff_multipliable_ite :
+    Multipliable (fun p : Primes ↦ f p) ↔ Multipliable fun n : ℕ ↦ if n.Prime then f n else 1 := by
+  rw [ite_prime_eq_mulIndicator]
+  exact multipliable_subtype_iff_mulIndicator (s := {n : ℕ | n.Prime})
+
+/-- `HasProd` over `Nat.Primes` iff over `ℕ` extending `f` by `1`. -/
+@[to_additive /-- `HasSum` over `Nat.Primes` iff over `ℕ` extending `f` by `0`. -/]
+theorem Nat.Primes.hasProd_iff_hasProd_ite {a : M} :
+    HasProd (fun p : Primes ↦ f p) a ↔ HasProd (fun n : ℕ ↦ if n.Prime then f n else 1) a := by
+  rw [ite_prime_eq_mulIndicator]; exact hasProd_subtype_iff_mulIndicator (s := {n : ℕ | n.Prime})
+
+end PrimeSums
 
 /-- The cardinality of the set of `k`-rough numbers `≤ N` is bounded by `N` times the sum
 of `1/p` over the primes `k ≤ p ≤ N`. -/
 -- This needs `Mathlib/Analysis/RCLike/Basic.lean`, so we put it here
 -- instead of in `Mathlib/NumberTheory/SmoothNumbers.lean`.
 lemma Nat.roughNumbersUpTo_card_le' (N k : ℕ) :
-    (roughNumbersUpTo N k).card ≤
+    #(roughNumbersUpTo N k) ≤
       N * (N.succ.primesBelow \ k.primesBelow).sum (fun p ↦ (1 : ℝ) / p) := by
   simp_rw [Finset.mul_sum, mul_one_div]
   exact (Nat.cast_le.mpr <| roughNumbersUpTo_card_le N k).trans <|
@@ -43,13 +77,13 @@ lemma Nat.roughNumbersUpTo_card_le' (N k : ℕ) :
 
 /-- The sum over primes `k ≤ p ≤ 4^(π(k-1)+1)` over `1/p` (as a real number) is at least `1/2`. -/
 lemma one_half_le_sum_primes_ge_one_div (k : ℕ) :
-    1 / 2 ≤ ∑ p ∈ (4 ^ (k.primesBelow.card + 1)).succ.primesBelow \ k.primesBelow,
+    1 / 2 ≤ ∑ p ∈ (4 ^ (#k.primesBelow + 1)).succ.primesBelow \ k.primesBelow,
       (1 / p : ℝ) := by
-  set m : ℕ := 2 ^ k.primesBelow.card
+  set m : ℕ := 2 ^ #k.primesBelow
   set N₀ : ℕ := 2 * m ^ 2 with hN₀
   let S : ℝ := ((2 * N₀).succ.primesBelow \ k.primesBelow).sum (fun p ↦ (1 / p : ℝ))
   suffices 1 / 2 ≤ S by
-    convert! this using 5
+    convert this using 5
     rw [show 4 = 2 ^ 2 by simp, pow_right_comm]
     ring
   suffices 2 * N₀ ≤ m * (2 * N₀).sqrt + 2 * N₀ * S by
@@ -58,9 +92,9 @@ lemma one_half_le_sum_primes_ge_one_div (k : ℕ) :
       show (2 * (2 * m ^ 2) - m * (2 * m) : ℝ) = 2 * (2 * m ^ 2) * (1 / 2) by ring,
       mul_le_mul_iff_right₀ <| by positivity] at this
   calc (2 * N₀ : ℝ)
-    _ = ((2 * N₀).smoothNumbersUpTo k).card + ((2 * N₀).roughNumbersUpTo k).card := by
+    _ = #((2 * N₀).smoothNumbersUpTo k) + #((2 * N₀).roughNumbersUpTo k) := by
         exact_mod_cast ((2 * N₀).smoothNumbersUpTo_card_add_roughNumbersUpTo_card k).symm
-    _ ≤ m * (2 * N₀).sqrt + ((2 * N₀).roughNumbersUpTo k).card := by
+    _ ≤ m * (2 * N₀).sqrt + #((2 * N₀).roughNumbersUpTo k) := by
         exact_mod_cast Nat.add_le_add_right ((2 * N₀).smoothNumbersUpTo_card_le k) _
     _ ≤ m * (2 * N₀).sqrt + 2 * N₀ * S := by grw [roughNumbersUpTo_card_le']; norm_cast
 
@@ -70,13 +104,14 @@ theorem not_summable_one_div_on_primes :
   intro h
   obtain ⟨k, hk⟩ := h.nat_tsum_vanishing (Iio_mem_nhds one_half_pos : Iio (1 / 2 : ℝ) ∈ 𝓝 0)
   specialize hk ({p | Nat.Prime p} ∩ {p | k ≤ p}) inter_subset_right
-  rw [tsum_subtype, indicator_indicator, inter_eq_left.mpr fun n hn ↦ hn.1, mem_Iio] at hk
+  rw [tsum_subtype, indicator_indicator,
+    inter_eq_left.mpr fun n (hn : n ∈ {p | Nat.Prime p} ∩ {p | k ≤ p}) ↦ hn.1, mem_Iio] at hk
   have h' : Summable (indicator ({p | Nat.Prime p} ∩ {p | k ≤ p}) fun n ↦ (1 : ℝ) / n) := by
-    convert! h.indicator {n : ℕ | k ≤ n} using 1
+    convert h.indicator {n : ℕ | k ≤ n} using 1
     simp only [indicator_indicator, inter_comm]
   refine ((one_half_le_sum_primes_ge_one_div k).trans_lt <| LE.le.trans_lt ?_ hk).false
   convert!
-    Summable.sum_le_tsum (primesBelow ((4 ^ (k.primesBelow.card + 1)).succ) \ primesBelow k)
+    Summable.sum_le_tsum (primesBelow ((4 ^ (#k.primesBelow + 1)).succ) \ primesBelow k)
       (fun n _ ↦ indicator_nonneg (fun p _ ↦ by positivity) _) h' using
     2 with p hp
   obtain ⟨hp₁, hp₂⟩ := mem_ofPred_eq ▸ Finset.mem_sdiff.mp hp

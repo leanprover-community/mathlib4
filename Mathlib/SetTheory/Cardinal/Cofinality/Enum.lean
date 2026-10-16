@@ -131,7 +131,7 @@ theorem enum_eq_iff {f : α → α} : Subtype.val ∘ enum s hs = f ↔ StrictMo
     use (Subtype.strictMono_coe _).comp (enum s hs).strictMono
     simp
   · rintro ⟨hf, rfl⟩
-    rw [← StrictMono.range_inj H hf]
+    rw [← StrictMono.range_inj_of_wellFoundedLT H hf]
     simp
     rfl
 
@@ -168,7 +168,7 @@ theorem isNormal_enum_iff_dirSupClosed :
   · refine enum_le_of_forall_lt (hs' ?_ ?_ (isLUB_csSup' bdd)) fun b hb ↦ ?_
     · grind
     · simpa using ha.ne_bot
-    · obtain ⟨c, hca, hbc⟩ := ha.lt_iff_exists_lt.1 hb
+    · obtain ⟨c, hbc, hca⟩ := ha.lt_iff_nonempty_Ioo.1 hb
       refine (H hbc).trans_le <| le_csSup bdd ⟨c, ?_⟩
       simpa
   · apply csSup_le'

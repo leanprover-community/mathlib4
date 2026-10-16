@@ -62,8 +62,11 @@ lemma Module.IsTorsionFree.comap [IsTorsionFree S M] (f : R → S)
     IsTorsionFree R M where
   isSMulRegular r hr := (isRegular _ hr).isSMulRegular.of_map f (smul r)
 
-instance IsAddTorsionFree.to_isTorsionFree_nat [IsAddTorsionFree M] : IsTorsionFree ℕ M where
+instance HasUniqueDiv.to_isTorsionFree_nat [HasUniqueDiv M] : IsTorsionFree ℕ M where
   isSMulRegular n hn := nsmul_right_injective (by simpa [isRegular_iff_ne_zero] using hn)
+
+@[deprecated (since := "2026-09-29")] alias IsAddTorsionFree.to_isTorsionFree_nat :=
+  HasUniqueDiv.to_isTorsionFree_nat
 
 instance Subsingleton.to_moduleIsTorsionFree [Subsingleton M] : IsTorsionFree R M where
   isSMulRegular _ _ := Function.injective_of_subsingleton _
@@ -122,34 +125,61 @@ variable [CharZero R]
 
 variable (R M) in
 include R in
-lemma IsAddTorsionFree.of_isTorsionFree : IsAddTorsionFree M where
+lemma HasUniqueDiv.of_isTorsionFree : HasUniqueDiv M where
   nsmul_right_injective n hn := by
     simp_rw [← Nat.cast_smul_eq_nsmul R]; apply smul_right_injective; simpa
 
+@[deprecated (since := "2026-09-29")] alias IsAddTorsionFree.of_isTorsionFree :=
+  HasUniqueDiv.of_isTorsionFree
+
 /-- A characteristic zero domain is torsion-free. -/
-instance (priority := 100) IsAddTorsionFree.of_isDomain_charZero : IsAddTorsionFree R :=
+instance (priority := 100) IsAddTorsionFree.of_isDomain_charZero : HasUniqueDiv R :=
   .of_isTorsionFree R R
 
 @[simp]
-lemma Module.isTorsionFree_nat_iff_isAddTorsionFree : IsTorsionFree ℕ M ↔ IsAddTorsionFree M where
+lemma Module.isTorsionFree_nat_iff_hasUniqueDiv : IsTorsionFree ℕ M ↔ HasUniqueDiv M where
   mp _ := .of_isTorsionFree ℕ _
   mpr _ := inferInstance
+
+@[deprecated (since := "2026-09-29")] alias Module.isTorsionFree_nat_iff_isAddTorsionFree :=
+  Module.isTorsionFree_nat_iff_hasUniqueDiv
 
 end AddCommMonoid
 
 section AddCommGroup
-variable [CharZero R] [IsDomain R] [AddCommGroup M] [Module R M] {m : M}
+variable [CharZero R] [IsDomain R] [AddCommGroup M] [Module R M]
 
-instance [IsAddTorsionFree M] : IsTorsionFree ℤ M where
+instance [HasUniqueDiv M] : IsTorsionFree ℤ M where
   isSMulRegular n hn := zsmul_right_injective (by simpa [isRegular_iff_ne_zero] using hn)
 
 @[simp]
-lemma Module.isTorsionFree_int_iff_isAddTorsionFree : IsTorsionFree ℤ M ↔ IsAddTorsionFree M where
+lemma Module.isTorsionFree_int_iff_hasUniqueDiv : IsTorsionFree ℤ M ↔ HasUniqueDiv M where
   mp _ := .of_isTorsionFree ℤ _
   mpr _ := inferInstance
 
+@[deprecated (since := "2026-09-29")] alias Module.isTorsionFree_int_iff_isAddTorsionFree :=
+  Module.isTorsionFree_int_iff_hasUniqueDiv
+
 end AddCommGroup
 end Semiring
+
+section NonAssocSemiring
+
+variable [NonAssocSemiring R] {n : ℕ}
+
+@[simp]
+theorem isLeftRegular_natCast : IsLeftRegular (n : R) ↔ IsSMulRegular R n := by
+  simp [IsSMulRegular, IsLeftRegular]
+
+@[simp]
+theorem isRightRegular_natCast : IsRightRegular (n : R) ↔ IsSMulRegular R n := by
+  simp [IsRightRegular, IsSMulRegular, Nat.cast_comm]
+
+@[simp]
+theorem isRegular_natCast : IsRegular (n : R) ↔ IsSMulRegular R n := by
+  simp [isRegular_iff]
+
+end NonAssocSemiring
 
 section Ring
 variable [Ring R] [AddCommGroup M] [Module R M] {m : M} {r₁ r₂ : R}
@@ -184,10 +214,21 @@ variable (R M) [Semiring R] [AddCommGroup M] [Module R M]
 -- TODO: Add a `ℤ`-specific version of `smul_left_injective` and move this lemma to an earlier file.
 /-- Only a ring of characteristic zero can have a non-trivial module without additive or
 scalar torsion. -/
-lemma CharZero.of_isAddTorsionFree [Nontrivial M] [IsAddTorsionFree M] : CharZero R := by
+lemma CharZero.of_hasUniqueDiv [Nontrivial M] [HasUniqueDiv M] : CharZero R := by
   refine ⟨fun {n m h} ↦ ?_⟩
   obtain ⟨x, hx⟩ := exists_ne (0 : M)
   replace h : (n : ℤ) • x = (m : ℤ) • x := by simp [← Nat.cast_smul_eq_nsmul R, h]
   simpa using smul_left_injective ℤ hx h
 
+@[deprecated (since := "2026-09-29")] alias CharZero.of_isAddTorsionFree := CharZero.of_hasUniqueDiv
+
 end Semiring
+
+section NonAssocRing
+variable [NonAssocRing R]
+
+theorem isSelfNeg_of_isSMulRegular_two (h : IsSMulRegular R 2) {a : R} :
+    IsSelfNeg a ↔ a = 0 :=
+  isSelfNeg_iff_two_nsmul_eq_zero.trans ⟨(h <| by simpa using ·), (by simp [·])⟩
+
+end NonAssocRing

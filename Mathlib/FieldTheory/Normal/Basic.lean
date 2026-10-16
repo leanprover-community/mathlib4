@@ -127,7 +127,7 @@ theorem splits_of_mem_adjoin {L} [Field L] [Algebra F L] {S : Set K}
   have : ∀ x ∈ S, ((minpoly F x).map (algebraMap F E)).Splits := fun x hx ↦ splits_of_splits
     (splits x hx).2 fun y hy ↦ (le_iSup _ ⟨x, hx⟩ : _ ≤ E) (subset_adjoin F _ <| by exact hy)
   obtain ⟨φ⟩ := nonempty_algHom_adjoin_of_splits fun x hx ↦ ⟨(splits x hx).1, this x hx⟩
-  convert! (normal.splits <| φ ⟨x, hx⟩).map E.val.toRingHom
+  convert (normal.splits <| φ ⟨x, hx⟩).map E.val.toRingHom
   simp [minpoly.algHom_eq _ φ.injective, ← minpoly.algHom_eq _ (adjoin F S).val.injective,
     Polynomial.map_map]
 
@@ -243,8 +243,8 @@ theorem Normal.minpoly_eq_iff_mem_orbit [h : Normal F E] {x y : E} :
 
 variable (F K₁)
 
-theorem isSolvable_of_isScalarTower [Normal F K₁] [h1 : IsSolvable (K₁ ≃ₐ[F] K₁)]
-    [h2 : IsSolvable (E ≃ₐ[K₁] E)] : IsSolvable Gal(E/F) := by
+theorem isSolvable_of_isScalarTower [Normal F K₁] [h1 : Group.IsSolvable (K₁ ≃ₐ[F] K₁)]
+    [h2 : Group.IsSolvable (E ≃ₐ[K₁] E)] : Group.IsSolvable Gal(E/F) := by
   let f : (E ≃ₐ[K₁] E) →* Gal(E/F) :=
     { toFun := fun ϕ =>
         AlgEquiv.ofAlgHom (ϕ.toAlgHom.restrictScalars F) (ϕ.symm.toAlgHom.restrictScalars F)
@@ -252,7 +252,7 @@ theorem isSolvable_of_isScalarTower [Normal F K₁] [h1 : IsSolvable (K₁ ≃�
       map_one' := AlgEquiv.ext fun _ => rfl
       map_mul' := fun _ _ => AlgEquiv.ext fun _ => rfl }
   refine
-    solvable_of_ker_le_range f (AlgEquiv.restrictNormalHom K₁) fun ϕ hϕ =>
+    Group.isSolvable_of_ker_le_range f (AlgEquiv.restrictNormalHom K₁) fun ϕ hϕ =>
       ⟨{ ϕ with commutes' := fun x => ?_ }, AlgEquiv.ext fun _ => rfl⟩
   exact Eq.trans (ϕ.restrictNormal_commutes K₁ x).symm (congr_arg _ (AlgEquiv.ext_iff.mp hϕ x))
 

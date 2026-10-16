@@ -30,8 +30,10 @@ for `𝒮ℒ` (= `SL(2, ℤ)`) of even weight.
 
 @[expose] public noncomputable section
 
-open UpperHalfPlane ModularForm SlashInvariantForm SlashInvariantFormClass ModularFormClass
-  CuspFormClass MatrixGroups OnePoint Filter EisensteinSeries Asymptotics
+open UpperHalfPlane ModularForm SlashInvariantForm SlashInvariantFormClass
+  CuspFormClass OnePoint Filter EisensteinSeries Asymptotics
+
+open scoped MatrixGroups
 
 open scoped Topology
 
@@ -91,10 +93,10 @@ lemma discriminantEquiv_apply (f : CuspForm 𝒮ℒ k) (z : ℍ) :
     (discriminantEquiv f) z = f z / Δ z := rfl
 
 /-- Divide a cusp form by the discriminant to get a modular form of weight `k - 12`. -/
-@[deprecated discriminantEquiv (since := "2026-05-18")]
+@[deprecated discriminantEquiv +typeChanged (since := "2026-05-18")]
 def divDiscriminant (f : CuspForm 𝒮ℒ k) : ModularForm 𝒮ℒ (k - 12) := discriminantEquiv f
 
-@[deprecated discriminantEquiv_apply (since := "2026-05-18")]
+@[deprecated discriminantEquiv_apply +typeChanged (since := "2026-05-18")]
 lemma divDiscriminant_apply (f : CuspForm 𝒮ℒ k) (z : ℍ) :
     (divDiscriminant f) z = f z / Δ z := rfl
 
@@ -178,8 +180,8 @@ lemma ModularForm.rank_eq_one_add_rank_cuspForm {k : ℕ} (hk : 3 ≤ k) (hk2 : 
     exact one_ne_zero <| hE.symm.trans <| (isCuspForm_iff_coeffZero_eq_zero _).mp h
   · refine (Submodule.Quotient.forall _).mpr fun f ↦ ⟨(qExpansion 1 f).coeff 0, ?_⟩
     rw [← Submodule.Quotient.mk_smul, Submodule.Quotient.eq, mem_cuspFormSubmodule_iff,
-      isCuspForm_iff_coeffZero_eq_zero, ModularForm.coe_sub, ModularForm.qExpansion_sub,
-      IsGLPos.coe_smul, ModularForm.qExpansion_smul, map_sub,
+      isCuspForm_iff_coeffZero_eq_zero, FunLike.coe_sub, ModularForm.qExpansion_sub,
+      FunLike.coe_smul, ModularForm.qExpansion_smul, map_sub,
       PowerSeries.coeff_smul, E_qExpansion_coeff_zero hk hk2, smul_eq_mul, mul_one, sub_self]
     all_goals simp
 
@@ -190,13 +192,13 @@ section DimensionFormula
 namespace ModularForm
 
 lemma levelOne_weight_four_rank_one : Module.rank ℂ (ModularForm 𝒮ℒ 4) = 1 :=
-  (rank_eq_one_add_rank_cuspForm (by norm_num) ⟨2, rfl⟩).trans
-    ((congrArg (1 + ·) (CuspForm.rank_eq_zero_of_weight_lt_twelve (by norm_num))).trans
+  (rank_eq_one_add_rank_cuspForm (by simp) ⟨2, rfl⟩).trans
+    ((congrArg (1 + ·) (CuspForm.rank_eq_zero_of_weight_lt_twelve (by simp))).trans
       (by norm_cast))
 
 lemma levelOne_weight_six_rank_one : Module.rank ℂ (ModularForm 𝒮ℒ 6) = 1 :=
-  (rank_eq_one_add_rank_cuspForm (by norm_num) ⟨3, rfl⟩).trans
-    ((congrArg (1 + ·) (CuspForm.rank_eq_zero_of_weight_lt_twelve (by norm_num))).trans
+  (rank_eq_one_add_rank_cuspForm (by simp) ⟨3, rfl⟩).trans
+    ((congrArg (1 + ·) (CuspForm.rank_eq_zero_of_weight_lt_twelve (by simp))).trans
       (by norm_cast))
 
 lemma E₄_qExpansion_coeff_one : (qExpansion 1 E₄).coeff 1 = 240 := by

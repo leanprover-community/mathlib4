@@ -5,8 +5,9 @@ Authors: Damien Thomine, Pietro Monticone
 -/
 module
 
-public import Mathlib.Order.Lattice.Nat
 public import Mathlib.Topology.UniformSpace.Basic
+
+import Mathlib.Order.Lattice.Nat
 
 /-!
 # Dynamical entourages
@@ -60,7 +61,7 @@ lemma mem_dynEntourage : (x, y) ∈ dynEntourage T U n ↔ ∀ k < n, (T^[k] x, 
 
 lemma mem_ball_dynEntourage :
     y ∈ ball x (dynEntourage T U n) ↔ ∀ k < n, T^[k] y ∈ ball (T^[k] x) U := by
-  simp only [ball, mem_preimage, mem_dynEntourage]
+  simp only [ball, SetRel.mem_ball, SetRel.mem_inv, mem_dynEntourage]
 
 lemma dynEntourage_mem_uniformity [UniformSpace X] (h : UniformContinuous T)
     (U_uni : U ∈ 𝓤 X) (n : ℕ) :
@@ -83,13 +84,13 @@ lemma ball_dynEntourage_mem_nhds [UniformSpace X] (h : Continuous T)
   simp only [map_iterate, _root_.ball_preimage]
   exact (h.iterate k).continuousAt.preimage_mem_nhds (ball_mem_nhds (T^[k] x) U_uni)
 
-set_option linter.flexible false in -- simp followed by infer_instance
 instance isRefl_dynEntourage [U.IsRefl] : (dynEntourage T U n).IsRefl := by
-  simp [dynEntourage]; infer_instance
+  simp only [dynEntourage, map_iterate]
+  infer_instance
 
-set_option linter.flexible false in -- simp followed by infer_instance
 instance isSymm_dynEntourage [U.IsSymm] : (dynEntourage T U n).IsSymm := by
-  simp [dynEntourage]; infer_instance
+  simp only [dynEntourage, map_iterate]
+  infer_instance
 
 lemma dynEntourage_comp_subset (T : X → X) (U V : SetRel X X) (n : ℕ) :
     (dynEntourage T U n) ○ (dynEntourage T V n) ⊆ dynEntourage T (U ○ V) n := by

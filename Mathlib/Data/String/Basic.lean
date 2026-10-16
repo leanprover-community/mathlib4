@@ -6,11 +6,12 @@ Authors: Mario Carneiro
 module
 
 public import Batteries.Data.String.Lemmas
-public import Mathlib.Data.List.Lex
-public import Mathlib.Data.Char
 public import Mathlib.Algebra.Order.Group.Nat
-import all Init.Data.String.Iterator  -- for unfolding `Iterator.curr`
+public import Mathlib.Data.Char
+public import Mathlib.Data.List.Lex
+
 import all Init.Data.Ord.String  -- for unfolding `String.compare`
+import all Init.Data.String.Iterator  -- for unfolding `Iterator.curr`
 
 /-!
 # Strings
@@ -60,20 +61,20 @@ theorem ltb_cons_addChar' (c : Char) (s₁ s₂ : Legacy.Iterator) :
   fun_induction ltb s₁ s₂ with
   | case1 s₁ s₂ h₁ h₂ h ih =>
     rw [ltb, Legacy.Iterator.hasNext_cons_addChar, Legacy.Iterator.hasNext_cons_addChar,
-      if_pos (by simpa using h₁), if_pos (by simpa using h₂), if_pos, ← ih]
+      ite_eq_left (by simpa using h₁), ite_eq_left (by simpa using h₂), ite_eq_left, ← ih]
     · simp only [Legacy.Iterator.next, Pos.Raw.next, get_cons_addChar, ofList_toList]
       congr 2 <;> apply Pos.Raw.add_char_right_comm
     · simpa only [Legacy.Iterator.curr, get_cons_addChar, ofList_toList] using h
   | case2 s₁ s₂ h₁ h₂ h =>
     rw [ltb, Legacy.Iterator.hasNext_cons_addChar, Legacy.Iterator.hasNext_cons_addChar,
-      if_pos (by simpa using h₁), if_pos (by simpa using h₂), if_neg]
+      ite_eq_left (by simpa using h₁), ite_eq_left (by simpa using h₂), ite_eq_right]
     · simp only [Legacy.Iterator.curr, get_cons_addChar, ofList_toList]
     · simpa only [Legacy.Iterator.curr, get_cons_addChar, ofList_toList] using h
   | case3 s₁ s₂ h₁ h₂ =>
     rw [ltb, Legacy.Iterator.hasNext_cons_addChar, Legacy.Iterator.hasNext_cons_addChar,
-      if_pos (by simpa using h₁), if_neg (by simpa using h₂)]
+      ite_eq_left (by simpa using h₁), ite_eq_right (by simpa using h₂)]
   | case4 s₁ s₂ h₁ =>
-    rw [ltb, Legacy.Iterator.hasNext_cons_addChar, if_neg (by simpa using h₁)]
+    rw [ltb, Legacy.Iterator.hasNext_cons_addChar, ite_eq_right (by simpa using h₁)]
 
 theorem ltb_cons_addChar (c : Char) (cs₁ cs₂ : List Char) (i₁ i₂ : Pos.Raw) :
     ltb ⟨ofList (c :: cs₁), i₁ + c⟩ ⟨ofList (c :: cs₂), i₂ + c⟩ =
@@ -117,15 +118,6 @@ theorem lt_iff_ltb {s₁ s₂ : String} :
       cases e <;> rename_i h'
       · assumption
       · contradiction
-
-@[deprecated "Use the new String API" (since := "2026-04-01")]
-theorem toList_nonempty :
-    ∀ {s : String}, s ≠ "" → s.toList = String.Legacy.front s :: (String.Legacy.drop s 1).toList
-  | s, h => by
-    obtain ⟨l, rfl⟩ := s.exists_eq_ofList
-    match l with
-    | [] => simp at h
-    | c::cs => simp [Legacy.front, Pos.Raw.get, Pos.Raw.utf8GetAux]
 
 @[simp]
 theorem head_empty : "".toList.head! = default :=

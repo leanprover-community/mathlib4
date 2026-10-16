@@ -6,11 +6,8 @@ Authors: Kyle Miller
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Bipartite
-public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.EdgeConnectivity
 public import Mathlib.Combinatorics.SimpleGraph.CycleGraph
-public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
-public import Mathlib.Combinatorics.SimpleGraph.Metric
 
 /-!
 
@@ -61,9 +58,6 @@ structure IsTree : Prop extends
   connected : G.Connected where
   /-- A tree is acyclic. -/
   isAcyclic : G.IsAcyclic
-
-@[deprecated (since := "2026-03-18")] alias IsTree.isConnected := IsTree.connected
-@[deprecated (since := "2026-03-18")] alias IsTree.IsAcyclic := IsTree.isAcyclic
 
 variable {G G'}
 
@@ -122,7 +116,7 @@ lemma isAcyclic_sSup_of_isAcyclic_directedOn (Hs : Set <| SimpleGraph V)
   · simp
   · intro u p hp
     obtain ⟨H, hH, hpH⟩ := p.exists_mem_contains_edges_of_directed Hs hnemp h_dir
-    exact h_acyc H hH (p.transfer H hpH) <| Walk.IsCycle.transfer hp hpH
+    exact h_acyc H hH (p.transfer H hpH) <| hp.transfer hpH
 
 /-- Every acyclic subgraph `H ≤ G` is contained in a maximal such subgraph. -/
 theorem exists_maximal_isAcyclic_of_le_isAcyclic
@@ -151,7 +145,7 @@ lemma IsAcyclic.of_subsingleton [Subsingleton V] {G : SimpleGraph V} : G.IsAcycl
   .of_card_le_two <| ENat.card_le_one.trans one_le_two
 
 lemma Subgraph.isAcyclic_coe_bot (G : SimpleGraph V) : (⊥ : G.Subgraph).coe.IsAcyclic :=
-  @IsAcyclic.of_subsingleton _ (Set.isEmpty_coe_sort.mpr rfl).instSubsingleton _
+  @.of_subsingleton _ (by simp) _
 
 lemma IsTree.of_subsingleton [Nonempty V] [Subsingleton V] {G : SimpleGraph V} : G.IsTree :=
   ⟨.of_subsingleton, .of_subsingleton⟩
@@ -195,16 +189,16 @@ theorem isAcyclic_iff_subsingleton_path : G.IsAcyclic ↔ ∀ u v, Subsingleton 
 
 alias ⟨IsAcyclic.subsingleton_path, _⟩ := isAcyclic_iff_subsingleton_path
 
-@[deprecated IsAcyclic.subsingleton_path (since := "2026-06-30")]
+@[deprecated IsAcyclic.subsingleton_path +typeChanged (since := "2026-06-30")]
 theorem IsAcyclic.path_unique {G : SimpleGraph V} (h : G.IsAcyclic) {v w : V} (p q : G.Path v w) :
     p = q :=
   h.subsingleton_path v w |>.elim p q
 
-@[deprecated isAcyclic_iff_subsingleton_path (since := "2026-06-30")]
+@[deprecated isAcyclic_iff_subsingleton_path +typeChanged (since := "2026-06-30")]
 theorem isAcyclic_of_path_unique (h : ∀ (v w : V) (p q : G.Path v w), p = q) : G.IsAcyclic :=
   isAcyclic_iff_subsingleton_path.mpr (⟨h · ·⟩)
 
-@[deprecated isAcyclic_iff_subsingleton_path (since := "2026-06-30")]
+@[deprecated isAcyclic_iff_subsingleton_path +typeChanged (since := "2026-06-30")]
 theorem isAcyclic_iff_path_unique : G.IsAcyclic ↔ ∀ ⦃v w : V⦄ (p q : G.Path v w), p = q :=
   isAcyclic_iff_subsingleton_path.trans <| forall₂_congr fun _ _ ↦ subsingleton_iff
 
@@ -350,9 +344,8 @@ lemma isTree_of_minimal_connected (h : Minimal Connected G) : IsTree G := by
   rw [isTree_iff, and_iff_right h.prop, isAcyclic_iff_forall_adj_isBridge]
   exact fun _ _ _ ↦ by_contra fun hbr ↦ h.not_prop_of_lt
     (by simpa [deleteEdges, ← edgeSet_ssubset_edgeSet])
-    <| h.prop.connected_delete_edge_of_not_isBridge hbr
+    <| h.prop.preconnected.connected_deleteEdges_of_not_isBridge hbr
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isTree_iff_minimal_connected : IsTree G ↔ Minimal Connected G := by
   refine ⟨fun htree ↦ ⟨htree.connected, fun G' h' hle u v hadj ↦ ?_⟩, isTree_of_minimal_connected⟩
   have ⟨p, hp⟩ := h'.exists_isPath u v
@@ -366,9 +359,6 @@ theorem IsAcyclic.sup_edge_of_not_reachable {u v : V} (hnreach : ¬G.Reachable u
     (hacyc : G.IsAcyclic) : (G ⊔ edge u v).IsAcyclic := by
   grind [isAcyclic_iff_forall_isBridge, IsBridge.sup_edge_of_not_reachable_of_isBridge,
     edgeSet_sup, edgeSet_edge, IsBridge.of_not_reachable, isBridge_sup_edge]
-
-@[deprecated (since := "2026-03-18")]
-alias IsAcyclic.isAcyclic_sup_fromEdgeSet_of_not_reachable := IsAcyclic.sup_edge_of_not_reachable
 
 theorem isAcyclic_add_edge_iff_of_not_reachable (x y : V) (hxy : ¬ G.Reachable x y) :
     (G ⊔ edge x y).IsAcyclic ↔ IsAcyclic G :=
@@ -386,7 +376,7 @@ theorem isAcyclic_sup_fromEdgeSet_iff {u v : V} :
   refine ⟨?_, fun ⟨hacyc, hreach⟩ ↦ hacyc.sup_edge_of_not_reachable <| by grind⟩
   refine fun hacyc ↦ ⟨hacyc.anti le_sup_left, fun hreach ↦ False.elim ?_⟩
   refine isAcyclic_iff_forall_isBridge.mp (e := s(u, v)) hacyc (by simp [huv]) ?_
-  convert! hreach
+  convert hreach
   simp [deleteEdges_sup, hadj]
 
 /--
@@ -402,9 +392,9 @@ lemma reachable_eq_of_maximal_isAcyclic (F : SimpleGraph V)
   have : ∃ d ∈ p.darts, d.fst ∈ s ∧ d.snd ∉ s := p.exists_boundary_dart s rfl this
   rcases this with ⟨⟨⟨u', v'⟩, huv⟩, _, hu, hv⟩
   have : ¬F.Reachable v' u' := mt ConnectedComponent.sound <| s.mem_supp_iff u' |>.mp hu ▸ hv
-  suffices F ⊔ edge v' u' ≤ F by grind [Adj.reachable, sup_le_iff, le_iff_adj, edge_adj]
+  suffices F ⊔ edge v' u' ≤ F by grind [Adj.reachable, sup_le_iff, le_iff_adj]
   refine h.le_of_ge ⟨?_, h.prop.right.sup_edge_of_not_reachable this⟩ le_sup_left
-  grind [Maximal, sup_le, le_iff_adj, edge_adj, huv.symm]
+  grind [Maximal, sup_le, le_iff_adj, huv.symm]
 
 /-- A subgraph is maximal acyclic iff its reachability relation agrees with the larger graph. -/
 theorem maximal_isAcyclic_iff_reachable_eq {F : SimpleGraph V} (hle : F ≤ G) (hF : F.IsAcyclic) :
@@ -487,8 +477,8 @@ lemma isTree_iff_connected_and_card [Finite V] :
   refine ⟨fun h ↦ ⟨h.connected, by simpa [edgeFinset] using h.card_edgeFinset⟩,
     fun ⟨h₁, h₂⟩ ↦ ⟨h₁, ?_⟩⟩
   simp_rw [isAcyclic_iff_forall_adj_isBridge]
-  refine fun x y h ↦ by_contra fun hbr ↦
-    (h₁.connected_delete_edge_of_not_isBridge hbr).card_vert_le_card_edgeSet_add_one.not_gt ?_
+  refine fun x y h ↦ by_contra (h₁.preconnected.connected_deleteEdges_of_not_isBridge ·
+    |>.card_vert_le_card_edgeSet_add_one.not_gt ?_)
   rw [Nat.card_eq_fintype_card, ← edgeFinset_card, ← h₂, Nat.card_eq_fintype_card,
     ← edgeFinset_card, add_lt_add_iff_right]
   exact Finset.card_lt_card <| by simpa [deleteEdges, edgeFinset]
@@ -510,10 +500,25 @@ lemma IsTree.minDegree_eq_one_of_nontrivial (h : G.IsTree) [Fintype V] [Nontrivi
 /-- A nontrivial tree has a vertex of degree one. -/
 lemma IsTree.exists_vert_degree_one_of_nontrivial [Fintype V] [Nontrivial V] [DecidableRel G.Adj]
     (h : G.IsTree) : ∃ v, G.degree v = 1 := by
-  obtain ⟨v, hv⟩ := G.exists_minimal_degree_vertex
-  use v
-  rw [← hv]
-  exact h.minDegree_eq_one_of_nontrivial
+  grind [G.exists_minimal_degree_vertex, minDegree_eq_one_of_nontrivial]
+
+/-- A nontrivial finite tree has at least two leaves. -/
+theorem IsTree.exists_ne_and_degree_eq_one [Nontrivial V] [Finite G.edgeSet] [G.LocallyFinite]
+    (h : G.IsTree) : ∃ u v, u ≠ v ∧ G.degree u = 1 ∧ G.degree v = 1 := by
+  have ⟨u, v, p, hp, hmax⟩ := exists_isPath_forall_isPath_length_le_length G
+  have ⟨u', v', hne⟩ := exists_pair_ne V
+  have ⟨p', hp'⟩ := h.connected.exists_isPath u' v'
+  have hnil : ¬p.Nil := by grind
+  refine ⟨u, v, hp.nil_iff_eq.not.mp hnil, ?_, ?_⟩ <;>
+    rw [degree_eq_one_iff_existsUnique_adj]
+  · refine ⟨_, p.adj_snd hnil, fun w hadj ↦ ?_⟩
+    apply h.isAcyclic.eq_snd_of_adj_start hp hadj
+    have : ¬(p.cons hadj.symm).IsPath := by grind [length_cons]
+    grind [hp.cons]
+  · refine ⟨_, p.adj_penultimate hnil |>.symm, fun w hadj ↦ ?_⟩
+    apply h.isAcyclic.eq_penultimate_of_adj_end hp hadj
+    have : ¬(p.concat hadj).IsPath := by grind [length_concat]
+    grind [hp.concat]
 
 /-- The graph resulting from removing a vertex of degree one from a connected graph is connected. -/
 lemma Connected.induce_compl_singleton_of_degree_eq_one (hconn : G.Connected) {v : V}
@@ -636,7 +641,13 @@ lemma IsAcyclic.chromaticNumber_le_two (hG : G.IsAcyclic) : G.chromaticNumber �
 lemma IsTree.chromaticNumber_le_two (hG : G.IsTree) : G.chromaticNumber ≤ 2 :=
   hG.colorable_two.chromaticNumber_le
 
-lemma exists_isCycle_of_two_le_isEdgeReachable {u v : V} (huv : u ≠ v) {n : ℕ} (hn : 2 ≤ n)
+protected theorem IsAcyclic.cliqueFree (h : G.IsAcyclic) {n : ℕ} (hn : 3 ≤ n) : G.CliqueFree n :=
+  cliqueFree_of_chromaticNumber_lt <| h.chromaticNumber_le_two.trans_lt <| by norm_cast
+
+theorem IsAcyclic.cliqueFree_three (h : G.IsAcyclic) : G.CliqueFree 3 :=
+  h.cliqueFree le_rfl
+
+lemma exists_isCycle_of_two_le_isEdgeReachable {u v : V} (huv : u ≠ v) {n : ℕ∞} (hn : 2 ≤ n)
     (h : G.IsEdgeReachable n u v) : ∃ w : G.Walk u u, w.IsCycle := by
   classical
   obtain ⟨w, hw, h⟩ := exists_adj_isEdgeReachable_two huv (h.anti hn)
@@ -659,8 +670,26 @@ theorem isAcyclic_iff_free_cycleGraph : G.IsAcyclic ↔ ∀ n ≥ 3, (cycleGraph
     exact h p hcyc
   · exact cycleGraph_isContained_iff hcyc.three_le_length |>.mpr ⟨v, p, hcyc, rfl⟩
 
-theorem IsAcyclic.cliqueFree (h : G.IsAcyclic) {n : ℕ} (hn : 3 ≤ n) : G.CliqueFree n := by
-  refine not_cliqueFree_iff_top_isContained n |>.not_right.mpr fun hle ↦ ?_
-  exact isAcyclic_iff_free_cycleGraph.mp h n hn <| hle.trans' <| .of_le le_top
+section Hasse
+
+theorem isAcyclic_hasse_of_linearOrder (α : Type*) [LinearOrder α] : (hasse α).IsAcyclic := by
+  refine isAcyclic_iff_forall_adj_isBridge.mpr fun u v huv ↦ ?_
+  wlog hle : u < v
+  · grind [Adj.symm]
+  refine isBridge_iff.mpr fun ⟨w⟩ ↦ ?_
+  have := w.exists_boundary_dart (.Iio v) hle Set.self_notMem_Iio
+  grind [Dart.adj, hasse_adj, deleteEdges_adj, CovBy]
+
+@[simp]
+theorem isAcyclic_pathGraph (n : ℕ) : (pathGraph n).IsAcyclic := isAcyclic_hasse_of_linearOrder _
+
+theorem isTree_pathGraph_add_one (n : ℕ) : (pathGraph (n + 1)).IsTree :=
+  ⟨connected_pathGraph_add_one n, isAcyclic_pathGraph (n + 1)⟩
+
+@[simp]
+theorem isTree_pathGraph {n : ℕ} : (pathGraph n).IsTree ↔ n ≠ 0 := by
+  simp [isTree_iff, connected_iff, ← Fin.isEmpty_iff]
+
+end Hasse
 
 end SimpleGraph

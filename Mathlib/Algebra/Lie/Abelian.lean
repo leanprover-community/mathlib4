@@ -5,8 +5,8 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.Algebra.Lie.IdealOperations
+public import Mathlib.Algebra.Lie.OfAssociative
 
 /-!
 # Trivial Lie modules and Abelian Lie algebras
@@ -87,9 +87,6 @@ theorem isMulCommutative_iff_isLieAbelian {A : Type v} [Ring A] :
   have : IsLieAbelian A ↔ ∀ a b : A, ⁅a, b⁆ = 0 := ⟨(·.trivial), (⟨·⟩)⟩
   simp [this, isMulCommutative_iff, LieRing.of_associative_ring_bracket, sub_eq_zero]
 
-@[deprecated (since := "2026-04-01")]
-alias commutative_ring_iff_abelian_lie_ring := isMulCommutative_iff_isLieAbelian
-
 @[simp] theorem LieSubalgebra.isLieAbelian_lieSpan_iff
     {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] {s : Set L} :
     IsLieAbelian (lieSpan R L s) ↔ ∀ᵉ (x ∈ s) (y ∈ s), ⁅x, y⁆ = 0 := by
@@ -151,7 +148,7 @@ lemma _root_.LieIdeal.isLieAbelian_iff {I : LieIdeal R L} :
     have := IsTrivial.trivial (⟨x, hx⟩ : I) y
     rw [LieIdeal.coe_bracket_of_module] at this
     simp [this]
-  · simpa using LinearMap.congr_fun (h hx) ⟨y, hy⟩
+  · simpa using congr($(h hx) ⟨y, hy⟩)
 
 lemma isFaithful_iff_ker_eq_bot : IsFaithful R L M ↔ LieModule.ker R L M = ⊥ := by
   rw [isFaithful_iff', LieSubmodule.ext_iff]
@@ -205,12 +202,11 @@ theorem isTrivial_iff_max_triv_eq_top : IsTrivial L M ↔ maxTrivSubmodule R L M
 
 variable {R L M N}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `maxTrivSubmodule` is functorial. -/
 def maxTrivHom (f : M →ₗ⁅R,L⁆ N) : maxTrivSubmodule R L M →ₗ⁅R,L⁆ maxTrivSubmodule R L N where
   toFun m := ⟨f m, fun x =>
     (LieModuleHom.map_lie _ _ _).symm.trans <|
-      (congr_arg f (m.property x)).trans (map_zero _)⟩
+      congr(f $(m.property x)).trans (map_zero _)⟩
   map_add' m n := by ext; simp
   map_smul' t m := by ext; simp
   map_lie' {x m} := by simp [trivial_lie_zero]
@@ -343,7 +339,7 @@ open LieSubmodule LieSubalgebra
 
 variable {R : Type u} {L : Type v} {M : Type w}
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup M] [Module R M]
-variable [LieRingModule L M] (N N' : LieSubmodule R L M) (I J : LieIdeal R L)
+variable [LieRingModule L M] (N : LieSubmodule R L M) (I : LieIdeal R L)
 
 @[simp]
 theorem LieSubmodule.trivial_lie_oper_zero [LieModule.IsTrivial L M] : ⁅I, N⁆ = ⊥ := by

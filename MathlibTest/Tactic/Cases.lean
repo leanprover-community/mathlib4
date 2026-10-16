@@ -117,8 +117,7 @@ example (a b : ℕ) (h : a + b = a) : b = 0 := by
     fail_if_success (guard_hyp h : a + b = a)
     intro h
     -- Sample proof
-    rw [Nat.zero_add] at h
-    assumption
+    rwa [Nat.zero_add] at h
   · -- Test the generalized vars have been removed
     revert h
     fail_if_success (guard_hyp a : Nat)
