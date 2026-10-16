@@ -648,7 +648,10 @@ def mkProof (lem : PositivityLemma) (goalType : Q(Prop))
   let mctx ← getMCtx
   let mvars := (mctx.mvarCounter, mctx.lmvarCounter)
   let goal ← mkFreshExprMVar goalType
-  let subgoals ← goal.mvarId!.apply <|← mkConstWithFreshMVarLevels lem.declName
+  -- Instance transparency is needed so that e.g. an `[LE α]` argument of `lem` can be unified
+  -- with the `LE` instance coming from the `PartialOrder α` instance used by `positivity`.
+  let subgoals ← withReducibleAndInstances <|
+    goal.mvarId!.apply <|← mkConstWithFreshMVarLevels lem.declName
   unless subgoals.length == prePfs.size do
     throwError "unexpected number of subgoals when applying {lem.declName}: \
       expected {prePfs.size}, got {subgoals.length}"
