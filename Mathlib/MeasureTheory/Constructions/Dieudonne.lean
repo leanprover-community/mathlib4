@@ -137,11 +137,19 @@ theorem measure_eq_zero_iff : measure s = 0 ↔ ¬ IsStationary s := by
   classical change ite .. = 0 ↔ _
   simp
 
+theorem measure_ne_one_iff : measure s ≠ 1 ↔ ¬ IsStationary s := by
+  rw [← measure_eq_one_iff]
+
+theorem measure_ne_zero_iff : measure s ≠ 0 ↔ IsStationary s := by
+  rw [ne_eq, measure_eq_zero_iff, not_not]
+
 alias ⟨_, measure_of_isStationary⟩ := measure_eq_one_iff
 alias ⟨_, measure_of_not_isStationary⟩ := measure_eq_zero_iff
 
-instance [Nonempty α] : IsProbabilityMeasure (measure (α := α)) where
-  measure_univ := measure_of_isStationary .univ
+instance [Nonempty α] : NeZero (measure (α := α)) where
+  out := by
+    rw [← Measure.measure_univ_ne_zero, measure_ne_zero_iff]
+    exact .univ
 
 theorem measure_of_isClub [Nonempty α] (hs : IsClub s) : measure s = 1 :=
   measure_of_isStationary (hs.isStationary h₀.out)
@@ -149,9 +157,7 @@ theorem measure_of_isClub [Nonempty α] (hs : IsClub s) : measure s = 1 :=
 theorem measure_of_not_isCofinal (hs : ¬ IsCofinal s) : measure s = 0 :=
   measure_of_not_isStationary (mt IsStationary.isCofinal hs)
 
-instance [Nonempty α] : IsProbabilityMeasure (α := α) measure where
-  measure_univ := measure_of_isStationary .univ
-
+@[simp]
 theorem measure_eq_dirac [OrderTop α] : measure (α := α) = Measure.dirac ⊤ := by
   ext s
   rw [Measure.dirac_apply]
