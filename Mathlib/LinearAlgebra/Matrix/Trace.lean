@@ -171,7 +171,8 @@ theorem trace_mul_pow_comm [DecidableEq n] [CommSemiring R]
     trace ((A * B) ^ k) = trace ((B * A) ^ k) := by
   cases k with
   | zero => simp
-  | succ k => exact trace_mul_pow_comm' A B (Nat.succ_ne_zero k)
+  | succ k =>
+      rw [pow_succ, ← Matrix.mul_assoc, trace_mul_cycle, mul_pow_succ_mul]
 
 /-- The trace of a positive power of `A * B` is unchanged when the factors are reversed.
 
@@ -183,7 +184,14 @@ theorem trace_mul_pow_comm' [DecidableEq m] [DecidableEq n] [CommSemiring R]
     (A : Matrix m n R) (B : Matrix n m R) {k : ℕ} (hk : k ≠ 0) :
     trace ((A * B) ^ k) = trace ((B * A) ^ k) := by
   have hpow (j : ℕ) : (B * A) ^ (j + 1) = B * (A * B) ^ j * A := by
-    exact mul_pow_succ_mul B A j
+    induction j with
+    | zero => simp
+    | succ j ih =>
+        calc
+          (B * A) ^ (j + 1 + 1) = (B * A) ^ (j + 1) * (B * A) := by rw [pow_succ]
+          _ = (B * (A * B) ^ j * A) * (B * A) := by rw [ih]
+          _ = B * ((A * B) ^ j * (A * B)) * A := by simp only [Matrix.mul_assoc]
+          _ = B * (A * B) ^ (j + 1) * A := by rw [pow_succ]
   cases k with
   | zero => exact (hk rfl).elim
   | succ k =>
