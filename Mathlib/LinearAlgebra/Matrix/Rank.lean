@@ -613,6 +613,7 @@ omit [Fintype n] in
 /-- A matrix with linearly independent columns has surjective `vecMul`. -/
 theorem _root_.LinearIndependent.vecMul_surjective [CommRing R] [IsSemisimpleRing R]
     [Fintype m] {M : Matrix m n R} (h : LinearIndependent R M.col) : M.vecMul.Surjective := by
+  rw [← row_transpose] at h
   simpa [← mulVec_transpose] using h.mulVec_surjective
 
 lemma rank_add_rank_le_card_of_mul_eq_zero [Field R] [Finite l] [Fintype m]
