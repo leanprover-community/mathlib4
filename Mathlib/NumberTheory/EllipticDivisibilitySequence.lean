@@ -8,16 +8,14 @@ module
 public import Mathlib.Algebra.Group.Action.Units
 public import Mathlib.Algebra.Group.EvenFunction
 public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Data.Nat.DvdSequence
 public import Mathlib.Data.Nat.EvenOddRec
-public import Mathlib.Data.Fin.Tuple.Reflection
 public import Mathlib.GroupTheory.Perm.Sign
-public import Mathlib.Order.Fin.Tuple
 
 import Mathlib.Algebra.Polynomial.Coeff
 import Mathlib.Algebra.Polynomial.Eval.Defs
 import Mathlib.Data.Fin.Tuple.Sort
-import Mathlib.Data.Fin.VecNotation
 import Mathlib.Tactic.FinCases
 
 /-!
@@ -97,9 +95,9 @@ polynomials of elliptic curves, omitting a factor of the bivariate `2`-division 
 
 ## References
 
-* K Stange, *Elliptic Nets and Elliptic Curves*
-* M Ward, *Memoir on Elliptic Divisibility Sequences*
-* J Xu, *On Elliptic Sequences over Commutative Rings*
+* [K Stange, *Elliptic Nets and Elliptic Curves*][stange2011]
+* [M Ward, *Memoir on Elliptic Divisibility Sequences*][ward1948]
+* [J Xu, *On Elliptic Sequences over Commutative Rings*][xu2026]
 
 ## Tags
 
@@ -291,54 +289,6 @@ lemma atomRel_perm (odd : W.Odd) (σ : Equiv.Perm <| Fin 4) (a b c d : ℤ) :
   | one => simp
   | mul_swap σ x y _ _ => fin_cases x <;> fin_cases y <;> simp [Equiv.swap_apply_def] <;>
       grind only [neg_atomRel₁₂, neg_atomRel₂₃, neg_atomRel₃₄, smul_neg]
-
-variable {W} in
-lemma foo (v : Fin 4 → ℤ) (neg : W.Odd) (hv : ¬ Function.Injective v) (h0 : W 0 = 0) :
-    atomRel W (v 0) (v 1) (v 2) (v 3) = 0 := by
-  obtain ⟨i, j, h⟩ := Function.not_injective_iff.mp hv
-  fin_cases i <;> fin_cases j <;> simp_all
-
-variable {W} in
-lemma atomRel_of_even_odd' (neg : W.Odd) (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
-    (even : ∀ m : ℤ, atomRel W (2 * m + 2) (2 * m - 2) 2 0 = 0)
-    (odd : ∀ m : ℤ, atomRel W (2 * m + 2) (2 * m) 2 0 = 0) (v : Fin 4 → ℤ)
-    -- Function.IsConst?
-    (parity : ∀ i j, v i % 2 = v j % 2) : atomRel W (v 0) (v 1) (v 2) (v 3) = 0 := by
-  wlog hn : 0 ≤ v generalizing v with h -- todo: 0 ≤ v
-  · exact atomRel_abs neg .. ▸ h (abs ∘ v) (by grind) (by simp [Pi.le_def])
-  wlog hm : Antitone v generalizing v with h
-  · have eta : ![v 0, v 1, v 2, v 3] = v := FinVec.etaExpand_eq v
-    rw [← atomRel_perm neg (Fin.revPerm.trans <| Tuple.sort v) (v 0) (v 1) (v 2) (v 3),
-      smul_eq_zero_iff_eq, eta]
-    exact h (v ∘ (Fin.revPerm.trans <| Tuple.sort v)) (fun i j ↦ parity _ _) (fun i ↦ hn _)
-      ((Tuple.monotone_sort v).comp_antitone Fin.rev_anti :)
-  by_cases hv : Function.Injective v; swap
-  · refine foo v neg hv ?_
-    exact pow_mem two 3 |>.right (W 0) (by grind only [atomRel_same₂₃, atom, odd 1])
-  replace hv : StrictAnti v := hm.strictAnti_of_injective hv
-  clear hm
-  replace parity : ∃ c : ℤ, ∀ i, v i % 2 = c := ⟨v 0 % 2, fun i ↦ parity _ _⟩
-  induction hn' : 4 * v 0 + v 1 + v 2 + v 3 using @Int.strongRec 0 generalizing v with
-  | lt n _ => simp_rw [Pi.le_def, Pi.zero_apply] at hn; grind
-  | ge n _ ih =>
-    replace ih (a b c d : ℤ) := (@ih (4 * a + b + c + d) · ![a, b, c, d])
-    simp only [Pi.le_def, ↓Fin.forall_fin_succ, Pi.ofNat_apply, Fin.isValue, Fin.succ_zero_eq_one,
-      Fin.succ_one_eq_two, Fin.reduceSucc, IsEmpty.forall_iff, and_true, Matrix.cons_val,
-      strictAnti_vecCons, strictAnti_vecEmpty, Nat.reduceAdd, exists_eq_left', forall_const,
-      and_imp] at hn parity ih
-    replace hv : v 1 < v 0 ∧ v 2 < v 1 ∧ v 3 < v 2 :=
-      ⟨hv (by decide), hv (by decide), hv (by decide)⟩
-    wlog _ : v 2 = v 0 % 2 + 2
-    · have ha : atom W (v 0 % 2 + 2) (v 0 % 2) ∈ R⁰ := by grind only [atom, mul_mem]
-      exact ha.left _ <| by grind (genLocal := 0) [atom_same, atomRel_same₃₄,
-        atomRel.eq_def W (v 0) (v 1) (v 2), @atom_mul_atomRel R _ W (v 0) (v 1) (v 2)
-          (max (v 3) <| v 0 % 2 + 2) (min (v 3) <| v 0 % 2 + 2) (v 0 % 2) 0 0 0 (-1) 0 1 <|
-          by norm_num1, = (ih)]
-    wlog _ : v 0 = v 1 + 2
-    · grind (genLocal := 0) [=_ atomRel_neg₄,
-        @atomRel_avg_sub R _ W (v 0) (v 1) (v 2) (v 3) <| by grind, = (ih)]
-    grind [odd (v 1 / 2), atomRel_neg₄ W (v 0) (v 1) (v 2) (v 3),
-      atomRel_avg_sub W (by simp) |>.trans (even (v 0 / 2))]
 
 variable {W} in
 lemma atomRel_of_even_odd (neg : W.Odd) (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
