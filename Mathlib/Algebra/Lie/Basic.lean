@@ -5,10 +5,10 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Module.Submodule.Equiv
 public import Mathlib.Algebra.Module.Equiv.Basic
+public import Mathlib.Algebra.Module.FunLike
 public import Mathlib.Algebra.Module.Rat
-public import Mathlib.Data.FunLike.Module
+public import Mathlib.Algebra.Module.Submodule.Equiv
 public import Mathlib.Tactic.Abel
 
 /-!
@@ -42,7 +42,7 @@ Lie algebras are defined as modules with a compatible Lie ring structure and thu
 are partially unbundled.
 
 ## References
-* [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 1--3*](bourbaki1975)
+* [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 1--3*][bourbaki1975]
 
 ## Tags
 
@@ -390,7 +390,7 @@ theorem id_apply (x : L₁) : (id : L₁ →ₗ⁅R⁆ L₁) x = x :=
 instance : Zero (L₁ →ₗ⁅R⁆ L₂) :=
   ⟨{ (0 : L₁ →ₗ[R] L₂) with map_lie' := by simp }⟩
 
-instance : IsZeroApply (L₁ →ₗ⁅R⁆ L₂) L₁ L₂ where
+instance : IsZeroApply (L₁ →ₗ⁅R⁆ L₂) where
 
 @[deprecated (since := "2026-07-27")] alias coe_zero := FunLike.coe_zero
 
@@ -400,7 +400,7 @@ instance : IsZeroApply (L₁ →ₗ⁅R⁆ L₂) L₁ L₂ where
 instance : One (L₁ →ₗ⁅R⁆ L₁) :=
   ⟨id⟩
 
-instance : IsOneApplyEqSelf (L₁ →ₗ⁅R⁆ L₁) L₁ where
+instance : IsOneApplyEqSelf (L₁ →ₗ⁅R⁆ L₁) where
 
 @[deprecated (since := "2026-07-27")] alias coe_one := FunLike.coe_one_eq_id
 
@@ -582,7 +582,7 @@ theorem ext {f g : L₁ ≃ₗ⁅R⁆ L₂} (h : ∀ x, f x = g x) : f = g :=
 instance : One (L₁ ≃ₗ⁅R⁆ L₁) :=
   ⟨{ (1 : L₁ ≃ₗ[R] L₁) with map_lie' := rfl }⟩
 
-instance : IsOneApplyEqSelf (L₁ ≃ₗ⁅R⁆ L₁) L₁ where
+instance : IsOneApplyEqSelf (L₁ ≃ₗ⁅R⁆ L₁) where
 
 @[deprecated (since := "2026-07-27")] protected alias one_apply := one_apply_eq_self
 
@@ -736,7 +736,7 @@ theorem id_apply (x : M) : (id : M →ₗ⁅R,L⁆ M) x = x :=
 instance : Zero (M →ₗ⁅R,L⁆ N) :=
   ⟨{ (0 : M →ₗ[R] N) with map_lie' := by simp }⟩
 
-instance : IsZeroApply (M →ₗ⁅R,L⁆ N) M N where
+instance : IsZeroApply (M →ₗ⁅R,L⁆ N) where
 
 @[deprecated (since := "2026-07-27")] alias coe_zero := FunLike.coe_zero
 
@@ -746,7 +746,7 @@ instance : IsZeroApply (M →ₗ⁅R,L⁆ N) M N where
 instance : One (M →ₗ⁅R,L⁆ M) :=
   ⟨id⟩
 
-instance : IsOneApplyEqSelf (M →ₗ⁅R,L⁆ M) M where
+instance : IsOneApplyEqSelf (M →ₗ⁅R,L⁆ M) where
 
 instance : Inhabited (M →ₗ⁅R,L⁆ N) :=
   ⟨0⟩
@@ -807,16 +807,16 @@ def inverse (f : M →ₗ⁅R,L⁆ N) (g : N → M) (h₁ : Function.LeftInverse
 instance : Add (M →ₗ⁅R,L⁆ N) where
   add f g := { (f : M →ₗ[R] N) + (g : M →ₗ[R] N) with map_lie' := by simp }
 
-instance : IsAddApply (M →ₗ⁅R,L⁆ N) M N where
+instance : IsAddApply (M →ₗ⁅R,L⁆ N) where
 
 instance : Sub (M →ₗ⁅R,L⁆ N) where
   sub f g := { (f : M →ₗ[R] N) - (g : M →ₗ[R] N) with map_lie' := by simp }
 
-instance : IsSubApply (M →ₗ⁅R,L⁆ N) M N where
+instance : IsSubApply (M →ₗ⁅R,L⁆ N) where
 
 instance : Neg (M →ₗ⁅R,L⁆ N) where neg f := { -(f : M →ₗ[R] N) with map_lie' := by simp }
 
-instance : IsNegApply (M →ₗ⁅R,L⁆ N) M N where
+instance : IsNegApply (M →ₗ⁅R,L⁆ N) where
 
 @[deprecated (since := "2026-07-27")] alias coe_add := FunLike.coe_add
 
@@ -837,12 +837,12 @@ instance hasPSMul : SMul ℕ+ (M →ₗ⁅R,L⁆ N) where
 theorem coe_psmul (n : ℕ+) (f : M →ₗ⁅R,L⁆ N) : ⇑(n • f) = n • (⇑f) :=
   rfl
 
-instance : IsSMulApply ℕ+ (M →ₗ⁅R,L⁆ N) M N where
+instance : IsSMulApply ℕ+ (M →ₗ⁅R,L⁆ N) where
 
 instance hasNSMul : SMul ℕ (M →ₗ⁅R,L⁆ N) where
   smul n f := { n • (f : M →ₗ[R] N) with map_lie' := by simp }
 
-instance : IsSMulApply ℕ (M →ₗ⁅R,L⁆ N) M N where
+instance : IsSMulApply ℕ (M →ₗ⁅R,L⁆ N) where
 
 @[deprecated (since := "2026-07-27")] alias coe_nsmul := FunLike.coe_smul
 
@@ -851,7 +851,7 @@ instance : IsSMulApply ℕ (M →ₗ⁅R,L⁆ N) M N where
 instance hasZSMul : SMul ℤ (M →ₗ⁅R,L⁆ N) where
   smul z f := { z • (f : M →ₗ[R] N) with map_lie' := by simp }
 
-instance : IsSMulApply ℤ (M →ₗ⁅R,L⁆ N) M N where
+instance : IsSMulApply ℤ (M →ₗ⁅R,L⁆ N) where
 
 @[deprecated (since := "2026-07-27")] alias coe_zsmul := FunLike.coe_smul
 
@@ -866,7 +866,7 @@ variable [LieAlgebra R L] [LieModule R L N]
 instance : SMul R (M →ₗ⁅R,L⁆ N) where
   smul t f := { t • (f : M →ₗ[R] N) with map_lie' := by simp }
 
-instance : IsSMulApply R (M →ₗ⁅R,L⁆ N) M N where
+instance : IsSMulApply R (M →ₗ⁅R,L⁆ N) where
 
 @[deprecated (since := "2026-07-27")] alias coe_smul := FunLike.coe_smul
 
@@ -964,7 +964,7 @@ instance : LinearEquivClass (M ≃ₗ⁅R,L⁆ N) R M N where
 instance : One (M ≃ₗ⁅R,L⁆ M) :=
   ⟨{ (1 : M ≃ₗ[R] M) with map_lie' := rfl }⟩
 
-instance : IsOneApplyEqSelf (M ≃ₗ⁅R,L⁆ M) M where
+instance : IsOneApplyEqSelf (M ≃ₗ⁅R,L⁆ M) where
 
 @[deprecated (since := "2026-07-27")] protected alias one_apply := one_apply_eq_self
 

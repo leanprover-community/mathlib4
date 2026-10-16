@@ -5,9 +5,9 @@ Authors: Anne Baanen, Kexing Ying, Eric Wieser
 -/
 module
 
-public import Mathlib.LinearAlgebra.SesquilinearForm.Orthogonal
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
+public import Mathlib.LinearAlgebra.SesquilinearForm.Orthogonal
 
 /-!
 # Quadratic maps
@@ -405,7 +405,7 @@ instance : SMul S (QuadraticMap R M N) :=
         letI := SMulCommClass.symm S R N
         ⟨a • B, by simp [h]⟩ }⟩
 
-instance : IsSMulApply S (QuadraticMap R M N) M N where
+instance : IsSMulApply S (QuadraticMap R M N) where
 
 @[deprecated (since := "2026-07-27")] alias coeFn_smul := FunLike.coe_smul
 
@@ -419,7 +419,7 @@ instance : SMul ℕ+ (QuadraticMap R M N) :=
         letI := SMulCommClass.symm S R N
         ⟨a • B, by simp [h]⟩ }⟩
 
-instance : IsSMulApply ℕ+ (QuadraticMap R M N) M N where
+instance : IsSMulApply ℕ+ (QuadraticMap R M N) where
 
 @[deprecated (since := "2026-07-27")] protected alias smul_apply := smul_apply
 
@@ -436,7 +436,7 @@ instance : Zero (QuadraticMap R M N) :=
       toFun_smul := fun a _ => by simp only [smul_zero]
       exists_companion' := ⟨0, fun _ _ => by simp only [add_zero, LinearMap.zero_apply]⟩ }⟩
 
-instance : IsZeroApply (QuadraticMap R M N) M N where
+instance : IsZeroApply (QuadraticMap R M N) where
 
 @[deprecated (since := "2026-07-27")] alias coeFn_zero := FunLike.coe_zero
 
@@ -455,7 +455,7 @@ instance : Add (QuadraticMap R M N) :=
         ⟨B + B', fun x y => by
           simp_rw [Pi.add_apply, h, h', LinearMap.add_apply, add_add_add_comm]⟩ }⟩
 
-instance : IsAddApply (QuadraticMap R M N) M N where
+instance : IsAddApply (QuadraticMap R M N) where
 
 @[deprecated (since := "2026-07-27")] alias coeFn_add := FunLike.coe_add
 
@@ -496,7 +496,7 @@ instance : Neg (QuadraticMap R M N) :=
         let ⟨B, h⟩ := Q.exists_companion
         ⟨-B, fun x y => by simp_rw [Pi.neg_apply, h, LinearMap.neg_apply, neg_add]⟩ }⟩
 
-instance : IsNegApply (QuadraticMap R M N) M N where
+instance : IsNegApply (QuadraticMap R M N) where
 
 @[deprecated (since := "2026-07-27")] alias coeFn_neg := FunLike.coe_neg
 
@@ -505,7 +505,7 @@ instance : IsNegApply (QuadraticMap R M N) M N where
 instance : Sub (QuadraticMap R M N) :=
   ⟨fun Q Q' => (Q + -Q').copy (Q - Q') (sub_eq_add_neg _ _)⟩
 
-instance : IsSubApply (QuadraticMap R M N) M N where
+instance : IsSubApply (QuadraticMap R M N) where
 
 @[deprecated (since := "2026-07-27")] alias coeFn_sub := FunLike.coe_sub
 

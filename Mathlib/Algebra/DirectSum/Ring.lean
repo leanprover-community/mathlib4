@@ -5,8 +5,8 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.GradedMonoid
 public import Mathlib.Algebra.DirectSum.Basic
+public import Mathlib.Algebra.GradedMonoid
 public import Mathlib.Algebra.Ring.Associator
 
 /-!

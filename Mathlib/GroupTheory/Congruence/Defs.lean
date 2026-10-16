@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.InjSurj
 public import Mathlib.Algebra.Group.Units.Defs
-public import Mathlib.Data.Setoid.Basic
+public import Mathlib.Order.Setoid.Basic
 public import Mathlib.Tactic.FastInstance
+
 import Mathlib.Algebra.Group.PPow.Defs
 import Mathlib.Order.GaloisConnection.Basic
 

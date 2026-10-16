@@ -5,9 +5,9 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Tactic.ClickSuggestions.SectionState
 public meta import Lean.Meta.ExprLens
 public meta import Mathlib.Tactic.ClickSuggestions.Util
+public import Mathlib.Tactic.ClickSuggestions.SectionState
 
 /-!
 # Support for `grw` suggestions in `#click_suggestions`
@@ -17,7 +17,7 @@ public meta section
 
 namespace Mathlib.Tactic.ClickSuggestions
 
-open Lean Meta Mathlib.Tactic ProofWidgets Jsx
+open Lean Meta Mathlib.Tactic ProofWidgets
 
 /-- `GRewritePos` contains the ìnformation about a given subexpression position needed for
 applying a  `grw` lemma. -/
@@ -224,13 +224,13 @@ def GrwLemma.try (i : GrwInfo) (lem : GrwLemma) (assignableMVars : Array Expr) :
   let mut htmls := #[← exprToHtml replacement]
   for goal in extraGoals do
     htmls := htmls.push
-      <div> <strong className="goal-vdash">⊢ </strong> {← exprToHtml goal} </div>
+      jsx%{<div><strong className="goal-vdash">⊢ </strong>{← exprToHtml goal}</div>}
   let filtered ←
     if isRefl || unhelpfulMVars then
       pure none
     else
       some <$> mkSuggestion tactic (.element "div" #[] htmls) (isClosing := isClosing)
-  htmls := htmls.push <div> {← lem.name.toHtml} </div>
+  htmls := htmls.push jsx%{<div>{← lem.name.toHtml}</div>}
   let unfiltered ← mkSuggestion tactic (.element "div" #[] htmls) (isClosing := isClosing)
   let pattern ← do
     let (_, _, e) ← forallMetaTelescopeReducing (← lem.name.getType)

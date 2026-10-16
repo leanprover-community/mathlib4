@@ -5,10 +5,11 @@ Authors: Johan Commelin, Kenny Lau, Ralf Stephan
 -/
 module
 
-public import Mathlib.RingTheory.MvPowerSeries.Basic
-import Mathlib.Tactic.MoveAdd
 public import Mathlib.Algebra.MvPolynomial.Equiv
 public import Mathlib.RingTheory.Ideal.Basic
+public import Mathlib.RingTheory.MvPowerSeries.Basic
+
+import Mathlib.Tactic.MoveAdd
 
 /-!
 # Formal power series (in one variable)
@@ -620,7 +621,7 @@ theorem rescale_map {S : Type*} [CommSemiring S] (φ : R →+* S) (r : R) (f : R
 theorem rescale_algebraMap_map {A S : Type*} [CommSemiring A] [Algebra A R] [CommSemiring S]
     [Algebra A S] (φ : R →ₐ[A] S) (a : A) (f : R⟦X⟧) :
     rescale (algebraMap A S a) (f.map φ) = (rescale (algebraMap A R a) f).map φ := by
-  convert! rescale_map (φ : R →+* S) _ _
+  convert rescale_map (φ : R →+* S) _ _
   simp
 
 end CommSemiring

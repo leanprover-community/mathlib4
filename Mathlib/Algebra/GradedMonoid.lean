@@ -5,10 +5,11 @@ Authors: Eric Wieser
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Algebra.Group.Action.Hom
 public import Mathlib.Algebra.Group.Submonoid.Defs
+
 import Mathlib.Data.List.FinRange
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Additively-graded multiplicative structures

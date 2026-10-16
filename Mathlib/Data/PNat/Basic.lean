@@ -5,8 +5,14 @@ Authors: Mario Carneiro, Ralf Stephan, Neil Strickland, Ruben Van de Velde
 -/
 module
 
-public import Mathlib.Data.PNat.Dvd
+public import Mathlib.Algebra.GroupWithZero.Divisibility
+public import Mathlib.Algebra.Order.Positive.Ring
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Algebra.Order.Sub.Basic
 public import Mathlib.Data.PNat.Algebra.Order
+public import Mathlib.Data.PNat.Dvd
+public import Mathlib.Data.PNat.Equiv
+
 import Mathlib.Tactic.Basify.Attr
 
 /-!

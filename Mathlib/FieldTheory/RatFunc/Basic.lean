@@ -5,9 +5,10 @@ Authors: Anne Baanen
 -/
 module
 
-import Mathlib.Algebra.CharP.Algebra
 public import Mathlib.FieldTheory.RatFunc.Defs
 public import Mathlib.RingTheory.Algebraic.Integral
+
+import Mathlib.Algebra.CharP.Algebra
 
 /-!
 # The field structure of rational functions
@@ -374,11 +375,11 @@ def mapRingHom [RingHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.co
       rintro ⟨x⟩ ⟨y⟩
       induction x using Localization.induction_on
       induction y using Localization.induction_on
-      · simp only [← ofFractionRing_add, Localization.add_mk, map_add, map_mul,
-          MonoidHom.toFun_eq_coe, map_apply_ofFractionRing_mk, Submonoid.coe_mul,
-          -- We have to specify `S[X]⁰` to `mk_mul_mk`, otherwise it will try to rewrite
-          -- the wrong occurrence.
-          Submonoid.mk_mul_mk S[X]⁰] }
+      simp only [← ofFractionRing_add, Localization.add_mk, map_add, map_mul,
+        MonoidHom.toFun_eq_coe, map_apply_ofFractionRing_mk, Submonoid.coe_mul,
+        -- We have to specify `S[X]⁰` to `mk_mul_mk`, otherwise it will try to rewrite
+        -- the wrong occurrence.
+        Submonoid.mk_mul_mk S[X]⁰] }
 
 theorem coe_mapRingHom_eq_coe_map [RingHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap φ) :
     (mapRingHom φ hφ : R⟮X⟯ → S⟮X⟯) = map φ hφ :=
@@ -897,7 +898,7 @@ private theorem num_div' (p : K[X]) {q : K[X]} (hq : q ≠ 0) :
   rw [num, numDenom_div _ hq]
 
 @[simp]
-theorem num_zero : num (0 : K⟮X⟯) = 0 := by convert! num_div' (0 : K[X]) one_ne_zero <;> simp
+theorem num_zero : num (0 : K⟮X⟯) = 0 := by convert num_div' (0 : K[X]) one_ne_zero <;> simp
 
 open scoped Classical in
 @[simp]
@@ -909,10 +910,10 @@ theorem num_div (p q : K[X]) :
   · exact num_div' p hq
 
 @[simp]
-theorem num_one : num (1 : K⟮X⟯) = 1 := by convert! num_div (1 : K[X]) 1 <;> simp
+theorem num_one : num (1 : K⟮X⟯) = 1 := by convert num_div (1 : K[X]) 1 <;> simp
 
 @[simp]
-theorem num_algebraMap (p : K[X]) : num (algebraMap _ _ p) = p := by convert! num_div p 1 <;> simp
+theorem num_algebraMap (p : K[X]) : num (algebraMap _ _ p) = p := by convert num_div p 1 <;> simp
 
 theorem num_div_dvd (p : K[X]) {q : K[X]} (hq : q ≠ 0) :
     num (algebraMap _ _ p / algebraMap _ _ q) ∣ p := by
@@ -951,15 +952,15 @@ theorem denom_ne_zero (x : K⟮X⟯) : denom x ≠ 0 :=
 
 @[simp]
 theorem denom_zero : denom (0 : K⟮X⟯) = 1 := by
-  convert! denom_div (0 : K[X]) one_ne_zero <;> simp
+  convert denom_div (0 : K[X]) one_ne_zero <;> simp
 
 @[simp]
 theorem denom_one : denom (1 : K⟮X⟯) = 1 := by
-  convert! denom_div (1 : K[X]) one_ne_zero <;> simp
+  convert denom_div (1 : K[X]) one_ne_zero <;> simp
 
 @[simp]
 theorem denom_algebraMap (p : K[X]) : denom (algebraMap _ K⟮X⟯ p) = 1 := by
-  convert! denom_div p one_ne_zero <;> simp
+  convert denom_div p one_ne_zero <;> simp
 
 @[simp]
 theorem denom_div_dvd (p q : K[X]) : denom (algebraMap _ _ p / algebraMap _ _ q) ∣ q := by
@@ -1083,12 +1084,12 @@ theorem denom_inv_dvd {x : K⟮X⟯} (hx : x ≠ 0) : denom x⁻¹ ∣ num x := 
 
 theorem associated_num_inv {x : K⟮X⟯} (hx : x ≠ 0) : Associated (num x⁻¹) (denom x) := by
   apply associated_of_dvd_dvd (num_inv_dvd hx)
-  convert! denom_inv_dvd (inv_ne_zero hx)
+  convert denom_inv_dvd (inv_ne_zero hx)
   rw [inv_inv]
 
 theorem associated_denom_inv {x : K⟮X⟯} (hx : x ≠ 0) : Associated (denom x⁻¹) (num x) := by
   apply Associated.symm
-  convert! associated_num_inv (inv_ne_zero hx)
+  convert associated_num_inv (inv_ne_zero hx)
   rw [inv_inv]
 
 theorem map_denom_ne_zero {L F : Type*} [Zero L] [FunLike F K[X] L] [ZeroHomClass F K[X] L]

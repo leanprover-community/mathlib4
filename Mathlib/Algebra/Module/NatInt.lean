@@ -142,7 +142,7 @@ should normally have exactly one `ℕ`-module structure by design. -/
 @[instance_reducible]
 def AddCommMonoid.uniqueNatModule : Unique (Module ℕ M) where
   default := inferInstance
-  uniq P := (Module.ext' P _) fun n => by convert! nat_smul_eq_nsmul P n
+  uniq P := (Module.ext' P _) fun n => by convert nat_smul_eq_nsmul P n
 
 /-- All `ℕ`-module structures are equal. See also `AddCommMonoid.uniqueNatModule`. -/
 instance AddCommMonoid.subsingletonNatModule : Subsingleton (Module ℕ M) :=
@@ -197,7 +197,7 @@ should normally have exactly one `ℤ`-module structure by design. -/
 @[instance_reducible]
 def AddCommGroup.uniqueIntModule : Unique (Module ℤ M) where
   default := inferInstance
-  uniq P := (Module.ext' P _) fun n => by convert! int_smul_eq_zsmul P n
+  uniq P := (Module.ext' P _) fun n => by convert int_smul_eq_zsmul P n
 
 end AddCommGroup
 
