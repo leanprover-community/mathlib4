@@ -188,7 +188,7 @@ We have to insert a coordinate change from `x₀` to `x` to make the derivative 
 This is a special case of `ContMDiffWithinAt.mfderivWithin` where `f` does not contain any
 parameters and `g = id`.
 -/
-theorem ContMDiffWithinAt.mfderivWithin_const {x₀ : M} {f : M → M'}
+protected theorem ContMDiffWithinAt.mfderivWithin_const {x₀ : M} {f : M → M'}
     (hf : CMDiffAt[s] n f x₀) (hmn : m + 1 ≤ n) (hx : x₀ ∈ s) (hs : UniqueMDiff[s]) :
     CMDiffAt[s] m (inTangentCoordinates I I' id f (mfderiv[s] f) x₀) x₀ := by
   have : CMDiffAt[s ×ˢ s] n (fun x : M × M ↦ f x.2) (x₀, x₀) :=
@@ -351,58 +351,38 @@ end tangentMap
 
 section
 
-open scoped Manifold ContDiff
+open scoped ContDiff
 
-variable {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] {f : M → V} {s : Set M} {x : M}
-  {X : Π x : M, TangentSpace% x} {k : ℕ∞ω}
-  [IsManifold I 1 M]
+variable {f : M → F} {s : Set M} {x : M} {X : Π x : M, TangentSpace% x} [IsManifold I 1 M]
 
-lemma ContMDiffWithinAt.mvfderivWithin
-    (hf : CMDiffAt[s] (k + 1) f x) (hX : CMDiffAt[s] k (T% X) x)
+protected lemma ContMDiffWithinAt.mvfderivWithin
+    (hf : CMDiffAt[s] n f x) (hX : CMDiffAt[s] m (T% X) x) (hmn : m + 1 ≤ n)
     (hs : UniqueMDiff[s]) (hx : x ∈ s) :
-    CMDiffAt[s] k (fun (x : M) ↦ d[s] f x (X x)) x := by
+    CMDiffAt[s] m (fun (x : M) ↦ d[s] f x (X x)) x := by
   let b₁ : TangentBundle I M → M := fun p ↦ p.1
-  replace hf' : ContMDiffWithinAt I 𝓘(𝕜, V) (k + 1) f s (b₁ (X x)) := hf
-  have aux := hf'.contMDiffWithinAt_tangentMapWithin hx  (m := k) (by simp) hs
+  replace hf' : CMDiffAt[s] n f (b₁ (X x)) := hf
+  have aux := hf'.contMDiffWithinAt_tangentMapWithin hx hmn hs
   -- Compose the tangent map `Tf` with `X` to obtain a `C^n` map `M → TN`.
   -- In particular, the fiber component of this map is smooth, which is the desired conclusion.
-  -- XXX: remove the named argument for `f` confuses Lean.
-  obtain ⟨_, aux2'⟩ :=
-    Bundle.contMDiffWithinAt_totalSpace.mp (aux.comp _ hX (f := (T% X)) (by intro; simp))
-  convert aux2'
+  convert (Bundle.contMDiffWithinAt_totalSpace.mp (aux.comp x hX (by intro; simp))).2
   simp
   rfl
 
-/- For reference: the `On` version of the lemma above doesn't have the issue with specifying `f`:
-lemma ContMDiffOn.mvfderivWithin {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
-    {k : ℕ∞ω} {f : M → V} {X : Π x : M, TangentSpace% x} {s : Set M} (hs : UniqueMDiff[s])
-    (hf : CMDiff[s] (k + 1) f) (hX : CMDiff[s] k (T% X)) :
-    CMDiff[s] k (fun (x : M) ↦ d[s] f x (X x)) := by
-  intro x hx
-  have aux := hf.contMDiffOn_tangentMapWithin (m := k) (by simp) hs
-  -- Compose the tangent map `Tf` with `X` to obtain a `C^n` map `M → TN`.
-  -- In particular, the fiber component of this map is smooth, which is the desired conclusion.
-  obtain ⟨_, aux2'⟩ := contMDiffWithinAt_totalSpace.mp ((aux.comp hX) (by intro; simp) x hx)
-  convert aux2'
-  simp
-  rfl -/
-
-lemma ContMDiffAt.mvfderiv (hf : CMDiffAt (k + 1) f x) (hX : CMDiffAt k (T% X) x) :
-    CMDiffAt k (fun (x : M) ↦ d% f x (X x)) x := by
+protected lemma ContMDiffAt.mvfderiv
+    (hf : CMDiffAt n f x) (hX : CMDiffAt m (T% X) x) (hmn : m + 1 ≤ n) :
+    CMDiffAt m (fun (x : M) ↦ d% f x (X x)) x := by
   rw [← contMDiffWithinAt_univ] at hf hX ⊢
   rw [← mvfderivWithin_univ]
-  exact hf.mvfderivWithin hX uniqueMDiffOn_univ (by simp)
+  exact hf.mvfderivWithin hX hmn uniqueMDiffOn_univ (by simp)
 
-lemma ContMDiffOn.mvfderivWithin
-    (hf : CMDiff[s] (k + 1) f) (hX : CMDiff[s] k (T% X)) (hs : UniqueMDiff[s]) :
-    CMDiff[s] k (fun (x : M) ↦ d[s] f x (X x)) :=
-  fun x hx ↦ ContMDiffWithinAt.mvfderivWithin (hf x hx) (hX x hx) hs hx
+protected lemma ContMDiffOn.mvfderivWithin
+    (hf : CMDiff[s] n f) (hX : CMDiff[s] m (T% X)) (hmn : m + 1 ≤ n) (hs : UniqueMDiff[s]) :
+    CMDiff[s] m (fun (x : M) ↦ d[s] f x (X x)) :=
+  fun x hx ↦ ContMDiffWithinAt.mvfderivWithin (hf x hx) (hX x hx) hmn hs hx
 
-lemma ContMDiff.mvfderiv {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
-    {k : ℕ∞ω} {f : M → V} {X : Π x : M, TangentSpace% x}
-    (hf : CMDiff (k + 1) f) (hX : CMDiff k (T% X)) :
-    CMDiff k (fun (x : M) ↦ d% f x (X x)) :=
-  fun x ↦ (hf x).mvfderiv (hX x)
+protected lemma ContMDiff.mvfderiv (hf : CMDiff n f) (hX : CMDiff m (T% X)) (hmn : m + 1 ≤ n) :
+    CMDiff m (fun (x : M) ↦ d% f x (X x)) :=
+  fun x ↦ (hf x).mvfderiv (hX x) hmn
 
 end
 

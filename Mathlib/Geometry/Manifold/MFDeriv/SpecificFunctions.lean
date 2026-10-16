@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Calculus.FDeriv.Mul
 public import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 
+import Mathlib.Geometry.Manifold.ContMDiff.Constructions
 import Mathlib.Geometry.Manifold.Notation
 
 /-!
@@ -624,6 +625,81 @@ theorem mfderiv_prod_eq_add_apply {f : M × M' → M''} {p : M × M'} {v : Tange
   rfl
 
 end Prod
+
+section Pi
+
+/-!
+### Differentiability of functions with codomain `Π i, M i`
+-/
+
+variable {ι : Type*} [Fintype ι] {Mi Hi Ei : ι → Type*}
+  [∀ i, NormedAddCommGroup (Ei i)] [∀ i, NormedSpace 𝕜 (Ei i)]
+  [∀ i, TopologicalSpace (Hi i)] {Ii : ∀ i, ModelWithCorners 𝕜 (Ei i) (Hi i)}
+  [∀ i, TopologicalSpace (Mi i)] [∀ i, ChartedSpace (Hi i) (Mi i)]
+  {φ : M → ∀ i, Ei i} {f : M → ∀ i, Mi i}
+
+theorem mdifferentiableWithinAt_apply {i : ι} {s : Set (Π i, Mi i)} {x : Π i, Mi i} :
+    MDifferentiableWithinAt (ModelWithCorners.pi Ii) (Ii i) (fun (x : Π i, Mi i) ↦ x i) s x :=
+  contMDiffWithinAt_apply.mdifferentiableWithinAt one_ne_zero
+
+theorem mdifferentiableAt_apply {i : ι} {x : Π i, Mi i} :
+    MDifferentiableAt (ModelWithCorners.pi Ii) (Ii i) (fun (x : Π i, Mi i) ↦ x i) x :=
+  contMDiffAt_apply.mdifferentiableAt one_ne_zero
+
+theorem mdifferentiableOn_apply {i : ι} {s : Set (Π i, Mi i)} :
+    MDifferentiableOn (ModelWithCorners.pi Ii) (Ii i) (fun (x : Π i, Mi i) ↦ x i) s :=
+  contMDiffOn_apply.mdifferentiableOn one_ne_zero
+
+theorem mdifferentiable_apply {i : ι} :
+    MDifferentiable (ModelWithCorners.pi Ii) (Ii i) (fun (x : Π i, Mi i) ↦ x i) :=
+  contMDiff_apply.mdifferentiable one_ne_zero
+
+theorem mdifferentiableWithinAt_pi_iff :
+    MDifferentiableWithinAt I (ModelWithCorners.pi Ii) f s x ↔
+      ∀ i, MDifferentiableWithinAt I (Ii i) (fun x => f x i) s x := by
+  refine ⟨fun h i ↦ mdifferentiableAt_apply.comp_mdifferentiableWithinAt _ h, fun h ↦ ?_⟩
+  simp only [mdifferentiableWithinAt_iff] at *
+  exact ⟨continuousWithinAt_pi.2 (fun i ↦ (h i).1), differentiableWithinAt_pi.2 (fun i ↦ (h i).2)⟩
+
+theorem mdifferentiableWithinAt_pi_space :
+    MDifferentiableWithinAt I 𝓘(𝕜, ∀ i, Ei i) φ s x ↔
+      ∀ i, MDifferentiableWithinAt I 𝓘(𝕜, Ei i) (fun x => φ x i) s x := by
+  simp only [mdifferentiableWithinAt_iff, continuousWithinAt_pi, differentiableWithinAt_pi,
+    forall_and, extChartAt_model_space_eq_id, Function.comp_def, PartialEquiv.refl_coe, id]
+
+theorem mdifferentiableAt_pi_iff :
+    MDifferentiableAt I (ModelWithCorners.pi Ii) f x ↔
+      ∀ i, MDifferentiableAt I (Ii i) (fun x => f x i) x :=
+  mdifferentiableWithinAt_pi_iff
+
+theorem mdifferentiableAt_pi_space :
+    MDifferentiableAt I 𝓘(𝕜, ∀ i, Ei i) φ x ↔
+      ∀ i, MDifferentiableAt I 𝓘(𝕜, Ei i) (fun x => φ x i) x :=
+  mdifferentiableWithinAt_pi_space
+
+theorem mdifferentiableOn_pi_iff :
+    MDifferentiableOn I (ModelWithCorners.pi Ii) f s ↔
+      ∀ i, MDifferentiableOn I (Ii i) (fun x => f x i) s :=
+  ⟨fun h i x hx ↦ mdifferentiableWithinAt_pi_iff.1 (h x hx) i,
+    fun h x hx ↦ mdifferentiableWithinAt_pi_iff.2 (fun i ↦ h i x hx)⟩
+
+theorem mdifferentiableOn_pi_space_iff :
+    MDifferentiableOn I 𝓘(𝕜, ∀ i, Ei i) φ s ↔
+      ∀ i, MDifferentiableOn I 𝓘(𝕜, Ei i) (fun x => φ x i) s :=
+  ⟨fun h i x hx => mdifferentiableWithinAt_pi_space.1 (h x hx) i, fun h x hx =>
+    mdifferentiableWithinAt_pi_space.2 fun i => h i x hx⟩
+
+theorem mdifferentiable_pi_iff :
+    MDifferentiable I (ModelWithCorners.pi Ii) f ↔ ∀ i, MDifferentiable I (Ii i) (fun x => f x i) :=
+  ⟨fun h i x ↦ mdifferentiableAt_pi_iff.1 (h x) i,
+    fun h x ↦ mdifferentiableAt_pi_iff.2 (fun i ↦ h i x)⟩
+
+theorem mdifferentiable_pi_space_iff :
+    MDifferentiable I 𝓘(𝕜, ∀ i, Ei i) φ ↔ ∀ i, MDifferentiable I 𝓘(𝕜, Ei i) fun x => φ x i :=
+  ⟨fun h i x => mdifferentiableAt_pi_space.1 (h x) i,
+    fun h x => mdifferentiableAt_pi_space.2 fun i => h i x⟩
+
+end Pi
 
 section disjointUnion
 
