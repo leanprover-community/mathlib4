@@ -20,9 +20,8 @@ with `c` servers at offered load `a`. It is defined by the recursion
 
 `B(0, a) = 1`, `B(c + 1, a) = a * B(c, a) / (c + 1 + a * B(c, a))`,
 
-which is the form classically used for computation, since it avoids the factorials and powers
-of the closed form `(a ^ c / c!) / ∑ j ≤ c, a ^ j / j!`. `Real.erlangB_eq_div` proves the two
-agree.
+rather than by the closed form `(a ^ c / c!) / ∑ j < c + 1, a ^ j / j!`, so that every result
+follows by induction on `c`. `Real.erlangB_eq_div` proves the two agree.
 
 ## Main definitions
 
@@ -56,7 +55,7 @@ namespace Real
 
 /-- Erlang's loss formula `B(c, a)`, by the recursion `B(0) = 1`,
 `B(c + 1) = a * B(c) / (c + 1 + a * B(c))`. Total on all of `ℝ`; the results assume `0 ≤ a`,
-which makes the denominator at least `c + 1` (`erlangB_denom_pos`). -/
+which makes the denominator positive (`erlangB_denom_pos`). -/
 noncomputable def erlangB (a : ℝ) : ℕ → ℝ
   | 0 => 1
   | c + 1 => a * erlangB a c / ((c : ℝ) + 1 + a * erlangB a c)
@@ -165,7 +164,7 @@ theorem erlangB_mul_sum {a : ℝ} (ha : 0 ≤ a) (c : ℕ) :
     linear_combination a * ih - hT
 
 /-- The recursion equals the closed form:
-`erlangB a c = (a ^ c / c!) / ∑ j ≤ c, a ^ j / j!` for `0 ≤ a`. -/
+`erlangB a c = (a ^ c / c!) / ∑ j < c + 1, a ^ j / j!` for `0 ≤ a`. -/
 theorem erlangB_eq_div {a : ℝ} (ha : 0 ≤ a) (c : ℕ) :
     erlangB a c = a ^ c / c.factorial / ∑ j ∈ range (c + 1), a ^ j / j.factorial := by
   have hS : 0 < ∑ j ∈ range (c + 1), a ^ j / j.factorial := by
