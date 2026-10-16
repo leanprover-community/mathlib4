@@ -168,7 +168,10 @@ theorem trace_mul_cycle' [NonUnitalCommSemiring R] (A : Matrix m n R) (B : Matri
 -- local so that the theorem statements do not impose extra typeclass assumptions.
 noncomputable section
 
+/-- Classical decidable equality for the row index of the first rectangular matrix. -/
 local instance : DecidableEq m := Classical.decEq m
+
+/-- Classical decidable equality for the column index of the first rectangular matrix. -/
 local instance : DecidableEq n := Classical.decEq n
 
 /-- The trace of a positive power of A * B is unchanged when the factors are reversed.
