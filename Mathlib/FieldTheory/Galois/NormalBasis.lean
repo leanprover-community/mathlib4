@@ -5,13 +5,13 @@ Authors: Madison Crim, Aaron Liu, Justus Springer, Junyan Xu
 -/
 module
 
-public import Mathlib.Algebra.Module.PID
-public import Mathlib.Algebra.MvPolynomial.Funext
-public import Mathlib.Algebra.Polynomial.Module.AEval
-public import Mathlib.FieldTheory.Finite.Basic
 public import Mathlib.FieldTheory.Galois.Basic
-public import Mathlib.LinearAlgebra.AnnihilatingPolynomial
-public import Mathlib.LinearAlgebra.Matrix.Nondegenerate
+
+import Mathlib.Algebra.Module.PID
+import Mathlib.Algebra.MvPolynomial.Funext
+import Mathlib.FieldTheory.Finite.Basic
+import Mathlib.LinearAlgebra.AnnihilatingPolynomial
+import Mathlib.LinearAlgebra.Dual.Lemmas
 
 /-!
 # The normal basis theorem
@@ -47,7 +47,7 @@ theorem exists_linearIndependent_algEquiv_apply_of_finite [Finite L] :
   convert!
     (AdjoinRoot.powerBasis (X_pow_sub_C_ne_zero Module.finrank_pos 1)).basis.linearIndependent
     |>.map' ((AEval'.of _).symm.toLinearMap ∘ₗ (liftQ _ _ hx.le).restrictScalars K) <| by
-    exact congr($(ker_liftQ_eq_bot' _ _ hx).restrictScalars K)
+    congrm $(ker_liftQ_eq_bot' _ _ hx).restrictScalars K
   ext i
   simp_rw [Equiv.coe_trans, Function.comp_apply, finCongr_apply, Equiv.ofBijective_apply,
     AlgEquiv.coe_pow, AdjoinRoot.powerBasis, AdjoinRoot.powerBasisAux, Basis.coe_mk,

@@ -22,7 +22,7 @@ This file proves that eigenvalues of positive (semi)definite matrices are (nonne
 
 @[expose] public section
 
-open WithLp Matrix Unitary
+open Matrix Unitary
 open scoped ComplexOrder
 
 namespace Matrix
@@ -45,6 +45,9 @@ lemma eigenvalues_nonneg [DecidableEq n] (hA : A.PosSemidef) (i : n) : 0 ≤ hA.
 lemma re_dotProduct_nonneg (hA : A.PosSemidef) (x : n → 𝕜) : 0 ≤ RCLike.re (star x ⬝ᵥ (A *ᵥ x)) :=
   RCLike.nonneg_iff.mp (hA.dotProduct_mulVec_nonneg _) |>.1
 
+-- TODO generalise this lemma. Similarly to `Matrix.PosDef.det_pos`, it requires just the following
+-- assumptions on the scalars `R`:
+-- `[CommRing R] [PartialOrder R] [StarRing R] [Nontrivial R] [IsOrderedRing R] [PosMulReflectLE R]`
 lemma det_nonneg [DecidableEq n] (hA : A.PosSemidef) : 0 ≤ A.det := by
   rw [hA.isHermitian.det_eq_prod_eigenvalues]
   exact Finset.prod_nonneg fun i _ ↦ by simpa using hA.eigenvalues_nonneg i
@@ -82,19 +85,13 @@ lemma re_dotProduct_pos (hA : A.PosDef) {x : n → 𝕜} (hx : x ≠ 0) :
 lemma eigenvalues_pos [DecidableEq n] (hA : A.PosDef) (i : n) : 0 < hA.1.eigenvalues i :=
   hA.isHermitian.posDef_iff_eigenvalues_pos.mp hA i
 
-lemma det_pos [DecidableEq n] (hA : A.PosDef) : 0 < det A := by
-  rw [hA.isHermitian.det_eq_prod_eigenvalues]
-  apply Finset.prod_pos
-  intro i _
-  simpa using hA.eigenvalues_pos i
-
 end PosDef
 
 set_option backward.privateInPublic true in
 /-- The pre-inner product space structure implementation. Only an auxiliary for
 `Matrix.toSeminormedAddCommGroup`, `Matrix.toNormedAddCommGroup`,
 and `Matrix.toInnerProductSpace`. -/
-@[implicit_reducible]
+@[instance_reducible]
 private def PosSemidef.preInnerProductSpace {M : Matrix n n 𝕜} (hM : M.PosSemidef) :
     PreInnerProductSpace.Core 𝕜 (n → 𝕜) where
   inner x y := (M *ᵥ y) ⬝ᵥ star x
@@ -124,7 +121,7 @@ noncomputable abbrev toNormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.PosDef) 
       simpa [hx, lt_irrefl, dotProduct_comm] using hM.re_dotProduct_pos h }
 
 /-- A positive semi-definite matrix `M` induces an inner product `⟪x, y⟫ = xᴴMy`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def toInnerProductSpace (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
     @InnerProductSpace 𝕜 (n → 𝕜) _ (M.toSeminormedAddCommGroup hM) :=
   InnerProductSpace.ofCore _

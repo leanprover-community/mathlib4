@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Set.Lattice
+public import Mathlib.Data.Set.Lattice.Bounded
 
 /-! # Semiquotients
 
@@ -178,6 +178,7 @@ def IsPure (q : Semiquot α) : Prop :=
 def get (q : Semiquot α) (h : q.IsPure) : α :=
   liftOn q id h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem get_mem {q : Semiquot α} (p) : get q p ∈ q := by
   let ⟨a, h⟩ := exists_mem q
   unfold get; rw [liftOn_ofMem q _ _ a h]; exact h

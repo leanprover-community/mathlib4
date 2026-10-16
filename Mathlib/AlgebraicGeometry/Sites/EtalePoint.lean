@@ -7,11 +7,9 @@ module
 
 public import Mathlib.AlgebraicGeometry.Fiber
 public import Mathlib.AlgebraicGeometry.Sites.AffineEtale
-public import Mathlib.CategoryTheory.Functor.TypeValuedFlat
-public import Mathlib.CategoryTheory.Limits.Elements
 public import Mathlib.CategoryTheory.Sites.Point.Conservative
 
-public import Mathlib.FieldTheory.SeparableClosure
+import Mathlib.CategoryTheory.Functor.TypeValuedFlat
 
 /-!
 
@@ -34,6 +32,7 @@ namespace AlgebraicGeometry.Scheme
 variable {S : Scheme.{u}} {Ω : Type u} [Field Ω] [IsSepClosed Ω]
   (s : Spec (.of Ω) ⟶ S)
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma exists_fac_of_etale_of_isSepClosed {X S : Scheme.{u}} (f : X ⟶ S) [Etale f]
     {Ω : Type u} [Field Ω] [IsSepClosed Ω] (s : Spec (.of Ω) ⟶ S)
     (x : X) (hx : f x = s default) :
@@ -56,6 +55,7 @@ lemma exists_fac_of_etale_of_isSepClosed {X S : Scheme.{u}} (f : X ⟶ S) [Etale
 instance : IsCofiltered (Etale.forget S ⋙ coyoneda.obj (op (Over.mk s))).Elements :=
   Functor.isCofiltered_elements _
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A morphism `s : Spec (.of Ω) ⟶ S` where `Ω` is a separably closed field
 defines a point for the small étale site of `S`. -/
@@ -65,8 +65,8 @@ noncomputable def pointSmallEtale : (smallEtaleTopology S).Point where
   initiallySmall :=
     initiallySmall_of_essentiallySmall_weakly_initial_objectProperty
       (Functor.Elements.precomp (AffineEtale.Spec S)
-        (Etale.forget S ⋙ coyoneda.obj (op (Over.mk s)))).essImage (by
-      rintro ⟨X, x⟩
+        (Etale.forget S ⋙ coyoneda.obj (op (Over.mk s)))).essImage (fun x ↦ by
+      induction x with | @mk X x
       cases X with | _ Y f
       obtain ⟨y, hy, rfl⟩ := Over.homMk_surjective x
       dsimp at y hy
@@ -109,7 +109,6 @@ instance {Y X : Scheme.{u}} (f : Y ⟶ X) [Etale f] (x : X) :
   dsimp [Hom.fiberToSpecResidueField]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 lemma pointSmallEtaleFiberObjToPreimage_surjective (X : S.Etale) :
     Function.Surjective (pointSmallEtaleFiberObjToPreimage s hs₀ (X := X)) := by
   intro y
@@ -120,9 +119,7 @@ lemma pointSmallEtaleFiberObjToPreimage_surjective (X : S.Etale) :
     (X.hom.fiberToSpecResidueField _) (Spec.map a) y (by subsingleton)
   refine ⟨Over.homMk (l ≫ X.hom.fiberι t) ?_, rfl⟩
   simp [X.hom.fiber_fac, reassoc_of% hl]
-  rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isConservative_pointSmallEtale
     {ι : Type*} {S : Scheme.{u}}
     {Ω : ι → Type u} [∀ i, Field (Ω i)] [∀ i, IsSepClosed (Ω i)]

@@ -5,7 +5,7 @@ Authors: Anatole Dedecker
 -/
 module
 
-public import Mathlib.Topology.Homeomorph.Lemmas
+public import Mathlib.Topology.Constructions
 
 /-!
 # Homeomorphisms between quotient spaces

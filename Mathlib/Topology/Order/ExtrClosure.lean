@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.Order.OrderClosed
 public import Mathlib.Topology.Order.LocalExtr
+public import Mathlib.Topology.Order.OrderClosed
 
 /-!
 # Maximum/minimum on the closure of a set
@@ -20,8 +20,6 @@ public section
 
 
 open Filter Set
-
-open Topology
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [Preorder Y]
   [OrderClosedTopology Y] {f : X → Y} {s : Set X} {a : X}

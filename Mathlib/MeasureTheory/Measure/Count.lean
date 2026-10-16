@@ -5,7 +5,9 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.Dirac
+public import Mathlib.MeasureTheory.Measure.Dirac.Basic
+
+import Mathlib.SetTheory.Cardinal.ENNReal
 
 /-!
 # Counting measure
@@ -161,6 +163,11 @@ instance count.isFiniteMeasure [Finite α] :
 
 @[simp]
 lemma count_univ : count (univ : Set α) = ENat.card α := by simp [count_apply .univ, encard_univ]
+
+@[simp] lemma count_real_univ : count.real (.univ : Set α) = Nat.card α := by simp [Measure.real]
+
+instance neZero_count [Nonempty α] : NeZero (count : Measure α) where
+  out := by rintro h; simpa using congr($h .univ)
 
 lemma _root_.Subsingleton.count_eq_dirac [Subsingleton α] (i : α) :
     count = dirac i := by

@@ -6,6 +6,7 @@ Authors: Jeremy Tan
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
+
 import Mathlib.Algebra.Order.Interval.Set.Group
 
 /-!
@@ -45,7 +46,7 @@ theorem tan_arctan {z : ℂ} (h₁ : z ≠ I) (h₂ : z ≠ -I) : tan (arctan z)
   have key : exp (2 * (arctan z * I)) = (1 + z * I) / (1 - z * I) := by
     rw [arctan, ← mul_rotate, ← mul_assoc,
       show 2 * (I * (-I / 2)) = 1 by simp [field], one_mul, exp_log]
-    · exact div_ne_zero z₁ z₂
+    exact div_ne_zero z₁ z₂
   -- multiply top and bottom by `1 - z * I`
   rw [key, ← mul_div_mul_right _ _ z₂, sub_mul, add_mul, div_mul_cancel₀ _ z₂, one_mul,
     show _ / _ * I = -(I * I) * z by ring, I_mul_I, neg_neg, one_mul]
@@ -66,7 +67,6 @@ lemma cos_ne_zero_of_arctan_bounds {z : ℂ} (h₀ : z ≠ π / 2) (h₁ : -(π 
     rwa [show 2 * k + 1 = 1 by lia, Int.cast_one, one_mul] at nr
   · exact Or.inr ni
 
-set_option linter.flexible false in -- TODO: fix non-terminal simp
 theorem arctan_tan {z : ℂ} (h₀ : z ≠ π / 2) (h₁ : -(π / 2) < z.re) (h₂ : z.re ≤ π / 2) :
     arctan (tan z) = z := by
   have h := cos_ne_zero_of_arctan_bounds h₀ h₁ h₂
@@ -78,7 +78,7 @@ theorem arctan_tan {z : ℂ} (h₀ : z ≠ π / 2) (h₁ : -(π / 2) < z.re) (h�
     rw [sub_eq_add_neg, ← neg_mul, ← sin_neg, ← cos_neg]
   rw [← exp_mul_I, ← exp_mul_I, ← exp_sub, show z * I - -z * I = 2 * (I * z) by ring, log_exp,
     show -I / 2 * (2 * (I * z)) = -(I * I) * z by ring, I_mul_I, neg_neg, one_mul]
-  all_goals simp
+  all_goals rw [mul_left_comm, I_mul_im, show (2 : ℂ) = (2 : ℝ) by rfl, re_ofReal_mul]
   · rwa [← div_lt_iff₀' two_pos, neg_div]
   · rwa [← le_div_iff₀' two_pos]
 
@@ -129,7 +129,7 @@ theorem hasSum_arctan {z : ℂ} (hz : ‖z‖ < 1) :
   simp_rw [← mul_comm 2 _] at this
   refine this.prod_fiberwise fun k => ?_
   dsimp only
-  convert! hasSum_fintype (_ : Fin 2 → ℂ) using 1
+  convert hasSum_fintype (_ : Fin 2 → ℂ) using 1
   rw [Fin.sum_univ_two, Fin.val_zero, Fin.val_one, Odd.neg_one_pow (n := 2 * k + 0 + 1) (by simp),
     neg_add_cancel, zero_mul, zero_div, mul_zero, zero_add,
     show 2 * k + 1 + 1 = 2 * (k + 1) by ring, Even.neg_one_pow (n := 2 * (k + 1)) (by simp),

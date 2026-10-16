@@ -5,7 +5,6 @@ Authors: Shanghe Chen
 -/
 module
 
-public import Mathlib.CategoryTheory.Products.Basic
 public import Mathlib.CategoryTheory.Discrete.Basic
 
 /-!
@@ -20,7 +19,7 @@ open CategoryTheory
 
 namespace CategoryTheory.prod
 
-open scoped Prod
+open scoped CategoryTheory.Prod
 
 variable (C : Type u) [Category.{v} C]
 

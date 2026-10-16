@@ -282,6 +282,7 @@ noncomputable def Hom.partialIso (f : U ⟶ X) [IsOpenImmersion f] [IsDominant f
 lemma Hom.birational (f : U ⟶ X) [IsOpenImmersion f] [IsDominant f] : Birational U X :=
   ⟨f.partialIso⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma Hom.birationalOver (f : U ⟶ X) [IsOpenImmersion f] [IsDominant f] (sX : X ⟶ S) (sU : U ⟶ S)
     (hf : f ≫ sX = sU) : BirationalOver sU sX :=

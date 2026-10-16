@@ -5,10 +5,9 @@ Authors: Boyang Hu
 -/
 module
 
-public import Mathlib.GroupTheory.Abelianization.Defs
-public import Mathlib.GroupTheory.Sylow
 public import Mathlib.GroupTheory.Transfer
-public import Mathlib.Data.ZMod.QuotientGroup
+
+import Mathlib.GroupTheory.Abelianization.Defs
 
 /-!
 # Focal Subgroup Theorem
@@ -176,7 +175,7 @@ variable {G : Type*} [Group G] {p : ℕ} [Fact p.Prime] (P : Sylow p G) [P.Finit
 /-- The power map `y ↦ y^n` is surjective on `P/P*` because `gcd(n, p) = 1`. -/
 lemma focalSubgroupOf.pow_index_surjective :
     Surjective fun y : P ⧸ P.focalSubgroupOf ↦ y ^ P.index :=
-  ((P.2.to_quotient P.focalSubgroupOf).powEquiv' P.not_dvd_index).surjective
+  ((P.isPGroup.to_quotient P.focalSubgroupOf).powEquiv' P.not_dvd_index).surjective
 
 /-- The Transfer homomorphism is surjective from `G` to `P/P*`. -/
 lemma transferFocal_surjective : Surjective P.transferFocal := by
@@ -186,19 +185,25 @@ lemma transferFocal_surjective : Surjective P.transferFocal := by
   exact ⟨x, P.transferFocal_eq_pow x⟩
 
 /-- Isomorphism theorem: `G / ker(V) ≅ P / P*`. -/
-noncomputable def transferFocal.quotientKerMulEquivQuotientFocalSubroupOf :
+noncomputable def transferFocal.quotientKerMulEquivQuotientFocalSubgroupOf :
     G ⧸ P.transferFocal.ker ≃* P ⧸ P.focalSubgroupOf :=
   QuotientGroup.quotientKerEquivOfSurjective P.transferFocal (transferFocal_surjective P)
 
+/-- Deprecated alias for `transferFocal.quotientKerMulEquivQuotientFocalSubgroupOf`. -/
+@[deprecated transferFocal.quotientKerMulEquivQuotientFocalSubgroupOf (since := "2026-10-13")]
+noncomputable abbrev transferFocal.quotientKerMulEquivQuotientFocalSubroupOf :
+    G ⧸ P.transferFocal.ker ≃* P ⧸ P.focalSubgroupOf :=
+  transferFocal.quotientKerMulEquivQuotientFocalSubgroupOf P
+
 lemma ker_restrict_transferFocal_eq_focalSubgroupOf :
-    (P.transferFocal.restrict P).ker = P.focalSubgroupOf := by
+    (P.transferFocal.domRestrict P).ker = P.focalSubgroupOf := by
   ext g
-  have hQ : IsPGroup p (P ⧸ P.focalSubgroupOf) := P.2.to_quotient P.focalSubgroupOf
-  rw [MonoidHom.mem_ker, MonoidHom.restrict_apply, transferFocal_eq_pow]
+  have hQ : IsPGroup p (P ⧸ P.focalSubgroupOf) := P.isPGroup.to_quotient P.focalSubgroupOf
+  rw [MonoidHom.mem_ker, MonoidHom.domRestrict_apply, transferFocal_eq_pow]
   simpa using (hQ.powEquiv' P.not_dvd_index).apply_eq_iff_eq (x := g) (y := 1)
 
 lemma ker_transferFocal_inf_eq_focalSubgroup : P.transferFocal.ker ⊓ P = P.focalSubgroup := by
-  rw [← subgroupOf_map_subtype, ← MonoidHom.ker_restrict, ← map_focalSubgroupOf]
+  rw [← subgroupOf_map_subtype, ← MonoidHom.ker_domRestrict, ← map_focalSubgroupOf]
   exact congr_arg _ (ker_restrict_transferFocal_eq_focalSubgroupOf P)
 
 open scoped IsMulCommutative in

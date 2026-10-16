@@ -6,8 +6,9 @@ Authors: Patrick Massot, Johannes Hölzl
 module
 
 public import Mathlib.Algebra.Field.Subfield.Defs
-public import Mathlib.Algebra.Order.Group.Pointwise.Interval
 public import Mathlib.Analysis.Normed.Ring.Basic
+
+import Mathlib.Algebra.Order.Group.Pointwise.Interval
 
 /-!
 # Normed division rings and fields
@@ -30,7 +31,7 @@ assert_not_exists AddChar comap_norm_atTop DilationEquiv Finset.sup_mul_le_mul_s
   IsOfFinOrder Isometry.norm_map_of_map_one NNReal.isOpen_Ico_zero Rat.norm_cast_real
   RestrictScalars
 
-variable {G α β ι : Type*}
+variable {α β : Type*}
 
 open Filter
 open scoped Topology NNReal ENNReal
@@ -286,7 +287,7 @@ end NormedField
 
 /-- A normed field is nontrivially normed
 provided that the norm of some nonzero element is not one. -/
-@[implicit_reducible]
+@[instance_reducible]
 def NontriviallyNormedField.ofNormNeOne {𝕜 : Type*} [h' : NormedField 𝕜]
     (h : ∃ x : 𝕜, x ≠ 0 ∧ ‖x‖ ≠ 1) : NontriviallyNormedField 𝕜 where
   toNormedField := h'
@@ -361,7 +362,7 @@ end SubfieldClass
 namespace AbsoluteValue
 
 /-- A real absolute value on a field determines a `NormedField` structure. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def toNormedField {K : Type*} [Field K] (v : AbsoluteValue K ℝ) : NormedField K where
   toField := inferInstanceAs (Field K)
   __ := v.toNormedRing

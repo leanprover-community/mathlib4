@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.Sites.CompatiblePlus
 public import Mathlib.CategoryTheory.Sites.ConcreteSheafification
 
 /-!
+# Compatibility of sheafification with functors
 
 In this file, we prove that sheafification is compatible with functors which
 preserve the correct limits and colimits.
@@ -63,6 +64,7 @@ noncomputable def sheafificationWhiskerLeftIso (P : Cᵒᵖ ⥤ D)
   refine isoWhiskerRight ?_ _
   exact J.plusFunctorWhiskerLeftIso _
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem sheafificationWhiskerLeftIso_hom_app (P : Cᵒᵖ ⥤ D) (F : D ⥤ E)
@@ -73,6 +75,7 @@ theorem sheafificationWhiskerLeftIso_hom_app (P : Cᵒᵖ ⥤ D) (F : D ⥤ E)
   dsimp [sheafificationWhiskerLeftIso, sheafifyCompIso]
   simp only [sheafify, Category.comp_id]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem sheafificationWhiskerLeftIso_inv_app (P : Cᵒᵖ ⥤ D) (F : D ⥤ E)
@@ -94,6 +97,7 @@ noncomputable def sheafificationWhiskerRightIso :
   refine (associator _ _ _).symm ≪≫ ?_
   exact isoWhiskerRight (J.plusFunctorWhiskerRightIso _) (J.plusFunctor E)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem sheafificationWhiskerRightIso_hom_app :
@@ -101,6 +105,7 @@ theorem sheafificationWhiskerRightIso_hom_app :
   dsimp [sheafificationWhiskerRightIso, sheafifyCompIso]
   simp only [sheafify, Category.id_comp, Category.comp_id]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem sheafificationWhiskerRightIso_inv_app :
@@ -108,6 +113,7 @@ theorem sheafificationWhiskerRightIso_inv_app :
   dsimp [sheafificationWhiskerRightIso, sheafifyCompIso]
   simp only [sheafify, Category.id_comp, Category.comp_id]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp, reassoc]
 theorem whiskerRight_toSheafify_sheafifyCompIso_hom :
