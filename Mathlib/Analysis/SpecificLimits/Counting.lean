@@ -34,7 +34,7 @@ and `0 < τ`.
 counting function, Cesàro average, specific limit
 -/
 
-@[expose] public section
+public section
 
 open Filter Topology
 
