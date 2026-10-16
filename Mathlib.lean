@@ -7605,6 +7605,8 @@ public import Mathlib.Tactic.DeriveFintype
 public import Mathlib.Tactic.DeriveTraversable
 public import Mathlib.Tactic.Determinant.Bird.Cert
 public import Mathlib.Tactic.Determinant.Bird.Meta
+public import Mathlib.Tactic.Determinant.Echelon.Cert
+public import Mathlib.Tactic.Determinant.Echelon.Reflection
 public import Mathlib.Tactic.DuplicateDecls
 public import Mathlib.Tactic.ENatToNat
 public import Mathlib.Tactic.Echelon.Bareiss
