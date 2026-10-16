@@ -593,7 +593,14 @@ end GaloisEquivalentDefinitions
 section normalClosure
 
 variable (k K F : Type*) [Field k] [Field K] [Field F] [Algebra k K] [Algebra k F] [Algebra K F]
-  [IsScalarTower k K F] [IsGalois k F]
+  [IsScalarTower k K F]
+
+/-- Let $F / K / k$ be a tower of field extensions. If $K$ is separable over $k$ and $F$ is normal
+over $k$, then the normal closure of $K$ over $k$ in $F$ is Galois over $k$. -/
+instance IsGalois.normalClosure_of_isSeparable [Algebra.IsSeparable k K] [Normal k F] :
+    IsGalois k (normalClosure k K F) where
+
+variable [IsGalois k F]
 
 /-- Let $F / K / k$ be a tower of field extensions. If $F$ is Galois over $k$,
 then the normal closure of $K$ over $k$ in $F$ is Galois over $k$. -/
@@ -795,9 +802,5 @@ instance IsQuadraticExtension.isCyclic : IsCyclic Gal(K/F) := by
   · simp_all
   · exact @isCyclic_of_subsingleton _ _ (Finite.card_le_one_iff_subsingleton.mp h.le)
   · exact isCyclic_of_prime_card h
-
-@[deprecated inferInstance +typeChanged (since := "2026-04-09")]
-theorem IsQuadraticExtension.isMulCommutative_galoisGroup : IsMulCommutative Gal(K/F) :=
-  inferInstance
 
 end Algebra
