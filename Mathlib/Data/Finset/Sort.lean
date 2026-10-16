@@ -69,6 +69,11 @@ theorem sort_empty : sort ∅ r = [] :=
 theorem sort_singleton (a : α) : sort {a} r = [a] :=
   Multiset.sort_singleton a r
 
+theorem sort_filter (p : α → Prop) [DecidablePred p] :
+    (s.filter p).sort r = (s.sort r).filter p := by
+  apply List.Perm.eq_of_pairwise' (pairwise_sort _ _) ((pairwise_sort _ _).filter _)
+  rw [← Multiset.coe_eq_coe, sort_eq, ← Multiset.filter_coe, sort_eq, filter_val]
+
 theorem map_sort
     (hs : ∀ a ∈ s, ∀ b ∈ s, r a b ↔ r' (f a) (f b)) :
     (s.sort r).map f = (s.map f).sort r' :=
@@ -121,6 +126,14 @@ theorem sort_cons {a : α} (h₁ : ∀ b ∈ s, r a b) (h₂ : a ∉ s) :
 theorem sort_insert [DecidableEq α] {a : α} (h₁ : ∀ b ∈ s, r a b) (h₂ : a ∉ s) :
     sort (insert a s) r = a :: sort s r := by
   rw [← cons_eq_insert _ _ h₂, sort_cons r h₁]
+
+theorem sort_insert_largest [DecidableEq α] {a : α} (h₁ : ∀ b ∈ s, r b a) (h₂ : a ∉ s) :
+    sort (insert a s) r = sort s r ++ [a] := by
+  apply List.Perm.eq_of_pairwise' (pairwise_sort _ _)
+  · exact List.pairwise_append.mpr ⟨pairwise_sort _ _, List.pairwise_singleton _ _,
+      by simpa only [List.mem_singleton, forall_eq, mem_sort] using h₁⟩
+  · rw [← Multiset.coe_eq_coe, sort_eq, insert_val_of_notMem h₂, ← Multiset.coe_add,
+      sort_eq, Multiset.coe_singleton, add_comm, Multiset.singleton_add]
 
 end
 
