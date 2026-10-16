@@ -24,14 +24,13 @@ open Filter Asymptotics ContinuousLinearMap Set
 
 open scoped Topology
 
-noncomputable section
-
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
-section TwoFunctions
+section binary
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {G : Type*} [AddCommGroup G] [TopologicalSpace G] [Module 𝕜 G] [ContinuousAdd G]
+  [ContinuousSMul 𝕜 G]
 variable {g : F → G} {f : E → F} {g' : F →L[𝕜] G} {f' : E →L[𝕜] F}
 variable (x : E) {s : Set E} {y : F} {t : Set F} {L : Filter (E × E)}
 
@@ -150,6 +149,10 @@ theorem Differentiable.comp_differentiableOn {g : F → G} (hg : Differentiable 
     (hf : DifferentiableOn 𝕜 f s) : DifferentiableOn 𝕜 (g ∘ f) s :=
   hg.differentiableOn.comp hf (mapsTo_univ _ _)
 
+section T2
+
+variable [T2Space G]
+
 @[to_fun fderivWithin_fun_comp]
 theorem fderivWithin_comp (hg : DifferentiableWithinAt 𝕜 g t (f x))
     (hf : DifferentiableWithinAt 𝕜 f s x) (h : MapsTo f s t) (hxs : UniqueDiffWithinAt 𝕜 s x) :
@@ -175,19 +178,6 @@ theorem fderivWithin_fderivWithin
   subst y
   rw [fderivWithin_comp x hg hf h hxs, comp_apply]
 
-/-- Ternary version of `fderivWithin_comp`, with equality assumptions of basepoints added, in
-  order to apply more easily as a rewrite from right-to-left. -/
-theorem fderivWithin_comp₃ {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
-    {g' : G → G'} {g : F → G} {t : Set F} {u : Set G} {y : F} {y' : G}
-    (hg' : DifferentiableWithinAt 𝕜 g' u y') (hg : DifferentiableWithinAt 𝕜 g t y)
-    (hf : DifferentiableWithinAt 𝕜 f s x) (h2g : MapsTo g t u) (h2f : MapsTo f s t) (h3g : g y = y')
-    (h3f : f x = y) (hxs : UniqueDiffWithinAt 𝕜 s x) :
-    fderivWithin 𝕜 (g' ∘ g ∘ f) s x =
-      (fderivWithin 𝕜 g' u y').comp ((fderivWithin 𝕜 g t y).comp (fderivWithin 𝕜 f s x)) := by
-  subst h3g h3f
-  exact (hg'.hasFDerivWithinAt.comp x (hg.hasFDerivWithinAt.comp x hf.hasFDerivWithinAt h2f) <|
-    h2g.comp h2f).fderivWithin hxs
-
 @[to_fun fderiv_fun_comp]
 theorem fderiv_comp (hg : DifferentiableAt 𝕜 g (f x)) (hf : DifferentiableAt 𝕜 f x) :
     fderiv 𝕜 (g ∘ f) x = (fderiv 𝕜 g (f x)).comp (fderiv 𝕜 f x) :=
@@ -199,10 +189,32 @@ theorem fderiv_comp_fderivWithin (hg : DifferentiableAt 𝕜 g (f x))
     (hf : DifferentiableWithinAt 𝕜 f s x) (hxs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (g ∘ f) s x = (fderiv 𝕜 g (f x)).comp (fderivWithin 𝕜 f s x) :=
   (hg.hasFDerivAt.comp_hasFDerivWithinAt x hf.hasFDerivWithinAt).fderivWithin hxs
+end T2
 
-end TwoFunctions
+end binary
 
-section Iterate
+section ternary
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {G' : Type*} [AddCommGroup G'] [TopologicalSpace G'] [Module 𝕜 G'] [ContinuousAdd G']
+  [ContinuousSMul 𝕜 G'] [T2Space G']
+variable {f : E → F} {x : E} {s : Set E}
+
+/-- Ternary version of `fderivWithin_comp`, with equality assumptions of basepoints added, in
+  order to apply more easily as a rewrite from right-to-left. -/
+theorem fderivWithin_comp₃ {g' : G → G'} {g : F → G} {t : Set F} {u : Set G} {y : F} {y' : G}
+    (hg' : DifferentiableWithinAt 𝕜 g' u y') (hg : DifferentiableWithinAt 𝕜 g t y)
+    (hf : DifferentiableWithinAt 𝕜 f s x) (h2g : MapsTo g t u) (h2f : MapsTo f s t) (h3g : g y = y')
+    (h3f : f x = y) (hxs : UniqueDiffWithinAt 𝕜 s x) :
+    fderivWithin 𝕜 (g' ∘ g ∘ f) s x =
+      (fderivWithin 𝕜 g' u y').comp ((fderivWithin 𝕜 g t y).comp (fderivWithin 𝕜 f s x)) := by
+  subst h3g h3f
+  exact (hg'.hasFDerivWithinAt.comp x (hg.hasFDerivWithinAt.comp x hf.hasFDerivWithinAt h2f) <|
+    h2g.comp h2f).fderivWithin hxs
+
+end ternary
+
+section iterate
 variable {f : E → E} {f' : E →L[𝕜] E} {s : Set E} {x : E} {L : Filter (E × E)}
 
 @[fun_prop]
@@ -253,4 +265,4 @@ protected theorem DifferentiableWithinAt.iterate (hf : DifferentiableWithinAt �
     (hx : f x = x) (hs : MapsTo f s s) (n : ℕ) : DifferentiableWithinAt 𝕜 f^[n] s x :=
   (hf.hasFDerivWithinAt.iterate hx hs n).differentiableWithinAt
 
-end Iterate
+end iterate

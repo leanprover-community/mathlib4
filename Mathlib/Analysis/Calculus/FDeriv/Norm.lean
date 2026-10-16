@@ -6,7 +6,8 @@ Authors: Etienne Marion
 module
 
 public import Mathlib.Analysis.Calculus.Deriv.Abs
-public import Mathlib.Analysis.Calculus.LineDeriv.Basic
+
+import Mathlib.Analysis.Calculus.LineDeriv.Basic
 
 /-!
 # Differentiability of the norm in a real normed vector space
@@ -62,7 +63,7 @@ theorem ContDiffAt.contDiffAt_norm_smul (ht : t ≠ 0) (h : ContDiffAt ℝ n (�
   have h1 : ContDiffAt ℝ n (fun y ↦ t⁻¹ • y) (t • x) := (contDiff_const_smul t⁻¹).contDiffAt
   have h2 : ContDiffAt ℝ n (fun y ↦ |t| * ‖y‖) x := h.const_smul |t|
   conv at h2 => enter [4]; rw [← one_smul ℝ x, ← inv_mul_cancel₀ ht, mul_smul]
-  convert! h2.comp (t • x) h1 using 1
+  convert h2.comp (t • x) h1 using 1
   ext y
   simp only [Function.comp_apply]
   rw [norm_smul, ← mul_assoc, norm_eq_abs, ← abs_mul, mul_inv_cancel₀ ht, abs_one, one_mul]
@@ -71,7 +72,7 @@ theorem contDiffAt_norm_smul_iff (ht : t ≠ 0) :
     ContDiffAt ℝ n (‖·‖) x ↔ ContDiffAt ℝ n (‖·‖) (t • x) where
   mp h := h.contDiffAt_norm_smul ht
   mpr hd := by
-    convert! hd.contDiffAt_norm_smul (inv_ne_zero ht)
+    convert hd.contDiffAt_norm_smul (inv_ne_zero ht)
     rw [smul_smul, inv_mul_cancel₀ ht, one_smul]
 
 theorem ContDiffAt.contDiffAt_norm_of_smul (h : ContDiffAt ℝ n (‖·‖) (t • x)) :
@@ -139,7 +140,7 @@ theorem differentiableAt_norm_smul (ht : t ≠ 0) :
     DifferentiableAt ℝ (‖·‖) x ↔ DifferentiableAt ℝ (‖·‖) (t • x) where
   mp hd := (hd.hasFDerivAt.hasFDerivAt_norm_smul ht).differentiableAt
   mpr hd := by
-    convert! (hd.hasFDerivAt.hasFDerivAt_norm_smul (inv_ne_zero ht)).differentiableAt
+    convert (hd.hasFDerivAt.hasFDerivAt_norm_smul (inv_ne_zero ht)).differentiableAt
     rw [smul_smul, inv_mul_cancel₀ ht, one_smul]
 
 theorem DifferentiableAt.differentiableAt_norm_of_smul (h : DifferentiableAt ℝ (‖·‖) (t • x)) :
