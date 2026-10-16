@@ -98,7 +98,7 @@ theorem _root_.IsClosed.polishSpace [TopologicalSpace α] [PolishSpace α] {s : 
     (hs : IsClosed s) : PolishSpace s :=
   hs.isClosedEmbedding_subtypeVal.polishSpace
 
-protected theorem _root_.CompletePseudometrizable.iInf {ι : Type*} [Countable ι]
+protected theorem _root_.CompletePseudometrizable.iInf {ι : Sort*} [Countable ι]
     {t : ι → TopologicalSpace α} (ht₀ : ∃ t₀, @T2Space α t₀ ∧ ∀ i, t i ≤ t₀)
     (ht : ∀ i, ∃ u : UniformSpace α, CompleteSpace α ∧ 𝓤[u].IsCountablyGenerated ∧
       u.toTopologicalSpace = t i) :
@@ -106,11 +106,14 @@ protected theorem _root_.CompletePseudometrizable.iInf {ι : Type*} [Countable �
       𝓤[u].IsCountablyGenerated ∧ u.toTopologicalSpace = ⨅ i, t i := by
   choose u hcomp hcount hut using ht
   obtain rfl : t = fun i ↦ (u i).toTopologicalSpace := (funext hut).symm
-  refine ⟨⨅ i, u i, .iInf hcomp ht₀, ?_, UniformSpace.toTopologicalSpace_iInf⟩
-  rw [iInf_uniformity]
-  infer_instance
+  refine ⟨⨅ i, u i, ?_, ?_, UniformSpace.toTopologicalSpace_iInf⟩
+  · have := CompleteSpace.iInf (u := fun i : PLift ι ↦ u i.down) (fun i ↦ hcomp i.down)
+      (ht₀.imp fun _ h ↦ ⟨h.1, fun i ↦ h.2 i.down⟩)
+    rwa [iInf_plift_down] at this
+  · rw [iInf_uniformity]
+    infer_instance
 
-protected theorem iInf {ι : Type*} [Countable ι] {t : ι → TopologicalSpace α}
+protected theorem iInf {ι : Sort*} [Countable ι] {t : ι → TopologicalSpace α}
     (ht₀ : ∃ i₀, ∀ i, t i ≤ t i₀) (ht : ∀ i, @PolishSpace α (t i)) : @PolishSpace α (⨅ i, t i) := by
   rcases ht₀ with ⟨i₀, hi₀⟩
   rcases CompletePseudometrizable.iInf ⟨t i₀, letI := t i₀; haveI := ht i₀; inferInstance, hi₀⟩
@@ -127,12 +130,13 @@ protected theorem iInf {ι : Type*} [Countable ι] {t : ι → TopologicalSpace 
 
 /-- Given a Polish space, and countably many finer Polish topologies, there exists another Polish
 topology which is finer than all of them. -/
-theorem exists_polishSpace_forall_le {ι : Type*} [Countable ι] [t : TopologicalSpace α]
+theorem exists_polishSpace_forall_le {ι : Sort*} [Countable ι] [t : TopologicalSpace α]
     [p : PolishSpace α] (m : ι → TopologicalSpace α) (hm : ∀ n, m n ≤ t)
     (h'm : ∀ n, @PolishSpace α (m n)) :
     ∃ t' : TopologicalSpace α, (∀ n, t' ≤ m n) ∧ t' ≤ t ∧ @PolishSpace α t' :=
-  ⟨⨅ i : Option ι, i.elim t m, fun i ↦ iInf_le _ (some i), iInf_le _ none,
-    .iInf ⟨none, Option.forall.2 ⟨le_rfl, hm⟩⟩ <| Option.forall.2 ⟨p, h'm⟩⟩
+  ⟨⨅ i : Option (PLift ι), i.elim t (fun i ↦ m i.down), fun i ↦ iInf_le _ (some (PLift.up i)),
+    iInf_le _ none, .iInf ⟨none, Option.forall.2 ⟨le_rfl, fun i ↦ hm i.down⟩⟩ <|
+      Option.forall.2 ⟨p, fun i ↦ h'm i.down⟩⟩
 
 instance : PolishSpace ENNReal :=
   ENNReal.orderIsoUnitIntervalBirational.toHomeomorph.isClosedEmbedding.polishSpace
@@ -297,13 +301,12 @@ theorem IsClopenable.iUnion {ι : Sort*} [Countable ι] [t : TopologicalSpace α
     {s : ι → Set α} (hs : ∀ n, IsClopenable (s n)) : IsClopenable (⋃ n, s n) := by
   choose m mt m_polish _ m_open using hs
   obtain ⟨t', t'm, t't, t'_polish⟩ :
-      ∃ t' : TopologicalSpace α, (∀ n : PLift ι, t' ≤ m n.down) ∧ t' ≤ t ∧ @PolishSpace α t' :=
-    exists_polishSpace_forall_le (fun n : PLift ι ↦ m n.down) (fun n ↦ mt n.down)
-      (fun n ↦ m_polish n.down)
+      ∃ t' : TopologicalSpace α, (∀ n, t' ≤ m n) ∧ t' ≤ t ∧ @PolishSpace α t' :=
+    exists_polishSpace_forall_le m mt m_polish
   have A : IsOpen[t'] (⋃ n, s n) := by
     apply isOpen_iUnion
     intro n
-    apply t'm ⟨n⟩
+    apply t'm n
     exact m_open n
   obtain ⟨t'', t''_le, t''_polish, h1, h2⟩ : ∃ t'' : TopologicalSpace α,
       t'' ≤ t' ∧ @PolishSpace α t'' ∧ IsClosed[t''] (⋃ n, s n) ∧ IsOpen[t''] (⋃ n, s n) :=
