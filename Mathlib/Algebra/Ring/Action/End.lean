@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Ring.Action.Group
-public import Mathlib.Algebra.Ring.Aut
 
 /-!
 # Ring automorphisms

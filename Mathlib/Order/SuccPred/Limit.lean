@@ -6,7 +6,6 @@ Authors: Violeta Hernández Palacios
 module
 
 public import Mathlib.Order.SuccPred.Archimedean
-public import Mathlib.Order.BoundedOrder.Lattice
 
 /-!
 # Successor and predecessor limits
@@ -305,22 +304,6 @@ protected theorem IsSuccPrelimit.isMax (h : IsSuccPrelimit (succ a)) : IsMax a :
 @[to_dual]
 protected theorem IsSuccLimit.isMax (h : IsSuccLimit (succ a)) : IsMax a :=
   h.isSuccPrelimit.isMax
-
-set_option linter.existingAttributeWarning false in
-@[to_dual, deprecated IsSuccPrelimit.isMax +typeChanged (since := "2026-03-31")]
-theorem not_isSuccPrelimit_succ_of_not_isMax (ha : ¬ IsMax a) : ¬ IsSuccPrelimit (succ a) :=
-  mt IsSuccPrelimit.isMax ha
-
-attribute [deprecated IsPredPrelimit.isMin +typeChanged (since := "2026-03-31")]
-not_isPredPrelimit_pred_of_not_isMin
-
-set_option linter.existingAttributeWarning false in
-@[to_dual, deprecated IsSuccLimit.isMax +typeChanged (since := "2026-03-31")]
-theorem not_isSuccLimit_succ_of_not_isMax (ha : ¬ IsMax a) : ¬ IsSuccLimit (succ a) :=
-  mt IsSuccLimit.isMax ha
-
-attribute [deprecated IsPredLimit.isMin +typeChanged (since := "2026-03-31")]
-not_isPredLimit_pred_of_not_isMin
 
 section NoMaxOrder
 

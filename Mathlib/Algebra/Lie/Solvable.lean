@@ -5,11 +5,9 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Lie.Abelian
 public import Mathlib.Algebra.Lie.BaseChange
-public import Mathlib.Algebra.Lie.IdealOperations
-public import Mathlib.Order.Hom.Basic
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
+public import Mathlib.Algebra.Lie.Quotient
 
 /-!
 # Solvable Lie algebras
@@ -464,5 +462,20 @@ theorem abelian_of_solvable_ideal_eq_bot_iff (I : LieIdeal R L) [h : IsSolvable 
     obtain ⟨_, h₂⟩ := (derivedSeries_of_derivedLength_succ R L I k).mp h
     have h₃ : I ≠ ⊥ := by rintro rfl; apply h₂; apply derivedSeries_of_bot_eq_bot
     simp only [h₂, h₃]
+
+theorem isSolvable_of_isSolvable_ideal_quotient
+    (Isol : IsSolvable I) (quotsol : IsSolvable (L ⧸ I)) :
+    IsSolvable L := by
+  obtain ⟨k, hk⟩ := IsSolvable.solvable R (L ⧸ I)
+  obtain ⟨l, hl⟩ := IsSolvable.solvable R I
+  rw [← LieIdeal.derivedSeries_map_eq k I.surjective_mkQ, LieIdeal.map_eq_bot_iff, I.mkQ_ker] at hk
+  rw [LieIdeal.derivedSeries_eq_bot_iff] at hl
+  refine (isSolvable_iff R L).mpr ⟨l + k, le_bot_iff.mp ?_⟩
+  rw [derivedSeries_def, derivedSeriesOfIdeal_add, ← hl]
+  exact derivedSeriesOfIdeal_mono hk l
+
+example : IsSolvable I ∧ IsSolvable (L ⧸ I) ↔ IsSolvable L :=
+  ⟨fun ⟨h₁, h₂⟩ ↦ isSolvable_of_isSolvable_ideal_quotient I h₁ h₂,
+    fun _ ↦ ⟨inferInstance, I.surjective_mkQ.lieAlgebra_isSolvable⟩⟩
 
 end LieAlgebra

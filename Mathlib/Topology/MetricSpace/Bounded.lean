@@ -5,12 +5,12 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébas
 -/
 module
 
+public import Mathlib.Topology.EMetricSpace.Diam
+public import Mathlib.Topology.MetricSpace.Basic
+public import Mathlib.Topology.MetricSpace.Cauchy
+public import Mathlib.Topology.MetricSpace.ProperSpace
 public import Mathlib.Topology.Order.Bornology
 public import Mathlib.Topology.Order.Compact
-public import Mathlib.Topology.MetricSpace.ProperSpace
-public import Mathlib.Topology.MetricSpace.Cauchy
-public import Mathlib.Topology.MetricSpace.Basic
-public import Mathlib.Topology.EMetricSpace.Diam
 
 /-!
 # Boundedness in (pseudo)-metric spaces
@@ -381,15 +381,13 @@ section CompactIccSpace_abs
 variable {α : Type*} [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] [PseudoMetricSpace α]
   [CompactIccSpace α]
 
-lemma isBounded_of_abs_le (C : α) : Bornology.IsBounded {x : α | |x| ≤ C} := by
-  convert! Metric.isBounded_Icc (-C) C
-  ext1 x
-  simp [abs_le]
+lemma isBounded_of_abs_le (C : α) : Bornology.IsBounded {x : α | |x| ≤ C} :=
+  (show {x : α | |x| ≤ C} = Set.Icc (-C) C by ext x; simp [abs_le]) ▸
+    Metric.isBounded_Icc (-C) C
 
-lemma isBounded_of_abs_lt (C : α) : Bornology.IsBounded {x : α | |x| < C} := by
-  convert! Metric.isBounded_Ioo (-C) C
-  ext1 x
-  simp [abs_lt]
+lemma isBounded_of_abs_lt (C : α) : Bornology.IsBounded {x : α | |x| < C} :=
+  (show {x : α | |x| < C} = Set.Ioo (-C) C by ext x; simp [abs_lt]) ▸
+    Metric.isBounded_Ioo (-C) C
 
 end CompactIccSpace_abs
 

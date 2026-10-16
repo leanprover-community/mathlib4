@@ -5,11 +5,9 @@ Authors: Joël Riou, Sophie Morel
 -/
 module
 
-public import Mathlib.CategoryTheory.Triangulated.Functor
-public import Mathlib.CategoryTheory.Shift.Adjunction
-public import Mathlib.CategoryTheory.Adjunction.Additive
-public import Mathlib.CategoryTheory.Adjunction.Opposites
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Functor
+
+import Mathlib.CategoryTheory.Adjunction.Additive
 
 /-!
 # The adjoint functor is triangulated

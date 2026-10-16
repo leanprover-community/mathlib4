@@ -8,11 +8,9 @@ module
 public import Mathlib.Algebra.Algebra.Operations
 public import Mathlib.Algebra.Module.BigOperators
 public import Mathlib.Data.Fintype.Lattice
-public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 public import Mathlib.RingTheory.Coprime.Lemmas
 public import Mathlib.RingTheory.Ideal.Basic
 public import Mathlib.RingTheory.Multiplicity
-public import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 public import Mathlib.Tactic.Order
 
 /-!
@@ -779,10 +777,6 @@ theorem isCoprime_biInf {J : ι → Ideal R} {s : Finset ι}
 -- TODO: Deprecate `Ideal.mul_eq_inf_of_coprime` in favor of this lemma.
 theorem mul_eq_inf_of_isCoprime (coprime : IsCoprime I J) : I * J = I ⊓ J :=
   (Ideal.mul_eq_inf_of_coprime coprime.sup_eq)
-
-@[deprecated mul_eq_inf_of_isCoprime +typeChanged (since := "2026-03-10")]
-theorem inf_eq_mul_of_isCoprime (coprime : IsCoprime I J) : I ⊓ J = I * J :=
-  (Ideal.mul_eq_inf_of_coprime coprime.sup_eq).symm
 
 open Function
 theorem prod_eq_iInf_of_pairwise_isCoprime {s : Finset ι} {J : ι → Ideal R}
