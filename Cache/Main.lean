@@ -100,6 +100,9 @@ Valid arguments are:
 * MATHLIB_CACHE_GET_URL   Download from this single URL as a flat namespace.
                           Allows third parties to use their own cache endpoint.
                           An empty value means unset.
+* MATHLIB_CACHE_PARALLEL_MAX
+                          Number of simultaneous downloads (default: 50).
+                          Keep it well below the open-file limit (`ulimit -n`).
 "
 
 /-- Commands which download with `curl`. Uploads validate curl inside the
