@@ -5,8 +5,8 @@ Authors: Robert A. Spencer, Markus Himmel
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Semi
 public import Mathlib.Algebra.Category.Grp.Preadditive
+public import Mathlib.Algebra.Category.ModuleCat.Semi
 public import Mathlib.CategoryTheory.Linear.Basic
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 public import Mathlib.LinearAlgebra.BilinearMap
@@ -213,11 +213,6 @@ end
 /- Not a `@[simp]` lemma since it will rewrite the (co)domain of maps and cause
 definitional equality issues. -/
 lemma forget_obj {M : ModuleCat.{v} R} : (forget (ModuleCat.{v} R)).obj M = M := rfl
-
-@[deprecated ConcreteCategory.forget_map_eq_ofHom +typeChanged (since := "2026-03-02")]
-lemma forget_map {M N : ModuleCat.{v} R} (f : M ⟶ N) :
-    (forget (ModuleCat.{v} R)).map f = (f : _ → _) :=
-  rfl
 
 instance hasForgetToAddCommGroup : HasForget₂ (ModuleCat R) AddCommGrpCat where
   forget₂ :=

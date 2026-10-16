@@ -7,11 +7,12 @@ module
 
 public import Mathlib.Algebra.Category.Grp.Basic
 public import Mathlib.Algebra.Ring.PUnit
-import Mathlib.CategoryTheory.Adjunction.Limits
 public import Mathlib.CategoryTheory.Conj
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 public import Mathlib.CategoryTheory.SingleObj
+
+import Mathlib.CategoryTheory.Adjunction.Limits
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.Tactic.ApplyFun
 
 /-!
@@ -433,7 +434,6 @@ instance (F : V ⥤ W) (G : Type*) [Monoid G] [F.Faithful] : (F.mapAction G).Fai
     apply_fun (fun f ↦ f.hom) at eq
     exact F.map_injective eq
 
-set_option backward.isDefEq.respectTransparency.types false in
 /--
 A fully faithful functor between categories induces a fully faithful functor between
 the categories of `G`-actions within those categories. -/
@@ -449,7 +449,6 @@ instance (F : V ⥤ W) (G : Type*) [Monoid G] [F.Faithful] [F.Full] : (F.mapActi
 
 variable (G : Type*) [Monoid G]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- `Functor.mapAction` is functorial in the functor. -/
 @[simps! hom inv]
@@ -458,7 +457,6 @@ def mapActionComp {T : Type*} [Category* T] (F : V ⥤ W) (F' : W ⥤ T) :
   NatIso.ofComponents (fun X ↦ Iso.refl _)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- `Functor.mapAction` preserves isomorphisms of functors. -/
 @[simps! hom inv]
 def mapActionCongr {F F' : V ⥤ W} (e : F ≅ F') :
@@ -467,7 +465,6 @@ def mapActionCongr {F F' : V ⥤ W} (e : F ≅ F') :
 
 end Functor
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- An equivalence of categories induces an equivalence of
 the categories of `G`-actions within those categories. -/

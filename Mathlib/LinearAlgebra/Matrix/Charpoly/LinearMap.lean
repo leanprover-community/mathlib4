@@ -5,8 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
 public import Mathlib.Algebra.Module.SpanRank
+public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
 
 /-!
 
@@ -222,13 +222,6 @@ theorem LinearMap.exists_monic_and_natDegree_eq_and_coeff_mem_pow_and_aeval_eq_z
     congr 1
     ext1
     rw [Polynomial.aeval_subalgebra_coe, Matrix.aeval_self_charpoly, Subalgebra.coe_zero]
-
-@[deprecated
-"strengthened conclusion to
-`LinearMap.exists_monic_and_natDegree_eq_and_coeff_mem_pow_and_aeval_eq_zero`"
-(since := "2026-04-10")] alias
-LinearMap.exists_monic_and_coeff_mem_pow_and_aeval_eq_zero_of_range_le_smul :=
-  LinearMap.exists_monic_and_natDegree_eq_and_coeff_mem_pow_and_aeval_eq_zero
 
 theorem LinearMap.exists_monic_and_natDegree_eq_and_aeval_eq_zero
     [Module.Finite R M] (f : Module.End R M) :

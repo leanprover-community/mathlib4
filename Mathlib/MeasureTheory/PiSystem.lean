@@ -5,10 +5,11 @@ Authors: Johannes Hölzl, Martin Zinkevich, Rémy Degenne
 -/
 module
 
-import Mathlib.Logic.Encodable.Lattice
 public import Mathlib.MeasureTheory.MeasurableSpace.Defs
 public import Mathlib.Order.Disjointed
 public import Mathlib.Order.SetDissipate
+
+import Mathlib.Logic.Encodable.Lattice
 
 /-!
 # Induction principles for measurable sets, related to π-systems and λ-systems.
@@ -640,7 +641,7 @@ def toMeasurableSpace (h_inter : ∀ s₁ s₂, d.Has s₁ → d.Has s₂ → d.
     rw [← iUnion_disjointed]
     exact
       d.has_iUnion (disjoint_disjointed _) fun n =>
-        disjointedRec (fun (t : Set α) i h => h_inter _ _ h <| d.has_compl <| hf i) (hf n)
+        disjointedRec (p := d.Has) (fun t i h => h_inter _ _ h <| d.has_compl <| hf i) (hf n)
 
 theorem ofMeasurableSpace_toMeasurableSpace
     (h_inter : ∀ s₁ s₂, d.Has s₁ → d.Has s₂ → d.Has (s₁ ∩ s₂)) :

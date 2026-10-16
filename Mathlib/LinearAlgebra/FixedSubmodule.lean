@@ -9,6 +9,7 @@ module
 public import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 public import Mathlib.LinearAlgebra.DFinsupp
 public import Mathlib.LinearAlgebra.Quotient.Basic
+
 import Mathlib.Tactic.NormNum
 
 /-!

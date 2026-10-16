@@ -6,11 +6,12 @@ Authors: Kevin Buzzard, Ines Wright, Joachim Breitner
 module
 
 public import Mathlib.Algebra.Group.Subgroup.Order
-import Mathlib.GroupTheory.Commutator.Finite
 public import Mathlib.GroupTheory.IndexNormal
 public import Mathlib.GroupTheory.QuotientGroup.Simple
 public import Mathlib.GroupTheory.Solvable
 public import Mathlib.GroupTheory.Sylow
+
+import Mathlib.GroupTheory.Commutator.Finite
 
 /-!
 
@@ -885,9 +886,10 @@ theorem nilpotencyClass_quotient_center :
           nilpotencyClass_le_of_ker_le_center _ (le_of_eq (ker_mk' _))
 
 /-- The nilpotency class of a non-trivial group is one more than its quotient by the center -/
-@[to_additive /-- The nilpotency class of a non-trivial additive group is one more than its quotient
+@[to_additive nilpotencyClass_eq_quotient_center_add_one
+/-- The nilpotency class of a non-trivial additive group is one more than its quotient
 by the center -/]
-theorem nilpotencyClass_eq_quotient_center_plus_one [hH : IsNilpotent G] [Nontrivial G] :
+theorem nilpotencyClass_eq_quotient_center_add_one [hH : IsNilpotent G] [Nontrivial G] :
     Group.nilpotencyClass G = Group.nilpotencyClass (G ⧸ center G) + 1 := by
   rw [nilpotencyClass_quotient_center]
   rcases h : Group.nilpotencyClass G with ⟨⟩
@@ -895,6 +897,10 @@ theorem nilpotencyClass_eq_quotient_center_plus_one [hH : IsNilpotent G] [Nontri
     rw [nilpotencyClass_zero_iff_subsingleton] at h
     apply false_of_nontrivial_of_subsingleton G
   · simp
+
+@[to_additive (attr := deprecated (since := "2026-10-06"))]
+alias nilpotencyClass_eq_quotient_center_plus_one :=
+  nilpotencyClass_eq_quotient_center_add_one
 
 /-- A custom induction principle for nilpotent groups. The base case is a trivial group
 (`subsingleton G`), and in the induction step, one can assume the hypothesis for
@@ -1301,7 +1307,7 @@ theorem Group.isNilpotent_of_product_of_sylow_group
   have : ∀ (p : ps) (P : Sylow p G), IsNilpotent (↑P : Subgroup G) := by
     intro p P
     have : Fact (Nat.Prime ↑p) := Fact.mk <| Nat.prime_of_mem_primeFactors p.2
-    exact P.isPGroup'.isNilpotent
+    exact P.isPGroup.isNilpotent
   exact nilpotent_of_mulEquiv e
 
 /-- A finite group is nilpotent iff the normalizer condition holds, and iff all maximal groups are
@@ -1334,7 +1340,7 @@ lemma Group.IsNilpotent.prime_dvd_card_center [IsNilpotent G] {p : ℕ} [hp : Fa
   obtain P : Sylow p G := Classical.arbitrary ..
   refine dvd_trans ?_ <| (↑P ⊓ center G).card_dvd_of_le inf_le_right
   have hnt := mt (eq_bot_iff_card _).mpr (inf_center_ne_bot_of_normal (P.ne_bot_of_dvd_card hcard))
-  exact P.isPGroup'.to_inf_left.card_eq_or_dvd.resolve_left hnt
+  exact P.isPGroup.to_inf_left.card_eq_or_dvd.resolve_left hnt
 
 /-- A finite nilpotent group has normal subgroups of every possible index. -/
 theorem Group.IsNilpotent.exists_normal_index_eq_of_dvd_card [IsNilpotent G] {k : ℕ}
@@ -1367,5 +1373,3 @@ theorem Group.IsNilpotent.exists_normal_card_eq_of_dvd_card [IsNilpotent G] {n :
   rwa [← H.card_mul_index, ← hind, Nat.mul_left_inj FiniteIndex.index_ne_zero] at hk
 
 end WithFiniteGroup
-
-open Group

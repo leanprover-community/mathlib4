@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Data.Finset.Lattice.Fold
+
 import Mathlib.Data.Fintype.Basic
 
 /-!

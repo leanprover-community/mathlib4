@@ -6,8 +6,9 @@ Authors: Christian Merten, Yi Song, Sihan Su
 module
 
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Algebra
-import Mathlib.RingTheory.Flat.Localization
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
+
+import Mathlib.RingTheory.Flat.Localization
 
 /-!
 # Going down
