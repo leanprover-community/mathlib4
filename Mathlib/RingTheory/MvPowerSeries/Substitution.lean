@@ -156,6 +156,16 @@ noncomputable def hasSubstIdeal : Ideal (σ → MvPowerSeries τ S) :=
     zero_mem' := HasSubst.zero
     smul_mem' := HasSubst.mul_left }
 
+theorem HasSubst.sub {a b : σ → MvPowerSeries τ S} (ha : HasSubst a) (hb : HasSubst b) :
+    HasSubst (a - b) := by
+  have : a - b ∈ hasSubstIdeal := Ideal.sub_mem _ ha hb
+  exact this
+
+theorem HasSubst.neg {a : σ → MvPowerSeries τ S} (ha : HasSubst a) :
+    HasSubst (-a) := by
+  have : -a ∈ hasSubstIdeal := Ideal.neg_mem_iff _|>.mpr ha
+  exact this
+
 /-- If `σ` is finite, then the nilpotent condition is enough for `HasSubst` -/
 theorem hasSubst_of_constantCoeff_nilpotent [Finite σ]
     {a : σ → MvPowerSeries τ S} (ha : ∀ s, IsNilpotent (constantCoeff (a s))) :
