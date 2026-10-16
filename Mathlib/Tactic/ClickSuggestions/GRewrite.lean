@@ -17,7 +17,7 @@ public meta section
 
 namespace Mathlib.Tactic.ClickSuggestions
 
-open Lean Meta Mathlib.Tactic ProofWidgets Jsx
+open Lean Meta Mathlib.Tactic ProofWidgets
 
 /-- A relation for a `grw` lemma. -/
 structure GrwRel where
@@ -225,13 +225,13 @@ def GrwLemma.try (i : GrwInfo) (lem : GrwLemma) (assignableMVars : Array Expr) :
     htmls := htmls.push <div><strong className="goal-vdash">⊢ </strong>{html}</div>
   for goal in extraGoals do
     htmls := htmls.push
-      <div> <strong className="goal-vdash">⊢ </strong> {← exprToHtml goal} </div>
+      jsx%{<div><strong className="goal-vdash">⊢ </strong>{← exprToHtml goal}</div>}
   let filtered ←
     if isRefl || unhelpfulMVars then
       pure none
     else
       some <$> mkSuggestion tactic (.element "div" #[] htmls) (isClosing := isClosing)
-  htmls := htmls.push <div> {← lem.name.toHtml} </div>
+  htmls := htmls.push jsx%{<div>{← lem.name.toHtml}</div>}
   let unfiltered ← mkSuggestion tactic (.element "div" #[] htmls) (isClosing := isClosing)
   let pattern ← do
     let (_, _, e) ← forallMetaTelescopeReducing (← lem.name.getType)
