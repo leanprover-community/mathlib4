@@ -282,7 +282,8 @@ theorem Measure.MeasureDense.of_generateFrom_isSetAlgebra_sigmaFinite (h𝒜 : I
     -- We use the fact that we already know this is true for finite measures. As `⋃ n, T n = X`,
     -- we have that `μ ((T n) ∩ s) ⟶ μ s`.
     have mono : Monotone (fun n ↦ (T n) ∩ s) := fun m n hmn ↦ inter_subset_inter_left s
-        (biUnion_subset_biUnion_left fun k hkm ↦ Nat.le_trans hkm hmn)
+        (biUnion_subset_biUnion_left (s := {k | k ≤ m}) (s' := {k | k ≤ n})
+          fun k hkm ↦ Nat.le_trans hkm hmn)
     have := tendsto_measure_iUnion_atTop (μ := μ) mono
     rw [← tendsto_toReal_iff] at this
     · -- We can therefore choose `N` such that `μ s - μ ((S N) ∩ s) < ε/2`.
@@ -298,7 +299,7 @@ theorem Measure.MeasureDense.of_generateFrom_isSetAlgebra_sigmaFinite (h𝒜 : I
       -- We can then use `t ∩ (S N)`, because `S N ∈ 𝒜` by hypothesis.
       -- `μ (s ∆ (t ∩ S N))`
       --   `≤ μ (s ∆ (s ∩ S N)) + μ ((s ∩ S N) ∆ (t ∩ S N))`
-      --   `= μ s - μ (s ∩ S N) + μ (s ∆ t) ∩ S N) < ε`.
+      --   `= μ s - μ (s ∩ S N) + μ ((s ∆ t) ∩ S N) < ε`.
       refine ⟨t ∩ T N, h𝒜.inter_mem t_mem (T_mem N), ?_⟩
       calc
         μ (s ∆ (t ∩ T N))

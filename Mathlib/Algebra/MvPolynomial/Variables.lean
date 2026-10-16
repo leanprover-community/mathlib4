@@ -5,8 +5,8 @@ Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Finsupp.Lex
 public import Mathlib.Algebra.MvPolynomial.Degrees
+public import Mathlib.Data.Finsupp.Lex
 
 /-!
 # Variables of polynomials

@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel, Kexing Ying
 module
 
 public import Mathlib.Probability.Moments.Covariance
+
 import Mathlib.MeasureTheory.Function.LpSeminorm.Prod
 import Mathlib.Probability.Independence.Integrable
 

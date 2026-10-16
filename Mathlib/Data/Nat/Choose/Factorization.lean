@@ -25,7 +25,7 @@ bounds in binomial coefficients. These include:
 * `Nat.factorization_choose_eq_zero_of_lt`: Primes greater than `n` do not
   appear in the factorization of `n` choose `k`.
 
-These results appear in the [Erdős proof of Bertrand's postulate](aigner1999proofs).
+These results appear in the [Erdős proof of Bertrand's postulate][aigner1999proofs].
 -/
 
 public section
