@@ -846,7 +846,7 @@ This is available in bundled forms as:
   __ := prodAddEquiv
   map_smul' _ _ := rfl
 
-@[simp] theorem toAddEquiv_prodLineardEquiv (R) [Semiring R] [AddCommMonoid α] [AddCommMonoid β]
+@[simp] theorem toAddEquiv_prodLinearEquiv (R) [Semiring R] [AddCommMonoid α] [AddCommMonoid β]
     [Module R α] [Module R β] : (prodLinearEquiv (m := m) (n := n) (α := α) (β := β) R :
       Matrix m n (α × β) ≃+ Matrix m n α × Matrix m n β) = prodAddEquiv := rfl
 
