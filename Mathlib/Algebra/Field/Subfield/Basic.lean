@@ -448,8 +448,7 @@ theorem isMulCommutative_closure {s : Set K} (hs : s.Pairwise Commute) :
 
 instance {S : Type*} [SetLike S K] [MulMemClass S K] (s : S) [IsMulCommutative s] :
     IsMulCommutative (closure (s : Set K)) :=
-  isMulCommutative_closure fun i hi j hj _ =>
-    SetLike.coe_eq_coe.2 (mul_comm' (⟨i, hi⟩ : s) (⟨j, hj⟩ : s))
+  isMulCommutative_closure fun _ hi _ hj _ => setLike_mul_comm hi hj
 
 end Subfield
 
