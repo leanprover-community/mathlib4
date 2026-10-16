@@ -66,7 +66,7 @@ def ListMatrixLit.ofArray {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (m n 
 
 /-- Build the list literal of the recorded swaps. -/
 def mkSwapsLitQ (m : Nat) (swaps : Array (Nat × Nat)) : MetaM Q(List (Fin $m × Fin $m)) := do
-  let pairs ← swaps.toList.mapM fun (a, b) => do
+  let pairs ← swaps.toList.mapM fun (a, b) ↦ do
     let aQ : Q(Fin $m) ← mkFinLitQ m a
     let bQ : Q(Fin $m) ← mkFinLitQ m b
     return q(($aQ, $bQ))
