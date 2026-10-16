@@ -38,12 +38,11 @@ instance instTopologicalSpace : TopologicalSpace (E [Sym^ι]→L[𝕜] F) :=
 lemma isClosed_range_toContinuousMultilinearMap [ContinuousSMul 𝕜 E] [T2Space F] :
     IsClosed (Set.range (toContinuousMultilinearMap : (E [Sym^ι]→L[𝕜] F) →
       ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) F)) := by
-  simp only [range_toContinuousMultilinearMap, setOf_forall]
+  simp only [range_toContinuousMultilinearMap, ofPred_forall]
   repeat refine isClosed_iInter fun _ ↦ ?_
   rename_i f i j _
   let A : ContinuousMultilinearMap 𝕜 (fun x ↦ E) F → F := fun x ↦ x (f ∘ ⇑(Equiv.swap i j)) - x f
   convert isClosed_singleton (x := 0).preimage (by fun_prop : Continuous A)
-  ext x
   simp [A, sub_eq_iff_eq_add]
 
 end IsClosedRange
@@ -249,6 +248,28 @@ lemma liftCLM_apply (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 (fun _ : ι 
     liftCLM f hf x v = f x v :=
   rfl
 
+/-- Symmetrization of a continuous multilinear map to a continuous symmetric map, as a
+continuous linear map. -/
+noncomputable def _root_.ContinuousMultilinearMap.symmetrizationL [Fintype ι] [DecidableEq ι] :
+    ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) F →L[𝕜] (E [Sym^ι]→L[𝕜] F) where
+  toFun g := ContinuousMultilinearMap.symmetrization g
+  map_add' g h := map_add _ g h
+  map_smul' c g := by
+    ext v
+    simp [ContinuousMultilinearMap.symmetrization_apply_apply, Finset.smul_sum]
+  cont := by
+    refine continuous_induced_rng.mpr ?_
+    simp only [Function.comp_def,
+      ContinuousMultilinearMap.symmetrization_apply_toContinuousMultilinearMap]
+    refine continuous_finsetSum _ fun σ _ ↦ ?_
+    exact (ContinuousMultilinearMap.domDomCongrL σ).continuous
+
+theorem _root_.ContinuousMultilinearMap.symmetrizationL_apply [Fintype ι] [DecidableEq ι]
+    (g : ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) F) (v : ι → E) :
+    ContinuousMultilinearMap.symmetrizationL g v =
+      ∑ σ : Equiv.Perm ι, g (v ∘ σ) :=
+  ContinuousMultilinearMap.symmetrization_apply_apply g v
+
 section CompContinuousLinearMap
 
 variable {E' : Type*} [AddCommGroup E'] [Module 𝕜 E'] [TopologicalSpace E']
@@ -276,7 +297,6 @@ def apply (m : ι → E) : E [Sym^ι]→L[𝕜] F →L[𝕜] F where
   toFun c := c m
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-  cont := continuous_eval_const m
 
 variable {𝕜 E F}
 
