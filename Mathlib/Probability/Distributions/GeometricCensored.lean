@@ -14,6 +14,8 @@ For `p : unitInterval` and `m : ℕ`, `geometricCensoredMeasure p m` is the dist
 `geometricMeasure p` under `fun k ↦ min k m`. The mass of `{m, m + 1, ...}` collects at `m`;
 nothing is renormalized. This is censoring, not truncation (which conditions on `k ≤ m` and
 renormalizes).
+As in `Mathlib.Probability.Distributions.Geometric`, `p = 0` is a junk case (`geometricMeasure 0` is
+`Measure.dirac 0`), so the mass-function lemmas assume `p ≠ 0`.
 
 ## Main definitions
 
@@ -30,7 +32,7 @@ renormalizes).
 geometric distribution, censoring
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Set
 
@@ -41,7 +43,7 @@ variable {p : unitInterval} {m k : ℕ}
 /-- The geometric distribution with success probability `p`, censored at `m`: the distribution
 of `min k m` for `k` geometric. The mass of `{m, m + 1, ...}` collects at `m`; nothing is
 renormalized. -/
-noncomputable def geometricCensoredMeasure (p : unitInterval) (m : ℕ) : Measure ℕ :=
+@[expose] noncomputable def geometricCensoredMeasure (p : unitInterval) (m : ℕ) : Measure ℕ :=
   (geometricMeasure p).map fun k ↦ min k m
 
 instance isProbabilityMeasure_geometricCensoredMeasure :
