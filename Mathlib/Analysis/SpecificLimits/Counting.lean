@@ -9,22 +9,24 @@ public import Mathlib.Analysis.SpecificLimits.Basic
 
 /-! # Asymptotics of counting functions
 
-If a sequence `f : ℕ → ℝ` grows linearly, `f n / n → τ` with `0 < τ`, and `c : ℝ → ℕ` counts
+If a sequence `f : ℕ → ℝ` grows linearly, `f n / n → τ` with `τ ≠ 0`, and `c : ℝ → ℕ` counts
 it, in the sense of the two one-sided bounds `t ≤ f (c t)` and `∀ k < c t, f k ≤ t`, then `c`
 grows at the inverse rate: `c t / t → τ⁻¹` (`tendsto_count_div_atTop`). Monotonicity of `f` is not
 required; the two bounds alone invert the rate.
 
 The bounds are those of `Nat.find`: if `h : ∀ t, ∃ n, t ≤ f n`, then `c t := Nat.find (h t)`
-satisfies them by `Nat.find_spec` and `Nat.find_min`. So does `fun t ↦ ⌈t / τ⌉₊` when `f n = τ * n`.
+satisfies them by `Nat.find_spec` and `Nat.find_min`. So does `fun t ↦ ⌈t / τ⌉₊` when `f n = τ * n`
+and `0 < τ`.
 
-`tendsto_comp_count_div_atTop` composes a Cesàro limit `S n / n → L` with such a count:
+`tendsto_comp_count_div_atTop` composes a limit `S n / n → L` with such a count:
 `S (c t) / t → L * ρ` whenever `c t / t → ρ` and `c → ∞`.
 
 ## Main results
 
 * `tendsto_count_div_atTop`: a counting function of a linearly growing sequence grows at the
   inverse rate.
-* `tendsto_comp_count_div_atTop`: Cesàro averages compose with a linearly growing count.
+* `tendsto_comp_count_div_atTop`: a limit `S n / n → L` composes with a linearly growing count;
+  for a partial sum `S` this is the Cesàro mean.
 * `tendsto_count_atTop`: a counting function dominated below through `f` diverges.
 
 ## Tags
@@ -52,12 +54,12 @@ theorem tendsto_count_atTop {f : ℕ → ℝ} {c : ℝ → ℕ} (hub : ∀ t, t 
   by_contra hcM
   exact absurd (hub t) (not_le.mpr ((hT _ (not_le.mp hcM)).trans_le ht))
 
-/-- **Rate inversion for counting functions.** If `f n / n → τ` with `0 < τ` and `c` satisfies
+/-- **Rate inversion for counting functions.** If `f n / n → τ` with `τ ≠ 0` and `c` satisfies
 the two one-sided bounds — `t` never exceeds `f` at the count, and `f` below the count never
 exceeds `t` — then `c t / t → τ⁻¹`. `f` need not be monotone. The proof squeezes `t / c t`
 between `f (c t - 1) / c t` and `f (c t) / c t`, both converging to `τ` by composition, and
 inverts. -/
-theorem tendsto_count_div_atTop {f : ℕ → ℝ} {c : ℝ → ℕ} {τ : ℝ} (hτ : 0 < τ)
+theorem tendsto_count_div_atTop {f : ℕ → ℝ} {c : ℝ → ℕ} {τ : ℝ} (hτ : τ ≠ 0)
     (hf : Tendsto (fun n ↦ f n / n) atTop (𝓝 τ)) (hub : ∀ t, t ≤ f (c t))
     (hlb : ∀ t, ∀ k < c t, f k ≤ t) :
     Tendsto (fun t ↦ (c t : ℝ) / t) atTop (𝓝 τ⁻¹) := by
@@ -83,10 +85,11 @@ theorem tendsto_count_div_atTop {f : ℕ → ℝ} {c : ℝ → ℕ} {τ : ℝ} (
     · filter_upwards [hc_top.eventually_ge_atTop 1] with t hct
       exact div_le_div_of_nonneg_right (hlb t _ (by omega)) (Nat.cast_nonneg _)
     · exact Eventually.of_forall fun t ↦ div_le_div_of_nonneg_right (hub t) (Nat.cast_nonneg _)
-  exact (hmid.inv₀ hτ.ne').congr fun t ↦ inv_div _ _
+  exact (hmid.inv₀ hτ).congr fun t ↦ inv_div _ _
 
-/-- Cesàro composition with a count: if the partial-sum averages converge, `S n / n → L`, and
-the count grows linearly, `c t / t → ρ` with `c → ∞`, then `S (c t) / t → L * ρ`. -/
+/-- Composition with a count: if `S n / n → L` and the count grows linearly, `c t / t → ρ` with
+`c → ∞`, then `S (c t) / t → L * ρ`. For a partial sum `S` this composes a Cesàro mean with the
+count. -/
 theorem tendsto_comp_count_div_atTop {S : ℕ → ℝ} {c : ℝ → ℕ} {L ρ : ℝ}
     (hS : Tendsto (fun n ↦ S n / n) atTop (𝓝 L))
     (hc : Tendsto (fun t ↦ (c t : ℝ) / t) atTop (𝓝 ρ))
