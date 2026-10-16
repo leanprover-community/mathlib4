@@ -206,10 +206,8 @@ def decideStronglyConnected (adjMatrix : Array (Array Bool)) : StrongConnectivit
   let n := adjMatrix.size
   let adj (p c : Nat) : Bool := (adjMatrix[p]!)[c]!
   let (outTree, fromRoot) := bfs n adj 0
-  -- The vertices reached from `0` are closed under the edges.
   if !fromRoot.all id then .disconnected fromRoot else
   let (inTree, toRoot) := bfs n (Function.swap adj) 0
-  -- The vertices not reaching `0` are closed under the edges.
   if !toRoot.all id then .disconnected (toRoot.map not) else
   .connected outTree inTree
 
