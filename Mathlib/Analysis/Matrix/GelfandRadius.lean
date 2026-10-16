@@ -33,7 +33,7 @@ private theorem gelfandRadius_mul_comm_le (A : Matrix m n R) (B : Matrix n m R) 
   intro n; induction n with
   | zero => simp
   | succ k hk =>
-    grw [pow_succ, ← Matrix.mul_assoc, mul_pow_mul, linfty_opNorm_mul, linfty_opNorm_mul,
+    grw [pow_succ, ← Matrix.mul_assoc, Matrix.mul_pow_mul, linfty_opNorm_mul, linfty_opNorm_mul,
       h k, ← le_max_right]
     grind [le_of_eq]
 
