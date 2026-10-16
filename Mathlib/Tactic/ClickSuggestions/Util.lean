@@ -356,7 +356,7 @@ section Widget
 open Widget
 
 /-- Generate a suggestion for inserting `tac`, with message `html`.
-`buton` will be used as the text on the clickable button.
+`button` will be used as the text on the clickable button.
 If `solves := true`, then a `🎉️` emoji is added. -/
 def mkSuggestion (tac : TSyntax `tactic) (button : String) (html : Html) (solves : Bool) :
     ClickSuggestionsM Html := do
@@ -369,7 +369,7 @@ def mkSuggestion (tac : TSyntax `tactic) (button : String) (html : Html) (solves
     jsx%{<span style={json% { "white-space" : "pre"}} className="font-code">
     { .ofComponent MakeEditLink (.ofReplaceRange (← read).meta range newText) #[.text buttonText] }
     </span>}
-  return jsx%{<div display="flex"
+  return jsx%{<div
     style={json% { "display" : "flex", "align-items" : "flex-start", "margin-bottom" : "1em" }}>
     {button}{html}
     </div>}
