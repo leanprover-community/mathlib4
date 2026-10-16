@@ -620,7 +620,7 @@ This is available in bundled forms as:
 * `Matrix.rowAddEquiv`
 * `Matrix.rowLinearEquiv`
 -/
-def row (A : Matrix m n α) : m → n → α := A
+def row : Matrix m n α ≃ (m → n → α) := .refl _
 
 /-- For an `m × n` `α`-matrix `A`, `A.col j` is the `j`th column of `A` as a vector in `m → α`.
 `A.col` is defeq to `Aᵀ`, but refers to the 'column function' of `A`
@@ -634,7 +634,7 @@ This is available in bundled forms as:
 * `Matrix.colAddEquiv`
 * `Matrix.colLinearEquiv`
 -/
-def col (A : Matrix m n α) : n → m → α := Aᵀ
+def col : Matrix m n α ≃ (n → m → α) := .functionSwap ..
 
 lemma row_eq_self (A : Matrix m n α) : A.row = of.symm A := rfl
 
