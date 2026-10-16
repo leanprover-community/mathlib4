@@ -561,6 +561,11 @@ lemma pow_apply_nonneg [Fintype n] [DecidableEq n] [PartialOrder α] [IsOrderedR
     intro i j; rw [pow_succ, mul_apply]
     exact Finset.sum_nonneg fun l _ => mul_nonneg (ih i l) (hA l j)
 
+lemma mul_pow_mul [Fintype n] [Fintype m] [DecidableEq n] [DecidableEq m]
+    (A : Matrix m n α) (B : Matrix n m α) : ∀ k : ℕ, (A * B) ^ k * A = A * (B * A) ^ k
+  | 0 => by simp
+  | k + 1 => by simp [pow_succ', ← mul_pow_mul, Matrix.mul_assoc]
+
 end Semiring
 
 section CommSemiring
