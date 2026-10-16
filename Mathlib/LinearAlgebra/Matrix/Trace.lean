@@ -166,8 +166,10 @@ theorem trace_mul_cycle' [NonUnitalCommSemiring R] (A : Matrix m n R) (B : Matri
 
 -- Matrix powers require decidable equality on the index types. Keep these instances
 -- local so that the theorem statements do not impose extra typeclass assumptions.
-noncomputable local instance : DecidableEq m := Classical.decEq m
-noncomputable local instance : DecidableEq n := Classical.decEq n
+noncomputable section
+
+local instance : DecidableEq m := Classical.decEq m
+local instance : DecidableEq n := Classical.decEq n
 
 /-- The trace of a positive power of A * B is unchanged when the factors are reversed.
 
@@ -206,6 +208,8 @@ theorem trace_mul_pow_comm [CommSemiring R] (A B : Matrix n n R) (k : ℕ) :
   cases k with
   | zero => rfl
   | succ k => exact trace_mul_pow_comm' A B k.succ_ne_zero
+
+end
 
 @[simp]
 theorem trace_replicateCol_mul_replicateRow {ι : Type*} [Unique ι] [NonUnitalNonAssocSemiring R]
