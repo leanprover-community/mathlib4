@@ -787,7 +787,7 @@ def Biprod.isoElim (f : X₁ ⊞ X₂ ≅ Y₁ ⊞ Y₂) [IsIso (biprod.inl ≫ 
   Biprod.isoElim' (biprod.inl ≫ f.hom ≫ biprod.fst) (biprod.inl ≫ f.hom ≫ biprod.snd)
     (biprod.inr ≫ f.hom ≫ biprod.fst) (biprod.inr ≫ f.hom ≫ biprod.snd)
 
-theorem Biprod.column_ne_zero_of_iso {W X Y Z : C} (f : W ⊞ X ⟶ Y ⊞ Z) [IsIso f] :
+theorem Biprod.column_nonzero_of_iso {W X Y Z : C} (f : W ⊞ X ⟶ Y ⊞ Z) [IsIso f] :
     𝟙 W = 0 ∨ biprod.inl ≫ f ≫ biprod.fst ≠ 0 ∨ biprod.inl ≫ f ≫ biprod.snd ≠ 0 := by
   by_contra! ⟨nz, a₁, a₂⟩
   set x := biprod.inl ≫ f ≫ inv f ≫ biprod.fst
@@ -812,12 +812,9 @@ theorem Biprod.column_ne_zero_of_iso {W X Y Z : C} (f : W ⊞ X ⟶ Y ⊞ Z) [Is
     simp only [zero_comp]
   exact nz (h₁.symm.trans h₀)
 
-@[deprecated (since := "2026-10-13")]
-alias Biprod.column_nonzero_of_iso := Biprod.column_ne_zero_of_iso
-
 end
 
-theorem Biproduct.column_ne_zero_of_iso' {σ τ : Type} [Finite τ] {S : σ → C} [HasBiproduct S]
+theorem Biproduct.column_nonzero_of_iso' {σ τ : Type} [Finite τ] {S : σ → C} [HasBiproduct S]
     {T : τ → C} [HasBiproduct T] (s : σ) (f : ⨁ S ⟶ ⨁ T) [IsIso f] :
     (∀ t : τ, biproduct.ι S s ≫ f ≫ biproduct.π T t = 0) → 𝟙 (S s) = 0 := by
   cases nonempty_fintype τ
@@ -833,9 +830,6 @@ theorem Biproduct.column_ne_zero_of_iso' {σ τ : Type} [Finite τ] {S : σ → 
     grind [CategoryTheory.Limits.zero_comp, Finset.sum_const_zero]
   exact h₁.symm.trans h₀
 
-@[deprecated (since := "2026-10-13")]
-alias Biproduct.column_nonzero_of_iso' := Biproduct.column_ne_zero_of_iso'
-
 /-- If `f : ⨁ S ⟶ ⨁ T` is an isomorphism, and `s` is a non-trivial summand of the source,
 then there is some `t` in the target so that the `s, t` matrix entry of `f` is nonzero.
 -/
@@ -844,7 +838,7 @@ def Biproduct.columnNonzeroOfIso {σ τ : Type} [Fintype τ] {S : σ → C} [Has
     Trunc (Σ' t : τ, biproduct.ι S s ≫ f ≫ biproduct.π T t ≠ 0) := by
   classical
     apply truncSigmaOfExists
-    have t := Biproduct.column_ne_zero_of_iso'.{v} s f
+    have t := Biproduct.column_nonzero_of_iso'.{v} s f
     by_contra h
     simp only [not_exists_not] at h
     exact nz (t h)
