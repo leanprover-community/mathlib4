@@ -41,8 +41,6 @@ This also relates to Grothendieck's yoga of six operations, though this is not s
 mathlib: https://ncatlab.org/nlab/show/six+operations.
 -/
 
-set_option backward.defeqAttrib.useBackward true
-
 @[expose] public section
 
 universe v₁ v₂ v₃ v₄ v₅ v₆ v₇ v₈ v₉ u₁ u₂ u₃ u₄ u₅ u₆ u₇ u₈ u₉
@@ -82,19 +80,19 @@ Note that if one of the transformations is an iso, it does not imply the other i
 -/
 @[simps]
 def mateEquiv : TwoSquare G L₁ L₂ H ≃ TwoSquare R₁ H G R₂ where
-  toFun α := .mk _ _ _ _ <|
+  toFun α :=
     (rightUnitor _).inv ≫
     whiskerLeft (R₁ ⋙ G) adj₂.unit ≫
     (associator _ _ _).hom ≫ whiskerLeft _ (associator _ _ _).inv ≫
-    whiskerLeft R₁ (whiskerRight α.natTrans R₂) ≫
+    whiskerLeft R₁ (whiskerRight α R₂) ≫
     whiskerLeft _ (associator _ _ _).hom ≫ (associator _ _ _).inv ≫
     whiskerRight adj₁.counit (H ⋙ R₂) ≫
     (leftUnitor _).hom
-  invFun β := .mk _ _ _ _ <|
+  invFun β :=
     (leftUnitor _).inv ≫
     whiskerRight adj₁.unit (G ⋙ L₂) ≫
     (associator _ _ _).inv ≫ whiskerRight (associator _ _ _).hom _ ≫
-    whiskerRight (whiskerLeft L₁ β.natTrans) L₂ ≫
+    whiskerRight (whiskerLeft L₁ β) L₂ ≫
     whiskerRight (associator _ _ _).inv _ ≫ (associator _ _ _).hom ≫
     whiskerLeft (L₁ ⋙ H) adj₂.counit ≫
     (rightUnitor _).hom
@@ -105,7 +103,7 @@ def mateEquiv : TwoSquare G L₁ L₂ H ≃ TwoSquare R₁ H G R₂ where
       Functor.comp_map, associator_inv_app, associator_hom_app, map_id, Functor.whiskerLeft_app,
       rightUnitor_inv_app, leftUnitor_hom_app, rightUnitor_hom_app, comp_id, id_comp,
       counit_naturality, counit_naturality_assoc, left_triangle_components_assoc]
-    rw [← assoc, ← Functor.comp_map, α.natTrans.naturality, Functor.comp_map, assoc, ← H.map_comp,
+    rw [← assoc, ← Functor.comp_map, α.naturality, Functor.comp_map, assoc, ← H.map_comp,
       left_triangle_components, map_id]
     simp only [comp_obj, comp_id]
   right_inv β := by
@@ -115,7 +113,7 @@ def mateEquiv : TwoSquare G L₁ L₂ H ≃ TwoSquare R₁ H G R₂ where
       associator_hom_app, associator_inv_app, Functor.whiskerRight_app, leftUnitor_inv_app, map_id,
       Functor.comp_map, rightUnitor_hom_app, leftUnitor_hom_app, comp_id, id_comp,
       unit_naturality_assoc, right_triangle_components_assoc]
-    rw [← assoc, ← Functor.comp_map, assoc, ← β.natTrans.naturality, ← assoc, Functor.comp_map,
+    rw [← assoc, ← Functor.comp_map, assoc, ← β.naturality, ← assoc, Functor.comp_map,
       ← G.map_comp, right_triangle_components, map_id, id_comp]
 
 set_option backward.defeqAttrib.useBackward true in
@@ -275,9 +273,7 @@ This is in contrast to the general case `mateEquiv` which does not in general ha
 def conjugateEquiv : (L₂ ⟶ L₁) ≃ (R₁ ⟶ R₂) :=
   calc
     (L₂ ⟶ L₁) ≃ (𝟭 C ⋙ L₂ ⟶ L₁ ⋙ 𝟭 D) := (Iso.homCongr L₂.leftUnitor L₁.rightUnitor).symm
-    _ ≃ TwoSquare _ _ _ _ := (TwoSquare.equivNatTrans _ _ _ _).symm
     _ ≃ _ := mateEquiv adj₁ adj₂
-    _ ≃ (R₁ ⋙ 𝟭 C ⟶ 𝟭 D ⋙ R₂) := TwoSquare.equivNatTrans _ _ _ _
     _ ≃ (R₁ ⟶ R₂) := R₁.rightUnitor.homCongr R₂.leftUnitor
 
 set_option backward.defeqAttrib.useBackward true in
@@ -294,7 +290,6 @@ theorem conjugateEquiv_counit_symm (α : R₁ ⟶ R₂) (d : D) :
     conv_lhs => rw [← (conjugateEquiv adj₁ adj₂).right_inv α]
     exact (conjugateEquiv_counit adj₁ adj₂ ((conjugateEquiv adj₁ adj₂).symm α) d)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A component of a transposed form of the conjugation definition. -/
 theorem unit_conjugateEquiv (α : L₂ ⟶ L₁) (c : C) :
@@ -343,7 +338,6 @@ variable [Category.{v₁} C] [Category.{v₂} D]
 variable {L₁ L₂ L₃ : C ⥤ D} {R₁ R₂ R₃ : D ⥤ C}
 variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : L₃ ⊣ R₃)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 theorem conjugateEquiv_comp (α : L₂ ⟶ L₁) (β : L₃ ⟶ L₂) :
@@ -444,7 +438,6 @@ variable {F₁ : A ⥤ C} {U₁ : C ⥤ A} {F₂ : B ⥤ D} {U₂ : D ⥤ B}
 variable {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ : C ⥤ D} {R₂ : D ⥤ C}
 variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : F₁ ⊣ U₁) (adj₄ : F₂ ⊣ U₂)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- When all four functors in a square are left adjoints, the mates operation can be iterated:
 
@@ -461,17 +454,14 @@ isomorphism if and only if the original transformation is. This explains why som
 natural transformations are natural isomorphisms.
 -/
 theorem iterated_mateEquiv_conjugateEquiv (α : TwoSquare F₁ L₁ L₂ F₂) :
-    (mateEquiv adj₄ adj₃ (mateEquiv adj₁ adj₂ α)).natTrans =
+    (mateEquiv adj₄ adj₃ (mateEquiv adj₁ adj₂ α)) =
       conjugateEquiv (adj₁.comp adj₄) (adj₃.comp adj₂) α := by
   ext d
   simp
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 theorem iterated_mateEquiv_conjugateEquiv_symm (α : TwoSquare U₂ R₂ R₁ U₁) :
     (mateEquiv adj₁ adj₂).symm ((mateEquiv adj₄ adj₃).symm α) =
-      (conjugateEquiv (adj₁.comp adj₄) (adj₃.comp adj₂)).symm.trans
-        (equivNatTrans _ _ _ _).symm α := by
+      (conjugateEquiv (adj₁.comp adj₄) (adj₃.comp adj₂)).symm α := by
   ext
   simp
 
@@ -479,8 +469,6 @@ end IteratedmateEquiv
 
 variable {G : A ⥤ C} {H : B ⥤ D}
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- The mates equivalence commutes with this composition, essentially by `mateEquiv_vcomp`. -/
 theorem mateEquiv_conjugateEquiv_vcomp {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ : C ⥤ D} {R₂ : D ⥤ C}
     {L₃ : C ⥤ D} {R₃ : D ⥤ C}
@@ -498,7 +486,6 @@ theorem mateEquiv_conjugateEquiv_vcomp {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ :
     comp_id] at vcompb
   simpa [mateEquiv]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The mates equivalence commutes with this composition, essentially by `mateEquiv_vcomp`. -/
 theorem conjugateEquiv_mateEquiv_vcomp {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ : A ⥤ B} {R₂ : B ⥤ A}

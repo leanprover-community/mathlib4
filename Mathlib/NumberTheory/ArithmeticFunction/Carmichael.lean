@@ -114,8 +114,6 @@ theorem carmichael_finsetProd {α : Type*} {s : Finset α} {f : α → ℕ}
     (h : Set.Pairwise s <| Coprime.onFun f) : carmichael (s.prod f) = s.lcm (carmichael ∘ f) :=
   s.lcm_eq_prod h ▸ carmichael_finset_lcm ..
 
-@[deprecated (since := "2026-04-08")] alias carmichael_finset_prod := carmichael_finsetProd
-
 theorem carmichael_factorization (n : ℕ) [NeZero n] :
     carmichael n = n.primeFactors.lcm fun p ↦ carmichael (p ^ n.factorization p) := by
   nth_rw 1 [← n.prod_factorization_pow_eq_self <| NeZero.ne _]
