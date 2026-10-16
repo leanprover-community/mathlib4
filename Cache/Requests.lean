@@ -674,7 +674,7 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
       msg := msg ++ "\x1b[K"
     return msg
   let init : TransferState := { last := (← IO.monoMsNow), decomp := decompState }
-  let (s, exitCode, stderr) ← IO.runCurlStreaming args init fun a line => do
+  let (s, exitCode, stderr) ← IO.runCurlStreaming (upload := dir == .upload) args init fun a line => do
     let mut {last, success, failed, done, speed, decomp, reported} := a
     let mut {pending, currentTask, lastBatchSize, decompressed, decompFailed} := decomp
     -- Classify each finished transfer: rename a delivered part file, report a

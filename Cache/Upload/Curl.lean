@@ -91,8 +91,7 @@ def putFilesViaCurl
 File failures exit with code 1; marker failures only warn. -/
 def putStagedViaCurl (dest : Location) (getSignArgs : IO (Array String))
     (srcDir : FilePath) (fileNames : Array String) (overwrite : Bool) : IO Unit := do
-  unless ← IO.validateCurl do
-    throw <| IO.userError "This curl version cannot run parallel cache uploads."
+  discard <| IO.validateCurl (upload := true)
   let files := fileNames.map fun (f : String) => srcDir / f
   putFilesViaCurl dest files (IO.curlConfigIn srcDir) overwrite (← getSignArgs)
   uploadMarker dest fun marker file => do
@@ -101,6 +100,6 @@ def putStagedViaCurl (dest : Location) (getSignArgs : IO (Array String))
     let args := uploadPutArgs (← getSignArgs) (overwrite := true) ++
       #["-X", "PUT", "-T", file.toString, marker.url]
     -- The argument list carries the credential; keep it out of the failure message.
-    discard <| IO.runCurl args (showArgsOnError := false)
+    discard <| IO.runCurl args (showArgsOnError := false) (upload := true)
 
 end Cache.Requests

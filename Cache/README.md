@@ -338,11 +338,12 @@ Mathlib or `MathlibTest`. Exits 0 on success, non-zero on failure.
 
 The cache system automatically downloads and manages:
 
-- **curl** (>=7.84, excluding 8.18) - for parallel HTTP transfers
+- **curl** (>=7.84) - for parallel downloads
 - **leantar** - for `.ltar` compression/decompression
 
-On supported Linux architectures, the tool downloads a static curl if the system version is too old or is 8.18.
-On other platforms, unsupported curl versions use serial downloads. Uploads require a supported curl version.
+Downloads use a static curl on supported Linux architectures if the system version is too old.
+On other platforms, older curl versions use serial downloads.
+Uploads require curl >=8.20 on `PATH` and do not use the static binary. CI installs curl with Homebrew.
 
 ## File Locations
 

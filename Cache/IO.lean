@@ -121,8 +121,9 @@ def nullDevice : String := if System.Platform.isWindows then "NUL" else "/dev/nu
 def LAKEPACKAGESDIR : FilePath :=
   ".lake" / "packages"
 
-def getCurl : BaseIO String := do
-  return if (← CURLBIN.pathExists) then CURLBIN.toString else "curl"
+/-- Use the system curl for uploads and prefer the cached binary for downloads. -/
+def getCurl (upload := false) : BaseIO String := do
+  return if !upload && (← CURLBIN.pathExists) then CURLBIN.toString else "curl"
 
 /-- Path to the `leantar` binary bundled with the Lean toolchain.
     This has been bundled since `nightly-2026-03-09` (lean4#12822). -/
@@ -222,8 +223,8 @@ def getSrcDir (sp : SearchPath) (mod : Name) : IO FilePath := do
 
 /-- Process curl's stdout line by line. Return the final state, exit code, and stderr. -/
 partial def runCurlStreaming (args : Array String) (init : α)
-    (processLine : α → String → IO α) : IO (α × UInt32 × String) := do
-  let child ← IO.Process.spawn { cmd := ← getCurl, args, stdout := .piped, stderr := .piped }
+    (processLine : α → String → IO α) (upload := false) : IO (α × UInt32 × String) := do
+  let child ← IO.Process.spawn { cmd := ← getCurl upload, args, stdout := .piped, stderr := .piped }
   -- Drain stderr concurrently: a full stderr pipe blocks curl.
   let stderr ← IO.asTask (prio := .dedicated) child.stderr.readToEnd
   let a ← loop child.stdout init
@@ -249,9 +250,10 @@ def runCmd (cmd : String) (args : Array String)
     IO.eprintln out.stderr
   return out.stdout
 
-def runCurl (args : Array String) (throwFailure stderrAsErr showArgsOnError := true) :
-    IO String := do
-  runCmd (← getCurl) (#["--no-progress-meter"] ++ args) throwFailure stderrAsErr showArgsOnError
+def runCurl (args : Array String) (throwFailure stderrAsErr showArgsOnError := true)
+    (upload := false) : IO String := do
+  runCmd (← getCurl upload) (#["--no-progress-meter"] ++ args)
+    throwFailure stderrAsErr showArgsOnError
 
 /-- The major and minor version of the curl binary `curl`, read from `curl --version`. -/
 def curlVersion (curl : String) : IO (Nat × Nat) := do
@@ -264,15 +266,17 @@ def curlVersion (curl : String) : IO (Nat × Nat) := do
     | _ => throw <| IO.userError "Invalidly formatted version of `curl`"
   | _ => throw <| IO.userError "Invalidly formatted response from `curl --version`"
 
-/-- Select a suitable curl binary and report whether it supports parallel transfers. -/
-def validateCurl : IO Bool := do
-  if (← CURLBIN.pathExists) then return true
+/-- Require a suitable system curl for uploads, or prepare curl for parallel downloads. -/
+def validateCurl (upload := false) : IO Bool := do
+  if !upload && (← CURLBIN.pathExists) then return true
   let version ← curlVersion "curl"
   let found := s!"{version.1}.{version.2}"
   let _ := @lexOrd
   let _ := @leOfOrd
-  -- curl 8.18 can hang on parallel retries.
-  if version >= (7, 84) && version != (8, 18) then return true
+  let minimum := if upload then (8, 20) else (7, 84)
+  if version >= minimum then return true
+  if upload then
+    throw <| IO.userError s!"Cache uploads require curl ≥{minimum.1}.{minimum.2}. Found {found}."
   let arch ← (·.trimAscii.copy) <$> runCmd "uname" #["-m"] false
   let kernel ← (·.trimAscii.copy) <$> runCmd "uname" #["-s"] false
   if kernel == "Linux" && arch ∈ ["x86_64", "aarch64"] then
@@ -283,7 +287,7 @@ def validateCurl : IO Bool := do
       "-L", "-o", CURLBIN.toString]
     let _ ← runCmd "chmod" #["u+x", CURLBIN.toString]
     return true
-  IO.println s!"Warning: curl {found} is unsupported for parallel cache transfers."
+  IO.println s!"Warning: curl {found} is unsupported for parallel cache downloads."
   return false
 
 /-- Recursively gets all files from a directory with a certain extension -/

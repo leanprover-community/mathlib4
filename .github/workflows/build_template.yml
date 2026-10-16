@@ -761,6 +761,12 @@ jobs:
           use-mathlib-cache: false # This can be re-enabled once we are confident in the cache again.
           reinstall-transient-toolchain: true
 
+      - &install_curl
+        name: Install curl
+        run: |
+          /home/linuxbrew/.linuxbrew/bin/brew install curl
+          echo "$(/home/linuxbrew/.linuxbrew/bin/brew --prefix curl)/bin" >> "$GITHUB_PATH"
+
       - &build_cache_executable
         name: build cache executable
         run: |
@@ -873,6 +879,7 @@ jobs:
       - *checkout_tools_branch
       - *compute_cache_trust_dispatch
       - *configure_lean_for_cache
+      - *install_curl
       - *build_cache_executable
 
       - name: Download MathlibTest cache staging artifact
