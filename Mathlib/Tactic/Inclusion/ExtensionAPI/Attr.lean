@@ -44,6 +44,7 @@ def addInclusionParam (declName : Name) (kind : AttributeKind) : AttrM Unit := d
   if params.contains decl.name then
     throwError "Inclusion parameter `{decl.name}` is already registered"
   inclusionParamExt.add (declName, decl) kind
+  recordRegisteringModule kind
 
 initialize registerBuiltinAttribute {
   name := `inclusionParamAttr
@@ -60,7 +61,7 @@ def addInclusionExt (declName : Name) (keys : Array (Array DiscrTree.Key))
     (kind : AttributeKind) : AttrM Unit := do
   let ext ← evalDecl InclusionExt ``InclusionExt declName
   let family ← getInclusionFamily ext.family
-  family.inclusionExt.add ((keys, declName), ext) kind
+  family.inclusionExt.register ((keys, declName), ext) kind
 
 initialize registerBuiltinAttribute {
   name := `inclusionExtAttr
@@ -87,7 +88,7 @@ def addHypothesisExt (declName : Name) (keys : Array (Array DiscrTree.Key))
     (kind : AttributeKind) : AttrM Unit := do
   let ext ← evalDecl HypothesisExt ``HypothesisExt declName
   let family ← getInclusionFamily ext.family
-  family.hypothesisExt.add ((keys, declName), ext) kind
+  family.hypothesisExt.register ((keys, declName), ext) kind
 
 /-- Register the `hypothesis_ext` attribute. -/
 initialize registerBuiltinAttribute {

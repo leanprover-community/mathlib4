@@ -89,7 +89,7 @@ theorem ext {f g : α →CO β} (h : ∀ a, f a = g a) : f = g :=
 /-- Copy of a `ContinuousOpenMap` with a new `ContinuousMap` equal to the old one. Useful to fix
 definitional equalities. -/
 protected def copy (f : α →CO β) (f' : α → β) (h : f' = f) : α →CO β :=
-  ⟨f.toContinuousMap.copy f' <| h, h.symm.subst f.map_open'⟩
+  ⟨f.toContinuousMap.copy f' h, h.symm.subst f.map_open'⟩
 
 @[simp]
 theorem coe_copy (f : α →CO β) (f' : α → β) (h : f' = f) : ⇑(f.copy f' h) = f' :=

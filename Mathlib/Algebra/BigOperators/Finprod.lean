@@ -6,7 +6,6 @@ Authors: Kexing Ying, Kevin Buzzard, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.BigOperators.Pi
-public import Mathlib.Algebra.FiniteSupport.Defs
 public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.Algebra.Notation.FiniteSupport
 public import Mathlib.Algebra.Order.Ring.Defs
@@ -377,12 +376,6 @@ theorem finprod_eq_finsetProd_of_mulSupport_subset (f : α → M) {s : Finset α
     simpa [← Finset.coe_subset, Set.coe_toFinset]
   finprod_eq_prod_of_mulSupport_toFinset_subset _ _ h'
 
-@[deprecated (since := "2026-04-08")]
-alias finsum_eq_finset_sum_of_support_subset := finsum_eq_finsetSum_of_support_subset
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias finprod_eq_finset_prod_of_mulSupport_subset := finprod_eq_finsetProd_of_mulSupport_subset
-
 @[to_additive]
 theorem finprod_def (f : α → M) [Decidable (HasFiniteMulSupport f)] :
     ∏ᶠ i : α, f i = if h : HasFiniteMulSupport f then ∏ i ∈ h.toFinset, f i else 1 := by
@@ -411,12 +404,6 @@ theorem hasFiniteMulSupport_of_finprod_ne_one {f : α → M} (h : ∏ᶠ i, f i 
     HasFiniteMulSupport f :=
   not_infinite.mp <| (finprod_of_infinite_mulSupport ·).mt h
 
-@[deprecated (since := "2026-03-03")] alias
-  finite_mulSupport_of_finprod_ne_one := hasFiniteMulSupport_of_finprod_ne_one
-
-@[deprecated (since := "2026-03-03")] alias
-  finite_support_of_finsum_ne_zero := hasFiniteSupport_of_finsum_ne_zero
-
 theorem hasFiniteSupport_of_finsum_eq_one {R : Type*} [NonAssocSemiring R] {f : α → R}
     (h : ∑ᶠ i, f i = 1) : HasFiniteSupport f := by
   cases subsingleton_or_nontrivial R
@@ -424,9 +411,6 @@ theorem hasFiniteSupport_of_finsum_eq_one {R : Type*} [NonAssocSemiring R] {f : 
   · apply hasFiniteSupport_of_finsum_ne_zero
     rw [h]
     exact one_ne_zero
-
-@[deprecated (since := "2026-03-03")] alias
-  finite_support_of_finsum_eq_one := hasFiniteSupport_of_finsum_eq_one
 
 @[to_additive]
 theorem finprod_eq_prod (f : α → M) (hf : HasFiniteMulSupport f) :
@@ -455,11 +439,6 @@ theorem finprod_apply_ne_zero {ι : Type*} {N₀ M₀ : Type*} [CommMonoidWithZe
 theorem map_finsetProd {α F : Type*} [Fintype α] [EquivLike F M N] [MulEquivClass F M N] (f : F)
     (g : α → M) : f (∏ i : α, g i) = ∏ i : α, f (g i) := by
   simp [← finprod_eq_prod_of_fintype, MulEquivClass.map_finprod]
-
-@[deprecated (since := "2026-04-08")] alias map_finset_sum := map_finsetSum
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias map_finset_prod := map_finsetProd
 
 @[to_additive]
 theorem finprod_cond_eq_prod_of_cond_iff (f : α → M) {p : α → Prop} {t : Finset α}
@@ -665,7 +644,7 @@ equals the product of `f i` divided by the product of `g i`. -/
       equals the sum of `f i` minus the sum of `g i`. -/]
 theorem finprod_div_distrib [DivisionCommMonoid G] {f g : α → G} (hf : HasFiniteMulSupport f)
     (hg : HasFiniteMulSupport g) : ∏ᶠ i, f i / g i = (∏ᶠ i, f i) / ∏ᶠ i, g i := by
-  simp only [div_eq_mul_inv, finprod_mul_distrib hf <| hg.fun_inv, finprod_inv_distrib]
+  simp only [div_eq_mul_inv, finprod_mul_distrib hf hg.fun_inv, finprod_inv_distrib]
 
 /-- A more general version of `finprod_mem_mul_distrib` that only requires `s ∩ mulSupport f` and
 `s ∩ mulSupport g` rather than `s` to be finite. -/
