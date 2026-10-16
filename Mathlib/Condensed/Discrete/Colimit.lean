@@ -63,7 +63,7 @@ noncomputable def isColimitLocallyConstantPresheaf (hc : IsLimit c) [∀ i, Epi 
     rw [← hx]
     change fi ((c.π.app k ≫ (F ⋙ toProfinite).map _) x) =
       fj ((c.π.app k ≫ (F ⋙ toProfinite).map _) x)
-    have h := LocallyConstant.congr_fun h x
+    have h := congr($h x)
     dsimp [- CompHausLike.coe_comp] -- `coe_comp` prevents rewriting with `c.w`
     rwa [dsimp% c.w, dsimp% c.w]
 
@@ -188,14 +188,14 @@ The functor which takes a finite set to the set of maps into `F(*)` for a preshe
 -/
 @[simps obj map]
 def finYoneda : FintypeCat.{u}ᵒᵖ ⥤ Type (u + 1) where
-  obj X := X.unop → F.obj (toProfinite.op.obj ⟨of <| PUnit.{u + 1}⟩)
+  obj X := X.unop → F.obj (toProfinite.op.obj ⟨of PUnit.{u + 1}⟩)
   map f := ↾fun g ↦ g ∘ f.unop
 
 /-- `locallyConstantPresheaf` restricted to finite sets is isomorphic to `finYoneda F`. -/
 @[simps! hom_app]
 def locallyConstantIsoFinYoneda :
     toProfinite.op ⋙ (locallyConstantPresheaf (F.obj (toProfinite.op.obj
-      ⟨of <| PUnit.{u + 1}⟩))) ≅
+      ⟨of PUnit.{u + 1}⟩))) ≅
     finYoneda F :=
   NatIso.ofComponents fun Y ↦ {
     hom := ↾fun f ↦ f.1
@@ -211,7 +211,7 @@ def fintypeCatAsCofanIsColimit (X : Profinite) [Finite X] :
     IsColimit (fintypeCatAsCofan X) :=
   Cofan.IsColimit.mk _ (fun t ↦ ConcreteCategory.ofHom ⟨fun x ↦ t.inj x PUnit.unit,
     continuous_of_discreteTopology (α := X)⟩) (by aesop)
-    (fun _ _ h ↦ by ext x; exact CategoryTheory.congr_fun (h x) _)
+    (fun _ _ h ↦ by ext x; congrm $(h x) _)
 
 variable [PreservesFiniteProducts F]
 
@@ -274,7 +274,7 @@ colimit, is isomorphic to the presheaf `LocallyConstant - F(*)`.
 -/
 def isoLocallyConstantOfIsColimit
     (hF : ∀ S : Profinite, IsColimit <| F.mapCocone S.asLimitCone.op) :
-    F ≅ locallyConstantPresheaf (F.obj (toProfinite.op.obj ⟨of <| PUnit.{u + 1}⟩)) :=
+    F ≅ locallyConstantPresheaf (F.obj (toProfinite.op.obj ⟨of PUnit.{u + 1}⟩)) :=
   (lanPresheafNatIso hF).symm ≪≫
     lanPresheafExt (isoFinYoneda F ≪≫ (locallyConstantIsoFinYoneda F).symm) ≪≫
       lanPresheafNatIso fun _ ↦ isColimitLocallyConstantPresheafDiagram _ _
@@ -352,7 +352,7 @@ noncomputable def isColimitLocallyConstantPresheaf (hc : IsLimit c) [∀ i, Epi 
     rw [← hx]
     change fi ((c.π.app k ≫ (F ⋙ toLightProfinite).map _) x) =
       fj ((c.π.app k ≫ (F ⋙ toLightProfinite).map _) x)
-    have h := LocallyConstant.congr_fun h x
+    have h := congr($h x)
     dsimp [- CompHausLike.coe_comp] -- `coe_comp` prevents rewriting with `c.w`
     rwa [dsimp% c.w, dsimp% c.w]
 
@@ -504,7 +504,7 @@ def fintypeCatAsCofanIsColimit (X : LightProfinite) [Finite X] :
     IsColimit (fintypeCatAsCofan X) :=
   Cofan.IsColimit.mk _ (fun t ↦ ConcreteCategory.ofHom ⟨fun x ↦ t.inj x PUnit.unit,
     continuous_of_discreteTopology (α := X)⟩) (by aesop)
-    (fun _ _ h ↦ by ext x; exact CategoryTheory.congr_fun (h x) _)
+    (fun _ _ h ↦ by ext x; congrm $(h x) _)
 
 variable [PreservesFiniteProducts F]
 

@@ -5,7 +5,6 @@ Authors: Robin Carlier
 -/
 module
 
-public import Mathlib.CategoryTheory.Equivalence
 public import Mathlib.CategoryTheory.Adjunction.Mates
 
 /-!
@@ -24,8 +23,6 @@ and provides the definition of the functor that takes an equivalence to its inve
   `Equivalence.congrLeft` on objects, and whiskers left by `conjugateEquiv` on maps.
 
 -/
-
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -88,6 +85,7 @@ variable {C D}
 def inverseFunctorObjIso (e : C ≌ D) :
     (inverseFunctor C D).obj e ≅ Opposite.op e.inverse := Iso.refl _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency.types false in
 /-- We can compare the way we obtain a natural isomorphism `e.inverse ≅ f.inverse` from
 an isomorphism `e ≌ f` via `inverseFunctor` with the way we get one through
@@ -103,7 +101,6 @@ def inverseFunctorObj' (e : C ≌ D) :
     Opposite.unop ((inverseFunctor C D).obj e) ≅ e.inverse :=
   Iso.refl _
 
-set_option backward.isDefEq.respectTransparency.types false in
 variable (C D) in
 /-- Promoting `Equivalence.congrLeft` to a functor. -/
 @[simps!]
