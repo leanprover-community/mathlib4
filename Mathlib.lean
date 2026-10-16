@@ -2362,7 +2362,6 @@ public import Mathlib.Analysis.Polynomial.Basic
 public import Mathlib.Analysis.Polynomial.CauchyBound
 public import Mathlib.Analysis.Polynomial.Factorization
 public import Mathlib.Analysis.Polynomial.Fourier
-public import Mathlib.Analysis.Polynomial.IsRealClosed
 public import Mathlib.Analysis.Polynomial.MahlerMeasure
 public import Mathlib.Analysis.Polynomial.Norm
 public import Mathlib.Analysis.Polynomial.Order
@@ -4713,6 +4712,7 @@ public import Mathlib.FieldTheory.IsAlgClosed.Classification
 public import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 public import Mathlib.FieldTheory.IsPerfectClosure
 public import Mathlib.FieldTheory.IsRealClosed.Basic
+public import Mathlib.FieldTheory.IsRealClosed.Real
 public import Mathlib.FieldTheory.IsSepClosed
 public import Mathlib.FieldTheory.Isaacs
 public import Mathlib.FieldTheory.JacobsonNoether
