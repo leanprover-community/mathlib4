@@ -332,10 +332,7 @@ theorem sum_range_id_mul_geometric_add (x : R) (m : ℕ) :
       ∑ k ∈ Finset.Icc 1 m, x ^ k := by
   induction m with
   | zero => simp
-  | succ m ih =>
-    rw [sum_range_succ, Finset.sum_Icc_succ_top (Nat.one_le_iff_ne_zero.mpr m.succ_ne_zero)]
-    push_cast
-    grind
+  | succ m ih => grind [sum_range_succ, sum_Icc_succ_top]
 
 end CommRing
 
