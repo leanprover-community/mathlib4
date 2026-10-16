@@ -14,6 +14,9 @@ it, in the sense of the two one-sided bounds `t ≤ f (c t)` and `∀ k < c t, f
 grows at the inverse rate: `c t / t → τ⁻¹` (`tendsto_count_div_atTop`). Monotonicity of `f` is not
 required; the two bounds alone invert the rate.
 
+The bounds are those of `Nat.find`: if `h : ∀ t, ∃ n, t ≤ f n`, then `c t := Nat.find (h t)`
+satisfies them by `Nat.find_spec` and `Nat.find_min`. So does `fun t ↦ ⌈t / τ⌉₊` when `f n = τ * n`.
+
 `tendsto_comp_count_div_atTop` composes a Cesàro limit `S n / n → L` with such a count:
 `S (c t) / t → L * ρ` whenever `c t / t → ρ` and `c → ∞`.
 
