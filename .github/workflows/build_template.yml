@@ -1039,8 +1039,7 @@ jobs:
             echo "${retry_hint}"
             exit 1
           elif [ "${dstat}" -eq 1 ]; then
-            echo "::warning title=Cache incomplete (expected)::${missing}"
-            echo "Note: this PR changes Cache/, so CI cannot check the cache for this PR. No action is needed."
+            echo "::notice title=Cache check skipped::This PR changes Cache/, so CI cannot check the cache for this PR. No action is needed."
             echo "${dout}"
             # The downstream check below reads the same key space, so skip it.
             echo "key_space_changed=true" >> "$GITHUB_OUTPUT"
