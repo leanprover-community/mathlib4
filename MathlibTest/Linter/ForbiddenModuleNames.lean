@@ -28,6 +28,8 @@ meta def testModulesOSForbidden : IO Unit := do
   assert!((← modulesOSForbidden opts #[`Mathlib.«Bar dname»]) == 1)
   assert!((← modulesOSForbidden opts #[`Mathlib.«Bar
 dname»]) == 1)
+  assert!((← modulesOSForbidden opts #[`Mathlib.Ϝancy]) == 1)
+  assert!((← modulesOSForbidden opts #[`«Math lib».𝕦𝕟𝕚𝕔𝕠𝕕𝕖.«🎉»]) == 1)
 
 /--
 info: error: module name `Mathlib.Aux.Foo` contains component `[Aux]`, which is forbidden in Windows filenames.
@@ -43,6 +45,9 @@ error: module name `Mathlib.«Ba dname»` contains whitespace.
 error: module name `Mathlib.«Bar dname»` contains whitespace.
 error: module name `Mathlib.«Bar
 dname»` contains whitespace.
+error: module name `Mathlib.Ϝancy` contains non-alphanumeric character `Ϝ`.
+error: module name `«Math lib».𝕦𝕟𝕚𝕔𝕠𝕕𝕖.«🎉»` contains whitespace.
+error: module name `«Math lib».𝕦𝕟𝕚𝕔𝕠𝕕𝕖.«🎉»` contains non-alphanumeric characters `[𝕦, 𝕟, 𝕚, 𝕔, 𝕠, 𝕕, 𝕖, 🎉]`.
 -/
 #guard_msgs in
 #eval testModulesOSForbidden
