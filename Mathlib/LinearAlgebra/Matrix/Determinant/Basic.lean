@@ -488,13 +488,13 @@ theorem det_eq_zero_of_not_linearIndependent_rows [IsDomain R] {A : Matrix m m R
     det A = 0 := detRowAlternating.map_linearDependent A hA
 
 theorem linearIndependent_rows_of_det_ne_zero [IsDomain R] {A : Matrix m m R} (hA : A.det ≠ 0) :
-    LinearIndependent R (fun i ↦ A i) := by
+    LinearIndependent R A.row := by
   contrapose hA
   exact det_eq_zero_of_not_linearIndependent_rows hA
 
 theorem linearIndependent_cols_of_det_ne_zero [IsDomain R] {A : Matrix m m R} (hA : A.det ≠ 0) :
     LinearIndependent R A.col :=
-  Matrix.linearIndependent_rows_of_det_ne_zero (by simpa [Matrix.col])
+  Aᵀ.linearIndependent_rows_of_det_ne_zero <| by simpa
 
 theorem det_eq_zero_of_not_linearIndependent_cols [IsDomain R] {A : Matrix m m R}
     (hA : ¬ LinearIndependent R (fun i ↦ Aᵀ i)) :
