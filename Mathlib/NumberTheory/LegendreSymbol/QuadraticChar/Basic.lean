@@ -243,16 +243,10 @@ theorem quadraticChar_sum_zero (hF : ringChar F ≠ 2) : ∑ a : F, quadraticCha
 `-1` is not a square. -/
 theorem quadraticChar_sum_comp_eq_zero_of_odd (hF : ¬IsSquare (-1 : F)) {f : F → F}
     (hf : Function.Odd f) : ∑ x : F, quadraticChar F (f x) = 0 := by
-  have h : ∑ x : F, quadraticChar F (f x)
-      = quadraticChar F (-1) * ∑ x : F, quadraticChar F (f x) :=
-    calc ∑ x : F, quadraticChar F (f x)
-      _ = ∑ x : F, quadraticChar F (f (-x)) :=
-          (Fintype.sum_equiv (Equiv.neg F) _ _ fun _ => rfl).symm
-      _ = ∑ x : F, quadraticChar F (-1) * quadraticChar F (f x) :=
-          congr(∑ x, $(by rw [hf x, ← map_mul, neg_one_mul]))
-      _ = quadraticChar F (-1) * ∑ x : F, quadraticChar F (f x) := (Finset.mul_sum ..).symm
-  rw [quadraticChar_neg_one_iff_not_isSquare.mpr hF] at h
-  linarith
+  rw [← quadraticChar_neg_one_iff_not_isSquare] at hF
+  suffices quadraticChar F (-1) * ∑ x, quadraticChar F (f x) = ∑ x, quadraticChar F (f x) by grind
+  simp_rw [Finset.mul_sum, ← map_mul, neg_one_mul, ← hf.eq]
+  exact Equiv.sum_comp (Equiv.neg F) (quadraticChar F ∘ f)
 
 end quadraticChar
 
