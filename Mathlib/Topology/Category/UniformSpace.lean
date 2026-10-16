@@ -5,10 +5,11 @@ Authors: Reid Barton, Patrick Massot, Kim Morrison
 -/
 module
 
-import Mathlib.CategoryTheory.Adjunction.Reflective
 public import Mathlib.CategoryTheory.Monad.Limits  -- shake: keep (used in `example` only)
 public import Mathlib.Topology.Category.TopCat.Basic
 public import Mathlib.Topology.UniformSpace.Completion
+
+import Mathlib.CategoryTheory.Adjunction.Reflective
 
 /-!
 # The category of uniform spaces

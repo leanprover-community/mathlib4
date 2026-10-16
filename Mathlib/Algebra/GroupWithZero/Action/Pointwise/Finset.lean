@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Action.Pointwise.Finset
 public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
+
 import Mathlib.Algebra.GroupWithZero.Pointwise.Finset
 
 /-!
@@ -14,6 +15,8 @@ import Mathlib.Algebra.GroupWithZero.Pointwise.Finset
 
 This file proves properties of pointwise operations of finsets in a group with zero.
 -/
+
+open scoped Finset
 
 @[expose] public section
 
@@ -148,13 +151,13 @@ lemma smul_univ₀' [Fintype β] {s : Finset α} (hs : s.Nontrivial) : s • (un
   coe_injective <| by push_cast; exact Set.smul_univ₀' hs
 
 @[simp]
-lemma card_smul_finset₀ (ha : a ≠ 0) (s : Finset β) : (a • s).card = s.card :=
+lemma card_smul_finset₀ (ha : a ≠ 0) (s : Finset β) : #(a • s) = #s :=
   card_image_of_injective _ (MulAction.injective₀ ha)
 
 /-- If the left cosets of `t` by elements of `s` are disjoint (but not necessarily distinct!), then
 the size of `t` divides the size of `s • t`. -/
 lemma card_dvd_card_smul_right₀ {s : Finset α} (hs : ∀ a ∈ s, a ≠ 0) :
-    ((· • t) '' (s : Set α)).PairwiseDisjoint id → t.card ∣ (s • t).card :=
+    ((· • t) '' (s : Set α)).PairwiseDisjoint id → #t ∣ #(s • t) :=
   card_dvd_card_image₂_right fun a ha => MulAction.injective₀ (hs a ha)
 
 end MulAction
@@ -166,18 +169,14 @@ open scoped RightActions
 @[simp] lemma inv_smul_finset_distrib₀ (a : α) (s : Finset α) : (a • s)⁻¹ = s⁻¹ <• a⁻¹ := by
   obtain rfl | ha := eq_or_ne a 0
   · obtain rfl | hs := s.eq_empty_or_nonempty <;> simp [*]
-  -- was `simp` and very slow (https://github.com/leanprover-community/mathlib4/issues/19751)
-  · ext; simp only [mem_inv', ne_eq, not_false_eq_true, ← inv_smul_mem_iff₀, smul_eq_mul,
-      MulOpposite.op_inv, inv_eq_zero, MulOpposite.op_eq_zero_iff, inv_inv,
-      MulOpposite.smul_eq_mul_unop, MulOpposite.unop_op, mul_inv_rev, ha]
+  · ext
+    simp [← inv_smul_mem_iff₀, ha]
 
 lemma inv_op_smul_finset_distrib₀ (a : α) (s : Finset α) : (s <• a)⁻¹ = a⁻¹ • s⁻¹ := by
   obtain rfl | ha := eq_or_ne a 0
   · obtain rfl | hs := s.eq_empty_or_nonempty <;> simp [*]
-  -- was `simp` and very slow (https://github.com/leanprover-community/mathlib4/issues/19751)
-  · ext; simp only [mem_inv', ne_eq, MulOpposite.op_eq_zero_iff, not_false_eq_true, ←
-      inv_smul_mem_iff₀, MulOpposite.smul_eq_mul_unop, MulOpposite.unop_inv, MulOpposite.unop_op,
-      inv_eq_zero, inv_inv, smul_eq_mul, mul_inv_rev, ha]
+  · ext
+    simp [← inv_smul_mem_iff₀, ha]
 
 end GroupWithZero
 

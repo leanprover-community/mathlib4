@@ -5,8 +5,9 @@ Authors: Floris van Doorn
 -/
 module
 
-import Mathlib.Init
 public import Lean.ScopedEnvExtension
+
+import Mathlib.Init
 
 /-!
 # Helper function for environment extensions and attributes.

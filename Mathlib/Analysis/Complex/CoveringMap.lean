@@ -5,13 +5,14 @@ Authors: Junyan Xu
 -/
 module
 
-import Mathlib.Analysis.Calculus.Deriv.Polynomial
 public import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
 public import Mathlib.Analysis.SpecialFunctions.Pow.Complex
-import Mathlib.RingTheory.RootsOfUnity.Basic
-import Mathlib.Topology.Algebra.Group.Units
 public import Mathlib.Topology.Algebra.Polynomial
 public import Mathlib.Topology.Covering.Quotient
+
+import Mathlib.Analysis.Calculus.Deriv.Polynomial
+import Mathlib.RingTheory.RootsOfUnity.Basic
+import Mathlib.Topology.Algebra.Group.Units
 import Mathlib.Topology.GDelta.MetrizableSpace
 import Mathlib.Topology.LocalAtTarget
 
@@ -92,8 +93,9 @@ theorem isCoveringMapOn_zpow (n : ℤ) (hn : (n : 𝕜) ≠ 0) :
   refine .of_isCoveringMap_restrictPreimage _ (by simp) ?_ ?_
   · convert isClosed_singleton (x := (0 : 𝕜)).isOpen_compl
     ext; simp [this]
-  · convert! (isCoveringMap_zpow n hn).comp_homeomorph (.setCongr _) using 1
-    ext; simpa using! (this _).not
+  · refine (isCoveringMap_zpow n hn).comp_homeomorph (.setCongr (t := {x : 𝕜 | x ≠ 0}) ?_)
+    ext
+    simp [this]
 
 attribute [-instance] Units.mulAction'
 

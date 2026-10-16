@@ -204,6 +204,9 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `↑(Metric.sphere
 [Elab.DiffGeo.MDiff] 💥️ ContinuousLinearMap
   [Elab.DiffGeo.MDiff] Failed with error:
       `↑(Metric.sphere 0 1)` is not a space of continuous linear maps
+[Elab.DiffGeo.MDiff] 💥️ ContinuousAlternatingMap
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `↑(Metric.sphere 0 1)` is not a space of continuous alternating maps
 [Elab.DiffGeo.MDiff] 💥️ RealInterval
   [Elab.DiffGeo.MDiff] Failed with error:
       `Metric.sphere 0 1` is not a closed real interval

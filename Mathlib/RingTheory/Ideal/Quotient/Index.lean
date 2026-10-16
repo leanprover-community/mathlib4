@@ -5,15 +5,16 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.GroupTheory.Index
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.RingTheory.TensorProduct.Finite
+
 import Mathlib.Algebra.Ring.GeomSum
 import Mathlib.Data.Finsupp.Fintype
-public import Mathlib.GroupTheory.Index
 import Mathlib.LinearAlgebra.DirectSum.Finsupp
 import Mathlib.LinearAlgebra.TensorProduct.Quotient
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.RingTheory.Finiteness.Cardinality
-public import Mathlib.RingTheory.Ideal.Quotient.Operations
-public import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
 # Indices of ideals
@@ -74,7 +75,8 @@ lemma Submodule.index_smul_le [Finite (R ⧸ I)]
       (quotTensorEquivQuotSMul N I).symm
   rw [Nat.card_congr e.toEquiv]
   have H : LinearMap.range (Finsupp.linearCombination R (α := s) (↑)) = N := by
-    rw [Finsupp.range_linearCombination, ← hs, Subtype.range_val]
+    rw [Finsupp.range_linearCombination, ← hs]
+    exact congr(span R $Subtype.range_coe_subtype)
   let f : (s →₀ R) →ₗ[R] N := (Finsupp.linearCombination R (↑)).codRestrict _
     (fun c => by rw [← H, LinearMap.mem_range]; exact exists_apply_eq_apply _ _)
   have hf : Function.Surjective f := fun x ↦ by

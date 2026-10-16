@@ -6,9 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Localization.Triangulated
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.CategoryTheory.ObjectProperty.FiniteProducts
 public import Mathlib.CategoryTheory.ObjectProperty.ShiftAdditive
-public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-! # Triangulated subcategories
 
