@@ -191,19 +191,15 @@ lemma mdifferentiableAt
     [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
     {x : M} (hx : x ∈ e.baseSet) (v : V x) :
     MDiffAt e v := by
-  have : ⟨x, v⟩ ∈ e.source := e.coe_mem_source.mpr hx
-  have foo := e.contMDiffOn (IB := I) (n := 1) v this
-  have := foo.contMDiffAt (e.open_source.mem_nhds this)
-  exact this.mdifferentiableAt zero_ne_one.symm
+  apply ContMDiffAt.mdifferentiableAt ?_ zero_ne_one.symm
+  exact e.contMDiffAt (e.coe_mem_source.mpr hx)
 
 lemma mdifferentiableAt_invFun
     [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
     {x : M} (hx : x ∈ e.baseSet) (f : F) :
     MDiffAt e.invFun (x, f) := by
-  have : ⟨x, f⟩ ∈ e.target := e.mk_mem_target.mpr hx
-  have foo := e.contMDiffOn_symm (IB := I) (n := 1) _ this
-  have := foo.contMDiffAt (e.open_target.mem_nhds this)
-  exact this.mdifferentiableAt zero_ne_one.symm
+  apply ContMDiffAt.mdifferentiableAt ?_ zero_ne_one.symm
+  exact e.contMDiffAt_symm (e.mk_mem_target.mpr hx)
 
 -- Note: The definition below (ab)uses definitional
 -- equality of `TangentSpace (I.prod 𝓘(𝕜, F)) (↑t v)`
