@@ -564,7 +564,7 @@ lemma pow_apply_nonneg [Fintype n] [DecidableEq n] [PartialOrder α] [IsOrderedR
 protected lemma mul_pow_mul [Fintype n] [Fintype m] [DecidableEq n] [DecidableEq m]
     (A : Matrix m n α) (B : Matrix n m α) : ∀ k : ℕ, (A * B) ^ k * A = A * (B * A) ^ k
   | 0 => by simp
-  | k + 1 => by simp [pow_succ', ← mul_pow_mul, Matrix.mul_assoc]
+  | k + 1 => by simp [pow_succ', ← Matrix.mul_pow_mul, Matrix.mul_assoc]
 
 end Semiring
 
