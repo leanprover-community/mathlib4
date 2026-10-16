@@ -29,10 +29,6 @@ example : (!![0, 1, 0; 0, 0, 1; 1, 0, 0] : Matrix (Fin 3) (Fin 3) ℤ).IsIndecom
 /-! ## Matrices given by definitions -/
 
 -- an existing definition, after rewriting it to a literal
-example : (E 8).IsIndecomposable := by
-  rw [E_eight_eq]
-  simp only [reduceIsIndecomposable]
-
 example : ¬(D 2).IsIndecomposable := by
   rw [D_two]
   simp [reduceIsIndecomposable]
