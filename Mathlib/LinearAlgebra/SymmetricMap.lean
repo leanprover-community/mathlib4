@@ -622,19 +622,11 @@ This is the symmetric version of `MultilinearMap.domDomCongr`. -/
 def domDomCongr (σ : ι ≃ ι') (f : M [Sym^ι]→ₗ[R] N) : M [Sym^ι']→ₗ[R] N :=
   { f.toMultilinearMap.domDomCongr σ with
     toFun := fun v ↦ f (v ∘ σ)
-    -- map_eq_zero_of_eq' := fun v i j hv hij ↦
-    --   f.map_eq_zero_of_eq (v ∘ σ) (i := σ.symm i) (j := σ.symm j)
-    --     (by simpa using hv) (σ.symm.injective.ne hij)
     map_eq_map_of_swap' v i j inst := by
       classical
-      --rename_i f₀ v
-      have aux := f.map_eq_map_of_swap' (v ∘ σ) (σ.symm i) (σ.symm j)
-      simp only [MultilinearMap.toFun_eq_coe, coe_multilinearMap] at aux
-      rw [← aux]
-      simp only [map_eq_map_of_swap]
-      --simp
-      sorry--apply f.map_eq_map_of_swap' (v ∘ σ) (i := σ.symm i) (j := σ.symm j)
-       }
+      convert f.map_eq_map_of_swap' (v ∘ σ) (σ.symm i) (σ.symm j)
+      apply congr_arg
+      grind }
 
 @[simp]
 theorem domDomCongr_refl (f : M [Sym^ι]→ₗ[R] N) : f.domDomCongr (Equiv.refl ι) = f := rfl
@@ -866,6 +858,4 @@ def Symmetric.constLinearEquivOfIsEmpty [IsEmpty ι] : N'' ≃ₗ[R'] (M'' [Sym^
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
   invFun f := f 0
-  right_inv f := by--ext fun _ ↦ AlternatingMap.congr_arg f <| Subsingleton.elim _ _
-    ext
-    sorry
+  right_inv f := by ext; exact SymmetricMap.congr_arg f <| Subsingleton.elim _ _
