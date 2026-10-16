@@ -265,25 +265,37 @@ def curlVersion (curl : String) : IO (Nat × Nat) := do
     | _ => throw <| IO.userError "Invalidly formatted version of `curl`"
   | _ => throw <| IO.userError "Invalidly formatted response from `curl --version`"
 
+/-- Whether the transfer paths can run on a system curl of `version`
+(major, minor). The get path's write-out reads response headers with
+`%header{…}`, which curl 7.84 added. curl 8.18 hangs on a pending retry in
+parallel mode (curl issue #20669), and the parallel transfer paths retry. -/
+def curlVersionUsable (version : Nat × Nat) : Bool :=
+  (version.1 > 7 || (version.1 == 7 && version.2 ≥ 84)) && !(version.1 == 8 && version.2 == 18)
+
 def validateCurl : IO Bool := do
   if (← CURLBIN.pathExists) then return true
   let version ← curlVersion "curl"
   let found := s!"{version.1}.{version.2}"
-  let _ := @lexOrd
-  let _ := @leOfOrd
-  -- The get path's write-out reads response headers with `%header{…}` (curl 7.84).
-  if version >= (7, 84) then return true
+  if curlVersionUsable version then return true
+  let hangs := version == (8, 18)
+  let reason := if hangs then s!"curl {found} hangs on a pending retry in parallel mode"
+    else s!"curl {found} is too old"
   -- TODO: support more platforms if the need arises
   let arch ← (·.trimAscii.copy) <$> runCmd "uname" #["-m"] false
   let kernel ← (·.trimAscii.copy) <$> runCmd "uname" #["-s"] false
   if kernel == "Linux" && arch ∈ ["x86_64", "aarch64"] then
-    IO.println s!"curl is too old; downloading more recent version"
+    IO.println s!"{reason}; downloading curl {CURLVERSION}"
     IO.FS.createDirAll IO.CACHEDIR
     let _ ← runCmd "curl" (stderrAsErr := false) #[
       s!"https://github.com/leanprover-community/static-curl/releases/download/v{CURLVERSION}/curl-{arch}-linux-static",
       "-L", "-o", CURLBIN.toString]
     let _ ← runCmd "chmod" #["u+x", CURLBIN.toString]
     return true
+  if hangs then
+    IO.println s!"Warning: {reason}. Can't use `--parallel`."
+    return false
+  let _ := @lexOrd
+  let _ := @leOfOrd
   -- The parallel transfer paths pass `--retry-all-errors` (curl 7.71)
   -- and read the `exitcode` and `errormsg` fields of the per-transfer
   -- JSON report (curl 7.75); an older curl rejects the flag or omits

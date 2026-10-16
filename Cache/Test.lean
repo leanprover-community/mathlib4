@@ -1862,6 +1862,17 @@ def test_monitorCurl_carries_decomp_state : IO Unit := do
   assertTrue "the decompressed counter survives the round" (s.decomp.decompressed == 42)
   assertTrue "the decompFailed counter survives the round" (s.decomp.decompFailed == 1)
 
+/-- The system curl versions the transfer paths accept: 7.84 and later, except
+8.18, which hangs on a pending retry in parallel mode. -/
+def test_curlVersionUsable : IO Unit := do
+  IO.println "curlVersionUsable:"
+  assertTrue "7.83 lacks the %header write-out" (!IO.curlVersionUsable (7, 83))
+  assertTrue "7.84 is the floor" (IO.curlVersionUsable (7, 84))
+  assertTrue "8.5 is usable" (IO.curlVersionUsable (8, 5))
+  assertTrue "8.18 hangs on a pending retry" (!IO.curlVersionUsable (8, 18))
+  assertTrue "8.19 is usable" (IO.curlVersionUsable (8, 19))
+  assertTrue "9.0 is usable" (IO.curlVersionUsable (9, 0))
+
 /-- curl reports each transfer it finishes. When curl exits before it reports
 every transfer, the transfers without a report count as failed, so a short
 upload exits 1 and does not pass as a full one. `curl --version` exits 0 and
@@ -2008,6 +2019,7 @@ def runAll : IO Unit := do
   test_readLocationsFrom
   test_finalizeDecomp
   test_monitorCurl_carries_decomp_state
+  test_curlVersionUsable
   test_monitorCurl_counts_unreported_transfers
   test_splitWriteOut
   test_curlGetWriteOut_real_curl

@@ -341,7 +341,7 @@ The cache system automatically downloads and manages:
 - **curl** (>=7.75, preferably >=7.84) - for HTTP transfers
 - **leantar** - for `.ltar` compression/decompression
 
-If your system curl is too old, a static binary is downloaded automatically on Linux.
+If your system curl is too old, or is curl 8.18 (which hangs on retries in parallel mode), a static binary is downloaded automatically on Linux.
 
 ## File Locations
 
