@@ -5,9 +5,8 @@ Authors: Michael Rothgang
 -/
 module
 
-public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.LinearAlgebra.SymmetricMap -- future: move that file to Symmetric.Basic
-public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 public import Mathlib.Topology.Algebra.Module.Multilinear.Basic
 
 /-!
@@ -29,6 +28,7 @@ multilinear map, symmetric map, continuous
 @[expose] public section
 
 open Function Matrix
+open scoped Nat
 
 /-- A continuous symmetric map from `ι → M` to `N`, denoted `M [Sym^ι]→L[R] N`,
 is a continuous map that is
@@ -71,9 +71,10 @@ theorem range_toContinuousMultilinearMap :
       {f | ∀ (v : ι → M) (i j : ι), [DecidableEq ι] → f (v ∘ (Equiv.swap i j)) = f v} :=
   Set.ext fun f ↦ ⟨fun ⟨g, hg⟩ ↦ hg ▸ g.2, fun h ↦ ⟨⟨f, h⟩, rfl⟩⟩
 
+@[macro_inline]
 instance funLike : FunLike (M [Sym^ι]→L[R] N) (ι → M) N where
   coe f := f.toFun
-  coe_injective' _ _ h := toContinuousMultilinearMap_injective <| DFunLike.ext' h
+  coe_injective _ _ h := toContinuousMultilinearMap_injective <| DFunLike.ext' h
 
 instance continuousMapClass : ContinuousMapClass (M [Sym^ι]→L[R] N) (ι → M) N where
   map_continuous f := f.cont
@@ -648,5 +649,14 @@ theorem symmetrization_apply_toSymmetricMap :
     (symmetrization f).toSymmetricMap = MultilinearMap.symmetrization f.1 := by
   ext v
   simp [symmetrization_apply_apply, MultilinearMap.symmetrization_apply, Function.comp_def]
+
+theorem _root_.ContinuousSymmetricMap.symmetrization_toContinuousMultilinearMap
+    (f : M [Sym^ι]→L[R] N) :
+    f.toContinuousMultilinearMap.symmetrization = (Fintype.card ι)! • f := by
+  ext v
+  have : MultilinearMap.symmetrization f.toSymmetricMap.toMultilinearMap v =
+      ((Fintype.card ι)! • f.toSymmetricMap) v := by
+    rw [SymmetricMap.coe_symmetrization f.toSymmetricMap]
+  simpa only [MultilinearMap.symmetrization_apply, symmetrization_apply_apply] using! this
 
 end ContinuousMultilinearMap
