@@ -122,8 +122,7 @@ theorem card (h : n ≠ 0) : Nat.card (GaloisField p n) = p ^ n := by
 
 theorem splits_zmod_X_pow_sub_X : Splits (X ^ p - X : (ZMod p)[X]) := by
   have h1 : roots (X ^ p - X : (ZMod p)[X]) = Finset.univ.val := by
-    convert! ← FiniteField.roots_X_pow_card_sub_X (ZMod p)
-    exact ZMod.card p
+    simpa using FiniteField.roots_X_pow_card_sub_X (ZMod p)
   rw [splits_iff_card_roots, h1, ← Finset.card_def, Finset.card_univ,
     natDegree_X_pow_sub_X h_prime.out.one_lt, ZMod.card]
 
