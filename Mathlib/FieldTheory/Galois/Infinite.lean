@@ -72,7 +72,7 @@ lemma fixingSubgroup_isClosed (L : IntermediateField k K) [IsGalois k K] :
         not_forall, exists_prop]
       push Not
       refine ⟨y, yL, ?_⟩
-      contrapose! ne
+      contrapose ne
       simpa [ne, AlgEquiv.eq_symm_apply, eq_comm] using
         (mem_fixingSubgroup_iff Gal(K/k)).mp hf y <| adjoin_simple_le_iff.mp le_rfl
     · simp only [(IntermediateField.fixingSubgroup_isOpen (adjoin k {y}).1).smul σ, true_and]
