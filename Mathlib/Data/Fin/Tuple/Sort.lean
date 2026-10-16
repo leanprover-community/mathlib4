@@ -290,20 +290,13 @@ them by *decreasing* index, the opposite of the stable `sortDesc f`. -/
 theorem isStable_sort_comp_rev_iff :
     IsStable f (sort f ∘ Fin.rev) ↔ Function.Injective f := by
   refine ⟨fun hσ => ?_, fun inj => ?_⟩
-  · -- `sort f` and its reversal order any tied `x, y` oppositely, so `f` can have no tie.
-    have key : ∀ x y, f x = f y → (sort f).symm x < (sort f).symm y → False := by
-      intro x y hxy hlt
-      have hxy' : x ≠ y := fun h => hlt.ne (by rw [h])
-      have h1 : x < y :=
-        lt_of_le_of_ne (by simpa using isStable_sort f hlt.le (by simp [hxy])) hxy'
-      have h2 : y < x :=
-        lt_of_le_of_ne (by simpa using hσ (Fin.rev_strictAnti hlt).le (by simp [hxy])) hxy'.symm
-      exact absurd h1 (asymm h2)
-    intro a b hfab
-    by_contra hab
-    rcases lt_or_gt_of_ne (fun h => hab ((sort f).symm.injective h)) with hlt | hlt
-    · exact key a b hfab hlt
-    · exact key b a hfab.symm hlt
+  · intro a b hfab
+    wlog! hle : (sort f).symm a ≤ (sort f).symm b generalizing a b
+    · exact (this hfab.symm hle.le).symm
+    -- `sort f` and its reversal order any tied `x, y` oppositely, so `f` can have no tie.
+    exact le_antisymm
+      (by simpa using isStable_sort f hle (by simp [hfab]))
+      (by simpa using hσ (Fin.rev_anti hle) (by simp [hfab]))
   · rw [sort_comp_rev_eq_sortDesc_of_injective inj]
     exact isStable_sortDesc f
 
