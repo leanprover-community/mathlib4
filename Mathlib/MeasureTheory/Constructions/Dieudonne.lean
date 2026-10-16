@@ -165,12 +165,11 @@ instance [NoMaxOrder α] : NullSingletonClass (α := α) measure where
 @[simp]
 theorem support_measure [NoMaxOrder α] [TopologicalSpace α] [ClosedIciTopology α] :
     (measure (α := α)).support = ∅ := by
-  ext x
-  rw [mem_empty_iff_false, iff_false, Measure.mem_support_iff,
-    Filter.not_frequently, Filter.eventually_smallSets]
+  simp_rw [eq_empty_iff_forall_notMem, Measure.mem_support_iff,
+    Filter.not_frequently, Filter.eventually_smallSets, not_lt]
+  intro x
   obtain ⟨y, hy⟩ := exists_gt x
   refine ⟨_, Iio_mem_nhds hy, fun s hs ↦ ?_⟩
-  apply ((measure_mono hs).trans _).not_gt
-  rw [measure_of_not_isCofinal (not_isCofinal_Iio y)]
+  grw [hs, measure_of_not_isCofinal (not_isCofinal_Iio y)]
 
 end MeasureTheory.Dieudonne
