@@ -5,9 +5,9 @@ Authors: Markus Himmel
 -/
 module
 
+public import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
 public import Mathlib.CategoryTheory.Limits.EssentiallySmall
 public import Mathlib.CategoryTheory.Subobject.Lattice
-public import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
 
 import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Equalizers
 

@@ -321,7 +321,7 @@ class MkEvalHorizontalComp (m : Type → Type) where
     (ηθ ηθ₁ ηθ₂ ηθ₃ : NormalExpr) (e_ηθ e_ηθ₁ e_ηθ₂ e_ηθ₃ : Expr) : m Expr
   /-- Evaluate `η ◫ (f ◁ θ)` -/
   mkEvalHorizontalCompAux'OfWhisker (f : Atom₁) (η : HorizontalComp) (θ : WhiskerLeft)
-    (η₁ ηθ ηθ₁ ηθ₂ : NormalExpr) (e_ηθ e_η₁ e_ηθ₁ e_ηθ₂ : Expr) : m Expr
+    (η₁ ηθ ηθ₁ ηθ₂ : NormalExpr) (e_η₁ e_ηθ e_ηθ₁ e_ηθ₂ : Expr) : m Expr
   /-- Evaluate `α ◫ β` -/
   mkEvalHorizontalCompNilNil (α β : Structural) : m Expr
   /-- Evaluate `α ◫ (β ≫ η ≫ ηs)` -/
@@ -478,7 +478,7 @@ partial def evalHorizontalCompAux' : WhiskerLeft → WhiskerLeft → CoherenceM 
     let ⟨ηθ, e_ηθ⟩ ← evalHorizontalComp η₁ (← NormalExpr.ofM θ)
     let ⟨ηθ₁, e_ηθ₁⟩ ← evalComp ηθ (← NormalExpr.associatorM (← η.tgtM) (.of f) (← θ.tgtM))
     let ⟨ηθ₂, e_ηθ₂⟩ ← evalComp (← NormalExpr.associatorInvM (← η.srcM) (.of f) (← θ.srcM)) ηθ₁
-    return ⟨ηθ₂, ← mkEvalHorizontalCompAux'OfWhisker f η θ ηθ η₁ ηθ₁ ηθ₂ e_η₁ e_ηθ e_ηθ₁ e_ηθ₂⟩
+    return ⟨ηθ₂, ← mkEvalHorizontalCompAux'OfWhisker f η θ η₁ ηθ ηθ₁ ηθ₂ e_η₁ e_ηθ e_ηθ₁ e_ηθ₂⟩
 
 /-- Evaluate the expression `η ⊗ θ` into a normalized form. -/
 partial def evalHorizontalComp : NormalExpr → NormalExpr → CoherenceM ρ Eval.Result
