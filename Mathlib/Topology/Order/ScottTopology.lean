@@ -221,8 +221,7 @@ lemma lowerClosure_subset_closure [IsScott α univ] : ↑(lowerClosure s) ⊆ cl
   · exact topology_eq α univ
 
 instance [IsScott α univ] : ClosedIicTopology α where
-  isClosed_Iic _ :=
-    isClosed_iff_isLowerSet_and_dirSupClosed.2 ⟨isLowerSet_Iic _, .Iic _⟩
+  isClosed_Iic _ := isClosed_iff_isLowerSet_and_dirSupClosed.2 ⟨.Iic _, .Iic _⟩
 
 /--
 The closure of a singleton `{a}` in the Scott topology is the right-closed left-infinite interval

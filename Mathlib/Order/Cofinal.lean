@@ -185,10 +185,10 @@ theorem IsUpperSet.isCofinal {s : Set α} (hs : IsUpperSet s) (hs₀ : s.Nonempt
   simpa using IsCofinal.univ.inter_of_isUpperSet_left hs hs₀
 
 @[simp] protected theorem IsCofinal.Ici (x : α) : IsCofinal (Ici x) := by
-  simpa using (isUpperSet_Ici x).isCofinal
+  simpa using (IsUpperSet.Ici x).isCofinal
 
 @[simp] protected theorem IsCofinal.Ioi [NoMaxOrder α] (x : α) : IsCofinal (Ioi x) := by
-  simpa using (isUpperSet_Ioi x).isCofinal
+  simpa using (IsUpperSet.Ioi x).isCofinal
 
 /-- The set of "records" (the smallest inputs yielding the highest values) with respect to a
 well-ordering of `α` is a cofinal set. -/

@@ -213,11 +213,11 @@ theorem IsUpperSet.not_bddAbove (hs : IsUpperSet s) : s.Nonempty → ¬BddAbove 
 
 @[to_dual]
 theorem not_bddAbove_Ici : ¬BddAbove (Ici a) :=
-  (isUpperSet_Ici _).not_bddAbove nonempty_Ici
+  (IsUpperSet.Ici _).not_bddAbove nonempty_Ici
 
 @[to_dual]
 theorem not_bddAbove_Ioi : ¬BddAbove (Ioi a) :=
-  (isUpperSet_Ioi _).not_bddAbove nonempty_Ioi
+  (IsUpperSet.Ioi _).not_bddAbove nonempty_Ioi
 
 end NoMaxOrder
 
