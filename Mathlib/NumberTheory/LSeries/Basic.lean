@@ -160,6 +160,7 @@ open LSeries
 
 /-- The value of the L-series of the sequence `f` at the point `s`
 if it converges absolutely there, and `0` otherwise. -/
+@[lmfdb lfunction.dirichlet_series]
 noncomputable
 def LSeries (f : ℕ → ℂ) (s : ℂ) : ℂ :=
   ∑' n, term f s n

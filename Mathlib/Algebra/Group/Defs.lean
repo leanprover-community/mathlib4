@@ -44,7 +44,7 @@ additive group structure on a type with the minimum proof obligations.
 class AddGroup (A : Type*) extends SubNegMonoid A where
   protected neg_add_cancel : ∀ a : A, -a + a = 0
 
-attribute [to_additive (attr := wikidata Q83478)] Group
+attribute [to_additive (attr := wikidata Q83478, lmfdb group)] Group
 
 section Group
 
@@ -112,7 +112,7 @@ class AddCommGroup (G : Type*) extends AddGroup G, AddCommMonoid G
 
 /-- A commutative group is a group with commutative `(*)`. -/
 -- There is intentionally no `IsMulCommutative` for `CommGroup` instance for performance reasons.
-@[to_additive (attr := wikidata Q181296)]
+@[to_additive (attr := wikidata Q181296, lmfdb group.abelian)]
 class CommGroup (G : Type*) extends Group G, CommMonoid G
 
 section CommGroup

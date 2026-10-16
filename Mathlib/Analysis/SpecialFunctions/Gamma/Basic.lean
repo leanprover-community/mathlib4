@@ -284,7 +284,8 @@ private theorem GammaAux_recurrence2 (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) :
 /- This definition is deliberately not @[expose]'d, since `GammaAux` is not mathematically
 interesting. -/
 /-- The `Γ` function (of a complex variable `s`). -/
-@[irreducible, pp_nodot] def Gamma (s : ℂ) : ℂ :=
+@[irreducible, pp_nodot, lmfdb specialfunction.gamma]
+def Gamma (s : ℂ) : ℂ :=
   GammaAux ⌊1 - s.re⌋₊ s
 
 private theorem Gamma_eq_GammaAux (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) : Gamma s = GammaAux n s := by

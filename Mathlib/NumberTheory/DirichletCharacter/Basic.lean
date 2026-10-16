@@ -35,7 +35,7 @@ dirichlet character, multiplicative character
 -/
 
 /-- The type of Dirichlet characters of level `n`. -/
-@[wikidata Q1063579]
+@[wikidata Q1063579, lmfdb character.dirichlet]
 abbrev DirichletCharacter (R : Type*) [CommMonoidWithZero R] (n : ℕ) := MulChar (ZMod n) R
 
 open MulChar
@@ -62,6 +62,7 @@ lemma apply_eq_zero_iff [Nontrivial R] (a : ℤ) : χ a = 0 ↔ ¬ IsCoprime a n
 
 /-- A function that modifies the level of a Dirichlet character to some multiple
   of its original level. -/
+@[lmfdb character.dirichlet.induce]
 noncomputable def changeLevel {n m : ℕ} (hm : n ∣ m) :
     DirichletCharacter R n →* DirichletCharacter R m where
   toFun ψ := MulChar.ofUnitHom (ψ.toUnitHom.comp (ZMod.unitsMap hm))
@@ -242,6 +243,7 @@ theorem zero_ne_mem_conductorSet [NeZero n] : 0 ∉ χ.conductorSet :=
   fun h ↦ NeZero.ne n <| Nat.eq_zero_of_zero_dvd <| FactorsThrough.dvd h
 
 /-- The minimum natural number level `n` through which `χ` factors. -/
+@[lmfdb character.dirichlet.conductor]
 noncomputable def conductor : ℕ := sInf (conductorSet χ)
 
 lemma conductor_mem_conductorSet : conductor χ ∈ conductorSet χ :=
@@ -288,6 +290,7 @@ lemma conductor_le_conductor_mem_conductorSet {d : ℕ} (hd : d ∈ conductorSet
 variable (χ)
 
 /-- A character is primitive if its level is equal to its conductor. -/
+@[lmfdb character.dirichlet.primitive]
 def IsPrimitive : Prop := conductor χ = n
 
 lemma isPrimitive_def : IsPrimitive χ ↔ conductor χ = n := Iff.rfl

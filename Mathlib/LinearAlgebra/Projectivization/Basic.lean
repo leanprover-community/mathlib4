@@ -45,6 +45,7 @@ def projectivizationSetoid : Setoid { v : V // v ≠ 0 } :=
 
 /-- The projectivization of the `K`-vector space `V`.
 The notation `ℙ K V` is preferred. -/
+@[lmfdb ag.projective_space]
 def Projectivization := Quotient (projectivizationSetoid K V)
 
 /-- We define notations `ℙ K V` for the projectivization of the `K`-vector space `V`. -/

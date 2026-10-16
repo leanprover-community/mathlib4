@@ -21,6 +21,7 @@ We give the definition of the Frattini subgroup of a group, and three elementary
 @[expose] public section
 
 /-- The Frattini subgroup of a group is the intersection of the maximal subgroups. -/
+@[lmfdb group.frattini_subgroup]
 def frattini (G : Type*) [Group G] : Subgroup G :=
   Order.radical (Subgroup G)
 

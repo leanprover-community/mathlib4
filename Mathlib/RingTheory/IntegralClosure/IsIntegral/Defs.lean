@@ -50,6 +50,7 @@ variable [Algebra R A] (R)
 /-- An element `x` of an algebra `A` over a commutative ring `R` is said to be *integral*,
 if it is a root of some monic polynomial `p : R[X]`.
 Equivalently, the element is integral over `R` with respect to the induced `algebraMap` -/
+@[lmfdb ring.integral]
 def IsIntegral (x : A) : Prop :=
   (algebraMap R A).IsIntegralElem x
 

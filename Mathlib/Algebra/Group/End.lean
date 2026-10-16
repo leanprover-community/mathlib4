@@ -627,7 +627,7 @@ end Group
 end Equiv
 
 /-- The group of multiplicative automorphisms. -/
-@[to_additive /-- The group of additive automorphisms. -/]
+@[to_additive (attr := lmfdb group.automorphism) /-- The group of additive automorphisms. -/]
 abbrev MulAut (M : Type*) [Mul M] :=
   M ≃* M
 

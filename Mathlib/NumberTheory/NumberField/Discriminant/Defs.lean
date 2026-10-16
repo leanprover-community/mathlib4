@@ -33,6 +33,7 @@ namespace NumberField
 variable (K : Type*) [Field K] [NumberField K]
 
 /-- The absolute discriminant of a number field. -/
+@[lmfdb nf.discriminant]
 noncomputable abbrev discr : ℤ := Algebra.discr ℤ (RingOfIntegers.basis K)
 
 theorem coe_discr : (discr K : ℚ) = Algebra.discr ℚ (integralBasis K) :=

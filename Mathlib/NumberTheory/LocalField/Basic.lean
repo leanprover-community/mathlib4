@@ -43,6 +43,7 @@ Assuming we have a compatible `UniformSpace K` instance
 - `CompleteSpace K`
 - `CompleteSpace 𝒪[K]`
 -/
+@[lmfdb lf.local_field]
 class IsNonarchimedeanLocalField
     (K : Type*) [Field K] [ValuativeRel K] [TopologicalSpace K] : Prop extends
   IsValuativeTopology K,
