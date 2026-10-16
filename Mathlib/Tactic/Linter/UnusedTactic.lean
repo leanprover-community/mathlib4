@@ -150,10 +150,10 @@ For each `TacticInfo` in the info tree that corresponds to a tactic syntax:
 - If the tactic is unused, add a message to this tactic, if it doesn't have a message already.
 -/
 partial def eraseUsedTactics (exceptions : Std.HashSet SyntaxNodeKind)
-    (trees : PersistentArray InfoTree) :
-    Std.HashMap Syntax.Range (Syntax × Option MessageData) →
+    (trees : PersistentArray InfoTree)
+    (map : Std.HashMap Syntax.Range (Syntax × Option MessageData)) :
     Std.HashMap Syntax.Range (Syntax × Option MessageData) :=
-  trees.foldl <| InfoTree.foldInfo fun _ i ranges => Id.run do
+  trees.foldl (init := map) <| InfoTree.foldInfo fun _ i ranges => Id.run do
     let .ofTacticInfo i := i | return ranges
     let stx := i.stx
     let some r := stx.getRange? true | return ranges
