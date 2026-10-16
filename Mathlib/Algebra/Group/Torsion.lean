@@ -127,10 +127,8 @@ lemma IsMulTorsionFree.zpow_eq_one_iff_right (ha : a ≠ 1) : a ^ n = 1 ↔ n = 
 
 @[to_additive IsAddTorsionFree.zsmul_left_injective_iff]
 lemma IsMulTorsionFree.zpow_right_injective_iff : (a ^ · : ℤ → G).Injective ↔ a ≠ 1 := by
-  refine ⟨fun h ha ↦ by
-    simpa using h (show a ^ (0 : ℤ) = a ^ (1 : ℤ) by simp [ha]), fun ha m n h ↦ ?_⟩
-  rw [← Int.sub_eq_zero, ← zpow_eq_one_iff_right ha]
-  simp [zpow_sub, h]
+  refine ⟨fun h ha ↦ by simpa using @h 0 1 (by simp [ha]), fun ha m n h ↦ ?_⟩
+  simp [← Int.sub_eq_zero, ← zpow_eq_one_iff_right ha, zpow_sub, h]
 
 @[to_additive IsAddTorsionFree.zsmul_left_injective]
 alias ⟨_, IsMulTorsionFree.zpow_right_injective⟩ :=
