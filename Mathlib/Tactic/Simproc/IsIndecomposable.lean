@@ -55,7 +55,8 @@ namespace Mathlib.Tactic.Matrix.IsIndecomposable
 
 /-- The vertices reached from the set bits of `s` by following the edges `es` in order. An edge
 counts only when it leaves a vertex already reached and is an edge of `adj`. -/
-def reached {n : ℕ} (adj : Fin n → Fin n → Bool) (s : ℕ) (es : List (Fin n × Fin n)) : ℕ :=
+@[expose] def reached {n : ℕ} (adj : Fin n → Fin n → Bool) (s : ℕ) (es : List (Fin n × Fin n)) :
+    ℕ :=
   es.foldl (init := s) fun visited (p, c) ↦
     bif visited.testBit p && adj p c then visited ||| 1 <<< (c : ℕ) else visited
 
@@ -86,12 +87,12 @@ def isClosed {n : ℕ} (adj : Fin n → Fin n → Bool) (s : ℕ) : Bool :=
     (List.finRange n).all fun j ↦ s.testBit j || !adj i j
 
 /-- Entry `(i, j)` of the `n × n` Boolean adjacency matrix represented by `bits`. -/
-def packedAdj (n bits : ℕ) (i j : Fin n) : Bool :=
+@[expose] def packedAdj (n bits : ℕ) (i j : Fin n) : Bool :=
   bits.testBit (i * n + j)
 
 /-- Whether no edge of the `n × n` Boolean adjacency matrix represented by `bits` leaves the set
 of vertices given by the set bits of `s`. Each row of `bits` is read at once. -/
-def isClosedPacked (n bits s : ℕ) : Bool :=
+@[expose] def isClosedPacked (n bits s : ℕ) : Bool :=
   (List.range n).all fun i ↦
     let row := bits >>> (i * n) &&& (2 ^ n - 1)
     !s.testBit i || (row &&& s) == row
@@ -130,12 +131,12 @@ theorem not_isIndecomposable_of_isClosed {n : ℕ} {M : Matrix (Fin n) (Fin n) R
 variable [DecidableEq R]
 
 /-- The nonzero entries of `row`, as the set bits of a natural number. -/
-def packRow (row : List R) : ℕ :=
+@[expose] def packRow (row : List R) : ℕ :=
   row.foldr (fun (a : R) acc ↦ (if a = 0 then 0 else 1) ||| acc <<< 1) 0
 
 /-- The Boolean adjacency matrix of `rows` interpreted as an `n × n` matrix, as the set bits of a
 natural number with entry `(i, j)` at bit `i * n + j`. -/
-def packRows (n : ℕ) (rows : List (List R)) : ℕ :=
+@[expose] def packRows (n : ℕ) (rows : List (List R)) : ℕ :=
   rows.foldr (fun row acc ↦ (packRow row &&& (2 ^ n - 1)) ||| acc <<< n) 0
 
 theorem testBit_packRow (row : List R) (j : ℕ) :
@@ -212,7 +213,11 @@ def decideStronglyConnected (adjMatrix : Array (Array Bool)) : StrongConnectivit
   .connected outTree inTree
 
 /-- The Boolean adjacency matrix of the matrix with rows `lit` evaluated by the kernel. Returns
-`none` if the kernel cannot decide which entries are zero. -/
+`none` if the kernel cannot decide which entries are zero.
+
+The kernel evaluates the packed number `packRows n lit` and then unpacks the boolean adjacency
+matrix from the bits. This round trip evaluates every entry in one `Kernel.whnf` call instead
+of needing a call per cell (about 2.5x the cost). -/
 def evalAdjMatrix? {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (dα : Q(DecidableEq $α)) (n : Nat)
     (lit : Q(List (List $α))) : MetaM (Option (Array (Array Bool))) := do
   let .ok (.lit (.natVal bits)) := Kernel.whnf (← getEnv) {} q(packRows $n $lit) | return none
