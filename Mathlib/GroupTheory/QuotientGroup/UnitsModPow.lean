@@ -138,7 +138,7 @@ lemma map_unit (φ : α →* β) (n : ℕ) (ha : IsUnit a) :
 `AddUnits.ModNSMul α n ≃+ AddUnits.ModNSMul β n` of the groups of additive units modulo `n`-th
 multiples. -/]
 def congr (e : α ≃* β) (n : ℕ) : ModPow α n ≃* ModPow β n :=
-  congrRangePowMonoidHom (Units.mapEquiv e) n
+  QuotientGroup.congr _ _ _ ((Units.mapEquiv e).map_range_powMonoidHom n)
 
 @[to_additive (attr := simp)]
 lemma congr_mk (e : α ≃* β) (n : ℕ) (u : αˣ) :
@@ -158,7 +158,7 @@ lemma bijective_map {φ : α →* β} (hφ : Function.Bijective φ) (n : ℕ) :
 @[to_additive /-- Taking additive units modulo `n`-th multiples commutes with products. -/]
 noncomputable def piEquiv {ι : Type*} (M : ι → Type*) [∀ i, CommMonoid (M i)] (n : ℕ) :
     ModPow ((i : ι) → M i) n ≃* ((i : ι) → ModPow (M i) n) :=
-  (congrRangePowMonoidHom MulEquiv.piUnits n).trans <|
+  (QuotientGroup.congr _ _ _ ((MulEquiv.piUnits (M := M)).map_range_powMonoidHom n)).trans <|
     mulEquivPiModRangePowMonoidHom (fun i ↦ (M i)ˣ) n
 
 @[to_additive (attr := simp)]
