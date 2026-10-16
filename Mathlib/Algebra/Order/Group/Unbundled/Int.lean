@@ -5,8 +5,8 @@ Authors: Jeremy Avigad
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Unbundled.Abs
 public import Mathlib.Algebra.Group.Int.Defs
+public import Mathlib.Algebra.Order.Group.Unbundled.Abs
 public import Mathlib.Data.Int.Basic
 
 /-!
@@ -29,7 +29,7 @@ public section
 -- We should need only a minimal development of sets in order to get here.
 assert_not_exists Set.Subsingleton Ring
 
-open Function Nat
+open Nat
 
 namespace Int
 

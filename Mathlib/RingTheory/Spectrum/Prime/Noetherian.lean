@@ -8,10 +8,11 @@ module
 public import Mathlib.RingTheory.Artinian.Ring
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
-public import Mathlib.Topology.NoetherianSpace
 
 /-!
-This file proves additional properties of the prime spectrum a ring is Noetherian.
+# Prime spectra of Noetherian and Artinian rings
+
+This file proves additional properties of the prime spectrum of a Noetherian or Artinian ring.
 -/
 
 public section
@@ -28,7 +29,7 @@ section IsNoetherianRing
 variable (R : Type u) [CommSemiring R] [IsNoetherianRing R]
 
 instance : NoetherianSpace (PrimeSpectrum R) :=
-  ((noetherianSpace_TFAE <| PrimeSpectrum R).out 0 1).mpr (closedsEmbedding R).dual.wellFoundedLT
+  ((noetherianSpace_TFAE <| PrimeSpectrum R).out 1 2).mpr (closedsEmbedding R).dual.wellFoundedLT
 
 lemma finite_setOfPred_isMin :
     {x : PrimeSpectrum R | IsMin x}.Finite := by
@@ -55,7 +56,7 @@ instance : DiscreteTopology (PrimeSpectrum R) :=
   discreteTopology_iff_finite_and_krullDimLE_zero.mpr ⟨inferInstance, inferInstance⟩
 
 variable {R} in
-lemma exists_not_mem_forall_mem_of_ne (p : Ideal R) [p.IsPrime] :
+lemma exists_notMem_forall_mem_of_ne (p : Ideal R) [p.IsPrime] :
     ∃ r ∉ p, IsIdempotentElem r ∧ ∀ q : Ideal R, q.IsPrime → q ≠ p → r ∈ q := by
   classical
   obtain ⟨r, hr⟩ := PrimeSpectrum.toPiLocalization_bijective.2 (Pi.single ⟨p, inferInstance⟩ 1)
@@ -74,6 +75,9 @@ lemma exists_not_mem_forall_mem_of_ne (p : Ideal R) [p.IsPrime] :
         -FaithfulSMul.algebraMap_eq_zero_iff] using funext_iff.mp hr ⟨q, inferInstance⟩
     rw [← IsLocalization.AtPrime.to_map_mem_maximal_iff (Localization.AtPrime q) q, this]
     simp
+
+@[deprecated (since := "2026-09-28")]
+alias exists_not_mem_forall_mem_of_ne := exists_notMem_forall_mem_of_ne
 
 variable (F : Type*) [Field F] [Algebra F R] [Module.Finite F R]
 

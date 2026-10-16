@@ -5,8 +5,8 @@ Authors: Scott Carnahan
 -/
 module
 
-public import Mathlib.LinearAlgebra.RootSystem.Hom
 public import Mathlib.CategoryTheory.Category.Basic
+public import Mathlib.LinearAlgebra.RootSystem.Hom
 
 /-!
 # The category of root pairings
@@ -30,7 +30,7 @@ This is mostly copied from `ModuleCat`.
 
 public section
 
-open Set Function CategoryTheory
+open CategoryTheory
 
 noncomputable section
 

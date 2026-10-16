@@ -6,9 +6,8 @@ Authors: Chris Birkbeck
 module
 
 public import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
-public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
-public import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
-public import Mathlib.Tactic.AdaptationNote
+
+import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Slash actions
@@ -27,7 +26,7 @@ Scoped in the `ModularForm` namespace, this file defines
 @[expose] public section
 
 
-open Complex UpperHalfPlane ModularGroup
+open Complex UpperHalfPlane
 
 open scoped MatrixGroups
 
@@ -190,7 +189,7 @@ theorem is_invariant_one' (A : SL(2, ℤ)) : (1 : ℍ → ℂ) ∣[(0 : ℤ)] (A
 theorem slash_action_eq'_iff (k : ℤ) (f : ℍ → ℂ) (γ : SL(2, ℤ)) (z : ℍ) :
     (f ∣[k] γ) z = f z ↔ f (γ • z) = ((γ 1 0 : ℂ) * z + (γ 1 1 : ℂ)) ^ k * f z := by
   simp only [SL_slash_apply]
-  convert! inv_mul_eq_iff_eq_mul₀ (G₀ := ℂ) _ using 2
+  convert inv_mul_eq_iff_eq_mul₀ (G₀ := ℂ) _ using 2
   · simp only [mul_comm (f _), denom, zpow_neg]
     rfl
   · exact zpow_ne_zero k (denom_ne_zero γ z)
@@ -249,13 +248,6 @@ lemma prod_slash {ι : Type*} {k : ℤ} {g : GL (Fin 2) ℝ} {f : ι → ℍ →
     rw [Finset.sum_const, nsmul_eq_mul']
   rw [this]
   exact prod_slash_sum_weights
-
-@[deprecated prod_slash (since := "2026-01-22")]
-lemma prod_fintype_slash {ι : Type*} [Fintype ι] [Nonempty ι] {k : ℤ} {g : GL (Fin 2) ℝ}
-    {f : ι → ℍ → ℂ} : (∏ i, f i) ∣[k * Fintype.card ι] g =
-      |g.det.val| ^ (Fintype.card ι - 1) • (∏ i, f i ∣[k] g) := by
-  have : 0 < Fintype.card ι := Fintype.card_pos
-  simpa [← zpow_natCast, this] using ModularForm.prod_slash (s := (.univ : Finset ι))
 
 end
 

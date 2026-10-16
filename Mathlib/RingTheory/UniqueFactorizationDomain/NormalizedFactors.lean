@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 module
 
 public import Mathlib.Algebra.GCDMonoid.Basic
-public import Mathlib.Data.Multiset.OrderedMonoid
+public import Mathlib.Algebra.Order.Monoid.Multiset
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
 
 /-!
@@ -46,7 +46,7 @@ theorem factors_eq_normalizedFactors {M : Type*} [CommMonoidWithZero M]
 
 theorem prod_normalizedFactors {a : α} (ane0 : a ≠ 0) :
     Associated (normalizedFactors a).prod a := by
-  rw [normalizedFactors, factors, dif_neg ane0]
+  rw [normalizedFactors, factors, dite_eq_right ane0]
   refine Associated.trans ?_ (Classical.choose_spec (exists_prime_factors a ane0)).2
   rw [← Associates.mk_eq_mk_iff_associated, ← Associates.prod_mk, ← Associates.prod_mk,
     Multiset.map_map]
@@ -88,13 +88,13 @@ theorem normalizedFactors_irreducible {a : α} (ha : Irreducible a) :
   have p_mem : p ∈ normalizedFactors a := by
     rw [hp]
     exact Multiset.mem_singleton_self _
-  convert! hp
+  convert hp
   rwa [← normalize_normalized_factor p p_mem, normalize_eq_normalize_iff, dvd_dvd_iff_associated]
 
 theorem normalizedFactors_eq_of_dvd (a : α) :
     ∀ᵉ (p ∈ normalizedFactors a) (q ∈ normalizedFactors a), p ∣ q → p = q := by
   intro p hp q hq hdvd
-  convert!
+  convert
     normalize_eq_normalize hdvd
       ((prime_of_normalized_factor _ hp).irreducible.dvd_symm
         (prime_of_normalized_factor _ hq).irreducible hdvd) <;>
@@ -327,7 +327,7 @@ theorem normalizedFactors_multiset_prod (s : Multiset α) (hs : 0 ∉ s) :
   · obtain rfl : s = 0 := by
       apply Multiset.eq_zero_of_forall_notMem
       intro _
-      convert! hs
+      convert hs
     simp
   induction s using Multiset.induction with
   | empty => simp
@@ -401,7 +401,7 @@ protected noncomputable def strongNormalizationMonoid : StrongNormalizationMonoi
         rw [Function.comp_apply, mkMonoidHom_apply,
           Classical.choose_spec mk_surjective.hasRightInverse x]
         rfl
-      rw [if_neg hx, ← mkMonoidHom_apply, MonoidHom.map_multiset_prod, map_map, h, map_id, ←
+      rw [ite_eq_right hx, ← mkMonoidHom_apply, MonoidHom.map_multiset_prod, map_map, h, map_id, ←
         associated_iff_eq]
       apply prod_normalizedFactors hx)
 
