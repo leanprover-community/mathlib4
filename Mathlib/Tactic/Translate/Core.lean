@@ -243,18 +243,17 @@ def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
     throwError "`{t.attrName}` does not support mutually recursive declarations."
   let decl := srcDecl.updateName tgt
   let decl := decl.updateAll [tgt]
+  let mut type := decl.type
   let mut value := decl.value! (allowOpaque := true)
   if let some b := unfoldBoundaries? then
-    value ← b.cast (← b.insertBoundaries value t.attrName) decl.type t.attrName
+    type ← b.insertBoundaries type t.attrName
+    value ← b.cast (← b.insertBoundaries value t.attrName) type t.attrName
   trace[translate_detail] "Value before translation:{indentExpr value}"
   let (value', relevantArg₁) ← applyReplacementLambda t dont value
   value ← reorderLambda reorder value'
   if let some b := unfoldBoundaries? then
     value ← b.unfoldInsertions value
   let decl := decl.updateValue value
-  let mut type := decl.type
-  if let some b := unfoldBoundaries? then
-    type ← b.insertBoundaries decl.type t.attrName
   let (type', relevantArg₂) ← applyReplacementForall t dont <|
     GuessName.renameBinderNames (t.guessNameExt.getState (← getEnv)) rename type
   type ← reorderForall reorder type'
@@ -928,18 +927,22 @@ partial def applyAttributes (t : TranslateData) (cfg : Config) (src tgt : Name) 
       -- Set the target of `(attr := deprecated)` when applied to an `alias`.
       if attr.name == `deprecated then
         if let some info ← Batteries.Tactic.Alias.getAliasInfo? src then
-          if let `(attr| deprecated%$tk $[$desc:str]? $[(since := $since)]?) := attr.stx then
+          if let `(attr| deprecated%$tk $[$desc:str]? $[$typeChanged?]?
+              $[(since := $since)]?) := attr.stx then
             attr := { attr with stx := ← `(attr|
-              deprecated%$tk $(mkCIdent info.name) $[$desc:str]? $[(since := $since)]?) }
+              deprecated%$tk $(mkCIdent info.name) $[$desc:str]? $[$typeChanged?]?
+                $[(since := $since)]?) }
       for decl in allDecls, i in 0...* do
         if i != 0 then
           -- Translate the target of `(attr := deprecated)` if possible.
           if attr.name == `deprecated then
-            if let `(attr| deprecated%$tk $name $[$desc]? $[(since := $since)]?) := attr.stx then
+            if let `(attr| deprecated%$tk $name $[$desc]? $[$typeChanged?]?
+                $[(since := $since)]?) := attr.stx then
               let name ← realizeGlobalConstNoOverload name
               if let some name := findTranslationName? (← getEnv) t name then
                 attr := { attr with stx := ← `(attr|
-                  deprecated%$tk $(mkCIdent name) $[$desc]? $[(since := $since)]?) }
+                  deprecated%$tk $(mkCIdent name) $[$desc]? $[$typeChanged?]?
+                    $[(since := $since)]?) }
         Term.applyAttributes decl #[attr]
   return nestedDecls
 

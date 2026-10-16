@@ -179,11 +179,6 @@ lemma generator_eq_exp_neg_one_of_surjective (hsurj : Function.Surjective v) :
     hv.generator = Units.mk0 (exp (-1 : ℤ) : ℤᵐ⁰) (by simp) :=
   generator_eq_exp_neg_one_of_mem_range (by aesop)
 
-@[deprecated generator_eq_exp_neg_one_of_surjective (since := "2026-04-01")]
-lemma generator_eq_neg_exp_one_of_surjective (hsurj : Function.Surjective v) :
-    hv.generator = Units.mk0 (exp (-1 : ℤ) : ℤᵐ⁰) (by simp) :=
-  generator_eq_exp_neg_one_of_surjective hsurj
-
 end WithZeroMulInt
 
 end IsRankOneDiscrete
