@@ -17,7 +17,7 @@ public meta section
 
 namespace Mathlib.Tactic.ClickSuggestions
 
-open Lean Meta ProofWidgets Jsx
+open Lean Meta ProofWidgets
 
 /-- The structure for `apply at` lemmas stored in the `RefinedDiscrTree`. -/
 structure ApplyAtLemma where
@@ -83,13 +83,14 @@ def ApplyAtLemma.try (lem : ApplyAtLemma) (assignableMVars : Array Expr) :
   let tactic ← tacticSyntax lem
   let mut htmls := #[← exprToHtml replacement]
   for goal in newGoals do
-    htmls := htmls.push <div> <strong className="goal-vdash">⊢ </strong> {← exprToHtml goal} </div>
+    htmls := htmls.push
+      jsx%{<div><strong className="goal-vdash">⊢ </strong>{← exprToHtml goal}</div>}
   let filtered ←
     if unhelpfulMVars then
       pure none
     else
       some <$> mkSuggestion tactic (.element "div" #[] htmls)
-  htmls := htmls.push <div> {← lem.name.toHtml} </div>
+  htmls := htmls.push jsx%{<div>{← lem.name.toHtml}</div>}
   let unfiltered ← mkSuggestion tactic (.element "div" #[] htmls)
   let pattern ← do
     let (xs, _, _) ← forallMetaTelescopeReducing (← lem.name.getType)
