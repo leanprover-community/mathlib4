@@ -88,8 +88,21 @@ def C (r : R) : SparsePoly R := ofSortedList [(0, r)] (List.pairwise_singleton _
 instance : One (SparsePoly R) where
   one := C 1
 
-/-- `degLt a l` holds when every pair in `l` has exponent strictly less than `a`. -/
-def degLt (a : ℕ) (l : List (ℕ × R)) : Prop := ∀ x ∈ l, x.1 < a
+/-- `degLT a l` holds when every pair in `l` has exponent strictly less than `a`. -/
+def degLT (a : ℕ) (l : List (ℕ × R)) : Prop := 
+  ∀ x ∈ l, x.1 < a
+
+/-- `degLE a l` holds when every pair in `l` has exponent less or equal than `a`. -/
+def degLE (a : ℕ) (l : List (ℕ × R)) : Prop := 
+  ∀ x ∈ l, x.1 ≤ a
+
+/-- `degGT a l` holds when every pair in `l` has exponent strictly greater than `a`. -/
+def degGT (a : ℕ) (l : List (ℕ × R)) : Prop := 
+  ∀ x ∈ l, x.1 > a
+
+/-- `degGE a l` holds when every pair in `l` has exponent greater or equal than `a`. -/
+def degGE (a : ℕ) (l : List (ℕ × R)) : Prop := 
+  ∀ x ∈ l, x.1 ≥ a
 
 /-- Interprets a list of `(exponent, coefficient)` pairs as the Mathlib polynomial
 `∑ Polynomial.C a * Polynomial.X ^ i`. -/
@@ -111,12 +124,15 @@ def addCore : List (ℕ × R) → List (ℕ × R) → List (ℕ × R)
       (j, b) :: addCore xx y
     else if j < i then
       (i, a) :: addCore x yy
-    else
-      ( fun c => if c=0 then addCore x y else (i, c) :: addCore x y) (a+b)
-    termination_by xx yy => xx.length + yy.length
+    else 
+      let ab := a + b 
+      if ab = 0 then 
+        addCore x y 
+      else (i, ab) :: addCore x y 
+termination_by xx yy => xx.length + yy.length
 
-theorem addCore_degLt {n : ℕ} : ∀ {x y : List (ℕ × R)},
-    degLt n x → degLt n y → degLt n (addCore x y)
+theorem addCore_degLT {n : ℕ} : ∀ {x y : List (ℕ × R)},
+    degLT n x → degLT n y → degLT n (addCore x y)
   | [], yy, _, hy => by
     unfold addCore
     exact hy
@@ -125,30 +141,30 @@ theorem addCore_degLt {n : ℕ} : ∀ {x y : List (ℕ × R)},
     exact hx
   | xx@((i, a) :: x), yy@((j, b) :: y), hx, hy => by
     have hx_head : i < n := hx (i, a) List.mem_cons_self
-    have hx_tail : degLt n x := fun e he => hx e (List.mem_cons_of_mem _ he)
+    have hx_tail : degLT n x := fun e he => hx e (List.mem_cons_of_mem _ he)
     have hy_head : j < n := hy (j, b) List.mem_cons_self
-    have hy_tail : degLt n y := fun e he => hy e (List.mem_cons_of_mem _ he)
+    have hy_tail : degLT n y := fun e he => hy e (List.mem_cons_of_mem _ he)
     unfold addCore
     split
     · intro e he
       simp only [List.mem_cons] at he
       rcases he with rfl | he
       · exact hy_head
-      · exact addCore_degLt hx hy_tail e he
+      · exact addCore_degLT hx hy_tail e he
     · split
       · intro e he
         simp only [List.mem_cons] at he
         rcases he with rfl | he
         · exact hx_head
-        · exact addCore_degLt hx_tail hy e he
+        · exact addCore_degLT hx_tail hy e he
       · dsimp only
         split
-        · exact addCore_degLt hx_tail hy_tail
+        · exact addCore_degLT hx_tail hy_tail
         · intro e he
           simp only [List.mem_cons] at he
           rcases he with rfl | he
           · exact hx_head
-          · exact addCore_degLt hx_tail hy_tail e he
+          · exact addCore_degLT hx_tail hy_tail e he
 termination_by x y => x.length + y.length
 
 theorem addCore_sorted : ∀ {x y : List (ℕ × R)},
@@ -167,7 +183,7 @@ theorem addCore_sorted : ∀ {x y : List (ℕ × R)},
     split
     · next ij =>
       constructor
-      · apply addCore_degLt
+      · apply addCore_degLT
         · intro
           | _, .head _ => exact ij
           | p, .tail _ hp => exact (hi _ hp).trans ij
@@ -176,7 +192,7 @@ theorem addCore_sorted : ∀ {x y : List (ℕ × R)},
     · split
       · next ji =>
         constructor
-        · apply addCore_degLt
+        · apply addCore_degLT
           · exact hi
           · intro
             | _, .head _ => exact ji
@@ -187,7 +203,7 @@ theorem addCore_sorted : ∀ {x y : List (ℕ × R)},
         split
         · exact addCore_sorted hx' hy'
         · constructor
-          · exact addCore_degLt hi hj
+          · exact addCore_degLT hi hj
           · exact addCore_sorted hx' hy'
 termination_by x y => x.length + y.length
 
