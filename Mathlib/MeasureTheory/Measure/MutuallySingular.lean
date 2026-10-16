@@ -76,6 +76,16 @@ lemma restrict_nullSet (h : μ ⟂ₘ ν) : μ.restrict h.nullSet = 0 := by simp
 lemma restrict_compl_nullSet (h : μ ⟂ₘ ν) : ν.restrict h.nullSetᶜ = 0 := by simp
 
 @[simp]
+lemma restrict_nullSet' (h : μ ⟂ₘ ν) : ν.restrict h.nullSet = ν := by
+  conv_rhs => rw [← restrict_add_restrict_compl (μ := ν) h.measurableSet_nullSet]
+  simp
+
+@[simp]
+lemma restrict_compl_nullSet' (h : μ ⟂ₘ ν) : μ.restrict h.nullSetᶜ = μ := by
+  conv_rhs => rw [← restrict_add_restrict_compl (μ := μ) h.measurableSet_nullSet]
+  simp
+
+@[simp]
 theorem zero_right : μ ⟂ₘ 0 :=
   ⟨∅, MeasurableSet.empty, measure_empty, rfl⟩
 
@@ -272,10 +282,10 @@ lemma mutuallySingular_tfae : List.TFAE
   tfae_finish
 
 lemma mutuallySingular_iff_disjoint : μ ⟂ₘ ν ↔ Disjoint μ ν :=
-  mutuallySingular_tfae.out 0 1
+  mutuallySingular_tfae.out 1 2
 
 lemma mutuallySingular_iff_disjoint_ae : μ ⟂ₘ ν ↔ Disjoint (ae μ) (ae ν) :=
-  mutuallySingular_tfae.out 0 2
+  mutuallySingular_tfae.out 1 3
 
 end Measure
 

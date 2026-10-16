@@ -5,13 +5,13 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.CharP.Frobenius
-public import Mathlib.Algebra.CharP.Pi
 public import Mathlib.Algebra.CharP.Quotient
-public import Mathlib.Algebra.CharP.Subring
 public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 public import Mathlib.FieldTheory.Perfect
 public import Mathlib.RingTheory.Valuation.Integers
+
+import Mathlib.Algebra.CharP.Pi
+import Mathlib.Algebra.CharP.Subring
 
 /-!
 # Ring Perfection and Tilt
@@ -40,8 +40,6 @@ If `α` is a ring with characteristic `p` and `p` is prime, `Perfection α p` is
 def Perfection (α : Type u₁) [Pow α ℕ] (p : ℕ) : Type u₁ :=
   { f : ℕ → α // ∀ n, f (n + 1) ^ p = f n }
 
-@[deprecated (since := "2026-03-03")] alias Ring.Perfection := Perfection
-
 namespace Perfection
 
 section CommMonoid
@@ -51,9 +49,6 @@ def submonoid (M : Type*) [CommMonoid M] (p : ℕ) : Submonoid (ℕ → M) where
   carrier := { f | ∀ n, f (n + 1) ^ p = f n }
   one_mem' _ := one_pow _
   mul_mem' hf hg n := (mul_pow _ _ _).trans congr($(hf n) * $(hg n))
-
-@[deprecated (since := "2026-03-03")]
-alias _root_.Monoid.perfection := submonoid
 
 instance (M : Type*) [CommMonoid M] (p : ℕ) : CommMonoid (Perfection M p) :=
   inferInstanceAs <| CommMonoid (submonoid M p)
@@ -199,9 +194,6 @@ def subsemiring (R : Type*) [CommSemiring R] (p : ℕ) [hp : Fact p.Prime] [Char
   zero_mem' _ := zero_pow hp.1.ne_zero
   add_mem' hf hg n := (map_add (frobenius R p) _ _).trans congr($(hf n) + $(hg n))
 
-@[deprecated (since := "2026-03-03")]
-alias _root_.Ring.perfectionSubsemiring := subsemiring
-
 variable (R : Type*) [CommSemiring R] (p : ℕ) [hp : Fact p.Prime] [CharP R p]
 
 instance : CommSemiring (Perfection R p) :=
@@ -330,12 +322,12 @@ noncomputable def lift (R : Type u₁) [CommSemiring R] [CharP R p] [PerfectRing
     { toFun := fun r => ⟨fun n => f (((frobeniusEquiv R p).symm : R →+* R)^[n] r),
         fun n => by rw [← f.map_pow, Function.iterate_succ_apply', RingHom.coe_coe,
           frobeniusEquiv_symm_pow_p]⟩
-      map_one' := ext fun _ => (congr_arg f <| iterate_map_one _ _).trans f.map_one
+      map_one' := ext fun _ => congr(f $(iterate_map_one ..)).trans f.map_one
       map_mul' := fun _ _ =>
-        ext fun _ => (congr_arg f <| iterate_map_mul _ _ _ _).trans <| f.map_mul _ _
-      map_zero' := ext fun _ => (congr_arg f <| iterate_map_zero _ _).trans f.map_zero
+        ext fun _ => congr(f $(iterate_map_mul ..)).trans <| f.map_mul _ _
+      map_zero' := ext fun _ => congr(f $(iterate_map_zero ..)).trans f.map_zero
       map_add' := fun _ _ =>
-        ext fun _ => (congr_arg f <| iterate_map_add _ _ _ _).trans <| f.map_add _ _ }
+        ext fun _ => congr(f $(iterate_map_add ..)).trans <| f.map_add _ _ }
   invFun := RingHom.comp <| coeff S p 0
   right_inv f := RingHom.ext fun r => ext fun n =>
     show coeff S p 0 (f (((frobeniusEquiv R p).symm)^[n] r)) = coeff S p n (f r) by
@@ -367,9 +359,6 @@ def subring (R : Type*) [CommRing R] (p : ℕ) [hp : Fact p.Prime] [CharP R p] :
     Subring (ℕ → R) where
   __ := subsemiring R p
   neg_mem' hf n := (map_neg (frobenius R p) _).trans congr(-$(hf n))
-
-@[deprecated (since := "2026-03-03")]
-alias _root_.Ring.perfectionSubring := subring
 
 variable (R : Type*) [CommRing R] (p : ℕ) [hp : Fact p.Prime] [CharP R p]
 
@@ -423,7 +412,7 @@ variable (p R P)
 
 /-- The canonical perfection map from the perfection of a ring. -/
 theorem of : PerfectionMap p (Perfection.coeff R p 0) :=
-  mk' (RingEquiv.refl _) <| (Equiv.apply_eq_iff_eq_symm_apply _).2 rfl
+  mk' (RingEquiv.refl _) <| (Equiv.eq_symm_apply _).1 rfl
 
 /-- For a perfect ring, it itself is the perfection. -/
 theorem id [PerfectRing R p] : PerfectionMap p (RingHom.id R) :=
@@ -439,9 +428,9 @@ variable {p R P}
 /-- A perfection map induces an isomorphism to the perfection. -/
 noncomputable def equiv {π : P →+* R} (m : PerfectionMap p π) : P ≃+* Perfection R p :=
   RingEquiv.ofBijective (Perfection.lift p P R π)
-    ⟨fun _ _ hxy => m.injective fun n => (congr_arg (Perfection.coeff R p n) hxy :), fun f =>
+    ⟨fun _ _ hxy => m.injective fun n => congr(Perfection.coeff R p n $hxy), fun f =>
       let ⟨x, hx⟩ := m.surjective f.1 f.2
-      ⟨x, Perfection.ext <| hx⟩⟩
+      ⟨x, Perfection.ext hx⟩⟩
 
 theorem equiv_apply {π : P →+* R} (m : PerfectionMap p π) (x : P) :
     m.equiv x = Perfection.lift p P R π x := rfl
@@ -478,7 +467,7 @@ noncomputable def lift [PerfectRing R p] (S : Type u₂) [CommSemiring S] [CharP
   right_inv f := by
     exact RingHom.ext fun x => m.equiv.injective <| (m.equiv.apply_symm_apply _).trans
       <| show Perfection.lift p R S (π.comp f) x = RingHom.comp (↑m.equiv) f x from
-        RingHom.ext_iff.1 (by rw [Equiv.apply_eq_iff_eq_symm_apply]; rfl) _
+        RingHom.ext_iff.1 (by rw [← Equiv.eq_symm_apply]; rfl) _
 
 variable {R p}
 
@@ -521,7 +510,7 @@ abbrev ModP :=
 namespace ModP
 
 instance [Fact p.Prime] [hvp : Fact (¬ IsUnit (p : O))] : CharP (ModP O p) p :=
-  CharP.quotient O p <| hvp.1
+  CharP.quotient O p hvp.1
 
 instance [hp : Fact p.Prime] [Fact (¬ IsUnit (p : O))] : Nontrivial (ModP O p) :=
   CharP.nontrivial_of_char_ne_one hp.1.ne_one
@@ -551,7 +540,7 @@ variable {K v O p}
 
 @[simp]
 theorem preVal_zero : preVal K v O p 0 = 0 :=
-  if_pos rfl
+  ite_eq_left rfl
 
 include hv
 
@@ -559,7 +548,7 @@ theorem preVal_mk {x : O} (hx : (Ideal.Quotient.mk _ x : ModP O p) ≠ 0) :
     preVal K v O p (Ideal.Quotient.mk _ x) = v (algebraMap O K x) := by
   obtain ⟨r, hr⟩ : ∃ (a : O), a * (p : O) = (Ideal.Quotient.mk _ x).out - x :=
     Ideal.mem_span_singleton'.1 <| Ideal.Quotient.eq.1 <| Quotient.sound' <| Quotient.mk_out' _
-  refine (if_neg hx).trans (v.map_eq_of_sub_lt <| lt_of_not_ge ?_)
+  refine (ite_eq_right hx).trans (v.map_eq_of_sub_lt <| lt_of_not_ge ?_)
   rw [← map_sub, ← hr, hv.le_iff_dvd]
   exact fun hprx =>
     hx (Ideal.Quotient.eq_zero_iff_mem.2 <| Ideal.mem_span_singleton.2 <| dvd_of_mul_left_dvd hprx)
@@ -590,7 +579,7 @@ theorem v_p_lt_preVal {x : ModP O p} : v p < preVal K v O p x ↔ x ≠ 0 := by
   refine ⟨by aesop, fun h => lt_of_not_ge fun hp => h ?_⟩
   obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective x
   rw [preVal_mk hv h, ← map_natCast (algebraMap O K) p, hv.le_iff_dvd] at hp
-  · rw [Ideal.Quotient.eq_zero_iff_mem, Ideal.mem_span_singleton]; exact hp
+  rw [Ideal.Quotient.eq_zero_iff_mem, Ideal.mem_span_singleton]; exact hp
 
 theorem preVal_eq_zero {x : ModP O p} : preVal K v O p x = 0 ↔ x = 0 where
   mp h := by
@@ -714,14 +703,14 @@ theorem coeff_nat_find_add_ne_zero {f : PreTilt O p} {h : ∃ n, coeff n f ≠ 0
 
 @[simp]
 theorem valAux_zero : valAux K v O p 0 = 0 :=
-  dif_neg fun ⟨_, hn⟩ => hn rfl
+  dite_eq_right fun ⟨_, hn⟩ => hn rfl
 
 include hv
 
 theorem valAux_eq {f : PreTilt O p} {n : ℕ} (hfn : coeff n f ≠ 0) :
     valAux K v O p f = ModP.preVal K v O p (coeff n f) ^ p ^ n := by
   have h : ∃ n, coeff n f ≠ 0 := ⟨n, hfn⟩
-  rw [valAux, dif_pos h]
+  rw [valAux, dite_eq_left h]
   classical
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le (Nat.find_min' h hfn)
   induction k with
@@ -755,8 +744,7 @@ theorem valAux_mul (f g : PreTilt O p) :
   have hfg : coeff (max m n + 1) (f * g) ≠ 0 := by
     rw [map_mul]
     refine ModP.mul_ne_zero_of_pow_p_ne_zero (hv := hv) ?_ ?_
-    · rw [coeff_pow_p f]; assumption
-    · rw [coeff_pow_p g]; assumption
+    <;> rwa [coeff_pow_p]
   rw [valAux_eq hv (coeff_add_ne_zero hm 1),
       valAux_eq hv (coeff_add_ne_zero hn 1), valAux_eq hv hfg]
   rw [map_mul] at hfg ⊢; rw [ModP.preVal_mul hv hfg, mul_pow]

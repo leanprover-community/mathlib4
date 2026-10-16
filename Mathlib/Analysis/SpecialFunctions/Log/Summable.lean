@@ -6,7 +6,8 @@ Authors: Chris Birkbeck
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
-public import Mathlib.Topology.Algebra.InfiniteSum.Field
+
+import Mathlib.Topology.Algebra.InfiniteSum.Field
 
 /-!
 # Summability of logarithms
@@ -20,7 +21,9 @@ public section
 
 variable {ι : Type*}
 
-open Filter Topology NNReal SummationFilter
+open Filter SummationFilter
+
+open scoped Topology
 
 namespace Complex
 variable {f : ι → ℂ} {a : ℂ}
@@ -193,6 +196,11 @@ lemma multipliable_one_add_of_summable [CompleteSpace R]
       simp [s, sdiff_union_distrib, disjoint_iff_inter_eq_empty]
   · intro x hx y hy
     exact (dist_triangle_right _ _ (∏ i ∈ s, (1 + f i))).trans_lt (add_halves ε ▸ add_lt_add hx hy)
+
+lemma multipliable_one_sub_of_summable [CompleteSpace R] (hf : Summable fun i ↦ ‖f i‖) :
+    Multipliable fun i ↦ (1 - f i) := by
+  have : Summable fun i ↦ ‖-f i‖ := by simpa using hf
+  simpa [← sub_eq_add_neg] using multipliable_one_add_of_summable this
 
 lemma summable_finsetProd_of_summable_norm [CompleteSpace R] (hf : Summable (fun i ↦ ‖f i‖)) :
     Summable (fun s ↦ ∏ i ∈ s, f i) :=

@@ -114,13 +114,16 @@ theorem empty_ssubset_singleton : (∅ : Finset α) ⊂ {a} :=
 theorem coe_singleton (a : α) : (({a} : Finset α) : Set α) = {a} := by grind
 
 @[simp, norm_cast]
-theorem coe_eq_singleton {s : Finset α} {a : α} : (s : Set α) = {a} ↔ s = {a} := by grind
+theorem coe_eq_singleton {s : Finset α} {a : α} : (s : Set α) = {a} ↔ s = {a} := by
+  rw [← coe_singleton, coe_inj]
 
 @[norm_cast]
-lemma coe_subset_singleton : (s : Set α) ⊆ {a} ↔ s ⊆ {a} := by grind
+lemma coe_subset_singleton : (s : Set α) ⊆ {a} ↔ s ⊆ {a} := by
+  rw [← coe_singleton, coe_subset]
 
 @[norm_cast]
-lemma singleton_subset_coe : {a} ⊆ (s : Set α) ↔ {a} ⊆ s := by grind
+lemma singleton_subset_coe : {a} ⊆ (s : Set α) ↔ {a} ⊆ s := by
+  rw [← coe_singleton, coe_subset]
 
 theorem eq_singleton_iff_unique_mem {s : Finset α} {a : α} : s = {a} ↔ a ∈ s ∧ ∀ x ∈ s, x = a := by
   grind
@@ -285,7 +288,6 @@ theorem cons_nonempty (h : a ∉ s) : (cons a s h).Nonempty :=
 
 @[simp] theorem cons_ne_empty (h : a ∉ s) : cons a s h ≠ ∅ := (cons_nonempty _).ne_empty
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem nonempty_mk {m : Multiset α} {hm} : (⟨m, hm⟩ : Finset α).Nonempty ↔ m ≠ 0 := by
   induction m using Multiset.induction_on <;> simp

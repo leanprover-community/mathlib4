@@ -8,7 +8,6 @@ module
 public import Mathlib.LinearAlgebra.TensorProduct.Tower
 public import Mathlib.RingTheory.Coalgebra.Basic
 
-import Mathlib.Tactic.Attr.Register
 
 /-!
 # Tactic to reassociate comultiplication in a coalgebra
@@ -48,11 +47,11 @@ open Coalgebra
 open Qq
 namespace CoassocSimps
 
-variable {R A M N P M' N' P' Q Q' M₁ M₂ M₃ N₁ N₂ N₃ : Type*}
+variable {R A M N P M' N' P' Q M₁ M₂ M₃ N₁ N₂ N₃ : Type*}
     [CommSemiring R] [AddCommMonoid A] [Module R A] [Coalgebra R A]
     [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N] [AddCommMonoid P] [Module R P]
     [AddCommMonoid M'] [Module R M'] [AddCommMonoid N'] [Module R N']
-    [AddCommMonoid P'] [Module R P'] [AddCommMonoid Q] [Module R Q] [AddCommMonoid Q'] [Module R Q']
+    [AddCommMonoid P'] [Module R P'] [AddCommMonoid Q] [Module R Q]
     [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
     [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₃]
     [Module R M₁] [Module R M₂] [Module R M₃] [Module R N₁] [Module R N₂] [Module R N₃]
@@ -82,7 +81,7 @@ attribute [coassoc_simps] LinearMap.comp_id LinearMap.id_comp TensorProduct.map_
   LinearEquiv.symm_comp_assoc TensorProduct.rightComm_def TensorProduct.leftComm_def
   TensorProduct.comm_symm TensorProduct.comm_comp_comm TensorProduct.comm_comp_comm_assoc
 
-attribute [coassoc_simps← ] TensorProduct.map_comp TensorProduct.map_map_comp_assoc_eq
+attribute [coassoc_simps ←] TensorProduct.map_comp TensorProduct.map_map_comp_assoc_eq
   TensorProduct.map_map_comp_assoc_symm_eq
 
 @[coassoc_simps]
@@ -91,13 +90,13 @@ lemma TensorProduct.map_comp_assoc
     map g g' ∘ₗ map f f' ∘ₗ φ = map (g ∘ₗ f) (g' ∘ₗ f') ∘ₛₗ φ := by
   rw [← LinearMap.comp_assoc, TensorProduct.map_comp]
 
-@[coassoc_simps← ]
+@[coassoc_simps ←]
 lemma TensorProduct.map_map_comp_assoc_eq_assoc
     (f₁ : M₁ →ₗ[R] N₁) (f₂ : M₂ →ₗ[R] N₂) (f₃ : M₃ →ₗ[R] N₃) (f : M →ₗ[R] M₁ ⊗[R] M₂ ⊗[R] M₃) :
     f₁ ⊗ₘ (f₂ ⊗ₘ f₃) ∘ₗ α ∘ₗ f = α ∘ₗ ((f₁ ⊗ₘ f₂) ⊗ₘ f₃) ∘ₗ f := by
   rw [← LinearMap.comp_assoc, ← LinearMap.comp_assoc, TensorProduct.map_map_comp_assoc_eq]
 
-@[coassoc_simps← ]
+@[coassoc_simps ←]
 lemma TensorProduct.map_map_comp_assoc_symm_eq_assoc
     (f₁ : M₁ →ₗ[R] N₁) (f₂ : M₂ →ₗ[R] N₂) (f₃ : M₃ →ₗ[R] N₃) (f : M →ₗ[R] M₁ ⊗[R] (M₂ ⊗[R] M₃)) :
     (f₁ ⊗ₘ f₂) ⊗ₘ f₃ ∘ₗ α⁻¹ ∘ₗ f = α⁻¹ ∘ₗ (f₁ ⊗ₘ (f₂ ⊗ₘ f₃)) ∘ₗ f := by

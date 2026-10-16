@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Analysis.Calculus.Deriv.Support
 public import Mathlib.Analysis.Calculus.FDeriv.Mul
-public import Mathlib.Analysis.Calculus.FDeriv.Add
-public import Mathlib.Analysis.Calculus.FDeriv.CompCLM
+
+import Mathlib.Analysis.Calculus.FDeriv.CompCLM
 
 /-!
 # Derivative of `f x * g x`
@@ -27,11 +27,9 @@ public section
 
 universe u v w
 
-noncomputable section
-
 open scoped Topology Filter ENNReal
 
-open Filter Asymptotics Set
+open Filter Set
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
@@ -63,11 +61,11 @@ theorem hasDerivAt_of_bilinear (hu : x ∈ tsupport v → HasDerivAt u u' x)
     · simpa using (B.hasFDerivAt_of_bilinear (hu hxv).hasFDerivAt (hv hxu).hasFDerivAt).hasDerivAt
     · have hx : x ∉ tsupport fun x ↦ B (u x) (v x) :=
         mt (closure_mono (fun x ↦ mt fun h ↦ by simp [h]) ·) hxv
-      convert! HasDerivAt.of_notMem_tsupport hx
+      convert HasDerivAt.of_notMem_tsupport hx
       simp [(hv hxu).unique <| .of_notMem_tsupport hxv, image_eq_zero_of_notMem_tsupport hxv]
   · have hx : x ∉ tsupport fun x ↦ B (u x) (v x) :=
       mt (closure_mono (fun x ↦ mt fun h ↦ by simp [h]) ·) hxu
-    convert! HasDerivAt.of_notMem_tsupport hx
+    convert HasDerivAt.of_notMem_tsupport hx
     by_cases hxv : x ∈ tsupport v
     · simp [image_eq_zero_of_notMem_tsupport hxu, (hu hxv).unique <| .of_notMem_tsupport hxu]
     · simp [image_eq_zero_of_notMem_tsupport hxu, image_eq_zero_of_notMem_tsupport hxv]
@@ -211,17 +209,11 @@ lemma derivWithin_fun_const_smul_field (c : 𝕝) (f : 𝕜 → F) :
   · simp [← fderivWithin_derivWithin, ← Pi.smul_def, fderivWithin_const_smul_field c hsx]
   · simp [derivWithin_zero_of_not_uniqueDiffWithinAt hsx]
 
-@[deprecated (since := "2026-01-11")] alias derivWithin_fun_const_smul' :=
-  derivWithin_fun_const_smul_field
-
 /-- A variant of `derivWithin_const_smul` without differentiability assumption when the scalar
 multiplication is by division ring elements. -/
 lemma derivWithin_const_smul_field (c : 𝕝) (f : 𝕜 → F) :
     derivWithin (c • f) s x = c • derivWithin f s x :=
   derivWithin_fun_const_smul_field c f
-
-@[deprecated (since := "2026-01-11")] alias derivWithin_const_smul' :=
-  derivWithin_const_smul_field
 
 theorem deriv_fun_const_smul (c : R) (hf : DifferentiableAt 𝕜 f x) :
     deriv (fun y => c • f y) x = c • deriv f x :=
@@ -237,15 +229,11 @@ lemma deriv_fun_const_smul_field (c : 𝕝) (f : 𝕜 → F) :
     deriv (fun y ↦ c • f y) x = c • deriv f x := by
   simp only [← derivWithin_univ, derivWithin_fun_const_smul_field]
 
-@[deprecated (since := "2026-01-11")] alias deriv_fun_const_smul' := deriv_fun_const_smul_field
-
 /-- A variant of `deriv_const_smul` without differentiability assumption when the scalar
 multiplication is by division ring elements. -/
 lemma deriv_const_smul_field (c : 𝕝) (f : 𝕜 → F) :
     deriv (c • f) x = c • deriv f x := by
   simp only [← derivWithin_univ, derivWithin_const_smul_field]
-
-@[deprecated (since := "2026-01-11")] alias deriv_const_smul' := deriv_const_smul_field
 
 end ConstSMul
 
@@ -297,7 +285,7 @@ theorem deriv_mul (hc : DifferentiableAt 𝕜 c x) (hd : DifferentiableAt 𝕜 d
 
 theorem HasDerivWithinAt.mul_const (hc : HasDerivWithinAt c c' s x) (d : 𝔸) :
     HasDerivWithinAt (fun y => c y * d) (c' * d) s x := by
-  convert! hc.mul (hasDerivWithinAt_const x s d) using 1
+  convert hc.mul (hasDerivWithinAt_const x s d) using 1
   rw [mul_zero, add_zero]
 
 theorem HasDerivAt.mul_const (hc : HasDerivAt c c' x) (d : 𝔸) :
@@ -310,7 +298,7 @@ theorem hasDerivAt_mul_const (c : 𝕜) : HasDerivAt (fun x => x * c) c x := by
 
 theorem HasStrictDerivAt.mul_const (hc : HasStrictDerivAt c c' x) (d : 𝔸) :
     HasStrictDerivAt (fun y => c y * d) (c' * d) x := by
-  convert! hc.mul (hasStrictDerivAt_const x d) using 1
+  convert hc.mul (hasStrictDerivAt_const x d) using 1
   rw [mul_zero, add_zero]
 
 theorem derivWithin_mul_const (hc : DifferentiableWithinAt 𝕜 c s x) (d : 𝔸) :
@@ -349,7 +337,7 @@ theorem deriv_mul_const_field' (v : 𝕜') : (deriv fun x => u x * v) = fun x =>
 
 theorem HasDerivWithinAt.const_mul (c : 𝔸) (hd : HasDerivWithinAt d d' s x) :
     HasDerivWithinAt (fun y => c * d y) (c * d') s x := by
-  convert! (hasDerivWithinAt_const x s c).mul hd using 1
+  convert (hasDerivWithinAt_const x s c).mul hd using 1
   rw [zero_mul, zero_add]
 
 theorem HasDerivAt.const_mul (c : 𝔸) (hd : HasDerivAt d d' x) :
@@ -362,7 +350,7 @@ theorem hasDerivAt_const_mul (c : 𝕜) : HasDerivAt (fun y => c * y) c x := by
 
 theorem HasStrictDerivAt.const_mul (c : 𝔸) (hd : HasStrictDerivAt d d' x) :
     HasStrictDerivAt (fun y => c * d y) (c * d') x := by
-  convert! (hasStrictDerivAt_const _ _).mul hd using 1
+  convert (hasStrictDerivAt_const _ _).mul hd using 1
   rw [zero_mul, zero_add]
 
 theorem derivWithin_const_mul (c : 𝔸) (hd : DifferentiableWithinAt 𝕜 d s x) :

@@ -5,9 +5,10 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 module
 
+public import Mathlib.Data.Set.Notation
 public import Mathlib.Order.Filter.CountableInter
 public import Mathlib.Topology.Defs.Induced
-public import Mathlib.Data.Set.Notation
+
 import Mathlib.Topology.Constructions
 
 /-!
@@ -50,7 +51,7 @@ assert_not_exists UniformSpace
 
 noncomputable section
 
-open Topology TopologicalSpace Filter Encodable Set
+open Topology TopologicalSpace Filter Set
 
 variable {X Y ι : Type*} {ι' : Sort*}
 
@@ -60,6 +61,7 @@ section IsGδ
 variable [TopologicalSpace X]
 
 /-- A Gδ set is a countable intersection of open sets. -/
+@[wikidata Q127244]
 def IsGδ (s : Set X) : Prop :=
   ∃ T : Set (Set X), (∀ t ∈ T, IsOpen t) ∧ T.Countable ∧ s = ⋂₀ T
 
@@ -167,6 +169,7 @@ section residual
 variable [TopologicalSpace X]
 
 /-- A set `s` is called *residual* if it includes a countable intersection of dense open sets. -/
+@[wikidata Q97623888]
 def residual (X : Type*) [TopologicalSpace X] : Filter X :=
   Filter.countableGenerate { t | IsOpen t ∧ Dense t }
 
@@ -197,6 +200,7 @@ open Function TopologicalSpace Set
 variable [TopologicalSpace X]
 
 /-- A set is called **nowhere dense** iff its closure has empty interior. -/
+@[wikidata Q1991405]
 def IsNowhereDense (s : Set X) := interior (closure s) = ∅
 
 /-- The empty set is nowhere dense. -/
@@ -208,6 +212,30 @@ lemma isNowhereDense_empty : IsNowhereDense (∅ : Set X) := by
 @[gcongr]
 lemma IsNowhereDense.mono {s t : Set X} (ht : t ⊆ s) (hs : IsNowhereDense s) : IsNowhereDense t :=
   Set.eq_empty_of_subset_empty <| by grw [ht]; rw [hs]
+
+/-- The union of two nowhere dense sets is nowhere dense. -/
+protected lemma IsNowhereDense.union {s t : Set X} (hs : IsNowhereDense s)
+    (ht : IsNowhereDense t) : IsNowhereDense (s ∪ t) := by
+  simp only [IsNowhereDense, closure_union] at hs ht ⊢
+  have h1 : interior (closure s ∪ closure t) ⊆ closure s := by
+    simpa [ht] using isClosed_closure.interior_union_left (s := closure s) (t := closure t)
+  exact Set.eq_empty_of_subset_empty (hs ▸ interior_maximal h1 isOpen_interior)
+
+/-- A union over a `Finset` of nowhere dense sets is nowhere dense. -/
+protected lemma IsNowhereDense.biUnion {u : Finset ι} {f : ι → Set X}
+    (hf : ∀ i ∈ u, IsNowhereDense (f i)) : IsNowhereDense (⋃ i ∈ u, f i) := by
+  induction u using Finset.cons_induction with
+  | empty => simp
+  | cons a u ha ih =>
+      rw [← Finset.set_biUnion_coe, Finset.coe_cons, Set.biUnion_insert, Finset.set_biUnion_coe]
+      exact (hf a (Finset.mem_cons_self a u)).union
+        (ih fun i hi => hf i (Finset.mem_cons_of_mem hi))
+
+/-- A finite union of nowhere dense sets is nowhere dense. -/
+protected lemma IsNowhereDense.iUnion [Finite ι] {f : ι → Set X}
+    (hf : ∀ i, IsNowhereDense (f i)) : IsNowhereDense (⋃ i, f i) := by
+  cases nonempty_fintype ι
+  simpa using IsNowhereDense.biUnion (u := (Finset.univ : Finset ι)) fun i _ => hf i
 
 /-- A closed set is nowhere dense iff its interior is empty. -/
 lemma IsClosed.isNowhereDense_iff {s : Set X} (hs : IsClosed s) :
@@ -229,6 +257,10 @@ lemma isClosed_isNowhereDense_iff_compl {s : Set X} :
     IsClosed s ∧ IsNowhereDense s ↔ IsOpen sᶜ ∧ Dense sᶜ := by
   rw [and_congr_right IsClosed.isNowhereDense_iff,
     isOpen_compl_iff, interior_eq_empty_iff_dense_compl]
+
+theorem isClosed_compl_and_isNowhereDense_compl {s : Set X} :
+    IsClosed sᶜ ∧ IsNowhereDense sᶜ ↔ IsOpen s ∧ Dense s := by
+  rw [isClosed_isNowhereDense_iff_compl, compl_compl]
 
 /-- To check that `s` is nowhere dense, it suffices to check that no point of `s`
 is in the interior of `closure s`. -/
@@ -257,6 +289,7 @@ lemma IsNowhereDense.image_val {Y : Set X} {s : Set Y}
   Topology.IsInducing.subtypeVal.isNowhereDense_image hs
 
 /-- A set is called **meagre** iff its complement is a residual (or comeagre) set. -/
+@[wikidata Q1747745]
 def IsMeagre (s : Set X) := sᶜ ∈ residual X
 
 /-- The empty set is meagre. -/
@@ -305,6 +338,14 @@ lemma isMeagre_iff_countable_union_isNowhereDense {s : Set X} :
     rw [forall_mem_image]
     exact ⟨fun s hs ↦ ⟨isClosed_closure, (hS s hs).closure⟩,
       (hc.image _).image _, hsub.trans (sUnion_mono_subsets fun s ↦ subset_closure)⟩
+
+/-- A set is meagre iff it is a countable union of nowhere dense sets. -/
+theorem isMeagre_iff_eq_countable_union_isNowhereDense {s : Set X} :
+    IsMeagre s ↔ ∃ S : Set (Set X), (∀ t ∈ S, IsNowhereDense t) ∧ S.Countable ∧ s = ⋃₀ S := by
+  refine isMeagre_iff_countable_union_isNowhereDense.trans ⟨fun ⟨S, hd, hc, hsub⟩ ↦ ?_, by grind⟩
+  refine ⟨(s ∩ ·) '' S, ?_, hc.image _, by simpa [← inter_iUnion₂, ← sUnion_eq_biUnion]⟩
+  rintro _ ⟨t, htS, rfl⟩
+  exact hd t htS |>.mono inter_subset_right
 
 /-- A set of second category (i.e. non-meagre) is nonempty. -/
 lemma nonempty_of_not_isMeagre {s : Set X} (hs : ¬IsMeagre s) : s.Nonempty := by

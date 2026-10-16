@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.Set.Insert
 public import Mathlib.Order.BooleanAlgebra.Basic
 public import Mathlib.Tactic.Tauto
-public import Mathlib.Tactic.FastInstance
 
 /-!
 # Boolean algebra of sets
@@ -29,8 +28,6 @@ set, sets, subset, subsets, complement
 
 assert_not_exists RelIso
 
-open Function
-
 namespace Set
 variable {α β : Type*} {s s₁ s₂ t t₁ t₂ u : Set α} {a b : α}
 
@@ -39,8 +36,12 @@ instance : HImp (Set α) where
 
 @[simp] theorem mem_himp_iff : a ∈ s ⇨ t ↔ a ∈ s → a ∈ t := .rfl
 
-instance instBooleanAlgebra : BooleanAlgebra (Set α) :=
-  fast_instance% { (inferInstance : BooleanAlgebra (α → Prop)) with }
+instance instBooleanAlgebra : BooleanAlgebra (Set α) where
+  __ := instBoundedOrder
+  inf_compl_le_bot _ _ h := h.2 h.1
+  top_le_sup_compl s x _ := em (x ∈ s)
+  sdiff_eq _ _ := rfl
+  himp_eq _ _ := ext fun _ => imp_iff_or_not
 
 theorem himp_def : s ⇨ t = t ∪ sᶜ := himp_eq
 
@@ -188,9 +189,9 @@ lemma disjoint_compl_right_iff_subset : Disjoint s tᶜ ↔ s ⊆ t := disjoint_
 
 alias ⟨_, _root_.Disjoint.subset_compl_right⟩ := subset_compl_iff_disjoint_right
 alias ⟨_, _root_.Disjoint.subset_compl_left⟩ := subset_compl_iff_disjoint_left
-@[deprecated LE.le.disjoint_compl_left (since := "2026-06-05")]
+@[deprecated LE.le.disjoint_compl_left +typeChanged (since := "2026-06-05")]
 alias ⟨_, _root_.HasSubset.Subset.disjoint_compl_left⟩ := disjoint_compl_left_iff_subset
-@[deprecated LE.le.disjoint_compl_right (since := "2026-06-05")]
+@[deprecated LE.le.disjoint_compl_right +typeChanged (since := "2026-06-05")]
 alias ⟨_, _root_.HasSubset.Subset.disjoint_compl_right⟩ := disjoint_compl_right_iff_subset
 
 @[simp] lemma nonempty_compl_of_nontrivial [Nontrivial α] (x : α) : Set.Nonempty {x}ᶜ := exists_ne x
@@ -200,7 +201,7 @@ lemma mem_compl_singleton_iff : a ∈ ({b} : Set α)ᶜ ↔ a ≠ b := .rfl
 lemma compl_singleton_eq (a : α) : {a}ᶜ = {x | x ≠ a} := rfl
 
 @[simp]
-lemma compl_ne_eq_singleton (a : α) : {x | x ≠ a}ᶜ = {a} := compl_compl _
+lemma compl_ne_eq_singleton (a : α) : {x | x ≠ a}ᶜ = {a} := compl_compl {a}
 
 @[simp]
 lemma subset_compl_singleton_iff : s ⊆ {a}ᶜ ↔ a ∉ s := subset_compl_comm.trans singleton_subset_iff

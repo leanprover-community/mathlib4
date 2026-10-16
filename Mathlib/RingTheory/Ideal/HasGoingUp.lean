@@ -24,7 +24,7 @@ This file closely mirrors `Mathlib.RingTheory.Ideal.GoingDown`.
 - `Algebra.HasGoingUp.of_isIntegral`: integral algebras satisfy going up.
 -/
 
-@[expose] public section
+public section
 
 /--
 An `R`-algebra `S` satisfies `Algebra.HasGoingUp R S` if for every pair of

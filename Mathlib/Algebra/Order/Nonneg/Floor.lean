@@ -12,13 +12,13 @@ public import Mathlib.Algebra.Order.Nonneg.Basic
 # Nonnegative elements are archimedean
 
 This file defines instances and prove some properties about the nonnegative elements
-`{x : α // 0 ≤ x}` of an arbitrary type `α`.
+`Nonneg α` of an arbitrary type `α`.
 
 This is used to derive algebraic structures on `ℝ≥0` and `ℚ≥0` automatically.
 
 ## Main declarations
 
-* `{x : α // 0 ≤ x}` is a `FloorSemiring` if `α` is.
+* `Nonneg α` is a `FloorSemiring` if `α` is.
 -/
 
 public section
@@ -30,7 +30,7 @@ namespace Nonneg
 variable {α : Type*}
 
 instance floorSemiring [Semiring α] [PartialOrder α] [IsOrderedRing α] [FloorSemiring α] :
-    FloorSemiring { r : α // 0 ≤ r } where
+    FloorSemiring (Nonneg α) where
   floor a := ⌊(a : α)⌋₊
   ceil a := ⌈(a : α)⌉₊
   floor_of_neg ha := FloorSemiring.floor_of_neg ha
@@ -39,13 +39,13 @@ instance floorSemiring [Semiring α] [PartialOrder α] [IsOrderedRing α] [Floor
 
 @[norm_cast]
 theorem nat_floor_coe [Semiring α] [PartialOrder α] [IsOrderedRing α] [FloorSemiring α]
-    (a : { r : α // 0 ≤ r }) :
+    (a : Nonneg α) :
     ⌊(a : α)⌋₊ = ⌊a⌋₊ :=
   rfl
 
 @[norm_cast]
 theorem nat_ceil_coe [Semiring α] [PartialOrder α] [IsOrderedRing α] [FloorSemiring α]
-    (a : { r : α // 0 ≤ r }) :
+    (a : Nonneg α) :
     ⌈(a : α)⌉₊ = ⌈a⌉₊ :=
   rfl
 
