@@ -458,54 +458,54 @@ lemma rpowIntegrandNeg_eq_inv_mul_rpowIntegrand₀₁ (hx : 0 < x) (ht : 0 < t) 
   ring
 
 lemma rpowIntegrandNeg_nonneg (ht : 0 ≤ t) (hx : 0 ≤ x) : 0 ≤ rpowIntegrandNeg p t x := by
-    unfold rpowIntegrandNeg
-    positivity
+  unfold rpowIntegrandNeg
+  positivity
 
 lemma rpowIntegrandNeg_antitoneOn (ht : 0 < t) :
-  AntitoneOn (rpowIntegrandNeg p t) (Ioi 0) := by
-    intro x (hx : 0 < x) y _ hxy
-    unfold rpowIntegrandNeg
-    gcongr
+    AntitoneOn (rpowIntegrandNeg p t) (Ioi 0) := by
+  intro x (hx : 0 < x) y _ hxy
+  unfold rpowIntegrandNeg
+  gcongr
 
 lemma continuousOn_rpowIntegrandNeg_uncurry (s : Set ℝ) (hs : s ⊆ Ici 0) :
-  ContinuousOn (rpowIntegrandNeg p).uncurry (Ioi 0 ×ˢ s) := by
-    unfold rpowIntegrandNeg
-    fun_prop (disch := grind)
+    ContinuousOn (rpowIntegrandNeg p).uncurry (Ioi 0 ×ˢ s) := by
+  unfold rpowIntegrandNeg
+  fun_prop (disch := grind)
 
 lemma integrableOn_rpowIntegrandNeg (hp : p ∈ Ioo (-1) 0) (hx : 0 < x) :
-  IntegrableOn (rpowIntegrandNeg p · x) (Ioi 0) := by
-    have hmain : (rpowIntegrandNeg p · x)
+    IntegrableOn (rpowIntegrandNeg p · x) (Ioi 0) := by
+  have hmain : (rpowIntegrandNeg p · x)
       =ᵐ[volume.restrict (Ioi 0)] ((x⁻¹ * rpowIntegrand₀₁ (p + 1) · x)) := by
-        filter_upwards [ae_restrict_mem measurableSet_Ioi] with a ha
-        rw [rpowIntegrandNeg_eq_inv_mul_rpowIntegrand₀₁ hx ha]
-    rw [integrableOn_congr_fun_ae hmain]
-    refine Integrable.const_mul ?_ _
-    exact integrableOn_rpowIntegrand₀₁_Ioi (by grind) (le_of_lt hx)
+    filter_upwards [ae_restrict_mem measurableSet_Ioi] with a ha
+    rw [rpowIntegrandNeg_eq_inv_mul_rpowIntegrand₀₁ hx ha]
+  rw [integrableOn_congr_fun_ae hmain]
+  refine Integrable.const_mul ?_ _
+  exact integrableOn_rpowIntegrand₀₁_Ioi (by grind) (le_of_lt hx)
 
 /-- The integral representation of the function `x ↦ x ^ p` (where `p ∈ (-1, 0)`). -/
-
 lemma rpow_eq_const_mul_integral_rpowIntegrandNeg (hp : p ∈ Ioo (-1) 0) (hx : 0 < x) :
-  x ^ p
-  = (∫ t in Ioi 0, rpowIntegrand₀₁ (p + 1) t 1)⁻¹ * ∫ t in Ioi 0, rpowIntegrandNeg p t x := by
-    rw [setIntegral_congr_fun measurableSet_Ioi fun t ht ↦
-      rpowIntegrandNeg_eq_inv_mul_rpowIntegrand₀₁ hx ht, integral_const_mul, mul_left_comm,
-    ← rpow_eq_const_mul_integral (by grind) hx.le, rpow_add_one hx.ne']
-    field_simp
+    x ^ p
+      = (∫ t in Ioi 0, rpowIntegrand₀₁ (p + 1) t 1)⁻¹ * ∫ t in Ioi 0, rpowIntegrandNeg p t x := by
+  rw [setIntegral_congr_fun measurableSet_Ioi fun t ht ↦
+    rpowIntegrandNeg_eq_inv_mul_rpowIntegrand₀₁ hx ht, integral_const_mul, mul_left_comm,
+  ← rpow_eq_const_mul_integral (by grind) hx.le, rpow_add_one hx.ne']
+  field_simp
 
 lemma exists_measure_rpow_eq_integral_rpowIntegrandNeg (hp : p ∈ Ioo (-1) 0) :
-  ∃ μ : Measure ℝ, ∀ x ∈ Ioi 0,
-    (IntegrableOn (fun t => rpowIntegrandNeg p t x) (Ioi 0) μ)
-    ∧ x ^ p = ∫ t in Ioi 0, rpowIntegrandNeg p t x ∂μ := by
-      let C : ℝ≥0 := .mk (∫ t in Ioi 0, rpowIntegrand₀₁ (p + 1) t 1)⁻¹ <| by
-        rw [inv_nonneg]
-        exact le_of_lt <| integral_rpowIntegrand₀₁_one_pos (by grind)
-      let μ : Measure ℝ := C • volume
-      refine ⟨μ, fun x hx => ⟨?_, ?_⟩⟩
-      · unfold μ IntegrableOn
-        rw [Measure.restrict_smul]
-        exact Integrable.smul_measure_nnreal <| integrableOn_rpowIntegrandNeg hp hx
-      · rw [Measure.restrict_smul, integral_smul_nnreal_measure, rpow_eq_const_mul_integral_rpowIntegrandNeg hp hx]
-        simp [C, NNReal.smul_def]
+    ∃ μ : Measure ℝ, ∀ x ∈ Ioi 0,
+      (IntegrableOn (fun t => rpowIntegrandNeg p t x) (Ioi 0) μ)
+      ∧ x ^ p = ∫ t in Ioi 0, rpowIntegrandNeg p t x ∂μ := by
+  let C : ℝ≥0 := .mk (∫ t in Ioi 0, rpowIntegrand₀₁ (p + 1) t 1)⁻¹ <| by
+    rw [inv_nonneg]
+    exact le_of_lt <| integral_rpowIntegrand₀₁_one_pos (by grind)
+  let μ : Measure ℝ := C • volume
+  refine ⟨μ, fun x hx => ⟨?_, ?_⟩⟩
+  · unfold μ IntegrableOn
+    rw [Measure.restrict_smul]
+    exact Integrable.smul_measure_nnreal <| integrableOn_rpowIntegrandNeg hp hx
+  · rw [Measure.restrict_smul, integral_smul_nnreal_measure,
+      rpow_eq_const_mul_integral_rpowIntegrandNeg hp hx]
+    simp [C, NNReal.smul_def]
 
 end NegOneZero
 
@@ -643,10 +643,11 @@ variable {A : Type*} [NormedRing A] [StarRing A] [NormedAlgebra ℝ A] [PartialO
 
 variable (A) in
 /-- The integral representation of the function `x ↦ x ^ p` (where `p ∈ (-1, 0)`). -/
-lemma exists_measure_rpow_eq_integral_cfc_rpowIntegrand₁₀ [CompleteSpace A] {p : ℝ} (hp : p ∈ Ioo (-1) 0) :
-  ∃ μ : Measure ℝ, ∀ a : A, (IsStrictlyPositive a) →
-    ((IntegrableOn (fun t => cfc (rpowIntegrandNeg p t) a) (Ioi 0) μ)
-    ∧ a ^ p = ∫ t in Ioi 0, cfc (rpowIntegrandNeg p t) a ∂μ) := by
+lemma exists_measure_rpow_eq_integral_cfc_rpowIntegrand₁₀ [CompleteSpace A] {p : ℝ}
+    (hp : p ∈ Ioo (-1) 0) :
+    ∃ μ : Measure ℝ, ∀ a : A, (IsStrictlyPositive a) →
+      ((IntegrableOn (fun t => cfc (rpowIntegrandNeg p t) a) (Ioi 0) μ)
+      ∧ a ^ p = ∫ t in Ioi 0, cfc (rpowIntegrandNeg p t) a ∂μ) := by
   obtain ⟨μ, hμ⟩ := exists_measure_rpow_eq_integral_rpowIntegrandNeg hp
   refine ⟨μ, fun a ha => ?_⟩
   nontriviality A
