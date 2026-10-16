@@ -4713,6 +4713,7 @@ public import Mathlib.FieldTheory.IsAlgClosed.Classification
 public import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 public import Mathlib.FieldTheory.IsPerfectClosure
 public import Mathlib.FieldTheory.IsRealClosed.Basic
+public import Mathlib.FieldTheory.IsRealClosed.Real
 public import Mathlib.FieldTheory.IsSepClosed
 public import Mathlib.FieldTheory.Isaacs
 public import Mathlib.FieldTheory.JacobsonNoether

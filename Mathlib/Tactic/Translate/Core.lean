@@ -97,7 +97,7 @@ syntax bracketedOption := "(" attrOption <|> reorderOption <|>
   translation heuristics, or because the value/proof is genuinely different.
 
 - `self` indicates that the declaration translates to itself, up to some reordering of arguments.
-  If no arguments are reordered then the attribute is redundant, which the `translateRedundant`
+  If no arguments are reordered then the attribute is redundant, which the `translate.redundant`
   linter will warn about.
 
 - `none` indicates that the translated declaration should not get a user-facing name,
@@ -125,39 +125,39 @@ register_option linter.existingAttributeWarning : Bool := {
 
 /-- Linter used by translate attributes that checks if the given declaration name is
     equal to the automatically generated name -/
-register_option linter.translateGenerateName : Bool := {
+register_option linter.translate.generateName : Bool := {
   defValue := true
   descr := "Linter used by translate attributes that checks if the given declaration name is \
     equal to the automatically generated name" }
 
 /-- Linter to check whether the user correctly specified that the translated declaration already
 exists -/
-register_option linter.translateExisting : Bool := {
+register_option linter.translate.existing : Bool := {
   defValue := true
   descr := "Linter used by translate attributes that checks whether the user correctly specified
     that the translated declaration already exists" }
 
 /-- Linter used by translate attributes that checks if the given reorder is
     equal to the automatically generated name -/
-register_option linter.translateReorder : Bool := {
+register_option linter.translate.reorder : Bool := {
   defValue := true
   descr := "Linter used by translate attributes that checks if the given reorder is \
     equal to the automatically generated one" }
 
 /-- Linter used by translate attributes that checks if the `relevant_arg` is
 automatically generated. -/
-register_option linter.translateRelevantArg : Bool := {
+register_option linter.translate.relevantArg : Bool := {
   defValue := true
   descr := "Linter used by translate attributes that checks if the relevant_arg is \
     automatically generated" }
 
 /-- Linter used by translate attributes that checks if the attribute was already applied -/
-register_option linter.translateOverwrite : Bool := {
+register_option linter.translate.overwrite : Bool := {
   defValue := true
   descr := "Linter used by translate attributes that checks if the attribute was already applied" }
 
 /-- Linter used by translate attributes that checks if the attribute is redundant -/
-register_option linter.translateRedundant : Bool := {
+register_option linter.translate.redundant : Bool := {
   defValue := true
   descr := "Linter used by translate attributes that checks if the attribute is redundant" }
 
@@ -167,6 +167,51 @@ register_option linter.translate.warnInvalid : Bool := {
   defValue := true
   descr := "Linter used by translate attributes that warns when a translation was not added
     because of being invalid." }
+
+
+/-- Linter used by translate attributes that checks if the given declaration name is
+    equal to the automatically generated name -/
+@[deprecated linter.translate.generateName (since := "2026-10-12")]
+register_option linter.translateGenerateName : Bool := {
+  defValue := true
+  descr := "Linter used by translate attributes that checks if the given declaration name is \
+    equal to the automatically generated name" }
+
+/-- Linter to check whether the user correctly specified that the translated declaration already
+exists -/
+@[deprecated linter.translate.existing (since := "2026-10-12")]
+register_option linter.translateExisting : Bool := {
+  defValue := true
+  descr := "Linter used by translate attributes that checks whether the user correctly specified
+    that the translated declaration already exists" }
+
+/-- Linter used by translate attributes that checks if the given reorder is
+    equal to the automatically generated name -/
+    @[deprecated linter.translate.reorder (since := "2026-10-12")]
+register_option linter.translateReorder : Bool := {
+  defValue := true
+  descr := "Linter used by translate attributes that checks if the given reorder is \
+    equal to the automatically generated one" }
+
+/-- Linter used by translate attributes that checks if the `relevant_arg` is
+automatically generated. -/
+@[deprecated linter.translate.relevantArg (since := "2026-10-12")]
+register_option linter.translateRelevantArg : Bool := {
+  defValue := true
+  descr := "Linter used by translate attributes that checks if the relevant_arg is \
+    automatically generated" }
+
+/-- Linter used by translate attributes that checks if the attribute was already applied -/
+@[deprecated linter.translate.overwrite (since := "2026-10-12")]
+register_option linter.translateOverwrite : Bool := {
+  defValue := true
+  descr := "Linter used by translate attributes that checks if the attribute was already applied" }
+
+/-- Linter used by translate attributes that checks if the attribute is redundant -/
+@[deprecated linter.translate.redundant (since := "2026-10-12")]
+register_option linter.translateRedundant : Bool := {
+  defValue := true
+  descr := "Linter used by translate attributes that checks if the attribute is redundant" }
 
 /-- Add a translation to the translations map. If the translation attribute is dual,
 also add the reverse translation, but don't do this when `unfold := true`,
@@ -188,7 +233,7 @@ where
   insertTranslationAux (src : Name) (info : TranslationInfo) : CoreM Unit := do
     if let some info' := findTranslation? (← getEnv) t src then
       unless allowDuplicate && info'.translation == info.translation do
-        Linter.logLintIf linter.translateOverwrite (← getRef)
+        Linter.logLintIf linter.translate.overwrite (← getRef)
           m!"`{.ofConstName src}` was already translated to `{.ofConstName info'.translation}` \
           instead of `{.ofConstName info.translation}`.\n\
           Unless the original translation was wrong, please remove this `{t.attrName}` attribute."
@@ -382,11 +427,11 @@ def getRelevantArg (t : TranslateData) (relevantArg : RelevantArg) (given? : Opt
   let some relevantArg' := given? | return relevantArg
   if isMainTranslation then
     if relevantArg == relevantArg' then
-      Linter.logLintIf linter.translateRelevantArg (← getRef) m!"\
+      Linter.logLintIf linter.translate.relevantArg (← getRef) m!"\
         `{t.attrName}` correctly autogenerated `(relevant_arg := {relevantArg'})` for \
         `{.ofConstName src}`.\nYou may remove the option."
     else if !isType then
-      Linter.logLintIf linter.translateRelevantArg (← getRef) m!"\
+      Linter.logLintIf linter.translate.relevantArg (← getRef) m!"\
         `{t.attrName}` determined that `(relevant_arg := {relevantArg})` \
         is the right option for `{.ofConstName src}`, \
         rather than `(relevant_arg := {relevantArg'})`.\nYou may remove the option."
@@ -472,7 +517,7 @@ partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt
       pure relevantArg
   insertTranslation t src tgt { reorder } relevantArg
   if src == rootSrc && srcDecl.isThm && tgtDecl.type == srcDecl.type then
-    Linter.logLintIf linter.translateRedundant (← getRef)
+    Linter.logLintIf linter.translate.redundant (← getRef)
       m!"`{t.attrName}` did not change the type \
       of theorem `{.ofConstName src}`. Please remove the attribute."
   /- If `src` is explicitly marked as `noncomputable`, then add the new decl as a declaration but
@@ -606,7 +651,7 @@ def targetName (t : TranslateData) (cfg : Config) (src : Name) : CoreM Name := d
     (if your declaration is an instance, try naming it)\n\
     or provide a translated name using the `@[{t.attrName} my_add_name]` syntax."
   if cfg.target != .anonymous && autoGeneratedName == resultingName && !cfg.allowAutoName then
-    Linter.logLintIf linter.translateGenerateName (← getRef) m!"\
+    Linter.logLintIf linter.translate.generateName (← getRef) m!"\
       `{t.attrName}` correctly autogenerated target name for {src}.\n\
       You may remove the explicit argument {cfg.target}."
   if cfg.target != .anonymous then
@@ -651,7 +696,7 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
         pure reorderGuess
     else if isMainTranslation then
       if reorder == reorderGuess then
-        Linter.logLintIf linter.translateReorder (← getRef) m!"\
+        Linter.logLintIf linter.translate.reorder (← getRef) m!"\
           `{t.attrName}` correctly autogenerated `(reorder := {reorderGuess})` for {src}.\n\
           You may remove the `(reorder := {reorder})` argument."
       pure reorder
@@ -663,7 +708,7 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
       else
         pure reorderGuess
   if isMainTranslation && cfg.self && reorder.isEmpty && cfg.relevantArg?.isNone then
-    Linter.logLintIf linter.translateRedundant (← getRef) m!"\
+    Linter.logLintIf linter.translate.redundant (← getRef) m!"\
       `{t.attrName} self` is redundant when none of the arguments are reordered \
       and no `(relevant_arg := ...)` is provided.\nPlease remove the attribute, \
       or provide an explicit `(reorder := ...)` or `(relevant_arg := ...)` argument.\n\
@@ -978,7 +1023,7 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
   let tgt ← targetName t cfg src
   let alreadyExists ← realizeGlobalConst tgt
   if cfg.existing != alreadyExists && !(← isInductive src) && !cfg.self then
-    Linter.logLintIf linter.translateExisting (← getRef) <|
+    Linter.logLintIf linter.translate.existing (← getRef) <|
       if alreadyExists then
         m!"The translated declaration `{.ofConstName tgt}` already exists. \
           Please specify this explicitly using `@[{t.attrName} existing]`."
