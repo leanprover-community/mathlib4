@@ -755,7 +755,9 @@ def symmetrization : MultilinearMap R (fun _ : ι ↦ M) N' →+ M [Sym^ι]→�
       toFun := ⇑(∑ σ : Perm ι, m.domDomCongr σ)
       -- proof in the alternating case is essentially alternization_map_eq_zero_of_eq_aux
       -- TODO: think about this and fill it in!
-      map_eq_map_of_swap' v i j _ := by sorry }
+      map_eq_map_of_swap' v i j _ := by
+        rw [sum_apply]
+        sorry }
   map_add' a b := by ext; simp [Finset.sum_add_distrib]
   map_zero' := by ext; simp
 
@@ -808,29 +810,6 @@ theorem compMultilinearMap_symmetrization (g : N' →ₗ[R] N'₂)
   simp [MultilinearMap.symmetrization_def]
 
 end LinearMap
-
-section Basis
-
-open SymmetricMap
-
-variable {ι₁ : Type*} [Finite ι]
-  {R' : Type*} {N₁ N₂ : Type*} [CommSemiring R'] [AddCommMonoid N₁] [AddCommMonoid N₂]
-  [Module R' N₁] [Module R' N₂]
-
-/-- Two symmetric maps indexed by a `Fintype` are equal if they are equal when all arguments
-are distinct basis vectors. -/
--- TODO: is this actually true for symmetric maps?? if so, fix the proof!
-theorem Module.Basis.ext_symmetric {f g : N₁ [Sym^ι]→ₗ[R'] N₂} (e : Basis ι₁ R' N₁)
-    (h : ∀ v : ι → ι₁, Function.Injective v → (f fun i ↦ e (v i)) = g fun i ↦ e (v i)) :
-    f = g := by
-  refine SymmetricMap.coe_multilinearMap_injective (Basis.ext_multilinear (fun _ ↦ e) fun v ↦ ?_)
-  by_cases hi : Function.Injective v
-  · exact h v hi
-  · have : ¬Function.Injective fun i ↦ e (v i) := hi.imp Function.Injective.of_comp
-    sorry --rw [coe_multilinearMap, coe_multilinearMap, f.map_eq_zero_of_not_injective _ this,
-    --  g.map_eq_zero_of_not_injective _ this]
-
-end Basis
 
 variable {R' : Type*} {M'' M₂'' N'' N₂'' : Type*} [CommSemiring R'] [AddCommMonoid M'']
   [AddCommMonoid M₂''] [AddCommMonoid N''] [AddCommMonoid N₂''] [Module R' M''] [Module R' M₂'']
