@@ -5,8 +5,8 @@ Authors: Jovan Gerbscheid, Thomas R. Murrills
 -/
 module
 
-public meta import Lean.Elab.Command
 public meta import Batteries.Lean.Position
+public meta import Lean.Elab.Command
 public import Mathlib.Tactic.Linter.UnusedInstancesInType
 
 /-!

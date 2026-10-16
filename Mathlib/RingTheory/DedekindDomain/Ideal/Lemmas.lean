@@ -360,13 +360,13 @@ end Ideal
 lemma FractionalIdeal.sup_mul_inf (I J : FractionalIdeal A⁰ K) :
     (I ⊓ J) * (I ⊔ J) = I * J := by
   apply mul_left_injective₀ (b := spanSingleton A⁰ (algebraMap A K
-    (I.den.1 * I.den.1 * J.den.1 * J.den.1))) (by simp [spanSingleton_eq_zero_iff])
+    (I.den.1 * I.den.1 * J.den.1 * J.den.1))) (by simp)
   have := Ideal.sup_mul_inf (Ideal.span {J.den.1} * I.num) (Ideal.span {I.den.1} * J.num)
   simp only [← coeIdeal_inj (K := K), coeIdeal_mul, coeIdeal_sup, coeIdeal_inf,
     ← den_mul_self_eq_num', coeIdeal_span_singleton] at this
   rw [mul_left_comm, ← mul_add, ← mul_add, ← mul_inf₀ (FractionalIdeal.zero_le _),
     ← mul_inf₀ (FractionalIdeal.zero_le _)] at this
-  simp only [FractionalIdeal.sup_eq_add, _root_.map_mul, ← spanSingleton_mul_spanSingleton]
+  simp only [FractionalIdeal.sup_eq_add, _root_.map_mul]
   convert this using 1 <;> ring
 
 end Gcd
@@ -895,9 +895,6 @@ theorem inf_pow_eq_prod_of_prime (s : Finset ι) (f : ι → Ideal R)
     (IsPrime.isMaximal (isPrime_of_prime (prime j hj)) (prime j hj).ne_zero)
     (coprime i hi j hj hij)))
 
-@[deprecated (since := "2026-03-10")] alias inf_prime_pow_eq_prod :=
-  inf_pow_eq_prod_of_prime
-
 /-- **Chinese remainder theorem** for a Dedekind domain: if the ideal `I` factors as
 `∏ i, P i ^ e i`, then `R ⧸ I` factors as `Π i, R ⧸ (P i ^ e i)`.
 See `IsDedekindDomain.quotientEquivPiOfProdEq` for the version in terms of `Ideal R`. -/
@@ -1193,7 +1190,8 @@ of the maximal ideal `p` in `B` and the primes over `p` in `B`.
 -/
 noncomputable def equivPrimesOver (hp : p ≠ 0) :
     {v : HeightOneSpectrum B // v.asIdeal ∣ map (algebraMap A B) p} ≃ p.primesOver B :=
-  Set.BijOn.equiv HeightOneSpectrum.asIdeal
+  Set.BijOn.equiv (s := {v : HeightOneSpectrum B | v.asIdeal ∣ map (algebraMap A B) p})
+    (t := ↑(p.primesOver B)) HeightOneSpectrum.asIdeal
     ⟨fun v hv ↦ ⟨v.isPrime, by rwa [liesOver_iff_dvd_map v.isPrime.ne_top]⟩,
     fun _ _ _ _ h ↦ HeightOneSpectrum.ext_iff.mpr h,
     fun Q hQ ↦ ⟨⟨Q, hQ.1, ne_bot_of_mem_primesOver hp hQ⟩,
