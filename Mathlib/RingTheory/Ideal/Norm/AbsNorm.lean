@@ -264,14 +264,12 @@ noncomputable def Ideal.absNorm [IsDedekindDomain S] :
     Ideal S →*₀ ℕ where
   toFun I := if I = ⊥ then 0 else Submodule.cardQuot I
   map_mul' I J := by
-    obtain _ | _ := finite_or_infinite S
+    by_cases hI : I = ⊥
+    · simp [hI]
+    cases finite_or_infinite S
     · let := (Finite.isField_of_domain S).toField
-      obtain rfl | rfl := I.eq_bot_or_top <;> simp
-    · obtain rfl | hI := eq_or_ne I ⊥
-      · simp
-      · obtain rfl | hJ := eq_or_ne J ⊥
-        · simp
-        · simp [ite_eq_right hI, ite_eq_right hJ, ite_eq_right (not_or_intro hI hJ), cardQuot_mul]
+      simp [I.eq_bot_or_top.resolve_left hI]
+    · simp [hI, cardQuot_mul]
   map_one' := by simp
   map_zero' := by simp
 
@@ -331,7 +329,8 @@ theorem absNorm_eq_one_iff {I : Ideal S} : absNorm I = 1 ↔ I = ⊤ := by
 
 theorem absNorm_ne_zero_iff (I : Ideal S) : Ideal.absNorm I ≠ 0 ↔ Finite (S ⧸ I) := by
   rw [absNorm_apply, Submodule.cardQuot_apply]
-  exact ⟨Nat.finite_of_card_ne_zero, fun h ↦ Nat.card_ne_zero.mpr ⟨⟨0⟩, h⟩⟩
+  rw [Nat.card_ne_zero, and_iff_right_iff_imp]
+  infer_instance
 
 omit [Infinite S] in
 theorem absNorm_dvd_absNorm_of_le {I J : Ideal S} (h : J ≤ I) :
