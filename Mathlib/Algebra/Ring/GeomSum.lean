@@ -327,7 +327,7 @@ lemma mul_geom_sum₂_Ico (x y : R) {m n : ℕ} (hmn : m ≤ n) :
 boundary weight `x ^ m`, gives the geometric sum `∑ k ∈ Icc 1 m, x ^ k`. This is the identity
 behind the mean of a censored geometric distribution: `x ^ k * (1 - x)` is the mass at `k` and
 `x ^ m` the mass collected at `m`. -/
-theorem sum_range_id_mul_geometric_add (x : R) (m : ℕ) :
+theorem sum_range_mul_geometric_add (x : R) (m : ℕ) :
     (∑ k ∈ range m, (k : R) * (x ^ k * (1 - x))) + (m : R) * x ^ m =
       ∑ k ∈ Finset.Icc 1 m, x ^ k := by
   induction m with
