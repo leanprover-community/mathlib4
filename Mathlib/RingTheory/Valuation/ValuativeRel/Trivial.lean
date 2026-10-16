@@ -28,8 +28,6 @@ namespace ValuativeRel
 variable {R Γ : Type} [Ring R] [DecidableEq R] [IsDomain R]
   [LinearOrderedCommGroupWithZero Γ]
 
-open WithZero
-
 /-- The trivial valuative relation on a domain `R`, such that all non-zero elements are related.
 The domain condition is necessary so that the relation is closed when multiplying.
 -/
@@ -54,7 +52,7 @@ lemma eq_trivialRel_of_compatible_one [h : ValuativeRel R]
 
 lemma trivialRel_eq_ofValuation_one :
     trivialRel = ValuativeRel.ofValuation (1 : Valuation R Γ) := by
-  convert! (eq_trivialRel_of_compatible_one (Γ := Γ)).symm
+  convert (eq_trivialRel_of_compatible_one (Γ := Γ)).symm
   exact Valuation.Compatible.ofValuation 1
 
 variable (R Γ) in

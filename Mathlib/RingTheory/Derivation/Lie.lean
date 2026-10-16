@@ -6,8 +6,8 @@ Authors: Nicolò Cavalleri, Andrew Yang
 module
 
 public import Mathlib.Algebra.Lie.OfAssociative
-public import Mathlib.RingTheory.Derivation.Basic
 public import Mathlib.Algebra.Lie.Prod
+public import Mathlib.RingTheory.Derivation.Basic
 
 /-!
 # Lie Algebra Structure on Derivations
@@ -75,7 +75,6 @@ section CompatibleDerivations
 variable {A' : Type*} [CommRing A'] [Algebra R A'] [Algebra A A'] [IsScalarTower R A A']
 attribute [local instance 100] LieRing.ofAssociativeRing
 
-set_option backward.isDefEq.respectTransparency false in
 variable (R A A') in
 /-- Let `σ : A → A'` be a an homomorphism. A derivation `d : A → A` and a derivation
 `d' : A' → A'` are called compatible if `d' ∘ σ = σ ∘ d`. Couples of derivations

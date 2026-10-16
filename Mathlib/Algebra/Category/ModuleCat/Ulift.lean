@@ -5,12 +5,13 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Injective
-public import Mathlib.Algebra.Category.ModuleCat.Projective
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
 public import Mathlib.CategoryTheory.Preadditive.Injective.Preserves
 public import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
+
+import Mathlib.Algebra.Category.ModuleCat.Injective
+import Mathlib.Algebra.Category.ModuleCat.Projective
 
 /-!
 
@@ -38,7 +39,7 @@ variable [Ring R]
 /-- Universe lift functor for `R`-module. -/
 @[simps obj map, pp_with_univ]
 def uliftFunctor : ModuleCat.{v} R ⥤ ModuleCat.{max v v'} R where
-  obj X := ModuleCat.of R (ULift.{v', v} X)
+  obj X := ↧(ULift.{v', v} X)
   map f := ModuleCat.ofHom <|
     ULift.moduleEquiv.symm.toLinearMap.comp (f.hom.comp ULift.moduleEquiv.toLinearMap)
 
@@ -85,7 +86,7 @@ lemma uliftFunctor_map_exact (S : ShortComplex (ModuleCat.{v} R)) (h : S.Exact) 
   cat_disch
 
 instance : Limits.PreservesFiniteColimits (uliftFunctor.{v', v} R) := by
-  have := ((CategoryTheory.Functor.exact_tfae (uliftFunctor.{v', v} R)).out 1 3).mp
+  have := ((CategoryTheory.Functor.exact_tfae (uliftFunctor.{v', v} R)).out 2 4).mp
     (uliftFunctor_map_exact R)
   exact this.2
 

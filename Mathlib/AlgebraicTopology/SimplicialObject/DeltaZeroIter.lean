@@ -18,7 +18,9 @@ they are obtained as the `i`th iteration of `δ 0` or `σ 0`.
 
 @[expose] public section
 
-open Simplicial Opposite
+open Opposite
+
+open scoped Simplicial
 
 namespace CategoryTheory.SimplicialObject
 

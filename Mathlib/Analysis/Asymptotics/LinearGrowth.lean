@@ -79,15 +79,15 @@ lemma linearGrowthInf_eventually_monotone (h : u ≤ᶠ[atTop] v) :
     linearGrowthInf u ≤ linearGrowthInf v :=
   liminf_le_liminf (h.mono fun n u_v ↦ EReal.monotone_div_right_of_nonneg n.cast_nonneg' u_v)
 
-lemma linearGrowthInf_monotone (h : u ≤ v) : linearGrowthInf u ≤ linearGrowthInf v :=
-  linearGrowthInf_eventually_monotone (Eventually.of_forall h)
+lemma linearGrowthInf_monotone : Monotone (linearGrowthInf (R := EReal)) :=
+  fun _ _ h ↦ linearGrowthInf_eventually_monotone (Eventually.of_forall h)
 
 lemma linearGrowthSup_eventually_monotone (h : u ≤ᶠ[atTop] v) :
     linearGrowthSup u ≤ linearGrowthSup v :=
   limsup_le_limsup (h.mono fun n u_v ↦ monotone_div_right_of_nonneg n.cast_nonneg' u_v)
 
-lemma linearGrowthSup_monotone (h : u ≤ v) : linearGrowthSup u ≤ linearGrowthSup v :=
-  linearGrowthSup_eventually_monotone (Eventually.of_forall h)
+lemma linearGrowthSup_monotone : Monotone (linearGrowthSup (R := EReal)) :=
+  fun _ _ h ↦ linearGrowthSup_eventually_monotone (Eventually.of_forall h)
 
 lemma linearGrowthInf_le_linearGrowthSup_of_frequently_le (h : ∃ᶠ n in atTop, u n ≤ v n) :
     linearGrowthInf u ≤ linearGrowthSup v :=
