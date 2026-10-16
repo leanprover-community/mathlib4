@@ -590,7 +590,7 @@ public def modulesOSForbidden (opts : LinterOptions) (modules : Array Lean.Name)
       if forbiddenNames.contains s.toUpper then
         badComps := s :: badComps
       else
-        for char in s do
+        for char in s.revChars do
           if char.isAlphanum then continue
           if char == '_' then continue
           badChars := char :: badChars
