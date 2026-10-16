@@ -334,8 +334,7 @@ variable (HP HP' : HomologyPretheory.{u} C (ComplexShape.down ℕ))
 /-- A `HomologyPretheory` on `ComplexShape.down ℕ` has the dimension axiom if it is trivial on the
 terminal space for `n > 0`. -/
 class HasDimensionAxiom where
-  isZero_pUnit_of_gt_zero : ∀ (n : ℕ) (_ : n ≠ 0), IsZero ((HP.H n).obj (TopCat.of PUnit)) := by
-    cat_disch
+  isZero_pUnit_of_gt_zero : ∀ (n : ℕ) (_ : n ≠ 0), IsZero ((HP.H n).obj (TopCat.of PUnit))
 
 export HasDimensionAxiom (isZero_pUnit_of_gt_zero)
 
