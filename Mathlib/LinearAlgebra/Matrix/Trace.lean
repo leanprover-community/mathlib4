@@ -1,4 +1,4 @@
-/-
+ /-
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
@@ -185,7 +185,7 @@ theorem trace_mul_pow_comm' [DecidableEq m] [DecidableEq n] [CommSemiring R]
   obtain ⟨k', rfl⟩ := Nat.exists_eq_succ_of_ne_zero hk
   calc
     trace ((A * B) ^ (k' + 1)) = trace (A * (B * A) ^ k' * B) := by
-      rw [pow_succ, mul_pow_succ_mul]
+      rw [mul_pow_succ_mul]
     _ = trace ((B * A) ^ (k' + 1)) := by
       rw [trace_mul_cycle, pow_succ]
 
