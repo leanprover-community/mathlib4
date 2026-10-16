@@ -431,10 +431,6 @@ theorem image_preimage_eq {f : α → β} (s : Set β) (h : Surjective f) : f ''
     let ⟨y, e⟩ := h x
     ⟨y, by grind⟩
 
-lemma image_ofPred {p : α → Prop} {f : β → α} (hf : f.Surjective) :
-    f '' {b | p (f b)} = {a | p a} := by
-  rw [← Set.preimage_ofPred_eq (f := f), Set.image_preimage_eq _ hf]
-
 @[simp]
 theorem Nonempty.subset_preimage_const {s : Set α} (hs : Set.Nonempty s) (t : Set β) (a : β) :
     s ⊆ (fun _ => a) ⁻¹' t ↔ a ∈ t := by
