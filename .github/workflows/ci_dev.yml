@@ -1,53 +1,143 @@
+---
 name: ci dev
-
-on:
+'on':
   workflow_dispatch:
     inputs:
-      tools_branch_ref:
-        description: ref for tools checkout (defaults to 'this commit')
-        required: false
-        type: string
-        default: ''
-      pr_branch_ref:
-        description: ref for building-branch checkout (defaults to 'this commit')
-        required: false
-        type: string
-        default: ''
-      run_post_ci:
-        description: Run the post-CI job?
-        required: false
-        type: boolean
-        default: false # We shouldn't need this job in typical experiments
-      mathlib_ci_ref:
-        description: ref for mathlib-ci checkout (defaults to 'master')
-        required: false
-        type: string
-        default: 'master'
-
-# Limit permissions for GITHUB_TOKEN for the entire workflow
+      upload_tool:
+        description: Upload tool
+        type: choice
+        required: true
+        default: rclone
+        options:
+        - curl
+        - rclone
 permissions:
   contents: read
   id-token: write
-  actions: read  # read-only: download master artifacts (tools-bin, cache-snapshot)
-  # By default let's remove this permission (which is present in the other build pipelines)
-  # from the CI experimentation runs to avoid unwitting side effects
-  # pull-requests: write
-
 jobs:
-  build:
-    name: ci (dev branch)
-    # For sanity and intentionality, let's only trigger this from branches ci-dev/*
-    if: ${{ github.repository == 'leanprover-community/mathlib4' && github.ref_type == 'branch' && startsWith(github.ref_name, 'ci-dev/') }}
-    uses: ./.github/workflows/build_template.yml
-    with:
-      concurrency_group: ${{ github.workflow }}-${{ github.ref }}
-      # Use the tools from 'this branch', as our changes in the tools might be relevant for experiments
-      tools_branch_ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || github.sha }}
-      pr_branch_ref: ${{ inputs.pr_branch_ref != '' && inputs.pr_branch_ref || github.sha }}
-      run_post_ci: ${{ inputs.run_post_ci }}
-      mathlib_ci_ref: ${{ inputs.mathlib_ci_ref }}
-      # The ref inputs choose the code that holds the upload credential, so
-      # the environment requires a CI admin to approve each run.
-      cache_environment: cache-upload-ci-dev
-      runs_on: pr
-    secrets: inherit
+  cache_upload:
+    name: Cache upload (${{ inputs.upload_tool }})
+    if: github.repository == 'leanprover-community/mathlib4' && startsWith(github.ref_name,
+      'ci-dev/')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: cache-upload-ci-dev
+      deployment: false
+    env:
+      LAKE_NO_CACHE: 'true'
+      MATHLIB_NO_CACHE_ON_UPDATE: '1'
+      MATHLIB_CACHE_DIR: "/tmp/cache-upload-check"
+      MATHLIB_CACHE_BASE_URL: "${{ vars.MATHLIB_CACHE_BASE_URL }}"
+      MATHLIB_CACHE_PARALLEL_MAX: "${{ vars.MATHLIB_CACHE_PARALLEL_MAX }}"
+      UPLOAD_TOOL: "${{ inputs.upload_tool }}"
+      MATHLIB_CACHE_PUT_FORCE_CURL: "${{ inputs.upload_tool == 'curl' && 'true' ||
+        'false' }}"
+    steps:
+    - name: Checkout tools branch
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      with:
+        ref: "${{ github.sha }}"
+        fetch-depth: 1
+        persist-credentials: false
+    - name: Compute cache trust dispatch
+      uses: "./.github/actions/cache-trust-dispatch"
+      with:
+        repo: "${{ github.event.pull_request.head.repo.full_name || github.repository
+          }}"
+        branch: "${{ github.head_ref || github.ref_name }}"
+        head-sha: "${{ github.event.pull_request.head.sha || github.sha }}"
+    - name: Configure Lean
+      uses: leanprover/lean-action@f061402b660e0c34644504b324e830f2991d4865
+      with:
+        auto-config: false
+        use-github-cache: false
+        use-mathlib-cache: false
+        reinstall-transient-toolchain: true
+    - name: Install curl
+      env:
+        PINNED_CURL_RELEASE: v8.23.0
+        PINNED_CURL_SHA256: 83a56256434a3d3f6edbdad2cbdb1f23a44fe8fd52968d18ab57763fdc0afba0
+      run: |
+        dir="$RUNNER_TEMP/curl-install"
+        mkdir -p "$dir"
+        cd "$dir"
+        curl -fsSL --retry 5 -o curl \
+          "https://github.com/leanprover-community/static-curl/releases/download/${PINNED_CURL_RELEASE}/curl-x86_64-linux-static"
+        echo "${PINNED_CURL_SHA256}  curl" | sha256sum -c -
+        chmod u+x curl
+        echo "$dir" >> "$GITHUB_PATH"
+        ./curl --version
+    - name: Install rclone
+      if: inputs.upload_tool == 'rclone'
+      env:
+        PINNED_RCLONE_RELEASE: v1.75.0
+        PINNED_RCLONE_SHA256: aa2804e08f48250e71009c727124b6341cd0288465804a9a09d14663cabafbaa
+      run: |
+        dir="$RUNNER_TEMP/rclone-install"
+        mkdir -p "$dir"
+        cd "$dir"
+        curl -fsSL --retry 5 -o rclone.zip \
+          "https://github.com/rclone/rclone/releases/download/${PINNED_RCLONE_RELEASE}/rclone-${PINNED_RCLONE_RELEASE}-linux-amd64.zip"
+        echo "${PINNED_RCLONE_SHA256}  rclone.zip" | sha256sum -c -
+        unzip -q rclone.zip
+        sudo install -m 0755 "rclone-${PINNED_RCLONE_RELEASE}-linux-amd64/rclone" /usr/local/bin/rclone
+        rclone version
+    - name: build cache executable
+      run: |
+        lake build cache
+        CACHE_BIN="$(pwd)/.lake/build/bin/cache"
+        if [ ! -x "$CACHE_BIN" ]; then
+          echo "cache binary not found: $CACHE_BIN"
+          exit 1
+        fi
+        echo "CACHE_BIN=$CACHE_BIN" >> "$GITHUB_ENV"
+    - name: Prepare cache files
+      run: |
+        set -euo pipefail
+        lake env "$CACHE_BIN" get --cache-from=master Mathlib.Data.Nat.Basic Batteries.Tactic.OpenPrivate
+        lake build --no-build Mathlib.Data.Nat.Basic Batteries.Tactic.OpenPrivate
+        lake env "$CACHE_BIN" stage! --staging-dir=cache-staging Mathlib.Data.Nat.Basic Batteries.Tactic.OpenPrivate
+        count=$(find cache-staging -name '*.ltar' | wc -l)
+        test "$count" -gt 1
+        (cd cache-staging; sha256sum *.ltar) > "$RUNNER_TEMP/cache-upload.sha256"
+        echo "Staged $count files"
+    - name: Mint R2 credentials
+      id: mint-r2
+      uses: leanprover-community/mathlib-ci/.github/actions/mint-s3-credentials@d6393a535c054122e507b6c5e1b2f4c31c604121
+      with:
+        broker-url: "${{ vars.MATHLIB_CACHE_BROKER_URL }}"
+        audience: mathlib-cache-broker
+    - name: Upload staged cache to R2
+      shell: bash
+      env:
+        MATHLIB_CACHE_S3_ACCESS_KEY_ID: "${{ steps.mint-r2.outputs.access-key-id }}"
+        MATHLIB_CACHE_S3_SECRET_ACCESS_KEY: "${{ steps.mint-r2.outputs.secret-access-key
+          }}"
+        MATHLIB_CACHE_S3_SESSION_TOKEN: "${{ steps.mint-r2.outputs.session-token }}"
+        MATHLIB_CACHE_S3_REGION: auto
+        DEVELOPER_PUT_BASE_URL: "${{ secrets.MATHLIB_CACHE_R2_DEVELOPER_PUT_BASE_URL
+          }}"
+      run: |
+        set -euo pipefail
+        export MATHLIB_CACHE_PUT_BASE_URL="$DEVELOPER_PUT_BASE_URL"
+        for pass in 1 2; do
+          lake env "$CACHE_BIN" put-staged --backend=s3 --container=forks \
+            --staging-dir=cache-staging --repo="$GITHUB_REPOSITORY" | tee "upload-$pass.log"
+        done
+        if [ "$UPLOAD_TOOL" = rclone ]; then
+          grep -q 'via rclone' upload-1.log
+        fi
+    - name: Verify uploaded cache
+      run: |
+        set -euo pipefail
+        curl -fsSL --retry 5 --retry-all-errors --max-time 60 \
+          "${MATHLIB_CACHE_BASE_URL%/}/mathlib4-forks/m/$GITHUB_REPOSITORY/$GITHUB_SHA" \
+          -o "$RUNNER_TEMP/cache-marker"
+        printf '%s\n' "$GITHUB_SHA" | cmp - "$RUNNER_TEMP/cache-marker"
+        find "$MATHLIB_CACHE_DIR" -maxdepth 1 -name '*.ltar' -delete
+        rm -rf .lake/build/lib/lean/Mathlib .lake/build/ir/Mathlib
+        lake env "$CACHE_BIN" get! --cache-from=forks --scope="$GITHUB_SHA" \
+          --repo="$GITHUB_REPOSITORY" Mathlib.Data.Nat.Basic Batteries.Tactic.OpenPrivate
+        (cd "$MATHLIB_CACHE_DIR"; sha256sum --check "$RUNNER_TEMP/cache-upload.sha256")
+        lake build --no-build --rehash Mathlib.Data.Nat.Basic Batteries.Tactic.OpenPrivate
