@@ -11,10 +11,10 @@ public import Mathlib.Analysis.Normed.Algebra.GelfandRadius
 /-!
 # Golfand radius of matrices
 
-This file proves some results on the Gelfand radius of matrices.
+This file proves some results on the Gelfand radius of matrices with respect to the operator norm.
 -/
 
-@[expose] public section
+public section
 
 namespace Matrix
 
@@ -23,7 +23,6 @@ open scoped Matrix.Norms.Operator
 variable {R m n : Type*} [SeminormedCommRing R] [Fintype m] [Fintype n]
   [DecidableEq m] [DecidableEq n]
 
-open Filter Topology in
 private theorem gelfandRadius_mul_comm_le (A : Matrix m n R) (B : Matrix n m R) :
     gelfandRadius (A * B) ≤ gelfandRadius (B * A) := by
   refine le_of_forall_gt_imp_ge_of_dense fun s hAB ↦ ?_
