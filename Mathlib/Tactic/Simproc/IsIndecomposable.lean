@@ -1,0 +1,333 @@
+/-
+Copyright (c) 2026 Rao Xiaojia. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Rao Xiaojia
+-/
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Block
+public import Mathlib.Tactic.Matrix.OfLists
+public import Mathlib.Tactic.Matrix.View
+
+/-!
+# Simproc deciding `Matrix.IsIndecomposable`
+
+`Matrix.reduceIsIndecomposable` rewrites `M.IsIndecomposable` to `True` or `False` for a closed
+square matrix `M` indexed by `Fin n`. This requires a kernel-decidable equality for the matrix
+entry type.
+
+This is equivalent to determining whether the directed graph corresponding to `M` is strongly
+connected.
+
+## Main definitions
+
+- `Matrix.reduceIsIndecomposable`: the simproc deciding `M.IsIndecomposable`.
+- `SpansFrom`: states that every vertex is visited following a list of edges starting from a root.
+- `isClosed`: tests whether a set of vertices has no edges leaving it.
+- `packedAdj`: a Boolean adjacency matrix stored as the bits of a natural number computed from a
+  matrix literal by `packRows`.
+- `adjOf`: the Boolean adjacency matrix of a matrix given by a function.
+- `decideStronglyConnected`: searches the graph from and to vertex `0`, returning two spanning
+  trees or a closed set of vertices.
+
+## Implementation notes
+
+This simproc simply runs two bfs on the graph from vertex `0` forwards and
+backwards. If all vertices are reached in both passes, then the indecomposability is certified by
+the two search trees. Otherwise, `M` is decomposable, witnessed by a set of rows whose entries
+outside the set evaluate to 0.
+
+There is an existing implementation of Tarjan's algorithm at `Tactic.Order.Graph.findSCCs`, but it
+doesn't return a witness for the strongly connected components, and the algorithm is also an
+overkill.
+
+The Boolean adjacency matrix of a `!![…]` literal is packed into one natural number, with entry
+`(i, j)` at bit `i * n + j`, and both certificates are checked against that number, since reading
+the literal by position costs the kernel a walk per entry.
+
+The Boolean adjacency matrix of `M` has entry `(i, j)` true when `M i j ≠ 0`,
+currently evaluated by the kernel; for the functional representation this is the bottleneck.
+
+Two future optimisations are possible. Reading a function's rows on demand would let the search
+evaluate only the rows it reaches. Compiled evaluation of the function is faster, but in a
+`module` file the compiled code may only call definitions available at compile time, a set that
+depends on the importing file's whole import graph.
+-/
+
+@[expose] public section
+
+open Matrix Relation
+
+namespace Mathlib.Tactic.Matrix.IsIndecomposable
+
+/-! ### Reachability in a Boolean adjacency matrix -/
+
+/-- The vertices reached from the set bits of `s` by following the edges `es` in order. An edge
+counts only when it leaves a vertex already reached and is an edge of `adj`. -/
+def reached {n : ℕ} (adj : Fin n → Fin n → Bool) (s : ℕ) (es : List (Fin n × Fin n)) : ℕ :=
+  es.foldl (init := s) fun visited (p, c) ↦
+    bif visited.testBit p && adj p c then visited ||| 1 <<< (c : ℕ) else visited
+
+theorem reflTransGen_of_testBit_reached {n : ℕ} {adj : Fin n → Fin n → Bool} {root : Fin n}
+    {s : ℕ} {es : List (Fin n × Fin n)}
+    (hs : ∀ v : Fin n, s.testBit v → ReflTransGen (fun i j ↦ adj i j) root v) {v : Fin n}
+    (hv : (reached adj s es).testBit v) : ReflTransGen (fun i j ↦ adj i j) root v := by
+  induction es generalizing s with
+  | nil => exact hs v hv
+  | cons e es ih => exact ih (fun w hw ↦ by grind [Fin.ext_iff]) hv
+
+/-- The edges `es` in order reach every vertex of `adj` starting from `root`. -/
+abbrev SpansFrom {n : ℕ} (adj : Fin n → Fin n → Bool) (es : List (Fin n × Fin n))
+    (root : Fin n) : Prop :=
+  reached adj (1 <<< (root : ℕ)) es = 2 ^ n - 1
+
+/-- If `adj` has a spanning list of edges from `root`, then `root` reaches every vertex. -/
+theorem SpansFrom.reflTransGen {n : ℕ} {adj : Fin n → Fin n → Bool} {es : List (Fin n × Fin n)}
+    {root : Fin n} (h : SpansFrom adj es root) (v : Fin n) :
+    ReflTransGen (fun i j ↦ adj i j) root v :=
+  reflTransGen_of_testBit_reached (s := 1 <<< (root : ℕ)) (es := es) (by grind) (by simp [h])
+
+/-! ### Closed sets of vertices in a Boolean adjacency matrix, and the packed version -/
+
+/-- Whether no edge of `adj` leaves the set of vertices given by the set bits of `s`. -/
+def isClosed {n : ℕ} (adj : Fin n → Fin n → Bool) (s : ℕ) : Bool :=
+  (List.finRange n).all fun i ↦ !s.testBit i ||
+    (List.finRange n).all fun j ↦ s.testBit j || !adj i j
+
+/-- Entry `(i, j)` of the `n × n` Boolean adjacency matrix represented by `bits`. -/
+def packedAdj (n bits : ℕ) (i j : Fin n) : Bool :=
+  bits.testBit (i * n + j)
+
+/-- Whether no edge of the `n × n` Boolean adjacency matrix represented by `bits` leaves the set
+of vertices given by the set bits of `s`. Each row of `bits` is read at once. -/
+def isClosedPacked (n bits s : ℕ) : Bool :=
+  (List.range n).all fun i ↦
+    let row := bits >>> (i * n) &&& (2 ^ n - 1)
+    !s.testBit i || (row &&& s) == row
+
+theorem isClosed_of_isClosedPacked {n bits s : ℕ} (h : isClosedPacked n bits s = true) :
+    isClosed (packedAdj n bits) s = true := by
+  simp [isClosedPacked, Nat.eq_iff_testBit_eq] at h
+  grind [isClosed, packedAdj]
+
+/-! ### Certificates for a matrix from its Boolean adjacency matrix -/
+
+variable {R : Type*} [Zero R]
+
+/-- If both `adj` and its reverse have spanning edge lists from `root`, then `M` is
+indecomposable (strong connectivity of `adj`). -/
+theorem isIndecomposable_of_spansFrom {n : ℕ}
+    {M : Matrix (Fin n) (Fin n) R} {adj : Fin n → Fin n → Bool}
+    (hadj : ∀ i j, adj i j ↔ M i j ≠ 0) {root : Fin n} {fwd bwd : List (Fin n × Fin n)}
+    (hf : SpansFrom adj fwd root) (hb : SpansFrom (Function.swap adj) bwd root) :
+    M.IsIndecomposable := by
+  refine (isIndecomposable_iff_reflTransGen M).2 fun i j ↦ ?_
+  simpa only [hadj] using (hb.reflTransGen i).swap.trans (hf.reflTransGen j)
+
+/-- If `adj` has a nonempty proper subset of vertices that is closed, then `M` is decomposable. -/
+theorem not_isIndecomposable_of_isClosed {n : ℕ} {M : Matrix (Fin n) (Fin n) R}
+    {adj : Fin n → Fin n → Bool} (hadj : ∀ i j, adj i j ↔ M i j ≠ 0) {s : ℕ}
+    (h : isClosed adj s = true) {i j : Fin n} (hij : s.testBit i ≠ s.testBit j) :
+    ¬M.IsIndecomposable := by
+  intro hM
+  obtain ⟨a, ha⟩ := (isIndecomposable_iff_blockTriangular_const M).1 hM (s.testBit ·)
+    (by grind [isClosed, BlockTriangular, Bool.lt_iff])
+  simp_all [funext_iff]
+
+/-! ### The Boolean adjacency matrix of a matrix literal or function -/
+
+variable [DecidableEq R]
+
+/-- The nonzero entries of `row`, as the set bits of a natural number. -/
+def packRow (row : List R) : ℕ :=
+  row.foldr (fun (a : R) acc ↦ (if a = 0 then 0 else 1) ||| acc <<< 1) 0
+
+/-- The Boolean adjacency matrix of `rows` interpreted as an `n × n` matrix, as the set bits of a
+natural number with entry `(i, j)` at bit `i * n + j`. -/
+def packRows (n : ℕ) (rows : List (List R)) : ℕ :=
+  rows.foldr (fun row acc ↦ (packRow row &&& (2 ^ n - 1)) ||| acc <<< n) 0
+
+theorem testBit_packRow (row : List R) (j : ℕ) :
+    (packRow row).testBit j = decide (row.getD j 0 ≠ 0) := by
+  induction row generalizing j with
+  | nil => simp [packRow]
+  | cons a row ih =>
+    cases j <;> by_cases a = 0 <;> simp_all [packRow, Nat.testBit_one_eq_true_iff_self_eq_zero]
+
+theorem testBit_packRows {n : ℕ} (rows : List (List R)) (i : ℕ) {j : ℕ} (hj : j < n) :
+    (packRows n rows).testBit (i * n + j) = decide ((rows.getD i []).getD j 0 ≠ 0) := by
+  induction rows generalizing i with
+  | nil => simp [packRows]
+  | cons row rows ih =>
+    cases i <;> simp_all [packRows, testBit_packRow, Nat.add_mul, Nat.add_right_comm _ n]
+
+theorem packedAdj_packRows_iff_of_eq {n : ℕ} {M : Matrix (Fin n) (Fin n) R}
+    {rows : List (List R)} (hM : M = ofLists n n rows) (i j : Fin n) :
+    packedAdj n (packRows n rows) i j ↔ M i j ≠ 0 := by
+  simp [hM, packedAdj, testBit_packRows]
+
+/-- The Boolean adjacency matrix of the function `f`, with an edge from `i` to `j` when
+`f i j ≠ 0`. -/
+def adjOf {n : ℕ} (f : Fin n → Fin n → R) (i j : Fin n) : Bool :=
+  decide (f i j ≠ 0)
+
+theorem adjOf_iff_of_eq {n : ℕ} {M : Matrix (Fin n) (Fin n) R} {f : Fin n → Fin n → R}
+    (hM : M = of f) (i j : Fin n) : adjOf f i j ↔ M i j ≠ 0 := by
+  rw [adjOf, hM, of_apply, decide_eq_true_iff]
+
+end Mathlib.Tactic.Matrix.IsIndecomposable
+
+end
+
+public meta section
+
+open Lean Meta Qq Matrix
+
+namespace Mathlib.Tactic.Matrix.IsIndecomposable
+
+/-- Breadth-first search from `root` along `adj`, returning the tree edges in discovery order and
+the reached vertices. -/
+def bfs (n : Nat) (adj : Nat → Nat → Bool) (root : Nat) :
+    Array (Nat × Nat) × Array Bool := Id.run do
+  let mut visited := (Array.replicate n false).set! root true
+  let mut tree := #[]
+  let mut current := #[root]
+  while !current.isEmpty do
+    let mut next := #[]
+    for p in current do
+      for c in 0...n do
+        if adj p c && !visited[c]! then
+          visited := visited.set! c true
+          tree := tree.push (p, c)
+          next := next.push c
+    current := next
+  return (tree, visited)
+
+/-- The list literal of the edges `edges`. -/
+def mkEdgeListLitQ (n : Nat) (edges : Array (Nat × Nat)) : MetaM Q(List (Fin $n × Fin $n)) := do
+  let es ← edges.toList.mapM fun (p, c) ↦ do
+    let pQ : Q(Fin $n) ← mkFinLitQ n p
+    let cQ : Q(Fin $n) ← mkFinLitQ n c
+    return q(($pQ, $cQ))
+  return mkListLitQ (α := q(Fin $n × Fin $n)) es
+
+/-- The outcome of searching a directed graph from and to vertex `0`. -/
+inductive StrongConnectivityResult where
+  /-- The graph is strongly connected, with the spanning out-tree `outTree` from `0` and in-tree
+  `inTree` to `0`. -/
+  | connected (outTree inTree : Array (Nat × Nat))
+  /-- The graph is not strongly connected. No edge leaves the nonempty proper set of vertices
+  `closedSet`. -/
+  | disconnected (closedSet : Array Bool)
+
+/-- Search the directed graph with Boolean adjacency matrix `adjMatrix` from and to vertex `0`. -/
+def decideStronglyConnected (adjMatrix : Array (Array Bool)) : StrongConnectivityResult :=
+  let n := adjMatrix.size
+  let adj (p c : Nat) : Bool := (adjMatrix[p]!)[c]!
+  let (outTree, fromRoot) := bfs n adj 0
+  -- The vertices reached from `0` are closed under the edges.
+  if !fromRoot.all id then .disconnected fromRoot else
+  let (inTree, toRoot) := bfs n (Function.swap adj) 0
+  -- The vertices not reaching `0` are closed under the edges.
+  if !toRoot.all id then .disconnected (toRoot.map not) else
+  .connected outTree inTree
+
+/-- The Boolean adjacency matrix of the matrix that `view` builds, evaluated by the kernel, or
+`none` when the kernel cannot decide which entries are zero. A literal is evaluated in one call to
+`packRows`, the number its certificates are checked against, and a function one row at a time. -/
+def evalAdjMatrix? {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (dα : Q(DecidableEq $α)) {n : Nat}
+    {M : Q(Matrix (Fin $n) (Fin $n) $α)} (view : MatrixView n n M) :
+    MetaM (Option (Array (Array Bool))) := do
+  let env ← getEnv
+  let eval (e : Q(Nat)) : Option Nat :=
+    match Kernel.whnf env {} e with
+    | .ok (.lit (.natVal m)) => some m
+    | _ => none
+  match view with
+  | .literal lit =>
+    let some bits := eval q(packRows $n $lit) | return none
+    return some <| Array.ofFn (n := n) fun i ↦ Array.ofFn (n := n) fun j ↦ bits.testBit (i * n + j)
+  | .functional f =>
+    OptionT.run <| Array.ofFnM (n := n) fun i ↦ do
+      -- `Kernel.whnf` checks neither heartbeats nor cancellation, so they are checked per row.
+      checkSystem "reduceIsIndecomposable"
+      let iQ : Q(Fin $n) ← mkFinLitQ n i
+      let some row := eval q(Nat.ofBits (adjOf $f $iQ)) | failure
+      return Array.ofFn (n := n) (row.testBit ·)
+
+/-- Prove `M.IsIndecomposable` from the spanning out-tree `outTree` from vertex `0` and in-tree
+`inTree` to it in the graph of the Boolean adjacency matrix of `M`. -/
+def certifyIsIndecomposable {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (dα : Q(DecidableEq $α))
+    {n : Nat} {M : Q(Matrix (Fin $n) (Fin $n) $α)} (view : MatrixView n n M)
+    (outTree inTree : Array (Nat × Nat)) : MetaM Q(($M).IsIndecomposable) := do
+  let root : Q(Fin $n) ← mkFinLitQ n 0
+  let outTreeQ ← mkEdgeListLitQ n outTree
+  let inTreeQ ← mkEdgeListLitQ n inTree
+  let ⟨adj, hadj⟩ : (adj : Q(Fin $n → Fin $n → Bool)) × Q(∀ i j, $adj i j ↔ $M i j ≠ 0) :=
+    match view, view.proof zα with
+    | .literal lit, pf => ⟨q(packedAdj $n (packRows $n $lit)), q(packedAdj_packRows_iff_of_eq $pf)⟩
+    | .functional f, pf => ⟨q(adjOf $f), q(adjOf_iff_of_eq $pf)⟩
+  let hout ← mkDecideProofQ q(SpansFrom $adj $outTreeQ $root)
+  let hin ← mkDecideProofQ q(SpansFrom (Function.swap $adj) $inTreeQ $root)
+  return q(isIndecomposable_of_spansFrom $hadj $hout $hin)
+
+/-- Prove `¬M.IsIndecomposable` from a nonempty proper set `closedSet` of vertices that no edge of
+the Boolean adjacency matrix of `M` leaves. -/
+def certifyNotIsIndecomposable {u : Level} {α : Q(Type u)} (zα : Q(Zero $α))
+    (dα : Q(DecidableEq $α)) {n : Nat} {M : Q(Matrix (Fin $n) (Fin $n) $α)}
+    (view : MatrixView n n M) (closedSet : Array Bool) :
+    MetaM Q(¬($M).IsIndecomposable) := do
+  let (some i, some j) := (closedSet.findIdx? id, closedSet.findIdx? not)
+    | throwError "reduceIsIndecomposable: the closed set {closedSet} is empty or full"
+  let closedSetQ : Q(Nat) := mkNatLitQ (Nat.ofBits (n := n) (closedSet[·]!))
+  let iQ : Q(Fin $n) ← mkFinLitQ n i
+  let jQ : Q(Fin $n) ← mkFinLitQ n j
+  let hd : Q(decide (Nat.testBit $closedSetQ $iQ = Nat.testBit $closedSetQ $jQ) = false) :=
+    (q(Eq.refl false) : Expr)
+  let hij : Q(Nat.testBit $closedSetQ $iQ ≠ Nat.testBit $closedSetQ $jQ) :=
+    q(of_decide_eq_false $hd)
+  match view, view.proof zα with
+  | .literal lit, pf =>
+    let hc ← mkDecideProofQ q(isClosedPacked $n (packRows $n $lit) $closedSetQ = true)
+    return q(not_isIndecomposable_of_isClosed (packedAdj_packRows_iff_of_eq $pf)
+      (isClosed_of_isClosedPacked $hc) $hij)
+  | .functional f, pf =>
+    let hc ← mkDecideProofQ q(isClosed (adjOf $f) $closedSetQ = true)
+    return q(not_isIndecomposable_of_isClosed (adjOf_iff_of_eq $pf) $hc $hij)
+
+/-- Core of the `Matrix.reduceIsIndecomposable` simproc. -/
+def reduceIsIndecomposableCore : Simp.Simproc := fun e ↦ do
+  let e ← instantiateMVars e
+  let_expr Matrix.IsIndecomposable finN R zR M := e | return .continue
+  let u ← getDecLevel R
+  have α : Q(Type u) := R
+  have zα : Q(Zero $α) := zR
+  have finN : Q(Type) := finN
+  let M : Q(Matrix $finN $finN $α) := M
+  let some ⟨m, n, M, view⟩ ← MatrixView.parse? M | return .continue
+  -- `M` is square, so `m` and `n` are read off the same index type.
+  let .isTrue h := decEq m n | unreachable!
+  let ⟨M, view⟩ : (M : Q(Matrix (Fin $n) (Fin $n) $α)) × MatrixView n n M :=
+    h ▸ (⟨M, view⟩ : (M : Q(Matrix (Fin $m) (Fin $n) $α)) × MatrixView m n M)
+  if n == 0 then
+    have M : Q(Matrix (Fin 0) (Fin 0) $α) := M
+    let pf : Q(($M).IsIndecomposable) := q((isIndecomposable_iff_reflTransGen $M).2 isEmptyElim)
+    return .done { expr := q(True), proof? := q(eq_true $pf) }
+  let .some dα ← trySynthInstanceQ q(DecidableEq $α) | return .continue
+  let some adjMatrix ← evalAdjMatrix? zα dα view | return .continue
+  match decideStronglyConnected adjMatrix with
+  | .connected outTree inTree =>
+    let pf ← certifyIsIndecomposable zα dα view outTree inTree
+    return .done { expr := q(True), proof? := q(eq_true $pf) }
+  | .disconnected closedSet =>
+    let pf ← certifyNotIsIndecomposable zα dα view closedSet
+    return .done { expr := q(False), proof? := q(eq_false $pf) }
+
+end Mathlib.Tactic.Matrix.IsIndecomposable
+
+open Mathlib.Tactic.Matrix.IsIndecomposable
+
+/-- `Matrix.reduceIsIndecomposable` decides `M.IsIndecomposable` for a closed matrix `M` indexed
+by `Fin n` with `n` a numeral, whose entry type has an equality the kernel can decide. -/
+simproc_decl Matrix.reduceIsIndecomposable (Matrix.IsIndecomposable _) :=
+  reduceIsIndecomposableCore
