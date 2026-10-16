@@ -1115,8 +1115,8 @@ theorem MeasurableSet.standardBorel {s : Set α} (hs : MeasurableSet s) :
 
 /-- In a standard Borel space, a zero-one measure that is not the zero measure is a Dirac
 measure. -/
-theorem exists_eq_dirac {μ : Measure α} [IsZeroOneMeasure μ] [NeZero μ] :
-    ∃ x₀, μ = Measure.dirac x₀ := by
+theorem MeasureTheory.IsZeroOneMeasure.exists_eq_dirac
+    {μ : Measure α} [IsZeroOneMeasure μ] [NeZero μ] : ∃ x₀, μ = Measure.dirac x₀ := by
   have : IsProbabilityMeasure μ := by
     rcases IsZeroOrProbabilityMeasure.measure_univ (μ := μ) with (h | h)
     · simp_all
