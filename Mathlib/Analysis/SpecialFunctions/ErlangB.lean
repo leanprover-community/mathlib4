@@ -49,14 +49,14 @@ Erlang, loss formula, blocking probability
 
 open Finset
 
-@[expose] public section
+public section
 
 namespace Real
 
 /-- Erlang's loss formula `B(c, a)`, by the recursion `B(0) = 1`,
 `B(c + 1) = a * B(c) / (c + 1 + a * B(c))`. Total on all of `ℝ`; the results assume `0 ≤ a`,
 which makes the denominator positive (`erlangB_denom_pos`). -/
-noncomputable def erlangB (a : ℝ) : ℕ → ℝ
+@[expose] noncomputable def erlangB (a : ℝ) : ℕ → ℝ
   | 0 => 1
   | c + 1 => a * erlangB a c / ((c : ℝ) + 1 + a * erlangB a c)
 
@@ -100,7 +100,6 @@ theorem erlangB_carried_le {a : ℝ} (ha : 0 ≤ a) : ∀ c : ℕ, a * (1 - erla
   | 0 => by simp
   | c + 1 => by
     have ih := erlangB_carried_le ha c
-    have hB0 := erlangB_nonneg ha c
     have hD := erlangB_denom_pos ha c
     have hDne : ((c : ℝ) + 1 + a * erlangB a c) ≠ 0 := hD.ne'
     have key : a * (1 - a * erlangB a c / ((c : ℝ) + 1 + a * erlangB a c))
@@ -148,7 +147,6 @@ theorem erlangB_mul_sum {a : ℝ} (ha : 0 ≤ a) (c : ℕ) :
   induction c with
   | zero => norm_num [sum_range_one, Nat.factorial]
   | succ c ih =>
-    have hB0 := erlangB_nonneg ha c
     have hD := erlangB_denom_pos ha c
     have hc0 : (c.factorial : ℝ) ≠ 0 := by exact_mod_cast c.factorial_pos.ne'
     have hcpos : (0 : ℝ) < (c : ℝ) + 1 := by positivity
