@@ -77,11 +77,6 @@ def putFilesViaCurl
     -- blobs (409/412 on a non-overwrite put), so a re-upload of files the
     -- server already has does not trip this.
     if s.failed > 0 then
-      let unreported := files.filter fun file =>
-        !s.reported.contains (dest.fileURL file.fileName.get!)
-      unless unreported.isEmpty do
-        IO.eprintln s!"files without a curl report: \
-          {" ".intercalate (unreported.toList.map (·.fileName.get!))}"
       IO.eprintln s!"Uploading {s.failed} file(s) failed"
       IO.Process.exit 1
   else IO.println "No files to upload"

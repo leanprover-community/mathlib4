@@ -565,8 +565,6 @@ structure TransferState where
   speed : Nat := 0
   /-- Decompression pipeline state; used only when a `DecompConfig` is set. -/
   decomp : DecompState := {}
-  /-- Reported upload URLs, without query strings. -/
-  reported : Std.HashSet String := {}
 
 /-- Harvest the result of a completed decompression task, updating counters.
     Returns `(successful, failed, error?)`. -/
@@ -675,7 +673,7 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
     return msg
   let init : TransferState := { last := (← IO.monoMsNow), decomp := decompState }
   let (s, exitCode, stderr) ← IO.runCurlStreaming (upload := dir == .upload) args init fun a line => do
-    let mut {last, success, failed, done, speed, decomp, reported} := a
+    let mut {last, success, failed, done, speed, decomp} := a
     let mut {pending, currentTask, lastBatchSize, decompressed, decompFailed} := decomp
     -- Classify each finished transfer: rename a delivered part file, report a
     -- failure, and remove the part file on any non-delivery.
@@ -689,9 +687,6 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
         let code? := result.getObjValAs? Nat "http_code"
         let fn? := result.getObjValAs? String "filename_effective"
         let exitCode := (result.getObjValAs? Nat "exitcode").toOption.getD 0
-        if let .upload := dir then
-          if let .ok url := result.getObjValAs? String "url_effective" then
-            reported := reported.insert ((url.splitOn "?").headD url)
         let verdict := classify code?.toOption exitCode
         if verdict matches .delivered then
           if let .ok fn := fn? then
@@ -778,7 +773,7 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
         IO.println s!"Non-JSON output from curl:\n  {line}\n{e}"
     let decompNow : DecompState :=
       {pending, currentTask, lastBatchSize, decompressed, decompFailed}
-    pure {last, success, failed, done, speed, decomp := decompNow, reported}
+    pure {last, success, failed, done, speed, decomp := decompNow}
   -- Count transfers without a completion report as failures.
   let s ← if s.done < size then do
       IO.eprintln s!"\ncurl exited with code {exitCode} after it reported {s.done} of {size} transfers"

@@ -33,8 +33,8 @@ These tests cover the pure logic of the cache system, including:
 
 Anything that touches the network is left to CI, which exercises the
 `cache get`/`put` paths end-to-end on real containers. The unit tests spawn
-local processes only: `curl --version`, one curl `file://` copy, and one
-leantar run on a nonexistent archive; none makes a network request.
+local processes only: `curl --version` and leantar on a nonexistent archive.
+Neither makes a network request.
 
 ## Invariants these tests defend
 
@@ -1867,26 +1867,6 @@ def test_monitorCurl_counts_unreported_transfers : IO Unit := do
   assertTrue "no transfer reported" (s.done == 0 && s.success == 0)
   assertTrue "the unreported transfers count as failed" (s.failed == 3)
 
-/-- Upload diagnostics retain reported URLs without query credentials. -/
-def test_monitorCurl_records_reported_urls : IO Unit := do
-  IO.println "monitorCurl records the URL of each report:"
-  if System.Platform.isWindows then
-    IO.println "  (skipped on Windows)"
-    return
-  let dir ← IO.FS.createTempDir
-  try
-    let file := dir / "aa.ltar"
-    IO.FS.writeFile file "x"
-    let url := s!"file://{file}"
-    let (s, _) ← withSuppressedOutput <|
-      monitorCurl #["--silent", "--write-out", "\n%{json}\n", "-o", IO.nullDevice,
-        s!"{url}?token=secret"] 1 "Uploaded" "speed_upload"
-        (classifyUpload · · true)
-    assertTrue "the transfer was reported" (s.done == 1)
-    assertTrue "the report's URL is recorded without its query"
-      (s.reported.contains url && s.reported.size == 1)
-  finally
-    IO.FS.removeDirAll dir
 
 end DecompPipeline
 
@@ -2023,7 +2003,6 @@ def runAll : IO Unit := do
   test_finalizeDecomp
   test_monitorCurl_carries_decomp_state
   test_monitorCurl_counts_unreported_transfers
-  test_monitorCurl_records_reported_urls
   test_splitWriteOut
   test_curlGetWriteOut_real_curl
   test_transferDiagnostics
