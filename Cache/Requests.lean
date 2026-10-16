@@ -298,13 +298,8 @@ def curlFollowRedirectArgs : Array String :=
   #["--location", "--proto-redir", "=https", "--max-redirs", "5"]
 
 /--
-`curl` retry flags for a cache transfer. `--retry` covers timeouts and
-408/429/5xx; every supported curl accepts it. With
-`supportLegacyCurl := false`, `--retry-all-errors` also retries transport
-errors on a fresh connection, with exponential backoff. That flag needs
-curl 7.71; `validateCurl` gates parallel mode at 7.75, which also
-guarantees the per-transfer JSON report fields `monitorCurl` reads. Pass
-`supportLegacyCurl := true` on paths that must work on older curls.
+Retry flags for a cache transfer. Set `supportLegacyCurl` to omit
+`--retry-all-errors` on paths that support older curl versions.
 -/
 def curlRetryArgs (supportLegacyCurl : Bool) : Array String :=
   #["--retry", "5"] ++ (if supportLegacyCurl then #[] else #["--retry-all-errors"])
@@ -332,10 +327,7 @@ def curlGetHeaders : List String := ["cf-ray", "cf-cache-status", "content-lengt
 value of each header in `curlGetHeaders`, each after `curlFieldSep`.
 curl writes a header value unescaped, so the values stay outside the JSON.
 
-`%header{…}` needs curl 7.84. curl 7.83 shipped it as experimental only.
-Below 7.84, `validateCurl` downloads a newer curl on Linux. A curl that
-old on another platform prints `%header{…}` as literal text, and that text
-appears only in a failure line.
+`%header{…}` requires curl 7.84 or later.
 -/
 def curlGetWriteOut : String :=
   "%{json}" ++ String.join (curlGetHeaders.map (curlFieldSep ++ "%header{" ++ · ++ "}")) ++ "\n"
@@ -500,7 +492,6 @@ def downloadFile (location : Location) (hash : UInt64) : IO (TransferVerdict .do
   let out ← IO.Process.output
     { cmd := (← IO.getCurl),
       args := #[url, "--silent"] ++ curlFollowRedirectArgs ++
-        -- This path serves curls below 7.71, which reject `--retry-all-errors`.
         curlRetryArgs (supportLegacyCurl := true) ++
         #["--write-out", "%{http_code}", "-o", partPath.toString] }
   -- Anything short of a delivery leaves at most an error body in the part file.
@@ -697,8 +688,6 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
       | .ok result =>
         let code? := result.getObjValAs? Nat "http_code"
         let fn? := result.getObjValAs? String "filename_effective"
-        -- The per-transfer JSON report carries `exitcode` from curl 7.75 on;
-        -- an absent field reads as 0.
         let exitCode := (result.getObjValAs? Nat "exitcode").toOption.getD 0
         if let .upload := dir then
           if let .ok url := result.getObjValAs? String "url_effective" then
@@ -774,7 +763,6 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
           -- (miss); remove it either way.
           if removeOnError then
             if let .ok fn := fn? then
-              -- `curl --remove-on-error` can already do this, but only from 7.83 onwards
               if (← System.FilePath.pathExists fn) && fn.endsWith IO.PARTSUFFIX then
                 IO.FS.removeFile fn
         done := done + 1

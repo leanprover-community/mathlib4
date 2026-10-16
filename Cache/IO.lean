@@ -264,40 +264,27 @@ def curlVersion (curl : String) : IO (Nat × Nat) := do
     | _ => throw <| IO.userError "Invalidly formatted version of `curl`"
   | _ => throw <| IO.userError "Invalidly formatted response from `curl --version`"
 
+/-- Select a suitable curl binary and report whether it supports parallel transfers. -/
 def validateCurl : IO Bool := do
   if (← CURLBIN.pathExists) then return true
   let version ← curlVersion "curl"
   let found := s!"{version.1}.{version.2}"
   let _ := @lexOrd
   let _ := @leOfOrd
+  -- curl 8.18 can hang on parallel retries.
   if version >= (7, 84) && version != (8, 18) then return true
-  let hangs := version == (8, 18)
-  let reason := if hangs then s!"curl {found} hangs on a pending retry in parallel mode"
-    else s!"curl {found} is too old"
-  -- TODO: support more platforms if the need arises
   let arch ← (·.trimAscii.copy) <$> runCmd "uname" #["-m"] false
   let kernel ← (·.trimAscii.copy) <$> runCmd "uname" #["-s"] false
   if kernel == "Linux" && arch ∈ ["x86_64", "aarch64"] then
-    IO.println s!"{reason}; downloading curl {CURLVERSION}"
+    IO.println s!"Downloading curl {CURLVERSION} (found {found})"
     IO.FS.createDirAll IO.CACHEDIR
     let _ ← runCmd "curl" (stderrAsErr := false) #[
       s!"https://github.com/leanprover-community/static-curl/releases/download/v{CURLVERSION}/curl-{arch}-linux-static",
       "-L", "-o", CURLBIN.toString]
     let _ ← runCmd "chmod" #["u+x", CURLBIN.toString]
     return true
-  if hangs then
-    IO.println s!"Warning: {reason}. Can't use `--parallel`."
-    return false
-  -- The parallel transfer paths pass `--retry-all-errors` (curl 7.71)
-  -- and read the `exitcode` and `errormsg` fields of the per-transfer
-  -- JSON report (curl 7.75); an older curl rejects the flag or omits
-  -- the fields.
-  if version >= (7, 75) then
-    IO.println s!"Warning: recommended `curl` version ≥7.84. Found {found}"
-    return true
-  else
-    IO.println s!"Warning: recommended `curl` version ≥7.75. Found {found}. Can't use `--parallel`."
-    return false
+  IO.println s!"Warning: curl {found} is unsupported for parallel cache transfers."
+  return false
 
 /-- Recursively gets all files from a directory with a certain extension -/
 partial def getFilesWithExtension
