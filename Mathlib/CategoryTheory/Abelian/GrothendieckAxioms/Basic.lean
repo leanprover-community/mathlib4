@@ -10,7 +10,8 @@ public import Mathlib.CategoryTheory.Abelian.FunctorCategory
 public import Mathlib.CategoryTheory.Limits.Constructions.Filtered
 public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 public import Mathlib.CategoryTheory.Limits.Shapes.Countable
-public import Mathlib.Logic.Equiv.List
+
+import Mathlib.Logic.Equiv.List
 /-!
 
 # Grothendieck Axioms
@@ -55,8 +56,6 @@ namespace CategoryTheory
 
 open Limits CategoryTheory.Functor
 
-attribute [instance] comp_preservesFiniteLimits comp_preservesFiniteColimits
-
 universe w w' w₂ w₂' v v' v'' u u' u''
 
 variable (C : Type u) [Category.{v} C]
@@ -100,7 +99,6 @@ lemma HasExactColimitsOfShape.domain_of_functor {D : Type*} (J : Type*) [Categor
       exact Cone.ext ((preservesColimitNatIso F).symm.app _)
         fun i ↦ (preservesColimitNatIso F).inv.naturality _ } } }
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 variable {C} in
 /--

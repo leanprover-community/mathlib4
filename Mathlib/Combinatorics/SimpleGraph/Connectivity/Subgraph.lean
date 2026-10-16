@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Chord
-public import Mathlib.Data.Set.Card
 
 /-!
 # Connectivity of subgraphs and induced graphs
@@ -242,7 +241,6 @@ theorem toSubgraph_rotate [DecidableEq V] (c : G.Walk v v) (h : u ∈ c.support)
 theorem toSubgraph_map (f : G →g G') (p : G.Walk u v) :
     (p.map f).toSubgraph = p.toSubgraph.map f := by induction p <;> simp [*, Subgraph.map_sup]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma adj_toSubgraph_mapLe {G' : SimpleGraph V} {w x : V} {p : G.Walk u v} (h : G ≤ G') :
     (p.mapLe h).toSubgraph.Adj w x ↔ p.toSubgraph.Adj w x := by
   simp
@@ -261,7 +259,7 @@ theorem finite_neighborSet_toSubgraph (p : G.Walk u v) : (p.toSubgraph.neighborS
 
 lemma toSubgraph_le_induce_support (p : G.Walk u v) :
     p.toSubgraph ≤ (⊤ : G.Subgraph).induce {v | v ∈ p.support} := by
-  convert! Subgraph.le_induce_top_verts
+  convert Subgraph.le_induce_top_verts using 2
   exact p.verts_toSubgraph.symm
 
 theorem toSubgraph_adj_getVert {u v} (w : G.Walk u v) {i : ℕ} (hi : i < w.length) :
@@ -344,7 +342,8 @@ theorem map_mapToSubgraph_eq_induce (s : Set V) {u v : V} :
 to its support. -/
 theorem map_mapToSubgraph_eq_induce_id {u v : V} (w : G.Walk u v) :
     w.mapToSubgraph.map (⟨fun v ↦ ⟨v, w.mem_verts_toSubgraph.mp v.prop⟩, w.toSubgraph.adj_sub⟩ :
-      w.toSubgraph.coe →g G.induce _) = w.induce _ (fun _ ↦ id) :=
+      w.toSubgraph.coe →g G.induce {x | x ∈ w.support}) =
+      w.induce {x | x ∈ w.support} (fun _ ↦ id) :=
   w.map_mapToSubgraph_eq_induce ..
 
 theorem isInduced_toSubgraph {w : G.Walk u v} : w.toSubgraph.IsInduced ↔ w.IsChordless := by

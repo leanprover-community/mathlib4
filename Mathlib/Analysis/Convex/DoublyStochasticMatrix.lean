@@ -28,7 +28,7 @@ Doubly stochastic, Birkhoff's theorem, Birkhoff-von Neumann theorem
 
 @[expose] public section
 
-open Finset Function Matrix
+open Finset Matrix
 
 variable {R n : Type*} [Fintype n] [DecidableEq n]
 

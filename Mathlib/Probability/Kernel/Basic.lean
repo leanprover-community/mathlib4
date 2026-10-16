@@ -130,7 +130,7 @@ section Copy
 /-- The deterministic kernel that maps `x : α` to the Dirac measure at `(x, x) : α × α`. -/
 noncomputable
 def copy (α : Type*) [MeasurableSpace α] : Kernel α (α × α) :=
-  Kernel.deterministic (fun x ↦ (x, x)) (measurable_id.prod measurable_id)
+  Kernel.deterministic Function.diag (measurable_id.prod measurable_id)
 
 instance : IsMarkovKernel (copy α) := by rw [copy]; infer_instance
 
@@ -215,7 +215,7 @@ instance const.instIsZeroOrMarkovKernel {μβ : Measure β} [hμβ : IsZeroOrPro
 
 lemma isSFiniteKernel_const [Nonempty α] {μβ : Measure β} :
     IsSFiniteKernel (const α μβ) ↔ SFinite μβ :=
-  ⟨fun h ↦ h.sFinite (Classical.arbitrary α), fun _ ↦ inferInstance⟩
+  ⟨fun h ↦ h.sfinite (Classical.arbitrary α), fun _ ↦ inferInstance⟩
 
 instance [Nonempty β] : Nonempty {κ : Kernel α β // IsMarkovKernel κ} :=
   nonempty_subtype.2 ⟨Kernel.const _ (Measure.dirac Classical.ofNonempty), inferInstance⟩

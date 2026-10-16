@@ -64,7 +64,7 @@ lemma smul_left_cancel_iff (g : α) {x y : β} : g • x = g • y ↔ x = y :=
 
 @[to_additive]
 lemma smul_eq_iff_eq_inv_smul (g : α) {x y : β} : g • x = y ↔ x = g⁻¹ • y :=
-  (MulAction.toPerm g).apply_eq_iff_eq_symm_apply
+  eq_inv_smul_iff.symm
 
 @[to_additive]
 lemma isCancelSMul_iff_eq_one_of_smul_eq :
@@ -150,7 +150,7 @@ variable (M α) in
 @[to_additive
 /-- Embedding of `α` into functions `M → α` induced by an additive action of `M` on `α`. -/]
 def toFun : α ↪ M → α :=
-  ⟨fun y x ↦ x • y, fun y₁ y₂ H ↦ one_smul M y₁ ▸ one_smul M y₂ ▸ by convert! congr_fun H 1⟩
+  ⟨fun y x ↦ x • y, fun y₁ y₂ H ↦ one_smul M y₁ ▸ one_smul M y₂ ▸ by convert congr_fun H 1⟩
 
 @[to_additive (attr := simp)]
 lemma toFun_apply (x : M) (y : α) : MulAction.toFun M α y x = x • y := rfl

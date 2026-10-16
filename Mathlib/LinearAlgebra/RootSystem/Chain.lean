@@ -31,7 +31,7 @@ length, `p + q` is at most 3.
 
 noncomputable section
 
-open FaithfulSMul Function Set Submodule
+open FaithfulSMul Function Set
 
 variable {ι R M N : Type*} [Finite ι] [CommRing R] [CharZero R] [IsDomain R]
   [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
@@ -52,7 +52,7 @@ lemma setOfPred_root_add_zsmul_eq_Icc_of_linearIndependent
     suffices Injective (fun z : S ↦ z.property.choose) from Finite.of_injective _ this
     intro ⟨z, hz⟩ ⟨z', hz'⟩ hzz
     have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
-    have : IsAddTorsionFree M := .of_isTorsionFree R M
+    have : HasUniqueDiv M := .of_isTorsionFree R M
     have : z • P.root i = z' • P.root i := by
       rwa [← add_right_inj (P.root j), ← hz.choose_spec, ← hz'.choose_spec, P.root.injective.eq_iff]
     exact Subtype.ext <| smul_left_injective ℤ (P.ne_zero i) this
