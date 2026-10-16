@@ -740,7 +740,7 @@ instance : Finite (⊥ : Subfield F) := (Subfield.fintypeBot F p).finite
 instance (K : Type*) [DivisionRing K] (p : ℕ) [ExpChar K p] :
     PerfectRing (⊥ : Subfield K) p := by
   cases id ‹ExpChar K p› with
-  | zero => exact ⟨funext (fun x : (⊥ : Subfield K) => pow_one x) ▸ Function.bijective_id⟩
+  | zero => exact .one (⊥ : Subfield K)
   | prime prime =>
     have := Fact.mk prime
     have : IsMulCommutative (⊥ : Subfield K) :=
