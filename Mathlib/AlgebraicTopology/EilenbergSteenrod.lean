@@ -17,7 +17,7 @@ In this file we introduce the Eilenberg-Steenrod axioms for homology theories.
 The data for a homology theory is bundled in a structure `HomologyPretheory` consisting of functors
 `Hₚ i : TopPair ⥤ C` and `H i : TopCat ⥤ C` which represent the `i`th relative and regular homology,
 respectively, (indexed by a `ComplexShape`) and a proof that they agree on `TopCat`. They also
-require boundary morphisms `δ i j :  Hₚ i ⟶ proj₂ ⋙ H j` for the long exact sequence of
+require boundary morphisms `δ i j : Hₚ i ⟶ proj₂ ⋙ H j` for the long exact sequence of
 topological pairs. These are nonzero only if `c.Rel i j`.
 
 We introduce a type class for each axiom:
@@ -32,9 +32,9 @@ We introduce a type class for each axiom:
 * `HasDimensionAxiom`: A `HomologyPretheory` on `ComplexShape.down ℕ : ComplexShape ℕ` has the
   dimension axiom, if homology is zero for positive indices.
 
- In addition, there are bundled type classes
-`IsExtraordinaryEilenbergSteenrod` with the homotopy-invariance, excision, additivity, and pair
-sequence axioms and `IsEilenbergSteenrod` which extends the former by the dimension axiom.
+In addition, there are bundled type classes `IsExtraordinaryEilenbergSteenrod` with the
+homotopy-invariance, excision, additivity, and pair sequence axioms and `IsEilenbergSteenrod` which
+extends the former by the dimension axiom.
 -/
 
 @[expose] public section
@@ -192,7 +192,7 @@ set_option linter.unusedVariables false in
 @[mk_iff]
 class HasExcisionIso where
   isIso_of_isExcisive ⦃X V : TopPair⦄ (g : V ⟶ X) [IsExcisive g] (i : ι) :
-      IsIso ((HP.Hₚ i).map g)
+    IsIso ((HP.Hₚ i).map g)
 
 attribute [instance] HasExcisionIso.isIso_of_isExcisive
 
@@ -215,7 +215,7 @@ instance : IsClosedUnderIsomorphisms (hasExcisionIso.{u} C c) where
 class IsAdditive where
   /-- An extraordinary Eilenberg-Steenrod homology functor preserves colimits. -/
   [preserves_coproducts_u (J : Type u) (i : ι) :
-      PreservesColimitsOfShape (Discrete J) (HP.H i)]
+    PreservesColimitsOfShape (Discrete J) (HP.H i)]
 
 attribute [instance] IsAdditive.preserves_coproducts_u
 
@@ -244,13 +244,13 @@ instance : IsClosedUnderIsomorphisms (isAdditive.{u} C c) where
 class HasPairSequence where
   /-- Exactness of the sequence `H i X.fst ⟶ Hₚ i X ⟶ H j X.snd.` -/
   exact_pair (X : TopPair) (i j : ι) (hij : c.Rel i j) :
-      (ComposableArrows.mk₂ (HP.hFstToHₚ i X) ((HP.δ i j).app _)).Exact
+    (ComposableArrows.mk₂ (HP.hFstToHₚ i X) ((HP.δ i j).app _)).Exact
   /-- Exactness of the sequence `Hₚ i X ⟶ H j X.snd ⟶ H j X.fst`. -/
   exact_snd (X : TopPair) (i j : ι) (hij : c.Rel i j) :
-      (ComposableArrows.mk₂ ((HP.δ i j).app _) ((HP.H j).map X.map)).Exact
+    (ComposableArrows.mk₂ ((HP.δ i j).app _) ((HP.H j).map X.map)).Exact
   /-- Exactness of the sequence `H i X.snd ⟶ H i X.fst ⟶ Hₚ i X`. -/
   exact_fst (X : TopPair) (i : ι) :
-      (ComposableArrows.mk₂ ((HP.H i).map X.map) (HP.hFstToHₚ i X)).Exact
+    (ComposableArrows.mk₂ ((HP.H i).map X.map) (HP.hFstToHₚ i X)).Exact
   /-- The boundary map out of homology with final index (i.e. an index with no successors in the
   `ComplexShape`) is an epi. -/
   epi_map_of_not_rel (X : TopPair) (i : ι) (hi : ∀ (j : ι), ¬ c.Rel i j) :
