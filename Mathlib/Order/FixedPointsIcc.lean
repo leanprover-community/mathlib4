@@ -5,9 +5,7 @@ Authors: Matthew W. Horn
 -/
 module
 
-public import Mathlib.Logic.Function.Iterate
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
-public import Mathlib.Order.Interval.Set.Basic
 
 /-!
 # Knaster–Tarski fixed points on an interval
