@@ -85,6 +85,11 @@ theorem IsMulTorsionFree.pow_right_injective (ha : a ≠ 1) :
   obtain ⟨l, rfl⟩ := Nat.exists_eq_add_of_le hmn
   simpa [pow_add, left_eq_mul, ha] using h
 
+@[to_additive IsAddTorsionFree.nsmul_left_injective_iff]
+theorem IsMulTorsionFree.pow_right_injective_iff :
+    Function.Injective (fun n : ℕ ↦ a ^ n) ↔ a ≠ 1 :=
+  ⟨fun h ha ↦ by simpa using @h 0 1 (by simp [ha]), pow_right_injective⟩
+
 @[to_additive (attr := simp) IsAddTorsionFree.nsmul_left_inj]
 theorem IsMulTorsionFree.pow_right_inj (ha : a ≠ 1) {n m : ℕ} : a ^ n = a ^ m ↔ n = m :=
   (pow_right_injective ha).eq_iff
