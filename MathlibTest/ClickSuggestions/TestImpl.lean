@@ -60,6 +60,7 @@ elab "click_test" onGoal?:(num)? hyp?:(ident)? pos?:(str)? "=>" expecteds:str+ :
   let goals ← Elab.Tactic.getGoals
   let onGoal := onGoal?.map (·.getNat - 1)
   let some goal := goals[onGoal.getD 0]? | throwError "there is no goal number {onGoal}"
+  let focus := onGoal.getD 0 == 0 && 2 ≤ goals.length
   goal.withContext do
   let hyp? ← hyp?.mapM fun hyp ↦ return (← getLocalDeclFromUserName hyp.getId).fvarId
   let pos? ← pos?.mapM fun pos ↦ do
@@ -81,7 +82,7 @@ elab "click_test" onGoal?:(num)? hyp?:(ident)? pos?:(str)? "=>" expecteds:str+ :
   let ctx := {
     cursorPos, masterToken, statusToken, solvedToken
     «meta» := { (default : DocumentMeta) with text }
-    onGoal
+    onGoal, focus
     stx := default
     goal
     hyp?
