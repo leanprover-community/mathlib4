@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 module
 
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Bases
@@ -70,8 +69,8 @@ universe u
 
 open Function Set Submodule Finsupp
 
-variable {ι : Type*} {ι' : Type*} {R : Type*} {R₂ : Type*} {K : Type*}
-variable {M : Type*} {M' M'' : Type*} {V : Type u} {V' : Type*}
+variable {ι : Type*} {ι' : Type*} {R : Type*}
+variable {M : Type*} {M' M'' : Type*}
 
 namespace Module
 
@@ -99,7 +98,7 @@ namespace Basis
 instance : Inhabited (Basis ι R (ι →₀ R)) :=
   ⟨.ofRepr (LinearEquiv.refl _ _)⟩
 
-variable (b b₁ : Basis ι R M) (i : ι) (c : R) (x : M)
+variable (b : Basis ι R M) (i : ι) (c : R) (x : M)
 
 section repr
 
@@ -107,10 +106,11 @@ theorem repr_injective : Injective (repr : Basis ι R M → M ≃ₗ[R] ι →�
   cases f; cases g; congr
 
 /-- `b i` is the `i`th basis vector. -/
+@[macro_inline]
 instance instFunLike : FunLike (Basis ι R M) ι M where
   coe b i := b.repr.symm (Finsupp.single i 1)
   coe_injective f g h := repr_injective <| LinearEquiv.symm_bijective.injective <|
-    LinearEquiv.toLinearMap_injective <| by ext; exact congr_fun h _
+    LinearEquiv.toLinearMap_injective <| by ext; congrm $h _
 
 @[simp]
 theorem coe_ofRepr (e : M ≃ₗ[R] ι →₀ R) : ⇑(ofRepr e) = fun i => e.symm (Finsupp.single i 1) :=
@@ -179,17 +179,16 @@ end Map
 
 section Reindex
 
-variable (b' : Basis ι' R M')
 variable (e : ι ≃ ι')
 
 /-- `b.reindex (e : ι ≃ ι')` is a basis indexed by `ι'` -/
 def reindex : Basis ι' R M :=
   .ofRepr (b.repr.trans (Finsupp.domLCongr e))
 
-theorem reindex_apply (i' : ι') : b.reindex e i' = b (e.symm i') :=
-  show (b.repr.trans (Finsupp.domLCongr e)).symm (Finsupp.single i' 1) =
+theorem reindex_apply (i' : ι') : b.reindex e i' = b (e.symm i') := by
+  change (b.repr.trans (Finsupp.domLCongr e)).symm (Finsupp.single i' 1) =
     b.repr.symm (Finsupp.single (e.symm i') 1)
-  by rw [LinearEquiv.symm_trans_apply, Finsupp.domLCongr_symm, Finsupp.domLCongr_single]
+  rw [LinearEquiv.symm_trans_apply, Finsupp.domLCongr_symm, Finsupp.domLCongr_single]
 
 @[simp]
 theorem coe_reindex : (b.reindex e : ι' → M) = b ∘ e.symm :=
@@ -199,7 +198,7 @@ theorem repr_reindex_apply (i' : ι') : (b.reindex e).repr x i' = b.repr x (e.sy
   show (Finsupp.domLCongr e : _ ≃ₗ[R] _) (b.repr x) i' = _ by simp
 
 @[simp]
-theorem repr_reindex : (b.reindex e).repr x = (b.repr x).mapDomain e :=
+theorem repr_reindex : (b.reindex e).repr x = (b.repr x).equivMapDomain e :=
   DFunLike.ext _ _ <| by simp [repr_reindex_apply]
 
 @[simp]
@@ -477,8 +476,7 @@ theorem reindexFinsetRange_repr_self (i : ι) :
     b.reindexFinsetRange.repr (b i) =
       Finsupp.single ⟨b i, Finset.mem_image_of_mem b (Finset.mem_univ i)⟩ 1 := by
   ext ⟨bi, hbi⟩
-  rw [reindexFinsetRange, repr_reindex, Finsupp.mapDomain_equiv_apply, reindexRange_repr_self]
-  simp [Finsupp.single_apply]
+  simp [reindexFinsetRange, reindexRange_repr_self]
 
 @[simp]
 theorem reindexFinsetRange_repr (x : M) (i : ι)
@@ -621,14 +619,14 @@ def equiv' (f : M → M') (g : M' → M) (hf : ∀ i, f (b i) ∈ range b') (hg 
           Exists.elim (hf i) fun i' hi' => by
             rw [LinearMap.comp_apply, b.constr_basis, Function.comp_apply, ← hi', b'.constr_basis,
               Function.comp_apply, hi', hgf, LinearMap.id_apply]
-      fun x => congr_arg (fun h : M →ₗ[R] M => h x) this
+      fun x => congr($this x)
     right_inv :=
       have : (constr (M' := M') b R (f ∘ b)).comp (constr (M' := M) b' R (g ∘ b')) = LinearMap.id :=
         b'.ext fun i =>
           Exists.elim (hg i) fun i' hi' => by
             rw [LinearMap.comp_apply, b'.constr_basis, Function.comp_apply, ← hi', b.constr_basis,
               Function.comp_apply, hi', hfg, LinearMap.id_apply]
-      fun x => congr_arg (fun h : M' →ₗ[R] M' => h x) this }
+      fun x => congr($this x) }
 
 @[simp]
 theorem equiv'_apply (f : M → M') (g : M' → M) (hf hg hgf hfg) (i : ι) :
@@ -708,11 +706,7 @@ variable (e : ι ≃ ι')
 @[simp]
 theorem sumCoords_reindex : (b.reindex e).sumCoords = b.sumCoords := by
   ext x
-  simp only [coe_sumCoords, repr_reindex]
-  exact Finsupp.sum_mapDomain_index (fun _ => rfl) fun _ _ _ => rfl
-
-variable (S : Type*) [Semiring S] [Module S M']
-variable [SMulCommClass R S M']
+  simp [Function.id_def]
 
 theorem coord_equivFun_symm [Finite ι] (b : Basis ι R M) (i : ι) (f : ι → R) :
     b.coord i (b.equivFun.symm f) = f i :=

@@ -24,13 +24,13 @@ variable {α X : Type*} {s t : Set X} {x y z : X}
 
 namespace Metric
 
-section PseudoEMetricSpace
-
-variable [PseudoEMetricSpace X]
+section WeakPseudoEMetricSpace
 
 /-- The diameter of a set in a pseudoemetric space as an extended nonnegative real number. -/
-noncomputable def ediam (s : Set X) :=
+noncomputable def ediam [EDist X] (s : Set X) :=
   ⨆ (x ∈ s) (y ∈ s), edist x y
+
+variable [TopologicalSpace X] [WeakPseudoEMetricSpace X]
 
 theorem ediam_eq_sSup (s : Set X) : ediam s = sSup (image2 edist s s) := sSup_image2.symm
 
@@ -135,11 +135,11 @@ theorem ediam_pi_le_of_le {ι : Type*} {X : ι → Type*} [Fintype ι] [∀ i, P
   rw [mem_univ_pi] at hx hy
   exact fun b => ediam_le_iff.1 (h b) (x b) (hx b) (y b) (hy b)
 
-end PseudoEMetricSpace
+end WeakPseudoEMetricSpace
 
-section EMetricSpace
+section WeakEMetricSpace
 
-variable [EMetricSpace X]
+variable [TopologicalSpace X] [WeakEMetricSpace X]
 
 theorem ediam_eq_zero_iff : ediam s = 0 ↔ s.Subsingleton :=
   ⟨fun h _x hx _y hy => edist_le_zero.1 <| h ▸ edist_le_ediam_of_mem hx hy, ediam_subsingleton⟩
@@ -150,6 +150,6 @@ theorem ediam_pos_iff : 0 < ediam s ↔ s.Nontrivial := by
 theorem ediam_pos_iff' : 0 < ediam s ↔ ∃ x ∈ s, ∃ y ∈ s, x ≠ y := by
   simp only [ediam_pos_iff, Set.Nontrivial]
 
-end EMetricSpace
+end WeakEMetricSpace
 
 end Metric

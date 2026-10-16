@@ -5,7 +5,6 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 public import Mathlib.CategoryTheory.Monoidal.Mon
 
 /-!

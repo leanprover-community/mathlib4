@@ -5,11 +5,11 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
-public import Mathlib.CategoryTheory.Limits.FullSubcategory
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsClosure
-public import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
-public import Mathlib.Data.Fintype.Shrink
+
+import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
+import Mathlib.CategoryTheory.Limits.FullSubcategory
+import Mathlib.Data.Fintype.Shrink
 
 /-!
 # Properties of objects that are stable under finite products
@@ -165,7 +165,6 @@ instance (priority := 100) [P.IsClosedUnderColimitsOfShape (Discrete.{0} PEmpty)
     P.Nonempty :=
   nonempty_of_prop P.prop_initial
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma IsClosedUnderBinaryCoproducts.closedUnderIsomorphisms [HasInitial C]
     [P.IsClosedUnderColimitsOfShape (Discrete.{0} PEmpty)] [P.IsClosedUnderBinaryCoproducts] :

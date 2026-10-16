@@ -5,9 +5,12 @@ Authors: Yury Kudryashov, Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Calculus.FDeriv.Equiv
+public import Mathlib.Analysis.Calculus.FDeriv.Congr
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ApproximatesLinearOn
+
+import Mathlib.Algebra.Order.Field.Power
 import Mathlib.Analysis.Calculus.FDeriv.OfCompLeft
+import Mathlib.Topology.OpenPartialHomeomorph.Continuity
 
 /-!
 # Inverse function theorem
