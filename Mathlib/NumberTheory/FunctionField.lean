@@ -5,7 +5,7 @@ Authors: Anne Baanen, Ashvni Narayanan
 -/
 module
 
-public import Mathlib.FieldTheory.RatFunc.Valuation -- for deprecation to `RatFunc.inftyValuation` and `RatFunc.CompletionAtInfty`
+public import Mathlib.FieldTheory.RatFunc.Valuation -- import originally for deprecation, TODO: shake
 
 import Mathlib.FieldTheory.RatFunc.Degree
 import Mathlib.FieldTheory.RatFunc.IntermediateField

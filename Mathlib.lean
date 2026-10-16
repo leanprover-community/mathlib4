@@ -1574,6 +1574,7 @@ public import Mathlib.AlgebraicTopology.ModelCategory.RightHomotopy
 public import Mathlib.AlgebraicTopology.ModelCategory.Transport
 public import Mathlib.AlgebraicTopology.MooreComplex
 public import Mathlib.AlgebraicTopology.Quasicategory.Basic
+public import Mathlib.AlgebraicTopology.Quasicategory.CompStruct
 public import Mathlib.AlgebraicTopology.Quasicategory.InnerFibration
 public import Mathlib.AlgebraicTopology.Quasicategory.Nerve
 public import Mathlib.AlgebraicTopology.Quasicategory.StrictBicategory
@@ -2364,6 +2365,7 @@ public import Mathlib.Analysis.Polynomial.Fourier
 public import Mathlib.Analysis.Polynomial.MahlerMeasure
 public import Mathlib.Analysis.Polynomial.Norm
 public import Mathlib.Analysis.Polynomial.Order
+public import Mathlib.Analysis.Polynomial.SignRight
 public import Mathlib.Analysis.Quaternion
 public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Analysis.RCLike.BoundedContinuous
@@ -7658,6 +7660,7 @@ public import Mathlib.Tactic.GuardGoalNums
 public import Mathlib.Tactic.GuardHypNums
 public import Mathlib.Tactic.Have
 public import Mathlib.Tactic.HaveI
+public import Mathlib.Tactic.Hessenberg.Reduce
 public import Mathlib.Tactic.HigherOrder
 public import Mathlib.Tactic.Hint
 public import Mathlib.Tactic.ITauto
