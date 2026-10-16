@@ -750,31 +750,37 @@ theorem Subfield.card_botFinset : (Subfield.botFinset F p).card = p := by
 def Subfield.fintypeBot : Fintype (⊥ : Subfield F) :=
   Fintype.ofFinset _ fun _ ↦ Subfield.mem_botFinset ..
 
-attribute [local instance] Subfield.fintypeBot
+@[simp]
+theorem Subfield.natCard_bot : Nat.card (⊥ : Subfield F) = p := by
+  let := Subfield.fintypeBot F p
+  rw [Nat.card_eq_fintype_card]
+  exact (Fintype.card_ofFinset ..).trans (Subfield.card_botFinset ..)
 
 @[simp]
-theorem Subfield.fintypeCard_bot : Fintype.card (⊥ : Subfield F) = p :=
-  (Fintype.card_ofFinset ..).trans (Subfield.card_botFinset ..)
+theorem Subfield.fintypeCard_bot [Fintype (⊥ : Subfield F)] :
+    Fintype.card (⊥ : Subfield F) = p := by
+  rw [← Nat.card_eq_fintype_card, natCard_bot]
 
 @[simp]
-theorem Subfield.botFinset_eq_univ : Subfield.botFinset (⊥ : Subfield F) p = .univ := by
+theorem Subfield.botFinset_eq_univ [Fintype (⊥ : Subfield F)] :
+    Subfield.botFinset (⊥ : Subfield F) p = .univ := by
   apply Finset.eq_univ_of_card
-  simp
+  rw [← Nat.card_eq_fintype_card, natCard_bot, card_botFinset]
 
 open Polynomial
 
-theorem Subfield.roots_X_pow_char_sub_X_bot :
+theorem Subfield.roots_X_pow_char_sub_X_bot [Fintype (⊥ : Subfield F)] :
     (X ^ p - X : (⊥ : Subfield F)[X]).roots = Finset.univ.val := by
-  let _ := Subfield.fintypeBot F p
   conv_lhs => rw [← card_bot F p, ← Fintype.card_eq_nat_card]
   exact FiniteField.roots_X_pow_card_sub_X _
 
 theorem Polynomial.roots_X_pow_char_sub_X :
     (X ^ p - X : F[X]).roots = (Subfield.botFinset F p).val := by
+  have := Subfield.fintypeBot F p
   have := roots_map_of_injective_of_card_eq_natDegree
     (p := X ^ p - X) (Subfield.subtype_injective (K := F) ⊥)
-  simp only [Subfield.roots_X_pow_char_sub_X_bot, card_val, card_univ, Subfield.fintypeCard_bot,
-    Polynomial.map_sub, Polynomial.map_pow, map_X] at this
+  rw [Subfield.roots_X_pow_char_sub_X_bot, card_val, card_univ,
+     Polynomial.map_sub, Polynomial.map_pow, map_X, Subfield.fintypeCard_bot] at this
   rw [← this (X_pow_card_sub_X_natDegree_eq _ (Nat.Prime.one_lt Fact.out)).symm]
   apply (Finset.map_val ⟨_, Subtype.val_injective⟩ .univ).symm.trans
   congr
