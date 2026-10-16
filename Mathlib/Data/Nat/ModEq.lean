@@ -495,8 +495,8 @@ theorem chineseRemainder_modEq_unique (co : n.Coprime m) {a b z}
 
 theorem modEq_and_modEq_iff_modEq_lcm {a b m n : ℕ} :
     a ≡ b [MOD m] ∧ a ≡ b [MOD n] ↔ a ≡ b [MOD lcm m n] :=
-  ⟨fun ⟨hm, hn⟩ => mod_lcm hm hn,
-  fun h => ⟨h.of_dvd (dvd_lcm_left m n), h.of_dvd (dvd_lcm_right m n)⟩⟩
+  ⟨fun ⟨hm, hn⟩ ↦ mod_lcm hm hn,
+    fun h ↦ ⟨h.of_dvd (dvd_lcm_left m n), h.of_dvd (dvd_lcm_right m n)⟩⟩
 
 theorem modEq_and_modEq_iff_modEq_mul {a b m n : ℕ} (hmn : m.Coprime n) :
     a ≡ b [MOD m] ∧ a ≡ b [MOD n] ↔ a ≡ b [MOD m * n] := by
