@@ -19,7 +19,7 @@ TODO: PR all this to appropriate places.
 
 @[expose] public section
 
-open Bundle Filter Module Topology Set
+open Topology
 
 open scoped Bundle Manifold ContDiff
 
@@ -30,29 +30,6 @@ section trivilization_topology
 variable {B F Z : Type*} [TopologicalSpace B]
   [TopologicalSpace F]
 
-section any_proj
-
-variable [TopologicalSpace Z] {proj : Z → B} (e : Trivialization F proj)
-lemma baseSet_mem_nhds {x : B} (hx : x ∈ e.baseSet) : e.baseSet ∈ 𝓝 x :=
-  e.open_baseSet.mem_nhds_iff.mpr hx
-
-lemma eventually {x : B} (hx : x ∈ e.baseSet) {P : B → Prop}
-  (h : ∀ x' ∈ e.baseSet, P x') : ∀ᶠ x' in 𝓝 x, P x' := by
-  filter_upwards [e.baseSet_mem_nhds hx] with x' hx'
-  exact h x' hx'
-
-lemma baseSet_prod_univ_mem_nhds {v : Z}
-    (hv : proj v ∈ e.baseSet) : e.baseSet ×ˢ univ ∈ 𝓝 (e v) := by
-  rw [← e.mk_proj_snd' hv]
-  exact prod_mem_nhds (e.baseSet_mem_nhds hv) univ_mem
-
-lemma comp_invFun_eventuallyEq
-    {v : Z} (hv : proj v ∈ e.baseSet) : e ∘ e.invFun =ᶠ[𝓝 (e v)] id := by
-  filter_upwards [e.baseSet_prod_univ_mem_nhds hv] with p hp
-  simp [(e.mem_target).2 hp.1]
-
-end any_proj
-
 section fiber_bundle
 variable {E : B → Type*} [TopologicalSpace (TotalSpace F E)]
   (e : Trivialization F (π F E))
@@ -62,22 +39,6 @@ lemma proj_invFun_eventuallyEq
     (TotalSpace.proj ∘ e.invFun) =ᶠ[𝓝 (e v)] Prod.fst := by
   filter_upwards [e.baseSet_prod_univ_mem_nhds hv] with ⟨x, f⟩ ⟨hx, hf⟩
   simp [hx]
-
-lemma injective_symm [(x : B) → Zero (E x)]
-  {v : TotalSpace F E} (hv : v.proj ∈ e.baseSet) :
-    Function.Injective (e.symm v.proj) := by
-  intro f f' hff'
-  simpa [hv] using congr(e $hff')
-
-lemma surjective_symm [(x : B) → Zero (E x)]
-  {v : TotalSpace F E} (hv : v.proj ∈ e.baseSet) :
-    Function.Surjective (e.symm v.proj) :=
-  fun u ↦ ⟨(e u).2, by simp [hv]⟩
-
-lemma bijective_symm [(x : B) → Zero (E x)]
-  {v : TotalSpace F E} (hv : v.proj ∈ e.baseSet) :
-    Function.Bijective (e.symm v.proj) :=
-  ⟨e.injective_symm hv, e.surjective_symm hv⟩
 
 /-- Turn sections of a fiber bundle into function into the model fiber using a trivialization. -/
 def secToFun (σ : (b : B) → E b) : B → F :=
@@ -109,7 +70,7 @@ lemma apply_total_eventuallyEq
 --     e.secToFun σ b = e.secToFun σ' b := by
 --   simp? +contextual [h]
 section
-variable [(x : B) → Zero (E x)]
+variable [(x : B) → Nonempty (E x)]
 
 /-- Turn functions into the model fiber of a fiber bundle into sections using a trivialization. -/
 noncomputable def funToSec (s : B → F) : (b : B) → E b :=
@@ -222,7 +183,7 @@ end fiber_bundle
 section
 variable {B F : Type*} {E : B → Type*} [TopologicalSpace B]
   [TopologicalSpace F] [TopologicalSpace (TotalSpace F E)]
-  [(x : B) → Zero (E x)]
+  [(x : B) → Nonempty (E x)]
   (e : Trivialization F (π F E))
 
 lemma eq_of {x : B} {v v' : E x} (hx : x ∈ e.baseSet) (hvv' : (e v).2 = (e v').2) :
