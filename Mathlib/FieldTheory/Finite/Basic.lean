@@ -750,13 +750,11 @@ theorem Subfield.card_botFinset : (Subfield.botFinset F p).card = p := by
 def Subfield.fintypeBot : Fintype (⊥ : Subfield F) :=
   Fintype.ofFinset _ fun _ ↦ Subfield.mem_botFinset ..
 
-@[simp]
 theorem Subfield.natCard_bot : Nat.card (⊥ : Subfield F) = p := by
   let := Subfield.fintypeBot F p
   rw [Nat.card_eq_fintype_card]
   exact (Fintype.card_ofFinset ..).trans (Subfield.card_botFinset ..)
 
-@[simp]
 theorem Subfield.fintypeCard_bot [Fintype (⊥ : Subfield F)] :
     Fintype.card (⊥ : Subfield F) = p := by
   rw [← Nat.card_eq_fintype_card, natCard_bot]
