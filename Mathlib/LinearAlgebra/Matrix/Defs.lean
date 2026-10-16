@@ -614,7 +614,12 @@ section RowCol
 while avoiding defeq abuse and noisy eta-expansions,
 such as in expressions like `Set.Injective A.row` and `Set.range A.row`.
 (Note 2025-04-07 : the identifier `Matrix.row` used to refer to a matrix with all rows equal;
-this is now called `Matrix.replicateRow`) -/
+this is now called `Matrix.replicateRow`)
+
+This is available in bundled forms as:
+* `Matrix.rowAddEquiv`
+* `Matrix.rowLinearEquiv`
+-/
 def row (A : Matrix m n α) : m → n → α := A
 
 /-- For an `m × n` `α`-matrix `A`, `A.col j` is the `j`th column of `A` as a vector in `m → α`.
@@ -623,7 +628,12 @@ while avoiding defeq abuse and noisy eta-expansions
 (and without the simplifier unfolding transposes) in expressions like `Set.Injective A.col`
 and `Set.range A.col`.
 (Note 2025-04-07 : the identifier `Matrix.col` used to refer to a matrix with all columns equal;
-this is now called `Matrix.replicateCol`) -/
+this is now called `Matrix.replicateCol`)
+
+This is available in bundled forms as:
+* `Matrix.colAddEquiv`
+* `Matrix.colLinearEquiv`
+-/
 def col (A : Matrix m n α) : n → m → α := Aᵀ
 
 lemma row_eq_self (A : Matrix m n α) : A.row = of.symm A := rfl
@@ -664,7 +674,43 @@ lemma ext_row {A B : Matrix m n α} (h : ∀ i, A.row i = B.row i) : A = B :=
 lemma ext_col {A B : Matrix m n α} (h : ∀ j, A.col j = B.col j) : A = B :=
   ext fun i j => congr($(h j) i)
 
+theorem row_injective : (row : Matrix m n α → _).Injective :=
+  Function.injective_id
+
+theorem col_injective : (col : Matrix m n α → _).Injective :=
+  transpose_injective
+
 end
+
+@[simp]
+theorem row_zero [Zero α] : (0 : Matrix m n α).row = 0 := rfl
+
+@[simp]
+theorem col_zero [Zero α] : (0 : Matrix m n α).col = 0 := rfl
+
+@[simp, push]
+theorem row_add [Add α] (A B : Matrix m n α) : (A + B).row = A.row + B.row := rfl
+
+@[simp, push]
+theorem col_add [Add α] (A B : Matrix m n α) : (A + B).col = A.col + B.col := rfl
+
+@[simp, push]
+theorem row_sub [Sub α] (A B : Matrix m n α) : (A - B).row = A.row - B.row := rfl
+
+@[simp, push]
+theorem col_sub [Sub α] (A B : Matrix m n α) : (A - B).col = A.col - B.col := rfl
+
+@[simp, push]
+theorem row_neg [Neg α] (M : Matrix m n α) : (-M).row = -M.row := rfl
+
+@[simp, push]
+theorem col_neg [Neg α] (M : Matrix m n α) : (-M).col = -M.col := rfl
+
+@[simp, push]
+theorem row_smul [SMul R α] (r : R) (M : Matrix m n α) : (r • M).row = r • M.row := rfl
+
+@[simp, push]
+theorem col_smul [SMul R α] (r : R) (M : Matrix m n α) : (r • M).col = r • M.col := rfl
 
 lemma row_submatrix {m₀ n₀ : Type*} (A : Matrix m n α) (r : m₀ → m) (c : n₀ → n) (i : m₀) :
     (A.submatrix r c).row i = (A.submatrix id c).row (r i) := rfl
