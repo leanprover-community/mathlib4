@@ -135,7 +135,7 @@ lemma netMaxcard_finite_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ)
       intro s h
       rw [← ENat.natCast_le_natCast, k_max]
       apply le_sSup
-      exact Filter.frequently_principal.mp fun a ↦ a (by simpa using ⟨_, h, rfl⟩) rfl
+      exact mem_image_of_mem _ (mem_image_of_mem Finset.card h)
     have h_nemp : (Finset.card '' {s : Finset X | IsDynNetIn T F U n s}).Nonempty := by
       refine ⟨0, ?_⟩
       simp only [mem_image, mem_ofPred_eq, Finset.card_eq_zero, exists_eq_right, Finset.coe_empty]
@@ -176,7 +176,7 @@ lemma one_le_netMaxcard_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ)
 lemma netMaxcard_zero (T : X → X) (h : F.Nonempty) (U : SetRel X X) : netMaxcard T F U 0 = 1 := by
   apply (iSup₂_le _).antisymm ((one_le_netMaxcard_iff T F U 0).2 h)
   intro s ⟨_, s_net⟩
-  simp only [ball, dynEntourage_zero, preimage_univ] at s_net
+  simp only [ball, dynEntourage_zero] at s_net
   norm_cast
   refine Finset.card_le_one.2 fun x x_s y y_s ↦ ?_
   exact PairwiseDisjoint.elim_set s_net x_s y_s x (mem_univ x) (mem_univ x)
@@ -184,7 +184,7 @@ lemma netMaxcard_zero (T : X → X) (h : F.Nonempty) (U : SetRel X X) : netMaxca
 lemma netMaxcard_univ (T : X → X) (h : F.Nonempty) (n : ℕ) : netMaxcard T F univ n = 1 := by
   apply (iSup₂_le _).antisymm ((one_le_netMaxcard_iff T F univ n).2 h)
   intro s ⟨_, s_net⟩
-  simp only [ball, dynEntourage_univ, preimage_univ] at s_net
+  simp only [ball, dynEntourage_univ] at s_net
   norm_cast
   refine Finset.card_le_one.2 fun x x_s y y_s ↦ ?_
   exact PairwiseDisjoint.elim_set s_net x_s y_s x (mem_univ x) (mem_univ x)
