@@ -89,19 +89,19 @@ instance : One (SparsePoly R) where
   one := C 1
 
 /-- `degLT a l` holds when every pair in `l` has exponent strictly less than `a`. -/
-def degLT (a : ℕ) (l : List (ℕ × R)) : Prop := 
+def degLT (a : ℕ) (l : List (ℕ × R)) : Prop :=
   ∀ x ∈ l, x.1 < a
 
 /-- `degLE a l` holds when every pair in `l` has exponent less or equal than `a`. -/
-def degLE (a : ℕ) (l : List (ℕ × R)) : Prop := 
+def degLE (a : ℕ) (l : List (ℕ × R)) : Prop :=
   ∀ x ∈ l, x.1 ≤ a
 
 /-- `degGT a l` holds when every pair in `l` has exponent strictly greater than `a`. -/
-def degGT (a : ℕ) (l : List (ℕ × R)) : Prop := 
+def degGT (a : ℕ) (l : List (ℕ × R)) : Prop :=
   ∀ x ∈ l, x.1 > a
 
 /-- `degGE a l` holds when every pair in `l` has exponent greater or equal than `a`. -/
-def degGE (a : ℕ) (l : List (ℕ × R)) : Prop := 
+def degGE (a : ℕ) (l : List (ℕ × R)) : Prop :=
   ∀ x ∈ l, x.1 ≥ a
 
 /-- Interprets a list of `(exponent, coefficient)` pairs as the Mathlib polynomial
@@ -124,11 +124,11 @@ def addCore : List (ℕ × R) → List (ℕ × R) → List (ℕ × R)
       (j, b) :: addCore xx y
     else if j < i then
       (i, a) :: addCore x yy
-    else 
-      let ab := a + b 
-      if ab = 0 then 
-        addCore x y 
-      else (i, ab) :: addCore x y 
+    else
+      let ab := a + b
+      if ab = 0 then
+        addCore x y
+      else (i, ab) :: addCore x y
 termination_by xx yy => xx.length + yy.length
 
 theorem addCore_degLT {n : ℕ} : ∀ {x y : List (ℕ × R)},
