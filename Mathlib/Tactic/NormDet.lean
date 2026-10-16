@@ -88,8 +88,8 @@ simproc_decl norm_det (Matrix.det _) := fun e => do
   let ⟨_, _, e⟩ ← inferTypeQ' e
   let ~q(@Matrix.det (Fin $n) _ _ _ $rα $matrix) := e | return .continue
   let some entries ← entriesOfMatrixLiteral? matrix | return .continue
-  -- TODO: once the echelon models return `none` on an entry out of scope, this `catch` only
-  -- sees bugs on the echelon path; trace them under the engine's class.
+  -- Entry types without a registered model fall back to the rational model, which throws on an
+  -- entry it cannot evaluate to a rational number (such as `Real.pi`). Bird then takes over.
   if let some r ← try normalizeDetByEchelon? rα matrix entries catch _ => pure none then
     return .done r
   return .done (← normalizeDetFromEntries rα matrix entries)
