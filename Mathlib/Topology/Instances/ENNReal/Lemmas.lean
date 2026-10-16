@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl
+Authors: Johannes Hölzl, Kalle Kytölä
 -/
 module
 
@@ -867,6 +867,54 @@ lemma limsup_toReal_eq [NeBot f] {b : ℝ≥0∞} (b_ne_top : b ≠ ∞) (le_b :
           (IsBoundedUnder.isCoboundedUnder_le ⟨0, Eventually.of_forall (by simp)⟩)
   rw [key]
   rfl
+
+/-- If `u` is eventually finite, taking `toReal` commutes with `liminf`. -/
+lemma liminf_toReal_eq_of_eventually_ne_top [NeBot f] (h : ∀ᶠ i in f, u i ≠ ∞) :
+    f.liminf (fun i ↦ (u i).toReal) = (f.liminf u).toReal := by
+  by_cases htop : f.liminf u = ∞
+  · have h_unbounded : ¬BddAbove {a : ℝ | ∀ᶠ i in f, a ≤ (u i).toReal} := by
+      rw [not_bddAbove_iff]
+      intro a
+      refine ⟨max (a + 1) 0, ?_, (lt_add_one a).trans_le (le_max_left _ _)⟩
+      have hlt : ENNReal.ofReal (max (a + 1) 0) < f.liminf u := by simp [htop]
+      filter_upwards [eventually_lt_of_lt_liminf hlt, h] with i hi hi_top
+      exact ((ofReal_lt_iff_lt_toReal (le_max_right _ _) hi_top).1 hi).le
+    rw [liminf_eq, Real.sSup_of_not_bddAbove h_unbounded, htop, toReal_top]
+  have hb : f.liminf u + 1 ≠ ∞ := by simp [htop]
+  have hfreq : ∃ᶠ i in f, (u i).toReal ≤ (f.liminf u + 1).toReal :=
+    (frequently_lt_of_liminf_lt (by isBoundedDefault) (lt_add_right htop one_ne_zero)).mono
+      fun _ hi ↦ toReal_mono hb hi.le
+  have hcobdd : f.IsCoboundedUnder (· ≥ ·) (fun i ↦ (u i).toReal) :=
+    .of_frequently_le hfreq
+  have hbdd : f.IsBoundedUnder (· ≥ ·) (fun i ↦ (u i).toReal) :=
+    isBoundedUnder_of ⟨0, fun _ ↦ toReal_nonneg⟩
+  apply le_antisymm
+  · refine (liminf_le_iff hcobdd hbdd).2 fun a ha ↦ ?_
+    have hlt : f.liminf u < ENNReal.ofReal a := (lt_ofReal_iff_toReal_lt htop).2 ha
+    exact (frequently_lt_of_liminf_lt (by isBoundedDefault) hlt).mono
+      fun _ hi ↦ (lt_ofReal_iff_toReal_lt (ne_top_of_lt hi)).1 hi
+  · refine (le_liminf_iff hcobdd hbdd).2 fun a ha ↦ ?_
+    by_cases ha_nonneg : 0 ≤ a
+    · have hlt : ENNReal.ofReal a < f.liminf u :=
+        (ofReal_lt_iff_lt_toReal ha_nonneg htop).2 ha
+      filter_upwards [eventually_lt_of_lt_liminf hlt, h] with i hi hi_top
+      exact (ofReal_lt_iff_lt_toReal ha_nonneg hi_top).1 hi
+    · exact .of_forall fun _ ↦ (lt_of_not_ge ha_nonneg).trans_le toReal_nonneg
+
+/-- If `u` is eventually finite, taking `toReal` commutes with `limsup`. -/
+lemma limsup_toReal_eq_of_eventually_ne_top [NeBot f] (h : ∀ᶠ i in f, u i ≠ ∞) :
+    f.limsup (fun i ↦ (u i).toReal) = (f.limsup u).toReal := by
+  by_cases htop : f.limsup u = ∞
+  · have h_empty : {a : ℝ | ∀ᶠ i in f, (u i).toReal ≤ a} = ∅ := by
+      refine eq_empty_iff_forall_notMem.2 fun a ha ↦ ?_
+      have hbound : ∀ᶠ i in f, u i ≤ ENNReal.ofReal a := by
+        filter_upwards [h, ha] with i hi_top hi
+        exact (le_ofReal_iff_toReal_le hi_top (toReal_nonneg.trans hi)).2 hi
+      have hle : f.limsup u ≤ ENNReal.ofReal a := limsup_le_of_le (by isBoundedDefault) hbound
+      simp [htop] at hle
+    rw [limsup_eq, h_empty, Real.sInf_empty, htop, toReal_top]
+  apply limsup_toReal_eq (b := f.limsup u + 1) (by simp [htop])
+  exact (eventually_lt_of_limsup_lt (lt_add_right htop one_ne_zero)).mono fun _ hi ↦ hi.le
 
 @[simp, norm_cast]
 lemma ofNNReal_limsup {u : ι → ℝ≥0} (hf : f.IsBoundedUnder (· ≤ ·) u) :
