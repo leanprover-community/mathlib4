@@ -148,15 +148,15 @@ theorem IsMultiplicative.prodPrimeFactors_one_sub [CommRing R]
   have hPsq : Squarefree P := by
     refine Finset.squarefree_prod_of_pairwise_isCoprime (fun p hp q hq hpq ↦ ?_)
       fun p hp ↦ (mem_primeFactors.mp hp).1.prime.squarefree
-    exact Nat.coprime_iff_isRelPrime.mp
-      ((coprime_primes (Nat.mem_primeFactors.mp hp).1 (mem_primeFactors.mp hq).1).mpr hpq)
+    exact coprime_iff_isRelPrime.mp
+      ((coprime_primes (mem_primeFactors.mp hp).1 (mem_primeFactors.mp hq).1).mpr hpq)
   have hP0 : P ≠ 0 := hPsq.ne_zero
   -- over the squarefree `P` this is `prodPrimeFactors_one_add_of_squarefree` applied to `μ * f`;
   -- the divisors of `n` that are not divisors of `P` are not squarefree, so `μ` kills them
   calc ∏ p ∈ n.primeFactors, (1 - f p)
     _ = ∏ p ∈ P.primeFactors,
           (1 + (ArithmeticFunction.pmul (μ : ArithmeticFunction R) f) p) := by
-      rw [hP, Nat.primeFactors_prod_primeFactors]
+      rw [hP, primeFactors_prod_primeFactors]
       refine prod_congr rfl fun p hp ↦ ?_
       rw [pmul_apply, intCoe_apply, moebius_apply_prime (prime_of_mem_primeFactors hp)]
       ring
