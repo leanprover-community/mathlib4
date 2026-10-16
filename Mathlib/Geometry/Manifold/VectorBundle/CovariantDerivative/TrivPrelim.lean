@@ -39,24 +39,6 @@ lemma proj_invFun_eventuallyEq
   filter_upwards [e.baseSet_prod_univ_mem_nhds hv] with ⟨x, f⟩ ⟨hx, hf⟩
   simp [hx]
 
-variable [(b : B) → TopologicalSpace (E b)] [FiberBundle F E]
-
-lemma preimage_baseSet_mem_nhds
-    {v : TotalSpace F E} (hv : v.proj ∈ e.baseSet) :
-    TotalSpace.proj ⁻¹' e.baseSet ∈ 𝓝 v :=
-  FiberBundle.continuous_proj F E |>.continuousAt <| e.baseSet_mem_nhds hv
-
-lemma fst_comp_eventuallyEq
-    {v : TotalSpace F E} (hv : v.proj ∈ e.baseSet) :
-    Prod.fst ∘ e =ᶠ[𝓝 v] (π F E) := by
-  filter_upwards [preimage_baseSet_mem_nhds e hv] with y hy using e.coe_fst' hy
-
-lemma invFun_comp_eventuallyEq
-    {v : TotalSpace F E} (hv : v.proj ∈ e.baseSet) :
-    e.invFun ∘ e =ᶠ[𝓝 v] id := by
-  filter_upwards [e.preimage_baseSet_mem_nhds hv] with w hw
-  simp [e.mem_source.mpr hw]
-
 end fiber_bundle
 
 section
