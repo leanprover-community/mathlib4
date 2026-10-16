@@ -323,16 +323,16 @@ instance endIsFreeOfConnectedFree
 end IsFreeGroupoid
 
 /-- The Nielsen-Schreier theorem: a subgroup of a free group is free. -/
-instance subgroupIsFreeGroupOfIsFreeGroup {G : Type u} [Group G] [IsFreeGroup G] (H : Subgroup G) :
+instance Subgroup.isFreeGroupOfIsFreeGroup {G : Type u} [Group G] [IsFreeGroup G] (H : Subgroup G) :
     IsFreeGroup H :=
   IsFreeGroup.ofMulEquiv (endMulEquivSubgroup H)
 
 @[deprecated (since := "2026-10-05")]
-alias subgroupIsFreeOfIsFree := subgroupIsFreeGroupOfIsFreeGroup
+alias subgroupIsFreeOfIsFree := Subgroup.isFreeGroupOfIsFreeGroup
 
 /-- The Nielsen-Schreier theorem: an additive subgroup of an additive free group is free. -/
-instance addSubgroupIsFreeAddGroupOfIsFreeAddGroup {G : Type u} [AddGroup G] [IsFreeAddGroup G]
+instance AddSubgroup.isFreeAddGroupOfIsFreeAddGroup {G : Type u} [AddGroup G] [IsFreeAddGroup G]
     (H : AddSubgroup G) : IsFreeAddGroup H :=
-  isFreeGroup_toSubgroup_iff.mp <| subgroupIsFreeGroupOfIsFreeGroup _
+  isFreeGroup_toSubgroup_iff.mp H.toSubgroup.isFreeGroupOfIsFreeGroup
 
-attribute [to_additive existing] subgroupIsFreeGroupOfIsFreeGroup
+attribute [to_additive existing] Subgroup.isFreeGroupOfIsFreeGroup

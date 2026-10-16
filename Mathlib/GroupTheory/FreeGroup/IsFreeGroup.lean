@@ -150,7 +150,7 @@ def _root_.FreeAddGroupBasis.freeGroupBasis [AddGroup G] (b : FreeAddGroupBasis 
     FreeGroupBasis ι (Multiplicative G) :=
   .ofRepr <| b.repr.toMultiplicative.trans FreeGroup.freeGroupEquivMultiplicative.symm
 
-/-- An free group basis of `G` is an additive free group basis of `Additive G`. -/
+/-- A free group basis of `G` is an additive free group basis of `Additive G`. -/
 def freeAddGroupBasis (b : FreeGroupBasis ι G) : FreeAddGroupBasis ι (Additive G) :=
   .ofRepr <| b.repr.toAdditive.trans FreeAddGroup.freeAddGroupEquivAdditive.symm
 
@@ -339,26 +339,26 @@ theorem isFreeGroup_multiplicative_iff [AddGroup G] :
     IsFreeGroup (Multiplicative G) ↔ IsFreeAddGroup G :=
   ⟨fun h ↦ h.basis.freeAddGroupBasis.isFreeAddGroup, fun h ↦ h.basis.freeGroupBasis.isFreeGroup⟩
 
-instance (G) [Group G] [IsFreeGroup G] : IsFreeAddGroup (Additive G) :=
+instance [Group G] [IsFreeGroup G] : IsFreeAddGroup (Additive G) :=
   isFreeAddGroup_additive_iff.mpr ‹_›
 
-instance (G) [AddGroup G] [IsFreeAddGroup G] : IsFreeGroup (Multiplicative G) :=
+instance [AddGroup G] [IsFreeAddGroup G] : IsFreeGroup (Multiplicative G) :=
   isFreeGroup_multiplicative_iff.mpr ‹_›
 
 @[simp]
-theorem isFreeAddGroup_toAddSubgroup_iff [Group G] {H : Subgroup G} :
+theorem Subgroup.isFreeAddGroup_toAddSubgroup_iff [Group G] {H : Subgroup G} :
     IsFreeAddGroup H.toAddSubgroup ↔ IsFreeGroup H :=
   ⟨fun h ↦ h.basis.freeGroupBasis.isFreeGroup, fun h ↦ h.basis.freeAddGroupBasis.isFreeAddGroup⟩
 
 @[simp]
-theorem isFreeGroup_toSubgroup_iff [AddGroup G] {H : AddSubgroup G} :
+theorem AddSubgroup.isFreeGroup_toSubgroup_iff [AddGroup G] {H : AddSubgroup G} :
     IsFreeGroup H.toSubgroup ↔ IsFreeAddGroup H :=
   ⟨fun h ↦ h.basis.freeAddGroupBasis.isFreeAddGroup, fun h ↦ h.basis.freeGroupBasis.isFreeGroup⟩
 
-instance (G) [Group G] (H : Subgroup G) [IsFreeGroup H] : IsFreeAddGroup H.toAddSubgroup :=
-  isFreeAddGroup_toAddSubgroup_iff.mpr ‹_›
+instance [Group G] (H : Subgroup G) [IsFreeGroup H] : IsFreeAddGroup H.toAddSubgroup :=
+  Subgroup.isFreeAddGroup_toAddSubgroup_iff.mpr ‹_›
 
-instance (G) [AddGroup G] (H : AddSubgroup G) [IsFreeAddGroup H] : IsFreeGroup H.toSubgroup :=
-  isFreeGroup_toSubgroup_iff.mpr ‹_›
+instance [AddGroup G] (H : AddSubgroup G) [IsFreeAddGroup H] : IsFreeGroup H.toSubgroup :=
+  AddSubgroup.isFreeGroup_toSubgroup_iff.mpr ‹_›
 
 end TypeTags
