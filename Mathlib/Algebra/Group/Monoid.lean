@@ -424,7 +424,6 @@ lemma pow_one (a : M) : a ^ 1 = a := by rw [pow_succ, pow_zero, one_mul]
   | zero => simp
   | succ n ih => simp [pow_succ', ← ih, mul_assoc]
 
-/-- A successor power of a product can be written by alternating its factors. -/
 @[to_additive]
 lemma mul_pow_succ_mul (a b : M) (n : ℕ) : (a * b) ^ (n + 1) = a * (b * a) ^ n * b := by
   rw [pow_succ, ← mul_assoc, mul_pow_mul]
