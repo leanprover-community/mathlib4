@@ -270,14 +270,13 @@ theorem le_comap_map [RingHomSurjective σ₁₂] (f : M →ₛₗ[σ₁₂] M�
 
 section submoduleOf
 
-/-- For any `R` submodules `p` and `q`, `q ⊓ p` as a submodule of `q`. -/
+/-- For any `R` submodules `p` and `q`, `p ⊓ q` as a submodule of `q`. -/
 def submoduleOf (p q : Submodule R M) : Submodule R q :=
   Submodule.comap q.subtype p
 
-@[simp]
 theorem map_subtype_submoduleOf (p q : Submodule R M) :
-    map q.subtype (p.submoduleOf q) = q ⊓ p := by
-  ext; simpa [submoduleOf] using And.comm
+    map q.subtype (p.submoduleOf q) = p ⊓ q := by
+  ext; simp [submoduleOf]
 
 /-- `p` as a submodule of `q` is isomorphic to `q ⊓ p`. -/
 def submoduleOfEquivInf (p q : Submodule R M) : p.submoduleOf q ≃ₗ[R] (q ⊓ p :) where
@@ -473,7 +472,7 @@ theorem map_inf_eq_map_inf_comap [RingHomSurjective σ₁₂] {f : M →ₛₗ[�
 
 @[simp]
 theorem map_comap_subtype : map p.subtype (comap p.subtype p') = p ⊓ p' :=
-  map_subtype_submoduleOf ..
+  inf_comm p p' ▸ map_subtype_submoduleOf ..
 
 theorem eq_zero_of_bot_submodule : ∀ b : (⊥ : Submodule R M), b = 0
   | ⟨b', hb⟩ => Subtype.ext <| show b' = 0 from (mem_bot R).1 hb
