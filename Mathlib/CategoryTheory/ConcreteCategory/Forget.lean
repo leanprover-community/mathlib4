@@ -50,7 +50,7 @@ abbrev forget : C ⥤ Type w where
   map f := ↾f
 
 instance : (forget C).Faithful where
-  map_injective h := ConcreteCategory.hom_ext _ _ fun x ↦ ConcreteCategory.congr_hom h x
+  map_injective h := ConcreteCategory.hom_ext _ _ fun x ↦ congr($h x)
 
 variable {C}
 
@@ -68,7 +68,7 @@ theorem forget_obj (X : C) : (forget C).obj X = ToType X := rfl
 when `h : f = g` is an equality between morphisms in a concrete category.
 -/
 protected theorem congr_fun {X Y : C} {f g : X ⟶ Y} (h : f = g) (x : ToType X) : f x = g x :=
-  congrFun (congrArg (fun k : X ⟶ Y => (k : ToType X → ToType Y)) h) x
+  congr($h x)
 
 /-- Analogue of `congr_arg f h`,
 when `h : x = x'` is an equality between elements of objects in a concrete category.
@@ -121,7 +121,7 @@ instance ObjectProperty.FullSubcategory.hasForget₂ (P : ObjectProperty C) :
 /-- In order to construct a “partially forgetting” functor, we do not need to verify functor laws;
 it suffices to ensure that compositions agree with `forget₂ C D ⋙ forget D = forget C`.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def HasForget₂.mk' (obj : C → D) (h_obj : ∀ X, (forget D).obj (obj X) = (forget C).obj X)
     (map : ∀ {X Y}, (X ⟶ Y) → (obj X ⟶ obj Y))
     (h_map : ∀ {X Y} {f : X ⟶ Y}, (forget D).map (map f) ≍ (forget C).map f) :

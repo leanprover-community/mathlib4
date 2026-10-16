@@ -6,6 +6,7 @@ Authors: Etienne Marion
 module
 
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+public import Mathlib.MeasureTheory.Integral.IntegrableOn
 
 import Mathlib.Analysis.Normed.Module.FiniteDimension
 
@@ -56,11 +57,11 @@ lemma integrable_sum_measure
     (hf : ∀ i, Integrable f (μ i)) (h : Summable (fun i ↦ ∫ x, ‖f x‖ ∂μ i)) :
     Integrable f (Measure.sum μ) := by
   refine ⟨aestronglyMeasurable_sum_measure_iff.mpr fun i ↦ (hf i).aestronglyMeasurable, ?_⟩
-  · rw [HasFiniteIntegral, lintegral_sum_measure]
-    convert! h.tsum_ofReal_lt_top with i
-    rw [ofReal_integral_eq_lintegral_ofReal (hf i).norm]
-    · simp_rw [ofReal_norm_eq_enorm]
-    · exact ae_of_all _ fun _ ↦ by positivity
+  rw [HasFiniteIntegral, lintegral_sum_measure]
+  convert! h.tsum_ofReal_lt_top with i
+  rw [ofReal_integral_eq_lintegral_ofReal (hf i).norm]
+  · simp_rw [ofReal_norm]
+  · exact ae_of_all _ fun _ ↦ by positivity
 
 omit [Countable ι] in
 lemma Integrable.summable_integral (hf : Integrable f (Measure.sum μ)) :
@@ -129,7 +130,7 @@ theorem hasSum_integral_measure (hf : Integrable f (Measure.sum μ)) :
   refine ((hasSum_lintegral_measure (fun x ↦ ‖f x‖ₑ) μ).eventually hmem).mono fun s hs ↦ ?_
   obtain ⟨ν, hν⟩ : ∃ ν, (∑ i ∈ s, μ i) + ν = Measure.sum μ := by
     refine ⟨Measure.sum fun i : ↥(sᶜ : Set ι) ↦ μ i, ?_⟩
-    simpa only [← Measure.sum_coe_finset] using Measure.sum_add_sum_compl (s : Set ι) μ
+    simpa only [← Measure.sum_coe_finset] using! Measure.sum_add_sum_compl (s : Set ι) μ
   rw [Metric.mem_ball, ← coe_nndist, NNReal.coe_lt_coe, ← ENNReal.coe_lt_coe, ← hν]
   rw [← hν, integrable_add_measure] at hf
   refine (nndist_integral_add_measure_le_lintegral hf.1 hf.2).trans_lt ?_
@@ -182,8 +183,6 @@ theorem integral_countable [Countable X] (hf : Integrable f μ) :
   congr 1 with a : 1
   rw [integral_smul_measure, integral_dirac, Measure.sum_smul_dirac, measureReal_def]
 
-@[deprecated (since := "2026-03-09")] alias integral_countable' := integral_countable
-
 theorem setIntegral_countable (f : X → E) {s : Set X} (hs : s.Countable) (hf : IntegrableOn f s μ) :
     ∫ x in s, f x ∂μ = ∑' x : s, μ.real {(x : X)} • f x := by
   have hi : Countable { x // x ∈ s } := Iff.mpr countable_coe_iff hs
@@ -203,8 +202,6 @@ theorem setIntegral_countable (f : X → E) {s : Set X} (hs : s.Countable) (hf :
 theorem setIntegral_finset (s : Finset X) (hf : IntegrableOn f s μ) :
     ∫ x in s, f x ∂μ = ∑ x ∈ s, μ.real {x} • f x := by
   rw [setIntegral_countable _ s.countable_toSet hf, ← Finset.tsum_subtype']
-
-@[deprecated (since := "2026-03-09")] alias integral_finset := setIntegral_finset
 
 theorem integral_fintype [Fintype X] (hf : Integrable f μ) :
     ∫ x, f x ∂μ = ∑ x, μ.real {x} • f x := by

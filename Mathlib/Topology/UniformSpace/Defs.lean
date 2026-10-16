@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 module
 
-public import Mathlib.Data.Rel.Cover
+public import Mathlib.Basic.Rel.Cover
 public import Mathlib.Topology.Order
 
 /-!
@@ -82,12 +82,12 @@ operations on filters, without directly manipulating entourages.
 
 Localized in `Uniformity`, we have the notation `𝓤 X` for the uniformity on a uniform space `X`.
 This file also uses a lot the notation `○` for composition of relations, seen as terms with
-type `SetRel X X`. This notation (defined in the file `Mathlib/Data/Rel.lean`) is
+type `SetRel X X`. This notation (defined in the file `Mathlib/Basic/Rel.lean`) is
 localized in `SetRel`.
 
 ## Implementation notes
 
-We use the theory of relations as sets developed in `Mathlib/Data/Rel.lean`.
+We use the theory of relations as sets developed in `Mathlib/Basic/Rel.lean`.
 The relevant definition is `SetRel X X := Set (X × X)`, which is the type of elements of
 the uniformity filter `𝓤 X : Filter (X × X)`.
 
@@ -108,7 +108,9 @@ But it makes a more systematic use of the filter library.
 
 @[expose] public section
 
-open Set Filter Topology
+open Set Filter
+
+open scoped Topology
 
 universe u v ua ub uc ud
 
@@ -116,7 +118,7 @@ universe u v ua ub uc ud
 ### Relations, seen as `SetRel α α`
 -/
 
-variable {α : Type ua} {β : Type ub} {γ : Type uc} {δ : Type ud} {ι : Sort*}
+variable {α : Type ua} {β : Type ub} {γ : Type uc} {ι : Sort*}
 
 open scoped SetRel
 
@@ -161,7 +163,7 @@ def UniformSpace.Core.mkOfBasis {α : Type u} (B : FilterBasis (α × α))
   comp := ((B.hasBasis.lift' (monotone_id.relComp monotone_id)).le_basis_iff B.hasBasis).2 comp
 
 /-- A uniform space generates a topological space -/
-@[implicit_reducible]
+@[instance_reducible]
 def UniformSpace.Core.toTopologicalSpace {α : Type u} (u : UniformSpace.Core α) :
     TopologicalSpace α :=
   .mkOfNhds fun x ↦ .comap (Prod.mk x) u.uniformity
@@ -189,6 +191,7 @@ theorem UniformSpace.Core.nhds_toTopologicalSpace {α : Type u} (u : Core α) (x
 
   A metric space has a natural uniformity, and a uniform space has a natural topology.
   A topological group also has a natural uniformity, even when it is not metrizable. -/
+@[wikidata Q652446]
 class UniformSpace (α : Type u) extends TopologicalSpace α where
   /-- The uniformity filter. -/
   protected uniformity : Filter (α × α)
@@ -248,7 +251,7 @@ lemma UniformSpace.mem_uniformity_ofCore_iff {u : UniformSpace.Core α} {s : Set
 protected theorem UniformSpace.ext {u₁ u₂ : UniformSpace α} (h : 𝓤[u₁] = 𝓤[u₂]) : u₁ = u₂ := by
   have : u₁.toTopologicalSpace = u₂.toTopologicalSpace := TopologicalSpace.ext_nhds fun x ↦ by
     rw [u₁.nhds_eq_comap_uniformity, u₂.nhds_eq_comap_uniformity]
-    exact congr_arg (comap _) h
+    congrm comap _ $h
   cases u₁; cases u₂; congr
 
 protected theorem UniformSpace.ext_iff {u₁ u₂ : UniformSpace α} :
@@ -426,7 +429,7 @@ namespace UniformSpace
 /-- The ball around `(x : β)` with respect to `(V : Set (β × β))`. Intended to be
 used for `V ∈ 𝓤 β`, but this is not needed for the definition. Recovers the
 notions of metric space ball when `V = {p | dist p.1 p.2 < r }`. -/
-def ball (x : β) (V : Set (β × β)) : Set β := Prod.mk x ⁻¹' V
+def ball (x : β) (V : Set (β × β)) : Set β := SetRel.ball (SetRel.inv V) x
 
 open UniformSpace (ball)
 
@@ -441,7 +444,7 @@ theorem ball_subset_of_comp_subset {V W : Set (β × β)} {x y} (h : x ∈ ball 
     ball x W ⊆ ball y V := fun _z z_in => h' (mem_ball_comp h z_in)
 
 theorem ball_mono {V W : Set (β × β)} (h : V ⊆ W) (x : β) : ball x V ⊆ ball x W :=
-  preimage_mono h
+  fun _ hy ↦ h hy
 
 theorem ball_inter (x : β) (V W : Set (β × β)) : ball x (V ∩ W) = ball x V ∩ ball x W :=
   preimage_inter
@@ -479,10 +482,7 @@ theorem mem_comp_comp {V W M : SetRel β β} [W.IsSymm] {p : β × β} :
 
 lemma isCover_iff_subset_iUnion_ball {U : SetRel β β} [U.IsSymm] {s N : Set β} :
     U.IsCover s N ↔ s ⊆ ⋃ y ∈ N, ball y U := by
-  simp [SetRel.IsCover, subset_def, ball, U.comm]
-
-alias ⟨_root_.SetRel.IsCover.subset_iUnion_ball, _root_.SetRel.IsCover.of_subset_iUnion_ball⟩ :=
-  isCover_iff_subset_iUnion_ball
+  simp [SetRel.IsCover, subset_def, ball]
 
 end UniformSpace
 
@@ -499,7 +499,7 @@ theorem mem_nhds_uniformity_iff_right {x : α} {s : Set α} :
 theorem mem_nhds_uniformity_iff_left {x : α} {s : Set α} :
     s ∈ 𝓝 x ↔ { p : α × α | p.2 = x → p.1 ∈ s } ∈ 𝓤 α := by
   rw [uniformity_eq_symm, mem_nhds_uniformity_iff_right]
-  simp only [mem_map, preimage_setOf_eq, Prod.snd_swap, Prod.fst_swap]
+  simp only [mem_map, preimage_ofPred_eq, Prod.snd_swap, Prod.fst_swap]
 
 theorem nhdsWithin_eq_comap_uniformity_of_mem {x : α} {T : Set α} (hx : x ∈ T) (S : Set α) :
     𝓝[S] x = (𝓤 α ⊓ 𝓟 (T ×ˢ S)).comap (Prod.mk x) := by
@@ -511,7 +511,7 @@ theorem nhdsWithin_eq_comap_uniformity {x : α} (S : Set α) :
 
 /-- See also `isOpen_iff_isOpen_ball_subset`. -/
 theorem isOpen_iff_ball_subset {s : Set α} : IsOpen s ↔ ∀ x ∈ s, ∃ V ∈ 𝓤 α, ball x V ⊆ s := by
-  simp_rw [isOpen_iff_mem_nhds, nhds_eq_comap_uniformity, mem_comap, ball]
+  simp [isOpen_iff_mem_nhds, nhds_eq_comap_uniformity, ball, SetRel.ball, Set.preimage]
 
 theorem nhds_basis_uniformity' {p : ι → Prop} {s : ι → SetRel α α} (h : (𝓤 α).HasBasis p s)
     {x : α} : (𝓝 x).HasBasis p fun i => ball x (s i) := by
@@ -528,8 +528,7 @@ theorem nhds_eq_comap_uniformity' {x : α} : 𝓝 x = (𝓤 α).comap fun y => (
   (nhds_basis_uniformity (𝓤 α).basis_sets).eq_of_same_basis <| (𝓤 α).basis_sets.comap _
 
 theorem UniformSpace.mem_nhds_iff {x : α} {s : Set α} : s ∈ 𝓝 x ↔ ∃ V ∈ 𝓤 α, ball x V ⊆ s := by
-  rw [nhds_eq_comap_uniformity, mem_comap]
-  simp_rw [ball]
+  simp [nhds_eq_comap_uniformity, ball, SetRel.ball, Set.preimage]
 
 theorem UniformSpace.ball_mem_nhds (x : α) ⦃V : SetRel α α⦄ (V_in : V ∈ 𝓤 α) : ball x V ∈ 𝓝 x := by
   rw [UniformSpace.mem_nhds_iff]
@@ -599,8 +598,8 @@ theorem tendsto_left_nhds_uniformity {a : α} : Tendsto (fun a' => (a, a')) (�
 
 theorem lift_nhds_left {x : α} {g : Set α → Filter β} (hg : Monotone g) :
     (𝓝 x).lift g = (𝓤 α).lift fun s : SetRel α α => g (ball x s) := by
-  rw [nhds_eq_comap_uniformity, comap_lift_eq2 hg]
-  simp_rw [ball, Function.comp_def]
+  simp [nhds_eq_comap_uniformity, comap_lift_eq2 hg, ball, SetRel.ball, Function.comp_def,
+    Set.preimage]
 
 theorem lift_nhds_right {x : α} {g : Set α → Filter β} (hg : Monotone g) :
     (𝓝 x).lift g = (𝓤 α).lift fun s : SetRel α α => g { y | (y, x) ∈ s } := by
@@ -626,6 +625,7 @@ variable [UniformSpace β]
 /-- A function `f : α → β` is *uniformly continuous* if `(f x, f y)` tends to the diagonal
 as `(x, y)` tends to the diagonal. In other words, if `x` is sufficiently close to `y`, then
 `f x` is close to `f y` no matter where `x` and `y` are located in `α`. -/
+@[fun_prop]
 def UniformContinuous (f : α → β) :=
   Tendsto (fun x : α × α => (f x.1, f x.2)) (𝓤 α) (𝓤 β)
 
@@ -636,6 +636,7 @@ scoped[Uniformity] notation "UniformContinuous[" u₁ ", " u₂ "]" => @UniformC
 the diagonal as `(x, y)` tends to the diagonal while remaining in `s ×ˢ s`.
 In other words, if `x` is sufficiently close to `y`, then `f x` is close to
 `f y` no matter where `x` and `y` are located in `s`. -/
+@[fun_prop]
 def UniformContinuousOn (f : α → β) (s : Set α) : Prop :=
   Tendsto (fun x : α × α => (f x.1, f x.2)) (𝓤 α ⊓ 𝓟 (s ×ˢ s)) (𝓤 β)
 
@@ -657,17 +658,21 @@ theorem uniformContinuous_of_const {c : α → β} (h : ∀ a b, c a = c b) :
     eq_univ_iff_forall.2 fun ⟨a, b⟩ => h a b
   le_trans (map_le_iff_le_comap.2 <| by simp [comap_principal, this]) refl_le_uniformity
 
+@[fun_prop]
 theorem uniformContinuous_id : UniformContinuous (@id α) := tendsto_id
 
+@[fun_prop]
 theorem uniformContinuous_const {b : β} : UniformContinuous fun _ : α => b :=
   uniformContinuous_of_const fun _ _ => rfl
 
+@[fun_prop]
 nonrec theorem UniformContinuous.comp [UniformSpace γ] {g : β → γ} {f : α → β}
     (hg : UniformContinuous g) (hf : UniformContinuous f) : UniformContinuous (g ∘ f) :=
   hg.comp hf
 
 /-- If a function `T` is uniformly continuous in a uniform space `β`,
 then its `n`-th iterate `T^[n]` is also uniformly continuous. -/
+@[fun_prop]
 theorem UniformContinuous.iterate (T : β → β) (n : ℕ) (h : UniformContinuous T) :
     UniformContinuous T^[n] := by
   induction n with
@@ -691,7 +696,7 @@ theorem Filter.HasBasis.uniformContinuousOn_iff {ι'} {p : ι → Prop}
 /-- A map `f : α → β` between uniform spaces is called *uniform inducing* if the uniformity filter
 on `α` is the pullback of the uniformity filter on `β` under `Prod.map f f`. If `α` is a separated
 space, then this implies that `f` is injective, hence it is a `IsUniformEmbedding`. -/
-@[mk_iff]
+@[mk_iff, fun_prop]
 structure IsUniformInducing (f : α → β) : Prop where
   /-- The uniformity filter on the domain is the pullback of the uniformity filter on the codomain
   under `Prod.map f f`. -/
@@ -699,7 +704,7 @@ structure IsUniformInducing (f : α → β) : Prop where
 
 /-- A map `f : α → β` between uniform spaces is a *uniform embedding* if it is uniform inducing and
 injective. If `α` is a separated space, then the latter assumption follows from the former. -/
-@[mk_iff]
+@[mk_iff, fun_prop]
 structure IsUniformEmbedding (f : α → β) : Prop extends IsUniformInducing f where
   /-- A uniform embedding is injective. -/
   injective : Function.Injective f

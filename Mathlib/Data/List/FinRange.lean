@@ -5,9 +5,9 @@ Authors: Mario Carneiro, Kenny Lau, Kim Morrison, Alex Keizer
 -/
 module
 
-public import Mathlib.Data.List.OfFn
-public import Batteries.Data.List.Perm
-public import Mathlib.Data.List.Nodup
+public import Mathlib.Data.Fin.Tuple.Basic
+
+import Mathlib.Data.List.Nodup
 
 /-!
 # Lists of elements of `Fin n`
@@ -66,7 +66,7 @@ open List
 theorem Equiv.Perm.map_finRange_perm {n : ℕ} (σ : Equiv.Perm (Fin n)) :
     map σ (finRange n) ~ finRange n := by
   rw [perm_ext_iff_of_nodup ((nodup_finRange n).map σ.injective) <| nodup_finRange n]
-  simpa [mem_map, mem_finRange] using σ.surjective
+  simpa [mem_map, mem_finRange] using! σ.surjective
 
 /-- The list obtained from a permutation of a tuple `f` is permutation equivalent to
 the list obtained from `f`. -/

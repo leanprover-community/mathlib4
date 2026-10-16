@@ -6,7 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
-public import Mathlib.CategoryTheory.GuitartExact.HorizontalComposition
+
+import Mathlib.CategoryTheory.GuitartExact.HorizontalComposition
 
 /-!
 # Derivability structures deduced from localized equivalences
@@ -39,7 +40,7 @@ complexes to homotopy categories).
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 
@@ -56,7 +57,6 @@ section
 variable [W₂'.RespectsIso]
   [L.IsLocalizedEquivalence] [R.IsLocalizedEquivalence] [R.functor.EssSurj]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isLeftDerivabilityStructure_of_isLocalizedEquivalence
     [T.IsLeftDerivabilityStructure]
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor)
@@ -71,11 +71,11 @@ lemma isLeftDerivabilityStructure_of_isLocalizedEquivalence
       hw := (W₂'.arrow_mk_iso_iff (Arrow.isoMk (iso.app _) e₂)).1 (R.map _ ρ.hw) }⟩
   let F := B.localizedFunctor W₁'.Q W₂'.Q
   let e' := CatCommSq.iso B.functor W₁'.Q W₂'.Q F
-  letI iso' : CatCommSq T.functor L.functor R.functor B.functor := ⟨iso⟩
-  letI : CatCommSq T.functor (L.functor ⋙ W₁'.Q) (R.functor ⋙ W₂'.Q) F :=
+  let iso' : CatCommSq T.functor L.functor R.functor B.functor := ⟨iso⟩
+  let : CatCommSq T.functor (L.functor ⋙ W₁'.Q) (R.functor ⋙ W₂'.Q) F :=
     CatCommSq.vComp (H₂ := B.functor) _ _ _ _ _ _
   have : (TwoSquare.hComp iso.inv e'.inv).GuitartExact := by
-    convert!
+    convert
       T.guitartExact_of_isLeftDerivabilityStructure' (L.functor ⋙ W₁'.Q) (R.functor ⋙ W₂'.Q) F
         (CatCommSq.iso _ _ _ _)
     ext
@@ -83,6 +83,7 @@ lemma isLeftDerivabilityStructure_of_isLocalizedEquivalence
   rw [B.isLeftDerivabilityStructure_iff W₁'.Q W₂'.Q F e']
   apply TwoSquare.GuitartExact.of_hComp iso.inv
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isLeftDerivabilityStructure_iff_of_isLocalizedEquivalence
     [L.functor.EssSurj] [R.functor.Full] [R.IsInduced]
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor)
@@ -150,7 +151,7 @@ lemma isLeftDerivabilityStructure_of_equivalences
   have := R.isLocalizedEquivalence_of_isInduced
   exact isLeftDerivabilityStructure_of_isLocalizedEquivalence iso
 
-open Functor in
+open CategoryTheory.Functor in
 lemma isLeftDerivabilityStructure_iff_of_equivalences
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor) :
     T.IsLeftDerivabilityStructure ↔ B.IsLeftDerivabilityStructure :=

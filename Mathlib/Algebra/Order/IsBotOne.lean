@@ -38,16 +38,26 @@ theorem isBot_one : IsBot (1 : α) :=
 theorem one_le {a : α} : 1 ≤ a :=
   isBot_one a
 
--- TODO: deprecate
+@[deprecated (since := "2026-05-27")]
 alias zero_le' := zero_le
 
 variable (α) in
 /-- Create an `OrderBot` instance, setting `1` as the bottom element. -/
-@[expose, to_additive (attr := implicit_reducible)
+@[expose, to_additive (attr := instance_reducible)
 /-- Create an `OrderBot` instance, setting `0` as the bottom element. -/]
 def IsBotOneClass.toOrderBot : OrderBot α where
   bot := 1
   bot_le _ := one_le
+
+@[to_additive]
+instance {β : Type*} [LE β] [One β] [IsBotOneClass β] :
+    IsBotOneClass (α × β) where
+  isBot_one _ := by simp [Prod.le_def]
+
+@[to_additive]
+instance {ι : Type*} {M : ι → Type*} [(i : ι) → LE (M i)] [(i : ι) → One (M i)]
+    [(i : ι) → IsBotOneClass (M i)] : IsBotOneClass ((i : ι) → M i) where
+  isBot_one _ _ := one_le
 
 end LE
 
@@ -55,13 +65,16 @@ end LE
 instance (priority := 100) [LE α] [Zero α] [One α] [IsBotZeroClass α] : ZeroLEOneClass α where
   zero_le_one := zero_le
 
+-- See note [lower instance priority]
+@[to_additive]
+instance (priority := 100) [Preorder α] [One α] [Subsingleton α] : IsBotOneClass α where
+  isBot_one a := (Subsingleton.allEq _ a).le
+
 section Preorder
 variable [Preorder α] [One α] [IsBotOneClass α]
 
 @[to_additive (attr := simp) not_lt_zero]
 theorem not_lt_one : ¬ a < 1 := one_le.not_gt
-
-@[deprecated (since := "2025-12-03")] alias not_neg := not_lt_zero
 
 @[deprecated (since := "2026-05-07")]
 alias not_lt_zero' := not_lt_zero
@@ -118,30 +131,51 @@ lemma one_notMem_iff {s : Set α} : 1 ∉ s ↔ ∀ x ∈ s, 1 < x :=
   let := IsBotOneClass.toOrderBot α
   bot_notMem_iff
 
-@[deprecated (since := "2026-02-17")] alias NE.ne.pos := Ne.pos
-@[deprecated (since := "2026-02-17")] alias NE.ne.one_lt := Ne.one_lt
-
 end PartialOrder
+
+section SemilatticeInf
+variable [SemilatticeInf α] [One α] [IsBotOneClass α]
+
+@[to_additive]
+theorem one_inf (a : α) : 1 ⊓ a = 1 := by simp
+
+@[to_additive]
+theorem inf_one (a : α) : a ⊓ 1 = 1 := by simp
+
+end SemilatticeInf
+
+section SemilatticeSup
+variable [SemilatticeSup α] [One α] [IsBotOneClass α]
+
+@[to_additive]
+theorem one_sup (a : α) : 1 ⊔ a = a := by simp
+
+@[to_additive]
+theorem sup_one (a : α) : a ⊔ 1 = a := by simp
+
+@[to_additive (attr := simp)]
+theorem sup_eq_one {a b : α} : a ⊔ b = 1 ↔ a = 1 ∧ b = 1 := by
+  simp [← le_one_iff_eq_one]
+
+end SemilatticeSup
 
 section LinearOrder
 variable [LinearOrder α] [One α] [IsBotOneClass α]
 
 @[to_additive]
-theorem one_min (a : α) : min 1 a = 1 := by simp
+theorem one_min (a : α) : min 1 a = 1 := one_inf a
 
 @[to_additive]
-theorem min_one (a : α) : min a 1 = 1 := by simp
+theorem min_one (a : α) : min a 1 = 1 := inf_one a
 
 @[to_additive]
-theorem one_max (a : α) : max 1 a = a := by simp
+theorem one_max (a : α) : max 1 a = a := one_sup a
 
 @[to_additive]
-theorem max_one (a : α) : max a 1 = a := by simp
+theorem max_one (a : α) : max a 1 = a := sup_one a
 
-@[to_additive (attr := simp)]
-theorem max_eq_one {a b : α} : max a b = 1 ↔ a = 1 ∧ b = 1 :=
-  let := IsBotOneClass.toOrderBot α
-  max_eq_bot
+@[to_additive]
+theorem max_eq_one {a b : α} : max a b = 1 ↔ a = 1 ∧ b = 1 := sup_eq_one
 
 @[to_additive (attr := simp)]
 theorem min_eq_one {a b : α} : min a b = 1 ↔ a = 1 ∨ b = 1 :=

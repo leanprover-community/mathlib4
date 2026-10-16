@@ -20,10 +20,10 @@ normed group
 public section
 
 
-variable {𝓕 α ι κ E F G : Type*}
+variable {E : Type*}
 
-open Filter Function Metric Bornology
-open ENNReal Filter NNReal Uniformity Pointwise Topology
+open Filter
+open ENNReal Filter NNReal
 
 namespace NNReal
 
@@ -31,6 +31,8 @@ instance : NNNorm ℝ≥0 where
   nnnorm x := x
 
 @[simp] lemma nnnorm_eq_self (x : ℝ≥0) : ‖x‖₊ = x := rfl
+
+@[simp] lemma enorm_eq_coe (x : ℝ≥0) : ‖x‖ₑ = x := rfl
 
 end NNReal
 
@@ -102,7 +104,10 @@ lemma enorm_ofReal_of_nonneg {a : ℝ} (ha : 0 ≤ a) : ‖ENNReal.ofReal a‖�
 @[simp] lemma enorm_abs (r : ℝ) : ‖|r|‖ₑ = ‖r‖ₑ := by simp [enorm]
 
 theorem enorm_eq_ofReal (hr : 0 ≤ r) : ‖r‖ₑ = .ofReal r := by
-  rw [← ofReal_norm_eq_enorm, norm_of_nonneg hr]
+  rw [← ofReal_norm, norm_of_nonneg hr]
+
+@[simp] lemma enorm_toReal {a : ℝ≥0∞} (ha : a ≠ ∞) : ‖a.toReal‖ₑ = a := by
+  simp [enorm_eq_ofReal, ha]
 
 theorem enorm_eq_ofReal_abs (r : ℝ) : ‖r‖ₑ = ENNReal.ofReal |r| := by
   rw [← enorm_eq_ofReal (abs_nonneg _), enorm_abs]
@@ -119,7 +124,7 @@ end Real
 
 section SeminormedCommGroup
 
-variable [SeminormedCommGroup E] [SeminormedCommGroup F] {a b : E} {r : ℝ}
+variable [SeminormedCommGroup E] {a : E}
 variable {ε : Type*} [TopologicalSpace ε] [ESeminormedCommMonoid ε]
 
 @[to_additive (attr := simp high) norm_norm] -- Higher priority as a shortcut lemma.

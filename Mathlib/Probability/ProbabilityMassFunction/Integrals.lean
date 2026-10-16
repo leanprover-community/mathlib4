@@ -5,9 +5,7 @@ Authors: Joachim Breitner
 -/
 module
 
-public import Mathlib.Probability.ProbabilityMassFunction.Basic
 public import Mathlib.Probability.ProbabilityMassFunction.Constructions
-public import Mathlib.MeasureTheory.Integral.Bochner.SumMeasure
 
 /-!
 # Integrals with a measure derived from probability mass functions.
@@ -54,7 +52,9 @@ theorem integral_eq_sum [Fintype α] (p : PMF α) (f : α → E) :
 
 end General
 
+@[deprecated ProbabilityTheory.integral_bernoulliMeasure +typeChanged (since := "2026-04-07")]
 theorem bernoulli_expectation {p : ℝ≥0} (h : p ≤ 1) :
-    ∫ b, cond b 1 0 ∂((bernoulli p h).toMeasure) = p.toReal := by simp [integral_eq_sum]
+    ∫ b, cond b 1 0 ∂((bernoulli p h).toMeasure) = p.toReal := by
+  simp [integral_eq_sum, bernoulli_apply]
 
 end PMF

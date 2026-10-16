@@ -5,7 +5,6 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equifibered
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
 
@@ -20,10 +19,11 @@ public section
 
 namespace CategoryTheory.NatTrans
 
-open Limits Functor ObjectProperty
+open Limits CategoryTheory.Functor ObjectProperty
 
-variable {J K C D ι : Type*} [Category* J] [Category* C] [Category* K] [Category* D]
+variable {J C D : Type*} [Category* J] [Category* C] [Category* D]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance (F : C ⥤ D) [∀ a b : C, HasCoproductsOfShape (a ⟶ b) D] :
     IsClosedUnderLimitsOfShape (fun f : Over F ↦ f.hom.Equifibered) J := by
@@ -57,6 +57,8 @@ instance (F : C ⥤ D) [∀ a b : C, HasCoproductsOfShape (a ⟶ b) D] :
     simp [← NatTrans.naturality, reassoc_of% hm₁]
   · simpa [← NatTrans.comp_app]
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 open Over in
 instance (F : C ⥤ D) [∀ a b : C, HasProductsOfShape (a ⟶ b) D] :
     IsClosedUnderColimitsOfShape (fun f : Under F ↦ f.hom.Coequifibered) J := by

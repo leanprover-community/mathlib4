@@ -23,8 +23,6 @@ namespace Stream'.WSeq
 
 variable {α : Type u} {β : Type v} {γ : Type w}
 
-open Function
-
 /-- Get the length of `s` (if it is finite and completes in finite time). -/
 def length (s : WSeq α) : Computation ℕ :=
   @Computation.corec ℕ (ℕ × WSeq α)

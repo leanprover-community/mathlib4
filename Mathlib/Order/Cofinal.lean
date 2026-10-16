@@ -5,11 +5,15 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.Order.GaloisConnection.Basic
-public import Mathlib.Order.Interval.Set.Basic
-public import Mathlib.Order.WellFounded
+public import Mathlib.Order.Bounds.Defs
+public import Mathlib.Order.GaloisConnection.Defs
+public import Mathlib.Order.Directed
+public import Mathlib.Order.Hom.Basic
+public import Mathlib.Order.Interval.Set.Defs
+public import Mathlib.Order.SetNotation
+public import Mathlib.Tactic.ToAdditive
 
-import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice.Indexed
 
 /-!
 # Cofinal sets
@@ -40,6 +44,10 @@ theorem isCofinal_empty_iff : IsCofinal (∅ : Set α) ↔ IsEmpty α := by
   refine ⟨fun h ↦ ⟨fun a ↦ ?_⟩, fun h ↦ .of_isEmpty⟩
   simpa using h a
 
+theorem IsCofinal.nonempty [Nonempty α] {s : Set α} (hs : IsCofinal s) : s.Nonempty := by
+  inhabit α
+  exact (hs default).imp fun _ ↦ And.left
+
 @[simp]
 theorem isCofinal_singleton_iff {x : α} : IsCofinal {x} ↔ IsTop x := by
   simp [IsCofinal, IsTop]
@@ -51,11 +59,6 @@ theorem IsCofinal.mono {s t : Set α} (h : s ⊆ t) (hs : IsCofinal s) : IsCofin
   intro a
   obtain ⟨b, hb, hb'⟩ := hs a
   exact ⟨b, h hb, hb'⟩
-
-theorem IsCofinal.nonempty [Nonempty α] {s : Set α} (h : IsCofinal s) : s.Nonempty := by
-  inhabit α
-  obtain ⟨x, hx, _⟩ := h default
-  exact ⟨x, hx⟩
 
 end LE
 
@@ -89,18 +92,12 @@ theorem GaloisConnection.map_isCofinal {f : β → α} {g : α → β}
     (h : GaloisConnection f g) {s : Set α} (hs : IsCofinal s) : IsCofinal (g '' s) :=
   hs.image h.monotone_u h.isCofinal_range
 
-@[deprecated (since := "2026-03-15")]
-alias GaloisConnection.map_cofinal := GaloisConnection.map_isCofinal
-
 theorem OrderIso.map_isCofinal (e : α ≃o β) {s : Set α} (hs : IsCofinal s) : IsCofinal (e '' s) :=
   e.symm.to_galoisConnection.map_isCofinal hs
 
 @[simp]
 theorem OrderIso.map_isCofinal_iff (e : α ≃o β) {s : Set α} : IsCofinal (e '' s) ↔ IsCofinal s :=
   ⟨fun hs ↦ by simpa using e.symm.map_isCofinal hs, e.map_isCofinal⟩
-
-@[deprecated (since := "2026-03-15")]
-alias OrderIso.map_cofinal := OrderIso.map_isCofinal
 
 theorem isCofinal_iff_iUnion_Iic_eq_univ {s : Set α} :
     IsCofinal s ↔ ⋃ i ∈ s, Iic i = univ := by
@@ -141,6 +138,30 @@ theorem IsCofinal.top_mem [OrderTop α] {s : Set α} (hs : IsCofinal s) : ⊤ �
 theorem isCofinal_iff_top_mem [OrderTop α] {s : Set α} : IsCofinal s ↔ ⊤ ∈ s :=
   ⟨IsCofinal.top_mem, fun hs _ ↦ ⟨⊤, hs, le_top⟩⟩
 
+variable [IsDirectedOrder α]
+
+theorem IsCofinal.inter_of_isUpperSet_left {s t : Set α} (hs : IsCofinal s) (ht : IsUpperSet t)
+    (ht₀ : t.Nonempty) : IsCofinal (t ∩ s) := by
+  intro y
+  obtain ⟨x, hx⟩ := ht₀
+  obtain ⟨m, hxm, hym⟩ := exists_ge_ge x y
+  obtain ⟨z, hz, hyz⟩ := hs m
+  exact ⟨z, ⟨ht (hxm.trans hyz) hx, hz⟩, hym.trans hyz⟩
+
+theorem IsCofinal.inter_of_isUpperSet_right {s t : Set α} (hs : IsCofinal s) (ht : IsUpperSet t)
+    (ht₀ : t.Nonempty) : IsCofinal (s ∩ t) := by
+  rw [inter_comm]
+  exact hs.inter_of_isUpperSet_left ht ht₀
+
+theorem IsUpperSet.isCofinal {s : Set α} (hs : IsUpperSet s) (hs₀ : s.Nonempty) : IsCofinal s := by
+  simpa using IsCofinal.univ.inter_of_isUpperSet_left hs hs₀
+
+@[simp] protected theorem IsCofinal.Ici (x : α) : IsCofinal (Ici x) := by
+  simpa using (IsUpperSet.Ici x).isCofinal
+
+@[simp] protected theorem IsCofinal.Ioi [NoMaxOrder α] (x : α) : IsCofinal (Ioi x) := by
+  simpa using (IsUpperSet.Ioi x).isCofinal
+
 end PartialOrder
 
 section LinearOrder
@@ -166,39 +187,28 @@ theorem not_isCofinal_iff_bddAbove [NoMaxOrder α] {s : Set α} : ¬ IsCofinal s
   obtain ⟨z, hz⟩ := exists_gt x
   exact ⟨z, fun y hy ↦ (h hy).trans_lt hz⟩
 
+alias ⟨_, BddAbove.not_isCofinal⟩ := not_isCofinal_iff_bddAbove
+
 /-- In a linear order with no maximum, cofinal sets are the same as unbounded sets. -/
 theorem not_bddAbove_iff_isCofinal [NoMaxOrder α] {s : Set α} : ¬ BddAbove s ↔ IsCofinal s :=
   not_iff_comm.1 not_isCofinal_iff_bddAbove
 
-theorem IsCofinal.inter_of_isUpperSet_left {s t : Set α} (hs : IsCofinal s) (ht : IsUpperSet t)
-    (ht₀ : t.Nonempty) : IsCofinal (s ∩ t) := by
-  intro y
-  obtain ⟨x, hx⟩ := ht₀
-  obtain ⟨z, hz, hyz⟩ := hs (max x y)
-  exact ⟨z, ⟨hz, ht ((le_max_left ..).trans hyz) hx⟩, (le_max_right ..).trans hyz⟩
-
-theorem IsCofinal.inter_of_isUpperSet_right {s t : Set α} (hs : IsCofinal s) (ht : IsUpperSet t)
-    (ht₀ : t.Nonempty) : IsCofinal (t ∩ s) := by
-  rw [inter_comm]
-  exact hs.inter_of_isUpperSet_left ht ht₀
-
-theorem IsUpperSet.isCofinal {s : Set α} (hs : IsUpperSet s) (hs₀ : s.Nonempty) : IsCofinal s := by
-  simpa using IsCofinal.univ.inter_of_isUpperSet_left hs hs₀
-
-@[simp] protected theorem IsCofinal.Ici (x : α) : IsCofinal (Ici x) := by
-  simpa using (isUpperSet_Ici x).isCofinal
-
-@[simp] protected theorem IsCofinal.Ioi [NoMaxOrder α] (x : α) : IsCofinal (Ioi x) := by
-  simpa using (isUpperSet_Ioi x).isCofinal
+alias ⟨_, IsCofinal.not_bddAbove⟩ := not_bddAbove_iff_isCofinal
 
 /-- The set of "records" (the smallest inputs yielding the highest values) with respect to a
 well-ordering of `α` is a cofinal set. -/
-theorem isCofinal_setOf_imp_lt (r : α → α → Prop) [h : IsWellFounded α r] :
+theorem isCofinal_setOfPred_imp_lt (r : α → α → Prop) [h : WellFounded r] :
     IsCofinal { a | ∀ b, r b a → b < a } := by
   intro a
-  obtain ⟨b, hb, hb'⟩ := h.wf.has_min (Set.Ici a) Set.nonempty_Ici
+  obtain ⟨b, hb, hb'⟩ := h.has_min (Set.Ici a) Set.nonempty_Ici
   refine ⟨b, fun c hc ↦ ?_, hb⟩
   by_contra! hc'
   exact hb' c (hb.trans hc') hc
+
+@[deprecated (since := "2026-07-09")] alias isCofinal_setOf_imp_lt := isCofinal_setOfPred_imp_lt
+
+theorem isCofinal_range_of_strictMono [WellFoundedLT α] {f : α → α} (hf : StrictMono f) :
+    IsCofinal (range f) :=
+  fun x ↦ ⟨_, ⟨x, rfl⟩, hf.le_apply⟩
 
 end LinearOrder

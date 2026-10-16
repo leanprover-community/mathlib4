@@ -6,9 +6,6 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Category.Pairwise
-public import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
-public import Mathlib.CategoryTheory.Limits.Final
-public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 public import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
 
 /-!
@@ -294,7 +291,7 @@ theorem isSheaf_iff_isSheafPreservesLimitPairwiseIntersections :
     F.IsSheaf ↔ F.IsSheafPreservesLimitPairwiseIntersections := by
   refine ⟨fun h U ↦ h.isSheafPreservesLimitPairwiseIntersections,
     fun h ↦ F.isSheaf_iff_isSheafPairwiseIntersections.mpr fun ι U ↦ ?_⟩
-  haveI := h U
+  have := h U
   exact ⟨isLimitOfPreserves _ (Pairwise.coconeIsColimit U).op⟩
 
 end TopCat.Presheaf
@@ -332,6 +329,7 @@ variable
   (s :
     PullbackCone (F.1.map (homOfLE inf_le_left : U ⊓ V ⟶ _).op) (F.1.map (homOfLE inf_le_right).op))
 
+set_option backward.defeqAttrib.useBackward true in
 /-- (Implementation).
 Every cone over `F(U) ⟶ F(U ⊓ V)` and `F(V) ⟶ F(U ⊓ V)` factors through `F(U ⊔ V)`.
 -/
@@ -384,6 +382,7 @@ theorem interUnionPullbackConeLift_right :
     (F.presheaf.isSheaf_iff_isSheafPairwiseIntersections.mp F.2 _).some.fac _ <|
       op <| Pairwise.single <| ULift.up WalkingPair.right
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- For a sheaf `F`, `F(U ⊔ V)` is the pullback of `F(U) ⟶ F(U ⊓ V)` and `F(V) ⟶ F(U ⊓ V)`. -/
 def isLimitPullbackCone : IsLimit (interUnionPullbackCone F U V) := by

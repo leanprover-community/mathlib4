@@ -7,9 +7,7 @@ module
 
 public import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
 public import Mathlib.Algebra.Lie.OfAssociative
-public import Mathlib.Algebra.Lie.Subalgebra
 public import Mathlib.RingTheory.Nilpotent.Exp
-public import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 # Lie derivations
@@ -59,9 +57,10 @@ variable {R L M : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
 
 variable (D : LieDerivation R L M) {D1 D2 : LieDerivation R L M} (a b : L)
 
+@[macro_inline]
 instance : FunLike (LieDerivation R L M) L M where
   coe D := D.toFun
-  coe_injective' D1 D2 h := by cases D1; cases D2; congr; exact DFunLike.coe_injective h
+  coe_injective D1 D2 h := by cases D1; cases D2; congr; exact DFunLike.coe_injective h
 
 instance instLinearMapClass : LinearMapClass (LieDerivation R L M) R L M where
   map_add D := D.toLinearMap.map_add'
@@ -95,7 +94,7 @@ theorem ext (H : ∀ a, D1 a = D2 a) : D1 = D2 :=
   DFunLike.ext _ _ H
 
 theorem congr_fun (h : D1 = D2) (a : L) : D1 a = D2 a :=
-  DFunLike.congr_fun h a
+  congr($h a)
 
 @[simp]
 lemma apply_lie_eq_sub (D : LieDerivation R L M) (a b : L) :
@@ -331,6 +330,8 @@ section
 
 variable (R L : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
 
+attribute [local instance 100] LieRing.ofAssociativeRing
+
 /-- The Lie algebra morphism from Lie derivations into linear endomorphisms. -/
 def toLinearMapLieHom : LieDerivation R L L →ₗ⁅R⁆ L →ₗ[R] L where
   toFun := toLinearMap
@@ -389,7 +390,7 @@ end Inner
 
 section ExpNilpotent
 
-variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] [LieAlgebra ℚ L]
+variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] [Module ℚ L]
   (D : LieDerivation R L L)
 
 /-- In characteristic zero, the exponential of a nilpotent derivation is a Lie algebra
@@ -416,7 +417,7 @@ lemma exp_apply (h : IsNilpotent D.toLinearMap) :
 
 lemma exp_map_apply (h : IsNilpotent D.toLinearMap) (l : L) :
     exp D h l = IsNilpotent.exp D.toLinearMap l :=
-  DFunLike.congr_fun (exp_apply D h) l
+  congr($(exp_apply D h) l)
 
 end ExpNilpotent
 

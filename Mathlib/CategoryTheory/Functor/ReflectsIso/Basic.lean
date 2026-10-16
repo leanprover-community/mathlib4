@@ -6,8 +6,6 @@ Authors: Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Whiskering
-public import Mathlib.CategoryTheory.Iso
-public import Mathlib.CategoryTheory.Functor.FullyFaithful
 
 /-!
 # Functors which reflect isomorphisms
@@ -23,7 +21,7 @@ public section
 
 namespace CategoryTheory
 
-open Functor
+open CategoryTheory.Functor
 
 variable {C : Type*} [Category* C]
   {D : Type*} [Category* D]
@@ -63,9 +61,10 @@ instance reflectsIsomorphisms_comp (F : C ⥤ D) (G : D ⥤ E)
     [F.ReflectsIsomorphisms] [G.ReflectsIsomorphisms] :
     (F ⋙ G).ReflectsIsomorphisms :=
   ⟨fun f (hf : IsIso (G.map _)) => by
-    haveI := isIso_of_reflects_iso (F.map f) G
+    have := isIso_of_reflects_iso (F.map f) G
     exact isIso_of_reflects_iso f F⟩
 
+set_option backward.defeqAttrib.useBackward true in
 lemma reflectsIsomorphisms_of_comp (F : C ⥤ D) (G : D ⥤ E)
     [(F ⋙ G).ReflectsIsomorphisms] : F.ReflectsIsomorphisms where
   reflects f _ := by
