@@ -5,9 +5,10 @@ Authors: Justus Springer
 -/
 module
 
-public import Mathlib.Algebra.Category.Ring.Basic
 public import Mathlib.Algebra.Category.Grp.FilteredColimits
-public import Mathlib.Algebra.Ring.ULift
+public import Mathlib.Algebra.Category.Ring.Basic
+
+import Mathlib.Algebra.Ring.ULift
 
 /-!
 # The forgetful functor from (commutative) (semi-) rings preserves filtered colimits.

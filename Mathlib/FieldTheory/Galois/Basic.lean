@@ -5,10 +5,8 @@ Authors: Thomas Browning, Patrick Lutz, Yongle Hu, Jingting Wang
 -/
 module
 
-public import Mathlib.FieldTheory.Normal.Closure
 public import Mathlib.FieldTheory.PrimitiveElement
 public import Mathlib.FieldTheory.SeparableClosure
-public import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 
 /-!
 # Galois Extensions
@@ -595,7 +593,14 @@ end GaloisEquivalentDefinitions
 section normalClosure
 
 variable (k K F : Type*) [Field k] [Field K] [Field F] [Algebra k K] [Algebra k F] [Algebra K F]
-  [IsScalarTower k K F] [IsGalois k F]
+  [IsScalarTower k K F]
+
+/-- Let $F / K / k$ be a tower of field extensions. If $K$ is separable over $k$ and $F$ is normal
+over $k$, then the normal closure of $K$ over $k$ in $F$ is Galois over $k$. -/
+instance IsGalois.normalClosure_of_isSeparable [Algebra.IsSeparable k K] [Normal k F] :
+    IsGalois k (normalClosure k K F) where
+
+variable [IsGalois k F]
 
 /-- Let $F / K / k$ be a tower of field extensions. If $F$ is Galois over $k$,
 then the normal closure of $K$ over $k$ in $F$ is Galois over $k$. -/

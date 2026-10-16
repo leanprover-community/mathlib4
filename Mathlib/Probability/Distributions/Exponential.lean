@@ -5,9 +5,7 @@ Authors: Claus Clausen, Patrick Massot
 -/
 module
 
-public import Mathlib.Probability.CDF
 public import Mathlib.Probability.Distributions.Gamma
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-! # Exponential distributions over ℝ
 
@@ -112,7 +110,7 @@ open Topology
 
 lemma hasDerivAt_neg_exp_mul_exp {r x : ℝ} :
     HasDerivAt (fun a ↦ -exp (-(r * a))) (r * exp (-(r * x))) x := by
-  convert! (((hasDerivAt_id x).const_mul (-r)).exp.const_mul (-1)) using 1
+  convert (((hasDerivAt_id x).const_mul (-r)).exp.const_mul (-1)) using 1
   · simp only [one_mul, id_eq, neg_mul]
   simp only [id_eq, neg_mul, mul_one, mul_neg, one_mul, neg_neg, mul_comm]
 

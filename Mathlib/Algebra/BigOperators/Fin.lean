@@ -555,18 +555,18 @@ theorem inv_partialProd_mul_eq_contractNth {G : Type*} [Group G] (g : Fin (n + 1
       j.contractNth (· * ·) g k := by
   rcases lt_trichotomy (k : ℕ) j with (h | h | h)
   · rwa [succAbove_of_castSucc_lt, succAbove_of_castSucc_lt, partialProd_right_inv,
-    contractNth_apply_of_lt]
-    · rw [castSucc_lt_iff_succ_le, succ_le_succ_iff, le_iff_val_le_val]
-      exact le_of_lt h
+      contractNth_apply_of_lt]
+    rw [castSucc_lt_iff_succ_le, succ_le_succ_iff, le_iff_val_le_val]
+    exact le_of_lt h
   · rwa [succAbove_of_castSucc_lt, succAbove_of_le_castSucc, partialProd_succ,
-    castSucc_succ, ← mul_assoc,
+      castSucc_succ, ← mul_assoc,
       partialProd_right_inv, contractNth_apply_of_eq]
     · simp [le_iff_val_le_val, ← h]
     · rw [castSucc_lt_iff_succ_le, succ_le_succ_iff, le_iff_val_le_val]
       exact le_of_eq h
   · rwa [succAbove_of_le_castSucc, succAbove_of_le_castSucc, partialProd_succ, partialProd_succ,
       castSucc_succ, partialProd_succ, inv_mul_cancel_left, contractNth_apply_of_gt]
-    · exact le_iff_val_le_val.2 (le_of_lt h)
+    exact le_iff_val_le_val.2 (le_of_lt h)
 
 end PartialProd
 
@@ -661,7 +661,7 @@ def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃
         simp_rw [Fin.val_zero, Fintype.prod_empty, Nat.div_one, mul_one, Fin.cons_zero,
           Fin.prod_univ_succ, Fin.castLE_zero, Fin.cons_zero, ← Nat.div_div_eq_div_mul,
           mul_left_comm (_ % _ : ℕ), ← mul_sum]
-        convert! Nat.mod_add_div _ _
+        convert Nat.mod_add_div _ _
         exact ih (a / x) (Nat.div_lt_of_lt_mul <| a.is_lt.trans_eq (Fin.prod_univ_succ _)))
 
 theorem finPiFinEquiv_apply {m : ℕ} {n : Fin m → ℕ} (f : ∀ i : Fin m, Fin (n i)) :

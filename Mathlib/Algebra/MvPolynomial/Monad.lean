@@ -5,7 +5,6 @@ Authors: Johan Commelin, Robert Y. Lewis
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.Rename
 public import Mathlib.Algebra.MvPolynomial.Variables
 
 /-!

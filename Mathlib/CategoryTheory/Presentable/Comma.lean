@@ -5,10 +5,11 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Comma.LocallySmall
 public import Mathlib.CategoryTheory.ObjectProperty.Comma
-public import Mathlib.CategoryTheory.Presentable.IsDiscrete
 public import Mathlib.CategoryTheory.Presentable.Uniformization
+
+import Mathlib.CategoryTheory.Comma.LocallySmall
+import Mathlib.CategoryTheory.Presentable.IsDiscrete
 
 /-!
 # Comma categories are accessible

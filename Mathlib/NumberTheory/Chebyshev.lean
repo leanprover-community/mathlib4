@@ -5,15 +5,12 @@ Authors: Alastair Irving, Terry Tao, Ruben Van de Velde
 -/
 module
 
-public import Mathlib.Algebra.Order.Floor.Semifield
-public import Mathlib.Analysis.SpecialFunctions.Pow.Real
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 public import Mathlib.NumberTheory.AbelSummation
-public import Mathlib.NumberTheory.PrimeCounting
-public import Mathlib.NumberTheory.Primorial
 public import Mathlib.NumberTheory.ArithmeticFunction.VonMangoldt
+public import Mathlib.NumberTheory.Primorial
 
 import Mathlib.Algebra.GCDMonoid.FinsetLemmas
+import Mathlib.Algebra.Order.Floor.Semifield
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.Analysis.SpecialFunctions.Log.InvLog
 import Mathlib.Data.Nat.Prime.Int
@@ -111,7 +108,7 @@ theorem theta_eq_sum_primesLE_log (n : ℕ) : θ n = ∑ p ∈ primesLE n, log p
 theorem psi_eq_zero_of_lt_two {x : ℝ} (hx : x < 2) : ψ x = 0 := by
   apply sum_eq_zero fun n hn ↦ ?_
   simp only [mem_Ioc] at hn
-  convert! vonMangoldt_apply_one
+  convert vonMangoldt_apply_one
   have := lt_of_le_of_lt (le_floor_iff' hn.1.ne' |>.mp hn.2) hx
   norm_cast at this
   linarith
@@ -136,7 +133,7 @@ theorem psi_one : ψ 1 = 0 := psi_eq_zero_of_lt_two one_lt_two
 
 theorem theta_eq_zero_of_lt_two {x : ℝ} (hx : x < 2) : θ x = 0 := by
   apply sum_eq_zero fun n hn ↦ ?_
-  convert! log_one
+  convert log_one
   simp only [mem_filter, mem_Ioc] at hn
   have := lt_of_le_of_lt (le_floor_iff' hn.1.1.ne' |>.mp hn.1.2) hx
   norm_cast at ⊢ this

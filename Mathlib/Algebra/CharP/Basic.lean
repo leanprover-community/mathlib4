@@ -7,13 +7,14 @@ module
 
 public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.Group.Fin.Basic
-public import Mathlib.Algebra.Ring.ULift
+public import Mathlib.Algebra.Ring.GrindInstances
 public import Mathlib.Algebra.Ring.Opposite
+public import Mathlib.Algebra.Ring.ULift
 public import Mathlib.Data.Int.ModEq
 public import Mathlib.Data.Nat.Cast.Prod
-public import Mathlib.Data.ULift
 public import Mathlib.Order.Interval.Set.Defs
-public import Mathlib.Algebra.Ring.GrindInstances
+
+import Mathlib.Data.ULift
 
 /-!
 # Characteristic of semirings
@@ -144,7 +145,7 @@ instance Nat.lcm.charP [CharP S q] : CharP (R × S) (Nat.lcm p q) where
 /-- The characteristic of the product of two rings of the same characteristic
   is the same as the characteristic of the rings -/
 instance Prod.charP [CharP S p] : CharP (R × S) p := by
-  convert! Nat.lcm.charP R S p p; simp
+  convert Nat.lcm.charP R S p p; simp
 
 instance Prod.charZero_of_left [CharZero R] : CharZero (R × S) where
   cast_injective _ _ h := CharZero.cast_injective congr($(h).fst)

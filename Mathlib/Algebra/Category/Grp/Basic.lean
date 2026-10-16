@@ -224,10 +224,16 @@ lemma ofHom_injective {X Y : Type u} [Group X] [Group Y] :
   apply ConcreteCategory.congr_hom h
 
 /-- The forgetful functor from groups to monoids is fully faithful. -/
-@[to_additive fullyFaihtfulForget₂ToAddMonCat
+@[to_additive fullyFaithfulForget₂ToAddMonCat
   /-- The forgetful functor from additive groups to additive monoids is fully faithful. -/]
 def fullyFaithfulForget₂ToMonCat : (forget₂ GrpCat.{u} MonCat).FullyFaithful where
   preimage f := ofHom f.hom
+
+/-- Deprecated alias for `AddGrpCat.fullyFaithfulForget₂ToAddMonCat`. -/
+@[deprecated AddGrpCat.fullyFaithfulForget₂ToAddMonCat (since := "2026-10-13")]
+abbrev _root_.AddGrpCat.fullyFaihtfulForget₂ToAddMonCat :
+    (forget₂ AddGrpCat.{u} AddMonCat).FullyFaithful :=
+  AddGrpCat.fullyFaithfulForget₂ToAddMonCat
 
 @[to_additive]
 instance : (forget₂ GrpCat.{u} MonCat).Full :=
@@ -433,10 +439,16 @@ instance hasForgetToGroup : HasForget₂ CommGrpCat GrpCat where
 instance : Coe CommGrpCat.{u} GrpCat.{u} where coe := (forget₂ CommGrpCat GrpCat).obj
 
 /-- The forgetful functor from commutative groups to groups is fully faithful. -/
-@[to_additive fullyFaihtfulForget₂ToAddGrp
+@[to_additive
 /-- The forgetful functor from additive commutative groups to additive groups is fully faithful. -/]
 def fullyFaithfulForget₂ToGrp : (forget₂ CommGrpCat.{u} GrpCat).FullyFaithful where
   preimage f := ofHom f.hom
+
+/-- Deprecated alias for `AddCommGrpCat.fullyFaithfulForget₂ToAddGrp`. -/
+@[deprecated AddCommGrpCat.fullyFaithfulForget₂ToAddGrp (since := "2026-10-13")]
+abbrev _root_.AddCommGrpCat.fullyFaihtfulForget₂ToAddGrp :
+    (forget₂ AddCommGrpCat.{u} AddGrpCat).FullyFaithful :=
+  AddCommGrpCat.fullyFaithfulForget₂ToAddGrp
 
 @[to_additive]
 instance : (forget₂ CommGrpCat.{u} GrpCat).Full :=
@@ -582,11 +594,11 @@ namespace CategoryTheory.Aut
 of permutations. -/
 def isoPerm {α : Type u} : GrpCat.of (Aut α) ≅ GrpCat.of (Equiv.Perm α) where
   hom := GrpCat.ofHom
-    { toFun := fun g => g.toEquiv
+    { toFun g := g.asIso.toEquiv
       map_one' := by aesop
       map_mul' := by aesop }
   inv := GrpCat.ofHom
-    { toFun := fun g => g.toIso
+    { toFun g := .of g.toIso
       map_one' := by aesop
       map_mul' := by aesop }
 
