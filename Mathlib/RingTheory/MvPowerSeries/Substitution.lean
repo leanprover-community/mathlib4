@@ -136,6 +136,19 @@ theorem HasSubst.smul_X (a : σ → R) :
   convert! HasSubst.X.mul_left (fun s ↦ algebraMap R (MvPowerSeries σ R) (a s))
   simp [funext_iff, algebra_compatible_smul (MvPowerSeries σ R)]
 
+theorem HasSubst.sumElim {γ : Type*} {a : σ → MvPowerSeries γ R} {b : τ → MvPowerSeries γ R}
+    (ha : HasSubst a) (hb : HasSubst b) : HasSubst (Sum.elim a b) where
+  const_coeff := by rintro (s | t) <;> simp [ha.const_coeff, hb.const_coeff]
+  coeff_zero d := ((ha.coeff_zero d).image .inl).union ((hb.coeff_zero d).image .inr)|>.subset
+    <| by rintro (s | t) h <;> simpa
+
+/-- Stacking finitely many substitutable families gives a substitutable family. -/
+theorem HasSubst.uncurry {γ : Type*} [Finite γ] {a : γ → σ → MvPowerSeries τ R}
+    (ha : ∀ k, HasSubst (a k)) : HasSubst (Function.uncurry a) where
+  const_coeff p := (ha p.1).const_coeff p.2
+  coeff_zero d := (Set.finite_iUnion fun k ↦ ((ha k).coeff_zero d).image (Prod.mk k)).subset
+    fun ⟨k, s⟩ h ↦ Set.mem_iUnion.mpr ⟨k, s, h, rfl⟩
+
 /-- Families of `MvPowerSeries` that can be substituted, as an `Ideal` -/
 noncomputable def hasSubstIdeal : Ideal (σ → MvPowerSeries τ S) :=
   { carrier := Set.ofPred HasSubst
