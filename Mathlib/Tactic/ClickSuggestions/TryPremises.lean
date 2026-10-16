@@ -38,7 +38,8 @@ open Meta.RefinedDiscrTree in
 of sections of candidates, where each section corresponds to one kind of match with the
 discrimination tree. -/
 @[specialize]
-def getCandidatesAux (rwInfo : RwInfo) (gpos : Array GrwPos) (reportProgress : String → BaseIO Unit)
+def getCandidatesAux (rwInfo : RwInfo) (grwInfo? : Option GrwInfo)
+    (reportProgress : String → BaseIO Unit)
     (rw : Expr → MetaM (MatchResult RwLemma)) (grw : Expr → MetaM (MatchResult GrwLemma))
     (app : Expr → MetaM (MatchResult ApplyLemma)) (appAt : Expr → MetaM (MatchResult ApplyAtLemma))
     : ClickSuggestionsM (Array Candidates) := do
@@ -46,9 +47,8 @@ def getCandidatesAux (rwInfo : RwInfo) (gpos : Array GrwPos) (reportProgress : S
   /- The order in which we show the suggestions for the same pattern for different tactics
   depends on the following insertion order.
   We choose the order `grw` => `rw` => `apply(at)`. -/
-  if !gpos.isEmpty then
+  if let some grwInfo := grwInfo? then
     reportProgress "grw"
-    let grwInfo := { rwInfo with gpos }
     cands := cands ++ (← grw rwInfo.subExpr).elts.map fun _ ↦ (·.map (.grw grwInfo))
   reportProgress "rw"
   let mut rwInfo := rwInfo
@@ -70,19 +70,19 @@ def getCandidatesAux (rwInfo : RwInfo) (gpos : Array GrwPos) (reportProgress : S
 
 /-- Get the candidate theorems from imported files. -/
 @[specialize]
-def getImportCandidates (rwInfo : RwInfo) (gpos : Array GrwPos)
+def getImportCandidates (rwInfo : RwInfo) (grwInfo? : Option GrwInfo)
     (reportProgress : String → BaseIO Unit) :
     ClickSuggestionsM (Array Candidates) :=
-  getCandidatesAux rwInfo gpos reportProgress
+  getCandidatesAux rwInfo grwInfo? reportProgress
     (getImportMatches rwRef) (getImportMatches grwRef)
     (getImportMatches appRef) (getImportMatches appAtRef)
 
 /-- Get the candidate theorems from `pres`.
 Used for current file declarations and local hypotheses -/
-def getCandidates (rwInfo : RwInfo) (gpos : Array GrwPos)
+def getCandidates (rwInfo : RwInfo) (grwInfo? : Option GrwInfo)
     (pres : PreDiscrTrees) :
     ClickSuggestionsM (Array Candidates) :=
-  getCandidatesAux rwInfo gpos (fun _ ↦ pure ())
+  getCandidatesAux rwInfo grwInfo? (fun _ ↦ pure ())
     (getMatches pres.rw.toRefinedDiscrTree) (getMatches pres.grw.toRefinedDiscrTree)
     (getMatches pres.app.toRefinedDiscrTree) (getMatches pres.appAt.toRefinedDiscrTree)
 
@@ -163,14 +163,16 @@ public def librarySearchSuggestions (rootExpr subExpr : Expr) (lctx : LocalConte
 
   let pos := (← read).pos
   let fvarId? := (← read).hyp?
-  let gpos ← getGrwPos? rootExpr subExpr pos fvarId?.isSome
   let rflTarget? ← Meta.withLCtx lctx {} <| findRflTarget? rootExpr subExpr rwKind
   let rwInfo := { rootExpr, subExpr, rflTarget?, pos, rwKind }
+  let grwInfo? :=
+    (← getGrwInfo? rootExpr subExpr pos fvarId?.isSome).map fun (rels, goals) ↦
+      { rootExpr, subExpr, rflTarget?, rwKind, rels, goals }
   let assignableMVars := Array.map Expr.mvar <| ←
     (subExpr.collectMVars {}).result.filterM (not <$> ·.isReadOnlyOrSyntheticOpaque)
   let choice : Choice := {
     rw := true
-    grw := !gpos.isEmpty
+    grw := grwInfo?.isSome
     app := pos == .root && fvarId?.isNone
     appAt := pos == .root && fvarId?.isSome
   }
@@ -179,7 +181,7 @@ public def librarySearchSuggestions (rootExpr subExpr : Expr) (lctx : LocalConte
   token.update <div> loading local hypotheses ⏳️ </div>
   let pres ← computeLCtxDiscrTrees choice lctx fvarId?
   Core.checkInterrupted
-  for cand in ← getCandidates rwInfo gpos pres do
+  for cand in ← getCandidates rwInfo grwInfo? pres do
     sections := sections.push (← runSuggestions .hyp assignableMVars cand)
 
   Core.checkInterrupted
@@ -189,7 +191,7 @@ public def librarySearchSuggestions (rootExpr subExpr : Expr) (lctx : LocalConte
     </div>
   let pres ← computeModuleDiscrTrees choice parentDecl?
   Core.checkInterrupted
-  for cand in ← getCandidates rwInfo gpos pres do
+  for cand in ← getCandidates rwInfo grwInfo? pres do
     sections := sections.push (← runSuggestions .currFile assignableMVars cand)
 
   Core.checkInterrupted
@@ -204,7 +206,7 @@ public def librarySearchSuggestions (rootExpr subExpr : Expr) (lctx : LocalConte
       {.element "div" #[] sections}
       <div> {.text s!"loading imported `{tac}` theorems ⏳️"} </div>
       </div>
-  for cand in ← getImportCandidates rwInfo gpos reportProgress do
+  for cand in ← getImportCandidates rwInfo grwInfo? reportProgress do
     sections := sections.push (← runSuggestions .imported assignableMVars cand)
 
   token.update <| .element "div" #[] sections

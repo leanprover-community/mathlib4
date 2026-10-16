@@ -19,9 +19,8 @@ namespace Mathlib.Tactic.ClickSuggestions
 
 open Lean Meta Mathlib.Tactic ProofWidgets Jsx
 
-/-- `GRewritePos` contains the ìnformation about a given subexpression position needed for
-applying a  `grw` lemma. -/
-structure GrwPos where
+/-- A relation for a `grw` lemma. -/
+structure GrwRel where
   /-- The name of the relation. -/
   relName : Name
   /-- The expression of the relation. -/
@@ -33,7 +32,7 @@ structure GrwPos where
 /-- Given the relation for grewriting at the given position, figure out all of the
 subrelations that could also be used. -/
 private def gcongrBackward (relName : Name) (relation : Expr) (symm : Bool) :
-    MetaM (Array GrwPos) := do
+    MetaM (Array GrwRel) := do
   let type ← inferType relation
   let α ← mkFreshTypeMVar
   unless ← isDefEq type (.forallE `_ α (.forallE `_ α (.sort 0) .default) .default) do
@@ -43,7 +42,7 @@ private def gcongrBackward (relName : Name) (relation : Expr) (symm : Bool) :
   withLocalDeclD `a α fun a ↦ do
   withLocalDeclD `b α fun b ↦ do
   withNewMCtxDepth do
-  let mut result : Array GrwPos := #[]
+  let mut result : Array GrwRel := #[]
   -- Any relation `r` can be proved from `AntisymmRel r`, so we add this as a possible relation
   if (← getEnv).contains `AntisymmRel then
     let antiSymm := mkApp2 (.const `AntisymmRel [u]) α relation
@@ -77,7 +76,7 @@ to help determine which lemmas could work with `grw`.
 If the selected grewrite position is valid, then `ref` is set, and a dummy error is thrown.
 Note that this function will be called at most once,
 so we don't lose information by throwing an error. -/
-private def dummyDischarger (ref : IO.Ref (Array GrwPos)) (hyp? : Bool) (fvar : Expr)
+private def dummyDischarger (ref : IO.Ref (Array GrwRel)) (hyp? : Bool) (fvar : Expr)
     (goal : MVarId) : MetaM Bool := do
   let e ← instantiateMVars (← goal.getType)
   let mkApp2 relation lhs rhs := e | throwError "`{e}` is not a relation"
@@ -91,29 +90,26 @@ private def dummyDischarger (ref : IO.Ref (Array GrwPos)) (hyp? : Bool) (fvar : 
     else
       throwError "{e} doesn't have {fvar} on either side"
   ref.set (← gcongrBackward relName relation symm)
-  throw <| .error default "dummyError"
+  return true
 
 /-- Determine possible ways in which a `grw` call could rewrite at the given subexpression. -/
-def getGrwPos? (rootExpr subExpr : Expr) (pos : SubExpr.Pos) (hyp? : Bool) :
-    MetaM (Array GrwPos) := do
+def getGrwInfo? (rootExpr subExpr : Expr) (pos : SubExpr.Pos) (hyp? : Bool) :
+    MetaM (Option (Array GrwRel × Array MVarId)) := do
   withLocalDeclD `_a (← inferType subExpr) fun fvar => do
   let root' ← replaceSubexpr (fun _ => pure (GCongr.mkHoleAnnotation fvar)) pos rootExpr
   let imp := Expr.forallE `_a rootExpr root' .default
   let dummyGoal ← mkFreshExprMVar imp
   let ref ← IO.mkRef #[]
-  try
-    _ ← dummyGoal.mvarId!.gcongr false |>.run (mainGoalDischarger := dummyDischarger ref hyp? fvar)
-    return #[]
-  catch ex =>
-    if (← ex.toMessageData.toString) != "dummyError" then
-      return #[]
+  let (_, state) ←
+    try dummyGoal.mvarId!.gcongr false |>.run (mainGoalDischarger := dummyDischarger ref hyp? fvar)
+    catch _ => return none
   let result ← ref.get
   /- I doubt that this can come up in practice, but we check anyways that the relation
   that was found doesn't contain any free variables that are now out of scope. -/
   for { relation, .. } in result do
     unless (collectFVars {} relation).fvarIds.all (← getLCtx).contains do
-      return #[]
-  return result
+      return none
+  return (result, state.newGoals)
 
 
 /-- The structure for rewrite lemmas stored in the `RefinedDiscrTree`. -/
@@ -134,7 +130,9 @@ structure GrwInfo where
   /-- If we rewrite into this expression, then the goal will be solved. -/
   rflTarget? : Option Expr
   /-- The relations that can be used for rewriting. -/
-  gpos : Array GrwPos
+  rels : Array GrwRel
+  /-- The side goals that appear when grewriting in this position. -/
+  goals : Array MVarId
   /-- Some information about the rewrite position. -/
   rwKind : RwKind
 
@@ -180,7 +178,7 @@ private def tacticSyntax (lem : GrwLemma) (i : GrwInfo) (proof : Expr) (justLemm
 def GrwLemma.try (i : GrwInfo) (lem : GrwLemma) (assignableMVars : Array Expr) :
     ClickSuggestionsM (Result GrwKey) := do
   let mctx ← getMCtx
-  (·.getDM do throwError "no suitable `grw` relation was found") =<< i.gpos.findSomeM? fun pos ↦ do
+  (·.getDM do throwError "no suitable `grw` relation was found") =<< i.rels.findSomeM? fun pos ↦ do
   unless lem.relName == pos.relName && pos.symm?.all (· == lem.symm) do return none
   let (proof, mvars, binderInfos, rel) ← lem.name.forallMetaTelescopeReducing
   let mkApp2 rel lhs rhs := rel.cleanupAnnotations | return none
@@ -215,13 +213,16 @@ def GrwLemma.try (i : GrwInfo) (lem : GrwLemma) (assignableMVars : Array Expr) :
   }
   let tactic ← tacticSyntax lem i proof justLemmaName
   let isClosing ← (do
-    if extraGoals.isEmpty then
+    if i.goals.isEmpty && extraGoals.isEmpty then
       if let some rflTarget := i.rflTarget? then
         return ← withoutModifyingMCtx <| isDefEq replacement rflTarget
     return false)
   if isClosing then
     addSolvedSuggestion tactic
   let mut htmls := #[← exprToHtml replacement]
+  for goal in i.goals do
+    let html ← goal.withContext (exprToHtml (← goal.getType))
+    htmls := htmls.push <div><strong className="goal-vdash">⊢ </strong>{html}</div>
   for goal in extraGoals do
     htmls := htmls.push
       <div> <strong className="goal-vdash">⊢ </strong> {← exprToHtml goal} </div>
