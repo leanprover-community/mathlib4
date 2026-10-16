@@ -15,7 +15,13 @@ public import Mathlib.Geometry.Convex.ConvexSpace.Prod
 In an R-convex space, we define the following objects:
 * `Icc R x y`: Closed segment joining `x` and `y`.
 * `Ioo R x y`: Open segment joining `x` and `y`.
-* `Ico R x y`: Right-open segment joining `x` and `y`.
+* `Ico R x y`: Half-open segment joining `x` and `y`.
+
+## Implementation notes
+
+We don't provide the left-open equivalent to `Set.Ioc`, since in convex space `Ico x y = Ioc y x`.
+This is reflected in `Ioo_insert_left` and `Ioo_insert_right`.
+
 -/
 
 namespace Convexity
@@ -27,20 +33,18 @@ open Convexity Function
 variable (R) {X} [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] [ConvexSpace R X] {s : Set X}
   {x y z : X}
 
-/-- Segments in a convex space. Denoted as `Icc R x y` within the `Convex` namespace. -/
+/-- Segment in a convex space. -/
 def Icc (x y : X) : Set X :=
   { z : X | ∃ (a b : R) (ha : 0 ≤ a) (hb : 0 ≤ b) (hab : a + b = 1),
     convexCombPair a b ha hb hab x y = z }
 
-/-- Open segments in a convex space. Denoted as `Ioo R x y` within the `Convex` namespace.
-Note that `Ioo R x x = {x}` instead of being `∅` when the base semiring has some element between
-`0` and `1`. -/
+/-- Open segment in a convex space. Note that `Ioo R x x = {x}` instead of `∅` if the base
+semiring has some element between `0` and `1`. -/
 def Ioo (x y : X) : Set X :=
   { z : X | ∃ (a b : R) (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1),
     convexCombPair a b ha.le hb.le hab x y = z }
 
-/-- Left-open segments in a convex space. Denoted as `Ico R x y` within the `Convex` namespace.
-Note that `Ico R x x = {x}` instead of being `∅` . -/
+/-- Left-open segment in a convex space. Note that `Ico R x x = {x}` instead of `∅` . -/
 def Ico (x y : X) : Set X :=
   { z : X | ∃ (a b : R) (ha : 0 < a) (hb : 0 ≤ b) (hab : a + b = 1),
     convexCombPair a b ha.le hb hab x y = z }
