@@ -56,7 +56,7 @@ example : (!![1, 2; 3, 4] : Matrix (Fin 2) (Fin 2) ℝ).IsIndecomposable := by
 -- a matrix given by a function; this will be handled in a future PR
 /-- error: `simp` made no progress -/
 #guard_msgs in
-example : (of fun i j : Fin 2 ↦ if i = j then (2 : ℤ) else -1).IsIndecomposable := by
+example : (of fun i j : Fin 3 ↦ if j = i + 1 then (1 : ℤ) else 0).IsIndecomposable := by
   simp only [reduceIsIndecomposable]
 
 -- a free variable
