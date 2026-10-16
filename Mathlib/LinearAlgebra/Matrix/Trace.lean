@@ -50,8 +50,8 @@ def trace (A : Matrix n n R) : R :=
 variable (n R)
 
 @[simp]
-theorem trace_zero : trace (0 : Matrix n n R) = 0 := by
-  simp [trace]
+theorem trace_zero : trace (0 : Matrix n n R) = 0 :=
+  (Finset.sum_const (0 : R)).trans <| smul_zero _
 
 variable {n R}
 
@@ -166,7 +166,7 @@ theorem trace_mul_cycle' [NonUnitalCommSemiring R] (A : Matrix m n R) (B : Matri
 
 /-- For square matrices, the trace of any power of `A * B` is unchanged when the factors
 are reversed. -/
-theorem trace_mul_pow_comm [CommSemiring R]
+theorem trace_mul_pow_comm [DecidableEq n] [CommSemiring R]
     (A B : Matrix n n R) (k : ℕ) :
     trace ((A * B) ^ k) = trace ((B * A) ^ k) := by
   cases k with
@@ -179,11 +179,11 @@ The matrices `A` and `B` may be rectangular. The exponent is positive because th
 does not hold at exponent zero when the index types have different cardinalities. For square
 matrices, see `trace_mul_pow_comm`.
 -/
-theorem trace_mul_pow_comm' [CommSemiring R]
+theorem trace_mul_pow_comm' [DecidableEq m] [DecidableEq n] [CommSemiring R]
     (A : Matrix m n R) (B : Matrix n m R) {k : ℕ} (hk : k ≠ 0) :
     trace ((A * B) ^ k) = trace ((B * A) ^ k) := by
   match k with
-  | 0 => by contradiction
+  | 0 => contradiction
   | k + 1 => rw [pow_succ, ← Matrix.mul_assoc, trace_mul_cycle, mul_pow_succ_mul]
 
 @[simp]
