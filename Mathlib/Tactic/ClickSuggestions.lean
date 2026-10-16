@@ -8,7 +8,7 @@ module
 public meta import Lean.Server.FileWorker.RequestHandling
 public meta import Mathlib.Lean.GoalsLocation
 public meta import Mathlib.Lean.Meta.KAbstractPositions
-public import Lean.Widget.InteractiveGoal
+public meta import Lean.Widget.InteractiveGoal
 public import Mathlib.Tactic.ClickSuggestions.TryPremises
 public import Mathlib.Tactic.ClickSuggestions.Unfold
 public import ProofWidgets.Component.OfRpcMethod
