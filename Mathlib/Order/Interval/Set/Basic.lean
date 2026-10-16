@@ -169,8 +169,12 @@ theorem nonempty_Ioc_subtype (h : a < b) : Nonempty (Ioc a b) :=
 theorem nonempty_Ioo_subtype [DenselyOrdered α] (h : a < b) : Nonempty (Ioo a b) :=
   Nonempty.to_subtype (nonempty_Ioo.mpr h)
 
-@[to_dual] protected theorem _root_.IsUpperSet.Ici : IsUpperSet (Ici a) := fun _ _ => ge_trans
-@[to_dual] protected theorem _root_.IsUpperSet.Ioi : IsUpperSet (Ioi a) :=
+@[to_dual]
+protected theorem _root_.IsUpperSet.Ici (a : α) : IsUpperSet (Ici a) :=
+  fun _ _ => ge_trans
+
+@[to_dual]
+protected theorem _root_.IsUpperSet.Ioi (a : α) : IsUpperSet (Ioi a) :=
   fun _ _ => flip lt_of_lt_of_le
 
 @[to_dual (attr := deprecated (since := "2026-10-16"))] alias isUpperSet_Ici := IsUpperSet.Ici
