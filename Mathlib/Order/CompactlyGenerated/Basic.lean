@@ -54,6 +54,8 @@ We also show well-founded lattices are compactly generated
 complete lattice, well-founded, compact
 -/
 
+open scoped Finset
+
 @[expose] public section
 
 variable {ι : Sort*} {α : Type*} {f : ι → α}
@@ -641,8 +643,8 @@ theorem iSupIndep.iInf {ι : Type*} {κ : ι → Type*} (f : (i : ι) → κ i �
   intro s
   induction s using Finset.strongInduction with
   | H s ih =>
-    by_cases hs : 1 < s.card; swap
-    · by_cases hcard0 : s.card = 0 <;> grind [Finset.card_eq_zero, Finset.card_eq_one]
+    by_cases hs : 1 < #s; swap
+    · by_cases hcard0 : #s = 0 <;> grind [Finset.card_eq_zero, Finset.card_eq_one]
     · obtain ⟨k₁, k₂, _, _, h⟩ := Finset.one_lt_card_iff.mp hs
       obtain ⟨i, hi⟩ : ∃ i : ι, k₁ i ≠ k₂ i := Function.ne_iff.mp h
       classical
