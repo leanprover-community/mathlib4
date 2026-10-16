@@ -5,6 +5,7 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
 module
 
+public import Mathlib.Algebra.Group.Action.Basic
 public import Mathlib.Algebra.Group.Hom.End
 public import Mathlib.Algebra.Module.NatInt
 
