@@ -46,7 +46,7 @@ noncomputable def geometricCensoredMeasure (p : unitInterval) (m : ℕ) : Measur
 
 instance isProbabilityMeasure_geometricCensoredMeasure :
     IsProbabilityMeasure (geometricCensoredMeasure p m) :=
-  Measure.isProbabilityMeasure_map Measurable.of_discrete.aemeasurable
+  inferInstanceAs (IsProbabilityMeasure ((geometricMeasure p).map fun k ↦ min k m))
 
 /-- The censored measure of a set is the geometric measure of its preimage under
 `fun k ↦ min k m`. -/
