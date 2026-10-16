@@ -36,8 +36,8 @@ a conditionally complete lattice is a complete lattice (`Mathlib.Order.CompleteL
 so these results are in principle available by bundling the restriction of `f` as an order hom on
 the subtype `↥(Set.Icc a b)`. The definitions here are the unbundled ambient-valued versions: they
 take `MonotoneOn` and `Set.MapsTo` hypotheses directly, need no `Fact (a ≤ b)` instance, and
-produce elements of `α` rather than of a subtype. This is the convenient form for applying the
-theorem on concrete intervals of `ℝ`.
+produce elements of `α` rather than of a subtype. This is the convenient form for applying
+the theorem on concrete intervals of `ℝ`.
 
 `lfpIcc` and `gfpIcc` are total. Without the hypotheses, they are the infimum and supremum of
 possibly empty sets, hence junk values; every theorem states the hypotheses it needs.
@@ -47,7 +47,7 @@ possibly empty sets, hence junk values; every theorem states the hypotheses it n
 fixed point, Knaster-Tarski, conditionally complete lattice, interval
 -/
 
-@[expose] public section
+public section
 
 open Function (IsFixedPt)
 open Set
@@ -57,13 +57,13 @@ variable {α : Type*} [ConditionallyCompleteLattice α] {f g : α → α} {a b c
 /-- The least fixed point of `f` on `Set.Icc a b`, realized as the infimum of the prefixed points
 of `f` in `[a, b]`. This is a genuine least fixed point when `f` is monotone on `[a, b]` and maps
 `[a, b]` into itself (`isLeast_lfpIcc`); otherwise it is a junk value. -/
-def lfpIcc (f : α → α) (a b : α) : α :=
+@[expose] def lfpIcc (f : α → α) (a b : α) : α :=
   sInf {x ∈ Icc a b | f x ≤ x}
 
 /-- The greatest fixed point of `f` on `Set.Icc a b`, realized as the supremum of the postfixed
 points of `f` in `[a, b]`. This is a genuine greatest fixed point when `f` is monotone on `[a, b]`
 and maps `[a, b]` into itself (`isGreatest_gfpIcc`); otherwise it is a junk value. -/
-def gfpIcc (f : α → α) (a b : α) : α :=
+@[expose] def gfpIcc (f : α → α) (a b : α) : α :=
   sSup {x ∈ Icc a b | x ≤ f x}
 
 theorem lfpIcc_le (hx : x ∈ Icc a b) (hfx : f x ≤ x) : lfpIcc f a b ≤ x :=
