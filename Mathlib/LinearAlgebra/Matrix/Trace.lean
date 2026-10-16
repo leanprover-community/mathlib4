@@ -166,8 +166,8 @@ theorem trace_mul_cycle' [NonUnitalCommSemiring R] (A : Matrix m n R) (B : Matri
 
 -- Matrix powers require decidable equality on the index types. Keep these instances
 -- local so that the theorem statements do not impose extra typeclass assumptions.
-local instance : DecidableEq m := Classical.decEq m
-local instance : DecidableEq n := Classical.decEq n
+noncomputable local instance : DecidableEq m := Classical.decEq m
+noncomputable local instance : DecidableEq n := Classical.decEq n
 
 /-- The trace of a positive power of A * B is unchanged when the factors are reversed.
 
