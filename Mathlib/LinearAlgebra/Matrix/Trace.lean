@@ -182,9 +182,12 @@ matrices, see `trace_mul_pow_comm`.
 theorem trace_mul_pow_comm' [DecidableEq m] [DecidableEq n] [CommSemiring R]
     (A : Matrix m n R) (B : Matrix n m R) {k : ℕ} (hk : k ≠ 0) :
     trace ((A * B) ^ k) = trace ((B * A) ^ k) := by
-  match k with
-  | 0 => contradiction
-  | k + 1 => rw [pow_succ, ← Matrix.mul_assoc, trace_mul_cycle, mul_pow_succ_mul]
+  obtain ⟨k', rfl⟩ := Nat.exists_eq_succ_of_ne_zero hk
+  calc
+    trace ((A * B) ^ (k' + 1)) = trace (A * (B * A) ^ k' * B) := by
+      rw [pow_succ, mul_pow_succ_mul]
+    _ = trace ((B * A) ^ (k' + 1)) := by
+      rw [trace_mul_cycle, pow_succ]
 
 @[simp]
 theorem trace_replicateCol_mul_replicateRow {ι : Type*} [Unique ι] [NonUnitalNonAssocSemiring R]
