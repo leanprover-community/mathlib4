@@ -20,7 +20,8 @@ Dirichlet convolution on `{1, …, n}`.
 
 * `Matrix.moebiusMatrix_mul_zetaMatrix`, `Matrix.zetaMatrix_mul_moebiusMatrix`: the two products
   are `1`.
-* `Matrix.zetaMatrix_inv`: `(zetaMatrix R n)⁻¹ = moebiusMatrix R n` over any commutative ring `R`.
+* `Matrix.zetaMatrix_inv`, `Matrix.moebiusMatrix_inv`: `(zetaMatrix R n)⁻¹ = moebiusMatrix R n` and
+  `(moebiusMatrix R n)⁻¹ = zetaMatrix R n` over any commutative ring `R`.
 * `Matrix.det_moebiusMatrix`: the Möbius matrix has determinant `1`.
 
 ## Implementation notes
