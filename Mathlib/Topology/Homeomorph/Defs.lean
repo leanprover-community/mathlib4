@@ -520,8 +520,11 @@ protected alias _root_.HomeomorphClass.coe_coe := Homeomorph.coe_ofClass
 
 instance [HomeomorphClass F α β] : CoeOut F (α ≃ₜ β) := ⟨Homeomorph.ofClass⟩
 
-theorem toHomeomorph_injective [HomeomorphClass F α β] : Function.Injective ((↑) : F → α ≃ₜ β) :=
+theorem ofClass_injective [HomeomorphClass F α β] : Function.Injective ((↑) : F → α ≃ₜ β) :=
   fun _ _ e ↦ DFunLike.ext _ _ fun a ↦ congr($e a)
+
+@[deprecated (since := "2026-10-16")]
+alias _root_.HomeomorphClass.toHomeomorph_injective := ofClass_injective
 
 instance [HomeomorphClass F α β] : ContinuousMapClass F α β where
   map_continuous f := HomeomorphClass.map_continuous f
