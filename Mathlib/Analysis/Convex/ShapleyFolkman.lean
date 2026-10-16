@@ -5,12 +5,13 @@ Authors: Kristofer Gaudel
 -/
 module
 
-public import Mathlib.Analysis.Convex.Caratheodory
 public import Mathlib.Analysis.Convex.Combination
 public import Mathlib.Algebra.Group.Pointwise.Set.BigOperators
 public import Mathlib.Data.Set.Card
 public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 public import Mathlib.LinearAlgebra.Dimension.Constructions
+
+import Mathlib.Analysis.Convex.Caratheodory
 
 /-!
 # The Shapley–Folkman lemma
@@ -35,8 +36,7 @@ non-convex optimization.
 The proof is the classical lifting argument. Write `n` for the number of summands and
 `d = finrank 𝕜 E`.
 
-1. `exists_eq_sum_of_mem_sum_convexHull` splits `x` as `∑ i, y i` with
-   `y i ∈ convexHull 𝕜 (t i)`.
+1. `Set.mem_fintype_sum` splits `x` as `∑ i, y i` with `y i ∈ convexHull 𝕜 (t i)`.
 2. The argument moves to the product space `E × (ι → 𝕜)`, where each point `z` of the `i`-th
    summand is tagged with the `i`-th standard basis vector as `(z, Pi.single i 1)`, and
    `L = ⋃ i, t i ×ˢ {Pi.single i 1}` collects all the tagged summands. Scaling by `n⁻¹` turns
@@ -52,8 +52,8 @@ The proof is the classical lifting argument. Write `n` for the number of summand
    weights of each fiber to sum to `n⁻¹`. Rescaling each fiber by `n` yields points
    `y i ∈ convexHull 𝕜 (t i)` summing to `x`.
 6. The fibers partition a set of at most `d + n` elements into `n` nonempty parts, so at most
-   `d` of them have more than one element; this is `card_two_le_fiber_le`. A fiber consisting
-   of a single element contributes a point of `t i` itself.
+   `d` of them have more than one element. A fiber consisting of a single element contributes a
+   point of `t i` itself.
 
 The `Fintype` instance produced by `eq_pos_convex_span_of_mem_convexHull` has to be introduced
 with `let` rather than `have`, since `have` would discard its value and the resulting instance
@@ -70,7 +70,7 @@ would no longer match the one appearing in the convex combination already obtain
 convex hull, Minkowski sum, Shapley-Folkman, Caratheodory
 -/
 
-@[expose] public section
+public section
 
 open Finset Module Set
 open scoped Pointwise
@@ -82,42 +82,7 @@ variable {𝕜 : Type*} {E : Type u} {ι : Type*} [Field 𝕜] [LinearOrder 𝕜
 
 namespace ShapleyFolkman
 
-/-! ### The lifted configuration
-
-Points of distinct summands are tagged with distinct standard basis vectors of `ι → 𝕜`, so
-that a convex combination of tagged points records in its second coordinate the total weight
-it assigns to each summand.
--/
-
-omit [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] in
-/-- Evaluated at any index, the sum of all the standard basis vectors of `ι → 𝕜` is `1`. -/
-theorem sum_single_apply [Fintype ι] [DecidableEq ι] (j : ι) :
-    ∑ i, Pi.single (M := fun _ ↦ 𝕜) i 1 j = 1 := by
-  simp
-
 /-! ### Ingredients of the proof -/
-
-omit [IsStrictOrderedRing 𝕜] in
-/-- A point of a finite Minkowski sum of convex hulls decomposes as a sum of points of those
-hulls. -/
-theorem exists_eq_sum_of_mem_sum_convexHull [Fintype ι] {t : ι → Set E} {x : E}
-    (hx : x ∈ ∑ i, convexHull 𝕜 (t i)) :
-    ∃ y : ι → E, (∀ i, y i ∈ convexHull 𝕜 (t i)) ∧ ∑ i, y i = x := by
-  obtain ⟨g, hg, hsum⟩ := (mem_fintype_sum _ _).mp hx
-  exact ⟨g, hg, hsum⟩
-
-/-- A combination of points of `s` with nonnegative weights summing to `c > 0` lies in
-`convexHull 𝕜 s` after rescaling by `c⁻¹`. -/
-theorem inv_smul_sum_mem_convexHull {s : Set E} {κ : Type*} [Fintype κ] {w : κ → 𝕜}
-    {z : κ → E} (hw : ∀ j, 0 ≤ w j) {c : 𝕜} (hc : 0 < c) (hsum : ∑ j, w j = c)
-    (hz : ∀ j, z j ∈ s) :
-    c⁻¹ • ∑ j, w j • z j ∈ convexHull 𝕜 s := by
-  rw [Finset.smul_sum]
-  simp_rw [smul_smul]
-  refine (convex_convexHull 𝕜 s).sum_mem (fun j _ ↦ ?_) ?_ (fun j _ ↦ ?_)
-  · exact mul_nonneg (inv_nonneg.2 hc.le) (hw j)
-  · rw [← Finset.mul_sum, hsum, inv_mul_cancel₀ hc.ne']
-  · exact subset_convexHull 𝕜 s (hz j)
 
 /-- If `y i ∈ convexHull 𝕜 (t i)` for every `i`, then scaling `∑ i, y i` and the all-ones tag
 by `n⁻¹`, where `n = Fintype.card ι`, gives a point of `convexHull 𝕜 (⋃ i, t i ×ˢ {Pi.single i 1})`.
@@ -187,22 +152,7 @@ theorem card_le_of_affineIndependent_of_sum_eq_one [FiniteDimensional 𝕜 E] [F
     have hrank : finrank 𝕜 (LinearMap.range ℓ) + finrank 𝕜 (LinearMap.ker ℓ)
         = finrank 𝕜 (E × (ι → 𝕜)) := LinearMap.finrank_range_add_finrank_ker ℓ
     rw [hsurj, finrank_top, Module.finrank_self, Module.finrank_prod, Module.finrank_pi] at hrank
-    omega
-
-/-- If `Fintype.card ι` nonempty parts have sizes summing to at most `d + Fintype.card ι`, then
-at most `d` of them have size at least `2`. -/
-theorem card_two_le_fiber_le [Fintype ι] {d : ℕ} {k : ι → ℕ} (h1 : ∀ i, 1 ≤ k i)
-    (h2 : ∑ i, k i ≤ d + Fintype.card ι) :
-    #{i ∈ Finset.univ | 2 ≤ k i} ≤ d := by
-  classical
-  set s : Finset ι := {i ∈ Finset.univ | 2 ≤ k i}
-  have hsplit : ∑ i ∈ s, k i + ∑ i ∈ sᶜ, k i = ∑ i, k i := Finset.sum_add_sum_compl s k
-  have hA : #s • 2 ≤ ∑ i ∈ s, k i :=
-    Finset.card_nsmul_le_sum s k 2 fun i hi ↦ (Finset.mem_filter.1 hi).2
-  have hB : #sᶜ • 1 ≤ ∑ i ∈ sᶜ, k i := Finset.card_nsmul_le_sum _ k 1 fun i _ ↦ h1 i
-  have hcard : #s + #sᶜ = Fintype.card ι := Finset.card_add_card_compl s
-  simp only [smul_eq_mul] at hA hB
-  omega
+    lia
 
 end ShapleyFolkman
 
@@ -222,7 +172,7 @@ theorem shapley_folkman [Fintype ι] [FiniteDimensional 𝕜 E] {t : ι → Set 
     · have hempty : {i | (0 : ι → E) i ∉ t i} = ∅ := Set.eq_empty_of_isEmpty _
       rw [hempty]
       simp
-  obtain ⟨y, hy, hyx⟩ := exists_eq_sum_of_mem_sum_convexHull hx
+  obtain ⟨y, hy, hyx⟩ := (mem_fintype_sum _ _).mp hx
   have hnpos : (0 : 𝕜) < Fintype.card ι := by exact_mod_cast Fintype.card_pos
   have hp := lifted_mem_convexHull hy
   rw [hyx] at hp
@@ -292,9 +242,18 @@ theorem shapley_folkman [Fintype ι] [FiniteDimensional 𝕜 E] {t : ι → Set 
       simp only [hF]
       rw [← Finset.card_univ]
       exact (Finset.card_eq_sum_card_fiberwise (fun j _ ↦ by simp)).symm
+    -- The `n` nonempty fibers have at most `d + n` elements in total, so at most `d` of them
+    -- have two or more elements.
     have hbig : #{i ∈ Finset.univ | 2 ≤ (F i).card} ≤ finrank 𝕜 E := by
-      refine card_two_le_fiber_le (fun i ↦ Finset.card_pos.mpr (hFne i)) ?_
-      rw [hpart]; exact hcardκ
+      set s : Finset ι := {i ∈ Finset.univ | 2 ≤ (F i).card}
+      have hsplit := Finset.sum_add_sum_compl s fun i ↦ (F i).card
+      have hA : #s • 2 ≤ ∑ i ∈ s, (F i).card :=
+        Finset.card_nsmul_le_sum s _ 2 fun i hi ↦ (Finset.mem_filter.1 hi).2
+      have hB : #sᶜ • 1 ≤ ∑ i ∈ sᶜ, (F i).card :=
+        Finset.card_nsmul_le_sum _ _ 1 fun i _ ↦ Finset.card_pos.mpr (hFne i)
+      have hcard : #s + #sᶜ = Fintype.card ι := Finset.card_add_card_compl s
+      simp only [smul_eq_mul] at hA hB
+      lia
     -- A fiber with a single element `j₀` forces `w j₀ = n⁻¹`, so that summand is `pt j₀`.
     have hsub : {i | ((Fintype.card ι : 𝕜) • ∑ j ∈ F i, w j • pt j) ∉ t i}
         ⊆ (({i ∈ Finset.univ | 2 ≤ (F i).card} : Finset ι) : Set ι) := by
@@ -305,7 +264,7 @@ theorem shapley_folkman [Fintype ι] [FiniteDimensional 𝕜 E] {t : ι → Set 
       push Not at hcon
       have hone : (F i).card = 1 := by
         have := Finset.card_pos.mpr (hFne i)
-        omega
+        lia
       obtain ⟨j₀, hj₀⟩ := Finset.card_eq_one.mp hone
       apply hi
       have hw₀ : w j₀ = (Fintype.card ι : 𝕜)⁻¹ := by
