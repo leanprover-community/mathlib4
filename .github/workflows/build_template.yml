@@ -794,6 +794,24 @@ jobs:
           name: cache-staging
           path: cache-staging
 
+      # Install the pinned rclone release when the repository variable selects it.
+      - &install_rclone
+        name: Install rclone
+        if: vars.MATHLIB_CACHE_UPLOAD_TOOL == 'rclone'
+        env:
+          PINNED_RCLONE_RELEASE: v1.75.0
+          PINNED_RCLONE_SHA256: aa2804e08f48250e71009c727124b6341cd0288465804a9a09d14663cabafbaa
+        run: |
+          dir="$RUNNER_TEMP/rclone-install"
+          mkdir -p "$dir"
+          cd "$dir"
+          curl -fsSL --retry 5 -o rclone.zip \
+            "https://github.com/rclone/rclone/releases/download/${PINNED_RCLONE_RELEASE}/rclone-${PINNED_RCLONE_RELEASE}-linux-amd64.zip"
+          echo "${PINNED_RCLONE_SHA256}  rclone.zip" | sha256sum -c -
+          unzip -q rclone.zip
+          sudo install -m 0755 "rclone-${PINNED_RCLONE_RELEASE}-linux-amd64/rclone" /usr/local/bin/rclone
+          rclone version
+
       # Upload the staged set to R2. `master` writes the public cache bucket,
       # flat. `forks` writes the developer cache bucket in the container's
       # layout, which the cache resolver serves. The mint action returns
@@ -898,6 +916,7 @@ jobs:
           name: cache-staging-test
           path: cache-staging
 
+      - *install_rclone
       - *mint_r2_credentials
 
       - name: Upload staged MathlibTest cache to R2

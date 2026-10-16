@@ -38,9 +38,11 @@ backend selects the destination, the credential variables it reads (see
   (`https://host/bucket`) and uploads with a system
   [rclone](https://rclone.org) when one works on PATH, with curl (SigV4 per
   request) otherwise. rclone receives the S3 credentials through its
-  environment (`RCLONE_S3_*`) and runs 16 transfers in parallel; a
-  non-overwrite put passes `--ignore-existing` in place of
-  `If-None-Match: *`. Both tools upload only the command's file list.
+  environment (`RCLONE_S3_*`). `RCLONE_TRANSFERS` and `RCLONE_CHECKERS`
+  default to 128 uploads and existence checks in parallel.
+  `--no-traverse` checks each requested file without listing the destination.
+  A non-overwrite upload passes `--ignore-existing` to skip existing objects.
+  Both tools upload only the command's file list.
 
 The cache binary sets the rclone credentials, endpoint, provider (`Other`
 unless the environment names one), and region; every other `RCLONE_S3_*`
@@ -61,6 +63,7 @@ transfers (50 by default).
 | `MATHLIB_CACHE_PUT_BASE_URL` | The upload base: the `--container` write is rebased under it (`{base}/{container}/{key}`) and keeps the container path policy. The azure backend defaults to the Azure storage account. For `--backend=s3` it names the bucket endpoint (`https://host/bucket`) and is required unless `MATHLIB_CACHE_PUT_URL` is set. |
 | `MATHLIB_CACHE_PUT_URL` | Upload to this single URL as a flat namespace, on either backend. On `--backend=s3` it must name the bucket by path (`https://host/bucket[/prefix]`). |
 | `MATHLIB_CACHE_PUT_FORCE_CURL` | Set to 1 or true to upload with curl on `--backend=s3`, which otherwise prefers rclone. The azure backend always uploads with curl. |
+| `RCLONE_TRANSFERS`, `RCLONE_CHECKERS` | The rclone upload and existence-check limits (128 each by default). Rclone parses these values. |
 | `MATHLIB_CACHE_PARALLEL_MAX` | The parallel curl transfer limit for uploads and downloads (50 by default). |
 | `MATHLIB_CACHE_REPO_SCOPE` | The per-commit namespace, for reads and `put` (see `--scope`, which takes precedence). |
 | `MATHLIB_CACHE_FROM` | Container list for reads, same shape as `--cache-from`, which takes precedence. CI sets it to widen reads per job. |

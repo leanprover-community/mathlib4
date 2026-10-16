@@ -1567,6 +1567,8 @@ def test_rcloneArgs : IO Unit := do
       ((files.toList.zip files.toList.tail).contains ("--files-from", "tmp/files-from.txt"))
     assertTrue "a non-overwrite copy skips existing objects"
       (files.contains "--ignore-existing")
+    assertTrue "files copy does not list the destination prefix"
+      (files.contains "--no-traverse")
     let overwriteFiles ← IO.ofExcept <| rcloneFilesArgs dest "staging" "tmp/files-from.txt"
       (overwrite := true)
     assertTrue "an overwrite copy replaces existing objects"
