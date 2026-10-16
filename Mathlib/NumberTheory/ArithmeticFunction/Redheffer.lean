@@ -45,10 +45,10 @@ and `mertens` stays `ℤ`-valued, cast into `R`. `mertens` is an `ArithmeticFunc
 `mertens 0 = 0` is `map_zero`) with `mertens_apply` as its defining lemma; `zetaMatrix_apply` and
 `redheffer_apply` are the `simp` normal forms of the two matrices.
 
-Since `M n = 0` for infinitely many `n` (Odlyzko and te Riele's disproof of the Mertens
-conjecture, [odlyzko1985]), the Redheffer matrix is singular infinitely often; the Riemann
-hypothesis is equivalent to `M x = O(x ^ (1/2 + ε))` for every `ε > 0`. Neither fact is
-formalised here.
+The interest of the theorem is that it turns growth statements about the Mertens function into
+statements about determinants: the Riemann hypothesis is equivalent to `M x = O(x ^ (1/2 + ε))`
+for every `ε > 0`, and the Mertens conjecture `|M n| < √n`, which would imply it, is false
+[odlyzko1985]. Neither fact is formalised here.
 
 ## References
 
@@ -86,7 +86,7 @@ end ArithmeticFunction
 
 namespace Nat
 
-theorem sum_fin_dvd_eq_sum_divisors {M : Type*} [AddCommMonoid M] (f : ℕ → M)
+private theorem sum_fin_dvd_eq_sum_divisors {M : Type*} [AddCommMonoid M] (f : ℕ → M)
     {n m : ℕ} (hm : m ≠ 0) (hmn : m ≤ n) :
     (∑ x : Fin n, if (x : ℕ) + 1 ∣ m then f ((x : ℕ) + 1) else 0) = ∑ d ∈ m.divisors, f d := by
   rw [Fin.sum_univ_eq_sum_range (fun x ↦ if x + 1 ∣ m then f (x + 1) else 0), range_eq_Ico,
@@ -146,7 +146,7 @@ variable [CommRing R]
   rw [det_of_isUpperTriangular (zetaMatrix_isUpperTriangular R n)]
   simp [zetaMatrix_apply]
 
-theorem det_redheffer_eq_one_add (n : ℕ) :
+private theorem det_redheffer_eq_one_add (n : ℕ) :
     (redheffer R (n + 1)).det =
       1 + ((zetaMatrix R (n + 1)).updateCol 0 (fun i ↦ if i = 0 then 0 else 1)).det := by
   rw [redheffer_eq_updateCol]
@@ -165,9 +165,9 @@ theorem det_redheffer_eq_one_add (n : ℕ) :
   rw [hcol, det_zetaMatrix]
 
 /-- The row vector `(μ 1, μ 2, …, μ n)`. -/
-def moebiusRow (n : ℕ) : Fin n → R := fun i ↦ (μ ((i : ℕ) + 1) : R)
+private def moebiusRow (n : ℕ) : Fin n → R := fun i ↦ (μ ((i : ℕ) + 1) : R)
 
-theorem vecMul_moebiusRow_zetaMatrix (n : ℕ) :
+private theorem vecMul_moebiusRow_zetaMatrix (n : ℕ) :
     (moebiusRow R (n + 1)) ᵥ* zetaMatrix R (n + 1) = fun k ↦ if k = 0 then (1 : R) else 0 := by
   funext k
   simp only [vecMul, dotProduct, moebiusRow, zetaMatrix_apply, mul_ite, mul_one, mul_zero]
@@ -177,19 +177,21 @@ theorem vecMul_moebiusRow_zetaMatrix (n : ℕ) :
   · subst hk; simp
   · simp [hk]
 
-theorem moebiusRow_eq_vecMul_inv (n : ℕ) :
+private theorem moebiusRow_eq_vecMul_inv (n : ℕ) :
     moebiusRow R (n + 1) =
       (fun k ↦ if k = (0 : Fin (n + 1)) then (1 : R) else 0) ᵥ* (zetaMatrix R (n + 1))⁻¹ := by
   simpa [vecMul_vecMul, mul_nonsing_inv (zetaMatrix R (n + 1)) (by simp)] using
     congrArg (· ᵥ* (zetaMatrix R (n + 1))⁻¹) (vecMul_moebiusRow_zetaMatrix R n)
 
 theorem det_zetaMatrix_updateCol (n : ℕ) (u : Fin (n + 1) → R) :
-    ((zetaMatrix R (n + 1)).updateCol 0 u).det = ∑ j, moebiusRow R (n + 1) j * u j := by
+    ((zetaMatrix R (n + 1)).updateCol 0 u).det =
+      ∑ j : Fin (n + 1), (μ ((j : ℕ) + 1) : R) * u j := by
+  change _ = ∑ j, moebiusRow R (n + 1) j * u j
   rw [← cramer_apply, ← det_smul_inv_mulVec_eq_cramer (zetaMatrix R (n + 1)) u (by simp),
     det_zetaMatrix, one_smul, moebiusRow_eq_vecMul_inv R n]
   simp [mulVec, dotProduct, vecMul]
 
-theorem sum_moebiusRow_add_one (n : ℕ) :
+private theorem sum_moebiusRow_add_one (n : ℕ) :
     (∑ j : Fin (n + 1), if j = 0 then (0 : R) else moebiusRow R (n + 1) j) =
       mertens (n + 1) - 1 := by
   rw [Fin.sum_univ_succ, mertens_eq_sum_fin, Fin.sum_univ_succ]
@@ -199,10 +201,10 @@ theorem sum_moebiusRow_add_one (n : ℕ) :
 /-- **Redheffer's theorem**: the determinant of the `(n + 1) × (n + 1)` Redheffer matrix is the
 Mertens function `M (n + 1) = ∑ k ∈ Icc 1 (n + 1), μ k`. -/
 theorem det_redheffer (n : ℕ) : (redheffer R (n + 1)).det = mertens (n + 1) := by
-  suffices (∑ j, moebiusRow R (n + 1) j * (if j = 0 then (0 : R) else 1)) =
+  suffices (∑ j : Fin (n + 1), (μ ((j : ℕ) + 1) : R) * (if j = 0 then (0 : R) else 1)) =
       mertens (n + 1) - 1 by
     rw [det_redheffer_eq_one_add, det_zetaMatrix_updateCol, this]; ring
   rw [← sum_moebiusRow_add_one]
-  exact sum_congr rfl fun j _ ↦ by by_cases hj : j = 0 <;> simp [hj]
+  exact sum_congr rfl fun j _ ↦ by by_cases hj : j = 0 <;> simp [hj, moebiusRow]
 
 end Matrix
