@@ -7,11 +7,9 @@ module
 
 public import Mathlib.Algebra.Polynomial.FieldDivision
 public import Mathlib.RingTheory.DiscreteValuationRing.Basic
+public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 public import Mathlib.RingTheory.MvPowerSeries.Inverse
 public import Mathlib.RingTheory.PowerSeries.NoZeroDivisors
-public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
-public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
-public import Mathlib.Data.ENat.Lattice
 
 /-! # Formal power series - Inverses
 
@@ -101,7 +99,7 @@ theorem constantCoeff_invOfUnit (φ : R⟦X⟧) (u : Rˣ) :
 @[simp]
 theorem mul_invOfUnit (φ : R⟦X⟧) (u : Rˣ) (h : constantCoeff φ = u) :
     φ * invOfUnit φ u = 1 :=
-  MvPowerSeries.mul_invOfUnit φ u <| h
+  MvPowerSeries.mul_invOfUnit φ u h
 
 @[simp]
 theorem invOfUnit_mul (φ : R⟦X⟧) (u : Rˣ) (h : constantCoeff φ = u) :
@@ -147,7 +145,7 @@ theorem coeff_inv (n) (φ : k⟦X⟧) :
 theorem constantCoeff_inv (φ : k⟦X⟧) : constantCoeff φ⁻¹ = (constantCoeff φ)⁻¹ :=
   MvPowerSeries.constantCoeff_inv φ
 
-theorem inv_eq_zero {φ : k⟦X⟧} : φ⁻¹ = 0 ↔ constantCoeff φ = 0 :=
+protected theorem inv_eq_zero {φ : k⟦X⟧} : φ⁻¹ = 0 ↔ constantCoeff φ = 0 :=
   MvPowerSeries.inv_eq_zero
 
 theorem zero_inv : (0 : k⟦X⟧)⁻¹ = 0 :=
@@ -185,6 +183,9 @@ theorem inv_eq_iff_mul_eq_one {φ ψ : k⟦X⟧} (h : constantCoeff ψ ≠ 0) :
 
 protected theorem mul_inv_rev (φ ψ : k⟦X⟧) : (φ * ψ)⁻¹ = ψ⁻¹ * φ⁻¹ :=
   MvPowerSeries.mul_inv_rev _ _
+
+protected theorem inv_pow (φ : k⟦X⟧) : ∀ n : ℕ, φ⁻¹ ^ n = (φ ^ n)⁻¹ :=
+  MvPowerSeries.inv_pow _
 
 @[simp]
 theorem C_inv (r : k) : (C r)⁻¹ = C r⁻¹ :=
@@ -250,7 +251,7 @@ theorem eq_divided_by_X_pow_order_Iff_Unit {f : k⟦X⟧} (hf : f ≠ 0) :
     f = divXPowOrder f ↔ IsUnit f :=
   ⟨fun h ↦ by rw [h]; exact isUnit_divided_by_X_pow_order hf, fun h ↦ by
     have : f.order = 0 := by
-      simp [order_zero_of_unit h]
+      simp [order_zero_of_isUnit h]
     conv_lhs => rw [← X_pow_order_mul_divXPowOrder (f := f), this, ENat.toNat_zero,
       pow_zero, one_mul]⟩
 
@@ -272,15 +273,9 @@ variable {k : Type*} [Field k]
 
 open IsDiscreteValuationRing
 
-theorem hasUnitMulPowIrreducibleFactorization :
-    HasUnitMulPowIrreducibleFactorization k⟦X⟧ :=
-  ⟨X, And.intro X_irreducible
-      (by
-        intro f hf
-        use f.order.toNat
-        use Unit_of_divided_by_X_pow_order f
-        simp only [Unit_of_divided_by_X_pow_order_nonzero hf]
-        exact X_pow_order_mul_divXPowOrder)⟩
+theorem hasUnitMulPowIrreducibleFactorization : HasUnitMulPowIrreducibleFactorization k⟦X⟧ := by
+  refine ⟨X, irreducible_X, fun {f} hf ↦ ⟨f.order.toNat, Unit_of_divided_by_X_pow_order f, ?_⟩⟩
+  rw [Unit_of_divided_by_X_pow_order_nonzero hf, X_pow_order_mul_divXPowOrder]
 
 instance : UniqueFactorizationMonoid k⟦X⟧ :=
   hasUnitMulPowIrreducibleFactorization.toUniqueFactorizationMonoid
@@ -296,7 +291,7 @@ theorem maximalIdeal_eq_span_X : IsLocalRing.maximalIdeal (k⟦X⟧) = Ideal.spa
     rw [Ideal.isMaximal_iff]
     constructor
     · rw [Ideal.mem_span_singleton]
-      exact Prime.not_dvd_one X_prime
+      exact prime_X.not_dvd_one
     · intro I f hI hfX hfI
       rw [Ideal.mem_span_singleton, X_dvd_iff] at hfX
       have hfI0 : C (f 0) ∈ I := by
@@ -340,7 +335,7 @@ theorem normalized_count_X_eq_of_coe {P : k[X]} (hP : P ≠ 0) :
   apply eq_of_forall_le_iff
   simp only [← Nat.cast_le (α := ℕ∞)]
   rw [X_eq_normalize, PowerSeries.X_eq_normalizeX, ← emultiplicity_eq_count_normalizedFactors
-    irreducible_X hP, ← emultiplicity_eq_count_normalizedFactors X_irreducible] <;>
+    Polynomial.irreducible_X hP, ← emultiplicity_eq_count_normalizedFactors irreducible_X] <;>
   simp only [← pow_dvd_iff_le_emultiplicity, Polynomial.X_pow_dvd_iff,
     PowerSeries.X_pow_dvd_iff, Polynomial.coeff_coe P, implies_true, ne_eq, coe_eq_zero_iff, hP,
     not_false_eq_true]

@@ -229,6 +229,12 @@ theorem singleton_union : {a} ∪ s = insert a s :=
 theorem union_singleton : s ∪ {a} = insert a s :=
   union_comm _ _
 
+theorem exists_mem_singleton {P : α → Prop} {a : α} :
+    (∃ x ∈ ({a} : Set α), P x) ↔ P a := by grind
+
+theorem forall_mem_singleton {P : α → Prop} {a : α} :
+    (∀ x ∈ ({a} : Set α), P x) ↔ P a := by grind
+
 @[simp]
 theorem singleton_inter_nonempty : ({a} ∩ s).Nonempty ↔ a ∈ s := by
   simp only [Set.Nonempty, mem_inter_iff, mem_singleton_iff, exists_eq_left]
@@ -364,10 +370,10 @@ theorem insert_inter_of_notMem (h : a ∉ t) : insert a s ∩ t = s ∩ t := by 
 /-! ### Lemmas about pairs -/
 
 theorem pair_eq_singleton (a : α) : ({a, a} : Set α) = {a} :=
-  union_self _
+  union_self {a}
 
 theorem pair_comm (a b : α) : ({a, b} : Set α) = {b, a} :=
-  union_comm _ _
+  union_comm {a} {b}
 
 theorem pair_eq_pair_iff {x y z w : α} :
     ({x, y} : Set α) = {z, w} ↔ x = z ∧ y = w ∨ x = w ∧ y = z := by
@@ -413,7 +419,7 @@ end
 
 /-! ### Decidability instances for sets -/
 
-variable (s t : Set α) (a b : α)
+variable (a b : α)
 
 instance decidableSingleton [Decidable (a = b)] : Decidable (a ∈ ({b} : Set α)) :=
   inferInstanceAs (Decidable (a = b))

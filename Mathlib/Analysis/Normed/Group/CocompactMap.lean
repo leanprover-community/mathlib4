@@ -26,7 +26,7 @@ public section
 
 open Filter Metric
 
-variable {𝕜 E F 𝓕 : Type*}
+variable {E F 𝓕 : Type*}
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]
 variable {f : 𝓕}
 

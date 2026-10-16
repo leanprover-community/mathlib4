@@ -5,9 +5,11 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Algebra.Module.Projective
-public import Mathlib.LinearAlgebra.Dimension.DivisionRing
-public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
+public import Mathlib.LinearAlgebra.Dimension.RankNullity
+
+import Mathlib.Algebra.Module.Projective
+import Mathlib.LinearAlgebra.Basis.VectorSpace
+import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 
 /-!
 # The rank of a linear map
@@ -29,7 +31,7 @@ open Cardinal Submodule Function Set
 
 namespace LinearMap
 
-section Ring
+section Semiring
 
 variable [Semiring K] [AddCommMonoid V] [Module K V] [AddCommMonoid V₁] [Module K V₁]
 variable [AddCommMonoid V'] [Module K V']
@@ -77,12 +79,12 @@ theorem rank_comp_le (g : V →ₗ[K] V') (f : V' →ₗ[K] V'₁) :
     rank (f.comp g) ≤ min (rank f) (rank g) := by
   simpa only [Cardinal.lift_id] using lift_rank_comp_le g f
 
-end Ring
+end Semiring
 
-section DivisionRing
+section HasRankNullity
 
-variable [DivisionRing K] [AddCommGroup V] [Module K V] [AddCommGroup V₁] [Module K V₁]
-variable [AddCommGroup V'] [Module K V']
+variable [Ring K] [HasRankNullity.{v'} K] [AddCommGroup V] [Module K V] [AddCommGroup V₁]
+  [Module K V₁] [AddCommGroup V'] [Module K V']
 
 theorem rank_add_le (f g : V →ₗ[K] V') : rank (f + g) ≤ rank f + rank g :=
   calc
@@ -100,6 +102,13 @@ theorem rank_finsetSum_le {η} (s : Finset η) (f : η → V →ₗ[K] V') :
 
 @[deprecated (since := "2026-04-08")] alias rank_finset_sum_le := rank_finsetSum_le
 
+end HasRankNullity
+
+section DivisionRing
+
+variable [DivisionRing K] [AddCommGroup V] [Module K V] [AddCommGroup V₁] [Module K V₁]
+variable [AddCommGroup V'] [Module K V']
+
 theorem le_rank_iff_exists_linearIndependent {c : Cardinal} {f : V →ₗ[K] V'} :
     c ≤ rank f ↔ ∃ s : Set V,
     Cardinal.lift.{v'} #s = Cardinal.lift.{v} c ∧ LinearIndepOn K f s := by
@@ -110,14 +119,14 @@ theorem le_rank_iff_exists_linearIndependent {c : Cardinal} {f : V →ₗ[K] V'}
     refine ⟨g '' s, Cardinal.mk_image_eq_lift _ _ fg.injective, ?_⟩
     replace fg : ∀ x, f (g x) = x := by
       intro x
-      convert! congr_arg Subtype.val (fg x)
+      convert! congr($(fg x).val)
     replace si : LinearIndepOn K (fun x => f (g x)) s := by
       simpa only [fg] using! si.map' _ (ker_subtype _)
     exact si.image_of_comp
   · rintro ⟨s, hsc, si⟩
     have : LinearIndepOn K f.rangeRestrict s :=
       LinearIndependent.of_comp (LinearMap.range f).subtype (by convert! si)
-    convert! this.id_image.cardinal_le_rank
+    convert this.id_image.cardinal_le_rank
     rw [← Cardinal.lift_inj, ← hsc, Cardinal.mk_image_eq_of_injOn_lift]
     exact injOn_iff_injective.2 this.injective
 

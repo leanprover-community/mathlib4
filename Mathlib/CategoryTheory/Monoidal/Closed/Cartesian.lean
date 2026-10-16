@@ -5,8 +5,8 @@ Authors: Bhavik Mehta, Edward Ayers, Thomas Read
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
+public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 
 /-!
 # Cartesian closed categories
@@ -27,7 +27,7 @@ namespace CategoryTheory
 
 open Category Limits MonoidalCategory CartesianMonoidalCategory
 
-variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C] {X X' Y Y' Z : C}
+variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C] {Y : C}
 
 instance CartesianMonoidalCategory.isLeftAdjoint_prod_functor
     (A : C) [Closed A] :

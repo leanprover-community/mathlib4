@@ -156,11 +156,11 @@ def lift : (∀ i, M i →* N) ≃ (CoprodI M →* N) where
 
 @[simp]
 theorem lift_comp_of {N} [Monoid N] (fi : ∀ i, M i →* N) i : (lift fi).comp of = fi i :=
-  congr_fun (lift.symm_apply_apply fi) i
+  congr($(lift.symm_apply_apply fi) i)
 
 @[simp]
 theorem lift_of {N} [Monoid N] (fi : ∀ i, M i →* N) {i} (m : M i) : lift fi (of m) = fi i m :=
-  DFunLike.congr_fun (lift_comp_of ..) m
+  congr($(lift_comp_of ..) m)
 
 @[simp]
 theorem lift_comp_of' {N} [Monoid N] (f : CoprodI M →* N) :
@@ -886,7 +886,6 @@ theorem empty_of_word_prod_eq_one {w : Word H} (h : lift f w.prod = 1) :
   obtain ⟨i, j, w, rfl⟩ := NeWord.of_word w hnotempty
   exact lift_word_prod_nontrivial_of_not_empty f hcard X hXnonempty hXdisj hpp w h
 
-set_option backward.isDefEq.respectTransparency false in
 include hcard in
 /-- The **Ping-Pong-Lemma**.
 
@@ -959,7 +958,6 @@ variable (hXYdisj : ∀ i j, Disjoint (X i) (Y j))
 variable (hX : ∀ i, a i • (Y i)ᶜ ⊆ X i)
 variable (hY : ∀ i, a⁻¹ i • (X i)ᶜ ⊆ Y i)
 
-set_option backward.isDefEq.respectTransparency false in
 include hXnonempty hXdisj hYdisj hXYdisj hX hY in
 /-- The Ping-Pong-Lemma.
 

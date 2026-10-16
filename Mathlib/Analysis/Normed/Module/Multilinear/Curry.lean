@@ -6,8 +6,8 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Normed.Module.Multilinear.Basic
-public import Mathlib.LinearAlgebra.Multilinear.Curry
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
+public import Mathlib.LinearAlgebra.Multilinear.Curry
 
 /-!
 # Currying and uncurrying continuous multilinear maps
@@ -133,7 +133,7 @@ theorem ContinuousLinearMap.curry_uncurryLeft
 @[simp]
 theorem ContinuousMultilinearMap.uncurry_curryLeft (f : ContinuousMultilinearMap 𝕜 Ei G) :
     f.curryLeft.uncurryLeft = f :=
-  ContinuousMultilinearMap.toMultilinearMap_injective <| f.toMultilinearMap.uncurry_curryLeft
+  ContinuousMultilinearMap.toMultilinearMap_injective f.toMultilinearMap.uncurry_curryLeft
 
 variable (𝕜 Ei G)
 
@@ -405,43 +405,7 @@ Therefore, the space of continuous multilinear maps on `(Fin 0) → G` with valu
 isomorphic (and even isometric) to `E₂`. As this is the zeroth step in the construction of iterated
 derivatives, we register this isomorphism. -/
 
-
 section
-
-/-- Associating to a continuous multilinear map in `0` variables the unique value it takes. -/
-def ContinuousMultilinearMap.curry0 (f : ContinuousMultilinearMap 𝕜 (fun _ : Fin 0 => G) G') :
-    G' :=
-  f 0
-
-variable (𝕜 G) in
-/-- Associating to an element `x` of a vector space `E₂` the continuous multilinear map in `0`
-variables taking the (unique) value `x` -/
-def ContinuousMultilinearMap.uncurry0 (x : G') : G [×0]→L[𝕜] G' :=
-  ContinuousMultilinearMap.constOfIsEmpty 𝕜 _ x
-
-variable (𝕜) in
-@[simp]
-theorem ContinuousMultilinearMap.uncurry0_apply (x : G') (m : Fin 0 → G) :
-    ContinuousMultilinearMap.uncurry0 𝕜 G x m = x :=
-  rfl
-
-@[simp]
-theorem ContinuousMultilinearMap.curry0_apply (f : G [×0]→L[𝕜] G') : f.curry0 = f 0 :=
-  rfl
-
-@[simp]
-theorem ContinuousMultilinearMap.apply_zero_uncurry0 (f : G [×0]→L[𝕜] G') {x : Fin 0 → G} :
-    ContinuousMultilinearMap.uncurry0 𝕜 G (f x) = f := by
-  ext m
-  simp [Subsingleton.elim x m]
-
-theorem ContinuousMultilinearMap.uncurry0_curry0 (f : G [×0]→L[𝕜] G') :
-    ContinuousMultilinearMap.uncurry0 𝕜 G f.curry0 = f := by simp
-
-variable (𝕜 G) in
-theorem ContinuousMultilinearMap.curry0_uncurry0 (x : G') :
-    (ContinuousMultilinearMap.uncurry0 𝕜 G x).curry0 = x :=
-  rfl
 
 variable (𝕜 G) in
 @[simp]
@@ -501,7 +465,6 @@ theorem continuousMultilinearCurryFin0_symm_apply_apply (x : G') (v : Fin 0 → 
 end
 
 /-! #### With 1 variable -/
-
 
 variable (𝕜 G G')
 
@@ -580,7 +543,6 @@ theorem uncurrySum_apply (f : ContinuousMultilinearMap 𝕜 (fun _ : ι => G)
 
 variable (𝕜 ι ι' G G')
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Linear isometric equivalence between the space of continuous multilinear maps with variables
 indexed by `ι ⊕ ι'` and the space of continuous multilinear maps with variables indexed by `ι`
 taking values in the space of continuous multilinear maps with variables indexed by `ι'`.
@@ -601,7 +563,7 @@ def currySumEquiv : ContinuousMultilinearMap 𝕜 (fun _ : ι ⊕ ι' => G) G' �
         rfl
       left_inv := fun f => by
         ext m
-        exact congr_arg f (Sum.elim_comp_inl_inr m) }
+        congrm f $(Sum.elim_comp_inl_inr m) }
     (fun f => MultilinearMap.mkContinuousMultilinear_norm_le _ (norm_nonneg f) _) fun f => by
       simp only [LinearEquiv.coe_symm_mk]
       exact MultilinearMap.mkContinuous_norm_le _ (norm_nonneg f) _

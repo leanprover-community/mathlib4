@@ -205,7 +205,6 @@ section lift₂
 variable {C : Sort*} (ih : ∀ i, F₁ i → F₂ i → C)
   (compat : ∀ i j h x y, ih i x y = ih j (f₁ i j h x) (f₂ i j h y))
 
-set_option backward.privateInPublic true in
 private noncomputable def lift₂Aux (z : Σ i, F₁ i) (w : Σ i, F₂ i) :
     {x : C // ∀ i (hzi : z.1 ≤ i) (hwi : w.1 ≤ i), x = ih i (f₁ _ _ hzi z.2) (f₂ _ _ hwi w.2)} := by
   choose j hzj hwj using exists_ge_ge z.1 w.1
@@ -213,10 +212,9 @@ private noncomputable def lift₂Aux (z : Σ i, F₁ i) (w : Σ i, F₂ i) :
   have ⟨i, hji, hki⟩ := exists_ge_ge j k
   simp_rw [compat _ _ hji, compat _ _ hki, map_map']
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- To define a binary function from the direct limit, it suffices to provide one binary function
 from each component subject to a compatibility condition. -/
+@[no_expose]
 protected noncomputable def lift₂ (z : DirectLimit F₁ f₁) (w : DirectLimit F₂ f₂) : C :=
   z.hrecOn₂ w (φ := fun _ _ ↦ C) (lift₂Aux f₁ f₂ ih compat · ·)
     fun _ _ _ _ ⟨j, hx, hyj, jeq⟩ ⟨k, hyk, hz, keq⟩ ↦ heq_of_eq <| by
@@ -302,7 +300,7 @@ then `piLT X i` is the limit of all `piLT X j` for `j < i`. -/
     ext j l
     set k := hi.mid (l.2.trans j.2)
     obtain le | le := le_total j ⟨k, k.2.2⟩
-    exacts [congr_fun (f.2 le) l, (congr_fun (f.2 le) ⟨l, _⟩).symm]
+    exacts [congr($(f.2 le) l), congr($(f.2 le) ⟨l, _⟩).symm]
 
 theorem piLTLim_symm_apply {f} (k : Iio i) {l : Iio i} (hl : l.1 < k.1) :
     (piLTLim (X := X) hi).symm f l = f.1 k ⟨l, hl⟩ := by
@@ -324,7 +322,6 @@ def piSplitLE : piLT X i × X i ≃ ∀ j : Iic i, X j where
   left_inv f := by ext j; exacts [dite_eq_right j.2.ne, dite_eq_left rfl]
   right_inv f := by grind
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem piSplitLE_eq {f : piLT X i × X i} :
     piSplitLE f ⟨i, le_rfl⟩ = f.2 := by simp [piSplitLE]
 
@@ -469,9 +466,10 @@ variable (hi : IsSuccPrelimit i) (e : ∀ j : Iio i, PEquivOn f equivSucc (Iic j
 obtaining a partial family over a right-open interval. -/
 noncomputable def pEquivOnGlue : PEquivOn f equivSucc (Iio i) where
   equiv := (piLTLim (X := fun j ↦ F j ≃ piLT X j) hi).symm
-    ⟨fun j ↦ ((e j).restrict fun _ h ↦ h.le).equiv, fun _ _ h ↦ funext fun _ ↦
+    ⟨fun j ↦ ((e j).restrict fun _ h ↦ le_of_lt h).equiv, fun _ _ h ↦ funext fun _ ↦
       pEquivOn_apply_eq ((isLowerSet_Iio _).inter <| isLowerSet_Iio _)⟩
-  nat j k hj hk h := by rw [piLTLim_symm_apply]; exacts [(e _).nat _ _ _, h.trans_lt (hi.mid _).2.1]
+  nat j k hj hk h := by
+    rw [piLTLim_symm_apply]; exacts [(e _).nat _ _ _, lt_of_le_of_lt h (hi.mid _).2.1]
   compat hj := have k := hi.mid hj
     by rw [piLTLim_symm_apply hi ⟨_, k.2.2⟩ (by exact k.2.1)]; apply (e _).compat
 
@@ -491,17 +489,14 @@ variable [WellFoundedLT ι] [SuccOrder ι] [InverseSystem f]
   (equivSucc : ∀ i, ¬IsMax i → {e : F i⁺ ≃ F i × X i // ∀ x, (e x).1 = f (le_succ i) x})
   (equivLim : ∀ i, IsSuccPrelimit i → {e : F i ≃ limit f i // ∀ x l, (e x).1 l = f l.2.le x})
 
-set_option backward.privateInPublic true in
 private noncomputable def globalEquivAux (i : ι) :
     PEquivOn f (fun i hi ↦ (equivSucc i hi).1) (Iic i) :=
   SuccOrder.prelimitRecOn i
     (fun _ hi e ↦ pEquivOnSucc hi e fun i hi ↦ (equivSucc i hi).2)
     fun i hi e ↦ pEquivOnLim hi (fun j ↦ e j j.2) (equivLim i hi).1 (equivLim i hi).2
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Over a well-ordered type, construct a family of bijections by transfinite recursion. -/
-noncomputable def globalEquiv (i : ι) : F i ≃ piLT X i :=
+@[no_expose] noncomputable def globalEquiv (i : ι) : F i ≃ piLT X i :=
   (globalEquivAux equivSucc equivLim i).equiv ⟨i, le_rfl⟩
 
 theorem globalEquiv_naturality ⦃i j⦄ (h : i ≤ j) (x : F j) :

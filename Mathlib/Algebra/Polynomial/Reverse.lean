@@ -88,7 +88,6 @@ Eventually, it will be used with `N` exactly equal to the degree of `f`. -/
 noncomputable def reflect (N : ℕ) : R[X] → R[X]
   | ⟨f⟩ => ⟨.ofCoeff <| f.coeff.embDomain (revAt N)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem reflect_support (N : ℕ) (f : R[X]) :
     (reflect N f).support = Finset.image (revAt N) f.support := by cases f; ext1; simp [reflect]
 
@@ -157,8 +156,7 @@ theorem reflect_mul_induction (cf cg : ℕ) (N O : ℕ) (f g : R[X]) (Cf : #f.su
     | succ cg hcg =>
       by_cases g0 : g = 0
       · rw [g0, reflect_zero, mul_zero, mul_zero, reflect_zero]
-      rw [← eraseLead_add_C_mul_X_pow g, mul_add, reflect_add, reflect_add, mul_add, hcg, hcg] <;>
-        try assumption
+      rw [← eraseLead_add_C_mul_X_pow g, mul_add, reflect_add, reflect_add, mul_add, hcg, hcg]
       · exact le_add_left card_support_C_mul_X_pow_le_one
       · exact le_trans (natDegree_C_mul_X_pow_le g.leadingCoeff g.natDegree) Og
       · exact Nat.lt_succ_iff.mp (lt_of_lt_of_le (eraseLead_support_card_lt g0) Cg)
@@ -166,8 +164,7 @@ theorem reflect_mul_induction (cf cg : ℕ) (N O : ℕ) (f g : R[X]) (Cf : #f.su
   | succ cf hcf =>
     by_cases f0 : f = 0
     · rw [f0, reflect_zero, zero_mul, zero_mul, reflect_zero]
-    rw [← eraseLead_add_C_mul_X_pow f, add_mul, reflect_add, reflect_add, add_mul, hcf, hcf] <;>
-      try assumption
+    rw [← eraseLead_add_C_mul_X_pow f, add_mul, reflect_add, reflect_add, add_mul, hcf, hcf]
     · exact le_add_left card_support_C_mul_X_pow_le_one
     · exact le_trans (natDegree_C_mul_X_pow_le f.leadingCoeff f.natDegree) Nf
     · exact Nat.lt_succ_iff.mp (lt_of_lt_of_le (eraseLead_support_card_lt f0) Cf)
@@ -176,12 +173,12 @@ theorem reflect_mul_induction (cf cg : ℕ) (N O : ℕ) (f g : R[X]) (Cf : #f.su
 @[simp]
 theorem reflect_mul (f g : R[X]) {F G : ℕ} (Ff : f.natDegree ≤ F) (Gg : g.natDegree ≤ G) :
     reflect (F + G) (f * g) = reflect F f * reflect G g :=
-  reflect_mul_induction _ _ F G f g f.support.card.le_succ g.support.card.le_succ Ff Gg
+  reflect_mul_induction _ _ F G f g (#f.support).le_succ (#g.support).le_succ Ff Gg
 
 set_option backward.isDefEq.respectTransparency false in
 lemma natDegree_reflect_le {N : ℕ} {p : R[X]} :
     (p.reflect N).natDegree ≤ max N p.natDegree := by
-  simp +contextual [-le_sup_iff, natDegree_le_iff_coeff_eq_zero,
+  simp +contextual [-le_max_iff, natDegree_le_iff_coeff_eq_zero,
     revAt, not_le_of_gt, coeff_eq_zero_of_natDegree_lt]
 
 section Eval₂

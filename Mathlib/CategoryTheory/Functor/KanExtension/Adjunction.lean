@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.Comma.StructuredArrow.Functor
 public import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
 public import Mathlib.CategoryTheory.Limits.Shapes.Grothendieck
-public import Mathlib.CategoryTheory.Comma.StructuredArrow.Functor
 
 /-! # The Kan extension functor
 
@@ -23,8 +23,6 @@ Similarly, we define the right Kan extension functor
 right Kan extension along `L`.
 
 -/
-
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -81,7 +79,6 @@ noncomputable def leftKanExtensionObjIsoColimit [HasLeftKanExtension L F] (X : D
     (isPointwiseLeftKanExtensionLeftKanExtensionUnit L F X)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ι_leftKanExtensionObjIsoColimit_inv [HasLeftKanExtension L F] (X : D)
     (f : CostructuredArrow L X) :
@@ -120,6 +117,7 @@ theorem hasColimit_map_comp_ι_comp_grothendieckProj {X Y : D} (f : X ⟶ Y) :
       grothendieckProj L ⋙ F) :=
   hasColimit_of_iso (isoWhiskerRight (mapCompιCompGrothendieckProj L f) F)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The left Kan extension of `F : C ⥤ H` along a functor `L : C ⥤ D` is isomorphic to the
 fiberwise colimit of the projection functor on the Grothendieck construction of the costructured
@@ -142,7 +140,6 @@ section HasLeftKanExtension
 
 variable [∀ (F : C ⥤ H), HasLeftKanExtension L F]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (H) in
 /-- The left Kan extension functor `L.Lan` is left adjoint to the precomposition by `L`. -/
 noncomputable def lanAdjunction : L.lan ⊣ (whiskeringLeft C D H).obj L :=
@@ -160,7 +157,6 @@ noncomputable def lanAdjunction : L.lan ⊣ (whiskeringLeft C D H).obj L :=
         dsimp [homEquivOfIsLeftKanExtension]
         rw [assoc] }
 
-set_option backward.isDefEq.respectTransparency false in
 variable (H) in
 @[simp]
 lemma lanAdjunction_unit : (L.lanAdjunction H).unit = L.lanUnit := by
@@ -183,12 +179,10 @@ lemma lanUnit_app_app_lanAdjunction_counit_app_app (G : D ⥤ H) (X : C) :
     (L.lanUnit.app (L ⋙ G)).app X ≫ ((L.lanAdjunction H).counit.app G).app (L.obj X) = 𝟙 _ :=
   congr_app (L.lanUnit_app_whiskerLeft_lanAdjunction_counit_app G) X
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isIso_lanAdjunction_counit_app_iff (G : D ⥤ H) :
     IsIso ((L.lanAdjunction H).counit.app G) ↔ G.IsLeftKanExtension (𝟙 (L ⋙ G)) :=
   (isLeftKanExtension_iff_isIso _ (L.lanUnit.app (L ⋙ G)) _ (by simp)).symm
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isIso_lanAdjunction_homEquiv_symm_iff {F : C ⥤ H} {G : D ⥤ H} (α : F ⟶ L ⋙ G) :
     IsIso (((L.lanAdjunction H).homEquiv _ _).symm α) ↔ G.IsLeftKanExtension α :=
   (isLeftKanExtension_iff_isIso ((((L.lanAdjunction H).homEquiv _ _).symm α))
@@ -234,6 +228,7 @@ noncomputable def colimitIsoColimitGrothendieck :
   _ ≅ colimit (CostructuredArrow.grothendieckProj L ⋙ G) :=
         colimitFiberwiseColimitIso _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ι_colimitIsoColimitGrothendieck_inv (X : Grothendieck (CostructuredArrow.functor L)) :
@@ -336,7 +331,6 @@ lemma ranObjObjIsoLimit_inv_π
   RightExtension.IsPointwiseRightKanExtensionAt.isoLimit_inv_π (F := F)
     (isPointwiseRightKanExtensionRanCounit L F X) f
 
-set_option backward.isDefEq.respectTransparency false in
 variable (H) in
 /-- The right Kan extension functor `L.ran` is right adjoint to the
 precomposition by `L`. -/
@@ -356,7 +350,6 @@ noncomputable def ranAdjunction : (whiskeringLeft C D H).obj L ⊣ L.ran :=
         dsimp [homEquivOfIsRightKanExtension]
         rw [assoc] }
 
-set_option backward.isDefEq.respectTransparency false in
 variable (H) in
 @[simp]
 lemma ranAdjunction_counit : (L.ranAdjunction H).counit = L.ranCounit := by
@@ -379,12 +372,10 @@ lemma ranCounit_app_app_ranAdjunction_unit_app_app (G : D ⥤ H) (X : C) :
     ((L.ranAdjunction H).unit.app G).app (L.obj X) ≫ (L.ranCounit.app (L ⋙ G)).app X = 𝟙 _ :=
   congr_app (L.ranCounit_app_whiskerLeft_ranAdjunction_unit_app G) X
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isIso_ranAdjunction_unit_app_iff (G : D ⥤ H) :
     IsIso ((L.ranAdjunction H).unit.app G) ↔ G.IsRightKanExtension (𝟙 (L ⋙ G)) :=
   (isRightKanExtension_iff_isIso _ (L.ranCounit.app (L ⋙ G)) _ (by simp)).symm
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isIso_ranAdjunction_homEquiv_iff {F : C ⥤ H} {G : D ⥤ H} (α : L ⋙ G ⟶ F) :
     IsIso (((L.ranAdjunction H).homEquiv _ _) α) ↔ G.IsRightKanExtension α :=
   (isRightKanExtension_iff_isIso ((((L.ranAdjunction H).homEquiv _ _) α))

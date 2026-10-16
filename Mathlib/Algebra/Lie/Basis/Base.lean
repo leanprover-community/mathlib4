@@ -6,6 +6,7 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Lie.Basis.Prod
+public import Mathlib.Algebra.Lie.CartanCriterion
 public import Mathlib.Algebra.Lie.Weights.RootSystem
 public import Mathlib.LinearAlgebra.RootSystem.BaseExists
 public import Mathlib.LinearAlgebra.RootSystem.CartanMatrix
@@ -104,7 +105,7 @@ def baseSupportEquiv : ι ≃ b.base.support :=
     coroot (b.baseSupportEquiv i) = b.h' i := by
   let := b.isCartanSubalgebra
   suffices b.h' i ∈ corootSpace (b.baseSupp' i) by
-    have _i : IsAddTorsionFree L := .of_isTorsionFree K L
+    have _i : HasUniqueDiv L := .of_isTorsionFree K L
     exact (eq_coroot_of_mem_corootSpace_of_two (b.baseSupp' i).val this (by simp [baseSupp'])).symm
   have h_mem : ⁅b.e i, b.f i⁆ ∈ H := by
     nth_rw 1 [(b.sl2 i).lie_e_f, b.cartan_eq_lieSpan]
@@ -147,7 +148,7 @@ private lemma exists_mem_rootSpace_lie_ne_zero' [IsKilling K L]
   obtain ⟨a', ha', b, hb, hab⟩ := exists_mem_rootSpace_lie_ne_zero hα h_ne_bot
   obtain ⟨t, rfl⟩ : ∃ t : K, t • a = a' :=
     Submodule.mem_span_singleton.mp <| by rwa [← toSubmodule_rootSpace_eq_span α hα a ha₀ ha]
-  exact ⟨b, hb, by contrapose! hab; simp [hab]⟩
+  exact ⟨b, hb, by contrapose hab; simp [hab]⟩
 
 lemma lieSpan_range_union_eq_top_of_mem_rootSpace [IsKilling K L] (b : (rootSystem H).Base)
     (e f : b.support → L)
@@ -194,7 +195,7 @@ lemma lieSpan_range_union_eq_top_of_mem_rootSpace [IsKilling K L] (b : (rootSyst
         exact mapsTo_toEnd_genWeightSpace_add_of_mem_rootSpace K L H L _ _ (e_mem ⟨j, hj⟩) hx
       simpa [toSubmodule_rootSpace_eq_span _ (H.isNonZero_coe_root k) _ hlie hmem] using
         lie_mem S (e_mem_S ⟨j, hj⟩) (hip hx)
-    · replace hk : ⇑k.val = ⇑i.val + ⇑j.val := by ext x; simpa using DFunLike.congr_fun hk x
+    · replace hk : ⇑k.val = ⇑i.val + ⇑j.val := by ext x; simpa using congr($hk x)
       replace hk : (⇑(-i).val + ⇑(-j).val) = ⇑(-k).val := by simp [hk, -neg_add_rev, neg_add]
       have h_ne_bot : rootSpace H (⇑(-j).val + ⇑(-i).val) ≠ ⊥ := by
         rw [add_comm, hk]; exact (-k).val.genWeightSpace_ne_bot
@@ -252,5 +253,21 @@ lemma exists_basis_of_base [IsKilling K L] (b : (rootSystem H).Base) :
         contrapose! this
         exact ⟨⟨χ, this⟩, hij, LinearMap.ext fun x ↦ by simp [hχ]⟩ }
   exact ⟨B, rfl, by simp [B]⟩
+
+open scoped Classical in
+/-- Lie algebras with equivalent root systems are equivalent. -/
+def equivOfRootSystemEquiv {L₂ : Type*} [LieRing L₂] [LieAlgebra K L₂] [FiniteDimensional K L₂]
+    {H₂ : LieSubalgebra K L₂} [H₂.IsCartanSubalgebra] [IsTriangularizable K H₂ L₂]
+    [IsSimple K L] [IsSimple K L₂]
+    (e : (rootSystem H).Equiv (rootSystem H₂)) :
+    L ≃ₗ⁅K⁆ L₂ :=
+  letI b := (rootSystem H).nonempty_base.some
+  letI B₁ := (exists_basis_of_base b).choose
+  letI B₂ := (exists_basis_of_base (b.map e)).choose
+  have hA : B₁.A.reindex (b.supportMapEquiv e) (b.supportMapEquiv e) = B₂.A := by
+    have hB₁ : B₁.A = _ := (exists_basis_of_base b).choose_spec.1
+    have hB₂ : B₂.A = _ := (exists_basis_of_base (b.map e)).choose_spec.1
+    simp [hB₁, hB₂, b.map_equiv_cartanMatrix e]
+  LieAlgebra.Basis.equivOfReindex _ _ _ hA
 
 end LieAlgebra
