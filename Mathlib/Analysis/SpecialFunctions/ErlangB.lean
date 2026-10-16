@@ -6,7 +6,7 @@ Authors: Matthew W. Horn
 module
 
 public import Mathlib.Data.Nat.Factorial.Basic
-public import Mathlib.Data.Real.Basic
+public import Mathlib.Basic.Real.Basic
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Tactic.FieldSimp
 public import Mathlib.Tactic.Linarith
