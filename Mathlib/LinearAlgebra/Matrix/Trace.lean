@@ -175,20 +175,7 @@ theorem trace_mul_pow_comm [CommSemiring R]
     trace ((A * B) ^ k) = trace ((B * A) ^ k) := by
   obtain ⟨k', rfl⟩ := Nat.exists_eq_succ_of_ne_zero hk
   have hpow (k : ℕ) : (B * A) ^ (k + 1) = B * (A * B) ^ k * A := by
-    induction k with
-    | zero => simp
-    | succ k ih =>
-        calc
-          (B * A) ^ (Nat.succ k + 1) = (B * A) ^ (k + 1) * (B * A) := by rfl
-          _ = (B * (A * B) ^ k * A) * (B * A) := by rw [ih]
-          _ = (B * (A * B) ^ k) * (A * (B * A)) := by
-            rw [Matrix.mul_assoc (B * (A * B) ^ k) A (B * A)]
-          _ = (B * (A * B) ^ k) * ((A * B) * A) := by
-            rw [← Matrix.mul_assoc A B A]
-          _ = B * ((A * B) ^ k * (A * B)) * A := by
-            rw [← Matrix.mul_assoc (B * (A * B) ^ k) (A * B) A,
-              Matrix.mul_assoc B ((A * B) ^ k) (A * B)]
-          _ = B * (A * B) ^ (k + 1) * A := by rw [pow_succ]
+    induction k <;> simp [*, pow_succ, Matrix.mul_assoc]
   calc
     trace ((A * B) ^ (k' + 1)) = trace (B * (A * B) ^ k' * A) := by
       rw [pow_succ, ← Matrix.mul_assoc, trace_mul_cycle]
