@@ -140,6 +140,9 @@ theorem measure_eq_zero_iff : measure s = 0 ↔ ¬ IsStationary s := by
 alias ⟨_, measure_of_isStationary⟩ := measure_eq_one_iff
 alias ⟨_, measure_of_not_isStationary⟩ := measure_eq_zero_iff
 
+instance [Nonempty α] : IsProbabilityMeasure (measure (α := α)) where
+  measure_univ := measure_of_isStationary .univ
+
 theorem measure_of_isClub [Nonempty α] (hs : IsClub s) : measure s = 1 :=
   measure_of_isStationary (hs.isStationary h₀.out)
 
