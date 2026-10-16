@@ -79,15 +79,11 @@ variable [CancelMonoid M] [IsMulTorsionFree M] {a : M}
 @[to_additive IsAddTorsionFree.nsmul_left_injective]
 theorem IsMulTorsionFree.pow_right_injective (ha : a ≠ 1) :
     Function.Injective (fun n : ℕ ↦ a ^ n) := by
-  intro n m hnm
-  have main {n m : ℕ} (h₁ : n ≤ m) (h₂ : a ^ n = a ^ m) : n = m := by
-    obtain ⟨l, rfl⟩ := Nat.exists_eq_add_of_le h₁
-    have hl : a ^ l = 1 := mul_left_cancel (by simpa only [pow_add, mul_one] using h₂.symm)
-    rw [pow_eq_one_iff_right ha] at hl
-    simp [hl]
-  obtain h | h := Nat.le_or_le n m
-  · exact main h hnm
-  · exact (main h hnm.symm).symm
+  suffices ∀ {m n : ℕ} (hmn : m ≤ n) (h : a ^ m = a ^ n), m = n from fun m n h ↦
+    (Nat.le_or_le m n).elim (this · h) fun hnm ↦ (this hnm h.symm).symm
+  intro m _ hmn h
+  obtain ⟨l, rfl⟩ := Nat.exists_eq_add_of_le hmn
+  simpa [pow_add, left_eq_mul, ha] using h
 
 @[to_additive (attr := simp) IsAddTorsionFree.nsmul_left_inj]
 theorem IsMulTorsionFree.pow_right_inj (ha : a ≠ 1) {n m : ℕ} : a ^ n = a ^ m ↔ n = m :=
