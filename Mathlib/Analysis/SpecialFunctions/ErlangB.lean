@@ -34,8 +34,8 @@ For every result below, `0 ≤ a`.
 
 * `Real.erlangB_eq_div`: the recursion equals the closed form.
 * `Real.erlangB_mem_Icc`: `Real.erlangB a c` lies in `[0, 1]`.
-* `Real.antitone_erlangB`: `Real.erlangB a` is antitone in the server count.
-* `Real.erlangB_le_erlangB_of_le`: `Real.erlangB · c` is monotone in the offered load.
+* `Real.erlangB_antitone`: `Real.erlangB a` is antitone in the server count.
+* `Real.erlangB_mono_load`: `Real.erlangB · c` is monotone in the offered load.
 * `Real.erlangB_carried_le`: the carried load `a * (1 - Real.erlangB a c)` never exceeds `c`.
 
 ## References
@@ -125,15 +125,15 @@ theorem erlangB_succ_le {a : ℝ} (ha : 0 ≤ a) (c : ℕ) : erlangB a (c + 1) �
   linarith [mul_nonneg hB0 (sub_nonneg.mpr haD)]
 
 /-- `erlangB a` is antitone in the server count. -/
-theorem antitone_erlangB {a : ℝ} (ha : 0 ≤ a) : Antitone (erlangB a) :=
+theorem erlangB_antitone {a : ℝ} (ha : 0 ≤ a) : Antitone (erlangB a) :=
   antitone_nat_of_succ_le (erlangB_succ_le ha)
 
 /-- `erlangB · c` is monotone in the offered load. -/
-theorem erlangB_le_erlangB_of_le {a a' : ℝ} (ha : 0 ≤ a) (haa' : a ≤ a') :
+theorem erlangB_mono_load {a a' : ℝ} (ha : 0 ≤ a) (haa' : a ≤ a') :
     ∀ c : ℕ, erlangB a c ≤ erlangB a' c
   | 0 => le_rfl
   | c + 1 => by
-    have ih := erlangB_le_erlangB_of_le ha haa' c
+    have ih := erlangB_mono_load ha haa' c
     have hB0 := erlangB_nonneg ha c
     have hx : a * erlangB a c ≤ a' * erlangB a' c := mul_le_mul haa' ih hB0 (ha.trans haa')
     have h1 := erlangB_denom_pos ha c
