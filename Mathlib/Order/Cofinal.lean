@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Order.Bounds.Defs
 public import Mathlib.Order.GaloisConnection.Defs
+public import Mathlib.Order.Directed
 public import Mathlib.Order.Hom.Basic
 public import Mathlib.Order.Interval.Set.Defs
 public import Mathlib.Order.SetNotation
@@ -131,6 +132,30 @@ theorem IsCofinal.top_mem [OrderTop α] {s : Set α} (hs : IsCofinal s) : ⊤ �
 theorem isCofinal_iff_top_mem [OrderTop α] {s : Set α} : IsCofinal s ↔ ⊤ ∈ s :=
   ⟨IsCofinal.top_mem, fun hs _ ↦ ⟨⊤, hs, le_top⟩⟩
 
+variable [IsDirectedOrder α]
+
+theorem IsCofinal.inter_of_isUpperSet_left {s t : Set α} (hs : IsCofinal s) (ht : IsUpperSet t)
+    (ht₀ : t.Nonempty) : IsCofinal (t ∩ s) := by
+  intro y
+  obtain ⟨x, hx⟩ := ht₀
+  obtain ⟨m, hxm, hym⟩ := exists_ge_ge x y
+  obtain ⟨z, hz, hyz⟩ := hs m
+  exact ⟨z, ⟨ht (hxm.trans hyz) hx, hz⟩, hym.trans hyz⟩
+
+theorem IsCofinal.inter_of_isUpperSet_right {s t : Set α} (hs : IsCofinal s) (ht : IsUpperSet t)
+    (ht₀ : t.Nonempty) : IsCofinal (s ∩ t) := by
+  rw [inter_comm]
+  exact hs.inter_of_isUpperSet_left ht ht₀
+
+theorem IsUpperSet.isCofinal {s : Set α} (hs : IsUpperSet s) (hs₀ : s.Nonempty) : IsCofinal s := by
+  simpa using IsCofinal.univ.inter_of_isUpperSet_left hs hs₀
+
+@[simp] protected theorem IsCofinal.Ici (x : α) : IsCofinal (Ici x) := by
+  simpa using (IsUpperSet.Ici x).isCofinal
+
+@[simp] protected theorem IsCofinal.Ioi [NoMaxOrder α] (x : α) : IsCofinal (Ioi x) := by
+  simpa using (IsUpperSet.Ioi x).isCofinal
+
 end PartialOrder
 
 section LinearOrder
@@ -163,27 +188,6 @@ theorem not_bddAbove_iff_isCofinal [NoMaxOrder α] {s : Set α} : ¬ BddAbove s 
   not_iff_comm.1 not_isCofinal_iff_bddAbove
 
 alias ⟨_, IsCofinal.not_bddAbove⟩ := not_bddAbove_iff_isCofinal
-
-theorem IsCofinal.inter_of_isUpperSet_left {s t : Set α} (hs : IsCofinal s) (ht : IsUpperSet t)
-    (ht₀ : t.Nonempty) : IsCofinal (t ∩ s) := by
-  intro y
-  obtain ⟨x, hx⟩ := ht₀
-  obtain ⟨z, hz, hyz⟩ := hs (max x y)
-  exact ⟨z, ⟨ht ((le_max_left ..).trans hyz) hx, hz⟩, (le_max_right ..).trans hyz⟩
-
-theorem IsCofinal.inter_of_isUpperSet_right {s t : Set α} (hs : IsCofinal s) (ht : IsUpperSet t)
-    (ht₀ : t.Nonempty) : IsCofinal (s ∩ t) := by
-  rw [inter_comm]
-  exact hs.inter_of_isUpperSet_left ht ht₀
-
-theorem IsUpperSet.isCofinal {s : Set α} (hs : IsUpperSet s) (hs₀ : s.Nonempty) : IsCofinal s := by
-  simpa using IsCofinal.univ.inter_of_isUpperSet_left hs hs₀
-
-@[simp] protected theorem IsCofinal.Ici (x : α) : IsCofinal (Ici x) := by
-  simpa using (IsUpperSet.Ici x).isCofinal
-
-@[simp] protected theorem IsCofinal.Ioi [NoMaxOrder α] (x : α) : IsCofinal (Ioi x) := by
-  simpa using (IsUpperSet.Ioi x).isCofinal
 
 /-- The set of "records" (the smallest inputs yielding the highest values) with respect to a
 well-ordering of `α` is a cofinal set. -/
