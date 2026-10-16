@@ -1013,7 +1013,7 @@ jobs:
           fi
 
           missing="The cache is missing build outputs. The log above names the modules that Lake needs to rebuild."
-          retry_hint="Hint: a network error can cause this. Re-run all jobs."
+          retry_hint="Hint: re-run all jobs. If the error persists, ask in the #mathlib4 channel on Zulip."
 
           # Only fork PRs read and write the cache with different binaries.
           # Every other build (master, bors, dev branches) uses one binary, so
