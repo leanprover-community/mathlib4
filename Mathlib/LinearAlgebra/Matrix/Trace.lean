@@ -166,13 +166,12 @@ theorem trace_mul_cycle' [NonUnitalCommSemiring R] (A : Matrix m n R) (B : Matri
 
 /-- For square matrices, the trace of any power of `A * B` is unchanged when the factors
 are reversed. -/
-theorem trace_mul_pow_comm [DecidableEq n] [CommSemiring R]
+theorem trace_mul_pow_comm [CommSemiring R]
     (A B : Matrix n n R) (k : ℕ) :
     trace ((A * B) ^ k) = trace ((B * A) ^ k) := by
   cases k with
-  | zero => simp
-  | succ k =>
-      rw [pow_succ, ← Matrix.mul_assoc, trace_mul_cycle, mul_pow_succ_mul]
+  | zero => rfl
+  | succ k => rw [pow_succ, ← Matrix.mul_assoc, trace_mul_cycle, mul_pow_succ_mul]
 
 /-- The trace of a positive power of `A * B` is unchanged when the factors are reversed.
 
@@ -180,22 +179,12 @@ The matrices `A` and `B` may be rectangular. The exponent is positive because th
 does not hold at exponent zero when the index types have different cardinalities. For square
 matrices, see `trace_mul_pow_comm`.
 -/
-theorem trace_mul_pow_comm' [DecidableEq m] [DecidableEq n] [CommSemiring R]
+theorem trace_mul_pow_comm' [CommSemiring R]
     (A : Matrix m n R) (B : Matrix n m R) {k : ℕ} (hk : k ≠ 0) :
     trace ((A * B) ^ k) = trace ((B * A) ^ k) := by
-  have hpow (j : ℕ) : (B * A) ^ (j + 1) = B * (A * B) ^ j * A := by
-    induction j with
-    | zero => simp
-    | succ j ih =>
-        calc
-          (B * A) ^ (j + 1 + 1) = (B * A) ^ (j + 1) * (B * A) := by rw [pow_succ]
-          _ = (B * (A * B) ^ j * A) * (B * A) := by rw [ih]
-          _ = B * ((A * B) ^ j * (A * B)) * A := by simp only [Matrix.mul_assoc]
-          _ = B * (A * B) ^ (j + 1) * A := by rw [pow_succ]
   cases k with
   | zero => exact (hk rfl).elim
-  | succ k =>
-      rw [pow_succ, ← Matrix.mul_assoc, trace_mul_cycle, hpow]
+  | succ k => rw [pow_succ, ← Matrix.mul_assoc, trace_mul_cycle, mul_pow_succ_mul]
 
 @[simp]
 theorem trace_replicateCol_mul_replicateRow {ι : Type*} [Unique ι] [NonUnitalNonAssocSemiring R]
