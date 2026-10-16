@@ -40,8 +40,7 @@ def Ioo (x y : X) : Set X :=
     convexCombPair a b ha.le hb.le hab x y = z }
 
 /-- Left-open segments in a convex space. Denoted as `Ico R x y` within the `Convex` namespace.
-Note that `Ioo R x x = {x}` instead of being `∅` when the base semiring has some element between
-`0` and `1`. -/
+Note that `Ico R x x = {x}` instead of being `∅` . -/
 def Ico (x y : X) : Set X :=
   { z : X | ∃ (a b : R) (ha : 0 < a) (hb : 0 ≤ b) (hab : a + b = 1),
     convexCombPair a b ha.le hb hab x y = z }
@@ -94,7 +93,7 @@ theorem forall_mem_Icc_iff (p : X → Prop) : (∀ z ∈ Icc R x y, p z) ↔
 
 theorem forall_mem_Ioo_iff (p : X → Prop) : (∀ z ∈ Ioo R x y, p z) ↔
     ∀ {a b : R} (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1),
-    p (convexCombPair a b ha.le hb.le hab x y):= by
+    p (convexCombPair a b ha.le hb.le hab x y) := by
   grind [Ioo]
 
 theorem forall_mem_Ico_iff (p : X → Prop) : (∀ z ∈ Ico R x y, p z) ↔
@@ -156,7 +155,7 @@ theorem Ioo_insert_left (x y : X) : insert x (Ioo R x y) = Ico R x y := by
 
 @[simp]
 theorem Ioo_insert_right (x y : X) : insert y (Ioo R x y) = Ico R y x := by
-  rw [Ioo_symm]; simp
+  rw [Ioo_symm, Iio_insert_left]
 
 @[simp]
 theorem Ico_insert (x y : X) : insert y (Ico R x y) = Icc R x y := by
@@ -209,13 +208,11 @@ theorem Icc_subset (x y : X × Y) : Icc R x y ⊆ Icc R x.1 y.1 ×ˢ Icc R x.2 y
   rintro z ⟨a, b, ha, hb, hab, rfl⟩
   simp [convexCombPair_mem_Icc]
 
-theorem Ioo_subset (x y : X × Y) :
-    Ioo R x y ⊆ Ioo R x.1 y.1 ×ˢ Ioo R x.2 y.2 := by
+theorem Ioo_subset (x y : X × Y) : Ioo R x y ⊆ Ioo R x.1 y.1 ×ˢ Ioo R x.2 y.2 := by
   rintro z ⟨a, b, ha, hb, hab, hz⟩
   exact ⟨⟨a, b, ha, hb, hab, by subst hz; simp⟩, a, b, ha, hb, hab, by subst hz; simp⟩
 
-theorem Ico_subset (x y : X × Y) :
-    Ico R x y ⊆ Ico R x.1 y.1 ×ˢ Ico R x.2 y.2 := by
+theorem Ico_subset (x y : X × Y) : Ico R x y ⊆ Ico R x.1 y.1 ×ˢ Ico R x.2 y.2 := by
   rintro z ⟨a, b, ha, hb, hab, hz⟩
   exact ⟨⟨a, b, ha, hb, hab, by subst hz; simp⟩, a, b, ha, hb, hab, by subst hz; simp⟩
 
@@ -253,8 +250,8 @@ variable (R) {X} [Ring R] [PartialOrder R] [IsStrictOrderedRing R] [ConvexSpace 
   [DenselyOrdered R]
 
 @[simp]
-theorem Ioo_same (x : X) : Ioo R x x = {x} :=
-  Set.ext <| fun _ ↦ by
+theorem Ioo_same (x : X) : Ioo R x x = {x} := by
+  ext
     refine ⟨by simp +contextual [Ioo], ?_⟩
     obtain ⟨a, ha₀, ha₁⟩ := exists_between (α := R) zero_lt_one
     refine fun h ↦ ⟨a, 1 - a, ha₀, sub_pos_of_lt ha₁, add_sub_cancel .., ?_⟩
