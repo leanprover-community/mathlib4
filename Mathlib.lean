@@ -8608,6 +8608,7 @@ public import Mathlib.Topology.UrysohnsLemma
 public import Mathlib.Topology.VectorBundle.Basic
 public import Mathlib.Topology.VectorBundle.Constructions
 public import Mathlib.Topology.VectorBundle.ContinuousAlternatingMap
+public import Mathlib.Topology.VectorBundle.ContinuousSymmetricMap
 public import Mathlib.Topology.VectorBundle.FiniteDimensional
 public import Mathlib.Topology.VectorBundle.Hom
 public import Mathlib.Topology.VectorBundle.Riemannian
