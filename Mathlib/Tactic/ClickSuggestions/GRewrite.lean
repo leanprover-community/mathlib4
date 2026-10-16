@@ -222,7 +222,7 @@ def GrwLemma.try (i : GrwInfo) (lem : GrwLemma) (assignableMVars : Array Expr) :
   let mut htmls := #[← exprToHtml replacement]
   for goal in i.goals do
     let html ← goal.withContext (exprToHtml (← goal.getType))
-    htmls := htmls.push <div><strong className="goal-vdash">⊢ </strong>{html}</div>
+    htmls := htmls.push jsx%{<div><strong className="goal-vdash">⊢ </strong>{html}</div>}
   for goal in extraGoals do
     htmls := htmls.push
       jsx%{<div><strong className="goal-vdash">⊢ </strong>{← exprToHtml goal}</div>}
