@@ -498,21 +498,14 @@ namespace ZMod
 
 open FiniteField Polynomial
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sq_add_sq (p : ℕ) [hp : Fact p.Prime] (x : ZMod p) : ∃ a b : ZMod p, a ^ 2 + b ^ 2 = x := by
   rcases hp.1.eq_two_or_odd with rfl | hp_odd
-  · change Fin 2 at x
+  · unfold ZMod
     fin_cases x
     · use 0; simp
     · use 0, 1; simp
-  let f : (ZMod p)[X] := X ^ 2
-  let g : (ZMod p)[X] := X ^ 2 - C x
-  obtain ⟨a, b, hab⟩ : ∃ a b, f.eval a + g.eval b = 0 :=
-    @exists_root_sum_quadratic _ _ _ _ f g (degree_X_pow 2) (degree_X_pow_sub_C (by decide) _)
-      (by rw [ZMod.card, hp_odd])
-  refine ⟨a, b, ?_⟩
-  rw [← sub_eq_zero]
-  simpa only [f, g, eval_C, eval_X, eval_pow, eval_sub, ← add_sub_assoc] using hab
+  simpa [hp_odd, sub_eq_zero, ← add_sub_assoc] using
+    exists_root_sum_quadratic (degree_X_pow 2) (degree_X_pow_sub_C two_pos x)
 
 end ZMod
 
@@ -643,7 +636,7 @@ theorem Int.ModEq.pow_card_sub_one_eq_one {p : ℕ} (hp : Nat.Prime p) {n : ℤ}
   have : Fact p.Prime := ⟨hp⟩
   have : ¬(n : ZMod p) = 0 := by
     rw [CharP.intCast_eq_zero_iff _ p, ← (Nat.prime_iff_prime_int.mp hp).coprime_iff_not_dvd]
-    · exact hpn.symm
+    exact hpn.symm
   simpa [← ZMod.intCast_eq_intCast_iff] using ZMod.pow_card_sub_one_eq_one this
 
 theorem Int.prime_dvd_pow_sub_one {p : ℕ} (hp : Nat.Prime p) {n : ℤ} (hpn : IsCoprime n p) :

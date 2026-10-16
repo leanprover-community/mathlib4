@@ -5,8 +5,8 @@ Authors: Aaron Liu
 -/
 module
 
-public import Mathlib.Logic.Encodable.Basic
 public import Mathlib.Data.NNRat.Defs
+public import Mathlib.Logic.Encodable.Basic
 
 /-! # The nonnegative rationals are `Encodable`.
 

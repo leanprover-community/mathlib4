@@ -97,8 +97,8 @@ Walk a list of SHAs (most recent first) and collect up to `limit` of them whose
 per-SHA marker exists in the `forks` container. Stops early once `limit` are
 found, so at most `limit` probes succeed (and at most `shas.length` are made).
 
-`forks` is the only SHA-scoped container; master/nightly-testing/pr-toolchain-tests
-are not scoped, so probing them here would be meaningless.
+`forks` is the only SHA-scoped container; `master` is flat, so probing it here
+would be meaningless.
 -/
 def findRecentSHAsWithCache (shas : List String) (repo : String) (limit : Nat) :
     IO (List String) := do

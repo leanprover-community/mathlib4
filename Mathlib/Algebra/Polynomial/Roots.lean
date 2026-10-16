@@ -8,9 +8,9 @@ module
 public import Mathlib.Algebra.Polynomial.BigOperators
 public import Mathlib.Algebra.Polynomial.RingDivision
 public import Mathlib.Data.Set.Card
+public import Mathlib.Order.Filter.TendstoCofinite
 public import Mathlib.RingTheory.Coprime.Lemmas
 public import Mathlib.RingTheory.Localization.FractionRing
-public import Mathlib.Order.Filter.TendstoCofinite
 
 /-!
 # Theory of univariate polynomials
@@ -622,6 +622,7 @@ theorem bUnion_roots_finite {R S : Type*} [Semiring R] [CommRing S] [IsDomain S]
     (⋃ (f : R[X]) (_ : f.natDegree ≤ d ∧ ∀ i, f.coeff i ∈ U),
         ((f.map m).roots.toFinset : Set S)).Finite :=
   Set.Finite.biUnion
+    (s := {f : R[X] | f.natDegree ≤ d ∧ ∀ i, f.coeff i ∈ U})
     (by
       -- We prove that the set of polynomials under consideration is finite because its
       -- image by the injective map `π` is finite

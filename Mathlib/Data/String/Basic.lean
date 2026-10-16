@@ -6,12 +6,12 @@ Authors: Mario Carneiro
 module
 
 public import Batteries.Data.String.Lemmas
-public import Mathlib.Data.List.Lex
-public import Mathlib.Data.Char
 public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Data.Char
+public import Mathlib.Data.List.Lex
 
-import all Init.Data.String.Iterator  -- for unfolding `Iterator.curr`
 import all Init.Data.Ord.String  -- for unfolding `String.compare`
+import all Init.Data.String.Iterator  -- for unfolding `Iterator.curr`
 
 /-!
 # Strings
@@ -118,15 +118,6 @@ theorem lt_iff_ltb {s₁ s₂ : String} :
       cases e <;> rename_i h'
       · assumption
       · contradiction
-
-@[deprecated "Use the new String API" (since := "2026-04-01")]
-theorem toList_nonempty :
-    ∀ {s : String}, s ≠ "" → s.toList = String.Legacy.front s :: (String.Legacy.drop s 1).toList
-  | s, h => by
-    obtain ⟨l, rfl⟩ := s.exists_eq_ofList
-    match l with
-    | [] => simp at h
-    | c::cs => simp [Legacy.front, Pos.Raw.get, Pos.Raw.utf8GetAux]
 
 @[simp]
 theorem head_empty : "".toList.head! = default :=

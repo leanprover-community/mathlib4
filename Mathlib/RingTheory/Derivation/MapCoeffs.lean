@@ -5,10 +5,10 @@ Authors: Daniel Weber
 -/
 module
 
-public import Mathlib.RingTheory.Derivation.DifferentialRing
-public import Mathlib.Algebra.Polynomial.Module.Basic
 public import Mathlib.Algebra.Polynomial.Derivation
+public import Mathlib.Algebra.Polynomial.Module.Basic
 public import Mathlib.FieldTheory.Separable
+public import Mathlib.RingTheory.Derivation.DifferentialRing
 
 /-!
 # Coefficient-wise derivation on polynomials
