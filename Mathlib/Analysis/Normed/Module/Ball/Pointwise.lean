@@ -60,8 +60,7 @@ theorem infDist_smul₀ (c : 𝕜) (s : Set E) (x : E) :
     infDist (c • x) (c • s) = ‖c‖ * infDist x s := by
   obtain rfl | hs := s.eq_empty_or_nonempty
   · simp
-  simp only [infDist, infEDist_smul₀_of_nonempty c hs, ENNReal.toReal_smul, NNReal.smul_def,
-    coe_nnnorm, smul_eq_mul]
+  simp [infDist, infEDist_smul₀_of_nonempty c hs, ENNReal.toReal_smul, NNReal.smul_def]
 
 end NormedRing
 
