@@ -1012,11 +1012,15 @@ jobs:
             exit 0
           fi
 
+          missing="The cache is missing build outputs. The log above names the modules that Lake needs to rebuild."
+          retry_hint="Hint: a network error can cause this. Re-run all jobs."
+
           # Only fork PRs read and write the cache with different binaries.
           # Every other build (master, bors, dev branches) uses one binary, so
           # a miss is a real gap.
           if [ "${HEAD_REPO_IS_FORK}" != "true" ]; then
-            echo "::error::Cache verification failed on an in-repo build; the uploaded cache is incomplete."
+            echo "::error title=Cache incomplete::${missing}"
+            echo "${retry_hint}"
             exit 1
           fi
 
@@ -1031,16 +1035,18 @@ jobs:
           dout=$(diff -rq workflow-actions/Cache Cache 2>&1)
           dstat=$?
           if [ "${dstat}" -eq 0 ]; then
-            echo "::error::Cache verification failed and this PR's Cache/ matches master's, so the key spaces agree: the uploaded cache is incomplete."
+            echo "::error title=Cache incomplete::${missing}"
+            echo "${retry_hint}"
             exit 1
           elif [ "${dstat}" -eq 1 ]; then
-            echo "::warning::Cache verification incomplete, but this PR's Cache/ differs from master's. CI wrote the cache with master's binary and this job reads it with the PR branch's, so a changed key space (such as a rootHashGeneration bump) misses as expected. Continuing; the cache repopulates once this lands on master."
+            echo "::warning title=Cache incomplete (expected)::${missing} This PR changes Cache/. CI uploads fork PR builds with master's cache tool and this job reads them with this PR's tool, so the two tools use different file names. Master CI uploads the files under the new names after this PR merges."
             echo "${dout}"
             # The downstream check below reads the same key space, so skip it.
             echo "key_space_changed=true" >> "$GITHUB_OUTPUT"
             exit 0
           else
-            echo "::error::Cache verification failed and master's Cache/ baseline could not be compared (diff status ${dstat}); treating as a failure."
+            echo "::error title=Cache incomplete::${missing}"
+            echo "Note: CI could not compare this PR's Cache/ with master's (diff exit status ${dstat})."
             echo "${dout}"
             exit 1
           fi
