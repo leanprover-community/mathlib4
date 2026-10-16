@@ -21,12 +21,12 @@ universe u v w
 
 namespace Valuation
 
-namespace Integers
+namespace IsIntegers
 
 section CommRing
 
 variable {R : Type u} {Γ₀ : Type v} [CommRing R] [LinearOrderedCommGroupWithZero Γ₀]
-variable {v : Valuation R Γ₀} {O : Type w} [CommRing O] [Algebra O R] (hv : Integers v O)
+variable {v : Valuation R Γ₀} {O : Type w} [CommRing O] [Algebra O R] (hv : IsIntegers v O)
 include hv
 
 open Polynomial
@@ -70,13 +70,13 @@ section FractionField
 variable {K : Type u} {Γ₀ : Type v} [Field K] [LinearOrderedCommGroupWithZero Γ₀]
 variable {v : Valuation K Γ₀} {O : Type w} [CommRing O]
 variable [Algebra O K]
-variable (hv : Integers v O)
+variable (hv : IsIntegers v O)
 
 include hv in
 theorem isIntegrallyClosed : IsIntegrallyClosed O := by
   have : IsFractionRing O K := hv.isFractionRing
   exact
-    (IsIntegrallyClosed.integralClosure_eq_bot_iff K).mp (Valuation.Integers.integralClosure hv)
+    (IsIntegrallyClosed.integralClosure_eq_bot_iff K).mp (Valuation.IsIntegers.integralClosure hv)
 
 instance isIntegrallyClosed_integers (v : Valuation K Γ₀) :
     IsIntegrallyClosed v.integer :=
@@ -84,6 +84,23 @@ instance isIntegrallyClosed_integers (v : Valuation K Γ₀) :
 
 end FractionField
 
-end Integers
+end IsIntegers
+
+/-! ### Deprecated aliases -/
+
+@[deprecated (since := "2026-09-15")]
+alias Integers.isIntegral_iff_v_le_one := IsIntegers.isIntegral_iff_v_le_one
+
+@[deprecated (since := "2026-09-15")]
+alias Integers.mem_of_integral := IsIntegers.mem_of_integral
+
+@[deprecated (since := "2026-09-15")]
+alias Integers.integralClosure := IsIntegers.integralClosure
+
+@[deprecated (since := "2026-09-15")]
+alias Integers.isIntegrallyClosed := IsIntegers.isIntegrallyClosed
+
+@[deprecated (since := "2026-09-15")]
+alias Integers.isIntegrallyClosed_integers := IsIntegers.isIntegrallyClosed_integers
 
 end Valuation
