@@ -54,11 +54,12 @@ skips the bucket-creation probe a scoped credential cannot pass. -/
 def rcloneCommonFlags : Array String := #["--s3-no-check-bucket", "--retries", "5"]
 
 /-- Copy the listed files to the resolved location. `--no-traverse` uses per-file
-checks to avoid listing a large destination. Non-overwrite uploads skip existing objects. -/
+checks to avoid listing a large destination. A trailing slash marks the destination
+as a directory. Non-overwrite uploads skip existing objects. -/
 def rcloneFilesArgs (dest : Location) (srcDir filesFrom : FilePath)
     (overwrite : Bool) : Except String (Array String) := do
   let (_, bucketPath) ← s3EndpointSplit dest.root
-  return #["copy", srcDir.toString, s!":s3:{bucketPath}/{dest.filesDir}",
+  return #["copy", srcDir.toString, s!":s3:{bucketPath}/{dest.filesDir}/",
     "--files-from", filesFrom.toString, "--no-traverse"] ++
     (if overwrite then #[] else #["--ignore-existing"]) ++ rcloneCommonFlags
 

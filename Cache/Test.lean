@@ -1561,7 +1561,7 @@ def test_rcloneArgs : IO Unit := do
     let files ← IO.ofExcept <| rcloneFilesArgs dest "staging" "tmp/files-from.txt"
       (overwrite := false)
     assertEq "files copy remote matches the location"
-      ":s3:devbucket/mathlib4-forks/f/alice/mathlib4/abc1" files[2]!
+      ":s3:devbucket/mathlib4-forks/f/alice/mathlib4/abc1/" files[2]!
     assertTrue "files copy is a copy" (files[0]! == "copy")
     assertTrue "files copy is restricted to the caller's file list"
       ((files.toList.zip files.toList.tail).contains ("--files-from", "tmp/files-from.txt"))
@@ -1588,7 +1588,7 @@ def test_rcloneArgs : IO Unit := do
     let prefixedFiles ← IO.ofExcept <| rcloneFilesArgs prefixed "staging" "tmp/files-from.txt"
       (overwrite := false)
     assertEq "file remotes keep the bucket, prefix, and container from the root"
-      ":s3:otherbucket/prefix/mathlib4-forks/f/alice/mathlib4/abc1" prefixedFiles[2]!
+      ":s3:otherbucket/prefix/mathlib4-forks/f/alice/mathlib4/abc1/" prefixedFiles[2]!
     let some prefixedMarkerLocation := prefixed.marker? | do
       assertTrue "the prefixed destination has a marker" false
       return
@@ -1668,7 +1668,7 @@ def test_putStagedViaRclone : IO Unit := do
     assertTrue "files copy targets the staging dir"
       ((copyArgs.splitOn "\n").any (· == staging.toString))
     assertTrue "files copy addresses the resolved remote"
-      ((copyArgs.splitOn "\n").any (· == ":s3:devbucket/mathlib4-forks/f/alice/mathlib4/abc1"))
+      ((copyArgs.splitOn "\n").any (· == ":s3:devbucket/mathlib4-forks/f/alice/mathlib4/abc1/"))
     assertEq "the files-from list holds exactly the caller's file names"
       "aa.ltar\n" (← IO.FS.readFile (dir / "files-from-copy"))
     let copyEnv ← IO.FS.readFile (dir / "env-copy")
@@ -1707,8 +1707,8 @@ def test_putStagedViaRclone : IO Unit := do
       assertTrue "endpoint file copies derive the bucket prefix from the location"
         (((← IO.FS.readFile (dir / "args-copy")).splitOn "\n").contains
           (match scope? with
-            | some sha => s!":s3:devbucket/prefix/f/alice/mathlib4/{sha}"
-            | none => ":s3:devbucket/prefix/f/alice/mathlib4"))
+            | some sha => s!":s3:devbucket/prefix/f/alice/mathlib4/{sha}/"
+            | none => ":s3:devbucket/prefix/f/alice/mathlib4/"))
       match scope? with
       | some _ =>
         assertEq "a scoped endpoint uploads files before its marker"
