@@ -220,8 +220,7 @@ def getSrcDir (sp : SearchPath) (mod : Name) : IO FilePath := do
 
   return srcDir
 
-/-- Runs `curl` and passes each line of its stdout to `processLine`. Returns the
-final state, curl's exit code, and curl's stderr. -/
+/-- Process curl's stdout line by line. Return the final state, exit code, and stderr. -/
 partial def runCurlStreaming (args : Array String) (init : α)
     (processLine : α → String → IO α) : IO (α × UInt32 × String) := do
   let child ← IO.Process.spawn { cmd := ← getCurl, args, stdout := .piped, stderr := .piped }
@@ -265,18 +264,13 @@ def curlVersion (curl : String) : IO (Nat × Nat) := do
     | _ => throw <| IO.userError "Invalidly formatted version of `curl`"
   | _ => throw <| IO.userError "Invalidly formatted response from `curl --version`"
 
-/-- Whether the transfer paths can run on a system curl of `version`
-(major, minor). The get path's write-out reads response headers with
-`%header{…}`, which curl 7.84 added. curl 8.18 hangs on a pending retry in
-parallel mode (curl issue #20669), and the parallel transfer paths retry. -/
-def curlVersionUsable (version : Nat × Nat) : Bool :=
-  (version.1 > 7 || (version.1 == 7 && version.2 ≥ 84)) && !(version.1 == 8 && version.2 == 18)
-
 def validateCurl : IO Bool := do
   if (← CURLBIN.pathExists) then return true
   let version ← curlVersion "curl"
   let found := s!"{version.1}.{version.2}"
-  if curlVersionUsable version then return true
+  let _ := @lexOrd
+  let _ := @leOfOrd
+  if version >= (7, 84) && version != (8, 18) then return true
   let hangs := version == (8, 18)
   let reason := if hangs then s!"curl {found} hangs on a pending retry in parallel mode"
     else s!"curl {found} is too old"
@@ -294,8 +288,6 @@ def validateCurl : IO Bool := do
   if hangs then
     IO.println s!"Warning: {reason}. Can't use `--parallel`."
     return false
-  let _ := @lexOrd
-  let _ := @leOfOrd
   -- The parallel transfer paths pass `--retry-all-errors` (curl 7.71)
   -- and read the `exitcode` and `errormsg` fields of the per-transfer
   -- JSON report (curl 7.75); an older curl rejects the flag or omits

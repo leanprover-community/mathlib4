@@ -309,8 +309,7 @@ guarantees the per-transfer JSON report fields `monitorCurl` reads. Pass
 def curlRetryArgs (supportLegacyCurl : Bool) : Array String :=
   #["--retry", "5"] ++ (if supportLegacyCurl then #[] else #["--retry-all-errors"])
 
-/-- `curl` flag that sets the number of simultaneous transfers in a parallel
-download from `MATHLIB_CACHE_PARALLEL_MAX`. -/
+/-- Set curl's parallel transfer limit from `MATHLIB_CACHE_PARALLEL_MAX`. -/
 def curlParallelMaxArgs : IO (Array String) := do
   let some value ← getEnvNonEmpty "MATHLIB_CACHE_PARALLEL_MAX" | return #[]
   let some n := value.toNat? | do
@@ -575,6 +574,8 @@ structure TransferState where
   speed : Nat := 0
   /-- Decompression pipeline state; used only when a `DecompConfig` is set. -/
   decomp : DecompState := {}
+  /-- Reported upload URLs, without query strings. -/
+  reported : Std.HashSet String := {}
 
 /-- Harvest the result of a completed decompression task, updating counters.
     Returns `(successful, failed, error?)`. -/
@@ -683,7 +684,7 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
     return msg
   let init : TransferState := { last := (← IO.monoMsNow), decomp := decompState }
   let (s, exitCode, stderr) ← IO.runCurlStreaming args init fun a line => do
-    let mut {last, success, failed, done, speed, decomp} := a
+    let mut {last, success, failed, done, speed, decomp, reported} := a
     let mut {pending, currentTask, lastBatchSize, decompressed, decompFailed} := decomp
     -- Classify each finished transfer: rename a delivered part file, report a
     -- failure, and remove the part file on any non-delivery.
@@ -699,6 +700,9 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
         -- The per-transfer JSON report carries `exitcode` from curl 7.75 on;
         -- an absent field reads as 0.
         let exitCode := (result.getObjValAs? Nat "exitcode").toOption.getD 0
+        if let .upload := dir then
+          if let .ok url := result.getObjValAs? String "url_effective" then
+            reported := reported.insert ((url.splitOn "?").headD url)
         let verdict := classify code?.toOption exitCode
         if verdict matches .delivered then
           if let .ok fn := fn? then
@@ -786,9 +790,8 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
         IO.println s!"Non-JSON output from curl:\n  {line}\n{e}"
     let decompNow : DecompState :=
       {pending, currentTask, lastBatchSize, decompressed, decompFailed}
-    pure {last, success, failed, done, speed, decomp := decompNow}
-  -- curl reports each transfer it finishes. A transfer without a report did
-  -- not finish, so it counts as failed.
+    pure {last, success, failed, done, speed, decomp := decompNow, reported}
+  -- Count transfers without a completion report as failures.
   let s ← if s.done < size then do
       IO.eprintln s!"\ncurl exited with code {exitCode} after it reported {s.done} of {size} transfers"
       unless stderr.isEmpty do IO.eprintln stderr.trimAscii

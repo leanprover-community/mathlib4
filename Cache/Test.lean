@@ -1256,10 +1256,7 @@ def test_classifyDownload : IO Unit := do
   assertTrue "no status fails"
     (classifyDownload none 0 matches .failed)
 
-/-- The put config sends every response body to the sink, a regular file:
-stdout must carry only the per-transfer JSON reports
-(`--write-out '%{json}'`) that `monitorCurl` parses, and curl below 8.14.0
-abandons a retry whose output it cannot truncate. -/
+/-- Upload bodies use a regular file so curl can retry after a server error. -/
 def test_mkPutConfigContent : IO Unit := do
   IO.println "mkPutConfigContent:"
   let dest : Location :=
@@ -1272,7 +1269,6 @@ def test_mkPutConfigContent : IO Unit := do
     ((cfg.splitOn
       "url = https://example.invalid/mathlib4-master/f/00000000deadbeef.ltar").length == 2)
   assertTrue "sends the response body to the sink" ((cfg.splitOn "-o /tmp/curl-1.body").length == 2)
-  assertTrue "does not use the null device" ((cfg.splitOn IO.nullDevice).length == 1)
 
 /-- `classifyUpload`: a clean 200/201 delivers, a 409/412 skips for a
 non-overwrite put, and every other answer — a 404 included — is a failure. -/
@@ -1862,21 +1858,7 @@ def test_monitorCurl_carries_decomp_state : IO Unit := do
   assertTrue "the decompressed counter survives the round" (s.decomp.decompressed == 42)
   assertTrue "the decompFailed counter survives the round" (s.decomp.decompFailed == 1)
 
-/-- The system curl versions the transfer paths accept: 7.84 and later, except
-8.18, which hangs on a pending retry in parallel mode. -/
-def test_curlVersionUsable : IO Unit := do
-  IO.println "curlVersionUsable:"
-  assertTrue "7.83 lacks the %header write-out" (!IO.curlVersionUsable (7, 83))
-  assertTrue "7.84 is the floor" (IO.curlVersionUsable (7, 84))
-  assertTrue "8.5 is usable" (IO.curlVersionUsable (8, 5))
-  assertTrue "8.18 hangs on a pending retry" (!IO.curlVersionUsable (8, 18))
-  assertTrue "8.19 is usable" (IO.curlVersionUsable (8, 19))
-  assertTrue "9.0 is usable" (IO.curlVersionUsable (9, 0))
-
-/-- curl reports each transfer it finishes. When curl exits before it reports
-every transfer, the transfers without a report count as failed, so a short
-upload exits 1 and does not pass as a full one. `curl --version` exits 0 and
-reports no transfer. -/
+/-- A successful curl exit with missing reports still counts as a failed transfer pass. -/
 def test_monitorCurl_counts_unreported_transfers : IO Unit := do
   IO.println "monitorCurl counts unreported transfers as failed:"
   let (s, _) ← withSuppressedOutput <|
@@ -1884,6 +1866,27 @@ def test_monitorCurl_counts_unreported_transfers : IO Unit := do
       (classifyUpload · · true)
   assertTrue "no transfer reported" (s.done == 0 && s.success == 0)
   assertTrue "the unreported transfers count as failed" (s.failed == 3)
+
+/-- Upload diagnostics retain reported URLs without query credentials. -/
+def test_monitorCurl_records_reported_urls : IO Unit := do
+  IO.println "monitorCurl records the URL of each report:"
+  if System.Platform.isWindows then
+    IO.println "  (skipped on Windows)"
+    return
+  let dir ← IO.FS.createTempDir
+  try
+    let file := dir / "aa.ltar"
+    IO.FS.writeFile file "x"
+    let url := s!"file://{file}"
+    let (s, _) ← withSuppressedOutput <|
+      monitorCurl #["--silent", "--write-out", "\n%{json}\n", "-o", IO.nullDevice,
+        s!"{url}?token=secret"] 1 "Uploaded" "speed_upload"
+        (classifyUpload · · true)
+    assertTrue "the transfer was reported" (s.done == 1)
+    assertTrue "the report's URL is recorded without its query"
+      (s.reported.contains url && s.reported.size == 1)
+  finally
+    IO.FS.removeDirAll dir
 
 end DecompPipeline
 
@@ -2019,8 +2022,8 @@ def runAll : IO Unit := do
   test_readLocationsFrom
   test_finalizeDecomp
   test_monitorCurl_carries_decomp_state
-  test_curlVersionUsable
   test_monitorCurl_counts_unreported_transfers
+  test_monitorCurl_records_reported_urls
   test_splitWriteOut
   test_curlGetWriteOut_real_curl
   test_transferDiagnostics

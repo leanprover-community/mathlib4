@@ -711,7 +711,6 @@ jobs:
     name: Upload to cache
     needs: [build]
     runs-on: ubuntu-latest # These steps run on a GitHub runner; no landrun sandboxing is needed.
-    # A transfer that hangs must not hold the runner.
     timeout-minutes: 20
     # Pins the OIDC `sub` claim to `...:environment:<cache_environment>`, which the cache writer
     # credentials are scoped to. A token minted by any job without this environment
@@ -858,7 +857,6 @@ jobs:
     # The upload is best effort: if it fails, later runs rebuild these test files.
     continue-on-error: true
     runs-on: ubuntu-latest # These steps run on a GitHub runner; no landrun sandboxing is needed.
-    # A transfer that hangs must not hold the runner.
     timeout-minutes: 20
     # The environment of `upload_cache` gives this job the same OIDC `sub` claim.
     environment:
@@ -904,7 +902,6 @@ jobs:
     needs: [build, upload_cache]
     if: ${{ always() && needs.build.result == 'success' && (needs.upload_cache.result == 'success' || needs.upload_cache.result == 'skipped') }}
     runs-on: ubuntu-latest # Note these steps run on disposable GitHub runners, so no landrun sandboxing is needed.
-    # A transfer that hangs must not hold the runner.
     timeout-minutes: 30
     # This job checks out and executes (potentially fork) PR code unsandboxed,
     # so it must not inherit any write-capable token.

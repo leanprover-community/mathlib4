@@ -101,7 +101,7 @@ Valid arguments are:
                           Allows third parties to use their own cache endpoint.
                           An empty value means unset.
 * MATHLIB_CACHE_PARALLEL_MAX
-                          Number of simultaneous downloads (default: 50).
+                          Number of simultaneous curl transfers (default: 50).
                           Keep it well below the open-file limit (`ulimit -n`).
 "
 

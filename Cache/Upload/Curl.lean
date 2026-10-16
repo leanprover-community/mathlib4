@@ -35,14 +35,8 @@ failures without the argument list (`showArgsOnError := false`).
 def uploadPutArgs (signArgs : Array String) (overwrite : Bool) : Array String :=
   if overwrite then signArgs else signArgs ++ #["-H", "If-None-Match: *"]
 
-/-- Formats the curl config file that lists the files to upload: each staged
-file goes to `dest.fileURL`. Every response body goes to `bodySink`: stdout
-must carry only the per-transfer JSON reports that `monitorCurl` parses.
-
-`bodySink` must be a regular file, not the null device. Before curl (below
-8.14.0) retries a transfer that received a body, it truncates the output file.
-It cannot truncate a character device, so it abandons the transfer without a
-retry or a report (curl issue #17371). -/
+/-- Build the upload config. Response bodies go to `bodySink`, leaving stdout
+for transfer reports. The sink must support truncation for retries (curl issue #17371). -/
 def mkPutConfigContent (dest : Location) (files : Array FilePath) (bodySink : FilePath) :
     String :=
   let l := files.toList.map fun file : FilePath =>
@@ -50,16 +44,15 @@ def mkPutConfigContent (dest : Location) (files : Array FilePath) (bodySink : Fi
       -o {bodySink.toString}"
   "\n".intercalate l
 
-/-- Calls `curl` to send a set of files to `dest`, the resolved upload location
-(`uploadLocation`), signed per request with `signArgs`. Exits with
-code 1 when any file fails to upload. -/
+/-- Upload files with curl and exit with code 1 if any transfer fails.
+Parallel uploads use the `MATHLIB_CACHE_PARALLEL_MAX` limit. -/
 def putFilesViaCurl
     (dest : Location) (files : Array FilePath) (tempConfigFilePath : FilePath)
     (overwrite : Bool) (signArgs : Array String) : IO Unit := do
   -- TODO: reimplement using HEAD requests?
   let size := files.size
   if size > 0 then
-    -- All transfers share one sink. The tool never reads the response bodies.
+    -- A shared regular file supports truncation when curl retries.
     let bodySink := tempConfigFilePath.withExtension "body"
     IO.FS.writeFile tempConfigFilePath (mkPutConfigContent dest files bodySink)
     IO.println
@@ -70,6 +63,7 @@ def putFilesViaCurl
     -- an overwrite retry re-sends the same bytes.
     let args := uploadPutArgs signArgs overwrite ++
       #["-X", "PUT", "--parallel", "--silent", "--show-error"] ++
+      (← curlParallelMaxArgs) ++
       curlRetryArgs (supportLegacyCurl := false) ++
       -- `%{json}` prints a JSON report for each finished transfer. The
       -- leading newline keeps each report on its own line even if something
@@ -83,22 +77,22 @@ def putFilesViaCurl
     -- blobs (409/412 on a non-overwrite put), so a re-upload of files the
     -- server already has does not trip this.
     if s.failed > 0 then
+      let unreported := files.filter fun file =>
+        !s.reported.contains (dest.fileURL file.fileName.get!)
+      unless unreported.isEmpty do
+        IO.eprintln s!"files without a curl report: \
+          {" ".intercalate (unreported.toList.map (·.fileName.get!))}"
       IO.eprintln s!"Uploading {s.failed} file(s) failed"
       IO.Process.exit 1
   else IO.println "No files to upload"
 
-/--
-The staged put on the curl tool: validate the system curl, then send the
-`.ltar` files named by `fileNames` under `srcDir`, then the per-SHA marker
-when the location derives a marker. `getSignArgs` produces the backend's signing
-arguments and runs once per curl invocation: once for the files batch and
-once for the marker. The curl config file is written under `srcDir` for the
-duration of the transfer, named after this process (`IO.curlConfigIn`). A files
-failure exits 1; a marker failure only warns (see `uploadMarker`).
--/
+/-- Upload the named staged files, then the location's marker if present.
+`getSignArgs` supplies signing arguments for each upload.
+File failures exit with code 1; marker failures only warn. -/
 def putStagedViaCurl (dest : Location) (getSignArgs : IO (Array String))
     (srcDir : FilePath) (fileNames : Array String) (overwrite : Bool) : IO Unit := do
-  discard IO.validateCurl
+  unless ← IO.validateCurl do
+    throw <| IO.userError "This curl version cannot run parallel cache uploads."
   let files := fileNames.map fun (f : String) => srcDir / f
   putFilesViaCurl dest files (IO.curlConfigIn srcDir) overwrite (← getSignArgs)
   uploadMarker dest fun marker file => do
