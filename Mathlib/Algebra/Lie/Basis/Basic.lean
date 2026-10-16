@@ -76,8 +76,8 @@ section CommRing
 variable {ι R L : Type*} [Finite ι] [CommRing R] [LieRing L] [LieAlgebra R L]
   {H : LieSubalgebra R L} (b : Basis ι H)
 
-@[simp] lemma A_diag_eq_two [IsAddTorsionFree L] (i : ι) : b.A i i = 2 := by
-  have : NoZeroSMulDivisors ℤ L := IsAddTorsionFree.to_noZeroSMulDivisors_int
+@[simp] lemma A_diag_eq_two [HasUniqueDiv L] (i : ι) : b.A i i = 2 := by
+  have : NoZeroSMulDivisors ℤ L := HasUniqueDiv.to_noZeroSMulDivisors_int
   have aux : (b.A i i - 2) • b.e i = 0 := by
     rw [sub_smul, ofNat_smul_eq_nsmul, ← (b.sl2 i).lie_h_e_nsmul, b.lie_h_e i i]; abel
   rwa [IsAddTorsionFree.zsmul_eq_zero_iff_left (b.sl2 i).e_ne_zero, sub_eq_zero] at aux
@@ -216,7 +216,7 @@ private lemma iSup_cartan_borelLower_borelUpper_eq_top_aux
       · rw [← lie_skew, neg_mem_iff]
         exact LieSubmodule.mem_sup_right <| LieSubalgebra.lie_mem _ hyu hv
 
-/-- Lemma 4.5 from [Geck](Geck2017). -/
+/-- Lemma 4.5 from [Geck][Geck2017]. -/
 lemma iSup_cartan_borelLower_borelUpper_eq_top :
     iSup ![H.toLieSubmodule, b.borelLower, b.borelUpper] = ⊤ := by
   suffices H.toLieSubmodule ⊔ b.borelLower ⊔ b.borelUpper = ⊤ by simpa
@@ -330,7 +330,7 @@ lemma linearIndependent_baseSupp [IsDomain R] [CharZero R] :
 
 variable [IsDomain R] [CharZero R]
 
-/-- Lemma 4.4 from [Geck](Geck2017). -/
+/-- Lemma 4.4 from [Geck][Geck2017]. -/
 lemma borelUpper_le_biSup :
     letI := b.isLieAbelian_cartan
     b.borelUpper ≤ ⨆ (n : ι → ℕ) (_ : n ≠ 0), rootSpace H (∑ i, n i • b.baseSupp i) := by
@@ -374,7 +374,7 @@ lemma borelUpper_le_biSup :
     convert mem_biSup_genWeightSpace_of hs hu hv
     rw [iSup_subtype', iSup_subtype', ← e.iSup_comp]; rfl
 
-/-- Lemma 4.4 from [Geck](Geck2017). -/
+/-- Lemma 4.4 from [Geck][Geck2017]. -/
 lemma borelLower_le_biSup :
     letI := b.isLieAbelian_cartan
     b.borelLower ≤ ⨆ (n : ι → ℕ) (_ : n ≠ 0), rootSpace H (∑ i, n i • (-b.baseSupp) i) := by

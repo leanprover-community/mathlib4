@@ -6,8 +6,8 @@ Authors: Kim Morrison, Sina Hazratpour
 module
 
 public import Mathlib.CategoryTheory.Category.Cat.AsSmall
-public import Mathlib.CategoryTheory.Elements
 public import Mathlib.CategoryTheory.Comma.Over.Basic
+public import Mathlib.CategoryTheory.Elements
 
 /-!
 # The Grothendieck construction

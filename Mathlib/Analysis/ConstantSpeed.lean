@@ -6,6 +6,7 @@ Authors: Rémi Bottinelli
 module
 
 public import Mathlib.Topology.EMetricSpace.VariationOnFromTo
+
 import Mathlib.Algebra.Order.BigOperators.Expect
 import Mathlib.Analysis.Real.Sqrt
 import Mathlib.Tactic.ContinuousFunctionalCalculus
