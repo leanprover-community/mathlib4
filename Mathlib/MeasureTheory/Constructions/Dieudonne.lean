@@ -25,7 +25,7 @@ The Dieudonné measurable space and measure on a well-order are scoped to the
 `MeasureTheory.Dieudonne` namespace.
 -/
 
-@[expose] public section
+public section
 
 namespace MeasureTheory.Dieudonne
 
@@ -97,7 +97,7 @@ noncomputable def measure : Measure α where
     split_ifs with hf
     · obtain ⟨i, hi⟩ := hf
       apply (ENNReal.le_tsum i).trans'
-      rw [if_pos hi]
+      rw [ite_eq_left hi]
     · rw [ENNReal.tsum_eq_zero.2]
       simpa using hf
   m_iUnion f hf hf' := by
@@ -107,7 +107,7 @@ noncomputable def measure : Measure α where
     · obtain ⟨i, hi⟩ := hf
       rw [tsum_eq_single i]
       · simpa
-      · refine fun j hji ↦ if_neg fun hj ↦ ?_
+      · refine fun j hji ↦ ite_eq_right fun hj ↦ ?_
         obtain ⟨s, hsi, hs⟩ := exists_isClub_subset hi (hf i)
         obtain ⟨t, htj, ht⟩ := exists_isClub_subset hj (hf j)
         have : Nonempty α := hi.nonempty.to_type
@@ -159,7 +159,7 @@ theorem measure_eq_dirac [OrderTop α] : measure (α := α) = Measure.dirac ⊤ 
   · rw [measure_of_not_isStationary hs, indicator_of_notMem]
     rwa [← isStationary_iff_top_mem]
 
-instance [NoMaxOrder α] : NoAtoms (α := α) measure where
+instance [NoMaxOrder α] : NullSingletonClass (α := α) measure where
   measure_singleton x := measure_of_not_isStationary (by simp)
 
 @[simp]
