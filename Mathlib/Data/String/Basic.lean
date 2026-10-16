@@ -119,15 +119,6 @@ theorem lt_iff_ltb {s₁ s₂ : String} :
       · assumption
       · contradiction
 
-@[deprecated "Use the new String API" (since := "2026-04-01")]
-theorem toList_nonempty :
-    ∀ {s : String}, s ≠ "" → s.toList = String.Legacy.front s :: (String.Legacy.drop s 1).toList
-  | s, h => by
-    obtain ⟨l, rfl⟩ := s.exists_eq_ofList
-    match l with
-    | [] => simp at h
-    | c::cs => simp [Legacy.front, Pos.Raw.get, Pos.Raw.utf8GetAux]
-
 @[simp]
 theorem head_empty : "".toList.head! = default :=
   rfl
