@@ -81,8 +81,8 @@ instance instStarOrderedRing {R : Type*}
     StarOrderedRing C(α, R)₀ where
   le_iff f g := by
     constructor
-    · rw [le_def, ← ContinuousMap.coe_coe, ← ContinuousMap.coe_coe g, ← ContinuousMap.le_def,
-        StarOrderedRing.le_iff]
+    · rw [le_def, ← ContinuousMap.coe_ofClass, ← ContinuousMap.coe_ofClass g,
+        ← ContinuousMap.le_def, StarOrderedRing.le_iff]
       rintro ⟨p, hp_mem, hp⟩
       induction hp_mem using AddSubmonoid.closure_induction_left generalizing f g with
       | zero => exact ⟨0, zero_mem _, by ext x; congrm($(hp) x)⟩
