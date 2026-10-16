@@ -405,9 +405,6 @@ theorem LinearIndependent.finCons' {m : ℕ} (x : M) (v : Fin m → M) (hli : Li
   rw [this, zero_smul, zero_add] at total_eq
   exact Fin.cases this (hli _ total_eq) j
 
-@[deprecated (since := "2026-04-07")]
-alias LinearIndependent.fin_cons' := LinearIndependent.finCons'
-
 /-- See `LinearIndependent.finSnoc` for a family of elements in a vector space. -/
 theorem LinearIndependent.finSnoc' {m : ℕ} (v : Fin m → M) (x : M) (hli : LinearIndependent R v)
     (x_ortho : ∀ (c : R) (y : M), y ∈ Submodule.span R (Set.range v) → c • x + y = 0 → c = 0) :
