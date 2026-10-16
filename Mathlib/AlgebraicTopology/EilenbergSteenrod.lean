@@ -192,7 +192,7 @@ set_option linter.unusedVariables false in
 @[mk_iff]
 class HasExcisionIso where
   isIso_of_isExcisive ⦃X V : TopPair⦄ (g : V ⟶ X) [IsExcisive g] (i : ι) :
-    IsIso ((HP.Hₚ i).map g)
+    IsIso ((HP.Hₚ i).map g) := by infer_instance
 
 attribute [instance] HasExcisionIso.isIso_of_isExcisive
 
@@ -214,8 +214,8 @@ instance : IsClosedUnderIsomorphisms (hasExcisionIso.{u} C c) where
 /-- A `HomologyPretheory` is additive if its homology functor preserves coproducts. -/
 class IsAdditive where
   /-- An extraordinary Eilenberg-Steenrod homology functor preserves colimits. -/
-  [preserves_coproducts_u (J : Type u) (i : ι) :
-    PreservesColimitsOfShape (Discrete J) (HP.H i)]
+  preserves_coproducts_u (J : Type u) (i : ι) :
+    PreservesColimitsOfShape (Discrete J) (HP.H i) := by infer_instance
 
 attribute [instance] IsAdditive.preserves_coproducts_u
 
@@ -254,7 +254,7 @@ class HasPairSequence where
   /-- The boundary map out of homology with final index (i.e. an index with no successors in the
   `ComplexShape`) is an epi. -/
   epi_map_of_not_rel (X : TopPair) (i : ι) (hi : ∀ (j : ι), ¬ c.Rel i j) :
-    Epi ((HP.Hₚ i).map X.j)
+    Epi ((HP.Hₚ i).map X.j) := by infer_instance
 
 export HasPairSequence (exact_pair exact_snd exact_fst)
 
