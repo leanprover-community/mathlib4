@@ -82,7 +82,6 @@ lemma leftDerivedFunctorComparison_fac_app (X : C₁) :
 
 variable [Φ.IsLeftDerivabilityStructure]
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma hasPointwiseLeftDerivedFunctorAt_iff_of_isLeftDerivabilityStructure (X : C₁) :
     (Φ.functor ⋙ F).HasPointwiseLeftDerivedFunctorAt W₁ X ↔
       F.HasPointwiseLeftDerivedFunctorAt W₂ (Φ.functor.obj X) := by

@@ -617,7 +617,6 @@ theorem spanSingleton_eq_spanSingleton [IsDomain R] [Module.IsTorsionFree R P] {
   rw [← Submodule.span_singleton_eq_span_singleton, ← coeToSubmodule_inj, coe_spanSingleton,
     coe_spanSingleton]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eq_spanSingleton_of_principal (I : FractionalIdeal S P) [IsPrincipal (I : Submodule R P)] :
     I = spanSingleton S (generator (I : Submodule R P)) := by
   -- Porting note: this used to be `coeToSubmodule_injective (span_singleton_generator ↑I).symm`
