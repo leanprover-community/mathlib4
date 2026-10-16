@@ -45,7 +45,7 @@ The Boolean adjacency matrix of a `!![…]` literal is packed into one natural n
 the literal by position costs the kernel a walk per entry.
 -/
 
-@[expose] public section
+public section
 
 open Matrix Relation
 
