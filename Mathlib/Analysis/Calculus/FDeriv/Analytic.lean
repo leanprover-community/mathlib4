@@ -667,8 +667,9 @@ theorem _root_.HasStrictFDerivAt.continuousMultilinearMap_apply {G : Type*}
   convert
     ContinuousMultilinearMap.hasStrictFDerivAt_uncurry (f x, (g · x)) |>.comp x
       (hf.prodMk (hasStrictFDerivAt_pi.2 hg))
-  ext
-  simp
+  · simp
+  · ext v
+    simp
 
 theorem _root_.HasFDerivWithinAt.continuousMultilinearMap_apply {G : Type*}
     [NormedAddCommGroup G] [NormedSpace 𝕜 G] [DecidableEq ι] {s : Set G} {x : G}
