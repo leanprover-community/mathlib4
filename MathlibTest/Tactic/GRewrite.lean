@@ -351,12 +351,20 @@ example : ∃ n, n < 2 := by
   exact 0
   refine zero_le_one
 
+set_option trace.Meta.grewrite true in
+example : ∀ n m : Int, n + m = m + n := by
+  grw -useRewrite [Int.add_comm]
+
 section zmod
 
 variable {a b c d n : ℤ}
 
 example (h : a ≡ b [ZMOD n]) : a ^ 2 ≡ b ^ 2 [ZMOD n] := by
   grw [h]
+
+example (h : a ≡ b [ZMOD n]) : True ↔ a ^ 2 ≡ b ^ 2 [ZMOD n] := by
+  grw [h]
+  simp
 
 example (h₁ : a ∣ b) (h₂ : b ∣ a * d) : a ∣ b * d := by
   grw [h₁] at h₂ ⊢
