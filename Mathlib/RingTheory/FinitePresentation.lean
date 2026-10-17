@@ -263,7 +263,7 @@ theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A 
           · exact Set.mem_range_self _
           · apply Ideal.subset_span
             apply Set.mem_union_right
-            exact Set.mem_range_self _
+            exact Set.mem_range_self (f := g) ⟨x, hx⟩
         · apply AddSubmonoid.mem_sup_left
           exact ⟨X i, map_X _ _⟩
       · intro r
