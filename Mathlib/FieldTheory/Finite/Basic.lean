@@ -711,10 +711,6 @@ instance (K : Type*) [DivisionRing K] (p : ℕ) [ExpChar K p] :
   | zero => exact .one (⊥ : Subfield K)
   | prime prime =>
     have := Fact.mk prime
-    have : IsMulCommutative (⊥ : Subfield K) :=
-      (@Subfield.closure_empty K _).symm ▸
-      Subfield.isMulCommutative_closure (Set.pairwise_empty Commute)
-    open scoped IsMulCommutative in
     exact .ofFiniteOfIsReduced p (⊥ : Subfield K)
 
 instance (K : Type*) [Field K] : PerfectField (⊥ : Subfield K) :=
