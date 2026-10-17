@@ -70,7 +70,7 @@ instance [IsIrreducible σ] [IsEmpty (Equiv ρ σ)] : Subsingleton (Intertwining
   ⟨fun f g ↦ sub_eq_zero.mp <| (bijective_or_eq_zero _).resolve_left
     fun h ↦ isEmpty_iff.mp inferInstance <| (f - g).ofBijective h⟩
 
-variable [FiniteDimensional k V] [IsAlgClosed k]
+variable [FiniteDimensional k ρ.asModule] [IsAlgClosed k]
 
 variable (f : IntertwiningMap ρ ρ) in
 theorem algebraMap_intertwiningMap_bijective_of_isAlgClosed :
