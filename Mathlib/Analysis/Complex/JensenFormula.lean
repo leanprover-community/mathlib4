@@ -5,9 +5,10 @@ Authors: Stefan Kebekus
 -/
 module
 
+public import Mathlib.Analysis.Complex.CanonicalDecomposition
 public import Mathlib.Analysis.Complex.Harmonic.Poisson
+public import Mathlib.Analysis.Normed.Module.Connected
 public import Mathlib.Analysis.SpecialFunctions.Integrals.PosLog
-
 
 /-!
 # Jensen's Formula of Complex Analysis
@@ -22,6 +23,9 @@ Jensen's Formula, formulated in `MeromorphicOn.circleAverage_log_norm` below, ge
 the setting where `g` is merely meromorphic. In that case, the `circleAverage (log ‖g ·‖) c R`
 equals `log ‖meromorphicTrailingCoeffAt g c‖` plus a correction term that accounts for the zeros and
 poles of `g` within the ball.
+
+The Poisson-Jensen formula, formulated in `MeromorphicOn.log_norm_meromorphicTrailingCoeffAt`,
+generalizes the Jensen formula from the circle centre to an arbitrary interior point.
 -/
 
 public section
@@ -37,12 +41,14 @@ In preparation to the proof of Jensen's formula, compute several circle averages
 some of the terms that appear in the formula and its proof.
 -/
 
--- Auxiliary definitition for `circleAverage_re_herglotzRieszKernel_mul_log`. Shorthand for the
--- integrand in our computations
+-- Auxiliary definition for `circleAverage_poissonKernel_smul_log`. Shorthand for the integrand in
+-- our computations. The estimates below are most conveniently formulated for the real part of the
+-- holomorphic Herglotz–Riesz kernel, which agrees with the Poisson kernel by
+-- `poissonKernel_eq_re_herglotzRieszKernel`.
 private noncomputable def herglotzLogIntegrand (w ρ : ℂ) : ℂ → ℝ :=
-  (Complex.re ∘ herglotzRieszKernel 0 w) • (Real.log ‖· - ρ‖)
+  (Complex.re ∘ herglotzRieszKernel 0 w) • (log ‖· - ρ‖)
 
--- Auxiliary lemma for `circleAverage_re_herglotzRieszKernel_mul_log`. Continuity of the
+-- Auxiliary lemma for `circleAverage_poissonKernel_smul_log`. Continuity of the
 -- herglotzLogIntegrand.
 private lemma continuousAt_herglotzLogIntegrand {w ρ z : ℂ} (hz_w : z ≠ w) (hz_ρ : z ≠ ρ) :
     ContinuousAt (herglotzLogIntegrand w ρ) z := by
@@ -50,7 +56,7 @@ private lemma continuousAt_herglotzLogIntegrand {w ρ z : ℂ} (hz_w : z ≠ w) 
   simp only [herglotzLogIntegrand, herglotzRieszKernel_fun_def, sub_zero, smul_eq_mul]
   fun_prop (disch := grind)
 
--- Auxiliary lemma for `circleAverage_re_herglotzRieszKernel_mul_log`. Continuity of the
+-- Auxiliary lemma for `circleAverage_poissonKernel_smul_log`. Continuity of the
 -- herglotzLogIntegrand.
 private lemma continuous_herglotzLogIntegrand_circle {w ρ : ℂ} {R r : ℝ} (hρ : ‖ρ‖ = R)
     (hr_lt : r < R) (hwr : ‖w‖ < r) :
@@ -62,7 +68,7 @@ private lemma continuous_herglotzLogIntegrand_circle {w ρ : ℂ} {R r : ℝ} (h
     grind [norm_circleMap_zero, lt_of_le_of_lt (Complex.norm_nonneg w) hwr]
 
 open Complex in
--- Auxiliary lemma for `circleAverage_re_herglotzRieszKernel_mul_log`. Computation for the
+-- Auxiliary lemma for `circleAverage_poissonKernel_smul_log`. Computation for the
 -- boundedness required by the dominated convergence theorem, Part I.
 private lemma const_mul_norm_sub_circleMap_le_norm_sub_circleMap {r₀ r R : ℝ} {ρ : ℂ} (hρ : ‖ρ‖ = R)
     (hr₀ : 0 < r₀) (hR : 0 < R) (hr₀r : r₀ ≤ r) (hrR : r ≤ R) (θ : ℝ) :
@@ -80,7 +86,7 @@ private lemma const_mul_norm_sub_circleMap_le_norm_sub_circleMap {r₀ r R : ℝ
       mul_le_mul_of_nonneg_left hrR hR.le, neg_one_le_cos, cos_le_one]
   grw [← sqrt_sq (norm_nonneg _), ← sqrt_mul (by positivity), this, sqrt_sq (norm_nonneg _)]
 
--- Auxiliary lemma for `circleAverage_re_herglotzRieszKernel_mul_log`. Computation for the
+-- Auxiliary lemma for `circleAverage_poissonKernel_smul_log`. Computation for the
 -- boundedness required by the dominated convergence theorem, Part II.
 private lemma norm_herglotzLogIntegrand_circleMap_le {w ρ : ℂ} {R r₀ r : ℝ} (hR : 0 < R)
   (hρ : ‖ρ‖ = R) (hr₀ : 0 < r₀) (hw : ‖w‖ < r₀) (hr₀r : r₀ ≤ r) (hrR : r ≤ R) (θ : ℝ)
@@ -114,7 +120,7 @@ private lemma norm_herglotzLogIntegrand_circleMap_le {w ρ : ℂ} {R r₀ r : �
       _ ≤ |log (2 * R)| + |log √(r₀ / R)| + |log ‖circleMap 0 R θ - ρ‖| := by
         gcongr <;> positivity
 
--- Auxiliary lemma for `circleAverage_re_herglotzRieszKernel_mul_log`. Dominated convergence
+-- Auxiliary lemma for `circleAverage_poissonKernel_smul_log`. Dominated convergence
 -- theorem: circle average can be computed by a sequence of circle averages integrating over circles
 -- in the interior
 private theorem herglotzLogIntegrand_circleAverage_tendsto {ρ w : ℂ} {R : ℝ} (hR : 0 < R)
@@ -153,12 +159,12 @@ private theorem herglotzLogIntegrand_circleAverage_tendsto {ρ w : ℂ} {R : ℝ
     exact tendsto_const_nhds.add <|
       (Complex.continuous_ofReal.continuousAt.tendsto.comp hr_tendsto).mul tendsto_const_nhds
 
--- Auxiliary lemma for `circleAverage_re_herglotzRieszKernel_mul_log`. Statement in case where the
--- center equals zero.
-theorem circleAverage_re_herglotzRieszKernel_mul_log₀ {w ρ : ℂ} {R : ℝ} (hρ : ρ ∈ sphere 0 R)
+-- Auxiliary lemma for `circleAverage_poissonKernel_smul_log`. Statement in case where the center
+-- equals zero.
+theorem circleAverage_poissonKernel_smul_log₀ {w ρ : ℂ} {R : ℝ} (hρ : ρ ∈ sphere 0 R)
     (hw : w ∈ ball 0 R) :
-    circleAverage ((Complex.re ∘ herglotzRieszKernel 0 w) • (log ‖· - ρ‖)) (0 : ℂ) R
-      = log ‖w - ρ‖ := by
+    circleAverage (poissonKernel 0 w • (log ‖· - ρ‖)) (0 : ℂ) R = log ‖w - ρ‖ := by
+  rw [poissonKernel_eq_re_herglotzRieszKernel]
   have hR : 0 < R := pos_of_mem_ball hw
   rw [mem_sphere_iff_norm, sub_zero] at hρ
   rw [mem_ball_iff_norm, sub_zero] at hw
@@ -192,11 +198,19 @@ theorem circleAverage_re_herglotzRieszKernel_mul_log₀ {w ρ : ℂ} {R : ℝ} (
         _ = R * (n + 2) := by ring
   aesop
 
+@[deprecated circleAverage_poissonKernel_smul_log₀ +typeChanged (since := "2026-10-01")]
+theorem circleAverage_re_herglotzRieszKernel_mul_log₀ {w ρ : ℂ} {R : ℝ} (hρ : ρ ∈ sphere 0 R)
+    (hw : w ∈ ball 0 R) :
+    circleAverage ((Complex.re ∘ herglotzRieszKernel 0 w) • (log ‖· - ρ‖)) (0 : ℂ) R
+      = log ‖w - ρ‖ := by
+  rw [← poissonKernel_eq_re_herglotzRieszKernel]
+  exact circleAverage_poissonKernel_smul_log₀ hρ hw
+
 /--
 Analogue of the **Poisson Integral Formula** for the circle average function `log ‖· - ρ‖` along the
 circle with radius `‖ρ‖`.
 
-- See `InnerProductSpace.HarmonicContOnCl.circleAverage_re_herglotzRieszKernel_smul` in the file
+- See `InnerProductSpace.HarmonicContOnCl.circleAverage_poissonKernel_smul` in the file
   `Mathlib/Analysis/Complex/Harmonic/Poisson` for the classic Poisson Integral Formula, for harmonic
   functions without logarithmic poles.
 
@@ -204,21 +218,24 @@ circle with radius `‖ρ‖`.
   `Mathlib/Analysis/Meromorphic/FactorizedRational` for a construction that splits factors of the
   form `· - ρ` off arbitrary meromorphic functions.
 -/
+theorem circleAverage_poissonKernel_smul_log {w ρ c : ℂ} {R : ℝ} (hρ : ρ ∈ sphere c R)
+    (hw : w ∈ ball c R) :
+    circleAverage (poissonKernel c w • (log ‖· - ρ‖)) c R = log ‖w - ρ‖ := by
+  -- Translate to the case where the center equals zero.
+  have : (fun z ↦ (poissonKernel c w • (log ‖· - ρ‖)) (z + c))
+      = poissonKernel 0 (w - c) • (log ‖· - (ρ - c)‖) := by
+    ext z
+    simp only [Pi.smul_apply', smul_eq_mul, poissonKernel_add_const, sub_sub_eq_add_sub]
+  rw [← circleAverage_map_add_const, this, circleAverage_poissonKernel_smul_log₀ (by simp_all)
+    (by simp_all [mem_ball_iff_norm.1 hw])]
+  simp
+
+@[deprecated circleAverage_poissonKernel_smul_log +typeChanged (since := "2026-10-01")]
 theorem circleAverage_re_herglotzRieszKernel_mul_log {w ρ c : ℂ} {R : ℝ} (hρ : ρ ∈ sphere c R)
     (hw : w ∈ ball c R) :
     circleAverage ((Complex.re ∘ herglotzRieszKernel c w) * (log ‖· - ρ‖)) c R = log ‖w - ρ‖ := by
-  simp only [← circleAverage_map_add_const, Pi.mul_apply, Function.comp_apply, add_zero]
-  conv =>
-    left; arg 1
-    intro z
-    rw [(by ring : (z + 0 + c) - ρ = z - (ρ - c))]
-    arg 1; arg 1
-    rw [add_zero, herglotzRieszKernel_add_const c w z]
-  have : (fun z ↦ (herglotzRieszKernel 0 (w - c) z).re * log ‖z - (ρ - c)‖) =
-    (Complex.re ∘ herglotzRieszKernel 0 (w - c)) • (log ‖· - (ρ - c)‖) := by rfl
-  rw [this, circleAverage_re_herglotzRieszKernel_mul_log₀ (by simp_all)
-    (by simp_all [mem_ball_iff_norm.1 hw])]
-  simp
+  rw [← poissonKernel_eq_re_herglotzRieszKernel]
+  exact circleAverage_poissonKernel_smul_log hρ hw
 
 /--
 Let `D : ℂ → ℤ` be a function with locally finite support within the closed ball with center `c` and
@@ -256,6 +273,33 @@ lemma circleAverage_log_norm_factorizedRational {R : ℝ} {c : ℂ}
     aesop
 
 /--
+Let `D : ℂ → ℤ` be a function with locally finite support within the circle with center `c` and
+radius `R`, such as the zero- and pole divisor of a meromorphic function on the circle. Then, the
+Poisson integral of the function `∑ᶠ u, (D u * log ‖· - u‖)` at a point `w` of the open ball equals
+`∑ᶠ u, D u * log ‖w - u‖`.
+
+This is the analogue of `circleAverage_log_norm_factorizedRational` for the Poisson integral, and
+generalizes `circleAverage_poissonKernel_smul_log` from a single point `ρ` to a divisor on the
+circle.
+-/
+theorem circleAverage_poissonKernel_smul_log_norm_factorizedRational {R : ℝ} {c w : ℂ}
+    (D : Function.locallyFinsuppWithin (sphere c R) ℤ) (hw : w ∈ ball c R) :
+    circleAverage (poissonKernel c w • ∑ᶠ u, (D u * log ‖· - u‖)) c R
+      = ∑ᶠ u, D u * log ‖w - u‖ := by
+  have hD := D.finiteSupport (isCompact_sphere c R)
+  have hw' : w ∉ sphere c |R| := by grind [mem_sphere, mem_ball, le_abs_self R]
+  rw [finsum_eq_sum_of_support_subset (s := hD.toFinset) _ (fun u ↦ by contrapose; aesop),
+    finsum_eq_sum_of_support_subset (s := hD.toFinset) _ (fun u ↦ by aesop),
+    Finset.smul_sum, circleAverage_sum (fun i _ ↦ by fun_prop)]
+  refine Finset.sum_congr rfl fun u hu ↦ ?_
+  rw [← circleAverage_poissonKernel_smul_log
+    (D.supportWithinDomain (hD.mem_toFinset.1 hu)) hw, ← smul_eq_mul, ← circleAverage_smul]
+  congr 1
+  ext z
+  simp only [Pi.smul_apply, Pi.smul_apply', Pi.mul_apply, smul_eq_mul]
+  ring
+
+/--
 If  `g : ℂ → ℂ` is analytic without zero on the closed ball with center `c` and radius `R`, then the
 circle average `circleAverage (log ‖g ·‖) c R` equals `log ‖g c‖`.
 -/
@@ -291,6 +335,68 @@ lemma countingFunction_finsum_eq_finsum_add {c : ℂ} {R : ℝ} {D : ℂ → ℤ
     · simp_all
     · rw [log_mul hR (inv_ne_zero (norm_ne_zero_iff.mpr (sub_eq_zero.not.2 h₁))), log_inv]
       ring
+
+/-!
+## The Poisson-Jensen Formula
+-/
+
+variable {R : ℝ} {c w : ℂ} {f : ℂ → ℂ}
+
+/--
+Companion lemma to `MeromorphicOn.exists_ecanonicalDecomp`: In the setting of the extended canonical
+decomposition, the Poisson integral of `log ‖f ·‖` at a point `w` of the open ball equals
+`log ‖h w‖`, corrected by a finite sum over the divisor of `f` on the circle.
+
+This is the Poisson–Jensen formula expressed in terms of the extended canonical decomposition; see
+`MeromorphicOn.log_norm_meromorphicTrailingCoeffAt` for the formulation in terms of `f` alone.
+-/
+theorem Complex.ECanonicalDecomp.circleAverage_poissonKernel_smul_log_norm {h : ℂ → ℂ}
+    (D : Complex.ECanonicalDecomp f h R) (hw : w ∈ ball 0 R) :
+    circleAverage (poissonKernel 0 w • (Real.log ‖f ·‖)) 0 R
+      = ∑ᶠ u, (divisor f (sphere 0 R)) u * Real.log ‖w - u‖ + Real.log ‖h w‖ := by
+  have hR : 0 < R := pos_of_mem_ball hw
+  have h₃w : w ∉ sphere 0 |R| := by grind [mem_sphere, mem_ball, le_abs_self R]
+  -- Replace `log ‖f‖` by the boundary sum plus `log ‖h‖` and integrate term by term, using the
+  -- Poisson formula for the harmonic function `log ‖h‖`.
+  rw [circleAverage_congr_codiscreteWithin (f₂ := poissonKernel 0 w •
+      (∑ᶠ u, (divisor f (sphere 0 R) u * Real.log ‖· - u‖) + (Real.log ‖h ·‖))) ?_ hR.ne',
+    smul_add, circleAverage_add (by fun_prop) ?_,
+    circleAverage_poissonKernel_smul_log_norm_factorizedRational _ hw,
+    InnerProductSpace.HarmonicOnNhd.circleAverage_poissonKernel_smul
+      (fun x hx ↦ (D.analyticOnNhd x hx).harmonicAt_log_norm (D.ne_zero x hx)) hw]
+  · have : CircleIntegrable (fun z ↦ Real.log ‖h z‖) 0 R := by
+      apply circleIntegrable_log_norm (D.analyticOnNhd.meromorphicOn.mono_set _)
+      simpa [abs_of_pos hR] using sphere_subset_closedBall
+    fun_prop
+  · rw [abs_of_pos hR]
+    filter_upwards [D.log_norm_eventuallyEq] with a ha
+    simp [ha]
+
+/--
+**The Poisson–Jensen Formula.** If `f` is meromorphic on `closedBall 0 R` and has vanishing order at
+an interior point `w ∈ ball 0 R`, then the logarithm of the norm of the trailing coefficient of `f`
+at `w` equals the Poisson integral of `log ‖f ·‖` at `w`, corrected by a finite sum over the divisor
+of `f`.
+
+This generalises Jensen's formula `MeromorphicOn.circleAverage_log_norm` from the centre `0` to an
+arbitrary interior point `w`.
+-/
+theorem MeromorphicOn.log_norm_meromorphicTrailingCoeffAt (h₁w : w ∈ ball 0 R)
+    (h₂w : meromorphicOrderAt f w = 0) (h₁f : MeromorphicOn f (closedBall 0 R)) :
+    log ‖meromorphicTrailingCoeffAt f w‖
+      = circleAverage (poissonKernel 0 w • (log ‖f ·‖)) 0 R
+        - ∑ᶠ i, (divisor f (ball 0 R) i) * log ‖Complex.canonicalFactor R i w‖ := by
+  have hR : 0 < R := pos_of_mem_ball h₁w
+  -- Write `f = (Blaschke product) • h` with `h` analytic and nowhere zero on the closed
+  -- ball, where the Blaschke product collects the zeros and poles of `f`.
+  obtain ⟨h, h₀h⟩ := h₁f.exists_ecanonicalDecomp <| by
+    apply (h₁f.exists_meromorphicOrderAt_ne_top_iff_forall (isConnected_closedBall hR.le)).1
+    exact ⟨⟨w, ball_subset_closedBall h₁w⟩, by simp [h₂w]⟩
+  -- Combine the circle-average identity with the value of `log ‖h‖` at `w`.
+  rw [h₀h.circleAverage_poissonKernel_smul_log_norm h₁w,
+    h₀h.log_norm_eq (ball_subset_closedBall h₁w) h₂w hR]
+  ring
+
 
 /-!
 ## Jensen's Formula
