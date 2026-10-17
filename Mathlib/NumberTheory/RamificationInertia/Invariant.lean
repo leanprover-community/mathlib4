@@ -27,7 +27,7 @@ The subgroup idempotent only requires the subgroup to be finite; the coset sum d
 normality of the subgroup.
 
 Linearizing the coset sum after multiplication by the subgroup idempotent gives multiplication
-by `Subgroup.descentMultiplier`.
+by `Algebra.FormallyUnramified.descentMultiplier`.
 -/
 
 @[expose] public section
@@ -72,7 +72,7 @@ lemma smulIdempotent_one : smulIdempotent A B (1 : G) = 1 := by
   simpa [smulIdempotent, h] using lmul_elem
 
 @[simp]
-lemma _root_.Ideal.Quotient.mk_smulIdempotent_eq_one_iff (Q : Ideal B) (g : G) :
+lemma mk_smulIdempotent_eq_one_iff (Q : Ideal B) (g : G) :
     Ideal.Quotient.mk Q (smulIdempotent A B g) = 1 ↔ g ∈ Q.inertia G := by
   simp_rw [Q.mem_inertia, ← Ideal.Quotient.mk_eq_mk_iff_sub_mem]
   refine ⟨fun he b ↦ ?_, fun hg ↦ ?_⟩
@@ -83,11 +83,11 @@ lemma _root_.Ideal.Quotient.mk_smulIdempotent_eq_one_iff (Q : Ideal B) (g : G) :
     ext <;> simp [hg]
 
 open Classical in
-lemma _root_.Ideal.Quotient.mk_smulIdempotent (Q : Ideal B) [Q.IsPrime] (g : G) :
+lemma mk_smulIdempotent (Q : Ideal B) [Q.IsPrime] (g : G) :
     Ideal.Quotient.mk Q (smulIdempotent A B g) = if g ∈ Q.inertia G then 1 else 0 := by
   have h := IsIdempotentElem.iff_eq_zero_or_one.mp
     ((isIdempotentElem_smulIdempotent A B g).map (Ideal.Quotient.mk Q))
-  grind [Ideal.Quotient.mk_smulIdempotent_eq_one_iff]
+  grind [mk_smulIdempotent_eq_one_iff]
 
 variable {A B}
 
@@ -198,19 +198,9 @@ lemma mk_subgroupIdempotent_eq_one_iff {Q : Ideal B} :
   · rw [subgroupIdempotent, map_prod]
     exact Finset.prod_eq_one fun h _ ↦ by simpa using hH h.2
 
-lemma _root_.Ideal.mk_subgroupIdempotent_inertia_eq_one (Q : Ideal B) [Finite (Q.inertia G)] :
+lemma mk_subgroupIdempotent_inertia_eq_one (Q : Ideal B) [Finite (Q.inertia G)] :
     Ideal.Quotient.mk Q (subgroupIdempotent A B (Q.inertia G)) = 1 :=
   mk_subgroupIdempotent_eq_one_iff.mpr le_rfl
-
-end Algebra.FormallyUnramified
-
-open Algebra.FormallyUnramified
-
-variable {G : Type*} [Group G] (H : Subgroup G) (A : Type*) (B : Type*)
-  [CommRing A] [CommRing B] [Algebra A B] [MulSemiringAction G B] [SMulCommClass G A B]
-  [Algebra.FormallyUnramified A B] [Algebra.EssFiniteType A B] [Finite H]
-
-namespace Subgroup
 
 omit [Finite H] in
 /-- The multiplier obtained by linearizing the coset sum after multiplication by the subgroup
@@ -220,13 +210,9 @@ noncomputable def descentMultiplier [Finite G] : B := by
   letI := Fintype.ofFinite (G ⧸ H)
   exact ∑ q : G ⧸ H, smulIdempotent A B q.out * subgroupIdempotent A B H
 
-end Subgroup
-
-namespace Ideal
-
 private lemma descentMultiplier_mem_colon [Algebra.IsInvariant A B G]
     [Finite G] (I : Ideal B) (hI : ∀ g : G, g • I = I) :
-      H.descentMultiplier A B ∈ ((I.comap (algebraMap A B)).map (algebraMap A B)).colon I := by
+      descentMultiplier A B H ∈ ((I.comap (algebraMap A B)).map (algebraMap A B)).colon I := by
   classical
   let := Fintype.ofFinite (G ⧸ H)
   let J := (I.comap (algebraMap A B)).map (algebraMap A B)
@@ -248,17 +234,17 @@ private lemma descentMultiplier_mem_colon [Algebra.IsInvariant A B G]
     obtain ⟨a, ha⟩ := Algebra.IsInvariant.isInvariant (A := A) z hz
     have : algebraMap A B a ∈ J := Ideal.mem_map_of_mem _ (by simpa [ha] using hzI)
     simpa [T, y, z, ha] using this
-  simpa [Submodule.mem_colon, IsConcreteLE.le_iff, Subgroup.descentMultiplier, T,
+  simpa [Submodule.mem_colon, IsConcreteLE.le_iff, descentMultiplier, T,
     Finset.sum_mul, mul_assoc] using le_comap_linearize T I J hT
 
-lemma Quotient.mk_descentMultiplier_inertia (Q : Ideal B) [Q.IsPrime] [Finite G] :
-    Quotient.mk Q ((Q.inertia G).descentMultiplier A B) = 1 := by
+lemma mk_descentMultiplier_inertia (Q : Ideal B) [Q.IsPrime] [Finite G] :
+    Ideal.Quotient.mk Q (descentMultiplier A B (Q.inertia G)) = 1 := by
   classical
-  simpa [Subgroup.descentMultiplier, Quotient.mk_smulIdempotent, ite_mul,
+  simpa [descentMultiplier, mk_smulIdempotent, ite_mul,
     ← SetLike.mem_coe, ← QuotientGroup.preimage_mk_one] using
-      (Q.mk_subgroupIdempotent_inertia_eq_one A)
+      (mk_subgroupIdempotent_inertia_eq_one A B Q)
 
-theorem map_comap_eq_of_isInvariant_of_unramified [Finite G] [Algebra.IsInvariant A B G]
+theorem map_comap_eq_of_isInvariant [Finite G] [Algebra.IsInvariant A B G]
     (I : Ideal B) (hI : ∀ g : G, g • I = I) :
     (I.comap (algebraMap A B)).map (algebraMap A B) = I := by
   classical
@@ -268,8 +254,9 @@ theorem map_comap_eq_of_isInvariant_of_unramified [Finite G] [Algebra.IsInvarian
   by_contra hJ
   obtain ⟨m, hm, hKm⟩ := Ideal.exists_le_maximal (J.colon (I : Set B)) hJ
   let : m.IsMaximal := hm
-  have := Quotient.eq_zero_iff_mem.mpr (hKm (descentMultiplier_mem_colon (m.inertia G) A B I hI))
-  rw [Quotient.mk_descentMultiplier_inertia A] at this
+  have := Ideal.Quotient.eq_zero_iff_mem.mpr
+    (hKm (descentMultiplier_mem_colon A B (m.inertia G) I hI))
+  rw [mk_descentMultiplier_inertia A] at this
   exact one_ne_zero this
 
-end Ideal
+end Algebra.FormallyUnramified
