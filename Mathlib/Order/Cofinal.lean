@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Order.Bounds.Defs
 public import Mathlib.Order.GaloisConnection.Defs
+public import Mathlib.Order.Directed
 public import Mathlib.Order.Hom.Basic
 public import Mathlib.Order.Interval.Set.Defs
 public import Mathlib.Order.SetNotation
@@ -115,6 +116,12 @@ theorem isCofinal_iff_iUnion_Iio_eq_univ [NoMaxOrder α] {s : Set α} :
     obtain ⟨z, hz, hz'⟩ := hs y
     exact ⟨z, hz, hy.trans_le hz'⟩
 
+@[simp]
+theorem not_isCofinal_Iio (x : α) : ¬ IsCofinal (Iio x) := by
+  intro hx
+  have := hx x
+  grind
+
 end Preorder
 
 section PartialOrder
@@ -130,6 +137,30 @@ theorem IsCofinal.top_mem [OrderTop α] {s : Set α} (hs : IsCofinal s) : ⊤ �
 @[simp]
 theorem isCofinal_iff_top_mem [OrderTop α] {s : Set α} : IsCofinal s ↔ ⊤ ∈ s :=
   ⟨IsCofinal.top_mem, fun hs _ ↦ ⟨⊤, hs, le_top⟩⟩
+
+variable [IsDirectedOrder α]
+
+theorem IsCofinal.inter_of_isUpperSet_left {s t : Set α} (hs : IsCofinal s) (ht : IsUpperSet t)
+    (ht₀ : t.Nonempty) : IsCofinal (t ∩ s) := by
+  intro y
+  obtain ⟨x, hx⟩ := ht₀
+  obtain ⟨m, hxm, hym⟩ := exists_ge_ge x y
+  obtain ⟨z, hz, hyz⟩ := hs m
+  exact ⟨z, ⟨ht (hxm.trans hyz) hx, hz⟩, hym.trans hyz⟩
+
+theorem IsCofinal.inter_of_isUpperSet_right {s t : Set α} (hs : IsCofinal s) (ht : IsUpperSet t)
+    (ht₀ : t.Nonempty) : IsCofinal (s ∩ t) := by
+  rw [inter_comm]
+  exact hs.inter_of_isUpperSet_left ht ht₀
+
+theorem IsUpperSet.isCofinal {s : Set α} (hs : IsUpperSet s) (hs₀ : s.Nonempty) : IsCofinal s := by
+  simpa using IsCofinal.univ.inter_of_isUpperSet_left hs hs₀
+
+@[simp] protected theorem IsCofinal.Ici (x : α) : IsCofinal (Ici x) := by
+  simpa using (IsUpperSet.Ici x).isCofinal
+
+@[simp] protected theorem IsCofinal.Ioi [NoMaxOrder α] (x : α) : IsCofinal (Ioi x) := by
+  simpa using (IsUpperSet.Ioi x).isCofinal
 
 end PartialOrder
 
