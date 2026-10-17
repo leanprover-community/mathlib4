@@ -6,6 +6,7 @@ Authors: Youheng Luo
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.Data.ENat.Lattice
 
 /-!
 # Edge Connectivity
@@ -77,6 +78,24 @@ lemma isEdgeReachable_one : G.IsEdgeReachable 1 u v ↔ G.Reachable u v := by
 lemma isEdgeConnected_one : G.IsEdgeConnected 1 ↔ G.Preconnected := by
   simp [IsEdgeConnected, Preconnected]
 
+theorem isEdgeReachable_top_iff_forall_finite :
+    G.IsEdgeReachable ⊤ u v ↔ ∀ ⦃s⦄, s.Finite → (G.deleteEdges s).Reachable u v := by
+  simp_rw [IsEdgeReachable, Set.encard_lt_top_iff]
+
+theorem isEdgeConnected_top_iff_forall_finite :
+    G.IsEdgeConnected ⊤ ↔ ∀ ⦃s⦄, s.Finite → (G.deleteEdges s).Preconnected := by
+  simp_rw [isEdgeConnected_iff, Set.encard_lt_top_iff]
+
+theorem isEdgeReachable_top_iff_forall_nat :
+    G.IsEdgeReachable ⊤ u v ↔ ∀ n : ℕ, G.IsEdgeReachable n u v := by
+  refine ⟨fun h _ ↦ h.anti le_top, fun h s hlt ↦ h (s.ncard + 1) ?_⟩
+  simp [← Set.encard_lt_top_iff.mp hlt |>.cast_ncard_eq, -Nat.cast_add]
+
+theorem isEdgeConnected_top_iff_forall_nat :
+    G.IsEdgeConnected ⊤ ↔ ∀ n : ℕ, G.IsEdgeConnected n := by
+  simp_rw [IsEdgeConnected, isEdgeReachable_top_iff_forall_nat]
+  exact ⟨fun h n u v ↦ h u v n, fun h u v n ↦ h n u v⟩
+
 lemma IsEdgeReachable.reachable (hk : k ≠ 0) (huv : G.IsEdgeReachable k u v) : G.Reachable u v :=
   isEdgeReachable_one.mp (huv.anti (Order.one_le_iff_ne_zero.mpr hk))
 
@@ -95,7 +114,7 @@ lemma IsEdgeConnected.connected [Nonempty V] (hk : k ≠ 0) (h : G.IsEdgeConnect
     G.Connected where
   preconnected := h.preconnected hk
 
-lemma IsEdgeReachable.le_degree [Fintype (G.neighborSet u)] (h : G.IsEdgeReachable k u v)
+lemma IsEdgeReachable.le_degree_left [Fintype (G.neighborSet u)] (h : G.IsEdgeReachable k u v)
     (huv : u ≠ v) : k ≤ G.degree u := by
   classical
   by_contra! hh
@@ -103,10 +122,19 @@ lemma IsEdgeReachable.le_degree [Fintype (G.neighborSet u)] (h : G.IsEdgeReachab
   obtain ⟨w, _⟩ := h hh |>.exists_isPath
   simpa using w.adj_snd <| mt Walk.Nil.eq huv
 
+lemma IsEdgeReachable.le_degree_right [Fintype (G.neighborSet v)] (h : G.IsEdgeReachable k u v)
+    (huv : u ≠ v) : k ≤ G.degree v := by
+  rw [isEdgeReachable_comm] at h
+  exact le_degree_left h (id (Ne.symm huv))
+
 lemma IsEdgeConnected.le_degree [Fintype (G.neighborSet u)] [Nontrivial V]
     (h : G.IsEdgeConnected k) : k ≤ G.degree u := by
   obtain ⟨v, hv⟩ := exists_ne u
-  exact (h u v).le_degree hv.symm
+  simpa using (h u v).le_degree_left hv.symm
+
+theorem IsEdgeConnected.le_minDegree [Fintype V] [Nontrivial V] [DecidableRel G.Adj]
+    (h : G.IsEdgeConnected k) : k ≤ G.minDegree :=
+  le_minDegree_of_forall_le_degree G k fun _ ↦ le_degree h
 
 lemma isEdgeReachable_add_one (hk : k ≠ 0) :
     G.IsEdgeReachable (k + 1) u v ↔ ∀ e, (G.deleteEdges {e}).IsEdgeReachable k u v := by
@@ -180,23 +208,65 @@ lemma exists_adj_isEdgeReachable_two (hne : u ≠ v) (h : G.IsEdgeReachable 2 u 
     refine (Set.subsingleton_iff_singleton h').mp ?_
     exact Set.encard_le_one_iff_subsingleton.mp (Order.le_of_lt_succ hs)
 
-theorem isEdgeReachable_top_iff_forall_finite :
-    G.IsEdgeReachable ⊤ u v ↔ ∀ ⦃s⦄, s.Finite → (G.deleteEdges s).Reachable u v := by
-  simp_rw [IsEdgeReachable, Set.encard_lt_top_iff]
+/--
+The edge reachability number of a graph `G` and two vertices `u`,`v` is the largest `k` for which
+`u`,`v` are `k`-edge-reachable
+-/
+noncomputable def edgeReachability (G : SimpleGraph V) (u v : V) : ℕ∞ :=
+  ⨆ (k : ℕ∞) (_ : G.IsEdgeReachable k u v), k
 
-theorem isEdgeConnected_top_iff_forall_finite :
-    G.IsEdgeConnected ⊤ ↔ ∀ ⦃s⦄, s.Finite → (G.deleteEdges s).Preconnected := by
-  simp_rw [isEdgeConnected_iff, Set.encard_lt_top_iff]
+/--
+The edge connectivity number of a graph `G` is the largest `k` such that `G` is `k`-edge-connected.
+-/
+noncomputable def edgeConnectivity (G : SimpleGraph V) : ℕ∞ :=
+  ⨆ (k : ℕ∞) (_ : G.IsEdgeConnected k), k
 
-theorem isEdgeReachable_top_iff_forall_nat :
-    G.IsEdgeReachable ⊤ u v ↔ ∀ n : ℕ, G.IsEdgeReachable n u v := by
-  refine ⟨fun h _ ↦ h.anti le_top, fun h s hlt ↦ h (s.ncard + 1) ?_⟩
-  simp [← Set.encard_lt_top_iff.mp hlt |>.cast_ncard_eq, -Nat.cast_add]
+theorem IsEdgeReachable.le_edgeReachability (h : G.IsEdgeReachable k u v) :
+    k ≤ G.edgeReachability u v :=
+  le_iSup₂_of_le k h le_rfl
 
-theorem isEdgeConnected_top_iff_forall_nat :
-    G.IsEdgeConnected ⊤ ↔ ∀ n : ℕ, G.IsEdgeConnected n := by
-  simp_rw [IsEdgeConnected, isEdgeReachable_top_iff_forall_nat]
-  exact ⟨fun h n u v ↦ h u v n, fun h u v n ↦ h n u v⟩
+theorem IsEdgeConnected.le_edgeConnectivity (h : G.IsEdgeConnected k) : k ≤ G.edgeConnectivity :=
+  le_iSup₂_of_le k h le_rfl
+
+theorem Reachable.edgeReachability_ne_zero (h : G.Reachable u v) : G.edgeReachability u v ≠ 0 := by
+  simpa [← Order.one_le_iff_ne_zero] using isEdgeReachable_one.mpr h |>.le_edgeReachability
+
+theorem Reachable.edgeConnectivity_ne_zero (h : G.Preconnected) : G.edgeConnectivity ≠ 0 := by
+  simpa [← Order.one_le_iff_ne_zero] using isEdgeConnected_one.mpr h |>.le_edgeConnectivity
+
+@[simp]
+theorem edgeReachability_self : G.edgeReachability v v = ⊤ := by
+  simpa [edgeReachability, iSup_pos, iSup_eq_top] using fun b a ↦ Exists.intro ⊤ a
+
+@[simp]
+theorem edgeReachability_eq_top_of_subsingleton [Subsingleton V] : G.edgeReachability u v = ⊤ := by
+  simp [Subsingleton.elim u v]
+
+@[simp]
+theorem edgeConnectivity_eq_top_of_subsingleton [Subsingleton V] : G.edgeConnectivity = ⊤ := by
+  simpa [edgeConnectivity, IsEdgeConnected, iSup_eq_top] using fun b a ↦ Exists.intro ⊤ a
+
+theorem edgeReachability_comm : G.edgeReachability u v = G.edgeReachability v u := by
+  simp only [isEdgeReachable_comm, edgeReachability]
+
+theorem edgeConnectivity_le_edgeReachability : G.edgeConnectivity ≤ G.edgeReachability u v := by
+  exact iSup₂_le (fun i h ↦ IsEdgeReachable.le_edgeReachability (h u v))
+
+theorem edgeReachability_le_degree_left [Fintype <| G.neighborSet u] (huv : u ≠ v) :
+    G.edgeReachability u v ≤ G.degree u :=
+  iSup₂_le fun _ hk ↦ mod_cast hk.le_degree_left huv
+
+theorem edgeReachability_le_degree_right [Fintype <| G.neighborSet v] (huv : u ≠ v) :
+    G.edgeReachability u v ≤ G.degree v := by
+  rw [edgeReachability_comm]
+  exact edgeReachability_le_degree_left huv.symm
+
+theorem edgeConnectivity_le_minDegree [Fintype V] [Nontrivial V] [DecidableRel G.Adj] :
+    G.edgeConnectivity ≤ G.minDegree := iSup₂_le fun _ h ↦ mod_cast h.le_minDegree
+
+theorem edgeConnectivity_le_degree [Fintype (G.neighborSet u)] [Nontrivial V] :
+    G.edgeConnectivity ≤ G.degree u := by
+    simpa [edgeConnectivity, iSup_le_iff]using fun i h ↦ IsEdgeConnected.le_degree h
 
 /-!
 ### 2-reachability

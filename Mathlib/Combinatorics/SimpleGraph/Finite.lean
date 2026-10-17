@@ -459,7 +459,7 @@ theorem minDegree_le_degree [DecidableRel G.Adj] (v : V) : G.minDegree ≤ G.deg
 /-- In a nonempty graph, if `k` is at most the degree of every vertex, it is at most the minimum
 degree. Note the assumption that the graph is nonempty is necessary as long as `G.minDegree` is
 defined to be a natural. -/
-theorem le_minDegree_of_forall_le_degree [DecidableRel G.Adj] [Nonempty V] (k : ℕ)
+theorem le_minDegree_of_forall_le_degree [DecidableRel G.Adj] [Nonempty V] (k : ℕ∞)
     (h : ∀ v, k ≤ G.degree v) : k ≤ G.minDegree := by
   rcases G.exists_minimal_degree_vertex with ⟨v, hv⟩
   rw [hv]
@@ -479,7 +479,11 @@ lemma minDegree_le_minDegree {H : SimpleGraph V} [DecidableRel G.Adj] [Decidable
     (hle : G ≤ H) : G.minDegree ≤ H.minDegree := by
   cases isEmpty_or_nonempty V
   · simp
-  · apply le_minDegree_of_forall_le_degree
+  · suffices h : (G.minDegree : ℕ∞) ≤ (H.minDegree : ℕ∞) by {
+      exact_mod_cast h
+    }
+    apply le_minDegree_of_forall_le_degree
+    simp only [Nat.cast_le]
     exact fun v ↦ (G.minDegree_le_degree v).trans (G.degree_le_of_le hle)
 
 /-- In a nonempty graph, the minimal degree is less than the number of vertices. -/
@@ -741,6 +745,8 @@ theorem le_minDegree_induce_of_support_subset (h : G.support ⊆ s) :
   rcases s.eq_empty_or_nonempty with (rfl | hs)
   · simp [minDegree_eq_zero_iff_support_ne, Set.subset_empty_iff.mp h, Set.empty_ne_univ]
   have := hs.to_subtype
+  suffices h : (G.minDegree : ℕ∞) ≤ ((induce s G).minDegree : ℕ∞) by
+      simp_all
   refine le_minDegree_of_forall_le_degree _ _ fun v ↦ ?_
   grw [G.minDegree_le_degree v, degree_induce_of_neighborSet_subset]
   grw [neighborSet_subset_support, h]
