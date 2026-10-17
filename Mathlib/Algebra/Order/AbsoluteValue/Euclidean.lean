@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.EuclideanDomain.Int
 public import Mathlib.Algebra.Order.AbsoluteValue.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Euclidean absolute values
 

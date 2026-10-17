@@ -11,6 +11,9 @@ import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.MeasureTheory.Integral.Layercake
 import Mathlib.Tactic.MoveAdd
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The integral of the real power of a nonnegative function
 

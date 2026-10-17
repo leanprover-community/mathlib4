@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Calculus.LocalExtr.Basic
 
 import Mathlib.Analysis.Calculus.Deriv.Mul
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Darboux's theorem
 

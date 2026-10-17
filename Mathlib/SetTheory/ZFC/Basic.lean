@@ -10,6 +10,9 @@ public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Logic.Small.Basic
 public import Mathlib.SetTheory.ZFC.PSet
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A model of ZFC
 

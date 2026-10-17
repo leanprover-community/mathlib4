@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.Constructions.Pi
 public import Mathlib.Probability.ConditionalProbability
 
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Classical probability
 

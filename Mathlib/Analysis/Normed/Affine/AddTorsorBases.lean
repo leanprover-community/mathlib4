@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Normed.Module.FiniteDimension
 
 import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bases in normed affine spaces.
 

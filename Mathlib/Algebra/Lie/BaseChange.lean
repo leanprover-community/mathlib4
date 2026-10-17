@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Algebra.RestrictScalars
 public import Mathlib.Algebra.Lie.TensorProduct
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extension and restriction of scalars for Lie algebras and Lie modules
 

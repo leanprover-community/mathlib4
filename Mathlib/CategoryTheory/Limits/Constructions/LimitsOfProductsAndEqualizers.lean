@@ -14,6 +14,9 @@ public import Mathlib.Data.Fintype.Sigma
 
 import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Constructing limits from products and equalizers.
 

@@ -10,6 +10,9 @@ public import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.Group.Units.Equiv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about group actions on big operators
 

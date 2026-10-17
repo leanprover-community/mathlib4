@@ -10,6 +10,9 @@ public import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 import Mathlib.Topology.EMetricSpace.Paracompact
 import Mathlib.Topology.ShrinkingLemma
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Shrinking lemma in a proper metric space
 

@@ -11,6 +11,9 @@ public import Mathlib.Data.Multiset.Sort
 public import Mathlib.Data.Nat.Factors
 public import Mathlib.Data.PNat.Prime
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Prime factors of nonzero naturals
 

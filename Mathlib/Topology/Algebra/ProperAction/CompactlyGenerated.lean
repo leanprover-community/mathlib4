@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Algebra.ProperAction.Basic
 public import Mathlib.Topology.Maps.Proper.CompactlyGenerated
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # When a proper action is properly discontinuous
 

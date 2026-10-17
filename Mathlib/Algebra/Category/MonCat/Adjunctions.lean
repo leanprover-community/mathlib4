@@ -14,6 +14,9 @@ public import Mathlib.CategoryTheory.Adjunction.Basic
 public import Mathlib.Data.Finsupp.Basic
 public import Mathlib.Data.Finsupp.SMulWithZero
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adjunctions regarding the category of monoids
 

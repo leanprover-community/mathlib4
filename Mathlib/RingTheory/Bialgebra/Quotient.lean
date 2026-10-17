@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.Bialgebra.Hom
 public import Mathlib.RingTheory.Coalgebra.Quotient
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bialgebra structure on quotients
 

@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Star.Basic
 public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Data.Set.Lattice.Image
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pointwise star operation on sets
 

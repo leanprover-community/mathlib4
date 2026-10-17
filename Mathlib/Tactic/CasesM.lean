@@ -8,6 +8,9 @@ module
 public meta import Lean.Elab.Tactic.Conv.Pattern
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `casesm`, `cases_type`, `constructorm` tactics
 

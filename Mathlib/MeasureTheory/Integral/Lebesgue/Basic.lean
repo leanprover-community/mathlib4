@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.Pi
 public import Mathlib.MeasureTheory.Function.SimpleFunc
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lower Lebesgue integral for `ℝ≥0∞`-valued functions
 

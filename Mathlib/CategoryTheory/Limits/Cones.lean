@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Yoneda
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cones and cocones
 

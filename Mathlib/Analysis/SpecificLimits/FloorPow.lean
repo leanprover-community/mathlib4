@@ -9,6 +9,9 @@ public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 import Mathlib.Algebra.Order.Field.GeomSum
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Results on discretized exponentials
 

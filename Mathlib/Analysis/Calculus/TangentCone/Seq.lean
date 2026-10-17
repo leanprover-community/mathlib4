@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Normed.Module.Basic
 
 import Mathlib.Analysis.SpecificLimits.Normed
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tangent cone points as limits of sequences
 

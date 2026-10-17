@@ -8,6 +8,9 @@ module
 public import Mathlib.Basic.SetLike.Basic
 public import Mathlib.Data.Set.Lattice.Image
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Order intervals
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Order.Monotone
 public import Mathlib.Topology.Separation.Regular
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Left and right limits
 

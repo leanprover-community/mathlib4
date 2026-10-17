@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.Valuation.Basic
 
 import Mathlib.FieldTheory.Minpoly.Field
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Minimal polynomials.
 

@@ -6,6 +6,9 @@ Authors: Simon Hudon, Keeley Hoek, Floris van Doorn, Chris Bailey
 module
 
 public import Mathlib.Init
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Definitions for `String`
 

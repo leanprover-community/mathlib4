@@ -11,6 +11,9 @@ public import Mathlib.Util.CompileInductive
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.Push
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Uniquely Decodable Codes
 

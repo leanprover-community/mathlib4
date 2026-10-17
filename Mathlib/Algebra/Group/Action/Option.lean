@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.Action.Faithful
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Option instances for additive and multiplicative actions
 

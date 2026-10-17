@@ -12,6 +12,9 @@ public meta import Lean.ResolveName
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 public import Lean.Message
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 This file contains functions that are used by multiple linters.
 -/

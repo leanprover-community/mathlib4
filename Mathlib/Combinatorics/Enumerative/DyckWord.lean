@@ -10,6 +10,9 @@ public import Mathlib.Combinatorics.Enumerative.Catalan.Tree
 import Batteries.Data.List.Count
 import Mathlib.Tactic.Positivity.Finset
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Dyck words
 

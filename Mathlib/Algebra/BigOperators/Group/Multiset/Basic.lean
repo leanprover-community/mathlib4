@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Algebra.Order.Group.Multiset
 public import Mathlib.Algebra.Order.Sub.Unbundled.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sums and products over multisets
 

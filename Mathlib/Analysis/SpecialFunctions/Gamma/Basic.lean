@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 public import Mathlib.MeasureTheory.Integral.ExpDecay
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Gamma function
 

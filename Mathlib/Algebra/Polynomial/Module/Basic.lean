@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Polynomial.Module.AEval
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Polynomial module
 

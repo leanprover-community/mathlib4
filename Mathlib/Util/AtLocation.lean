@@ -11,6 +11,9 @@ public meta import Lean.Meta.Tactic.Simp.Main
 import Lean.Elab.Tactic.Location
 import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Rewriting at specified locations
 
