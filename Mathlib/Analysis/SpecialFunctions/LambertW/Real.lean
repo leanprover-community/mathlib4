@@ -1,0 +1,267 @@
+/-
+Copyright (c) 2026 Emlis. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Emlis
+-/
+module
+
+public import Mathlib.Analysis.SpecialFunctions.LambertW.Basic
+
+/-!
+# The real Lambert W function
+
+This defines the two branches of the standard Lambert W function over the reals.
+
+If `y = W(x)`, then `x = y * exp y` on each branch.
+
+* `Real.lambertWZero`, the strictly increasing principal branch `W₀ : [-1 / e, +∞) → [-1, +∞)`,
+  is the real part of `Complex.lambertW 0`.
+* `Real.lambertWNegOne`, the strictly decreasing branch `W₋₁ : [-1 / e, 0) → (-∞, -1]`,
+  is the real part of `Complex.lambertW (-1)`.
+
+Outside their domains the two branches discard the imaginary part of complex Lambert W,
+so their values there are junk values. Notably `W₋₁ 0` is the arbitrary junk value produced by
+`Function.invFunOn`, since `0 ∉ Complex.LambertW.domain (-1)`.
+
+## Main definitions
+
+* `Real.lambertWZero`: the principal branch `W₀` of the real Lambert W function.
+* `Real.lambertWNegOne`: the branch `W₋₁` of the real Lambert W function.
+* `Real.omegaConstant`: the omega constant `Ω = W₀ 1 ≈ 0.5671432904`.
+
+## Main results
+
+* `Real.lambertWZero_mul_exp_of_le`, `Real.lambertWNegOne_mul_exp_of_le`: the basic identities
+  `W₀ (y * rexp y) = y` for `-1 ≤ y`, and `W₋₁ (y * rexp y) = y` for `y ≤ -1`.
+* `Real.lambertWZero_mul_exp_lambertWZero_of_le`,
+  `Real.lambertWNegOne_mul_exp_lambertWNegOne_of_mem_Ico`: the basic identities
+  `W₀ x * rexp (W₀ x) = x` for `-(rexp 1)⁻¹ ≤ x`, and
+  `W₋₁ x * rexp (W₋₁ x) = x` for `x ∈ [-1 / e, 0)`.
+* `Real.invOn_mul_exp_lambertWZero`, `Real.invOn_mul_exp_lambertWNegOne`: `W₀` and `W₋₁` are
+  inverses of `y ↦ y * rexp y` on their respective domains and images.
+* `Real.strictMonoOn_lambertWZero` and `Real.strictAntiOn_lambertWNegOne`: `W₀` is strictly
+  increasing, and `W₋₁` is strictly decreasing.
+* `Real.omegaConstant_mul_exp`, `Real.omegaConstant_eq_exp_neg`:
+  `Ω * rexp Ω = 1` and `Ω = rexp (-Ω)`.
+* `Real.omegaConstant_pos`, `Real.omegaConstant_lt_one`: the bounds `0 < Ω < 1`.
+
+## Notation
+
+The following notations are localized in `RealLambertW`:
+
+* `W₀` is `Real.lambertWZero`.
+* `W₋₁` is `Real.lambertWNegOne`.
+
+Use `open scoped RealLambertW` to use these.
+
+The following notation is localized in `OmegaConstant`:
+
+* `Ω` is `Real.omegaConstant`.
+
+Use `open scoped OmegaConstant` to use this.
+
+## References
+
+* <https://en.wikipedia.org/wiki/Lambert_W_function>
+* <https://dlmf.nist.gov/4.13>
+* <https://en.wikipedia.org/wiki/Omega_constant>
+-/
+
+public noncomputable section
+
+namespace Real
+
+open Set
+
+variable {x y : ℝ}
+
+/-- The principal branch `W₀` of the real Lambert W function, defined as the real part of the
+complex principal branch `Complex.lambertW 0`.
+
+It is the inverse of `x ↦ x * rexp x`, and maps `[-1 / e, +∞)` bijectively onto `[-1, +∞)`. -/
+@[pp_nodot, expose]
+def lambertWZero : ℝ -> ℝ := fun x => (Complex.lambertW 0 x).re
+
+/-- The branch `W₋₁` of the real Lambert W function, defined as the real part of the complex
+branch `Complex.lambertW (-1)`.
+
+It is the inverse of `x ↦ x * rexp x`, and maps `[-1 / e, 0)` bijectively onto `(-∞, -1]`. -/
+@[pp_nodot, expose]
+def lambertWNegOne : ℝ -> ℝ := fun x => (Complex.lambertW (-1) x).re
+
+@[inherit_doc] scoped[RealLambertW] notation "W₀" => Real.lambertWZero
+recommended_spelling "lambertWZero" for "W₀" in [lambertWZero, RealLambertW.«termW₀»]
+
+@[inherit_doc] scoped[RealLambertW] notation "W₋₁" => Real.lambertWNegOne
+recommended_spelling "lambertWNegOne" for "W₋₁" in [lambertWNegOne, RealLambertW.«termW₋₁»]
+
+open scoped RealLambertW
+
+theorem _root_.Complex.LambertW.ofReal_mem_range_zero
+    (hx : -1 ≤ y) : (y : ℂ) ∈ Complex.LambertW.range 0 := by
+  simpa [Complex.LambertW.mem_range_zero_iff, hx] using Complex.arg_mem_Ioc y
+
+theorem _root_.Complex.LambertW.ofReal_mem_range_neg_one
+    (hx : y ≤ -1) : (y : ℂ) ∈ Complex.LambertW.range (-1) :=
+  Or.inr ⟨hx, rfl⟩
+
+theorem lambertWZero_mul_exp_of_le (hy : -1 ≤ y) : W₀ (y * rexp y) = y := by
+  rw [lambertWZero, Complex.ofReal_mul, Complex.ofReal_exp,
+    Complex.lambertW_mul_exp_of_mem_range (Complex.LambertW.ofReal_mem_range_zero hy),
+    Complex.ofReal_re]
+
+theorem lambertWNegOne_mul_exp_of_le (hy : y ≤ -1) : W₋₁ (y * rexp y) = y := by
+  rw [lambertWNegOne, Complex.ofReal_mul, Complex.ofReal_exp,
+    Complex.lambertW_mul_exp_of_mem_range (Complex.LambertW.ofReal_mem_range_neg_one hy),
+    Complex.ofReal_re]
+
+private theorem exists_ge_neg_one_mul_exp_eq_of_le (hx : -(rexp 1)⁻¹ ≤ x) :
+    ∃ y ≥ -1, y * rexp y = x := by
+  have : -1 < -(rexp 1)⁻¹ := by simp [field]
+  obtain ⟨y, hy, hyx⟩ : ∃ y ∈ Icc (-1) (x + 1), y * rexp y = x :=
+    intermediate_value_Icc (by grind) (by fun_prop)
+      ⟨by simpa [exp_neg], by nlinarith [one_le_exp (show 0 ≤ x + 1 by grind)]⟩
+  exact ⟨y, hy.left, hyx⟩
+
+theorem invOn_lambertWZero_mul_exp :
+    InvOn W₀ (fun y => y * rexp y) (Ici (-1)) (Ici (-(rexp 1)⁻¹)) := by
+  refine ⟨fun y => lambertWZero_mul_exp_of_le, fun x hx => ?_⟩
+  obtain ⟨y, hy, hyx⟩ : ∃ y ≥ -1, y * rexp y = x := exists_ge_neg_one_mul_exp_eq_of_le hx
+  rw [← hyx, lambertWZero_mul_exp_of_le hy]
+
+theorem invOn_mul_exp_lambertWZero :
+    InvOn (fun x => x * rexp x) W₀ (Ici (-(rexp 1)⁻¹)) (Ici (-1)) :=
+  invOn_lambertWZero_mul_exp.symm
+
+theorem invOn_lambertWNegOne_mul_exp :
+    InvOn W₋₁ (fun x => x * rexp x) (Iic (-1)) (Ico (-(rexp 1)⁻¹) 0) := by
+  refine ⟨fun y => lambertWNegOne_mul_exp_of_le, fun x hx => ?_⟩
+  obtain ⟨y, ⟨hy, hyx⟩, -⟩ : ∃! y ≤ -1, y * rexp y = x :=
+    existsUnique_mem_Iic_mul_exp_eq_of_mem_Ico hx
+  rw [← hyx, lambertWNegOne_mul_exp_of_le hy]
+
+theorem invOn_mul_exp_lambertWNegOne :
+    InvOn (fun x => x * rexp x) W₋₁ (Ico (-(rexp 1)⁻¹) 0) (Iic (-1)) :=
+  invOn_lambertWNegOne_mul_exp.symm
+
+theorem bijOn_lambertWZero : BijOn W₀ (Ici (-(rexp 1)⁻¹)) (Ici (-1)) := by
+  refine invOn_mul_exp_lambertWZero.bijOn (fun x hx => ?_) fun y _ => neg_exp_one_inv_le_mul_exp y
+  obtain ⟨y, hy, hyx⟩ := exists_ge_neg_one_mul_exp_eq_of_le hx
+  rwa [← hyx, lambertWZero_mul_exp_of_le hy]
+
+theorem bijOn_lambertWNegOne : BijOn W₋₁ (Ico (-(rexp 1)⁻¹) 0) (Iic (-1)) := by
+  refine invOn_mul_exp_lambertWNegOne.bijOn (fun x hx => ?_) fun y hy =>
+    ⟨neg_exp_one_inv_le_mul_exp y, mul_neg_of_neg_of_pos (by grind) (exp_pos y)⟩
+  obtain ⟨y, ⟨hy, hyx⟩, -⟩ := existsUnique_mem_Iic_mul_exp_eq_of_mem_Ico hx
+  rwa [← hyx, lambertWNegOne_mul_exp_of_le hy]
+
+theorem bijOn_mul_exp_Ici : BijOn (fun y => y * rexp y) (Ici (-1)) (Ici (-(rexp 1)⁻¹)) :=
+  invOn_lambertWZero_mul_exp.bijOn (fun x _ => neg_exp_one_inv_le_mul_exp x)
+    fun _y hy => bijOn_lambertWZero.mapsTo hy
+
+theorem bijOn_mul_exp_Iic : BijOn (fun y => y * rexp y) (Iic (-1)) (Ico (-(rexp 1)⁻¹) 0) := by
+  refine invOn_lambertWNegOne_mul_exp.bijOn (fun x hx => ⟨neg_exp_one_inv_le_mul_exp x, ?_⟩)
+    fun y hy => bijOn_lambertWNegOne.mapsTo hy
+  simp [exp_pos x, mul_neg_iff, hx.trans_lt]
+
+theorem lambertWZero_mul_exp_lambertWZero_of_le (hx : -(rexp 1)⁻¹ ≤ x) :
+    W₀ x * rexp (W₀ x) = x :=
+  invOn_mul_exp_lambertWZero.left hx
+
+theorem lambertWNegOne_mul_exp_lambertWNegOne_of_mem_Ico (hx : x ∈ Ico (-(rexp 1)⁻¹) 0) :
+    W₋₁ x * rexp (W₋₁ x) = x :=
+  invOn_mul_exp_lambertWNegOne.left hx
+
+/-- If `hy : -1 ≤ y` and `x = y * rexp y`, then `y = W₀ x`. In other words, on
+`[-1, ∞)`, `W₀` is the unique inverse of `y ↦ y * rexp y`. -/
+theorem eq_lambertWZero_of_le (hy : -1 ≤ y) (hyx : x = y * rexp y) :
+    y = W₀ x :=
+  hyx ▸ (invOn_lambertWZero_mul_exp.left hy).symm
+
+/-- If `hy : y ≤ -1` and `x = y * rexp y`, then `y = W₋₁ x`. In other words, on
+`(-∞, -1]`, `W₋₁` is the unique inverse of `y ↦ y * rexp y`. -/
+theorem eq_lambertWNegOne_of_le (hy : y ≤ -1) (hyx : x = y * rexp y) :
+    y = W₋₁ x :=
+  hyx ▸ (invOn_lambertWNegOne_mul_exp.left hy).symm
+
+/-- See also `Real.lambertWZero`, `lambertWZero_mul_exp_lambertWZero_of_le` and
+`eq_lambertWZero_of_le`. -/
+theorem existsUnique_ge_mul_exp_eq_of_le (hx : -(rexp 1)⁻¹ ≤ x) :
+    ∃! y ≥ -1, y * rexp y = x :=
+  ⟨W₀ x, ⟨bijOn_lambertWZero.mapsTo hx, invOn_lambertWZero_mul_exp.right hx⟩,
+    fun _y' ⟨hy', hy'x⟩ => eq_lambertWZero_of_le hy' hy'x.symm⟩
+
+theorem strictMonoOn_lambertWZero : StrictMonoOn W₀ (Ici (-(rexp 1)⁻¹)) := by
+  apply Function.strictMonoOn_of_rightInvOn_of_mapsTo ?_
+    invOn_mul_exp_lambertWZero.left bijOn_lambertWZero.mapsTo
+  exact (mul_log_strictMonoOn.comp (exp_strictMono.strictMonoOn (Ici (-1)))
+    fun x => exp_le_exp.mpr).congr fun x hx => by simp [mul_comm]
+
+theorem strictAntiOn_lambertWNegOne : StrictAntiOn W₋₁ (Ico (-(rexp 1)⁻¹) 0) := by
+  apply Function.strictAntiOn_of_rightInvOn_of_mapsTo ?_
+    invOn_mul_exp_lambertWNegOne.left bijOn_lambertWNegOne.mapsTo
+  exact (mul_log_strictAntiOn.comp_strictMonoOn (exp_strictMono.strictMonoOn (Iic (-1))) fun x hx =>
+    ⟨exp_pos x |>.le, exp_le_exp.mpr hx⟩).congr fun x hx => by simp [mul_comm]
+
+@[simp]
+theorem lambertWZero_zero : W₀ 0 = 0 := by
+  nth_rw 1 [← zero_mul, lambertWZero_mul_exp_of_le neg_one_lt_zero.le]
+
+theorem lambertWZero_pos_of_pos (hx : 0 < x) : 0 < W₀ x := by
+  have : -(rexp 1)⁻¹ ≤ 0 := by simpa using exp_nonneg 1
+  exact lambertWZero_zero ▸ strictMonoOn_lambertWZero this (this.trans hx.le) hx
+
+theorem lambertWZero_nonneg_of_nonneg (hx : 0 ≤ x) : 0 ≤ W₀ x := by
+  have : -(rexp 1)⁻¹ ≤ 0 := by simpa using exp_nonneg 1
+  exact lambertWZero_zero ▸ strictMonoOn_lambertWZero.monotoneOn this (this.trans hx) hx
+
+section OmegaConstant
+
+/-- The omega constant `Ω ≈ 0.5671432904` (OEIS: A030178), the value of the principal branch of the
+Lambert W function at `1`.
+
+It is the real solution of `x * rexp x = 1`. -/
+@[wikidata Q2291098]
+abbrev omegaConstant : ℝ := W₀ 1
+
+@[inherit_doc] scoped[OmegaConstant] notation "Ω" => Real.omegaConstant
+
+open scoped OmegaConstant
+
+theorem omegaConstant_eq : Ω = W₀ 1 := rfl
+
+theorem omegaConstant_mul_exp : Ω * rexp Ω = 1 := by
+  apply lambertWZero_mul_exp_lambertWZero_of_le
+  simp [field, neg_one_lt_zero.le.trans <| exp_nonneg _]
+
+theorem omegaConstant_eq_exp_neg : Ω = rexp (-Ω) := by
+  grind [omegaConstant_mul_exp, exp_neg]
+
+theorem omegaConstant_lt_one : Ω < 1 := by
+  rw [omegaConstant_eq]
+  nth_rw 2 [← lambertWZero_mul_exp_of_le (show -1 ≤ 1 by norm_num)]
+  apply strictMonoOn_lambertWZero <;> simp [field, neg_one_lt_zero.le.trans <| exp_nonneg _]
+
+open Qq Mathlib.Meta.Positivity in
+/-- Extension for the `positivity` tactic: `Real.lambertWZero`.
+Since `W₀` is strictly increasing on its domain and vanishes at `0`,
+it preserves both strict and weak positivity. -/
+@[positivity Real.lambertWZero _]
+meta def _root_.Mathlib.Meta.Positivity.evalLambertWZero :
+    PositivityExt where eval {u α} zα pα? e :=
+  match pα? with | none => pure .none | some pα => do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(W₀ $a) =>
+    assertInstancesCommute
+    match ← core zα pα a with
+    | .positive pa => pure <| .positive q(lambertWZero_pos_of_pos $pa)
+    | .nonnegative pa => pure <| .nonnegative q(lambertWZero_nonneg_of_nonneg $pa)
+    | _ => pure .none
+  | _, _, _ => throwError "not Real.lambertWZero"
+
+theorem omegaConstant_pos : 0 < Ω := by
+  positivity
+
+end OmegaConstant
+
+end Real
