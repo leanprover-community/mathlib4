@@ -95,43 +95,43 @@ def freeLiftLEquiv (α : Type*) : ((free k G α).IntertwiningMap σ) ≃ₗ[k] (
 
 /-- Equiv between representations induced by linear equiv between `(α →₀ V) ⊗[k] W` and
   `α →₀ (V ⊗[k] W)`. -/
-def finsuppTensorLeft (α : Type*) [DecidableEq α] :
+def finsuppTensorLeft (α : Type*) :
     ((σ.finsupp α).tprod ρ).Equiv ((σ.tprod ρ).finsupp α) :=
-  .mk (TensorProduct.finsuppLeft _ _ _ _ _) fun g ↦ by
+  open scoped Classical in .mk (TensorProduct.finsuppLeft _ _ _ _ _) fun g ↦ by
     ext; simp [TensorProduct.finsuppLeft_apply_tmul]
 
-lemma finsuppTensorLeft_apply_tmul {α : Type*} [DecidableEq α] (f : α →₀ V) (w : W) :
+lemma finsuppTensorLeft_apply_tmul {α : Type*} (f : α →₀ V) (w : W) :
     finsuppTensorLeft σ ρ α (f ⊗ₜ w) = f.sum fun i v ↦ Finsupp.single i (v ⊗ₜ w) := by
   simp [finsuppTensorLeft, TensorProduct.finsuppLeft_apply_tmul]
 
 @[simp]
-lemma finsuppTensorLeft_apply_tmul_apply {α : Type*} [DecidableEq α] (f : α →₀ V) (w : W)
-    (i : α) : finsuppTensorLeft σ ρ α (f ⊗ₜ w) i = f i ⊗ₜ w := by
+lemma finsuppTensorLeft_apply_tmul_apply {α : Type*} (f : α →₀ V) (w : W)
+    (i : α) : finsuppTensorLeft σ ρ α (f ⊗ₜ w) i = f i ⊗ₜ w := by classical
   simp +contextual [finsuppTensorLeft_apply_tmul, Finsupp.sum_apply, Finsupp.single_apply]
 
 @[simp]
-lemma finsuppTensorLeft_symm_apply_single {α : Type*} [DecidableEq α] (i : α) (v : V) (w : W) :
+lemma finsuppTensorLeft_symm_apply_single {α : Type*} (i : α) (v : V) (w : W) :
     (finsuppTensorLeft σ ρ α).symm (Finsupp.single i (v ⊗ₜ w)) = Finsupp.single i v ⊗ₜ w := by
   simp [finsuppTensorLeft]
 
 /-- Equiv between representations induced by linear equiv between `V ⊗[k] (α →₀ W)` and
   `α →₀ (V ⊗[k] W)`. -/
-def finsuppTensorRight (α : Type*) [DecidableEq α] :
+def finsuppTensorRight (α : Type*) :
     (σ.tprod (ρ.finsupp α)).Equiv ((σ.tprod ρ).finsupp α) :=
-  .mk (TensorProduct.finsuppRight _ _ _ _ _) fun g ↦ by
+  open scoped Classical in .mk (TensorProduct.finsuppRight _ _ _ _ _) fun g ↦ by
     ext; simp [TensorProduct.finsuppRight_apply_tmul]
 
-lemma finsuppTensorRight_apply_tmul {α : Type*} [DecidableEq α] (v : V) (f : α →₀ W) :
+lemma finsuppTensorRight_apply_tmul {α : Type*} (v : V) (f : α →₀ W) :
     finsuppTensorRight σ ρ α (v ⊗ₜ f) = f.sum fun i w ↦ Finsupp.single i (v ⊗ₜ w) := by
   simp [finsuppTensorRight, TensorProduct.finsuppRight_apply_tmul]
 
 @[simp]
-lemma finsuppTensorRight_apply_tmul_apply {α : Type*} [DecidableEq α] (v : V) (f : α →₀ W)
-    (i : α) : finsuppTensorRight σ ρ α (v ⊗ₜ f) i = v ⊗ₜ f i := by
+lemma finsuppTensorRight_apply_tmul_apply {α : Type*} (v : V) (f : α →₀ W)
+    (i : α) : finsuppTensorRight σ ρ α (v ⊗ₜ f) i = v ⊗ₜ f i := by classical
   simp +contextual [finsuppTensorRight_apply_tmul, Finsupp.sum_apply, Finsupp.single_apply]
 
 @[simp]
-lemma finsuppTensorRight_symm_apply_single {α : Type*} [DecidableEq α] (i : α) (v : V) (w : W) :
+lemma finsuppTensorRight_symm_apply_single {α : Type*} (i : α) (v : V) (w : W) :
     (finsuppTensorRight σ ρ α).symm (Finsupp.single i (v ⊗ₜ w)) = v ⊗ₜ Finsupp.single i w := by
   simp [finsuppTensorRight]
 
