@@ -6,6 +6,7 @@ Authors: Yuyang Zhao
 module
 
 public import Mathlib.Data.Finsupp.Defs
+public import Mathlib.Data.Set.Finite.Lattice
 
 /-!
 # Lifts a `Finsupp` from an underlying type to a `Finsupp` on a quotient
@@ -51,3 +52,52 @@ theorem liftFinsupp_mk (a : α) : Quotient.liftFinsupp f h ⟦a⟧ = f a :=
   rfl
 
 end Quotient
+
+namespace Quotient
+
+variable {s : Setoid α} [Zero β]
+
+/-- Pull a function `Quotient s →₀ β` back to `α →₀ β`, provided the classes of `s` are finite. -/
+def compMkFinsupp (hs : ∀ a, {b | s b a}.Finite) (f : Quotient s →₀ β) : α →₀ β :=
+  Finsupp.ofSupportFinite (f ∘ Quotient.mk s) <| by
+    rw [Function.support_comp_eq_preimage]
+    refine f.hasFiniteSupport.preimage' fun q _ ↦ ?_
+    induction q using Quotient.inductionOn with | h a => ?_
+    convert hs a using 1
+    ext b
+    simp [Quotient.eq]
+
+@[simp]
+theorem compMkFinsupp_apply (hs : ∀ a, {b | s b a}.Finite) (f : Quotient s →₀ β) (a : α) :
+    compMkFinsupp hs f a = f ⟦a⟧ :=
+  rfl
+
+end Quotient
+
+namespace Setoid
+
+variable (s : Setoid α) [Zero β]
+
+/-- Finitely supported functions on `α` that are constant on the classes of `s` correspond to
+finitely supported functions on `Quotient s`, provided the classes are finite. -/
+def liftFinsuppEquiv (hs : ∀ a, {b | s b a}.Finite) :
+    {f : α →₀ β // ∀ a b, s a b → f a = f b} ≃ (Quotient s →₀ β) where
+  toFun f := Quotient.liftFinsupp f.1 f.2
+  invFun f := ⟨Quotient.compMkFinsupp hs f, fun a b h ↦ by simp [Quotient.sound h]⟩
+  left_inv _ := Subtype.ext <| Finsupp.ext fun _ ↦ rfl
+  right_inv f := Finsupp.ext fun q ↦ Quotient.inductionOn q fun _ ↦ rfl
+
+variable {s}
+
+@[simp]
+theorem liftFinsuppEquiv_apply_mk (hs : ∀ a, {b | s b a}.Finite)
+    (f : {f : α →₀ β // ∀ a b, s a b → f a = f b}) (a : α) :
+    liftFinsuppEquiv s hs f ⟦a⟧ = f.1 a :=
+  rfl
+
+@[simp]
+theorem coe_liftFinsuppEquiv_symm (hs : ∀ a, {b | s b a}.Finite) (f : Quotient s →₀ β) :
+    ((liftFinsuppEquiv s hs).symm f : α →₀ β) = Quotient.compMkFinsupp hs f :=
+  rfl
+
+end Setoid
