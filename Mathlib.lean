@@ -5589,6 +5589,7 @@ public import Mathlib.MeasureTheory.Constructions.BorelSpace.WithTop
 public import Mathlib.MeasureTheory.Constructions.ClosedCompactCylinders
 public import Mathlib.MeasureTheory.Constructions.Cylinders
 public import Mathlib.MeasureTheory.Constructions.HaarToSphere
+public import Mathlib.MeasureTheory.Constructions.KolmogorovExtension
 public import Mathlib.MeasureTheory.Constructions.Pi
 public import Mathlib.MeasureTheory.Constructions.Polish.Basic
 public import Mathlib.MeasureTheory.Constructions.Polish.EmbeddingReal
@@ -5781,6 +5782,7 @@ public import Mathlib.MeasureTheory.Measure.AEDisjoint
 public import Mathlib.MeasureTheory.Measure.AEMeasurable
 public import Mathlib.MeasureTheory.Measure.AbsolutelyContinuous
 public import Mathlib.MeasureTheory.Measure.AddContent
+public import Mathlib.MeasureTheory.Measure.AddContent.CompactSystem
 public import Mathlib.MeasureTheory.Measure.Basic
 public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
 public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.TaylorExpansion
