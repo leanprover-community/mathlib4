@@ -5,11 +5,11 @@ Authors: Chris Hughes, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Opposites
 public import Mathlib.Logic.Function.Iterate
 
 import Mathlib.Tactic.Spread
+public import Mathlib.Algebra.Group.Defs
 
 /-!
 # Definitions of group actions

@@ -10,7 +10,6 @@ public import Mathlib.Probability.Independence.Kernel.Indep
 public import Mathlib.Probability.Kernel.Composition.MeasureComp
 
 import Mathlib.MeasureTheory.Constructions.Cylinders
-import Mathlib.MeasureTheory.MeasurableSpace.Pi
 
 /-!
 # Independence of random variables with respect to a kernel and a measure

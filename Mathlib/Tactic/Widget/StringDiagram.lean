@@ -15,7 +15,6 @@ public import ProofWidgets.Component.HtmlDisplay
 public import ProofWidgets.Component.PenroseDiagram
 public import ProofWidgets.Presentation.Expr
 
-import ProofWidgets.Component.Panel.Basic
 
 /-!
 # String Diagram Widget

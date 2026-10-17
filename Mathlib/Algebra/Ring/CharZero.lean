@@ -11,6 +11,8 @@ public import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.Logic.Embedding.Basic
 
 import Mathlib.Algebra.GroupWithZero.Units.Basic
+public import Mathlib.Algebra.Group.Torsion
+public import Mathlib.Data.Nat.Cast.Pi
 
 /-!
 # Characteristic zero rings

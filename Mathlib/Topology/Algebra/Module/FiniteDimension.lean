@@ -5,7 +5,6 @@ Authors: Sébastien Gouëzel, Anatole Dedecker
 -/
 module
 
-public import Lean.Meta.Tactic.Rfl
 public import Mathlib.Analysis.LocallyConvex.Bounded
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.Analysis.Normed.Module.Basic

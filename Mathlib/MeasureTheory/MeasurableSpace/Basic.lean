@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Algebra.Notation.Indicator
 public import Mathlib.Data.Int.Cast.Pi
-public import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.MeasureTheory.MeasurableSpace.Defs
 public import Mathlib.Order.SupClosed
+public import Mathlib.Data.Nat.Cast.Pi
 
 /-!
 # Measurable spaces and measurable functions

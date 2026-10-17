@@ -5,7 +5,6 @@ Authors: David Ledvinka
 -/
 module
 
-public meta import Lean.Meta.DiscrTree
 public import Mathlib.Init
 
 /-!

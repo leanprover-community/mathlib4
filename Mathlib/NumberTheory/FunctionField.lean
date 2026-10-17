@@ -7,7 +7,6 @@ module
 
 public import Mathlib.FieldTheory.RatFunc.Valuation -- import originally for deprecation, TODO: shake
 
-import Mathlib.FieldTheory.RatFunc.Degree
 import Mathlib.FieldTheory.RatFunc.IntermediateField
 import Mathlib.RingTheory.Adjoin.Polynomial.Bivariate
 import Mathlib.RingTheory.DedekindDomain.IntegralClosure

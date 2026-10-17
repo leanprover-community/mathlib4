@@ -10,6 +10,7 @@ public meta import Mathlib.Lean.Expr.Rat
 public meta import Mathlib.Util.Qq
 public import Lean.Elab.Tactic.Try  -- shake: keep (`register_try?_tactic` command dependency)
 public import Mathlib.Tactic.NormNum.Result
+public import Mathlib.Tactic.Hint
 
 /-!
 ## `norm_num` core functionality
