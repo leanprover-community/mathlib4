@@ -26,8 +26,8 @@ variable {α : Type*}
 namespace WithTop
 
 @[to_dual (attr := simp)]
-theorem preimage_coe_top : (some : α → WithTop α) ⁻¹' {⊤} = (∅ : Set α) :=
-  eq_empty_of_subset_empty fun _ => coe_ne_top
+theorem preimage_coe_top : (some : α → WithTop α) ⁻¹' {⊤} = (∅ : Set α) := by
+  ext; simp
 
 variable [Preorder α] {a b : α}
 

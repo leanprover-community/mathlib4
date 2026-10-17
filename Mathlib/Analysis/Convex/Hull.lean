@@ -84,9 +84,7 @@ theorem convexHull_empty : convexHull 𝕜 (∅ : Set E) = ∅ :=
 @[simp]
 theorem convexHull_eq_empty : convexHull 𝕜 s = ∅ ↔ s = ∅ := by
   constructor
-  · intro h
-    rw [← Set.subset_empty_iff, ← h]
-    exact subset_convexHull 𝕜 _
+  · grw [← subset_convexHull]; exact id
   · rintro rfl
     exact convexHull_empty
 

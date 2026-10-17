@@ -271,7 +271,7 @@ theorem exists_lt_lowerSemicontinuous_integral_gt_nnreal [SigmaFinite μ] (f : �
   rcases exists_lt_lowerSemicontinuous_lintegral_ge_of_aemeasurable μ f fmeas
       (ENNReal.coe_ne_zero.2 δpos.ne') with
     ⟨g, f_lt_g, gcont, gint⟩
-  have gint_ne : (∫⁻ x : α, g x ∂μ) ≠ ∞ := ne_top_of_le_ne_top (by simpa) gint
+  have gint_ne : (∫⁻ x : α, g x ∂μ) ≠ ∞ := by grw [gint]; simpa
   have g_lt_top : ∀ᵐ x : α ∂μ, g x < ∞ := ae_lt_top gcont.measurable gint_ne
   have Ig : (∫⁻ a : α, ENNReal.ofReal (g a).toReal ∂μ) = ∫⁻ a : α, g a ∂μ := by
     apply lintegral_congr_ae
@@ -369,7 +369,7 @@ theorem exists_upperSemicontinuous_le_lintegral_le (f : α → ℝ≥0) (int_f :
     rw [← SimpleFunc.lintegral_eq_lintegral]
     simp only [SimpleFunc.coe_map, Function.comp_apply]
   have int_fs_lt_top : (∫⁻ x, fs x ∂μ) ≠ ∞ := by
-    refine ne_top_of_le_ne_top int_f (lintegral_mono fun x => ?_)
+    gconvert int_f
     simpa only [ENNReal.coe_le_coe] using fs_le_f x
   obtain ⟨g, g_le_fs, gcont, gint⟩ :
     ∃ g : α → ℝ≥0,

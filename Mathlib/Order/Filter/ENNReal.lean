@@ -271,7 +271,7 @@ lemma ofReal_limsup_toReal [f.NeBot] {u : α → ℝ≥0∞} {C : ℝ≥0} (hf :
     exact ENNReal.toReal_le_coe_of_le_coe ha
   refine (ENNReal.ofReal_limsup h₁ h₂).trans (limsup_congr ?_)
   filter_upwards [hf] with x hx
-  exact ENNReal.ofReal_toReal (ne_top_of_le_ne_top (by simp : C ≠ ∞) hx)
+  exact ENNReal.ofReal_toReal (by grw [hs]; simp)
 
 lemma toReal_limsup {u : α → ℝ≥0∞} (h₁ : ∀ᶠ a in f, u a ≠ ∞)
     (h₂ : IsBoundedUnder (· ≤ ·) f fun a ↦ (u a).toReal := by isBoundedDefault) :

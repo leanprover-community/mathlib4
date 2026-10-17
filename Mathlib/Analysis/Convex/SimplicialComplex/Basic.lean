@@ -234,8 +234,8 @@ theorem faces_bot : (⊥ : SimplicialComplex 𝕜 E).faces = ∅ := rfl
 theorem space_bot : (⊥ : SimplicialComplex 𝕜 E).space = ∅ :=
   Set.biUnion_empty _
 
-theorem facets_bot : (⊥ : SimplicialComplex 𝕜 E).facets = ∅ :=
-  eq_empty_of_subset_empty facets_subset
+theorem facets_bot : (⊥ : SimplicialComplex 𝕜 E).facets = ∅ := by
+  grw [facets_subset]; rfl
 
 end SimplicialComplex
 

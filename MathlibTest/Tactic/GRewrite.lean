@@ -559,3 +559,15 @@ example (h : liftEq b a) (h' : liftLE b c) : liftLE a c := by
   grw [← h, ← h']
 
 end universePolymorphic
+
+example (a : ℕ) (h : a ≤ 0) : a = 0 := by grw [h]
+example (a : ℕ) (h : a ≤ 0) : 0 = a := by grw [h]
+example (a : ℕ) (h : a ≤ ⊥) : a = ⊥ := by grw [h]
+example (a : ℕ) (h : a ≤ ⊥) : ⊥ = a := by grw [h]
+example (a : WithTop ℕ) (h : ⊤ ≤ a) : a = ⊤ := by grw [← h]
+example (a : WithTop ℕ) (h : ⊤ ≤ a) : ⊤ = a := by grw [← h]
+
+example (a : Set ℕ) (h : a ≤ ∅) : a = ∅ := by grw [h]
+example (a : Set ℕ) (h : a ≤ ∅) : ∅ = a := by grw [h]
+example (a : Set ℕ) (h : .univ ≤ a) : a = .univ := by grw [← h]
+example (a : Set ℕ) (h : .univ ≤ a) : .univ = a := by grw [← h]

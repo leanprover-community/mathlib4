@@ -477,7 +477,7 @@ theorem restrict_inf (P Q : Finpartition a) (hb : b ≤ a) :
   simp only [parts_inf, parts_restrict, mem_erase, mem_image, mem_product, Prod.exists]
   rintro ⟨h, -, -, ⟨⟨-, y, hy, rfl⟩, ⟨-, z, hz, rfl⟩⟩, rfl⟩
   exact ⟨y ⊓ z ⊓ b, ⟨by ac_nf at h ⊢, y ⊓ z,
-    ⟨ne_bot_of_le_ne_bot h <| inf_le_inf inf_le_left inf_le_left, y, z, ⟨hy, hz⟩, rfl⟩, rfl⟩,
+    ⟨by gconvert h; apply inf_le_left, y, z, ⟨hy, hz⟩, rfl⟩, rfl⟩,
     by ac_nf⟩
 
 /-- The sum of a set-valued function over restricted partition parts equals the sum over original

@@ -94,7 +94,7 @@ theorem interior_univ : interior (univ : Set X) = univ :=
 
 @[simp]
 theorem interior_eq_univ : interior s = univ ↔ s = univ :=
-  ⟨fun h => univ_subset_iff.mp <| h.symm.trans_le interior_subset, fun h => h.symm ▸ interior_univ⟩
+  ⟨by grw [interior_subset]; exact id, fun h => h.symm ▸ interior_univ⟩
 
 @[simp]
 theorem interior_interior : interior (interior s) = interior s :=
@@ -277,7 +277,7 @@ theorem closure_empty : closure (∅ : Set X) = ∅ :=
 
 @[simp]
 theorem closure_empty_iff (s : Set X) : closure s = ∅ ↔ s = ∅ :=
-  ⟨subset_eq_empty subset_closure, fun h => h.symm ▸ closure_empty⟩
+  ⟨by gcongr; exact subset_closure, fun h => h.symm ▸ closure_empty⟩
 
 @[simp]
 theorem closure_nonempty_iff : (closure s).Nonempty ↔ s.Nonempty := by

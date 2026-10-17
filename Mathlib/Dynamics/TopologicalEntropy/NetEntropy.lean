@@ -278,8 +278,9 @@ lemma netEntropyEntourage_empty : netEntropyEntourage T ∅ U = ⊥ := by
   simp only [netMaxcard_empty, ENat.toENNReal_zero, Pi.zero_def]
 
 @[simp]
-lemma netEntropyInfEntourage_empty : netEntropyInfEntourage T ∅ U = ⊥ :=
-  eq_bot_mono (netEntropyInfEntourage_le_netEntropyEntourage T ∅ U) netEntropyEntourage_empty
+lemma netEntropyInfEntourage_empty : netEntropyInfEntourage T ∅ U = ⊥ := by
+  grw [netEntropyInfEntourage_le_netEntropyEntourage]
+  exact netEntropyEntourage_empty
 
 lemma netEntropyInfEntourage_nonneg (T : X → X) (h : F.Nonempty) (U : SetRel X X) :
     0 ≤ netEntropyInfEntourage T F U := by

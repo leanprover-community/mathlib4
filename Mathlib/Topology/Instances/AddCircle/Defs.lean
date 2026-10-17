@@ -473,8 +473,8 @@ theorem coe_image_Ioc_eq : ((↑) : 𝕜 → AddCircle p) '' Ioc a (a + p) = uni
 /-- The image of the closed interval `[0, p]` under the quotient map `𝕜 → AddCircle p` is the
 entire space. -/
 @[simp]
-theorem coe_image_Icc_eq : ((↑) : 𝕜 → AddCircle p) '' Icc a (a + p) = univ :=
-  eq_top_mono (image_mono Ico_subset_Icc_self) <| coe_image_Ico_eq _ _
+theorem coe_image_Icc_eq : ((↑) : 𝕜 → AddCircle p) '' Icc a (a + p) = univ := by
+  grw [← Ico_subset_Icc_self, coe_image_Ico_eq]
 
 /-- If functions on AddCircle agree on the image of the interval `[a, a + p)` then they are equal -/
 lemma Ico_ext {α : Type*} {f g : AddCircle p → α} (a : 𝕜)
