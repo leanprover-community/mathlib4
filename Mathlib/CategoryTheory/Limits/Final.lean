@@ -237,7 +237,7 @@ def extendCocone : Cocone (F ⋙ G) ⥤ Cocone G where
   map f := { hom := f.hom }
 
 set_option backward.defeqAttrib.useBackward true in
-/-- Alternative equational lemma for `(extendCocone c).ι.app` in case a lift of the object
+/-- Alternative equation lemma for `(extendCocone c).ι.app` in case a lift of the object
 is given explicitly. -/
 lemma extendCocone_obj_ι_app' (c : Cocone (F ⋙ G)) {X : D} {Y : C} (f : X ⟶ F.obj Y) :
     (extendCocone.obj c).ι.app X = G.map f ≫ c.ι.app Y := by
@@ -595,7 +595,7 @@ def extendCone : Cone (F ⋙ G) ⥤ Cone G where
             · rw [← Functor.map_comp] } }
   map f := { hom := f.hom }
 
-/-- Alternative equational lemma for `(extendCone c).π.app` in case a lift of the object
+/-- Alternative equation lemma for `(extendCone c).π.app` in case a lift of the object
 is given explicitly. -/
 lemma extendCone_obj_π_app' (c : Cone (F ⋙ G)) {X : C} {Y : D} (f : F.obj X ⟶ Y) :
     (extendCone.obj c).π.app Y = c.π.app X ≫ G.map f := by

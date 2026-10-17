@@ -210,7 +210,7 @@ scans its type and value for names starting with `src`, and transports
 them. This includes auxiliary definitions like `src._match_1`
 
 In addition to transporting the “main” declaration, `to_additive` transports
-its equational lemmas and tags them as equational lemmas for the new declaration.
+its equation lemmas and tags them as equation lemmas for the new declaration.
 
 ### Structure fields and constructors
 
