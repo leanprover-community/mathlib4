@@ -6806,6 +6806,7 @@ public import Mathlib.RingTheory.DedekindDomain.AdicValuation.Ramification
 public import Mathlib.RingTheory.DedekindDomain.AdicValuation.Valuation
 public import Mathlib.RingTheory.DedekindDomain.Basic
 public import Mathlib.RingTheory.DedekindDomain.Different
+public import Mathlib.RingTheory.DedekindDomain.Divisor
 public import Mathlib.RingTheory.DedekindDomain.Dvr
 public import Mathlib.RingTheory.DedekindDomain.Factorization
 public import Mathlib.RingTheory.DedekindDomain.FiniteAdeleRing
