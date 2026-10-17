@@ -173,7 +173,7 @@ theorem dpow_comp {n : ℕ} (hn_fac : IsUnit ((n - 1).factorial : A)) (hnI : I ^
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- If `(n-1)!` is invertible in `A` and `I^n = 0`, then `I` admits a divided power structure.
-  Proposition 1.2.7 of [B74], part (ii). -/
+  Proposition 1.2.7 of [Berthelot-1974], part (ii). -/
 noncomputable def dividedPowers {n : ℕ} (hn_fac : IsUnit ((n - 1).factorial : A))
     (hnI : I ^ n = 0) : DividedPowers I where
   dpow            := dpow I

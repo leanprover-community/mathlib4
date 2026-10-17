@@ -162,7 +162,7 @@ end IsBridge
 section IsBond
 
 /-- A bond of a graph is a minimal nonempty edge-cut; see
-[Diestel, *Graph Theory*, Section 1.9][diestel2017]. -/
+[Diestel, *Graph Theory*, Section 1.9][diestel2025]. -/
 @[expose]
 def IsBond (G : Graph α β) (F : Set β) : Prop := Minimal (fun F ↦ G.IsEdgeCut F ∧ F.Nonempty) F
 

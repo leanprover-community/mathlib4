@@ -144,7 +144,7 @@ lemma comp_parallelComp_comp_copy {γ : Type*} [MeasurableSpace γ] {κ : Kernel
   · rw [h₀, zero_mul, setLIntegral_eq_zero_iff ht <| η.measurable_coe hs]
     rw [comp_apply' _ _ _ hs, lintegral_eq_zero_iff <| η.measurable_coe hs] at h₀
     filter_upwards [h₀] with x hx _ using hx
-  · /- In Example 11.25 of [gritz2020], the case where `((η ∘ₖ κ) a) s = 1` is not explicitly
+  · /- In Example 11.25 of [fritz2020], the case where `((η ∘ₖ κ) a) s = 1` is not explicitly
     treated. We prove it here by using the fact that the hypothesis implies that
     `((η ∘ₖ κ) a) sᶜ = 0`, and thus that the integral of `1 - (η b) s` over `κ a` is zero. -/
     rw [h₁, one_mul]

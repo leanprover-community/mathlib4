@@ -41,7 +41,7 @@ boundaries.
 
 ## References
 
-* [Robin Hartshorne, *Algebraic Geometry*][Har77]
+* [Robin Hartshorne, *Algebraic Geometry*][har77]
 
 
 -/
