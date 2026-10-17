@@ -258,6 +258,7 @@ public import Mathlib.Algebra.CharP.Basic
 public import Mathlib.Algebra.CharP.CharAndCard
 public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.CharP.Frobenius
+public import Mathlib.Algebra.CharP.HasseDeriv
 public import Mathlib.Algebra.CharP.IntermediateField
 public import Mathlib.Algebra.CharP.Invertible
 public import Mathlib.Algebra.CharP.Lemmas
