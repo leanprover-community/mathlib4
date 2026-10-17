@@ -104,6 +104,18 @@ theorem linearCombination_unique [Unique α] (l : α →₀ R) (v : α → M) :
     linearCombination R v l = l default • v default := by
   rw [← linearCombination_single, ← unique_single l]
 
+@[simp, push]
+theorem linearCombination_add (u v : α → M) :
+    linearCombination R (u + v) = linearCombination R u + linearCombination R v := by
+  ext
+  simp
+
+@[simp, push]
+theorem linearCombination_sum {ι : Type*} {s : Finset ι} (v : ι → α → M) :
+    linearCombination R (∑ i ∈ s, v i) = ∑ i ∈ s, linearCombination R (v i) := by
+  ext
+  simp
+
 theorem linearCombination_surjective (h : Function.Surjective v) :
     Function.Surjective (linearCombination R v) := by
   intro x
@@ -277,6 +289,12 @@ theorem linearCombination_onFinset {s : Finset α} {f : α → R} (g : α → M)
 
 variable [Module S M] [SMulCommClass R S M]
 
+@[simp, push]
+theorem linearCombination_smul' (r : S) (v : α → M) :
+    linearCombination R (r • v) = r • linearCombination R v := by
+  ext
+  simp
+
 variable (S) in
 /-- `Finsupp.bilinearCombination R S v f` is the linear combination of vectors in `v` with weights
 in `f`, as a bilinear map of `v` and `f`.
@@ -285,13 +303,16 @@ In the absence of `SMulCommClass R S M`, use `Finsupp.linearCombination`.
 See note [bundled maps over different rings] for why separate `R` and `S` semirings are used.
 -/
 def bilinearCombination : (α → M) →ₗ[S] (α →₀ R) →ₗ[R] M where
-  toFun v := linearCombination R v
-  map_add' u v := by ext; simp [Pi.add_apply, smul_add]
-  map_smul' r v := by ext; simp [smul_comm]
+  toFun := linearCombination R
+  map_add' := linearCombination_add R
+  map_smul' := linearCombination_smul' R
 
 @[simp]
-theorem bilinearCombination_apply :
-    bilinearCombination R S v = linearCombination R v :=
+theorem coe_bilinearCombination :
+    ⇑(bilinearCombination (α := α) (M := M) R S) = linearCombination R :=
+  rfl
+
+theorem bilinearCombination_apply : bilinearCombination R S v = linearCombination R v :=
   rfl
 
 end LinearCombination
@@ -524,6 +545,18 @@ lemma Submodule.span_eq_iUnion_nat (s : Set M) :
 section Ring
 
 variable {R M ι : Type*} [Ring R] [AddCommGroup M] [Module R M] (i : ι) (c : ι → R) (h₀ : c i = 0)
+
+variable (R) in
+theorem linearCombination_sub {α} (u v : α → M) :
+    linearCombination R (u - v) = linearCombination R u - linearCombination R v := by
+  ext
+  simp
+
+variable (R) in
+theorem linearCombination_neg {α} (v : α → M) :
+    linearCombination R (-v) = -linearCombination R v := by
+  ext
+  simp
 
 /-- Given `c : ι → R` and an index `i` such that `c i = 0`, this is the linear isomorphism sending
 the `j`-th standard basis vector to itself plus `c j` multiplied with the `i`-th standard basis
