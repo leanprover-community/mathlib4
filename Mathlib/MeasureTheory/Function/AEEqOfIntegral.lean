@@ -80,36 +80,9 @@ theorem ae_eq_zero_of_forall_dual_of_isSeparable [NormedAddCommGroup E] [NormedS
     {t : Set E} (ht : TopologicalSpace.IsSeparable t) {f : α → E}
     (hf : ∀ c : StrongDual 𝕜 E, (fun x => ⟪f x, c⟫) =ᵐ[μ] 0) (h't : ∀ᵐ x ∂μ, f x ∈ t) :
     f =ᵐ[μ] 0 := by
-  rcases ht with ⟨d, d_count, hd⟩
-  have : Encodable d := d_count.toEncodable
-  have : ∀ x : d, ∃ g : StrongDual 𝕜 E, ‖g‖ ≤ 1 ∧ g x = ‖(x : E)‖ :=
-    fun x => exists_dual_vector'' 𝕜 (x : E)
-  choose s hs using this
-  have A : ∀ a : E, a ∈ t → (∀ x, ⟪a, s x⟫ = (0 : 𝕜)) → a = 0 := by
-    intro a hat ha
-    contrapose! ha
-    have a_pos : 0 < ‖a‖ := by simp only [ha, norm_pos_iff, Ne, not_false_iff]
-    have a_mem : a ∈ closure d := hd hat
-    obtain ⟨x, hx⟩ : ∃ x : d, dist a x < ‖a‖ / 2 := by
-      rcases Metric.mem_closure_iff.1 a_mem (‖a‖ / 2) (half_pos a_pos) with ⟨x, h'x, hx⟩
-      exact ⟨⟨x, h'x⟩, hx⟩
-    use x
-    have I : ‖a‖ / 2 < ‖(x : E)‖ := by
-      have : ‖a‖ ≤ ‖(x : E)‖ + ‖a - x‖ := norm_le_insert' _ _
-      have : ‖a - x‖ < ‖a‖ / 2 := by rwa [dist_eq_norm] at hx
-      linarith
-    intro h
-    apply lt_irrefl ‖s x x‖
-    calc
-      ‖s x x‖ = ‖s x (x - a)‖ := by simp only [h, sub_zero, map_sub]
-      _ ≤ 1 * ‖(x : E) - a‖ := ContinuousLinearMap.le_of_opNorm_le _ (hs x).1 _
-      _ < ‖a‖ / 2 := by rw [one_mul]; rwa [dist_eq_norm'] at hx
-      _ < ‖(x : E)‖ := I
-      _ = ‖s x x‖ := by simp [(hs x).2]
-  have hfs : ∀ y : d, ∀ᵐ x ∂μ, ⟪f x, s y⟫ = (0 : 𝕜) := fun y => hf (s y)
-  have hf' : ∀ᵐ x ∂μ, ∀ y : d, ⟪f x, s y⟫ = (0 : 𝕜) := by rwa [ae_all_iff]
-  filter_upwards [hf', h't] with x hx h'x
-  exact A (f x) h'x hx
+  obtain ⟨φ, hφ⟩ := ht.exists_seq_strongDual_eq_zero_of_forall_apply_eq_zero 𝕜
+  filter_upwards [ae_all_iff.2 fun k ↦ hf (φ k), h't] with x hx h'x
+  exact hφ (f x) h'x hx
 
 theorem ae_eq_zero_of_forall_dual [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     [SecondCountableTopology E] {f : α → E}

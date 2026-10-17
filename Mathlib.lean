@@ -2126,6 +2126,7 @@ public import Mathlib.Analysis.InnerProductSpace.Projection.Minimal
 public import Mathlib.Analysis.InnerProductSpace.Projection.Reflection
 public import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
 public import Mathlib.Analysis.InnerProductSpace.Rayleigh
+public import Mathlib.Analysis.InnerProductSpace.Reflexive
 public import Mathlib.Analysis.InnerProductSpace.Reproducing
 public import Mathlib.Analysis.InnerProductSpace.Reproducing.Operations
 public import Mathlib.Analysis.InnerProductSpace.Semisimple
