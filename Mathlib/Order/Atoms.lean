@@ -91,6 +91,14 @@ theorem isAtom_iff_le_of_ge : IsAtom a ↔ a ≠ ⊥ ∧ ∀ b ≠ ⊥, b ≤ a 
 @[to_dual]
 lemma IsAtom.ne_bot (ha : IsAtom a) : a ≠ ⊥ := ha.1
 
+@[to_dual]
+theorem minimal_ne_bot_iff : Minimal (· ≠ ⊥) a ↔ IsAtom a := by
+  refine ⟨fun h ↦ ⟨h.prop, fun b hlt ↦ ?_⟩, fun h ↦ ⟨h.ne_bot, fun b hne hle ↦ ?_⟩⟩
+  · by_contra hne
+    exact hlt.not_ge <| h.le_of_le hne hlt.le
+  · by_contra hge
+    exact hne <| h.right b (lt_of_le_not_ge hle hge)
+
 @[to_dual (attr := simp)]
 theorem isCoatom_dual_iff_isAtom {a : α} : IsCoatom (OrderDual.toDual a) ↔ IsAtom a :=
   Iff.rfl
@@ -143,6 +151,14 @@ theorem bot_covBy_iff : ⊥ ⋖ a ↔ IsAtom a := by
 @[to_dual covBy_top] alias ⟨_, IsAtom.bot_covBy⟩ := bot_covBy_iff
 
 @[deprecated (since := "2026-09-01")] alias CovBy.is_atom := CovBy.isAtom
+
+@[to_dual]
+theorem minimal_bot_lt_iff : Minimal (⊥ < ·) a ↔ IsAtom a := by
+  simpa [bot_lt_iff_ne_bot] using minimal_ne_bot_iff
+
+@[to_dual]
+theorem minimal_not_isMin_iff : Minimal (¬IsMin ·) a ↔ IsAtom a := by
+  simpa using minimal_ne_bot_iff
 
 end PartialOrder
 
