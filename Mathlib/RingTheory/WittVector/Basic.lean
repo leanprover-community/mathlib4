@@ -147,7 +147,7 @@ elab "ghost_fun_tac " φ:term ", " fn:term : tactic => do
   simp only [wittZero, OfNat.ofNat, Zero.zero, wittOne, One.one,
     HAdd.hAdd, Add.add, HSub.hSub, Sub.sub, Neg.neg, HMul.hMul, Mul.mul, HPow.hPow, Pow.pow,
     wittNSMul, wittZSMul, HSMul.hSMul, SMul.smul]
-  simpa +unfoldPartialApp [WittVector.ghostFun, aeval_rename, aeval_bind₁,
+  simpa +unfoldPartialApp [WittVector.ghostFun, aeval_rename, comp_aeval_apply _ (aeval _),
     comp, uncurry, peval, eval] using! this
   )))
 
@@ -216,16 +216,18 @@ private def ghostEquiv' [Invertible (p : R)] : 𝕎 R ≃ (ℕ → R) where
   left_inv := by
     intro x
     ext n
-    have := bind₁_wittPolynomial_xInTermsOfW p R n
+    have := aeval_wittPolynomial_xInTermsOfW p R n
     apply_fun aeval x.coeff at this
-    simpa +unfoldPartialApp only [aeval_bind₁, aeval_X, ghostFun,
+    simpa +unfoldPartialApp only [comp_aeval_apply, aeval_X, ghostFun,
       aeval_wittPolynomial]
   right_inv := by
     intro x
     ext n
-    have := bind₁_xInTermsOfW_wittPolynomial p R n
+    have := aeval_xInTermsOfW_wittPolynomial p R n
     apply_fun aeval x at this
-    simpa only [aeval_bind₁, aeval_X, ghostFun, aeval_wittPolynomial]
+    simp_rw [ghostFun, aeval_wittPolynomial, coeff_mk]
+    simp_rw [comp_aeval_apply, aeval_wittPolynomial, aeval_X] at this
+    exact this
 
 variable [Fact p.Prime]
 
