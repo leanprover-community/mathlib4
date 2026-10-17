@@ -75,13 +75,13 @@ lemma equalizerIdempotent_one : equalizerIdempotent A B (1 : G) = 1 := by
 @[simp]
 lemma _root_.Ideal.Quotient.mk_equalizerIdempotent_eq_one_iff (Q : Ideal B) (g : G) :
     Ideal.Quotient.mk Q (equalizerIdempotent A B g) = 1 ↔ g ∈ Q.inertia G := by
-  refine ⟨fun he ↦ Q.mem_inertia.mpr fun b ↦ ?_, fun hg ↦ ?_⟩
-  · rw [← Ideal.Quotient.mk_eq_mk_iff_sub_mem]
-    simpa [he] using congrArg (Ideal.Quotient.mk Q) (equalizerIdempotent_mul_smul A B g b)
+  simp_rw [Q.mem_inertia, ← Ideal.Quotient.mk_eq_mk_iff_sub_mem]
+  refine ⟨fun he b ↦ ?_, fun hg ↦ ?_⟩
+  · simpa [he] using congr(Ideal.Quotient.mk Q $(equalizerIdempotent_mul_smul A B g b))
   · rw [← map_one (Ideal.Quotient.mk Q), ← equalizerIdempotent_one A B (G := G)]
-    simp only [equalizerIdempotent, ← Ideal.Quotient.mkₐ_eq_mk A, ← AlgHom.comp_apply]
+    simp_rw [equalizerIdempotent, ← Ideal.Quotient.mkₐ_eq_mk A, ← AlgHom.comp_apply]
     congr 1
-    ext b <;> simp [Ideal.Quotient.mk_eq_mk_iff_sub_mem, Q.mem_inertia.mp hg]
+    ext <;> simp [hg]
 
 open Classical in
 lemma _root_.Ideal.Quotient.mk_equalizerIdempotent (Q : Ideal B) [Q.IsPrime] (g : G) :
