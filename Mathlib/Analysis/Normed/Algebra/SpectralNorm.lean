@@ -25,6 +25,31 @@ section matrices
 
 open scoped Matrix.Norms.Operator
 
+open scoped Matrix.Norms.Operator in
+theorem foobar {α β γ κ : Type*} [SeminormedAddCommGroup γ] [IsUltrametricDist γ]
+    [Fintype α] [Fintype β]
+    (M : κ → Matrix α β γ) (s : Finset κ) (B : ℝ) (hB : 0 ≤ B) (hM : ∀ i ∈ s, ‖M i‖ ≤ B) :
+    ‖∑ k ∈ s, M k‖ ≤ Fintype.card β * B := by
+  let B : NNReal := ⟨B, hB⟩
+  simp_rw [Matrix.linfty_opNorm_def]
+  have key i j : ‖(∑ k ∈ s, M k) i j‖₊ ≤ B := by
+    grw [Matrix.sum_apply]
+    suffices ∀ k ∈ s, ‖M k i j‖₊ ≤ B from
+      IsUltrametricDist.norm_sum_le_of_forall_le_of_nonneg hB this
+    intro k hk
+    have hM : ‖M k‖₊ ≤ B := hM k hk
+    refine .trans ?_ hM
+    rw [Matrix.linfty_opNNNorm_def]
+    refine Finset.le_sup_of_le (Finset.mem_univ i) ?_
+    exact Finset.single_le_sum (f := fun j ↦ ‖M k i j‖₊) (fun _ _ ↦ zero_le) (Finset.mem_univ j)
+  grw [key, Finset.sum_const, Finset.card_univ, nsmul_eq_mul, Finset.sup_const_le]
+  simp
+  rfl
+
+theorem foo {α β γ : Type*} [SeminormedAddCommGroup γ] [IsUltrametricDist γ] [Fintype α] [Fintype β]
+    (M N : Matrix α β γ) : ‖M + N‖ ≤ Fintype.card β * max ‖M‖ ‖N‖ := by
+  simpa using foobar (Bool.rec N M) Finset.univ (max ‖M‖ ‖N‖) (by simp) (by simp)
+
 theorem Matrix.gelfandRadius_mul_comm {R m n : Type*}
     [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [NormedCommRing R]
     (A : Matrix m n R) (B : Matrix n m R) : gelfandRadius (A * B) = gelfandRadius (B * A) := by
@@ -368,43 +393,6 @@ noncomputable def spectralNorm.normedAlgebra' (K E L : Type*) [NormedField K]
     apply le_of_eq
     simp [Algebra.smul_def]
     simp [NormedAlgebra.norm_eq_spectralNorm K, spectralNorm_algebraMap]
-
-open scoped Matrix.Norms.Operator in
-theorem foo {α β γ : Type*} [SeminormedAddCommGroup γ] [IsUltrametricDist γ] [Fintype α] [Fintype β]
-    (M N : Matrix α β γ) : ‖M + N‖ ≤ Fintype.card β * max ‖M‖ ‖N‖ := by
-  simp_rw [Matrix.linfty_opNorm_def]
-  set RM := Finset.univ.sup fun i ↦ ∑ j, ‖M i j‖₊
-  set RN := Finset.univ.sup fun i ↦ ∑ j, ‖N i j‖₊
-  have key i j : ‖(M + N) i j‖₊ ≤ max RM RN := by
-    grw [Matrix.add_apply, IsUltrametricDist.nnnorm_add_le_max]
-    apply max_le_max
-    · exact Finset.le_sup_of_le (Finset.mem_univ i)
-        (Finset.single_le_sum (fun j hj ↦ zero_le (a := ‖M i j‖₊)) (Finset.mem_univ j))
-    · exact Finset.le_sup_of_le (Finset.mem_univ i)
-        (Finset.single_le_sum (fun j hj ↦ zero_le (a := ‖N i j‖₊)) (Finset.mem_univ j))
-  grw [key, Finset.sum_const, Finset.card_univ, nsmul_eq_mul, Finset.sup_const_le]
-  simp
-
-open scoped Matrix.Norms.Operator in
-theorem foobar {α β γ κ : Type*} [SeminormedAddCommGroup γ] [IsUltrametricDist γ]
-    [Fintype α] [Fintype β]
-    (M : κ → Matrix α β γ) (s : Finset κ) (B : ℝ) (hB : 0 ≤ B) (hM : ∀ i ∈ s, ‖M i‖ ≤ B) :
-    ‖∑ k ∈ s, M k‖ ≤ Fintype.card β * B := by
-  let B : NNReal := ⟨B, hB⟩
-  simp_rw [Matrix.linfty_opNorm_def]
-  have key i j : ‖(∑ k ∈ s, M k) i j‖₊ ≤ B := by
-    grw [Matrix.sum_apply]
-    suffices ∀ k ∈ s, ‖M k i j‖₊ ≤ B from
-      IsUltrametricDist.norm_sum_le_of_forall_le_of_nonneg hB this
-    intro k hk
-    have hM : ‖M k‖₊ ≤ B := hM k hk
-    refine .trans ?_ hM
-    rw [Matrix.linfty_opNNNorm_def]
-    refine Finset.le_sup_of_le (Finset.mem_univ i) ?_
-    exact Finset.single_le_sum (f := fun j ↦ ‖M k i j‖₊) (fun _ _ ↦ zero_le) (Finset.mem_univ j)
-  grw [key, Finset.sum_const, Finset.card_univ, nsmul_eq_mul, Finset.sup_const_le]
-  simp
-  rfl
 
 open scoped Matrix.Norms.Operator Topology in
 open Filter in
