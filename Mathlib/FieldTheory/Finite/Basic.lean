@@ -761,7 +761,7 @@ theorem Subfield.splits_bot : Splits (X ^ p - X : (⊥ : Subfield F)[X]) :=
 theorem Subfield.mem_bot_iff_pow_eq_self {x : F} : x ∈ (⊥ : Subfield F) ↔ x ^ p = x := by
   rw [← mem_botFinset, ← mem_val, ← roots_X_pow_char_sub_X, mem_roots]
   · simp [sub_eq_zero]
-  · exact FiniteField.X_pow_card_sub_X_ne_zero F (Nat.Prime.one_lt Fact.out)
+  · exact X_pow_sub_X_ne_zero (Nat.Prime.one_lt Fact.out)
 
 end prime_subfield
 
