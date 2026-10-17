@@ -5,7 +5,6 @@ Authors: Robert Y. Lewis, Heather Macbeth
 -/
 module
 
-public import Mathlib.Data.Nat.Cast.WithTop
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
 public import Mathlib.RingTheory.WittVector.DiscreteValuationRing
 
@@ -131,7 +130,7 @@ theorem succNthVal_spec' (n : ℕ) (a₁ a₂ : 𝕎 k) (bs : Fin (n + 1) → k)
     Polynomial.eval_pow, succNthDefiningPoly, Polynomial.eval_mul, Polynomial.eval_add,
     Polynomial.eval_sub, Polynomial.IsRoot.def]
     at this
-  convert! this using 1
+  convert this using 1
   ring
 
 end IsAlgClosed
@@ -238,7 +237,7 @@ theorem exists_frobenius_solution_fractionRing_aux (m n : ℕ) (r' q' : 𝕎 k) 
   simp_rw [← mul_div_assoc, div_eq_iff hq'', mul_comm (algebraMap _ _ b), ← map_mul, key]
 
 theorem exists_frobenius_solution_fractionRing {a : FractionRing (𝕎 k)} (ha : a ≠ 0) :
-    ∃ᵉ (b ≠ 0) (m : ℤ), φ b * a = (p : FractionRing (𝕎 k)) ^ m * b := by
+    ∃ b ≠ 0, ∃ m : ℤ, φ b * a = (p : FractionRing (𝕎 k)) ^ m * b := by
   revert ha
   refine Localization.induction_on a ?_
   rintro ⟨r, q, hq⟩ hrq

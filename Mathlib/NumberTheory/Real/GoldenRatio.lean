@@ -5,9 +5,7 @@ Authors: Anatole Dedecker, Alexey Soloyev, Junyan Xu, Kamila Szewczyk
 -/
 module
 
-public import Mathlib.Algebra.EuclideanDomain.Basic
 public import Mathlib.Algebra.LinearRecurrence
-public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Data.Int.Fib.Basic
 public import Mathlib.NumberTheory.Real.Irrational
 public import Mathlib.Tactic.NormNum.NatFib
@@ -88,7 +86,7 @@ theorem goldenConj_sq : ψ ^ 2 = ψ + 1 := by
   grind
 
 theorem goldenRatio_pos : 0 < φ :=
-  mul_pos (by apply add_pos <;> norm_num) <| inv_pos.2 zero_lt_two
+  mul_pos (by apply add_pos <;> simp) <| inv_pos.2 zero_lt_two
 
 theorem goldenRatio_ne_zero : φ ≠ 0 :=
   ne_of_gt goldenRatio_pos
@@ -120,7 +118,7 @@ theorem neg_one_lt_goldenConj : -1 < ψ := by
 theorem goldenRatio_irrational : Irrational φ := by
   have := Nat.Prime.irrational_sqrt (show Nat.Prime 5 by norm_num)
   have := this.ratCast_add 1
-  convert! this.ratCast_mul (show (0.5 : ℚ) ≠ 0 by norm_num)
+  convert this.ratCast_mul (show (0.5 : ℚ) ≠ 0 by norm_num)
   simp
   ring
 
@@ -128,7 +126,7 @@ theorem goldenRatio_irrational : Irrational φ := by
 theorem goldenConj_irrational : Irrational ψ := by
   have := Nat.Prime.irrational_sqrt (show Nat.Prime 5 by norm_num)
   have := this.ratCast_sub 1
-  convert! this.ratCast_mul (show (0.5 : ℚ) ≠ 0 by norm_num)
+  convert this.ratCast_mul (show (0.5 : ℚ) ≠ 0 by norm_num)
   simp
   ring
 
@@ -212,7 +210,7 @@ theorem fib_succ_sub_goldenRatio_mul_fib (n : ℕ) : Nat.fib (n + 1) - φ * Nat.
   repeat rw [coe_fib_eq]
   rw [mul_div, div_sub_div_same, mul_sub, ← pow_succ']
   ring_nf
-  have nz : √5 ≠ 0 := by norm_num
+  have nz : √5 ≠ 0 := by simp
   rw [← (mul_inv_cancel₀ nz).symm, one_mul]
 
 /-- Relationship between the Fibonacci Sequence, the conjugate of the golden ratio,

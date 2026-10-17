@@ -6,8 +6,8 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.CategoryTheory.EffectiveEpi.Comp
-public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 /-!
 
 # Functors preserving effective epimorphisms
@@ -263,7 +263,6 @@ instance (F : C ⥤ D) [ReflectsFiniteEffectiveEpiFamilies F] : ReflectsEffectiv
     have := F.finite_effectiveEpiFamily_of_map _ _ h
     infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance (F : C ⥤ D) [IsEquivalence F] : F.ReflectsEffectiveEpiFamilies where
   reflects {α B} X π _ := by
     let i : (a : α) → X a ⟶ (inv F).obj (F.obj (X a)) := fun a ↦ (asEquivalence F).unit.app _
