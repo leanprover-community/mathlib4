@@ -127,7 +127,15 @@ theorem degree_divX_lt (hp0 : p ≠ 0) : (divX p).degree < p.degree := by
         rw [degree_add_eq_left_of_degree_lt this]; exact degree_lt_degree_mul_X hXp0
     _ = degree p := congr_arg _ (divX_mul_X_add _)
 
-/-- An induction principle for polynomials, valued in Sort* instead of Prop. -/
+/-- A property holds for all polynomials over a semiring `R` if it holds for
+* `0`,
+* `p + a`, with `a ∈ R`, `p ∈ R[X]`,
+* `p * X`, with `p ∈ R[X]`,
+
+with appropriate restrictions on each term.
+
+See `horner_induction` for a variant with a constant base case.
+-/
 @[elab_as_elim]
 noncomputable def recOnHorner {M : R[X] → Sort*} (p : R[X]) (M0 : M 0)
     (MC : ∀ p a, coeff p 0 = 0 → a ≠ 0 → M p → M (p + C a))
@@ -148,8 +156,26 @@ noncomputable def recOnHorner {M : R[X] → Sort*} (p : R[X]) (M0 : M 0)
           else MX (divX p) hpX0 (recOnHorner _ M0 MC MX))
 termination_by p.degree
 
-/-- A property holds for all polynomials of positive `degree` with coefficients in a semiring `R`
-if it holds for
+/-- A property holds for all polynomials over a semiring `R` if it holds for
+* `a`, with `a ∈ R`,
+* `p + a`, with `a ∈ R`, `p ∈ R[X]`,
+* `p * X`, with `p ∈ R[X]`,
+
+with appropriate restrictions on each term.
+
+See `recOnHorner` for a variant with a zero base case.
+-/
+@[elab_as_elim]
+theorem horner_induction {motive : R[X] → Prop}
+    (hC : ∀ a, motive (C a))
+    (ha : ∀ p a, (hp : p.coeff 0 = 0) → (hdeg : 0 < p.natDegree) → (ha : a ≠ 0) →
+      (ih : motive p) → motive (p + C a))
+    (hX : ∀ p, (hp : p ≠ 0) → (ih : motive p) → motive (p * X)) (p : R[X]) : motive p :=
+  recOnHorner p (by simpa using hC 0) (by grind [Polynomial.eq_C_of_natDegree_eq_zero]) hX
+
+-- TODO : better names for next two lemmas, and fix their statements to work with `induction`
+
+/-- A property holds for all polynomials of positive `degree` over a semiring `R` if it holds for
 * `a * X`, with `a ∈ R`,
 * `p * X`, with `p ∈ R[X]`,
 * `p + a`, with `a ∈ R`, `p ∈ R[X]`,
@@ -176,8 +202,7 @@ theorem degree_pos_induction_on {P : R[X] → Prop} (p : R[X]) (h0 : 0 < degree 
         exact hC fun h : coeff p 0 = 0 => by simp [h] at h0')
     h0
 
-/-- A property holds for all polynomials of non-zero `natDegree` with coefficients in a
-semiring `R` if it holds for
+/-- A property holds for all polynomials of non-zero `natDegree` over a semiring `R` if it holds for
 * `p + a`, with `a ∈ R`, `p ∈ R[X]`,
 * `p + q`, with `p, q ∈ R[X]`,
 * monomials with nonzero coefficient and non-zero exponent,
