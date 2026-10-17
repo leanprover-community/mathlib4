@@ -52,9 +52,9 @@ theorem prod_isUnit_iff {M : Type*} [CommMonoid M] {L : List M} :
     exact fun m' h' ↦ Or.elim (eq_or_mem_of_mem_cons h') (fun H => H.substr h.1) fun H => ih h.2 _ H
 
 @[to_additive (attr := simp)]
-theorem prod_rotate {M : Type*} [CommMonoid M] {l : List M} {n : ℕ} :
-    (l.rotate n).prod = l.prod := by
-  exact List.Perm.prod_eq (List.rotate_perm l n)
+theorem prod_rotate {M : Type*} [CommMonoid M] (l : List M) (n : ℕ) :
+    (l.rotate n).prod = l.prod :=
+  l.rotate_perm n |>.prod_eq
 
 /-- If elements of a list commute with each other, then their product does not
 depend on the order of elements. -/
@@ -66,9 +66,9 @@ lemma Perm.prod_eq' (h : l₁ ~ l₂) (hc : l₁.Pairwise Commute) : l₁.prod =
   rw [← mul_assoc, ← mul_assoc, h]
 
 @[to_additive]
-theorem prod_rotate' {l : List M} {n : ℕ} (hc : l.Pairwise Commute) :
-    (l.rotate n).prod = l.prod := by
-  exact (List.Perm.prod_eq' (List.rotate_perm l n).symm hc).symm
+theorem prod_rotate_of_pairwise_commute {l : List M} (n : ℕ) (hc : l.Pairwise Commute) :
+    (l.rotate n).prod = l.prod :=
+  l.rotate_perm n |>.symm hc |>.prod_eq'.symm
 
 end Monoid
 
