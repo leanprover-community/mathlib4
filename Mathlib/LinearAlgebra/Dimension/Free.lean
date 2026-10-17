@@ -58,7 +58,7 @@ This is a simpler version of `lift_rank_mul_lift_rank` with `K` and `A` in the s
 theorem rank_mul_rank (A : Type v) [AddCommMonoid A]
     [Module K A] [Module F A] [IsScalarTower F K A] [Module.Free K A] :
     Module.rank F K * Module.rank K A = Module.rank F A := by
-  convert! lift_rank_mul_lift_rank F K A <;> rw [lift_id]
+  convert lift_rank_mul_lift_rank F K A <;> rw [lift_id]
 
 /-- Tower law: if `A` is a `K`-module and `K` is an extension of `F` then
 $\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$.
@@ -354,8 +354,6 @@ noncomputable def basisUnique (ι : Type*) [Unique ι]
 theorem Basis.nonempty_unique_index_of_finrank_eq_one
     {ι : Type*} (b : Module.Basis ι R M) (d1 : Module.finrank R M = 1) :
     Nonempty (Unique ι) := by
-  -- why isn't this an instance?
-  have : Nontrivial R := nontrivial_of_invariantBasisNumber R
   have : Module.Finite R M :=
     Module.finite_of_finrank_pos (Nat.lt_of_sub_eq_succ d1)
   have : Finite ι := Module.Finite.finite_basis b

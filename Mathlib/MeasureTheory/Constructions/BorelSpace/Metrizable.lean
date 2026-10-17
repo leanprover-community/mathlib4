@@ -7,8 +7,8 @@ module
 
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
-public import Mathlib.Topology.Metrizable.Real
 public import Mathlib.Topology.IndicatorConstPointwise
+public import Mathlib.Topology.Metrizable.Real
 
 /-!
 # Measurable functions in (pseudo-)metrizable Borel spaces
