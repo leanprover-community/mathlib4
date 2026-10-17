@@ -251,11 +251,10 @@ def Strand.toPenroseVar (s : Strand) : PenroseVar :=
 
 open ProofWidgets Penrose DiagramBuilderM Lean.Server
 
-open scoped Jsx in
 /-- Add the variable `v` with the type `tp` to the substance program. -/
 def addPenroseVar (tp : String) (v : PenroseVar) :
     DiagramBuilderM Unit := do
-  let h := <InteractiveCode fmt={← Widget.ppExprTagged v.e} />
+  let h := jsx%{<InteractiveCode fmt={← Widget.ppExprTagged v.e} />}
   addEmbed (toString v) tp h
 
 /-- Add constructor `tp v := nm (vs)` to the substance program. -/
@@ -264,7 +263,6 @@ def addConstructor (tp : String) (v : PenroseVar) (nm : String) (vs : List Penro
   let vs' := ", ".intercalate (vs.map (fun v => toString v))
   addInstruction s!"{tp} {v} := {nm} ({vs'})"
 
-open scoped Jsx in
 /-- Construct a string diagram from a Penrose `sub`stance program and expressions `embeds` to
 display as labels in the diagram. -/
 def mkStringDiagram (nodes : List (List Node)) (strands : List (List Strand)) :
@@ -324,7 +322,6 @@ def mkKind (e : Expr) : MetaM Kind := do
     | some _ => return .monoidal
     | none => return .none
 
-open scoped Jsx in
 /-- Given a 2-morphism, return a string diagram. Otherwise `none`. -/
 def stringM? (e : Expr) : MetaM (Option Html) := do
   let e ← instantiateMVars e
@@ -349,23 +346,22 @@ def stringM? (e : Expr) : MetaM (Option Html) := do
       trace[string_diagram] "Penrose substance: \n{(← get).sub}"
       match ← DiagramBuilderM.buildDiagram dsl sty with
       | some html => return html
-      | none => return <span>No non-structural morphisms found.</span>
+      | none => return jsx%{<span>No non-structural morphisms found.</span>}
 
-open scoped Jsx in
 /-- Help function for displaying two string diagrams in an equality. -/
 def mkEqHtml (lhs rhs : Html) : Html :=
-  <div className="flex">
+  jsx%{<div className="flex">
     <div className="w-50">
-      <details «open»={true}>
-        <summary className="mv2 pointer">String diagram for LHS</summary> {lhs}
+      <details open={true}>
+        <summary className="mv2 pointer">String diagram for LHS</summary>{lhs}
       </details>
     </div>
     <div className="w-50">
-      <details «open»={true}>
-        <summary className="mv2 pointer">String diagram for RHS</summary> {rhs}
+      <details open={true}>
+        <summary className="mv2 pointer">String diagram for RHS</summary>{rhs}
       </details>
     </div>
-  </div>
+  </div>}
 
 /-- Given an equality between 2-morphisms, return a string diagram of the LHS and RHS.
 Otherwise `none`. -/
@@ -397,7 +393,6 @@ def stringPresenter : ExprPresenter where
       return html
     throwError "Couldn't find a 2-morphism to display a string diagram."
 
-open scoped Jsx in
 /-- The RPC method for displaying string diagrams. -/
 @[server_rpc_method]
 def rpc (props : PanelWidgetProps) : RequestM (RequestTask Html) :=
@@ -411,7 +406,7 @@ def rpc (props : PanelWidgetProps) : RequestM (RequestTask Html) :=
           let type ← g.mvarId.getType
           stringEqM? type)
     match html with
-    | none => return <span>No String Diagram.</span>
+    | none => return jsx%{<span>No String Diagram.</span>}
     | some inner => return inner
 
 end StringDiagram
