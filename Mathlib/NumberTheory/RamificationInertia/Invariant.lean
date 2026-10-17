@@ -5,7 +5,6 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Subalgebra.Operations
 public import Mathlib.GroupTheory.GroupAction.Quotient
 public import Mathlib.LinearAlgebra.TensorProduct.Lift
 public import Mathlib.RingTheory.Ideal.Pointwise
@@ -23,59 +22,15 @@ from the base ring. The proof uses a separability tensor, a multiplier on which 
 subgroup acts trivially, and a sum over left cosets of the inertia subgroup.
 
 The reusable ingredients are `Algebra.FormallyUnramified.equalizerIdempotent`,
-`Algebra.FormallyUnramified.linearize`, `Subgroup.relativeTrace`, and
-`Subgroup.inertiaIdempotent`. Relative trace is unnormalized and does not require normality
-of the subgroup; the inertia idempotent only requires that subgroup to be finite.
+`Algebra.FormallyUnramified.linearize`, and `Subgroup.inertiaIdempotent`.
+The inertia idempotent only requires the subgroup to be finite; the coset sum does not require
+normality of the subgroup.
 
 The identity `Subgroup.linearize_descentTrace` explains the multiplier: linearizing
 `Subgroup.descentTrace` gives multiplication by `Subgroup.descentMultiplier`.
 -/
 
 @[expose] public section
-
-namespace Subgroup
-
-section RelativeTrace
-
-variable {G M : Type*} [Group G] [AddCommMonoid M] [DistribMulAction G M]
-  (H : Subgroup G) [Fintype (G ⧸ H)]
-
-/-- The unnormalized relative trace from subgroup-fixed points to group-fixed points. -/
-noncomputable def relativeTrace : FixedPoints.addSubmonoid H M →+ FixedPoints.addSubmonoid G M where
-  toFun x := ⟨∑ q : G ⧸ H, q.out • x, fun g ↦ by
-    rw [Finset.smul_sum]
-    refine Fintype.sum_equiv (MulAction.toPerm g) _ _ fun q ↦ ?_
-    obtain ⟨h, hh⟩ := QuotientGroup.mk_out_eq_mul H (g * q.out)
-    rw [← smul_eq_mul, MulAction.Quotient.mk_smul_out] at hh
-    change g • (q.out • (x : M)) = (g • q).out • (x : M)
-    simp only [hh, smul_eq_mul, mul_smul, show (h : G) • (x : M) = x from x.property h]⟩
-  map_zero' := Subtype.ext (by simp)
-  map_add' x y := Subtype.ext (by simp [smul_add, Finset.sum_add_distrib])
-
-lemma relativeTrace_apply (x : FixedPoints.addSubmonoid H M) :
-    (H.relativeTrace x : M) = ∑ q : G ⧸ H, q.out • (x : M) := rfl
-
-lemma relativeTrace_mem (P : AddSubmonoid M)
-    (hP : ∀ (g : G) x, x ∈ P → g • x ∈ P)
-    (x : FixedPoints.addSubmonoid H M) (hx : (x : M) ∈ P) :
-    (H.relativeTrace x : M) ∈ P :=
-  P.sum_mem fun q _ ↦ hP q.out _ hx
-
-noncomputable def relativeTraceLinearMap {A B : Type*} [CommSemiring A] [Semiring B]
-    [Algebra A B] [MulSemiringAction G B] [SMulCommClass G A B] :
-    FixedPoints.subalgebra A B H →ₗ[A] FixedPoints.subalgebra A B G where
-  __ := H.relativeTrace (M := B)
-  map_smul' a x := Subtype.ext <|
-    (Finset.sum_congr rfl fun q _ ↦ smul_comm q.out a (x : B)).trans Finset.smul_sum.symm
-
-lemma relativeTraceLinearMap_apply {A B : Type*} [CommSemiring A] [Semiring B]
-    [Algebra A B] [MulSemiringAction G B] [SMulCommClass G A B]
-    (x : FixedPoints.subalgebra A B H) :
-    (H.relativeTraceLinearMap (A := A) (B := B) x : B) = ∑ q : G ⧸ H, q.out • (x : B) := rfl
-
-end RelativeTrace
-
-end Subgroup
 
 open scoped Pointwise TensorProduct
 
@@ -296,13 +251,20 @@ private lemma descentMultiplier_mem_colon [Algebra.IsInvariant A B G]
   set J := (I.comap (algebraMap A B)).map (algebraMap A B)
   have hT : I.restrictScalars A ≤ (J.restrictScalars A).comap (H.descentTrace A B) := by
     intro x hx
-    let y : FixedPoints.addSubmonoid H B :=
-      ⟨H.inertiaIdempotent A B * x, fun h ↦ H.smul_inertiaIdempotent_mul A B h x⟩
-    have hy : (H.relativeTrace y : B) ∈ I := H.relativeTrace_mem I.toAddSubmonoid
-      (fun g x hx ↦ hI g ▸ Ideal.smul_mem_pointwise_smul g x I hx) y (I.mul_mem_left _ hx)
-    obtain ⟨a, ha⟩ := Algebra.IsInvariant.isInvariant (A := A) _ (H.relativeTrace y).property
-    have : algebraMap A B a ∈ J := Ideal.mem_map_of_mem _ (by simpa [ha] using hy)
-    simpa [Subgroup.descentTrace, Subgroup.relativeTrace_apply, y, ha] using this
+    let y := H.inertiaIdempotent A B * x
+    have hy (g : G) : g • (∑ q : G ⧸ H, q.out • y) = ∑ q : G ⧸ H, q.out • y := by
+      rw [Finset.smul_sum]
+      refine Fintype.sum_equiv (MulAction.toPerm g) _ _ fun q ↦ ?_
+      obtain ⟨h, hh⟩ := QuotientGroup.mk_out_eq_mul H (g * q.out)
+      rw [← smul_eq_mul, MulAction.Quotient.mk_smul_out] at hh
+      change g • (q.out • y) = (g • q).out • y
+      simp only [hh, smul_eq_mul, mul_smul,
+        show (h : G) • y = y from H.smul_inertiaIdempotent_mul A B h x]
+    have hyI : (∑ q : G ⧸ H, q.out • y) ∈ I := I.sum_mem fun q _ ↦
+      hI q.out ▸ Ideal.smul_mem_pointwise_smul q.out y I (I.mul_mem_left _ hx)
+    obtain ⟨a, ha⟩ := Algebra.IsInvariant.isInvariant (A := A) _ hy
+    have : algebraMap A B a ∈ J := Ideal.mem_map_of_mem _ (by simpa [ha] using hyI)
+    simpa [Subgroup.descentTrace, y, ha] using this
   simpa [Submodule.mem_colon, IsConcreteLE.le_iff, Subgroup.linearize_descentTrace] using
     le_comap_linearize (H.descentTrace A B) I J hT
 
