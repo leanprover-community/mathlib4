@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Data.Finset.BooleanAlgebra
 public import Mathlib.Data.Finset.Image
 public import Mathlib.Order.Category.PartOrd
 
@@ -24,6 +25,33 @@ universe v u
 
 open CategoryTheory
 
+-- to be moved
+namespace Finset
+
+variable {X : Type*}
+
+lemma compl_singleton_ssubset_univ [Fintype X] [DecidableEq X] (x : X) :
+    {x}ᶜ ⊂ Finset.univ := by
+  rw [lt_iff_le_and_ne]
+  aesop
+
+lemma compl_singleton_ssubset_iff [Fintype X] [DecidableEq X] (s : Finset X) (x : X) :
+    {x}ᶜ ⊂ s ↔ s = .univ := by
+  simp [ssubset_iff]
+
+lemma compl_singleton_subset_iff [Fintype X] [DecidableEq X] (s : Finset X) (x : X) :
+    {x}ᶜ ⊆ s ↔ s = {x}ᶜ ∨ s = .univ := by
+  rw [← s.compl_singleton_ssubset_iff x, le_iff_eq_or_lt']
+
+lemma eq_compl_singleton_iff [Fintype X] [DecidableEq X] (s : Finset X) (x : X) :
+    s = {x}ᶜ ↔ s < ⊤ ∧ s ∪ {x} = .univ := by
+  refine ⟨by rintro rfl; simp [compl_singleton_ssubset_iff], fun ⟨h₁, h₂⟩ ↦ ?_⟩
+  replace h₂ (z : X) : z = x ∨ z ∈ s := by
+    simpa [← h₂] using Finset.mem_univ z
+  grind [mem_compl]
+
+end Finset
+
 namespace PartialOrder
 
 /-- Given a partially ordered type `X`, this is the type of nonempty finite
@@ -33,7 +61,7 @@ structure NonemptyFiniteChains (X : Type u) [PartialOrder X] where
   /-- a finite subset -/
   finset : Finset X
   nonempty : finset.Nonempty := by simp
-  comparable (a b : finset) : a ≤ b ∨ b ≤ a
+  comparable (a b : finset) : a ≤ b ∨ b ≤ a := by apply le_total
 
 namespace NonemptyFiniteChains
 
@@ -80,6 +108,45 @@ noncomputable def orderHomMap (f : X →o Y) :
     obtain ⟨x, hx, rfl⟩ := hx
     exact ⟨x, h hx, rfl⟩
 
+section
+
+variable {Z : Type*} [LinearOrder Z] [Fintype Z]
+
+instance [Nonempty Z] : OrderTop (NonemptyFiniteChains Z) where
+  top :=
+    { finset := .univ
+      comparable := le_total }
+  le_top _ := by simp
+
+@[simp] lemma coe_top [Nonempty Z] : (⊤ : NonemptyFiniteChains Z).1 = Finset.univ := rfl
+
+variable (x₀ : Z) [Nontrivial Z]
+
+@[simps]
+def complSingleton : NonemptyFiniteChains Z where
+  finset := {x₀}ᶜ
+  nonempty := ⟨(exists_ne x₀).choose, by simpa using (exists_ne x₀).choose_spec⟩
+  comparable := le_total
+
+--lemma complSingleton_le_iff {s : NonemptyFiniteChains Z} :
+--    complSingleton x₀ ≤ s ↔ s = complSingleton x₀ ∨ s = ⊤ := by
+--  simp [NonemptyFiniteChains.ext_iff]
+
+--lemma complSingleton_lt_top :
+--    complSingleton x₀ < ⊤ := by
+--  simp
+
+--lemma complSingleton_lt_iff {s : NonemptyFiniteChains Z} :
+--    complSingleton x₀ < s ↔ s = ⊤ := by
+--  simp [NonemptyFiniteChains.ext_iff]
+
+--lemma eq_complSingleton_iff (s : NonemptyFiniteChains Z) :
+--    s = complSingleton x₀ ↔ s < ⊤ ∧ s.finset ∪ {x₀} = ⊤ := by
+--  simp [NonemptyFiniteChains.ext_iff, Finset.eq_compl_singleton_iff]
+
+
+end
+
 end NonemptyFiniteChains
 
 end PartialOrder
@@ -87,7 +154,7 @@ end PartialOrder
 open PartialOrder in
 /-- The functor `PartOrd ⥤ PartOrd` which sends a partially ordered type `X`
 to `NonemptyFiniteChains X`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def PartOrd.nonemptyFiniteChainsFunctor : PartOrd.{u} ⥤ PartOrd.{u} where
   obj X := ↧(NonemptyFiniteChains X)
   map f := PartOrd.ofHom (NonemptyFiniteChains.orderHomMap f.hom)
