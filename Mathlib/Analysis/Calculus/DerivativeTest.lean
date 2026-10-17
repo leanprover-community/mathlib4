@@ -411,4 +411,23 @@ theorem isLocalMax_of_deriv_deriv_neg (hf : deriv (deriv f) x₀ < 0) (hd : deri
     (hc : ContinuousAt f x₀) : IsLocalMax f x₀ := by
   simpa using isLocalMin_of_deriv_deriv_pos (by simpa) (by simpa) hc.neg |>.neg
 
+/-- If `f` is continuous at a local maximum `x₀`, then
+`deriv (deriv f) x₀` is nonpositive. -/
+theorem IsLocalMax.deriv_deriv_nonpos
+    (hx : IsLocalMax f x₀)
+    (hc : ContinuousAt f x₀) :
+    deriv (deriv f) x₀ ≤ 0 := by
+  by_contra! h
+  have hmin : IsLocalMin f x₀ :=
+    isLocalMin_of_deriv_deriv_pos h hx.deriv_eq_zero hc
+  simp [eventuallyEq_of_isMinFilter_of_isMaxFilter hmin hx |>.deriv.deriv_eq] at h
+
+/-- If `f` is continuous at a local minimum `x₀`, then
+`deriv (deriv f) x₀` is nonnegative. -/
+theorem IsLocalMin.deriv_deriv_nonneg
+    (hx : IsLocalMin f x₀)
+    (hc : ContinuousAt f x₀) :
+    0 ≤ deriv (deriv f) x₀ := by
+  simpa using hx.neg.deriv_deriv_nonpos hc.neg
+
 end SecondDeriv
