@@ -518,7 +518,7 @@ theorem exists_isCycle_of_card_le [Finite V] [Nonempty V]
 theorem isTree_iff_isAcyclic_and_ncard_edgeSet_add_one_eq_card [Finite V] :
     G.IsTree ↔ G.IsAcyclic ∧ G.edgeSet.ncard + 1 = Nat.card V := by
   refine ⟨fun h ↦ ⟨h.isAcyclic, h.ncard_edgeSet_add_one⟩, fun ⟨h, _⟩ ↦ ⟨?_, h⟩⟩
-  grind [connected_iff_card_connectedComponent_eq_one, h.ncard_edgeSet_add_card_connectedComponent]
+  grind [card_connectedComponent_eq_one_iff, h.ncard_edgeSet_add_card_connectedComponent]
 
 /-- The minimum degree of all vertices in a nontrivial tree is one. -/
 lemma IsTree.minDegree_eq_one_of_nontrivial (h : G.IsTree) [Fintype V] [Nontrivial V]

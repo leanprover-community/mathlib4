@@ -462,19 +462,19 @@ theorem _root_.SimpleGraph.isEmpty_connectedComponent_iff :
   contrapose!
   exact nonempty_connectedComponent_iff
 
-theorem _root_.SimpleGraph.preconnected_iff_subsingleton_connectedComponent :
-    G.Preconnected ↔ Subsingleton G.ConnectedComponent := by
+theorem _root_.SimpleGraph.subsingleton_connectedComponent_iff :
+    Subsingleton G.ConnectedComponent ↔ G.Preconnected := by
   have : G.ConnectedComponent = Quotient G.reachableSetoid := rfl
   simp [preconnected_iff_reachable_eq_top, this, reachableSetoid]
 
-alias ⟨_root_.SimpleGraph.Preconnected.subsingleton_connectedComponent, _⟩ :=
-  preconnected_iff_subsingleton_connectedComponent
+alias ⟨_, _root_.SimpleGraph.Preconnected.subsingleton_connectedComponent⟩ :=
+  subsingleton_connectedComponent_iff
 
-theorem _root_.SimpleGraph.connected_iff_card_connectedComponent_eq_one :
-    G.Connected ↔ Nat.card G.ConnectedComponent = 1 := by
+theorem _root_.SimpleGraph.card_connectedComponent_eq_one_iff :
+    Nat.card G.ConnectedComponent = 1 ↔ G.Connected := by
   have : G.ConnectedComponent = Quotient G.reachableSetoid := rfl
-  simp_rw [connected_iff, preconnected_iff_subsingleton_connectedComponent,
-    Nat.card_eq_one_iff_unique, this, nonempty_quotient_iff]
+  rw [Nat.card_eq_one_iff_unique, subsingleton_connectedComponent_iff, this, nonempty_quotient_iff,
+    connected_iff]
 
 /-- This is `Quot.recOn` specialized to connected components.
 For convenience, it strengthens the assumptions in the hypothesis
