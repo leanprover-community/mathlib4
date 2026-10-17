@@ -298,11 +298,10 @@ lemma atomRel_of_even_odd (neg : W.Odd) (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰
   wlog _ : 0 ≤ a ∧ 0 ≤ b ∧ 0 ≤ c ∧ 0 ≤ d generalizing a b c d with h
   · exact atomRel_abs neg .. ▸ h (parity.map _ <| by grind) <| by simp
   wlog _ : d ≤ c ∧ c ≤ b ∧ b ≤ a generalizing a b c d with h
-  · rw [← atomRel_perm neg (Fin.revPerm.trans <| Tuple.sort ![a, b, c, d]) a b c d,
-      smul_eq_zero_iff_eq]
+  · rw [← atomRel_perm neg (Tuple.sortDesc ![a, b, c, d]) a b c d, smul_eq_zero_iff_eq]
     refine h (parity.perm (Equiv.Perm.ofFn_comp_perm _ ![a, b, c, d]).symm .symm) ?_ ?_
     · split_ands <;> apply (fun i ↦ by fin_cases i <;> simp <;> omega : 0 ≤ ![a, b, c, d])
-    · split_ands <;> exact Tuple.monotone_sort _ <| by decide
+    · split_ands <;> exact Tuple.antitone_sortDesc _ <| by decide
   wlog _ : d < c ∧ c < b ∧ b < a
   · rcases (by omega : a = b ∨ b = c ∨ c = d) with rfl | rfl | rfl <;>
       simp [pow_mem two 3 |>.right (W 0) <| by grind only [atomRel_same₂₃, atom, odd 1]]
