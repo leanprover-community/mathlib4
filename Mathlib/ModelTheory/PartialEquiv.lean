@@ -457,12 +457,14 @@ namespace IsExtensionPair
 protected alias ⟨cod, _⟩ := isExtensionPair_iff_cod
 
 /-- The cofinal set of finite equivalences with a given element in their domain. -/
+@[deprecated "`Order.Cofinal` is deprecated" (since := "2026-10-04")]
 def definedAtLeft
     (h : L.IsExtensionPair M N) (m : M) : Order.Cofinal (FGEquiv L M N) where
   carrier := {f | m ∈ f.val.dom}
   isCofinal := fun f => h f m
 
 /-- The cofinal set of finite equivalences with a given element in their codomain. -/
+@[deprecated "`Order.Cofinal` is deprecated" (since := "2026-10-04")]
 def definedAtRight
     (h : L.IsExtensionPair N M) (n : N) : Order.Cofinal (FGEquiv L M N) where
   carrier := {f | n ∈ f.val.cod}
@@ -478,20 +480,21 @@ theorem embedding_from_cg (M_cg : Structure.CG L M) (g : L.FGEquiv M N)
     ∃ f : M ↪[L] N, g ≤ f.toPartialEquiv := by
   rcases M_cg with ⟨X, _, X_gen⟩
   have _ : Countable (↑X : Type _) := by simpa only [countable_coe_iff]
-  have _ : Encodable (↑X : Type _) := Encodable.ofCountable _
-  let D : X → Order.Cofinal (FGEquiv L M N) := fun x ↦ H.definedAtLeft x
-  let S : ℕ →o M ≃ₚ[L] N :=
-    ⟨Subtype.val ∘ (Order.sequenceOfCofinals g D),
-      (Subtype.mono_coe _).comp (Order.sequenceOfCofinals.monotone _ _)⟩
+  obtain ⟨I, hI, hI'⟩ :=
+    Order.exists_ideal_meets_cofinals g (fun x : X ↦ {f | x.1 ∈ f.val.dom}) fun x f => H f x
+  have : Nonempty I := ⟨⟨g, hI⟩⟩
+  have : IsDirectedOrder I := I.directed.isDirectedOrder
+  let S : I →o M ≃ₚ[L] N :=
+    ⟨fun f ↦ f.val.val, fun _ _ h ↦ h⟩
   let F := DirectLimit.partialEquivLimit S
-  have _ : X ⊆ F.dom := by
+  have isTop : F.dom = ⊤ := by
+    rw [← top_le_iff, ← X_gen, Substructure.closure_le]
     intro x hx
-    have := Order.sequenceOfCofinals.encode_mem g D ⟨x, hx⟩
-    exact dom_le_dom
-      (le_partialEquivLimit S (Encodable.encode (⟨x, hx⟩ : X) + 1)) this
-  have isTop : F.dom = ⊤ := by rwa [← top_le_iff, ← X_gen, Substructure.closure_le]
-  exact ⟨toEmbeddingOfEqTop isTop,
-        by convert! (le_partialEquivLimit S 0); apply Embedding.toPartialEquiv_toEmbedding⟩
+    obtain ⟨f, hf, hxf⟩ := hI' ⟨x, hx⟩
+    exact dom_le_dom (le_partialEquivLimit S ⟨f, hf⟩) hxf
+  refine ⟨toEmbeddingOfEqTop isTop, ?_⟩
+  rw [Embedding.toPartialEquiv_toEmbedding]
+  exact le_partialEquivLimit S ⟨g, hI⟩
 
 /-- For two countably generated structure `M` and `N`, if any PartialEquiv
 between finitely generated substructures can be extended to any element in the domain and to
@@ -501,34 +504,33 @@ theorem equiv_between_cg (M_cg : Structure.CG L M) (N_cg : Structure.CG L N)
     (ext_dom : L.IsExtensionPair M N)
     (ext_cod : L.IsExtensionPair N M) :
     ∃ f : M ≃[L] N, g ≤ f.toEmbedding.toPartialEquiv := by
-  rcases M_cg with ⟨X, X_count, X_gen⟩
-  rcases N_cg with ⟨Y, Y_count, Y_gen⟩
+  rcases M_cg with ⟨X, _, X_gen⟩
+  rcases N_cg with ⟨Y, _, Y_gen⟩
   have _ : Countable (↑X : Type _) := by simpa only [countable_coe_iff]
-  have _ : Encodable (↑X : Type _) := Encodable.ofCountable _
   have _ : Countable (↑Y : Type _) := by simpa only [countable_coe_iff]
-  have _ : Encodable (↑Y : Type _) := Encodable.ofCountable _
-  let D : Sum X Y → Order.Cofinal (FGEquiv L M N) := fun p ↦
-    Sum.recOn p (fun x ↦ ext_dom.definedAtLeft x) (fun y ↦ ext_cod.definedAtRight y)
-  let S : ℕ →o M ≃ₚ[L] N :=
-    ⟨Subtype.val ∘ (Order.sequenceOfCofinals g D),
-      (Subtype.mono_coe _).comp (Order.sequenceOfCofinals.monotone _ _)⟩
-  let F := @DirectLimit.partialEquivLimit L M N _ _ ℕ _ _ _ S
-  have _ : X ⊆ F.dom := by
+  let D : Sum X Y → Set (FGEquiv L M N) :=
+    Sum.elim (fun x ↦ {f | x.1 ∈ f.val.dom}) (fun y ↦ {f | y.1 ∈ f.val.cod})
+  have hD : ∀ i, IsCofinal (D i) :=
+    Sum.rec (fun x f ↦ ext_dom f x) (fun y f ↦ ext_cod.cod f y)
+  obtain ⟨I, hI, hI'⟩ := Order.exists_ideal_meets_cofinals g D hD
+  have : Nonempty I := ⟨⟨g, hI⟩⟩
+  have : IsDirectedOrder I := I.directed.isDirectedOrder
+  let S : I →o M ≃ₚ[L] N :=
+    ⟨fun f ↦ f.val.val, fun _ _ h ↦ h⟩
+  let F := DirectLimit.partialEquivLimit S
+  have dom_top : F.dom = ⊤ := by
+    rw [← top_le_iff, ← X_gen, Substructure.closure_le]
     intro x hx
-    have := Order.sequenceOfCofinals.encode_mem g D (Sum.inl ⟨x, hx⟩)
-    exact dom_le_dom
-      (le_partialEquivLimit S (Encodable.encode (Sum.inl (⟨x, hx⟩ : X)) + 1)) this
-  have _ : Y ⊆ F.cod := by
+    obtain ⟨f, hf, hxf⟩ := hI' (Sum.inl ⟨x, hx⟩)
+    exact dom_le_dom (le_partialEquivLimit S ⟨f, hf⟩) hxf
+  have cod_top : F.cod = ⊤ := by
+    rw [← top_le_iff, ← Y_gen, Substructure.closure_le]
     intro y hy
-    have := Order.sequenceOfCofinals.encode_mem g D (Sum.inr ⟨y, hy⟩)
-    exact cod_le_cod
-      (le_partialEquivLimit S (Encodable.encode (Sum.inr (⟨y, hy⟩ : Y)) + 1)) this
-  have dom_top : F.dom = ⊤ := by rwa [← top_le_iff, ← X_gen, Substructure.closure_le]
-  have cod_top : F.cod = ⊤ := by rwa [← top_le_iff, ← Y_gen, Substructure.closure_le]
+    obtain ⟨f, hf, hyf⟩ := hI' (Sum.inr ⟨y, hy⟩)
+    exact cod_le_cod (le_partialEquivLimit S ⟨f, hf⟩) hyf
   refine ⟨toEquivOfEqTop dom_top cod_top, ?_⟩
-  convert! le_partialEquivLimit S 0
-  rw [toEquivOfEqTop_toEmbedding]
-  apply Embedding.toPartialEquiv_toEmbedding
+  rw [toEquivOfEqTop_toEmbedding, Embedding.toPartialEquiv_toEmbedding]
+  exact le_partialEquivLimit S ⟨g, hI⟩
 
 end FGEquiv
 
