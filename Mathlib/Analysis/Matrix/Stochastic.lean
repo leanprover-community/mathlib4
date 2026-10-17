@@ -6,14 +6,18 @@ Authors: Matteo Cipollina, Michail Karatarakis
 module
 
 public import Mathlib.Analysis.Matrix.Normed
+public import Mathlib.Analysis.Normed.Algebra.GelfandRadius
 public import Mathlib.Analysis.Normed.Algebra.Spectrum
 public import Mathlib.LinearAlgebra.Matrix.Stochastic
+
+import Mathlib.LinearAlgebra.Matrix.Charpoly.Eigs
 
 /-!
 # Analysis of stochastic matrices
 
-This file contains analytic consequences of `Matrix.rowStochastic` from
-`Mathlib/LinearAlgebra/Matrix/Stochastic.lean`: operator-norm and spectral-radius bounds.
+This file contains analytic consequences of `Matrix.rowStochastic` and `Matrix.colStochastic` from
+`Mathlib/LinearAlgebra/Matrix/Stochastic.lean`: operator-norm, spectral-radius and Gelfand-radius
+bounds. Norms are the `L∞` operator norm, from `Matrix.Norms.Operator`.
 
 ## Main statements
 
@@ -21,8 +25,13 @@ This file contains analytic consequences of `Matrix.rowStochastic` from
   norm at most `1`.
 * `Matrix.norm_mulVec_le_of_mem_rowStochastic`: a row-stochastic matrix is nonexpansive for
   `Matrix.mulVec`.
-* `Matrix.spectralRadius_le_one_of_mem_rowStochastic`: a row-stochastic matrix has spectral radius
-  at most `1`.
+* `Matrix.spectralRadius_le_one_of_mem_rowStochastic`,
+  `Matrix.spectralRadius_le_one_of_mem_colStochastic`: a row- or column-stochastic matrix has
+  spectral radius at most `1`.
+* `Matrix.gelfandRadius_le_one_of_mem_rowStochastic`,
+  `Matrix.gelfandRadius_le_one_of_mem_colStochastic`: a row- or column-stochastic matrix has
+  Gelfand radius at most `1`. For a real matrix, this bounds the moduli of all its complex
+  eigenvalues, whereas `spectralRadius ℝ` only sees the real ones.
 -/
 
 @[expose] public section
@@ -47,5 +56,28 @@ theorem spectralRadius_le_one_of_mem_rowStochastic (hA : A ∈ rowStochastic �
     spectralRadius 𝕜 A ≤ 1 :=
   (spectralRadius_le_nnnorm A).trans <|
     mod_cast linfty_opNorm_le_one_of_mem_rowStochastic hA
+
+theorem spectralRadius_le_one_of_mem_colStochastic (hA : A ∈ colStochastic 𝕜 n) :
+    spectralRadius 𝕜 A ≤ 1 := by
+  simpa [spectralRadius_eq_of_unital, spectrum_transpose] using
+    spectralRadius_le_one_of_mem_rowStochastic
+      (transpose_mem_rowStochastic_iff_mem_colStochastic.2 hA)
+
+theorem gelfandRadius_le_one_of_mem_rowStochastic (hA : A ∈ rowStochastic 𝕜 n) :
+    gelfandRadius A ≤ 1 :=
+  (gelfandRadius_le_norm A).trans (linfty_opNorm_le_one_of_mem_rowStochastic hA)
+
+theorem gelfandRadius_le_one_of_mem_colStochastic (hA : A ∈ colStochastic 𝕜 n) :
+    gelfandRadius A ≤ 1 := by
+  refine gelfandRadius_le_of_bound (C := Fintype.card n) zero_le_one fun k ↦ ?_
+  have hk := pow_mem hA k
+  have hle (i j : n) : ‖(A ^ k) i j‖ ≤ 1 := by
+    have : (A ^ k) i j ≤ 1 := le_one_of_mem_colStochastic hk
+    rw [← RCLike.norm_of_nonneg' (nonneg_of_mem_colStochastic hk)] at this
+    exact_mod_cast this
+  rw [one_pow, mul_one, linfty_opNorm_def, ← NNReal.coe_natCast, NNReal.coe_le_coe]
+  refine Finset.sup_le fun i _ ↦ ?_
+  simpa using Finset.sum_le_card_nsmul Finset.univ (fun j ↦ ‖(A ^ k) i j‖₊) 1
+    fun j _ ↦ mod_cast hle i j
 
 end Matrix
