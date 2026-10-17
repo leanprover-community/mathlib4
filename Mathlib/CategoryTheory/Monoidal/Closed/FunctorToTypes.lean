@@ -49,8 +49,6 @@ def rightAdj : (C ⥤ Type (max w v u)) ⥤ C ⥤ Type (max w v u) where
       change (F.map g ≫ a.app _ (h ≫ g)) ≫ _ = _
       aesop  }}
 
-@[deprecated "Use `(rightAdj F).map instead" (since := "2026-04-08")] alias rightAdj_map := rightAdj
-
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] types_tensorObj_def in

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+
 import Mathlib.Tactic.ApplyFun
 
 /-!

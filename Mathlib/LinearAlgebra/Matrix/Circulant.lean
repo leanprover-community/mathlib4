@@ -5,8 +5,9 @@ Authors: Lu-Ming Zhang
 -/
 module
 
-import Mathlib.Algebra.Group.Fin.Basic
 public import Mathlib.LinearAlgebra.Matrix.Symmetric
+
+import Mathlib.Algebra.Group.Fin.Basic
 import Mathlib.Tactic.Abel
 
 /-!

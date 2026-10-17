@@ -8,8 +8,8 @@ module
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Submonoid.Defs
 public import Mathlib.Data.Set.Inclusion
-public import Mathlib.Tactic.Common
 public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.Common
 
 /-!
 # Subgroups
@@ -632,8 +632,6 @@ variable {H : Subgroup G}
 instance (priority := 100) normal_of_isMulCommutative [IsMulCommutative G] (H : Subgroup G) :
     H.Normal := ⟨by simp [mul_comm']⟩
 
-@[deprecated (since := "2026-04-10")] alias normal_of_comm := normal_of_isMulCommutative
-
 namespace Normal
 
 @[to_additive]
@@ -676,11 +674,6 @@ def normalizer (S : Set G) : Subgroup G where
     rw [ha (a⁻¹ * n * a⁻¹⁻¹)]
     simp only [inv_inv, mul_assoc, mul_inv_cancel_left, mul_inv_cancel, mul_one]
 
-@[deprecated (since := "2026-03-19")]
-alias setNormalizer := normalizer
-@[deprecated (since := "2026-03-19")]
-alias _root_.AddSubgroup.setNormalizer := AddSubgroup.normalizer
-
 variable {H} {S : Set G} {g : G}
 
 @[to_additive]
@@ -714,15 +707,6 @@ theorem le_normalizer : H ≤ normalizer H := fun x xH n => by
     H.mul_mem_cancel_left xH]
 
 end Normalizer
-
-@[to_additive (attr := deprecated inferInstance +typeChanged (since := "2026-04-09"))]
-theorem commGroup_isMulCommutative {G : Type*} [CommGroup G] (H : Subgroup G) :
-    IsMulCommutative H := inferInstance
-
-@[to_additive (attr := deprecated setLike_mul_comm +typeChanged (since := "2026-03-09"))]
-lemma mul_comm_of_mem_isMulCommutative [IsMulCommutative H] {a b : G} (ha : a ∈ H) (hb : b ∈ H) :
-    a * b = b * a :=
-  setLike_mul_comm ha hb
 
 end Subgroup
 
