@@ -40,6 +40,10 @@ protected def card (α : Type*) : ℕ :=
   toNat (mk α)
 
 @[simp]
+theorem _root_.Cardinal.toNat_mk (α : Type*) : (mk α).toNat = Nat.card α :=
+  rfl
+
+@[simp]
 theorem card_eq_fintype_card [Fintype α] : Nat.card α = Fintype.card α :=
   mk_toNat_eq_card
 
@@ -73,12 +77,12 @@ lemma _root_.Set.Infinite.card_eq_zero {s : Set α} (hs : s.Infinite) : Nat.card
   @card_eq_zero_of_infinite _ hs.to_subtype
 
 lemma card_eq_zero : Nat.card α = 0 ↔ IsEmpty α ∨ Infinite α := by
-  simp [Nat.card, mk_eq_zero_iff, aleph0_le_mk_iff]
+  simp [← toNat_mk, mk_eq_zero_iff, aleph0_le_mk_iff]
 
 lemma card_ne_zero : Nat.card α ≠ 0 ↔ Nonempty α ∧ Finite α := by simp [card_eq_zero, not_or]
 
 lemma card_pos_iff : 0 < Nat.card α ↔ Nonempty α ∧ Finite α := by
-  simp [Nat.card, mk_eq_zero_iff, mk_lt_aleph0_iff]
+  simp [← toNat_mk, mk_eq_zero_iff, mk_lt_aleph0_iff]
 
 @[simp] lemma card_pos [Nonempty α] [Finite α] : 0 < Nat.card α := card_pos_iff.2 ⟨‹_›, ‹_›⟩
 
@@ -279,6 +283,14 @@ def card (α : Type*) : ℕ∞ :=
   toENat (mk α)
 
 @[simp]
+theorem toNat_card (α : Type*) : (card α).toNat = Nat.card α :=
+  rfl
+
+@[simp]
+theorem _root_.Cardinal.toENat_mk (α : Type*) : (mk α).toENat = ENat.card α :=
+  rfl
+
+@[simp]
 theorem card_eq_coe_fintype_card [Fintype α] : card α = Fintype.card α := by
   simp [card]
 
@@ -286,11 +298,11 @@ theorem card_eq_coe_fintype_card [Fintype α] : card α = Fintype.card α := by
 theorem card_eq_top_of_infinite [Infinite α] : card α = ⊤ := by
   simp only [card, toENat_eq_top, aleph0_le_mk]
 
-@[simp] lemma card_eq_top : card α = ⊤ ↔ Infinite α := by simp [card, aleph0_le_mk_iff]
+@[simp] lemma card_eq_top : card α = ⊤ ↔ Infinite α := by simp [← toENat_mk, aleph0_le_mk_iff]
 
-@[simp high] theorem card_lt_top_of_finite [Finite α] : card α < ⊤ := by simp [card]
+@[simp high] theorem card_lt_top_of_finite [Finite α] : card α < ⊤ := by simp [← toENat_mk]
 
-@[simp] theorem card_lt_top : card α < ⊤ ↔ Finite α := by simp [card, lt_aleph0_iff_finite]
+@[simp] theorem card_lt_top : card α < ⊤ ↔ Finite α := by simp [← toENat_mk, lt_aleph0_iff_finite]
 
 @[simp]
 theorem card_sum (α β : Type*) :
@@ -317,7 +329,7 @@ lemma card_le_card_of_injective {α β : Type*} {f : α → β} (hf : Injective 
 
 theorem card_eq_zero_iff_empty (α : Type*) : card α = 0 ↔ IsEmpty α := by
   rw [← Cardinal.mk_eq_zero_iff]
-  simp [card]
+  simp [← toENat_mk]
 
 theorem card_ne_zero_iff_nonempty (α : Type*) : card α ≠ 0 ↔ Nonempty α := by
   simp [card_eq_zero_iff_empty]
@@ -334,7 +346,7 @@ theorem one_le_card_iff_nonempty (α : Type*) : 1 ≤ card α ↔ Nonempty α :=
 
 theorem card_le_one_iff_subsingleton (α : Type*) : card α ≤ 1 ↔ Subsingleton α := by
   rw [← le_one_iff_subsingleton]
-  simp [card]
+  simp [← toENat_mk]
 
 @[simp] lemma card_le_one [Subsingleton α] : card α ≤ 1 := by simpa [card_le_one_iff_subsingleton]
 
@@ -351,11 +363,11 @@ theorem one_lt_card_iff_nontrivial (α : Type*) : 1 < card α ↔ Nontrivial α 
 @[simp] lemma one_lt_card [Nontrivial α] : 1 < card α := by simpa [one_lt_card_iff_nontrivial]
 
 lemma exists_ne_ne_of_three_le (h : 3 ≤ ENat.card α) (x y : α) : ∃ z, z ≠ x ∧ z ≠ y :=
-  Cardinal.exists_ne_ne_of_three_le (by simpa [ENat.card] using h) x y
+  Cardinal.exists_ne_ne_of_three_le (by simpa [← toENat_mk] using h) x y
 
 @[simp]
 theorem card_prod (α β : Type*) : card (α × β) = card α * card β := by
-  simp [ENat.card]
+  simp [← toENat_mk]
 
 @[simp]
 lemma card_fun {α β : Type*} : card (α → β) = card β ^ card α := by
