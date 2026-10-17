@@ -711,6 +711,7 @@ jobs:
     name: Upload to cache
     needs: [build]
     runs-on: ubuntu-latest # These steps run on a GitHub runner; no landrun sandboxing is needed.
+    timeout-minutes: 20
     # Pins the OIDC `sub` claim to `...:environment:<cache_environment>`, which the cache writer
     # credentials are scoped to. A token minted by any job without this environment
     # (e.g. the untrusted build/post_steps/style_lint jobs) cannot satisfy that trust.
@@ -760,6 +761,22 @@ jobs:
           use-mathlib-cache: false # This can be re-enabled once we are confident in the cache again.
           reinstall-transient-toolchain: true
 
+      - &install_curl
+        name: Install curl
+        env:
+          PINNED_CURL_RELEASE: v8.23.0
+          PINNED_CURL_SHA256: 83a56256434a3d3f6edbdad2cbdb1f23a44fe8fd52968d18ab57763fdc0afba0
+        run: |
+          dir="$RUNNER_TEMP/curl-install"
+          mkdir -p "$dir"
+          cd "$dir"
+          curl -fsSL --retry 5 -o curl \
+            "https://github.com/leanprover-community/static-curl/releases/download/${PINNED_CURL_RELEASE}/curl-x86_64-linux-static"
+          echo "${PINNED_CURL_SHA256}  curl" | sha256sum -c -
+          chmod u+x curl
+          echo "$dir" >> "$GITHUB_PATH"
+          ./curl --version
+
       - &build_cache_executable
         name: build cache executable
         run: |
@@ -776,6 +793,24 @@ jobs:
         with:
           name: cache-staging
           path: cache-staging
+
+      # Install the pinned rclone release when the repository variable selects it.
+      - &install_rclone
+        name: Install rclone
+        if: vars.MATHLIB_CACHE_UPLOAD_TOOL == 'rclone'
+        env:
+          PINNED_RCLONE_RELEASE: v1.75.0
+          PINNED_RCLONE_SHA256: aa2804e08f48250e71009c727124b6341cd0288465804a9a09d14663cabafbaa
+        run: |
+          dir="$RUNNER_TEMP/rclone-install"
+          mkdir -p "$dir"
+          cd "$dir"
+          curl -fsSL --retry 5 -o rclone.zip \
+            "https://github.com/rclone/rclone/releases/download/${PINNED_RCLONE_RELEASE}/rclone-${PINNED_RCLONE_RELEASE}-linux-amd64.zip"
+          echo "${PINNED_RCLONE_SHA256}  rclone.zip" | sha256sum -c -
+          unzip -q rclone.zip
+          sudo install -m 0755 "rclone-${PINNED_RCLONE_RELEASE}-linux-amd64/rclone" /usr/local/bin/rclone
+          rclone version
 
       # Upload the staged set to R2. `master` writes the public cache bucket,
       # flat. `forks` writes the developer cache bucket in the container's
@@ -856,6 +891,7 @@ jobs:
     # The upload is best effort: if it fails, later runs rebuild these test files.
     continue-on-error: true
     runs-on: ubuntu-latest # These steps run on a GitHub runner; no landrun sandboxing is needed.
+    timeout-minutes: 20
     # The environment of `upload_cache` gives this job the same OIDC `sub` claim.
     environment:
       name: ${{ inputs.cache_environment }}
@@ -871,6 +907,7 @@ jobs:
       - *checkout_tools_branch
       - *compute_cache_trust_dispatch
       - *configure_lean_for_cache
+      - *install_curl
       - *build_cache_executable
 
       - name: Download MathlibTest cache staging artifact
@@ -879,6 +916,7 @@ jobs:
           name: cache-staging-test
           path: cache-staging
 
+      - *install_rclone
       - *mint_r2_credentials
 
       - name: Upload staged MathlibTest cache to R2
@@ -900,6 +938,7 @@ jobs:
     needs: [build, upload_cache]
     if: ${{ always() && needs.build.result == 'success' && (needs.upload_cache.result == 'success' || needs.upload_cache.result == 'skipped') }}
     runs-on: ubuntu-latest # Note these steps run on disposable GitHub runners, so no landrun sandboxing is needed.
+    timeout-minutes: 30
     # This job checks out and executes (potentially fork) PR code unsandboxed,
     # so it must not inherit any write-capable token.
     permissions:

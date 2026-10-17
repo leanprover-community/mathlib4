@@ -163,13 +163,8 @@ Pure so the policy is testable; `s3PutStaged` wires the environment in.
 def s3UploadToolFrom (forceCurl rcloneAvailable : Bool) : S3UploadTool :=
   if !forceCurl && rcloneAvailable then .rclone else .curl
 
-/--
-The staged put on the s3 backend: split the base (`s3EndpointSplit`), resolve
-the transfer tool (`s3UploadToolFrom`), and transfer, each request signed with
-`creds` in `region`. Only this resolution reads the
-`MATHLIB_CACHE_PUT_FORCE_CURL` flag, and the availability probe runs only when
-the flag does not already force curl.
--/
+/-- Upload to S3 with rclone when available. `MATHLIB_CACHE_PUT_FORCE_CURL`
+selects curl and skips the rclone availability check. -/
 def s3PutStaged (dest : Location) (creds : S3Credentials) (region : String)
     (srcDir : FilePath) (fileNames : Array String) (overwrite : Bool) : IO Unit := do
   let (endpoint, _) ← IO.ofExcept (s3EndpointSplit dest.root)

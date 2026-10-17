@@ -33,8 +33,8 @@ These tests cover the pure logic of the cache system, including:
 
 Anything that touches the network is left to CI, which exercises the
 `cache get`/`put` paths end-to-end on real containers. The unit tests spawn
-local processes only: `curl --version`, one curl `file://` copy, and one
-leantar run on a nonexistent archive; none makes a network request.
+local processes only: `curl --version` and leantar on a nonexistent archive.
+Neither makes a network request.
 
 ## Invariants these tests defend
 
@@ -1256,21 +1256,19 @@ def test_classifyDownload : IO Unit := do
   assertTrue "no status fails"
     (classifyDownload none 0 matches .failed)
 
-/-- The put config discards every response body: stdout must carry only the
-per-transfer JSON reports (`--write-out '%{json}'`) that `monitorCurl`
-parses. -/
+/-- Upload bodies use a regular file so curl can retry after a server error. -/
 def test_mkPutConfigContent : IO Unit := do
   IO.println "mkPutConfigContent:"
   let dest : Location :=
     { root := "https://example.invalid/mathlib4-master"
       label := "master"
       scope? := none }
-  let cfg := mkPutConfigContent dest #["/tmp/00000000deadbeef.ltar"]
+  let cfg := mkPutConfigContent dest #["/tmp/00000000deadbeef.ltar"] "/tmp/curl-1.body"
   assertTrue "uploads the file" ((cfg.splitOn "-T /tmp/00000000deadbeef.ltar").length == 2)
   assertTrue "addresses {root}/{filesDir}/{name}"
     ((cfg.splitOn
       "url = https://example.invalid/mathlib4-master/f/00000000deadbeef.ltar").length == 2)
-  assertTrue "discards the response body" ((cfg.splitOn s!"-o {IO.nullDevice}").length == 2)
+  assertTrue "sends the response body to the sink" ((cfg.splitOn "-o /tmp/curl-1.body").length == 2)
 
 /-- `classifyUpload`: a clean 200/201 delivers, a 409/412 skips for a
 non-overwrite put, and every other answer — a 404 included — is a failure. -/
@@ -1563,12 +1561,14 @@ def test_rcloneArgs : IO Unit := do
     let files ← IO.ofExcept <| rcloneFilesArgs dest "staging" "tmp/files-from.txt"
       (overwrite := false)
     assertEq "files copy remote matches the location"
-      ":s3:devbucket/mathlib4-forks/f/alice/mathlib4/abc1" files[2]!
+      ":s3:devbucket/mathlib4-forks/f/alice/mathlib4/abc1/" files[2]!
     assertTrue "files copy is a copy" (files[0]! == "copy")
     assertTrue "files copy is restricted to the caller's file list"
       ((files.toList.zip files.toList.tail).contains ("--files-from", "tmp/files-from.txt"))
     assertTrue "a non-overwrite copy skips existing objects"
       (files.contains "--ignore-existing")
+    assertTrue "files copy does not list the destination prefix"
+      (files.contains "--no-traverse")
     let overwriteFiles ← IO.ofExcept <| rcloneFilesArgs dest "staging" "tmp/files-from.txt"
       (overwrite := true)
     assertTrue "an overwrite copy replaces existing objects"
@@ -1588,7 +1588,7 @@ def test_rcloneArgs : IO Unit := do
     let prefixedFiles ← IO.ofExcept <| rcloneFilesArgs prefixed "staging" "tmp/files-from.txt"
       (overwrite := false)
     assertEq "file remotes keep the bucket, prefix, and container from the root"
-      ":s3:otherbucket/prefix/mathlib4-forks/f/alice/mathlib4/abc1" prefixedFiles[2]!
+      ":s3:otherbucket/prefix/mathlib4-forks/f/alice/mathlib4/abc1/" prefixedFiles[2]!
     let some prefixedMarkerLocation := prefixed.marker? | do
       assertTrue "the prefixed destination has a marker" false
       return
@@ -1668,7 +1668,7 @@ def test_putStagedViaRclone : IO Unit := do
     assertTrue "files copy targets the staging dir"
       ((copyArgs.splitOn "\n").any (· == staging.toString))
     assertTrue "files copy addresses the resolved remote"
-      ((copyArgs.splitOn "\n").any (· == ":s3:devbucket/mathlib4-forks/f/alice/mathlib4/abc1"))
+      ((copyArgs.splitOn "\n").any (· == ":s3:devbucket/mathlib4-forks/f/alice/mathlib4/abc1/"))
     assertEq "the files-from list holds exactly the caller's file names"
       "aa.ltar\n" (← IO.FS.readFile (dir / "files-from-copy"))
     let copyEnv ← IO.FS.readFile (dir / "env-copy")
@@ -1707,8 +1707,8 @@ def test_putStagedViaRclone : IO Unit := do
       assertTrue "endpoint file copies derive the bucket prefix from the location"
         (((← IO.FS.readFile (dir / "args-copy")).splitOn "\n").contains
           (match scope? with
-            | some sha => s!":s3:devbucket/prefix/f/alice/mathlib4/{sha}"
-            | none => ":s3:devbucket/prefix/f/alice/mathlib4"))
+            | some sha => s!":s3:devbucket/prefix/f/alice/mathlib4/{sha}/"
+            | none => ":s3:devbucket/prefix/f/alice/mathlib4/"))
       match scope? with
       | some _ =>
         assertEq "a scoped endpoint uploads files before its marker"
@@ -1860,6 +1860,16 @@ def test_monitorCurl_carries_decomp_state : IO Unit := do
   assertTrue "the decompressed counter survives the round" (s.decomp.decompressed == 42)
   assertTrue "the decompFailed counter survives the round" (s.decomp.decompFailed == 1)
 
+/-- A successful curl exit with missing reports still counts as a failed transfer pass. -/
+def test_monitorCurl_counts_unreported_transfers : IO Unit := do
+  IO.println "monitorCurl counts unreported transfers as failed:"
+  let (s, _) ← withSuppressedOutput <|
+    monitorCurl #["--version"] 3 "Uploaded" "speed_upload"
+      (classifyUpload · · true)
+  assertTrue "no transfer reported" (s.done == 0 && s.success == 0)
+  assertTrue "the unreported transfers count as failed" (s.failed == 3)
+
+
 end DecompPipeline
 
 section TransferDiagnostics
@@ -1994,6 +2004,7 @@ def runAll : IO Unit := do
   test_readLocationsFrom
   test_finalizeDecomp
   test_monitorCurl_carries_decomp_state
+  test_monitorCurl_counts_unreported_transfers
   test_splitWriteOut
   test_curlGetWriteOut_real_curl
   test_transferDiagnostics

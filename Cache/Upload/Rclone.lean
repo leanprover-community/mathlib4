@@ -11,11 +11,8 @@ public import Cache.Marker
 /-!
 # The rclone upload tool
 
-An opt-in transfer tool: a system [rclone](https://rclone.org) against the
-resolved location (`Location`), addressed through rclone's `:s3:` remote
-syntax. `Cache/Upload/S3.lean` assembles the child environment that carries
-the credentials and endpoint and calls `putStagedViaRclone`. The tool derives
-its remote paths from the location's root.
+Upload cache files with a system [rclone](https://rclone.org).
+The S3 backend supplies credentials and endpoint settings through the child environment.
 -/
 
 public section
@@ -43,7 +40,11 @@ def s3EndpointSplit (base : String) : Except String (String × String) :=
 /-- Whether a working rclone is available on PATH. -/
 def rcloneAvailable : IO Bool := do
   try
-    let out ← IO.Process.output { cmd := "rclone", args := #["version"] }
+    -- Validate concurrency settings during the upload, after tool selection.
+    let out ← IO.Process.output {
+      cmd := "rclone"
+      args := #["version"]
+      env := #[("RCLONE_TRANSFERS", none), ("RCLONE_CHECKERS", none)] }
     return out.exitCode == 0
   catch _ =>
     return false
@@ -52,20 +53,14 @@ def rcloneAvailable : IO Bool := do
 skips the bucket-creation probe a scoped credential cannot pass. -/
 def rcloneCommonFlags : Array String := #["--s3-no-check-bucket", "--retries", "5"]
 
-/--
-The rclone invocation for the `.ltar` files: a copy from `srcDir` into the
-files prefix, restricted to the `--files-from` list, so only the files the
-caller names are uploaded. The bucket path comes from `dest.root`.
-A non-overwrite put passes
-`--ignore-existing`, which skips objects the destination already holds; this
-matches the curl tool's `If-None-Match: *`. Artifact names are content
-hashes, so a skipped re-put loses nothing.
--/
+/-- Copy the listed files to the resolved location. `--no-traverse` uses per-file
+checks to avoid listing a large destination. A trailing slash marks the destination
+as a directory. Non-overwrite uploads skip existing objects. -/
 def rcloneFilesArgs (dest : Location) (srcDir filesFrom : FilePath)
     (overwrite : Bool) : Except String (Array String) := do
   let (_, bucketPath) ← s3EndpointSplit dest.root
-  return #["copy", srcDir.toString, s!":s3:{bucketPath}/{dest.filesDir}",
-    "--files-from", filesFrom.toString, "--transfers", "16"] ++
+  return #["copy", srcDir.toString, s!":s3:{bucketPath}/{dest.filesDir}/",
+    "--files-from", filesFrom.toString, "--no-traverse"] ++
     (if overwrite then #[] else #["--ignore-existing"]) ++ rcloneCommonFlags
 
 /--
@@ -80,21 +75,17 @@ def rcloneMarkerArgs (marker : Location.Marker) (markerFile : FilePath) :
   return #["copyto", markerFile.toString, s!":s3:{bucketPath}/{marker.path}"] ++
     rcloneCommonFlags
 
-/--
-The staged put on a system rclone. `env` carries the credentials and endpoint
-from `rcloneEnv`, so no credential appears on a command line. The remote
-paths come from `dest`. An invalid root fails before any transfer.
-`srcDir` holds the files and `fileNames` lists the ones to upload; the list is passed as a
-`--files-from` file, so only the named files are uploaded. The files are
-uploaded first, then the marker derived by `Location.marker?`, if present.
-A files failure exits 1; a marker failure only warns (see `uploadMarker`).
-The `rclone` parameter names the binary and exists for the tests; production
-callers use the default.
--/
+/-- Upload the named staged files, then the location's marker if present.
+`env` carries the credentials and endpoint. `RCLONE_TRANSFERS` and `RCLONE_CHECKERS`
+default to 128; rclone parses the caller's values.
+File failures exit with code 1; marker failures only warn. -/
 def putStagedViaRclone (dest : Location) (env : Array (String × Option String))
     (srcDir : FilePath) (fileNames : Array String) (overwrite : Bool)
     (rclone : String := "rclone") : IO Unit := do
   discard <| IO.ofExcept (s3EndpointSplit dest.root)
+  let env := env ++ #[
+    ("RCLONE_TRANSFERS", some ((← getEnvNonEmpty "RCLONE_TRANSFERS").getD "128")),
+    ("RCLONE_CHECKERS", some ((← getEnvNonEmpty "RCLONE_CHECKERS").getD "128"))]
   let run (args : Array String) : IO UInt32 := do
     let child ← IO.Process.spawn { cmd := rclone, args, env }
     child.wait
