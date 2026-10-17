@@ -47,7 +47,7 @@ section derivedSeries
 variable (G)
 
 /-- The derived series of the group `G`, obtained by starting from the subgroup `⊤` and repeatedly
-  taking the commutator of the previous subgroup with itself for `n` times. -/
+taking the commutator of the previous subgroup with itself `n` times. -/
 @[to_additive existing]
 def derivedSeries : ℕ → Subgroup G
   | 0 => ⊤
@@ -68,7 +68,7 @@ theorem derivedSeries_normal (n : ℕ) : (derivedSeries G n).Normal := by
   | zero => exact (⊤ : Subgroup G).normal_of_characteristic
   | succ n ih => exact Subgroup.commutator_normal (derivedSeries G n) (derivedSeries G n)
 
-@[to_additive (attr := simp 1100) AddSubgroup.derivedSeries_one]
+@[to_additive (attr := simp 1100) derivedSeries_one]
 theorem derivedSeries_one : derivedSeries G 1 = _root_.commutator G :=
   rfl
 
@@ -114,24 +114,24 @@ end CommutatorMap
 
 end Subgroup
 
-@[deprecated (since := "2026-08-25")] alias derivedSeries := derivedSeries
-@[deprecated (since := "2026-08-25")] alias derivedSeries_zero := derivedSeries_zero
-@[deprecated (since := "2026-08-25")] alias derivedSeries_succ := derivedSeries_succ
-@[deprecated (since := "2026-08-25")] alias derivedSeries_normal := derivedSeries_normal
-@[deprecated (since := "2026-08-25")] alias derivedSeries_one := derivedSeries_one
-@[deprecated (since := "2026-08-25")] alias derivedSeries_antitone := derivedSeries_antitone
-@[deprecated (since := "2026-08-25")] alias derivedSeries_characteristic :=
+@[deprecated (since := "2026-10-17")] alias derivedSeries := derivedSeries
+@[deprecated (since := "2026-10-17")] alias derivedSeries_zero := derivedSeries_zero
+@[deprecated (since := "2026-10-17")] alias derivedSeries_succ := derivedSeries_succ
+@[deprecated (since := "2026-10-17")] alias derivedSeries_normal := derivedSeries_normal
+@[deprecated (since := "2026-10-17")] alias derivedSeries_one := derivedSeries_one
+@[deprecated (since := "2026-10-17")] alias derivedSeries_antitone := derivedSeries_antitone
+@[deprecated (since := "2026-10-17")] alias derivedSeries_characteristic :=
   derivedSeries_characteristic
-@[deprecated (since := "2026-08-25")] alias map_derivedSeries_le_derivedSeries :=
+@[deprecated (since := "2026-10-17")] alias map_derivedSeries_le_derivedSeries :=
   map_derivedSeries_le_derivedSeries
-@[deprecated (since := "2026-08-25")] alias derivedSeries_le_map_derivedSeries :=
+@[deprecated (since := "2026-10-17")] alias derivedSeries_le_map_derivedSeries :=
   derivedSeries_le_map_derivedSeries
-@[deprecated (since := "2026-08-25")] alias map_derivedSeries_eq := map_derivedSeries_eq
+@[deprecated (since := "2026-10-17")] alias map_derivedSeries_eq := map_derivedSeries_eq
 
 section Solvable
 
 /-- An additive group `G` is solvable if its derived series is eventually trivial. -/
-@[mk_iff isSolvable_def]
+@[mk_iff isSolvable_def, wikidata Q759832]
 class AddGroup.IsSolvable (G : Type*) [AddGroup G] : Prop where
   /-- An additive group `G` is solvable if its derived series is eventually trivial. -/
   solvable : ∃ n : ℕ, AddSubgroup.derivedSeries G n = ⊥
@@ -140,8 +140,7 @@ variable (G)
 
 namespace Group
 
-/-- A group `G` is solvable if its derived series is eventually trivial. We use this definition
-  because it's the most convenient one to work with. -/
+/-- A group `G` is solvable if its derived series is eventually trivial. -/
 @[mk_iff isSolvable_def, wikidata Q759832, to_additive existing]
 class IsSolvable : Prop where
   /-- A group `G` is solvable if its derived series is eventually trivial. -/
@@ -282,12 +281,14 @@ theorem isSolvable_iff_commutator_lt [WellFoundedLT (Subgroup G)] :
     | zero =>
       rw [zero_add, Subgroup.derivedSeries_one, Subgroup.derivedSeries_zero, map_commutator_eq,
         Subgroup.map_top, range_subtype, range_subtype]
-    | succ n ih => rw [Subgroup.derivedSeries_succ, map_commutator, ih, Subgroup.derivedSeries_succ,
-        map_commutator]
+    | succ n ih =>
+      rw [Subgroup.derivedSeries_succ, map_commutator, ih,
+        Subgroup.derivedSeries_succ, map_commutator]
 
 @[deprecated (since := "2026-07-16")]
 alias _root_.isSolvable_iff_commutator_lt := Group.isSolvable_iff_commutator_lt
 
+@[to_additive]
 theorem isSolvable_commutator_iff : IsSolvable (commutator G) ↔ IsSolvable G :=
   ⟨fun _ ↦ isSolvable_of_subgroup_quotient (commutator G), fun _ ↦ inferInstance⟩
 
@@ -334,7 +335,7 @@ theorem Group.not_isSolvable_of_mem_derivedSeries {g : G} (h1 : g ≠ 1)
     (not_exists_of_forall_not fun n h =>
       h1 (Subgroup.mem_bot.mp (congr(g ∈ $h).mp (h2 n))))
 
-@[deprecated (since := "2026-08-25")] alias not_isSolvable_of_mem_derivedSeries :=
+@[deprecated (since := "2026-10-17")] alias not_isSolvable_of_mem_derivedSeries :=
   Group.not_isSolvable_of_mem_derivedSeries
 
 @[deprecated (since := "2026-07-16")]
