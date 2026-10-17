@@ -31,8 +31,9 @@ theorem IsSimpleModule.algebraMap_end_bijective_of_isAlgClosed :
     LinearMap.restrictScalars_injective _
   classical exact IsAlgClosed.algebraMap_bijective_of_isIntegral (k := k)
 
+variable (V) in
 theorem IsSimpleModule.lsmul_eq_smul_id_of_mul_comm {z : A} (hz : ∀ a, z * a = a * z) :
-    ∃ r : k, Algebra.lsmul k k V z = r • LinearMap.id := by
+    ∃ r : k, Algebra.lsmul k k V z = r • 1 := by
   let z' : Module.End A V :=
     { toFun := Algebra.lsmul k k V z
       map_add' := by simp
