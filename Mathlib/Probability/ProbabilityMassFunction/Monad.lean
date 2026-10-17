@@ -243,7 +243,6 @@ theorem pure_bindOnSupport (a : α) (f : ∀ (a' : α) (_ : a' ∈ (pure a).supp
 theorem bindOnSupport_pure (p : PMF α) : (p.bindOnSupport fun a _ => pure a) = p := by
   simp only [PMF.bind_pure, PMF.bindOnSupport_eq_bind]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem bindOnSupport_bindOnSupport (p : PMF α) (f : ∀ a ∈ p.support, PMF β)
     (g : ∀ b ∈ (p.bindOnSupport f).support, PMF γ) :
@@ -251,17 +250,19 @@ theorem bindOnSupport_bindOnSupport (p : PMF α) (f : ∀ a ∈ p.support, PMF �
       p.bindOnSupport fun a ha =>
         (f a ha).bindOnSupport fun b hb =>
           g b ((mem_support_bindOnSupport_iff f b).mpr ⟨a, ha, hb⟩) := by
-  refine PMF.ext fun a => ?_
-  dsimp only [bindOnSupport_apply]
-  simp only [← tsum_dite_right, ENNReal.tsum_mul_left.symm, ENNReal.tsum_mul_right.symm]
+  ext a
+  simp only [bindOnSupport_apply, ← tsum_dite_right, ← ENNReal.tsum_mul_left,
+    ← ENNReal.tsum_mul_right]
   classical
-  simp only [ENNReal.tsum_eq_zero]
   refine ENNReal.tsum_comm.trans (tsum_congr fun a' => tsum_congr fun b => ?_)
-  split_ifs with h _ h_1 H h_2
+  split_ifs with h _ h_1
   any_goals ring1
-  · absurd H
-    simpa [h] using h_1 a'
-  · simp [h_2]
+  · simp [(dite_eq_right h).symm.trans
+      ((mul_eq_zero.1 (ENNReal.tsum_eq_zero.1 h_1 a')).resolve_left h)]
+  · by_cases hf : f a' h b = 0
+    · simp [hf]
+    · rw [dite_eq_right hf, ← mul_assoc]
+      exact congrArg _ (dite_eq_right h_1)
 
 theorem bindOnSupport_comm (p : PMF α) (q : PMF β) (f : ∀ a ∈ p.support, ∀ b ∈ q.support, PMF γ) :
     (p.bindOnSupport fun a ha => q.bindOnSupport (f a ha)) =
