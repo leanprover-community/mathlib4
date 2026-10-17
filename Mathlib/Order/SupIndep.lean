@@ -545,6 +545,12 @@ lemma iSupIndep.mem_of_biSup_eq_top {f : ι → α} {s : Set ι}
   replace h₁ : Disjoint (f i) (⨆ i ∈ s, f i) := (h₁ i).mono_right <| biSup_mono <| by aesop
   aesop
 
+theorem Finset.sSupIndep_coe_iff {s : Finset α} : sSupIndep (s : Set α) ↔ s.SupIndep id := by
+  rw [sSupIndep_iff, ← iSupIndep_comp_coe_iff_supIndep, id_comp]
+  rfl -- This is needed because the LHS has `↥(s : Set α)`, while the RHS has `↥s`.
+
+alias ⟨sSupIndep.supIndep, Finset.SupIndep.sSupIndep⟩ := Finset.sSupIndep_coe_iff
+
 end CompleteLattice
 
 section Frame

@@ -296,6 +296,11 @@ instance [Decidable (a = ⊥)] : OrderTop (Finpartition a) where
       simpa [h, P.ne_bot hx] using P.le hx
     · exact fun b hb ↦ ⟨a, mem_singleton_self _, P.le hb⟩
 
+theorem mem_parts_top {b : α} [Decidable (a = ⊥)] :
+    b ∈ (⊤ : Finpartition a).parts ↔ b = a ∧ b ≠ ⊥ := by
+  simp only [Top.top]
+  split_ifs <;> simp +contextual [*]
+
 theorem parts_top_subset (a : α) [Decidable (a = ⊥)] : (⊤ : Finpartition a).parts ⊆ {a} := by
   intro b hb
   have hb : b ∈ Finpartition.parts (dite _ _ _) := hb
