@@ -154,6 +154,7 @@ def foo4 {α : Type u} : Type v → Type (max u v) := @my_has_pow α
 lemma foo4_test {α β : Type u} : @foo4 α β = @my_has_pow α β := (rfl)
 
 set_option linter.defProp false in
+set_option linter.concreteInstances false in
 @[to_additive bar5]
 def foo5 {α} [my_has_pow α ℕ] [my_has_pow ℕ ℤ] : True := True.intro
 
