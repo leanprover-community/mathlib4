@@ -170,8 +170,11 @@ The matrices A and B may be rectangular. The exponent is positive because the id
 does not hold at exponent zero when the index types have different cardinalities. -/
 theorem trace_mul_pow_comm' [CommSemiring R]
     (A : Matrix m n R) (B : Matrix n m R) {k : ℕ} (hk : k ≠ 0) :
-    trace ((A * B) ^ k) = trace ((B * A) ^ k) := by
+    (letI : DecidableEq m := Classical.decEq m
+     letI : DecidableEq n := Classical.decEq n
+     trace ((A * B) ^ k) = trace ((B * A) ^ k)) := by
   classical
+  change trace ((A * B) ^ k) = trace ((B * A) ^ k)
   obtain ⟨k', rfl⟩ := Nat.exists_eq_succ_of_ne_zero hk
   rw [pow_succ, ← Matrix.mul_assoc, trace_mul_cycle, mul_pow_succ_mul]
 
@@ -180,8 +183,10 @@ are reversed. Unlike the rectangular version, this also holds at exponent zero.
 
 See trace_mul_pow_comm' for the rectangular version. -/
 theorem trace_mul_pow_comm [CommSemiring R] (A B : Matrix n n R) (k : ℕ) :
-    trace ((A * B) ^ k) = trace ((B * A) ^ k) := by
+    (letI : DecidableEq n := Classical.decEq n
+     trace ((A * B) ^ k) = trace ((B * A) ^ k)) := by
   classical
+  change trace ((A * B) ^ k) = trace ((B * A) ^ k)
   cases k with
   | zero => rfl
   | succ k => exact trace_mul_pow_comm' A B k.succ_ne_zero
