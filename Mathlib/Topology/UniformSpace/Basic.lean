@@ -503,9 +503,7 @@ theorem uniformity_comap {_ : UniformSpace β} (f : α → β) :
   rfl
 
 lemma ball_preimage {f : α → β} {U : SetRel β β} {x : α} :
-    UniformSpace.ball x (Prod.map f f ⁻¹' U) = f ⁻¹' UniformSpace.ball (f x) U := by
-  ext : 1
-  simp only [UniformSpace.ball, mem_preimage, Prod.map_apply]
+    UniformSpace.ball x (Prod.map f f ⁻¹' U) = f ⁻¹' UniformSpace.ball (f x) U := rfl
 
 @[simp]
 theorem UniformSpace.comap_id {α : Type*} : UniformSpace.comap (id : α → α) = id := by
@@ -925,8 +923,7 @@ theorem entourageProd_mem_uniformity [t₁ : UniformSpace α] [t₂ : UniformSpa
   rw [uniformity_prod]; exact inter_mem_inf (preimage_mem_comap hu) (preimage_mem_comap hv)
 
 theorem ball_entourageProd (u : SetRel α α) (v : SetRel β β) (x : α × β) :
-    ball x (entourageProd u v) = ball x.1 u ×ˢ ball x.2 v := by
-  ext p; simp only [ball, entourageProd, Set.mem_ofPred_eq, Set.mem_prod, Set.mem_preimage]
+    ball x (entourageProd u v) = ball x.1 u ×ˢ ball x.2 v := rfl
 
 instance IsSymm_entourageProd {u : SetRel α α} {v : SetRel β β} [u.IsSymm] [v.IsSymm] :
     (entourageProd u v).IsSymm where
