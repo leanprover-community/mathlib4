@@ -48,8 +48,8 @@
     result: https://github.com/wwylele/Compass/blob/master/Solution.lean
 9:
   title  : The Area of a Circle
-  decl   : Theorems100.area_disc
-  authors: James Arthur and Benjamin Davidson and Andrew Souther
+  decl   : EuclideanSpace.volume_ball_fin_two
+  authors: Xavier Roblot
 10:
   title  : Euler’s Generalization of Fermat’s Little Theorem
   decl   : Nat.ModEq.pow_totient
@@ -83,7 +83,7 @@
 18:
   title  : Liouville’s Theorem and the Construction of Transcendental Numbers
   authors: Jujian Zhang
-  decl   :  Liouville.transcendental
+  decl   : Liouville.transcendental
 19:
   title  : Four Squares Theorem
   decl   : Nat.sum_four_squares

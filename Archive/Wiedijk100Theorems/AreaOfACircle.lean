@@ -42,6 +42,9 @@ continues to develop, it should eventually become possible to redefine `disc` an
 to the n-ball.
 -/
 
+deprecated_module "This result exists in Mathlib in greater generality, see
+Mathlib.MeasureTheory.Lebesgue.VolumeOfBalls." (since := "2026-10-10")
+
 @[expose] public section
 
 open Set Real MeasureTheory intervalIntegral
