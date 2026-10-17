@@ -89,12 +89,17 @@ lemma Equilateral.dist_eq {s : Simplex R P n} (he : s.Equilateral) {i₁ i₂ i�
   rcases he with ⟨r, hr⟩
   rw [hr _ _ h₁₂, hr _ _ h₃₄]
 
+lemma Equilateral.face [NeZero n] {s : Simplex R P n} {m : ℕ} {fs : Finset (Fin (n + 1))}
+    (hfs : fs.card = m + 1) (h : s.Equilateral) : (s.face hfs).Equilateral := by
+  obtain ⟨r, hr⟩ := h
+  unfold Equilateral
+  aesop
+
 /-- The face of an equilateral simplex opposite a vertex is equilateral. -/
 lemma Equilateral.faceOpposite [NeZero n] {s : Simplex R P n} {i : Fin (n + 1)}
     (h : s.Equilateral) : (s.faceOpposite i).Equilateral := by
-  obtain ⟨r, hr⟩ := h
-  use r
-  aesop
+  rw [Simplex.faceOpposite]
+  exact h.face _
 
 @[simp] lemma equilateral_reindex_iff {s : Simplex R P m} (e : Fin (m + 1) ≃ Fin (n + 1)) :
     (s.reindex e).Equilateral ↔ s.Equilateral := by
