@@ -270,7 +270,8 @@ lemma eventually_norm_mfderivWithin_symm_extChartAt_comp_lt (x : M) :
   rw [TangentBundle.symmL_trivializationAt h'y] at hy
   have A : (extChartAt I x).symm (extChartAt I x y) = y :=
     (extChartAt I x).left_inv (by simpa using h'y)
-  convert! hy using 3 <;> congr
+  convert! hy using 3
+  congr
 
 set_option backward.isDefEq.respectTransparency false in
 lemma eventually_norm_mfderivWithin_symm_extChartAt_lt (x : M) :
