@@ -22,15 +22,18 @@ We use this to show that the graph distance in the Cayley graph is given by the 
 
 * `Group.Generators.cayleySimpleGraph`: the Cayley graph of `G` with respect to a generating
   family `P`, realized as a `SimpleGraph G`.
+* `AddGroup.Generators.cayleySimpleGraph`: the additive version of the above.
 
 ## Main results
 
 * `Group.Generators.dist_cayleySimpleGraph`: the distance from `g` to `h` in the Cayley graph is
   the word length of `g⁻¹ * h`.
+* `AddGroup.Generators.dist_cayleySimpleGraph`: the additive version of the above.
 
 ## Implementation notes
 
-* `SimpleGraph.mulCayley` is used to construct the Cayley graph induced by elements of `G`.
+* `SimpleGraph.mulCayley` (resp. `SimpleGraph.addCayley`) is used to construct the Cayley graph
+  induced by elements of `G`.
 * A simple graph has no loops, so a letter that evaluates to `1` in the group contributes no edge.
   This is why `exists_walk_of_word` produces a walk which may be shorter than the word.
 
@@ -50,13 +53,17 @@ variable {G ι : Type*} [Group G]
 variable (P : Group.Generators G ι) (g h : G) (l : List (ι × Bool))
 
 /-- The Cayley graph of `G` with respect to the generating family `P`. -/
+@[to_additive /-- The Cayley graph of `G` with respect to the generating family `P`. -/]
 def cayleySimpleGraph : SimpleGraph G := mulCayley (Set.range P.val)
 
 /-- `g` is a letter of `P` if it is the value of a one-letter word. -/
+@[to_additive /-- `g` is a letter of `P` if it is the value of a one-letter word. -/]
 def IsLetter : Prop := ∃ x : ι × Bool, P.wordProd [x] = g
 
 variable {g} in
 /-- `g` is a letter of `P` if and only if it is a generator or the inverse of one. -/
+@[to_additive /-- `g` is a letter of `P` if and only if it is a generator or the negative of
+one. -/]
 lemma isLetter_iff : P.IsLetter g ↔ g ∈ Set.range P.val ∨ g⁻¹ ∈ Set.range P.val := by
   constructor
   · intro hg
@@ -69,6 +76,8 @@ lemma isLetter_iff : P.IsLetter g ↔ g ∈ Set.range P.val ∨ g⁻¹ ∈ Set.r
 
 /-- `g` and `h` are adjacent in the Cayley graph if and only if they are distinct and
 `g⁻¹ * h` is a letter of `P`. -/
+@[to_additive /-- `g` and `h` are adjacent in the Cayley graph if and only if they are distinct
+and `-g + h` is a letter of `P`. -/]
 lemma cayleySimpleGraph_adj : P.cayleySimpleGraph.Adj g h ↔ g ≠ h ∧ P.IsLetter (g⁻¹ * h) := by
   simp [cayleySimpleGraph, mulCayley_adj, isLetter_iff]
 
@@ -76,6 +85,8 @@ lemma cayleySimpleGraph_adj : P.cayleySimpleGraph.Adj g h ↔ g ≠ h ∧ P.IsLe
 
 /-- A word `l` gives a walk in the Cayley graph from `g` to `g * P.wordProd l`,
 of length at most the length of `l`. -/
+@[to_additive /-- A word `l` gives a walk in the Cayley graph from `g` to `g + P.wordSum l`,
+of length at most the length of `l`. -/]
 lemma exists_walk_of_word (g : G) (l : List (ι × Bool)) :
     ∃ p : P.cayleySimpleGraph.Walk g (g * P.wordProd l), p.length ≤ l.length := by
   match l with
@@ -97,6 +108,8 @@ lemma exists_walk_of_word (g : G) (l : List (ι × Bool)) :
 
 /-- A walk in the Cayley graph from `g` to `h` gives a word of the same length which evaluates to
 `g⁻¹ * h`. -/
+@[to_additive /-- A walk in the Cayley graph from `g` to `h` gives a word of the same length which
+evaluates to `-g + h`. -/]
 lemma exists_word_of_walk {g h : G} (p : P.cayleySimpleGraph.Walk g h) :
     ∃ l, P.wordProd l = g⁻¹ * h ∧ l.length = p.length := by
   match p with
@@ -116,6 +129,8 @@ lemma exists_word_of_walk {g h : G} (p : P.cayleySimpleGraph.Walk g h) :
 /-! ### Distance -/
 
 /-- The distance from `g` to `h` in the Cayley graph is the word length of `g⁻¹ * h`. -/
+@[to_additive /-- The distance from `g` to `h` in the Cayley graph is the word length of
+`-g + h`. -/]
 theorem dist_cayleySimpleGraph : P.cayleySimpleGraph.dist g h = P.wordLength (g⁻¹ * h) := by
   -- get sufficiently short walk between `g` and `h`; gives reachability and the ≤ direction
   obtain ⟨p, hp⟩ : ∃ p : P.cayleySimpleGraph.Walk g h, p.length ≤ P.wordLength (g⁻¹ * h) := by
@@ -136,7 +151,8 @@ theorem dist_cayleySimpleGraph : P.cayleySimpleGraph.dist g h = P.wordLength (g�
       _ = P.cayleySimpleGraph.dist g h := hq
 
 /-- The word length of `g` is its distance from `1` in the Cayley graph. -/
-@[simp]
+@[to_additive (attr := simp)
+/-- The word length of `g` is its distance from `0` in the Cayley graph. -/]
 lemma dist_cayleySimpleGraph_one_left : P.cayleySimpleGraph.dist 1 g = P.wordLength g := by
   simp [dist_cayleySimpleGraph]
 

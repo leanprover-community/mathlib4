@@ -24,6 +24,8 @@ family given by `Group.Generators`. The word length defines a norm on `G` induci
 * `Group.Generators.wordNorm`: the word length as a norm on `G`.
 * `Group.Generators.normedGroup`: the normed group structure on `G` induced by `wordNorm`.
   This gives rise to a word metric on `G`.
+* `AddGroup.Generators.wordLength`, `AddGroup.Generators.addGroupNorm`,
+  `AddGroup.Generators.normedAddGroup`: the additive versions of the above.
 
 ## Main results
 
@@ -55,30 +57,38 @@ variable (P : Group.Generators G ι) (g h : G) (l : List (ι × Bool))
 /-! ### Definition of word length -/
 
 /-- The word length of `g` with respect to the generating family `P`. -/
-@[no_expose]
+@[no_expose, to_additive /-- The word length of `g` with respect to the generating family `P`. -/]
 noncomputable def wordLength : ℕ := sInf {n | ∃ l, P.wordProd l = g ∧ l.length = n}
 
 /-! ### Geodesic words -/
 
 /-- A word `l` is geodesic if its length is exactly the word length of the group element it
 represents. -/
+@[to_additive /-- A word `l` is geodesic if its length is exactly the word length of the group
+element it represents. -/]
 def IsGeodesic : Prop := P.wordLength (P.wordProd l) = l.length
 
+@[to_additive]
 lemma IsGeodesic.eq {l : List (ι × Bool)} (hl : P.IsGeodesic l) :
     P.wordLength (P.wordProd l) = l.length := hl
 
 /-- Every group element has a geodesic word representative. -/
+@[to_additive /-- Every additive group element has a geodesic word representative. -/]
 theorem exists_isGeodesic : ∃ l, P.IsGeodesic l ∧ P.wordProd l = g := by
   obtain ⟨l, rfl, hlen⟩ := Nat.sInf_mem (Set.Nonempty.image List.length (P.wordProd_surjective g))
   exact ⟨l, hlen.symm, rfl⟩
 
 /-! ### Word length -/
 
+@[to_additive]
 lemma wordLength_wordProd_le : P.wordLength (P.wordProd l) ≤ l.length :=
   Nat.sInf_le ⟨l, rfl, rfl⟩
 
 /-- The characterisation of word length: the word length of a group element is less or equal to `n`
 if and only if there exists a word `l` of length at most `n` which evaluates to `g`. -/
+@[to_additive /-- The characterisation of word length: the word length of an additive group
+element is less or equal to `n` if and only if there exists a word `l` of length at most `n` which
+evaluates to `g`. -/]
 theorem wordLength_le_iff {n : ℕ} : P.wordLength g ≤ n ↔ ∃ l, l.length ≤ n ∧ P.wordProd l = g := by
   constructor
   · intro h
@@ -88,32 +98,36 @@ theorem wordLength_le_iff {n : ℕ} : P.wordLength g ≤ n ↔ ∃ l, l.length �
     exact (P.wordLength_wordProd_le l).trans hl
 
 variable {g} in
-@[simp]
+@[to_additive (attr := simp)]
 lemma wordLength_eq_zero_iff : P.wordLength g = 0 ↔ g = 1 := by
   rw [← Nat.le_zero, wordLength_le_iff]
   simp [eq_comm]
 
-@[simp]
+@[to_additive (attr := simp)]
 lemma wordLength_one : P.wordLength (1 : G) = 0 := by
   rw [wordLength_eq_zero_iff]
 
 -- This is superceded by `wordLength_inv`.
+@[to_additive]
 private lemma wordLength_inv_le : P.wordLength g⁻¹ ≤ P.wordLength g := by
   obtain ⟨l, hl, rfl⟩ := P.exists_isGeodesic g
   simpa [wordProd_invRev, hl.eq] using P.wordLength_wordProd_le (FreeGroup.invRev l)
 
-@[simp]
+@[to_additive (attr := simp)]
 lemma wordLength_inv : P.wordLength g⁻¹ = P.wordLength g := by
   apply le_antisymm
   · exact P.wordLength_inv_le g
   · simpa using P.wordLength_inv_le g⁻¹
 
+@[to_additive]
 lemma wordLength_mul_le : P.wordLength (g * h) ≤ P.wordLength g + P.wordLength h := by
   obtain ⟨l₁, hl₁, rfl⟩ := P.exists_isGeodesic g
   obtain ⟨l₂, hl₂, rfl⟩ := P.exists_isGeodesic h
   simpa [wordProd_append, hl₁.eq, hl₂.eq] using P.wordLength_wordProd_le (l₁ ++ l₂)
 
 /-- The `wordLength` with respect to a generating family `P` defines a norm on `G`. -/
+@[to_additive /-- The `wordLength` with respect to a generating family `P` defines a norm on the
+additive group `G`. -/]
 noncomputable def groupNorm : GroupNorm G where
   toFun g := P.wordLength g
   map_one' := by simp
@@ -125,7 +139,9 @@ noncomputable def groupNorm : GroupNorm G where
 
 /-- `G` as a metric space `NormedGroup G` with respect to a generating family `P`. The metric is
 given by `dist g h = ‖g⁻¹ * h‖`, where the norm is given by `groupNorm`. -/
-@[instance_reducible]
+@[to_additive (attr := instance_reducible) /-- `G` as a metric space `NormedAddGroup G` with respect
+to a generating family `P`. The metric is given by `dist g h = ‖-g + h‖`, where the norm is given by
+`addGroupNorm`. -/]
 noncomputable def normedGroup : NormedGroup G := P.groupNorm.toNormedGroup
 
 end Group.Generators
