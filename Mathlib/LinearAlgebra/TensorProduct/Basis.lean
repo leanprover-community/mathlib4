@@ -122,6 +122,26 @@ lemma TensorProduct.sum_tmul_basis_right_eq_zero
   have := Classical.decEq κ
   (TensorProduct.equivFinsuppOfBasisRight 𝒞).symm.injective (a₂ := 0) <| by simpa
 
+lemma TensorProduct.equivFinsuppOfBasisRight_rTensor {P : Type*} [AddCommMonoid P] [Module R P]
+    (f : M →ₗ[R] P) (x : M ⊗[R] N) :
+    equivFinsuppOfBasisRight 𝒞 (f.rTensor N x) =
+      (equivFinsuppOfBasisRight 𝒞 x).mapRange f f.map_zero := by
+  induction x with
+  | tmul m n => ext; simp
+  | add x y hx hy => simp [hx, hy, Finsupp.mapRange_add (map_add f)]
+
+/-- Let `𝒞` be a basis of `N`. An element of `P ⊗[R] N` lies in the range of `f.rTensor N` if and
+only if each of its coordinates with respect to `𝒞` lies in the range of `f`. -/
+lemma TensorProduct.mem_range_rTensor_iff_equivFinsuppOfBasisRight {P : Type*} [AddCommMonoid P]
+    [Module R P] (f : M →ₗ[R] P) (x : P ⊗[R] N) :
+    x ∈ range (f.rTensor N) ↔ ∀ i, equivFinsuppOfBasisRight 𝒞 x i ∈ range f := by
+  refine ⟨?_, fun h ↦ ?_⟩
+  · rintro ⟨y, rfl⟩ i
+    simp [equivFinsuppOfBasisRight_rTensor]
+  choose g hg using h
+  rw [← (equivFinsuppOfBasisRight 𝒞).symm_apply_apply x, equivFinsuppOfBasisRight_symm_apply]
+  exact Submodule.sum_mem _ fun i _ ↦ ⟨g i ⊗ₜ 𝒞 i, by simp [hg]⟩
+
 /--
 If `{ℬᵢ}` is a basis for the module `M`, then every elements of `x ∈ M ⊗ N` can be uniquely written
 as `∑ᵢ ℬᵢ ⊗ nᵢ` for some `nᵢ ∈ N`.
