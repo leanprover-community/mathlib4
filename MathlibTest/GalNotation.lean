@@ -59,7 +59,8 @@ abbrev Copy := L
 
 set_option pp.explicit true in
 /--
-info: @AlgEquiv K L L (@Semifield.toCommSemiring K (@Field.toSemifield K inst✝²))
+info:
+@AlgEquiv K (@Semifield.toCommSemiring K (@Field.toSemifield K inst✝²)) L L
   (@CommSemiring.toSemiring L (@Semifield.toCommSemiring L (@Field.toSemifield L inst✝¹)))
   (@CommSemiring.toSemiring L (@Semifield.toCommSemiring L (@Field.toSemifield L inst✝¹))) inst✝ inst✝ : Type uL
 -/

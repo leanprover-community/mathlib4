@@ -202,7 +202,7 @@ noncomputable def AlgHom.liftNormal [h : Normal F E] : E →ₐ[F] E :=
 theorem AlgHom.liftNormal_commutes [Normal F E] (x : K₁) :
     ϕ.liftNormal E (algebraMap K₁ E x) = algebraMap K₂ E (ϕ x) :=
   -- We have to specify one `Algebra` instance by unification, not synthesis.
-  @AlgHom.commutes K₁ E E _ _ _ _ (_) _ _
+  @AlgHom.commutes K₁ _ E E _ _ _ (_) _ _
 
 @[simp]
 theorem AlgHom.restrict_liftNormal (ϕ : K₁ →ₐ[F] K₁) [Normal F K₁] [Normal F E] :
