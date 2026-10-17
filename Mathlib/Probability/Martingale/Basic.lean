@@ -587,8 +587,6 @@ theorem Submartingale.sum_smul_sub [IsFiniteMeasure μ] {R : ℝ}
       ((hf.integrable _).sub (hf.integrable _))] with ω hω1 hω2
   simp only [Pi.zero_apply, Nat.succ_eq_add_one, Pi.smul_apply'] at hω1 hω2 ⊢
   grw [← smul_zero (0 : ℝ), hnonneg i ω, hω1, hω2]
-  · exact hnonneg i ω
-  · simp
 
 /-- Given a discrete submartingale `f` and a predictable process `ξ` (i.e. `ξ (n + 1)` is strongly
 adapted) the process defined by `fun n => ∑ k ∈ Finset.range n, ξ (k + 1) * (f (k + 1) - f k)` is

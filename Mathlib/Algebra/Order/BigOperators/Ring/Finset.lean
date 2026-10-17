@@ -38,8 +38,7 @@ lemma sum_sq_le_sq_sum_of_nonneg (hf : ∀ i ∈ s, 0 ≤ f i) :
   refine sum_le_sum fun i hi ↦ ?_
   rw [← mul_sum]
   gcongr
-  · exact hf i hi
-  · exact single_le_sum hf hi
+  exact single_le_sum hf hi
 
 end OrderedSemiring
 

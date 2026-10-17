@@ -208,7 +208,7 @@ lemma reduce {m n : ℕ} (h : Reachable (single 3 n)) (hmn : m ≤ n) : Reachabl
 lemma tower_inequality {m n : ℕ} (hm : m = 2010) (hn : n = 11) :
     2010 ^ 2010 ^ m ≤ 2 ^ 2 ^ 2 ^ 2 ^ 2 ^ n := by
   calc
-    _ ≤ 2 ^ (11 * 2010 ^ m) := by rw [pow_mul]; gcongr <;> lia
+    _ ≤ 2 ^ (11 * 2010 ^ m) := by rw [pow_mul]; gcongr; lia
     _ ≤ _ := Nat.pow_le_pow_right Nat.zero_lt_two ?_
   calc
     _ ≤ 2 ^ (4 + 11 * m) := by rw [pow_add, pow_mul]; gcongr <;> lia
@@ -243,6 +243,6 @@ theorem result : Reachable (single 5 (2010 ^ 2010 ^ 2010)) := by
   · apply pow_dvd_pow
     trans 2010 ^ 1
     · lia
-    · gcongr <;> lia
+    · gcongr; lia
 
 end Imo2010Q5
