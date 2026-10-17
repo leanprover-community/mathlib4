@@ -17,6 +17,11 @@ when the base field has characteristic zero.
 
 We also show that applying a smooth family of symmetric maps to smooth families of vectors gives
 a smooth result, in several versions.
+
+Note that, in positive characteristic, the result is true in finite dimension, but not in
+general for `n = ω`: this is analogous to the case of alternating maps.
+See https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/bundles.20of.20alternating.20maps/near/630597041
+For now, we only implement the characteristic zero case as it is the most important.
 -/
 
 public section
@@ -66,7 +71,7 @@ theorem contMDiffOn_continuousSymmetricMapCoordChange [CharZero 𝕜]
 
 variable [∀ x, IsTopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜 (E₂ x)]
 
-theorem chartAt_continuousSymmetricMap (y₀ y : SE₁E₂) :
+@[simp] theorem chartAt_continuousSymmetricMap (y₀ y : SE₁E₂) :
     chartAt (ModelProd HB (F₁ [Sym^ι]→L[𝕜] F₂)) y₀ y =
       (chartAt HB y₀.1 y.1, inCoordinates F₁ F₂ y₀.1 y.1 y₀.1 y.1 y.2) := by
   rw [FiberBundle.chartedSpace_chartAt, trans_apply, OpenPartialHomeomorph.prod_apply,
@@ -120,7 +125,7 @@ end
 variable [CharZero 𝕜] [∀ x, IsTopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜 (E₂ x)]
   [ContMDiffVectorBundle n F₁ E₁ IB] [ContMDiffVectorBundle n F₂ E₂ IB]
 
-instance Bundle.continuousSymmetricMap.vectorPrebundle.isContMDiff :
+instance Bundle.ContinuousSymmetricMap.vectorPrebundle.isContMDiff :
     (Bundle.ContinuousSymmetricMap.vectorPrebundle 𝕜 ι F₁ E₁ F₂ E₂).IsContMDiff IB n where
   exists_contMDiffCoordChange := by
     rintro _ ⟨e₁, e₂, he₁, he₂, rfl⟩ _ ⟨e₁', e₂', he₁', he₂', rfl⟩
@@ -184,6 +189,9 @@ lemma ContMDiffWithinAt.continuousSymmetricMap_apply_of_inCoordinates
       (fun m ↦ inCoordinates F₁ F₂ (b₁ m₀) (b₁ m) (b₂ m₀) (b₂ m) (ϕ m)) m₀)
     (hv : ∀ i, CMDiffAt[s] n (fun m ↦ (v i m : TotalSpace F₁ E₁)) m₀) (hb₂ : CMDiffAt[s] n b₂ m₀) :
     CMDiffAt[s] n (fun m ↦ (ϕ m (fun i ↦ v i m) : TotalSpace F₂ E₂)) m₀ := by
+  /- The version in vector spaces is `ContMDiffWithinAt.continuousAlternatingMap_apply`.
+  To apply this version, we need to write down the expressions in coordinates of the various
+  objects that show up in the formula. -/
   rw [← contMDiffWithinAt_insert_self] at hϕ hb₂ ⊢
   replace hv : ∀ i, CMDiffAt[insert m₀ s] n (fun m ↦ (v i m : TotalSpace F₁ E₁)) m₀ := by
     intro i
@@ -193,12 +201,12 @@ lemma ContMDiffWithinAt.continuousSymmetricMap_apply_of_inCoordinates
   refine ⟨hb₂, ?_⟩
   apply (ContMDiffWithinAt.continuousSymmetricMap_apply hϕ
     (fun i ↦ (hv i).2)).congr_of_eventuallyEq_of_mem ?_ (mem_insert m₀ s)
-  have A' : ∀ᶠ m in 𝓝[insert m₀ s] m₀, b₂ m ∈ (trivializationAt F₂ E₂ (b₂ m₀)).baseSet := by
-      apply hb₂.continuousWithinAt
-      apply (trivializationAt F₂ E₂ (b₂ m₀)).open_baseSet.mem_nhds
-      exact FiberBundle.mem_baseSet_trivializationAt' (b₂ m₀)
+  have A : ∀ᶠ m in 𝓝[insert m₀ s] m₀, b₂ m ∈ (trivializationAt F₂ E₂ (b₂ m₀)).baseSet := by
+    apply hb₂.continuousWithinAt
+    apply (trivializationAt F₂ E₂ (b₂ m₀)).open_baseSet.mem_nhds
+    exact FiberBundle.mem_baseSet_trivializationAt' (b₂ m₀)
   rcases isEmpty_or_nonempty ι with hι | ⟨⟨i₀⟩⟩
-  · filter_upwards [A'] with m h'm
+  · filter_upwards [A] with m h'm
     rw [inCoordinates_eq_of_mem_baseSet₂ _ _ h'm]
     simp only [compContinuousLinearMap_apply, ContinuousLinearMap.compContinuousSymmetricMap_coe,
       ContinuousLinearEquiv.coe_coe, Trivialization.continuousLinearEquivAt_apply,
@@ -206,11 +214,11 @@ lemma ContMDiffWithinAt.continuousSymmetricMap_apply_of_inCoordinates
     congr
     ext i
     exact hι.elim i
-  · have A : ∀ᶠ m in 𝓝[insert m₀ s] m₀, b₁ m ∈ (trivializationAt F₁ E₁ (b₁ m₀)).baseSet := by
+  · have B : ∀ᶠ m in 𝓝[insert m₀ s] m₀, b₁ m ∈ (trivializationAt F₁ E₁ (b₁ m₀)).baseSet := by
       apply (hv i₀).1.continuousWithinAt
       apply (trivializationAt F₁ E₁ (b₁ m₀)).open_baseSet.mem_nhds
       exact FiberBundle.mem_baseSet_trivializationAt' (b₁ m₀)
-    filter_upwards [A, A'] with m hm h'm
+    filter_upwards [A, B] with m hm h'm
     rw [inCoordinates_eq _ _ hm h'm]
     simp only [compContinuousLinearMap_apply, ContinuousLinearEquiv.coe_coe,
       Trivialization.continuousLinearEquivAt_symm_apply,
@@ -266,16 +274,19 @@ lemma MDifferentiableWithinAt.continuousSymmetricMap_apply_of_inCoordinates
       (fun m ↦ inCoordinates F₁ F₂ (b₁ m₀) (b₁ m) (b₂ m₀) (b₂ m) (ϕ m)) m₀)
     (hv : ∀ i, MDiffAt[s] (fun m ↦ (v i m : TotalSpace F₁ E₁)) m₀) (hb₂ : MDiffAt[s] b₂ m₀) :
     MDiffAt[s] (fun m ↦ (ϕ m (fun i ↦ v i m) : TotalSpace F₂ E₂)) m₀ := by
+  /- The version in vector spaces is `DifferentiableWithinAt.continuousAlternatingMap_apply`.
+  To apply this version, we need to write down the expressions in coordinates of the various
+  objects that show up in the formula. -/
   simp_rw [mdifferentiableWithinAt_totalSpace] at hv ⊢
   refine ⟨hb₂, ?_⟩
   apply (MDifferentiableWithinAt.continuousSymmetricMap_apply hϕ
     (fun i ↦ (hv i).2)).congr_of_eventuallyEq_insert ?_
-  have A' : ∀ᶠ m in 𝓝[insert m₀ s] m₀, b₂ m ∈ (trivializationAt F₂ E₂ (b₂ m₀)).baseSet := by
-      apply hb₂.insert.continuousWithinAt
-      apply (trivializationAt F₂ E₂ (b₂ m₀)).open_baseSet.mem_nhds
-      exact FiberBundle.mem_baseSet_trivializationAt' (b₂ m₀)
+  have A : ∀ᶠ m in 𝓝[insert m₀ s] m₀, b₂ m ∈ (trivializationAt F₂ E₂ (b₂ m₀)).baseSet := by
+    apply hb₂.insert.continuousWithinAt
+    apply (trivializationAt F₂ E₂ (b₂ m₀)).open_baseSet.mem_nhds
+    exact FiberBundle.mem_baseSet_trivializationAt' (b₂ m₀)
   rcases isEmpty_or_nonempty ι with hι | ⟨⟨i₀⟩⟩
-  · filter_upwards [A'] with m h'm
+  · filter_upwards [A] with m h'm
     rw [inCoordinates_eq_of_mem_baseSet₂ _ _ h'm]
     simp only [compContinuousLinearMap_apply, ContinuousLinearMap.compContinuousSymmetricMap_coe,
       ContinuousLinearEquiv.coe_coe, Trivialization.continuousLinearEquivAt_apply,
@@ -283,11 +294,11 @@ lemma MDifferentiableWithinAt.continuousSymmetricMap_apply_of_inCoordinates
     congr
     ext i
     exact hι.elim i
-  · have A : ∀ᶠ m in 𝓝[insert m₀ s] m₀, b₁ m ∈ (trivializationAt F₁ E₁ (b₁ m₀)).baseSet := by
+  · have B : ∀ᶠ m in 𝓝[insert m₀ s] m₀, b₁ m ∈ (trivializationAt F₁ E₁ (b₁ m₀)).baseSet := by
       apply (hv i₀).1.insert.continuousWithinAt
       apply (trivializationAt F₁ E₁ (b₁ m₀)).open_baseSet.mem_nhds
       exact FiberBundle.mem_baseSet_trivializationAt' (b₁ m₀)
-    filter_upwards [A, A'] with m hm h'm
+    filter_upwards [A, B] with m hm h'm
     rw [inCoordinates_eq _ _ hm h'm]
     simp only [compContinuousLinearMap_apply, ContinuousLinearEquiv.coe_coe,
       Trivialization.continuousLinearEquivAt_symm_apply,
