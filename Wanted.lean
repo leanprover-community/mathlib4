@@ -1,5 +1,6 @@
 module  -- shake: keep-all --deprecated_module: ignore
 
+public import Wanted.AlgebraicGeometry.Group.Jacobian
 public import Wanted.Analysis.Convex.Cone.Basic
 public import Wanted.Analysis.Real.Pi.Chudnovsky
 public import Wanted.CategoryTheory.Limits.Shapes.Countable
@@ -12,7 +13,6 @@ public import Wanted.GroupTheory.GroupAction.Jordan
 public import Wanted.Order.KrullDimension
 public import Wanted.Probability.Combinatorics.BinomialRandomGraph.Defs
 public import Wanted.Probability.Distributions.Binomial
-public import Wanted.RingTheory.Congruence.Basic
 public import Wanted.RingTheory.Etale.Descent
 public import Wanted.RingTheory.KrullDimension.Basic
 public import Wanted.RingTheory.SimpleModule.Basic

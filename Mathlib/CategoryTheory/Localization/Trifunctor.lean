@@ -5,9 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Localization.Bifunctor
 public import Mathlib.CategoryTheory.Functor.CurryingThree
-public import Mathlib.CategoryTheory.Products.Associator
+public import Mathlib.CategoryTheory.Localization.Bifunctor
 
 /-!
 # Lifting of trifunctors

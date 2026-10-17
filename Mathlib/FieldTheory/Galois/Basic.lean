@@ -5,10 +5,8 @@ Authors: Thomas Browning, Patrick Lutz, Yongle Hu, Jingting Wang
 -/
 module
 
-public import Mathlib.FieldTheory.Normal.Closure
 public import Mathlib.FieldTheory.PrimitiveElement
 public import Mathlib.FieldTheory.SeparableClosure
-public import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 
 /-!
 # Galois Extensions
@@ -270,6 +268,16 @@ def fixingSubgroupEquiv : fixingSubgroup K ≃* Gal(E/K) where
   invFun ϕ := ⟨ϕ.restrictScalars _, ϕ.commutes⟩
   map_mul' _ _ := by ext; rfl
 
+@[simp]
+theorem coe_fixingSubgroupEquiv_apply (σ : K.fixingSubgroup) :
+    ⇑(K.fixingSubgroupEquiv σ) = ⇑σ.1 :=
+  rfl
+
+@[simp]
+theorem coe_fixingSubgroupEquiv_symm_apply (σ : Gal(E/K)) :
+    ⇑(K.fixingSubgroupEquiv.symm σ).1 = ⇑σ :=
+  rfl
+
 theorem fixingSubgroup_fixedField [FiniteDimensional F E] : fixingSubgroup (fixedField H) = H := by
   have H_le : H ≤ fixingSubgroup (fixedField H) := (le_iff_le _ _).mp le_rfl
   suffices Nat.card H = Nat.card (fixingSubgroup (fixedField H)) by
@@ -287,6 +295,16 @@ A subgroup is isomorphic to the Galois group of its fixed field.
 def subgroupEquivAlgEquiv [FiniteDimensional F E] (H : Subgroup Gal(E/F)) :
     H ≃* Gal(E/IntermediateField.fixedField H) :=
   (MulEquiv.subgroupCongr (fixingSubgroup_fixedField H).symm).trans (fixingSubgroupEquiv _)
+
+@[simp]
+theorem coe_subgroupEquivAlgEquiv_apply [FiniteDimensional F E] (σ : H) :
+    ⇑(subgroupEquivAlgEquiv H σ) = ⇑σ.1 :=
+  rfl
+
+@[simp]
+theorem coe_subgroupEquivAlgEquiv_symm_apply [FiniteDimensional F E] (σ : Gal(E/fixedField H)) :
+    ⇑((subgroupEquivAlgEquiv H).symm σ).1 = ⇑σ :=
+  rfl
 
 instance fixedField.smul : SMul K (fixedField (fixingSubgroup K)) where
   smul x y := ⟨x * y, fun ϕ => by
@@ -575,7 +593,14 @@ end GaloisEquivalentDefinitions
 section normalClosure
 
 variable (k K F : Type*) [Field k] [Field K] [Field F] [Algebra k K] [Algebra k F] [Algebra K F]
-  [IsScalarTower k K F] [IsGalois k F]
+  [IsScalarTower k K F]
+
+/-- Let $F / K / k$ be a tower of field extensions. If $K$ is separable over $k$ and $F$ is normal
+over $k$, then the normal closure of $K$ over $k$ in $F$ is Galois over $k$. -/
+instance IsGalois.normalClosure_of_isSeparable [Algebra.IsSeparable k K] [Normal k F] :
+    IsGalois k (normalClosure k K F) where
+
+variable [IsGalois k F]
 
 /-- Let $F / K / k$ be a tower of field extensions. If $F$ is Galois over $k$,
 then the normal closure of $K$ over $k$ in $F$ is Galois over $k$. -/
@@ -641,7 +666,7 @@ theorem restrictRestrictAlgEquivMapHom_surjective [FiniteDimensional F K] [Finit
     refine mem_bot.mp <| (IsGalois.mem_bot_iff_fixed _).mpr fun φ ↦ ?_
     rw [← restrictRestrictAlgEquivMapHom_apply K L φ ⟨x, hx₁⟩]
     rw [mem_fixedField_iff] at hx₂
-    exact congr_arg ((↑) : K → E) <| hx₂ (restrictRestrictAlgEquivMapHom F K L E φ) ⟨φ, rfl⟩
+    congrm $(hx₂ (restrictRestrictAlgEquivMapHom F K L E φ) ⟨φ, rfl⟩)
   obtain ⟨z, rfl⟩ : y ∈ (⊥ : IntermediateField F E) := h ▸ mem_inf.mpr ⟨hx₁, hy⟩
   exact mem_bot.mp ⟨z, rfl⟩
 
@@ -777,9 +802,5 @@ instance IsQuadraticExtension.isCyclic : IsCyclic Gal(K/F) := by
   · simp_all
   · exact @isCyclic_of_subsingleton _ _ (Finite.card_le_one_iff_subsingleton.mp h.le)
   · exact isCyclic_of_prime_card h
-
-@[deprecated inferInstance +typeChanged (since := "2026-04-09")]
-theorem IsQuadraticExtension.isMulCommutative_galoisGroup : IsMulCommutative Gal(K/F) :=
-  inferInstance
 
 end Algebra
