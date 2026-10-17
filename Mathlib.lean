@@ -2160,6 +2160,7 @@ public import Mathlib.Analysis.LocallyConvex.WeakDual
 public import Mathlib.Analysis.LocallyConvex.WeakOperatorTopology
 public import Mathlib.Analysis.LocallyConvex.WeakSpace
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
+public import Mathlib.Analysis.Matrix.GelfandRadius
 public import Mathlib.Analysis.Matrix.Hermitian
 public import Mathlib.Analysis.Matrix.HermitianFunctionalCalculus
 public import Mathlib.Analysis.Matrix.LDL
@@ -4700,6 +4701,7 @@ public import Mathlib.FieldTheory.Galois.IsGaloisGroup
 public import Mathlib.FieldTheory.Galois.NormalBasis
 public import Mathlib.FieldTheory.Galois.Notation
 public import Mathlib.FieldTheory.Galois.Profinite
+public import Mathlib.FieldTheory.Galois.Sylow
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
@@ -4896,6 +4898,7 @@ public import Mathlib.Geometry.Manifold.StructureGroupoid
 public import Mathlib.Geometry.Manifold.Submersion
 public import Mathlib.Geometry.Manifold.VectorBundle.Basic
 public import Mathlib.Geometry.Manifold.VectorBundle.ContMDiffSection
+public import Mathlib.Geometry.Manifold.VectorBundle.ContinuousAlternatingMap
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Basic
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.LeviCivita
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Metric
@@ -6798,6 +6801,9 @@ public import Mathlib.RingTheory.Coprime.Basic
 public import Mathlib.RingTheory.Coprime.Ideal
 public import Mathlib.RingTheory.Coprime.Lemmas
 public import Mathlib.RingTheory.DedekindDomain.AdicValuation
+public import Mathlib.RingTheory.DedekindDomain.AdicValuation.Completion
+public import Mathlib.RingTheory.DedekindDomain.AdicValuation.Ramification
+public import Mathlib.RingTheory.DedekindDomain.AdicValuation.Valuation
 public import Mathlib.RingTheory.DedekindDomain.Basic
 public import Mathlib.RingTheory.DedekindDomain.Different
 public import Mathlib.RingTheory.DedekindDomain.Dvr
@@ -7248,6 +7254,7 @@ public import Mathlib.RingTheory.PowerSeries.WellKnown
 public import Mathlib.RingTheory.Prime
 public import Mathlib.RingTheory.PrincipalIdealDomain
 public import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
+public import Mathlib.RingTheory.QuadraticAlgebra
 public import Mathlib.RingTheory.QuasiFinite.Basic
 public import Mathlib.RingTheory.QuasiFinite.Polynomial
 public import Mathlib.RingTheory.QuasiFinite.Weakly
