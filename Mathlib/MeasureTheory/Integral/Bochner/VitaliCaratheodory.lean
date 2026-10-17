@@ -108,7 +108,7 @@ theorem SimpleFunc.exists_le_lowerSemicontinuous_lintegral_ge (f : α →ₛ ℝ
       · classical
         simp only [hc, Set.indicator_zero', Pi.zero_apply, SimpleFunc.const_zero, imp_true_iff,
           SimpleFunc.coe_zero, Set.piecewise_eq_indicator,
-          SimpleFunc.coe_piecewise, le_zero_iff]
+          SimpleFunc.coe_piecewise, nonpos_iff_eq_zero]
       · simp only [lintegral_const, zero_mul, zero_le, ENNReal.coe_zero]
     have ne_top : μ s ≠ ⊤ := by
       simpa [f, hs, hc, lt_top_iff_ne_top, SimpleFunc.coe_const,

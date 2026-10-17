@@ -752,12 +752,12 @@ lemma one_vle_iff : 1 ≤ᵥ x ↔ 1 ≤ v x := by simp [v.vle_iff_le]
 lemma one_vlt_iff : 1 <ᵥ x ↔ 1 < v x := by simp [v.vlt_iff_lt]
 
 @[simp]
-lemma apply_posSubmonoid_ne_zero (x : posSubmonoid R) : v (x : R) ≠ 0 := by
+lemma apply_posSubmonoid_ne_zero (x : posSubmonoid R) : v x ≠ 0 := by
   simp [(isEquiv v (valuation R)).eq_zero, valuation_posSubmonoid_ne_zero]
 
 @[simp]
 lemma apply_posSubmonoid_pos (x : posSubmonoid R) : 0 < v x :=
-  zero_lt_iff.mpr <| v.apply_posSubmonoid_ne_zero x
+  (v.apply_posSubmonoid_ne_zero x).pos
 
 variable {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation R Γ₀) [v.Compatible]
 
@@ -942,8 +942,8 @@ lemma IsNontrivial.exists_lt_one [IsNontrivial R] :
     ∃ γ : ValueGroupWithZero R, 0 < γ ∧ γ < 1 := by
   obtain ⟨γ, h0, h1⟩ := IsNontrivial.condition (R := R)
   obtain h1 | h1 := lt_or_lt_iff_ne.mpr h1
-  · exact ⟨γ, zero_lt_iff.mpr h0, h1⟩
-  · exact ⟨γ⁻¹, by simpa [zero_lt_iff], by simp [inv_lt_one_iff₀, h0, h1]⟩
+  · exact ⟨γ, h0.pos, h1⟩
+  · exact ⟨γ⁻¹, by simpa [pos_iff_ne_zero], by simp [inv_lt_one_iff₀, h0, h1]⟩
 
 lemma isNontrivial_iff_nontrivial_units :
     IsNontrivial R ↔ Nontrivial (ValueGroupWithZero R)ˣ := by
@@ -1135,7 +1135,8 @@ lemma embed_strictMono [v.Compatible] : StrictMono (embed v) := by
   rw [← embedding_strictMono.lt_iff_lt]
   simp only [map_div₀]
   rw [div_lt_div_iff₀] at h ⊢
-  any_goals simp only [zero_lt_iff, ne_eq, Valuation.apply_posSubmonoid_ne_zero, not_false_eq_true]
+  any_goals
+    simp only [pos_iff_ne_zero, ne_eq, Valuation.apply_posSubmonoid_ne_zero, not_false_eq_true]
   · rw [← map_mul, ← map_mul, (isEquiv (valuation R) v).lt_iff_lt] at h
     simp only [embed, coe_mk, ZeroHom.coe_mk, lift_valuation,
       OneMemClass.coe_one, map_one, div_one]
