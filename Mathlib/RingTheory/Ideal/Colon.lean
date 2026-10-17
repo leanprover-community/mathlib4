@@ -78,8 +78,12 @@ lemma colon_inf_eq_left_of_subset (h : S ⊆ (N₂ : Set M)) : (N₁ ⊓ N₂).c
   aesop (add simp mem_colon)
 
 @[simp]
-lemma colon_eq_top_iff_subset (S : Set M) : N.colon S = ⊤ ↔ S ⊆ N := by
+lemma colon_eq_top_iff_subset : N.colon S = ⊤ ↔ S ⊆ N := by
   aesop (add simp [mem_colon, Ideal.eq_top_iff_one])
+
+@[simp]
+lemma colon_eq_top_iff_le : N₁.colon N₂ = ⊤ ↔ N₂ ≤ N₁ :=
+  colon_eq_top_iff_subset
 
 @[simp]
 lemma inf_colon : (N₁ ⊓ N₂).colon S = N₁.colon S ⊓ N₂.colon S := by
