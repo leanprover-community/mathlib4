@@ -64,7 +64,7 @@ partial def mkHigherOrderType (e : Expr) : MetaM Expr := do
       let exp ← mkHigherOrderType body
       mkForallFVars #[fvar] exp (binderInfoForMVars := e.binderInfo)
     else
-      let some (_, lhs, rhs) ← matchEq? body | throwError "not an equality {← ppExpr body}"
+      let some (_, lhs, rhs) ← matchEq? body | throwError "not an equality `{body}`"
       mkEq (← mkComp fvar lhs) (← mkComp fvar rhs)
 
 /-- A user attribute that applies to lemmas of the shape `∀ x, f (g x) = h x`.

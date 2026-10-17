@@ -99,7 +99,7 @@ def getFunProp? (e : Expr) : MetaM (Option (FunPropDecl × Expr)) := do
     return none
   else
     if decls.size > 1 then
-      throwError "fun_prop bug: expression {← ppExpr e} matches multiple function properties\n\
+      throwError "fun_prop bug: expression `{e}` matches multiple function properties\n\
         {decls.map (fun d => d.funPropName)}"
 
     let decl := decls[0]
@@ -134,7 +134,7 @@ open Elab Term in
 /-- Turn tactic syntax into a discharger function. -/
 def tacticToDischarge (tacticCode : TSyntax `tactic) : Expr → MetaM (Option Expr) := fun e =>
   withTraceNode `Meta.Tactic.fun_prop
-    (fun _ => do pure s!"discharging: {← ppExpr e}") do
+    (fun _ => do pure s!"discharging: `{← ppExpr e}`") do
     let mvar ← mkFreshExprSyntheticOpaqueMVar e `funProp.discharger
     let runTac? : TermElabM (Option Expr) :=
       try
