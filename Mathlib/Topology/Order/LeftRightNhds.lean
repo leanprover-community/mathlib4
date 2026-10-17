@@ -255,9 +255,7 @@ theorem mem_nhdsGE_iff_exists_Ico_subset [NoMaxOrder α] {a : α} {s : Set α} :
   let ⟨_, hu'⟩ := exists_gt a
   mem_nhdsGE_iff_exists_Ico_subset' hu'
 
-@[to_dual]
-theorem nhdsGE_basis_Ico [NoMaxOrder α] (a : α) : (𝓝[≥] a).HasBasis (fun u => a < u) (Ico a) :=
-  ⟨fun _ => mem_nhdsGE_iff_exists_Ico_subset⟩
+@[to_dual (attr := deprecated (since := "2026-10-07"))] alias nhdsGE_basis_Ico := nhdsGE_basis
 
 /-- The filter of right neighborhoods has a basis of closed intervals. -/
 @[to_dual /-- The filter of left neighborhoods has a basis of closed intervals. -/]
