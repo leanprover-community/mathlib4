@@ -4,6 +4,10 @@
 # See yaml_check.py for documentation about the allowed fields in this file.
 # The structure of this file is checked by `scripts/yaml_check.py` in this repo
 # and by `make_site.py` in the leanprover-community.github.io repo.
+#
+# Note: this file only accepts entries about formalisations in mathlib, the archive and
+# counterexamples. A comment that a theorem is out of scope for mathlib resp. present in cslib/
+# physlib is acceptable; no more.
 
 1:
   title  : The Irrationality of the Square Root of 2
@@ -23,18 +27,10 @@
   authors: Joseph Myers
 5:
   title   : Prime Number Theorem
-  authors : Alex Kontorovich, Terry Tao, and the Prime Number Theorem + Project
-  links   :
-    Prime Number Theorem : https://github.com/AlexKontorovich/PrimeNumberTheoremAnd/blob/a5040887e6bb24f7c201db8568e7755c138b3878/PrimeNumberTheoremAnd/Wiener.lean#L2196-L2211
-    With Error Terms     : https://github.com/AlexKontorovich/PrimeNumberTheoremAnd/blob/a5040887e6bb24f7c201db8568e7755c138b3878/PrimeNumberTheoremAnd/MediumPNT.lean#L5504-L6162
-    website              : https://github.com/AlexKontorovich/PrimeNumberTheoremAnd
+  # pending pull request on https://github.com/leanprover-community/mathlib4/pull/43238, gradually getting merged
 6:
   title  : Gödel’s Incompleteness Theorem
-  authors: Shogo Saito
-  links  :
-    First incompleteness theorem: https://github.com/FormalizedFormalLogic/Foundation/blob/7c74089c2442ee211abfa1e2dd5a75091800f57b/Foundation/FirstOrder/Incompleteness/First.lean#L24-L53
-    Second incompleteness theorem: https://github.com/FormalizedFormalLogic/Foundation/blob/7c74089c2442ee211abfa1e2dd5a75091800f57b/Foundation/FirstOrder/Incompleteness/Second.lean#L15-L18
-    website: https://formalizedformallogic.github.io/Catalogue/
+  note: possibly out of scope for mathlib; could be part of e.g. cslib
 7:
   title  : Law of Quadratic Reciprocity
   decls  :
@@ -43,9 +39,6 @@
   authors: Chris Hughes (first) and Michael Stoll (second)
 8:
   title  : The Impossibility of Trisecting the Angle and Doubling the Cube
-  authors: Weiyi Wang
-  links  :
-    result: https://github.com/wwylele/Compass/blob/master/Solution.lean
 9:
   title  : The Area of a Circle
   decl   : Theorems100.area_disc
@@ -104,11 +97,7 @@
   authors: Paul van Wamelen
 24:
   title  : The Independence of the Continuum Hypothesis
-  authors: Jesse Michael Han and Floris van Doorn
-  links  :
-    result: https://github.com/flypitch/flypitch/blob/master/src/summary.lean
-    website: https://flypitch.github.io/
-  note   : see the `README` file in the [linked repository](https://github.com/flypitch/flypitch/).
+  # formalised as part of the flypitch project in Lean 3
 25:
   title  : Schroeder-Bernstein Theorem
   decl   : Function.Embedding.schroeder_bernstein
@@ -131,9 +120,7 @@
   decl   : Ballot.ballot_problem
 31:
   title  : Ramsey’s Theorem
-  authors: Bhavik Mehta
-  links  :
-    result: https://github.com/b-mehta/combinatorics/blob/extras/src/inf_ramsey.lean
+  # pre-AI formalization outside of mathlib
 32:
   title  : The Four Color Problem
 33:
@@ -153,9 +140,7 @@
   authors: Moritz Doll
 36:
   title  : Brouwer Fixed Point Theorem
-  authors: Brendan Seamas Murphy
-  links  :
-    result: https://github.com/Shamrock-Frost/BrouwerFixedPoint/blob/master/src/brouwer_fixed_point.lean
+  # exists Lean 3 formalization, AI-slopped one. full mathlib upstreaming in progress
 37:
   title  : The Solution of a Cubic
   authors: Jeoff Lee
@@ -275,10 +260,7 @@
   authors: Sander R. Dahmen (finite) and Johannes Hölzl (infinite)
 67:
   title  : e is Transcendental
-  authors: Jujian Zhang
-  links  :
-    result: https://github.com/jjaassoonn/transcendental/blob/master/src/e_transcendental.lean
-    website: https://jjaassoonn.github.io/transcendental/
+  # Lindemann-Weierstrass theorem (PR pending) will prove this
 68:
   title  : Sum of an arithmetic series
   decl   : Finset.sum_range_id
