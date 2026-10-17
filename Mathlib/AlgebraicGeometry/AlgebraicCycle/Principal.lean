@@ -1,0 +1,92 @@
+/-
+Copyright (c) 2026 Raphael Douglas Giles. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Raphael Douglas Giles
+-/
+module
+
+public import Mathlib.AlgebraicGeometry.AlgebraicCycle.Basic
+public import Mathlib.AlgebraicGeometry.OrderOfVanishing
+
+/-!
+# Principal divisors
+
+In this file we develop the notion of a principal Weil divisor associated with an element of the
+function field of a locally noetherian integral scheme.
+-/
+
+@[expose] public section
+
+open AlgebraicGeometry Order TopologicalSpace Set Topology
+
+universe u
+variable {X : Scheme.{u}}
+
+namespace AlgebraicGeometry.AlgebraicCycle
+
+open Multiplicative WithZero Scheme
+
+/--
+The principal Weil divisor `divisor f` of an element `f` of the function field of a locally
+Noetherian integral scheme, as an algebraic cycle with coefficients in `ℤ`.
+
+This has a junk value of `0` when `f = 0`, inherited from `AlgebraicGeometry.ord`.
+-/
+noncomputable
+def divisor [IsIntegral X] [IsLocallyNoetherian X] (f : X.functionField) :
+    AlgebraicCycle X ℤ where
+  toFun z := ord f z
+  supportWithinDomain' := subset_univ _
+  supportLocallyFiniteWithinDomain' z _ := by
+    by_cases hf : f = 0
+    · exact ⟨⊤, Filter.univ_mem, by simp [hf]⟩
+    obtain ⟨U, hU, g, hUne, hgf, hg⟩ := exists_isUnit_germ_eq X f hf
+    obtain ⟨W, hW, hfin⟩ := exists_mem_nhds_finite_coheight_one_of_closure_ne_univ
+      (by
+        rw [U.2.isClosed_compl.closure_eq]
+        exact compl_ne_univ.mpr ((Scheme.Opens.nonempty_iff _).mp hUne)) z
+    refine ⟨W, hW, hfin.subset (fun x ⟨hxW, hxsup⟩ ↦ ⟨hxW, fun a ↦ hxsup ?_, ?_⟩)⟩
+    · rw [← hgf]; exact ord_of_isUnit hg a
+    · by_contra h; exact hxsup (ord_eq_zero_of_coheight_neq_one h f)
+
+@[simp]
+lemma divisor_apply [IsIntegral X] [IsLocallyNoetherian X] (f : X.functionField)
+    (z : X) : divisor f z = ord f z := rfl
+
+@[simp]
+theorem divisor_mul [IsIntegral X] [IsLocallyNoetherian X]
+    (f : X.functionField) (hf : f ≠ 0) (g : X.functionField) (hg : g ≠ 0) :
+    divisor (f * g) = divisor f + divisor g := by
+  ext a
+  by_cases ha : coheight a = 1 <;> simp_all
+
+theorem isWeilDivisor_divisor [IsIntegral X] [IsLocallyNoetherian X] {f : X.functionField} :
+    (divisor f).IsWeilDivisor := by
+  intro z hz
+  simp only [Function.mem_support, ne_eq] at hz
+  contrapose hz
+  simp_all
+
+/-- The principal divisor of a unit on `U` vanishes on `U`. -/
+@[simp]
+theorem filter_divisor_germToFunctionField_eq_zero_of_isUnit [IsIntegral X] [IsLocallyNoetherian X]
+    {U : X.Opens} [Nonempty U] {g : Γ(X, U)} (hg : IsUnit g) :
+    (divisor (X.germToFunctionField U g)).filter U = 0 := by
+  ext z
+  by_cases hz : z ∈ (U : Set X)
+  · simp [hz, ord_of_isUnit hg hz]
+  · simp [hz]
+
+/-- The principal divisor of a global unit is zero. -/
+@[simp]
+lemma divisor_germToFunctionField_top_eq_zero_of_isUnit [IsIntegral X] [IsLocallyNoetherian X]
+    {g : Γ(X, ⊤)} (hg : IsUnit g) : divisor (X.germToFunctionField ⊤ g) = 0 := by
+  simpa using filter_divisor_germToFunctionField_eq_zero_of_isUnit hg
+
+@[simp]
+theorem divisor_neg [IsIntegral X] [IsLocallyNoetherian X] (f : X.functionField) :
+    divisor (- f) = divisor f := by
+  ext z
+  simp
+
+end AlgebraicGeometry.AlgebraicCycle
