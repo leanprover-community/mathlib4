@@ -211,6 +211,19 @@ def getRel' (e : Expr) : Option (Name × Option Expr × Expr × Expr) :=
       none
   | _ => none
 
+/-- Construct a `GCongrLemma` using `funext`, used for rewriting inside lambdas. -/
+def funextLemma : GCongrLemma where
+  declName := ``funext
+  mainSubgoals := #[⟨2, 3, 4, [some 0], false⟩]
+  numHyps := 5
+  keys := default; prio := default; numVarying := default; forGrw := true
+
+attribute [gcongr] forall_congr implies_congr_ctx
+
+/-- See if the term is `a ↔ b` and the goal is `a = b`. -/
+@[gcongr_forward] public meta def exactPropext : ForwardExt where
+  eval h goal := do goal.assignIfDefEq (← Lean.Meta.mkAppM ``propext #[h])
+
 mutual
 
 /-- Recursively call `grewriteCore` to process a subgoal of a `gcongr` lemma.
@@ -221,6 +234,7 @@ partial def processGCongrHypothesisAux (goal : MVarId) (forward : Bool) (config 
   let some (relName, rel?, lhs, rhs) := getRel' (← whnf (← goal.getType)) |
     throwError "internal `grewrite` error: invalid `gcongr` goal {goal}"
   let (target, mvarApp) := if forward then (lhs, rhs) else (rhs, lhs)
+  let target ← instantiateMVars target; let rel? ← rel?.mapM instantiateMVars
   if let some (result, proof) ← grewriteCore relName rel? target forward config then
     mvarApp.withApp fun mvar xs ↦ do
       /- Note: the names of the free variables `xs` end up in the new goal as lambda binders.
@@ -308,6 +322,17 @@ partial def processGCongrLemma (goal : MVarId) (lem : GCongrLemma) (forward : Bo
       dischargeSide mvarId
   return true
 
+partial def congr (e : Expr) (config : Config) : GRewriteM Simp.Result := fun c s c' s' ↦ do
+  let methods := { pre e := do
+    let α ← inferType e
+    let eq := Expr.app (.const ``Eq [← getLevel α]) α
+    if let some (e', pf) ← grewriteCore ``Eq eq e true config c s c' s' then
+      return .done { expr := e', proof? := pf }
+    else
+      return .done { expr := e }
+    }
+  (·.1) <$> (Simp.simpApp e).run (← Simp.mkContext Simp.neutralConfig) (methods := methods)
+
 /-- The core of the `grw` implementation. Rewrite in the expression `e` which occurs under the
 relation `relName`/`rel?`, using the `GRewriteLemma` stored in `GRewriteM`.
 If `e` itself cannot be rewritten, descend into subexpressions of `e` using `@[gcongr]` lemmas.
@@ -320,7 +345,6 @@ partial def grewriteCore (relName : Name) (rel? : Option Expr) (e : Expr) (forwa
     (config : Config) : GRewriteM (Option (Expr × Expr)) :=
   withTraceNodeBefore `Meta.grewrite (fun _ ↦ return m!"visiting `{e}` in the \
     {if forward then "LHS" else "RHS"} of relation `{rel?.elim m!"→" (m!"{·}")}`") do
-  let e ← instantiateMVars e; let rel? ← rel?.mapM instantiateMVars
   let cacheKey := (rel?, e, forward)
   if (← get).cache.contains cacheKey then
     trace[Meta.grewrite] "cached: no rewrite"
@@ -346,6 +370,17 @@ partial def grewriteCore (relName : Name) (rel? : Option Expr) (e : Expr) (forwa
           | .forallE n _ _ bi, .forallE _ d b _ => return some (.forallE n d b bi, goal)
           | _, result => return some (result, goal)
         setMCtx mctx
+  if relName == ``Eq then
+    if let .lam n _ _ bi := e then
+      if ← processGCongrLemma goal.mvarId! funextLemma forward config then
+        -- Preserve the binder name/info in a forall.
+        match ← instantiateMVars mvar with
+        | .lam _ d b _ => return some (.lam n d b bi, goal)
+        | _ => throwError "internal `grw` error: {mvar} is not a lambda"
+    else if e.isApp then
+      if let { expr, proof? := some pf, .. } ← congr e config then
+        let pf ← if forward then pure pf else mkAppM ``Eq.symm #[pf]
+        return some (expr, pf)
   -- Cache the fact that there was nothing to rewrite.
   modify fun s ↦ { s with cache := s.cache.insert cacheKey }
   return none
@@ -400,7 +435,6 @@ public def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr)
     if pattern.getAppFn.isMVar then
       throwTacticEx `grewrite goal
         m!"pattern is a metavariable{indentExpr pattern}\nfrom relation{indentExpr hrelType}"
-    -- abstract the occurrences of `lhs` from `e` to get `eAbst`
     let e ← instantiateMVars e
     let (lctx?, eNew, impProof, sideGoals) ←
       if config.useKAbstract then
@@ -416,9 +450,17 @@ public def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr)
         else throwTacticEx `grewrite goal m!"`{hrelType}` is not a valid relation"
       let index := (pattern.toHeadIndex, pattern.headNumArgs)
       let mvarIds := mvarIds ++ newMVars.map (·.mvarId!, #[])
-      if let ((some (eNew, impProof), { progress, ..}), s) ←
-        grewriteCore `_Implies none e (forward := forwardImp) config |>.run
-          { symm := symm', proof := hrel, type := hrelType, index, mvarIds }
+      let go := do
+        if let some r ← grewriteCore `_Implies none e (forward := forwardImp) config then
+          return some r
+        let α ← inferType e
+        let eq := Expr.app (.const ``Eq [← getLevel α]) α
+        if let some (eNew, eqProof) ← grewriteCore ``Eq eq e (forward := true) config then
+          let mp := if forwardImp then ``Eq.mp else ``Eq.mpr
+          return some (eNew, ← mkAppM mp #[eqProof])
+        return none
+      if let ((some (eNew, impProof), { progress, .. }), s) ←
+          go.run { symm := symm', proof := hrel, type := hrelType, index, mvarIds }
           |>.run {} |>.run then
         let lctx? := match progress with
           | .matchedOutOfScope lctx => some lctx
