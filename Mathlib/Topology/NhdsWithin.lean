@@ -123,10 +123,10 @@ theorem mem_nhdsWithin_iff_eventuallyEqSet {s t : Set α} {x : α} :
 alias mem_nhdsWithin_iff_eventuallyEq := mem_nhdsWithin_iff_eventuallyEqSet
 
 lemma mem_nhdsWithin_inter_self {s t : Set α} {x : α} : t ∈ 𝓝[s ∩ t] x :=
-  mem_nhdsWithin_iff_eventuallyEqSet.mpr <| by simp [inter_assoc]
+  mem_nhdsWithin_iff_eventuallyEqSet.mpr <| by simp
 
 lemma mem_nhdsWithin_self_inter {s t : Set α} {x : α} : s ∈ 𝓝[s ∩ t] x :=
-  mem_nhdsWithin_iff_eventuallyEqSet.mpr <| by simp [inter_comm s t, inter_assoc]
+  mem_nhdsWithin_iff_eventuallyEqSet.mpr <| by simp
 
 theorem nhdsWithin_eq_iff_eventuallyEqSet {s t : Set α} {x : α} : 𝓝[s] x = 𝓝[t] x ↔ s =ᶠ[𝓝 x] t :=
   eventuallyEqSet_iff_inf_principal.symm

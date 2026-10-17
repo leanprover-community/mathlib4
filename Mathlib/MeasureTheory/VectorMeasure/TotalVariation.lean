@@ -76,8 +76,7 @@ lemma etvDist_restrict_add_compl {s : Set 𝓧} (hs : MeasurableSet s) :
     etvDist (μ.restrict s) (ν.restrict s) + etvDist (μ.restrict sᶜ) (ν.restrict sᶜ) =
       etvDist μ ν := by
   simp [etvDist, ← restrict_sub, variation_restrict hs, variation_restrict hs.compl,
-    MeasurableSet.univ, Measure.restrict_apply, Set.univ_inter,
-    ← measure_union disjoint_compl_right hs.compl]
+    MeasurableSet.univ, Measure.restrict_apply, ← measure_union disjoint_compl_right hs.compl]
 
 end VectorMeasure
 
