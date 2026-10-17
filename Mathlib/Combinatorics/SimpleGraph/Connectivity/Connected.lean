@@ -594,6 +594,14 @@ lemma mem_supp_congr_adj {v w : V} (c : G.ConnectedComponent) (hadj : G.Adj v w)
   · exact hadj.symm
   · exact hadj
 
+@[simp]
+theorem encard_supp (C : G.ConnectedComponent) : C.supp.encard = ENat.card C :=
+  rfl
+
+@[simp]
+theorem ncard_supp (C : G.ConnectedComponent) : C.supp.ncard = Nat.card C :=
+  rfl
+
 theorem connectedComponentMk_mem {v : V} : v ∈ G.connectedComponentMk v :=
   rfl
 
@@ -740,8 +748,7 @@ def edgeSetEquivSigmaConnectedComponent :
 variable (G) in
 theorem sum_connectedComponent_ncard_supp [Finite V] [Fintype G.ConnectedComponent] :
     ∑ c : G.ConnectedComponent, c.supp.ncard = Nat.card V := by
-  rw [Nat.card_congr G.verticesEquivSigmaConnectedComponent, Nat.card_sigma]
-  rfl
+  simp [Nat.card_congr G.verticesEquivSigmaConnectedComponent, Nat.card_sigma]
 
 variable (G) in
 theorem sum_connectedComponent_ncard_edgeSet [Finite V] [Fintype G.ConnectedComponent] :
