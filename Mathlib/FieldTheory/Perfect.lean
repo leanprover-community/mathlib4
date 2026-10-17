@@ -52,7 +52,7 @@ variable (M : Type*) (p q : ℕ) [CommMonoid M] [PerfectRing M p] [PerfectRing M
 
 namespace PerfectRing
 
-instance one : PerfectRing M 1 :=
+instance one (M : Type*) [Monoid M] : PerfectRing M 1 :=
   ⟨by simpa using! bijective_id⟩
 
 instance mul : PerfectRing M (p * q) :=
@@ -88,6 +88,28 @@ theorem powMulEquiv_pow (n : ℕ) : powMulEquiv M (p ^ n) = powMulEquiv M p ^ n 
     rw [pow_succ']
 
 end Monoid
+
+section SubringBot
+
+instance (R : Type*) (p : ℕ) [Semiring R] [ExpChar R p] : PerfectRing (⊥ : Subsemiring R) p where
+  bijective_frobenius := by
+    suffices h : ∀ x : (⊥ : Subsemiring R), x ^ p = x from
+      funext h ▸ bijective_id
+    simp_rw [Subtype.forall, Subtype.ext_iff, Subsemiring.coe_pow,
+      ← SetLike.mem_coe, Subsemiring.coe_bot, Set.forall_mem_range]
+    intro x
+    apply natCast_pow_expChar
+
+instance (R : Type*) (p : ℕ) [Ring R] [ExpChar R p] : PerfectRing (⊥ : Subring R) p where
+  bijective_frobenius := by
+    suffices h : ∀ x : (⊥ : Subring R), x ^ p = x from
+      funext h ▸ bijective_id
+    simp_rw [Subtype.forall, Subtype.ext_iff, Subring.coe_pow,
+      ← SetLike.mem_coe, Subring.coe_bot, Set.forall_mem_range]
+    intro x
+    apply intCast_pow_expChar
+
+end SubringBot
 
 section CommSemiring
 variable (R : Type*) (p m n : ℕ) [CommSemiring R] [ExpChar R p]
