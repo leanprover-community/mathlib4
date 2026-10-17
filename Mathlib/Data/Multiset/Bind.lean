@@ -255,13 +255,10 @@ variable {f s t}
 open scoped Function in -- required for scoped `on` notation
 @[simp] lemma nodup_bind :
     Nodup (bind s f) ↔ (∀ a ∈ s, Nodup (f a)) ∧ s.Pairwise (Disjoint on f) := by
-  have : ∀ a, ∃ l : List β, f a = l := fun a => Quot.induction_on (f a) fun l => ⟨l, rfl⟩
-  choose f' h' using this
-  have : f = fun a ↦ ofList (f' a) := funext h'
-  have _ : Std.Symm fun a b : List β ↦ List.Disjoint a b := { symm a b h := h.symm }
-  exact Quot.induction_on s <| by
-    unfold Function.onFun
-    simp [this, List.nodup_flatMap, pairwise_coe_iff_pairwise]
+  choose f' h' using show ∀ a, ∃ l : List β, l = f a from Quot.exists_rep ∘' f
+  refine Quot.induction_on s ?_
+  unfold Function.onFun
+  simp [← h', List.nodup_flatMap, pairwise_coe_iff_pairwise]
 
 @[simp]
 lemma dedup_bind_dedup [DecidableEq α] [DecidableEq β] (s : Multiset α) (f : α → Multiset β) :
