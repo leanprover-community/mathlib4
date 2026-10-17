@@ -6,9 +6,25 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.Analysis.Matrix.GelfandRadius
-public import Mathlib.Analysis.Normed.Field.WithAbs
 public import Mathlib.Analysis.Normed.Ring.Ultra
-public import Mathlib.Analysis.Normed.Unbundled.IsPowMulUnique
+public import Mathlib.Analysis.Normed.Unbundled.AlgebraNorm
+
+/-!
+# The Gelfand radius as an algebra norm
+
+This file uses the Gelfand radius to define an algebra norm on finite extension of a normed field.
+
+## Main definitions
+
+* `gelfandRadiusNorm K L`: The algebra norm on a finite extension `L` of a normed field `K`.
+  The norm of `x : L` is defined as the Gelfand radius of multiplication by `x` on `L`.
+
+## Main statements
+
+* `isPowMul_gelfandRadiusNorm`: the Gelfand radius norm is power-multiplicative.
+* `gelfandRadiusNorm_algebraMap`: the Gelfand radius norm is invariant under algebra maps.
+-/
+
 
 /-!
 # The Gelfand radius as an algebra norm
@@ -75,7 +91,8 @@ variable (K L M : Type*) [NormedField K] [Field L] [Field M] [Algebra K L] [Alge
 
 open scoped Matrix.Norms.Operator
 
-/-- The spectral norm defined by the spectral radius limit `lim ‖x ^ k‖ ^ (1 / k)`. -/
+/-- The algebra norm on a finite extension `L` of a normed field `K`.
+The norm of `x : L` is defined as the Gelfand radius of multiplication by `x` on `L`. -/
 noncomputable def gelfandRadiusNorm : AlgebraNorm K L where
   toFun x := gelfandRadius (Algebra.leftMulMatrix (Module.finBasis K L) x)
   map_zero' := by rw [map_zero, gelfandRadius_zero]
@@ -118,6 +135,7 @@ theorem Module.Basis.gelfandRadiusNorm_apply
   rw [← basis_toMatrix_mul_linearMap_toMatrix b b (Module.finBasis K L),
     Matrix.gelfandRadius_mul_comm, linearMap_toMatrix_mul_basis_toMatrix]
 
+variable {L} in
 @[simp]
 theorem gelfandRadiusNorm_algebraMap (x : L) :
     gelfandRadiusNorm K M (algebraMap L M x) = gelfandRadiusNorm K L x := by
@@ -129,8 +147,8 @@ theorem gelfandRadiusNorm_algebraMap (x : L) :
     Matrix.gelfandRadius_blockDiagonal, ciSup_const, bKL.gelfandRadiusNorm_apply]
 
 open Filter Topology in
-theorem isNonarchimedean_gelfandRadiusNorm {K L : Type*} [NormedField K] [Field L] [Algebra K L]
-    [IsUltrametricDist K] [FiniteDimensional K L] : IsNonarchimedean (gelfandRadiusNorm K L) := by
+theorem isNonarchimedean_gelfandRadiusNorm [IsUltrametricDist K] :
+    IsNonarchimedean (gelfandRadiusNorm K L) := by
   intro x y
   simp_rw [gelfandRadiusNorm_def]
   set T := Algebra.leftMulMatrix (Module.finBasis K L)

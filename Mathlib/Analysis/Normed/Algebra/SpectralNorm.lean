@@ -5,9 +5,8 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.Analysis.Matrix.GelfandRadius
 public import Mathlib.Analysis.Normed.Field.WithAbs
-public import Mathlib.Analysis.Normed.Group.Ultra
+public import Mathlib.Analysis.Normed.Unbundled.GelfandRadiusNorm
 public import Mathlib.Analysis.Normed.Unbundled.IsPowMulUnique
 
 /-!
@@ -19,170 +18,6 @@ This file defines spectral norms and uses them to construct extensions of absolu
 @[expose] public section
 
 -- todo: golf `normFromConst` file
-
-section matrices
-
-open scoped Matrix.Norms.Operator
-
--- PRed
-theorem Matrix.nnnorm_apply_le_linfty_opNNNorm {α β γ : Type*} [SeminormedAddCommGroup γ]
-    [Fintype α] [Fintype β] (M : Matrix α β γ) (i : α) (j : β) : ‖M i j‖₊ ≤ ‖M‖₊ := by
-  grw [Matrix.linfty_opNNNorm_def, ← Finset.le_sup_of_le (by simp)] -- these grws cannot be combined
-  grw [← Finset.single_le_sum (by simp) (by simp)]
-
--- PRed
-theorem Matrix.norm_apply_le_linfty_opNorm {α β γ : Type*} [SeminormedAddCommGroup γ]
-    [Fintype α] [Fintype β] (M : Matrix α β γ) (i : α) (j : β) : ‖M i j‖ ≤ ‖M‖ := by
-  grw [← coe_nnnorm, nnnorm_apply_le_linfty_opNNNorm, coe_nnnorm]
-
-theorem Matrix.linfty_opNorm_sum_le_card_mul
-    {α β γ κ : Type*} [Fintype α] [Fintype β] [SeminormedAddCommGroup γ] [IsUltrametricDist γ]
-    (M : κ → Matrix α β γ) (s : Finset κ) (B : ℝ) (hB : 0 ≤ B) (hM : ∀ i ∈ s, ‖M i‖ ≤ B) :
-    ‖∑ k ∈ s, M k‖ ≤ Fintype.card β * B := by
-  let B' : NNReal := NNReal.mk B hB
-  have h i j k (hk : k ∈ s) : ‖M k i j‖₊ ≤ B' :=
-    (nnnorm_apply_le_linfty_opNNNorm (M k) i j).trans (hM k hk)
-  replace h i j : ‖∑ k ∈ s, M k i j‖₊ ≤ B' :=
-    IsUltrametricDist.norm_sum_le_of_forall_le_of_nonneg hB (h i j)
-  have h i j : ‖(∑ k ∈ s, M k) i j‖₊ ≤ B' := by grw [sum_apply, h]
-  grw [linfty_opNorm_def, h, Finset.sup_const_le]
-  simp [B']
-
-theorem Matrix.linfty_opNorm_add_le_card_mul_max
-    {α β γ : Type*} [SeminormedAddCommGroup γ] [IsUltrametricDist γ] [Fintype α] [Fintype β]
-    (M N : Matrix α β γ) : ‖M + N‖ ≤ Fintype.card β * max ‖M‖ ‖N‖ := by
-  simpa using linfty_opNorm_sum_le_card_mul (Bool.rec N M) Finset.univ _ (by simp) (by simp)
-
--- PRed
-theorem Matrix.gelfandRadius_blockDiagonal {R m n : Type*} (M : n → Matrix m m R)
-    [DecidableEq m] [DecidableEq n] [Fintype m] [Fintype n] [NormedCommRing R] :
-    gelfandRadius (Matrix.blockDiagonal M) = ⨆ i, gelfandRadius (M i) := by
-  rcases isEmpty_or_nonempty n
-  · simp [Subsingleton.elim M 0]
-  let s : Finset n := Finset.univ
-  have hs : s.Nonempty := Finset.univ_nonempty
-  rw [← Finset.sup'_univ_eq_ciSup]
-  refine tendsto_nhds_unique_of_forall (tendsto_gelfandRadius (blockDiagonal M))
-    (Filter.Tendsto.finset_sup'_nhds_apply hs fun i hi ↦ tendsto_gelfandRadius (M i)) fun k ↦ ?_
-  have h (x y : NNReal) : max (x : ℝ) y ^ (k : ℝ)⁻¹ = max (x ^ (k : ℝ)⁻¹) (y ^ (k : ℝ)⁻¹) := by
-    simp [Real.rpow_max]
-  rw [← blockDiagonal_pow, linfty_opNorm_blockDiagonal, Pi.pow_def, Pi.norm_def, ← s.sup'_eq_sup hs,
-    s.apply_sup'_eq_sup'_comp hs (f := fun x ↦ ‖M x ^ k‖₊) (fun x ↦ (x : ℝ) ^ (k : ℝ)⁻¹) h]
-  simp [Function.comp_def]
-
-end matrices
-
--- all blocked by spectral radius
-section gelfandRadiusNorm
-
-variable (K L M : Type*) [NormedField K] [Field L] [Field M] [Algebra K L] [Algebra K M]
-  [Algebra L M] [IsScalarTower K L M] [FiniteDimensional K L] [FiniteDimensional K M]
-
-open scoped Matrix.Norms.Operator
-
-/-- The spectral norm defined by the spectral radius limit `lim ‖x ^ k‖ ^ (1 / k)`. -/
-noncomputable def gelfandRadiusNorm : AlgebraNorm K L where
-  toFun x := gelfandRadius (Algebra.leftMulMatrix (Module.finBasis K L) x)
-  map_zero' := by rw [map_zero, gelfandRadius_zero]
-  add_le' x y := by grw [map_add, ((Commute.all x y).map _).gelfandRadius_add_le]
-  neg' x := by rw [map_neg, gelfandRadius_neg]
-  mul_le' x y := by grw [map_mul, ((Commute.all x y).map _).gelfandRadius_mul_le]
-  eq_zero_of_map_eq_zero' x h := by
-    have : NeZero (Module.finrank K L) := ⟨Module.finrank_pos.ne'⟩
-    have hx := ((Commute.inv_right_self₀ x).map
-      (Algebra.leftMulMatrix (Module.finBasis K L))).gelfandRadius_mul_le
-    contrapose! hx
-    simp [← map_mul, h, hx]
-  smul' x y := by rw [map_smul, gelfandRadius_smul]
-
-variable {K L M}
-
-theorem gelfandRadiusNorm_def (x : L) :
-    gelfandRadiusNorm K L x = gelfandRadius (Algebra.leftMulMatrix (Module.finBasis K L) x) :=
-  rfl
-
-@[simp]
-theorem gelfandRadiusNorm_one : gelfandRadiusNorm K L 1 = 1 := by
-  have : NeZero (Module.finrank K L) := ⟨Module.finrank_pos.ne'⟩
-  rw [gelfandRadiusNorm_def, map_one, gelfandRadius_one]
-
-@[simp]
-theorem gelfandRadiusNorm_eq_norm (x : K) :
-    gelfandRadiusNorm K K x = ‖x‖ := by
-  simpa using map_smul_eq_mul (gelfandRadiusNorm K K) x 1
-
-theorem isPowMul_gelfandRadiusNorm : IsPowMul (gelfandRadiusNorm K L) := by
-  have : NeZero (Module.finrank K L) := ⟨Module.finrank_pos.ne'⟩
-  intro x k hk
-  simp_rw [gelfandRadiusNorm_def, map_pow, gelfandRadius_pow]
-
-theorem Module.Basis.gelfandRadiusNorm_apply
-    {ι : Type*} [DecidableEq ι] [Fintype ι] (b : Module.Basis ι K L) (x : L) :
-    gelfandRadiusNorm K L x = gelfandRadius (Algebra.leftMulMatrix b x) := by
-  simp_rw [gelfandRadiusNorm_def, Algebra.leftMulMatrix_apply]
-  rw [← basis_toMatrix_mul_linearMap_toMatrix b b (Module.finBasis K L),
-    Matrix.gelfandRadius_mul_comm, linearMap_toMatrix_mul_basis_toMatrix]
-
-@[simp]
-theorem gelfandRadiusNorm_algebraMap (x : L) :
-    gelfandRadiusNorm K M (algebraMap L M x) = gelfandRadiusNorm K L x := by
-  have : FiniteDimensional L M := .of_restrictScalars_finite K L M
-  have : NeZero (Module.finrank L M) := ⟨Module.finrank_pos.ne'⟩
-  let bKL := Module.finBasis K L
-  let bLM := Module.finBasis L M
-  rw [(bKL.smulTower bLM).gelfandRadiusNorm_apply, Algebra.smulTower_leftMulMatrix_algebraMap,
-    Matrix.gelfandRadius_blockDiagonal, ciSup_const, bKL.gelfandRadiusNorm_apply]
-
--- todo: golf
-open scoped Matrix.Norms.Operator Topology in
-open Filter in
-theorem isNonarchimedean_gelfandRadiusNorm {K L : Type*} [NormedField K] [Field L] [Algebra K L]
-    [IsUltrametricDist K] [FiniteDimensional K L] : IsNonarchimedean (gelfandRadiusNorm K L) := by
-  intro x y
-  let T := Algebra.leftMulMatrix (Module.finBasis K L)
-  let M := max (gelfandRadius (T x)) (gelfandRadius (T y))
-  change gelfandRadius (T (x + y)) ≤ M
-  suffices ∀ (c : ℝ), M < c → gelfandRadius (T (x + y)) ≤ c by
-    apply le_of_forall_pos_le_add
-    intro ε hε
-    apply this
-    simpa
-  intro r hr
-  rw [max_lt_iff] at hr
-  obtain ⟨Cx, hCx0, hCx⟩ : ∃ C > 0, ∀ (n : ℕ), ‖T x ^ n‖ ≤ C * r ^ n :=
-    norm_pow_le_mul_pow_of_gelfandRadius_lt (T x) hr.1
-  obtain ⟨Cy, hCy0, hCy⟩ : ∃ C > 0, ∀ (n : ℕ), ‖T y ^ n‖ ≤ C * r ^ n :=
-    norm_pow_le_mul_pow_of_gelfandRadius_lt (T y) hr.2
-  let C := Cx * Cy * Module.finrank K L
-  have : 0 < Module.finrank K L := Module.finrank_pos
-  have : 0 < r := by grind [gelfandRadius_nonneg]
-  have key n : ‖T (x + y) ^ n‖ ≤ C * r ^ n := by
-    grw [map_add, ((Commute.all x y).map T).add_pow]
-    grw [Matrix.linfty_opNorm_sum_le_card_mul _ _ (Cx * Cy * r ^ n) (by positivity)]
-    · rw [Fintype.card_fin]
-      grind
-    intro k hk
-    rw [Finset.mem_range_succ_iff] at hk
-    have key : (n.choose k : Matrix (Fin (Module.finrank K L)) (Fin (Module.finrank K L)) K)
-      = algebraMap K _ (n.choose k) := by
-      simp only [map_natCast]
-    rw [← nsmul_eq_mul', nsmul_eq_mul, key, ← Algebra.smul_def]
-    grw [norm_smul_le, ← nsmul_one, IsUltrametricDist.norm_nsmul_le, norm_one, one_mul,
-      norm_mul_le, hCx, hCy, mul_mul_mul_comm, ← pow_add, Nat.add_sub_cancel' hk]
-  replace key (n : ℕ) (hn : n ≠ 0) : ‖T (x + y) ^ n‖ ^ (n⁻¹ : ℝ) ≤ C ^ (n⁻¹ : ℝ) * r := by
-    specialize key n
-    rwa [← pow_le_pow_iff_left₀ (by positivity) (by positivity) hn, mul_pow,
-      ← Real.rpow_mul_natCast (by positivity), ← Real.rpow_mul_natCast (by positivity),
-      inv_mul_cancel₀ (by simpa), Real.rpow_one, Real.rpow_one]
-  suffices ∀ C > (0 : ℝ), Tendsto (fun n : ℕ ↦ C ^ (n : ℝ)⁻¹) atTop (𝓝 1) by
-    refine le_of_tendsto_of_tendsto (tendsto_gelfandRadius (T (x + y)))
-      (by simpa using (this C (by positivity)).mul_const _)
-        (eventually_atTop.mpr ⟨1, fun n hn ↦ key n (by grind)⟩)
-  intro C hC
-  rw [← C.rpow_zero]
-  exact (C.continuous_const_rpow hC.ne').continuousAt.tendsto.comp tendsto_inv_atTop_nhds_zero_nat
-
-end gelfandRadiusNorm
 
 section spectralNorm
 
@@ -215,7 +50,7 @@ theorem IsAlgebraic.spectralNorm_eq {x : L} (hx : IsAlgebraic K x) :
 theorem FiniteDimensional.spectralNorm_eq [FiniteDimensional K L] (x : L) :
     spectralNorm K L x = gelfandRadiusNorm K L x :=
   (Algebra.IsAlgebraic.isAlgebraic x).spectralNorm_eq.trans
-    (gelfandRadiusNorm_algebraMap (AdjoinSimple.gen K x)).symm
+    (gelfandRadiusNorm_algebraMap K L (AdjoinSimple.gen K x)).symm
 
 @[simp]
 theorem spectralNorm_algebraMap {E : Type*} [Field E] [Algebra K E] [Algebra E L]
@@ -232,7 +67,7 @@ theorem spectralNorm_algebraMap {E : Type*} [Field E] [Algebra K E] [Algebra E L
     have := adjoin.finiteDimensional hx.isIntegral
     have : FiniteDimensional K K⟮algebraMap E L x⟯ :=
       adjoin.finiteDimensional hx.algebraMap.isIntegral
-    exact gelfandRadiusNorm_algebraMap (AdjoinSimple.gen K x)
+    exact gelfandRadiusNorm_algebraMap K (K⟮algebraMap E L x⟯) (AdjoinSimple.gen K x)
   · rw [spectralNorm_eq_zero hx, spectralNorm_eq_zero]
     exact mt (isAlgebraic_algebraMap_iff (algebraMap E L).injective).mp hx
 
@@ -300,7 +135,7 @@ theorem isPowMul_spectralNorm : IsPowMul (spectralNorm K L) := by
   · have : FiniteDimensional K K⟮x⟯ := adjoin.finiteDimensional hx.isIntegral
     rw [K⟮x⟯.spectralNorm_eq x (AdjoinSimple.gen K x) rfl,
       K⟮x⟯.spectralNorm_eq (x ^ k) (AdjoinSimple.gen K x ^ k) rfl,
-      isPowMul_gelfandRadiusNorm (AdjoinSimple.gen K x) hk]
+      isPowMul_gelfandRadiusNorm K K⟮x⟯ (AdjoinSimple.gen K x) hk]
   · rw [spectralNorm_eq_zero hx, spectralNorm_eq_zero, zero_pow (by grind)]
     contrapose hx
     exact hx.of_pow hk
