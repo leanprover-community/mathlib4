@@ -5,8 +5,8 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.Probability.Independence.Kernel.IndepFun
 public import Mathlib.MeasureTheory.Constructions.Pi
+public import Mathlib.Probability.Independence.Kernel.IndepFun
 
 /-!
 # Independence of sets of sets and measure spaces (σ-algebras)
@@ -790,6 +790,14 @@ lemma iIndepFun.isProbabilityMeasure (h : iIndepFun f μ) : IsProbabilityMeasure
   ⟨by simpa using h.meas_biInter (S := ∅) (s := fun _ ↦ univ)⟩
 
 /-- If `f` is a family of mutually independent random variables (`iIndepFun m f μ`) and `S, T` are
+two disjoint index sets, then the tuple formed by `(f i)_i` for `i ∈ S` is independent of the
+tuple `(f i)_i` for `i ∈ T`. -/
+lemma iIndepFun.indepFun_set (S T : Set ι) (hST : Disjoint S T) (hf_Indep : iIndepFun f μ)
+    (hf_meas : ∀ i, Measurable (f i)) :
+    IndepFun (fun a (i : S) ↦ f i a) (fun a (i : T) ↦ f i a) μ :=
+  Kernel.iIndepFun.indepFun_set S T hST hf_Indep hf_meas
+
+/-- If `f` is a family of mutually independent random variables (`iIndepFun m f μ`) and `S, T` are
 two disjoint finite index sets, then the tuple formed by `f i` for `i ∈ S` is independent of the
 tuple `(f i)_i` for `i ∈ T`. -/
 lemma iIndepFun.indepFun_finset (S T : Finset ι) (hST : Disjoint S T) (hf_Indep : iIndepFun f μ)
@@ -994,23 +1002,11 @@ lemma iIndepFun.indepFun_finsetProd_of_notMem (hf_Indep : iIndepFun f μ)
     IndepFun (∏ j ∈ s, f j) (f i) μ :=
   Kernel.iIndepFun.indepFun_finsetProd_of_notMem hf_Indep hf_meas hi
 
-@[deprecated (since := "2026-04-08")]
-alias iIndepFun.indepFun_finset_sum_of_notMem := iIndepFun.indepFun_finsetSum_of_notMem
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias iIndepFun.indepFun_finset_prod_of_notMem := iIndepFun.indepFun_finsetProd_of_notMem
-
 @[to_additive]
 lemma iIndepFun.indepFun_finsetProd_of_notMem₀ (hf_Indep : iIndepFun f μ)
     (hf_meas : ∀ i, AEMeasurable (f i) μ) {s : Finset ι} {i : ι} (hi : i ∉ s) :
     IndepFun (∏ j ∈ s, f j) (f i) μ :=
   Kernel.iIndepFun.indepFun_finsetProd_of_notMem₀ hf_Indep (by simp [hf_meas]) hi
-
-@[deprecated (since := "2026-04-08")]
-alias iIndepFun.indepFun_finset_sum_of_notMem₀ := iIndepFun.indepFun_finsetSum_of_notMem₀
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias iIndepFun.indepFun_finset_prod_of_notMem₀ := iIndepFun.indepFun_finsetProd_of_notMem₀
 
 @[to_additive]
 lemma iIndepFun.indepFun_prod_range_succ {f : ℕ → Ω → β} (hf_Indep : iIndepFun f μ)
