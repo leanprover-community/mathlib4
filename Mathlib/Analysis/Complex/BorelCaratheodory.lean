@@ -82,7 +82,7 @@ lemma iteratedDeriv_div_factorial_eq_circleAverage_re
 
 theorem norm_iteratedDeriv_le_of_re_le_sphere (hR : 0 < R)
     (hf : DiffContOnCl ℂ f (ball c R)) (hf0 : f c = 0)
-    (hM : ∀ z ∈ sphere c R, (f z).re ≤ M) (hn : n ≠ 0) :
+    (hM : (sphere c R).MapsTo f {z | z.re ≤ M}) (hn : n ≠ 0) :
     ‖iteratedDeriv n f c / (n !)‖ ≤ 2 * M / R ^ n := by
   grw [iteratedDeriv_div_factorial_eq_circleAverage_re M hf hR hn,
     norm_circleAverage_le_circleAverage_norm]
@@ -93,7 +93,7 @@ theorem norm_iteratedDeriv_le_of_re_le_sphere (hR : 0 < R)
   trans circleAverage (fun z ↦ (2 / R ^ n) • (M - (f z).re)) c R
   · refine circleAverage_congr_sphere fun z hz ↦ ?_
     rw [hRabs] at hz
-    rw [abs_of_nonpos (by grind)]
+    rw [abs_of_nonpos (by grind [hM hz])]
     simp [mem_sphere_iff_norm.mp hz, smul_eq_mul]
     ring
   · rw [← hRabs] at hf
@@ -107,23 +107,23 @@ theorem norm_iteratedDeriv_le_of_re_le_sphere (hR : 0 < R)
 
 public theorem norm_iteratedDeriv_le_of_re_le (hR : 0 < R)
     (hf : DifferentiableOn ℂ f (ball c R)) (hf0 : f c = 0)
-    (hM : ∀ z ∈ ball c R, (f z).re ≤ M) :
+    (hM : (ball c R).MapsTo f {z | z.re ≤ M}) :
     ‖iteratedDeriv n f c / (n !)‖ ≤ 2 * M / R ^ n := by
   by_cases! hn : n = 0
-  · specialize hM c (mem_ball_self hR)
+  · specialize hM (mem_ball_self hR)
     simp_all
   refine ge_of_tendsto (f := fun R' : ℝ ↦ 2 * M / R' ^ n) (x := 𝓝[<] R)
     (((continuousAt_const.div (by fun_prop) (by positivity)).tendsto).mono_left
       nhdsWithin_le_nhds) ?_
   filter_upwards [self_mem_nhdsWithin, eventually_nhdsWithin_of_eventually_nhds
     (eventually_gt_nhds hR)] with R' hR'R hR'0
-  have hsub : closedBall c R' ⊆ ball c R := closedBall_subset_ball hR'R
-  exact norm_iteratedDeriv_le_of_re_le_sphere hR'0 (hf.diffContOnCl_ball hsub) hf0
-    (fun z hz ↦ hM z (hsub (sphere_subset_closedBall hz))) hn
+  exact norm_iteratedDeriv_le_of_re_le_sphere hR'0
+    (hf.diffContOnCl_ball (closedBall_subset_ball hR'R)) hf0
+    (hM.mono_left (sphere_subset_ball hR'R)) hn
 
 public theorem norm_le_of_re_le (hR : 0 < R)
     (hf : DifferentiableOn ℂ f (ball c R)) (hf0 : f c = 0)
-    (hM : ∀ w ∈ ball c R, (f w).re ≤ M) (hz : z ∈ ball c R) :
+    (hM : (ball c R).MapsTo f {z | z.re ≤ M}) (hz : z ∈ ball c R) :
     ‖f z‖ ≤ 2 * M * ‖z - c‖ / (R - ‖z - c‖) := by
   have hsum := hasSum_taylorSeries_on_ball_of_eq_zero hf hz hf0
   simp only [mem_ball, dist_eq_norm_sub] at hz
@@ -142,7 +142,7 @@ public theorem norm_le_of_re_le (hR : 0 < R)
 the derivative of `f` on the disc of radius `r < R` is bounded by `2 * R * M / (R - r) ^ 2`. -/
 public theorem norm_deriv_le_of_re_le (hR : 0 < R)
     (hf : DifferentiableOn ℂ f (ball c R)) (hf0 : f c = 0)
-    (hM : ∀ w ∈ ball c R, (f w).re ≤ M) (hz : z ∈ ball c R) :
+    (hM : (ball c R).MapsTo f {z | z.re ≤ M}) (hz : z ∈ ball c R) :
     ‖deriv f z‖ ≤ 2 * R * M / (R - ‖z - c‖) ^ 2 := by
   have hgeo : HasSum (fun n : ℕ ↦ 2 * M / R * (((n : ℝ) + 1) * (‖z - c‖ / R) ^ n))
       (2 * R * M / (R - ‖z - c‖) ^ 2) := by
@@ -173,7 +173,7 @@ and `f 0 = 0`, then `‖f z‖ ≤ 2 * M * ‖z‖ / (R - ‖z‖)` for all `‖
 public theorem borelCaratheodory_zero (hf : DifferentiableOn ℂ f (ball 0 R))
     (hf₁ : Set.MapsTo f (ball 0 R) {z | z.re ≤ M}) (hR : 0 < R) (hz : z ∈ ball 0 R)
     (hf₂ : f 0 = 0) : ‖f z‖ ≤ 2 * M * ‖z‖ / (R - ‖z‖) := by
-  convert norm_le_of_re_le hR hf hf₂ hf₁ hz <;>ring
+  convert norm_le_of_re_le hR hf hf₂ hf₁ hz <;> ring
 
 /-- **Borel-Carathéodory theorem**.
 
