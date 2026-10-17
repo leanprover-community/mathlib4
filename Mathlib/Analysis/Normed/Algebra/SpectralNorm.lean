@@ -53,34 +53,21 @@ theorem Matrix.linfty_opNorm_add_le_card_mul_max
     (M N : Matrix α β γ) : ‖M + N‖ ≤ Fintype.card β * max ‖M‖ ‖N‖ := by
   simpa using linfty_opNorm_sum_le_card_mul (Bool.rec N M) Finset.univ _ (by simp) (by simp)
 
--- PRed
-theorem map_finset_sup'' {α β ι : Type*} [SemilatticeSup α] [SemilatticeSup β]
-    (f : α → β) (h : ∀ x y, f (x ⊔ y) = f x ⊔ f y) {s : Finset ι} (hs) (g : ι → α) :
-    f (s.sup' hs g) = s.sup' hs (f ∘ g) := by
-  refine hs.cons_induction ?_ ?_ <;> intros <;> simp [*]
-
 theorem Matrix.gelfandRadius_blockDiagonal_eq_sup {R m n : Type*} (M : n → Matrix m m R)
-    [DecidableEq m] [DecidableEq n] [Fintype m] [Fintype n] [Nonempty n]
-    [NormedCommRing R] :
+    [DecidableEq m] [DecidableEq n] [Fintype m] [Fintype n] [NormedCommRing R] :
     gelfandRadius (Matrix.blockDiagonal M) = ⨆ i, gelfandRadius (M i) := by
+  rcases isEmpty_or_nonempty n
+  · simp [Subsingleton.elim M 0]
   let s : Finset n := Finset.univ
   have hs : s.Nonempty := Finset.univ_nonempty
   rw [← Finset.sup'_univ_eq_ciSup]
   refine tendsto_nhds_unique_of_forall (tendsto_gelfandRadius (blockDiagonal M))
     (Filter.Tendsto.finset_sup'_nhds_apply hs fun i hi ↦ tendsto_gelfandRadius (M i)) fun k ↦ ?_
-  suffices ‖blockDiagonal M ^ k‖₊ ^ (k : ℝ)⁻¹ = s.sup' hs fun x ↦ ‖M x ^ k‖₊ ^ (k : ℝ)⁻¹ by
-    rw [← coe_nnnorm, ← NNReal.coe_rpow, this, Finset.sup'_univ_eq_ciSup, Finset.sup'_univ_eq_ciSup]
-    simp
-  have key : ‖blockDiagonal M ^ k‖₊ ^ (k : ℝ)⁻¹ = (s.sup' hs (‖M · ^ k‖₊)) ^ (k : ℝ)⁻¹ := by
-    rw [← blockDiagonal_pow, linfty_opNNNorm_blockDiagonal, Pi.pow_def, Pi.nnnorm_def,
-      Finset.sup_univ_eq_ciSup, Finset.sup'_univ_eq_ciSup]
-  have key : ‖blockDiagonal M ^ k‖₊ ^ (k : ℝ)⁻¹ = s.sup' hs (‖M · ^ k‖₊ ^ (k : ℝ)⁻¹) := by
-    rw [key]
-    apply map_finset_sup'' (fun x : NNReal ↦ x ^ (k : ℝ)⁻¹) (fun x y ↦ ?_) hs
-    rw [← NNReal.coe_inj]
-    simp only [NNReal.coe_rpow, NNReal.coe_max]
-    apply Real.rpow_max <;> positivity
-  exact key
+  have h (x y : NNReal) : max (x : ℝ) y ^ (k : ℝ)⁻¹ = max (x ^ (k : ℝ)⁻¹) (y ^ (k : ℝ)⁻¹) := by
+    simp [Real.rpow_max]
+  rw [← blockDiagonal_pow, linfty_opNorm_blockDiagonal, Pi.pow_def, Pi.norm_def, ← s.sup'_eq_sup hs,
+    s.apply_sup'_eq_sup'_comp hs (f := fun x ↦ ‖M x ^ k‖₊) (fun x ↦ (x : ℝ) ^ (k : ℝ)⁻¹) h]
+  simp [Function.comp_def]
 
 end matrices
 
