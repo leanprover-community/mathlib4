@@ -40,6 +40,12 @@ variable {μ : Measure α} [IsZeroOneMeasure μ]
 instance : IsZeroOrProbabilityMeasure μ where
   measure_univ := μ.zero_one univ
 
+instance [ne : NeZero μ] : IsProbabilityMeasure μ where
+  measure_univ := by
+    contrapose! ne
+    rw [neZero_iff, not_ne_iff, ← Measure.measure_univ_eq_zero]
+    exact (μ.zero_one _).resolve_right ne
+
 namespace IsZeroOneMeasure
 
 lemma exists_measure_eq_one_iff_measure_univ_eq_one : (∃ s, μ s = 1) ↔ μ univ = 1 := by
@@ -53,11 +59,14 @@ lemma exists_measure_eq_one_iff_measure_univ_eq_one : (∃ s, μ s = 1) ↔ μ u
   · intro h
     exact ⟨univ, h⟩
 
-lemma measure_univ {s : Set α} (hμs : μ s = 1) : μ univ = 1 :=
-  (exists_measure_eq_one_iff_measure_univ_eq_one).mp ⟨s, hμs⟩
+@[deprecated MeasureTheory.measure_univ +typeChanged (since := "2026-10-16")]
+protected lemma measure_univ {s : Set α} (hμs : μ s = 1) : μ univ = 1 := by
+  have : NeZero μ := ⟨by rintro rfl; simp at hμs⟩
+  simp
 
 lemma measure_inter_eq_one {s t : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t)
     (hμs : μ s = 1) (hμt : μ t = 1) : μ (s ∩ t) = 1 := by
+  have : NeZero μ := ⟨by rintro rfl; simp at hμs⟩
   have : μ (s ∩ t) ≤ μ s := measure_mono inter_subset_left
   have : μ (s ∩ t) ≤ μ t := measure_mono inter_subset_right
   rcases μ.zero_one s with (_ | hμs)
@@ -65,14 +74,14 @@ lemma measure_inter_eq_one {s t : Set α} (hs : MeasurableSet s) (ht : Measurabl
     <;> rcases μ.zero_one (s ∩ t)
   all_goals try simp_all only [zero_le, zero_ne_one]
   suffices μ (s ∩ t)ᶜ ≤ 0 by
-    rw [measure_compl (hs.inter ht) (by simp), measure_univ ‹_›] at this
+    rw [measure_compl (hs.inter ht) (by simp), measure_univ] at this
     simp_all
   calc
   _ = μ (sᶜ ∪ tᶜ) := by simp [compl_inter]
   _ ≤ μ sᶜ + μ tᶜ := measure_union_le _ _
   _ ≤ 0 := by
-    rw [measure_compl hs (by simp), measure_univ hμs, hμs, tsub_self,
-      measure_compl ht (by simp), measure_univ hμt, hμt, tsub_self]
+    rw [measure_compl hs (by simp), measure_univ, hμs, tsub_self,
+      measure_compl ht (by simp), measure_univ, hμt, tsub_self]
     simp
 
 lemma measure_inter_eq_prod {s t : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t) :
