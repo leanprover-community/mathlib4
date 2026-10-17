@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.EuclideanDomain.Basic
 public import Mathlib.Algebra.Order.Group.Finset
 public import Mathlib.Algebra.Squarefree.Basic
+public import Mathlib.Algebra.IsPrimePow
 
 /-!
 # Radical of an element of a unique factorization normalization monoid
@@ -356,6 +357,35 @@ theorem radical_mul_of_dvd (h : a ∣ b) : radical (a * b) = radical b := by
   rw [radical_eq_iff_primeFactors_eq, primeFactors_mul_eq_union ha hb, Finset.union_eq_right,
     ← radical_dvd_iff_primeFactors_subset hb]
   exact radical_dvd_self.trans h
+
+section StrongNormalizationMonoid
+
+variable {N : Type*} [CommMonoidWithZero N] [StrongNormalizationMonoid N]
+  [UniqueFactorizationMonoid N] {a b : N}
+
+@[simp]
+theorem normalize_radical : normalize (radical a) = radical a := by
+  rw [radical, ← coe_normalizeHom, map_prod]
+  exact Finset.prod_congr rfl fun p hp ↦ normalize_normalized_factor p (mem_primeFactors.mp hp)
+
+theorem prime_radical_iff_isPrimePow_normalize : Prime (radical a) ↔ IsPrimePow (normalize a) := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · have ha : a ≠ 0 := by rintro rfl; simp at h
+    obtain ⟨m, hm⟩ := exists_dvd_radical_self_pow ha
+    obtain ⟨n, _, hn⟩ := (dvd_prime_pow h m).mp hm
+    have : n ≠ 0 := by
+      rintro rfl
+      rw [pow_zero, associated_one_iff_isUnit] at hn
+      simp [radical_of_isUnit hn] at h
+    refine ⟨radical a, n, h, by lia, ?_⟩
+    have : normalizeHom (radical a ^ n) = normalize a :=
+      (normalize_eq_normalize_iff_associated.mpr hn).symm
+    simpa [map_pow, coe_normalizeHom, normalize_radical]
+  · rcases h with ⟨p, n, hp, hn, h⟩
+    rwa [← radical_eq_of_associated (normalize_associated a), ← h,
+      radical_pow_of_prime hp hn.ne', (normalize_associated p).prime_iff]
+
+end StrongNormalizationMonoid
 
 end UniqueFactorizationMonoid
 
