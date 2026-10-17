@@ -75,7 +75,7 @@ theorem commutator_le_ker : commutator G ≤ f.ker := by
   rintro x ⟨p, q, rfl⟩
   simp [MonoidHom.mem_ker, mul_comm' (f p) (f q), commutatorElement_def]
 
-@[deprecated (since := "2026-10-17")] alias commutator_le_ker := commutator_le_ker
+@[deprecated (since := "2026-10-17")] alias commutator_subset_ker := commutator_le_ker
 
 /-- If `f : G → A` is a group homomorphism to an abelian group, then `lift f` is the unique map
   from the abelianization of a `G` to `A` that factors through `f`. -/
