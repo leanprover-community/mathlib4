@@ -514,10 +514,7 @@ lemma mem_commutatorSet_of_isConj_sq {g : G} (hg : IsConj g (g ^ 2)) : g ∈ com
 variable {G} in
 @[to_additive]
 lemma map_commutator_eq (f : G →* G') : (commutator G).map f = ⁅f.range, f.range⁆ := by
-  rw [_root_.commutator_def, Subgroup.map_commutator]
-  apply congr_arg₂ <;>
-  · rw [Subgroup.map_eq_range_iff]
-    rw [codisjoint_iff, top_sup_eq]
+  rw [commutator_def, map_commutator, map_top]
 
 variable {G} in
 @[to_additive]
