@@ -5,6 +5,7 @@ import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
 import Mathlib.Basic.ENNReal.Basic
+import Mathlib.Geometry.Convex.ConvexSpace.Defs
 import Mathlib.Geometry.Euclidean.Volume.Basic
 import Mathlib.MeasureTheory.Integral.Bochner.Basic
 import Mathlib.NumberTheory.ArithmeticFunction.Misc
@@ -668,6 +669,23 @@ example {α : Type*} [Semiring α] [Nontrivial α] (a : α) : a ^ 0 ≠ 0 := by 
 
 example {α : Type*} [AddGroup α] {a b : α} (ha : a ≠ b) : 0 ≠ b - a := by positivity
 example {α : Type*} [AddGroup α] {a b : α} (ha : a ≠ b) : 0 ≠ a - b := by positivity
+
+/- ## `Convexity.StdSimplex.weights` -/
+
+section Convexity
+variable {R M : Type*} [PartialOrder R] [Semiring R]
+
+example (w : Convexity.StdSimplex R M) : 0 ≤ w.weights := by positivity
+
+example [Nontrivial R] (w : Convexity.StdSimplex R M) : 0 < w.weights := by positivity
+
+example [Nontrivial R] (w : Convexity.StdSimplex R M) : w.weights ≠ 0 := by positivity
+
+example (w : Convexity.StdSimplex R M) (i : M) : 0 ≤ w.weights i := by positivity
+
+example [IsOrderedRing R] (w : Convexity.StdSimplex R M) (i j : M) : 0 ≤ w.weights i * w.weights j := by positivity
+
+end Convexity
 
 /- ## Geometry -/
 
