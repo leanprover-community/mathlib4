@@ -28,7 +28,9 @@ ideal (for `M = ℤⁿ`: the gcd of the coordinates is `1`, i.e. `v` is a *primi
 * `Module.IsUnimodular.exists_basis_zero_eq`: a unimodular vector of a rank-two module can be
   completed to a basis;
 * `Module.Free.isUnimodular_one`: in a nonzero algebra that is free as a module, `1` is
-  unimodular.
+  unimodular;
+* `AddSubgroup.rat_smul_mem_iff`: if `x` is indivisible in a subgroup `P` of a `ℚ`-vector space,
+  the rational multiples of `x` lying in `P` are its integer multiples.
 
 ## References
 
@@ -114,3 +116,19 @@ theorem exists_basis_zero_eq (hM : Module.finrank R M = 2) {v : M} (hv : IsUnimo
   simpa [N] using (Fin.sum_univ_two fun i ↦ b.repr v i • b i).symm.trans (b.sum_repr v)
 
 end Module.IsUnimodular
+
+namespace AddSubgroup
+
+theorem rat_smul_mem_iff {V : Type*} [AddCommGroup V] [Module ℚ V] {P : AddSubgroup V} {x : V}
+    (hx : x ∈ P) (hx' : ∀ y ∈ P, ∀ m : ℤ, x = m • y → IsUnit m) {q : ℚ} :
+    q • x ∈ P ↔ ∃ n : ℤ, q = n := by
+  refine ⟨fun hq ↦ ?_, fun ⟨n, hn⟩ ↦ by simpa [hn, Int.cast_smul_eq_zsmul] using P.zsmul_mem hx n⟩
+  obtain ⟨u, v, huv⟩ := q.isCoprime_num_den
+  have hd := hx' _ (P.add_mem (P.zsmul_mem hq u) (P.zsmul_mem hx v)) q.den <| by
+    conv_lhs => rw [← one_smul ℚ x, ← Int.cast_one, ← huv]
+    simp only [← Int.cast_smul_eq_zsmul ℚ, smul_smul, ← add_smul]
+    push_cast [← q.den_mul_eq_num]
+    ring_nf
+  exact ⟨q.num, by simpa [Int.isUnit_iff_natAbs_eq, eq_comm, Rat.den_eq_one_iff] using hd⟩
+
+end AddSubgroup
