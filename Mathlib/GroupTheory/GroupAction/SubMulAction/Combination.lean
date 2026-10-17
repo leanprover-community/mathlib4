@@ -273,21 +273,20 @@ theorem isPretransitive_alternatingGroup [Fintype α] (hα : 3 ≤ Nat.card α) 
   have := alternatingGroup.isMultiplyPretransitive α
   apply isMultiplyPretransitive_of_le (n := Nat.card α - 2) <;> grind
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The action of `alternatingGroup α` on `Set.powersetCard α n` is preprimitive
-provided `1 ≤ n < Nat.card α` and `Nat.card α ≠ 2 * n`. -/
-theorem isPreprimitive_alternatingGroup [Fintype α] {n : ℕ}
-    (h_three_le : 3 ≤ n) (hn : n < Nat.card α) (hα : Nat.card α ≠ 2 * n) :
-    IsPreprimitive (alternatingGroup α) (powersetCard α n) := by
+provided `0 < n < Nat.card α` and `Nat.card α ≠ 2 * n`.
+
+See `Set.powersetCard.isPreprimitive_perm` for the action of `Equiv.Perm α`. -/
+theorem isPreprimitive_alternatingGroup [Fintype α] {n : ℕ} (hn₀ : n ≠ 0) (hn : n < Nat.card α)
+    (hα : Nat.card α ≠ 2 * n) : IsPreprimitive (alternatingGroup α) (powersetCard α n) := by
   have : IsPretransitive (alternatingGroup α) (powersetCard α n) :=
-    isPretransitive_alternatingGroup (le_trans h_three_le hn.le)
-  have : Nontrivial (powersetCard α n) := nontrivial (by positivity) (by simpa using hn)
+    isPretransitive_alternatingGroup (by lia)
+  have : Nontrivial (powersetCard α n) := nontrivial' (Nat.pos_of_ne_zero hn₀) hn
   obtain ⟨s⟩ := this.to_nonempty
-  rw [← isCoatom_stabilizer_iff_preprimitive _ s, stabilizer_coe]
-  apply alternatingGroup.isCoatom_stabilizer
-  · rw [powersetCard.coe_nonempty_iff]
-    exact le_trans (by simp) h_three_le
-  · simpa [nonempty_compl, ne_eq, eq_univ_iff_ncard, ncard_eq] using ne_of_lt hn
-  · simpa only [ncard_eq]
+  -- the stabilizer of `s` is that of `(s : Set α)`, computed via the action of `Perm α`
+  rw [← isCoatom_stabilizer_iff_preprimitive _ s, ← stabilizer_subgroupOf, stabilizer_coe,
+    stabilizer_subgroupOf]
+  exact alternatingGroup.isCoatom_stabilizer (coe_nonempty_iff.mpr (Nat.pos_of_ne_zero hn₀))
+    (by simpa [nonempty_compl, eq_univ_iff_ncard] using hn.ne) (by rwa [ncard_eq])
 
 end Set.powersetCard
