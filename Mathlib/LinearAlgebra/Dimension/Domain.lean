@@ -181,12 +181,12 @@ theorem IsTorsionFree.erank_mul_erank [hM : IsTorsionFree S M] :
   let FS := Localization mS
   let M' := LocalizedModule mS M
   let pS : S →ₗ[R] FS := IsScalarTower.toAlgHom R S FS |>.toLinearMap
-  let pM : M →ₗ[S] M' := LocalizedModule.mkLinearMap ..
+  let pM : M →ₗ[R] M' := LocalizedModule.mkLinearMap .. |>.restrictScalars R
   let : Module FR M' := .restrictScalars _ FS _
   have : IsScalarTower FR FS M' := .restrictScalars ..
   have : IsScalarTower R FR M' := .to₁₂₄ (P := FS) ..
   have hFS := IsLocalizedModule.isBaseChange R⁰ FR pS
-  have : IsLocalizedModule R⁰ (pM : M →ₗ[R] M') :=
+  have : IsLocalizedModule R⁰ pM :=
     localizedModuleIsLocalizedModule mS |>.restrictScalars R⁰
   have hM' := this.isBaseChange R⁰ FR
   by_cases! hRS : rank R S < .aleph0
@@ -205,7 +205,7 @@ theorem IsTorsionFree.erank_mul_erank [hM : IsTorsionFree S M] :
     have ⟨m, hm⟩ := exists_ne (0 : M)
     let f : S →ₗ[R] M := LinearMap.lsmul S M |>.flip m
     have : Module.Finite FR FS :=
-      .of_injective (IsLocalizedModule.mapExtendScalars R⁰ pS (pM : M →ₗ[R] M') FR f) <|
+      .of_injective (IsLocalizedModule.mapExtendScalars R⁰ pS pM FR f) <|
         IsLocalizedModule.map_injective (h_inj := smul_left_injective _ hm) ..
     exact hRS.not_gt <| hFS.rank_eq ▸ rank_lt_aleph0 ..
 
