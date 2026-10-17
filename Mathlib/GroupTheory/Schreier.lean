@@ -209,7 +209,7 @@ theorem card_commutator_dvd_index_center_pow [Finite (commutatorSet G)] :
   apply card_dvd_exponent_pow_rank'
   intro g
   -- `Z(G)` is abelian, so `g ∈ Z(G) ∩ G' ≤ G' ≤ ker (transfer : G → Z(G))`
-  have := Abelianization.commutator_subset_ker (MonoidHom.transferCenterPow G) g.1.2
+  have := Abelianization.commutator_le_ker (MonoidHom.transferCenterPow G) g.1.2
   -- `transfer g` is defeq to `g ^ [G : Z(G)]`, so we are done
   simpa only [MonoidHom.mem_ker, Subtype.ext_iff] using! this
 

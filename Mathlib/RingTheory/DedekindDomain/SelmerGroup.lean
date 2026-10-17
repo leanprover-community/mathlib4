@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Int.TypeTags
 public import Mathlib.GroupTheory.QuotientGroup.UnitsModPow
-public import Mathlib.RingTheory.DedekindDomain.AdicValuation
+public import Mathlib.RingTheory.DedekindDomain.AdicValuation.Valuation
 
 /-!
 # Selmer groups of fraction fields of Dedekind domains
