@@ -28,7 +28,6 @@ example : True := by
   exact .intro
   exact .intro
 
-#guard_msgs(drop warning) in
 /--
 warning: The following tactic starts with 2 goals and ends with 1 goal, 1 of which is not operated on.
   assumption
@@ -281,7 +280,7 @@ example (hx : x = 0 ∨ x = 1) (hy : y = 0 ∨ y = 1) : x ≤ 1 := by
 example (hx : x = 0 ∨ x = 1) (hy : y = 0 ∨ y = 1) : x ≤ 1 := by
   grind =>
     cases #484a
-    repeat finish
+    repeat · finish
 
 example (hx : x = 0 ∨ x = 1) (hy : y = 0 ∨ y = 1) : x ≤ 1 := by
   grind =>
