@@ -127,7 +127,7 @@ lemma mem_ofSimplex_obj_iff
 /-- Given a `n`-simplex `x` in `Δ[p] ⊗ Δ[q]`, this is the order preserving
 map `Fin (n + 1) →o Fin (m + 1)` (with `p + q = m`) which corresponds to the
 sum of the two components of `objEquiv x : Fin (n + 1) →o Fin (p + 1) × Fin (q + 1)`. -/
-@[simps coe]
+@[simps coe, implicit_reducible]
 def orderHomOfSimplex {n : ℕ} (x : (Δ[p] ⊗ Δ[q] : SSet.{u}) _⦋n⦌) {m : ℕ} (hm : p + q = m) :
     Fin (n + 1) →o Fin (m + 1) where
   toFun i := ⟨(x.1 i : ℕ) + x.2 i, by lia⟩

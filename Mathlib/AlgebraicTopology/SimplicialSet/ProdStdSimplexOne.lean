@@ -34,7 +34,6 @@ namespace prodStdSimplex₁
 
 variable {p : ℕ}
 
-set_option backward.defeqAttrib.useBackward true in
 open stdSimplex prodStdSimplex in
 /-- This is an enumeration of the `p + 1` nondegenerate dimension-`(p + 1)`
 simplices of `Δ[p] ⊗ Δ[1]`. It sends `i : Fin (p + 1)` to the nondegenerate
@@ -57,6 +56,7 @@ noncomputable def nonDegenerateEquiv :
         rw [objMk₁_of_le_castSucc _ _ (by simpa), objEquiv_symm_apply]
         change (i.predAbove j : ℕ) + 1 = _
         rw [Fin.predAbove_of_castSucc_lt _ _ hj, Fin.val_pred]
+        simp only [OrderHom.id_coe, id_eq]
         lia⟩) (by
     refine ⟨fun _ _ h ↦ ?_, fun ⟨⟨s₁, s₂⟩, hs⟩ ↦ ?_⟩
     · simpa using stdSimplex.objMk₁_injective congr((Prod.snd ∘ Subtype.val) $h)
@@ -168,13 +168,12 @@ noncomputable abbrev intersectionNondeg (i j : Fin (p + 1)) :
 which correspond to the stricly monotone map `Fin (p + 1) → Fin (p + 1) × Fin 2`
 whose first projection is the identity, and whose second projection takes `j`-times
 the value `0`. -/
-@[simps coe_fst coe_snd]
+@[simps coe_fst coe_snd, implicit_reducible]
 def codimOneSimplex (j : Fin (p + 2)) : (Δ[p] ⊗ Δ[1] : SSet.{u}).nonDegenerate p :=
   ⟨⟨stdSimplex.objMk .id, stdSimplex.objMk₁ j⟩,
     nonDegenerate_of_app_apply (fst _ _)
       (stdSimplex.objEquiv_symm_id_mem_nonDegenerate p)⟩
 
-set_option backward.defeqAttrib.useBackward true in
 lemma δ_castSucc_nonDegenerateEquiv (j : Fin (p + 1)) :
     (Δ[p] ⊗ Δ[1]).δ j.castSucc (nonDegenerateEquiv.{u} j).val =
       (codimOneSimplex j.castSucc).val := by
@@ -183,7 +182,6 @@ lemma δ_castSucc_nonDegenerateEquiv (j : Fin (p + 1)) :
   · dsimp
     rw [stdSimplex.δ_objMk₁_of_lt _ _ (by simp), Fin.pred_succ]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma δ_succ_nonDegenerateEquiv (j : Fin (p + 1)) :
     (Δ[p] ⊗ Δ[1]).δ j.succ (nonDegenerateEquiv.{u} j).val =
       (codimOneSimplex j.succ).val := by
@@ -193,7 +191,6 @@ lemma δ_succ_nonDegenerateEquiv (j : Fin (p + 1)) :
     rw [stdSimplex.δ_objMk₁_of_le _ _ (by simp)]
     simp only [Fin.succ_castSucc, Fin.castPred_castSucc]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma ofSimplex_codimOneSimplex (j : Fin p) :
     Subcomplex.ofSimplex (codimOneSimplex.{u} j.succ.castSucc).val =
       intersectionNondeg j.castSucc j.succ := by
@@ -294,7 +291,6 @@ lemma filtration.ι_ι (i j : Fin (p + 1)) (hi : i ≤ j) :
     filtration.ι.{u} hi ≫ (filtration j).ι =
       yonedaEquiv.symm (nonDegenerateEquiv i).val := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given `j : Fin p`, the subcomplex `filtration j.succ` of `Δ[p] ⊗ Δ[1]`
 is the pushout of `filtration j` and of the inclusion
 `filtration.ι j.succ : Δ[p + 1] ⟶ (filtration j.succ).toSSet`
