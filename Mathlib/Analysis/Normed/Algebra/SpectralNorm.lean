@@ -24,28 +24,33 @@ section matrices
 
 open scoped Matrix.Norms.Operator
 
-open scoped Matrix.Norms.Operator in
-theorem foobar {α β γ κ : Type*} [SeminormedAddCommGroup γ] [IsUltrametricDist γ]
+theorem Matrix.nnnorm_apply_le_linfty_opNNNorm {α β γ : Type*} [SeminormedAddCommGroup γ]
+    [Fintype α] [Fintype β] (M : Matrix α β γ) (i : α) (j : β) : ‖M i j‖₊ ≤ ‖M‖₊ := by
+  rw [Matrix.linfty_opNNNorm_def]
+  refine Finset.le_sup_of_le (Finset.mem_univ i) ?_
+  exact Finset.single_le_sum (f := fun j ↦ ‖M i j‖₊) (fun _ _ ↦ zero_le) (Finset.mem_univ j)
+
+theorem Matrix.norm_apply_le_linfty_opNorm {α β γ : Type*} [SeminormedAddCommGroup γ]
+    [Fintype α] [Fintype β] (M : Matrix α β γ) (i : α) (j : β) : ‖M i j‖ ≤ ‖M‖ := by
+  grw [← coe_nnnorm, nnnorm_apply_le_linfty_opNNNorm, coe_nnnorm]
+
+theorem Matrix.foobar {α β γ κ : Type*} [SeminormedAddCommGroup γ] [IsUltrametricDist γ]
     [Fintype α] [Fintype β]
     (M : κ → Matrix α β γ) (s : Finset κ) (B : ℝ) (hB : 0 ≤ B) (hM : ∀ i ∈ s, ‖M i‖ ≤ B) :
     ‖∑ k ∈ s, M k‖ ≤ Fintype.card β * B := by
-  let B : NNReal := ⟨B, hB⟩
-  simp_rw [Matrix.linfty_opNorm_def]
-  have key i j : ‖(∑ k ∈ s, M k) i j‖₊ ≤ B := by
-    grw [Matrix.sum_apply]
-    suffices ∀ k ∈ s, ‖M k i j‖₊ ≤ B from
-      IsUltrametricDist.norm_sum_le_of_forall_le_of_nonneg hB this
-    intro k hk
-    have hM : ‖M k‖₊ ≤ B := hM k hk
-    refine .trans ?_ hM
-    rw [Matrix.linfty_opNNNorm_def]
-    refine Finset.le_sup_of_le (Finset.mem_univ i) ?_
-    exact Finset.single_le_sum (f := fun j ↦ ‖M k i j‖₊) (fun _ _ ↦ zero_le) (Finset.mem_univ j)
+  let B' : NNReal := ⟨B, hB⟩
+  simp_rw [linfty_opNorm_def]
+  have key i j k (hk : k ∈ s) : ‖M k i j‖₊ ≤ B' :=
+    (nnnorm_apply_le_linfty_opNNNorm (M k) i j).trans (hM k hk)
+  replace key i j : ‖∑ k ∈ s, M k i j‖₊ ≤ B' :=
+    IsUltrametricDist.norm_sum_le_of_forall_le_of_nonneg hB (key i j)
+  have key i j : ‖(∑ k ∈ s, M k) i j‖₊ ≤ B' := by grw [sum_apply, key]
   grw [key, Finset.sum_const, Finset.card_univ, nsmul_eq_mul, Finset.sup_const_le]
   simp
   rfl
 
-theorem foo {α β γ : Type*} [SeminormedAddCommGroup γ] [IsUltrametricDist γ] [Fintype α] [Fintype β]
+theorem Matrix.foo
+    {α β γ : Type*} [SeminormedAddCommGroup γ] [IsUltrametricDist γ] [Fintype α] [Fintype β]
     (M N : Matrix α β γ) : ‖M + N‖ ≤ Fintype.card β * max ‖M‖ ‖N‖ := by
   simpa using foobar (Bool.rec N M) Finset.univ (max ‖M‖ ‖N‖) (by simp) (by simp)
 
