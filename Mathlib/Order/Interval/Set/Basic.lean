@@ -143,7 +143,6 @@ theorem nonempty_Icc : (Icc a b).Nonempty ↔ a ≤ b :=
 theorem nonempty_Ico : (Ico a b).Nonempty ↔ a < b :=
   ⟨fun ⟨_, hx⟩ => hx.1.trans_lt hx.2, fun h => ⟨a, left_mem_Ico.2 h⟩⟩
 
-
 @[simp, to_dual self]
 theorem nonempty_Ioo [DenselyOrdered α] : (Ioo a b).Nonempty ↔ a < b :=
   ⟨fun ⟨_, ha, hb⟩ => ha.trans hb, exists_between⟩
