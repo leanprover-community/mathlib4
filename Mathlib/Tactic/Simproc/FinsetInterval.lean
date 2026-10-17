@@ -5,7 +5,6 @@ Authors: Yaël Dillies
 -/
 module
 
-public meta import Mathlib.Tactic.ToAdditive
 public meta import Mathlib.Util.Qq
 public import Mathlib.Algebra.Order.Interval.Finset.SuccPred
 public import Mathlib.Data.Int.Interval

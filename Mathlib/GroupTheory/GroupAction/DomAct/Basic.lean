@@ -5,7 +5,6 @@ Authors: Yury Kudryashov
 -/
 module
 
-public meta import Mathlib.Tactic.ToDual
 public import Mathlib.Algebra.Group.Action.Basic
 public import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.Algebra.GroupWithZero.Action.Hom

@@ -5,7 +5,6 @@ Authors: Wenrong Zou
 -/
 module
 
-public meta import Mathlib.Tactic.Simps
 public import Mathlib.RingTheory.MvPowerSeries.Basic  -- shake: keep (tactic dependency)
 
 /-!

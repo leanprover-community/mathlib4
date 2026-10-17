@@ -5,7 +5,6 @@ Authors: Yuma Mizuno
 -/
 module
 
-public meta import Mathlib.Tactic.CategoryTheory.Bicategory.Datatypes
 public import Mathlib.Tactic.CategoryTheory.Bicategory.Datatypes
 public import Mathlib.Tactic.CategoryTheory.Coherence.PureCoherence
 
@@ -19,14 +18,12 @@ are equal.
 
 -/
 
-public meta section
+public section
 
 open Lean Meta Elab Qq
 open CategoryTheory Mathlib.Tactic.BicategoryLike Bicategory
 
 namespace Mathlib.Tactic.Bicategory
-
-section
 
 universe w v u
 
@@ -85,6 +82,8 @@ theorem naturality_inv {p : a ⟶ b} {f g : b ⟶ c} {pf : a ⟶ c}
     p ◁ η.symm ≪≫ η_f = η_g := by
   rw [← ih]
   apply Iso.ext (by simp)
+
+meta section
 
 instance : MonadNormalizeNaturality BicategoryM where
   mkNaturalityAssociator p pf pfg pfgh f g h η_f η_g η_h := do
@@ -237,8 +236,6 @@ theorem mk_eq_of_naturality {f g f' : a ⟶ b} {η θ : f ⟶ g} {η' θ' : f �
       simp [← reassoc_of% (congrArg Iso.hom Hθ')]
     _ = θ := Hθ
 
-end
-
 instance : MkEqOfNaturality BicategoryM where
   mkEqOfNaturality η θ ηIso θIso η_f η_g Hη Hθ := do
     let ctx ← read
@@ -281,5 +278,7 @@ def pureCoherence (mvarId : MVarId) : MetaM (List MVarId) :=
 @[inherit_doc pureCoherence]
 elab "bicategory_coherence" : tactic => withMainContext do
   replaceMainGoal <| ← Bicategory.pureCoherence <| ← getMainGoal
+
+end
 
 end Mathlib.Tactic.Bicategory

@@ -6,8 +6,6 @@ Authors: Kyle Miller
 module
 
 public meta import Lean.Elab.Deriving.Util
-public meta import Mathlib.Tactic.ToAdditive
-public meta import Mathlib.Tactic.ToDual
 public import Mathlib.Data.Fintype.OfMap  -- shake: keep (metaprogram output dependency)
 public import Mathlib.Tactic.ProxyType
 

@@ -6,7 +6,6 @@ Authors: Paul Lezeau, Bhavik Mehta
 module
 
 public meta import Mathlib.NumberTheory.Divisors
-public meta import Mathlib.Tactic.ToAdditive
 public meta import Mathlib.Util.Qq
 
 import Mathlib.Data.Finset.Attr

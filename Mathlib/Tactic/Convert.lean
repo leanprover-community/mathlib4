@@ -8,8 +8,6 @@ module
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Tactic.CongrExclamation
 
-meta import Mathlib.Tactic.CongrExclamation
-
 /-!
 # The `convert` tactic.
 

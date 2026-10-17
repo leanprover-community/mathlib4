@@ -5,7 +5,7 @@ Authors: David Ledvinka
 -/
 module
 
-public meta import Mathlib.Tactic.Inclusion.Core.Core
+public import Mathlib.Tactic.Inclusion.Core.Core
 
 /-!
 # The `inclusion` tactic

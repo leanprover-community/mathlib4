@@ -8,7 +8,6 @@ module
 public meta import Batteries.Lean.Except
 public meta import Lean.Meta.Tactic.Rfl
 public meta import Lean.Meta.Tactic.Symm
-public meta import Mathlib.Tactic.GCongr.ForwardAttr
 public import Batteries.Tactic.Exact
 public import Mathlib.Order.Defs.Unbundled
 public import Mathlib.Tactic.Core
