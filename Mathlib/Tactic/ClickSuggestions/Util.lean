@@ -162,6 +162,8 @@ structure Context where
   cursorPos : Lsp.Position
   /-- Whether to use the `on_goal n =>` combinator. -/
   onGoal : Option Nat
+  /-- Whether to use the `·` combinator. -/
+  focus : Bool
   /-- The preceding piece of syntax, if available. It is not available if the cursor is
   at the start of the next tactic. This is used for merging consecutive `rw` tactics. -/
   stx : Option (TSyntax `tactic)
@@ -338,6 +340,9 @@ def tacticPasteString (tac : TSyntax `tactic) : ClickSuggestionsM String := do
 /-- Given tactic syntax `tac`, compute the text edit that will paste it into the editor.
 We return the range that should be replaced, and the new text that will replace it. -/
 def mkInsertion (tac : TSyntax `tactic) : ClickSuggestionsM (Lsp.Range × String) := do
+  let tac ← match (← read).onGoal with
+    | some n => `(tactic| on_goal $(Syntax.mkNatLit (n + 1)):num => $tac:tactic)
+    | none => pure tac
   if let some stx := (← read).stx then
     if let some tac ← mergeTactics? stx tac then
       if let some range := stx.raw.getRange? then
@@ -346,6 +351,7 @@ def mkInsertion (tac : TSyntax `tactic) : ClickSuggestionsM (Lsp.Range × String
         let extraWhitespace := range.stop.extract text.source endPos
         let tactic ← tacticPasteString tac
         return (text.utf8RangeToLspRange ⟨range.start, endPos⟩, tactic ++ extraWhitespace)
+  let tac ← if (← read).focus then `(tactic| · $tac:tactic) else pure tac
   return (⟨(← read).cursorPos, (← read).cursorPos⟩,
     s!"{← tacticPasteString tac}\n{String.replicate (← read).cursorPos.character ' '}")
 
@@ -360,9 +366,6 @@ open Widget
 If `solves := true`, then a `🎉️` emoji is added. -/
 def mkSuggestion (tac : TSyntax `tactic) (button : String) (html : Html) (solves : Bool) :
     ClickSuggestionsM Html := do
-  let tac ← match (← read).onGoal with
-    | some n => `(tactic| on_goal $(Syntax.mkNatLit (n + 1)):num => $tac:tactic)
-    | none => pure tac
   let (range, newText) ← mkInsertion tac (← read)
   let buttonText := s!"{if solves then "🎉️" else ""}[{button}] "
   let button :=
