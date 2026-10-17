@@ -13,10 +13,17 @@ public import Mathlib.RingTheory.Kaehler.JacobiZariski
 # The differential module and étale algebras
 
 ## Main results
+- `KaehlerDifferential.exists_retraction_mapBaseChange`:
+  The map `T ⊗[S] Ω[S⁄R] →ₗ[T] Ω[T⁄R]` has a retraction for `T` a formally smooth `S`-algebra,
+  i.e. the first fundamental sequence `0 → T ⊗[S] Ω[S⁄R] → Ω[T⁄R] → Ω[T⁄S] → 0` is split exact.
 - `KaehlerDifferential.tensorKaehlerEquivOfFormallyEtale`:
   The canonical isomorphism `T ⊗[S] Ω[S⁄R] ≃ₗ[T] Ω[T⁄R]` for `T` a formally étale `S`-algebra.
 - `Algebra.tensorH1CotangentOfIsLocalization`:
   The canonical isomorphism `T ⊗[S] H¹(L_{S⁄R}) ≃ₗ[T] H¹(L_{T⁄R})` for `T` a localization of `S`.
+
+## References
+
+- [H. Matsumura, *Commutative Ring Theory*][matsumura1987], Theorem 25.1
 -/
 
 @[expose] public section
@@ -28,19 +35,32 @@ variable [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
 open TensorProduct
 
+lemma KaehlerDifferential.mapBaseChange_injective [Subsingleton (Algebra.H1Cotangent S T)] :
+    Function.Injective (mapBaseChange R S T) := by
+  rw [injective_iff_map_eq_zero]
+  intro x hx
+  obtain ⟨x, rfl⟩ := (Algebra.H1Cotangent.exact_δ_mapBaseChange R S T x).mp hx
+  rw [Subsingleton.elim x 0, map_zero]
+
+/-- The first fundamental sequence `0 → T ⊗[S] Ω[S⁄R] → Ω[T⁄R] → Ω[T⁄S] → 0` is split exact
+when `H¹(L_{T⁄S}) = 0` and `Ω[T⁄S]` is projective, e.g. when `T` is a formally smooth `S`-algebra
+([Matsumura, Theorem 25.1][matsumura1987]). -/
+lemma KaehlerDifferential.exists_retraction_mapBaseChange [Subsingleton (Algebra.H1Cotangent S T)]
+    [Module.Projective T Ω[T⁄S]] :
+    ∃ l : Ω[T⁄R] →ₗ[T] T ⊗[S] Ω[S⁄R], l ∘ₗ mapBaseChange R S T = LinearMap.id := by
+  have := (exact_mapBaseChange_map R S T).split_tfae'.out 1 2
+  exact (this.mp ⟨mapBaseChange_injective R S T,
+    Module.projective_lifting_property _ _ (map_surjective R S T)⟩).2
+
 /--
 The canonical isomorphism `T ⊗[S] Ω[S⁄R] ≃ₗ[T] Ω[T⁄R]` for `T` a formally étale `S`-algebra.
 Also see `S ⊗[R] Ω[A⁄R] ≃ₗ[S] Ω[S ⊗[R] A⁄S]` at `KaehlerDifferential.tensorKaehlerEquiv`.
 -/
 @[simps! apply] noncomputable
 def KaehlerDifferential.tensorKaehlerEquivOfFormallyEtale [Algebra.FormallyEtale S T] :
-    T ⊗[S] Ω[S⁄R] ≃ₗ[T] Ω[T⁄R] := by
-  refine LinearEquiv.ofBijective (mapBaseChange R S T)
-    ⟨?_, fun x ↦ (KaehlerDifferential.exact_mapBaseChange_map R S T x).mp (Subsingleton.elim _ _)⟩
-  rw [injective_iff_map_eq_zero]
-  intro x hx
-  obtain ⟨x, rfl⟩ := (Algebra.H1Cotangent.exact_δ_mapBaseChange R S T x).mp hx
-  rw [Subsingleton.elim x 0, map_zero]
+    T ⊗[S] Ω[S⁄R] ≃ₗ[T] Ω[T⁄R] :=
+  .ofBijective (mapBaseChange R S T) ⟨mapBaseChange_injective R S T,
+    fun x ↦ (exact_mapBaseChange_map R S T x).mp (Subsingleton.elim _ _)⟩
 
 lemma KaehlerDifferential.tensorKaehlerEquivOfFormallyEtale_symm_D_algebraMap
     [Algebra.FormallyEtale S T] (s : S) :
