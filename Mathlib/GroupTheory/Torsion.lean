@@ -517,8 +517,7 @@ it is torsion-free. -/
 /-- Quotienting an additive group by its torsion additive subgroup yields an additive group with
 unique divisibility. In particular, it is torsion-free. -/]
 instance _root_.QuotientGroup.instHasUniqueRoots : HasUniqueRoots <| G ⧸ torsion G := by
-  suffices IsMulTorsionFree (G ⧸ torsion G) from
-    ⟨fun _ hn _ _ ↦ eq_of_pow_eq_pow_of_commute hn (.all _ _)⟩
+  suffices IsMulTorsionFree (G ⧸ torsion G) from IsMulTorsionFree.hasUniqueRoots
   refine .of_not_isOfFinOrder fun g hne hfin ↦ hne ?_
   obtain ⟨g⟩ := g
   obtain ⟨m, mpos, hm⟩ := hfin.exists_pow_eq_one
