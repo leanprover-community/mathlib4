@@ -53,7 +53,8 @@ theorem Matrix.linfty_opNorm_add_le_card_mul_max
     (M N : Matrix α β γ) : ‖M + N‖ ≤ Fintype.card β * max ‖M‖ ‖N‖ := by
   simpa using linfty_opNorm_sum_le_card_mul (Bool.rec N M) Finset.univ _ (by simp) (by simp)
 
-theorem Matrix.gelfandRadius_blockDiagonal_eq_sup {R m n : Type*} (M : n → Matrix m m R)
+-- PRed
+theorem Matrix.gelfandRadius_blockDiagonal {R m n : Type*} (M : n → Matrix m m R)
     [DecidableEq m] [DecidableEq n] [Fintype m] [Fintype n] [NormedCommRing R] :
     gelfandRadius (Matrix.blockDiagonal M) = ⨆ i, gelfandRadius (M i) := by
   rcases isEmpty_or_nonempty n
@@ -130,7 +131,56 @@ theorem gelfandRadiusNorm_algebraMap (x : L) :
   let bKL := Module.finBasis K L
   let bLM := Module.finBasis L M
   rw [(bKL.smulTower bLM).gelfandRadiusNorm_apply, Algebra.smulTower_leftMulMatrix_algebraMap,
-    Matrix.gelfandRadius_blockDiagonal_eq_sup, ciSup_const, bKL.gelfandRadiusNorm_apply]
+    Matrix.gelfandRadius_blockDiagonal, ciSup_const, bKL.gelfandRadiusNorm_apply]
+
+-- todo: golf
+open scoped Matrix.Norms.Operator Topology in
+open Filter in
+theorem isNonarchimedean_gelfandRadiusNorm {K L : Type*} [NormedField K] [Field L] [Algebra K L]
+    [IsUltrametricDist K] [FiniteDimensional K L] : IsNonarchimedean (gelfandRadiusNorm K L) := by
+  intro x y
+  let T := Algebra.leftMulMatrix (Module.finBasis K L)
+  let M := max (gelfandRadius (T x)) (gelfandRadius (T y))
+  change gelfandRadius (T (x + y)) ≤ M
+  suffices ∀ (c : ℝ), M < c → gelfandRadius (T (x + y)) ≤ c by
+    apply le_of_forall_pos_le_add
+    intro ε hε
+    apply this
+    simpa
+  intro r hr
+  rw [max_lt_iff] at hr
+  obtain ⟨Cx, hCx0, hCx⟩ : ∃ C > 0, ∀ (n : ℕ), ‖T x ^ n‖ ≤ C * r ^ n :=
+    norm_pow_le_mul_pow_of_gelfandRadius_lt (T x) hr.1
+  obtain ⟨Cy, hCy0, hCy⟩ : ∃ C > 0, ∀ (n : ℕ), ‖T y ^ n‖ ≤ C * r ^ n :=
+    norm_pow_le_mul_pow_of_gelfandRadius_lt (T y) hr.2
+  let C := Cx * Cy * Module.finrank K L
+  have : 0 < Module.finrank K L := Module.finrank_pos
+  have : 0 < r := by grind [gelfandRadius_nonneg]
+  have key n : ‖T (x + y) ^ n‖ ≤ C * r ^ n := by
+    grw [map_add, ((Commute.all x y).map T).add_pow]
+    grw [Matrix.linfty_opNorm_sum_le_card_mul _ _ (Cx * Cy * r ^ n) (by positivity)]
+    · rw [Fintype.card_fin]
+      grind
+    intro k hk
+    rw [Finset.mem_range_succ_iff] at hk
+    have key : (n.choose k : Matrix (Fin (Module.finrank K L)) (Fin (Module.finrank K L)) K)
+      = algebraMap K _ (n.choose k) := by
+      simp only [map_natCast]
+    rw [← nsmul_eq_mul', nsmul_eq_mul, key, ← Algebra.smul_def]
+    grw [norm_smul_le, ← nsmul_one, IsUltrametricDist.norm_nsmul_le, norm_one, one_mul,
+      norm_mul_le, hCx, hCy, mul_mul_mul_comm, ← pow_add, Nat.add_sub_cancel' hk]
+  replace key (n : ℕ) (hn : n ≠ 0) : ‖T (x + y) ^ n‖ ^ (n⁻¹ : ℝ) ≤ C ^ (n⁻¹ : ℝ) * r := by
+    specialize key n
+    rwa [← pow_le_pow_iff_left₀ (by positivity) (by positivity) hn, mul_pow,
+      ← Real.rpow_mul_natCast (by positivity), ← Real.rpow_mul_natCast (by positivity),
+      inv_mul_cancel₀ (by simpa), Real.rpow_one, Real.rpow_one]
+  suffices ∀ C > (0 : ℝ), Tendsto (fun n : ℕ ↦ C ^ (n : ℝ)⁻¹) atTop (𝓝 1) by
+    refine le_of_tendsto_of_tendsto (tendsto_gelfandRadius (T (x + y)))
+      (by simpa using (this C (by positivity)).mul_const _)
+        (eventually_atTop.mpr ⟨1, fun n hn ↦ key n (by grind)⟩)
+  intro C hC
+  rw [← C.rpow_zero]
+  exact (C.continuous_const_rpow hC.ne').continuousAt.tendsto.comp tendsto_inv_atTop_nhds_zero_nat
 
 end gelfandRadiusNorm
 
@@ -384,55 +434,6 @@ noncomputable def spectralNorm.normedAlgebra' (K E L : Type*) [NormedField K]
     apply le_of_eq
     simp [Algebra.smul_def]
     simp [NormedAlgebra.norm_eq_spectralNorm K, spectralNorm_algebraMap]
-
--- todo: golf
-open scoped Matrix.Norms.Operator Topology in
-open Filter in
-theorem isNonarchimedean_gelfandRadiusNorm {K L : Type*} [NormedField K] [Field L] [Algebra K L]
-    [IsUltrametricDist K] [FiniteDimensional K L] : IsNonarchimedean (gelfandRadiusNorm K L) := by
-  intro x y
-  let T := Algebra.leftMulMatrix (Module.finBasis K L)
-  let M := max (gelfandRadius (T x)) (gelfandRadius (T y))
-  change gelfandRadius (T (x + y)) ≤ M
-  suffices ∀ (c : ℝ), M < c → gelfandRadius (T (x + y)) ≤ c by
-    apply le_of_forall_pos_le_add
-    intro ε hε
-    apply this
-    simpa
-  intro r hr
-  rw [max_lt_iff] at hr
-  obtain ⟨Cx, hCx0, hCx⟩ : ∃ C > 0, ∀ (n : ℕ), ‖T x ^ n‖ ≤ C * r ^ n :=
-    norm_pow_le_mul_pow_of_gelfandRadius_lt (T x) hr.1
-  obtain ⟨Cy, hCy0, hCy⟩ : ∃ C > 0, ∀ (n : ℕ), ‖T y ^ n‖ ≤ C * r ^ n :=
-    norm_pow_le_mul_pow_of_gelfandRadius_lt (T y) hr.2
-  let C := Cx * Cy * Module.finrank K L
-  have : 0 < Module.finrank K L := Module.finrank_pos
-  have : 0 < r := by grind [gelfandRadius_nonneg]
-  have key n : ‖T (x + y) ^ n‖ ≤ C * r ^ n := by
-    grw [map_add, ((Commute.all x y).map T).add_pow]
-    grw [Matrix.linfty_opNorm_sum_le_card_mul _ _ (Cx * Cy * r ^ n) (by positivity)]
-    · rw [Fintype.card_fin]
-      grind
-    intro k hk
-    rw [Finset.mem_range_succ_iff] at hk
-    have key : (n.choose k : Matrix (Fin (Module.finrank K L)) (Fin (Module.finrank K L)) K)
-      = algebraMap K _ (n.choose k) := by
-      simp only [map_natCast]
-    rw [← nsmul_eq_mul', nsmul_eq_mul, key, ← Algebra.smul_def]
-    grw [norm_smul_le, ← nsmul_one, IsUltrametricDist.norm_nsmul_le, norm_one, one_mul,
-      norm_mul_le, hCx, hCy, mul_mul_mul_comm, ← pow_add, Nat.add_sub_cancel' hk]
-  replace key (n : ℕ) (hn : n ≠ 0) : ‖T (x + y) ^ n‖ ^ (n⁻¹ : ℝ) ≤ C ^ (n⁻¹ : ℝ) * r := by
-    specialize key n
-    rwa [← pow_le_pow_iff_left₀ (by positivity) (by positivity) hn, mul_pow,
-      ← Real.rpow_mul_natCast (by positivity), ← Real.rpow_mul_natCast (by positivity),
-      inv_mul_cancel₀ (by simpa), Real.rpow_one, Real.rpow_one]
-  suffices ∀ C > (0 : ℝ), Tendsto (fun n : ℕ ↦ C ^ (n : ℝ)⁻¹) atTop (𝓝 1) by
-    refine le_of_tendsto_of_tendsto (tendsto_gelfandRadius (T (x + y)))
-      (by simpa using (this C (by positivity)).mul_const _)
-        (eventually_atTop.mpr ⟨1, fun n hn ↦ key n (by grind)⟩)
-  intro C hC
-  rw [← C.rpow_zero]
-  exact (C.continuous_const_rpow hC.ne').continuousAt.tendsto.comp tendsto_inv_atTop_nhds_zero_nat
 
 open IntermediateField in
 theorem isNonarchimedean_spectralNorm {K L : Type*} [NormedField K] [Field L] [Algebra K L]
