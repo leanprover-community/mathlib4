@@ -297,6 +297,16 @@ theorem sSupIndep.pairwiseDisjoint : s.PairwiseDisjoint id := fun _ hx y hy h =>
 theorem sSupIndep_singleton (a : α) : sSupIndep ({a} : Set α) := fun i hi ↦ by
   simp_all
 
+lemma sSupIndep.image (hS : sSupIndep s) {f : α → α} (hf : ∀ i, f i ≤ i) : sSupIndep (f '' s) := by
+  rintro t ⟨x, hxS, rfl⟩
+  refine hS hxS |>.mono (hf x) ?_
+  simp only [sSup_le_iff, mem_diff, mem_image, mem_singleton_iff, and_imp, forall_exists_index,
+    forall_apply_eq_imp_iff₂]
+  refine fun y hyS hne ↦ (hf y).trans <| le_sSup ?_
+  simp only [mem_diff, hyS, mem_singleton_iff, true_and]
+  rintro rfl
+  simp at hne
+
 theorem sSupIndep_pair {a b : α} (hab : a ≠ b) :
     sSupIndep ({a, b} : Set α) ↔ Disjoint a b := by
   constructor
