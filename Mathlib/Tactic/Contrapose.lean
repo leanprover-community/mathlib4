@@ -125,12 +125,12 @@ elab_rules : tactic
 syntax (name := contrapose!)
   "contrapose!" optConfig (ppSpace colGt ident (" with " ident)?)? : tactic
 
-local elab "try_push_neg" cfg:optConfig : tactic => do
+local elab "try_push_not" cfg:optConfig : tactic => do
   Push.push (← Push.elabPushConfig cfg) none (.const ``Not) (.targets #[] true)
-    (ifUnchanged := .silent)
+    (ifUnchanged := .warning)
 
 macro_rules
-  | `(tactic| contrapose! $cfg) => `(tactic| (contrapose; try_push_neg $cfg))
+  | `(tactic| contrapose! $cfg) => `(tactic| (contrapose; try_push_not $cfg))
   | `(tactic| contrapose! $cfg:optConfig $e) =>
     `(tactic| (revert $e:ident; contrapose! $cfg; intro $e:ident))
   | `(tactic| contrapose! $cfg:optConfig $e with $e') =>
