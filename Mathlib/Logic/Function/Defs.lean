@@ -113,29 +113,30 @@ end Prod
 /- ### The diagonal map -/
 
 /-- The diagonal map into `Prod`. -/
-@[inline] protected def diag {α} : α → α × α := fun a : α ↦ (a, a)
+@[inline] protected def diagonal {α} : α → α × α := fun a : α ↦ (a, a)
 
-section Diag
+section Diagonal
 
 variable {α β γ : Type*} (f : α → β) (g : α → γ) (a b : α)
 
-theorem diag_def : Function.diag = fun a : α ↦ (a, a) := rfl
+theorem diagonal_def : Function.diagonal = fun a : α ↦ (a, a) := rfl
 
-@[simp, grind =] theorem diag_apply : Function.diag a = (a, a) := rfl
+@[simp, grind =] theorem diagonal_apply : Function.diagonal a = (a, a) := rfl
 
-theorem diag_injective : Injective (α := α) Function.diag := fun _ _ ↦ congrArg Prod.fst
+theorem diagonal_injective : Injective (α := α) Function.diagonal := fun _ _ ↦ congrArg Prod.fst
 
-@[simp] theorem prod_id_id : Function.prod (@id α) id = Function.diag := rfl
-@[simp] theorem fst_comp_diag : Prod.fst ∘ Function.diag = @id α := rfl
-@[simp] theorem snd_comp_diag : Prod.snd ∘ Function.diag = @id α := rfl
+@[simp] theorem prod_id_id : Function.prod (@id α) id = Function.diagonal := rfl
+@[simp] theorem fst_comp_diagonal : Prod.fst ∘ Function.diagonal = @id α := rfl
+@[simp] theorem snd_comp_diagonal : Prod.snd ∘ Function.diagonal = @id α := rfl
 
-@[simp] theorem diag_comp : Function.diag ∘ f = Function.prod f f := rfl
+@[simp] theorem diagonal_comp : Function.diagonal ∘ f = Function.prod f f := rfl
 
-@[simp] theorem map_comp_diag : Prod.map f g ∘ Function.diag = Function.prod f g := rfl
+@[simp] theorem map_comp_diagonal : Prod.map f g ∘ Function.diagonal = Function.prod f g := rfl
 
-@[simp] theorem swap_comp_diag : Prod.swap ∘ Function.diag = Function.diag (α := α) := rfl
+@[simp] theorem swap_comp_diagonal :
+    Prod.swap ∘ Function.diagonal = Function.diagonal (α := α) := rfl
 
-end Diag
+end Diagonal
 
 /- ### `onFun` function -/
 

@@ -86,7 +86,7 @@ theorem toMatrix_update [DecidableEq ι'] (x : M) :
 /-- The basis constructed by `unitsSMul` has vectors given by a diagonal matrix. -/
 @[simp]
 theorem toMatrix_unitsSMul [DecidableEq ι] (e : Basis ι R₂ M₂) (w : ι → R₂ˣ) :
-    e.toMatrix (e.unitsSMul w) = diagonal ((↑) ∘ w) := by
+    e.toMatrix (e.unitsSMul w) = Matrix.diagonal ((↑) ∘ w) := by
   ext i j
   by_cases h : i = j <;>
     simp [h, toMatrix_apply, unitsSMul_apply, Units.smul_def]
@@ -94,7 +94,7 @@ theorem toMatrix_unitsSMul [DecidableEq ι] (e : Basis ι R₂ M₂) (w : ι →
 /-- The basis constructed by `isUnitSMul` has vectors given by a diagonal matrix. -/
 @[simp]
 theorem toMatrix_isUnitSMul [DecidableEq ι] (e : Basis ι R₂ M₂) {w : ι → R₂}
-    (hw : ∀ i, IsUnit (w i)) : e.toMatrix (e.isUnitSMul hw) = diagonal w :=
+    (hw : ∀ i, IsUnit (w i)) : e.toMatrix (e.isUnitSMul hw) = Matrix.diagonal w :=
   e.toMatrix_unitsSMul _
 
 theorem toMatrix_smul_left {G} [Group G] [DistribMulAction G M] [SMulCommClass G R M] (g : G) :
