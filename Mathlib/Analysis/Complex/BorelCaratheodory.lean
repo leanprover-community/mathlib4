@@ -93,8 +93,15 @@ lemma iteratedDeriv_div_factorial_eq_circleAverage_re
 center of a ball given a bound for its real part on the sphere. -/
 public theorem norm_iteratedDeriv_le_of_re_le_sphere (hR : 0 < R)
     (hf : DiffContOnCl ℂ f (ball c R)) (hf0 : f c = 0)
-    (hM : (sphere c R).MapsTo f {z | z.re ≤ M}) (hn : n ≠ 0) :
+    (hM : (sphere c R).MapsTo f {z | z.re ≤ M}) :
     ‖iteratedDeriv n f c / (n !)‖ ≤ 2 * M / R ^ n := by
+  by_cases! hn : n = 0
+  · simp only [hn, iteratedDeriv_zero, Nat.factorial_zero, Nat.cast_one, div_one, norm_zero, hf0,
+      pow_zero, Nat.ofNat_pos, mul_nonneg_iff_of_pos_left]
+    have hfs := hf.continuousOn_ball.mono sphere_subset_closedBall
+    rw [← abs_of_pos hR] at hf hM
+    rw [← zero_re, ← hf0, ← hf.circleAverage, ← circleAverage_re (hfs.circleIntegrable hR.le)]
+    exact circleAverage_mono_on_of_le_circle (ContinuousOn.circleIntegrable hR.le (by fun_prop)) hM
   grw [iteratedDeriv_div_factorial_eq_circleAverage_re M hf hR hn,
     norm_circleAverage_le_circleAverage_norm]
   apply le_of_eq
@@ -122,9 +129,6 @@ public theorem norm_iteratedDeriv_le_of_re_le (hR : 0 < R)
     (hf : DifferentiableOn ℂ f (ball c R)) (hf0 : f c = 0)
     (hM : (ball c R).MapsTo f {z | z.re ≤ M}) :
     ‖iteratedDeriv n f c / (n !)‖ ≤ 2 * M / R ^ n := by
-  by_cases! hn : n = 0
-  · specialize hM (mem_ball_self hR)
-    simp_all
   refine ge_of_tendsto (f := fun R' : ℝ ↦ 2 * M / R' ^ n) (x := 𝓝[<] R)
     (((continuousAt_const.div (by fun_prop) (by positivity)).tendsto).mono_left
       nhdsWithin_le_nhds) ?_
@@ -132,7 +136,7 @@ public theorem norm_iteratedDeriv_le_of_re_le (hR : 0 < R)
     (eventually_gt_nhds hR)] with R' hR'R hR'0
   exact norm_iteratedDeriv_le_of_re_le_sphere hR'0
     (hf.diffContOnCl_ball (closedBall_subset_ball hR'R)) hf0
-    (hM.mono_left (sphere_subset_ball hR'R)) hn
+    (hM.mono_left (sphere_subset_ball hR'R))
 
 /-- **Borel-Carathéodory theorem:** estimates a differentiable function on a ball which vanishes
 at the center given a bound for its real part on that ball. -/
