@@ -5,8 +5,10 @@ Authors: Vasilii Nesterov
 -/
 module
 
+public import Mathlib.Algebra.Ring.Periodic
 public import Mathlib.Analysis.SpecificLimits.Normed
 
+import Mathlib.Algebra.Order.Floor.Semifield
 import Mathlib.Analysis.Normed.Group.FunctionSeries
 import Mathlib.Tactic.Qify
 import Mathlib.Tactic.Rify
@@ -26,6 +28,8 @@ representations of reals as sequences of digits in positional system.
 ## Main Statements
 
 * `ofDigits_digits` states that `ofDigits (digits x b) = x`.
+* `exists_ratCast_eq_iff_digits_eventually_periodic`: a nonnegative real number is rational
+  if and only if its digits are eventually periodic.
 -/
 
 @[expose] public section
@@ -216,5 +220,91 @@ theorem continuous_ofDigits {b : ℕ} : Continuous (@ofDigits b) := by
           linarith
         _ = _ := by
           grind
+
+section Periodic
+
+theorem digits_fract {b : ℕ} [NeZero b] {x : ℝ} (hx : 0 ≤ x) :
+    digits (Int.fract x) b = digits x b := by
+  ext i
+  simp only [digits, Fin.val_ofNat]
+  conv_rhs => rw [← Int.fract_add_floor x, ← natCast_floor_eq_intCast_floor hx]
+  rw [add_mul, ← Nat.cast_pow, ← Nat.cast_mul,
+    Nat.floor_add_natCast (mul_nonneg (Int.fract_nonneg x) (Nat.cast_nonneg _)),
+    pow_succ, ← Nat.mul_assoc, Nat.add_mul_mod_self_right]
+
+theorem val_digits_natCast_div {b : ℕ} [NeZero b] (r s n : ℕ) :
+    (digits ((r : ℝ) / s) b n : ℕ) = r * b ^ n % s * b / s := by
+  rw [digits, Fin.val_ofNat, ← Nat.mul_div_mod_eq_mod_mul_div]
+  congr 1
+  rw [div_mul_eq_mul_div, pow_succ, ← mul_assoc]
+  exact_mod_cast Nat.floor_div_eq_div (K := ℝ) (r * b ^ n * b) s
+
+private lemma exists_periodic_mod_pow (r s b : ℕ) (hs : 0 < s) :
+    ∃ N c, 0 < c ∧ Function.Periodic (fun d ↦ r * b ^ (N + d) % s) c := by
+  obtain ⟨i, j, hij, h⟩ := Finite.exists_ne_map_eq_of_infinite
+    (fun n : ℕ ↦ (⟨r * b ^ n % s, Nat.mod_lt _ hs⟩ : Fin s))
+  simp only [Fin.mk.injEq] at h
+  wlog hlt : i < j generalizing i j
+  · exact this j i hij.symm h.symm (lt_of_le_of_ne (not_lt.1 hlt) hij.symm)
+  refine ⟨i, j - i, by lia, fun d ↦ ?_⟩
+  dsimp only
+  rw [show i + (d + (j - i)) = j + d by lia, pow_add, ← mul_assoc, Nat.mul_mod, ← h,
+    ← Nat.mul_mod, mul_assoc, ← pow_add]
+
+theorem digits_ratCast_eventually_periodic {b : ℕ} [NeZero b] {q : ℚ} (hq : 0 ≤ q) :
+    ∃ N c, 0 < c ∧ Function.Periodic (fun d ↦ digits (q : ℝ) b (N + d)) c := by
+  have hx : (q : ℝ) = (q.num.toNat : ℝ) / q.den := by
+    rw [Rat.cast_def]
+    congr 1
+    exact_mod_cast (Int.toNat_of_nonneg (Rat.num_nonneg.2 hq)).symm
+  obtain ⟨N, c, hc, h⟩ := exists_periodic_mod_pow q.num.toNat q.den b q.den_pos
+  refine ⟨N, c, hc, fun d ↦ Fin.ext ?_⟩
+  dsimp only
+  rw [hx, val_digits_natCast_div, val_digits_natCast_div]
+  exact congrArg (· * b / q.den) (h d)
+
+private lemma exists_ratCast_eq_sum_ofDigitsTerm {b : ℕ} (a : ℕ → Fin b) (n : ℕ) :
+    ∃ q : ℚ, (q : ℝ) = ∑ i ∈ Finset.range n, ofDigitsTerm a i :=
+  ⟨∑ i ∈ Finset.range n, ((a i : ℕ) : ℚ) * ((b : ℚ) ^ (i + 1))⁻¹, by simp [ofDigitsTerm]⟩
+
+theorem exists_ratCast_eq_ofDigits_of_eventually_periodic {b : ℕ} (hb : 1 < b)
+    {a : ℕ → Fin b} {N c : ℕ} (hc : 0 < c) (h : Function.Periodic (fun d ↦ a (N + d)) c) :
+    ∃ q : ℚ, (q : ℝ) = ofDigits a := by
+  set e : ℕ → Fin b := fun i ↦ a (i + N) with he_def
+  have he : (fun i ↦ e (i + c)) = e := by
+    ext1 i
+    simp only [he_def]
+    rw [add_comm (i + c) N, add_comm i N]
+    exact h i
+  have ht : ((b : ℝ) ^ c)⁻¹ ≠ 1 :=
+    (inv_lt_one_of_one_lt₀ (one_lt_pow₀ (by exact_mod_cast hb) hc.ne')).ne
+  have key := ofDigits_eq_sum_add_ofDigits e c
+  rw [he] at key
+  obtain ⟨q₁, hq₁⟩ := exists_ratCast_eq_sum_ofDigitsTerm a N
+  obtain ⟨q₂, hq₂⟩ := exists_ratCast_eq_sum_ofDigitsTerm e c
+  have he' : ofDigits e = q₂ / (1 - ((b : ℝ) ^ c)⁻¹) := by
+    rw [eq_div_iff (sub_ne_zero.2 ht.symm), hq₂, eq_sub_of_add_eq key.symm]
+    ring
+  refine ⟨q₁ + ((b : ℚ) ^ N)⁻¹ * (q₂ / (1 - ((b : ℚ) ^ c)⁻¹)), ?_⟩
+  rw [ofDigits_eq_sum_add_ofDigits a N, ← he_def, he', ← hq₁]
+  push_cast
+  ring
+
+/-- A nonnegative real number is rational if and only if its digits in base `b` are eventually
+periodic. -/
+theorem exists_ratCast_eq_iff_digits_eventually_periodic {b : ℕ} [NeZero b] (hb : 1 < b)
+    {x : ℝ} (hx : 0 ≤ x) :
+    (∃ q : ℚ, (q : ℝ) = x) ↔
+      ∃ N c, 0 < c ∧ Function.Periodic (fun d ↦ digits x b (N + d)) c := by
+  constructor
+  · rintro ⟨q, rfl⟩
+    exact digits_ratCast_eventually_periodic (mod_cast hx)
+  · rintro ⟨N, c, hc, h⟩
+    rw [← digits_fract hx] at h
+    obtain ⟨q, hq⟩ := exists_ratCast_eq_ofDigits_of_eventually_periodic hb hc h
+    rw [ofDigits_digits hb ⟨Int.fract_nonneg x, Int.fract_lt_one x⟩] at hq
+    exact ⟨q + ⌊x⌋, by push_cast; rw [hq, Int.fract_add_floor]⟩
+
+end Periodic
 
 end Real
