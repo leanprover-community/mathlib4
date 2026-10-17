@@ -95,9 +95,17 @@ theorem mono_eta_iff_residuallyFinite : Mono (eta G) ↔ Group.ResiduallyFinite 
   exact forall_congr' fun H ↦ QuotientGroup.eq_one_iff g
 
 @[to_additive]
+theorem mono_eta [Group.ResiduallyFinite G] : Mono (eta G) :=
+  (mono_eta_iff_residuallyFinite G).2 ‹_›
+
+@[to_additive]
 theorem etaFn_injective_iff_residuallyFinite :
     Function.Injective (etaFn G) ↔ Group.ResiduallyFinite G :=
   (GrpCat.mono_iff_injective (eta G)).symm.trans (mono_eta_iff_residuallyFinite G)
+
+@[to_additive]
+theorem etaFn_injective [Group.ResiduallyFinite G] : Function.Injective (etaFn G) :=
+  (etaFn_injective_iff_residuallyFinite G).2 ‹_›
 
 set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
@@ -144,8 +152,8 @@ def quotientMap (f : G ⟶ ↧P) (H : OpenNormalSubgroup P) :
   FiniteGrp.ofHom <| QuotientGroup.map _ _ f.hom <| fun _ h => h
 
 /-- The universal morphism from the profinite completion to `P`. -/
-noncomputable
-def lift (f : G ⟶ ↧P) : completion G ⟶ P :=
+@[to_additive /-- The universal morphism from the profinite completion to `P`. -/]
+noncomputable def lift (f : G ⟶ ↧P) : completion G ⟶ P :=
   P.isLimitCone.lift ⟨_, {
     app H := (limitCone (diagram G)).π.app _ ≫ (ofFiniteGrpHom <| quotientMap f H)
     naturality := by
@@ -166,7 +174,7 @@ def lift (f : G ⟶ ↧P) : completion G ⟶ P :=
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
-@[reassoc (attr := simp)]
+@[to_additive (attr := reassoc (attr := simp))]
 lemma lift_eta (f : G ⟶ ↧P) : eta G ≫ (forget₂ _ _).map (lift f) = f := by
   let e := isoLimittoFiniteQuotientFunctor P
   rw [← (forget₂ ProfiniteGrp GrpCat).mapIso e |>.cancel_iso_hom_right]
@@ -188,7 +196,7 @@ lemma lift_unique (f g : completion G ⟶ P)
 end ProfiniteCompletion
 
 /-- The profinite completion functor. -/
-@[simps]
+@[to_additive (attr := simps) /-- The profinite completion functor. -/]
 noncomputable def profiniteCompletion : GrpCat.{u} ⥤ ProfiniteGrp.{u} where
   obj G := ProfiniteCompletion.completion G
   map f := ProfiniteCompletion.lift <| f ≫ ProfiniteCompletion.eta _
@@ -202,8 +210,8 @@ noncomputable def profiniteCompletion : GrpCat.{u} ⥤ ProfiniteGrp.{u} where
 namespace ProfiniteCompletion
 
 /-- The hom-set equivalence exhibiting the adjunction. -/
-noncomputable
-def homEquiv (G : GrpCat.{u}) (P : ProfiniteGrp.{u}) :
+@[to_additive /-- The hom-set equivalence exhibiting the adjunction. -/]
+noncomputable def homEquiv (G : GrpCat.{u}) (P : ProfiniteGrp.{u}) :
     (completion G ⟶ P) ≃ (G ⟶ ↧P) where
   toFun f := eta G ≫ (forget₂ _ _).map f
   invFun f := lift f
@@ -212,14 +220,48 @@ def homEquiv (G : GrpCat.{u}) (P : ProfiniteGrp.{u}) :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The profinite completion is left adjoint to the forgetful functor. -/
-noncomputable
-def adjunction : profiniteCompletion ⊣ forget₂ _ _ :=
+@[to_additive /-- The profinite completion is left adjoint to the forgetful functor. -/]
+noncomputable def adjunction : profiniteCompletion ⊣ forget₂ _ _ :=
   Adjunction.mkOfHomEquiv {
     homEquiv := homEquiv
     homEquiv_naturality_left_symm f g := by
       apply lift_unique
       simp [homEquiv]
   }
+
+/-- The canonical projection of the profinite completion of `G` onto any of its quotients by
+finite index normal subgroups. -/
+@[to_additive
+/-- The canonical projection of the profinite completion of `G` onto any of its quotients by
+finite index normal subgroups. -/]
+noncomputable def proj (G : GrpCat.{u}) (H : FiniteIndexNormalSubgroup G) :
+    completion G ⟶ ofFiniteGrp <| .of (G ⧸ H.toSubgroup) :=
+  limitProj ..
+
+@[to_additive (attr := reassoc (attr := simp))]
+lemma proj_eta (G : GrpCat.{u}) (H : FiniteIndexNormalSubgroup G) :
+    eta G ≫ (forget₂ _ _).map (proj G H) = GrpCat.ofHom (QuotientGroup.mk' H.toSubgroup) := by
+  suffices lift (GrpCat.ofHom <| QuotientGroup.mk' H.toSubgroup) = proj G H by
+    rw [← this]
+    exact lift_eta ..
+  apply lift_unique
+  ext x
+  simp [proj]
+  rfl
+
+/-- Two elements of the profinite completion are equal iff all their projections onto quotients of
+finite index are equal. -/
+@[to_additive
+/-- Two elements of the profinite completion are equal iff all their projections onto quotients of
+finite index are equal. -/]
+theorem proj_ext (G : GrpCat.{u}) (x y : completion G) (H : ∀ H, proj G H x = proj G H y) : x = y :=
+  limit_ext H
+
+@[to_additive]
+noncomputable instance (G : Type u) [CommGroup G] : CommGroup (completion (.mk G)) :=
+  letI f : completion (.mk G) →* Π H : FiniteIndexNormalSubgroup G, G ⧸ H.toSubgroup :=
+    SubgroupClass.subtype _
+  f.commGroupOfInjective (SubgroupClass.subtype_injective _)
 
 end ProfiniteCompletion
 
