@@ -195,7 +195,7 @@ theorem coeff_zero (i : Fin n) : (0 : TruncatedWittVector p n R).coeff i = 0 := 
 end TruncatedWittVector
 
 /-- A macro tactic used to prove that `truncateFun` respects ring operations. -/
-macro (name := witt_truncateFun_tac) "witt_truncateFun_tac" : tactic =>
+local macro (name := witt_truncateFun_tac) "witt_truncateFun_tac" : tactic =>
   `(tactic|
     { change _ = WittVector.truncateFun n _
       apply TruncatedWittVector.out_injective

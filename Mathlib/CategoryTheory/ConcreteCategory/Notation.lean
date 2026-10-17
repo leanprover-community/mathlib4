@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Lean.PrettyPrinter.Delaborator.Builtins
+public meta import Lean.PrettyPrinter.Delaborator.Builtins
 public import Mathlib.Init
 
 /-!

@@ -6,9 +6,10 @@ Authors: María Inés de Frutos-Fernández
 module
 
 public import Mathlib.RingTheory.DedekindDomain.AdicValuation
-public import Mathlib.RingTheory.DedekindDomain.Factorization
 public import Mathlib.Topology.Algebra.RestrictedProduct.TopologicalSpace
 public import Mathlib.Topology.Algebra.RestrictedProduct.Units
+
+import Mathlib.RingTheory.DedekindDomain.Factorization
 
 /-!
 # The finite adèle ring of a Dedekind domain
@@ -100,6 +101,7 @@ instance : CommRing (FiniteAdeleRing R K) := inferInstanceAs <|
 instance : TopologicalSpace (FiniteAdeleRing R K) := inferInstanceAs <|
   TopologicalSpace <| Πʳ v : HeightOneSpectrum R, [v.adicCompletion K, v.adicCompletionIntegers K]
 
+@[macro_inline]
 instance : DFunLike (FiniteAdeleRing R K) (HeightOneSpectrum R) (adicCompletion K) where
   coe a := a.1
   coe_injective _ _ := Subtype.ext

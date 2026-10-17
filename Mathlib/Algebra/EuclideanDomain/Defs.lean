@@ -88,7 +88,7 @@ class EuclideanDomain (R : Type u) extends CommRing R, Nontrivial R where
   protected r : R → R → Prop
   /-- The relation `r` must be well-founded.
     This ensures that the GCD algorithm always terminates. -/
-  r_wellFounded : WellFounded r
+  [r_wellFounded : WellFounded r]
   /-- The relation `r` satisfies `r (a % b) b`. -/
   protected remainder_lt : ∀ (a) {b}, b ≠ 0 → r (remainder a b) b
   /-- An additional constraint on `r`. -/
@@ -114,9 +114,6 @@ local infixl:50 " ≺ " => EuclideanDomain.r
 
 local instance wellFoundedRelation : WellFoundedRelation R where
   rel := EuclideanDomain.r
-  wf := r_wellFounded
-
-instance isWellFounded : IsWellFounded R (· ≺ ·) where
   wf := r_wellFounded
 
 -- see Note [lower instance priority]

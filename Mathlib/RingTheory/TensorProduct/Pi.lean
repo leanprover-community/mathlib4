@@ -36,9 +36,7 @@ variable {R S A B} in
 lemma piRightHom_mul (x y : A ⊗[R] ∀ i, B i) :
     piRightHom R S A B (x * y) = piRightHom R S A B x * piRightHom R S A B y := by
   induction x
-  · simp
   · induction y
-    · simp
     · ext j
       simp
     · simp_all [mul_add]
