@@ -51,11 +51,6 @@ theorem prod_isUnit_iff {M : Type*} [CommMonoid M] {L : List M} :
     rw [prod_cons, IsUnit.mul_iff] at h
     exact fun m' h' ↦ Or.elim (eq_or_mem_of_mem_cons h') (fun H => H.substr h.1) fun H => ih h.2 _ H
 
-@[to_additive (attr := simp)]
-theorem prod_rotate {M : Type*} [CommMonoid M] (l : List M) (n : ℕ) :
-    (l.rotate n).prod = l.prod :=
-  l.rotate_perm n |>.prod_eq
-
 /-- If elements of a list commute with each other, then their product does not
 depend on the order of elements. -/
 @[to_additive /-- If elements of a list additively commute with each other, then their sum does not
@@ -64,6 +59,11 @@ lemma Perm.prod_eq' (h : l₁ ~ l₂) (hc : l₁.Pairwise Commute) : l₁.prod =
   have : Std.Symm fun x y ↦ ∀ z : M, y * (x * z) = x * (y * z) := { symm x y h z := h z |>.symm }
   refine h.foldr_eq' (Pairwise.forall_of_forall (fun _ _ _ ↦ rfl) <| hc.imp fun {a b} h z ↦ ?_) 1
   rw [← mul_assoc, ← mul_assoc, h]
+
+@[to_additive (attr := simp)]
+theorem prod_rotate {M : Type*} [CommMonoid M] (l : List M) (n : ℕ) :
+    (l.rotate n).prod = l.prod :=
+  l.rotate_perm n |>.prod_eq
 
 @[to_additive]
 theorem prod_rotate_of_pairwise_commute {l : List M} (n : ℕ) (hc : l.Pairwise Commute) :
