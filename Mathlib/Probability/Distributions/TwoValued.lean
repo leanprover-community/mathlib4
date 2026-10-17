@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Probability.CondVar
+public import Mathlib.Probability.Distributions.Bernoulli
 
 
 /-!
@@ -17,7 +18,7 @@ This file proves a few lemmas about random variables that take at most two value
 public section
 
 open MeasureTheory
-open scoped ProbabilityTheory
+open scoped ProbabilityTheory unitInterval
 
 namespace MeasureTheory
 variable {Ω : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {μ : Measure Ω}
@@ -95,5 +96,18 @@ lemma variance_of_ae_eq_zero_or_one {μ : Measure Ω} [IsZeroOrProbabilityMeasur
   · simp
   simpa [Pi.mul_def, integral_of_ae_eq_zero_or_one, integral_one_sub_of_ae_eq_zero_or_one, mul_comm,
     *] using condVar_of_ae_eq_zero_or_one bot_le hXmeas hX
+
+/-- **Conditional variance of a Bernoulli random variable**.
+
+The conditional variance of a random variable with law `Ber(1, 0, p)` is the product of the
+conditional probabilities that it's equal to `1` and that it's equal to `0`. -/
+lemma condVar_of_hasLaw_bernoulliMeasure {m₀ : MeasurableSpace Ω} (hm : m ≤ m₀)
+    {P : Measure[m₀] Ω} {p : I} (hX : HasLaw X Ber(1, 0, p) P) :
+    Var[X; P | m] =ᵐ[P] P[X | m] * P[1 - X | m] := by
+  have := hX.isProbabilityMeasure
+  have hp : Measurable fun x : ℝ ↦ x = 0 ∨ x = 1 := by fun_prop
+  refine condVar_of_ae_eq_zero_or_one hm hX.aemeasurable ?_
+  rw [hX.ae_iff hp, ae_iff]
+  exact bernoulliMeasure_apply_of_notMem_of_notMem p hp.not.setOf (by simp) (by simp)
 
 end ProbabilityTheory
