@@ -223,6 +223,34 @@ theorem card_divisors_le_self (n : ℕ) : #n.divisors ≤ n := calc
     simp only [divisors, filter_subset]
   _ = n := by rw [card_Ico, add_tsub_cancel_right]
 
+/-- Multiplication by a nonzero natural number which does not divide `a` at least doubles
+the number of divisors of `a`. -/
+theorem two_mul_card_divisors_le_card_divisors_mul_of_not_dvd {a b : ℕ}
+    (hb : b ≠ 0) (hnot : ¬ b ∣ a) :
+    2 * a.divisors.card ≤ (a * b).divisors.card := by
+  have ha : a ≠ 0 := by
+    rintro rfl
+    exact hnot (dvd_zero b)
+  let T := a.divisors.image (b * ·)
+  have hT : T ⊆ (a * b).divisors := by
+    intro m hm
+    obtain ⟨d, hd, rfl⟩ := Finset.mem_image.mp hm
+    refine Nat.mem_divisors.mpr ⟨?_, mul_ne_zero ha hb⟩
+    simpa [mul_comm] using mul_dvd_mul_left b (Nat.dvd_of_mem_divisors hd)
+  have hdisj : Disjoint a.divisors T := by
+    refine Finset.disjoint_left.mpr ?_
+    intro m hm hTm
+    obtain ⟨d, _, rfl⟩ := Finset.mem_image.mp hTm
+    exact hnot ((dvd_mul_right b d).trans (Nat.dvd_of_mem_divisors hm))
+  have hcard : T.card = a.divisors.card :=
+    Finset.card_image_of_injective a.divisors (mul_right_injective₀ hb)
+  calc
+    2 * a.divisors.card = a.divisors.card + T.card := by rw [hcard, two_mul]
+    _ = (a.divisors ∪ T).card := (Finset.card_union_of_disjoint hdisj).symm
+    _ ≤ (a * b).divisors.card := Finset.card_le_card <|
+      Finset.union_subset
+        (Nat.divisors_subset_of_dvd (mul_ne_zero ha hb) (dvd_mul_right a b)) hT
+
 theorem divisors_subset_properDivisors {m : ℕ} (hzero : n ≠ 0) (h : m ∣ n) (hdiff : m ≠ n) :
     divisors m ⊆ properDivisors n := by
   apply Finset.subset_iff.2
