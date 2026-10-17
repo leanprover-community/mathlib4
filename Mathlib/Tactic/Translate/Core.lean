@@ -258,7 +258,7 @@ structure Config : Type where
   relevantArg? : Option RelevantArg := .none
   /-- The attributes which we want to give to the original and translated declaration.
   For `simps` this will also add generated lemmas to the translation dictionary. -/
-  attrs : Array Syntax := #[]
+  attrs : Array Attribute := #[]
   /-- A list of positions of type variables that should not be translated. -/
   dontTranslate : List Nat := []
   /-- The `Syntax` element corresponding to the translation attribute,
@@ -848,6 +848,32 @@ where
       throwErrorAt old "rename rule for `{old.getId}` already specified"
     return rename.insert old.getId new.getId
 
+/-- In a `deprecated` attribute without a target, set the target to `declName`. -/
+def preprocessAttribute (declName : Name) (attr : Attribute) : CoreM Attribute := do
+  if let `(attr| deprecated%$tk
+      $[$desc:str]? $[$typeChanged?]? $[(since := $since)]?) := attr.stx then
+    if let some info ← Batteries.Tactic.Alias.getAliasInfo? declName then
+      let stx ← `(attr| deprecated%$tk $(mkCIdent info.name)
+        $[$desc:str]? $[$typeChanged?]? $[(since := $since)]?)
+      return { attr with stx }
+  return attr
+
+/-- In a `deprecated` or `inherit_doc` attribute, translate the target declaration. -/
+def translateAttribute (t : TranslateData) (attr : Attribute) : CoreM Attribute := do
+  let translate (name : Syntax) : CoreM (Option Ident) := do
+    let name ← realizeGlobalConstNoOverload name
+    let some name := findTranslationName? (← getEnv) t name | return none
+    return mkCIdent name
+  match attr.stx with
+  | `(attr| deprecated%$tk $name $[$desc]? $[$typeChanged?]? $[(since := $since)]?) =>
+    let some name ← translate name | return attr
+    return { attr with stx := ← `(attr|
+      deprecated%$tk $name $[$desc]? $[$typeChanged?]? $[(since := $since)]?) }
+  | `(attr| inherit_doc $name) =>
+    let some name ← translate name | return attr
+    return { attr with stx := ← `(attr| inherit_doc $name)}
+  | _ => return attr
+
 /-- Elaboration of the configuration options for a translation attribute. It is assumed that
 - `stx[0]` is the attribute (e.g. `to_additive`)
 - `stx[1]` is the optional tracing `?`
@@ -904,7 +930,8 @@ def elabTranslationAttr (declName : Name) (stx : Syntax) : CoreM Config := do
     return {
       trace := !stx[1].isNone
       target := match tgt with | some tgt => tgt.getId | _ => Name.anonymous
-      doc, attrs, reorder?, relevantArg?, dontTranslate, existing, self, none, rename,
+      attrs := ← (← liftCommandElabM (elabAttrs attrs)).mapM (preprocessAttribute declName ·)
+      doc, reorder?, relevantArg?, dontTranslate, existing, self, none, rename,
       ref := match tgt with | some tgt => tgt.raw | _ => stx[0] }
   | _ => throwUnsupportedSyntax
 
@@ -939,8 +966,7 @@ partial def applyAttributes (t : TranslateData) (cfg : Config) (src tgt : Name) 
   -- add attributes
   -- the following is similar to `Term.ApplyAttributesCore`, but we hijack the implementation of
   -- `simps` and `to_additive`.
-  let attrs ← elabAttrs cfg.attrs
-  let (additiveAttrs, attrs) := attrs.partition (·.name == t.attrName)
+  let (additiveAttrs, attrs) := cfg.attrs.partition (·.name == t.attrName)
   let nestedDecls ←
     match h : additiveAttrs.size with
     | 0 => pure #[]
@@ -970,25 +996,9 @@ partial def applyAttributes (t : TranslateData) (cfg : Config) (src tgt : Name) 
           (impl · attr.stx attr.kind)
     else
       let mut attr := attr
-      -- Set the target of `(attr := deprecated)` when applied to an `alias`.
-      if attr.name == `deprecated then
-        if let some info ← Batteries.Tactic.Alias.getAliasInfo? src then
-          if let `(attr| deprecated%$tk $[$desc:str]? $[$typeChanged?]?
-              $[(since := $since)]?) := attr.stx then
-            attr := { attr with stx := ← `(attr|
-              deprecated%$tk $(mkCIdent info.name) $[$desc:str]? $[$typeChanged?]?
-                $[(since := $since)]?) }
       for decl in allDecls, i in 0...* do
         if i != 0 then
-          -- Translate the target of `(attr := deprecated)` if possible.
-          if attr.name == `deprecated then
-            if let `(attr| deprecated%$tk $name $[$desc]? $[$typeChanged?]?
-                $[(since := $since)]?) := attr.stx then
-              let name ← realizeGlobalConstNoOverload name
-              if let some name := findTranslationName? (← getEnv) t name then
-                attr := { attr with stx := ← `(attr|
-                  deprecated%$tk $(mkCIdent name) $[$desc]? $[$typeChanged?]?
-                    $[(since := $since)]?) }
+          attr ← translateAttribute t attr
         Term.applyAttributes decl #[attr]
   return nestedDecls
 
