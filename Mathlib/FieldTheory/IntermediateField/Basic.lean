@@ -461,6 +461,19 @@ def comap (f : L →ₐ[K] L') (S : IntermediateField K L') : IntermediateField 
   __ := S.toSubalgebra.comap f
   inv_mem' x hx := show f x⁻¹ ∈ S by rw [map_inv₀ f x]; exact S.inv_mem hx
 
+@[simp]
+theorem coe_comap (f : L →ₐ[K] L') (S : IntermediateField K L') : (S.comap f : Set L) = f ⁻¹' S :=
+  rfl
+
+@[simp]
+theorem mem_comap {S : IntermediateField K L'} {f : L →ₐ[K] L'} {x : L} :
+    x ∈ S.comap f ↔ f x ∈ S :=
+  Iff.rfl
+
+theorem comap_comap {L'' : Type*} [Field L''] [Algebra K L''] (S : IntermediateField K L'')
+    (g : L' →ₐ[K] L'') (f : L →ₐ[K] L') : (S.comap g).comap f = S.comap (g.comp f) :=
+  rfl
+
 /-- Given `f : L →ₐ[K] L'`, `S.map f` is the intermediate field between `K` and `L'`
 such that `x ∈ S ↔ f x ∈ S.map f`. -/
 def map (f : L →ₐ[K] L') (S : IntermediateField K L) : IntermediateField K L' where
