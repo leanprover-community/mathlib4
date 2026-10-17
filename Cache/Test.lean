@@ -33,8 +33,8 @@ These tests cover the pure logic of the cache system, including:
 
 Anything that touches the network is left to CI, which exercises the
 `cache get`/`put` paths end-to-end on real containers. The unit tests spawn
-local processes only: `curl --version`, one curl `file://` copy, and one
-leantar run on a nonexistent archive; none makes a network request.
+local processes only: `curl --version` and leantar on a nonexistent archive.
+Neither makes a network request.
 
 ## Invariants these tests defend
 
@@ -1256,21 +1256,19 @@ def test_classifyDownload : IO Unit := do
   assertTrue "no status fails"
     (classifyDownload none 0 matches .failed)
 
-/-- The put config discards every response body: stdout must carry only the
-per-transfer JSON reports (`--write-out '%{json}'`) that `monitorCurl`
-parses. -/
+/-- Upload bodies use a regular file so curl can retry after a server error. -/
 def test_mkPutConfigContent : IO Unit := do
   IO.println "mkPutConfigContent:"
   let dest : Location :=
     { root := "https://example.invalid/mathlib4-master"
       label := "master"
       scope? := none }
-  let cfg := mkPutConfigContent dest #["/tmp/00000000deadbeef.ltar"]
+  let cfg := mkPutConfigContent dest #["/tmp/00000000deadbeef.ltar"] "/tmp/curl-1.body"
   assertTrue "uploads the file" ((cfg.splitOn "-T /tmp/00000000deadbeef.ltar").length == 2)
   assertTrue "addresses {root}/{filesDir}/{name}"
     ((cfg.splitOn
       "url = https://example.invalid/mathlib4-master/f/00000000deadbeef.ltar").length == 2)
-  assertTrue "discards the response body" ((cfg.splitOn s!"-o {IO.nullDevice}").length == 2)
+  assertTrue "sends the response body to the sink" ((cfg.splitOn "-o /tmp/curl-1.body").length == 2)
 
 /-- `classifyUpload`: a clean 200/201 delivers, a 409/412 skips for a
 non-overwrite put, and every other answer — a 404 included — is a failure. -/
@@ -1860,6 +1858,16 @@ def test_monitorCurl_carries_decomp_state : IO Unit := do
   assertTrue "the decompressed counter survives the round" (s.decomp.decompressed == 42)
   assertTrue "the decompFailed counter survives the round" (s.decomp.decompFailed == 1)
 
+/-- A successful curl exit with missing reports still counts as a failed transfer pass. -/
+def test_monitorCurl_counts_unreported_transfers : IO Unit := do
+  IO.println "monitorCurl counts unreported transfers as failed:"
+  let (s, _) ← withSuppressedOutput <|
+    monitorCurl #["--version"] 3 "Uploaded" "speed_upload"
+      (classifyUpload · · true)
+  assertTrue "no transfer reported" (s.done == 0 && s.success == 0)
+  assertTrue "the unreported transfers count as failed" (s.failed == 3)
+
+
 end DecompPipeline
 
 section TransferDiagnostics
@@ -1994,6 +2002,7 @@ def runAll : IO Unit := do
   test_readLocationsFrom
   test_finalizeDecomp
   test_monitorCurl_carries_decomp_state
+  test_monitorCurl_counts_unreported_transfers
   test_splitWriteOut
   test_curlGetWriteOut_real_curl
   test_transferDiagnostics

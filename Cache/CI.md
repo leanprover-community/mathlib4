@@ -47,7 +47,8 @@ unless the environment names one), and region; every other `RCLONE_S3_*`
 option inherits from the environment.
 
 The curl tool's non-overwrite guard relies on the store honoring
-`If-None-Match: *`.
+`If-None-Match: *`. Parallel curl uploads use `MATHLIB_CACHE_PARALLEL_MAX`
+transfers (50 by default).
 
 ## Environment variables
 
@@ -60,6 +61,7 @@ The curl tool's non-overwrite guard relies on the store honoring
 | `MATHLIB_CACHE_PUT_BASE_URL` | The upload base: the `--container` write is rebased under it (`{base}/{container}/{key}`) and keeps the container path policy. The azure backend defaults to the Azure storage account. For `--backend=s3` it names the bucket endpoint (`https://host/bucket`) and is required unless `MATHLIB_CACHE_PUT_URL` is set. |
 | `MATHLIB_CACHE_PUT_URL` | Upload to this single URL as a flat namespace, on either backend. On `--backend=s3` it must name the bucket by path (`https://host/bucket[/prefix]`). |
 | `MATHLIB_CACHE_PUT_FORCE_CURL` | Set to 1 or true to upload with curl on `--backend=s3`, which otherwise prefers rclone. The azure backend always uploads with curl. |
+| `MATHLIB_CACHE_PARALLEL_MAX` | The parallel curl transfer limit for uploads and downloads (50 by default). |
 | `MATHLIB_CACHE_REPO_SCOPE` | The per-commit namespace, for reads and `put` (see `--scope`, which takes precedence). |
 | `MATHLIB_CACHE_FROM` | Container list for reads, same shape as `--cache-from`, which takes precedence. CI sets it to widen reads per job. |
 

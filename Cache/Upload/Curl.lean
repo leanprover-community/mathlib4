@@ -35,32 +35,35 @@ failures without the argument list (`showArgsOnError := false`).
 def uploadPutArgs (signArgs : Array String) (overwrite : Bool) : Array String :=
   if overwrite then signArgs else signArgs ++ #["-H", "If-None-Match: *"]
 
-/-- Formats the curl config file that lists the files to upload: each staged
-file goes to `dest.fileURL`. The response body goes to the null device: stdout
-must carry only the per-transfer JSON reports that `monitorCurl` parses. -/
-def mkPutConfigContent (dest : Location) (files : Array FilePath) : String :=
+/-- Build the upload config. Response bodies go to `bodySink`, leaving stdout
+for transfer reports. The sink must support truncation for retries (curl issue #17371). -/
+def mkPutConfigContent (dest : Location) (files : Array FilePath) (bodySink : FilePath) :
+    String :=
   let l := files.toList.map fun file : FilePath =>
     s!"-T {file.toString}\nurl = {dest.fileURL file.fileName.get!}\n\
-      -o {IO.nullDevice}"
+      -o {bodySink.toString}"
   "\n".intercalate l
 
-/-- Calls `curl` to send a set of files to `dest`, the resolved upload location
-(`uploadLocation`), signed per request with `signArgs`. Exits with
-code 1 when any file fails to upload. -/
+/-- Upload files with curl and exit with code 1 if any transfer fails.
+Parallel uploads use the `MATHLIB_CACHE_PARALLEL_MAX` limit. -/
 def putFilesViaCurl
     (dest : Location) (files : Array FilePath) (tempConfigFilePath : FilePath)
     (overwrite : Bool) (signArgs : Array String) : IO Unit := do
   -- TODO: reimplement using HEAD requests?
   let size := files.size
   if size > 0 then
-    IO.FS.writeFile tempConfigFilePath (mkPutConfigContent dest files)
+    -- A shared regular file supports truncation when curl retries.
+    let bodySink := tempConfigFilePath.withExtension "body"
+    IO.FS.writeFile tempConfigFilePath (mkPutConfigContent dest files bodySink)
     IO.println
       s!"Attempting to upload {size} file(s) under {dest.root}/{dest.filesDir} \
         (location: {dest.label})"
     -- A retry after a PUT that landed is safe: the server answers a
     -- non-overwrite retry with 409/412, which `classifyUpload` excuses, and
     -- an overwrite retry re-sends the same bytes.
-    let args := uploadPutArgs signArgs overwrite ++ #["-X", "PUT", "--parallel"] ++
+    let args := uploadPutArgs signArgs overwrite ++
+      #["-X", "PUT", "--parallel", "--silent", "--show-error"] ++
+      (← curlParallelMaxArgs) ++
       curlRetryArgs (supportLegacyCurl := false) ++
       -- `%{json}` prints a JSON report for each finished transfer. The
       -- leading newline keeps each report on its own line even if something
@@ -69,6 +72,7 @@ def putFilesViaCurl
     let (s, _) ← monitorCurl args size "Uploaded" "speed_upload"
       (classifyUpload · · !overwrite) (removeOnError := false) (decompConfig := none)
     IO.FS.removeFile tempConfigFilePath
+    if ← bodySink.pathExists then IO.FS.removeFile bodySink
     -- Surface genuine upload failures. `monitorCurl` excuses already-present
     -- blobs (409/412 on a non-overwrite put), so a re-upload of files the
     -- server already has does not trip this.
@@ -77,18 +81,12 @@ def putFilesViaCurl
       IO.Process.exit 1
   else IO.println "No files to upload"
 
-/--
-The staged put on the curl tool: validate the system curl, then send the
-`.ltar` files named by `fileNames` under `srcDir`, then the per-SHA marker
-when the location derives a marker. `getSignArgs` produces the backend's signing
-arguments and runs once per curl invocation: once for the files batch and
-once for the marker. The curl config file is written under `srcDir` for the
-duration of the transfer, named after this process (`IO.curlConfigIn`). A files
-failure exits 1; a marker failure only warns (see `uploadMarker`).
--/
+/-- Upload the named staged files, then the location's marker if present.
+`getSignArgs` supplies signing arguments for each upload.
+File failures exit with code 1; marker failures only warn. -/
 def putStagedViaCurl (dest : Location) (getSignArgs : IO (Array String))
     (srcDir : FilePath) (fileNames : Array String) (overwrite : Bool) : IO Unit := do
-  discard IO.validateCurl
+  discard <| IO.validateCurl (upload := true)
   let files := fileNames.map fun (f : String) => srcDir / f
   putFilesViaCurl dest files (IO.curlConfigIn srcDir) overwrite (← getSignArgs)
   uploadMarker dest fun marker file => do
@@ -97,6 +95,6 @@ def putStagedViaCurl (dest : Location) (getSignArgs : IO (Array String))
     let args := uploadPutArgs (← getSignArgs) (overwrite := true) ++
       #["-X", "PUT", "-T", file.toString, marker.url]
     -- The argument list carries the credential; keep it out of the failure message.
-    discard <| IO.runCurl args (showArgsOnError := false)
+    discard <| IO.runCurl args (showArgsOnError := false) (upload := true)
 
 end Cache.Requests
