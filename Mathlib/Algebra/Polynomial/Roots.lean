@@ -168,8 +168,8 @@ theorem eq_of_infinite_eval_eq (p q : R[X]) (h : Set.Infinite { x | eval x p = e
   simpa only [IsRoot, eval_sub, sub_eq_zero]
 
 /-- Non-constant polynomials have finite fibres, provided the coefficients are a domain. -/
-lemma tendstoCofinite_of_natDegree_ne_zero {R : Type} [CommRing R] [IsDomain R] (p : R[X])
-    (hp : p.natDegree ≠ 0) : Filter.TendstoCofinite p.eval := by
+lemma tendstoCofinite_of_natDegree_ne_zero (p : R[X]) (hp : p.natDegree ≠ 0) :
+    Filter.TendstoCofinite p.eval := by
   rw [Filter.tendstoCofinite_iff_finite_preimage_singleton]
   intro x
   by_contra! hx
