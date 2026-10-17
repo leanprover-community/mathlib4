@@ -749,9 +749,11 @@ theorem spectralAlgNorm_mul (x y : L) :
 
 variable (K L)
 
+namespace spectralNorm
+
 /-- `L` with the spectral norm is a `NormedField`. -/
 @[instance_reducible]
-def spectralNorm'.normedField : NormedField L :=
+def normedField' : NormedField L :=
   { (inferInstance : Field L) with
     norm x := (spectralNorm' K L x : ℝ)
     dist x y := (spectralNorm' K L (x - y) : ℝ)
@@ -770,34 +772,34 @@ def spectralNorm'.normedField : NormedField L :=
 
 /-- `L` with the spectral norm is a `NontriviallyNormedField`. -/
 @[instance_reducible]
-def spectralNorm'.nontriviallyNormedField : NontriviallyNormedField L where
-  __ := spectralNorm'.normedField K L
+def nontriviallyNormedField' : NontriviallyNormedField L where
+  __ := normedField' K L
   non_trivial :=
     let ⟨x, hx⟩ := NontriviallyNormedField.non_trivial (α := K)
     ⟨algebraMap K L x, hx.trans_eq (spectralNorm_extends _).symm⟩
 
 /-- `L` with the spectral norm is a `SeminormedRing`. -/
 @[instance_reducible]
-def spectralNorm.seminormedRing : SeminormedRing L := by
-  letI : NormedField L := spectralNorm'.normedField K L
+def seminormedRing : SeminormedRing L := by
+  letI : NormedField L := normedField' K L
   infer_instance
 
 /-- `L` with the spectral norm is a `NormedAddCommGroup`. -/
 @[instance_reducible]
-def spectralNorm.normedAddCommGroup : NormedAddCommGroup L := by
-  haveI : NormedField L := spectralNorm'.normedField K L
+def normedAddCommGroup : NormedAddCommGroup L := by
+  haveI : NormedField L := normedField' K L
   infer_instance
 
 /-- `L` with the spectral norm is a `SeminormedAddCommGroup`. -/
 @[instance_reducible]
-def spectralNorm.seminormedAddCommGroup : SeminormedAddCommGroup L := by
-  have : NormedField L := spectralNorm'.normedField K L
+def seminormedAddCommGroup : SeminormedAddCommGroup L := by
+  have : NormedField L := normedField' K L
   infer_instance
 
 /-- `L` with the spectral norm is a `NormedSpace` over `K`. -/
 @[instance_reducible]
-def spectralNorm'.normedSpace : @NormedSpace K L _ (spectralNorm.seminormedAddCommGroup K L) :=
-  letI _ := spectralNorm.seminormedAddCommGroup K L
+def normedSpace' : @NormedSpace K L _ (seminormedAddCommGroup K L) :=
+  letI _ := seminormedAddCommGroup K L
   { (inferInstance : Module K L) with
     norm_smul_le r x := by
       change spectralAlgNorm' K L (r • x) ≤ ‖r‖ * spectralAlgNorm' K L x
@@ -805,19 +807,19 @@ def spectralNorm'.normedSpace : @NormedSpace K L _ (spectralNorm.seminormedAddCo
 
 /-- `L` with the spectral norm is a `NormedAlgebra` over `K`. -/
 @[instance_reducible]
-def spectralNorm'.normedAlgebra : @NormedAlgebra K L _ (spectralNorm.seminormedRing K L) :=
-  letI _ := normedField K L
-  { normedSpace K L, (inferInstance : Algebra K L) with }
+def normedAlgebra'' : @NormedAlgebra K L _ (seminormedRing K L) :=
+  letI _ := normedField' K L
+  { normedSpace' K L, (inferInstance : Algebra K L) with }
 
 /-- `L` with the spectral norm is a `NormedAlgebra` over any intermediate `E`
 that is a normed algebra over `K`. -/
 @[instance_reducible]
-def spectralNorm'.normedAlgebra'
+def normedAlgebra'''
     (E L : Type*) [Field L] [Algebra K L] [Algebra.IsAlgebraic K L] [NormedField E]
     [NormedAlgebra K E] [Algebra E L] [IsScalarTower K E L] :
-    @NormedAlgebra E L _ (spectralNorm.seminormedRing K L) :=
-  letI _ := normedField K L
-  letI _ := normedAlgebra K L
+    @NormedAlgebra E L _ (seminormedRing K L) :=
+  letI _ := normedField' K L
+  letI _ := normedAlgebra' K L
   letI _ := Algebra.IsAlgebraic.tower_bot K E L
   { (inferInstance : Algebra E L) with
     norm_smul_le _ _ := by
@@ -828,22 +830,22 @@ def spectralNorm'.normedAlgebra'
 
 /-- The metric space structure on `L` induced by the spectral norm. -/
 @[instance_reducible]
-def spectralNorm.metricSpace : MetricSpace L := (spectralNorm'.normedField K L).toMetricSpace
+def metricSpace : MetricSpace L := (normedField' K L).toMetricSpace
 
 /-- The uniform space structure on `L` induced by the spectral norm. -/
 @[instance_reducible]
-def spectralNorm.uniformSpace : UniformSpace L := (metricSpace K L).toUniformSpace
+def uniformSpace : UniformSpace L := (metricSpace K L).toUniformSpace
 
 /-- If `L/K` is finite dimensional, then `L` is a complete space with respect to topology induced
   by the spectral norm. -/
 instance (priority := 100) completeSpace [h_fin : FiniteDimensional K L] :
-    @CompleteSpace L (spectralNorm.uniformSpace K L) := by
-  let := spectralNorm.normedAddCommGroup K L
-  let := spectralNorm'.normedSpace K L
+    @CompleteSpace L (uniformSpace K L) := by
+  let := normedAddCommGroup K L
+  let := normedSpace' K L
   exact FiniteDimensional.complete K L
 
 omit [Algebra.IsAlgebraic K L] in
-lemma spectralNorm.spectralMulAlgNorm_eq_of_mem_roots (x : L) {E : Type*} [Field E] [Algebra K E]
+lemma spectralMulAlgNorm_eq_of_mem_roots (x : L) {E : Type*} [Field E] [Algebra K E]
     [Algebra L E] [IsScalarTower K L E] [Algebra.IsAlgebraic K E] {a : E}
     (ha : a ∈ ((mapAlg K E) (minpoly K x)).roots) :
     (spectralMulAlgNorm' K E) a = (spectralMulAlgNorm' K E) ((algebraMap L E) x) := by
@@ -859,7 +861,7 @@ omit [Algebra.IsAlgebraic K L] in
   over `K` splits into linear factors over `E`, the `degree(f)`th power of the spectral norm of `x`,
   considered as an element of `E`, is equal to the spectral norm of the product of the `E`-valued
   roots of `f`. -/
-theorem spectralNorm.spectralNorm_pow_natDegree_eq_prod_roots
+theorem spectralNorm_pow_natDegree_eq_prod_roots
     (x : L) {E : Type*} [Field E] [Algebra K E]
     [Algebra L E] [IsScalarTower K L E] [IsSplittingField L E (mapAlg K L (minpoly K x))]
     [Algebra.IsAlgebraic K E] :
@@ -889,7 +891,7 @@ theorem spectralNorm.spectralNorm_pow_natDegree_eq_prod_roots
 
 /-- For `x : L` with minimal polynomial `f(X) := X^n + a_{n-1}X^{n-1} + ... + a_0` over `K`,
   the spectral norm of `x` is equal to `‖a_0‖^(1/(degree(f(X))))`. -/
-theorem spectralNorm.spectralNorm_eq_norm_coeff_zero_rpow (x : L) :
+theorem spectralNorm_eq_norm_coeff_zero_rpow (x : L) :
     spectralNorm' K L x = ‖(minpoly K x).coeff 0‖ ^ (1 / (minpoly K x).natDegree : ℝ) := by
   set E := (mapAlg K L (minpoly K x)).SplittingField
   have hspl : Splits (mapAlg K E (minpoly K x)) :=
@@ -906,6 +908,8 @@ theorem spectralNorm.spectralNorm_eq_norm_coeff_zero_rpow (x : L) :
     map_neg_eq_map, map_one, one_pow, one_mul, spectralNorm_pow_natDegree_eq_prod_roots _ _ x]
   · simp [monic_mapAlg_iff, minpoly.monic (Algebra.IsAlgebraic.isAlgebraic x).isIntegral]
   · exact_mod_cast (minpoly.natDegree_pos (Algebra.IsIntegral.isIntegral x)).ne'
+
+end spectralNorm
 
 end CompleteSpace
 
