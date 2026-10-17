@@ -81,6 +81,7 @@ set_option linter.overlappingInstances false
 namespace IsDedekindDomain
 
 theorem differentIdeal_dvd_map_differentIdeal [Algebra.IsIntegral R₂ B]
+    [FiniteDimensional (FractionRing R₁) (FractionRing B)]
     [Module.Free A R₂] [IsLocalization (Algebra.algebraMapSubmonoid R₂ A⁰) F₂]
     (h₁ : F₁.LinearDisjoint F₂) (h₂ : F₁ ⊔ F₂ = ⊤) :
     differentIdeal R₁ B ∣ Ideal.map (algebraMap R₂ B) (differentIdeal A R₂) := by

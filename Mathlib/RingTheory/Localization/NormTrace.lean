@@ -80,7 +80,8 @@ lemma Algebra.norm_eq_iff [Module.Free R S] [Module.Finite R S] {a : S} {b : R}
 /-- Let `S` be an extension of `R` and `Rₘ Sₘ` be localizations at `M` of `R S` respectively.
 Then the trace of `a : Sₘ` over `Rₘ` is the trace of `a : S` over `R` if `S` is free as `R`-module.
 -/
-theorem Algebra.trace_localization [Module.Free R S] [Module.Finite R S] (a : S) :
+theorem Algebra.trace_localization [Module.Free R S] [Module.Finite R S]
+    [Module.Finite Rₘ Sₘ] [Module.Projective Rₘ Sₘ] (a : S) :
     Algebra.trace Rₘ Sₘ (algebraMap S Sₘ a) = algebraMap R Rₘ (Algebra.trace R S a) := by
   cases subsingleton_or_nontrivial R
   · have : Subsingleton Rₘ := Module.subsingleton R Rₘ
@@ -97,6 +98,9 @@ variable (Sₘ : Type*) [CommRing Sₘ] [Algebra S Sₘ] [Algebra Rₘ Sₘ] [Al
 variable [IsScalarTower R Rₘ Sₘ] [IsScalarTower R S Sₘ]
 variable [IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ]
 variable {ι : Type*} [Fintype ι] [DecidableEq ι]
+
+variable [Module.Finite R S] [Module.Projective R S]
+variable [Module.Finite Rₘ Sₘ] [Module.Projective Rₘ Sₘ]
 
 theorem Algebra.traceMatrix_localizationLocalization (b : Basis ι R S) :
     Algebra.traceMatrix Rₘ (b.localizationLocalization Rₘ M Sₘ) =
