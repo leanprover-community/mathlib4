@@ -191,9 +191,8 @@ theorem IsTorsionFree.erank_mul_erank [hM : IsTorsionFree S M] :
   have hM' := this.isBaseChange R⁰ FR
   by_cases! hRS : rank R S < .aleph0
   · have : Module.Finite FR FS := rank_lt_aleph0_iff.mp <| hFS.rank_eq ▸ hRS
-    have : IsDomain FS := IsLocalization.isDomain_localization <| by
-      rintro _ ⟨r, hr, rfl⟩
-      simpa using hr
+    have : IsDomain FS := IsLocalization.isDomain_localization <|
+      map_le_nonZeroDivisors_of_injective _ h.algebraMap_injective le_rfl
     let : Field FS := fieldOfFiniteDimensional FR FS
     simpa using congr($(lift_rank_mul_lift_rank_of_field_isLocalization R S FS M).toENat)
   · rw [toENat_eq_top.mpr hRS, ENat.top_mul (by simpa using rank_pos.ne'), eq_comm, toENat_eq_top]
