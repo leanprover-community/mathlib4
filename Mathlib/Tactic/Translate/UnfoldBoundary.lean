@@ -183,4 +183,7 @@ public def registerUnfoldBoundaryExt : IO UnfoldBoundaryExt := do
     addImportedFn as := as.foldl (Array.foldl (·.insert ·)) {}
   }
 
+-- Registered in `Mathlib.Tactic.Translate.Core`.
+allow_unregistered_trace_class translate_detail
+
 end Mathlib.Tactic.UnfoldBoundary
