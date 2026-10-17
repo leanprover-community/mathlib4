@@ -272,7 +272,7 @@ theorem convs_toEuler_of_forall_le (hB : ∀ m ≤ n, g.dens m ≠ 0) :
   match m with
   | 0 => simp [toEuler, euler_h]
   | m + 1 =>
-  replace ih := fun m hm => ih m hm <| by omega
+  replace ih := fun m hm => ih m hm <| by lia
   rw [← sub_left_inj (a := g.convs m), ← ih m m.lt_add_one]
   rcases Decidable.em <| TerminatedAt g m with terminatedAt_m | not_terminatedAt_m
   · rw [nums_stable_of_terminated m.le_succ <| terminatedAt_toEuler.mpr terminatedAt_m,

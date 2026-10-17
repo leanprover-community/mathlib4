@@ -210,8 +210,8 @@ theorem sum_mul_le_sum_mul_of_sum_range_le
   rw [sub_nonneg]
   refine (sum_nonpos fun i hi ↦ ?_).trans (mul_nonneg (hD n le_rfl) (hg₀ (n - 1)))
   have hi' : i < n - 1 := mem_range.1 hi
-  exact mul_nonpos_of_nonneg_of_nonpos (hD (i + 1) (by omega))
-    (sub_nonpos.2 (hg (Set.mem_Iio.2 (by omega)) (Set.mem_Iio.2 (by omega)) (Nat.le_succ i)))
+  exact mul_nonpos_of_nonneg_of_nonpos (hD (i + 1) (by lia))
+    (sub_nonpos.2 (hg (Set.mem_Iio.2 (by lia)) (Set.mem_Iio.2 (by lia)) (Nat.le_succ i)))
 
 /-- **Abel's inequality** (one-sided upper form): if every partial sum of `f` up to `n` is at most
 `M`, and `g` is nonnegative and antitone, then `∑ i ∈ range n, f i * g i ≤ M * g 0`. -/
