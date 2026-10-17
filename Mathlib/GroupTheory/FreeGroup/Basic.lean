@@ -196,10 +196,11 @@ respectively. This is also known as Newman's diamond lemma. -/
   to `w2` and `w3` respectively, then there is a word `w4` such that `w2` and `w3` reduce to `w4`
   respectively. This is also known as Newman's diamond lemma. -/]
 theorem church_rosser : Red L₁ L₂ → Red L₁ L₃ → Join Red L₂ L₃ :=
-  Relation.church_rosser fun _ b c hab hac =>
+  (Relation.isConfluent_of_reflGen_reflTransGen (r := @Red.Step α) fun _ b c hab hac =>
     match b, c, Red.Step.diamond hab hac rfl with
     | b, _, Or.inl rfl => ⟨b, by rfl, by rfl⟩
-    | _, _, Or.inr ⟨d, hbd, hcd⟩ => ⟨d, ReflGen.single hbd, hcd.to_red⟩
+    | _, _, Or.inr ⟨d, hbd, hcd⟩ => ⟨d, ReflGen.single hbd, hcd.to_red⟩).join_of_rel_of_rel
+    (a := L₁) (b := L₂) (c := L₃)
 
 @[to_additive]
 theorem cons_cons {p} : Red L₁ L₂ → Red (p :: L₁) (p :: L₂) :=
