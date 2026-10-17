@@ -5,10 +5,11 @@ Authors: Eric Wieser
 -/
 module
 
-import Mathlib.Algebra.MonoidAlgebra.Ideal
-import Mathlib.Algebra.MvPolynomial.Division
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder
+
+import Mathlib.Algebra.MonoidAlgebra.Ideal
+import Mathlib.Algebra.MvPolynomial.Division
 import Mathlib.Algebra.Order.Group.Pointwise.Interval
 
 /-!
@@ -71,7 +72,7 @@ lemma idealOfVars_fg [Finite σ] : (idealOfVars σ R).FG :=
 
 set_option backward.isDefEq.respectTransparency false in
 lemma idealOfVars_eq_restrictSupportIdeal :
-    idealOfVars σ R = restrictSupportIdeal _ _ ((isUpperSet_Ici 1).preimage degree_mono) := by
+    idealOfVars σ R = restrictSupportIdeal _ _ ((IsUpperSet.Ici 1).preimage degree_mono) := by
   apply le_antisymm
   · simp [idealOfVars, Ideal.span_le, Set.range_subset_iff, restrictSupportIdeal, X]
   · simp only [IsConcreteLE.le_iff, restrictSupportIdeal, Submodule.mem_mk,
@@ -84,7 +85,7 @@ lemma idealOfVars_eq_restrictSupportIdeal :
 
 open scoped Pointwise in
 theorem pow_idealOfVars (n : ℕ) :
-    idealOfVars σ R ^ n = restrictSupportIdeal _ _ ((isUpperSet_Ici n).preimage degree_mono) := by
+    idealOfVars σ R ^ n = restrictSupportIdeal _ _ ((IsUpperSet.Ici n).preimage degree_mono) := by
   rw [idealOfVars_eq_restrictSupportIdeal]
   apply Submodule.restrictScalars_injective R
   by_cases hn : n = 0

@@ -6,11 +6,12 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.NumberTheory.RamificationInertia.Ramification
-import Mathlib.RingTheory.DedekindDomain.Dvr
 public import Mathlib.RingTheory.LocalRing.Length
 public import Mathlib.RingTheory.LocalRing.ResidueField.Separable
-import Mathlib.RingTheory.QuasiFinite.Basic
 public import Mathlib.RingTheory.Unramified.LocalRing
+
+import Mathlib.RingTheory.DedekindDomain.Dvr
+import Mathlib.RingTheory.QuasiFinite.Basic
 
 /-!
 # Ramification index
