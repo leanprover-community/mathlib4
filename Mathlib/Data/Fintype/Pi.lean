@@ -239,3 +239,22 @@ lemma iUnion_fin_add_one_eq_iUnion_castSucc {n : ℕ} (f : Fin (n + 1) → Set �
   simp [Function.comp_def]
 
 end Set
+
+section List
+
+lemma List.card_idxsOf_toFinset_eq_count {α : Type*} [BEq α] (l : List α) (a : α) :
+    (l.idxsOf a).toFinset.card = l.count a := by
+  rw [List.card_toFinset, List.Nodup.dedup List.nodup_idxsOf, List.length_idxsOf]
+
+lemma List.count_ofFn_eq_card [DecidableEq α] (n : ℕ) (f : Fin n → α) (a : α)
+    [DecidablePred fun i ↦ f i = a] :
+    List.count a (List.ofFn f) = Finset.card {i | f i = a} := by
+  rw [← List.card_idxsOf_toFinset_eq_count]
+  refine card_bij (fun b hb ↦ ⟨b, by aesop⟩) (fun c hc ↦ ?_) (fun _ _ _ _ ↦ by simp)
+    (fun _ _ ↦ by aesop)
+  simp only [List.mem_toFinset, List.mem_idxsOf_iff_getElem_sub_pos, Nat.zero_le, Nat.sub_zero,
+    List.getElem_ofFn, beq_iff_eq, List.length_ofFn, true_and] at hc
+  simp only [Finset.mem_filter, mem_univ, true_and]
+  exact Exists.elim hc fun a_1 a ↦ a
+
+end List
