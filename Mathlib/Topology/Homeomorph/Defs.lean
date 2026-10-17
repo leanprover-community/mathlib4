@@ -39,6 +39,18 @@ open Set Topology Filter
 
 variable {X Y Z : Type*}
 
+universe u v w
+
+#print EquivLike
+#check EquivLike.coe_symm_apply_apply
+
+structure EquivClass (F : Type u) (A B : outParam (Type w))
+  extends EquivLike F A B, EquivLike F B A where
+  -- fwd : EquivLike F A B
+  -- rwd : EquivLike F B A
+  one : fwd.coe = rwd.inv
+  two : fwd.inv = rwd.coe
+
 /-- Homeomorphism between `X` and `Y`, also called topological isomorphism -/
 @[wikidata Q202906]
 structure Homeomorph (X : Type*) (Y : Type*) [TopologicalSpace X] [TopologicalSpace Y]
@@ -62,6 +74,14 @@ theorem toEquiv_injective : Function.Injective (toEquiv : X ≃ₜ Y → X ≃ Y
 
 @[macro_inline]
 instance : EquivLike (X ≃ₜ Y) X Y where
+  coe h := h.toEquiv
+  inv h := h.toEquiv.symm
+  left_inv h := h.left_inv
+  right_inv h := h.right_inv
+  coe_injective' _ _ H _ := toEquiv_injective <| DFunLike.ext' H
+
+instance : EquivClass
+  (fun (X Y : Type u) /- [TopologicalSpace X] [TopologicalSpace Y] -/ ↦ (X ≃ₜ Y)) where
   coe h := h.toEquiv
   inv h := h.toEquiv.symm
   left_inv h := h.left_inv
@@ -93,13 +113,6 @@ def Simps.symm_apply (h : X ≃ₜ Y) : Y → X :=
 
 initialize_simps_projections Homeomorph (toFun → apply, invFun → symm_apply, as_prefix toEquiv)
 
-@[simp]
-theorem coe_toEquiv (h : X ≃ₜ Y) : ⇑h.toEquiv = h :=
-  rfl
-
-@[simp]
-theorem coe_symm_toEquiv (h : X ≃ₜ Y) : ⇑h.toEquiv.symm = h.symm :=
-  rfl
 
 @[ext]
 theorem ext {h h' : X ≃ₜ Y} (H : ∀ x, h x = h' x) : h = h' :=
