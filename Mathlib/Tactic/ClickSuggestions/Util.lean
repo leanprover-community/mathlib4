@@ -357,31 +357,31 @@ section Widget
 open Widget
 
 /-- Generate a suggestion for inserting `tac`, with message `html`.
-The button is `[apply]` if the tactic does not close the goal, and `[done]` if it is closing. -/
-def mkSuggestion (tac : TSyntax `tactic) (html : Html) (isClosing := false) :
+`button` will be used as the text on the clickable button.
+If `solves := true`, then a `🎉️` emoji is added. -/
+def mkSuggestion (tac : TSyntax `tactic) (button : String) (html : Html) (solves : Bool) :
     ClickSuggestionsM Html := do
   let tac ← match (← read).onGoal with
     | some n => `(tactic| on_goal $(Syntax.mkNatLit (n + 1)):num => $tac:tactic)
     | none => pure tac
   let (range, newText) ← mkInsertion tac (← read)
-  let buttonText := if isClosing then "[done] " else "[apply] "
+  let buttonText := s!"{if solves then "🎉️" else ""}[{button}] "
   let button :=
-    -- TODO: The hover on this button should be a `CodeWithInfos`, instead of a string.
     jsx%{<span style={json% { "white-space" : "pre"}} className="font-code">
     { .ofComponent MakeEditLink (.ofReplaceRange (← read).meta range newText) #[.text buttonText] }
-    </span>};
-  return jsx%{<div display="flex"
+    </span>}
+  return jsx%{<div
     style={json% { "display" : "flex", "align-items" : "flex-start", "margin-bottom" : "1em" }}>
     {button}{html}
     </div>}
 
 /-- Add suggestion `tac` to the list of tactics that solve the goal. -/
-def addSolvedSuggestion (tac : TSyntax `tactic) : ClickSuggestionsM Unit := do
-  let html ← mkSuggestion tac (.text (← PrettyPrinter.ppTactic tac).pretty) (isClosing := true)
+def addSolvingSuggestion (tac : TSyntax `tactic) : ClickSuggestionsM Unit := do
+  let html ← mkSuggestion tac "done" (.text (← PrettyPrinter.ppTactic tac).pretty) (solves := true)
   modify fun s ↦ { s with solvedSuggestions := s.solvedSuggestions.push html }
   (← read).solvedToken.update jsx%{<details open={true}>
     <summary className="mv2 pointer">
-    These tactics solve the goal: 🎉️
+    Tactics that solve the goal
     </summary>
     {.element "div" #[] (← get).solvedSuggestions}
     </details>}

@@ -90,6 +90,14 @@ theorem monotone_toDual_comp_iff : Monotone (toDual ∘ f) ↔ Antitone f :=
 theorem antitone_toDual_comp_iff : Antitone (toDual ∘ f) ↔ Monotone f :=
   Iff.rfl
 
+omit [Preorder β] in
+/-- Stability of `σ` for `f` is unchanged by reversing the order on the codomain of `f`, since it
+only uses equality there. -/
+@[simp]
+theorem isStable_toDual_comp_iff (σ : α → α) :
+    IsStable (toDual ∘ f) σ ↔ IsStable f σ :=
+  Iff.rfl
+
 @[simp]
 theorem monotoneOn_comp_ofDual_iff : MonotoneOn (f ∘ ofDual) s ↔ AntitoneOn f s :=
   forall₂_comm
