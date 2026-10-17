@@ -9,6 +9,8 @@ public import Mathlib.Analysis.InnerProductSpace.Projection.Reflection
 public import Mathlib.Geometry.Euclidean.PerpBisector
 public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 
+import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
+
 /-!
 # Orthogonal projection in affine spaces
 
@@ -577,7 +579,7 @@ lemma reflection_subtype (s : AffineSubspace 𝕜 P) [Nonempty s] (s' : AffineSu
     (reflection s' p : P) = reflection (s'.map s.subtype) p := by
   simp [reflection_apply', orthogonalProjection_subtype]
 
-section perpBisector
+section RealInnerProductSpace
 
 variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
@@ -611,7 +613,40 @@ theorem reflection_perpBisector_right (a b : P) :
     reflection (perpBisector b a) a = b := by
   simpa [perpBisector_comm a b] using reflection_perpBisector_left a b
 
-end perpBisector
+open scoped RealInnerProductSpace
+
+/-- The distance from a point `p` to its orthogonal projection on an affine subspace `s` whose
+orthogonal complement is spanned by `n` (a hyperplane with normal vector `n`, when `n ≠ 0`) is
+`|⟪n, p -ᵥ q⟫| / ‖n‖`, for any point `q` of `s`. -/
+theorem dist_orthogonalProjection_eq_abs_inner_div_norm (s : AffineSubspace ℝ P) [Nonempty s]
+    [s.direction.HasOrthogonalProjection] {n : V} (hn : s.directionᗮ = ℝ ∙ n) {q : P}
+    (hq : q ∈ s) (p : P) :
+    dist p (orthogonalProjection s p) = |⟪n, p -ᵥ q⟫| / ‖n‖ := by
+  obtain ⟨t, ht⟩ := Submodule.mem_span_singleton.1
+    (hn ▸ vsub_orthogonalProjection_mem_direction_orthogonal s p)
+  have hn' : n ∈ s.directionᗮ := hn ▸ Submodule.mem_span_singleton_self n
+  have h0 : ⟪n, (orthogonalProjection s p : P) -ᵥ q⟫ = 0 :=
+    s.direction.inner_left_of_mem_orthogonal
+      (AffineSubspace.vsub_mem_direction (orthogonalProjection_mem p) hq) hn'
+  rw [dist_eq_norm_vsub V, ← vsub_add_vsub_cancel p (orthogonalProjection s p : P) q,
+    inner_add_right, h0, add_zero, ← ht, norm_smul, inner_smul_right,
+    real_inner_self_eq_norm_sq, abs_mul, abs_of_nonneg (sq_nonneg ‖n‖), Real.norm_eq_abs]
+  field
+
+instance (q : P) (K : Submodule ℝ V) [K.HasOrthogonalProjection] :
+    (AffineSubspace.mk' q K).direction.HasOrthogonalProjection := by
+  rw [AffineSubspace.direction_mk']
+  infer_instance
+
+/-- The distance from a point `p` to the affine hyperplane through `q` with normal vector `n`,
+measured to its orthogonal projection, is `|⟪n, p -ᵥ q⟫| / ‖n‖`. -/
+theorem dist_orthogonalProjection_mk'_eq_abs_inner_div_norm (q : P) (n : V) (p : P) :
+    dist p (orthogonalProjection (AffineSubspace.mk' q (ℝ ∙ n)ᗮ) p) = |⟪n, p -ᵥ q⟫| / ‖n‖ :=
+  dist_orthogonalProjection_eq_abs_inner_div_norm _
+    (by rw [AffineSubspace.direction_mk', Submodule.orthogonal_orthogonal (ℝ ∙ n)])
+    (AffineSubspace.self_mem_mk' q _) p
+
+end RealInnerProductSpace
 
 end EuclideanGeometry
 
