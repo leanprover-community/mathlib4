@@ -98,8 +98,7 @@ theorem of_completeSpace_of_normal [Normal K L] : IsKrasner K L where
           simpa [norm_neg, sub_eq_add_neg] using (IsUltrametricDist.norm_add_le_max z (- z'))
         _ ≤ ‖x - y‖ := by
           simp only [NormedAlgebra.norm_eq_spectralNorm K, hσ, sup_le_iff]
-          rw [← AlgEquiv.restrictScalars_apply K,
-              ← spectralNorm_eq_of_equiv (σ.symm.restrictScalars K)]
+          rw [← AlgEquiv.restrictScalars_apply K, spectralNorm_algHom]
           simp [z]
         _ < ‖x - (z' + y)‖ := by
           apply kr (z' + y)
