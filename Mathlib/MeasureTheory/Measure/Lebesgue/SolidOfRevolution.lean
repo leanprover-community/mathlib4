@@ -47,9 +47,7 @@ theorem prod_setOf_mem_closedBall {s : Set α} (hs : MeasurableSet s) {r : α �
       ((continuous_id.dist continuous_const).measurable.comp measurable_snd)
       (hr.comp measurable_fst)
   rw [prod_apply hm, ← lintegral_indicator hs]
-  congr 1
-  ext x
-  by_cases hx : x ∈ s <;> simp [hx, Set.preimage, closedBall]
+  exact lintegral_congr fun x ↦ by by_cases hx : x ∈ s <;> simp [hx, Set.preimage, closedBall]
 
 end MeasureTheory.Measure
 
@@ -84,7 +82,7 @@ theorem volume_solidOfRevolution {f : ℝ → ℝ} {a b : ℝ} (hab : a ≤ b)
     simp only [g, Set.piecewise_eq_of_mem _ _ _ hx]
     rw [← ENNReal.ofReal_pow (hf₀ x hx), ← ENNReal.ofReal_mul (sq_nonneg _), mul_comm]
   · exact ((hf.pow 2).const_mul π).integrableOn_compact isCompact_Icc
-  · exact (ae_restrict_mem measurableSet_Icc).mono fun x _ ↦ by positivity
+  · exact .of_forall fun x ↦ by positivity
 
 /-- **Volume of a cone** of radius `R` and height `H`: one third of the cylinder with the same
 base and height. -/
@@ -92,13 +90,10 @@ theorem volume_cone {R H : ℝ} (hR : 0 ≤ R) (hH : 0 < H) :
     volume {p : ℝ × EuclideanSpace ℝ (Fin 2) | p.1 ∈ Icc 0 H ∧ ‖p.2‖ ≤ R * p.1 / H} =
       ENNReal.ofReal (π * R ^ 2 * H / 3) := by
   refine (volume_solidOfRevolution (f := fun x ↦ R * x / H) hH.le (by fun_prop)
-    fun x hx ↦ by have := hx.1; positivity).trans ?_
+    fun x hx ↦ div_nonneg (mul_nonneg hR hx.1) hH.le).trans ?_
   congr 1
-  have : (fun x : ℝ ↦ (R * x / H) ^ 2) = fun x ↦ (R / H) ^ 2 * x ^ 2 := by
-    ext x
-    ring
-  rw [this, intervalIntegral.integral_const_mul, integral_pow]
-  field_simp
-  ring
+  simp only [mul_pow, div_pow, intervalIntegral.integral_div, intervalIntegral.integral_const_mul,
+    integral_pow]
+  field
 
 end EuclideanSpace

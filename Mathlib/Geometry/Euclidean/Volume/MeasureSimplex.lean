@@ -65,76 +65,58 @@ theorem euclideanHausdorffMeasure_cone {T S : AffineSubspace ℝ P} [FiniteDimen
       ((d + 1 : ℕ) : ℝ≥0∞)⁻¹ * .ofReal (dist a (orthogonalProjection S a)) * μHE[d] B := by
   borelize V
   set K := ⋃ t ∈ Icc (0 : ℝ) 1, AffineMap.homothety a t '' B
-  set f : P := (orthogonalProjection S a : P)
-  set w : V := f -ᵥ a
+  set w : V := (orthogonalProjection S a : P) -ᵥ a
   have hw : w ≠ 0 := vsub_ne_zero.2 fun h ↦ ha (h ▸ orthogonalProjection_mem a)
-  have hw2 : 0 < ‖w‖ ^ 2 := by positivity
-  -- every point of `S` lies at level `1` along `w`
-  have hlevel (b : P) (hb : b ∈ S) : ⟪w, b -ᵥ a⟫ = ‖w‖ ^ 2 := by
-    rw [← vsub_add_vsub_cancel b f a, inner_add_right,
-      S.direction.inner_left_of_mem_orthogonal (vsub_mem_direction hb (orthogonalProjection_mem a))
-        (orthogonalProjection_vsub_mem_direction_orthogonal S a), zero_add,
-      real_inner_self_eq_norm_sq]
-  have hhom (t : ℝ) (b : P) : AffineMap.homothety a t b -ᵥ a = t • (b -ᵥ a) := by
-    simp [AffineMap.homothety_apply]
+  set lev : P → ℝ := fun y ↦ ⟪w, y -ᵥ a⟫ / ‖w‖ ^ 2
+  have hlev (t : ℝ) {b : P} (hb : b ∈ B) : lev (AffineMap.homothety a t b) = t := by
+    have : ⟪w, b -ᵥ a⟫ = ‖w‖ ^ 2 := by
+      rw [← vsub_add_vsub_cancel b (orthogonalProjection S a : P) a, inner_add_right,
+        S.direction.inner_left_of_mem_orthogonal
+          (vsub_mem_direction (hBS hb) (orthogonalProjection_mem a))
+          (orthogonalProjection_vsub_mem_direction_orthogonal S a), zero_add,
+        real_inner_self_eq_norm_sq]
+    simp [lev, AffineMap.homothety_apply, inner_smul_right, this, hw]
   -- the slice of the cone at level `x ∈ (0, 1]` is the image of `B` by a homothety
   have hslice (x : ℝ) (hx : x ≠ 0) :
       K ∩ mk' (x • w +ᵥ a) (ℝ ∙ w)ᗮ = if x ∈ Ioc 0 1 then AffineMap.homothety a x '' B else ∅ := by
-    have hmem (y : P) : y ∈ mk' (x • w +ᵥ a) (ℝ ∙ w)ᗮ ↔ ⟪w, y -ᵥ a⟫ = x * ‖w‖ ^ 2 := by
-      rw [mem_mk', Submodule.mem_orthogonal_singleton_iff_inner_right,
-        vsub_vadd_eq_vsub_sub, inner_sub_right, inner_smul_right, real_inner_self_eq_norm_sq,
-        sub_eq_zero]
-    have hlev (t : ℝ) (b : P) (hb : b ∈ B) :
-        ⟪w, AffineMap.homothety a t b -ᵥ a⟫ = t * ‖w‖ ^ 2 := by
-      rw [hhom, inner_smul_right, hlevel b (hBS hb)]
+    have hmem (y : P) : y ∈ mk' (x • w +ᵥ a) (ℝ ∙ w)ᗮ ↔ lev y = x := by
+      rw [mem_mk', Submodule.mem_orthogonal_singleton_iff_inner_right, vsub_vadd_eq_vsub_sub,
+        inner_sub_right, inner_smul_right, real_inner_self_eq_norm_sq, sub_eq_zero,
+        div_eq_iff (by positivity)]
     ext y
     simp only [K, mem_inter_iff, mem_iUnion, mem_image, SetLike.mem_coe, hmem, exists_prop]
     split_ifs with hx'
     · constructor
-      · rintro ⟨⟨t, -, b, hb, rfl⟩, hy⟩
-        rw [hlev t b hb] at hy
-        exact ⟨b, hb, by rw [mul_right_cancel₀ hw2.ne' hy]⟩
+      · rintro ⟨⟨t, -, b, hb, rfl⟩, rfl⟩
+        exact ⟨b, hb, by rw [hlev t hb]⟩
       · rintro ⟨b, hb, rfl⟩
-        exact ⟨⟨x, Ioc_subset_Icc_self hx', b, hb, rfl⟩, hlev x b hb⟩
-    · simp only [mem_empty_iff_false, iff_false, not_and]
-      rintro ⟨t, ht, b, hb, rfl⟩ hy
-      rw [hlev t b hb] at hy
-      obtain rfl := mul_right_cancel₀ hw2.ne' hy
-      exact hx' ⟨lt_of_le_of_ne ht.1 (Ne.symm hx), ht.2⟩
+        exact ⟨⟨x, Ioc_subset_Icc_self hx', b, hb, rfl⟩, hlev x hb⟩
+    · refine iff_of_false ?_ (notMem_empty y)
+      rintro ⟨⟨t, ht, b, hb, rfl⟩, rfl⟩
+      rw [hlev t hb] at hx hx'
+      exact hx' ⟨ht.1.lt_of_ne' hx, ht.2⟩
   -- the cone is measurable: away from the apex, it is a preimage of `B`
   have hK : MeasurableSet K := by
-    set lev : P → ℝ := fun y ↦ ⟪w, y -ᵥ a⟫ / ‖w‖ ^ 2
-    have hK' : K = ({y | lev y ∈ Ioc 0 1} ∩
-        (fun y ↦ AffineMap.homothety a (lev y)⁻¹ y) ⁻¹' B) ∪ (K ∩ {a}) := by
+    have hK' : K \ {a} =
+        {y | lev y ∈ Ioc 0 1} ∩ (fun y ↦ AffineMap.homothety a (lev y)⁻¹ y) ⁻¹' B := by
       ext y
       constructor
-      · intro hy
-        by_cases hya : y = a
-        · exact Or.inr ⟨hy, hya⟩
-        left
+      · rintro ⟨hy, hya⟩
         obtain ⟨t, ht, b, hb, rfl⟩ : ∃ t ∈ Icc (0 : ℝ) 1, ∃ b ∈ B,
             AffineMap.homothety a t b = y := by simpa [K] using hy
         have ht0 : t ≠ 0 := by rintro rfl; simp at hya
-        have hlt : lev (AffineMap.homothety a t b) = t := by
-          simp only [lev, hhom, inner_smul_right, hlevel b (hBS hb)]
-          field_simp
-        refine ⟨by simpa [hlt] using ⟨lt_of_le_of_ne ht.1 (Ne.symm ht0), ht.2⟩, ?_⟩
-        simpa [hlt, ← AffineMap.homothety_mul_apply, inv_mul_cancel₀ ht0] using hb
-      · rintro (⟨hlev, hb⟩ | ⟨hy, -⟩)
-        · refine mem_iUnion₂.2 ⟨lev y, Ioc_subset_Icc_self hlev, _, hb, ?_⟩
-          rw [← AffineMap.homothety_mul_apply, mul_inv_cancel₀ hlev.1.ne', AffineMap.homothety_one,
+        simpa [hlev t hb, ← AffineMap.homothety_mul_apply, inv_mul_cancel₀ ht0, hb] using
+          ⟨ht.1.lt_of_ne' ht0, ht.2⟩
+      · rintro ⟨hlev, hb⟩
+        refine ⟨mem_iUnion₂.2 ⟨lev y, Ioc_subset_Icc_self hlev, _, hb, ?_⟩, fun hya ↦ ?_⟩
+        · rw [← AffineMap.homothety_mul_apply, mul_inv_cancel₀ hlev.1.ne', AffineMap.homothety_one,
             AffineMap.id_apply]
-        · exact hy
-    have hlevm : Measurable lev :=
-      ((continuous_const.inner (continuous_id.vsub continuous_const)).div_const _).measurable
-    rw [hK']
-    refine MeasurableSet.union (MeasurableSet.inter ?_ (hB.preimage ?_))
-      ((subsingleton_singleton.anti inter_subset_right).measurableSet)
-    · exact measurableSet_Ioc.preimage hlevm
-    · simp only [AffineMap.homothety_apply]
-      have hψ : Continuous fun q : ℝ × P ↦ q.1 • (q.2 -ᵥ a) +ᵥ a :=
-        (continuous_fst.smul (continuous_snd.vsub continuous_const)).vadd continuous_const
-      exact hψ.measurable.comp (hlevm.inv.prodMk measurable_id)
+        · simp [lev, show y = a from hya] at hlev
+    rw [← sdiff_union_inter K {a}, hK']
+    refine .union (.inter (measurableSet_Ioc.preimage (by fun_prop)) (hB.preimage ?_))
+      (subsingleton_singleton.anti inter_subset_right).measurableSet
+    simp only [AffineMap.homothety_apply]
+    fun_prop
   -- integrate the volume of the slices along `w`
   have hae : (fun x : ℝ ↦ μHE[d] (K ∩ mk' (x • w +ᵥ a) (ℝ ∙ w)ᗮ)) =ᵐ[volume]
       (Ioc 0 1).indicator fun x ↦ ((‖x‖₊ ^ d : ℝ≥0) : ℝ≥0∞) * μHE[d] B := by
