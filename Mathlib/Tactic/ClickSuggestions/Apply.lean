@@ -18,7 +18,7 @@ public meta section
 
 namespace Mathlib.Tactic.ClickSuggestions
 
-open Lean Meta ProofWidgets Jsx
+open Lean Meta ProofWidgets
 
 /-- The structure for `apply` lemmas stored in the `RefinedDiscrTree`. -/
 structure ApplyLemma where
@@ -108,7 +108,8 @@ def ApplyLemma.try (lem : ApplyLemma) (assignableMVars : Array Expr) :
   let tactic ← tacticSyntax lem.name proof (solves := solves) (justLemmaName := justLemmaName)
   let mut htmls := #[]
   for goal in newGoals do
-    htmls := htmls.push <div> <strong className="goal-vdash">⊢ </strong> {← exprToHtml goal} </div>
+    htmls := htmls.push
+      jsx%{<div><strong className="goal-vdash">⊢ </strong>{← exprToHtml goal}</div>}
   if solves then
     htmls := #[.text "Goal accomplished!"]
     addSolvingSuggestion tactic
@@ -118,7 +119,7 @@ def ApplyLemma.try (lem : ApplyLemma) (assignableMVars : Array Expr) :
       pure none
     else
       some <$> mkSuggestion tactic button (.element "div" #[] htmls) (solves := solves)
-  htmls := htmls.push <div> {← lem.name.toHtml} </div>
+  htmls := htmls.push jsx%{<div>{← lem.name.toHtml}</div>}
   let unfiltered ← mkSuggestion tactic button (.element "div" #[] htmls) (solves := solves)
   let pattern ← do
     let (_, _, e) ← forallMetaTelescopeReducing (← lem.name.getType)
