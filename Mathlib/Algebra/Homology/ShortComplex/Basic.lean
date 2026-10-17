@@ -20,6 +20,8 @@ the Liquid Tensor Experiment.
 
 @[expose] public section
 
+to_dual_name_hint X₁ X₃, τ₁ τ₃, π₁ π₃
+
 namespace CategoryTheory
 
 open Category Limits
@@ -45,12 +47,17 @@ structure ShortComplex where
   /-- the composition of the two given morphisms is zero -/
   zero : f ≫ g = 0 := by cat_disch
 
+attribute [to_dual existing] ShortComplex.X₁
+attribute [to_dual existing g] ShortComplex.f
+attribute [to_dual self] ShortComplex.mk
+
 namespace ShortComplex
 
 attribute [reassoc (attr := simp)] ShortComplex.zero
 
+set_option linter.translate.warnInvalid false in
 /-- Morphisms of short complexes are the commutative diagrams of the obvious shape. -/
-@[ext]
+@[ext, to_dual self (reorder := S₁ S₂)]
 structure Hom (S₁ S₂ : ShortComplex C) where
   /-- the morphism on the left objects -/
   τ₁ : S₁.X₁ ⟶ S₂.X₁
@@ -62,6 +69,10 @@ structure Hom (S₁ S₂ : ShortComplex C) where
   comm₁₂ : τ₁ ≫ S₂.f = S₁.f ≫ τ₂ := by cat_disch
   /-- the right commutative square of a morphism in `ShortComplex` -/
   comm₂₃ : τ₂ ≫ S₂.g = S₁.g ≫ τ₃ := by cat_disch
+
+to_dual_for Hom.comm₁₂ := self.comm₂₃.symm
+to_dual_for Hom.comm₂₃ := self.comm₁₂.symm
+to_dual_for Hom.mk := ⟨τ₃, τ₂, τ₁, comm₂₃.symm, comm₁₂.symm⟩
 
 attribute [map (attr := reassoc)] Hom.comm₁₂ Hom.comm₂₃
 attribute [local simp] Hom.comm₁₂ Hom.comm₂₃ Hom.comm₁₂_assoc Hom.comm₂₃_assoc
@@ -76,7 +87,7 @@ def Hom.id : Hom S S where
   τ₃ := 𝟙 _
 
 /-- The composition of morphisms of short complexes. -/
-@[simps]
+@[simps, to_dual self (reorder := S₁ S₃, φ₁₂ φ₂₃)]
 def Hom.comp (φ₁₂ : Hom S₁ S₂) (φ₂₃ : Hom S₂ S₃) : Hom S₁ S₃ where
   τ₁ := φ₁₂.τ₁ ≫ φ₂₃.τ₁
   τ₂ := φ₁₂.τ₂ ≫ φ₂₃.τ₂
@@ -87,7 +98,7 @@ instance : Category (ShortComplex C) where
   id := Hom.id
   comp := Hom.comp
 
-@[ext]
+@[ext, to_dual self (reorder := S₁ S₂, h₁ h₃)]
 lemma hom_ext (f g : S₁ ⟶ S₂) (h₁ : f.τ₁ = g.τ₁) (h₂ : f.τ₂ = g.τ₂) (h₃ : f.τ₃ = g.τ₃) : f = g :=
   Hom.ext h₁ h₂ h₃
 
@@ -98,32 +109,35 @@ def homMk {S₁ S₂ : ShortComplex C} (τ₁ : S₁.X₁ ⟶ S₂.X₁) (τ₂ 
     (τ₃ : S₁.X₃ ⟶ S₂.X₃) (comm₁₂ : τ₁ ≫ S₂.f = S₁.f ≫ τ₂)
     (comm₂₃ : τ₂ ≫ S₂.g = S₁.g ≫ τ₃) : S₁ ⟶ S₂ := ⟨τ₁, τ₂, τ₃, comm₁₂, comm₂₃⟩
 
-@[simp] lemma id_τ₁ : Hom.τ₁ (𝟙 S) = 𝟙 _ := rfl
+to_dual_for homMk := homMk τ₃ τ₂ τ₁ comm₂₃.symm comm₁₂.symm
+to_dual_for homMk_τ₁ := by simp
+to_dual_for homMk_τ₂ := by simp
+to_dual_for homMk_τ₃ := by simp
+
+@[to_dual (attr := simp)] lemma id_τ₁ : Hom.τ₁ (𝟙 S) = 𝟙 _ := rfl
 @[simp] lemma id_τ₂ : Hom.τ₂ (𝟙 S) = 𝟙 _ := rfl
-@[simp] lemma id_τ₃ : Hom.τ₃ (𝟙 S) = 𝟙 _ := rfl
-@[reassoc] lemma comp_τ₁ (φ₁₂ : S₁ ⟶ S₂) (φ₂₃ : S₂ ⟶ S₃) :
+
+@[to_dual (attr := simp, reassoc)]
+lemma comp_τ₁ (φ₁₂ : S₁ ⟶ S₂) (φ₂₃ : S₂ ⟶ S₃) :
     (φ₁₂ ≫ φ₂₃).τ₁ = φ₁₂.τ₁ ≫ φ₂₃.τ₁ := rfl
-@[reassoc] lemma comp_τ₂ (φ₁₂ : S₁ ⟶ S₂) (φ₂₃ : S₂ ⟶ S₃) :
+
+@[to_dual self, simp, reassoc]
+lemma comp_τ₂ (φ₁₂ : S₁ ⟶ S₂) (φ₂₃ : S₂ ⟶ S₃) :
     (φ₁₂ ≫ φ₂₃).τ₂ = φ₁₂.τ₂ ≫ φ₂₃.τ₂ := rfl
-@[reassoc] lemma comp_τ₃ (φ₁₂ : S₁ ⟶ S₂) (φ₂₃ : S₂ ⟶ S₃) :
-    (φ₁₂ ≫ φ₂₃).τ₃ = φ₁₂.τ₃ ≫ φ₂₃.τ₃ := rfl
 
-attribute [simp] comp_τ₁ comp_τ₂ comp_τ₃
-
-instance : Zero (S₁ ⟶ S₂) := ⟨{ τ₁ := 0, τ₂ := 0, τ₃ := 0 }⟩
+@[to_dual self] instance : Zero (S₁ ⟶ S₂) := ⟨{ τ₁ := 0, τ₂ := 0, τ₃ := 0 }⟩
 
 variable (S₁ S₂)
 
-@[simp] lemma zero_τ₁ : Hom.τ₁ (0 : S₁ ⟶ S₂) = 0 := rfl
-@[simp] lemma zero_τ₂ : Hom.τ₂ (0 : S₁ ⟶ S₂) = 0 := rfl
-@[simp] lemma zero_τ₃ : Hom.τ₃ (0 : S₁ ⟶ S₂) = 0 := rfl
+@[to_dual (attr := simp)] lemma zero_τ₁ : Hom.τ₁ (0 : S₁ ⟶ S₂) = 0 := rfl
+@[to_dual self, simp] lemma zero_τ₂ : Hom.τ₂ (0 : S₁ ⟶ S₂) = 0 := rfl
 
 variable {S₁ S₂}
 
 instance : HasZeroMorphisms (ShortComplex C) where
 
 /-- The first projection functor `ShortComplex C ⥤ C`. -/
-@[simps]
+@[to_dual (attr := simps) /-- The third projection functor `ShortComplex C ⥤ C`. -/]
 def π₁ : ShortComplex C ⥤ C where
   obj S := S.X₁
   map f := f.τ₁
@@ -134,29 +148,23 @@ def π₂ : ShortComplex C ⥤ C where
   obj S := S.X₂
   map f := f.τ₂
 
-/-- The third projection functor `ShortComplex C ⥤ C`. -/
-@[simps]
-def π₃ : ShortComplex C ⥤ C where
-  obj S := S.X₃
-  map f := f.τ₃
+attribute [to_dual self] π₂_map
 
-instance preservesZeroMorphisms_π₁ : Functor.PreservesZeroMorphisms (π₁ : _ ⥤ C) where
+@[to_dual] instance preservesZeroMorphisms_π₁ : Functor.PreservesZeroMorphisms (π₁ : _ ⥤ C) where
 instance preservesZeroMorphisms_π₂ : Functor.PreservesZeroMorphisms (π₂ : _ ⥤ C) where
-instance preservesZeroMorphisms_π₃ : Functor.PreservesZeroMorphisms (π₃ : _ ⥤ C) where
 
+@[to_dual instIsIsoτ₃]
 instance (f : S₁ ⟶ S₂) [IsIso f] : IsIso f.τ₁ := (inferInstance : IsIso (π₁.mapIso (asIso f)).hom)
+
+@[to_dual self]
 instance (f : S₁ ⟶ S₂) [IsIso f] : IsIso f.τ₂ := (inferInstance : IsIso (π₂.mapIso (asIso f)).hom)
-instance (f : S₁ ⟶ S₂) [IsIso f] : IsIso f.τ₃ := (inferInstance : IsIso (π₃.mapIso (asIso f)).hom)
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation `π₁ ⟶ π₂` induced by `S.f` for all `S : ShortComplex C`. -/
-@[simps] def π₁Toπ₂ : (π₁ : _ ⥤ C) ⟶ π₂ where
+@[to_dual (attr := simps) π₂Toπ₃
+/-- The natural transformation `π₂ ⟶ π₃` induced by `S.g` for all `S : ShortComplex C`. -/]
+def π₁Toπ₂ : (π₁ : _ ⥤ C) ⟶ π₂ where
   app S := S.f
-
-set_option backward.defeqAttrib.useBackward true in
-/-- The natural transformation `π₂ ⟶ π₃` induced by `S.g` for all `S : ShortComplex C`. -/
-@[simps] def π₂Toπ₃ : (π₂ : _ ⥤ C) ⟶ π₃ where
-  app S := S.g
 
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
@@ -231,14 +239,11 @@ lemma isIso_iff (f : S₁ ⟶ S₂) :
   apply isIso_of_isIso
 
 /-- The first map of a short complex, as a functor. -/
-@[simps] def fFunctor : ShortComplex C ⥤ Arrow C where
+@[to_dual (attr := simps) gFunctor
+/-- The second map of a short complex, as a functor. -/]
+def fFunctor : ShortComplex C ⥤ Arrow C where
   obj S := .mk S.f
   map {S T} f := Arrow.homMk f.τ₁ f.τ₂ f.comm₁₂
-
-/-- The second map of a short complex, as a functor. -/
-@[simps] def gFunctor : ShortComplex C ⥤ Arrow C where
-  obj S := .mk S.g
-  map {S T} f := Arrow.homMk f.τ₂ f.τ₃ f.comm₂₃
 
 /-- The opposite `ShortComplex` in `Cᵒᵖ` associated to a short complex in `C`. -/
 @[simps]
