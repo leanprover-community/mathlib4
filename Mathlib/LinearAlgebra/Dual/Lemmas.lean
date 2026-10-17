@@ -320,9 +320,6 @@ protected theorem Nondegenerate.id : Nondegenerate (M₁ := M →ₗ[R] R) .id :
 
 alias id_nondegenerate := Nondegenerate.id
 
-@[deprecated (since := "2026-04-02")]
-alias dualPairing_nondegenerate := id_nondegenerate
-
 /-- The pairing `Dual.eval` is left-separating. -/
 protected theorem SeparatingLeft.eval : (Dual.eval R M).SeparatingLeft :=
   id_separatingRight

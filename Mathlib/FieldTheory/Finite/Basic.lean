@@ -428,34 +428,9 @@ end frobenius
 
 open Polynomial
 
-section
-
-variable (K' : Type*) [Field K'] {p n : ℕ}
-
-theorem X_pow_card_sub_X_natDegree_eq (hp : 1 < p) : (X ^ p - X : K'[X]).natDegree = p := by
-  have h1 : (X : K'[X]).degree < (X ^ p : K'[X]).degree := by
-    rw [degree_X_pow, degree_X]
-    exact mod_cast hp
-  rw [natDegree_eq_of_degree_eq (degree_sub_eq_left_of_degree_lt h1), natDegree_X_pow]
-
-theorem X_pow_card_pow_sub_X_natDegree_eq (hn : n ≠ 0) (hp : 1 < p) :
-    (X ^ p ^ n - X : K'[X]).natDegree = p ^ n :=
-  X_pow_card_sub_X_natDegree_eq K' <| Nat.one_lt_pow hn hp
-
-theorem X_pow_card_sub_X_ne_zero (hp : 1 < p) : (X ^ p - X : K'[X]) ≠ 0 :=
-  ne_zero_of_natDegree_gt <|
-    calc
-      1 < _ := hp
-      _ = _ := (X_pow_card_sub_X_natDegree_eq K' hp).symm
-
-theorem X_pow_card_pow_sub_X_ne_zero (hn : n ≠ 0) (hp : 1 < p) : (X ^ p ^ n - X : K'[X]) ≠ 0 :=
-  X_pow_card_sub_X_ne_zero K' <| Nat.one_lt_pow hn hp
-
-end
-
 theorem roots_X_pow_card_sub_X : roots (X ^ q - X : K[X]) = Finset.univ.val := by
   classical
-    have aux : (X ^ q - X : K[X]) ≠ 0 := X_pow_card_sub_X_ne_zero K Fintype.one_lt_card
+    have aux : (X ^ q - X : K[X]) ≠ 0 := X_pow_sub_X_ne_zero Fintype.one_lt_card
     have : (roots (X ^ q - X : K[X])).toFinset = Finset.univ := by
       rw [eq_univ_iff_forall]
       intro x
@@ -498,21 +473,14 @@ namespace ZMod
 
 open FiniteField Polynomial
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sq_add_sq (p : ℕ) [hp : Fact p.Prime] (x : ZMod p) : ∃ a b : ZMod p, a ^ 2 + b ^ 2 = x := by
   rcases hp.1.eq_two_or_odd with rfl | hp_odd
-  · change Fin 2 at x
+  · unfold ZMod
     fin_cases x
     · use 0; simp
     · use 0, 1; simp
-  let f : (ZMod p)[X] := X ^ 2
-  let g : (ZMod p)[X] := X ^ 2 - C x
-  obtain ⟨a, b, hab⟩ : ∃ a b, f.eval a + g.eval b = 0 :=
-    @exists_root_sum_quadratic _ _ _ _ f g (degree_X_pow 2) (degree_X_pow_sub_C (by decide) _)
-      (by rw [ZMod.card, hp_odd])
-  refine ⟨a, b, ?_⟩
-  rw [← sub_eq_zero]
-  simpa only [f, g, eval_C, eval_X, eval_pow, eval_sub, ← add_sub_assoc] using hab
+  simpa [hp_odd, sub_eq_zero, ← add_sub_assoc] using
+    exists_root_sum_quadratic (degree_X_pow 2) (degree_X_pow_sub_C two_pos x)
 
 end ZMod
 
@@ -771,22 +739,20 @@ theorem Subfield.roots_X_pow_char_sub_X_bot [Fintype (⊥ : Subfield F)] :
   conv_lhs => rw [← card_bot F p, ← Fintype.card_eq_nat_card]
   exact FiniteField.roots_X_pow_card_sub_X _
 
+theorem Polynomial.splits_X_pow_char_sub_X : Splits ((X : F[X]) ^ p - X) := by
+  suffices (X ^ p - X : (⊥ : Subfield F)[X]).Splits by simpa using this.map (⊥ : Subfield F).subtype
+  let _ := Subfield.fintypeBot F p
+  rw [splits_iff_card_roots, Subfield.roots_X_pow_char_sub_X_bot, Finset.card_val, Finset.card_univ,
+    Fintype.card_eq_nat_card, Subfield.card_bot F p,
+    natDegree_X_pow_sub_X _ (Prime.one_lt Fact.out)]
+
 theorem Polynomial.roots_X_pow_char_sub_X :
     (X ^ p - X : F[X]).roots = (Subfield.botFinset F p).val := by
+  classical
   have := Subfield.fintypeBot F p
-  have := roots_map_of_injective_of_card_eq_natDegree
-    (p := X ^ p - X) (Subfield.subtype_injective (K := F) ⊥)
-  rw [Subfield.roots_X_pow_char_sub_X_bot, card_val, card_univ,
-     Polynomial.map_sub, Polynomial.map_pow, map_X, Subfield.fintypeCard_bot] at this
-  rw [← this (X_pow_card_sub_X_natDegree_eq _ (Nat.Prime.one_lt Fact.out)).symm]
-  apply (Finset.map_val ⟨_, Subtype.val_injective⟩ .univ).symm.trans
-  congr
-  ext
-  simp
-
-theorem Polynomial.splits_X_pow_char_sub_X : Splits ((X : F[X]) ^ p - X) := by
-  rw [splits_iff_card_roots, roots_X_pow_char_sub_X, card_val, Subfield.card_botFinset,
-    X_pow_card_sub_X_natDegree_eq _ (Nat.Prime.one_lt Fact.out)]
+  have : (univ : Finset (⊥ : Subfield F)).image Subtype.val = Subfield.botFinset F p := by ext; simp
+  simpa [Subfield.roots_X_pow_char_sub_X_bot, ← image_val_of_injOn Set.injOn_subtype_val, this]
+    using (splits_X_pow_char_sub_X (⊥ : Subfield F) p).roots_map (⊥ : Subfield F).subtype
 
 @[deprecated Polynomial.splits_X_pow_char_sub_X +typeChanged (since := "2026-10-09")]
 theorem Subfield.splits_bot : Splits (X ^ p - X : (⊥ : Subfield F)[X]) :=
