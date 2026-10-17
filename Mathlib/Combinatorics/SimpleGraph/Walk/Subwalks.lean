@@ -129,17 +129,7 @@ theorem isSubwalk_iff_support_isInfix {v w v' w' : V} {p₁ : G.Walk v w} {p₂ 
 
 theorem isSubwalk_iff_darts_isInfix {p₁ : G.Walk u v} {p₂ : G.Walk u' v'} (hnil : ¬p₁.Nil) :
     p₁.IsSubwalk p₂ ↔ p₁.darts <:+: p₂.darts := by
-  rw [isSubwalk_iff_support_isInfix, List.infix_iff_getElem?, List.infix_iff_getElem?]
-  refine ⟨fun ⟨k, hk, h⟩ ↦ ⟨k, by grind, fun i hi ↦ ?_⟩,
-    fun ⟨k, hk, h⟩ ↦ ⟨k, by grind, fun i hi ↦ ?_⟩⟩
-  · rw [getElem?_pos _ _ <| by grind, Option.some_inj]
-    ext <;> grind [fst_darts_getElem, snd_darts_getElem]
-  · rw [getElem?_pos _ _ <| by grind, Option.some_inj]
-    by_cases hi' : i = p₁.length
-    · have := h <| i - 1
-      grind [not_nil_iff_lt_length, snd_darts_getElem]
-    have := h i
-    grind [fst_darts_getElem]
+  rw [isSubwalk_iff_support_isInfix, darts_infix_iff_support_infix hnil]
 
 @[simp]
 theorem isSubwalk_nil_iff_mem_support (p : G.Walk u v) :
