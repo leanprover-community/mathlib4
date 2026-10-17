@@ -82,9 +82,12 @@ theorem gelfandRadius_le_norm (a : A) : gelfandRadius a ≤ ‖a‖ := by
   refine le_of_tendsto (tendsto_gelfandRadius' a) (Eventually.of_forall fun k ↦ ?_)
   grw [Real.rpow_inv_le_iff_of_pos, Real.rpow_natCast, norm_pow_le'] <;> positivity
 
+theorem gelfandRadius_of_norm_nonpos {a : A} (ha : ‖a‖ ≤ 0) : gelfandRadius a = 0 :=
+  le_antisymm ((gelfandRadius_le_norm a).trans ha) (gelfandRadius_nonneg a)
+
 @[simp]
 theorem gelfandRadius_zero : gelfandRadius (0 : A) = 0 :=
-  le_antisymm (by simpa using gelfandRadius_le_norm (0 : A)) (gelfandRadius_nonneg 0)
+  gelfandRadius_of_norm_nonpos norm_zero.le
 
 @[simp]
 theorem gelfandRadius_neg (a : A) : gelfandRadius (-a) = gelfandRadius a :=
