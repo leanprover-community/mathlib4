@@ -152,7 +152,7 @@ theorem bot_covBy_iff : ⊥ ⋖ a ↔ IsAtom a := by
 
 @[deprecated (since := "2026-09-01")] alias CovBy.is_atom := CovBy.isAtom
 
-@[to_dual]
+@[to_dual maximal_lt_top_iff]
 theorem minimal_bot_lt_iff : Minimal (⊥ < ·) a ↔ IsAtom a := by
   simpa [bot_lt_iff_ne_bot] using minimal_ne_bot_iff
 
