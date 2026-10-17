@@ -6,8 +6,8 @@ Authors: Kyle Miller
 module
 
 public import Mathlib.Algebra.Order.Group.Multiset
-public import Mathlib.Data.Setoid.Basic
 public import Mathlib.Data.Vector.Basic
+public import Mathlib.Order.Setoid.Basic
 public import Mathlib.Tactic.ApplyFun
 
 /-!
@@ -613,7 +613,7 @@ theorem decode_encode [DecidableEq α] (s : Sym (Option α) n.succ) : decode (en
   · simp [h]
   · simp only [decode, h, not_false_iff, encode_of_none_notMem, Embedding.some_apply, map_map,
       comp_apply, Option.some_get]
-    convert! s.attach_map_coe
+    convert s.attach_map_coe
 
 @[simp]
 theorem encode_decode [DecidableEq α] (s : Sym (Option α) n ⊕ Sym α n.succ) :
@@ -624,7 +624,7 @@ theorem encode_decode [DecidableEq α] (s : Sym (Option α) n ⊕ Sym α n.succ)
     split_ifs with h
     · obtain ⟨a, _, ha⟩ := Multiset.mem_map.mp h
       exact Option.some_ne_none _ ha
-    · refine congr_arg Sum.inr ?_
+    · congrm Sum.inr ?_
       refine map_injective (Option.some_injective _) _ ?_
       refine Eq.trans ?_ (.trans (SymOptionSuccEquiv.decode (Sum.inr s)).attach_map_coe ?_) <;> simp
 

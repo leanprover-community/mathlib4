@@ -7,7 +7,8 @@ module
 
 public import Mathlib.FieldTheory.Minpoly.Basic
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.LinearMap
-public import Mathlib.RingTheory.FiniteType
+
+import Mathlib.RingTheory.FiniteType
 
 /-!
 # Minimal polynomials on a finite algebra

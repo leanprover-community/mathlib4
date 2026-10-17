@@ -12,7 +12,7 @@ public import Mathlib.Order.SetNotation
 /-!
 # Relations as sets of pairs
 
-This file provides API to regard relations between `α` and `β`  as sets of pairs `Set (α × β)`.
+This file provides API to regard relations between `α` and `β` as sets of pairs `Set (α × β)`.
 
 This is in particular useful in the study of uniform spaces, which are topological spaces equipped
 with a *uniformity*, namely a filter of pairs `α × α` whose elements can be viewed as "proximity"
@@ -41,18 +41,21 @@ relations.
 ## Implementation notes
 
 There is tension throughout the library between considering relations between `α` and `β` simply as
-`α → β → Prop`, or as a bundled object `SetRel α β` with dedicated operations and API.
+`α → β → Prop`, or as a set of pairs `SetRel α β` with dedicated operations and API.
 
-The former approach is used almost everywhere as it is very lightweight and has arguably native
-support from core Lean features, but it cracks at the seams whenever one starts talking about
-operations on relations. For example:
-* composition of relations `R : α → β → Prop`, `S : β → γ → Prop` is
-  `Relation.Comp R S := fun a c ↦ ∃ b, R a b ∧ S b c`
-* map of a relation `R : α → β → Prop` under `f : α → γ`, `g : β → δ` is
-  `Relation.Map R f g := fun c d ↦ ∃ a b, R a b ∧ f a = c ∧ g b = d`.
+The function representation is lightweight and has native support from core Lean features. It is a
+good fit when a relation is primarily applied to two arguments. The set-of-pairs representation is
+useful when the relation itself is manipulated as a mathematical object, as `R` is in the examples
+below, because the standard `Set` API applies directly. For example:
+* the inverse relation is the preimage `Prod.swap ⁻¹' R`;
+* transporting a relation along `f : α → γ` and `g : β → δ` is the image
+  `(Prod.map f g) '' R`;
+* unions, intersections, complements, and the subset order are inherited from `Set`.
 
-The latter approach is embodied by `SetRel α β`, with the dedicated notation `○` for composition.
-(Note that `○` is _not_ the same as function composition `∘`.)
+These operations can also be defined for `α → β → Prop`; the advantage of `SetRel` is reuse of the
+existing set API and direct interoperability with objects such as filters on `α × α`, rather than
+additional expressive power. `SetRel` also provides dedicated relational operations, including the
+notation `○` for composition. (Note that `○` is _not_ function composition `∘`.)
 
 Previously, `SetRel` suffered from the leakage of its definition as
 ```
@@ -60,7 +63,7 @@ def SetRel (α β : Type*) := α → β → Prop
 ```
 The fact that `SetRel` wasn't an `abbrev` confuses automation.
 But simply making it an `abbrev` would have killed the point of having a separate less see-through
-type to perform relation operations on. So we instead redefined it as
+type to perform relation operations on, so we instead redefined
 ```
 abbrev SetRel (α β : Type*) := Set (α × β)
 ```
@@ -349,7 +352,27 @@ variable (R s) in
 /-- Restrict the domain of a relation to a subtype. -/
 def restrictDomain : SetRel s β := {(a, b) | ↑a ~[R] b}
 
+variable (R b) in
+/-- The ball of `b : β` with respect to a relation between `α` and `β` is the set of `a : α` related
+to `b`. -/
+def ball : Set α := {a | a ~[R] b}
+
+@[simp, grind =] lemma mem_ball : a ∈ R.ball b ↔ a ~[R] b := .rfl
+
+@[gcongr]
+lemma ball_mono (h : R₁ ⊆ R₂) (b : β) : R₁.ball b ⊆ R₂.ball b := fun _a hab ↦ h hab
+
+variable (R₁ R₂ b) in
+lemma ball_inter : ball (R₁ ∩ R₂) b = ball R₁ b ∩ ball R₂ b := rfl
+
+lemma ball_iInter (R : ι → Set (α × β)) (b : β) : ball (⋂ i, R i) b = ⋂ i, ball (R i) b := by
+  ext; simp
+
 variable {R R₁ R₂ : SetRel α α} {S : SetRel β β} {a b c : α}
+
+@[gcongr only]
+lemma ball_subset_ball_of_comp_subset (hab : a ~[R₁] b) (h : R₁ ○ R₁ ⊆ R₂) :
+    R₁.ball a ⊆ R₂.ball b := fun _c hc ↦ h ⟨a, hc, hab⟩
 
 /-! ### Reflexive relations -/
 
@@ -422,6 +445,7 @@ variable (R) in
 protected abbrev IsSymm : Prop := Std.Symm (· ~[R] ·)
 
 variable (R) in
+@[grind →]
 protected lemma symm [R.IsSymm] (hab : a ~[R] b) : b ~[R] a := symm_of (· ~[R] ·) hab
 
 variable (R) in
@@ -467,6 +491,10 @@ instance isSymm_comp_inv : (R ○ R.inv).IsSymm where
 instance isSymm_inv_comp : (R.inv ○ R).IsSymm := isSymm_comp_inv
 
 instance isSymm_comp_self [R.IsSymm] : (R ○ R).IsSymm := by simpa using R.isSymm_comp_inv
+
+lemma mem_comp_comp {U : SetRel α β} {V : SetRel β γ} {W : SetRel γ δ} {p : α × δ} :
+    p ∈ U ○ V ○ W ↔ (U.inv.ball p.1 ×ˢ W.ball p.2 ∩ V).Nonempty := by
+  grind [Set.nonempty_def, Prod.exists]
 
 lemma prod_subset_comm [R.IsSymm] : s₁ ×ˢ s₂ ⊆ R ↔ s₂ ×ˢ s₁ ⊆ R := by
   rw [← R.inv_eq_self, SetRel.inv, ← Set.image_subset_iff, Set.image_swap_prod, ← SetRel.inv,
@@ -548,8 +576,8 @@ variable (R) in
 abbrev IsWellFounded : Prop := WellFounded (· ~[R] ·)
 
 variable (R S) in
-/-- A relation homomorphism with respect to a given pair of relations `R` and `S` s is a function
-`f : α → β` such that `a ~[R] b → f a ~[s] f b`. -/
+/-- A relation homomorphism with respect to a given pair of relations `R` and `S` is a function
+`f : α → β` such that `a ~[R] b → f a ~[S] f b`. -/
 abbrev Hom := (· ~[R] ·) →r (· ~[S] ·)
 
 end SetRel
@@ -585,16 +613,8 @@ theorem Equiv.graph_inv (f : α ≃ β) : (f.symm : β → α).graph = SetRel.in
 
 lemma SetRel.exists_graph_eq_iff (R : SetRel α β) :
     (∃! f, Function.graph f = R) ↔ ∀ a, ∃! b, a ~[R] b := by
-  constructor
-  · rintro ⟨f, rfl, _⟩ x
-    simp
-  intro h
-  choose f hf using fun x ↦ (h x).exists
-  refine ⟨f, ?_, by grind⟩
-  ext ⟨a, b⟩
-  constructor
-  · grind
-  · exact (h _).unique (hf _)
+  rw [Function.graph_injective.existsUnique_iff_exists, forall_existsUnique_iff]
+  simp [Set.ext_iff, iff_comm]
 
 namespace Set
 
@@ -612,4 +632,4 @@ end Set
 /-- A shorthand for `α → β → Prop`.
 
 Consider using `SetRel` instead if you want extra API for relations. -/
-abbrev Rel (α β : Type*) : Type _ := α → β → Prop
+abbrev Rel (α β : Sort*) : Sort _ := α → β → Prop

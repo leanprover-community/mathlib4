@@ -32,6 +32,16 @@ variable {M R : Type*}
 
 namespace Subring
 
+section NonAssocRing
+
+variable [NonAssocRing R]
+
+theorem coe_iSup_eq_iUnion_finset_coe_biSup {ι : Type*} (S : ι → Subring R) :
+    ((⨆ i, S i : Subring R) : Set R) = ⋃ s : Finset ι, (⨆ i ∈ s, S i : Subring R) := by
+  rw [iSup_eq_iSup_finset, coe_iSup_of_directed <| Monotone.directed_le fun _ _ ↦ biSup_mono]
+
+end NonAssocRing
+
 section Monoid
 
 variable [Monoid M] [Ring R] [MulSemiringAction M R]
@@ -42,9 +52,9 @@ This is available as an instance in the `Pointwise` locale. -/
 @[instance_reducible]
 protected def pointwiseMulAction : MulAction M (Subring R) where
   smul a S := S.map (MulSemiringAction.toRingHom _ _ a)
-  one_smul S := (congr_arg (fun f => S.map f) (RingHom.ext <| one_smul M)).trans S.map_id
+  one_smul S := congr(S.map $(RingHom.ext <| one_smul M)).trans S.map_id
   mul_smul _ _ S :=
-    (congr_arg (fun f => S.map f) (RingHom.ext <| mul_smul _ _)).trans (S.map_map _ _).symm
+    congr(S.map $(RingHom.ext <| mul_smul _ _)).trans (S.map_map _ _).symm
 
 scoped[Pointwise] attribute [instance] Subring.pointwiseMulAction
 

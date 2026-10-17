@@ -6,9 +6,9 @@ Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 module
 
 public import Mathlib.Algebra.GCDMonoid.Basic
+public import Mathlib.Algebra.GroupWithZero.Nat
 public import Mathlib.Algebra.Order.Group.Unbundled.Int
 public import Mathlib.Algebra.Ring.Int.Units
-public import Mathlib.Algebra.GroupWithZero.Nat
 
 /-!
 # ℕ and ℤ are normalized GCD monoids.
@@ -155,7 +155,7 @@ end Int
 def associatesIntEquivNat : Associates ℤ ≃ ℕ := by
   refine ⟨(·.out.natAbs), (Associates.mk ·), ?_, fun n ↦ ?_⟩
   · refine Associates.forall_associated.2 fun a ↦ ?_
-    refine Associates.mk_eq_mk_iff_associated.2 <| Associated.symm <| ⟨normUnit a, ?_⟩
+    refine Associates.mk_eq_mk_iff_associated.2 <| Associated.symm ⟨normUnit a, ?_⟩
     simp [Int.natCast_natAbs, Int.abs_eq_normalize, normalize_apply]
   · dsimp only [Associates.out_mk]
     rw [← Int.abs_eq_normalize, Int.natAbs_abs, Int.natAbs_natCast]

@@ -5,15 +5,15 @@ Authors: Joseph Myers
 -/
 module
 
-public import Mathlib.FieldTheory.Finiteness
 public import Mathlib.LinearAlgebra.AffineSpace.Basis
-public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
+public import Mathlib.LinearAlgebra.AffineSpace.Dimension
 public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Centroid
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 
-import Mathlib.RingTheory.Finiteness.Prod
+import Mathlib.FieldTheory.Finiteness
+import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+import Mathlib.RingTheory.Finiteness.Prod
 
 /-!
 # Finite-dimensional subspaces of affine spaces.
@@ -108,7 +108,7 @@ theorem finiteDimensional_iff_finite {p : ι → P} (hi : AffineIndependent k p)
   exact hi.codRestrict (vectorSpan k (Set.range p)) (by simp [vsub_mem_vectorSpan]) |>.finite
 
 /-- An affine-independent family of points in a finite-dimensional affine subspace is finite. -/
-@[deprecated finiteDimensional_iff_finite (since := "2026-09-01")]
+@[deprecated finiteDimensional_iff_finite +typeChanged (since := "2026-09-01")]
 theorem finite_of_fin_dim_affineIndependent {p : ι → P} (hi : AffineIndependent k p)
     [FiniteDimensional k (vectorSpan k (Set.range p))] : Finite ι :=
   finiteDimensional_iff_finite k hi |>.mp inferInstance
@@ -122,7 +122,7 @@ theorem finiteDimensional_iff_setFinite {s : Set ι} {f : s → P}
     exact finiteDimensional_vectorSpan_range k f
 
 /-- An affine-independent subset of a finite-dimensional affine subspace is finite. -/
-@[deprecated finiteDimensional_iff_setFinite (since := "2026-09-01")]
+@[deprecated finiteDimensional_iff_setFinite +typeChanged (since := "2026-09-01")]
 theorem finite_set_of_fin_dim_affineIndependent {s : Set ι} {f : s → P} (hi : AffineIndependent k f)
     [FiniteDimensional k (vectorSpan k (Set.range f))] : s.Finite :=
   finiteDimensional_iff_setFinite k hi |>.mp inferInstance
@@ -189,6 +189,38 @@ theorem AffineIndependent.vectorSpan_eq_top_of_card_eq_finrank_add_one [FiniteDi
     [Fintype ι] {p : ι → P} (hi : AffineIndependent k p) (hc : Fintype.card ι = finrank k V + 1) :
     vectorSpan k (Set.range p) = ⊤ :=
   Submodule.eq_top_of_finrank_eq <| hi.finrank_vectorSpan hc
+
+/-- The `vectorSpan` of the image of an affinely independent finite nonempty set has dimension one
+less than its cardinality. -/
+theorem AffineIndepOn.finrank_vectorSpan_image {p : ι → P} {s : Set ι} (hs₁ : s.Finite)
+    (hs₂ : s.Nonempty) (hi : AffineIndepOn k p s) :
+    finrank k (vectorSpan k (p '' s)) = s.ncard - 1 := by
+  have := hs₁.fintype
+  rw [Set.image_eq_range]
+  apply hi.affineIndependent.finrank_vectorSpan
+  simp [Nat.sub_add_cancel <| (Set.ncard_pos hs₁).mpr hs₂]
+
+/-- The `vectorSpan` of an affinely independent finite nonempty set has dimension one less than its
+cardinality. -/
+theorem AffineIndepOn.finrank_vectorSpan {s : Set P} (hs₁ : s.Finite) (hs₂ : s.Nonempty)
+    (hi : AffineIndepOn k id s) : finrank k (vectorSpan k s) = s.ncard - 1 := by
+  rw [← hi.finrank_vectorSpan_image hs₁ hs₂, Set.image_id]
+
+theorem AffineIndepOn.ncard_eq_succ_finDim_affineSpan {s : Set P} (hai : AffineIndepOn k id s)
+    [hf : FiniteDimensional k (vectorSpan k s)] : s.ncard = (affineSpan k s).finDim.succ := by
+  rcases Set.eq_empty_or_nonempty s with rfl | hs
+  · simp
+  rw [← Subtype.range_coe (s := s)] at hf
+  have := finiteDimensional_iff_setFinite k hai |>.mp hf
+  have := hai.finrank_vectorSpan this hs
+  rw [finDim_eq_finrank (by simp [Set.nonempty_iff_ne_empty.mp hs]), direction_affineSpan,
+    WithBot.succ_natCast, this]
+  grind only [Set.ncard_eq_zero, Set.not_nonempty_empty]
+
+theorem AffineIndependent.ncard_eq_succ_finDim_affineSpan {s : Set P}
+    (hai : AffineIndependent k ((↑) : s → P)) [hf : FiniteDimensional k (vectorSpan k s)] :
+    s.ncard = (affineSpan k s).finDim.succ :=
+  AffineIndepOn.ncard_eq_succ_finDim_affineSpan ((affineIndependent_subtype_iff _).mp hai)
 
 namespace Affine.Simplex
 
@@ -293,6 +325,23 @@ theorem finrank_vectorSpan_le_iff_not_affineIndependent [Fintype ι] (p : ι →
     (hc : Fintype.card ι = n + 2) :
     finrank k (vectorSpan k (Set.range p)) ≤ n ↔ ¬AffineIndependent k p :=
   (not_iff_comm.1 (affineIndependent_iff_not_finrank_vectorSpan_le k p hc).symm).symm
+
+variable (V) in
+theorem exists_affineIndependent_of_finiteDimensional (s : Set P)
+    [F : FiniteDimensional k (vectorSpan k s)] :
+    ∃ t ⊆ s, affineSpan k t = affineSpan k s ∧ AffineIndependent k ((↑) : t → P) ∧
+      t.ncard = (affineSpan k s).finDim.succ := by
+  obtain ⟨t, ht₁, ht₂, ht₃⟩ := exists_affineIndependent k V s
+  refine ⟨t, ht₁, ht₂, ht₃, ?_⟩
+  rw [← direction_affineSpan, ← ht₂, direction_affineSpan] at F
+  exact ht₂ ▸ ht₃.ncard_eq_succ_finDim_affineSpan
+
+variable (V) in
+theorem exists_affineIndepOn_of_finiteDimensional (s : Set P)
+    [F : FiniteDimensional k (vectorSpan k s)] :
+    ∃ t ⊆ s, affineSpan k t = affineSpan k s ∧ AffineIndepOn k id t ∧
+      t.ncard = (affineSpan k s).finDim.succ :=
+  exists_affineIndependent_of_finiteDimensional k V s
 
 variable {k}
 
@@ -407,10 +456,13 @@ theorem AffineIndependent.affineSpan_eq_top_iff_card_eq_finrank_add_one [FiniteD
     rw [← finrank_top, ← direction_top k V P] at hc
     exact hi.affineSpan_eq_of_le_of_card_eq_finrank_add_one le_top hc
 
-theorem Affine.Simplex.span_eq_top [FiniteDimensional k V] {n : ℕ} (T : Affine.Simplex k V n)
+theorem Affine.Simplex.affineSpan_eq_top [FiniteDimensional k V] {n : ℕ} (T : Affine.Simplex k P n)
     (hrank : finrank k V = n) : affineSpan k (Set.range T.points) = ⊤ := by
   rw [AffineIndependent.affineSpan_eq_top_iff_card_eq_finrank_add_one T.independent,
     Fintype.card_fin, hrank]
+
+@[deprecated (since := "2026-09-07")] alias Affine.Simplex.span_eq_top :=
+  Affine.Simplex.affineSpan_eq_top
 
 /-- The `vectorSpan` of adding a point to a finite-dimensional subspace is finite-dimensional. -/
 instance finiteDimensional_vectorSpan_insert (s : AffineSubspace k P)
@@ -530,7 +582,7 @@ theorem collinear_iff_of_mem {s : Set P} {p₀ : P} (h : p₀ ∈ s) :
       rcases hp₀v p hp with ⟨r, rfl⟩
       use r
       simp
-    have hw' := SetLike.le_def.1 hs hw
+    have hw' := mem_of_le_of_mem hs hw
     rwa [Submodule.mem_span_singleton] at hw'
 
 /-- A set of points is collinear if and only if they can all be
@@ -720,7 +772,7 @@ theorem affineIndependent_iff_affineIndependent_collinear_ne {p₁ p₂ p₃ p :
     AffineIndependent k ![p₁, p₂, p] ↔ AffineIndependent k ![p₁, p₂, p₃] := by
   refine ⟨fun h ↦ affineIndependent_of_affineIndependent_collinear_ne h hcol hne2,
     fun h ↦ affineIndependent_of_affineIndependent_collinear_ne h ?_ hne1⟩
-  convert! hcol using 1
+  convert hcol using 1
   aesop
 
 variable (k) in
@@ -807,7 +859,7 @@ theorem finrank_vectorSpan_insert_le (s : AffineSubspace k P) (p : P) :
   · rw [coe_eq_bot_iff] at hs
     rw [hs, bot_coe, span_empty, bot_coe, direction_affineSpan, direction_bot, finrank_bot,
       zero_add]
-    convert! zero_le_one' ℕ
+    convert zero_le_one' ℕ
     rw [← finrank_bot k V]
     convert! rfl <;> simp
   · rw [affineSpan_coe, direction_affineSpan_insert hp₀, add_comm]

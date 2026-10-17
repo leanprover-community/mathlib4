@@ -5,10 +5,10 @@ Authors: Kevin Buzzard, Will Sawin
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.Equiv
-public import Mathlib.RingTheory.Finiteness.Cardinality
 public import Mathlib.Algebra.Algebra.Bilinear
-public import Mathlib.Algebra.Group.Basic
+public import Mathlib.RingTheory.Finiteness.Cardinality
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
+public import Mathlib.Topology.Algebra.Module.Equiv.Pi
 
 /-!
 # A "module topology" for modules over a topological ring
@@ -318,7 +318,7 @@ theorem continuous_of_distribMulActionHomₑ {σ : R →* S} (hσ : Continuous �
   -- is given the topology induced from `φ`. Hence the module topology is finer than
   -- the induced topology, and so the function is continuous.
   rw [eq_moduleTopology R A, continuous_iff_le_induced]
-  exact sInf_le <| ⟨continuousSMul_inducedₛₗ φ hσ, continuousAdd_induced φ⟩
+  exact sInf_le ⟨continuousSMul_inducedₛₗ φ hσ, continuousAdd_induced φ⟩
 
 /-- Every `R`-linear map between two topological `R`-modules, where the source has the module
 topology, is continuous. -/
