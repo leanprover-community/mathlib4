@@ -816,6 +816,70 @@ open Matrix
 
 namespace Matrix
 
+section Prod
+
+/-- Matrices over a product are in canonical bijection with product of matrices
+
+This is available in bundled forms as:
+* `Matrix.prodAddEquiv`
+* `Matrix.prodLinearEquiv`
+* `Matrix.prodRingEquiv`
+* `Matrix.prodAlgEquiv`
+-/
+@[simps!] def prodEquiv : Matrix m n (α × β) ≃ Matrix m n α × Matrix m n β where
+  toFun a := ⟨a.map Prod.fst, a.map Prod.snd⟩
+  invFun a := .of fun i j ↦ ⟨a.1 i j, a.2 i j⟩
+
+/-- `prodEquiv` as an `AddEquiv`. -/
+@[simps!] def prodAddEquiv [Add α] [Add β] :
+    Matrix m n (α × β) ≃+ Matrix m n α × Matrix m n β where
+  __ := prodEquiv
+  map_add' _ _ := rfl
+
+@[simp] theorem toEquiv_prodAddEquiv [Add α] [Add β] :
+   (prodAddEquiv (m := m) (n := n) (α := α) (β := β) :
+      Matrix m n (α × β) ≃ Matrix m n α × Matrix m n β) = prodEquiv := rfl
+
+/-- `prodEquiv` as a `LinearEquiv`. -/
+@[simps!] def prodLinearEquiv (R) [Semiring R] [AddCommMonoid α] [AddCommMonoid β]
+    [Module R α] [Module R β] : Matrix m n (α × β) ≃ₗ[R] Matrix m n α × Matrix m n β where
+  __ := prodAddEquiv
+  map_smul' _ _ := rfl
+
+@[simp] theorem toAddEquiv_prodLinearEquiv (R) [Semiring R] [AddCommMonoid α] [AddCommMonoid β]
+    [Module R α] [Module R β] : (prodLinearEquiv (m := m) (n := n) (α := α) (β := β) R :
+      Matrix m n (α × β) ≃+ Matrix m n α × Matrix m n β) = prodAddEquiv := rfl
+
+variable [Fintype n]
+
+/-- `prodEquiv` as a `RingEquiv`. -/
+@[simps!] def prodRingEquiv [AddCommMonoid α] [AddCommMonoid β] [Mul α] [Mul β] :
+    Matrix n n (α × β) ≃+* Matrix n n α × Matrix n n β where
+  __ := prodAddEquiv
+  map_mul' _ _ := by ext <;> simp [Matrix.mul_apply, Prod.fst_sum, Prod.snd_sum]
+
+@[simp] theorem toAddEquiv_prodRingEquiv [AddCommMonoid α] [AddCommMonoid β] [Mul α] [Mul β]
+    {a : Matrix n n (α × β)} : prodRingEquiv a = prodAddEquiv a := rfl
+
+variable (R) [CommSemiring R] [DecidableEq n]
+
+/-- `prodEquiv` as an `AlgEquiv`. -/
+@[simps!] def prodAlgEquiv [Semiring α] [Algebra R α] [Semiring β] [Algebra R β] :
+    Matrix n n (α × β) ≃ₐ[R] Matrix n n α × Matrix n n β where
+  __ := prodRingEquiv
+  commutes' := (AlgHom.mk' (prodRingEquiv (n := n) (α := α) (β := β)).toRingHom
+    fun _ _ ↦ rfl).commutes
+
+@[simp] theorem toAddEquiv_prodAlgEquiv [Semiring α] [Algebra R α] [Semiring β] [Algebra R β] :
+    (prodAlgEquiv (n := n) (α := α) (β := β) R :
+      Matrix n n (α × β) ≃+* Matrix n n α × Matrix n n β) = prodRingEquiv  := rfl
+
+@[simp] theorem toLinearEquiv_prodAlgEquiv [Semiring α] [Algebra R α]
+  [Semiring β] [Algebra R β] : (prodAlgEquiv (n := n) (α := α) (β := β) R :
+      Matrix n n (α × β) ≃ₗ[R] Matrix n n α × Matrix n n β) = prodLinearEquiv R := rfl
+
+end Prod
+
 section Pi
 
 variable {ι : Type*} {β : ι → Type*}
@@ -831,13 +895,15 @@ This is available in bundled forms as:
 @[simps] def piEquiv : Matrix m n (Π i, β i) ≃ Π i, Matrix m n (β i) where
   toFun f i := f.map (· i)
   invFun f := .of fun j k i ↦ f i j k
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- `piEquiv` as an `AddEquiv`. -/
 @[simps!] def piAddEquiv [∀ i, Add (β i)] : Matrix m n (Π i, β i) ≃+ Π i, Matrix m n (β i) where
   __ := piEquiv
   map_add' _ _ := rfl
+
+@[simp] theorem toEquiv_piAddEquiv [∀ i, Add (β i)] :
+  (piAddEquiv (m := m) (n := n) (ι := ι) (β := β) : Matrix m n (Π i, β i) ≃ Π i, Matrix m n (β i)) =
+    piEquiv := rfl
 
 /-- `piEquiv` as a `LinearEquiv`. -/
 @[simps] def piLinearEquiv (R) [Semiring R] [∀ i, AddCommMonoid (β i)] [∀ i, Module R (β i)] :
@@ -845,17 +911,33 @@ This is available in bundled forms as:
   __ := piAddEquiv
   map_smul' _ _ := rfl
 
+@[simp] theorem toEquiv_piLinearEquiv (R) [Semiring R] [∀ i, AddCommMonoid (β i)]
+  [∀ i, Module R (β i)] : (piLinearEquiv (m := m) (n := n) (ι := ι) (β := β) R :
+    Matrix m n (Π i, β i) ≃ Π i, Matrix m n (β i)) = piEquiv := rfl
+
 /-- `piEquiv` as a `RingEquiv`. -/
 @[simps!] def piRingEquiv [∀ i, AddCommMonoid (β i)] [∀ i, Mul (β i)] [Fintype n] :
     Matrix n n (Π i, β i) ≃+* Π i, Matrix n n (β i) where
   __ := piAddEquiv
   map_mul' _ _ := by ext; simp [Matrix.mul_apply]
 
+@[simp] theorem toEquiv_piRingEquiv [∀ i, AddCommMonoid (β i)] [∀ i, Mul (β i)] [Fintype n] :
+  (piRingEquiv (n := n) (ι := ι) (β := β) :
+    Matrix n n (Π i, β i) ≃+ Π i, Matrix n n (β i)) = piAddEquiv := rfl
+
 /-- `piEquiv` as an `AlgEquiv`. -/
 @[simps!] def piAlgEquiv (R) [CommSemiring R] [∀ i, Semiring (β i)] [∀ i, Algebra R (β i)]
     [Fintype n] [DecidableEq n] : Matrix n n (Π i, β i) ≃ₐ[R] Π i, Matrix n n (β i) where
   __ := piRingEquiv
   commutes' := (AlgHom.mk' (piRingEquiv (β := β) (n := n)).toRingHom fun _ _ ↦ rfl).commutes
+
+@[simp] theorem toRingEquiv_piAlgEquiv (R) [CommSemiring R] [∀ i, Semiring (β i)]
+  [∀ i, Algebra R (β i)] [Fintype n] [DecidableEq n] : (piAlgEquiv (n := n) (ι := ι) (β := β) R :
+    Matrix n n (Π i, β i) ≃+* Π i, Matrix n n (β i)) = piRingEquiv := rfl
+
+@[simp] theorem toLinearEquiv_piAlgEquiv (R) [CommSemiring R] [∀ i, Semiring (β i)]
+  [∀ i, Algebra R (β i)] [Fintype n] [DecidableEq n] : (piAlgEquiv (n := n) (ι := ι) (β := β) R :
+    Matrix n n (Π i, β i) ≃ₗ[R] Π i, Matrix n n (β i)) = piLinearEquiv R := rfl
 
 end Pi
 
@@ -902,6 +984,11 @@ def transposeLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] :
   map_smul' := transpose_smul
 
 @[simp]
+theorem toAddEquiv_transposeLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] :
+  (transposeLinearEquiv m n R α : Matrix m n α ≃+ Matrix n m α) =
+    transposeAddEquiv m n α := rfl
+
+@[simp]
 theorem transposeLinearEquiv_symm [Semiring R] [AddCommMonoid α] [Module R α] :
     (transposeLinearEquiv m n R α).symm = transposeLinearEquiv n m R α :=
   rfl
@@ -941,6 +1028,11 @@ def transposeAlgEquiv [CommSemiring R] [CommSemiring α] [Fintype m] [DecidableE
     Matrix m m α ≃ₐ[R] (Matrix m m α)ᵐᵒᵖ where
   __ := transposeRingEquiv m α
   commutes' r := by simp [algebraMap_eq_diagonal]
+
+@[simp]
+theorem toRingEquiv_transposeAlgEquiv [CommSemiring R] [CommSemiring α] [Fintype m]
+  [DecidableEq m] [Algebra R α] : (transposeAlgEquiv m R α : Matrix m m α ≃+* (Matrix m m α)ᵐᵒᵖ) =
+    transposeRingEquiv m α := rfl
 
 end Transpose
 
