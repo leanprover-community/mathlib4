@@ -4252,6 +4252,7 @@ public import Mathlib.Data.List.Lattice
 public import Mathlib.Data.List.Lemmas
 public import Mathlib.Data.List.Lex
 public import Mathlib.Data.List.Lookmap
+public import Mathlib.Data.List.Lyndon
 public import Mathlib.Data.List.Map2
 public import Mathlib.Data.List.MinMax
 public import Mathlib.Data.List.ModifyLast
