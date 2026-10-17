@@ -140,10 +140,10 @@ public theorem norm_iteratedDeriv_le_of_re_le (hR : 0 < R)
 
 /-- **Borel-Carathéodory theorem:** estimates a differentiable function on a ball which vanishes
 at the center given a bound for its real part on that ball. -/
-public theorem norm_le_of_re_le_of_eq_zero (hR : 0 < R)
-    (hf : DifferentiableOn ℂ f (ball c R)) (hf0 : f c = 0)
+public theorem norm_le_of_re_le_of_eq_zero (hf : DifferentiableOn ℂ f (ball c R)) (hf0 : f c = 0)
     (hM : (ball c R).MapsTo f {z | z.re ≤ M}) (hz : z ∈ ball c R) :
     ‖f z‖ ≤ 2 * M * ‖z - c‖ / (R - ‖z - c‖) := by
+  have hR := pos_of_mem_ball hz
   have hsum := hasSum_taylorSeries_on_ball_of_eq_zero hf hz hf0
   simp only [mem_ball, dist_eq_norm_sub] at hz
   convert hsum.norm_le_of_bounded ((hasSum_geometric_of_lt_one (by positivity)
@@ -159,12 +159,11 @@ public theorem norm_le_of_re_le_of_eq_zero (hR : 0 < R)
 
 /-- **Borel-Carathéodory theorem:** estimates a differentiable function on a ball given a bound for
 its real part on that ball. -/
-public theorem norm_le_of_re_le (hR : 0 < R)
-    (hf : DifferentiableOn ℂ f (ball c R))
+public theorem norm_le_of_re_le (hf : DifferentiableOn ℂ f (ball c R))
     (hM : (ball c R).MapsTo f {z | z.re ≤ M}) (hz : z ∈ ball c R) :
     ‖f z‖ ≤ 2 * M * ‖z - c‖ / (R - ‖z - c‖) + ‖f c‖ * (R + ‖z - c‖) / (R - ‖z - c‖) := by
   have hfz : ‖f z - f c‖ ≤ 2 * (M + ‖f c‖) * ‖z - c‖ / (R - ‖z - c‖) := by
-    refine norm_le_of_re_le_of_eq_zero hR (hf.sub_const (f c)) (by simp) (fun x hx ↦ ?_) hz
+    refine norm_le_of_re_le_of_eq_zero (hf.sub_const (f c)) (by simp) (fun x hx ↦ ?_) hz
     simp only [Set.mem_ofPred_eq, sub_re]
     calc _ ≤ M - (f c).re := by gcongr; exact hM hx
       _ ≤ _ := by linarith [neg_le_abs (f c).re, abs_re_le_norm (f c)]
@@ -175,10 +174,11 @@ public theorem norm_le_of_re_le (hR : 0 < R)
 
 /-- **Borel-Carathéodory theorem for the derivative**: estimates the derivative of a differentiable
 function on a ball which vanishes at the center given a bound on its real part on that ball. -/
-public theorem norm_deriv_le_of_re_le_of_eq_zero (hR : 0 < R)
+public theorem norm_deriv_le_of_re_le_of_eq_zero
     (hf : DifferentiableOn ℂ f (ball c R)) (hf0 : f c = 0)
     (hM : (ball c R).MapsTo f {z | z.re ≤ M}) (hz : z ∈ ball c R) :
     ‖deriv f z‖ ≤ 2 * R * M / (R - ‖z - c‖) ^ 2 := by
+  have hR := pos_of_mem_ball hz
   have hgeo : HasSum (fun n : ℕ ↦ 2 * M / R * (((n : ℝ) + 1) * (‖z - c‖ / R) ^ n))
       (2 * R * M / (R - ‖z - c‖) ^ 2) := by
     convert! (hasSum_choose_mul_geometric_of_norm_lt_one 1 (r := (‖z - c‖ / R))
@@ -209,9 +209,9 @@ If `f` is analytic on the open ball `‖z‖ < R`, satisfies `(f z).re ≤ M` fo
 and `f 0 = 0`, then `‖f z‖ ≤ 2 * M * ‖z‖ / (R - ‖z‖)` for all `‖z‖ < R`. -/
 @[deprecated BorelCaratheodory.norm_le_of_re_le_of_eq_zero +typeChanged (since := "2026-10-17")]
 public theorem borelCaratheodory_zero (hf : DifferentiableOn ℂ f (ball 0 R))
-    (hf₁ : Set.MapsTo f (ball 0 R) {z | z.re ≤ M}) (hR : 0 < R) (hz : z ∈ ball 0 R)
+    (hf₁ : Set.MapsTo f (ball 0 R) {z | z.re ≤ M}) (hz : z ∈ ball 0 R)
     (hf₂ : f 0 = 0) : ‖f z‖ ≤ 2 * M * ‖z‖ / (R - ‖z‖) := by
-  convert BorelCaratheodory.norm_le_of_re_le_of_eq_zero hR hf hf₂ hf₁ hz <;> ring
+  convert BorelCaratheodory.norm_le_of_re_le_of_eq_zero hf hf₂ hf₁ hz <;> ring
 
 /-- **Borel-Carathéodory theorem**.
 
@@ -219,8 +219,8 @@ If `f` is analytic on the open ball `‖z‖ < R` and satisfies `(f z).re ≤ M`
 then `‖f z‖ ≤ 2 * M * ‖z‖ / (R - ‖z‖) + ‖f 0‖ * (R + ‖z‖) / (R - ‖z‖)` for all `‖z‖ < R`. -/
 @[deprecated BorelCaratheodory.norm_le_of_re_le +typeChanged (since := "2026-10-17")]
 public theorem borelCaratheodory (hf : DifferentiableOn ℂ f (ball 0 R))
-    (hf₁ : Set.MapsTo f (ball 0 R) {z | z.re ≤ M}) (hR : 0 < R) (hz : z ∈ ball 0 R) :
+    (hf₁ : Set.MapsTo f (ball 0 R) {z | z.re ≤ M}) (hz : z ∈ ball 0 R) :
     ‖f z‖ ≤ 2 * M * ‖z‖ / (R - ‖z‖) + ‖f 0‖ * (R + ‖z‖) / (R - ‖z‖) := by
-  convert BorelCaratheodory.norm_le_of_re_le hR hf hf₁ hz <;> ring
+  convert BorelCaratheodory.norm_le_of_re_le hf hf₁ hz <;> ring
 
 end Complex
