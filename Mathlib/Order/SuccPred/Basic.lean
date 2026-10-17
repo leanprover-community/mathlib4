@@ -247,6 +247,13 @@ theorem Iic_subset_Iio_succ_of_not_isMax (ha : ¬IsMax a) : Iic a ⊆ Iio (succ 
 theorem Ici_succ_of_not_isMax (ha : ¬IsMax a) : Ici (succ a) = Ioi a :=
   Set.ext fun _ => succ_le_iff_of_not_isMax ha
 
+attribute [deprecated
+  "Use `Set.Ici_succ_eq_Ioi_of_not_isMax` from `Mathlib.Order.Interval.Set.SuccPred` instead"
+  (since := "2026-09-05")] Ici_succ_of_not_isMax
+attribute [deprecated
+  "Use `Set.Iic_pred_eq_Iio_of_not_isMin` from `Mathlib.Order.Interval.Set.SuccPred` instead"
+  (since := "2026-09-05")] Iic_pred_of_not_isMin
+
 @[to_dual Icc_subset_Ioc_pred_left_of_not_isMin]
 theorem Icc_subset_Ico_succ_right_of_not_isMax (hb : ¬IsMax b) : Icc a b ⊆ Ico a (succ b) := by
   gcongr
@@ -258,12 +265,26 @@ theorem Ioc_subset_Ioo_succ_right_of_not_isMax (hb : ¬IsMax b) : Ioc a b ⊆ Io
   exact lt_succ_of_not_isMax hb
 
 @[to_dual Icc_pred_right_of_not_isMin]
-theorem Icc_succ_left_of_not_isMax (ha : ¬IsMax a) : Icc (succ a) b = Ioc a b := by
-  rw [← Ici_inter_Iic, Ici_succ_of_not_isMax ha, Ioi_inter_Iic]
+theorem Icc_succ_left_of_not_isMax (ha : ¬IsMax a) : Icc (succ a) b = Ioc a b :=
+  Set.ext fun _ => and_congr_left' (succ_le_iff_of_not_isMax ha)
+
+attribute [deprecated
+  "Use `Set.Icc_succ_left_eq_Ioc_of_not_isMax` from `Mathlib.Order.Interval.Set.SuccPred` instead"
+  (since := "2026-09-05")] Icc_succ_left_of_not_isMax
+attribute [deprecated
+  "Use `Set.Icc_pred_right_eq_Ico_of_not_isMin` from `Mathlib.Order.Interval.Set.SuccPred` instead"
+  (since := "2026-09-05")] Icc_pred_right_of_not_isMin
 
 @[to_dual Ioc_pred_right_of_not_isMin]
-theorem Ico_succ_left_of_not_isMax (ha : ¬IsMax a) : Ico (succ a) b = Ioo a b := by
-  rw [← Ici_inter_Iio, Ici_succ_of_not_isMax ha, Ioi_inter_Iio]
+theorem Ico_succ_left_of_not_isMax (ha : ¬IsMax a) : Ico (succ a) b = Ioo a b :=
+  Set.ext fun _ => and_congr_left' (succ_le_iff_of_not_isMax ha)
+
+attribute [deprecated
+  "Use `Set.Ico_succ_left_eq_Ioo` from `Mathlib.Order.Interval.Set.SuccPred` instead"
+  (since := "2026-09-05")] Ico_succ_left_of_not_isMax
+attribute [deprecated
+  "Use `Set.Ioc_pred_right_eq_Ioo` from `Mathlib.Order.Interval.Set.SuccPred` instead"
+  (since := "2026-09-05")] Ioc_pred_right_of_not_isMin
 
 section NoMaxOrder
 
@@ -294,9 +315,15 @@ theorem covBy_succ (a : α) : a ⋖ succ a :=
 @[to_dual]
 theorem Iic_subset_Iio_succ (a : α) : Iic a ⊆ Iio (succ a) := by simp
 
-@[to_dual (attr := simp)]
-theorem Ici_succ (a : α) : Ici (succ a) = Ioi a :=
-  Ici_succ_of_not_isMax <| not_isMax _
+@[to_dual]
+theorem Ici_succ (a : α) : Ici (succ a) = Ioi a := Set.ext fun _ => succ_le_iff
+
+attribute [deprecated
+  "Use `Set.Ici_succ_eq_Ioi` from `Mathlib.Order.Interval.Set.SuccPred` instead"
+  (since := "2026-09-05")] Ici_succ
+attribute [deprecated
+  "Use `Set.Iic_pred_eq_Iio` from `Mathlib.Order.Interval.Set.SuccPred` instead"
+  (since := "2026-09-05")] Iic_pred
 
 @[to_dual (attr := simp) Icc_subset_Ioc_pred_left]
 theorem Icc_subset_Ico_succ_right (a b : α) : Icc a b ⊆ Ico a (succ b) :=
@@ -306,13 +333,27 @@ theorem Icc_subset_Ico_succ_right (a b : α) : Icc a b ⊆ Ico a (succ b) :=
 theorem Ioc_subset_Ioo_succ_right (a b : α) : Ioc a b ⊆ Ioo a (succ b) :=
   Ioc_subset_Ioo_succ_right_of_not_isMax <| not_isMax _
 
-@[to_dual (attr := simp) Icc_pred_right]
+@[to_dual Icc_pred_right]
 theorem Icc_succ_left (a b : α) : Icc (succ a) b = Ioc a b :=
-  Icc_succ_left_of_not_isMax <| not_isMax _
+  Set.ext fun _ => and_congr_left' succ_le_iff
 
-@[to_dual (attr := simp) Ioc_pred_right]
+attribute [deprecated
+  "Use `Set.Icc_succ_left_eq_Ioc` from `Mathlib.Order.Interval.Set.SuccPred` instead"
+  (since := "2026-09-05")] Icc_succ_left
+attribute [deprecated
+  "Use `Set.Icc_pred_right_eq_Ico` from `Mathlib.Order.Interval.Set.SuccPred` instead"
+  (since := "2026-09-05")] Icc_pred_right
+
+@[to_dual Ioc_pred_right]
 theorem Ico_succ_left (a b : α) : Ico (succ a) b = Ioo a b :=
-  Ico_succ_left_of_not_isMax <| not_isMax _
+  Set.ext fun _ => and_congr_left' succ_le_iff
+
+attribute [deprecated
+  "Use `Set.Ico_succ_left_eq_Ioo` from `Mathlib.Order.Interval.Set.SuccPred` instead"
+  (since := "2026-09-05")] Ico_succ_left
+attribute [deprecated
+  "Use `Set.Ioc_pred_right_eq_Ioo` from `Mathlib.Order.Interval.Set.SuccPred` instead"
+  (since := "2026-09-05")] Ioc_pred_right
 
 end NoMaxOrder
 
@@ -447,13 +488,34 @@ theorem succ_le_succ_iff_of_not_isMax (ha : ¬IsMax a) (hb : ¬IsMax b) :
 theorem Iio_succ_of_not_isMax (ha : ¬IsMax a) : Iio (succ a) = Iic a :=
   Set.ext fun _ => lt_succ_iff_of_not_isMax ha
 
+attribute [deprecated
+  "Use `Set.Iio_succ_eq_Iic_of_not_isMax` from `Mathlib.Order.Interval.Set.SuccPred` instead"
+  (since := "2026-09-05")] Iio_succ_of_not_isMax
+attribute [deprecated
+  "Use `Set.Ioi_pred_eq_Ici_of_not_isMin` from `Mathlib.Order.Interval.Set.SuccPred` instead"
+  (since := "2026-09-05")] Ioi_pred_of_not_isMin
+
 @[to_dual Ioc_pred_left_of_not_isMin]
-theorem Ico_succ_right_of_not_isMax (hb : ¬IsMax b) : Ico a (succ b) = Icc a b := by
-  rw [← Ici_inter_Iio, Iio_succ_of_not_isMax hb, Ici_inter_Iic]
+theorem Ico_succ_right_of_not_isMax (hb : ¬IsMax b) : Ico a (succ b) = Icc a b :=
+  Set.ext fun _ => and_congr_right' (lt_succ_iff_of_not_isMax hb)
+
+attribute [deprecated
+  "Use `Set.Ico_succ_right_eq_Icc_of_not_isMax` from `Mathlib.Order.Interval.Set.SuccPred` instead"
+  (since := "2026-09-05")] Ico_succ_right_of_not_isMax
+attribute [deprecated
+  "Use `Set.Ioc_pred_left_eq_Icc_of_not_isMin` from `Mathlib.Order.Interval.Set.SuccPred` instead"
+  (since := "2026-09-05")] Ioc_pred_left_of_not_isMin
 
 @[to_dual Ioo_pred_left_of_not_isMin]
-theorem Ioo_succ_right_of_not_isMax (hb : ¬IsMax b) : Ioo a (succ b) = Ioc a b := by
-  rw [← Ioi_inter_Iio, Iio_succ_of_not_isMax hb, Ioi_inter_Iic]
+theorem Ioo_succ_right_of_not_isMax (hb : ¬IsMax b) : Ioo a (succ b) = Ioc a b :=
+  Set.ext fun _ => and_congr_right' (lt_succ_iff_of_not_isMax hb)
+
+attribute [deprecated
+  "Use `Set.Ioo_succ_right_eq_Ioc_of_not_isMax` from `Mathlib.Order.Interval.Set.SuccPred` instead"
+  (since := "2026-09-05")] Ioo_succ_right_of_not_isMax
+attribute [deprecated
+  "Use `Set.Ioo_pred_left_eq_Ico_of_not_isMin` from `Mathlib.Order.Interval.Set.SuccPred` instead"
+  (since := "2026-09-05")] Ioo_pred_left_of_not_isMin
 
 @[to_dual]
 theorem succ_eq_succ_iff_of_not_isMax (ha : ¬IsMax a) (hb : ¬IsMax b) :
@@ -517,19 +579,37 @@ theorem lt_succ_iff : a < succ b ↔ a ≤ b :=
 @[to_dual] alias ⟨le_of_succ_le_succ, _⟩ := succ_le_succ_iff
 @[to_dual] alias ⟨lt_of_succ_lt_succ, _⟩ := succ_lt_succ_iff
 
--- TODO: prove for a succ-archimedean non-linear order with bottom
-@[to_dual (attr := simp)]
-theorem Iio_succ (a : α) : Iio (succ a) = Iic a :=
-  Iio_succ_of_not_isMax <| not_isMax _
+@[to_dual]
+theorem Iio_succ (a : α) : Iio (succ a) = Iic a := Set.ext fun _ => lt_succ_iff
 
-@[to_dual (attr := simp) Ioc_pred_left]
+attribute [deprecated
+  "Use `Set.Iio_succ_eq_Iic` from `Mathlib.Order.Interval.Set.SuccPred` instead"
+  (since := "2026-09-05")] Iio_succ
+attribute [deprecated
+  "Use `Set.Ioi_pred_eq_Ici` from `Mathlib.Order.Interval.Set.SuccPred` instead"
+  (since := "2026-09-05")] Ioi_pred
+
+@[to_dual Ioc_pred_left]
 theorem Ico_succ_right (a b : α) : Ico a (succ b) = Icc a b :=
-  Ico_succ_right_of_not_isMax <| not_isMax _
+  Set.ext fun _ => and_congr_right' lt_succ_iff
 
--- TODO: prove for a succ-archimedean non-linear order
-@[to_dual (attr := simp) Ioo_pred_left]
+attribute [deprecated
+  "Use `Set.Ico_succ_right_eq_Icc` from `Mathlib.Order.Interval.Set.SuccPred` instead"
+  (since := "2026-09-05")] Ico_succ_right
+attribute [deprecated
+  "Use `Set.Ioc_pred_left_eq_Icc` from `Mathlib.Order.Interval.Set.SuccPred` instead"
+  (since := "2026-09-05")] Ioc_pred_left
+
+@[to_dual Ioo_pred_left]
 theorem Ioo_succ_right (a b : α) : Ioo a (succ b) = Ioc a b :=
-  Ioo_succ_right_of_not_isMax <| not_isMax _
+  Set.ext fun _ => and_congr_right' lt_succ_iff
+
+attribute [deprecated
+  "Use `Set.Ioo_succ_right_eq_Ioc` from `Mathlib.Order.Interval.Set.SuccPred` instead"
+  (since := "2026-09-05")] Ioo_succ_right
+attribute [deprecated
+  "Use `Set.Ioo_pred_left_eq_Ico` from `Mathlib.Order.Interval.Set.SuccPred` instead"
+  (since := "2026-09-05")] Ioo_pred_left
 
 @[to_dual (attr := simp)]
 theorem succ_eq_succ_iff : succ a = succ b ↔ a = b :=
