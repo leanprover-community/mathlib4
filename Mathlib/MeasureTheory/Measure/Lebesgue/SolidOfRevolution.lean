@@ -82,38 +82,33 @@ private lemma convexJoin_zero_prod {h : ℝ} (hh : 0 < h) (B : Set F) :
 variable [MeasurableSpace F] [BorelSpace F] [FiniteDimensional ℝ F] (μ : Measure F)
   [μ.IsAddHaarMeasure]
 
-private lemma volume_prod_convexJoin_zero_prod {B : Set F} (hB : MeasurableSet B) {h : ℝ}
-    (hh : 0 < h) :
-    (volume.prod μ) (convexJoin ℝ {0} ({h} ×ˢ B)) =
-      μ B * ENNReal.ofReal (h / (Module.finrank ℝ F + 1)) := by
-  rw [convexJoin_zero_prod hh]
-  set C := {p : ℝ × F | p.1 ∈ Icc 0 h ∧ p.2 ∈ (p.1 / h) • B}
+private lemma volume_prod_convexJoin_zero_prod {B : Set F} (hB : MeasurableSet B) :
+    (volume.prod μ) (convexJoin ℝ {0} ({(1 : ℝ)} ×ˢ B)) =
+      μ B * ENNReal.ofReal (Module.finrank ℝ F + 1 : ℝ)⁻¹ := by
+  simp_rw [convexJoin_zero_prod one_pos, div_one]
+  set C := {p : ℝ × F | p.1 ∈ Icc 0 1 ∧ p.2 ∈ p.1 • B}
   have hC : MeasurableSet C := by
-    have : C = {p : ℝ × F | p.1 ∈ Ioc 0 h ∧ (h / p.1) • p.2 ∈ B} ∪ {0} ×ˢ ((0 : ℝ) • B) := by
+    have : C = {p : ℝ × F | p.1 ∈ Ioc 0 1 ∧ p.1⁻¹ • p.2 ∈ B} ∪ {0} ×ˢ ((0 : ℝ) • B) := by
       ext ⟨t, y⟩
       rcases eq_or_ne t 0 with rfl | ht
-      · simp [C, hh.le]
-      · simp [C, ht, mem_smul_set_iff_inv_smul_mem₀ (div_ne_zero ht hh.ne'), le_iff_lt_or_eq,
-          eq_comm (a := (0 : ℝ))]
+      · simp [C]
+      · simp [C, ht, mem_smul_set_iff_inv_smul_mem₀ ht, le_iff_lt_or_eq, eq_comm (a := (0 : ℝ))]
     rw [this]
     exact ((measurable_fst measurableSet_Ioc).inter (hB.preimage (by fun_prop))).union
       ((measurableSet_singleton 0).prod
         (subsingleton_singleton.anti (zero_smul_set_subset B)).measurableSet)
   have hslice (t : ℝ) : μ (Prod.mk t ⁻¹' C) =
-      (Icc 0 h).indicator (fun t ↦ ENNReal.ofReal ((t / h) ^ Module.finrank ℝ F) * μ B) t := by
-    by_cases ht : t ∈ Icc 0 h
-    · simp [C, ht.1, ht.2, Set.preimage, addHaar_smul, abs_of_nonneg (div_nonneg ht.1 hh.le)]
+      (Icc 0 1).indicator (fun t ↦ ENNReal.ofReal (t ^ Module.finrank ℝ F) * μ B) t := by
+    by_cases ht : t ∈ Icc 0 1
+    · simp [C, ht.1, ht.2, Set.preimage, addHaar_smul, abs_of_nonneg ht.1]
     · rw [indicator_of_notMem ht]
       exact measure_mono_null (fun y hy ↦ ht hy.1) measure_empty
   rw [prod_apply hC, lintegral_congr hslice, lintegral_indicator measurableSet_Icc,
-    lintegral_mul_const _ (by fun_prop), mul_comm,
-    ← ofReal_integral_eq_lintegral_ofReal, integral_Icc_eq_integral_Ioc,
-    ← intervalIntegral.integral_of_le hh.le]
-  · congr 2
-    simp only [div_pow, intervalIntegral.integral_div, integral_pow]
-    field
-  · exact (by fun_prop : Continuous fun t : ℝ ↦ (t / h) ^ Module.finrank ℝ F).integrableOn_Icc
-  · exact (ae_restrict_mem measurableSet_Icc).mono fun t ht ↦ by have := ht.1; positivity
+    lintegral_mul_const _ (by fun_prop), mul_comm, ← ofReal_integral_eq_lintegral_ofReal,
+    integral_Icc_eq_integral_Ioc, ← intervalIntegral.integral_of_le zero_le_one]
+  · simp
+  · exact (continuous_pow _).integrableOn_Icc
+  · exact (ae_restrict_mem measurableSet_Icc).mono fun t ht ↦ pow_nonneg ht.1 _
 
 /-- **Volume of a cone**: in `ℝ × F`, the cone with apex `a` over the base `{c} × B` has
 measure `μ B * |c - a.1| / n`, where `n = finrank ℝ F + 1` is the dimension of `ℝ × F`. -/
@@ -125,19 +120,15 @@ theorem volume_prod_convexJoin_singleton_prod {B : Set F} (hB : MeasurableSet B)
   have hK : convexJoin ℝ {a} ({c} ×ˢ B) =
       a +ᵥ L '' convexJoin ℝ {0} ({1} ×ˢ (-a.2 +ᵥ B)) := by
     let f := (AffineEquiv.constVAdd ℝ (ℝ × F) a).toAffineMap.comp L.toAffineMap
-    have hf : a +ᵥ L '' convexJoin ℝ {0} ({1} ×ˢ (-a.2 +ᵥ B)) =
-        f '' convexJoin ℝ {0} ({1} ×ˢ (-a.2 +ᵥ B)) := by
-      rw [← image_vadd, image_image]
-      rfl
-    rw [hf, image_convexJoin_singleton]
-    congr
-    · simp [f]
-    · ext ⟨t, y⟩
+    have hS : {c} ×ˢ B = f '' ({1} ×ˢ (-a.2 +ᵥ B)) := by
+      ext ⟨t, y⟩
       simp [f, L, mem_vadd_set, Prod.ext_iff, eq_comm, and_comm]
+    rw [← image_vadd, image_image, hS]
+    exact .trans (by simp [f]) (image_convexJoin_singleton f 0 _).symm
   have hL : LinearMap.det L = c - a.1 := by simp [L, LinearMap.det_prodMap]
   rw [hK, measure_vadd, addHaar_image_linearMap, hL,
-    volume_prod_convexJoin_zero_prod μ (hB.const_vadd _) one_pos, measure_vadd, mul_left_comm,
-    ← ENNReal.ofReal_mul (abs_nonneg _), mul_one_div]
+    volume_prod_convexJoin_zero_prod μ (hB.const_vadd _), measure_vadd, mul_left_comm,
+    ← ENNReal.ofReal_mul (abs_nonneg _), div_eq_mul_inv]
 
 end Cone
 
