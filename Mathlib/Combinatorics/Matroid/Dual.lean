@@ -178,7 +178,7 @@ theorem IsBase.compl_isBase_dual (h : M.IsBase B) : M✶.IsBase (M.E \ B) := by
 theorem IsBase.compl_inter_isBasis_of_inter_isBasis (hB : M.IsBase B) (hBX : M.IsBasis (B ∩ X) X) :
     M✶.IsBasis ((M.E \ B) ∩ (M.E \ X)) (M.E \ X) := by
   refine Indep.isBasis_of_forall_insert ?_ inter_subset_right (fun e he ↦ ?_)
-  · rw [dual_indep_iff_exists]
+  · rw [dual_indep_iff_exists (hI := inter_subset_left.trans sdiff_subset)]
     exact ⟨B, hB, disjoint_of_subset_left inter_subset_left disjoint_sdiff_left⟩
   simp only [sdiff_inter_self_eq_sdiff, mem_sdiff, not_and, not_not, imp_iff_right he.1.1] at he
   simp_rw [dual_dep_iff_forall, insert_subset_iff, and_iff_right he.1.1,
