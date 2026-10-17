@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Category.MonCat.Basic
 public import Mathlib.CategoryTheory.Limits.HasLimits
-public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
 /-!
 # The category of monoids has all colimits.
@@ -165,6 +164,7 @@ theorem cocone_naturality_components (j j' : J) (f : j ⟶ j') (x : F.obj j) :
   rw [← cocone_naturality F f]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The cocone over the proposed colimit monoid. -/
 def colimitCocone : Cocone F where
   pt := colimit F
@@ -189,8 +189,8 @@ def descFun (s : Cocone F) : ColimitType F → s.pt := by
     | map j j' f x => exact s.w_apply f x
     | mul j x y => exact map_mul (s.ι.app j).hom x y
     | one j => exact map_one (s.ι.app j).hom
-    | mul_1 x x' y _ h => exact congr_arg (· * _) h
-    | mul_2 x y y' _ h => exact congr_arg (_ * ·) h
+    | mul_1 x x' y _ h => congrm $h * _
+    | mul_2 x y y' _ h => congrm _ * $h
     | mul_assoc x y z => exact mul_assoc _ _ _
     | one_mul x => exact one_mul _
     | mul_one x => exact mul_one _

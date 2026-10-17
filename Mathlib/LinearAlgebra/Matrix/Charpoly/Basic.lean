@@ -5,10 +5,10 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Eval.SMul
-public import Mathlib.LinearAlgebra.Matrix.Adjugate
 public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.RingTheory.MatrixPolynomialAlgebra
+
+import Mathlib.Algebra.Polynomial.Eval.SMul
 
 /-!
 # Characteristic polynomials and the Cayley-Hamilton theorem
@@ -112,6 +112,13 @@ lemma charmatrix_map (M : Matrix n n R) (f : R →+* S) :
   ext i j
   by_cases h : i = j <;> simp [h, charmatrix, diagonal]
 
+lemma charmatrix_mul_map_C_of_mul_eq_mul {A : Matrix n n R} {B : Matrix m m R} {P : Matrix n m R}
+    (h : A * P = P * B) : charmatrix A * P.map C = P.map C * charmatrix B := by
+  simp only [charmatrix, RingHom.mapMatrix_apply, Matrix.sub_mul, Matrix.mul_sub, ← Matrix.map_mul,
+    h]
+  congrm ?_ - _
+  exact Matrix.scalar_comm X commute_X _
+
 lemma charmatrix_fromBlocks :
     charmatrix (fromBlocks M₁₁ M₁₂ M₂₁ M₂₂) =
       fromBlocks (charmatrix M₁₁) (- M₁₂.map C) (- M₂₁.map C) (charmatrix M₂₂) := by
@@ -129,6 +136,7 @@ lemma charmatrix_blockTriangular_iff {α : Type*} [Preorder α] {M : Matrix n n 
 alias ⟨BlockTriangular.of_charmatrix, BlockTriangular.charmatrix⟩ := charmatrix_blockTriangular_iff
 
 /-- The characteristic polynomial of a matrix `M` is given by $\det (t I - M)$. -/
+@[wikidata Q849705]
 def charpoly (M : Matrix n n R) : R[X] :=
   (charmatrix M).det
 
@@ -196,9 +204,12 @@ lemma BlockTriangular.charpoly {α : Type*} {b : n → α} [LinearOrder α] (h :
     M.charpoly = ∏ a ∈ image b univ, (M.toSquareBlock b a).charpoly := by
   simp only [Matrix.charpoly, h.charmatrix.det, charmatrix_toSquareBlock]
 
-lemma charpoly_of_upperTriangular [LinearOrder n] (M : Matrix n n R) (h : M.BlockTriangular id) :
+lemma charpoly_of_isUpperTriangular [LinearOrder n] (M : Matrix n n R) (h : M.IsUpperTriangular) :
     M.charpoly = ∏ i : n, (X - C (M i i)) := by
-  simp [charpoly, det_of_upperTriangular h.charmatrix]
+  simp [charpoly, det_of_isUpperTriangular h.charmatrix]
+
+@[deprecated (since := "2026-07-30")]
+alias charpoly_of_upperTriangular := charpoly_of_isUpperTriangular
 
 -- This proof follows http://drorbn.net/AcademicPensieve/2015-12/CayleyHamilton.pdf
 /-- The **Cayley-Hamilton Theorem**, that the characteristic polynomial of a matrix,
@@ -230,6 +241,7 @@ theorem aeval_self_charpoly (M : Matrix n n R) : aeval M M.charpoly = 0 := by
   -- Thus we have $χ_M(M) = 0$, which is the desired result.
   exact h
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 A version of `Matrix.charpoly_mul_comm` for rectangular matrices.
 See also `Matrix.charpoly_mul_comm_of_le` which has just `(A * B).charpoly` as the LHS.
@@ -275,16 +287,26 @@ theorem charpoly_vecMulVec (u v : n → R) :
     rw [vecMulVec_eq (ι := Unit), charpoly_mul_comm_of_le (n := Unit) _ _ h, charpoly, charmatrix]
     simp [-Matrix.map_mul, mul_sub, ← pow_succ, h, dotProduct_comm, smul_eq_C_mul]
 
+@[simp]
 theorem charpoly_units_conj (M : (Matrix n n R)ˣ) (N : Matrix n n R) :
-    (M.val * N * M⁻¹.val).charpoly = N.charpoly := by
+    (M.val * N * M.val⁻¹).charpoly = N.charpoly := by
   rw [Matrix.charpoly_mul_comm, ← mul_assoc]
   simp
 
+@[simp]
 theorem charpoly_units_conj' (M : (Matrix n n R)ˣ) (N : Matrix n n R) :
-    (M⁻¹.val * N * M.val).charpoly = N.charpoly :=
-  charpoly_units_conj M⁻¹ N
+    (M.val⁻¹ * N * M.val).charpoly = N.charpoly := by
+  simpa using charpoly_units_conj M⁻¹ N
 
-set_option backward.isDefEq.respectTransparency false in
+theorem C_det_mul_charpoly_of_mul_eq_mul {A B P : Matrix n n R} (h : A * P = P * B) :
+    C P.det * A.charpoly = C P.det * B.charpoly := by
+  rw [RingHom.map_det, RingHom.mapMatrix_apply, charpoly, charpoly, mul_comm, ← det_mul,
+    charmatrix_mul_map_C_of_mul_eq_mul h, det_mul]
+
+theorem charpoly_eq_of_mul_eq_mul [IsDomain R] {A B P : Matrix n n R}
+    (hP : P.det ≠ 0) (h : A * P = P * B) : A.charpoly = B.charpoly :=
+  mul_left_cancel₀ (C_ne_zero.mpr hP) (C_det_mul_charpoly_of_mul_eq_mul h)
+
 theorem charpoly_sub_scalar (M : Matrix n n R) (μ : R) :
     (M - scalar n μ).charpoly = M.charpoly.comp (X + C μ) := by
   simp_rw [charpoly, det_apply, Polynomial.sum_comp, Polynomial.smul_comp, Polynomial.prod_comp]
@@ -293,3 +315,13 @@ theorem charpoly_sub_scalar (M : Matrix n n R) (μ : R) :
   ring
 
 end Matrix
+
+open Matrix Polynomial in
+/-- Cayley–Hamilton: an algebra element is a root of the characteristic polynomial of its
+matrix of left multiplication in any basis. -/
+theorem Algebra.aeval_charpoly_leftMulMatrix {R S : Type*} [CommRing R] [Semiring S] [Algebra R S]
+    {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Module.Basis ι R S) (a : S) :
+    aeval a (leftMulMatrix b a).charpoly = 0 := by
+  apply leftMulMatrix_injective b
+  rw [map_zero, ← aeval_algHom_apply]
+  exact aeval_self_charpoly _

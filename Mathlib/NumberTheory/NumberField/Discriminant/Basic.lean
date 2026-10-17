@@ -11,10 +11,12 @@ public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
 public import Mathlib.NumberTheory.NumberField.Discriminant.Defs
 public import Mathlib.NumberTheory.NumberField.EquivReindex
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
-public import Mathlib.Analysis.SpecialFunctions.Log.Base
+
+import Mathlib.Analysis.SpecialFunctions.Log.Base
 
 /-!
 # Number field discriminant
+
 This file defines the discriminant of a number field.
 
 ## Main result
@@ -51,7 +53,6 @@ theorem discr_eq_basisMatrix_det_sq [DecidableEq (K →+* ℂ)] :
     ← Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two, ← (equivReindex K).symm_symm,
     Algebra.discr_reindex, eq_ratCast]
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped ComplexConjugate ComplexOrder in
 theorem sign_discr :
     (discr K).sign = (-1) ^ nrComplexPlaces K := by
@@ -94,7 +95,7 @@ theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis 
   let e : (index K) ≃ Module.Free.ChooseBasisIndex ℤ (𝓞 K) := (indexEquiv K).trans f.symm
   let M := (mixedEmbedding.stdBasis K).toMatrix ((latticeBasis K).reindex e.symm)
   let N := Algebra.embeddingsMatrixReindex ℚ ℂ (integralBasis K ∘ f.symm)
-    RingHom.equivRatAlgHom
+    (RingHom.equivRatAlgHom K ℂ)
   suffices M.map ofRealHom = matrixToStdBasis K *
       (Matrix.reindex (indexEquiv K).symm (indexEquiv K).symm N).transpose by
     calc volume (fundamentalDomain (latticeBasis K))
@@ -157,7 +158,7 @@ theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal
       mul_one]
     · exact mul_ne_top (ne_of_lt (minkowskiBound_lt_top K I)) coe_ne_top
     · exact (Nat.cast_ne_zero.mpr (ne_of_gt finrank_pos))
-  convert exists_ne_zero_mem_ideal_of_norm_le K I h_le
+  convert! exists_ne_zero_mem_ideal_of_norm_le K I h_le
   rw [div_pow B, ← Real.rpow_natCast B, ← Real.rpow_mul (by positivity), div_mul_cancel₀ _
     (Nat.cast_ne_zero.mpr <| ne_of_gt finrank_pos), Real.rpow_one, mul_comm_div, mul_div_assoc']
   congr 1
@@ -267,7 +268,7 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
           convert (mul_le_mul h_m this (by positivity) (by positivity)) using 1
           field
       refine le_trans (le_of_eq (by simp [field]; norm_num)) (one_add_mul_le_pow ?_ (2 * m))
-      exact le_trans (by norm_num : (-2 : ℝ) ≤ 0) (by positivity)
+      exact le_trans (by simp : (-2 : ℝ) ≤ 0) (by positivity)
 
 /-- **Hermite-Minkowski Theorem**. A nontrivial number field has discriminant greater than `2`. -/
 theorem abs_discr_gt_two (h : 1 < finrank ℚ K) : 2 < |discr K| := by
@@ -322,7 +323,7 @@ theorem finite_of_finite_generating_set {p : IntermediateField ℚ A → Prop}
   refine Set.finite_coe_iff.mp <| Finite.of_injective
     (fun ⟨F, hF⟩ ↦ (⟨(h F hF).choose, (h F hF).choose_spec.1⟩ : T)) (fun _ _ h_eq ↦ ?_)
   rw [Subtype.ext_iff, Subtype.ext_iff]
-  convert congr_arg (ℚ⟮·⟯) (Subtype.mk_eq_mk.mp h_eq)
+  convert congr(ℚ⟮$(Subtype.mk_eq_mk.mp h_eq)⟯)
   all_goals exact (h _ (Subtype.mem _)).choose_spec.2
 
 variable (N : ℕ)
@@ -392,7 +393,6 @@ theorem natDegree_le_rankOfDiscrBdd (a : 𝓞 K) (h : ℚ⟮(a : K)⟯ = ⊤) :
 
 variable (N)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem finite_of_discr_bdd_of_isReal :
     {K : { F : IntermediateField ℚ A // FiniteDimensional ℚ F} |
       haveI :  NumberField K := @NumberField.mk _ _ inferInstance K.prop
@@ -410,7 +410,7 @@ theorem finite_of_discr_bdd_of_isReal :
   simp_rw [Set.mem_iUnion]
   -- this is purely an optimization
   have : CharZero K := SubsemiringClass.instCharZero K
-  haveI : NumberField K := @NumberField.mk _ _ inferInstance hK₀
+  have : NumberField K := @NumberField.mk _ _ inferInstance hK₀
   obtain ⟨w₀, hw₀⟩ := hK₁
   suffices minkowskiBound K ↑1 < (convexBodyLTFactor K) * B by
     obtain ⟨x, hx₁, hx₂⟩ := exists_primitive_element_lt_of_isReal K hw₀ this
@@ -441,7 +441,6 @@ theorem finite_of_discr_bdd_of_isReal :
     _ = 1 * B := by rw [one_mul]
     _ ≤ convexBodyLTFactor K * B := by gcongr; exact mod_cast one_le_convexBodyLTFactor K
 
-set_option backward.isDefEq.respectTransparency false in
 theorem finite_of_discr_bdd_of_isComplex :
     {K : { F : IntermediateField ℚ A // FiniteDimensional ℚ F} |
       haveI :  NumberField K := @NumberField.mk _ _ inferInstance K.prop
@@ -459,7 +458,7 @@ theorem finite_of_discr_bdd_of_isComplex :
   simp_rw [Set.mem_iUnion]
   -- this is purely an optimization
   have : CharZero K := SubsemiringClass.instCharZero K
-  haveI : NumberField K := @NumberField.mk _ _ inferInstance hK₀
+  have : NumberField K := @NumberField.mk _ _ inferInstance hK₀
   obtain ⟨w₀, hw₀⟩ := hK₁
   suffices minkowskiBound K ↑1 < (convexBodyLT'Factor K) * boundOfDiscBdd N by
     obtain ⟨x, hx₁, hx₂⟩ := exists_primitive_element_lt_of_isComplex K hw₀ this
@@ -502,7 +501,7 @@ theorem _root_.NumberField.finite_of_discr_bdd :
   rintro ⟨K, hK₀⟩ hK₁
   -- this is purely an optimization
   have : CharZero K := SubsemiringClass.instCharZero K
-  haveI : NumberField K := @NumberField.mk _ _ inferInstance hK₀
+  have : NumberField K := @NumberField.mk _ _ inferInstance hK₀
   obtain ⟨w₀⟩ := (inferInstance : Nonempty (InfinitePlace K))
   by_cases hw₀ : IsReal w₀
   · apply Set.mem_union_left

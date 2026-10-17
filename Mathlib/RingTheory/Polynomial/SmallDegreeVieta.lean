@@ -5,9 +5,9 @@ Authors: Qinchuan Zhang
 -/
 module
 
-public import Mathlib.Tactic.FieldSimp
-public import Mathlib.Tactic.LinearCombination
 public import Mathlib.RingTheory.Polynomial.Vieta
+
+import Mathlib.Tactic.FieldSimp
 
 /-!
 # Vieta's Formula for polynomial of small degrees.

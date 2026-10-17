@@ -5,13 +5,15 @@ Authors: Louis Carlin, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Algebra.EuclideanDomain.Defs
-public import Mathlib.Algebra.Order.Group.Unbundled.Int
 public import Mathlib.Algebra.Ring.Int.Defs
+
+import Mathlib.Algebra.Group.Nat.Defs
+import Mathlib.Algebra.Order.Group.Unbundled.Int
 
 /-!
 # Instances for Euclidean domains
+
 * `Int.euclideanDomain`: shows that `ℤ` is a Euclidean domain.
 -/
 

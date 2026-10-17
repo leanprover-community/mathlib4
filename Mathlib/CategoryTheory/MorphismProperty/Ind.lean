@@ -5,11 +5,12 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.Comma.LocallySmall
-public import Mathlib.CategoryTheory.Limits.Preserves.Over
 public import Mathlib.CategoryTheory.MorphismProperty.Comma
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.CategoryTheory.ObjectProperty.Ind
+
+import Mathlib.CategoryTheory.Comma.LocallySmall
+import Mathlib.CategoryTheory.Limits.Preserves.Over
 
 /-!
 # Ind and pro-properties
@@ -68,6 +69,7 @@ lemma exists_hom_of_isFinitelyPresentable {J : Type w} [SmallCategory J] [IsFilt
     ∃ (j : J) (q : A ⟶ D.obj j), p ≫ q = s.app j ∧ q ≫ c.ι.app j = f :=
   hp.exists_hom_of_isColimit_under hc _ s _ h
 
+set_option backward.defeqAttrib.useBackward true in
 lemma le_ind : P ≤ ind.{w} P := by
   intro X Y f hf
   refine ⟨PUnit, inferInstance, inferInstance, (Functor.const PUnit).obj Y, ?_, 𝟙 _, ?_, ?_⟩
@@ -77,6 +79,7 @@ lemma le_ind : P ≤ ind.{w} P := by
 
 variable {P}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma ind_iff_ind_underMk {X Y : C} (f : X ⟶ Y) :
     ind.{w} P f ↔ ObjectProperty.ind.{w} P.underObj (CategoryTheory.Under.mk f) := by
@@ -100,13 +103,11 @@ lemma underObj_ind_eq_ind_underObj (X : C) :
 
 variable (Q : MorphismProperty C)
 
-set_option backward.isDefEq.respectTransparency false in
 instance [P.RespectsLeft Q] : P.ind.RespectsLeft Q where
   precomp {X Y Z} i hi f := fun ⟨J, _, _, D, t, s, hs, hst⟩ ↦ by
     refine ⟨J, ‹_›, ‹_›, D, (Functor.const J).map i ≫ t, s, hs, fun j ↦ ⟨?_, by simp [hst]⟩⟩
     exact RespectsLeft.precomp _ hi _ (hst j).1
 
-set_option backward.isDefEq.respectTransparency false in
 instance [P.RespectsIso] : P.ind.RespectsIso where
   postcomp {X Y Z} i (hi : IsIso i) f := fun ⟨J, _, _, D, t, s, hs, hst⟩ ↦ by
     refine ⟨J, ‹_›, ‹_›, D, t, s ≫ (Functor.const J).map i, ?_, fun j ↦ ⟨(hst j).1, ?_⟩⟩
@@ -137,7 +138,6 @@ lemma ind_ind (hp : P ≤ isFinitelyPresentable.{w} C) [LocallySmall.{w} C] :
   simpa [ind_iff_ind_underMk, underObj_ind_eq_ind_underObj,
     ObjectProperty.ind_ind.{w} this] using hf
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ind_iff_exists (H : P ≤ isFinitelyPresentable.{w} C) {X Y : C} (f : X ⟶ Y)
     [IsFinitelyAccessibleCategory.{w} (Under X)] :
     ind.{w} P f ↔ ∀ {Z : C} (p : X ⟶ Z) (g : Z ⟶ Y),
@@ -180,6 +180,7 @@ class PreIndSpreads (P : MorphismProperty C) : Prop where
 
 alias exists_isPushout_of_isFiltered := PreIndSpreads.exists_isPushout
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `P` ind-spreads and all under categories are finitely accessible, `ind P`
 is stable under composition if `P` is. -/

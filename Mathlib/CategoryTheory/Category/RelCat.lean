@@ -5,11 +5,8 @@ Authors: Kim Morrison, Uni Marx
 -/
 module
 
-public import Mathlib.CategoryTheory.EssentialImage
-public import Mathlib.CategoryTheory.Iso
-public import Mathlib.CategoryTheory.Opposites
+public import Mathlib.Basic.Rel
 public import Mathlib.CategoryTheory.Types.Basic
-public import Mathlib.Data.Rel
 
 /-!
 # Basics on the category of relations
@@ -49,6 +46,7 @@ structure Hom (X Y : RelCat.{u}) : Type u where
 
 initialize_simps_projections Hom (as_prefix rel)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The category of types with binary relations as morphisms. -/
 instance instLargeCategory : LargeCategory RelCat where
   Hom := Hom
@@ -69,6 +67,7 @@ theorem rel_comp_apply₂ (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) (z : Z) :
 
 end Hom
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The essentially surjective faithful embedding
 from the category of types and functions into the category of types and relations. -/
 @[simps obj map_rel]
@@ -96,11 +95,11 @@ theorem rel_iso_iff {X Y : RelCat} (r : X ⟶ Y) :
     simp only [RelCat.Hom.rel_comp_apply₂, RelCat.Hom.rel_id_apply₂, eq_iff_iff] at h1 h2
     obtain ⟨f, hf⟩ := Classical.axiomOfChoice (fun a => (h1 a a).mpr rfl)
     obtain ⟨g, hg⟩ := Classical.axiomOfChoice (fun a => (h2 a a).mpr rfl)
-    suffices hif : IsIso (C := Type u) (TypeCat.ofHom f) by
-      use asIso (TypeCat.ofHom f)
+    suffices hif : IsIso (C := Type u) (↾f) by
+      use asIso (↾f)
       ext ⟨x, y⟩
       exact ⟨by aesop, fun hxy ↦ (h2 (f x) y).1 ⟨x, (hf x).2, hxy⟩⟩
-    use TypeCat.ofHom g
+    use ↾g
     constructor
     · ext x
       apply (h1 _ _).mp
@@ -114,11 +113,13 @@ theorem rel_iso_iff {X Y : RelCat} (r : X ⟶ Y) :
 section Opposite
 open Opposite
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The argument-swap isomorphism from `RelCat` to its opposite. -/
 def opFunctor : RelCat ⥤ RelCatᵒᵖ where
   obj X := op X
   map {_ _} r := .op <| .ofRel r.rel.inv
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The other direction of `opFunctor`. -/
 def unopFunctor : RelCatᵒᵖ ⥤ RelCat where
   obj X := unop X

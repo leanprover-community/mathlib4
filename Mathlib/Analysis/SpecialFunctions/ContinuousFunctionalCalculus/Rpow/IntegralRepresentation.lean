@@ -5,11 +5,12 @@ Authors: Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Integral
 public import Mathlib.Analysis.CStarAlgebra.ApproximateUnit
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Integral
 public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
-import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.RingInverseOrder
+import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 
 /-!
 # Integral representations of `rpow`
@@ -359,9 +360,6 @@ lemma exists_measure_rpow_eq_integral_rpowIntegrand₀₁ (hp : p ∈ Ioo 0 1) :
   · simp_rw [Measure.restrict_smul, integral_smul_nnreal_measure, rpow_eq_const_mul_integral hp hx,
       NNReal.smul_def, C, NNReal.coe_mk, smul_eq_mul]
 
-@[deprecated (since := "2026-04-03")]
-alias exists_measure_rpow_eq_integral := exists_measure_rpow_eq_integral_rpowIntegrand₀₁
-
 end ZeroOne
 
 section OneTwo
@@ -463,13 +461,13 @@ lemma cfcₙ_rpowIntegrand₀₁_eq_cfcₙ_rpowIntegrand₀₁_one {p t : ℝ} (
     simp only [mem_Ici, smul_eq_mul] at hx ⊢
     positivity
   calc _ = cfcₙ (fun x => t ^ ((p : ℝ) - 1) * (rpowIntegrand₀₁ p 1 (t⁻¹ • x))) a := by
-          refine cfcₙ_congr ?_
-          refine Set.EqOn.mono hspec (rpowIntegrand₀₁_eqOn_mul_rpowIntegrand₀₁_one ht)
+          congr! 1 with x hx
+          exact rpowIntegrand₀₁_eqOn_mul_rpowIntegrand₀₁_one ht (hspec hx)
     _ = t ^ ((p : ℝ) - 1) • cfcₙ (fun x => rpowIntegrand₀₁ p 1 (t⁻¹ • x)) a := by
           refine cfcₙ_smul (R := ℝ) (t ^ ((p : ℝ) - 1)) _ a ?_
           refine ContinuousOn.mono ?_ hspec
           have := continuousOn_rpowIntegrand₀₁_Ici hp zero_lt_one
-          fun_prop (disch := assumption)
+          fun_prop
     _ = t ^ ((p : ℝ) - 1) • cfcₙ (rpowIntegrand₀₁ p 1) (t⁻¹ • a) := by
           congr! 1
           refine cfcₙ_comp_smul (R := ℝ) t⁻¹ (fun x => rpowIntegrand₀₁ p 1 x) a ?_
@@ -560,7 +558,7 @@ lemma exists_measure_nnrpow_eq_integral_cfcₙ_rpowIntegrand₁₂ [CompleteSpac
         rw [CFC.nnrpow_def]
       _ = cfcₙ (fun r => ∫ t in Ioi 0, rpowIntegrand₁₂ p t r ∂μ) a := by
         rw [cfcₙ_nnreal_eq_real ..]
-        refine cfcₙ_congr fun r hr => ?_
+        congr! 1 with r hr
         have hr' : 0 ≤ r := by grind
         simp only [sup_of_le_left hr', NNReal.nnrpow_def, NNReal.coe_rpow, coe_toNNReal']
         exact (hμ r hr').2

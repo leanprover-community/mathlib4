@@ -5,10 +5,11 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.RingTheory.Finiteness.Basic
 public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
+
+import Mathlib.LinearAlgebra.Quotient.Basic
 
 /-!
 # Jacobson radical of modules and rings
@@ -99,7 +100,7 @@ theorem jacobson_quotient_jacobson : jacobson R (M ⧸ jacobson R M) = ⊥ := by
 
 theorem jacobson_lt_top [Nontrivial M] [IsCoatomic (Submodule R M)] : jacobson R M < ⊤ := by
   obtain ⟨m, hm, -⟩ := (eq_top_or_exists_le_coatom (⊥ : Submodule R M)).resolve_left bot_ne_top
-  exact (sInf_le <| Set.mem_setOf.mpr hm).trans_lt hm.1.lt_top
+  exact (sInf_le <| Set.mem_ofPred.mpr hm).trans_lt hm.1.lt_top
 
 example [Nontrivial M] [Module.Finite R M] : jacobson R M < ⊤ := jacobson_lt_top R M
 

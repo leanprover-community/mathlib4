@@ -47,15 +47,18 @@ lemma GeometricallyConnected.eq_geometrically :
 instance : IsStableUnderBaseChange @GeometricallyConnected :=
   GeometricallyConnected.eq_geometrically ▸ inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [GeometricallyConnected g] : GeometricallyConnected (pullback.fst f g) :=
   MorphismProperty.pullback_fst f g inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [GeometricallyConnected f] : GeometricallyConnected (pullback.snd f g) :=
   MorphismProperty.pullback_snd f g inferInstance
 
 instance (V : S.Opens) [GeometricallyConnected f] : GeometricallyConnected (f ∣_ V) :=
   MorphismProperty.of_isPullback (isPullback_morphismRestrict ..).flip ‹_›
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (s : S) [GeometricallyConnected f] :
     GeometricallyConnected (f.fiberToSpecResidueField s) :=
   MorphismProperty.pullback_snd _ _ inferInstance

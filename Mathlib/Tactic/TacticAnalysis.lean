@@ -5,10 +5,10 @@ Authors: Anne Baanen
 -/
 module
 
-public meta import Lean.Util.Heartbeats
-public meta import Lean.Server.InfoUtils
-public meta import Mathlib.Lean.Elab.Tactic.Meta
 public meta import Lean.Compiler.IR.CompilerM
+public meta import Lean.Elab.InfoTree.Util
+public meta import Lean.Util.Heartbeats
+public meta import Mathlib.Lean.Elab.Tactic.Meta
 public import Lean.Elab.Command
 public import Mathlib.Lean.ContextInfo
 
@@ -29,6 +29,12 @@ option: `set_option linter.tacticAnalysis.roundName true`.
 To add a round of analysis called `roundName`, declare an option `linter.tacticAnalysis.roundName`,
 make a definition of type `Mathlib.TacticAnalysis.Config` and give the `Config` declaration the
 `@[tacticAnalysis linter.tacticAnalysis.roundName]` attribute. Don't forget to enable the option.
+
+Passes report their findings by logging messages, e.g. with `logWarningAt` or `logInfoAt`.
+The framework tags these messages with the pass's option name, the way `Lean.Linter.logLint`
+does, so that `lake lint` and CI reports can group them by pass. Unlike core linters, passes also
+report at `info` severity; such messages are tagged too, so a lint driver without a severity
+filter (such as Lake's builtin one) counts them as lint failures.
 
 ## Warning
 
@@ -58,8 +64,6 @@ structure TacticNode where
   ctxI : ContextInfo
   /-- `TacticInfo` at the infotree node. -/
   tacI : TacticInfo
-  /-- This tactic is allowed to fail because it is in a `try`/`anyGoals`/etc block. -/
-  mayFail : Bool
 
 /-- Run tactic code, given by a piece of syntax, in the context of a tactic info node.
 
@@ -83,7 +87,7 @@ This provides the low-level interface into the tactic analysis framework.
 structure Config where
   /-- The function that runs this pass. Takes an array of infotree nodes corresponding
   to a sequence of tactics from the source file. Should do all reporting itself,
-  for example by `Lean.Linter.logLint`.
+  for example by `logWarningAt`; the framework tags the messages with the pass's option name.
   -/
   run : Array TacticNode → CommandElabM Unit
 
@@ -157,7 +161,7 @@ initialize registerBuiltinAttribute {
     | _ => throwUnsupportedSyntax
 }
 
-/-- Parse an infotree to find all the sequences of tactics contained within `stx`.
+/-- Parse an infotree to find all the sequences of tactics contained in the original syntax.
 
 We consider a sequence here to be a maximal interval of tactics joined by `;` or newlines.
 This function returns an array of sequences. For example, a proof of the form:
@@ -175,64 +179,66 @@ would result in three sequences:
 Similarly, a declaration with multiple `by` blocks results in each of the blocks getting its
 own sequence.
 -/
-def findTacticSeqs (tree : InfoTree) : CommandElabM (Array (Array TacticNode)) := do
-  -- Turn the CommandElabM into a surrounding context for traversing the tree.
-  let ctx ← read
-  let state ← get
-  let ctxInfo := { env := state.env, fileMap := ctx.fileMap, ngen := state.ngen }
-  let out ← tree.visitM (m := CommandElabM) (ctx? := some ctxInfo)
-    (fun _ _ _ => pure true) -- Assumption: a tactic can occur as a child of any piece of syntax.
-    (fun ctx i _c cs => do
-      let relevantChildren := (cs.filterMap id).toArray
-      let childTactics := relevantChildren.filterMap Prod.fst
-      let childSequences := (relevantChildren.map Prod.snd).flatten
-      let stx := i.stx
-      -- Tactic sequencing operators: collect all the child tactics into a new sequence.
-      -- This must happen regardless of source info, as `have h := by ...` creates tacticSeq
-      -- nodes with synthetic source info.
-      if stx.getKind ∈ [``Lean.Parser.Tactic.tacticSeq, ``Lean.Parser.Tactic.tacticSeq1Indented,
-          ``Lean.Parser.Term.byTactic] then
-        return (none, if childTactics.isEmpty then
-            childSequences
-          else
-            childSequences.push childTactics)
-      if let some (.original _ _ _ _) := stx.getHeadInfo? then
-        -- Punctuation: skip this.
-        if stx.getKind ∈ [`«;», `Lean.cdotTk, `«]», nullKind, `«by»] then
-          return (none, childSequences)
-        -- Tactic modifiers: return the children unmodified.
-        if stx.getKind ∈ [``Lean.Parser.Tactic.withAnnotateState] then
-          return (childTactics[0]?, childSequences)
+def findTacticSeqs (tree : InfoTree) : Array (Array TacticNode) :=
+  tree.foldInfoTree (init := #[]) fun ctx tree seqs ↦ Id.run do
+    let .node (.ofTacticInfo i) trees := tree | return seqs
+    unless i.elaborator == `Lean.Elab.Tactic.evalTacticSeq1Indented do
+      return seqs
+    -- Note: `have h := by ...` creates tacticSeq nodes with synthetic source info,
+    -- so we cannot filter out synthetic tactic sequences.
+    let tacs := trees.foldl (init := #[]) fun
+      | tacs, .node (.ofTacticInfo i) _ =>
+        -- Exclude atomic tactics like `;`.
+        -- Exclude tactics with synthetic source info, as they aren't user-written.
+        if !i.stx.isAtom && i.stx.getHeadInfo? matches some (.original ..) then
+          tacs.push ⟨ctx, i⟩
+        else
+          tacs
+      | tacs, _ => tacs
+    if tacs.isEmpty then
+      return seqs
+    return seqs.push tacs
 
-        -- Remaining options: plain pieces of syntax.
-        -- We discard `childTactics` here, because those are either already picked up by a
-        -- sequencing operator, or come from macros.
-        if let .ofTacticInfo i := i then
-          let childSequences :=
-            -- This tactic accepts the failure of its children.
-            if stx.getKind ∈ [``Lean.Parser.Tactic.tacticTry_, ``Lean.Parser.Tactic.anyGoals] then
-              childSequences.map (·.map fun i => { i with mayFail := true })
-            else
-              childSequences
-          return (some ⟨ctx, i, false⟩, childSequences)
-        return (none, childSequences)
-      else
-        return (none, childSequences))
-  return (out.map Prod.snd).getD #[]
+/-- Tag `msg` as a finding of the pass enabled by `opt`, copying the shape of
+`Lean.Linter.logLint` (core has no `MessageData`-level helper for this, so keep the two in sync):
+the kind becomes `opt.name`, `Lean.Linter.linterMessageTag` sits directly inside it, and a note
+on how to disable the pass is appended.
+
+Errors, and messages that are already linter messages, are returned unchanged. -/
+def tagLintMessage (opt : Lean.Option Bool) (msg : Message) : Message :=
+  if msg.severity == .error || msg.data.isLinterMessage then
+    msg
+  else
+    let disable :=
+      MessageData.note m!"This linter can be disabled with `set_option {opt.name} false`"
+    { msg with data := .tagged opt.name <| .tagged linterMessageTag m!"{msg.data}{disable}" }
+
+/-- Run `x` with an empty message log, then tag every message it logged with
+`tagLintMessage opt` and append them to the messages logged before. -/
+def withLintTagging {α : Type} (opt : Lean.Option Bool) (x : CommandElabM α) :
+    CommandElabM α := do
+  let saved ← modifyGet fun s => (s.messages, { s with messages := {} })
+  try
+    x
+  finally
+    -- `x` started from an empty log, so none of its messages have been reported yet.
+    modify fun s => { s with
+      messages := saved ++ { s.messages with
+        unreported := s.messages.unreported.map (tagLintMessage opt) } }
 
 /-- Run the tactic analysis passes from `configs` on the tactic sequences in `stx`,
 using `trees` to get the infotrees. -/
 def runPasses (configs : Array Pass) (trees : PersistentArray InfoTree) : CommandElabM Unit := do
   let opts ← getLinterOptions
-  let enabledConfigs := configs.filter fun config =>
+  let enabledConfigs := configs.filterMap fun config =>
     -- This can be `none` in the file where the option is declared.
-    if let some opt := config.opt then getLinterValue opt opts else false
+    config.opt.filter (getLinterValue · opts) |>.map ((·, config))
   if enabledConfigs.isEmpty then
     return
   for i in trees do
-    for seq in (← findTacticSeqs i) do
-      for config in enabledConfigs do
-        config.run seq
+    for seq in findTacticSeqs i do
+      for (opt, config) in enabledConfigs do
+        withLintTagging opt <| config.run seq
 
 /-- A tactic analysis framework.
 It is aimed at allowing developers to specify refactoring patterns,
@@ -245,6 +251,7 @@ collecting tactic syntax and state to call the passes on.
 def tacticAnalysis : Linter where run := withSetOptionIn fun stx => do
   if (← get).messages.hasErrors then
     return
+  profileitM Exception "tacticAnalysis" (← getOptions) do
   let env ← getEnv
   let configs := (tacticAnalysisExt.getState env).2
   let trees ← getInfoTrees
@@ -322,9 +329,12 @@ def testTacticSeq (config : ComplexConfig) (tacticSeq : Array (TSyntax `tactic))
       let (oldGoals, oldHeartbeats) ← withHeartbeats <|
         try
           i.runTacticCode goal stx
-        catch e =>
-          if !i.mayFail then
-            logWarning m!"original tactic '{stx}' failed: {e.toMessageData}"
+        catch _ =>
+          -- We can encounter an error in two cases:
+          -- 1. The original tactic is run in a context where it is allowed to fail (e.g. `try`/`any_goals`).
+          -- 2. There is an internal bug in tacticAnalysis.
+          -- Since excluding case 1 is too expensive, we silently let the error pass also in case 2.
+          -- See also https://github.com/leanprover-community/mathlib4/pull/44445
           return [goal]
       let (new, newHeartbeats) ← withHeartbeats <| config.test i.ctxI i.tacI ctx goal
       if let some msg ← config.tell stx oldGoals oldHeartbeats new newHeartbeats  then

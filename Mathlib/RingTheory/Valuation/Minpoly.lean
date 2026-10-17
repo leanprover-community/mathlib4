@@ -5,9 +5,10 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 module
 
-public import Mathlib.FieldTheory.Minpoly.Field
 public import Mathlib.FieldTheory.Minpoly.Finite
 public import Mathlib.RingTheory.Valuation.Basic
+
+import Mathlib.FieldTheory.Minpoly.Field
 
 /-!
 # Minimal polynomials.
@@ -42,7 +43,7 @@ theorem coeff_zero_minpoly (x : K) : v ((minpoly K (algebraMap K L x)).coeff 0) 
 
 variable {L}
 
-/- For any unit `x : Lˣ`, we prove that a certain power of the valuation of zeroth coefficient of
+/-- For any unit `x : Lˣ`, we prove that a certain power of the valuation of zeroth coefficient of
 the minimal polynomial of `x` over `K` is nonzero. This lemma is helpful for defining the valuation
 on `L` inducing `v`. -/
 theorem pow_coeff_zero_ne_zero_of_unit [FiniteDimensional K L] (x : L) (hx : IsUnit x) :

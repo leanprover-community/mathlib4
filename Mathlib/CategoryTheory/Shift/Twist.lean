@@ -35,7 +35,7 @@ structure TwistShiftData where
   z (a b : A) : (CatCenter C)ˣ
   z_zero_zero : z 0 0 = 1 := by cat_disch
   assoc (a b c : A) : z (a + b) c * z a b = z a (b + c) * z b c := by cat_disch
-  commShift (a b : A) : NatTrans.CommShift (z a b).val A := by infer_instance
+  commShift (a b : A) : NatTrans.CommShift (z a b).val.asHom A := by infer_instance
 
 namespace TwistShiftData
 
@@ -51,10 +51,11 @@ lemma z_zero_left (b : A) : t.z 0 b = 1 := by simpa using t.assoc 0 0 b
 
 attribute [instance] commShift
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma shift_z_app (a b c : A) (X : C) :
     ((t.z a b).val.app X)⟦c⟧' = (t.z a b).val.app (X⟦c⟧) := by
-  simpa using NatTrans.shift_app_comm (t.z a b).val c X
+  simpa using NatTrans.shift_app_comm (t.z a b).val.asHom c X
 
 /-- Given `t : TwistShiftData C A`, this is a type synonym for the category `C`,
 which the same shift functors as `C` but where the `shiftFunctorAdd` isomorphisms
@@ -64,6 +65,7 @@ protected def Category (_ : TwistShiftData C A) : Type u := C
 
 instance : Category t.Category := inferInstanceAs (Category C)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given `t : TwistShiftData C A`, the shift on the category `TwistShift t` has
 the same shift functors as `C`, the same isomorphism `shiftFunctorZero` isomorphism,
@@ -92,6 +94,7 @@ identify to the shift functors on `C`. -/
 noncomputable def shiftIso (m : A) : shiftFunctor t.Category m ≅ shiftFunctor C m :=
   Iso.refl _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma shiftFunctor_map {X Y : t.Category} (f : X ⟶ Y) (m : A) :
     (shiftFunctor t.Category m).map f =
       (t.shiftIso m).hom.app X ≫ (shiftFunctor C m).map f ≫ (t.shiftIso m).inv.app Y := by

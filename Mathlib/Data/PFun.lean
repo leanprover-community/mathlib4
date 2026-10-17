@@ -6,8 +6,8 @@ Authors: Mario Carneiro, Jeremy Avigad, Simon Hudon
 module
 
 public import Batteries.Tactic.GeneralizeProofs
+public import Mathlib.Basic.Rel
 public import Mathlib.Data.Part
-public import Mathlib.Data.Rel
 
 /-!
 # Partial functions
@@ -131,7 +131,7 @@ instance coe : Coe (α → β) (α →. β) :=
 theorem coe_val (f : α → β) (a : α) : (f : α →. β) a = Part.some (f a) :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem dom_coe (f : α → β) : (f : α →. β).Dom = Set.univ :=
   rfl
 
@@ -152,18 +152,42 @@ def graph' (f : α →. β) : SetRel α β := {(x, y) : α × β | y ∈ f x}
 def ran (f : α →. β) : Set β :=
   { b | ∃ a, b ∈ f a }
 
+@[simp, grind =]
+lemma ran_coe (f : α → β) : (↑f : α →. β).ran = Set.range f := by
+  ext x
+  simp [ran, eq_comm]
+
+@[simp]
+lemma ran_eq_empty_iff_dom_eq_empty (f : α →. β) : f.ran = ∅ ↔ f.Dom = ∅ := by
+  simp only [ran, Set.ext_iff, Set.mem_ofPred_eq, Set.mem_empty_iff_false, mem_dom]
+  grind
+
 /-- Restrict a partial function to a smaller domain. -/
 def restrict (f : α →. β) {p : Set α} (H : p ⊆ f.Dom) : α →. β := fun x =>
   (f x).restrict (x ∈ p) (@H x)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mem_restrict {f : α →. β} {s : Set α} (h : s ⊆ f.Dom) (a : α) (b : β) :
     b ∈ f.restrict h a ↔ a ∈ s ∧ b ∈ f a := by simp [restrict]
+
+@[simp]
+lemma dom_restrict {f : α →. β} {S : Set α} (hS : S ⊆ f.Dom) : (f.restrict hS).Dom = S := by
+  ext a
+  simp only [mem_dom, mem_restrict, exists_and_left, and_iff_left_iff_imp]
+  exact fun haS ↦ Part.dom_iff_mem.mp (hS haS)
+
+@[simp]
+lemma restrict_restrict {f : α →. β} {S T : Set α} (hS : S ⊆ f.Dom) (hT : T ⊆ (f.restrict hS).Dom) :
+    (f.restrict hS).restrict hT = f.restrict (p := S ∩ T) (by grind) := by
+  ext a x
+  grind [mem_restrict]
 
 /-- Turns a function into a partial function with a prescribed domain. -/
 def res (f : α → β) (s : Set α) : α →. β :=
   (PFun.lift f).restrict s.subset_univ
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mem_res (f : α → β) (s : Set α) (a : α) (b : β) : b ∈ res f s a ↔ a ∈ s ∧ f a = b := by
   simp [res, @eq_comm _ b]
 
@@ -188,6 +212,23 @@ theorem bind_apply (f : α →. β) (g : β → α →. γ) (a : α) : f.bind g 
 
 /-- The monad `map` function, pointwise `Part.map` -/
 def map (f : β → γ) (g : α →. β) : α →. γ := fun a => (g a).map f
+
+@[simp]
+lemma dom_map (g : β → γ) (f : α →. β) : (f.map g).Dom = f.Dom := by
+  ext a
+  simp only [mem_dom, PFun.map, Part.mem_map_iff]
+  grind
+
+@[simp]
+lemma mem_map (g : β → γ) (f : α →. β) (a : α) (c : γ) :
+    c ∈ (f.map g) a ↔ ∃ b ∈ f a, g b = c := by
+  simp [PFun.map]
+
+@[simp]
+lemma ran_map (g : β → γ) (f : α →. β) : (f.map g).ran = g '' f.ran := by
+  ext c
+  simp only [ran, mem_map]
+  grind
 
 instance monad : Monad (PFun α) where
   pure := PFun.pure
@@ -344,9 +385,11 @@ def image (s : Set α) : Set β :=
 theorem image_def (s : Set α) : f.image s = { y | ∃ x ∈ s, y ∈ f x } :=
   rfl
 
+@[simp]
 theorem mem_image (y : β) (s : Set α) : y ∈ f.image s ↔ ∃ x ∈ s, y ∈ f x :=
   Iff.rfl
 
+@[gcongr]
 theorem image_mono {s t : Set α} (h : s ⊆ t) : f.image s ⊆ f.image t :=
   SetRel.image_mono h
 
@@ -355,6 +398,20 @@ theorem image_inter (s t : Set α) : f.image (s ∩ t) ⊆ f.image s ∩ f.image
 
 theorem image_union (s t : Set α) : f.image (s ∪ t) = f.image s ∪ f.image t :=
   SetRel.image_union _ s t
+
+lemma image_subset_ran {S : Set α} : f.image S ⊆ f.ran := by
+  intro a
+  grind [mem_image, ran]
+
+@[simp]
+lemma ran_restrict {S : Set α} (hS : S ⊆ f.Dom) : (f.restrict hS).ran = f.image S := by
+  ext a
+  simp [ran]
+
+@[simp]
+lemma image_map (g : β → γ) (f : α →. β) (S : Set α) : (f.map g).image S = g '' f.image S := by
+  ext a
+  grind [mem_image, mem_map]
 
 /-- Preimage of a set under a partial function. -/
 def preimage (s : Set β) : Set α := f.graph'.preimage s
@@ -366,21 +423,46 @@ theorem Preimage_def (s : Set β) : f.preimage s = { x | ∃ y ∈ s, y ∈ f x 
 theorem mem_preimage (s : Set β) (x : α) : x ∈ f.preimage s ↔ ∃ y ∈ s, y ∈ f x :=
   Iff.rfl
 
+@[simp, grind .]
 theorem preimage_subset_dom (s : Set β) : f.preimage s ⊆ f.Dom := fun _ ⟨y, _, fxy⟩ =>
   Part.dom_iff_mem.mpr ⟨y, fxy⟩
 
+@[gcongr]
 theorem preimage_mono {s t : Set β} (h : s ⊆ t) : f.preimage s ⊆ f.preimage t :=
   SetRel.preimage_mono h
 
-theorem preimage_inter (s t : Set β) : f.preimage (s ∩ t) ⊆ f.preimage s ∩ f.preimage t :=
-  SetRel.preimage_inter_subset _
+theorem preimage_inter (s t : Set β) : f.preimage (s ∩ t) = f.preimage s ∩ f.preimage t := by
+  grind
 
 theorem preimage_union (s t : Set β) : f.preimage (s ∪ t) = f.preimage s ∪ f.preimage t :=
   SetRel.preimage_union _ s t
 
+@[simp]
 theorem preimage_univ : f.preimage Set.univ = f.Dom := by ext; simp [mem_preimage, mem_dom]
 
 theorem coe_preimage (f : α → β) (s : Set β) : (f : α →. β).preimage s = f ⁻¹' s := by ext; simp
+
+@[simp]
+theorem preimage_empty : f.preimage ∅ = ∅ := by ext; simp [mem_preimage]
+
+theorem disjoint_preimage_of_disjoint {s t : Set β} (h : Disjoint s t) :
+    Disjoint (f.preimage s) (f.preimage t) := by
+  rw [Set.disjoint_iff_inter_eq_empty] at h ⊢
+  rw [← preimage_inter, h]
+  simp [preimage]
+
+@[simp]
+lemma preimage_restrict {S : Set α} {T : Set β} (hS : S ⊆ f.Dom) :
+    (f.restrict hS).preimage T = f.preimage T ∩ S := by
+  ext a
+  simp only [mem_preimage, mem_restrict]
+  grind
+
+@[simp]
+lemma preimage_map (g : β → γ) (S : Set γ) : (PFun.map g f).preimage S = f.preimage (g ⁻¹' S) := by
+  ext a
+  simp only [mem_preimage, mem_map]
+  grind
 
 /-- Core of a set `s : Set β` with respect to a partial function `f : α →. β`. Set of all `a : α`
 such that `f a ∈ s`, if `f a` is defined. -/
@@ -479,14 +561,17 @@ def comp (f : β →. γ) (g : α →. β) : α →. γ := fun a => (g a).bind f
 theorem comp_apply (f : β →. γ) (g : α →. β) (a : α) : f.comp g a = (g a).bind f :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem id_comp (f : α →. β) : (PFun.id β).comp f = f :=
   ext fun _ _ => by simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem comp_id (f : α →. β) : f.comp (PFun.id α) = f :=
   ext fun _ _ => by simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem dom_comp (f : β →. γ) (g : α →. β) : (f.comp g).Dom = g.preimage f.Dom := by
   ext
@@ -508,6 +593,7 @@ theorem Part.bind_comp (f : β →. γ) (g : α →. β) (a : Part α) :
 theorem comp_assoc (f : γ →. δ) (g : β →. γ) (h : α →. β) : (f.comp g).comp h = f.comp (g.comp h) :=
   ext fun _ _ => by simp only [comp_apply, Part.bind_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 -- This can't be `simp`
 theorem coe_comp (g : β → γ) (f : α → β) : ((g ∘ f : α → γ) : α →. γ) = (g : β →. γ).comp f :=
   ext fun _ _ => by simp only [coe_val, comp_apply, Function.comp, Part.bind_some]
@@ -560,6 +646,7 @@ theorem mem_prodMap {f : α →. γ} {g : β →. δ} {x : α × β} {y : γ × 
   · simp only [prodMap, Part.mem_mk_iff, And.exists, Prod.ext_iff]
   · simp only [exists_and_left, exists_and_right, Membership.mem, Part.Mem]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem prodLift_fst_comp_snd_comp (f : α →. γ) (g : β →. δ) :
     prodLift (f.comp ((Prod.fst : α × β → α) : α × β →. α))

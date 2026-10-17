@@ -42,9 +42,8 @@ variable {M : Type*} [AddCommMonoid M] [Module R M]
 variable {N : Type*} [AddCommMonoid N] [Module R N]
 variable {p : M →ₗ[R] N →ₗ[R] R} {s t : Set M} {y : N}
 
-local notation3 "R≥0" => {c : R // 0 ≤ c}
+local notation3 "R≥0" => Nonneg R
 
-set_option backward.isDefEq.respectTransparency false in
 variable (p) in
 /-- The dual cone of a set `s` with respect to a bilinear pairing `p` is the cone consisting of all
 points `y` such that for all points `x ∈ s` we have `0 ≤ p x y`. -/
@@ -100,7 +99,6 @@ variable (s) in
 @[simp] lemma dual_flip_dual_dual_flip (s : Set N) :
     dual p.flip (dual p (dual p.flip s)) = dual p.flip s := dual_dual_flip_dual _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma dual_hull (s : Set M) : dual p (hull R s) = dual p s := by
   refine le_antisymm (dual_anti Submodule.subset_span) (fun x hx y hy => ?_)
@@ -110,16 +108,13 @@ lemma dual_hull (s : Set M) : dual p (hull R s) = dual p s := by
   | add y z _hy _hz hy hz => rw [map_add, add_apply]; exact add_nonneg hy hz
   | smul t y _hy hy => rw [map_smul_of_tower, Nonneg.mk_smul, smul_apply]; exact mul_nonneg t.2 hy
 
-@[deprecated "`PointedCone.span` was renamed to `PointedCone.hull`" (since := "2026-03-22")]
-alias dual_span := dual_hull
-
 @[simp] lemma dual_sup (C D : PointedCone R M) : dual p (C ⊔ D : PointedCone R M) = dual p (C ∪ D)
   := by simp [← dual_hull]
 
 variable {M' : Type*} [AddCommMonoid M'] [Module R M']
 
-@[simp] lemma dual_image (s : Set M') (q : M' →ₗ[R] M) : dual p (q '' s) = dual (p.comp q) s :=
-  by ext; simp
+@[simp] lemma dual_image (s : Set M') (q : M' →ₗ[R] M) : dual p (q '' s) = dual (p.comp q) s := by
+  ext; simp
 
 /-- Duality with respect to a general bilinear map can be expressed as duality using the
   identity pairing. -/

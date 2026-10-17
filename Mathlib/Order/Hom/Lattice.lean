@@ -166,10 +166,10 @@ section Sup
 
 variable [Max β] [Max γ] [Max δ]
 
-@[to_dual]
+@[to_dual (attr := macro_inline)]
 instance : FunLike (SupHom α β) α β where
   coe := SupHom.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 @[to_dual]
 instance : SupHomClass (SupHom α β) α β where
@@ -366,9 +366,10 @@ namespace LatticeHom
 
 variable [Lattice α] [Lattice β] [Lattice γ] [Lattice δ]
 
+@[macro_inline]
 instance : FunLike (LatticeHom α β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
+  coe_injective f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
 
 instance : LatticeHomClass (LatticeHom α β) α β where
   map_sup f := f.map_sup'

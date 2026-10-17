@@ -24,6 +24,7 @@ variable {C : Type*} [Category* C]
 
 attribute [local instance] IsFiltered.nonempty IsCofiltered.nonempty
 
+set_option backward.defeqAttrib.useBackward true in
 instance {X : C} : PreservesCofilteredLimitsOfSize (Over.forget X) := by
   refine ⟨fun J hJ hJ' ↦ ⟨fun {F} ↦ ⟨fun {c} hc ↦ ⟨.ofExistsUnique fun s ↦ ?_⟩⟩⟩⟩
   obtain i := Nonempty.some ((inferInstance : Nonempty J))
@@ -34,9 +35,10 @@ instance {X : C} : PreservesCofilteredLimitsOfSize (Over.forget X) := by
     simp), fun j k e ↦ by ext; simpa using (s.w e).symm⟩
   refine ⟨(hc.lift s').left, fun j ↦ congr($(hc.fac s' j).left), fun f hf ↦ ?_⟩
   dsimp at hf
-  exact congr($(hc.uniq s' (Over.homMk f (by simp [s', ← hf]))
-    fun j ↦ Over.OverMorphism.ext (hf j)).left)
+  congrm $(hc.uniq s' (Over.homMk f (by simp [s', ← hf]))
+   fun j ↦ Over.OverMorphism.ext (hf j)).left
 
+set_option backward.defeqAttrib.useBackward true in
 instance {X : C} : PreservesFilteredColimitsOfSize (Under.forget X) := by
   refine ⟨fun J hJ hJ' ↦ ⟨fun {F} ↦ ⟨fun {c} hc ↦ ⟨.ofExistsUnique fun s ↦ ?_⟩⟩⟩⟩
   obtain i := Nonempty.some ((inferInstance : Nonempty J))
@@ -47,7 +49,7 @@ instance {X : C} : PreservesFilteredColimitsOfSize (Under.forget X) := by
     simp), fun j k e ↦ by ext; simpa using s.w e⟩
   refine ⟨(hc.desc s').right, fun j ↦ congr($(hc.fac s' j).right), fun f hf ↦ ?_⟩
   dsimp at hf
-  exact congr($(hc.uniq s' (Under.homMk f (by simp [s', ← hf]))
-    fun j ↦ Under.UnderMorphism.ext (hf j)).right)
+  congrm $(hc.uniq s' (Under.homMk f (by simp [s', ← hf]))
+   fun j ↦ Under.UnderMorphism.ext (hf j)).right
 
 end CategoryTheory.Limits

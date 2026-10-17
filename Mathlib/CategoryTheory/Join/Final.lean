@@ -6,7 +6,6 @@ Authors: Robin Carlier
 module
 
 public import Mathlib.CategoryTheory.Join.Basic
-public import Mathlib.CategoryTheory.Limits.Final
 public import Mathlib.CategoryTheory.Limits.IsConnected
 
 /-!
@@ -23,6 +22,7 @@ namespace CategoryTheory.Join
 
 variable (C D : Type*) [Category* C] [Category* D]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The category of `Join.inclLeft C D`-costructured arrows with target `right d` is equivalent to
 `C`. -/
 def costructuredArrowEquiv (d : D) : CostructuredArrow (inclLeft C D) (right d) ≌ C where
@@ -33,6 +33,7 @@ def costructuredArrowEquiv (d : D) : CostructuredArrow (inclLeft C D) (right d) 
   unitIso := NatIso.ofComponents (fun _ ↦ CostructuredArrow.isoMk (Iso.refl _))
   counitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The category of `Join.inclRight C D`-structured arrows with source `left c` is equivalent to
 `D`. -/
 def structuredArrowEquiv (c : C) : StructuredArrow (left c) (inclRight C D) ≌ D where

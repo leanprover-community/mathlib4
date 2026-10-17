@@ -6,7 +6,6 @@ Authors: Pablo Donato
 module
 
 public import Mathlib.CategoryTheory.Subobject.Basic
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 
 /-!
 # Subobjects presheaf
@@ -48,7 +47,7 @@ subobject of `Y` to its pullback along `f`. -/
 @[simps]
 noncomputable def presheaf : Cᵒᵖ ⥤ Type max u v where
   obj X := Subobject X.unop
-  map f := TypeCat.ofHom (pullback f.unop).obj
+  map f := ↾(pullback f.unop).obj
   map_id _ := by ext : 3; simp [pullback_id]
   map_comp _ _ := by ext : 3; simp [pullback_comp]
 

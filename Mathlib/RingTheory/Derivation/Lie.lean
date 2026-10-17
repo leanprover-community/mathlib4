@@ -6,8 +6,8 @@ Authors: Nicolò Cavalleri, Andrew Yang
 module
 
 public import Mathlib.Algebra.Lie.OfAssociative
-public import Mathlib.RingTheory.Derivation.Basic
 public import Mathlib.Algebra.Lie.Prod
+public import Mathlib.RingTheory.Derivation.Basic
 
 /-!
 # Lie Algebra Structure on Derivations
@@ -32,7 +32,6 @@ section LieStructures
 /-! ### Lie structures -/
 
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The commutator of derivations is again a derivation. -/
 instance : Bracket (Derivation R A A) (Derivation R A A) :=
   ⟨fun D1 D2 =>
@@ -74,6 +73,7 @@ lemma bracket_eq_fun (X : Derivation R A A) (a : A) : ⁅X, a⁆ = X a := rfl
 
 section CompatibleDerivations
 variable {A' : Type*} [CommRing A'] [Algebra R A'] [Algebra A A'] [IsScalarTower R A A']
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 variable (R A A') in
 /-- Let `σ : A → A'` be a an homomorphism. A derivation `d : A → A` and a derivation

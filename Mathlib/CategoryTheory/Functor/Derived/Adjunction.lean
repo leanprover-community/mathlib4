@@ -44,9 +44,9 @@ variable {C₁ C₂ D₁ D₂ : Type*} [Category* C₁] [Category* C₂] [Catego
 
 namespace Adjunction
 
-open Functor
+open CategoryTheory.Functor
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `Adjunction.derived`. -/
 @[simps]
 def derived' [G'.IsLeftDerivedFunctor α W₁] [F'.IsRightDerivedFunctor β W₂]
@@ -98,11 +98,12 @@ noncomputable def derivedη : 𝟭 D₁ ⟶ G' ⋙ F' :=
     (L₁.rightUnitor.hom ≫ L₁.leftUnitor.inv ≫ whiskerRight adj.unit L₁ ≫
       (Functor.associator _ _ _).hom ≫ whiskerLeft G β ≫ (Functor.associator _ _ _).inv)
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma derivedη_fac_app (X₁ : C₁) :
     (adj.derivedη W₁ α β).app (L₁.obj X₁) ≫ F'.map (α.app X₁) =
       L₁.map (adj.unit.app X₁) ≫ β.app (G.obj X₁) := by
-  simpa using ((G' ⋙ F').leftDerived_fac_app ((Functor.associator _ _ _).inv ≫
+  simpa using! ((G' ⋙ F').leftDerived_fac_app ((Functor.associator _ _ _).inv ≫
     whiskerRight α F') W₁ _ (L₁.rightUnitor.hom ≫ L₁.leftUnitor.inv ≫ whiskerRight adj.unit L₁ ≫
       (Functor.associator _ _ _).hom ≫ whiskerLeft G β ≫ (Functor.associator _ _ _).inv)) X₁
 
@@ -119,18 +120,18 @@ noncomputable def derivedε : F' ⋙ G' ⟶ 𝟭 D₂ :=
     ((Functor.associator _ _ _).hom ≫ whiskerLeft F α ≫ (Functor.associator _ _ _).inv ≫
         whiskerRight adj.counit _ ≫ L₂.leftUnitor.hom ≫ L₂.rightUnitor.inv)
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma derivedε_fac_app (X₂ : C₂) :
     G'.map (β.app X₂) ≫ (adj.derivedε W₂ α β).app (L₂.obj X₂) =
       α.app (F.obj X₂) ≫ L₂.map (adj.counit.app X₂) := by
-  simpa using ((F' ⋙ G').rightDerived_fac_app
+  simpa using! ((F' ⋙ G').rightDerived_fac_app
     (whiskerRight β G' ≫ (Functor.associator _ _ _).hom) W₂ _
     ((Functor.associator _ _ _).hom ≫ whiskerLeft F α ≫ (Functor.associator _ _ _).inv ≫
       whiskerRight adj.counit _ ≫ L₂.leftUnitor.hom ≫ L₂.rightUnitor.inv)) X₂
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An adjunction between functors induces an adjunction between the
 corresponding left/right derived functors, when these derived
 functors are *absolute*, i.e. they remain derived functors

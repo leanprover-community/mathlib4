@@ -5,10 +5,11 @@ Authors: Reid Barton, Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Products.Basic
 public import Mathlib.CategoryTheory.Types.Basic
 
 /-!
+# The hom functor
+
 The hom functor, sending `(X, Y)` to the type `X ⟶ Y`.
 -/
 
@@ -30,6 +31,6 @@ covariant in `Y`. -/
 @[simps]
 def hom : Cᵒᵖ × C ⥤ Type v where
   obj p := unop p.1 ⟶ p.2
-  map f := TypeCat.ofHom fun h => f.1.unop ≫ h ≫ f.2
+  map f := ↾fun h => f.1.unop ≫ h ≫ f.2
 
 end CategoryTheory.Functor

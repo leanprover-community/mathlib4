@@ -5,10 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
+public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 public import Mathlib.GroupTheory.Archimedean
 public import Mathlib.Topology.Algebra.Order.Group
-public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
-public import Mathlib.Topology.Order.Basic
 
 /-!
 # Topology on archimedean groups and fields
@@ -71,43 +70,5 @@ theorem dense_of_no_min (S : Subgroup G) (hbot : S ≠ ⊥)
   refine S.dense_of_not_isolated_one fun ε ε1 => ?_
   contrapose! H
   exact exists_isLeast_one_lt hbot ε1 (disjoint_left.2 H)
-
-/-- A subgroup of an archimedean linear ordered multiplicative commutative group `G` with order
-topology either is dense in `G` or is a cyclic subgroup. -/
-@[to_additive dense_or_cyclic
-/-- An additive subgroup of an archimedean linear ordered additive commutative group `G`
-with order topology either is dense in `G` or is a cyclic subgroup. -/]
-theorem dense_or_cyclic (S : Subgroup G) : Dense (S : Set G) ∨ ∃ a : G, S = closure {a} := by
-  refine (em _).imp (dense_of_not_isolated_one S) fun h => ?_
-  push Not at h
-  rcases h with ⟨ε, ε1, hε⟩
-  exact cyclic_of_isolated_one ε1 (disjoint_left.2 hε)
-
-variable [Nontrivial G] [DenselyOrdered G]
-
-/-- In a nontrivial densely linear ordered archimedean topological multiplicative group,
-a subgroup is either dense or is cyclic, but not both.
-
-For a non-exclusive `Or` version with weaker assumptions, see `Subgroup.dense_or_cyclic` above. -/
-@[to_additive dense_xor'_cyclic
-/-- In a nontrivial densely linear ordered archimedean topological additive group,
-a subgroup is either dense or is cyclic, but not both.
-
-For a non-exclusive `Or` version with weaker assumptions, see `AddSubgroup.dense_or_cyclic` above.
--/]
-theorem dense_xor'_cyclic (s : Subgroup G) :
-    Xor' (Dense (s : Set G)) (∃ a, s = .zpowers a) := by
-  if hd : Dense (s : Set G) then
-    simp only [hd, xor_true]
-    rintro ⟨a, rfl⟩
-    exact not_denseRange_zpow hd
-  else
-    simp only [hd, xor_false, id, zpowers_eq_closure]
-    exact s.dense_or_cyclic.resolve_left hd
-
-@[to_additive]
-theorem dense_iff_ne_zpowers {s : Subgroup G} :
-    Dense (s : Set G) ↔ ∀ a, s ≠ .zpowers a := by
-  simp [xor_iff_iff_not.1 s.dense_xor'_cyclic]
 
 end Subgroup
