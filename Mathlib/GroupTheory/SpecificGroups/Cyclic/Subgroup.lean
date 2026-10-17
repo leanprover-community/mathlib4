@@ -43,12 +43,16 @@ theorem isCyclic_iff_exists_zpowers_eq_top [Group α] : IsCyclic α ↔ ∃ g : 
   exact ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
 
 @[to_additive]
-protected theorem Subgroup.isCyclic_iff_exists_zpowers_eq_top [Group α] (H : Subgroup α) :
+protected theorem Subgroup.isCyclic_iff_exists_zpowers_eq [Group α] (H : Subgroup α) :
     IsCyclic H ↔ ∃ g : α, Subgroup.zpowers g = H := by
   rw [isCyclic_iff_exists_zpowers_eq_top]
   simp_rw [← map_subtype_inj, Subgroup.map_top,
     H.range_subtype, MonoidHom.map_zpowers, Subtype.exists, coe_subtype, exists_prop]
   exact exists_congr fun g ↦ and_iff_right_of_imp fun h ↦ h ▸ mem_zpowers g
+
+@[to_additive (attr := deprecated (since := "2026-10-10"))]
+protected alias Subgroup.isCyclic_iff_exists_zpowers_eq_top :=
+  Subgroup.isCyclic_iff_exists_zpowers_eq
 
 @[to_additive]
 instance Subgroup.isCyclic_zpowers [Group G] (g : G) :
@@ -229,7 +233,7 @@ lemma Subgroup.isCyclic_of_le {H H' : Subgroup G} (h : H ≤ H') [IsCyclic H'] :
 theorem Subgroup.le_zpowers_iff (g : G) (H : Subgroup G) :
     H ≤ Subgroup.zpowers g ↔ ∃ n : ℕ, H = Subgroup.zpowers (g ^ n) := by
   refine ⟨fun h ↦ ?_, ?_⟩
-  · obtain ⟨x, rfl⟩ := (H.isCyclic_iff_exists_zpowers_eq_top).mp (isCyclic_of_le h)
+  · obtain ⟨x, rfl⟩ := H.isCyclic_iff_exists_zpowers_eq.mp (isCyclic_of_le h)
     obtain ⟨k, rfl⟩ := mem_zpowers_iff.mp <| h (mem_zpowers x)
     obtain ⟨n, rfl | rfl⟩ := Int.eq_nat_or_neg k
     · exact ⟨n, by rw [zpow_natCast]⟩
