@@ -397,9 +397,8 @@ theorem fixedField_eq_iff_fixingSubgroup_eq {K : IntermediateField F E} {H : Sub
     eq_comm]
 
 theorem fixedField_le_iff_fixingSubgroup_le {K : IntermediateField F E} {H : Subgroup Gal(E/F)} :
-    IntermediateField.fixedField H ≤ K ↔ K.fixingSubgroup ≤ H where
-  mp h := IntermediateField.fixingSubgroup_fixedField H ▸ IntermediateField.fixingSubgroup_le h
-  mpr h := fixedField_fixingSubgroup K ▸ IntermediateField.fixedField_le h
+    IntermediateField.fixedField H ≤ K ↔ K.fixingSubgroup ≤ H :=
+  intermediateFieldEquivSubgroup.symm_apply_le
 
 end
 
