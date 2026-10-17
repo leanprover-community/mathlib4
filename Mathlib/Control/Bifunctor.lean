@@ -30,8 +30,6 @@ public section
 
 universe u₀ u₁ u₂ v₀ v₁ v₂
 
-open Function
-
 /-- Lawless bifunctor. This typeclass only holds the data for the bimap. -/
 class Bifunctor (F : Type u₀ → Type u₁ → Type u₂) where
   bimap : ∀ {α α' β β'}, (α → α') → (β → β') → F α β → F α' β'
@@ -145,7 +143,7 @@ instance Function.bicompl.bifunctor : Bifunctor (bicompl F G H) where
 set_option backward.isDefEq.respectTransparency false in
 instance Function.bicompl.lawfulBifunctor [LawfulFunctor G] [LawfulFunctor H] [LawfulBifunctor F] :
     LawfulBifunctor (bicompl F G H) := by
-  constructor <;> intros <;> simp [bimap, map_id, map_comp_map, functor_norm]
+  constructor <;> intros <;> simp [bimap, Functor.map_id, Functor.map_comp_map, functor_norm]
 
 end Bicompl
 
