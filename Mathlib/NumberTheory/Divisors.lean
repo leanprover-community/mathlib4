@@ -233,11 +233,22 @@ theorem divisors_subset_properDivisors {m : ℕ} (hzero : n ≠ 0) (h : m ∣ n)
         lt_of_le_of_lt (divisor_le hx)
           (lt_of_le_of_ne (divisor_le (Nat.mem_divisors.2 ⟨h, hzero⟩)) hdiff)⟩
 
+/-- The divisors of the gcd of two nonzero natural numbers are their common divisors. -/
+lemma divisors_gcd {m n : ℕ} (hm : m ≠ 0) (hn : n ≠ 0) :
+    (m.gcd n).divisors = m.divisors ∩ n.divisors := by
+  ext d
+  simp [mem_divisors, dvd_gcd_iff, gcd_ne_zero_left hm, hm, hn]
+
+/-- Filtering the divisors of a nonzero natural number by divisibility gives the divisors of
+its gcd with the filtering number. -/
+lemma divisors_filter_dvd {n m : ℕ} (hn : n ≠ 0) :
+    {d ∈ n.divisors | d ∣ m} = (n.gcd m).divisors := by
+  ext d
+  simp [mem_divisors, dvd_gcd_iff, gcd_ne_zero_left hn, hn]
+
 lemma divisors_filter_dvd_of_dvd {n m : ℕ} (hn : n ≠ 0) (hm : m ∣ n) :
     {d ∈ n.divisors | d ∣ m} = m.divisors := by
-  ext k
-  simp_rw [mem_filter, mem_divisors]
-  exact ⟨fun ⟨_, hkm⟩ ↦ ⟨hkm, ne_zero_of_dvd_ne_zero hn hm⟩, fun ⟨hk, _⟩ ↦ ⟨⟨hk.trans hm, hn⟩, hk⟩⟩
+  rw [divisors_filter_dvd hn, gcd_eq_right hm]
 
 @[simp]
 theorem divisors_zero : divisors 0 = ∅ := by
