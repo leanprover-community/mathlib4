@@ -263,14 +263,12 @@ noncomputable def Ideal.absNorm [IsDedekindDomain S] :
     Ideal S →*₀ ℕ where
   toFun I := if I = ⊥ then 0 else Submodule.cardQuot I
   map_mul' I J := by
-    obtain _ | _ := finite_or_infinite S
+    by_cases hI : I = ⊥
+    · simp [hI]
+    cases finite_or_infinite S
     · let := (Finite.isField_of_domain S).toField
-      obtain rfl | rfl := I.eq_bot_or_top <;> simp
-    · obtain rfl | hI := eq_or_ne I ⊥
-      · simp
-      · obtain rfl | hJ := eq_or_ne J ⊥
-        · simp
-        · simp [ite_eq_right hI, ite_eq_right hJ, ite_eq_right (not_or_intro hI hJ), cardQuot_mul]
+      simp [I.eq_bot_or_top.resolve_left hI]
+    · simp [hI, cardQuot_mul]
   map_one' := by simp
   map_zero' := by simp
 
@@ -319,7 +317,8 @@ theorem finite_absNorm_eq [IsDedekindDomain S] (B : ℕ) :
 theorem finite_absNorm_le₀ [IsDedekindDomain S] (B : ℕ) :
     {I : (Ideal S)⁰ | Ideal.absNorm (I : Ideal S) ≤ B}.Finite := by
   have : Finite {I : Ideal S // I ∈ (Ideal S)⁰ ∧ Ideal.absNorm I ≤ B} :=
-    (finite_absNorm_le B).subset fun _ ⟨_, h⟩ ↦ h
+    (finite_absNorm_le B).subset
+      (t := {I | I ∈ (Ideal S)⁰ ∧ Ideal.absNorm I ≤ B}) fun _ ⟨_, h⟩ ↦ h
   exact Finite.of_equiv _
     (Equiv.subtypeSubtypeEquivSubtypeInter _ (fun I ↦ Ideal.absNorm I ≤ B)).symm
 
@@ -446,9 +445,11 @@ theorem card_norm_le_eq_card_norm_le_add_one' (n : ℕ) :
       Nat.card {I : (Ideal S)⁰ // absNorm (I : Ideal S) ≤ n} + 1 := by
   classical
   have : Finite {I : Ideal S // I ∈ (Ideal S)⁰ ∧ absNorm I ≤ n} :=
-    (Ring.HasFiniteQuotients.finite_absNorm_le n).subset fun _ ⟨_, h⟩ ↦ h
+    (Ring.HasFiniteQuotients.finite_absNorm_le n).subset
+      (t := {I | I ∈ (Ideal S)⁰ ∧ absNorm I ≤ n}) fun _ ⟨_, h⟩ ↦ h
   have : Finite {I : Ideal S // I ∉ (Ideal S)⁰ ∧ absNorm I ≤ n} :=
-    (Ring.HasFiniteQuotients.finite_absNorm_le n).subset fun _ ⟨_, h⟩ ↦ h
+    (Ring.HasFiniteQuotients.finite_absNorm_le n).subset
+      (t := {I | I ∉ (Ideal S)⁰ ∧ absNorm I ≤ n}) fun _ ⟨_, h⟩ ↦ h
   rw [Nat.card_congr (Equiv.subtypeSubtypeEquivSubtypeInter (fun I ↦ I ∈ (Ideal S)⁰)
     (fun I ↦ absNorm I ≤ n))]
   let e : {I : Ideal S // absNorm I ≤ n} ≃ {I : Ideal S // I ∈ (Ideal S)⁰ ∧ absNorm I ≤ n} ⊕

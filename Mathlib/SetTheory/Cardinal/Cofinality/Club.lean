@@ -21,6 +21,10 @@ A **stationary set** is a set which intersects all club sets.
 To avoid importing topology in the ordinals, we spell out the closure property using `DirSupClosed`.
 For any type equipped with the Scott-Hausdorff topology (which includes well-orders with the order
 topology), `DirSupClosed s` and `IsClosed s` are equivalent predicates.
+
+## Tags
+
+Fodor, pressing down, pressing-down
 -/
 
 public section
@@ -331,9 +335,9 @@ theorem isStationary_union_iff (hα : cof α ≠ ℵ₀) :
     IsStationary (s ∪ t) ↔ IsStationary s ∨ IsStationary t := by
   simpa using isStationary_sUnion_iff_of_countable (s := {s, t}) hα
 
-/-- **Fodor's lemma**, or the **pressing down lemma**: if `α` has the order type of a regular
-cardinal, `s` is a stationary set, and `f : α → α` is a regressive function on `s`, there exists
-some stationary subset of `s` on which `f` is constant. -/
+/-- **Fodor's lemma**, or the **pressing down lemma**: if `α` has the order type of an uncountable
+regular cardinal, `s` is a stationary set, and `f : α → α` is a regressive function on `s`, there
+exists some stationary subset of `s` on which `f` is constant. -/
 @[wikidata Q1119050]
 theorem exists_isStationary_preimage_singleton [IsRegularCardinalOrder α] {f : α → α}
     (hα : cof α ≠ ℵ₀) (hs : IsStationary s) (hf : ∀ x ∈ s, f x < x) :

@@ -114,7 +114,7 @@ theorem comp (hg : IsNormal g) (hf : IsNormal f) : IsNormal (g ∘ f) := by
 theorem to_Iio (hf : IsNormal f) (a : α) :
     IsNormal (β := Iio (f a)) fun x : Iio a ↦ ⟨f x.1, hf.strictMono x.2⟩ := by
   rw [isNormal_iff]
-  refine ⟨fun x y h ↦ hf.strictMono h, fun b hb c hc ↦ hf.2 (hb.subtypeVal (isLowerSet_Iio _)) ?_⟩
+  refine ⟨fun x y h ↦ hf.strictMono h, fun b hb c hc ↦ hf.2 (hb.subtypeVal (.Iio _)) ?_⟩
   simpa [upperBounds] using! fun d hd ↦ hc ⟨d, hd.trans b.2⟩ hd
 
 end LinearOrder
@@ -217,8 +217,6 @@ theorem ext_iff [OrderBot α] {g : α → β} (hf : IsNormal f) (hg : IsNormal g
     apply (hf.isLUB_image_Iio_of_isSuccLimit ha).unique
     convert hg.isLUB_image_Iio_of_isSuccLimit ha using 1
     aesop
-
-@[deprecated (since := "2026-03-22")] protected alias ext := IsNormal.ext_iff
 
 theorem exists_map_le_lt_map_succ_of_exists_ge [NoMaxOrder α] [OrderBot α] [WellFoundedLT β]
     {f : α → β} {x : β} (hf : IsNormal f) (hf' : ∃ y, x ≤ f y) (hx : f ⊥ ≤ x) :
