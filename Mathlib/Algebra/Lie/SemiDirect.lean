@@ -150,6 +150,86 @@ lemma projl_inl_apply {x : K} : projl ψ (inl ψ x) = x := by simp
 lemma projr_surjective : Function.Surjective (projr ψ) :=
   fun x ↦ ⟨inr ψ x, by simp⟩
 
+def leftIdeal : LieIdeal R (K ⋊⁅ψ⁆ L) := LieHom.ker (projr ψ)
+
+theorem leftIdeal_mem_iff (x : K ⋊⁅ψ⁆ L) :  (x ∈ (leftIdeal ψ)) ↔ x.right = 0 := by
+  unfold leftIdeal
+  rw [LieHom.mem_ker (f:=projr ψ) (x:=x)]
+  simp
+
+def leftIdeal_equiv : leftIdeal ψ ≃ₗ⁅R⁆ K where
+    toFun := fun x ↦ x.val.left
+    map_add' _ _:= by simp
+    map_smul' := by simp
+    map_lie' := by
+      intro x y
+      dsimp [Bracket.bracket]
+      rw [(leftIdeal_mem_iff ψ x).mp, (leftIdeal_mem_iff ψ y).mp]
+      · simp
+      · exact SetLike.coe_mem y
+      · exact SetLike.coe_mem x
+    invFun := fun x ↦ ⟨⟨x,0⟩, rfl⟩
+    left_inv := by
+      intro x
+      ext
+      · simp
+      · symm
+        apply (leftIdeal_mem_iff ψ x).mp
+        exact SetLike.coe_mem x
+    right_inv := fun _ ↦ rfl
+
+theorem range_inl_eq_leftIdeal : LieHom.range (inl ψ) = (leftIdeal ψ).toLieSubalgebra := by
+  ext x
+  constructor
+  · intro ⟨_,v⟩
+    apply_fun projr ψ at v
+    norm_cast at v
+    simp only [projr_inl_apply ψ] at v
+    exact (LieIdeal.mem_toLieSubalgebra R (K ⋊⁅ψ⁆ L) (leftIdeal ψ) x).mpr (Eq.symm v)
+  · rw [(LieIdeal.mem_toLieSubalgebra R (K ⋊⁅ψ⁆ L) (leftIdeal ψ) x)]
+    intro hx
+    use x.left
+    ext
+    · simp only [LieHom.coe_toLinearMap, inl_eq_mk]
+    · exact hx.symm
+
+def rightSubalgebra : LieSubalgebra R (K ⋊⁅ψ⁆ L) := LieHom.range (inr ψ)
+
+@[simp]
+theorem rightSubalgebra_mem_iff (x : K ⋊⁅ψ⁆ L) :  (x ∈ (rightSubalgebra ψ)) ↔ x.left = 0 := by
+  unfold rightSubalgebra
+  rw [LieHom.mem_range (f:=inr ψ) (x:=x)]
+  constructor
+  · intro ⟨y,hy⟩
+    apply_fun projl ψ at hy
+    simp at hy
+    exact hy.symm
+  · intro hx
+    use x.right
+    simp only [inr_eq_mk]
+    congr
+    exact hx.symm
+
+def rightSubalgebra_equiv : rightSubalgebra ψ ≃ₗ⁅R⁆ L where
+    toFun := fun x ↦ x.val.right
+    map_add' _ _:= by simp
+    map_smul' := by simp
+    map_lie' := by
+      intro x y
+      dsimp [Bracket.bracket]
+    invFun := fun x ↦ ⟨⟨0,x⟩, (by unfold rightSubalgebra ; simp only [LieHom.mem_range,
+      inr_eq_mk, mk.injEq, true_and, exists_eq])⟩
+    left_inv := by
+      intro x
+      ext
+      · symm
+        apply (rightSubalgebra_mem_iff ψ x).mp
+        exact SetLike.coe_mem x
+      · simp
+    right_inv := by
+      intro x
+      simp
+
 instance : LieAlgebra.IsExtension (inl ψ) (projr ψ) where
   ker_eq_bot := by simp [LieHom.ker_eq_bot]
   range_eq_top := by simp [LieHom.range_eq_top]
