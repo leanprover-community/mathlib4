@@ -17,6 +17,9 @@ A submonoid `C` is *spanning* if `M ∪ -M = G`.
 
 The names for these concepts are taken from the theory of convex cones.
 
+The equivalence with ordered groups and rings can be found in
+`Mathlib/Algebra/Order/Group/Cone.lean` and `Mathlib/Algebra/Order/Ring/Cone.lean`, respectively.
+
 ## Main definitions
 
 * `AddSubmonoid.support`: the support of a submonoid.
