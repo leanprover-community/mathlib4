@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Dynamics.FixedPoints.Defs
 public import Mathlib.Order.DirSupClosed
+public import Mathlib.Order.OrdContinuous
 public import Mathlib.Order.SuccPred.InitialSeg
 
 import Mathlib.Order.SuccPred.CompleteLinearOrder
@@ -76,9 +77,8 @@ theorem map_isSuccLimit (hf : IsNormal f) (ha : IsSuccLimit a) : IsSuccLimit (f 
     rw [hf.strictMono.le_iff_le] at hc'
     exact hc.not_ge hc'
 
-theorem map_isLUB (hf : IsNormal f) {s : Set α} (hs : IsLUB s a) (hs' : s.Nonempty) :
-    IsLUB (f '' s) (f a) := by
-  refine ⟨?_, fun b hb ↦ ?_⟩
+theorem leftOrdContinuous (hf : IsNormal f) : LeftOrdContinuous f := by
+  refine fun s a hs' hs ↦ ⟨?_, fun b hb ↦ ?_⟩
   · simpa [mem_upperBounds, hf.strictMono.le_iff_le] using hs.1
   · by_cases ha : a ∈ s
     · simp_all [mem_upperBounds]
@@ -88,6 +88,11 @@ theorem map_isLUB (hf : IsNormal f) {s : Set α} (hs : IsLUB s a) (hs' : s.Nonem
       obtain ⟨d, hd, hcd, hda⟩ := hs.exists_between hc
       simp_rw [mem_upperBounds, forall_mem_image] at hb
       exact (hf.strictMono hcd).le.trans (hb hd)
+
+@[deprecated leftOrdContinuous +typeChanged (since := "2026-10-17")]
+theorem map_isLUB (hf : IsNormal f) {s : Set α} (hs : IsLUB s a) (hs' : s.Nonempty) :
+    IsLUB (f '' s) (f a) :=
+  hf.leftOrdContinuous hs' hs
 
 theorem _root_.InitialSeg.isNormal (f : α ≤i β) : IsNormal f where
   strictMono := f.strictMono
@@ -122,20 +127,19 @@ end LinearOrder
 section ConditionallyCompleteLinearOrder
 variable [ConditionallyCompleteLinearOrder α] [ConditionallyCompleteLinearOrder β]
 
+@[deprecated LeftOrdContinuous.map_csSup +typeChanged (since := "2026-10-17")]
 theorem map_sSup (hf : IsNormal f) {s : Set α} (hs : s.Nonempty) (hs' : BddAbove s) :
     f (sSup s) = sSup (f '' s) :=
-  ((hf.map_isLUB (isLUB_csSup hs hs') hs).csSup_eq (hs.image f)).symm
+  hf.leftOrdContinuous.map_csSup hs hs'
 
+@[deprecated LeftOrdContinuous.map_ciSup +typeChanged (since := "2026-10-17")]
 theorem map_iSup {ι} [Nonempty ι] {g : ι → α} (hf : IsNormal f) (hg : BddAbove (range g)) :
-    f (⨆ i, g i) = ⨆ i, f (g i) := by
-  unfold iSup
-  convert map_sSup hf (range_nonempty g) hg
-  ext
-  simp
+    f (⨆ i, g i) = ⨆ i, f (g i) :=
+  hf.leftOrdContinuous.map_ciSup hg
 
 theorem iSup_iterate_mem_fixedPoints [WellFoundedLT α] {f : α → α} (a : α) (hf : IsNormal f)
     (hf' : BddAbove (.range fun n ↦ f^[n] a)) : ⨆ n, f^[n] a ∈ f.fixedPoints := by
-  rw [f.mem_fixedPoints_iff, hf.map_iSup hf']
+  rw [f.mem_fixedPoints_iff, hf.leftOrdContinuous.map_ciSup hf']
   apply le_antisymm <;> refine ciSup_le fun n ↦ ?_
   · rw [← f.iterate_succ_apply']
     exact le_ciSup hf' _
@@ -152,7 +156,7 @@ theorem preimage_Iic (hf : IsNormal f) {x : β}
   · rw [lt_csSup_iff h₂ h₁] at hy
     obtain ⟨z, hz, hyz⟩ := hy
     exact (hf.strictMono hyz).le.trans hz
-  · rw [mem_preimage, hf.map_sSup h₁ h₂]
+  · rw [mem_preimage, hf.leftOrdContinuous.map_csSup h₁ h₂]
     apply (csSup_le_csSup bddAbove_Iic _ (image_preimage_subset ..)).trans
     · rw [csSup_Iic]
     · simpa
@@ -175,7 +179,7 @@ variable [ConditionallyCompleteLinearOrderBot α] [ConditionallyCompleteLinearOr
 
 theorem apply_of_isSuccLimit (hf : IsNormal f) (ha : IsSuccLimit a) :
     f a = ⨆ b : Iio a, f b := by
-  convert map_iSup hf _
+  convert hf.leftOrdContinuous.map_ciSup _
   · exact ha.iSup_Iio.symm
   · exact ⟨⊥, ha.bot_lt⟩
   · use a
@@ -250,7 +254,7 @@ theorem dirSupClosed_range {f : α → α} (hf : IsNormal f) : DirSupClosed (ran
   let := WellFoundedLT.conditionallyCompleteLinearOrderBot α
   have hfl : IsLUB (f ⁻¹' s) (sSup (f ⁻¹' s)) :=
     isLUB_csSup hf' ⟨a, fun b hb ↦ hf.strictMono.le_apply.trans (ha.1 hb)⟩
-  have ha' := hf.map_isLUB hfl hf'
+  have ha' := hf.leftOrdContinuous hf' hfl
   rw [image_preimage_eq_of_subset hs] at ha'
   obtain rfl := ha.unique ha'
   exact mem_range_self _
