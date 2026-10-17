@@ -250,6 +250,7 @@ lemma fromSpecStalkOfMem_toPartialMap (f : X ⟶ Y) (x) :
   simp [fromSpecStalkOfMem]
 
 /-- Two partial maps are equivalent if they are equal on a dense open subscheme. -/
+@[stacks 01RS "(1)"]
 protected noncomputable
 def equiv (f g : X.PartialMap Y) : Prop :=
   ∃ (W : X.Opens) (hW : Dense (W : Set X)) (hWl : W ≤ f.domain) (hWr : W ≤ g.domain),
@@ -371,6 +372,7 @@ end PartialMap
 
 /-- A rational map from `X` to `Y` (`X ⤏ Y`) is an equivalence class of partial maps,
 where two partial maps are equivalent if they are equal on a dense open subscheme. -/
+@[stacks 01RS "(2)"]
 def RationalMap (X Y : Scheme.{u}) : Type u :=
   @Quotient (X.PartialMap Y) inferInstance
 
@@ -389,6 +391,7 @@ abbrev RationalMap.id : X ⤏ X := (PartialMap.id X).toRationalMap
 
 variable (S) in
 /-- A rational map is an `S`-map if some partial map in the equivalence class is an `S`-map. -/
+@[stacks 01RS "(3)"]
 class RationalMap.IsOver [X.Over S] [Y.Over S] (f : X ⤏ Y) : Prop where
   exists_partialMap_over : ∃ g : X.PartialMap Y, g.IsOver S ∧ g.toRationalMap = f
 
@@ -567,6 +570,7 @@ end functionField
 section domain
 
 /-- The domain of definition of a rational map. -/
+@[stacks 0A1X]
 def RationalMap.domain (f : X ⤏ Y) : X.Opens :=
   sSup { PartialMap.domain g | (g) (_ : g.toRationalMap = f) }
 
@@ -598,6 +602,7 @@ def RationalMap.openCoverDomain (f : X ⤏ Y) : f.domain.toScheme.OpenCover wher
 set_option backward.isDefEq.respectTransparency false in
 /-- If `f : X ⤏ Y` is a rational map from a reduced scheme to a separated scheme,
 then `f` can be represented as a partial map on its domain of definition. -/
+@[stacks 0A1Y "first part"]
 noncomputable
 def RationalMap.toPartialMap [IsReduced X] [Y.IsSeparated] (f : X ⤏ Y) : X.PartialMap Y := by
   refine ⟨f.domain, f.dense_domain, f.openCoverDomain.glueMorphisms
@@ -639,6 +644,7 @@ lemma RationalMap.toRationalMap_toPartialMap [IsReduced X] [Y.IsSeparated]
   · congr 1
     exact PartialMap.ext _ f rfl (by simpa using f.toPartialMap_toRationalMap_restrict)
 
+@[stacks 0A1Y "last part"]
 instance [IsReduced X] [Y.IsSeparated] [S.IsSeparated] [X.Over S] [Y.Over S]
     (f : X ⤏ Y) [f.IsOver S] : f.toPartialMap.IsOver S := by
   rw [← PartialMap.isOver_toRationalMap_iff_of_isSeparated, f.toRationalMap_toPartialMap]
