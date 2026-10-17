@@ -6,6 +6,7 @@ Authors: Eric Wieser, Brendan Murphy
 module
 
 public import Mathlib.Logic.Equiv.Fin.Basic
+public import Mathlib.Logic.Function.Init
 public import Mathlib.Logic.Function.OfArity
 
 /-!
