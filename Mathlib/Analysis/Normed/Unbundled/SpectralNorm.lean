@@ -581,7 +581,7 @@ theorem spectralNorm_one' : spectralNorm' K L 1 = 1 := by
 
 variable [IsUltrametricDist K]
 
-/-- `spectralNorm' K L (-y) = spectralNorm' K L y` . -/
+/-- `spectralNorm K L (-y) = spectralNorm K L y` . -/
 theorem spectralNorm_neg' {y : L} (hy : IsAlgebraic K y) :
     spectralNorm' K L (-y) = spectralNorm' K L y := by
   set E := K⟮y⟯

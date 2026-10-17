@@ -356,18 +356,6 @@ noncomputable def spectralNorm.normedField (K L : Type*) [NormedField K] [Field 
     [Algebra K L] [Algebra.IsAlgebraic K L] [CompleteSpace K] : NormedField L :=
   (spectralAbsoluteValue K L).toNormedField
 
-/-- The spectral norm gives `L` the structure of a nontrivally normed field. -/
-@[instance_reducible]
-noncomputable def spectralNorm.nontriviallyNormedField (K L : Type*) [NontriviallyNormedField K]
-    [Field L] [Algebra K L] [Algebra.IsAlgebraic K L] [CompleteSpace K] :
-    NontriviallyNormedField L where
-  __ := spectralNorm.normedField K L
-  non_trivial := by
-    let ⟨x, hx⟩ := NontriviallyNormedField.non_trivial (α := K)
-    use algebraMap K L x
-    change 1 < spectralNorm K L (algebraMap K L x)
-    rwa [spectralNorm_algebraMap, spectralNorm_eq_norm]
-
 /-- The spectral norm gives `L` the structure of a normed algebra. -/
 @[instance_reducible]
 noncomputable def spectralNorm.normedAlgebra
@@ -377,6 +365,18 @@ noncomputable def spectralNorm.normedAlgebra
     NormedAlgebra K L where
   __ := spectralNorm.normedField K L
   norm_smul_le x y := ((spectralAlgNorm K L).smul' x y).le
+
+/-- The spectral norm gives `L` the structure of a nontrivally normed field. -/
+@[instance_reducible]
+noncomputable def spectralNorm.nontriviallyNormedField (K L : Type*) [NontriviallyNormedField K]
+    [Field L] [Algebra K L] [Algebra.IsAlgebraic K L] [CompleteSpace K] :
+    NontriviallyNormedField L where
+  __ := spectralNorm.normedField K L
+  non_trivial := by
+    let := spectralNorm.normedAlgebra K L
+    let ⟨x, hx⟩ := NontriviallyNormedField.non_trivial (α := K)
+    use algebraMap K L x
+    rwa [NormedAlgebra.norm_eq_spectralNorm K, spectralNorm_algebraMap, spectralNorm_eq_norm]
 
 /-- The spectral norm gives `L` the structure of a normed algebra over any intermediate field. -/
 @[instance_reducible]
@@ -393,11 +393,11 @@ noncomputable def spectralNorm.normedAlgebra' (K E L : Type*) [NormedField K]
     simp [Algebra.smul_def]
     simp [NormedAlgebra.norm_eq_spectralNorm K, spectralNorm_algebraMap]
 
+-- todo: golf
 open scoped Matrix.Norms.Operator Topology in
 open Filter in
 theorem isNonarchimedean_gelfandRadiusNorm {K L : Type*} [NormedField K] [Field L] [Algebra K L]
-    [IsUltrametricDist K] [FiniteDimensional K L] :
-    IsNonarchimedean (gelfandRadiusNorm K L) := by
+    [IsUltrametricDist K] [FiniteDimensional K L] : IsNonarchimedean (gelfandRadiusNorm K L) := by
   intro x y
   let T := Algebra.leftMulMatrix (Module.finBasis K L)
   let M := max (gelfandRadius (T x)) (gelfandRadius (T y))
