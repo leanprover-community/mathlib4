@@ -332,6 +332,17 @@ theorem _root_.LinearMap.isSemisimpleModule_iff_of_bijective
   simp_rw [isSemisimpleModule_iff,
     (Submodule.orderIsoMapComapOfBijective l hl).complementedLattice_iff]
 
+theorem _root_.LinearMap.isSemisimpleModule_of_injective
+    [RingHomSurjective σ] (hl : Function.Injective l) [IsSemisimpleModule S N'] :
+    IsSemisimpleModule R M' :=
+  (l.rangeRestrict.isSemisimpleModule_iff_of_bijective
+    ⟨l.injective_rangeRestrict_iff.mpr hl, l.surjective_rangeRestrict⟩).mpr inferInstance
+
+theorem _root_.LinearMap.isSemisimpleModule_of_surjective
+    [RingHomSurjective σ] (hl : Function.Surjective l) [IsSemisimpleModule R M'] :
+    IsSemisimpleModule S N' :=
+  (isSemisimpleModule_iff_of_bijective _ ((ker l).liftQ_bijective l rfl hl)).mp inferInstance
+
 end
 
 end IsSemisimpleModule

@@ -236,6 +236,11 @@ theorem ker_liftQ_eq_bot' (f : M →ₛₗ[τ₁₂] M₂) (h : p = ker f) :
     ker (p.liftQ f (le_of_eq h)) = ⊥ :=
   ker_liftQ_eq_bot p f h.le h.ge
 
+/-- A surjective semilinear map induces a bijection from the quotient by its kernel. -/
+theorem liftQ_bijective (f : M →ₛₗ[τ₁₂] M₂) (h : p = ker f) (hf : Function.Surjective f) :
+    Function.Bijective (p.liftQ f h.le) :=
+  ⟨ker_eq_bot.mp (p.ker_liftQ_eq_bot' f h), .of_comp (g := p.mkQ) hf⟩
+
 theorem range_mapQ [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) (h : p ≤ comap f q) :
     (p.mapQ q f h).range = f.range.map q.mkQ := by
   rw [mapQ, range_liftQ, range_comp]

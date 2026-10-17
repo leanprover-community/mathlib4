@@ -23,8 +23,7 @@ universe u v
 
 variable {R M M₂ M₃ : Type*}
 variable [Ring R] [AddCommGroup M] [AddCommGroup M₂] [AddCommGroup M₃]
-variable [Module R M] [Module R M₂] [Module R M₃]
-variable (f : M →ₗ[R] M₂)
+variable [Module R M] [Module R M₃]
 
 /-! The first and second isomorphism theorems for modules. -/
 
@@ -34,18 +33,23 @@ open Submodule
 
 section IsomorphismLaws
 
-/-- The **first isomorphism law for modules**. The quotient of `M` by the kernel of `f` is linearly
-equivalent to the range of `f`. -/
-noncomputable def quotKerEquivRange : (M ⧸ LinearMap.ker f) ≃ₗ[R] LinearMap.range f :=
+section
+
+variable {S : Type*} [Ring S] [Module S M₂] {σ : R →+* S} {σ' : S →+* R}
+  [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (f : M →ₛₗ[σ] M₂)
+
+/-- The **first isomorphism law for modules**. The quotient of `M` by the kernel of `f` is
+semilinearly equivalent to the range of `f`. -/
+noncomputable def quotKerEquivRange : (M ⧸ LinearMap.ker f) ≃ₛₗ[σ] LinearMap.range f :=
   -- TODO: We should fix this definition so that `fₗ.quotKerEquivRange.toAddEquiv` is definitionally
   -- equal to `QuotientAddGroup.quotientKerEquivRange f.toAddMonoidHom`.
   (LinearEquiv.ofInjective ((LinearMap.ker f).liftQ f le_rfl) <|
         ker_eq_bot.mp <| Submodule.ker_liftQ_eq_bot _ _ _ (le_refl (LinearMap.ker f))).trans
     (LinearEquiv.ofEq _ _ <| Submodule.range_liftQ _ _ _)
 
-/-- The **first isomorphism theorem for surjective linear maps**. -/
-noncomputable def quotKerEquivOfSurjective (f : M →ₗ[R] M₂) (hf : Function.Surjective f) :
-    (M ⧸ LinearMap.ker f) ≃ₗ[R] M₂ :=
+/-- The **first isomorphism theorem for surjective semilinear maps**. -/
+noncomputable def quotKerEquivOfSurjective (f : M →ₛₗ[σ] M₂) (hf : Function.Surjective f) :
+    (M ⧸ LinearMap.ker f) ≃ₛₗ[σ] M₂ :=
   f.quotKerEquivRange.trans <| .ofTop (LinearMap.range f) <| range_eq_top.2 hf
 
 @[simp]
@@ -67,6 +71,8 @@ theorem quotKerEquivRange_symm_apply_image (x : M) (h : f x ∈ LinearMap.range 
 theorem quotKerEquivOfSurjective_symm_apply (hf : Function.Surjective f) (x : M) :
     (f.quotKerEquivOfSurjective hf).symm (f x) = Submodule.Quotient.mk x := by
   simp [LinearEquiv.symm_apply_eq]
+
+end
 
 /-- Linear map from `p` to `p+p'/p'` where `p p'` are submodules of `R` -/
 abbrev subToSupQuotient (p p' : Submodule R M) :
@@ -151,7 +157,7 @@ end IsomorphismLaws
 
 section Surjective
 
-variable {f} (hf : Function.Surjective f)
+variable [Module R M₂] {f : M →ₗ[R] M₂} (hf : Function.Surjective f)
 
 /-- Given a surjective `f : M →ₗ[R] M₂` and an `R`-module `M₃`, this is a bijection between
 `R`-linear maps `M₂ →ₗ[R] M₃` and `R`-linear maps `g : M →ₗ[R] M₃` such that `ker f ≤ ker g`. -/
