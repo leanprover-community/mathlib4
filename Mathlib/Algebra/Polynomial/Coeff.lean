@@ -91,8 +91,6 @@ theorem finsetSum_coeff {ι : Type*} (s : Finset ι) (f : ι → R[X]) (n : ℕ)
     coeff (∑ b ∈ s, f b) n = ∑ b ∈ s, coeff (f b) n :=
   map_sum (lcoeff R n) _ _
 
-@[deprecated (since := "2026-04-08")] alias finset_sum_coeff := finsetSum_coeff
-
 lemma coeff_list_sum (l : List R[X]) (n : ℕ) :
     l.sum.coeff n = (l.map (lcoeff R n)).sum :=
   map_list_sum (lcoeff R n) _

@@ -6,14 +6,14 @@ Authors: Kim Morrison, Heather Macbeth
 module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Tower
-public import Mathlib.Topology.Algebra.StarSubalgebra
 public import Mathlib.Topology.Algebra.NonUnitalStarAlgebra
+public import Mathlib.Topology.Algebra.StarSubalgebra
 public import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 public import Mathlib.Topology.ContinuousMap.Lattice
 public import Mathlib.Topology.ContinuousMap.Weierstrass
 
-import Mathlib.Topology.Algebra.Star.Real
 import Mathlib.Algebra.Order.Module.Basic
+import Mathlib.Topology.Algebra.Star.Real
 
 /-!
 # The Stone-Weierstrass theorem
@@ -638,7 +638,7 @@ lemma ContinuousMapZero.adjoin_id_dense (s : Set 𝕜) [Fact (0 ∈ s)]
     ← ContinuousMap.ker_evalStarAlgHom_eq_closure_adjoin_id s h0']
   apply Set.eq_univ_of_forall fun f ↦ ?_
   simp only [Set.mem_preimage, SetLike.mem_coe, RingHom.mem_ker,
-    ContinuousMap.evalStarAlgHom_apply, ContinuousMap.coe_coe]
+    ContinuousMap.evalStarAlgHom_apply, ContinuousMap.coe_ofClass]
   exact map_zero f
 
 open NonUnitalStarAlgebra in
@@ -691,7 +691,9 @@ lemma ContinuousMapZero.nonUnitalStarAlgHom_apply_mul_eq_zero {𝕜 A : Type*}
   | add _ _ h₁ h₂ => simp only [map_add, add_mul, h₁, h₂, zero_add]
   | mul _ _ _ h => simp only [map_mul, mul_assoc, h, mul_zero]
   | smul _ _ h => rw [map_smul, smul_mul_assoc, h, smul_zero]
-  | frequently f h => exact h.mem_of_closed <| isClosed_eq (by fun_prop) continuous_zero
+  | frequently f h =>
+    exact h.mem_of_closed (s := {g | φ g * a = 0}) <|
+      isClosed_eq (by fun_prop) continuous_zero
 
 lemma ContinuousMapZero.mul_nonUnitalStarAlgHom_apply_eq_zero {𝕜 A : Type*}
     [RCLike 𝕜] [NonUnitalSemiring A] [Star A] [TopologicalSpace A] [SeparatelyContinuousMul A]
@@ -706,6 +708,8 @@ lemma ContinuousMapZero.mul_nonUnitalStarAlgHom_apply_eq_zero {𝕜 A : Type*}
   | add _ _ h₁ h₂ => simp only [map_add, mul_add, h₁, h₂, zero_add]
   | mul _ _ h _ => simp only [map_mul, ← mul_assoc, h, zero_mul]
   | smul _ _ h => rw [map_smul, mul_smul_comm, h, smul_zero]
-  | frequently f h => exact h.mem_of_closed <| isClosed_eq (by fun_prop) continuous_zero
+  | frequently f h =>
+    exact h.mem_of_closed (s := {g | a * φ g = 0}) <|
+      isClosed_eq (by fun_prop) continuous_zero
 
 end ContinuousMapZero

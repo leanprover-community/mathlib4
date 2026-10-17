@@ -9,7 +9,8 @@ def mkTestLambda (n : Name) : Expr :=
   .lam n (.sort 0) (.bvar 0) .default
 
 def mkDocComment (s : String) : TSyntax `Lean.Parser.Command.docComment :=
-  .mk <| mkNode ``Parser.Command.docComment #[mkAtom "/--", mkAtom (s ++ "-/")]
+  .mk <| mkNode ``Parser.Command.docComment
+    #[mkAtom "/--", mkNode ``Parser.Command.commentBody #[mkAtom s, mkAtom "-/"]]
 
 open Parser Elab Command in
 /--
@@ -40,7 +41,7 @@ elab "test" str:str bool:(&"false" <|> &"true") name:term : command => do
     else
       throwErrorAt str "Failed to parse {str} as an identifier, despite expecting to roundtrip"
   -- Check that pretty-printing `name` recovers `str`
-  let doc := mkDocComment s!"info: fun {str.getString} => {str.getString} : Prop → Prop\n"
+  let doc := mkMarkdownDocComment s!"info: fun {str.getString} => {str.getString} : Prop → Prop\n"
   elabCommand <| ←
     `(command| $doc:docComment #guard_msgs in #check by_elab return mkTestLambda $name:term)
 

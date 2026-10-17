@@ -318,7 +318,7 @@ theorem upperCentralSeries_mono : Monotone (upperCentralSeries G) := by
   refine monotone_nat_of_le_succ ?_
   intro n x hx y
   rw [commutatorElement_def, mul_assoc, mul_assoc, ← mul_assoc y x⁻¹ y⁻¹]
-  exact mul_mem hx (Normal.conj_mem inferInstance x⁻¹ (inv_mem hx) y)
+  exact mul_mem hx (Normal.conj_mem x⁻¹ (inv_mem hx) y)
 
 /-- A group `G` is nilpotent iff there exists an ascending central series which reaches `G` in
 finitely many steps. -/
@@ -1307,7 +1307,7 @@ theorem Group.isNilpotent_of_product_of_sylow_group
   have : ∀ (p : ps) (P : Sylow p G), IsNilpotent (↑P : Subgroup G) := by
     intro p P
     have : Fact (Nat.Prime ↑p) := Fact.mk <| Nat.prime_of_mem_primeFactors p.2
-    exact P.isPGroup'.isNilpotent
+    exact P.isPGroup.isNilpotent
   exact nilpotent_of_mulEquiv e
 
 /-- A finite group is nilpotent iff the normalizer condition holds, and iff all maximal groups are
@@ -1340,7 +1340,7 @@ lemma Group.IsNilpotent.prime_dvd_card_center [IsNilpotent G] {p : ℕ} [hp : Fa
   obtain P : Sylow p G := Classical.arbitrary ..
   refine dvd_trans ?_ <| (↑P ⊓ center G).card_dvd_of_le inf_le_right
   have hnt := mt (eq_bot_iff_card _).mpr (inf_center_ne_bot_of_normal (P.ne_bot_of_dvd_card hcard))
-  exact P.isPGroup'.to_inf_left.card_eq_or_dvd.resolve_left hnt
+  exact P.isPGroup.to_inf_left.card_eq_or_dvd.resolve_left hnt
 
 /-- A finite nilpotent group has normal subgroups of every possible index. -/
 theorem Group.IsNilpotent.exists_normal_index_eq_of_dvd_card [IsNilpotent G] {k : ℕ}
@@ -1351,9 +1351,9 @@ theorem Group.IsNilpotent.exists_normal_index_eq_of_dvd_card [IsNilpotent G] {k 
   · refine ⟨⊥, by simp [hmul, hm1], normal_bot⟩
   · obtain ⟨p, hp, m'', rfl⟩ : ∃ p, p.Prime ∧ p ∣ m' := m'.ne_one_iff_exists_prime_dvd.mp hm1
     obtain ⟨N, hNcard, hN⟩ : ∃ N : Subgroup G, Nat.card N = p ∧ N.Normal := by
-      suffices ∃ (H : Subgroup G), Nat.card H = p ^ 1 ∧ ⊥ ≤ H ∧ H ≤ center G by
+      suffices ∃ (H : Subgroup G), Nat.card H = p ^ 1 ∧ H ≤ center G by
         grind [normal_of_le_center]
-      refine Sylow.exists_subgroup_card_pow_prime_le_le hp (by simp) ?_ bot_le
+      refine Sylow.exists_subgroup_card_pow_prime_le hp (center G) ?_
       exact prime_dvd_card_center (hp := ⟨by simpa⟩) ⟨k * m'', by grind⟩
     obtain ⟨K, hKcard, hK⟩ : ∃ K : Subgroup (G ⧸ N), K.index = k ∧ K.Normal := by
       refine ih (Nat.card (G ⧸ N)) ?_ ?_ rfl
@@ -1373,5 +1373,3 @@ theorem Group.IsNilpotent.exists_normal_card_eq_of_dvd_card [IsNilpotent G] {n :
   rwa [← H.card_mul_index, ← hind, Nat.mul_left_inj FiniteIndex.index_ne_zero] at hk
 
 end WithFiniteGroup
-
-open Group

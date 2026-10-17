@@ -5,8 +5,8 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.GroupTheory.QuotientGroup.Defs
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+public import Mathlib.GroupTheory.QuotientGroup.Defs
 
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
