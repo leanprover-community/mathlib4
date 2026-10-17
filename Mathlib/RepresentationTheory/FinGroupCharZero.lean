@@ -33,7 +33,7 @@ an algebraically closed field in which the order of `G` is invertible:
 
 public section
 
-universe u v w
+universe u v
 
 variable {k : Type u} [Field k] {G : Type u} [Finite G] [Group G]
 
@@ -47,7 +47,7 @@ variable [NeZero (Nat.card G : k)]
 If `G` is finite and its order is nonzero in the field `k`, then every object of
 `Rep k G` is injective.
 -/
-instance (V : Rep.{w} k G) : Injective V := by
+instance (V : Rep.{u} k G) : Injective V := by
   rw [← Rep.equivalenceModuleMonoidAlgebra.map_injective_iff,
     ← Module.injective_iff_injective_object]
   exact Module.injective_of_isSemisimpleRing _ _
