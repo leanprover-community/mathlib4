@@ -405,17 +405,18 @@ meta def evalTsum : PositivityExt where eval {u α} zα pα? e :=
   match e with
   | ~q(@tsum _ $ι $instCommMonoid $instTopSpace $f $L) =>
     lambdaBoundedTelescope f 1 fun args (body : Q($α)) => do
-      let #[(i : Q($ι))] := args | failure
+      let #[(i : Q($ι))] := args | return .none
       let rbody ← core zα pα body
-      let pbody ← rbody.toNonneg
-      let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody
-      let mα' ← synthInstanceQ q(AddCommMonoid $α)
-      let oα' ← synthInstanceQ q(Preorder $α)
-      let pα' ← synthInstanceQ q(IsOrderedAddMonoid $α)
-      let instOrderClosed ← synthInstanceQ q(OrderClosedTopology $α)
-      assertInstancesCommute
-      return .nonnegative
-        q(@tsum_nonneg $ι $α $L $mα' $oα' $pα' $instTopSpace $instOrderClosed $f $pr)
+      return ← catchNone do
+        let pbody ← rbody.toNonneg
+        let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody
+        let mα' ← synthInstanceQ q(AddCommMonoid $α)
+        let oα' ← synthInstanceQ q(Preorder $α)
+        let pα' ← synthInstanceQ q(IsOrderedAddMonoid $α)
+        let instOrderClosed ← synthInstanceQ q(OrderClosedTopology $α)
+        assertInstancesCommute
+        return .nonnegative
+          q(@tsum_nonneg $ι $α $L $mα' $oα' $pα' $instTopSpace $instOrderClosed $f $pr)
   | _ => throwError "not tsum"
 
 end Mathlib.Meta.Positivity

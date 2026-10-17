@@ -128,13 +128,15 @@ meta def evalZPow : PositivityExt where eval {u α} zα pα? e := do
   let .app (.app _ (a : Q($α))) (b : Q(ℤ)) ← whnf e | throwError "not ^"
   match (dependent := true) pα? with
   | none =>
-    match ← core zα pα? a with
-    | .nonzero pa =>
-      let _a ← synthInstanceQ q(GroupWithZero $α)
-      assumeInstancesCommute
-      haveI' : $e =Q $a ^ $b := ⟨⟩
-      pure (.nonzero q(zpow_ne_zero $b $pa))
-    | _ => pure .none
+    let ra ← core zα pα? a
+    return ← catchNone do
+      match ra with
+      | .nonzero pa =>
+        let _a ← synthInstanceQ q(GroupWithZero $α)
+        assumeInstancesCommute
+        haveI' : $e =Q $a ^ $b := ⟨⟩
+        pure (.nonzero q(zpow_ne_zero $b $pa))
+      | _ => pure .none
   | some pα =>
     let result ← catchNone do
       let _a ← synthInstanceQ q(Field $α)
@@ -158,8 +160,9 @@ meta def evalZPow : PositivityExt where eval {u α} zα pα? e := do
         haveI' : $e =Q $a ^ $b := ⟨⟩
         pure (.nonnegative q(Even.zpow_nonneg (Even.add_self _) $a))
       | _ => throwError "not a ^ n where n is a literal or a negated literal"
+    if result.toPositive.isSome then return result
+    let ra ← core zα pα a
     orElse result do
-      let ra ← core zα pα a
       let ofNonneg (pa : Q(0 ≤ $a))
           (_oα : Q(Semifield $α)) (_oα : Q(LinearOrder $α)) (_oα : Q(IsStrictOrderedRing $α)) :
           MetaM (Strictness zα e pα) := do

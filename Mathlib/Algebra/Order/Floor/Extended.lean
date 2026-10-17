@@ -262,8 +262,9 @@ meta def evalENatCeil : PositivityExt where eval {u α} _zα pα? e :=
   | 0, ~q(ℕ∞), ~q(ENat.ceil $r) =>
     match ← core q(inferInstance) (some q(inferInstance)) r with
     | .positive pr =>
-      assertInstancesCommute
-      pure (.positive q(natCeil_pos $pr))
+      liftM <| catchNone do
+        assertInstancesCommute
+        pure (.positive q(natCeil_pos $pr))
     | _ => pure .none
   | _, _, _ => throwError "failed to match on ENat.ceil application"
 

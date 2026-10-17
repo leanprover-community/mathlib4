@@ -183,7 +183,7 @@ open Lean.Meta Qq
 meta def evalRealPi : PositivityExt where eval {u α} _zα pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
-  | 0, ~q(ℝ), ~q(Real.pi) =>
+  | 0, ~q(ℝ), ~q(Real.pi) => liftM <| catchNone do
     assertInstancesCommute
     pure (.positive q(Real.pi_pos))
   | _, _, _ => throwError "not Real.pi"

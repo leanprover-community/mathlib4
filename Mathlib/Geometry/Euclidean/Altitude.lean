@@ -294,8 +294,9 @@ meta def evalHeight : PositivityExt where eval {u α} _ pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@height $V $P $i1 $i2 $i3 $i4 $n $hn $s $i) =>
-    assertInstancesCommute
-    return .positive q(height_pos $s $i)
+    return ← catchNone do
+      assertInstancesCommute
+      return .positive q(height_pos $s $i)
   | _, _, _ => throwError "not Simplex.height"
 
 /-- The height of a 1-dimensional simplex equals to the distance between the two vertices. -/

@@ -69,11 +69,11 @@ def rescale (lems : Ineq.WithStrictness → Name) (ty : Option Expr) (p c : Term
   | le => do
     let i := mkIdent <| lems .le
     let e₂ ← withSynthesizeLight <| Term.elabTerm c ty
-    let hc₂ ← Meta.Positivity.proveNonneg e₂
+    let hc₂ ← (Meta.Positivity.proveNonneg e₂).run' {}
     .proof le <$> ``($i $p $(← hc₂.toSyntax))
   | lt => do
     let e₂ ← withSynthesizeLight <| Term.elabTerm c ty
-    let (strict, hc₂) ← Meta.Positivity.bestResult e₂
+    let (strict, hc₂) ← (Meta.Positivity.bestResult e₂).run' {}
     let i := mkIdent <| lems (.lt strict)
     let p' : Term ← ``($i $p $(← hc₂.toSyntax))
     if strict then pure (.proof lt p') else pure (.proof le p')

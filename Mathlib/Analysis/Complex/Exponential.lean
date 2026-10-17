@@ -280,7 +280,7 @@ private theorem add_one_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) : x + 1 ≤ ex
 
 theorem one_le_exp {x : ℝ} (hx : 0 ≤ x) : 1 ≤ exp x := by linarith [add_one_le_exp_of_nonneg hx]
 
-@[bound]
+@[bound, positivity_lemma]
 theorem exp_pos (x : ℝ) : 0 < exp x :=
   (le_total 0 x).elim (lt_of_lt_of_le zero_lt_one ∘ one_le_exp) fun h => by
     rw [← neg_neg x, Real.exp_neg]
@@ -667,7 +667,6 @@ lemma exp_lt_two_add_div_two_sub {x : ℝ} (hx : 0 < x) (hx' : x < 2) :
   _ = exp (x / 2) ^ 2 := by grind [Real.exp_nat_mul (x / 2) 2]
   _ ≤ _ := by
     grw [Real.exp_bound' (x := x / 2) (by grind) (by grind) (n := 3) (by simp)]
-    apply Real.exp_nonneg
   _ < (2 + x) / (2 - x) := by
     rw [lt_div_iff₀ (by linarith), ← sub_pos]
     simp only [Finset.sum_range_succ]
@@ -687,21 +686,6 @@ theorem prod_one_add_le_exp_sum {ι : Type*} (s : Finset ι) {f : ι → ℝ}
     (exp_sum s f).symm.le
 
 end Real
-
-namespace Mathlib.Meta.Positivity
-open Lean.Meta Qq
-
-/-- Extension for the `positivity` tactic: `Real.exp` is always positive. -/
-@[positivity Real.exp _]
-meta def evalExp : PositivityExt where eval {u α} _ pα? e :=
-  match pα? with | none => pure .none | some _ => do
-  match u, α, e with
-  | 0, ~q(ℝ), ~q(Real.exp $a) =>
-    assertInstancesCommute
-    pure (.positive q(Real.exp_pos $a))
-  | _, _, _ => throwError "not Real.exp"
-
-end Mathlib.Meta.Positivity
 
 namespace Complex
 

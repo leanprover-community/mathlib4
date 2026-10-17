@@ -81,7 +81,7 @@ open Qq Mathlib.Meta.Positivity in
 meta def evalVolume : PositivityExt where eval {u α} _ pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
-  | 0, ~q(ℝ), ~q(@volume $V $P $i1 $i2 $i3 $i4 $n $s) =>
+  | 0, ~q(ℝ), ~q(@volume $V $P $i1 $i2 $i3 $i4 $n $s) => liftM <| catchNone do
     assertInstancesCommute
     return .positive q(volume_pos $s)
   | _, _, _ => throwError "not Simplex.volume"
