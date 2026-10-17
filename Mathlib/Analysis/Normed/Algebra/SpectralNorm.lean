@@ -34,7 +34,8 @@ theorem Matrix.norm_apply_le_linfty_opNorm {α β γ : Type*} [SeminormedAddComm
     [Fintype α] [Fintype β] (M : Matrix α β γ) (i : α) (j : β) : ‖M i j‖ ≤ ‖M‖ := by
   grw [← coe_nnnorm, nnnorm_apply_le_linfty_opNNNorm, coe_nnnorm]
 
-theorem Matrix.foobar {α β γ κ : Type*} [SeminormedAddCommGroup γ] [IsUltrametricDist γ]
+theorem Matrix.linfty_opNorm_sum_le_card_mul
+    {α β γ κ : Type*} [SeminormedAddCommGroup γ] [IsUltrametricDist γ]
     [Fintype α] [Fintype β]
     (M : κ → Matrix α β γ) (s : Finset κ) (B : ℝ) (hB : 0 ≤ B) (hM : ∀ i ∈ s, ‖M i‖ ≤ B) :
     ‖∑ k ∈ s, M k‖ ≤ Fintype.card β * B := by
@@ -49,10 +50,10 @@ theorem Matrix.foobar {α β γ κ : Type*} [SeminormedAddCommGroup γ] [IsUltra
   simp
   rfl
 
-theorem Matrix.foo
+theorem Matrix.linfty_opNorm_add_le_card_mul_max
     {α β γ : Type*} [SeminormedAddCommGroup γ] [IsUltrametricDist γ] [Fintype α] [Fintype β]
     (M N : Matrix α β γ) : ‖M + N‖ ≤ Fintype.card β * max ‖M‖ ‖N‖ := by
-  simpa using foobar (Bool.rec N M) Finset.univ (max ‖M‖ ‖N‖) (by simp) (by simp)
+  simpa using linfty_opNorm_sum_le_card_mul (Bool.rec N M) Finset.univ _ (by simp) (by simp)
 
 theorem map_finset_sup'' {α β ι : Type*} [SemilatticeSup α] [SemilatticeSup β]
     (f : α → β) (h : ∀ x y, f (x ⊔ y) = f x ⊔ f y) {s : Finset ι} (hs) (g : ι → α) :
@@ -423,7 +424,7 @@ theorem isNonarchimedean_gelfandRadiusNorm {K L : Type*} [NormedField K] [Field 
   have : 0 < r := by grind [gelfandRadius_nonneg]
   have key n : ‖T (x + y) ^ n‖ ≤ C * r ^ n := by
     grw [map_add, ((Commute.all x y).map T).add_pow]
-    grw [foobar _ _ (Cx * Cy * r ^ n) (by positivity)]
+    grw [Matrix.linfty_opNorm_sum_le_card_mul _ _ (Cx * Cy * r ^ n) (by positivity)]
     · rw [Fintype.card_fin]
       grind
     intro k hk
