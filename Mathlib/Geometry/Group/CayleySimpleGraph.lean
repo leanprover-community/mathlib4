@@ -25,7 +25,6 @@ We use this to show that the graph distance in the Cayley graph is given by the 
 
 ## Main results
 
-* `Group.Generators.cayleySimpleGraph_connected`: the Cayley graph is connected.
 * `Group.Generators.dist_cayleySimpleGraph`: the distance from `g` to `h` in the Cayley graph is
   the word length of `g⁻¹ * h`.
 
@@ -114,36 +113,27 @@ lemma exists_word_of_walk {g h : G} (p : P.cayleySimpleGraph.Walk g h) :
     · rw [wordProd_append, hx, hprod]; simp
     · simp [hl]
 
-/-! ### Connectedness -/
-
-/-- The Cayley graph is preconnected: any two vertices can be joined by a walk. -/
-lemma cayleySimpleGraph_preconnected : P.cayleySimpleGraph.Preconnected := by
-  intro g h
-  obtain ⟨l, hl⟩ := P.wordProd_surjective (g⁻¹ * h)
-  obtain ⟨p, -⟩ := P.exists_walk_of_word g l
-  simp [hl] at p
-  exact p.reachable
-
-/-- The Cayley graph is connected: preconnected and nonempty. -/
-theorem cayleySimpleGraph_connected : P.cayleySimpleGraph.Connected := by
-  constructor; exact P.cayleySimpleGraph_preconnected
-
 /-! ### Distance -/
 
 /-- The distance from `g` to `h` in the Cayley graph is the word length of `g⁻¹ * h`. -/
 theorem dist_cayleySimpleGraph : P.cayleySimpleGraph.dist g h = P.wordLength (g⁻¹ * h) := by
-  apply le_antisymm
-  · obtain ⟨l, hl, hprod⟩ := P.exists_isGeodesic (g⁻¹ * h)
+  -- get sufficiently short walk between `g` and `h`; gives reachability and the ≤ direction
+  obtain ⟨p, hp⟩ : ∃ p : P.cayleySimpleGraph.Walk g h, p.length ≤ P.wordLength (g⁻¹ * h) := by
+    obtain ⟨l, hl, hprod⟩ := P.exists_isGeodesic (g⁻¹ * h)
+    rw [IsGeodesic, hprod] at hl
     obtain ⟨p, hp⟩ := P.exists_walk_of_word g l
-    rw [← hprod, hl.eq]
-    have heq : h = g * P.wordProd l := by simp [hprod]
-    subst heq
-    exact (dist_le p).trans hp
-  · have hconn := P.cayleySimpleGraph_preconnected g h
-    obtain ⟨p, hp⟩ := hconn.exists_walk_length_eq_dist
-    obtain ⟨l, hprod, hl⟩ := P.exists_word_of_walk p
-    rw [← hp, ← hl, wordLength_le_iff]
-    use l
+    use p.copy rfl (by simp [hprod])
+    rw [Walk.length_copy, hl]
+    exact hp
+  apply le_antisymm
+  · calc P.cayleySimpleGraph.dist g h ≤ p.length := dist_le p
+      _ ≤ P.wordLength (g⁻¹ * h) := hp
+  · obtain ⟨q, hq⟩ := p.reachable.exists_walk_length_eq_dist
+    obtain ⟨l, hl, hlen⟩ := P.exists_word_of_walk q
+    rw [← hl]
+    calc P.wordLength (P.wordProd l) ≤ l.length := P.wordLength_wordProd_le l
+      _ = q.length := hlen
+      _ = P.cayleySimpleGraph.dist g h := hq
 
 /-- The word length of `g` is its distance from `1` in the Cayley graph. -/
 @[simp]
