@@ -104,6 +104,12 @@ theorem updateRow_eq_transvection [Finite n] (c : R) :
       Ne, not_false_iff,
       false_and, add_apply]
 
+@[simp]
+lemma map_transvection {S : Type*} [CommRing S] (f : R →+* S) (c : R) :
+    map (transvection i j c) f = transvection i j (f c) := by
+  ext a b
+  simp [transvection, one_apply, single_apply, apply_ite f]
+
 variable [Fintype n]
 
 theorem transvection_mul_transvection_same (h : i ≠ j) (c d : R) :
@@ -133,6 +139,14 @@ theorem mul_transvection_apply_of_ne {m : Type*} (a : m) (b : n) (hb : b ≠ j) 
 @[simp]
 theorem det_transvection_of_ne (h : i ≠ j) (c : R) : det (transvection i j c) = 1 := by
   rw [← updateRow_eq_transvection i j, det_updateRow_add_smul_self _ h, det_one]
+
+theorem transvection_mul_transvection_mul_transvection_neg_mul_transvection_neg
+    {k : n} (hij : i ≠ j) (hik : i ≠ k) (hjk : j ≠ k) (a b : R) :
+    transvection i j a * transvection j k b * transvection i j (-a) * transvection j k (-b) =
+      transvection i k (a * b) := by
+  simp [transvection, mul_add, add_mul, single_mul_single_of_ne, hij.symm, hik.symm, hjk.symm,
+    ← single_neg]
+  abel
 
 end
 
@@ -288,6 +302,38 @@ def reindexEquiv (e : n ≃ p) (t : TransvectionStruct n R) : TransvectionStruct
   j := e t.j
   hij := by simp [t.hij]
   c := t.c
+
+omit [DecidableEq n] [DecidableEq p] [CommRing R] in
+theorem reindexEquiv_surjective (e : n ≃ p) :
+    Function.Surjective (reindexEquiv e : TransvectionStruct n R → TransvectionStruct p R) :=
+  fun t ↦ ⟨t.reindexEquiv e.symm, by simp [reindexEquiv]⟩
+
+section map
+
+variable {S : Type*} [CommRing S] (f : R →+* S)
+
+/-- The `TransvectionStruct` obtained by applying `f` to the coefficient. -/
+@[simps]
+def map (t : TransvectionStruct n R) : TransvectionStruct n S := { t with c := f t.c }
+
+@[simp]
+lemma map_toMatrix (t : TransvectionStruct n R) :
+    t.toMatrix.map f = (t.map f).toMatrix := map_transvection t.i t.j f t.c
+
+omit [DecidableEq n] in
+lemma map_surjective (hf : Function.Surjective f) :
+    Function.Surjective (map f : TransvectionStruct n R → TransvectionStruct n S) := fun t ↦ by
+  obtain ⟨c, hc⟩ := hf t.c
+  exact ⟨{ t with c }, by simp [map, hc]⟩
+
+/-- If `f` is surjective, every transvection matrix over `S` is the image under `f` of a
+transvection matrix over `R`. -/
+lemma toMatrix_mem_range_map (hf : Function.Surjective f) (t : TransvectionStruct n S) :
+    t.toMatrix ∈ Set.range fun M : Matrix n n R ↦ M.map f := by
+  obtain ⟨t', rfl⟩ := map_surjective f hf t
+  exact ⟨t'.toMatrix, map_toMatrix f t'⟩
+
+end map
 
 variable [Fintype n] [Fintype p]
 
