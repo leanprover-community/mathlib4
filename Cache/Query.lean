@@ -5,6 +5,7 @@ Authors: Marcelo Lynch
 -/
 module
 
+public import Cache.Requests
 public import Cache.Marker
 
 /-!
@@ -12,15 +13,14 @@ public import Cache.Marker
 
 Discovers the most recent commit on the current branch that has a cached CI
 build, by walking git history back to the merge base with `master` and probing
-each commit's per-SHA marker. Diagnostic only: it prints a SHA for the user to
-pass to `cache get --scope=`, and never reads or writes artifacts itself.
+each commit's per-SHA marker. Git lookups use
+`CacheM.Context.mathlibDepPath`. The command prints a SHA for the user to pass
+to `cache get --scope=`, and never reads or writes artifacts itself.
 -/
 
 public section
 
 namespace Cache.Requests
-
-open System (FilePath)
 
 /--
 Walk git log backwards from HEAD, starting from `startRef`, stopping at
@@ -28,15 +28,15 @@ Walk git log backwards from HEAD, starting from `startRef`, stopping at
 
 Returns the list of commit SHAs in reverse chronological order (most recent first).
 -/
-def gitLogWalk (startRef stopRef : String) (cap : Nat) (cwd : FilePath := ".") :
-    IO (List String) := do
+def gitLogWalk (startRef stopRef : String) (cap : Nat) :
+    IO.CacheM (List String) := do
   -- Construct git log command: walk from startRef to stopRef (if provided) using first-parent.
   -- First-parent follows the main branch across merges, which is the intended behavior.
   let args := if stopRef.isEmpty then
     #["log", startRef, "--first-parent", "--pretty=format:%H", s!"--max-count={cap}"]
   else
     #["log", s!"{startRef}...{stopRef}", "--first-parent", "--pretty=format:%H", s!"--max-count={cap}"]
-  let out ← IO.Process.output {cmd := "git", args := args, cwd := cwd}
+  let out ← IO.Process.output {cmd := "git", args := args, cwd := (← read).mathlibDepPath}
   unless out.exitCode == 0 do
     throw <| IO.userError
       s!"git log failed (exit code {out.exitCode}):\n{out.stderr.trimAscii}"
@@ -47,9 +47,9 @@ def gitLogWalk (startRef stopRef : String) (cap : Nat) (cwd : FilePath := ".") :
 Determine the merge base between `HEAD` and a target ref (typically `master`).
 Falls back to a cap-only walk if the ref is not reachable.
 -/
-def gitMergeBase (targetRef : String) (cwd : FilePath := ".") : IO (Option String) := do
+def gitMergeBase (targetRef : String) : IO.CacheM (Option String) := do
   let out ← IO.Process.output
-    {cmd := "git", args := #["merge-base", "HEAD", targetRef], cwd := cwd}
+    {cmd := "git", args := #["merge-base", "HEAD", targetRef], cwd := (← read).mathlibDepPath}
   if out.exitCode == 0 then
     pure (some out.stdout.trimAscii.toString)
   else
@@ -67,47 +67,25 @@ present locally, or git unavailable) is treated as "not an ancestor", so callers
 degrade to their default behavior rather than throwing — matching the never-throw
 posture of the rest of the read path.
 -/
-def headIsAncestorOfMaster (cwd : FilePath := ".") : IO Bool := do
+def headIsAncestorOfMaster : IO.CacheM Bool := do
   try
     let out ← IO.Process.output
-      {cmd := "git", args := #["merge-base", "--is-ancestor", "HEAD", "master"], cwd := cwd}
+      {cmd := "git", args := #["merge-base", "--is-ancestor", "HEAD", "master"],
+       cwd := (← read).mathlibDepPath}
     pure (out.exitCode == 0)
   catch _ =>
     pure false
 
-/--
-Probe a single container for the per-SHA marker blob.
+/-- URL of the per-SHA marker of `sha` in `container` on the container's read
+base (`getBaseURL`), or `none` for a flat container. Marker writes
+use the upload location (`uploadLocation`). -/
+def markerProbeURL (container : Container) (repo sha : String) : IO (Option String) := do
+  return (container.location (← getBaseURL container) repo (some sha)).markerURL?
 
-Issues an anonymous HEAD against `{container}/m/{repo}/{sha}` and returns
-`true` iff the response is 200. The marker is uploaded by `put-staged`
-after a successful upload, so its presence means CI published this commit's
-artifacts. Absence is a weaker signal: CI may not have built the commit yet,
-or its build staged no files — a commit with no cache-relevant changes is
-fully served by the master container, so CI uploads nothing for it, marker
-included.
-
-Cheaper than blob-listing: deterministic URL, headers-only response,
-billed as a Read op.
--/
+/-- Resolve the read location of a container at `sha` and check its marker. -/
 def probeContainerForSHA (container : Container) (repo sha : String) :
     IO Bool := do
-  let url ← markerReadURL container repo sha
-  -- Discard the response body to the platform null device (`NUL` on Windows),
-  -- so curl reports a write error only on a genuine failure, not on every probe.
-  let out ← IO.Process.output
-    {cmd := (← IO.getCurl),
-     args := #["-s", "-o", IO.nullDevice, "-w", "%{http_code}", "-I"] ++
-       -- No retry flags: the probe is diagnostic and a false negative is
-       -- cheap. The time bounds keep an unreachable endpoint from stalling
-       -- the up-to-50-probe `cache query` walk.
-       curlFollowRedirectArgs ++
-       #["--connect-timeout", "10", "--max-time", "30", url],
-     cwd := "."}
-  if out.exitCode != 0 then
-    -- Network error; assume no cache at this SHA
-    pure false
-  else
-    pure (out.stdout.trimAscii.toString == "200")
+  checkMarker (container.location (← getBaseURL container) repo (some sha))
 
 /-- Default number of marked fork commits `cache get --unsafe` will try as SHA
 scopes: 1, namely just the latest cached SHA. Overridden by
@@ -119,8 +97,8 @@ Walk a list of SHAs (most recent first) and collect up to `limit` of them whose
 per-SHA marker exists in the `forks` container. Stops early once `limit` are
 found, so at most `limit` probes succeed (and at most `shas.length` are made).
 
-`forks` is the only SHA-scoped container; master/nightly-testing/pr-toolchain-tests
-are not scoped, so probing them here would be meaningless.
+`forks` is the only SHA-scoped container; `master` is flat, so probing it here
+would be meaningless.
 -/
 def findRecentSHAsWithCache (shas : List String) (repo : String) (limit : Nat) :
     IO (List String) := do
@@ -142,29 +120,16 @@ def findMostRecentSHAWithCache (shas : List String) (repo : String) :
   return (← findRecentSHAsWithCache shas repo 1).head?
 
 /--
-Resolve a git ref (HEAD, branch name, tag, short SHA, full SHA) to a full
-commit SHA via `git rev-parse`. Errors propagate if the ref is unknown.
--/
-def resolveGitRef (ref : String) (cwd : FilePath := ".") : IO String := do
-  let out ← IO.Process.output {cmd := "git", args := #["rev-parse", ref], cwd := cwd}
-  unless out.exitCode == 0 do
-    throw <| IO.userError
-      s!"git rev-parse {ref} failed (exit code {out.exitCode}):\n{out.stderr.trimAscii}"
-  pure out.stdout.trimAscii.toString
-
-/--
 Resolve the repo to use for a `cache query` invocation.
 
-Precedence: the explicit `--repo=` flag (if passed) > the cwd's git remote
-> `MATHLIBREPO`. Defaulting to the git remote is intentional for `query` —
-the typical user is asking "what's cached for *my* commits", not for
-canonical mathlib's commits.
+Precedence: the explicit `--repo=` flag (if passed) > the Mathlib checkout's
+git remote > `MATHLIBREPO`. Repo and commit lookups use the same checkout.
 -/
-def resolveQueryRepo (repoExplicit? : Option String) : IO String := do
+def resolveQueryRepo (repoExplicit? : Option String) : IO.CacheM String := do
   match repoExplicit? with
   | some r => pure r
   | none =>
-    match ← getRemoteRepo "." with
+    match ← getRemoteRepo (← read).mathlibDepPath with
     | some info => pure info.repo
     | none => pure MATHLIBREPO
 
@@ -199,17 +164,17 @@ SHA-scoped namespace to find the most recent commit that has cache entries.
 This is a diagnostic-only command: it prints the SHA to stdout but does not
 auto-apply it. The user manually passes the result to `cache get` if desired.
 -/
-def cacheQuery (repo : String) (cap : Nat := 50) (cwd : FilePath := ".") : IO Unit := do
+def cacheQuery (repo : String) (cap : Nat := 50) : IO.CacheM Unit := do
   if isCanonicalRepo repo then
     IO.println s!"`cache query` locates a fork PR's per-commit cache. {repo} reads \
       its own cache container directly, so there is nothing to query for it."
     return
   -- Determine merge base with master. If not reachable, use cap-only walk.
-  let mergeBase? ← gitMergeBase "master" cwd
+  let mergeBase? ← gitMergeBase "master"
   let stopRef := mergeBase?.getD ""
 
   -- Walk git log backwards from HEAD.
-  let shas ← gitLogWalk "HEAD" stopRef cap cwd
+  let shas ← gitLogWalk "HEAD" stopRef cap
   if shas.isEmpty then
     IO.println "No commits found to walk (repository history is empty)"
     return
@@ -245,10 +210,10 @@ result means no cached commit was found in range; the caller falls back to a
 normal (unscoped) read.
 -/
 def discoverUnsafeScopes (repo : String) (window : Nat := defaultUnsafeSHAWindow)
-    (cap : Nat := 50) (cwd : FilePath := ".") : IO (List String) := do
-  let mergeBase? ← gitMergeBase "master" cwd
+    (cap : Nat := 50) : IO.CacheM (List String) := do
+  let mergeBase? ← gitMergeBase "master"
   let stopRef := mergeBase?.getD ""
-  let shas ← gitLogWalk "HEAD" stopRef cap cwd
+  let shas ← gitLogWalk "HEAD" stopRef cap
   findRecentSHAsWithCache shas repo window
 
 end Cache.Requests

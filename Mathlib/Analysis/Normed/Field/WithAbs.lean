@@ -8,10 +8,11 @@ module
 public import Mathlib.Analysis.Normed.Field.Lemmas
 public import Mathlib.Analysis.Normed.Field.TransferInstance
 public import Mathlib.Analysis.Normed.Ring.WithAbs
-import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.FieldTheory.Separable
-import Mathlib.Topology.Algebra.UniformField
 public import Mathlib.Topology.MetricSpace.Completion
+
+import Mathlib.Analysis.SpecificLimits.Basic
+import Mathlib.Topology.Algebra.UniformField
 
 /-!
 # WithAbs for fields

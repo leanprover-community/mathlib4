@@ -514,8 +514,17 @@ then so is the domain. -/
 then so is the domain. -/]
 theorem Function.Injective.isMulTorsionFree [Monoid M] [Monoid N] [IsMulTorsionFree N]
     (f : M →* N) (hf : Function.Injective f) : IsMulTorsionFree M where
-  pow_left_injective n hn x y hxy := hf <| IsMulTorsionFree.pow_left_injective hn <| by
-    simpa using congrArg f hxy
+  eq_of_pow_eq_pow_of_commute n hn x y h hxy :=
+    hf <| eq_of_pow_eq_pow_of_commute hn
+      (by simpa [commute_iff_eq] using congrArg f h) (by simpa using congrArg f hxy)
+
+/-- If the codomain of an injective monoid homomorphism has unique roots,
+then so is the domain. -/
+@[to_additive /-- If the codomain of an injective additive monoid homomorphism has unique
+divisibility, then so is the domain. -/]
+theorem Function.Injective.hasUniqueRoots [Monoid M] [Monoid N] [HasUniqueRoots N]
+    (f : M →* N) (hf : Function.Injective f) : HasUniqueRoots M where
+  pow_left_injective n hn x y hxy := hf <| pow_left_injective hn <| by simpa using congrArg f hxy
 
 -- completely uninteresting lemmas about coercion to function, that all homs need
 section Coes
@@ -936,8 +945,7 @@ and `M` is commutative, then `N` is commutative. -/
 /-- If `M` and `N` have additions, `f` is a surjective additive map,
 and `M` is commutative, then `N` is commutative. -/]
 theorem Function.Surjective.isMulCommutative [Mul M] [Mul N] [FunLike F M N] [MulHomClass F M N]
-    {f : F} (is_surj : Function.Surjective f) (is_comm : IsMulCommutative M) :
-    IsMulCommutative N where
+    {f : F} (is_surj : Function.Surjective f) [IsMulCommutative M] : IsMulCommutative N where
   is_comm.comm a b := by
     have ⟨a', ha'⟩ := is_surj a
     have ⟨b', hb'⟩ := is_surj b

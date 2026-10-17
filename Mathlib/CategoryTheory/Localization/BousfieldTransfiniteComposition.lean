@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Localization.Bousfield
 public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
+
 import Mathlib.CategoryTheory.SmallObject.WellOrderInductionData
 
 /-!
