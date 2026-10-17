@@ -36,17 +36,19 @@ variable [Monoid M] [Monoid N]
 
 /-- A multiplicative equivalence of monoids defines a multiplicative equivalence
 of their groups of units. -/
+@[to_additive /-- An additive equivalence of additive monoids defines an additive equivalence
+of their groups of additive units. -/]
 def mapEquiv (h : M ≃* N) : Mˣ ≃* Nˣ :=
   { map h.toMonoidHom with
     invFun := map h.symm.toMonoidHom,
     left_inv := fun u => ext <| h.left_inv u,
     right_inv := fun u => ext <| h.right_inv u }
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem mapEquiv_symm (h : M ≃* N) : (mapEquiv h).symm = mapEquiv h.symm :=
   rfl
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem coe_mapEquiv (h : M ≃* N) (x : Mˣ) : (mapEquiv h x : N) = h x :=
   rfl
 
