@@ -3800,6 +3800,7 @@ public import Mathlib.Combinatorics.SetFamily.Shadow
 public import Mathlib.Combinatorics.SetFamily.Shatter
 public import Mathlib.Combinatorics.SimpleGraph.Acyclic
 public import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
+public import Mathlib.Combinatorics.SimpleGraph.BallCardinality
 public import Mathlib.Combinatorics.SimpleGraph.Basic
 public import Mathlib.Combinatorics.SimpleGraph.Bipartite
 public import Mathlib.Combinatorics.SimpleGraph.Cayley
