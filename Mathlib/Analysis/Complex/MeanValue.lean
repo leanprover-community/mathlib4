@@ -120,7 +120,7 @@ theorem DiffContOnCl.circleAverage_one_div_sub_center_pow_smul (n : ℕ)
     (hf : DiffContOnCl ℂ f (ball c R)) (hR : 0 < R) :
     Real.circleAverage (fun z ↦ (1 / (z - c) ^ n) • f z) c R
       = ((1 : ℂ) / n.factorial) • iteratedDeriv n f c := by
-  rw [circleAverage_eq_circleIntegral hR.ne.symm, inv_smul_eq_iff₀ (by simp)]
+  rw [circleAverage_eq_circleIntegral hR.ne', inv_smul_eq_iff₀ (by simp)]
   convert hf.circleIntegral_one_div_sub_center_pow_smul hR n using 1
   · simp [pow_succ, smul_smul]
   · rw [smul_smul]

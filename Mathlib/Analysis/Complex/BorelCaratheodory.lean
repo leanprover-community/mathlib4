@@ -19,7 +19,8 @@ and `‖f' z‖ ≤ 2 * R * M / (R - ‖z - c‖) ^ 2`.
 
 ## Main results
 
-* `Complex.BorelCaratheodory.norm_iteratedDeriv_le_of_re_le` bounds the derivatives at the center.
+* `Complex.BorelCaratheodory.norm_iteratedDeriv_le_of_re_le_sphere` and
+  `Complex.BorelCaratheodory.norm_iteratedDeriv_le_of_re_le` bound the derivatives at the center.
 * `Complex.BorelCaratheodory.norm_le_of_re_le_of_eq_zero` bounds `f` given a bound on its real part
   and `f c = 0`.
 * `Complex.BorelCaratheodory.norm_le_of_re_le` bounds `f` given a bound on its real part.
