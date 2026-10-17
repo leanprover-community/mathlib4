@@ -65,11 +65,10 @@ open LinearMap LieAlgebra
   such that `a ^ (p ^ n)` is contained in `k`. -/
 lemma exists_pow_mem_center_of_inseparable (p : ℕ) [hchar : ExpChar D p] (a : D)
     (hinsep : ∀ x : D, IsSeparable k x → x ∈ k) : ∃ n, a ^ (p ^ n) ∈ k := by
-  have := (@isPurelyInseparable_iff_pow_mem k D _ _ _ _ p (ExpChar.expChar_center_iff.2 hchar)).1
-  have pure : IsPurelyInseparable k D := ⟨Algebra.IsAlgebraic.isIntegral, fun x hx ↦ by
+  have insep : IsPurelyInseparable k D := ⟨Algebra.IsAlgebraic.isIntegral, fun x hx ↦ by
     rw [RingHom.mem_range, Subtype.exists]
     exact ⟨x, ⟨hinsep x hx, rfl⟩⟩⟩
-  obtain ⟨n, ⟨m, hm⟩⟩ := this pure a
+  obtain ⟨n, ⟨m, hm⟩⟩ := (isPurelyInseparable_iff_pow_mem k p).1 insep a
   have := Subalgebra.range_subset (R := k) ⟨(k).toSubsemiring, fun r ↦ r.2⟩
   exact ⟨n, Set.mem_of_subset_of_mem this <| Set.mem_range.2 ⟨m, hm⟩⟩
 
