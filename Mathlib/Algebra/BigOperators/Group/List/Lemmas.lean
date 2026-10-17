@@ -62,6 +62,11 @@ lemma Perm.prod_eq' (h : l₁ ~ l₂) (hc : l₁.Pairwise Commute) : l₁.prod =
 
 end Monoid
 
+@[to_additive (attr := simp)]
+theorem prod_rotate [CommMonoid α] (l : List α) {n : ℕ} : (l.rotate n).prod = l.prod := by
+  apply List.Perm.prod_eq
+  apply List.rotate_perm
+
 section Group
 
 variable [Group G]
