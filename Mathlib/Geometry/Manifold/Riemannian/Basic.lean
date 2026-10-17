@@ -257,7 +257,7 @@ lemma eventually_enorm_mfderiv_extChartAt_lt (x : M) :
   refine ⟨C, C_pos, ?_⟩
   filter_upwards [hC] with y hy
   simp only [enorm, nnnorm]
-  exact_mod_cast hy
+  exact mod_cast hy
 
 set_option backward.isDefEq.respectTransparency false in
 lemma eventually_norm_mfderivWithin_symm_extChartAt_comp_lt (x : M) :
@@ -297,7 +297,7 @@ lemma eventually_enorm_mfderivWithin_symm_extChartAt_lt (x : M) :
   refine ⟨C, C_pos, ?_⟩
   filter_upwards [hC] with y hy
   simp only [enorm, nnnorm]
-  exact_mod_cast hy
+  exact mod_cast hy
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Around any point `x`, the Riemannian distance between two points is controlled by the distance

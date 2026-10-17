@@ -144,7 +144,7 @@ lemma variation_withDensity' [CompleteSpace G]
       ‖B‖₊ (f - ⇑g) hfg]
     grw [h'g.le]
     simp only [ENNReal.toReal_one, inv_one, NNReal.rpow_one, ENNReal.smul_def, smul_eq_mul]
-    exact_mod_cast hδ
+    exact mod_cast hδ
   -- the integral of `‖f‖ₑ` is approximated up to `δ` by that of `‖g‖ₑ`.
   have I1 : ∫⁻ a in s, ‖f a‖ₑ ∂(μ.transpose B).variation
         ≤ ∫⁻ a in s, ‖g a‖ₑ ∂(μ.transpose B).variation + δ := calc

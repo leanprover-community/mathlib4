@@ -255,7 +255,7 @@ theorem eLpNorm_le_eLpNorm_mul_eLpNorm_of_not_aestronglyMeasurable
   apply eLpNorm_le_eLpNorm_mul_eLpNorm_of_enorm_of_not_aestronglyMeasurable p q r b c ?_ hfg hp hq
   filter_upwards [h] with x hx
   simp only [enorm_eq_nnnorm]
-  exact_mod_cast hx
+  exact mod_cast hx
 
 private lemma ae_enorm_bilin_le_of_ae_nnnorm_le {b : E → F → G} {c : ℝ≥0}
     (h : ∀ᵐ x ∂μ, ‖b (f x) (g x)‖₊ ≤ c * ‖f x‖₊ * ‖g x‖₊) :

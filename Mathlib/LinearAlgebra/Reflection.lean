@@ -246,7 +246,7 @@ lemma reflection_mul_reflection_zpow_apply (m : ℤ) (z : M)
         ((S R ((m - 1) / 2)).eval t * ((S R (m / 2)).eval t + (S R ((m - 2) / 2)).eval t)) •
           ((f y * g z - f z) • x - g z • y) := by
   induction m using Int.negInduction with
-  | nat m => exact_mod_cast reflection_mul_reflection_pow_apply hf hg m z t ht
+  | nat m => exact mod_cast reflection_mul_reflection_pow_apply hf hg m z t ht
   | neg _ m =>
     have ht' : t = g x * f y - 2 := by rwa [mul_comm (g x)]
     rw [zpow_neg, ← inv_zpow, mul_inv_rev, reflection_inv, reflection_inv, zpow_natCast,

@@ -141,7 +141,7 @@ lemma eventually_zero_of_frequently_zero (hf : GrowsPolynomially f) (hf' : ∃�
     rw [← rpow_intCast, logb_rpow (by simp) (by simp), ← neg_le_neg_iff]
     simp only [Int.cast_sub, Int.cast_neg, Int.cast_natCast, Int.cast_one, neg_sub, sub_neg_eq_add]
     calc -logb 2 (x / x₀) ≤ ⌈-logb 2 (x / x₀)⌉₊ := Nat.le_ceil (-logb 2 (x / x₀))
-         _ ≤ _ := by rw [add_comm]; exact_mod_cast Nat.ceil_le_floor_add_one _
+         _ ≤ _ := by rw [add_comm]; exact mod_cast Nat.ceil_le_floor_add_one _
   case ub =>
     rw [← div_le_iff₀ x₀_pos]
     refine (logb_le_logb (b := 2) (by simp) (by positivity)
@@ -153,7 +153,7 @@ lemma eventually_zero_of_frequently_zero (hf : GrowsPolynomially f) (hf' : ∃�
       refine logb_nonpos (by simp) (by positivity) ?_
       rw [div_le_one x₀_pos]
       exact le_of_max_le_left hx₀_ge
-    exact_mod_cast Nat.floor_le this
+    exact mod_cast Nat.floor_le this
 
 lemma eventually_atTop_nonneg_or_nonpos (hf : GrowsPolynomially f) :
     (∀ᶠ x in atTop, 0 ≤ f x) ∨ (∀ᶠ x in atTop, f x ≤ 0) := by

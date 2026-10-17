@@ -238,7 +238,7 @@ lemma exists_mem_rootSpace_lie_ne_zero
     exact toEnd_pow_apply_mem hf hx (chainTopCoeff α β)
   · have hq₀ : 0 < chainTopCoeff α β := by
       have := (rootSpace_zsmul_add_ne_bot_iff α β hα 1).mp <| by rwa [one_smul]
-      exact_mod_cast this.1
+      exact mod_cast this.1
     obtain ⟨n, hn⟩ : ∃ n, chainTopCoeff α β = n + 1 := ⟨chainTopCoeff α β - 1, by lia⟩
     have h_prim : ef_sl2.HasPrimitiveVectorWith x (chainLength α β : K) :=
       { ne_zero := hx₀
@@ -248,7 +248,7 @@ lemma exists_mem_rootSpace_lie_ne_zero
           rwa [genWeightSpace_add_chainTop α β hα] at hmem }
     rw [hn, h_prim.lie_e_pow_succ_toEnd_f n]
     have : chainTopCoeff α β ≤ chainLength α β := chainTopCoeff_le_chainLength α β
-    refine smul_ne_zero (mul_ne_zero (by exact_mod_cast n.succ_ne_zero) ?_)
+    refine smul_ne_zero (mul_ne_zero (mod_cast n.succ_ne_zero) ?_)
       (h_prim.pow_toEnd_f_ne_zero_of_eq_nat rfl (by lia))
     rw [sub_ne_zero, Nat.cast_injective.ne_iff]
     lia

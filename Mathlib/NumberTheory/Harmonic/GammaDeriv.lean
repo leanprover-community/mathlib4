@@ -204,7 +204,7 @@ lemma hasDerivAt_Gammaℂ_one : HasDerivAt Gammaℂ (-(γ + log (2 * π)) / π) 
   let f (s : ℂ) : ℂ := 2 * (2 * π) ^ (-s)
   have : HasDerivAt (fun s : ℂ ↦ 2 * (2 * π : ℂ) ^ (-s)) (-log (2 * π) / π) 1 := by
     have := (hasDerivAt_neg' (1 : ℂ)).const_cpow (c := 2 * π)
-      (Or.inl (by exact_mod_cast Real.two_pi_pos.ne'))
+      (Or.inl (mod_cast Real.two_pi_pos.ne'))
     refine (this.const_mul 2).congr_deriv ?_
     rw [mul_neg_one, mul_neg, cpow_neg_one, ← div_eq_inv_mul, ← mul_div_assoc,
       mul_div_mul_left _ _ two_ne_zero, neg_div]

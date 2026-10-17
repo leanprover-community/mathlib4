@@ -428,7 +428,7 @@ theorem irreducible_pow_sup_of_le (hJ : Irreducible J) (n : ℕ) (hn : n ≤ emu
   · simp_all
   rw [irreducible_pow_sup hI hJ, min_eq_right]
   rw [emultiplicity_eq_count_normalizedFactors hJ hI, normalize_eq J] at hn
-  exact_mod_cast hn
+  exact mod_cast hn
 
 @[deprecated (since := "2026-04-16")]
 alias _root_.irreducible_pow_sup_of_le := irreducible_pow_sup_of_le
@@ -443,7 +443,7 @@ theorem irreducible_pow_sup_of_ge (hI : I ≠ ⊥) (hJ : Irreducible J) (n : ℕ
     apply hn.trans_lt
     simp
   · rw [emultiplicity_eq_count_normalizedFactors hJ hI, normalize_eq J] at hn
-    exact_mod_cast hn
+    exact mod_cast hn
 
 @[deprecated (since := "2026-04-16")]
 alias _root_.irreducible_pow_sup_of_ge := irreducible_pow_sup_of_ge

@@ -377,7 +377,7 @@ theorem FractionalIdeal.isPrincipal.of_isPrincipal_pow_of_coprime [IsDedekindDom
     Nat.dvd_gcd_iff]
   refine ⟨?_, orderOf_dvd_card⟩
   rw [orderOf_dvd_iff_pow_eq_one, ← map_pow, ClassGroup.mk_eq_one_iff]
-  exact_mod_cast hI
+  exact mod_cast hI
 
 /-- If the class group is trivial, any unit fractional ideal is principal. -/
 theorem ClassGroup.isPrincipal_coeSubmodule_of_isUnit [Subsingleton (ClassGroup R)]
