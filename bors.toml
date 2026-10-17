@@ -1,7 +1,7 @@
 status = ["ci (staging) / Build", "ci (staging) / Test and lint", "ci (staging) / Lint style", "ci (staging) / Post-Build Step", "ci (staging) / Post-CI job"]
 use_squash_merge = true
 timeout_sec = 7200
-block_labels = ["WIP", "blocked-by-other-PR", "merge-conflict", "awaiting-CI"]
+block_labels = ["WIP", "merge-conflict", "awaiting-CI"]
 delete_merged_branches = true
 update_base_for_deletes = true
 cut_body_after = "\n---"
@@ -12,6 +12,14 @@ on_queue  = "ready-to-merge"   # PR is on the merge queue (a batch waiting or ru
 building  = "bors-staging"     # PR is currently building on staging (such PRs will also have the on_queue label)
 failed    = "awaiting-requeue" # PR's merge build failed terminally and was dropped; needs a re-queue
 delegated = "delegated"        # PR has at least one active (non-expired) delegation
+
+# A PR is blocked while a dependency its description lists (`- [ ] depends on: #123`)
+# is open, unless the dependency is linked with it (`bors link` / `bors stack`) so
+# they merge together. bors reads the description, not the `blocked-by-other-PR`
+# label. These keywords must match those in .github/workflows/dependent-issues.yml
+# exactly, taken here as literal text rather than regular expressions.
+[dependencies]
+keywords = ["- [ ] depends on:", "- [x] depends on:"]
 
 [delegation]
 default_expiry_sec = 1209600 # 2 weeks
