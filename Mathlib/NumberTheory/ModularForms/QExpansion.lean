@@ -332,7 +332,7 @@ lemma qExpansion_coeff_eq_intervalIntegral {f : ℍ → ℂ} (hh : 0 < h)
   have hR1 : R < 1 := Real.exp_lt_one_iff.2 <| by simpa [neg_div] using div_pos (by positivity) hh
   -- First apply `qExpansion_coeff_eq_circleIntegral` and rescale from `0 .. 2 * π` to `0 .. h`.
   rw [qExpansion_coeff_eq_circleIntegral hh hfper hfhol hfbdd n hR0 hR1, circleIntegral,
-    show 2 * π = h * (2 * π / h) by field_simp]
+    show 2 * π = h * (2 * π / h) by field]
   conv => enter [1, 2, 2]; rw [show 0 = 0 * (2 * π / h) by simp]
   simp_rw [← intervalIntegral.smul_integral_comp_mul_right, real_smul, ← mul_assoc,
     ← intervalIntegral.integral_const_mul]
@@ -348,7 +348,7 @@ lemma qExpansion_coeff_eq_intervalIntegral {f : ℍ → ℂ} (hh : 0 < h)
   -- now just complex exponential arithmetic to finish
   simp_rw [deriv_circleMap, this, show ↑I = Complex.I by rfl, show u + t * Complex.I = τ by rfl,
     show ⟨↑τ, τ.2⟩ = τ by rfl, eq_cuspFunction _ hh.ne' hfper, smul_eq_mul, pow_succ]
-  field_simp [(show 𝕢 h τ ≠ 0 from Complex.exp_ne_zero _), Real.pi_ne_zero, NeZero.ne]
+  field [(show 𝕢 h τ ≠ 0 from Complex.exp_ne_zero _), Real.pi_ne_zero, NeZero.ne]
   push_cast
   ring
 
@@ -510,7 +510,7 @@ lemma qExpansion_mul {f g : ℍ → ℂ}
     Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk, Nat.succ_eq_add_one]
   refine Finset.sum_congr rfl fun i hi ↦ ?_
   rw [Nat.cast_choose _ (by grind)]
-  field_simp [Nat.factorial_ne_zero]
+  field [Nat.factorial_ne_zero]
 
 lemma qExpansion_smul {f : ℍ → ℂ} (hf : AnalyticAt ℂ (cuspFunction h f) 0) (a : ℂ) :
     qExpansion h (a • f) = a • qExpansion h f := by
