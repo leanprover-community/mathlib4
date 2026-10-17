@@ -125,9 +125,9 @@ instance : Lattice {a : R // IsIdempotentElem a} where
   sup_le a b c hac hbc := show _ = _ by simp_rw [sub_mul, add_mul, mul_assoc]; rw [hbc, hac]
 
 instance : BooleanAlgebra {a : R // IsIdempotentElem a} where
-  __ : DistribLattice _ := .ofInfSupLe fun a b c ↦ Eq.le <| Subtype.ext <| by
-    simp_rw [(· ⊔ ·), (· ⊓ ·), SemilatticeSup.sup, SemilatticeInf.inf, Lattice.inf,
-      SemilatticeInf.inf, mul_sub, mul_add, mul_mul_mul_comm]
+  inf_sup_le a b c := Eq.le <| Subtype.ext <| by
+    change a * (b + c - b * c : R) = a * b + a * c - a * b * (a * c)
+    simp_rw [mul_sub, mul_add, mul_mul_mul_comm]
     rw [a.2]
   __ : OrderTop _ := inferInstance
   __ : OrderBot _ := inferInstance
