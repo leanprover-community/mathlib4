@@ -176,38 +176,38 @@ theorem IsTorsionFree.erank_mul_erank [hM : IsTorsionFree S M] :
   have : Nontrivial S := FaithfulSMul.algebraMap_injective R S |>.nontrivial
   have : IsDomain S := {}
   nontriviality M using rank_subsingleton'
-  let R' := FractionRing R
+  let FR := FractionRing R
   let mS := algebraMapSubmonoid S R⁰
-  let S' := Localization mS
+  let FS := Localization mS
   let M' := LocalizedModule mS M
-  let fS : S →ₗ[R] S' := IsScalarTower.toAlgHom R S S' |>.toLinearMap
-  let fM : M →ₗ[S] M' := LocalizedModule.mkLinearMap ..
-  let : Module R' M' := .restrictScalars _ S' _
-  have : IsScalarTower R' S' M' := .restrictScalars ..
-  have : IsScalarTower R R' M' := .to₁₂₄ (P := S') ..
-  have hS' := IsLocalizedModule.isBaseChange R⁰ R' fS
-  have : IsLocalizedModule R⁰ (fM : M →ₗ[R] M') :=
+  let pS : S →ₗ[R] FS := IsScalarTower.toAlgHom R S FS |>.toLinearMap
+  let pM : M →ₗ[S] M' := LocalizedModule.mkLinearMap ..
+  let : Module FR M' := .restrictScalars _ FS _
+  have : IsScalarTower FR FS M' := .restrictScalars ..
+  have : IsScalarTower R FR M' := .to₁₂₄ (P := FS) ..
+  have hFS := IsLocalizedModule.isBaseChange R⁰ FR pS
+  have : IsLocalizedModule R⁰ (pM : M →ₗ[R] M') :=
     localizedModuleIsLocalizedModule mS |>.restrictScalars R⁰
-  have hM' := this.isBaseChange R⁰ R'
+  have hM' := this.isBaseChange R⁰ FR
   by_cases! hRS : rank R S < .aleph0
-  · have : Module.Finite R' S' := rank_lt_aleph0_iff.mp <| hS'.rank_eq ▸ hRS
-    have : IsDomain S' := IsLocalization.isDomain_localization <| by
+  · have : Module.Finite FR FS := rank_lt_aleph0_iff.mp <| hFS.rank_eq ▸ hRS
+    have : IsDomain FS := IsLocalization.isDomain_localization <| by
       rintro _ ⟨r, hr, rfl⟩
       simpa using hr
-    let : Field S' := fieldOfFiniteDimensional R' S'
-    simpa using congr($(lift_rank_mul_lift_rank_of_field_isLocalization R S S' M).toENat)
+    let : Field FS := fieldOfFiniteDimensional FR FS
+    simpa using congr($(lift_rank_mul_lift_rank_of_field_isLocalization R S FS M).toENat)
   · have hm : 0 < rank S M := rank_pos_iff_exists_ne_zero.mpr <| exists_ne 0
     rw [toENat_eq_top.mpr hRS, ENat.top_mul (by simpa using hm.ne'), eq_comm, toENat_eq_top]
     by_contra! hRM : rank R M < .aleph0
-    have : Module.Finite R' M' := by
-      rwa [← rank_lt_aleph0_iff, ← lift_id'.{w, v} (rank R' M'), hM'.lift_rank_eq, lift_lt_aleph0]
-    -- it would also suffice to have FaithfulSMul S' M' (and Nontrivial M') at this point
+    have : Module.Finite FR M' := by
+      rwa [← rank_lt_aleph0_iff, ← lift_id'.{w, v} (rank FR M'), hM'.lift_rank_eq, lift_lt_aleph0]
+    -- it would also suffice to have FaithfulSMul FS M' (and Nontrivial M') at this point
     have ⟨m, hm⟩ := exists_ne (0 : M)
     let f : S →ₗ[R] M := LinearMap.lsmul S M |>.flip m
-    have : Module.Finite R' S' :=
-      .of_injective (IsLocalizedModule.mapExtendScalars R⁰ fS (fM : M →ₗ[R] M') R' f) <|
+    have : Module.Finite FR FS :=
+      .of_injective (IsLocalizedModule.mapExtendScalars R⁰ pS (pM : M →ₗ[R] M') FR f) <|
         IsLocalizedModule.map_injective (h_inj := smul_left_injective _ hm) ..
-    exact hRS.not_gt <| hS'.rank_eq ▸ rank_lt_aleph0 ..
+    exact hRS.not_gt <| hFS.rank_eq ▸ rank_lt_aleph0 ..
 
 /-- **Tower law for torsion-free modules.**
 The tower law for `Module.finrank` of a `S`-torsion-free module over an algebra `S/R` of domains.
