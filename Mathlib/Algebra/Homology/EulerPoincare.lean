@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.LinearAlgebra.Dimension.RankNullity
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.Data.Int.Interval
-public import Mathlib.Data.Int.SuccPred
+public import Mathlib.Order.SuccPred.Int
 public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 
