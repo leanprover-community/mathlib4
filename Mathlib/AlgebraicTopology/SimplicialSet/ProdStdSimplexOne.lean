@@ -35,7 +35,6 @@ namespace prodStdSimplex₁
 variable {p : ℕ}
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency.types false in
 open stdSimplex prodStdSimplex in
 /-- This is an enumeration of the `p + 1` nondegenerate dimension-`(p + 1)`
 simplices of `Δ[p] ⊗ Δ[1]`. It sends `i : Fin (p + 1)` to the nondegenerate
@@ -136,7 +135,9 @@ lemma ofSimplex_le_filtration {i j : Fin (p + 1)} (hij : i ≤ j) :
 variable (p) in
 lemma filtration_zero :
     filtration.{u} (0 : Fin (p + 1)) = .ofSimplex (nonDegenerateEquiv 0).val :=
-  le_antisymm (by simp [filtration]) (ofSimplex_le_filtration.{u} (by rfl))
+  le_antisymm
+    (by simp [filtration, -Subfunctor.ofSection_le_iff])
+      (ofSimplex_le_filtration.{u} (by rfl))
 
 variable (p) in
 lemma filtration_last :
@@ -174,7 +175,6 @@ def codimOneSimplex (j : Fin (p + 2)) : (Δ[p] ⊗ Δ[1] : SSet.{u}).nonDegenera
       (stdSimplex.objEquiv_symm_id_mem_nonDegenerate p)⟩
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency.types false in
 lemma δ_castSucc_nonDegenerateEquiv (j : Fin (p + 1)) :
     (Δ[p] ⊗ Δ[1]).δ j.castSucc (nonDegenerateEquiv.{u} j).val =
       (codimOneSimplex j.castSucc).val := by
@@ -184,7 +184,6 @@ lemma δ_castSucc_nonDegenerateEquiv (j : Fin (p + 1)) :
     rw [stdSimplex.δ_objMk₁_of_lt _ _ (by simp), Fin.pred_succ]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency.types false in
 lemma δ_succ_nonDegenerateEquiv (j : Fin (p + 1)) :
     (Δ[p] ⊗ Δ[1]).δ j.succ (nonDegenerateEquiv.{u} j).val =
       (codimOneSimplex j.succ).val := by
@@ -194,7 +193,6 @@ lemma δ_succ_nonDegenerateEquiv (j : Fin (p + 1)) :
     rw [stdSimplex.δ_objMk₁_of_le _ _ (by simp)]
     simp only [Fin.succ_castSucc, Fin.castPred_castSucc]
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 lemma ofSimplex_codimOneSimplex (j : Fin p) :
     Subcomplex.ofSimplex (codimOneSimplex.{u} j.succ.castSucc).val =
@@ -223,7 +221,6 @@ lemma ofSimplex_codimOneSimplex (j : Fin p) :
     · grind [stdSimplex.objMk₁_apply_eq_zero_iff, Fin.predAbove_of_le_castSucc, Fin.castPred]
     · grind [stdSimplex.objMk₁_apply_eq_one_iff, Fin.pred, Fin.predAbove_of_castSucc_lt]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma intersectionNondeg_le_intersectionNondeg (i j k : Fin (p + 1))
     (hij : i ≤ j) (hij : j ≤ k) :
     intersectionNondeg.{u} i k ≤ intersectionNondeg j k := by
@@ -238,7 +235,6 @@ lemma intersectionNondeg_le_intersectionNondeg (i j k : Fin (p + 1))
   · grind [mem_range_objEquiv_nonDegenerateEquiv₀_iff,
       mem_range_objEquiv_nonDegenerateEquiv₁_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma intersectionNondeg_le_intersectionNondeg' (i j k : Fin (p + 1))
     (hij : i ≤ j) (hij : j ≤ k) :
     intersectionNondeg.{u} i k ≤ intersectionNondeg i j := by
