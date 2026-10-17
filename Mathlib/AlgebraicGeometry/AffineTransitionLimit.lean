@@ -103,6 +103,7 @@ open Scheme.IdealSheafData in
 Suppose we have a cofiltered diagram of schemes whose transition maps are affine. The limit of
 a family of compatible nonempty quasicompact closed sets in the diagram is also nonempty.
 -/
+@[stacks 01Z3]
 lemma exists_mem_of_isClosed_of_nonempty
     [IsCofilteredOrEmpty I]
     [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
@@ -152,7 +153,7 @@ include hc in
 A variant of `exists_mem_of_isClosed_of_nonempty` where the closed sets are only defined
 for the objects over a given `j : I`.
 -/
-@[stacks 01Z3]
+@[stacks 01Z3 "Variant where the closed sets are indexed by the objects over a fixed index."]
 lemma exists_mem_of_isClosed_of_nonempty'
     [IsCofilteredOrEmpty I]
     [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
@@ -679,7 +680,7 @@ In other words, for each pair of `a : Homₛ(Dᵢ, X)` and `b : Homₛ(Dⱼ, X)`
 same map `Homₛ(lim Dᵢ, X)`, there exists a `k` with `fᵢ : k ⟶ i` and `fⱼ : k ⟶ j` such that
 `D(fᵢ) ≫ a = D(fⱼ) ≫ b`.
 -/
-@[stacks 01ZC "Injective part of (1) => (3)"]
+@[stacks 01ZC "Injective part of (1) => (3), for morphisms locally of finite type."]
 lemma Scheme.exists_hom_hom_comp_eq_comp_of_locallyOfFiniteType
     {i : I} (a : D.obj i ⟶ X) (ha : t.app i = a ≫ f)
     {j : I} (b : D.obj j ⟶ X) (hb : t.app j = b ≫ f)
@@ -974,7 +975,7 @@ section IsAffine
 include hc in
 /-- Suppose `{ Xᵢ }` is an inverse system of qcqs schemes with affine transition maps.
 If `lim Xᵢ` is quasi-affine, then some `Xᵢ` is quasi-affine. -/
-@[stacks 01Z5]
+@[stacks 01Z5 "Use IsQuasiAffine.of_isAffineHom to get `D.obj j` quasi-affine for `j ≥ i` "]
 lemma Scheme.exists_isQuasiAffine_of_isLimit [IsCofiltered I]
     [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
     [∀ (i : I), CompactSpace (D.obj i)]
@@ -1050,7 +1051,7 @@ lemma Scheme.exists_isAffine_of_isLimit [IsCofiltered I]
 
 set_option backward.defeqAttrib.useBackward true in
 include hc in
-@[stacks 01Z4 "(1)"]
+@[stacks 01Z4 "Affine open version of (1)."]
 lemma exists_isAffineOpen_preimage_eq
     [IsCofiltered I] [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
     [∀ i, QuasiSeparatedSpace (D.obj i)]
