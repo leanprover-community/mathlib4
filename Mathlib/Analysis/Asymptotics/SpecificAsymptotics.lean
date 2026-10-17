@@ -192,6 +192,87 @@ theorem Filter.Tendsto.cesaro {u : ℕ → ℝ} {l : ℝ} (h : Tendsto u atTop (
     Tendsto (fun n : ℕ => (n⁻¹ : ℝ) * ∑ i ∈ range n, u i) atTop (𝓝 l) :=
   h.cesaro_smul
 
+/-- A weighted (Toeplitz-type) generalization of `Filter.Tendsto.cesaro_smul`: if `S k → L` and
+`w k ≥ 0` has total weight `∑ k < n, w k → ∞`, then the running weighted average of `S` with
+respect to `w` also tends to `L`. The case `w ≡ 1` recovers `cesaro_smul`. -/
+theorem Filter.Tendsto.weighted_cesaro_smul {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {S : ℕ → E} {L : E} (hS : Tendsto S atTop (𝓝 L)) (w : ℕ → ℝ) (hw_nonneg : ∀ n, 0 ≤ w n)
+    (hw_sum_top : Tendsto (fun n => ∑ k ∈ range n, w k) atTop atTop) :
+    Tendsto (fun n => (∑ k ∈ range n, w k)⁻¹ • ∑ k ∈ range n, w k • S k) atTop (𝓝 L) := by
+  rw [Metric.tendsto_atTop]
+  intro ε hε
+  obtain ⟨N, hN⟩ := Metric.tendsto_atTop.mp hS (ε / 2) (by linarith)
+  set C : ℝ := ∑ k ∈ range N, w k * ‖S k - L‖ with hC_def
+  have hC_nonneg : 0 ≤ C :=
+    sum_nonneg (fun k _ => mul_nonneg (hw_nonneg k) (norm_nonneg _))
+  obtain ⟨N1, hN1⟩ := Filter.eventually_atTop.mp
+    (Filter.tendsto_atTop.mp hw_sum_top (max 1 (4 * C / ε)))
+  refine ⟨max N N1, fun n hn => ?_⟩
+  have hnN : N ≤ n := le_trans (le_max_left N N1) hn
+  have hnN1 : N1 ≤ n := le_trans (le_max_right N N1) hn
+  have hWbound : max 1 (4 * C / ε) ≤ ∑ k ∈ range n, w k := hN1 n hnN1
+  set W : ℝ := ∑ k ∈ range n, w k with hW_def
+  have hWpos : 0 < W := lt_of_lt_of_le one_pos (le_trans (le_max_left _ _) hWbound)
+  have hCbound : C ≤ (ε / 4) * W := by
+    have h4C : 4 * C / ε ≤ W := le_trans (le_max_right _ _) hWbound
+    rw [div_le_iff₀ hε] at h4C
+    linarith
+  rw [dist_eq_norm]
+  have hrw : W⁻¹ • ∑ k ∈ range n, w k • S k - L
+      = W⁻¹ • ∑ k ∈ range n, w k • (S k - L) := by
+    have hL : W⁻¹ • W • L = L := by rw [smul_smul, inv_mul_cancel₀ hWpos.ne', one_smul]
+    have hsum : ∑ k ∈ range n, w k • (S k - L)
+        = (∑ k ∈ range n, w k • S k) - W • L := by
+      simp_rw [smul_sub]
+      rw [sum_sub_distrib, sum_smul]
+    rw [hsum, smul_sub, hL]
+  rw [hrw, norm_smul, Real.norm_eq_abs, abs_of_pos (inv_pos.mpr hWpos)]
+  have hbound : ‖∑ k ∈ range n, w k • (S k - L)‖ < ε * W := by
+    have hsplit : ∑ k ∈ range n, w k • (S k - L)
+        = ∑ k ∈ range N, w k • (S k - L) + ∑ k ∈ Ico N n, w k • (S k - L) := by
+      rw [range_eq_Ico, range_eq_Ico]
+      exact (sum_Ico_consecutive _ (Nat.zero_le N) hnN).symm
+    rw [hsplit]
+    have hhead : ‖∑ k ∈ range N, w k • (S k - L)‖ ≤ C := by
+      calc ‖∑ k ∈ range N, w k • (S k - L)‖
+          ≤ ∑ k ∈ range N, ‖w k • (S k - L)‖ := norm_sum_le _ _
+        _ = ∑ k ∈ range N, w k * ‖S k - L‖ := by
+            refine sum_congr rfl (fun k _ => ?_)
+            rw [norm_smul, Real.norm_eq_abs, abs_of_nonneg (hw_nonneg k)]
+    have htail : ‖∑ k ∈ Ico N n, w k • (S k - L)‖ ≤ (ε / 2) * ∑ k ∈ Ico N n, w k := by
+      calc ‖∑ k ∈ Ico N n, w k • (S k - L)‖
+          ≤ ∑ k ∈ Ico N n, ‖w k • (S k - L)‖ := norm_sum_le _ _
+        _ ≤ ∑ k ∈ Ico N n, w k * (ε / 2) := by
+            refine sum_le_sum (fun k hk => ?_)
+            rw [norm_smul, Real.norm_eq_abs, abs_of_nonneg (hw_nonneg k)]
+            have hk' : ‖S k - L‖ ≤ ε / 2 := by
+              rw [← dist_eq_norm]
+              exact (hN k (mem_Ico.mp hk).1).le
+            nlinarith [hw_nonneg k]
+        _ = (ε / 2) * ∑ k ∈ Ico N n, w k := by rw [← sum_mul]; ring
+    have hIco_le : ∑ k ∈ Ico N n, w k ≤ W := by
+      rw [hW_def, range_eq_Ico]
+      exact sum_le_sum_of_subset_of_nonneg
+        (Ico_subset_Ico_left (Nat.zero_le N)) (fun k _ _ => hw_nonneg k)
+    calc ‖∑ k ∈ range N, w k • (S k - L) + ∑ k ∈ Ico N n, w k • (S k - L)‖
+        ≤ ‖∑ k ∈ range N, w k • (S k - L)‖ + ‖∑ k ∈ Ico N n, w k • (S k - L)‖ :=
+          norm_add_le _ _
+      _ ≤ C + (ε / 2) * ∑ k ∈ Ico N n, w k := add_le_add hhead htail
+      _ ≤ C + (ε / 2) * W := by
+          nlinarith [mul_le_mul_of_nonneg_left hIco_le (by linarith : (0:ℝ) ≤ ε / 2)]
+      _ ≤ (ε / 4) * W + (ε / 2) * W := by linarith
+      _ < ε * W := by nlinarith [hWpos]
+  calc W⁻¹ * ‖∑ k ∈ range n, w k • (S k - L)‖
+      < W⁻¹ * (ε * W) := mul_lt_mul_of_pos_left hbound (inv_pos.mpr hWpos)
+    _ = ε := by field_simp
+
+/-- Real-valued version of `Filter.Tendsto.weighted_cesaro_smul`. -/
+theorem Filter.Tendsto.weighted_cesaro {u : ℕ → ℝ} {l : ℝ} (h : Tendsto u atTop (𝓝 l))
+    (w : ℕ → ℝ) (hw_nonneg : ∀ n, 0 ≤ w n)
+    (hw_sum_top : Tendsto (fun n => ∑ k ∈ range n, w k) atTop atTop) :
+    Tendsto (fun n => (∑ k ∈ range n, w k)⁻¹ * ∑ k ∈ range n, w k * u k) atTop (𝓝 l) :=
+  h.weighted_cesaro_smul w hw_nonneg hw_sum_top
+
 end Real
 
 section NormedLinearOrderedField
