@@ -118,8 +118,7 @@ include hg
 
 theorem lintegral_comp' {f : β → ℝ≥0∞} (hf : AEMeasurable f ν) :
     ∫⁻ a, f (g a) ∂μ = ∫⁻ b, f b ∂ν := by
-  rw [← hg.map_eq] at hf ⊢
-  exact (lintegral_map' hf hg.aemeasurable).symm
+  rw [← hg.map_eq, lintegral_map' (hg.map_eq ▸ hf) hg.aemeasurable]
 
 theorem lintegral_comp {f : β → ℝ≥0∞} (hf : Measurable f) :
     ∫⁻ a, f (g a) ∂μ = ∫⁻ b, f b ∂ν :=
