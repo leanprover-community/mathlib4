@@ -26,9 +26,8 @@ open scoped Matrix.Norms.Operator
 
 theorem Matrix.nnnorm_apply_le_linfty_opNNNorm {α β γ : Type*} [SeminormedAddCommGroup γ]
     [Fintype α] [Fintype β] (M : Matrix α β γ) (i : α) (j : β) : ‖M i j‖₊ ≤ ‖M‖₊ := by
-  rw [Matrix.linfty_opNNNorm_def]
-  refine Finset.le_sup_of_le (Finset.mem_univ i) ?_
-  exact Finset.single_le_sum (f := fun j ↦ ‖M i j‖₊) (fun _ _ ↦ zero_le) (Finset.mem_univ j)
+  grw [Matrix.linfty_opNNNorm_def, ← Finset.le_sup_of_le (by simp)] -- these grws cannot be combined
+  grw [← Finset.single_le_sum (by simp) (by simp)]
 
 theorem Matrix.norm_apply_le_linfty_opNorm {α β γ : Type*} [SeminormedAddCommGroup γ]
     [Fintype α] [Fintype β] (M : Matrix α β γ) (i : α) (j : β) : ‖M i j‖ ≤ ‖M‖ := by
