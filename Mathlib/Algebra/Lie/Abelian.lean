@@ -87,9 +87,6 @@ theorem isMulCommutative_iff_isLieAbelian {A : Type v} [Ring A] :
   have : IsLieAbelian A ↔ ∀ a b : A, ⁅a, b⁆ = 0 := ⟨(·.trivial), (⟨·⟩)⟩
   simp [this, isMulCommutative_iff, LieRing.of_associative_ring_bracket, sub_eq_zero]
 
-@[deprecated (since := "2026-04-01")]
-alias commutative_ring_iff_abelian_lie_ring := isMulCommutative_iff_isLieAbelian
-
 @[simp] theorem LieSubalgebra.isLieAbelian_lieSpan_iff
     {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] {s : Set L} :
     IsLieAbelian (lieSpan R L s) ↔ ∀ᵉ (x ∈ s) (y ∈ s), ⁅x, y⁆ = 0 := by
