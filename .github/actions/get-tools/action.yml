@@ -3,10 +3,13 @@
 #
 # Fast path: download the `tools-bin` artifact published by `publish_tools.yml`
 # from its latest successful `master` `push` run, unpack it, and install the
-# matching toolchain. Fallback: check out `tools_source_ref` and build from source
-# (the original behaviour). The fallback also triggers automatically if anything
-# about the download/verification fails, so this action can never make CI worse
-# than building from source.
+# matching toolchain. The artifact is used only when its tool sources match the
+# tool sources at `github.workflow_sha`, the commit that holds the calling
+# workflow, so the tools always match the workflow that invokes them.
+# Fallback: check out `tools_source_ref` and build from source (the original
+# behaviour). The fallback also triggers automatically if anything about the
+# download/verification fails, so this action can never make CI worse than
+# building from source.
 #
 # Requires (fast path only): `actions: read` permission and the `gh` CLI, which the
 # self-hosted runner image provides. Any lookup/download failure falls through to the
@@ -36,15 +39,6 @@ inputs:
     description: Destination directory for the tools.
     required: false
     default: tools-branch
-  source_dir:
-    description: >
-      Optional path to a local checkout under test. When set and the artifact
-      fast path is in play, the action compares this checkout's tool sources
-      against the artifact's `master` baseline; if they differ it skips the
-      prebuilt artifact and builds from source, so a branch that changes the
-      tool is tested with its own tool. Empty disables the comparison.
-    required: false
-    default: ''
 runs:
   using: composite
   steps:
@@ -56,31 +50,41 @@ runs:
       shell: bash
       env:
         GH_TOKEN: ${{ inputs.github_token }}
+        WORKFLOW_SHA: ${{ github.workflow_sha }}
       run: |
         set -uo pipefail
         run_id=""
         if [[ "${{ inputs.use_artifact }}" == "true" && -n "${{ inputs.github_token }}" ]]; then
-          run_id=$(gh run list \
+          read -r run_id artifact_sha < <(gh run list \
             --repo "${{ inputs.artifact_repo }}" \
             --workflow "${{ inputs.artifact_workflow }}" \
             --branch master --status success --event push \
-            --limit 1 --json databaseId --jq '.[0].databaseId // empty' 2>/dev/null || true)
+            --limit 1 --json databaseId,headSha --jq '.[0] // empty | "\(.databaseId) \(.headSha)"' 2>/dev/null || true)
 
-          # If a local checkout under test is provided and its tool sources differ
-          # from the artifact's master baseline, the prebuilt tool would mask the
-          # change — drop it and build from source. Local git only; no API call.
-          # These are the source paths that determine the bundled tools (the
-          # `cache` binary and the build-helper scripts in publish_tools.yml); they
-          # live here so callers don't have to duplicate the list.
-          if [[ -n "$run_id" && -n "${{ inputs.source_dir }}" ]]; then
-            git -C "${{ inputs.source_dir }}" fetch --no-tags --depth=1 \
-              "https://github.com/${{ inputs.artifact_repo }}.git" master || true
-            # Fail safe toward building: a failed fetch/diff leaves $? non-zero.
-            if ! git -C "${{ inputs.source_dir }}" diff --quiet FETCH_HEAD -- \
-                Cache scripts/lake-build-with-retry.sh scripts/lake-build-wrapper.py; then
-              echo "Tool sources in '${{ inputs.source_dir }}' differ from master; building from source."
+          # The publisher builds its run's head commit. If the tool sources there
+          # differ from the tool sources at the calling workflow's commit, the
+          # prebuilt tools do not match the workflow that invokes them, so drop
+          # the artifact and build from source. These are the source paths that
+          # determine the bundled tools (the `cache` binary and the build-helper
+          # scripts in publish_tools.yml); they live here so callers don't have
+          # to duplicate the list. The comparison reads tree entries only, so
+          # the fetch skips all file contents.
+          if [[ -n "$run_id" ]]; then
+            tool_paths=(Cache scripts/lake-build-with-retry.sh scripts/lake-build-wrapper.py)
+            repo_dir="${RUNNER_TEMP}/get-tools-trees"
+            rm -rf "$repo_dir"
+            # Fail safe toward building: a failed fetch or ls-tree leaves the
+            # listings unequal or the commands non-zero.
+            if ! { git init -q --bare "$repo_dir" \
+                && git -C "$repo_dir" fetch -q --no-tags --depth=1 --filter=blob:none \
+                  "https://github.com/${{ inputs.artifact_repo }}.git" "$artifact_sha" "$WORKFLOW_SHA" \
+                && artifact_tools=$(git -C "$repo_dir" ls-tree "$artifact_sha" -- "${tool_paths[@]}") \
+                && workflow_tools=$(git -C "$repo_dir" ls-tree "$WORKFLOW_SHA" -- "${tool_paths[@]}") \
+                && [[ -n "$artifact_tools" && "$artifact_tools" == "$workflow_tools" ]]; }; then
+              echo "Tool sources at ${WORKFLOW_SHA} differ from the artifact's ${artifact_sha}, or the comparison failed; building from source."
               run_id=""
             fi
+            rm -rf "$repo_dir"
           fi
         fi
         echo "Resolved publisher run_id: '${run_id}'"

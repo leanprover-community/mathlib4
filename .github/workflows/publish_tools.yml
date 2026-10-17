@@ -39,10 +39,13 @@ jobs:
     steps:
       # Build under `tools-branch/`, the same directory `build_template.yml` unpacks
       # the tools into, in case the build bakes its own location into the binary.
-      - name: Checkout master
+      # Build the pushed commit, so the run's head SHA names the source of the
+      # artifact. get-tools compares the tool sources at that SHA with the
+      # tool sources of the workflow that downloads the artifact.
+      - name: Checkout the pushed commit
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: master
+          ref: ${{ github.sha }}
           path: tools-branch
 
       - name: install elan
