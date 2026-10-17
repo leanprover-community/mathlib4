@@ -767,6 +767,25 @@ theorem isCauSeq_norm {f : ℕ → K} (hf : IsCauSeq norm f) : IsCauSeq abs (nor
 
 lemma I_mem_skewAdjoint : I ∈ skewAdjoint K := by simp [skewAdjoint.mem_iff]
 
+/-- **Lagrange's identity** over `ℝ` or `ℂ`, with the sum over ordered pairs `(i, j)`:
+`∑_{i,j} |a_i b_j - a_j b_i|² = 2 ((∑ |a_i|²)(∑ |b_i|²) - |∑ conj a_i b_i|²)`. -/
+theorem sum_sum_norm_mul_sub_mul_sq {ι : Type*} (s : Finset ι) (a b : ι → K) :
+    ∑ i ∈ s, ∑ j ∈ s, ‖a i * b j - a j * b i‖ ^ 2 =
+      2 * ((∑ i ∈ s, ‖a i‖ ^ 2) * ∑ i ∈ s, ‖b i‖ ^ 2 - ‖∑ i ∈ s, conj (a i) * b i‖ ^ 2) := by
+  apply ofReal_injective (K := K)
+  push_cast
+  simp only [← mul_conj, map_sub, map_mul, map_sum, conj_conj,
+    Finset.sum_sum_mul_sub_mul_mul_mul_sub_mul, mul_comm (b _) (conj (a _))]
+  ring
+
+/-- **Lagrange's inequality** over `ℝ` or `ℂ`, with the sum over ordered pairs `(i, j)`:
+`∑_{i,j} |a_i b_j - a_j b_i|² ≤ 2 (∑ |a_i|²)(∑ |b_i|²)`. -/
+theorem sum_sum_norm_mul_sub_mul_sq_le {ι : Type*} (s : Finset ι) (a b : ι → K) :
+    ∑ i ∈ s, ∑ j ∈ s, ‖a i * b j - a j * b i‖ ^ 2 ≤
+      2 * (∑ i ∈ s, ‖a i‖ ^ 2) * ∑ i ∈ s, ‖b i‖ ^ 2 := by
+  rw [sum_sum_norm_mul_sub_mul_sq, mul_assoc]
+  linarith [sq_nonneg ‖∑ i ∈ s, conj (a i) * b i‖]
+
 end RCLike
 
 section
