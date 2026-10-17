@@ -103,8 +103,7 @@ lemma pi_indepFun_pi_of_prod_bcf (mX : ∀ s, AEMeasurable (X s) P)
     (h : ∀ (f : (s : S) → E s →ᵇ ℝ) (g : (t : T) → F t →ᵇ ℝ),
       P[(∏ s, f s ∘ (X s)) * (∏ t, g t ∘ (Y t))] = P[∏ s, f s ∘ (X s)] * P[∏ t, g t ∘ (Y t)]) :
     IndepFun (fun ω s ↦ X s ω) (fun ω t ↦ Y t ω) P := by
-  rw [indepFun_iff_map_prod_eq_prod_map_map (aemeasurable_pi_lambda _ mX)
-    (aemeasurable_pi_lambda _ mY)]
+  rw [indepFun_iff_map_prod_eq_prod_map_map (.of_eval mX) (.of_eval mY)]
   refine eq_prod_of_integral_prod_mul_prod_boundedContinuousFunction fun f g ↦ ?_
   rw [integral_map, integral_map, integral_map]
   · convert! h f g <;> simp
@@ -131,7 +130,7 @@ lemma indepFun_pi_of_prod_bcf (mZ : AEMeasurable Z P)
     (h : ∀ (f : G →ᵇ ℝ) (g : (t : T) → F t →ᵇ ℝ),
       P[f ∘ Z * (∏ t, g t ∘ (Y t))] = P[f ∘ Z] * P[∏ t, g t ∘ (Y t)]) :
     IndepFun Z (fun ω t ↦ Y t ω) P := by
-  rw [indepFun_iff_map_prod_eq_prod_map_map mZ (aemeasurable_pi_lambda _ mY)]
+  rw [indepFun_iff_map_prod_eq_prod_map_map mZ (.of_eval mY)]
   refine eq_prod_of_integral_mul_prod_boundedContinuousFunction fun f g ↦ ?_
   rw [integral_map, integral_map, integral_map]
   · convert! h f g <;> simp
@@ -153,7 +152,7 @@ lemma pi_indepFun_of_prod_bcf (mX : ∀ s, AEMeasurable (X s) P)
     (h : ∀ (f : (s : S) → E s →ᵇ ℝ) (g : H →ᵇ ℝ),
       P[(∏ s, f s ∘ (X s)) * g ∘ U] = P[∏ s, f s ∘ (X s)] * P[g ∘ U]) :
     IndepFun (fun ω s ↦ X s ω) U P := by
-  rw [indepFun_iff_map_prod_eq_prod_map_map (aemeasurable_pi_lambda _ mX) mU]
+  rw [indepFun_iff_map_prod_eq_prod_map_map (.of_eval mX) mU]
   refine eq_prod_of_integral_prod_mul_boundedContinuousFunction fun f g ↦ ?_
   rw [integral_map, integral_map, integral_map]
   · convert! h f g <;> simp

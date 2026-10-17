@@ -5,8 +5,8 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public import Mathlib.Data.ENat.Monoid
 public meta import Mathlib.Tactic.ToAdditive
+public import Mathlib.Data.ENat.Monoid
 
 /-!
 # `enat_to_nat`

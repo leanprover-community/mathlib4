@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Calculus.ContDiff.Comp
 public import Mathlib.Analysis.Calculus.Deriv.Inverse
 public import Mathlib.Topology.OpenPartialHomeomorph.IsImage
+
 import Mathlib.Analysis.Calculus.FDeriv.OfCompLeft
 
 /-!
@@ -139,22 +140,28 @@ theorem contDiff_single [DecidableEq ι] (k : ℕ∞ω) (i : ι) :
     ContDiff 𝕜 k (Pi.single i : F' i → ∀ i, F' i) :=
   contDiff_update k 0 i
 
-variable (𝕜 E)
+variable (𝕜 F')
 
 @[fun_prop]
-theorem contDiff_apply (i : ι) : ContDiff 𝕜 n fun f : ι → E => f i :=
+theorem contDiff_apply (i : ι) : ContDiff 𝕜 n fun (f : Π i, F' i) => f i :=
   contDiff_pi.mp contDiff_id i
 
 @[fun_prop]
-theorem contDiffAt_apply (i : ι) (f : ι → E) : ContDiffAt 𝕜 n (fun f : ι → E => f i) f :=
-  (contDiff_apply 𝕜 E i).contDiffAt
+theorem contDiffAt_apply (i : ι) (f : Π i, F' i) : ContDiffAt 𝕜 n (fun (f : Π i, F' i) => f i) f :=
+  (contDiff_apply 𝕜 F' i).contDiffAt
 
 @[fun_prop]
-theorem contDiffOn_apply (i : ι) (s : Set (ι → E)) : ContDiffOn 𝕜 n (fun f : ι → E => f i) s :=
-  (contDiff_apply 𝕜 E i).contDiffOn
+theorem contDiffWithinAt_apply (i : ι) (s : Set (Π i, F' i)) (f : Π i, F' i) :
+    ContDiffWithinAt 𝕜 n (fun (f : Π i, F' i) => f i) s f :=
+  (contDiffAt_apply 𝕜 F' i f).contDiffWithinAt
+
+@[fun_prop]
+theorem contDiffOn_apply (i : ι) (s : Set (Π i, F' i)) :
+    ContDiffOn 𝕜 n (fun (f : Π i, F' i) => f i) s :=
+  (contDiff_apply 𝕜 F' i).contDiffOn
 
 theorem contDiff_apply_apply (i : ι) (j : ι') : ContDiff 𝕜 n fun f : ι → ι' → E => f i j :=
-  contDiff_pi.mp (contDiff_apply 𝕜 (ι' → E) i) j
+  contDiff_pi.mp (contDiff_apply 𝕜 _ i) j
 
 end Pi
 
@@ -177,7 +184,7 @@ at this point. -/
 @[fun_prop]
 theorem ContDiffWithinAt.add {s : Set E} {f g : E → F} (hf : ContDiffWithinAt 𝕜 n f s x)
     (hg : ContDiffWithinAt 𝕜 n g s x) : ContDiffWithinAt 𝕜 n (fun x => f x + g x) s x :=
-  contDiff_add.contDiffWithinAt.comp x (hf.prodMk hg) subset_preimage_univ
+  contDiff_add.contDiffWithinAt.comp x (hf.prodMk hg) (mapsTo_univ ..)
 
 /-- The sum of two `C^n` functions at a point is `C^n` at this point. -/
 @[fun_prop]
@@ -211,24 +218,18 @@ The iterated derivative of the sum of two functions is the sum of the iterated d
   have hft : ContDiffOn 𝕜 i f (s ∩ t) := fun a ha ↦ (h (by simp_all)).1.mono inter_subset_left
   have hgt : ContDiffOn 𝕜 i g (s ∩ t) := fun a ha ↦ (h (by simp_all)).2.mono inter_subset_left
   have hut : UniqueDiffOn 𝕜 (s ∩ t) := hu.inter ht
-  have H : ↑(s ∩ t) =ᶠ[𝓝 x] s :=
-    inter_eventuallyEq_left.mpr (eventually_of_mem (ht.mem_nhds hxt) (fun _ h _ ↦ h))
+  have H : s ∩ t =ᶠ[𝓝 x] s :=
+    inter_eventuallyEqSet_left.mpr (eventually_of_mem (ht.mem_nhds hxt) (fun _ h _ ↦ h))
   rw [← iteratedFDerivWithin_congr_set H, ← iteratedFDerivWithin_congr_set H,
     ← iteratedFDerivWithin_congr_set H]
   exact .symm (((hft.ftaylorSeriesWithin hut).add
       (hgt.ftaylorSeriesWithin hut)).eq_iteratedFDerivWithin_of_uniqueDiffOn le_rfl hut ⟨hx, hxt⟩)
-
-@[deprecated (since := "2026-02-13")]
-alias iteratedFDerivWithin_add_apply' := fun_iteratedFDerivWithin_add_apply
 
 @[to_fun] theorem iteratedFDeriv_add_apply {i : ℕ} {f g : E → F}
     (hf : ContDiffAt 𝕜 i f x) (hg : ContDiffAt 𝕜 i g x) :
     iteratedFDeriv 𝕜 i (f + g) x = iteratedFDeriv 𝕜 i f x + iteratedFDeriv 𝕜 i g x := by
   simp_rw [← iteratedFDerivWithin_univ]
   exact iteratedFDerivWithin_add_apply hf hg uniqueDiffOn_univ (Set.mem_univ _)
-
-@[deprecated (since := "2026-02-13")]
-alias iteratedFDeriv_add_apply' := fun_iteratedFDeriv_add_apply
 
 @[to_fun] theorem iteratedFDeriv_add {i : ℕ} {f g : E → F} (hf : ContDiff 𝕜 i f)
     (hg : ContDiff 𝕜 i g) :
@@ -251,7 +252,7 @@ this point. -/
 @[fun_prop]
 theorem ContDiffWithinAt.neg {s : Set E} {f : E → F} (hf : ContDiffWithinAt 𝕜 n f s x) :
     ContDiffWithinAt 𝕜 n (fun x => -f x) s x :=
-  contDiff_neg.contDiffWithinAt.comp x hf subset_preimage_univ
+  contDiff_neg.contDiffWithinAt.comp x hf (mapsTo_univ ..)
 
 /-- The negative of a `C^n` function at a point is `C^n` at this point. -/
 @[fun_prop]
@@ -560,7 +561,7 @@ set at this point. -/
 @[to_fun (attr := fun_prop)]
 theorem ContDiffWithinAt.smul {s : Set E} {f : E → 𝕜'} {g : E → F} (hf : ContDiffWithinAt 𝕜 n f s x)
     (hg : ContDiffWithinAt 𝕜 n g s x) : ContDiffWithinAt 𝕜 n (f • g) s x :=
-  contDiff_smul.contDiffWithinAt.comp x (hf.prodMk hg) subset_preimage_univ
+  contDiff_smul.contDiffWithinAt.comp x (hf.prodMk hg) (mapsTo_univ ..)
 
 /-- The scalar multiplication of two `C^n` functions at a point is `C^n` at this point. -/
 @[to_fun (attr := fun_prop)]
@@ -861,7 +862,7 @@ theorem contDiffAt_map_inverse [CompleteSpace E] (e : E ≃L[𝕜] F) :
   have h₁ : ContDiff 𝕜 n O₁ := contDiff_id.clm_comp contDiff_const
   have h₂ : ContDiff 𝕜 n O₂ := contDiff_const.clm_comp contDiff_id
   refine h₁.contDiffAt.comp _ (ContDiffAt.comp _ ?_ h₂.contDiffAt)
-  convert! contDiffAt_ringInverse 𝕜 (1 : (E →L[𝕜] E)ˣ)
+  convert contDiffAt_ringInverse 𝕜 (1 : (E →L[𝕜] E)ˣ)
   simp [O₂, one_def]
 
 /-- At an invertible map `e : M →L[R] M₂` between Banach spaces, the operation of
@@ -923,7 +924,7 @@ theorem OpenPartialHomeomorph.contDiffAt_symm [CompleteSpace E] (f : OpenPartial
         have h_deriv : HasFDerivAt f (e : E →L[𝕜] F) (f.symm x) := by
           rw [he]
           exact hff' (f.symm x) hxu
-        convert! f.hasFDerivAt_symm hx.1 h_deriv
+        convert f.hasFDerivAt_symm hx.1 h_deriv
         simp [← he]
       · -- Then we check that the formula, being a composition of `ContDiff` pieces, is
         -- itself `ContDiff`

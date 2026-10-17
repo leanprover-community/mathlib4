@@ -6,14 +6,14 @@ Authors: Kim Morrison, Heather Macbeth
 module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Tower
-public import Mathlib.Analysis.RCLike.Basic
-public import Mathlib.Topology.Algebra.Star.Real
-public import Mathlib.Topology.Algebra.StarSubalgebra
 public import Mathlib.Topology.Algebra.NonUnitalStarAlgebra
+public import Mathlib.Topology.Algebra.StarSubalgebra
 public import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 public import Mathlib.Topology.ContinuousMap.Lattice
 public import Mathlib.Topology.ContinuousMap.Weierstrass
-public import Mathlib.Algebra.Order.Module.Basic
+
+import Mathlib.Algebra.Order.Module.Basic
+import Mathlib.Topology.Algebra.Star.Real
 
 /-!
 # The Stone-Weierstrass theorem
@@ -84,7 +84,7 @@ theorem polynomial_comp_attachBound (A : Subalgebra ℝ C(X, ℝ)) (f : A) (g : 
 gives another function in `A`.
 
 This lemma proves something slightly more subtle than this:
-we take `f`, and think of it as a function into the restricted target `Set.Icc (-‖f‖) ‖f‖)`,
+we take `f`, and think of it as a function into the restricted target `Set.Icc (-‖f‖) ‖f‖`,
 and then postcompose with a polynomial function on that interval.
 This is in fact the same situation as above, and so also gives a function in `A`.
 -/
@@ -135,7 +135,7 @@ theorem inf_mem_subalgebra_closure (A : Subalgebra ℝ C(X, ℝ)) (f g : A) :
 
 theorem inf_mem_closed_subalgebra (A : Subalgebra ℝ C(X, ℝ)) (h : IsClosed (A : Set C(X, ℝ)))
     (f g : A) : (f : C(X, ℝ)) ⊓ (g : C(X, ℝ)) ∈ A := by
-  convert! inf_mem_subalgebra_closure A f g
+  convert inf_mem_subalgebra_closure A f g
   apply SetLike.ext'
   symm
   rw [Subalgebra.topologicalClosure_coe, closure_eq_iff_isClosed]
@@ -155,7 +155,7 @@ theorem sup_mem_subalgebra_closure (A : Subalgebra ℝ C(X, ℝ)) (f g : A) :
 
 theorem sup_mem_closed_subalgebra (A : Subalgebra ℝ C(X, ℝ)) (h : IsClosed (A : Set C(X, ℝ)))
     (f g : A) : (f : C(X, ℝ)) ⊔ (g : C(X, ℝ)) ∈ A := by
-  convert! sup_mem_subalgebra_closure A f g
+  convert sup_mem_subalgebra_closure A f g
   apply SetLike.ext'
   simp
 
@@ -163,8 +163,8 @@ open scoped Topology
 
 -- Here's the fun part of Stone-Weierstrass!
 theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
-    (inf_mem : ∀ᵉ (f ∈ L) (g ∈ L), f ⊓ g ∈ L)
-    (sup_mem : ∀ᵉ (f ∈ L) (g ∈ L), f ⊔ g ∈ L) (sep : L.SeparatesPointsStrongly) :
+    (inf_mem : ∀ f ∈ L, ∀ g ∈ L, f ⊓ g ∈ L)
+    (sup_mem : ∀ f ∈ L, ∀ g ∈ L, f ⊔ g ∈ L) (sep : L.SeparatesPointsStrongly) :
     closure L = ⊤ := by
   -- We start by boiling down to a statement about close approximation.
   rw [eq_top_iff]
@@ -386,7 +386,7 @@ theorem Subalgebra.SeparatesPoints.rclike_to_real {A : StarSubalgebra 𝕜 C(X, 
   refine ⟨_, ⟨⟨(‖F ·‖ ^ 2), by fun_prop⟩, ?_, rfl⟩, ?_⟩
   · -- This is also an element of the subalgebra, and takes only real values
     rw [SetLike.mem_coe, Subalgebra.mem_comap]
-    convert! (A.restrictScalars ℝ).mul_mem hFA (star_mem hFA : star F ∈ A)
+    convert (A.restrictScalars ℝ).mul_mem hFA (star_mem hFA : star F ∈ A)
     ext1
     simp [← RCLike.mul_conj]
   · -- And it also separates the points `x₁`, `x₂`
@@ -413,7 +413,7 @@ theorem ContinuousMap.starSubalgebra_topologicalClosure_eq_top_of_separatesPoint
     -- we may apply the real Stone-Weierstrass result to it.
     have SW : A₀.topologicalClosure = ⊤ :=
       haveI := subalgebra_topologicalClosure_eq_top_of_separatesPoints _ hA.rclike_to_real
-      congr_arg Subalgebra.toSubmodule this
+      congr(Subalgebra.toSubmodule $this)
     rw [← Submodule.map_top, ← SW]
     -- So it suffices to prove that the image under `I` of the closure of `A₀` is contained in the
     -- closure of `A`, which follows by abstract nonsense
@@ -430,7 +430,7 @@ theorem ContinuousMap.starSubalgebra_topologicalClosure_eq_top_of_separatesPoint
   -- So `f_re + I • f_im` is in the closure of `A`
   have := A.topologicalClosure.add_mem h_f_re (A.topologicalClosure.smul_mem h_f_im RCLike.I)
   rw [StarSubalgebra.mem_toSubalgebra] at this
-  convert! this
+  convert this
   -- And this, of course, is just `f`
   ext
   apply Eq.symm
@@ -615,7 +615,7 @@ lemma ker_evalStarAlgHom_eq_closure_adjoin_id (s : Set 𝕜) (h0 : 0 ∈ s) [Com
       closure (adjoin 𝕜 {(restrict s (.id 𝕜))}) := by
   rw [← ker_evalStarAlgHom_inter_adjoin_id s h0,
     AlgHom.closure_ker_inter (φ := evalStarAlgHom 𝕜 𝕜 (X := s) ⟨0, h0⟩) (continuous_eval_const _) _]
-  convert! (Set.univ_inter _).symm
+  convert (Set.univ_inter _).symm
   rw [← Polynomial.toContinuousMapOn_X_eq_restrict_id, ← Polynomial.toContinuousMapOnAlgHom_apply,
     ← polynomialFunctions.starClosure_eq_adjoin_X s]
   congrm (($(polynomialFunctions.starClosure_topologicalClosure s) : Set C(s, 𝕜)))
@@ -638,7 +638,7 @@ lemma ContinuousMapZero.adjoin_id_dense (s : Set 𝕜) [Fact (0 ∈ s)]
     ← ContinuousMap.ker_evalStarAlgHom_eq_closure_adjoin_id s h0']
   apply Set.eq_univ_of_forall fun f ↦ ?_
   simp only [Set.mem_preimage, SetLike.mem_coe, RingHom.mem_ker,
-    ContinuousMap.evalStarAlgHom_apply, ContinuousMap.coe_coe]
+    ContinuousMap.evalStarAlgHom_apply, ContinuousMap.coe_ofClass]
   exact map_zero f
 
 open NonUnitalStarAlgebra in
@@ -691,7 +691,9 @@ lemma ContinuousMapZero.nonUnitalStarAlgHom_apply_mul_eq_zero {𝕜 A : Type*}
   | add _ _ h₁ h₂ => simp only [map_add, add_mul, h₁, h₂, zero_add]
   | mul _ _ _ h => simp only [map_mul, mul_assoc, h, mul_zero]
   | smul _ _ h => rw [map_smul, smul_mul_assoc, h, smul_zero]
-  | frequently f h => exact h.mem_of_closed <| isClosed_eq (by fun_prop) continuous_zero
+  | frequently f h =>
+    exact h.mem_of_closed (s := {g | φ g * a = 0}) <|
+      isClosed_eq (by fun_prop) continuous_zero
 
 lemma ContinuousMapZero.mul_nonUnitalStarAlgHom_apply_eq_zero {𝕜 A : Type*}
     [RCLike 𝕜] [NonUnitalSemiring A] [Star A] [TopologicalSpace A] [SeparatelyContinuousMul A]
@@ -706,6 +708,8 @@ lemma ContinuousMapZero.mul_nonUnitalStarAlgHom_apply_eq_zero {𝕜 A : Type*}
   | add _ _ h₁ h₂ => simp only [map_add, mul_add, h₁, h₂, zero_add]
   | mul _ _ h _ => simp only [map_mul, ← mul_assoc, h, zero_mul]
   | smul _ _ h => rw [map_smul, mul_smul_comm, h, smul_zero]
-  | frequently f h => exact h.mem_of_closed <| isClosed_eq (by fun_prop) continuous_zero
+  | frequently f h =>
+    exact h.mem_of_closed (s := {g | a * φ g = 0}) <|
+      isClosed_eq (by fun_prop) continuous_zero
 
 end ContinuousMapZero
