@@ -464,6 +464,7 @@ def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
     return
   if (← MonadState.get).messages.hasErrors then
     return
+  if true then return
   let trees ← getInfoTrees
   let tacticData := trees.foldl (init := #[]) fun acc tree => acc ++ extractTacticData tree
   -- `stains` records pairs `(location, mvar)`, where
