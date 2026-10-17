@@ -93,53 +93,52 @@ lemma isIdempotentElem_elem : IsIdempotentElem (elem A B) := by
       mul_assoc, ← one_tmul_mul_elem, ← mul_assoc, TensorProduct.tmul_mul_tmul, mul_one, one_mul]
   | add t₁ t₂ h₁ h₂ => rw [map_add, TensorProduct.add_tmul, add_mul, add_mul, h₁, h₂]
 
-end Algebra.FormallyUnramified
-
-namespace Algebra.FormallyUnramified
-
 open Algebra.TensorProduct
 
-variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
-  [Algebra A B] [Algebra A C] [FormallyUnramified A B] [EssFiniteType A B]
+variable {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
 
-/-- The separability tensor evaluated at two algebra maps. Its support is their equalizer. -/
-noncomputable def equalizerIdempotent (f g : B →ₐ[A] C) : C :=
-  productMap f g (elem A B)
+/-- The separability tensor evaluated at the identity and the action of `g`. Modulo an ideal
+`Q`, it equals `1` exactly when `g` belongs to `Q.inertia G`. -/
+noncomputable def equalizerIdempotent (g : G) : B :=
+  productMap (AlgHom.id A B) (MulSemiringAction.toAlgHom A B g) (elem A B)
 
-lemma isIdempotentElem_equalizerIdempotent (f g : B →ₐ[A] C) :
-    IsIdempotentElem (equalizerIdempotent f g) :=
-  (isIdempotentElem_elem A B).map (productMap f g)
+lemma isIdempotentElem_equalizerIdempotent (g : G) :
+    IsIdempotentElem (equalizerIdempotent A B g) :=
+  (isIdempotentElem_elem A B).map (productMap (AlgHom.id A B) (MulSemiringAction.toAlgHom A B g))
 
-lemma mul_equalizerIdempotent (f g : B →ₐ[A] C) (b : B) :
-    g b * equalizerIdempotent f g = f b * equalizerIdempotent f g := by
-  simpa [equalizerIdempotent] using congr(productMap f g $(one_tmul_mul_elem b))
-
-lemma equalizerIdempotent_mul (f g : B →ₐ[A] C) (b : B) :
-    equalizerIdempotent f g * f b = equalizerIdempotent f g * g b := by
-  grind [mul_equalizerIdempotent f g b]
+lemma equalizerIdempotent_mul_smul (g : G) (b : B) :
+    equalizerIdempotent A B g * (g • b) = equalizerIdempotent A B g * b := by
+  simpa [equalizerIdempotent, mul_comm] using
+    congr(productMap (AlgHom.id A B) (MulSemiringAction.toAlgHom A B g) $(one_tmul_mul_elem b))
 
 @[simp]
-lemma equalizerIdempotent_self (f : B →ₐ[A] C) : equalizerIdempotent f f = 1 := by
-  have h : productMap f f = f.comp (lmul' A) := by ext <;> simp
+lemma equalizerIdempotent_one : equalizerIdempotent A B (1 : G) = 1 := by
+  have h : productMap (AlgHom.id A B) (MulSemiringAction.toAlgHom A B (1 : G)) = lmul' A := by
+    ext <;> simp
   simp [equalizerIdempotent, h, lmul_elem]
 
 @[simp]
-lemma equalizerIdempotent_eq_one_iff (f g : B →ₐ[A] C) :
-    equalizerIdempotent f g = 1 ↔ f = g := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · simpa [AlgHom.ext_iff, h] using equalizerIdempotent_mul f g
-  · simp [h]
+lemma _root_.Ideal.Quotient.mk_equalizerIdempotent_eq_one_iff (Q : Ideal B) (g : G) :
+    Ideal.Quotient.mk Q (equalizerIdempotent A B g) = 1 ↔ g ∈ Q.inertia G := by
+  refine ⟨fun he ↦ Q.mem_inertia.mpr fun b ↦ ?_, fun hg ↦ ?_⟩
+  · rw [← Ideal.Quotient.mk_eq_mk_iff_sub_mem]
+    simpa [he] using congrArg (Ideal.Quotient.mk Q) (equalizerIdempotent_mul_smul A B g b)
+  · have he : (Ideal.Quotient.mkₐ A Q).comp
+        (productMap (AlgHom.id A B) (MulSemiringAction.toAlgHom A B g)) =
+        (Ideal.Quotient.mkₐ A Q).comp (lmul' A) := by
+      ext b
+      · simp
+      · simpa [Ideal.Quotient.mk_eq_mk_iff_sub_mem] using Q.mem_inertia.mp hg b
+    simpa [equalizerIdempotent, lmul_elem] using congr($he (elem A B))
 
-lemma map_equalizerIdempotent {D : Type*} [CommRing D] [Algebra A D]
-    (f g : B →ₐ[A] C) (k : C →ₐ[A] D) :
-    k (equalizerIdempotent f g) = equalizerIdempotent (k.comp f) (k.comp g) := by
-  have h : k.comp (productMap f g) = productMap (k.comp f) (k.comp g) := by ext <;> simp
-  exact congr($h (elem A B))
+open Classical in
+lemma _root_.Ideal.Quotient.mk_equalizerIdempotent (Q : Ideal B) [Q.IsPrime] (g : G) :
+    Ideal.Quotient.mk Q (equalizerIdempotent A B g) = if g ∈ Q.inertia G then 1 else 0 := by
+  have h := IsIdempotentElem.iff_eq_zero_or_one.mp
+    ((isIdempotentElem_equalizerIdempotent A B g).map (Ideal.Quotient.mk Q))
+  by_cases hg : g ∈ Q.inertia G <;> simp_all
 
-lemma mk_equalizerIdempotent_eq_one_iff (f g : B →ₐ[A] C) (Q : Ideal C) :
-    Ideal.Quotient.mk Q (equalizerIdempotent f g) = 1 ↔
-      (Ideal.Quotient.mkₐ A Q).comp f = (Ideal.Quotient.mkₐ A Q).comp g := by
-  rw [← Ideal.Quotient.mkₐ_eq_mk A Q, map_equalizerIdempotent, equalizerIdempotent_eq_one_iff]
+variable {A B}
 
 section Linearize
 
@@ -156,7 +155,7 @@ noncomputable def linearize : (M →ₗ[A] N) →ₗ[B] (M →ₗ[B] N) :=
 lemma linearize_apply (f : M →ₗ[A] N) : linearize B f = (f.liftBaseChange B).comp (sec A B M) :=
   rfl
 
-lemma le_comap_lineraize (f : M →ₗ[A] N) (P : Submodule B M) (Q : Submodule B N)
+lemma le_comap_linearize (f : M →ₗ[A] N) (P : Submodule B M) (Q : Submodule B N)
     (hf : P.restrictScalars A ≤ (Q.restrictScalars A).comap f) : P ≤ Q.comap (linearize B f) := by
   intro x hx
   simp_rw [Submodule.mem_comap, linearize_apply, sec, LinearMap.comp_apply, LinearMap.coe_mk]
@@ -192,8 +191,9 @@ lemma linearize_restrictScalars (f : M →ₗ[B] N) : linearize B (f.restrictSca
   simpa using comp_linearize f (LinearMap.id (R := A))
 
 @[simp]
-lemma linearize_toLinearMap (f : B →ₐ[A] B) :
-    linearize B f.toLinearMap = LinearMap.mulLeft B (equalizerIdempotent (AlgHom.id A B) f) := by
+lemma linearize_toAlgHom (g : G) :
+    linearize B (MulSemiringAction.toAlgHom A B g).toLinearMap =
+      LinearMap.mulLeft B (equalizerIdempotent A B g) := by
   apply LinearMap.ext_ring
   simp_rw [linearize_apply, sec, LinearMap.comp_apply, LinearMap.coe_mk, equalizerIdempotent]
   induction elem A B using TensorProduct.inductionOn with
@@ -215,68 +215,49 @@ namespace Subgroup
 /-- The idempotent whose multiples are fixed by a finite subgroup. -/
 noncomputable def inertiaIdempotent : B :=
   letI := Fintype.ofFinite H
-  ∏ h : H, equalizerIdempotent (AlgHom.id A B) (MulSemiringAction.toAlgHom A B h)
+  ∏ h : H, equalizerIdempotent A B (h : G)
 
 lemma isIdempotentElem_inertiaIdempotent : IsIdempotentElem (H.inertiaIdempotent A B) := by
   classical
-  let := Fintype.ofFinite H -- missing IsIdempotentElem.prod?
+  let := Fintype.ofFinite H
   rw [IsIdempotentElem, inertiaIdempotent, ← Finset.prod_mul_distrib]
-  exact Finset.prod_congr rfl fun h _ ↦ (isIdempotentElem_equalizerIdempotent _ _).eq
+  exact Finset.prod_congr rfl fun h _ ↦ (isIdempotentElem_equalizerIdempotent A B (h : G)).eq
 
 lemma inertiaIdempotent_mul_smul (h : H) (b : B) :
     H.inertiaIdempotent A B * (h • b) = H.inertiaIdempotent A B * b := by
   classical
   let := Fintype.ofFinite H
-  obtain ⟨w, hw⟩ : equalizerIdempotent (AlgHom.id A B)
-      (MulSemiringAction.toAlgHom A B h) ∣ H.inertiaIdempotent A B :=
+  obtain ⟨w, hw⟩ : equalizerIdempotent A B (h : G) ∣ H.inertiaIdempotent A B :=
     Finset.dvd_prod_of_mem _ (Finset.mem_univ h)
-  have he := equalizerIdempotent_mul (AlgHom.id A B) (MulSemiringAction.toAlgHom A B h) b
-  rw [AlgHom.id_apply, MulSemiringAction.toAlgHom_apply] at he
-  rw [hw, mul_right_comm, ← he, mul_right_comm]
+  rw [Subgroup.smul_def, hw, mul_right_comm, equalizerIdempotent_mul_smul, mul_right_comm]
 
 @[simp]
 lemma smul_inertiaIdempotent (h : H) :
     h • H.inertiaIdempotent A B = H.inertiaIdempotent A B := by
-  have h₁ := (H.inertiaIdempotent_mul_smul A B h (H.inertiaIdempotent A B)).trans
-    (H.isIdempotentElem_inertiaIdempotent A B).eq
-  have h₂ : (h • H.inertiaIdempotent A B) * H.inertiaIdempotent A B =
-      h • (H.inertiaIdempotent A B) := by
-    simpa only [smul_mul', smul_smul, mul_inv_cancel, one_smul] using
-      congrArg (h • ·) ((H.inertiaIdempotent_mul_smul A B h⁻¹ (H.inertiaIdempotent A B)).trans
-        (H.isIdempotentElem_inertiaIdempotent A B).eq)
-  exact h₂.symm.trans ((mul_comm _ _).trans h₁)
+  calc
+    h • H.inertiaIdempotent A B =
+        h • (H.inertiaIdempotent A B * (h⁻¹ • H.inertiaIdempotent A B)) := by
+      rw [inertiaIdempotent_mul_smul, (H.isIdempotentElem_inertiaIdempotent A B).eq]
+    _ = H.inertiaIdempotent A B := by
+      rw [smul_mul', smul_inv_smul, mul_comm, inertiaIdempotent_mul_smul,
+        (H.isIdempotentElem_inertiaIdempotent A B).eq]
 
 lemma smul_inertiaIdempotent_mul (h : H) (b : B) :
     h • (H.inertiaIdempotent A B * b) = H.inertiaIdempotent A B * b := by
   rw [smul_mul', smul_inertiaIdempotent, inertiaIdempotent_mul_smul]
 
 variable {H A B} in
-lemma inertiaIdempotent_sub_one_mem_iff {Q : Ideal B} :
+lemma mk_inertiaIdempotent_eq_one_iff {Q : Ideal B} :
     Ideal.Quotient.mk Q (H.inertiaIdempotent A B) = 1 ↔ H ≤ Q.inertia G := by
   refine ⟨fun hu h hh ↦ Q.mem_inertia.mpr fun b ↦ ?_, fun hH ↦ ?_⟩
   · rw [← Ideal.Quotient.mk_eq_mk_iff_sub_mem]
     simpa [hu] using congrArg (Ideal.Quotient.mk Q) (H.inertiaIdempotent_mul_smul A B ⟨h, hh⟩ b)
   · rw [inertiaIdempotent, map_prod]
-    apply Finset.prod_eq_one
-    intro h hh
-    rw [mk_equalizerIdempotent_eq_one_iff, eq_comm]
-    ext b
-    simpa [Ideal.Quotient.mk_eq_mk_iff_sub_mem, Subgroup.smul_def] using Q.mem_inertia.mp (hH h.2) b
+    exact Finset.prod_eq_one fun h _ ↦ by simpa using hH h.2
 
 lemma _root_.Ideal.mk_inertiaIdempotent_inertia_eq_one (Q : Ideal B) [Finite (Q.inertia G)] :
     Ideal.Quotient.mk Q ((Q.inertia G).inertiaIdempotent A B) = 1 :=
-  inertiaIdempotent_sub_one_mem_iff.mpr le_rfl
-
-open Classical in
-lemma _root_.Ideal.Quotient.mk_equalizerIdempotent (Q : Ideal B) [Q.IsPrime] (g : G) :
-    Ideal.Quotient.mk Q (equalizerIdempotent (AlgHom.id A B)
-      (MulSemiringAction.toAlgHom A B g)) = if g ∈ Q.inertia G then 1 else 0 := by
-  have h {u : B ⧸ Q} (hu : IsIdempotentElem u) : u = if u = 1 then 1 else 0 := by
-    grind [IsIdempotentElem.iff_eq_zero_or_one]
-  rw [h ((isIdempotentElem_equalizerIdempotent (AlgHom.id A B)
-    (MulSemiringAction.toAlgHom A B g)).map (Ideal.Quotient.mk Q))]
-  simp [mk_equalizerIdempotent_eq_one_iff, AlgHom.ext_iff,
-    Ideal.Quotient.mk_eq_mk_iff_sub_mem, Q.toAddSubgroup.sub_mem_comm_iff]
+  mk_inertiaIdempotent_eq_one_iff.mpr le_rfl
 
 omit [Finite H] in
 /-- Relative trace after multiplication by the inertia idempotent, viewed as a base-linear
@@ -292,8 +273,7 @@ omit [Finite H] in
 noncomputable def descentMultiplier [Finite G] : B := by
   classical
   letI := Fintype.ofFinite (G ⧸ H)
-  exact ∑ q : G ⧸ H, equalizerIdempotent (AlgHom.id A B)
-    (MulSemiringAction.toAlgHom A B q.out) * H.inertiaIdempotent A B
+  exact ∑ q : G ⧸ H, equalizerIdempotent A B q.out * H.inertiaIdempotent A B
 
 /-- Linearizing the relative trace after multiplication by the inertia idempotent gives
 multiplication by the descent multiplier. -/
@@ -324,7 +304,7 @@ private lemma descentMultiplier_mem_colon [Algebra.IsInvariant A B G]
     have : algebraMap A B a ∈ J := Ideal.mem_map_of_mem _ (by simpa [ha] using hy)
     simpa [Subgroup.descentTrace, Subgroup.relativeTrace_apply, y, ha] using this
   simpa [Submodule.mem_colon, IsConcreteLE.le_iff, Subgroup.linearize_descentTrace] using
-    le_comap_lineraize (H.descentTrace A B) I J hT
+    le_comap_linearize (H.descentTrace A B) I J hT
 
 lemma Quotient.mk_descentMultiplier_inertia (Q : Ideal B) [Q.IsPrime] [Finite G] :
     Quotient.mk Q ((Q.inertia G).descentMultiplier A B) = 1 := by
