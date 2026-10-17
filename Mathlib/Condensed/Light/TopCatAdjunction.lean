@@ -167,6 +167,7 @@ noncomputable def sequentialAdjunction :
     (Functor.FullyFaithful.id _) fullyFaithfulSequentialToTop
     (Iso.refl _) (Iso.refl _)
 
+set_option fun_prop.projDefaultTransparency true in
 /--
 The counit of the adjunction `lightCondSetToSequential ⊣ sequentialToLightCondSet`
 is a homeomorphism.

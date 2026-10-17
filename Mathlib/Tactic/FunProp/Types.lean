@@ -149,14 +149,15 @@ structure Result where
   /-- -/
   proof : Expr
 
-/-- Default names to unfold -/
-def defaultUnfoldPred : Name → Bool :=
-  defaultNamesToUnfold.contains
+/-- Predicate for unfolding the constants that are considered reducible by `fun_prop`. -/
+def unfoldPred (toUnfold : NameSet := .ofArray defaultNamesToUnfold) (cfg : Meta.Config)
+    (info : ConstantInfo) : CoreM Bool :=
+  pure (toUnfold.contains info.name) <||> canUnfoldDefault cfg info
 
-/-- Get predicate on names indicating whether they should be unfolded. -/
-def unfoldNamePred : FunPropM (Name → Bool) := do
-  let toUnfold := (← read).constToUnfold
-  return fun n => toUnfold.contains n
+/-- Returns an unfolding predicate that also unfolds constants given with the `fun_prop [c]` syntax.
+-/
+def getUnfoldPred : FunPropM (Meta.Config → ConstantInfo → CoreM Bool) := do
+  return unfoldPred (← read).constToUnfold
 
 /-- Increase heartbeat, throws error when `maxSteps` was reached -/
 def increaseSteps : FunPropM Unit := do
