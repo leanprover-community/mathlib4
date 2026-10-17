@@ -80,6 +80,12 @@ theorem hasseDeriv_coeff (n : ℕ) :
   · intro h
     simp only [notMem_support_iff.mp h, monomial_zero_right, mul_zero, coeff_zero]
 
+theorem hasseDeriv_eq_zero_iff : hasseDeriv k f = 0 ↔ ∀ n, (n.choose k : R) * f.coeff n = 0 := by
+  refine ⟨fun h n ↦ ?_, fun h ↦ ext fun n ↦ by rw [hasseDeriv_coeff, coeff_zero, h]⟩
+  rcases lt_or_ge n k with hn | hn
+  · simp [Nat.choose_eq_zero_of_lt hn]
+  · simpa [hasseDeriv_coeff, Nat.sub_add_cancel hn] using congr(coeff $h (n - k))
+
 theorem hasseDeriv_zero' : hasseDeriv 0 f = f := by
   simp only [hasseDeriv_apply, Nat.sub_zero, choose_zero_right, cast_one, one_mul, sum_monomial_eq]
 
