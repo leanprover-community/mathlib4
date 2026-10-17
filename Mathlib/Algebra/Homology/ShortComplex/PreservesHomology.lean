@@ -99,34 +99,32 @@ lemma IsPreservedBy.hf' : PreservesColimit (parallelPair h.f' 0) F := IsPreserve
 
 /-- When a left homology data `h` of a short complex `S` is preserved by a functor `F`,
 this is the induced left homology data `h.map F` for the short complex `S.map F`. -/
-@[simps]
-noncomputable def map : (S.map F).LeftHomologyData := by
-  have := IsPreservedBy.hg h F
-  have := IsPreservedBy.hf' h F
-  have wi : F.map h.i ≫ F.map S.g = 0 := by rw [← F.map_comp, h.wi, F.map_zero]
-  have hi := KernelFork.mapIsLimit _ h.hi F
-  let f' : F.obj S.X₁ ⟶ F.obj h.K := hi.lift (KernelFork.ofι (S.map F).f (S.map F).zero)
-  have hf' : f' = F.map h.f' := Fork.IsLimit.hom_ext hi (by
+@[implicit_reducible, simps]
+noncomputable def map : (S.map F).LeftHomologyData :=
+  haveI := IsPreservedBy.hg h F
+  haveI := IsPreservedBy.hf' h F
+  haveI wi : F.map h.i ≫ F.map S.g = 0 := by rw [← F.map_comp, h.wi, F.map_zero]
+  haveI hi := KernelFork.mapIsLimit _ h.hi F
+  letI f' : F.obj S.X₁ ⟶ F.obj h.K := hi.lift (KernelFork.ofι (S.map F).f (S.map F).zero)
+  haveI hf' : f' = F.map h.f' := Fork.IsLimit.hom_ext hi (by
     rw [Fork.IsLimit.lift_ι hi]
     simp only [KernelFork.map_ι, Fork.ι_ofι, map_f, ← F.map_comp, f'_i])
-  have wπ : f' ≫ F.map h.π = 0 := by rw [hf', ← F.map_comp, f'_π, F.map_zero]
-  have hπ : IsColimit (CokernelCofork.ofπ (F.map h.π) wπ) := by
+  haveI wπ : f' ≫ F.map h.π = 0 := by rw [hf', ← F.map_comp, f'_π, F.map_zero]
+  haveI hπ : IsColimit (CokernelCofork.ofπ (F.map h.π) wπ) := by
     let e : parallelPair f' 0 ≅ parallelPair (F.map h.f') 0 :=
       parallelPair.ext (Iso.refl _) (Iso.refl _) (by simpa using hf') (by simp)
     refine IsColimit.precomposeInvEquiv e _
       (IsColimit.ofIsoColimit (CokernelCofork.mapIsColimit _ h.hπ' F) ?_)
     exact Cofork.ext (Iso.refl _) (by simp [e])
-  exact
-    { K := F.obj h.K
-      H := F.obj h.H
-      i := F.map h.i
-      π := F.map h.π
-      wi := wi
-      hi := hi
-      wπ := wπ
-      hπ := hπ }
+  { K := F.obj h.K
+    H := F.obj h.H
+    i := F.map h.i
+    π := F.map h.π
+    wi := wi
+    hi := hi
+    wπ := wπ
+    hπ := hπ }
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma map_f' : (h.map F).f' = F.map h.f' := by
   rw [← cancel_mono (h.map F).i, f'_i, map_f, map_i, ← F.map_comp, f'_i]
@@ -181,35 +179,33 @@ lemma IsPreservedBy.hg' : PreservesLimit (parallelPair h.g' 0) F :=
 
 /-- When a right homology data `h` of a short complex `S` is preserved by a functor `F`,
 this is the induced right homology data `h.map F` for the short complex `S.map F`. -/
-@[simps]
-noncomputable def map : (S.map F).RightHomologyData := by
-  have := IsPreservedBy.hf h F
-  have := IsPreservedBy.hg' h F
-  have wp : F.map S.f ≫ F.map h.p = 0 := by rw [← F.map_comp, h.wp, F.map_zero]
-  have hp := CokernelCofork.mapIsColimit _ h.hp F
-  let g' : F.obj h.Q ⟶ F.obj S.X₃ := hp.desc (CokernelCofork.ofπ (S.map F).g (S.map F).zero)
-  have hg' : g' = F.map h.g' := by
+@[implicit_reducible, simps]
+noncomputable def map : (S.map F).RightHomologyData :=
+  haveI := IsPreservedBy.hf h F
+  haveI := IsPreservedBy.hg' h F
+  haveI wp : F.map S.f ≫ F.map h.p = 0 := by rw [← F.map_comp, h.wp, F.map_zero]
+  haveI hp := CokernelCofork.mapIsColimit _ h.hp F
+  letI g' : F.obj h.Q ⟶ F.obj S.X₃ := hp.desc (CokernelCofork.ofπ (S.map F).g (S.map F).zero)
+  haveI hg' : g' = F.map h.g' := by
     apply Cofork.IsColimit.hom_ext hp
     rw [Cofork.IsColimit.π_desc hp]
     simp only [Cofork.π_ofπ, CokernelCofork.map_π, map_g, ← F.map_comp, p_g']
-  have wι : F.map h.ι ≫ g' = 0 := by rw [hg', ← F.map_comp, ι_g', F.map_zero]
-  have hι : IsLimit (KernelFork.ofι (F.map h.ι) wι) := by
+  haveI wι : F.map h.ι ≫ g' = 0 := by rw [hg', ← F.map_comp, ι_g', F.map_zero]
+  haveI hι : IsLimit (KernelFork.ofι (F.map h.ι) wι) := by
     let e : parallelPair g' 0 ≅ parallelPair (F.map h.g') 0 :=
       parallelPair.ext (Iso.refl _) (Iso.refl _) (by simpa using hg') (by simp)
     refine IsLimit.postcomposeHomEquiv e _
       (IsLimit.ofIsoLimit (KernelFork.mapIsLimit _ h.hι' F) ?_)
     exact Fork.ext (Iso.refl _) (by simp [e])
-  exact
-    { Q := F.obj h.Q
-      H := F.obj h.H
-      p := F.map h.p
-      ι := F.map h.ι
-      wp := wp
-      hp := hp
-      wι := wι
-      hι := hι }
+  { Q := F.obj h.Q
+    H := F.obj h.H
+    p := F.map h.p
+    ι := F.map h.ι
+    wp := wp
+    hp := hp
+    wι := wι
+    hι := hι }
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma map_g' : (h.map F).g' = F.map h.g' := by
   rw [← cancel_epi (h.map F).p, p_g', map_g, map_p, ← F.map_comp, p_g']
@@ -254,7 +250,6 @@ noncomputable def HomologyMapData.map {φ : S₁ ⟶ S₂} {h₁ : S₁.Homology
   left := ψ.left.map F
   right := ψ.right.map F
 
-set_option backward.isDefEq.respectTransparency false in
 lemma map_leftRightHomologyComparison' (F : C ⥤ D) [F.PreservesZeroMorphisms]
     (hₗ : S.LeftHomologyData) (hᵣ : S.RightHomologyData) [hₗ.IsPreservedBy F] [hᵣ.IsPreservedBy F] :
     F.map (leftRightHomologyComparison' hₗ hᵣ) =
@@ -341,7 +336,6 @@ instance hasLeftHomology_of_preserves [S.HasLeftHomology] [F.PreservesLeftHomolo
     (S.map F).HasLeftHomology :=
   HasLeftHomology.mk' (S.leftHomologyData.map F)
 
-set_option backward.defeqAttrib.useBackward true in
 instance hasLeftHomology_of_preserves' [S.HasLeftHomology] [F.PreservesLeftHomologyOf S] :
     (F.mapShortComplex.obj S).HasLeftHomology := by
   dsimp; infer_instance
@@ -350,7 +344,6 @@ instance hasRightHomology_of_preserves [S.HasRightHomology] [F.PreservesRightHom
     (S.map F).HasRightHomology :=
   HasRightHomology.mk' (S.rightHomologyData.map F)
 
-set_option backward.defeqAttrib.useBackward true in
 instance hasRightHomology_of_preserves' [S.HasRightHomology] [F.PreservesRightHomologyOf S] :
     (F.mapShortComplex.obj S).HasRightHomology := by
   dsimp; infer_instance
@@ -360,7 +353,6 @@ instance hasHomology_of_preserves [S.HasHomology] [F.PreservesLeftHomologyOf S]
     (S.map F).HasHomology :=
   HasHomology.mk' (S.homologyData.map F)
 
-set_option backward.defeqAttrib.useBackward true in
 instance hasHomology_of_preserves' [S.HasHomology] [F.PreservesLeftHomologyOf S]
     [F.PreservesRightHomologyOf S] :
     (F.mapShortComplex.obj S).HasHomology := by
@@ -463,7 +455,6 @@ noncomputable def mapHomologyIso' [S.HasHomology] [(S.map F).HasHomology]
 variable {S}
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma LeftHomologyData.mapCyclesIso_eq [S.HasLeftHomology]
     [F.PreservesLeftHomologyOf S] :
     S.mapCyclesIso F = (hl.map F).cyclesIso ≪≫ F.mapIso hl.cyclesIso.symm := by
@@ -473,7 +464,6 @@ lemma LeftHomologyData.mapCyclesIso_eq [S.HasLeftHomology]
     Functor.mapShortComplex_obj]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma LeftHomologyData.mapLeftHomologyIso_eq [S.HasLeftHomology]
     [F.PreservesLeftHomologyOf S] :
     S.mapLeftHomologyIso F = (hl.map F).leftHomologyIso ≪≫ F.mapIso hl.leftHomologyIso.symm := by
@@ -483,7 +473,6 @@ lemma LeftHomologyData.mapLeftHomologyIso_eq [S.HasLeftHomology]
     Functor.mapShortComplex_obj]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma RightHomologyData.mapOpcyclesIso_eq [S.HasRightHomology]
     [F.PreservesRightHomologyOf S] :
     S.mapOpcyclesIso F = (hr.map F).opcyclesIso ≪≫ F.mapIso hr.opcyclesIso.symm := by
@@ -493,7 +482,6 @@ lemma RightHomologyData.mapOpcyclesIso_eq [S.HasRightHomology]
     Functor.mapShortComplex_obj]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma RightHomologyData.mapRightHomologyIso_eq [S.HasRightHomology]
     [F.PreservesRightHomologyOf S] :
     S.mapRightHomologyIso F = (hr.map F).rightHomologyIso ≪≫
@@ -503,8 +491,6 @@ lemma RightHomologyData.mapRightHomologyIso_eq [S.HasRightHomology]
   simp only [map_rightHomologyMap', ← rightHomologyMap'_comp, Functor.map_id, comp_id,
     Functor.mapShortComplex_obj]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma LeftHomologyData.mapHomologyIso_eq [S.HasHomology]
     [(S.map F).HasHomology] [F.PreservesLeftHomologyOf S] :
     S.mapHomologyIso F = (hl.map F).homologyIso ≪≫ F.mapIso hl.homologyIso.symm := by
@@ -515,7 +501,6 @@ lemma LeftHomologyData.mapHomologyIso_eq [S.HasHomology]
   simp only [map_leftHomologyMap', ← leftHomologyMap'_comp, comp_id, Functor.map_id,
     Functor.mapShortComplex_obj]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma RightHomologyData.mapHomologyIso'_eq [S.HasHomology]
     [(S.map F).HasHomology] [F.PreservesRightHomologyOf S] :
     S.mapHomologyIso' F = (hr.map F).homologyIso ≪≫ F.mapIso hr.homologyIso.symm := by
@@ -524,8 +509,6 @@ lemma RightHomologyData.mapHomologyIso'_eq [S.HasHomology]
     rightHomologyIso, rightHomologyMapIso', ShortComplex.rightHomologyIso]
   simp only [assoc, F.map_comp, map_rightHomologyMap', ← rightHomologyMap'_comp_assoc]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma mapCyclesIso_hom_naturality [S₁.HasLeftHomology] [S₂.HasLeftHomology]
     [F.PreservesLeftHomologyOf S₁] [F.PreservesLeftHomologyOf S₂] :
@@ -543,8 +526,6 @@ lemma mapCyclesIso_inv_naturality [S₁.HasLeftHomology] [S₂.HasLeftHomology]
   rw [← cancel_epi (S₁.mapCyclesIso F).hom, ← mapCyclesIso_hom_naturality_assoc,
     Iso.hom_inv_id, comp_id, Iso.hom_inv_id_assoc]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma mapLeftHomologyIso_hom_naturality [S₁.HasLeftHomology] [S₂.HasLeftHomology]
     [F.PreservesLeftHomologyOf S₁] [F.PreservesLeftHomologyOf S₂] :
@@ -563,8 +544,6 @@ lemma mapLeftHomologyIso_inv_naturality [S₁.HasLeftHomology] [S₂.HasLeftHomo
   rw [← cancel_epi (S₁.mapLeftHomologyIso F).hom, ← mapLeftHomologyIso_hom_naturality_assoc,
     Iso.hom_inv_id, comp_id, Iso.hom_inv_id_assoc]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma mapOpcyclesIso_hom_naturality [S₁.HasRightHomology] [S₂.HasRightHomology]
     [F.PreservesRightHomologyOf S₁] [F.PreservesRightHomologyOf S₂] :
@@ -583,8 +562,6 @@ lemma mapOpcyclesIso_inv_naturality [S₁.HasRightHomology] [S₂.HasRightHomolo
   rw [← cancel_epi (S₁.mapOpcyclesIso F).hom, ← mapOpcyclesIso_hom_naturality_assoc,
     Iso.hom_inv_id, comp_id, Iso.hom_inv_id_assoc]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma mapRightHomologyIso_hom_naturality [S₁.HasRightHomology] [S₂.HasRightHomology]
     [F.PreservesRightHomologyOf S₁] [F.PreservesRightHomologyOf S₂] :
@@ -603,7 +580,6 @@ lemma mapRightHomologyIso_inv_naturality [S₁.HasRightHomology] [S₂.HasRightH
   rw [← cancel_epi (S₁.mapRightHomologyIso F).hom, ← mapRightHomologyIso_hom_naturality_assoc,
     Iso.hom_inv_id, comp_id, Iso.hom_inv_id_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma mapHomologyIso_hom_naturality [S₁.HasHomology] [S₂.HasHomology]
     [(S₁.map F).HasHomology] [(S₂.map F).HasHomology]
@@ -625,7 +601,6 @@ lemma mapHomologyIso_inv_naturality [S₁.HasHomology] [S₂.HasHomology]
   rw [← cancel_epi (S₁.mapHomologyIso F).hom, ← mapHomologyIso_hom_naturality_assoc,
     Iso.hom_inv_id, comp_id, Iso.hom_inv_id_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma mapHomologyIso'_hom_naturality [S₁.HasHomology] [S₂.HasHomology]
     [(S₁.map F).HasHomology] [(S₂.map F).HasHomology]
@@ -651,7 +626,6 @@ lemma mapHomologyIso'_inv_naturality [S₁.HasHomology] [S₂.HasHomology]
 variable (S)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma mapHomologyIso'_eq_mapHomologyIso [S.HasHomology] [F.PreservesLeftHomologyOf S]
     [F.PreservesRightHomologyOf S] :
     S.mapHomologyIso' F = S.mapHomologyIso F := by
@@ -680,7 +654,6 @@ variable {S}
   [F.PreservesLeftHomologyOf S] [G.PreservesLeftHomologyOf S]
   [F.PreservesRightHomologyOf S] [G.PreservesRightHomologyOf S]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a natural transformation `τ : F ⟶ G` between functors `C ⥤ D` which preserve
 the left homology of a short complex `S`, and a left homology data for `S`,
 this is the left homology map data for the morphism `S.mapNatTrans τ`
@@ -691,7 +664,6 @@ noncomputable def LeftHomologyMapData.natTransApp (h : LeftHomologyData S) (τ :
   φK := τ.app h.K
   φH := τ.app h.H
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a natural transformation `τ : F ⟶ G` between functors `C ⥤ D` which preserve
 the right homology of a short complex `S`, and a right homology data for `S`,
 this is the right homology map data for the morphism `S.mapNatTrans τ`
@@ -799,7 +771,6 @@ lemma RightHomologyMapData.quasiIso_map_iff
 variable (φ) [S₁.HasHomology] [S₂.HasHomology]
     [(F.mapShortComplex.obj S₁).HasHomology] [(F.mapShortComplex.obj S₂).HasHomology]
 
-set_option backward.isDefEq.respectTransparency false in
 instance quasiIso_map_of_preservesLeftHomology
     [F.PreservesLeftHomologyOf S₁] [F.PreservesLeftHomologyOf S₂]
     [QuasiIso φ] : QuasiIso (F.mapShortComplex.map φ) := by
@@ -810,7 +781,6 @@ instance quasiIso_map_of_preservesLeftHomology
   rw [(γ.map F).quasiIso_iff, LeftHomologyMapData.map_φH]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 lemma quasiIso_map_iff_of_preservesLeftHomology
     [F.PreservesLeftHomologyOf S₁] [F.PreservesLeftHomologyOf S₂]
     [F.ReflectsIsomorphisms] :
@@ -823,7 +793,6 @@ lemma quasiIso_map_iff_of_preservesLeftHomology
   · intro
     infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance quasiIso_map_of_preservesRightHomology
     [F.PreservesRightHomologyOf S₁] [F.PreservesRightHomologyOf S₂]
     [QuasiIso φ] : QuasiIso (F.mapShortComplex.map φ) := by
@@ -834,7 +803,6 @@ instance quasiIso_map_of_preservesRightHomology
   rw [(γ.map F).quasiIso_iff, RightHomologyMapData.map_φH]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 lemma quasiIso_map_iff_of_preservesRightHomology
     [F.PreservesRightHomologyOf S₁] [F.PreservesRightHomologyOf S₂]
     [F.ReflectsIsomorphisms] :
