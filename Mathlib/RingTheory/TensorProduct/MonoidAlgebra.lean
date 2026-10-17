@@ -130,7 +130,7 @@ instance instIsPushout' [IsPushout R A S B] : IsPushout R A[M] S B[M] :=
 
 omit [CommMonoid M] [CommMonoid N]
 
--- TODO: Generalise to different base rings, strengthen to an `AlgEquiv`
+-- TODO: Generalise to different base rings
 variable (R) in
 /-- The tensor product of two monoid algebras is the monoid algebra of their product. -/
 @[to_additive (dont_translate := R) (attr := simps! apply_coeff)
@@ -152,6 +152,49 @@ lemma tensorEquiv_symm_single_eq_single_one_tmul (mn : M × N) (r : R) :
 lemma tensorEquiv_symm_single_eq_tmul_single_one (mn : M × N) (r : R) :
     (tensorEquiv R).symm (single mn r) = single mn.1 r ⊗ₜ single mn.2 1 := by
   simp [tensorEquiv, finsuppTensorFinsupp'_symm_single_eq_tmul_single_one]
+
+end MonoidAlgebra
+
+namespace MonoidAlgebra
+variable {R M N : Type*} [CommSemiring R] [Monoid M] [Monoid N]
+
+-- Note: Cannot be additivised automatically because of the use of `Multiplicative`
+-- in `AddMonoidAlgebra.lift`
+variable (R M N) in
+/-- Implementation detail for `MonoidAlgebra.tensorAlgEquiv`: the inverse of
+`MonoidAlgebra.tensorEquiv` as an algebra hom. -/
+private noncomputable def tensorAlgHomSymm : R[M × N] →ₐ[R] R[M] ⊗[R] R[N] :=
+  lift R _ _
+    { toFun mn := single mn.1 1 ⊗ₜ single mn.2 1
+      map_one' := by simp [Algebra.TensorProduct.one_def, one_def]
+      map_mul' x y := by simp [Algebra.TensorProduct.tmul_mul_tmul, single_mul_single] }
+
+private lemma tensorEquiv_symm_eq_tensorAlgHomSymm (x : R[M × N]) :
+    (tensorEquiv R).symm x = tensorAlgHomSymm R M N x := by
+  induction x using MonoidAlgebra.induction_linear with
+  | zero => simp
+  | add x y hx hy => simp [hx, hy]
+  | single mn r =>
+    simp [tensorEquiv_symm_single_eq_tmul_single_one, tensorAlgHomSymm, smul_tmul']
+
+private lemma tensorEquiv_symm_mul (x y : R[M × N]) :
+    (tensorEquiv R).symm (x * y) = (tensorEquiv R).symm x * (tensorEquiv R).symm y := by
+  simp [tensorEquiv_symm_eq_tensorAlgHomSymm, map_mul]
+
+variable (R) in
+/-- The tensor product of two monoid algebras is the monoid algebra of their product,
+as algebras. -/
+noncomputable def tensorAlgEquiv : R[M] ⊗[R] R[N] ≃ₐ[R] R[M × N] :=
+  .ofLinearEquiv (tensorEquiv R)
+    (by simp [Algebra.TensorProduct.one_def, one_def, Prod.mk_one_one])
+    fun x y ↦ (tensorEquiv R).symm.injective <| by simp [tensorEquiv_symm_mul]
+
+@[simp]
+lemma tensorAlgEquiv_apply (x : R[M] ⊗[R] R[N]) : tensorAlgEquiv R x = tensorEquiv R x := rfl
+
+@[simp]
+lemma tensorAlgEquiv_toLinearEquiv :
+    (tensorAlgEquiv R (M := M) (N := N)).toLinearEquiv = tensorEquiv R := rfl
 
 end MonoidAlgebra
 
