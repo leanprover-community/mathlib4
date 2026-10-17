@@ -188,9 +188,7 @@ theorem reachable_mulCayley_iff (u v : M) :
 @[to_additive /-- The Cayley graph is connected if and only if `s` generates the additive
 group. -/]
 theorem connected_mulCayley_iff : (mulCayley s).Connected ↔ Subgroup.closure s = ⊤ := by
-  constructor
-  · sorry -- use inv_mul_mem_subgroupClosure_of_reachable_mulCayley
-  · sorry -- use reachable_mulCayley_iff
+  sorry -- reachable_mulCayley_iff
 
 end Group
 
