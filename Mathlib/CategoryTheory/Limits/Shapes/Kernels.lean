@@ -523,14 +523,14 @@ section Transport
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
-/-- Transport an `IsKernel` across isomorphisms. -/
+/-- Transport an `IsKernel` across isomorphisms: if `s` is a limit kernel fork of `f` and
+`eX`, `eY`, `e` identify `f` with `f'` (`H`) and `s.ι` with `s'.ι` (`H'`), then `s'` is a limit
+kernel fork of `f'`. This is the kernel case of `Fork.isLimitOfIsos`; to change only the
+target of `f` or only `s.pt`, see `IsKernel.ofCompIso` and `IsKernel.isoKernel`. -/
 def IsKernel.ofIso {X' Y' : C} {f' : X' ⟶ Y'} {s : KernelFork f} (hs : IsLimit s)
     (s' : KernelFork f') (eX : X ≅ X') (eY : Y ≅ Y') (e : s.pt ≅ s'.pt)
-    (H : eX.hom ≫ f' = f ≫ eY.hom) (H' : e.hom ≫ s'.ι = s.ι ≫ eX.hom) :
-    IsLimit s' :=
-  let α : parallelPair f 0 ≅ parallelPair f' 0 := parallelPairIsoMk eX eY H.symm (by simp)
-  IsLimit.ofIsoLimit ((IsLimit.postcomposeHomEquiv α s).symm hs) <|
-    Cone.ext e (by rintro (_ | _) <;> simp [α, ← H'])
+    (H : eX.hom ≫ f' = f ≫ eY.hom) (H' : e.hom ≫ s'.ι = s.ι ≫ eX.hom) : IsLimit s' :=
+  Fork.isLimitOfIsos s hs s' eX eY e H (by simp) H'
 
 /-- If `i` is an isomorphism such that `l ≫ i.hom = f`, any kernel of `f` is a kernel of `l`. -/
 def IsKernel.ofCompIso {Z : C} (l : X ⟶ Z) (i : Z ≅ Y) (h : l ≫ i.hom = f) {s : KernelFork f}
@@ -1162,14 +1162,14 @@ def IsCokernel.cokernelIso {Z : C} (l : Y ⟶ Z) {s : CokernelCofork f} (hs : Is
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
-/-- Transport an `IsCokernel` across isomorphisms. -/
+/-- Transport an `IsCokernel` across isomorphisms: if `s` is a colimit cokernel cofork of `f` and
+`eX`, `eY`, `e` identify `f` with `f'` (`H`) and `s.π` with `s'.π` (`H'`), then `s'` is a colimit
+cokernel cofork of `f'`. This is the cokernel case of `Cofork.isColimitOfIsos`; to change only the
+source of `f` or only `s.pt`, see `IsCokernel.ofIsoComp` and `IsCokernel.cokernelIso`. -/
 def IsCokernel.ofIso {X' Y' : C} {f' : X' ⟶ Y'} {s : CokernelCofork f} (hs : IsColimit s)
     (s' : CokernelCofork f') (eX : X ≅ X') (eY : Y ≅ Y') (e : s.pt ≅ s'.pt)
-    (H : eX.hom ≫ f' = f ≫ eY.hom) (H' : eY.hom ≫ s'.π = s.π ≫ e.hom) :
-    IsColimit s' :=
-  let α : parallelPair f 0 ≅ parallelPair f' 0 := parallelPairIsoMk eX eY H.symm (by simp)
-  IsColimit.ofIsoColimit ((IsColimit.precomposeHomEquiv α.symm s).symm hs) <|
-    Cocone.ext e (by rintro (_ | _) <;> simp [α, ← H'])
+    (H : eX.hom ≫ f' = f ≫ eY.hom) (H' : eY.hom ≫ s'.π = s.π ≫ e.hom) : IsColimit s' :=
+  Cofork.isColimitOfIsos s hs s' eX eY e H (by simp) (eY.inv_comp_eq.2 H'.symm)
 
 /-- If `i` is an isomorphism such that `cokernel.π f ≫ i.hom = l`, then `l` is a cokernel of `f`. -/
 def cokernel.cokernelIso [HasCokernel f] {Z : C} (l : Y ⟶ Z) (i : cokernel f ≅ Z)
