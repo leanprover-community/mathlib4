@@ -319,6 +319,12 @@ theorem _root_.RingHom.map_det (f : R →+* S) (M : Matrix n n R) :
     f M.det = Matrix.det (f.mapMatrix M) := by
   simp [Matrix.det_apply', map_sum f, map_prod f]
 
+/-- The determinant of submatrices are natural with respect to a ring homomorphism. -/
+theorem _root_.RingHom.map_det_submatrix {m n t : Type*} [Fintype t] [DecidableEq t]
+  (f : R →+* S) (A : Matrix m n R) (row : t → m) (col : t → n) :
+    f (det (submatrix A row col)) = det (submatrix (A.map f) row col) := by
+  simp [submatrix_map, f.map_det]
+
 theorem _root_.RingEquiv.map_det (f : R ≃+* S) (M : Matrix n n R) :
     f M.det = Matrix.det (f.mapMatrix M) :=
   f.toRingHom.map_det _
@@ -343,22 +349,6 @@ theorem _root_.Rat.cast_det {F : Type*} [Field F] [CharZero F] (M : Matrix n n �
 
 end HomMap
 
-section DetSubmatrix
-
-variable {m n t : Type*} [Fintype t] [DecidableEq t]
-
-/-- The determinant of a square submatrix selected by row and column functions. -/
-def detSubmatrix (A : Matrix m n R) (row : t → m) (col : t → n) : R :=
-  det <| submatrix A row col
-
-/-- Concrete minors are natural with respect to a ring homomorphism. -/
-theorem detSubmatrix_map {S : Type*} [CommRing S] (f : R →+* S) (A : Matrix m n R)
-    (row : t → m) (col : t → n) :
-    f (detSubmatrix A row col) = detSubmatrix (A.map f) row col := by
-  unfold detSubmatrix
-  simpa [submatrix_map] using (RingHom.map_det f (submatrix A row col))
-
-end DetSubmatrix
 
 @[simp]
 theorem det_conjTranspose [StarRing R] (M : Matrix m m R) : det Mᴴ = star (det M) :=
