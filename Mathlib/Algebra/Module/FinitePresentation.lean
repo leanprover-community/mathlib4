@@ -24,6 +24,8 @@ import Mathlib.LinearAlgebra.TensorProduct.Pi
 ## Main results
 
 - `Module.finitePresentation_iff_finite`: If `R` is Noetherian, then f.p. iff f.g. on `R`-modules.
+- `isNoetherianRing_iff_forall_finitePresentation`: conversely, `R` is Noetherian if every f.g.
+  `R`-module is f.p.
 
 Suppose `0 → K → M → N → 0` is an exact sequence of `R`-modules.
 
@@ -312,6 +314,23 @@ instance pi {ι : Type*} (M : ι → Type*)
     infer_instance
 
 end Module.FinitePresentation
+
+universe v in
+variable (R) in
+/-- A ring `R` is Noetherian if and only if every finitely generated `R`-module is finitely
+presented. It suffices to consider modules in any universe in which `R` is small. -/
+theorem isNoetherianRing_iff_forall_finitePresentation [Small.{v} R] :
+    IsNoetherianRing R ↔ ∀ (M : Type v) [AddCommGroup M] [Module R M] [Module.Finite R M],
+      Module.FinitePresentation R M := by
+  refine ⟨fun _ M _ _ _ ↦ Module.finitePresentation_of_finite R M, fun h ↦ ?_⟩
+  refine (isNoetherianRing_iff_ideal_fg R).2 fun I ↦ ?_
+  let e := Shrink.linearEquiv.{v} R (R ⧸ I)
+  have := Module.Finite.equiv e.symm
+  have := h (Shrink.{v} (R ⧸ I))
+  have := Module.FinitePresentation.of_equiv e
+  have hI := Module.FinitePresentation.fg_ker I.mkQ I.mkQ_surjective
+  rw [Submodule.ker_mkQ] at hI
+  exact hI
 
 end Ring
 
