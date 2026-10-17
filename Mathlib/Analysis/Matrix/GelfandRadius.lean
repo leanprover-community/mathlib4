@@ -40,4 +40,19 @@ theorem gelfandRadius_mul_comm (A : Matrix m n R) (B : Matrix n m R) :
     gelfandRadius (A * B) = gelfandRadius (B * A) :=
   le_antisymm (gelfandRadius_mul_comm_le A B) (gelfandRadius_mul_comm_le B A)
 
+theorem gelfandRadius_blockDiagonal (M : n → Matrix m m R) :
+    gelfandRadius (Matrix.blockDiagonal M) = ⨆ i, gelfandRadius (M i) := by
+  rcases isEmpty_or_nonempty n
+  · simp [Subsingleton.elim M 0]
+  let s : Finset n := Finset.univ
+  have hs : s.Nonempty := Finset.univ_nonempty
+  rw [← Finset.sup'_univ_eq_ciSup]
+  refine tendsto_nhds_unique_of_forall (tendsto_gelfandRadius (blockDiagonal M))
+    (Filter.Tendsto.finset_sup'_nhds_apply hs fun i hi ↦ tendsto_gelfandRadius (M i)) fun k ↦ ?_
+  have h (x y : NNReal) : max (x : ℝ) y ^ (k : ℝ)⁻¹ = max (x ^ (k : ℝ)⁻¹) (y ^ (k : ℝ)⁻¹) := by
+    simp [Real.rpow_max]
+  rw [← blockDiagonal_pow, linfty_opNorm_blockDiagonal, Pi.pow_def, Pi.norm_def, ← s.sup'_eq_sup hs,
+    s.apply_sup'_eq_sup'_comp hs (f := fun x ↦ ‖M x ^ k‖₊) (fun x ↦ (x : ℝ) ^ (k : ℝ)⁻¹) h]
+  simp [Function.comp_def]
+
 end Matrix
