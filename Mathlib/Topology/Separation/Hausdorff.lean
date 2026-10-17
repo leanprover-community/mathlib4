@@ -293,6 +293,10 @@ theorem isOpen_iff_ultrafilter' [CompactSpace X] (U : Set X) :
   rw [← Ultrafilter.lim_eq_iff_le_nhds.2 h] at hx
   exact cond _ hx
 
+theorem Filter.EventuallyEq.limUnder_eq {X Y : Type*} [TopologicalSpace Y] [Nonempty Y]
+    {f g : X -> Y} {L : Filter X} (hL : f =ᶠ[L] g) : L.limUnder f = L.limUnder g :=
+  congr(lim $(map_congr hL))
+
 theorem Filter.Tendsto.limUnder_eq {x : X} {f : Filter Y} [NeBot f] {g : Y → X}
     (h : Tendsto g f (𝓝 x)) : @limUnder _ _ _ ⟨x⟩ f g = x :=
   lim_eq h
