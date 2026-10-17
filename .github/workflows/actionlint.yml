@@ -16,6 +16,16 @@ jobs:
         with:
           tool_name: actionlint
           fail_level: any
+          # actionlint 1.7.12 does not know the parallel-steps keys (`background`,
+          # `parallel`, `wait`, `wait-all`, `cancel`) and does not see the steps inside
+          # a `parallel` group, so it reports the keys and the `steps.<id>` references
+          # to group members. The action splits this string on spaces without quote
+          # handling, so the patterns use `.` for spaces and quotes. Remove the patterns
+          # when actionlint ships rhysd/actionlint#694.
+          actionlint_flags: >-
+            -ignore unexpected.key..background.
+            -ignore step.must.run.script.with..run..section.or.run.action.with..uses..section
+            -ignore property..(archive|counterexamples|wanted|noisy)..is.not.defined
 
   ensure-sha-pinned-actions:
     runs-on: ubuntu-latest
