@@ -43,7 +43,7 @@ private def truncAux (n : ℕ) (φ : R⟦X⟧) : R[X] :=
 
 private theorem coeff_truncAux (m) (n) (φ : R⟦X⟧) :
     (truncAux n φ).coeff m = if m < n then coeff m φ else 0 := by
-  simp [truncAux, Polynomial.coeff_monomial]
+  simp [truncAux, Finsupp.single_apply]
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -55,7 +55,7 @@ def trunc (n : ℕ) : R⟦X⟧ →ₗ[R] R[X] where
     split_ifs with H
     · rfl
     · rw [zero_add]
-  map_smul' t φ := by ext; simp [truncAux, Polynomial.coeff_monomial]
+  map_smul' t φ := by ext; simp [truncAux, Finsupp.single_apply]
 
 lemma trunc_apply (n : ℕ) (φ : R⟦X⟧) :
     trunc n φ = ∑ m ∈ Ico 0 n, Polynomial.monomial m (coeff m φ) := rfl
