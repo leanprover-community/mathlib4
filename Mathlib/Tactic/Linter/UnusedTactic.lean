@@ -60,7 +60,10 @@ open Lean Elab Std Linter
 
 namespace Mathlib.Linter
 
-/-- The unused tactic linter makes sure that every tactic call actually changes *something*. -/
+/--
+The unused tactic linter makes sure that every tactic call actually changes *something*.
+It has built in support for the tactics `<;>`, `all_goals`, `try`, `any_goals` and `swap_var`.
+-/
 public register_option linter.unusedTactic : Bool := {
   defValue := true
   descr := "enable the unused tactic linter"
@@ -74,7 +77,6 @@ abbrev M := StateRefT (Std.HashMap Lean.Syntax.Range Syntax) BaseIO
 -- Tactics that are expected to not change the state but should also not be flagged by the
 -- unused tactic linter.
 #allow_unused_tactic!
-  Lean.Parser.Tactic.tacticTry_
   -- the following `SyntaxNodeKind`s play a role in silencing `test`s
   Lean.Parser.Tactic.guardHyp
   Lean.Parser.Tactic.guardHypConv
@@ -156,26 +158,43 @@ partial def eraseUsedTactics (exceptions : Std.HashSet SyntaxNodeKind)
     let some r := stx.getRange? true | return ranges
     match i.stx with
     | .atom _ "<;>" =>
-      -- Bespoke check for `<;>`: if it generates at most 1 goal, we consider it unused.
-      match i.goalsAfter with
-      | [] | [_] => return ranges
-      | _ => return ranges.push r
+      -- `<;>` is used if it generates at least 2 goals
+      return if i.goalsAfter matches [] | [_] then ranges else ranges.push r
     | .node _ kind _ =>
-      -- if the tactic is allowed to not change the goals
+      -- An excepted tactic is always considered to be used.
       if exceptions.contains kind then
         return ranges.push r
-      -- if the goals have changed
-      if i.goalsAfter != i.goalsBefore then
-        return ranges.push r
-      -- bespoke check for `swap_var`: the only change that it does is
-      -- in the usernames of local declarations, so we check the names before and after
-      if (kind == `Mathlib.Tactic.«tacticSwap_var__,,») &&
-              (getNames i.mctxBefore != getNames i.mctxAfter) then
-        return ranges.push r
-      return ranges
+      match kind with
+      | ``Lean.Parser.Tactic.allGoals =>
+        -- `all_goals` is used if it acts on at least 2 goals.
+        return if i.goalsBefore matches [] | [_] then ranges else ranges.push r
+      | ``Lean.Parser.Tactic.tacticTry_ | ``Lean.Parser.Tactic.anyGoals =>
+        -- `try`/`any_goals` is used if it leaves at least 1 goal.
+        return if i.goalsAfter matches [] then ranges else ranges.push r
+      | `Mathlib.Tactic.«tacticSwap_var__,,» =>
+        -- `swap_var` is used if it changes the username of a free variable.
+        return if getNames i.mctxBefore != getNames i.mctxAfter then ranges.push r else ranges
+      | _ =>
+      -- The tactic is used if the goals have changed.
+      return if i.goalsAfter != i.goalsBefore then ranges.push r else ranges
     | _ => return ranges
   for r in ranges do
     modify (·.erase r)
+
+/--
+The warning message emitted for `stx`. Also return the syntax on which to put the warning.
+This is for tactic combinators like `all_goals` so that the warning is only on `all_goals` itself.
+-/
+def unusedTacticMsg (stx : Syntax) : MessageData × Syntax :=
+  if stx.isAtom then
+    (m!"`<;>` can be replaced with `;` or be removed", stx)
+  else
+    match stx.getKind with
+    | ``Lean.Parser.Tactic.allGoals => (m!"`all_goals` can be removed", stx[0])
+    | ``Lean.Parser.Tactic.anyGoals =>
+      (m!"`any_goals` can be replaced with `all_goals` or be removed", stx[0])
+    | ``Lean.Parser.Tactic.tacticTry_ => (m!"`try` can be removed", stx[0])
+    | _ => (m!"`{stx}` does nothing", stx)
 
 /-- The main entry point to the unused tactic linter. -/
 def unusedTacticLinter : Linter where run := withSetOptionIn fun stx => do
@@ -196,18 +215,16 @@ def unusedTacticLinter : Linter where run := withSetOptionIn fun stx => do
     getTactics (← ignoreTacticKindsRef.get) (fun k => tactics.contains k || convs.contains k) stx
     eraseUsedTactics exceptions trees
   let (_, map) ← go.run {}
-  let unused := map.toArray
+  let unused := map.toArray.map fun (r, stx) ↦
+    let (msg, stx) := unusedTacticMsg stx
+    (stx.getRange?.getD r, stx, msg)
   let key (r : Lean.Syntax.Range) := (r.start.byteIdx, (-r.stop.byteIdx : Int))
   let mut last : Lean.Syntax.Range := ⟨0, 0⟩
-  for (r, stx) in let _ := @lexOrd; let _ := @ltOfOrd.{0}; unused.qsort (key ·.1 < key ·.1) do
+  for (r, stx, msg) in let _ := @lexOrd; let _ := @ltOfOrd.{0}; unused.qsort (key ·.1 < key ·.1) do
     if stx.getKind ∈ [``Batteries.Tactic.unreachable, ``Batteries.Tactic.unreachableConv] then
       continue
     if last.start ≤ r.start && r.stop ≤ last.stop then continue
-    if stx.isAtom then
-      Linter.logLint linter.unusedTactic stx
-        m!"Unused tactic linter: `<;>` should be replaced with `;` or be removed."
-    else
-      Linter.logLint linter.unusedTactic stx m!"Unused tactic linter: `{stx}` does nothing."
+    Linter.logLint linter.unusedTactic stx m!"Unused tactic linter: {msg}."
     last := r
 
 initialize addLinter unusedTacticLinter
