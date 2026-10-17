@@ -96,16 +96,11 @@ example {a b c : ℝ≥0∞} (ha : a ≠ ∞) (hb : b ≠ ∞) : a * b ≠ ∞ :
   simp
   finiteness
 
---  `abel` and `abel!` are allowed `simp`-followers.
+-- `abel` is an allowed `simp`-follower.
 #guard_msgs in
 example {a b : Nat} : a + b = b + a + 0 := by
   simp
   abel
-
-#guard_msgs in
-example {a b : Nat} : a + b = b + a + 0 := by
-  simp
-  abel!
 
 -- Test that `continuity` is also a flexible tactic: the goal must be solvable by continuity,
 -- but require some simplification first.
@@ -206,13 +201,6 @@ example {K : Type*} [Field K] (x y z : K) (hy : 1 - y ≠ 0) (h : z = y) :
 example {a b : Nat} (h : a + b = a + (b + 1)) : a + b = b + a + 0 + 1 := by
   simp
   abel_nf
-  assumption
-
--- So are `abel_nf!` and `group`.
-#guard_msgs in
-example {a b : Nat} (h : a + b = a + (b + 1)) : a + b = b + a + 0 + 1 := by
-  simp
-  abel_nf!
   assumption
 
 #guard_msgs in
