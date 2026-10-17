@@ -114,7 +114,9 @@ theorem DiffContOnCl.circleAverage (hf : DiffContOnCl ℂ f (ball c |R|)) :
     have : z - c ≠ 0 := by grind [ne_of_mem_sphere]
     simp_all
 
-lemma DiffContOnCl.circleAverage_one_div_sub_center_pow_smul (n : ℕ)
+/-- Cauchy's formula for the derivatives of a differentiable function at the center of a ball
+expressed in terms of `circleAverage`. -/
+theorem DiffContOnCl.circleAverage_one_div_sub_center_pow_smul (n : ℕ)
     (hf : DiffContOnCl ℂ f (ball c R)) (hR : 0 < R) :
     Real.circleAverage (fun z ↦ (1 / (z - c) ^ n) • f z) c R
       = ((1 : ℂ) / n.factorial) • iteratedDeriv n f c := by

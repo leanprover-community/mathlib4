@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Maksym Radziwill. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Maksym Radziwill
+Authors: Maksym Radziwill, Alastair Irving
 -/
 
 module
@@ -13,19 +13,21 @@ public import Mathlib.Analysis.Complex.TaylorSeries
 # Borel-Carathéodory theorem
 
 This file proves the Borel-Carathéodory theorem: for any function `f` analytic on the
-open ball `|z| < R` such that `Re(f z) < M` for all `|z| < R`, we have
-`‖f z‖ ≤ 2 * M * ‖z‖ / (R - ‖z‖) + ‖f 0‖ * (R + ‖z‖) / (R - ‖z‖)`
+open ball `|z - c| < R` such that `Re(f z) ≤ M` for all `|z - c| < R` and `f c = 0`, we have
+`‖f z‖ ≤ 2 * M * ‖z - c‖ / (R - ‖z - c‖)`
+and `‖f' z‖ ≤ 2 * R * M / (R - ‖z - c‖) ^ 2`.
 
 ## Main results
 
-* `Complex.borelCaratheodory_zero`: The theorem under the assumption `f 0 = 0`
+* `Complex.BorelCaratheodory.norm_iteratedDeriv_le_of_re_le` bounds the derivatives at the center.
+* `Complex.BorelCaratheodory.norm_le_of_re_le_of_eq_zero` bounds `f` given a bound on its real part.
+* `Complex.BorelCaratheodory.norm_deriv_le_of_re_le_of_eq_zero` bounds `f'` given a bound on `re f`.
 * `Complex.borelCaratheodory`: The general version of the theorem
 
 ## Implementation Notes
 
-The proof applies the Schwarz lemma to the transformed function `w z := f z / (2 * M - f z)`,
-which maps the ball `|z| < R` into the unit disk provided that `(f z).re ≤ M` for all `|z| < R`.
-After obtaining bounds on `w`, we invert the transformation to recover bounds on `f`.
+We first estimate all the derivatives of `f` at `c` using an identity for them
+using circle averages. The estimates for `f` and `f'` then follow from Taylor series expansions.
 
 ## Tags
 
@@ -38,9 +40,13 @@ namespace Complex
 
 variable {f : ℂ → ℂ} {M R : ℝ} {z c : ℂ} {n : ℕ}
 
+namespace BorelCaratheodory
+
 open scoped Nat ComplexConjugate
 
-lemma circleAverage_conj_div_sub_pow_eq_zero (hR : 0 < R)
+/- Replacing `f` by `conj f` in Cauchy's formula gives an integral which evaluates to `0`.
+The proof expresses the average as the conjugate of an average of a differentiable function. -/
+lemma circleAverage_one_div_sub_center_pow_smul_conj (hR : 0 < R)
     (hf : DiffContOnCl ℂ f (ball c R)) (hn : n ≠ 0) :
     circleAverage (fun z ↦ (1 / (z - c) ^ n) • conj (f z)) c R = 0 := by
   calc
@@ -64,6 +70,7 @@ lemma circleAverage_conj_div_sub_pow_eq_zero (hR : 0 < R)
     exact DiffContOnCl.mk_ball (hf.differentiableOn.mul (by fun_prop))
       (hf.continuousOn_ball.mul (by fun_prop))
 
+/- Main identity for the higher derivatives at the center. -/
 variable (M) in
 lemma iteratedDeriv_div_factorial_eq_circleAverage_re
     (hf : DiffContOnCl ℂ f (ball c R)) (hR : 0 < R) (hn : n ≠ 0) :
@@ -74,13 +81,15 @@ lemma iteratedDeriv_div_factorial_eq_circleAverage_re
   have ne_zero : ∀ x ∈ sphere c R, (x - c) ^ n ≠ 0 := fun x hx ↦ pow_ne_zero _ fun h ↦ (by simp_all)
   rw [circleAverage_fun_sub, circleAverage_fun_add,
     hf.circleAverage_one_div_sub_center_pow_smul n hR,
-    circleAverage_conj_div_sub_pow_eq_zero hR hf hn,
+    circleAverage_one_div_sub_center_pow_smul_conj hR hf hn,
     diffContOnCl_const.circleAverage_one_div_sub_center_pow_smul n hR]
   · simp [iteratedDeriv_const, hn]
     field
   all_goals exact ContinuousOn.circleIntegrable hR.le (by fun_prop)
 
-theorem norm_iteratedDeriv_le_of_re_le_sphere (hR : 0 < R)
+/-- **Borel-Carathéodory theorem:** estimates the derivatives of a differentiable function at the
+center of a ball given a bound for its real part on the sphere. -/
+public theorem norm_iteratedDeriv_le_of_re_le_sphere (hR : 0 < R)
     (hf : DiffContOnCl ℂ f (ball c R)) (hf0 : f c = 0)
     (hM : (sphere c R).MapsTo f {z | z.re ≤ M}) (hn : n ≠ 0) :
     ‖iteratedDeriv n f c / (n !)‖ ≤ 2 * M / R ^ n := by
@@ -105,6 +114,8 @@ theorem norm_iteratedDeriv_le_of_re_le_sphere (hR : 0 < R)
       hf.circleAverage, hf0, zero_re]
     ring
 
+/-- **Borel-Carathéodory theorem:** estimates the derivatives of a differentiable function at the
+center of a ball given a bound for its real part on that ball. -/
 public theorem norm_iteratedDeriv_le_of_re_le (hR : 0 < R)
     (hf : DifferentiableOn ℂ f (ball c R)) (hf0 : f c = 0)
     (hM : (ball c R).MapsTo f {z | z.re ≤ M}) :
@@ -121,7 +132,9 @@ public theorem norm_iteratedDeriv_le_of_re_le (hR : 0 < R)
     (hf.diffContOnCl_ball (closedBall_subset_ball hR'R)) hf0
     (hM.mono_left (sphere_subset_ball hR'R)) hn
 
-public theorem norm_le_of_re_le (hR : 0 < R)
+/-- **Borel-Carathéodory theorem:** estimates a differentiable function on a ball which vanishes
+at the center given a bound for its real part on that ball. -/
+public theorem norm_le_of_re_le_of_eq_zero (hR : 0 < R)
     (hf : DifferentiableOn ℂ f (ball c R)) (hf0 : f c = 0)
     (hM : (ball c R).MapsTo f {z | z.re ≤ M}) (hz : z ∈ ball c R) :
     ‖f z‖ ≤ 2 * M * ‖z - c‖ / (R - ‖z - c‖) := by
@@ -138,9 +151,9 @@ public theorem norm_le_of_re_le (hR : 0 < R)
       grw [norm_iteratedDeriv_le_of_re_le hR hf hf0 hM]
       exact le_of_eq (by ring)
 
-/-- **Borel-Carathéodory theorem for the derivative**: under the hypotheses of `norm_le_of_re_le`,
-the derivative of `f` on the disc of radius `r < R` is bounded by `2 * R * M / (R - r) ^ 2`. -/
-public theorem norm_deriv_le_of_re_le (hR : 0 < R)
+/-- **Borel-Carathéodory theorem for the derivative**: estimates the derivative of a differentiable
+function on a ball which vannishes at the center given a bound on its real part on that ball. -/
+public theorem norm_deriv_le_of_re_le_of_eq_zero (hR : 0 < R)
     (hf : DifferentiableOn ℂ f (ball c R)) (hf0 : f c = 0)
     (hM : (ball c R).MapsTo f {z | z.re ≤ M}) (hz : z ∈ ball c R) :
     ‖deriv f z‖ ≤ 2 * R * M / (R - ‖z - c‖) ^ 2 := by
@@ -166,6 +179,8 @@ public theorem norm_deriv_le_of_re_le (hR : 0 < R)
     grw [norm_iteratedDeriv_le_of_re_le hR hf hf0 hM]
     exact le_of_eq (by field)
 
+end BorelCaratheodory
+
 /-- **Borel-Carathéodory theorem** for functions vanishing at the origin.
 
 If `f` is analytic on the open ball `‖z‖ < R`, satisfies `(f z).re ≤ M` for all such `z`,
@@ -173,7 +188,7 @@ and `f 0 = 0`, then `‖f z‖ ≤ 2 * M * ‖z‖ / (R - ‖z‖)` for all `‖
 public theorem borelCaratheodory_zero (hf : DifferentiableOn ℂ f (ball 0 R))
     (hf₁ : Set.MapsTo f (ball 0 R) {z | z.re ≤ M}) (hR : 0 < R) (hz : z ∈ ball 0 R)
     (hf₂ : f 0 = 0) : ‖f z‖ ≤ 2 * M * ‖z‖ / (R - ‖z‖) := by
-  convert norm_le_of_re_le hR hf hf₂ hf₁ hz <;> ring
+  convert BorelCaratheodory.norm_le_of_re_le_of_eq_zero hR hf hf₂ hf₁ hz <;> ring
 
 /-- **Borel-Carathéodory theorem**.
 
