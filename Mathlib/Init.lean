@@ -34,8 +34,6 @@ public import Mathlib.Tactic.Linter.PrivateModule
 public import Mathlib.Tactic.Linter.Style
 public import Mathlib.Tactic.Linter.TacticDocumentation
 public import Mathlib.Tactic.Linter.UnusedTactic
--- The following import contains the environment extension for the unused tactic linter.
-public import Mathlib.Tactic.Linter.UnusedTacticExtension
 public import Mathlib.Tactic.Linter.Whitespace
 -- This import makes the `#min_imports in` command available globally.
 public import Mathlib.Tactic.MinImports
@@ -154,4 +152,4 @@ run_cmd liftTermElabM do
     if !cinfo.type.isAppOf ``Lean.Option then
       throwError "{.ofConstName mlRes} is not an option, it is a{indentD cinfo.type}"
 
-#allow_unused_tactic! Mathlib.Linter.Style.show
+allow_unused_tactic Mathlib.Linter.Style.show
