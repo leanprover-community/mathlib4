@@ -176,7 +176,7 @@ end Polynomial.Gal
 lemma Polynomial.mul_star_dvd_of_aeval_eq_zero_im_ne_zero (p : ℝ[X]) {z : ℂ} (h0 : aeval z p = 0)
     (hz : z.im ≠ 0) : (X - C ((starRingEnd ℂ) z)) * (X - C z) ∣ map (algebraMap ℝ ℂ) p := by
   apply IsCoprime.mul_dvd
-  · exact isCoprime_X_sub_C_of_isUnit_sub <| .mk0 _ <| sub_ne_zero.2 <| mt conj_eq_iff_im.1 hz
+  · exact isCoprime_X_sub_C_iff_isUnit_sub.2 <| .mk0 _ <| sub_ne_zero.2 <| mt conj_eq_iff_im.1 hz
   · simpa [dvd_iff_isRoot, aeval_conj]
   · simpa [dvd_iff_isRoot]
 

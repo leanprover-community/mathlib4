@@ -227,6 +227,24 @@ theorem Monic.neg_one_pow_natDegree_mul_comp_neg_X {p : R[X]} (hp : p.Monic) :
       apply monic_mul_C_of_leadingCoeff_mul_eq_one
       simp [← pow_add, hp]
 
+theorem isCoprime_X_sub_C_iff {p : R[X]} :
+    IsCoprime (X - C a) p ↔ IsUnit (p.eval a) := by
+  refine ⟨fun h ↦ by simpa [isCoprime_zero_left] using h.map (evalRingHom a), fun h ↦ ?_⟩
+  have ⟨q, hq⟩ := X_sub_C_dvd_sub_C_eval (a := a) (p := p)
+  rw [eq_add_of_sub_eq' hq]
+  simp [isCoprime_one_right.of_isCoprime_of_dvd_right, isUnit_C, h]
+
+@[simp]
+theorem isCoprime_X_sub_C_iff_isUnit_sub :
+    IsCoprime (X - C a) (X - C b) ↔ IsUnit (a - b) := by
+  simp [isCoprime_X_sub_C_iff]
+
+@[deprecated +typeChanged (since := "2026-10-12")]
+alias ⟨_, isCoprime_X_sub_C_of_isUnit_sub⟩ := isCoprime_X_sub_C_iff_isUnit_sub
+
+theorem isCoprime_X_iff {p : R[X]} : IsCoprime X p ↔ IsUnit (p.coeff 0) := by
+  simpa [coeff_zero_eq_eval_zero] using isCoprime_X_sub_C_iff (a := 0) (p := p)
+
 variable [IsDomain R] {p q : R[X]}
 
 theorem degree_eq_degree_of_associated (h : Associated p q) : degree p = degree q := by
@@ -291,18 +309,10 @@ lemma aeval_ne_zero_of_isCoprime {R} [CommSemiring R] [Nontrivial S] [Semiring S
   apply_fun aeval s at h
   simp only [map_add, map_mul, map_one, hp, hq, mul_zero, add_zero, zero_ne_one] at h
 
-theorem isCoprime_X_sub_C_of_isUnit_sub {R} [CommRing R] {a b : R} (h : IsUnit (a - b)) :
-    IsCoprime (X - C a) (X - C b) :=
-  ⟨-C h.unit⁻¹.val, C h.unit⁻¹.val, by
-    rw [neg_mul_comm, ← left_distrib, neg_add_eq_sub, sub_sub_sub_cancel_left, ← C_sub, ← C_mul]
-    rw [← C_1]
-    congr
-    exact h.val_inv_mul⟩
-
 open scoped Function in -- required for scoped `on` notation
 theorem pairwise_coprime_X_sub_C {K} [Field K] {I : Type v} {s : I → K} (H : Function.Injective s) :
     Pairwise (IsCoprime on fun i : I => X - C (s i)) := fun _ _ hij =>
-  isCoprime_X_sub_C_of_isUnit_sub (sub_ne_zero_of_ne <| H.ne hij).isUnit
+  isCoprime_X_sub_C_iff_isUnit_sub.2 (sub_ne_zero_of_ne <| H.ne hij).isUnit
 
 theorem rootMultiplicity_mul {p q : R[X]} {x : R} (hpq : p * q ≠ 0) :
     rootMultiplicity x (p * q) = rootMultiplicity x p + rootMultiplicity x q := by
