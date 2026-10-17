@@ -259,8 +259,8 @@ instance : DecidablePred (Odd : ℕ → Prop) := fun _ ↦ decidable_of_iff _ od
 
 lemma not_odd_iff : ¬Odd n ↔ n % 2 = 0 := by grind
 
-@[simp, grind =] lemma not_odd_iff_even : ¬Odd n ↔ Even n := by grind
-@[simp] lemma not_even_iff_odd : ¬Even n ↔ Odd n := by grind
+@[simp, grind =, push] lemma not_odd_iff_even : ¬Odd n ↔ Even n := by grind
+@[simp, push] lemma not_even_iff_odd : ¬Even n ↔ Odd n := by grind
 
 @[simp] lemma not_odd_zero : ¬Odd 0 := by grind
 
