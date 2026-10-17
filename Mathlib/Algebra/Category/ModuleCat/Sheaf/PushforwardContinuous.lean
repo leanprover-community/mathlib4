@@ -316,8 +316,7 @@ instance isLeftAdjoint_pushforward_of_isIso [F.IsCocontinuous J K] [IsIso φ] [F
   · ext U : 2
     have := (inv φ).hom.naturality
     dsimp at this
-    simp only [ObjectProperty.hom_inv, NatIso.isIso_inv_app, sheafPushforwardContinuous_obj_obj_obj,
-      IsIso.eq_inv_comp] at this
+    simp only [ObjectProperty.hom_inv, NatIso.isIso_inv_app, IsIso.eq_inv_comp] at this
     simp [ψ, shAdj, ← this, ← Functor.map_comp_assoc, ← op_comp]
 
 noncomputable section
