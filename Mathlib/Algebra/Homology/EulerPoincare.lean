@@ -93,7 +93,7 @@ lemma dFrom_succ_range_finrank_eq_dTo
     Module.finrank k (LinearMap.range (C.dFrom (i + 1)).hom) =
     Module.finrank k (LinearMap.range (C.dTo i).hom) := by
   have rel : (ComplexShape.down ℤ).Rel (i + 1) i := by
-    simp [ComplexShape.down, ComplexShape.down']
+    rfl
   rw [dFrom_range_finrank_eq_d C rel, dTo_range_finrank_eq_d C rel]
 
 /-- The dimension of the range of moduleCatToCycles equals
@@ -147,7 +147,7 @@ lemma chain_dimension_decomposition
     (Module.finrank k
       (LinearMap.range (C.dFrom i).hom) : ℤ) := by
   have := LinearMap.finrank_range_add_finrank_ker (C.dFrom i).hom
-  omega
+  lia
 
 private lemma finrank_eq_zero_of_isZero (M : ModuleCat k)
     (h : IsZero M) : Module.finrank k M = 0 := by
@@ -159,7 +159,7 @@ private lemma isZero_outside_Ico (C : ChainComplex (ModuleCat k) ℤ) (a b i : �
     (hbelow : ∀ i < a, IsZero (C.X i))
     (habove : ∀ i > b, IsZero (C.X i)) : IsZero (C.X i) := by
   simp only [Finset.coe_Ico, Set.mem_Ico, not_and, not_lt] at hi
-  exact if h : i < a then hbelow i h else habove i (by omega)
+  exact if h : i < a then hbelow i h else habove i (by lia)
 
 /-- **Euler-Poincaré formula**: for bounded chain complexes that vanish outside `[a, b]`,
 the Euler characteristic equals the homological Euler characteristic. -/
@@ -190,11 +190,9 @@ theorem eulerChar_eq_homologyEulerChar
     C.homologyEulerChar_eq_sum_finSet_of_finrankSupport_subset
     (Finset.Ico a (b + 1)) h_supp_H]
   simp only [ComplexShape.eulerCharSignsDownInt_χ]
-  simp_rw [show ∀ n : ℤ, (n.negOnePow : ℤ) = (-1) ^ n.natAbs
-    from Int.coe_negOnePow ℤ]
   rw [show ∑ x ∈ Finset.Ico a (b + 1),
-        (-1 : ℤ) ^ x.natAbs * ↑(Module.finrank k ↑(C.X x)) =
-      ∑ x ∈ Finset.Ico a (b + 1), (-1 : ℤ) ^ x.natAbs *
+        (x.negOnePow : ℤ) * ↑(Module.finrank k ↑(C.X x)) =
+      ∑ x ∈ Finset.Ico a (b + 1), (x.negOnePow : ℤ) *
         (↑(Module.finrank k (C.homology x)) +
          ↑(Module.finrank k ↥(LinearMap.range (C.dFrom x).hom)) +
          ↑(Module.finrank k ↥(LinearMap.range (C.dTo x).hom)))
@@ -205,10 +203,10 @@ theorem eulerChar_eq_homologyEulerChar
   rw [Finset.sum_add_distrib, Finset.sum_add_distrib]
   suffices h_cancel :
       ∑ x ∈ Finset.Ico a (b + 1),
-        (-1 : ℤ) ^ x.natAbs *
+        (x.negOnePow : ℤ) *
           ↑(Module.finrank k ↥(LinearMap.range (C.dFrom x).hom)) +
       ∑ x ∈ Finset.Ico a (b + 1),
-        (-1 : ℤ) ^ x.natAbs *
+        (x.negOnePow : ℤ) *
           ↑(Module.finrank k ↥(LinearMap.range (C.dTo x).hom)) = 0 by
     linarith
   -- p(a) = 0 and c(b) = 0: boundary ranges vanish at the edges
@@ -217,16 +215,16 @@ theorem eulerChar_eq_homologyEulerChar
     rw [dFrom_zero_range C a (by
       simp only [xNext]
       rw [(ComplexShape.down ℤ).next_eq'
-        (ComplexShape.down_mk a (a - 1) (by omega))]
-      exact hC_bounded_below _ (by omega))]
+        (ComplexShape.down_mk a (a - 1) (by lia))]
+      exact hC_bounded_below _ (by lia))]
     simp
   have hp_split : ∑ x ∈ Finset.Ico a (b + 1),
-      (-1 : ℤ) ^ x.natAbs *
+      (x.negOnePow : ℤ) *
         ↑(Module.finrank k ↥(LinearMap.range (C.dFrom x).hom)) =
       ∑ x ∈ Finset.Ico (a + 1) (b + 1),
-        (-1 : ℤ) ^ x.natAbs *
+        (x.negOnePow : ℤ) *
           ↑(Module.finrank k ↥(LinearMap.range (C.dFrom x).hom)) := by
-    rw [← Finset.insert_Ico_add_one_left_eq_Ico (show a < b + 1 by omega),
+    rw [← Finset.insert_Ico_add_one_left_eq_Ico (show a < b + 1 by lia),
       Finset.sum_insert (by simp [Finset.mem_Ico]),
       hp_a, mul_zero, zero_add]
   have hc_b : (Module.finrank k
@@ -234,31 +232,31 @@ theorem eulerChar_eq_homologyEulerChar
     rw [dTo_zero_range C b (by
       simp only [xPrev]
       rw [(ComplexShape.down ℤ).prev_eq'
-        (ComplexShape.down_mk (b + 1) b (by omega))]
-      exact hC_bounded_above _ (by omega))]
+        (ComplexShape.down_mk (b + 1) b (by lia))]
+      exact hC_bounded_above _ (by lia))]
     simp
   have hc_split : ∑ x ∈ Finset.Ico a (b + 1),
-      (-1 : ℤ) ^ x.natAbs *
+      (x.negOnePow : ℤ) *
         ↑(Module.finrank k ↥(LinearMap.range (C.dTo x).hom)) =
       ∑ x ∈ Finset.Ico a b,
-        (-1 : ℤ) ^ x.natAbs *
+        (x.negOnePow : ℤ) *
           ↑(Module.finrank k ↥(LinearMap.range (C.dTo x).hom)) := by
     rw [← Finset.insert_Ico_right_eq_Ico_add_one hab,
       Finset.sum_insert Finset.right_notMem_Ico,
       hc_b, mul_zero, zero_add]
   rw [hp_split, hc_split]
   rw [show ∑ x ∈ Finset.Ico a b,
-        (-1 : ℤ) ^ x.natAbs *
+        (x.negOnePow : ℤ) *
           ↑(Module.finrank k ↥(LinearMap.range (C.dTo x).hom)) =
       ∑ x ∈ Finset.Ico a b,
-        (-1 : ℤ) ^ x.natAbs *
+        (x.negOnePow : ℤ) *
           ↑(Module.finrank k ↥(LinearMap.range (C.dFrom (x + 1)).hom))
     from Finset.sum_congr rfl fun x _ => by
       rw [dFrom_succ_range_finrank_eq_dTo C x]]
   -- Shift the second sum's index by one; the sign flips, so the two sums cancel.
-  have hw : ∀ j : ℤ, (-1 : ℤ) ^ (j + 1).natAbs = -(-1) ^ j.natAbs :=
-    fun j => by simp [← Int.coe_negOnePow, Int.negOnePow_succ]
-  rw [← Finset.sum_Ico_add' (fun x => (-1 : ℤ) ^ x.natAbs *
+  have hw : ∀ j : ℤ, ((j + 1).negOnePow : ℤ) = -(j.negOnePow : ℤ) :=
+    fun j => by rw [Int.negOnePow_succ, Units.val_neg]
+  rw [← Finset.sum_Ico_add' (fun x => (x.negOnePow : ℤ) *
     ↑(Module.finrank k ↥(LinearMap.range (C.dFrom x).hom))) a b 1]
   simp_rw [hw, neg_mul, Finset.sum_neg_distrib, neg_add_cancel]
 
