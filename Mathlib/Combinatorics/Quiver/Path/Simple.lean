@@ -13,7 +13,7 @@ public import Mathlib.Data.Fintype.Card
 
 The vertices a path visits, as a `Set` and as a `Finset`, the decomposition of a positive-length
 path at its first or last edge, and the bound `p.length ≤ card V - 1` for a path that repeats no
-vertex: the material the Perron-Frobenius development needs about simple paths.
+vertex.
 
 ## Main definitions
 
@@ -29,7 +29,7 @@ vertex: the material the Perron-Frobenius development needs about simple paths.
 
 ## Tags
 
-quiver, path, simple path, Perron-Frobenius theorem
+quiver, path, simple path, cycle
 -/
 
 @[expose] public section
