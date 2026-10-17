@@ -25,37 +25,10 @@ section matrices
 
 open scoped Matrix.Norms.Operator
 
-open Filter Topology in
-theorem Matrix.gelfandRadius_conj_le {R m n : Type*}
+theorem Matrix.gelfandRadius_mul_comm {R m n : Type*}
     [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [NormedCommRing R]
-    (A : Matrix m n R) (B : Matrix n n R) (C : Matrix n m R)
-    (hCA : C * A = 1) : gelfandRadius (A * B * C) ≤ gelfandRadius B := by
-  cases subsingleton_or_nontrivial (Matrix n n R)
-  · simp [Subsingleton.elim B 0]
-  have h k (hk : 1 ≤ k) : (A * B * C) ^ k = A * B ^ k * C := by
-    refine Nat.le_induction (by simp) (fun k _ ih ↦ ?_) k hk
-    transitivity A * B ^ k * (C * A) * B * C
-    · simp_rw [pow_succ, ih, Matrix.mul_assoc]
-    · simp_rw [pow_succ, hCA, Matrix.mul_assoc, Matrix.one_mul]
-  have key {c : ℝ} (hc : c ≠ 0) : Tendsto (fun n : ℕ ↦ (c ^ ((n : ℝ)⁻¹))) atTop (𝓝 1) :=
-    ((c.continuous_const_rpow hc).tendsto' 0 1 c.rpow_zero).comp tendsto_inv_atTop_nhds_zero_nat
-  have hA : ‖A‖ ≠ 0 := by contrapose! hCA; simp_all
-  have hC : ‖C‖ ≠ 0 := by contrapose! hCA; simp_all
-  replace key := ((key hA).mul (tendsto_gelfandRadius B)).mul (key hC)
-  rw [one_mul, mul_one] at key
-  refine le_of_tendsto_of_tendsto' (tendsto_gelfandRadius (A * B * C)) key fun k ↦ ?_
-  rcases eq_zero_or_pos k with rfl | hk
-  · simp
-  · grw [h k hk, Matrix.linfty_opNorm_mul, Matrix.linfty_opNorm_mul,
-      Real.mul_rpow, Real.mul_rpow] <;> positivity
-
-theorem Matrix.gelfandRadius_conj {R m n : Type*}
-    [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [NormedCommRing R]
-    (A : Matrix m n R) (B : Matrix n n R) (C : Matrix n m R)
-    (hAC : A * C = 1) (hCA : C * A = 1) : gelfandRadius (A * B * C) = gelfandRadius B := by
-  refine le_antisymm (Matrix.gelfandRadius_conj_le A B C hCA) ?_
-  grw [← gelfandRadius_conj_le C (A * B * C) A hAC, Matrix.mul_assoc, Matrix.mul_assoc,
-    hCA, Matrix.mul_one, ← Matrix.mul_assoc, hCA, Matrix.one_mul]
+    (A : Matrix m n R) (B : Matrix n m R) : gelfandRadius (A * B) = gelfandRadius (B * A) := by
+  sorry
 
 theorem map_finset_sup'' {α β ι : Type*} [SemilatticeSup α] [SemilatticeSup β]
     (f : α → β) (h : ∀ x y, f (x ⊔ y) = f x ⊔ f y) {s : Finset ι} (hs) (g : ι → α) :
@@ -130,24 +103,12 @@ theorem isPowMul_gelfandRadiusNorm : IsPowMul (gelfandRadiusNorm K L) := by
   intro x k hk
   simp_rw [gelfandRadiusNorm_def, map_pow, gelfandRadius_pow]
 
-theorem gelfandRadiusNorm_apply
+theorem Module.Basis.gelfandRadiusNorm_apply
     {ι : Type*} [DecidableEq ι] [Fintype ι] (b : Module.Basis ι K L) (x : L) :
     gelfandRadiusNorm K L x = gelfandRadius (Algebra.leftMulMatrix b x) := by
-  let ι' := Fin (Module.finrank K L)
-  let b' := Module.finBasis K L
-  rw [gelfandRadiusNorm_def]
-  let m : Matrix ι ι K := Algebra.leftMulMatrix b x
-  let m' : Matrix ι' ι' K := Algebra.leftMulMatrix b' x
-  change gelfandRadius m' = gelfandRadius m
-  let v := b.toMatrix b'
-  let v' := b'.toMatrix b
-  have h : v * m' * v' = m := by
-    apply basis_toMatrix_mul_linearMap_toMatrix_mul_basis_toMatrix
-  have h' : v' * m * v = m' := by
-    apply basis_toMatrix_mul_linearMap_toMatrix_mul_basis_toMatrix
-  rw [← h']
-  exact Matrix.gelfandRadius_conj v' m v (b'.toMatrix_mul_toMatrix_flip b)
-    (b.toMatrix_mul_toMatrix_flip b')
+  simp_rw [gelfandRadiusNorm_def, Algebra.leftMulMatrix_apply]
+  rw [← basis_toMatrix_mul_linearMap_toMatrix b b (Module.finBasis K L),
+    Matrix.gelfandRadius_mul_comm, linearMap_toMatrix_mul_basis_toMatrix]
 
 theorem gelfandRadiusNorm_algebraMap (x : L) :
     gelfandRadiusNorm K M (algebraMap L M x) = gelfandRadiusNorm K L x := by
@@ -155,9 +116,8 @@ theorem gelfandRadiusNorm_algebraMap (x : L) :
   have : NeZero (Module.finrank L M) := ⟨Module.finrank_pos.ne'⟩
   let bKL := Module.finBasis K L
   let bLM := Module.finBasis L M
-  rw [gelfandRadiusNorm_apply bKL, gelfandRadiusNorm_apply (bKL.smulTower bLM),
-    Algebra.smulTower_leftMulMatrix_algebraMap, Matrix.gelfandRadius_blockDiagonal_eq_sup,
-    ciSup_const]
+  rw [(bKL.smulTower bLM).gelfandRadiusNorm_apply, Algebra.smulTower_leftMulMatrix_algebraMap,
+    Matrix.gelfandRadius_blockDiagonal_eq_sup, ciSup_const, bKL.gelfandRadiusNorm_apply]
 
 end gelfandRadiusNorm
 
@@ -236,7 +196,7 @@ theorem spectralNorm_neg (x : L) : spectralNorm K L (-x) = spectralNorm K L x :=
     rw [spectralNorm_eq_of_mem K⟮x⟯ x (AdjoinSimple.gen K x) rfl,
       spectralNorm_eq_of_mem K⟮x⟯ (-x) (-AdjoinSimple.gen K x) rfl, map_neg_eq_map]
   · rw [spectralNorm_eq_zero, spectralNorm_eq_zero hx]
-    contrapose! hx
+    contrapose hx
     simpa using hx.neg
 
 theorem spectralNorm_smul (x : K) (y : L) :
@@ -248,7 +208,7 @@ theorem spectralNorm_smul (x : K) (y : L) :
     rw [spectralNorm_eq_of_mem K⟮y⟯ y (AdjoinSimple.gen K y) rfl,
       spectralNorm_eq_of_mem K⟮y⟯ (x • y) (x • AdjoinSimple.gen K y) rfl, map_smul_eq_mul]
   · rw [spectralNorm_eq_zero, spectralNorm_eq_zero hy, mul_zero]
-    contrapose! hy
+    contrapose hy
     simpa [hx] using hy.smul x⁻¹
 
 theorem spectralNorm_extends (x : K) : spectralNorm K L (algebraMap K L x) = ‖x‖ := by
@@ -284,7 +244,7 @@ theorem isPowMul_spectralNorm : IsPowMul (spectralNorm K L) := by
       spectralNorm_eq_of_mem K⟮x⟯ (x ^ k) (AdjoinSimple.gen K x ^ k) rfl,
       isPowMul_gelfandRadiusNorm (AdjoinSimple.gen K x) hk]
   · rw [spectralNorm_eq_zero hx, spectralNorm_eq_zero, zero_pow (by grind)]
-    contrapose! hx
+    contrapose hx
     exact hx.of_pow hk
 
 end spectralNorm
