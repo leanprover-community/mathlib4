@@ -201,7 +201,7 @@ in Lean 4 core.
   (Documentation says "for debugging purposes only.")
 
 * `unfold id1 id2 ...` unfolds the definitions for the given constants using each
-  definitions equational lemmas. For recursive definitions, only one layer of unfolding
+  definition's equation lemmas. For recursive definitions, only one layer of unfolding
   is performed.
 
 * `delta id1 id2 ...` applies delta reduction for the given constants (i.e., substitutes
