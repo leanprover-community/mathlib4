@@ -58,7 +58,7 @@ Usage:
 - `simp_rw [...] at *` rewrites in the whole context: all hypotheses and the goal.
 
 Lemmas passed to `simp_rw` must be expressions that are valid arguments to `simp`.
-For example, `rw` cannot directly solve the following, but `simp_rw` can:
+For example, `rw` alone cannot solve the following, but `simp_rw` can:
 
 ```lean
 example {a : ℕ}
@@ -69,7 +69,7 @@ example {a : ℕ}
 ```
 
 `simp` also solves the goal above, but it does not show the step-by-step transformation of the goal
-that `simp_rw` shows. `rw` cannot solve this directly because it cannot rewrite expressions
+that `simp_rw` shows. `rw` alone cannot solve this because it cannot rewrite expressions
 containing bound variables (https://github.com/leanprover/lean4/issues/6033). With `conv` and
 `intro`, `rw` can be used:
 
