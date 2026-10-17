@@ -225,7 +225,7 @@ private def ghostEquiv' [Invertible (p : R)] : 𝕎 R ≃ (ℕ → R) where
     ext n
     have := aeval_xInTermsOfW_wittPolynomial p R n
     apply_fun aeval x at this
-    simp_rw [ghostFun, aeval_wittPolynomial, coeff_mk]
+    simp_rw [ghostFun, aeval_wittPolynomial]
     simp_rw [comp_aeval_apply, aeval_wittPolynomial, aeval_X] at this
     exact this
 
