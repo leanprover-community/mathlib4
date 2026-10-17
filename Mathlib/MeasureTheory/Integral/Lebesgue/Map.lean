@@ -116,16 +116,14 @@ protected theorem lintegral_map_equiv (f : β → ℝ≥0∞) (g : α ≃ᵐ β)
 
 include hg
 
-/-- Generalization of `MeasurePreserving.lintegral_comp` to almost everywhere measurable
-integrands. -/
-theorem lintegral_comp₀ {f : β → ℝ≥0∞} (hf : AEMeasurable f ν) :
+theorem lintegral_comp' {f : β → ℝ≥0∞} (hf : AEMeasurable f ν) :
     ∫⁻ a, f (g a) ∂μ = ∫⁻ b, f b ∂ν := by
   rw [← hg.map_eq] at hf ⊢
   exact (lintegral_map' hf hg.aemeasurable).symm
 
 theorem lintegral_comp {f : β → ℝ≥0∞} (hf : Measurable f) :
     ∫⁻ a, f (g a) ∂μ = ∫⁻ b, f b ∂ν :=
-  hg.lintegral_comp₀ hf.aemeasurable
+  hg.lintegral_comp' hf.aemeasurable
 
 theorem lintegral_comp_emb (hge : MeasurableEmbedding g) (f : β → ℝ≥0∞) :
     ∫⁻ a, f (g a) ∂μ = ∫⁻ b, f b ∂ν := by rw [← hg.map_eq, hge.lintegral_map]
