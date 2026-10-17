@@ -238,15 +238,15 @@ Note: This linter can be disabled with `set_option linter.style.cdot false`
 example : Add Nat where add := (. + ·)
 
 /--
+warning: This central dot `·` is isolated; please merge it with the next line.
+
+Note: This linter can be disabled with `set_option linter.style.cdot false`
+---
+warning: This central dot `·` is isolated; please merge it with the next line.
+
+Note: This linter can be disabled with `set_option linter.style.cdot false`
+---
 warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
-
-Note: This linter can be disabled with `set_option linter.style.cdot false`
----
-warning: This central dot `·` is isolated; please merge it with the next line.
-
-Note: This linter can be disabled with `set_option linter.style.cdot false`
----
-warning: This central dot `·` is isolated; please merge it with the next line.
 
 Note: This linter can be disabled with `set_option linter.style.cdot false`
 -/
