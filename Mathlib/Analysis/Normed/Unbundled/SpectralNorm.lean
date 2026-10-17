@@ -56,11 +56,11 @@ As a prerequisite, we formalize the proof of [S. Bosch, U. Güntzer, R. Remmert,
 ## Main Results
 
 * `norm_le_spectralNorm` : if `f` is a power-multiplicative `K`-algebra norm on `L`, then `f` is
-  bounded above by `spectralNorm' K L`.
+  bounded above by `spectralNorm K L`.
 * `spectralNorm_eq_of_equiv` : the `K`-algebra automorphisms of `L` are isometries with respect to
   the spectral norm.
 * `spectralNorm_eq_iSup_of_finiteDimensional_normal` : if `L/K` is finite and normal, then
-  `spectralNorm' K L x = iSup (fun (σ : Gal(L/K)) ↦ f (σ x))`.
+  `spectralNorm K L x = iSup (fun (σ : Gal(L/K)) ↦ f (σ x))`.
 * `isPowMul_spectralNorm` : the spectral norm is power-multiplicative.
 * `isNonarchimedean_spectralNorm` : the spectral norm is nonarchimedean.
 * `spectralNorm_extends` : the spectral norm extends the norm on `K`.
@@ -377,7 +377,7 @@ open IntermediateField
 variable (K : Type*) [NormedField K] (L : Type*) [Field L] [Algebra K L]
 
 /-- If `L` is an algebraic extension of a normed field `K` and `y : L` then the spectral norm
-  `spectralNorm' K y : ℝ` of `y` (written `|y|_sp` in the textbooks) is the spectral value of the
+  `spectralNorm K y : ℝ` of `y` (written `|y|_sp` in the textbooks) is the spectral value of the
   minimal polynomial of `y` over `K`. -/
 def spectralNorm' (y : L) : ℝ := spectralValue (minpoly K y)
 
@@ -416,16 +416,16 @@ variable (y : L)
 
 open Real
 
-/-- `spectralNorm' K L (0 : L) = 0`. -/
-theorem spectralNorm'_zero : spectralNorm' K L (0 : L) = 0 := by
+/-- `spectralNorm K L (0 : L) = 0`. -/
+theorem spectralNorm_zero' : spectralNorm' K L (0 : L) = 0 := by
   unfold spectralNorm'
   rw [minpoly.zero, ← pow_one X, spectralValue_X_pow 1]
 
-/-- `spectralNorm' K L y` is nonnegative. -/
+/-- `spectralNorm K L y` is nonnegative. -/
 theorem spectralNorm_nonneg (y : L) : 0 ≤ spectralNorm' K L y :=
   le_ciSup_of_le (spectralValueTerms_bddAbove (minpoly K y)) 0 (spectralValueTerms_nonneg _ 0)
 
-/-- `spectralNorm' K L y` is positive if `y ≠ 0`. -/
+/-- `spectralNorm K L y` is positive if `y ≠ 0`. -/
 theorem spectralNorm_zero_lt {y : L} (hy : y ≠ 0) (hy_alg : IsAlgebraic K y) :
     0 < spectralNorm' K L y := by
   apply lt_of_le_of_ne (spectralNorm_nonneg _)
@@ -434,14 +434,14 @@ theorem spectralNorm_zero_lt {y : L} (hy : y ≠ 0) (hy_alg : IsAlgebraic K y) :
   apply minpoly.coeff_zero_ne_zero hy_alg.isIntegral hy
   rw [h, coeff_X_pow, ite_eq_right (ne_of_lt (minpoly.natDegree_pos hy_alg.isIntegral))]
 
-/-- If `spectralNorm' K L x = 0`, then `x = 0`. -/
+/-- If `spectralNorm K L x = 0`, then `x = 0`. -/
 theorem eq_zero_of_map_spectralNorm_eq_zero {x : L} (hx : spectralNorm' K L x = 0)
     (hx_alg : IsAlgebraic K x) : x = 0 := by
   by_contra h0
   exact (ne_of_gt (spectralNorm_zero_lt h0 hx_alg)) hx
 
 /-- If `f` is a power-multiplicative `K`-algebra norm on `L`, then `f`
-  is bounded above by `spectralNorm' K L`. -/
+  is bounded above by `spectralNorm K L`. -/
 theorem norm_le_spectralNorm {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
     (hf_na : IsNonarchimedean f) {x : L} (hx_alg : IsAlgebraic K x) :
     f x ≤ spectralNorm' K L x :=
@@ -460,7 +460,7 @@ section FiniteNormal
 variable (K L) [h_fin : FiniteDimensional K L] [hn : Normal K L]
 
 /--
-If `L/K` is finite and normal, then `spectralNorm' K L x = supr (λ (σ : Gal(L/K)), f (σ x))`. -/
+If `L/K` is finite and normal, then `spectralNorm K L x = supr (λ (σ : Gal(L/K)), f (σ x))`. -/
 theorem spectralNorm_eq_iSup_of_finiteDimensional_normal
     {f : AlgebraNorm K L} (hf_pm : IsPowMul f) (hf_na : IsNonarchimedean f)
     (hf_ext : ∀ (x : K), f (algebraMap K L x) = ‖x‖) (x : L) :
@@ -491,7 +491,7 @@ theorem spectralNorm_eq_iSup_of_finiteDimensional_normal
 
 open IsUltrametricDist
 
-/-- If `L/K` is finite and normal, then `spectralNorm' K L = invariantExtension K L`. -/
+/-- If `L/K` is finite and normal, then `spectralNorm K L = invariantExtension K L`. -/
 theorem spectralNorm_eq_invariantExtension [hu : IsUltrametricDist K] :
     spectralNorm' K L = invariantExtension K L := by
   ext x
@@ -510,7 +510,7 @@ theorem spectralNorm_eq_invariantExtension [hu : IsUltrametricDist K] :
 /- Note that the main results below are reproved without the finite dimensionality and normality
   assumptions later on in this file. -/
 
-/-- If `L/K` is finite and normal, then `spectralNorm' K L` is power-multiplicative.
+/-- If `L/K` is finite and normal, then `spectralNorm K L` is power-multiplicative.
   See also the more general result `isPowMul_spectralNorm`. -/
 theorem isPowMul_spectralNorm_of_finiteDimensional_normal [IsUltrametricDist K] :
     IsPowMul (spectralNorm' K L) := by
@@ -551,7 +551,7 @@ theorem spectralNorm_extends_of_finiteDimensional [IsUltrametricDist K] (x : K) 
   rw [spectralNorm_eq_invariantExtension, invariantExtension_extends K L x]
 
 /-- If `L/K` is finite and normal, and `f` is a power-multiplicative `K`-algebra norm on `L`
-  extending the norm on `K`, then `f = spectralNorm' K L`. -/
+  extending the norm on `K`, then `f = spectralNorm K L`. -/
 theorem spectralNorm_unique_of_finiteDimensional_normal {f : AlgebraNorm K L}
     (hf_pm : IsPowMul f) (hf_na : IsNonarchimedean f)
     (hf_ext : ∀ (x : K), f (algebraMap K L x) = ‖x‖₊)
@@ -575,14 +575,14 @@ theorem spectralNorm_extends (k : K) : spectralNorm' K L (algebraMap K L k) = �
   simp_rw [spectralNorm', minpoly.eq_X_sub_C_of_algebraMap_inj _ (algebraMap K L).injective]
   exact spectralValue_X_sub_C k
 
-theorem spectralNorm'_one : spectralNorm' K L 1 = 1 := by
+theorem spectralNorm_one' : spectralNorm' K L 1 = 1 := by
   have h1 : (1 : L) = algebraMap K L 1 := by rw [map_one]
   rw [h1, spectralNorm_extends, norm_one]
 
 variable [IsUltrametricDist K]
 
 /-- `spectralNorm' K L (-y) = spectralNorm' K L y` . -/
-theorem spectralNorm'_neg {y : L} (hy : IsAlgebraic K y) :
+theorem spectralNorm_neg' {y : L} (hy : IsAlgebraic K y) :
     spectralNorm' K L (-y) = spectralNorm' K L y := by
   set E := K⟮y⟯
   have h_finiteDimensional_E : FiniteDimensional K E :=
@@ -595,7 +595,7 @@ theorem spectralNorm'_neg {y : L} (hy : IsAlgebraic K y) :
   exact map_neg_eq_map _ _
 
 /-- The spectral norm is compatible with the action of `K`. -/
-theorem spectralNorm'_smul (k : K) {y : L} (hy : IsAlgebraic K y) :
+theorem spectralNorm_smul' (k : K) {y : L} (hy : IsAlgebraic K y) :
     spectralNorm' K L (k • y) = ‖k‖₊ * spectralNorm' K L y := by
   set E := K⟮y⟯
   have h_finiteDimensional_E : FiniteDimensional K E :=
@@ -611,7 +611,7 @@ theorem spectralNorm'_smul (k : K) {y : L} (hy : IsAlgebraic K y) :
   apply map_smul_eq_mul
 
 /-- The spectral norm is submultiplicative. -/
-theorem spectralNorm'_mul {x y : L} (hx : IsAlgebraic K x) (hy : IsAlgebraic K y) :
+theorem spectralNorm_mul' {x y : L} (hx : IsAlgebraic K x) (hy : IsAlgebraic K y) :
     spectralNorm' K L (x * y) ≤ spectralNorm' K L x * spectralNorm' K L y := by
   set E := K⟮x, y⟯
   have h_finiteDimensional_E : FiniteDimensional K E :=
@@ -663,19 +663,19 @@ variable (K L) in
 /-- The spectral norm is a `K`-algebra norm on `L`. -/
 def spectralAlgNorm' : AlgebraNorm K L where
   toFun       := spectralNorm' K L
-  map_zero'   := spectralNorm'_zero
+  map_zero'   := spectralNorm_zero'
   add_le' _ _ := isNonarchimedean_spectralNorm'.add_le spectralNorm_nonneg
-  mul_le' x y := spectralNorm'_mul (h_alg.isAlgebraic x) (h_alg.isAlgebraic y)
-  smul' k x   := spectralNorm'_smul k (h_alg.isAlgebraic x)
-  neg' x      := spectralNorm'_neg (h_alg.isAlgebraic x)
+  mul_le' x y := spectralNorm_mul' (h_alg.isAlgebraic x) (h_alg.isAlgebraic y)
+  smul' k x   := spectralNorm_smul' k (h_alg.isAlgebraic x)
+  neg' x      := spectralNorm_neg' (h_alg.isAlgebraic x)
   eq_zero_of_map_eq_zero' x hx := eq_zero_of_map_spectralNorm_eq_zero hx (h_alg.isAlgebraic x)
 
-theorem spectralAlgNorm'_def (x : L) : spectralAlgNorm' K L x = spectralNorm' K L x := rfl
+theorem spectralAlgNorm_def' (x : L) : spectralAlgNorm' K L x = spectralNorm' K L x := rfl
 
 theorem spectralAlgNorm_extends (k : K) : spectralAlgNorm' K L (algebraMap K L k) = ‖k‖ :=
   spectralNorm_extends k
 
-theorem spectralAlgNorm'_one : spectralAlgNorm' K L (1 : L) = 1 := spectralNorm'_one
+theorem spectralAlgNorm_one' : spectralAlgNorm' K L (1 : L) = 1 := spectralNorm_one'
 
 theorem spectralAlgNorm_isPowMul : IsPowMul (spectralAlgNorm' K L) := isPowMul_spectralNorm'
 
@@ -718,7 +718,7 @@ theorem spectralNorm_unique_field_norm_ext [CompleteSpace K]
       mul_le' x y := by simp [AddGroupSeminorm.toFun_eq_coe, MulRingSeminorm.toFun_eq_coe] }
   have hg_pow : IsPowMul g := MulRingNorm.isPowMul _
   have hgx : f x = g x := rfl
-  rw [hgx, spectralNorm_unique hg_pow, spectralAlgNorm'_def]
+  rw [hgx, spectralNorm_unique hg_pow, spectralAlgNorm_def']
 
 variable (K) in
 /-- If `K` is a field complete with respect to a nontrivial nonarchimedean multiplicative norm and
@@ -726,7 +726,7 @@ variable (K) in
   norm. -/
 theorem NormedAlgebra.norm_eq_spectralNorm' {L : Type*} [NormedField L] [NormedAlgebra K L]
     [Algebra.IsAlgebraic K L] [CompleteSpace K] (x : L) : ‖x‖ = spectralNorm' K L x := by
-  rw [← toMulAlgebraNorm_apply K L x, ← spectralAlgNorm'_def, ← MulAlgebraNorm.coe_AlgebraNorm,
+  rw [← toMulAlgebraNorm_apply K L x, ← spectralAlgNorm_def', ← MulAlgebraNorm.coe_AlgebraNorm,
       spectralNorm_unique (f := (toMulAlgebraNorm K L).toAlgebraNorm)
       (MulRingNorm.isPowMul (toMulAlgebraNorm K L).toMulRingNorm)]
 
@@ -747,9 +747,9 @@ theorem spectralAlgNorm_mul (x y : L) :
     spectralAlgNorm' K L (x * y) = spectralAlgNorm' K L x * spectralAlgNorm' K L y :=
   (spectralMulAlgNorm' K L).map_mul x y
 
-variable (K L)
-
 namespace spectralNorm
+
+variable (K L)
 
 /-- `L` with the spectral norm is a `NormedField`. -/
 @[instance_reducible]
@@ -757,15 +757,15 @@ def normedField' : NormedField L :=
   { (inferInstance : Field L) with
     norm x := (spectralNorm' K L x : ℝ)
     dist x y := (spectralNorm' K L (x - y) : ℝ)
-    dist_self x := by simp [sub_self, spectralNorm'_zero]
-    dist_comm x y := by rw [← neg_sub, spectralNorm'_neg (Algebra.IsAlgebraic.isAlgebraic _)]
+    dist_self x := by simp [sub_self, spectralNorm_zero']
+    dist_comm x y := by rw [← neg_sub, spectralNorm_neg' (Algebra.IsAlgebraic.isAlgebraic _)]
     dist_triangle x y z :=
       sub_add_sub_cancel x y z ▸ isNonarchimedean_spectralNorm'.add_le spectralNorm_nonneg
     eq_of_dist_eq_zero hxy := by
       rw [← sub_eq_zero]
       exact (map_eq_zero_iff_eq_zero (spectralMulAlgNorm' K L)).mp hxy
     dist_eq x y := by
-      rw [← spectralNorm'_neg, sub_eq_add_neg, neg_add, neg_neg]
+      rw [← spectralNorm_neg', sub_eq_add_neg, neg_add, neg_neg]
       exact Algebra.IsAlgebraic.isAlgebraic (x - y)
     norm_mul x y := by simp [← spectralMulAlgNorm_def, map_mul]
     edist_dist x y := by rw [ENNReal.ofReal_eq_coe_nnreal] }
@@ -773,7 +773,7 @@ def normedField' : NormedField L :=
 /-- `L` with the spectral norm is a `NontriviallyNormedField`. -/
 @[instance_reducible]
 def nontriviallyNormedField' : NontriviallyNormedField L where
-  __ := normedField' K L
+  __ := spectralNorm.normedField' K L
   non_trivial :=
     let ⟨x, hx⟩ := NontriviallyNormedField.non_trivial (α := K)
     ⟨algebraMap K L x, hx.trans_eq (spectralNorm_extends _).symm⟩
@@ -807,15 +807,15 @@ def normedSpace' : @NormedSpace K L _ (seminormedAddCommGroup K L) :=
 
 /-- `L` with the spectral norm is a `NormedAlgebra` over `K`. -/
 @[instance_reducible]
-def normedAlgebra'' : @NormedAlgebra K L _ (seminormedRing K L) :=
+def normedAlgebra'' :
+    @NormedAlgebra K L _ (seminormedRing K L) :=
   letI _ := normedField' K L
   { normedSpace' K L, (inferInstance : Algebra K L) with }
 
 /-- `L` with the spectral norm is a `NormedAlgebra` over any intermediate `E`
 that is a normed algebra over `K`. -/
 @[instance_reducible]
-def normedAlgebra'''
-    (E L : Type*) [Field L] [Algebra K L] [Algebra.IsAlgebraic K L] [NormedField E]
+def normedAlgebra''' (E L : Type*) [Field L] [Algebra K L] [Algebra.IsAlgebraic K L] [NormedField E]
     [NormedAlgebra K E] [Algebra E L] [IsScalarTower K E L] :
     @NormedAlgebra E L _ (seminormedRing K L) :=
   letI _ := normedField' K L
@@ -840,13 +840,13 @@ def uniformSpace : UniformSpace L := (metricSpace K L).toUniformSpace
   by the spectral norm. -/
 instance (priority := 100) completeSpace [h_fin : FiniteDimensional K L] :
     @CompleteSpace L (uniformSpace K L) := by
-  let := normedAddCommGroup K L
-  let := normedSpace' K L
+  let := (normedAddCommGroup K L)
+  let := (normedSpace' K L)
   exact FiniteDimensional.complete K L
 
 omit [Algebra.IsAlgebraic K L] in
-lemma spectralMulAlgNorm_eq_of_mem_roots (x : L) {E : Type*} [Field E] [Algebra K E]
-    [Algebra L E] [IsScalarTower K L E] [Algebra.IsAlgebraic K E] {a : E}
+lemma spectralMulAlgNorm_eq_of_mem_roots (x : L) {E : Type*} [Field E] [Algebra K E] [Algebra L E]
+    [IsScalarTower K L E] [Algebra.IsAlgebraic K E] {a : E}
     (ha : a ∈ ((mapAlg K E) (minpoly K x)).roots) :
     (spectralMulAlgNorm' K E) a = (spectralMulAlgNorm' K E) ((algebraMap L E) x) := by
   simp only [spectralMulAlgNorm_def, spectralNorm']
@@ -861,8 +861,7 @@ omit [Algebra.IsAlgebraic K L] in
   over `K` splits into linear factors over `E`, the `degree(f)`th power of the spectral norm of `x`,
   considered as an element of `E`, is equal to the spectral norm of the product of the `E`-valued
   roots of `f`. -/
-theorem spectralNorm_pow_natDegree_eq_prod_roots
-    (x : L) {E : Type*} [Field E] [Algebra K E]
+theorem spectralNorm_pow_natDegree_eq_prod_roots (x : L) {E : Type*} [Field E] [Algebra K E]
     [Algebra L E] [IsScalarTower K L E] [IsSplittingField L E (mapAlg K L (minpoly K x))]
     [Algebra.IsAlgebraic K E] :
     (spectralMulAlgNorm' K E) ((algebraMap L E) x) ^ (minpoly K x).natDegree =
