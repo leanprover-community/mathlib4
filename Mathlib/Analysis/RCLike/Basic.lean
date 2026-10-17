@@ -535,15 +535,17 @@ theorem div_re_ofReal {z : K} {r : ℝ} : re (z / r) = re z / r := by
 theorem ofReal_zpow (r : ℝ) (n : ℤ) : ((r ^ n : ℝ) : K) = (r : K) ^ n :=
   map_zpow₀ (algebraMap ℝ K) r n
 
-theorem I_mul_I_of_nonzero : (I : K) ≠ 0 → (I : K) * I = -1 :=
+theorem I_mul_I_of_ne_zero : (I : K) ≠ 0 → (I : K) * I = -1 :=
   I_mul_I_ax.resolve_left
+
+@[deprecated (since := "2026-10-13")] alias I_mul_I_of_nonzero := I_mul_I_of_ne_zero
 
 @[simp, rclike_simps]
 theorem inv_I : (I : K)⁻¹ = -I := by
   by_cases h : (I : K) = 0
   · simp [h]
   · field_simp
-    linear_combination I_mul_I_of_nonzero h
+    linear_combination I_mul_I_of_ne_zero h
 
 @[simp, rclike_simps]
 theorem div_I (z : K) : z / I = -(z * I) := by rw [div_eq_mul_inv, inv_I, mul_neg]
@@ -725,7 +727,7 @@ theorem abs_im_div_norm_le_one (z : K) : |im z / ‖z‖| ≤ 1 := by
 
 theorem norm_I_of_ne_zero (hI : (I : K) ≠ 0) : ‖(I : K)‖ = 1 := by
   rw [← mul_self_inj_of_nonneg (norm_nonneg I) zero_le_one, one_mul, ← norm_mul,
-    I_mul_I_of_nonzero hI, norm_neg, norm_one]
+    I_mul_I_of_ne_zero hI, norm_neg, norm_one]
 
 theorem norm_I : ‖(I : K)‖ = if (I : K) = 0 then 0 else 1 := by
   grind [norm_I_of_ne_zero, norm_eq_zero]
@@ -1269,7 +1271,7 @@ lemma norm_le_im_iff_eq_I_mul_norm {z : K} :
   · have : (I : K) ≠ 0 := fun _ ↦ by simp_all
     rw [← mul_right_inj' (neg_ne_zero.mpr this)]
     convert norm_le_re_iff_eq_norm (z := -I * z) using 2
-    all_goals simp [neg_mul, ← mul_assoc, I_mul_I_of_nonzero this, norm_I_of_ne_zero this]
+    all_goals simp [neg_mul, ← mul_assoc, I_mul_I_of_ne_zero this, norm_I_of_ne_zero this]
 
 lemma im_le_neg_norm_iff_eq_neg_I_mul_norm {z : K} :
     im z ≤ -‖z‖ ↔ z = -(I * ‖z‖) := by

@@ -427,11 +427,15 @@ theorem kernelIsoOfEq_trans {f g h : X ⟶ Y} [HasKernel f] [HasKernel g] [HasKe
 
 variable {f}
 
-theorem kernel_not_epi_of_nonzero (w : f ≠ 0) : ¬Epi (kernel.ι f) := fun _ =>
+theorem kernel_not_epi_of_ne_zero (w : f ≠ 0) : ¬Epi (kernel.ι f) := fun _ =>
   w (eq_zero_of_epi_kernel f)
 
-theorem kernel_not_iso_of_nonzero (w : f ≠ 0) : IsIso (kernel.ι f) → False := fun _ =>
-  kernel_not_epi_of_nonzero w inferInstance
+@[deprecated (since := "2026-10-13")] alias kernel_not_epi_of_nonzero := kernel_not_epi_of_ne_zero
+
+theorem kernel_not_iso_of_ne_zero (w : f ≠ 0) : IsIso (kernel.ι f) → False := fun _ =>
+  kernel_not_epi_of_ne_zero w inferInstance
+
+@[deprecated (since := "2026-10-13")] alias kernel_not_iso_of_nonzero := kernel_not_iso_of_ne_zero
 
 instance hasKernel_comp_mono {X Y Z : C} (f : X ⟶ Y) [HasKernel f] (g : Y ⟶ Z) [Mono g] :
     HasKernel (f ≫ g) :=
@@ -943,11 +947,17 @@ theorem cokernelIsoOfEq_trans {f g h : X ⟶ Y} [HasCokernel f] [HasCokernel g] 
 
 variable {f}
 
-theorem cokernel_not_mono_of_nonzero (w : f ≠ 0) : ¬Mono (cokernel.π f) := fun _ =>
+theorem cokernel_not_mono_of_ne_zero (w : f ≠ 0) : ¬Mono (cokernel.π f) := fun _ =>
   w (eq_zero_of_mono_cokernel f)
 
-theorem cokernel_not_iso_of_nonzero (w : f ≠ 0) : IsIso (cokernel.π f) → False := fun _ =>
-  cokernel_not_mono_of_nonzero w inferInstance
+@[deprecated (since := "2026-10-13")]
+alias cokernel_not_mono_of_nonzero := cokernel_not_mono_of_ne_zero
+
+theorem cokernel_not_iso_of_ne_zero (w : f ≠ 0) : IsIso (cokernel.π f) → False := fun _ =>
+  cokernel_not_mono_of_ne_zero w inferInstance
+
+@[deprecated (since := "2026-10-13")]
+alias cokernel_not_iso_of_nonzero := cokernel_not_iso_of_ne_zero
 
 set_option backward.defeqAttrib.useBackward true in
 -- TODO the remainder of this section has obvious generalizations to `HasCoequalizer f g`.
