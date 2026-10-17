@@ -249,7 +249,7 @@ lemma divisors_filter_dvd {n m : ℕ} (hn : n ≠ 0) :
 lemma divisors_filter_dvd_of_dvd {n m : ℕ} (hn : n ≠ 0) (hm : m ∣ n) :
     {d ∈ n.divisors | d ∣ m} = m.divisors := by
   rw [divisors_filter_dvd hn, gcd_eq_right hm]
-  
+
 @[simp]
 theorem divisors_zero : divisors 0 = ∅ := by
   ext
