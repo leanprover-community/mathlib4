@@ -22,8 +22,9 @@ called the *index of imprimitivity*; a quiver is *aperiodic* when it equals `1`.
 * `Quiver.period i`: the period of `i`, i.e. the gcd of `Quiver.cycleLengths i`.
 * `Quiver.imprimitivityIndex V`: the common period of the vertices of a strongly connected
   quiver.
-* `Quiver.IsAperiodic V`: the index of imprimitivity is `1`.
-* `Quiver.IsCyclicPartition f`: `f` sends each edge from one class to the next, cyclically.
+* `Quiver.IsAperiodic V`: predicate for the index of imprimitivity to be `1`.
+* `Quiver.IsCyclicPartition f`: predicate for `f` to send each edge from one class to the next,
+  cyclically.
 
 ## Main statements
 
@@ -65,12 +66,12 @@ lemma add_mem_cycleLengths (ha : a ∈ cycleLengths i) (hb : b ∈ cycleLengths 
     a + b ∈ cycleLengths i := by
   obtain ⟨ha, p, rfl⟩ := ha
   obtain ⟨hb, q, rfl⟩ := hb
-  exact ⟨by omega, p.comp q, by simp [Path.length_comp]⟩
+  exact ⟨by lia, p.comp q, by simp [Path.length_comp]⟩
 
 lemma const_mul_mem_cycleLengths (ha : a ∈ cycleLengths i) (hm : 0 < m) :
     m * a ∈ cycleLengths i := by
   induction m with
-  | zero => omega
+  | zero => lia
   | succ k ih =>
     rcases Nat.eq_zero_or_pos k with rfl | hk
     · simpa using ha
@@ -140,7 +141,7 @@ theorem exists_forall_ge_mem_cycleLengths (h : period i = 1) :
   obtain ⟨N, hN⟩ := Nat.exists_mem_closure_of_ge (cycleLengths i)
   refine ⟨N + 1, fun n hn ↦ ?_⟩
   exact (eq_zero_or_mem_cycleLengths_of_mem_closure
-    (hN n (by omega) (h ▸ one_dvd n : period i ∣ n))).resolve_left (by omega)
+    (hN n (by lia) (h ▸ one_dvd n : period i ∣ n))).resolve_left (by lia)
 
 /-! ### Strongly connected quivers -/
 
@@ -153,7 +154,7 @@ private lemma period_dvd_of_round_trip (p : Path i j) (q : Path j i) (hpq : 0 < 
     period_dvd_of_mem_cycleLengths ⟨hpq, p.comp q, rfl⟩
   have h2 : period i ∣ (p.comp q).length + c.length := by
     refine period_dvd_of_mem_cycleLengths ⟨?_, (p.comp c).comp q, ?_⟩ <;>
-      simp only [Path.length_comp] at hpq ⊢ <;> omega
+      simp only [Path.length_comp] at hpq ⊢ <;> lia
   exact (Nat.dvd_add_right h1).1 h2
 
 /-- In a strongly connected quiver the period is the same at every vertex. -/
