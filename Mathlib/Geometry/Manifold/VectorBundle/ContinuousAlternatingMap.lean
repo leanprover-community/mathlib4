@@ -114,7 +114,7 @@ end
 variable [CharZero 𝕜] [∀ x, IsTopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜 (E₂ x)]
   [ContMDiffVectorBundle n F₁ E₁ IB] [ContMDiffVectorBundle n F₂ E₂ IB]
 
-instance Bundle.continuousAlternatingMap.vectorPrebundle.isContMDiff :
+instance Bundle.ContinuousAlternatingMap.vectorPrebundle.isContMDiff :
     (Bundle.ContinuousAlternatingMap.vectorPrebundle 𝕜 ι F₁ E₁ F₂ E₂).IsContMDiff IB n where
   exists_contMDiffCoordChange := by
     rintro _ ⟨e₁, e₂, he₁, he₂, rfl⟩ _ ⟨e₁', e₂', he₁', he₂', rfl⟩
@@ -188,9 +188,9 @@ lemma ContMDiffWithinAt.continuousAlternatingMap_apply_of_inCoordinates
   apply (ContMDiffWithinAt.continuousAlternatingMap_apply hϕ
     (fun i ↦ (hv i).2)).congr_of_eventuallyEq_of_mem ?_ (mem_insert m₀ s)
   have A' : ∀ᶠ m in 𝓝[insert m₀ s] m₀, b₂ m ∈ (trivializationAt F₂ E₂ (b₂ m₀)).baseSet := by
-      apply hb₂.continuousWithinAt
-      apply (trivializationAt F₂ E₂ (b₂ m₀)).open_baseSet.mem_nhds
-      exact FiberBundle.mem_baseSet_trivializationAt' (b₂ m₀)
+    apply hb₂.continuousWithinAt
+    apply (trivializationAt F₂ E₂ (b₂ m₀)).open_baseSet.mem_nhds
+    exact FiberBundle.mem_baseSet_trivializationAt' (b₂ m₀)
   rcases isEmpty_or_nonempty ι with hι | ⟨⟨i₀⟩⟩
   · filter_upwards [A'] with m h'm
     rw [inCoordinates_eq_of_mem_baseSet₂ _ _ h'm]
