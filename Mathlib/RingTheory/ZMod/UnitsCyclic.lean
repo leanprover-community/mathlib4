@@ -45,8 +45,7 @@ The case of prime numbers is also an instance:
 * `ZMod.isCyclic_units_two_pow_iff` : `(ZMod (2 ^ n))ˣ` is cyclic iff `n ≤ 2`.
 
 The proofs mostly follow [Ireland and Rosen,
-  *A classical introduction to modern number theory*, chapter 4]
-  [IrelandRosen1990].
+  *A classical introduction to modern number theory*, chapter 4][IrelandRosen1990].
 
 -/
 

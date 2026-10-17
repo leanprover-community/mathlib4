@@ -51,8 +51,8 @@ value of `j`.
 ## References
 
 * [Th. Motzkin, *The Euclidean algorithm*][MR32592]
-* [J.-J. Hiblot, *Des anneaux euclidiens dont le plus petit algorithme n'est pas à valeurs finies*]
-  [MR399081]
+* [J.-J. Hiblot, *Des anneaux euclidiens dont le plus petit algorithme n'est pas à valeurs
+  finies*][MR399081]
 * [M. Nagata, *On Euclid algorithm*][MR541021]
 
 
