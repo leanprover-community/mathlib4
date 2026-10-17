@@ -13,6 +13,7 @@ public import Mathlib.RingTheory.Finiteness.Small
 public import Mathlib.RingTheory.IsTensorProduct
 public import Mathlib.RingTheory.TensorProduct.Finite
 
+import Mathlib.LinearAlgebra.TensorProduct.Prod
 import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
@@ -43,6 +44,8 @@ the current `Module.Flat` to `Module.MonoFlat`.
 * `Module.Flat.of_retract`: retracts of flat modules are flat
 * `Module.Flat.of_linearEquiv`: modules linearly equivalent to a flat module are flat
 * `Module.Flat.directSum`: arbitrary direct sums of flat modules are flat
+* `Module.Flat.prod`, `Module.Flat.pi`: binary products and finite products of flat modules
+  are flat
 * `Module.Flat.of_free`: free modules are flat
 * `Module.Flat.of_projective`: projective modules are flat
 * `Module.Flat.preserves_injective_linearMap`: If `M` is a flat module then tensoring with `M`
@@ -219,7 +222,30 @@ instance directSum [∀ i, Flat R (M i)] : Flat R (⨁ i, M i) := directSum_iff.
 
 instance dfinsupp [∀ i, Flat R (M i)] : Flat R (Π₀ i, M i) := dfinsupp_iff.mpr ‹_›
 
+theorem pi_iff [Finite ι] : Flat R (Π i, M i) ↔ ∀ i, Flat R (M i) := by
+  classical
+  have := Fintype.ofFinite ι
+  rw [← directSum_iff]
+  exact equiv_iff (linearEquivFunOnFintype R ι M).symm
+
+/-- A finite product of flat `R`-modules is flat. -/
+instance pi [Finite ι] [∀ i, Flat R (M i)] : Flat R (Π i, M i) := pi_iff.mpr ‹_›
+
 end DirectSum
+
+theorem prod_iff : Flat R (M × N) ↔ Flat R M ∧ Flat R N := by
+  have key {P : Type u} [AddCommMonoid P] [Module R P] (Q : Submodule R P) :
+      Function.Injective (Q.subtype.rTensor (M × N)) ↔
+        Function.Injective (Q.subtype.rTensor M) ∧ Function.Injective (Q.subtype.rTensor N) := by
+    have : (prodRight R R P M N).toLinearMap ∘ₗ Q.subtype.rTensor (M × N) =
+        (Q.subtype.rTensor M).prodMap (Q.subtype.rTensor N) ∘ₗ
+          (prodRight R R Q M N).toLinearMap := by
+      ext <;> simp
+    simpa [coe_prodMap, Prod.map_injective] using congr(Function.Injective ⇑$this)
+  simp_rw [iff_rTensor_injectiveₛ, key, forall_and]
+
+/-- The product of two flat `R`-modules is flat. -/
+instance prod [Flat R M] [Flat R N] : Flat R (M × N) := prod_iff.mpr ⟨‹_›, ‹_›⟩
 
 /-- Free `R`-modules over discrete types are flat. -/
 instance finsupp (ι : Type v) : Flat R (ι →₀ R) := by
