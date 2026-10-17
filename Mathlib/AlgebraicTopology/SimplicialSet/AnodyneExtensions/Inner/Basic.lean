@@ -55,6 +55,11 @@ lemma innerAnodyneExtensions_eq_llp_rlp :
     innerAnodyneExtensions.{u} = innerHornInclusions.rlp.llp :=
   rfl
 
+lemma rlp_innerAnodyneExtensions :
+    innerAnodyneExtensions.{u}.rlp = innerFibrations := by
+  rw [innerAnodyneExtensions_eq_llp_rlp, rlp_llp_rlp]
+  rfl
+
 lemma innerAnodyneExtensions.horn_ι {n : ℕ} {i : Fin (n + 1)}
     (h0 : 0 < i) (hn : i < Fin.last n) :
     innerAnodyneExtensions.{u} Λ[n, i].ι := by
