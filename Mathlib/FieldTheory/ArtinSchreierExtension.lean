@@ -73,7 +73,7 @@ lemma artinSchreierPoly_splits {a c : F} (hr : (artinSchreierPoly a).IsRoot c) :
   have : ExpChar F p := ringExpChar.expChar F
   rcases expChar_is_prime_or_one F p with hp | hp1
   · rw [IsRoot.def] at hr
-    rw [← Splits.taylor_iff c, artinSchreierPoly_taylor p, hr, artinSchreierPoly_def p]
+    rw [← splits_taylor_iff c, artinSchreierPoly_taylor p, hr, artinSchreierPoly_def p]
     have : CharP F p := (expChar_prime_iff F hp).mp ‹ExpChar F p›
     have := Fact.mk hp
     simpa using splits_X_pow_char_sub_X F p
