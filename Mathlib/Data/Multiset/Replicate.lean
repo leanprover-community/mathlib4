@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.Multiset.AddSub
+public import Mathlib.Data.Multiset.Basic
 
 /-!
 # Repeating elements in multisets
@@ -166,10 +167,20 @@ theorem nodup_iff_ne_cons_cons {s : Multiset α} : s.Nodup ↔ ∀ a t, s ≠ a 
       h a t (by rwa [cons_add, cons_add, Multiset.zero_add] at s_eq)⟩
 
 theorem nodup_iff_pairwise {α} {s : Multiset α} : Nodup s ↔ Pairwise (· ≠ ·) s :=
-  Quotient.inductionOn s fun _ ↦ pairwise_coe_iff_pairwise.symm
+  Quotient.inductionOn s fun _ ↦ pairwise_coe_iff.symm
 
-protected theorem Nodup.pairwise : (∀ a ∈ s, ∀ b ∈ s, a ≠ b → r a b) → Nodup s → Pairwise r s :=
-  Quotient.inductionOn s fun l h hl => ⟨l, rfl, hl.imp_of_mem fun {a b} ha hb => h a ha b hb⟩
+protected theorem Nodup.pairwise (h : ∀ a ∈ s, ∀ b ∈ s, a ≠ b → r a b) (hn : Nodup s)
+    [inst : Std.Symm r] : Pairwise r s := by
+  induction s using Quotient.inductionOn with | _ l
+  simp only [quot_mk_to_coe, coe_nodup] at hn
+  simp only [quot_mk_to_coe, mem_coe, ne_eq] at h
+  simp only [quot_mk_to_coe, pairwise_coe_iff]
+  induction l with
+  | nil => grind
+  | cons a l hl =>
+    refine List.Pairwise.cons ?_ ?_
+    · exact fun z hz ↦ by grind [h z (by grind) a (by grind) (by grind)]
+    · exact (hl (by grind) (fun x hx y hy hne => h x (by simp [hx]) y (by simp [hy]) hne))
 
 end Replicate
 

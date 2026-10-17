@@ -604,8 +604,9 @@ theorem Rel.trans (r : α → α → Prop) [IsTrans α r] {s t u : Multiset α} 
 end Rel
 
 @[simp]
-theorem pairwise_zero (r : α → α → Prop) : Multiset.Pairwise r 0 :=
-  ⟨[], rfl, List.Pairwise.nil⟩
+theorem pairwise_zero (r : α → α → Prop) [Std.Symm r] : Multiset.Pairwise r 0 :=
+  pairwise_coe_iff.mpr List.Pairwise.nil
+
 
 section Nodup
 
