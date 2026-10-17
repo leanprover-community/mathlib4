@@ -1,11 +1,13 @@
 /-
 Copyright (c) 2025 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kexing Ying
+Authors: Kexing Ying, Joris van Winden, Rémy Degenne
 -/
 module
 
 public import Mathlib.Probability.Process.Adapted
+public import Mathlib.Probability.Process.Stopping
+public import Mathlib.Topology.Order.Cadlag
 
 /-!
 # Predictable σ-algebra
@@ -25,6 +27,10 @@ and adapted. We also give an equivalent characterization of predictability for d
 * `IsStronglyPredictable.isStronglyProgressive` : A predictable process is progressively measurable.
 * `IsStronglyPredictable.iff_measurable_add_one` : `u` is a discrete predictable process iff
   `u (n + 1)` is `𝓕 n`-measurable and `u 0` is `𝓕 0`-measurable.
+* `IsStronglyPredictable.stoppedProcess` : A predictable process stopped at a stopping time is
+  predictable.
+* `StronglyAdapted.isStronglyPredictable_of_leftContinuous` : A left-continuous adapted process is
+  predictable, if the index set is a densely ordered separable linear order.
 
 ## Tags
 
@@ -77,6 +83,22 @@ lemma measurableSet_predictable_Ioc_prod [LinearOrder ι] [OrderBot ι]
       = Set.Ioi i ×ˢ (s \ s) ∪ (Set.Ioi i \ Set.Ioi j) ×ˢ s), ← Set.prod_sdiff_prod]
     exact (measurableSet_predictable_Ioi_prod hs).diff
       (measurableSet_predictable_Ioi_prod <| 𝓕.mono hij _ hs)
+
+lemma measurableSet_predictable_univ_prod [LinearOrder ι] [OrderBot ι]
+    {𝓕 : Filtration ι m} {s : Set Ω} (hs : MeasurableSet[𝓕 ⊥] s) :
+    MeasurableSet[𝓕.predictable] (Set.univ ×ˢ s) := by
+  rw [(by simp : Set.univ = {⊥} ∪ Set.Ioi ⊥), Set.union_prod]
+  refine MeasurableSet.union ?_ ?_
+  · exact measurableSet_predictable_singleton_bot_prod hs
+  · exact measurableSet_predictable_Ioi_prod hs
+
+lemma measurableSet_predictable_Iic_prod [LinearOrder ι] [OrderBot ι]
+    {𝓕 : Filtration ι m} {s : Set Ω} (hs : MeasurableSet[𝓕 ⊥] s) {i} :
+    MeasurableSet[𝓕.predictable] (Set.Iic i ×ˢ s) := by
+  rw [(by simp : Set.Iic i = {⊥} ∪ Set.Ioc ⊥ i), Set.union_prod]
+  refine MeasurableSet.union ?_ ?_
+  · exact measurableSet_predictable_singleton_bot_prod hs
+  · exact measurableSet_predictable_Ioc_prod ⊥ i hs
 
 lemma measurableSet_predictable_singleton_prod
     {𝓕 : Filtration ℕ m} {n : ℕ} {s : Set Ω} (hs : MeasurableSet[𝓕 n] s) :
@@ -162,6 +184,36 @@ variable [TopologicalSpace E]
 σ-algebra. -/
 def IsStronglyPredictable [Preorder ι] [OrderBot ι] (𝓕 : Filtration ι m) (u : ι → Ω → E) :=
   StronglyMeasurable[𝓕.predictable] <| Function.uncurry u
+
+section Algebra
+
+variable [Preorder ι] [OrderBot ι] {𝓕 : Filtration ι m} {X Y : ι → Ω → E}
+
+variable (𝓕) in
+lemma isStronglyPredictable_const (c : E) :
+    IsStronglyPredictable 𝓕 (fun _ _ ↦ c : ι → Ω → E) := by unfold IsStronglyPredictable; fun_prop
+
+@[to_additive (attr := to_fun)]
+protected nonrec lemma IsStronglyPredictable.mul [Mul E] [ContinuousMul E]
+    (hX : IsStronglyPredictable 𝓕 X) (hY : IsStronglyPredictable 𝓕 Y) :
+    IsStronglyPredictable 𝓕 (X * Y) := hX.mul hY
+
+@[to_additive (attr := to_fun)]
+protected nonrec lemma IsStronglyPredictable.inv [Inv E] [ContinuousInv E]
+    (hX : IsStronglyPredictable 𝓕 X) :
+    IsStronglyPredictable 𝓕 X⁻¹ := hX.inv
+
+@[to_additive (attr := to_fun) sub]
+protected nonrec lemma IsStronglyPredictable.div' [Div E] [ContinuousDiv E]
+    (hX : IsStronglyPredictable 𝓕 X) (hY : IsStronglyPredictable 𝓕 Y) :
+    IsStronglyPredictable 𝓕 (X / Y) := hX.div' hY
+
+@[to_fun]
+protected nonrec lemma IsStronglyPredictable.const_smul {𝕜 : Type*} [SMul 𝕜 E]
+    [ContinuousConstSMul 𝕜 E] (c : 𝕜) (hX : IsStronglyPredictable 𝓕 X) :
+    IsStronglyPredictable 𝓕 (c • X) := hX.const_smul c
+
+end Algebra
 
 namespace IsStronglyPredictable
 
@@ -256,6 +308,194 @@ lemma iff_measurable_add_one {𝓕 : Filtration ℕ m} {u : ℕ → Ω → E} :
 end Discrete
 
 end IsStronglyPredictable
+
+section StoppedProcess
+
+open Function Set
+
+variable [LinearOrder ι] [OrderBot ι] {𝓕 : Filtration ι m} {τ : Ω → WithTop ι} {X : ι → Ω → E}
+
+/-- For a stopping time `τ`, the map `(t, ω) ↦ (min t (τ ω), ω)` is measurable with respect to the
+predictable σ-algebra. -/
+lemma IsStoppingTime.measurable_predictable_min (hτ : IsStoppingTime 𝓕 τ) :
+    Measurable[𝓕.predictable, 𝓕.predictable]
+      fun p : ι × Ω ↦ ((min (p.1 : WithTop ι) (τ p.2)).untopA, p.2) := by
+  refine @measurable_generateFrom _ _ 𝓕.predictable _ _ ?_
+  rintro _ (⟨A, hA, rfl⟩ | ⟨i, A, hA, rfl⟩)
+  · -- `min t (τ ω) = ⊥` iff `t = ⊥` or `τ ω = ⊥`
+    have h_eq : (fun p : ι × Ω ↦ ((min (p.1 : WithTop ι) (τ p.2)).untopA, p.2)) ⁻¹' ({⊥} ×ˢ A)
+        = {⊥} ×ˢ A ∪ univ ×ˢ (A ∩ {ω | τ ω ≤ ⊥}) := by
+      ext ⟨t, ω⟩
+      simp only [mem_preimage, mem_prod, mem_union, mem_inter_iff, mem_ofPred_eq]
+      cases τ ω with
+      | top => simp
+      | coe s =>
+        simp only [← WithTop.coe_min, WithTop.untopD_coe, mem_singleton_iff, min_eq_bot, mem_univ,
+          le_bot_iff, WithTop.coe_eq_bot, true_and]
+        grind
+    rw [h_eq]
+    exact (measurableSet_predictable_singleton_bot_prod hA).union
+      (measurableSet_predictable_univ_prod (hA.inter (hτ ⊥)))
+  · have h_eq : (fun p : ι × Ω ↦ ((min (p.1 : WithTop ι) (τ p.2)).untopA, p.2)) ⁻¹' (Ioi i ×ˢ A)
+        = Ioi i ×ˢ (A ∩ {ω | τ ω ≤ i}ᶜ) := by
+      ext ⟨t, ω⟩
+      simp only [mem_preimage, mem_prod, mem_inter_iff, mem_compl_iff, mem_ofPred_eq]
+      cases τ ω with
+      | top => simp
+      | coe s =>
+        simp only [← WithTop.coe_min, WithTop.untopD_coe]
+        simp
+        grind
+    rw [h_eq]
+    exact measurableSet_predictable_Ioi_prod (hA.inter (hτ i).compl)
+
+/-- For a stopping time `τ`, the set `{(t, ω) | τ ω < t}` is predictable. -/
+lemma IsStoppingTime.measurableSet_predictable_lt [TopologicalSpace ι] [OrderTopology ι]
+    [SecondCountableTopology ι] (hτ : IsStoppingTime 𝓕 τ) :
+    MeasurableSet[𝓕.predictable] {p : ι × Ω | τ p.2 < p.1} := by
+  borelize ι
+  let : MeasurableSpace (ι × Ω) := 𝓕.predictable
+  -- the projection `(t, ω) ↦ t` is measurable for the predictable σ-algebra
+  have h_fst : Measurable (Prod.fst : ι × Ω → ι) := by
+    refine measurable_of_Ioi fun x ↦ ?_
+    rw [← prod_univ]
+    exact measurableSet_predictable_Ioi_prod .univ
+  -- the set is `{p | min p.1 (τ p.2) < p.1}`
+  convert _root_.measurableSet_lt (h_fst.comp hτ.measurable_predictable_min) h_fst using 1
+  ext ⟨t, ω⟩
+  simp only [mem_ofPred_eq, comp_apply]
+  cases τ ω with
+  | top => simp
+  | coe s =>
+    simp only [← WithTop.coe_min, WithTop.untopD_coe]
+    simp
+
+/-- A strongly predictable process stopped at a stopping time is strongly predictable. -/
+protected lemma IsStronglyPredictable.stoppedProcess
+    (hX : IsStronglyPredictable 𝓕 X) (hτ : IsStoppingTime 𝓕 τ) :
+    IsStronglyPredictable 𝓕 (stoppedProcess X τ) :=
+  StronglyMeasurable.comp_measurable hX hτ.measurable_predictable_min
+
+/-- The product of a strongly predictable process with the indicator of a `𝓕 ⊥`-measurable set is
+strongly predictable. -/
+lemma IsStronglyPredictable.indicator_of_bot [Zero E]
+    (hX : IsStronglyPredictable 𝓕 X) {s : Set Ω} (hs : MeasurableSet[𝓕 ⊥] s) :
+    IsStronglyPredictable 𝓕 (fun i ↦ s.indicator (X i)) := by
+  have h_eq : uncurry (fun i ↦ s.indicator (X i)) = (univ ×ˢ s).indicator (uncurry X) := by
+    ext ⟨t, ω⟩
+    by_cases hp : ω ∈ s <;> simp [hp]
+  rw [IsStronglyPredictable, h_eq]
+  exact hX.indicator (measurableSet_predictable_univ_prod hs)
+
+end StoppedProcess
+
+section LeftContinuous
+
+/-! ### Left-continuous strongly adapted processes are strongly predictable -/
+
+variable [LinearOrder ι] [OrderBot ι] {𝓕 : Filtration ι m}
+
+/-- helper function which (strictly) rounds down `i` onto the set `{⊥} ∪ s` -/
+private def roundDown (s : Finset ι) (i : ι) := (insert ⊥ {j ∈ s | j < i}).max' (by simp)
+
+private lemma roundDown_bot {s : Finset ι} : roundDown s ⊥ = ⊥ :=
+  eq_bot_iff.mpr <| Finset.max'_le _ _ _ (by simp)
+
+private lemma roundDown_lt_of_ne_bot {s : Finset ι} {i : ι} (h : i ≠ ⊥) :
+    roundDown s i < i := by
+  apply lt_of_le_of_ne
+  · exact Finset.max'_le _ _ _ fun _ _ ↦ by grind
+  · contrapose! h
+    simp [roundDown, Finset.max'_eq_iff] at h
+    grind
+
+private lemma roundDown_le_of_subset {s t : Finset ι} {i : ι} (h : s ⊆ t) :
+    roundDown s i ≤ roundDown t i :=
+  Finset.max'_le _ _ _ <| fun _ _ ↦ by apply Finset.le_max'; grind
+
+variable {β : Type*} [TopologicalSpace β] [PseudoMetrizableSpace β] {X : ι → Ω → β}
+
+/- a 'rounded down' function is predictable -/
+private lemma StronglyAdapted.isStronglyPredictable_roundDown {times : Finset ι}
+    (h_adap : StronglyAdapted 𝓕 X) :
+    IsStronglyPredictable 𝓕 (fun i ω ↦ X (roundDown times i) ω) := by
+  let : MeasurableSpace (ι × Ω) := 𝓕.predictable
+  -- `X_ap i` approximates X at times `i`
+  let X_ap n i : @SimpleFunc Ω (𝓕 i) β := (h_adap i).approx n
+  -- For `Y` and `Y_ap`, we keep `s` as a variable for use in the induction step
+  -- `Y` is the uncurried version of the rounded down `X`
+  let Y s (x : ι × Ω) : β := X (roundDown s x.1) x.2
+  -- `Y_ap` approximates `Y`
+  let Y_ap n s (x : ι × Ω) : β := X_ap n (roundDown s x.1) x.2
+  apply stronglyMeasurable_of_tendsto (u := atTop) (f := fun n x ↦ Y_ap n times x)
+  · refine fun n ↦ SimpleFunc.mk (Y_ap n times) (fun b ↦ ?_) ?_ |>.stronglyMeasurable
+    · -- induction on the largest element of `times`
+      refine times.induction_on_max ?_ ?_
+      · apply MeasurableSet.congr (s := Set.univ ×ˢ (X_ap n ⊥ ⁻¹' {b})) _ (by aesop)
+        exact measurableSet_predictable_univ_prod (by measurability)
+      refine fun t times ht_max hm ↦ MeasurableSet.congr
+        (s := ((Y_ap n times ⁻¹' {b}) ∩ (Set.Iic t ×ˢ Set.univ)) ∪
+          (Set.Ioi t) ×ˢ (X_ap n t ⁻¹' {b})) ?_ ?_
+      · apply MeasurableSet.union
+        · exact hm.inter (measurableSet_predictable_Iic_prod .univ)
+        · exact measurableSet_predictable_Ioi_prod (by measurability)
+      · ext ⟨i, ω⟩
+        simp_rw [Y_ap, Set.mem_preimage]
+        by_cases! hi : i ≤ t
+        · have : roundDown (insert t times) i = roundDown times i := by
+            rw [roundDown]; congr 2; grind
+          simp
+          grind
+        · have : roundDown (insert t times) i = t := by rw [roundDown, Finset.max'_eq_iff]; grind
+          simp
+          grind
+    · apply Set.Finite.subset (s := ⋃ i ∈ Set.range (roundDown times), Set.range (X_ap n i)) _
+        <| fun _ _ ↦ by simp; grind
+      apply Set.Finite.biUnion _ <| fun i _ ↦ @(X_ap n i).finite_range
+      refine Set.Finite.subset (s := insert ⊥ times) (by simp) fun i hi ↦ ?_
+      obtain ⟨j, rfl⟩ := Set.mem_range.mp hi
+      rw [← Finset.coe_insert, Finset.mem_coe]
+      apply Finset.mem_of_subset (s₁ := insert ⊥ {s ∈ times | s < j}) (by simp)
+      exact Finset.max'_mem _ _
+  · simpa [Y_ap, tendsto_pi_nhds] using fun _ ↦ by apply StronglyMeasurable.tendsto_approx
+
+variable [TopologicalSpace ι] [OrderTopology ι] [DenselyOrdered ι]
+
+/-- A left-continuous adapted process is predictable, if the index set is a densely ordered
+separable linear order with a bottom element.
+
+This is not true in `ℕ`, since the left continuity assumption is vacuous there, and not all adapted
+processes are predictable. -/
+lemma StronglyAdapted.isStronglyPredictable_of_isLeftContinuous [SeparableSpace ι]
+    (h_adap : StronglyAdapted 𝓕 X) (h_cont : ∀ ω, IsLeftContinuous (X · ω)) :
+    IsStronglyPredictable 𝓕 X := by
+  obtain ⟨d, hd_count, hd_dense⟩ := exists_countable_dense ι
+  let times n := Finset.image (Set.enumerateCountable hd_count ⊥) (Finset.range n)
+  apply stronglyMeasurable_of_tendsto atTop (f := fun n x ↦ X (roundDown (times n) x.1) x.2)
+  · exact fun _ ↦ isStronglyPredictable_roundDown (by grind)
+  rw [tendsto_pi_nhds]
+  intro ⟨i, ω⟩
+  apply (h_cont ω i).insert.tendsto.comp
+  simp_rw [Set.Iio_insert, tendsto_nhdsWithin_iff]
+  by_cases! hi_bot : i = ⊥
+  · simp [hi_bot, roundDown_bot]
+  refine ⟨?_, .of_forall <| fun _ ↦ le_of_lt <| roundDown_lt_of_ne_bot hi_bot⟩
+  apply tendsto_atTop_isLUB (fun _ _ _ ↦ roundDown_le_of_subset <| by grind)
+  apply (isLUB_congr _).mp (isLUB_Iio (a := i))
+  ext j
+  simp_rw [mem_upperBounds, Set.mem_Iio]
+  constructor
+  · refine fun hj k hk ↦ hj _ ?_
+    obtain ⟨y, rfl⟩ := Set.mem_range.mp hk
+    exact roundDown_lt_of_ne_bot hi_bot
+  · intro hj k hk
+    obtain ⟨r, hr_mem, hr_lt⟩ := hd_dense.exists_between hk
+    obtain ⟨n, h_rn⟩ := Set.mem_range.mp <| Set.subset_range_enumerate hd_count ⊥ hr_mem
+    trans roundDown (times (n + 1)) i
+    · exact hr_lt.1.le.trans <| Finset.le_max' _ _ (by grind)
+    · exact hj _ (by grind)
+
+end LeftContinuous
 
 @[deprecated (since := "2026-04-24")]
 alias IsPredictable := IsStronglyPredictable
