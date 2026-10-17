@@ -11,6 +11,7 @@ public import Mathlib.SetTheory.Cardinal.Order
 import Mathlib.Basic.Real.Basic
 
 /-!
+# Arithmetic of order types
 
 ## Main definitions
 
