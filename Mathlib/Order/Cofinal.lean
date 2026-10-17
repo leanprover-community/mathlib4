@@ -195,6 +195,12 @@ theorem not_bddAbove_iff_isCofinal [NoMaxOrder α] {s : Set α} : ¬ BddAbove s 
 
 alias ⟨_, IsCofinal.not_bddAbove⟩ := not_bddAbove_iff_isCofinal
 
+theorem IsCofinal.noMaxOrder [NoMaxOrder α] {s : Set α} (hs : IsCofinal s) : NoMaxOrder s where
+  exists_gt x := by
+    obtain ⟨y, hxy⟩ := exists_gt x.1
+    obtain ⟨z, hz, hyz⟩ := hs y
+    exact ⟨⟨z, hz⟩, hxy.trans_le hyz⟩
+
 /-- The set of "records" (the smallest inputs yielding the highest values) with respect to a
 well-ordering of `α` is a cofinal set. -/
 theorem isCofinal_setOfPred_imp_lt (r : α → α → Prop) [h : WellFounded r] :
