@@ -121,21 +121,22 @@ section rank
 
 /-! ### Degree formulas -/
 
-variable [IsDomain B] [Finite G] {A : Type*} [CommRing A] [IsDomain A]
-  [Algebra A B] [Module.Finite A B] [Module.Flat A B] [IsGaloisGroup G A B] (p : Ideal A)
-  [P.LiesOver p] [p.IsPrime] [Algebra.HasSeparableResidueFieldsAt A B p]
-  [FaithfulSMul R B] [P.IsPrime]
+variable [IsDomain B] {A : Type*} [CommRing A] [IsDomain A] [Algebra A B] [Module.Finite A B]
+  [Module.Flat A B] [IsGaloisGroup G A B] (p : Ideal A) [P.LiesOver p] [p.IsPrime]
+  [Algebra.HasSeparableResidueFieldsAt A B p] [FaithfulSMul R B] [P.IsPrime]
 
 /-- The degree `[B : R]` of `B` over the decomposition ring `R` equals the product of the
 ramification index and the inertia degree of `p` in `B`. -/
 theorem IsDecompositionRing.finrank_top [P.IsDecompositionRing G R] :
     Module.finrank R B = p.ramificationIdxIn B * p.inertiaDegIn B := by
+  have := IsGaloisGroup.finite G A B
   rw [← IsGaloisGroup.card_eq_finrank' (stabilizer G P) R B, card_stabilizer_eq p]
 
 /-- The degree `[B : R]` of `B` over the inertia ring `R` equals the ramification index of `p`
 in `B`. -/
 theorem IsInertiaRing.finrank_top [P.IsInertiaRing G R] :
     Module.finrank R B = p.ramificationIdxIn B := by
+  have := IsGaloisGroup.finite G A B
   rw [← IsGaloisGroup.card_eq_finrank' (inertia G P) R B, card_inertia_eq_ramificationIdxIn p]
 
 variable [Algebra A R] [IsScalarTower A R B]
@@ -144,6 +145,7 @@ variable [Algebra A R] [IsScalarTower A R B]
 of `B` lying over `p`. -/
 theorem IsDecompositionRing.finrank_bot [P.IsDecompositionRing G R] :
     Module.finrank A R = (p.primesOver B).ncard := by
+  have := IsGaloisGroup.finite G A B
   have : IsDomain R := (FaithfulSMul.algebraMap_injective R B).isDomain
   have : Module.Finite R B := Module.Finite.right A R B
   rw [← mul_left_inj' (c := Module.finrank R B) Module.finrank_pos.ne',
@@ -155,6 +157,7 @@ theorem IsDecompositionRing.finrank_bot [P.IsDecompositionRing G R] :
 prime ideals of `B` lying over `p` and the inertia degree of `p` in `B`. -/
 theorem IsInertiaRing.finrank_bot [P.IsInertiaRing G R] :
     Module.finrank A R = (p.primesOver B).ncard * p.inertiaDegIn B := by
+  have := IsGaloisGroup.finite G A B
   have : IsDomain R := (FaithfulSMul.algebraMap_injective R B).isDomain
   have : Module.Finite R B := Module.Finite.right A R B
   rw [← mul_left_inj' (c := Module.finrank R B) Module.finrank_pos.ne',
