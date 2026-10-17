@@ -9,6 +9,7 @@ public import ImportGraph.Lean.Environment  -- shake: keep (Environment.getModul
 public import Mathlib.Init
 
 meta import ImportGraph.Lean.Environment
+public meta import Lean.Meta.CompletionName
 
 /-!
 # A tool for finding duplicate declarations
