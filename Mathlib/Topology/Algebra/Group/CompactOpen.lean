@@ -169,7 +169,7 @@ theorem locallyCompactSpace_of_equicontinuousAt (U : Set X) (V : Set Y)
     rw [equicontinuous_iff_range, ← Set.image_eq_range] at h ⊢
     rwa [← hS4] at h
   replace hS4 : S4 = Set.pi U (fun _ ↦ W) ∩ Set.range ((↑) : (X →* Y) → (X → Y)) := by
-    simp_rw [hS4, Set.ext_iff, Set.mem_image, S1, Set.mem_ofPred_eq]
+    simp_rw [hS4, Set.ext_iff, Set.mem_image, S1, Set.mem_ofPred]
     exact fun f ↦ ⟨fun ⟨g, hg, hf⟩ ↦ hf ▸ ⟨hg, g, rfl⟩, fun ⟨hg, g, hf⟩ ↦ ⟨g, hf ▸ hg, hf⟩⟩
   replace hS4 : IsClosed S4 :=
     hS4.symm ▸ (isClosed_set_pi (fun _ _ ↦ hWc.isClosed)).inter (MonoidHom.isClosed_range_coe X Y)
@@ -209,7 +209,7 @@ theorem locallyCompactSpace_of_hasBasis (V : ℕ → Set Y)
   apply locallyCompactSpace_of_equicontinuousAt (U 0) (V 0) hU0c (hVo.mem_of_mem trivial)
   rw [hVo.uniformity_of_nhds_one.equicontinuousAt_iff_right]
   refine fun n _ ↦ Filter.eventually_iff_exists_mem.mpr ⟨U n, hU1 n, fun x hx ⟨f, hf⟩ ↦ ?_⟩
-  rw [Set.mem_ofPred_eq, map_one, div_one]
+  rw [Set.mem_ofPred, map_one, div_one]
   exact hU4 f hf n hx
 
 end LocallyCompact

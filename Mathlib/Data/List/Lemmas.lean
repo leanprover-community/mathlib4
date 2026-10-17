@@ -32,7 +32,7 @@ theorem injOn_insertIdx_index_of_notMem (l : List α) (x : α) (hx : x ∉ l) :
   | nil =>
     simp_all [Set.mem_singleton_iff, Set.ofPred_eq_eq_singleton, length]
   | cons hd tl IH =>
-    simp only [length, Set.mem_ofPred_eq] at hn hm
+    simp only [length, Set.mem_ofPred] at hn hm
     simp only [mem_cons, not_or] at hx
     cases n <;> cases m
     · rfl

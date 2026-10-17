@@ -158,7 +158,7 @@ theorem countable_setOfPred_isolated_right_within [SecondCountableTopology α] {
     simp [H, (subsingleton_isTop α).countable]
   have (x) (hx : x ∈ t) : ∃ y > x, s ∩ Ioo x y = ∅ := by
     simp only [← empty_mem_iff_bot, mem_nhdsWithin_iff_exists_mem_nhds_inter,
-      subset_empty_iff, IsTop, not_forall, not_le, mem_ofPred_eq, t] at hx
+      subset_empty_iff, IsTop, not_forall, not_le, mem_ofPred, t] at hx
     rcases hx.2.1 with ⟨u, hu, h'u⟩
     obtain ⟨y, hxy, hy⟩ : ∃ y, x < y ∧ Ico x y ⊆ u := exists_Ico_subset_of_mem_nhds hu hx.2.2
     refine ⟨y, hxy, ?_⟩
@@ -361,7 +361,7 @@ theorem nhds_basis_Ioo_one_lt [NoMaxOrder α] (a : α) :
     (𝓝 a).HasBasis (fun ε : α => (1 : α) < ε) fun ε => Ioo (a / ε) (a * ε) := by
   refine (nhds_basis_mabs_div_lt a).congr (fun _ => Iff.rfl) fun ε _ => ?_
   ext b
-  simp only [mem_ofPred_eq, mem_Ioo, mabs_lt, ← div_lt_iff_lt_mul, inv_lt_div_iff_lt_mul,
+  simp only [mem_ofPred, mem_Ioo, mabs_lt, ← div_lt_iff_lt_mul, inv_lt_div_iff_lt_mul,
     div_lt_comm]
 
 @[to_additive]

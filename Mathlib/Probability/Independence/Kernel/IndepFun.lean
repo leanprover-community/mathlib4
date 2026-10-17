@@ -358,7 +358,7 @@ theorem iIndepFun.indepFun_set (S T : Set ι) (hST : Disjoint S T)
     (Measurable.comap_le (measurable_pi_iff.mpr fun i => hf_meas i)) hπS_pi hπT_pi hπS_gen hπT_gen
     ?_
   rintro _ _ ⟨s, ⟨s', sets_s, hs1, hs2⟩, rfl⟩ ⟨t, ⟨t', sets_t, ht1, ht2⟩, rfl⟩
-  simp only [mem_pi, mem_univ, mem_ofPred_eq, forall_const, Subtype.forall] at hs1 ht1
+  simp only [mem_pi, mem_univ, mem_ofPred, forall_const, Subtype.forall] at hs1 ht1
   rw [hs2, ht2]
   classical
   let sets_s' : ∀ i : ι, Set (β i) := fun i =>
