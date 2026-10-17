@@ -51,7 +51,7 @@ theorem prod_eq_foldr (s : Multiset M) :
 @[to_additive]
 theorem prod_eq_foldl (s : Multiset M) :
     prod s = foldl (· * ·) 1 s :=
-  (foldr_swap _ _ _).trans (by simp [mul_comm])
+  (foldr_dflip _ _ _).trans (by simp)
 
 @[to_additive (attr := simp, norm_cast)]
 theorem prod_coe (l : List M) : prod ↑l = l.prod := rfl

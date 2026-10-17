@@ -97,12 +97,12 @@ lemma interleaves_append_singleton_append_singleton_of_length_eq_length_add_one
   simp [interleaves_iff_length_isChain_interleave, and_comm, *]
 
 lemma interleaves_reverse_reverse_of_length_eq_length (h : l₁.length = l₂.length) :
-    Interleaves r l₁.reverse l₂.reverse ↔ Interleaves (Function.swap r) l₂ l₁ := by
+    Interleaves r l₁.reverse l₂.reverse ↔ Interleaves (Function.dflip r) l₂ l₁ := by
   simp [interleaves_iff_length_isChain_interleave, ← reverse_interleave_of_length_eq_length,
     isChain_reverse, *]
 
 lemma interleaves_reverse_reverse_of_length_eq_length_add_one (h : l₁.length + 1 = l₂.length) :
-    Interleaves r l₁.reverse l₂.reverse ↔ Interleaves (Function.swap r) l₁ l₂ := by
+    Interleaves r l₁.reverse l₂.reverse ↔ Interleaves (Function.dflip r) l₁ l₂ := by
   simp [interleaves_iff_length_isChain_interleave, ← reverse_interleave_of_length_eq_length_add_one,
     isChain_reverse, *]
 

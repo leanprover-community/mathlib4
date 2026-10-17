@@ -30,7 +30,7 @@ relation (typically `(≤)` or `(<)`), these are the only two typeclasses that I
 The general approach is to formulate the lemma that you are interested in and prove it, with the
 `IsOrdered[...]` typeclass of your liking.  After that, you convert the typeclass,
 say `[IsOrderedCancelMonoid M]`, into whichever typeclasses, e.g.
-`[CovariantClass M M (Function.swap (*)) (≤)]`
+`[CovariantClass M M (Function.dflip (*)) (≤)]`
 and have a go at seeing if the proof still works!
 
 Note that it is possible to combine several `Co(ntra)variantClass` assumptions together.
@@ -48,8 +48,8 @@ holds -- note the `Co*ntra*` assumption on the `(≤)`-relation.
 
 ## Formalization notes
 
-We stick to the convention of using `Function.swap (*)` (or `Function.swap (+)`), for the
-typeclass assumptions, since `Function.swap` is slightly better behaved than `flip`.
+We stick to the convention of using `Function.dflip (*)` (or `Function.dflip (+)`), for the
+typeclass assumptions, since `Function.dflip` is slightly better behaved than `flip`.
 However, sometimes as a **non-typeclass** assumption, we prefer `flip (*)` (or `flip (+)`),
 as it is easier to use.
 
@@ -137,7 +137,7 @@ namely `a₁ ≤ a₂ → a₁ * b ≤ a₂ * b`.
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `IsOrderedMonoid`. -/
 abbrev MulRightMono [Mul M] [LE M] : Prop :=
-  CovariantClass M M (swap (· * ·)) (· ≤ ·)
+  CovariantClass M M (dflip (· * ·)) (· ≤ ·)
 
 /-- Typeclass for monotonicity of addition on the left,
 namely `b₁ ≤ b₂ → a + b₁ ≤ a + b₂`.
@@ -153,7 +153,7 @@ namely `a₁ ≤ a₂ → a₁ + b ≤ a₂ + b`.
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `IsOrderedAddMonoid`. -/
 abbrev AddRightMono [Add M] [LE M] : Prop :=
-  CovariantClass M M (swap (· + ·)) (· ≤ ·)
+  CovariantClass M M (dflip (· + ·)) (· ≤ ·)
 
 attribute [to_additive existing] MulLeftMono MulRightMono
 
@@ -171,7 +171,7 @@ namely `a₁ < a₂ → a₁ * b < a₂ * b`.
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `IsOrderedMonoid`. -/
 abbrev MulRightStrictMono [Mul M] [LT M] : Prop :=
-  CovariantClass M M (swap (· * ·)) (· < ·)
+  CovariantClass M M (dflip (· * ·)) (· < ·)
 
 /-- Typeclass for monotonicity of addition on the left,
 namely `b₁ < b₂ → a + b₁ < a + b₂`.
@@ -187,7 +187,7 @@ namely `a₁ < a₂ → a₁ + b < a₂ + b`.
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `IsOrderedAddMonoid`. -/
 abbrev AddRightStrictMono [Add M] [LT M] : Prop :=
-  CovariantClass M M (swap (· + ·)) (· < ·)
+  CovariantClass M M (dflip (· + ·)) (· < ·)
 
 attribute [to_additive existing] MulLeftStrictMono MulRightStrictMono
 
@@ -205,7 +205,7 @@ namely `a₁ * b < a₂ * b → a₁ < a₂`.
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `IsOrderedMonoid`. -/
 abbrev MulRightReflectLT [Mul M] [LT M] : Prop :=
-  ContravariantClass M M (swap (· * ·)) (· < ·)
+  ContravariantClass M M (dflip (· * ·)) (· < ·)
 
 /-- Typeclass for strict reverse monotonicity of addition on the left,
 namely `a + b₁ < a + b₂ → b₁ < b₂`.
@@ -221,7 +221,7 @@ namely `a₁ * b < a₂ * b → a₁ < a₂`.
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `IsOrderedAddMonoid`. -/
 abbrev AddRightReflectLT [Add M] [LT M] : Prop :=
-  ContravariantClass M M (swap (· + ·)) (· < ·)
+  ContravariantClass M M (dflip (· + ·)) (· < ·)
 
 attribute [to_additive existing] MulLeftReflectLT MulRightReflectLT
 
@@ -316,24 +316,30 @@ theorem Group.mulLeftReflectLT_of_mulLeftStrictMono [Group N] [LT N]
   inferInstance
 
 @[to_additive]
-theorem Group.covariant_swap_iff_contravariant_swap [Group N] :
-    Covariant N N (swap (· * ·)) r ↔ Contravariant N N (swap (· * ·)) r := by
+theorem Group.covariant_dflip_iff_contravariant_dflip [Group N] :
+    Covariant N N (dflip (· * ·)) r ↔ Contravariant N N (dflip (· * ·)) r := by
   refine ⟨fun h a b c bc ↦ ?_, fun h a b c bc ↦ ?_⟩
   · rw [← mul_inv_cancel_right b a, ← mul_inv_cancel_right c a]
     exact h a⁻¹ bc
   · rw [← mul_inv_cancel_right b a, ← mul_inv_cancel_right c a] at bc
     exact h a⁻¹ bc
 
+@[to_additive (attr := deprecated (since := "2026-10-14"))]
+alias Group.covariant_swap_iff_contravariant_swap := Group.covariant_dflip_iff_contravariant_dflip
+
 
 @[to_additive]
-instance (priority := 100) Group.covconv_swap [Group N] [CovariantClass N N (swap (· * ·)) r] :
-    ContravariantClass N N (swap (· * ·)) r :=
-  ⟨Group.covariant_swap_iff_contravariant_swap.mp CovariantClass.elim⟩
+instance (priority := 100) Group.covconv_dflip [Group N] [CovariantClass N N (dflip (· * ·)) r] :
+    ContravariantClass N N (dflip (· * ·)) r :=
+  ⟨Group.covariant_dflip_iff_contravariant_dflip.mp CovariantClass.elim⟩
+
+@[to_additive (attr := deprecated (since := "2026-10-14"))]
+alias Group.covconv_swap := Group.covconv_dflip
 
 @[to_additive]
 instance Group.mulRightReflectLE_of_mulRightMono [Group N] [LE N] [MulRightMono N] :
     MulRightReflectLE N where
-  le_of_mul_le_mul_right' := Group.covariant_swap_iff_contravariant_swap.mp CovariantClass.elim _
+  le_of_mul_le_mul_right' := Group.covariant_dflip_iff_contravariant_dflip.mp CovariantClass.elim _
 
 @[to_additive]
 theorem Group.mulRightReflectLT_of_mulRightStrictMono [Group N] [LT N] [MulRightStrictMono N] :
@@ -360,10 +366,10 @@ end Covariant
 section MEqN
 
 variable {M N μ r} {mu : N → N → N} [IsTrans N r] [i : CovariantClass N N mu r]
-  [i' : CovariantClass N N (swap mu) r] {a b c d : N}
+  [i' : CovariantClass N N (dflip mu) r] {a b c d : N}
 
 theorem act_rel_act_of_rel_of_rel (ab : r a b) (cd : r c d) : r (mu a c) (mu b d) :=
-  _root_.trans (@act_rel_act_of_rel _ _ (swap mu) r _ c _ _ ab) (act_rel_act_of_rel b cd)
+  _root_.trans (@act_rel_act_of_rel _ _ (dflip mu) r _ c _ _ ab) (act_rel_act_of_rel b cd)
 
 end MEqN
 
@@ -408,9 +414,9 @@ theorem Monotone.covariant_of_const [CovariantClass M N μ (· ≤ ·)] (hf : Mo
 
 /-- Same as `Monotone.covariant_of_const`, but with the constant on the other side of
 the operator.  E.g., `∀ (m : ℕ), Monotone f → Monotone (fun n ↦ f (n + m))`. -/
-theorem Monotone.covariant_of_const' {μ : N → N → N} [CovariantClass N N (swap μ) (· ≤ ·)]
+theorem Monotone.covariant_of_const' {μ : N → N → N} [CovariantClass N N (dflip μ) (· ≤ ·)]
     (hf : Monotone f) (m : N) : Monotone (f <| μ · m) :=
-  Monotone.covariant_of_const (μ := swap μ) hf m
+  Monotone.covariant_of_const (μ := dflip μ) hf m
 
 /-- Dual of `Monotone.covariant_of_const` -/
 theorem Antitone.covariant_of_const [CovariantClass M N μ (· ≤ ·)] (hf : Antitone f) (m : M) :
@@ -418,9 +424,9 @@ theorem Antitone.covariant_of_const [CovariantClass M N μ (· ≤ ·)] (hf : An
   hf.comp_monotone <| Covariant.monotone_of_const m
 
 /-- Dual of `Monotone.covariant_of_const'` -/
-theorem Antitone.covariant_of_const' {μ : N → N → N} [CovariantClass N N (swap μ) (· ≤ ·)]
+theorem Antitone.covariant_of_const' {μ : N → N → N} [CovariantClass N N (dflip μ) (· ≤ ·)]
     (hf : Antitone f) (m : N) : Antitone (f <| μ · m) :=
-  Antitone.covariant_of_const (μ := swap μ) hf m
+  Antitone.covariant_of_const (μ := dflip μ) hf m
 
 end Monotone
 
@@ -504,9 +510,12 @@ instance mulRightStrictMono_of_mulRightReflectLE [Mul N] [LinearOrder N] [MulRig
 -- This instance has low priority because it isn't compatible with `to_dual`.
 -- Note that we will want to remove these classes anyways: https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Remove.20docs.23CovariantClass.20and.20docs.23ContravariantClass/with/613122790
 @[to_additive]
-instance (priority := 10) covariant_swap_mul_of_covariant_mul [CommSemigroup N]
-    [CovariantClass N N (· * ·) r] : CovariantClass N N (swap (· * ·)) r where
+instance (priority := 10) covariant_dflip_mul_of_covariant_mul [CommSemigroup N]
+    [CovariantClass N N (· * ·) r] : CovariantClass N N (dflip (· * ·)) r where
   elim := (covariant_flip_iff N r (· * ·)).mpr CovariantClass.elim
+
+@[to_additive (attr := deprecated (since := "2026-10-14"))]
+alias covariant_swap_mul_of_covariant_mul := covariant_dflip_mul_of_covariant_mul
 
 @[to_additive]
 theorem mulRightMono_of_mulLeftMono [CommSemigroup N] [LE N] [MulLeftMono N] :
@@ -521,9 +530,12 @@ theorem mulRightStrictMono_of_mulLeftStrictMono [CommSemigroup N] [LT N] [MulLef
 -- This instance has low priority because it isn't compatible with `to_dual`.
 -- Note that we will want to remove these classes anyways: https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Remove.20docs.23CovariantClass.20and.20docs.23ContravariantClass/with/613122790
 @[to_additive]
-instance (priority := 10) contravariant_swap_mul_of_contravariant_mul [CommSemigroup N]
-    [ContravariantClass N N (· * ·) r] : ContravariantClass N N (swap (· * ·)) r where
+instance (priority := 10) contravariant_dflip_mul_of_contravariant_mul [CommSemigroup N]
+    [ContravariantClass N N (· * ·) r] : ContravariantClass N N (dflip (· * ·)) r where
   elim := (contravariant_flip_iff N r (· * ·)).mpr ContravariantClass.elim
+
+@[to_additive (attr := deprecated (since := "2026-10-14"))]
+alias contravariant_swap_mul_of_contravariant_mul := contravariant_dflip_mul_of_contravariant_mul
 
 @[to_additive]
 instance mulRightReflectLE_of_mulLeftReflectLE [CommSemigroup N] [LE N] [MulLeftReflectLE N] :

@@ -299,7 +299,7 @@ namespace NonemptyInterval
 instance [CommSemiring α] [PartialOrder α] [CanonicallyOrderedAdd α] :
     CommSemiring (NonemptyInterval α) :=
   fast_instance% NonemptyInterval.toProd_injective.commSemiring _
-    toProd_zero toProd_one toProd_add toProd_mul (swap toProd_nsmul) toProd_pow (fun _ => rfl)
+    toProd_zero toProd_one toProd_add toProd_mul (dflip toProd_nsmul) toProd_pow (fun _ => rfl)
 
 end NonemptyInterval
 
