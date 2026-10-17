@@ -100,7 +100,7 @@ theorem LinearMap.lift_rank_map_add_rank_inf_ker (f : M →ₗ[R] M') (p : Submo
     range_submoduleMap, ker_submoduleMap]
   simp
 
-theorem LinearMap.rank_map_add_rank_inf_ker (f : M →ₗ[R] M₂) (p : Submodule R M) :
+theorem LinearMap.rank_map_add_rank_inf_ker (f : M →ₗ[R] M₁) (p : Submodule R M) :
     Module.rank R (map f p) + Module.rank R (p ⊓ f.ker :) = Module.rank R p := by
   simpa using lift_rank_map_add_rank_inf_ker f p
 
