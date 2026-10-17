@@ -144,10 +144,8 @@ variable (S : Type*) [AddMonoidWithOne R] [AddMonoidWithOne S] (p q : ℕ) [Char
 characteristics of the two rings. -/
 instance Nat.lcm.charP [CharP S q] : CharP (R × S) (Nat.lcm p q) where
   cast_eq_iff_mod_eq a b := by
-    simp only [Prod.ext_iff, Prod.fst_natCast, Prod.snd_natCast, CharP.cast_eq_iff_mod_eq]
-    change a ≡ b [MOD p] ∧ a ≡ b [MOD q] ↔ a ≡ b [MOD p.lcm q]
-    exact ⟨fun h => Nat.mod_lcm h.1 h.2, fun h =>
-      ⟨h.of_dvd (dvd_lcm_left p q), h.of_dvd (dvd_lcm_right p q)⟩⟩
+    simp_rw [Prod.ext_iff, Prod.fst_natCast, Prod.snd_natCast, CharP.cast_eq_iff_mod_eq]
+    exact modEq_and_modEq_iff_modEq_lcm
 
 /-- The characteristic of the product of two rings of the same characteristic
   is the same as the characteristic of the rings -/
