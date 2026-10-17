@@ -121,3 +121,15 @@ instance [ResiduallyFinite G] [ResiduallyFinite G'] : ResiduallyFinite (G × G')
   · exact eq_one_of_forall_finiteIndexNormalSubgroup g.2 fun K ↦ hg (K.comap (MonoidHom.snd G G'))
 
 end Group
+
+-- TODO: by the fundamental theorem of finitely generated groups, any abelian FG group is
+-- isomorphic to ℤ^n × G for finite G, and thus residually finite.
+set_option backward.isDefEq.respectTransparency.types false in
+instance : AddGroup.ResiduallyFinite ℤ := by
+  rw [AddGroup.residuallyFinite_iff_exists_finiteIndex]
+  refine fun g hg ↦ ⟨Int.finiteIndexNormalSubgroupEquiv.symm ⟨_, g.natAbs.add_one_pos⟩, ?_, ?_⟩
+  · infer_instance
+  · simp_rw [Int.finiteIndexNormalSubgroupEquiv_symm_apply]
+    rw [PNat.mk_coe, Nat.cast_add_one, Int.mem_zmultiples_iff, ← Int.dvd_natAbs]
+    refine fun h ↦ (Int.le_of_dvd ?_ h).not_gt (lt_add_one _)
+    simpa

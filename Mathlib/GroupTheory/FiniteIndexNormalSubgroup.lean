@@ -7,11 +7,13 @@ module
 
 public import Mathlib.GroupTheory.Index
 
+import Mathlib.GroupTheory.SpecificGroups.Cyclic.Subgroup
+
 /-!
 # Finite-index normal subgroups
 
 This file builds the lattice `FiniteIndexNormalSubgroup G` of finite-index normal subgroups of a
-group `G`, and its additive version `FiniteIndexNormalAddSubgroup`.
+group `G`, and its additive version `FiniteIndexNormalAddSubgroup G`.
 
 This is used primarily in the definition of the profinite completion of a group.
 -/
@@ -33,6 +35,8 @@ structure FiniteIndexNormalAddSubgroup (G : Type*) [AddGroup G] extends AddSubgr
   isFiniteIndex' : toAddSubgroup.FiniteIndex := by infer_instance
 
 attribute [to_additive] FiniteIndexNormalSubgroup
+attribute [instance]
+  FiniteIndexNormalSubgroup.isFiniteIndex' FiniteIndexNormalAddSubgroup.isFiniteIndex'
 
 namespace FiniteIndexNormalSubgroup
 
@@ -118,6 +122,12 @@ theorem toSubgroup_ofSubgroup (H : Subgroup G) [H.Normal] [H.FiniteIndex] :
     ((ofSubgroup H : FiniteIndexNormalSubgroup G) : Subgroup G) = H :=
   rfl
 
+@[to_additive (attr := simp)]
+protected theorem ne_bot [Infinite G] (H : FiniteIndexNormalSubgroup G) : (H : Subgroup G) ≠ ⊥ := by
+  cases H
+  rintro rfl
+  simp_all [← not_finite_iff_infinite]
+
 section Comap
 
 variable {H : Type*} {N : Type*} [Group H] [Group N]
@@ -155,5 +165,23 @@ theorem comap_comp (f : G →* H) (g : H →* N) (K : FiniteIndexNormalSubgroup 
 end Comap
 
 end FiniteIndexNormalSubgroup
+
+/-- The finite index (normal) subgroups of ℤ are exactly `AddSubgroup.zmultiples n` for `n : ℕ+`. -/
+noncomputable def Int.finiteIndexNormalSubgroupEquiv : FiniteIndexNormalAddSubgroup ℤ ≃ ℕ+ where
+  toFun G := ⟨G.index, AddSubgroup.index_pos⟩
+  invFun n := ⟨AddSubgroup.zmultiples n, inferInstance, ⟨by simp⟩⟩
+  left_inv G := by simp
+  right_inv n := PNat.coe_injective <| by simp
+
+@[simp]
+theorem Int.finiteIndexNormalSubgroupEquiv_apply (G : FiniteIndexNormalAddSubgroup ℤ) :
+    finiteIndexNormalSubgroupEquiv G = ⟨G.index, G.isFiniteIndex'.index_ne_zero.pos⟩ :=
+  rfl
+
+@[simp]
+theorem Int.finiteIndexNormalSubgroupEquiv_symm_apply (n : ℕ+) :
+    finiteIndexNormalSubgroupEquiv.symm n =
+      ⟨AddSubgroup.zmultiples n, inferInstance, ⟨by simp⟩⟩ :=
+  rfl
 
 end

@@ -1104,6 +1104,13 @@ lemma Subgroup.zpowers_eq_zpowers_iff {x y : G} (hx : ¬IsOfFinOrder x) :
   rcases (Int.mul_eq_one_iff_eq_one_or_neg_one).mp h1 with (h | h) <;> simp [h.1]
 
 @[to_additive]
+theorem Subgroup.zpowers_eq_zpowers_iff_of_isMulTorsionFree {x y : G} [IsMulTorsionFree G] :
+    zpowers x = zpowers y ↔ x = y ∨ x⁻¹ = y := by
+  obtain rfl | hx := eq_or_ne x 1
+  · simp
+  · exact Subgroup.zpowers_eq_zpowers_iff (not_isOfFinOrder_of_isMulTorsionFree hx)
+
+@[to_additive]
 theorem mem_zpowers_zpow_iff {g : G} {k : ℤ} :
     g ∈ Subgroup.zpowers (g ^ k) ↔ k.gcd (orderOf g) = 1 := by
   simp_rw [← Nat.dvd_one, Int.gcd_dvd_iff, Nat.cast_one, ← Int.sub_eq_iff_eq_add', ← dvd_def,

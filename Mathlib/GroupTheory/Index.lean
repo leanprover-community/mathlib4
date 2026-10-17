@@ -691,8 +691,14 @@ variable (H K) in
 @[to_additive] class IsFiniteRelIndex : Prop where
   protected relIndex_ne_zero : H.relIndex K ≠ 0
 
+@[to_additive] theorem index_pos [H.FiniteIndex] : 0 < H.index :=
+  FiniteIndex.index_ne_zero.pos
+
 @[to_additive] lemma relIndex_ne_zero [H.IsFiniteRelIndex K] : H.relIndex K ≠ 0 :=
   IsFiniteRelIndex.relIndex_ne_zero
+
+@[to_additive] lemma relIndex_pos [H.IsFiniteRelIndex K] : 0 < H.relIndex K :=
+  relIndex_ne_zero.pos
 
 @[to_additive]
 instance IsFiniteRelIndex.to_finiteIndex_subgroupOf [H.IsFiniteRelIndex K] :
@@ -788,6 +794,10 @@ instance : FiniteIndex (⊤ : Subgroup G) :=
 @[to_additive]
 instance [FiniteIndex H] [FiniteIndex K] : FiniteIndex (H ⊓ K) :=
   ⟨index_inf_ne_zero FiniteIndex.index_ne_zero FiniteIndex.index_ne_zero⟩
+
+@[to_additive (attr := simp)]
+theorem finiteIndex_bot_iff : FiniteIndex (⊥ : Subgroup G) ↔ Finite G := by
+  simp [finiteIndex_iff, Nat.card_eq_zero]
 
 @[to_additive]
 theorem finiteIndex_iInf {ι : Type*} [Finite ι] {f : ι → Subgroup G}
