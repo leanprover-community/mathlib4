@@ -439,6 +439,13 @@ theorem map_linearMap_volume_pi_eq_smul_volume_pi {f : (ι → ℝ) →ₗ[ℝ] 
     apply map_matrix_volume_pi_eq_smul_volume_pi
     rwa [A] at hf
 
+open scoped Pointwise in
+/-- One-dimensional **Brunn–Minkowski theorem**. -/
+theorem volume_add_volume_le {A B : Set ℝ} (hA : A.Nonempty) (hB : B.Nonempty) :
+    volume A + volume B ≤ volume (A + B) := by
+  grw [PartialOrder.measure_add_measure_le_measure_add_add_iSup (by simp) (by simp) (by simp) hA hB]
+  simp
+
 end Real
 
 section regionBetween
