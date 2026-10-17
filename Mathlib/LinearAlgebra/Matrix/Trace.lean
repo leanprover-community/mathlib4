@@ -176,7 +176,8 @@ theorem trace_mul_pow_comm' [CommSemiring R]
   classical
   change trace ((A * B) ^ k) = trace ((B * A) ^ k)
   obtain ⟨k', rfl⟩ := Nat.exists_eq_succ_of_ne_zero hk
-  rw [pow_succ, ← Matrix.mul_assoc, trace_mul_cycle, mul_pow_succ_mul]
+  rw [pow_succ, ← Matrix.mul_assoc, trace_mul_cycle]
+  rw [show k'.succ = k' + 1 by rfl, mul_pow_succ_mul]
 
 /-- For square matrices, the trace of any power of A * B is unchanged when the factors
 are reversed. Unlike the rectangular version, this also holds at exponent zero.
