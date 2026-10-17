@@ -196,8 +196,7 @@ theorem IsTorsionFree.erank_mul_erank [hM : IsTorsionFree S M] :
       simpa using hr
     let : Field FS := fieldOfFiniteDimensional FR FS
     simpa using congr($(lift_rank_mul_lift_rank_of_field_isLocalization R S FS M).toENat)
-  · have hm : 0 < rank S M := rank_pos_iff_exists_ne_zero.mpr <| exists_ne 0
-    rw [toENat_eq_top.mpr hRS, ENat.top_mul (by simpa using hm.ne'), eq_comm, toENat_eq_top]
+  · rw [toENat_eq_top.mpr hRS, ENat.top_mul (by simpa using rank_pos.ne'), eq_comm, toENat_eq_top]
     by_contra! hRM : rank R M < .aleph0
     have : Module.Finite FR M' := by
       rwa [← rank_lt_aleph0_iff, ← lift_id'.{w, v} (rank FR M'), hM'.lift_rank_eq, lift_lt_aleph0]
