@@ -5,8 +5,7 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.Analysis.Matrix.Normed
-public import Mathlib.Analysis.Normed.Algebra.GelfandRadius
+public import Mathlib.Analysis.Matrix.GelfandRadius
 public import Mathlib.Analysis.Normed.Field.WithAbs
 public import Mathlib.Analysis.Normed.Group.Ultra
 public import Mathlib.Analysis.Normed.Unbundled.IsPowMulUnique
@@ -49,11 +48,6 @@ theorem foobar {α β γ κ : Type*} [SeminormedAddCommGroup γ] [IsUltrametricD
 theorem foo {α β γ : Type*} [SeminormedAddCommGroup γ] [IsUltrametricDist γ] [Fintype α] [Fintype β]
     (M N : Matrix α β γ) : ‖M + N‖ ≤ Fintype.card β * max ‖M‖ ‖N‖ := by
   simpa using foobar (Bool.rec N M) Finset.univ (max ‖M‖ ‖N‖) (by simp) (by simp)
-
-theorem Matrix.gelfandRadius_mul_comm {R m n : Type*}
-    [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [NormedCommRing R]
-    (A : Matrix m n R) (B : Matrix n m R) : gelfandRadius (A * B) = gelfandRadius (B * A) := by
-  sorry
 
 theorem map_finset_sup'' {α β ι : Type*} [SemilatticeSup α] [SemilatticeSup β]
     (f : α → β) (h : ∀ x y, f (x ⊔ y) = f x ⊔ f y) {s : Finset ι} (hs) (g : ι → α) :
