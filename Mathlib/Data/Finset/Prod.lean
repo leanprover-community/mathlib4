@@ -19,10 +19,10 @@ This file defines finset constructions on the product type `α × β`. Beware no
 ## Main declarations
 
 * `Finset.product`: Turns `s : Finset α`, `t : Finset β` into their product in `Finset (α × β)`.
-* `Finset.diag`: For `s : Finset α`, `s.diag` is the `Finset (α × α)` of pairs `(a, a)` with
+* `Finset.diagonal`: For `s : Finset α`, `s.diagonal` is the `Finset (α × α)` of pairs `(a, a)` with
   `a ∈ s`.
-* `Finset.offDiag`: For `s : Finset α`, `s.offDiag` is the `Finset (α × α)` of pairs `(a, b)` with
-  `a, b ∈ s` and `a ≠ b`.
+* `Finset.offDiagonal`: For `s : Finset α`, `s.offDiagonal` is the `Finset (α × α)` of pairs
+  `(a, b)` with `a, b ∈ s` and `a ≠ b`.
 -/
 
 @[expose] public section
@@ -240,128 +240,187 @@ theorem product_disjUnion (ht : Disjoint t t') :
 
 end Prod
 
-section Diag
+section Diagonal
 
 variable (s t : Finset α)
 
-/-- Given a finite set `s`, the diagonal, `s.diag` is the set of pairs of the form `(a, a)` for
+/-- Given a finite set `s`, the diagonal, `s.diagonal` is the set of pairs of the form `(a, a)` for
 `a ∈ s`. -/
-def diag : Finset (α × α) := s.map ⟨Function.diag, Function.diag_injective⟩
+def diagonal : Finset (α × α) := s.map ⟨Prod.diagonal, Prod.diagonal_injective⟩
 
--- TODO: define `Multiset.offDiag`, provide basic API, use it here
-/-- Given a finite set `s`, the off-diagonal, `s.offDiag` is the set of pairs `(a, b)` with `a ≠ b`
-for `a, b ∈ s`. -/
-def offDiag : Finset (α × α) :=
-  .mk (Quotient.map List.offDiag (fun _ _ ↦ List.Perm.offDiag) s.1) <| by
+@[deprecated (since := "2026-09-06")] alias diag := diagonal
+
+-- TODO: define `Multiset.offDiagonal`, provide basic API, use it here
+/-- Given a finite set `s`, the off-diagonal, `s.offDiagonal` is the set of pairs `(a, b)` with
+`a ≠ b` for `a, b ∈ s`. -/
+def offDiagonal : Finset (α × α) :=
+  .mk (Quotient.map List.offDiagonal (fun _ _ ↦ List.Perm.offDiagonal) s.1) <| by
     rcases s with ⟨⟨s⟩, hs⟩
-    exact hs.offDiag
+    exact hs.offDiagonal
+
+@[deprecated (since := "2026-09-06")] alias offDiag := offDiagonal
 
 variable {s} {x : α × α}
 
 @[simp, grind =]
-theorem mem_diag : x ∈ s.diag ↔ x.1 ∈ s ∧ x.1 = x.2 := by
-  aesop (add simp diag)
+theorem mem_diagonal : x ∈ s.diagonal ↔ x.1 ∈ s ∧ x.1 = x.2 := by
+  aesop (add simp diagonal)
+
+@[deprecated (since := "2026-09-06")] alias mem_diag := mem_diagonal
 
 @[simp, grind =]
-theorem mem_offDiag : x ∈ s.offDiag ↔ x.1 ∈ s ∧ x.2 ∈ s ∧ x.1 ≠ x.2 := by
+theorem mem_offDiagonal : x ∈ s.offDiagonal ↔ x.1 ∈ s ∧ x.2 ∈ s ∧ x.1 ≠ x.2 := by
   rcases s with ⟨⟨s⟩, hs⟩
-  exact hs.mem_offDiag
+  exact hs.mem_offDiagonal
+
+@[deprecated (since := "2026-09-06")] alias mem_offDiag := mem_offDiagonal
 
 @[simp, grind =]
-theorem diag_nonempty : s.diag.Nonempty ↔ s.Nonempty := by
-  simp [diag]
+theorem diagonal_nonempty : s.diagonal.Nonempty ↔ s.Nonempty := by
+  simp [diagonal]
+
+@[deprecated (since := "2026-09-06")] alias diag_nonempty := diagonal_nonempty
 
 @[simp, grind =]
-theorem diag_eq_empty : s.diag = ∅ ↔ s = ∅ := by
-  simp [diag]
+theorem diagonal_eq_empty : s.diagonal = ∅ ↔ s = ∅ := by
+  simp [diagonal]
 
-theorem diag_eq_filter [DecidableEq α] :
-    s.diag = (s ×ˢ s).filter fun a : α × α => a.fst = a.snd := by
+@[deprecated (since := "2026-09-06")] alias diag_eq_empty := diagonal_eq_empty
+
+theorem diagonal_eq_filter [DecidableEq α] :
+    s.diagonal = (s ×ˢ s).filter fun a : α × α => a.fst = a.snd := by
   ext; simp +contextual
+
+@[deprecated (since := "2026-09-06")] alias diag_eq_filter := diagonal_eq_filter
 
 variable (s)
 
 @[simp]
-theorem image_diag [DecidableEq β] (f : α × α → β) (s : Finset α) :
-    s.diag.image f = s.image fun x ↦ f (x, x) := by
+theorem image_diagonal [DecidableEq β] (f : α × α → β) (s : Finset α) :
+    s.diagonal.image f = s.image fun x ↦ f (x, x) := by
   grind
+
+@[deprecated (since := "2026-09-06")] alias image_diag := image_diagonal
 
 @[simp, norm_cast]
-theorem coe_offDiag : (s.offDiag : Set (α × α)) = (s : Set α).offDiag :=
-  Set.ext fun _ => mem_offDiag
+theorem coe_offDiagonal : (s.offDiagonal : Set (α × α)) = (s : Set α).offDiagonal :=
+  Set.ext fun _ => mem_offDiagonal
+
+@[deprecated (since := "2026-09-06")] alias coe_offDiag := coe_offDiagonal
 
 @[simp]
-theorem diag_card : (diag s).card = s.card := by
-  simp [diag]
+theorem diagonal_card : (diagonal s).card = s.card := by
+  simp [diagonal]
+
+@[deprecated (since := "2026-09-06")] alias diag_card := diagonal_card
 
 @[simp]
-theorem offDiag_card : (offDiag s).card = s.card * s.card - s.card := by
+theorem offDiagonal_card : (offDiagonal s).card = s.card * s.card - s.card := by
   rw [← sq]
   rcases s with ⟨⟨s⟩, hs⟩
-  apply List.length_offDiag
+  apply List.length_offDiagonal
+
+@[deprecated (since := "2026-09-06")] alias offDiag_card := offDiagonal_card
 
 @[gcongr, mono]
-theorem diag_mono : Monotone (diag : Finset α → Finset (α × α)) := fun _ _ ↦ by simp [diag]
+theorem diagonal_mono : Monotone (diagonal : Finset α → Finset (α × α)) :=
+  fun _ _ ↦ by simp [diagonal]
+
+@[deprecated (since := "2026-09-06")] alias diag_mono := diagonal_mono
 
 @[gcongr, mono]
-theorem offDiag_mono : Monotone (offDiag : Finset α → Finset (α × α)) := fun _ _ h _ hx =>
-  mem_offDiag.2 <| And.imp (@h _) (And.imp_left <| @h _) <| mem_offDiag.1 hx
+theorem offDiagonal_mono : Monotone (offDiagonal : Finset α → Finset (α × α)) := fun _ _ h _ hx =>
+  mem_offDiagonal.2 <| And.imp (@h _) (And.imp_left <| @h _) <| mem_offDiagonal.1 hx
+
+@[deprecated (since := "2026-09-06")] alias offDiag_mono := offDiagonal_mono
 
 @[simp]
-theorem diag_empty : (∅ : Finset α).diag = ∅ :=
+theorem diagonal_empty : (∅ : Finset α).diagonal = ∅ :=
   rfl
 
+@[deprecated (since := "2026-09-06")] alias diag_empty := diagonal_empty
+
 @[simp]
-theorem offDiag_empty : (∅ : Finset α).offDiag = ∅ :=
+theorem offDiagonal_empty : (∅ : Finset α).offDiagonal = ∅ :=
   rfl
 
-@[simp]
-theorem diag_union_offDiag [DecidableEq α] : s.diag ∪ s.offDiag = s ×ˢ s := by
-  grind
+@[deprecated (since := "2026-09-06")] alias offDiag_empty := offDiagonal_empty
 
 @[simp]
-theorem disjoint_diag_offDiag : Disjoint s.diag s.offDiag := by simp [disjoint_left]
-
-theorem product_sdiff_diag [DecidableEq α] : s ×ˢ s \ s.diag = s.offDiag := by grind
-
-theorem product_sdiff_offDiag [DecidableEq α] : s ×ˢ s \ s.offDiag = s.diag := by grind
-
-theorem diag_inter [DecidableEq α] : (s ∩ t).diag = s.diag ∩ t.diag := by
+theorem diagonal_union_offDiagonal [DecidableEq α] : s.diagonal ∪ s.offDiagonal = s ×ˢ s := by
   grind
 
-theorem offDiag_inter [DecidableEq α] : (s ∩ t).offDiag = s.offDiag ∩ t.offDiag :=
+@[deprecated (since := "2026-09-06")] alias diag_union_offDiag := diagonal_union_offDiagonal
+
+@[simp]
+theorem disjoint_diagonal_offDiagonal : Disjoint s.diagonal s.offDiagonal := by simp [disjoint_left]
+
+@[deprecated (since := "2026-09-06")] alias disjoint_diag_offDiag := disjoint_diagonal_offDiagonal
+
+theorem product_sdiff_diagonal [DecidableEq α] : s ×ˢ s \ s.diagonal = s.offDiagonal := by grind
+
+@[deprecated (since := "2026-09-06")] alias product_sdiff_diag := product_sdiff_diagonal
+
+theorem product_sdiff_offDiagonal [DecidableEq α] : s ×ˢ s \ s.offDiagonal = s.diagonal := by grind
+
+@[deprecated (since := "2026-09-06")] alias product_sdiff_offDiag := product_sdiff_offDiagonal
+
+theorem diagonal_inter [DecidableEq α] : (s ∩ t).diagonal = s.diagonal ∩ t.diagonal := by
+  grind
+
+@[deprecated (since := "2026-09-06")] alias diag_inter := diagonal_inter
+
+theorem offDiagonal_inter [DecidableEq α] : (s ∩ t).offDiagonal = s.offDiagonal ∩ t.offDiagonal :=
   coe_injective <| by
     push_cast
-    exact Set.offDiag_inter _ _
+    exact Set.offDiagonal_inter _ _
 
-theorem diag_union [DecidableEq α] : (s ∪ t).diag = s.diag ∪ t.diag := by
+@[deprecated (since := "2026-09-06")] alias offDiag_inter := offDiagonal_inter
+
+theorem diagonal_union [DecidableEq α] : (s ∪ t).diagonal = s.diagonal ∪ t.diagonal := by
   grind
+
+@[deprecated (since := "2026-09-06")] alias diag_union := diagonal_union
 
 variable {s t}
 
-theorem offDiag_union [DecidableEq α] (h : Disjoint s t) :
-    (s ∪ t).offDiag = s.offDiag ∪ t.offDiag ∪ s ×ˢ t ∪ t ×ˢ s :=
+theorem offDiagonal_union [DecidableEq α] (h : Disjoint s t) :
+    (s ∪ t).offDiagonal = s.offDiagonal ∪ t.offDiagonal ∪ s ×ˢ t ∪ t ×ˢ s :=
   coe_injective <| by
     push_cast
-    exact Set.offDiag_union (disjoint_coe.2 h)
+    exact Set.offDiagonal_union (disjoint_coe.2 h)
+
+@[deprecated (since := "2026-09-06")] alias offDiag_union := offDiagonal_union
 
 @[simp]
-theorem offDiag_singleton (a : α) : ({a} : Finset α).offDiag = ∅ := by simp [← Finset.card_eq_zero]
+theorem offDiagonal_singleton (a : α) : ({a} : Finset α).offDiagonal = ∅ := by
+  simp [← Finset.card_eq_zero]
 
-theorem diag_singleton (a : α) : ({a} : Finset α).diag = {(a, a)} := by grind
+@[deprecated (since := "2026-09-06")] alias offDiag_singleton := offDiagonal_singleton
 
-theorem diag_insert [DecidableEq α] (a : α) :
-    (insert a s).diag = insert (a, a) s.diag := by grind
+theorem diagonal_singleton (a : α) : ({a} : Finset α).diagonal = {(a, a)} := by grind
 
-theorem offDiag_insert [DecidableEq α] {a : α} (has : a ∉ s) :
-    (insert a s).offDiag = s.offDiag ∪ {a} ×ˢ s ∪ s ×ˢ {a} := by
+@[deprecated (since := "2026-09-06")] alias diag_singleton := diagonal_singleton
+
+theorem diagonal_insert [DecidableEq α] (a : α) :
+    (insert a s).diagonal = insert (a, a) s.diagonal := by grind
+
+@[deprecated (since := "2026-09-06")] alias diag_insert := diagonal_insert
+
+theorem offDiagonal_insert [DecidableEq α] {a : α} (has : a ∉ s) :
+    (insert a s).offDiagonal = s.offDiagonal ∪ {a} ×ˢ s ∪ s ×ˢ {a} := by
   grind
 
-theorem offDiag_filter_lt_eq_filter_le {ι} [PartialOrder ι] [DecidableLE ι] [DecidableLT ι]
+@[deprecated (since := "2026-09-06")] alias offDiag_insert := offDiagonal_insert
+
+theorem offDiagonal_filter_lt_eq_filter_le {ι} [PartialOrder ι] [DecidableLE ι] [DecidableLT ι]
     (s : Finset ι) :
-    s.offDiag.filter (fun i => i.1 < i.2) = s.offDiag.filter (fun i => i.1 ≤ i.2) := by
+    s.offDiagonal.filter (fun i => i.1 < i.2) = s.offDiagonal.filter (fun i => i.1 ≤ i.2) := by
   ext
   simpa using fun _ _ a ↦ (Ne.le_iff_lt a).symm
+
+@[deprecated (since := "2026-09-06")]
+alias offDiag_filter_lt_eq_filter_le := offDiagonal_filter_lt_eq_filter_le
 
 /-- The number of strictly ordered pairs `(a, b)` with `a, b ∈ s` is `(#s).choose 2`. -/
 lemma card_product_filter_lt [LinearOrder α] :
@@ -369,10 +428,10 @@ lemma card_product_filter_lt [LinearOrder α] :
   set u : Finset (α × α) := {x ∈ s ×ˢ s | x.1 < x.2}
   set v : Finset (α × α) := {x ∈ s ×ˢ s | x.2 < x.1}
   have disj : Disjoint u v := by grind [disjoint_left]
-  have union : u.disjUnion v disj = s.offDiag := by grind
+  have union : u.disjUnion v disj = s.offDiagonal := by grind
   have swap : #u = #v := Finset.card_equiv (Equiv.prodComm α α) (by grind)
-  grind [Nat.mul_sub_one, offDiag_card, Nat.choose_two_right]
+  grind [Nat.mul_sub_one, offDiagonal_card, Nat.choose_two_right]
 
-end Diag
+end Diagonal
 
 end Finset

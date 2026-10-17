@@ -334,7 +334,7 @@ theorem comul_comp_lapply (i : ι) :
     comul ∘ₗ (lapply i : _ →ₗ[R] A i) = TensorProduct.map (lapply i) (lapply i) ∘ₗ comul := by
   ext j
   have := eq_or_ne i j
-  aesop (add simp [TensorProduct.map_map, proj_comp_single, diag])
+  aesop (add simp [TensorProduct.map_map, proj_comp_single, diagonal])
 
 @[simp] theorem counit_comp_lsingle (i : ι) : counit ∘ₗ (lsingle i : A i →ₗ[R] _) = counit := by
   ext; simp
@@ -401,7 +401,7 @@ theorem comul_comp_lsingle (i : ι) :
 theorem comul_comp_lapply (i : ι) :
     comul ∘ₗ (lapply i : _ →ₗ[R] A) = TensorProduct.map (lapply i) (lapply i) ∘ₗ comul := by
   ext j; have := eq_or_ne i j
-  aesop (add simp [TensorProduct.map_map, proj_comp_single, diag])
+  aesop (add simp [TensorProduct.map_map, proj_comp_single, diagonal])
 
 @[simp] theorem counit_comp_lsingle (i : ι) : counit ∘ₗ (lsingle i : A →ₗ[R] _) = counit := by
   ext; simp
@@ -462,7 +462,7 @@ theorem comul_comp_single (i : n) :
 theorem comul_comp_proj (i : n) :
     comul ∘ₗ (proj i : (Π i, A i) →ₗ[R] A i) = map (proj i) (proj i) ∘ₗ comul := by
   ext j; have := eq_or_ne i j
-  aesop (add simp [map_map, proj_comp_single, diag])
+  aesop (add simp [map_map, proj_comp_single, diagonal])
 
 @[simp] theorem counit_comp_single (i : n) : counit ∘ₗ .single R A i = counit := by ext; simp
 

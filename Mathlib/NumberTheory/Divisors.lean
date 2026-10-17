@@ -33,7 +33,7 @@ Let `n : ℕ`. All of the following definitions are in the `Nat` namespace:
 
 Since `0` has infinitely many divisors, none of the definitions in this file make sense for it.
 Therefore we adopt the convention that `Nat.divisors 0`, `Nat.properDivisors 0`,
-`Nat.divisorsAntidiagonal 0` and `Int.divisorsAntidiag 0` are all `∅`.
+`Nat.divisorsAntidiagonal 0` and `Int.divisorsAntidiagonal 0` are all `∅`.
 
 ## Tags
 divisors, perfect numbers
@@ -330,8 +330,11 @@ theorem swap_mem_divisorsAntidiagonal {x : ℕ × ℕ} :
     x.swap ∈ divisorsAntidiagonal n ↔ x ∈ divisorsAntidiagonal n := by
   rw [mem_divisorsAntidiagonal, mem_divisorsAntidiagonal, mul_comm, Prod.swap]
 
-lemma prodMk_mem_divisorsAntidiag {x y : ℕ} (hn : n ≠ 0) :
+lemma prodMk_mem_divisorsAntidiagonal {x y : ℕ} (hn : n ≠ 0) :
     (x, y) ∈ n.divisorsAntidiagonal ↔ x * y = n := by simp [hn]
+
+@[deprecated (since := "2026-09-06")]
+alias prodMk_mem_divisorsAntidiag := prodMk_mem_divisorsAntidiagonal
 
 theorem fst_mem_divisors_of_mem_antidiagonal {x : ℕ × ℕ} (h : x ∈ divisorsAntidiagonal n) :
     x.fst ∈ divisors n := by
@@ -603,11 +606,11 @@ def divisors (z : ℤ) : Finset ℤ :=
 
 /-- Pairs of divisors of an integer as a finset.
 
-`z.divisorsAntidiag` is the finset of pairs `(a, b) : ℤ × ℤ` such that `a * b = z`.
-By convention, we set `Int.divisorsAntidiag 0 = ∅`.
+`z.divisorsAntidiagonal` is the finset of pairs `(a, b) : ℤ × ℤ` such that `a * b = z`.
+By convention, we set `Int.divisorsAntidiagonal 0 = ∅`.
 
 O(|z|). Computed from `Nat.divisorsAntidiagonal`. -/
-def divisorsAntidiag : (z : ℤ) → Finset (ℤ × ℤ)
+def divisorsAntidiagonal : (z : ℤ) → Finset (ℤ × ℤ)
   | (n : ℕ) =>
     let s : Finset (ℕ × ℕ) := n.divisorsAntidiagonal
     (s.map <| .prodMap natCast natCast).disjUnion (s.map <| .prodMap negNatCast negNatCast) <| by
@@ -661,86 +664,89 @@ lemma mem_divisors_self (hz : z ≠ 0) : z ∈ divisors z :=
   simp
 
 @[simp]
-lemma mem_divisorsAntidiag : xy ∈ divisorsAntidiag z ↔ xy.fst * xy.snd = z ∧ z ≠ 0 := by
+lemma mem_divisorsAntidiagonal : xy ∈ divisorsAntidiagonal z ↔ xy.fst * xy.snd = z ∧ z ≠ 0 := by
   rcases z, xy with ⟨_ | _, ⟨_ | _, _ | _⟩⟩
   -- splitting this case saves about 1770 heartbeats i.e. 12.5% faster
   case ofNat.negSucc.negSucc =>
-    simp [divisorsAntidiag]
+    simp [divisorsAntidiagonal]
     grind [Nat.cast_inj]
   all_goals
-    simp [divisorsAntidiag]
+    simp [divisorsAntidiagonal]
     grind
 
-theorem image_fst_divisorsAntidiag : z.divisorsAntidiag.image Prod.fst = z.divisors := by
+theorem image_fst_divisorsAntidiagonal : z.divisorsAntidiagonal.image Prod.fst = z.divisors := by
   ext
   simp [Eq.comm, dvd_def]
 
-theorem image_snd_divisorsAntidiag : z.divisorsAntidiag.image Prod.snd = z.divisors := by
+theorem image_snd_divisorsAntidiagonal : z.divisorsAntidiagonal.image Prod.snd = z.divisors := by
   ext
   simp [Eq.comm, mul_comm, dvd_def]
 
-@[simp] lemma divisorsAntidiag_zero : divisorsAntidiag 0 = ∅ := rfl
+@[simp] lemma divisorsAntidiagonal_zero : divisorsAntidiagonal 0 = ∅ := rfl
 
 -- TODO Write a simproc instead of `divisorsAntidiagonal_one`, ..., `divisorsAntidiagonal_four` ...
 
 @[simp]
 theorem divisorsAntidiagonal_one :
-    Int.divisorsAntidiag 1 = {(1, 1), (-1, -1)} :=
+    Int.divisorsAntidiagonal 1 = {(1, 1), (-1, -1)} :=
   rfl
 
 @[simp]
 theorem divisorsAntidiagonal_two :
-    Int.divisorsAntidiag 2 = {(1, 2), (2, 1), (-1, -2), (-2, -1)} :=
+    Int.divisorsAntidiagonal 2 = {(1, 2), (2, 1), (-1, -2), (-2, -1)} :=
   rfl
 
 @[simp]
 theorem divisorsAntidiagonal_three :
-    Int.divisorsAntidiag 3 = {(1, 3), (3, 1), (-1, -3), (-3, -1)} :=
+    Int.divisorsAntidiagonal 3 = {(1, 3), (3, 1), (-1, -3), (-3, -1)} :=
   rfl
 
 @[simp]
 theorem divisorsAntidiagonal_four :
-    Int.divisorsAntidiag 4 = {(1, 4), (2, 2), (4, 1), (-1, -4), (-2, -2), (-4, -1)} :=
+    Int.divisorsAntidiagonal 4 = {(1, 4), (2, 2), (4, 1), (-1, -4), (-2, -2), (-4, -1)} :=
   rfl
 
-lemma prodMk_mem_divisorsAntidiag (hz : z ≠ 0) : (x, y) ∈ z.divisorsAntidiag ↔ x * y = z := by
+lemma prodMk_mem_divisorsAntidiagonal (hz : z ≠ 0) :
+    (x, y) ∈ z.divisorsAntidiagonal ↔ x * y = z := by
   simp [hz]
 
 @[simp high]
-lemma swap_mem_divisorsAntidiag : xy.swap ∈ z.divisorsAntidiag ↔ xy ∈ z.divisorsAntidiag := by
+lemma swap_mem_divisorsAntidiagonal :
+    xy.swap ∈ z.divisorsAntidiagonal ↔ xy ∈ z.divisorsAntidiagonal := by
   simp [mul_comm]
 
-lemma neg_mem_divisorsAntidiag : -xy ∈ z.divisorsAntidiag ↔ xy ∈ z.divisorsAntidiag := by simp
+lemma neg_mem_divisorsAntidiagonal :
+    -xy ∈ z.divisorsAntidiagonal ↔ xy ∈ z.divisorsAntidiagonal := by simp
 
 @[simp]
-lemma map_prodComm_divisorsAntidiag :
-    z.divisorsAntidiag.map (Equiv.prodComm _ _).toEmbedding = z.divisorsAntidiag := by
-  ext; simp [mem_divisorsAntidiag]
+lemma map_prodComm_divisorsAntidiagonal :
+    z.divisorsAntidiagonal.map (Equiv.prodComm _ _).toEmbedding = z.divisorsAntidiagonal := by
+  ext; simp [mem_divisorsAntidiagonal]
 
 @[simp]
-lemma map_neg_divisorsAntidiag :
-    z.divisorsAntidiag.map (Equiv.neg _).toEmbedding = z.divisorsAntidiag := by
-  ext; simp [mem_divisorsAntidiag, mul_comm]
+lemma map_neg_divisorsAntidiagonal :
+    z.divisorsAntidiagonal.map (Equiv.neg _).toEmbedding = z.divisorsAntidiagonal := by
+  ext; simp [mem_divisorsAntidiagonal, mul_comm]
 
-lemma divisorsAntidiag_neg :
-    (-z).divisorsAntidiag =
-      z.divisorsAntidiag.map (.prodMap (.refl _) (Equiv.neg _).toEmbedding) := by
-  ext; simp [mem_divisorsAntidiag, Prod.ext_iff, neg_eq_iff_eq_neg]
+lemma divisorsAntidiagonal_neg :
+    (-z).divisorsAntidiagonal =
+      z.divisorsAntidiagonal.map (.prodMap (.refl _) (Equiv.neg _).toEmbedding) := by
+  ext; simp [mem_divisorsAntidiagonal, Prod.ext_iff, neg_eq_iff_eq_neg]
 
-lemma divisorsAntidiag_natCast (n : ℕ) :
-    divisorsAntidiag n =
+lemma divisorsAntidiagonal_natCast (n : ℕ) :
+    divisorsAntidiagonal n =
       (n.divisorsAntidiagonal.map <| .prodMap natCast natCast).disjUnion
         (n.divisorsAntidiagonal.map <| .prodMap negNatCast negNatCast) (by
           simp +contextual [disjoint_left, eq_comm]) := rfl
 
-lemma divisorsAntidiag_neg_natCast (n : ℕ) :
-    divisorsAntidiag (-n) =
+lemma divisorsAntidiagonal_neg_natCast (n : ℕ) :
+    divisorsAntidiagonal (-n) =
       (n.divisorsAntidiagonal.map <| .prodMap natCast negNatCast).disjUnion
         (n.divisorsAntidiagonal.map <| .prodMap negNatCast natCast) (by
           simp +contextual [disjoint_left, eq_comm]) := by cases n <;> rfl
 
-lemma divisorsAntidiag_ofNat (n : ℕ) :
-    divisorsAntidiag ofNat(n) =
+lemma divisorsAntidiagonal_ofNat (n : ℕ) :
+    divisorsAntidiagonal ofNat(n) =
       (n.divisorsAntidiagonal.map <| .prodMap natCast natCast).disjUnion
         (n.divisorsAntidiagonal.map <| .prodMap negNatCast negNatCast) (by
           simp +contextual [disjoint_left, eq_comm]) := rfl
@@ -751,8 +757,8 @@ lemma mul_mem_one_two_three_iff {a b : ℤ} :
       (1, 1), (-1, -1),
       (1, 2), (2, 1), (-1, -2), (-2, -1),
       (1, 3), (3, 1), (-1, -3), (-3, -1)} : Set (ℤ × ℤ)) := by
-  simp only [← Int.prodMk_mem_divisorsAntidiag, Set.mem_insert_iff, Set.mem_singleton_iff, ne_eq,
-    one_ne_zero, not_false_eq_true, OfNat.ofNat_ne_zero]
+  simp only [← Int.prodMk_mem_divisorsAntidiagonal, Set.mem_insert_iff, Set.mem_singleton_iff,
+    ne_eq, one_ne_zero, not_false_eq_true, OfNat.ofNat_ne_zero]
   aesop
 
 /-- This lemma justifies its existence from its utility in crystallographic root system theory. -/
@@ -763,8 +769,31 @@ lemma mul_mem_zero_one_two_three_four_iff {a b : ℤ} (h₀ : a = 0 ↔ b = 0) :
       (1, 2), (2, 1), (-1, -2), (-2, -1),
       (1, 3), (3, 1), (-1, -3), (-3, -1),
       (4, 1), (1, 4), (-4, -1), (-1, -4), (2, 2), (-2, -2)} : Set (ℤ × ℤ)) := by
-  simp only [← Int.prodMk_mem_divisorsAntidiag, Set.mem_insert_iff, Set.mem_singleton_iff, ne_eq,
-    one_ne_zero, not_false_eq_true, OfNat.ofNat_ne_zero]
+  simp only [← Int.prodMk_mem_divisorsAntidiagonal, Set.mem_insert_iff, Set.mem_singleton_iff,
+    ne_eq, one_ne_zero, not_false_eq_true, OfNat.ofNat_ne_zero]
   aesop
+
+@[deprecated (since := "2026-09-06")] alias divisorsAntidiag := divisorsAntidiagonal
+@[deprecated (since := "2026-09-06")] alias mem_divisorsAntidiag := mem_divisorsAntidiagonal
+@[deprecated (since := "2026-09-06")]
+alias image_fst_divisorsAntidiag := image_fst_divisorsAntidiagonal
+@[deprecated (since := "2026-09-06")]
+alias image_snd_divisorsAntidiag := image_snd_divisorsAntidiagonal
+@[deprecated (since := "2026-09-06")] alias divisorsAntidiag_zero := divisorsAntidiagonal_zero
+@[deprecated (since := "2026-09-06")]
+alias prodMk_mem_divisorsAntidiag := prodMk_mem_divisorsAntidiagonal
+@[deprecated (since := "2026-09-06")]
+alias swap_mem_divisorsAntidiag := swap_mem_divisorsAntidiagonal
+@[deprecated (since := "2026-09-06")] alias neg_mem_divisorsAntidiag := neg_mem_divisorsAntidiagonal
+@[deprecated (since := "2026-09-06")]
+alias map_prodComm_divisorsAntidiag := map_prodComm_divisorsAntidiagonal
+@[deprecated (since := "2026-09-06")]
+alias map_neg_divisorsAntidiag := map_neg_divisorsAntidiagonal
+@[deprecated (since := "2026-09-06")] alias divisorsAntidiag_neg := divisorsAntidiagonal_neg
+@[deprecated (since := "2026-09-06")]
+alias divisorsAntidiag_natCast := divisorsAntidiagonal_natCast
+@[deprecated (since := "2026-09-06")]
+alias divisorsAntidiag_neg_natCast := divisorsAntidiagonal_neg_natCast
+@[deprecated (since := "2026-09-06")] alias divisorsAntidiag_ofNat := divisorsAntidiagonal_ofNat
 
 end Int

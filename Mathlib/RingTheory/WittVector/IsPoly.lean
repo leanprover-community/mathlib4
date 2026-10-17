@@ -247,7 +247,7 @@ instance IsPoly.comp₂ {g f} [hg : IsPoly p g] [hf : IsPoly₂ p f] :
   simp only [peval, aeval_bind₁, hg, hf]
 
 /-- The diagonal `fun x ↦ f x x` of a polynomial function `f` is polynomial. -/
-instance IsPoly₂.diag {f} [hf : IsPoly₂ p f] : IsPoly p fun _ _Rcr x => f x x := by
+instance IsPoly₂.diagonal {f} [hf : IsPoly₂ p f] : IsPoly p fun _ _Rcr x => f x x := by
   obtain ⟨φ, hf⟩ := hf
   refine ⟨⟨fun n => bind₁ (uncurry ![X, X]) (φ n), ?_⟩⟩
   intros; funext n

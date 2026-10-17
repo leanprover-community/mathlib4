@@ -91,7 +91,7 @@ theorem summable_genFun_term' (f : ℕ → ℕ → R) {i : ℕ} (hi : i ≠ 0) :
 variable [T2Space R]
 
 private theorem aux_dvd_of_coeff_ne_zero {f : ℕ → ℕ → R} {d : ℕ} {s : Finset ℕ} (hs0 : 0 ∉ s)
-    {g : ℕ →₀ ℕ} (hg : g ∈ s.finsuppAntidiag d)
+    {g : ℕ →₀ ℕ} (hg : g ∈ s.finsuppAntidiagonal d)
     (hprod : ∀ i ∈ s, (coeff (g i)) (1 + ∑' j, f i (j + 1) • X ^ (i * (j + 1))) ≠ (0 : R)) (x : ℕ) :
     x ∣ g x := by
   by_cases hx : x ∈ s
@@ -111,11 +111,11 @@ private theorem aux_dvd_of_coeff_ne_zero {f : ℕ → ℕ → R} {d : ℕ} {s : 
       simp [hprod]
   · suffices g x = 0 by simp [this]
     contrapose! hx
-    exact mem_of_subset (mem_finsuppAntidiag.mp hg).2 <| by simpa using hx
+    exact mem_of_subset (mem_finsuppAntidiagonal.mp hg).2 <| by simpa using hx
 
 private theorem aux_prod_coeff_eq_zero_of_notMem_range (f : ℕ → ℕ → R) {d : ℕ} {s : Finset ℕ}
-    (hs0 : 0 ∉ s) {g : ℕ →₀ ℕ} (hg : g ∈ s.finsuppAntidiag d)
-    (hg' : g ∉ Set.range (toFinsuppAntidiag (n := d))) :
+    (hs0 : 0 ∉ s) {g : ℕ →₀ ℕ} (hg : g ∈ s.finsuppAntidiagonal d)
+    (hg' : g ∉ Set.range (toFinsuppAntidiagonal (n := d))) :
     ∏ i ∈ s, (coeff (g i)) (1 + ∑' j, f i (j + 1) • X ^ (i * (j + 1)) : R⟦X⟧) = 0 := by
   suffices ∃ i ∈ s, (coeff (g i)) ((1 : R⟦X⟧) + ∑' j, f i (j + 1) • X ^ (i * (j + 1))) = 0 by
     obtain ⟨i, hi, hi'⟩ := this
@@ -125,24 +125,25 @@ private theorem aux_prod_coeff_eq_zero_of_notMem_range (f : ℕ → ℕ → R) {
   have hgne0 (i : ℕ) : g i ≠ 0 ↔ i ≠ 0 ∧ i ≤ g i := by
     refine ⟨fun h ↦ ⟨?_, ?_⟩, by grind⟩
     · contrapose hs0 with rfl
-      exact mem_of_subset (mem_finsuppAntidiag.mp hg).2 (by simpa using h)
+      exact mem_of_subset (mem_finsuppAntidiagonal.mp hg).2 (by simpa using h)
     · exact Nat.le_of_dvd (Nat.pos_of_ne_zero h) <| aux_dvd_of_coeff_ne_zero hs0 hg hprod _
   refine ⟨Nat.Partition.mk (Finsupp.mk g.support (fun i ↦ g i / i) ?_).toMultiset ?_ ?_, ?_⟩
   · simpa using hgne0
   · suffices ∀ i, g i ≠ 0 → i ≠ 0 by simpa [Nat.pos_iff_ne_zero]
     exact fun i h ↦ ((hgne0 i).mp h).1
-  · obtain ⟨h1, h2⟩ := mem_finsuppAntidiag.mp hg
+  · obtain ⟨h1, h2⟩ := mem_finsuppAntidiagonal.mp hg
     refine Eq.trans ?_ h1
     suffices ∑ x ∈ g.support, g x / x * x = ∑ x ∈ s, g x by simpa [Finsupp.sum]
     apply sum_subset_zero_on_sdiff h2 (by simp)
     exact fun x hx ↦ Nat.div_mul_cancel <| aux_dvd_of_coeff_ne_zero hs0 hg hprod x
   · ext x
-    simpa [toFinsuppAntidiag] using Nat.div_mul_cancel <| aux_dvd_of_coeff_ne_zero hs0 hg hprod x
+    simpa [toFinsuppAntidiagonal] using
+      Nat.div_mul_cancel <| aux_dvd_of_coeff_ne_zero hs0 hg hprod x
 
 private theorem aux_prod_f_eq_prod_coeff (f : ℕ → ℕ → R) {n : ℕ} (p : Partition n) {s : Finset ℕ}
     (hs : Icc 1 n ⊆ s) (hs0 : 0 ∉ s) :
     p.parts.toFinsupp.prod f =
-    ∏ i ∈ s, coeff (p.toFinsuppAntidiag i) (1 + ∑' j, f i (j + 1) • X ^ (i * (j + 1))) := by
+    ∏ i ∈ s, coeff (p.toFinsuppAntidiagonal i) (1 + ∑' j, f i (j + 1) • X ^ (i * (j + 1))) := by
   simp_rw [Finsupp.prod, Multiset.toFinsupp_support, Multiset.toFinsupp_apply]
   apply prod_subset_one_on_sdiff
   · grind
@@ -151,14 +152,14 @@ private theorem aux_prod_f_eq_prod_coeff (f : ℕ → ℕ → R) {n : ℕ} (p : 
     have hx0 : x ≠ 0 := fun h ↦ hs0 (h ▸ hx.1)
     have hsum := (summable_genFun_term' f hx0).map_tsum _
       (WithPiTopology.continuous_constantCoeff R)
-    simp [toFinsuppAntidiag, hsum, hx.2, hx0]
+    simp [toFinsuppAntidiagonal, hsum, hx.2, hx0]
   · intro i hi
     rw [Multiset.mem_toFinset] at hi
     have hi0 : i ≠ 0 := (p.parts_pos hi).ne.symm
     rw [map_add, (summable_genFun_term' f hi0).map_tsum _ (WithPiTopology.continuous_coeff _ _)]
     suffices f i (Multiset.count i p.parts) =
         ∑' j, if Multiset.count i p.parts * i = i * (j + 1) then f i (j + 1) else 0 by
-      simpa [toFinsuppAntidiag, hi, hi0, coeff_X_pow]
+      simpa [toFinsuppAntidiagonal, hi, hi0, coeff_X_pow]
     rw [tsum_eq_single (Multiset.count i p.parts - 1) ?_]
     · rw [mul_comm]
       simp [Nat.sub_add_cancel (Multiset.one_le_count_iff_mem.mpr hi)]
@@ -180,9 +181,11 @@ theorem hasProd_genFun (f : ℕ → ℕ → R) :
     intro h1 h2
     refine ⟨i - 1, mem_of_subset hs ?_, ?_⟩ <;> grind
   rw [coeff_genFun, coeff_prod]
-  refine (sum_of_injOn toFinsuppAntidiag (toFinsuppAntidiag_injective d).injOn ?_ ?_ ?_).symm
+  refine (sum_of_injOn toFinsuppAntidiagonal
+    (toFinsuppAntidiagonal_injective d).injOn ?_ ?_ ?_).symm
   · intro p _
-    exact mem_of_subset (finsuppAntidiag_mono hs _) p.toFinsuppAntidiag_mem_finsuppAntidiag
+    exact mem_of_subset (finsuppAntidiagonal_mono hs _)
+      p.toFinsuppAntidiagonal_mem_finsuppAntidiagonal
   · exact fun g hg hg' ↦ aux_prod_coeff_eq_zero_of_notMem_range f (by simp) hg (by simpa using hg')
   · exact fun p _ ↦ aux_prod_f_eq_prod_coeff f p hs (by simp)
 

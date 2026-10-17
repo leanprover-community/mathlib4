@@ -27,7 +27,7 @@ variable {α : Type*}
 
 @[simp]
 theorem finite_sym2_iff : Finite (Sym2 α) ↔ Finite α :=
-  ⟨fun _ ↦ diagElemEquiv.finite_iff.mp Subtype.finite, fun _ ↦ inferInstance⟩
+  ⟨fun _ ↦ diagonalElemEquiv.finite_iff.mp Subtype.finite, fun _ ↦ inferInstance⟩
 
 @[simp]
 theorem infinite_sym2_iff : Infinite (Sym2 α) ↔ Infinite α := by
@@ -38,20 +38,26 @@ theorem finite_mk_fiber (z : Sym2 α) : (Sym2.mk.uncurry ⁻¹' {z}).Finite := b
   cases z
   simp [mk_fiber]
 
-theorem ncard_mk_fiber_of_isDiag {z : Sym2 α} (hz : z.IsDiag) :
+theorem ncard_mk_fiber_of_isDiagonal {z : Sym2 α} (hz : z.IsDiagonal) :
     (Sym2.mk.uncurry ⁻¹' {z}).ncard = 1 := by
-  simp [mk_fiber_of_isDiag hz]
+  simp [mk_fiber_of_isDiagonal hz]
 
-theorem ncard_mk_fiber_of_not_isDiag {z : Sym2 α} (hz : ¬z.IsDiag) :
+@[deprecated (since := "2026-10-14")]
+alias ncard_mk_fiber_of_isDiag := ncard_mk_fiber_of_isDiagonal
+
+theorem ncard_mk_fiber_of_not_isDiagonal {z : Sym2 α} (hz : ¬z.IsDiagonal) :
     (Sym2.mk.uncurry ⁻¹' {z}).ncard = 2 := by
   cases z
-  simp [mk_fiber, mk_isDiag_iff.not.mp hz]
+  simp [mk_fiber, mk_isDiagonal_iff.not.mp hz]
+
+@[deprecated (since := "2026-10-14")]
+alias ncard_mk_fiber_of_not_isDiag := ncard_mk_fiber_of_not_isDiagonal
 
 theorem ncard_mk_fiber [DecidableEq α] (z : Sym2 α) :
-    (Sym2.mk.uncurry ⁻¹' {z}).ncard = if z.IsDiag then 1 else 2 := by
+    (Sym2.mk.uncurry ⁻¹' {z}).ncard = if z.IsDiagonal then 1 else 2 := by
   split_ifs with h
-  · rw [ncard_mk_fiber_of_isDiag h]
-  · rw [ncard_mk_fiber_of_not_isDiag h]
+  · rw [ncard_mk_fiber_of_isDiagonal h]
+  · rw [ncard_mk_fiber_of_not_isDiagonal h]
 
 theorem ncard_mk_fiber_eq_card_toFinset [DecidableEq α] {z : Sym2 α} :
     (Sym2.mk.uncurry ⁻¹' {z}).ncard = z.toFinset.card := by
@@ -64,45 +70,57 @@ theorem encard_mk_fiber_le (z : Sym2 α) : (Sym2.mk.uncurry ⁻¹' {z}).encard �
 
 variable (α) in
 @[simp]
-theorem cardinalMk_diagSet : #(@diagSet α) = #α :=
-  Sym2.diagElemEquiv.cardinal_eq
+theorem cardinalMk_diagonalSet : #(@diagonalSet α) = #α :=
+  Sym2.diagonalElemEquiv.cardinal_eq
+
+@[deprecated (since := "2026-10-14")] alias cardinalMk_diagSet := cardinalMk_diagonalSet
 
 open scoped Classical in
-private noncomputable def diagSetComplEquiv : Bool × (diagSetᶜ : Set (Sym2 α)) ⊕ α ≃ α × α where
+private noncomputable def diagonalSetComplEquiv :
+    Bool × (diagonalSetᶜ : Set (Sym2 α)) ⊕ α ≃ α × α where
   toFun
     | .inl ⟨true, z, _⟩ => (z.out.fst, z.out.snd)
     | .inl ⟨false, z, _⟩ => (z.out.snd, z.out.fst)
     | .inr a => (a, a)
   invFun
     | ⟨a, b⟩ => if h : a = b then .inr a else .inl ⟨s(a, b).out.fst = a, s(a, b), by simpa⟩
-  left_inv := by grind [mk_fst_out_snd_out, mk_isDiag_iff, mem_diagSet]
+  left_inv := by grind [mk_fst_out_snd_out, mk_isDiagonal_iff, mem_diagonalSet]
   right_inv _ := by grind [mk_fst_out_snd_out]
 
 variable (α) in
-theorem two_mul_cardinalMk_diagSet_compl_add_cardinalMk :
-    2 * #(diagSetᶜ : Set (Sym2 α)) + #α = #α * #α := by
-  simpa using diagSetComplEquiv.cardinal_eq
+theorem two_mul_cardinalMk_diagonalSet_compl_add_cardinalMk :
+    2 * #(diagonalSetᶜ : Set (Sym2 α)) + #α = #α * #α := by
+  simpa using diagonalSetComplEquiv.cardinal_eq
+
+@[deprecated (since := "2026-10-14")]
+alias two_mul_cardinalMk_diagSet_compl_add_cardinalMk :=
+  two_mul_cardinalMk_diagonalSet_compl_add_cardinalMk
 
 variable (α) in
 @[simp]
-theorem encard_diagSet : (@diagSet α).encard = ENat.card α :=
-  congrArg _ <| cardinalMk_diagSet α
+theorem encard_diagonalSet : (@diagonalSet α).encard = ENat.card α :=
+  congrArg _ <| cardinalMk_diagonalSet α
+
+@[deprecated (since := "2026-10-14")] alias encard_diagSet := encard_diagonalSet
 
 variable (α) in
-theorem two_mul_encard_diagSet_compl_add_enatCard :
-    2 * (@diagSet α)ᶜ.encard + ENat.card α = ENat.card α * ENat.card α := by
-  simpa [ENat.card] using congr($(two_mul_cardinalMk_diagSet_compl_add_cardinalMk α).toENat)
+theorem two_mul_encard_diagonalSet_compl_add_enatCard :
+    2 * (@diagonalSet α)ᶜ.encard + ENat.card α = ENat.card α * ENat.card α := by
+  simpa [ENat.card] using congr($(two_mul_cardinalMk_diagonalSet_compl_add_cardinalMk α).toENat)
+
+@[deprecated (since := "2026-10-14")]
+alias two_mul_encard_diagSet_compl_add_enatCard := two_mul_encard_diagonalSet_compl_add_enatCard
 
 open scoped Classical in
 private noncomputable def boolProdSym2Equiv : Bool × Sym2 α ≃ α × Option α where
   toFun
     | ⟨true, z⟩ => (z.out.fst, some z.out.snd)
-    | ⟨false, z⟩ => (z.out.snd, if z.IsDiag then none else some z.out.fst)
+    | ⟨false, z⟩ => (z.out.snd, if z.IsDiagonal then none else some z.out.fst)
   invFun
     | ⟨a, some b⟩ => (s(a, b).out.fst = a, s(a, b))
     | ⟨a, none⟩ => (false, s(a, a))
-  left_inv := by grind [mk_fst_out_snd_out, mk_isDiag_iff]
-  right_inv _ := by grind [mk_fst_out_snd_out, mk_isDiag_iff]
+  left_inv := by grind [mk_fst_out_snd_out, mk_isDiagonal_iff]
+  right_inv _ := by grind [mk_fst_out_snd_out, mk_isDiagonal_iff]
 
 variable (α) in
 theorem two_mul_cardinalMk_sym2 : 2 * #(Sym2 α) = #α * (#α + 1) := by
@@ -134,7 +152,7 @@ theorem cardinalMk_prod_eq_two_mul_cardinalMk_fromRel [Std.Irrefl r] :
   congr
   ext ⟨z, hz⟩
   rw [← Set.coe_ofPred, ← Set.preimage_singleton, ← Set.cast_ncard z.finite_mk_fiber,
-    z.ncard_mk_fiber_of_not_isDiag, Nat.cast_two]
+    z.ncard_mk_fiber_of_not_isDiagonal, Nat.cast_two]
   exact fromRel_irrefl.mp ‹_› hz
 
 theorem finite_fromRel_iff : (fromRel sym).Finite ↔ Finite { p : α × α // r p.fst p.snd } := by
