@@ -712,9 +712,7 @@ theorem exists_subgroup_card_pow_prime_le_le {p : ℕ} (hp : p.Prime) {n : ℕ}
 theorem exists_subgroup_card_pow_prime_le {p : ℕ} (hp : p.Prime) {n : ℕ}
     (H : Subgroup G) [Finite H] (hH : p ^ n ∣ Nat.card H) :
     ∃ K : Subgroup G, Nat.card K = p ^ n ∧ K ≤ H := by
-  rcases exists_subgroup_card_pow_prime_le_le hp (by simp) hH bot_le
-    with ⟨K, hcard, _, hle⟩
-  exact ⟨K, hcard, hle⟩
+  grind [exists_subgroup_card_pow_prime_le_le hp (by simp) hH bot_le]
 
 /-- A generalisation of **Sylow's first theorem**. If `p ^ n` divides
   the cardinality of `G`, then there is a subgroup of cardinality `p ^ n` -/
