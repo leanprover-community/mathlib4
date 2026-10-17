@@ -42,9 +42,9 @@ theorem quotient_span_eq_top_iff_span_eq_top (s : Set S) :
   constructor
   · intro hs
     rw [← top_le_iff]
-    apply le_of_le_smul_of_le_jacobson_bot
+    apply le_of_le_smul_of_le_jacobson
     · exact Module.finite_def.mp ‹_›
-    · exact (jacobson_eq_maximalIdeal ⊥ bot_ne_top).ge
+    · exact (ringJacobson_eq_maximalIdeal R).ge
     · rw [Ideal.smul_top_eq_map]
       rintro x -
       have : LinearMap.ker (IsScalarTower.toAlgHom R S (S ⧸ pS) : S →ₗ[R] S ⧸ pS) =
@@ -114,12 +114,12 @@ lemma exists_maximalIdeal_pow_le_of_isArtinianRing_quotient
   have : Nontrivial (R ⧸ I) := Ideal.Quotient.nontrivial_iff.mpr hI
   have := IsLocalRing.of_surjective' (Ideal.Quotient.mk I) Ideal.Quotient.mk_surjective
   have := IsLocalHom.of_surjective (Ideal.Quotient.mk I) Ideal.Quotient.mk_surjective
-  obtain ⟨n, hn⟩ := IsArtinianRing.isNilpotent_jacobson_bot (R := R ⧸ I)
+  obtain ⟨n, hn⟩ := IsArtinianRing.isNilpotent_jacobson (R := R ⧸ I)
   have : (maximalIdeal R).map (Ideal.Quotient.mk I) = maximalIdeal (R ⧸ I) := by
     ext x
     obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
     simp [sup_eq_left.mpr (le_maximalIdeal hI)]
-  rw [jacobson_eq_maximalIdeal _ bot_ne_top, ← this, ← Ideal.map_pow, Ideal.zero_eq_bot,
+  rw [ringJacobson_eq_maximalIdeal, ← this, ← Ideal.map_pow, Ideal.zero_eq_bot,
     Ideal.map_eq_bot_iff_le_ker, Ideal.mk_ker] at hn
   exact ⟨n, hn⟩
 

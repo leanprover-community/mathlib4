@@ -134,7 +134,8 @@ theorem isJacobsonRing_of_isIntegral [Algebra R S] [Algebra.IsIntegral R S] [IsJ
   refine eq_bot_of_under_eq_bot (R := R ⧸ comap (algebraMap R S) P) ?_
   rw [eq_bot_iff, ← jacobson_eq_iff_jacobson_quotient_eq_bot.1
     ((isJacobsonRing_iff_prime_eq.1 ‹_›) (comap (algebraMap R S) P) (comap_isPrime _ _)),
-    under_def, comap_jacobson]
+    under_def]
+  simp only [← Ideal.jacobson_bot, comap_jacobson]
   refine sInf_le_sInf fun J hJ => ?_
   simp only [true_and, Set.mem_image, bot_le, Set.mem_ofPred_eq]
   have : J.IsMaximal := by simpa using hJ
@@ -319,14 +320,15 @@ theorem isIntegral_isLocalization_polynomial_quotient
 
 /-- If `f : R → S` descends to an integral map in the localization at `x`,
   and `R` is a Jacobson ring, then the intersection of all maximal ideals in `S` is trivial -/
-theorem jacobson_bot_of_integral_localization
+theorem Ring.jacobson_eq_bot_of_integral_localization
     {R : Type*} [CommRing R] [IsDomain R] [IsJacobsonRing R]
     (Rₘ Sₘ : Type*) [CommRing Rₘ] [CommRing Sₘ] (φ : R →+* S) (hφ : Function.Injective ↑φ) (x : R)
     (hx : x ≠ 0) [Algebra R Rₘ] [IsLocalization.Away x Rₘ] [Algebra S Sₘ]
     [IsLocalization ((Submonoid.powers x).map φ : Submonoid S) Sₘ]
     (hφ' :
       RingHom.IsIntegral (IsLocalization.map Sₘ φ (Submonoid.powers x).le_comap_map : Rₘ →+* Sₘ)) :
-    (⊥ : Ideal S).jacobson = (⊥ : Ideal S) := by
+    Ring.jacobson S = (⊥ : Ideal S) := by
+  rw [← Ideal.jacobson_bot]
   have hM : ((Submonoid.powers x).map φ : Submonoid S) ≤ nonZeroDivisors S :=
     map_le_nonZeroDivisors_of_injective φ hφ (powers_le_nonZeroDivisors_of_noZeroDivisors hx)
   let : IsDomain Sₘ := IsLocalization.isDomain_of_le_nonZeroDivisors _ hM
@@ -363,14 +365,28 @@ theorem jacobson_bot_of_integral_localization
   apply IsLocalization.surjective_quotientMap_of_maximal_of_localization (Submonoid.powers x)
   rwa [under_def, comap_comap, hcomm, ← bot_quotient_isMaximal_iff]
 
+@[deprecated Ring.jacobson_eq_bot_of_integral_localization +typeChanged (since := "2026-10-12")]
+theorem jacobson_bot_of_integral_localization
+    {R : Type*} [CommRing R] [IsDomain R] [IsJacobsonRing R]
+    (Rₘ Sₘ : Type*) [CommRing Rₘ] [CommRing Sₘ] (φ : R →+* S) (hφ : Function.Injective ↑φ) (x : R)
+    (hx : x ≠ 0) [Algebra R Rₘ] [IsLocalization.Away x Rₘ] [Algebra S Sₘ]
+    [IsLocalization ((Submonoid.powers x).map φ : Submonoid S) Sₘ]
+    (hφ' :
+      RingHom.IsIntegral (IsLocalization.map Sₘ φ (Submonoid.powers x).le_comap_map : Rₘ →+* Sₘ)) :
+    (⊥ : Ideal S).jacobson = (⊥ : Ideal S) := by
+  simpa only [Ideal.jacobson_bot] using
+    Ring.jacobson_eq_bot_of_integral_localization Rₘ Sₘ φ hφ x hx hφ'
+
 /-- Used to bootstrap the proof of `isJacobsonRing_polynomial_iff_isJacobsonRing`.
   That theorem is more general and should be used instead of this one. -/
 private theorem isJacobsonRing_polynomial_of_domain (R : Type*) [CommRing R] [IsDomain R]
     [hR : IsJacobsonRing R] (P : Ideal R[X]) [IsPrime P] (hP : ∀ x : R, C x ∈ P → x = 0) :
     P.jacobson = P := by
   by_cases Pb : P = ⊥
-  · exact Pb.symm ▸
-      jacobson_bot_polynomial_of_jacobson_bot (hR.out isRadical_bot)
+  · subst P
+    simpa only [Ideal.jacobson_bot] using
+      (Ring.jacobson_polynomial_eq_bot_of_jacobson_eq_bot (R := R)
+        (by simpa only [Ideal.jacobson_bot] using hR.out isRadical_bot))
   · rw [jacobson_eq_iff_jacobson_quotient_eq_bot]
     let P' := P.comap (C : R →+* R[X])
     have : P'.IsPrime := comap_isPrime C P
@@ -382,7 +398,8 @@ private theorem isJacobsonRing_polynomial_of_domain (R : Type*) [CommRing R] [Is
     let hφ : Function.Injective ↑φ := quotientMap_injective
     let Rₘ := Localization.Away x
     let Sₘ := (Localization ((Submonoid.powers x).map φ : Submonoid (R[X] ⧸ P)))
-    refine jacobson_bot_of_integral_localization (S := R[X] ⧸ P) (R := R ⧸ P') Rₘ Sₘ _ hφ _ hx ?_
+    refine Ring.jacobson_eq_bot_of_integral_localization
+      (S := R[X] ⧸ P) (R := R ⧸ P') Rₘ Sₘ _ hφ _ hx ?_
     exact isIntegral_isLocalization_polynomial_quotient P p pP
 
 theorem isJacobsonRing_polynomial_of_isJacobsonRing (hR : IsJacobsonRing R) :

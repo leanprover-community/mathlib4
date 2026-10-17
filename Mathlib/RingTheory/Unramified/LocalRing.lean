@@ -78,7 +78,8 @@ lemma FormallyUnramified.isField_quotient_map_maximalIdeal [FormallyUnramified R
     Ideal.Quotient.nontrivial_iff.mpr <| ne_top_of_le_ne_top (maximalIdeal.isMaximal S).ne_top hmR
   have : IsLocalRing (S ⧸ mR) := .of_surjective' _ Ideal.Quotient.mk_surjective
   have : maximalIdeal (S ⧸ mR) = ⊥ := by
-    rw [← jacobson_eq_maximalIdeal _ bot_ne_top, IsArtinianRing.jacobson_eq_radical,
+    rw [← ringJacobson_eq_maximalIdeal, ← Ideal.jacobson_bot,
+      IsArtinianRing.jacobson_eq_radical,
       ← Ideal.zero_eq_bot, ← nilradical, nilradical_eq_zero]
   rwa [← isField_iff_maximalIdeal_eq] at this
 
@@ -203,7 +204,8 @@ lemma localRingHom_surjective_of_primesOver_eq_singleton
   rw [← Localization.AtPrime.algebraMap_eq]
   change Function.Surjective (Algebra.linearMap _ _)
   rw [← LinearMap.range_eq_top, ← top_le_iff]
-  apply Submodule.le_of_le_smul_of_le_jacobson_bot Module.Finite.fg_top (maximalIdeal_le_jacobson _)
+  apply Submodule.le_of_le_smul_of_le_jacobson Module.Finite.fg_top
+    (ringJacobson_eq_maximalIdeal (Localization.AtPrime p)).ge
   rw [Ideal.smul_top_eq_map, Algebra.FormallyUnramified.map_maximalIdeal]
   rintro x -
   obtain ⟨a, ha⟩ := H (algebraMap _ _ x)

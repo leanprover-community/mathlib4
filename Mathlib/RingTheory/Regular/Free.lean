@@ -33,7 +33,7 @@ instance [Module.Free R M] (x : R) : Module.Free (R ⧸ Ideal.span {x}) (QuotSMu
 
 open Pointwise in
 lemma Module.free_quotSMulTop_iff_free [Module.FinitePresentation R M] {x : R}
-    (mem : x ∈ (⊥ : Ideal R).jacobson) (reg : IsSMulRegular M x) :
+    (mem : x ∈ Ring.jacobson R) (reg : IsSMulRegular M x) :
     Module.Free (R ⧸ Ideal.span {x}) (QuotSMulTop x M) ↔ Module.Free R M := by
   refine ⟨fun free ↦ ?_, fun free ↦ inferInstance⟩
   have := Module.Finite.of_restrictScalars_finite R (R ⧸ Ideal.span {x}) (QuotSMulTop x M)
@@ -45,7 +45,7 @@ lemma Module.free_quotSMulTop_iff_free [Module.FinitePresentation R M] {x : R}
     (Submodule.mkQ_surjective _) with ⟨g, hg⟩
   have surjf : Function.Surjective f := by
     simpa [f] using! Finsupp.mapRange_surjective _ rfl (Submodule.mkQ_surjective (Ideal.span {x}))
-  have lejac : Ideal.span {x} ≤ (⊥ :Ideal R).jacobson := by simpa
+  have lejac : Ideal.span {x} ≤ Ring.jacobson R := by simpa
   have surjg : Function.Surjective g := by
     apply g.surjective_of_surjective_comp_mkQ (Ideal.span {x}) lejac
     rwa [Submodule.ideal_span_singleton_smul x ⊤, hg]
@@ -57,7 +57,7 @@ lemma Module.free_quotSMulTop_iff_free [Module.FinitePresentation R M] {x : R}
   have injg : Function.Injective g := by
     rw [← LinearMap.ker_eq_bot]
     have fg : (LinearMap.ker g).FG := Module.FinitePresentation.fg_ker g surjg
-    apply Submodule.eq_bot_of_le_smul_of_le_jacobson_bot (Ideal.span {x}) _ fg _ lejac
+    apply Submodule.eq_bot_of_le_smul_of_le_jacobson (Ideal.span {x}) _ fg _ lejac
     rw [Submodule.ideal_span_singleton_smul]
     intro y hy
     have : y ∈ x • (⊤ : Submodule R (I →₀ R)) := by simp [← kerf, ← hg, LinearMap.mem_ker.mp hy]
