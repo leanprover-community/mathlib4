@@ -21,12 +21,17 @@ polynomial of the form `X ^ p - X - C a` for some `a` in `K`.
 
 * `artinSchreierPoly` refers to a term of the form `X ^ p - X - C a`.
 
-TODO: extend to finite extensions whose Galois group is cyclic of order `p^n` (Artin-Schreier-Witt
+TODO:
+* Extend to finite extensions whose Galois group is cyclic of order `p^n` (Artin-Schreier-Witt
 theory).
+* Rewrite in terms of "Additive Hilbert 90" once this has been implemented.
+
 -/
 
 public section
 universe u
+
+section ArtinScheierPolynomial
 
 variable {F : Type u} [CommRing F]
 
@@ -120,25 +125,25 @@ lemma artinSchreierPoly_irreducible_or_splits (a : F) :
   · right
     simp [artinSchreierPoly_def p, hp1]
 
-variable {F : Type u} {K : Type u} {p : ℕ} [Field F] [ExpChar F p] [Field K] [Algebra F K]
-  [hp : Fact p.Prime] (hrank : Module.finrank F K = p)
+end ArtinScheierPolynomial
 
 section Lemmas
 
-include hrank in
-open Finset IsGalois MulAction Subgroup minpoly in
+variable {F : Type u} {K : Type u} {p : ℕ} [Field F] [CharP F p] [Field K] [Algebra F K]
+  [FiniteDimensional F K] [IsGalois F K] [hp : Fact p.Prime] (hrank : Module.finrank F K = p)
+include hrank
+
+open Finset
+
 private
-lemma isGalois_generator_of_charP [IsGalois F K] :
-    ∃ z : K, z ∉ Set.range ⇑(algebraMap F K) ∧ z ^ p - z ∈ (⊥ : IntermediateField F K) := by
-  have := FiniteDimensional.of_finrank_pos (hrank.trans_gt hp.elim.pos)
-  have : CharP F p := (expChar_prime_iff F hp.elim).mp ‹ExpChar F p›
+lemma generator_of_charP (g : Gal(K/F)) (h_gen : Subgroup.zpowers g = ⊤) :
+    ∃ z : K, g z = z - 1 := by
   have := (Algebra.charP_iff F K p).mp ‹CharP F p›
-  have h_ord := (card_aut_eq_finrank F K).trans hrank
-  have ⟨g, h_gen⟩ := isCyclic_iff_exists_zpowers_eq_top.mp (isCyclic_of_prime_card h_ord)
-  let rp := Finset.range p
+  have h_ord := (IsGalois.card_aut_eq_finrank F K).trans hrank
   obtain ⟨y, hy⟩ := Algebra.trace_surjective F K 1
-  let z := ∑ i : rp, (g ^ (i : ℕ)) y * i
-  have hz1 : ∑ i : rp, (g ^ (i + 1 : ℕ)) y * (i + 1) = z := by
+  let rp := Finset.range p
+  use ∑ i : rp, (g ^ (i : ℕ)) y * i
+  have hz1 : ∑ i : rp, (g ^ (i + 1 : ℕ)) y * (i + 1) = ∑ i : rp, (g ^ (i : ℕ)) y * i := by
     let f := fun (i : ℕ) ↦ (g ^ i) y * i
     have hp1 : p - 1 + 1 = p := Nat.succ_pred_prime hp.elim
     calc
@@ -155,22 +160,20 @@ lemma isGalois_generator_of_charP [IsGalois F K] :
       orderOf_eq_card_of_zpowers_eq_top h_gen, h_ord, Nat.mod_eq_of_lt (by grind),
       Nat.mod_eq_of_lt (by grind), SetCoe.ext_iff] at h
     exact h
-  have hgz : g z = z - 1 := calc
-    _ = ∑ i : rp, g ((g ^ (i : ℕ)) y * i) := map_finsetSum ..
-    _ = ∑ i : rp, (g ^ (i + 1 : ℕ)) y * i := by simp [pow_succ' g]
-    _ = ∑ i : rp, ((g ^ (i + 1 : ℕ)) y * (i + 1) - (g ^ (i + 1 : ℕ)) y) := by grind only
-    _ = _ := by rw [sum_sub_distrib, hz1, hz2, ← trace_eq_sum_automorphisms, hy, map_one]
-  refine ⟨z, ⟨(mem_range_algebraMap_iff_fixed z).mp.mt (by grind), ?_⟩⟩
-  refine (mem_bot_iff_fixed _).mpr fun γ ↦ ?_
-  obtain ⟨n, rfl⟩ := mem_zpowers_iff.mp ((Subgroup.ext_iff.mp h_gen.symm γ).mp (mem_top _))
-  rw [← AlgEquiv.smul_def, ← mem_fixedBy]
-  apply mem_fixedBy_zpow (by simp [hgz, sub_pow_char])
+  calc
+  _ = ∑ i : rp, g ((g ^ (i : ℕ)) y * i) := map_finsetSum ..
+  _ = ∑ i : rp, (g ^ (i + 1 : ℕ)) y * i := by simp [pow_succ' g]
+  _ = ∑ i : rp, ((g ^ (i + 1 : ℕ)) y * (i + 1) - (g ^ (i + 1 : ℕ)) y) := by grind only
+  _ = _ := by rw [sum_sub_distrib, hz1, hz2, ← trace_eq_sum_automorphisms, hy, map_one]
 
 end Lemmas
 
-open Field minpoly
+open Field IntermediateField minpoly Polynomial
 
-include hrank in
+variable {F : Type u} {K : Type u} {p : ℕ} [Field F] [ExpChar F p] [Field K] [Algebra F K]
+  [hp : Fact p.Prime] (hrank : Module.finrank F K = p)
+include hrank
+
 theorem isCyclic_charP_tfae :
     [IsGalois F K,
     ∃ a : F, Irreducible (artinSchreierPoly a) ∧ IsSplittingField F K (artinSchreierPoly a),
@@ -179,6 +182,7 @@ theorem isCyclic_charP_tfae :
     ∃ a : F, Nonempty (IsAdjoinRootMonic K (artinSchreierPoly a))].TFAE := by
   let := FiniteDimensional.of_finrank_pos (hp.elim.pos.trans_eq hrank.symm)
   have : CharP F p := (expChar_prime_iff F hp.elim).mp ‹ExpChar F p›
+  have := (Algebra.charP_iff F K p).mp ‹CharP F p›
   have ha := fun (a : F) ↦ artinSchreierPoly_isMonicOfDegree p a
   have h_int := fun (z : K) ↦ Algebra.IsIntegral.isIntegral z (R := F)
   have hprim := fun (z : K) ↦ primitive_element_iff_minpoly_natDegree_eq F z
@@ -187,12 +191,21 @@ theorem isCyclic_charP_tfae :
       ((separable_iff_derivative_ne_zero h1).mpr ?_)
     simp [artinSchreierPoly_def p, derivative_pow]
   tfae_have 1 → 4 := by
-    intro _
-    obtain ⟨z, ⟨hz, ⟨a, _⟩⟩⟩ := isGalois_generator_of_charP hrank
-    have h : (minpoly F z).natDegree ∣ p := (degree_dvd (h_int z)).trans hrank.dvd
-    have h1 := (ha a).1.trans ((hp.elim.dvd_iff_eq (natDegree_eq_one_iff.mp.mt hz)).mp h)
+    intro hgal
+    have h_ord := (hgal.card_aut_eq_finrank F K).trans hrank
+    obtain ⟨g, h_gen⟩ := isCyclic_iff_exists_zpowers_eq_top.mp (isCyclic_of_prime_card h_ord)
+    obtain ⟨z, hgz⟩ := generator_of_charP hrank g h_gen
+    have hz := (hgal.mem_range_algebraMap_iff_fixed z).mp.mt (by grind)
+    have h : p = (minpoly F z).natDegree := (hp.elim.dvd_iff_eq (natDegree_eq_one_iff.mp.mt
+        hz)).mp ((degree_dvd (h_int z)).trans hrank.dvd)
+    obtain ⟨a, _⟩ : z ^ p - z ∈ (⊥ : IntermediateField F K) := by
+      refine (hgal.mem_bot_iff_fixed _).mpr fun γ ↦ ?_
+      obtain ⟨n, rfl⟩ := Subgroup.mem_zpowers_iff.mp
+        ((Subgroup.ext_iff.mp h_gen.symm γ).mp (Subgroup.mem_top _))
+      rw [← AlgEquiv.smul_def, ← MulAction.mem_fixedBy]
+      apply MulAction.mem_fixedBy_zpow (by simp [hgz, sub_pow_char])
     refine ⟨a, z, (eq_of_monic_of_dvd_of_natDegree_le
-      (monic (h_int z)) (ha a).2 (dvd _ _ ?_) h1.le).symm⟩
+      (monic (h_int z)) (ha a).2 (dvd _ _ ?_) ((ha a).1.trans h).le).symm⟩
     rw [artinSchreierPoly_def p]; aesop
   tfae_have 4 → 3 := by
     refine fun ⟨a, z, hz⟩ ↦ ⟨z, ⟨a, (sub_eq_zero.mp ?_).symm⟩, ?_⟩
@@ -228,7 +241,6 @@ theorem isCyclic_charP_tfae :
 /- This is the first step towards the Artin-Schreier-Witt construction.
 -/
 
-include hrank in
 lemma irreducible_artinSchreierPoly_tower {a : F} {x : K} (hx : minpoly F x = artinSchreierPoly a) :
     Irreducible (artinSchreierPoly (algebraMap F K a * x ^ (p-1))) := by
   have hp := hp.elim
