@@ -27,7 +27,6 @@ variable {K A Γ : Type*} [Field K] [Ring A] [Algebra K A]
 /-- If `x` is algebraic over `K`, then `v x` is an `n`-th root of some `v (algebraMap K A r)`. -/
 public theorem exists_map_pow_eq_map_algebraMap_of_isAlgebraic {x : A} (hx : IsAlgebraic K x) :
     ∃ (n : ℕ) (r : K), 0 < n ∧ n ≤ (minpoly K x).natDegree ∧ v x ^ n = v (algebraMap K A r) := by
-  classical
   have : Nontrivial A := ⟨0, 1, ne_of_apply_ne v (by simp)⟩
   obtain hx0 | hx0 := eq_or_ne (v x) 0
   · exact ⟨1, 0, one_pos, Nat.one_le_of_lt (minpoly.natDegree_pos hx.isIntegral), by simp [hx0]⟩
