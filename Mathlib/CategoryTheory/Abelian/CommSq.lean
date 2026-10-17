@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Algebra.Homology.CommSq
 public import Mathlib.CategoryTheory.Abelian.Refinements
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
-public import Mathlib.Algebra.Homology.CommSq
 
 /-!
 # The exact sequence attached to a pushout square

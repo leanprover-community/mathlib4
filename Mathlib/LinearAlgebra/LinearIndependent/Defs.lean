@@ -5,9 +5,9 @@ Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp, Anne Baanen
 -/
 module
 
+public meta import Mathlib.Lean.Expr.ExtraRecognizers
 public import Mathlib.Algebra.Order.Sub.Basic
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-public meta import Mathlib.Lean.Expr.ExtraRecognizers
 
 /-!
 
@@ -251,7 +251,7 @@ theorem linearIndependent_iff''ₛ :
   exact linearIndependent_iff'ₛ.trans
     ⟨fun H s f g eq hv i ↦ if his : i ∈ s then H s f g hv i his else eq i his,
       fun H s f g eq i hi ↦ by
-      convert!
+      convert
         H s (fun j ↦ if j ∈ s then f j else 0) (fun j ↦ if j ∈ s then g j else 0)
           (fun j hj ↦ (ite_eq_right hj).trans (ite_eq_right hj).symm)
           (by simp_rw [ite_smul, zero_smul, Finset.sum_extend_by_zero, eq]) i <;>
@@ -407,8 +407,8 @@ theorem linearIndepOn_iffₛ : LinearIndepOn R v s ↔
   refine ⟨fun h l₁ h₁ l₂ h₂ eq ↦ (Finsupp.subtypeDomain_eq_iff h₁ h₂).1 <| h _ _ <|
     (Finsupp.sum_subtypeDomain_index h₁).trans eq ▸ (Finsupp.sum_subtypeDomain_index h₂).symm,
     fun h l₁ l₂ eq ↦ ?_⟩
-  refine Finsupp.embDomain_injective (Embedding.subtype (· ∈ s)) <| h _ ?_ _ ?_ ?_
-  iterate 2 simpa using fun _ h _ ↦ h
+  refine Finsupp.embDomain_injective (Embedding.subtype (· ∈ s)) <|
+    h _ (by simp +contextual) _ (by simp +contextual) ?_
   simp_rw [Finsupp.embDomain_eq_mapDomain]
   rwa [Finsupp.sum_mapDomain_index, Finsupp.sum_mapDomain_index] <;>
     intros <;> simp only [zero_smul, add_smul]
@@ -609,7 +609,7 @@ theorem linearIndependent_iffₒₛ :
         (a := ∑ i ∈ s with g i ≤ f i, g i • v i + ∑ i ∈ s with f i < g i, f i • v i)]
       conv_lhs => rw [← add_assoc, ← Finset.sum_add_distrib]
       conv_rhs => rw [add_left_comm, ← Finset.sum_add_distrib]
-      convert! heq
+      convert heq
         <;> simp_rw [← Finset.sum_filter_add_sum_filter_not s (fun i => g i ≤ f i), not_le]
         <;> congr! 2 with i hi
         <;> simp only [Finset.mem_filter] at hi
@@ -731,9 +731,9 @@ theorem linearIndependent_iff' :
       ∀ s : Finset ι, ∀ g : ι → R, ∑ i ∈ s, g i • v i = 0 → ∀ i ∈ s, g i = 0 := by
   rw [linearIndependent_iff'ₛ]
   refine ⟨fun h s f ↦ ?_, fun h s f g ↦ ?_⟩
-  · convert! h s f 0; simp_rw [Pi.zero_apply, zero_smul, Finset.sum_const_zero]
+  · convert h s f 0; simp_rw [Pi.zero_apply, zero_smul, Finset.sum_const_zero]
   · rw [← sub_eq_zero, ← Finset.sum_sub_distrib]
-    convert! h s (f - g) using 3; simp only [Pi.sub_apply, sub_smul, sub_eq_zero]
+    convert h s (f - g) using 3; simp only [Pi.sub_apply, sub_smul, sub_eq_zero]
 
 /-- A version of `linearIndependent_iff` where the linear combination is a `Finset` sum
 of a function with support contained in the `Finset`. -/
@@ -743,7 +743,7 @@ theorem linearIndependent_iff'' :
   classical
   exact linearIndependent_iff'.trans
     ⟨fun H s g hg hv i => if his : i ∈ s then H s g hv i his else hg i his, fun H s g hg i hi => by
-      convert!
+      convert
         H s (fun j => if j ∈ s then g j else 0) (fun j hj => ite_eq_right hj)
           (by simp_rw [ite_smul, zero_smul, Finset.sum_extend_by_zero, hg]) i
       exact (ite_eq_left hi).symm⟩

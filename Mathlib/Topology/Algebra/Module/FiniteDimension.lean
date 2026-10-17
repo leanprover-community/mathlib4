@@ -5,18 +5,20 @@ Authors: Sébastien Gouëzel, Anatole Dedecker
 -/
 module
 
+public import Lean.Meta.Tactic.Rfl
 public import Mathlib.Analysis.LocallyConvex.Bounded
+public import Mathlib.Analysis.LocallyConvex.WithSeminorms
+public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.RingTheory.Finiteness.Cofinite
 public import Mathlib.RingTheory.LocalRing.Basic
+public import Mathlib.Topology.Algebra.Module.Complement
 public import Mathlib.Topology.Algebra.Module.Determinant
 public import Mathlib.Topology.Algebra.Module.ModuleTopology
 public import Mathlib.Topology.Algebra.Module.Simple
-public import Mathlib.Topology.Algebra.Module.Complement
 public import Mathlib.Topology.Algebra.SeparationQuotient.FiniteDimensional
 public import Mathlib.Topology.Maps.Strict.Basic
-public import Lean.Meta.Tactic.Rfl
 
 /-!
 # Finite-dimensional topological vector spaces over complete fields
@@ -598,6 +600,23 @@ theorem ContinuousLinearMap.isStrictMap_of_finiteDimensional [T2Space F] [Finite
     IsStrictMap f := by
   rw [isStrictMap_iff_isQuotientMap_rangeFactorization]
   exact f.rangeRestrict.isQuotientMap_of_finiteDimensional (by simp)
+
+variable (E) in
+private lemma isNormableSpace_of_t2Space_finiteDimensional
+    [T2Space E] [FiniteDimensional 𝕜 E] : IsNormableSpace 𝕜 E := by
+  have e : E ≃L[𝕜] (Basis.ofVectorSpaceIndex 𝕜 E) → 𝕜 :=
+    (Basis.ofVectorSpace 𝕜 E).equivFun.toContinuousLinearEquiv
+  exact e.isNormableSpace
+
+/-- A finite dimensional topological vector space over a complete normed field is normable.
+
+Not registered as a global instance only for performance reasons. -/
+theorem isNormableSpace_of_finiteDimensional [FiniteDimensional 𝕜 E] : IsNormableSpace 𝕜 E := by
+  let F := SeparationQuotient E
+  have : IsNormableSpace 𝕜 F := isNormableSpace_of_t2Space_finiteDimensional _
+  let f : E →ₗ[𝕜] F := SeparationQuotient.mkCLM 𝕜 E
+  have : IsInducing f := SeparationQuotient.isInducing_mk
+  exact this.isNormableSpace
 
 /-- If `K` is a complete field and `V` is a finite-dimensional vector space over `K` (equipped with
 any topology so that `V` is a topological `K`-module, meaning `[IsTopologicalAddGroup V]`

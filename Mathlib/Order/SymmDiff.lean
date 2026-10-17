@@ -5,8 +5,8 @@ Authors: Adam Topaz, Bryan Gin-ge Chen, Yaël Dillies
 -/
 module
 
-public import Mathlib.Order.BooleanAlgebra.Basic
 public import Mathlib.Logic.Equiv.Basic
+public import Mathlib.Order.BooleanAlgebra.Basic
 
 /-!
 # Symmetric difference and bi-implication
@@ -213,7 +213,7 @@ theorem symmDiff_triangle : a ∆ c ≤ a ∆ b ⊔ b ∆ c := by
 
 @[to_dual]
 theorem le_symmDiff_sup_right (a b : α) : a ≤ (a ∆ b) ⊔ b := by
-  convert! symmDiff_triangle a b ⊥ <;> rw [symmDiff_bot]
+  convert symmDiff_triangle a b ⊥ <;> rw [symmDiff_bot]
 
 @[to_dual]
 theorem le_symmDiff_sup_left (a b : α) : b ≤ (a ∆ b) ⊔ a :=

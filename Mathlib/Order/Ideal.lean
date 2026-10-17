@@ -113,8 +113,6 @@ instance : SetLike (Ideal P) P where
 /-- The partial ordering by subset inclusion, inherited from `Set P`. -/
 instance : PartialOrder (Ideal P) := .ofSetLike (Ideal P)
 
-@[deprecated (since := "2026-04-01")] alias instPartialOrderIdeal := Order.Ideal.instPartialOrder
-
 @[ext]
 theorem ext {s t : Ideal P} : (s : Set P) = t → s = t :=
   SetLike.ext'

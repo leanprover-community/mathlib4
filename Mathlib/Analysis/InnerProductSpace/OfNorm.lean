@@ -6,6 +6,7 @@ Authors: Heather Macbeth
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Convex
+
 import Mathlib.Algebra.Module.LinearMap.Rat
 
 /-!
