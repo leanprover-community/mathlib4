@@ -25,26 +25,27 @@ adic valuation on `L` associated to `w`, in terms of the ramification index, and
 adic completions.
 
 The algebra `K → L` extends to a continuous ring homomorphism
-`completionMap K L v w : v.adicCompletion K →+* w.adicCompletion L`. Any algebra
+`adicCompletion.map K L v w : v.adicCompletion K →+* w.adicCompletion L`. Any algebra
 `v.adicCompletion K → w.adicCompletion L` that is continuous and compatible with `K → L` is equal to
-the one induced by `completionMap K L v w`. This is the analogue for finite places of
+the one induced by `adicCompletion.map K L v w`. This is the analogue for finite places of
 `Mathlib.NumberTheory.NumberField.Completion.LiesOverInstances`, but does not assume that `K` and
 `L` are number fields.
 
 ## Main definitions
 
-- `IsDedekindDomain.HeightOneSpectrum.completionMap`: the ring homomorphism
+- `IsDedekindDomain.HeightOneSpectrum.adicCompletion.map`: the ring homomorphism
   `v.adicCompletion K →+* w.adicCompletion L` extending `algebraMap K L`.
-- `IsDedekindDomain.HeightOneSpectrum.algebraOfLiesOver`: the algebra induced by `completionMap`.
+- `IsDedekindDomain.HeightOneSpectrum.adicCompletion.algebraOfLiesOver`: the algebra induced by
+  `adicCompletion.map`.
 
 ## Main results
 
 - `IsDedekindDomain.HeightOneSpectrum.valuation_liesOver`: the valuation on `L` restricts to the
   `e`-th power of the valuation on `K`, where `e` is the ramification index of `w` over `v`.
-- `IsDedekindDomain.HeightOneSpectrum.algebra_eq`: a continuous algebra
+- `IsDedekindDomain.HeightOneSpectrum.adicCompletion.algebra_of_liesOver_eq`: a continuous algebra
   `v.adicCompletion K → w.adicCompletion L` compatible with `K → L` is `algebraOfLiesOver`.
-- `IsDedekindDomain.HeightOneSpectrum.adicCompletion_valuation_liesOver`: the analogue of
-  `valuation_liesOver` for the adic completions.
+- `IsDedekindDomain.HeightOneSpectrum.adicCompletion.adicCompletion_valuation_liesOver`: the
+  analogue of `valuation_liesOver` for the adic completions.
 - The valuation on `w.adicCompletion L` extends the valuation on `v.adicCompletion K`, so
   `w.adicCompletionIntegers L` is an algebra over `v.adicCompletionIntegers K`.
 -/
@@ -161,7 +162,7 @@ theorem map_coe (x : WithVal (v.valuation K)) :
 structure on `w.adicCompletion L` satisfying both
 `IsScalarTower K (v.adicCompletion K) (w.adicCompletion L)` and
 `ContinuousSMul (v.adicCompletion K) (w.adicCompletion L)`, see
-`adicCompletion.algebra_eq`. -/
+`adicCompletion.algebra_of_liesOver_eq`. -/
 @[instance_reducible]
 noncomputable def algebraOfLiesOver : Algebra (v.adicCompletion K) (w.adicCompletion L) :=
   (map K L v w).toAlgebra
