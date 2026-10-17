@@ -201,25 +201,6 @@ omit [DecidableEq σ] in
 private theorem eq_X_of_idempotent (g : σ → MvPowerSeries σ R) (hg : HasSubst g)
     (hg0 : ∀ i, constantCoeff (g i) = 0) (hlin : ∀ i, (2 : ℕ∞) ≤ (g i - X i).order)
     (hgg : ∀ i, (g i).subst g = g i) : g = X := by
-  have h (n : ℕ) (i : σ) : (n : ℕ∞) ≤ (g i - X i).order := by
-    induction n generalizing i with
-    | zero => simp
-    | succ n ih =>
-      have hf (s : σ) : coeff (single s 1) (g i - X i) = 0 :=
-        coeff_of_lt_order (.trans_le (by simp) (hlin i))
-      have := add_le_order_subst_sub (k := 1) hg HasSubst.X
-        (fun s ↦ one_le_order_iff_constCoeff_eq_zero.mpr (hg0 s))
-        (fun s ↦ one_le_order_iff_constCoeff_eq_zero.mpr (constantCoeff_X s)) ih fun s _ ↦ hf s
-      rwa [subst_sub hg, hgg, subst_X hg, sub_self, subst_self, id_eq, zero_sub,
-        order_neg] at this
-  ext i d
-  exact coeff_eq_of_lt_order_sub ((Nat.cast_lt.mpr (lt_add_one _)).trans_le (h _ i))
-
-omit [DecidableEq σ] in
-/-- An idempotent family congruent to `X` modulo degree two is `X`. -/
-private theorem eq_X_of_idempotent' (g : σ → MvPowerSeries σ R) (hg : HasSubst g)
-    (hg0 : ∀ i, constantCoeff (g i) = 0) (hlin : ∀ i, (2 : ℕ∞) ≤ (g i - X i).order)
-    (hgg : ∀ i, (g i).subst g = g i) : g = X := by
   -- one factor `c x.1` for each of the `d s` occurrences of the variable `s`
   have hprod (c : σ → MvPowerSeries σ R) (d : σ →₀ ℕ) :
       d.prod (fun s k ↦ c s ^ k) = ∏ x ∈ d.support.sigma fun s ↦ Finset.range (d s), c x.1 := by
