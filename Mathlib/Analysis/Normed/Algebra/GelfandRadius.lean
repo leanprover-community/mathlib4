@@ -43,7 +43,7 @@ variable [NormedField 𝕜] [SeminormedRing A] [NormedAlgebra 𝕜 A]
 /-- The limit `‖a ^ k‖ ^ (1 / k)` of an element `a` in a normed ring.
 We use `k : ℕ+` to ease the eventual generalization to `NonUnitalSeminormedRing`.
 
-Do not use the definition directly. Use `tendsto_gelfandRadius` instead. -/
+This definition is not exposed. Use `tendsto_gelfandRadius` instead. -/
 noncomputable def gelfandRadius (a : A) : ℝ :=
   atTop.limUnder fun k : ℕ+ ↦ ‖a ^ (k : ℕ)‖ ^ (k : ℝ)⁻¹
 
