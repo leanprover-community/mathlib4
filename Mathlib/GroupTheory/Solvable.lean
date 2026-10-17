@@ -154,7 +154,7 @@ alias _root_.isSolvable_def := Group.isSolvable_def
 
 @[to_additive]
 instance (priority := 100) {G : Type*} [Group G] [IsMulCommutative G] : IsSolvable G :=
-  ⟨⟨1, le_bot_iff.mp (Abelianization.commutator_subset_ker (MonoidHom.id G))⟩⟩
+  ⟨⟨1, le_bot_iff.mp (Abelianization.commutator_le_ker (MonoidHom.id G))⟩⟩
 
 @[to_additive]
 theorem isSolvable_of_comm {G : Type*} [hG : Group G] (h : ∀ a b : G, a * b = b * a) :
@@ -339,7 +339,7 @@ theorem Group.not_isSolvable_of_mem_derivedSeries {g : G} (h1 : g ≠ 1)
   Group.not_isSolvable_of_mem_derivedSeries
 
 @[deprecated (since := "2026-07-16")]
-alias not_solvable_of_mem_derivedSeries := not_isSolvable_of_mem_derivedSeries
+alias not_solvable_of_mem_derivedSeries := Group.not_isSolvable_of_mem_derivedSeries
 
 theorem Equiv.Perm.not_isSolvable_fin_5 : ¬Group.IsSolvable (Equiv.Perm (Fin 5)) := by
   let x : Equiv.Perm (Fin 5) := ⟨![1, 2, 0, 3, 4], ![2, 0, 1, 3, 4], by decide, by decide⟩
