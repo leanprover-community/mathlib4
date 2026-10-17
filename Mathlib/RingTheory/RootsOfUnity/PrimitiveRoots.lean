@@ -483,21 +483,24 @@ def zmodEquivZPowers (h : IsPrimitiveRoot ζ k) : ZMod k ≃+ Additive (Subgroup
         rfl)
 
 @[simp]
-theorem zmodEquivZPowers_apply_coe_int (i : ℤ) :
+theorem zmodEquivZPowers_apply_intCast (i : ℤ) :
     h.zmodEquivZPowers i = Additive.ofMul (⟨ζ ^ i, i, rfl⟩ : Subgroup.zpowers ζ) := by
   rw [zmodEquivZPowers, AddEquiv.ofBijective_apply] -- Porting note: Original proof didn't have `rw`
   exact AddMonoidHom.liftOfRightInverse_comp_apply _ _ ZMod.intCast_rightInverse _ _
+
+@[deprecated (since := "2026-10-13")]
+alias zmodEquivZPowers_apply_coe_int := zmodEquivZPowers_apply_intCast
 
 @[simp]
 theorem zmodEquivZPowers_apply_coe_nat (i : ℕ) :
     h.zmodEquivZPowers i = Additive.ofMul (⟨ζ ^ i, i, rfl⟩ : Subgroup.zpowers ζ) := by
   have : (i : ZMod k) = (i : ℤ) := by norm_cast
-  simp only [this, zmodEquivZPowers_apply_coe_int, zpow_natCast]
+  simp only [this, zmodEquivZPowers_apply_intCast, zpow_natCast]
 
 @[simp]
 theorem zmodEquivZPowers_symm_apply_zpow (i : ℤ) :
     h.zmodEquivZPowers.symm (Additive.ofMul (⟨ζ ^ i, i, rfl⟩ : Subgroup.zpowers ζ)) = i := by
-  rw [← h.zmodEquivZPowers.symm_apply_apply i, zmodEquivZPowers_apply_coe_int]
+  rw [← h.zmodEquivZPowers.symm_apply_apply i, zmodEquivZPowers_apply_intCast]
 
 @[simp]
 theorem zmodEquivZPowers_symm_apply_zpow' (i : ℤ) : h.zmodEquivZPowers.symm ⟨ζ ^ i, i, rfl⟩ = i :=
