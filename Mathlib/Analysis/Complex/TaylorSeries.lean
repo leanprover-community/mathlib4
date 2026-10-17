@@ -85,7 +85,7 @@ include hf hz in
 /-- The derivative of a function that is complex differentiable on an open ball
 is given by evaluating the derivative of its Taylor series. -/
 lemma hasSum_taylorSeries_deriv_on_ball :
-    HasSum (fun n : ℕ => ((n ! : ℂ))⁻¹ • (z - c) ^ n • iteratedDeriv (n + 1) f c) (deriv f z) := by
+    HasSum (fun n : ℕ ↦ (n ! : ℂ)⁻¹ • (z - c) ^ n • iteratedDeriv (n + 1) f c) (deriv f z) := by
   simpa only [← iteratedDeriv_succ'] using
     hasSum_taylorSeries_on_ball (hf.deriv Metric.isOpen_ball) hz
 
