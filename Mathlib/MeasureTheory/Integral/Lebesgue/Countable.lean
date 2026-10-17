@@ -148,7 +148,7 @@ theorem lintegral_insert [MeasurableSingletonClass α] {a : α} {s : Set α} (h 
 
 theorem lintegral_finset [MeasurableSingletonClass α] (s : Finset α) (f : α → ℝ≥0∞) :
     ∫⁻ x in s, f x ∂μ = ∑ x ∈ s, f x * μ {x} := by
-  simp only [lintegral_countable _ s.countable_toSet, ← Finset.tsum_subtype']
+  simp only [lintegral_countable _ s.countable_toSet, ← (Finset.tsum_subtype')]
 
 theorem lintegral_fintype [MeasurableSingletonClass α] [Fintype α] (f : α → ℝ≥0∞) :
     ∫⁻ x, f x ∂μ = ∑ x, f x * μ {x} := by
