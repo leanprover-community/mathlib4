@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Algebra.BigOperators.Finprod
+
 import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.Group.Units.Equiv
 

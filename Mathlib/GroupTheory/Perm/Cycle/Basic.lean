@@ -472,7 +472,7 @@ theorem nodup_of_pairwise_disjoint_cycles {l : List (Perm β)} (h1 : ∀ f ∈ l
     (h2 : l.Pairwise Disjoint) : l.Nodup :=
   nodup_of_pairwise_disjoint (fun h => (h1 1 h).ne_one rfl) h2
 
-/-- Unlike `support_congr`, which assumes that `∀ (x ∈ g.support), f x = g x)`, here
+/-- Unlike `support_congr`, which assumes that `∀ (x ∈ g.support), f x = g x`, here
 we have the weaker assumption that `∀ (x ∈ f.support), f x = g x`. -/
 theorem IsCycle.support_congr (hf : IsCycle f) (hg : IsCycle g) (h : f.support ⊆ g.support)
     (h' : ∀ x ∈ f.support, f x = g x) : f = g := by
@@ -767,6 +767,11 @@ theorem IsCycleOn.zpow_apply_eq_zpow_apply {s : Finset α} (hf : f.IsCycleOn s) 
   rw [Int.modEq_iff_dvd, ← hf.zpow_apply_eq ha]
   simp [sub_eq_neg_add, zpow_add, eq_symm_apply, eq_comm]
 
+/-- The map `n ↦ (f ^ n) a` is injective on `[0, #s)` when `f.IsCycleOn s` and `a ∈ s`. -/
+theorem IsCycleOn.injOn_pow_apply {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈ s) :
+    Set.InjOn (fun n ↦ (f ^ n) a) (.Iio #s) :=
+  fun _ hm _ hn h ↦ ((hf.pow_apply_eq_pow_apply ha).mp h).eq_of_lt_of_lt hm hn
+
 theorem IsCycleOn.pow_card_apply {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈ s) :
     (f ^ #s) a = a :=
   (hf.pow_apply_eq ha).2 dvd_rfl
@@ -813,7 +818,7 @@ theorem IsCycleOn.extendDomain {p : β → Prop} [DecidablePred p] (f : α ≃ S
 protected theorem IsCycleOn.countable (hs : f.IsCycleOn s) : s.Countable := by
   obtain rfl | ⟨a, ha⟩ := s.eq_empty_or_nonempty
   · exact Set.countable_empty
-  · exact (Set.countable_range fun n : ℤ => (⇑(f ^ n) : α → α) a).mono (hs.2 ha)
+  · exact (Set.countable_range fun n : ℤ => (⇑(f ^ n) : α → α) a).mono fun y hy ↦ hs.2 ha hy
 
 
 end IsCycleOn
@@ -848,8 +853,7 @@ theorem exists_cycleOn (s : Finset α) :
     ∃ f : Perm α, f.IsCycleOn s ∧ f.support ⊆ s := by
   refine ⟨s.toList.formPerm, ?_, fun x hx => by
     simpa using List.mem_of_formPerm_apply_ne (Perm.mem_support.1 hx)⟩
-  convert s.nodup_toList.isCycleOn_formPerm
-  simp
+  simpa using s.nodup_toList.isCycleOn_formPerm
 
 end Finset
 
@@ -863,8 +867,7 @@ theorem Countable.exists_cycleOn (hs : s.Countable) :
   obtain hs' | hs' := s.finite_or_infinite
   · refine ⟨hs'.toFinset.toList.formPerm, ?_, fun x hx => by
       simpa using List.mem_of_formPerm_apply_ne hx⟩
-    convert hs'.toFinset.nodup_toList.isCycleOn_formPerm
-    simp
+    simpa using hs'.toFinset.nodup_toList.isCycleOn_formPerm
   · have := hs.to_subtype
     have := hs'.to_subtype
     obtain ⟨f⟩ : Nonempty (ℤ ≃ s) := inferInstance

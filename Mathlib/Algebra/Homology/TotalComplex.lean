@@ -5,9 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Linear.Basic
 public import Mathlib.Algebra.Homology.ComplexShapeSigns
 public import Mathlib.Algebra.Homology.HomologicalBicomplex
+public import Mathlib.CategoryTheory.Linear.Basic
+
 import Mathlib.Algebra.Module.Basic
 
 /-!

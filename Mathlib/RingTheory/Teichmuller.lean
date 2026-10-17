@@ -5,9 +5,10 @@ Authors: Kenny Lau
 -/
 module
 
-import Mathlib.LinearAlgebra.SModEq.Pow
 public import Mathlib.RingTheory.AdicCompletion.Basic
 public import Mathlib.RingTheory.Perfection
+
+import Mathlib.LinearAlgebra.SModEq.Pow
 
 /-! # Teichmüller map
 
