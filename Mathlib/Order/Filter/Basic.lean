@@ -1200,6 +1200,10 @@ theorem eventuallyLE_iff_all_subsets {f g : α → β} {l : Filter α} :
     f ≤ᶠ[l] g ↔ ∀ s : Set α, ∀ᶠ x in l, x ∈ s → f x ≤ g x :=
   eventually_iff_all_subsets
 
+lemma eventuallyLE_of_subset {s t : Set α} (h : s ⊆ t) :
+    s ≤ᶠ[l] t :=
+  Eventually.of_forall h
+
 end LE
 
 section Preorder
@@ -1276,9 +1280,14 @@ theorem Eventually.lt_top_iff_ne_top [PartialOrder β] [OrderTop β] {l : Filter
   ⟨Eventually.ne_of_lt, Eventually.lt_top_of_ne⟩
 
 namespace EventuallySubset
-variable {s t u : Set α} {l l' : Filter α}
+variable {s s' t t' u : Set α} {l l' : Filter α}
 
 lemma eventually (h : s ≤ᶠ[l] t) : ∀ᶠ x in l, x ∈ s → x ∈ t := h
+
+lemma congr (h : s ≤ᶠ[l] t) (hs : s =ᶠ[l] s') (ht : t =ᶠ[l] t') :
+    s' ≤ᶠ[l] t' := by
+  filter_upwards [h, hs, ht] with x hst hs' ht'
+  rwa [← hs', ← ht']
 
 @[gcongr]
 lemma filter_mono (h : s ≤ᶠ[l] t) (hl : l' ≤ l) : s ≤ᶠ[l'] t :=
