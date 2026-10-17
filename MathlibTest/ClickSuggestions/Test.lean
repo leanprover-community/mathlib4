@@ -14,7 +14,7 @@ import Mathlib.SetTheory.ZFC.Basic
 import Mathlib.Algebra.Lie.OfAssociative
 
 /-!
-This file tests some basic features of `#click_search`
+This file tests some basic features of `#click_suggestions`
 -/
 
 set_option linter.all false

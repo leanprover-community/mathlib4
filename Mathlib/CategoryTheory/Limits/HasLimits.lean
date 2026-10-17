@@ -323,7 +323,6 @@ theorem limit.lift_map {F G : J ⥤ C} [HasLimit F] [HasLimit G] (c : Cone F) (�
 theorem limit.lift_cone {F : J ⥤ C} [HasLimit F] : limit.lift F (limit.cone F) = 𝟙 (limit F) :=
   (limit.isLimit _).lift_self
 
--- TODO: `to_dual` doesn't yet know that it shouldn't translate the category on `Type _`.
 /-- The isomorphism (in `Type`) between
 morphisms from a specified object `W` to the limit object,
 and cones with cone point `W`.
@@ -341,6 +340,11 @@ theorem limit.homIso_hom (F : J ⥤ C) [HasLimit F] {W : C} :
 morphisms from a specified object `W` to the limit object,
 and an explicit componentwise description of cones with cone point `W`.
 -/
+@[to_dual
+/-- The isomorphism (in `Type`) between
+morphisms from the colimit object to a specified object `W`,
+and an explicit componentwise description of cocones with cone point `W`.
+-/]
 def limit.homIso' (F : J ⥤ C) [HasLimit F] (W : C) :
     ULift.{u₁} (W ⟶ limit F : Type v) ≅
       { p : ∀ j, W ⟶ F.obj j // ∀ {j j' : J} (f : j ⟶ j'), p j ≫ F.map f = p j' } :=
@@ -728,15 +732,6 @@ theorem colimit.homIso_hom (F : J ⥤ C) [HasColimit F] {W : C} :
     (colimit.homIso F W).hom =
       ↾fun f ↦ (colimit.cocone F).ι ≫ (const J).map f.down :=
   (colimit.isColimit F).homIso_hom
-
-/-- The isomorphism (in `Type`) between
-morphisms from the colimit object to a specified object `W`,
-and an explicit componentwise description of cocones with cone point `W`.
--/
-def colimit.homIso' (F : J ⥤ C) [HasColimit F] (W : C) :
-    ULift.{u₁} (colimit F ⟶ W : Type v) ≅
-      { p : ∀ j, F.obj j ⟶ W // ∀ {j j'} (f : j ⟶ j'), F.map f ≫ p j' = p j } :=
-  (colimit.isColimit F).homIso' W
 
 -- This has the isomorphism pointing in the opposite direction than in `has_limit_of_iso`.
 -- This is intentional; it seems to help with elaboration.
