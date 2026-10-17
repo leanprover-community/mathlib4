@@ -26,8 +26,8 @@ The reusable ingredients are `Algebra.FormallyUnramified.smulIdempotent`,
 The subgroup idempotent only requires the subgroup to be finite; the coset sum does not require
 normality of the subgroup.
 
-The identity `Subgroup.linearize_descentTrace` explains the multiplier: linearizing
-`Subgroup.descentTrace` gives multiplication by `Subgroup.descentMultiplier`.
+Linearizing the coset sum after multiplication by the subgroup idempotent gives multiplication
+by `Subgroup.descentMultiplier`.
 -/
 
 @[expose] public section
@@ -213,29 +213,12 @@ variable {G : Type*} [Group G] (H : Subgroup G) (A : Type*) (B : Type*)
 namespace Subgroup
 
 omit [Finite H] in
-/-- Relative trace after multiplication by the subgroup idempotent, viewed as a base-linear
-endomorphism. Its linearization is multiplication by `descentMultiplier`. -/
-noncomputable def descentTrace [Finite G] : B →ₗ[A] B := by
-  classical
-  letI := Fintype.ofFinite (G ⧸ H)
-  exact (∑ q : G ⧸ H, (MulSemiringAction.toAlgHom A B q.out).toLinearMap).comp
-    (LinearMap.mulLeft A (subgroupIdempotent A B H))
-
-omit [Finite H] in
-/-- The multiplier representing the linearization of `descentTrace`. -/
+/-- The multiplier obtained by linearizing the coset sum after multiplication by the subgroup
+idempotent. -/
 noncomputable def descentMultiplier [Finite G] : B := by
   classical
   letI := Fintype.ofFinite (G ⧸ H)
   exact ∑ q : G ⧸ H, smulIdempotent A B q.out * subgroupIdempotent A B H
-
-/-- Linearizing the relative trace after multiplication by the subgroup idempotent gives
-multiplication by the descent multiplier. -/
-@[simp]
-lemma linearize_descentTrace [Finite G] :
-    linearize B (H.descentTrace A B) = LinearMap.mulLeft B (H.descentMultiplier A B) := by
-  classical
-  apply LinearMap.ext_ring
-  simp [descentMultiplier, descentTrace]
 
 end Subgroup
 
@@ -246,25 +229,27 @@ private lemma descentMultiplier_mem_colon [Algebra.IsInvariant A B G]
       H.descentMultiplier A B ∈ ((I.comap (algebraMap A B)).map (algebraMap A B)).colon I := by
   classical
   let := Fintype.ofFinite (G ⧸ H)
-  set J := (I.comap (algebraMap A B)).map (algebraMap A B)
-  have hT : I.restrictScalars A ≤ (J.restrictScalars A).comap (H.descentTrace A B) := by
+  let J := (I.comap (algebraMap A B)).map (algebraMap A B)
+  let T : B →ₗ[A] B := (∑ q : G ⧸ H, (MulSemiringAction.toAlgHom A B q.out).toLinearMap).comp
+    (LinearMap.mulLeft A (subgroupIdempotent A B H))
+  have hT : I.restrictScalars A ≤ (J.restrictScalars A).comap T := by
     intro x hx
     let y := subgroupIdempotent A B H * x
-    have hy (g : G) : g • (∑ q : G ⧸ H, q.out • y) = ∑ q : G ⧸ H, q.out • y := by
-      rw [Finset.smul_sum]
+    let z := ∑ q : G ⧸ H, q.out • y
+    have hz (g : G) : g • z = z := by
+      simp only [z, Finset.smul_sum]
       refine Fintype.sum_equiv (MulAction.toPerm g) _ _ fun q ↦ ?_
       obtain ⟨h, hh⟩ := QuotientGroup.mk_out_eq_mul H (g * q.out)
       rw [← smul_eq_mul, MulAction.Quotient.mk_smul_out] at hh
-      change g • (q.out • y) = (g • q).out • y
-      simp only [hh, smul_eq_mul, mul_smul,
-        show (h : G) • y = y from smul_subgroupIdempotent_mul A B H h x]
-    have hyI : (∑ q : G ⧸ H, q.out • y) ∈ I := I.sum_mem fun q _ ↦
+      have hy : (h : G) • y = y := smul_subgroupIdempotent_mul A B H h x
+      simp [hh, mul_smul, hy]
+    have hzI : z ∈ I := I.sum_mem fun q _ ↦
       hI q.out ▸ Ideal.smul_mem_pointwise_smul q.out y I (I.mul_mem_left _ hx)
-    obtain ⟨a, ha⟩ := Algebra.IsInvariant.isInvariant (A := A) _ hy
-    have : algebraMap A B a ∈ J := Ideal.mem_map_of_mem _ (by simpa [ha] using hyI)
-    simpa [Subgroup.descentTrace, y, ha] using this
-  simpa [Submodule.mem_colon, IsConcreteLE.le_iff, Subgroup.linearize_descentTrace] using
-    le_comap_linearize (H.descentTrace A B) I J hT
+    obtain ⟨a, ha⟩ := Algebra.IsInvariant.isInvariant (A := A) z hz
+    have : algebraMap A B a ∈ J := Ideal.mem_map_of_mem _ (by simpa [ha] using hzI)
+    simpa [T, y, z, ha] using this
+  simpa [Submodule.mem_colon, IsConcreteLE.le_iff, Subgroup.descentMultiplier, T,
+    Finset.sum_mul, mul_assoc] using le_comap_linearize T I J hT
 
 lemma Quotient.mk_descentMultiplier_inertia (Q : Ideal B) [Q.IsPrime] [Finite G] :
     Quotient.mk Q ((Q.inertia G).descentMultiplier A B) = 1 := by
