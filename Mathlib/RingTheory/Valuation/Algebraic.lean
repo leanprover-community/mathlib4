@@ -14,8 +14,9 @@ import Mathlib.RingTheory.Algebraic.Integral
 /-!
 # Valuation of an algebraic element
 
-The valuation of an algebraic element is an `n`-th root, for some positive integer `n`, of
-the valuation of an element of the base field.
+The valuation of an element `x` algebraic over a field `K` is an `n`-th root of
+the valuation of some element of `K`, for some positive integer `n`
+at most the degree of `x` over `K`.
 -/
 
 namespace Valuation
@@ -23,7 +24,7 @@ namespace Valuation
 variable {K A Γ : Type*} [Field K] [Ring A] [Algebra K A]
     [LinearOrderedCommGroupWithZero Γ] (v : Valuation A Γ)
 
-/-- If `x` is algebraic over `K`, then `v x` is an n-th root of some `v (algebraMap K A r)`. -/
+/-- If `x` is algebraic over `K`, then `v x` is an `n`-th root of some `v (algebraMap K A r)`. -/
 public theorem exists_map_pow_eq_map_algebraMap_of_isAlgebraic {x : A} (hx : IsAlgebraic K x) :
     ∃ (n : ℕ) (r : K), 0 < n ∧ n ≤ (minpoly K x).natDegree ∧ v x ^ n = v (algebraMap K A r) := by
   classical
