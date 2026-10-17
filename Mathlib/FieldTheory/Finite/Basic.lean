@@ -744,7 +744,7 @@ theorem Polynomial.splits_X_pow_char_sub_X : Splits ((X : F[X]) ^ p - X) := by
   let _ := Subfield.fintypeBot F p
   rw [splits_iff_card_roots, Subfield.roots_X_pow_char_sub_X_bot, Finset.card_val, Finset.card_univ,
     Fintype.card_eq_nat_card, Subfield.card_bot F p,
-    natDegree_X_pow_sub_X _ (Prime.one_lt Fact.out)]
+    natDegree_X_pow_sub_X (Nat.Prime.one_lt Fact.out)]
 
 theorem Polynomial.roots_X_pow_char_sub_X :
     (X ^ p - X : F[X]).roots = (Subfield.botFinset F p).val := by
