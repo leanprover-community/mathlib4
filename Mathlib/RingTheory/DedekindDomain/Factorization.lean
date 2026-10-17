@@ -818,9 +818,6 @@ theorem Ideal.map_algebraMap_eq_finsetProd_pow {p : Ideal S} [p.IsMaximal] (hp :
     simpa [maxPowDividing, Function.mem_mulSupport, IsPrime.ne_top _,
       Associates.count_ne_zero_iff_dvd h (irreducible v)] using hv
 
-@[deprecated (since := "2026-04-08")]
-alias Ideal.map_algebraMap_eq_finset_prod_pow := Ideal.map_algebraMap_eq_finsetProd_pow
-
 end primesOver
 
 /-!

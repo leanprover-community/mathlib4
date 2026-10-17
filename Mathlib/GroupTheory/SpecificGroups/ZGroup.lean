@@ -95,7 +95,7 @@ theorem commutator_lt [Finite G] [IsZGroup G] [Nontrivial G] : commutator G < �
   let P : Sylow p G := default
   have hP := isZGroup p hp P
   let f := MonoidHom.transferSylow P (hP.normalizer_le_centralizer rfl)
-  refine lt_of_le_of_lt (Abelianization.commutator_subset_ker f) ?_
+  refine lt_of_le_of_lt (Abelianization.commutator_le_ker f) ?_
   have h := P.ne_bot_of_dvd_card (Nat.card G).minFac_dvd
   contrapose h
   rw [← Subgroup.isComplement'_top_left, ← (not_lt_top_iff.mp h)]
@@ -168,7 +168,7 @@ theorem isCyclic_commutator [Finite G] [IsZGroup G] : IsCyclic (commutator G) :=
       simpa [le_iff_mem_imp_mem, Subgroup.mem_center_iff, Subgroup.mem_centralizer_iff] using h
     rw [Subgroup.map_subtype_commutator, Subgroup.le_centralizer_iff]
     let _ := (hH.mulAutMulEquiv _).toMonoidHom.commGroupOfInjective (hH.mulAutMulEquiv _).injective
-    have h := Abelianization.commutator_subset_ker ⁅commutator H, commutator H⁆.normalizerMonoidHom
+    have h := Abelianization.commutator_le_ker ⁅commutator H, commutator H⁆.normalizerMonoidHom
     rwa [Subgroup.normalizerMonoidHom_ker, Subgroup.normalizer_eq_top,
       ← Subgroup.map_subtype_le_map_subtype, Subgroup.map_subtype_commutator,
         Subgroup.map_subgroupOf_eq_of_le le_top] at h
@@ -275,7 +275,7 @@ theorem not_dvd_card_commutator_or_not_dvd_index_commutator :
   refine (normalizer_le_centralizer_or_le_commutator P).imp ?_ ?_ <;>
       refine fun hP h ↦ P.not_dvd_index (h.trans ?_)
   · rw [(MonoidHom.ker_transferSylow_isComplement' P hP).index_eq_card]
-    exact Subgroup.card_dvd_of_le (Abelianization.commutator_subset_ker _)
+    exact Subgroup.card_dvd_of_le (Abelianization.commutator_le_ker _)
   · exact Subgroup.index_dvd_of_le hP
 
 end Sylow
