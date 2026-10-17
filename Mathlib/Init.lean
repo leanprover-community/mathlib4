@@ -25,6 +25,7 @@ public import Mathlib.Tactic.Linter.FlexibleLinter
 public import Mathlib.Tactic.Linter.HashCommandLinter
 public import Mathlib.Tactic.Linter.HaveILetI
 public import Mathlib.Tactic.Linter.Header
+public import Mathlib.Tactic.Linter.InstanceDiamonds
 public import Mathlib.Tactic.Linter.InternalConstructor
 -- The following module imports `Batteries.Tactic.Lint`, where `#lint` is defined.
 public import Mathlib.Tactic.Linter.Lint

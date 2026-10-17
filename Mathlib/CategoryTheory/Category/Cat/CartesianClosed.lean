@@ -66,6 +66,7 @@ namespace Cat
 section
 variable (C : Type u) [Category.{u} C]
 
+@[nolint instanceDiamonds]
 instance closed : Closed (Cat.of C) where
   rightAdj := exp C
   adj := Adjunction.mkOfHomEquiv
