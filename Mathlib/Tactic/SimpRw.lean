@@ -69,8 +69,9 @@ example {a : ℕ}
 ```
 
 `simp` also solves the goal above, but it does not show the step-by-step transformation of the goal
-that `simp_rw` shows. `rw` cannot solve this directly because it cannot rewrite under binders, see
-https://github.com/leanprover/lean4/issues/6033. With `conv` and `intro`, `rw` can be used:
+that `simp_rw` shows. `rw` cannot solve this directly because it cannot rewrite expressions
+containing bound variables (https://github.com/leanprover/lean4/issues/6033). With `conv` and
+`intro`, `rw` can be used:
 
 ```lean
 example {a : ℕ}
