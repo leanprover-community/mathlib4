@@ -385,7 +385,7 @@ variable {K L}
 
 /-- If `L/E/K` is a tower of fields, then the spectral norm of `x : E` equals its spectral norm
   when regarding `x` as an element of `L`. -/
-theorem spectralNorm'.eq_of_tower {E : Type*} [Field E] [Algebra K E] [Algebra E L]
+theorem spectralNorm.eq_of_tower {E : Type*} [Field E] [Algebra K E] [Algebra E L]
     [IsScalarTower K E L] (x : E) :
     spectralNorm' K E x = spectralNorm' K L (algebraMap E L x) := by
   have hx : minpoly K (algebraMap E L x) = minpoly K x :=
@@ -400,7 +400,7 @@ theorem spectralNorm.eq_of_normalClosure' (x : E) :
     spectralNorm' K (normalClosure K E (AlgebraicClosure E))
       (algebraMap E (normalClosure K E (AlgebraicClosure E)) x) =
     spectralNorm' K L (algebraMap E L x) := by
-  simp_rw [← spectralNorm'.eq_of_tower]
+  simp_rw [← spectralNorm.eq_of_tower]
 
 /-- If `L/E/K` is a tower of fields and `x = algebraMap E L g`, then the spectral norm
   of `g : E` when regarded as an element of the normal closure of `E` equals the spectral norm
@@ -449,7 +449,7 @@ theorem norm_le_spectralNorm {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
     (by rw [minpoly.aeval])
 
 /-- The `K`-algebra automorphisms of `L` are isometries with respect to the spectral norm. -/
-theorem spectralNorm'_eq_of_equiv (σ : Gal(L/K)) (x : L) :
+theorem spectralNorm_eq_of_equiv (σ : Gal(L/K)) (x : L) :
     spectralNorm' K L x = spectralNorm' K L (σ x) := by
   simp only [spectralNorm', minpoly.algEquiv_eq]
 
@@ -571,13 +571,13 @@ instance : SeminormClass (AlgebraNorm K ↥(normalClosure K (↥E) (AlgebraicClo
     ↥(normalClosure K (↥E) (AlgebraicClosure ↥E)) := AlgebraNormClass.toSeminormClass
 
 /-- The spectral norm extends the norm on `K`. -/
-theorem spectralNorm'_extends (k : K) : spectralNorm' K L (algebraMap K L k) = ‖k‖ := by
+theorem spectralNorm_extends (k : K) : spectralNorm' K L (algebraMap K L k) = ‖k‖ := by
   simp_rw [spectralNorm', minpoly.eq_X_sub_C_of_algebraMap_inj _ (algebraMap K L).injective]
   exact spectralValue_X_sub_C k
 
 theorem spectralNorm'_one : spectralNorm' K L 1 = 1 := by
   have h1 : (1 : L) = algebraMap K L 1 := by rw [map_one]
-  rw [h1, spectralNorm'_extends, norm_one]
+  rw [h1, spectralNorm_extends, norm_one]
 
 variable [IsUltrametricDist K]
 
@@ -672,8 +672,8 @@ def spectralAlgNorm' : AlgebraNorm K L where
 
 theorem spectralAlgNorm'_def (x : L) : spectralAlgNorm' K L x = spectralNorm' K L x := rfl
 
-theorem spectralAlgNorm'_extends (k : K) : spectralAlgNorm' K L (algebraMap K L k) = ‖k‖ :=
-  spectralNorm'_extends k
+theorem spectralAlgNorm_extends (k : K) : spectralAlgNorm' K L (algebraMap K L k) = ‖k‖ :=
+  spectralNorm_extends k
 
 theorem spectralAlgNorm'_one : spectralAlgNorm' K L (1 : L) = 1 := spectralNorm'_one
 
@@ -776,7 +776,7 @@ def nontriviallyNormedField : NontriviallyNormedField L where
   __ := spectralNorm'.normedField K L
   non_trivial :=
     let ⟨x, hx⟩ := NontriviallyNormedField.non_trivial (α := K)
-    ⟨algebraMap K L x, hx.trans_eq (spectralNorm'_extends _).symm⟩
+    ⟨algebraMap K L x, hx.trans_eq (spectralNorm_extends _).symm⟩
 
 /-- `L` with the spectral norm is a `SeminormedRing`. -/
 @[instance_reducible]
@@ -826,7 +826,7 @@ def normedAlgebra' (E L : Type*) [Field L] [Algebra K L] [Algebra.IsAlgebraic K 
       apply le_of_eq
       simp only [Algebra.smul_def, norm_mul, mul_eq_mul_right_iff, _root_.norm_eq_zero]
       simp only [NormedAlgebra.norm_eq_spectralNorm' K]
-      exact Or.inl (spectralNorm'.eq_of_tower _).symm }
+      exact Or.inl (spectralNorm.eq_of_tower _).symm }
 
 /-- The metric space structure on `L` induced by the spectral norm. -/
 @[instance_reducible]
@@ -899,9 +899,9 @@ theorem spectralNorm_eq_norm_coeff_zero_rpow (x : L) :
     IsSplittingField.IsScalarTower.isAlgebraic E (mapAlg K L (minpoly K x))
   have : Algebra.IsAlgebraic K E := Algebra.IsAlgebraic.trans K L E
   rw [one_div, Real.eq_rpow_inv (spectralNorm_nonneg x) (norm_nonneg ((minpoly K x).coeff 0)),
-    Real.rpow_natCast, @spectralNorm'.eq_of_tower K _ E,
-    ← @spectralNorm'_extends K _ L _ _ ((minpoly K x).coeff 0),
-    @spectralNorm'.eq_of_tower K _ E _ _ L, ← spectralMulAlgNorm_def,
+    Real.rpow_natCast, @spectralNorm.eq_of_tower K _ E,
+    ← @spectralNorm_extends K _ L _ _ ((minpoly K x).coeff 0),
+    @spectralNorm.eq_of_tower K _ E _ _ L, ← spectralMulAlgNorm_def,
     ← spectralMulAlgNorm_def, Polynomial.coeff_zero_of_isScalarTower,
     hspl.coeff_zero_eq_prod_roots_of_monic _, map_mul, map_pow,
     map_neg_eq_map, map_one, one_pow, one_mul, spectralNorm_pow_natDegree_eq_prod_roots _ _ x]
