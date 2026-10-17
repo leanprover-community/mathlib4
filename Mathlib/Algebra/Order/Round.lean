@@ -64,38 +64,9 @@ theorem round_ofNat (n : ℕ) [n.AtLeastTwo] : round (ofNat(n) : α) = ofNat(n) 
 @[simp]
 theorem round_intCast (n : ℤ) : round (n : α) = n := by simp [round]
 
-variable [IsStrictOrderedRing α]
+section
 
-/-- Formula for `round` in terms of `Int.floor`, a version that works over any ring.
-
-TODO: decide if we want to use this as a definition. It may be slightly faster over `ℚ`. -/
-theorem round_eq_div (x : α) : round x = (⌊2 * x⌋ + 1) / 2 := by
-  rw [← floor_add_fract x, round, fract_intCast_add, fract_fract, floor_intCast_add, mul_add,
-    ← Int.cast_ofNat, ← Int.cast_mul, floor_intCast_add, ceil_intCast_add, add_assoc,
-    Int.mul_add_ediv_left _ _ two_ne_zero, Int.cast_ofNat]
-  split_ifs with h <;> congr 1
-  · rw [Int.floor_eq_zero_iff.mpr, Int.floor_eq_zero_iff.mpr]
-    · simp
-    · simp [h]
-    · suffices fract x < 1 by simpa
-      refine lt_of_le_of_lt ?_ h
-      apply le_mul_of_one_le_left <;> simp
-  · have H : ⌊2 * fract x⌋ = 1 := by simpa [floor_eq_iff, ← two_mul, fract_lt_one] using h
-    suffices 0 < fract x by simp [this, H, ceil_eq_iff, (fract_lt_one _).le]
-    contrapose! h
-    grw [h]
-    simp
-
-/-- Away from the points with fractional part `1 / 2`, `round x = ⌈2 * x⌉ / 2`. -/
-theorem round_eq_half_ceil_two_mul {x : α} (hx : 2 * fract x ≠ 1) : round x = ⌈2 * x⌉ / 2 := by
-  rcases em (2 * x ∈ range Int.cast) with ⟨m, hm⟩ | hx'
-  · rw [← hm, ceil_intCast]
-    rcases m.even_or_odd with ⟨m, rfl⟩ | ⟨m, rfl⟩
-    · obtain rfl : m = x := mul_left_cancel₀ two_ne_zero <| by simp [← hm, ← two_mul]
-      rw [round_intCast, ← two_mul, Int.mul_ediv_cancel_left _ two_ne_zero]
-    · refine absurd ?_ hx
-      exact (mul_fract_eq_one_iff_exists_int one_lt_two).mpr ⟨m, mod_cast hm.symm⟩
-  · rw [round_eq_div, (ceil_eq_floor_add_one_iff_notMem _).mpr hx']
+variable [IsOrderedAddMonoid α]
 
 @[simp]
 theorem round_add_intCast (x : α) (y : ℤ) : round (x + y) = round x + y := by
@@ -146,6 +117,41 @@ theorem round_natCast_add (x : α) (y : ℕ) : round ((y : α) + x) = y + round 
 theorem round_ofNat_add (n : ℕ) [n.AtLeastTwo] (x : α) :
     round (ofNat(n) + x) = ofNat(n) + round x :=
   round_natCast_add x n
+
+end
+
+variable [IsStrictOrderedRing α]
+
+/-- Formula for `round` in terms of `Int.floor`, a version that works over any ring.
+
+TODO: decide if we want to use this as a definition. It may be slightly faster over `ℚ`. -/
+theorem round_eq_div (x : α) : round x = (⌊2 * x⌋ + 1) / 2 := by
+  rw [← floor_add_fract x, round, fract_intCast_add, fract_fract, floor_intCast_add, mul_add,
+    ← Int.cast_ofNat, ← Int.cast_mul, floor_intCast_add, ceil_intCast_add, add_assoc,
+    Int.mul_add_ediv_left _ _ two_ne_zero, Int.cast_ofNat]
+  split_ifs with h <;> congr 1
+  · rw [Int.floor_eq_zero_iff.mpr, Int.floor_eq_zero_iff.mpr]
+    · simp
+    · simp [h]
+    · suffices fract x < 1 by simpa
+      refine lt_of_le_of_lt ?_ h
+      apply le_mul_of_one_le_left <;> simp
+  · have H : ⌊2 * fract x⌋ = 1 := by simpa [floor_eq_iff, ← two_mul, fract_lt_one] using h
+    suffices 0 < fract x by simp [this, H, ceil_eq_iff, (fract_lt_one _).le]
+    contrapose! h
+    grw [h]
+    simp
+
+/-- Away from the points with fractional part `1 / 2`, `round x = ⌈2 * x⌉ / 2`. -/
+theorem round_eq_half_ceil_two_mul {x : α} (hx : 2 * fract x ≠ 1) : round x = ⌈2 * x⌉ / 2 := by
+  rcases em (2 * x ∈ range Int.cast) with ⟨m, hm⟩ | hx'
+  · rw [← hm, ceil_intCast]
+    rcases m.even_or_odd with ⟨m, rfl⟩ | ⟨m, rfl⟩
+    · obtain rfl : m = x := mul_left_cancel₀ two_ne_zero <| by simp [← hm, ← two_mul]
+      rw [round_intCast, ← two_mul, Int.mul_ediv_cancel_left _ two_ne_zero]
+    · refine absurd ?_ hx
+      exact (mul_fract_eq_one_iff_exists_int one_lt_two).mpr ⟨m, mod_cast hm.symm⟩
+  · rw [round_eq_div, (ceil_eq_floor_add_one_iff_notMem _).mpr hx']
 
 theorem abs_sub_round_eq_min (x : α) : |x - round x| = min (fract x) (1 - fract x) := by
   simp_rw [round, min_def_lt, two_mul, ← lt_tsub_iff_left]

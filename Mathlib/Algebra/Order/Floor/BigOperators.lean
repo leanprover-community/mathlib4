@@ -47,7 +47,7 @@ public theorem sum_range_add_ediv (m : ℤ) {n : ℕ} (hn : 0 < n) :
 /-- **Hermite's identity** for the floor function: for every `x` in a linearly ordered
 floor field and every `n : ℕ`, `∑ i ∈ Finset.range n, ⌊x + i / n⌋ = ⌊n * x⌋`. -/
 public theorem sum_floor_add_div
-    {α : Type*} [Field α] [LinearOrder α] [IsOrderedRing α] [FloorRing α] (x : α) (n : ℕ) :
+    {α : Type*} [Field α] [LinearOrder α] [IsOrderedAddMonoid α] [FloorRing α] (x : α) (n : ℕ) :
     ∑ i ∈ Finset.range n, ⌊x + i / n⌋ = ⌊n * x⌋ := by
   rcases Nat.eq_zero_or_pos n with rfl | hn; · simp
   calc
