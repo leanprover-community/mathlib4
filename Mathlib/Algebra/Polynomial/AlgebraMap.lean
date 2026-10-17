@@ -67,11 +67,8 @@ instance algebraOfAlgebra : Algebra R A[X] where
 theorem algebraMap_apply (r : R) : algebraMap R A[X] r = C (algebraMap R A r) :=
   rfl
 
-@[simp]
-theorem toFinsupp_algebraMap (r : R) : (algebraMap R A[X] r).toFinsupp = algebraMap R _ r :=
-  show toFinsupp (C (algebraMap _ _ r)) = _ by
-    rw [toFinsupp_C]
-    rfl
+theorem toFinsupp_algebraMap (r : R) : (algebraMap R A[X] r).toFinsupp = algebraMap R _ r := by
+  simp
 
 theorem ofFinsupp_algebraMap (r : R) : (⟨algebraMap R _ r⟩ : A[X]) = algebraMap R A[X] r :=
   toFinsupp_injective (toFinsupp_algebraMap _).symm

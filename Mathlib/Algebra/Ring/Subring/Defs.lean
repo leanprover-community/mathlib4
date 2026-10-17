@@ -329,29 +329,23 @@ protected theorem zsmul_mem {x : R} (hx : x ∈ s) (n : ℤ) : n • x ∈ s :=
 protected theorem pow_mem {R : Type*} [Ring R] (s : Subring R) {x : R} (hx : x ∈ s) (n : ℕ) :
     x ^ n ∈ s := pow_mem hx n
 
-@[simp, norm_cast]
 theorem coe_add (x y : s) : (↑(x + y) : R) = ↑x + ↑y :=
   rfl
 
-@[simp, norm_cast]
 theorem coe_neg (x : s) : (↑(-x) : R) = -↑x :=
   rfl
 
-@[simp, norm_cast]
 theorem coe_mul (x y : s) : (↑(x * y) : R) = ↑x * ↑y :=
   rfl
 
-@[simp, norm_cast]
 theorem coe_zero : ((0 : s) : R) = 0 :=
   rfl
 
-@[simp, norm_cast]
 theorem coe_one : ((1 : s) : R) = 1 :=
   rfl
 
-@[simp, norm_cast]
 theorem coe_pow {R} [Ring R] (s : Subring R) (x : s) (n : ℕ) : ↑(x ^ n) = (x : R) ^ n :=
-  SubmonoidClass.coe_pow x n
+  rfl
 
 theorem coe_eq_zero_iff {x : s} : (x : R) = 0 ↔ x = 0 :=
   ⟨fun h => Subtype.ext (Trans.trans h s.coe_zero.symm), fun h => h.symm ▸ s.coe_zero⟩

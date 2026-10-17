@@ -111,7 +111,7 @@ theorem IsDecompOn.mono {f f' : X → X} {A A' : Set X} {S : Finset G} (h : IsDe
   exact h a (hA' ha)
 
 /-- The restriction of an equidecomposition as an equidecomposition. -/
-@[simps!]
+@[simps! -isSimp]
 def restr (f : Equidecomp X G) (A : Set X) : Equidecomp X G where
   toPartialEquiv := f.toPartialEquiv.restr A
   isDecompOn' := ⟨f.witness,
