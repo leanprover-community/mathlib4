@@ -330,6 +330,14 @@ theorem linfty_opNorm_blockDiagonal [DecidableEq l] (M : l → Matrix m n α) :
     ‖blockDiagonal M‖ = ‖M‖ :=
   congr($(linfty_opNNNorm_blockDiagonal M))
 
+theorem isometry_blockDiagonal [DecidableEq l] :
+    Isometry (blockDiagonal : (l → Matrix m n α) → Matrix (m × l) (n × l) α) := by
+  let f : (l → Matrix m n α) →+ Matrix (m × l) (n × l) α :=
+  { toFun := blockDiagonal
+    map_zero' := blockDiagonal_zero
+    map_add' := blockDiagonal_add }
+  exact AddMonoidHomClass.isometry_of_norm f Matrix.linfty_opNorm_blockDiagonal
+
 end SeminormedAddCommGroup
 
 section NonUnitalSeminormedRing

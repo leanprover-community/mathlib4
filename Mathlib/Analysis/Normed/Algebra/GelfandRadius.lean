@@ -28,7 +28,7 @@ and proves basic properties.
 
 -/
 
-@[expose] public section
+public section
 
 open Filter
 
@@ -41,7 +41,9 @@ section SeminormedRing
 variable [NormedField 𝕜] [SeminormedRing A] [NormedAlgebra 𝕜 A]
 
 /-- The limit `‖a ^ k‖ ^ (1 / k)` of an element `a` in a normed ring.
-We use `k : ℕ+` to ease the eventual generalization to `NonUnitalSeminormedRing`. -/
+We use `k : ℕ+` to ease the eventual generalization to `NonUnitalSeminormedRing`.
+
+Do not use the definition directly. Use `tendsto_gelfandRadius` instead. -/
 noncomputable def gelfandRadius (a : A) : ℝ :=
   atTop.limUnder fun k : ℕ+ ↦ ‖a ^ (k : ℕ)‖ ^ (k : ℝ)⁻¹
 
@@ -77,6 +79,11 @@ meta def evalGelfandRadius : PositivityExt where eval {u α} _ pα? e :=
   | _, _, _ => throwError "not gelfandRadius"
 
 end Mathlib.Meta.Positivity
+
+theorem Isometry.gelfandRadius_apply_eq {B : Type*} [SeminormedRing B] {f : A →*₀ B}
+    (hf : Isometry f) (a : A) : gelfandRadius (f a) = gelfandRadius a :=
+  tendsto_nhds_unique (by simpa [← map_pow, hf.norm_map_of_map_zero (map_zero f)]
+    using tendsto_gelfandRadius (f a)) (tendsto_gelfandRadius a)
 
 theorem gelfandRadius_le_norm (a : A) : gelfandRadius a ≤ ‖a‖ := by
   refine le_of_tendsto (tendsto_gelfandRadius' a) (Eventually.of_forall fun k ↦ ?_)
@@ -169,6 +176,20 @@ theorem Commute.gelfandRadius_mul_le {a b : A} (h : Commute a b) :
     ((tendsto_gelfandRadius a).mul (tendsto_gelfandRadius b)) (.of_forall fun n ↦ ?_)
   simp_rw [h.mul_pow]
   grw [norm_mul_le, Real.mul_rpow] <;> positivity
+
+theorem Pi.gelfandRadius_eq {ι : Type*} [Fintype ι] {A : ι → Type*} [∀ i, SeminormedRing (A i)]
+    (a : Π i, A i) : gelfandRadius a = ⨆ i, gelfandRadius (a i) := by
+  rcases isEmpty_or_nonempty ι
+  · simp [Subsingleton.elim a 0]
+  let s : Finset ι := Finset.univ
+  have hs : s.Nonempty := Finset.univ_nonempty
+  rw [← Finset.sup'_univ_eq_ciSup]
+  refine tendsto_nhds_unique_of_forall (tendsto_gelfandRadius a)
+    (Filter.Tendsto.finset_sup'_nhds_apply hs fun i hi ↦ tendsto_gelfandRadius (a i)) fun k ↦ ?_
+  have h (x y : NNReal) : max (x : ℝ) y ^ (k : ℝ)⁻¹ = max (x ^ (k : ℝ)⁻¹) (y ^ (k : ℝ)⁻¹) := by
+    simp [Real.rpow_max]
+  rw [Pi.pow_def, Pi.norm_def, ← s.sup'_eq_sup hs]
+  exact s.apply_sup'_eq_sup'_comp hs (f := fun i ↦ ‖a i ^ k‖₊) (fun x ↦ (x : ℝ) ^ (k : ℝ)⁻¹) h
 
 end SeminormedRing
 
