@@ -16,7 +16,7 @@ public import Mathlib.Tactic.DeclarationNames
 import Lean.Parser.Command
 
 /-!
-## Style linters
+# Style linters
 
 This file contain linters about stylistic aspects: these are only about coding style,
 but do not affect correctness nor global coherence of mathlib.
@@ -128,7 +128,7 @@ initialize addLinter setOptionLinter
 end Style.setOption
 
 /-!
-# The "missing end" linter
+### The "missing end" linter
 
 The "missing end" linter emits a warning on non-closed `section`s and `namespace`s.
 It allows the "outermost" `noncomputable section` to be left open (whether or not it is named).

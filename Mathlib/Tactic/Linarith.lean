@@ -10,7 +10,7 @@ public import Mathlib.Tactic.Linarith.Frontend
 public import Mathlib.Tactic.NormNum
 
 /-!
-We register `linarith` with the `hint` tactic.
+# Registering `linarith` with the `hint` tactic
 -/
 
 public meta section

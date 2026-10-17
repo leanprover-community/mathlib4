@@ -13,7 +13,7 @@ import Lean.Elab.InfoTree.Main
 import Mathlib.Tactic.InferParam
 
 /-!
-## `funProp` tactic syntax
+# `funProp` tactic syntax
 -/
 
 public meta section
