@@ -532,6 +532,12 @@ lemma transvection_mulVec_single_other {i j : ι} (hij : i ≠ j) (b : F) :
   rw [transvection_coe]
   simp [-mulVec_single, add_mulVec, single_mulVec_eq]
 
+/-- The transvection `transvection hij b` fixes `e_k = Pi.single k 1` whenever `k ≠ j`. -/
+lemma transvection_smul_single_of_ne {i j : ι} (hij : i ≠ j) (b : F) {k : ι} (hk : k ≠ j) :
+    (transvection hij b) • (Pi.single k 1 : ι → F) = Pi.single k 1 := by
+  simp [SpecialLinearGroup.smul_def, -mulVec_single, transvection_coe,
+    add_mulVec, single_mulVec_eq, hk.symm]
+
 /-- Inverse of a transvection: `transvection i j hij b * transvection i j hij (-b) = 1`. -/
 lemma transvection_mul_neg {i j : ι} (hij : i ≠ j) (b : F) :
     transvection hij b * transvection hij (-b) = 1 := Subtype.ext <| by
@@ -555,6 +561,17 @@ lemma transvection_mem_center_iff {i j : ι} (hij : i ≠ j) (b : F) :
   · simp only [hb, mem_center_iff, scalar_apply, transvection_coe, single_zero,
       add_zero, diagonal_eq_one]
     exact ⟨1, one_pow _, rfl⟩
+
+open scoped commutatorElement in
+lemma commutator_transvection_transvection {i j k : ι} (hij : i ≠ j) (hik : i ≠ k) (hkj : k ≠ j)
+    (a b : F) : ⁅transvection hik a, transvection hkj b⁆ = transvection hij (a * b) := by
+  rw [commutatorElement_def, transvection_inv, transvection_inv]
+  refine Subtype.ext ?_
+  simp only [Matrix.SpecialLinearGroup.coe_mul, transvection_coe, mul_add, add_mul, one_mul,
+    mul_one, ← single_neg, mul_neg, neg_mul, add_zero, single_mul_single_same,
+    single_mul_single_of_ne _ _ _ _ hij.symm, single_mul_single_of_ne _ _ _ _ hik.symm,
+    single_mul_single_of_ne _ _ _ _ hkj.symm]
+  abel
 
 end SpecialLinearGroup
 
@@ -632,6 +649,74 @@ lemma diag2_inv (a : F) (ha : a ≠ 0) :
     (diag2 a ha)⁻¹ = diag2 a⁻¹ (inv_ne_zero ha) := by
   apply inv_eq_of_mul_eq_one_right
   exact diag2_mul_inv a ha
+
+section elemDiag
+
+/-! ### The Whitehead identity for an elementary diagonal
+
+For distinct indices `i j : ι` and a nonzero scalar `α : F`, the elementary diagonal
+`diag2n hij α` is a product of six transvections:
+`diag_{ij}(α) = U(α) · L(-α⁻¹) · U(α) · U(-1) · L(1) · U(-1)`,
+where `U(b) := 1 + b · E_{i,j}` and `L(b) := 1 + b · E_{j,i}`. This is the general-index
+counterpart of `Matrix.diag2_decompose`. -/
+
+variable {ι : Type*} [Fintype ι] [DecidableEq ι]
+
+/-- The explicit element of `SL ι F` realising the elementary diagonal `diag2n hij α`
+as a Whitehead-style product of six transvections. -/
+abbrev elemDiagSL {i j : ι} (hij : i ≠ j) (α : F) : SpecialLinearGroup ι F :=
+  transvection hij α
+    * transvection hij.symm (-α⁻¹)
+    * transvection hij α
+    * transvection hij (-1)
+    * transvection hij.symm 1
+    * transvection hij (-1)
+
+/-- Unfold the action of `elemDiagSL hij α` on a vector as the six-fold composition. -/
+lemma elemDiagSL_smul {i j : ι} (hij : i ≠ j) (α : F) (v : ι → F) :
+    elemDiagSL hij α • v =
+      transvection hij α •
+        (transvection hij.symm (-α⁻¹) •
+          (transvection hij α •
+            (transvection hij (-1 : F) •
+              (transvection hij.symm (1 : F) •
+                (transvection hij (-1 : F) • v))))) := by
+  simp only [mul_smul]
+
+/-- `elemDiagSL hij α` acts as multiplication by `α` on `e_i`. -/
+lemma elemDiagSL_smul_single_fst {i j : ι} (hij : i ≠ j) (α : F) (hα : α ≠ 0) :
+    elemDiagSL hij α • (Pi.single i 1 : ι → F) = α • Pi.single i 1 := by
+  simp only [elemDiagSL_smul, transvection_smul_single_fst, transvection_smul_single_snd,
+    smul_add, smul_comm (M := SpecialLinearGroup ι F) (N := F)]
+  match_scalars <;> simp [inv_mul_cancel₀ hα, mul_inv_cancel₀ hα]
+
+/-- `elemDiagSL hij α` acts as multiplication by `α⁻¹` on `e_j`. -/
+lemma elemDiagSL_smul_single_snd {i j : ι} (hij : i ≠ j) (α : F) (hα : α ≠ 0) :
+    elemDiagSL hij α • (Pi.single j 1 : ι → F) = α⁻¹ • Pi.single j 1 := by
+  simp only [elemDiagSL_smul, transvection_smul_single_fst, transvection_smul_single_snd,
+    smul_add, smul_comm (M := SpecialLinearGroup ι F) (N := F)]
+  match_scalars <;> simp [inv_mul_cancel₀ hα, mul_inv_cancel₀ hα]
+
+/-- `elemDiagSL hij α` fixes `e_k` whenever `k ∉ {i, j}`. -/
+lemma elemDiagSL_smul_single_of_ne {i j : ι} (hij : i ≠ j) (α : F) {k : ι} (hki : k ≠ i)
+    (hkj : k ≠ j) : elemDiagSL hij α • (Pi.single k 1 : ι → F) = Pi.single k 1 := by
+  simp only [elemDiagSL_smul, transvection_smul_single_of_ne _ _ hki,
+    transvection_smul_single_of_ne _ _ hkj]
+
+/-- The Whitehead decomposition: the elementary diagonal `diag2n` is the product of the six
+transvections `elemDiagSL`. -/
+lemma diag2n_eq_elemDiagSL {i j : ι} (hij : i ≠ j) (α : F) (hα : α ≠ 0) :
+    diag2n hij α hα = elemDiagSL hij α := by
+  refine Subtype.ext (ext_of_mulVec_single fun k ↦ ?_)
+  rw [diag2n_coe, diagonal_mulVec_single, ← smul_eq_mul, Pi.single_smul',
+    ← smul_eq_mulVec, ← SpecialLinearGroup.smul_def]
+  rcases eq_or_ne k i with rfl | hki
+  · rw [elemDiagSL_smul_single_fst hij α hα, ite_eq_left rfl]
+  rcases eq_or_ne k j with rfl | hkj
+  · rw [elemDiagSL_smul_single_snd hij α hα, ite_eq_right hij.symm, ite_eq_left rfl]
+  · rw [elemDiagSL_smul_single_of_ne hij α hki hkj, ite_eq_right hki, ite_eq_right hkj, one_smul]
+
+end elemDiag
 
 section induction
 
