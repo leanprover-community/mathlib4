@@ -154,9 +154,12 @@ theorem mem_bind {b s} {f : α → Multiset β} : b ∈ bind s f ↔ ∃ a ∈ s
 @[simp]
 theorem card_bind : card (s.bind f) = (s.map (card ∘ f)).sum := by simp [bind]
 
-@[congr]
 theorem bind_congr {f g : α → Multiset β} {m : Multiset α} :
     (∀ a ∈ m, f a = g a) → bind m f = bind m g := by simp +contextual [bind]
+
+@[congr]
+theorem bind_congr' {f g : α → Multiset β} {m m' : Multiset α} (hm : m = m') :
+    (∀ a ∈ m, f a = g a) → bind m f = bind m' g := by subst hm; exact bind_congr
 
 theorem bind_hcongr {β' : Type v} {m : Multiset α} {f : α → Multiset β} {f' : α → Multiset β'}
     (h : β = β') (hf : ∀ a ∈ m, f a ≍ f' a) : bind m f ≍ bind m f' := by

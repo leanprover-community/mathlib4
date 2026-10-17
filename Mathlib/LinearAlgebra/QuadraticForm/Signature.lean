@@ -122,13 +122,12 @@ lemma QuadraticMap.Equivalent.sigPos_eq (h : Equivalent Q Q') : sigPos Q = sigPo
   obtain ⟨e⟩ := h
   unfold sigPos
   congr! with j
+  · exact e.toLinearEquiv.finrank_eq
   · apply (Submodule.orderIsoMapComap e.toLinearEquiv).exists_congr
     intro V
     refine .and ?_ (IsometryEquiv.map_posDef_iff _).symm
-    revert j
-    rw [eq_iff_eq_cancel_right]
-    exact (e.finrank_map_eq _).symm
-  · exact e.toLinearEquiv.finrank_eq
+    rw [← (e.finrank_map_eq _)]
+    rfl
 
 lemma QuadraticMap.Equivalent.sigNeg_eq (h : Equivalent Q Q') : sigNeg Q = sigNeg Q' :=
   sigPos_eq <| match h with | ⟨e⟩ => ⟨e, by simp⟩
