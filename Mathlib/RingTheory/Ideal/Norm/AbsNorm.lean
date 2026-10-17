@@ -315,12 +315,8 @@ theorem finite_absNorm_eq [IsDedekindDomain S] (B : ℕ) :
 
 /-- A ring with finite quotients has only finitely many nonzero ideals of bounded norm. -/
 theorem finite_absNorm_le₀ [IsDedekindDomain S] (B : ℕ) :
-    {I : (Ideal S)⁰ | Ideal.absNorm (I : Ideal S) ≤ B}.Finite := by
-  have : Finite {I : Ideal S // I ∈ (Ideal S)⁰ ∧ Ideal.absNorm I ≤ B} :=
-    (finite_absNorm_le B).subset
-      (t := {I | I ∈ (Ideal S)⁰ ∧ Ideal.absNorm I ≤ B}) fun _ ⟨_, h⟩ ↦ h
-  exact Finite.of_equiv _
-    (Equiv.subtypeSubtypeEquivSubtypeInter _ (fun I ↦ Ideal.absNorm I ≤ B)).symm
+    {I : (Ideal S)⁰ | Ideal.absNorm (I : Ideal S) ≤ B}.Finite :=
+  (finite_absNorm_le B).preimage Subtype.val_injective.injOn
 
 /-- A ring with finite quotients has only finitely many nonzero prime ideals of bounded norm. -/
 theorem finite_absNorm_heightOneSpectrum_le [IsDedekindDomain S] (B : ℕ) :
@@ -403,8 +399,8 @@ variable [Ring.HasFiniteQuotients S]
 theorem absNorm_eq_zero_iff' {I : Ideal S} : Ideal.absNorm I = 0 ↔ I = ⊥ := by
   obtain rfl | hI := eq_or_ne I ⊥
   · simp
-  · simpa [hI, absNorm_of_ne_bot hI, Submodule.cardQuot_apply]
-      using Nat.card_ne_zero.mpr ⟨⟨0⟩, Ring.HasFiniteQuotients.finiteQuotient hI⟩
+  · have := Ring.HasFiniteQuotients.finiteQuotient hI
+    simpa [hI, absNorm_of_ne_bot hI, Submodule.cardQuot_apply] using Nat.card_pos.ne'
 
 /-- A version of `absNorm_ne_zero_iff_mem_nonZeroDivisors` for a ring with finite quotients. -/
 theorem absNorm_ne_zero_iff_mem_nonZeroDivisors' {I : Ideal S} :
@@ -424,46 +420,17 @@ theorem absNorm_ne_zero_of_nonZeroDivisors' (I : (Ideal S)⁰) : absNorm (I : Id
 theorem absNorm_pos_of_nonZeroDivisors' (I : (Ideal S)⁰) : 0 < absNorm (I : Ideal S) :=
   absNorm_pos_iff_mem_nonZeroDivisors'.mpr (SetLike.coe_mem I)
 
--- TODO: move the two lemmas below to
--- `Mathlib/RingTheory/Ideal/Quotient/HasFiniteQuotients/Basic.lean`.
-omit [IsDedekindDomain S] in
-/-- A version of `finiteIndex` for a ring with finite quotients. -/
-lemma finiteIndex' {I : Ideal S} (hI : I ≠ ⊥) : I.toAddSubgroup.FiniteIndex := by
-  have : Finite (S ⧸ I.toAddSubgroup) := Ring.HasFiniteQuotients.finiteQuotient hI
-  exact AddSubgroup.finiteIndex_of_finite_quotient
-
-omit [IsDedekindDomain S] in
-/-- A version of `isFiniteRelIndex` for a ring with finite quotients. -/
-lemma isFiniteRelIndex' {I : Ideal S} (hI : I ≠ ⊥) (J : Ideal S) :
-    I.toAddSubgroup.IsFiniteRelIndex J.toAddSubgroup :=
-  have := finiteIndex' hI
-  AddSubgroup.isFiniteRelIndex_of_finiteIndex
-
 /-- A version of `card_norm_le_eq_card_norm_le_add_one` for a ring with finite quotients. -/
 theorem card_norm_le_eq_card_norm_le_add_one' (n : ℕ) :
     Nat.card {I : Ideal S // absNorm I ≤ n} =
       Nat.card {I : (Ideal S)⁰ // absNorm (I : Ideal S) ≤ n} + 1 := by
-  classical
-  have : Finite {I : Ideal S // I ∈ (Ideal S)⁰ ∧ absNorm I ≤ n} :=
-    (Ring.HasFiniteQuotients.finite_absNorm_le n).subset
-      (t := {I | I ∈ (Ideal S)⁰ ∧ absNorm I ≤ n}) fun _ ⟨_, h⟩ ↦ h
-  have : Finite {I : Ideal S // I ∉ (Ideal S)⁰ ∧ absNorm I ≤ n} :=
-    (Ring.HasFiniteQuotients.finite_absNorm_le n).subset
-      (t := {I | I ∉ (Ideal S)⁰ ∧ absNorm I ≤ n}) fun _ ⟨_, h⟩ ↦ h
-  rw [Nat.card_congr (Equiv.subtypeSubtypeEquivSubtypeInter (fun I ↦ I ∈ (Ideal S)⁰)
-    (fun I ↦ absNorm I ≤ n))]
-  let e : {I : Ideal S // absNorm I ≤ n} ≃ {I : Ideal S // I ∈ (Ideal S)⁰ ∧ absNorm I ≤ n} ⊕
-      {I : Ideal S // I ∉ (Ideal S)⁰ ∧ absNorm I ≤ n} := by
-    refine (Equiv.subtypeEquivRight ?_).trans (subtypeOrEquiv _ _ ?_)
-    · intro _
-      simp_rw [← or_and_right, em, true_and]
-    · exact Pi.disjoint_iff.mpr fun I ↦ Prop.disjoint_iff.mpr (by tauto)
-  simp_rw [Nat.card_congr e, Nat.card_sum, add_right_inj]
-  conv_lhs =>
-    enter [1, 1, I]
-    rw [← absNorm_ne_zero_iff_mem_nonZeroDivisors', ne_eq, not_not, and_iff_left_iff_imp.mpr
-      (fun h ↦ by rw [h]; exact Nat.zero_le n), absNorm_eq_zero_iff']
-  rw [Nat.card_unique]
+  rw [← Set.coe_ofPred, ← Set.coe_ofPred, Nat.card_coe_set_eq, Nat.card_coe_set_eq,
+    ← Set.ncard_sdiff_singleton_add_one (a := ⊥) (by simp)
+    (Ring.HasFiniteQuotients.finite_absNorm_le n), Nat.add_left_inj,
+    ← Set.ncard_image_of_injective _ Subtype.val_injective]
+  congr
+  ext
+  simp
 
 end HasFiniteQuotients
 
