@@ -24,36 +24,36 @@ section matrices
 
 open scoped Matrix.Norms.Operator
 
+-- PRed
 theorem Matrix.nnnorm_apply_le_linfty_opNNNorm {α β γ : Type*} [SeminormedAddCommGroup γ]
     [Fintype α] [Fintype β] (M : Matrix α β γ) (i : α) (j : β) : ‖M i j‖₊ ≤ ‖M‖₊ := by
   grw [Matrix.linfty_opNNNorm_def, ← Finset.le_sup_of_le (by simp)] -- these grws cannot be combined
   grw [← Finset.single_le_sum (by simp) (by simp)]
 
+-- PRed
 theorem Matrix.norm_apply_le_linfty_opNorm {α β γ : Type*} [SeminormedAddCommGroup γ]
     [Fintype α] [Fintype β] (M : Matrix α β γ) (i : α) (j : β) : ‖M i j‖ ≤ ‖M‖ := by
   grw [← coe_nnnorm, nnnorm_apply_le_linfty_opNNNorm, coe_nnnorm]
 
 theorem Matrix.linfty_opNorm_sum_le_card_mul
-    {α β γ κ : Type*} [SeminormedAddCommGroup γ] [IsUltrametricDist γ]
-    [Fintype α] [Fintype β]
+    {α β γ κ : Type*} [Fintype α] [Fintype β] [SeminormedAddCommGroup γ] [IsUltrametricDist γ]
     (M : κ → Matrix α β γ) (s : Finset κ) (B : ℝ) (hB : 0 ≤ B) (hM : ∀ i ∈ s, ‖M i‖ ≤ B) :
     ‖∑ k ∈ s, M k‖ ≤ Fintype.card β * B := by
-  let B' : NNReal := ⟨B, hB⟩
-  simp_rw [linfty_opNorm_def]
-  have key i j k (hk : k ∈ s) : ‖M k i j‖₊ ≤ B' :=
+  let B' : NNReal := NNReal.mk B hB
+  have h i j k (hk : k ∈ s) : ‖M k i j‖₊ ≤ B' :=
     (nnnorm_apply_le_linfty_opNNNorm (M k) i j).trans (hM k hk)
-  replace key i j : ‖∑ k ∈ s, M k i j‖₊ ≤ B' :=
-    IsUltrametricDist.norm_sum_le_of_forall_le_of_nonneg hB (key i j)
-  have key i j : ‖(∑ k ∈ s, M k) i j‖₊ ≤ B' := by grw [sum_apply, key]
-  grw [key, Finset.sum_const, Finset.card_univ, nsmul_eq_mul, Finset.sup_const_le]
-  simp
-  rfl
+  replace h i j : ‖∑ k ∈ s, M k i j‖₊ ≤ B' :=
+    IsUltrametricDist.norm_sum_le_of_forall_le_of_nonneg hB (h i j)
+  have h i j : ‖(∑ k ∈ s, M k) i j‖₊ ≤ B' := by grw [sum_apply, h]
+  grw [linfty_opNorm_def, h, Finset.sup_const_le]
+  simp [B']
 
 theorem Matrix.linfty_opNorm_add_le_card_mul_max
     {α β γ : Type*} [SeminormedAddCommGroup γ] [IsUltrametricDist γ] [Fintype α] [Fintype β]
     (M N : Matrix α β γ) : ‖M + N‖ ≤ Fintype.card β * max ‖M‖ ‖N‖ := by
   simpa using linfty_opNorm_sum_le_card_mul (Bool.rec N M) Finset.univ _ (by simp) (by simp)
 
+-- PRed
 theorem map_finset_sup'' {α β ι : Type*} [SemilatticeSup α] [SemilatticeSup β]
     (f : α → β) (h : ∀ x y, f (x ⊔ y) = f x ⊔ f y) {s : Finset ι} (hs) (g : ι → α) :
     f (s.sup' hs g) = s.sup' hs (f ∘ g) := by
