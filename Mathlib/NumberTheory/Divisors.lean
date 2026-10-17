@@ -49,10 +49,12 @@ namespace Nat
 variable (n : ℕ)
 
 /-- `divisors n` is the `Finset` of divisors of `n`. By convention, we set `divisors 0 = ∅`. -/
+@[oeis A027750]
 def divisors : Finset ℕ := {d ∈ Ico 1 (n + 1) | d ∣ n}
 
 /-- `properDivisors n` is the `Finset` of divisors of `n`, other than `n`.
 By convention, we set `properDivisors 0 = ∅`. -/
+@[oeis A027751]
 def properDivisors : Finset ℕ := {d ∈ Ico 1 n | d ∣ n}
 
 /-- Pairs of divisors of a natural number as a finset.
@@ -392,6 +394,7 @@ theorem sum_divisors_eq_sum_properDivisors_add_self :
 
 /-- `n : ℕ` is perfect if and only the sum of the proper divisors of `n` is `n` and `n`
   is positive. -/
+@[oeis A000396]
 def Perfect (n : ℕ) : Prop :=
   ∑ i ∈ properDivisors n, i = n ∧ 0 < n
 

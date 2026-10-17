@@ -101,6 +101,7 @@ end ProdPrimeFactors
 section Id
 
 /-- The identity on `ℕ` as an `ArithmeticFunction`. -/
+@[oeis A001477]
 protected def id : ArithmeticFunction ℕ :=
   ⟨id, rfl⟩
 
@@ -255,6 +256,7 @@ theorem _root_.Nat.sum_divisors {n : ℕ} (hn : n ≠ 0) :
     sigma_one_apply_prime_pow <| prime_of_mem_primeFactors h
 
 /-- `Ω n` is the number of prime factors of `n`. -/
+@[oeis A001222]
 def cardFactors : ArithmeticFunction ℕ :=
   ⟨fun n => n.primeFactorsList.length, by simp⟩
 
@@ -321,6 +323,7 @@ theorem cardFactors_eq_sum_factorization {n : ℕ} :
     primeFactorsList_count_eq]
 
 /-- `ω n` is the number of distinct prime factors of `n`. -/
+@[oeis A001221]
 def cardDistinctFactors : ArithmeticFunction ℕ :=
   ⟨fun n => n.primeFactorsList.dedup.length, by simp⟩
 
