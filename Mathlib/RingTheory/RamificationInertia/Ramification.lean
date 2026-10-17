@@ -254,6 +254,21 @@ theorem ramificationIdx_eq_multiplicity [IsDedekindDomain S]
 
 end IsDedekindDomain
 
+open UniqueFactorizationMonoid in
+variable {p} in
+/-- If a nonzero maximal ideal `p` of `R` is unramified in `S`, then `p.map (algebraMap R S)` is
+the product of the primes of `S` lying over `p`. -/
+theorem _root_.Algebra.IsUnramifiedIn.prod_primesOverFinset [IsDomain R] [IsDedekindDomain S]
+    [Module.IsTorsionFree R S] [Algebra.EssFiniteType R S] [p.IsMaximal]
+    (hp : Algebra.IsUnramifiedIn S p) (hp0 : p ≠ ⊥) :
+    ∏ P ∈ IsDedekindDomain.primesOverFinset p S, P = p.map (algebraMap R S) := by
+  have hpS : p.map (algebraMap R S) ≠ ⊥ := map_ne_bot_of_ne_bot hp0
+  rw [← associated_iff_eq.mp (factors_pow_count_prod hpS)]
+  refine Finset.prod_congr rfl fun P hP ↦ ?_
+  obtain ⟨h1, h2⟩ := (IsDedekindDomain.mem_primesOverFinset_iff hp0 S).mp hP
+  have := hp P h1 h2
+  rw [← IsDedekindDomain.ramificationIdx_eq_factors_count p P hpS, ramificationIdx_eq_one, pow_one]
+
 /-- See `ramificationIdx_tower` for a version that does not assume primality. -/
 theorem ramificationIdx_tower' [q.IsPrime] [r.IsPrime] [r.LiesOver q]
     [Algebra (Localization.AtPrime q) (Localization.AtPrime r)]
