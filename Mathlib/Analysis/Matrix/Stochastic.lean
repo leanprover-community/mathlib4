@@ -43,9 +43,9 @@ theorem norm_mulVec_le_of_mem_rowStochastic (hA : A ∈ rowStochastic 𝕜 n) (v
     ‖A *ᵥ v‖ ≤ ‖v‖ := by
   grw [linfty_opNorm_mulVec, linfty_opNorm_le_one_of_mem_rowStochastic hA, one_mul]
 
-theorem spectralRadius_le_one_of_mem_rowStochastic [Nonempty n] (hA : A ∈ rowStochastic 𝕜 n) :
+theorem spectralRadius_le_one_of_mem_rowStochastic (hA : A ∈ rowStochastic 𝕜 n) :
     spectralRadius 𝕜 A ≤ 1 :=
-  (spectrum.spectralRadius_le_nnnorm A).trans <|
+  (spectralRadius_le_nnnorm A).trans <|
     mod_cast linfty_opNorm_le_one_of_mem_rowStochastic hA
 
 end Matrix
