@@ -316,7 +316,7 @@ variable (K M) in
 @[simp]
 theorem under_under (w : AbsoluteValue L S) : (w.under M).under K = w.under K := by
   ext x
-  rw [under_apply, under_apply, under_apply, ← IsScalarTower.algebraMap_apply]
+  simp [← IsScalarTower.algebraMap_apply]
 
 variable (M) in
 @[simp]
