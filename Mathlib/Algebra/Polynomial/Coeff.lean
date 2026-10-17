@@ -372,7 +372,7 @@ end cast
 instance charZero [CharZero R] : CharZero R[X] where cast_injective _x _y := natCast_inj.mp
 
 instance charP {p : ℕ} [CharP R p] : CharP R[X] p where
-  cast_eq_zero_iff n := by
-    rw [← CharP.cast_eq_zero_iff R, ← C_inj (R := R), map_natCast, C_0]
+  cast_eq_iff_mod_eq a b := by
+    rw [← CharP.cast_eq_iff_mod_eq R, ← C_inj (R := R), map_natCast, map_natCast]
 
 end Polynomial

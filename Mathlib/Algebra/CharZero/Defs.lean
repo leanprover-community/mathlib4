@@ -9,6 +9,7 @@ public import Mathlib.Data.Int.Cast.Defs
 
 import Mathlib.Basic.Logic.Basic
 import Mathlib.Tactic.Basify.Attr
+import Mathlib.Tactic.WLOG
 
 /-!
 
@@ -32,15 +33,7 @@ from the natural numbers into it is injective.
 public section
 
 /-- Typeclass for monoids with characteristic zero.
-  (This is usually stated on fields but it makes sense for any additive monoid with 1.)
-
-*Warning*: for a semiring `R`, `CharZero R` and `CharP R 0` need not coincide.
-* `CharZero R` requires an injection `ℕ ↪ R`;
-* `CharP R 0` asks that only `0 : ℕ` maps to `0 : R` under the map `ℕ → R`.
-  For instance, endowing `{0, 1}` with addition given by `max` (i.e. `1` is absorbing), shows that
-  `CharZero {0, 1}` does not hold and yet `CharP {0, 1} 0` does.
-  This example is formalized in `Counterexamples/CharPZeroNeCharZero.lean`.
--/
+  (This is usually stated on fields but it makes sense for any additive monoid with 1.) -/
 class CharZero (R) [AddMonoidWithOne R] : Prop where
   /-- An additive monoid with one has characteristic zero if the canonical map `ℕ → R` is
   injective. -/
@@ -48,15 +41,13 @@ class CharZero (R) [AddMonoidWithOne R] : Prop where
 
 variable {R : Type*}
 
-theorem charZero_of_inj_zero [AddGroupWithOne R] (H : ∀ n : ℕ, (n : R) = 0 → n = 0) :
-    CharZero R :=
-  ⟨@fun m n h => by
-    induction m generalizing n with
-    | zero => rw [H n]; rw [← h, Nat.cast_zero]
-    | succ m ih =>
-      cases n
-      · apply H; rw [h, Nat.cast_zero]
-      · simp only [Nat.cast_succ, add_right_cancel_iff] at h; rwa [ih]⟩
+theorem charZero_of_inj_zero [AddMonoidWithOne R] [IsLeftCancelAdd R]
+    (H : ∀ n : ℕ, (n : R) = 0 → n = 0) : CharZero R := by
+  refine ⟨fun m n h => ?_⟩
+  wlog h0 : m ≤ n generalizing m n
+  · exact (this n m h.symm (Nat.le_of_not_le h0)).symm
+  rw [← add_zero (m : R), ← Nat.add_sub_cancel' h0, Nat.cast_add, add_left_cancel_iff] at h
+  exact Nat.le_antisymm h0 (Nat.le_of_sub_eq_zero (H _ h.symm))
 
 namespace Nat
 

@@ -20,18 +20,10 @@ namespace CharP
 
 instance subsemiring (R : Type u) [Semiring R] (p : ℕ) [CharP R p] (S : Subsemiring R) :
     CharP S p :=
-  ⟨fun x =>
-    Iff.symm <|
-      (CharP.cast_eq_zero_iff R p x).symm.trans
-        ⟨fun h => Subtype.ext <| show S.subtype x = 0 by rw [map_natCast, h], fun h =>
-          map_natCast S.subtype x ▸ by rw [h, map_zero]⟩⟩
+  ⟨fun a b => Subtype.ext_iff.trans (cast_eq_iff_mod_eq R p a b)⟩
 
 instance subring (R : Type u) [Ring R] (p : ℕ) [CharP R p] (S : Subring R) : CharP S p :=
-  ⟨fun x =>
-    Iff.symm <|
-      (CharP.cast_eq_zero_iff R p x).symm.trans
-        ⟨fun h => Subtype.ext <| show S.subtype x = 0 by rw [map_natCast, h], fun h =>
-          map_natCast S.subtype x ▸ by rw [h, map_zero]⟩⟩
+  ⟨fun a b => Subtype.ext_iff.trans (cast_eq_iff_mod_eq R p a b)⟩
 
 instance subring' (R : Type u) [CommRing R] (p : ℕ) [CharP R p] (S : Subring R) : CharP S p :=
   CharP.subring R p S
