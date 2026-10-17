@@ -210,6 +210,11 @@ instance instSMul : SMul S (M [⋀^ι]→ₗ[R] N) :=
     { c • (f : MultilinearMap R (fun _ : ι => M) N) with
       map_eq_zero_of_eq' := fun v i j h hij => by simp [f.map_eq_zero_of_eq v h hij] }⟩
 
+instance instPSMul : SMul ℕ+ (M [⋀^ι]→ₗ[R] N) :=
+  ⟨fun c f =>
+    { c • (f : MultilinearMap R (fun _ : ι => M) N) with
+      map_eq_zero_of_eq' := fun v i j h hij => by simp [f.map_eq_zero_of_eq v h hij] }⟩
+
 instance : IsSMulApply S (M [⋀^ι]→ₗ[R] N) where
   smul_apply _ _ _ := rfl
 
@@ -223,8 +228,21 @@ theorem toMultilinearMap_smul (c : S) : ↑(c • f) = c • (f : MultilinearMap
 
 @[deprecated (since := "2026-07-27")] alias coeFn_smul := FunLike.coe_smul
 
+instance : IsSMulApply ℕ+ (M [⋀^ι]→ₗ[R] N) where
+
+@[norm_cast]
+theorem coe_psmul (c : ℕ+) : ↑(c • f) = c • (f : MultilinearMap R (fun _ : ι => M) N) :=
+  rfl
+
+theorem coeFn_psmul (c : ℕ+) (f : M [⋀^ι]→ₗ[R] N) : ⇑(c • f) = c • ⇑f :=
+  rfl
+
 instance instSMulCommClass {T : Type*} [Monoid T] [DistribMulAction T N] [SMulCommClass R T N]
     [SMulCommClass S T N] : SMulCommClass S T (M [⋀^ι]→ₗ[R] N) := FunLike.smulCommClass
+
+instance instPSMulCommClass {T : Type*} [Monoid T] [DistribMulAction T N] [SMulCommClass R T N]
+    [SMulCommClass ℕ+ T N] : SMulCommClass ℕ+ T (M [⋀^ι]→ₗ[R] N) where
+  smul_comm _ _ _ := ext fun _ ↦ smul_comm ..
 
 instance instIsCentralScalar [DistribMulAction Sᵐᵒᵖ N] [IsCentralScalar S N] :
     IsCentralScalar S (M [⋀^ι]→ₗ[R] N) := FunLike.isCentralScalar

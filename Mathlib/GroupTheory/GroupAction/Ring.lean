@@ -36,6 +36,11 @@ instance NonUnitalNonAssocSemiring.nat_isScalarTower [NonUnitalNonAssocSemiring 
     | zero => simp
     | succ n ih => simp_rw [succ_nsmul, ← ih, smul_eq_mul, add_mul]
 
+/-- Note that `AddCommSemigroup.pnat_isScalarTower` requires stronger assumptions on `R`. -/
+instance NonUnitalNonAssocSemiring.pnat_isScalarTower [NonUnitalNonAssocSemiring R] :
+    IsScalarTower ℕ+ R R where
+  smul_assoc _ _ _ := by rw [← nsmul_val_eq_psmul, smul_assoc, nsmul_val_eq_psmul]
+
 /-- Note that `AddCommGroup.int_isScalarTower` requires stronger assumptions on `R`. -/
 instance NonUnitalNonAssocRing.int_isScalarTower [NonUnitalNonAssocRing R] :
     IsScalarTower ℤ R R where

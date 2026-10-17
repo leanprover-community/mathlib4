@@ -157,6 +157,19 @@ theorem contMDiff_mul_right {a : G} : CMDiff n (· * a) :=
 theorem contMDiffAt_mul_right {a b : G} : CMDiffAt n (· * a) b :=
   contMDiff_mul_right.contMDiffAt
 
+@[to_additive]
+theorem contMDiff_ppow {G : Type*} [Semigroup G] [TopologicalSpace G] [ChartedSpace H G]
+    [ContMDiffMul I n G] (i : ℕ+) : CMDiff n fun a : G ↦ a ^ i := by
+  intro x
+  induction i using Semigroup.ppow_induction x with
+  | h1 =>
+    simp only [ppow_one]
+    exact contMDiffAt_id
+  | hsucc i IH =>
+    simp only [ppow_succ]
+    exact ((IH.contMDiffAt Filter.univ_mem).mul contMDiffAt_id).contMDiffAt Filter.univ_mem
+
+
 end
 
 section

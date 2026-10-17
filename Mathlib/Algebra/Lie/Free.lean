@@ -144,10 +144,11 @@ instance : Sub (FreeLieAlgebra R X) where
 
 instance : AddGroup (FreeLieAlgebra R X) :=
   Function.Surjective.addGroup (Quot.mk _) Quot.mk_surjective rfl (fun _ _ => rfl)
-    (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+    (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 instance : AddCommSemigroup (FreeLieAlgebra R X) :=
-  Function.Surjective.addCommSemigroup (Quot.mk _) Quot.mk_surjective fun _ _ => rfl
+  Function.Surjective.addCommSemigroup (Quot.mk _) Quot.mk_surjective (fun _ _ => rfl)
+    fun _ _ => rfl
 
 instance : AddCommGroup (FreeLieAlgebra R X) :=
   { (inferInstance : AddGroup (FreeLieAlgebra R X)),

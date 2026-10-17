@@ -188,11 +188,17 @@ instance : Add (X ⟶ (forget₂ TopCommRingCat TopCat).obj R) where
 instance : Mul (X ⟶ (forget₂ TopCommRingCat TopCat).obj R) where
   mul f g := ofHom (f.hom * g.hom)
 
+instance : SMul ℕ+ (X ⟶ (forget₂ TopCommRingCat TopCat).obj R) where
+  smul n f := ofHom (n • f.hom)
+
 instance : SMul ℕ (X ⟶ (forget₂ TopCommRingCat TopCat).obj R) where
   smul n f := ofHom (n • f.hom)
 
 instance : SMul ℤ (X ⟶ (forget₂ TopCommRingCat TopCat).obj R) where
   smul n f := ofHom (n • f.hom)
+
+instance : Pow (X ⟶ (forget₂ TopCommRingCat TopCat).obj R) ℕ+ where
+  pow f n := ofHom (f.hom ^ n)
 
 instance : Pow (X ⟶ (forget₂ TopCommRingCat TopCat).obj R) ℕ where
   pow f n := ofHom (f.hom ^ n)
@@ -200,7 +206,8 @@ instance : Pow (X ⟶ (forget₂ TopCommRingCat TopCat).obj R) ℕ where
 instance : CommRing (X ⟶ (forget₂ TopCommRingCat TopCat).obj R) :=
   Function.Injective.commRing _ ConcreteCategory.hom_injective
     rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl)
+    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
+    (fun _ => rfl)
 
 -- TODO upgrade the result to TopCommRing?
 /-- The (bundled) commutative ring of continuous functions from a topological space

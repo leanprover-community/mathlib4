@@ -41,7 +41,11 @@ def groupLikeSubmonoid : Submonoid A where
   one_mem' := .one
   mul_mem' := .mul
 
-/-- Group-like elements in a bialgebra are stable under power. -/
+/-- Group-like elements in a bialgebra are stable under positive power. -/
+lemma IsGroupLikeElem.ppow {n : ℕ+} (ha : IsGroupLikeElem R a) : IsGroupLikeElem R (a ^ n) := by
+  suffices a ^ n ∈ groupLikeSubmonoid R A from this
+  exact ppow_mem ha _
+
 lemma IsGroupLikeElem.pow {n : ℕ} (ha : IsGroupLikeElem R a) : IsGroupLikeElem R (a ^ n) :=
   (groupLikeSubmonoid R A).pow_mem ha _
 
@@ -67,13 +71,15 @@ namespace GroupLike
 
 instance : One (GroupLike R A) where one := ⟨1, .one⟩
 instance : Mul (GroupLike R A) where mul a b := ⟨a * b, a.2.mul b.2⟩
+instance : Pow (GroupLike R A) ℕ+ where pow a n := ⟨a ^ n, a.2.ppow⟩
 instance : Pow (GroupLike R A) ℕ where pow a n := ⟨a ^ n, a.2.pow⟩
 
 @[simp] lemma val_one : (1 : GroupLike R A) = (1 : A) := rfl
 @[simp] lemma val_mul (a b : GroupLike R A) : ↑(a * b) = (a * b : A) := rfl
+@[simp] lemma val_ppow (a : GroupLike R A) (n : ℕ+) : ↑(a ^ n) = (a ^ n : A) := rfl
 @[simp] lemma val_pow (a : GroupLike R A) (n : ℕ) : ↑(a ^ n) = (a ^ n : A) := rfl
 
-instance : Monoid (GroupLike R A) := val_injective.monoid val val_one val_mul val_pow
+instance : Monoid (GroupLike R A) := val_injective.monoid val val_one val_mul val_ppow val_pow
 
 variable (R A) in
 /-- `GroupLike.val` as a monoid hom. -/
@@ -88,4 +94,4 @@ end Semiring
 variable [CommSemiring R] [CommSemiring A] [Bialgebra R A] {a b : A}
 
 instance GroupLike.instCommMonoid : CommMonoid (GroupLike R A) :=
-  val_injective.commMonoid val val_one val_mul val_pow
+  val_injective.commMonoid val val_one val_mul val_ppow val_pow
