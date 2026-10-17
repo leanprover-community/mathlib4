@@ -235,17 +235,14 @@ variable [MulOneClass M] [CommMonoid N]
 
 /-- Given two monoid morphisms `f`, `g` to a commutative monoid, `f * g` is the monoid morphism
 sending `x` to `f x * g x`. -/
-@[to_additive]
+@[to_additive /-- Given two additive monoid morphisms `f`, `g` to an additive commutative monoid,
+`f + g` is the additive monoid morphism sending `x` to `f x + g x`. -/]
 instance mul : Mul (M →* N) :=
   ⟨fun f g =>
     { toFun := fun m => f m * g m,
       map_one' := by simp,
       map_mul' := fun x y => by
         rw [f.map_mul, g.map_mul, ← mul_assoc, ← mul_assoc, mul_right_comm (f x)] }⟩
-
-/-- Given two additive monoid morphisms `f`, `g` to an additive commutative monoid,
-`f + g` is the additive monoid morphism sending `x` to `f x + g x`. -/
-add_decl_doc AddMonoidHom.add
 
 @[to_additive (attr := simp)] lemma mul_apply (f g : M →* N) (x : M) : (f * g) x = f x * g x := rfl
 
