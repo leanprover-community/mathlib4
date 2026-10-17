@@ -125,10 +125,10 @@ theorem rat_smul_mem_iff {V : Type*} [AddCommGroup V] [Module ℚ V] {P : AddSub
   refine ⟨fun hq ↦ ?_, fun ⟨n, hn⟩ ↦ by simpa [hn, Int.cast_smul_eq_zsmul] using P.zsmul_mem hx n⟩
   obtain ⟨u, v, huv⟩ := q.isCoprime_num_den
   have hd := hx' _ (P.add_mem (P.zsmul_mem hq u) (P.zsmul_mem hx v)) q.den <| by
-    conv_lhs => rw [← one_smul ℚ x, ← Int.cast_one, ← huv]
-    simp only [← Int.cast_smul_eq_zsmul ℚ, smul_smul, ← add_smul]
-    push_cast [← q.den_mul_eq_num]
-    ring_nf
+    have h : (u * q.num + v * q.den : ℚ) = 1 := by exact_mod_cast huv
+    rw [← q.den_mul_eq_num] at h
+    match_scalars
+    linarith
   exact ⟨q.num, by simpa [Int.isUnit_iff_natAbs_eq, eq_comm, Rat.den_eq_one_iff] using hd⟩
 
 end AddSubgroup
