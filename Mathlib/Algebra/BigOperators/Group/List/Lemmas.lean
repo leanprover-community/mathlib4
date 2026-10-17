@@ -68,7 +68,7 @@ lemma Perm.prod_eq' (h : l₁ ~ l₂) (hc : l₁.Pairwise Commute) : l₁.prod =
 @[to_additive]
 theorem prod_rotate_of_pairwise_commute {l : List M} (n : ℕ) (hc : l.Pairwise Commute) :
     (l.rotate n).prod = l.prod :=
-  l.rotate_perm n |>.symm hc |>.prod_eq'.symm
+  l.rotate_perm n |>.symm |>.prod_eq' hc |>.symm
 
 end Monoid
 
