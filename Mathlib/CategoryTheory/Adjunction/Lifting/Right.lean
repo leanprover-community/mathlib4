@@ -54,8 +54,8 @@ Please try to keep them in sync.
 ## References
 * https://ncatlab.org/nlab/show/adjoint+triangle+theorem
 * https://ncatlab.org/nlab/show/adjoint+lifting+theorem
-* Adjoint Lifting Theorems for Categories of Algebras (PT Johnstone, 1975)
-* A unified approach to the lifting of adjoints (AJ Power, 1988)
+* [P. T. Johnstone, *Adjoint lifting theorems for categories of algebras*][johnstone1975]
+* [A. J. Power, *A unified approach to the lifting of adjoints*][power1988]
 -/
 
 @[expose] public section

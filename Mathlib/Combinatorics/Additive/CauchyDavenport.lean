@@ -44,7 +44,7 @@ Version for `circle`.
 
 ## References
 
-* Matt DeVos, *On a generalization of the Cauchy-Davenport theorem*
+* [M. DeVos, *On a generalization of the Cauchy-Davenport theorem*][devos2016]
 
 ## Tags
 
