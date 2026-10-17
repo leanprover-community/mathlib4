@@ -79,8 +79,7 @@ include hf hz in
 lemma hasSum_taylorSeries_on_ball_of_eq_zero (hf0 : f c = 0) :
     HasSum (fun n : ℕ ↦ ((n + 1) ! : ℂ)⁻¹ • (z - c) ^ (n + 1) • iteratedDeriv (n + 1) f c)
       (f z) := by
-  simpa [hf0] using (hasSum_nat_add_iff' 1).mpr (hasSum_taylorSeries_on_ball
-    hf hz)
+  simpa [hf0] using (hasSum_nat_add_iff' 1).mpr (hasSum_taylorSeries_on_ball hf hz)
 
 include hf hz in
 /-- The derivative of a function that is complex differentiable on an open ball

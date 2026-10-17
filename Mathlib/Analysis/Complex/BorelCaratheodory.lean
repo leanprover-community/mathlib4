@@ -13,16 +13,17 @@ public import Mathlib.Analysis.Complex.TaylorSeries
 # Borel-Carathéodory theorem
 
 This file proves the Borel-Carathéodory theorem: for any function `f` analytic on the
-open ball `|z - c| < R` such that `Re(f z) ≤ M` for all `|z - c| < R` and `f c = 0`, we have
+open ball `‖z - c‖ < R` such that `Re(f z) ≤ M` for all `‖z - c‖ < R` and `f c = 0`, we have
 `‖f z‖ ≤ 2 * M * ‖z - c‖ / (R - ‖z - c‖)`
 and `‖f' z‖ ≤ 2 * R * M / (R - ‖z - c‖) ^ 2`.
 
 ## Main results
 
 * `Complex.BorelCaratheodory.norm_iteratedDeriv_le_of_re_le` bounds the derivatives at the center.
-* `Complex.BorelCaratheodory.norm_le_of_re_le_of_eq_zero` bounds `f` given a bound on its real part.
+* `Complex.BorelCaratheodory.norm_le_of_re_le_of_eq_zero` bounds `f` given a bound on its real part
+  and `f c = 0`.
+* `Complex.BorelCaratheodory.norm_le_of_re_le` bounds `f` given a bound on its real part.
 * `Complex.BorelCaratheodory.norm_deriv_le_of_re_le_of_eq_zero` bounds `f'` given a bound on `re f`.
-* `Complex.borelCaratheodory`: The general version of the theorem
 
 ## Implementation Notes
 
@@ -151,8 +152,24 @@ public theorem norm_le_of_re_le_of_eq_zero (hR : 0 < R)
       grw [norm_iteratedDeriv_le_of_re_le hR hf hf0 hM]
       exact le_of_eq (by ring)
 
+/-- **Borel-Carathéodory theorem:** estimates a differentiable function on a ball given a bound for
+its real part on that ball. -/
+public theorem norm_le_of_re_le (hR : 0 < R)
+    (hf : DifferentiableOn ℂ f (ball c R))
+    (hM : (ball c R).MapsTo f {z | z.re ≤ M}) (hz : z ∈ ball c R) :
+    ‖f z‖ ≤ 2 * M * ‖z - c‖ / (R - ‖z - c‖) + ‖f c‖ * (R + ‖z - c‖) / (R - ‖z - c‖) := by
+  have hfz : ‖f z - f c‖ ≤ 2 * (M + ‖f c‖) * ‖z - c‖ / (R - ‖z - c‖) := by
+    refine norm_le_of_re_le_of_eq_zero hR (hf.sub_const (f c)) (by simp) (fun x hx ↦ ?_) hz
+    simp only [Set.mem_ofPred_eq, sub_re]
+    calc _ ≤ M - (f c).re := by gcongr; exact hM hx
+      _ ≤ _ := by linarith [neg_le_abs (f c).re, abs_re_le_norm (f c)]
+  have h_denom_ne : R - ‖z - c‖ ≠ 0 := by linarith [mem_ball_iff_norm.mp hz]
+  calc _ ≤ ‖f z - f c‖ + ‖f c‖ := norm_le_norm_sub_add _ _
+    _ ≤ 2 * (M + ‖f c‖) * ‖z - c‖ / (R - ‖z - c‖) + ‖f c‖ := by gcongr
+    _ = _ := by field
+
 /-- **Borel-Carathéodory theorem for the derivative**: estimates the derivative of a differentiable
-function on a ball which vannishes at the center given a bound on its real part on that ball. -/
+function on a ball which vanishes at the center given a bound on its real part on that ball. -/
 public theorem norm_deriv_le_of_re_le_of_eq_zero (hR : 0 < R)
     (hf : DifferentiableOn ℂ f (ball c R)) (hf0 : f c = 0)
     (hM : (ball c R).MapsTo f {z | z.re ≤ M}) (hz : z ∈ ball c R) :
@@ -185,6 +202,7 @@ end BorelCaratheodory
 
 If `f` is analytic on the open ball `‖z‖ < R`, satisfies `(f z).re ≤ M` for all such `z`,
 and `f 0 = 0`, then `‖f z‖ ≤ 2 * M * ‖z‖ / (R - ‖z‖)` for all `‖z‖ < R`. -/
+@[deprecated BorelCaratheodory.norm_le_of_re_le_of_eq_zero +typeChanged (since := "2026-10-17")]
 public theorem borelCaratheodory_zero (hf : DifferentiableOn ℂ f (ball 0 R))
     (hf₁ : Set.MapsTo f (ball 0 R) {z | z.re ≤ M}) (hR : 0 < R) (hz : z ∈ ball 0 R)
     (hf₂ : f 0 = 0) : ‖f z‖ ≤ 2 * M * ‖z‖ / (R - ‖z‖) := by
@@ -194,18 +212,10 @@ public theorem borelCaratheodory_zero (hf : DifferentiableOn ℂ f (ball 0 R))
 
 If `f` is analytic on the open ball `‖z‖ < R` and satisfies `(f z).re ≤ M` for all such `z`,
 then `‖f z‖ ≤ 2 * M * ‖z‖ / (R - ‖z‖) + ‖f 0‖ * (R + ‖z‖) / (R - ‖z‖)` for all `‖z‖ < R`. -/
+@[deprecated BorelCaratheodory.norm_le_of_re_le +typeChanged (since := "2026-10-17")]
 public theorem borelCaratheodory (hf : DifferentiableOn ℂ f (ball 0 R))
     (hf₁ : Set.MapsTo f (ball 0 R) {z | z.re ≤ M}) (hR : 0 < R) (hz : z ∈ ball 0 R) :
     ‖f z‖ ≤ 2 * M * ‖z‖ / (R - ‖z‖) + ‖f 0‖ * (R + ‖z‖) / (R - ‖z‖) := by
-  have hfz : ‖f z - f 0‖ ≤ 2 * (M + ‖f 0‖) * ‖z‖ / (R - ‖z‖) := by
-    apply borelCaratheodory_zero (by fun_prop) ?_ hR hz (by simp)
-    intro x hx
-    simp only [Set.mem_ofPred_eq, sub_re]
-    calc (f x).re - (f 0).re ≤ M - (f 0).re := by gcongr; exact hf₁ hx
-      _ ≤ M + ‖f 0‖ := by linarith [neg_le_abs (f 0).re, abs_re_le_norm (f 0)]
-  have h_denom_ne : R - ‖z‖ ≠ 0 := by linarith [mem_ball_zero_iff.mp hz]
-  calc ‖f z‖ ≤ ‖f z - f 0‖ + ‖f 0‖ := norm_le_norm_sub_add _ _
-    _ ≤ 2 * (M + ‖f 0‖) * ‖z‖ / (R - ‖z‖) + ‖f 0‖ := by gcongr
-    _ = 2 * M * ‖z‖ / (R - ‖z‖) + ‖f 0‖ * (R + ‖z‖) / (R - ‖z‖) := by field_simp; ring
+  convert BorelCaratheodory.norm_le_of_re_le hR hf hf₁ hz <;> ring
 
 end Complex
