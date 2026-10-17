@@ -73,6 +73,29 @@ end HasUniqueRoots
 
 end Monoid
 
+section CancelMonoid
+variable [CancelMonoid M] [IsMulTorsionFree M] {a : M}
+
+@[to_additive IsAddTorsionFree.nsmul_left_injective]
+theorem IsMulTorsionFree.pow_right_injective (ha : a ≠ 1) :
+    Function.Injective (fun n : ℕ ↦ a ^ n) := by
+  suffices ∀ {m n : ℕ} (hmn : m ≤ n) (h : a ^ m = a ^ n), m = n from fun m n h ↦
+    (Nat.le_or_le m n).elim (this · h) fun hnm ↦ (this hnm h.symm).symm
+  intro m _ hmn h
+  obtain ⟨l, rfl⟩ := Nat.exists_eq_add_of_le hmn
+  simpa [pow_add, left_eq_mul, ha] using h
+
+@[to_additive IsAddTorsionFree.nsmul_left_injective_iff]
+theorem IsMulTorsionFree.pow_right_injective_iff :
+    Function.Injective (fun n : ℕ ↦ a ^ n) ↔ a ≠ 1 :=
+  ⟨fun h ha ↦ by simpa using @h 0 1 (by simp [ha]), pow_right_injective⟩
+
+@[to_additive (attr := simp) IsAddTorsionFree.nsmul_left_inj]
+theorem IsMulTorsionFree.pow_right_inj (ha : a ≠ 1) {n m : ℕ} : a ^ n = a ^ m ↔ n = m :=
+  (pow_right_injective ha).eq_iff
+
+end CancelMonoid
+
 /-- A commutative torsion-free monoid has unique roots.
 
 This is not an instance, to avoid an expensive instance loop with
@@ -113,6 +136,19 @@ lemma IsMulTorsionFree.zpow_eq_one_iff : a ^ n = 1 ↔ a = 1 ∨ n = 0 := by
 
 @[to_additive IsAddTorsionFree.zsmul_eq_zero_iff_left]
 lemma IsMulTorsionFree.zpow_eq_one_iff_right (ha : a ≠ 1) : a ^ n = 1 ↔ n = 0 := by simp [*]
+
+@[to_additive IsAddTorsionFree.zsmul_left_injective_iff]
+lemma IsMulTorsionFree.zpow_right_injective_iff : (a ^ · : ℤ → G).Injective ↔ a ≠ 1 := by
+  refine ⟨fun h ha ↦ by simpa using @h 0 1 (by simp [ha]), fun ha m n h ↦ ?_⟩
+  simp [← Int.sub_eq_zero, ← zpow_eq_one_iff_right ha, zpow_sub, h]
+
+@[to_additive IsAddTorsionFree.zsmul_left_injective]
+alias ⟨_, IsMulTorsionFree.zpow_right_injective⟩ :=
+  IsMulTorsionFree.zpow_right_injective_iff
+
+@[to_additive (attr := simp) IsAddTorsionFree.zsmul_left_inj]
+lemma IsMulTorsionFree.zpow_right_inj (ha : a ≠ 1) {m n : ℤ} : a ^ m = a ^ n ↔ m = n :=
+  (zpow_right_injective ha).eq_iff
 
 @[to_additive] lemma self_eq_inv : a = a⁻¹ ↔ a = 1 := by rw [← sq_eq_one, sq, mul_eq_one_iff_eq_inv]
 @[to_additive] lemma inv_eq_self : a⁻¹ = a ↔ a = 1 := by rw [eq_comm, self_eq_inv]
