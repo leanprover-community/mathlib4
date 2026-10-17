@@ -13,6 +13,7 @@ public import Mathlib.Data.Nat.DvdSequence
 public import Mathlib.Data.Nat.EvenOddRec
 public import Mathlib.GroupTheory.Perm.Sign
 
+import Mathlib.Algebra.MvPolynomial.Eval
 import Mathlib.Algebra.Polynomial.Coeff
 import Mathlib.Algebra.Polynomial.Eval.Defs
 import Mathlib.Data.Fin.Tuple.Sort
@@ -71,8 +72,9 @@ Some examples of EDSs include
 
 ## Main statements
 
-* `IsEllipticSequence.normEDS`: `normEDS` satisfies `IsEllipticSequence`.
-* TODO: prove that a sequence satisfying `IsEllipticDvdSequence` can be normalised to a `normEDS`.
+* `IsEllipticDvdSequence.normEDS`: `normEDS` satisfies `IsEllipticDvdSequence`.
+* `IsEllipticDvdSequence.eq_smul_normEDS`: a sequence satisfying `IsEllipticDvdSequence` is a
+  scalar multiple of `normEDS`.
 
 ## Implementation notes
 
@@ -415,6 +417,18 @@ protected lemma smul (h : IsEllipticSequence W) (x : R) : IsEllipticSequence <| 
 
 protected lemma comp (h : IsEllipticSequence W) (f : F) : IsEllipticSequence <| f ∘ W :=
   fun _ _ _ ↦ by rw [← IsEllipticNet.map_rel, h, map_zero]
+
+protected lemma zero (h : IsEllipticSequence W) (two : W 2 ∈ R⁰) : W 0 = 0 :=
+  pow_mem two 3 |>.right _ <| by grind only [rel, h 1 1 2]
+
+protected lemma neg (h : IsEllipticSequence W) (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰) : W.Odd := by
+  refine fun m ↦ eq_neg_of_add_eq_zero_left ?_
+  rcases m.even_or_odd' with ⟨m, rfl | rfl⟩ <;> apply pow_mem (mul_mem one two) 3 |>.right <;>
+  grind only [rel, h (1 - m) (1 + m) 2, h (1 + m) (1 - m) 2, h (-m) (m + 1) 1, h (1 + m) (-m) 1]
+
+lemma isEllipticNet (h : IsEllipticSequence W) (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰) :
+    IsEllipticNet W :=
+  of_even_odd (h.neg one two) one two (fun _ ↦ h ..) (fun _ ↦ h ..)
 
 /-- If a sequence satisfies the even and odd elliptic relations, then it is an elliptic sequence. -/
 theorem of_even_odd (neg : W.Odd) (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
@@ -888,6 +902,18 @@ lemma map_complEDS (k n : ℤ) : f (complEDS b c d k n) = complEDS (f b) (f c) (
 
 end Map
 
+variable {W} in
+protected lemma IsEllipticSequence.ext {V : ℤ → R} (hW : IsEllipticSequence W)
+    (hV : IsEllipticSequence V) (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰) (h1 : W 1 = V 1) (h2 : W 2 = V 2)
+    (h3 : W 3 = V 3) (h4 : W 4 = V 4) : W = V :=
+  funext fun n ↦ by induction n using Int.negInduction with
+  | nat n =>
+    refine normEDSRec (by grind [hW.zero, hV.zero]) h1 h2 h3 h4 (fun m ↦ ?_) (fun m ↦ ?_) n <;>
+      intros <;> refine sub_eq_zero.mp <| pow_mem (mul_mem one two) 3 |>.right _ ?_ <;>
+        grind only [IsEllipticNet.rel, hW (m + 4) (m + 2) 1, hV (m + 4) (m + 2) 1,
+          hW (m + 3) (m + 2) 1, hV (m + 3) (m + 2) 1]
+  | neg hn n => rw [hW.neg one two, hV.neg (h1 ▸ one) (h2 ▸ two), hn]
+
 open Polynomial in
 /-- The canonical normalised EDS is an elliptic net. -/
 theorem IsEllipticNet.normEDS : IsEllipticNet <| normEDS b c d := by
@@ -900,3 +926,57 @@ theorem IsEllipticNet.normEDS : IsEllipticNet <| normEDS b c d := by
 /-- The canonical normalised EDS is an elliptic sequence. -/
 theorem IsEllipticSequence.normEDS : IsEllipticSequence <| normEDS b c d :=
   IsEllipticNet.normEDS b c d |>.isEllipticSequence
+
+variable {W} in
+/-- An elliptic divisibility sequence is a scalar multiple of the canonical normalised EDS. -/
+theorem IsEllipticDvdSequence.eq_smul_normEDS (h : IsEllipticDvdSequence W) (two : W 2 ∈ R⁰) :
+    ∃ b c d : R, W = (W 1 • normEDS b c d ·) := by
+  rcases h.right 1 2 ⟨2, by norm_num1⟩, h.right 1 3 ⟨3, by norm_num1⟩, h.right 2 4 ⟨2, by norm_num1⟩
+    with ⟨⟨b, hb⟩, ⟨c, hc⟩, ⟨d, hd⟩⟩
+  exact ⟨b, c, d, h.left.ext (IsEllipticSequence.normEDS b c d |>.smul _)
+    (mul_mem_nonZeroDivisors.mp <| hb ▸ two).left two (by simp) (by simp [hb]) (by simp [hc])
+    (by rw [hd, hb, normEDS_four]; ring1)⟩
+
+@[simp]
+lemma normEDS_two_three_two (n : ℤ) : normEDS 2 3 2 n = n :=
+  congrFun (g := id) (by apply IsEllipticSequence.ext <;>
+    simp [IsEllipticSequence.normEDS, IsEllipticSequence.id]) n
+
+@[simp]
+lemma complEDS₂_two_three_two (n : ℤ) : complEDS₂ (2 : ℤ) 3 2 n = 2 := by
+  grind only [complEDS₂_mul_b (2 : ℤ) 3 2 n, normEDS_two_three_two]
+
+@[simp]
+lemma complEDS'_two_three_two (k : ℤ) (n : ℕ) : complEDS' (2 : ℤ) 3 2 k n = n := by
+  induction n using complEDSRec <;> simp <;>
+    grind only [complEDS'_even, complEDS'_odd, complEDS₂_two_three_two, normEDS_two_three_two]
+
+@[simp]
+lemma complEDS_two_three_two (k n : ℤ) : complEDS 2 3 2 k n = n := by
+  simpa [complEDS] using n.sign_mul_natAbs
+
+open MvPolynomial in
+lemma normEDS_mul_complEDS (m n : ℤ) :
+    normEDS b c d m * complEDS b c d m n = normEDS b c d (n * m) := by
+  let N (m : ℤ) : MvPolynomial (Fin 3) ℤ := normEDS (X 0) (X 1) (X 2) m
+  suffices hN : N m * complEDS (X 0) (X 1) (X 2) m n = N (n * m) by
+    simpa [N] using congr(aeval ![b, c, d] $hN)
+  by_cases hm : m = 0
+  · simp [N, hm]
+  induction n using Int.negInduction with
+  | nat n => induction n using complEDSRec with
+    | zero | one => simp [N]
+    | even => rw [Nat.cast_mul, Nat.cast_ofNat, complEDS_even]; grind only [normEDS_mul_complEDS₂]
+    | odd k ih₁ ih₂ =>
+      apply mul_left_cancel₀ (a := N m) fun h ↦ hm <| by simpa [N] using congr(eval ![2, 3, 2] $h)
+      grind [complEDS_odd _ _ _ m <| k + 1, normEDS_one, IsEllipticNet.rel,
+        IsEllipticSequence.normEDS (@X ℤ _ _ (0 : Fin 3)) (X 1) (X 2) ((k + 2) * m) ((k + 1) * m) 1]
+  | neg h n => simpa [N] using h n
+
+/-- The canonical normalised EDS is a divisibility sequence. -/
+theorem IsDvdSequence.normEDS : IsDvdSequence <| normEDS b c d :=
+  fun _ _ ⟨_, h⟩ ↦ h ▸ ⟨complEDS .., by rw [normEDS_mul_complEDS, mul_comm]⟩
+
+/-- The canonical normalised EDS is an elliptic divisibility sequence. -/
+theorem IsEllipticDvdSequence.normEDS : IsEllipticDvdSequence <| normEDS b c d :=
+  ⟨IsEllipticSequence.normEDS b c d, IsDvdSequence.normEDS b c d⟩
