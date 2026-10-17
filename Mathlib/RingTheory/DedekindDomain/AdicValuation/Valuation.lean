@@ -214,7 +214,7 @@ theorem intValuation_lt_one_iff_dvd (r : R) :
   by_cases hr : r = 0
   · simp [hr]
   · rw [v.intValuation_if_neg hr, ← exp_zero, exp_lt_exp,
-      neg_lt_zero, ← Int.ofNat_zero, Int.ofNat_lt, zero_lt_iff]
+      neg_lt_zero, ← Int.ofNat_zero, Int.ofNat_lt, pos_iff_ne_zero]
     have h : (Ideal.span {r} : Ideal R) ≠ 0 := by
       rw [Ne, Ideal.zero_eq_bot, Ideal.span_singleton_eq_bot]
       exact hr
@@ -537,7 +537,7 @@ theorem exists_intValuation_mul_sub_lt {a b : R} (hv : v.intValuation b ≤ v.in
   -- If `a = 0`, then `b = 0`, so we can take `y = 0`.
   by_cases ha: a = 0
   · subst ha
-    rw [map_zero, le_zero_iff] at hv
+    rw [map_zero, nonpos_iff_eq_zero] at hv
     exact ⟨0, by simp [hv]⟩
   · have hvaz := intValuation_ne_zero v a ha
     have hγz : WithZero.coe γ ≠ 0 := WithZero.coe_ne_zero

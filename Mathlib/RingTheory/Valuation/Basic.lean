@@ -192,7 +192,7 @@ theorem map_sum_lt {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hg :
     (hf : ∀ i ∈ s, v (f i) < g) : v (∑ i ∈ s, f i) < g := by
   classical
   refine
-    Finset.induction_on s (fun _ => v.map_zero ▸ (zero_lt_iff.2 hg))
+    Finset.induction_on s (fun _ => v.map_zero ▸ hg.pos)
       (fun a s has ih hf => ?_) hf
   rw [Finset.forall_mem_insert] at hf; rw [Finset.sum_insert has]
   exact v.map_add_lt hf.1 (ih hf.2)
@@ -219,7 +219,7 @@ theorem ne_zero_iff [Nontrivial Γ₀] (v : Valuation K Γ₀) {x : K} : v x ≠
   map_ne_zero v
 
 lemma pos_iff [Nontrivial Γ₀] (v : Valuation K Γ₀) {x : K} : 0 < v x ↔ x ≠ 0 := by
-  rw [zero_lt_iff, ne_zero_iff]
+  rw [pos_iff_ne_zero, ne_zero_iff]
 
 theorem unit_map_eq (u : Rˣ) : (Units.map (v : R →* Γ₀) u : Γ₀) = v u :=
   rfl
@@ -340,7 +340,7 @@ theorem map_eq_of_sub_lt (h : v (y - x) < v x) : v y = v x := by
 lemma map_sub_of_left_eq_zero (hx : v x = 0) : v (x - y) = v y := by
   by_cases hy : v y = 0
   · simpa [*] using map_sub v x y
-  · simp [*, map_sub_eq_of_lt_right, zero_lt_iff]
+  · simp [*, map_sub_eq_of_lt_right, pos_iff_ne_zero]
 
 lemma map_sub_of_right_eq_zero (hy : v y = 0) : v (x - y) = v x := by
   rw [map_sub_swap, map_sub_of_left_eq_zero v hy]
@@ -504,7 +504,7 @@ lemma restrict_eq_mk {x : R} (hx : v x ≠ 0) :
 @[simp]
 lemma restrict_pos_iff (x : R) : 0 < v.restrict x ↔ 0 < v x := by
   simp only [restrict_def, restrict₀_apply]
-  split_ifs with h <;> simpa [zero_lt_iff]
+  split_ifs with h <;> simpa [pos_iff_ne_zero]
 
 @[simp]
 lemma restrict_lt_iff {x y : R} : v.restrict x < v.restrict y ↔ v x < v y := by
@@ -543,7 +543,7 @@ lemma exists_div_eq_of_unit (γ : (ValueGroup₀ (v : R →*₀ Γ₀))ˣ) :
   have hx : 0 < v x := by
     rw [← restrict_pos_iff, restrict_def, WithZero.pos_iff_ne_zero, ne_eq, restrict₀_eq_zero_iff]
     aesop
-  use x, a, hx, zero_lt_iff.mpr ha
+  use x, a, hx, ha.pos
   have ha0 : v.restrict a ≠ 0 := by simpa using ha
   rw [div_eq_iff ha0, mul_comm, ← embedding_strictMono.injective.eq_iff, map_mul,
     embedding_restrict, embedding_restrict, ← coe_toMonoidWithZeroHom, ← hax]
@@ -652,7 +652,7 @@ lemma IsNontrivial.exists_one_lt {Γ₀ : Type*} [LinearOrderedCommGroupWithZero
     ∃ x, 1 < v x := by
   obtain ⟨x, h0, h1⟩ := hv.exists_lt_one
   use x⁻¹
-  simp [one_lt_inv₀ (zero_lt_iff.mpr (by simp [h0] : v x ≠ 0)), h1]
+  simp_all [one_lt_inv₀, pos_iff_ne_zero]
 
 lemma IsNontrivial_iff_exists_one_lt {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
     {v : Valuation K Γ₀} : v.IsNontrivial ↔ ∃ x, 1 < v x :=
@@ -727,7 +727,7 @@ theorem eq_zero (h : v₁.IsEquiv v₂) {r : R} : v₁ r = 0 ↔ v₂ r = 0 := b
 @[deprecated (since := "2026-09-15")] alias ofClass_eq_zero := eq_zero
 
 lemma pos_iff (h : v₁.IsEquiv v₂) {x : R} : 0 < v₁ x ↔ 0 < v₂ x := by
-  rw [zero_lt_iff, zero_lt_iff, h.eq_zero.ne]
+  rw [pos_iff_ne_zero, pos_iff_ne_zero, h.eq_zero.ne]
 
 lemma le_iff_le (h : v₁.IsEquiv v₂) {x y : R} :
     v₁ x ≤ v₁ y ↔ v₂ x ≤ v₂ y := h x y
@@ -909,7 +909,7 @@ theorem isEquiv_of_val_le_one (h : ∀ x, v x ≤ 1 ↔ v' x ≤ 1) : v.IsEquiv 
   obtain rfl | hy := eq_or_ne y 0
   · simp
   · rw [← div_le_one₀, ← v.map_div, h, v'.map_div, div_le_one₀] <;>
-      rwa [zero_lt_iff, ne_zero_iff]
+      rwa [pos_iff_ne_zero, ne_zero_iff]
 
 theorem isEquiv_iff_val_le_one : v.IsEquiv v' ↔ ∀ {x}, v x ≤ 1 ↔ v' x ≤ 1 :=
   ⟨IsEquiv.le_one_iff_le_one, isEquiv_of_val_le_one⟩
@@ -1005,15 +1005,10 @@ variable [CommRing R] [LinearOrderedCommMonoidWithZero Γ₀] (v : Valuation R �
 def supp : Ideal R where
   carrier := { x | v x = 0 }
   zero_mem' := map_zero v
-  add_mem' {x y} hx hy := le_zero_iff.mp <|
-    calc
-      v (x + y) ≤ max (v x) (v y) := v.map_add x y
-      _ ≤ 0 := max_le (le_zero_iff.mpr hx) (le_zero_iff.mpr hy)
-  smul_mem' c x hx :=
-    calc
-      v (c * x) = v c * v x := map_mul v c x
-      _ = v c * 0 := congr_arg _ hx
-      _ = 0 := mul_zero _
+  add_mem' {x y} hx hy := by
+    rw [Set.mem_ofPred] at hx hy
+    simpa [hx, hy] using v.map_add x y
+  smul_mem' c x hx := by simp_all
 
 @[simp]
 theorem mem_supp_iff (x : R) : x ∈ supp v ↔ v x = 0 :=

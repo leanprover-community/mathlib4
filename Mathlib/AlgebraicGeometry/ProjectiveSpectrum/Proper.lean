@@ -217,8 +217,8 @@ theorem valuativeCriterion_existence_aux
   have ⟨i₀, hi1⟩ : ∃ a, ψ a = Kmax := by simpa using Finset.max'_mem (Finset.univ.image ψ)
   have hi₀ (j) : ψ j ≤ ψ i₀ := hi1 ▸ (Finset.univ.image ψ).le_max' (ψ j) (by simp)
   have hKmax : 0 < Kmax := by
-    refine zero_lt_iff.mpr fun hKmax ↦ ?_
-    have (i : _) : ψ i = 0 := le_zero_iff.mp (hKmax ▸ Finset.le_max' _ _ (by simp))
+    refine pos_of_ne_zero fun hKmax ↦ ?_
+    have (i : _) : ψ i = 0 := eq_zero_of_nonpos (hKmax ▸ Finset.le_max' _ _ (by simp))
     simp only [ψ, map_pow, pow_eq_zero_iff', map_eq_zero, ne_eq] at this
     have : φ 1 = 0 := by convert (this j).1; ext; simp
     simp only [map_one, one_ne_zero] at this
