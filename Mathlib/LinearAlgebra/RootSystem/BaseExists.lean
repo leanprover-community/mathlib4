@@ -83,7 +83,8 @@ lemma linearIndepOn_root_baseOf' [IsDomain R] {S : Type*}
   obtain ⟨B, hB⟩ : ∃ B : P.RootPositiveForm S, B.posForm.toQuadraticMap.PosDef :=
     ⟨P.posRootForm S, by simpa using P.posRootForm_rootFormIn_posDef S⟩
   have hp (i : baseOf P.root (f : M →+ S)) : 0 < f' (v i) := by obtain ⟨i, -, hi⟩ := i; simpa
-  have hn : Pairwise fun (i j : baseOf P.root (f : M →+ S)) ↦ B.posForm (v i) (v j) ≤ 0 := by
+  have hn : Pairwise' fun (i j : baseOf P.root (f : M →+ S)) ↦ B.posForm (v i) (v j) ≤ 0 := by
+    rw [pairwise'_iff]
     rintro ⟨i, hi⟩ ⟨j, hj⟩ hij
     rw [B.posForm_apply_root_root_le_zero_iff, ← P.algebraMap_pairingIn' S ℤ]
     simpa using P.baseOf_pairwise_pairing_le_zero _ hf (by simpa) (by simpa) (by aesop : i ≠ j)
