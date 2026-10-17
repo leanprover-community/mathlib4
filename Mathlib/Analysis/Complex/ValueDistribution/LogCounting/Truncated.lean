@@ -16,6 +16,10 @@ poles with multiplicity one.
 
 The truncated counting function is the quantity through which the Second Main Theorem
 of Value Distribution Theory is classically stated.
+
+The theorems `ValueDistribution.logCounting_deriv_top` and
+`ValueDistribution.sum_logCounting_sub_truncatedLogCounting_le` relate the counting functions of the
+derivative `deriv f` to the counting functions and truncated counting functions of `f`.
 -/
 
 @[expose] public section
@@ -134,5 +138,37 @@ theorem truncatedLogCounting_congr_codiscrete [NormedSpace ℂ E] {f g : ℂ →
     simp only [truncatedLogCounting_top, truncatedLogCounting_coe]
     congr! 3
     exact divisor_congr_codiscreteWithin (hfg.mono <| by simp) isOpen_univ
+
+/-!
+## Counting Functions of the Derivative
+-/
+
+/--
+The poles of `deriv f` are exactly the poles of `f`, each with multiplicity increased by one:
+the counting function for the poles of `deriv f` is the sum of the counting function and the
+truncated counting function for the poles of `f`.
+-/
+theorem logCounting_deriv_top [CompleteSpace E] [CharZero 𝕜] (hf : Meromorphic f) :
+    logCounting (deriv f) ⊤ = logCounting f ⊤ + truncatedLogCounting f ⊤ := by
+  rw [logCounting_top, logCounting_top, truncatedLogCounting_top,
+    hf.meromorphicOn.negPart_divisor_deriv, map_add]
+
+/--
+The `a`-points of `f`, for `a` in a finite set `s` and counted with multiplicity beyond the first,
+are zeros of `deriv f`: for `1 ≤ r`, the differences between the counting functions and the
+truncated counting functions for the `a`-points of `f` sum up to at most the counting function for
+the zeros of `deriv f`.
+-/
+theorem sum_logCounting_sub_truncatedLogCounting_le [CompleteSpace E] [CharZero 𝕜]
+    (hf : Meromorphic f) (s : Finset E) {r : ℝ} (hr : 1 ≤ r) :
+    ∑ a ∈ s, (logCounting f a r - truncatedLogCounting f a r) ≤ logCounting (deriv f) 0 r := by
+  calc ∑ a ∈ s, (logCounting f a r - truncatedLogCounting f a r)
+    _ = (∑ a ∈ s, ((divisor (f · - a) univ)⁺ - (divisor (f · - a) univ)⁺.truncate₁)).logCounting
+        r := by
+      simp [logCounting_coe, truncatedLogCounting_coe]
+    _ ≤ (divisor (deriv f) univ)⁺.logCounting r :=
+      locallyFinsuppWithin.logCounting_le
+        (hf.meromorphicOn.sum_posPart_divisor_sub_truncate_le_divisor_deriv s) hr
+    _ = logCounting (deriv f) 0 r := by rw [logCounting_zero]
 
 end ValueDistribution
