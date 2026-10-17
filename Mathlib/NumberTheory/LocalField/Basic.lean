@@ -39,7 +39,8 @@ This implies the following typeclasses via `inferInstance`
 - `Finite 𝓀[K]`
 
 Assuming we have a compatible `UniformSpace K` instance
-(e.g. via `IsTopologicalAddGroup.toUniformSpace` and `isUniformAddGroup_of_addCommGroup`) then
+(e.g. via `IsTopologicalAddGroup.toUniformSpace` and
+`IsUniformAddGroup.rightUniformSpace_of_addCommGroup`) then
 - `CompleteSpace K`
 - `CompleteSpace 𝒪[K]`
 -/
@@ -63,7 +64,7 @@ attribute [local simp] zero_lt_iff
 
 instance : IsTopologicalDivisionRing K := by
   let := IsTopologicalAddGroup.rightUniformSpace K
-  have := isUniformAddGroup_of_addCommGroup (G := K)
+  have := IsUniformAddGroup.rightUniformSpace_of_addCommGroup K
   infer_instance
 
 lemma isCompact_closedBall (γ : ValueGroupWithZero K) : IsCompact { x | valuation K x ≤ γ } := by
@@ -71,7 +72,7 @@ lemma isCompact_closedBall (γ : ValueGroupWithZero K) : IsCompact { x | valuati
   by_cases hγ : γ = 0
   · simp [hγ]
   let := IsTopologicalAddGroup.rightUniformSpace K
-  let := isUniformAddGroup_of_addCommGroup (G := K)
+  let := IsUniformAddGroup.rightUniformSpace_of_addCommGroup K
   obtain ⟨s, hs, -, hs'⟩ := LocallyCompactSpace.local_compact_nhds (0 : K) .univ Filter.univ_mem
   obtain ⟨r, hr, hr1, H⟩ :
       ∃ r', r' ≠ 0 ∧ valuation K r' < 1 ∧ { x | valuation K x ≤ valuation K r' } ⊆ s := by
@@ -108,7 +109,7 @@ instance (K : Type*) [Field K] [ValuativeRel K] [UniformSpace K] [IsUniformAddGr
 
 instance : IsDiscreteValuationRing 𝒪[K] :=
   letI := IsTopologicalAddGroup.rightUniformSpace K
-  haveI := isUniformAddGroup_of_addCommGroup (G := K)
+  haveI := IsUniformAddGroup.rightUniformSpace_of_addCommGroup K
   haveI : CompactSpace (Valued.integer K) := inferInstanceAs (CompactSpace 𝒪[K])
   Valued.integer.isDiscreteValuationRing_of_compactSpace
 
@@ -117,7 +118,7 @@ noncomputable
 def valueGroupWithZeroIsoInt : ValueGroupWithZero K ≃*o ℤᵐ⁰ := by
   apply Nonempty.some
   let := IsTopologicalAddGroup.rightUniformSpace K
-  have := isUniformAddGroup_of_addCommGroup (G := K)
+  have := IsUniformAddGroup.rightUniformSpace_of_addCommGroup K
   obtain ⟨_⟩ := Valued.integer.locallyFiniteOrder_units_mrange_of_isCompact_integer
     (isCompact_iff_compactSpace.mpr (inferInstance : CompactSpace 𝒪[K]))
   let e : (MonoidHom.mrange (valuation K)) ≃*o ValueGroupWithZero K :=
@@ -141,7 +142,7 @@ instance : ValuativeRel.IsRankLeOne K :=
 
 instance : Finite 𝓀[K] :=
   letI := IsTopologicalAddGroup.rightUniformSpace K
-  haveI := isUniformAddGroup_of_addCommGroup (G := K)
+  haveI := IsUniformAddGroup.rightUniformSpace_of_addCommGroup K
   letI : (Valued.v (R := K)).RankOne :=
   { hom' := IsRankLeOne.nonempty.some.emb (R := K).comp MonoidWithZeroHom.ValueGroup₀.embedding
     strictMono' := IsRankLeOne.nonempty.some.strictMono.comp
