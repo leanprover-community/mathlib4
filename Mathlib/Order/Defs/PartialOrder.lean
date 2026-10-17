@@ -221,8 +221,12 @@ protected lemma Decidable.le_iff_lt_or_eq [DecidableLE α] : a ≤ b ↔ a < b �
   ⟨Decidable.lt_or_eq_of_le, le_of_lt_or_eq⟩
 
 @[to_dual lt_or_eq_of_le']
-lemma lt_or_eq_of_le : a ≤ b → a < b ∨ a = b := open scoped Classical in Decidable.lt_or_eq_of_le
+lemma lt_or_eq_of_le : a ≤ b → a < b ∨ a = b := by
+  classical
+  exact Decidable.lt_or_eq_of_le
 @[to_dual le_iff_lt_or_eq']
-lemma le_iff_lt_or_eq : a ≤ b ↔ a < b ∨ a = b := open scoped Classical in Decidable.le_iff_lt_or_eq
+lemma le_iff_lt_or_eq : a ≤ b ↔ a < b ∨ a = b := by
+  classical
+  exact Decidable.le_iff_lt_or_eq
 
 end PartialOrder
