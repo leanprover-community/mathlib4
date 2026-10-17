@@ -89,7 +89,7 @@ lemma Equilateral.dist_eq {s : Simplex R P n} (he : s.Equilateral) {i₁ i₂ i�
   rcases he with ⟨r, hr⟩
   rw [hr _ _ h₁₂, hr _ _ h₃₄]
 
-lemma Equilateral.face [NeZero n] {s : Simplex R P n} {m : ℕ} {fs : Finset (Fin (n + 1))}
+lemma Equilateral.face {s : Simplex R P n} {m : ℕ} {fs : Finset (Fin (n + 1))}
     (hfs : fs.card = m + 1) (h : s.Equilateral) : (s.face hfs).Equilateral := by
   obtain ⟨r, hr⟩ := h
   unfold Equilateral
