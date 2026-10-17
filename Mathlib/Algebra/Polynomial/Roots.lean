@@ -1020,12 +1020,12 @@ section Order
 
 open Filter
 
-variable [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] {p : R[X]}
+variable [CommRing R] [IsDomain R] [Preorder R] {p : R[X]}
 
-theorem eventually_atTop_not_isRoot (hp : p ≠ 0) : ∀ᶠ x in atTop, ¬p.IsRoot x :=
+theorem eventually_atTop_not_isRoot [NoTopOrder R] (hp : p ≠ 0) : ∀ᶠ x in atTop, ¬p.IsRoot x :=
   atTop_le_cofinite (finite_setOfPred_isRoot hp).compl_mem_cofinite
 
-theorem eventually_atBot_not_isRoot (hp : p ≠ 0) : ∀ᶠ x in atBot, ¬p.IsRoot x :=
+theorem eventually_atBot_not_isRoot [NoBotOrder R] (hp : p ≠ 0) : ∀ᶠ x in atBot, ¬p.IsRoot x :=
   atBot_le_cofinite (finite_setOfPred_isRoot hp).compl_mem_cofinite
 
 end Order
