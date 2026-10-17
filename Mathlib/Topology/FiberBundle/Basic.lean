@@ -294,6 +294,22 @@ lemma t3Space [T3Space F] (b : B) : T3Space (E b) :=
 
 variable {E F}
 
+lemma _root_.Bundle.Trivialization.preimage_baseSet_mem_nhds
+    (e : Trivialization F (π F E)) {v : TotalSpace F E} (hv : v.proj ∈ e.baseSet) :
+    TotalSpace.proj ⁻¹' e.baseSet ∈ 𝓝 v :=
+  FiberBundle.continuous_proj F E |>.continuousAt (e.baseSet_mem_nhds hv)
+
+lemma _root_.Bundle.Trivialization.fst_comp_eventuallyEq
+    (e : Trivialization F (π F E)) {v : TotalSpace F E} (hv : v.proj ∈ e.baseSet) :
+    Prod.fst ∘ e =ᶠ[𝓝 v] (π F E) := by
+  filter_upwards [e.preimage_baseSet_mem_nhds hv] with y hy using e.coe_fst' hy
+
+lemma _root_.Bundle.Trivialization.invFun_comp_eventuallyEq
+    (e : Trivialization F (π F E)) {v : TotalSpace F E} (hv : v.proj ∈ e.baseSet) :
+    e.invFun ∘ e =ᶠ[𝓝 v] id := by
+  filter_upwards [e.preimage_baseSet_mem_nhds hv] with w hw
+  simp [e.mem_source.mpr hw]
+
 @[simp, mfld_simps]
 theorem mem_trivializationAt_proj_source {x : TotalSpace F E} :
     x ∈ (trivializationAt F E x.proj).source :=
