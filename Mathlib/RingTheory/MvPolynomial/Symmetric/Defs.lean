@@ -91,6 +91,16 @@ lemma pow_smul_esymm {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTowe
     rw [Function.comp_apply, (mem_powersetCard.1 hx).2]
   · simp_rw [smul_prod, esymm, powersetCard_map, map_map, Function.comp_def]
 
+theorem esymm_cons (a : R) (s : Multiset R) (k : ℕ) :
+    (a ::ₘ s).esymm (k + 1) = s.esymm (k + 1) + a * s.esymm k := by
+  simp [esymm, sum_map_mul_left]
+
+theorem esymm_one (s : Multiset R) : s.esymm 1 = s.sum := by
+  simp [esymm, powersetCard_one]
+
+theorem esymm_card (s : Multiset R) : s.esymm s.card = s.prod := by
+  simp [esymm]
+
 -- TODO: `Multiset.insert_eq_cons` being simp means that `esymm {x, y}` is not simp normal form
 @[simp] lemma esymm_pair_one (x y : R) :
     esymm (x ::ₘ {y}) 1 = x + y := by
@@ -99,6 +109,28 @@ lemma pow_smul_esymm {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTowe
 @[simp] lemma esymm_pair_two (x y : R) :
     esymm (x ::ₘ {y}) 2 = x * y := by
   simp [esymm, powersetCard_one]
+
+theorem two_mul_esymm_two {R : Type*} [CommRing R] (s : Multiset R) : 2 * s.esymm 2 =
+    s.sum ^ 2 - (s.map (· ^ 2)).sum := by
+  induction s using Multiset.induction with
+  | empty => simp [esymm, powersetCard_zero_right]
+  | cons a t ih => grind [sum_cons, map_cons, esymm_cons, esymm_one]
+
+private theorem esymm_map_inv_aux {R : Type*} [Field R] (s : Multiset R) : 0 ∉ s →
+    ∀ j k, s.card = j + k → (s.map (·⁻¹)).esymm k * s.prod = s.esymm j := by
+  induction s using Multiset.induction with
+  | empty => grind [map_zero, card_zero]
+  | cons a t _ =>
+    intro _ j k _
+    cases k
+    · grind [esymm_zero, esymm_card]
+    cases j
+    · grind [esymm_zero, card_map, esymm_card, prod_map_inv', prod_ne_zero]
+    · grind [map_cons, esymm_cons, prod_cons, card_cons]
+
+theorem esymm_map_inv {R : Type*} [Field R] {s : Multiset R} (h0 : 0 ∉ s) {k : ℕ}
+    (hk : k ≤ s.card) : s.esymm k = (s.map (·⁻¹)).esymm (s.card - k) * s.esymm s.card := by
+  grind [esymm_map_inv_aux, esymm_card]
 
 end Multiset
 
