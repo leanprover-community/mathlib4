@@ -559,3 +559,28 @@ example (h : liftEq b a) (h' : liftLE b c) : liftLE a c := by
   grw [← h, ← h']
 
 end universePolymorphic
+
+axiom myRel : ℕ → ℕ → Prop
+
+@[gcongr] axiom myRel_add (a b c d : ℕ) : myRel a b → myRel c d → myRel (a + c) (b + d)
+@[instance] axiom isTrans_myRel : IsTrans ℕ myRel
+
+/--
+error: Tactic `grewrite` failed: Did not find a rewrite with
+  a ≤ _
+in the target expression
+  myRel a 5 → myRel b 5
+
+Use the command `set_option trace.Meta.grewrite true` to inspect this.
+
+Note: The following goals could not be solved by `rfl`. You might need to add appropriate `@[refl]` attributes.
+• myRel a a
+• myRel b b
+
+a b : ℕ
+h : a ≤ b
+⊢ myRel a 5 → myRel b 5
+-/
+#guard_msgs in
+example (a b : ℕ) (h : a ≤ b) : myRel a 5 → myRel b 5 := by
+  grw [h]

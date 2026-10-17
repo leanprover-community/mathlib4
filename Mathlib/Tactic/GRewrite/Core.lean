@@ -132,6 +132,8 @@ structure State where
   cache : Std.HashSet (Option Expr × Expr × Bool) := {}
   /-- The current progress level. -/
   progress : Progress := .noMatch
+  /-- Goals on which the `rfl` tactic has failed. -/
+  rflFailures : Array MessageData := #[]
 
 /-- The information about the given rewrite lemma. -/
 structure GRewriteLemma where
@@ -292,6 +294,8 @@ partial def processGCongrLemma (goal : MVarId) (lem : GCongrLemma) (forward : Bo
       withReducibleAndInstances goal.applyRflOrId
     catch ex =>
       -- In principle, this case should not happen.
+      let goalMsg ← addMessageContextFull m!"{← goal.getType}"
+      modify fun s ↦ { s with rflFailures := s.rflFailures.push goalMsg }
       trace[Meta.grewrite] "{← goal.getType} could not be closed with `rfl`:\n{ex.toMessageData}"
       return false
   -- Only continue if at least one rewrite happened
@@ -416,10 +420,11 @@ public def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr)
         else throwTacticEx `grewrite goal m!"`{hrelType}` is not a valid relation"
       let index := (pattern.toHeadIndex, pattern.headNumArgs)
       let mvarIds := mvarIds ++ newMVars.map (·.mvarId!, #[])
-      if let ((some (eNew, impProof), { progress, ..}), s) ←
-        grewriteCore `_Implies none e (forward := forwardImp) config |>.run
-          { symm := symm', proof := hrel, type := hrelType, index, mvarIds }
-          |>.run {} |>.run then
+      let ((result, {progress, rflFailures, .. }), s) ←
+        grewriteCore `_Implies none e (forward := forwardImp) config
+          |>.run { symm := symm', proof := hrel, type := hrelType, index, mvarIds }
+          |>.run {} |>.run
+      if let some (eNew, impProof) := result then
         let lctx? := match progress with
           | .matchedOutOfScope lctx => some lctx
           | _ => none
@@ -427,10 +432,14 @@ public def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr)
       else
         withLocalDeclD `_ (← inferType replacement) fun replacement' ↦ do
           let hrelType := updateRel hrelType replacement' symm
-          throwTacticEx `grewrite goal
-            m!"Did not find a rewrite with{indentExpr hrelType}\n\
+          let mut msg := m!"Did not find a rewrite with{indentExpr hrelType}\n\
             in the target expression{indentExpr e}\n\n\
             Use the command `set_option trace.Meta.grewrite true` to inspect this."
+          if !rflFailures.isEmpty then
+            msg := msg ++ .note m!"The following goals could not be solved by `rfl`. \
+              You might need to add appropriate `@[refl]` attributes.\
+              {rflFailures.foldl (· ++ m!"\n• " ++ ·) ""}"
+          throwTacticEx `grewrite goal msg
     -- post-process the metavariables
     postprocessAppMVars `grewrite goal newMVars binderInfos
       (synthAssignedInstances := !tactic.skipAssignedInstances.get (← getOptions))
