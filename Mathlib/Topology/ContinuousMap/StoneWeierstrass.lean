@@ -638,7 +638,7 @@ lemma ContinuousMapZero.adjoin_id_dense (s : Set 𝕜) [Fact (0 ∈ s)]
     ← ContinuousMap.ker_evalStarAlgHom_eq_closure_adjoin_id s h0']
   apply Set.eq_univ_of_forall fun f ↦ ?_
   simp only [Set.mem_preimage, SetLike.mem_coe, RingHom.mem_ker,
-    ContinuousMap.evalStarAlgHom_apply, ContinuousMap.coe_coe]
+    ContinuousMap.evalStarAlgHom_apply, ContinuousMap.coe_ofClass]
   exact map_zero f
 
 open NonUnitalStarAlgebra in
