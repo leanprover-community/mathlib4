@@ -538,10 +538,10 @@ private lemma dist_nsPole_point_eq_dist_nsPole_excenter_aux [Fact (finrank ℝ V
     _ = (2 : ℤ) • ∡ B I X := by
         rw [collinear_AIX.two_zsmul_oangle_eq_right I_ne_A.symm X_ne_I]
 
-/-- The **incenter-excenter lemma**, **trillium theorem** or **trident lemma**: given a triangle
-ABC, suppose an angle bisector from A through the incenter or excenter I meets the circumcircle
-again at X (including the case of an external bisector at A tangent to the circle, in which case
-X = A). Then XB = XI (= XC, by applying this lemma again). -/
+/-- The **incenter-excenter lemma**, **trillium theorem**, **trident lemma** or **north/south pole
+theorem**: given a triangle ABC, suppose an angle bisector from A through the incenter or excenter I
+meets the circumcircle again at X (including the case of an external bisector at A tangent to the
+circle, in which case X = A). Then XB = XI (= XC, by applying this lemma again). -/
 lemma dist_nsPole_point_eq_dist_nsPole_excenter (signs : Finset (Fin 3)) {i₁ i₂ : Fin 3}
     (h₁₂ : i₁ ≠ i₂) :
     dist (t.nsPole signs i₁) (t.points i₂) = dist (t.nsPole signs i₁) (t.excenter signs) := by
@@ -554,16 +554,24 @@ lemma dist_nsPole_point_eq_dist_nsPole_excenter (signs : Finset (Fin 3)) {i₁ i
   obtain ⟨i₃, h₁₃, h₂₃⟩ : ∃ i₃, i₁ ≠ i₃ ∧ i₂ ≠ i₃ := by decide +revert
   exact t'.dist_nsPole_point_eq_dist_nsPole_excenter_aux signs h₁₂ h₁₃ h₂₃
 
-/-- The **incenter-excenter lemma**, **trillium theorem** or **trident lemma**: given a triangle
-ABC, suppose the angle bisector from A through the incenter I meets the circumcircle again at S.
-Then SB = SI (= SC, by applying this lemma again). -/
+/-- The **incenter-excenter lemma**, **trillium theorem**, **trident lemma** or **south pole
+theorem**: given a triangle ABC, suppose the angle bisector from A through the incenter I meets the
+circumcircle again at S. Then SB = SI (= SC, by applying this lemma again). -/
 lemma dist_southPole_point_eq_dist_southPole_incenter {i₁ i₂ : Fin 3} (h₁₂ : i₁ ≠ i₂) :
     dist (t.southPole i₁) (t.points i₂) = dist (t.southPole i₁) (t.incenter) :=
   t.dist_nsPole_point_eq_dist_nsPole_excenter ∅ h₁₂
 
-/-- The **incenter-excenter lemma**, **trillium theorem** or **trident lemma**: given a triangle
-ABC, suppose the angle bisector from A through the excenters not opposite A meets the circumcircle
-again at N. Then NB = NI (= NC, by applying this lemma again). -/
+/-- The **incenter-excenter lemma**, **trillium theorem**, **trident lemma** or **south pole
+theorem**: given a triangle ABC, suppose the angle bisector from A through the excenter I opposite A
+meets the circumcircle again at S. Then SB = SI (= SC, by applying this lemma again). -/
+lemma dist_southPole_point_eq_dist_southPole_excenter {i₁ i₂ : Fin 3} (h₁₂ : i₁ ≠ i₂) :
+    dist (t.southPole i₁) (t.points i₂) = dist (t.southPole i₁) (t.excenter {i₁}) := by
+  rw [← nsPole_singleton_self]
+  exact t.dist_nsPole_point_eq_dist_nsPole_excenter _ h₁₂
+
+/-- The **incenter-excenter lemma**, **trillium theorem**, **trident lemma** or **north pole
+theorem: given a triangle ABC, suppose the angle bisector from A through the excenters not opposite
+A meets the circumcircle again at N. Then NB = NI (= NC, by applying this lemma again). -/
 lemma dist_northPole_point_eq_dist_northPole_excenter {i₁ i₂ : Fin 3} (h₁₂ : i₁ ≠ i₂) :
     dist (t.northPole i₁) (t.points i₂) = dist (t.northPole i₁) (t.excenter {i₂}) := by
   rw [← t.nsPole_singleton_eq_northPole h₁₂]
