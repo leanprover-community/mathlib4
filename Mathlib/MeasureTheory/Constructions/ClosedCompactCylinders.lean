@@ -17,8 +17,6 @@ proof of Kolmogorov's extension theorem.
 ## Main definitions
 
 * `closedCompactCylinders X`: the set of all cylinders of `Π i, X i` based on closed compact sets.
-* `compactClosedSquareCylinders X`: the set of all cylinders of `Π i, X i` based on products of
-  closed compact sets.
 
 ## Main statements
 
