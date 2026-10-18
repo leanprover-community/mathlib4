@@ -237,7 +237,7 @@ theorem divisors_subset_properDivisors {m : ℕ} (hzero : n ≠ 0) (h : m ∣ n)
 lemma divisors_gcd {m n : ℕ} (hm : m ≠ 0) (hn : n ≠ 0) :
     (m.gcd n).divisors = m.divisors ∩ n.divisors := by
   ext d
-  simp [mem_divisors, dvd_gcd_iff, gcd_ne_zero_left hm, hm, hn]
+  simp [dvd_gcd_iff, hm, hn]
 
 /-- Filtering the divisors of a nonzero natural number by divisibility gives the divisors of
 its gcd with the filtering number. -/
