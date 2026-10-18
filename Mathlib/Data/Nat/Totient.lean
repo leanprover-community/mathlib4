@@ -343,7 +343,6 @@ theorem totient_gcd_mul_totient_mul (a b : ℕ) : φ (a.gcd b) * φ (a * b) = φ
   rw [eq_comm, mul_comm, ← mul_assoc, ← Nat.mul_div_assoc]
   exact mul_dvd_mul (prod_primeFactors_dvd a) (prod_primeFactors_dvd b)
 
-@[simp, grind .]
 theorem totient_eq_self_iff {a : ℕ} : φ a = a ↔ a ≤ 1 := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · by_contra! hle
