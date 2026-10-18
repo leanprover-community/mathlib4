@@ -495,7 +495,7 @@ theorem invVeblen₂_lt (x : Ordinal) : invVeblen₂ x < ω ^ x := by
 theorem invVeblen₂_le (x : Ordinal) : invVeblen₂ x ≤ x := by
   obtain h | h := eq_zero_or_pos (invVeblen₁ x)
   · rw [invVeblen₂_le_iff, h, veblen_zero]
-  · convert! (invVeblen₂_lt x).le
+  · convert (invVeblen₂_lt x).le
     rw [← veblen_zero_apply, veblen_eq_of_lt_invVeblen₁ h]
 
 theorem invVeblen₂_of_lt_opow (h : a < ω ^ a) : invVeblen₂ a = a := by
@@ -521,7 +521,7 @@ theorem veblen_eq_opow_iff (h : a < veblen o a) :
     · rw [← veblen_veblen_of_lt ho, veblen_zero_apply, opow_right_inj one_lt_omega0]
       rintro rfl
       simp [invVeblen₁_veblen h, invVeblen₂_veblen ho.ne' h]
-  · convert! ← veblen_invVeblen₁_invVeblen₂ x
+  · convert ← veblen_invVeblen₁_invVeblen₂ x
 
 /-! ### Epsilon function -/
 
@@ -537,7 +537,7 @@ scoped notation "ε₀" => ε_ 0
 recommended_spelling "epsilon_zero" for "ε₀" in [«termε₀»]
 
 theorem epsilon_eq_deriv (o : Ordinal) : ε_ o = deriv (fun a ↦ ω ^ a) o := by
-  simpa [epsilon] using congrFun (veblen_add_one 0) o
+  simpa [epsilon] using congr($(veblen_add_one 0) o)
 
 theorem epsilon_zero_eq_nfp : ε₀ = nfp (fun a ↦ ω ^ a) 0 := by
   rw [epsilon_eq_deriv, deriv_zero_right]
@@ -545,7 +545,7 @@ theorem epsilon_zero_eq_nfp : ε₀ = nfp (fun a ↦ ω ^ a) 0 := by
 theorem epsilon_add_one_eq_nfp (o : Ordinal) : ε_ (o + 1) = nfp (fun a ↦ ω ^ a) (ε_ o + 1) := by
   simp [epsilon_eq_deriv, deriv_add_one]
 
-@[deprecated epsilon_add_one_eq_nfp (since := "2026-06-18")]
+@[deprecated epsilon_add_one_eq_nfp +typeChanged (since := "2026-06-18")]
 theorem epsilon_succ_eq_nfp (o : Ordinal) : ε_ (succ o) = nfp (fun a ↦ ω ^ a) (succ (ε_ o)) := by
   simpa [succ_eq_add_one] using epsilon_add_one_eq_nfp o
 
@@ -556,9 +556,20 @@ theorem epsilon_zero_le_of_omega0_opow_le (h : ω ^ o ≤ o) : ε₀ ≤ o := by
 theorem epsilon_le_veblen_of_ne_zero (ha : a ≠ 0) : ε_ b ≤ veblen a b :=
   veblen_left_monotone b <| Order.one_le_iff_ne_zero.mpr ha
 
+theorem mem_range_epsilon : o ∈ range epsilon ↔ ω ^ o = o := by
+  simp [mem_range_veblen one_ne_zero]
+
 @[simp]
 theorem omega0_opow_epsilon (o : Ordinal) : ω ^ ε_ o = ε_ o := by
-  rw [epsilon_eq_deriv, deriv_fp (isNormal_opow one_lt_omega0)]
+  simp [← mem_range_epsilon]
+
+theorem isPrincipal_opow_epsilon (o : Ordinal) : IsPrincipal (· ^ ·) (ε_ o) :=
+  (omega0_lt_and_isPrincipal_opow_iff.2 (omega0_opow_epsilon o)).2
+
+/-- The exponential principal ordinals are `0`, `2`, `ω`, and the epsilon numbers. -/
+theorem isPrincipal_opow_iff_zero_or_two_or_omega0_or_epsilon :
+    IsPrincipal (· ^ ·) o ↔ o = 0 ∨ o = 2 ∨ o = ω ∨ o ∈ range epsilon := by
+  rw [isPrincipal_opow_iff_zero_or_two_or_omega0_or_omega0_opow_eq, mem_range_epsilon]
 
 /-- `ε₀` is the limit of `0`, `ω ^ 0`, `ω ^ ω ^ 0`, … -/
 theorem lt_epsilon_zero : o < ε₀ ↔ ∃ n : ℕ, o < (fun a ↦ ω ^ a)^[n] 0 := by
@@ -642,12 +653,12 @@ theorem veblen_gamma_zero (o : Ordinal) : veblen (Γ_ o) 0 = Γ_ o :=
 theorem gamma_zero_eq_nfp : Γ₀ = nfp (veblen · 0) 0 :=
   deriv_zero_right _
 
-theorem gamma_add_one_eq_nfp (o : Ordinal) : Γ_ (o + 1) = nfp (veblen · 0) (Γ_ o + 1) :=
-  by simp [gamma, deriv_add_one]
+theorem gamma_add_one_eq_nfp (o : Ordinal) : Γ_ (o + 1) = nfp (veblen · 0) (Γ_ o + 1) := by
+  simp [gamma, deriv_add_one]
 
-@[deprecated gamma_add_one_eq_nfp (since := "2026-06-18")]
-theorem gamma_succ_eq_nfp (o : Ordinal) : Γ_ (succ o) = nfp (veblen · 0) (succ (Γ_ o)) :=
-  by simpa [succ_eq_add_one] using gamma_add_one_eq_nfp o
+@[deprecated gamma_add_one_eq_nfp +typeChanged (since := "2026-06-18")]
+theorem gamma_succ_eq_nfp (o : Ordinal) : Γ_ (succ o) = nfp (veblen · 0) (succ (Γ_ o)) := by
+  simpa [succ_eq_add_one] using gamma_add_one_eq_nfp o
 
 theorem gamma_zero_le_of_veblen_le (h : veblen o 0 ≤ o) : Γ₀ ≤ o := by
   rw [gamma_zero_eq_nfp]

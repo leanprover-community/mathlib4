@@ -5,9 +5,10 @@ Authors: Snir Broshi
 -/
 module
 
-public import Mathlib.Algebra.GCDMonoid.FinsetLemmas
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
 public import Mathlib.RingTheory.ZMod.UnitsCyclic
+
+import Mathlib.Algebra.GCDMonoid.FinsetLemmas
 
 /-!
 # The Carmichael function
@@ -112,8 +113,6 @@ theorem carmichael_finset_lcm {α : Type*} (s : Finset α) (f : α → ℕ) :
 theorem carmichael_finsetProd {α : Type*} {s : Finset α} {f : α → ℕ}
     (h : Set.Pairwise s <| Coprime.onFun f) : carmichael (s.prod f) = s.lcm (carmichael ∘ f) :=
   s.lcm_eq_prod h ▸ carmichael_finset_lcm ..
-
-@[deprecated (since := "2026-04-08")] alias carmichael_finset_prod := carmichael_finsetProd
 
 theorem carmichael_factorization (n : ℕ) [NeZero n] :
     carmichael n = n.primeFactors.lcm fun p ↦ carmichael (p ^ n.factorization p) := by

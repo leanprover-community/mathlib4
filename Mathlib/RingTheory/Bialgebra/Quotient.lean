@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.Coalgebra.CoassocSimps
 public import Mathlib.RingTheory.Coalgebra.Quotient
 public import Mathlib.RingTheory.Congruence.Hom
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
-public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
 # Bialgebra structure on quotients by a ring congruence

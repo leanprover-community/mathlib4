@@ -6,10 +6,11 @@ Authors: Christian Merten
 module
 
 public import Mathlib.Algebra.Category.AlgCat.Basic
-public import Mathlib.Algebra.Category.Ring.Colimits
 public import Mathlib.Algebra.Category.Ring.FilteredColimits
 public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
-public import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
+
+import Mathlib.Algebra.Category.Ring.Colimits
+import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 
 /-!
 
@@ -72,9 +73,9 @@ private def AlgCat.isColimitCoconeOfIsFiltered (hc : IsColimit c) (j : J) :
     apply elementwise_of% hc.fac
   uniq s m hm := by
     ext
-    refine congr($(hc.uniq (Functor.mapCocone _ s) ((forget₂ _ _).map m) fun j ↦ ?_) _)
+    congrm $(hc.uniq (Functor.mapCocone _ s) ((forget₂ _ _).map m) fun j ↦ ?_) _
     ext
-    exact congr($(hm _) _)
+    congrm $(hm _) _
 
 end
 

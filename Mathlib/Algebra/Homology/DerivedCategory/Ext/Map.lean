@@ -5,9 +5,9 @@ Authors: Nailin Guan, Jingting Wang, Joël Riou
 -/
 module
 
+public import Mathlib.Algebra.Homology.DerivedCategory.ExactFunctor
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExtClass
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
-public import Mathlib.Algebra.Homology.DerivedCategory.ExactFunctor
 
 /-!
 # Map between Ext groups induced by an exact functor
@@ -15,7 +15,7 @@ public import Mathlib.Algebra.Homology.DerivedCategory.ExactFunctor
 In this file, we define the map `Ext^k (M, N) → Ext^k (F(M), F(N))`,
 where `F` is an exact functor between abelian categories.
 
-# Main Definition and results
+## Main definitions and results
 
 * `CategoryTheory.Abelian.Ext.mapExactFunctor` : The map between `Ext` induced by
   `CategoryTheory.LocalizerMorphism.smallShiftedHomMap`.
@@ -81,7 +81,6 @@ lemma DerivedCategory.map_triangleOfSESδ [HasDerivedCategory.{t} C] [HasDerived
   simp [NatTrans.shift_app, Functor.commShiftIso_comp_hom_app, Functor.commShiftIso_comp_inv_app,
     ← Functor.map_comp_assoc]
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma ShortComplex.ShortExact.mapShiftedHom_singleδ'
     [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
