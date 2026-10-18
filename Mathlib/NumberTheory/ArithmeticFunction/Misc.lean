@@ -141,6 +141,7 @@ end Pow
 section Sigma
 
 /-- `σ k n` is the sum of the `k`th powers of the divisors of `n` -/
+@[oeis A000005 "values for `k = 0`, `n > 0`"]
 def sigma (k : ℕ) : ArithmeticFunction ℕ :=
   ⟨fun n => ∑ d ∈ divisors n, d ^ k, by simp⟩
 
