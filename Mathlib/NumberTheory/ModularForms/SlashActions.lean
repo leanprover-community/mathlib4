@@ -256,11 +256,7 @@ lemma prod_slash_sum_weights {ι : Type*} {k : ι → ℤ} {g : GL (Fin 2) ℝ} 
     (∏ i ∈ s, f i) ∣[∑ i ∈ s, k i] g = |g.det.val| ^ (#s - 1 : ℤ) • (∏ i ∈ s, f i ∣[k i] g) := by
   classical
   induction s using Finset.induction_on with
-  | empty =>
-    simp only [sum_empty, prod_empty, Matrix.GeneralLinearGroup.val_det_apply, card_empty,
-      CharP.cast_eq_zero, zero_sub, Int.reduceNeg, zpow_neg, zpow_one]
-    ext _
-    simp [slash_apply]
+  | empty => simpa using pow_slash 0 0 g 1
   | insert i t hi IH =>
     rcases t.eq_empty_or_nonempty with rfl | ht
     · simp
