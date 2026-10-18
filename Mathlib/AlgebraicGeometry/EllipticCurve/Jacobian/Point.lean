@@ -564,7 +564,6 @@ lemma toAffineLift_add [DecidableEq F] (P Q : W.Point) :
   rcases P, Q with ⟨@⟨⟨_⟩, hP⟩, @⟨⟨_⟩, hQ⟩⟩
   exact toAffine_add hP hQ
 
-set_option backward.isDefEq.respectTransparency false in
 variable (W) in
 /-- The addition-preserving equivalence between the type of nonsingular Jacobian points on a
 Weierstrass curve `W` and the type of nonsingular points in affine coordinates. -/
@@ -573,7 +572,8 @@ noncomputable def toAffineAddEquiv [DecidableEq F] : W.Point ≃+ W.toAffine.Poi
   toFun := toAffineLift
   invFun := fromAffine
   left_inv := by
-    rintro @⟨⟨P⟩, hP⟩
+    rintro @⟨P, hP⟩
+    induction P using Quotient.inductionOn with | h P => ?_
     by_cases hPz : P z = 0
     · rw [Point.ext_iff, toAffineLift_eq, toAffine_of_Z_eq_zero hPz]
       exact Quotient.eq.mpr <| Setoid.symm <| equiv_zero_of_Z_eq_zero hP hPz
