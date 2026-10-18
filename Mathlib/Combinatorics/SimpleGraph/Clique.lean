@@ -749,8 +749,8 @@ lemma exists_isNClique_cliqueNum : ∃ s, G.IsNClique G.cliqueNum s := by
 
 variable (G) in
 @[simp]
-theorem cliqueNum_of_isEmpty [IsEmpty α] : G.cliqueNum = 0 :=
-  Nat.le_zero.mp <| csSup_le' fun n ⟨s, h⟩ ↦ by simp [s.eq_empty_of_isEmpty, ← h.card_eq]
+theorem cliqueNum_of_isEmpty [IsEmpty α] : G.cliqueNum = 0 := by
+  simp [cliqueNum, Finset.eq_empty_of_isEmpty]
 
 -- TODO: generalize from `Finite α` to `Finite G.edgeSet`
 variable (G) in
