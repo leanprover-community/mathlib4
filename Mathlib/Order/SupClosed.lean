@@ -121,15 +121,15 @@ lemma SupClosed.insert_lowerBounds {s : Set α} {a : α} (h : SupClosed s) (ha :
 
 @[to_dual]
 protected theorem SupClosed.Ioi (a : α) : SupClosed (Ioi a) :=
-  isUpperSet_Ioi a |>.supClosed
+  IsUpperSet.Ioi a |>.supClosed
 
 @[to_dual]
 protected theorem SupClosed.Ici (a : α) : SupClosed (Ici a) :=
-  isUpperSet_Ici a |>.supClosed
+  IsUpperSet.Ici a |>.supClosed
 
 @[to_dual]
 protected theorem SupClosed.Iic (a : α) : SupClosed (Iic a) :=
-  DirectedOn.supClosed_of_isLowerSet (isLowerSet_Iic a) (.le_Iic a)
+  DirectedOn.supClosed_of_isLowerSet (.Iic a) (.le_Iic a)
 
 @[to_dual]
 protected theorem SupClosed.Ioc (a b : α) : SupClosed (Ioc a b) :=

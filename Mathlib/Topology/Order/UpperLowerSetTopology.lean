@@ -281,16 +281,16 @@ lemma nhdsSet_eq_principal_upperClosure (s : Set α) : 𝓝ˢ s = 𝓟 ↑(upper
   rw [← principal_nhdsKer, nhdsKer_eq_upperClosure]
 
 protected theorem IsOpen.Ioi (a : α) : IsOpen (Ioi a) :=
-  isOpen_iff_isUpperSet.mpr <| isUpperSet_Ioi a
+  isOpen_iff_isUpperSet.mpr <| .Ioi a
 
 protected theorem IsOpen.Ici (a : α) : IsOpen (Ici a) :=
-  isOpen_iff_isUpperSet.mpr <| isUpperSet_Ici a
+  isOpen_iff_isUpperSet.mpr <| .Ici a
 
 protected theorem IsClosed.Iio (a : α) : IsClosed (Iio a) :=
-  isClosed_iff_isLowerSet.mpr <| isLowerSet_Iio a
+  isClosed_iff_isLowerSet.mpr <| .Iio a
 
 protected theorem IsClosed.Iic (a : α) : IsClosed (Iic a) :=
-  isClosed_iff_isLowerSet.mpr <| isLowerSet_Iic a
+  isClosed_iff_isLowerSet.mpr <| .Iic a
 
 end Preorder
 
@@ -392,16 +392,16 @@ lemma nhdsSet_eq_principal_lowerClosure (s : Set α) : 𝓝ˢ s = 𝓟 ↑(lower
   rw [← principal_nhdsKer, nhdsKer_eq_lowerClosure]
 
 protected theorem IsOpen.Iio (a : α) : IsOpen (Iio a) :=
-  isOpen_iff_isLowerSet.mpr <| isLowerSet_Iio a
+  isOpen_iff_isLowerSet.mpr <| .Iio a
 
 protected theorem IsOpen.Iic (a : α) : IsOpen (Iic a) :=
-  isOpen_iff_isLowerSet.mpr <| isLowerSet_Iic a
+  isOpen_iff_isLowerSet.mpr <| .Iic a
 
 protected theorem IsClosed.Ioi (a : α) : IsClosed (Ioi a) :=
-  isClosed_iff_isUpperSet.mpr <| isUpperSet_Ioi a
+  isClosed_iff_isUpperSet.mpr <| .Ioi a
 
 protected theorem IsClosed.Ici (a : α) : IsClosed (Ici a) :=
-  isClosed_iff_isUpperSet.mpr <| isUpperSet_Ici a
+  isClosed_iff_isUpperSet.mpr <| .Ici a
 
 end Preorder
 
