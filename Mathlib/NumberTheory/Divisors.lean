@@ -239,8 +239,6 @@ lemma divisors_gcd {m n : ℕ} (hm : m ≠ 0) (hn : n ≠ 0) :
   ext d
   simp [dvd_gcd_iff, hm, hn]
 
-/-- Filtering the divisors of a nonzero natural number by divisibility gives the divisors of
-its gcd with the filtering number. -/
 lemma filter_dvd_divisors {n m : ℕ} (hn : n ≠ 0) :
     {d ∈ n.divisors | d ∣ m} = (n.gcd m).divisors := by
   ext d
