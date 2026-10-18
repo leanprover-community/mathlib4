@@ -5,8 +5,9 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-import ProofWidgets.Component.Basic
 public import Mathlib.Tactic.ClickSuggestions.Util
+
+import ProofWidgets.Component.Basic
 
 /-!
 
@@ -53,7 +54,7 @@ So, all such results are filtered out. This is implemented with `isUserFriendly`
 
 meta section
 
-open Lean Meta ProofWidgets Jsx
+open Lean Meta ProofWidgets
 
 namespace Mathlib.Tactic.ClickSuggestions
 
@@ -139,11 +140,11 @@ public def suggestUnfold (e : Expr) (rwKind : RwKind) :
     return none
   let htmls ← results.mapM fun unfold => do
     let tactic ← tacticSyntax e unfold rwKind
-    mkSuggestion tactic (← exprToHtml unfold)
-  return <details>
-    <summary className="mv2 pointer"> unfold </summary>
+    mkSuggestion tactic "rw" (← exprToHtml unfold) (solves := false)
+  return jsx%{<details>
+    <summary className="mv2 pointer">Unfold</summary>
     {.element "div" #[] htmls}
-  </details>
+  </details>}
 
 open Elab in
 /-- `#unfold? e` gives all unfolds of `e`.

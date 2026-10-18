@@ -5,9 +5,9 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Internal.Types.Basic
-public import Mathlib.CategoryTheory.Monoidal.Grp
 public import Mathlib.Algebra.Category.Grp.Basic
+public import Mathlib.CategoryTheory.Monoidal.Grp
+public import Mathlib.CategoryTheory.Monoidal.Internal.Types.Basic
 
 /-!
 # `Grp (Type u) ≌ GrpCat.{u}`

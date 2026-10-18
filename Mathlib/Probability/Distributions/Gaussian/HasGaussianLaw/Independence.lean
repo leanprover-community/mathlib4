@@ -6,6 +6,7 @@ Authors: Etienne Marion
 module
 
 public import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Def
+
 import Mathlib.Probability.Distributions.Gaussian.CharFun
 import Mathlib.Probability.Distributions.Gaussian.Fernique
 import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Basic

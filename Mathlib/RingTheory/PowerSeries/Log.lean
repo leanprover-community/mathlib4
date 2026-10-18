@@ -5,8 +5,9 @@ Authors: Ralf Stephan
 -/
 module
 
-import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.RingTheory.PowerSeries.Exp
+
+import Mathlib.Algebra.Algebra.Rat
 import Mathlib.RingTheory.PowerSeries.WellKnown
 
 /-!
