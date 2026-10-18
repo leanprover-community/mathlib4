@@ -32,6 +32,7 @@ of it (Pólya).
 ## References
 
 * [P.-J. Cahen and J.-L. Chabert, *Integer-valued polynomials*][cahen1997], Chapter I
+* [G. Pólya, *Über ganzwertige Polynome in algebraischen Zahlkörpern*][polya1919]
 -/
 
 @[expose] public section
