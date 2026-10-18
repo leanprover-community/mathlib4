@@ -56,6 +56,11 @@ In particular,
 
 For finitely presented algebras, see `Algebra.FinitePresentation`
 in file `Mathlib/RingTheory/FinitePresentation.lean`.
+
+## References
+
+* [H. Lenzing, *Endlich präsentierbare Moduln*][lenzing1969]: conversely, a module `M` for which
+  `M ⊗ (Π i, P i) → Π i, (M ⊗ P i)` is bijective for every family `P i` is finitely presented.
 -/
 
 @[expose] public section
@@ -744,6 +749,7 @@ lemma Module.piRightHom_bijective_of_finite_free (κ : Type*) [Finite κ] :
 variable (R M) in
 /-- If `M` is a finitely presented `R`-module, then for any family of `R`-modules `P i`, the
 canonical map `M ⊗[R] (Π i, P i) → Π i, M ⊗[R] P i` is bijective. -/
+@[stacks 059K "(1) ⇒ (2)"]
 theorem Module.FinitePresentation.piRightHom_bijective [Module.FinitePresentation R M] :
     Function.Bijective (piRightHom R R M P) := by
   obtain ⟨n, m, f, g, hf, hfg⟩ := Module.FinitePresentation.exists_fin' R M
