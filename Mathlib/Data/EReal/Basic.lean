@@ -5,7 +5,7 @@ Authors: Kevin Buzzard
 -/
 module
 
-public import Mathlib.Data.ENNReal.Operations
+public import Mathlib.Basic.ENNReal.Operations
 
 /-!
 # The extended real numbers
@@ -86,8 +86,16 @@ theorem coe_orderEmbedding : ⇑orderEmbedding = Real.toEReal := rfl
   | ⊤ => ⊤
   | .some x => x.1
 
-instance hasCoeENNReal : Coe ℝ≥0∞ EReal :=
+instance : Coe ℝ≥0∞ EReal :=
   ⟨ENNReal.toEReal⟩
+
+@[simp] lemma _root_.ENNReal.toEReal_natCast (n : ℕ) : ((n : ℝ≥0∞) : EReal) = n := rfl
+
+@[simp, norm_cast] lemma _root_.ENNReal.toEReal_zero : ((0 : ℝ≥0∞) : EReal) = 0 := rfl
+@[simp, norm_cast] lemma _root_.ENNReal.toEReal_one : ((1 : ℝ≥0∞) : EReal) = 1 := rfl
+
+lemma _root_.ENNReal.toEReal_ofNat (n : ℕ) [n.AtLeastTwo] :
+    ((ofNat(n) : ℝ) : EReal) = ofNat(n) := rfl
 
 instance : Inhabited EReal := ⟨0⟩
 
@@ -194,12 +202,12 @@ protected theorem mul_comm (x y : EReal) : x * y = y * x := by
 protected theorem one_mul : ∀ x : EReal, 1 * x = x
   | ⊤ => ite_eq_left one_pos
   | ⊥ => ite_eq_left one_pos
-  | (x : ℝ) => congr_arg Real.toEReal (one_mul x)
+  | (x : ℝ) => congr($(one_mul x).toEReal)
 
 protected theorem zero_mul : ∀ x : EReal, 0 * x = 0
   | ⊤ => (ite_eq_right (lt_irrefl _)).trans (ite_eq_left rfl)
   | ⊥ => (ite_eq_right (lt_irrefl _)).trans (ite_eq_left rfl)
-  | (x : ℝ) => congr_arg Real.toEReal (zero_mul x)
+  | (x : ℝ) => congr($(zero_mul x).toEReal)
 
 instance : MulZeroOneClass EReal where
   one_mul := EReal.one_mul
@@ -302,11 +310,19 @@ theorem range_coe_eq_Ioo : range Real.toEReal = Ioo ⊥ ⊤ := by
 theorem coe_add (x y : ℝ) : (↑(x + y) : EReal) = x + y :=
   rfl
 
+/-- The additive homomorphism from `ℝ` to `EReal`. -/
+def _root_.Real.toERealAddHom : ℝ →+ EReal where
+  toFun := Real.toEReal
+  map_zero' := coe_zero
+  map_add' := coe_add
+
+@[simp] lemma _root_.Real.coe_toERealAddHom : ⇑Real.toERealAddHom = Real.toEReal := rfl
+
 -- `coe_mul` moved up
 
 @[norm_cast]
 theorem coe_nsmul (n : ℕ) (x : ℝ) : (↑(n • x) : EReal) = n • (x : EReal) :=
-  map_nsmul (⟨⟨Real.toEReal, coe_zero⟩, coe_add⟩ : ℝ →+ EReal) _ _
+  map_nsmul Real.toERealAddHom _ _
 
 @[simp, norm_cast]
 theorem coe_eq_zero {x : ℝ} : (x : EReal) = 0 ↔ x = 0 :=
@@ -339,7 +355,7 @@ protected theorem coe_neg' {x : ℝ} : (x : EReal) < 0 ↔ x < 0 :=
   EReal.coe_lt_coe_iff
 
 lemma toReal_eq_zero_iff {x : EReal} : x.toReal = 0 ↔ x = 0 ∨ x = ⊤ ∨ x = ⊥ := by
-  cases x <;> norm_num
+  cases x <;> simp
 
 lemma toReal_ne_zero_iff {x : EReal} : x.toReal ≠ 0 ↔ x ≠ 0 ∧ x ≠ ⊤ ∧ x ≠ ⊥ := by
   simp only [ne_eq, toReal_eq_zero_iff, not_or]
@@ -782,8 +798,10 @@ lemma toENNReal_lt_toENNReal {x y : EReal} (hx : 0 ≤ x) (hxy : x < y) :
 
 theorem coe_coe_eq_natCast (n : ℕ) : (n : ℝ) = (n : EReal) := rfl
 
+@[simp]
 theorem natCast_ne_bot (n : ℕ) : (n : EReal) ≠ ⊥ := Ne.symm (ne_of_beq_false rfl)
 
+@[simp]
 theorem natCast_ne_top (n : ℕ) : (n : EReal) ≠ ⊤ := Ne.symm (ne_of_beq_false rfl)
 
 @[norm_cast]
@@ -805,6 +823,22 @@ theorem natCast_lt_iff {m n : ℕ} : (m : EReal) < (n : EReal) ↔ m < n := by
 theorem natCast_mul (m n : ℕ) :
     (m * n : ℕ) = (m : EReal) * (n : EReal) := by
   rw [← coe_coe_eq_natCast, ← coe_coe_eq_natCast, ← coe_coe_eq_natCast, Nat.cast_mul, EReal.coe_mul]
+
+@[simp, norm_cast]
+lemma ennrealToEReal_le_natCast {r : ℝ≥0∞} {n : ℕ} : (r : EReal) ≤ n ↔ r ≤ n := by
+  rw [← EReal.coe_ennreal_le_coe_ennreal_iff, ENNReal.toEReal_natCast]
+
+@[simp, norm_cast]
+lemma natCast_le_ennrealToEReal {r : ℝ≥0∞} {n : ℕ} : n ≤ (r : EReal) ↔ n ≤ r := by
+  rw [← EReal.coe_ennreal_le_coe_ennreal_iff, ENNReal.toEReal_natCast]
+
+@[simp, norm_cast]
+lemma ennrealToEReal_lt_natCast {r : ℝ≥0∞} {n : ℕ} : (r : EReal) < n ↔ r < n := by
+  rw [← EReal.coe_ennreal_lt_coe_ennreal_iff, ENNReal.toEReal_natCast]
+
+@[simp, norm_cast]
+lemma natCast_lt_ennrealToEReal {r : ℝ≥0∞} {n : ℕ} : n < (r : EReal) ↔ n < r := by
+  rw [← EReal.coe_ennreal_lt_coe_ennreal_iff, ENNReal.toEReal_natCast]
 
 /-! ### Miscellaneous lemmas -/
 

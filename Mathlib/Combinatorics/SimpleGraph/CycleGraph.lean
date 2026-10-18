@@ -5,7 +5,8 @@ Authors: Iván Renison, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Hasse
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.Combinatorics.SimpleGraph.Copy
 
 /-!
 # Definition of cycle graphs
@@ -43,14 +44,6 @@ theorem cycleGraph_one_eq_bot : cycleGraph 1 = ⊥ := Subsingleton.elim _ _
 theorem cycleGraph_zero_eq_top : cycleGraph 0 = ⊤ := Subsingleton.elim _ _
 theorem cycleGraph_one_eq_top : cycleGraph 1 = ⊤ := Subsingleton.elim _ _
 
-theorem cycleGraph_two_eq_top : cycleGraph 2 = ⊤ := by
-  simp only [SimpleGraph.ext_iff, funext_iff]
-  decide
-
-theorem cycleGraph_three_eq_top : cycleGraph 3 = ⊤ := by
-  simp only [SimpleGraph.ext_iff, funext_iff]
-  decide
-
 theorem cycleGraph_one_adj {u v : Fin 1} : ¬(cycleGraph 1).Adj u v := by
   simp [cycleGraph_one_eq_bot]
 
@@ -63,6 +56,18 @@ theorem cycleGraph_adj' {n : ℕ} {u v : Fin n} :
   | 0 => exact u.elim0
   | 1 => simp [cycleGraph_one_adj]
   | n + 2 => simp [cycleGraph_adj, Fin.ext_iff]
+
+theorem cycleGraph_eq_top_iff {n : ℕ} : cycleGraph n = ⊤ ↔ n ≤ 3 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · contrapose! h
+    refine ne_top_iff_exists_not_adj.mpr ⟨⟨0, by lia⟩, ⟨2, by lia⟩, by simp, ?_⟩
+    grind [cycleGraph_adj', Fin.coe_int_sub_eq_ite]
+  · simp only [SimpleGraph.ext_iff, funext_iff]
+    match n with
+    | 0 | 1 | 2 | 3 => decide
+
+theorem cycleGraph_two_eq_top : cycleGraph 2 = ⊤ := cycleGraph_eq_top_iff.mpr (by simp)
+theorem cycleGraph_three_eq_top : cycleGraph 3 = ⊤ := cycleGraph_eq_top_iff.mpr (by simp)
 
 theorem cycleGraph_neighborSet {n : ℕ} {v : Fin (n + 2)} :
     (cycleGraph (n + 2)).neighborSet v = {v - 1, v + 1} := by
@@ -84,23 +89,6 @@ theorem cycleGraph_degree_three_le {n : ℕ} {v : Fin (n + 3)} :
   simp only [ne_eq, sub_eq_iff_eq_add, add_assoc v, left_eq_add]
   exact ne_of_beq_false rfl
 
-theorem pathGraph_le_cycleGraph {n : ℕ} : pathGraph n ≤ cycleGraph n := by
-  match n with
-  | 0 | 1 => simp
-  | n + 2 =>
-    intro u v h
-    rw [pathGraph_adj] at h
-    rw [cycleGraph_adj']
-    cases h with
-    | inl h | inr h =>
-      simp [Fin.coe_sub_iff_le.mpr (Nat.lt_of_succ_le h.le).le, Nat.eq_sub_of_add_eq' h]
-
-theorem cycleGraph_preconnected {n : ℕ} : (cycleGraph n).Preconnected :=
-  (pathGraph_preconnected n).mono pathGraph_le_cycleGraph
-
-theorem cycleGraph_connected {n : ℕ} : (cycleGraph (n + 1)).Connected :=
-  (pathGraph_connected n).mono pathGraph_le_cycleGraph
-
 section cycle
 
 set_option backward.privateInPublic true in
@@ -119,9 +107,6 @@ def cycleGraph.cycle (n : ℕ) : (cycleGraph (n + 3)).Walk 0 0 :=
     simp [cycleGraph_adj]
   Walk.cons hadj (cycleGraph.cycleCons n (Fin.last (n + 2)))
 
-@[deprecated (since := "2026-02-15")]
-alias cycleGraph_EulerianCircuit := cycleGraph.cycle
-
 private theorem cycleGraph.length_cycle_cons (n : ℕ) :
     ∀ m : Fin (n + 3), (cycleGraph.cycleCons n m).length = m.val
   | ⟨0, h⟩ => by
@@ -138,9 +123,6 @@ variable {n : ℕ}
 theorem cycleGraph.length_cycle : (cycleGraph.cycle n).length = n + 3 := by
   unfold cycleGraph.cycle
   simp [cycleGraph.length_cycle_cons]
-
-@[deprecated (since := "2026-02-15")]
-alias cycleGraph_EulerianCircuit_length := cycleGraph.length_cycle
 
 private theorem cycleGraph.getVert_cycleCons (m : Fin (n + 3)) (i : ℕ) (hi : i ≤ m.val) :
     (cycleGraph.cycleCons n m).getVert i = (m - i) % (n + 3) := by
@@ -164,7 +146,26 @@ theorem cycleGraph.isPath_tail_cycle : (cycleGraph.cycle n).tail.IsPath := by
 theorem cycleGraph.isCycle_cycle : (cycleGraph.cycle n).IsCycle :=
   isCycle_iff_isPath_tail_and_le_length.mpr ⟨cycleGraph.isPath_tail_cycle, by simp⟩
 
+theorem cycleGraph.mem_support_cycle {n : ℕ} (u : Fin (n + 3)) :
+    u ∈ (cycleGraph.cycle n).support := by
+  refine mem_support_iff_exists_getVert.mpr ⟨n + 3 - u, ?_, by simp⟩
+  simp [cycleGraph.getVert_cycle, Fin.ext_iff, Nat.sub_sub_self, -Order.lt_add_one_iff]
+
 end cycle
+
+theorem preconnected_cycleGraph {n : ℕ} : (cycleGraph n).Preconnected := by
+  match n with
+  | 0 | 1 | 2 => simp [cycleGraph_eq_top_iff.mpr]
+  | n + 3 =>
+    exact fun _ _ ↦ reachable_of_mem_support
+      (cycleGraph.mem_support_cycle _) (cycleGraph.mem_support_cycle _)
+
+@[deprecated (since := "2026-10-01")] alias cycleGraph_preconnected := preconnected_cycleGraph
+
+theorem connected_cycleGraph_add_one {n : ℕ} : (cycleGraph (n + 1)).Connected where
+  preconnected := preconnected_cycleGraph
+
+@[deprecated (since := "2026-10-01")] alias cycleGraph_connected := connected_cycleGraph_add_one
 
 section IsContained
 
@@ -172,32 +173,20 @@ variable {V : Type*} {G : SimpleGraph V}
 
 lemma cycleGraph_isContained_iff {n : ℕ} (hn : 2 < n) :
     cycleGraph n ⊑ G ↔ ∃ (v : V) (p : G.Walk v v), p.IsCycle ∧ p.length = n := by
-  refine ⟨fun ⟨h⟩ ↦ ?_, fun h' ↦ ?_⟩
-  · have : n = n - 3 + 3 := by lia
-    rw [this] at h
-    refine ⟨h.toHom ⟨0, by lia⟩, Walk.map h.toHom <| cycleGraph.cycle (n - 3), ?_, ?_⟩
-    · exact (isCycle_map_iff_of_injective h.injective).mpr cycleGraph.isCycle_cycle
-    · simp [cycleGraph.length_cycle, ← this]
-  · obtain ⟨a, p, hp₁, hp₂⟩ := h'
-    refine ⟨⟨⟨fun n ↦ p.support[n.succ]'(?_), ?_⟩, ?_⟩⟩
-    · grind [hp₁.three_le_length, length_tail_add_one, not_nil_iff_lt_length]
-    · intro ⟨x, hx⟩ ⟨y, hy⟩ hab
-      have hne : x ≠ y := fun _ ↦ by simp_all
-      wlog hle : x > y
-      · exact this hn a p hp₁ hp₂ y hy x hx hab.symm hne.symm (by lia) |>.symm
-      rcases cycleGraph_adj'.mp hab with hab | hab
-      · simp_rw [show x = y + 1 by grind [Fin.sub_val_of_le]]
-        exact p.isChain_adj_support.getElem _ _ |>.symm
-      · rw [Fin.coe_sub_iff_lt.mpr hle] at hab
-        simp_rw [show x = n - 1 by lia, show y = 0 by lia, Fin.succ_mk, show n - 1 + 1 = n by lia]
-        simp [← hp₂, p.adj_snd hp₁.not_nil]
-    · have hlen : p.tail.support.length = n := by
-        grind [length_tail_add_one, not_nil_iff_lt_length]
-      have (m : Fin n) : p.support[m.succ]'(by grind) = p.tail.support[m] := by
-        simp [p.support_tail_of_not_nil hp₁.not_nil]
-      simp_rw [this]
-      have := IsPath.mk' <| (support_tail_of_not_nil _ hp₁.not_nil) ▸ hp₁.support_nodup
-      exact hlen ▸ (isPath_iff_injective_get_support _ |>.mp this)
+  have hn' : n - 3 + 3 = n := by lia
+  refine ⟨fun ⟨h⟩ ↦ ⟨_, _, cycleGraph.isCycle_cycle.map (hn' ▸ h).injective, by simp [hn']⟩, ?_⟩
+  rintro ⟨u, p, hp, rfl⟩
+  -- The copy sends `i : Fin p.length` to the `i`-th vertex of the cycle `p`.
+  have key {i j : Fin p.length} (h : (j - i).val = 1) : G.Adj (p.getVert i) (p.getVert j) := by
+    rcases Nat.lt_or_ge j i with hij | hij
+    · -- wraparound: `i` is the last vertex of `p` and `j` the first
+      rw [Fin.coe_sub_iff_lt.mpr (Fin.lt_def.mpr hij)] at h
+      rw [show i = p.length - 1 by lia, show ↑j = 0 by lia, getVert_zero]
+      exact p.adj_penultimate hp.not_nil
+    · grind [adj_getVert_succ, Fin.sub_val_of_le]
+  refine ⟨⟨(p.getVert ·), fun hij ↦ ?_⟩, fun i j hij ↦ ?_⟩
+  · exact cycleGraph_adj'.mp hij |>.elim (key · |>.symm) key
+  · grind [hp.getVert_injOn', Set.InjOn, RelHom.coeFn_mk]
 
 end IsContained
 

@@ -5,7 +5,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Countable.Defs
+public import Mathlib.Basic.Countable.Defs
 public import Mathlib.Data.Nat.Factors
 public import Mathlib.Data.Nat.Prime.Infinite
 public import Mathlib.Data.Set.Finite.Lattice
