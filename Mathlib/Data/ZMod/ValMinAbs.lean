@@ -6,6 +6,7 @@ Authors: Chris Hughes
 module
 
 public import Mathlib.Data.ZMod.Basic
+
 import Mathlib.Tactic.Linarith
 
 /-!

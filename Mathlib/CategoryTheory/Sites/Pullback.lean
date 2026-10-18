@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Adjunction.Restrict
 public import Mathlib.CategoryTheory.Functor.Flat
 public import Mathlib.CategoryTheory.Sites.Continuous
+
 import Mathlib.CategoryTheory.Sites.LeftExact
 
 /-!

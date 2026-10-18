@@ -5,8 +5,9 @@ Authors: Kim Morrison
 -/
 module
 
-import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 public import Mathlib.Topology.Sheaves.Presheaf
+
+import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 
 /-!
 # Presheafed spaces

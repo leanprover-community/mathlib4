@@ -5,8 +5,9 @@ Authors: Frédéric Dupuis
 -/
 module
 
-import Mathlib.Analysis.Normed.Module.WeakDual
 public import Mathlib.Analysis.Normed.Algebra.Spectrum
+
+import Mathlib.Analysis.Normed.Module.WeakDual
 
 /-!
 # Normed algebras
