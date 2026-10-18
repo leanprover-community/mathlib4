@@ -244,7 +244,7 @@ end IsTorsionFreeClass
 class if and only if it is closed under quotients, extensions, and coproducts. This is a
 theorem of [S. E. Dickson][dickson1966]; see also
 [Bo Stenström, *Rings of Quotients*][stenstrom1975], Chapter VI. -/
-theorem isTorsionClass_iff' (P : ObjectProperty C)
+theorem isTorsionClass_iff_of_wellPowered (P : ObjectProperty C)
     [LocallySmall.{w} C] [WellPowered.{w} C] [HasCoproducts.{w} C] :
     IsTorsionClass P ↔
       P.IsClosedUnderQuotients ∧ P.IsClosedUnderExtensions ∧
@@ -268,13 +268,13 @@ lemma isTorsionClass_iff_isTorsionFreeClass_op (P : ObjectProperty C) :
 torsion-free class if and only if it is closed under subobjects, extensions, and products.
 This is the dual of `isTorsionClass_iff`, obtained by transporting it through the
 opposite category. -/
-theorem isTorsionFreeClass_iff' (P : ObjectProperty C)
+theorem isTorsionFreeClass_iff_of_wellPowered (P : ObjectProperty C)
     [LocallySmall.{w} C] [WellPowered.{w} Cᵒᵖ] [HasProducts.{w} C] :
     IsTorsionFreeClass P ↔
       P.IsClosedUnderSubobjects ∧ P.IsClosedUnderExtensions ∧
         ∀ J : Type w, P.IsClosedUnderLimitsOfShape (Discrete J) :=
   ⟨fun _ ↦ ⟨inferInstance, inferInstance, inferInstance⟩, fun⟨_, _, _⟩ ↦ by
-    rw [isTorsionFreeClass_iff_isTorsionClass_op, isTorsionClass_iff']
+    rw [isTorsionFreeClass_iff_isTorsionClass_op, isTorsionClass_iff_of_wellPowered]
     refine ⟨inferInstance, inferInstance, fun J ↦ ?_⟩
     rw [← P.op.isClosedUnderColimitsOfShape_iff_of_equivalence (Discrete.opposite J)]
     infer_instance
