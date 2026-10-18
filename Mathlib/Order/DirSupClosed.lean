@@ -248,24 +248,24 @@ theorem DirSupInacc.mem_iff_of_antisymmRel (hs : DirSupInacc s) {a b : α}
     (h : AntisymmRel (· ≤ ·) a b) : a ∈ s ↔ b ∈ s := by
   simpa [not_iff_not] using hs.compl.mem_iff_of_antisymmRel h
 
-protected lemma DirSupClosed.Iic (a : α) : DirSupClosed (Iic a) :=
+protected theorem DirSupClosed.Iic (a : α) : DirSupClosed (Iic a) :=
   fun _d h _ _ _a ha ↦ (isLUB_le_iff ha).2 h
 
-@[deprecated (since := "2026-09-07")] alias dirSupClosed_Iic := DirSupClosed.Iic
+@[deprecated (since := "2026-10-16")] alias dirSupClosed_Iic := DirSupClosed.Iic
 
-protected lemma DirSupClosedOn.Iic (a : α) : DirSupClosedOn D (Iic a) :=
+protected theorem DirSupClosedOn.Iic (a : α) : DirSupClosedOn D (Iic a) :=
   (DirSupClosed.Iic a).dirSupClosedOn
 
-@[deprecated (since := "2026-09-07")] alias dirSupClosedOn_Iic := DirSupClosedOn.Iic
+@[deprecated (since := "2026-10-16")] alias dirSupClosedOn_Iic := DirSupClosedOn.Iic
 
 protected theorem DirSupClosed.Ici (a : α) : DirSupClosed (Ici a) :=
-  isUpperSet_Ici a |>.dirSupClosed
+  IsUpperSet.Ici a |>.dirSupClosed
 
 protected theorem DirSupClosedOn.Ici (a : α) : DirSupClosedOn D (Ici a) :=
   DirSupClosed.Ici a |>.dirSupClosedOn
 
 protected theorem DirSupClosed.Ioi (a : α) : DirSupClosed (Ioi a) :=
-  isUpperSet_Ioi a |>.dirSupClosed
+  IsUpperSet.Ioi a |>.dirSupClosed
 
 protected theorem DirSupClosedOn.Ioi (a : α) : DirSupClosedOn D (Ioi a) :=
   DirSupClosed.Ioi a |>.dirSupClosedOn
@@ -288,19 +288,19 @@ protected theorem DirSupInacc.Iio (a : α) : DirSupInacc (Iio a) :=
 protected theorem DirSupInaccOn.Iio (a : α) : DirSupInaccOn D (Iio a) :=
   DirSupInacc.Iio a |>.dirSupInaccOn
 
-protected lemma DirSupInacc.Iic (a : α) : DirSupInacc (Iic a) :=
-  (isLowerSet_Iic a).dirSupInacc
+protected theorem DirSupInacc.Iic (a : α) : DirSupInacc (Iic a) :=
+  (IsLowerSet.Iic a).dirSupInacc
 
-@[deprecated (since := "2026-09-07")] alias dirSupInacc_Iic := DirSupInacc.Iic
+@[deprecated (since := "2026-10-16")] alias dirSupInacc_Iic := DirSupInacc.Iic
 
-protected lemma DirSupInaccOn.Iic (a : α) : DirSupInaccOn D (Iic a) :=
-  (isLowerSet_Iic a).dirSupInaccOn
+protected theorem DirSupInaccOn.Iic (a : α) : DirSupInaccOn D (Iic a) :=
+  (IsLowerSet.Iic a).dirSupInaccOn
 
-@[deprecated (since := "2026-09-07")] alias dirSupInaccOn_Iic := DirSupInaccOn.Iic
+@[deprecated (since := "2026-10-16")] alias dirSupInaccOn_Iic := DirSupInaccOn.Iic
 
 end Preorder
 
-namespace PartialOrder
+section PartialOrder
 variable [PartialOrder α]
 
 theorem dirSupClosed_singleton (a : α) : DirSupClosed {a} := by
