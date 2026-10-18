@@ -18,8 +18,6 @@ This file defines compact systems of sets.
 
 * `IsCompactSystem`: A set of sets is a compact system if, whenever a countable subfamily has empty
   intersection, then finitely many of them already have empty intersection.
-* `compactClosedSquareCylinders`: The square cylinders in a product space whose sides are
-  compact and closed.
 
 ## Main results
 

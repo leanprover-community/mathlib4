@@ -64,8 +64,6 @@ lemma innerRegular_projectiveFamilyContent (hP : IsProjectiveMeasureFamily P)
   rw [sdiff_cylinder_same, projectiveFamilyContent_cylinder _ (hA.diff hK_closed.measurableSet)]
   exact (measure_sdiff_lt_of_lt_add hK_closed.nullMeasurableSet hKA (measure_ne_top _ _) hK).le
 
-variable [∀ i, R1Space (α i)]
-
 /-- If the measures `P J` are inner regular with respect to compact closed sets, then the content
 `projectiveFamilyContent hP` is σ-additive. -/
 theorem projectiveFamilyContent_iUnion_eq_tsum_of_innerRegular (hP : IsProjectiveMeasureFamily P)

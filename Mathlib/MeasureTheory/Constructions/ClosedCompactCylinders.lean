@@ -32,8 +32,8 @@ proof of Kolmogorov's extension theorem.
 * `cylinder_mem_countableInfClosure_supClosure`: In a product of second-countable R₁ spaces, a
   cylinder with a compact closed base is a countable intersection of finite unions of compact and
   closed square cylinders.
-* `isCompactSystem_closedCompactCylinders`: In a product of second-countable R₁ spaces, cylinders
-  with compact closed bases form a compact system.
+* `isCompactSystem_closedCompactCylinders`: cylinders with compact closed bases form a compact
+  system.
 
 -/
 
@@ -99,6 +99,47 @@ theorem mem_measurableCylinders_of_mem_closedCompactCylinders [∀ i, Measurable
   refine ⟨closedCompactCylinders.finset ht, closedCompactCylinders.set ht, ?_, ?_⟩
   · exact (closedCompactCylinders.isClosed ht).measurableSet
   · exact closedCompactCylinders.eq_cylinder ht
+
+variable (X) in
+/-- Cylinders with compact closed bases form a compact system. -/
+theorem isCompactSystem_closedCompactCylinders : IsCompactSystem (closedCompactCylinders X) := by
+  refine IsCompactSystem.of_nonempty_iInter fun C hC h_nonempty ↦ ?_
+  classical
+  let J n := closedCompactCylinders.finset (hC n)
+  let K n := closedCompactCylinders.set (hC n)
+  have hC_eq n : C n = cylinder (J n) (K n) := closedCompactCylinders.eq_cylinder (hC n)
+  have hC_closed n : IsClosed (C n) := by
+    rw [hC_eq]
+    exact (closedCompactCylinders.isClosed (hC n)).preimage (Finset.continuous_restrict _)
+  choose y hy using h_nonempty
+  -- `T i` is the projection on coordinate `i` of the base of the first cylinder that depends on
+  -- `i`. The points of the finite intersections can be modified to belong to the compact `pi T`.
+  let T : ∀ i, Set (X i) := fun i ↦
+    if h : ∃ n, i ∈ J n then (fun x ↦ x ⟨i, Nat.find_spec h⟩) '' K (Nat.find h) else {y 0 i}
+  have hT_compact i : IsCompact (T i) := by
+    simp only [T]
+    split_ifs with h
+    · exact (closedCompactCylinders.isCompact (hC _)).image (continuous_apply _)
+    · exact isCompact_singleton
+  have h_mem_T {i} (h : ∃ n, i ∈ J n) {x} (hx : x ∈ C (Nat.find h)) : x i ∈ T i := by
+    simp only [T, h, ↓reduceDIte]
+    rw [hC_eq, mem_cylinder] at hx
+    exact ⟨_, hx, rfl⟩
+  refine ((isCompact_univ_pi hT_compact).inter_iInter_nonempty C hC_closed fun u ↦ ?_).mono
+    inter_subset_right
+  obtain ⟨N, hN⟩ : ∃ N, ∀ n ∈ u, n ≤ N := ⟨u.sup id, fun n hn ↦ Finset.le_sup (f := id) hn⟩
+  let z : Π i, X i := fun i ↦ if ∃ n ≤ N, i ∈ J n then y N i
+    else if h : ∃ n, i ∈ J n then y (Nat.find h) i else y 0 i
+  refine ⟨z, fun i _ ↦ ?_, mem_iInter₂.mpr fun n hn ↦ ?_⟩
+  · simp only [z]
+    split_ifs with h₁ h₂
+    · obtain ⟨n, hnN, hn⟩ := h₁
+      exact h_mem_T ⟨n, hn⟩ (mem_dissipate.mp (hy N) _ ((Nat.find_min' _ hn).trans hnN))
+    · exact h_mem_T h₂ (mem_dissipate.mp (hy _) _ le_rfl)
+    · simp [T, h₂]
+  · have : (J n).restrict z = (J n).restrict (y N) := by ext; simp [z]; grind
+    rw [hC_eq, mem_cylinder, this, ← mem_cylinder, ← hC_eq]
+    exact mem_dissipate.mp (hy N) _ (hN n hn)
 
 section CompactClosedSquareCylinders
 
@@ -207,18 +248,6 @@ lemma cylinder_mem_countableInfClosure_supClosure [∀ i, SecondCountableTopolog
   exact supClosed_supClosure.iSup_mem (subset_supClosure (mem_insert _ _)) fun j ↦
     subset_supClosure (mem_insert_of_mem _ (cylinder_univ_pi_mem_compactClosedSquareCylinders
       (hB_compact u (hT𝒰 u.2) j) (hB_closed u (hT𝒰 u.2) j)))
-
-variable (X) in
-/-- In a product of second-countable R₁ spaces, cylinders with compact closed bases form a compact
-system. -/
-theorem isCompactSystem_closedCompactCylinders [∀ i, SecondCountableTopology (X i)]
-    [∀ i, R1Space (X i)] :
-    IsCompactSystem (closedCompactCylinders X) := by
-  refine (isCompactSystem_countableInfClosure_supClosure_compactClosedSquareCylinders X).mono
-    fun t ht ↦ ?_
-  rw [closedCompactCylinders.eq_cylinder ht]
-  exact cylinder_mem_countableInfClosure_supClosure (closedCompactCylinders.isCompact ht)
-    (closedCompactCylinders.isClosed ht)
 
 end CompactClosedSquareCylinders
 
