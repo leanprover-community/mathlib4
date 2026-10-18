@@ -114,150 +114,87 @@ theorem discriminant_eq_E₄_cube_sub_E₆_sq_graded :
 /-! ### `E₄` and `E₆` generate the graded ring -/
 
 /-- The evaluation homomorphism from `ℂ[X₀, X₁]` to the graded ring `⨁ k, ModularForm 𝒮ℒ k` of
-level-1 modular forms, sending `X₀ = MvPolynomial.X 0` to `E₄` in weight `4` and
-`X₁ = MvPolynomial.X 1` to `E₆` in weight `6`; thus the monomial `X₀ ^ a * X₁ ^ b` maps to
-`E₄ ^ a * E₆ ^ b`, of weight `4 * a + 6 * b`. It is surjective by `evalE₄E₆_surjective`. -/
+level-1 modular forms, sending `X₀ = MvPolynomial.X 0` to `E₄` (in weight `4`) and
+`X₁ = MvPolynomial.X 1` to `E₆` (in weight `6`). It is surjective (`evalE₄E₆_surjective`). -/
 def evalE₄E₆ : MvPolynomial (Fin 2) ℂ →ₐ[ℂ] DirectSum ℤ (ModularForm 𝒮ℒ) :=
   MvPolynomial.aeval ![DirectSum.of (ModularForm 𝒮ℒ) 4 E₄, DirectSum.of (ModularForm 𝒮ℒ) 6 E₆]
 
+/-- `evalE₄E₆` sends `X 0` to `E₄`, in weight `4` of the graded ring `⨁ k, ModularForm 𝒮ℒ k`. -/
 @[simp]
-lemma evalE₄E₆_X_zero : evalE₄E₆ (MvPolynomial.X 0) = DirectSum.of (ModularForm 𝒮ℒ) 4 E₄ := by
-  simp [evalE₄E₆]
+lemma evalE₄E₆_X_zero : evalE₄E₆ (MvPolynomial.X 0) = DirectSum.of (ModularForm 𝒮ℒ) 4 E₄ :=
+  MvPolynomial.aeval_X _ 0
 
+/-- `evalE₄E₆` sends `X 1` to `E₆`, in weight `6` of the graded ring `⨁ k, ModularForm 𝒮ℒ k`. -/
 @[simp]
-lemma evalE₄E₆_X_one : evalE₄E₆ (MvPolynomial.X 1) = DirectSum.of (ModularForm 𝒮ℒ) 6 E₆ := by
-  simp [evalE₄E₆]
+lemma evalE₄E₆_X_one : evalE₄E₆ (MvPolynomial.X 1) = DirectSum.of (ModularForm 𝒮ℒ) 6 E₆ :=
+  MvPolynomial.aeval_X _ 1
 
-private lemma E₄_mem_range : DirectSum.of (ModularForm 𝒮ℒ) 4 E₄ ∈ evalE₄E₆.range :=
-  ⟨_, evalE₄E₆_X_zero⟩
+private lemma discriminant_mem_range : DirectSum.of (ModularForm 𝒮ℒ) 12 CuspForm.discriminant ∈
+    evalE₄E₆.range :=
+  ⟨(1 / 1728 : ℂ) • (.X 0 ^ 3 - .X 1 ^ 2), by simp [discriminant_eq_E₄_cube_sub_E₆_sq_graded]⟩
 
-private lemma E₆_mem_range : DirectSum.of (ModularForm 𝒮ℒ) 6 E₆ ∈ evalE₄E₆.range :=
-  ⟨_, evalE₄E₆_X_one⟩
+private lemma exists_mem_range_coeff_zero_eq_one {k : ℕ} (hk : Even k) (h2 : k ≠ 2) :
+    ∃ m : ModularForm 𝒮ℒ k, DirectSum.of _ _ m ∈ evalE₄E₆.range ∧ (qExpansion 1 m).coeff 0 = 1 := by
+  -- Take `m = E₄ ^ a * E₆ ^ b` with `4 * a + 6 * b = k`: here `b = 1` exactly when
+  -- `k ≡ 2 [MOD 4]`, and then `k ≠ 2` gives `1 ≤ k / 4`.
+  rw [Nat.even_iff] at hk
+  obtain ⟨a, b, hab⟩ : ∃ a b : ℕ, 4 * a + 6 * b = k := ⟨k / 4 - k % 4 / 2, k % 4 / 2, by lia⟩
+  -- `E₄ ^ a * E₆ ^ b` has degree `a • 4 + b • 6 = k`, so it is its own weight-`k` component.
+  have h : DirectSum.of _ (k : ℤ) (evalE₄E₆ (.X 0 ^ a * .X 1 ^ b) k) =
+      evalE₄E₆ (.X 0 ^ a * .X 1 ^ b) := by
+    rw [map_mul, map_pow, map_pow, evalE₄E₆_X_zero, evalE₄E₆_X_one, DirectSum.ofPow,
+      DirectSum.ofPow, DirectSum.of_mul_of, show (k : ℤ) = a • 4 + b • 6 by lia,
+      DirectSum.of_eq_same]
+  refine ⟨evalE₄E₆ (.X 0 ^ a * .X 1 ^ b) k, h.symm ▸ ⟨_, rfl⟩, ?_⟩
+  -- Transport along `qExpansionRingHom`; both Eisenstein series have constant term `1`.
+  rw [← qExpansionRingHom_apply one_pos one_mem_strictPeriods_SL, h]
+  simpa using
+    congr($(E_qExpansion_coeff_zero _ ⟨2, rfl⟩) ^ a * $(E_qExpansion_coeff_zero _ ⟨3, rfl⟩) ^ b)
 
-private lemma discriminant_mem_range :
-    DirectSum.of (ModularForm 𝒮ℒ) 12
-      ((CuspForm.discriminant : CuspForm 𝒮ℒ 12) : ModularForm 𝒮ℒ 12) ∈ evalE₄E₆.range := by
-  rw [discriminant_eq_E₄_cube_sub_E₆_sq_graded]
-  exact Subalgebra.smul_mem _ (sub_mem (pow_mem E₄_mem_range 3) (pow_mem E₆_mem_range 2)) _
-
-private lemma exists_monomial_weight {k : ℕ} (hk : k ≠ 2) (hkeven : Even k) :
-    ∃ a b : ℕ, 4 * a + 6 * b = k := by
-  obtain ⟨m, rfl⟩ := hkeven
-  rcases Nat.even_or_odd m with ⟨n, hn⟩ | ⟨n, hn⟩
-  exacts [⟨n, 0, by lia⟩, ⟨n - 1, 1, by lia⟩]
-
-private lemma directSum_of_E₄_pow_mul_E₆_pow_apply {a b n : ℕ}
-    (hab : 4 * a + 6 * b = n) :
-    DirectSum.of (ModularForm 𝒮ℒ) (↑n : ℤ)
-        ((DirectSum.of (ModularForm 𝒮ℒ) 4 E₄ ^ a *
-          DirectSum.of (ModularForm 𝒮ℒ) 6 E₆ ^ b) (↑n : ℤ)) =
-      DirectSum.of (ModularForm 𝒮ℒ) 4 E₄ ^ a *
-        DirectSum.of (ModularForm 𝒮ℒ) 6 E₆ ^ b := by
-  -- The graded degree of `E₄^a * E₆^b` is `a • 4 + b • 6`; reshape the index `n` into
-  -- that form so that `of_eq_same` extracts the component.
-  rw [DirectSum.ofPow, DirectSum.ofPow, DirectSum.of_mul_of,
-    show (↑n : ℤ) = a • (4 : ℤ) + b • (6 : ℤ) by
-      simp only [Int.nsmul_eq_mul]
-      push_cast [← hab]
-      ring,
-    DirectSum.of_eq_same]
-
-/-- Transport along the ring homomorphism `qExpansionRingHom`: the `q`-expansion of the
-weight-`n` component of `E₄^a * E₆^b` is the product of the `q`-expansions. -/
-private lemma qExpansion_of_E₄_pow_mul_E₆_pow {n a b : ℕ} (hab : 4 * a + 6 * b = n) :
-    qExpansion 1 ((DirectSum.of (ModularForm 𝒮ℒ) 4 E₄ ^ a *
-      DirectSum.of (ModularForm 𝒮ℒ) 6 E₆ ^ b) (n : ℤ)) =
-      qExpansion 1 E₄ ^ a * qExpansion 1 E₆ ^ b := by
-  rw [← ModularForm.qExpansionRingHom_apply (h := 1) one_pos one_mem_strictPeriods_SL,
-    directSum_of_E₄_pow_mul_E₆_pow_apply hab, map_mul, map_pow, map_pow,
-    ModularForm.qExpansionRingHom_apply, ModularForm.qExpansionRingHom_apply]
-
-private lemma monomial_qExpansion_coeff_zero_eq_one {n a b : ℕ} (hab : 4 * a + 6 * b = n) :
-    (qExpansion 1
-      ((DirectSum.of (ModularForm 𝒮ℒ) 4 E₄ ^ a *
-        DirectSum.of (ModularForm 𝒮ℒ) 6 E₆ ^ b) (n : ℤ))).coeff 0 = 1 := by
-  -- Both Eisenstein series are normalized to constant term `1`, so the zeroth
-  -- coefficient of the product of their powers is `1`.
-  rw [qExpansion_of_E₄_pow_mul_E₆_pow hab, PowerSeries.coeff_mul]
-  simp [PowerSeries.coeff_pow,
-    E_qExpansion_coeff_zero _ ⟨2, rfl⟩, E_qExpansion_coeff_zero _ ⟨3, rfl⟩]
-
-private lemma cuspForm_eq_discriminant_mul {n : ℕ} (g : ModularForm 𝒮ℒ ↑n)
-    (hg : ModularForm.IsCuspForm g) :
-    DirectSum.of (ModularForm 𝒮ℒ) (↑n : ℤ) g =
-      DirectSum.of (ModularForm 𝒮ℒ) (↑n - 12 : ℤ)
-        (CuspForm.discriminantEquiv (ModularForm.toCuspForm g
-          ((ModularForm.isCuspForm_iff_coeffZero_eq_zero g).mp hg))) *
-        DirectSum.of (ModularForm 𝒮ℒ) 12
-          ((CuspForm.discriminant : CuspForm 𝒮ℒ 12) : ModularForm 𝒮ℒ 12) := by
+private lemma cuspForm_eq_discriminant_mul {k : ℤ} (g : CuspForm 𝒮ℒ k) :
+    DirectSum.of (ModularForm 𝒮ℒ) k g = DirectSum.of (ModularForm 𝒮ℒ) 12 CuspForm.discriminant *
+      DirectSum.of (ModularForm 𝒮ℒ) (k - 12) (CuspForm.discriminantEquiv g) := by
   rw [DirectSum.of_mul_of]
   symm
-  -- The degrees agree because `(n − 12) + 12 = n`; the goal is definitionally that
-  -- integer identity, exposed by `change`.
-  refine DirectSum.of_eq_of_gradedMonoid_eq
-    (ModularForm.gradedMonoid_eq_of_cast (by change (↑n - 12 + 12 : ℤ) = ↑n; ring) ?_)
-  refine DFunLike.coe_injective ?_
-  have hcusp := (ModularForm.isCuspForm_iff_coeffZero_eq_zero g).mp hg
-  -- `mcast` along the degree identity does not change the underlying function, so the
-  -- coercion goal is definitionally the product form; `change` exposes it.
-  change ⇑((CuspForm.discriminantEquiv (ModularForm.toCuspForm g hcusp)).mul
-      ((CuspForm.discriminant : CuspForm 𝒮ℒ 12) : ModularForm 𝒮ℒ 12)) = ⇑g
-  rw [ModularForm.coe_mul, mul_comm]
-  exact ModularForm.discriminant_mul_discriminantEquiv (ModularForm.toCuspForm g hcusp)
+  -- The degrees agree as `12 + (k - 12) = k`, and `mcast` along this identity does not change
+  -- the underlying function, so the coercion goal is definitionally `Δ * (g / Δ) = g`.
+  refine DirectSum.of_eq_of_gradedMonoid_eq (gradedMonoid_eq_of_cast (add_sub_cancel _ _) ?_)
+  exact DFunLike.coe_injective (discriminant_mul_discriminantEquiv _)
 
-/-- The inductive step: if `4 * a + 6 * b = n` and every form of weight `n - 12` lies in the
-range of `evalE₄E₆`, then so does every form `f` of weight `n`, since `f` minus its constant term
-times `E₄ ^ a * E₆ ^ b` is `Δ` times a form of weight `n - 12`. -/
-private lemma of_mem_range_of_sub_twelve {n a b : ℕ} (hab : 4 * a + 6 * b = n)
-    (ih : ∀ g : ModularForm 𝒮ℒ ((n : ℤ) - 12), DirectSum.of _ _ g ∈ evalE₄E₆.range)
-    (f : ModularForm 𝒮ℒ n) : DirectSum.of _ (n : ℤ) f ∈ evalE₄E₆.range := by
-  set m := (DirectSum.of (ModularForm 𝒮ℒ) 4 E₄ ^ a * DirectSum.of (ModularForm 𝒮ℒ) 6 E₆ ^ b) n
-  set c := (qExpansion 1 f).coeff 0
-  have hcusp := sub_smul_isCuspForm f m (monomial_qExpansion_coeff_zero_eq_one hab)
-  rw [← sub_add_cancel f (c • m), map_add, cuspForm_eq_discriminant_mul _ hcusp,
-    DirectSum.of_smul, directSum_of_E₄_pow_mul_E₆_pow_apply hab]
-  exact add_mem (mul_mem (ih _) discriminant_mem_range)
-    (Subalgebra.smul_mem _ (mul_mem (pow_mem E₄_mem_range a) (pow_mem E₆_mem_range b)) c)
-
-private lemma of_mem_range (k : ℤ) (f : ModularForm 𝒮ℒ k) :
+private lemma directSum_of_mem_range (k : ℤ) (f : ModularForm 𝒮ℒ k) :
     DirectSum.of _ k f ∈ evalE₄E₆.range := by
-  have of_zero {k : ℤ} (f : ModularForm 𝒮ℒ k) (hf : f = 0) :
-      DirectSum.of _ k f ∈ evalE₄E₆.range := by
-    simp [hf, zero_mem]
-  obtain hk | hk := lt_or_ge k 0
-  · exact of_zero f (rank_zero_iff_forall_zero.mp (levelOne_neg_weight_rank_zero hk) f)
-  lift k to ℕ using hk
-  induction k using Nat.strong_induction_on with | _ n ih => ?_
-  by_cases hodd : Odd (n : ℤ)
-  · exact of_zero f (levelOne_odd_weight_eq_zero hodd f)
-  obtain rfl | h2 := eq_or_ne n 2
-  · exact of_zero f (rank_zero_iff_forall_zero.mp levelOne_weight_two_rank_zero f)
-  obtain ⟨a, b, hab⟩ := exists_monomial_weight h2 (by simpa [Int.not_odd_iff_even] using hodd)
-  refine of_mem_range_of_sub_twelve hab (fun g ↦ ?_) f
-  obtain hn | hn := lt_or_ge n 12
-  · exact of_zero g (rank_zero_iff_forall_zero.mp (levelOne_neg_weight_rank_zero (by lia)) g)
-  rw [← congr_eqRec (DirectSum.of _ ·) (show (n : ℤ) - 12 = (n - 12 : ℕ) by lia)]
-  exact ih _ (by lia) _
+  induction k using Int.strongRec (m := 0) with
+  | lt k hk => simp [rank_zero_iff_forall_zero.mp (levelOne_neg_weight_rank_zero hk) f]
+  | ge k hk ih =>
+    lift k to ℕ using hk
+    by_cases hodd : Odd k
+    · simp [levelOne_odd_weight_eq_zero hodd.natCast f]
+    obtain rfl | h2 := eq_or_ne k 2
+    · simp [rank_zero_iff_forall_zero.mp levelOne_weight_two_rank_zero f]
+    -- `f` minus its constant term times `m` is a cusp form `g`, and `g` is `Δ` times the form
+    -- `g / Δ` of weight `k - 12`, which lies in the range by `ih`.
+    obtain ⟨m, hm, hm1⟩ := exists_mem_range_coeff_zero_eq_one (Nat.not_odd_iff_even.mp hodd) h2
+    obtain ⟨g, hg⟩ := sub_smul_isCuspForm f m hm1
+    rw [← sub_add_cancel f ((qExpansion 1 f).coeff 0 • m), ← hg, map_add, DirectSum.of_smul,
+      CuspForm.toModularFormₗ_eq_coe, cuspForm_eq_discriminant_mul]
+    exact add_mem (mul_mem discriminant_mem_range (ih _ (by lia) _)) (Subalgebra.smul_mem _ hm _)
 
 /-- The evaluation homomorphism `evalE₄E₆` is surjective: every element of the graded ring
-`⨁ k, ModularForm 𝒮ℒ k` of level-1 modular forms is a polynomial in `E₄` and `E₆`. -/
-theorem evalE₄E₆_surjective : Function.Surjective evalE₄E₆ := by
-  rw [← AlgHom.range_eq_top, eq_top_iff]
-  rintro x -
-  induction x using DirectSum.induction_on with
-  | zero => exact zero_mem _
-  | of k f => exact of_mem_range k f
-  | add x y hx hy => exact add_mem hx hy
+`⨁ k, ModularForm 𝒮ℒ k`, i.e. every finite sum of level-1 modular forms of possibly different
+weights, is a polynomial in `E₄` and `E₆`. -/
+theorem evalE₄E₆_surjective : Function.Surjective evalE₄E₆ := fun x ↦
+  evalE₄E₆.mem_range.mp <| DirectSum.induction_on x (zero_mem _) directSum_of_mem_range
+    fun _ _ ↦ add_mem
 
 /-- `E₄` and `E₆` generate the graded ring `⨁ k, ModularForm 𝒮ℒ k` of level-1 modular forms
 as a `ℂ`-algebra. -/
-theorem adjoin_E₄_E₆_eq_top :
-    Algebra.adjoin ℂ
-      {DirectSum.of (ModularForm 𝒮ℒ) 4 E₄, DirectSum.of (ModularForm 𝒮ℒ) 6 E₆} = ⊤ := by
-  rw [← Matrix.range_cons_cons_empty, Algebra.adjoin_range_eq_range_aeval]
-  exact AlgHom.range_eq_top _ |>.mpr evalE₄E₆_surjective
+theorem adjoin_E₄_E₆_eq_top : Algebra.adjoin ℂ {DirectSum.of (ModularForm 𝒮ℒ) 4 E₄,
+    DirectSum.of (ModularForm 𝒮ℒ) 6 E₆} = ⊤ := by
+  rw [← Matrix.range_cons_cons_empty _ _ ![], Algebra.adjoin_range_eq_range_aeval]
+  exact evalE₄E₆.range_eq_top.2 evalE₄E₆_surjective
 
-/-- The graded ring of level-1 modular forms is a finitely generated `ℂ`-algebra. -/
+/-- The graded ring `⨁ k, ModularForm 𝒮ℒ k` of level-1 modular forms is a finitely generated
+`ℂ`-algebra. -/
 instance : Algebra.FiniteType ℂ (DirectSum ℤ (ModularForm 𝒮ℒ)) :=
   .of_surjective evalE₄E₆ evalE₄E₆_surjective
 
