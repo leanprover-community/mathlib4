@@ -742,12 +742,6 @@ private lemma finite_cliqueNum_bddAbove [Finite α] : BddAbove {n | ∃ s, G.IsN
 lemma IsClique.card_le_cliqueNum [Finite α] {t : Finset α} (tc : G.IsClique t) : #t ≤ G.cliqueNum :=
   le_csSup G.finite_cliqueNum_bddAbove ⟨t, tc, rfl⟩
 
--- TODO: generalize from `Finite α` to `Finite G.edgeSet`
-variable (G) in
-theorem cliqueNum_ne_zero_of_finite [Nonempty α] [Finite α] : G.cliqueNum ≠ 0 := by
-  refine (Nat.not_succ_le_zero 0 <| le_of_le_of_eq ?_ ·)
-  exact IsClique.card_le_cliqueNum (t := {Classical.arbitrary α}) <| by simp
-
 lemma exists_isNClique_cliqueNum : ∃ s, G.IsNClique G.cliqueNum s := by
   by_cases h : BddAbove {n | ∃ s, G.IsNClique n s}
   · exact Nat.sSup_mem ⟨0, by simp⟩ h
@@ -757,6 +751,12 @@ variable (G) in
 @[simp]
 theorem cliqueNum_of_isEmpty [IsEmpty α] : G.cliqueNum = 0 :=
   Nat.le_zero.mp <| csSup_le' fun n ⟨s, h⟩ ↦ by simp [s.eq_empty_of_isEmpty, ← h.card_eq]
+
+-- TODO: generalize from `Finite α` to `Finite G.edgeSet`
+variable (G) in
+theorem cliqueNum_ne_zero_of_finite [Nonempty α] [Finite α] : G.cliqueNum ≠ 0 := by
+  refine (Nat.not_succ_le_zero 0 <| le_of_le_of_eq ?_ ·)
+  exact IsClique.card_le_cliqueNum (t := {Classical.arbitrary α}) <| by simp
 
 theorem cliqueNum_eq_zero_iff [Finite α] : G.cliqueNum = 0 ↔ IsEmpty α := by
   refine ⟨fun h ↦ ?_, fun h ↦ G.cliqueNum_of_isEmpty⟩
