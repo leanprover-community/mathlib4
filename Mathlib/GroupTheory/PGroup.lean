@@ -47,18 +47,18 @@ variable {p} {G}
 
 namespace IsPGroup
 
-@[to_additive]
+@[to_additive isAddPGroup_iff_pow_nsmul_eq_zero]
 theorem _root_.isPGroup_iff_pow_pow_eq_one : IsPGroup p G ↔ ∀ g : G, ∃ k, g ^ p ^ k = 1 :=
   .rfl
 
-@[to_additive]
+@[to_additive exists_pow_nsmul_eq_zero]
 alias ⟨exists_pow_pow_eq_one, _⟩ := isPGroup_iff_pow_pow_eq_one
 
-@[to_additive]
+@[to_additive isAddPGroup_iff_addOrderOf_dvd_pow]
 theorem _root_.isPGroup_iff_orderOf_dvd_pow : IsPGroup p G ↔ ∀ g : G, ∃ k, orderOf g ∣ p ^ k := by
   simp_rw [isPGroup_iff_pow_pow_eq_one, orderOf_dvd_iff_pow_eq_one]
 
-@[to_additive]
+@[to_additive exists_addOrderOf_dvd_pow]
 alias ⟨exists_orderOf_dvd_pow, _⟩ := isPGroup_iff_orderOf_dvd_pow
 
 @[to_additive]
@@ -66,15 +66,15 @@ theorem iff_orderOf [Fact p.Prime] : IsPGroup p G ↔ ∀ g : G, ∃ k, orderOf 
   simp_rw [isPGroup_iff_orderOf_dvd_pow, Nat.dvd_prime_pow Fact.out]
   exact forall_congr' fun g ↦ ⟨by grind, .imp <| by grind⟩
 
-@[to_additive]
+@[to_additive exists_addOrderOf_eq_pow]
 alias ⟨exists_orderOf_eq_pow, _⟩ := iff_orderOf
 
-@[to_additive]
+@[to_additive of_card_dvd_pow]
 theorem of_card_dvd_pow {n : ℕ} (hG : Nat.card G ∣ p ^ n) : IsPGroup p G := by
   refine fun g ↦ ⟨n, ?_⟩
   grw [← orderOf_dvd_iff_pow_eq_one, ← hG, orderOf_dvd_natCard]
 
-@[to_additive]
+@[to_additive isAddPGroup_iff_card_dvd_pow]
 theorem _root_.isPGroup_iff_card_dvd_pow [Finite G] : IsPGroup p G ↔ ∃ n, Nat.card G ∣ p ^ n := by
   refine ⟨fun h ↦ ?_, fun ⟨n, hn⟩ ↦ of_card_dvd_pow hn⟩
   rcases eq_or_ne p 0 with rfl | hp
@@ -85,7 +85,7 @@ theorem _root_.isPGroup_iff_card_dvd_pow [Finite G] : IsPGroup p G ↔ ∃ n, Na
   have ⟨k, hk⟩ := h.exists_orderOf_dvd_pow g
   exact Nat.mem_primeFactors.mpr ⟨hqp, hqp.dvd_of_dvd_pow <| hg ▸ hk, hp⟩
 
-@[to_additive]
+@[to_additive exists_card_dvd_pow]
 alias ⟨exists_card_dvd_pow, _⟩ := isPGroup_iff_card_dvd_pow
 
 @[to_additive]
@@ -113,7 +113,7 @@ variable (G) in
 protected theorem zero : IsPGroup 0 G :=
   fun g ↦ ⟨1, by simp⟩
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) isAddPGroup_one_iff_subsingleton]
 theorem _root_.isPGroup_one_iff_subsingleton : IsPGroup 1 G ↔ Subsingleton G := by
   refine ⟨?_, fun h ↦ .of_subsingleton 1 G⟩
   simpa [isPGroup_iff_pow_pow_eq_one] using subsingleton_of_forall_eq 1
@@ -127,7 +127,7 @@ protected theorem mono {q : ℕ} (hpq : p ∣ q) (hp : IsPGroup p G) : IsPGroup 
   rw [isPGroup_iff_orderOf_dvd_pow] at hp ⊢
   exact fun g ↦ (hp g).imp fun k hk ↦ hk.trans <| pow_dvd_pow_of_dvd hpq k
 
-@[to_additive]
+@[to_additive of_pow]
 theorem of_pow {n : ℕ} (h : IsPGroup (p ^ n) G) : IsPGroup p G :=
   fun g ↦ (h g).imp' (n * ·) <| by simp [pow_mul]
 
@@ -139,7 +139,7 @@ theorem iff_card [Fact p.Prime] [Finite G] : IsPGroup p G ↔ ∃ n : ℕ, Nat.c
 @[to_additive]
 alias ⟨exists_card_eq, _⟩ := iff_card
 
-@[to_additive]
+@[to_additive isAddPGroup_iff_exists_addOrderOf_dvd_pow]
 theorem _root_.isPGroup_iff_exists_orderOf_dvd_pow [Finite G] :
     IsPGroup p G ↔ ∃ k, ∀ g : G, orderOf g ∣ p ^ k := by
   refine isPGroup_iff_orderOf_dvd_pow.trans ⟨fun h ↦ ?_, fun ⟨k, hk⟩ ↦ fun g ↦ ⟨k, hk g⟩⟩
@@ -150,33 +150,33 @@ theorem _root_.isPGroup_iff_exists_orderOf_dvd_pow [Finite G] :
   grw [← Nat.pow_dvd_pow p <| hg g' <| Finset.mem_univ g']
   exact hk g'
 
-@[to_additive]
+@[to_additive isAddPGroup_iff_exists_pow_nsmul_eq_zero]
 theorem _root_.isPGroup_iff_exists_pow_pow_eq_one [Finite G] :
     IsPGroup p G ↔ ∃ k, ∀ g : G, g ^ p ^ k = 1 := by
   simp_rw [isPGroup_iff_exists_orderOf_dvd_pow, orderOf_dvd_iff_pow_eq_one]
 
-@[to_additive]
+@[to_additive of_exponent_dvd_pow]
 theorem of_exponent_dvd_pow {n : ℕ} (h : Monoid.exponent G ∣ p ^ n) : IsPGroup p G :=
   fun g ↦ ⟨n, Monoid.exponent_dvd_iff_forall_pow_eq_one.mp h g⟩
 
-@[to_additive]
+@[to_additive isAddPGroup_iff_exponent_dvd_pow]
 theorem _root_.isPGroup_iff_exponent_dvd_pow [Finite G] :
     IsPGroup p G ↔ ∃ n, Monoid.exponent G ∣ p ^ n := by
   simp_rw [isPGroup_iff_exists_orderOf_dvd_pow, Monoid.exponent_dvd]
 
-@[to_additive]
+@[to_additive exists_exponent_dvd_pow]
 alias ⟨exists_exponent_dvd_pow, _⟩ := isPGroup_iff_exponent_dvd_pow
 
-@[to_additive]
+@[to_additive isAddPGroup_iff_exponent_eq_pow]
 theorem _root_.isPGroup_iff_exponent_eq_pow [Finite G] [Fact p.Prime] :
     IsPGroup p G ↔ ∃ n, Monoid.exponent G = p ^ n := by
   simp_rw [isPGroup_iff_exponent_dvd_pow, Nat.dvd_prime_pow Fact.out]
   exact ⟨fun ⟨n, k, _, hk⟩ ↦ ⟨k, hk⟩, fun ⟨n, hn⟩ ↦ ⟨n, n, le_rfl, hn⟩⟩
 
-@[to_additive]
+@[to_additive exists_exponent_eq_pow]
 alias ⟨exists_exponent_eq_pow, _⟩ := isPGroup_iff_exponent_eq_pow
 
-@[to_additive]
+@[to_additive isAddPGroup_iff_isAddPGroup_prod_primeFactors]
 theorem _root_.isPGroup_iff_isPGroup_prod_primeFactors (h : p ≠ 0) :
     IsPGroup p G ↔ IsPGroup (p.primeFactors.prod id) G :=
   ⟨(.of_pow <| ·.mono <| p.dvd_prod_primeFactors_pow_self h), .mono p.prod_primeFactors_dvd⟩
@@ -254,7 +254,7 @@ theorem powEquiv_symm_apply {n : ℕ} (hn : p.Coprime n) (g : G) :
 variable [hp : Fact p.Prime]
 
 /-- If `p ∤ n`, then the `n`th power map is a bijection. -/
-@[to_additive /-- If `p ∤ n`, then the `n`th multiplication map is a bijection. -/]
+@[to_additive /-- If `p ∤ n`, then multiplication by `n` map is a bijection. -/]
 noncomputable abbrev powEquiv' {n : ℕ} (hn : ¬p ∣ n) : G ≃ G :=
   powEquiv hG (hp.out.coprime_iff_not_dvd.mpr hn)
 
@@ -304,7 +304,8 @@ variable (α) [Finite α]
 
 /-- If `G` is a `p`-group acting on a finite set `α`, then the number of fixed points
 of the action is congruent mod `p` to the cardinality of `α` -/
-@[to_additive /-- If `G` is a `p`-group acting on a finite set `α`, then the number of fixed points
+@[to_additive
+/-- If `G` is a `p`-group acting on a finite set `α`, then the number of fixed points
 of the action is congruent mod `p` to the cardinality of `α` -/]
 theorem card_modEq_card_fixedPoints : Nat.card α ≡ Nat.card (fixedPoints G α) [MOD p] := by
   have := Fintype.ofFinite α
@@ -341,7 +342,8 @@ theorem card_modEq_card_fixedPoints : Nat.card α ≡ Nat.card (fixedPoints G α
 
 /-- If a p-group acts on `α` and the cardinality of `α` is not a multiple
 of `p` then the action has a fixed point. -/
-@[to_additive /-- If a p-group acts on `α` and the cardinality of `α` is not a multiple
+@[to_additive
+/-- If a p-group acts on `α` and the cardinality of `α` is not a multiple
 of `p` then the action has a fixed point. -/]
 theorem nonempty_fixed_point_of_prime_not_dvd_card (α) [MulAction G α] (hpα : ¬p ∣ Nat.card α) :
     (fixedPoints G α).Nonempty :=
@@ -355,7 +357,8 @@ theorem nonempty_fixed_point_of_prime_not_dvd_card (α) [MulAction G α] (hpα :
 
 /-- If a p-group acts on `α` and the cardinality of `α` is a multiple
 of `p`, and the action has one fixed point, then it has another fixed point. -/
-@[to_additive /-- If a p-group acts on `α` and the cardinality of `α` is a multiple
+@[to_additive
+/-- If a p-group acts on `α` and the cardinality of `α` is a multiple
 of `p`, and the action has one fixed point, then it has another fixed point. -/]
 theorem exists_fixed_point_of_prime_dvd_card_of_fixed_point (hpα : p ∣ Nat.card α) {a : α}
     (ha : a ∈ fixedPoints G α) : ∃ b, b ∈ fixedPoints G α ∧ a ≠ b := by
@@ -568,8 +571,8 @@ end IsPGroup
 namespace ZModModule
 variable (n : ℕ) (G : Type*) [AddCommGroup G] [Module (ZMod n) G]
 
-lemma isAddPGroup : IsAddPGroup n G := by
-  simpa [IsAddPGroup] using fun _ ↦ ⟨1, by simp [ZModModule.char_nsmul_eq_zero]⟩
+lemma isAddPGroup : IsAddPGroup n G :=
+  fun _ ↦ ⟨1, by simp [ZModModule.char_nsmul_eq_zero]⟩
 
 lemma isPGroup_multiplicative : IsPGroup n (Multiplicative G) :=
   isAddPGroup n G
