@@ -149,11 +149,11 @@ variable [Preorder α]
 
 @[to_dual]
 protected theorem CountableSupClosed.Ioi (a : α) : CountableSupClosed (Ioi a) :=
-  isUpperSet_Ioi a |>.countableSupClosed
+  IsUpperSet.Ioi a |>.countableSupClosed
 
 @[to_dual]
 protected theorem CountableSupClosed.Ici (a : α) : CountableSupClosed (Ici a) :=
-  isUpperSet_Ici a |>.countableSupClosed
+  IsUpperSet.Ici a |>.countableSupClosed
 
 @[to_dual]
 protected theorem CountableSupClosed.Iic (a : α) : CountableSupClosed (Iic a) where
