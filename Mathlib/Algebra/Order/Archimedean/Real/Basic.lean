@@ -29,7 +29,7 @@ namespace Real
 variable {ι : Sort*} {f : ι → ℝ} {s : Set ℝ} {a : ℝ}
 
 instance instArchimedean : Archimedean ℝ :=
-  archimedean_iff_rat_le.2 fun x =>
+  archimedean_iff_ratCast_le.2 fun x =>
     Real.ind_mk x fun f =>
       let ⟨M, _, H⟩ := f.bounded' 0
       ⟨M, mk_le_of_forall_le ⟨0, fun i _ => Rat.cast_le.2 <| le_of_lt (abs_lt.1 (H i)).2⟩⟩
@@ -39,7 +39,7 @@ noncomputable instance : FloorRing ℝ :=
 
 theorem isCauSeq_iff_lift {f : ℕ → ℚ} : IsCauSeq abs f ↔ IsCauSeq abs fun i => (f i : ℝ) where
   mp H ε ε0 :=
-    let ⟨δ, δ0, δε⟩ := exists_pos_rat_lt ε0
+    let ⟨δ, δ0, δε⟩ := exists_pos_ratCast_lt ε0
     (H _ δ0).imp fun i hi j ij => by dsimp; exact lt_trans (mod_cast hi _ ij) δε
   mpr H ε ε0 :=
     (H _ (Rat.cast_pos.2 ε0)).imp fun i hi j ij => by dsimp at hi; exact mod_cast hi _ ij
@@ -342,16 +342,16 @@ theorem iInf_Ioi_eq_iInf_rat_gt {f : ℝ → ℝ} (x : ℝ) (hf : BddBelow (f ''
     (hf_mono : Monotone f) : ⨅ r : Ioi x, f r = ⨅ q : { q' : ℚ // x < q' }, f q := by
   refine le_antisymm ?_ ?_
   · have : Nonempty { r' : ℚ // x < ↑r' } := by
-      obtain ⟨r, hrx⟩ := exists_rat_gt x
+      obtain ⟨r, hrx⟩ := exists_ratCast_gt x
       exact ⟨⟨r, hrx⟩⟩
     refine le_ciInf fun r => ?_
-    obtain ⟨y, hxy, hyr⟩ := exists_rat_btwn r.prop
+    obtain ⟨y, hxy, hyr⟩ := exists_ratCast_btwn r.prop
     refine ciInf_set_le hf (hxy.trans ?_)
     exact_mod_cast hyr
   · refine le_ciInf fun q => ?_
     have hq := q.prop
     rw [mem_Ioi] at hq
-    obtain ⟨y, hxy, hyq⟩ := exists_rat_btwn hq
+    obtain ⟨y, hxy, hyq⟩ := exists_ratCast_btwn hq
     refine (ciInf_le ?_ ?_).trans ?_
     · refine ⟨hf.some, fun z => ?_⟩
       rintro ⟨u, rfl⟩
@@ -365,13 +365,13 @@ theorem not_bddAbove_coe : ¬ (BddAbove <| range (fun (x : ℚ) ↦ (x : ℝ))) 
   dsimp only [BddAbove, upperBounds]
   rw [Set.not_nonempty_iff_eq_empty]
   ext
-  simpa using exists_rat_gt _
+  simpa using exists_ratCast_gt _
 
 theorem not_bddBelow_coe : ¬ (BddBelow <| range (fun (x : ℚ) ↦ (x : ℝ))) := by
   dsimp only [BddBelow, lowerBounds]
   rw [Set.not_nonempty_iff_eq_empty]
   ext
-  simpa using exists_rat_lt _
+  simpa using exists_ratCast_lt _
 
 theorem iUnion_Iic_rat : ⋃ r : ℚ, Iic (r : ℝ) = univ := by
   exact iUnion_Iic_of_not_bddAbove_range not_bddAbove_coe
@@ -383,7 +383,7 @@ theorem iInter_Iic_rat : ⋂ r : ℚ, Iic (r : ℝ) = ∅ := by
 lemma exists_natCast_add_one_lt_pow_of_one_lt (ha : 1 < a) : ∃ m : ℕ, (m + 1 : ℝ) < a ^ m := by
   obtain ⟨k, posk, hk⟩ : ∃ k : ℕ, 0 < k ∧ 1 / k + 1 < a := by
     contrapose! ha
-    refine le_of_forall_lt_rat_imp_le ?_
+    refine le_of_forall_lt_ratCast_imp_le ?_
     intro q hq
     refine (ha q.den (by positivity)).trans ?_
     rw [← le_sub_iff_add_le, div_le_iff₀ (by positivity), sub_mul, one_mul]

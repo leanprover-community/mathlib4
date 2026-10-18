@@ -31,7 +31,7 @@ instance OrderRingHom.subsingleton [IsStrictOrderedRing β] [Archimedean β] :
     by_contra h' : f x ≠ g x
     wlog h : f x < g x with h₂
     · exact h₂ g f x (Ne.symm h') (h'.lt_or_gt.resolve_left h)
-    obtain ⟨q, hf, hg⟩ := exists_rat_btwn h
+    obtain ⟨q, hf, hg⟩ := exists_ratCast_btwn h
     rw [← map_ratCast f] at hf
     rw [← map_ratCast g] at hg
     exact

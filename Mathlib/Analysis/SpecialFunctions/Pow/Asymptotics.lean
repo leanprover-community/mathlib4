@@ -122,7 +122,7 @@ theorem tendsto_rpow_neg_div : Tendsto (fun x => x ^ (-(1 : ℝ) / x)) atTop (�
 
 /-- The function `exp(x) / x ^ s` tends to `+∞` at `+∞`, for any real number `s`. -/
 theorem tendsto_exp_div_rpow_atTop (s : ℝ) : Tendsto (fun x : ℝ => exp x / x ^ s) atTop atTop := by
-  obtain ⟨n, hn⟩ := archimedean_iff_nat_lt.1 Real.instArchimedean s
+  obtain ⟨n, hn⟩ := archimedean_iff_natCast_lt.1 Real.instArchimedean s
   refine tendsto_atTop_mono' _ ?_ (tendsto_exp_div_pow_atTop n)
   filter_upwards [eventually_gt_atTop (0 : ℝ), eventually_ge_atTop (1 : ℝ)] with x hx₀ hx₁
   gcongr

@@ -629,7 +629,7 @@ def limNthHom (r : R) : ℤ_[p] :=
 theorem limNthHom_spec (r : R) :
     ∀ ε : ℝ, 0 < ε → ∃ N : ℕ, ∀ n ≥ N, ‖limNthHom f_compat r - nthHom f r n‖ < ε := by
   intro ε hε
-  obtain ⟨ε', hε'0, hε'⟩ : ∃ v : ℚ, (0 : ℝ) < v ∧ ↑v < ε := exists_rat_btwn hε
+  obtain ⟨ε', hε'0, hε'⟩ : ∃ v : ℚ, (0 : ℝ) < v ∧ ↑v < ε := exists_ratCast_btwn hε
   norm_cast at hε'0
   obtain ⟨N, hN⟩ := padicNormE.defn (nthHomSeq f_compat r) hε'0
   use N

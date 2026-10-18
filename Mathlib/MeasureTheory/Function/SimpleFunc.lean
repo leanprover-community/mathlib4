@@ -902,7 +902,7 @@ lemma iSup_eapprox_apply (hf : Measurable f) (a : α) : ⨆ n, (eapprox f n : α
   rw [eapprox, iSup_approx_apply ennrealRatEmbed f a hf rfl]
   refine le_antisymm (iSup_le fun i => iSup_le fun hi => hi) (le_of_not_gt ?_)
   intro h
-  rcases ENNReal.lt_iff_exists_rat_btwn.1 h with ⟨q, _, lt_q, q_lt⟩
+  rcases ENNReal.lt_iff_exists_ratCast_btwn.1 h with ⟨q, _, lt_q, q_lt⟩
   have :
     (Real.toNNReal q : ℝ≥0∞) ≤ ⨆ (k : ℕ) (_ : ennrealRatEmbed k ≤ f a), ennrealRatEmbed k := by
     refine le_iSup_of_le (Encodable.encode q) ?_

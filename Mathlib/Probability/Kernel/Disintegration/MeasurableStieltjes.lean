@@ -303,7 +303,7 @@ lemma IsMeasurableRatCDF.stieltjesFunctionAux_eq (a : α) (r : ℚ) :
 lemma IsMeasurableRatCDF.stieltjesFunctionAux_nonneg (a : α) (r : ℝ) :
     0 ≤ IsMeasurableRatCDF.stieltjesFunctionAux f a r := by
   have : Nonempty { r' : ℚ // r < ↑r' } := by
-    obtain ⟨r, hrx⟩ := exists_rat_gt r
+    obtain ⟨r, hrx⟩ := exists_ratCast_gt r
     exact ⟨⟨r, hrx⟩⟩
   rw [IsMeasurableRatCDF.stieltjesFunctionAux_def]
   exact le_ciInf fun r' ↦ hf.nonneg a _
@@ -312,7 +312,7 @@ lemma IsMeasurableRatCDF.monotone_stieltjesFunctionAux (a : α) :
     Monotone (IsMeasurableRatCDF.stieltjesFunctionAux f a) := by
   intro x y hxy
   have : Nonempty { r' : ℚ // y < ↑r' } := by
-    obtain ⟨r, hrx⟩ := exists_rat_gt y
+    obtain ⟨r, hrx⟩ := exists_ratCast_gt y
     exact ⟨⟨r, hrx⟩⟩
   simp_rw [IsMeasurableRatCDF.stieltjesFunctionAux_def]
   refine le_ciInf fun r ↦ (ciInf_le ?_ ?_).trans_eq ?_
@@ -355,7 +355,7 @@ lemma IsMeasurableRatCDF.stieltjesFunction_nonneg (a : α) (r : ℝ) : 0 ≤ hf.
 
 lemma IsMeasurableRatCDF.stieltjesFunction_le_one (a : α) (x : ℝ) :
     hf.stieltjesFunction a x ≤ 1 := by
-  obtain ⟨r, hrx⟩ := exists_rat_gt x
+  obtain ⟨r, hrx⟩ := exists_ratCast_gt x
   rw [← StieltjesFunction.iInf_rat_gt_eq]
   simp_rw [IsMeasurableRatCDF.stieltjesFunction_eq]
   refine ciInf_le_of_le ?_ ?_ (hf.le_one _ _)
@@ -364,7 +364,7 @@ lemma IsMeasurableRatCDF.stieltjesFunction_le_one (a : α) (x : ℝ) :
 
 lemma IsMeasurableRatCDF.tendsto_stieltjesFunction_atBot (a : α) :
     Tendsto (hf.stieltjesFunction a) atBot (𝓝 0) := by
-  have h_exists : ∀ x : ℝ, ∃ q : ℚ, x < q ∧ ↑q < x + 1 := fun x ↦ exists_rat_btwn (lt_add_one x)
+  have h_exists : ∀ x : ℝ, ∃ q : ℚ, x < q ∧ ↑q < x + 1 := fun x ↦ exists_ratCast_btwn (lt_add_one x)
   let qs : ℝ → ℚ := fun x ↦ (h_exists x).choose
   have hqs_tendsto : Tendsto qs atBot atBot := by
     rw [tendsto_atBot_atBot]
@@ -380,7 +380,7 @@ lemma IsMeasurableRatCDF.tendsto_stieltjesFunction_atBot (a : α) :
 
 lemma IsMeasurableRatCDF.tendsto_stieltjesFunction_atTop (a : α) :
     Tendsto (hf.stieltjesFunction a) atTop (𝓝 1) := by
-  have h_exists : ∀ x : ℝ, ∃ q : ℚ, x - 1 < q ∧ ↑q < x := fun x ↦ exists_rat_btwn (sub_one_lt x)
+  have h_exists : ∀ x : ℝ, ∃ q : ℚ, x - 1 < q ∧ ↑q < x := fun x ↦ exists_ratCast_btwn (sub_one_lt x)
   let qs : ℝ → ℚ := fun x ↦ (h_exists x).choose
   have hqs_tendsto : Tendsto qs atTop atTop := by
     rw [tendsto_atTop_atTop]

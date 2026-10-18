@@ -91,7 +91,7 @@ instance : IsUniformAddGroup ℚ :=
 
 instance : IsTopologicalAddGroup ℚ := inferInstance
 
-instance : OrderTopology ℚ := induced_orderTopology _ Rat.cast_lt exists_rat_btwn
+instance : OrderTopology ℚ := induced_orderTopology _ Rat.cast_lt exists_ratCast_btwn
 
 theorem uniformContinuous_abs : UniformContinuous (abs : ℚ → ℚ) :=
   Metric.uniformContinuous_iff.2 fun ε ε0 =>

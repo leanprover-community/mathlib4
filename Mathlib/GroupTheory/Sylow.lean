@@ -809,7 +809,7 @@ least `k` then there is a subgroup of `H` of cardinality between `k / p` and `k`
 lemma exists_subgroup_le_card_le {k p : ℕ} (hp : p.Prime) (h : IsPGroup p G) {H : Subgroup G}
     (hk : k ≤ Nat.card H) (hk₀ : k ≠ 0) : ∃ H' ≤ H, Nat.card H' ≤ k ∧ k < p * Nat.card H' := by
   obtain ⟨m, hmk, hkm⟩ : ∃ s, p ^ s ≤ k ∧ k < p ^ (s + 1) :=
-    exists_nat_pow_near (Nat.one_le_iff_ne_zero.2 hk₀) hp.one_lt
+    exists_natCast_pow_near (Nat.one_le_iff_ne_zero.2 hk₀) hp.one_lt
   obtain ⟨H', H'H, H'card⟩ := exists_subgroup_le_card_pow_prime_of_le_card hp h (hmk.trans hk)
   refine ⟨H', H'H, ?_⟩
   simpa only [pow_succ', H'card] using And.intro hmk hkm

@@ -276,7 +276,7 @@ instance Rat.instNormedField : NormedField ℚ where
 
 instance Rat.instDenselyNormedField : DenselyNormedField ℚ where
   lt_norm_lt r₁ r₂ h₀ hr :=
-    let ⟨q, h⟩ := exists_rat_btwn hr
+    let ⟨q, h⟩ := exists_ratCast_btwn hr
     ⟨q, by rwa [← Rat.norm_cast_real, Real.norm_eq_abs, abs_of_pos (h₀.trans_lt h.1)]⟩
 
 section Complete
