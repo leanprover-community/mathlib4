@@ -132,6 +132,26 @@ theorem choose_pow_mul_pow_mul_modEq_choose_nat :
   rw [← Int.natCast_modEq_iff]
   exact_mod_cast choose_pow_mul_pow_mul_modEq_choose
 
+/-- For primes `p` and `k ≤ p ^ a - 1`, `choose (p ^ a - 1) k` is congruent to `(-1) ^ k`
+modulo `p`. -/
+theorem choose_pow_sub_one_modEq_neg_one_pow (hk : k ≤ p ^ a - 1) :
+    choose (p ^ a - 1) k ≡ (-1) ^ k [ZMOD p] := by
+  induction k with
+  | zero => simp [Int.ModEq.refl]
+  | succ k ih =>
+    have h₀ : 1 ≤ p ^ a := Nat.one_le_pow _ _ (Fact.out : p.Prime).pos
+    have h := (Fact.out : p.Prime).dvd_choose_pow (n := a) k.succ_ne_zero (by lia)
+    rw [← Nat.sub_add_cancel h₀, choose_succ_succ'] at h
+    simpa [pow_succ] using
+      (Int.modEq_zero_iff_dvd.2 (Int.natCast_dvd_natCast.2 h)).sub (ih (by lia))
+
+/-- For primes `p` and `k ≤ p ^ a - 1`, `p` does not divide `choose (p ^ a - 1) k`. -/
+theorem not_dvd_choose_pow_sub_one (hk : k ≤ p ^ a - 1) : ¬ p ∣ choose (p ^ a - 1) k := by
+  intro h
+  have := ((Int.modEq_zero_iff_dvd.2 (Int.natCast_dvd_natCast.2 h)).symm.trans
+    (choose_pow_sub_one_modEq_neg_one_pow hk)).dvd
+  exact (Fact.out : p.Prime).not_dvd_one (by simpa [Int.natCast_dvd] using this)
+
 /-- For primes `p` and positive integer `n`, assume that for all `i ∈ Icc 1 (n - 1)`,
 `choose n i` congruent to `0` module `p`, then `n = p ^ multiplicity p n`.
 Also see `eq_pow_multiplicity_of_choose_modEq_zero_nat` for the version with `MOD`. -/
