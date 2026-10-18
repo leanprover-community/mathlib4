@@ -41,7 +41,7 @@ variable [Preorder α] [Preorder β]
 def hasse : SimpleGraph α where
   Adj a b := a ⋖ b ∨ b ⋖ a
 
-variable {α} {a b : α}
+variable {α β} {a b : α}
 
 @[simp]
 theorem hasse_adj : (hasse α).Adj a b ↔ a ⋖ b ∨ b ⋖ a :=
