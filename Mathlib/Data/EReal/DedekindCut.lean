@@ -39,12 +39,11 @@ theorem lowerBounds_setOfPred_le_ratCast (x : EReal) :
     lowerBounds {q : ℚ | x ≤ (q : ℝ)} = {q : ℚ | (q : ℝ) ≤ x} := by
   ext y
   constructor
-  · refine fun hy ↦ le_of_forall_lt_rat_imp_le fun q hq ↦ ?_
+  · refine fun hy ↦ le_of_forall_lt_ratCast_imp_le fun q hq ↦ ?_
     simpa using hy hq.le
   · intro hy z hz
     simpa using le_trans (b := x) hy hz
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The Dedekind completion of the rationals is order isomorphic to the extended reals. -/
 def dedekindCutOrderIso : DedekindCut ℚ ≃o EReal where
   toFun := factorEmbedding (Rat.castOrderEmbedding.trans Real.coeOrderEmbedding)
@@ -65,8 +64,9 @@ def dedekindCutOrderIso : DedekindCut ℚ ≃o EReal where
       exact_mod_cast z_le_sup (r : ℝ) fun t ht => by simp [hr t ht]
     · exact (le_iSup₂_of_le z · le_rfl)
   right_inv x := by
+    beta_reduce
     apply sSup_eq_of_forall_le_of_forall_lt_exists_gt
-    · simp [left_mk]
+    · simp
     · simp only [Set.mem_image, exists_exists_and_eq_and]
       intro w w_lt_x
       obtain ⟨r, w_lt_r, r_lt_x⟩ := exists_rat_btwn_of_lt w_lt_x
