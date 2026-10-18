@@ -22,7 +22,7 @@ to define them.
 
 -/
 
-noncomputable section
+public noncomputable section
 
 namespace ContinuousLinearMap
 
