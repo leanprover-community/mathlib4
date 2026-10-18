@@ -242,7 +242,7 @@ lemma divisors_gcd {m n : ℕ} (hm : m ≠ 0) (hn : n ≠ 0) :
 lemma filter_dvd_divisors {n m : ℕ} (hn : n ≠ 0) :
     {d ∈ n.divisors | d ∣ m} = (n.gcd m).divisors := by
   ext d
-  simp [mem_divisors, dvd_gcd_iff, gcd_ne_zero_left hn, hn]
+  simp [dvd_gcd_iff, hn]
 
 lemma divisors_filter_dvd_of_dvd {n m : ℕ} (hn : n ≠ 0) (hm : m ∣ n) :
     {d ∈ n.divisors | d ∣ m} = m.divisors := by
