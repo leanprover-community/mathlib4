@@ -104,6 +104,9 @@ lemma IsEdgeReachable.le_degree_left [Fintype (G.neighborSet u)] (h : G.IsEdgeRe
   obtain ⟨w, _⟩ := h hh |>.exists_isPath
   simpa using w.adj_snd <| mt Walk.Nil.eq huv
 
+@[deprecated (since := "2026-10-18")]
+alias IsEdgeReachable.le_degree := IsEdgeReachable.le_degree_left
+
 lemma IsEdgeReachable.le_degree_right [Fintype (G.neighborSet v)] (h : G.IsEdgeReachable k u v)
     (huv : u ≠ v) : k ≤ G.degree v := by
   rw [isEdgeReachable_comm] at h
