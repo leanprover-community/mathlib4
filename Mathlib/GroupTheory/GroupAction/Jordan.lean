@@ -5,9 +5,9 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Algebra.Group.Pointwise.Set.Card
-public import Mathlib.Data.Set.Card
 public import Mathlib.GroupTheory.GroupAction.MultiplePrimitivity
+
+import Mathlib.Algebra.Group.Pointwise.Set.Card
 
 /-! # Theorems of Jordan
 
@@ -63,7 +63,7 @@ theorem normalClosure_of_stabilizer_eq_top (hsn' : 2 < ENat.card α)
     exact isMultiplyPretransitive_of_le' (one_le_two) (le_of_lt hsn')
   have : Nontrivial α := by
     rw [← ENat.one_lt_card_iff_nontrivial]
-    exact lt_trans (by norm_num) hsn'
+    exact lt_trans (by simp) hsn'
   have hGa : IsCoatom (stabilizer G a) := by
     rw [isCoatom_stabilizer_iff_preprimitive]
     exact isPreprimitive_of_is_two_pretransitive hG'
@@ -252,7 +252,7 @@ theorem MulAction.IsPreprimitive.isMultiplyPreprimitive
         rw [← is_one_preprimitive_iff]
         rw [← isMultiplyPreprimitive_succ_iff_ofStabilizer]
         · apply is_two_preprimitive hG hsn hsn' hprim
-        · norm_num
+        · simp
       have : IsPreprimitive ↥(fixingSubgroup G (insert a (Subtype.val '' t)))
           (ofFixingSubgroup G (insert a (Subtype.val '' t))) :=
         IsPreprimitive.of_surjective
@@ -400,7 +400,7 @@ theorem subgroup_eq_top_of_isPreprimitive_of_isSwap_mem
   · rw [hn]; apply Nat.lt_add_one
   have := isPretransitive_of_isCycle_mem h2g.isCycle hg
   apply IsPreprimitive.of_prime_card
-  convert! Nat.prime_two
+  convert Nat.prime_two
   rw [Nat.card_eq_fintype_card, Fintype.card_subtype, ← card_support_eq_two.mpr h2g]
   simp [SubMulAction.mem_ofFixingSubgroup_iff, support]
 
@@ -437,7 +437,7 @@ theorem alternatingGroup_le_of_isPreprimitive_of_isThreeCycle_mem
   · grind
   have := isPretransitive_of_isCycle_mem h3g.isCycle hg
   apply IsPreprimitive.of_prime_card
-  convert! Nat.prime_three
+  convert Nat.prime_three
   rw [Nat.card_eq_fintype_card, Fintype.card_subtype, ← h3g.card_support]
   apply congr_arg
   ext x
