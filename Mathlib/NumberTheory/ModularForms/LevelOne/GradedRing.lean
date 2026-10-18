@@ -27,7 +27,7 @@ particular, every level-1 modular form is a polynomial in the Eisenstein series 
   ring `⨁ k, ModularForm 𝒮ℒ k`.
 * `ModularForm.evalE₄E₆_surjective`: `evalE₄E₆` is surjective.
 * `ModularForm.adjoin_E₄_E₆_eq_top`: `E₄` and `E₆` generate `⨁ k, ModularForm 𝒮ℒ k` as a
-  `ℂ`-algebra; in particular it is a finitely generated `ℂ`-algebra.
+  `ℂ`-algebra; in particular it is a finitely generated `ℂ`-algebra and a Noetherian ring.
 
 ## Implementation notes
 
@@ -197,6 +197,10 @@ theorem adjoin_E₄_E₆_eq_top : Algebra.adjoin ℂ {DirectSum.of (ModularForm 
 `ℂ`-algebra. -/
 instance : Algebra.FiniteType ℂ (DirectSum ℤ (ModularForm 𝒮ℒ)) :=
   .of_surjective evalE₄E₆ evalE₄E₆_surjective
+
+/-- The graded ring `⨁ k, ModularForm 𝒮ℒ k` of level-1 modular forms is a Noetherian ring. -/
+instance : IsNoetherianRing (DirectSum ℤ (ModularForm 𝒮ℒ)) :=
+  Algebra.FiniteType.isNoetherianRing ℂ _
 
 end ModularForm
 
