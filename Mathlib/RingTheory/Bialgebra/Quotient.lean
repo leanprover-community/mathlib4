@@ -23,7 +23,8 @@ then `c.Quotient` is again an `R`-bialgebra. A two-sided ideal `I` of a ring `A`
 * `RingCon.IsBialgebraCon R c` : the counit and comultiplication descend along `c.mkₐ`.
 * `Bialgebra.Quotient.counitAlgHom`, `Bialgebra.Quotient.comulAlgHom` : the descended counit and
   comultiplication, as `R`-algebra homomorphisms.
-* `Bialgebra.Quotient.mkBialgHom` : `c.mkₐ` as a bialgebra homomorphism.
+* `RingCon.mkBialgHom` : `c.mkₐ` as a bialgebra homomorphism.
+* `Bialgebra.Quotient.mkBialgHom` : `Ideal.Quotient.mkₐ` as a bialgebra homomorphism.
 
 ## Main results
 
@@ -57,9 +58,6 @@ class RingCon.IsBialgebraCon (c : RingCon A) : Prop where
 
 namespace Bialgebra.Quotient
 
-open AlgHom (comp_toLinearMap)
-open Algebra.TensorProduct (toLinearMap_map)
-
 variable (c : RingCon A) [hc : c.IsBialgebraCon R]
 
 /-- The counit on `c.Quotient`, as an `R`-algebra homomorphism. -/
@@ -71,34 +69,36 @@ def comulAlgHom : c.Quotient →ₐ[R] c.Quotient ⊗[R] c.Quotient :=
   c.liftₐ ((Algebra.TensorProduct.map (c.mkₐ R) (c.mkₐ R)).comp (Bialgebra.comulAlgHom R A))
     hc.comul_eq
 
-@[simp] lemma counit_mkₐ (a : A) : counitAlgHom c (c.mkₐ R a) = counit (R := R) a := rfl
-
-@[simp] lemma comul_mkₐ (a : A) : comulAlgHom c (c.mkₐ R a) =
-    Algebra.TensorProduct.map (c.mkₐ R) (c.mkₐ R) (comul (R := R) a) := rfl
-
 lemma counit_comp_mkₐ : (counitAlgHom c).toLinearMap ∘ₗ (c.mkₐ R).toLinearMap = counit := rfl
 
 lemma comul_comp_mkₐ : (comulAlgHom c).toLinearMap ∘ₗ (c.mkₐ R).toLinearMap =
     map (c.mkₐ R).toLinearMap (c.mkₐ R).toLinearMap ∘ₗ comul := rfl
 
 /-- The bialgebra structure on `c.Quotient` when `c` is a bialgebra congruence. -/
-instance : Bialgebra R c.Quotient :=
-  .ofAlgHom (comulAlgHom c) (counitAlgHom c)
-    (RingCon.Quotient.hom_extₐ <| AlgHom.toLinearMap_injective <| by
-      simp [coassoc_simps, comul_comp_mkₐ])
-    (RingCon.Quotient.hom_extₐ <| AlgHom.toLinearMap_injective <| by
-      simp only [coassoc_simps, comp_toLinearMap, toLinearMap_map, comul_comp_mkₐ, counit_comp_mkₐ]
-      rw [CoassocSimps.map_counit_comp_comul_left]; rfl)
-    (RingCon.Quotient.hom_extₐ <| AlgHom.toLinearMap_injective <| by
-      simp only [coassoc_simps, comp_toLinearMap, toLinearMap_map, comul_comp_mkₐ, counit_comp_mkₐ]
-      rw [CoassocSimps.map_counit_comp_comul_right]; rfl)
+instance : Bialgebra R c.Quotient := by
+  refine .ofAlgHom (comulAlgHom c) (counitAlgHom c) ?_ ?_ ?_ <;>
+    refine RingCon.Quotient.hom_extₐ (AlgHom.toLinearMap_injective ?_) <;>
+    simp only [coassoc_simps, AlgHom.comp_toLinearMap, Algebra.TensorProduct.toLinearMap_map,
+      comul_comp_mkₐ, counit_comp_mkₐ]
+  · simp [coassoc_simps]
+  · rw [CoassocSimps.map_counit_comp_comul_left]; rfl
+  · rw [CoassocSimps.map_counit_comp_comul_right]; rfl
 
-/-- `c.mkₐ` as a bialgebra homomorphism. -/
-def mkBialgHom : A →ₐc[R] c.Quotient := .ofAlgHom (c.mkₐ R) rfl rfl
+@[simp] lemma counit_coe (a : A) : counit (R := R) (a : c.Quotient) = counit a := rfl
 
-@[simp] lemma mkBialgHom_apply (a : A) : mkBialgHom (R := R) c a = c.mkₐ R a := rfl
+@[simp] lemma comul_coe (a : A) :
+    comul (R := R) (a : c.Quotient) = map (c.mkₐ R).toLinearMap (c.mkₐ R).toLinearMap (comul a) :=
+  rfl
 
 end Bialgebra.Quotient
+
+variable (R) in
+/-- `c.mkₐ` as a bialgebra homomorphism. -/
+def RingCon.mkBialgHom (c : RingCon A) [c.IsBialgebraCon R] : A →ₐc[R] c.Quotient :=
+  .ofAlgHom (c.mkₐ R) rfl rfl
+
+@[simp] lemma RingCon.mkBialgHom_apply (c : RingCon A) [c.IsBialgebraCon R] (a : A) :
+    c.mkBialgHom R a = a := rfl
 
 end RingCon
 
@@ -110,18 +110,19 @@ variable {R A : Type*} [CommRing R] [Ring A] [Bialgebra R A] (I : Ideal A) [I.Is
 /-- The ring congruence of a two-sided ideal whose underlying submodule is a coideal is a
 bialgebra congruence. -/
 instance : (Ideal.Quotient.ringCon I).IsBialgebraCon R where
-  counit_eq := fun ⦃_ _⦄ h ↦ sub_eq_zero.mp <| by
+  counit_eq _ _ h := sub_eq_zero.mp <| by
     rw [← map_sub]
     exact Submodule.IsCoideal.counit_eq_zero (I := I.restrictScalars R)
       (Ideal.Quotient.eq.mp (Quotient.sound h))
-  comul_eq := fun ⦃_ _⦄ h ↦ sub_eq_zero.mp <| by
+  comul_eq _ _ h := sub_eq_zero.mp <| by
     rw [← map_sub, ← map_sub]
     exact Submodule.IsCoideal.map_mkQ_comul_eq_zero (I := I.restrictScalars R)
       (Ideal.Quotient.eq.mp (Quotient.sound h))
 
 namespace Bialgebra.Quotient
 
-/-- The bialgebra structure on `A ⧸ I` when `I` is a biideal. -/
+/-- The bialgebra structure on `A ⧸ I` when `I` is a two-sided ideal whose underlying
+`R`-submodule is a coideal. -/
 instance : Bialgebra R (A ⧸ I) :=
   { Ideal.Quotient.algebra R,
     (inferInstance : Bialgebra R (Ideal.Quotient.ringCon I).Quotient) with }
@@ -132,6 +133,12 @@ instance : Bialgebra R (A ⧸ I) :=
     comul (R := R) (Ideal.Quotient.mk I a) =
       map (Ideal.Quotient.mkₐ R I).toLinearMap (Ideal.Quotient.mkₐ R I).toLinearMap (comul a) :=
   rfl
+
+/-- `Ideal.Quotient.mkₐ` as a bialgebra homomorphism. -/
+def mkBialgHom : A →ₐc[R] A ⧸ I := .ofAlgHom (Ideal.Quotient.mkₐ R I) rfl rfl
+
+@[simp] lemma mkBialgHom_apply (a : A) :
+    mkBialgHom (R := R) I a = Ideal.Quotient.mk I a := rfl
 
 end Bialgebra.Quotient
 
