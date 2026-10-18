@@ -146,6 +146,19 @@ theorem leibniz_pow (n : ℕ) : D (a ^ n) = n • a ^ (n - 1) • D a := by
       simp only [pow_succ', leibniz, ihn, smul_comm a n (_ : M), smul_smul a, add_smul, this,
         Nat.add_succ_sub_one, add_zero, one_nsmul]
 
+/-- The Leibniz rule for a finite product. -/
+theorem leibniz_prod {ι : Type*} [DecidableEq ι] (s : Finset ι) (f : ι → A) :
+    D (∏ i ∈ s, f i) = ∑ i ∈ s, (∏ j ∈ s.erase i, f j) • D (f i) := by
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert a s ha ih =>
+    rw [Finset.prod_insert ha, Finset.sum_insert ha, leibniz, ih, Finset.erase_insert ha,
+      Finset.smul_sum, add_comm]
+    congr 1
+    refine Finset.sum_congr rfl fun i hi => ?_
+    rw [smul_smul, Finset.erase_insert_of_ne (ne_of_mem_of_not_mem hi ha).symm,
+      Finset.prod_insert fun h => ha (Finset.mem_of_mem_erase h)]
+
 open Polynomial in
 @[simp]
 theorem map_aeval (P : R[X]) (x : A) :
@@ -484,6 +497,24 @@ theorem leibniz_of_mul_eq_one {a b : A} (h : a * b = 1) : D a = -a ^ 2 • D b :
 
 theorem leibniz_invOf [Invertible a] : D (⅟a) = -⅟a ^ 2 • D a :=
   D.leibniz_of_mul_eq_one <| invOf_mul_self a
+
+/-- The Leibniz rule for integer powers of a unit. See `Derivation.leibniz_zpow` for fields. -/
+theorem leibniz_zpow_units (u : Aˣ) (n : ℤ) :
+    D ↑(u ^ n) = n • ((u ^ (n - 1) : Aˣ) : A) • D ↑u := by
+  rcases n with k | k
+  · rw [Int.ofNat_eq_natCast, zpow_natCast, Units.val_pow_eq_pow_val, leibniz_pow,
+      ← natCast_zsmul]
+    rcases k with _ | k <;> simp
+  · rw [zpow_negSucc, D.leibniz_of_mul_eq_one (Units.inv_mul _), Units.val_pow_eq_pow_val,
+      leibniz_pow, ← Nat.cast_smul_eq_nsmul A, ← Int.cast_smul_eq_zsmul A]
+    simp only [smul_smul]
+    congr 1
+    simp only [Int.negSucc_sub_one, zpow_negSucc, ← inv_pow, Units.val_pow_eq_pow_val,
+      Int.cast_negSucc, Nat.add_sub_cancel]
+    push_cast
+    trans -(k + 1) * ((↑u⁻¹ : A) ^ (k + 2) * ((↑u⁻¹ : A) * u) ^ k)
+    · ring
+    · simp
 
 section Field
 
