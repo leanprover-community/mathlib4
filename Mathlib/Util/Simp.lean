@@ -9,6 +9,7 @@ public meta import Lean.Meta.Tactic.Simp.Types
 public import Qq
 
 import Mathlib.Init
+public import Mathlib.Init
 
 /-! # Additional simp utilities
 

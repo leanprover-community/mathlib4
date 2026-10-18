@@ -11,6 +11,7 @@ public import Aesop.Frontend.Basic
 public import Batteries.Util.LibraryNote
 
 import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # SetLike Rule Set

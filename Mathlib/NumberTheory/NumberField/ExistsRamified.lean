@@ -5,11 +5,12 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.NumberTheory.RamificationInertia.Galois
 
 import Mathlib.NumberTheory.NumberField.Discriminant.Basic
 import Mathlib.NumberTheory.NumberField.Discriminant.Different
 import Mathlib.RingTheory.Unramified.Dedekind
+public import Mathlib.NumberTheory.NumberField.Basic
+public import Mathlib.RingTheory.Unramified.Locus
 
 /-!
 # Every number field has a ramified prime over `ℚ`

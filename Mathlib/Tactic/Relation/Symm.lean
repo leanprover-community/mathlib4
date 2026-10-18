@@ -8,6 +8,7 @@ module
 public meta import Lean.Meta.Tactic.Symm
 
 import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # `relSidesIfSymm?`

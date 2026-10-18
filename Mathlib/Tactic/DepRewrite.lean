@@ -15,6 +15,7 @@ meta import Lean.Elab.ConfigEval.DeriveEvalExpr
 meta import Lean.Elab.ConfigEval.DeriveEvalTerm
 meta import Lean.Elab.ConfigEval.MetaInstances
 import Mathlib.Init
+public import Mathlib.Init
 
 /-! ## Dependent rewrite tactic -/
 

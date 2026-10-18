@@ -8,6 +8,7 @@ module
 public meta import Lean.Elab.Command
 public meta import Mathlib.Lean.Name
 public import Lean.Meta.Sorry
+public import Mathlib.Init
 
 /-!
 # Tracking uses of `sorry`

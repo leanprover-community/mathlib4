@@ -7,6 +7,7 @@ module
 
 import Batteries.Data.List.Lemmas
 import Mathlib.Tactic.MkIffOfInductiveProp
+public import Mathlib.Init
 
 /-!
 # Triplewise predicates on list.

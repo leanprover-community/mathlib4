@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.LocallyConvex.AbsConvex
 public import Mathlib.Analysis.LocallyConvex.Polar
-public import Mathlib.Analysis.LocallyConvex.SeparatingDual
 public import Mathlib.Analysis.RCLike.Lemmas
 
 /-!

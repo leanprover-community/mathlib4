@@ -8,7 +8,6 @@ module
 public import Batteries.Tactic.Congr
 public import Mathlib.Control.Monad.Writer
 
-import Batteries.Lean.Except
 import Mathlib.Control.Lawful
 import Mathlib.Control.Monad.Basic
 

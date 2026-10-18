@@ -9,6 +9,7 @@ public import Batteries.Control.AlternativeMonad
 public import Lean.LocalContext
 
 import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # Additional methods about `LocalContext`

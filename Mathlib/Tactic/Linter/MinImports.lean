@@ -8,6 +8,7 @@ module
 public meta import ImportGraph.Graph.TransitiveClosure
 public meta import ImportGraph.Imports.ImportGraph
 public import Mathlib.Tactic.MinImports
+public import Mathlib.Init
 
 /-! # The `minImports` linter
 

@@ -14,7 +14,7 @@ public import Batteries.Util.ExtendedBinder
 public import Lean.Parser.Module
 public import Mathlib.Tactic.DeclarationNames
 
-import Lean.Parser.Command
+public import Lean.Meta.TryThis
 
 /-!
 ## Style linters

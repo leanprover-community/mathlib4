@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Monad.Limits  -- shake: keep (used in `exam
 public import Mathlib.Topology.Category.TopCat.Basic
 public import Mathlib.Topology.UniformSpace.Completion
 
-import Mathlib.CategoryTheory.Adjunction.Reflective
 
 /-!
 # The category of uniform spaces

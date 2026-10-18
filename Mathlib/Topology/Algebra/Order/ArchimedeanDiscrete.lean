@@ -11,6 +11,7 @@ import Mathlib.GroupTheory.ArchimedeanDensely
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.Topology.Algebra.OpenSubgroup
 import Mathlib.Topology.Order.DenselyOrdered
+public import Mathlib.Topology.Algebra.Order.Group
 
 /-!
 # Discreteness of subgroups in archimedean ordered groups

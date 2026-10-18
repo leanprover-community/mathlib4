@@ -14,7 +14,6 @@ public import Batteries.CodeAction.Attr
 public import Mathlib.Tactic.Widget.SelectPanelUtils
 public import ProofWidgets.Component.OfRpcMethod
 
-import ProofWidgets.Component.Basic
 
 /-! # Calc widget
 

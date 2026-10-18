@@ -5,7 +5,6 @@ Authors: María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.Algebra.Group.Submonoid.Units
 public import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 public import Mathlib.Data.Int.WithZero
 public import Mathlib.RingTheory.DedekindDomain.Dvr

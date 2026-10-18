@@ -10,6 +10,7 @@ public meta import Lean.Meta.Tactic.LibrarySearch
 public meta import Lean.Meta.Tactic.TryThis
 
 import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # The `observe` tactic.

@@ -6,6 +6,7 @@ Authors: Johan Commelin, Simon Hudon
 module
 
 import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # The Following Are Equivalent

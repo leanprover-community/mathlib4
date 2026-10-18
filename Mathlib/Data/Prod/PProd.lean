@@ -7,6 +7,7 @@ module
 
 import Batteries.Logic
 import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # Extra facts about `PProd`

@@ -6,6 +6,7 @@ Authors: Johannes Hölzl
 module
 
 import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # Nonempty types

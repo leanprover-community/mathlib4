@@ -8,6 +8,7 @@ module
 public import Aesop
 
 import Mathlib.Tactic.FunProp
+public import Mathlib.Init
 
 /-!
 

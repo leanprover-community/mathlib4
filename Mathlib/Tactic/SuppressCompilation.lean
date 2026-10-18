@@ -8,6 +8,7 @@ module
 public meta import Lean.Elab.Declaration
 
 import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # Suppressing compilation to executable code in a file or in a section
