@@ -24,6 +24,10 @@ respectively.
   k_i` modulo `p`, where `n_i` and `k_i` are the base-`p` digits of `n` and `k`, respectively.
 * `pow_dvd_iff_forall_dvd_choose`: `p ^ e` divides `n` if and only if `p` divides `n choose k` for
   all `0 < k < p ^ e`.
+
+## References
+
+* [É. Lucas, *Théorie des fonctions numériques simplement périodiques*][lucas1878]
 -/
 
 public section
