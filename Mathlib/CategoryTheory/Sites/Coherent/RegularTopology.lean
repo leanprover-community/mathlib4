@@ -22,8 +22,6 @@ public section
 
 namespace CategoryTheory.regularTopology
 
-open Limits
-
 variable {C : Type*} [Category* C] [Preregular C] {X : C}
 
 /--

@@ -127,8 +127,7 @@ hom `f : A →*₀ B` into the codomain `B`. -/
 @[simps! -isSimp]
 def ValueGroup₀.embedding : ValueGroup₀ f →*₀ B :=
   letI : DecidablePred fun b : B ↦ b = 0 := Classical.decPred fun b ↦ b = 0
-  comp (.ofClass WithZero.withZeroUnitsEquiv)
-    <| WithZero.map' (valueGroup f).subtype
+  comp (WithZero.withZeroUnitsEquiv (G := B)) <| WithZero.map' (valueGroup f).subtype
 
 variable (f) in
 /-- This is the restriction of `f` as a function taking values in `valueGroup₀ f`. -/
@@ -168,15 +167,22 @@ lemma embedding_restrict₀ (a : A) : ValueGroup₀.embedding (restrict₀ f a) 
   simp only [restrict₀_apply, embedding_apply]
   aesop
 
+@[simp]
+theorem restrict₀_inj {a b : A} :
+    restrict₀ f a = restrict₀ f b ↔ f a = f b := by
+  simp only [restrict₀_apply]
+  aesop
+
 end ValueGroup₀
 
 end Restrict
 
-noncomputable section GroupWithZero
+section GroupWithZero
 
 variable [GroupWithZero A] [GroupWithZero B] {f : A →*₀ B}
 
-/- When the *domain* is itself a group with zero, the `valueMonoid` and the `valueGroup` coincide.-/
+/--
+When the *domain* is itself a group with zero, the `valueMonoid` and the `valueGroup` coincide. -/
 lemma valueMonoid_eq_valueGroup : (valueMonoid f) = (valueGroup f).toSubmonoid := by
   rw [valueGroup_def, Subgroup.closure_toSubmonoid, Eq.comm]
   apply Submonoid.closure_eq_of_le
@@ -285,7 +291,24 @@ def mk (r s : A) (hr : f r ≠ 0) (hs : f s ≠ 0) : valueGroup f :=
   simp only [mk, map_mul, MulMemClass.mk_mul_mk, Units.mk0_mul, Subtype.mk.injEq]
   rw [mul_mul_mul_comm, mul_inv]
 
+@[simp]
+lemma mk_eq_div {r s : A} (hr : f r ≠ 0) (hs : f s ≠ 0) :
+    (valueGroup.mk f r s hr hs : Bˣ) = f s / f r := by
+  simp [valueGroup.mk, inv_mul_eq_div]
+
+theorem exists_mk (f : A →*₀ B) (x : f.valueGroup) :
+    ∃ r s hr hs, x = valueGroup.mk f r s hr hs := by
+  obtain ⟨r, hr, s, hs, hrs⟩ := (mem_valueGroup_iff_of_comm' f).mp x.2
+  exact ⟨r, s, hr, hs, by simp [valueGroup.mk, ← hrs]⟩
+
 end valueGroup
+
+theorem mem_valueGroup_iff_exists_mk_of_comm (f : A →*₀ B) {y : Bˣ} :
+    y ∈ f.valueGroup ↔ ∃ r s hr hs, y = valueGroup.mk f r s hr hs := by
+  refine ⟨fun hy ↦ ?_, fun ⟨r, s, hr, hs, hy⟩ ↦ by aesop⟩
+  obtain ⟨r, s, hr, hs, h⟩ := valueGroup.exists_mk f ⟨y, hy⟩
+  exact ⟨r, s, hr, hs, Subtype.ext_iff.mp h⟩
+
 namespace ValueGroup₀
 
 /-- The map sending a pair of nonzero `r s : A` to the element `(v r)⁻¹ * (v s)`

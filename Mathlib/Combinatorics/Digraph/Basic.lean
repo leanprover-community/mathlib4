@@ -5,8 +5,8 @@ Authors: Kyle Miller, Jack Cheverton, Jeremy Tan
 -/
 module
 
-public import Mathlib.Order.CompleteBooleanAlgebra
 public import Mathlib.Data.Fintype.Pi
+public import Mathlib.Order.CompleteBooleanAlgebra
 
 /-!
 # Digraphs
@@ -36,7 +36,7 @@ of digraphs on `V`.
 
 @[expose] public section
 
-open Finset Function
+open Function
 
 /--
 A digraph is a relation `Adj` on a vertex type `V`.
