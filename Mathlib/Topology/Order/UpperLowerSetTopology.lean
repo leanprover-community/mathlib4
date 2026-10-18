@@ -247,7 +247,7 @@ instance toAlexandrovDiscrete : AlexandrovDiscrete α where
 lemma isClosed_iff_isLowerSet : IsClosed s ↔ IsLowerSet s := by
   rw [← isOpen_compl_iff, isOpen_iff_isUpperSet, isLowerSet_compl.symm, compl_compl]
 
-@[deprecated (since := "2026-09-07")]
+@[deprecated (since := "2026-10-17")]
 alias isClosed_iff_isLower := isClosed_iff_isLowerSet
 
 lemma closure_eq_lowerClosure {s : Set α} : closure s = lowerClosure s := by
@@ -362,7 +362,7 @@ instance toAlexandrovDiscrete : AlexandrovDiscrete α := IsUpperSet.toAlexandrov
 lemma isClosed_iff_isUpperSet : IsClosed s ↔ IsUpperSet s := by
   rw [← isOpen_compl_iff, isOpen_iff_isLowerSet, isUpperSet_compl.symm, compl_compl]
 
-@[deprecated (since := "2026-09-07")]
+@[deprecated (since := "2026-10-17")]
 alias isClosed_iff_isUpper := isClosed_iff_isUpperSet
 
 lemma closure_eq_upperClosure {s : Set α} : closure s = upperClosure s :=
