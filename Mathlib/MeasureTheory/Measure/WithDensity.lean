@@ -5,9 +5,9 @@ Authors: Mario Carneiro, Johannes Hölzl
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.Decomposition.Exhaustion
-public import Mathlib.MeasureTheory.Group.Convolution
 public import Mathlib.Analysis.LConvolution
+public import Mathlib.MeasureTheory.Group.Convolution
+public import Mathlib.MeasureTheory.Measure.Decomposition.Exhaustion
 
 /-!
 # Measure with a given density with respect to another measure
@@ -45,6 +45,10 @@ theorem withDensity_apply (f : α → ℝ≥0∞) {s : Set α} (hs : MeasurableS
     μ.withDensity f s = ∫⁻ a in s, f a ∂μ :=
   Measure.ofMeasurable_apply s hs
 
+lemma withDensity_real_apply (f : α → ℝ≥0∞) {s : Set α} (hs : MeasurableSet s) :
+    (μ.withDensity f).real s = (∫⁻ a in s, f a ∂μ).toReal := by
+  rw [Measure.real, withDensity_apply f hs]
+
 theorem withDensity_apply_le (f : α → ℝ≥0∞) (s : Set α) :
     ∫⁻ a in s, f a ∂μ ≤ μ.withDensity f s := by
   let t := toMeasurable (μ.withDensity f) s
@@ -77,7 +81,11 @@ theorem withDensity_apply' [SFinite μ] (f : α → ℝ≥0∞) (s : Set α) :
   calc
   μ.withDensity f s ≤ μ.withDensity f t := measure_mono (subset_toMeasurable μ s)
   _ = ∫⁻ a in t, f a ∂μ := withDensity_apply f (measurableSet_toMeasurable μ s)
-  _ = ∫⁻ a in s, f a ∂μ := by congr 1; exact restrict_toMeasurable_of_sFinite s
+  _ = ∫⁻ a in s, f a ∂μ := by congr 1; exact restrict_toMeasurable_of_sfinite s
+
+lemma withDensity_real_apply' [SFinite μ] (f : α → ℝ≥0∞) (s : Set α) :
+    (μ.withDensity f).real s = (∫⁻ a in s, f a ∂μ).toReal := by
+  rw [Measure.real, withDensity_apply' f]
 
 @[simp]
 lemma withDensity_zero_left (f : α → ℝ≥0∞) : (0 : Measure α).withDensity f = 0 := by
@@ -143,6 +151,12 @@ theorem isFiniteMeasure_withDensity {f : α → ℝ≥0∞} (hf : ∫⁻ a, f a 
   { measure_univ_lt_top := by
       rwa [withDensity_apply _ MeasurableSet.univ, Measure.restrict_univ, lt_top_iff_ne_top] }
 
+lemma isFiniteMeasure_withDensity_iff {f : α → ℝ≥0∞} :
+    IsFiniteMeasure (μ.withDensity f) ↔ ∫⁻ a, f a ∂μ ≠ ∞ := by
+  refine ⟨fun h ↦ ?_, isFiniteMeasure_withDensity⟩
+  rw [← setLIntegral_univ, ← withDensity_apply f .univ]
+  exact measure_ne_top _ _
+
 theorem withDensity_absolutelyContinuous {m : MeasurableSpace α} (μ : Measure α) (f : α → ℝ≥0∞) :
     μ.withDensity f ≪ μ := by
   refine AbsolutelyContinuous.mk fun s hs₁ hs₂ => ?_
@@ -158,6 +172,10 @@ theorem withDensity_apply₀ (f : α → ℝ≥0∞) {s : Set α} (hs : NullMeas
     measure_congr (withDensity_absolutelyContinuous μ f hs.toMeasurable_ae_eq)
   rw [← A, ← B]
   exact withDensity_apply _ (measurableSet_toMeasurable μ s)
+
+lemma withDensity_real_apply₀ (f : α → ℝ≥0∞) {s : Set α} (hs : NullMeasurableSet s μ) :
+    (μ.withDensity f).real s = (∫⁻ a in s, f a ∂μ).toReal := by
+  rw [Measure.real, withDensity_apply₀ f hs]
 
 instance nullSingletonClass_withDensity [NullSingletonClass μ] (f : α → ℝ≥0∞) :
     NullSingletonClass (μ.withDensity f) where
@@ -255,7 +273,7 @@ theorem withDensity_apply_eq_zero' {f : α → ℝ≥0∞} {s : Set α} (hf : AE
     swap
     · simp only [measurableSet_toMeasurable, MeasurableSet.nullMeasurableSet]
     simp only [Pi.zero_apply] at A
-    convert! A using 2
+    convert A using 2
     ext x
     simp only [and_comm, exists_prop, mem_inter_iff, mem_ofPred_eq,
       not_forall]
@@ -670,11 +688,14 @@ instance [SFinite μ] {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0�
   infer_instance
 
 /-- If `μ ≪ ν` and `ν` is s-finite, then `μ` is s-finite. -/
-theorem sFinite_of_absolutelyContinuous {ν : Measure α} [SFinite ν] (hμν : μ ≪ ν) :
+theorem sfinite_of_absolutelyContinuous {ν : Measure α} [SFinite ν] (hμν : μ ≪ ν) :
     SFinite μ := by
   rw [← Measure.restrict_add_restrict_compl (μ := μ) measurableSet_sigmaFiniteSetWRT,
     restrict_compl_sigmaFiniteSetWRT hμν]
   infer_instance
+
+@[deprecated (since := "2026-09-29")]
+alias sFinite_of_absolutelyContinuous := sfinite_of_absolutelyContinuous
 
 /-- In a countable space, every measure is s-finite. -/
 instance [Countable α] : SFinite μ := by

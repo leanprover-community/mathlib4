@@ -1036,8 +1036,6 @@ theorem lintegral_finsetSum {ι} (f : α →ₛ ℝ≥0∞) (μ : ι → Measure
     f.lintegral (∑ i ∈ s, μ i) = ∑ i ∈ s, f.lintegral (μ i) :=
   map_sum (lintegralₗ f) ..
 
-@[deprecated (since := "2026-04-08")] alias lintegral_finset_sum := lintegral_finsetSum
-
 theorem lintegral_sum {m : MeasurableSpace α} {ι} (f : α →ₛ ℝ≥0∞) (μ : ι → Measure α) :
     f.lintegral (Measure.sum μ) = ∑' i, f.lintegral (μ i) := by
   simp only [lintegral, Measure.sum_apply, f.measurableSet_preimage, ← Finset.tsum_subtype, ←
@@ -1273,7 +1271,7 @@ protected theorem induction {α γ} [MeasurableSpace α] [AddZeroClass γ]
   induction s using Finset.induction generalizing f with
   | empty =>
     rw [Finset.coe_empty, sdiff_eq_empty, range_subset_singleton] at h
-    convert! const 0 MeasurableSet.univ
+    convert const 0 MeasurableSet.univ
     ext x
     simp [h]
   | insert x s hxs ih =>
@@ -1285,10 +1283,10 @@ protected theorem induction {α γ} [MeasurableSpace α] [AddZeroClass γ]
       rw [image_compl_preimage, union_sdiff_distrib, sdiff_sdiff_comm, h, Finset.coe_insert,
         insert_sdiff_self_of_notMem, sdiff_eq_empty.mpr, Set.empty_union]
       · rw [Set.image_subset_iff]
-        convert! Set.subset_univ _
+        convert Set.subset_univ _
         exact preimage_const_of_mem (mem_singleton _)
       · rwa [Finset.mem_coe]
-    convert! add _ Pg (const x mx)
+    convert add _ Pg (const x mx)
     · ext1 y
       by_cases hy : y ∈ f ⁻¹' {x}
       · simpa [g, hy]
@@ -1315,7 +1313,7 @@ protected theorem induction' {α γ} [MeasurableSpace α] [Nonempty γ] {P : Sim
   induction s using Finset.induction generalizing f with
   | empty =>
     rw [Finset.coe_empty, sdiff_eq_empty, range_subset_singleton] at h
-    convert! const c
+    convert const c
     ext x
     simp [h]
   | insert x s hxs ih =>
@@ -1327,14 +1325,14 @@ protected theorem induction' {α γ} [MeasurableSpace α] [Nonempty γ] {P : Sim
       rw [image_compl_preimage, union_sdiff_distrib, sdiff_sdiff_comm, h, Finset.coe_insert,
         insert_sdiff_self_of_notMem, sdiff_eq_empty.mpr, Set.empty_union]
       · rw [Set.image_subset_iff]
-        convert! Set.subset_univ _
+        convert Set.subset_univ _
         exact preimage_const_of_mem (mem_singleton _)
       · rwa [Finset.mem_coe]
-    convert! pcw mx.compl Pg (const x)
-    · ext1 y
-      by_cases hy : y ∈ f ⁻¹' {x}
-      · simpa [g, hy]
-      · simp [g, hy]
+    convert pcw mx.compl Pg (const x)
+    ext1 y
+    by_cases hy : y ∈ f ⁻¹' {x}
+    · simpa [g, hy]
+    · simp [g, hy]
 
 /-- In a topological vector space, the addition of a measurable function and a simple function is
 measurable. -/
