@@ -8,6 +8,7 @@ module
 public import Lean.Meta.Tactic.Rewrite
 
 import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # Additional declarations for `Lean.Meta.Tactic.Rewrite`

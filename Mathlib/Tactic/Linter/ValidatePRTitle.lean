@@ -8,6 +8,7 @@ module
 
 import Mathlib.Init
 import Mathlib.Tactic.Linter.TextBased.UnicodeLinter
+public import Mathlib.Init
 
 /-!
 # Checker for well-formed title and labels

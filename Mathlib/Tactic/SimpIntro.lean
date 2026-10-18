@@ -9,6 +9,7 @@ public meta import Lean.Elab.Tactic.Simp
 
 import Lean.Elab.Tactic.Simp
 import Mathlib.Init
+public import Mathlib.Init
 
 /-! # `simp_intro` tactic -/
 

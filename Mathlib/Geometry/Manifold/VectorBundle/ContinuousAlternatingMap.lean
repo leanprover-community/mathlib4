@@ -5,7 +5,6 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Geometry.Manifold.VectorBundle.Hom
 public import Mathlib.Topology.VectorBundle.ContinuousAlternatingMap
 public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 public import Mathlib.Geometry.Manifold.Notation

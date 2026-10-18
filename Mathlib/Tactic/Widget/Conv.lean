@@ -10,7 +10,6 @@ public meta import ProofWidgets.Component.Basic
 public import Mathlib.Lean.Name
 public import Mathlib.Tactic.Widget.SelectPanelUtils
 
-import ProofWidgets.Component.Basic
 import ProofWidgets.Component.OfRpcMethod
 
 /-! # Conv widget

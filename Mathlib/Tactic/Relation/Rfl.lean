@@ -8,6 +8,7 @@ module
 public meta import Lean.Meta.Tactic.Rfl
 
 import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # `Mathlib.Tactic.liftReflToEq`

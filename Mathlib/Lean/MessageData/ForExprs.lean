@@ -10,6 +10,7 @@ public import Lean.Meta.Basic
 
 import Lean.Message
 import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # Tools for extracting `Expr`s from `MessageData` nodes

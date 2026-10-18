@@ -8,6 +8,7 @@ module
 public import Aesop
 
 import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # SimpleGraph Rule Set

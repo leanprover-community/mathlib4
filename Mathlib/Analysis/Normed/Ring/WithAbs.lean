@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.TransferInstance
 public import Mathlib.Algebra.Module.TransferInstance
 public import Mathlib.Analysis.Normed.Ring.TransferInstance
+public import Mathlib.Topology.Algebra.Ring.Basic
 
 /-!
 # `WithAbs` type synonym

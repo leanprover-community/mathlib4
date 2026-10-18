@@ -14,7 +14,6 @@ public import Mathlib.Data.Int.ModEq
 public import Mathlib.Data.Nat.Cast.Prod
 public import Mathlib.Order.Interval.Set.Defs
 
-import Mathlib.Data.ULift
 
 /-!
 # Characteristic of semirings

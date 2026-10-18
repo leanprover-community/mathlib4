@@ -9,6 +9,7 @@ public import Aesop.Frontend
 
 import Aesop.Frontend.Basic
 import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # Aesop rule set for finsets

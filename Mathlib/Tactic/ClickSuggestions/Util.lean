@@ -15,6 +15,7 @@ public import Mathlib.Tactic.NthRewrite
 public import Mathlib.Tactic.SimpRw
 public import ProofWidgets.Component.MakeEditLink
 public import ProofWidgets.Component.RefreshComponent
+public import Lean.Data.Html.Syntax
 
 /-!
 # Various utilities used in `#click_suggestions`

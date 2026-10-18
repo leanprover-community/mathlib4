@@ -8,6 +8,7 @@ module
 public import Aesop.Frontend
 
 import Mathlib.Init
+public import Mathlib.Init
 
 /-! # Finiteness tactic attribute -/
 

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.RingTheory.Localization.Integer
-public import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
 
 /-!
 # Numerator and denominator in a localization

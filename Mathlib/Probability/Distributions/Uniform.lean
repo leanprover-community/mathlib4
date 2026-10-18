@@ -5,7 +5,7 @@ Authors: Josha Dekker, Devon Tuma, Kexing Ying
 -/
 module
 
-public import Mathlib.Probability.ProbabilityMassFunction.Constructions
+public import Mathlib.Probability.HasLaw
 
 /-!
 # Uniform distributions and probability mass functions

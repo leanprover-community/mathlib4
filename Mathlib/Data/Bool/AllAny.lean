@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 module
 
 import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # Boolean quantifiers

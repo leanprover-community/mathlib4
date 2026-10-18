@@ -9,6 +9,7 @@ public import Qq
 
 import Mathlib.Init
 import Qq.Typ
+public import Mathlib.Init
 
 /-!
 # Extra `Qq` helpers

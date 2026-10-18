@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # `ULift` and `PLift`
