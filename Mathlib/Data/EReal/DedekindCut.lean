@@ -29,7 +29,7 @@ theorem upperBounds_setOfPred_ratCast_le (x : EReal) :
     upperBounds {q : ℚ | (q : ℝ) ≤ x} = {q : ℚ | x ≤ (q : ℝ)} := by
   ext y
   constructor
-  · refine fun hy ↦ le_of_forall_rat_lt_imp_le fun q hq ↦ ?_
+  · refine fun hy ↦ le_of_forall_ratCast_lt_imp_le fun q hq ↦ ?_
     simpa using hy hq.le
   · intro hy z hz
     simpa using le_trans (b := x) hz hy
@@ -64,7 +64,7 @@ def dedekindCutOrderIso : DedekindCut ℚ ≃o EReal where
       exact_mod_cast z_le_sup (r : ℝ) fun t ht => by simp [hr t ht]
     · exact (le_iSup₂_of_le z · le_rfl)
   right_inv x := by
-    beta_reduce
+    rw [factorEmbedding_apply]
     apply sSup_eq_of_forall_le_of_forall_lt_exists_gt
     · simp
     · simp only [Set.mem_image, exists_exists_and_eq_and]
