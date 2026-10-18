@@ -354,7 +354,7 @@ theorem totient_eq_self_iff {a : ℕ} : φ a = a ↔ a ≤ 1 := by
 /-- For nonzero natural numbers, Euler's totient function is multiplicative exactly when the
 arguments are coprime. -/
 theorem totient_mul_eq_totient_mul_iff {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
-    (a * b).totient = a.totient * b.totient ↔ a.Coprime b := by
+    φ (a * b) = φ a * φ b ↔ a.Coprime b := by
   refine ⟨fun h ↦ ?_, totient_mul⟩
   have hg' : φ (a.gcd b) = a.gcd b := by
     apply mul_left_cancel₀ <| mul_ne_zero
