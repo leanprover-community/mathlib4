@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.HopfAlgebra.Convolution
 
 If the antipode of an `R`-Hopf algebra `A` descends along a bialgebra congruence `c`, then
 `c.Quotient` is again a Hopf algebra. A *Hopf ideal* of `A`, a biideal stable under the antipode,
-induces such a congruence, so the quotient by a two-sided Hopf ideal is a Hopf algebra.
+induces such a congruence, so the quotient by a Hopf ideal is a Hopf algebra.
 
 ## Main definitions
 
@@ -66,7 +66,7 @@ variable [HopfAlgebra R A] (c : RingCon A) [c.IsHopfAlgebraCon R]
 
 /-- The Hopf algebra structure on `c.Quotient` when `c` is a Hopf algebra congruence. -/
 noncomputable instance : HopfAlgebra R c.Quotient :=
-  .ofSurjective (c.mkBialgHom R) (c.mkₐ_surjective (α := R)) fun _ ↦ rfl
+  .ofSurjective (c.mkBialgHom R) c.mk'_surjective fun _ ↦ rfl
 
 end HopfAlgebra.Quotient
 
@@ -97,6 +97,7 @@ instance : (Ideal.Quotient.ringCon I).IsHopfAlgebraCon R where
 
 namespace HopfAlgebra.Quotient
 
+/-- The antipode of `A ⧸ I` when `I` is a Hopf ideal. -/
 instance : HopfAlgebraStruct R (A ⧸ I) :=
   { (inferInstance : Bialgebra R (A ⧸ I)),
     (inferInstance : HopfAlgebraStruct R (Ideal.Quotient.ringCon I).Quotient) with }

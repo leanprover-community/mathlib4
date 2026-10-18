@@ -20,9 +20,7 @@ underlying `R`-submodule is a coideal, induces such a congruence, so `A ⧸ I` i
 
 ## Main definitions
 
-* `RingCon.IsBialgebraCon R c` : the counit and comultiplication descend along `c.mkₐ`.
-* `Bialgebra.Quotient.counitAlgHom`, `Bialgebra.Quotient.comulAlgHom` : the descended counit and
-  comultiplication, as `R`-algebra homomorphisms.
+* `RingCon.IsBialgebraCon R c` : the counit and comultiplication descend to `c.Quotient`.
 * `RingCon.mkBialgHom` : `c.mkₐ` as a bialgebra homomorphism.
 * `Bialgebra.Quotient.mkBialgHom` : `Ideal.Quotient.mkₐ` as a bialgebra homomorphism.
 
@@ -42,13 +40,13 @@ variable {R A : Type*} [CommSemiring R] [Semiring A] [Bialgebra R A]
 
 variable (R) in
 /-- A ring congruence `c` on an `R`-bialgebra is a bialgebra congruence if the counit and
-comultiplication descend along `c.mkₐ`. -/
+comultiplication descend to `c.Quotient`. -/
 @[mk_iff]
 class RingCon.IsBialgebraCon (c : RingCon A) : Prop where
   counit_eq : ∀ ⦃x y : A⦄, c x y → counit (R := R) x = counit y
   comul_eq : ∀ ⦃x y : A⦄, c x y →
-    Algebra.TensorProduct.map (c.mkₐ R) (c.mkₐ R) (comul x) =
-      Algebra.TensorProduct.map (c.mkₐ R) (c.mkₐ R) (comul y)
+    TensorProduct.map (c.mkₐ R).toLinearMap (c.mkₐ R).toLinearMap (comul x) =
+      TensorProduct.map (c.mkₐ R).toLinearMap (c.mkₐ R).toLinearMap (comul y)
 
 namespace Bialgebra.Quotient
 
