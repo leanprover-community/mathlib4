@@ -147,13 +147,13 @@ lemma isClosedUnderCoproducts_torsion (hTF : TorsionTheory T F) (J : Type w) :
   infer_instance
 
 /-- The torsion-free class of a torsion theory is closed under subobjects. -/
-lemma isClosedUnderSubobjects_torsionFree (hTF : TorsionTheory T F) : 
+lemma isClosedUnderSubobjects_torsionFree (hTF : TorsionTheory T F) :
     F.IsClosedUnderSubobjects := by
   rw [← hTF.rightOrthogonal_eq]
   infer_instance
 
 /-- The torsion-free class of a torsion theory is closed under extensions. -/
-lemma isClosedUnderExtensions_torsionFree (hTF : TorsionTheory T F) : 
+lemma isClosedUnderExtensions_torsionFree (hTF : TorsionTheory T F) :
     F.IsClosedUnderExtensions := by
   rw [← hTF.rightOrthogonal_eq]
   infer_instance
