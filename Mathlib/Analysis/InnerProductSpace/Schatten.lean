@@ -32,8 +32,10 @@ variable (p : ℝ≥0∞) (q : ℝ) {E F : Type*}
   [NormedAddCommGroup E] [InnerProductSpace ℂ E] [CompleteSpace E]
   [NormedAddCommGroup F] [InnerProductSpace ℂ F] [CompleteSpace F]
 
+/-- The modulus `|T| = √(T†∘T) of a continuous linear map `T : E →L[ℂ] F`. -/
 def modulus (T : E →L[ℂ] F) : E →L[ℂ] E := CFC.sqrt (T.adjoint ∘L T)
 
+@[inherit_doc]
 scoped notation "|" T "|" => modulus T
 
 @[simp]
