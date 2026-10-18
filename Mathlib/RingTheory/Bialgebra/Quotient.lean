@@ -12,11 +12,11 @@ public import Mathlib.RingTheory.Congruence.Hom
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 
 /-!
-# Bialgebra structure on quotients by a ring congruence
+# Bialgebra structure on quotients
 
 If the counit and comultiplication of an `R`-bialgebra `A` descend along a ring congruence `c`,
-then `c.Quotient` is again an `R`-bialgebra. A two-sided ideal `I` of a ring `A` whose underlying
-`R`-submodule is a coideal induces such a congruence, so `A ⧸ I` is an `R`-bialgebra.
+then `c.Quotient` is again an `R`-bialgebra. A *biideal* `I` of `A`, a two-sided ideal whose
+underlying `R`-submodule is a coideal, induces such a congruence, so `A ⧸ I` is an `R`-bialgebra.
 
 ## Main definitions
 
@@ -30,12 +30,6 @@ then `c.Quotient` is again an `R`-bialgebra. A two-sided ideal `I` of a ring `A`
 
 * `Bialgebra R c.Quotient` instance when `[c.IsBialgebraCon R]`.
 * `Bialgebra R (A ⧸ I)` instance when `[I.IsTwoSided]` and `[(I.restrictScalars R).IsCoideal]`.
-
-## Implementation notes
-
-The bialgebra structure on `A ⧸ I` is that of `(Ideal.Quotient.ringCon I).Quotient`, except that
-its algebra structure is `Ideal.Quotient.algebra`: the two algebra structures are definitionally
-equal but not reducibly so, and transporting the whole instance would create a diamond.
 -/
 
 @[expose] public section
@@ -47,8 +41,9 @@ section RingCon
 variable {R A : Type*} [CommSemiring R] [Semiring A] [Bialgebra R A]
 
 variable (R) in
-/-- A ring congruence `c` on an `R`-bialgebra is a *bialgebra congruence* if the counit and
-comultiplication descend along `c.mkₐ`. -/
+/-- A ring congruence `c` on an `R`-bialgebra is a bialgebra congruence if the counit and
+comultiplication descend along `c.mkₐ`. This is the analogue of a biideal for congruences: the
+congruence of a biideal is one. -/
 @[mk_iff]
 class RingCon.IsBialgebraCon (c : RingCon A) : Prop where
   counit_eq : ∀ ⦃x y : A⦄, c x y → counit (R := R) x = counit y
@@ -107,8 +102,7 @@ section Ideal
 variable {R A : Type*} [CommRing R] [Ring A] [Bialgebra R A] (I : Ideal A) [I.IsTwoSided]
   [(I.restrictScalars R).IsCoideal]
 
-/-- The ring congruence of a two-sided ideal whose underlying submodule is a coideal is a
-bialgebra congruence. -/
+/-- The ring congruence of a biideal is a bialgebra congruence. -/
 instance : (Ideal.Quotient.ringCon I).IsBialgebraCon R where
   counit_eq _ _ h := sub_eq_zero.mp <| by
     rw [← map_sub]
@@ -121,9 +115,10 @@ instance : (Ideal.Quotient.ringCon I).IsBialgebraCon R where
 
 namespace Bialgebra.Quotient
 
-/-- The bialgebra structure on `A ⧸ I` when `I` is a two-sided ideal whose underlying
-`R`-submodule is a coideal. -/
+/-- The bialgebra structure on `A ⧸ I` when `I` is a biideal. -/
 instance : Bialgebra R (A ⧸ I) :=
+  -- Transporting the `RingCon` instance wholesale would give an algebra structure that is only
+  -- defeq to `Ideal.Quotient.algebra` at default transparency, creating a diamond.
   { Ideal.Quotient.algebra R,
     (inferInstance : Bialgebra R (Ideal.Quotient.ringCon I).Quotient) with }
 
