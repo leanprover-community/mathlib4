@@ -29,7 +29,9 @@ section
 
 variable {R : Type*} [Ring R] [ValuativeRel R] [TopologicalSpace R]
 
-open ValuativeRel TopologicalSpace Filter Topology Set
+open ValuativeRel TopologicalSpace Filter Set
+
+open scoped Topology
 
 local notation "v" => valuation R
 

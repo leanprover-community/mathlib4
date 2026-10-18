@@ -5,8 +5,8 @@ Authors: Chris Hughes, Kim Morrison, Johan Commelin
 -/
 module
 
-public import Mathlib.Data.Finset.Card
 public import Mathlib.Data.Fin.Embedding
+public import Mathlib.Data.Finset.Card
 
 /-!
 # Finsets in `Fin n`

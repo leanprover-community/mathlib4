@@ -16,7 +16,7 @@ This file proves lemmas on the sum and product of piecewise functions, including
 
 public section
 
-variable {ι κ M β γ : Type*} {s : Finset ι}
+variable {ι M γ : Type*} {s : Finset ι}
 
 namespace Finset
 
@@ -41,9 +41,9 @@ theorem prod_apply_dite {p : ι → Prop} [DecidablePred p]
     _ = (∏ x : {x ∈ s | p x}, h (f x.1 <| by simpa using (mem_filter.mp x.2).2)) *
           ∏ x : {x ∈ s | ¬p x}, h (g x.1 <| by simpa using (mem_filter.mp x.2).2) :=
       congr_arg₂ _ (prod_congr rfl fun x _hx ↦
-        congr_arg h (dite_eq_left <| by simpa using (mem_filter.mp x.2).2))
+        congr(h $(dite_eq_left <| by simpa using (mem_filter.mp x.2).2)))
         (prod_congr rfl fun x _hx =>
-          congr_arg h (dite_eq_right <| by simpa using (mem_filter.mp x.2).2))
+          congr(h $(dite_eq_right <| by simpa using (mem_filter.mp x.2).2)))
 
 @[to_additive]
 theorem prod_apply_ite {s : Finset ι} {p : ι → Prop} [DecidablePred p] (f g : ι → γ)
@@ -194,7 +194,7 @@ theorem prod_inter_mul_prod_sdiff [DecidableEq ι] (s t : Finset ι) (f : ι →
 theorem prod_eq_mul_prod_sdiff_singleton [DecidableEq ι] {s : Finset ι} (i : ι) (f : ι → M)
     (h : i ∉ s → f i = 1) : ∏ x ∈ s, f x = f i * ∏ x ∈ s \ {i}, f x := by
   by_cases hs : i ∈ s
-  · convert! (s.prod_inter_mul_prod_sdiff { i } f).symm
+  · convert (s.prod_inter_mul_prod_sdiff { i } f).symm
     simp [hs]
   · simp_all only [not_false_eq_true, forall_const, one_mul]
     apply Finset.prod_congr <;> aesop

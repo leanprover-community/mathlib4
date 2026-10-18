@@ -8,6 +8,8 @@ module
 public import Mathlib.Init
 
 /-!
+# The `#whats_new` command
+
 Defines a command wrapper that prints the changes the command makes to the
 environment.
 

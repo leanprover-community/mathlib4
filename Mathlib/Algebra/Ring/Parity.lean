@@ -8,8 +8,6 @@ module
 public import Mathlib.Algebra.Group.Int.Even
 public import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.Data.Nat.Cast.Commute
-public import Mathlib.Data.Set.Operations
-public import Mathlib.Logic.Function.Iterate
 
 /-!
 # Even and odd elements in rings
@@ -71,7 +69,7 @@ variable [Add α] [Mul α] {a : α}
 end Distrib
 
 section Semiring
-variable [Semiring α] [Semiring β] {a b : α} {m n : ℕ}
+variable [Semiring α] [Semiring β] {a b : α} {n : ℕ}
 
 lemma even_iff_exists_two_mul : Even a ↔ ∃ b, a = 2 * b := by simp [even_iff_exists_two_nsmul]
 
@@ -118,7 +116,7 @@ lemma Odd.add_odd : Odd a → Odd b → Even (a + b) := by
   ac_rfl
 
 @[simp] lemma odd_one : Odd (1 : α) :=
-  ⟨0, (zero_add _).symm.trans (congr_arg (· + (1 : α)) (mul_zero _).symm)⟩
+  ⟨0, (zero_add _).symm.trans congr($((mul_zero _).symm) + (1 : α))⟩
 
 @[simp] lemma Even.add_one (h : Even a) : Odd (a + 1) := h.add_odd odd_one
 @[simp] lemma Even.one_add (h : Even a) : Odd (1 + a) := h.odd_add odd_one
@@ -193,7 +191,7 @@ lemma Odd.neg_pow : Odd n → ∀ a : α, (-a) ^ n = -a ^ n := by
 end Monoid
 
 section Ring
-variable [Ring α] {a b : α} {n : ℕ}
+variable [Ring α] {a b : α}
 
 lemma even_neg_two : Even (-2 : α) := by simp only [even_neg, even_two]
 
@@ -218,27 +216,27 @@ lemma Odd.sub_odd (ha : Odd a) (hb : Odd b) : Even (a - b) := by
 
 @[simp]
 lemma even_add_one : Even (a + 1) ↔ Odd a :=
-  ⟨(by convert! ·.sub_odd odd_one; rw [eq_sub_iff_add_eq]), (·.add_one)⟩
+  ⟨(by convert ·.sub_odd odd_one; rw [eq_sub_iff_add_eq]), (·.add_one)⟩
 
 @[simp]
 lemma even_sub_one : Even (a - 1) ↔ Odd a :=
-  ⟨(by convert! ·.add_odd odd_one; rw [sub_add_cancel]), (·.sub_odd odd_one)⟩
+  ⟨(by convert ·.add_odd odd_one; rw [sub_add_cancel]), (·.sub_odd odd_one)⟩
 
 @[simp]
 lemma even_add_two : Even (a + 2) ↔ Even a :=
-  ⟨(by convert! ·.sub even_two; rw [eq_sub_iff_add_eq]), (·.add even_two)⟩
+  ⟨(by convert ·.sub even_two; rw [eq_sub_iff_add_eq]), (·.add even_two)⟩
 
 @[simp]
 lemma even_sub_two : Even (a - 2) ↔ Even a :=
-  ⟨(by convert! ·.add even_two; rw [sub_add_cancel]), (·.sub even_two)⟩
+  ⟨(by convert ·.add even_two; rw [sub_add_cancel]), (·.sub even_two)⟩
 
 @[simp]
 lemma odd_add_one : Odd (a + 1) ↔ Even a :=
-  ⟨(by convert! ·.sub_odd odd_one; rw [eq_sub_iff_add_eq]), (·.add_one)⟩
+  ⟨(by convert ·.sub_odd odd_one; rw [eq_sub_iff_add_eq]), (·.add_one)⟩
 
 @[simp]
 lemma odd_sub_one : Odd (a - 1) ↔ Even a :=
-  ⟨(by convert! ·.add_odd odd_one; rw [sub_add_cancel]), (·.sub_odd odd_one)⟩
+  ⟨(by convert ·.add_odd odd_one; rw [sub_add_cancel]), (·.sub_odd odd_one)⟩
 
 @[simp]
 lemma odd_add_two : Odd (a + 2) ↔ Odd a := by

@@ -5,8 +5,8 @@ Authors: Yaël Dillies
 -/
 module
 
+public import Mathlib.Basic.TwoPointing
 public import Mathlib.CategoryTheory.Category.Bipointed
-public import Mathlib.Data.TwoPointing
 
 /-!
 # The category of two-pointed types
@@ -25,8 +25,6 @@ This defines `TwoP`, the category of two-pointed types.
 open CategoryTheory Option
 
 universe u
-
-variable {α β : Type*}
 
 
 /-- The category of two-pointed types. -/

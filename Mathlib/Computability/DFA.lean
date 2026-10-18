@@ -6,10 +6,11 @@ Authors: Fox Thomson, Chris Wong, Rudy Peterson
 module
 
 public import Mathlib.Computability.Language
-public import Mathlib.Data.Countable.Small
-public import Mathlib.Data.Fintype.Pigeonhole
-public import Mathlib.Data.Fintype.Prod
 public import Mathlib.Tactic.NormNum
+
+import Mathlib.Basic.Countable.Small
+import Mathlib.Data.Fintype.Pigeonhole
+import Mathlib.Data.Fintype.Prod
 
 /-!
 # Deterministic Finite Automata
@@ -51,7 +52,7 @@ Currently, there are two disjoint sets of simp lemmas: one for `DFA.eval`, and a
 
 universe u v
 
-open Computability
+open scoped Computability
 
 /-- A DFA is a set of states (`σ`), a transition function from state to state labelled by the
   alphabet (`step`), a starting state (`start`) and a set of acceptance states (`accept`). -/
@@ -143,7 +144,7 @@ theorem evalFrom_split [Fintype σ] {x : List α} {s t : σ} (hlen : Fintype.car
   · simp only [List.length_drop, List.length_take]
     omega
   · intro h
-    have hlen' := congr_arg List.length h
+    have hlen' := congr($(h).length)
     simp only [List.length_drop, List.length, List.length_take] at hlen'
     omega
   have hq : M.evalFrom (M.evalFrom s ((x.take m).take n)) ((x.take m).drop n) =

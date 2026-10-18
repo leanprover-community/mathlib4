@@ -6,9 +6,9 @@ Authors: David Loeffler
 module
 
 public import Mathlib.Analysis.Complex.ExponentialBounds
-public import Mathlib.Analysis.Normed.Order.Lattice
-public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.NumberTheory.Harmonic.Defs
+
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
 # The Euler-Mascheroni constant `γ`
@@ -38,7 +38,9 @@ It follows that both sequences tend to a common limit `γ`, and we have the ineq
 
 @[expose] public section
 
-open Filter Topology
+open Filter
+
+open scoped Topology
 
 namespace Real
 
