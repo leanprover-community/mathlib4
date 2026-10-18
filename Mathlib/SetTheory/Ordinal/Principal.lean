@@ -465,4 +465,8 @@ theorem opow_omega0 (a1 : 1 < a) (h : a < ω) : a ^ ω = ω :=
 theorem natCast_opow_omega0 {n : ℕ} (hn : 1 < n) : n ^ ω = ω :=
   opow_omega0 (mod_cast hn) (natCast_lt_omega0 n)
 
+@[simp]
+theorem Ordinal.ofNat_opow_omega0 {n : ℕ} [n.AtLeastTwo] : ofNat(n) ^ ω = ω :=
+  natCast_opow_omega0 Nat.AtLeastTwo.one_lt
+
 end Ordinal
