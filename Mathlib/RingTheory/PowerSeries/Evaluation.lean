@@ -7,7 +7,6 @@ module
 
 public import Mathlib.RingTheory.MvPowerSeries.Evaluation
 public import Mathlib.RingTheory.PowerSeries.PiTopology
-public import Mathlib.Algebra.MvPolynomial.Equiv
 
 /-! # Evaluation of power series
 
@@ -179,7 +178,7 @@ theorem hasSum_eval₂ (hφ : Continuous φ) (ha : HasEval a) (f : PowerSeries R
   have := MvPowerSeries.hasSum_eval₂ hφ (hasEval ha) f
   simp only [PowerSeries.eval₂]
   rw [← (Finsupp.single_injective ()).hasSum_iff] at this
-  · convert this; simp; congr
+  · convert this; simp
   · intro d hd
     exact False.elim (hd ⟨d (), by ext; simp⟩)
 

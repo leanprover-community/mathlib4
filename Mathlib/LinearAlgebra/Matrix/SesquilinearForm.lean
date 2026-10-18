@@ -5,14 +5,10 @@ Authors: Anne Baanen, Kexing Ying, Moritz Doll
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Action.Opposite
-public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
+public import Mathlib.LinearAlgebra.Basis.Bilinear
 public import Mathlib.LinearAlgebra.Matrix.Basis
-public import Mathlib.LinearAlgebra.Matrix.Nondegenerate
-public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 public import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
-public import Mathlib.LinearAlgebra.Basis.Bilinear
 
 /-!
 # Sesquilinear form
@@ -608,7 +604,7 @@ theorem Matrix.isAdjointPair_equiv (P : Matrix n n R) (h : IsUnit P) :
     dsimp only [Matrix.IsAdjointPair]
     simp only [Matrix.transpose_mul]
     simp only [← mul_assoc, P.transpose_nonsing_inv]
-    convert this using 2
+    convert! this using 2
     · rw [mul_assoc, mul_assoc, ← mul_assoc J]
       rfl
     · rw [mul_assoc, mul_assoc, ← mul_assoc _ _ J]

@@ -5,9 +5,10 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.RingTheory.Flat.Localization
-public import Mathlib.RingTheory.LocalProperties.Basic
 public import Mathlib.RingTheory.Ideal.GoingDown
+public import Mathlib.RingTheory.LocalProperties.Basic
+
+import Mathlib.RingTheory.Flat.Localization
 
 /-!
 # Flat ring homomorphisms
@@ -78,7 +79,7 @@ lemma ofLocalizationSpanTarget : OfLocalizationSpanTarget Flat := by
   refine Module.flat_of_isLocalized_span _ _ s hsp _
     (fun r ↦ Algebra.linearMap S <| Localization.Away r.1) ?_
   dsimp only [RingHom.Flat] at h
-  convert h; ext
+  convert! h; ext
   apply Algebra.smul_def
 
 /-- Flat is a local property of ring homomorphisms. -/
@@ -166,7 +167,7 @@ lemma tensorProductMap {f : A →ₐ[S] C} {g : B →ₐ[R] D} (hf : f.Flat) (hg
     refine RingHom.Flat.comp ?_ (.of_bijective <| AlgEquiv.bijective _)
     change RingHom.Flat (RingHom.comp (Algebra.TensorProduct.lTensor D
       (AlgHom.restrictScalars R f)).toRingHom _)
-    exact RingHom.Flat.comp (.of_bijective <| (TensorProduct.comm R A D).bijective) (lTensor D hf)
+    exact RingHom.Flat.comp (.of_bijective (TensorProduct.comm R A D).bijective) (lTensor D hf)
 
 end
 
@@ -240,3 +241,32 @@ instance : flat.IsStableUnderCobaseChange := by
   exact RingHom.Flat.isStableUnderBaseChange
 
 end CommRingCat
+
+open CategoryTheory Limits
+
+/-- If `S ⊗[R] S → S` is flat, then also `T ⊗[R] A → T ⊗[S] A` is flat. -/
+-- TODO: If necessary, generalize the universes here by composing with suitable `ULift`
+-- isomorphisms.
+lemma RingHom.Flat.mapOfCompatibleSMul {R S : Type u} (T A : Type u)
+    [CommRing R] [CommRing S] [CommRing T] [CommRing A] [Algebra R S]
+    [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+    [Algebra R A] [Algebra S A] [IsScalarTower R S A]
+    (h : (Algebra.TensorProduct.lmul' (S := S) R).Flat) :
+    (Algebra.TensorProduct.mapOfCompatibleSMul S R T T A).Flat := by
+  rw [← CommRingCat.flat_ofHom_iff] at h ⊢
+  apply MorphismProperty.of_isPushout _ h
+  · exact CommRingCat.ofHom
+      (Algebra.TensorProduct.map (IsScalarTower.toAlgHom R S T)
+      (IsScalarTower.toAlgHom R S A)).toRingHom
+  · exact CommRingCat.ofHom
+      (RingHom.comp (Algebra.TensorProduct.includeLeft (S := R)).toRingHom (algebraMap S T))
+  · refine .of_iso
+      (isPushout_map_codiagonal (CommRingCat.ofHom <| algebraMap S T)
+        (CommRingCat.ofHom <| algebraMap S A) (CommRingCat.ofHom <| algebraMap R S))
+      ?_ ?_ (.refl _) ?_ ?_ ?_ ?_ ?_
+    · exact (CommRingCat.isPushout_tensorProduct R S S).isoPushout.symm
+    · exact pushout.congrHom (by simp [IsScalarTower.algebraMap_eq R S T])
+          (by simp [IsScalarTower.algebraMap_eq R S A]) ≪≫
+        (CommRingCat.isPushout_tensorProduct R T A).isoPushout.symm
+    · exact (CommRingCat.isPushout_tensorProduct S T A).isoPushout.symm
+    all_goals ext <;> simp

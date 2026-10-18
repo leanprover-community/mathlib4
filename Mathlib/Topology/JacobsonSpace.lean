@@ -6,8 +6,6 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Topology.LocalAtTarget
-public import Mathlib.Topology.Separation.Regular
-public import Mathlib.Tactic.StacksAttribute
 
 /-!
 
@@ -35,7 +33,7 @@ variable (X) {Y} [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y}
 section closedPoints
 
 /-- The set of closed points. -/
-def closedPoints : Set X := setOf (IsClosed {·})
+def closedPoints : Set X := Set.ofPred (IsClosed {·})
 
 variable {X}
 
@@ -60,7 +58,7 @@ lemma closedPoints_eq_univ [T1Space X] :
 
 lemma Set.Finite.isDiscrete_of_subset_closedPoints
     {s : Set X} (hs : s.Finite) (hs' : s ⊆ closedPoints X) : IsDiscrete s := by
-  have : T1Space s := ⟨fun x ↦ by convert (hs' x.2).preimage continuous_subtype_val; aesop⟩
+  have : T1Space s := ⟨fun x ↦ by convert! (hs' x.2).preimage continuous_subtype_val; aesop⟩
   have : Finite s := hs
   exact ⟨inferInstance⟩
 
@@ -89,10 +87,10 @@ lemma jacobsonSpace_iff_locallyClosed :
     have : Z ⊆ closure Z \ Z := by
       refine subset_closure.trans ?_
       nth_rw 1 [← H isClosed_closure]
-      rw [hZ'.closure_subset_iff, Set.subset_diff, Set.disjoint_iff, Set.inter_assoc,
+      rw [hZ'.closure_subset_iff, Set.subset_sdiff, Set.disjoint_iff, Set.inter_assoc,
         Set.inter_comm _ Z, e]
       exact ⟨Set.inter_subset_left, Set.inter_subset_right⟩
-    rw [Set.subset_diff, disjoint_self, Set.bot_eq_empty] at this
+    rw [Set.subset_sdiff, disjoint_self, Set.bot_eq_empty] at this
     exact hZ this.2
   · intro H Z hZ
     refine subset_antisymm (hZ.closure_subset_iff.mpr Set.inter_subset_left) ?_
@@ -182,9 +180,10 @@ lemma TopologicalSpace.IsOpenCover.jacobsonSpace_iff {ι : Type*} {U : ι → Op
   · convert_to IsClosed {(⟨y, h⟩ : U j)}
     · ext; simp [← Subtype.coe_inj]
     apply isClosed_singleton_of_isLocallyClosed_singleton
-    convert (hy'.isLocallyClosed.image IsEmbedding.subtypeVal.isInducing
-      (U i).2.isOpenEmbedding_subtypeVal.isOpen_range.isLocallyClosed).preimage
-      continuous_subtype_val
+    convert
+      (hy'.isLocallyClosed.image IsEmbedding.subtypeVal.isInducing
+            (U i).2.isOpenEmbedding_subtypeVal.isOpen_range.isLocallyClosed).preimage
+        continuous_subtype_val
     ext
     simp [← Subtype.coe_inj]
   · convert isClosed_empty

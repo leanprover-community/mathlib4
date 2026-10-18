@@ -5,10 +5,10 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Basic
-public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.Polynomial.Degree.Lemmas
 public import Mathlib.Algebra.Polynomial.Eval.Algebra
+
+import Mathlib.Algebra.Algebra.Basic
 
 /-!
 # The Pochhammer polynomials
@@ -137,7 +137,7 @@ theorem ascPochhammer_succ_comp_X_add_one (n : ℕ) :
       ascPochhammer S (n + 1) + (n + 1) • (ascPochhammer S n).comp (X + 1) := by
   suffices (ascPochhammer ℕ (n + 1)).comp (X + 1) =
       ascPochhammer ℕ (n + 1) + (n + 1) * (ascPochhammer ℕ n).comp (X + 1)
-    by simpa [map_comp] using congr_arg (Polynomial.map (Nat.castRingHom S)) this
+    by simpa [map_comp] using congr(Polynomial.map (Nat.castRingHom S) $this)
   nth_rw 2 [ascPochhammer_succ_left]
   rw [← add_mul, ascPochhammer_succ_right ℕ n, mul_comp, mul_comm, add_comp, X_comp, natCast_comp,
     add_comm, ← add_assoc]
@@ -218,18 +218,17 @@ theorem factorial_mul_ascPochhammer (S : Type*) [Semiring S] (r n : ℕ) :
     (r ! : S) * (ascPochhammer S n).eval (r + 1 : S) = (r + n)! := by
   rw_mod_cast [ascPochhammer_nat_eq_ascFactorial, Nat.factorial_mul_ascFactorial]
 
-theorem ascPochhammer_nat_eval_succ (r : ℕ) :
-    ∀ n : ℕ, n * (ascPochhammer ℕ r).eval (n + 1) = (n + r) * (ascPochhammer ℕ r).eval n
-  | 0 => by
-    by_cases h : r = 0
-    · simp only [h, zero_mul, zero_add]
-    · simp only [ascPochhammer_eval_zero, zero_mul, if_neg h, mul_zero]
-  | k + 1 => by simp only [ascPochhammer_nat_eq_ascFactorial, Nat.succ_ascFactorial, add_right_comm]
+variable {S} in
+theorem ascPochhammer_eval_succ (r : ℕ) (n : S) :
+    n * (ascPochhammer S r).eval (n + 1) = (ascPochhammer S r).eval n * (n + r) := by
+  induction r with
+  | zero => simp
+  | succ r ih => grind [ascPochhammer_succ_eval]
 
-theorem ascPochhammer_eval_succ (r n : ℕ) :
-    (n : S) * (ascPochhammer S r).eval (n + 1 : S) =
-    (n + r) * (ascPochhammer S r).eval (n : S) :=
-  mod_cast congr_arg Nat.cast (ascPochhammer_nat_eval_succ r n)
+@[deprecated ascPochhammer_eval_succ +typeChanged (since := "2026-08-16")]
+theorem ascPochhammer_nat_eval_succ (r : ℕ) (n : ℕ) :
+    n * (ascPochhammer ℕ r).eval (n + 1) = (n + r) * (ascPochhammer ℕ r).eval n := by
+  simp [ascPochhammer_eval_succ, mul_comm]
 
 namespace Nat
 variable (a b : ℕ)
@@ -355,7 +354,7 @@ theorem descPochhammer_succ_comp_X_sub_one (n : ℕ) :
       descPochhammer R (n + 1) - (n + (1 : R[X])) • (descPochhammer R n).comp (X - 1) := by
   suffices (descPochhammer ℤ (n + 1)).comp (X - 1) =
       descPochhammer ℤ (n + 1) - (n + 1) * (descPochhammer ℤ n).comp (X - 1)
-    by simpa [map_comp] using congr_arg (Polynomial.map (Int.castRingHom R)) this
+    by simpa [map_comp] using congr(Polynomial.map (Int.castRingHom R) $this)
   nth_rw 2 [descPochhammer_succ_left]
   rw [← sub_mul, descPochhammer_succ_right ℤ n, mul_comp, mul_comm, sub_comp, X_comp, natCast_comp]
   ring

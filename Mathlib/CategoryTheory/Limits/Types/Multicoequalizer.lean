@@ -35,6 +35,7 @@ namespace CategoryTheory.Functor.CoconeTypes
 
 open Limits
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma isMulticoequalizer_iff {J : MultispanShape.{w, w'}} {d : MultispanIndex J (Type u)}
     (c : d.multispan.CoconeTypes) :
     c.IsColimit ↔
@@ -72,6 +73,7 @@ namespace CategoryTheory.Limits.Types
 
 variable {X : Type u} {ι : Type w} {A : Set X} {U : ι → Set X} {V : ι → ι → Set X}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given `X : Type u`, `A : Set X`, `U : ι → Set X` and `V : ι → ι → Set X` such
 that `MulticoequalizerDiagram A U V` holds, then in the category of types,
@@ -97,6 +99,8 @@ noncomputable def isColimitOfMulticoequalizerDiagram
     obtain ⟨i, hi⟩ := hx
     exact ⟨i, ⟨x, hi⟩, rfl⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Let `X : Type u`, `A : Set X`, `U : ι → Set X` and `V : ι → ι → Set X` such
 that `MulticoequalizerDiagram A U V` holds, then in the category of types,
 `A` is the multicoequalizer of the `U i`s along the `V i j`s. In this version,

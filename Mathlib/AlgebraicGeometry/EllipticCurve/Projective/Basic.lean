@@ -5,10 +5,9 @@ Authors: David Kurniadi Angdinata
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.PDeriv
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
-public import Mathlib.Data.Fin.Tuple.Reflection
-public import Mathlib.Tactic.Ring.NamePolyVars
+
+import Mathlib.Tactic.Ring.NamePolyVars
 
 /-!
 # Weierstrass equations and the nonsingular condition in projective coordinates
@@ -263,7 +262,7 @@ lemma equation_smul (P : Fin 3 → R) {u : R} (hu : IsUnit u) : W'.Equation (u �
   have hP (u : R) {P : Fin 3 → R} (hP : W'.Equation P) : W'.Equation <| u • P := by
     rw [equation_iff] at hP ⊢
     linear_combination (norm := (simp only [smul_fin3_ext]; ring1)) u ^ 3 * hP
-  ⟨fun h => by convert hP ↑hu.unit⁻¹ h; rw [smul_smul, hu.val_inv_mul, one_smul], hP u⟩
+  ⟨fun h => by convert hP (↑hu.unit⁻¹) h; rw [smul_smul, hu.val_inv_mul, one_smul], hP u⟩
 
 lemma equation_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : W'.Equation P ↔ W'.Equation Q := by
   rcases h with ⟨u, rfl⟩
@@ -482,13 +481,11 @@ variable (W') (f : R →+* S)
 
 /-- The Weierstrass curve in projective coordinates mapped over a ring homomorphism `f : R →+* S`.
 -/
-@[simps!]
 abbrev map : Projective S :=
   WeierstrassCurve.map W' f
 
 variable (S) in
 /-- The Weierstrass curve in projective coordinates base changed to an algebra `S` over `R`. -/
-@[simps!]
 abbrev baseChange [Algebra R S] : Projective S :=
   WeierstrassCurve.baseChange W' S
 

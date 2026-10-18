@@ -35,7 +35,7 @@ def permanent (M : Matrix n n R) : R := ∑ σ : Perm n, ∏ i, M (σ i) i
 theorem permanent_diagonal {d : n → R} : permanent (diagonal d) = ∏ i, d i := by
   refine (sum_eq_single 1 (fun σ _ hσ ↦ ?_) (fun h ↦ (h <| mem_univ _).elim)).trans ?_
   · match not_forall.mp (mt Equiv.ext hσ) with
-    | ⟨x, hx⟩ => exact Finset.prod_eq_zero (mem_univ x) (if_neg hx)
+    | ⟨x, hx⟩ => exact Finset.prod_eq_zero (mem_univ x) (ite_eq_right hx)
   · simp only [Perm.one_apply, diagonal_apply_eq]
 
 @[simp]

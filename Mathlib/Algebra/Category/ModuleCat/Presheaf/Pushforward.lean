@@ -34,12 +34,13 @@ namespace PresheafOfModules
 
 variable (F : C ⥤ D)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Implementation of `pushforward₀`. -/
 @[simps]
 def pushforward₀Obj (R : Dᵒᵖ ⥤ RingCat.{u}) (M : PresheafOfModules R) :
     PresheafOfModules (F.op ⋙ R) :=
-  { obj X := ModuleCat.of _ (M.obj (F.op.obj X))
+  { obj X := ↧(M.obj (F.op.obj X))
     map {X Y} f := M.map (F.op.map f)
     map_id X := by
       refine ModuleCat.hom_ext
@@ -88,36 +89,33 @@ a morphism of presheaves of rings `S ⟶ F.op ⋙ R`. -/
 noncomputable def pushforward : PresheafOfModules.{v} R ⥤ PresheafOfModules.{v} S :=
   pushforward₀ F R ⋙ restrictScalars φ
 
+lemma forget₂_map_pushforward_obj_map {U V : Cᵒᵖ} (f : U ⟶ V) (M : PresheafOfModules R) :
+    (forget₂ _ Ab).map (((PresheafOfModules.pushforward φ).obj M).map f) =
+      M.presheaf.map (F.map f.unop).op :=
+  rfl
+
+lemma forget₂_map_pushforward_map_app {U : Cᵒᵖ} {M N : PresheafOfModules _} (g : M ⟶ N) :
+    (forget₂ _ Ab).map (((pushforward φ).map g).app U) = (forget₂ _ Ab).map (g.app _) :=
+  rfl
+
 /-- The pushforward of presheaves of modules commutes with the forgetful functor
 to presheaves of abelian groups. -/
 noncomputable def pushforwardCompToPresheaf :
     pushforward.{v} φ ⋙ toPresheaf _ ≅ toPresheaf _ ⋙ (whiskeringLeft _ _ _).obj F.op :=
   Iso.refl _
 
+@[simp]
 lemma pushforward_obj_map_apply (M : PresheafOfModules.{v} R) {X Y : Cᵒᵖ} (f : X ⟶ Y)
     (m : (ModuleCat.restrictScalars (φ.app X).hom).obj (M.obj (Opposite.op (F.obj X.unop)))) :
       (((pushforward φ).obj M).map f).hom m = M.map (F.map f.unop).op m := rfl
 
-/-- `@[simp]`-normal form of `pushforward_obj_map_apply`. -/
 @[simp]
-lemma pushforward_obj_map_apply' (M : PresheafOfModules.{v} R) {X Y : Cᵒᵖ} (f : X ⟶ Y)
-    (m : (ModuleCat.restrictScalars (φ.app X).hom).obj (M.obj (Opposite.op (F.obj X.unop)))) :
-      DFunLike.coe
-        (F := ↑((ModuleCat.restrictScalars _).obj _) →ₗ[_]
-          ↑((ModuleCat.restrictScalars (S.map f).hom).obj ((ModuleCat.restrictScalars _).obj _)))
-        (((pushforward φ).obj M).map f).hom m = M.map (F.map f.unop).op m := rfl
-
 lemma pushforward_map_app_apply {M N : PresheafOfModules.{v} R} (α : M ⟶ N) (X : Cᵒᵖ)
     (m : (ModuleCat.restrictScalars (φ.app X).hom).obj (M.obj (Opposite.op (F.obj X.unop)))) :
     (((pushforward φ).map α).app X).hom m = α.app (Opposite.op (F.obj X.unop)) m := rfl
 
-/-- `@[simp]`-normal form of `pushforward_map_app_apply`. -/
-@[simp]
-lemma pushforward_map_app_apply' {M N : PresheafOfModules.{v} R} (α : M ⟶ N) (X : Cᵒᵖ)
-    (m : (ModuleCat.restrictScalars (φ.app X).hom).obj (M.obj (Opposite.op (F.obj X.unop)))) :
-    DFunLike.coe
-      (F := ↑((ModuleCat.restrictScalars _).obj _) →ₗ[_] ↑((ModuleCat.restrictScalars _).obj _))
-      (((pushforward φ).map α).app X).hom m = α.app (Opposite.op (F.obj X.unop)) m := rfl
+@[deprecated (since := "2026-09-24")] alias pushforward_obj_map_apply' := pushforward_obj_map_apply
+@[deprecated (since := "2026-09-24")] alias pushforward_map_app_apply' := pushforward_map_app_apply
 
 section
 

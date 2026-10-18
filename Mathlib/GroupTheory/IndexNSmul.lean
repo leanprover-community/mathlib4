@@ -6,9 +6,7 @@ Authors: Michael Stoll
 module
 
 public import Mathlib.GroupTheory.Index
-public import Mathlib.LinearAlgebra.Dimension.Finrank
-public import Mathlib.LinearAlgebra.FreeModule.Basic
-public import Mathlib.RingTheory.Finiteness.Defs
+public import Mathlib.LinearAlgebra.Dimension.Free
 
 import Mathlib.Algebra.Group.Subgroup.ZPowers.Lemmas
 import Mathlib.Data.ZMod.QuotientGroup
@@ -27,7 +25,7 @@ public section
 
 namespace AddSubgroup
 
-variable {M N : Type*} [AddCommGroup M] [AddCommGroup N]
+variable {M : Type*} [AddCommGroup M]
 
 open Module
 
@@ -54,7 +52,7 @@ lemma relIndex_map_nsmul (n : ℕ) (S : AddSubgroup M) [Free ℤ ↥S.toIntSubmo
     [Module.Finite ℤ ↥S.toIntSubmodule] :
     (S.map (nsmulAddMonoidHom (α := M) n)).relIndex S = n ^ finrank ℤ S := by
   simpa only [relIndex, addSubgroupOf_map_nsmulAddMonoidHom_eq_range]
-    using index_range_nsmul S.toIntSubmodule n
+    using! index_range_nsmul S.toIntSubmodule n
 
 /-- On an additive group that is torsion-free as a `ℤ`-module, the linear map given by
 multiplication by `n : ℕ` is injective (when `n ≠ 0`). -/
@@ -76,7 +74,7 @@ lemma finrank_eq_of_finiteIndex [Module.Finite ℤ M] [IsTorsionFree ℤ M] (A :
   refine le_antisymm A.toIntSubmodule.finrank_le ?_
   have : finrank ℤ (DistribSMul.toLinearMap ℤ M A.index).range = finrank ℤ M :=
     (DistribSMul.toLinearMap ..).finrank_range_of_inj <|
-      distribSMulToLinearMap_injective_of_isTorsionFree FiniteIndex.index_ne_zero
+      distribSMulToLinearMap_injective_of_isTorsionFree index_ne_zero
   rw [← this]
   refine Submodule.finrank_mono <| (OrderIso.symm_apply_le toIntSubmodule).mp fun m hm ↦ ?_
   obtain ⟨x, rfl⟩ : ∃ x, A.index • x = m := by simpa using hm

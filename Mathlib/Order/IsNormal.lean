@@ -5,9 +5,11 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
+public import Mathlib.Dynamics.FixedPoints.Defs
 public import Mathlib.Order.DirSupClosed
-public import Mathlib.Order.SuccPred.CompleteLinearOrder
 public import Mathlib.Order.SuccPred.InitialSeg
+
+import Mathlib.Order.SuccPred.CompleteLinearOrder
 
 /-!
 # Normal functions
@@ -112,8 +114,19 @@ theorem comp (hg : IsNormal g) (hf : IsNormal f) : IsNormal (g ∘ f) := by
 theorem to_Iio (hf : IsNormal f) (a : α) :
     IsNormal (β := Iio (f a)) fun x : Iio a ↦ ⟨f x.1, hf.strictMono x.2⟩ := by
   rw [isNormal_iff]
-  refine ⟨fun x y h ↦ hf.strictMono h, fun b hb c hc ↦ hf.2 (hb.subtypeVal (isLowerSet_Iio _)) ?_⟩
-  simpa [upperBounds] using fun d hd ↦ hc ⟨d, hd.trans b.2⟩ hd
+  refine ⟨fun x y h ↦ hf.strictMono h, fun b hb c hc ↦ hf.2 (hb.subtypeVal (.Iio _)) ?_⟩
+  simpa [upperBounds] using! fun d hd ↦ hc ⟨d, hd.trans b.2⟩ hd
+
+theorem of_dirSupClosed_range [WellFoundedLT β]
+    (hf : StrictMono f) (hf' : DirSupClosed (.range f)) : IsNormal f := by
+  refine isNormal_iff.2 ⟨hf, fun x hx y hy ↦ ?_⟩
+  have hfb : BddAbove (f '' Set.Iio x) := hf.monotone.map_bddAbove bddAbove_Iio
+  obtain ⟨z, hz⟩ := WellFoundedLT.exists_minimal inferInstance _ hfb
+  have hz : IsLUB (f '' Set.Iio x) z := minimal_iff_isLeast.1 hz
+  obtain ⟨w, rfl⟩ := hf' (image_subset_range ..) (hx.nonempty_Iio.image f) (.of_linearOrder _) hz
+  have hw : IsLUB (Set.Iio x) w := hz.of_image hf.le_iff_le
+  cases hw.unique hx.isLUB_Iio
+  simpa [isLUB_le_iff hz, mem_upperBounds] using hy
 
 end LinearOrder
 
@@ -130,6 +143,17 @@ theorem map_iSup {ι} [Nonempty ι] {g : ι → α} (hf : IsNormal f) (hg : BddA
   convert map_sSup hf (range_nonempty g) hg
   ext
   simp
+
+theorem iSup_iterate_mem_fixedPoints [WellFoundedLT α] {f : α → α} (a : α) (hf : IsNormal f)
+    (hf' : BddAbove (.range fun n ↦ f^[n] a)) : ⨆ n, f^[n] a ∈ f.fixedPoints := by
+  rw [f.mem_fixedPoints_iff, hf.map_iSup hf']
+  apply le_antisymm <;> refine ciSup_le fun n ↦ ?_
+  · rw [← f.iterate_succ_apply']
+    exact le_ciSup hf' _
+  · apply hf.strictMono.le_apply.trans
+    apply (le_ciSup (hf'.mono _) n)
+    simp_rw [← f.iterate_succ_apply']
+    grind
 
 theorem preimage_Iic (hf : IsNormal f) {x : β}
     (h₁ : (f ⁻¹' Iic x).Nonempty) (h₂ : BddAbove (f ⁻¹' Iic x)) :
@@ -205,8 +229,6 @@ theorem ext_iff [OrderBot α] {g : α → β} (hf : IsNormal f) (hg : IsNormal g
     convert hg.isLUB_image_Iio_of_isSuccLimit ha using 1
     aesop
 
-@[deprecated (since := "2026-03-22")] protected alias ext := IsNormal.ext_iff
-
 theorem exists_map_le_lt_map_succ_of_exists_ge [NoMaxOrder α] [OrderBot α] [WellFoundedLT β]
     {f : α → β} {x : β} (hf : IsNormal f) (hf' : ∃ y, x ≤ f y) (hx : f ⊥ ≤ x) :
     ∃ a, f a ≤ x ∧ x < f (succ a) := by
@@ -227,22 +249,41 @@ theorem exists_map_le_lt_map_succ [NoMaxOrder α] [OrderBot α] {f : α → α} 
     (hf : IsNormal f) (hx : f ⊥ ≤ x) : ∃ a, f a ≤ x ∧ x < f (succ a) :=
   exists_map_le_lt_map_succ_of_exists_ge hf ⟨x, hf.strictMono.le_apply⟩ hx
 
-omit [SuccOrder α] in
-theorem dirSupClosed_range {f : α → α} (hf : IsNormal f) : DirSupClosed (range f) := by
+omit [SuccOrder α]
+
+theorem dirSupClosed_range_of_isCofinal {f : α → β} (hf : IsNormal f) (hf' : IsCofinal (range f)) :
+    DirSupClosed (range f) := by
   intro s hs hs₀ _ a ha
-  have hf' : (f ⁻¹' s).Nonempty := by
+  have hfn : (f ⁻¹' s).Nonempty := by
     obtain ⟨b, hb⟩ := hs₀
     obtain ⟨c, rfl⟩ := hs hb
     exact ⟨c, hb⟩
-  have : Nonempty α := ⟨a⟩
+  have := hfn.to_type
   let := WellFoundedLT.toOrderBot α
   let := WellFoundedLT.conditionallyCompleteLinearOrderBot α
-  have hfl : IsLUB (f ⁻¹' s) (sSup (f ⁻¹' s)) :=
-    isLUB_csSup hf' ⟨a, fun b hb ↦ hf.strictMono.le_apply.trans (ha.1 hb)⟩
-  have ha' := hf.map_isLUB hfl hf'
+  have hfl : IsLUB (f ⁻¹' s) (sSup (f ⁻¹' s)) := by
+    apply isLUB_csSup hfn _
+    obtain ⟨_, ⟨b, rfl⟩, hb⟩ := hf' a
+    use b
+    intro c hc
+    rw [← hf.strictMono.le_iff_le]
+    exact (ha.1 hc).trans hb
+  have ha' := hf.map_isLUB hfl hfn
   rw [image_preimage_eq_of_subset hs] at ha'
   obtain rfl := ha.unique ha'
   exact mem_range_self _
+
+theorem dirSupClosed_range {f : α → α} (hf : IsNormal f) : DirSupClosed (range f) :=
+  dirSupClosed_range_of_isCofinal hf hf.strictMono.isCofinal_range_of_wellFoundedLT
+
+theorem _root_.Order.isNormal_iff_dirSupClosed_range_of_isCofinal [WellFoundedLT β]
+    {f : α → β} (hf : StrictMono f) (hf' : IsCofinal (range f)) :
+    IsNormal f ↔ DirSupClosed (range f) :=
+  ⟨fun hf ↦ dirSupClosed_range_of_isCofinal hf hf', of_dirSupClosed_range hf⟩
+
+theorem _root_.Order.isNormal_iff_dirSupClosed_range {f : α → α} (hf : StrictMono f) :
+    IsNormal f ↔ DirSupClosed (range f) :=
+  ⟨dirSupClosed_range, of_dirSupClosed_range hf⟩
 
 end WellFoundedLT
 end IsNormal

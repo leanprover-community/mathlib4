@@ -141,4 +141,26 @@ theorem support_add (a b : FreeAbelianGroup X) : support (a + b) ⊆ a.support �
   simp only [support, map_add]
   apply Finsupp.support_add
 
+@[simp] theorem support_eq_empty {a : FreeAbelianGroup X} : a.support = ∅ ↔ a = 0 :=
+  Finsupp.support_eq_empty.trans (equivFinsupp X).map_eq_zero_iff
+
+@[simp] theorem nonempty_support_iff {a : FreeAbelianGroup X} :
+    a.support.Nonempty ↔ a ≠ 0 := by
+  contrapose!; exact support_eq_empty
+
+theorem card_support_eq_zero {a : FreeAbelianGroup X} : a.support.card = 0 ↔ a = 0 := by
+  simp
+
+theorem eq_sum_support_coeff_smul_of (a : FreeAbelianGroup X) :
+    a = ∑ x ∈ a.support, coeff x a • of x := by
+  conv_lhs => rw [← toFreeAbelianGroup_toFinsupp a, ← sum_single a.toFinsupp]
+  simp [sum, support, coeff]
+
+@[simp] lemma coeff_of_self (x : X) : coeff x (of x) = 1 := by simp [coeff]
+
+@[simp] lemma coeff_of_of_ne {x y : X} (h : x ≠ y) : coeff x (of y) = 0 := by simp [coeff, h]
+
+lemma coeff_of (x y : X) [Decidable (x = y)] : coeff x (of y) = if x = y then 1 else 0 := by
+  aesop
+
 end FreeAbelianGroup

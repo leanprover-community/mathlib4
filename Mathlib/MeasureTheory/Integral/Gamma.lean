@@ -5,8 +5,9 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.PolarCoord
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
+
+import Mathlib.Analysis.SpecialFunctions.PolarCoord
 
 /-!
 # Integrals involving the Gamma function

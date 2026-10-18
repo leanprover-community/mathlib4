@@ -5,10 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
-public import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
-public import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 /-!
 # Objects that are local with respect to a property of morphisms
@@ -76,7 +73,7 @@ instance : W.isColocal.IsClosedUnderIsomorphisms where
     convert (Iso.homFromEquiv e).bijective.comp (hX g hg) using 1
     aesop
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 instance (J : Type u') [Category.{v'} J] :
     W.isLocal.IsClosedUnderLimitsOfShape J where
   limitsOfShape_le := fun Z ⟨p⟩ X Y f hf ↦ by
@@ -89,7 +86,7 @@ instance (J : Type u') [Category.{v'} J] :
           (by simp [reassoc_of% h, h, p.w a]) }),
       p.isLimit.hom_ext (fun j ↦ by simp [p.isLimit.fac, h])⟩
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 instance (J : Type u') [Category.{v'} J] :
     W.isColocal.IsClosedUnderColimitsOfShape J where
   colimitsOfShape_le := fun X ⟨p⟩ Y Z g hg ↦ by

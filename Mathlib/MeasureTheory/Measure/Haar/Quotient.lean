@@ -5,11 +5,8 @@ Authors: Alex Kontorovich, Heather Macbeth
 -/
 module
 
-public import Mathlib.Algebra.Group.Opposite
-public import Mathlib.MeasureTheory.Constructions.Polish.Basic
 public import Mathlib.MeasureTheory.Group.FundamentalDomain
 public import Mathlib.MeasureTheory.Integral.DominatedConvergence
-public import Mathlib.MeasureTheory.Measure.Haar.Basic
 
 /-!
 # Haar quotient measure
@@ -72,7 +69,9 @@ variable {G : Type*} [Group G] [MeasurableSpace G] (ν : Measure G) {Γ : Subgro
 /-- Given a subgroup `Γ` of a topological group `G` with measure `ν`, and a measure 'μ' on the
   quotient `G ⧸ Γ` satisfying `QuotientMeasureEqMeasurePreimage`, the restriction
   of `ν` to a fundamental domain is measure-preserving with respect to `μ`. -/
-@[to_additive]
+@[to_additive /-- Given a subgroup `Γ` of a topological additive group `G` with measure `ν`, and a
+  measure 'μ' on the quotient `G ⧸ Γ` satisfying `AddQuotientMeasureEqMeasurePreimage`, the
+  restriction of `ν` to a fundamental domain is measure-preserving with respect to `μ`. -/]
 theorem measurePreserving_quotientGroup_mk_of_QuotientMeasureEqMeasurePreimage
     {𝓕 : Set G} (h𝓕 : IsFundamentalDomain Γ.op 𝓕 ν) (μ : Measure (G ⧸ Γ))
     [QuotientMeasureEqMeasurePreimage ν μ] :
@@ -86,7 +85,8 @@ variable [TopologicalSpace G] [IsTopologicalGroup G] [BorelSpace G] [PolishSpace
 
 /-- If `μ` satisfies `QuotientMeasureEqMeasurePreimage` relative to a both left- and right-
   invariant measure `ν` on `G`, then it is a `G` invariant measure on `G ⧸ Γ`. -/
-@[to_additive]
+@[to_additive /-- If `μ` satisfies `AddQuotientMeasureEqMeasurePreimage` relative to a both left-
+  and right-invariant measure `ν` on `G`, then it is a `G` invariant measure on `G ⧸ Γ`. -/]
 lemma MeasureTheory.QuotientMeasureEqMeasurePreimage.smulInvariantMeasure_quotient
     [IsMulLeftInvariant ν] [hasFun : HasFundamentalDomain Γ.op G ν] :
     SMulInvariantMeasure G (G ⧸ Γ) μ where
@@ -162,7 +162,7 @@ theorem MeasureTheory.Measure.IsMulLeftInvariant.quotientMeasureEqMeasurePreimag
   ext U _
   have meas_π : Measurable (QuotientGroup.mk : G → G ⧸ Γ) := continuous_quotient_mk'.measurable
   let μ' : Measure (G ⧸ Γ) := (ν.restrict s).map π
-  haveI has_fund : HasFundamentalDomain Γ.op G ν := ⟨⟨s, fund_dom_s⟩⟩
+  have has_fund : HasFundamentalDomain Γ.op G ν := ⟨⟨s, fund_dom_s⟩⟩
   have i : QuotientMeasureEqMeasurePreimage ν μ' :=
     fund_dom_s.quotientMeasureEqMeasurePreimage_quotientMeasure
   have : μ'.IsMulLeftInvariant :=
@@ -192,7 +192,7 @@ theorem MeasureTheory.leftInvariantIsQuotientMeasureEqMeasurePreimage [IsFiniteM
   have finiteCovol : μ univ < ⊤ := measure_lt_top μ univ
   rw [fund_dom_s.covolume_eq_volume] at h
   by_cases meas_s_ne_zero : ν s = 0
-  · convert fund_dom_s.quotientMeasureEqMeasurePreimage_of_zero meas_s_ne_zero
+  · convert! fund_dom_s.quotientMeasureEqMeasurePreimage_of_zero meas_s_ne_zero
     rw [← @measure_univ_eq_zero, ← h, meas_s_ne_zero]
   apply IsMulLeftInvariant.quotientMeasureEqMeasurePreimage_of_set (fund_dom_s := fund_dom_s)
     (meas_V := MeasurableSet.univ)
@@ -225,7 +225,7 @@ theorem MeasureTheory.QuotientMeasureEqMeasurePreimage.haarMeasure_quotient [Loc
   obtain ⟨K⟩ := PositiveCompacts.nonempty' (α := G)
   let K' : PositiveCompacts (G ⧸ Γ) :=
     K.map π QuotientGroup.continuous_mk QuotientGroup.isOpenMap_coe
-  haveI : IsMulLeftInvariant μ :=
+  have : IsMulLeftInvariant μ :=
     MeasureTheory.QuotientMeasureEqMeasurePreimage.mulInvariantMeasure_quotient ν
   rw [haarMeasure_unique μ K']
   have finiteCovol : covolume Γ.op G ν ≠ ⊤ :=
@@ -296,7 +296,7 @@ theorem IsFundamentalDomain.QuotientMeasureEqMeasurePreimage_smulHaarMeasure {�
   have c_ne_top : c ≠ ∞ := measure_inter_ne_top_of_right_ne_top h𝓕_finite
   set μ := c • haarMeasure K
   have hμK : μ K = c := by simp [μ, haarMeasure_self]
-  haveI : SigmaFinite μ := by
+  have : SigmaFinite μ := by
     clear_value c
     lift c to NNReal using c_ne_top
     exact SMul.sigmaFinite c

@@ -6,11 +6,10 @@ Authors: Yuval Filmus
 
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Orthogonality
-public import Mathlib.Analysis.Complex.Trigonometric
+
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
 import Mathlib.Topology.Algebra.Polynomial
-import Mathlib.Algebra.Polynomial.Sequence
 
 /-!
 # Chebyshev polynomials over the reals: Chebyshev–Gauss
@@ -89,7 +88,7 @@ theorem sumZeroes_T_of_not_dvd {n : ℕ} {k : ℤ} (hk : ¬ (2 * n : ℤ) ∣ k)
   · simp [sumZeroes]
   suffices ∑ i ∈ range n, 2 * cos (k * ((2 * i + 1) / (2 * n) * π)) = 0 by
     rw [sumZeroes, mul_eq_zero_iff_left (by aesop)]
-    rw [← mul_sum, mul_eq_zero_iff_left (by norm_num)] at this
+    rw [← mul_sum, mul_eq_zero_iff_left (by simp)] at this
     simpa [T_real_cos]
   suffices (∑ i ∈ range n, 2 * cos (k * ((2 * i + 1) / (2 * n) * π)) : ℂ) = 0 by norm_cast at this ⊢
   suffices ∑ i ∈ range n, 2 * Complex.cos (k * ((2 * i + 1) / (2 * n) * π)) = 0 by aesop
@@ -110,7 +109,7 @@ theorem sumZeroes_T_of_not_dvd {n : ℕ} {k : ℤ} (hk : ¬ (2 * n : ℤ) ∣ k)
 theorem integral_eq_sumZeroes {n : ℕ} {P : ℝ[X]} (hn : n ≠ 0) (hP : P.degree < 2 * n) :
     ∫ x, P.eval x ∂measureT = sumZeroes n P := by
   have hmem : P ∈ degreeLT ℝ (2 * n) := by rwa [mem_degreeLT]
-  rw [← Sequence.span_degreeLT (chebyshevTsequence ℝ) (by simp),
+  rw [← Sequence.span_degreeLT (chebyshevTSequence ℝ) (by simp),
     show Set.Iio (2 * n) = Finset.range (2 * n) by simp,
     Submodule.mem_span_image_finset_iff_exists_fun'] at hmem
   obtain ⟨c, rfl⟩ := hmem
@@ -118,7 +117,7 @@ theorem integral_eq_sumZeroes {n : ℕ} {P : ℝ[X]} (hn : n ≠ 0) (hP : P.degr
   rw [MeasureTheory.integral_finsetSum, sumZeroes_sum]
   · simp_rw [sumZeroes_smul, smul_eq_mul, MeasureTheory.integral_const_mul]
     congr! with i hrange
-    simp_rw [chebyshevTsequence]
+    simp_rw [chebyshevTSequence]
     by_cases i = 0
     case pos hi => rw [hi, Nat.cast_zero, integral_eval_T_real_measureT_zero, sumZeroes_T_zero hn]
     case neg hi =>

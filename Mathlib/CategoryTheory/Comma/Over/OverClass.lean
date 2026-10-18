@@ -5,7 +5,6 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Tactic.CategoryTheory.Reassoc
 public import Mathlib.CategoryTheory.Comma.Over.Basic
 
 /-!
@@ -173,6 +172,7 @@ instance {f : X ⟶ Y} [IsIso f] [HomIsOver f S] : HomIsOver (inv f) S where
 
 end OverClass
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Reinterpret an isomorphism over an object `S` into an isomorphism in the category over `S`. -/
 @[simps]
 def Iso.asOver (e : X ≅ Y) [HomIsOver e.hom S] : OverClass.asOver X S ≅ OverClass.asOver Y S where

@@ -6,6 +6,7 @@ Authors: Kenny Lau, Patrick Massot, Yury Kudryashov
 module
 
 public import Mathlib.Topology.Connected.Clopen
+public import Mathlib.Topology.InductiveDimension.Classes
 
 /-!
 # Totally disconnected and totally separated topological spaces
@@ -61,7 +62,7 @@ instance Pi.totallyDisconnectedSpace {α : Type*} {β : α → Type*}
     [∀ a, TopologicalSpace (β a)] [∀ a, TotallyDisconnectedSpace (β a)] :
     TotallyDisconnectedSpace (∀ a : α, β a) :=
   ⟨fun t _ h2 =>
-    have this : ∀ a, IsPreconnected ((fun x : ∀ a, β a => x a) '' t) := fun a =>
+    have : ∀ a, IsPreconnected ((fun x : ∀ a, β a => x a) '' t) := fun a =>
       h2.image (fun x => x a) (continuous_apply a).continuousOn
     fun x x_in y y_in => funext fun a => (this a).subsingleton ⟨x, x_in, rfl⟩ ⟨y, y_in, rfl⟩⟩
 
@@ -306,7 +307,7 @@ theorem Continuous.connectedComponentsMap_continuous {β : Type*} [TopologicalSp
 lemma Topology.IsCoinducing.connectedComponentsMap {β : Type*} [TopologicalSpace β] {f : α → β}
     (hf : IsCoinducing f) :
     IsCoinducing hf.continuous.connectedComponentsMap := by
-  rw [← ConnectedComponents.isQuotientMap_coe.of_comp_iff]
+  rw [← ConnectedComponents.isQuotientMap_coe.isCoinducing.of_comp_iff]
   exact ConnectedComponents.isQuotientMap_coe.isCoinducing.comp hf
 
 @[simp]
@@ -353,3 +354,28 @@ theorem IsPreconnected.eqOn_const_of_mapsTo {S : Set α} (hS : IsPreconnected S)
   rcases S.eq_empty_or_nonempty with (rfl | ⟨x, hx⟩)
   · exact hne.imp fun _ hy => ⟨hy, eqOn_empty _ _⟩
   · exact ⟨f x, hTm hx, fun x' hx' => hS.constant_of_mapsTo hT hc hTm hx' hx⟩
+
+theorem IsPreconnected.isDiscrete_iff_subsingleton {S : Set α} (hS : IsPreconnected S) :
+    IsDiscrete S ↔ S.Subsingleton where
+  mp h := by
+    have : DiscreteTopology S := isDiscrete_iff_discreteTopology.mp h
+    have : PreconnectedSpace S := isPreconnected_iff_preconnectedSpace.mp hS
+    have : Subsingleton S := subsingleton_of_preconnected_totallyDisconnected
+    simpa using this
+  mpr h := h.isDiscrete
+
+instance [T0Space α] [ZeroDimensionalSpace α] : TotallySeparatedSpace α := by
+  simp_rw [totallySeparatedSpace_iff_exists_isClopen, mem_compl_iff]
+  intro x y hxy
+  contrapose! hxy
+  apply Inseparable.eq
+  rw [isTopologicalBasis_isClopen.inseparable_iff]
+  exact fun V hV ↦ ⟨hxy V hV, (hxy Vᶜ hV.compl).mtr⟩
+
+@[deprecated instTotallySeparatedSpaceOfT0SpaceOfZeroDimensionalSpace +typeChanged
+(since := "2026-10-08")]
+theorem totallySeparatedSpace_of_t0_of_basis_clopen [T0Space α]
+    (h : TopologicalSpace.IsTopologicalBasis { s : Set α | IsClopen s }) :
+    TotallySeparatedSpace α := by
+  rw [← zeroDimensionalSpace_iff_isTopologicalBasis_isClopen] at h
+  infer_instance

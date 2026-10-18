@@ -5,8 +5,6 @@ Authors: Kalle Kytölä
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Basic
-public import Mathlib.Topology.MetricSpace.ProperSpace.Real
 public import Mathlib.Analysis.Normed.Ring.Lemmas
 
 /-!
@@ -162,7 +160,7 @@ lemma SeminormedAddCommGroup.lipschitzWith_sub :
 
 instance : BoundedSub R := boundedSub_of_lipschitzWith_sub SeminormedAddCommGroup.lipschitzWith_sub
 
-open Filter Pointwise Bornology
+open Filter Bornology
 
 /-
 TODO:
@@ -177,7 +175,7 @@ lemma tendsto_add_const_cobounded (x : R) :
   rw [mem_map]
   rw [← isCobounded_def, ← isBounded_compl_iff] at hs ⊢
   rw [← Set.preimage_compl]
-  convert isBounded_sub hs (t := {x}) isBounded_singleton using 1
+  convert isBounded_sub hs (t := { x }) isBounded_singleton using 1
   ext y
   simp [sub_eq_iff_eq_add]
 
@@ -200,7 +198,7 @@ theorem tendsto_sub_const_cobounded (x : R) :
 @[simp]
 theorem tendsto_const_sub_cobounded (x : R) :
     Tendsto (x - ·) (cobounded R) (cobounded R) := by
-  simpa only [sub_eq_add_neg] using (tendsto_const_add_cobounded x).comp tendsto_neg_cobounded
+  simpa only [sub_eq_add_neg] using! (tendsto_const_add_cobounded x).comp tendsto_neg_cobounded
 
 end SeminormedAddCommGroup
 

@@ -9,6 +9,8 @@ public import Mathlib.Algebra.BigOperators.Finprod
 public import Mathlib.RingTheory.Multiplicity
 public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 
+import Mathlib.Algebra.FiniteSupport.Basic
+
 /-!
 # Unique factorization and multiplicity
 
@@ -17,6 +19,12 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 * `UniqueFactorizationMonoid.emultiplicity_eq_count_normalizedFactors`: The multiplicity of an
   irreducible factor of a nonzero element is exactly the number of times the normalized factor
   occurs in the `normalizedFactors`.
+
+* `UniqueFactorizationMonoid.dvd_iff_multiplicity_le`: A nonzero element divides a nonzero element
+  iff its multiplicity at every prime is at most that of the other.
+
+* `UniqueFactorizationMonoid.associated_iff_multiplicity_eq`: Two nonzero elements are associated
+  iff they have the same multiplicity at every prime.
 -/
 
 public section
@@ -46,7 +54,12 @@ theorem FiniteMultiplicity.of_not_isUnit [CommMonoidWithZero α] [IsCancelMulZer
 
 theorem FiniteMultiplicity.of_prime_left [CommMonoidWithZero α] [IsCancelMulZero α] [WfDvdMonoid α]
     {a b : α} (ha : Prime a) (hb : b ≠ 0) : FiniteMultiplicity a b :=
-  .of_not_isUnit ha.not_unit hb
+  .of_not_isUnit ha.not_isUnit hb
+
+/-- An element of a `WfDvdMonoid` has finite multiplicity at a prime iff it is nonzero. -/
+theorem Prime.finiteMultiplicity_iff_ne_zero [CommMonoidWithZero α] [IsCancelMulZero α]
+    [WfDvdMonoid α] {a p : α} (hp : Prime p) : FiniteMultiplicity p a ↔ a ≠ 0 :=
+  ⟨FiniteMultiplicity.ne_zero, .of_prime_left hp⟩
 
 namespace UniqueFactorizationMonoid
 
@@ -105,7 +118,7 @@ theorem multiplicity_eq_count_normalizedFactors {a b : R} (ha : Irreducible a) (
     multiplicity a b = (normalizedFactors b).count (normalize a) := by
   have := emultiplicity_eq_count_normalizedFactors ha hb
   rwa [(finiteMultiplicity_of_emultiplicity_eq_natCast this).emultiplicity_eq_multiplicity,
-    ENat.coe_inj] at this
+    ENat.natCast_inj] at this
 
 /-- The number of times an irreducible factor `p` appears in `normalizedFactors x` is defined by
 the number of times it divides `x`.
@@ -155,7 +168,7 @@ lemma dvd_iff_emultiplicity_le {a b : R} (ha : a ≠ 0) :
   refine ⟨fun h _ _ ↦ emultiplicity_le_emultiplicity_of_dvd_right h, fun h ↦ ?_⟩
   by_cases hb : b = 0
   · simp_all
-  letI : NormalizationMonoid R := UniqueFactorizationMonoid.normalizationMonoid
+  let : StrongNormalizationMonoid R := UniqueFactorizationMonoid.strongNormalizationMonoid
   rw [dvd_iff_normalizedFactors_le_normalizedFactors ha hb, Multiset.le_iff_count]
   intro q
   by_cases hq : q ∈ normalizedFactors a
@@ -163,8 +176,25 @@ lemma dvd_iff_emultiplicity_le {a b : R} (ha : a ≠ 0) :
     have h1 := emultiplicity_eq_count_normalizedFactors hqprime.irreducible ha
     have h2 := emultiplicity_eq_count_normalizedFactors hqprime.irreducible hb
     rw [normalize_normalized_factor q hq] at h1 h2
-    simpa [h1, h2] using h q hqprime
+    simpa [h1, h2, ENat.natCast_le_natCast] using h q hqprime
   · simp [Multiset.count_eq_zero_of_notMem hq]
+
+/-- A nonzero element of a `UniqueFactorizationMonoid` divides a nonzero element iff its
+`multiplicity` at every prime is at most that of the other. -/
+lemma dvd_iff_multiplicity_le {a b : R} (ha : a ≠ 0) (hb : b ≠ 0) :
+    a ∣ b ↔ ∀ p : R, Prime p → multiplicity p a ≤ multiplicity p b := by
+  rw [dvd_iff_emultiplicity_le ha]
+  refine forall₂_congr fun p hp ↦ ?_
+  rw [(FiniteMultiplicity.of_prime_left hp ha).emultiplicity_eq_multiplicity,
+    (FiniteMultiplicity.of_prime_left hp hb).emultiplicity_eq_multiplicity,
+    ENat.natCast_le_natCast]
+
+/-- Two nonzero elements of a `UniqueFactorizationMonoid` are associated iff they have the
+same `multiplicity` at every prime. -/
+lemma associated_iff_multiplicity_eq {a b : R} (ha : a ≠ 0) (hb : b ≠ 0) :
+    Associated a b ↔ ∀ p : R, Prime p → multiplicity p a = multiplicity p b := by
+  rw [← dvd_dvd_iff_associated, dvd_iff_multiplicity_le ha hb, dvd_iff_multiplicity_le hb ha]
+  simp_rw [le_antisymm_iff, forall_and]
 
 lemma pow_dvd_pow_iff_dvd {a b : R} {n : ℕ} (hn : n ≠ 0) : a ^ n ∣ b ^ n ↔ a ∣ b := by
   by_cases ha : a = 0
@@ -174,6 +204,14 @@ lemma pow_dvd_pow_iff_dvd {a b : R} {n : ℕ} (hn : n ≠ 0) : a ^ n ∣ b ^ n �
   intro H p hp
   have := H p hp
   rwa [emultiplicity_pow hp, emultiplicity_pow hp,
-    ENat.mul_le_mul_left_iff (by exact_mod_cast hn) (ENat.coe_ne_top _)] at this
+    ENat.mul_le_mul_left_iff (by exact_mod_cast hn) (ENat.natCast_ne_top _)] at this
+
+@[fun_prop]
+lemma hasFiniteMulSupport_fun_pow_multiplicity {α M : Type*} [CommMonoid M] [Subsingleton Rˣ]
+    (f : α → M) {g : α → R} (hgi : g.Injective) (hg : ∀ s, Irreducible (g s)) {r : R} (hr : r ≠ 0) :
+    (fun s : α ↦ f s ^ multiplicity (g s) r).HasFiniteMulSupport := by
+  classical
+  simp only [multiplicity_eq_count_normalizedFactors (hg _) hr, normalize_eq]
+  fun_prop
 
 end UniqueFactorizationMonoid

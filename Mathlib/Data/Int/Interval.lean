@@ -6,9 +6,9 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Group.Embedding
+public import Mathlib.Algebra.Order.Group.Unbundled.Int
 public import Mathlib.Algebra.Ring.CharZero
 public import Mathlib.Algebra.Ring.Int.Defs
-public import Mathlib.Algebra.Order.Group.Unbundled.Int
 public import Mathlib.Order.Interval.Finset.Basic
 
 /-!
@@ -41,7 +41,7 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder ℤ where
     · lia
     · intro
       use (x - a).toNat
-      omega
+      lia
   finset_mem_Ico a b x := by
     simp_rw [mem_map, mem_range, Function.Embedding.trans_apply, Nat.castEmbedding_apply,
       addLeftEmbedding_apply]
@@ -49,7 +49,7 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder ℤ where
     · lia
     · intro
       use (x - a).toNat
-      omega
+      lia
   finset_mem_Ioc a b x := by
     simp_rw [mem_map, mem_range, Function.Embedding.trans_apply, Nat.castEmbedding_apply,
       addLeftEmbedding_apply]
@@ -57,7 +57,7 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder ℤ where
     · lia
     · intro
       use (x - (a + 1)).toNat
-      omega
+      lia
   finset_mem_Ioo a b x := by
     simp_rw [mem_map, mem_range, Function.Embedding.trans_apply, Nat.castEmbedding_apply,
       addLeftEmbedding_apply]

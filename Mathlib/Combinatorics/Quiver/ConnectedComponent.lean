@@ -6,7 +6,6 @@ Authors: David Wärn, Matteo Cipollina
 module
 
 public import Mathlib.Combinatorics.Quiver.Subquiver
-public import Mathlib.Combinatorics.Quiver.Path
 public import Mathlib.Combinatorics.Quiver.Symmetric
 
 /-!
@@ -36,7 +35,7 @@ variable (V : Type*) [Quiver.{u} V]
 
 /-- Two vertices are related in the zigzag setoid if there is a
 zigzag of arrows from one to the other. -/
-@[implicit_reducible]
+@[instance_reducible]
 def zigzagSetoid : Setoid V :=
   ⟨fun a b ↦ Nonempty (@Path (Symmetrify V) _ a b), fun _ ↦ ⟨Path.nil⟩, fun ⟨p⟩ ↦
     ⟨p.reverse⟩, fun ⟨p⟩ ⟨q⟩ ↦ ⟨p.comp q⟩⟩
@@ -115,7 +114,7 @@ lemma IsSStronglyConnected.isStronglyConnected
   intro i j; obtain ⟨p, _⟩ := h i j; exact ⟨p⟩
 
 /-- Equivalence relation identifying vertices connected by directed paths in both directions. -/
-@[implicit_reducible]
+@[instance_reducible]
 def stronglyConnectedSetoid : Setoid V :=
   ⟨fun a b => (Nonempty (Path a b)) ∧ (Nonempty (Path b a)),
    fun _ => ⟨⟨Path.nil⟩, ⟨Path.nil⟩⟩, fun ⟨hab, hba⟩ => ⟨hba, hab⟩, fun ⟨hab, hba⟩ ⟨hbc, hcb⟩ =>

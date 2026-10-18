@@ -26,7 +26,7 @@ variable (X) in
 lemma IsCommMonObj.ofRepresentableBy (F : Cᵒᵖ ⥤ CommMonCat) (α : (F ⋙ forget _).RepresentableBy X) :
     letI : MonObj X := .ofRepresentableBy X (F ⋙ forget₂ CommMonCat MonCat) α
     IsCommMonObj X := by
-  letI : MonObj X := .ofRepresentableBy X (F ⋙ forget₂ CommMonCat MonCat) α
+  let : MonObj X := .ofRepresentableBy X (F ⋙ forget₂ CommMonCat MonCat) α
   have : μ = α.homEquiv'.symm (α.homEquiv' (fst X X) * α.homEquiv' (snd X X)) := rfl
   constructor
   simp_rw [this, ← α.homEquiv'.apply_eq_iff_eq, α.homEquiv'_comp,
