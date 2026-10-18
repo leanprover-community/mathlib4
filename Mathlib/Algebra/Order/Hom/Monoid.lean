@@ -267,7 +267,7 @@ section Preorder
 variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ] [MulOneClass α] [MulOneClass β]
   [MulOneClass γ] [MulOneClass δ] {f g : α →*o β}
 
-@[to_additive]
+@[to_additive (attr := macro_inline)]
 instance : FunLike (α →*o β) α β where
   coe f := f.toFun
   coe_injective f g h := by
@@ -311,8 +311,11 @@ def toOrderHom (f : α →*o β) : α →o β :=
   { f with }
 
 @[to_additive (attr := simp)]
-theorem coe_monoidHom (f : α →*o β) : ((f : α →* β) : α → β) = f :=
+theorem coe_toMonoidHom (f : α →*o β) : ((f : α →* β) : α → β) = f :=
   rfl
+
+@[to_additive (attr := deprecated (since := "2026-09-15"))]
+alias coe_monoidHom := coe_toMonoidHom
 
 @[to_additive (attr := simp)]
 theorem coe_orderHom (f : α →*o β) : ((f : α →o β) : α → β) = f :=
@@ -320,7 +323,7 @@ theorem coe_orderHom (f : α →*o β) : ((f : α →o β) : α → β) = f :=
 
 @[to_additive]
 theorem toMonoidHom_injective : Injective (toMonoidHom : _ → α →* β) := fun f g h =>
-  ext <| by convert! DFunLike.ext_iff.1 h using 0
+  ext <| by convert DFunLike.ext_iff.1 h using 0
 
 @[to_additive]
 theorem toOrderHom_injective : Injective (toOrderHom : _ → α →o β) := fun f g h =>
@@ -372,9 +375,12 @@ theorem comp_apply (f : β →*o γ) (g : α →*o β) (a : α) : (f.comp g) a =
   rfl
 
 @[to_additive]
-theorem coe_comp_monoidHom (f : β →*o γ) (g : α →*o β) :
+theorem toMonoidHom_comp (f : β →*o γ) (g : α →*o β) :
     (f.comp g : α →* γ) = (f : β →* γ).comp g :=
   rfl
+
+@[to_additive (attr := deprecated (since := "2026-09-15"))]
+alias coe_comp_monoidHom := toMonoidHom_comp
 
 @[to_additive]
 theorem coe_comp_orderHom (f : β →*o γ) (g : α →*o β) :
@@ -496,7 +502,7 @@ section Preorder
 variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ] [Mul α] [Mul β]
   [Mul γ] [Mul δ] {f g : α ≃*o β}
 
-@[to_additive]
+@[to_additive (attr := macro_inline)]
 instance : EquivLike (α ≃*o β) α β where
   coe f := f.toFun
   inv f := f.invFun
@@ -548,7 +554,7 @@ theorem coe_orderIso (f : α ≃*o β) : ((f : α →o β) : α → β) = f :=
 
 @[to_additive]
 theorem toMulEquiv_injective : Injective (toMulEquiv : _ → α ≃* β) := fun f g h =>
-  ext <| by convert! DFunLike.ext_iff.1 h using 0
+  ext <| by convert DFunLike.ext_iff.1 h using 0
 
 @[to_additive]
 theorem toOrderIso_injective : Injective (toOrderIso : _ → α ≃o β) := fun f g h =>
@@ -694,7 +700,7 @@ theorem symm_apply_eq (e : α ≃*o β) {x y} : e.symm x = y ↔ x = e y :=
 theorem eq_symm_apply (e : α ≃*o β) {x y} : y = e.symm x ↔ e y = x :=
   e.toEquiv.eq_symm_apply
 
-@[to_additive (attr := deprecated eq_symm_apply (since := "2026-07-26"))]
+@[to_additive (attr := deprecated eq_symm_apply +typeChanged (since := "2026-07-26"))]
 theorem apply_eq_iff_symm_apply (e : α ≃*o β) {x : α} {y : β} : e x = y ↔ x = e.symm y :=
   e.eq_symm_apply.symm
 
@@ -736,7 +742,7 @@ protected lemma strictMono : StrictMono f :=
 protected lemma strictMono_symm : StrictMono f.symm :=
   strictMono_of_le_iff_le <| fun a b ↦ by
     rw [← map_le_map_iff f]
-    convert! Iff.rfl <;>
+    convert Iff.rfl <;>
     exact f.toEquiv.apply_symm_apply _
 
 end Preorder

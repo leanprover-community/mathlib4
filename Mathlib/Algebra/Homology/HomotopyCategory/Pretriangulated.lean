@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.HomotopyCategory.MappingCone
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexShift
+public import Mathlib.Algebra.Homology.HomotopyCategory.MappingCone
 public import Mathlib.CategoryTheory.Triangulated.Functor
 
 /-! # The pretriangulated structure on the homotopy category of complexes
@@ -50,7 +50,7 @@ namespace mappingCone
 /-- The standard triangle `K ⟶ L ⟶ mappingCone φ ⟶ K⟦(1 : ℤ)⟧` in `CochainComplex C ℤ`
 attached to a morphism `φ : K ⟶ L`. It involves `φ`, `inr φ : L ⟶ mappingCone φ` and
 the morphism induced by the `1`-cocycle `-mappingCone.fst φ`. -/
-@[simps! obj₁ obj₂ obj₃ mor₁ mor₂]
+@[implicit_reducible, simps! obj₁ obj₂ obj₃ mor₁ mor₂]
 noncomputable def triangle : Triangle (CochainComplex C ℤ) :=
   Triangle.mk φ (inr φ) (Cocycle.homOf ((-fst φ).rightShift 1 0 (zero_add 1)))
 
@@ -106,14 +106,14 @@ noncomputable def mapOfHomotopy :
     ((Cochain.equivHomotopy _ _) H).1.comp (Cochain.ofHom (inr φ₂)) (add_zero _))
     (b ≫ inr φ₂) (by simp)
 
-@[reassoc]
+@[map (attr := reassoc)]
 lemma triangleMapOfHomotopy_comm₂ :
     inr φ₁ ≫ mapOfHomotopy H = b ≫ inr φ₂ := by
   simp [mapOfHomotopy]
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
-@[reassoc]
+@[map (attr := reassoc)]
 lemma triangleMapOfHomotopy_comm₃ :
     mapOfHomotopy H ≫ (triangle φ₂).mor₃ = (triangle φ₁).mor₃ ≫ a⟦1⟧' := by
   ext p
@@ -139,16 +139,11 @@ noncomputable def trianglehMapOfHomotopy :
   hom₂ := (HomotopyCategory.quotient _ _).map b
   hom₃ := (HomotopyCategory.quotient _ _).map (mapOfHomotopy H)
   comm₁ := by
-    dsimp
-    simp only [← Functor.map_comp]
-    exact HomotopyCategory.eq_of_homotopy _ _ H
+    simpa using HomotopyCategory.eq_of_homotopy _ _ H
   comm₂ := by
-    dsimp
-    simp only [← Functor.map_comp, triangleMapOfHomotopy_comm₂]
+    simp [triangleMapOfHomotopy_comm₂_map]
   comm₃ := by
-    dsimp
-    rw [← Functor.map_comp_assoc, triangleMapOfHomotopy_comm₃, Functor.map_comp, assoc, assoc]
-    simp
+    simp [triangleMapOfHomotopy_comm₃_map_assoc]
 
 end mapOfHomotopy
 

@@ -39,12 +39,12 @@ variable [Quiver.{v₁} C]
 @[to_dual self]
 theorem Quiver.Hom.op_inj {X Y : C} :
     Function.Injective (Quiver.Hom.op : (X ⟶ Y) → (Opposite.op Y ⟶ Opposite.op X)) := fun _ _ H =>
-  congr_arg Quiver.Hom.unop H
+  congr($(H).unop)
 
 @[to_dual self]
 theorem Quiver.Hom.unop_inj {X Y : Cᵒᵖ} :
     Function.Injective (Quiver.Hom.unop : (X ⟶ Y) → (Opposite.unop Y ⟶ Opposite.unop X)) :=
-  fun _ _ H => congr_arg Quiver.Hom.op H
+  fun _ _ H => congr($(H).op)
 
 @[simp, to_dual self]
 theorem Quiver.Hom.unop_op {X Y : C} (f : X ⟶ Y) : f.op.unop = f :=
@@ -151,8 +151,8 @@ def opOp : C ⥤ Cᵒᵖᵒᵖ where
 def opOpEquivalence : Cᵒᵖᵒᵖ ≌ C where
   functor := unopUnop C
   inverse := opOp C
-  unitIso := Iso.refl (𝟭 Cᵒᵖᵒᵖ)
-  counitIso := Iso.refl (opOp C ⋙ unopUnop C)
+  unitIso := NatIso.ofComponents fun _ ↦ Iso.refl _
+  counitIso := NatIso.ofComponents fun _ ↦ Iso.refl _
 
 instance : (opOp C).IsEquivalence :=
   (opOpEquivalence C).isEquivalence_inverse
@@ -246,7 +246,7 @@ def opInv : (Cᵒᵖ ⥤ Dᵒᵖ) ⥤ (C ⥤ D)ᵒᵖ where
   map α :=
     Quiver.Hom.op
       { app := fun X => (α.app (op X)).unop
-        naturality := fun _ _ f => Quiver.Hom.op_inj <| (α.naturality f.op).symm }
+        naturality := fun _ _ f => Quiver.Hom.op_inj (α.naturality f.op).symm }
 
 variable {C D}
 
@@ -344,6 +344,20 @@ def rightOpComp {E : Type*} [Category* E] (F : Cᵒᵖ ⥤ D) (G : D ⥤ E) :
 @[simps!]
 def leftOpComp {E : Type*} [Category* E] (F : C ⥤ D) (G : D ⥤ Eᵒᵖ) :
     (F ⋙ G).leftOp ≅ F.op ⋙ G.leftOp :=
+  Iso.refl _
+
+/-- Compatibility of `Functor.leftOp` with respect to composition with the opposite of a
+functor. -/
+@[simps!]
+def leftOpCompOp {E : Type*} [Category* E] (F : C ⥤ Dᵒᵖ) (G : D ⥤ E) :
+    (F ⋙ G.op).leftOp ≅ F.leftOp ⋙ G :=
+  Iso.refl _
+
+/-- Compatibility of `Functor.rightOp` with respect to composition with the opposite of a
+functor. -/
+@[simps!]
+def rightOpCompOp {E : Type*} [Category* E] (F : C ⥤ D) (G : Dᵒᵖ ⥤ E) :
+    (F.op ⋙ G).rightOp ≅ F ⋙ G.rightOp :=
   Iso.refl _
 
 section
@@ -633,8 +647,6 @@ isomorphism between the original functors `F ≅ G`. -/
 protected def op (α : F ≅ G) : G.op ≅ F.op where
   hom := NatTrans.op α.hom
   inv := NatTrans.op α.inv
-  hom_inv_id := by ext; dsimp; rw [← op_comp]; rw [α.inv_hom_id_app]; rfl
-  inv_hom_id := by ext; dsimp; rw [← op_comp]; rw [α.hom_inv_id_app]; rfl
 
 @[simp]
 theorem op_refl : NatIso.op (Iso.refl F) = Iso.refl F.op := rfl
