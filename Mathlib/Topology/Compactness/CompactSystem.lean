@@ -349,6 +349,15 @@ lemma cylinder_mem_countableInfClosure_supClosure [∀ i, SecondCountableTopolog
     obtain ⟨u, hu, hu_sub⟩ := isOpen_pi_iff'.mp hK_closed.isOpen_compl y hy
     exact mem_biUnion (x := u) ⟨fun j ↦ (hu j).1, subset_compl_iff_disjoint_right.mp hu_sub⟩
       fun j _ ↦ (hu j).2
+  obtain rfl | hK := eq_or_ne K univ
+  · refine subset_countableInfClosure (subset_supClosure (mem_insert_of_mem _ ?_))
+    convert cylinder_univ_pi_mem_compactClosedSquareCylinders hA_compact hA_closed
+    grind
+  have _ : Nonempty T := by
+    rw [nonempty_coe_sort]
+    by_contra! rfl
+    simp at hK_compl
+    grind
   -- for each such box `univ.pi u`, `K` is covered by the boxes `B u j` for `j : J`, obtained by
   -- replacing the side `A j` by `A j \ u j`
   let B : (∀ j : J, Set (α j)) → J → ∀ k : J, Set (α k) :=
@@ -361,41 +370,27 @@ lemma cylinder_mem_countableInfClosure_supClosure [∀ i, SecondCountableTopolog
     simp only [B]
     split_ifs
     exacts [(hA_closed k).sdiff (hu.1 k), hA_closed k]
-  have hK_eq : K = univ.pi A ∩ ⋂ u : T, ⋃ j, univ.pi (B u j) := by
-    refine Subset.antisymm (fun y hy ↦ ⟨hKA hy, mem_iInter.mpr fun u ↦ ?_⟩)
-      fun y ⟨hyA, hy⟩ ↦ ?_
+  have hK_eq : K = ⋂ u : T, ⋃ j, univ.pi (B u j) := by
+    refine Subset.antisymm (fun y hy ↦ mem_iInter.mpr fun u ↦ ?_) fun y hy ↦ ?_
     · have hyu : y ∉ univ.pi u.1 := fun h ↦ (hT𝒰 u.2).2.notMem_of_mem_left h hy
       simp only [mem_univ_pi, not_forall] at hyu
       obtain ⟨j, hj⟩ := hyu
-      refine mem_iUnion.mpr ⟨j, fun k _ ↦ ?_⟩
-      simp only [B]
-      split_ifs with hkj
-      · subst hkj
-        exact ⟨hKA hy k trivial, hj⟩
-      · exact hKA hy k trivial
+      exact mem_iUnion.mpr ⟨j, fun k _ ↦ by grind⟩
     · by_contra hyK
       rw [← mem_compl_iff, hK_compl, mem_iUnion₂] at hyK
       obtain ⟨u, hu, hyu⟩ := hyK
       obtain ⟨j, hj⟩ := mem_iUnion.mp (mem_iInter.mp hy ⟨u, hu⟩)
       have hj' := hj j trivial
-      simp only [B, ite_true] at hj'
-      exact hj'.2 (hyu j trivial)
-  -- conclude by taking preimages
+      grind
+  -- conclude with closure properties
   have : Countable T := hT_count.to_subtype
-  have h_eq : cylinder J K = ⋂ o : Option T, o.elim (cylinder J (univ.pi A))
-      fun u ↦ ⋃ j, cylinder J (univ.pi (B u j)) := by
-    rw [iInter_option]
-    conv_lhs => rw [hK_eq]
-    simp only [cylinder, preimage_inter, preimage_iInter, preimage_iUnion, Option.elim]
-  rw [h_eq, ← iInf_eq_iInter]
-  refine iInf_mem_countableInfClosure fun o ↦ ?_
-  cases o with
-  | none =>
-    exact subset_supClosure (mem_insert_of_mem _
-      (cylinder_univ_pi_mem_compactClosedSquareCylinders hA_compact hA_closed))
-  | some u =>
-    exact supClosed_supClosure.iSup_mem (subset_supClosure (mem_insert _ _)) fun j ↦
-      subset_supClosure (mem_insert_of_mem _ (cylinder_univ_pi_mem_compactClosedSquareCylinders
-        (hB_compact u (hT𝒰 u.2) j) (hB_closed u (hT𝒰 u.2) j)))
+  have h_eq : cylinder J K = ⋂ u : T, ⋃ j, cylinder J (univ.pi (B u j)) := by
+    rw [hK_eq]
+    simp [cylinder, preimage_iInter]
+  rw [h_eq]
+  refine iInf_mem_countableInfClosure fun u ↦ ?_
+  exact supClosed_supClosure.iSup_mem (subset_supClosure (mem_insert _ _)) fun j ↦
+    subset_supClosure (mem_insert_of_mem _ (cylinder_univ_pi_mem_compactClosedSquareCylinders
+      (hB_compact u (hT𝒰 u.2) j) (hB_closed u (hT𝒰 u.2) j)))
 
 end CompactClosedSquareCylinders
