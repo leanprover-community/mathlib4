@@ -149,6 +149,11 @@ theorem HasSubst.uncurry {γ : Type*} [Finite γ] {a : γ → σ → MvPowerSeri
   coeff_zero d := (Set.finite_iUnion fun k ↦ ((ha k).coeff_zero d).image (Prod.mk k)).subset
     fun ⟨k, s⟩ h ↦ Set.mem_iUnion.mpr ⟨k, s, h, rfl⟩
 
+/-- Two substitutable families combine to a substitutable family indexed by `Fin 2 × σ`. -/
+theorem HasSubst.pair {x y : σ → MvPowerSeries τ R} (hx : HasSubst x) (hy : HasSubst y) :
+    HasSubst (Function.uncurry ![x, y]) :=
+  .uncurry <| Fin.forall_fin_two.mpr ⟨hx, hy⟩
+
 /-- Families of `MvPowerSeries` that can be substituted, as an `Ideal` -/
 noncomputable def hasSubstIdeal : Ideal (σ → MvPowerSeries τ S) :=
   { carrier := Set.ofPred HasSubst
