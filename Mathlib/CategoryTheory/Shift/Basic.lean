@@ -197,6 +197,10 @@ def shiftFunctorZero : shiftFunctor C (0 : A) ≅ 𝟭 C :=
 def shiftFunctorZero' (a : A) (ha : a = 0) : shiftFunctor C a ≅ 𝟭 C :=
   eqToIso (by rw [ha]) ≪≫ shiftFunctorZero C A
 
+lemma shiftFunctorZero'_eq_shiftFunctorZero :
+    shiftFunctorZero' C 0 rfl = shiftFunctorZero C A := by
+  simp [shiftFunctorZero']
+
 end
 
 variable {C A}

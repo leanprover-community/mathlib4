@@ -285,7 +285,7 @@ theorem IsChain.append_overlap {l₁ l₂ l₃ : List α} (h₁ : IsChain R (l�
 
 lemma isChain_flatten : ∀ {L : List (List α)}, [] ∉ L →
     (IsChain R L.flatten ↔ (∀ l ∈ L, IsChain R l) ∧
-    L.IsChain (fun l₁ l₂ => ∀ᵉ (x ∈ l₁.getLast?) (y ∈ l₂.head?), R x y))
+    L.IsChain (fun l₁ l₂ => ∀ x ∈ l₁.getLast?, ∀ y ∈ l₂.head?, R x y))
 | [], _ => by simp
 | [l], _ => by simp [flatten]
 | (l₁ :: l₂ :: L), hL => by
