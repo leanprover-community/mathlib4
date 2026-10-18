@@ -355,13 +355,10 @@ arguments are coprime. -/
 theorem totient_mul_eq_totient_mul_iff {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
     φ (a * b) = φ a * φ b ↔ a.Coprime b := by
   refine ⟨fun h ↦ ?_, totient_mul⟩
-  have hg' : φ (a.gcd b) = a.gcd b := by
-    apply mul_left_cancel₀ <| mul_ne_zero
-      (totient_eq_zero.not.mpr ha) (totient_eq_zero.not.mpr hb)
-    rw [← totient_gcd_mul_totient_mul, h, mul_comm]
-  rw [totient_eq_self_iff] at hg'
-  have hpos : 1 ≤ a.gcd b := by grind
-  exact le_antisymm hg' hpos
+  refine le_antisymm (totient_eq_self_iff.mp ?_) (by grind)
+  apply mul_left_cancel₀ <| mul_ne_zero
+    (totient_eq_zero.not.mpr ha) (totient_eq_zero.not.mpr hb)
+  rw [← totient_gcd_mul_totient_mul, h, mul_comm]
 
 theorem totient_super_multiplicative (a b : ℕ) : φ a * φ b ≤ φ (a * b) := by
   let d := a.gcd b
