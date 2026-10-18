@@ -5,6 +5,7 @@ Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
 module
 
+public import Mathlib.MeasureTheory.Constructions.ClosedCompactCylinders
 public import Mathlib.MeasureTheory.Constructions.ProjectiveFamilyContent
 public import Mathlib.MeasureTheory.Measure.AddContent.CompactSystem
 public import Mathlib.MeasureTheory.Measure.Regular
