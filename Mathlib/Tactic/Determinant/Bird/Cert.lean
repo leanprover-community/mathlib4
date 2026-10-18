@@ -5,8 +5,6 @@ Authors: Paul Cadman
 -/
 module
 
-public meta import Mathlib.Tactic.Determinant.Bird.Meta
-public meta import Mathlib.Tactic.Ring
 public import Mathlib.Tactic.Determinant.Bird.Meta
 
 /-!

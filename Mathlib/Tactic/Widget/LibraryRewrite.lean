@@ -8,7 +8,6 @@ module
 public meta import Mathlib.Lean.GoalsLocation
 public meta import Mathlib.Lean.Meta.KAbstractPositions
 public meta import Mathlib.Lean.Meta.RefinedDiscrTree
-public meta import Mathlib.Tactic.Widget.SelectPanelUtils
 public import Mathlib.Lean.Meta.RefinedDiscrTree
 public import Mathlib.Tactic.Widget.SelectPanelUtils
 public import ProofWidgets.Component.FilterDetails

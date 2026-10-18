@@ -5,8 +5,6 @@ Authors: Adam Topaz
 -/
 module
 
-public meta import Mathlib.Lean.Expr.Basic
-public meta import Mathlib.Tactic.Simps
 public import Mathlib.Logic.Equiv.Defs
 
 /-!

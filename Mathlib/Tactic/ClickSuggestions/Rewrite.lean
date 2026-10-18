@@ -6,7 +6,6 @@ Authors: Jovan Gerbscheid
 module
 
 public meta import Mathlib.Control.Basic
-public meta import Mathlib.Tactic.ClickSuggestions.Util
 public import Mathlib.Tactic.ClickSuggestions.SectionState
 
 /-!

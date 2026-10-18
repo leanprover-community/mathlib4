@@ -5,7 +5,6 @@ Authors: Moritz Doll, Mario Carneiro, Robert Y. Lewis
 -/
 module
 
-public meta import Mathlib.Tactic.ToAdditive
 public import Mathlib.Algebra.Order.Ring.Cast
 public import Mathlib.Algebra.Order.Ring.Unbundled.Rat
 public import Mathlib.Algebra.Ring.Rat

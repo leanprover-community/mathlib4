@@ -5,7 +5,6 @@ Authors: Johannes Hölzl
 -/
 module
 
-public meta import Mathlib.Tactic.ToDual
 public import Mathlib.Algebra.Group.Equiv.Opposite
 public import Mathlib.Algebra.Group.TypeTags.Basic
 public import Mathlib.Data.Fintype.Sets

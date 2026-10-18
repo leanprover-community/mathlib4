@@ -5,9 +5,6 @@ Authors: Jireh Loreaux
 -/
 module
 
-public meta import Mathlib.Tactic.Basic
-public meta import Mathlib.Tactic.ToAdditive
-public meta import Mathlib.Tactic.ToDual
 public import Mathlib.Order.Filter.Basic
 
 /-!

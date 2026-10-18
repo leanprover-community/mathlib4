@@ -5,7 +5,6 @@ Authors: Kyle Miller
 -/
 module
 
-public meta import Mathlib.Tactic.Simps
 public import Mathlib.Logic.Equiv.Defs
 
 /-!

@@ -5,7 +5,6 @@ Authors: Rao Xiaojia
 -/
 module
 
-public meta import Mathlib.Tactic.Matrix.MulExpand
 public import Mathlib.Tactic.Matrix.MulExpand
 public import Mathlib.Tactic.Matrix.OfLists
 public import Mathlib.Tactic.Matrix.Parsing

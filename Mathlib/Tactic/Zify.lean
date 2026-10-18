@@ -5,8 +5,6 @@ Authors: Moritz Doll, Mario Carneiro, Robert Y. Lewis
 -/
 module
 
-public meta import Mathlib.Tactic.ToAdditive
-public meta import Mathlib.Tactic.ToDual
 public import Mathlib.Data.Int.Cast.Basic
 public import Mathlib.Order.Basic
 

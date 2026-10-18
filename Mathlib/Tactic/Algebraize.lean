@@ -5,8 +5,6 @@ Authors: Johan Commelin, Nick Kuhn, Arend Mellendijk, Christian Merten, Calle SÃ
 -/
 module
 
-public meta import Mathlib.Tactic.Attr.Core
-public meta import Mathlib.Tactic.ToAdditive
 public import Mathlib.Algebra.Algebra.Tower
 
 /-!

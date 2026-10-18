@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Evgenia Karunus, Kyle Miller
 module
 
 public meta import Lean.Meta.Basic
-public meta import Mathlib.Tactic.Explode.Datatypes
 public import Mathlib.Tactic.Explode.Datatypes
 
 /-!
