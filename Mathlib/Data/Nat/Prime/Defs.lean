@@ -215,7 +215,7 @@ termination_by k => sqrt n + 2 - k
 decreasing_by simp_wf; apply minFac_lemma n k; assumption
 
 /-- Returns the smallest prime factor of `n ≠ 1`. -/
-@[oeis A020639]
+@[oeis A020639 "the sequence skips `n = 0` which is a junk value"]
 def minFac (n : ℕ) : ℕ :=
   if 2 ∣ n then 2 else minFacAux n 3
 

@@ -75,7 +75,7 @@ theorem even_largeSchroder : ∀ {n : ℕ}, n ≠ 0 → Even (largeSchroder n)
     exact .mul_right (even_largeSchroder k.succ_ne_zero) _
 
 /-- The small Schröder number is equal to : `largeSchroder n = 2 * smallSchroder (n + 1), n ≥ 1` -/
-@[oeis A001003]
+@[oeis A001003 "the sequence skips `n = 0`"]
 def smallSchroder : ℕ → ℕ
   | 0 => 1
   | 1 => 1
