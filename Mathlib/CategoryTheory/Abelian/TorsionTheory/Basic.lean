@@ -63,8 +63,8 @@ namespace Abelian
 torsion and torsion-free objects, respectively, such that `T` is the left orthogonal
 of `F` and `F` is the right orthogonal of `T`. -/
 structure TorsionTheory (T F : ObjectProperty C) : Prop where
-  leftOrthogonal_eq : F.leftOrthogonal = T
-  rightOrthogonal_eq : T.rightOrthogonal = F
+  leftOrthogonal_eq : F.leftOrthogonal = T := by cat_disch
+  rightOrthogonal_eq : T.rightOrthogonal = F := by cat_disch
 
 /-- A property of objects is a torsion class if it is the torsion class of some torsion theory.
 
