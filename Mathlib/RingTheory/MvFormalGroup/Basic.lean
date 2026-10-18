@@ -161,7 +161,6 @@ theorem constantCoeff_zeroX (i : σ) : constantCoeff (F.zeroX i) = 0 :=
   constantCoeff_subst_eq_zero (.uncurry <| Fin.forall_fin_two.mpr ⟨.zero, .X⟩)
     (by simp [Fin.forall_fin_two]) (F.zero_constantCoeff i)
 
-@[simp]
 theorem Xzero_subst_Xzero (i : σ) : (F.Xzero i).subst F.Xzero = F.Xzero i := by
   have hs : HasSubst F.Xzero := F.hasSubst_subst_pair .X .zero
   rw [Xzero, subst_pair_subst _ (x := X) (y := 0) .X .zero hs]
@@ -171,7 +170,6 @@ theorem Xzero_subst_Xzero (i : σ) : (F.Xzero i).subst F.Xzero = F.Xzero i := by
     Pi.zero_apply, ← substAlgHom_apply hs, map_zero, substAlgHom_X,
     Xzero, ← Pi.zero_def] using F.assoc_subst .X .zero .zero i (S := R)
 
-@[simp]
 theorem zeroX_subst_zeroX (i : σ) : (F.zeroX i).subst F.zeroX = F.zeroX i := by
   have hs : HasSubst F.zeroX := F.hasSubst_subst_pair .zero .X
   rw [zeroX, subst_pair_subst _ (x := 0) (y := X) .zero .X hs]
