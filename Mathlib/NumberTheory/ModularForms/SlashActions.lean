@@ -247,7 +247,7 @@ theorem inv_slash_SL2 (k : ℤ) (A : SL(2, ℤ)) (f : ℍ → ℂ) :
 
 theorem div_slash_SL2 (k1 k2 : ℤ) (A : SL(2, ℤ)) (f g : ℍ → ℂ) :
     (f / g) ∣[k1 - k2] A = f ∣[k1] A / g ∣[k2] A := by
-  simp only [div_eq_mul_inv, sub_eq_add_neg, mul_slash_SL2, inv_slash_SL2, neg_neg]
+  simp [div_eq_mul_inv, sub_eq_add_neg, mul_slash_SL2, inv_slash_SL2]
 
 open Finset
 

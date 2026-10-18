@@ -215,8 +215,7 @@ lemma G2_slash_action (γ : SL(2, ℤ)) : G2 ∣[(2 : ℤ)] γ = G2 - D2 γ := b
         aesop
       · simpa only [h2, D2_T, sub_zero] using G2_T_transform
   | mul g h _ _ ig ih =>
-      rw [D2_mul, SlashAction.slash_mul, ig, SlashAction.sub_slash, ih]
-      abel
+      grind [D2_mul, SlashAction.slash_mul, SlashAction.sub_slash]
   | inv g _ ig =>
       have H1 : (G2 ∣[(2 : ℤ)] g) ∣[(2 : ℤ)] g⁻¹ = (G2 - D2 g) ∣[(2 : ℤ)] g⁻¹ := by
         rw [ig]
