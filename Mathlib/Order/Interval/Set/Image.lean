@@ -370,14 +370,14 @@ alias directedOn_le_Iic := DirectedOn.le_Iic
 lemma DirectedOn.le_Icc (a b : α) : DirectedOn (· ≤ ·) (Icc a b) :=
   fun _x hx _y hy ↦ ⟨b, right_mem_Icc.2 <| hx.1.trans hx.2, hx.2, hy.2⟩
 
-@[to_dual (attr := deprecated (since := "2026-09-07")) directedOn_ge_Icc]
+@[to_dual (reorder := a b) (attr := deprecated (since := "2026-09-07")) directedOn_ge_Icc]
 alias directedOn_le_Icc := DirectedOn.le_Icc
 
 @[to_dual (reorder := a b) (rename := a ↔ b) ge_Ico]
 lemma DirectedOn.le_Ioc (a b : α) : DirectedOn (· ≤ ·) (Ioc a b) :=
   fun _x hx _y hy ↦ ⟨b, right_mem_Ioc.2 <| hx.1.trans_le hx.2, hx.2, hy.2⟩
 
-@[to_dual (attr := deprecated (since := "2026-09-07")) directedOn_ge_Ico]
+@[to_dual (reorder := a b) (attr := deprecated (since := "2026-09-07")) directedOn_ge_Ico]
 alias directedOn_le_Ioc := DirectedOn.le_Ioc
 
 @[to_dual ge_Iio]
