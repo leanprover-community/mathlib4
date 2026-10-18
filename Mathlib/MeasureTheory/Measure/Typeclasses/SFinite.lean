@@ -93,7 +93,7 @@ theorem exists_isFiniteMeasure_absolutelyContinuous [SFinite μ] :
 end SFinite
 
 /-- A measure `μ` is called σ-finite if there is a countable collection of sets
-`{ A i | i ∈ ℕ }` such that `μ (A i) < ∞` and `⋃ i, A i = s`. -/
+`{ A i | i ∈ ℕ }` such that `μ (A i) < ∞` and `⋃ i, A i = Set.univ`. -/
 class SigmaFinite {m0 : MeasurableSpace α} (μ : Measure α) : Prop where
   out' : Nonempty (μ.FiniteSpanningSetsIn univ)
 
@@ -185,6 +185,10 @@ lemma measure_singleton_lt_top [SigmaFinite μ] : μ {a} < ∞ :=
   measure_lt_top_mono (singleton_subset_iff.2 <| mem_spanningSetsIndex ..)
     (measure_spanningSets_lt_top _ _)
 
+theorem _root_.Set.Finite.measure_lt_top_of_sigmaFinite [SigmaFinite μ] (hs : s.Finite) :
+    μ s < ∞ := by
+  grw [← s.biUnion_of_singleton, measure_biUnion_lt_top hs fun _ _ ↦ measure_singleton_lt_top]
+
 theorem sum_restrict_disjointed_spanningSets (μ ν : Measure α) [SigmaFinite ν] :
     sum (fun n ↦ μ.restrict (disjointed (spanningSets ν) n)) = μ := by
   rw [← restrict_iUnion (disjoint_disjointed _)
@@ -198,15 +202,6 @@ instance (priority := 100) [SigmaFinite μ] : SFinite μ := by
     (sum_restrict_disjointed_spanningSets μ μ).symm⟩⟩
 
 namespace Measure
-
-/-- A set in a σ-finite space has zero measure if and only if its intersection with
-all members of the countable family of finite measure spanning sets has zero measure. -/
-@[deprecated forall_measure_inter_isCountablySpanning_eq_zero +typeChanged (since := "2026-03-13")]
-theorem forall_measure_inter_spanningSets_eq_zero [MeasurableSpace α] {μ : Measure α}
-    [SigmaFinite μ] (s : Set α) : (∀ n, μ (s ∩ spanningSets μ n) = 0) ↔ μ s = 0 := by
-  nth_rw 2 [show s = ⋃ n, s ∩ spanningSets μ n by
-      rw [← inter_iUnion, iUnion_spanningSets, inter_univ]]
-  rw [measure_iUnion_null_iff]
 
 /-- A set in a σ-finite space has positive measure if and only if its intersection with
 some member of the countable family of finite measure spanning sets has positive measure. -/

@@ -26,8 +26,6 @@ a restricted measure.
 public section
 
 
-noncomputable section
-
 open MeasureTheory.Lp Filter
 
 open scoped NNReal ENNReal Topology MeasureTheory

@@ -6,6 +6,7 @@ Authors: David Wärn
 module
 
 public import Mathlib.Order.Ideal
+
 import Mathlib.Data.Finset.Max
 
 /-!

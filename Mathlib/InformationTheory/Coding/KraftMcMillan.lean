@@ -5,10 +5,11 @@ Authors: Elazar Gershuni
 -/
 module
 
-import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Basic.Real.Basic
 public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.InformationTheory.Coding.UniquelyDecodable
+
+import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Analysis.SpecificLimits.Normed
 
 /-!

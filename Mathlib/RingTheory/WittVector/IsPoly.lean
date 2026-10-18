@@ -5,9 +5,9 @@ Authors: Johan Commelin, Robert Y. Lewis
 -/
 module
 
+public meta import Mathlib.Lean.Elab.Tactic.Basic
 public import Mathlib.Algebra.MvPolynomial.Funext
 public import Mathlib.RingTheory.WittVector.Basic
-public meta import Mathlib.Lean.Elab.Tactic.Basic
 /-!
 # The `IsPoly` predicate
 
@@ -189,7 +189,7 @@ theorem ext [Fact p.Prime] {f g} (hf : IsPoly p f) (hg : IsPoly p g)
     apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
     ext1
     apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
-    simp only [coeff_mk]; rfl
+    rfl
 
 /-- The composition of polynomial functions is polynomial. -/
 instance comp {g f} [hg : IsPoly p g] [hf : IsPoly p f] :
@@ -350,7 +350,7 @@ theorem ext [Fact p.Prime] {f g} (hf : IsPoly₂ p f) (hg : IsPoly₂ p g)
     ext1
     apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
     ext ⟨b, _⟩
-    fin_cases b <;> simp only [coeff_mk, uncurry] <;> rfl
+    fin_cases b <;> rfl
 
 -- unfortunately this is not universe polymorphic, merely because `f` isn't
 theorem map [Fact p.Prime] {f} (hf : IsPoly₂ p f) (g : R →+* S) (x y : 𝕎 R) :

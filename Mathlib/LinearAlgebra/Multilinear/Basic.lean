@@ -186,14 +186,14 @@ instance : Add (MultilinearMap R M₁ M₂) :=
     ⟨fun x => f x + f' x, fun m i x y => by simp [add_left_comm, add_assoc], fun m i c x => by
       simp [smul_add]⟩⟩
 
-instance : IsAddApply (MultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
+instance : IsAddApply (MultilinearMap R M₁ M₂) where
 
 @[deprecated (since := "2026-06-10")] protected alias add_apply := add_apply
 
 instance : Zero (MultilinearMap R M₁ M₂) :=
   ⟨⟨fun _ => 0, fun _ _ _ _ => by simp, fun _ _ c _ => by simp⟩⟩
 
-instance : IsZeroApply (MultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
+instance : IsZeroApply (MultilinearMap R M₁ M₂) where
 
 instance : Inhabited (MultilinearMap R M₁ M₂) :=
   ⟨0⟩
@@ -209,7 +209,7 @@ instance : SMul S (MultilinearMap R M₁ M₂) :=
     ⟨fun m => c • f m, fun m i x y => by simp [smul_add], fun l i x d => by
       simp [← smul_comm x c (_ : M₂)]⟩⟩
 
-instance : IsSMulApply S (MultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
+instance : IsSMulApply S (MultilinearMap R M₁ M₂) where
 
 @[deprecated (since := "2026-06-10")] protected alias smul_apply := smul_apply
 
@@ -739,7 +739,7 @@ lemma domDomRestrict_aux_right {ι} [DecidableEq ι] (P : ι → Prop) [Decidabl
 
 /-- Given a multilinear map `f` on `(i : ι) → M i`, a (decidable) predicate `P` on `ι` and
 an element `z` of `(i : {a // ¬ P a}) → M₁ i`, construct a multilinear map on
-`(i : {a // P a}) → M₁ i)` whose value at `x` is `f` evaluated at the vector with `i`th coordinate
+`(i : {a // P a}) → M₁ i` whose value at `x` is `f` evaluated at the vector with `i`th coordinate
 `x i` if `P i` and `z i` otherwise.
 
 The naming is similar to `MultilinearMap.domDomCongr`: here we are applying the restriction to the
@@ -1285,7 +1285,7 @@ variable [Semiring R] [∀ i, AddCommMonoid (M₁ i)] [AddCommGroup M₂] [∀ i
 instance : Neg (MultilinearMap R M₁ M₂) :=
   ⟨fun f => ⟨fun m => -f m, fun m i x y => by simp [add_comm], fun m i c x => by simp⟩⟩
 
-instance : IsNegApply (MultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
+instance : IsNegApply (MultilinearMap R M₁ M₂) where
 
 @[deprecated (since := "2026-06-10")] protected alias neg_apply := neg_apply
 
@@ -1296,7 +1296,7 @@ instance : Sub (MultilinearMap R M₁ M₂) :=
       abel,
       fun m i c x => by simp only [MultilinearMap.map_update_smul, smul_sub]⟩⟩
 
-instance : IsSubApply (MultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
+instance : IsSubApply (MultilinearMap R M₁ M₂) where
 
 @[deprecated (since := "2026-06-10")] protected alias sub_apply := sub_apply
 
