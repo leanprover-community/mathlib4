@@ -207,7 +207,7 @@ theorem IsEdgeConnected.le_edgeConnectivity (h : G.IsEdgeConnected k) : k ≤ G.
 theorem Reachable.edgeReachability_ne_zero (h : G.Reachable u v) : G.edgeReachability u v ≠ 0 := by
   simpa [← Order.one_le_iff_ne_zero] using isEdgeReachable_one.mpr h |>.le_edgeReachability
 
-theorem Reachable.edgeConnectivity_ne_zero (h : G.Preconnected) : G.edgeConnectivity ≠ 0 := by
+theorem Preconnected.edgeConnectivity_ne_zero (h : G.Preconnected) : G.edgeConnectivity ≠ 0 := by
   simpa [← Order.one_le_iff_ne_zero] using isEdgeConnected_one.mpr h |>.le_edgeConnectivity
 
 @[simp]
