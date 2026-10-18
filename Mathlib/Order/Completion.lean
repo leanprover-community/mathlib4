@@ -65,15 +65,8 @@ abbrev left (A : DedekindCut α) : Set α := A.extent
 @[to_dual existing]
 abbrev right (A : DedekindCut α) : Set α := A.intent
 
-theorem left_mk (leftSet rightSet : Set α)
-  (upperPolar_extent : upperPolar (· ≤ ·) leftSet = rightSet)
-  (lowerPolar_intent : lowerPolar (· ≤ ·) rightSet = leftSet) :
-  left (mk leftSet rightSet upperPolar_extent lowerPolar_intent) = leftSet := rfl
-
-theorem right_mk (leftSet rightSet : Set α)
-  (upperPolar_extent : upperPolar (· ≤ ·) leftSet = rightSet)
-  (lowerPolar_intent : lowerPolar (· ≤ ·) rightSet = leftSet) :
-  right (mk leftSet rightSet upperPolar_extent lowerPolar_intent) = rightSet := rfl
+theorem left_mk (l r : Set α) (hl hr) : left (mk l r hl hr) = l := rfl
+theorem right_mk (l r : Set α) (hl hr) : right (mk l r hl hr) = r := rfl
 
 /-- See `DedekindCut.ext'` for a version using the right set instead. -/
 @[ext] theorem ext {A B : DedekindCut α} (h : A.left = B.left) : A = B := Concept.ext h
