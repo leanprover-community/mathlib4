@@ -47,9 +47,6 @@ open Real Function
 
 open scoped Manifold
 
-private lemma EReal.eq_top_iff_forall_ge (t : EReal) : t = ⊤ ↔ ∀ (s : ℝ), s ≤ t :=
-  WithBot.eq_top_iff_forall_ge
-
 public section
 
 namespace UpperHalfPlane
