@@ -276,14 +276,16 @@ lemma mk₀_comp_extMk {n : ℕ} (f : R.complex.X n ⟶ Y) (m : ℕ) (hm : n + 1
   congr 3
   simp [← Functor.map_comp_assoc, ← Functor.map_comp]
 
--- The `(-1) ^ m` which appears in the statement (see assumption `hf₁`) can be
--- explained by the fact that in the complex of morphisms
--- `HomComplex R.cochainComplex ((singleFunctor C 0).obj S.X₂)`
--- there is a sign `(-1) ^ m` in the differential `d n m`:
--- the computation here is consistent with the snake lemma applied to the short exact
--- sequence of cochain complexes of morphisms from `R.cochainComplex`
--- to the single complexes `S.X₁`, `S.X₂` and `S.X₃`, see [conrad2000], p. 13
 open CochainComplex.HomComplex in
+/-- Let `S` be a short exact sequence in an abelian category `C`. For `X : C`,
+this lemma computes the connecting morphism `Ext X S.X₃ n → Ext X S.X₁ m` (when `n + 1 = m`)
+in terms of a projective resolution `R` of `X`. There is a `(-1) ^ m` sign in the
+formula (see assumption `hf₁`). It can be explained by the fact that in the
+complex of morphisms `HomComplex R.cochainComplex ((singleFunctor C 0).obj S.X₂)`
+there is a sign `(-1) ^ m` in the differential `d n m`.
+The computation given by this lemma is consistent with the snake lemma applied to
+the short exact sequence of cochain complexes of morphisms from `R.cochainComplex`
+to the single complexes `S.X₁`, `S.X₂` and `S.X₃`, see [conrad2000], p. 13. -/
 lemma extMk_comp_extClass
     {S : ShortComplex C} (hS : S.ShortExact) (f₃ : R.complex.X n ⟶ S.X₃)
     (m : ℕ) (hm : n + 1 = m)
