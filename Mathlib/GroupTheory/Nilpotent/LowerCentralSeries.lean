@@ -47,16 +47,16 @@ namespace Subgroup
 def IsDescendingCentralSeries (H : ℕ → Subgroup G) :=
   H 0 = ⊤ ∧ ∀ (x : G) (n : ℕ), x ∈ H n → ∀ g, ⁅x, g⁆ ∈ H (n + 1)
 
-/-- The lower central series of an additive subgroup `S` of `G`, computed in the ambient additive
+/-- The lower central series of an additive subgroup `H` of `G`, computed in the ambient additive
 group `G`. -/
-def _root_.AddSubgroup.lowerCentralSeries {G : Type*} [AddGroup G] (S : AddSubgroup G) :
+def _root_.AddSubgroup.lowerCentralSeries {G : Type*} [AddGroup G] (H : AddSubgroup G) :
     ℕ → AddSubgroup G
-  | 0 => S
-  | n + 1 => ⁅lowerCentralSeries S n, S⁆
+  | 0 => H
+  | n + 1 => ⁅lowerCentralSeries H n, H⁆
 
-/-- The lower central series of a subgroup `S` of `G`, computed in the ambient group `G`.
-This is the iterated commutator `⁅⁅⋯⁅S, S⁆, S⁆⋯, S⁆`, a subgroup of `G`. The lower central series
-of `G` itself is the case `S = ⊤`. -/
+/-- The lower central series of a subgroup `H` of `G`, computed in the ambient group `G`.
+This is the iterated commutator `⁅⁅⋯⁅H, H⁆, H⁆⋯, H⁆`, a subgroup of `G`. The lower central series
+of `G` itself is the case `H = ⊤`. -/
 @[to_additive existing]
 def lowerCentralSeries (H : Subgroup G) : ℕ → Subgroup G
   | 0 => H
@@ -184,7 +184,7 @@ theorem lowerCentralSeries_succ_eq_bot {n : ℕ} (h : H.lowerCentralSeries n ≤
     H.lowerCentralSeries (n + 1) = ⊥ := by
   grw [eq_bot_iff, lowerCentralSeries_succ, h, commutator_center_left]
 
--- todo: namespace `derivedSeries` and to_additivize.
+@[to_additive]
 theorem derived_le_lower_central (n : ℕ) : derivedSeries G n ≤ lowerCentralSeries ⊤ n := by
   induction n with
   | zero => simp

@@ -27,10 +27,6 @@ subgroup `G` of `G`, and `⊥` denotes the trivial subgroup `{1}`.
 * `Subgroup.upperCentralSeries G : ℕ → Subgroup G` : the upper central series of a group `G`.
      This is an increasing sequence of characteristic subgroups `H n` of `G` with `H 0 = ⊥` and
      `H (n + 1) / H n` is the centre of `G / H n`.
-* `Subgroup.lowerCentralSeries (S : Subgroup G) : ℕ → Subgroup G` : the lower central series of `S`,
-     computed in the ambient group `G`. This is the iterated commutator
-     `S, ⁅S, S⁆, ⁅⁅S, S⁆, S⁆, …`. The classical lower central series of `G` is the case
-     `S = ⊤`.
 * `IsNilpotent` : A group G is nilpotent if its upper central series reaches `⊤`, or
     equivalently if its lower central series reaches `⊥`.
 * `Group.nilpotencyClass` : the length of the upper central series of a nilpotent group.
