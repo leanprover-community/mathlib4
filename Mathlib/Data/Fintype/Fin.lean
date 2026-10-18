@@ -61,6 +61,11 @@ theorem card_filter_univ_eq_vector_get_eq_count [DecidableEq α] (a : α) (v : L
     simp_rw [card_filter_univ_succ', Vector.get_cons_zero, Vector.toList_cons, Vector.get_cons_succ,
       hxs, List.count_cons, add_comm (ite (x = a) 1 0), beq_iff_eq]
 
+theorem card_filter_univ_eq_map_eq_count_ofFn [DecidableEq α] (a : α) (f : Fin n → α) :
+    #{i | f i = a} = (List.ofFn f).count a := by
+  rw [← List.Vector.toList_ofFn, ← card_filter_univ_eq_vector_get_eq_count a (List.Vector.ofFn f)]
+  simp
+
 /--
 Given a "downward-closed" predicate `p` on `Fin n` (which could be spelt `Antitone p`),
 then `p` holds for more than `j` elements iff it holds for `p` itself.
