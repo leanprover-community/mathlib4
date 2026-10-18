@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Eric Paul. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Eric Paul
+Authors: Eric Paul, Violeta Hernández Palacios
 -/
 module
 
@@ -13,20 +13,21 @@ import Mathlib.Tactic.Order
 /-!
 # The Dedekind completion of the rationals
 
-In Mathlib, the real numbers are defined via equivalence classes of Cauchy sequences.
-A popular alternative is to instead define them in terms of Dedekind cuts.
-This file indirectly formalizes that construction, by proving that the Dedekind completion
-of the rationals is order isomorphic to the extended reals.
+In Mathlib, the real numbers are defined via equivalence classes of Cauchy sequences. A popular
+alternative is to instead define them in terms of Dedekind cuts.
+
+This file indirectly formalizes that construction, by proving that the Dedekind completion of the
+rationals is order isomorphic to the extended reals.
 -/
 
-@[expose] public section
+public noncomputable section
 
 namespace EReal
 
 open DedekindCut Concept Order
 
 @[simp]
-theorem upperBounds_setOf_ratCast_le (x : EReal) :
+theorem upperBounds_setOfPred_ratCast_le (x : EReal) :
     upperBounds {q : ℚ | (q : ℝ) ≤ x} = {q : ℚ | x ≤ (q : ℝ)} := by
   ext y
   constructor
@@ -36,7 +37,7 @@ theorem upperBounds_setOf_ratCast_le (x : EReal) :
     simpa using le_trans (b := x) hz hy
 
 @[simp]
-theorem lowerBounds_setOf_le_ratCast (x : EReal) :
+theorem lowerBounds_setOfPred_le_ratCast (x : EReal) :
     lowerBounds {q : ℚ | x ≤ (q : ℝ)} = {q : ℚ | (q : ℝ) ≤ x} := by
   ext y
   constructor
@@ -45,8 +46,9 @@ theorem lowerBounds_setOf_le_ratCast (x : EReal) :
   · intro hy z hz
     simpa using le_trans (b := x) hy hz
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The Dedekind completion of the rationals is order isomorphic to the extended reals. -/
-public noncomputable def dedekindCutOrderIso : DedekindCut ℚ ≃o EReal where
+def dedekindCutOrderIso : DedekindCut ℚ ≃o EReal where
   toFun := factorEmbedding (Rat.castOrderEmbedding.trans Real.coeOrderEmbedding)
   invFun x := {
     extent := {q : ℚ | (q : ℝ) ≤ x}
@@ -56,7 +58,7 @@ public noncomputable def dedekindCutOrderIso : DedekindCut ℚ ≃o EReal where
   }
   left_inv x := by
     ext z
-    simp only [factorEmbedding_apply, sSup_image, left_mk, Set.mem_setOf_eq]
+    simp only [factorEmbedding_apply, sSup_image, left_mk, Set.mem_ofPred]
     constructor
     · intro z_le_sup
       simp_rw [← x.lowerBounds_right, ← x.upperBounds_left, mem_lowerBounds, mem_upperBounds]
@@ -75,14 +77,14 @@ public noncomputable def dedekindCutOrderIso : DedekindCut ℚ ≃o EReal where
 
 @[simp]
 theorem left_dedekindCutOrderIso_symm_apply (x : EReal) :
-  (dedekindCutOrderIso.symm x).left = {q : ℚ | (q : ℝ) ≤ x} := rfl
+  (dedekindCutOrderIso.symm x).left = {q : ℚ | (q : ℝ) ≤ x} := (rfl)
 
 @[simp]
 theorem right_dedekindCutOrderIso_symm_apply (x : EReal) :
-  (dedekindCutOrderIso.symm x).right = {q : ℚ | x ≤ (q : ℝ)} := rfl
+  (dedekindCutOrderIso.symm x).right = {q : ℚ | x ≤ (q : ℝ)} := (rfl)
 
 theorem dedekindCutOrderIso_apply_eq_sSup (A : DedekindCut ℚ) :
-  dedekindCutOrderIso A = sSup ((fun q : ℚ ↦ ((q : ℝ) : EReal)) '' A.left) := rfl
+  dedekindCutOrderIso A = sSup ((fun q : ℚ ↦ ((q : ℝ) : EReal)) '' A.left) := (rfl)
 
 theorem dedekindCutOrderIso_apply_eq_sInf (A : DedekindCut ℚ) :
     dedekindCutOrderIso A = sInf ((fun q : ℚ ↦ ((q : ℝ) : EReal)) '' A.right) := by
@@ -96,5 +98,9 @@ theorem dedekindCutOrderIso_apply_eq_sInf (A : DedekindCut ℚ) :
     apply (b_le_right q _).not_gt q_lt_b
     rw [← upperBounds_left]
     exact fun t ht ↦ mod_cast (left_lt_c t ht).trans sup_lt_q.le
+
+@[simp]
+theorem dedekindCutOrderIso_principal (q : ℚ) : dedekindCutOrderIso (principal q) = (q : ℝ) := by
+  apply (sSup_le _).antisymm (le_sSup _) <;> simp
 
 end EReal
