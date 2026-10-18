@@ -1089,6 +1089,10 @@ theorem IsIndepSet.card_le_indepNum
   simp_rw [indepNum, ← isNClique_compl]
   exact tc.card_le_cliqueNum
 
+lemma exists_isNIndepSet_indepNum : ∃ s, G.IsNIndepSet G.indepNum s := by
+  simp_rw [indepNum, ← isNClique_compl]
+  exact exists_isNClique_cliqueNum
+
 theorem indepNum_eq_zero [Finite α] : G.indepNum = 0 ↔ IsEmpty α := by
   rw [isEmpty_iff]
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
@@ -1098,10 +1102,6 @@ theorem indepNum_eq_zero [Finite α] : G.indepNum = 0 ↔ IsEmpty α := by
     grind
   · have : ∀ (s : Finset α), s = ∅ := fun s ↦ eq_empty_of_forall_notMem fun x a ↦ h x
     simp [indepNum, this, exists_const]
-
-lemma exists_isNIndepSet_indepNum : ∃ s, G.IsNIndepSet G.indepNum s := by
-  simp_rw [indepNum, ← isNClique_compl]
-  exact exists_isNClique_cliqueNum
 
 /-- An independent set in a graph `G` such that there is no independent set with more vertices. -/
 -- TODO: replace with `MaximalFor (G.IsIndepSet ∘ (↑)) card s`
