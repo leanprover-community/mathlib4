@@ -21,10 +21,10 @@ namespace Inclusion
 /-- Square root of an interval. -/
 def Interval.sqrt (I : Interval Dyadic) (prec : ℕ) : Interval Dyadic where
   lb := match I.lb with
-    | ⊥ => WithBot.some 0
+    | ⊥ => 0
     | WithBot.some lb =>
       if 0 ≤ lb then Dyadic.ofIntWithPrec ⌊(lb <<< (2 * prec)).toRat⌋₊.sqrt prec
-      else WithBot.some 0
+      else 0
   ub := match I.ub with
     | ⊤ => ⊤
     | WithTop.some ub =>
