@@ -1,15 +1,15 @@
 /-
 Copyright (c) 2021 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kevin Buzzard, Ines Wright, Joachim Breitner
+Authors: Kevin Buzzard, Ines Wright
 -/
 module
 
-public import Mathlib.GroupTheory.Commutator.Finite
 public import Mathlib.GroupTheory.Solvable
 
-/-!
+import Mathlib.GroupTheory.Commutator.Finite
 
+/-!
 # Lower Central Series
 
 This file defines the lower central series of a subgroup.
@@ -21,8 +21,8 @@ by the commutators `h * k * h⁻¹ * k⁻¹`. Recall also Lean's conventions tha
 subgroup `G` of `G`, and `⊥` denotes the trivial subgroup `{1}`.
 
 * `Subgroup.lowerCentralSeries (H : Subgroup G) : ℕ → Subgroup G` : the lower central series of `H`,
-    computed in the ambient group `G`. This is the iterated commutators `H, ⁅H, H⁆, ⁅⁅H, H⁆, H⁆, …`.
-    The classical lower central series of `G` is the case `H = ⊤`.
+    computed in the ambient group `G`. These are the iterated commutators
+    `H, ⁅H, H⁆, ⁅⁅H, H⁆, H⁆, …`. The classical lower central series of `G` is the case `H = ⊤`.
 * `IsDescendingCentralSeries (H : ℕ → Subgroup G) : Prop` : Note that in the literature
     a "central series" for a group is usually defined to be a *finite* sequence of normal subgroups
     `H 0`, `H 1`, ..., starting at `⊤`, finishing at `⊥`, and with each `H n / H (n + 1)`
@@ -30,7 +30,6 @@ subgroup `G` of `G`, and `⊥` denotes the trivial subgroup `{1}`.
     on an infinite sequence of subgroups `H n` of `G`: we say a sequence is a *descending central
     series* if it starts at `G` and `⁅H n, ⊤⁆ ⊆ H (n + 1)` for all `n`. Note that this series
     may not terminate at `⊥`, and the `H i` need not be normal.
-
 -/
 
 @[expose] public section
@@ -73,6 +72,11 @@ theorem lowerCentralSeries_succ (n : ℕ) :
 @[to_additive top_lowerCentralSeries_one]
 theorem top_lowerCentralSeries_one : (⊤ : Subgroup G).lowerCentralSeries 1 = _root_.commutator G :=
   rfl
+
+@[to_additive]
+theorem lowerCentralSeries_one_eq_bot_iff :
+    lowerCentralSeries (G := G) ⊤ 1 = ⊥ ↔ IsMulCommutative G := by
+  rw [top_lowerCentralSeries_one, commutator_eq_bot_iff]
 
 @[deprecated (since := "2026-05-25")]
 alias _root_.AddSubgroup.lowerCentralSeries_one := AddSubgroup.top_lowerCentralSeries_one
@@ -158,8 +162,8 @@ theorem lowerCentralSeries_le_self (n : ℕ) : H.lowerCentralSeries n ≤ H := b
 theorem lowerCentralSeries_mono (n : ℕ) :
     Monotone (fun H : Subgroup G ↦ H.lowerCentralSeries n) := by
   induction n with
-  | zero => intro S T h; simpa
-  | succ d hd => intro S T h; simp only [lowerCentralSeries_succ]; exact commutator_mono (hd h) h
+  | zero => intro H T h; simpa
+  | succ d hd => intro H T h; simp only [lowerCentralSeries_succ]; exact commutator_mono (hd h) h
 
 @[to_additive (attr := deprecated "Use `top_subtype_lowerCentralSeries` and \
   `lowerCentralSeries_mono` instead." (since := "2026-05-27"))]

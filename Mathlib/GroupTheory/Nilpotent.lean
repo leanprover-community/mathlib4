@@ -9,10 +9,7 @@ public import Mathlib.Algebra.Group.Subgroup.Order
 public import Mathlib.GroupTheory.IndexNormal
 public import Mathlib.GroupTheory.Nilpotent.LowerCentralSeries
 public import Mathlib.GroupTheory.QuotientGroup.Simple
-public import Mathlib.GroupTheory.Solvable
 public import Mathlib.GroupTheory.Sylow
-
-import Mathlib.GroupTheory.Commutator.Finite
 
 /-!
 
@@ -37,8 +34,7 @@ subgroup `G` of `G`, and `⊥` denotes the trivial subgroup `{1}`.
 * `IsNilpotent` : A group G is nilpotent if its upper central series reaches `⊤`, or
     equivalently if its lower central series reaches `⊥`.
 * `Group.nilpotencyClass` : the length of the upper central series of a nilpotent group.
-* `IsAscendingCentralSeries (H : ℕ → Subgroup G) : Prop` and
-* `IsDescendingCentralSeries (H : ℕ → Subgroup G) : Prop` : Note that in the literature
+* `IsAscendingCentralSeries (H : ℕ → Subgroup G) : Prop` : Note that in the literature
     a "central series" for a group is usually defined to be a *finite* sequence of normal subgroups
     `H 0`, `H 1`, ..., starting at `⊤`, finishing at `⊥`, and with each `H n / H (n + 1)`
     central in `G / H (n + 1)`. In this formalisation it is convenient to have two weaker predicates
@@ -784,12 +780,6 @@ theorem Subgroup.upperCentralSeries_one_eq_top_iff :
     upperCentralSeries G 1 = ⊤ ↔ IsMulCommutative G := by
   rw [upperCentralSeries_one]
   exact Subgroup.center_eq_top_iff
-
-@[to_additive]
-theorem Subgroup.lowerCentralSeries_one_eq_bot_iff :
-    lowerCentralSeries (G := G) ⊤ 1 = ⊥ ↔ IsMulCommutative G := by
-  rw [lowerCentralSeries_eq_bot_iff_upperCentralSeries_eq_top]
-  exact upperCentralSeries_one_eq_top_iff
 
 @[to_additive]
 theorem Group.IsNilpotent.nilpotencyClass_le_one_iff [IsNilpotent G] :
