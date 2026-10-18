@@ -35,19 +35,18 @@ theorem traceOfBasis_eq {A : E →L[ℂ] E} (hA : 0 ≤ A) {ι ι' : Type*}
     (b : HilbertBasis ι ℂ E) (b' : HilbertBasis ι' ℂ E) :
     traceOfBasis A b = traceOfBasis A b' := by
   unfold traceOfBasis
-  set S := CFC.sqrt A with hSdef
-  have hS : S.adjoint * S = A := by
-    simp [hSdef, CFC.sqrt_mul_sqrt_self A hA, (CFC.sqrt_nonneg A).isSelfAdjoint.adjoint_eq]
-  simp_rw [← hS, mul_apply_eq_comp, ContinuousLinearMap.adjoint_inner_right]
-  simp_rw +singlePass [← HilbertBasis.tsum_inner_mul_inner b' (S (b _)),
-    ← inner_conj_symm (S (b _)), ← HilbertBasis.tsum_inner_mul_inner b (S (b' _)),
-    ← inner_conj_symm (S (b' _)), RCLike.conj_mul, ← RCLike.ofReal_pow]
-  simp_rw [← RCLike.ofReal_tsum]
+  set S := CFC.sqrt A with hS
+  have hS' : S.adjoint * S = A := by
+    simp [hS, CFC.sqrt_mul_sqrt_self A hA, (CFC.sqrt_nonneg A).isSelfAdjoint.adjoint_eq]
+  simp_rw +singlePass [← hS', mul_apply_eq_comp, ContinuousLinearMap.adjoint_inner_right,
+    ← b'.tsum_inner_mul_inner (S (b _)), ← inner_conj_symm (S (b _)),
+    ← b.tsum_inner_mul_inner (S (b' _)), ← inner_conj_symm (S (b' _)),
+    RCLike.conj_mul, ← RCLike.ofReal_pow, ← RCLike.ofReal_tsum]
   simp only [Complex.coe_algebraMap, RCLike.re_to_complex, Complex.ofReal_re]
   simp_rw [fun x => ENNReal.ofReal_tsum_of_nonneg (fun _ => by positivity)
-    (b.orthonormal.inner_products_summable x)]
-  simp_rw [fun x => ENNReal.ofReal_tsum_of_nonneg (fun _ => by positivity)
-    (b'.orthonormal.inner_products_summable x)]
+    (b.orthonormal.inner_products_summable x),
+    fun x => ENNReal.ofReal_tsum_of_nonneg (fun _ => by positivity)
+      (b'.orthonormal.inner_products_summable x)]
   rw [ENNReal.tsum_comm]
   simp_rw [← LinearMap.IsSymmetric.apply_clm (T := S)
     (CFC.sqrt_nonneg A).isSelfAdjoint.isSymmetric (b' _) (b _), norm_inner_symm (S (b' _)) (b _)]
@@ -83,22 +82,19 @@ theorem trace_add (hA : 0 ≤ A) (hB : 0 ≤ B) : trace (A + B) = trace A + trac
   · simpa only [sub_zero] using hB.re_inner_nonneg_right _
 
 theorem trace_eq_zero (hA : 0 ≤ A) : trace A = 0 ↔ A = 0 := by
-  constructor
-  · rintro h
-    unfold trace traceOfBasis at h
-    set b := Classical.choose (Classical.choose_spec (exists_hilbertBasis ℂ E))
-    set S := CFC.sqrt A with hSdef
-    have hS : S.adjoint * S = A := by
-      simp [hSdef, CFC.sqrt_mul_sqrt_self A hA, (CFC.sqrt_nonneg A).isSelfAdjoint.adjoint_eq]
-    simp_rw [ENNReal.tsum_eq_zero, ← hS, mul_apply_eq_comp,
-      ContinuousLinearMap.adjoint_inner_right, ENNReal.ofReal_eq_zero, re_inner_self_nonpos] at h
-    rw [← hS]
-    apply ContinuousLinearMap.ext_on
-      (Submodule.dense_iff_topologicalClosure_eq_top.mpr b.dense_span)
-    rintro _ ⟨i, rfl⟩
-    simp [h i]
-  · rintro h
-    simp [h]
+  refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
+  unfold trace traceOfBasis at h
+  set b := Classical.choose (Classical.choose_spec (exists_hilbertBasis ℂ E))
+  set S := CFC.sqrt A with hS
+  have hS' : S.adjoint * S = A := by
+    simp [hS, CFC.sqrt_mul_sqrt_self A hA, (CFC.sqrt_nonneg A).isSelfAdjoint.adjoint_eq]
+  simp_rw [ENNReal.tsum_eq_zero, ← hS', mul_apply_eq_comp,
+    ContinuousLinearMap.adjoint_inner_right, ENNReal.ofReal_eq_zero, re_inner_self_nonpos] at h
+  rw [← hS']
+  apply ContinuousLinearMap.ext_on
+    (Submodule.dense_iff_topologicalClosure_eq_top.mpr b.dense_span)
+  rintro _ ⟨i, rfl⟩
+  simp [h i]
 
 end Trace
 
@@ -124,14 +120,11 @@ theorem modulus_modulus (T : E →L[ℂ] F) : |(|T|)| = |T| := by
   exact CFC.sqrt_mul_self |T|
 
 theorem modulus_eq_zero (T : E →L[ℂ] F) : |T| = 0 ↔ T = 0 := by
-  constructor
-  · rintro h
-    simp only [modulus] at h
-    rw [CFC.sqrt_eq_zero_iff (adjoint T ∘SL T)
-      (nonneg_iff_isPositive.mpr (ContinuousLinearMap.isPositive_adjoint_comp_self T))] at h
-    exact adjoint_comp_self_eq_zero_iff.mp h
-  · rintro h
-    simp [h]
+  refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
+  simp only [modulus] at h
+  rw [CFC.sqrt_eq_zero_iff (adjoint T ∘SL T)
+    (nonneg_iff_isPositive.mpr (ContinuousLinearMap.isPositive_adjoint_comp_self T))] at h
+  exact adjoint_comp_self_eq_zero_iff.mp h
 
 theorem modulus_comp_modulus (T : E →L[ℂ] F) :
     |T| ∘L |T| = T.adjoint ∘L T := by
@@ -142,7 +135,7 @@ theorem modulus_comp_modulus (T : E →L[ℂ] F) :
 theorem norm_modulus_apply (T : E →L[ℂ] F) (x : E) : ‖|T| x‖ = ‖T x‖ := by
   apply (sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _)).mp
   simp_rw [apply_norm_sq_eq_inner_adjoint_left, ContinuousLinearMap.comp_apply]
-  rw [IsSelfAdjoint.adjoint_eq T.modulus_nonneg.isSelfAdjoint]
+  rw [T.modulus_nonneg.isSelfAdjoint.adjoint_eq]
   simp [modulus, ← mul_apply_eq_comp, CFC.sqrt_mul_sqrt_self (adjoint T ∘SL T)
       (nonneg_iff_isPositive.mpr (ContinuousLinearMap.isPositive_adjoint_comp_self T)),
     ContinuousLinearMap.comp_apply]
@@ -199,13 +192,11 @@ theorem range_polarₚₗᵢ (T : E →L[ℂ] F) :
       (isClosed_closure.preimage T.polarₚₗᵢ.toContinuousLinearMap.continuous) ?_
     rintro ⟨_, x, rfl⟩
     exact subset_closure ⟨x, (T.polarₚₗᵢ_apply x).symm ▸ rfl⟩
-  · have hcl : IsClosed (T.polarₚₗᵢ.toContinuousLinearMap.range : Set F) :=
-      T.polarₚₗᵢ.isometry.isClosedEmbedding.isClosed_range
-    exact Submodule.topologicalClosure_minimal _
+  · exact Submodule.topologicalClosure_minimal _
       (by
         rintro _ ⟨x, rfl⟩
         exact ⟨⟨|T| x, |T|.range.le_topologicalClosure ⟨x, rfl⟩⟩, T.polarₚₗᵢ_apply x⟩)
-      hcl
+      T.polarₚₗᵢ.isometry.isClosedEmbedding.isClosed_range
 
 theorem polarₚₗᵢ_adjoint_comp (T : E →L[ℂ] F) :
     T.polarₚₗᵢ.toContinuousLinearMap.adjoint ∘L T.polarₚₗᵢ.toContinuousLinearMap
