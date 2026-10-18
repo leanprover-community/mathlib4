@@ -346,8 +346,7 @@ theorem totient_gcd_mul_totient_mul (a b : ℕ) : φ (a.gcd b) * φ (a * b) = φ
 @[simp, grind .]
 theorem totient_eq_self_iff {a : ℕ} : φ a = a ↔ a ≤ 1 := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · by_contra hle
-    rw [not_le] at hle
+  · by_contra! hle
     exact h.not_lt (totient_lt a hle)
   · match a with | 0 | 1 => simp
 
