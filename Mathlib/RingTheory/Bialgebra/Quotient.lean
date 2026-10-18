@@ -42,8 +42,7 @@ variable {R A : Type*} [CommSemiring R] [Semiring A] [Bialgebra R A]
 
 variable (R) in
 /-- A ring congruence `c` on an `R`-bialgebra is a bialgebra congruence if the counit and
-comultiplication descend along `c.mkₐ`. This is the analogue of a biideal for congruences: the
-congruence of a biideal is one. -/
+comultiplication descend along `c.mkₐ`. -/
 @[mk_iff]
 class RingCon.IsBialgebraCon (c : RingCon A) : Prop where
   counit_eq : ∀ ⦃x y : A⦄, c x y → counit (R := R) x = counit y

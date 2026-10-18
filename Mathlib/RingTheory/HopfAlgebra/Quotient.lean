@@ -36,8 +36,7 @@ variable {R A : Type*} [CommSemiring R] [Semiring A]
 
 variable (R) in
 /-- A ring congruence `c` on an `R`-Hopf algebra is a Hopf algebra congruence if it is a
-bialgebra congruence along which the antipode also descends. This is the analogue of a Hopf
-ideal for congruences: the congruence of a two-sided Hopf ideal is one. -/
+bialgebra congruence along which the antipode also descends. -/
 @[mk_iff]
 class RingCon.IsHopfAlgebraCon [HopfAlgebraStruct R A] (c : RingCon A) : Prop
     extends RingCon.IsBialgebraCon R c where
