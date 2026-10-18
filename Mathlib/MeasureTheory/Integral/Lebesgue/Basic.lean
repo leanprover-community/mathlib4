@@ -449,9 +449,6 @@ theorem lintegral_finsetSum_measure {ι} (s : Finset ι) (f : α → ℝ≥0∞)
       map_add' := lintegral_add_measure f }
   map_sum F μ s
 
-@[deprecated (since := "2026-04-08")]
-alias lintegral_finset_sum_measure := lintegral_finsetSum_measure
-
 @[simp]
 theorem lintegral_sum_measure {m : MeasurableSpace α} {ι} (f : α → ℝ≥0∞) (μ : ι → Measure α) :
     ∫⁻ a, f a ∂Measure.sum μ = ∑' i, ∫⁻ a, f a ∂μ i := by
