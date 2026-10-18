@@ -6,12 +6,11 @@ Authors: Violeta Hernández Palacios
 module
 
 public import Mathlib.Order.Bounds.Defs
-public import Mathlib.Order.GaloisConnection.Defs
 public import Mathlib.Order.Directed
+public import Mathlib.Order.GaloisConnection.Defs
 public import Mathlib.Order.Hom.Basic
 public import Mathlib.Order.Interval.Set.Defs
 public import Mathlib.Order.SetNotation
-public import Mathlib.Tactic.ToAdditive
 
 import Mathlib.Data.Set.Lattice.Indexed
 
