@@ -38,26 +38,26 @@ lemma AEFinStronglyMeasurable.exists_measurableSet_measure_pos_lt_top {f : α �
     (hf : AEFinStronglyMeasurable f μ) (h'f : ¬(f =ᵐ[μ] 0)) :
     ∃ s, MeasurableSet s ∧ 0 < μ s ∧ μ s < ∞ := by
   apply hf.finStronglyMeasurable_mk.exists_measurableSet_measure_pos_lt_top
-  contrapose! h'f
+  contrapose h'f
   exact hf.ae_eq_mk.trans h'f
 
 variable (E p μ) in
 lemma nontrivial_Lp_real_of_nontrivial_Lp [Nontrivial (Lp E p μ)] : Nontrivial (Lp ℝ p μ) := by
   obtain ⟨f, hf⟩ : ∃ f : Lp E p μ, f ≠ 0 := exists_ne 0
   have hfne : ¬ (f =ᵐ[μ] 0) := by
-    contrapose! hf
+    contrapose hf
     ext
     grw [hf, Lp.coeFn_zero E p μ]
   rcases eq_top_or_lt_top p with rfl | h'p
   · apply nontrivial_of_ne ((memLp_top_const (1 : ℝ)).toLp _) 0
-    contrapose! hfne
+    contrapose hfne
     have := Lp.ext_iff.1 hfne
     grw [Lp.coeFn_zero, MemLp.coeFn_toLp] at this
     filter_upwards [this] with x hx using by simp at hx
   rcases eq_or_ne p 0 with rfl | hp
   · have : MemLp (fun (_ : α) ↦ (1 : ℝ)) 0 μ := by simpa using aestronglyMeasurable_const
     apply nontrivial_of_ne (this.toLp _) 0
-    contrapose! hfne
+    contrapose hfne
     have := Lp.ext_iff.1 hfne
     grw [Lp.coeFn_zero, MemLp.coeFn_toLp] at this
     filter_upwards [this] with x hx using by simp at hx
@@ -98,7 +98,7 @@ lemma completeSpace_of_completeSpace_Lp [hp : Fact (1 ≤ p)]
   have : (ae (μ.restrict (Function.support f))).NeBot := by
     apply ae_restrict_neBot.2
     apply μ.measure_support_eq_zero_iff.not.2
-    contrapose! hf
+    contrapose hf
     ext
     grw [Lp.coeFn_zero]
     exact hf

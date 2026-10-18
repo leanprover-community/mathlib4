@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Init
+import Mathlib.Init
 
 /-!
 # `ULift` and `PLift`

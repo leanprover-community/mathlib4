@@ -565,7 +565,7 @@ lemma equivHomShift_symm_postcomp
 
 lemma shiftedHomComp_equivHomShift_symm
     {a b c : ℤ} (z : Cocycle K L a) {K' : CochainComplex C ℤ}
-    (g : ShiftedHom K' K b) (h : a + b = c) :
+    (g : ShiftedHom K' K b) (h : a + b = c := by lia) :
     ShiftedHom.comp g (equivHomShift.symm z) h =
       equivHomShift.symm ((equivHomShift g).comp z (by lia)) := by
   ext n
@@ -587,6 +587,17 @@ lemma equivHomShift_symm_shiftedHomComp
     Cochain.rightShift_v _ _ _ (zero_add c) _ _ (add_zero n) (n + c) rfl,
     Cochain.comp_v _ _ (show a + b = c by lia) n (n + a) (n + c) (by lia) (by lia),
     Cochain.rightUnshift_v _ _ (zero_add b) _ _ _ (n + a) (add_zero (n + a))]
+
+@[simp]
+lemma equivHomShift_smul (r : R) (z : K ⟶ L⟦n⟧) :
+    equivHomShift (r • z) = r • equivHomShift z := by
+  ext : 1
+  simp [equivHomShift_apply]
+
+@[simp]
+lemma equivHomShift_symm_smul (r : R) (z : Cocycle K L n) :
+    equivHomShift.symm (r • z) = r • equivHomShift.symm z :=
+  equivHomShift.injective (by simp)
 
 /-- The additive equivalence `Cocycle K L n ≃+ Cocycle K⟦a⟧ L n'` when `n + a = n'`. -/
 @[simps]

@@ -5,10 +5,8 @@ Authors: Yuma Mizuno, Fernando Chu
 -/
 module
 
-public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 public import Mathlib.CategoryTheory.Bicategory.Functor.StrictPseudofunctor
 public import Mathlib.Tactic.CategoryTheory.Bicategory.Basic
-public import Mathlib.Tactic.CategoryTheory.BicategoricalComp
 
 /-!
 # Adjunctions in bicategories

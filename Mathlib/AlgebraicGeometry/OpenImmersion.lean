@@ -5,10 +5,10 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Geometry.RingedSpace.OpenImmersion
 public import Mathlib.AlgebraicGeometry.Scheme
-public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.CategoryTheory.Limits.Preorder
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
+public import Mathlib.Geometry.RingedSpace.OpenImmersion
 
 /-!
 # Open immersions of schemes
@@ -324,7 +324,7 @@ instance isOpenImmersion_SpecMap_localizationAway {R : CommRingCat.{u}} (f : R) 
   apply SheafedSpace.IsOpenImmersion.of_stalk_iso (H := ?_)
   · exact (PrimeSpectrum.localization_away_isOpenEmbedding (Localization.Away f) f :)
   · intro x
-    exact isIso_SpecMap_stakMap_localization R (Submonoid.powers f) x
+    exact isIso_specMap_stalkMap_localization R (Submonoid.powers f) x
 
 instance {R} [CommRing R] (f : R) :
     IsOpenImmersion (Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away f)))) :=
@@ -346,7 +346,7 @@ lemma _root_.AlgebraicGeometry.IsOpenImmersion.of_isLocalization {R S} [CommRing
   rw [← e, CommRingCat.ofHom_comp, Spec.map_comp]
   have H : IsIso (CommRingCat.ofHom (IsLocalization.algEquiv
     (Submonoid.powers f) S (Localization.Away f)).symm.toAlgHom.toRingHom) := by
-    exact inferInstanceAs (IsIso <| (IsLocalization.algEquiv
+    exact inferInstanceAs (IsIso (IsLocalization.algEquiv
       (Submonoid.powers f) S (Localization.Away f)).toRingEquiv.toCommRingCatIso.inv)
   simp only [AlgHom.toRingHom_eq_coe, AlgEquiv.toAlgHom_toRingHom] at H ⊢
   infer_instance
@@ -709,7 +709,7 @@ theorem isPullback_lift_id
     {X U Y : Scheme.{u}} (f : X ⟶ Y) (g : U ⟶ Y) [IsOpenImmersion g]
     (H : Set.range f ⊆ Set.range g) :
     IsPullback (IsOpenImmersion.lift g f H) (𝟙 _) g f := by
-  convert! IsPullback.of_id_snd.paste_horiz (IsKernelPair.id_of_mono g)
+  convert IsPullback.of_id_snd.paste_horiz (IsKernelPair.id_of_mono g)
   · exact (Category.comp_id _).symm
   · simp
 
@@ -771,7 +771,7 @@ noncomputable
 def ΓIso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (U : Y.Opens) :
     Γ(X, f ⁻¹ᵁ U) ≅ Γ(Y, f.opensRange ⊓ U) :=
   (f.appIso (f ⁻¹ᵁ U)).symm ≪≫
-    Y.presheaf.mapIso (eqToIso <| (f.image_preimage_eq_opensRange_inf U).symm).op
+    Y.presheaf.mapIso (eqToIso (f.image_preimage_eq_opensRange_inf U).symm).op
 
 @[simp]
 lemma ΓIso_inv {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (U : Y.Opens) :

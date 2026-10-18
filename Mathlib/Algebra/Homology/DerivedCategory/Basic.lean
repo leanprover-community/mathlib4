@@ -6,8 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.HomotopyCategory.Acyclic
-public import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
 public import Mathlib.Algebra.Homology.HomotopyCategory.MappingCocone
+public import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
 public import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 
 /-! # The derived category of an abelian category
