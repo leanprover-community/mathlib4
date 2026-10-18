@@ -32,6 +32,8 @@ proof of Kolmogorov's extension theorem.
 * `cylinder_mem_countableInfClosure_supClosure`: In a product of second-countable R₁ spaces, a
   cylinder with a compact closed base is a countable intersection of finite unions of compact and
   closed square cylinders.
+* `isCompactSystem_closedCompactCylinders`: In a product of second-countable R₁ spaces, cylinders
+  with compact closed bases form a compact system.
 
 -/
 
@@ -205,6 +207,18 @@ lemma cylinder_mem_countableInfClosure_supClosure [∀ i, SecondCountableTopolog
   exact supClosed_supClosure.iSup_mem (subset_supClosure (mem_insert _ _)) fun j ↦
     subset_supClosure (mem_insert_of_mem _ (cylinder_univ_pi_mem_compactClosedSquareCylinders
       (hB_compact u (hT𝒰 u.2) j) (hB_closed u (hT𝒰 u.2) j)))
+
+variable (X) in
+/-- In a product of second-countable R₁ spaces, cylinders with compact closed bases form a compact
+system. -/
+theorem isCompactSystem_closedCompactCylinders [∀ i, SecondCountableTopology (X i)]
+    [∀ i, R1Space (X i)] :
+    IsCompactSystem (closedCompactCylinders X) := by
+  refine (isCompactSystem_countableInfClosure_supClosure_compactClosedSquareCylinders X).mono
+    fun t ht ↦ ?_
+  rw [closedCompactCylinders.eq_cylinder ht]
+  exact cylinder_mem_countableInfClosure_supClosure (closedCompactCylinders.isCompact ht)
+    (closedCompactCylinders.isClosed ht)
 
 end CompactClosedSquareCylinders
 

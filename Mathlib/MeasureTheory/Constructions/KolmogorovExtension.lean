@@ -47,24 +47,24 @@ variable {ι : Type*} {α : ι → Type*} [∀ i, MeasurableSpace (α i)]
 section InnerRegular
 
 variable [∀ i, TopologicalSpace (α i)] [∀ i, OpensMeasurableSpace (α i)]
-  [∀ i, SecondCountableTopology (α i)] [∀ i, R1Space (α i)] [∀ I, IsFiniteMeasure (P I)]
+  [∀ i, SecondCountableTopology (α i)] [∀ I, IsFiniteMeasure (P I)]
 
 /-- If the measures `P J` are inner regular with respect to compact closed sets, then the content
-`projectiveFamilyContent hP` is inner regular with respect to countable intersections of finite
-unions of compact closed square cylinders. -/
+`projectiveFamilyContent hP` is inner regular with respect to cylinders with compact closed
+bases. -/
 lemma innerRegular_projectiveFamilyContent (hP : IsProjectiveMeasureFamily P)
     (hP_inner : ∀ J, (P J).InnerRegularWRT (fun s ↦ IsCompact s ∧ IsClosed s) MeasurableSet)
     {s : Set (Π i, α i)} (hs : s ∈ measurableCylinders α) (ε : ℝ≥0∞) (hε : 0 < ε) :
-    ∃ K ∈ measurableCylinders α ∩
-        countableInfClosure (supClosure (insert ∅ (compactClosedSquareCylinders α))),
-      K ⊆ s ∧ projectiveFamilyContent hP (s \ K) ≤ ε := by
+    ∃ K ∈ closedCompactCylinders α, K ⊆ s ∧ projectiveFamilyContent hP (s \ K) ≤ ε := by
   obtain ⟨J, A, hA, rfl⟩ := (mem_measurableCylinders s).mp hs
   obtain ⟨K, hKA, ⟨hK_compact, hK_closed⟩, hK⟩ := (hP_inner J).exists_subset_lt_add
     ⟨isCompact_empty, isClosed_empty⟩ hA (measure_ne_top _ _) hε.ne'
-  refine ⟨cylinder J K, ⟨cylinder_mem_measurableCylinders _ _ hK_closed.measurableSet,
-    cylinder_mem_countableInfClosure_supClosure hK_compact hK_closed⟩, preimage_mono hKA, ?_⟩
+  refine ⟨cylinder J K, cylinder_mem_closedCompactCylinders _ _ hK_closed hK_compact,
+    preimage_mono hKA, ?_⟩
   rw [sdiff_cylinder_same, projectiveFamilyContent_cylinder _ (hA.diff hK_closed.measurableSet)]
   exact (measure_sdiff_lt_of_lt_add hK_closed.nullMeasurableSet hKA (measure_ne_top _ _) hK).le
+
+variable [∀ i, R1Space (α i)]
 
 /-- If the measures `P J` are inner regular with respect to compact closed sets, then the content
 `projectiveFamilyContent hP` is σ-additive. -/
@@ -76,8 +76,8 @@ theorem projectiveFamilyContent_iUnion_eq_tsum_of_innerRegular (hP : IsProjectiv
     projectiveFamilyContent hP (⋃ i, f i) = ∑' i, projectiveFamilyContent hP (f i) :=
   addContent_iUnion_eq_sum_of_innerRegular isSetRing_measurableCylinders
     (projectiveFamilyContent hP) (fun _ _ ↦ projectiveFamilyContent_ne_top hP)
-    ((isCompactSystem_countableInfClosure_supClosure_compactClosedSquareCylinders α).mono
-      inter_subset_right) inter_subset_left
+    (isCompactSystem_closedCompactCylinders α)
+    (fun _ ↦ mem_measurableCylinders_of_mem_closedCompactCylinders)
     (fun _ ↦ innerRegular_projectiveFamilyContent hP hP_inner) hf hf_Union h_disj
 
 /-- If the measures `P J` are inner regular with respect to compact closed sets, then the content
