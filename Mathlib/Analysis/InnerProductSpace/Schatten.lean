@@ -16,7 +16,8 @@ This file defines the Schatten operators, and the required trace, modulus and po
 to define them.
 
 ## Main definitions
- - `ContinuousLinearMap.modulus` the modulus for continuous linear maps between Hilbert spaces.
+ - `ContinuousLinearMap.modulus` the modulus `|T|` for continuous linear maps `T` between Hilbert
+   spaces.
 
 -/
 
