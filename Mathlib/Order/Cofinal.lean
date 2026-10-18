@@ -13,7 +13,6 @@ public import Mathlib.Order.Interval.Set.Defs
 public import Mathlib.Order.SetNotation
 
 import Mathlib.Data.Set.Lattice.Indexed
-import Mathlib.Order.UpperLower.Basic
 
 /-!
 # Cofinal sets

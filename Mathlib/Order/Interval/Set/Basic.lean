@@ -444,6 +444,15 @@ end matched_intervals
 @[to_additive (attr := simp)]
 lemma Ici_one_eq_univ [One α] [IsBotOneClass α] : Ici (1 : α) = univ := by ext; simp
 
+@[to_dual] protected theorem IsUpperSet.Ici (a : α) : IsUpperSet (Ici a) :=
+  fun _ _ => ge_trans
+
+@[to_dual] protected theorem IsUpperSet.Ioi (a : α) : IsUpperSet (Ioi a) :=
+  fun _ _ => flip lt_of_lt_of_le
+
+@[to_dual (attr := deprecated (since := "2026-10-16"))] alias isUpperSet_Ici := IsUpperSet.Ici
+@[to_dual (attr := deprecated (since := "2026-10-16"))] alias isUpperSet_Ioi := IsUpperSet.Ioi
+
 end Preorder
 
 section PartialOrder
