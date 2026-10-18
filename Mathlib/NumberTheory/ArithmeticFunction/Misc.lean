@@ -337,6 +337,9 @@ theorem cardDistinctFactors_one : ω 1 = 0 := by simp [cardDistinctFactors]
 theorem cardDistinctFactors_apply {n : ℕ} : ω n = n.primeFactorsList.dedup.length :=
   rfl
 
+theorem cardDistinctFactors_apply' {n : ℕ} : ω n = n.primeFactors.card :=
+  rfl
+
 @[simp]
 theorem cardDistinctFactors_eq_zero {n : ℕ} : ω n = 0 ↔ n ≤ 1 := by
   simp [cardDistinctFactors_apply, le_one_iff_eq_zero_or_eq_one]
@@ -346,11 +349,8 @@ theorem cardDistinctFactors_pos {n : ℕ} : 0 < ω n ↔ 1 < n := by simp [pos_i
 
 theorem cardDistinctFactors_eq_cardFactors_iff_squarefree {n : ℕ} (h0 : n ≠ 0) :
     ω n = Ω n ↔ Squarefree n := by
-  rw [squarefree_iff_nodup_primeFactorsList h0, cardDistinctFactors_apply]
-  constructor <;> intro h
-  · rw [← n.primeFactorsList.dedup_sublist.eq_of_length h]
-    apply List.nodup_dedup
-  · simp [h.dedup, cardFactors]
+  rw [cardFactors_apply, cardDistinctFactors_apply, ← List.nodup_iff_length_dedup_eq,
+    squarefree_iff_nodup_primeFactorsList h0]
 
 theorem cardDistinctFactors_eq_one_iff {n : ℕ} : ω n = 1 ↔ IsPrimePow n := by
   rw [ArithmeticFunction.cardDistinctFactors_apply, isPrimePow_iff_card_primeFactors_eq_one,
@@ -366,8 +366,8 @@ theorem cardDistinctFactors_apply_prime {p : ℕ} (hp : p.Prime) : ω p = 1 := b
   rw [← pow_one p, cardDistinctFactors_apply_prime_pow hp one_ne_zero]
 
 theorem cardDistinctFactors_mul {m n : ℕ} (h : m.Coprime n) : ω (m * n) = ω m + ω n := by
-  simp [cardDistinctFactors_apply, perm_primeFactorsList_mul_of_coprime h |>.dedup |>.length_eq,
-    coprime_primeFactorsList_disjoint h |>.dedup_append]
+  simp_rw [cardDistinctFactors_apply', h.primeFactors_mul,
+    card_union_of_disjoint h.disjoint_primeFactors]
 
 open scoped Function in
 theorem cardDistinctFactors_prod {ι : Type*} {s : Finset ι} {f : ι → ℕ}
