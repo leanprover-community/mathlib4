@@ -12,7 +12,7 @@ public import Mathlib.Lean.Meta.CongrTheorems
 This module defines a term elaborator for generating congruence lemmas
 from patterns written using quotation syntax.
 One can write `congr($hf $hx)` with `hf : f = f'` and `hx : x = x'` to get `f x = f' x'`.
-While in simple cases it might be possible to use `congr_arg` or `congr_fun`,
+While in simple cases it might be possible to use `congrArg` or `congrFun`,
 congruence quotations are more general,
 since for example `f` could have implicit arguments, complicated dependent types,
 and subsingleton instance arguments such as `Decidable` or `Fintype`.
