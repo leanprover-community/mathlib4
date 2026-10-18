@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.DirectSum.Decomposition
 public import Mathlib.LinearAlgebra.DirectSum.TensorProduct
-public import Mathlib.LinearAlgebra.TensorProduct.Map
 import Mathlib.Algebra.Module.Submodule.EqLocus
 
 /-! # Decomposition of tensor product
@@ -185,7 +184,7 @@ theorem tmul_mem_gradeBy (hx : x ∈ ℳ p) (hy : y ∈ 𝒩 q) (h : f p q = m) 
 
 theorem gradeBy_le {S : Submodule R (M ⊗[R] N)} :
     gradeBy f ℳ 𝒩 m ≤ S ↔ ∀ p q, f p q = m → ∀ x ∈ ℳ p, ∀ y ∈ 𝒩 q, x ⊗ₜ[R] y ∈ S := by
-  simp [gradeBy, iSup_le_iff, Submodule.map₂_le]
+  simp [gradeBy, Submodule.map₂_le]
 
 variable {P : Type*} [AddCommMonoid P] [Module R P] {g g' : M ⊗[R] N →ₗ[R] P}
 
@@ -202,7 +201,7 @@ every pure tensor of degree `m`. -/
 theorem eqOn_gradeBy_iff :
     Set.EqOn g g' (gradeBy f ℳ 𝒩 m) ↔
       ∀ p q, f p q = m → ∀ x ∈ ℳ p, ∀ y ∈ 𝒩 q, g (x ⊗ₜ[R] y) = g' (x ⊗ₜ[R] y) :=
-  mapsTo_gradeBy_iff f (g := LinearMap.id) (S := LinearMap.eqLocus g g')
+  LinearMap.le_eqLocus.symm.trans (gradeBy_le f)
 
 variable [DecidableEq ι] [DecidableEq κ] [DecidableEq μ] [Decomposition ℳ] [Decomposition 𝒩]
 
@@ -221,7 +220,6 @@ theorem gradeBy.decomposeAux_tmul (hx : x ∈ ℳ p) (hy : y ∈ 𝒩 q) :
   lift x to ℳ p using hx
   lift y to 𝒩 q using hy
   simp [decomposeAux]
-  rfl
 
 theorem gradeBy.decomposeAux_coe (z : gradeBy f ℳ 𝒩 m) :
     decomposeAux f ℳ 𝒩 ↑z = lof R μ (gradeBy f ℳ 𝒩 ·) m z := by
@@ -239,8 +237,10 @@ theorem gradeBy.decomposeAux_coe (z : gradeBy f ℳ 𝒩 m) :
 /-- The decomposition of a tensor product induced by decompositions of the two factors. -/
 @[no_expose] instance gradeBy.decomposition : Decomposition (gradeBy f ℳ 𝒩) :=
   .ofLinearMap _ (decomposeAux f ℳ 𝒩)
-    (by unfold decomposeAux
-        rw [← comp_assoc, ← LinearEquiv.eq_comp_toLinearMap_symm]; ext ⟨p, q⟩ x y; simp)
+    (by
+      rw [decomposeAux, ← comp_assoc, ← LinearEquiv.eq_comp_toLinearMap_symm]
+      ext ⟨p, q⟩ x y
+      simp)
     (linearMap_ext _ fun m ↦ LinearMap.ext fun z ↦ by
       simp [coeLinearMap_lof, decomposeAux_coe])
 
@@ -256,7 +256,7 @@ theorem gradeBy.isInternal : IsInternal (gradeBy f ℳ 𝒩) := Decomposition.is
 end GradeBy
 
 /-- The submodule of `M ⊗[R] N` corresponding to each total degree. -/
-@[expose] def grade [Add ι] (ℳ : ι → Submodule R M) (𝒩 : ι → Submodule R N) (n : ι) :
+abbrev grade [Add ι] (ℳ : ι → Submodule R M) (𝒩 : ι → Submodule R N) (n : ι) :
     Submodule R (M ⊗[R] N) :=
   gradeBy (· + ·) ℳ 𝒩 n
 
@@ -277,11 +277,6 @@ theorem grade_le {S : Submodule R (M ⊗[R] N)} :
   gradeBy_le _
 
 variable [DecidableEq ι] [Decomposition ℳ] [Decomposition 𝒩]
-
-/-- The total-degree decomposition of a tensor product induced by decompositions of the two
-factors. -/
-@[no_expose] instance grade.decomposition : Decomposition (grade ℳ 𝒩) :=
-  inferInstanceAs <| Decomposition (gradeBy (· + ·) ℳ 𝒩)
 
 theorem grade.decompose_tmul (hx : x ∈ ℳ p) (hy : y ∈ 𝒩 q) :
     decompose (grade ℳ 𝒩) (x ⊗ₜ[R] y) = .of _ (p + q) ⟨x ⊗ₜ y, tmul_mem_grade hx hy rfl⟩ :=

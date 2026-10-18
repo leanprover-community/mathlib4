@@ -96,9 +96,14 @@ def mapInclOfLE {p : Submodule R P} {q : Submodule R Q} {s : Submodule R (P ⊗[
     (h : Submodule.map₂ (mk R P Q) p q ≤ s) : p ⊗[R] q →ₗ[R] s :=
   (mapIncl p q).codRestrict s fun c ↦ (range_mapIncl p q).trans_le h ⟨c, rfl⟩
 
+@[simp] lemma coe_mapInclOfLE {p : Submodule R P} {q : Submodule R Q}
+    {s : Submodule R (P ⊗[R] Q)} (h : Submodule.map₂ (mk R P Q) p q ≤ s) (z : p ⊗[R] q) :
+    (mapInclOfLE h z : P ⊗[R] Q) = mapIncl p q z := rfl
+
 @[simp] lemma mapInclOfLE_tmul {p : Submodule R P} {q : Submodule R Q}
     {s : Submodule R (P ⊗[R] Q)} (h : Submodule.map₂ (mk R P Q) p q ≤ s) (x : p) (y : q) :
-    (mapInclOfLE h (x ⊗ₜ[R] y) : P ⊗[R] Q) = (x : P) ⊗ₜ[R] (y : Q) := rfl
+    mapInclOfLE h (x ⊗ₜ[R] y) = ⟨(x : P) ⊗ₜ[R] (y : Q), h (Submodule.apply_mem_map₂ _ x.2 y.2)⟩ :=
+  rfl
 
 theorem map₂_eq_range_lift_comp_mapIncl (f : P →ₗ[R] Q →ₗ[R] M)
     (p : Submodule R P) (q : Submodule R Q) :
