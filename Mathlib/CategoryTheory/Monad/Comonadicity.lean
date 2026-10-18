@@ -34,6 +34,10 @@ comonadicity theorem:
 This file has been adapted from `Mathlib/CategoryTheory/Monad/Monadicity.lean`.
 Please try to keep them in sync.
 
+## References
+
+* [J. Beck, *Triples, algebras and cohomology*][beck1967]
+
 ## Tags
 
 Beck, comonadicity, descent

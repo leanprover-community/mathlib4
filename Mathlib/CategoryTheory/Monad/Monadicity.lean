@@ -33,6 +33,10 @@ show three versions of Beck's monadicity theorem, and the reflexive (crude) mona
 This file has been adapted to `Mathlib/CategoryTheory/Monad/Comonadicity.lean`.
 Please try to keep them in sync.
 
+## References
+
+* [J. Beck, *Triples, algebras and cohomology*][beck1967]
+
 ## Tags
 
 Beck, monadicity, descent
