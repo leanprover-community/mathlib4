@@ -7,11 +7,13 @@ module
 
 public import Mathlib.Algebra.Order.Ring.Nat
 public import Mathlib.Algebra.Ring.Int.Defs
-public import Mathlib.Data.Nat.Bitwise
-public import Mathlib.Data.Nat.Cast.Order.Basic
 public import Mathlib.Data.Nat.PSub
 public import Mathlib.Data.Nat.Size
 public import Mathlib.Data.Num.Bitwise
+
+import Mathlib.Data.Nat.Bitwise
+import Mathlib.Data.Nat.Cast.Order.Basic
+
 import all Init.Data.Nat.Bitwise.Basic  -- for unfolding `bitwise`
 
 /-!

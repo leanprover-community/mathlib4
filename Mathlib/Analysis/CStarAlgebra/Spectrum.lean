@@ -6,10 +6,10 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Analysis.CStarAlgebra.Unitization
-public import Mathlib.Analysis.Complex.Convex
 public import Mathlib.Analysis.Normed.Algebra.GelfandFormula
 public import Mathlib.Analysis.SpecialFunctions.Exponential
-public import Mathlib.Algebra.Star.StarAlgHom
+
+import Mathlib.Analysis.Complex.Convex
 
 /-! # Spectral properties in C⋆-algebras
 
@@ -142,7 +142,7 @@ theorem IsStarNormal.spectralRadius_eq_nnnorm (a : A) [IsStarNormal a] :
     ((ENNReal.continuous_pow 2).tendsto (spectralRadius ℂ a)).comp
       (spectrum.pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius a)
   rw [← heq] at h₂
-  convert! tendsto_nhds_unique h₂ (pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius (a⋆ * a))
+  convert tendsto_nhds_unique h₂ (pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius (a⋆ * a))
   rw [(IsSelfAdjoint.star_mul_self a).spectralRadius_eq_nnnorm, sq, nnnorm_star_mul_self, coe_mul]
 
 namespace CStarAlgebra
@@ -206,10 +206,7 @@ theorem selfAdjoint.val_re_map_spectrum (a : selfAdjoint A) :
 lemma IsSelfAdjoint.isConnected_spectrum_compl {a : A} (ha : IsSelfAdjoint a) :
     IsConnected (σ ℂ a)ᶜ := by
   suffices IsConnected (((σ ℂ a)ᶜ ∩ {z | 0 ≤ z.im}) ∪ (σ ℂ a)ᶜ ∩ {z | z.im ≤ 0}) by
-    rw [← Set.inter_union_distrib_left, ← Set.ofPred_or] at this
-    rw [← Set.inter_univ (σ ℂ a)ᶜ]
-    convert this
-    exact Eq.symm <| Set.eq_univ_of_forall (fun z ↦ le_total 0 z.im)
+    simpa [← Set.inter_union_distrib_left, ← Set.ofPred_or, le_total] using this
   refine IsConnected.union ?nonempty ?upper ?lower
   case nonempty =>
     have := Filter.NeBot.nonempty_of_mem inferInstance <| Filter.mem_map.mp <|

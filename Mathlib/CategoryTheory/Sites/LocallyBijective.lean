@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Sites.LocallySurjective
-public import Mathlib.CategoryTheory.Sites.Localization
 
 /-!
 # Locally bijective morphisms of presheaves
@@ -66,11 +65,11 @@ private lemma isLocallyBijective_iff_isIso' :
       rw [← Functor.map_comp_apply, ← Functor.map_comp_apply]
       simp only [← op_comp, w]
     refine ⟨H.amalgamate t ht, ?_⟩
-    · apply (((isSheaf_iff_isSheaf_of_type J G.obj).1 G.property).isSeparated _
-        (Presheaf.imageSieve_mem J f.hom s)).ext
-      intro Y g hg
-      rw [← NatTrans.naturality_apply, H.valid_glue ht]
-      exact Presheaf.app_localPreimage f.hom s g hg
+    apply (((isSheaf_iff_isSheaf_of_type J G.obj).1 G.property).isSeparated _
+      (Presheaf.imageSieve_mem J f.hom s)).ext
+    intro Y g hg
+    rw [← NatTrans.naturality_apply, H.valid_glue ht]
+    exact Presheaf.app_localPreimage f.hom s g hg
   · intro
     constructor <;> infer_instance
 

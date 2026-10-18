@@ -5,8 +5,8 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.Regular.SMul
 public import Mathlib.Algebra.Notation.Pi.Basic
+public import Mathlib.Algebra.Regular.SMul
 
 /-!
 # Results about `IsRegular` and pi types

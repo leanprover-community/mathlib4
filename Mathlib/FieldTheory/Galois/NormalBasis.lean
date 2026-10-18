@@ -5,12 +5,13 @@ Authors: Madison Crim, Aaron Liu, Justus Springer, Junyan Xu
 -/
 module
 
-public import Mathlib.Algebra.Module.PID
-public import Mathlib.Algebra.MvPolynomial.Funext
-public import Mathlib.FieldTheory.Finite.Basic
 public import Mathlib.FieldTheory.Galois.Basic
-public import Mathlib.LinearAlgebra.AnnihilatingPolynomial
-public import Mathlib.LinearAlgebra.Dual.Lemmas
+
+import Mathlib.Algebra.Module.PID
+import Mathlib.Algebra.MvPolynomial.Funext
+import Mathlib.FieldTheory.Finite.Basic
+import Mathlib.LinearAlgebra.AnnihilatingPolynomial
+import Mathlib.LinearAlgebra.Dual.Lemmas
 
 /-!
 # The normal basis theorem
@@ -39,7 +40,7 @@ theorem exists_linearIndependent_algEquiv_apply_of_finite [Finite L] :
   obtain ⟨x, rfl⟩ := (AEval'.of _).surjective x
   use x
   rw [← span_minpoly_eq_annihilator, minpoly_frobeniusAlgHom, eq_comm] at hx
-  rw [← linearIndependent_equiv ((finCongr <| natDegree_X_pow_sub_C (R := K)).trans <|
+  rw [← linearIndependent_equiv ((finCongr <| natDegree_X_pow_sub_C (R := K) _).trans <|
     .ofBijective _ <| bijective_frobeniusAlgEquivOfAlgebraic_pow K L)]
   /- Therefore, `{Frⁱ | 0 ≤ i < [L : K]}` is linearly independent, which implies that
     `{Frⁱ(x) | 0 ≤ i < [L : K]}` is also linearly independent. -/

@@ -6,10 +6,11 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.LinearAlgebra.LeftExact
-public import Mathlib.LinearAlgebra.TensorProduct.Pi
 public import Mathlib.RingTheory.Finiteness.Projective
 public import Mathlib.RingTheory.Flat.IsBaseChange
 public import Mathlib.RingTheory.Localization.BaseChange
+
+import Mathlib.LinearAlgebra.TensorProduct.Pi
 
 /-!
 
@@ -144,7 +145,7 @@ lemma Module.finitePresentation_of_free_of_surjective [Module.Free R M] [Module.
     by simpa [Set.range_comp, LinearMap.range_eq_top], ?_⟩
   let f : M →ₗ[R] (Set.finite_range (l ∘ b)).toFinset →₀ R :=
     Finsupp.lmapDomain _ _ π ∘ₗ b.repr.toLinearMap
-  convert! hl'.map f
+  convert hl'.map f
   ext x; simp only [LinearMap.mem_ker, Submodule.mem_map]
   constructor
   · intro hx
@@ -178,7 +179,7 @@ lemma Module.finitePresentation_of_surjective [h : Module.FinitePresentation R M
   obtain ⟨t, ht⟩ := hl'
   have H : Function.Surjective (Finsupp.linearCombination R ((↑) : s → M)) :=
     LinearMap.range_eq_top.mp
-      (by rw [range_linearCombination, Subtype.range_val, ← hs])
+      (by rw [range_linearCombination, Subtype.range_coe_subtype, ← hs]; rfl)
   apply Module.finitePresentation_of_free_of_surjective (l ∘ₗ linearCombination R Subtype.val)
     (hl.comp H)
   choose σ hσ using (show _ from H)
@@ -194,7 +195,7 @@ lemma Module.FinitePresentation.fg_ker [Module.Finite R M]
   obtain ⟨s, hs, hs'⟩ := h
   have H : Function.Surjective (Finsupp.linearCombination R ((↑) : s → N)) :=
     LinearMap.range_eq_top.mp
-      (by rw [range_linearCombination, Subtype.range_val, ← hs])
+      (by rw [range_linearCombination, Subtype.range_coe_subtype, ← hs]; rfl)
   obtain ⟨f, hf⟩ : ∃ f : (s →₀ R) →ₗ[R] M, l ∘ₗ f = (Finsupp.linearCombination R Subtype.val) := by
     choose f hf using show _ from hl
     exact ⟨Finsupp.linearCombination R (fun i ↦ f i), by ext; simp [hf]⟩
@@ -227,7 +228,7 @@ lemma Module.finitePresentation_of_ker [Module.FinitePresentation R N]
   let π := Finsupp.linearCombination R ((↑) : s → M)
   have H : Function.Surjective π :=
     LinearMap.range_eq_top.mp
-      (by rw [range_linearCombination, Subtype.range_val, ← hs])
+      (by rw [range_linearCombination, Subtype.range_coe_subtype, ← hs]; rfl)
   have inst : Module.Finite R (LinearMap.ker (l ∘ₗ π)) :=
     .of_fg <| Module.FinitePresentation.fg_ker _ (hl.comp H)
   let f : LinearMap.ker (l ∘ₗ π) →ₗ[R] LinearMap.ker l := LinearMap.restrict π (fun x ↦ id)
@@ -370,7 +371,7 @@ lemma Module.FinitePresentation.exists_lift_of_isLocalizedModule
   let π := Finsupp.linearCombination R ((↑) : σ → M)
   have hπ : Function.Surjective π :=
     LinearMap.range_eq_top.mp
-      (by rw [range_linearCombination, Subtype.range_val, ← hσ])
+      (by rw [range_linearCombination, Subtype.range_coe_subtype, ← hσ]; rfl)
   classical
   choose s hs using IsLocalizedModule.surj S f
   let i : σ → N :=
@@ -389,7 +390,7 @@ lemma Module.FinitePresentation.exists_lift_of_isLocalizedModule
     · simp only [smul_zero]
     apply IsLocalizedModule.exists_of_eq (S := S) (f := f)
     rw [← LinearMap.comp_apply, map_zero, hi, LinearMap.comp_apply]
-    convert! map_zero (s₀ • g)
+    convert map_zero (s₀ • g)
     rw [← LinearMap.mem_ker, ← hτ]
     exact Submodule.subset_span x.prop
   choose s' hs' using this
@@ -400,7 +401,7 @@ lemma Module.FinitePresentation.exists_lift_of_isLocalizedModule
     simp only [s₁]
     rw [SetLike.mem_coe, LinearMap.mem_ker, LinearMap.smul_apply,
       ← Finset.prod_erase_mul _ _ (Finset.mem_univ ⟨x, hxσ⟩), mul_smul]
-    convert! smul_zero _
+    convert smul_zero _
     exact hs' ⟨x, hxσ⟩
   refine ⟨Submodule.liftQ _ _ this ∘ₗ
     (LinearMap.quotKerEquivOfSurjective _ hπ).symm.toLinearMap, s₁ * s₀, ?_⟩
@@ -608,7 +609,7 @@ lemma IsLocalizedModule.exists_isLocalizedModule_powers_of_finitePresentation
     ⟨IsLocalizedModule.map_units f, fun y ↦ ⟨⟨y, 1⟩, by simp⟩, by simpa using ⟨1, S.one_mem⟩⟩
   obtain ⟨r, hrp, H⟩ := exists_bijective_map_powers S
       f (.id (R := R) (M := M')) f <| by
-    convert! show Function.Bijective LinearMap.id from Function.bijective_id
+    convert show Function.Bijective LinearMap.id from Function.bijective_id
     apply IsLocalizedModule.ext S f
     · exact IsLocalizedModule.map_units f
     · simp [IsLocalizedModule.map_comp]

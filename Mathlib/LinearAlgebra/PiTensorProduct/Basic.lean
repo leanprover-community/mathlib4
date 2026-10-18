@@ -5,9 +5,10 @@ Authors: Frédéric Dupuis, Eric Wieser
 -/
 module
 
-public import Mathlib.LinearAlgebra.Multilinear.TensorProduct
-public import Mathlib.Tactic.AdaptationNote
 public import Mathlib.LinearAlgebra.Multilinear.Curry
+public import Mathlib.LinearAlgebra.Multilinear.TensorProduct
+
+import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Tensor product of an indexed family of modules over commutative semirings
@@ -366,10 +367,10 @@ theorem ext {φ₁ φ₂ : (⨂[R] i, s i) →ₗ[R] E}
   refine LinearMap.ext ?_
   refine fun z ↦
     PiTensorProduct.induction_on' z ?_ fun {x y} hx hy ↦ by rw [φ₁.map_add, φ₂.map_add, hx, hy]
-  · intro r f
-    rw [tprodCoeff_eq_smul_tprod, φ₁.map_smul, φ₂.map_smul]
-    apply congr_arg
-    congrm $H f
+  intro r f
+  rw [tprodCoeff_eq_smul_tprod, φ₁.map_smul, φ₂.map_smul]
+  apply congr_arg
+  congrm $H f
 
 /-- The pure tensors (i.e. the elements of the image of `PiTensorProduct.tprod`) span
 the tensor product. -/
@@ -730,12 +731,24 @@ theorem reindex_reindex (e : ι ≃ ι₂) (e' : ι₂ ≃ ι₃) (x : ⨂[R] i,
     reindex R _ e' (reindex R s e x) = reindex R s (e.trans e') x :=
   congr($((reindex_trans e e' : _ = reindex R s (e.trans e'))) x)
 
-/-- This lemma is impractical to state in the dependent case. -/
+/-- This lemma is impractical to state in the dependent case, instead see `reindex_symm_tprod`. -/
 @[simp]
 theorem reindex_symm (e : ι ≃ ι₂) :
     (reindex R (fun _ ↦ M) e).symm = reindex R (fun _ ↦ M) e.symm := by
   ext x
   simp [reindex]
+
+@[simp]
+theorem reindex_symm_tprod (e : ι ≃ ι₂) (f : Π i, s i) :
+    (reindex R s e).symm (tprod R (fun i ↦ f (e.symm i))) = tprod R f := by
+  apply (reindex R s e).injective
+  simp
+
+@[simp]
+theorem reindex_symm_symm_tprod (e : ι₂ ≃ ι) (f : Π i, s i) :
+    (reindex R s e.symm).symm (tprod R (fun i ↦ f (e i))) = tprod R f := by
+  apply (reindex R s e.symm).injective
+  simp
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]

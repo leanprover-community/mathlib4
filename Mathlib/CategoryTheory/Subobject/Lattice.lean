@@ -5,7 +5,6 @@ Authors: Bhavik Mehta, Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.Currying
 public import Mathlib.CategoryTheory.Subobject.FactorThru
 public import Mathlib.CategoryTheory.Subobject.WellPowered
 public import Mathlib.Data.Finset.Lattice.Fold
@@ -171,21 +170,18 @@ and which on `Subobject A` will induce a `SemilatticeSup`. -/
 def sup {A : C} : MonoOver A ⥤ MonoOver A ⥤ MonoOver A :=
   Functor.curryObj ((forget A).prod (forget A) ⋙ Functor.uncurry.obj Over.coprod ⋙ image)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- A morphism version of `le_sup_left`. -/
 def leSupLeft {A : C} (f g : MonoOver A) : f ⟶ (sup.obj f).obj g := by
   refine homMk (coprod.inl ≫ factorThruImage _) ?_
   erw [Category.assoc, image.fac, coprod.inl_desc]
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- A morphism version of `le_sup_right`. -/
 def leSupRight {A : C} (f g : MonoOver A) : g ⟶ (sup.obj f).obj g := by
   refine homMk (coprod.inr ≫ factorThruImage _) ?_
   erw [Category.assoc, image.fac, coprod.inr_desc]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A morphism version of `sup_le`. -/
 def supLe {A : C} (f g h : MonoOver A) : (f ⟶ h) → (g ⟶ h) → ((sup.obj f).obj g ⟶ h) := by

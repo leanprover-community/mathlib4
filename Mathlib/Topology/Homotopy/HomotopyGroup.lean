@@ -5,10 +5,11 @@ Authors: Roberto Alvarez
 -/
 module
 
-public import Mathlib.Algebra.Group.Ext
 public import Mathlib.Algebra.Group.TransferInstance
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.FundamentalGroup
 public import Mathlib.GroupTheory.EckmannHilton
+
+import Mathlib.Algebra.Group.Ext
 
 /-!
 # `n`th homotopy group
@@ -129,7 +130,7 @@ instance instContinuousEvalConst : ContinuousEvalConst (Ω^ N X x) (I^N) X := in
 /-- Copy of a `GenLoop` with a new map from the unit cube equal to the old one.
   Useful to fix definitional equalities. -/
 def copy (f : Ω^ N X x) (g : (I^N) → X) (h : g = f) : Ω^ N X x :=
-  ⟨⟨g, h.symm ▸ f.1.2⟩, by convert! f.2⟩
+  ⟨⟨g, h.symm ▸ f.1.2⟩, by convert f.2⟩
 
 theorem coe_copy (f : Ω^ N X x) {g : (I^N) → X} (h : g = f) : ⇑(copy f g h) = g :=
   rfl
@@ -329,7 +330,7 @@ theorem fromLoop_apply (i : N) {p : Ω (Ω^ { j // j ≠ i } X x) const} {t : I^
 /-- Composition with `Cube.insertAt` as a continuous map. -/
 abbrev cCompInsert (i : N) : C(C(I^N, X), C(I × I^{ j // j ≠ i }, X)) :=
   ⟨fun f ↦ f.comp (Cube.insertAt i),
-    (toContinuousMap <| Cube.insertAt i).continuous_precomp⟩
+    (ContinuousMap.ofClass <| Cube.insertAt i).continuous_precomp⟩
 
 /-- A homotopy between `n+1`-dimensional loops `p` and `q` constant on the boundary
   seen as a homotopy between two paths in the space of `n`-dimensional paths. -/
@@ -352,12 +353,11 @@ theorem homotopicTo (i : N) {p q : Ω^ N X x} :
     rw [homotopyTo_apply, H.eq_fst, p.2]
     all_goals apply Cube.insertAt_boundary; right; exact ⟨i, iH⟩
   · fun_prop
-  iterate 2
+  on_goal 1 2 =>
     intro
     ext
     dsimp
     rw [homotopyTo_apply, toLoop_apply]
-    swap
   · apply H.apply_zero
   · apply H.apply_one
   intro t y yH
@@ -407,7 +407,7 @@ def transAt (i : N) (f g : Ω^ N X x) : Ω^ N X x :=
     (by
       ext1; symm
       dsimp only [Path.trans, fromLoop, Path.coe_mk_mk, Function.comp_apply, mk_apply,
-        ContinuousMap.comp_apply, ContinuousMap.coe_coe, funSplitAt_apply,
+        ContinuousMap.comp_apply, ContinuousMap.coe_ofClass, funSplitAt_apply,
         ContinuousMap.uncurry_apply, ContinuousMap.coe_mk, Function.uncurry_apply_pair]
       split_ifs
       · change f _ = _; congr 1
@@ -452,7 +452,9 @@ open GenLoop
   `Ω^{j // j ≠ i} x`. -/
 def homotopyGroupEquivFundamentalGroup (i : N) :
     HomotopyGroup N X x ≃ FundamentalGroup (Ω^ { j // j ≠ i } X x) const :=
-  Quotient.congr (loopHomeo i).toEquiv fun _ _ ↦ ⟨homotopicTo i, homotopicFrom i⟩
+  Equiv.trans
+    (by exact Quotient.congr (loopHomeo i).toEquiv fun _ _ ↦ ⟨homotopicTo i, homotopicFrom i⟩)
+      CategoryTheory.End.homEquiv.symm
 
 /-- Homotopy group of finite index, denoted as `π_n` within the Topology namespace. -/
 abbrev HomotopyGroup.Pi (n) (X : Type*) [TopologicalSpace X] (x : X) :=
@@ -509,8 +511,9 @@ def genLoopEquivOfUnique (N) [Unique N] : Ω^ N X x ≃ Ω X x where
 /-- The homotopy group at `x` indexed by a singleton is in bijection with the fundamental group,
   i.e. the loops based at `x` up to homotopy. -/
 def homotopyGroupEquivFundamentalGroupOfUnique (N) [Unique N] :
-    HomotopyGroup N X x ≃ FundamentalGroup X x :=
-  Quotient.congr (genLoopEquivOfUnique N) fun a₁ a₂ ↦ by
+    HomotopyGroup N X x ≃ FundamentalGroup X x := by
+  refine Equiv.trans ?_ CategoryTheory.End.homEquiv.symm
+  exact Quotient.congr (genLoopEquivOfUnique N) fun a₁ a₂ ↦ by
     constructor <;> rintro ⟨H⟩
     · exact
         ⟨{  toFun := fun tx ↦ H (tx.fst, fun _ ↦ tx.snd)
@@ -617,6 +620,7 @@ def homotopyGroupOfUniqueMulEquivFundamentalGroup (N) [Unique N] :
   toEquiv := homotopyGroupEquivFundamentalGroupOfUnique N
   map_mul' a b := Quotient.inductionOn₂ a b fun p q => by
     simp only [HomotopyGroup.mul_spec (i := default)]
+    ext
     apply Quotient.sound
     simp [genLoopEquivOfUnique_transAt]
 
@@ -626,6 +630,7 @@ def pi1MulEquivFundamentalGroup :
   toEquiv := HomotopyGroup.pi1EquivFundamentalGroup (X := X) (x := x)
   map_mul' a b := Quotient.inductionOn₂ a b fun p q => by
     simp only [HomotopyGroup.mul_spec (i := (0 : Fin 1))]
+    ext
     apply Quotient.sound
     rw [Unique.eq_default 0, genLoopEquivOfUnique_transAt]
 
