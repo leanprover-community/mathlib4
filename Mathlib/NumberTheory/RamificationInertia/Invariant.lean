@@ -250,7 +250,7 @@ theorem map_comap_eq_of_isInvariant [Finite G] [Algebra.IsInvariant A B G]
   classical
   set J := (I.comap (algebraMap A B)).map (algebraMap A B)
   apply le_antisymm Ideal.map_comap_le
-  suffices J.colon (I : Set B) = ⊤ from (Submodule.colon_eq_top_iff_subset _).mp this
+  rw [← Submodule.colon_eq_top_iff_le]
   by_contra hJ
   obtain ⟨m, hm, hKm⟩ := Ideal.exists_le_maximal (J.colon (I : Set B)) hJ
   let : m.IsMaximal := hm
