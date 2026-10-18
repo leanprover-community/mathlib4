@@ -193,7 +193,7 @@ theorem integralClosure.isIntegral (x : integralClosure R A) : IsIntegral R x :=
     Subtype.ext <| by
       rwa [← aeval_def, ← Subalgebra.val_apply, aeval_algHom_apply] at hpx⟩
 
-instance integralClosure.AlgebraIsIntegral : Algebra.IsIntegral R (integralClosure R A) :=
+instance integralClosure.algebraIsIntegral : Algebra.IsIntegral R (integralClosure R A) :=
   ⟨integralClosure.isIntegral⟩
 
 theorem IsIntegral.of_mul_unit {x y : B} {r : R} (hr : algebraMap R B r * y = 1)
@@ -291,6 +291,20 @@ instance : Algebra.IsIntegral R[X] S[X] := Algebra.IsPushout.isIntegral R _ S _
 
 attribute [local instance] MvPolynomial.algebraMvPolynomial in
 instance {σ} : Algebra.IsIntegral (MvPolynomial σ R) (MvPolynomial σ S) :=
+  Algebra.IsPushout.isIntegral R _ S _
+
+instance {M : Type*} [CommMonoid M]
+    [Algebra (MonoidAlgebra R M) (MonoidAlgebra S M)]
+    [IsScalarTower R (MonoidAlgebra R M) (MonoidAlgebra S M)]
+    [Algebra.IsPushout R S (MonoidAlgebra R M) (MonoidAlgebra S M)] :
+    Algebra.IsIntegral (MonoidAlgebra R M) (MonoidAlgebra S M) :=
+  Algebra.IsPushout.isIntegral R _ S _
+
+instance {M : Type*} [AddCommMonoid M]
+    [Algebra (AddMonoidAlgebra R M) (AddMonoidAlgebra S M)]
+    [IsScalarTower R (AddMonoidAlgebra R M) (AddMonoidAlgebra S M)]
+    [Algebra.IsPushout R S (AddMonoidAlgebra R M) (AddMonoidAlgebra S M)] :
+    Algebra.IsIntegral (AddMonoidAlgebra R M) (AddMonoidAlgebra S M) :=
   Algebra.IsPushout.isIntegral R _ S _
 
 end Pushout

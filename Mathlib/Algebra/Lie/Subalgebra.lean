@@ -658,7 +658,7 @@ theorem coe_lieSpan_submodule_eq_iff {p : Submodule R L} :
 
 open Submodule in
 theorem coe_lieSpan_eq_span_of_forall_lie_eq_zero
-    {s : Set L} (hs : ∀ᵉ (x ∈ s) (y ∈ s), ⁅x, y⁆ = 0) :
+    {s : Set L} (hs : ∀ x ∈ s, ∀ y ∈ s, ⁅x, y⁆ = 0) :
     lieSpan R L s = span R s := by
   suffices ∀ {x y}, x ∈ span R s → y ∈ span R s → ⁅x, y⁆ ∈ span R s by
     refine le_antisymm ?_ submodule_span_le_lieSpan
