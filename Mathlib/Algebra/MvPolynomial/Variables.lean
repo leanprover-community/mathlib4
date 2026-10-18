@@ -316,9 +316,9 @@ theorem hom_congr_vars {f₁ f₂ : MvPolynomial σ R →+* S} {p₁ p₂ : MvPo
     _ = f₂ p₂ := RingHom.congr_fun (by ext <;> simp) _
 
 lemma aeval_ite_mem_eq (q : MvPolynomial σ R) {s : Set σ}
-    [DecidablePred (· ∈ s)] [DecidablePred (fun (x : σ →₀ ℕ) ↦ ↑x.support ⊆ s)] :
+    [DecidablePred (· ∈ s)] [DecidablePred (fun (x : σ →₀ ℕ) ↦ (x.support : Set σ) ⊆ s)] :
     MvPolynomial.aeval (fun i ↦ if i ∈ s then .X i else 0) q =
-    ∑ x ∈ q.support, if ↑x.support ⊆ s then monomial x (coeff q x) else 0 := by
+    ∑ x ∈ q.support, if (x.support : Set σ) ⊆ s then monomial x (coeff q x) else 0 := by
   rw [MvPolynomial.as_sum q, MvPolynomial.aeval_sum]
   refine Finset.sum_congr (by simp) fun u hu ↦ ?_
   split_ifs with hh
