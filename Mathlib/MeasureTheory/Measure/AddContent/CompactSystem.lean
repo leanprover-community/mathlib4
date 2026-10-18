@@ -59,7 +59,7 @@ lemma tendsto_zero_of_innerRegular_addContent (hR : IsSetRing R) (m : AddContent
         rintro x ⟨hxs, hxt⟩
         simp only [mem_dissipate, not_forall, mem_iUnion, Set.mem_sdiff] at hxs hxt ⊢
         grind
-    _ = m (⋃ i ∈ Finset.range (n + 1), (s i \ t i)) := by simp only [Finset.mem_range_succ_iff]
+    _ = m (⋃ i ∈ Finset.range (n + 1), (s i \ t i)) := by simp
     _ ≤ ∑ i ∈ Finset.range (n + 1), m (s i \ t i) :=
         addContent_biUnion_le hR fun i _ ↦ hR.sdiff_mem (hs i) (ht_mem i)
     _ ≤ ∑ i ∈ Finset.range (n + 1), (δ i : ℝ≥0∞) := Finset.sum_le_sum fun i _ ↦ ht i
