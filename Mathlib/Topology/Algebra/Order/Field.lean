@@ -334,7 +334,7 @@ theorem tendsto_const_mul_zpow_atTop_atTop_iff {n : ℤ} {c : 𝕜} :
     | ofNat n =>
       simpa [tendsto_const_mul_pow_atTop_iff, Nat.pos_iff_ne_zero] using h
     | negSucc n =>
-      exact False.elim <| (tendsto_const_mul_zpow_atTop_zero (Int.negSucc_lt_zero n)).not_tendsto
+      cases (tendsto_const_mul_zpow_atTop_zero (Int.negSucc_lt_zero n)).not_tendsto
         (disjoint_nhds_atTop _) h
   · exact (tendsto_zpow_atTop_atTop hn).const_mul_atTop hc
 
