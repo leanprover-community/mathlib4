@@ -72,14 +72,20 @@ This is a typeclass, on the model of `Functor.IsLeftAdjoint`: every construction
 theory registers an instance for its torsion class, and the closure properties of torsion
 classes are then available by instance search. See `IsTorsionClass.torsionTheory` for the
 torsion theory itself. -/
+@[mk_iff]
 class IsTorsionClass (P : ObjectProperty C) : Prop where
-  exists_torsionFreeClass : ∃ F, TorsionTheory P F
+ leftOrthogonal_rightOrthogonal_eq (P) : P.rightOrthogonal.leftOrthogonal = P := by cat_disch
+  -- exists_torsionFreeClass : ∃ F, TorsionTheory P F
 
 /-- A property of objects is a torsion-free class if it is the torsion-free class of some
 torsion theory. This is a typeclass; see `IsTorsionClass` for the design and
 `IsTorsionFreeClass.torsionTheory` for the torsion theory itself. -/
+@[mk_iff]
 class IsTorsionFreeClass (P : ObjectProperty C) : Prop where
-  exists_torsionClass : ∃ T, TorsionTheory T P
+  rightOrthogonal_leftOrthogonal_eq (P) : P.leftOrthogonal.rightOrthogonal = P := by cat_disch
+
+attribute [simp] IsTorsionClass.leftOrthogonal_rightOrthogonal_eq
+  IsTorsionFreeClass.rightOrthogonal_leftOrthogonal_eq
 
 namespace TorsionTheory
 
@@ -89,7 +95,7 @@ variable {T F : ObjectProperty C}
 object vanishes. -/
 lemma torsion_iff (hTF : TorsionTheory T F) (X : C) :
     T X ↔ ∀ ⦃Y : C⦄ (f : X ⟶ Y), F Y → f = 0 := by
-  rw [← hTF.leftOrthogonal_eq, ObjectProperty.leftOrthogonal_iff]
+ rw [← hTF.leftOrthogonal_eq, ObjectProperty.leftOrthogonal_iff]
 
 /-- An object of a torsion theory is torsion-free iff every morphism to it from a torsion
 object vanishes. -/
@@ -159,10 +165,12 @@ lemma isClosedUnderProducts_torsionFree (hTF : TorsionTheory T F) (J : Type w) :
     infer_instance
 
 /-- A torsion theory exhibits its torsion class as a torsion class. -/
-lemma isTorsionClass (hTF : TorsionTheory T F) : IsTorsionClass T := ⟨⟨F, hTF⟩⟩
+lemma isTorsionClass (hTF : TorsionTheory T F) : IsTorsionClass T :=
+  ⟨by rw [hTF.rightOrthogonal_eq, hTF.leftOrthogonal_eq]⟩
 
 /-- A torsion theory exhibits its torsion-free class as a torsion-free class. -/
-lemma isTorsionFreeClass (hTF : TorsionTheory T F) : IsTorsionFreeClass F := ⟨⟨T, hTF⟩⟩
+lemma isTorsionFreeClass (hTF : TorsionTheory T F) : IsTorsionFreeClass F :=
+  ⟨by rw [hTF.leftOrthogonal_eq, hTF.rightOrthogonal_eq]⟩
 
 end TorsionTheory
 
@@ -174,27 +182,9 @@ instance (P : ObjectProperty C) : IsTorsionClass P.leftOrthogonal :=
 instance (P : ObjectProperty C) : IsTorsionFreeClass P.rightOrthogonal :=
   (TorsionTheory.generated_by P).isTorsionFreeClass
 
-/-- A property of objects is a torsion class iff it is the left orthogonal of its right
-orthogonal. -/
-lemma isTorsionClass_iff_leftOrthogonal_rightOrthogonal_eq (P : ObjectProperty C) :
-    IsTorsionClass P ↔ P.rightOrthogonal.leftOrthogonal = P :=
-  ⟨fun ⟨⟨F, h⟩⟩ ↦ by rw [h.rightOrthogonal_eq, ← h.leftOrthogonal_eq],
-    fun h ↦ ⟨⟨P.rightOrthogonal, ⟨h, rfl⟩⟩⟩⟩
-
-/-- A property of objects is a torsion-free class iff it is the right orthogonal of its left
-orthogonal. -/
-lemma isTorsionFreeClass_iff_rightOrthogonal_leftOrthogonal_eq (P : ObjectProperty C) :
-    IsTorsionFreeClass P ↔ P.leftOrthogonal.rightOrthogonal = P :=
-  ⟨fun ⟨⟨T, h⟩⟩ ↦ by rw [h.leftOrthogonal_eq, ← h.rightOrthogonal_eq],
-    fun h ↦ ⟨⟨P.leftOrthogonal, ⟨rfl, h⟩⟩⟩⟩
-
 namespace IsTorsionClass
 
 variable (P : ObjectProperty C) [IsTorsionClass P]
-
-@[simp]
-lemma leftOrthogonal_rightOrthogonal : P.rightOrthogonal.leftOrthogonal = P :=
-  (isTorsionClass_iff_leftOrthogonal_rightOrthogonal_eq P).1 inferInstance
 
 /-- The torsion theory whose torsion class is `P`; its torsion-free class is necessarily
 `P.rightOrthogonal`. -/
@@ -225,10 +215,6 @@ namespace IsTorsionFreeClass
 
 variable (P : ObjectProperty C) [IsTorsionFreeClass P]
 
-@[simp]
-lemma rightOrthogonal_leftOrthogonal : P.leftOrthogonal.rightOrthogonal = P :=
-  (isTorsionFreeClass_iff_rightOrthogonal_leftOrthogonal_eq P).1 inferInstance
-
 /-- The torsion theory whose torsion-free class is `P`; its torsion class is necessarily
 `P.leftOrthogonal`. -/
 lemma torsionTheory : TorsionTheory P.leftOrthogonal P := by
@@ -258,14 +244,13 @@ end IsTorsionFreeClass
 class if and only if it is closed under quotients, extensions, and coproducts. This is a
 theorem of [S. E. Dickson][dickson1966]; see also
 [Bo Stenström, *Rings of Quotients*][stenstrom1975], Chapter VI. -/
-theorem isTorsionClass_iff (P : ObjectProperty C)
+theorem isTorsionClass_iff' (P : ObjectProperty C)
     [LocallySmall.{w} C] [WellPowered.{w} C] [HasCoproducts.{w} C] :
     IsTorsionClass P ↔
       P.IsClosedUnderQuotients ∧ P.IsClosedUnderExtensions ∧
         ∀ J : Type w, P.IsClosedUnderColimitsOfShape (Discrete J) :=
   ⟨fun _ ↦ ⟨inferInstance, inferInstance, inferInstance⟩, fun ⟨_, _, _⟩ ↦ by
-    rw [isTorsionClass_iff_leftOrthogonal_rightOrthogonal_eq,
-      P.leftOrthogonal_rightOrthogonal_eq_self]⟩
+    rw [isTorsionClass_iff, P.leftOrthogonal_rightOrthogonal_eq_self]⟩
 
 /-- A property of objects is a torsion-free class if and only if its opposite is a torsion
 class in the opposite category. -/
@@ -283,13 +268,13 @@ lemma isTorsionClass_iff_isTorsionFreeClass_op (P : ObjectProperty C) :
 torsion-free class if and only if it is closed under subobjects, extensions, and products.
 This is the dual of `isTorsionClass_iff`, obtained by transporting it through the
 opposite category. -/
-theorem isTorsionFreeClass_iff (P : ObjectProperty C)
+theorem isTorsionFreeClass_iff' (P : ObjectProperty C)
     [LocallySmall.{w} C] [WellPowered.{w} Cᵒᵖ] [HasProducts.{w} C] :
     IsTorsionFreeClass P ↔
       P.IsClosedUnderSubobjects ∧ P.IsClosedUnderExtensions ∧
         ∀ J : Type w, P.IsClosedUnderLimitsOfShape (Discrete J) :=
   ⟨fun _ ↦ ⟨inferInstance, inferInstance, inferInstance⟩, fun⟨_, _, _⟩ ↦ by
-    rw [isTorsionFreeClass_iff_isTorsionClass_op, isTorsionClass_iff]
+    rw [isTorsionFreeClass_iff_isTorsionClass_op, isTorsionClass_iff']
     refine ⟨inferInstance, inferInstance, fun J ↦ ?_⟩
     rw [← P.op.isClosedUnderColimitsOfShape_iff_of_equivalence (Discrete.opposite J)]
     infer_instance
