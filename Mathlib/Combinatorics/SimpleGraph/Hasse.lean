@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
+public import Mathlib.Combinatorics.SimpleGraph.CycleGraph
 public import Mathlib.Combinatorics.SimpleGraph.Prod
 
 import Mathlib.Order.SuccPred.Fin
@@ -172,6 +173,10 @@ theorem pathGraph_two_eq_top : pathGraph 2 = ⊤ := by
 
 instance (n : ℕ) : DecidableRel (pathGraph n).Adj :=
   inferInstanceAs <| DecidableRel (hasse _).Adj
+
+theorem pathGraph_le_cycleGraph {n : ℕ} : pathGraph n ≤ cycleGraph n := by
+  intro u v h
+  grind [pathGraph_adj, cycleGraph_adj', Fin.coe_sub_iff_le]
 
 /-- An embedding of the path graph in a larger path graph. -/
 protected def Embedding.pathGraph (n m : ℕ) (h : n ≤ m) : pathGraph n ↪g pathGraph m :=
