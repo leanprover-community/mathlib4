@@ -343,21 +343,26 @@ theorem totient_gcd_mul_totient_mul (a b : ℕ) : φ (a.gcd b) * φ (a * b) = φ
   rw [eq_comm, mul_comm, ← mul_assoc, ← Nat.mul_div_assoc]
   exact mul_dvd_mul (prod_primeFactors_dvd a) (prod_primeFactors_dvd b)
 
+@[simp, grind .]
+theorem totient_eq_self_iff {a : ℕ} : a.totient = a ↔ a ≤ 1 := by
+  refine ⟨fun h => ?_, fun h ↦ ?_⟩
+  · by_contra hle
+    rw [not_le] at hle
+    exact h.not_lt (totient_lt a hle)
+  · match a with | 0 | 1 => simp
+
 /-- For nonzero natural numbers, Euler's totient function is multiplicative exactly when the
 arguments are coprime. -/
 theorem totient_mul_eq_totient_mul_iff {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
     (a * b).totient = a.totient * b.totient ↔ a.Coprime b := by
-  constructor
-  · intro h
-    have hg := totient_gcd_mul_totient_mul a b
-    rw [h, mul_comm (a.gcd b).totient] at hg
-    have hg' := mul_left_cancel₀ (mul_ne_zero
-      (totient_eq_zero.not.mpr ha) (totient_eq_zero.not.mpr hb)) hg
-    apply coprime_iff_gcd_eq_one.mpr
-    have hpos := gcd_pos_of_pos_left b (Nat.pos_of_ne_zero ha)
-    by_contra hne
-    exact (totient_lt _ (lt_of_le_of_ne hpos (Ne.symm hne))).ne hg'
-  · exact totient_mul
+  refine ⟨fun h ↦ ?_, totient_mul⟩
+  have hg' : φ (a.gcd b) = a.gcd b := by
+    apply mul_left_cancel₀ <| mul_ne_zero
+      (totient_eq_zero.not.mpr ha) (totient_eq_zero.not.mpr hb)
+    rw [← totient_gcd_mul_totient_mul, h, mul_comm]
+  rw [totient_eq_self_iff] at hg'
+  have hpos : 1 ≤ a.gcd b := by grind
+  exact le_antisymm hg' hpos
 
 theorem totient_super_multiplicative (a b : ℕ) : φ a * φ b ≤ φ (a * b) := by
   let d := a.gcd b
