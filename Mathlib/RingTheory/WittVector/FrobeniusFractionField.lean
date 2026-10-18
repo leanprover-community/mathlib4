@@ -203,10 +203,10 @@ theorem frobenius_frobeniusRotation {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 �
   ext n
   rcases n with - | n
   · simp only [WittVector.mul_coeff_zero, WittVector.coeff_frobenius_charP, frobeniusRotation,
-      coeff_mk, frobeniusRotationCoeff]
+      frobeniusRotationCoeff]
     exact solution_spec' _ ha₁ _
   · simp only [nthRemainder_spec, WittVector.coeff_frobenius_charP,
-      frobeniusRotation, coeff_mk, frobeniusRotationCoeff]
+      frobeniusRotation, frobeniusRotationCoeff]
     have :=
       succNthVal_spec' p n a₁ a₂ (fun i : Fin (n + 1) => frobeniusRotationCoeff p ha₁ ha₂ i.val)
         ha₁ ha₂
@@ -241,7 +241,7 @@ theorem exists_frobenius_solution_fractionRing_aux (m n : ℕ) (r' q' : 𝕎 k) 
   simp_rw [← mul_div_assoc, div_eq_iff hq'', mul_comm (algebraMap _ _ b), ← map_mul, key]
 
 theorem exists_frobenius_solution_fractionRing {a : FractionRing (𝕎 k)} (ha : a ≠ 0) :
-    ∃ᵉ (b ≠ 0) (m : ℤ), φ b * a = (p : FractionRing (𝕎 k)) ^ m * b := by
+    ∃ b ≠ 0, ∃ m : ℤ, φ b * a = (p : FractionRing (𝕎 k)) ^ m * b := by
   revert ha
   refine Localization.induction_on a ?_
   rintro ⟨r, q, hq⟩ hrq
