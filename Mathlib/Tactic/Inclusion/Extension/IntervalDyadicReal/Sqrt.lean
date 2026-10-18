@@ -33,23 +33,19 @@ def Interval.sqrt (I : Interval Dyadic) (prec : ℕ) : Interval Dyadic where
       if ub' ≤ ubsqrt ^ 2 then Dyadic.ofIntWithPrec ubsqrt prec
       else Dyadic.ofIntWithPrec (ubsqrt + 1) prec
 
+private theorem toRat_shiftLeft_two_mul (d : Dyadic) (n : ℕ) :
+    (d <<< (2 * n)).toRat = d.toRat * 4 ^ n := by
+  norm_num [Dyadic.toRat_shiftLeft_nat, pow_mul]
+
 theorem Interval.sqrt_mem
     (f : Dyadic ↪o ℝ) (map_zero : f 0 = 0) (map_sq : ∀ x, f (x ^ 2) = f x ^ 2)
     {x : ℝ} {I : Interval Dyadic} (hx : x ∈ I.map f) (prec : ℕ) :
     √x ∈ (I.sqrt prec).map f := by
-  have hshift (q : Dyadic) : (q <<< (2 * prec)).toRat = q.toRat * 4 ^ prec := by
-    rcases q with _ | ⟨n, k, hn⟩
-    · change (0 : Dyadic).toRat = (0 : Dyadic).toRat * _
-      simp
-    · change (Dyadic.ofOdd n (k - 2 * prec) hn).toRat = _
-      simp only [Dyadic.toRat_ofOdd_eq_mul_two_pow]
-      rw [neg_sub, zpow_sub₀ two_ne_zero, zpow_mul, zpow_natCast, zpow_neg]
-      ring
   have H (n : ℤ) (q : Dyadic) :
       (f q ≤ f (.ofIntWithPrec n prec) ^ 2 ↔ (q <<< (2 * prec)).toRat ≤ n ^ 2) ∧
       (f (.ofIntWithPrec n prec) ^ 2 ≤ f q ↔ n ^ 2 ≤ (q <<< (2 * prec)).toRat) := by
     norm_num [← map_sq, ← Dyadic.toRat_le_toRat_iff, Dyadic.toRat_ofIntWithPrec_eq_mul_two_pow,
-      mul_pow, le_mul_inv_iff₀, mul_inv_le_iff₀, ← pow_mul, pow_mul', hshift]
+      mul_pow, le_mul_inv_iff₀, mul_inv_le_iff₀, ← pow_mul, pow_mul', toRat_shiftLeft_two_mul]
   have hub (n : ℕ) (q : Dyadic) (hq : x ≤ f q) (h : ⌈(q <<< (2 * prec)).toRat⌉₊ ≤ n ^ 2) :
       √x ≤ f (.ofIntWithPrec n prec) := by
     rw [Nat.ceil_le] at h
@@ -63,7 +59,7 @@ theorem Interval.sqrt_mem
       · cases ha
         refine Real.le_sqrt_of_sq_le (((H _ lb).right.mpr ?_).trans (hl lb rfl))
         refine Nat.le_floor_iff ?_ |>.mp ⌊(lb <<< (2 * prec)).toRat⌋₊.sqrt_le'
-        rw [hshift]
+        rw [toRat_shiftLeft_two_mul]
         exact mul_nonneg (Dyadic.toRat_le_toRat_iff.mpr h0) (by simp)
       · simp [map_zero, ← WithBot.coe_eq_coe.mp ha]
   · rcases I with ⟨lb, _ | ub⟩ <;> simp only [Interval.sqrt] at ha

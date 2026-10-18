@@ -158,6 +158,10 @@ example {x y : ℝ} (hx : x ∈ Set.Icc (-0.5) 1.5) (hy₀ : -2 ≤ y) (hy₁ : 
     x ^ 4 + 0.5 * x ^ 2 * y + ((1 / 8 : ℚ) : ℝ) ∈ Set.Icc (-2.125) 5.1875 := by
   dyadic_interval [prec := 4]
 
+end Arithmetic
+
+section Sqrt
+
 example : √2 ∈ Set.Icc 1 2 := by dyadic_interval
 
 example : √16 = 4 := by dyadic_interval
@@ -168,7 +172,7 @@ example {x y : ℝ} (hx : x ∈ Set.Icc (-0.5) 1.5) (hy₀ : -2 ≤ y) (hy₁ : 
     √(x ^ 2 + y ^ 2) + ((1 / 2 : ℚ) : ℝ) * x * y ∈ Set.Icc (-0.5) 3 := by
   dyadic_interval [prec := 1]
 
-end Arithmetic
+end Sqrt
 
 section Splitting
 
@@ -199,7 +203,6 @@ example :
       1.4142135623730950488016887242096980785696718753769
       1.4142135623730950488016887242096980785696718753770 := by
   dyadic_interval +kernel [prec := 165]
-
 
 end Kernel
 
