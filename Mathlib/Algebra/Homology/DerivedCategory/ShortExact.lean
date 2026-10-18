@@ -68,6 +68,11 @@ section
 open CochainComplex
 
 variable (S) in
+/-- Given a short complex `S` in the category of cochain complexes in an abelian
+category, this is the morphism of triangles in the derived category from the image of
+the triangle involving the cone of `S.f` to the image of the triangle involving the
+cocone of `S.g`. It is an isomorphism if `S` is short exact,
+see `DerivedCategory.mappingConeTriangleIsoMappingCoconeTriangle`. -/
 @[implicit_reducible, simps]
 noncomputable def mappingConeTriangleToMappingCoconeTriangle :
     Q.mapTriangle.obj (mappingCone.triangle S.f) ⟶
@@ -78,7 +83,7 @@ noncomputable def mappingConeTriangleToMappingCoconeTriangle :
   comm₁ := by simp [← Functor.map_comp]
   comm₂ := by simp [← Functor.map_comp]
   comm₃ := by
-    simp [Category.assoc, ← Functor.commShiftIso_hom_naturality,
+    simp [← Functor.commShiftIso_hom_naturality,
       ← Functor.map_comp_assoc, -Functor.map_comp,
       Q_map_eq_of_homotopy (homotopyMappingConeTriangleMor₃CompliftShortComplex S)]
 
@@ -101,6 +106,10 @@ lemma isIso_mappingConeTriangleToMappingCoconeTriangle :
   apply Triangle.isIso_of_isIsos
   all_goals dsimp; infer_instance
 
+/-- Given a short exact short complex `S` in the category of cochain complexes
+in an abelian category, this is the isomorphism of triangles in the derived category
+from the image of the triangle involving the cone of `S.f` to the image of the
+triangle involving the cocone of `S.g`. -/
 @[simps! hom_hom₁ hom_hom₂ hom_hom₃ inv_hom₂]
 noncomputable def mappingConeTriangleIsoMappingCoconeTriangle :
     Q.mapTriangle.obj (mappingCone.triangle S.f) ≅

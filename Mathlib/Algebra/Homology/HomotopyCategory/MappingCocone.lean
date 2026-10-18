@@ -34,6 +34,8 @@ variable {C : Type*} [Category* C] [Preadditive C]
 noncomputable def mappingCocone [HasHomotopyCofiber φ] :
     CochainComplex C ℤ := (mappingCone φ)⟦(-1 : ℤ)⟧
 
+/-- If `φ` is a morphism of cochain complexes, the mapping cocone of `φ`
+shifted by `1` identifies to the mapping cocone of `φ`. -/
 @[no_expose]
 noncomputable def shiftMappingCoconeIso [HasHomotopyCofiber φ] :
     (mappingCocone φ)⟦(1 : ℤ)⟧ ≅ mappingCone φ :=
@@ -45,7 +47,6 @@ section
 
 variable [HasHomotopyCofiber φ]
 
-@[simp]
 lemma isZero_X_iff (i j : ℤ) (hj : j + 1 = i := by lia) :
     IsZero ((mappingCocone φ).X i) ↔ IsZero (K.X i) ∧ IsZero (L.X j) := by
   obtain rfl : j = i + -1 := by lia
@@ -394,6 +395,8 @@ section
 
 variable [HasBinaryBiproducts C]
 
+/-- The connecting morphism in the triangle involving the mapping cocone of a
+morphism of cochain complexes, see `CochainComplex.mappingCocone.triangle`. -/
 @[no_expose]
 noncomputable def triangleδ : L ⟶ (mappingCocone φ)⟦(1 : ℤ)⟧ :=
   (mappingCone.triangle φ).mor₂ ≫ (shiftMappingCoconeIso φ).inv

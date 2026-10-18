@@ -218,6 +218,11 @@ lemma liftShortComplex_f_snd_v (i j : ℤ) (h : i + -1 = j) :
 end mappingCocone
 
 open HomComplex in
+/-- Given a short complex `S` in the category of cochain complexes in an abelian category,
+there are two different ways to define a morphism `mappingCone S.f ⟶ (mappingCocone S.g)⟦1⟧`
+depending on whether we use the connecting homomorphism attached to the
+mapping cone of `S.f` or to the mapping cocone of `S.g`. This definition shows that
+these two morphisms are homotopic. -/
 noncomputable def homotopyMappingConeTriangleMor₃CompliftShortComplex
     (S : ShortComplex (CochainComplex C ℤ)) :
     Homotopy
