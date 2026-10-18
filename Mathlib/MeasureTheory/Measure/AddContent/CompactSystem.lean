@@ -21,7 +21,7 @@ contained in the ring is σ-additive.
   values.
 -/
 
-@[expose] public section
+public section
 
 open Filter Set
 
@@ -58,8 +58,7 @@ lemma tendsto_zero_of_innerRegular_addContent (hR : IsSetRing R) (m : AddContent
           (hR.iUnion_le_mem (fun i ↦ hR.sdiff_mem (hs i) (ht_mem i)) n) ?_
         rintro x ⟨hxs, hxt⟩
         simp only [mem_dissipate, not_forall, mem_iUnion, Set.mem_sdiff] at hxs hxt ⊢
-        obtain ⟨i, hi, hxi⟩ := hxt
-        exact ⟨i, hi, hxs i hi, hxi⟩
+        grind
     _ = m (⋃ i ∈ Finset.range (n + 1), (s i \ t i)) := by simp only [Finset.mem_range_succ_iff]
     _ ≤ ∑ i ∈ Finset.range (n + 1), m (s i \ t i) :=
         addContent_biUnion_le hR fun i _ ↦ hR.sdiff_mem (hs i) (ht_mem i)
