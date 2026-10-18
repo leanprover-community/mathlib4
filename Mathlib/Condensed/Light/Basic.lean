@@ -38,14 +38,6 @@ namespace LightCondensed
 
 variable {C : Type w} [Category.{v} C]
 
-@[deprecated ObjectProperty.FullSubcategory.id_hom +typeChanged (since := "2026-04-08")]
-lemma id_hom (X : LightCondensed.{u} C) : (𝟙 X : X ⟶ X).hom = 𝟙 _ := rfl
-
-@[deprecated ObjectProperty.FullSubcategory.comp_hom +typeChanged (since := "2026-04-08")]
-lemma comp_hom {X Y Z : LightCondensed.{u} C} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (f ≫ g).hom = f.hom ≫ g.hom :=
-  rfl
-
 @[ext]
 lemma hom_ext {X Y : LightCondensed.{u} C} (f g : X ⟶ Y) (h : ∀ S, f.hom.app S = g.hom.app S) :
     f = g := by
