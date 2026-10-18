@@ -5,10 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Category.Cat
-public import Mathlib.CategoryTheory.Limits.Types.Limits
-public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
+public import Mathlib.CategoryTheory.Limits.Types.Limits
 
 /-!
 # The category of small categories has all small limits.
@@ -131,7 +129,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 theorem limit_π_homDiagram_eqToHom {F : J ⥤ Cat.{v, v}} (X Y : limit (F ⋙ Cat.objects.{v, v}))
     (j : J) (h : X = Y) :
     limit.π (homDiagram X Y) j (eqToHom h) =
-      eqToHom (ConcreteCategory.congr_arg (limit.π (F ⋙ Cat.objects.{v, v}) j) h) := by
+      eqToHom congr(limit.π (F ⋙ Cat.objects.{v, v}) j $h) := by
   subst h
   simp [-homDiagram_obj]
 

@@ -47,7 +47,7 @@ theorem dedup_cons_of_mem {a : α} {s : Multiset α} : a ∈ s → dedup (a ::�
 
 @[simp]
 theorem dedup_cons_of_notMem {a : α} {s : Multiset α} : a ∉ s → dedup (a ::ₘ s) = a ::ₘ dedup s :=
-  Quot.induction_on s fun _ m => congr_arg ofList <| List.dedup_cons_of_notMem m
+  Quot.induction_on s fun _ m => congr(ofList $(List.dedup_cons_of_notMem m))
 
 theorem dedup_le (s : Multiset α) : dedup s ≤ s :=
   Quot.induction_on s fun _ => (dedup_sublist _).subperm
@@ -70,7 +70,7 @@ theorem nodup_dedup (s : Multiset α) : Nodup (dedup s) :=
   Quot.induction_on s List.nodup_dedup
 
 theorem dedup_eq_self {s : Multiset α} : dedup s = s ↔ Nodup s :=
-  ⟨fun e => e ▸ nodup_dedup s, Quot.induction_on s fun _ h => congr_arg ofList h.dedup⟩
+  ⟨fun e => e ▸ nodup_dedup s, Quot.induction_on s fun _ h => congr(ofList $h.dedup)⟩
 
 alias ⟨_, Nodup.dedup⟩ := dedup_eq_self
 
@@ -115,7 +115,7 @@ theorem Nodup.le_dedup_iff_le {s t : Multiset α} (hno : s.Nodup) : s ≤ t.dedu
 theorem Subset.dedup_add_right {s t : Multiset α} (h : s ⊆ t) :
     dedup (s + t) = dedup t := by
   induction s, t using Quot.induction_on₂
-  exact congr_arg ((↑) : List α → Multiset α) <| List.Subset.dedup_append_right h
+  congrm $(List.Subset.dedup_append_right h)
 
 theorem Subset.dedup_add_left {s t : Multiset α} (h : t ⊆ s) :
     dedup (s + t) = dedup s := by

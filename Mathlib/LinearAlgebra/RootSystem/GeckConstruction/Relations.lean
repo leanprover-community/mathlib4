@@ -5,9 +5,10 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Basic
-public import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Lemmas
 public import Mathlib.Algebra.Lie.Sl2
+public import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Basic
+
+import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Lemmas
 
 /-!
 # Relations in Geck's construction of a Lie algebra associated to a root system
@@ -27,8 +28,6 @@ satisfying relations associated to the Cartan matrix of the input root system.
 
 public section
 
-noncomputable section
-
 namespace RootPairing.GeckConstruction
 
 open Function Module.End
@@ -41,7 +40,7 @@ variable {ι R M N : Type*} [Finite ι] [CommRing R] [IsDomain R] [CharZero R]
 
 attribute [local simp] Ring.lie_def Matrix.mul_apply Matrix.one_apply Matrix.diagonal_apply
 
-/-- Lemma 3.3 (a) from [Geck](Geck2017). -/
+/-- Lemma 3.3 (a) from [Geck][Geck2017]. -/
 lemma lie_h_e :
     ⁅h j, e i⁆ = b.cartanMatrix i j • e i := by
   classical
@@ -68,12 +67,12 @@ lemma lie_h_e :
     simp only [pairingIn_eq_add_of_root_eq_add hkil, Int.cast_add]
     ring
 
-/-- Lemma 3.3 (b) from [Geck](Geck2017). -/
+/-- Lemma 3.3 (b) from [Geck][Geck2017]. -/
 lemma lie_h_f :
     ⁅h j, f i⁆ = -b.cartanMatrix i j • f i := by
   classical
   suffices ω b * ⁅h j, f i⁆ = ω b * (-b.cartanMatrix i j • f i) by
-    replace this := congr_arg (ω b * ·) this
+    replace this := congr(ω b * $this)
     simpa [← mul_assoc, ω_mul_ω] using this
   calc ω b * ⁅h j, f i⁆ = ω b * (h j * f i - f i * h j) := by rw [Ring.lie_def]
                       _ = -(h j * e i - e i * h j) * ω b := ?_
@@ -136,12 +135,12 @@ private lemma lie_e_f_same_aux (k : ι) (hki : k ≠ i) (hki' : k ≠ P.reflecti
     exact ⟨P.chainBotCoeff_eq_zero_iff.mpr <| Or.inr fun ⟨x, hx⟩ ↦ h₁ x <| by simp [hx],
            P.chainTopCoeff_eq_zero_iff.mpr <| Or.inr fun ⟨x, hx⟩ ↦ h₂ x <| by simp [hx]⟩
 
-/-- Lemma 3.4 from [Geck](Geck2017). -/
+/-- Lemma 3.4 from [Geck][Geck2017]. -/
 lemma lie_e_f_same :
     ⁅e i, f i⁆ = h i := by
   let := P.indexNeg
   have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
-  have : IsAddTorsionFree M := .of_isTorsionFree R M
+  have : HasUniqueDiv M := .of_isTorsionFree R M
   classical
   ext (k | k) (l | l)
   · simp [e, f, h]
@@ -188,7 +187,7 @@ attribute [local instance 100] LieRing.ofAssociativeRing
 
 lemma isSl2Triple [DecidableEq ι] :
     IsSl2Triple (h i) (e i) (f i) where
-  h_ne_zero := fun contra ↦ by simpa [h] using congr_fun₂ contra (.inr i) (.inr i)
+  h_ne_zero := fun contra ↦ by simpa [h] using congr($contra (.inr i) (.inr i))
   lie_e_f := by rw [lie_e_f_same]
   lie_h_e_nsmul := by rw [lie_h_e]; simp
   lie_h_f_nsmul := by rw [lie_h_f]; simp
@@ -261,7 +260,7 @@ private lemma lie_e_f_ne_aux₂ :
       Matrix.transpose_mul, Matrix.mul_apply', lie_e_f_ne_aux₁ hij.symm]
     simp
 
-/-- Lemma 3.5 from [Geck](Geck2017). -/
+/-- Lemma 3.5 from [Geck][Geck2017]. -/
 lemma lie_e_f_ne [P.IsReduced] [P.IsIrreducible] :
     ⁅e i, f j⁆ = 0 := by
   have hij' : (i : ι) ≠ (j : ι) := hij ∘ SetLike.coe_eq_coe.mp

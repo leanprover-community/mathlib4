@@ -8,8 +8,9 @@ module
 public import Mathlib.Algebra.Homology.CochainComplexPlus
 public import Mathlib.Algebra.Homology.HomotopyCategory.Acyclic
 public import Mathlib.Algebra.Homology.Precylinder
-public import Mathlib.CategoryTheory.Localization.OfQuotient
 public import Mathlib.CategoryTheory.Shift.SingleFunctorsLift
+
+import Mathlib.CategoryTheory.Localization.OfQuotient
 
 /-!
 # The triangulated subcategory of bounded below cochain complexes up to homotopy
@@ -92,7 +93,7 @@ lemma plus_quotient_obj_iff (K : CochainComplex C ℤ) :
   refine ⟨?_, fun h ↦ ⟨_, h⟩⟩
   simp only [plus, ObjectProperty.strictMap_iff]
   rintro ⟨L, h, hL⟩
-  obtain rfl : L = K := congr_arg Quotient.as hL
+  obtain rfl : L = K := congr(Quotient.as $hL)
   exact h
 
 instance [HasZeroObject C] : (plus C).ContainsZero where

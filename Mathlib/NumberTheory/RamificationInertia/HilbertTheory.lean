@@ -9,35 +9,99 @@ public import Mathlib.NumberTheory.RamificationInertia.Galois
 
 /-!
 
-# Decomposition and Inertia fields
+# Decomposition and inertia rings
 
-In this file, we develop Hilbert Theory on the splitting of prime ideals in a Galois extension.
+We develop Hilbert's theory of the splitting of a prime ideal in a Galois extension, working
+throughout at the level of rings.
 
-Let `L/K` be a Galois extension of fields. Let `A` and `B` be subrings of `K` `L` respectively with
-`K` fraction field of `A`, `L` fraction field of `B` and `B` the integral closure of `A` in `L`.
+Let `A ⊆ B` be commutative rings with `B` Galois over `A` with group `G`, let `p` be a prime of `A`
+and `P` a prime of `B` lying over `p`. The *decomposition ring* `R` and the *inertia ring* `R'` of
+`P` are the intermediate rings fixed by the decomposition and inertia subgroups of `P`; since the
+inertia group is contained in the decomposition group, they fit into a tower `A ⊆ R ⊆ R' ⊆ B`.
 
-For `P` a prime ideal of `B` lying over the prime ideal `p` of `A`, the decomposition field `D` of
-`P` in `L/K` is the subfield of elements of `L` fixed by the stabilizer of `P` in `Gal(L/K)`, and
-the inertia field `E` of `P` in `L/K` is the subfield of elements of `L` fixed by the inertia
-group of `P` in `Gal(L/K)`.
+## Ring predicates
 
-Let `e` and `f` the ramification index and inertia degree of `P` over `p` and let `g`
-be the number of prime ideals above `p` in `L`. Denote by `𝓟D`, resp. `𝓟E`, the prime ideal of `D`,
-resp. `E`, below `P`. Then we have the following properties
-```
-degree            ramif. index   inertia deg.
-        L      P
-  e     |      |      e               1
-        E      𝓟E
-  f     |      |      1               f
-        D      𝓟D
-  g     |      |      1               1
-        K      p
-```
+For an intermediate ring `R` of `B`, we introduce two characteristic predicates:
+
+* `Ideal.IsDecompositionRing G P R`: `B` is Galois over `R` with Galois group the *decomposition
+  group* of `P`, that is the stabilizer of `P` in `G`;
+* `Ideal.IsInertiaRing G P R`: `B` is Galois over `R` with Galois group the *inertia group* of `P`,
+  that is the subgroup of `G` acting trivially modulo `P`.
+
+## Relation to the classical field setting
+
+In the classical setting `L/K` is a Galois extension of fields with `G = Gal(L/K)`, and `A`, `B` are
+subrings of `K`, `L` with `K` the fraction field of `A`, `L` that of `B`, and `B` the integral
+closure of `A` in `L`. The decomposition (resp. inertia) *field* is the subfield of `L` fixed by the
+decomposition (resp. inertia) group of `P`, and the associated ring is the integral closure of `A`
+in this field. Decomposition and inertia rings arising this way are provided by
+`Ideal.IsDecompositionRing.of_isFractionRing` and `Ideal.IsInertiaRing.of_isFractionRing`.
+
+The field-level predicates `IsDecompositionField` and `IsInertiaField` defined below will be
+deprecated in favor of the ring-level predicates `Ideal.IsDecompositionRing` and
+`Ideal.IsInertiaRing`.
 
 -/
 
 @[expose] public section
+
+namespace Ideal
+
+variable {B : Type*} [CommRing B] (G : Type*) [Group G] [MulSemiringAction G B]
+  (P : Ideal B) (R : Type*) [CommRing R] [Algebra R B]
+
+open MulAction Pointwise
+
+section basic
+
+/-- `P.IsDecompositionRing G R` states that the intermediate ring `R` of `B` is a *decomposition
+ring* of the prime `P`: the ring `B` is Galois over `R` with Galois group the *decomposition group*
+of `P`, that is the stabilizer of `P` under the action of `G`.
+
+This is the ring-level characteristic predicate; the classical decomposition *field* is
+recovered by passing to fraction fields. -/
+@[mk_iff]
+class IsDecompositionRing extends IsGaloisGroup (stabilizer G P) R B
+
+instance [IsGaloisGroup (stabilizer G P) R B] : IsDecompositionRing G P R where
+
+/-- `P.IsInertiaRing G R` states that the intermediate ring `R` of `B` is an *inertia ring* of the
+prime `P`: the ring `B` is Galois over `R` with Galois group the *inertia group* of `P`, that is the
+elements of `G` acting trivially modulo `P` (a subgroup of the decomposition group).
+
+This is the ring-level characteristic predicate; the classical inertia *field* is recovered by
+passing to fraction fields. -/
+@[mk_iff]
+class IsInertiaRing extends IsGaloisGroup (inertia G P) R B
+
+instance [IsGaloisGroup (inertia G P) R B] : IsInertiaRing G P R where
+
+variable (L : Type*) [Field L] [Algebra B L] [IsFractionRing B L]
+  [MulSemiringAction G L] [SMulDistribClass G B L]
+
+/-- If `L` is Galois over the field `D` with the decomposition group of `P` as a Galois group (so
+`D` is the decomposition field of `P`), and `R` is an integrally closed subring of `D` with fraction
+field `D` such that `B` is integral over `R`, then `R` is a decomposition ring of `P`. -/
+theorem IsDecompositionRing.of_isFractionRing (D : Type*) [Field D]
+    [Algebra R D] [Algebra R L] [Algebra D L] [IsScalarTower R D L] [IsScalarTower R B L]
+    [IsFractionRing R D] [IsIntegrallyClosed R] [Algebra.IsIntegral R B]
+    [IsGaloisGroup (stabilizer G P) D L] :
+    IsDecompositionRing G P R where
+  toIsGaloisGroup := .of_isFractionRing (stabilizer G P) R B D L
+
+/-- If `L` is Galois over the field `E` with the inertia group of `P` as a Galois group (so `E` is
+the inertia field of `P`), and `R` is an integrally closed subring of `E` with fraction field `E`
+such that `B` is integral over `R`, then `R` is an inertia ring of `P`. -/
+theorem IsInertiaRing.of_isFractionRing (E : Type*) [Field E]
+    [Algebra R E] [Algebra R L] [Algebra E L] [IsScalarTower R E L] [IsScalarTower R B L]
+    [IsFractionRing R E] [IsIntegrallyClosed R] [Algebra.IsIntegral R B]
+    [IsGaloisGroup (inertia G P) E L] :
+    IsInertiaRing G P R where
+  toIsGaloisGroup := .of_isFractionRing (inertia G P) R B E L
+
+end basic
+
+end Ideal
 
 variable (A K L : Type*) {B : Type*} [Field K] [Field L] [Algebra K L] [CommRing A] [CommRing B]
   [Algebra A B] (p : Ideal A) (P : Ideal B) [P.LiesOver p]
@@ -324,7 +388,7 @@ theorem ramificationIdx_eq :
   have := ramificationIdx_tower (R := A) 𝓟D P
   rwa [← ramificationIdxIn_eq_ramificationIdx 𝓟D P (stabilizer Gal(L/K) P),
     ramificationIdxIn_eq A K L p P D 𝓞D 𝓟D, ramificationIdxIn_eq_ramificationIdx p P Gal(L/K),
-    right_eq_mul₀ (ramificationIdx_pos P A).ne'] at this
+    right_eq_mul₀ (ramificationIdx_pos A P).ne'] at this
 
 include K L D p P in
 /--

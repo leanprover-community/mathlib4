@@ -5,11 +5,11 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Field.Subfield.Defs
 public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-public import Mathlib.Algebra.Ring.Subring.Basic
 public import Mathlib.RingTheory.SimpleRing.Basic
+
+import Mathlib.Order.CompleteLattice.Finset
 
 /-!
 # Subfields
@@ -275,7 +275,7 @@ theorem sInf_toSubring (s : Set (Subfield K)) :
 theorem isGLB_sInf (S : Set (Subfield K)) : IsGLB S (sInf S) := by
   have : ∀ {s t : Subfield K}, (s : Set K) ≤ t ↔ s ≤ t := by simp [SetLike.coe_subset_coe]
   refine IsGLB.of_image this ?_
-  convert! isGLB_biInf (s := S) (f := SetLike.coe)
+  convert isGLB_biInf (s := S) (f := SetLike.coe)
   exact coe_sInf _
 
 /-- Subfields of a ring form a complete lattice. -/
@@ -328,14 +328,15 @@ theorem closure_eq_of_le {s : Set K} {t : Subfield K} (h₁ : s ⊆ t) (h₂ : t
 of `s`, and is preserved under addition, negation, and multiplication, then `p` holds for all
 elements of the closure of `s`. -/
 @[elab_as_elim]
-theorem closure_induction {s : Set K} {p : ∀ x ∈ closure s, Prop}
-    (mem : ∀ x hx, p x (subset_closure hx))
-    (one : p 1 (one_mem _)) (add : ∀ x y hx hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
-    (neg : ∀ x hx, p x hx → p (-x) (neg_mem hx)) (inv : ∀ x hx, p x hx → p x⁻¹ (inv_mem hx))
-    (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
-    {x} (h : x ∈ closure s) : p x h :=
+theorem closure_induction {s : Set K} {motive : ∀ x ∈ closure s, Prop}
+    (mem : ∀ x hx, motive x (subset_closure hx)) (one : motive 1 (one_mem _))
+    (add : ∀ x y hx hy, motive x hx → motive y hy → motive (x + y) (add_mem hx hy))
+    (neg : ∀ x hx, motive x hx → motive (-x) (neg_mem hx))
+    (inv : ∀ x hx, motive x hx → motive x⁻¹ (inv_mem hx))
+    (mul : ∀ x y hx hy, motive x hx → motive y hy → motive (x * y) (mul_mem hx hy))
+    {x} (h : x ∈ closure s) : motive x h :=
   letI : Subfield K :=
-    { carrier := {x | ∃ hx, p x hx}
+    { carrier := {x | ∃ hx, motive x hx}
       mul_mem' := by rintro _ _ ⟨_, hx⟩ ⟨_, hy⟩; exact ⟨_, mul _ _ _ _ hx hy⟩
       one_mem' := ⟨_, one⟩
       add_mem' := by rintro _ _ ⟨_, hx⟩ ⟨_, hy⟩; exact ⟨_, add _ _ _ _ hx hy⟩
@@ -430,6 +431,24 @@ theorem mem_sSup_of_directedOn {S : Set (Subfield K)} (Sne : S.Nonempty) (hS : D
 theorem coe_sSup_of_directedOn {S : Set (Subfield K)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) : (↑(sSup S) : Set K) = ⋃ s ∈ S, ↑s :=
   Set.ext fun x => by simp [mem_sSup_of_directedOn Sne hS]
+
+theorem coe_iSup_eq_iUnion_finset_coe_biSup {ι : Type*} (S : ι → Subfield K) :
+    ((⨆ i, S i : Subfield K) : Set K) = ⋃ s : Finset ι, (⨆ i ∈ s, S i : Subfield K) := by
+  rw [iSup_eq_iSup_finset, coe_iSup_of_directed <| Monotone.directed_le fun _ _ ↦ biSup_mono]
+
+theorem isMulCommutative_closure {s : Set K} (hs : s.Pairwise Commute) :
+    IsMulCommutative (closure s) :=
+  have : (closure s : Set K) ≤ s.centralizer.centralizer := fun _ hx ↦
+    closure_induction (fun _ h ↦ Set.subset_centralizer_centralizer h)
+      Set.one_mem_centralizer (fun _ _ _ _ ↦ Set.add_mem_centralizer)
+      (fun _ _ ↦ Set.neg_mem_centralizer) (fun _ _ ↦ Set.inv_mem_centralizer₀)
+      (fun _ _ _ _ ↦ Set.mul_mem_centralizer) hx
+  .of_setLike_mul_comm fun _ h₁ _ h₂ ↦
+    Set.centralizer_centralizer_comm_of_comm hs _ (this h₁) _ (this h₂)
+
+instance {S : Type*} [SetLike S K] [MulMemClass S K] (s : S) [IsMulCommutative s] :
+    IsMulCommutative (closure (s : Set K)) :=
+  isMulCommutative_closure fun _ hi _ hj _ ↦ setLike_mul_comm hi hj
 
 end Subfield
 

@@ -39,12 +39,12 @@ variable [Quiver.{v₁} C]
 @[to_dual self]
 theorem Quiver.Hom.op_inj {X Y : C} :
     Function.Injective (Quiver.Hom.op : (X ⟶ Y) → (Opposite.op Y ⟶ Opposite.op X)) := fun _ _ H =>
-  congr_arg Quiver.Hom.unop H
+  congr($(H).unop)
 
 @[to_dual self]
 theorem Quiver.Hom.unop_inj {X Y : Cᵒᵖ} :
     Function.Injective (Quiver.Hom.unop : (X ⟶ Y) → (Opposite.unop Y ⟶ Opposite.unop X)) :=
-  fun _ _ H => congr_arg Quiver.Hom.op H
+  fun _ _ H => congr($(H).op)
 
 @[simp, to_dual self]
 theorem Quiver.Hom.unop_op {X Y : C} (f : X ⟶ Y) : f.op.unop = f :=
