@@ -61,13 +61,13 @@ theorem ofIntWithPrec_one (prec : Int) : ofIntWithPrec 1 prec = step prec := by
 theorem toRat_shiftLeft (d : Dyadic) (n : ℤ) : (d <<< n).toRat = d.toRat * 2 ^ n := by
   rcases d with _ | ⟨d, k, hd⟩
   · simp
-  · simp [toRat_ofOdd_eq_mul_two_pow, sub_eq_add_neg, zpow_add₀ (a := (2 : ℚ)) (by decide)]
+  · norm_num [toRat_ofOdd_eq_mul_two_pow, sub_eq_add_neg, zpow_add₀]
     ac_rfl
 
 theorem toRat_shiftRight (d : Dyadic) (n : ℤ) : (d >>> n).toRat = d.toRat * 2 ^ (-n) := by
   rcases d with _ | ⟨d, k, hd⟩
   · simp
-  · simp [toRat_ofOdd_eq_mul_two_pow, zpow_add₀ (a := (2 : ℚ)) (by decide)]
+  · norm_num [toRat_ofOdd_eq_mul_two_pow, zpow_add₀]
     ac_rfl
 
 theorem toRat_shiftRight' (d : Dyadic) (n : ℤ) : (d >>> n).toRat = d.toRat / 2 ^ n := by
