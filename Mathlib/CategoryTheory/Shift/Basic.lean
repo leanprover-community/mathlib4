@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
-public import Mathlib.CategoryTheory.Monoidal.End
 public import Mathlib.CategoryTheory.Monoidal.Discrete
+public import Mathlib.CategoryTheory.Monoidal.End
 
 /-!
 # Shift
@@ -196,6 +196,10 @@ def shiftFunctorZero : shiftFunctor C (0 : A) ≅ 𝟭 C :=
 /-- Shifting by `a` such that `a = 0` identifies to the identity functor. -/
 def shiftFunctorZero' (a : A) (ha : a = 0) : shiftFunctor C a ≅ 𝟭 C :=
   eqToIso (by rw [ha]) ≪≫ shiftFunctorZero C A
+
+lemma shiftFunctorZero'_eq_shiftFunctorZero :
+    shiftFunctorZero' C 0 rfl = shiftFunctorZero C A := by
+  simp [shiftFunctorZero']
 
 end
 

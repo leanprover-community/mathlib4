@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
 
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Continuity
 import Mathlib.Analysis.SpecialFunctions.Exponential
 import Mathlib.Topology.ContinuousMap.ContinuousSqrt
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Continuity
 
 /-!
 # The exponential and logarithm based on the continuous functional calculus
