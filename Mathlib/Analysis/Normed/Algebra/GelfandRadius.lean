@@ -80,8 +80,9 @@ meta def evalGelfandRadius : PositivityExt where eval {u α} _ pα? e :=
 
 end Mathlib.Meta.Positivity
 
-theorem Isometry.gelfandRadius_apply_eq {B : Type*} [SeminormedRing B] {f : A →*₀ B}
-    (hf : Isometry f) (a : A) : gelfandRadius (f a) = gelfandRadius a :=
+theorem Isometry.gelfandRadius_map {B F : Type*} [SeminormedRing B] [FunLike F A B]
+    [MonoidWithZeroHomClass F A B] {f : F} (hf : Isometry f) (a : A) :
+    gelfandRadius (f a) = gelfandRadius a :=
   tendsto_nhds_unique (by simpa [← map_pow, hf.norm_map_of_map_zero (map_zero f)]
     using tendsto_gelfandRadius (f a)) (tendsto_gelfandRadius a)
 
