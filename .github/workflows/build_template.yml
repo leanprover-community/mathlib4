@@ -25,18 +25,10 @@ on:
         type: string
         required: false
         default: ''
-      cache_application_id:
-        # The Azure writer app for the `upload_cache` job. Only builds that write
-        # the `master` container set it. When it is empty, the job skips the Azure
-        # upload.
-        type: string
-        required: false
-        default: ''
       cache_environment:
         # GitHub environment for the `upload_cache` and `upload_test_cache` jobs. Its only
         # role is to fix the OIDC `sub` claim to `...:environment:<name>`, which the cache
-        # writer credentials are scoped to; it must match the writer
-        # `cache_application_id` when that is set.
+        # writer credentials are scoped to.
         type: string
         required: true
       publish_cache:
@@ -388,8 +380,8 @@ jobs:
           ../tools-branch/.lake/build/bin/cache clean
 
       # Publish this run's pruned `.ltar` set as `cache-snapshot` for other runs to warm
-      # from. Already on disk (no Azure egress) and already zstd-compressed (skip
-      # recompression); retention covers how far back a PR's merge-base can be matched.
+      # from. The files are already zstd-compressed, so the upload skips compression.
+      # The retention covers how far back a PR's merge-base can be matched.
       - name: upload cache snapshot warming artifact
         if: ${{ inputs.publish_cache && steps.build.outcome == 'success' }}
         continue-on-error: true # best-effort; never fail the build
@@ -432,10 +424,10 @@ jobs:
     # only cost is a second setup prefix on a fresh runner.
     #
     # It does not depend on `upload_cache`: it reconstitutes this run's oleans
-    # without the paid Azure round-trip, by downloading the `cache-staging` artifact
-    # `build` produces (this commit's freshly-built delta) and warming the rest from
-    # the master `cache-snapshot` via the `get-cache` action. The `verify the Mathlib
-    # cache is complete` step below fails loudly if that reconstitution is incomplete,
+    # from the `cache-staging` artifact `build` produces (this commit's
+    # freshly-built delta) and warms the rest from the master `cache-snapshot`
+    # via the `get-cache` action. The `verify the Mathlib cache is complete`
+    # step below fails loudly if that reconstitution is incomplete,
     # rather than silently rebuilding under landrun (which has no network).
     #
     # Gating: runs when `build` succeeded or failed (not cancelled/skipped). Running
@@ -496,8 +488,7 @@ jobs:
       # Pre-populate the local cache with this commit's freshly-built delta: the
       # `cache-staging` artifact `build` produces holds its newly-built `.ltar` —
       # the oleans not already in the master snapshot. `get-cache` below then warms
-      # the unchanged bulk from the master `cache-snapshot` and unpacks everything,
-      # so the bulk of the cache is not re-downloaded from paid Azure storage.
+      # the unchanged bulk from the master `cache-snapshot` and unpacks everything.
       # Gated on `cache-staging-has-files`: a full cache hit stages nothing (no
       # artifact is uploaded), and `get-cache` alone then covers the commit.
       - name: download cache staging artifact
@@ -509,8 +500,8 @@ jobs:
 
       # Warm the unchanged bulk from the master `cache-snapshot` and fetch/unpack
       # this commit's oleans. The staged `.ltar` placed above are already local, so
-      # `get-cache`'s `cache get` decompresses them rather than re-downloading; only
-      # anything still missing is pulled from Azure.
+      # `get-cache`'s `cache get` decompresses them and downloads only the missing
+      # files.
       - name: Get cache
         uses: ./workflow-actions/.github/actions/get-cache
         with:
@@ -830,25 +821,6 @@ jobs:
           esac
           echo "Uploading cache to R2 (container: $MATHLIB_CACHE_PRIMARY)..."
           lake env "$CACHE_BIN" put-staged --backend=s3 "${container_args[@]}" --staging-dir="cache-staging" --repo="$REPO"
-
-      # Builds that write `master` also upload the staged set to Azure. A failed
-      # upload fails the job.
-      - name: Azure CLI OIDC login and mint storage bearer token
-        if: inputs.cache_application_id != ''
-        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-cache-token@d6393a535c054122e507b6c5e1b2f4c31c604121
-        with:
-          azure-client-id: ${{ inputs.cache_application_id }}
-          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
-
-      - name: Upload staged cache to Azure
-        if: inputs.cache_application_id != ''
-        shell: bash
-        env:
-          REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
-        run: |
-          # $MATHLIB_CACHE_PRIMARY is the container the dispatch selected.
-          echo "Uploading cache to Azure (container: $MATHLIB_CACHE_PRIMARY)..."
-          lake env "$CACHE_BIN" put-staged --container="$MATHLIB_CACHE_PRIMARY" --staging-dir="cache-staging" --repo="$REPO"
 
   upload_test_cache:
     name: Upload tests to cache
