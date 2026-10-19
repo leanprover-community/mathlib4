@@ -9,7 +9,7 @@ public meta import Mathlib.Tactic.Matrix.ListMatrix
 public meta import Mathlib.Util.Qq
 public import Batteries.Logic  -- shake: keep (Qq dependency)
 public import Mathlib.Init
-public import Qq
+public meta import Qq
 
 /-!
 # Expansion of products of list matrices
