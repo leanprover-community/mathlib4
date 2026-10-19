@@ -5,9 +5,10 @@ Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Ring.Equiv
-public import Mathlib.Algebra.Ring.Opposite
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.Ring.Equiv
+
+import Mathlib.Algebra.Ring.Opposite
 
 /-!
 # Results about mapping big operators across ring equivalences
