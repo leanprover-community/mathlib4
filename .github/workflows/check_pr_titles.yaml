@@ -32,7 +32,9 @@ jobs:
 
       - name: check the PR title format
         id: pr-title-check
-        if: github.event.pull_request.draft == false && github.event.pull_request.base.ref == 'master'
+        # PRs into `bump/*` branches get the same review as PRs into `master`, so their
+        # titles follow the same format.
+        if: github.event.pull_request.draft == false && (github.event.pull_request.base.ref == 'master' || startsWith(github.event.pull_request.base.ref, 'bump/'))
         env:
           TITLE: ${{ github.event.pull_request.title }}
           PR_LABELS: ${{ toJson(github.event.pull_request.labels) }}

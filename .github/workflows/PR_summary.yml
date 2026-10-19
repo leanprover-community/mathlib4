@@ -14,6 +14,10 @@ jobs:
     name: "post-or-update-summary-comment"
     runs-on: ubuntu-latest
     if: github.repository == 'leanprover-community/mathlib4'
+    env:
+      # The PR's base branch: `master`, or a `bump/*` branch. Every comparison below
+      # is against this branch.
+      PR_BASE_REF: ${{ github.base_ref }}
 
     steps:
     - name: Checkout code
@@ -46,17 +50,18 @@ jobs:
         git config user.name "leanprover-community-mathlib4-bot"
         git config user.email "leanprover-community-mathlib4-bot@users.noreply.github.com"
 
-        if git merge origin/master --no-ff --no-commit
+        git fetch origin "${PR_BASE_REF}"
+        if git merge "origin/${PR_BASE_REF}" --no-ff --no-commit
         then
           git merge --abort || true
-          echo "This PR does not have merge conflicts with master."
+          echo "This PR does not have merge conflicts with ${PR_BASE_REF}."
           # we use curl rather than octokit/request-action so that the job won't fail
           # (and send an annoying email) if the labels don't exist
           curl --request DELETE \
             --url https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels/merge-conflict \
             --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}'
         else
-          echo "This PR has merge conflicts with master."
+          echo "This PR has merge conflicts with ${PR_BASE_REF}."
           # we use curl rather than octokit/request-action so that the job won't fail
           # (and send an annoying email) if the labels don't exist
           curl --request POST \
@@ -81,28 +86,28 @@ jobs:
     - name: Get changed and removed/renamed files
       run: |
         cd pr-branch
-        git fetch origin ${{ github.base_ref }}  # fetch the base branch
+        git fetch origin "${PR_BASE_REF}"  # fetch the base branch
 
         # Get the list of all changed files.
         echo "Saving the changed files to 'changed_files.txt'..."
-        git diff --name-only origin/${{ github.base_ref }}... | tee changed_files.txt
+        git diff --name-only "origin/${PR_BASE_REF}..." | tee changed_files.txt
 
         # Get all newly added files.
         echo "Checking for added files..."
-        git diff --name-only --diff-filter A origin/${{ github.base_ref }}... | tee added_files.txt
+        git diff --name-only --diff-filter A "origin/${PR_BASE_REF}..." | tee added_files.txt
 
         # Get all files which were removed or renamed.
         echo "Checking for removed files..."
 
         # Shows the `D`eleted files, one per line.
-        git diff --name-only --diff-filter D origin/${{ github.base_ref }}... | tee removed_files.txt
+        git diff --name-only --diff-filter D "origin/${PR_BASE_REF}..." | tee removed_files.txt
         echo "Checking for renamed files..."
 
         # Shows the `R`enamed files, in human-readable format
         # The `awk` pipe
         # * extracts into an array the old name as the key and the new name as the value
         # * eventually prints "`oldName` was renamed to `newName`" for each key-value pair.
-        git diff -p --summary --diff-filter=R origin/${{ github.base_ref }}... |
+        git diff -p --summary --diff-filter=R "origin/${PR_BASE_REF}..." |
           awk '
             /^rename from / {
                 file=$0
@@ -124,7 +129,7 @@ jobs:
         cd pr-branch
         touch moved_without_deprecation.txt
         touch extraneous_deprecated_module.txt
-        git checkout ${{ github.base_ref }}
+        git checkout "${PR_BASE_REF}"
         while IFS= read -r file
         do
           if grep ^deprecated_module "${file}" ; then
@@ -157,7 +162,8 @@ jobs:
     - name: Compute transitive imports
       run: |
         cd pr-branch
-        # the checkout dance, to avoid a detached head
+        # Create the local `master` branch: mathlib-ci's `import_trans_difference.sh`
+        # lists the files added relative to a local `master`.
         git checkout master
         git checkout -
         currentHash="$(git rev-parse HEAD)"
@@ -166,8 +172,8 @@ jobs:
         echo "Compute the counts for the HEAD of the PR"
         python "${CI_SCRIPTS_DIR}/pr_summary/count-trans-deps.py" "Mathlib/" > head.json
 
-        # Checkout the merge base
-        git checkout "$(git merge-base master ${{ github.event.pull_request.head.sha }})"
+        # Checkout the merge base with the PR's base branch
+        git checkout "$(git merge-base "origin/${PR_BASE_REF}" "${currentHash}")"
 
         echo "Compute the counts for the merge base"
         python "${CI_SCRIPTS_DIR}/pr_summary/count-trans-deps.py" "Mathlib/" > base.json
@@ -184,13 +190,16 @@ jobs:
         currentHash="$(git rev-parse HEAD)"
         PR="${{ github.event.pull_request.number }}"
         title="### PR summary"
+        # The mathlib-ci scripts compare against `master` when called without commits;
+        # pass the merge base with the PR's base branch instead.
+        mergeBase="$(git merge-base "origin/${PR_BASE_REF}" "${currentHash}")"
 
         graphAndHighPercentReports=$(python "${CI_SCRIPTS_DIR}/pr_summary/import-graph-report.py" base.json head.json changed_files.txt)
 
         echo "Produce import count comment"
         importCount=$(
           printf '%s\n' "${graphAndHighPercentReports}" | sed '/^Import changes exceeding/Q'
-          "${CI_SCRIPTS_DIR}/pr_summary/import_trans_difference.sh"
+          "${CI_SCRIPTS_DIR}/pr_summary/import_trans_difference.sh" "${currentHash}" "${mergeBase}"
         )
 
         echo "Produce high percentage imports"
@@ -214,7 +223,7 @@ jobs:
         fi
 
         echo "Compute Declarations' diff comment"
-        declDiff=$("${CI_SCRIPTS_DIR}/pr_summary/declarations_diff.sh")
+        declDiff=$("${CI_SCRIPTS_DIR}/pr_summary/declarations_diff.sh" "" "${mergeBase}")
         if [ "$(printf '%s' "${declDiff}" | wc -l)" -gt 15 ]
         then
           declDiff="$(printf '<details><summary>\n\n%s\n\n</summary>\n\n%s\n\n</details>\n' "#### Declarations diff (regex)" "${declDiff}")"
