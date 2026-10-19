@@ -36,21 +36,11 @@ open scoped Pointwise TensorProduct
 
 namespace Algebra.FormallyUnramified
 
-variable (A B : Type*) [CommRing A] [CommRing B] [Algebra A B]
-  [FormallyUnramified A B] [EssFiniteType A B]
-
-lemma isIdempotentElem_elem : IsIdempotentElem (elem A B) := by
-  suffices ∀ t, t * elem A B = TensorProduct.lmul' A t ⊗ₜ[A] 1 * elem A B by
-    simpa [IsIdempotentElem, lmul_elem, ← Algebra.TensorProduct.one_def] using this (elem A B)
-  intro t
-  induction t using TensorProduct.inductionOn with
-  | tmul a b => rw [TensorProduct.lmul'_apply_tmul, ← one_mul 1, ← TensorProduct.tmul_mul_tmul,
-      mul_assoc, ← one_tmul_mul_elem, ← mul_assoc, TensorProduct.tmul_mul_tmul, mul_one, one_mul]
-  | add t₁ t₂ h₁ h₂ => rw [map_add, TensorProduct.add_tmul, add_mul, add_mul, h₁, h₂]
-
 open Algebra.TensorProduct
 
-variable {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
+variable (A B : Type*) [CommRing A] [CommRing B] [Algebra A B]
+  [FormallyUnramified A B] [EssFiniteType A B]
+  {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
 
 /-- The separability tensor evaluated at the identity and the action of `g`. Modulo an ideal
 `Q`, it equals `1` exactly when `g` belongs to `Q.inertia G`. -/
@@ -153,7 +143,11 @@ lemma linearize_toAlgHom (g : G) :
 
 end Linearize
 
-variable (A B) (H : Subgroup G) [Finite H]
+variable (A B) (H : Subgroup G)
+
+section finite
+
+variable [Finite H]
 
 /-- The idempotent whose multiples are fixed by a finite subgroup. -/
 noncomputable def subgroupIdempotent : B :=
@@ -202,17 +196,20 @@ lemma mk_subgroupIdempotent_inertia_eq_one (Q : Ideal B) [Finite (Q.inertia G)] 
     Ideal.Quotient.mk Q (subgroupIdempotent A B (Q.inertia G)) = 1 :=
   mk_subgroupIdempotent_eq_one_iff.mpr le_rfl
 
-omit [Finite H] in
+end finite
+
+variable [Finite G]
+
 /-- The multiplier obtained by linearizing the coset sum after multiplication by the subgroup
 idempotent. -/
-noncomputable def descentMultiplier [Finite G] : B := by
+noncomputable def descentMultiplier : B := by
   classical
   letI := Fintype.ofFinite (G ⧸ H)
   exact ∑ q : G ⧸ H, smulIdempotent A B q.out * subgroupIdempotent A B H
 
 private lemma descentMultiplier_mem_colon [Algebra.IsInvariant A B G]
-    [Finite G] (I : Ideal B) (hI : ∀ g : G, g • I = I) :
-      descentMultiplier A B H ∈ ((I.comap (algebraMap A B)).map (algebraMap A B)).colon I := by
+    (I : Ideal B) (hI : ∀ g : G, g • I = I) :
+    descentMultiplier A B H ∈ ((I.comap (algebraMap A B)).map (algebraMap A B)).colon I := by
   classical
   let := Fintype.ofFinite (G ⧸ H)
   let J := (I.comap (algebraMap A B)).map (algebraMap A B)
@@ -237,14 +234,14 @@ private lemma descentMultiplier_mem_colon [Algebra.IsInvariant A B G]
   simpa [Submodule.mem_colon, IsConcreteLE.le_iff, descentMultiplier, T,
     Finset.sum_mul, mul_assoc] using le_comap_linearize T I J hT
 
-lemma mk_descentMultiplier_inertia (Q : Ideal B) [Q.IsPrime] [Finite G] :
+lemma mk_descentMultiplier_inertia (Q : Ideal B) [Q.IsPrime] :
     Ideal.Quotient.mk Q (descentMultiplier A B (Q.inertia G)) = 1 := by
   classical
   simpa [descentMultiplier, mk_smulIdempotent, ite_mul,
     ← SetLike.mem_coe, ← QuotientGroup.preimage_mk_one] using
       (mk_subgroupIdempotent_inertia_eq_one A B Q)
 
-theorem map_comap_eq_of_isInvariant [Finite G] [Algebra.IsInvariant A B G]
+theorem map_comap_eq_of_isInvariant [Algebra.IsInvariant A B G]
     (I : Ideal B) (hI : ∀ g : G, g • I = I) :
     (I.comap (algebraMap A B)).map (algebraMap A B) = I := by
   classical
