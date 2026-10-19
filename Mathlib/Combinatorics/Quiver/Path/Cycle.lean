@@ -22,13 +22,13 @@ strictly stronger than forbidding simple cycles only.
 `Quiver.cycleLengths` (in `Mathlib/Combinatorics/Quiver/Cyclic.lean`) records lengths of positive
 loops without a simplicity hypothesis.
 
-For cardinality bounds use `p.vertices.toFinset` (see `List.toFinset_card_of_nodup`).
+For cardinality bounds, use `p.vertices.toFinset` (see `List.toFinset_card_of_nodup`).
 
 ## Main statements
 
 * `Quiver.Path.exists_length_add_eq_of_getElem_eq`: a path that visits the same vertex twice can
   be shortened by excising the loop in between. Both shortening results below come from it.
-* `Quiver.Path.isSimple_of_minimal_length`: a shortest positive loop is simple.
+* `Quiver.Path.IsSimple.of_minimal_length`: a shortest positive loop is simple.
 -/
 
 @[expose] public section
@@ -40,11 +40,11 @@ open List
 variable {V : Type*} [Quiver V]
 
 /-- A path with no repeated vertices (cf. `SimpleGraph.Walk.IsPath`). -/
-@[reducible] def IsPath {a b : V} (p : Path a b) : Prop :=
+abbrev IsPath {a b : V} (p : Path a b) : Prop :=
   p.vertices.Nodup
 
 /-- A path with no repeated vertices except possibly at the end. -/
-@[reducible] def IsSimple {a b : V} (p : Path a b) : Prop :=
+abbrev IsSimple {a b : V} (p : Path a b) : Prop :=
   p.vertices.dropLast.Nodup
 
 /-- A nontrivial simple closed walk. -/
@@ -105,7 +105,7 @@ lemma exists_pos_length_lt_of_not_isSimple {a : V} {c : Path a a} (h : ¬ c.IsSi
   exact ⟨q, by grind, by grind⟩
 
 /-- A shortest positive loop is simple. -/
-theorem isSimple_of_minimal_length {a : V} {c : Path a a}
+theorem IsSimple.of_minimal_length {a : V} {c : Path a a}
     (hc : ∀ p : Path a a, 0 < p.length → c.length ≤ p.length) : c.IsSimple := by
   by_contra h
   obtain ⟨q, hq_pos, hq_lt⟩ := exists_pos_length_lt_of_not_isSimple h
