@@ -27,13 +27,19 @@ def replicate : ℕ → Path a a → Path a a
 
 @[simp] lemma replicate_zero (p : Path a a) : replicate 0 p = .nil := rfl
 
-@[simp] lemma replicate_succ (n : ℕ) (p : Path a a) :
+lemma replicate_succ (n : ℕ) (p : Path a a) :
     replicate (n + 1) p = (replicate n p).comp p := rfl
+
+lemma replicate_succ' (n : ℕ) (p : Path a a) :
+    replicate (n + 1) p = p.comp (replicate n p) := by
+  induction n with
+  | zero => simp [replicate_succ]
+  | succ k ih => rw [replicate_succ, ih, comp_assoc, ← replicate_succ, ih]
 
 @[simp]
 lemma length_replicate (n : ℕ) (p : Path a a) : (replicate n p).length = n * p.length := by
   induction n with
   | zero => simp
-  | succ k ih => simp [ih, Nat.succ_mul]
+  | succ k ih => simp [replicate_succ, ih, Nat.succ_mul]
 
 end Quiver.Path
