@@ -4783,9 +4783,9 @@ public import Mathlib.Geometry.Convex.ConvexSpace.ModuleTopology
 public import Mathlib.Geometry.Convex.ConvexSpace.PathConnectedSpaceStdSimplex
 public import Mathlib.Geometry.Convex.ConvexSpace.Prod
 public import Mathlib.Geometry.Convex.ConvexSpace.Topology
-public import Mathlib.Geometry.Convex.Hull
-public import Mathlib.Geometry.Convex.Set
-public import Mathlib.Geometry.Convex.Star
+public import Mathlib.Geometry.Convex.Set.Hull
+public import Mathlib.Geometry.Convex.Set.Basic
+public import Mathlib.Geometry.Convex.Set.Star
 public import Mathlib.Geometry.Diffeology.Basic
 public import Mathlib.Geometry.Euclidean.Altitude
 public import Mathlib.Geometry.Euclidean.Angle.Bisector

@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Geometry.Convex.Set
+public import Mathlib.Geometry.Convex.Set.Basic
 
 /-!
 # Star-convex sets

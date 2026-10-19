@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Order.Field.Basic
 public import Mathlib.Geometry.Convex.ConvexSpace.AffineMap
-public import Mathlib.Geometry.Convex.Star
+public import Mathlib.Geometry.Convex.Set.Star
 public import Mathlib.Tactic.NormNum.Basic
 
 import Mathlib.LinearAlgebra.Prod
