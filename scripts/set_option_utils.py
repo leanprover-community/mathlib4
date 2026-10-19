@@ -8,10 +8,14 @@ from pathlib import Path
 PROJECT_DIR = Path(__file__).resolve().parent.parent
 
 DEFAULT_OPTIONS = [
+    "backward.defeqAttrib.useBackward",
+    "backward.privateInPublic",
     "backward.isDefEq.respectTransparency",
     "backward.isDefEq.respectTransparency.types",
     "backward.whnf.reducibleClassField",
     "backward.inferInstanceAs.wrap",
+    "backward.inferInstanceAs.wrap.data",
+    "backward.inferInstanceAs.wrap.instances",
 ]
 
 
