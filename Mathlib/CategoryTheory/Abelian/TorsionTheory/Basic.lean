@@ -134,40 +134,6 @@ lemma unop {T F : ObjectProperty Cᵒᵖ} (hTF : TorsionTheory T F) :
   rightOrthogonal_eq := by
     rw [ObjectProperty.rightOrthogonal_unop, hTF.leftOrthogonal_eq]
 
-/-- The torsion class of a torsion theory is closed under quotients. -/
-lemma isClosedUnderQuotients_torsion (hTF : TorsionTheory T F) : T.IsClosedUnderQuotients := by
-  rw [← hTF.leftOrthogonal_eq]
-  infer_instance
-
-/-- The torsion class of a torsion theory is closed under extensions. -/
-lemma isClosedUnderExtensions_torsion (hTF : TorsionTheory T F) : T.IsClosedUnderExtensions := by
-  rw [← hTF.leftOrthogonal_eq]
-  infer_instance
-
-/-- The torsion class of a torsion theory is closed under coproducts. -/
-lemma isClosedUnderCoproducts_torsion (hTF : TorsionTheory T F) (J : Type w) :
-    T.IsClosedUnderColimitsOfShape (Discrete J) := by
-  rw [← hTF.leftOrthogonal_eq]
-  infer_instance
-
-/-- The torsion-free class of a torsion theory is closed under subobjects. -/
-lemma isClosedUnderSubobjects_torsionFree (hTF : TorsionTheory T F) :
-    F.IsClosedUnderSubobjects := by
-  rw [← hTF.rightOrthogonal_eq]
-  infer_instance
-
-/-- The torsion-free class of a torsion theory is closed under extensions. -/
-lemma isClosedUnderExtensions_torsionFree (hTF : TorsionTheory T F) :
-    F.IsClosedUnderExtensions := by
-  rw [← hTF.rightOrthogonal_eq]
-  infer_instance
-
-/-- The torsion-free class of a torsion theory is closed under products. -/
-lemma isClosedUnderProducts_torsionFree (hTF : TorsionTheory T F) (J : Type w) :
-    F.IsClosedUnderLimitsOfShape (Discrete J) := by
-    rw [← hTF.rightOrthogonal_eq]
-    infer_instance
-
 /-- A torsion theory exhibits its torsion class as a torsion class. -/
 lemma isTorsionClass (hTF : TorsionTheory T F) : IsTorsionClass T :=
   ⟨by rw [hTF.rightOrthogonal_eq, hTF.leftOrthogonal_eq]⟩
@@ -196,14 +162,18 @@ lemma torsionTheory : TorsionTheory P P.rightOrthogonal := by
   simpa using TorsionTheory.generated_by P
 
 /-- A torsion class is closed under quotients. -/
-instance : P.IsClosedUnderQuotients := (torsionTheory P).isClosedUnderQuotients_torsion
+instance : P.IsClosedUnderQuotients := by
+  rw [← leftOrthogonal_rightOrthogonal_eq P]
+  infer_instance
 
 /-- A torsion class is closed under extensions. -/
-instance : P.IsClosedUnderExtensions := (torsionTheory P).isClosedUnderExtensions_torsion
+instance : P.IsClosedUnderExtensions := by
+  rw [← leftOrthogonal_rightOrthogonal_eq P]
+  infer_instance
 
-/-- A torsion class is closed under colimits of any shape, not only coproducts. -/
+/-- A torsion class is closed under colimits of any shape. -/
 instance {J : Type*} [Category* J] : P.IsClosedUnderColimitsOfShape J := by
-  rw [← (torsionTheory P).leftOrthogonal_eq]
+  rw [← leftOrthogonal_rightOrthogonal_eq P]
   infer_instance
 
 /-- The opposite of a torsion class is a torsion-free class. -/
@@ -225,14 +195,18 @@ lemma torsionTheory : TorsionTheory P.leftOrthogonal P := by
   simpa using TorsionTheory.cogenerated_by P
 
 /-- A torsion-free class is closed under subobjects. -/
-instance : P.IsClosedUnderSubobjects := (torsionTheory P).isClosedUnderSubobjects_torsionFree
+instance : P.IsClosedUnderSubobjects := by
+  rw [← rightOrthogonal_leftOrthogonal_eq P]
+  infer_instance
 
 /-- A torsion-free class is closed under extensions. -/
-instance : P.IsClosedUnderExtensions := (torsionTheory P).isClosedUnderExtensions_torsionFree
+instance : P.IsClosedUnderExtensions := by
+  rw [← rightOrthogonal_leftOrthogonal_eq P]
+  infer_instance
 
-/-- A torsion-free class is closed under limits of any shape, not only products. -/
+/-- A torsion-free class is closed under limits of any shape. -/
 instance {J : Type*} [Category* J] : P.IsClosedUnderLimitsOfShape J := by
-  rw [← (torsionTheory P).rightOrthogonal_eq]
+  rw [← rightOrthogonal_leftOrthogonal_eq P]
   infer_instance
 
 /-- The opposite of a torsion-free class is a torsion class. -/
@@ -277,12 +251,11 @@ theorem isTorsionFreeClass_iff_of_wellPowered (P : ObjectProperty C)
     IsTorsionFreeClass P ↔
       P.IsClosedUnderSubobjects ∧ P.IsClosedUnderExtensions ∧
         ∀ J : Type w, P.IsClosedUnderLimitsOfShape (Discrete J) :=
-  ⟨fun _ ↦ ⟨inferInstance, inferInstance, inferInstance⟩, fun⟨_, _, _⟩ ↦ by
+  ⟨fun _ ↦ ⟨inferInstance, inferInstance, inferInstance⟩, fun ⟨_, _, _⟩ ↦ by
     rw [isTorsionFreeClass_iff_isTorsionClass_op, isTorsionClass_iff_of_wellPowered]
     refine ⟨inferInstance, inferInstance, fun J ↦ ?_⟩
     rw [← P.op.isClosedUnderColimitsOfShape_iff_of_equivalence (Discrete.opposite J)]
-    infer_instance
-  ⟩
+    infer_instance⟩
 
 end Abelian
 
