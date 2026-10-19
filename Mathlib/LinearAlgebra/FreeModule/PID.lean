@@ -327,49 +327,25 @@ noncomputable def Submodule.basisOfPidOfLESpan {ι : Type*} [Finite ι] {b : ι 
 noncomputable def Module.basisOfFiniteTypeTorsionFree [Fintype ι] {s : ι → M}
     (hs : span R (range s) = ⊤) [IsTorsionFree R M] : Σ n : ℕ, Basis (Fin n) R M := by
   classical
-    -- We define `N` as the submodule spanned by a maximal linear independent subfamily of `s`
-    have := exists_maximal_linearIndepOn R s
-    let I : Set ι := this.choose
-    obtain
-      ⟨indepI : LinearIndependent R (s ∘ (fun x => x) : I → M), hI :
-        ∀ i ∉ I, ∃ a : R, a ≠ 0 ∧ a • s i ∈ span R (s '' I)⟩ :=
-      this.choose_spec
-    let N := span R (range (s ∘ (fun x => x) : I → M))
-    -- same as `span R (s '' I)` but more convenient
-    let _sI : I → N := fun i ↦ ⟨s i.1, subset_span (mem_range_self i)⟩
-    -- `s` restricted to `I` is a basis of `N`
-    let sI_basis : Basis I R N := Basis.span indepI
-    -- Our first goal is to build `A ≠ 0` such that `A • M ⊆ N`
-    have exists_a : ∀ i : ι, ∃ a : R, a ≠ 0 ∧ a • s i ∈ N := by
-      intro i
-      by_cases hi : i ∈ I
-      · use 1, zero_ne_one.symm
-        rw [one_smul]
-        exact subset_span (mem_range_self (⟨i, hi⟩ : I))
-      · simpa [image_eq_range s I] using! hI i hi
-    choose a ha ha' using exists_a
-    let A := ∏ i, a i
-    have hA : A ≠ 0 := by
-      rw [Finset.prod_ne_zero_iff]
-      simpa using! ha
-    -- `M ≃ A • M` because `M` is torsion free and `A ≠ 0`
-    let φ : M →ₗ[R] M := LinearMap.lsmul R M A
-    have : LinearMap.ker φ = ⊥ := LinearMap.ker_lsmul hA
-    let ψ := LinearEquiv.ofInjective φ (LinearMap.ker_eq_bot.mp this)
-    have : LinearMap.range φ ≤ N := by
-      -- as announced, `A • M ⊆ N`
-      suffices ∀ i, φ (s i) ∈ N by
-        rw [LinearMap.range_eq_map, ← hs, map_span_le]
-        rintro _ ⟨i, rfl⟩
-        apply this
-      intro i
-      calc
-        (∏ j ∈ {i}ᶜ, a j) • a i • s i ∈ N := N.smul_mem _ (ha' i)
-        _ = (∏ j, a j) • s i := by rw [Fintype.prod_eq_prod_compl_mul i, mul_smul]
-    -- Since a submodule of a free `R`-module is free, we get that `A • M` is free
-    obtain ⟨n, b : Basis (Fin n) R (LinearMap.range φ)⟩ := Submodule.basisOfPidOfLE this sI_basis
-    -- hence `M` is free.
-    exact ⟨n, b.map ψ.symm⟩
+  -- We define `N` as the submodule spanned by a linearly independent subfamily of `s`,
+  -- such that `A • M ⊆ N` for some `A ≠ 0`
+  have := exists_linearIndepOn_smul_mem_span hs
+  let I : Set ι := this.choose
+  obtain ⟨indepI : LinearIndependent R (s ∘ (fun x => x) : I → M), hA⟩ := this.choose_spec
+  let N := span R (range (s ∘ (fun x => x) : I → M))
+  -- `s` restricted to `I` is a basis of `N`
+  let sI_basis : Basis I R N := Basis.span indepI
+  -- `M ≃ A • M` because `M` is torsion free and `A ≠ 0`
+  let φ : M →ₗ[R] M := LinearMap.lsmul R M hA.choose
+  have : LinearMap.ker φ = ⊥ := LinearMap.ker_lsmul hA.choose_spec.1
+  let ψ := LinearEquiv.ofInjective φ (LinearMap.ker_eq_bot.mp this)
+  have : LinearMap.range φ ≤ N := by
+    rintro _ ⟨m, rfl⟩
+    exact span_mono (image_eq_range s I).subset (hA.choose_spec.2 m)
+  -- Since a submodule of a free `R`-module is free, we get that `A • M` is free
+  obtain ⟨n, b : Basis (Fin n) R (LinearMap.range φ)⟩ := Submodule.basisOfPidOfLE this sI_basis
+  -- hence `M` is free.
+  exact ⟨n, b.map ψ.symm⟩
 
 theorem Module.free_of_finite_type_torsion_free [_root_.Finite ι] {s : ι → M}
     (hs : span R (range s) = ⊤) [IsTorsionFree R M] : Module.Free R M := by
