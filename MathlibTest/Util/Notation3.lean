@@ -182,14 +182,16 @@ warning: Was not able to generate a pretty printer for this notation. If you do 
 notation3 "error" => idStr Nat.zero
 
 section
-/--
-warning: Was not able to generate a pretty printer for this notation. If you do not expect it to be
-pretty printable, then you can use `notation3 (prettyPrint := false)`. If the notation expansion
-refers to section variables, be sure to do `local notation3`. Otherwise, you might be able to adjust
-the notation expansion to make it matchable; pretty printing relies on deriving an expression
-matcher from the expansion. (Use `set_option trace.notation3 true` to get some debug information.)
--/
-#guard_msgs (warning, drop error) in local notation3 "#" n => Fin.mk n (by decide)
+-- Tactic blocks in the expansion are ignored when generating the pretty printer.
+set_option linter.unusedTactic false
+local notation3 "#" n => Fin.mk n (by decide)
+
+/-- info: #1 : Fin 5 -/
+#guard_msgs in #check (#1 : Fin 5)
+
+-- Since proofs are not matched, this also applies to proofs not produced by the tactic block.
+/-- info: fun h ↦ #1 : 1 < 5 → Fin 5 -/
+#guard_msgs in #check fun h : 1 < 5 => (Fin.mk 1 h : Fin 5)
 end
 
 section
