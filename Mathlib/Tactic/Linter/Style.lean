@@ -129,8 +129,8 @@ initialize addLinter setOptionLinter
 
 end Style.setOption
 
-/-- The `omit` linter warns on persistent `omit` commands. Use `omit ... in` to make the
-omitted assumptions explicit at each declaration, without affecting subsequent declarations. -/
+/-- The `omit` linter warns on persistent `omit` commands. Use `omit ... in` for one declaration,
+or `omit ... in section` to share an omission across a group of related declarations. -/
 public register_option linter.style.omit : Bool := {
   defValue := false
   descr := "enable the linter against persistent `omit` commands"
@@ -143,7 +143,7 @@ private partial def lintOmit : Syntax → CommandElabM Unit := withSetOptionIn f
   else if stx.isOfKind ``Parser.Command.omit &&
       getLinterValue linter.style.omit (← getLinterOptions) then
     Linter.logLint linter.style.omit stx
-      "Please use `omit ... in` to scope omitted variables to a single command."
+      "Please use `omit ... in` to scope omitted variables to a declaration or section."
 
 /-- Warn on persistent `omit` commands, allowing `omit ... in`.
 Only command wrappers need inspecting; declaration bodies and syntax quotations are skipped. -/
