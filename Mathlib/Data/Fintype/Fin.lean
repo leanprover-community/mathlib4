@@ -97,7 +97,7 @@ variable {α : Type*} {n : ℕ}
 
 @[simp]
 theorem count_ofFn [DecidableEq α] (f : Fin n → α) (a : α) :
-    (List.ofFn f).count a = #{i | f i = a} := by
-  simp [← List.Vector.toList_ofFn, ← Fin.card_filter_univ_eq_vector_get_eq_count]
+    (ofFn f).count a = #{i | f i = a} := by
+  simp [← Vector.toList_ofFn, ← Fin.card_filter_univ_eq_vector_get_eq_count]
 
 end List
