@@ -27,8 +27,8 @@ The roles are declared in the root namespace so that they are available in every
 opening a namespace.
 -/
 
-open Lean Lean.Doc
-open scoped Lean.Doc.Syntax
+open Lean Lean.Doc Lean.Doc.Parser
+open scoped Lean.Doc
 
 public meta section
 
@@ -50,18 +50,17 @@ deriving TypeName, Repr
 Extracts the single code literal from the contents of a role, such as the {lit}`` `x` ``
 in {lit}`` {role}`x` ``.
 -/
-def soleCode (xs : TSyntaxArray `inline) : DocM StrLit := do
-  -- Filter out whitespace, for the case `` {url}[ `x` ] ``.
-  let xs := xs.filter fun x => match x with
-    | `(inline|$s:str) => !s.getString.all (·.isWhitespace)
-    | `(Lean.Doc.Syntax.linebreak| line!$_) => false
+def soleCode (xs : Array VersoInline) : DocM VersoCode := do
+  let xs := xs.filter fun x => match VersoInline.view x with
+    | .text s => !s.getVersoText.all Char.isWhitespace
+    | .linebreak _ => false
     | _ => true
   if h : xs.size ≠ 1 then
     throwErrorAt (mkNullNode xs) "Expected a single code element"
   else
-    match xs[0] with
-    | `(inline|code($s)) => return s
-    | other => throwErrorAt other "Expected a code element"
+    match VersoInline.view xs[0] with
+    | .code c => return c.content
+    | other => throwErrorAt other.stx "Expected a code element"
 
 /-- Whether {name}`bib` (the contents of {lit}`docs/references.bib`) contains an entry with
 the given key. -/
@@ -84,9 +83,9 @@ The code literal contains the target, which is also used as the link text, as
 in {lit}`` {url}`https://leanprover.org` ``.
 -/
 @[doc_role]
-def url (xs : TSyntaxArray `inline) : DocM (Inline ElabInline) := do
+def url (xs : TSyntaxArray `Lean.Doc.Parser.inline) : DocM (Inline ElabInline) := do
   let s ← Mathlib.VersoRoles.soleCode xs
-  let target := s.getString
+  let target := s.view
   return .link #[.text target] target
 
 /-- If {name}`doc.verso.libraryNote.warnOnMissing` is enabled, a {lit}`{library_note}`
@@ -107,9 +106,9 @@ defined later are allowed. Set the option {name}`doc.verso.libraryNote.warnOnMis
 {lean}`false` to disable this warning.
 -/
 @[doc_role, nolint defsWithUnderscore] -- This name intentionally contains an underscore.
-def «library_note» (xs : TSyntaxArray `inline) : DocM (Inline ElabInline) := do
+def «library_note» (xs : TSyntaxArray `Lean.Doc.Parser.inline) : DocM (Inline ElabInline) := do
   let s ← Mathlib.VersoRoles.soleCode xs
-  let label := s.getString
+  let label := s.view
   if ← doc.verso.libraryNote.warnOnMissing.getM then
     /- Note that `Batteries.Util.LibraryNote.libraryNoteExt` initializes its state by flattening
     all imported library notes into the state array. -/
@@ -133,7 +132,7 @@ docstring. For potential optimization, see:
 https://github.com/leanprover-community/mathlib4/pull/44135/changes#r4258754031
 -/
 @[doc_role]
-def cite (key : StrLit) (xs : TSyntaxArray `inline) : DocM (Inline ElabInline) := do
+def cite (key : StrLit) (xs : TSyntaxArray `Lean.Doc.Parser.inline) : DocM (Inline ElabInline) := do
   let rendered ← xs.mapM elabInline
   let k := key.getString
   let path : System.FilePath := "docs" / "references.bib"
@@ -152,9 +151,9 @@ in {lit}```` ```code python ````.
 The language is recorded for later use; the listing itself is rendered verbatim.
 -/
 @[doc_code_block]
-def code (language : Ident) (content : StrLit) : DocM (Block ElabInline ElabBlock) := do
+def code (language : Ident) (content : VersoCodeBlock) : DocM (Block ElabInline ElabBlock) := do
   return .other
     (.custom (.mk (Mathlib.VersoRoles.CodeWithLanguage.mk language.getId.toString)))
-    #[.code content.getString]
+    #[.code content.view]
 
 end
