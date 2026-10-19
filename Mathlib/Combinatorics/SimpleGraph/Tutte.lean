@@ -56,8 +56,7 @@ private lemma tutte_exists_isAlternating_isCycles {x b a c : V} {M : Subgraph (G
 variable [Finite V]
 
 lemma IsTutteViolator.mono {u : Set V} (h : G ≤ G') (ht : G'.IsTutteViolator u) :
-    G.IsTutteViolator u :=
-  ht.trans_le (ncard_oddComponents_mono _ (Subgraph.deleteVerts_mono' u h))
+    G.IsTutteViolator u := ht.trans_le (ncard_oddComponents_mono _ (Subgraph.deleteVerts_mono' u h))
 
 /-- Given a graph in which the universal vertices do not violate Tutte's condition,
 if the graph decomposes into cliques, there exists a matching that covers
@@ -255,7 +254,6 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
     exact tutte_exists_isAlternating_isCycles p hp hcalt (hnM2 _ hnbc) hpac hnpxb hM2ac
       hab.symm hnbc hxa.ne.symm hle (aux (by simp))
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- From a graph on an even number of vertices with no perfect matching, we can remove an odd number
 of vertices such that there are more odd components in the resulting graph than vertices we removed.
 
@@ -285,21 +283,20 @@ lemma exists_isTutteViolator (h : ∀ (M : G.Subgraph), ¬M.IsPerfectMatching)
     obtain ⟨p, hp⟩ := Reachable.exists_path_of_dist (K.connected_toSimpleGraph x y)
     obtain ⟨x, a, b, hxa, hxb, hnadjxb, hnxb⟩ := Walk.exists_adj_adj_not_adj_ne hp.2
       (p.reachable.one_lt_dist_of_ne_of_not_adj hxy.1 hxy.2)
-    simp only [ConnectedComponent.toSimpleGraph, deleteUniversalVerts, universalVerts,
-      Subgraph.verts_top, comap_adj, Function.Embedding.coe_subtype,
-      Subgraph.coe_adj, Subgraph.induce_adj, Subtype.coe_prop, Subgraph.top_adj, true_and]
-      at hxa hxb hnadjxb
+    simp_rw [ConnectedComponent.toSimpleGraph, induce_adj, Subgraph.coe_adj, deleteUniversalVerts,
+      Subgraph.induce_adj, Subgraph.top_adj] at hxa hxb hnadjxb
+    simp_rw [hxa.1, hxb.2.1, true_and] at hnadjxb
     obtain ⟨c, hc⟩ : ∃ (c : V), (a : V) ≠ c ∧ ¬ Gmax.Adj a c := by
       simpa [universalVerts, IsUniversal] using a.1.2.2
-    have hbnec : b.val.val ≠ c := by rintro rfl; exact hc.2 hxb
+    have hbnec : b.val.val ≠ c := by rintro rfl; exact hc.2 hxb.2.2
     obtain ⟨_, hG1⟩ := hMaximal _ <| left_lt_sup.mpr (by
       rw [edge_le_iff (v := x.1.1) (w := b.1.1)]
       simp [hnadjxb, Subtype.val_injective.ne <| Subtype.val_injective.ne hnxb])
     obtain ⟨_, hG2⟩ := hMaximal _ <| left_lt_sup.mpr (by
       rwa [edge_le_iff (v := a.1.1) (w := c), not_or])
-    have hcnex : x.val.val ≠ c := by rintro rfl; exact hc.2 hxa.symm
-    obtain ⟨Mcon, hMcon⟩ := tutte_exists_isPerfectMatching_of_near_matchings hxa
-      hxb hnadjxb (fun hadj ↦ hc.2 hadj) (by lia) hcnex hc.1 hbnec hG1 hG2
+    have hcnex : x.val.val ≠ c := by rintro rfl; exact hc.2 hxa.2.2.symm
+    obtain ⟨Mcon, hMcon⟩ := tutte_exists_isPerfectMatching_of_near_matchings hxa.2.2
+      hxb.2.2 hnadjxb (fun hadj ↦ hc.2 hadj) (by lia) hcnex hc.1 hbnec hG1 hG2
     exact hMatchingFree Mcon hMcon
 
 /-- **Tutte's theorem**
