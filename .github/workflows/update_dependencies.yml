@@ -12,9 +12,11 @@ jobs:
     if: github.repository == 'leanprover-community/mathlib4'
     # `lake update` runs the lakefile code (and any `post_update` hooks) of every dependency at
     # its new revision, before anyone has reviewed it. So this job must not get a write-capable
-    # token, an OIDC token or any secret. The `update-pr` job reads its result as data.
+    # token, an OIDC token, any secret or access to the Actions cache. The `update-pr` job reads
+    # its result as data.
     permissions:
       contents: read
+    cache-mode: none
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -130,9 +132,11 @@ jobs:
           name: lake-update-result
           path: ${{ runner.temp }}/lake-update-result
 
-      - name: Apply the updated manifest and toolchain
-        # The artifact comes from a job that ran upstream code, so treat it as data: take only
-        # these two files, and check that the manifest has the shape `lake update` writes.
+      - name: Check the toolchain and apply the updated manifest
+        id: check_toolchain
+        # The artifact comes from a job that ran upstream code, so treat it as data: skip the PR if
+        # the toolchain changed, and otherwise take only the manifest, once it has the shape
+        # `lake update` writes.
         if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}
         env:
           RESULT_DIR: ${{ runner.temp }}/lake-update-result
@@ -143,9 +147,15 @@ jobs:
               exit 1
             fi
           done
+          if ! cmp -s lean-toolchain "$RESULT_DIR/lean-toolchain"; then
+            echo "toolchain_modified=true" >> "$GITHUB_OUTPUT"
+            echo "Lean toolchain file was modified. Skipping PR creation."
+            exit 0
+          fi
           if ! jq -e '.packages | type == "array" and all(.[]; .type == "git"
                 and (.rev | type == "string" and test("^[0-9a-f]{40}$"))
-                and (.url | type == "string" and startswith("https://")))' \
+                and (.url | type == "string" and startswith("https://"))
+                and (.inputRev | . == null or type == "string"))' \
                 "$RESULT_DIR/lake-manifest.json" > /dev/null; then
             echo "::error::lake-manifest.json from the lake-update job does not look like a Lake manifest"
             exit 1
@@ -153,26 +163,16 @@ jobs:
           # Apart from the revisions, the manifest must match master's: the same packages, URLs and
           # so on. A transitive package's `inputRev` is copied from its parent's manifest, so it may
           # change too. When an update legitimately changes more, a maintainer should do it by hand.
-          shape='{top: del(.packages), packages: (.packages
-            | map({key: .name, value: (del(.rev) | if .inherited then del(.inputRev) else . end)})
-            | from_entries)}'
+          # The packages are sorted rather than keyed by name, so a duplicate entry is a difference.
+          shape='del(.packages[].rev) | .packages |= (
+            map(if .inherited then del(.inputRev) else . end) | sort_by(.name)
+          )'
           if ! diff <(jq -S "$shape" lake-manifest.json) <(jq -S "$shape" "$RESULT_DIR/lake-manifest.json"); then
             echo "::error::lake update changed more than the dependencies' revisions (diff above: master, then the update); update the dependencies by hand"
             exit 1
           fi
           cp "$RESULT_DIR/lake-manifest.json" lake-manifest.json
-          cp "$RESULT_DIR/lean-toolchain" lean-toolchain
-
-      - name: Check if lean-toolchain was modified
-        if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}
-        id: check_toolchain
-        run: |
-          if git diff --name-only | grep -q "lean-toolchain"; then
-            echo "toolchain_modified=true" >> "$GITHUB_OUTPUT"
-            echo "Lean toolchain file was modified. Skipping PR creation."
-          else
-            echo "toolchain_modified=false" >> "$GITHUB_OUTPUT"
-          fi
+          echo "toolchain_modified=false" >> "$GITHUB_OUTPUT"
 
       - name: Determine PR state
         # only run if check_toolchain ran and returned "false"
