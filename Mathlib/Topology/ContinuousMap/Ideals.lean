@@ -5,11 +5,12 @@ Authors: Jireh Loreaux
 -/
 module
 
-import Mathlib.Topology.ContinuousMap.Compact
-public import Mathlib.Topology.UrysohnsLemma
-public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Analysis.Normed.Ring.Units
+public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Topology.Algebra.Module.Spaces.CharacterSpace
+public import Mathlib.Topology.UrysohnsLemma
+
+import Mathlib.Topology.ContinuousMap.Compact
 
 /-!
 # Ideals of continuous functions
@@ -194,7 +195,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
   replace hε := show (0 : ℝ≥0) < ε from hε
   simp_rw [dist_nndist]
   norm_cast
-  -- Let `t := {x : X | ε / 2 ≤ ‖f x‖₊}}` which is closed and disjoint from `set_of_ideal I`.
+  -- Let `t := {x : X | ε / 2 ≤ ‖f x‖₊}` which is closed and disjoint from `set_of_ideal I`.
   set t := {x : X | ε / 2 ≤ ‖f x‖₊}
   have ht : IsClosed t := isClosed_le continuous_const (map_continuous f).nnnorm
   have htI : Disjoint t (setOfIdeal I)ᶜ := by
@@ -213,14 +214,14 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
     refine (nnnorm_lt_iff _ hε).2 fun x => ?_
     simp only [coe_sub, coe_mul, Pi.sub_apply, Pi.mul_apply]
     by_cases hx : x ∈ t
-    · simpa only [hgt hx, comp_apply, Pi.one_apply, ContinuousMap.coe_coe, algebraMapCLM_apply,
+    · simpa only [hgt hx, comp_apply, Pi.one_apply, ContinuousMap.coe_ofClass, algebraMapCLM_apply,
         map_one, mul_one, sub_self, nnnorm_zero] using! hε
     · refine lt_of_le_of_lt ?_ (half_lt_self hε)
       have :=
         calc
           ‖((1 - (algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g) x : 𝕜)‖₊ =
               ‖1 - algebraMap ℝ≥0 𝕜 (g x)‖₊ := by
-            simp only [coe_sub, coe_one, coe_comp, ContinuousMap.coe_coe, Pi.sub_apply,
+            simp only [coe_sub, coe_one, coe_comp, ContinuousMap.coe_ofClass, Pi.sub_apply,
               Pi.one_apply, Function.comp_apply, algebraMapCLM_apply]
           _ = ‖algebraMap ℝ≥0 𝕜 (1 - g x)‖₊ := by
             simp only [Algebra.algebraMap_eq_smul_one, NNReal.smul_def, NNReal.coe_sub (hg x),
@@ -243,13 +244,13 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
   have : ∃ g' : C(X, ℝ≥0), (algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g' ∈ I ∧ ∀ x ∈ t, 0 < g' x := by
     refine ht.isCompact.induction_on ?_ ?_ ?_ ?_
     · refine ⟨0, ?_, fun x hx => False.elim hx⟩
-      convert! I.zero_mem
+      convert I.zero_mem
       ext
-      simp only [comp_apply, zero_apply, ContinuousMap.coe_coe, map_zero]
+      simp
     · rintro s₁ s₂ hs ⟨g, hI, hgt⟩; exact ⟨g, hI, fun x hx => hgt x (hs hx)⟩
     · rintro s₁ s₂ ⟨g₁, hI₁, hgt₁⟩ ⟨g₂, hI₂, hgt₂⟩
       refine ⟨g₁ + g₂, ?_, fun x hx => ?_⟩
-      · convert! I.add_mem hI₁ hI₂
+      · convert I.add_mem hI₁ hI₂
         ext y
         simp
       · rcases hx with (hx | hx)
@@ -265,7 +266,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
           mem_nhdsWithin_iff_exists_mem_nhds_inter.mpr ⟨_, this, Set.Subset.rfl⟩,
           ⟨⟨fun x => ‖g x‖₊ ^ 2, (map_continuous g).nnnorm.fun_pow 2⟩, ?_, fun x hx =>
             pow_pos (norm_pos_iff.mpr hx.1) 2⟩⟩
-      convert! I.mul_mem_left (star g) hI
+      convert I.mul_mem_left (star g) hI
       ext
       simp only [comp_apply, coe_mk, algebraMapCLM_apply, map_pow,
         mul_apply, star_apply, star_def]
@@ -282,9 +283,9 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
       ⟨g' x, hgt' x hx, hx'⟩
   obtain ⟨g, hg, hgc⟩ := exists_mul_le_one_eqOn_ge g' hc
   refine ⟨g * g', ?_, hg, hgc.mono hgc'⟩
-  convert! I.mul_mem_left ((algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g) hI'
+  convert I.mul_mem_left ((algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g) hI'
   ext
-  simp only [coe_algebraMapCLM, comp_apply, mul_apply, ContinuousMap.coe_coe, map_mul]
+  simp
 
 theorem idealOfSet_ofIdeal_isClosed {I : Ideal C(X, 𝕜)} (hI : IsClosed (I : Set C(X, 𝕜))) :
     idealOfSet 𝕜 (setOfIdeal I) = I :=

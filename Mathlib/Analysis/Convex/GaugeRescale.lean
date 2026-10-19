@@ -6,7 +6,9 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Convex.Gauge
+
 import Mathlib.Analysis.Normed.Module.Convex
+
 /-!
 # "Gauge rescale" homeomorphism between convex sets
 

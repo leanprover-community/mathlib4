@@ -5,18 +5,19 @@ Authors: Aaron Anderson
 -/
 module
 
-import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 public import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.LinearAlgebra.Finsupp.Span
-import Mathlib.LinearAlgebra.Isomorphisms
 public import Mathlib.LinearAlgebra.Projection
 public import Mathlib.Order.Atoms.Finite
 public import Mathlib.Order.CompactlyGenerated.Intervals
 public import Mathlib.Order.JordanHolder
 public import Mathlib.RingTheory.Ideal.Colon
 public import Mathlib.RingTheory.Noetherian.Defs
+
+import Mathlib.Algebra.DirectSum.Module
+import Mathlib.LinearAlgebra.Finsupp.Span
+import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.SetTheory.Cardinal.NatCard
-public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Simple Modules
@@ -169,7 +170,7 @@ theorem isSimpleModule_iff_quot_maximal :
     have ⟨m, hm⟩ := exists_ne (0 : M)
     exact ⟨_, ker_toSpanSingleton_isMaximal R hm,
       ⟨(LinearMap.quotKerEquivOfSurjective _ <| toSpanSingleton_surjective R hm).symm⟩⟩
-  · convert! congr equiv; rwa [isSimpleModule_iff_isCoatom]
+  · convert congr equiv; rwa [isSimpleModule_iff_isCoatom]
 
 /-- In general, the annihilator of a simple module is called a primitive ideal, and it is
 always a two-sided prime ideal, but mathlib's `Ideal.IsPrime` is not the correct definition

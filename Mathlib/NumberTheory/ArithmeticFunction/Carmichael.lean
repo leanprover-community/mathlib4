@@ -5,9 +5,10 @@ Authors: Snir Broshi
 -/
 module
 
-import Mathlib.Algebra.GCDMonoid.FinsetLemmas
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
 public import Mathlib.RingTheory.ZMod.UnitsCyclic
+
+import Mathlib.Algebra.GCDMonoid.FinsetLemmas
 
 /-!
 # The Carmichael function
@@ -43,6 +44,7 @@ namespace ArithmeticFunction
 
 /-- `λ` is the Carmichael function, also known as the reduced totient function,
 defined as the exponent of the unit group of `ZMod n`. -/
+@[oeis A002322 "the sequence skips `n = 0`"]
 def carmichael : ArithmeticFunction ℕ where
   toFun
     | 0 => 0
@@ -112,8 +114,6 @@ theorem carmichael_finset_lcm {α : Type*} (s : Finset α) (f : α → ℕ) :
 theorem carmichael_finsetProd {α : Type*} {s : Finset α} {f : α → ℕ}
     (h : Set.Pairwise s <| Coprime.onFun f) : carmichael (s.prod f) = s.lcm (carmichael ∘ f) :=
   s.lcm_eq_prod h ▸ carmichael_finset_lcm ..
-
-@[deprecated (since := "2026-04-08")] alias carmichael_finset_prod := carmichael_finsetProd
 
 theorem carmichael_factorization (n : ℕ) [NeZero n] :
     carmichael n = n.primeFactors.lcm fun p ↦ carmichael (p ^ n.factorization p) := by

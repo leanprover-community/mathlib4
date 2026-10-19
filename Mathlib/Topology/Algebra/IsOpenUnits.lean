@@ -6,9 +6,10 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.Jacobson.Ideal
-import Mathlib.Topology.Algebra.Group.Units
 public import Mathlib.Topology.Algebra.GroupWithZero
 public import Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology
+
+import Mathlib.Topology.Algebra.Group.Units
 
 /-!
 
@@ -55,7 +56,7 @@ instance (priority := 900) {M : Type*} [GroupWithZero M]
     [TopologicalSpace M] [ContinuousInv₀ M] [T1Space M] : IsOpenUnits M where
   isOpenEmbedding_unitsVal := by
     refine ⟨Units.isEmbedding_val₀, ?_⟩
-    convert! (isClosed_singleton (X := M) (x := 0)).isOpen_compl
+    convert (isClosed_singleton (X := M) (x := 0)).isOpen_compl
     ext
     simp only [Set.mem_range, Set.mem_compl_iff, Set.mem_singleton_iff]
     exact isUnit_iff_ne_zero
@@ -96,3 +97,25 @@ lemma IsOpenUnits.of_isAdic {R : Type*} [CommRing R] [TopologicalSpace R] [IsTop
     · simp
   rw [this]
   exact Ideal.mul_mem_left _ _ hx
+
+/-!
+### Units of products
+
+This section contains the instances that the units in a product of two or finitely many topological
+monoids with open units are open.
+-/
+
+open ContinuousMulEquiv
+
+/-- Openness of the group of units is preserved under products. -/
+instance {M N : Type*} [Monoid M] [TopologicalSpace M] [Monoid N]
+    [TopologicalSpace N] [hM : IsOpenUnits M] [hN : IsOpenUnits N] : IsOpenUnits (M × N) := by
+  rw [isOpenUnits_iff] at *
+  exact ((hM.prodMap hN).of_comp_iff _).mpr prodUnits_isOpenEmbedding
+
+/-- Openness of the group of units is preserved under finite products. -/
+instance {I : Type*} [Finite I] {f : I → Type _} [(i : I) → Monoid (f i)]
+    [(i : I) → TopologicalSpace (f i)] [∀ i, IsOpenUnits (f i)] :
+    IsOpenUnits ((i : I) → f i) := by
+  simp_rw [isOpenUnits_iff] at *
+  exact ((IsOpenEmbedding.piMap ‹_›).of_comp_iff _).mpr piUnits_isOpenEmbedding
