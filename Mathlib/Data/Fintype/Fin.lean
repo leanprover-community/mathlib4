@@ -53,7 +53,8 @@ theorem card_filter_univ_succ' (p : Fin (n + 1) → Prop) [DecidablePred p] :
     #{x | p x} = ite (p 0) 1 0 + #{x | p (.succ x)} := by
   rw [card_filter_univ_succ]; split_ifs <;> simp [add_comm]
 
-theorem card_filter_univ_vector_get_eq_countP (p : α → Bool) (v : List.Vector α n) :
+@[simp]
+theorem _root_.List.Vector.countP_toList (p : α → Bool) (v : List.Vector α n) :
      #{i | p (v.get i)} = v.toList.countP p := by
   induction v with
   | nil => simp
@@ -61,9 +62,13 @@ theorem card_filter_univ_vector_get_eq_countP (p : α → Bool) (v : List.Vector
     simp_rw [card_filter_univ_succ', Vector.get_cons_zero, Vector.toList_cons, Vector.get_cons_succ,
       hxs, List.countP_cons, add_comm (ite (p x = true) 1 0)]
 
-theorem card_filter_univ_eq_vector_get_eq_count [DecidableEq α] (a : α) (v : List.Vector α n) :
+@[simp]
+theorem _root_.List.Vector.count_toList [DecidableEq α] (a : α) (v : List.Vector α n) :
     #{i | v.get i = a} = v.toList.count a := by
-  simp [List.count_eq_countP, ← card_filter_univ_vector_get_eq_countP, beq_iff_eq]
+  simp [List.count_eq_countP, ← List.Vector.countP_toList, beq_iff_eq]
+
+@[deprecated (since := "2026-10-19")]
+alias card_filter_univ_eq_vector_get_eq_count := List.Vector.count_toList
 
 /--
 Given a "downward-closed" predicate `p` on `Fin n` (which could be spelt `Antitone p`),
@@ -102,11 +107,11 @@ variable {α : Type*} {n : ℕ}
 @[simp]
 theorem countP_ofFn (f : Fin n → α) (p : α → Bool) :
     (ofFn f).countP p = #{i | p (f i)} := by
-  simp [← Vector.toList_ofFn, ← Fin.card_filter_univ_vector_get_eq_countP]
+  simp [← Vector.toList_ofFn, ← Vector.countP_toList]
 
 @[simp]
 theorem count_ofFn [DecidableEq α] (f : Fin n → α) (a : α) :
     (ofFn f).count a = #{i | f i = a} := by
-  simp [← Vector.toList_ofFn, ← Fin.card_filter_univ_eq_vector_get_eq_count]
+  simp [← Vector.toList_ofFn, ← Vector.count_toList]
 
 end List
