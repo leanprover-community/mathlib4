@@ -60,7 +60,7 @@ theorem _root_.List.Vector.countP_toList (p : α → Bool) (v : List.Vector α n
   | nil => simp
   | @cons n x xs hxs =>
     simp_rw [card_filter_univ_succ', Vector.get_cons_zero, Vector.toList_cons, Vector.get_cons_succ,
-      hxs.symm, List.countP_cons, add_comm (ite (p x = true) 1 0)]
+      ← hxs, List.countP_cons, add_comm (ite (p x = true) 1 0)]
 
 @[simp]
 theorem _root_.List.Vector.count_toList [DecidableEq α] (a : α) (v : List.Vector α n) :
