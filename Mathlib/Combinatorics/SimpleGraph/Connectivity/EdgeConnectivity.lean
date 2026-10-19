@@ -124,9 +124,9 @@ theorem IsEdgeConnected.le_minDegree [Fintype V] [Nontrivial V] [DecidableRel G.
   cases k
   · contradiction
   · simp only [Nat.cast_le, ge_iff_le]
-    apply le_minDegree_of_forall_le_degree 
+    apply le_minDegree_of_forall_le_degree
     intro v
-    obtain ⟨v',h''⟩ := exists_ne v 
+    obtain ⟨v',h''⟩ := exists_ne v
     have := IsEdgeReachable.le_degree_left (h v v') h''.symm
     simp only [Nat.cast_le] at this
     assumption
