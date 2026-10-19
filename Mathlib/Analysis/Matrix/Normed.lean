@@ -103,11 +103,16 @@ theorem nnnorm_lt_iff {r : ℝ≥0} (hr : 0 < r) {A : Matrix m n α} :
     ‖A‖₊ < r ↔ ∀ i j, ‖A i j‖₊ < r := by
   simp_rw [nnnorm_def, pi_nnnorm_lt_iff hr]
 
-theorem norm_entry_le_entrywise_sup_norm (A : Matrix m n α) {i : m} {j : n} : ‖A i j‖ ≤ ‖A‖ :=
+theorem norm_apply_le_norm (A : Matrix m n α) {i : m} {j : n} : ‖A i j‖ ≤ ‖A‖ :=
   (norm_le_pi_norm (A i) j).trans (norm_le_pi_norm A i)
 
-theorem nnnorm_entry_le_entrywise_sup_nnnorm (A : Matrix m n α) {i : m} {j : n} : ‖A i j‖₊ ≤ ‖A‖₊ :=
+@[deprecated (since := "2026-10-19")] alias norm_entry_le_entrywise_sup_norm := norm_apply_le_norm
+
+theorem nnnorm_apply_le_nnnorm (A : Matrix m n α) {i : m} {j : n} : ‖A i j‖₊ ≤ ‖A‖₊ :=
   (nnnorm_le_pi_nnnorm (A i) j).trans (nnnorm_le_pi_nnnorm A i)
+
+@[deprecated (since := "2026-10-19")]
+alias nnnorm_entry_le_entrywise_sup_nnnorm := nnnorm_apply_le_nnnorm
 
 @[simp]
 theorem nnnorm_map_eq (A : Matrix m n α) (f : α → β) (hf : ∀ a, ‖f a‖₊ = ‖a‖₊) :
@@ -291,11 +296,11 @@ theorem linfty_opNNNorm_def (A : Matrix m n α) :
   Subtype.ext <| linfty_opNorm_def A
 
 theorem nnnorm_apply_le_linfty_opNNNorm (A : Matrix m n α) (i : m) (j : n) : ‖A i j‖₊ ≤ ‖A‖₊ := by
-  grw [Matrix.linfty_opNNNorm_def, ← Finset.le_sup_of_le (by simp)] -- these grws cannot be combined
-  grw [← Finset.single_le_sum (by simp) (by simp)]
+  grw [linfty_opNNNorm_def, ← Finset.le_sup_of_le (by simp)] -- these grws cannot be combined
+  grw [← Finset.single_le_sum] <;> simp
 
-theorem norm_apply_le_linfty_opNorm (A : Matrix m n α) (i : m) (j : n) : ‖A i j‖ ≤ ‖A‖ := by
-  grw [← coe_nnnorm, nnnorm_apply_le_linfty_opNNNorm, coe_nnnorm]
+theorem norm_apply_le_linfty_opNorm (A : Matrix m n α) (i : m) (j : n) : ‖A i j‖ ≤ ‖A‖ :=
+  nnnorm_apply_le_linfty_opNNNorm A i j
 
 @[simp]
 theorem linfty_opNNNorm_replicateCol (v : m → α) : ‖replicateCol ι v‖₊ = ‖v‖₊ := by
@@ -568,6 +573,13 @@ theorem frobenius_nnnorm_def (A : Matrix m n α) :
 theorem frobenius_norm_def (A : Matrix m n α) :
     ‖A‖ = (∑ i, ∑ j, ‖A i j‖ ^ (2 : ℝ)) ^ (1 / 2 : ℝ) :=
   congr(($(frobenius_nnnorm_def A) : ℝ)).trans <| by simp [NNReal.coe_sum]
+
+theorem nnnorm_apply_le_frobenius_nnnorm (A : Matrix m n α) (i : m) (j : n) : ‖A i j‖₊ ≤ ‖A‖₊ := by
+  grw [frobenius_nnnorm_def, ← NNReal.sqrt_eq_rpow, NNReal.le_sqrt_iff_sq_le, ← NNReal.rpow_ofNat,
+    ← Finset.single_le_sum, ← Finset.single_le_sum] <;> simp
+
+theorem norm_apply_le_frobenius_norm (A : Matrix m n α) (i : m) (j : n) : ‖A i j‖ ≤ ‖A‖ :=
+  nnnorm_apply_le_frobenius_nnnorm A i j
 
 @[simp]
 theorem frobenius_nnnorm_map_eq (A : Matrix m n α) (f : α → β) (hf : ∀ a, ‖f a‖₊ = ‖a‖₊) :
