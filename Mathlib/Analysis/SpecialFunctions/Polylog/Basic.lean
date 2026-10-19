@@ -502,7 +502,7 @@ private lemma polylogIntegral_eq_polylogSeries_aux (hs : 0 < s.re) (hz : ‖z‖
       (fun t : ℝ => z ^ (n + 1) * (t ^ (s - 1) * cexp (-t * (n + 1)))) (Ioi 0) := by
     apply (hi (‖z‖ ^ (n + 1))).mono' (ContinuousOn.aestronglyMeasurable ?_ measurableSet_Ioi) ?_
     · apply ContinuousOn.const_mul (b := _) <| continuousOn_of_forall_continuousAt fun t ht =>
-        (continuousAt_ofReal_cpow_const t (s - 1) <| Or.inr ht.ne').mul ?_
+        (continuousAt_ofReal_cpow_const t (s - 1) <| Or.inr (by exact ht.ne')).mul ?_
       fun_prop
     · exact ae_restrict_iff' measurableSet_Ioi |>.mpr <| .of_forall (hbdd n)
   refine integral_tsum_of_summable_integral_norm hi' ?_
