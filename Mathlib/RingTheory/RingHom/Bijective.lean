@@ -6,6 +6,7 @@ Authors: Christian Merten
 module
 
 public import Mathlib.RingTheory.LocalProperties.Basic
+
 import Mathlib.RingTheory.LocalProperties.Exactness
 
 /-!

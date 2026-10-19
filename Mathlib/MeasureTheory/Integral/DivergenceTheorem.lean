@@ -8,8 +8,9 @@ module
 public import Mathlib.Analysis.BoxIntegral.DivergenceTheorem
 public import Mathlib.Analysis.BoxIntegral.Integrability
 public import Mathlib.Analysis.Calculus.Deriv.Basic
-import Mathlib.Analysis.Calculus.FDeriv.Equiv
 public import Mathlib.MeasureTheory.Integral.Prod
+
+import Mathlib.Analysis.Calculus.FDeriv.Equiv
 
 /-!
 # Divergence theorem for Bochner integral

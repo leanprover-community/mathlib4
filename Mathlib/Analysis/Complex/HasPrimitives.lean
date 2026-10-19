@@ -6,6 +6,7 @@ Authors: Ian Jauslin, Alex Kontorovich, Oliver Nash
 module
 
 public import Mathlib.Analysis.Complex.CauchyIntegral
+
 import Mathlib.Analysis.Complex.Convex
 
 /-!

@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Alastair Irving, Kim Morrison, Ainsley Pahljina
 module
 
 public import Mathlib.NumberTheory.Fermat
+
 import Mathlib.RingTheory.Fintype
 
 /-!

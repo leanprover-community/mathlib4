@@ -7,11 +7,11 @@ module
 
 public import Mathlib.Algebra.Order.Group.Pointwise.Interval
 public import Mathlib.Algebra.Order.Module.Defs
+public import Mathlib.Algebra.Torsor.Basic
+public import Mathlib.LinearAlgebra.AffineSpace.Defs
 public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.Tactic.Abel
-public import Mathlib.Algebra.Torsor.Basic
-public import Mathlib.LinearAlgebra.AffineSpace.Defs
 /-!
 # Affine maps
 
@@ -76,6 +76,8 @@ instance AffineMap.instFunLike (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*
     congr with v
     apply vadd_right_cancel (f p)
     rw [← f_add, h, ← g_add]
+
+initialize_simps_projections AffineMap (toFun → apply)
 
 namespace LinearMap
 

@@ -6,6 +6,7 @@ Authors: Anne Baanen
 module
 
 public import Mathlib.RingTheory.Ideal.Oka
+
 import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
