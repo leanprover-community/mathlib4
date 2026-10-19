@@ -51,6 +51,11 @@ Extracts the single code literal from the contents of a role, such as the {lit}`
 in {lit}`` {role}`x` ``.
 -/
 def soleCode (xs : TSyntaxArray `inline) : DocM StrLit := do
+  -- Filter out whitespace, for the case `` {url}[ `x` ] ``.
+  let xs := xs.filter fun x => match x with
+    | `(inline|$s:str) => !s.getString.all (·.isWhitespace)
+    | `(Lean.Doc.Syntax.linebreak| line!$_) => false
+    | _ => true
   if h : xs.size ≠ 1 then
     throwErrorAt (mkNullNode xs) "Expected a single code element"
   else
