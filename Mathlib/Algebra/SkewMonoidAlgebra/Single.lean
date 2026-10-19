@@ -6,6 +6,7 @@ Authors: María Inés de Frutos Fernández, Xavier Généreux
 module
 
 public import Mathlib.Algebra.SkewMonoidAlgebra.Basic
+
 set_option doc.verso true
 set_option doc.verso.suggestions false
 

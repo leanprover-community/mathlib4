@@ -6,6 +6,7 @@ Authors: David Loeffler
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Deligne
+
 set_option doc.verso true
 set_option doc.verso.suggestions false
 
