@@ -591,47 +591,68 @@ namespace SpecialLinearGroup
 
 /-- An element in SLₙ(F) induced by a diagonal matrix `1` on any other entries and `a`, `a⁻¹` on
   positition `i` and `j` respectively where `i ≠ j`. -/
-noncomputable def diag2n {ι : Type*} [Fintype ι] [DecidableEq ι] {i j : ι} (hij : i ≠ j) (a : F)
+noncomputable def diagonal2n {ι : Type*} [Fintype ι] [DecidableEq ι] {i j : ι} (hij : i ≠ j) (a : F)
     (ha : a ≠ 0) : SpecialLinearGroup ι F :=
   ⟨diagonal (fun k ↦ if k = i then a else if k = j then a⁻¹ else 1), by
     simp [Finset.prod_ite, hij.symm, Finset.card_eq_one (s := {x : ι | x = i}).2 ⟨i, by grind⟩,
       mul_inv_cancel₀ ha]⟩
 
-lemma diag2n_coe {ι : Type*} [Fintype ι] [DecidableEq ι] {i j : ι} (hij : i ≠ j) (a : F)
-    (ha : a ≠ 0) : (diag2n hij a ha).1 = diagonal (fun k ↦
+@[deprecated (since := "2026-09-06")] alias diag2n := diagonal2n
+
+lemma diagonal2n_coe {ι : Type*} [Fintype ι] [DecidableEq ι] {i j : ι} (hij : i ≠ j) (a : F)
+    (ha : a ≠ 0) : (diagonal2n hij a ha).1 = diagonal (fun k ↦
       if k = i then a else if k = j then a⁻¹ else 1) := rfl
+
+@[deprecated (since := "2026-09-06")] alias diag2n_coe := diagonal2n_coe
 
 /-- An element in SL₂(F) induced by a diagonal matrix with `a`, `a⁻¹` on
   positition `0` and `1` respectively. -/
-noncomputable abbrev diag2 (a : F) (ha : a ≠ 0) : SL(2, F) :=
-  diag2n zero_ne_one a ha
+noncomputable abbrev diagonal2 (a : F) (ha : a ≠ 0) : SL(2, F) :=
+  diagonal2n zero_ne_one a ha
 
-lemma diag2_def {a : F} (ha : a ≠ 0) : diag2 a ha = diag2n zero_ne_one a ha := rfl
+@[deprecated (since := "2026-09-06")] alias diag2 := diagonal2
 
-lemma diag2_coe (a : F) (ha : a ≠ 0) :
-    (diag2 a ha).1 = diagonal (fun i ↦ match i with | 0 => a|1 => a⁻¹) := by simp [diag2n_coe]
+lemma diagonal2_def {a : F} (ha : a ≠ 0) : diagonal2 a ha = diagonal2n zero_ne_one a ha := rfl
 
-lemma diag2_coe' {a : F} (ha : a ≠ 0) :
-    (diag2 a ha).1 = !![a, 0; 0, a⁻¹] := by
+@[deprecated (since := "2026-09-06")] alias diag2_def := diagonal2_def
+
+lemma diagonal2_coe (a : F) (ha : a ≠ 0) :
+    (diagonal2 a ha).1 = diagonal (fun i ↦ match i with | 0 => a|1 => a⁻¹) := by
+  simp [diagonal2n_coe]
+
+@[deprecated (since := "2026-09-06")] alias diag2_coe := diagonal2_coe
+
+lemma diagonal2_coe' {a : F} (ha : a ≠ 0) :
+    (diagonal2 a ha).1 = !![a, 0; 0, a⁻¹] := by
   ext i j
-  fin_cases i <;> fin_cases j <;> simp [diag2n_coe]
+  fin_cases i <;> fin_cases j <;> simp [diagonal2n_coe]
 
-lemma diag2_smul_single_i₁ {a : F} (ha : a ≠ 0) :
-    diag2 a ha • (Pi.single 0 1 : Fin 2 → F) = a • Pi.single 0 (1 : F) := by
-  ext k; fin_cases k <;> simp [Matrix.SpecialLinearGroup.smul_def, diag2_coe]
+@[deprecated (since := "2026-09-06")] alias diag2_coe' := diagonal2_coe'
 
-lemma diag2_smul_single_i₂ {a : F} (ha : a ≠ 0) :
-    diag2 a ha • (Pi.single 1 1 : Fin 2 → F) = a⁻¹ • Pi.single 1 (1 : F) := by
-  ext k; fin_cases k <;> simp [Matrix.SpecialLinearGroup.smul_def, diag2_coe]
+lemma diagonal2_smul_single_i₁ {a : F} (ha : a ≠ 0) :
+    diagonal2 a ha • (Pi.single 0 1 : Fin 2 → F) = a • Pi.single 0 (1 : F) := by
+  ext k; fin_cases k <;> simp [Matrix.SpecialLinearGroup.smul_def, diagonal2_coe]
 
-lemma diag2_mul_inv (a : F) (ha : a ≠ 0) :
-    diag2 a ha * diag2 a⁻¹ (inv_ne_zero ha) = 1 := Subtype.ext <| by
-  simp [diag2_coe, funext_iff, mul_inv_cancel₀ ha, inv_mul_cancel₀ ha]
+@[deprecated (since := "2026-09-06")] alias diag2_smul_single_i₁ := diagonal2_smul_single_i₁
 
-lemma diag2_inv (a : F) (ha : a ≠ 0) :
-    (diag2 a ha)⁻¹ = diag2 a⁻¹ (inv_ne_zero ha) := by
+lemma diagonal2_smul_single_i₂ {a : F} (ha : a ≠ 0) :
+    diagonal2 a ha • (Pi.single 1 1 : Fin 2 → F) = a⁻¹ • Pi.single 1 (1 : F) := by
+  ext k; fin_cases k <;> simp [Matrix.SpecialLinearGroup.smul_def, diagonal2_coe]
+
+@[deprecated (since := "2026-09-06")] alias diag2_smul_single_i₂ := diagonal2_smul_single_i₂
+
+lemma diagonal2_mul_inv (a : F) (ha : a ≠ 0) :
+    diagonal2 a ha * diagonal2 a⁻¹ (inv_ne_zero ha) = 1 := Subtype.ext <| by
+  simp [diagonal2_coe, funext_iff, mul_inv_cancel₀ ha, inv_mul_cancel₀ ha]
+
+@[deprecated (since := "2026-09-06")] alias diag2_mul_inv := diagonal2_mul_inv
+
+lemma diagonal2_inv (a : F) (ha : a ≠ 0) :
+    (diagonal2 a ha)⁻¹ = diagonal2 a⁻¹ (inv_ne_zero ha) := by
   apply inv_eq_of_mul_eq_one_right
-  exact diag2_mul_inv a ha
+  exact diagonal2_mul_inv a ha
+
+@[deprecated (since := "2026-09-06")] alias diag2_inv := diagonal2_inv
 
 section induction
 
@@ -649,7 +670,7 @@ lemma coeMonoidHom_apply (g : SpecialLinearGroup ι R) : coeMonoidHom g = (g : M
 lemma coeMonoidHom_injective : Function.Injective (coeMonoidHom : SpecialLinearGroup ι R → _) :=
   Subtype.val_injective
 
-private lemma diag_decompose (i₀ : ι) (D : ι → F) (hD : det (diagonal D) = 1) :
+private lemma diagonal_decompose (i₀ : ι) (D : ι → F) (hD : det (diagonal D) = 1) :
     Finset.prod {i | i ≠ i₀} (fun i k ↦ if k = i then D i else
       if k = i₀ then (D i)⁻¹ else 1 : ι → ι → F) = D := by
   rw [det_diagonal, show Finset.univ = insert i₀ ({i | i ≠ i₀} : Finset ι) by grind,
@@ -667,29 +688,34 @@ lemma diagonal_neZero (D : ι → F) (hD : det (diagonal D) = 1) (j : ι) :
   exact zero_ne_one hD
 
 set_option backward.isDefEq.respectTransparency.types false in
-lemma diag_commute (i₀ : ι) (D : ι → F) (hD : det (diagonal D) = 1) :
+lemma diagonal_commute (i₀ : ι) (D : ι → F) (hD : det (diagonal D) = 1) :
     (({i | i ≠ i₀} : Finset ι) : Set ι).Pairwise (Function.onFun Commute fun i ↦
-      if hi : i ≠ i₀ then diag2n hi (D i) (diagonal_neZero D hD i) else 1) := by
+      if hi : i ≠ i₀ then diagonal2n hi (D i) (diagonal_neZero D hD i) else 1) := by
   intro i1 hi1 i2 hi2 hi12
   ext i j
-  simp [apply_dite, diag2n_coe]
+  simp [apply_dite, diagonal2n_coe]
   split_ifs <;> simp [diagonal_apply]; grind
 
+@[deprecated (since := "2026-09-06")] alias diag_commute := diagonal_commute
+
 set_option backward.isDefEq.respectTransparency.types false in
-lemma diag_eq_diag2n_prod (i₀ : ι) (D : ι → F) (hD : det (diagonal D) = 1) :
+lemma diagonal_eq_diagonal2n_prod (i₀ : ι) (D : ι → F) (hD : det (diagonal D) = 1) :
     (⟨diagonal D, hD⟩ : SpecialLinearGroup ι F) =
       Finset.noncommProd {i : ι | i ≠ i₀} (fun i ↦ if hi : i ≠ i₀ then
-      diag2n hi (D i) (diagonal_neZero D hD i) else 1) (diag_commute i₀ D hD) := by
+      diagonal2n hi (D i) (diagonal_neZero D hD i) else 1) (diagonal_commute i₀ D hD) := by
   set g : ι → ι → F := fun i k ↦ if k = i then D i else if k = i₀ then (D i)⁻¹ else 1 with hg_def
   apply coeMonoidHom_injective
   rw [Finset.map_noncommProd]
   simp_rw [coeMonoidHom_apply, apply_dite, coe_one]
   rw [Finset.noncommProd_congr (s₂ := {i | i ≠ i₀}) rfl (fun i hi ↦
-      (dite_eq_left (Finset.mem_filter.1 hi).2 : _ = (diag2n (Finset.mem_filter.1 hi).2 _ _).1))]
+      (dite_eq_left (Finset.mem_filter.1 hi).2 :
+        _ = (diagonal2n (Finset.mem_filter.1 hi).2 _ _).1))]
   convert_to! _ = Finset.noncommProd {i | i ≠ i₀} (fun x ↦ diagonal (g x)) _
   simp_rw [← diagonalRingHom_apply]
   rw [← Finset.map_noncommProd _ _ (fun _ _ _ _ _ ↦ Commute.all _ _), Finset.noncommProd_eq_prod]
-  rw [diag_decompose i₀ D hD]
+  rw [diagonal_decompose i₀ D hD]
+
+@[deprecated (since := "2026-09-06")] alias diag_eq_diag2n_prod := diagonal_eq_diagonal2n_prod
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The `SpecialLinearGroup` analogue of
@@ -707,15 +733,15 @@ theorem exists_list_transvec_mul_diagonal_mul_list_transvec (M : SpecialLinearGr
 
 theorem diagonal_transvection_induction' [Nontrivial ι] (P : SpecialLinearGroup ι F → Prop)
     (M : SpecialLinearGroup ι F)
-    (hdiag : ∀ (i j : ι) (hij : i ≠ j) {c : F} (hc : c ≠ 0), P (diag2n hij c hc))
+    (hdiagonal2n : ∀ (i j : ι) (hij : i ≠ j) {c : F} (hc : c ≠ 0), P (diagonal2n hij c hc))
     (htransvec : ∀ (i j : ι) (hij : i ≠ j) (a : F), P (transvection hij a))
     (hmul : ∀ A B, P A → P B → P (A * B)) : P M := by
   obtain ⟨i₀, j₀, hij₀⟩ := exists_pair_ne ι
   have hP1 : P 1 := transvection_coeff_zero (F := F) hij₀ ▸ htransvec i₀ j₀ hij₀ 0
   have hdiagonal (D : ι → F) (hD : det (diagonal D) = 1) : P ⟨diagonal D, hD⟩ := by
-    rw [diag_eq_diag2n_prod i₀ D hD]
+    rw [diagonal_eq_diagonal2n_prod i₀ D hD]
     refine Finset.noncommProd_induction _ _ _ P hmul hP1 fun i hi => ?_
-    simp [(Finset.mem_filter.1 hi).2, hdiag]
+    simp [(Finset.mem_filter.1 hi).2, hdiagonal2n]
   have hlist (L : List (TransvectionStruct ι F)) :
       P (L.map TransvectionStruct.toSpecialLinearGroup).prod := by
     induction L with
@@ -733,34 +759,37 @@ end SpecialLinearGroup
 open Matrix.SpecialLinearGroup
 open scoped commutatorElement
 
-lemma commutator_diag2_transvection (a : F) (ha : a ≠ 0) (b c : F)
-    (hc : c = b * (a ^ 2 - 1)) : ⁅diag2 a ha, SpecialLinearGroup.transvection zero_ne_one b⁆ =
+lemma commutator_diagonal2_transvection (a : F) (ha : a ≠ 0) (b c : F)
+    (hc : c = b * (a ^ 2 - 1)) : ⁅diagonal2 a ha, SpecialLinearGroup.transvection zero_ne_one b⁆ =
     (SpecialLinearGroup.transvection zero_ne_one c : SL(2, F)) := by
-  rw [commutatorElement_def, diag2_inv a ha, SpecialLinearGroup.transvection_inv zero_ne_one b]
+  rw [commutatorElement_def, diagonal2_inv a ha, SpecialLinearGroup.transvection_inv zero_ne_one b]
   refine Subtype.ext <| Matrix.ext fun i j ↦ ?_
   fin_cases i <;> fin_cases j
-  <;> simp [hc, SpecialLinearGroup.transvection_coe, diag2_coe, mul_add, add_mul,
+  <;> simp [hc, SpecialLinearGroup.transvection_coe, diagonal2_coe, mul_add, add_mul,
     mul_inv_cancel₀ ha, inv_mul_cancel₀ ha, mul_comm a b, mul_assoc b a a, ← pow_two,
     mul_sub_one, ← sub_eq_add_neg]
+
+@[deprecated (since := "2026-09-06")]
+alias commutator_diag2_transvection := commutator_diagonal2_transvection
 
 /-- For any `c : F`, given `a ≠ 0` and `a² ≠ 1`, the transvection `transvection i₁ i₂ hij c` is
 a commutator in `SL ι F`, hence lies in `commutator (SL ι F)`. -/
 lemma transvection_mem_commutator₀ {a : F} (ha : a ≠ 0) (hasq : a ^ 2 ≠ 1) (c : F) :
     SpecialLinearGroup.transvection zero_ne_one c ∈ commutator SL(2, F) := by
-  rw [← commutator_diag2_transvection a ha (c / (a ^ 2 - 1)) c
+  rw [← commutator_diagonal2_transvection a ha (c / (a ^ 2 - 1)) c
     (div_mul_cancel₀ c (sub_ne_zero_of_ne hasq)).symm]
   exact Subgroup.commutator_mem_commutator (Subgroup.mem_top _) (Subgroup.mem_top _)
 
 lemma transvection_mem_commutator₁ {a : F} (ha : a ≠ 0) (hasq : a ^ 2 ≠ 1) (c : F) :
     SpecialLinearGroup.transvection one_ne_zero c ∈ commutator SL(2, F) := by
   have (b c' : F) (hc : c' = b * (a ^ 2 - 1)) :
-      ⁅diag2 a⁻¹ (inv_ne_zero ha), SpecialLinearGroup.transvection one_ne_zero b⁆ =
+      ⁅diagonal2 a⁻¹ (inv_ne_zero ha), SpecialLinearGroup.transvection one_ne_zero b⁆ =
       (SpecialLinearGroup.transvection one_ne_zero c' : SL(2, F)) := by
-    rw [commutatorElement_def, diag2_inv a⁻¹ (inv_ne_zero ha),
+    rw [commutatorElement_def, diagonal2_inv a⁻¹ (inv_ne_zero ha),
       SpecialLinearGroup.transvection_inv one_ne_zero b]
     refine Subtype.ext <| Matrix.ext fun i j ↦ ?_
     fin_cases i <;> fin_cases j <;>
-    simp [hc, SpecialLinearGroup.transvection_coe, diag2_coe, inv_inv, mul_add, add_mul,
+    simp [hc, SpecialLinearGroup.transvection_coe, diagonal2_coe, inv_inv, mul_add, add_mul,
       mul_inv_cancel₀ ha, inv_mul_cancel₀ ha, mul_comm a b, mul_assoc b a a, ← pow_two,
       mul_sub_one, ← sub_eq_add_neg]
   rw [← this (c / (a ^ 2 - 1)) c (div_mul_cancel₀ c (sub_ne_zero_of_ne hasq)).symm]
@@ -774,8 +803,8 @@ lemma transvection_mem_commutator {a : F} (ha : a ≠ 0) (hasq : a ^ 2 ≠ 1) {i
   · obtain rfl : j = 0 := by fin_cases j <;> tauto
     exact transvection_mem_commutator₁ ha hasq c
 
-lemma diag2_decompose (a : F) (ha : a ≠ 0) :
-    diag2 a ha = SpecialLinearGroup.transvection zero_ne_one a *
+lemma diagonal2_decompose (a : F) (ha : a ≠ 0) :
+    diagonal2 a ha = SpecialLinearGroup.transvection zero_ne_one a *
       SpecialLinearGroup.transvection one_ne_zero (- a⁻¹) *
       SpecialLinearGroup.transvection zero_ne_one a *
       SpecialLinearGroup.transvection zero_ne_one (-1) *
@@ -783,7 +812,9 @@ lemma diag2_decompose (a : F) (ha : a ≠ 0) :
       SpecialLinearGroup.transvection zero_ne_one (-1) := by
   ext i j
   fin_cases i <;> fin_cases j <;>
-  simp [diag2_coe', transvection_coe, mul_add, add_mul, mul_inv_cancel₀ ha, inv_mul_cancel₀ ha]
+  simp [diagonal2_coe', transvection_coe, mul_add, add_mul, mul_inv_cancel₀ ha, inv_mul_cancel₀ ha]
+
+@[deprecated (since := "2026-09-06")] alias diag2_decompose := diagonal2_decompose
 
 theorem SL2.transvection_induction (P : SL(2, F) → Prop)
     (htransvec : ∀ (i j : Fin 2) (h : i ≠ j) c, P (SpecialLinearGroup.transvection h c))
@@ -791,13 +822,13 @@ theorem SL2.transvection_induction (P : SL(2, F) → Prop)
   refine diagonal_transvection_induction' P _ (fun i j hij c hc ↦ ?_) htransvec hmul
   fin_cases i
   · obtain rfl : j = 1 := by fin_cases j <;> tauto
-    change P (diag2 c hc)
-    rw [diag2_decompose c hc]
+    change P (diagonal2 c hc)
+    rw [diagonal2_decompose c hc]
     refine hmul _ _ (hmul _ _ (hmul _ _ (hmul _ _ (hmul _ _ ?_ ?_) ?_) ?_) ?_) ?_
     all_goals exact htransvec _ _ _ _
   · obtain rfl : j = 0 := by fin_cases j <;> tauto
-    rw [show diag2n hij c hc = diag2 c⁻¹ (inv_ne_zero hc) by
-      ext; simp [diag2n_coe, diagonal_apply]; grind, diag2_decompose c⁻¹ (inv_ne_zero hc)]
+    rw [show diagonal2n hij c hc = diagonal2 c⁻¹ (inv_ne_zero hc) by
+      ext; simp [diagonal2n_coe, diagonal_apply]; grind, diagonal2_decompose c⁻¹ (inv_ne_zero hc)]
     refine hmul _ _ (hmul _ _ (hmul _ _ (hmul _ _ (hmul _ _ ?_ ?_) ?_) ?_) ?_) ?_
     all_goals exact htransvec _ _ _ _
 

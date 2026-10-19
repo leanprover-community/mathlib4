@@ -289,10 +289,14 @@ variable (C)
 
 /-- The diagonal functor. -/
 @[implicit_reducible, simps! obj map]
-def diag : C ⥤ C × C :=
+def diagonal : C ⥤ C × C :=
   (𝟭 C).prod' (𝟭 C)
 
 end
+
+@[deprecated (since := "2026-09-06")] alias diag := diagonal
+@[deprecated (since := "2026-09-06")] alias diag_obj := diagonal_obj
+@[deprecated (since := "2026-09-06")] alias diag_map := diagonal_map
 
 end Functor
 

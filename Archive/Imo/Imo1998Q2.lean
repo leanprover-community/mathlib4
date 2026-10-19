@@ -102,8 +102,12 @@ def A : Finset (AgreedTriple C J) :=
   Finset.univ.filter @fun (a : AgreedTriple C J) =>
     (a.judgePair.Agree r a.contestant ∧ a.judgePair.Distinct)
 
-theorem A_maps_to_offDiag_judgePair (a : AgreedTriple C J) :
-    a ∈ A r → a.judgePair ∈ Finset.offDiag (@Finset.univ J _) := by simp [A, Finset.mem_offDiag]
+theorem A_maps_to_offDiagonal_judgePair (a : AgreedTriple C J) :
+    a ∈ A r → a.judgePair ∈ Finset.offDiagonal (@Finset.univ J _) := by
+  simp [A, Finset.mem_offDiagonal]
+
+@[deprecated (since := "2026-09-06")]
+alias A_maps_to_offDiag_judgePair := A_maps_to_offDiagonal_judgePair
 
 open scoped Classical in
 theorem A_fibre_over_contestant (c : C) :
@@ -146,8 +150,8 @@ theorem A_card_upper_bound {k : ℕ}
     (A r).card ≤ k * (Fintype.card J * Fintype.card J - Fintype.card J) := by
   change _ ≤ k * (Finset.card _ * Finset.card _ - Finset.card _)
   classical
-  rw [← Finset.offDiag_card]
-  apply Finset.card_le_mul_card_image_of_maps_to (A_maps_to_offDiag_judgePair r)
+  rw [← Finset.offDiagonal_card]
+  apply Finset.card_le_mul_card_image_of_maps_to (A_maps_to_offDiagonal_judgePair r)
   intro p hp
   have hp' : p.Distinct := by grind
   rw [← A_fibre_over_judgePair_card r hp']; apply hk; exact hp'
@@ -188,14 +192,14 @@ theorem distinct_judge_pairs_card_lower_bound {z : ℕ} (hJ : Fintype.card J = 2
   let s := Finset.univ.filter fun p : JudgePair J => p.Agree r c
   let t := Finset.univ.filter fun p : JudgePair J => p.Distinct
   have hs : 2 * z * z + 2 * z + 1 ≤ s.card := judge_pairs_card_lower_bound r hJ c
-  have hst : s \ t = Finset.univ.diag := by
+  have hst : s \ t = Finset.univ.diagonal := by
     ext p; constructor <;> intro hp
     · unfold s t at hp
       aesop
     · unfold s t
       suffices p.judge₁ = p.judge₂ by simp [this]
       aesop
-  have hst' : (s \ t).card = 2 * z + 1 := by rw [hst, Finset.diag_card, ← hJ, Finset.card_univ]
+  have hst' : (s \ t).card = 2 * z + 1 := by rw [hst, Finset.diagonal_card, ← hJ, Finset.card_univ]
   rw [Finset.filter_and, ← Finset.sdiff_sdiff_self_left s t, Finset.card_sdiff_of_subset]
   · rw [hst']; rw [add_assoc] at hs; apply le_tsub_of_add_le_right hs
   · apply Finset.sdiff_subset

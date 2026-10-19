@@ -264,13 +264,13 @@ lemma mapsTo_span_int_range_sRoot {w : (M ≃ₗ[R] M) × (N ≃ₗ[R] N)} (hw :
   | one => intro x hx; simpa using hx
   | mul u v _ _ hu hv => exact fun x hx ↦ hu (hv hx)
 
-lemma exists_zsum_eq_of_mem_weylGroup {d : n → ℤ} (hd : (rl.matrix * diagonal d).IsSymm)
+lemma exists_zsum_eq_of_mem_weylGroup {d : n → ℤ} (hd : (rl.matrix * Matrix.diagonal d).IsSymm)
     {w : (M ≃ₗ[R] M) × (N ≃ₗ[R] N)} (hw : w ∈ rl.weylGroup) (c : n → ℤ) :
-    letI S := rl.matrix * diagonal d
+    letI S := rl.matrix * Matrix.diagonal d
     ∃ c' : n → ℤ, w.1 (∑ j, c j • rl.sRoot j) = ∑ j, c' j • rl.sRoot j ∧
       c' ⬝ᵥ S *ᵥ c' = c ⬝ᵥ S *ᵥ c := by
   set A := rl.matrix with A_def
-  set S := A * diagonal d with S_def
+  set S := A * Matrix.diagonal d with S_def
   induction hw using weylGroup.induction generalizing c with
   | mem i =>
     set t : ℤ := ∑ j, c j * A j i with t_def
@@ -296,7 +296,7 @@ lemma exists_zsum_eq_of_mem_weylGroup {d : n → ℤ} (hd : (rl.matrix * diagona
 lemma finite_setOf_mem_weylGroup_apply_sRoot :
     {w.1 (rl.sRoot i) | (w ∈ rl.weylGroup) (i)}.Finite := by
   obtain ⟨d, hd, hS⟩ := rl.isCartan.transpose.exists_posDef
-  set S := rl.matrix * diagonal d with S_def
+  set S := rl.matrix * Matrix.diagonal d with S_def
   replace hS : S.PosDef := by rw [S_def, ← PosDef.transpose_iff]; simpa using hS
   refine ((hS.finite_setOfPred_dotProduct_mulVec_le S.trace).image
     fun c ↦ ∑ j, c j • rl.sRoot j).subset ?_

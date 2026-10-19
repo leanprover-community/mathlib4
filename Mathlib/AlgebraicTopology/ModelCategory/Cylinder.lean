@@ -229,7 +229,7 @@ variable [ModelCategory C] {A : C} (P : Cylinder A)
 section
 
 variable (h : MorphismProperty.MapFactorizationData (cofibrations C) (trivialFibrations C)
-    (codiag A))
+    (coprod.codiagonal A))
 
 /-- A cylinder object for `A` can be obtained from a factorization of the obvious
 map `A ⨿ A ⟶ A` as a cofibration followed by a trivial fibration. -/
