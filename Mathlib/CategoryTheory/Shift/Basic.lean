@@ -229,7 +229,6 @@ notation3 f "⟦" n "⟧'" => (shiftFunctor _ n).map f
 variable (C)
 variable [HasShift C A]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma shiftFunctorAdd'_zero_add (a : A) :
     shiftFunctorAdd' C 0 a a (zero_add a) = (leftUnitor _).symm ≪≫
     isoWhiskerRight (shiftFunctorZero C A).symm (shiftFunctor C a) := by
@@ -239,7 +238,6 @@ lemma shiftFunctorAdd'_zero_add (a : A) :
     eqToHom_map, Category.id_comp]
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 lemma shiftFunctorAdd'_add_zero (a : A) :
     shiftFunctorAdd' C a 0 a (add_zero a) = (rightUnitor _).symm ≪≫
     isoWhiskerLeft (shiftFunctor C a) (shiftFunctorZero C A).symm := by
@@ -249,7 +247,6 @@ lemma shiftFunctorAdd'_add_zero (a : A) :
     eqToHom_map, Category.id_comp]
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 lemma shiftFunctorAdd'_assoc (a₁ a₂ a₃ a₁₂ a₂₃ a₁₂₃ : A)
     (h₁₂ : a₁ + a₂ = a₁₂) (h₂₃ : a₂ + a₃ = a₂₃) (h₁₂₃ : a₁ + a₂ + a₃ = a₁₂₃) :
     shiftFunctorAdd' C a₁₂ a₃ a₁₂₃ (by rw [← h₁₂, h₁₂₃]) ≪≫
@@ -279,7 +276,6 @@ lemma shiftFunctorAdd_assoc (a₁ a₂ a₃ : A) :
 
 variable {C}
 
-set_option backward.defeqAttrib.useBackward true in
 lemma shiftFunctorAdd'_zero_add_hom_app (a : A) (X : C) :
     (shiftFunctorAdd' C 0 a a (zero_add a)).hom.app X =
     ((shiftFunctorZero C A).inv.app X)⟦a⟧' := by
@@ -290,7 +286,6 @@ lemma shiftFunctorAdd_zero_add_hom_app (a : A) (X : C) :
     eqToHom (by dsimp; rw [zero_add]) ≫ ((shiftFunctorZero C A).inv.app X)⟦a⟧' := by
   simp [← shiftFunctorAdd'_zero_add_hom_app, shiftFunctorAdd']
 
-set_option backward.defeqAttrib.useBackward true in
 lemma shiftFunctorAdd'_zero_add_inv_app (a : A) (X : C) :
     (shiftFunctorAdd' C 0 a a (zero_add a)).inv.app X =
     ((shiftFunctorZero C A).hom.app X)⟦a⟧' := by
@@ -300,29 +295,24 @@ lemma shiftFunctorAdd_zero_add_inv_app (a : A) (X : C) : (shiftFunctorAdd C 0 a)
     ((shiftFunctorZero C A).hom.app X)⟦a⟧' ≫ eqToHom (by dsimp; rw [zero_add]) := by
   simp [← shiftFunctorAdd'_zero_add_inv_app, shiftFunctorAdd']
 
-set_option backward.defeqAttrib.useBackward true in
 lemma shiftFunctorAdd'_add_zero_hom_app (a : A) (X : C) :
     (shiftFunctorAdd' C a 0 a (add_zero a)).hom.app X =
     (shiftFunctorZero C A).inv.app (X⟦a⟧) := by
   simpa using congr($(shiftFunctorAdd'_add_zero C a).hom.app X)
 
-set_option backward.defeqAttrib.useBackward true in
 lemma shiftFunctorAdd_add_zero_hom_app (a : A) (X : C) : (shiftFunctorAdd C a 0).hom.app X =
     eqToHom (by dsimp; rw [add_zero]) ≫ (shiftFunctorZero C A).inv.app (X⟦a⟧) := by
   simp [← shiftFunctorAdd'_add_zero_hom_app, shiftFunctorAdd']
 
-set_option backward.defeqAttrib.useBackward true in
 lemma shiftFunctorAdd'_add_zero_inv_app (a : A) (X : C) :
     (shiftFunctorAdd' C a 0 a (add_zero a)).inv.app X =
     (shiftFunctorZero C A).hom.app (X⟦a⟧) := by
   simpa using congr($(shiftFunctorAdd'_add_zero C a).inv.app X)
 
-set_option backward.defeqAttrib.useBackward true in
 lemma shiftFunctorAdd_add_zero_inv_app (a : A) (X : C) : (shiftFunctorAdd C a 0).inv.app X =
     (shiftFunctorZero C A).hom.app (X⟦a⟧) ≫ eqToHom (by dsimp; rw [add_zero]) := by
   simp [← shiftFunctorAdd'_add_zero_inv_app, shiftFunctorAdd']
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma shiftFunctorAdd'_assoc_hom_app (a₁ a₂ a₃ a₁₂ a₂₃ a₁₂₃ : A)
     (h₁₂ : a₁ + a₂ = a₁₂) (h₂₃ : a₂ + a₃ = a₂₃) (h₁₂₃ : a₁ + a₂ + a₃ = a₁₂₃) (X : C) :
@@ -332,7 +322,6 @@ lemma shiftFunctorAdd'_assoc_hom_app (a₁ a₂ a₃ a₁₂ a₂₃ a₁₂₃ 
       (shiftFunctorAdd' C a₂ a₃ a₂₃ h₂₃).hom.app (X⟦a₁⟧) := by
   simpa using congr($(shiftFunctorAdd'_assoc C _ _ _ _ _ _ h₁₂ h₂₃ h₁₂₃).hom.app X)
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma shiftFunctorAdd'_assoc_inv_app (a₁ a₂ a₃ a₁₂ a₂₃ a₁₂₃ : A)
     (h₁₂ : a₁ + a₂ = a₁₂) (h₂₃ : a₂ + a₃ = a₂₃) (h₁₂₃ : a₁ + a₂ + a₃ = a₁₂₃) (X : C) :
@@ -342,7 +331,6 @@ lemma shiftFunctorAdd'_assoc_inv_app (a₁ a₂ a₃ a₁₂ a₂₃ a₁₂₃ 
       (shiftFunctorAdd' C a₁ a₂₃ a₁₂₃ (by rw [← h₂₃, ← add_assoc, h₁₂₃])).inv.app X := by
   simpa using congr($(shiftFunctorAdd'_assoc C _ _ _ _ _ _ h₁₂ h₂₃ h₁₂₃).inv.app X)
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma shiftFunctorAdd_assoc_hom_app (a₁ a₂ a₃ : A) (X : C) :
     (shiftFunctorAdd C (a₁ + a₂) a₃).hom.app X ≫
@@ -351,7 +339,6 @@ lemma shiftFunctorAdd_assoc_hom_app (a₁ a₂ a₃ : A) (X : C) :
       (shiftFunctorAdd C a₂ a₃).hom.app (X⟦a₁⟧) := by
   simpa using congr($(shiftFunctorAdd_assoc C a₁ a₂ a₃).hom.app X)
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma shiftFunctorAdd_assoc_inv_app (a₁ a₂ a₃ : A) (X : C) :
     ((shiftFunctorAdd C a₁ a₂).inv.app X)⟦a₃⟧' ≫
@@ -469,7 +456,6 @@ theorem shift_equiv_triangle (n : A) (X : C) :
 
 section
 
-set_option backward.defeqAttrib.useBackward true in
 theorem shift_shiftFunctorCompIsoId_hom_app (n m : A) (h : n + m = 0) (X : C) :
     ((shiftFunctorCompIsoId C n m h).hom.app X)⟦n⟧' =
     (shiftFunctorCompIsoId C m n
@@ -515,13 +501,11 @@ section
 
 variable (A)
 
-set_option backward.defeqAttrib.useBackward true in
 lemma shiftFunctorCompIsoId_zero_zero_hom_app (X : C) :
     (shiftFunctorCompIsoId C 0 0 (add_zero 0)).hom.app X =
       ((shiftFunctorZero C A).hom.app X)⟦0⟧' ≫ (shiftFunctorZero C A).hom.app X := by
   simp [shiftFunctorCompIsoId, shiftFunctorAdd'_zero_add_inv_app]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma shiftFunctorCompIsoId_zero_zero_inv_app (X : C) :
     (shiftFunctorCompIsoId C 0 0 (add_zero 0)).inv.app X =
       (shiftFunctorZero C A).inv.app X ≫ ((shiftFunctorZero C A).inv.app X)⟦0⟧' := by
@@ -534,7 +518,6 @@ section
 variable (m n p m' n' p' : A) (hm : m' + m = 0) (hn : n' + n = 0) (hp : p' + p = 0)
   (h : m + n = p)
 
-set_option backward.defeqAttrib.useBackward true in
 lemma shiftFunctorCompIsoId_add'_inv_app :
     (shiftFunctorCompIsoId C p' p hp).inv.app X =
       (shiftFunctorCompIsoId C n' n hn).inv.app X ≫
@@ -559,7 +542,6 @@ lemma shiftFunctorCompIsoId_add'_inv_app :
     ← shiftFunctorAdd'_add_zero_hom_app, Iso.hom_inv_id_app,
     Functor.map_id, Category.id_comp, Iso.hom_inv_id_app]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma shiftFunctorCompIsoId_add'_hom_app :
     (shiftFunctorCompIsoId C p' p hp).hom.app X =
       ((shiftFunctorAdd' C n' m' p'
@@ -631,7 +613,6 @@ theorem shiftComm_symm (i j : A) : (shiftComm X i j).symm = shiftComm X j i := b
 
 variable {X Y}
 
-set_option backward.defeqAttrib.useBackward true in
 /-- When shifts are indexed by an additive commutative monoid, then shifts commute. -/
 theorem shiftComm' (i j : A) :
     f⟦i⟧'⟦j⟧' = (shiftComm _ _ _).hom ≫ f⟦j⟧'⟦i⟧' ≫ (shiftComm _ _ _).hom := by
@@ -644,7 +625,6 @@ theorem shiftComm_hom_comp (i j : A) :
     (shiftComm X i j).hom ≫ f⟦j⟧'⟦i⟧' = f⟦i⟧'⟦j⟧' ≫ (shiftComm Y i j).hom := by
   rw [shiftComm', ← shiftComm_symm, Iso.symm_hom, Iso.inv_hom_id_assoc]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma shiftFunctorZero_hom_app_shift (n : A) :
     (shiftFunctorZero C A).hom.app (X⟦n⟧) =
     (shiftFunctorComm C n 0).hom.app X ≫ ((shiftFunctorZero C A).hom.app X)⟦n⟧' := by
@@ -661,14 +641,12 @@ lemma shiftFunctorZero_inv_app_shift (n : A) :
   dsimp
   rw [Functor.map_id]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma shiftFunctorComm_zero_hom_app (a : A) :
     (shiftFunctorComm C a 0).hom.app X =
       (shiftFunctorZero C A).hom.app (X⟦a⟧) ≫ ((shiftFunctorZero C A).inv.app X)⟦a⟧' := by
   simp only [shiftFunctorZero_hom_app_shift, Category.assoc, ← Functor.map_comp,
     Iso.hom_inv_id_app, Functor.map_id, Functor.comp_obj, Category.comp_id]
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma shiftFunctorComm_hom_app_comp_shift_shiftFunctorAdd_hom_app (m₁ m₂ m₃ : A) (X : C) :
     (shiftFunctorComm C m₁ (m₂ + m₃)).hom.app X ≫
@@ -723,14 +701,12 @@ def zero : s 0 ≅ 𝟭 C :=
   (hF.whiskeringRight C).preimageIso ((i 0) ≪≫ isoWhiskerLeft F (shiftFunctorZero D A) ≪≫
     rightUnitor _ ≪≫ (leftUnitor _).symm)
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma map_zero_hom_app (X : C) :
     F.map ((zero hF s i).hom.app X) =
       (i 0).hom.app X ≫ (shiftFunctorZero D A).hom.app (F.obj X) := by
   simp [zero]
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma map_zero_inv_app (X : C) :
     F.map ((zero hF s i).inv.app X) =
@@ -744,7 +720,6 @@ def add (a b : A) : s (a + b) ≅ s a ⋙ s b :=
       associator _ _ _ ≪≫ (isoWhiskerLeft _ (i b).symm) ≪≫
       (associator _ _ _).symm)
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma map_add_hom_app (a b : A) (X : C) :
     F.map ((add hF s i a b).hom.app X) =
@@ -753,7 +728,6 @@ lemma map_add_hom_app (a b : A) (X : C) :
   dsimp [add]
   simp
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma map_add_inv_app (a b : A) (X : C) :
     F.map ((add hF s i a b).inv.app X) =
@@ -764,7 +738,6 @@ lemma map_add_inv_app (a b : A) (X : C) :
 
 end hasShift
 
-set_option backward.defeqAttrib.useBackward true in
 open hasShift in
 /-- Given a family of endomorphisms of `C` which are intertwined by a fully faithful `F : C ⥤ D`
 with shift functors on `D`, we can promote that family to shift functors on `C`. -/
