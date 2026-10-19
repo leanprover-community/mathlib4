@@ -965,7 +965,7 @@ instance (priority := 100) IsNilpotent.to_isSolvable [h : IsNilpotent G] : Group
   obtain ⟨n, hn⟩ := nilpotent_iff_lowerCentralSeries.1 h
   use n
   rw [eq_bot_iff, ← hn]
-  exact derived_le_lower_central n
+  exact derivedSeries_le_lowerCentralSeries_top n
 
 /-- A simple nilpotent group is commutative. -/
 @[to_additive /-- A simple nilpotent additive group is commutative. -/]
