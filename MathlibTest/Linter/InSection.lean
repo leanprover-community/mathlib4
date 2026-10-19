@@ -13,7 +13,7 @@ section
 variable (h : True)
 
 /--
-warning: Please put `section` before `omit`, rather than using `omit ... in section`.
+warning: Please put `section` before the command, rather than using `... in section`.
 
 Note: This linter can be disabled with `set_option linter.style.inSection false`
 -/
@@ -23,7 +23,7 @@ section
 end
 
 /--
-warning: Please put `section` before `include`, rather than using `include ... in section`.
+warning: Please put `section` before the command, rather than using `... in section`.
 
 Note: This linter can be disabled with `set_option linter.style.inSection false`
 -/
@@ -32,7 +32,7 @@ include h in section
 end
 
 /--
-warning: Please put `section` before `variable`, rather than using `variable ... in section`.
+warning: Please put `section` before the command, rather than using `... in section`.
 
 Note: This linter can be disabled with `set_option linter.style.inSection false`
 -/
@@ -42,7 +42,7 @@ section
 end
 
 /--
-warning: Please put `section` before `set_option`, rather than using `set_option ... in section`.
+warning: Please put `section` before the command, rather than using `... in section`.
 
 Note: This linter can be disabled with `set_option linter.style.inSection false`
 -/
@@ -51,9 +51,50 @@ set_option autoImplicit false in
 section
 end
 
+-- The check applies to every command prefix, including opening namespaces and local syntax.
+/--
+warning: Please put `section` before the command, rather than using `... in section`.
+
+Note: This linter can be disabled with `set_option linter.style.inSection false`
+-/
+#guard_msgs in
+open Nat in
+section
+end
+
+/--
+warning: Please put `section` before the command, rather than using `... in section`.
+
+Note: This linter can be disabled with `set_option linter.style.inSection false`
+-/
+#guard_msgs in
+attribute [local simp] Nat.add_zero in
+section
+end
+
+/--
+warning: Please put `section` before the command, rather than using `... in section`.
+
+Note: This linter can be disabled with `set_option linter.style.inSection false`
+-/
+#guard_msgs in
+local notation "InSectionTrue" => True in
+section
+end
+
+/--
+warning: Please put `section` before the command, rather than using `... in section`.
+
+Note: This linter can be disabled with `set_option linter.style.inSection false`
+-/
+#guard_msgs in
+universe inSectionUniverse in
+section
+end
+
 -- Comments and modifiers do not hide the section header.
 /--
-warning: Please put `section` before `omit`, rather than using `omit ... in section`.
+warning: Please put `section` before the command, rather than using `... in section`.
 
 Note: This linter can be disabled with `set_option linter.style.inSection false`
 -/
@@ -65,7 +106,7 @@ end
 
 -- A chain of wrappers receives one warning, pointing at the first offending command.
 /--
-warning: Please put `section` before `omit`, rather than using `omit ... in section`.
+warning: Please put `section` before the command, rather than using `... in section`.
 
 Note: This linter can be disabled with `set_option linter.style.inSection false`
 -/
@@ -76,7 +117,7 @@ section
 end
 
 /--
-warning: Please put `section` before `set_option`, rather than using `set_option ... in section`.
+warning: Please put `section` before the command, rather than using `... in section`.
 
 Note: This linter can be disabled with `set_option linter.style.inSection false`
 -/
@@ -86,9 +127,9 @@ set_option pp.universes false in
 section
 end
 
--- Prefixes other than the four linted commands are traversed too.
+-- The outermost command in a chain is reported.
 /--
-warning: Please put `section` before `omit`, rather than using `omit ... in section`.
+warning: Please put `section` before the command, rather than using `... in section`.
 
 Note: This linter can be disabled with `set_option linter.style.inSection false`
 -/
@@ -112,7 +153,7 @@ section
 end
 
 /--
-warning: Please put `section` before `set_option`, rather than using `set_option ... in section`.
+warning: Please put `section` before the command, rather than using `... in section`.
 
 Note: This linter can be disabled with `set_option linter.style.inSection false`
 -/
@@ -137,6 +178,18 @@ example : True := h
 
 #guard_msgs in
 set_option autoImplicit false in
+example : True := trivial
+
+#guard_msgs in
+open Nat in
+example : Nat := succ 0
+
+#guard_msgs in
+attribute [local simp] Nat.add_zero in
+example : True := trivial
+
+#guard_msgs in
+local notation "InSectionTrue" => True in
 example : True := trivial
 
 -- Explicit sections with commands inside them are allowed.
