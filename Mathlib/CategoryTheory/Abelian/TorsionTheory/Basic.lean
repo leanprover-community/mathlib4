@@ -66,7 +66,10 @@ structure TorsionTheory (T F : ObjectProperty C) : Prop where
   leftOrthogonal_eq : F.leftOrthogonal = T := by cat_disch
   rightOrthogonal_eq : T.rightOrthogonal = F := by cat_disch
 
-/-- A property of objects is a torsion class if it is the torsion class of some torsion theory.
+/-- A property of objects `P` is a torsion class if `P` is the left orthogonal of its right
+orthogonal, i.e. `P.rightOrthogonal.leftOrthogonal = P`. Equivalently, `P` is the torsion
+class of some torsion theory, namely `TorsionTheory P P.rightOrthogonal`; see
+`IsTorsionClass.torsionTheory`.
 
 This is a typeclass, on the model of `Functor.IsLeftAdjoint`: every construction of a torsion
 theory registers an instance for its torsion class, and the closure properties of torsion
@@ -74,12 +77,13 @@ classes are then available by instance search. See `IsTorsionClass.torsionTheory
 torsion theory itself. -/
 @[mk_iff]
 class IsTorsionClass (P : ObjectProperty C) : Prop where
- leftOrthogonal_rightOrthogonal_eq (P) : P.rightOrthogonal.leftOrthogonal = P := by cat_disch
-  -- exists_torsionFreeClass : ∃ F, TorsionTheory P F
+  leftOrthogonal_rightOrthogonal_eq (P) : P.rightOrthogonal.leftOrthogonal = P := by cat_disch
 
-/-- A property of objects is a torsion-free class if it is the torsion-free class of some
-torsion theory. This is a typeclass; see `IsTorsionClass` for the design and
-`IsTorsionFreeClass.torsionTheory` for the torsion theory itself. -/
+
+/-- A property of objects `P` is a torsion-free class if `P` is the right orthogonal of its
+left orthogonal, i.e. `P.leftOrthogonal.rightOrthogonal = P`. Equivalently, `P` is the
+torsion-free class of some torsion theory, namely `TorsionTheory P.leftOrthogonal P`; see
+`IsTorsionFreeClass.torsionTheory`. This is a typeclass; see `IsTorsionClass` for the design. -/
 @[mk_iff]
 class IsTorsionFreeClass (P : ObjectProperty C) : Prop where
   rightOrthogonal_leftOrthogonal_eq (P) : P.leftOrthogonal.rightOrthogonal = P := by cat_disch
