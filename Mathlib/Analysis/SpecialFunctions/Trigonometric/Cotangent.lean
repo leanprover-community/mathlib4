@@ -123,7 +123,7 @@ lemma multipliableUniformlyOn_euler_sin_prod_on_compact (hZC : IsCompact Z) :
   · filter_upwards with n z hz using hu2 n z hz
   · fun_prop
 
-lemma HasProdUniformlyOn_sineTerm_prod_on_compact (hZ2 : Z ⊆ {0}ᶜ)
+lemma HasProdUniformlyOn_sineTerm_prod_on_compact (hZ2 : 0 ∉ Z)
     (hZC : IsCompact Z) :
     HasProdUniformlyOn (fun n : ℕ => fun z : ℂ => (1 + sineTerm z n))
     (fun x => (Complex.sin (↑π * x) / (↑π * x))) Z := by
@@ -134,7 +134,7 @@ lemma HasProdLocallyUniformlyOn_euler_sin_prod :
     HasProdLocallyUniformlyOn (fun n : ℕ => fun z : ℂ => (1 + sineTerm z n))
     (fun x => (Complex.sin (π * x) / (π * x))) {0}ᶜ := by
   apply hasProdLocallyUniformlyOn_of_forall_compact isOpen_compl_singleton
-  exact fun _ hZ hZC => HasProdUniformlyOn_sineTerm_prod_on_compact hZ hZC
+  exact fun _ hZ hZC => HasProdUniformlyOn_sineTerm_prod_on_compact (by simpa using hZ) hZC
 
 /-- `sin π z` is non vanishing on the complement of the integers in `ℂ`. -/
 theorem sin_pi_mul_ne_zero (hx : x ∈ ℂ_ℤ) : Complex.sin (π * x) ≠ 0 := by
