@@ -151,16 +151,6 @@ private lemma exists_mem_range_coeff_zero_eq_one {k : ℕ} (hk : Even k) (h2 : k
   simpa using
     congr($(E_qExpansion_coeff_zero _ ⟨2, rfl⟩) ^ a * $(E_qExpansion_coeff_zero _ ⟨3, rfl⟩) ^ b)
 
-private lemma cuspForm_eq_discriminant_mul {k : ℤ} (g : CuspForm 𝒮ℒ k) :
-    DirectSum.of (ModularForm 𝒮ℒ) k g = DirectSum.of (ModularForm 𝒮ℒ) 12 CuspForm.discriminant *
-      DirectSum.of (ModularForm 𝒮ℒ) (k - 12) (CuspForm.discriminantEquiv g) := by
-  rw [DirectSum.of_mul_of]
-  symm
-  -- The degrees agree as `12 + (k - 12) = k`, and `mcast` along this identity does not change
-  -- the underlying function, so the coercion goal is definitionally `Δ * (g / Δ) = g`.
-  refine DirectSum.of_eq_of_gradedMonoid_eq (gradedMonoid_eq_of_cast (add_sub_cancel _ _) ?_)
-  exact DFunLike.coe_injective (discriminant_mul_discriminantEquiv _)
-
 private lemma directSum_of_mem_range (k : ℤ) (f : ModularForm 𝒮ℒ k) :
     DirectSum.of _ k f ∈ evalE₄E₆.range := by
   induction k using Int.strongRec (m := 0) with
