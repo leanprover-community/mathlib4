@@ -728,9 +728,11 @@ theorem Subfield.fintypeCard_bot [Fintype (⊥ : Subfield F)] :
   rw [← Nat.card_eq_fintype_card, natCard_bot]
 
 @[simp]
-theorem ZMod.botFinset_eq_univ : Subfield.botFinset (ZMod p) p = .univ := by
-  apply Finset.eq_univ_of_card
-  rw [← Nat.card_eq_fintype_card, Nat.card_zmod, Subfield.card_botFinset]
+theorem Subfield.botFinset_eq_univ [Subsingleton (Subfield F)] [Fintype F] :
+    Subfield.botFinset F p = .univ := by
+  have : (⊥ : Subfield F) = ⊤ := by subsingleton
+  ext
+  simp [this]
 
 open Polynomial
 
