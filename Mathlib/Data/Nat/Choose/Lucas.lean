@@ -139,18 +139,15 @@ theorem choose_pow_sub_one_modEq_neg_one_pow (hk : k ≤ p ^ a - 1) :
   induction k with
   | zero => simp [Int.ModEq.refl]
   | succ k ih =>
-    have h₀ : 1 ≤ p ^ a := Nat.one_le_pow _ _ (Fact.out : p.Prime).pos
     have h := (Fact.out : p.Prime).dvd_choose_pow (n := a) k.succ_ne_zero (by lia)
-    rw [← Nat.sub_add_cancel h₀, choose_succ_succ'] at h
-    simpa [pow_succ] using
-      (Int.modEq_zero_iff_dvd.2 (Int.natCast_dvd_natCast.2 h)).sub (ih (by lia))
+    rw [← Nat.sub_add_cancel (by lia : 1 ≤ p ^ a), choose_succ_succ'] at h
+    simpa [pow_succ] using (Int.natCast_dvd_natCast.2 h).modEq_zero_int.sub (ih (by lia))
 
 /-- For primes `p` and `k ≤ p ^ a - 1`, `p` does not divide `choose (p ^ a - 1) k`. -/
-theorem not_dvd_choose_pow_sub_one (hk : k ≤ p ^ a - 1) : ¬ p ∣ choose (p ^ a - 1) k := by
-  intro h
-  have := ((Int.modEq_zero_iff_dvd.2 (Int.natCast_dvd_natCast.2 h)).symm.trans
-    (choose_pow_sub_one_modEq_neg_one_pow hk)).dvd
-  exact (Fact.out : p.Prime).not_dvd_one (by simpa [Int.natCast_dvd] using this)
+theorem not_dvd_choose_pow_sub_one (hk : k ≤ p ^ a - 1) : ¬ p ∣ choose (p ^ a - 1) k := fun h ↦
+  (Fact.out : p.Prime).not_dvd_one <| by
+    simpa [Int.natCast_dvd] using ((Int.natCast_dvd_natCast.2 h).modEq_zero_int.symm.trans
+      (choose_pow_sub_one_modEq_neg_one_pow hk)).dvd
 
 /-- For primes `p` and positive integer `n`, assume that for all `i ∈ Icc 1 (n - 1)`,
 `choose n i` congruent to `0` module `p`, then `n = p ^ multiplicity p n`.
