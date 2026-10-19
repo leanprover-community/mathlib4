@@ -6,8 +6,9 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Algebra.QuadraticAlgebra.Basic
-import Mathlib.LinearAlgebra.Matrix.Nonsingular
 public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+
+import Mathlib.LinearAlgebra.Matrix.Nonsingular
 
 /-!
 # Algebra homomorphisms between quadratic algebras
