@@ -9,7 +9,7 @@ open Lake DSL
 require "leanprover-community" / "batteries" from git "https://github.com/fgdorais/batteries" @ "chore/order-lean-free"
 require "leanprover-community" / "Qq" @ git "master"
 
-require "leanprover-community" / "aesop" from git "https://github.com/fgdorais/aesop" @ "fix/unreachable-tactic-import"
+require "leanprover-community" / "aesop" @ git "master"
 require "leanprover-community" / "proofwidgets" @ git "main"
   with NameMap.empty.insert `errorOnBuild
     "ProofWidgets failed to reuse pre-built JS code. \
@@ -86,6 +86,9 @@ lean_lib Mathlib where
 -- `scripts/mk_all.lean`.
 lean_lib Cache where
   globs := #[`Cache.+]
+  -- The `Cache` modules do not use the module system, but they import each other and thus
+  -- the `requiresModuleSystem` package option set above.
+  allowNonModules := true
 
 lean_lib MathlibTest where
   globs := #[`MathlibTest.+]
@@ -132,6 +135,9 @@ lean_exe autolabel where
 /-- `lake exe cache get` retrieves precompiled `.olean` files from a central server. -/
 lean_exe cache where
   root := `Cache.Main
+  -- As for `lean_lib Cache`: the root does not use the module system either, and the
+  -- executable's configuration does not inherit the library's.
+  allowNonModules := true
 
 /-- `lake exe cache-test` runs the cache tool's unit tests (container URL
 construction, per-repo trust-ordered allowlist, `--cache-from` parsing).
