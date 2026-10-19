@@ -185,10 +185,14 @@ theorem lowerCentralSeries_succ_eq_bot {n : ℕ} (h : H.lowerCentralSeries n ≤
   grw [eq_bot_iff, lowerCentralSeries_succ, h, commutator_center_left]
 
 @[to_additive]
-theorem derived_le_lower_central (n : ℕ) : derivedSeries G n ≤ lowerCentralSeries ⊤ n := by
+theorem derivedSeries_le_lowerCentralSeries_top (n : ℕ) :
+    derivedSeries G n ≤ lowerCentralSeries ⊤ n := by
   induction n with
   | zero => simp
   | succ i ih => apply commutator_mono ih; simp
+
+@[deprecated (since := "2026-10-19")] alias derived_le_lower_central :=
+  derivedSeries_le_lowerCentralSeries_top
 
 section Prod
 

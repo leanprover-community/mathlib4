@@ -33,10 +33,8 @@ subgroup `G` of `G`, and `⊥` denotes the trivial subgroup `{1}`.
 * `IsAscendingCentralSeries (H : ℕ → Subgroup G) : Prop` : Note that in the literature
     a "central series" for a group is usually defined to be a *finite* sequence of normal subgroups
     `H 0`, `H 1`, ..., starting at `⊤`, finishing at `⊥`, and with each `H n / H (n + 1)`
-    central in `G / H (n + 1)`. In this formalisation it is convenient to have two weaker predicates
-    on an infinite sequence of subgroups `H n` of `G`: we say a sequence is a *descending central
-    series* if it starts at `G` and `⁅H n, ⊤⁆ ⊆ H (n + 1)` for all `n`. Note that this series
-    may not terminate at `⊥`, and the `H i` need not be normal. Similarly a sequence is an
+    central in `G / H (n + 1)`. In this formalisation it is convenient to have a weaker predicate
+    on an infinite sequence of subgroups `H n` of `G`: we say a sequence is an
     *ascending central series* if `H 0 = ⊥` and `⁅H (n + 1), ⊤⁆ ⊆ H n` for all `n`, again with no
     requirement that the series reaches `⊤` or that the `H i` are normal.
 
