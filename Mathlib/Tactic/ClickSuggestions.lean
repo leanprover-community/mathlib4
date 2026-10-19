@@ -58,7 +58,7 @@ meta section
 
 namespace Mathlib.Tactic.ClickSuggestions
 
-open Lean Meta Server Widget ProofWidgets Jsx
+open Lean Meta Server Widget ProofWidgets
 
 /-- Run `k` with the `RwKind` of the selected position, and the subexpression at that position.
 If the subexpression contains bound variables, then they are introduced as free variables. -/
@@ -137,7 +137,7 @@ public def rpc (props : PanelWidgetProps) : RequestM (RequestTask Html) :=
     let (solvedHtml, solvedToken) ← mkRefreshComponent
     let targetHtml ←
       if let .hyp h := loc.loc then
-        pure <span> hypothesis {← exprToHtml (.fvar h)} </span>
+        pure jsx%{<span> hypothesis {← exprToHtml (.fvar h)}</span>}
       else
         Meta.viewSubexpr (fun _ e ↦ exprToHtml e) loc.pos (← loc.rootExpr)
     let html ← mkRefreshComponentM
@@ -151,13 +151,13 @@ public def rpc (props : PanelWidgetProps) : RequestM (RequestTask Html) :=
         hyp? := loc.fvarId?
         pos := loc.pos
       } |>.run (← IO.mkRef {})
-    return <details «open»={true}>
+    return jsx%{<details open={true}>
       <summary className="mv2 pointer">
         Suggestions for {targetHtml}: {statusHtml}
       </summary>
       {solvedHtml}
       {html}
-    </details>
+    </details>}
 
 /-- The component called by the `#click_suggestions` command. -/
 @[widget_module]
