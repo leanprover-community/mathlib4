@@ -49,7 +49,7 @@ namespace IsArtinianRing
 apply to every `Finite` goal, causing slowly failing typeclass search in some cases. -/
 theorem finite_of_compactSpace_of_t2Space [IsArtinianRing R] :
     Finite R := by
-  obtain ⟨n, hn⟩ := IsArtinianRing.isNilpotent_jacobson (R := R)
+  obtain ⟨n, hn⟩ := IsArtinianRing.isNilpotent_jacobson R
   have H : (∏ p : PrimeSpectrum R, p.asIdeal) ^ n = ⊥ := by
     rw [← le_bot_iff, ← Ideal.zero_eq_bot, ← hn]
     gcongr

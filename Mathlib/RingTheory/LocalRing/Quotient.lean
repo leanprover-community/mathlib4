@@ -114,7 +114,7 @@ lemma exists_maximalIdeal_pow_le_of_isArtinianRing_quotient
   have : Nontrivial (R ⧸ I) := Ideal.Quotient.nontrivial_iff.mpr hI
   have := IsLocalRing.of_surjective' (Ideal.Quotient.mk I) Ideal.Quotient.mk_surjective
   have := IsLocalHom.of_surjective (Ideal.Quotient.mk I) Ideal.Quotient.mk_surjective
-  obtain ⟨n, hn⟩ := IsArtinianRing.isNilpotent_jacobson (R := R ⧸ I)
+  obtain ⟨n, hn⟩ := IsArtinianRing.isNilpotent_jacobson (R ⧸ I)
   have : (maximalIdeal R).map (Ideal.Quotient.mk I) = maximalIdeal (R ⧸ I) := by
     ext x
     obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x

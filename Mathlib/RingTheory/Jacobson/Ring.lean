@@ -382,9 +382,8 @@ theorem jacobson_bot_of_integral_localization
 private theorem isJacobsonRing_polynomial_of_domain (R : Type*) [CommRing R] [IsDomain R]
     [hR : IsJacobsonRing R] (P : Ideal R[X]) [IsPrime P] (hP : ∀ x : R, C x ∈ P → x = 0) :
     P.jacobson = P := by
-  by_cases Pb : P = ⊥
-  · subst P
-    simpa only [Ideal.jacobson_bot] using
+  rcases eq_or_ne P ⊥ with rfl | Pb
+  · simpa only [Ideal.jacobson_bot] using
       (Ring.jacobson_polynomial_eq_bot_of_jacobson_eq_bot (R := R)
         (by simpa only [Ideal.jacobson_bot] using hR.out isRadical_bot))
   · rw [jacobson_eq_iff_jacobson_quotient_eq_bot]
