@@ -103,8 +103,6 @@ theorem ZModXQuotSpanEquivQuotSpan_mk_apply (hp : ¬ p ∣ exponent θ) (Q : ℤ
   exact congr_arg (quotientEquivAlgOfEq ℤ (by simp [map_span])) <|
     quotMapEquivQuotQuotMap_symm_apply (not_dvd_exponent_iff.mp hp).eq_top θ.isIntegral Q
 
-section monicFactorsMod
-
 omit [NumberField K] in
 variable (p θ) in
 /--
@@ -137,8 +135,6 @@ omit [NumberField K] in
 theorem monicFactorsMod_dvd_map_minpoly (Q : monicFactorsMod θ p) :
     (Q : (ZMod p)[X]) ∣ (minpoly ℤ θ).map (Int.castRingHom (ZMod p)) :=
   (mem_monicFactorsMod_iff.mp Q.2).2.2
-
-end monicFactorsMod
 
 /--
 If `p` does not divide `exponent θ` and `Q` is a lift of a monic irreducible factor of

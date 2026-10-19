@@ -197,8 +197,6 @@ lemma LFunctionTrivChar_residue_one :
 ### Completed L-functions and the functional equation
 -/
 
-section gammaFactor
-
 -- not required for these declarations
 
 omit [NeZero N] in
@@ -216,8 +214,6 @@ omit [NeZero N] in
 lemma Odd.gammaFactor_def {χ : DirichletCharacter ℂ N} (hχ : χ.Odd) (s : ℂ) :
     gammaFactor χ s = Gammaℝ (s + 1) := by
   simp [gammaFactor, hχ.not_even]
-
-end gammaFactor
 
 /--
 The completed L-function of a Dirichlet character, almost everywhere equal to

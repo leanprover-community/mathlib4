@@ -790,8 +790,6 @@ lemma exists_eval_ne_zero_of_natDegree_lt_card (f : R[X]) (hf : f ≠ 0) (hfR : 
   contrapose! hf
   exact eq_zero_of_forall_eval_zero_of_natDegree_lt_card f hf hfR
 
-section
-
 omit [IsDomain R] in
 theorem monic_multisetProd_X_sub_C (s : Multiset R) : Monic (s.map fun a => X - C a).prod :=
   monic_multiset_prod_of_monic _ _ fun a _ => monic_X_sub_C a
@@ -804,8 +802,6 @@ theorem monic_prod_X_sub_C {α : Type*} (b : α → R) (s : Finset α) :
 omit [IsDomain R] in
 theorem monic_finprod_X_sub_C {α : Type*} (b : α → R) : Monic (∏ᶠ k, (X - C (b k))) :=
   monic_finprod_of_monic _ _ fun a _ => monic_X_sub_C (b a)
-
-end
 
 theorem prod_multiset_root_eq_finset_root [DecidableEq R] :
     (p.roots.map fun a => X - C a).prod =

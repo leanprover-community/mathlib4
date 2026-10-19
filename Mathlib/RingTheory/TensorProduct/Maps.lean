@@ -405,8 +405,6 @@ lemma comm_comp_includeRight :
 theorem adjoin_tmul_eq_top : adjoin R { t : A ⊗[R] B | ∃ a b, a ⊗ₜ[R] b = t } = ⊤ :=
   top_le_iff.mp <| (top_le_iff.mpr <| span_tmul_eq_top R A B).trans (span_le_adjoin R _)
 
-section
-
 omit [Algebra S A] [IsScalarTower R S A] in
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 /-- `S`-linear version of `Algebra.TensorProduct.comm` when `A ⊗[R] S`
@@ -431,8 +429,6 @@ set_option linter.dupNamespace false in
 omit [Algebra S A] [IsScalarTower R S A] in
 @[deprecated (since := "2026-05-24")]
 alias Algebra.TensorProduct.commRight_symm_tmul := commRight_symm_tmul
-
-end
 
 end
 

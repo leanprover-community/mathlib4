@@ -419,8 +419,6 @@ lemma shift_distinguished (n : ℤ) :
     | zero => exact H_neg_one
     | succ n hn => exact H_add hn H_neg_one rfl
 
-section
-
 omit hT in
 lemma shift_distinguished_iff (n : ℤ) :
     (CategoryTheory.shiftFunctor (Triangle C) n).obj T ∈ (distTriang C) ↔ T ∈ distTriang C :=
@@ -451,8 +449,6 @@ lemma distinguished_iff_of_isZero₂ (T : Triangle C) (h : IsZero T.obj₂) :
     T ∈ distTriang _ ↔ IsIso T.mor₃ := by
   rw [rotate_distinguished_triangle, distinguished_iff_of_isZero₁ _ h]
   simp
-
-end
 
 end Triangle
 

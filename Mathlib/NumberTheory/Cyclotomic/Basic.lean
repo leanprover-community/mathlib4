@@ -644,8 +644,6 @@ end Field
 
 end IsCyclotomicExtension
 
-section CyclotomicField
-
 /-- Given a nonzero `n : ℕ` and a field `K`, we define `CyclotomicField n K` as the
 splitting field of `cyclotomic n K`. If `n` is nonzero in `K`, it has
 the instance `IsCyclotomicExtension {n} K (CyclotomicField n K)`. -/
@@ -704,8 +702,6 @@ instance [CharZero K] : IsCyclotomicExtension {n} K (CyclotomicField n K) :=
 omit [NeZero n] in
 instance [NumberField K] : NumberField (CyclotomicField n K) :=
   IsCyclotomicExtension.numberField {n} K _
-
-end CyclotomicField
 
 end CyclotomicField
 

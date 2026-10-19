@@ -121,7 +121,6 @@ theorem stronglyMeasurable_const' (hf : ∀ x y, f x = f y) : StronglyMeasurable
 
 variable [MeasurableSingletonClass α]
 
-section aux
 omit [TopologicalSpace β] in
 /-- Auxiliary definition for `StronglyMeasurable.of_discrete`. -/
 private noncomputable def simpleFuncAux (f : α → β) (g : ℕ → α) : ℕ → SimpleFunc α β
@@ -138,8 +137,6 @@ private lemma simpleFuncAux_eq_of_lt : ∀ n > m, simpleFuncAux f g n (g m) = f 
 omit [TopologicalSpace β] in
 private lemma simpleFuncAux_eventuallyEq : ∀ᶠ n in atTop, simpleFuncAux f g n (g m) = f (g m) :=
   eventually_atTop.2 ⟨_, simpleFuncAux_eq_of_lt⟩
-
-end aux
 
 @[fun_prop]
 lemma StronglyMeasurable.of_discrete [Countable α] : StronglyMeasurable f := by
