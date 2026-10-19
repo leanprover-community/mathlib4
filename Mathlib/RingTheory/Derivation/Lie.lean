@@ -71,6 +71,23 @@ instance : LieModule R (Derivation R A A) A where
 @[simp]
 lemma bracket_eq_fun (X : Derivation R A A) (a : A) : ⁅X, a⁆ = X a := rfl
 
+theorem lie_mulLeft (D : Derivation R A A) :
+    ⁅(D : Module.End R A), LinearMap.mulLeft R a⁆ = LinearMap.mulLeft R (D a) := by
+  ext b
+  simp [Ring.lie_def, leibniz]
+  ring
+
+/-- Conjugating a derivation by multiplication by a unit `u` subtracts multiplication by the
+logarithmic derivative `u⁻¹ * D u`. -/
+theorem mulLeft_mul_mul_mulLeft_inv (D : Derivation R A A) (u : Aˣ) :
+    LinearMap.mulLeft R (u : A) * (D : Module.End R A) * LinearMap.mulLeft R ((u⁻¹ : Aˣ) : A) =
+      (D : Module.End R A) - LinearMap.mulLeft R ((u⁻¹ : Aˣ) * D u) := by
+  have h : (u : A) * D ↑u⁻¹ = -(↑u⁻¹ * D u) :=
+    eq_neg_of_add_eq_zero_left (by simpa using (D.leibniz u ↑u⁻¹).symm)
+  ext b
+  simp [leibniz, mul_add, mul_left_comm (u : A) b, h]
+  ring
+
 section CompatibleDerivations
 variable {A' : Type*} [CommRing A'] [Algebra R A'] [Algebra A A'] [IsScalarTower R A A']
 attribute [local instance 100] LieRing.ofAssociativeRing
