@@ -36,19 +36,17 @@ namespace Path
 
 variable {i j : S}
 
+/-- The vertices of `mapPath` on the inclusion are those of the path, viewed in `V`. -/
+lemma vertices_mapPath_inducePrefunctor (p : Path i j) :
+    ((inducePrefunctor S).mapPath p).vertices = p.vertices.map Subtype.val :=
+  vertices_mapPath _ p
+
 /-- Vertices of `mapPath` on the inclusion lie in `S`. -/
 lemma mapPath_inducePrefunctor_mem_vertices {v : V} (p : Path i j)
     (hv : v ∈ ((inducePrefunctor S).mapPath p).vertices) : v ∈ S := by
-  induction p with
-  | nil =>
-    rw [Prefunctor.mapPath_nil, vertices_nil, List.mem_singleton] at hv
-    exact hv ▸ i.property
-  | cons p' e ih =>
-    simp only [Prefunctor.mapPath_cons, vertices_cons, List.concat_eq_append,
-      List.mem_append, List.mem_singleton] at hv
-    rcases hv with h | rfl
-    · exact ih h
-    · exact Subtype.coe_prop _
+  rw [vertices_mapPath_inducePrefunctor, List.mem_map] at hv
+  obtain ⟨w, -, rfl⟩ := hv
+  exact w.property
 
 /-- A path in `V` whose vertices stay in `S` induces a path in the induced quiver on `S`. -/
 def induce {i j : V} (p : Path i j) (hp : ∀ k, k ∈ p.vertices → k ∈ S) :
