@@ -565,6 +565,7 @@ theorem Subgroup.Normal.quotient_commutative_iff_commutator_le {N : Subgroup G} 
     map_eq_bot_iff, QuotientGroup.ker_mk']
 
 open IsMulCommutative in
+@[to_additive]
 instance : IsMulCommutative (G ⧸ _root_.commutator G) :=
   Subgroup.Normal.quotient_commutative_iff_commutator_le.mpr le_rfl
 
