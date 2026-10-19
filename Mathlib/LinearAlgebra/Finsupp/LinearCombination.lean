@@ -49,10 +49,12 @@ section LinearCombination
 variable (R)
 variable {α' : Type*} {M' : Type*} [AddCommMonoid M'] [Module R M'] (v : α → M) {v' : α' → M'}
 
-/-- Interprets (l : α →₀ R) as a linear combination of the elements in the family (v : α → M) and
-    evaluates this linear combination. -/
-def linearCombination : (α →₀ R) →ₗ[R] M :=
-  Finsupp.lsum ℕ fun i => LinearMap.id.smulRight (v i)
+/-- Interprets `(l : α →₀ R)` as a linear combination of the elements in the family `(v : α → M)`
+and evaluates this linear combination. -/
+def linearCombination : (α → M) →+ (α →₀ R) →ₗ[R] M where
+  toFun v := lsum ℕ <| smulRight id ∘ v
+  map_zero' := by simp
+  map_add' _ _ := by ext; simp
 
 variable {v}
 
@@ -69,14 +71,15 @@ theorem linearCombination_single (c : R) (a : α) :
     linearCombination R v (single a c) = c • v a := by
   simp [linearCombination_apply, sum_single_index]
 
+@[deprecated "by simp" (since := "2026-10-19")]
 theorem linearCombination_zero_apply (x : α →₀ R) : (linearCombination R (0 : α → M)) x = 0 := by
-  simp [linearCombination_apply]
+  simp
 
 variable (α M)
 
-@[simp]
-theorem linearCombination_zero : linearCombination R (0 : α → M) = 0 :=
-  LinearMap.ext (linearCombination_zero_apply R)
+@[deprecated "by simp" (since := "2026-10-19")]
+theorem linearCombination_zero : linearCombination R (0 : α → M) = 0 := by
+  simp
 
 @[simp]
 theorem linearCombination_single_index (c : M) (a : α) (f : α →₀ R) [DecidableEq α] :
@@ -103,18 +106,6 @@ theorem apply_linearCombination_id (f : M →ₗ[R] M') (l : M →₀ R) :
 theorem linearCombination_unique [Unique α] (l : α →₀ R) (v : α → M) :
     linearCombination R v l = l default • v default := by
   rw [← linearCombination_single, ← unique_single l]
-
-@[simp, push]
-theorem linearCombination_add (u v : α → M) :
-    linearCombination R (u + v) = linearCombination R u + linearCombination R v := by
-  ext
-  simp
-
-@[simp, push]
-theorem linearCombination_sum {ι : Type*} {s : Finset ι} (v : ι → α → M) :
-    linearCombination R (∑ i ∈ s, v i) = ∑ i ∈ s, linearCombination R (v i) := by
-  ext
-  simp
 
 theorem linearCombination_surjective (h : Function.Surjective v) :
     Function.Surjective (linearCombination R v) := by
@@ -303,8 +294,7 @@ In the absence of `SMulCommClass R S M`, use `Finsupp.linearCombination`.
 See note [bundled maps over different rings] for why separate `R` and `S` semirings are used.
 -/
 def bilinearCombination : (α → M) →ₗ[S] (α →₀ R) →ₗ[R] M where
-  toFun := linearCombination R
-  map_add' := linearCombination_add R
+  __ := linearCombination R
   map_smul' := linearCombination_smul' R
 
 @[simp]
@@ -545,18 +535,6 @@ lemma Submodule.span_eq_iUnion_nat (s : Set M) :
 section Ring
 
 variable {R M ι : Type*} [Ring R] [AddCommGroup M] [Module R M] (i : ι) (c : ι → R) (h₀ : c i = 0)
-
-variable (R) in
-theorem linearCombination_sub {α} (u v : α → M) :
-    linearCombination R (u - v) = linearCombination R u - linearCombination R v := by
-  ext
-  simp
-
-variable (R) in
-theorem linearCombination_neg {α} (v : α → M) :
-    linearCombination R (-v) = -linearCombination R v := by
-  ext
-  simp
 
 /-- Given `c : ι → R` and an index `i` such that `c i = 0`, this is the linear isomorphism sending
 the `j`-th standard basis vector to itself plus `c j` multiplied with the `i`-th standard basis
