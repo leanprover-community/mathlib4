@@ -8,10 +8,6 @@ open Lean Name
 def mkTestLambda (n : Name) : Expr :=
   .lam n (.sort 0) (.bvar 0) .default
 
-def mkDocComment (s : String) : TSyntax `Lean.Parser.Command.docComment :=
-  .mk <| mkNode ``Parser.Command.docComment
-    #[mkAtom "/--", mkNode ``Parser.Command.commentBody #[mkAtom s, mkAtom "-/"]]
-
 open Parser Elab Command in
 /--
 `test "some.pretty.printed.name" shouldRoundTrip name` is silent iff all of the following are true:
