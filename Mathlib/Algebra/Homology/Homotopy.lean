@@ -938,11 +938,12 @@ noncomputable def Homotopy.toShortComplex (ho : Homotopy f g) (i : ι) :
       rw [congr_arg (fun j => ho.hom (c.next i) j ≫ L.d j (c.next i)) (c.prev_eq' h)]
     · abel
 
-omit [DecidableRel c.Rel]
+omit [DecidableRel c.Rel] in
 lemma Homotopy.homologyMap_eq (ho : Homotopy f g) (i : ι) [K.HasHomology i] [L.HasHomology i] :
     homologyMap f i = homologyMap g i :=
   open scoped Classical in ShortComplex.Homotopy.homologyMap_congr (ho.toShortComplex i)
 
+omit [DecidableRel c.Rel] in
 /-- The isomorphism in homology induced by a homotopy equivalence. -/
 noncomputable def HomotopyEquiv.toHomologyIso (h : HomotopyEquiv K L) (i : ι)
     [K.HasHomology i] [L.HasHomology i] : K.homology i ≅ L.homology i where

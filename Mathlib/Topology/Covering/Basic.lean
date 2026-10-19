@@ -393,13 +393,13 @@ theorem homeomorph_comp {Y} [TopologicalSpace Y] (g : X ≃ₜ Y) : IsCoveringMa
   rw [isCoveringMap_iff_isCoveringMapOn_univ] at hf ⊢
   exact hf.homeomorph_comp g
 
-omit hf
-
+omit hf in
 theorem comp_homeomorph_iff {E'} [TopologicalSpace E'] (g : E' ≃ₜ E) :
     IsCoveringMap (f ∘ g) ↔ IsCoveringMap f where
   mp h := by convert h.comp_homeomorph g.symm; ext; simp
   mpr h := h.comp_homeomorph g
 
+omit hf in
 theorem homeomorph_comp_iff {Y} [TopologicalSpace Y] (g : X ≃ₜ Y) :
     IsCoveringMap (g ∘ f) ↔ IsCoveringMap f where
   mp h := by convert h.homeomorph_comp g.symm; ext; simp

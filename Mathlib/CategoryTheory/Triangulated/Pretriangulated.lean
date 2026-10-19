@@ -421,8 +421,7 @@ lemma shift_distinguished (n : ℤ) :
 
 section
 
-omit hT
-
+omit hT in
 lemma shift_distinguished_iff (n : ℤ) :
     (CategoryTheory.shiftFunctor (Triangle C) n).obj T ∈ (distTriang C) ↔ T ∈ distTriang C :=
   ⟨fun hT ↦ isomorphic_distinguished _ (shift_distinguished _ hT (-n)) _
@@ -430,6 +429,7 @@ lemma shift_distinguished_iff (n : ℤ) :
     fun hT ↦ shift_distinguished T hT n⟩
 
 set_option backward.defeqAttrib.useBackward true in
+omit hT in
 lemma distinguished_iff_of_isZero₃ (T : Triangle C) (h : IsZero T.obj₃) :
     T ∈ distTriang _ ↔ IsIso T.mor₁ :=
   ⟨fun hT ↦ by rwa [← isZero₃_iff_isIso₁ _ hT],
@@ -438,6 +438,7 @@ lemma distinguished_iff_of_isZero₃ (T : Triangle C) (h : IsZero T.obj₃) :
         ((isZero_zero C).eq_of_tgt _ _) (h.eq_of_src _ _))⟩
 
 set_option backward.defeqAttrib.useBackward true in
+omit hT in
 lemma distinguished_iff_of_isZero₁ (T : Triangle C) (h : IsZero T.obj₁) :
     T ∈ distTriang _ ↔ IsIso T.mor₂ := by
   rw [rotate_distinguished_triangle,
@@ -445,6 +446,7 @@ lemma distinguished_iff_of_isZero₁ (T : Triangle C) (h : IsZero T.obj₁) :
   simp
 
 set_option backward.defeqAttrib.useBackward true in
+omit hT in
 lemma distinguished_iff_of_isZero₂ (T : Triangle C) (h : IsZero T.obj₂) :
     T ∈ distTriang _ ↔ IsIso T.mor₃ := by
   rw [rotate_distinguished_triangle, distinguished_iff_of_isZero₁ _ h]

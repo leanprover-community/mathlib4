@@ -238,8 +238,7 @@ theorem finite_dual_iff [Free K V] : Module.Finite K (Dual K V) ↔ Module.Finit
 
 end
 
-omit [Projective K V]
-
+omit [Projective K V] in
 theorem dual_rank_eq [Free K V] [Module.Finite K V] :
     Module.rank K (Dual K V) = Cardinal.lift.{uK, uV} (Module.rank K V) :=
   (Free.chooseBasis K V).dual_rank_eq
@@ -251,6 +250,7 @@ open Function
 variable (R M N : Type*)
 variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
 
+omit [Projective K V] in
 /-- See also `Module.instFiniteDimensionalOfIsReflexive` for the converse over a field. -/
 instance (priority := 900) IsReflexive.of_finite_of_free [Module.Finite R M] [Free R M] :
     IsReflexive R M where
@@ -259,11 +259,13 @@ instance (priority := 900) IsReflexive.of_finite_of_free [Module.Finite R M] [Fr
 
 variable [IsReflexive R M]
 
+omit [Projective K V] in
 instance (priority := 900) [Module.Finite R N] [Projective R N] : IsReflexive R N :=
   have ⟨_, f, hf⟩ := Finite.exists_fin' R N
   have ⟨g, H⟩ := projective_lifting_property f .id hf
   .of_split g f H
 
+omit [Projective K V] in
 instance _root_.Prod.instModuleIsReflexive [IsReflexive R N] :
     IsReflexive R (M × N) where
   bijective_dual_eval' := by
@@ -276,11 +278,13 @@ instance _root_.Prod.instModuleIsReflexive [IsReflexive R N] :
       coe_comp, LinearEquiv.coe_coe, EquivLike.comp_bijective]
     exact (bijective_dual_eval R M).prodMap (bijective_dual_eval R N)
 
+omit [Projective K V] in
 instance _root_.ULift.instModuleIsReflexive.{w} : IsReflexive R (ULift.{w} M) :=
   equiv ULift.moduleEquiv.symm
 
 -- Very low priority because instance resolution will often end up using the instances above
 -- to prove `IsReflexive`, which require proving `Finite` again.
+omit [Projective K V] in
 instance (priority := 90) instFiniteDimensionalOfIsReflexive (K V : Type*)
     [Field K] [AddCommGroup V] [Module K V] [IsReflexive K V] :
     FiniteDimensional K V := by

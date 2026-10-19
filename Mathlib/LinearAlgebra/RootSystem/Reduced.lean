@@ -268,18 +268,20 @@ section IsValuedIn
 open FaithfulSMul
 
 variable [CommRing S] [Algebra S R] [FaithfulSMul S R] [P.IsValuedIn S]
-omit [Module.IsTorsionFree R N]
 variable {i j}
 
+omit [Module.IsTorsionFree R N] in
 lemma linearIndependent_iff_coxeterWeightIn_ne_four :
     LinearIndependent R ![P.root i, P.root j] ↔ P.coxeterWeightIn S i j ≠ 4 := by
   rw [linearIndependent_iff_coxeterWeight_ne_four, ← P.algebraMap_coxeterWeightIn S,
     ← map_ofNat (algebraMap S R), (algebraMap_injective S R).ne_iff]
 
+omit [Module.IsTorsionFree R N] in
 lemma coxeterWeightIn_eq_four_iff_not_linearIndependent :
     P.coxeterWeightIn S i j = 4 ↔ ¬ LinearIndependent R ![P.root i, P.root j] := by
   rw [P.linearIndependent_iff_coxeterWeightIn_ne_four S, not_not]
 
+omit [Module.IsTorsionFree R N] in
 lemma coxeterWeightIn_ne_four [P.IsReduced] (h : i ≠ j) (h' : P.root i ≠ -P.root j) :
     P.coxeterWeightIn S i j ≠ 4 := by
   rw [ne_eq, coxeterWeightIn_eq_four_iff_not_linearIndependent, not_not]
@@ -287,12 +289,14 @@ lemma coxeterWeightIn_ne_four [P.IsReduced] (h : i ≠ j) (h' : P.root i ≠ -P.
 
 variable (i j)
 
+omit [Module.IsTorsionFree R N] in
 @[simp]
 lemma pairingIn_two_two_iff :
     P.pairingIn S i j = 2 ∧ P.pairingIn S j i = 2 ↔ i = j := by
   simp only [← P.pairing_two_two_iff, ← P.algebraMap_pairingIn S, ← map_ofNat (algebraMap S R),
     (algebraMap_injective S R).eq_iff]
 
+omit [Module.IsTorsionFree R N] in
 @[simp]
 lemma pairingIn_neg_two_neg_two_iff :
     P.pairingIn S i j = -2 ∧ P.pairingIn S j i = -2 ↔ P.root i = -P.root j := by
@@ -301,12 +305,14 @@ lemma pairingIn_neg_two_neg_two_iff :
 
 variable [Module.IsTorsionFree R N]
 
+omit [Module.IsTorsionFree R N] in
 lemma pairingIn_one_four_iff :
     P.pairingIn S i j = 1 ∧ P.pairingIn S j i = 4 ↔ P.root j = (2 : R) • P.root i := by
   rw [← P.pairing_one_four_iff, ← P.algebraMap_pairingIn S, ← P.algebraMap_pairingIn S,
     ← map_one (algebraMap S R), ← map_ofNat (algebraMap S R), (algebraMap_injective S R).eq_iff,
     (algebraMap_injective S R).eq_iff]
 
+omit [Module.IsTorsionFree R N] in
 lemma pairingIn_neg_one_neg_four_iff :
     P.pairingIn S i j = -1 ∧ P.pairingIn S j i = -4 ↔ P.root j = (-2 : R) • P.root i := by
   rw [← P.pairing_neg_one_neg_four_iff, ← P.algebraMap_pairingIn S, ← P.algebraMap_pairingIn S,

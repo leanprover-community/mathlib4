@@ -230,8 +230,7 @@ lemma coe_chainBotCoeff_eq_sSup :
   rw [setOfPred_root_sub_zsmul_mem_eq_Icc h]
   simp
 
-omit h
-
+omit h in
 private lemma chainCoeff_reflectionPerm_left_aux :
     letI := P.indexNeg
     Icc (-P.chainTopCoeff i j : ℤ) (P.chainBotCoeff i j) =
@@ -247,6 +246,7 @@ private lemma chainCoeff_reflectionPerm_left_aux :
     simp only [chainTopCoeff_of_not_linearIndependent h, chainTopCoeff_of_not_linearIndependent h',
       chainBotCoeff_of_not_linearIndependent h, chainBotCoeff_of_not_linearIndependent h']
 
+omit h in
 private lemma chainCoeff_reflectionPerm_right_aux :
     letI := P.indexNeg
     Icc (-P.chainTopCoeff i j : ℤ) (P.chainBotCoeff i j) =
@@ -262,6 +262,7 @@ private lemma chainCoeff_reflectionPerm_right_aux :
     simp only [chainTopCoeff_of_not_linearIndependent h, chainTopCoeff_of_not_linearIndependent h',
       chainBotCoeff_of_not_linearIndependent h, chainBotCoeff_of_not_linearIndependent h']
 
+omit h in
 @[simp]
 lemma chainTopCoeff_reflectionPerm_left :
     P.chainTopCoeff (P.reflectionPerm i i) j = P.chainBotCoeff i j := by
@@ -273,6 +274,7 @@ lemma chainTopCoeff_reflectionPerm_left :
   · simpa using this (P.chainTopCoeff (-i) j)
   · simpa using this (P.chainBotCoeff i j)
 
+omit h in
 @[simp]
 lemma chainBotCoeff_reflectionPerm_left :
     P.chainBotCoeff (P.reflectionPerm i i) j = P.chainTopCoeff i j := by
@@ -284,6 +286,7 @@ lemma chainBotCoeff_reflectionPerm_left :
   · simpa using this (-P.chainBotCoeff (-i) j)
   · simpa using this (-P.chainTopCoeff i j)
 
+omit h in
 @[simp]
 lemma chainTopCoeff_reflectionPerm_right :
     P.chainTopCoeff i (P.reflectionPerm j j) = P.chainBotCoeff i j := by
@@ -295,6 +298,7 @@ lemma chainTopCoeff_reflectionPerm_right :
   · simpa using this (P.chainTopCoeff i (-j))
   · simpa using this (P.chainBotCoeff i j)
 
+omit h in
 @[simp]
 lemma chainBotCoeff_reflectionPerm_right :
     P.chainBotCoeff i (P.reflectionPerm j j) = P.chainTopCoeff i j := by
@@ -306,6 +310,7 @@ lemma chainBotCoeff_reflectionPerm_right :
   · simpa using this (-P.chainBotCoeff i (-j))
   · simpa using this (-P.chainTopCoeff i j)
 
+omit h in
 lemma chainBotCoeff_eq_zero_iff :
     P.chainBotCoeff i j = 0 ↔
       ¬ LinearIndependent R ![P.root i, P.root j] ∨ P.root j - P.root i ∉ range P.root := by
@@ -321,6 +326,7 @@ lemma chainBotCoeff_eq_zero_iff :
   rw [root_sub_nsmul_mem_range_iff_le_chainBotCoeff h] at h''
   lia
 
+omit h in
 lemma chainTopCoeff_eq_zero_iff :
     P.chainTopCoeff i j = 0 ↔
       ¬ LinearIndependent R ![P.root i, P.root j] ∨ P.root j + P.root i ∉ range P.root := by
@@ -355,9 +361,9 @@ lemma chainTopCoeff_of_add {k : ι} (hk : P.root k = P.root j + P.root i) :
   replace hk : P.root j = P.root k - P.root i := by rw [hk]; abel
   exact chainTopCoeff_of_sub h hk
 
-omit h
 variable (i j)
 
+omit h in
 open scoped Classical in
 /-- If `α = P.root i` and `β = P.root j` are linearly independent, this is the index of the root
 `β + p • α` where `β - q • α, ..., β - α, β, β + α, ..., β + p • α` is the `α`-chain through `β`.
@@ -369,6 +375,7 @@ def chainTopIdx : ι :=
       (le_refl <| P.chainTopCoeff i j) |>.choose
     else j
 
+omit h in
 open scoped Classical in
 /-- If `α = P.root i` and `β = P.root j` are linearly independent, this is the index of the root
 `β - q • α` where `β - q • α, ..., β - α, β, β + α, ..., β + p • α` is the `α`-chain through `β`.
@@ -382,6 +389,7 @@ def chainBotIdx : ι :=
 
 variable {i j}
 
+omit h in
 @[simp]
 lemma root_chainTopIdx :
     P.root (P.chainTopIdx i j) = P.root j + P.chainTopCoeff i j • P.root i := by
@@ -391,6 +399,7 @@ lemma root_chainTopIdx :
       (le_refl <| P.chainTopCoeff i j) |>.choose_spec
   · simp only [chainTopIdx, chainTopCoeff, h, reduceDIte, zero_smul, add_zero]
 
+omit h in
 @[simp]
 lemma root_chainBotIdx :
     P.root (P.chainBotIdx i j) = P.root j - P.chainBotCoeff i j • P.root i := by
@@ -426,8 +435,7 @@ lemma chainTopCoeff_sub_chainBotCoeff :
     P.chainTopCoeff i j - P.chainBotCoeff i j = -P.pairingIn ℤ j i := by
   rw [← chainBotCoeff_sub_chainTopCoeff h, neg_sub]
 
-omit h
-
+omit h in
 lemma chainCoeff_chainTopIdx_aux :
     P.chainBotCoeff i (P.chainTopIdx i j) = P.chainBotCoeff i j + P.chainTopCoeff i j ∧
     P.chainTopCoeff i (P.chainTopIdx i j) = 0 := by
@@ -451,16 +459,19 @@ lemma chainCoeff_chainTopIdx_aux :
     neg_add_rev, neg_neg, neg_neg] at hS₁₂
   norm_cast at hS₁₂
 
+omit h in
 @[simp]
 lemma chainBotCoeff_chainTopIdx :
     P.chainBotCoeff i (P.chainTopIdx i j) = P.chainBotCoeff i j + P.chainTopCoeff i j :=
   chainCoeff_chainTopIdx_aux.1
 
+omit h in
 @[simp]
 lemma chainTopCoeff_chainTopIdx :
     P.chainTopCoeff i (P.chainTopIdx i j) = 0 :=
   chainCoeff_chainTopIdx_aux.2
 
+omit h in
 include h in
 lemma chainBotCoeff_add_chainTopCoeff_eq_pairingIn_chainTopIdx :
     P.chainBotCoeff i j + P.chainTopCoeff i j = P.pairingIn ℤ (P.chainTopIdx i j) i := by
@@ -472,6 +483,7 @@ lemma chainBotCoeff_add_chainTopCoeff_eq_pairingIn_chainTopIdx :
     _ = P.chainBotCoeff i (P.chainTopIdx i j) - P.chainTopCoeff i (P.chainTopIdx i j) := by simp
     _ = P.pairingIn ℤ (P.chainTopIdx i j) i := by rw [P.chainBotCoeff_sub_chainTopCoeff h]
 
+omit h in
 lemma chainBotCoeff_add_chainTopCoeff_le_three [P.IsReduced] :
     P.chainBotCoeff i j + P.chainTopCoeff i j ≤ 3 := by
   by_cases h : LinearIndependent R ![P.root i, P.root j]

@@ -343,15 +343,16 @@ def equivOfCompatibleSMul [CompatibleSMul S R A B] : A ⊗[S] B ≃ₐ[T] A ⊗[
   __ := _root_.TensorProduct.equivOfCompatibleSMul R S T A B
 
 variable [Algebra R S] [CompatibleSMul R S S A] [CompatibleSMul S R S A]
-omit [SMulCommClass R S A]
-
+omit [SMulCommClass R S A] in
 /-- If the R- and S- action on S and A satisfy `CompatibleSMul` both ways,
 then `S ⊗[R] A` is canonically isomorphic to `A`. -/
 def lidOfCompatibleSMul : S ⊗[R] A ≃ₐ[S] A :=
   (equivOfCompatibleSMul R S S S A).symm.trans (TensorProduct.lid _ _)
 
+omit [SMulCommClass R S A] in
 theorem lidOfCompatibleSMul_tmul (s a) : lidOfCompatibleSMul R S A (s ⊗ₜ[R] a) = s • a := rfl
 
+omit [SMulCommClass R S A] in
 instance {R M N : Type*} [CommSemiring R] [AddCommGroup M] [AddCommGroup N]
     [Module R M] [Module R N] [Module ℚ M] [Module ℚ N] : CompatibleSMul R ℚ M N where
   smul_tmul q m n := by
@@ -406,8 +407,7 @@ theorem adjoin_tmul_eq_top : adjoin R { t : A ⊗[R] B | ∃ a b, a ⊗ₜ[R] b 
 
 section
 
-omit [Algebra S A] [IsScalarTower R S A]
-
+omit [Algebra S A] [IsScalarTower R S A] in
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 /-- `S`-linear version of `Algebra.TensorProduct.comm` when `A ⊗[R] S`
 is viewed as an `S`-algebra via the right component. -/
@@ -415,10 +415,12 @@ def commRight : S ⊗[R] A ≃ₐ[S] A ⊗[R] S where
   __ := Algebra.TensorProduct.comm R S A
   commutes' _ := rfl
 
+omit [Algebra S A] [IsScalarTower R S A] in
 variable {S A} in
 @[simp]
 lemma commRight_tmul (s : S) (a : A) : commRight R S A (s ⊗ₜ a) = a ⊗ₜ s := rfl
 
+omit [Algebra S A] [IsScalarTower R S A] in
 variable {S A} in
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 @[simp]
@@ -426,6 +428,7 @@ lemma commRight_symm_tmul (s : S) (a : A) :
     (commRight R S A).symm (a ⊗ₜ[R] s) = s ⊗ₜ a := rfl
 
 set_option linter.dupNamespace false in
+omit [Algebra S A] [IsScalarTower R S A] in
 @[deprecated (since := "2026-05-24")]
 alias Algebra.TensorProduct.commRight_symm_tmul := commRight_symm_tmul
 
