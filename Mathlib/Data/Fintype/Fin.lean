@@ -67,7 +67,7 @@ theorem _root_.List.Vector.count_toList [DecidableEq α] (a : α) (v : List.Vect
     v.toList.count a = #{i | v.get i = a} := by
   simp [List.count_eq_countP]
 
-@[deprecated (since := "2026-10-19")]
+@[deprecated List.Vector.count_toList (since := "2026-10-19")]
 alias card_filter_univ_eq_vector_get_eq_count := List.Vector.count_toList
 
 /--
