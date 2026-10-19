@@ -29,7 +29,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Configure Lean
-        uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1.5.0
+        uses: leanprover/lean-action@f061402b660e0c34644504b324e830f2991d4865 # v1.6.1
         with:
           auto-config: false
           use-github-cache: false
@@ -43,7 +43,7 @@ jobs:
         id: shake
         run: |
           # Add back Archive and Counterexamples when they've been modulized
-          lake shake --add-public --keep-implied --keep-prefix --fix --explain Mathlib > explain.txt 2>&1
+          lake shake --add-public --keep-implied --keep-prefix --add-public-downstream Mathlib.Init --fix --explain Mathlib > explain.txt 2>&1
           if git diff --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
@@ -112,12 +112,12 @@ jobs:
           author: "mathlib-nolints[bot] <258989889+mathlib-nolints[bot]@users.noreply.github.com>"
           token: "${{ steps.app-token.outputs.token }}"
           commit-message: |
-            chore: lake shake --add-public --keep-implied --keep-prefix --fix
+            chore: lake shake --add-public --keep-implied --keep-prefix --add-public-downstream Mathlib.Init --fix
 
             ${{ steps.stats.outputs.changed_files }} files changed · +${{ steps.stats.outputs.added }} imports added · -${{ steps.stats.outputs.removed }} imports removed
           branch: "shake"
           base: master
-          title: "chore: lake shake --add-public --keep-implied --keep-prefix --fix"
+          title: "chore: lake shake --add-public --keep-implied --keep-prefix --add-public-downstream Mathlib.Init --fix"
           body: ${{ steps.pr_body.outputs.body }}
           # labels: ${{ (github.event_name == 'schedule' || toJson(inputs.auto_merge) == 'true') && 'auto-merge-after-CI' || '' }}
 

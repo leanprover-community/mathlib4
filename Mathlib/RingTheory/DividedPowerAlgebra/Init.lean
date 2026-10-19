@@ -5,10 +5,10 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos—Fernández
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.Eval
 public import Mathlib.RingTheory.Congruence.Hom
-public import Mathlib.RingTheory.Congruence.BigOperators
 public import Mathlib.RingTheory.DividedPowers.Basic
+
+import Mathlib.RingTheory.Congruence.BigOperators
 
 /-!
 # The universal divided power algebra

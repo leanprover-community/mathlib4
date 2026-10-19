@@ -10,8 +10,9 @@ public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 public import Mathlib.Algebra.Order.Quantale
 public import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 public import Mathlib.Topology.Algebra.InfiniteSum.NatInt
-public import Mathlib.Topology.Algebra.Order.Field
 public import Mathlib.Topology.Order.MonotoneConvergence
+
+import Mathlib.Topology.Algebra.Order.Field
 
 /-!
 # Infinite sum or product in an order
