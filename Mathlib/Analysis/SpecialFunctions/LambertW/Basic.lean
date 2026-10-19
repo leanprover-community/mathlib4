@@ -159,7 +159,7 @@ variable {x y z w : ℂ} {i : ℤ}
 
 theorem mem_slitPlane_of_notMem (hz : z ≠ 0) (hz' : z ∉ Iio 0 ×ℂ {0}) :
     z ∈ Complex.slitPlane := by
-  contrapose! hz
+  contrapose hz
   simp [mem_reProdIm, mem_slitPlane_iff] at hz hz'
   apply Complex.ext ?_ hz.right
   grind [zero_re]
