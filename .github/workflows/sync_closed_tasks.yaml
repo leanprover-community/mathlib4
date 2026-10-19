@@ -6,9 +6,14 @@ on:
   issues:
     types: [closed, reopened]
 
-  # the action works on pull request events as well
-  pull_request:
+  # the action works on pull request events as well; `pull_request_target` because
+  # PRs come from forks, whose `pull_request` token is read-only (no PR code is checked out)
+  pull_request_target:
     types: [closed, reopened]
+
+permissions:
+  issues: write
+  pull-requests: write
 
 jobs:
   build:
