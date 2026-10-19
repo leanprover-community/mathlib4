@@ -318,7 +318,7 @@ theorem upperCentralSeries_mono : Monotone (upperCentralSeries G) := by
   refine monotone_nat_of_le_succ ?_
   intro n x hx y
   rw [commutatorElement_def, mul_assoc, mul_assoc, ← mul_assoc y x⁻¹ y⁻¹]
-  exact mul_mem hx (Normal.conj_mem inferInstance x⁻¹ (inv_mem hx) y)
+  exact mul_mem hx (Normal.conj_mem x⁻¹ (inv_mem hx) y)
 
 /-- A group `G` is nilpotent iff there exists an ascending central series which reaches `G` in
 finitely many steps. -/
@@ -1351,9 +1351,9 @@ theorem Group.IsNilpotent.exists_normal_index_eq_of_dvd_card [IsNilpotent G] {k 
   · refine ⟨⊥, by simp [hmul, hm1], normal_bot⟩
   · obtain ⟨p, hp, m'', rfl⟩ : ∃ p, p.Prime ∧ p ∣ m' := m'.ne_one_iff_exists_prime_dvd.mp hm1
     obtain ⟨N, hNcard, hN⟩ : ∃ N : Subgroup G, Nat.card N = p ∧ N.Normal := by
-      suffices ∃ (H : Subgroup G), Nat.card H = p ^ 1 ∧ ⊥ ≤ H ∧ H ≤ center G by
+      suffices ∃ (H : Subgroup G), Nat.card H = p ^ 1 ∧ H ≤ center G by
         grind [normal_of_le_center]
-      refine Sylow.exists_subgroup_card_pow_prime_le_le hp (by simp) ?_ bot_le
+      refine Sylow.exists_subgroup_card_pow_prime_le hp (center G) ?_
       exact prime_dvd_card_center (hp := ⟨by simpa⟩) ⟨k * m'', by grind⟩
     obtain ⟨K, hKcard, hK⟩ : ∃ K : Subgroup (G ⧸ N), K.index = k ∧ K.Normal := by
       refine ih (Nat.card (G ⧸ N)) ?_ ?_ rfl
@@ -1370,6 +1370,6 @@ theorem Group.IsNilpotent.exists_normal_card_eq_of_dvd_card [IsNilpotent G] {n :
   obtain ⟨k, hk⟩ := hdvd
   obtain ⟨H, hind, hH⟩ := exists_normal_index_eq_of_dvd_card (Dvd.intro_left n hk.symm)
   refine ⟨H, ?_, hH⟩
-  rwa [← H.card_mul_index, ← hind, Nat.mul_left_inj FiniteIndex.index_ne_zero] at hk
+  rwa [← H.card_mul_index, ← hind, Nat.mul_left_inj index_ne_zero] at hk
 
 end WithFiniteGroup
