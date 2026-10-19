@@ -5,8 +5,8 @@ Authors: Arthur Paulino, Gabriel Ebner, Kyle Miller
 -/
 module
 
-public meta import Lean.Meta.Tactic.Util
 public meta import Lean.Elab.Tactic.Basic
+public meta import Lean.Meta.Tactic.Util
 public import Mathlib.Init
 
 /-!

@@ -532,7 +532,7 @@ Note that this lemma proves a.e. measurability, **not** a.e. strong measurabilit
 This is an intentional decision: for functions taking values in ℝ≥0∞,
 a.e. measurability is much more useful than a.e. strong measurability. -/
 @[fun_prop]
-protected theorem edist {β : Type*} [PseudoMetricSpace β] {f g : α → β}
+protected theorem edist {β : Type*} [PseudoEMetricSpace β] {f g : α → β}
     (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) :
     AEMeasurable (fun a => edist (f a) (g a)) μ :=
   (continuous_edist.comp_aestronglyMeasurable (hf.prodMk hg)).aemeasurable
