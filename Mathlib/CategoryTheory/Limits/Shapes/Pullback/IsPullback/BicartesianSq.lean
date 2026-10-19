@@ -286,8 +286,9 @@ namespace BicartesianSq
 
 variable {W X Y Z : C} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : Y ⟶ Z}
 
-omit [HasZeroObject C] [HasZeroMorphisms C] in
 section
+
+omit [HasZeroObject C] [HasZeroMorphisms C]
 
 theorem of_isPullback_isPushout (p₁ : IsPullback f g h i) (p₂ : IsPushout f g h i) :
     BicartesianSq f g h i :=

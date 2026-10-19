@@ -102,6 +102,7 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.emptyLine
   linter.style.extendedBinder
   linter.style.header
+  linter.style.inSection
   linter.style.lambdaSyntax
   linter.style.longLine
   linter.style.longFile
