@@ -5,7 +5,7 @@ Authors: Michael Rothgang
 -/
 module
 
-public import Mathlib.LinearAlgebra.SymmetricMap -- future: move that file to Symmetric.Basic
+public import Mathlib.LinearAlgebra.Symmetric.Basic
 public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 public import Mathlib.Topology.Algebra.Module.Multilinear.Basic
 
