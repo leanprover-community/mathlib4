@@ -192,22 +192,6 @@ matcher from the expansion. (Use `set_option trace.notationDelab true` to get so
 #guard_msgs (warning, drop error) in local notation +delab "#" n => Fin.mk n (by decide)
 end
 
-section
-set_option linter.unusedTactic false
-set_option linter.deprecated false in
-local notation3 (prettyPrint := false) "#" n => Fin.mk n (by decide)
-
-example : Fin 5 := #1
-
-/--
-error: Tactic `decide` proved that the proposition
-  6 < 5
-is false
--/
-#guard_msgs in example : Fin 5 := #6
-
-end
-
 section test_scoped
 
 scoped[MyNotation] notation +delab "π" => (3 : Nat)
@@ -235,7 +219,7 @@ trace: [notationDelab] Generating matcher for pattern default
       matchApp✝ (matchApp✝ (matchExpr✝ (Expr.isConstOf✝ · `Inhabited.default)) (matchExpr✝ (Expr.isConstOf✝ · `Nat)))
           pure✝ >=>
         pure✝
-[notationDelab] Creating delaborator for key Mathlib.Notation3.DelabKey.app (some `Inhabited.default) 2
+[notationDelab] Creating delaborator for key Mathlib.NotationDelab.DelabKey.app (some `Inhabited.default) 2
 -/
 #guard_msgs in
 set_option trace.notationDelab true in
@@ -264,6 +248,18 @@ notation +delab "Objet " "mathématique" => Type
 
 end Test
 
-/-- warning: `notation3` has been deprecated: use `notation +delab` instead -/
+/--
+warning: syntax 'Mathlib.NotationDelab.notation3' has been deprecated: use `notation +delab` instead
+
+Note: This linter can be disabled with `set_option linter.deprecated.syntax false`
+-/
 #guard_msgs in
 notation3 "deprecatedNotation3" => (0 : Nat)
+
+/--
+warning: macro 'Mathlib.Tactic.scopedNS' produces deprecated syntax 'Mathlib.NotationDelab.notation3': use `notation +delab` instead
+
+Note: This linter can be disabled with `set_option linter.deprecated.syntax false`
+-/
+#guard_msgs in
+scoped[MyNotation] notation3 "deprecatedScopedNotation3" => (0 : Nat)
