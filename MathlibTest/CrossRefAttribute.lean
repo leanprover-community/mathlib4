@@ -46,7 +46,7 @@ run_cmd
 -- Known issue: due to async elaboration, the stacks / kerodon tags get overwritten by
 -- the declaration's own docstring.
 /--
-info: some (This docstring should appear before any Stacks or Kerodon references. )
+info: some (This docstring should appear before any Stacks or Kerodon references.)
 -/
 #guard_msgs in
 run_cmd
