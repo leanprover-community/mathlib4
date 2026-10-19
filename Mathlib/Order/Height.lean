@@ -8,6 +8,8 @@ module
 public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Data.Set.Card
 
+import Mathlib.Data.Finset.Sort
+
 /-!
 
 # Maximal length of chains
@@ -26,6 +28,8 @@ This file contains lemmas to work with the maximal lengths of chains of arbitrar
 - `Set.chainHeight_mono`: If `s ⊆ t` then `s.chainHeight ≤ t.chainHeight`.
 - `Set.chainHeight_eq_of_relEmbedding`: If `f` is an relation embedding, then
   `(f '' s).chainHeight = s.chainHeight`.
+- `Set.natCast_le_chainHeight_iff`: In a preorder, a set has chain height at least `n` if and
+  only if it contains a strictly increasing sequence of `n` elements.
 
 -/
 
@@ -174,5 +178,47 @@ theorem chainHeight_coe_univ_le [LE α] :
 theorem chainHeight_coe_univ_lt [LT α] :
     (@Set.univ ↑s).chainHeight (· < ·) = s.chainHeight (· < ·) := by
   simpa using chainHeight_coe_univ s (· < ·)
+
+section Preorder
+
+variable [Preorder α]
+
+/-- A finite strict chain can be enumerated by a strictly monotone function. -/
+theorem IsChain.exists_strictMono_of_encard_eq {s : Set α} {n : ℕ}
+    (hs : IsChain (· < ·) s) (hn : s.encard = n) :
+    ∃ f : Fin n → α, StrictMono f ∧ range f = s := by
+  classical
+  let := (finite_of_encard_eq_coe hn).fintype
+  let := hs.linearOrder
+  have hcard : Fintype.card s = n := by
+    exact ENat.natCast_inj.mp ((ENat.card_eq_coe_fintype_card).symm.trans hn)
+  let e := Fintype.orderIsoFinOfCardEq s hcard
+  refine ⟨fun i ↦ (e i).val, fun _ _ h ↦ e.strictMono h, ?_⟩
+  ext x
+  constructor
+  · rintro ⟨i, rfl⟩
+    exact (e i).property
+  · intro hx
+    exact ⟨e.symm ⟨x, hx⟩, congr_arg Subtype.val (e.apply_symm_apply _)⟩
+
+/-- A set has chain height at least `n` if and only if it contains a strictly increasing
+sequence of `n` elements. -/
+theorem natCast_le_chainHeight_iff (s : Set α) (n : ℕ) :
+    (n : ℕ∞) ≤ s.chainHeight (· < ·) ↔
+      ∃ f : Fin n → α, StrictMono f ∧ range f ⊆ s := by
+  constructor
+  · intro hn
+    obtain ⟨t, hts, htn, ht⟩ := exists_isChain_of_le_chainHeight n hn
+    obtain ⟨f, hf, hft⟩ := IsChain.exists_strictMono_of_encard_eq ht htn
+    exact ⟨f, hf, hft ▸ hts⟩
+  · rintro ⟨f, hf, hfs⟩
+    have hc : IsChain (· < ·) (range f) := by
+      rw [← image_univ]
+      exact (isChain_of_trichotomous _).image_of_map_rel _ _ _ fun _ _ h ↦ hf h
+    simpa [hf.injective.encard_range] using
+      encard_le_chainHeight_of_isChain s (range f) hfs hc
+
+
+end Preorder
 
 end Set
