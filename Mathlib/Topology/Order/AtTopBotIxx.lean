@@ -5,8 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.Order.Basic
 public import Mathlib.Order.SuccPred.Limit
+public import Mathlib.Topology.Order.Basic
+
 import Mathlib.Topology.Order.LeftRightNhds
 
 /-!

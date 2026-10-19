@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Combinatorics.SimpleGraph.Density
-import Mathlib.Data.Nat.Cast.Order.Field
 public import Mathlib.Order.Partition.Equipartition
 public import Mathlib.SetTheory.Cardinal.Order
+
+import Mathlib.Data.Nat.Cast.Order.Field
 
 /-!
 # Graph uniformity and uniform partitions
@@ -352,7 +353,7 @@ lemma IsEquipartition.card_biUnion_offDiag_le (hε : 0 < ε) (hP : P.IsEquiparti
   refine (mul_le_mul_of_nonneg_left this <| by positivity).trans ?_
   suffices 1 ≤ ε / 4 * #P.parts by
     rw [mul_left_comm, ← sq]
-    convert! mul_le_mul_of_nonneg_left this (mul_nonneg zero_le_two <| sq_nonneg (#A : 𝕜)) using 1
+    convert mul_le_mul_of_nonneg_left this (mul_nonneg zero_le_two <| sq_nonneg (#A : 𝕜)) using 1
       <;> ring
   rwa [← div_le_iff₀', one_div_div]
   positivity

@@ -7,11 +7,12 @@ module
 
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 public import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Regular.Basic
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Ring.Subsemiring.Defs
 public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.Data.Matrix.Diagonal
-public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+
+import Mathlib.Algebra.Regular.Basic
 
 /-!
 # Matrix multiplication

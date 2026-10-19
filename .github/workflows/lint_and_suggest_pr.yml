@@ -9,7 +9,7 @@ jobs:
     name: Lint and suggest
     runs-on: ubuntu-latest
     steps:
-      - uses: leanprover-community/lint-style-action@a7e7428fa44f9635d6eb8e01919d16fd498d387a # 2025-08-18
+      - uses: leanprover-community/lint-style-action@a52329f904d58af9f3e1fc6ef3b986e8f753cc54 # mathlib4-compat
         with:
           mode: suggest
           lint-bib-file: true

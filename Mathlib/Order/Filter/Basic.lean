@@ -671,6 +671,13 @@ theorem eventually_false_iff_eq_bot {f : Filter α} : (∀ᶠ _ in f, False) ↔
 theorem eventually_const {f : Filter α} [t : NeBot f] {p : Prop} : (∀ᶠ _ in f, p) ↔ p := by
   by_cases h : p <;> simp [h, t.ne]
 
+theorem const_eventuallyEq' {f : Filter α} [NeBot f] {a b : β} : (∀ᶠ _ in f, a = b) ↔ a = b :=
+  eventually_const
+
+@[simp] theorem const_eventuallyEq {f : Filter α} [NeBot f] {a b : β} :
+    ((fun _ => a) =ᶠ[f] fun _ => b) ↔ a = b :=
+  @const_eventuallyEq' _ _ _ _ a b
+
 theorem eventually_iff_exists_mem {p : α → Prop} {f : Filter α} :
     (∀ᶠ x in f, p x) ↔ ∃ v ∈ f, ∀ y ∈ v, p y :=
   exists_mem_subset_iff.symm
@@ -983,6 +990,7 @@ protected theorem EventuallyEq.rfl {l : Filter α} {f : α → β} : f =ᶠ[l] f
   EventuallyEq.refl l f
 
 theorem EventuallyEq.of_eq {l : Filter α} {f g : α → β} (h : f = g) : f =ᶠ[l] g := h ▸ .rfl
+
 alias _root_.Eq.eventuallyEq := EventuallyEq.of_eq
 
 @[symm]
@@ -1090,6 +1098,8 @@ protected lemma refl (l : Filter α) (s : Set α) : s =ᶠ[l] s := EventuallyEq.
 protected lemma rfl : s =ᶠ[l] s := .refl l s
 
 lemma of_eq (h : s = t) : s =ᶠ[l] t := h ▸ .rfl
+
+alias _root_.Eq.eventuallyEqSet := EventuallyEqSet.of_eq
 
 @[symm]
 lemma symm (h : s =ᶠ[l] t) : t =ᶠ[l] s := EventuallyEq.symm h
@@ -1377,8 +1387,6 @@ lemma LE.le.eventuallySubset {α} {l : Filter α} {s t : Set α} (h : s ⊆ t) :
 
 lemma LE.le.eventuallyLE {α β : Type*} [LE β] {l : Filter α} {f g : α → β} (h : f ≤ g) :
     f ≤ᶠ[l] g := .of_forall h
-
-@[deprecated (since := "2026-03-16")] alias HasSubset.Subset.eventuallyLE := LE.le.eventuallySubset
 
 alias Filter.EventuallySubset.of_subset := LE.le.eventuallySubset
 alias Filter.EventuallyLE.of_le := LE.le.eventuallyLE
