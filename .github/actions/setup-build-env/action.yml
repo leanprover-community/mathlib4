@@ -1,9 +1,9 @@
 # Shared runner setup for the self-hosted `build` and `test_lint` jobs in
-# build_template.yml. Both run on the same Hoskinson pool and need the same
+# build_template.yml. Both run on the same self-hosted pool and need the same
 # preparation before they diverge (build → build + stage, test_lint →
-# fetch + test + lint): toolchain hygiene, jq, the cache-trust and get-tools
-# wiring, the PR-branch checkout, the elan toolchain and LEAN_SRC_PATH
-# environment, and the dependency download.
+# fetch + test + lint): the cache-trust and get-tools wiring, the PR-branch
+# checkout, the elan toolchain and LEAN_SRC_PATH environment, and the
+# dependency download. The runner image provides jq, landrun and the `gh` CLI.
 #
 # The caller runs `Checkout local actions` (sparse `.github/actions` →
 # `workflow-actions/`) before invoking this action: that checkout puts both this
@@ -28,25 +28,6 @@ inputs:
 runs:
   using: composite
   steps:
-    # Prune old toolchains from `~/.elan`. That directory is mounted from the host
-    # and shared across the ephemeral job containers, so toolchains accumulate and
-    # nothing else trims them (host-side housekeeping only trims the mathlib `.ltar`
-    # cache). Keep the 5 most recent plus `nightly`/`stable`.
-    - name: prune old toolchains
-      shell: bash # just deletes old files; safe to run outside landrun
-      run: |
-        # Make sure to delete both the `~/.elan/toolchains/X` directory and the `~/.elan/update-hashes/X` file.
-        # Skip symbolic links (`-type d`), the current directory (`! -name .`), and `nightly` and `stable`.
-        if cd ~/.elan/toolchains && find . -maxdepth 1 -type d ! -name . -print0 | xargs -0 ls -1td | grep -v 'nightly$' | grep -v 'stable$' | tail -n +6 | xargs -I {} sh -c 'echo {} && rm -rf "{}" && rm "../update-hashes/{}"'; then
-            : # Do nothing on success
-        else
-            : # Do nothing on failure, but suppress errors
-        fi
-
-    # The Hoskinson runners may not have jq installed, so do that now.
-    - name: 'Setup jq'
-      uses: dcarbone/install-jq-action@4fcb5062d7ce9bc4382d1a352d19ba3ba2c317c1 # v4.0.1
-
     # Compute the trust-classified container target and read fallback for this
     # job. Sets MATHLIB_CACHE_FROM / MATHLIB_CACHE_PRIMARY in env so every
     # subsequent `cache get` inherits them without per-call flag plumbing. Loaded
@@ -124,10 +105,22 @@ runs:
 
     - name: set toolchain directory
       shell: bash
+      env:
+        IS_FORK: ${{ github.event.pull_request.head.repo.fork == true }}
       run: |
+        set -euo pipefail
         cd pr-branch
+        # CI only builds against official Lean releases and nightlies; builds of
+        # lean4 PRs (`lean4-pr-releases`) are only used on branches of this repository.
+        origins='lean4|lean4-nightly|lean4-pr-releases'
+        if [ "$IS_FORK" = true ]; then origins='lean4|lean4-nightly'; fi
+        toolchain="$(cat lean-toolchain)"
+        if ! [[ "$toolchain" =~ ^leanprover/($origins):[A-Za-z0-9][A-Za-z0-9.-]*$ ]]; then
+          echo "::error file=lean-toolchain::lean-toolchain must name a toolchain from leanprover/${origins//|/, leanprover/}, e.g. 'leanprover/lean4:v4.24.0'"
+          exit 1
+        fi
         # Get the lake binary path from elan and extract toolchain directory
-        LAKE_PATH=$(elan which lake)
+        LAKE_PATH=$(ELAN_TOOLCHAIN="$toolchain" elan which lake)
         echo "Lake path: $LAKE_PATH"
 
         # Extract the toolchain directory by removing /bin/lake from the end

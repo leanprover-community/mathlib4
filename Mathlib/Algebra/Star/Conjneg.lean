@@ -6,8 +6,8 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.BigOperators.Pi
-public import Mathlib.Algebra.Star.Pi
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+public import Mathlib.Algebra.Star.Pi
 
 /-!
 # Conjugation-negation operator

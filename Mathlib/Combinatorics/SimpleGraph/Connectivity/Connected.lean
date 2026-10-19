@@ -5,8 +5,8 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Paths
 public import Mathlib.Combinatorics.SimpleGraph.Operations
+public import Mathlib.Combinatorics.SimpleGraph.Paths
 
 /-!
 ## Main definitions
@@ -157,6 +157,13 @@ lemma Reachable.mem_subgraphVerts {u v} {H : G.Subgraph} (hr : G.Reachable u v)
     lia
   }
   exact aux hu hr.some
+
+lemma Walk.reachable_of_mem_support {u v x y} {w : G.Walk u v} (hx : x ∈ w.support)
+    (hy : y ∈ w.support) : G.Reachable x y := by
+  induction w generalizing x y with
+  | nil => simp_all
+  | cons hadj w ih =>
+    grind [w.start_mem_support, Adj.reachable, Adj.symm, Reachable.trans]
 
 variable (G)
 
@@ -453,9 +460,28 @@ protected theorem «forall» {p : G.ConnectedComponent → Prop} :
     (∀ c : G.ConnectedComponent, p c) ↔ ∀ v, p (G.connectedComponentMk v) :=
   Quot.mk_surjective.forall
 
-theorem _root_.SimpleGraph.Preconnected.subsingleton_connectedComponent (h : G.Preconnected) :
-    Subsingleton G.ConnectedComponent :=
-  ⟨ConnectedComponent.ind₂ fun v w => ConnectedComponent.sound (h v w)⟩
+theorem _root_.SimpleGraph.nonempty_connectedComponent_iff :
+    Nonempty G.ConnectedComponent ↔ Nonempty V :=
+  nonempty_quotient_iff G.reachableSetoid
+
+theorem _root_.SimpleGraph.isEmpty_connectedComponent_iff :
+    IsEmpty G.ConnectedComponent ↔ IsEmpty V := by
+  contrapose!
+  exact nonempty_connectedComponent_iff
+
+theorem _root_.SimpleGraph.subsingleton_connectedComponent_iff :
+    Subsingleton G.ConnectedComponent ↔ G.Preconnected := by
+  have : G.ConnectedComponent = Quotient G.reachableSetoid := rfl
+  simp [preconnected_iff_reachable_eq_top, this, reachableSetoid]
+
+alias ⟨_, _root_.SimpleGraph.Preconnected.subsingleton_connectedComponent⟩ :=
+  subsingleton_connectedComponent_iff
+
+theorem _root_.SimpleGraph.card_connectedComponent_eq_one_iff :
+    Nat.card G.ConnectedComponent = 1 ↔ G.Connected := by
+  have : G.ConnectedComponent = Quotient G.reachableSetoid := rfl
+  rw [Nat.card_eq_one_iff_unique, subsingleton_connectedComponent_iff, this, nonempty_quotient_iff,
+    connected_iff]
 
 /-- This is `Quot.recOn` specialized to connected components.
 For convenience, it strengthens the assumptions in the hypothesis
@@ -574,6 +600,14 @@ lemma mem_supp_congr_adj {v w : V} (c : G.ConnectedComponent) (hadj : G.Adj v w)
   constructor <;> intro h <;> simp only [← h] <;> apply connectedComponentMk_eq_of_adj
   · exact hadj.symm
   · exact hadj
+
+@[simp]
+theorem encard_supp (C : G.ConnectedComponent) : C.supp.encard = ENat.card C :=
+  rfl
+
+@[simp]
+theorem ncard_supp (C : G.ConnectedComponent) : C.supp.ncard = Nat.card C :=
+  rfl
 
 theorem connectedComponentMk_mem {v : V} : v ∈ G.connectedComponentMk v :=
   rfl
@@ -705,6 +739,29 @@ theorem maximal_connected_induce_iff (s : Set V) :
 
 end ConnectedComponent
 
+variable (G) in
+/-- The vertices of a graph are partitioned among its connected components. -/
+@[simps!]
+def verticesEquivSigmaConnectedComponent : V ≃ Σ c : G.ConnectedComponent, c :=
+  .symm <| .sigmaFiberEquiv G.connectedComponentMk
+
+variable (G) in
+/-- The edges of a graph are partitioned among its connected components. -/
+@[simps!]
+def edgeSetEquivSigmaConnectedComponent :
+    G.edgeSet ≃ Σ c : G.ConnectedComponent, c.toSimpleGraph.edgeSet :=
+  .sigmaQuotFromRel G.symm <| .ofLE fun _ _ ↦ Adj.reachable
+
+variable (G) in
+theorem sum_connectedComponent_ncard_supp [Finite V] [Fintype G.ConnectedComponent] :
+    ∑ c : G.ConnectedComponent, c.supp.ncard = Nat.card V := by
+  simp [Nat.card_congr G.verticesEquivSigmaConnectedComponent, Nat.card_sigma]
+
+variable (G) in
+theorem sum_connectedComponent_ncard_edgeSet [Finite V] [Fintype G.ConnectedComponent] :
+    ∑ c : G.ConnectedComponent, c.toSimpleGraph.edgeSet.ncard = G.edgeSet.ncard := by
+  simpa [Nat.card_sigma] using Nat.card_congr G.edgeSetEquivSigmaConnectedComponent.symm
+
 /-- Given graph homomorphisms from each connected component of `G` to `H`, this is the graph
 homomorphism from `G` to `H`. -/
 @[simps]
@@ -784,9 +841,6 @@ theorem reachable_deleteEdges_iff_exists_walk {v w v' w' : V} :
     refine ⟨p.transfer _ fun e ep => ?_⟩
     rw [edgeSet_deleteEdges]
     exact ⟨p.edges_subset_edgeSet ep, fun h' => h (h' ▸ ep)⟩
-
-@[deprecated (since := "2026-03-18")]
-alias reachable_delete_edges_iff_exists_walk := reachable_deleteEdges_iff_exists_walk
 
 theorem isBridge_iff_forall_walk_mem_edges {v w : V} :
     G.IsBridge s(v, w) ↔ ∀ p : G.Walk v w, s(v, w) ∈ p.edges := by
@@ -897,10 +951,6 @@ theorem IsBridge.anti {G' : SimpleGraph V} {e : Sym2 V} (hG : G ≤ G') (h : G'.
 theorem IsBridge.sup_edge_of_not_reachable {u v : V} (h : ¬G.Reachable u v) :
     (G ⊔ edge u v).IsBridge s(u, v) := isBridge_sup_edge.mpr (of_not_reachable h)
 
-set_option linter.deprecated.deprecatedTarget false in
-@[deprecated (since := "2026-03-18")]
-alias IsBridge.sup_fromEdgeSet_of_not_reachable := IsBridge.sup_edge_of_not_reachable
-
 /-- Connecting two unreachable vertices by an edge preserves existing bridges,
 provided the bridge is already an edge. -/
 theorem IsBridge.sup_edge_of_not_reachable_of_isBridge {u v : V} {e : Sym2 V}
@@ -912,10 +962,6 @@ theorem IsBridge.sup_edge_of_not_reachable_of_isBridge {u v : V} {e : Sym2 V}
   refine edgeSet_sup .. ▸ Walk.edges_subset_edgeSet _ he' |>.elim id fun h' ↦ h ?_ |>.elim
   exact .mono (sdiff_le_iff'.mpr le_rfl) <|
     adj_and_reachable_delete_edges_iff_exists_cycle.mpr ⟨_, p, by simp_all⟩ |>.right
-
-@[deprecated (since := "2026-03-18")]
-alias IsBridge.sup_fromEdgeSet_of_not_reachable_of_isBridge :=
-  IsBridge.sup_edge_of_not_reachable_of_isBridge
 
 end BridgeEdges
 
@@ -985,7 +1031,7 @@ lemma Preconnected.induce_of_degree_eq_one (hG : G.Preconnected) {s : Set V}
   rintro ⟨u, hu⟩ ⟨v, hv⟩
   obtain ⟨p, hp⟩ := hG.exists_isPath u v
   constructor
-  convert! p.induce s _
+  convert p.induce s _
   rintro w hwp
   by_contra hws
   exact hp.notMem_support_of_subsingleton_neighborSet (by grind) (by grind) (hs _ hws) hwp

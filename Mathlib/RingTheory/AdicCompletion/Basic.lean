@@ -5,11 +5,12 @@ Authors: Kenny Lau, Judith Ludwig, Christian Merten, Jiedong Jiang
 -/
 module
 
-import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.LinearAlgebra.SModEq.Basic
 public import Mathlib.RingTheory.Ideal.Quotient.PowTransition
 public import Mathlib.RingTheory.Jacobson.Ideal
 public import Mathlib.Tactic.SuppressCompilation
+
+import Mathlib.Algebra.Ring.GeomSum
 
 /-!
 # Completion of a module with respect to an ideal.
@@ -902,7 +903,7 @@ theorem le_jacobson_bot [IsAdicComplete I R] : I ≤ (⊥ : Ideal R).jacobson :=
   rw [SModEq.sub_mem, smul_eq_mul, Ideal.mul_top] at hL ⊢
   rw [sub_zero]
   suffices (1 - x * y) * f n - 1 ∈ I ^ n by
-    convert! Ideal.sub_mem _ this (Ideal.mul_mem_left _ (1 + -(x * y)) hL) using 1
+    convert Ideal.sub_mem _ this (Ideal.mul_mem_left _ (1 + -(x * y)) hL) using 1
     ring
   cases n
   · simp only [Ideal.one_eq_top, pow_zero, mem_top]

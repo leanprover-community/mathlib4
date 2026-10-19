@@ -10,6 +10,7 @@ PROJECT_DIR = Path(__file__).resolve().parent.parent
 DEFAULT_OPTIONS = [
     "backward.isDefEq.respectTransparency",
     "backward.isDefEq.respectTransparency.types",
+    "backward.defeqAttrib.useBackward",
     "backward.whnf.reducibleClassField",
     "backward.inferInstanceAs.wrap",
 ]
