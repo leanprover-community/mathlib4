@@ -11,10 +11,10 @@ public import Mathlib.Data.List.NodupEquivFin
 /-!
 # Simple quiver paths and cycles
 
-Parallel to `SimpleGraph.Walk` in `Mathlib/Combinatorics/SimpleGraph/Paths.lean`:
-
-`IsSimple` allows the endpoint to repeat the start (simple directed cycle). `IsPath` forbids
-any repeated vertex and is strictly stronger.
+Parallel to `SimpleGraph.Walk` in `Mathlib/Combinatorics/SimpleGraph/Paths.lean`. Since
+`Quiver.Path` plays the role of `SimpleGraph.Walk`, a path with no repeated vertex is called
+simple (`IsSimple`, cf. `SimpleGraph.Walk.IsPath`). `IsCycle` is a nontrivial closed path that
+repeats no vertex except its start (cf. `SimpleGraph.Walk.IsCycle`).
 
 `Quiver.IsAcyclic` (below) means no nontrivial closed paths. It implies `¬IsCycle` but is
 strictly stronger than forbidding simple cycles only.
@@ -28,7 +28,7 @@ For cardinality bounds, use `p.vertices.toFinset` (see `List.toFinset_card_of_no
 
 * `Quiver.Path.exists_length_add_eq_of_getElem_eq`: a path that visits the same vertex twice can
   be shortened by excising the loop in between. Both shortening results below come from it.
-* `Quiver.Path.IsSimple.of_minimal_length`: a shortest positive loop is simple.
+* `Quiver.Path.IsCycle.of_minimal_length`: a shortest nontrivial loop is a cycle.
 -/
 
 @[expose] public section
@@ -40,27 +40,29 @@ open List
 variable {V : Type*} [Quiver V]
 
 /-- A path with no repeated vertices (cf. `SimpleGraph.Walk.IsPath`). -/
-abbrev IsPath {a b : V} (p : Path a b) : Prop :=
-  p.vertices.Nodup
+structure IsSimple {a b : V} (p : Path a b) : Prop where
+  vertices_nodup : p.vertices.Nodup
 
-/-- A path with no repeated vertices except possibly at the end. -/
-abbrev IsSimple {a b : V} (p : Path a b) : Prop :=
-  p.vertices.dropLast.Nodup
+/-- A cycle: a nontrivial closed path with no repeated vertices except its start
+(cf. `SimpleGraph.Walk.IsCycle`). -/
+structure IsCycle {a : V} (p : Path a a) : Prop where
+  length_ne_zero : p.length ≠ 0
+  vertices_dropLast_nodup : p.vertices.dropLast.Nodup
 
-/-- A nontrivial simple closed walk. -/
-def IsCycle {a : V} (p : Path a a) : Prop :=
-  0 < p.length ∧ p.IsSimple
+lemma isSimple_def {a b : V} (p : Path a b) : p.IsSimple ↔ p.vertices.Nodup :=
+  ⟨IsSimple.vertices_nodup, IsSimple.mk⟩
 
-theorem IsPath.nil (a : V) : IsPath (nil : Path a a) := by
-  simp [IsPath]
+lemma isCycle_def {a : V} (p : Path a a) :
+    p.IsCycle ↔ p.length ≠ 0 ∧ p.vertices.dropLast.Nodup :=
+  ⟨fun h ↦ ⟨h.length_ne_zero, h.vertices_dropLast_nodup⟩, fun h ↦ ⟨h.1, h.2⟩⟩
 
-@[simp] lemma isPath_cons {a b c : V} (p : Path a b) (e : b ⟶ c) :
-    IsPath (p.cons e) ↔ IsPath p ∧ c ∉ p.vertices := by
-  simp only [IsPath, vertices_cons]
+theorem IsSimple.nil (a : V) : IsSimple (nil : Path a a) :=
+  ⟨by simp⟩
+
+@[simp] lemma isSimple_cons {a b c : V} (p : Path a b) (e : b ⟶ c) :
+    IsSimple (p.cons e) ↔ IsSimple p ∧ c ∉ p.vertices := by
+  simp only [isSimple_def, vertices_cons]
   rw [nodup_concat]; aesop
-
-lemma IsPath.isSimple {a b : V} {p : Path a b} (h : IsPath p) : IsSimple p :=
-  h.sublist (dropLast_sublist (l := p.vertices))
 
 /-! ### Excising a repeated vertex -/
 
@@ -83,18 +85,20 @@ lemma exists_length_add_eq_of_getElem_eq {a b : V} (p : Path a b) {i j : ℕ}
   exact ⟨s₁.comp t, by simp only [length_comp, hs₁, hs]; grind⟩
 
 /-- A path that repeats a vertex is not of minimal length. -/
-lemma exists_length_lt_of_not_isPath {a b : V} {p : Path a b} (h : ¬ p.IsPath) :
+lemma exists_length_lt_of_not_isSimple {a b : V} {p : Path a b} (h : ¬ p.IsSimple) :
     ∃ q : Path a b, q.length < p.length := by
+  rw [isSimple_def] at h
   obtain ⟨x, hx⟩ := exists_duplicate_iff_not_nodup.2 h
   obtain ⟨n, m, hnm, hn, hm⟩ := duplicate_iff_exists_distinct_get.1 hx
   obtain ⟨q, hq⟩ := p.exists_length_add_eq_of_getElem_eq hnm m.isLt
     (by simpa [get_eq_getElem] using hn.symm.trans hm)
   exact ⟨q, by grind⟩
 
-/-- A loop that repeats a vertex before returning to its start is not the shortest positive
-loop: excising the repetition leaves a strictly shorter loop that is still nontrivial. -/
-lemma exists_pos_length_lt_of_not_isSimple {a : V} {c : Path a a} (h : ¬ c.IsSimple) :
-    ∃ q : Path a a, 0 < q.length ∧ q.length < c.length := by
+/-- A nontrivial loop that is not a cycle is not the shortest nontrivial loop: excising the
+repeated vertex leaves a strictly shorter loop that is still nontrivial. -/
+lemma exists_length_lt_of_not_isCycle {a : V} {c : Path a a} (h₀ : c.length ≠ 0)
+    (h : ¬ c.IsCycle) : ∃ q : Path a a, q.length ≠ 0 ∧ q.length < c.length := by
+  have h : ¬ c.vertices.dropLast.Nodup := fun hc ↦ h ⟨h₀, hc⟩
   obtain ⟨x, hx⟩ := exists_duplicate_iff_not_nodup.2 h
   obtain ⟨n, m, hnm, hn, hm⟩ := duplicate_iff_exists_distinct_get.1 hx
   have hlen : c.vertices.dropLast.length = c.length := by
@@ -104,12 +108,12 @@ lemma exists_pos_length_lt_of_not_isSimple {a : V} {c : Path a a} (h : ¬ c.IsSi
     (by simpa [get_eq_getElem, getElem_dropLast] using hn.symm.trans hm)
   exact ⟨q, by grind, by grind⟩
 
-/-- A shortest positive loop is simple. -/
-theorem IsSimple.of_minimal_length {a : V} {c : Path a a}
-    (hc : ∀ p : Path a a, 0 < p.length → c.length ≤ p.length) : c.IsSimple := by
+/-- A shortest nontrivial loop is a cycle. -/
+theorem IsCycle.of_minimal_length {a : V} {c : Path a a} (h₀ : c.length ≠ 0)
+    (hc : ∀ p : Path a a, p.length ≠ 0 → c.length ≤ p.length) : c.IsCycle := by
   by_contra h
-  obtain ⟨q, hq_pos, hq_lt⟩ := exists_pos_length_lt_of_not_isSimple h
-  exact absurd (hc q hq_pos) (by grind)
+  obtain ⟨q, hq₀, hq_lt⟩ := exists_length_lt_of_not_isCycle h₀ h
+  exact absurd (hc q hq₀) (by grind)
 
 end Quiver.Path
 
@@ -131,9 +135,7 @@ variable {V}
 lemma IsAcyclic.eq_nil (h : IsAcyclic V) {a : V} (p : Path a a) : p = Path.nil :=
   Path.eq_nil_of_length_zero p (h p)
 
-lemma IsAcyclic.not_isCycle (h : IsAcyclic V) {a : V} (p : Path a a) : ¬p.IsCycle := by
-  rintro ⟨hp, -⟩
-  have := h p
-  grind
+lemma IsAcyclic.not_isCycle (h : IsAcyclic V) {a : V} (p : Path a a) : ¬p.IsCycle :=
+  fun hp ↦ hp.length_ne_zero (h p)
 
 end Quiver
