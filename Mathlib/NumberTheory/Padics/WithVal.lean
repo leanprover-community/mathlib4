@@ -5,9 +5,9 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Algebra.Order.BigOperators.Expect
+public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.NumberTheory.Padics.PadicIntegers
-public import Mathlib.Topology.Algebra.Valued.ValuedField
 public import Mathlib.Topology.Algebra.Valued.WithVal
 public import Mathlib.Topology.GDelta.MetrizableSpace
 
@@ -33,9 +33,8 @@ namespace Padic
 
 variable {p : ℕ} [Fact p.Prime]
 
-open NNReal WithZero UniformSpace
+open WithZero UniformSpace
 
-set_option backward.isDefEq.respectTransparency.types false in
 open MonoidWithZeroHom.ValueGroup₀ in
 lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).comp
     (WithVal.equiv (Rat.padicValuation p)).toRingHom) := by
@@ -80,8 +79,8 @@ lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).
     change Rat.padicValuation p (x' - y') < embedding γ.1
     rw [← Nat.cast_pow, ← Rat.cast_natCast, ← Rat.cast_inv_of_ne_zero, Rat.cast_le] at h
     · change padicNorm p (x' - y') ≤ _ at h
-      simp only [Rat.padicValuation, Valuation.coe_mk, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
-        padicNorm, zpow_neg, Nat.cast_pow] at h ⊢
+      unfold Rat.padicValuation at *
+      simp only [Valuation.coe_mk, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk] at h ⊢
       split_ifs with H
       · simp only [exp_neg]
         exact embedding_unit_pos _
@@ -177,7 +176,11 @@ theorem withValUniformEquiv_norm_le_one_iff {p : ℕ} [Fact p.Prime]
     ‖Padic.withValUniformEquiv x‖ ≤ 1 ↔ Valued.v x ≤ 1 := by
   induction x using UniformSpace.Completion.induction_on with
   | hp =>
-    rw [Set.ext fun _ ↦ Iff.comm]
+    have : {x : (Rat.padicValuation p).Completion |
+          ‖Padic.withValUniformEquiv x‖ ≤ 1 ↔ Valued.v x ≤ 1} =
+        {x | Valued.v x ≤ 1 ↔ ‖Padic.withValUniformEquiv x‖ ≤ 1} :=
+      Set.ext fun _ ↦ Iff.comm
+    rw [this]
     simp_rw [← Valuation.restrict_le_one_iff Valued.v]
     apply withValUniformEquiv.toHomeomorph.isClosed_setOfPred_iff (q := fun x ↦ ‖x‖ ≤ 1)
       (Valued.isClopen_closedBall _ one_ne_zero)

@@ -5,7 +5,9 @@ Authors: Kim Morrison, Yuma Mizuno, Oleksandr Manzyuk
 -/
 module
 
+public meta import Lean.Meta.Tactic.Congr
 public import Mathlib.CategoryTheory.Monoidal.Free.Basic
+public meta import Mathlib.Lean.Meta
 public import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
 public import Mathlib.Tactic.CategoryTheory.MonoidalComp
 

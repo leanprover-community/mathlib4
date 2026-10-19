@@ -6,11 +6,9 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Operations
-public import Mathlib.Analysis.Normed.Module.Convex
 public import Mathlib.Analysis.RCLike.TangentCone
 public import Mathlib.Data.Bundle
 public import Mathlib.Geometry.Manifold.HasGroupoid
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # `C^n` manifolds (possibly with boundary or corners)
@@ -194,7 +192,7 @@ def ModelWithCorners.ofTargetUniv (𝕜 : Type*) [NontriviallyNormedField 𝕜]
   source_eq := hsource
   convex_range' := by
     have : range φ = φ.target := by rw [← φ.image_source_eq_target, hsource, image_univ.symm]
-    simp only [this, htarget, dite_else_true]
+    simp only [this, htarget, dite_true_right]
     intro h
     let := h.rclike 𝕜
     let := NormedSpace.restrictScalars ℝ 𝕜 E
@@ -312,7 +310,7 @@ lemma _root_.Convex.convex_isRCLikeNormedField [NormedSpace ℝ E] [h : IsRCLike
   let := NormedSpace.restrictScalars ℝ 𝕜 E
   simp only [Convex, StarConvex] at hs ⊢
   intro u hu v hv a b ha hb hab
-  convert! hs hu hv ha hb hab using 2
+  convert hs hu hv ha hb hab using 2
   · rw [← @algebraMap_smul (R := ℝ) (A := 𝕜), ← @algebraMap_smul (R := ℝ) (A := 𝕜)]
   · rw [← @algebraMap_smul (R := ℝ) (A := 𝕜), ← @algebraMap_smul (R := ℝ) (A := 𝕜)]
 
@@ -339,7 +337,7 @@ theorem convex_range [NormedSpace ℝ E] : Convex ℝ (range I) := by
     simp only [h, ↓reduceDIte, toPartialEquiv_coe] at W
     simp only [Convex, StarConvex] at W ⊢
     intro u hu v hv a b ha hb hab
-    convert! W hu hv ha hb hab using 2
+    convert W hu hv ha hb hab using 2
     · rw [← @algebraMap_smul (R := ℝ) (A := 𝕜)]
       rfl
     · rw [← @algebraMap_smul (R := ℝ) (A := 𝕜)]
@@ -738,7 +736,6 @@ theorem symm_trans_mem_contDiffGroupoid (e : OpenPartialHomeomorph M H) :
 
 variable {E' H' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] [TopologicalSpace H']
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The product of two `C^n` open partial homeomorphisms is `C^n`. -/
 theorem contDiffGroupoid_prod {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCorners 𝕜 E' H'}
     {e : OpenPartialHomeomorph H H} {e' : OpenPartialHomeomorph H' H'}
@@ -990,15 +987,17 @@ theorem OpenPartialHomeomorph.isManifold_singleton
     {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {n : ℕ∞ω}
     {M : Type*} [TopologicalSpace M] (e : OpenPartialHomeomorph M H) (h : e.source = Set.univ) :
-    @IsManifold 𝕜 _ E _ _ H _ I n M _ (e.singletonChartedSpace h) :=
-  @IsManifold.mk' _ _ _ _ _ _ _ _ _ _ _ (id _) <|
-    e.singleton_hasGroupoid h (contDiffGroupoid n I)
+    letI := e.singletonChartedSpace h
+    IsManifold I n M :=
+  let := e.singletonChartedSpace h
+  IsManifold.mk' (gr := e.singleton_hasGroupoid h (contDiffGroupoid n I))
 
 theorem Topology.IsOpenEmbedding.isManifold_singleton {𝕜 E H : Type*}
     [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [TopologicalSpace H]
     {I : ModelWithCorners 𝕜 E H} {n : ℕ∞ω}
     {M : Type*} [TopologicalSpace M] [Nonempty M] {f : M → H} (h : IsOpenEmbedding f) :
-    @IsManifold 𝕜 _ E _ _ H _ I n M _ h.singletonChartedSpace :=
+    letI := h.singletonChartedSpace
+    IsManifold I n M :=
   (h.toOpenPartialHomeomorph f).isManifold_singleton (by simp)
 
 namespace TopologicalSpace.Opens
@@ -1040,24 +1039,41 @@ deriving
   ContinuousSMul 𝕜,
   -- the following instance derives from the previous one, but through an instance with priority 100
   -- which takes a long time to be found. We register a shortcut instance instead
-  ContinuousConstSMul 𝕜
+  ContinuousConstSMul 𝕜, IsNormableSpace 𝕜
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {x : M}
 
-set_option backward.isDefEq.respectTransparency false in
+/-- Definitional identification between the tangent space of a manifold at a point and the
+model space. *Do not use*, unless when setting up foundational properties of the tangent space:
+this definition is a technical detail related to our specific implementation of tangent spaces,
+but it has no mathematical meaning. The mathematically meaningful version of this definition
+is the derivative of the extended chart at `x`, in its `mvfderiv` version. -/
+def tangentSpaceCastModel (x : M) : TangentSpace I x ≃L[𝕜] E where
+  toFun v := v
+  invFun v := v
+  map_add' x y := rfl
+  map_smul' c x := rfl
+
 /-- Identifying the tangent space at a normed space with the normed space itself.
 This canonical identification (which, in mathlib, is implemented using an abuse of definitional
 equality) is very prevalent in a number of places: this device allows making it explicit. -/
-def NormedSpace.fromTangentSpace (v : E) : TangentSpace 𝓘(𝕜, E) v ≃L[𝕜] E where
+def NormedSpace.fromTangentSpace (v : E) : TangentSpace 𝓘(𝕜, E) v ≃L[𝕜] E :=
+  tangentSpaceCastModel 𝓘(𝕜, E) v
+
+/-- Definitional identification between the tangent space of a manifold at two points. This only
+makes sense mathematically when `x = y`. -/
+def tangentSpaceCast (x y : M) : TangentSpace I x ≃L[𝕜] TangentSpace I y where
   toFun v := v
   invFun v := v
-  map_add' := by simp
-  map_smul' := by simp
+  map_add' x y := rfl
+  map_smul' c x := rfl
 
 instance : Inhabited (TangentSpace I x) := ⟨0⟩
+
+instance : T2Space (TangentSpace I x) := inferInstanceAs (T2Space E)
 
 variable (M) in
 -- is empty if the base manifold is empty

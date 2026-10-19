@@ -5,8 +5,9 @@ Authors: Jovan Gerbscheid
 -/
 module
 
+public meta import ProofWidgets.Util
 public import Mathlib.Tactic.ClickSuggestions.Util
-public import ProofWidgets.Component.FilterDetails
+public meta import ProofWidgets.Component.FilterDetails
 
 /-!
 # Infrastructure for searching and displaying sets of lemmas
@@ -17,7 +18,7 @@ This is used for `apply`, `apply at`, `rw` and `grw` suggestions.
 public meta section
 
 namespace Mathlib.Tactic.ClickSuggestions
-open Lean Widget ProofWidgets Jsx
+open Lean Widget ProofWidgets
 
 /-- `Result` stores the information from a lemma that was successfully applied. -/
 structure Result (α : Type) where
@@ -93,7 +94,7 @@ inductive SectionKind where
 
 -- TODO?: add a `⏳️` with hover info that shows which lemmas are still being computed?
 /-- Create the HTML corresponding to `s`. -/
-def renderSection (tactic : String) (kind : SectionKind) (s : SectionState α) : Html := Id.run do
+def renderSection (kind : SectionKind) (s : SectionState α) : Html := Id.run do
   let { results, errors } := s
   if results.isEmpty && errors.isEmpty then
     return .text ""
@@ -101,26 +102,27 @@ def renderSection (tactic : String) (kind : SectionKind) (s : SectionState α) :
   let mut all := .element "div" #[] <| results.map (·.unfiltered)
   let mut filtered := .element "div" #[] <| results.filterMap (·.filtered)
   unless errors.isEmpty do
-    all := <div> {all} {renderErrors errors} </div>
-    filtered := <div> {filtered} {renderErrors errors} </div>
+    all := jsx%{<div>{all}{renderErrors errors}</div>}
+    filtered := jsx%{<div>{filtered}{renderErrors errors}</div>}
   let suffix := match kind with
     | .hyp => " (local hypotheses)"
     | .currFile => " (current file)"
     | .imported => ""
-  let header := <span> {.text s!"{tactic} ("} {pattern} {.text ")"} {.text suffix} </span>
+  let header := jsx%{<span>Pattern {pattern}{.text suffix}</span>}
   if kind matches .imported then
-    return <FilterDetails summary={header} all={all} filtered={filtered} initiallyFiltered={true} />
+    return jsx%{<FilterDetails summary={header} all={all} filtered={filtered}
+      initiallyFiltered={true} />}
   else
     -- We don't filter local results, because there aren't that many of them.
-    return <details «open»={true}> <summary> {header} </summary> {all} </details>
+    return jsx%{<details open={true}><summary>{header}</summary>{all}</details>}
 where
   renderErrors (errors : Array Html) : Html :=
-    <details «open»={true}>
+    jsx%{<details open={true}>
       <summary className="mv2 pointer">
-        <span «class»="error"> Failures: </span>
+        <span class="error"> Failures: </span>
       </summary>
       {Html.element "ul" #[("style", json% { "padding-left" : "30px"})] errors}
-    </details>
+    </details>}
 
 /-- Spawn a task that computes a piece of `Html` to be displayed when finished. -/
 @[specialize]
@@ -145,10 +147,10 @@ def spawnTask {α} (premise : Premise) (k : ClickSuggestionsM α) :
           throw ex
         return .ok none
   BaseIO.asTask <| act.catchExceptions fun ex =>
-    return .error <li>
+    return .error jsx%{<li>
         {premiseHtml} failed:
         <br/>
         <InteractiveMessage msg={← Server.WithRpcRef.mk ex.toMessageData} />
-      </li>
+      </li>}
 
 end Mathlib.Tactic.ClickSuggestions

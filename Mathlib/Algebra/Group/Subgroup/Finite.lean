@@ -25,7 +25,6 @@ public section
 assert_not_exists Field
 
 variable {G : Type*} [Group G]
-variable {A : Type*} [AddGroup A]
 
 namespace Subgroup
 
@@ -92,12 +91,6 @@ theorem val_finsetProd {ι G} [CommGroup G] (H : Subgroup G) (f : ι → H) (s :
     ↑(∏ i ∈ s, f i) = (∏ i ∈ s, f i : G) :=
   SubmonoidClass.coe_finsetProd f s
 
-@[deprecated (since := "2026-04-08")]
-alias _root_.AddSubgroup.val_finset_sum := _root_.AddSubgroup.val_finsetSum
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias val_finset_prod := val_finsetProd
-
 @[to_additive]
 instance fintypeBot : Fintype (⊥ : Subgroup G) :=
   ⟨{1}, by
@@ -158,6 +151,10 @@ theorem card_le_card_group [Finite G] : Nat.card H ≤ Nat.card G :=
 @[to_additive]
 theorem card_le_of_le {H K : Subgroup G} [Finite K] (h : H ≤ K) : Nat.card H ≤ Nat.card K :=
   Nat.card_le_card_of_injective _ (Subgroup.inclusion_injective h)
+
+@[to_additive]
+theorem card_lt_of_lt {H K : Subgroup G} [Finite K] (h : H < K) : Nat.card H < Nat.card K :=
+  (Set.toFinite _).card_lt_card h
 
 @[to_additive]
 theorem card_map_of_injective {H : Type*} [Group H] {K : Subgroup G} {f : G →* H}

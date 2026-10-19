@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Polynomial.Derivative
 public import Mathlib.Tactic.LinearCombination
-public import Mathlib.Tactic.Ring
 
 /-!
 # Theory of univariate polynomials
@@ -24,8 +23,8 @@ namespace Polynomial
 
 universe u v w x y z
 
-variable {R : Type u} {S : Type v} {T : Type w} {ι : Type x} {k : Type y} {A : Type z} {a b : R}
-  {m n : ℕ}
+variable {R : Type u} {ι : Type x} {k : Type y} {A : Type z} {a : R}
+  {n : ℕ}
 
 section Identities
 

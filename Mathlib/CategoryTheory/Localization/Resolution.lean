@@ -5,8 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Comma.CatCommSq
 public import Mathlib.CategoryTheory.Localization.LocalizerMorphism
+
+import Mathlib.CategoryTheory.Comma.CatCommSq
 
 /-!
 # Resolutions for a morphism of localizers
@@ -41,8 +42,6 @@ Similar definitions are done for left resolutions.
 universe v₁ v₂ v₂' u₁ u₂ u₂'
 
 namespace CategoryTheory
-
-open Category Localization
 
 variable {C₁ C₂ D₁ D₂ H : Type*}
   [Category* C₁] [Category* C₂] [Category* D₁] [Category* D₂] [Category* H]
@@ -327,7 +326,6 @@ lemma hasRightResolutions_of_iso_of_essSurj
     w := e.inv ≫ R.functor.map ρ.w ≫ iso.hom.app _
     hw := (W₂'.arrow_mk_iso_iff (Arrow.isoMk e (iso.app _))).1 (R.map _ ρ.hw) }⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hasLeftResolutions_of_iso_of_essSurj
     [R.functor.EssSurj] [W₂'.RespectsIso]
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor) [T.HasLeftResolutions] :
@@ -340,7 +338,6 @@ lemma hasLeftResolutions_of_iso_of_essSurj
     w := iso.inv.app _ ≫ R.functor.map ρ.w ≫ e.hom
     hw := (W₂'.arrow_mk_iso_iff (Arrow.isoMk (iso.app _) e)).1 (R.map _ ρ.hw) }⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hasRightResolutions_of_iso_of_essSurj_of_full
     [L.functor.EssSurj] [R.functor.Full] [R.IsInduced] [W₂'.RespectsIso]
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor) [B.HasRightResolutions] :

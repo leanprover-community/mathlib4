@@ -5,8 +5,9 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.MeasureTheory.Function.SpecialFunctions.Sinc
 public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
+
+import Mathlib.MeasureTheory.Function.SpecialFunctions.Sinc
 
 /-!
 # Integrals of characteristic functions
@@ -32,7 +33,9 @@ relating the measure of some sets to integrals of characteristic functions.
 
 public section
 
-open RealInnerProductSpace Real Complex NormedSpace
+open Real Complex NormedSpace
+
+open scoped RealInnerProductSpace
 
 namespace MeasureTheory
 
@@ -111,7 +114,8 @@ lemma measureReal_abs_gt_le_integral_charFun [IsProbabilityMeasure μ] (hr : 0 <
     refine setIntegral_mono_on ?_
       ((integrable_const _).sub (integrable_sinc_const_mul _)).integrableOn ?_ fun x hx ↦ ?_
     · exact Integrable.integrableOn <| by fun_prop
-    · exact MeasurableSet.preimage measurableSet_Ioi (by fun_prop)
+    · exact MeasurableSet.preimage (f := fun x : ℝ ↦ |2 * r⁻¹ * x|) measurableSet_Ioi
+        (by fun_prop)
     · have hx_ne : 2 * r⁻¹ * x ≠ 0 := by
         intro hx0
         simp only [hx0, Set.mem_ofPred_eq, abs_zero] at hx
@@ -151,11 +155,10 @@ lemma measureReal_abs_dual_gt_le_integral_charFunDual {E : Type*} [NormedAddComm
     [NormedSpace ℝ E] {mE : MeasurableSpace E} [OpensMeasurableSpace E]
     {μ : Measure E} [IsProbabilityMeasure μ] (L : StrongDual ℝ E) {r : ℝ} (hr : 0 < r) :
     μ.real {x | r < |L x|} ≤ 2⁻¹ * r * ‖∫ t in -2 * r⁻¹..2 * r⁻¹, 1 - charFunDual μ (t • L)‖ := by
-  have : IsProbabilityMeasure (μ.map L) := Measure.isProbabilityMeasure_map (by fun_prop)
   convert! measureReal_abs_gt_le_integral_charFun (μ := μ.map L) hr with x
   · rw [map_measureReal_apply (by fun_prop)]
     · simp
-    · exact MeasurableSet.preimage measurableSet_Ioi (by fun_prop)
+    · exact MeasurableSet.preimage (f := fun x : ℝ ↦ |x|) measurableSet_Ioi (by fun_prop)
   · rw [charFun_map_eq_charFunDual_smul]
 
 /-- A bound on the measure of the set `{x | r < |⟪a, x⟫|}` in terms of the integral of
@@ -164,12 +167,10 @@ lemma measureReal_abs_inner_gt_le_integral_charFun {E : Type*} [SeminormedAddCom
     [InnerProductSpace ℝ E] {mE : MeasurableSpace E} [OpensMeasurableSpace E]
     {μ : Measure E} [IsProbabilityMeasure μ] {a : E} {r : ℝ} (hr : 0 < r) :
     μ.real {x | r < |⟪a, x⟫|} ≤ 2⁻¹ * r * ‖∫ t in -2 * r⁻¹..2 * r⁻¹, 1 - charFun μ (t • a)‖ := by
-  have : IsProbabilityMeasure (μ.map (fun x ↦ ⟪a, x⟫)) :=
-    Measure.isProbabilityMeasure_map (by fun_prop)
   convert! measureReal_abs_gt_le_integral_charFun (μ := μ.map (fun x ↦ ⟪a, x⟫)) hr with x
   · rw [map_measureReal_apply (by fun_prop)]
     · simp
-    · exact MeasurableSet.preimage measurableSet_Ioi (by fun_prop)
+    · exact MeasurableSet.preimage (f := fun x : ℝ ↦ |x|) measurableSet_Ioi (by fun_prop)
   · simp only [charFun_apply, inner_smul_right, conj_trivial, ofReal_mul, RCLike.inner_apply]
     rw [integral_map (by fun_prop) (by fun_prop)]
     simp_rw [real_inner_comm a]
