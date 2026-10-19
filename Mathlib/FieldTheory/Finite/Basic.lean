@@ -703,7 +703,7 @@ def Subfield.botFinset : Finset F :=
 
 @[simp]
 theorem Subfield.mem_botFinset {x : F} : x ∈ Subfield.botFinset F p ↔ x ∈ (⊥ : Subfield F) := by
-  simp_rw [botFinset, Finset.mem_map, mem_univ, true_and, ← fieldRange_castHom_eq_bot p]; rfl
+  simp [botFinset, ← fieldRange_castHom_eq_bot p]
 
 @[simp]
 theorem Subfield.coe_botFinset : (Subfield.botFinset F p : Set F) = (⊥ : Subfield F) := by
