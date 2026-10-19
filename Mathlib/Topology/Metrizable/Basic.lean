@@ -191,7 +191,7 @@ theorem IsSeparable.exists_countable_dense_subset [PseudoMetrizableSpace X]
   obtain ⟨t, htc, hst⟩ := hs
   refine ⟨t, htc, fun x hx => ?_⟩
   obtain ⟨y, hyx, hyt⟩ := mem_closure_iff_ball.1 (hst hx) (symmetrize_mem_uniformity hU)
-  exact mem_biUnion hyt (ball_mono SetRel.symmetrize_subset_inv x hyx)
+  exact mem_biUnion hyt (UniformSpace.ball_mono SetRel.symmetrize_subset_inv x hyx)
 
 /-- A compact set is separable. -/
 theorem _root_.IsCompact.isSeparable {α : Type*} [TopologicalSpace α] [PseudoMetrizableSpace α]
