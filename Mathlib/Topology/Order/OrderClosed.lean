@@ -326,11 +326,11 @@ theorem Icc_mem_nhdsLT (H : a < b) : Icc a b ∈ 𝓝[<] b := Icc_mem_nhdsLT_of_
 
 @[to_dual (attr := simp)]
 theorem nhdsWithin_Ico_eq_nhdsLT (h : a < b) : 𝓝[Ico a b] b = 𝓝[<] b :=
-  nhdsWithin_inter_of_mem <| nhdsWithin_le_nhds <| Ici_mem_nhds h
+  nhdsWithin_inter_of_mem (t := Iio b) <| nhdsWithin_le_nhds <| Ici_mem_nhds h
 
 @[to_dual (attr := simp)]
 theorem nhdsWithin_Ioo_eq_nhdsLT (h : a < b) : 𝓝[Ioo a b] b = 𝓝[<] b :=
-  nhdsWithin_inter_of_mem <| nhdsWithin_le_nhds <| Ioi_mem_nhds h
+  nhdsWithin_inter_of_mem (t := Iio b) <| nhdsWithin_le_nhds <| Ioi_mem_nhds h
 
 @[to_dual (attr := simp)]
 theorem continuousWithinAt_Ico_iff_Iio (h : a < b) :
@@ -379,11 +379,11 @@ theorem Icc_mem_nhdsLE (H : a < b) : Icc a b ∈ 𝓝[≤] b := Icc_mem_nhdsLE_o
 
 @[to_dual (attr := simp)]
 theorem nhdsWithin_Icc_eq_nhdsLE (h : a < b) : 𝓝[Icc a b] b = 𝓝[≤] b :=
-  nhdsWithin_inter_of_mem <| nhdsWithin_le_nhds <| Ici_mem_nhds h
+  nhdsWithin_inter_of_mem (t := Iic b) <| nhdsWithin_le_nhds <| Ici_mem_nhds h
 
 @[to_dual (attr := simp)]
 theorem nhdsWithin_Ioc_eq_nhdsLE (h : a < b) : 𝓝[Ioc a b] b = 𝓝[≤] b :=
-  nhdsWithin_inter_of_mem <| nhdsWithin_le_nhds <| Ioi_mem_nhds h
+  nhdsWithin_inter_of_mem (t := Iic b) <| nhdsWithin_le_nhds <| Ioi_mem_nhds h
 
 @[to_dual (attr := simp)]
 theorem continuousWithinAt_Icc_iff_Iic (h : a < b) :
@@ -667,7 +667,7 @@ theorem frontier_le_subset_eq (hf : Continuous f) (hg : Continuous g) :
   rw [frontier_eq_closure_inter_closure, closure_le_eq hf hg]
   rintro b ⟨hb₁, hb₂⟩
   refine le_antisymm hb₁ (closure_lt_subset_le hg hf ?_)
-  convert! hb₂ using 2; simp only [not_le.symm]; rfl
+  convert hb₂ using 2; simp only [not_le.symm]; rfl
 
 @[to_dual]
 theorem frontier_Iic_subset (a : α) : frontier (Iic a) ⊆ {a} :=

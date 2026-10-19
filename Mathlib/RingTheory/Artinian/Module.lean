@@ -6,16 +6,11 @@ Authors: Chris Hughes
 module
 
 public import Mathlib.Algebra.Group.Units.Opposite
-public import Mathlib.Algebra.Regular.Opposite
 public import Mathlib.Data.SetLike.Fintype
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 public import Mathlib.Order.Filter.EventuallyConst
 public import Mathlib.RingTheory.Artinian.Defs
-public import Mathlib.RingTheory.Ideal.Prod
-public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Jacobson.Semiprimary
-public import Mathlib.RingTheory.Nilpotent.Lemmas
-public import Mathlib.RingTheory.Noetherian.Defs
 public import Mathlib.RingTheory.Spectrum.Maximal.Basic
 public import Mathlib.RingTheory.Spectrum.Prime.Basic
 
@@ -102,7 +97,8 @@ theorem isArtinian_of_surjective_algebraMap {S : Type*} [CommSemiring S] [Algebr
     suffices r • x ∈ N by simpa [Algebra.algebraMap_eq_smul_one, smul_assoc]
     apply N.smul_mem _ hx
   · intro N1 N2 h
-    rwa [Submodule.ext_iff] at h ⊢
+    rw [Submodule.ext_iff] at h ⊢
+    assumption
   · intro N1 N2
     rfl
 
@@ -156,7 +152,7 @@ open Function
 
 /-- Any injective endomorphism of an Artinian module is surjective. -/
 theorem surjective_of_injective_endomorphism (f : M →ₗ[R] M) (s : Injective f) : Surjective f := by
-  have h := ‹IsArtinian R M›; contrapose! h
+  have h := ‹IsArtinian R M›; contrapose h
   rw [IsArtinian, WellFoundedLT]
   refine (RelEmbedding.natGT (LinearMap.range <| f ^ ·) ?_).not_wellFounded
   intro n
@@ -282,7 +278,7 @@ theorem IsArtinian.isSemisimpleModule_iff_jacobson [IsArtinian R M] :
     .of_injective f <| LinearMap.ker_eq_bot.mp <| le_bot_iff.mp fun x hx ↦ by
       rw [← h, Module.jacobson, Submodule.mem_sInf]
       exact fun m hm ↦ hs ⟨m, hm⟩ <| Submodule.mem_finsetInf.mpr fun i hi ↦
-        (Submodule.Quotient.mk_eq_zero i.1).mp <| congr_fun hx ⟨i, hi⟩⟩
+        (Submodule.Quotient.mk_eq_zero i.1).mp congr($hx ⟨i, hi⟩)⟩
 
 open Submodule Function
 
@@ -533,7 +529,7 @@ lemma isField_of_isDomain [IsDomain R] : IsField R := by
   obtain ⟨n, y, hy⟩ := IsArtinian.exists_pow_succ_smul_dvd x (1 : R)
   replace hy : x ^ n * (x * y - 1) = 0 := by
     rw [mul_sub, sub_eq_zero]
-    convert! hy using 1
+    convert hy using 1
     simp [Nat.succ_eq_add_one, pow_add, mul_assoc]
   rw [mul_eq_zero, sub_eq_zero] at hy
   exact ⟨_, hy.resolve_left <| pow_ne_zero _ hx⟩

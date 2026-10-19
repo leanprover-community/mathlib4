@@ -74,7 +74,6 @@ def symm : Precylinder A where
   i₁ := P.i₀
   π := P.π
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The gluing of two precylinders. -/
 @[simps]
 noncomputable def trans (P' : Precylinder A) [HasPushout P.i₁ P'.i₀] :
@@ -264,7 +263,6 @@ lemma exists_very_good :
 instance : Nonempty (Cylinder A) := ⟨(exists_very_good A).choose⟩
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The gluing of two good cylinders. -/
 @[simps!]
 noncomputable def trans [IsCofibrant A] (P P' : Cylinder A) [P'.IsGood] :
