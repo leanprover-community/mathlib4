@@ -6,9 +6,10 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.MeasureTheory.Covering.VitaliFamily
-import Mathlib.MeasureTheory.Function.AEMeasurableOrder
 public import Mathlib.MeasureTheory.Integral.Average
 public import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
+
+import Mathlib.MeasureTheory.Function.AEMeasurableOrder
 
 /-!
 # Differentiation of measures

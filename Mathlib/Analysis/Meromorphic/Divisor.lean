@@ -5,9 +5,10 @@ Authors: Stefan Kebekus
 -/
 module
 
-import Mathlib.Analysis.Meromorphic.IsolatedZeros
 public import Mathlib.Analysis.Meromorphic.Order
 public import Mathlib.Topology.LocallyFinsupp
+
+import Mathlib.Analysis.Meromorphic.IsolatedZeros
 
 /-!
 # The Divisor of a meromorphic function

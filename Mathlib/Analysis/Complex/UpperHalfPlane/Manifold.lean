@@ -10,10 +10,11 @@ public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 public import Mathlib.Analysis.Meromorphic.Order
 public import Mathlib.Geometry.Manifold.Algebra.Structures
 public import Mathlib.Geometry.Manifold.ContMDiff.Atlas
+public import Mathlib.RingTheory.Norm.Transitivity
+
 import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 import Mathlib.LinearAlgebra.Complex.Determinant
 import Mathlib.RingTheory.Complex
-public import Mathlib.RingTheory.Norm.Transitivity
 
 /-!
 # Manifold structure on the upper half plane.

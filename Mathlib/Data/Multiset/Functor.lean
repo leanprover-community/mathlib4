@@ -5,9 +5,9 @@ Authors: Mario Carneiro, Johannes Hölzl, Simon Hudon, Kenny Lau
 -/
 module
 
-public import Mathlib.Data.Multiset.Bind
-public import Mathlib.Control.Traversable.Lemmas
 public import Mathlib.Control.Traversable.Instances
+public import Mathlib.Control.Traversable.Lemmas
+public import Mathlib.Data.Multiset.Bind
 
 /-!
 # Functoriality of `Multiset`.
