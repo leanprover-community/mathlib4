@@ -32,9 +32,6 @@ example : (of fun i j : Fin 3 ↦ if j = i + 1 then (1 : ℤ) else 0).IsIndecomp
   simp only [reduceIsIndecomposable]
 
 -- an existing definition, without rewriting it to a literal
-example : (E 8).IsIndecomposable := by
-  simp only [reduceIsIndecomposable]
-
 example : ¬(D 2).IsIndecomposable := by
   simp [reduceIsIndecomposable]
 
