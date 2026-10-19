@@ -103,6 +103,28 @@ lemma euler_sineTerm_tprod (hx : x ∈ ℂ_ℤ) :
     Multipliable.hasProd_iff_tendsto_nat (multipliable_sineTerm x)]
   exact tendsto_euler_sin_prod' (integerComplement.ne_zero hx)
 
+lemma sineTerm_mul_I (x : ℂ) (n : ℕ) : sineTerm (x * I) n = x ^ 2 / (n + 1) ^ 2 := by
+  simp only [sineTerm, mul_pow, I_sq]
+  ring
+
+/-- The infinite product for the hyperbolic sine converges absolutely. -/
+lemma multipliable_one_add_sq_div (x : ℂ) :
+    Multipliable fun n : ℕ ↦ (1 + x ^ 2 / ((n : ℂ) + 1) ^ 2) := by
+  simpa only [sineTerm_mul_I] using multipliable_sineTerm (x * I)
+
+/-- Euler's infinite product for the hyperbolic sine:
+`sinh (π * x) / (π * x) = ∏' n, (1 + x ^ 2 / (n + 1) ^ 2)`. -/
+lemma euler_sinh_tprod (hx : x * I ∈ ℂ_ℤ) :
+    ∏' n : ℕ, (1 + x ^ 2 / ((n : ℂ) + 1) ^ 2) = Complex.sinh (π * x) / (π * x) := by
+  have h := euler_sineTerm_tprod hx
+  simp only [sineTerm_mul_I] at h
+  have hx0 : x ≠ 0 := by
+    rintro rfl
+    exact integerComplement.ne_zero hx (by simp)
+  rw [h, show (π : ℂ) * (x * I) = (π * x) * I by ring, Complex.sin_mul_I]
+  have hπ : (π : ℂ) ≠ 0 := Complex.ofReal_ne_zero.mpr Real.pi_ne_zero
+  field_simp
+
 private lemma sineTerm_bound_aux (hZ : IsCompact Z) :
     ∃ u : ℕ → ℝ, Summable u ∧ ∀ j z, z ∈ Z → ‖sineTerm z j‖ ≤ u j := by
   have hf : ContinuousOn (fun x : ℂ => ‖-x ^ 2‖) Z := by
