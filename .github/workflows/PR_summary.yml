@@ -190,8 +190,8 @@ jobs:
         currentHash="$(git rev-parse HEAD)"
         PR="${{ github.event.pull_request.number }}"
         title="### PR summary"
-        # The mathlib-ci scripts compare against `master` when called without commits;
-        # pass the merge base with the PR's base branch instead.
+        # `import_trans_difference.sh` and `declarations_diff.sh` compare against `master`
+        # when called without commits; pass the merge base with the PR's base branch.
         mergeBase="$(git merge-base "origin/${PR_BASE_REF}" "${currentHash}")"
 
         graphAndHighPercentReports=$(python "${CI_SCRIPTS_DIR}/pr_summary/import-graph-report.py" base.json head.json changed_files.txt)

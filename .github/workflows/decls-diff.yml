@@ -136,22 +136,38 @@ jobs:
           BASE_REF: ${{ steps.pr.outputs.base-ref }}
         run: |
           set -euo pipefail
-          RUN="$(gh api -X GET "repos/$REPO/actions/runs" -f head_sha="$MB" -f event=push -f status=success -f branch="$BASE_REF" \
-                  --jq '[.workflow_runs[] | select(.name=="continuous integration")] | .[0].id // ""')"
-          # A successful run is not enough: it must also carry the `import-graph` artifact.
-          HAS_ARTIFACT=""
-          if [ -n "$RUN" ]; then
-            HAS_ARTIFACT="$(gh api "repos/$REPO/actions/runs/$RUN/artifacts" \
-                    --jq '[.artifacts[] | select(.name=="import-graph")] | length')"
+          # A successful push build of the merge-base on the given branch that still
+          # carries its `import-graph` artifact. Expired artifacts stay listed with
+          # `expired: true`, and downloading one fails.
+          find_run() {
+            local run
+            local -a runs
+            mapfile -t runs < <(gh api -X GET "repos/$REPO/actions/runs" \
+                                  -f head_sha="$MB" -f event=push -f status=success -f branch="$1" \
+                                  --jq '.workflow_runs[] | select(.name=="continuous integration") | .id')
+            for run in "${runs[@]}"; do
+              if [ "$(gh api "repos/$REPO/actions/runs/$run/artifacts" \
+                        --jq '[.artifacts[] | select(.name=="import-graph" and (.expired | not))] | length')" -gt 0 ]; then
+                echo "$run"
+                return 0
+              fi
+            done
+            return 1
+          }
+          RUN="$(find_run "$BASE_REF" || true)"
+          # A `bump/*` branch contains `master`, so the merge-base can be a `master`
+          # commit, whose build ran on `master`.
+          if [ -z "$RUN" ] && [ "$BASE_REF" != "master" ]; then
+            RUN="$(find_run master || true)"
           fi
-          if [ -n "$RUN" ] && [ "${HAS_ARTIFACT:-0}" -gt 0 ]; then
+          if [ -n "$RUN" ]; then
             {
               echo "found=true"
               echo "run-id=$RUN"
             } | tee -a "$GITHUB_OUTPUT"
           else
             echo "found=false" | tee -a "$GITHUB_OUTPUT"
-            echo "No usable $BASE_REF Build for merge-base $MB (no run, or run lacks the import-graph artifact)."
+            echo "No usable $BASE_REF Build for merge-base $MB (no run, or no live import-graph artifact)."
           fi
 
       - name: Download base-side artifact
@@ -184,6 +200,8 @@ jobs:
         if: steps.base-run.outputs.found == 'true'
         id: diff
         uses: ./ci-tools/.github/actions/decls-diff
+        env:
+          PR_BASE_REF: ${{ steps.pr.outputs.base-ref }}
         with:
           reference-decls-file:   ${{ github.workspace }}/ref-artifact/decls.txt
           reference-imports-file: ${{ github.workspace }}/ref-artifact/imports.json

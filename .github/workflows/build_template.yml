@@ -1065,9 +1065,9 @@ jobs:
             decls.txt
             imports.json
             pr_number.txt
-          ## Master pushes: 90 days, so later PRs forked from these commits
-          ## can consume the dumps from the artifact. Other branches: 7 days.
-          retention-days: ${{ github.ref == 'refs/heads/master' && '90' || '7' }}
+          ## Pushes to `master` and `bump/*`: 90 days, so later PRs forked from these
+          ## commits can consume the dumps from the artifact. Other branches: 7 days.
+          retention-days: ${{ (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/bump/')) && '90' || '7' }}
 
       - name: clean up the import graph file
         run: rm -f import_graph.dot decls.txt imports.json pr_number.txt
