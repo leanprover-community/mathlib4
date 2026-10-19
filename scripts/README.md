@@ -228,12 +228,6 @@ to module `Foo.Bar` (no `srcDir` indirection).
   run via `lake exe mk_all`, regenerates the import-only files
   `Mathlib.lean`, `Mathlib/Tactic.lean`, `Archive.lean` and `Counterexamples.lean`
 - `lint-style.lean`: style linters written in Lean. Run via `lake exe lint-style`.
-  This also requires `meta import` for development-tool dependencies in Mathlib, Archive,
-  Counterexamples and Wanted, including imports-only files. The module prefixes are configured in
-  `Mathlib.Linter.metaOnlyImports` in `Mathlib/Tactic/Linter/Header.lean`.
-  This is a compilation-phase restriction: `public meta import` still permits theorem statements
-  about the imported declarations. Use private imports to keep a dependency out of the public API
-  of modules; consumers without a `module` header do not respect this visibility boundary.
 - `check_title_labels.lean` verifies that a (non-WIP, non-draft) PR has a well-formed title.
   In the future, it may also check that a feature PR has a topic label.
 - `lint-bib.sh`

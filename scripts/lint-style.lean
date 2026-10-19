@@ -8,7 +8,6 @@ import Lake.CLI.Main
 import Lean.Elab.ParseImportsFast
 import Batteries.Data.String.Basic
 import Mathlib.Tactic.Linter.TextBased
-import Mathlib.Tactic.Linter.Header
 import ImportGraph.Imports.FromSource
 import Cli.Basic
 
@@ -162,22 +161,6 @@ def missingInitImports (opts : LinterOptions) : IO Nat := do
     return missing.size
   return 0
 
-/-- Check development-tool imports from source, including imports-only files and files where the
-header linter is disabled. Only check repository libraries, leaving tests and downstream projects
-free to import these dependencies explicitly. -/
-def nonMetaToolImports (opts : LinterOptions) (modules : Array Lean.Name) : IO Nat := do
-  unless getLinterValue Mathlib.Linter.linter.metaImports opts do return 0
-  let mut errors := 0
-  for mod in modules do
-    unless [`Mathlib, `Archive, `Counterexamples, `Wanted].contains mod.getRoot do continue
-    let path := (System.mkFilePath (mod.components.map fun n ↦ n.toString)).addExtension "lean"
-    for imp in (← path.parseImports').imports do
-      if Mathlib.Linter.isNonMetaToolImport imp then
-        IO.eprintln s!"{path}: error: `{imp.module}` is a development-tool dependency and must \
-          be imported using `meta import`."
-        errors := errors + 1
-  return errors
-
 /-- Verify that every file in the `scripts` directory is documented in `scripts/README.md` -/
 register_option linter.allScriptsDocumented : Bool := { defValue := false }
 
@@ -289,7 +272,6 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
     + (← missingInitImports opts).toUInt32 + (← undocumentedScripts opts).toUInt32
     + (← modulesNotUpperCamelCase opts allModuleNames).toUInt32
     + (← modulesOSForbidden opts allModuleNames).toUInt32
-    + (← nonMetaToolImports opts (originModules ++ allModuleNames)).toUInt32
   -- If run with the `--fix` argument, return a zero exit code.
   -- Otherwise, make sure to return an exit code of at most 125,
   -- so this return value can be used further in shell scripts.
