@@ -116,6 +116,12 @@ theorem terminal.comp_from [HasTerminal C] {P Q : C} (f : P ⟶ Q) :
     f ≫ terminal.from Q = terminal.from P := by
   simp [eq_iff_true_of_subsingleton]
 
+/-- If `P` is terminal, then the map `P → ⊤_ C` is an isomorphism. -/
+@[to_dual isIso_to
+/-- If `P` is initial, then the map `⊥_ C → P` is an isomorphism. -/]
+theorem IsTerminal.isIso_from [HasTerminal C] {P : C} (hP : IsTerminal P) :
+    IsIso (terminal.from P) := (hP.uniqueUpToIso terminalIsTerminal).isIso_hom
+
 /-- The (unique) isomorphism between the chosen initial object and any other initial object. -/
 @[to_dual (attr := simps!)
 /-- The (unique) isomorphism between the chosen terminal object and any other terminal object. -/]
