@@ -149,9 +149,14 @@ lemma Even.isSquare_pow (hn : Even n) : ∀ a : α, IsSquare (a ^ n) := by aesop
 
 /-- If a is a unit, then it is a square if and only if its underlying element in the monoid is a
 square. -/
-lemma isSquare_coe_units_iff {M : Type*} [Monoid M] [IsDedekindFiniteMonoid M] (a : Mˣ) :
+lemma isSquare_coe_units_iff {M : Type*} [Monoid M] (a : Mˣ) :
     IsSquare (a : M) ↔ IsSquare a :=
-  ⟨fun ⟨b, hb⟩ ↦ ⟨(isUnit_of_mul_isUnit_left (hb ▸ a.isUnit)).unit, by aesop⟩,
+  ⟨fun ⟨b, hb⟩ ↦ ⟨⟨b, b * a⁻¹, by rw [← mul_assoc, ← hb, a.mul_inv],
+      calc
+        b * a⁻¹ * b = b * a⁻¹ * b * (b * b * a⁻¹) := by rw [← hb, a.mul_inv, mul_one]
+        _ = b * (a⁻¹ * (b * b)) * (b * a⁻¹) := by simp_rw [mul_assoc]
+        _ = b * (b * a⁻¹) := by rw [← hb, a.inv_mul, mul_one]
+        _ = 1 := by rw [← mul_assoc, ← hb, a.mul_inv]⟩, Units.ext hb⟩,
     fun ⟨b, hb⟩ ↦ ⟨b.val, by simp [hb]⟩⟩
 
 end Monoid
