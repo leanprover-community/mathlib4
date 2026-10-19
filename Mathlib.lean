@@ -2362,6 +2362,7 @@ public import Mathlib.Analysis.PSeries
 public import Mathlib.Analysis.PSeriesComplex
 public import Mathlib.Analysis.Polynomial.Basic
 public import Mathlib.Analysis.Polynomial.CauchyBound
+public import Mathlib.Analysis.Polynomial.CauchyIndex
 public import Mathlib.Analysis.Polynomial.Factorization
 public import Mathlib.Analysis.Polynomial.Fourier
 public import Mathlib.Analysis.Polynomial.MahlerMeasure
