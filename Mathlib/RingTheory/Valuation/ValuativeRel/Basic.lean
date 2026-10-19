@@ -704,7 +704,7 @@ def ofValuation
   not_vle_one_zero := by simp
   vle_mul_comm := by simp [map_mul, mul_comm]
 
-lemma _root_.Valuation.Compatible.ofValuation
+instance _root_.Valuation.Compatible.ofValuation
     {S Γ : Type*} [Ring S]
     [LinearOrderedCommGroupWithZero Γ]
     (v : Valuation S Γ) :
@@ -724,6 +724,11 @@ variable {v₁ v₂} in
 lemma _root_.Valuation.IsEquiv.compatible (h : v₁.IsEquiv v₂) : v₂.Compatible where
   vle_iff_le x y := by
     rw [Valuation.Compatible.vle_iff_le (v := v₁), h]
+
+lemma isEquiv_ofValuation {S Γ : Type*} [Ring S] [LinearOrderedCommGroupWithZero Γ]
+    (v : Valuation S Γ) : v.IsEquiv (ofValuation v).valuation := by
+  let := ofValuation v
+  exact isEquiv v (ofValuation v).valuation
 
 end Valuation
 
@@ -750,6 +755,10 @@ lemma vle_one_iff : x ≤ᵥ 1 ↔ v x ≤ 1 := by simp [v.vle_iff_le]
 lemma vlt_one_iff : x <ᵥ 1 ↔ v x < 1 := by simp [v.vlt_iff_lt]
 lemma one_vle_iff : 1 ≤ᵥ x ↔ 1 ≤ v x := by simp [v.vle_iff_le]
 lemma one_vlt_iff : 1 <ᵥ x ↔ 1 < v x := by simp [v.vlt_iff_lt]
+
+theorem _root_.Valuation.compatible_iff_isEquiv (v : Valuation R Γ₀) :
+    v.Compatible ↔ v.IsEquiv (valuation R) :=
+  ⟨fun _ ↦ isEquiv _ _, fun h ↦ h.symm.compatible⟩
 
 @[simp]
 lemma apply_posSubmonoid_ne_zero (x : posSubmonoid R) : v (x : R) ≠ 0 := by
