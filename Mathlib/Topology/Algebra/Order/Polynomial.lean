@@ -30,8 +30,6 @@ open scoped Topology
 
 namespace Polynomial
 
--- TODO : better names
-
 variable {F : Type*} [Field F] [LinearOrder F] [IsStrictOrderedRing F] {P Q : F[X]}
 
 section PolynomialAtTop

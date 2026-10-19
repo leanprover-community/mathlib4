@@ -156,6 +156,8 @@ noncomputable def recOnHorner {M : R[X] → Sort*} (p : R[X]) (M0 : M 0)
           else MX (divX p) hpX0 (recOnHorner _ M0 MC MX))
 termination_by p.degree
 
+-- TODO : generalise to Sort-valued motives
+
 /-- A property holds for all polynomials over a semiring `R` if it holds for
 * `a`, with `a ∈ R`,
 * `p + a`, with `a ∈ R`, `p ∈ R[X]`,
