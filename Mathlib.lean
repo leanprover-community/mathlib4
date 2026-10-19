@@ -3776,6 +3776,7 @@ public import Mathlib.Combinatorics.Quiver.Cast
 public import Mathlib.Combinatorics.Quiver.ConnectedComponent
 public import Mathlib.Combinatorics.Quiver.Covering
 public import Mathlib.Combinatorics.Quiver.Path
+public import Mathlib.Combinatorics.Quiver.Path.Cycle
 public import Mathlib.Combinatorics.Quiver.Path.Decomposition
 public import Mathlib.Combinatorics.Quiver.Path.Vertices
 public import Mathlib.Combinatorics.Quiver.Path.Weight
