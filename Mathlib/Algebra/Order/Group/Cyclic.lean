@@ -113,7 +113,7 @@ variable {A B : Type*} [LinearOrder A] [CommGroup A] [IsOrderedMonoid A] [Nontri
   [LinearOrder B] [CommGroup B] [IsOrderedMonoid B] [Nontrivial B] [IsCyclic B] (f : A ≃*o B)
 
 theorem map_genLTOne : f (LinearOrderedCommGroup.Subgroup.genLTOne ⊤) =
-      (LinearOrderedCommGroup.Subgroup.genLTOne ⊤) := by
+      LinearOrderedCommGroup.Subgroup.genLTOne ⊤ := by
   apply genLTOne_unique
   · simpa [-map_one, ← map_one f, map_lt_map_iff] using genLTOne_lt_one ⊤
   · rw [Subgroup.eq_top_iff']
@@ -123,8 +123,8 @@ theorem map_genLTOne : f (LinearOrderedCommGroup.Subgroup.genLTOne ⊤) =
       simp [genLTOne_zpowers_eq_top]
     exact ⟨k, by simp [← hx, ← hk]⟩
 
-theorem map_genLTOne' : f (LinearOrderedCommGroup.genLTOne A) =
-      (LinearOrderedCommGroup.genLTOne B) := by
+theorem map_genLTOne' :
+    f (LinearOrderedCommGroup.genLTOne A) = LinearOrderedCommGroup.genLTOne B := by
   simp [LinearOrderedCommGroup.genLTOne_eq_of_top, map_genLTOne]
 
 end OrderMonoidIso
