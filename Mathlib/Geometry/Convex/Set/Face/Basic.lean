@@ -5,9 +5,8 @@ Authors: Olivia Röhrig
 -/
 module
 
-public import Mathlib.Analysis.Convex.Extreme
 public import Mathlib.Geometry.Convex.Segment
-public import Mathlib.Geometry.Convex.Set
+public import Mathlib.Geometry.Convex.Set.Basic
 
 /-!
 # Faces of sets
