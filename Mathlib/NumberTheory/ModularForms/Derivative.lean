@@ -135,10 +135,6 @@ lemma serreDerivative_apply (k : ℂ) (F : ℍ → ℂ) (z : ℍ) :
 lemma serreDerivative_eq (k : ℂ) (F : ℍ → ℂ) :
     serreDerivative k F = fun z ↦ D F z - k * 12⁻¹ * EisensteinSeries.E2 z * F z := rfl
 
-@[simp]
-lemma serreDerivative_def (k : ℂ) (F : ℍ → ℂ) :
-    serreDerivative k F = D F - (k * 12⁻¹) • EisensteinSeries.E2 * F := rfl
-
 /-!
 Basic properties of Serre derivative.
 -/
@@ -229,8 +225,9 @@ $\partial_k (F ∣[k] γ) = (\partial_k F) ∣[k + 2] \gamma$ for all $\gamma \i
 -/
 theorem serreDerivative_slash_equivariant {k : ℤ} {F : ℍ → ℂ} (hF : MDiff F) {γ : SL(2, ℤ)} :
     serreDerivative k F ∣[k + 2] γ = serreDerivative k (F ∣[k] γ) := by
-  rw [serreDerivative_def, SlashAction.sub_slash, add_comm k 2, ModularForm.mul_slash_SL2,
-    ModularForm.SL_smul_slash]
+  simp only [serreDerivative_eq, ← smul_eq_mul ((k : ℂ) * 12⁻¹), ← Pi.sub_def, ← Pi.mul_def,
+    ← Pi.smul_def]
+  rw [SlashAction.sub_slash, add_comm k 2, ModularForm.mul_slash_SL2, ModularForm.SL_smul_slash]
   ext z
   simp [normalizedDerivOfComplex_SL_slash hF, EisensteinSeries.E2_slash_action,
     EisensteinSeries.D2, riemannZeta_two, add_comm k 2]
