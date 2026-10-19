@@ -232,8 +232,8 @@ def decideStronglyConnected (adjMatrix : Array (Array Bool)) : StrongConnectivit
   .connected outTree inTree
 
 /-- The Boolean adjacency matrix of the matrix that `view` builds, evaluated by the kernel, or
-`none` when the kernel cannot decide which entries are zero. A literal is evaluated in one call to
-`packRows`, the number its certificates are checked against, and a function one row at a time.
+`none` when the kernel cannot decide which entries are zero. A function is evaluated one row at a
+time.
 
 The kernel evaluates the packed number `packRows n lit` and then unpacks the boolean adjacency
 matrix from the bits. This round trip evaluates every entry in one `Kernel.whnf` call instead
