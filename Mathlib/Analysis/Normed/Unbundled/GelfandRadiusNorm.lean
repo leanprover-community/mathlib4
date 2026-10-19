@@ -78,7 +78,8 @@ theorem Module.Basis.gelfandRadiusNorm_apply
 
 variable {L} in
 @[simp]
-theorem gelfandRadiusNorm_algebraMap (x : L) :
+theorem gelfandRadiusNorm_algebraMap (M : Type*) [Field M] [Algebra K M] [Algebra L M]
+    [IsScalarTower K L M] [FiniteDimensional K M] (x : L) :
     gelfandRadiusNorm K M (algebraMap L M x) = gelfandRadiusNorm K L x := by
   have : FiniteDimensional L M := .of_restrictScalars_finite K L M
   have : NeZero (Module.finrank L M) := ⟨Module.finrank_pos.ne'⟩
@@ -89,8 +90,8 @@ theorem gelfandRadiusNorm_algebraMap (x : L) :
 
 variable {K L} in
 @[simp]
-theorem gelfandRadiusNorm_map {F : Type*} [FunLike F L M] [Algebra K M] [FiniteDimensional K M]
-    [AlgHomClass F K L M] (f : F) (x : L) :
-    gelfandRadiusNorm K M (f x) = gelfandRadiusNorm K L x := by
-  letI := (AlgHom.ofClass f).toAlgebra
-  exact gelfandRadiusNorm_algebraMap K M x
+theorem gelfandRadiusNorm_map {M : Type*} [Field M] [Algebra K M] [FiniteDimensional K M]
+    {F : Type*} [FunLike F L M] [AlgHomClass F K L M] (f : F) (x : L) :
+    gelfandRadiusNorm K M (f x) = gelfandRadiusNorm K L x :=
+  let := (AlgHom.ofClass f).toAlgebra
+  gelfandRadiusNorm_algebraMap K M x
