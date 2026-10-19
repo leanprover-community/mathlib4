@@ -5,8 +5,9 @@ Authors: Johan Commelin
 -/
 module
 
-import Mathlib.Algebra.Algebra.ZMod
 public import Mathlib.RingTheory.WittVector.IsPoly
+
+import Mathlib.Algebra.Algebra.ZMod
 
 /-!
 ## The Frobenius operator
@@ -205,8 +206,7 @@ instance frobeniusFun_isPoly : IsPoly p fun R _ Rcr => @frobeniusFun p R _ Rcr :
 @[ghost_simps]
 theorem ghostComponent_frobeniusFun (n : ℕ) (x : 𝕎 R) :
     ghostComponent n (frobeniusFun x) = ghostComponent (n + 1) x := by
-  simp only [ghostComponent_apply, frobeniusFun, coeff_mk, ← bind₁_frobeniusPoly_wittPolynomial,
-    aeval_bind₁]
+  simp only [ghostComponent_apply, frobeniusFun, ← bind₁_frobeniusPoly_wittPolynomial, aeval_bind₁]
 
 /-- If `R` has characteristic `p`, then there is a ring endomorphism
 that raises `r : R` to the power `p`.

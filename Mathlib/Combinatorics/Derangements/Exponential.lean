@@ -5,9 +5,10 @@ Authors: Henry Swanson, Patrick Massot
 -/
 module
 
-import Mathlib.Algebra.BigOperators.Field
 public import Mathlib.Analysis.SpecialFunctions.Exponential
 public import Mathlib.Combinatorics.Derangements.Finite
+
+import Mathlib.Algebra.BigOperators.Field
 import Mathlib.Data.Nat.Cast.Field
 
 /-!

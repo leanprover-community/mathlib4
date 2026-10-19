@@ -5,13 +5,14 @@ Authors: Anne Baanen, Ashvni Narayanan
 -/
 module
 
+public import Mathlib.FieldTheory.RatFunc.Valuation -- import originally for deprecation, TODO: shake
+
 import Mathlib.FieldTheory.RatFunc.Degree
+import Mathlib.FieldTheory.RatFunc.IntermediateField
+import Mathlib.RingTheory.Adjoin.Polynomial.Bivariate
 import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 import Mathlib.Topology.Algebra.Valued.ValuedField
-import Mathlib.FieldTheory.RatFunc.IntermediateField
-import Mathlib.RingTheory.Adjoin.Polynomial.Bivariate
-public import Mathlib.FieldTheory.RatFunc.Valuation -- for deprecation to `RatFunc.inftyValuation` and `RatFunc.CompletionAtInfty`
 
 /-!
 # Function fields
@@ -76,7 +77,7 @@ theorem functionField_iff (Ft : Type*) [Field Ft] [Algebra F[X] Ft]
     exact (b.mapCoeffs e this).finiteDimensional_of_finite
   · let b := Module.finBasis Ft K
     refine (b.mapCoeffs e.symm ?_).finiteDimensional_of_finite
-    intro c x; convert! (this (e.symm c) x).symm; simp only [e.apply_symm_apply]
+    intro c x; convert (this (e.symm c) x).symm; simp only [e.apply_symm_apply]
 
 namespace FunctionField
 
@@ -136,67 +137,6 @@ instance [Algebra.IsSeparable F⟮X⟯ K] : IsDedekindDomain (ringOfIntegers F K
   IsIntegralClosure.isDedekindDomain F[X] F⟮X⟯ K _
 
 end ringOfIntegers
-
-section deprecated
-
-@[deprecated RatFunc.inftyValuationDef (since := "2026-04-14")]
-alias inftyValuationDef := RatFunc.inftyValuationDef
-
-@[deprecated RatFunc.InftyValuation.map_zero' (since := "2026-04-14")]
-alias InftyValuation.map_zero' := RatFunc.InftyValuation.map_zero'
-
-@[deprecated RatFunc.InftyValuation.map_one' (since := "2026-04-14")]
-alias InftyValuation.map_one' := RatFunc.InftyValuation.map_one'
-
-@[deprecated RatFunc.InftyValuation.map_mul' (since := "2026-04-14")]
-alias InftyValuation.map_mul' := RatFunc.InftyValuation.map_mul'
-
-@[deprecated RatFunc.InftyValuation.map_add_le_max' (since := "2026-04-14")]
-alias InftyValuation.map_add_le_max' := RatFunc.InftyValuation.map_add_le_max'
-
-@[deprecated RatFunc.inftyValuation_of_nonzero (since := "2026-04-14")]
-alias inftyValuation_of_nonzero := RatFunc.inftyValuation_of_nonzero
-
-@[deprecated RatFunc.inftyValuation (since := "2026-04-14")]
-alias inftyValuation := RatFunc.inftyValuation
-
-@[deprecated RatFunc.inftyValuation_apply (since := "2026-04-14")]
-alias inftyValuation_apply := RatFunc.inftyValuation_apply
-
-@[deprecated RatFunc.inftyValuation.C (since := "2026-04-14")]
-alias inftyValuation.C := RatFunc.inftyValuation.C
-
-@[deprecated RatFunc.inftyValuation.X (since := "2026-04-14")]
-alias inftyValuation.X := RatFunc.inftyValuation.X
-
-@[deprecated RatFunc.inftyValuation.X_zpow (since := "2026-04-14")]
-alias inftyValuation.X_zpow := RatFunc.inftyValuation.X_zpow
-
-@[deprecated RatFunc.inftyValuation.X_inv (since := "2026-04-14")]
-alias inftyValuation.X_inv := RatFunc.inftyValuation.X_inv
-
-@[deprecated RatFunc.inftyValuation.polynomial (since := "2026-04-14")]
-alias inftyValuation.polynomial := RatFunc.inftyValuation.polynomial
-
-@[deprecated RatFunc.inftyValued (since := "2026-04-14")]
-alias inftyValuedFqt := RatFunc.inftyValued
-
-@[deprecated RatFunc.inftyValued.def (since := "2026-04-14")]
-alias inftyValuedFqt.def := RatFunc.inftyValued.def
-
-@[deprecated RatFunc.CompletionAtInfty (since := "2026-04-14")]
-alias FqtInfty := RatFunc.CompletionAtInfty
-
-@[deprecated "Use the anonymous `Valued` instance on `RatFunc.CompletionAtInfty`"
-(since := "2026-04-14")]
-instance valuedFqtInfty [DecidableEq F⟮X⟯] :
-    Valued (RatFunc.CompletionAtInfty F) ℤᵐ⁰ :=
-  inferInstance
-
-@[deprecated RatFunc.valuedCompletionAtInfty.def (since := "2026-04-14")]
-alias valuedFqtInfty.def := RatFunc.valuedCompletionAtInfty.def
-
-end deprecated
 
 section AdjoinTranscendental
 

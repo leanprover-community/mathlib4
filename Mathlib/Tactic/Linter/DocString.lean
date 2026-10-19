@@ -9,7 +9,9 @@ module
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 public meta import Std.Data.Iterators.Combinators.Zip
-public import Lean.Parser.Command
+public meta import Lean.DocString.Parser
+public meta import Lean.Parser.Command
+
 meta import Std.Data.Iterators.Producers.Range
 
 /-!
@@ -101,7 +103,7 @@ def checkVersoSyntax (docComment : String) (fileName : Option String := none) :
     openDecls := (← getOpenDecls)
   }
   let s := mkParserState docComment
-  let s := Doc.Parser.document.run ictx pmctx (getTokenTable env) s
+  let s := Doc.Parser.documentFn.run ictx pmctx (getTokenTable env) s
   return s.allErrors
 
 /--
@@ -184,8 +186,9 @@ def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
     if docStx.isMissing then continue -- this is probably superfluous, thanks to `some pos` above.
     -- ignore antiquotations from syntax patterns like `$(_)?`
     unless docStx.getKind == ``Parser.Command.docComment do continue
-    -- `docString` contains e.g. trailing spaces before the `-/`, but does not contain
-    -- any leading whitespace before the actual string starts.
+    -- `docString` contains neither the leading whitespace after the `/--`, nor the trailing
+    -- whitespace before the `-/`: the parser stores both in the source info of the
+    -- surrounding atoms, and they are recovered below.
     let docString ← try getDocStringText ⟨docStx⟩ catch _ => continue
     if docString.trimAscii.isEmpty then
       Linter.logLintIf linter.style.docString.empty docStx m!"warning: this doc-string is empty"
@@ -193,6 +196,12 @@ def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- `startSubstring` is the whitespace between `/--` and the actual doc-string text.
     let startSubstring := match docStx with
       | .node _ _ #[(.atom si ..), _] => si.getTrailing?.getD default
+      | _ => default
+    -- `endSubstring` is the whitespace between the actual doc-string text and the closing `-/`.
+    -- The text and the `-/` are the two children of the `commentBody` node, and the parser puts
+    -- the whitespace separating them into the trailing of the text atom.
+    let endSubstring := match docStx with
+      | .node _ _ #[_, .node _ _ #[(.atom si ..), _]] => si.getTrailing?.getD default
       | _ => default
     -- We replace all line-breaks followed by `currIndent` spaces with a single space.
     let start := deindentString currIndent startSubstring.toString
@@ -204,15 +213,17 @@ def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let deIndentedDocString := deindentString currIndent docString
 
     let docTrim := deIndentedDocString.trimAsciiEnd.copy
-    let tail := docTrim.length
-    -- `endRange` creates an 0-wide range `n` characters from the end of `docStx`
-    let endRange (n : Nat) : Syntax := .ofRange
-      {start := docStx.getTailPos?.get!.unoffsetBy ⟨n⟩, stop := docStx.getTailPos?.get!.unoffsetBy ⟨n⟩}
     if docTrim.takeEnd 1 == ",".toSlice then
-      Linter.logLintIf linter.style.docString (endRange (docString.length - tail + 3))
+      -- The comma is the last character of the doc-string text, so it sits immediately before
+      -- the whitespace that `endSubstring` spans.
+      let commaRange :=
+        {start := endSubstring.startPos.unoffsetBy ⟨1⟩, stop := endSubstring.startPos}
+      Linter.logLintIf linter.style.docString (.ofRange commaRange)
         s!"error: doc-strings should not end with a comma"
-    if tail + 1 != deIndentedDocString.length then
-      Linter.logLintIf linter.style.docString (endRange 3)
+    let tail := deindentString currIndent endSubstring.toString
+    if !#["\n", " "].contains tail then
+      let endRange := {start := endSubstring.startPos, stop := endSubstring.stopPos}
+      Linter.logLintIf linter.style.docString (.ofRange endRange)
         s!"error: doc-strings should end with a single space or newline"
     -- Check for verso syntax, but only if it is not already enabled.
     -- If Verso is already enabled for docstrings, then this check would be superfluous.

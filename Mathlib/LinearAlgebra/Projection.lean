@@ -5,10 +5,10 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.Algebra.Module.Submodule.Invariant
-public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 public import Mathlib.Algebra.Ring.Idempotent
+public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
+public import Mathlib.LinearAlgebra.Quotient.Basic
 
 /-!
 # Projection to a subspace
@@ -663,7 +663,7 @@ open LinearMap in
 its range along its kernel. -/
 theorem IsIdempotentElem.eq_projection {T : E →ₗ[R] E} (hT : IsIdempotentElem T) :
     T = T.range.projection T.ker hT.isCompl := by
-  convert! ofIsCompl_subtype_zero_eq hT.isCompl
+  convert ofIsCompl_subtype_zero_eq hT.isCompl
   exact ofIsCompl_eq _ (by simp [hT.isProj_range.map_id]) (by simp) |>.symm
 
 open LinearMap in
