@@ -149,7 +149,7 @@ lemma ext_of_span_eq_top
   LinearMap.ext_on_range (submodule_span_eq_top hg) h
 
 lemma _root_.MultilinearMap.ext_of_span_eq_top
-    (hg : ∀ i, Submodule.span R (Set.range (@g i)) = ⊤) {φ φ' : M →ₗₘ[R] N}
+    (hg : ∀ i, Submodule.span R (Set.range (@g i)) = ⊤) {φ φ' : M →ₘₗ[R] N}
     (h : ∀ (j : (i : ι) → γ i), φ (fun i ↦ g (j i)) = φ' (fun i ↦ g (j i))) :
     φ = φ' := by
   suffices lift φ = lift φ' by

@@ -46,9 +46,9 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- summand used in `AlternatingMap.domCoprod` -/
 def domCoprod.summand (a : Mᵢ [⋀^ιa]→ₗ[R'] N₁) (b : Mᵢ [⋀^ιb]→ₗ[R'] N₂)
-    (σ : Perm.ModSumCongr ιa ιb) : (fun _ : ιa ⊕ ιb ↦ Mᵢ) →ₗₘ[R'] N₁ ⊗[R'] N₂ :=
+    (σ : Perm.ModSumCongr ιa ιb) : (fun _ : ιa ⊕ ιb ↦ Mᵢ) →ₘₗ[R'] N₁ ⊗[R'] N₂ :=
   Quotient.liftOn' σ
-    (fun σ => Equiv.Perm.sign σ • (MultilinearMap.domCoprod ↑a ↑b : _ →ₗₘ[R'] _).domDomCongr σ)
+    (fun σ => Equiv.Perm.sign σ • (MultilinearMap.domCoprod ↑a ↑b : _ →ₘₗ[R'] _).domDomCongr σ)
     fun σ₁ σ₂ H => by
     rw [QuotientGroup.leftRel_apply] at H
     obtain ⟨⟨sl, sr⟩, h⟩ := H
@@ -66,7 +66,7 @@ def domCoprod.summand (a : Mᵢ [⋀^ιa]→ₗ[R'] N₁) (b : Mᵢ [⋀^ιb]→
 theorem domCoprod.summand_mk'' (a : Mᵢ [⋀^ιa]→ₗ[R'] N₁) (b : Mᵢ [⋀^ιb]→ₗ[R'] N₂)
     (σ : Equiv.Perm (ιa ⊕ ιb)) :
     domCoprod.summand a b (Quotient.mk'' σ) =
-      Equiv.Perm.sign σ • (MultilinearMap.domCoprod ↑a ↑b : _ →ₗₘ[R'] _).domDomCongr σ :=
+      Equiv.Perm.sign σ • (MultilinearMap.domCoprod ↑a ↑b : _ →ₘₗ[R'] _).domDomCongr σ :=
   rfl
 
 /-- Swapping elements in `σ` with equal values in `v` results in an addition that cancels -/
@@ -144,7 +144,7 @@ def domCoprod (a : Mᵢ [⋀^ιa]→ₗ[R'] N₁) (b : Mᵢ [⋀^ιb]→ₗ[R'] 
           Equiv.swap_smul_involutive i j σ }
 
 theorem domCoprod_coe (a : Mᵢ [⋀^ιa]→ₗ[R'] N₁) (b : Mᵢ [⋀^ιb]→ₗ[R'] N₂) :
-    (↑(a.domCoprod b) : _ →ₗₘ[R'] _) = ∑ σ : Perm.ModSumCongr ιa ιb, domCoprod.summand a b σ :=
+    (↑(a.domCoprod b) : _ →ₘₗ[R'] _) = ∑ σ : Perm.ModSumCongr ιa ιb, domCoprod.summand a b σ :=
   MultilinearMap.ext fun _ => rfl
 
 /-- A more bundled version of `AlternatingMap.domCoprod` that maps
@@ -180,7 +180,7 @@ open Equiv
 
 /-- A helper lemma for `MultilinearMap.domCoprod_alternatization`. -/
 theorem MultilinearMap.domCoprod_alternatization_coe [DecidableEq ιa] [DecidableEq ιb]
-    (a : (fun _ : ιa ↦ Mᵢ) →ₗₘ[R'] N₁) (b : (fun _ : ιb ↦ Mᵢ) →ₗₘ[R'] N₂) :
+    (a : (fun _ : ιa ↦ Mᵢ) →ₘₗ[R'] N₁) (b : (fun _ : ιb ↦ Mᵢ) →ₘₗ[R'] N₂) :
     MultilinearMap.domCoprod (MultilinearMap.alternatization a)
       (MultilinearMap.alternatization b) =
       ∑ σa : Perm ιa, ∑ σb : Perm ιb,
@@ -202,7 +202,7 @@ open Perm in
 as computing the `AlternatingMap.domCoprod` of the `MultilinearMap.alternatization`s.
 -/
 theorem MultilinearMap.domCoprod_alternatization [DecidableEq ιa] [DecidableEq ιb]
-    (a : (fun _ : ιa ↦ Mᵢ) →ₗₘ[R'] N₁) (b : (fun _ : ιb ↦ Mᵢ) →ₗₘ[R'] N₂) :
+    (a : (fun _ : ιa ↦ Mᵢ) →ₘₗ[R'] N₁) (b : (fun _ : ιb ↦ Mᵢ) →ₘₗ[R'] N₂) :
     MultilinearMap.alternatization (MultilinearMap.domCoprod a b) =
       a.alternatization.domCoprod (MultilinearMap.alternatization b) := by
   apply coe_multilinearMap_injective
@@ -239,7 +239,7 @@ alias MultilinearMap.domCoprod_alternization := MultilinearMap.domCoprod_alterna
 -/
 theorem MultilinearMap.domCoprod_alternatization_eq [DecidableEq ιa] [DecidableEq ιb]
     (a : Mᵢ [⋀^ιa]→ₗ[R'] N₁) (b : Mᵢ [⋀^ιb]→ₗ[R'] N₂) :
-    MultilinearMap.alternatization (MultilinearMap.domCoprod a b : _ →ₗₘ[R'] _) =
+    MultilinearMap.alternatization (MultilinearMap.domCoprod a b : _ →ₘₗ[R'] _) =
       ((Fintype.card ιa).factorial * (Fintype.card ιb).factorial) • a.domCoprod b := by
   rw [MultilinearMap.domCoprod_alternatization, coe_alternatization, coe_alternatization, mul_smul,
     ← AlternatingMap.domCoprod'_apply, ← AlternatingMap.domCoprod'_apply,
