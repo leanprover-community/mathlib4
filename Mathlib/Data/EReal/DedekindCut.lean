@@ -75,14 +75,17 @@ def dedekindCutOrderIso : DedekindCut ℚ ≃o EReal where
 
 @[simp]
 theorem left_dedekindCutOrderIso_symm_apply (x : EReal) :
-  (dedekindCutOrderIso.symm x).left = {q : ℚ | (q : ℝ) ≤ x} := (rfl)
+    (dedekindCutOrderIso.symm x).left = {q : ℚ | (q : ℝ) ≤ x} :=
+  (rfl)
 
 @[simp]
 theorem right_dedekindCutOrderIso_symm_apply (x : EReal) :
-  (dedekindCutOrderIso.symm x).right = {q : ℚ | x ≤ (q : ℝ)} := (rfl)
+    (dedekindCutOrderIso.symm x).right = {q : ℚ | x ≤ (q : ℝ)} :=
+  (rfl)
 
 theorem dedekindCutOrderIso_apply_eq_sSup (A : DedekindCut ℚ) :
-  dedekindCutOrderIso A = sSup ((fun q : ℚ ↦ ((q : ℝ) : EReal)) '' A.left) := (rfl)
+    dedekindCutOrderIso A = sSup ((fun q : ℚ ↦ ((q : ℝ) : EReal)) '' A.left) :=
+  (rfl)
 
 theorem dedekindCutOrderIso_apply_eq_sInf (A : DedekindCut ℚ) :
     dedekindCutOrderIso A = sInf ((fun q : ℚ ↦ ((q : ℝ) : EReal)) '' A.right) := by
