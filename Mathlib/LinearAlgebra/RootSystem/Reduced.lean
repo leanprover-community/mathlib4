@@ -305,12 +305,16 @@ lemma pairingIn_neg_two_neg_two_iff :
 
 variable [Module.IsTorsionFree R N]
 
+omit [Module.IsTorsionFree R N] in
+variable [Module.IsTorsionFree R N] in
 lemma pairingIn_one_four_iff :
     P.pairingIn S i j = 1 ∧ P.pairingIn S j i = 4 ↔ P.root j = (2 : R) • P.root i := by
   rw [← P.pairing_one_four_iff, ← P.algebraMap_pairingIn S, ← P.algebraMap_pairingIn S,
     ← map_one (algebraMap S R), ← map_ofNat (algebraMap S R), (algebraMap_injective S R).eq_iff,
     (algebraMap_injective S R).eq_iff]
 
+omit [Module.IsTorsionFree R N] in
+variable [Module.IsTorsionFree R N] in
 lemma pairingIn_neg_one_neg_four_iff :
     P.pairingIn S i j = -1 ∧ P.pairingIn S j i = -4 ↔ P.root j = (-2 : R) • P.root i := by
   rw [← P.pairing_neg_one_neg_four_iff, ← P.algebraMap_pairingIn S, ← P.algebraMap_pairingIn S,
