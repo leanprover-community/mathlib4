@@ -45,8 +45,8 @@ theorem lowerBounds_setOfPred_le_ratCast (x : EReal) :
     simpa using le_trans (b := x) hy hz
 
 /-- The Dedekind completion of the rationals is order isomorphic to the extended reals. -/
-def dedekindCutOrderIso : DedekindCut ℚ ≃o EReal where
-  toFun := factorEmbedding (Rat.castOrderEmbedding.trans Real.coeOrderEmbedding)
+@[expose] def dedekindCutOrderIso : DedekindCut ℚ ≃o EReal where
+  toFun := private factorEmbedding (Rat.castOrderEmbedding.trans Real.coeOrderEmbedding)
   invFun x := {
     extent := {q : ℚ | (q : ℝ) ≤ x}
     intent := {q : ℚ | x ≤ (q : ℝ)}
@@ -55,7 +55,9 @@ def dedekindCutOrderIso : DedekindCut ℚ ≃o EReal where
   }
   left_inv x := by
     ext z
-    simp only [factorEmbedding_apply, sSup_image, left_mk, Set.mem_ofPred]
+    simp only [left_mk, Set.mem_ofPred]
+    change _ ≤ factorEmbedding _ x ↔ _
+    simp only [factorEmbedding_apply, sSup_image]
     constructor
     · intro z_le_sup
       simp_rw [← x.lowerBounds_right, ← x.upperBounds_left, mem_lowerBounds, mem_upperBounds]
@@ -64,6 +66,7 @@ def dedekindCutOrderIso : DedekindCut ℚ ≃o EReal where
       exact_mod_cast z_le_sup (r : ℝ) fun t ht => by simp [hr t ht]
     · exact (le_iSup₂_of_le z · le_rfl)
   right_inv x := by
+    change factorEmbedding _ _ = x
     rw [factorEmbedding_apply]
     apply sSup_eq_of_forall_le_of_forall_lt_exists_gt
     · simp
@@ -71,17 +74,17 @@ def dedekindCutOrderIso : DedekindCut ℚ ≃o EReal where
       intro w w_lt_x
       obtain ⟨r, w_lt_r, r_lt_x⟩ := exists_rat_btwn_of_lt w_lt_x
       exact ⟨r, r_lt_x.le, w_lt_r⟩
-  map_rel_iff' := by simp
+  map_rel_iff' {a b} := by simp
 
 @[simp]
 theorem left_dedekindCutOrderIso_symm_apply (x : EReal) :
     (dedekindCutOrderIso.symm x).left = {q : ℚ | (q : ℝ) ≤ x} :=
-  (rfl)
+  rfl
 
 @[simp]
 theorem right_dedekindCutOrderIso_symm_apply (x : EReal) :
     (dedekindCutOrderIso.symm x).right = {q : ℚ | x ≤ (q : ℝ)} :=
-  (rfl)
+  rfl
 
 theorem dedekindCutOrderIso_apply_eq_sSup (A : DedekindCut ℚ) :
     dedekindCutOrderIso A = sSup ((fun q : ℚ ↦ ((q : ℝ) : EReal)) '' A.left) :=
