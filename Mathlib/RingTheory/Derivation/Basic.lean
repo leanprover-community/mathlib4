@@ -155,9 +155,8 @@ theorem leibniz_prod {ι : Type*} [DecidableEq ι] (s : Finset ι) (f : ι → A
     rw [Finset.prod_insert ha, Finset.sum_insert ha, leibniz, ih, Finset.erase_insert ha,
       Finset.smul_sum, add_comm]
     congr 1
-    refine Finset.sum_congr rfl fun i hi => ?_
-    rw [smul_smul, Finset.erase_insert_of_ne (ne_of_mem_of_not_mem hi ha).symm,
-      Finset.prod_insert fun h => ha (Finset.mem_of_mem_erase h)]
+    refine Finset.sum_congr rfl fun i hi ↦ ?_
+    rw [smul_smul, Finset.erase_insert_of_ne (by grind), Finset.prod_insert (by grind)]
 
 open Polynomial in
 @[simp]
@@ -505,16 +504,13 @@ theorem leibniz_zpow_units (u : Aˣ) (n : ℤ) :
   · rw [Int.ofNat_eq_natCast, zpow_natCast, Units.val_pow_eq_pow_val, leibniz_pow,
       ← natCast_zsmul]
     rcases k with _ | k <;> simp
-  · rw [zpow_negSucc, D.leibniz_of_mul_eq_one (Units.inv_mul _), Units.val_pow_eq_pow_val,
-      leibniz_pow, ← Nat.cast_smul_eq_nsmul A, ← Int.cast_smul_eq_zsmul A]
+  · simp only [Int.negSucc_sub_one, zpow_negSucc, ← inv_pow, Units.val_pow_eq_pow_val]
+    rw [leibniz_pow, D.leibniz_of_mul_eq_one (Units.inv_mul u), ← Nat.cast_smul_eq_nsmul A,
+      ← Int.cast_smul_eq_zsmul A, Nat.add_sub_cancel]
     simp only [smul_smul]
     congr 1
-    simp only [Int.negSucc_sub_one, zpow_negSucc, ← inv_pow, Units.val_pow_eq_pow_val,
-      Int.cast_negSucc, Nat.add_sub_cancel]
     push_cast
-    trans -(k + 1) * ((↑u⁻¹ : A) ^ (k + 2) * ((↑u⁻¹ : A) * u) ^ k)
-    · ring
-    · simp
+    ring
 
 section Field
 
