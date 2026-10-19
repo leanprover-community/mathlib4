@@ -61,7 +61,6 @@ theorem card_filter_univ_vector_get_eq_countP (p : α → Bool) (v : List.Vector
     simp_rw [card_filter_univ_succ', Vector.get_cons_zero, Vector.toList_cons, Vector.get_cons_succ,
       hxs, List.countP_cons, add_comm (ite (p x = true) 1 0)]
 
-
 theorem card_filter_univ_eq_vector_get_eq_count [DecidableEq α] (a : α) (v : List.Vector α n) :
     #{i | v.get i = a} = v.toList.count a := by
   simp [List.count_eq_countP, ← card_filter_univ_vector_get_eq_countP, beq_iff_eq]
