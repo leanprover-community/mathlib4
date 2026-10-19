@@ -53,13 +53,18 @@ theorem card_filter_univ_succ' (p : Fin (n + 1) → Prop) [DecidablePred p] :
     #{x | p x} = ite (p 0) 1 0 + #{x | p (.succ x)} := by
   rw [card_filter_univ_succ]; split_ifs <;> simp [add_comm]
 
-theorem card_filter_univ_eq_vector_get_eq_count [DecidableEq α] (a : α) (v : List.Vector α n) :
-    #{i | v.get i = a} = v.toList.count a := by
+theorem card_filter_univ_eq_vector_get_eq_countP (p : α → Bool) (v : List.Vector α n) :
+     #{i | p (v.get i)} = v.toList.countP p := by
   induction v with
   | nil => simp
   | @cons n x xs hxs =>
     simp_rw [card_filter_univ_succ', Vector.get_cons_zero, Vector.toList_cons, Vector.get_cons_succ,
-      hxs, List.count_cons, add_comm (ite (x = a) 1 0), beq_iff_eq]
+      hxs, List.countP_cons, add_comm (ite (p x = true) 1 0)]
+
+
+theorem card_filter_univ_eq_vector_get_eq_count [DecidableEq α] (a : α) (v : List.Vector α n) :
+    #{i | v.get i = a} = v.toList.count a := by
+  simp [List.count_eq_countP, ← card_filter_univ_eq_vector_get_eq_countP, beq_iff_eq]
 
 /--
 Given a "downward-closed" predicate `p` on `Fin n` (which could be spelt `Antitone p`),
@@ -94,6 +99,11 @@ end Fin
 namespace List
 
 variable {α : Type*} {n : ℕ}
+
+@[simp]
+theorem countP_ofFn (f : Fin n → α) (p : α → Bool) :
+    (ofFn f).countP p = #{i | p (f i)} := by
+  simp [← Vector.toList_ofFn, ← Fin.card_filter_univ_eq_vector_get_eq_countP]
 
 @[simp]
 theorem count_ofFn [DecidableEq α] (f : Fin n → α) (a : α) :
