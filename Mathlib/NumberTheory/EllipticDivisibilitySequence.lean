@@ -421,6 +421,7 @@ protected lemma comp (h : IsEllipticSequence W) (f : F) : IsEllipticSequence <| 
 protected lemma zero (h : IsEllipticSequence W) (two : W 2 ∈ R⁰) : W 0 = 0 :=
   pow_mem two 3 |>.right _ <| by grind only [rel, h 1 1 2]
 
+/-- An elliptic sequence is an odd function. -/
 protected lemma neg (h : IsEllipticSequence W) (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰) : W.Odd := by
   refine fun m ↦ eq_neg_of_add_eq_zero_left ?_
   rcases m.even_or_odd' with ⟨m, rfl | rfl⟩ <;> apply pow_mem (mul_mem one two) 3 |>.right <;>
