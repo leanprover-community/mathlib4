@@ -52,7 +52,7 @@ in {lit}`` {role}`x` ``.
 -/
 def soleCode (xs : TSyntaxArray `inline) : DocM StrLit := do
   if h : xs.size ≠ 1 then
-    throwError "Expected a single code element"
+    throwErrorAt (mkNullNode xs) "Expected a single code element"
   else
     match xs[0] with
     | `(inline|code($s)) => return s
