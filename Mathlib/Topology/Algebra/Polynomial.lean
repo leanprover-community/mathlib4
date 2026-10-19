@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Normed.Ring.Lemmas
 public import Mathlib.RingTheory.Polynomial.Vieta
 public import Mathlib.Topology.Maps.Proper.CompactlyGenerated
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Polynomials and limits
 

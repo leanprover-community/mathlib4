@@ -10,6 +10,9 @@ public import Mathlib.Data.Nat.Upto
 public import Mathlib.Data.Part
 public import Mathlib.Data.Stream.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fixed point
 

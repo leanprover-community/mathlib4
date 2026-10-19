@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.Filter.Map
 public import Mathlib.Order.ZornAtoms
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ultrafilters
 

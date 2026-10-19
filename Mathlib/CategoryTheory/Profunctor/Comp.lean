@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.Types.End
 public import Mathlib.CategoryTheory.Profunctor.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Composition of Profunctors
 

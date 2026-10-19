@@ -9,6 +9,9 @@ public import Mathlib.Order.Antichain
 public import Mathlib.Order.Interval.Set.UnorderedInterval
 public import Mathlib.Topology.ContinuousOn
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Left and right continuity
 

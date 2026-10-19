@@ -9,6 +9,9 @@ public import Mathlib.Data.Bool.Basic
 public import Mathlib.Data.Num.Basic
 public import Mathlib.Data.Vector.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bitwise operations using binary representation of integers
 

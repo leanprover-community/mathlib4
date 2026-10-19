@@ -11,6 +11,9 @@ public import Mathlib.Basic.Nontrivial.Defs
 
 import Batteries.Tactic.SeqFocus
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Typeclasses for groups with an adjoined zero element
 

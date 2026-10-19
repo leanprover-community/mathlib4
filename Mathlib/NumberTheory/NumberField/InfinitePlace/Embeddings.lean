@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Algebra.Hom.Rat
 public import Mathlib.Analysis.Complex.Polynomial.Basic
 public import Mathlib.NumberTheory.NumberField.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Embeddings of number fields
 

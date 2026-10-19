@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Matrix.Composition
 public import Mathlib.LinearAlgebra.Matrix.ConjTranspose
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Block Matrices
 

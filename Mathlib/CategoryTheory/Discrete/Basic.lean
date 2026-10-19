@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Pi.Basic
 public import Mathlib.Data.Set.Image
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Discrete categories
 

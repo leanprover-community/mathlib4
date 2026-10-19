@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.RingHom.Flat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Faithfully flat ring maps
 

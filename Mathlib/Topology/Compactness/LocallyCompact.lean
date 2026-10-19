@@ -6,6 +6,9 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 module
 
 public import Mathlib.Topology.Compactness.Compact
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Locally compact spaces
 

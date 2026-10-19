@@ -14,6 +14,9 @@ import Mathlib.Algebra.Notation.Indicator
 import Mathlib.Data.Finset.Powerset
 import Mathlib.Order.Preorder.Finite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Dissociation and span
 

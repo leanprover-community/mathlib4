@@ -8,6 +8,9 @@ module
 public import Mathlib.GroupTheory.QuotientGroup.Basic
 public import Mathlib.GroupTheory.Subgroup.Simple
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Simplicity of quotient groups
 

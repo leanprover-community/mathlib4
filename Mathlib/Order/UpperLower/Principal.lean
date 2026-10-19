@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.Interval.Set.OrderIso
 public import Mathlib.Order.UpperLower.CompleteLattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Principal upper/lower sets
 

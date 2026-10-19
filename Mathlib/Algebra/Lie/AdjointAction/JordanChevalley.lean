@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Lie.AdjointAction.Basic
 public import Mathlib.LinearAlgebra.JordanChevalley
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Jordan–Chevalley decomposition and the adjoint action
 

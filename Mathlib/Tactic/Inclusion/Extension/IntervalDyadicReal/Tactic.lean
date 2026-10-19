@@ -11,6 +11,9 @@ public meta import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Hypothe
 
 import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Rational
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `dyadic_interval` tactic
 

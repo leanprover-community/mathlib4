@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Order.CauSeq.Completion
 public import Mathlib.Algebra.Order.Ring.Rat
 public import Mathlib.Data.Rat.Cast.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Real numbers from Cauchy sequences
 

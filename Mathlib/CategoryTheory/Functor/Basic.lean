@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Category.Basic
 public import Mathlib.Combinatorics.Quiver.Prefunctor
 public import Mathlib.Tactic.CategoryTheory.CategoryStar
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functors
 

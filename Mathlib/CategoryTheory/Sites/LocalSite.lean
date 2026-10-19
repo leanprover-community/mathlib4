@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Adjunction.Triple
 public import Mathlib.CategoryTheory.Sites.GlobalSections
 public import Mathlib.CategoryTheory.Sites.Point.Skyscraper
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Local sites
 

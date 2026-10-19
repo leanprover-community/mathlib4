@@ -10,6 +10,9 @@ public import Mathlib.NumberTheory.ModularForms.Discriminant
 
 import Mathlib.Algebra.Order.Floor.Semifield
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Dimension formula and Sturm bound for level 1 modular forms
 

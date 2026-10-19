@@ -14,6 +14,9 @@ public import Mathlib.LinearAlgebra.BilinearForm.TensorProduct
 import Mathlib.Algebra.DirectSum.LinearMap
 import Mathlib.LinearAlgebra.PID
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The trace and Killing forms of a Lie algebra.
 

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Basic.Finite.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finiteness of `DFunLike` types
 

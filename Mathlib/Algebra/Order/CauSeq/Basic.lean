@@ -13,6 +13,9 @@ public import Mathlib.Algebra.Ring.Pi
 public import Mathlib.GroupTheory.GroupAction.Ring
 public import Mathlib.Order.Setoid.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cauchy sequences
 

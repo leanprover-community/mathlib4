@@ -11,6 +11,9 @@ import Mathlib.Analysis.Asymptotics.Theta
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Data.Nat.Cast.Field
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Binomial coefficients and factorial variants
 

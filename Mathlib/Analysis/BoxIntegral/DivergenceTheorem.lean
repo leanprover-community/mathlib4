@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.BoxIntegral.Basic
 public import Mathlib.Analysis.Calculus.FDeriv.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Divergence integral for Henstock-Kurzweil integral
 

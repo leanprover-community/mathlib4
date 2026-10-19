@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Nat.Choose.Factorization
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Natural number multiplicity
 

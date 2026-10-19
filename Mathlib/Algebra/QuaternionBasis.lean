@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Quaternion
 
 import Mathlib.Tactic.LinearCombination
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basis on a quaternion-like algebra
 

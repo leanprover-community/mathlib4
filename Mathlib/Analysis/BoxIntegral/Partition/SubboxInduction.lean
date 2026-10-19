@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.BoxIntegral.Box.SubboxInduction
 public import Mathlib.Analysis.BoxIntegral.Partition.Tagged
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Induction on subboxes
 

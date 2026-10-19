@@ -9,6 +9,9 @@ public import Mathlib.Analysis.InnerProductSpace.Subspace
 public import Mathlib.Analysis.Normed.Module.Normalize
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Angles between vectors
 

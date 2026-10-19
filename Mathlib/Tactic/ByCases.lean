@@ -8,6 +8,9 @@ module
 public import Batteries.Tactic.PermuteGoals
 public import Mathlib.Tactic.Push
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `by_cases!` tactic
 

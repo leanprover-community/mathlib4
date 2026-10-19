@@ -9,6 +9,9 @@ public meta import Mathlib.Data.String.Defs
 public meta import Std.Data.TreeMap.Basic
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Name generation APIs for `to_additive`-like attributes
 -/

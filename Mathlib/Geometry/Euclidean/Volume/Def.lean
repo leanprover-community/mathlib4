@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Geometry.Euclidean.Altitude
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Volume of a simplex
 
