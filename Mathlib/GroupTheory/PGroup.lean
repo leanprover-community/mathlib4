@@ -254,7 +254,7 @@ theorem powEquiv_symm_apply {n : ℕ} (hn : p.Coprime n) (g : G) :
 variable [hp : Fact p.Prime]
 
 /-- If `p ∤ n`, then the `n`th power map is a bijection. -/
-@[to_additive /-- If `p ∤ n`, then multiplication by `n` map is a bijection. -/]
+@[to_additive /-- If `p ∤ n`, then multiplication by `n` is a bijection. -/]
 noncomputable abbrev powEquiv' {n : ℕ} (hn : ¬p ∣ n) : G ≃ G :=
   powEquiv hG (hp.out.coprime_iff_not_dvd.mpr hn)
 
