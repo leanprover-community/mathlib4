@@ -140,8 +140,8 @@ variable {ι κ : Sort*} {f g : ι → ℕ∞} {s : Set ℕ∞} {a : ℕ∞}
 lemma iSup_natCast : ⨆ n : ℕ, (n : ℕ∞) = ⊤ :=
   iSup_eq_top.2 fun _b hb ↦ ENat.exists_nat_gt (lt_top_iff_ne_top.1 hb)
 
-lemma iSup_Cast {α : Type*} [CompleteLattice α] : ⨆ n : α, n = ⊤ :=
-  le_antisymm le_top (le_iSup_iff.mpr fun _ a ↦ a ⊤)
+lemma iSup_Cast {α : Type*} [CompleteLattice α] : ⨆ n : α, n = ⊤ := by
+  simp [← sSup_range]
 
 lemma mul_iSup (a : ℕ∞) (f : ι → ℕ∞) : a * ⨆ i, f i = ⨆ i, a * f i := by
   refine (iSup_le fun i ↦ mul_le_mul' rfl.le <| le_iSup_iff.2 fun _ a ↦ a i).antisymm' <|
