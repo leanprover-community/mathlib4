@@ -919,6 +919,8 @@ theorem filterMap_eq_flatMap_toList (f : α → Option β) (l : List α) :
   induction l with | nil => ?_ | cons a l ih => ?_ <;> simp [filterMap_cons]
   rcases f a <;> simp [ih]
 
+-- TODO: add an equality hypothesis for each argument flagged by `linter.congrFixedArgs`.
+set_option linter.congrFixedArgs false in
 @[congr]
 theorem filterMap_congr {f g : α → Option β} {l : List α}
     (h : ∀ x ∈ l, f x = g x) : l.filterMap f = l.filterMap g := by

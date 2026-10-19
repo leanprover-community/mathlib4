@@ -313,6 +313,8 @@ theorem mapDomain_single {f : α → β} {a : α} {b : M} : mapDomain f (single 
 theorem mapDomain_zero {f : α → β} : mapDomain f (0 : α →₀ M) = (0 : β →₀ M) :=
   sum_zero_index
 
+-- TODO: add an equality hypothesis for each argument flagged by `linter.congrFixedArgs`.
+set_option linter.congrFixedArgs false in
 @[congr] theorem mapDomain_congr {f g : α → β} (h : ∀ x ∈ v.support, f x = g x) :
     v.mapDomain f = v.mapDomain g :=
   Finset.sum_congr rfl fun _ H => by simp only [h _ H]
