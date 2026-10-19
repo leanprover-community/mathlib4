@@ -43,13 +43,13 @@ theorem natTrans_eq {F G : Karoubi C ⥤ D} (φ : F ⟶ G) (P : Karoubi C) :
 
 namespace FunctorExtension₁
 
-set_option linter.style.longLine false in
 /-- The canonical extension of a functor `C ⥤ Karoubi D` to a functor
 `Karoubi C ⥤ Karoubi D` -/
 @[simps]
 def obj (F : C ⥤ Karoubi D) : Karoubi C ⥤ Karoubi D where
   obj P :=
-    ⟨(F.obj P.X).X, (F.map P.p).f, by simpa only [F.map_comp, hom_ext_iff] using! F.congr_map P.idem⟩
+    ⟨(F.obj P.X).X, (F.map P.p).f,
+     by simpa only [F.map_comp, hom_ext_iff] using! F.congr_map P.idem⟩
   map f := ⟨(F.map f.f).f, by simpa only [F.map_comp, hom_ext_iff] using! F.congr_map f.comm⟩
 
 set_option backward.isDefEq.respectTransparency false in
