@@ -129,6 +129,7 @@ lemma Algebra.isSeparable_iff_isTranscendentalSeparable_and_isAlgebraic :
 instance (priority := low) [Algebra.IsSeparable k K] : Algebra.IsTranscendentalSeparable k K :=
   ((Algebra.isSeparable_iff_isTranscendentalSeparable_and_isAlgebraic k K).mp ‹_›).1
 
+@[stacks 030Y "Equivalence to the alternative definition."]
 instance [PerfectField k] : Algebra.IsTranscendentalSeparable k K :=
   ⟨fun _ _ ↦ inferInstance⟩
 
@@ -507,28 +508,21 @@ lemma Algebra.isTranscendentalSeparable_iff_isSeparablyGenerated_of_essFiniteTyp
   have := h.1 ⊤ (IntermediateField.essFiniteType_iff.mpr (IntermediateField.fg_top_iff.mpr ‹_›))
   exact IntermediateField.topEquiv.isSeparablyGenerated
 
-@[stacks 030Y "Equivalence to the alternative definition."]
-lemma Algebra.isTranscendentalSeparable_of_perfectField [PerfectField k] :
-    Algebra.IsTranscendentalSeparable k K := by
-  rcases CharP.exists' k with char0|⟨p, prime, charp⟩
-  · exact Algebra.isTranscendentalSeparable_of_charZero k K
-  · apply ((Algebra.isTranscendentalSeparable_tfae k K p prime.out).out 1 3).mpr
-    have bij : Function.Bijective (Algebra.ofId k (AdjoinPthRoots k)) :=
-      ⟨RingHom.injective _,
-        IsPurelyInseparable.surjective_algebraMap_of_isSeparable k (AdjoinPthRoots k)⟩
-    let e := (Algebra.TensorProduct.congr (AlgEquiv.ofBijective _ bij).symm AlgEquiv.refl).trans
-      (Algebra.TensorProduct.lid k K)
-    exact isReduced_of_injective _ e.injective
-
 section IsGeometricallyReduced
 
 variable (S : Type*) [CommRing S] [Algebra k S]
 
 lemma isReduced_of_perfectField [PerfectField k] [IsReduced S]
-    (K : Type*) [Field K] [Algebra k K] : IsReduced (K ⊗[k] S) := by
-  have : Algebra.IsTranscendentalSeparable k K :=
-    Algebra.isTranscendentalSeparable_of_perfectField k K
-  apply isReduced_tensorProduct_of_isTranscendentalSeparable_of_isReduced
+    (K : Type*) [Field K] [Algebra k K] : IsReduced (K ⊗[k] S) :=
+  isReduced_tensorProduct_of_isTranscendentalSeparable_of_isReduced _ _ _
+
+lemma isTranscendentalSeparable_iff_isGeometricallyReduced_field (K : Type*) [Field K]
+    [Algebra k K] : Algebra.IsTranscendentalSeparable k K ↔ Algebra.IsGeometricallyReduced k K := by
+  rcases CharP.exists' k with zero|⟨p, hp, char⟩
+  · apply iff_of_true (Algebra.isTranscendentalSeparable_of_charZero k K)
+    rw [Algebra.isGeometricallyReduced_field_iff]
+    apply isReduced_of_perfectField
+  · exact (Algebra.isTranscendentalSeparable_tfae k K p hp.out).out 1 4
 
 lemma tensorProduct_isReduced_of_localization_of_finiteType [IsReduced S] [Algebra.FiniteType k S]
     (h : ∀ (p : Ideal S) (h : p ∈ minimalPrimes S),
@@ -604,9 +598,10 @@ lemma tensorProduct_isReduced_of_isGeometricallyReduced_field (K : Type*) [Field
       Module.Flat.rTensor_preserves_injective_linearMap _ (RingHom.injective _)
     exact isReduced_of_injective _ this
 
-lemma tensorProduct_isReduced_of_isGeometricallyReduced (R : Type*) [CommRing R]
-    (S : Type*) [CommRing S] [Algebra R S] [Algebra.IsGeometricallyReduced R S]
-    (K : Type*) [Field K] [Algebra R K] : IsReduced (K ⊗[R] S) := by
+instance (priority := low) tensorProduct_isReduced_of_isGeometricallyReduced
+    (R : Type*) [CommRing R] (S : Type*) [CommRing S] [Algebra R S]
+    [Algebra.IsGeometricallyReduced R S] (K : Type*) [Field K] [Algebra R K] :
+    IsReduced (K ⊗[R] S) := by
   let p := RingHom.ker (algebraMap R K)
   have : p.IsPrime := RingHom.ker_isPrime (algebraMap R K)
   let f : p.ResidueField →ₐ[R] K := Ideal.ResidueField.liftₐ p (Algebra.ofId R K) (le_refl _)
