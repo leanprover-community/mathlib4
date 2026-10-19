@@ -56,15 +56,8 @@ private lemma tutte_exists_isAlternating_isCycles {x b a c : V} {M : Subgraph (G
 variable [Finite V]
 
 lemma IsTutteViolator.mono {u : Set V} (h : G ≤ G') (ht : G'.IsTutteViolator u) :
-    G.IsTutteViolator u := by
-  simp only [IsTutteViolator] at *
-  have := ncard_oddComponents_mono _ (Subgraph.deleteVerts_mono' (G := G) (G' := G') u h)
-  simp only [oddComponents] at *
-  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
-  (replacing grind's canonicalizer with a type-directed normalizer), `lia` closed this goal.
-  It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
-  canonicalizer; a minimization would help. The original proof was: `lia` -/
-  exact lt_of_lt_of_le ht this
+    G.IsTutteViolator u :=
+  ht.trans_le (ncard_oddComponents_mono _ (Subgraph.deleteVerts_mono' u h))
 
 /-- Given a graph in which the universal vertices do not violate Tutte's condition,
 if the graph decomposes into cliques, there exists a matching that covers

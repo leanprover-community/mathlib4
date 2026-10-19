@@ -585,7 +585,6 @@ theorem LinearMap.associated_det_comp_equiv {N : Type*} [AddCommGroup N] [Module
 
 namespace Module.Basis
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The determinant of a family of vectors with respect to some basis, as an alternating
 multilinear map. -/
 nonrec def det : M [⋀^ι]→ₗ[R] R where
@@ -598,7 +597,7 @@ nonrec def det : M [⋀^ι]→ₗ[R] R where
         apply det_updateCol_smul)
   map_eq_zero_of_eq' := by
     intro v i j h hij
-    dsimp
+    simp only [MultilinearMap.toFun_eq_coe, MultilinearMap.mk'_apply]
     rw [← Function.update_eq_self i v, h, ← det_transpose, e.toMatrix_update, ← updateRow_transpose,
       ← e.toMatrix_transpose_apply]
     apply det_zero_of_row_eq hij

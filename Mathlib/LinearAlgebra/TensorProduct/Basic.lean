@@ -91,13 +91,11 @@ variable {M N}
 variable (f : M →ₗ[R] N →ₗ[R] P)
 variable (f' : M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary function to constructing a linear map `M ⊗ N → P` given a bilinear map `M → N → P`
 with the property that its composition with the canonical bilinear map `M → N → M ⊗ N` is
 the given bilinear map `M → N → P`. -/
 def liftAux : M ⊗[R] N →+ P₂ :=
-  liftAddHom (LinearMap.toAddMonoidHom'.comp f'.toAddMonoidHom)
-    fun r m n => by dsimp; rw [LinearMap.map_smulₛₗ₂, map_smulₛₗ]
+  liftAddHom (LinearMap.toAddMonoidHom'.comp f'.toAddMonoidHom) (by simp)
 
 theorem liftAux_tmul (m n) : liftAux f' (m ⊗ₜ n) = f' m n :=
   rfl
