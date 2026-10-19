@@ -5,6 +5,7 @@ Authors: Kyle Miller
 -/
 module
 
+public import Lean.Expr
 public import Mathlib.Data.Set.CoeSort
 
 /-!
