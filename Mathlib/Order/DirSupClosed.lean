@@ -268,6 +268,18 @@ protected theorem DirSupInaccOn.Iic (a : α) : DirSupInaccOn D (Iic a) :=
 
 @[deprecated (since := "2026-10-16")] alias dirSupInaccOn_Iic := DirSupInaccOn.Iic
 
+protected lemma DirSupClosed.Ioi (a : α) : DirSupClosed (Ioi a) :=
+  IsUpperSet.Ioi a |>.dirSupClosed
+
+protected lemma DirSupClosedOn.Ioi (a : α) : DirSupClosedOn D (Ioi a) :=
+  DirSupClosed.Ioi a |>.dirSupClosedOn
+
+protected lemma DirSupClosed.Ici (a : α) : DirSupClosed (Ici a) :=
+  IsUpperSet.Ici a |>.dirSupClosed
+
+protected lemma DirSupClosedOn.Ici (a : α) : DirSupClosedOn D (Ici a) :=
+  (DirSupClosed.Ici a).dirSupClosedOn
+
 end Preorder
 
 section PartialOrder
@@ -304,23 +316,11 @@ theorem dirSupInacc_iff_of_linearOrder :
     DirSupInacc s ↔ ∀ ⦃d⦄, d.Nonempty → ∀ ⦃a⦄, IsLUB d a → a ∈ s → (d ∩ s).Nonempty := by
   simp [DirSupInacc]
 
-protected lemma DirSupClosed.Ioi (a : α) : DirSupClosed (Ioi a) :=
-  IsUpperSet.Ioi a |>.dirSupClosed
-
-protected lemma DirSupClosedOn.Ioi (a : α) : DirSupClosedOn D (Ioi a) :=
-  DirSupClosed.Ioi a |>.dirSupClosedOn
-
 protected lemma DirSupInacc.Ioi (a : α) : DirSupInacc (Ioi a) := by
   simpa using (DirSupClosed.Iic a).compl
 
 protected lemma DirSupInaccOn.Ioi (a : α) : DirSupInaccOn D (Ioi a) :=
   DirSupInacc.Ioi a |>.dirSupInaccOn
-
-protected lemma DirSupClosed.Ici (a : α) : DirSupClosed (Ici a) :=
-  IsUpperSet.Ici a |>.dirSupClosed
-
-protected lemma DirSupClosedOn.Ici (a : α) : DirSupClosedOn D (Ici a) :=
-  (DirSupClosed.Ici a).dirSupClosedOn
 
 end LinearOrder
 
