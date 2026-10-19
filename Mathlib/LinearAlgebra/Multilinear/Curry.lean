@@ -59,20 +59,20 @@ variable [Semiring R] [CommSemiring S] {σ : R →+* S}
 /-- Given a linear map `f` from `M 0` to multilinear maps on `n` variables,
 construct the corresponding multilinear map on `n+1` variables obtained by concatenating
 the variables, given by `m ↦ f (m 0) (tail m)` -/
-def LinearMap.uncurryLeft (f : M 0 →ₛₗ[σ] (fun i : Fin n => M i.succ) →ₛₗₘ[σ] M₂) : M →ₛₗₘ[σ] M₂ :=
+def LinearMap.uncurryLeft (f : M 0 →ₛₗ[σ] (fun i : Fin n => M i.succ) →ₘₛₗ[σ] M₂) : M →ₘₛₗ[σ] M₂ :=
   MultilinearMap.mk' (fun m ↦ f (m 0) (tail m))
     (fun m i x y ↦ by cases i using Fin.cases <;> simp [Ne.symm])
     (fun m i c x ↦ by cases i using Fin.cases <;> simp [Ne.symm])
 
 @[simp]
-theorem LinearMap.uncurryLeft_apply (f : M 0 →ₛₗ[σ] (fun i : Fin n => M i.succ) →ₛₗₘ[σ] M₂)
+theorem LinearMap.uncurryLeft_apply (f : M 0 →ₛₗ[σ] (fun i : Fin n => M i.succ) →ₘₛₗ[σ] M₂)
     (m : ∀ i, M i) : f.uncurryLeft m = f (m 0) (tail m) :=
   rfl
 
 /-- Given a multilinear map `f` in `n+1` variables, split the first variable to obtain
 a linear map into multilinear maps in `n` variables, given by `x ↦ (m ↦ f (cons x m))`. -/
-def MultilinearMap.curryLeft (f : M →ₛₗₘ[σ] M₂) :
-    M 0 →ₛₗ[σ] (fun i : Fin n => M i.succ) →ₛₗₘ[σ] M₂ where
+def MultilinearMap.curryLeft (f : M →ₘₛₗ[σ] M₂) :
+    M 0 →ₛₗ[σ] (fun i : Fin n => M i.succ) →ₘₛₗ[σ] M₂ where
   toFun x := MultilinearMap.mk' fun m => f (cons x m)
   map_add' x y := by
     ext m
@@ -82,17 +82,17 @@ def MultilinearMap.curryLeft (f : M →ₛₗₘ[σ] M₂) :
     exact cons_smul f m c x
 
 @[simp]
-theorem MultilinearMap.curryLeft_apply (f : M →ₛₗₘ[σ] M₂) (x : M 0) (m : ∀ i : Fin n, M i.succ) :
+theorem MultilinearMap.curryLeft_apply (f : M →ₘₛₗ[σ] M₂) (x : M 0) (m : ∀ i : Fin n, M i.succ) :
     f.curryLeft x m = f (cons x m) :=
   rfl
 
 @[simp]
-theorem LinearMap.curry_uncurryLeft (f : M 0 →ₛₗ[σ] (fun i : Fin n => M i.succ) →ₛₗₘ[σ] M₂) :
+theorem LinearMap.curry_uncurryLeft (f : M 0 →ₛₗ[σ] (fun i : Fin n => M i.succ) →ₘₛₗ[σ] M₂) :
     f.uncurryLeft.curryLeft = f :=
   rfl
 
 @[simp]
-theorem MultilinearMap.uncurry_curryLeft (f : M →ₛₗₘ[σ] M₂) : f.curryLeft.uncurryLeft = f := by
+theorem MultilinearMap.uncurry_curryLeft (f : M →ₘₛₗ[σ] M₂) : f.curryLeft.uncurryLeft = f := by
   ext m
   simp
 
@@ -107,7 +107,7 @@ The direct and inverse maps are given by `f.curryLeft` and `f.uncurryLeft`. Use 
 unless you need the full framework of linear equivs. -/
 @[simps]
 def multilinearCurryLeftEquiv :
-    (M →ₛₗₘ[σ] M₂) ≃ₗ[S] M 0 →ₛₗ[σ] (fun i : Fin n => M i.succ) →ₛₗₘ[σ] M₂ where
+    (M →ₘₛₗ[σ] M₂) ≃ₗ[S] M 0 →ₛₗ[σ] (fun i : Fin n => M i.succ) →ₘₛₗ[σ] M₂ where
   toFun := MultilinearMap.curryLeft
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
@@ -123,42 +123,42 @@ variable {σ M M₂}
 `M₂`, construct the corresponding multilinear map on `n+1` variables obtained by concatenating
 the variables, given by `m ↦ f (init m) (m (last n))` -/
 def MultilinearMap.uncurryRight
-    (f : (fun i : Fin n => M (castSucc i)) →ₛₗₘ[σ] M (last n) →ₛₗ[σ] M₂) : M →ₛₗₘ[σ] M₂ :=
+    (f : (fun i : Fin n => M (castSucc i)) →ₘₛₗ[σ] M (last n) →ₛₗ[σ] M₂) : M →ₘₛₗ[σ] M₂ :=
   MultilinearMap.mk' (fun m ↦ f (init m) (m (last n)))
     (fun m i x y ↦ by cases i using Fin.lastCases <;> simp [Ne.symm])
     (fun m i c x ↦ by cases i using Fin.lastCases <;> simp [Ne.symm])
 
 @[simp]
 theorem MultilinearMap.uncurryRight_apply
-    (f : (fun i : Fin n => M (castSucc i)) →ₛₗₘ[σ] M (last n) →ₛₗ[σ] M₂) (m : ∀ i, M i) :
+    (f : (fun i : Fin n => M (castSucc i)) →ₘₛₗ[σ] M (last n) →ₛₗ[σ] M₂) (m : ∀ i, M i) :
     f.uncurryRight m = f (init m) (m (last n)) :=
   rfl
 
 /-- Given a multilinear map `f` in `n+1` variables, split the last variable to obtain
 a multilinear map in `n` variables taking values in linear maps from `M (last n)` to `M₂`, given by
 `m ↦ (x ↦ f (snoc m x))`. -/
-def MultilinearMap.curryRight (f : M →ₛₗₘ[σ] M₂) :
-    (fun i : Fin n => M (Fin.castSucc i)) →ₛₗₘ[σ] M (last n) →ₛₗ[σ] M₂ :=
+def MultilinearMap.curryRight (f : M →ₘₛₗ[σ] M₂) :
+    (fun i : Fin n => M (Fin.castSucc i)) →ₘₛₗ[σ] M (last n) →ₛₗ[σ] M₂ :=
   MultilinearMap.mk' fun m ↦
     { toFun := fun x => f (snoc m x)
       map_add' := fun x y => by simp_rw [f.snoc_add]
       map_smul' := fun c x => by simp only [f.snoc_smul] }
 
 @[simp]
-theorem MultilinearMap.curryRight_apply (f : M →ₛₗₘ[σ] M₂)
+theorem MultilinearMap.curryRight_apply (f : M →ₘₛₗ[σ] M₂)
     (m : ∀ i : Fin n, M (castSucc i)) (x : M (last n)) : f.curryRight m x = f (snoc m x) :=
   rfl
 
 @[simp]
 theorem MultilinearMap.curry_uncurryRight
-    (f : (fun i : Fin n => M (castSucc i)) →ₛₗₘ[σ] M (last n) →ₛₗ[σ] M₂) :
+    (f : (fun i : Fin n => M (castSucc i)) →ₘₛₗ[σ] M (last n) →ₛₗ[σ] M₂) :
     f.uncurryRight.curryRight = f := by
   ext m x
   simp only [snoc_last, MultilinearMap.curryRight_apply, MultilinearMap.uncurryRight_apply]
   rw [init_snoc]
 
 @[simp]
-theorem MultilinearMap.uncurry_curryRight (f : M →ₛₗₘ[σ] M₂) : f.curryRight.uncurryRight = f := by
+theorem MultilinearMap.uncurry_curryRight (f : M →ₘₛₗ[σ] M₂) : f.curryRight.uncurryRight = f := by
   ext m
   simp
 
@@ -172,7 +172,7 @@ isomorphism as a linear isomorphism in `multilinearCurryRightEquiv R M M₂`.
 The direct and inverse maps are given by `f.curryRight` and `f.uncurryRight`. Use these
 unless you need the full framework of linear equivs. -/
 def multilinearCurryRightEquiv :
-    (M →ₛₗₘ[σ] M₂) ≃ₗ[S] (fun i : Fin n => M (castSucc i)) →ₛₗₘ[σ] M (last n) →ₛₗ[σ] M₂ where
+    (M →ₘₛₗ[σ] M₂) ≃ₗ[S] (fun i : Fin n => M (castSucc i)) →ₘₛₗ[σ] M (last n) →ₛₗ[σ] M₂ where
   toFun := MultilinearMap.curryRight
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
@@ -187,7 +187,7 @@ in `n` variables `M 0`, ..., `M n` with `M p` removed,
 returns a multilinear map in all `n + 1` variables. -/
 @[simps!]
 def LinearMap.uncurryMid (p : Fin (n + 1))
-    (f : M p →ₛₗ[σ] (fun i ↦ M (p.succAbove i)) →ₛₗₘ[σ] M₂) : M →ₛₗₘ[σ] M₂ :=
+    (f : M p →ₛₗ[σ] (fun i ↦ M (p.succAbove i)) →ₘₛₗ[σ] M₂) : M →ₘₛₗ[σ] M₂ :=
   .mk' (fun m ↦ f (m p) (p.removeNth m))
     (fun m i x y ↦ by cases i using Fin.succAboveCases p <;> simp)
     (fun m i x y ↦ by cases i using Fin.succAboveCases p <;> simp)
@@ -195,19 +195,19 @@ def LinearMap.uncurryMid (p : Fin (n + 1))
 /-- Interpret a multilinear map in `n + 1` variables
 as a linear map in `p`th variable with values in the multilinear maps in the other variables. -/
 @[simps!]
-def MultilinearMap.curryMid (p : Fin (n + 1)) (f : M →ₛₗₘ[σ] M₂) :
-    M p →ₛₗ[σ] (fun i ↦ M (p.succAbove i)) →ₛₗₘ[σ] M₂ where
+def MultilinearMap.curryMid (p : Fin (n + 1)) (f : M →ₘₛₗ[σ] M₂) :
+    M p →ₛₗ[σ] (fun i ↦ M (p.succAbove i)) →ₘₛₗ[σ] M₂ where
   toFun x := .mk' fun m ↦ f (p.insertNth x m)
   map_add' x y := by ext; simp [map_insertNth_add]
   map_smul' c x := by ext; simp [map_insertNth_smul]
 
 @[simp]
 theorem LinearMap.curryMid_uncurryMid (i : Fin (n + 1))
-    (f : M i →ₛₗ[σ] (fun j ↦ M (i.succAbove j)) →ₛₗₘ[σ] M₂) : (f.uncurryMid i).curryMid i = f := by
+    (f : M i →ₛₗ[σ] (fun j ↦ M (i.succAbove j)) →ₘₛₗ[σ] M₂) : (f.uncurryMid i).curryMid i = f := by
   ext; simp
 
 @[simp]
-theorem MultilinearMap.uncurryMid_curryMid (i : Fin (n + 1)) (f : M →ₛₗₘ[σ] M₂) :
+theorem MultilinearMap.uncurryMid_curryMid (i : Fin (n + 1)) (f : M →ₘₛₗ[σ] M₂) :
     (f.curryMid i).uncurryMid i = f := by ext; simp
 
 variable (σ M M₂)
@@ -215,7 +215,7 @@ variable (σ M M₂)
 /-- `MultilinearMap.curryMid` as a linear equivalence. -/
 @[simps]
 def MultilinearMap.curryMidLinearEquiv (p : Fin (n + 1)) :
-    (M →ₛₗₘ[σ] M₂) ≃ₗ[S] M p →ₛₗ[σ] (fun i ↦ M (p.succAbove i)) →ₛₗₘ[σ] M₂ where
+    (M →ₘₛₗ[σ] M₂) ≃ₗ[S] M p →ₛₗ[σ] (fun i ↦ M (p.succAbove i)) →ₘₛₗ[σ] M₂ where
   toFun := MultilinearMap.curryMid p
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
@@ -232,8 +232,8 @@ variable {σ M₂} {N : (ι ⊕ ι') → Type*}
 on `(fun _ : ι ⊕ ι' => M')` induces a multilinear map on
 `(fun (i : ι) ↦ N (.inl i))` taking values in the space of
 linear maps on `(fun (i : ι') ↦ N (.inr i))`. -/
-def currySum (f : N →ₛₗₘ[σ] M₂) :
-    (fun i : ι ↦ N (.inl i)) →ₛₗₘ[σ] (fun i : ι' ↦ N (.inr i)) →ₛₗₘ[σ] M₂ where
+def currySum (f : N →ₘₛₗ[σ] M₂) :
+    (fun i : ι ↦ N (.inl i)) →ₘₛₗ[σ] (fun i : ι' ↦ N (.inr i)) →ₘₛₗ[σ] M₂ where
   toFun u :=
     { toFun v := f (Sum.rec u v)
       map_update_add' := by let := Classical.decEq ι; simp
@@ -244,29 +244,29 @@ def currySum (f : N →ₛₗₘ[σ] M₂) :
     ext fun _ ↦ by let := Classical.decEq ι'; simp
 
 @[simp low]
-theorem currySum_apply (f : N →ₛₗₘ[σ] M₂)
+theorem currySum_apply (f : N →ₘₛₗ[σ] M₂)
     (u : (i : ι) → N (Sum.inl i)) (v : (i : ι') → N (Sum.inr i)) :
     currySum f u v = f (Sum.rec u v) := rfl
 
 @[simp]
 theorem currySum_apply' {N : Type*} [AddCommMonoid N] [Module R N]
-    (f : (fun _ : ι ⊕ ι' ↦ N) →ₛₗₘ[σ] M₂) (u : ι → N) (v : ι' → N) :
+    (f : (fun _ : ι ⊕ ι' ↦ N) →ₘₛₗ[σ] M₂) (u : ι → N) (v : ι' → N) :
     currySum f u v = f (Sum.elim u v) := rfl
 
 @[simp]
-lemma currySum_add (f₁ f₂ : N →ₛₗₘ[σ] M₂) :
+lemma currySum_add (f₁ f₂ : N →ₘₛₗ[σ] M₂) :
     currySum (f₁ + f₂) = currySum f₁ + currySum f₂ := rfl
 
 @[simp]
-lemma currySum_smul (r : S) (f : N →ₛₗₘ[σ] M₂) :
+lemma currySum_smul (r : S) (f : N →ₘₛₗ[σ] M₂) :
     currySum (r • f) = r • currySum f := rfl
 
 /-- Given a family of modules `N : (ι ⊕ ι') → Type*`, a multilinear map on
 `(fun (i : ι) ↦ N (.inl i))` taking values in the space of
 linear maps on `(fun (i : ι') ↦ N (.inr i))` induces a multilinear map
 on `(fun _ : ι ⊕ ι' => M')` induces. -/
-def uncurrySum (g : (fun i : ι ↦ N (.inl i)) →ₛₗₘ[σ] (fun i : ι' ↦ N (.inr i)) →ₛₗₘ[σ] M₂) :
-    N →ₛₗₘ[σ] M₂ where
+def uncurrySum (g : (fun i : ι ↦ N (.inl i)) →ₘₛₗ[σ] (fun i : ι' ↦ N (.inr i)) →ₘₛₗ[σ] M₂) :
+    N →ₘₛₗ[σ] M₂ where
   toFun u := g (fun i ↦ u (.inl i)) (fun i' ↦ u (.inr i'))
   map_update_add' := by
     let := Classical.decEq ι
@@ -279,22 +279,22 @@ def uncurrySum (g : (fun i : ι ↦ N (.inl i)) →ₛₗₘ[σ] (fun i : ι' �
 
 @[simp]
 theorem uncurrySum_apply
-    (g : (fun i : ι ↦ N (.inl i)) →ₛₗₘ[σ] (fun i : ι' ↦ N (.inr i)) →ₛₗₘ[σ] M₂) (u) :
+    (g : (fun i : ι ↦ N (.inl i)) →ₘₛₗ[σ] (fun i : ι' ↦ N (.inr i)) →ₘₛₗ[σ] M₂) (u) :
     g.uncurrySum u = g (fun i ↦ u (.inl i)) (fun i' ↦ u (.inr i')) := rfl
 
 @[simp]
 lemma uncurrySum_add
-    (g₁ g₂ : (fun i : ι ↦ N (.inl i)) →ₛₗₘ[σ] (fun i : ι' ↦ N (.inr i)) →ₛₗₘ[σ] M₂) :
+    (g₁ g₂ : (fun i : ι ↦ N (.inl i)) →ₘₛₗ[σ] (fun i : ι' ↦ N (.inr i)) →ₘₛₗ[σ] M₂) :
     uncurrySum (g₁ + g₂) = uncurrySum g₁ + uncurrySum g₂ :=
   rfl
 
 lemma uncurrySum_smul
-    (r : S) (g : (fun i : ι ↦ N (.inl i)) →ₛₗₘ[σ] (fun i : ι' ↦ N (.inr i)) →ₛₗₘ[σ] M₂) :
+    (r : S) (g : (fun i : ι ↦ N (.inl i)) →ₘₛₗ[σ] (fun i : ι' ↦ N (.inr i)) →ₘₛₗ[σ] M₂) :
     uncurrySum (r • g) = r • uncurrySum g :=
   rfl
 
 @[simp]
-lemma uncurrySum_currySum (f : N →ₛₗₘ[σ] M₂) :
+lemma uncurrySum_currySum (f : N →ₘₛₗ[σ] M₂) :
     uncurrySum (currySum f) = f := by
   ext
   simp only [uncurrySum_apply, currySum_apply]
@@ -303,7 +303,7 @@ lemma uncurrySum_currySum (f : N →ₛₗₘ[σ] M₂) :
 
 @[simp]
 lemma currySum_uncurrySum
-    (g : (fun i : ι ↦ N (.inl i)) →ₛₗₘ[σ] (fun i : ι' ↦ N (.inr i)) →ₛₗₘ[σ] M₂) :
+    (g : (fun i : ι ↦ N (.inl i)) →ₘₛₗ[σ] (fun i : ι' ↦ N (.inr i)) →ₘₛₗ[σ] M₂) :
     currySum (uncurrySum g) = g :=
   rfl
 
@@ -312,8 +312,8 @@ from `(fun (i : ι) ↦ N (.inl i))` taking values in the space of
 linear maps on `(fun (i : ι') ↦ N (.inr i))`. -/
 @[simps]
 def currySumEquiv :
-    (N →ₛₗₘ[σ] M₂) ≃ₗ[S]
-      (fun i : ι ↦ N (.inl i)) →ₛₗₘ[σ] (fun i : ι' ↦ N (.inr i)) →ₛₗₘ[σ] M₂ where
+    (N →ₘₛₗ[σ] M₂) ≃ₗ[S]
+      (fun i : ι ↦ N (.inl i)) →ₘₛₗ[σ] (fun i : ι' ↦ N (.inr i)) →ₘₛₗ[σ] M₂ where
   toFun := currySum
   invFun := uncurrySum
   left_inv _ := by simp
@@ -335,8 +335,8 @@ variable (σ M₂ M')
 multilinear maps on `fun i : Fin k => M'` taking values in the space of multilinear maps
 on `fun i : Fin l => M'`. -/
 def curryFinFinset {k l n : ℕ} {s : Finset (Fin n)} (hk : #s = k) (hl : #sᶜ = l) :
-    ((fun _ : Fin n => M') →ₛₗₘ[σ] M₂) ≃ₗ[S]
-      (fun _ : Fin k => M') →ₛₗₘ[σ] (fun _ : Fin l => M') →ₛₗₘ[σ] M₂ :=
+    ((fun _ : Fin n => M') →ₘₛₗ[σ] M₂) ≃ₗ[S]
+      (fun _ : Fin k => M') →ₘₛₗ[σ] (fun _ : Fin l => M') →ₘₛₗ[σ] M₂ :=
   (domDomCongrLinearEquiv S M' M₂ σ (finSumEquivOfFinset hk hl).symm).trans
     currySumEquiv
 
@@ -344,21 +344,21 @@ variable {σ M₂ M'}
 
 @[simp]
 theorem curryFinFinset_apply {k l n : ℕ} {s : Finset (Fin n)} (hk : #s = k) (hl : #sᶜ = l)
-    (f : (fun _ : Fin n => M') →ₛₗₘ[σ] M₂) (mk : Fin k → M') (ml : Fin l → M') :
+    (f : (fun _ : Fin n => M') →ₘₛₗ[σ] M₂) (mk : Fin k → M') (ml : Fin l → M') :
     curryFinFinset M₂ M' σ hk hl f mk ml =
       f fun i => Sum.elim mk ml ((finSumEquivOfFinset hk hl).symm i) :=
   rfl
 
 @[simp]
 theorem curryFinFinset_symm_apply {k l n : ℕ} {s : Finset (Fin n)} (hk : #s = k) (hl : #sᶜ = l)
-    (f : (fun _ : Fin k => M') →ₛₗₘ[σ] (fun _ : Fin l => M') →ₛₗₘ[σ] M₂) (m : Fin n → M') :
+    (f : (fun _ : Fin k => M') →ₘₛₗ[σ] (fun _ : Fin l => M') →ₘₛₗ[σ] M₂) (m : Fin n → M') :
     (curryFinFinset M₂ M' σ hk hl).symm f m =
       f (fun i => m <| finSumEquivOfFinset hk hl (Sum.inl i)) fun i =>
         m <| finSumEquivOfFinset hk hl (Sum.inr i) :=
   rfl
 
 theorem curryFinFinset_symm_apply_piecewise_const {k l n : ℕ} {s : Finset (Fin n)} (hk : #s = k)
-    (hl : #sᶜ = l) (f : (fun _ : Fin k => M') →ₛₗₘ[σ] (fun _ : Fin l => M') →ₛₗₘ[σ] M₂) (x y : M') :
+    (hl : #sᶜ = l) (f : (fun _ : Fin k => M') →ₘₛₗ[σ] (fun _ : Fin l => M') →ₘₛₗ[σ] M₂) (x y : M') :
     (curryFinFinset M₂ M' σ hk hl).symm f (s.piecewise (fun _ => x) fun _ => y) =
       f (fun _ => x) fun _ => y := by
   rw [curryFinFinset_symm_apply]; congr
@@ -371,12 +371,12 @@ theorem curryFinFinset_symm_apply_piecewise_const {k l n : ℕ} {s : Finset (Fin
 
 @[simp]
 theorem curryFinFinset_symm_apply_const {k l n : ℕ} {s : Finset (Fin n)} (hk : #s = k)
-    (hl : #sᶜ = l) (f : (fun _ : Fin k => M') →ₛₗₘ[σ] (fun _ : Fin l => M') →ₛₗₘ[σ] M₂) (x : M') :
+    (hl : #sᶜ = l) (f : (fun _ : Fin k => M') →ₘₛₗ[σ] (fun _ : Fin l => M') →ₘₛₗ[σ] M₂) (x : M') :
     ((curryFinFinset M₂ M' σ hk hl).symm f fun _ => x) = f (fun _ => x) fun _ => x :=
   rfl
 
 theorem curryFinFinset_apply_const {k l n : ℕ} {s : Finset (Fin n)} (hk : #s = k)
-    (hl : #sᶜ = l) (f : (fun _ : Fin n => M') →ₛₗₘ[σ] M₂) (x y : M') :
+    (hl : #sᶜ = l) (f : (fun _ : Fin n => M') →ₘₛₗ[σ] M₂) (x y : M') :
     (curryFinFinset M₂ M' σ hk hl f (fun _ => x) fun _ => y) =
       f (s.piecewise (fun _ => x) fun _ => y) := by
   rw [← curryFinFinset_symm_apply_piecewise_const hk hl, LinearEquiv.symm_apply_apply]
