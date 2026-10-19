@@ -145,7 +145,6 @@ def cite (key : StrLit) (xs : TSyntaxArray `inline) : DocM (Inline ElabInline) :
     (.custom (.mk (Mathlib.VersoRoles.Citation.mk k)))
     rendered
 
-
 /--
 A verbatim code listing in the language named by the positional argument, as
 in {lit}```` ```code python ````.
