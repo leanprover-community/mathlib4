@@ -5,10 +5,8 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public import ImportGraph.Lean.Environment  -- shake: keep (Environment.getModuleFor? is used from public meta code), cf. lean#14427
+public meta import ImportGraph.Lean.Environment  -- shake: keep (Environment.getModuleFor? is used from public meta code), cf. lean#14427
 public import Mathlib.Init
-
-meta import ImportGraph.Lean.Environment
 
 /-!
 # A tool for finding duplicate declarations

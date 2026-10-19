@@ -274,6 +274,36 @@ def headerToPreludeTk? (header : TSyntax ``Parser.Module.header) : Option Syntax
   | `(Parser.Module.header| $[module]? $[prelude%$tk]? $_*) => tk
   | _ => none
 
+/-- Module prefixes which Mathlib uses only as development tools. Imports of these modules must
+be `meta import` (possibly `public`). Add a prefix here to extend this policy to another dependency.
+
+This controls the compilation phase, not visibility or logical dependencies: even a
+`public meta import` allows theorem statements to mention the imported declarations.
+Use private imports to keep a dependency out of the public mathematical API of modules.
+Consumers without a `module` header do not respect this visibility boundary. -/
+public def metaOnlyImports : Array Name := #[`ImportGraph, `LeanSearchClient]
+
+/-- Whether an import violates the development-tool import policy. Prefixes are matched as module
+names, so e.g. `ImportGraphExtra` does not match `ImportGraph`. -/
+public def isNonMetaToolImport (imp : Import) : Bool :=
+  !imp.isMeta && metaOnlyImports.any (·.isPrefixOf imp.module)
+
+/-- Require meta imports for the dependencies listed in `Mathlib.Linter.metaOnlyImports`. -/
+public register_option linter.metaImports : Bool := {
+  defValue := true
+  descr := "require meta imports for development-tool dependencies"
+}
+
+/-- Check development-tool imports, including private imports and `import all`.
+The source-based style linter also checks this policy, covering imports-only files and files
+where the header linter is disabled. -/
+def metaImportsCheck (imports : Array ImportRef) : CommandElabM Unit := do
+  unless getLinterValue linter.metaImports (← getLinterOptions) do return
+  for imp in imports do
+    if isNonMetaToolImport imp.toImport then
+      Linter.logLint linter.metaImports imp.getIdent
+        m!"`{imp.module}` is a development-tool dependency and must be imported using `meta import`."
+
 namespace Style.Header
 
 /--
@@ -425,9 +455,10 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   let (headerStx, s, log) ← Parser.parseHeader (Parser.mkInputContext map.source (← getFileName))
   if log.hasErrors then return
   let importRefs := headerToImportRefs headerStx
-  -- Report on broad or duplicate imports.
+  -- Check import policy and report broad or duplicate imports.
   broadImportsCheck importRefs mainModule
   duplicateImportsCheck importRefs
+  metaImportsCheck importRefs
   let errors ← directoryDependencyCheck mainModule
   if errors.size > 0 then
     Linter.logLint linter.directoryDependency (importRefs.back?.elim headerStx (·.stx)) <|

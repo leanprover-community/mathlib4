@@ -5,7 +5,7 @@ Authors: Damiano Testa, Anne Baanen
 -/
 module
 
-public import ImportGraph.Widget.GoToModule
+public meta import ImportGraph.Widget.GoToModule
 public import Mathlib.Init
 
 /-! # The `upstreamableDecl` linter

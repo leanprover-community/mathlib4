@@ -20,7 +20,7 @@ public import Batteries.Tactic.GeneralizeProofs
 public import Batteries.CodeAction
 
 -- Import syntax for leansearch
-public import LeanSearchClient
+public meta import LeanSearchClient
 
 -- Import Mathlib-specific linters.
 public import Mathlib.Tactic.Linter.Lint
