@@ -24,7 +24,7 @@ vertex.
 
 * `Quiver.Path.path_decomposition_first_edge`, `Quiver.Path.path_decomposition_last_edge`: a path
   of positive length splits off its first, resp. last, edge.
-* `Quiver.Path.isPath_of_shortest`: a shortest path repeats no vertex.
+* `Quiver.Path.isSimple_of_shortest`: a shortest path repeats no vertex.
 * `Quiver.Path.length_le_card_minus_one_of_isSimple`: the length bound for simple paths.
 
 ## Tags
@@ -74,22 +74,22 @@ def vertexFinset {V : Type*} [Quiver V] [DecidableEq V] {a b : V} (p : Path a b)
   p.vertices.toFinset
 
 /-- The set of vertices of a simple path has cardinality `p.length + 1`. -/
-lemma card_vertexFinset_of_isPath {V : Type*} [Quiver V] [DecidableEq V] {a b : V}
-    {p : Path a b} (hp : IsPath p) : p.vertexFinset.card = p.length + 1 := by
-  simp [vertexFinset, List.toFinset_card_of_nodup hp, vertices_length]
+lemma card_vertexFinset_of_isSimple {V : Type*} [Quiver V] [DecidableEq V] {a b : V}
+    {p : Path a b} (hp : IsSimple p) : p.vertexFinset.card = p.length + 1 := by
+  simp [vertexFinset, List.toFinset_card_of_nodup hp.vertices_nodup, vertices_length]
 
 /-- A shortest path repeats no vertex. -/
-theorem isPath_of_shortest (p : Path a b) (h_min : ∀ q : Path a b, p.length ≤ q.length) :
-    IsPath p := by
+theorem isSimple_of_shortest (p : Path a b) (h_min : ∀ q : Path a b, p.length ≤ q.length) :
+    IsSimple p := by
   by_contra h
-  obtain ⟨q, hq⟩ := exists_length_lt_of_not_isPath h
+  obtain ⟨q, hq⟩ := exists_length_lt_of_not_isSimple h
   exact absurd (h_min q) (by grind)
 
-/-- The length of a strictly simple path is at most one less than the number of vertices. -/
+/-- The length of a simple path is at most one less than the number of vertices. -/
 lemma length_le_card_minus_one_of_isSimple {V : Type*} [Fintype V] [Quiver V] {a b : V}
-    (p : Path a b) (hp : p.IsPath) : p.length ≤ Fintype.card V - 1 := by
+    (p : Path a b) (hp : p.IsSimple) : p.length ≤ Fintype.card V - 1 := by
   classical
-  have h := (card_vertexFinset_of_isPath hp) ▸ Finset.card_le_univ p.vertexFinset
+  have h := (card_vertexFinset_of_isSimple hp) ▸ Finset.card_le_univ p.vertexFinset
   grind
 
 end Quiver.Path
