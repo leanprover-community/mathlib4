@@ -222,7 +222,7 @@ theorem Preconnected.edgeConnectivity_ne_zero (h : G.Preconnected) : G.edgeConne
 
 @[simp]
 theorem edgeReachability_self : G.edgeReachability v v = ⊤ := by
-  simpa [edgeReachability, iSup_pos, iSup_eq_top] using fun b a ↦ Exists.intro ⊤ a
+  simpa [edgeReachability] using ENat.iSup_id
 
 theorem edgeReachability_comm : G.edgeReachability u v = G.edgeReachability v u := by
   simp only [isEdgeReachable_comm, edgeReachability]
@@ -233,7 +233,7 @@ theorem edgeReachability_eq_top_of_subsingleton [Subsingleton V] : G.edgeReachab
 
 @[simp]
 theorem edgeConnectivity_eq_top_of_subsingleton [Subsingleton V] : G.edgeConnectivity = ⊤ := by
-  simpa [edgeConnectivity, IsEdgeConnected] using ENat.iSup_Cast
+  simpa [edgeConnectivity, IsEdgeConnected] using ENat.iSup_id
 
 theorem edgeConnectivity_le_edgeReachability : G.edgeConnectivity ≤ G.edgeReachability u v :=
   iSup₂_le (fun _ h ↦ IsEdgeReachable.le_edgeReachability (h u v))
