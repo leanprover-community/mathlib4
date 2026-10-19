@@ -274,22 +274,20 @@ include hfG
   (hf.isQuotientCoveringMap_of_properlyDiscontinuousSMul hfG).isLocalHomeomorph
 
 omit hf hfG in
-section
-
 @[to_additive] lemma _root_.isCoveringMapOn_quotientMk_of_properlyDiscontinuousSMul :
     IsCoveringMapOn (Quotient.mk _) <|
       (Quotient.mk <| MulAction.orbitRel G E) '' {e | MulAction.stabilizer G e = ⊥} :=
   isQuotientMap_quotient_mk'.isCoveringMapOn_of_properlyDiscontinuousSMul Quotient.eq''
 
+omit hf hfG in
 @[to_additive] lemma _root_.isQuotientCoveringMap_quotientMk_of_properlyDiscontinuousSMul
     [IsCancelSMul G E] : IsQuotientCoveringMap (Quotient.mk <| MulAction.orbitRel G E) G :=
   isQuotientMap_quotient_mk'.isQuotientCoveringMap_of_properlyDiscontinuousSMul Quotient.eq''
 
+omit hf hfG in
 @[to_additive] lemma _root_.isLocalHomeomorph_quotientMk_of_properlyDiscontinuousSMul
     [IsCancelSMul G E] : IsLocalHomeomorph (Quotient.mk <| MulAction.orbitRel G E) :=
   isQuotientMap_quotient_mk'.isLocalHomeomorph_of_properlyDiscontinuousSMul Quotient.eq''
-
-end
 
 end ProperlyDiscontinuousSMul
 

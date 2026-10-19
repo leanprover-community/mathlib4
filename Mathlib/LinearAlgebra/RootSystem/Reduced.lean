@@ -271,23 +271,21 @@ variable [CommRing S] [Algebra S R] [FaithfulSMul S R] [P.IsValuedIn S]
 variable {i j}
 
 omit [Module.IsTorsionFree R N] in
-section
-
 lemma linearIndependent_iff_coxeterWeightIn_ne_four :
     LinearIndependent R ![P.root i, P.root j] ↔ P.coxeterWeightIn S i j ≠ 4 := by
   rw [linearIndependent_iff_coxeterWeight_ne_four, ← P.algebraMap_coxeterWeightIn S,
     ← map_ofNat (algebraMap S R), (algebraMap_injective S R).ne_iff]
 
+omit [Module.IsTorsionFree R N] in
 lemma coxeterWeightIn_eq_four_iff_not_linearIndependent :
     P.coxeterWeightIn S i j = 4 ↔ ¬ LinearIndependent R ![P.root i, P.root j] := by
   rw [P.linearIndependent_iff_coxeterWeightIn_ne_four S, not_not]
 
+omit [Module.IsTorsionFree R N] in
 lemma coxeterWeightIn_ne_four [P.IsReduced] (h : i ≠ j) (h' : P.root i ≠ -P.root j) :
     P.coxeterWeightIn S i j ≠ 4 := by
   rw [ne_eq, coxeterWeightIn_eq_four_iff_not_linearIndependent, not_not]
   exact IsReduced.linearIndependent P h h'
-
-end
 
 variable (i j)
 

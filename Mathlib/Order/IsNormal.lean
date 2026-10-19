@@ -250,8 +250,6 @@ theorem exists_map_le_lt_map_succ [NoMaxOrder α] [OrderBot α] {f : α → α} 
   exists_map_le_lt_map_succ_of_exists_ge hf ⟨x, hf.strictMono.le_apply⟩ hx
 
 omit [SuccOrder α] in
-section
-
 theorem dirSupClosed_range_of_isCofinal {f : α → β} (hf : IsNormal f) (hf' : IsCofinal (range f)) :
     DirSupClosed (range f) := by
   intro s hs hs₀ _ a ha
@@ -274,19 +272,20 @@ theorem dirSupClosed_range_of_isCofinal {f : α → β} (hf : IsNormal f) (hf' :
   obtain rfl := ha.unique ha'
   exact mem_range_self _
 
+omit [SuccOrder α] in
 theorem dirSupClosed_range {f : α → α} (hf : IsNormal f) : DirSupClosed (range f) :=
   dirSupClosed_range_of_isCofinal hf hf.strictMono.isCofinal_range_of_wellFoundedLT
 
+omit [SuccOrder α] in
 theorem _root_.Order.isNormal_iff_dirSupClosed_range_of_isCofinal [WellFoundedLT β]
     {f : α → β} (hf : StrictMono f) (hf' : IsCofinal (range f)) :
     IsNormal f ↔ DirSupClosed (range f) :=
   ⟨fun hf ↦ dirSupClosed_range_of_isCofinal hf hf', of_dirSupClosed_range hf⟩
 
+omit [SuccOrder α] in
 theorem _root_.Order.isNormal_iff_dirSupClosed_range {f : α → α} (hf : StrictMono f) :
     IsNormal f ↔ DirSupClosed (range f) :=
   ⟨dirSupClosed_range, of_dirSupClosed_range hf⟩
-
-end
 
 end WellFoundedLT
 end IsNormal

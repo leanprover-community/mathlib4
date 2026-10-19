@@ -313,26 +313,25 @@ section
 variable [Fintype (G.incidenceSet v)]
 
 omit [Fintype (G.neighborSet v)] in
-section
-
 @[simp, norm_cast]
 theorem coe_incidenceFinset : (G.incidenceFinset v : Set (Sym2 V)) = G.incidenceSet v := by
   simp [incidenceFinset]
 
+omit [Fintype (G.neighborSet v)] in
 variable {G v} in
 @[simp]
 theorem mem_incidenceFinset {e : Sym2 V} : e ∈ G.incidenceFinset v ↔ e ∈ G.incidenceSet v :=
   Set.mem_toFinset
 
+omit [Fintype (G.neighborSet v)] in
 theorem incidenceFinset_eq_filter [DecidableEq V] [Fintype G.edgeSet] :
     G.incidenceFinset v = {e ∈ G.edgeFinset | v ∈ e} := by
   ext ⟨⟨⟩⟩
   simp [mk'_mem_incidenceSet_iff]
 
+omit [Fintype (G.neighborSet v)] in
 theorem incidenceFinset_subset [Fintype G.edgeSet] : G.incidenceFinset v ⊆ G.edgeFinset :=
   Set.toFinset_subset_toFinset.mpr (G.incidenceSet_subset v)
-
-end
 
 end
 

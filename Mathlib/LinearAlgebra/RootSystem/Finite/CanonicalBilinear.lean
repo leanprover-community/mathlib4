@@ -388,17 +388,17 @@ lemma zero_le_posForm (x : span S (range P.root)) :
 variable [Finite ι]
 
 omit [Fintype ι] in
-section
-
 lemma zero_lt_pairingIn_iff' :
     0 < P.pairingIn S i j ↔ 0 < P.pairingIn S j i :=
   let _i : Fintype ι := Fintype.ofFinite ι
   zero_lt_pairingIn_iff (P.posRootForm S) i j
 
+omit [Fintype ι] in
 lemma pairingIn_lt_zero_iff :
     P.pairingIn S i j < 0 ↔ P.pairingIn S j i < 0 := by
   simpa using P.zero_lt_pairingIn_iff' S (i := i) (j := P.reflectionPerm j j)
 
+omit [Fintype ι] in
 lemma pairingIn_le_zero_iff [NeZero (2 : R)] [IsDomain R] [Module.IsTorsionFree R M] :
     P.pairingIn S i j ≤ 0 ↔ P.pairingIn S j i ≤ 0 := by
   rcases eq_or_ne (P.pairingIn S i j) 0 with hij | hij <;>
@@ -408,8 +408,6 @@ lemma pairingIn_le_zero_iff [NeZero (2 : R)] [IsDomain R] [Module.IsTorsionFree 
   · rw [hji, P.pairingIn_eq_zero_iff.mp hji]
   · rw [le_iff_eq_or_lt, le_iff_eq_or_lt, or_iff_right hij, or_iff_right hji]
     exact P.pairingIn_lt_zero_iff S
-
-end
 
 end IsValuedInOrdered
 

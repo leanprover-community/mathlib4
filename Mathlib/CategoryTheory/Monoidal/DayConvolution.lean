@@ -568,11 +568,9 @@ section
 
 variable [DayConvolution U F]
 
+set_option backward.isDefEq.respectTransparency false in
 omit [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
   (CostructuredArrow (Functor.fromPUnit.{0} (𝟙_ C)) d) (tensorLeft v)] in
-section
-
-set_option backward.isDefEq.respectTransparency false in
 /-- Characterizing the forward direction of `leftUnitor` via the universal maps. -/
 @[reassoc (attr := simp)]
 lemma leftUnitor_hom_unit_app (y : C) :
@@ -592,6 +590,8 @@ lemma leftUnitor_hom_unit_app (y : C) :
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
+omit [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
+  (CostructuredArrow (Functor.fromPUnit.{0} (𝟙_ C)) d) (tensorLeft v)] in
 @[simp, reassoc]
 lemma leftUnitor_inv_app (x : C) :
     (leftUnitor U F).inv.app x =
@@ -605,6 +605,8 @@ lemma leftUnitor_inv_app (x : C) :
   erw [id_apply] -- TODO: remove this `erw` (introduced in #36613)
   simp
 
+omit [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
+  (CostructuredArrow (Functor.fromPUnit.{0} (𝟙_ C)) d) (tensorLeft v)] in
 variable {F} in
 @[reassoc (attr := simp)]
 lemma leftUnitor_naturality {G : C ⥤ V} [DayConvolution U G] (f : F ⟶ G) :
@@ -617,17 +619,13 @@ lemma leftUnitor_naturality {G : C ⥤ V} [DayConvolution U G] (f : F ⟶ G) :
 
 end
 
-end
-
 section
 
 variable [DayConvolution F U]
 
+set_option backward.isDefEq.respectTransparency false in
 omit [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
   (CostructuredArrow (Functor.fromPUnit.{0} (𝟙_ C)) d) (tensorRight v)] in
-section
-
-set_option backward.isDefEq.respectTransparency false in
 /-- Characterizing the forward direction of `rightUnitor` via the universal maps. -/
 @[reassoc (attr := simp)]
 lemma rightUnitor_hom_unit_app (x : C) :
@@ -648,6 +646,8 @@ lemma rightUnitor_hom_unit_app (x : C) :
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
+omit [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
+  (CostructuredArrow (Functor.fromPUnit.{0} (𝟙_ C)) d) (tensorRight v)] in
 @[simp, reassoc]
 lemma rightUnitor_inv_app (x : C) :
     (rightUnitor U F).inv.app x =
@@ -661,6 +661,8 @@ lemma rightUnitor_inv_app (x : C) :
   erw [id_apply] -- TODO: remove this `erw` (introduced in #36613)
   simp
 
+omit [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
+  (CostructuredArrow (Functor.fromPUnit.{0} (𝟙_ C)) d) (tensorRight v)] in
 variable {F} in
 @[reassoc (attr := simp)]
 lemma rightUnitor_naturality {G : C ⥤ V} [DayConvolution G U] (f : F ⟶ G) :
@@ -670,8 +672,6 @@ lemma rightUnitor_naturality {G : C ⥤ V} [DayConvolution G U] (f : F ⟶ G) :
   apply Functor.hom_ext_of_isLeftKanExtension _ (extensionUnitRight U (φ U) F) _
   ext
   simp [whisker_exchange_assoc]
-
-end
 
 end
 

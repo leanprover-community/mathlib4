@@ -222,22 +222,20 @@ open EuclideanGeometry
 
 namespace AffineSubspace
 omit [MeasurableSpace V] [BorelSpace V] [FiniteDimensional ℝ V] in
-section
-
 theorem euclideanHausdorffMeasure_coe_image (d : ℕ) (s : AffineSubspace ℝ P)
     (t : Set s) : μHE[d] (Subtype.val '' t) = μHE[d] t :=
   isometry_subtype_coe.euclideanHausdorffMeasure_image _
 
+omit [MeasurableSpace V] [BorelSpace V] [FiniteDimensional ℝ V] in
 theorem euclideanHausdorffMeasure_preimage_coe (d : ℕ) {s : AffineSubspace ℝ P} {t : Set P} :
     μHE[d] ((Subtype.val : s → P) ⁻¹' t) = μHE[d] (t ∩ s) := by
   rw [isometry_subtype_coe.euclideanHausdorffMeasure_preimage, Subtype.range_coe]
 
+omit [MeasurableSpace V] [BorelSpace V] [FiniteDimensional ℝ V] in
 theorem euclideanHausdorffMeasure_preimage_coe_of_subset (d : ℕ) {s : AffineSubspace ℝ P}
     {t : Set P} (ht : t ⊆ s) :
     μHE[d] ((Subtype.val : s → P) ⁻¹' t) = μHE[d] t := by
   rw [euclideanHausdorffMeasure_preimage_coe, Set.inter_eq_left.mpr ht]
-
-end
 
 end AffineSubspace
 

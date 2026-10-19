@@ -337,32 +337,31 @@ lemma long_eq_three_mul_short :
   simpa using B.pairing_mul_eq_pairing_mul_swap (long P) (short P)
 
 omit [Finite ι] [CharZero R] [IsDomain R] in
-section
-
 /-- `α + β` is short. -/
 @[simp] lemma shortAddLongRoot_shortRoot :
     B.form (shortAddLongRoot P) (shortAddLongRoot P) = B.form (shortRoot P) (shortRoot P) := by
   simp [shortAddLongRoot, shortAddLong]
 
+omit [Finite ι] [CharZero R] [IsDomain R] in
 /-- `2α + β` is short. -/
 @[simp] lemma twoShortAddLongRoot_shortRoot :
     B.form (twoShortAddLongRoot P) (twoShortAddLongRoot P) =
       B.form (shortRoot P) (shortRoot P) := by
   simp [twoShortAddLongRoot, twoShortAddLong]
 
+omit [Finite ι] [CharZero R] [IsDomain R] in
 /-- `3α + β` is long. -/
 @[simp] lemma threeShortAddLongRoot_longRoot :
     B.form (threeShortAddLongRoot P) (threeShortAddLongRoot P) =
       B.form (longRoot P) (longRoot P) := by
   simp [threeShortAddLongRoot, threeShortAddLong]
 
+omit [Finite ι] [CharZero R] [IsDomain R] in
 /-- `3α + 2β` is long. -/
 @[simp] lemma threeShortAddTwoLongRoot_longRoot :
     B.form (threeShortAddTwoLongRoot P) (threeShortAddTwoLongRoot P) =
       B.form (longRoot P) (longRoot P) := by
   simp [threeShortAddTwoLongRoot, threeShortAddTwoLong]
-
-end
 
 end InvariantForm
 
