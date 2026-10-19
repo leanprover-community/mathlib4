@@ -219,12 +219,12 @@ lemma ShiftMkCore.shiftFunctorAdd_eq (h : ShiftMkCore C A) (a b : A) :
 
 set_option quotPrecheck false in
 /-- shifting an object `X` by `n` is obtained by the notation `X⟦n⟧` -/
-notation -- Any better notational suggestions?
+notation3 -- Any better notational suggestions?
 X "⟦" n "⟧" => (shiftFunctor _ n).obj X
 
 set_option quotPrecheck false in
 /-- shifting a morphism `f` by `n` is obtained by the notation `f⟦n⟧'` -/
-notation f "⟦" n "⟧'" => (shiftFunctor _ n).map f
+notation3 f "⟦" n "⟧'" => (shiftFunctor _ n).map f
 
 variable (C)
 variable [HasShift C A]
