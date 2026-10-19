@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Functor.CurryingFour
 public import Mathlib.CategoryTheory.Monoidal.Functor
+
 /-!
 
 # Constructing monoidal categories and monoidal functors from multifunctors
