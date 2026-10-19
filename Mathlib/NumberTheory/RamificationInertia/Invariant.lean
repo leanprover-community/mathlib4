@@ -34,6 +34,73 @@ by `Algebra.FormallyUnramified.descentMultiplier`.
 
 open scoped Pointwise TensorProduct
 
+section LiftBaseChange
+
+namespace LinearMap
+
+variable {R M N : Type*} (A : Type*) [CommSemiring R] [CommSemiring A] [Algebra R A]
+  [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
+  [Module A N] [IsScalarTower R A N]
+
+lemma liftBaseChange_comp_baseChange {P} [AddCommMonoid P] [Module R P]
+    (l : M →ₗ[R] N) (l' : P →ₗ[R] M) :
+    (l.liftBaseChange A).comp (l'.baseChange A) = (l.comp l').liftBaseChange A := by
+  ext
+  simp
+
+lemma le_comap_liftBaseChange (l : M →ₗ[R] N) (p : Submodule R M) (q : Submodule A N)
+    (hl : p ≤ (q.restrictScalars R).comap l) : p.baseChange A ≤ q.comap (l.liftBaseChange A) := by
+  rw [Submodule.baseChange, LinearMap.range_le_iff_comap, ← Submodule.comap_comp,
+    liftBaseChange_comp_baseChange, ← LinearMap.range_le_iff_comap,
+    LinearMap.range_liftBaseChange, Submodule.span_le]
+  rintro _ ⟨x, rfl⟩
+  exact hl x.property
+
+end LinearMap
+
+end LiftBaseChange
+
+section Sec
+
+namespace Algebra.FormallyUnramified
+
+variable (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
+  [FormallyUnramified R S] [EssFiniteType R S]
+  (M : Type*) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
+
+lemma sec_apply (x : M) : sec R S M x =
+    ((LinearMap.toSpanSingleton S M x).restrictScalars R).baseChange S (elem R S) :=
+  rfl
+
+@[simp]
+lemma sec_one : sec R S S 1 = elem R S := by
+  rw [sec_apply]
+  have h : LinearMap.toSpanSingleton S S 1 = LinearMap.id := by ext; simp
+  simp [h]
+
+variable {M} in
+lemma sec_comp {N : Type*} [AddCommGroup N]
+    [Module R N] [Module S N] [IsScalarTower R S N] (f : M →ₗ[S] N) :
+    (sec R S N).comp f = ((f.restrictScalars R).baseChange S).comp (sec R S M) := by
+  ext x
+  simp [sec_apply, ← f.comp_toSpanSingleton, LinearMap.baseChange_comp]
+
+variable {M} in
+@[simp]
+lemma baseChange_sec {N : Type*} [AddCommGroup N]
+    [Module R N] [Module S N] [IsScalarTower R S N] (f : M →ₗ[S] N) (x : M) :
+    (f.restrictScalars R).baseChange S (sec R S M x) = sec R S N (f x) :=
+  (congr($(sec_comp R S f) x)).symm
+
+variable {M} in
+lemma sec_mem_baseChange (P : Submodule S M) {x : M} (hx : x ∈ P) :
+    sec R S M x ∈ (P.restrictScalars R).baseChange S :=
+  ⟨sec R S P ⟨x, hx⟩, baseChange_sec R S P.subtype ⟨x, hx⟩⟩
+
+end Algebra.FormallyUnramified
+
+end Sec
+
 namespace Algebra.FormallyUnramified
 
 open Algebra.TensorProduct
@@ -99,19 +166,13 @@ lemma linearize_apply (f : M →ₗ[A] N) : linearize B f = (f.liftBaseChange B)
 lemma le_comap_linearize (f : M →ₗ[A] N) (P : Submodule B M) (Q : Submodule B N)
     (hf : P.restrictScalars A ≤ (Q.restrictScalars A).comap f) : P ≤ Q.comap (linearize B f) := by
   intro x hx
-  simp_rw [Submodule.mem_comap, linearize_apply, sec, LinearMap.comp_apply, LinearMap.coe_mk]
-  induction elem A B using TensorProduct.inductionOn with
-  | tmul a b => exact Q.smul_mem a (hf (P.smul_mem b hx))
-  | add t₁ t₂ h₁ h₂ => simpa using Q.add_mem h₁ h₂
+  exact f.le_comap_liftBaseChange B (P.restrictScalars A) Q hf (sec_mem_baseChange A B P hx)
 
 @[simp]
 lemma linearize_comp (f : M →ₗ[A] N) (g : L →ₗ[B] M) :
     linearize B (f.comp (g.restrictScalars A)) = (linearize B f).comp g := by
-  ext x
-  simp_rw [linearize_apply, sec, LinearMap.comp_apply, LinearMap.coe_mk]
-  induction elem A B using TensorProduct.inductionOn with
-  | tmul => simp
-  | add => simp_all
+  rw [linearize_apply, linearize_apply, LinearMap.comp_assoc, sec_comp,
+    ← LinearMap.comp_assoc, LinearMap.liftBaseChange_comp_baseChange]
 
 @[simp]
 lemma linearize_comp_mulLeft (f : B →ₗ[A] N) (b : B) :
@@ -136,10 +197,8 @@ lemma linearize_toAlgHom (g : G) :
     linearize B (MulSemiringAction.toAlgHom A B g).toLinearMap =
       LinearMap.mulLeft B (smulIdempotent A B g) := by
   apply LinearMap.ext_ring
-  simp_rw [linearize_apply, sec, LinearMap.comp_apply, LinearMap.coe_mk, smulIdempotent]
-  induction elem A B using TensorProduct.inductionOn with
-  | tmul => simp
-  | add => simp_all
+  simp [linearize_apply]
+  rfl
 
 end Linearize
 
