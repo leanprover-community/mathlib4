@@ -96,8 +96,8 @@ theorem commute_trans {a b c : FreeGroup α} (h₁ : Commute a b) (h₂ : Commut
 theorem commute_iff_exists_zpow {a b : FreeGroup α} :
     Commute a b ↔ ∃ c, ∃ n m : ℤ, a = c ^ n ∧ b = c ^ m := by
   refine ⟨fun h ↦ ?_, by simp +contextual⟩
-  rcases eq_or_ne b 1 with rfl | hb
-  · exact ⟨a, 1, 0, by simp⟩
+  by_cases hb : b = 1
+  · exact ⟨a, 1, 0, by simp [hb]⟩
   obtain ⟨g, hg⟩ := isCyclic_centralizer hb
   obtain ⟨n, hn⟩ := hg ⟨a, Subgroup.mem_centralizer_singleton_iff.mpr h.eq⟩
   obtain ⟨m, hm⟩ := hg ⟨b, Subgroup.mem_centralizer_singleton_iff.mpr rfl⟩
