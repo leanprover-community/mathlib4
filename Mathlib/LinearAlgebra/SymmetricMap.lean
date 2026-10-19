@@ -737,27 +737,20 @@ open Equiv
 
 variable [Fintype ι] [DecidableEq ι]
 
--- private theorem alternization_map_eq_zero_of_eq_aux (m : MultilinearMap R (fun _ : ι ↦ M) N')
---     (v : ι → M) (i j : ι) (i_ne_j : i ≠ j) (hv : v i = v j) :
---     (∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ) v = 0 := by
---   rw [sum_apply]
---   exact
---     Finset.sum_involution (fun σ _ ↦ swap i j * σ)
---       (fun σ _ ↦ by simp [Perm.sign_swap i_ne_j, apply_swap_eq_self hv])
---       (fun σ _ _ ↦ (not_congr swap_mul_eq_iff).mpr i_ne_j) (fun σ _ ↦ Finset.mem_univ _)
---       fun σ _ ↦ swap_mul_involutive i j σ
-
 /-- Produce a `SymmetricMap` out of a `MultilinearMap`, by summing over all argument
 permutations. -/
 def symmetrization : MultilinearMap R (fun _ : ι ↦ M) N' →+ M [Sym^ι]→ₗ[R] N' where
   toFun m :=
     { ∑ σ : Perm ι, m.domDomCongr σ with
       toFun := ⇑(∑ σ : Perm ι, m.domDomCongr σ)
-      -- proof in the alternating case is essentially alternization_map_eq_zero_of_eq_aux
-      -- TODO: think about this and fill it in!
       map_eq_map_of_swap' v i j _ := by
-        rw [sum_apply]
-        sorry }
+        simp only [sum_apply, domDomCongr_apply, Function.comp_apply, sum_apply]
+        let f (x : Perm ι) := m fun i' ↦ v ((swap i j) (x i'))
+        let g (x : Perm ι) := m fun i' ↦ v (x i')
+        have aux : ∑ x, f x = ∑ x, g x := by
+          apply Fintype.sum_bijective (fun x ↦ x.trans (Equiv.swap i j)) ?_ f g (by simp [f, g])
+          exact Function.Involutive.bijective (by intro; grind)
+        convert aux }
   map_add' a b := by ext; simp [Finset.sum_add_distrib]
   map_zero' := by ext; simp
 
