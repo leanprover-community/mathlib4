@@ -910,10 +910,6 @@ mutual
 /-- Apply attributes to the original and translated declarations. -/
 partial def applyAttributes (t : TranslateData) (cfg : Config) (src tgt : Name) :
     TermElabM (Array Name) := do
-  if !cfg.existing && !cfg.none then
-    -- Copy the `instance` attribute, since it is nice to directly tag `instance` declarations.
-    copyInstanceAttribute src tgt
-    copyAliasAttribute t src tgt
   -- Warn users if the original declaration has an attribute
   if !cfg.existing && !cfg.none && linter.existingAttributeWarning.get (← getOptions) then
     let appliedAttrs ← getAllSimpAttrs src
@@ -1049,6 +1045,11 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
     -- TODO: `Syntax.missing` means we do not add binders to the context,
     -- so the docstring is going to have incomplete syntax highlighting.
     addDocString tgt Syntax.missing doc |>.run'.run'
+  if !alreadyExists && !cfg.none then
+    -- Copy the attribute from an `instance` declaration.
+    copyInstanceAttribute src tgt
+    -- Copy the attribute from an `alias` declaration.
+    copyAliasAttribute t src tgt
   let nestedNames ← copyMetaData t cfg src tgt
   -- add pop-up information when mousing over the given translated name
   -- (the information will be over the attribute if no translated name is given)
