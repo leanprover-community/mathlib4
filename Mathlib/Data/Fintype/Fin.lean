@@ -96,7 +96,7 @@ namespace List
 variable {α : Type*} {n : ℕ}
 
 @[simp]
-theorem count_ofFn [DecidableEq α] (a : α) (f : Fin n → α) :
+theorem count_ofFn [DecidableEq α] (f : Fin n → α) (a : α) :
     (List.ofFn f).count a = #{i | f i = a} := by
   simp [← List.Vector.toList_ofFn, ← Fin.card_filter_univ_eq_vector_get_eq_count]
 
