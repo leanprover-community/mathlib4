@@ -525,8 +525,7 @@ theorem isEmpty_linearEquiv_iff_forall_linearMap_eq_zero [IsSimpleModule R M] [I
   have : Nontrivial M := IsSimpleModule.nontrivial R M
   obtain ⟨v, hv⟩ := exists_ne (0 : M)
   apply hv
-  rw [← LinearEquiv.symm_apply_apply f v, ← LinearEquiv.coe_toLinearMap f, hf f, zero_apply,
-      map_zero]
+  rw [← LinearEquiv.symm_apply_apply f v, ← f.coe_toLinearMap, hf f, zero_apply, map_zero]
 
 /-- Schur's Lemma makes the endomorphism ring of a simple module a division ring. -/
 noncomputable instance _root_.Module.End.instDivisionRing
