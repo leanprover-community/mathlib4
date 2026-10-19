@@ -39,7 +39,7 @@ def horn (n : ℕ) (i : Fin (n + 1)) : (Δ[n] : SSet.{u}).Subcomplex where
     exact Set.range_comp_subset_range _ _ hj)
 
 /-- The `i`-th horn `Λ[n, i]` of the standard `n`-simplex -/
-scoped[Simplicial] notation3 "Λ[" n ", " i "]" => SSet.horn (n : ℕ) i
+scoped[Simplicial] notation +delab "Λ[" n ", " i "]" => SSet.horn (n : ℕ) i
 
 lemma mem_horn_iff {n : ℕ} (i : Fin (n + 1)) {m : SimplexCategoryᵒᵖ} (x : Δ[n].obj m) :
     x ∈ (horn n i).obj m ↔ Set.range (stdSimplex.asOrderHom x) ∪ {i} ≠ Set.univ := Iff.rfl

@@ -37,8 +37,9 @@ namespace IsCyclotomicExtension.Rat.Three
 
 variable {K : Type*} [Field K]
 variable {ζ : K} (hζ : IsPrimitiveRoot ζ 3) (u : (𝓞 K)ˣ)
-local notation3 "η" => (IsPrimitiveRoot.isUnit (hζ.toInteger_isPrimitiveRoot) (by decide)).unit
-local notation3 "λ" => hζ.toInteger - 1
+local notation +delab "η" =>
+  (IsPrimitiveRoot.isUnit (hζ.toInteger_isPrimitiveRoot) (by decide)).unit
+local notation +delab "λ" => hζ.toInteger - 1
 
 lemma coe_eta : (η : 𝓞 K) = hζ.toInteger := rfl
 

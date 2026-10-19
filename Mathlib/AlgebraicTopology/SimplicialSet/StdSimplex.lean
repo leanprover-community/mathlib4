@@ -37,7 +37,7 @@ Yoneda embedding). -/
 def stdSimplex : CosimplicialObject SSet.{u} := uliftYoneda
 
 @[inherit_doc SSet.stdSimplex]
-scoped[Simplicial] notation3 "Δ[" n "]" => SSet.stdSimplex.obj (SimplexCategory.mk n)
+scoped[Simplicial] notation +delab "Δ[" n "]" => SSet.stdSimplex.obj (SimplexCategory.mk n)
 
 instance : Inhabited SSet :=
   ⟨Δ[0]⟩

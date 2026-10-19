@@ -1,4 +1,4 @@
-import Mathlib.Util.Notation3
+import Mathlib.Util.NotationDelab
 import Mathlib.Data.Nat.Basic
 
 set_option linter.style.setOption false
@@ -7,13 +7,13 @@ set_option autoImplicit true
 
 namespace Test
 
--- set_option trace.notation3 true
+-- set_option trace.notationDelab true
 
 def Filter (α : Type) : Type := (α → Prop) → Prop
 def Filter.atTop [Preorder α] : Filter α := fun _ => True
 def Filter.eventually (p : α → Prop) (f : Filter α) := f p
 
-notation3 "∀ᶠ " (...) " in " f ", " r:(scoped p => Filter.eventually p f) => r
+notation +delab "∀ᶠ " (...) " in " f ", " r:(scoped p => Filter.eventually p f) => r
 
 /-- info: ∀ᶠ (x : ℕ) (y : ℕ) in Filter.atTop, x < y : Prop -/
 #guard_msgs in #check ∀ᶠ (x : Nat) (y) in Filter.atTop, x < y
@@ -65,13 +65,13 @@ end
 
 
 -- Testing lambda expressions:
-notation3 "∀ᶠ' " f ", " p => Filter.eventually (fun x => (p : _ → _) x) f
+notation +delab "∀ᶠ' " f ", " p => Filter.eventually (fun x => (p : _ → _) x) f
 /-- info: ∀ᶠ' Filter.atTop, fun x ↦ x < 3 : Prop -/
 #guard_msgs in #check ∀ᶠ' Filter.atTop, fun x => x < 3
 
 def foobar (p : α → Prop) (f : Prop) := ∀ x, p x = f
 
-notation3 "∀ᶠᶠ " (...) " in " f ": "
+notation +delab "∀ᶠᶠ " (...) " in " f ": "
   r1:(scoped p => Filter.eventually p f) ", " r2:(scoped p => foobar p r1) => r2
 
 /-- info: ∀ᶠᶠ (x : ℕ) (y : ℕ) in Filter.atTop: x < y, x = y : Prop -/
@@ -83,7 +83,7 @@ notation3 "∀ᶠᶠ " (...) " in " f ": "
 /-- info: foobar (fun y ↦ y = 1) (∀ᶠ (x : ℕ) in Filter.atTop, x < 3) : Prop -/
 #guard_msgs in #check foobar (fun y ↦ Eq y 1) (Filter.atTop.eventually fun x ↦ LT.lt x 3)
 
-notation3 "∃' " (...) ", " r:(scoped p => Exists p) => r
+notation +delab "∃' " (...) ", " r:(scoped p => Exists p) => r
 /-- info: ∃' (a : ℕ) (_ : a < 3), a < 3 : Prop -/
 #guard_msgs in #check ∃' a < 3, a < 3
 /-- info: ∃' (x : ℕ) (_ : x < 3), True : Prop -/
@@ -92,12 +92,12 @@ notation3 "∃' " (...) ", " r:(scoped p => Exists p) => r
 #guard_msgs in #check ∃' (x < 1) (_ < 2), x = 0
 
 def func (x : α) : α := x
-notation3 "func! " (...) ", " r:(scoped p => func p) => r
+notation +delab "func! " (...) ", " r:(scoped p => func p) => r
 /-- info: (func! (x : ℕ → ℕ), x) fun x ↦ x * 2 : ℕ → ℕ -/
 #guard_msgs in #check (func! (x : Nat → Nat), x) (· * 2)
 
 structure MyUnit where
-notation3 "~{" (x"; "* => foldl (a b => (a, b)) MyUnit) "}~" => x
+notation +delab "~{" (x"; "* => foldl (a b => (a, b)) MyUnit) "}~" => x
 /-- info: ~{1; true; ~{2}~}~ : ((Type × ℕ) × Bool) × Type × ℕ -/
 #guard_msgs in #check ~{1; true; ~{2}~}~
 /-- info: ~{}~ : Type -/
@@ -105,19 +105,19 @@ notation3 "~{" (x"; "* => foldl (a b => (a, b)) MyUnit) "}~" => x
 
 structure MyUnit' where
 instance : OfNat MyUnit' (nat_lit 0) := ⟨{}⟩
-notation3 "MyUnit'0" => (0 : MyUnit')
+notation +delab "MyUnit'0" => (0 : MyUnit')
 /-- info: MyUnit'0 : MyUnit' -/
 #guard_msgs in #check (0 : MyUnit')
 /-- info: 0 : ℕ -/
 #guard_msgs in #check 0
 
-notation3 "%[" (x", "* => foldr (a b => a :: b) []) "]" => x
+notation +delab "%[" (x", "* => foldr (a b => a :: b) []) "]" => x
 /-- info: %[1, 2, 3] : List ℕ -/
 #guard_msgs in #check %[1, 2, 3]
 
 def foo (a : Nat) (f : Nat → Nat) := a + f a
 def bar (a b : Nat) := a * b
-notation3 "*[" x "] " (...) ", " v:(scoped c => bar x (foo x c)) => v
+notation +delab "*[" x "] " (...) ", " v:(scoped c => bar x (foo x c)) => v
 /-- info: *[1] (x : ℕ) (y : ℕ), x + y : ℕ -/
 #guard_msgs in #check *[1] (x) (y), x + y
 /-- info: bar 1 : ℕ → ℕ -/
@@ -126,26 +126,26 @@ notation3 "*[" x "] " (...) ", " v:(scoped c => bar x (foo x c)) => v
 -- Checking that the `<|` macro is expanded when making matcher
 def foo' (a : Nat) (f : Nat → Nat) := a + f a
 def bar' (a b : Nat) := a * b
-notation3 "*'[" x "] " (...) ", " v:(scoped c => bar' x <| foo' x c) => v
+notation +delab "*'[" x "] " (...) ", " v:(scoped c => bar' x <| foo' x c) => v
 /-- info: *'[1] (x : ℕ) (y : ℕ), x + y : ℕ -/
 #guard_msgs in #check *'[1] (x) (y), x + y
 /-- info: bar' 1 : ℕ → ℕ -/
 #guard_msgs in #check bar' 1
 
 -- Need to give type ascription to `p` so that `p x` elaborates when making matcher
-notation3 "MyPi " (...) ", " r:(scoped p => (x : _) → (p : _ → _) x) => r
+notation +delab "MyPi " (...) ", " r:(scoped p => (x : _) → (p : _ → _) x) => r
 /-- info: MyPi (x : ℕ) (y : ℕ), x < y : Prop -/
 #guard_msgs in #check MyPi (x : Nat) (y : Nat), x < y
 
 -- The notation parses fine, but the delaborator never succeeds, which is expected
 def myId (x : α) := x
-notation3 "BAD " c "; " (x", "* => foldl (a b => b) c) " DAB" => myId x
+notation +delab "BAD " c "; " (x", "* => foldl (a b => b) c) " DAB" => myId x
 /-- info: myId 3 : ℕ -/
 #guard_msgs in #check BAD 1; 2, 3 DAB
 
 section
 variable (x : Nat)
-local notation3 "y" => x + 1
+local notation +delab "y" => x + 1
 /-- info: y : ℕ -/
 #guard_msgs in #check y
 /-- info: y : ℕ -/
@@ -154,7 +154,7 @@ end
 
 section
 variable (α : Type u) [Add α]
-local notation3 x " +α " y => (x + y : α)
+local notation +delab x " +α " y => (x + y : α)
 variable (x y : α)
 /-- info: x +α y : α -/
 #guard_msgs in #check x +α y
@@ -176,24 +176,25 @@ but is expected to have type
 in the application
   idStr Nat.zero
 ---
-warning: Was not able to generate a pretty printer for this notation. If you do not expect it to be pretty printable, then you can use `notation3 (prettyPrint := false)`. If the notation expansion refers to section variables, be sure to do `local notation3`. Otherwise, you might be able to adjust the notation expansion to make it matchable; pretty printing relies on deriving an expression matcher from the expansion. (Use `set_option trace.notation3 true` to get some debug information.)
+warning: Was not able to generate a pretty printer for this notation. If you do not expect it to be pretty printable, then you can use `macro` or `syntax` and `macro_rules` instead. If the notation expansion refers to section variables, be sure to do `local notation +delab`. Otherwise, you might be able to adjust the notation expansion to make it matchable; pretty printing relies on deriving an expression matcher from the expansion. (Use `set_option trace.notationDelab true` to get some debug information.)
 -/
 #guard_msgs in
-notation3 "error" => idStr Nat.zero
+notation +delab "error" => idStr Nat.zero
 
 section
 /--
 warning: Was not able to generate a pretty printer for this notation. If you do not expect it to be
-pretty printable, then you can use `notation3 (prettyPrint := false)`. If the notation expansion
-refers to section variables, be sure to do `local notation3`. Otherwise, you might be able to adjust
-the notation expansion to make it matchable; pretty printing relies on deriving an expression
-matcher from the expansion. (Use `set_option trace.notation3 true` to get some debug information.)
+pretty printable, then you can use `macro` or `syntax` and `macro_rules` instead. If the notation
+expansion refers to section variables, be sure to do `local notation +delab`. Otherwise, you might
+be able to adjust the notation expansion to make it matchable; pretty printing relies on deriving an expression
+matcher from the expansion. (Use `set_option trace.notationDelab true` to get some debug information.)
 -/
-#guard_msgs (warning, drop error) in local notation3 "#" n => Fin.mk n (by decide)
+#guard_msgs (warning, drop error) in local notation +delab "#" n => Fin.mk n (by decide)
 end
 
 section
 set_option linter.unusedTactic false
+set_option linter.deprecated false in
 local notation3 (prettyPrint := false) "#" n => Fin.mk n (by decide)
 
 example : Fin 5 := #1
@@ -209,7 +210,7 @@ end
 
 section test_scoped
 
-scoped[MyNotation] notation3 "π" => (3 : Nat)
+scoped[MyNotation] notation +delab "π" => (3 : Nat)
 
 /-- error: Unknown identifier `π` -/
 #guard_msgs in #check π
@@ -226,19 +227,19 @@ Verifying that delaborator does not match the exact `Inhabited` instance.
 Instead, it matches that it's an application of `Inhabited.default` whose first argument is `Nat`.
 -/
 /--
-trace: [notation3] syntax declaration has name Test.termδNat
+trace: [notationDelab] syntax declaration has name Test.termδNat
 ---
-trace: [notation3] Generating matcher for pattern default
-[notation3] Matcher creation succeeded; assembling delaborator
-[notation3] matcher:
+trace: [notationDelab] Generating matcher for pattern default
+[notationDelab] Matcher creation succeeded; assembling delaborator
+[notationDelab] matcher:
       matchApp✝ (matchApp✝ (matchExpr✝ (Expr.isConstOf✝ · `Inhabited.default)) (matchExpr✝ (Expr.isConstOf✝ · `Nat)))
           pure✝ >=>
         pure✝
-[notation3] Creating delaborator for key Mathlib.Notation3.DelabKey.app (some `Inhabited.default) 2
+[notationDelab] Creating delaborator for key Mathlib.Notation3.DelabKey.app (some `Inhabited.default) 2
 -/
 #guard_msgs in
-set_option trace.notation3 true in
-notation3 "δNat" => (default : Nat)
+set_option trace.notationDelab true in
+notation +delab "δNat" => (default : Nat)
 
 /-- info: δNat : ℕ -/
 #guard_msgs in #check (default : Nat)
@@ -246,10 +247,10 @@ notation3 "δNat" => (default : Nat)
 #guard_msgs in #check @default Nat (Inhabited.mk 5)
 
 
-notation3 "(" "ignorez " "SVP" ")" => Sort _
-notation3 "Objet " "mathématique " "supérieur" => Type _
-notation3 "Énoncé" => Prop
-notation3 "Objet " "mathématique" => Type
+notation +delab "(" "ignorez " "SVP" ")" => Sort _
+notation +delab "Objet " "mathématique " "supérieur" => Type _
+notation +delab "Énoncé" => Prop
+notation +delab "Objet " "mathématique" => Type
 /-- info: 1 = 1 : Énoncé -/
 #guard_msgs in #check 1 = 1
 /-- info: Énoncé : Objet mathématique -/
@@ -262,3 +263,7 @@ notation3 "Objet " "mathématique" => Type
 #guard_msgs in #check PSum
 
 end Test
+
+/-- warning: `notation3` has been deprecated: use `notation +delab` instead -/
+#guard_msgs in
+notation3 "deprecatedNotation3" => (0 : Nat)

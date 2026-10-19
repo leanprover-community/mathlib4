@@ -64,14 +64,14 @@ namespace NoetherNormalization
 section equivT
 
 /-- `up` is defined as `2 + f.totalDegree`. Any big enough number would work. -/
-local notation3 "up" => 2 + f.totalDegree
+local notation +delab "up" => 2 + f.totalDegree
 
 variable {f v} in
 private lemma lt_up (vlt : ∀ i, v i < up) : ∀ l ∈ ofFn v, l < up := by
   grind
 
 /-- `r` maps `(i : Fin (n + 1))` to `up ^ i`. -/
-local notation3 "r" => fun (i : Fin (n + 1)) ↦ up ^ i.1
+local notation +delab "r" => fun (i : Fin (n + 1)) ↦ up ^ i.1
 
 /-- We construct an algebra map `T1 f c` which maps `X_i` into `X_i + c • X_0 ^ r_i` when `i ≠ 0`
 and `X_0` to `X_0`. -/

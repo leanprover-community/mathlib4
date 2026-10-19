@@ -153,8 +153,9 @@ open NumberField IsCyclotomicExtension.Rat.Three
 variable {K : Type*} [Field K]
 variable {ζ : K} (hζ : IsPrimitiveRoot ζ 3)
 
-local notation3 "η" => (IsPrimitiveRoot.isUnit (hζ.toInteger_isPrimitiveRoot) (by decide)).unit
-local notation3 "λ" => hζ.toInteger - 1
+local notation +delab "η" =>
+  (IsPrimitiveRoot.isUnit (hζ.toInteger_isPrimitiveRoot) (by decide)).unit
+local notation +delab "λ" => hζ.toInteger - 1
 
 /-- `FermatLastTheoremForThreeGen` is the statement that `a ^ 3 + b ^ 3 = u * c ^ 3` has no
 nontrivial solutions in `𝓞 K` for all `u : (𝓞 K)ˣ` such that `¬ λ ∣ a`, `¬ λ ∣ b` and `λ ∣ c`.

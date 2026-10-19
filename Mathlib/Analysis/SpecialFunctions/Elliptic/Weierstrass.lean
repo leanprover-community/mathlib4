@@ -220,7 +220,7 @@ def weierstrassPExcept (l₀ : ℂ) (z : ℂ) : ℂ :=
   ∑' l : L.lattice, if l = l₀ then 0 else (1 / (z - l) ^ 2 - 1 / l ^ 2)
 
 @[inherit_doc weierstrassPExcept]
-scoped notation3 "℘[" L:max " - " l₀ "]" => weierstrassPExcept L l₀
+scoped notation +delab "℘[" L:max " - " l₀ "]" => weierstrassPExcept L l₀
 
 lemma hasSumLocallyUniformly_weierstrassPExcept (l₀ : ℂ) :
     HasSumLocallyUniformly
@@ -267,7 +267,7 @@ section weierstrassP
 /-- The Weierstrass `℘` function. This has the notation `℘[L]` in the namespace `PeriodPairs`. -/
 def weierstrassP (z : ℂ) : ℂ := ∑' l : L.lattice, (1 / (z - l) ^ 2 - 1 / l ^ 2)
 
-@[inherit_doc weierstrassP] scoped notation3 "℘[" L "]" => weierstrassP L
+@[inherit_doc weierstrassP] scoped notation +delab "℘[" L "]" => weierstrassP L
 
 lemma weierstrassPExcept_add (l₀ : L.lattice) (z : ℂ) :
     ℘[L - l₀] z + (1 / (z - l₀.1) ^ 2 - 1 / l₀.1 ^ 2) = ℘[L] z := by
@@ -336,7 +336,7 @@ def derivWeierstrassPExcept (l₀ : ℂ) (z : ℂ) : ℂ :=
   ∑' l : L.lattice, if l.1 = l₀ then 0 else -2 / (z - l) ^ 3
 
 @[inherit_doc derivWeierstrassPExcept]
-scoped notation3 "℘'[" L:max " - " l₀ "]" => derivWeierstrassPExcept L l₀
+scoped notation +delab "℘'[" L:max " - " l₀ "]" => derivWeierstrassPExcept L l₀
 
 lemma hasSumLocallyUniformly_derivWeierstrassPExcept (l₀ : ℂ) :
     HasSumLocallyUniformly (fun (l : L.lattice) (z : ℂ) ↦ if l.1 = l₀ then 0 else -2 / (z - l) ^ 3)
@@ -518,7 +518,7 @@ section derivWeierstrassP
 This has the notation `℘'[L]` in the namespace `PeriodPairs`. -/
 def derivWeierstrassP (z : ℂ) : ℂ := - ∑' l : L.lattice, 2 / (z - l) ^ 3
 
-@[inherit_doc weierstrassP] scoped notation3 "℘'[" L "]" => derivWeierstrassP L
+@[inherit_doc weierstrassP] scoped notation +delab "℘'[" L "]" => derivWeierstrassP L
 
 lemma derivWeierstrassPExcept_sub (l₀ : L.lattice) (z : ℂ) :
     ℘'[L - l₀] z - 2 / (z - l₀) ^ 3 = ℘'[L] z := by

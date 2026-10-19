@@ -254,19 +254,19 @@ def modelWithCornersEuclideanQuadrant (n : ℕ) :
 
 /-- The model space used to define `n`-dimensional real manifolds without boundary. -/
 scoped[Manifold]
-  notation3 "𝓡 " n =>
+  notation +delab "𝓡 " n =>
     (modelWithCornersSelf ℝ (EuclideanSpace ℝ (Fin n)) :
       ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanSpace ℝ (Fin n)))
 
 /-- The model space used to define `n`-dimensional real manifolds with boundary. -/
 scoped[Manifold]
-  notation3 "𝓡∂ " n =>
+  notation +delab "𝓡∂ " n =>
     (modelWithCornersEuclideanHalfSpace n :
       ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n))
 
 /-- The model space used to define `n`-dimensional real manifolds with corners. -/
 scoped[Manifold]
-  notation3 "𝓡c " n =>
+  notation +delab "𝓡c " n =>
     (modelWithCornersEuclideanQuadrant n :
       ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanQuadrant n))
 

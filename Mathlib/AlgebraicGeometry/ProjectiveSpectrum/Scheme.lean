@@ -117,13 +117,13 @@ open CategoryTheory Opposite
 open ProjectiveSpectrum.StructureSheaf
 
 -- Porting note: currently require lack of hygiene to use in variable declarations
--- maybe all make into notation3?
+-- maybe all make into `notation +delab`?
 set_option hygiene false
 /-- `Proj` as a locally ringed space -/
-local notation3 "Proj" => Proj.toLocallyRingedSpace 𝒜
+local notation +delab "Proj" => Proj.toLocallyRingedSpace 𝒜
 
 /-- The underlying topological space of `Proj` -/
-local notation3 "Proj.T" => PresheafedSpace.carrier <| SheafedSpace.toPresheafedSpace
+local notation +delab "Proj.T" => PresheafedSpace.carrier <| SheafedSpace.toPresheafedSpace
   <| LocallyRingedSpace.toSheafedSpace <| Proj.toLocallyRingedSpace 𝒜
 
 /-- `Proj` restrict to some open set -/
@@ -143,13 +143,13 @@ local notation "pbo " x => ProjectiveSpectrum.basicOpen 𝒜 x
 local notation "sbo " f => PrimeSpectrum.basicOpen f
 
 /-- `Spec` as a locally ringed space -/
-local notation3 "Spec " ring => Spec.locallyRingedSpaceObj ↧ring
+local notation +delab "Spec " ring => Spec.locallyRingedSpaceObj ↧ring
 
 /-- the underlying topological space of `Spec` -/
 local notation "Spec.T " ring =>
   (Spec.locallyRingedSpaceObj ↧ring).toSheafedSpace.toPresheafedSpace.1
 
-local notation3 "A⁰_ " f => HomogeneousLocalization.Away 𝒜 f
+local notation +delab "A⁰_ " f => HomogeneousLocalization.Away 𝒜 f
 
 namespace ProjIsoSpecTopComponent
 

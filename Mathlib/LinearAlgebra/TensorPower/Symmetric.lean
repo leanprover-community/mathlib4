@@ -118,7 +118,7 @@ def tprod : MultilinearMap R (fun _ : ι ↦ M) Sym[R] ι M :=
 
 unsuppress_compilation in
 @[inherit_doc tprod]
-notation3:100 "⨂ₛ["R"] "(...)", "r:(scoped f => tprod R f) => r
+notation:100 +delab "⨂ₛ["R"] "(...)", "r:(scoped f => tprod R f) => r
 
 variable {R ι M} in
 @[simp] lemma tprod_equiv (e : Perm ι) (f : ι → M) :

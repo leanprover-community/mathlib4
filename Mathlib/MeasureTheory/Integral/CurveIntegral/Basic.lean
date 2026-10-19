@@ -127,7 +127,7 @@ noncomputable irreducible_def curveIntegral (lemma := curveIntegral_def')
   ∫ t in 0..1, curveIntegralFun ω γ t
 
 @[inherit_doc curveIntegral]
-notation3 "∫ᶜ "(...)" in " γ ", "r:67:(scoped ω => curveIntegral ω γ) => r
+notation +delab "∫ᶜ "(...)" in " γ ", "r:67:(scoped ω => curveIntegral ω γ) => r
 
 /-- curve integral is defined using Bochner integral,
 thus it is defined as zero whenever the codomain is not a complete space. -/

@@ -8635,7 +8635,7 @@ public import Mathlib.Util.Export
 public import Mathlib.Util.FormatTable
 public import Mathlib.Util.GetAllModules
 public import Mathlib.Util.LongNames
-public import Mathlib.Util.Notation3
+public import Mathlib.Util.NotationDelab
 public import Mathlib.Util.PPOptions
 public import Mathlib.Util.ParseCommand
 public import Mathlib.Util.PrintSorries

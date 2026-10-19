@@ -107,7 +107,7 @@ namespace Hollom
     (∀ x y z, p x y z) ↔ ∀ x y z, p (toHollom x) (toHollom y) (toHollom z) := by aesop
 @[simp] lemma «exists» {p : Hollom → Prop} : (∃ x, p x) ↔ ∃ x, p (toHollom x) := by aesop
 
-local notation3 "h(" x ", " y ", " z ")" => toHollom (x, y, z)
+local notation +delab "h(" x ", " y ", " z ")" => toHollom (x, y, z)
 
 @[elab_as_elim, induction_eliminator, cases_eliminator]
 lemma induction {p : Hollom → Prop} (h : ∀ x y z, p (h(x, y, z))) : ∀ x, p x := by simpa

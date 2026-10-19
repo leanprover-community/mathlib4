@@ -15,16 +15,16 @@ variable {R A M N P M' N' P' Q Q' : Type*} [CommSemiring R] [AddCommMonoid A] [M
     [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₃]
     [Module R M₁] [Module R M₂] [Module R M₃] [Module R N₁] [Module R N₂] [Module R N₃]
 
-local notation3 "α" => (TensorProduct.assoc R _ _ _).toLinearMap
-local notation3 "α⁻¹" => (TensorProduct.assoc R _ _ _).symm.toLinearMap
-local notation3 "λ" => (TensorProduct.lid R _).toLinearMap
-local notation3 "λ⁻¹" => (TensorProduct.lid R _).symm.toLinearMap
-local notation3 "ρ" => (TensorProduct.rid R _).toLinearMap
-local notation3 "ρ⁻¹" => (TensorProduct.rid R _).symm.toLinearMap
-local notation3 "β" => (TensorProduct.comm R _ _).toLinearMap
+local notation +delab "α" => (TensorProduct.assoc R _ _ _).toLinearMap
+local notation +delab "α⁻¹" => (TensorProduct.assoc R _ _ _).symm.toLinearMap
+local notation +delab "λ" => (TensorProduct.lid R _).toLinearMap
+local notation +delab "λ⁻¹" => (TensorProduct.lid R _).symm.toLinearMap
+local notation +delab "ρ" => (TensorProduct.rid R _).toLinearMap
+local notation +delab "ρ⁻¹" => (TensorProduct.rid R _).symm.toLinearMap
+local notation +delab "β" => (TensorProduct.comm R _ _).toLinearMap
 local infix:90 " ⊗ₘ " => TensorProduct.map
-local notation3 "δ" => comul (R := R)
-local notation3 "ε" => counit (R := R)
+local notation +delab "δ" => comul (R := R)
+local notation +delab "ε" => counit (R := R)
 
 example (f₃' : N →ₗ[R] M₃) (f₃ : M₃ →ₗ[R] N₃) (f₁₂ : M →ₗ[R] M₁ ⊗[R] M₂) :
     α ∘ₗ (f₁₂ ⊗ₘ (f₃ ∘ₗ f₃')) = (id ⊗ₘ (id ⊗ₘ f₃)) ∘ₗ α ∘ₗ (f₁₂ ⊗ₘ f₃') := by

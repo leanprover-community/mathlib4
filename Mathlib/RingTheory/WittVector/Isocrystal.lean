@@ -96,12 +96,12 @@ instance inv_pair₂ : RingHomInvPair ((FractionRing.frobenius p k).symm : K(p, 
 
 /-- The Frobenius automorphism of `k`, as a linear map -/
 scoped[Isocrystal]
-  notation3:50 M " →ᶠˡ[" p ", " k "] " M₂ =>
+  notation:50 +delab M " →ᶠˡ[" p ", " k "] " M₂ =>
     LinearMap (WittVector.FractionRing.frobeniusRingHom p k) M M₂
 
 /-- The Frobenius automorphism of `k`, as a linear equivalence -/
 scoped[Isocrystal]
-  notation3:50 M " ≃ᶠˡ[" p ", " k "] " M₂ =>
+  notation:50 +delab M " ≃ᶠˡ[" p ", " k "] " M₂ =>
     LinearEquiv (WittVector.FractionRing.frobeniusRingHom p k) M M₂
 
 /-! ### Isocrystals -/

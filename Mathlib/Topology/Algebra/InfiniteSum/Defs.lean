@@ -150,15 +150,15 @@ noncomputable irreducible_def tprod (f : β → α) (L := unconditional β) :=
 variable {L : SummationFilter β}
 
 @[inherit_doc tprod]
-notation3 "∏'[" L "]" (...)", "r:67:(scoped f => tprod f L) => r
+notation +delab "∏'[" L "]" (...)", "r:67:(scoped f => tprod f L) => r
 @[inherit_doc tsum]
-notation3 "∑'[" L "]" (...)", "r:67:(scoped f => tsum f L) => r
+notation +delab "∑'[" L "]" (...)", "r:67:(scoped f => tsum f L) => r
 
 -- see note [operator precedence of big operators]
 @[inherit_doc tprod]
-notation3 "∏' "(...)", "r:67:(scoped f => tprod f (unconditional _)) => r
+notation +delab "∏' "(...)", "r:67:(scoped f => tprod f (unconditional _)) => r
 @[inherit_doc tsum]
-notation3 "∑' "(...)", "r:67:(scoped f => tsum f (unconditional _)) => r
+notation +delab "∑' "(...)", "r:67:(scoped f => tsum f (unconditional _)) => r
 
 @[to_additive]
 lemma hasProd_bot (hL : ¬L.NeBot) (f : β → α) (a : α) :

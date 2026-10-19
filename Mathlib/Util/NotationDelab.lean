@@ -17,7 +17,16 @@ public import Mathlib.Lean.Elab.Term
 public import Mathlib.Tactic.ScopedNS
 
 /-!
-# The notation3 macro, simulating Lean 3's notation.
+# The `notation +delab` command
+
+This file defines a command `notation +delab` that creates an elaborator/delaborator pair from
+a string describing the syntax. This can be seen both as a version of Lean 4's `notation` command
+that also creates a delaborator, or as a ported version of Lean 3's `notation` command.
+
+Currently, this second description is the most accurate one as `notation` is missing some Lean 3's
+`notation`-style features that `notation +delab` enjoys, besides the creation of a delaborator.
+Ultimately, it would be best if `notation` had these features directly,
+so that `notation +delab` can be dropped entirely.
 -/
 
 public meta section
@@ -29,7 +38,7 @@ namespace Mathlib.Notation3
 open Lean Parser Meta Elab Command PrettyPrinter.Delaborator SubExpr
 open Batteries.ExtendedBinder
 
-initialize registerTraceClass `notation3
+initialize registerTraceClass `notationDelab
 
 /-! ### Syntaxes supporting `notation3` -/
 
@@ -344,7 +353,7 @@ partial def exprToMatcher (boundFVars : Std.HashMap FVarId Name)
       let (_, matchBody) ← exprToMatcher boundFVars localFVars' body
       return ([.other `lam], ← ``(matchLambda $matchDom (fun $n' => $matchBody)))
   | _ =>
-    trace[notation3] "can't generate matcher for {e}"
+    trace[notationDelab] "can't generate matcher for {e}"
     failure
 
 /-- Returns a `Term` that represents a `Matcher` for the given pattern `stx`.
@@ -362,11 +371,11 @@ partial def mkExprMatcher (stx : Term) (boundNames : Array Name) :
         Term.elabPattern stx none
       catch e =>
         logException e
-        trace[notation3] "Could not elaborate pattern{indentD stx}\nError: {e.toMessageData}"
-        -- Convert the exception into an `OptionT` failure so that the `(prettyPrint := false)`
-        -- suggestion appears.
+        trace[notationDelab] "Could not elaborate pattern{indentD stx}\nError: {e.toMessageData}"
+        -- Convert the exception into an `OptionT` failure so that the warning below
+        -- suggesting alternatives appears.
         failure
-    trace[notation3] "Generating matcher for pattern {patt}"
+    trace[notationDelab] "Generating matcher for pattern {patt}"
     exprToMatcher boundFVars {} patt
 
 /-- Matcher for processing `scoped` syntax. Assumes the expression to be matched
@@ -505,26 +514,12 @@ def withHeadRefIfTagAppFns (d : Delab) : Delab := do
   else
     d
 
-/--
-`notation3` declares notation using Lean-3-style syntax.
-
-Examples:
-```
-notation3 "∀ᶠ " (...) " in " f ", " r:(scoped p => Filter.eventually p f) => r
-notation3 "MyList[" (x", "* => foldr (a b => MyList.cons a b) MyList.nil) "]" => x
-```
-By default notation is unable to mention any variables defined using `variable`, but
-`local notation3` is able to use such local variables.
-
-Use `notation3 (prettyPrint := false)` to keep the command from generating a pretty printer
-for the notation.
-
-This command can be used in mathlib4 but it has an uncertain future and was created primarily
-for backward compatibility.
--/
-elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attrKind:Term.attrKind
-    "notation3" prec?:(precedence)? name?:(namedName)? prio?:(namedPrio)?
-    pp?:(ppSpace prettyPrintOpt)? items:(ppSpace notation3Item)+ " => " val:term : command => do
+/-- Implementation of `notation +delab` and the deprecated `notation3`. -/
+def elabNotationDelab (doc : Option (TSyntax ``Parser.Command.docComment))
+    (attrs? : Option (TSyntax ``Parser.Term.attributes)) (attrKind : TSyntax ``Term.attrKind)
+    (prec? : Option (TSyntax ``precedence)) (name? : Option (TSyntax ``namedName))
+    (prio? : Option (TSyntax ``namedPrio)) (pp : Bool)
+    (items : TSyntaxArray ``notation3Item) (val : Term) : CommandElabM Unit := do
   -- We use raw `Name`s for variables. This maps variable names back to the
   -- identifiers that appear in `items`
   let mut boundIdents : Std.HashMap Name Ident := {}
@@ -618,7 +613,7 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
     syntax $(prec?)? $[$name?:namedName]? $(prio?)? $[$syntaxArgs]* : term))
 
   -- 2. The `macro_rules`
-  trace[notation3] "syntax declaration has name {fullName}"
+  trace[notationDelab] "syntax declaration has name {fullName}"
   let pat : Term := ⟨mkNode fullName pattArgs⟩
   let val' ← val.replaceM fun s => pure boundValues[s.getId]?
   let mut macroDecl ← `($attrKind:attrKind macro_rules | `($pat) => `($val'))
@@ -628,7 +623,7 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
   elabCommand macroDecl
 
   -- 3. Create a delaborator
-  if getPrettyPrintOpt pp? then
+  if pp then
     matchers := matchers.push <| Mathlib.Notation3.mkExprMatcher val boundNames
     -- The matchers need to run in reverse order, so may as well reverse them here.
     let matchersM? := (matchers.reverse.mapM id).run
@@ -638,9 +633,9 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
     else
       liftTermElabM matchersM?
     if let some ms := matchers? then
-      trace[notation3] "Matcher creation succeeded; assembling delaborator"
+      trace[notationDelab] "Matcher creation succeeded; assembling delaborator"
       let matcher ← ms.foldrM (fun m t => `($(m.2) >=> $t)) (← `(pure))
-      trace[notation3] "matcher:{indentD matcher}"
+      trace[notationDelab] "matcher:{indentD matcher}"
       let mut result ← `(withHeadRefIfTagAppFns `($pat))
       for (name, id) in boundIdents.toArray do
         match boundType.getD name .normal with
@@ -655,14 +650,14 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
       let vis ← if let `(attrKind| local) := attrKind then
         `(visibility| private) else `(visibility| public)
       for key in delabKeys do
-        trace[notation3] "Creating delaborator for key {repr key}"
+        trace[notationDelab] "Creating delaborator for key {repr key}"
         let bodyCore ← `(getExpr >>= fun e => $matcher MatchState.empty >>= fun s => $result)
         let body ←
           match key with
           | .app _ arity => ``(withOverApp $(quote arity) $bodyCore)
           | _            => pure bodyCore
         elabCommand <| ← `(
-          /-- Pretty printer defined by `notation3` command. -/
+          /-- Pretty printer defined by `notation +delab` command. -/
           @[$attrKind delab $(mkIdent key.key)]
           $vis:visibility aux_def delab_app $(mkIdent fullName) : Delab :=
             whenPPOption getPPNotation <| whenNotPPOption getPPExplicit <| $body)
@@ -670,13 +665,53 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
       logWarning s!"\
         Was not able to generate a pretty printer for this notation. \
         If you do not expect it to be pretty printable, then you can use \
-        `notation3 (prettyPrint := false)`. \
-        If the notation expansion refers to section variables, be sure to do `local notation3`. \
+        `macro` or `syntax` and `macro_rules` instead. \
+        If the notation expansion refers to section variables, be sure to do \
+        `local notation +delab`. \
         Otherwise, you might be able to adjust the notation expansion to make it matchable; \
         pretty printing relies on deriving an expression matcher from the expansion. \
-        (Use `set_option trace.notation3 true` to get some debug information.)"
+        (Use `set_option trace.notationDelab true` to get some debug information.)"
+
+
+/--
+`notation +delab` declares notation using Lean-3-style syntax.
+
+Examples:
+```
+notation +delab "∀ᶠ " (...) " in " f ", " r:(scoped p => Filter.eventually p f) => r
+notation +delab "MyList[" (x", "* => foldr (a b => MyList.cons a b) MyList.nil) "]" => x
+```
+By default notation is unable to mention any variables defined using `variable`, but
+`local notation +delab` is able to use such local variables.
+
+If the notation should not have a pretty printer, use `macro` or `syntax` and `macro_rules`
+instead.
+
+This is the successor of `notation3`, which is now deprecated.
+-/
+syntax (name := notationDelab) (docComment)? (Parser.Term.attributes)? Term.attrKind
+    "notation" (precedence)? " +" &"delab" (namedName)? (namedPrio)?
+    (ppSpace notation3Item)+ " => " term : command
+
+elab_rules : command
+  | `($[$doc:docComment]? $[$attrs?:attributes]? $attrKind:attrKind
+      notation $[$prec?:precedence]? +delab $[$name?:namedName]? $[$prio?:namedPrio]?
+      $items* => $val) =>
+    elabNotationDelab doc attrs? attrKind prec? name? prio? true items val
+
+/--
+`notation3` is deprecated in favor of `notation +delab`. Instead of
+`notation3 (prettyPrint := false)`, use `macro` or `syntax` and `macro_rules`.
+-/
+elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attrKind:Term.attrKind
+    "notation3" prec?:(precedence)? name?:(namedName)? prio?:(namedPrio)?
+    pp?:(ppSpace prettyPrintOpt)? items:(ppSpace notation3Item)+ " => " val:term : command => do
+  if Linter.linter.deprecated.get (← getOptions) then
+    logWarning "`notation3` has been deprecated: use `notation +delab` instead"
+  elabNotationDelab doc attrs? attrKind prec? name? prio? (getPrettyPrintOpt pp?) items val
 
 initialize Batteries.Linter.UnreachableTactic.addIgnoreTacticKind ``«notation3»
+initialize Batteries.Linter.UnreachableTactic.addIgnoreTacticKind ``notationDelab
 
 /-! `scoped[ns]` support -/
 
@@ -684,6 +719,11 @@ macro_rules
   | `($[$doc]? $(attr)? scoped[$ns] notation3 $(prec)? $(n)? $(prio)? $(pp)? $items* => $t) =>
     `(with_weak_namespace $(mkIdentFrom ns <| rootNamespace ++ ns.getId)
       $[$doc]? $(attr)? scoped notation3 $(prec)? $(n)? $(prio)? $(pp)? $items* => $t)
+
+  | `($[$doc]? $(attr)? scoped[$ns] notation $(prec)? +delab $(n)? $(prio)?
+      $items* => $t) =>
+    `(with_weak_namespace $(mkIdentFrom ns <| rootNamespace ++ ns.getId)
+      $[$doc]? $(attr)? scoped notation $(prec)? +delab $(n)? $(prio)? $items* => $t)
 
 end Notation3
 

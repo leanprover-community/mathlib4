@@ -27,7 +27,7 @@ assert_not_exists TopologicalSpace Real Cardinal
 
 variable {R E F G : Type*}
 
-local notation3 "R≥0" => Nonneg R
+local notation +delab "R≥0" => Nonneg R
 
 /-- A pointed cone is a submodule of a module with scalars restricted to being nonnegative. -/
 abbrev PointedCone (R E)

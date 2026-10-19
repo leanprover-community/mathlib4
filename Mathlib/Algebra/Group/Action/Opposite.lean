@@ -83,22 +83,22 @@ namespace RightActions
 /-- With `open scoped RightActions`, an alternative symbol for left actions, `r • m`.
 
 In lemma names this is still called `smul`. -/
-scoped notation3:74 r:75 " •> " m:74 => r • m
+scoped notation:74 +delab r:75 " •> " m:74 => r • m
 
 /-- With `open scoped RightActions`, a shorthand for right actions, `op r • m`.
 
 In lemma names this is still called `op_smul`. -/
-scoped notation3:73 m:73 " <• " r:74 => MulOpposite.op r • m
+scoped notation:73 +delab m:73 " <• " r:74 => MulOpposite.op r • m
 
 /-- With `open scoped RightActions`, an alternative symbol for left actions, `r +ᵥ m`.
 
 In lemma names this is still called `vadd`. -/
-scoped notation3:74 r:75 " +ᵥ> " m:74 => r +ᵥ m
+scoped notation:74 +delab r:75 " +ᵥ> " m:74 => r +ᵥ m
 
 /-- With `open scoped RightActions`, a shorthand for right actions, `op r +ᵥ m`.
 
 In lemma names this is still called `op_vadd`. -/
-scoped notation3:73 m:73 " <+ᵥ " r:74 => AddOpposite.op r +ᵥ m
+scoped notation:73 +delab m:73 " <+ᵥ " r:74 => AddOpposite.op r +ᵥ m
 
 section examples
 variable [SMul α β] [SMul αᵐᵒᵖ β] [VAdd α β] [VAdd αᵃᵒᵖ β] {a a₁ a₂ a₃ a₄ : α} {b : β}
