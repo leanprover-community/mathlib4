@@ -606,6 +606,29 @@ def curry (α β M : Type*) [MulOneClass M] : (α × β → M) ≃* (α → β �
 
 end
 
+section curry
+
+variable {α β M : Type*} [Mul M]
+
+variable (α β M) in
+/-- `MulEquiv` version of `Equiv.curry`. -/
+@[to_additive /-- `AddEquiv` version of `Equiv.curry`. -/]
+protected def curry : (α × β → M) ≃* (α → β → M) where
+  toEquiv := .curry α β M
+  map_mul' _ _ := rfl
+
+@[to_additive (attr := simp)]
+lemma toEquiv_curry :
+    (MulEquiv.curry α β M : (α × β → M) ≃ (α → β → M)) = .curry α β M := rfl
+
+@[to_additive (attr := simp)]
+lemma curry_apply (x) : MulEquiv.curry α β M x = Function.curry x := rfl
+
+@[to_additive (attr := simp)]
+lemma curry_symm_apply (x) : (MulEquiv.curry α β M).symm x = Function.uncurry x := rfl
+
+end curry
+
 section
 
 variable [Monoid M] [Monoid N]
