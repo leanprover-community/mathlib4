@@ -455,16 +455,14 @@ theorem continuous_curry [LocallyCompactSpace X] :
   obtain ⟨C, hCx, hCU, hC⟩ := local_compact_nhds <|
     hL.eventually_forall_of_forall_eventually (P := fun x' y ↦ f (x', y) ∈ U) fun y hy ↦
       f.continuous.continuousAt.preimage_mem_nhds (hU.mem_nhds (hxL hy))
-  rw [nhds_prod_eq]
-  exact ((eventually_mapsTo (hC.prod hL) hU fun p hp ↦ hCU hp.1 p.2 hp.2).prod_mk hCx).mono
+  exact ((eventually_mapsTo (hC.prod hL) hU fun p hp ↦ hCU hp.1 p.2 hp.2).prod_nhds hCx).mono
     fun p hp y hy ↦ hp.1 ⟨hp.2, hy⟩
 
 theorem continuous_curry_of_r1Space [R1Space X] :
-    Continuous (curry : C(X × Y, Z) → C(X, C(Y, Z))) := by
-  refine continuous_iff_continuousAt.2 fun f ↦ (tendsto_compactOpen_iff_forall _ _).2 fun K hK ↦ ?_
-  have := isCompact_iff_compactSpace.1 hK
-  exact (continuous_curry.comp
-    (continuous_precomp ((restrict K (.id X)).prodMap (.id Y)))).tendsto f
+    Continuous (curry : C(X × Y, Z) → C(X, C(Y, Z))) :=
+  continuous_iff_continuousAt.2 fun f ↦ (tendsto_compactOpen_iff_forall _ _).2 fun K hK ↦
+    have := isCompact_iff_compactSpace.1 hK
+    (continuous_curry.comp (continuous_precomp ((restrict K (.id X)).prodMap (.id Y)))).tendsto f
 
 /-- The uncurried form of a continuous map `X → C(Y, Z)` is a continuous map `X × Y → Z`. -/
 theorem continuous_uncurry_of_continuous [LocallyCompactSpace Y] (f : C(X, C(Y, Z))) :
@@ -488,12 +486,11 @@ theorem continuous_uncurry [LocallyCompactSpace X] [LocallyCompactSpace Y] :
   exact (continuous_fst.fst.eval continuous_fst.snd).eval continuous_snd
 
 theorem continuous_uncurry_of_r1Space [R1Space X] [LocallyCompactSpace Y] :
-    Continuous (uncurry : C(X, C(Y, Z)) → C(X × Y, Z)) := by
-  refine continuous_iff_continuousAt.2 fun g ↦ (tendsto_compactOpen_iff_forall _ _).2 fun M hM ↦ ?_
-  have := isCompact_iff_compactSpace.1 (hM.image continuous_fst)
-  let φ : C(M, (Prod.fst '' M) × Y) :=
-    ⟨fun p ↦ (⟨p.1.1, mem_image_of_mem _ p.2⟩, p.1.2), by fun_prop⟩
-  exact (((continuous_precomp φ).comp continuous_uncurry).comp (continuous_restrict _)).tendsto g
+    Continuous (uncurry : C(X, C(Y, Z)) → C(X × Y, Z)) :=
+  continuous_iff_continuousAt.2 fun g ↦ (tendsto_compactOpen_iff_forall _ _).2 fun M hM ↦
+    have := isCompact_iff_compactSpace.1 (hM.image continuous_fst)
+    let φ : C(M, (Prod.fst '' M) × Y) := ⟨fun p ↦ (⟨_, mem_image_of_mem _ p.2⟩, p.1.2), by fun_prop⟩
+    (((continuous_precomp φ).comp continuous_uncurry).comp (continuous_restrict _)).tendsto g
 
 /-- The family of constant maps: `Y → C(X, Y)` as a continuous map. -/
 def const' : C(Y, C(X, Y)) :=
