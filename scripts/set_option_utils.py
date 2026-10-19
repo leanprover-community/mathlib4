@@ -8,12 +8,11 @@ from pathlib import Path
 PROJECT_DIR = Path(__file__).resolve().parent.parent
 
 DEFAULT_OPTIONS = [
-    # Default value is false: add special handling elsewhere.
     "backward.defeqAttrib.useBackward",
-    "backward.privateInPublic",
     "backward.isDefEq.respectTransparency",
     "backward.isDefEq.respectTransparency.types",
     "backward.isDefEq.respectTransparency.instanceSearchTypes",
+    "backward.privateInPublic",
     "backward.whnf.reducibleClassField",
     "backward.inferInstanceAs.wrap",
     "backward.inferInstanceAs.wrap.data",
