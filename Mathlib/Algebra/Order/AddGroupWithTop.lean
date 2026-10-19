@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Regular.Basic
 
 import Mathlib.Tactic.Basify.Attr
 
-
 set_option doc.verso true
 set_option doc.verso.suggestions false
 
