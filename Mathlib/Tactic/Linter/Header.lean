@@ -336,8 +336,9 @@ def formatImports (imports : Array (ImportRef × Import.Whitespace)) : CommandEl
   let note := .note m!"This linter can be disabled by writing \
     `set_option {linter.style.header.imports.name} false` just after the import block."
   if errs.isEmpty then
-    -- Note: the widget nature of `diffGranularity := .word` effectively gives us a newline
-    -- before `{msg}`, meaning we don't need one here.
+    -- Note: when `errs.isEmpty`, `Import.mkImportSuggestionMessage` gives us a clickable widget
+    -- that uses `diffGranularity := .word`. This effectively gives us a newline before `{msg}`,
+    -- meaning we don't need one after `reformatted:` here.
     logWarningAt lastImportRef.stx m!"Imports can be reformatted:{msg}{note}"
   else
     logWarningAt lastImportRef.stx m!"Imports can be reformatted, but some comments could not be \
