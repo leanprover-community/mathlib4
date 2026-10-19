@@ -122,6 +122,10 @@ A reference to a bibliography entry.
 The positional argument is the entry's key in {lit}`docs/references.bib`, and the bracketed content
 is the text to render, as in {lit}`` {cite "Adamek_Rosicky_1994"}[Adámek–Rosický] ``. A warning is
 emitted when the key is not found in {lit}`docs/references.bib`.
+
+TODO: this performs an O(n) lookup of bibliographic entries for every reference appearing in each
+docstring. For potential optimization, see:
+https://github.com/leanprover-community/mathlib4/pull/44135/changes#r4258754031
 -/
 @[doc_role]
 def cite (key : StrLit) (xs : TSyntaxArray `inline) : DocM (Inline ElabInline) := do
