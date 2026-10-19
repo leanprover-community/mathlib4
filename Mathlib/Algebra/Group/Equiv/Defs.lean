@@ -60,9 +60,7 @@ structure AddEquiv (A B : Type*) [Add A] [Add B] extends A ≃ B, AddHom A B
 /-- `AddEquivClass F A B` states that `F` is a type of addition-preserving morphisms.
 You should extend this class when you extend `AddEquiv`. -/
 class AddEquivClass (F : Type*) (A B : outParam Type*) [Add A] [Add B] [EquivLike F A B] :
-    Prop where
-  /-- Preserves addition. -/
-  map_add : ∀ (f : F) (a b), f (a + b) = f a + f b
+    Prop extends AddHomClass F A B
 
 /-- The `Equiv` underlying an `AddEquiv`. -/
 add_decl_doc AddEquiv.toEquiv
@@ -96,9 +94,7 @@ You should extend this class when you extend `MulEquiv`. -/
 -- TODO: make this a synonym for MulHomClass?
 @[to_additive]
 class MulEquivClass (F : Type*) (A B : outParam Type*) [Mul A] [Mul B] [EquivLike F A B] :
-    Prop where
-  /-- Preserves multiplication. -/
-  map_mul : ∀ (f : F) (a b), f (a * b) = f a * f b
+    Prop extends MulHomClass F A B
 
 @[to_additive]
 alias MulEquivClass.map_eq_one_iff := EmbeddingLike.map_eq_one_iff
@@ -112,17 +108,14 @@ variable (F)
 variable [EquivLike F M N]
 
 -- See note [lower instance priority]
-@[to_additive]
-instance (priority := 100) instMulHomClass (F : Type*)
-    [Mul M] [Mul N] [EquivLike F M N] [h : MulEquivClass F M N] : MulHomClass F M N :=
-  { h with }
+attribute [instance 100] toMulHomClass
 
 -- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) instMonoidHomClass
     [MulOneClass M] [MulOneClass N] [MulEquivClass F M N] :
     MonoidHomClass F M N :=
-  { MulEquivClass.instMulHomClass F with
+  { MulEquivClass.toMulHomClass with
     map_one := fun e =>
       calc
         e 1 = e 1 * 1 := (mul_one _).symm

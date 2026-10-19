@@ -6,16 +6,15 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
-public import Mathlib.Algebra.BigOperators.Pi
+public import Mathlib.Algebra.Module.FunLike
 public import Mathlib.Data.Finset.Sort
 public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.Data.Fintype.Powerset
-public import Mathlib.Data.FunLike.Group
-public import Mathlib.Data.FunLike.Module
 public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.Logic.Equiv.Fintype
 public import Mathlib.Tactic.Abel
-public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 
 /-!
@@ -126,8 +125,8 @@ def mk' [DecidableEq ι] (f : (∀ i, M i) → N)
       f (update m i (c • x)) = σ c • f (update m i x) := by aesop) :
     M →ₛₗₘ[σ] N where
   toFun := f
-  map_update_add' m i x y := by convert! h₁ m i x y
-  map_update_smul' m i c x := by convert! h₂ m i c x
+  map_update_add' m i x y := by convert h₁ m i x y
+  map_update_smul' m i c x := by convert h₂ m i c x
 
 @[simp]
 theorem toFun_eq_coe : f.toFun = ⇑f :=
@@ -138,10 +137,10 @@ theorem coe_mk (f : (∀ i, M i) → N) (h₁ h₂) : ⇑(⟨f, h₁, h₂⟩ : 
   rfl
 
 theorem congr_fun {f g : M →ₛₗₘ[σ] N} (h : f = g) (x : ∀ i, M i) : f x = g x :=
-  DFunLike.congr_fun h x
+  congr($h x)
 
 nonrec theorem congr_arg (f : M →ₛₗₘ[σ] N) {x y : ∀ i, M i} (h : x = y) : f x = f y :=
-  DFunLike.congr_arg f h
+  congr(f $h)
 
 theorem coe_injective : Injective ((↑) : (M →ₛₗₘ[σ] N) → (∀ i, M i) → N) :=
   DFunLike.coe_injective
@@ -188,16 +187,14 @@ instance : Add (M →ₛₗₘ[σ] N) :=
     ⟨fun x => f x + f' x, fun m i x y => by simp [add_left_comm, add_assoc], fun m i c x => by
       simp [smul_add]⟩⟩
 
-instance : IsAddApply (M →ₛₗₘ[σ] N) (∀ i, M i) N where
-  add_apply _ _ _ := rfl
+instance : IsAddApply (M →ₛₗₘ[σ] N) where
 
 @[deprecated (since := "2026-06-10")] protected alias add_apply := add_apply
 
 instance : Zero (M →ₛₗₘ[σ] N) :=
   ⟨⟨fun _ => 0, fun _ _ _ _ => by simp, fun _ _ c _ => by simp⟩⟩
 
-instance : IsZeroApply (M →ₛₗₘ[σ] N) (∀ i, M i) N where
-  zero_apply _ := rfl
+instance : IsZeroApply (M →ₛₗₘ[σ] N) where
 
 instance : Inhabited (M →ₛₗₘ[σ] N) :=
   ⟨0⟩
@@ -213,8 +210,7 @@ instance : SMul S' (M →ₛₗₘ[σ] N) :=
     ⟨fun m => c • f m, fun m i x y => by simp [smul_add], fun l i x d => by
       simp [← smul_comm (σ x) c (_ : N)]⟩⟩
 
-instance : IsSMulApply S' (M →ₛₗₘ[σ] N) (∀ i, M i) N where
-  smul_apply _ _ _ := rfl
+instance : IsSMulApply S' (M →ₛₗₘ[σ] N) where
 
 @[deprecated (since := "2026-06-10")] protected alias smul_apply := smul_apply
 
@@ -1308,8 +1304,7 @@ variable [∀ i, AddCommMonoid (M i)] [AddCommGroup N] [∀ i, Module R (M i)] [
 instance : Neg (M →ₛₗₘ[σ] N) :=
   ⟨fun f => ⟨fun m => -f m, fun m i x y => by simp [add_comm], fun m i c x => by simp⟩⟩
 
-instance : IsNegApply (M →ₛₗₘ[σ] N) (∀ i, M i) N where
-  neg_apply _ _ := rfl
+instance : IsNegApply (M →ₛₗₘ[σ] N) where
 
 @[deprecated (since := "2026-06-10")] protected alias neg_apply := neg_apply
 
@@ -1320,8 +1315,7 @@ instance : Sub (M →ₛₗₘ[σ] N) :=
       abel,
       fun m i c x => by simp only [MultilinearMap.map_update_smul, smul_sub]⟩⟩
 
-instance : IsSubApply (M →ₛₗₘ[σ] N) (∀ i, M i) N where
-  sub_apply _ _ _ := rfl
+instance : IsSubApply (M →ₛₗₘ[σ] N) where
 
 @[deprecated (since := "2026-06-10")] protected alias sub_apply := sub_apply
 
@@ -1377,7 +1371,7 @@ lemma map_piecewise_sub_map_piecewise [LinearOrder ι] (a b v : (i : ι) → M i
     f (s.piecewise a v) - f (s.piecewise b v) = ∑ i ∈ s, f
       fun j ↦ if j ∈ s then if j < i then a j else if j = i then a j - b j else b j else v j := by
   rw [← s.piecewise_idem_right b a, map_sub_map_piecewise]
-  refine Finset.sum_congr rfl fun i hi ↦ congr_arg f <| funext fun j ↦ ?_
+  refine Finset.sum_congr rfl fun i hi ↦ congr(f $(funext fun j ↦ ?_))
   by_cases hjs : j ∈ s
   · rw [ite_eq_left hjs]; by_cases hji : j < i
     · rw [ite_eq_left fun _ ↦ hji, ite_eq_left hji, s.piecewise_eq_of_mem _ _ hjs]

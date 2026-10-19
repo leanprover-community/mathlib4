@@ -5,9 +5,10 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Basic
 public import Mathlib.Topology.Algebra.Group.Defs
 public import Mathlib.Topology.Order.LeftRightNhds
+
+import Mathlib.Algebra.Order.Group.Basic
 
 /-!
 # Topology on a linear ordered commutative group

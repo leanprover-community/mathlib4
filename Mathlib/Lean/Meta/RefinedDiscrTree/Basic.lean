@@ -6,6 +6,7 @@ Authors: Jovan Gerbscheid
 module
 
 public import Mathlib.Init
+public import Lean.Meta.Basic
 
 /-!
 # Basic Definitions for `RefinedDiscrTree`
@@ -18,7 +19,7 @@ We define
 * `RefinedDiscrTree`, the discrimination tree itself.
 -/
 
-@[expose] public section
+public section
 
 namespace Lean.Meta.RefinedDiscrTree
 

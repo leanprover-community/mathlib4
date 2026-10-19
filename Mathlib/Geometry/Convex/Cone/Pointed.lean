@@ -6,7 +6,6 @@ Authors: Apurva Nakade
 module
 
 public import Mathlib.Algebra.Group.Submonoid.Support
-public import Mathlib.Algebra.Group.SelfInv
 public import Mathlib.Algebra.Order.Monoid.Submonoid
 public import Mathlib.Algebra.Order.Nonneg.Module
 public import Mathlib.Geometry.Convex.Cone.Basic
@@ -143,10 +142,10 @@ def _root_.ConvexCone.toPointedCone (C : ConvexCone R E) (hC : C.Pointed) : Poin
     simp_rw [SetLike.mem_coe]
     rcases eq_or_lt_of_le hc with hzero | hpos
     · unfold ConvexCone.Pointed at hC
-      convert! hC
+      convert hC
       simp [← hzero]
     · apply ConvexCone.smul_mem
-      · convert! hpos
+      · convert hpos
       · exact hx
 
 @[simp]
@@ -189,9 +188,6 @@ abbrev hull (s : Set E) : PointedCone R E := span R≥0 s
 
 lemma subset_hull {s : Set E} : s ⊆ PointedCone.hull R s := subset_span
 
-@[deprecated "`PointedCone.span` was renamed to `PointedCone.hull`" (since := "2026-03-22")]
-alias subset_span := subset_hull
-
 variable (R) in
 lemma hull_le_span (s : Set E) : hull R s ≤ span R s := span_le_restrictScalars R≥0 R s
 
@@ -204,9 +200,6 @@ lemma mem_hull_set {s : Set E} : x ∈ hull R s ↔
     exact ⟨⟨c.support, Subtype.val ∘ c, by simp [← Subtype.val_inj]⟩, hc, fun y ↦ (c y).2, rfl⟩
   · rintro ⟨c, hc, hc₀, rfl⟩
     exact ⟨⟨c.support, fun y ↦ ⟨c y, hc₀ _⟩, by simp⟩, hc, rfl⟩
-
-@[deprecated "`PointedCone.span` was renamed to `PointedCone.hull`" (since := "2026-03-22")]
-alias mem_span_set := mem_hull_set
 
 /- Note that the character `∙` U+2219 used below is different from the scalar multiplication
 character `•` U+2022. This is the same character as used in `R ∙ x` for `Submodule.span {x}`. -/
