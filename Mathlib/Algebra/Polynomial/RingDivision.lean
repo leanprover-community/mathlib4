@@ -313,6 +313,12 @@ theorem rootMultiplicity_mul {p q : R[X]} {x : R} (hpq : p * q ≠ 0) :
     rootMultiplicity_eq_multiplicity p, ite_eq_right hp, rootMultiplicity_eq_multiplicity q,
     ite_eq_right hq, multiplicity_mul (prime_X_sub_C x) (finiteMultiplicity_X_sub_C _ hpq)]
 
+theorem rootMultiplicity_C_mul {p : R[X]} {x c : R} (hc : c ≠ 0) :
+    rootMultiplicity x (C c * p) = rootMultiplicity x p := by
+  rcases eq_or_ne p 0 with rfl | hp
+  · simp
+  rw [rootMultiplicity_mul (mul_ne_zero (C_ne_zero.2 hc) hp), rootMultiplicity_C, zero_add]
+
 open Multiset in
 theorem exists_multiset_roots [DecidableEq R] :
     ∀ {p : R[X]} (_ : p ≠ 0), ∃ s : Multiset R,
