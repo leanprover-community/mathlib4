@@ -39,6 +39,7 @@ variable {R : Type*}
 
 /-- An element of a monoid is squarefree if the only squares that
   divide it are the squares of units. -/
+@[oeis A005117]
 def Squarefree [Monoid R] (r : R) : Prop :=
   ∀ x : R, x * x ∣ r → IsUnit x
 
