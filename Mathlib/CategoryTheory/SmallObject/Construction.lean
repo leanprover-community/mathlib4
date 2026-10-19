@@ -174,9 +174,8 @@ instance : Small.{t} (FunctorObjIndex f πX) := by
     simpa [cancel_epi, φ] using h
   exact small_of_injective hφ
 
-set_option backward.defeqAttrib.useBackward true in
 instance : Small.{t} (attachCellsιFunctorObj f πX).ι := by
-  dsimp
+  simp only [attachCellsιFunctorObj_ι]
   infer_instance
 
 /-- The morphism `ιFunctorObj f πX : X ⟶ functorObj f πX` is obtained by
