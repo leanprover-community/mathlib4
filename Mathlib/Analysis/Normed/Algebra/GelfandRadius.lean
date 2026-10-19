@@ -178,7 +178,7 @@ theorem Commute.gelfandRadius_mul_le {a b : A} (h : Commute a b) :
   simp_rw [h.mul_pow]
   grw [norm_mul_le, Real.mul_rpow] <;> positivity
 
-theorem Pi.gelfandRadius_eq {ι : Type*} [Fintype ι] {A : ι → Type*} [∀ i, SeminormedRing (A i)]
+theorem Pi.gelfandRadius_eq {ι : Type*} [Fintype ι] {A : ι → Type*} [Π i, SeminormedRing (A i)]
     (a : Π i, A i) : gelfandRadius a = ⨆ i, gelfandRadius (a i) := by
   rcases isEmpty_or_nonempty ι
   · simp [Subsingleton.elim a 0]
