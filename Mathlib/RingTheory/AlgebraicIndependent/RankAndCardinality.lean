@@ -5,11 +5,12 @@ Authors: Chris Hughes
 -/
 module
 
+public import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
+
 import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 import Mathlib.FieldTheory.MvRatFunc.Rank
 import Mathlib.RingTheory.Algebraic.Cardinality
 import Mathlib.RingTheory.AlgebraicIndependent.Adjoin
-public import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
 
 /-!
 # Cardinality of a transcendence basis
@@ -26,8 +27,6 @@ transcendence basis, transcendence degree, transcendence
 -/
 
 public section
-
-noncomputable section
 
 open Function Set Subalgebra MvPolynomial Algebra
 

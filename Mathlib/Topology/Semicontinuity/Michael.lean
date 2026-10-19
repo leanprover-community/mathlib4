@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Topology.Algebra.Module.LocallyConvex
 public import Mathlib.Topology.PartitionOfUnity
+
 import Mathlib.Analysis.LocallyConvex.AbsConvex
 import Mathlib.Topology.Semicontinuity.Hemicontinuity
 

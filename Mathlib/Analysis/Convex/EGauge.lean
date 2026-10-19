@@ -365,6 +365,30 @@ lemma egauge_unitBall_le_of_one_lt_norm (hc : 1 < ‖c‖) (x : E) :
     egauge 𝕜 (p.ball 0 1) x ≤ ‖c‖ₑ * (p x).toNNReal := by
   simpa using p.egauge_ball_le_of_one_lt_norm hc (.inl one_ne_zero)
 
+variable {F : Type*} [AddCommGroup F] [Module 𝕜 F] {p} {q : Seminorm 𝕜 F} {y : F}
+
+lemma le_smul_of_le_egauge_unitBall_le_mul (ε : ℝ≥0) (hc : 1 < ‖c‖)
+    (h : egauge 𝕜 (p.ball 0 1) x ≤ ↑ε * egauge 𝕜 (q.ball 0 1) y) :
+    p x ≤ ε • ‖c‖₊ • q y := by
+  suffices (p x).toNNReal ≤ ε * ‖c‖ₑ * (q y).toNNReal by
+    simpa (discharger := positivity) [NNReal.smul_def, ← Real.toNNReal_le_toNNReal_iff,
+      ← ENNReal.coe_le_coe, Real.toNNReal_mul, mul_assoc]
+  calc ↑(p x).toNNReal
+    _ ≤ egauge 𝕜 (p.ball 0 1) x := p.le_egauge_unitBall _
+    _ ≤ ε * egauge 𝕜 (q.ball 0 1) y := h
+    _ ≤ ε * ‖c‖ₑ * (q y).toNNReal := by
+      grw [mul_assoc, q.egauge_unitBall_le_of_one_lt_norm hc _]
+
+lemma egauge_unitBall_le_mul_of_le_smul (ε : ℝ≥0) (hc : 1 < ‖c‖)
+    (h : p x ≤ ε • q y) : egauge 𝕜 (p.ball 0 1) x ≤ ε * egauge 𝕜 ((‖c‖₊ • q).ball 0 1) y := by
+  calc egauge 𝕜 (p.ball 0 1) x
+    _ ≤ ‖c‖ₑ * (p x).toNNReal := p.egauge_unitBall_le_of_one_lt_norm hc _
+    _ ≤ ‖c‖ₑ * ((ε • q) y).toNNReal := by gcongr; exact h
+    _ = ε * ((‖c‖₊ • q) y).toNNReal := by
+      simp [NNReal.smul_def, Real.toNNReal_mul, enorm_eq_nnnorm, ← mul_assoc, mul_comm]
+    _ ≤ ε * egauge 𝕜 ((‖c‖₊ • q).ball 0 1) y := by
+      grw [(‖c‖₊ • q).le_egauge_unitBall _]
+
 end Seminorm
 
 section SeminormedAddCommGroup

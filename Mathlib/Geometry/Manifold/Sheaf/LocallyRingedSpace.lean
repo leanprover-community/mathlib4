@@ -69,7 +69,7 @@ theorem smoothSheafCommRing.isUnit_stalk_iff {x : M}
     -- `x`, which is nonzero at `x`
     obtain ⟨U : Opens M, hxU, f : C^∞⟮IM, U; 𝓘(𝕜), 𝕜⟯, rfl⟩ := S.exists_germ_eq f
     have hf' : f ⟨x, hxU⟩ ≠ 0 := by
-      convert! hf
+      convert hf
       exact (smoothSheafCommRing.eval_germ U x hxU f).symm
     -- In fact, by continuity, `f` is nonzero on a neighbourhood `V` of `x`
     have H : ∀ᶠ (z : U) in 𝓝 ⟨x, hxU⟩, f z ≠ 0 := f.2.continuous.continuousAt.eventually_ne hf'
@@ -77,16 +77,12 @@ theorem smoothSheafCommRing.isUnit_stalk_iff {x : M}
     obtain ⟨V₀, hV₀f, hV₀, hxV₀⟩ := H
     let V : Opens M := ⟨Subtype.val '' V₀, U.2.isOpenMap_subtype_val V₀ hV₀⟩
     have hUV : V ≤ U := Subtype.coe_image_subset (U : Set M) V₀
-    have hV : V₀ = Set.range (Set.inclusion hUV) := by
-      convert! (Set.range_inclusion hUV).symm
-      ext y
-      change _ ↔ y ∈ Subtype.val ⁻¹' Subtype.val '' V₀
-      rw [Set.preimage_image_eq _ Subtype.coe_injective]
+    have hV : V₀ = .range (Set.inclusion hUV) := by rw [Set.range_inclusion hUV]; simp [V]
     clear_value V
     subst hV
     have hxV : x ∈ (V : Set M) := by
       obtain ⟨x₀, hxx₀⟩ := hxV₀
-      convert! x₀.2
+      convert x₀.2
       congrm $(hxx₀.symm).val
     have hVf : ∀ y : V, f (Set.inclusion hUV y) ≠ 0 :=
       fun y ↦ hV₀f (Set.inclusion hUV y) (Set.mem_range_self y)
@@ -97,14 +93,14 @@ theorem smoothSheafCommRing.isUnit_stalk_iff {x : M}
         ?_, ?_⟩, S.germ_res_apply hUV.hom x hxV f⟩
       · rw [← map_mul]
         -- Qualified the name to avoid Lean not finding a `OneHomClass` https://github.com/leanprover-community/mathlib4/pull/8386
-        convert! RingHom.map_one _
+        convert RingHom.map_one _
         apply Subtype.ext
         ext y
         apply mul_inv_cancel₀
         exact hVf y
       · rw [← map_mul]
         -- Qualified the name to avoid Lean not finding a `OneHomClass` https://github.com/leanprover-community/mathlib4/pull/8386
-        convert! RingHom.map_one _
+        convert RingHom.map_one _
         apply Subtype.ext
         ext y
         apply inv_mul_cancel₀
@@ -140,9 +136,6 @@ def ChartedSpace.locallyRingedSpace : LocallyRingedSpace where
   IsSheaf := (smoothSheafCommRing IM 𝓘(𝕜) M 𝕜).property
   isLocalRing x := smoothSheafCommRing.instLocalRing_stalk IM x
 
-@[deprecated (since := "2026-04-01")]
-alias IsManifold.locallyRingedSpace := ChartedSpace.locallyRingedSpace
-
 open CategoryTheory
 
 variable {M IM IN}
@@ -175,7 +168,7 @@ def ChartedSpace.locallyRingedSpaceMap (f : M → N) (hf : ContMDiff IM IN ∞ f
   prop x := by
     refine ⟨fun a ha ↦ ?_⟩
     rw [smoothSheafCommRing.isUnit_stalk_iff, RingHom.mem_ker] at ha ⊢
-    convert! ha
+    convert ha
     exact (congr($(stalkMap_locallyRingedSpaceMapAux f hf x) a)).symm
 
 @[reassoc (attr := simp)]
@@ -216,7 +209,7 @@ instance (U : Opens M) :
       refine ⟨⟨g ∘ b.symm, ContMDiff.comp hg ?_⟩, Subtype.ext <| funext fun _ ↦ ?_⟩
       · refine (ContMDiff.subtypeVal_comp_iff V' _).mp ?_
         rw [← ContMDiff.subtypeVal_comp_iff]
-        convert! contMDiff_subtype_val
+        convert contMDiff_subtype_val
         ext x
         congrm $(b.apply_symm_apply x).1
       · change g _ = _

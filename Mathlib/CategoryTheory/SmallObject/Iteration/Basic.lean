@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.Limits.Comma
 public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.HasIterationOfShape
 public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.PrincipalSeg
-public import Mathlib.CategoryTheory.Limits.Comma
 
 /-! # Transfinite iterations of a successor structure
 
