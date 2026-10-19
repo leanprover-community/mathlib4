@@ -160,6 +160,45 @@ example {x y : ℝ} (hx : x ∈ Set.Icc (-0.5) 1.5) (hy₀ : -2 ≤ y) (hy₁ : 
 
 end Arithmetic
 
+section Artanh
+
+open Real
+
+example {x : ℝ} (hx : x ∈ Set.Icc 0.5 0.8) : artanh x ∈ Set.Icc 0.549 1.099 := by
+  dyadic_interval [prec := 18]
+
+example : artanh 0 = 0 := by
+  dyadic_interval
+
+example : artanh 1 = 0 := by
+  dyadic_interval
+
+example : artanh 2 = 0 := by
+  dyadic_interval
+
+example {x : ℝ} (hx : x ∈ Set.Icc 0.5 1) : 0 ≤ artanh x := by
+  dyadic_interval
+
+example :
+  artanh (((1 / 2 : ℚ) : ℝ)) ∈ Set.Icc
+    0.54930614433405484569762261846126285232374527891137
+    0.54930614433405484569762261846126285232374527891138 := by
+  dyadic_interval [prec := 168]
+
+example {x : ℝ} (hx : x ∈ Set.Icc 0 0.5) :
+    artanh (artanh x) ∈ Set.Icc 0 0.618 := by
+  dyadic_interval [prec := 11]
+
+example {x : ℝ} (hx : x ∈ Set.Icc (-0.5) 0.5) :
+    x ^ 3 + artanh x ∈ Set.Icc (-0.675) 0.675 := by
+  dyadic_interval [prec := 10]
+
+example {x y : ℝ} (hx : x ∈ Set.Icc 1 2) (hy : y ∈ Set.Icc (-0.5) 0.5) :
+    x ^ 2 + y ^ 2 + artanh y ∈ Set.Icc 0.45 4.8 := by
+  dyadic_interval [prec := 10]
+
+end Artanh
+
 section Splitting
 
 example {x : ℝ} (hx : x ∈ Set.Icc (-4) 4) :
