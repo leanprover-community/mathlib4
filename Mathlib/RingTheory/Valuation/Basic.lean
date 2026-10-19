@@ -827,7 +827,7 @@ private theorem valueGroupFun_spec (h : v.IsEquiv w) {r s : R} (hr : v r ≠ 0) 
 /-- The order preserving isomorphism between the `valueGroup`s of the underlying
 `MonoidWithZeroHom`s of two equivalent valuations. -/
 def orderMonoidIso (h : v.IsEquiv w) :
-    valueGroup (v : R →*₀ Γ₀) ≃*o valueGroup (w :  R →*₀ Γ'₀) where
+    v.valueGroup ≃*o w.valueGroup where
   toFun       := valueGroupFun h
   invFun      := valueGroupFun h.symm
   left_inv x  := by
