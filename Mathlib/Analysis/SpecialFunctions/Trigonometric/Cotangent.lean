@@ -114,13 +114,10 @@ lemma multipliable_one_add_sq_div (x : ℂ) :
 
 /-- Euler's infinite product for the hyperbolic sine:
 `sinh (π * x) / (π * x) = ∏' n, (1 + x ^ 2 / (n + 1) ^ 2)`. -/
-lemma euler_sinh_tprod (hx : x * I ∈ ℂ_ℤ) :
+lemma euler_sinh_tprod (hx : x ≠ 0) :
     ∏' n : ℕ, (1 + x ^ 2 / ((n : ℂ) + 1) ^ 2) = Complex.sinh (π * x) / (π * x) := by
-  have h := euler_sineTerm_tprod hx
+  have h := euler_sineTerm_tprod (mul_ne_zero hx I_ne_zero)
   simp only [sineTerm_mul_I] at h
-  have hx0 : x ≠ 0 := by
-    rintro rfl
-    exact integerComplement.ne_zero hx (by simp)
   rw [h, show (π : ℂ) * (x * I) = (π * x) * I by ring, Complex.sin_mul_I]
   have hπ : (π : ℂ) ≠ 0 := Complex.ofReal_ne_zero.mpr Real.pi_ne_zero
   field_simp
