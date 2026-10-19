@@ -28,7 +28,7 @@ def urlBracketsTest : Nat := 0
 #guard_msgs in
 set_option doc.verso true in
 /-- See {url}[
-`https://leanprover.org`   
+`https://leanprover.org`
    ]. -/
 def urlNewlineTest : Nat := 0
 
