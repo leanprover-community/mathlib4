@@ -298,7 +298,6 @@ theorem ae_eq_set_biUnion {s : Set β} (hs : s.Countable) {t t' : β → Set α}
     ⋃ b ∈ s, t b =ᵐ[μ] ⋃ b ∈ s, t' b :=
   .countable_bUnion hs h
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem _root_.Set.mulIndicator_ae_eq_one {M : Type*} [One M] {f : α → M} {s : Set α} :
     s.mulIndicator f =ᵐ[μ] 1 ↔ μ (s ∩ f.mulSupport) = 0 := by

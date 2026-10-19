@@ -1,5 +1,10 @@
-import Mathlib.Tactic.Linter.Lint
-import Mathlib.Tactic.ToAdditive
+module
+
+public import Mathlib.Tactic.Linter.Lint
+public import Mathlib.Tactic.ToAdditive
+
+public section
+
 /--
 warning: The namespace `add` is duplicated in the declaration `add.add`.
 
