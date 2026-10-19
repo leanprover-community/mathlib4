@@ -758,7 +758,7 @@ lemma one_vlt_iff : 1 <ᵥ x ↔ 1 < v x := by simp [v.vlt_iff_lt]
 
 theorem _root_.Valuation.compatible_iff_isEquiv (v : Valuation R Γ₀) :
     v.Compatible ↔ v.IsEquiv (valuation R) :=
-  ⟨fun _ _ _ ↦ by simp_rw [← Compatible.vle_iff_le], fun h ↦ h.symm.compatible⟩
+  ⟨fun _ ↦ isEquiv _ _, fun h ↦ h.symm.compatible⟩
 
 @[simp]
 lemma apply_posSubmonoid_ne_zero (x : posSubmonoid R) : v (x : R) ≠ 0 := by
