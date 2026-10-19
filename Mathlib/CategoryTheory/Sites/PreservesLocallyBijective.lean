@@ -6,6 +6,7 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
+
 /-!
 
 # Preserving and reflecting local injectivity and surjectivity
