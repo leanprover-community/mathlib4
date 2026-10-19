@@ -87,9 +87,10 @@ theorem gelfandRadiusNorm_algebraMap (x : L) :
   rw [(bKL.smulTower bLM).gelfandRadiusNorm_apply, Algebra.smulTower_leftMulMatrix_algebraMap,
     Matrix.gelfandRadius_blockDiagonal, ciSup_const, bKL.gelfandRadiusNorm_apply]
 
-variable {K L M} in
+variable {K L} in
 @[simp]
-theorem gelfandRadiusNorm_map {F : Type*} [AlgHomClass F K L] (f : F) (x : L) :
+theorem gelfandRadiusNorm_map {F : Type*} [FunLike F L M] [Algebra K M] [FiniteDimensional K M]
+    [AlgHomClass F K L M] (f : F) (x : L) :
     gelfandRadiusNorm K M (f x) = gelfandRadiusNorm K L x := by
-  letI := (f : L →ₐ[K] M).toAlgebra
+  letI := (AlgHom.ofClass f).toAlgebra
   exact gelfandRadiusNorm_algebraMap K M x
