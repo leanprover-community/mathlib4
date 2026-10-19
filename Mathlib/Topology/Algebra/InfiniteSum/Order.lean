@@ -388,14 +388,14 @@ theorem tsum_sigma' {β : ι → Type*} (f : (Σ i, β i) → α) :
     ∑' p : Σ i, β i, f p = ∑' (i) (j), f ⟨i, j⟩ :=
   summable.tsum_sigma' (fun _ ↦ summable)
 
-theorem tsum_biUnion' {S : Set ι'} {t : ι' → Set ι} (h : S.PairwiseDisjoint t) :
+theorem tsum_biUnion {S : Set ι'} {t : ι' → Set ι} (h : S.PairwiseDisjoint t) :
     ∑' x : ⋃ i ∈ S, t i, f x = ∑' (i : S), ∑' (x : t i), f x := by
   simp [← tsum_sigma, ← (Set.biUnionEqSigmaOfDisjoint h).tsum_eq]
 
-theorem tsum_biUnion {t : ι' → Set ι} (h : Set.univ.PairwiseDisjoint t) :
+theorem tsum_iUnion {t : ι' → Set ι} (h : Set.univ.PairwiseDisjoint t) :
     ∑' x : ⋃ i, t i, f x = ∑' (i) (x : t i), f x := by
   nth_rw 2 [← tsum_univ]
-  rw [← tsum_biUnion' h, Set.biUnion_univ]
+  rw [← tsum_biUnion h, Set.biUnion_univ]
 
 omit [ContinuousAdd α] [T3Space α]
 variable [IsOrderedAddMonoid α] [OrderClosedTopology α]
