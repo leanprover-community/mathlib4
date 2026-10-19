@@ -287,6 +287,8 @@ open MeasurableSpace
 variable {s t : Set Ω} [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
 
 omit [StandardBorelSpace Ω] in
+section
+
 lemma condExp_generateFrom_singleton (hs : MeasurableSet s) {f : Ω → F} (hf : Integrable f μ) :
     μ[f | generateFrom {s}] =ᵐ[μ.restrict s] fun _ ↦ ∫ x, f x ∂μ[|s] := by
   by_cases hμs : μ s = 0
@@ -316,13 +318,11 @@ lemma condExp_generateFrom_singleton (hs : MeasurableSet s) {f : Ω → F} (hf :
       rw [smul_inv_smul₀]
       exact (measureReal_ne_zero_iff (by finiteness)).2 hμs
 
-omit [StandardBorelSpace Ω] in
 lemma condExp_set_generateFrom_singleton (hs : MeasurableSet s) (ht : MeasurableSet t) :
     μ⟦t | generateFrom {s}⟧ =ᵐ[μ.restrict s] fun _ ↦ μ[|s].real t := by
   rw [← integral_indicator_one ht]
   exact condExp_generateFrom_singleton hs <| Integrable.indicator (integrable_const 1) ht
 
-omit [StandardBorelSpace Ω] in
 lemma condExpKernel_singleton_ae_eq_cond [StandardBorelSpace Ω] (hs : MeasurableSet s)
     (ht : MeasurableSet t) :
     ∀ᵐ ω ∂μ.restrict s,
@@ -334,6 +334,8 @@ lemma condExpKernel_singleton_ae_eq_cond [StandardBorelSpace Ω] (hs : Measurabl
   filter_upwards [condExp_set_generateFrom_singleton hs ht, this] with ω hω₁ hω₂
   rwa [hω₁, measureReal_def, measureReal_def,
     ENNReal.toReal_eq_toReal_iff' (measure_ne_top _ t) (measure_ne_top _ t)] at hω₂
+
+end
 
 end Cond
 

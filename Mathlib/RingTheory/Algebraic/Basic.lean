@@ -209,6 +209,8 @@ variable [FunLike FRS R S] [RingHomClass FRS R S] [FunLike FAB A B] [RingHomClas
   (f : FRS) (g : FAB) {a : A}
 
 omit [Algebra R S] [Algebra S A] [IsScalarTower R S A] [Algebra R B] in
+section
+
 theorem IsAlgebraic.ringHom_of_comp_eq (halg : IsAlgebraic R a)
     (hf : Function.Injective f)
     (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
@@ -218,13 +220,11 @@ theorem IsAlgebraic.ringHom_of_comp_eq (halg : IsAlgebraic R a)
   change aeval ((g : A →+* B) a) _ = 0
   rw [← map_aeval_eq_aeval_map h, h2, map_zero]
 
-omit [Algebra R S] [Algebra S A] [IsScalarTower R S A] [Algebra R B] in
 theorem Transcendental.of_ringHom_of_comp_eq (H : Transcendental S (g a))
     (hf : Function.Injective f)
     (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
     Transcendental R a := fun halg ↦ H (halg.ringHom_of_comp_eq f g hf h)
 
-omit [Algebra R S] [Algebra S A] [IsScalarTower R S A] [Algebra R B] in
 theorem Algebra.IsAlgebraic.ringHom_of_comp_eq [Algebra.IsAlgebraic R A]
     (hf : Function.Injective f) (hg : Function.Surjective g)
     (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
@@ -233,7 +233,6 @@ theorem Algebra.IsAlgebraic.ringHom_of_comp_eq [Algebra.IsAlgebraic R A]
   obtain ⟨a, rfl⟩ := hg b
   exact (Algebra.IsAlgebraic.isAlgebraic a).ringHom_of_comp_eq f g hf h
 
-omit [Algebra R S] [Algebra S A] [IsScalarTower R S A] [Algebra R B] in
 theorem Algebra.Transcendental.of_ringHom_of_comp_eq [H : Algebra.Transcendental S B]
     (hf : Function.Injective f) (hg : Function.Surjective g)
     (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
@@ -241,7 +240,6 @@ theorem Algebra.Transcendental.of_ringHom_of_comp_eq [H : Algebra.Transcendental
   rw [Algebra.transcendental_iff_not_isAlgebraic] at H ⊢
   exact fun halg ↦ H (halg.ringHom_of_comp_eq f g hf hg h)
 
-omit [Algebra R S] [Algebra S A] [IsScalarTower R S A] [Algebra R B] in
 theorem IsAlgebraic.of_ringHom_of_comp_eq (halg : IsAlgebraic S (g a))
     (hf : Function.Surjective f) (hg : Function.Injective g)
     (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
@@ -253,26 +251,25 @@ theorem IsAlgebraic.of_ringHom_of_comp_eq (halg : IsAlgebraic S (g a))
   change (g : A →+* B) _ = _
   rw [map_zero, map_aeval_eq_aeval_map h, h2]
 
-omit [Algebra R S] [Algebra S A] [IsScalarTower R S A] [Algebra R B] in
 theorem Transcendental.ringHom_of_comp_eq (H : Transcendental R a)
     (hf : Function.Surjective f) (hg : Function.Injective g)
     (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
     Transcendental S (g a) := fun halg ↦ H (halg.of_ringHom_of_comp_eq f g hf hg h)
 
-omit [Algebra R S] [Algebra S A] [IsScalarTower R S A] [Algebra R B] in
 theorem Algebra.IsAlgebraic.of_ringHom_of_comp_eq [Algebra.IsAlgebraic S B]
     (hf : Function.Surjective f) (hg : Function.Injective g)
     (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
     Algebra.IsAlgebraic R A :=
   ⟨fun a ↦ (Algebra.IsAlgebraic.isAlgebraic (g a)).of_ringHom_of_comp_eq f g hf hg h⟩
 
-omit [Algebra R S] [Algebra S A] [IsScalarTower R S A] [Algebra R B] in
 theorem Algebra.Transcendental.ringHom_of_comp_eq [H : Algebra.Transcendental R A]
     (hf : Function.Surjective f) (hg : Function.Injective g)
     (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
     Algebra.Transcendental S B := by
   rw [Algebra.transcendental_iff_not_isAlgebraic] at H ⊢
   exact fun halg ↦ H (halg.of_ringHom_of_comp_eq f g hf hg h)
+
+end
 
 end
 

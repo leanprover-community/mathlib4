@@ -225,6 +225,8 @@ instance : IsGeneratedBy X (PUnit.{v + 1}) := by
   exact Eq.le (by subsingleton)
 
 omit [TopologicalSpace Z] in
+section
+
 /-- Any topology coinduced by an `X`-generated topology is `X`-generated. -/
 protected lemma coinduced [IsGeneratedBy X Y] (f : Y → Z) :
     IsGeneratedBy X (tY := tY.coinduced f) := by
@@ -232,20 +234,20 @@ protected lemma coinduced [IsGeneratedBy X Y] (f : Y → Z) :
   refine iff_le_generatedBy.2 ?_
   exact ((equiv_symm_comp_continuous_iff (X := X) f).2 continuous_coinduced_rng).coinduced_le
 
-omit [TopologicalSpace Z] in
 /-- Suprema of `X`-generated topologies are `X`-generated. -/
 protected lemma iSup {Y : Type*} {κ : Sort*} {t : κ → TopologicalSpace Y}
     (h : ∀ k, IsGeneratedBy X (tY := t k)) : @IsGeneratedBy _ X _ Y (⨆ k, t k) :=
   iff_le_generatedBy.2 <| iSup_le_iff.2 fun k ↦
     (h k).le_generatedBy.trans <| TopologicalSpace.generatedBy_mono <| le_iSup t k
 
-omit [TopologicalSpace Z] in
 /-- Suprema of `X`-generated topologies are `X`-generated. -/
 protected lemma sup {Y : Type*} {t₁ t₂ : TopologicalSpace Y}
     (h₁ : IsGeneratedBy X (tY := t₁)) (h₂ : @IsGeneratedBy _ X _ Y t₂) :
     IsGeneratedBy X (tY := t₁ ⊔ t₂) := by
   rw [sup_eq_iSup]
   exact .iSup <| Bool.forall_bool.2 ⟨h₂, h₁⟩
+
+end
 
 end IsGeneratedBy
 

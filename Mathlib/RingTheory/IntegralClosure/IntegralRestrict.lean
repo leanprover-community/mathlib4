@@ -48,6 +48,8 @@ section galois
 section galRestrict'
 variable {K L L₂ L₃}
 omit [IsFractionRing A K] in
+section
+
 /-- A generalization of `galRestrictHom` beyond endomorphisms. -/
 noncomputable
 def galRestrict' (f : L →ₐ[K] L₂) : (B →ₐ[A] B₂) :=
@@ -56,13 +58,11 @@ def galRestrict' (f : L →ₐ[K] L₂) : (B →ₐ[A] B₂) :=
         (integralClosure A L₂) (fun x ↦ IsIntegral.map _ (IsIntegralClosure.isIntegral A L x)))
 
 set_option backward.isDefEq.respectTransparency.types false in
-omit [IsFractionRing A K] in
 @[simp]
 lemma algebraMap_galRestrict'_apply (σ : L →ₐ[K] L₂) (x : B) :
     algebraMap B₂ L₂ (galRestrict' A B B₂ σ x) = σ (algebraMap B L x) := by
   simp [galRestrict', galRestrict', Subalgebra.algebraMap_eq]
 
-omit [IsFractionRing A K] in
 @[simp]
 theorem galRestrict'_id : galRestrict' A B B (.id K L) = .id A B := by
   ext
@@ -70,13 +70,14 @@ theorem galRestrict'_id : galRestrict' A B B (.id K L) = .id A B := by
   simp
 
 set_option backward.isDefEq.respectTransparency.types false in
-omit [IsFractionRing A K] in
 theorem galRestrict'_comp (σ : L →ₐ[K] L₂) (σ' : L₂ →ₐ[K] L₃) :
     galRestrict' A B B₃ (σ'.comp σ) = (galRestrict' A B₂ B₃ σ').comp (galRestrict' A B B₂ σ) := by
   ext x
   apply (IsIntegralClosure.equiv A (integralClosure A L₃) L₃ B₃).symm.injective
   ext
   simp [galRestrict', Subalgebra.algebraMap_eq]
+
+end
 
 end galRestrict'
 

@@ -272,10 +272,11 @@ lemma eq_liftPath_iff' {Γ : C(I, E)} : Γ = cov.liftPath γ e γ_0 ↔ p ∘ Γ
   simp_rw [← DFunLike.coe_fn_eq, eq_liftPath_iff, and_iff_right (ContinuousMap.continuous _)]
 
 omit γ_0 in
+section
+
 lemma liftPath_const {x : X} (hpe : x = p e) : cov.liftPath (.const I x) e hpe = .const I e :=
   .symm <| (cov.eq_liftPath_iff' _).mpr ⟨funext fun _ ↦ hpe.symm, rfl⟩
 
-omit γ_0 in
 lemma liftPath_trans {x y z : X} {e : E} (hpe : x = p e) (γ : Path x y) (γ' : Path y z) :
     letI Γ := cov.liftPath γ e (γ.source.trans hpe)
     cov.liftPath (γ.trans γ') e (by simpa) = (⟨Γ, liftPath_zero .., rfl⟩ : Path e (Γ 1)).trans
@@ -287,7 +288,6 @@ lemma liftPath_trans {x y z : X} {e : E} (hpe : x = p e) (γ : Path x y) (γ' : 
   · congrm $(cov.liftPath_lifts γ' _ ?_) _
     simpa using congr($(cov.liftPath_lifts γ ..) 1).symm
 
-omit γ_0 in
 theorem comp_subtypeVal_pathComponent_surjective (e₀ : E) [PathConnectedSpace X] :
     Surjective (fun x : pathComponent e₀ ↦ p x) := by
   intro x
@@ -299,6 +299,8 @@ theorem comp_subtypeVal_pathComponent_surjective (e₀ : E) [PathConnectedSpace 
     exact ⟨⟨Γ, cov.liftPath_zero γ e₀ hγ, rfl⟩⟩
   refine ⟨⟨Γ 1, hΓ⟩, ?_⟩
   simpa [γ] using congr($(cov.liftPath_lifts γ e₀ hγ) 1)
+
+end
 
 end path_lifting
 

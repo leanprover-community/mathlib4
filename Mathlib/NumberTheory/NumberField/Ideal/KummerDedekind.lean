@@ -104,6 +104,8 @@ theorem ZModXQuotSpanEquivQuotSpan_mk_apply (hp : ¬ p ∣ exponent θ) (Q : ℤ
     quotMapEquivQuotQuotMap_symm_apply (not_dvd_exponent_iff.mp hp).eq_top θ.isIntegral Q
 
 omit [NumberField K] in
+section
+
 variable (p θ) in
 /--
 The finite set of monic irreducible factors of `minpoly ℤ θ` modulo `p`.
@@ -111,7 +113,6 @@ The finite set of monic irreducible factors of `minpoly ℤ θ` modulo `p`.
 abbrev monicFactorsMod : Finset ((ZMod p)[X]) :=
   (normalizedFactors (map (Int.castRingHom (ZMod p)) (minpoly ℤ θ))).toFinset
 
-omit [NumberField K] in
 /--
 Membership in `monicFactorsMod θ p` unfolds to irreducibility, monicity and divisibility.
 -/
@@ -121,20 +122,19 @@ theorem mem_monicFactorsMod_iff {Q : (ZMod p)[X]} :
   rw [monicFactorsMod, Multiset.mem_toFinset,
     Polynomial.mem_normalizedFactors_iff (map_monic_ne_zero (minpoly.monic θ.isIntegral))]
 
-omit [NumberField K] in
 theorem irreducible_monicFactorsMod (Q : monicFactorsMod θ p) :
     Irreducible (Q : (ZMod p)[X]) :=
   (mem_monicFactorsMod_iff.mp Q.2).1
 
-omit [NumberField K] in
 theorem monic_monicFactorsMod (Q : monicFactorsMod θ p) :
     (Q : (ZMod p)[X]).Monic :=
   (mem_monicFactorsMod_iff.mp Q.2).2.1
 
-omit [NumberField K] in
 theorem monicFactorsMod_dvd_map_minpoly (Q : monicFactorsMod θ p) :
     (Q : (ZMod p)[X]) ∣ (minpoly ℤ θ).map (Int.castRingHom (ZMod p)) :=
   (mem_monicFactorsMod_iff.mp Q.2).2.2
+
+end
 
 /--
 If `p` does not divide `exponent θ` and `Q` is a lift of a monic irreducible factor of

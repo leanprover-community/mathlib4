@@ -130,6 +130,8 @@ instance instIsPushout' [IsPushout R A S B] : IsPushout R A[M] S B[M] :=
 
 -- TODO: Generalise to different base rings, strengthen to an `AlgEquiv`
 omit [CommMonoid M] [CommMonoid N] in
+section
+
 variable (R) in
 /-- The tensor product of two monoid algebras is the monoid algebra of their product. -/
 @[to_additive (dont_translate := R) (attr := simps! apply_coeff)
@@ -138,22 +140,21 @@ noncomputable def tensorEquiv : R[M] ⊗[R] R[N] ≃ₗ[R] R[M × N] :=
   TensorProduct.congr (coeffLinearEquiv _) (coeffLinearEquiv _) ≪≫ₗ
     finsuppTensorFinsupp' .. ≪≫ₗ (coeffLinearEquiv _).symm
 
-omit [CommMonoid M] [CommMonoid N] in
 @[to_additive (dont_translate := R) (attr := simp)]
 lemma tensorEquiv_single_tmul_single (m : M) (r₁ : R) (n : N) (r₂ : R) :
     tensorEquiv R (single m r₁ ⊗ₜ single n r₂) = single (m, n) (r₁ * r₂) := by ext; simp
 
-omit [CommMonoid M] [CommMonoid N] in
 @[to_additive (dont_translate := R)]
 lemma tensorEquiv_symm_single_eq_single_one_tmul (mn : M × N) (r : R) :
     (tensorEquiv R).symm (single mn r) = single mn.1 1 ⊗ₜ single mn.2 r := by
   simp [tensorEquiv, finsuppTensorFinsupp'_symm_single_eq_single_one_tmul]
 
-omit [CommMonoid M] [CommMonoid N] in
 @[to_additive (dont_translate := R)]
 lemma tensorEquiv_symm_single_eq_tmul_single_one (mn : M × N) (r : R) :
     (tensorEquiv R).symm (single mn r) = single mn.1 r ⊗ₜ single mn.2 1 := by
   simp [tensorEquiv, finsuppTensorFinsupp'_symm_single_eq_tmul_single_one]
+
+end
 
 end MonoidAlgebra
 

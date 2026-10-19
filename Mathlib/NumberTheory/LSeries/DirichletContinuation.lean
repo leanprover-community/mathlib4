@@ -200,20 +200,22 @@ lemma LFunctionTrivChar_residue_one :
 -- not required for these declarations
 
 omit [NeZero N] in
+section
+
 open scoped Classical in
 /-- The Archimedean Gamma factor: `Gammaℝ s` if `χ` is even, and `Gammaℝ (s + 1)` otherwise. -/
 noncomputable def gammaFactor (χ : DirichletCharacter ℂ N) (s : ℂ) :=
   if χ.Even then Gammaℝ s else Gammaℝ (s + 1)
 
-omit [NeZero N] in
 lemma Even.gammaFactor_def {χ : DirichletCharacter ℂ N} (hχ : χ.Even) (s : ℂ) :
     gammaFactor χ s = Gammaℝ s := by
   simp [gammaFactor, hχ]
 
-omit [NeZero N] in
 lemma Odd.gammaFactor_def {χ : DirichletCharacter ℂ N} (hχ : χ.Odd) (s : ℂ) :
     gammaFactor χ s = Gammaℝ (s + 1) := by
   simp [gammaFactor, hχ.not_even]
+
+end
 
 /--
 The completed L-function of a Dirichlet character, almost everywhere equal to

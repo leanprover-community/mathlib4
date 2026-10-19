@@ -580,6 +580,8 @@ lemma Module.finrank_bot_le_finrank_of_isScalarTower (S T : Type*) [Semiring S] 
     (Module.rank_lt_aleph0 _ _)
 
 omit [StrongRankCondition R] in
+section
+
 theorem strongRankCondition_iff_forall_rank_lt_aleph0 [Nontrivial R] :
     StrongRankCondition R ↔ ∀ n : ℕ, Module.rank R (Fin n → R) < ℵ₀ :=
   (strongRankCondition_iff_succ R).trans <| not_iff_not.mp <| by
@@ -590,7 +592,6 @@ theorem strongRankCondition_iff_forall_rank_lt_aleph0 [Nontrivial R] :
     convert! (Finsupp.basisSingleOne.linearIndependent.map_injOn _ hg.injOn).cardinal_lift_le_rank
     simp
 
-omit [StrongRankCondition R] in
 theorem strongRankCondition_iff_forall_zero_lt_finrank [Nontrivial R] :
     StrongRankCondition R ↔ ∀ n > 0, 0 < finrank R (Fin n → R) := by
   rw [strongRankCondition_iff_forall_rank_lt_aleph0, ← not_iff_not]
@@ -603,7 +604,6 @@ theorem strongRankCondition_iff_forall_zero_lt_finrank [Nontrivial R] :
     rw [← n.succ_pred_eq_of_pos pos] at eq ⊢
     exact eq ⟨.single R (fun _ ↦ _) 0, Pi.single_injective (M := fun _ ↦ _) _⟩
 
-omit [StrongRankCondition R] in
 /-- If each `Rⁿ` is a Noetherian `R`-module, then `R` satisfies the strong rank condition.
 Not an instance for performance reasons.
 
@@ -616,6 +616,8 @@ theorem StrongRankCondition.of_isNoetherian [Nontrivial R] [∀ n, IsNoetherian 
     have e := LinearEquiv.piCongrLeft R (fun _ ↦ R) (finSuccEquiv n) ≪≫ₗ .piOptionEquivProd _
     not_subsingleton R <| IsNoetherian.subsingleton_of_injective
       (f := f ∘ₗ e.symm.toLinearMap) (hf.comp e.symm.injective)
+
+end
 
 end StrongRankCondition
 

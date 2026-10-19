@@ -247,6 +247,8 @@ variable {m m0 : MeasurableSpace α}
 local infixr:25 " →ₛ " => SimpleFunc
 
 omit [MeasurableSpace α] in
+section
+
 include m m0 in
 theorem univ_le_of_forall_fin_meas_le {μ : Measure α} (hm : m ≤ m0) [SigmaFinite (μ.trim hm)]
     (C : ℝ≥0∞) {f : Set α → ℝ≥0∞} (hf : ∀ s, MeasurableSet[m] s → μ s ≠ ∞ → f s ≤ C)
@@ -261,7 +263,6 @@ theorem univ_le_of_forall_fin_meas_le {μ : Measure α} (hm : m ≤ m0) [SigmaFi
   refine iSup_le fun n => hf (S n) (hS_meas n) ?_
   exact ((le_trim hm).trans_lt (@measure_spanningSets_lt_top _ m (μ.trim hm) _ n)).ne
 
-omit [MeasurableSpace α] in
 include m m0 in
 /-- If the Lebesgue integral of a function is bounded by some constant on all sets with finite
 measure in a sub-σ-algebra and the measure is σ-finite on that sub-σ-algebra, then the integral
@@ -275,10 +276,8 @@ theorem lintegral_le_of_forall_fin_meas_trim_le {μ : Measure α} (hm : m ≤ m0
   rw [setLIntegral_iUnion_of_directed]
   exact directed_of_isDirected_le hS_mono
 
-omit [MeasurableSpace α] in
 alias lintegral_le_of_forall_fin_meas_le_of_measurable := lintegral_le_of_forall_fin_meas_trim_le
 
-omit [MeasurableSpace α] in
 /-- If the Lebesgue integral of a function is bounded by some constant on all sets with finite
 measure and the measure is σ-finite, then the integral over the whole space is bounded by that same
 constant. -/
@@ -288,7 +287,6 @@ theorem lintegral_le_of_forall_fin_meas_le [MeasurableSpace α] {μ : Measure α
   have : SigmaFinite (μ.trim le_rfl) := by rwa [trim_eq_self]
   lintegral_le_of_forall_fin_meas_trim_le _ C hf
 
-omit [MeasurableSpace α] in
 theorem SimpleFunc.exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : MeasurableSpace α}
     {μ : Measure α} [SigmaFinite μ] {f : α →ₛ ℝ≥0} {L : ℝ≥0∞} (hL : L < ∫⁻ x, f x ∂μ) :
     ∃ g : α →ₛ ℝ≥0, (∀ x, g x ≤ f x) ∧ ∫⁻ x, g x ∂μ < ∞ ∧ L < ∫⁻ x, g x ∂μ := by
@@ -344,7 +342,6 @@ theorem SimpleFunc.exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : Measurabl
       rw [← lintegral_add_left g₁.measurable.coe_nnreal_ennreal]
       simp only [coe_add, Pi.add_apply, ENNReal.coe_add, le_rfl]
 
-omit [MeasurableSpace α] in
 theorem exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : MeasurableSpace α} {μ : Measure α}
     [SigmaFinite μ] {f : α → ℝ≥0} {L : ℝ≥0∞} (hL : L < ∫⁻ x, f x ∂μ) :
     ∃ g : α →ₛ ℝ≥0, (∀ x, g x ≤ f x) ∧ ∫⁻ x, g x ∂μ < ∞ ∧ L < ∫⁻ x, g x ∂μ := by
@@ -356,6 +353,8 @@ theorem exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : MeasurableSpace α} 
     simp only [Function.comp_apply]
   rcases SimpleFunc.exists_lt_lintegral_simpleFunc_of_lt_lintegral h'L with ⟨g, hg, gL, gtop⟩
   exact ⟨g, fun x => (hg x).trans (ENNReal.coe_le_coe.1 (hg₀ x)), gL, gtop⟩
+
+end
 
 end SFinite
 
