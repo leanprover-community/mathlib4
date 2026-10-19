@@ -247,6 +247,7 @@ variable {m m0 : MeasurableSpace α}
 local infixr:25 " →ₛ " => SimpleFunc
 
 omit [MeasurableSpace α] in
+include m m0 in
 theorem univ_le_of_forall_fin_meas_le {μ : Measure α} (hm : m ≤ m0) [SigmaFinite (μ.trim hm)]
     (C : ℝ≥0∞) {f : Set α → ℝ≥0∞} (hf : ∀ s, MeasurableSet[m] s → μ s ≠ ∞ → f s ≤ C)
     (h_F_lim :
@@ -261,6 +262,7 @@ theorem univ_le_of_forall_fin_meas_le {μ : Measure α} (hm : m ≤ m0) [SigmaFi
   exact ((le_trim hm).trans_lt (@measure_spanningSets_lt_top _ m (μ.trim hm) _ n)).ne
 
 omit [MeasurableSpace α] in
+include m m0 in
 /-- If the Lebesgue integral of a function is bounded by some constant on all sets with finite
 measure in a sub-σ-algebra and the measure is σ-finite on that sub-σ-algebra, then the integral
 over the whole space is bounded by that same constant. -/
