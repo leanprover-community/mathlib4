@@ -10,7 +10,7 @@ public meta import Lean.Elab.InfoTree.Util
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 public import Batteries.Tactic.Unreachable
-public import Lean.Parser.Syntax
+public meta import Lean.Parser.Syntax
 public import Mathlib.Tactic.Linter.UnusedTacticExtension
 
 /-!
@@ -74,9 +74,6 @@ abbrev M := StateRefT (Std.HashMap Lean.Syntax.Range Syntax) BaseIO
 -- Tactics that are expected to not change the state but should also not be flagged by the
 -- unused tactic linter.
 #allow_unused_tactic!
-  Lean.Parser.Term.byTactic
-  Lean.Parser.Tactic.tacticSeq
-  Lean.Parser.Tactic.tacticSeq1Indented
   Lean.Parser.Tactic.tacticTry_
   -- the following `SyntaxNodeKind`s play a role in silencing `test`s
   Lean.Parser.Tactic.guardHyp
