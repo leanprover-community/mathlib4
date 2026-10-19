@@ -14,6 +14,9 @@ public import Mathlib.Tactic.CasesM
 public import Mathlib.Tactic.Core
 public import Qq
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 The `tauto` tactic.
 -/

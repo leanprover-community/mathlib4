@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
 public import Mathlib.Analysis.RCLike.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Normed spaces over R or C
 

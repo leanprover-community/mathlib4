@@ -11,6 +11,9 @@ public meta import Lean.Meta.Tactic.TryThis
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 public import Lean.Meta.TryThis
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adaptation notes
 
