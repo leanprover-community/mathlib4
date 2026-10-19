@@ -4784,7 +4784,7 @@ public import Mathlib.Geometry.Convex.ConvexSpace.PathConnectedSpaceStdSimplex
 public import Mathlib.Geometry.Convex.ConvexSpace.Prod
 public import Mathlib.Geometry.Convex.ConvexSpace.Topology
 public import Mathlib.Geometry.Convex.Set.Basic
-public import Mathlib.Geometry.Convex.Face
+public import Mathlib.Geometry.Convex.Set.Face.Basic
 public import Mathlib.Geometry.Convex.Set.Hull
 public import Mathlib.Geometry.Convex.Set.Star
 public import Mathlib.Geometry.Diffeology.Basic
