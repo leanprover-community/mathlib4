@@ -8,7 +8,7 @@ module
 public meta import Lean.Elab.Command
 public meta import Lean.Elab.ParseImportsFast
 public meta import Lean.Elab.AssertExists
-public import Lean.Message
+public meta import Lean.Message
 
 meta import Lean.Data.Json.FromToJson.Extra
 

@@ -5,8 +5,8 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
 public import Mathlib.LinearAlgebra.Multilinear.Basic
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
 
 import Mathlib.Algebra.BigOperators.Fin
 
@@ -127,7 +127,7 @@ instance : Zero (ContinuousMultilinearMap R M₁ M₂) :=
 instance : Inhabited (ContinuousMultilinearMap R M₁ M₂) :=
   ⟨0⟩
 
-instance : IsZeroApply (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
+instance : IsZeroApply (ContinuousMultilinearMap R M₁ M₂) where
 
 @[deprecated (since := "2026-06-10")] protected alias zero_apply := zero_apply
 
@@ -144,7 +144,7 @@ variable {R' R'' A : Type*} [Semiring A] [∀ i, Module A (M₁ i)]
 instance : SMul R' (ContinuousMultilinearMap A M₁ M₂) :=
   ⟨fun c f => { c • f.toMultilinearMap with cont := f.cont.const_smul c }⟩
 
-instance : IsSMulApply R' (ContinuousMultilinearMap A M₁ M₂) (∀ i, M₁ i) M₂ where
+instance : IsSMulApply R' (ContinuousMultilinearMap A M₁ M₂) where
 
 @[deprecated (since := "2026-06-10")] protected alias smul_apply := smul_apply
 
@@ -181,7 +181,7 @@ variable [ContinuousAdd M₂]
 instance : Add (ContinuousMultilinearMap R M₁ M₂) :=
   ⟨fun f f' => ⟨f.toMultilinearMap + f'.toMultilinearMap, f.cont.add f'.cont⟩⟩
 
-instance : IsAddApply (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
+instance : IsAddApply (ContinuousMultilinearMap R M₁ M₂) where
 
 @[deprecated (since := "2026-06-10")] protected alias add_apply := add_apply
 
@@ -350,6 +350,35 @@ theorem zero_prod_zero :
     (0 : ContinuousMultilinearMap R M₁ M₂).prod (0 : ContinuousMultilinearMap R M₁ M₃) = 0 :=
   rfl
 
+/-- Associating to a continuous multilinear map in `0` variables the unique value it takes. -/
+def curry0 (f : ContinuousMultilinearMap R (fun _ : Fin 0 => M₂) M₃) : M₃ := f 0
+
+variable (R M₂) in
+/-- Associating to an element `x` of a vector space `M₃` the continuous multilinear map in `0`
+variables taking the (unique) value `x` -/
+def uncurry0 (x : M₃) : M₂ [×0]→L[R] M₃ :=
+  ContinuousMultilinearMap.constOfIsEmpty R _ x
+
+variable (R) in
+@[simp]
+theorem uncurry0_apply (x : M₃) (m : Fin 0 → M₂) :
+    ContinuousMultilinearMap.uncurry0 R M₂ x m = x :=
+  rfl
+
+@[simp]
+theorem curry0_apply (f : M₂ [×0]→L[R] M₃) : f.curry0 = f 0 :=
+  rfl
+
+@[simp]
+theorem apply_zero_uncurry0 (f : M₂ [×0]→L[R] M₃) {x : Fin 0 → M₂} : uncurry0 _ _ (f x) = f := by
+  ext m
+  simp [Subsingleton.elim x m]
+
+theorem uncurry0_curry0 (f : M₂ [×0]→L[R] M₃) : uncurry0 _ _ f.curry0 = f := by simp
+
+variable (R M₂) in
+theorem curry0_uncurry0 (x : M₃) : (uncurry0 R M₂ x).curry0 = x := rfl
+
 /-- `ContinuousMultilinearMap.pi` as an `Equiv`. -/
 @[simps]
 def piEquiv {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)]
@@ -478,14 +507,14 @@ variable [IsTopologicalAddGroup M₂]
 instance : Neg (ContinuousMultilinearMap R M₁ M₂) :=
   ⟨fun f => { -f.toMultilinearMap with cont := f.cont.neg }⟩
 
-instance : IsNegApply (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
+instance : IsNegApply (ContinuousMultilinearMap R M₁ M₂) where
 
 @[deprecated (since := "2026-06-10")] protected alias neg_apply := neg_apply
 
 instance : Sub (ContinuousMultilinearMap R M₁ M₂) :=
   ⟨fun f g => { f.toMultilinearMap - g.toMultilinearMap with cont := f.cont.sub g.cont }⟩
 
-instance : IsSubApply (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
+instance : IsSubApply (ContinuousMultilinearMap R M₁ M₂) where
 
 @[deprecated (since := "2026-06-10")] protected alias sub_apply := sub_apply
 

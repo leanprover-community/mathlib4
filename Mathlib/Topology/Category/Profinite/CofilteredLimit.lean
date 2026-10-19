@@ -8,8 +8,8 @@ module
 public import Mathlib.Topology.Category.Profinite.Basic
 public import Mathlib.Topology.Category.TopCat.Limits.Konig
 
-import Mathlib.Topology.DiscreteQuotient
 import Mathlib.Topology.Category.TopCat.Limits.Cofiltered
+import Mathlib.Topology.DiscreteQuotient
 
 /-!
 # Cofiltered limits of profinite sets.

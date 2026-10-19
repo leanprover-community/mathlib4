@@ -190,14 +190,14 @@ instance : Add (M₁ →ₗₘ[R] M₂) :=
     ⟨fun x => f x + f' x, fun m i x y => by simp [add_left_comm, add_assoc], fun m i c x => by
       simp [smul_add]⟩⟩
 
-instance : IsAddApply (M₁ →ₗₘ[R] M₂) (∀ i, M₁ i) M₂ where
+instance : IsAddApply (M₁ →ₗₘ[R] M₂) where
 
 @[deprecated (since := "2026-06-10")] protected alias add_apply := add_apply
 
 instance : Zero (M₁ →ₗₘ[R] M₂) :=
   ⟨⟨fun _ => 0, fun _ _ _ _ => by simp, fun _ _ c _ => by simp⟩⟩
 
-instance : IsZeroApply (M₁ →ₗₘ[R] M₂) (∀ i, M₁ i) M₂ where
+instance : IsZeroApply (M₁ →ₗₘ[R] M₂) where
 
 instance : Inhabited (M₁ →ₗₘ[R] M₂) :=
   ⟨0⟩
@@ -213,7 +213,7 @@ instance : SMul S (M₁ →ₗₘ[R] M₂) :=
     ⟨fun m => c • f m, fun m i x y => by simp [smul_add], fun l i x d => by
       simp [← smul_comm x c (_ : M₂)]⟩⟩
 
-instance : IsSMulApply S (M₁ →ₗₘ[R] M₂) (∀ i, M₁ i) M₂ where
+instance : IsSMulApply S (M₁ →ₗₘ[R] M₂) where
 
 @[deprecated (since := "2026-06-10")] protected alias smul_apply := smul_apply
 
@@ -1277,7 +1277,7 @@ variable [Semiring R] [∀ i, AddCommMonoid (M₁ i)] [AddCommGroup M₂] [∀ i
 instance : Neg (M₁ →ₗₘ[R] M₂) :=
   ⟨fun f => ⟨fun m => -f m, fun m i x y => by simp [add_comm], fun m i c x => by simp⟩⟩
 
-instance : IsNegApply (M₁ →ₗₘ[R] M₂) (∀ i, M₁ i) M₂ where
+instance : IsNegApply (M₁ →ₗₘ[R] M₂) where
 
 @[deprecated (since := "2026-06-10")] protected alias neg_apply := neg_apply
 
@@ -1288,7 +1288,7 @@ instance : Sub (M₁ →ₗₘ[R] M₂) :=
       abel,
       fun m i c x => by simp only [MultilinearMap.map_update_smul, smul_sub]⟩⟩
 
-instance : IsSubApply (M₁ →ₗₘ[R] M₂) (∀ i, M₁ i) M₂ where
+instance : IsSubApply (M₁ →ₗₘ[R] M₂) where
 
 @[deprecated (since := "2026-06-10")] protected alias sub_apply := sub_apply
 

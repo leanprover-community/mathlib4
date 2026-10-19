@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
-public import Mathlib.CategoryTheory.Monoidal.End
 public import Mathlib.CategoryTheory.Monoidal.Discrete
+public import Mathlib.CategoryTheory.Monoidal.End
 
 /-!
 # Shift
@@ -197,6 +197,10 @@ def shiftFunctorZero : shiftFunctor C (0 : A) ≅ 𝟭 C :=
 def shiftFunctorZero' (a : A) (ha : a = 0) : shiftFunctor C a ≅ 𝟭 C :=
   eqToIso (by rw [ha]) ≪≫ shiftFunctorZero C A
 
+lemma shiftFunctorZero'_eq_shiftFunctorZero :
+    shiftFunctorZero' C 0 rfl = shiftFunctorZero C A := by
+  simp [shiftFunctorZero']
+
 end
 
 variable {C A}
@@ -215,12 +219,12 @@ lemma ShiftMkCore.shiftFunctorAdd_eq (h : ShiftMkCore C A) (a b : A) :
 
 set_option quotPrecheck false in
 /-- shifting an object `X` by `n` is obtained by the notation `X⟦n⟧` -/
-notation -- Any better notational suggestions?
+notation3 -- Any better notational suggestions?
 X "⟦" n "⟧" => (shiftFunctor _ n).obj X
 
 set_option quotPrecheck false in
 /-- shifting a morphism `f` by `n` is obtained by the notation `f⟦n⟧'` -/
-notation f "⟦" n "⟧'" => (shiftFunctor _ n).map f
+notation3 f "⟦" n "⟧'" => (shiftFunctor _ n).map f
 
 variable (C)
 variable [HasShift C A]
