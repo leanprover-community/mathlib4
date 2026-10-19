@@ -80,7 +80,7 @@ theorem Subgroup.is_normal_topologicalClosure {G : Type*} [TopologicalSpace G] [
     (Subgroup.topologicalClosure N).Normal where
   conj_mem n hn g := by
     apply map_mem_closure (IsTopologicalGroup.continuous_conj g) hn
-    exact fun m hm => Subgroup.Normal.conj_mem inferInstance m hm g
+    exact fun m hm => Subgroup.Normal.conj_mem m hm g
 
 @[to_additive]
 theorem mul_mem_connectedComponent_one {G : Type*} [TopologicalSpace G] [MulOneClass G]
