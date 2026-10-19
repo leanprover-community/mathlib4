@@ -146,7 +146,6 @@ theorem toSheafification_app (P : Cᵒᵖ ⥤ D) : (toSheafification J D).app P 
 
 variable {D}
 
-set_option backward.defeqAttrib.useBackward true in
 theorem isIso_toSheafify {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) : IsIso (toSheafify J P) := by
   refine ⟨(sheafificationAdjunction J D |>.counit.app ⟨P, hP⟩).hom, ?_, ?_⟩
   · exact sheafificationAdjunction J D |>.right_triangle_components ⟨P, hP⟩
@@ -254,7 +253,6 @@ lemma sheafifyLift_id_toSheafify {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P)
 
 variable (J D)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism `𝟭 (Sheaf J D) ≅ sheafToPresheaf J D ⋙ presheafToSheaf J D`. -/
 @[simps!]
 noncomputable def sheafificationNatIso :
