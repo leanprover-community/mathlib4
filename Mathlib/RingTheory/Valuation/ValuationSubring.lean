@@ -868,16 +868,32 @@ end
 
 section IsTrivialOn
 
-variable {k : Type*} [CommRing k] [Algebra k K]
+variable {k : Type*} [CommSemiring k] [Algebra k K]
 
 theorem algebraMap_mem_of_isTrivialOn [A.valuation.IsTrivialOn k] (a : k) :
     algebraMap k K a ∈ A :=
   (A.valuation_le_one_iff _).mp (Valuation.IsTrivialOn.valuation_algebraMap_le_one A.valuation a)
 
+theorem smul_mem_of_isTrivialOn [A.valuation.IsTrivialOn k] (c : k) {x : K} (hx : x ∈ A) :
+    c • x ∈ A := by
+  rw [Algebra.smul_def]
+  exact A.mul_mem _ _ (A.algebraMap_mem_of_isTrivialOn c) hx
+
 /-- If `A.valuation` is trivial on `k`, then the image of `k` under `algebraMap k K` lies in `A`,
-turning `A` into a `k`-algebra. -/
-instance algebraOfIsTrivialOn [A.valuation.IsTrivialOn k] : Algebra k A :=
-  ((algebraMap k K).codRestrict A (A.algebraMap_mem_of_isTrivialOn)).toAlgebra
+turning `A` into a `k`-algebra. The scalar action is the restriction of the action of `k` on `K`. -/
+instance algebraOfIsTrivialOn [A.valuation.IsTrivialOn k] : Algebra k A where
+  smul c x      := ⟨c • (x : K), A.smul_mem_of_isTrivialOn c x.2⟩
+  algebraMap    := (algebraMap k K).codRestrict A A.algebraMap_mem_of_isTrivialOn
+  commutes' _ _ := Subtype.ext <| Algebra.commutes ..
+  smul_def' _ _ := Subtype.ext <| Algebra.smul_def ..
+
+@[simp, norm_cast]
+theorem coe_algebraMap_of_isTrivialOn [A.valuation.IsTrivialOn k] (c : k) :
+    (algebraMap k A c : K) = algebraMap k K c := rfl
+
+@[simp, norm_cast]
+theorem coe_smul_of_isTrivialOn [A.valuation.IsTrivialOn k] (c : k) (x : A) :
+    ((c • x : A) : K) = c • (x : K) := rfl
 
 instance isScalarTowerOfIsTrivialOn [A.valuation.IsTrivialOn k] : IsScalarTower k A K :=
   IsScalarTower.of_algebraMap_eq fun _ ↦ rfl
