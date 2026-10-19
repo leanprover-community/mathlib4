@@ -781,8 +781,6 @@ nonrec theorem integral_finsetSum {ι} {s : Finset ι} {f : ι → ℝ → E}
   simp only [intervalIntegral_eq_integral_uIoc, integral_finsetSum s fun i hi => (h i hi).def',
     Finset.smul_sum]
 
-@[deprecated (since := "2026-04-08")] alias integral_finset_sum := integral_finsetSum
-
 @[simp]
 nonrec theorem integral_neg : ∫ x in a..b, -f x ∂μ = -∫ x in a..b, f x ∂μ := by
   simp only [intervalIntegral, integral_neg]; abel
