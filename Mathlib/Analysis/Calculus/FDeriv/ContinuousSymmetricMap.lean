@@ -86,7 +86,7 @@ theorem HasFDerivAt.continuousSymmetricMapCompContinuousLinearMap
     HasFDerivAt (fun x ↦ (f x).compContinuousLinearMap (g x))
       (compContinuousLinearMapCLM (g x) ∘L f' +
         (f x).fderivCompContinuousLinearMap (g x) ∘L g') x := by
-  convert hasStrictFDerivAt_compContinuousLinearMap (f x, (g x)) |>.hasFDerivAt
+  convert! hasStrictFDerivAt_compContinuousLinearMap (f x, (g x)) |>.hasFDerivAt
     |>.comp x (hf.prodMk hg)
 
 theorem HasFDerivWithinAt.continuousSymmetricMapCompContinuousLinearMap
@@ -94,7 +94,7 @@ theorem HasFDerivWithinAt.continuousSymmetricMapCompContinuousLinearMap
     HasFDerivWithinAt (fun x ↦ (f x).compContinuousLinearMap (g x))
       (compContinuousLinearMapCLM (g x) ∘L f' +
         (f x).fderivCompContinuousLinearMap (g x) ∘L g') s x := by
-  convert hasStrictFDerivAt_compContinuousLinearMap (f x, (g x)) |>.hasFDerivAt
+  convert! hasStrictFDerivAt_compContinuousLinearMap (f x, (g x)) |>.hasFDerivAt
     |>.comp_hasFDerivWithinAt x (hf.prodMk hg)
 
 theorem fderivWithin_continuousSymmetricMapCompContinuousLinearMap
@@ -183,22 +183,24 @@ theorem HasStrictFDerivAt.continuousSymmetricMap_apply (hf : HasStrictFDerivAt f
   (toContinuousMultilinearMapCLM 𝕜).hasStrictFDerivAt.comp x hf
     |>.continuousMultilinearMap_apply hg
 
+-- TODO: why is the by exact necessary here?
 theorem HasFDerivAt.continuousSymmetricMap_apply (hf : HasFDerivAt f f' x)
     (hg : ∀ i, HasFDerivAt (g i) (g' i) x) :
     HasFDerivAt
       (fun x ↦ f x (g · x))
       (apply 𝕜 F G (g · x) ∘L f' + ∑ i, (f x).toContinuousLinearMap (g · x) i ∘L g' i)
-      x :=
-  (toContinuousMultilinearMapCLM 𝕜).hasFDerivAt.comp x hf
+      x := by
+  exact (toContinuousMultilinearMapCLM 𝕜).hasFDerivAt.comp x hf
     |>.continuousMultilinearMap_apply hg
 
+-- TODO: why is the by exact necessary here?
 theorem HasFDerivWithinAt.continuousSymmetricMap_apply (hf : HasFDerivWithinAt f f' s x)
     (hg : ∀ i, HasFDerivWithinAt (g i) (g' i) s x) :
     HasFDerivWithinAt
       (fun x ↦ f x (g · x))
       (apply 𝕜 F G (g · x) ∘L f' + ∑ i, (f x).toContinuousLinearMap (g · x) i ∘L g' i)
       s x :=
-  (toContinuousMultilinearMapCLM 𝕜).hasFDerivAt.comp_hasFDerivWithinAt x hf
+  by exact (toContinuousMultilinearMapCLM 𝕜).hasFDerivAt.comp_hasFDerivWithinAt x hf
     |>.continuousMultilinearMap_apply hg
 
 theorem fderivWithin_continuousSymmetricMap_apply (hf : DifferentiableWithinAt 𝕜 f s x)
