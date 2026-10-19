@@ -47,12 +47,15 @@ times a form of weight `k - 12` (`CuspForm.discriminantEquiv`), which is a polyn
 `E₆` by induction, and so is `Δ = (E₄³ - E₆²) / 1728`. The same step covers the weights `k < 12`,
 where the form of weight `k - 12` is zero.
 
-Injectivity is proved one weight at a time. Let `D = (X₀³ - X₁²) / 1728`, which maps to `Δ`.
-Division with remainder by `D` for the lexicographic monomial order (`MonomialOrder.div_single`),
-in which the leading monomial of `D` is `X₀³`, writes a weighted-homogeneous polynomial `p` of
-weight `k` as `r + D * s`, where every monomial `X₀ ^ a * X₁ ^ b` of `r` has `a < 3`; so `r` is a
-multiple of a single monomial. If `p` maps to zero, comparing constant terms of `q`-expansions
-gives `r = 0`, and then `Δ * evalE₄E₆ s = 0` gives `s = 0` by induction on the weight.
+Injectivity is proved one weight at a time. Since `E₄` and `E₆` have constant term `1`, the
+constant term of the `q`-expansion of the image of a polynomial `p` is `p (1, 1)`. Let
+`D = (X₀³ - X₁²) / 1728`, which maps to `Δ`. Division with remainder by `D` for the lexicographic
+monomial order (`MonomialOrder.div_single`), in which the leading monomial of `D` is `X₀³`,
+followed by taking weight-`k` components, writes a weighted-homogeneous polynomial `p` of weight
+`k ≥ 12` as `r + D * s` with `r` and `s` weighted-homogeneous, where every monomial
+`X₀ ^ a * X₁ ^ b` of `r` has `a < 3` (for `k < 12`, `p` itself has this property); so `r` is a
+multiple of a single monomial. If `p` maps to zero, then `r (1, 1) = 0` because `D (1, 1) = 0`, so
+`r = 0`; and then `Δ * evalE₄E₆ s = 0` gives `s = 0` by induction on the weight.
 
 ## References
 
@@ -220,10 +223,6 @@ instance : IsNoetherianRing (DirectSum ℤ (ModularForm 𝒮ℒ)) :=
 
 /-! ### `E₄` and `E₆` are algebraically independent -/
 
-private lemma evalE₄E₆_monomial (d : Fin 2 →₀ ℕ) (c : ℂ) : evalE₄E₆ (MvPolynomial.monomial d c) =
-    c • (DirectSum.of (ModularForm 𝒮ℒ) 4 E₄ ^ d 0 * DirectSum.of (ModularForm 𝒮ℒ) 6 E₆ ^ d 1) := by
-  simp [MvPolynomial.monomial_fin_two, Algebra.smul_def, mul_assoc]
-
 private def discriminantPoly : MvPolynomial (Fin 2) ℂ :=
   (1 / 1728 : ℂ) • (MvPolynomial.X 0 ^ 3 - MvPolynomial.X 1 ^ 2)
 
@@ -241,55 +240,47 @@ private lemma eq_of_weight_eq_of_lt_three {d d' : Fin 2 →₀ ℕ} (hd : d 0 < 
   exact Finsupp.ext fun i ↦ by fin_cases i <;> lia
 
 private lemma evalE₄E₆_monomial_apply_eq_zero_of_ne (d : Fin 2 →₀ ℕ) (c : ℂ) (k : ℤ)
-    (hk : k ≠ d 0 * 4 + d 1 * 6) : (evalE₄E₆ (MvPolynomial.monomial d c)) k = 0 := by
+    (hk : k ≠ d 0 * 4 + d 1 * 6) : evalE₄E₆ (MvPolynomial.monomial d c) k = 0 := by
   simp [MvPolynomial.monomial_fin_two, MvPolynomial.C_mul', DirectSum.ofPow, DirectSum.of_mul_of,
     DirectSum.smul_apply, DirectSum.of_eq_of_ne, hk]
 
-private lemma evalE₄E₆_apply_eq_zero_of_ne {n : ℕ} (p : MvPolynomial (Fin 2) ℂ)
-    (hp : p.IsWeightedHomogeneous (![4, 6] : Fin 2 → ℕ) n) (k : ℤ) (hk : k ≠ n) :
-    evalE₄E₆ p k = 0 := by
-  rw [p.as_sum, map_sum, DirectSum.sum_apply]
+private lemma evalE₄E₆_eq_of_isWeightedHomogeneous {n : ℕ} {p : MvPolynomial (Fin 2) ℂ}
+    (hp : p.IsWeightedHomogeneous (![4, 6] : Fin 2 → ℕ) n) :
+    evalE₄E₆ p = DirectSum.of (ModularForm 𝒮ℒ) n (evalE₄E₆ p n) := by
+  ext k : 1
+  obtain rfl | hk := eq_or_ne k n
+  · simp
+  -- Every monomial of `p` has weight `n`, so its image vanishes in degree `k ≠ n`.
+  rw [DirectSum.of_eq_of_ne _ _ _ hk, p.as_sum, map_sum, DirectSum.sum_apply]
   refine Finset.sum_eq_zero fun d hd ↦ evalE₄E₆_monomial_apply_eq_zero_of_ne _ _ _ ?_
   simpa [← hp (MvPolynomial.mem_support_iff.mp hd), weight_four_six_apply] using hk
 
-private lemma evalE₄E₆_eq_of_isWeightedHomogeneous {n : ℕ} {p : MvPolynomial (Fin 2) ℂ}
-    (hp : MvPolynomial.IsWeightedHomogeneous (![4, 6] : Fin 2 → ℕ) p n) :
-    evalE₄E₆ p = DirectSum.of (ModularForm 𝒮ℒ) (↑n : ℤ) ((evalE₄E₆ p) ↑n) := by
-  ext k : 1
-  grind [DirectSum.of_apply, evalE₄E₆_apply_eq_zero_of_ne]
-
 private lemma evalE₄E₆_weightedHomogeneousComponent_apply (p : MvPolynomial (Fin 2) ℂ) (n : ℕ) :
-    (evalE₄E₆ (MvPolynomial.weightedHomogeneousComponent ![4, 6] n p)) n = (evalE₄E₆ p) n := by
+    evalE₄E₆ (MvPolynomial.weightedHomogeneousComponent ![4, 6] n p) n = evalE₄E₆ p n := by
   -- Both sides are sums over the monomials of `p`; those of weight `≠ n` vanish in degree `n`.
-  conv_rhs => rw [← MvPolynomial.support_sum_monomial_coeff p]
+  conv_rhs => rw [p.as_sum]
   simp only [MvPolynomial.weightedHomogeneousComponent_apply, map_sum, DirectSum.sum_apply]
   exact Finset.sum_filter_of_ne fun d _ ↦ Not.imp_symm fun h ↦
-    evalE₄E₆_monomial_apply_eq_zero_of_ne _ _ _ <| by grind [weight_four_six_apply]
+    evalE₄E₆_monomial_apply_eq_zero_of_ne _ _ _ <| by lia [weight_four_six_apply d]
 
 private lemma discriminantPoly_isWeightedHomogeneous :
-    MvPolynomial.IsWeightedHomogeneous (![4, 6] : Fin 2 → ℕ) discriminantPoly 12 :=
+    discriminantPoly.IsWeightedHomogeneous (![4, 6] : Fin 2 → ℕ) 12 :=
   (MvPolynomial.weightedHomogeneousSubmodule ℂ _ 12).smul_mem _ <|
     ((MvPolynomial.isWeightedHomogeneous_X ℂ _ 0).pow 3).sub <|
       (MvPolynomial.isWeightedHomogeneous_X ℂ _ 1).pow 2
 
-private lemma evalE₄E₆_discriminantPoly_mul_apply {n : ℕ} {s : MvPolynomial (Fin 2) ℂ}
-    (hs : MvPolynomial.IsWeightedHomogeneous (![4, 6] : Fin 2 → ℕ) s (n - 12))
-    (hcast : 12 + ((n - 12 : ℕ) : ℤ) = n) : evalE₄E₆ (discriminantPoly * s) n =
-      mcast hcast ((CuspForm.discriminant : ModularForm 𝒮ℒ 12).mul (evalE₄E₆ s ↑(n - 12))) := by
-  conv_lhs => rw [map_mul, evalE₄E₆_discriminantPoly, evalE₄E₆_eq_of_isWeightedHomogeneous hs,
-    DirectSum.of_mul_of]
-  -- The product sits in degree `12 + (n - 12)`; transport it to degree `n` along `hcast`.
-  exact congr($(DirectSum.of_eq_of_gradedMonoid_eq (gradedMonoid_eq_of_cast hcast rfl)) _).trans
-    (DirectSum.of_eq_same _ _)
-
-private lemma evalE₄E₆_discriminantPoly_mul_qExpansion_coeff_zero {n : ℕ} (hn12 : 12 ≤ n)
-    {s : MvPolynomial (Fin 2) ℂ} (hs : s.IsWeightedHomogeneous (![4, 6] : Fin 2 → ℕ) (n - 12)) :
-    (qExpansion 1 ((evalE₄E₆ (discriminantPoly * s)) n)).coeff 0 = 0 := by
-  rw [evalE₄E₆_discriminantPoly_mul_apply hs (by lia)]
-  -- Transporting along the degree identity (`mcast`) does not change the `q`-expansion, and the
-  -- underlying function is that of the cusp form `Δ * (evalE₄E₆ s) (n - 12)`.
-  exact CuspFormClass.qExpansion_coeff_zero (CuspForm.discriminant.mulModularForm _) one_pos
-    one_mem_strictPeriods_SL
+private lemma constantCoeff_qExpansionAlgHom_evalE₄E₆ (p : MvPolynomial (Fin 2) ℂ) :
+    PowerSeries.constantCoeff (qExpansionAlgHom 1 one_pos one_mem_strictPeriods_SL (evalE₄E₆ p)) =
+      MvPolynomial.eval 1 p := by
+  -- Both sides are ring homomorphisms in `p`; on `X 0` and `X 1` they are `1`, since `E₄` and `E₆`
+  -- have constant term `1`.
+  induction p using MvPolynomial.induction_on with
+  | C a => simp
+  | add p q hp hq => simp [hp, hq]
+  | mul_X p i hp =>
+    fin_cases i
+    · simpa [hp] using congr(MvPolynomial.eval 1 p * $(E_qExpansion_coeff_zero _ ⟨2, rfl⟩))
+    · simpa [hp] using congr(MvPolynomial.eval 1 p * $(E_qExpansion_coeff_zero _ ⟨3, rfl⟩))
 
 attribute [local instance] MvPolynomial.weightedGradedAlgebra in
 private lemma weightedHomogeneousComponent_mul_of_isWeightedHomogeneous_right {σ R : Type*}
@@ -323,26 +314,22 @@ private lemma lex_degree_discriminantPoly : MonomialOrder.lex.degree discriminan
     simp [MonomialOrder.degree_pow, MonomialOrder.degree_X, MonomialOrder.lex_lt_iff,
       Finsupp.Lex.lt_iff]
 
-private lemma exists_eq_reduced_add_discriminantPoly_mul {n : ℕ} (p : MvPolynomial (Fin 2) ℂ)
-    (hp : MvPolynomial.IsWeightedHomogeneous (![4, 6] : Fin 2 → ℕ) p n) :
-    ∃ r s : MvPolynomial (Fin 2) ℂ, MvPolynomial.IsWeightedHomogeneous (![4, 6] : Fin 2 → ℕ) r n ∧
-      MvPolynomial.IsWeightedHomogeneous (![4, 6] : Fin 2 → ℕ) s (n - 12) ∧
+private lemma exists_eq_reduced_add_discriminantPoly_mul {n : ℕ} {p : MvPolynomial (Fin 2) ℂ}
+    (hp : p.IsWeightedHomogeneous (![4, 6] : Fin 2 → ℕ) n) (hn : 12 ≤ n) :
+    ∃ r s : MvPolynomial (Fin 2) ℂ, r.IsWeightedHomogeneous (![4, 6] : Fin 2 → ℕ) n ∧
+      s.IsWeightedHomogeneous (![4, 6] : Fin 2 → ℕ) (n - 12) ∧
       p = r + discriminantPoly * s ∧ ∀ d ∈ r.support, d 0 < 3 := by
-  -- In weight `n < 12` every monomial `X₀ ^ a * X₁ ^ b` of `p` already has `a < 3`.
-  obtain hn | hn := lt_or_ge n 12
-  · refine ⟨p, 0, hp, MvPolynomial.isWeightedHomogeneous_zero ℂ _ _, by simp, fun d hd ↦ ?_⟩
-    lia [weight_four_six_apply d, hp (MvPolynomial.mem_support_iff.mp hd)]
   -- Divide by `discriminantPoly`, whose leading monomial for the lexicographic order is `X₀ ^ 3`:
   -- every monomial of the remainder `r` then has `X₀`-degree `< 3`.
   obtain ⟨s, r, hs, hr, rfl, hr_red⟩ := div_single_of_isWeightedHomogeneous .lex
-    (MonomialOrder.isUnit_leadingCoeff.mpr fun h ↦ by
-      simpa [h, eq_comm] using lex_degree_discriminantPoly)
+    (MonomialOrder.isUnit_leadingCoeff.mpr <| MonomialOrder.lex.ne_zero_of_degree_ne_zero <| by
+      simp [lex_degree_discriminantPoly])
     discriminantPoly_isWeightedHomogeneous hp hn
   refine ⟨r, s, hr, hs, by ring, fun d hd ↦ ?_⟩
   simpa [lex_degree_discriminantPoly, Finsupp.single_le_iff] using hr_red d hd
 
-private lemma reduced_isWeightedHomogeneous_eq_monomial {n : ℕ} (r : MvPolynomial (Fin 2) ℂ)
-    (hr : MvPolynomial.IsWeightedHomogeneous (![4, 6] : Fin 2 → ℕ) r n)
+private lemma reduced_isWeightedHomogeneous_eq_monomial {n : ℕ} {r : MvPolynomial (Fin 2) ℂ}
+    (hr : r.IsWeightedHomogeneous (![4, 6] : Fin 2 → ℕ) n)
     (hr_red : ∀ d ∈ r.support, d 0 < 3) {d₀ : Fin 2 →₀ ℕ} (hd₀ : d₀ ∈ r.support) :
     r = MvPolynomial.monomial d₀ (r.coeff d₀) :=
   -- An exponent `(a, b)` with `a < 3` is determined by its weight `4 * a + 6 * b`.
@@ -351,56 +338,45 @@ private lemma reduced_isWeightedHomogeneous_eq_monomial {n : ℕ} (r : MvPolynom
       (hr (MvPolynomial.mem_support_iff.mp hd)).trans
         (hr (MvPolynomial.mem_support_iff.mp hd₀)).symm
 
-private lemma evalE₄E₆_monomial_qExpansion_coeff_zero {n : ℕ} {d₀ : Fin 2 →₀ ℕ}
-    (hd₀ : Finsupp.weight (![4, 6] : Fin 2 → ℕ) d₀ = n) (c : ℂ) :
-    (qExpansion 1 ((evalE₄E₆ (MvPolynomial.monomial d₀ c)) n)).coeff 0 = c := by
-  -- The monomial has weight `n`, so its image lies in degree `n` alone
-  -- (`evalE₄E₆_eq_of_isWeightedHomogeneous`) and we may transport along the algebra homomorphism
-  -- `qExpansionAlgHom`: the image is `c • (E₄ ^ d₀ 0 * E₆ ^ d₀ 1)`, and both Eisenstein series
-  -- have constant term `1`.
-  rw [← qExpansionAlgHom_apply one_pos one_mem_strictPeriods_SL,
-    ← evalE₄E₆_eq_of_isWeightedHomogeneous (MvPolynomial.isWeightedHomogeneous_monomial _ _ _ hd₀)]
-  simpa [evalE₄E₆_monomial] using congr(c * ($(E_qExpansion_coeff_zero _ ⟨2, rfl⟩) ^ d₀ 0 *
-    $(E_qExpansion_coeff_zero _ ⟨3, rfl⟩) ^ d₀ 1))
-
-private lemma reduced_eq_zero_of_coeffZero_eq_zero {n : ℕ} (r : MvPolynomial (Fin 2) ℂ)
-    (hr : MvPolynomial.IsWeightedHomogeneous (![4, 6] : Fin 2 → ℕ) r n)
-    (hr_red : ∀ d ∈ r.support, d 0 < 3) (h0 : (qExpansion 1 ((evalE₄E₆ r) n)).coeff 0 = 0) :
-    r = 0 := by
+private lemma reduced_eq_zero_of_eval_one_eq_zero {n : ℕ} {r : MvPolynomial (Fin 2) ℂ}
+    (hr : r.IsWeightedHomogeneous (![4, 6] : Fin 2 → ℕ) n)
+    (hr_red : ∀ d ∈ r.support, d 0 < 3) (h0 : MvPolynomial.eval 1 r = 0) : r = 0 := by
   -- A nonzero `r` is a single monomial `c • X₀ ^ a * X₁ ^ b` with `c ≠ 0`, since its monomials
-  -- all have weight `n` and `a < 3`; the image of that monomial has constant term `c`.
+  -- all have weight `n` and `a < 3`; its value at `(1, 1)` is `c`.
   contrapose! h0 with hr0
   obtain ⟨d₀, hd₀⟩ := MvPolynomial.exists_coeff_ne_zero hr0
-  rwa [reduced_isWeightedHomogeneous_eq_monomial r hr hr_red (MvPolynomial.mem_support_iff.mpr hd₀),
-    evalE₄E₆_monomial_qExpansion_coeff_zero (hr hd₀)]
+  rw [reduced_isWeightedHomogeneous_eq_monomial hr hr_red (MvPolynomial.mem_support_iff.mpr hd₀)]
+  simpa [MvPolynomial.eval_monomial] using hd₀
 
-private lemma evalE₄E₆_apply_eq_zero_of_discriminantPoly_mul_apply_eq_zero {n : ℕ} (hn12 : 12 ≤ n)
-    {s : MvPolynomial (Fin 2) ℂ} (hs : s.IsWeightedHomogeneous (![4, 6] : Fin 2 → ℕ) (n - 12))
-    (hds : (evalE₄E₆ (discriminantPoly * s)) n = 0) : (evalE₄E₆ s) ↑(n - 12) = 0 := by
-  rw [evalE₄E₆_discriminantPoly_mul_apply hs (by lia), mcast_eq_zero_iff] at hds
-  -- Now `hds : Δ * g = 0` with `g = (evalE₄E₆ s) ↑(n - 12)`, and `Δ` has no zeros on `ℍ`.
-  simpa [DFunLike.ext_iff, discriminant_ne_zero] using hds
+private lemma evalE₄E₆_apply_eq_zero_of_discriminantPoly_mul_eq_zero {n : ℕ}
+    {s : MvPolynomial (Fin 2) ℂ} (hs : s.IsWeightedHomogeneous (![4, 6] : Fin 2 → ℕ) n)
+    (hds : evalE₄E₆ (discriminantPoly * s) = 0) : evalE₄E₆ s n = 0 := by
+  rw [map_mul, evalE₄E₆_discriminantPoly, evalE₄E₆_eq_of_isWeightedHomogeneous hs,
+    DirectSum.of_mul_of, map_eq_zero_iff _ (DirectSum.of_injective _)] at hds
+  -- Now `hds : Δ * g = 0` with `g = (evalE₄E₆ s) n`, and `Δ` has no zeros on `ℍ`.
+  simpa [DFunLike.ext_iff, discriminant_ne_zero, GradedMonoid.GMul.mul] using hds
 
-private lemma eq_zero_of_isWeightedHomogeneous_of_evalE₄E₆_apply_eq_zero (n : ℕ)
-    (p : MvPolynomial (Fin 2) ℂ) (hp : MvPolynomial.IsWeightedHomogeneous (![4, 6] : Fin 2 → ℕ) p n)
-    (heval : (evalE₄E₆ p) n = 0) : p = 0 := by
+private lemma eq_zero_of_isWeightedHomogeneous_of_evalE₄E₆_apply_eq_zero {n : ℕ}
+    {p : MvPolynomial (Fin 2) ℂ} (hp : p.IsWeightedHomogeneous (![4, 6] : Fin 2 → ℕ) n)
+    (heval : evalE₄E₆ p n = 0) : p = 0 := by
   induction n using Nat.strong_induction_on generalizing p with | _ n ih => ?_
+  -- `evalE₄E₆ p` lies in degree `n`, so it vanishes, and so does the constant term `p (1, 1)` of
+  -- its `q`-expansion.
+  replace heval : evalE₄E₆ p = 0 := by
+    rw [evalE₄E₆_eq_of_isWeightedHomogeneous hp, heval, map_zero]
+  have h1 : MvPolynomial.eval 1 p = 0 := by
+    rw [← constantCoeff_qExpansionAlgHom_evalE₄E₆, heval, map_zero, map_zero]
   obtain hn12 | hn12 := lt_or_ge n 12
   · -- In weight `n < 12`, every monomial `X₀ ^ a * X₁ ^ b` has `a < 3`.
-    refine reduced_eq_zero_of_coeffZero_eq_zero p hp (fun d hd ↦ ?_)
-      (by simp [heval, UpperHalfPlane.qExpansion_zero])
+    refine reduced_eq_zero_of_eval_one_eq_zero hp (fun d hd ↦ ?_) h1
     lia [weight_four_six_apply d, hp (MvPolynomial.mem_support_iff.mp hd)]
-  -- Otherwise `p = r + D * s` with `r` reduced: comparing constant terms gives `r = 0`, and then
-  -- `Δ * evalE₄E₆ s = 0` gives `s = 0` by induction.
-  obtain ⟨r, s, hr, hs, rfl, hr_red⟩ := exists_eq_reduced_add_discriminantPoly_mul p hp
-  obtain rfl : r = 0 := reduced_eq_zero_of_coeffZero_eq_zero r hr hr_red <| by
-    rw [map_add, DirectSum.add_apply, add_eq_zero_iff_eq_neg] at heval
-    -- The constant coefficient of the discriminant part vanishes.
-    simpa [heval, ModularForm.qExpansion_neg one_pos one_mem_strictPeriods_SL] using
-      evalE₄E₆_discriminantPoly_mul_qExpansion_coeff_zero hn12 hs
+  -- Otherwise `p = r + D * s` with `r` reduced: `D (1, 1) = 0` gives `r (1, 1) = 0`, so `r = 0`;
+  -- then `Δ * evalE₄E₆ s = 0` gives `s = 0` by induction.
+  obtain ⟨r, s, hr, hs, rfl, hr_red⟩ := exists_eq_reduced_add_discriminantPoly_mul hp hn12
+  obtain rfl : r = 0 :=
+    reduced_eq_zero_of_eval_one_eq_zero hr hr_red (by simpa [discriminantPoly] using h1)
   rw [zero_add] at heval
-  simp [ih _ (by lia) s hs
-    (evalE₄E₆_apply_eq_zero_of_discriminantPoly_mul_apply_eq_zero hn12 hs heval)]
+  simp [ih _ (by lia) hs (evalE₄E₆_apply_eq_zero_of_discriminantPoly_mul_eq_zero hs heval)]
 
 /-- The evaluation homomorphism `evalE₄E₆` is injective, i.e. `E₄` and `E₆` are algebraically
 independent over `ℂ` in the graded ring `⨁ k, ModularForm 𝒮ℒ k`. Together with
@@ -409,7 +385,7 @@ theorem evalE₄E₆_injective : Function.Injective evalE₄E₆ := by
   refine (injective_iff_map_eq_zero _).2 fun p hp ↦ ?_
   rw [← MvPolynomial.sum_weightedHomogeneousComponent ![4, 6] p]
   refine finsum_eq_zero_of_forall_eq_zero fun n ↦
-    eq_zero_of_isWeightedHomogeneous_of_evalE₄E₆_apply_eq_zero n _
+    eq_zero_of_isWeightedHomogeneous_of_evalE₄E₆_apply_eq_zero
       (MvPolynomial.weightedHomogeneousComponent_isWeightedHomogeneous _ _) ?_
   -- The weight-`n` component of `p` maps to the weight-`n` part of `evalE₄E₆ p = 0`.
   rw [evalE₄E₆_weightedHomogeneousComponent_apply, hp, DirectSum.zero_apply]
@@ -430,7 +406,8 @@ def mvPolynomialEquivModularForms : MvPolynomial (Fin 2) ℂ ≃ₐ[ℂ] DirectS
 computes it on explicit polynomials via `evalE₄E₆_X_zero` and `evalE₄E₆_X_one`. -/
 @[simp]
 lemma mvPolynomialEquivModularForms_apply (p : MvPolynomial (Fin 2) ℂ) :
-    mvPolynomialEquivModularForms p = evalE₄E₆ p := (rfl) -- not `rfl`: the def is not exposed
+    mvPolynomialEquivModularForms p = evalE₄E₆ p :=
+  AlgEquiv.ofBijective_apply _ _ p
 
 /-- `mvPolynomialEquivModularForms.symm` inverts the evaluation map `evalE₄E₆`. -/
 @[simp]
