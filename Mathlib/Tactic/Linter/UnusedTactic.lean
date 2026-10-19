@@ -135,7 +135,7 @@ partial def getTactics (ignoreTacticKinds : NameHashSet)
       if k == ``Lean.Parser.Tactic.«tactic_<;>_» || k == ``Lean.Parser.Tactic.Conv.«conv_<;>_» then
         if let some arg := args[1]? then
           if let some r := arg.getRange? true then
-            modify (·.insert r (stx, none))
+            modify (·.insert r (arg, none))
 
 /-- `getNames mctx` extracts the names of all the local declarations implied by the
 `MetavarContext` `mctx`. -/

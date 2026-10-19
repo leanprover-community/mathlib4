@@ -130,7 +130,7 @@ example : True ∧ True := by simp <;> simp
 
 -- `<;>` leaving 1 goal
 /--
-@ +1:28...53
+@ +1:45...48
 warning: Unused tactic linter: `<;>` can be replaced with `;`.
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
@@ -163,7 +163,7 @@ example : True ∧ True := by
 
 -- `conv` mode `<;>`  leaving 1 goal
 /--
-@ +2:10...23
+@ +2:15...18
 warning: Unused tactic linter: `<;>` can be replaced with `;`.
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
