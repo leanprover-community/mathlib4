@@ -28,8 +28,12 @@ public import Mathlib.Topology.MetricSpace.Isometry
 
 ## Implementation notes
 
-The constant `δ` in `IsHyperbolicWith X δ` is a real number. For a non-empty space,
-taking `w = x = y = z` in the four-point condition yields `0 ≤ δ`.
+* `IsHyperbolicWith X δ` follows `LipschitzWith` and `HolderWith`. A space can admit many
+  hyperbolicity constants. The typeclass `IsHyperbolic X` records only the existence of a constant,
+  as `LipschitzMul` and `MemHolder` do. Using a typeclass lets instance search infer hyperbolicity
+  for subtypes and bounded spaces.
+* The constant `δ` in `IsHyperbolicWith X δ` is a real number. For a non-empty space,
+  taking `w = x = y = z` in the four-point condition yields `0 ≤ δ`.
 
 ## Tags
 
