@@ -170,6 +170,7 @@ theorem iff_card [Fact p.Prime] [Finite G] : IsPGroup p G ↔ ∃ n : ℕ, Nat.c
 @[to_additive]
 alias ⟨exists_card_eq, _⟩ := iff_card
 
+@[to_additive isAddPGroup_iff_isAddPGroup_prod_primeFactors]
 theorem _root_.isPGroup_iff_isPGroup_prod_primeFactors (h : p ≠ 0) :
     IsPGroup p G ↔ IsPGroup (p.primeFactors.prod id) G :=
   ⟨(.of_pow <| ·.mono <| p.dvd_prod_primeFactors_pow_self h), .mono p.prod_primeFactors_dvd⟩
