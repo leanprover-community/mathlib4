@@ -12,6 +12,7 @@ public import Mathlib.Data.Sigma.Basic
 public import Mathlib.Util.CompileInductive
 
 import Batteries.Tactic.Lint.TypeClass
+import Batteries.Tactic.SeqFocus
 
 /-!
 # A computable model of ZFA without infinity

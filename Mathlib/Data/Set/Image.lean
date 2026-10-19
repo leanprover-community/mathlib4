@@ -11,6 +11,8 @@ public import Mathlib.Data.Set.Inclusion
 public import Mathlib.Data.Set.Subsingleton
 public import Mathlib.Data.Set.SymmDiff
 
+import Batteries.Tactic.SeqFocus
+
 /-!
 # Images and preimages of sets
 
