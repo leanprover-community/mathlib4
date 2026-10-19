@@ -35,7 +35,7 @@ subgroup `G` of `G`, and `⊥` denotes the trivial subgroup `{1}`.
     `H 0`, `H 1`, ..., starting at `⊤`, finishing at `⊥`, and with each `H n / H (n + 1)`
     central in `G / H (n + 1)`. In this formalisation it is convenient to have a weaker predicate
     on an infinite sequence of subgroups `H n` of `G`: we say a sequence is an
-    *ascending central series* if `H 0 = ⊥` and `⁅H (n + 1), ⊤⁆ ⊆ H n` for all `n`, again with no
+    *ascending central series* if `H 0 = ⊥` and `⁅H (n + 1), ⊤⁆ ⊆ H n` for all `n`, with no
     requirement that the series reaches `⊤` or that the `H i` are normal.
 
 ## Main theorems
