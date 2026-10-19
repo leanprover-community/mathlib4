@@ -96,36 +96,34 @@ theorem isCompact_uIcc {α : Type*} [LinearOrder α] [TopologicalSpace α] [Comp
     {a b : α} : IsCompact (uIcc a b) :=
   isCompact_Icc
 
-section DenseLinear
+section OrderClosed
 
-variable [TopologicalSpace α] [LinearOrder α] [OrderTopology α] [DenselyOrdered α]
-  [CompactIccSpace α]
-
-@[compactness .]
-lemma isCompact_closure_Ioc {a b : α} : IsCompact (closure (Ioc a b)) := by
-  obtain rfl|h := eq_or_ne a b
-  · simp
-  · simp [h, isCompact_Icc]
+variable [TopologicalSpace α] [Preorder α] [OrderClosedTopology α] [CompactIccSpace α]
 
 @[compactness .]
-lemma isCompact_closure_Ico {a b : α} : IsCompact (closure (Ico a b)) := by
-  obtain rfl|h := eq_or_ne a b
-  · simp
-  · simp [h, isCompact_Icc]
+lemma isCompact_closure_Ioc {a b : α} : IsCompact (closure (Ioc a b)) :=
+  isCompact_Icc.of_isClosed_subset isClosed_closure <|
+    closure_minimal Ioc_subset_Icc_self isClosed_Icc
+
 
 @[compactness .]
-lemma isCompact_closure_Ioo {a b : α} : IsCompact (closure (Ioo a b)) := by
-  obtain rfl|h := eq_or_ne a b
-  · simp
-  · simp [h, isCompact_Icc]
+lemma isCompact_closure_Ico {a b : α} : IsCompact (closure (Ico a b)) :=
+  isCompact_Icc.of_isClosed_subset isClosed_closure <|
+    closure_minimal Ico_subset_Icc_self isClosed_Icc
 
 @[compactness .]
-lemma isCompact_closure_uIoc {a b : α} : IsCompact (closure (uIoc a b)) := by
-  obtain rfl|h := eq_or_ne a b
-  · simp
-  · simp [h, isCompact_uIcc]
+lemma isCompact_closure_Ioo {a b : α} : IsCompact (closure (Ioo a b)) :=
+  isCompact_Icc.of_isClosed_subset isClosed_closure <|
+    closure_minimal Ioo_subset_Icc_self isClosed_Icc
 
-end DenseLinear
+end OrderClosed
+
+@[compactness .]
+lemma isCompact_closure_uIoc [TopologicalSpace α] [LinearOrder α] [OrderClosedTopology α]
+    [CompactIccSpace α] {a b : α} : IsCompact (closure (uIoc a b)) :=
+  isCompact_uIcc.of_isClosed_subset isClosed_closure <|
+    closure_minimal uIoc_subset_uIcc isClosed_Icc
+
 
 -- See note [lower instance priority]
 /-- A complete linear order is a compact space.
