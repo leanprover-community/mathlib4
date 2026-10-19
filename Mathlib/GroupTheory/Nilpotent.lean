@@ -1370,6 +1370,6 @@ theorem Group.IsNilpotent.exists_normal_card_eq_of_dvd_card [IsNilpotent G] {n :
   obtain ⟨k, hk⟩ := hdvd
   obtain ⟨H, hind, hH⟩ := exists_normal_index_eq_of_dvd_card (Dvd.intro_left n hk.symm)
   refine ⟨H, ?_, hH⟩
-  rwa [← H.card_mul_index, ← hind, Nat.mul_left_inj FiniteIndex.index_ne_zero] at hk
+  rwa [← H.card_mul_index, ← hind, Nat.mul_left_inj index_ne_zero] at hk
 
 end WithFiniteGroup
