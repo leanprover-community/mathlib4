@@ -12,7 +12,7 @@ public meta import Lean.Meta.Tactic.TryThis
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
-public import Lean.Parser.Term
+public meta import Lean.Parser.Term
 
 /-!
 # The "flexible" linter
