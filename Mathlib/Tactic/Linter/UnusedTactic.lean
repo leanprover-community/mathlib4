@@ -149,7 +149,7 @@ For each `TacticInfo` in the info tree that corresponds to a tactic syntax:
 - If the tactic is used, erase it from the set of tactics.
 - If the tactic is unused, add a message to this tactic, if it doesn't have a message already.
 -/
-partial def eraseUsedTactics (exceptions : Std.HashSet SyntaxNodeKind)
+def eraseUsedTactics (exceptions : Std.HashSet SyntaxNodeKind)
     (trees : PersistentArray InfoTree)
     (map : Std.HashMap Syntax.Range (Syntax × Option MessageData)) :
     Std.HashMap Syntax.Range (Syntax × Option MessageData) :=
