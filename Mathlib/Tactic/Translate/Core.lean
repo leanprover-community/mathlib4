@@ -848,8 +848,11 @@ where
       throwErrorAt old "rename rule for `{old.getId}` already specified"
     return rename.insert old.getId new.getId
 
-/-- In a `deprecated` attribute without a target, set the target to `declName`. -/
-def preprocessAttribute (declName : Name) (attr : Attribute) : CoreM Attribute := do
+/--
+In a `deprecated` attribute without a target, if `declName` is an alias,
+set the deprecation target to the declaration it is an alias of.
+-/
+def setDeprecatedTarget (declName : Name) (attr : Attribute) : CoreM Attribute := do
   if let `(attr| deprecated%$tk
       $[$desc:str]? $[$typeChanged?]? $[(since := $since)]?) := attr.stx then
     if let some info ← Batteries.Tactic.Alias.getAliasInfo? declName then
@@ -930,7 +933,7 @@ def elabTranslationAttr (declName : Name) (stx : Syntax) : CoreM Config := do
     return {
       trace := !stx[1].isNone
       target := match tgt with | some tgt => tgt.getId | _ => Name.anonymous
-      attrs := ← (← liftCommandElabM (elabAttrs attrs)).mapM (preprocessAttribute declName ·)
+      attrs := ← (← liftCommandElabM (elabAttrs attrs)).mapM (setDeprecatedTarget declName ·)
       doc, reorder?, relevantArg?, dontTranslate, existing, self, none, rename,
       ref := match tgt with | some tgt => tgt.raw | _ => stx[0] }
   | _ => throwUnsupportedSyntax
