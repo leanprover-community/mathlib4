@@ -262,3 +262,32 @@ notation3 "Objet " "mathématique" => Type
 #guard_msgs in #check PSum
 
 end Test
+
+section noWs
+
+def noWsTest (a b : Nat) : Nat := a + b
+
+local notation3:max a noWs "[|" b "]" => noWsTest a b
+
+variable (m n : Nat)
+
+/-- info: m[|n] : ℕ -/
+#guard_msgs in #check m[|n]
+
+/-- info: (m + 1)[|n] : ℕ -/
+#guard_msgs in #check (m + 1)[|n]
+
+-- Whitespace before `[|` is rejected.
+/-- info: false -/
+#guard_msgs in
+run_cmd Lean.logInfo m!"{(Lean.Parser.runParserCategory (← Lean.getEnv) `term "m [|n]").toBool}"
+
+-- Test the pretty-printing of `notation3` itself.
+/-- info: `notation3:max a noWs "[|" b "]" => noWsTest a b` -/
+#guard_msgs in
+run_cmd do
+  let .ok stx := Lean.Parser.runParserCategory (← Lean.getEnv) `command
+    "notation3:max a noWs \"[|\" b \"]\" => noWsTest a b" | unreachable!
+  Lean.logInfo m!"`{← Lean.Elab.Command.liftCoreM <| Lean.PrettyPrinter.ppCommand ⟨stx⟩}`"
+
+end noWs

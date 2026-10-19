@@ -76,42 +76,13 @@ def cond (s : Set Ω) : Measure Ω :=
   (μ s)⁻¹ • μ.restrict s
 
 @[inherit_doc ProbabilityTheory.cond]
-scoped macro:max μ:term noWs "[|" s:term "]" : term =>
-  `(ProbabilityTheory.cond $μ $s)
+scoped notation3:max μ noWs "[|" s "]" => ProbabilityTheory.cond μ s
 @[inherit_doc cond]
-scoped macro:max μ:term noWs "[" t:term " | " s:term "]" : term =>
-  `(ProbabilityTheory.cond $μ $s $t)
-
-/-!
-We can't use `notation` or `notation3` as it does not support `noWs`, and so we have to write
-our own delaborators.
--/
-
-section delaborators
-open Lean PrettyPrinter.Delaborator SubExpr
-
-/-- Unexpander for `μ[|s]` notation. -/
-@[app_unexpander ProbabilityTheory.cond]
-meta def condUnexpander : Lean.PrettyPrinter.Unexpander
-  | `($_ $μ $s) => `($μ[|$s])
-  | _ => throw ()
+scoped notation3:max μ noWs "[" t " | " s "]" => ProbabilityTheory.cond μ s t
 
 /-- info: μ[|s] : Measure Ω -/
 #guard_msgs in
 #check μ[|s]
-
-/-- Delaborator for `μ[t | s]` notation. -/
-@[app_delab DFunLike.coe]
-meta def delabCondApplied : Delab :=
-  whenNotPPOption getPPExplicit <| whenPPOption getPPNotation <| withOverApp 6 do
-    let e ← getExpr
-    guard <| e.isAppOfArity' ``DFunLike.coe 6
-    guard <| (e.getArg!' 4).isAppOf' ``ProbabilityTheory.cond
-    let t ← withAppArg delab
-    withAppFn <| withAppArg do
-      let μ ← withNaryArg 2 delab
-      let s ← withNaryArg 3 delab
-      `($μ[$t|$s])
 
 /-- info: μ[t | s] : ℝ≥0∞ -/
 #guard_msgs in
@@ -119,8 +90,6 @@ meta def delabCondApplied : Delab :=
 /-- info: μ[t | s] : ℝ≥0∞ -/
 #guard_msgs in
 #check μ[|s] t
-
-end delaborators
 
 /-- The conditional probability measure of measure `μ` on `{ω | X ω ∈ s}`.
 
