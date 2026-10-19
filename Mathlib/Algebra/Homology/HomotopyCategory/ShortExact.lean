@@ -223,7 +223,7 @@ there are two different ways to define a morphism `mappingCone S.f ⟶ (mappingC
 depending on whether we use the connecting homomorphism attached to the
 mapping cone of `S.f` or to the mapping cocone of `S.g`. This definition shows that
 these two morphisms are homotopic. -/
-noncomputable def homotopyMappingConeTriangleMor₃CompliftShortComplex
+noncomputable def homotopyMappingConeTriangleMor₃CompLiftShortComplex
     (S : ShortComplex (CochainComplex C ℤ)) :
     Homotopy
       ((mappingCone.triangle S.f).mor₃ ≫

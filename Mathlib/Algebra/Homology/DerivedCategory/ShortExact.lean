@@ -59,7 +59,7 @@ lemma triangleOfSESδ_liftShortComplex :
   rw [← cancel_epi (Q.map (CochainComplex.mappingCone.descShortComplex S)),
     descShortComplex_triangleOfSESδ_assoc, ← Functor.commShiftIso_hom_naturality,
     ← Functor.map_comp_assoc,
-    Q_map_eq_of_homotopy (CochainComplex.homotopyMappingConeTriangleMor₃CompliftShortComplex S),
+    Q_map_eq_of_homotopy (CochainComplex.homotopyMappingConeTriangleMor₃CompLiftShortComplex S),
     Functor.map_comp_assoc]
   dsimp
 
@@ -85,7 +85,7 @@ noncomputable def mappingConeTriangleToMappingCoconeTriangle :
   comm₃ := by
     simp [← Functor.commShiftIso_hom_naturality,
       ← Functor.map_comp_assoc, -Functor.map_comp,
-      Q_map_eq_of_homotopy (homotopyMappingConeTriangleMor₃CompliftShortComplex S)]
+      Q_map_eq_of_homotopy (homotopyMappingConeTriangleMor₃CompLiftShortComplex S)]
 
 include hS in
 lemma _root_.CochainComplex.mappingCocone.quasiIso_liftShortComplex :
