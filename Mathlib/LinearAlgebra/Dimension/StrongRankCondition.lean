@@ -179,14 +179,11 @@ theorem linearIndependent_le_span_aux' {ι : Type*} [Fintype ι] (v : ι → M)
   -- by thinking of `f : ι → R` as a linear combination of the finite family `v`,
   -- and expressing that (using the axiom of choice) as a linear combination over `w`.
   -- We can do this linearly by constructing the map on a basis.
-  fapply card_le_of_injective' R
-  · apply Finsupp.linearCombination
-    exact fun i => Span.repr R w ⟨v i, s (mem_range_self i)⟩
-  · intro f g h
-    apply_fun linearCombination R ((↑) : w → M) at h
-    simp only [linearCombination_linearCombination,
-               Span.finsupp_linearCombination_repr] at h
-    exact i h
+  apply card_le_of_injective' R <| linearCombination R (Span.repr R w ⟨_, s <| mem_range_self ·⟩)
+  intro f g h
+  apply_fun linearCombination R ((↑) : w → M) at h
+  simp only [linearCombination_linearCombination, Span.finsupp_linearCombination_repr] at h
+  exact i h
 
 /-- If `R` satisfies the strong rank condition,
 then any linearly independent family `v : ι → M`
@@ -282,14 +279,12 @@ and spanning set `w : Set M`, the cardinality of `ι` is bounded by the cardinal
 -/
 theorem linearIndependent_le_span'' {ι : Type v} {v : ι → M} (i : LinearIndependent R v) (w : Set M)
     (s : span R w = ⊤) : #ι ≤ #w := by
-  fapply card_le_of_injective'' (R := R)
-  · apply Finsupp.linearCombination
-    exact fun i ↦ Span.repr R w ⟨v i, s ▸ trivial⟩
-  · intro f g h
-    apply_fun linearCombination R ((↑) : w → M) at h
-    simp only [linearCombination_linearCombination,
-               Span.finsupp_linearCombination_repr] at h
-    exact i h
+  apply card_le_of_injective'' <| linearCombination R (Span.repr R w ⟨v ·, s ▸ trivial⟩)
+  intro f g h
+  apply_fun linearCombination R ((↑) : w → M) at h
+  simp only [linearCombination_linearCombination,
+              Span.finsupp_linearCombination_repr] at h
+  exact i h
 
 /-- Let `R` satisfy the strong rank condition. If `m` elements of a free rank `n` `R`-module are
 linearly independent, then `m ≤ n`. -/
