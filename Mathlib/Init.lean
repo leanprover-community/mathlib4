@@ -8,7 +8,7 @@ public import Batteries.Tactic.HelpCmd
 public import Batteries.Util.ProofWanted
 -- This import makes the `#redundant_imports`/`#min_imports`/`#find_home`/`#import_diff` commands
 -- available globally.
-public import ImportGraph.Tools
+public meta import ImportGraph.Tools
 public import Lean.LibrarySuggestions.Default -- for `+suggestions` modes in tactics
 public import Lean.Linter.Sets -- for the definition of linter sets
 public import Mathlib.Lean.Linter -- linter utilities; will be transitively imported in #31134
