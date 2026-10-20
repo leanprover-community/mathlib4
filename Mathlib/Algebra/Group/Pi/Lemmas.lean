@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Group.Hom.Instances
 public import Mathlib.Algebra.Group.SelfInv
 public import Mathlib.Data.Set.Piecewise
-
 public import Mathlib.Util.Delaborators
 
 /-!

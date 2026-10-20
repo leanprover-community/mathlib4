@@ -189,8 +189,8 @@ protected theorem induction_on'
   cases nonempty_fintype m; cases nonempty_fintype n
   rw [matrix_eq_sum_single M, ← Finset.sum_product']
   apply Finset.sum_induction _ _ h_add h_zero
-  · intros
-    apply h_std_basis
+  intros
+  apply h_std_basis
 
 @[elab_as_elim]
 protected theorem induction_on

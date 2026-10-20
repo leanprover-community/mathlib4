@@ -6,8 +6,8 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 module
 
 public import Mathlib.Analysis.Calculus.TangentCone.Prod
-public import Mathlib.Geometry.Manifold.MFDeriv.Defs
 public import Mathlib.Geometry.Manifold.ContMDiff.Defs
+public import Mathlib.Geometry.Manifold.MFDeriv.Defs
 
 import Mathlib.Geometry.Manifold.Notation
 
@@ -26,8 +26,6 @@ mimicking the API for Fréchet derivatives.
 -/
 
 public section
-
-noncomputable section
 
 assert_not_exists tangentBundleCore
 
