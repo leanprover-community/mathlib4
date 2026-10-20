@@ -316,7 +316,6 @@ The projection from the limit of `diagram_over_open` to a component of `D.U j`. 
 abbrev diagramOverOpenπ {i : D.J} (U : Opens (D.U i).carrier) (j : D.J) :=
   limit.π (D.diagramOverOpen U) (op (WalkingMultispan.right j))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation) We construct the map `Γ(𝒪_{U_i}, U) ⟶ Γ(𝒪_V, U_V)` for each `V` in the gluing
 diagram. We will lift these maps into `ιInvApp`. -/
 def ιInvAppπApp {i : D.J} (U : Opens (D.U i).carrier) (j) :

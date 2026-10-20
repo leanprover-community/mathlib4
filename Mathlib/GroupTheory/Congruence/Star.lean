@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Star.Basic
 public import Mathlib.GroupTheory.Congruence.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Helpers for working with star operators on quotients.
 
