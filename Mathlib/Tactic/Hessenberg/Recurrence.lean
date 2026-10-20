@@ -111,12 +111,9 @@ theorem ofCoeffList_coeffHessSum (n : ℕ) (H : Array R) (kcol : ℕ) :
             ofCoeffList (ps.getD (t : ℕ) [])
   | 0, r, ps => by simp [coeffHessSum]
   | i + 1, r, ps => by
-    rw [Fin.sum_univ_castSucc, coeffHessSum, ofCoeffList_zipWithAll_add, ofCoeffList_map_mul,
-      ofCoeffList_coeffHessSum, add_comm]
-    simp only [Fin.val_castSucc, Fin.val_last, Finset.Ico_self, Finset.prod_empty, mul_one]
-    congrm ∑ t, ?_ + _
-    rw [Finset.prod_Ico_succ_top (Nat.lt_succ_iff.mp t.isLt)]
-    simp only [map_mul]
+    rw [coeffHessSum, ofCoeffList_zipWithAll_add, ofCoeffList_coeffHessSum,
+      Fin.sum_univ_succAbove _ (.last (i + 1))]
+    congrm ?_ + ∑ t, ?_ <;> simp [Finset.prod_Ico_succ_top, Fin.is_le]
     ring
 
 theorem ofCoeffList_coeffHessStep (n : ℕ) (H : Array R) (k : ℕ) (ps : Array (List R)) :
