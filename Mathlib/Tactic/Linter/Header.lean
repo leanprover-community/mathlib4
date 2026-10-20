@@ -8,7 +8,6 @@ module
 public meta import ImportGraph.Imports.Pretty
 public meta import Lean.Linter.Basic
 public meta import Std.Sync.Mutex
-public meta import Lean.Parser.Module
 public import Mathlib.Tactic.Linter.DirectoryDependency
 public import Std.Sync.Mutex
 
