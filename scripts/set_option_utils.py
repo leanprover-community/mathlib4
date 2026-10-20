@@ -62,12 +62,11 @@ def is_annotated(lines: list[str], idx: int) -> bool:
     return False
 
 
-def lakefile_pattern(option: str, value: str) -> re.Pattern:
+def lakefile_pattern(option: str) -> re.Pattern:
     """Match lakefile entries for an option."""
     escaped = re.escape(option)
-    escaped_val = re.escape(value)
     return re.compile(
-        rf"^\s*⟨`{escaped},\s*{escaped_val}⟩,?\s*\n",
+        rf'^\s*⟨`{escaped},\s*(true|false|\d+|"[^"]*")⟩,?\s*\n',
         re.MULTILINE,
     )
 

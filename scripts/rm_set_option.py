@@ -163,16 +163,15 @@ class _RemoveDisplay(Display):
             self._redraw()
 
 
-def handle_lakefile(options: list[str], value: str) -> bool:
-    """Check and remove options with a prescribed value from lakefile.lean.
-    Return True if changed."""
+def handle_lakefile(options: list[str]) -> bool:
+    """Check and remove options from lakefile.lean. Return True if changed."""
     lakefile = PROJECT_DIR / "lakefile.lean"
     content = lakefile.read_text()
     changed = False
     for opt in options:
         if opt not in content:
             continue
-        pat = lakefile_pattern(opt, value)
+        pat = lakefile_pattern(opt)
         new_content = pat.sub("", content)
         if new_content != content:
             content = new_content
@@ -404,7 +403,7 @@ def main():
 
     # Step 1: lakefile.lean
     if not args.dry_run and (PROJECT_DIR / "lakefile.lean").exists():
-        handle_lakefile(options, "false")
+        handle_lakefile(options)
     elif (PROJECT_DIR / "lakefile.toml").exists():
         opts_str = ", ".join(options)
         print(
