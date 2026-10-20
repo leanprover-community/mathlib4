@@ -171,7 +171,7 @@ lemma comp_lift_eq_weight (h : ∀ p, g (f p) = 1) : g ∘ₗ (ℋ.lift f) = ℋ
 
 lemma lift_bijective_of_injective_of_range_comap (hinj : Injective f)
     (hrange : f.range = comap g.toAffineMap {1}) : Bijective (ℋ.lift f) := by
-  have g_f : ∀ p, g (f p) = 1 := AffineMap.range_le_iff.mp hrange.le
+  have g_f : ∀ p, g (f p) = 1 := Set.range_subset_iff.mp hrange.le
   constructor
   · rw [injective_iff_map_eq_zero]
     intro a ha
