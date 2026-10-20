@@ -202,8 +202,8 @@ lemma coeff_single (m : M) (r : R) [DecidableEq M] : (single m r).coeff = Pi.sin
 lemma ofCoeff_single (m : M) (r : R) [DecidableEq M] : ofCoeff (Pi.single m r) = single m r := rfl
 
 @[to_additive]
-lemma single_inj [DecidableEq M] : single m₁ r₁ = single m₂ r₂ ↔
-    m₁ = m₂ ∧ r₁ = r₂ ∨ r₁ = 0 ∧ r₂ = 0 := by
+lemma single_inj [DecidableEq M] :
+    single m₁ r₁ = single m₂ r₂ ↔ m₁ = m₂ ∧ r₁ = r₂ ∨ r₁ = 0 ∧ r₂ = 0 := by
   simp [← coeff_inj, Pi.single_eq_single_iff]
 
 @[to_additive]
