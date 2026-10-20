@@ -5,7 +5,6 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Presentation
 public import Mathlib.CategoryTheory.Presentable.Finite
 
 /-!
@@ -60,7 +59,6 @@ def Total.Hom.comp {k l m : Total P} (f : k.Hom l) (g : l.Hom m) : k.Hom m where
     simp only [Functor.map_comp, Category.assoc]
     rw [f.w_assoc, g.w]
 
-set_option backward.defeqAttrib.useBackward true in
 @[simps! id_base id_hom comp_base comp_hom]
 instance : Category (Total P) where
   Hom := Total.Hom
@@ -90,7 +88,6 @@ instance [IsFiltered J] [∀ j, IsFiltered (I j)] : Nonempty (Total P) := by
   obtain ⟨i⟩ : Nonempty (I j) := IsFiltered.nonempty
   exact ⟨⟨j, i⟩⟩
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance [IsFiltered J] [∀ j, IsFiltered (I j)]
     [∀ j i, IsFinitelyPresentable.{w} ((P j).diag.obj i)] :
@@ -119,7 +116,6 @@ instance [IsFiltered J] [∀ j, IsFiltered (I j)]
       simp only [Functor.map_comp, comp_hom, reassoc_of% hpq]
       simp [← Functor.map_comp, ← IsFiltered.coeq_condition]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `P` is a colimit presentation over `J` of `X` and for every `j` we are given a colimit
 presentation `Qⱼ` over `I j` of the `P.diag.obj j`, this is the refined colimit presentation of `X`
 over `Total Q`. -/

@@ -5,10 +5,10 @@ Authors: Jeremy Avigad, Leonardo de Moura
 -/
 module
 
-public import Mathlib.Lean.Meta.Simp
 public import Batteries.Logic
 public import Batteries.Util.LibraryNote
-public import Mathlib.Tactic.Attr.Register
+public meta import Mathlib.Lean.Meta.Simp
+public meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Basic logic properties
@@ -100,7 +100,9 @@ end CommSimproc
 
 /-- An identity function with its main argument implicit. This will be printed as `hidden` even
 if it is applied to a large term, so it can be used for elision,
-as done in the `elide` and `unelide` tactics. -/
+as was done in the mathlib3 tactics `elide` and `unelide`. -/
+@[deprecated "use the builtin pretty-printer elision (`⋯`, see `pp.deepTerms`) instead"
+  (since := "2026-09-13")]
 abbrev hidden {α : Sort*} {a : α} := a
 
 variable {α : Sort*}
@@ -539,13 +541,9 @@ end Dependent
 
 variable {α β : Sort*} {p : α → Prop}
 
-@[deprecated (since := "2026-03-25")] alias forall_swap := forall_comm
-
 theorem forall₂_comm
     {ι₁ ι₂ : Sort*} {κ₁ : ι₁ → Sort*} {κ₂ : ι₂ → Sort*} {p : ∀ i₁, κ₁ i₁ → ∀ i₂, κ₂ i₂ → Prop} :
     (∀ i₁ j₁ i₂ j₂, p i₁ j₁ i₂ j₂) ↔ ∀ i₂ j₂ i₁ j₁, p i₁ j₁ i₂ j₂ := ⟨swap₂, swap₂⟩
-
-@[deprecated (since := "2026-03-25")] alias forall₂_swap := forall₂_comm
 
 /-- We intentionally restrict the type of `α` in this lemma so that this is safer to use in simp
 than `forall_comm`. -/
@@ -554,8 +552,6 @@ theorem imp_forall_iff {α : Type*} {p : Prop} {q : α → Prop} : (p → ∀ x,
 
 lemma imp_forall_iff_forall (A : Prop) (B : A → Prop) : (A → ∀ h : A, B h) ↔ ∀ h : A, B h := by
   by_cases h : A <;> simp [h]
-
-@[deprecated (since := "2026-03-25")] alias exists_swap := exists_comm
 
 theorem exists_and_exists_comm {P : α → Prop} {Q : β → Prop} :
     (∃ a, P a) ∧ (∃ b, Q b) ↔ ∃ a b, P a ∧ Q b :=
