@@ -510,8 +510,8 @@ instance [Mul R] [BoundedMul R] [ContinuousMul R] : IsMulApply (α →ᵇ R) whe
 @[deprecated (since := "2026-10-20")] alias coe_add := FunLike.coe_add
 @[to_additive existing, deprecated (since := "2026-10-20")] alias coe_mul := FunLike.coe_mul
 
-@[deprecated (since := "2026-10-20")] alias add_apply := add_apply
-@[to_additive existing, deprecated (since := "2026-10-20")] alias mul_apply := mul_apply
+@[deprecated (since := "2026-10-20")] protected alias add_apply := add_apply
+@[to_additive existing, deprecated (since := "2026-10-20")] protected alias mul_apply := mul_apply
 
 @[to_additive]
 instance instPow [Monoid R] [BoundedMul R] [ContinuousMul R] : Pow (α →ᵇ R) ℕ where
@@ -527,7 +527,7 @@ instance [Monoid R] [BoundedMul R] [ContinuousMul R] : IsPowApply ℕ (α →ᵇ
 
 @[deprecated (since := "2026-10-20")] alias coe_pow := FunLike.coe_pow
 
-@[deprecated (since := "2026-10-20")] alias pow_apply := pow_apply
+@[deprecated (since := "2026-10-20")] protected alias pow_apply := pow_apply
 
 @[to_additive]
 instance instMonoid [Monoid R] [BoundedMul R] [ContinuousMul R] :
@@ -556,8 +556,9 @@ def toContinuousMapMonoidHom [Monoid R] [BoundedMul R] [ContinuousMul R] : (α �
 @[deprecated (since := "2026-10-20")] alias coe_sum := FunLike.coe_sum
 @[to_additive existing, deprecated (since := "2026-10-20")] alias coe_prod := FunLike.coe_prod
 
-@[deprecated (since := "2026-10-20")] alias sum_apply := sum_apply
-@[to_additive existing, deprecated (since := "2026-10-20")] alias prod_apply := _root_.prod_apply
+@[deprecated (since := "2026-10-20")] protected alias sum_apply := sum_apply
+@[to_additive existing, deprecated (since := "2026-10-20")] protected alias prod_apply :=
+  _root_.prod_apply
 
 @[to_additive]
 instance instMulOneClass [MulOneClass R] [BoundedMul R] [ContinuousMul R] : MulOneClass (α →ᵇ R) :=
@@ -640,7 +641,7 @@ instance : IsSubApply (α →ᵇ R) where
 
 @[deprecated (since := "2026-10-20")] alias coe_sub := FunLike.coe_sub
 
-@[deprecated (since := "2026-10-20")] alias sub_apply := sub_apply
+@[deprecated (since := "2026-10-20")] protected alias sub_apply := sub_apply
 
 end sub
 
@@ -698,7 +699,7 @@ instance : IsSMulApply 𝕜 (α →ᵇ β) where
 
 @[deprecated (since := "2026-10-20")] alias coe_smul := FunLike.coe_smul
 
-@[deprecated (since := "2026-10-20")] alias smul_apply := smul_apply
+@[deprecated (since := "2026-10-20")] protected alias smul_apply := smul_apply
 
 instance instIsScalarTower {𝕜' : Type*} [PseudoMetricSpace 𝕜'] [Zero 𝕜'] [SMul 𝕜' β]
     [IsBoundedSMul 𝕜' β] [SMul 𝕜' 𝕜] [IsScalarTower 𝕜' 𝕜 β] :
@@ -761,8 +762,8 @@ and `BoundedContinuousFunction.smul_apply` are removed. -/
 @[simps]
 def evalCLM (x : α) : (α →ᵇ β) →L[𝕜] β where
   toFun f := f x
-  map_add' _ _ := _root_.add_apply _ _ _
-  map_smul' _ _ := _root_.smul_apply _ _ _
+  map_add' _ _ := add_apply _ _ _
+  map_smul' _ _ := smul_apply _ _ _
 
 variable (α β)
 
