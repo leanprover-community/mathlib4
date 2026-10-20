@@ -6,6 +6,7 @@ Authors: Jeremy Avigad
 module
 
 import Mathlib.Init
+
 /-!
 # Notation `ℤ` for the integers.
 -/
