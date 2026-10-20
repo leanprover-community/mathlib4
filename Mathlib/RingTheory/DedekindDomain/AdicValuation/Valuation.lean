@@ -460,13 +460,6 @@ instance : (v.valuation K).IsTrivialOn k :=
     rw [IsScalarTower.algebraMap_apply k R K]
     exact valuation_le_one v _
 
-/-- A nonzero element of a height-one prime of `R` is transcendental over any subfield of `R`. -/
-theorem transcendental_algebraMap_of_mem {a : R} (ha0 : a ≠ 0) (ha : a ∈ v.asIdeal) :
-    Transcendental k (algebraMap R K a) := by
-  refine Valuation.transcendental_of_ne_one (v := v.valuation K) k _ ?_ (ne_of_lt ?_)
-  · simpa using ha0
-  · rwa [valuation_lt_one_iff_mem]
-
 end IsTrivialOn
 
 section Localization
