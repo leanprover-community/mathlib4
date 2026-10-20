@@ -54,13 +54,14 @@ variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 instance instMul [Mul β] [ContinuousMul β] : Mul C(α, β) :=
   ⟨fun f g => ⟨f * g, continuous_mul.comp (f.continuous.prodMk g.continuous :)⟩⟩
 
-@[to_additive (attr := norm_cast, simp)]
-theorem coe_mul [Mul β] [ContinuousMul β] (f g : C(α, β)) : ⇑(f * g) = f * g :=
-  rfl
+@[to_additive]
+instance [Mul β] [ContinuousMul β] : IsMulApply C(α, β) where
 
-@[to_additive (attr := simp)]
-theorem mul_apply [Mul β] [ContinuousMul β] (f g : C(α, β)) (x : α) : (f * g) x = f x * g x :=
-  rfl
+@[deprecated (since := "2026-10-20")] alias coe_add := FunLike.coe_add
+@[to_additive existing, deprecated (since := "2026-10-20")] alias coe_mul := FunLike.coe_mul
+
+@[deprecated (since := "2026-10-20")] protected alias add_apply := add_apply
+@[to_additive existing, deprecated (since := "2026-10-20")] protected alias mul_apply := mul_apply
 
 @[to_additive (attr := simp)]
 theorem mul_comp [Mul γ] [ContinuousMul γ] (f₁ f₂ : C(β, γ)) (g : C(α, β)) :
@@ -73,13 +74,14 @@ theorem mul_comp [Mul γ] [ContinuousMul γ] (f₁ f₂ : C(β, γ)) (g : C(α, 
 instance [One β] : One C(α, β) :=
   ⟨const α 1⟩
 
-@[to_additive (attr := norm_cast, simp)]
-theorem coe_one [One β] : ⇑(1 : C(α, β)) = 1 :=
-  rfl
+@[to_additive]
+instance [One β] : IsOneApply C(α, β) where
 
-@[to_additive (attr := simp)]
-theorem one_apply [One β] (x : α) : (1 : C(α, β)) x = 1 :=
-  rfl
+@[deprecated (since := "2026-10-20")] alias coe_zero := FunLike.coe_zero
+@[to_additive existing, deprecated (since := "2026-10-20")] alias coe_one := FunLike.coe_one
+
+@[deprecated (since := "2026-10-20")] protected alias zero_apply := zero_apply
+@[to_additive existing, deprecated (since := "2026-10-20")] protected alias one_apply := one_apply
 
 @[to_additive (attr := simp)]
 theorem one_comp [One γ] (g : C(α, β)) : (1 : C(β, γ)).comp g = 1 :=
@@ -96,26 +98,22 @@ theorem const_one [One β] : const α (1 : β) = 1 := rfl
 instance [NatCast β] : NatCast C(α, β) :=
   ⟨fun n => ContinuousMap.const _ n⟩
 
-@[simp, norm_cast]
-theorem coe_natCast [NatCast β] (n : ℕ) : ((n : C(α, β)) : α → β) = n :=
-  rfl
+instance [NatCast β] : IsNatCastApply C(α, β) where
 
-@[simp]
-theorem natCast_apply [NatCast β] (n : ℕ) (x : α) : (n : C(α, β)) x = n :=
-  rfl
+@[deprecated (since := "2026-10-20")] alias coe_natCast := FunLike.coe_natCast
+
+@[deprecated (since := "2026-10-20")] alias natCast_apply := natCast_apply_eq_const
 
 /-! ### `Int.cast` -/
 
 instance [IntCast β] : IntCast C(α, β) :=
   ⟨fun n => ContinuousMap.const _ n⟩
 
-@[simp, norm_cast]
-theorem coe_intCast [IntCast β] (n : ℤ) : ((n : C(α, β)) : α → β) = n :=
-  rfl
+instance [IntCast β] : IsIntCastApply C(α, β) where
 
-@[simp]
-theorem intCast_apply [IntCast β] (n : ℤ) (x : α) : (n : C(α, β)) x = n :=
-  rfl
+@[deprecated (since := "2026-10-20")] alias coe_intCast := FunLike.coe_intCast
+
+@[deprecated (since := "2026-10-20")] alias intCast_apply := intCast_apply_eq_const
 
 /-! ### `nsmul` and `pow` -/
 
