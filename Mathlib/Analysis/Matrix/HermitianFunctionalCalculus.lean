@@ -54,10 +54,10 @@ noncomputable def cfcAux : C(spectrum ℝ A, ℝ) →⋆ₐ[ℝ] (Matrix n n �
   map_zero' := by simp [Pi.zero_def, Function.comp_def]
   map_one' := by simp [Pi.one_def, Function.comp_def]
   map_mul' f g := by
-    simp only [ContinuousMap.coe_mul, ← map_mul, diagonal_mul_diagonal, Function.comp_apply]
+    simp only [FunLike.coe_mul, ← map_mul, diagonal_mul_diagonal, Function.comp_apply]
     rfl
   map_add' f g := by
-    simp only [ContinuousMap.coe_add, ← map_add, diagonal_add, Function.comp_apply]
+    simp only [FunLike.coe_add, ← map_add, diagonal_add, Function.comp_apply]
     rfl
   commutes' r := by
     simp only [Function.comp_def, algebraMap_apply, smul_eq_mul, mul_one]
@@ -82,7 +82,7 @@ lemma isClosedEmbedding_cfcAux : IsClosedEmbedding hA.cfcAux := by
     simp only [mul_assoc, SetLike.coe_mem, Unitary.star_mul_self_of_mem, mul_one, zero_mul] at hf
     simpa [← mul_assoc] using congr((star hA.eigenvectorUnitary : Matrix n n 𝕜) * $hf)
   ext x
-  simp only [ContinuousMap.zero_apply]
+  simp only [_root_.zero_apply]
   obtain ⟨x, hx⟩ := x
   obtain ⟨i, rfl⟩ := hA.spectrum_real_eq_range_eigenvalues ▸ hx
   rw [← diagonal_zero] at h2

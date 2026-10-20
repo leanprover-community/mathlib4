@@ -212,7 +212,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
     refine ⟨f * (algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g, I.mul_mem_left f hgI, ?_⟩
     rw [nndist_eq_nnnorm]
     refine (nnnorm_lt_iff _ hε).2 fun x => ?_
-    simp only [coe_sub, coe_mul, Pi.sub_apply, Pi.mul_apply]
+    simp only [sub_apply, mul_apply, comp_apply, coe_mk, algebraMapCLM_apply]
     by_cases hx : x ∈ t
     · simpa only [hgt hx, comp_apply, Pi.one_apply, ContinuousMap.coe_ofClass, algebraMapCLM_apply,
         map_one, mul_one, sub_self, nnnorm_zero] using! hε
@@ -220,17 +220,14 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
       have :=
         calc
           ‖((1 - (algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g) x : 𝕜)‖₊ =
-              ‖1 - algebraMap ℝ≥0 𝕜 (g x)‖₊ := by
-            simp only [coe_sub, coe_one, coe_comp, ContinuousMap.coe_ofClass, Pi.sub_apply,
-              Pi.one_apply, Function.comp_apply, algebraMapCLM_apply]
+              ‖1 - algebraMap ℝ≥0 𝕜 (g x)‖₊ := by simp
           _ = ‖algebraMap ℝ≥0 𝕜 (1 - g x)‖₊ := by
             simp only [Algebra.algebraMap_eq_smul_one, NNReal.smul_def, NNReal.coe_sub (hg x),
               NNReal.coe_one, sub_smul, one_smul]
           _ ≤ 1 := (nnnorm_algebraMap_nnreal 𝕜 (1 - g x)).trans_le tsub_le_self
       calc
         ‖f x - f x * (algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g x‖₊ =
-            ‖f x * (1 - (algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g) x‖₊ := by
-          simp only [mul_sub, coe_sub, coe_one, Pi.sub_apply, Pi.one_apply, mul_one]
+            ‖f x * (1 - (algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g) x‖₊ := by simp [mul_sub]
         _ ≤ ε / 2 * ‖(1 - (algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g) x‖₊ :=
           ((nnnorm_mul_le _ _).trans
             (mul_le_mul_left (not_le.mp <| show ¬ε / 2 ≤ ‖f x‖₊ from hx).le _))

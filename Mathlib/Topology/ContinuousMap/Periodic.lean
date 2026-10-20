@@ -39,7 +39,7 @@ theorem periodic_tsum_comp_add_zsmul [AddCommGroup X] [ContinuousAdd X] [AddComm
     simp_rw [← tsum_apply h, ← tsum_apply this]
     simp [Equiv.coe_addRight, comp_apply, add_one_zsmul, add_comm (_ • p) p, ← add_assoc]
   · rw [tsum_eq_zero_of_not_summable h]
-    simp only [coe_zero, Pi.zero_apply]
+    simp
 
 end Periodicity
 
