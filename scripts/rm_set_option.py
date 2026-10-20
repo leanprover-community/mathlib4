@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Remove unnecessary `set_option ... false in` from a Lean project.
+Remove unnecessary `set_option ... in` from a Lean project.
 
 Tries removing each occurrence (that isn't followed by a comment), testing
 whether the file still builds. Processes files in reverse import-DAG order
@@ -340,7 +340,7 @@ def write_github_outputs(summary: Summary):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Remove unnecessary `set_option ... (true|false) in` lines in a Lean project.\n\n"
+        description="Remove unnecessary `set_option ... in` lines in a Lean project.\n\n"
                     "To use outside mathlib, copy `rm_set_option.py`, `dag_traversal.py` and "
                     "`set_option_utils.py` to a subdirectory of your project named `scripts/` "
                     "and then run from the project root with `scripts/rm_set_option.py`.",
