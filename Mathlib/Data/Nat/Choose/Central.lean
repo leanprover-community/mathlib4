@@ -34,6 +34,7 @@ namespace Nat
 
 /-- The central binomial coefficient, `Nat.choose (2 * n) n`.
 -/
+@[oeis A000984]
 def centralBinom (n : ℕ) :=
   (2 * n).choose n
 
@@ -89,7 +90,7 @@ theorem succ_mul_centralBinom_succ (n : ℕ) :
 
 /-- An exponential lower bound on the central binomial coefficient.
 This bound is of interest because it appears in
-[Tochiori's refinement of Erdős's proof of Bertrand's postulate](tochiori_bertrand).
+[Tochiori's refinement of Erdős's proof of Bertrand's postulate][tochiori_bertrand].
 -/
 theorem four_pow_lt_mul_centralBinom (n : ℕ) (n_big : 4 ≤ n) : 4 ^ n < n * centralBinom n := by
   induction n using Nat.strong_induction_on with | _ n IH

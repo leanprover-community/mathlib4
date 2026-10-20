@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Ring.Idempotent
 public import Mathlib.Algebra.Star.SelfAdjoint
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Star projections
 

@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Module.Defs
 public import Mathlib.Algebra.Regular.SMul
 public import Mathlib.Algebra.Ring.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pi instances for modules
 

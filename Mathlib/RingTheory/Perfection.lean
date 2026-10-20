@@ -40,8 +40,6 @@ If `α` is a ring with characteristic `p` and `p` is prime, `Perfection α p` is
 def Perfection (α : Type u₁) [Pow α ℕ] (p : ℕ) : Type u₁ :=
   { f : ℕ → α // ∀ n, f (n + 1) ^ p = f n }
 
-@[deprecated (since := "2026-03-03")] alias Ring.Perfection := Perfection
-
 namespace Perfection
 
 section CommMonoid
@@ -51,9 +49,6 @@ def submonoid (M : Type*) [CommMonoid M] (p : ℕ) : Submonoid (ℕ → M) where
   carrier := { f | ∀ n, f (n + 1) ^ p = f n }
   one_mem' _ := one_pow _
   mul_mem' hf hg n := (mul_pow _ _ _).trans congr($(hf n) * $(hg n))
-
-@[deprecated (since := "2026-03-03")]
-alias _root_.Monoid.perfection := submonoid
 
 instance (M : Type*) [CommMonoid M] (p : ℕ) : CommMonoid (Perfection M p) :=
   inferInstanceAs <| CommMonoid (submonoid M p)
@@ -198,9 +193,6 @@ def subsemiring (R : Type*) [CommSemiring R] (p : ℕ) [hp : Fact p.Prime] [Char
   __ := submonoid R p
   zero_mem' _ := zero_pow hp.1.ne_zero
   add_mem' hf hg n := (map_add (frobenius R p) _ _).trans congr($(hf n) + $(hg n))
-
-@[deprecated (since := "2026-03-03")]
-alias _root_.Ring.perfectionSubsemiring := subsemiring
 
 variable (R : Type*) [CommSemiring R] (p : ℕ) [hp : Fact p.Prime] [CharP R p]
 
@@ -367,9 +359,6 @@ def subring (R : Type*) [CommRing R] (p : ℕ) [hp : Fact p.Prime] [CharP R p] :
     Subring (ℕ → R) where
   __ := subsemiring R p
   neg_mem' hf n := (map_neg (frobenius R p) _).trans congr(-$(hf n))
-
-@[deprecated (since := "2026-03-03")]
-alias _root_.Ring.perfectionSubring := subring
 
 variable (R : Type*) [CommRing R] (p : ℕ) [hp : Fact p.Prime] [CharP R p]
 
@@ -590,7 +579,7 @@ theorem v_p_lt_preVal {x : ModP O p} : v p < preVal K v O p x ↔ x ≠ 0 := by
   refine ⟨by aesop, fun h => lt_of_not_ge fun hp => h ?_⟩
   obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective x
   rw [preVal_mk hv h, ← map_natCast (algebraMap O K) p, hv.le_iff_dvd] at hp
-  · rw [Ideal.Quotient.eq_zero_iff_mem, Ideal.mem_span_singleton]; exact hp
+  rw [Ideal.Quotient.eq_zero_iff_mem, Ideal.mem_span_singleton]; exact hp
 
 theorem preVal_eq_zero {x : ModP O p} : preVal K v O p x = 0 ↔ x = 0 where
   mp h := by
