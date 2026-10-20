@@ -1829,7 +1829,6 @@ def test_monitorCurl_counts_unreported_transfers : IO Unit := do
   assertTrue "no transfer reported" (s.done == 0 && s.success == 0)
   assertTrue "the unreported transfers count as failed" (s.failed == 3)
 
-
 end DecompPipeline
 
 section TransferDiagnostics
