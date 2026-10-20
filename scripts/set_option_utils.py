@@ -38,14 +38,14 @@ def removable_pattern(option: str) -> re.Pattern:
     """Match bare `set_option X <value> in` lines (no trailing comment).
     |value| can be a boolean (true or false), number or string (alphanumeric only)."""
     escaped = re.escape(option)
-    return re.compile(rf'^\s*set_option {escaped} (true|false|[0-9]*|"[A-Za-z]*") in\s*$')
+    return re.compile(rf'^\s*set_option {escaped} (true|false|\d+|"[^"]*") in\s*$')
 
 
 def commented_pattern(option: str) -> re.Pattern:
     """Match `set_option X <value> in -- ...` lines.
     |value| can be a boolean (true or false), number or string (alphanumeric only)."""
     escaped = re.escape(option)
-    return re.compile(rf'^\s*set_option {escaped} (true|false|[0-9]*|"[A-Za-z]*") in\s+--')
+    return re.compile(rf'^\s*set_option {escaped} (true|false|\d+|"[^"]*") in\s+--')
 
 
 def is_annotated(lines: list[str], idx: int) -> bool:
