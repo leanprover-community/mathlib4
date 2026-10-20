@@ -163,6 +163,7 @@ public import Mathlib.Tactic.GuardGoalNums
 public import Mathlib.Tactic.GuardHypNums
 public import Mathlib.Tactic.Have
 public import Mathlib.Tactic.HaveI
+public import Mathlib.Tactic.Hessenberg.Charpoly
 public import Mathlib.Tactic.Hessenberg.Reduce
 public import Mathlib.Tactic.HigherOrder
 public import Mathlib.Tactic.Hint
