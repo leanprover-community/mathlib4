@@ -1,0 +1,5 @@
+# Configuration for actionlint (the "Check workflows" job). `runs-on` labels
+# that actionlint's built-in list does not know yet are declared here.
+self-hosted-runner:
+  labels:
+    - ubuntu-26.04
