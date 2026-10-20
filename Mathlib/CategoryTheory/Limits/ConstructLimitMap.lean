@@ -5,9 +5,10 @@ Authors: Christian Merten
 -/
 module
 
+public import Mathlib.CategoryTheory.Presentable.Basic
+
 import Mathlib.CategoryTheory.Comma.Final
 import Mathlib.CategoryTheory.Limits.ConeCategory
-public import Mathlib.CategoryTheory.Presentable.Basic
 
 /-!
 # Morphisms between (co)filtered (co)limits

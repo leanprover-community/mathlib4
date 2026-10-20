@@ -8,6 +8,8 @@ module
 public import Mathlib.CategoryTheory.Functor.KanExtension.Yoneda
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
+
 /-!
 # Preservation of (co)limits in the functor category
 

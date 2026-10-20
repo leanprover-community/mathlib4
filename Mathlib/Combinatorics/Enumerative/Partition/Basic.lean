@@ -149,7 +149,7 @@ theorem toFinsuppAntidiag_mem_finsuppAntidiag {n : ℕ} (p : Partition n) :
   have hp : p.parts.toFinset ⊆ Finset.Icc 1 n := by
     grind
   suffices ∑ m ∈ Finset.Icc 1 n, Multiset.count m p.parts * m = n by simpa [toFinsuppAntidiag, hp]
-  convert! ← p.parts_sum
+  convert ← p.parts_sum
   rw [Finset.sum_multiset_count]
   apply Finset.sum_subset hp
   suffices ∀ (x : ℕ), 1 ≤ x → x ≤ n → x ∉ p.parts → x ∉ p.parts ∨ x = 0 by simpa
@@ -210,9 +210,11 @@ def countRestricted (n : ℕ) (m : ℕ) : Finset n.Partition :=
   Finset.univ.filter fun x ↦ ∀ i ∈ x.parts, x.parts.count i < m
 
 /-- The finset of those partitions in which every part is odd. -/
+@[oeis A000009 "cardinality"]
 def odds (n : ℕ) : Finset n.Partition := restricted n (¬ Even ·)
 
 /-- The finset of those partitions in which each part is used at most once. -/
+@[oeis A000009 "cardinality"]
 def distincts (n : ℕ) : Finset n.Partition :=
   Finset.univ.filter fun c => c.parts.Nodup
 
