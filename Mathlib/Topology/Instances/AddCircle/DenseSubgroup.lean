@@ -8,7 +8,7 @@ module
 public import Mathlib.NumberTheory.Real.Irrational
 public import Mathlib.Topology.Instances.AddCircle.Defs
 
-import Mathlib.GroupTheory.SpecificGroups.Cyclic.Basic
+import Mathlib.GroupTheory.SpecificGroups.Cyclic.Subgroup
 import Mathlib.Topology.Algebra.Order.ArchimedeanDiscrete
 
 /-!

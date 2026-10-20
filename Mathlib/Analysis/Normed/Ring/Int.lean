@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Normed.Ring.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The integers as normed ring
 

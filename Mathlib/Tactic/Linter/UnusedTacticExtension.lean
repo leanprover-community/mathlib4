@@ -6,10 +6,10 @@ Authors: Damiano Testa
 
 module
 
+public meta import Lean.Exception
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
-public import Lean.Exception
 
 /-!
 This file defines the environment extension to keep track of which tactics are allowed to leave
@@ -55,9 +55,6 @@ public initialize allowedRef : IO.Ref (Std.HashSet SyntaxNodeKind) ←
   IO.mkRef <| .ofArray #[
     `Mathlib.Tactic.Says.says,
     `Batteries.Tactic.«tacticOn_goal_=>_»,
-    `by,
-    `null,
-    `«]»,
     ``Lean.Parser.Tactic.show,
     -- the following `SyntaxNodeKind`s play a role in silencing `test`s
     `Mathlib.Tactic.successIfFailWithMsg,
