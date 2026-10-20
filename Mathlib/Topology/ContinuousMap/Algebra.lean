@@ -121,18 +121,14 @@ instance [IntCast β] : IsIntCastApply C(α, β) where
 instance instPow [Monoid β] [ContinuousMul β] : Pow C(α, β) ℕ :=
   ⟨fun f n => ⟨(⇑f) ^ n, f.continuous.pow n⟩⟩
 
-@[to_additive (attr := norm_cast) (reorder := 7 8)]
-theorem coe_pow [Monoid β] [ContinuousMul β] (f : C(α, β)) (n : ℕ) : ⇑(f ^ n) = (⇑f) ^ n :=
-  rfl
+@[to_additive]
+instance [Monoid β] [ContinuousMul β] : IsPowApply ℕ C(α, β) where
 
-@[to_additive (attr := norm_cast)]
-theorem pow_apply [Monoid β] [ContinuousMul β] (f : C(α, β)) (n : ℕ) (x : α) :
-    (f ^ n) x = f x ^ n :=
-  rfl
+@[deprecated (since := "2026-10-20")] alias coe_nsmul := FunLike.coe_smul
+@[to_additive existing, deprecated (since := "2026-10-20")] alias coe_pow := FunLike.coe_pow
 
--- Don't make auto-generated `coe_nsmul` and `nsmul_apply` simp, as the linter complains they're
--- redundant w.r.t. `coe_smul`
-attribute [simp] coe_pow pow_apply
+@[deprecated (since := "2026-10-20")] protected alias nsmul_apply := smul_apply
+@[to_additive existing, deprecated (since := "2026-10-20")] protected alias pow_apply := pow_apply
 
 @[to_additive]
 theorem pow_comp [Monoid γ] [ContinuousMul γ] (f : C(β, γ)) (n : ℕ) (g : C(α, β)) :
@@ -147,13 +143,14 @@ attribute [simp] pow_comp
 @[to_additive]
 instance [Inv β] [ContinuousInv β] : Inv C(α, β) where inv f := ⟨f⁻¹, f.continuous.inv⟩
 
-@[to_additive (attr := simp)]
-theorem coe_inv [Inv β] [ContinuousInv β] (f : C(α, β)) : ⇑f⁻¹ = (⇑f)⁻¹ :=
-  rfl
+@[to_additive]
+instance [Inv β] [ContinuousInv β] : IsInvApply C(α, β) where
 
-@[to_additive (attr := simp)]
-theorem inv_apply [Inv β] [ContinuousInv β] (f : C(α, β)) (x : α) : f⁻¹ x = (f x)⁻¹ :=
-  rfl
+@[deprecated (since := "2026-10-20")] alias coe_neg := FunLike.coe_neg
+@[to_additive existing, deprecated (since := "2026-10-20")] alias coe_inv := FunLike.coe_inv
+
+@[deprecated (since := "2026-10-20")] protected alias neg_apply := neg_apply
+@[to_additive existing, deprecated (since := "2026-10-20")] protected alias inv_apply := inv_apply
 
 @[to_additive (attr := simp)]
 theorem inv_comp [Inv γ] [ContinuousInv γ] (f : C(β, γ)) (g : C(α, β)) :
@@ -166,13 +163,14 @@ theorem inv_comp [Inv γ] [ContinuousInv γ] (f : C(β, γ)) (g : C(α, β)) :
 instance [Div β] [ContinuousDiv β] : Div C(α, β) where
   div f g := ⟨f / g, f.continuous.div' g.continuous⟩
 
-@[to_additive (attr := norm_cast, simp)]
-theorem coe_div [Div β] [ContinuousDiv β] (f g : C(α, β)) : ⇑(f / g) = f / g :=
-  rfl
+@[to_additive]
+instance [Div β] [ContinuousDiv β] : IsDivApply C(α, β) where
 
-@[to_additive (attr := simp)]
-theorem div_apply [Div β] [ContinuousDiv β] (f g : C(α, β)) (x : α) : (f / g) x = f x / g x :=
-  rfl
+@[deprecated (since := "2026-10-20")] alias coe_sub := FunLike.coe_sub
+@[to_additive existing, deprecated (since := "2026-10-20")] alias coe_div := FunLike.coe_div
+
+@[deprecated (since := "2026-10-20")] protected alias sub_apply := sub_apply
+@[to_additive existing, deprecated (since := "2026-10-20")] protected alias div_apply := div_apply
 
 @[to_additive (attr := simp)]
 theorem div_comp [Div γ] [ContinuousDiv γ] (f g : C(β, γ)) (h : C(α, β)) :
@@ -184,6 +182,9 @@ theorem div_comp [Div γ] [ContinuousDiv γ] (f g : C(β, γ)) (h : C(α, β)) :
 @[to_additive]
 instance instZPow [Group β] [IsTopologicalGroup β] : Pow C(α, β) ℤ where
   pow f z := ⟨(⇑f) ^ z, f.continuous.zpow z⟩
+
+@[to_additive]
+instance [Group β] [IsTopologicalGroup β] : IsPowApply ℤ C(α, β) where
 
 @[to_additive (attr := norm_cast) (reorder := 7 8)]
 theorem coe_zpow [Group β] [IsTopologicalGroup β] (f : C(α, β)) (z : ℤ) : ⇑(f ^ z) = (⇑f) ^ z :=
