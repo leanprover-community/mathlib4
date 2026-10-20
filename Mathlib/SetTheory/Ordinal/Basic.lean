@@ -749,10 +749,12 @@ theorem lt_lift_iff {a : Ordinal.{u}} {b : Ordinal.{max u v}} :
   liftInitialSeg.lt_apply_iff
 
 @[simp]
-theorem _root_.Cardinal.mk_Iio_ordinal (o : Ordinal.{u}) :
+theorem cardinalMk_Iio (o : Ordinal.{u}) :
     #(Iio o) = Cardinal.lift.{u + 1} o.card := by
   rw [lift_card, ← typein_ordinal]
   rfl
+
+@[deprecated (since := "2026-10-20")] alias _root_.Cardinal.mk_Iio_ordinal := cardinalMk_Iio
 
 /-! ### The first infinite ordinal ω -/
 
@@ -1175,11 +1177,13 @@ lemma exists_le_of_small {ι : Type*} [Small.{u} ι] (κ : ι → Cardinal.{u}) 
   simpa [T] using Cardinal.mk_le_of_injective
     (sigma_mk_injective (β := fun i ↦ (κ ((equivShrink _).symm i)).ord.ToType))
 
-lemma mk_iio_le_lift (κ : Cardinal.{u}) :
+lemma mk_Iio_le_lift (κ : Cardinal.{u}) :
     Cardinal.mk (Set.Iio κ) ≤ Cardinal.lift.{u + 1} κ := by
-  conv_rhs => rw [← card_ord κ, ← mk_Iio_ordinal]
+  conv_rhs => rw [← card_ord κ, ← cardinalMk_Iio]
   rw [Cardinal.le_def]
   exact ⟨⟨fun ⟨a, ha⟩ ↦ ⟨a.ord, by simpa⟩, fun _ _ h ↦ by aesop⟩⟩
+
+@[deprecated (since := "2026-10-20")] alias mk_iio_le_lift := mk_Iio_le_lift
 
 end Cardinal
 
