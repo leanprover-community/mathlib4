@@ -534,6 +534,10 @@ theorem AffineMap.map_vectorSpan {s : Set P₁} :
     Submodule.map f.linear (vectorSpan k s) = vectorSpan k (f '' s) := by
   simp [vectorSpan_def, f.image_vsub_image]
 
+theorem AffineMap.vectorSpan_preimage_le {s : Set P₂} :
+    vectorSpan k (f ⁻¹' s) ≤ (vectorSpan k s).comap f.linear := by
+  simp [← Submodule.map_le_iff_le_comap, AffineMap.map_vectorSpan, vectorSpan_mono]
+
 namespace AffineSubspace
 
 /-- The image of an affine subspace under an affine map as an affine subspace. -/
@@ -764,13 +768,9 @@ theorem comap_comap (s : AffineSubspace k P₃) (f : P₁ →ᵃ[k] P₂) (g : P
     (s.comap g).comap f = s.comap (g.comp f) :=
   rfl
 
-theorem _root_.AffineMap.vectorSpan_preimage_le (f : P₁ →ᵃ[k] P₂) (s : Set P₂) :
-    vectorSpan k (f ⁻¹' s) ≤ (vectorSpan k s).comap f.linear := by
-  simp [← Submodule.map_le_iff_le_comap, AffineMap.map_vectorSpan, vectorSpan_mono]
-
 theorem direction_comap_le (f : P₁ →ᵃ[k] P₂) (s : AffineSubspace k P₂) :
     (s.comap f).direction ≤ s.direction.comap f.linear :=
-  f.vectorSpan_preimage_le _
+  f.vectorSpan_preimage_le
 
 theorem direction_comap {f : P₁ →ᵃ[k] P₂} {s : AffineSubspace k P₂} (h : s.comap f ≠ ⊥) :
     (s.comap f).direction = s.direction.comap f.linear := by
