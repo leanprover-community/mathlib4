@@ -111,6 +111,17 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr)
 
   return true
 
+/-- When false, `fun_prop` applies theorems at default transparency. -/
+register_option fun_prop.reducibleApply : Bool := {
+  defValue := true
+  descr := "When false, `fun_prop` applies theorems at default transparency."
+}
+
+private def withReducibleApply {α : Type} (x : FunPropM α) : FunPropM α := do
+  if ← fun_prop.reducibleApply.getM then
+    withReducible <| withCanUnfoldPred (← getUnfoldPred) x
+  else
+    x
 
 /-- Try to apply theorem - core function -/
 def tryTheoremCore (xs : Array Expr) (val : Expr) (type : Expr) (e : Expr)
@@ -118,7 +129,7 @@ def tryTheoremCore (xs : Array Expr) (val : Expr) (type : Expr) (e : Expr)
   withTraceNode `Meta.Tactic.fun_prop
     (fun _ => return s!"applying: {← ppOrigin' thmId}") do
 
-  if (← isDefEq type e) then
+  if (← withReducibleApply <| isDefEq type e) then
 
     if ¬(← synthesizeArgs thmId xs funProp) then
       return none
