@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 public import Mathlib.Topology.Instances.Matrix
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Measurable space structure on Matrices
 
@@ -32,7 +35,7 @@ lemma _root_.Measurable.eval_matrix {i : m} {j : n} {M : β → Matrix m n α} (
 
 lemma _root_.Measurable.of_eval_matrix (M : β → Matrix m n α)
     (hM : ∀ i j, Measurable (M · i j)) : Measurable M :=
-  measurable_pi_lambda _ (fun i ↦ measurable_pi_lambda _ fun j ↦ hM i j)
+  .of_eval (fun i ↦ .of_eval fun j ↦ hM i j)
 
 protected lemma measurable_iff {M : β → Matrix m n α} :
     Measurable M ↔ ∀ i j, Measurable (M · i j) where

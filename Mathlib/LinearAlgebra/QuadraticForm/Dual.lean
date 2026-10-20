@@ -6,7 +6,6 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.LinearAlgebra.Dual.Lemmas
-public import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
 public import Mathlib.LinearAlgebra.QuadraticForm.Prod
 
 /-!
@@ -105,7 +104,7 @@ variable {R M N}
 @[simps!]
 def dualProdIsometry (f : M ≃ₗ[R] N) : (dualProd R M).IsometryEquiv (dualProd R N) where
   toLinearEquiv := f.dualMap.symm.prodCongr f
-  map_app' x := DFunLike.congr_arg x.fst <| f.symm_apply_apply _
+  map_app' x := congr(x.fst $(f.symm_apply_apply _))
 
 /-- `QuadraticForm.dualProd` commutes (isometrically) with `QuadraticForm.prod`. -/
 @[simps!]

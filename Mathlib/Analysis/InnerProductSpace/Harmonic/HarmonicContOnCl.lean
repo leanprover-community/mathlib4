@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Harmonic.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functions Harmonic on a Domain and Continuous on Its Closure
 
@@ -62,7 +65,7 @@ theorem continuousOn_ball {x : E} {r : ℝ} (h : HarmonicContOnCl f (ball x r)) 
 theorem mk_ball {x : E} {r : ℝ} (hd : HarmonicOnNhd f (ball x r))
     (hc : ContinuousOn f (closedBall x r)) :
     HarmonicContOnCl f (ball x r) :=
-  ⟨hd, hc.mono <| closure_ball_subset_closedBall⟩
+  ⟨hd, hc.mono closure_ball_subset_closedBall⟩
 
 theorem contDiffAt (h : HarmonicContOnCl f s) (hx : x ∈ s) :
     ContDiffAt ℝ 2 f x := (h.1 x hx).1

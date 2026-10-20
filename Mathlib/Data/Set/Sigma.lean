@@ -5,8 +5,10 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Set.Image
 public import Mathlib.Data.Set.BooleanAlgebra
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Sets in sigma types

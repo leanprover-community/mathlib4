@@ -9,6 +9,9 @@ public import Mathlib.Tactic.Peel
 public import Mathlib.Topology.Compactness.Compact
 public import Mathlib.Topology.NhdsKer
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Compactness of the neighborhoods kernel of a set
 
@@ -23,7 +26,7 @@ variable {X : Type*} [TopologicalSpace X] {s : Set X}
 
 theorem IsCompact.nhdsKer_iff : IsCompact (nhdsKer s) ↔ IsCompact s := by
   simp only [isCompact_iff_finite_subcover]
-  peel with ι U hUo
+  congr! with ι U hUo
   simp only [(isOpen_iUnion hUo).nhdsKer_subset,
     (isOpen_iUnion fun i ↦ isOpen_iUnion fun _ ↦ hUo i).nhdsKer_subset]
 

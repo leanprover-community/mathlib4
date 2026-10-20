@@ -5,10 +5,11 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 module
 
-public import Batteries.Data.List.Perm
 public import Mathlib.Data.List.Basic
-public import Batteries.Tactic.Trans
 public import Mathlib.Data.List.Perm.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # List Sub-permutations

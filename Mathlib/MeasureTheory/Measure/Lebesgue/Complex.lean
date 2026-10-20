@@ -5,8 +5,11 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
+public import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Lebesgue measure on `ℂ`

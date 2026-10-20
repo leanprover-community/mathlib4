@@ -54,7 +54,7 @@ a Coxeter matrix and the standard geometric representation of a Coxeter group.
 
 ## References
 
-* [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 4--6*](bourbaki1968) chapter IV
+* [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 4--6*][bourbaki1968] chapter IV
   pages 4--5, 13--15
 
 * [J. Baez, *Coxeter and Dynkin Diagrams*](https://math.ucr.edu/home/baez/twf_dynkin.pdf)
@@ -112,8 +112,6 @@ protected def A : CoxeterMatrix (Fin n) where
   diagonal := by simp
   off_diagonal := by aesop
 
-@[deprecated (since := "2026-03-25")] alias Aₙ := CoxeterMatrix.A
-
 /-- The Coxeter matrix of type Bₙ.
 
 The corresponding Coxeter-Dynkin diagram is:
@@ -130,8 +128,6 @@ protected def B : CoxeterMatrix (Fin n) where
   isSymm := by unfold Matrix.IsSymm; aesop
   diagonal := by simp
   off_diagonal := by aesop
-
-@[deprecated (since := "2026-03-25")] alias Bₙ := CoxeterMatrix.B
 
 /-- The Coxeter matrix of type Dₙ.
 
@@ -153,8 +149,6 @@ protected def D : CoxeterMatrix (Fin n) where
   diagonal := by simp
   off_diagonal := by aesop
 
-@[deprecated (since := "2026-03-25")] alias Dₙ := CoxeterMatrix.D
-
 /-- The Coxeter matrix of type I₂(m).
 
 The corresponding Coxeter-Dynkin diagram is:
@@ -168,8 +162,6 @@ protected def I (m : ℕ) : CoxeterMatrix (Fin 2) where
   isSymm := by unfold Matrix.IsSymm; aesop
   diagonal := by simp
   off_diagonal := by simp
-
-@[deprecated (since := "2026-03-25")] alias I₂ₙ := CoxeterMatrix.I
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The Coxeter matrix of type E₆.

@@ -6,7 +6,6 @@ Authors: Andreas Swerdlow
 module
 
 public import Mathlib.LinearAlgebra.Basis.Basic
-public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 
 import Mathlib.Algebra.Module.Torsion.Field
@@ -54,28 +53,6 @@ variable [CommSemiring R] [CommSemiring R₁] [AddCommMonoid M₁] [Module R₁ 
   [AddCommMonoid M₂] [Module R₂ M₂] [AddCommMonoid M] [Module R M]
   {I₁ : R₁ →+* R} {I₂ : R₂ →+* R} {I₁' : R₁ →+* R}
 
-/-- The proposition that two elements of a sesquilinear map space are orthogonal -/
-@[deprecated "Use `B x y = 0`" (since := "2026-03-30")]
-def IsOrtho (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) (x : M₁) (y : M₂) : Prop :=
-  B x y = 0
-
-@[deprecated "`LinearMap.IsOrtho` has been deprecated" (since := "2026-03-30")]
-theorem isOrtho_def {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} {x y} : B.IsOrtho x y ↔ B x y = 0 :=
-  Iff.rfl
-
-@[deprecated "`LinearMap.IsOrtho` has been deprecated" (since := "2026-03-30")]
-theorem isOrtho_zero_left (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) (x) : IsOrtho B (0 : M₁) x := by
-  dsimp only [IsOrtho]
-  rw [map_zero B, zero_apply]
-
-@[deprecated "`LinearMap.IsOrtho` has been deprecated" (since := "2026-03-30")]
-theorem isOrtho_zero_right (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) (x) : IsOrtho B x (0 : M₂) :=
-  map_zero (B x)
-
-@[deprecated "`LinearMap.IsOrtho` has been deprecated" (since := "2026-03-30")]
-theorem isOrtho_flip {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] M} {x y} : B.IsOrtho x y ↔ B.flip.IsOrtho y x := by
-  simp_rw [isOrtho_def, flip_apply]
-
 open scoped Function in -- required for scoped `on` notation
 /-- A set of vectors `v` is orthogonal with respect to some bilinear map `B` if and only
 if for all `i ≠ j`, `B (v i) (v j) = 0`. -/
@@ -98,23 +75,6 @@ section Field
 variable [Field K] [AddCommGroup V] [Module K V] [Field K₁] [AddCommGroup V₁] [Module K₁ V₁]
   [Field K₂] [AddCommGroup V₂] [Module K₂ V₂]
   {I₁ : K₁ →+* K} {I₂ : K₂ →+* K} {I₁' : K₁ →+* K}
-
-@[deprecated "`LinearMap.IsOrtho` has been deprecated" (since := "2026-03-30")]
-theorem ortho_smul_left {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] V} {x y} {a : K₁} (ha : a ≠ 0) :
-    IsOrtho B x y ↔ IsOrtho B (a • x) y := by
-  dsimp only [IsOrtho]
-  constructor <;> intro H
-  · rw [map_smulₛₗ₂, H, smul_zero]
-  · rw [map_smulₛₗ₂, smul_eq_zero] at H
-    rcases H with H | H
-    · rw [map_eq_zero I₁] at H
-      trivial
-    · exact H
-
-@[deprecated "`LinearMap.IsOrtho` has been deprecated" (since := "2026-03-30")]
-theorem ortho_smul_right {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] V} {x y} {a : K₂} {ha : a ≠ 0} :
-    IsOrtho B x y ↔ IsOrtho B x (a • y) := by
-  simp_all [IsOrtho]
 
 /-- A set of orthogonal vectors `v` with respect to some sesquilinear map `B` is linearly
   independent if for all `i`, `B (v i) (v i) ≠ 0`. -/
@@ -153,9 +113,6 @@ include H
 theorem eq_zero : ∀ {x y}, B x y = 0 → B y x = 0 := fun {x y} ↦ H x y
 
 theorem eq_iff {x y} : B x y = 0 ↔ B y x = 0 := ⟨H x y, H y x⟩
-
-@[deprecated (since := "2026-03-30")]
-alias ortho_comm := eq_iff
 
 theorem domRestrict (p : Submodule R₁ M₁) : (B.domRestrict₁₂ p p).IsRefl :=
   fun _ _ ↦ by
@@ -202,9 +159,6 @@ theorem isRefl (H : B.IsSymm) : B.IsRefl := fun x y H1 ↦ by
   simp [H1]
 
 theorem eq_iff (H : B.IsSymm) {x y} : B x y = 0 ↔ B y x = 0 := H.isRefl.eq_iff
-
-@[deprecated (since := "2026-03-30")]
-alias ortho_comm := eq_iff
 
 theorem domRestrict (H : B.IsSymm) (p : Submodule R M) : (B.domRestrict₁₂ p p).IsSymm where
   eq _ _ := by
@@ -319,9 +273,6 @@ theorem isRefl (H : B.IsAlt) : B.IsRefl := by
 
 theorem eq_iff (H : B.IsAlt) {x y} : B x y = 0 ↔ B y x = 0 := H.isRefl.eq_iff
 
-@[deprecated (since := "2026-03-30")]
-alias ortho_comm := eq_iff
-
 end IsAlt
 
 end AddCommGroup
@@ -340,7 +291,7 @@ theorem isAlt_iff_eq_neg_flip [NoZeroDivisors R] [CharZero R] {B : M₁ →ₛ�
     simp_rw [neg_apply, flip_apply]
     exact (h.neg _ _).symm
   intro x
-  let h' := congr_fun₂ h x x
+  let h' := congr($h x x)
   simp only [neg_apply, flip_apply, ← add_eq_zero_iff_eq_neg] at h'
   exact add_self_eq_zero.mp h'
 
@@ -625,7 +576,7 @@ theorem Nondegenerate.congr (h : B.Nondegenerate) :
 theorem separatingLeft_congr_iff :
     (e₁.arrowCongr (e₂.arrowCongr (LinearEquiv.refl R M)) B).SeparatingLeft ↔ B.SeparatingLeft :=
   ⟨fun h ↦ by
-    convert! h.congr e₁.symm e₂.symm
+    convert h.congr e₁.symm e₂.symm
     ext x y
     simp,
    SeparatingLeft.congr e₁ e₂⟩
@@ -643,21 +594,21 @@ theorem nondegenerate_congr_iff :
 
 end Linear
 
+variable {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M}
+
 @[simp]
-theorem flip_separatingRight {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} :
-    B.flip.SeparatingRight ↔ B.SeparatingLeft :=
+theorem flip_separatingRight : B.flip.SeparatingRight ↔ B.SeparatingLeft :=
   ⟨fun hB x hy ↦ hB x hy, fun hB x hy ↦ hB x hy⟩
 
 @[simp]
-theorem flip_separatingLeft {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} :
-    B.flip.SeparatingLeft ↔ SeparatingRight B := by rw [← flip_separatingRight, flip_flip]
+theorem flip_separatingLeft : B.flip.SeparatingLeft ↔ SeparatingRight B := by
+  rw [← flip_separatingRight, flip_flip]
 
 @[simp]
-theorem flip_nondegenerate {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} : B.flip.Nondegenerate ↔ B.Nondegenerate :=
+theorem flip_nondegenerate : B.flip.Nondegenerate ↔ B.Nondegenerate :=
   Iff.trans and_comm (and_congr flip_separatingRight flip_separatingLeft)
 
-theorem separatingLeft_iff_linear_nontrivial {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} :
-    B.SeparatingLeft ↔ ∀ x : M₁, B x = 0 → x = 0 := by
+theorem separatingLeft_iff_linear_nontrivial : B.SeparatingLeft ↔ ∀ x : M₁, B x = 0 → x = 0 := by
   constructor <;> intro h x hB
   · simpa only [hB, zero_apply, eq_self_iff_true, forall_const] using h x
   have h' : B x = 0 := by
@@ -666,19 +617,29 @@ theorem separatingLeft_iff_linear_nontrivial {B : M₁ →ₛₗ[I₁] M₂ →�
     exact hB _
   exact h x h'
 
-theorem separatingRight_iff_linear_flip_nontrivial {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} :
+theorem separatingRight_iff_linear_flip_nontrivial :
     B.SeparatingRight ↔ ∀ y : M₂, B.flip y = 0 → y = 0 := by
   rw [← flip_separatingLeft, separatingLeft_iff_linear_nontrivial]
 
 /-- A bilinear map is left-separating if and only if it has a trivial kernel. -/
-theorem separatingLeft_iff_ker_eq_bot {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} :
-    B.SeparatingLeft ↔ LinearMap.ker B = ⊥ :=
+theorem separatingLeft_iff_ker_eq_bot : B.SeparatingLeft ↔ LinearMap.ker B = ⊥ :=
   Iff.trans separatingLeft_iff_linear_nontrivial LinearMap.ker_eq_bot'.symm
 
 /-- A bilinear map is right-separating if and only if its flip has a trivial kernel. -/
-theorem separatingRight_iff_flip_ker_eq_bot {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} :
-    B.SeparatingRight ↔ LinearMap.ker B.flip = ⊥ := by
+theorem separatingRight_iff_flip_ker_eq_bot : B.SeparatingRight ↔ LinearMap.ker B.flip = ⊥ := by
   rw [← flip_separatingLeft, separatingLeft_iff_ker_eq_bot]
+
+/-- The identity pairing is left-separating. -/
+protected theorem SeparatingLeft.id : SeparatingLeft (M₁ := M₁ →ₛₗ[I₁] M) .id :=
+  separatingLeft_iff_ker_eq_bot.mpr ker_id
+
+alias id_separatingLeft := SeparatingLeft.id
+
+/-- The pairing `Dual.eval` is right-separating. -/
+protected theorem SeparatingRight.eval : (Dual.eval R M).SeparatingRight :=
+  id_separatingLeft
+
+alias eval_separatingRight := SeparatingRight.eval
 
 end CommSemiring
 

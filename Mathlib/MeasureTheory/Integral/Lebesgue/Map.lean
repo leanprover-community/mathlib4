@@ -8,6 +8,9 @@ module
 public import Mathlib.Dynamics.Ergodic.MeasurePreserving
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Add
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Behavior of the Lebesgue integral under maps
 -/
@@ -30,7 +33,7 @@ theorem lintegral_map {f : β → ℝ≥0∞} {g : α → β} (hf : Measurable f
   simp only [← Function.comp_apply (f := f) (g := g)]
   rw [lintegral_eq_iSup_eapprox_lintegral (hf.comp hg)]
   congr with n : 1
-  convert! SimpleFunc.lintegral_map _ hg
+  convert SimpleFunc.lintegral_map _ hg
   ext1 x; simp only [eapprox_comp hf hg, coe_comp]
 
 theorem lintegral_map' {f : β → ℝ≥0∞} {g : α → β}
@@ -82,7 +85,7 @@ theorem _root_.MeasurableEmbedding.lintegral_map {g : α → β}
   refine le_antisymm (iSup₂_le fun f₀ hf₀ => ?_) (iSup₂_le fun f₀ hf₀ => ?_)
   · rw [SimpleFunc.lintegral_map _ hg.measurable]
     have : (f₀.comp g hg.measurable : α → ℝ≥0∞) ≤ f ∘ g := fun x => hf₀ (g x)
-    exact le_iSup_of_le (comp f₀ g hg.measurable) (by exact le_iSup (α := ℝ≥0∞) _ this)
+    exact le_iSup_of_le (comp f₀ g hg.measurable) (by grw [← le_iSup _ this])
   · rw [← f₀.extend_comp_eq hg (const _ 0), ← SimpleFunc.lintegral_map, ←
       SimpleFunc.lintegral_eq_lintegral, ← lintegral]
     refine lintegral_mono_ae (hg.ae_map_iff.2 <| Eventually.of_forall fun x => ?_)
@@ -116,8 +119,13 @@ protected theorem lintegral_map_equiv (f : β → ℝ≥0∞) (g : α ≃ᵐ β)
 
 include hg
 
+theorem lintegral_comp' {f : β → ℝ≥0∞} (hf : AEMeasurable f ν) :
+    ∫⁻ a, f (g a) ∂μ = ∫⁻ b, f b ∂ν := by
+  rw [← hg.map_eq, lintegral_map' (hg.map_eq ▸ hf) hg.aemeasurable]
+
 theorem lintegral_comp {f : β → ℝ≥0∞} (hf : Measurable f) :
-    ∫⁻ a, f (g a) ∂μ = ∫⁻ b, f b ∂ν := by rw [← hg.map_eq, lintegral_map hf hg.measurable]
+    ∫⁻ a, f (g a) ∂μ = ∫⁻ b, f b ∂ν :=
+  hg.lintegral_comp' hf.aemeasurable
 
 theorem lintegral_comp_emb (hge : MeasurableEmbedding g) (f : β → ℝ≥0∞) :
     ∫⁻ a, f (g a) ∂μ = ∫⁻ b, f b ∂ν := by rw [← hg.map_eq, hge.lintegral_map]
