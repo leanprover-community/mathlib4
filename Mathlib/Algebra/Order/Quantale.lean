@@ -77,7 +77,7 @@ structure AddQuantale (α : Type*)
 
 /-- A quantale is a semigroup distributing over a complete lattice. -/
 @[to_additive]
-class IsQuantale (α : Type*) [Semigroup α] [CompleteLattice α] : Prop where
+class IsQuantale (α : Type*) [Semigroup α] [CompleteLattice α] where
   /-- Multiplication is distributive over join in a quantale -/
   protected mul_sSup_distrib (x : α) (s : Set α) : x * sSup s = ⨆ y ∈ s, x * y
   /-- Multiplication is distributive over join in a quantale -/
