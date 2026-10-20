@@ -130,7 +130,7 @@ theorem toSquareBlockProp_lastColMinor_not_lt (M : Matrix (Fin (n + 1)) (Fin (n 
   ext a b
   simp [toSquareBlockProp_def, hrow]
 
-theorem charmatrix_leadingBlock {R : Type*} [CommRing R] (M : Matrix (Fin n) (Fin n) R)
+theorem charmatrix_leadingBlock [CommRing α] (M : Matrix (Fin n) (Fin n) α)
     (h : k ≤ n) : (M.leadingBlock h).charmatrix = M.charmatrix.leadingBlock h := by
   ext i j
   by_cases hij : i = j <;> simp [hij]
@@ -141,7 +141,7 @@ theorem IsUpperHessenberg.leadingBlock [Zero α] {M : Matrix (Fin n) (Fin n) α}
   intro _ _ hij
   exact hM (by simpa [Fin.orderSucc_lt_iff] using hij)
 
-theorem IsUpperHessenberg.charmatrix {R : Type*} [CommRing R] {M : Matrix (Fin n) (Fin n) R}
+theorem IsUpperHessenberg.charmatrix [CommRing α] {M : Matrix (Fin n) (Fin n) α}
     (hM : M.IsUpperHessenberg) : M.charmatrix.IsUpperHessenberg := by
   rw [isUpperHessenberg_iff] at hM ⊢
   intro _ j hij
