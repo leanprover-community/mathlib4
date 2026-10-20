@@ -8,6 +8,9 @@ module
 public import Mathlib.Geometry.Euclidean.Inversion.Basic
 public import Mathlib.Geometry.Euclidean.PerpBisector
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Image of a hyperplane under inversion
 
@@ -28,7 +31,7 @@ inversion
 
 public section
 
-open Metric Function AffineMap Set AffineSubspace
+open Metric AffineMap Set AffineSubspace
 open scoped Topology
 
 variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]

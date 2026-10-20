@@ -6,11 +6,12 @@ Authors: Kim Morrison, Adam Topaz
 module
 
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
-public import Mathlib.CategoryTheory.Limits.Preserves.Basic
-public import Mathlib.CategoryTheory.Limits.Types.Colimits
-public import Mathlib.CategoryTheory.Limits.Types.Images
 public import Mathlib.CategoryTheory.Limits.Types.Filtered
+public import Mathlib.CategoryTheory.Limits.Types.Images
 public import Mathlib.CategoryTheory.Limits.Yoneda
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Facts about (co)limits of functors into concrete categories
@@ -138,7 +139,6 @@ theorem colimit_exists_rep [HasColimit F] (x : ToType (colimit F)) :
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isColimit_rep_eq_of_exists {D : Cocone F} {i j : J} (x : ToType (F.obj i))
     (y : ToType (F.obj j))
     (h : ∃ (k : _) (f : i ⟶ k) (g : j ⟶ k), F.map f x = F.map g y) :
@@ -149,7 +149,7 @@ theorem isColimit_rep_eq_of_exists {D : Cocone F} {i j : J} (x : ToType (F.obj i
   let h2 : (F ⋙ forget C).map g ≫ E.ι.app k = E.ι.app j := E.ι.naturality g
   change E.ι.app i x = E.ι.app j y
   rw [← h1, comp_apply, hfg]
-  exact ConcreteCategory.congr_hom h2 y
+  congrm $h2 y
 
 theorem colimit_rep_eq_of_exists [HasColimit F] {i j : J} (x : ToType (F.obj i))
     (y : ToType (F.obj j))

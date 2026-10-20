@@ -5,11 +5,15 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Cardinal
 public import Mathlib.RingTheory.Algebraic.Basic
 
+import Mathlib.Algebra.Polynomial.Cardinal
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-### Cardinality of algebraic numbers
+# Cardinality of algebraic numbers
 
 In this file, we prove variants of the following result: the cardinality of algebraic numbers under
 an R-algebra is at most `#R[X] * ℵ₀`.

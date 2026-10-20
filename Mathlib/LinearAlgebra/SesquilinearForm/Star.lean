@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.PosDef
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sesquilinear forms over a star ring
 
@@ -22,7 +25,6 @@ variable {R M n : Type*} [CommSemiring R] [StarRing R] [AddCommMonoid M] [Module
   [Fintype n] [DecidableEq n]
   {B : M →ₗ⋆[R] M →ₗ[R] R} (b : Basis n R M)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma LinearMap.isSymm_iff_basis {ι : Type*} (b : Basis ι R M) :
     IsSymm B ↔ ∀ i j, star (B (b i) (b j)) = B (b j) (b i) where
   mp h i j := h.eq _ _

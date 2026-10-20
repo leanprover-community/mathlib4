@@ -6,9 +6,14 @@ Authors: Chris Hughes, Yaël Dillies
 module
 
 public import Mathlib.Algebra.Field.GeomSum
-public import Mathlib.Algebra.Order.Archimedean.Basic
-public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.Archimedean.Defs
 public import Mathlib.Algebra.Order.CauSeq.Basic
+
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Data.Rat.Floor
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Cauchy sequences and big operators

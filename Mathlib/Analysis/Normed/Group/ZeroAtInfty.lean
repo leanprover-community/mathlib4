@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.ContinuousMap.ZeroAtInfty
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # ZeroAtInftyContinuousMapClass in normed additive groups
 
@@ -18,7 +21,9 @@ for every `ε > 0` there exists a `r : ℝ` such that for all `x : E` with `r < 
 
 public section
 
-open Topology Filter
+open Filter
+
+open scoped Topology
 
 variable {E F 𝓕 : Type*}
 variable [SeminormedAddGroup E] [SeminormedAddCommGroup F]

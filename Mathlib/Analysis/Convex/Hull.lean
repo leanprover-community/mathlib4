@@ -6,7 +6,9 @@ Authors: Yury Kudryashov, Yaël Dillies
 module
 
 public import Mathlib.Analysis.Convex.Basic
-public import Mathlib.Order.Closure
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Convex hull

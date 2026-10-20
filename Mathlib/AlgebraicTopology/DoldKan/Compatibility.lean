@@ -85,7 +85,6 @@ def equivalence₁CounitIso : (e'.inverse ⋙ eA.inverse) ⋙ F ≅ 𝟭 B' :=
     _ ≅ e'.inverse ⋙ e'.functor := isoWhiskerLeft _ (leftUnitor _)
     _ ≅ 𝟭 B' := e'.counitIso
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem equivalence₁CounitIso_eq : (equivalence₁ hF).counitIso = equivalence₁CounitIso hF := by
   ext Y

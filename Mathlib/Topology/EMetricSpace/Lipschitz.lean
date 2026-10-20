@@ -6,7 +6,6 @@ Authors: Rohan Mitta, Kevin Buzzard, Alistair Tucker, Johannes Hölzl, Yury Kudr
 module
 
 public import Mathlib.Algebra.Group.End
-public import Mathlib.Tactic.Finiteness
 public import Mathlib.Topology.EMetricSpace.Diam
 
 /-!
@@ -46,7 +45,9 @@ argument, and return `LipschitzWith (Real.toNNReal K) f`.
 
 universe u v w x
 
-open Filter Function Set Topology NNReal ENNReal Bornology
+open Filter Function Set NNReal ENNReal
+
+open scoped Topology
 
 variable {α : Type u} {β : Type v} {γ : Type w} {ι : Type x}
 
@@ -149,14 +150,8 @@ theorem edist_lt_mul_of_lt (h : LipschitzWith K f) (hK : K ≠ 0) (hr : edist x 
 theorem mapsTo_closedEBall (h : LipschitzWith K f) (x : α) (r : ℝ≥0∞) :
     MapsTo f (closedEBall x r) (closedEBall (f x) (K * r)) := fun _y hy => h.edist_le_mul_of_le hy
 
-@[deprecated (since := "2026-01-24")]
-alias mapsTo_emetric_closedBall := mapsTo_closedEBall
-
 theorem mapsTo_eball (h : LipschitzWith K f) (hK : K ≠ 0) (x : α) (r : ℝ≥0∞) :
     MapsTo f (eball x r) (eball (f x) (K * r)) := fun _y hy => h.edist_lt_mul_of_lt hK hy
-
-@[deprecated (since := "2026-01-24")]
-alias mapsTo_emetric_ball := mapsTo_eball
 
 theorem edist_lt_top (hf : LipschitzWith K f) {x y : α} (h : edist x y ≠ ⊤) :
     edist (f x) (f y) < ⊤ :=
@@ -219,7 +214,7 @@ theorem subtype_mk (hf : LipschitzWith K f) {p : β → Prop} (hp : ∀ x, p (f 
 
 protected theorem eval {α : ι → Type u} [∀ i, PseudoEMetricSpace (α i)] [Fintype ι] (i : ι) :
     LipschitzWith 1 (Function.eval i : (∀ i, α i) → α i) :=
-  LipschitzWith.of_edist_le fun f g => by convert! edist_le_pi_edist f g i
+  LipschitzWith.of_edist_le fun f g => by convert edist_le_pi_edist f g i
 
 /-- The restriction of a `K`-Lipschitz function is `K`-Lipschitz. -/
 protected theorem restrict (hf : LipschitzWith K f) (s : Set α) :

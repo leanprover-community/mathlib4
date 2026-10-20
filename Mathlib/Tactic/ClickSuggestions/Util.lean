@@ -5,15 +5,16 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public import ProofWidgets.Component.MakeEditLink
-public import ProofWidgets.Component.RefreshComponent
-public import Mathlib.Tactic.GRewrite
-public import Mathlib.Tactic.SimpRw
-public import Mathlib.Tactic.NthRewrite
-public import Mathlib.Tactic.DepRewrite
-public import Batteries.Tactic.PermuteGoals
-public meta import Mathlib.Data.String.Defs
 public meta import Lean.PrettyPrinter.Delaborator.Builtins
+public meta import Lean.Server.Utils
+public meta import Mathlib.Data.String.Defs
+public meta import ProofWidgets.Component.MakeEditLink
+public meta import ProofWidgets.Component.RefreshComponent
+public import Batteries.Tactic.PermuteGoals
+public import Mathlib.Tactic.DepRewrite
+public import Mathlib.Tactic.GRewrite
+public import Mathlib.Tactic.NthRewrite
+public import Mathlib.Tactic.SimpRw
 
 /-!
 # Various utilities used in `#click_suggestions`
@@ -23,7 +24,7 @@ public meta section
 
 namespace Mathlib.Tactic.ClickSuggestions
 
-open Lean Meta ProofWidgets Jsx Server
+open Lean Meta ProofWidgets Server
 
 section
 
@@ -31,12 +32,12 @@ open Widget PrettyPrinter.Delaborator
 
 /-- Turn an `Expr` into an HTML with hover info. -/
 def exprToHtml (e : Expr) : MetaM Html :=
-  return <InteractiveCode fmt={← Widget.ppExprTagged e}/>
+  return jsx%{<InteractiveCode fmt={← Widget.ppExprTagged e}/>}
 
 /-- Turn a constant into an HTML with hover info.
 This avoids the `@` that may appear when using `exprToHtml`. -/
 def constToHtml (n : Name) : MetaM Html := do
-  let delab := withOptionAtCurrPos `pp.tagAppFns true <| delabConst
+  let delab := withOptionAtCurrPos `pp.tagAppFns true delabConst
   let ⟨fmt, infos⟩ ← PrettyPrinter.ppExprWithInfos (delab := delab) (← mkConstWithLevelParams n)
   let tt := TaggedText.prettyTagged fmt
   let ctx := {
@@ -48,7 +49,7 @@ def constToHtml (n : Name) : MetaM Html := do
     fileMap       := default
     ngen          := (← getNGen)
   }
-  return <InteractiveCode fmt={← tagCodeInfos ctx infos tt}/>
+  return jsx%{<InteractiveCode fmt={← tagCodeInfos ctx infos tt}/>}
 
 /-- Display `fmt` with a docstring as if it is the constant `n`. -/
 def formatToHtmlWithDoc (fmt : Format) (n : Name) : MetaM Html := do
@@ -70,7 +71,7 @@ def formatToHtmlWithDoc (fmt : Format) (n : Name) : MetaM Html := do
   -- TODO: I would love to print this using the same keyword colour used by the editor,
   -- but I don't think this is possible. Additionally, `InteractiveCode` already overwrites the
   -- colour and style of the text (namely the expression style)
-  return <InteractiveCode fmt={← tagCodeInfos ctx infos tt} />
+  return jsx%{<InteractiveCode fmt={← tagCodeInfos ctx infos tt} />}
 
 
 /-- Pretty print a tactic with its docstring as hover info.
@@ -232,7 +233,7 @@ where
       else
         -- TODO: use a fancier throbber instead of `⏳️`?
         let title := "ongoing computations: " ++ String.intercalate ", " status.keys;
-        <span title={title}> {.text "⏳️"} </span>
+        jsx%{<span title={title}>⏳️</span>}
 
 section Meta
 
@@ -308,10 +309,10 @@ In particular, we merge sequences of `rw`, `simp_rw` and `grw`. -/
 partial def mergeTactics? {m} [Monad m] [MonadQuotation m] (stx₁ stx₂ : TSyntax `tactic) :
     m (Option (TSyntax `tactic)) := do
   match stx₁, stx₂ with
-  | `(tactic| on_goal $n₁ => $tac₁:tactic), `(tactic| on_goal $n₂ => $tac₂:tactic) =>
+  | `(tactic| on_goal $n₁:num => $tac₁:tactic), `(tactic| on_goal $n₂:num => $tac₂:tactic) =>
     if n₁.getNat == n₂.getNat then
       if let some tac ← mergeTactics? tac₁ tac₂ then
-        return ← `(tactic| on_goal $n₁ => $tac:tactic)
+        return ← `(tactic| on_goal $n₁:num => $tac:tactic)
   | `(tactic| rw [$[$rules₁],*] $[at $h₁:ident]?),
     `(tactic| rw [$[$rules₂],*] $[at $h₂:ident]?) =>
     if h₁.map (·.getId) == h₂.map (·.getId) then
@@ -355,34 +356,34 @@ section Widget
 open Widget
 
 /-- Generate a suggestion for inserting `tac`, with message `html`.
-The button is `[apply]` if the tactic does not close the goal, and `[done]` if it is closing. -/
-def mkSuggestion (tac : TSyntax `tactic) (html : Html) (isClosing := false) :
+`button` will be used as the text on the clickable button.
+If `solves := true`, then a `🎉️` emoji is added. -/
+def mkSuggestion (tac : TSyntax `tactic) (button : String) (html : Html) (solves : Bool) :
     ClickSuggestionsM Html := do
   let tac ← match (← read).onGoal with
-    | some n => `(tactic| on_goal $(Syntax.mkNatLit (n + 1)) => $tac:tactic)
+    | some n => `(tactic| on_goal $(Syntax.mkNatLit (n + 1)):num => $tac:tactic)
     | none => pure tac
   let (range, newText) ← mkInsertion tac (← read)
-  let buttonText := if isClosing then "[done] " else "[apply] "
+  let buttonText := s!"{if solves then "🎉️" else ""}[{button}] "
   let button :=
-    -- TODO: The hover on this button should be a `CodeWithInfos`, instead of a string.
-    <span style={json% { "white-space" : "pre"}} className="font-code">
+    jsx%{<span style={json% { "white-space" : "pre"}} className="font-code">
     { .ofComponent MakeEditLink (.ofReplaceRange (← read).meta range newText) #[.text buttonText] }
-    </span>;
-  return <div display="flex"
+    </span>}
+  return jsx%{<div
     style={json% { "display" : "flex", "align-items" : "flex-start", "margin-bottom" : "1em" }}>
-    {button} {html}
-    </div>
+    {button}{html}
+    </div>}
 
 /-- Add suggestion `tac` to the list of tactics that solve the goal. -/
-def addSolvedSuggestion (tac : TSyntax `tactic) : ClickSuggestionsM Unit := do
-  let html ← mkSuggestion tac (.text (← PrettyPrinter.ppTactic tac).pretty) (isClosing := true)
+def addSolvingSuggestion (tac : TSyntax `tactic) : ClickSuggestionsM Unit := do
+  let html ← mkSuggestion tac "done" (.text (← PrettyPrinter.ppTactic tac).pretty) (solves := true)
   modify fun s ↦ { s with solvedSuggestions := s.solvedSuggestions.push html }
-  (← read).solvedToken.update <details «open»={true}>
+  (← read).solvedToken.update jsx%{<details open={true}>
     <summary className="mv2 pointer">
-    These tactics solve the goal: 🎉️
+    Tactics that solve the goal
     </summary>
     {.element "div" #[] (← get).solvedSuggestions}
-    </details>
+    </details>}
 
 end Widget
 
@@ -423,5 +424,18 @@ def kabstractFindsPositions (e p : Expr) (targetPos : SubExpr.Pos) : MetaM Bool 
     foundRef.get
   catch _ =>
     return false
+
+/-- Determine which metavariables count as "unhelpful", given the old and new metavariables.
+This is used in suggestions of e.g. `apply`, to filter out suggestions with unhelpful metavariables.
+
+A metavariable is unhelpful if it was freshly introduced, and is not used in the assignment
+of a previously appearing metavariable.
+-/
+def hasUnhelpfulMVars (newMVars : Array MVarId) (oldMVars newExpressions : Array Expr) :
+    MetaM Bool := do
+  let used ← oldMVars.foldlM (init := {}) (Expr.collectMVars · <$> instantiateMVars ·)
+  let used := used.result
+  let unhelpful := newMVars.filter (!used.contains ·)
+  return newExpressions.any (·.findMVar? unhelpful.contains |>.isSome)
 
 end Mathlib.Tactic.ClickSuggestions

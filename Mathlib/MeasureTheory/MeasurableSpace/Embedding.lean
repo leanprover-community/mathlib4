@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.MeasureTheory.MeasurableSpace.Constructions
-public import Mathlib.Tactic.FunProp
 
 /-!
 # Measurable embeddings and equivalences
@@ -40,7 +39,7 @@ measurable equivalence, measurable embedding
 @[expose] public section
 
 
-open Set Function Equiv MeasureTheory
+open Set Function Equiv
 
 universe uι
 
@@ -142,14 +141,14 @@ variable {α₁ α₂ α₃ : Type*} {mα : MeasurableSpace α} {mβ : Measurabl
 lemma MeasurableSet.of_union_range_cover (hi₁ : MeasurableEmbedding i₁)
     (hi₂ : MeasurableEmbedding i₂) (h : univ ⊆ range i₁ ∪ range i₂)
     (hs₁ : MeasurableSet (i₁ ⁻¹' s)) (hs₂ : MeasurableSet (i₂ ⁻¹' s)) : MeasurableSet s := by
-  convert! (hi₁.measurableSet_image' hs₁).union (hi₂.measurableSet_image' hs₂)
+  convert (hi₁.measurableSet_image' hs₁).union (hi₂.measurableSet_image' hs₂)
   simp [image_preimage_eq_range_inter, ← union_inter_distrib_right, univ_subset_iff.1 h]
 
 lemma MeasurableSet.of_union₃_range_cover (hi₁ : MeasurableEmbedding i₁)
     (hi₂ : MeasurableEmbedding i₂) (hi₃ : MeasurableEmbedding i₃)
     (h : univ ⊆ range i₁ ∪ range i₂ ∪ range i₃) (hs₁ : MeasurableSet (i₁ ⁻¹' s))
     (hs₂ : MeasurableSet (i₂ ⁻¹' s)) (hs₃ : MeasurableSet (i₃ ⁻¹' s)) : MeasurableSet s := by
-  convert!
+  convert
     (hi₁.measurableSet_image' hs₁).union (hi₂.measurableSet_image' hs₂) |>.union
       (hi₃.measurableSet_image' hs₃)
   simp [image_preimage_eq_range_inter, ← union_inter_distrib_right, univ_subset_iff.1 h]
@@ -193,6 +192,7 @@ theorem toEquiv_injective : Injective (toEquiv : α ≃ᵐ β → α ≃ β) := 
   rintro ⟨e₁, _, _⟩ ⟨e₂, _, _⟩ (rfl : e₁ = e₂)
   rfl
 
+@[macro_inline]
 instance instEquivLike : EquivLike (α ≃ᵐ β) α β where
   coe e := e.toEquiv
   inv e := e.toEquiv.symm
@@ -477,19 +477,17 @@ equivalent to the type of functions `∀ a, {b : β a // p a b}`. -/
 def subtypePiEquivPi {p : (a : δ') → π a → Prop} :
     { f : (a : δ') → π a // ∀ (a : δ'), p a (f a) } ≃ᵐ ((a : δ') → { b : π a // p a b }) where
   toEquiv := .subtypePiEquivPi
-  measurable_toFun := measurable_pi_lambda _ (fun a =>
+  measurable_toFun := .of_eval (fun a =>
     ((measurable_pi_apply a).comp measurable_subtype_coe).subtype_mk)
-  measurable_invFun := (measurable_pi_lambda _ (fun a =>
+  measurable_invFun := (Measurable.of_eval (fun a =>
     measurable_subtype_coe.comp (measurable_pi_apply a))).subtype_mk
 
 /-- A family of measurable equivalences `Π a, β₁ a ≃ᵐ β₂ a` generates a measurable equivalence
   between `Π a, β₁ a` and `Π a, β₂ a`. -/
 def piCongrRight (e : ∀ a, π a ≃ᵐ π' a) : (∀ a, π a) ≃ᵐ ∀ a, π' a where
   toEquiv := .piCongrRight fun a => (e a).toEquiv
-  measurable_toFun :=
-    measurable_pi_lambda _ fun i => (e i).measurable_toFun.comp (measurable_pi_apply i)
-  measurable_invFun :=
-    measurable_pi_lambda _ fun i => (e i).measurable_invFun.comp (measurable_pi_apply i)
+  measurable_toFun := .of_eval fun i => (e i).measurable_toFun.comp (measurable_pi_apply i)
+  measurable_invFun := .of_eval fun i => (e i).measurable_invFun.comp (measurable_pi_apply i)
 
 variable (π) in
 /-- Moving a dependent type along an equivalence of coordinates, as a measurable equivalence. -/
@@ -507,7 +505,6 @@ lemma piCongrLeft_apply_apply {ι ι' : Type*} (e : ι ≃ ι') {β : ι' → Ty
     piCongrLeft (fun i' ↦ β i') e x (e i) = x i := by
   rw [piCongrLeft, coe_mk, Equiv.piCongrLeft_apply_apply]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The isomorphism `(γ → α × β) ≃ (γ → α) × (γ → β)` as a measurable equivalence. -/
 def arrowProdEquivProdArrow (α β γ : Type*) [MeasurableSpace α] [MeasurableSpace β] :
     (γ → α × β) ≃ᵐ (γ → α) × (γ → β) where
@@ -645,7 +642,6 @@ def ofInvolutive (f : α → α) (hf : Involutive f) (hf' : Measurable f) : α �
 @[simp] theorem ofInvolutive_symm (f : α → α) (hf : Involutive f) (hf' : Measurable f) :
     (ofInvolutive f hf hf').symm = ofInvolutive f hf hf' := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- `Set.ofPred` as a `MeasurableEquiv`. -/
 @[simps]
 protected def setOfPred {α : Type*} : (α → Prop) ≃ᵐ Set α where

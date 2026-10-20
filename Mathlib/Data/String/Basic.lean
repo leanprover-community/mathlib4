@@ -6,11 +6,15 @@ Authors: Mario Carneiro
 module
 
 public import Batteries.Data.String.Lemmas
-public import Mathlib.Data.List.Lex
-public import Mathlib.Data.Char
 public import Mathlib.Algebra.Order.Group.Nat
-import all Init.Data.String.Iterator  -- for unfolding `Iterator.curr`
+public import Mathlib.Data.Char
+public import Mathlib.Data.List.Lex
+
 import all Init.Data.Ord.String  -- for unfolding `String.compare`
+import all Init.Data.String.Iterator  -- for unfolding `Iterator.curr`
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Strings
@@ -60,20 +64,20 @@ theorem ltb_cons_addChar' (c : Char) (s₁ s₂ : Legacy.Iterator) :
   fun_induction ltb s₁ s₂ with
   | case1 s₁ s₂ h₁ h₂ h ih =>
     rw [ltb, Legacy.Iterator.hasNext_cons_addChar, Legacy.Iterator.hasNext_cons_addChar,
-      if_pos (by simpa using h₁), if_pos (by simpa using h₂), if_pos, ← ih]
+      ite_eq_left (by simpa using h₁), ite_eq_left (by simpa using h₂), ite_eq_left, ← ih]
     · simp only [Legacy.Iterator.next, Pos.Raw.next, get_cons_addChar, ofList_toList]
       congr 2 <;> apply Pos.Raw.add_char_right_comm
     · simpa only [Legacy.Iterator.curr, get_cons_addChar, ofList_toList] using h
   | case2 s₁ s₂ h₁ h₂ h =>
     rw [ltb, Legacy.Iterator.hasNext_cons_addChar, Legacy.Iterator.hasNext_cons_addChar,
-      if_pos (by simpa using h₁), if_pos (by simpa using h₂), if_neg]
+      ite_eq_left (by simpa using h₁), ite_eq_left (by simpa using h₂), ite_eq_right]
     · simp only [Legacy.Iterator.curr, get_cons_addChar, ofList_toList]
     · simpa only [Legacy.Iterator.curr, get_cons_addChar, ofList_toList] using h
   | case3 s₁ s₂ h₁ h₂ =>
     rw [ltb, Legacy.Iterator.hasNext_cons_addChar, Legacy.Iterator.hasNext_cons_addChar,
-      if_pos (by simpa using h₁), if_neg (by simpa using h₂)]
+      ite_eq_left (by simpa using h₁), ite_eq_right (by simpa using h₂)]
   | case4 s₁ s₂ h₁ =>
-    rw [ltb, Legacy.Iterator.hasNext_cons_addChar, if_neg (by simpa using h₁)]
+    rw [ltb, Legacy.Iterator.hasNext_cons_addChar, ite_eq_right (by simpa using h₁)]
 
 theorem ltb_cons_addChar (c : Char) (cs₁ cs₂ : List Char) (i₁ i₂ : Pos.Raw) :
     ltb ⟨ofList (c :: cs₁), i₁ + c⟩ ⟨ofList (c :: cs₂), i₂ + c⟩ =
@@ -82,9 +86,8 @@ theorem ltb_cons_addChar (c : Char) (cs₁ cs₂ : List Char) (i₁ i₂ : Pos.R
   simp
 
 theorem lt_iff_toList_lt {s₁ s₂ : String} : s₁ < s₂ ↔ s₁.toList < s₂.toList :=
-  Iff.rfl
+  toList_lt_toList_iff.symm
 
-@[simp]
 theorem lt_iff_ltb {s₁ s₂ : String} :
     s₁ < s₂ ↔ ltb (String.Legacy.iter s₁) (String.Legacy.iter s₂) := by
   rw [Iff.comm]
@@ -118,15 +121,6 @@ theorem lt_iff_ltb {s₁ s₂ : String} :
       · assumption
       · contradiction
 
-@[deprecated "Use the new String API" (since := "2026-04-01")]
-theorem toList_nonempty :
-    ∀ {s : String}, s ≠ "" → s.toList = String.Legacy.front s :: (String.Legacy.drop s 1).toList
-  | s, h => by
-    obtain ⟨l, rfl⟩ := s.exists_eq_ofList
-    match l with
-    | [] => simp at h
-    | c::cs => simp [Legacy.front, Pos.Raw.get, Pos.Raw.utf8GetAux]
-
 @[simp]
 theorem head_empty : "".toList.head! = default :=
   rfl
@@ -138,22 +132,21 @@ theorem le_iff_toList_le {s₁ s₂ : String} : s₁ ≤ s₂ ↔ s₁.toList �
   rw [String.le_iff_not_lt, lt_iff_toList_lt, not_lt]
 
 instance : LinearOrder String where
-  le_refl _ := le_iff_toList_le.mpr le_rfl
-  le_trans a b c := by
-    simp only [le_iff_toList_le]
-    apply le_trans
-  lt_iff_le_not_ge a b := by
-    simp only [lt_iff_toList_lt, le_iff_toList_le, lt_iff_le_not_ge]
-  le_antisymm a b := by
-    simp only [le_iff_toList_le, ← toList_inj]
-    apply le_antisymm
-  le_total a b := by
-    simp only [le_iff_toList_le]
-    apply le_total
+  le_refl _ := Std.le_refl _
+  le_trans a b c := Std.le_trans
+  lt_iff_le_not_ge a b := Std.lt_iff_le_and_not_ge
+  le_antisymm a b := Std.le_antisymm
+  le_total a b := Std.le_total
   toDecidableLE := inferInstance
   toDecidableEq := inferInstance
   toDecidableLT := String.decidableLT
-  compare_eq_compareOfLessAndEq a b := by simp [Ord.compare, String.compare]
+  compare_eq_compareOfLessAndEq a b := Std.LawfulLTCmp.eq_compareOfLessAndEq a b
+  min_def a b := Std.min_eq_ite
+  max_def a b := by
+    obtain h | rfl | h := Std.lt_trichotomy a b
+    · simp [Std.le_of_lt h, Std.max_eq_ite, Std.not_le.2 h]
+    · simp [Std.max_eq_ite]
+    · simp [Std.not_le.2 h, Std.max_eq_ite, Std.le_of_lt h]
 
 theorem ofList_eq {l : List Char} {s : String} : ofList l = s ↔ l = s.toList := by
   simp [← toList_inj]

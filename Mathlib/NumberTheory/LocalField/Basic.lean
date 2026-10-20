@@ -5,10 +5,11 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Valuation.DiscreteValuativeRel
-public import Mathlib.Topology.Algebra.Module.Compact
 public import Mathlib.Topology.Algebra.Valued.LocallyCompact
 public import Mathlib.Topology.Algebra.Valued.ValuativeRel
+
+import Mathlib.RingTheory.Valuation.DiscreteValuativeRel
+import Mathlib.Topology.Algebra.Module.Compact
 
 /-!
 
@@ -88,7 +89,7 @@ lemma isCompact_closedBall (γ : ValueGroupWithZero K) : IsCompact { x | valuati
       dsimp at hx ⊢
       exact hx.trans_lt (hr.trans_le hr1)
   simp_rw [← (valuation K).restrict_le_iff] at H ⊢
-  convert!
+  convert
     (hs'.of_isClosed_subset (Valued.isClosed_closedBall K _) H).image
       (Homeomorph.mulLeft₀ (γ / r) (by simp [hr, div_eq_zero_iff, hγ])).continuous using 1
   refine .trans ?_ (Equiv.image_eq_preimage_symm _ _).symm
@@ -131,7 +132,8 @@ instance : IsCyclic (ValueGroupWithZero K)ˣ :=
   (Units.mapEquiv (valueGroupWithZeroIsoInt K).toMulEquiv).isCyclic.mpr inferInstance
 
 instance : ValuativeRel.IsDiscrete K :=
-  (ValuativeRel.nonempty_orderIso_withZeroMul_int_iff.mp ⟨valueGroupWithZeroIsoInt K⟩).1
+  (ValuativeRel.ValueGroupWithZero.nonempty_orderMonoidIso_withZeroMulInt_iff.mp
+    ⟨valueGroupWithZeroIsoInt K⟩).1
 
 instance : ValuativeRel.IsRankLeOne K :=
   ValuativeRel.isRankLeOne_iff_mulArchimedean.mpr

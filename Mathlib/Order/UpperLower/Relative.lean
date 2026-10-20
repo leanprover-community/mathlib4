@@ -5,10 +5,13 @@ Authors: Jeremy Tan
 -/
 module
 
+public import Mathlib.Basic.SetLike.Basic
 public import Mathlib.Data.Set.Image
-public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Order.Interval.Set.Defs
 public import Mathlib.Order.SetNotation
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Properties of relative upper/lower sets
@@ -161,7 +164,7 @@ instance : SetLike (RelUpperSet P) α where
   coe := RelUpperSet.carrier
   coe_injective s t h := by cases s; cases t; congr
 
-instance : PartialOrder (RelUpperSet P) := .ofSetLike (RelUpperSet P) α
+instance : PartialOrder (RelUpperSet P) := .ofSetLike (RelUpperSet P)
 
 instance : SetLike (RelLowerSet P) α where
   coe := RelLowerSet.carrier

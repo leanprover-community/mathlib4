@@ -9,6 +9,9 @@ public import Mathlib.Algebra.EuclideanDomain.Defs
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.GroupWithZero.Units.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Instances for Euclidean domains
 
@@ -45,10 +48,10 @@ protected theorem gcd_eq [DecidableEq K] (a b : K) :
 
 protected theorem gcd_zero_eq [DecidableEq K] (b : K) :
     EuclideanDomain.gcd 0 b = b := by
-  rw [Field.gcd_eq, if_pos rfl]
+  rw [Field.gcd_eq, ite_eq_left rfl]
 
 protected theorem gcd_eq_of_ne [DecidableEq K] {a : K} (ha : a ≠ 0) (b : K) :
     EuclideanDomain.gcd a b = a := by
-  rw [Field.gcd_eq, if_neg ha]
+  rw [Field.gcd_eq, ite_eq_right ha]
 
 end Field
