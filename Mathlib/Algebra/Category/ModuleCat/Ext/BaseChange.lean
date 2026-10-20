@@ -155,7 +155,6 @@ noncomputable instance (n : ℕ) (M N : ModuleCat.{v'} S) : Module R (Ext M N n)
   letI : Linear R (ModuleCat.{v'} S) := ModuleCat.Algebra.instLinear
   inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 instance (n : ℕ) (M N : ModuleCat.{v'} S) : IsScalarTower R S (Ext M N n) where
   smul_assoc r s z := by
     simp only [Ext.smul_eq_comp_mk₀, Ext.comp_assoc_of_second_deg_zero, Ext.mk₀_comp_mk₀,
@@ -167,7 +166,6 @@ instance (M N : ModuleCat.{v'} S) : Module R (M ⟶ N) :=
   letI : Linear R (ModuleCat.{v'} S) := ModuleCat.Algebra.instLinear
   inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 instance (M N : ModuleCat.{v'} S) : IsScalarTower R S (M ⟶ N) where
   smul_assoc r s x := by
     rw [Algebra.smul_def, ← smul_smul]
@@ -187,7 +185,6 @@ lemma ModuleCat.extendScalars'.mapLinearMap_eq_mapAddHom (M N : ModuleCat.{v} R)
   extendScalars'.mapLinearMap.{v, v'} S M N =
   (ModuleCat.extendScalars'.{v, v'} R S).mapAddHom (X := M) (Y := N) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 omit [Small.{v} R] in
 lemma ModuleCat.isBaseChange_hom [Module.Flat R S]
     (M N : ModuleCat.{v} R) [Module.FinitePresentation R M] :
