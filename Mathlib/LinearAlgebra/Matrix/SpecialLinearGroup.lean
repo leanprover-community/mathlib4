@@ -241,8 +241,6 @@ def prodEquiv :
   __ := (map (RingHom.fst R S)).prod (map (RingHom.snd R S))
   invFun A := ⟨(Matrix.prodRingEquiv).symm ⟨A.1, A.2⟩, by
     rw [det_prodRingEquiv_symm, A.1.2, A.2.2, Prod.mk_one_one]⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 end Prod
 
