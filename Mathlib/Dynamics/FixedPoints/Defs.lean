@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Data.Set.Operations
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Fixed points of a self-map
 

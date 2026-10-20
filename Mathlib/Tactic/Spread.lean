@@ -8,9 +8,6 @@ module
 public meta import Lean.Elab.Binders
 public import Mathlib.Init
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Macro for spread syntax (`__ := instSomething`) in structures.
 -/

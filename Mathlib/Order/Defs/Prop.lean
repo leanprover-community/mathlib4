@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Tactic.ToDual
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Order definitions for propositions
 

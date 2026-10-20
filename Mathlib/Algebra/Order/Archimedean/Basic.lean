@@ -14,9 +14,6 @@ import Mathlib.Algebra.Order.Monoid.Units
 import Mathlib.Algebra.Order.Ring.Pow
 import Mathlib.Order.Int.LeastGreatest
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Archimedean groups and fields
 

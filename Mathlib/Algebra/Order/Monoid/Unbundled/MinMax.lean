@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Lemmas about `min` and `max` in an ordered monoid.
 -/

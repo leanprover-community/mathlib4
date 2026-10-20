@@ -11,9 +11,6 @@ public import Mathlib.Algebra.Ring.Subring.Defs
 
 import Mathlib.Algebra.Polynomial.Eval.Coeff
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Polynomials over subrings
 
