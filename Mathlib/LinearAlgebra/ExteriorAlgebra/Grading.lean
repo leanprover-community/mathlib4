@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 public import Mathlib.RingTheory.GradedAlgebra.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Results about the grading structure of the exterior algebra
 
