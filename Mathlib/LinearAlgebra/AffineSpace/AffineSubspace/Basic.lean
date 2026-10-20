@@ -536,7 +536,7 @@ theorem AffineMap.map_vectorSpan {s : Set P₁} :
 
 theorem AffineMap.vectorSpan_preimage_le {s : Set P₂} :
     vectorSpan k (f ⁻¹' s) ≤ (vectorSpan k s).comap f.linear := by
-  simp [← Submodule.map_le_iff_le_comap, AffineMap.map_vectorSpan, vectorSpan_mono]
+  simp [← Submodule.map_le_iff_le_comap, map_vectorSpan, vectorSpan_mono]
 
 namespace AffineSubspace
 
