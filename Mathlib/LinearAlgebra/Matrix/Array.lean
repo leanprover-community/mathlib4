@@ -12,7 +12,7 @@ public import Mathlib.LinearAlgebra.Matrix.Defs
 # Array representation of matrices
 
 This file relates `Fin`-indexed matrices to arrays of their entries in row-major ordering. This
- means that, for an `m` by `n` matrix, the entry at row `i` and column `j` can be found at
+means that, for an `m` by `n` matrix, the entry at row `i` and column `j` can be found at
 index `n * i + j` in the array.
 
 ## Main definitions
