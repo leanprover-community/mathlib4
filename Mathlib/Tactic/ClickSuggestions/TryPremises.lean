@@ -9,6 +9,9 @@ public import Mathlib.Tactic.ClickSuggestions.FindPremises
 
 meta import Mathlib.Tactic.ClickSuggestions.FindPremises
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # generating lemma suggestions, given the the shortlist of candidate lemmas
 -/
@@ -124,12 +127,12 @@ where
       discard <| foldTasksM tasks ({} : SectionState α) fun s ↦ fun
         | .ok (some res) => do
           let s ← s.insertResult res isDup
-          token.updateLazy (renderSection tactic kind s)
+          token.updateLazy (renderSection kind s)
           return s
         | .ok none => pure s
         | .error e => do
           let s := { s with errors := s.errors.push e }
-          token.updateLazy (renderSection tactic kind s)
+          token.updateLazy (renderSection kind s)
           return s
       ).catchExceptions fun ex ↦ do
         if let .internal ex := ex then

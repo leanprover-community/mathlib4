@@ -1027,6 +1027,26 @@ lemma add_rpow_le_two_rpow_mul_rpow_add_rpow {p : ℝ} (a b : ℝ≥0∞) (hp : 
   _ = 2 ^ p * max (a ^ p) (b ^ p) := by rw [max_rpow hp]
   _ ≤ 2 ^ p * (a ^ p + b ^ p) := by gcongr; apply max_le_add_of_nonneg <;> simp
 
+lemma iSup_rpow_of_pos {ι : Sort*} {r : ℝ} (hr : 0 < r) (f : ι → ℝ≥0∞) :
+    (⨆ i, f i) ^ r = ⨆ i, f i ^ r :=
+  (orderIsoRpow r hr).map_iSup f
+
+lemma iSup_rpow_of_nonneg {ι : Sort*} [Nonempty ι] {r : ℝ} (hr : 0 ≤ r) (f : ι → ℝ≥0∞) :
+    (⨆ i, f i) ^ r = ⨆ i, f i ^ r := by
+  rcases eq_or_lt_of_le hr with rfl | hr
+  · simp
+  · exact iSup_rpow_of_pos hr f
+
+lemma iInf_rpow_of_pos {ι : Sort*} {r : ℝ} (hr : 0 < r) (f : ι → ℝ≥0∞) :
+    (⨅ i, f i) ^ r = ⨅ i, f i ^ r :=
+  (orderIsoRpow r hr).map_iInf f
+
+lemma iInf_rpow_of_nonneg {ι : Sort*} [Nonempty ι] {r : ℝ} (hr : 0 ≤ r) (f : ι → ℝ≥0∞) :
+    (⨅ i, f i) ^ r = ⨅ i, f i ^ r := by
+  rcases eq_or_lt_of_le hr with rfl | hr
+  · simp
+  · exact iInf_rpow_of_pos hr f
+
 end ENNReal
 
 -- Porting note(https://github.com/leanprover-community/mathlib4/issues/6038): restore

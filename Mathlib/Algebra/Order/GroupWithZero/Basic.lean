@@ -14,6 +14,9 @@ public import Mathlib.Tactic.Monotonicity.Attr
 
 import Mathlib.Data.Set.Function
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas on the monotone multiplication typeclasses
 

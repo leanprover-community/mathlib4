@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Algebra.Module.Prod
 public import Mathlib.Data.Finsupp.SMul
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Finsupp`s and sum/product types
 

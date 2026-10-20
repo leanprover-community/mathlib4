@@ -5,9 +5,9 @@ Authors: Jovan Gerbscheid
 -/
 module
 
+public meta import ProofWidgets.Component.FilterDetails
 public meta import ProofWidgets.Util
 public import Mathlib.Tactic.ClickSuggestions.Util
-public import ProofWidgets.Component.FilterDetails
 
 /-!
 # Infrastructure for searching and displaying sets of lemmas
@@ -94,7 +94,7 @@ inductive SectionKind where
 
 -- TODO?: add a `⏳️` with hover info that shows which lemmas are still being computed?
 /-- Create the HTML corresponding to `s`. -/
-def renderSection (tactic : String) (kind : SectionKind) (s : SectionState α) : Html := Id.run do
+def renderSection (kind : SectionKind) (s : SectionState α) : Html := Id.run do
   let { results, errors } := s
   if results.isEmpty && errors.isEmpty then
     return .text ""
@@ -108,7 +108,7 @@ def renderSection (tactic : String) (kind : SectionKind) (s : SectionState α) :
     | .hyp => " (local hypotheses)"
     | .currFile => " (current file)"
     | .imported => ""
-  let header := jsx%{<span>{.text tactic} ({pattern}){.text suffix}</span>}
+  let header := jsx%{<span>Pattern {pattern}{.text suffix}</span>}
   if kind matches .imported then
     return jsx%{<FilterDetails summary={header} all={all} filtered={filtered}
       initiallyFiltered={true} />}
