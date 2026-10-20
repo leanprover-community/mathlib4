@@ -286,9 +286,15 @@ theorem isCauSeq_im (f : CauSeq ℂ (‖·‖)) : IsCauSeq abs fun n ↦ (f n).i
 noncomputable def cauSeqRe (f : CauSeq ℂ (‖·‖)) : CauSeq ℝ abs :=
   ⟨_, isCauSeq_re f⟩
 
+@[simp]
+theorem cauSeqRe_apply (f : CauSeq ℂ (‖·‖)) (x : ℕ) : cauSeqRe f x = (f x).re := rfl
+
 /-- The imaginary part of a complex Cauchy sequence, as a real Cauchy sequence. -/
 noncomputable def cauSeqIm (f : CauSeq ℂ (‖·‖)) : CauSeq ℝ abs :=
   ⟨_, isCauSeq_im f⟩
+
+@[simp]
+theorem cauSeqIm_apply (f : CauSeq ℂ (‖·‖)) (x : ℕ) : cauSeqIm f x = (f x).im := rfl
 
 theorem isCauSeq_norm {f : ℕ → ℂ} (hf : IsCauSeq (‖·‖) f) :
     IsCauSeq abs ((‖·‖) ∘ f) := fun ε ε0 ↦
@@ -325,10 +331,10 @@ theorem lim_eq_lim_im_add_lim_re (f : CauSeq ℂ (‖·‖)) :
           Complex.ext (by simp [limAux, cauSeqRe, ofReal]) (by simp [limAux, cauSeqIm, ofReal])
 
 theorem lim_re (f : CauSeq ℂ (‖·‖)) : lim (cauSeqRe f) = (lim f).re := by
-  rw [lim_eq_lim_im_add_lim_re]; simp [ofReal]
+  rw [lim_eq_lim_im_add_lim_re]; simp
 
 theorem lim_im (f : CauSeq ℂ (‖·‖)) : lim (cauSeqIm f) = (lim f).im := by
-  rw [lim_eq_lim_im_add_lim_re]; simp [ofReal]
+  rw [lim_eq_lim_im_add_lim_re]; simp
 
 theorem isCauSeq_conj (f : CauSeq ℂ (‖·‖)) :
     IsCauSeq (‖·‖) fun n ↦ conj (f n) := fun ε ε0 ↦
@@ -340,19 +346,24 @@ theorem isCauSeq_conj (f : CauSeq ℂ (‖·‖)) :
 noncomputable def cauSeqConj (f : CauSeq ℂ (‖·‖)) : CauSeq ℂ (‖·‖) :=
   ⟨_, isCauSeq_conj f⟩
 
-set_option backward.isDefEq.respectTransparency false in
+@[simp]
+theorem cauSeqConj_apply (f : CauSeq ℂ (‖·‖)) (x : ℕ) : cauSeqConj f x = conj (f x) := rfl
+
 theorem lim_conj (f : CauSeq ℂ (‖·‖)) : lim (cauSeqConj f) = conj (lim f) :=
-  Complex.ext (by simp [cauSeqConj, (lim_re _).symm, cauSeqRe])
-    (by simp [cauSeqConj, (lim_im _).symm, cauSeqIm, (lim_neg _).symm]; rfl)
+  Complex.ext (by simp [← Complex.lim_re]; congr 1)
+    (by simp [← Complex.lim_im, ← lim_neg]; congr 1)
 
 /-- The norm of a complex Cauchy sequence, as a real Cauchy sequence. -/
 noncomputable def cauSeqNorm (f : CauSeq ℂ (‖·‖)) : CauSeq ℝ abs :=
   ⟨_, isCauSeq_norm f.2⟩
 
+@[simp]
+theorem cauSeqNorm_apply (f : CauSeq ℂ (‖·‖)) (x : ℕ) : cauSeqNorm f x = ‖f x‖ := rfl
+
 theorem lim_norm (f : CauSeq ℂ (‖·‖)) : lim (cauSeqNorm f) = ‖lim f‖ :=
   lim_eq_of_equiv_const fun ε ε0 ↦
     let ⟨i, hi⟩ := equiv_lim f ε ε0
-    ⟨i, fun j hj => lt_of_le_of_lt (abs_norm_sub_norm_le _ _) (hi j hj)⟩
+    ⟨i, fun j hj => lt_of_le_of_lt (by simpa using abs_norm_sub_norm_le _ _) (hi j hj)⟩
 
 lemma ne_zero_of_re_pos {s : ℂ} (hs : 0 < s.re) : s ≠ 0 :=
   fun h ↦ (zero_re ▸ h ▸ hs).false

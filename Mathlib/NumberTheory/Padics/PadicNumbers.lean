@@ -411,7 +411,7 @@ private theorem norm_eq_of_equiv_aux {f g : PadicSeq p} (hf : ¬f ≈ 0) (hg : �
   rw [lift_index_left hf N (stationaryPoint hg), lift_index_right hg N (stationaryPoint hf)]
     at hN' h hlt
   have hpne : padicNorm p (f i) ≠ padicNorm p (-g i) := by rwa [← padicNorm.neg (g i)] at h
-  rw [CauSeq.sub_apply, sub_eq_add_neg, add_eq_max_of_ne hpne, padicNorm.neg, max_eq_left_of_lt hlt]
+  rw [sub_apply, sub_eq_add_neg, add_eq_max_of_ne hpne, padicNorm.neg, max_eq_left_of_lt hlt]
     at hN'
   have : padicNorm p (f i) < padicNorm p (f i) := by
     apply lt_of_lt_of_le hN'
@@ -695,7 +695,7 @@ theorem rat_dense' (q : ℚ_[p]) {ε : ℚ} (hε : 0 < ε) : ∃ r : ℚ, padicN
         change padicNorm p (q' _ - q' _) < ε
         rcases Decidable.em (stationaryPoint hne' ≤ N) with hle | hle
         · have := (stationaryPoint_spec hne' le_rfl hle).symm
-          simp only [const_apply, CauSeq.sub_apply, padicNorm.zero, sub_self] at this
+          simp only [const_apply, sub_apply, padicNorm.zero, sub_self] at this
           simpa only [this]
         · exact hN _ (lt_of_not_ge hle).le _ le_rfl⟩
 

@@ -165,6 +165,11 @@ instance : FunLike (CauSeq β abv) ℕ β where
   coe := Subtype.val
   coe_injective := Subtype.val_injective
 
+def mk (f : ℕ → β) (hf : IsCauSeq abv f) : CauSeq β abv := ⟨f, hf⟩
+
+@[simp]
+theorem mk_apply {f : ℕ → β} (hf : IsCauSeq abv f) (n : ℕ) : (CauSeq.mk f hf) n = f n := rfl
+
 @[ext]
 theorem ext {f g : CauSeq β abv} (h : ∀ i, f i = g i) : f = g := DFunLike.ext f g h
 
