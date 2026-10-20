@@ -194,11 +194,16 @@ def eraseUsedTactics (exceptions : Std.HashSet SyntaxNodeKind)
           return withMsg m!"`all_goals` can be removed" stx[0]
       | ``Lean.Parser.Tactic.anyGoals =>
         -- `any_goals` is unused if it acts on 1 goal,
-        -- or if the inner tactic succeeded on all goals.
+        -- or if the inner tactic succeeded on all goals, or on at most one goal.
         if i.goalsBefore matches [_] then
           return withMsg "`any_goals` can be removed" stx[0]
-        if i.goalsAfter.all (!i.goalsBefore.contains ·) then
+        let touched := i.goalsBefore.filter (!i.goalsAfter.contains ·)
+        if touched == i.goalsBefore then
           return withMsg "`any_goals` can be replaced with `all_goals`" stx[0]
+        else if touched.isEmpty then
+          return withMsg m!"`any_goals` failed on each goal" stx[0]
+        else if let [g] := touched then
+          return withMsg m!"`any_goals` can be replaced with `on_goal {i.goalsBefore.idxOf g} =>`"
       | `Mathlib.Tactic.«tacticSwap_var__,,» =>
         -- `swap_var` is used if it changes the username of a free variable.
         if getNames i.mctxBefore == getNames i.mctxAfter then

@@ -246,6 +246,10 @@ Note: This linter can be disabled with `set_option linter.unusedTactic false`
 warning: Unused tactic linter: `any_goals` can be replaced with `all_goals`.
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
+---
+warning: Unused tactic linter: `any_goals` can be replaced with `on_goal 0 =>`.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
 -/
 #guard_msgs in
 example : True ∧ (1 : Rat) + 1 = 2 := by
