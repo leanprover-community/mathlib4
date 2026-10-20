@@ -46,7 +46,7 @@ local trivializations, which is not yet needed for the curvature.
 * Prove the first and second Bianchi identities.
 -/
 
-@[expose] public noncomputable section
+public noncomputable section
 
 open Bundle Set NormedSpace FiberBundle VectorField
 open scoped Manifold ContDiff
@@ -58,7 +58,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 namespace CovariantDerivative
 
-variable [IsManifold I 2 M] [CompleteSpace E]
+variable [IsManifold I 2 M]
   (cov : CovariantDerivative I E (TangentSpace I : M → Type _))
   {X X' Y Y' Z : Π x : M, TangentSpace I x}
 
@@ -68,39 +68,45 @@ vector fields: `curvature cov X Y Z = ∇_X (∇_Y Z) - ∇_Y (∇_X Z) - ∇_[X
 This quantity is tensorial in all three arguments (for the first two, see
 `tensorialAt_curvature_fst` and `tensorialAt_curvature_snd`), so its value at `x` only depends on
 the values `X x`, `Y x`, `Z x`. -/
-def curvature (X Y Z : Π x : M, TangentSpace I x) : Π x : M, TangentSpace I x :=
+@[expose] def curvature (X Y Z : Π x : M, TangentSpace I x) : Π x : M, TangentSpace I x :=
   fun x ↦ cov (fun y ↦ cov Z y (Y y)) x (X x) - cov (fun y ↦ cov Z y (X y)) x (Y x)
     - cov Z x (mlieBracket I X Y x)
 
-omit [CompleteSpace E] in
 lemma curvature_apply :
     curvature cov X Y Z x = cov (fun y ↦ cov Z y (Y y)) x (X x)
       - cov (fun y ↦ cov Z y (X y)) x (Y x) - cov Z x (mlieBracket I X Y x) :=
   rfl
 
 variable (X Z) in
-omit [CompleteSpace E] in
 @[simp]
 lemma curvature_self : curvature cov X X Z = 0 := by
-  funext x
+  ext
   simp [curvature]
 
 variable (X Y Z) in
-omit [CompleteSpace E] in
 /-- The Riemann curvature is antisymmetric in its first two arguments. -/
 lemma curvature_swap : curvature cov X Y Z = - curvature cov Y X Z := by
-  funext x
+  ext
   rw [Pi.neg_apply, curvature_apply, curvature_apply, mlieBracket_swap_apply, map_neg]
   abel
+
+/-- If `∇` is a `C¹` covariant derivative, `σ` is a `C²` vector field and `X` is a vector field
+differentiable at `x`, then `∇_X σ` is differentiable at `x`. -/
+lemma mdifferentiableAt_apply [ContMDiffCovariantDerivative cov 1]
+    {σ : Π x : M, TangentSpace I x} (hσ : CMDiff 2 (T% σ)) (hX : MDiffAt (T% X) x) :
+    MDiffAt (T% (fun y ↦ cov σ y (X y))) x := by
+  have h := (ContMDiffCovariantDerivative.contMDiff (cov := cov) (k := 1)).contMDiff
+    (σ := σ) (by rw [show ((1 : ℕ∞ω) + 1) = 2 by norm_num]; exact hσ.contMDiffOn) x trivial
+  exact ((contMDiffWithinAt_univ.mp h).mdifferentiableAt one_ne_zero).clm_bundle_apply hX
+
+variable [CompleteSpace E]
 
 /-- The Riemann curvature is tensorial in its first argument: multiplying `X` by a function `f`
 multiplies `curvature cov X Y Z` at `x` by `f x`. -/
 lemma curvature_smul_left {f : M → 𝕜} (hf : MDiffAt f x) (hX : MDiffAt (T% X) x)
     (hXZ : MDiffAt (T% (fun y ↦ cov Z y (X y))) x) :
     curvature cov (f • X) Y Z x = f x • curvature cov X Y Z x := by
-  have h1 : (fun y ↦ cov Z y ((f • X) y)) = f • (fun y ↦ cov Z y (X y)) := by
-    ext y
-    simp
+  have h1 : (fun y ↦ cov Z y ((f • X) y)) = f • (fun y ↦ cov Z y (X y)) := by ext; simp
   rw [curvature_apply, curvature_apply, h1,
     cov.isCovariantDerivativeOnUniv.leibniz hXZ hf trivial,
     mlieBracket_smul_left hf hX]
@@ -114,9 +120,7 @@ lemma curvature_add_left (hX : MDiffAt (T% X) x) (hX' : MDiffAt (T% X') x)
     (hX'Z : MDiffAt (T% (fun y ↦ cov Z y (X' y))) x) :
     curvature cov (X + X') Y Z x = curvature cov X Y Z x + curvature cov X' Y Z x := by
   have h1 : (fun y ↦ cov Z y ((X + X') y)) =
-      (fun y ↦ cov Z y (X y)) + (fun y ↦ cov Z y (X' y)) := by
-    ext y
-    simp
+      (fun y ↦ cov Z y (X y)) + (fun y ↦ cov Z y (X' y)) := by ext; simp
   rw [curvature_apply, curvature_apply, curvature_apply, h1,
     cov.isCovariantDerivativeOnUniv.add hXZ hX'Z trivial,
     mlieBracket_add_left hX hX']
@@ -128,31 +132,18 @@ multiplies `curvature cov X Y Z` at `x` by `f x`. -/
 lemma curvature_smul_snd {f : M → 𝕜} (hf : MDiffAt f x) (hY : MDiffAt (T% Y) x)
     (hYZ : MDiffAt (T% (fun y ↦ cov Z y (Y y))) x) :
     curvature cov X (f • Y) Z x = f x • curvature cov X Y Z x := by
-  rw [curvature_swap, Pi.neg_apply, curvature_smul_left cov hf hY hYZ,
-    curvature_swap cov Y X Z, Pi.neg_apply, smul_neg, neg_neg]
+  simp [curvature_swap cov X, curvature_smul_left cov hf hY hYZ]
 
 /-- The Riemann curvature is additive in its second argument. -/
 lemma curvature_add_snd (hY : MDiffAt (T% Y) x) (hY' : MDiffAt (T% Y') x)
     (hYZ : MDiffAt (T% (fun y ↦ cov Z y (Y y))) x)
     (hY'Z : MDiffAt (T% (fun y ↦ cov Z y (Y' y))) x) :
     curvature cov X (Y + Y') Z x = curvature cov X Y Z x + curvature cov X Y' Z x := by
-  rw [curvature_swap, Pi.neg_apply, curvature_add_left cov hY hY' hYZ hY'Z,
-    curvature_swap cov Y X Z, curvature_swap cov Y' X Z]
-  simp only [Pi.neg_apply]
-  abel
+  simp [curvature_swap cov X, curvature_add_left cov hY hY' hYZ hY'Z, add_comm]
 
 section tensorial
 
 variable [ContMDiffCovariantDerivative cov 1]
-
-omit [CompleteSpace E] in
-/-- If `∇` is a `C¹` covariant derivative, `σ` is a `C²` vector field and `X` is a vector field
-differentiable at `x`, then `∇_X σ` is differentiable at `x`. -/
-lemma mdifferentiableAt_apply {σ : Π x : M, TangentSpace I x} (hσ : CMDiff 2 (T% σ))
-    (hX : MDiffAt (T% X) x) : MDiffAt (T% (fun y ↦ cov σ y (X y))) x := by
-  have h := (ContMDiffCovariantDerivative.contMDiff (cov := cov) (k := 1)).contMDiff
-    (σ := σ) (by rw [show ((1 : ℕ∞ω) + 1) = 2 by norm_num]; exact hσ.contMDiffOn) x trivial
-  exact ((contMDiffWithinAt_univ.mp h).mdifferentiableAt one_ne_zero).clm_bundle_apply hX
 
 /-- For a `C¹` covariant derivative and a `C²` vector field `Z`, the curvature `R(X, Y) Z` at `x`
 is tensorial in `X`. -/
