@@ -53,7 +53,7 @@ lemma Set.Nonempty.ordConnected_iff_of_bdd' [ConditionallyCompleteLinearOrder α
 for which this result holds). However at the time of writing it is not clear what weaker
 assumption(s) should replace it. -/
 lemma Set.ordConnected_iff_disjoint_Ioo_empty [LinearOrder α] [LocallyFiniteOrder α] :
-    I.OrdConnected ↔ ∀ᵉ (x ∈ I) (y ∈ I), Disjoint (Ioo x y) I → Ioo x y = ∅ := by
+    I.OrdConnected ↔ ∀ x ∈ I, ∀ y ∈ I, Disjoint (Ioo x y) I → Ioo x y = ∅ := by
   simp_rw [← Set.subset_compl_iff_disjoint_right]
   refine ⟨fun h' x hx y hy hxy ↦ ?_, fun h' ↦ ordConnected_of_Ioo fun x hx y hy hxy z hz ↦ ?_⟩
   · suffices ∀ z, x < z → y ≤ z by ext z; simpa using this z
@@ -75,10 +75,10 @@ lemma Set.ordConnected_iff_disjoint_Ioo_empty [LinearOrder α] [LocallyFiniteOrd
 
 lemma Set.Nonempty.eq_Icc_iff_nat {I : Set ℕ}
     (h₀ : I.Nonempty) (h₂ : BddAbove I) :
-    I = Icc (sInf I) (sSup I) ↔ ∀ᵉ (x ∈ I) (y ∈ I), Disjoint (Ioo x y) I → y ≤ x + 1 := by
+    I = Icc (sInf I) (sSup I) ↔ ∀ x ∈ I, ∀ y ∈ I, Disjoint (Ioo x y) I → y ≤ x + 1 := by
   simp [← h₀.ordConnected_iff_of_bdd (OrderBot.bddBelow I) h₂, ordConnected_iff_disjoint_Ioo_empty]
 
 lemma Set.Nonempty.eq_Icc_iff_int {I : Set ℤ}
     (h₀ : I.Nonempty) (h₁ : BddBelow I) (h₂ : BddAbove I) :
-    I = Icc (sInf I) (sSup I) ↔ ∀ᵉ (x ∈ I) (y ∈ I), Disjoint (Ioo x y) I → y ≤ x + 1 := by
+    I = Icc (sInf I) (sSup I) ↔ ∀ x ∈ I, ∀ y ∈ I, Disjoint (Ioo x y) I → y ≤ x + 1 := by
   simp [← h₀.ordConnected_iff_of_bdd h₁ h₂, ordConnected_iff_disjoint_Ioo_empty]
