@@ -386,7 +386,12 @@ def checkBlocklist (env : Environment) (forbidden : NamePrefixRel) (mainModule :
       on a module starting with {n₂} but a module with that prefix was not found in the import graph."
   | none => none
 
-@[inherit_doc Mathlib.Linter.linter.directoryDependency]
+/--
+Runs the `directoryDependency` linter on the current module, assuming that it is called `mainModule`. Detects imports between directories that are supposed to be independent. If this is the case, it emits a warning.
+
+Note: we look in `srcDir` for `scripts/forbiddenDirs.json` and, if in mathlib, for `Mathlib.Init`.
+`srcDir` is thus typically expected to be the package directory (e.g. `{path}/mathlib4`).
+-/
 public def directoryDependencyCheck (srcDir : System.FilePath) (mainModule : Name) :
     CommandElabM (Array MessageData) := do
   unless Linter.getLinterValue linter.directoryDependency (← Linter.getLinterOptions) do
