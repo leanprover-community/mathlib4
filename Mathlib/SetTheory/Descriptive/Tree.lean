@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.CompleteSublattice.SetLike
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Trees in the sense of descriptive set theory
 

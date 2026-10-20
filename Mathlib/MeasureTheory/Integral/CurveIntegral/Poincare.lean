@@ -15,6 +15,9 @@ import Mathlib.Analysis.Calculus.FDeriv.Symmetric
 import Mathlib.Analysis.Calculus.TangentCone.Prod
 import Mathlib.MeasureTheory.Integral.DivergenceTheorem
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Poincaré lemma for 1-forms
 
