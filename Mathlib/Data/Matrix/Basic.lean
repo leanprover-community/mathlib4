@@ -922,7 +922,7 @@ This is available in bundled forms as:
   map_mul' _ _ := by ext; simp [Matrix.mul_apply]
 
 @[simp] theorem toEquiv_piRingEquiv [∀ i, AddCommMonoid (β i)] [∀ i, Mul (β i)] [Fintype n] :
-  (piRingEquiv (n := n) (ι := ι) (β := β) :
+    (piRingEquiv (n := n) (ι := ι) (β := β) :
     Matrix n n (Π i, β i) ≃+ Π i, Matrix n n (β i)) = piAddEquiv := rfl
 
 /-- `piEquiv` as an `AlgEquiv`. -/
