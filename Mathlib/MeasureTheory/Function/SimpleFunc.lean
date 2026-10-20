@@ -1036,8 +1036,6 @@ theorem lintegral_finsetSum {ι} (f : α →ₛ ℝ≥0∞) (μ : ι → Measure
     f.lintegral (∑ i ∈ s, μ i) = ∑ i ∈ s, f.lintegral (μ i) :=
   map_sum (lintegralₗ f) ..
 
-@[deprecated (since := "2026-04-08")] alias lintegral_finset_sum := lintegral_finsetSum
-
 theorem lintegral_sum {m : MeasurableSpace α} {ι} (f : α →ₛ ℝ≥0∞) (μ : ι → Measure α) :
     f.lintegral (Measure.sum μ) = ∑' i, f.lintegral (μ i) := by
   simp only [lintegral, Measure.sum_apply, f.measurableSet_preimage, ← Finset.tsum_subtype, ←
@@ -1331,10 +1329,10 @@ protected theorem induction' {α γ} [MeasurableSpace α] [Nonempty γ] {P : Sim
         exact preimage_const_of_mem (mem_singleton _)
       · rwa [Finset.mem_coe]
     convert pcw mx.compl Pg (const x)
-    · ext1 y
-      by_cases hy : y ∈ f ⁻¹' {x}
-      · simpa [g, hy]
-      · simp [g, hy]
+    ext1 y
+    by_cases hy : y ∈ f ⁻¹' {x}
+    · simpa [g, hy]
+    · simp [g, hy]
 
 /-- In a topological vector space, the addition of a measurable function and a simple function is
 measurable. -/

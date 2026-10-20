@@ -935,23 +935,30 @@ variable [MeasurableSpace β] {f g : β → Set α}
 /-- This instance is useful when talking about Bernoulli sequences of random variables or binomial
 random graphs. -/
 instance Set.instMeasurableSpace : MeasurableSpace (Set α) :=
-  inferInstanceAs <| MeasurableSpace (α → Prop)
-
-instance Set.instMeasurableSingletonClass [Countable α] : MeasurableSingletonClass (Set α) :=
-  inferInstanceAs <| MeasurableSingletonClass (α → Prop)
+  .comap (fun s ↦ (· ∈ s)) inferInstance
 
 @[simp, fun_prop] lemma measurable_setOfPred :
-    Measurable fun p : α → Prop ↦ {a | p a} := measurable_id
+    Measurable fun p : α → Prop ↦ {a | p a} := measurable_comap_iff.2 measurable_id
 
 @[deprecated (since := "2026-07-09")]
 alias measurable_setOf := measurable_setOfPred
 
-lemma measurable_set_iff : Measurable g ↔ ∀ a, Measurable fun x ↦ a ∈ g x := measurable_pi_iff
+lemma measurable_set_iff : Measurable f ↔ ∀ a, Measurable fun x ↦ a ∈ f x :=
+  measurable_comap_iff.trans measurable_pi_iff
 
-alias ⟨Measurable.mem, Measurable.of_mem⟩ := measurable_set_iff
+lemma Measurable.mem (hf : Measurable f) {a : α} : Measurable fun x ↦ a ∈ f x :=
+  measurable_set_iff.1 hf _
+
+alias ⟨_, Measurable.of_mem⟩ := measurable_set_iff
 
 @[fun_prop]
-lemma measurable_set_mem (a : α) : Measurable fun s : Set α ↦ a ∈ s := measurable_pi_apply _
+lemma measurable_set_mem (a : α) : Measurable fun s : Set α ↦ a ∈ s :=
+  (measurable_pi_apply a).comp (comap_measurable _)
+
+instance Set.instMeasurableSingletonClass [Countable α] : MeasurableSingletonClass (Set α) where
+  measurableSet_singleton s := by
+    have : MeasurableSet {t : Set α | ∀ a, a ∈ t ↔ a ∈ s} := by measurability
+    simpa [← Set.ext_iff] using this
 
 lemma measurable_set_notMem (a : α) : Measurable fun s : Set α ↦ a ∉ s :=
   (Measurable.of_discrete (f := Not)).comp <| measurable_set_mem a
@@ -965,20 +972,20 @@ lemma measurableSet_notMem (a : α) : MeasurableSet {s : Set α | a ∉ s} :=
 @[fun_prop]
 lemma Measurable.inter (hf : Measurable f) (hg : Measurable g) :
     Measurable fun a ↦ f a ∩ g a :=
-  .of_eval fun _ ↦ hf.eval.and hg.eval
+  .of_mem fun _ ↦ hf.mem.and hg.mem
 
 lemma measurable_inter : Measurable (fun p : (Set α) × (Set α) ↦ p.1 ∩ p.2) := by fun_prop
 
 @[fun_prop]
 lemma Measurable.union (hf : Measurable f) (hg : Measurable g) :
     Measurable fun a ↦ f a ∪ g a :=
-  .of_eval fun _ ↦ hf.eval.or hg.eval
+  .of_mem fun _ ↦ hf.mem.or hg.mem
 
 lemma measurable_union : Measurable (fun p : (Set α) × (Set α) ↦ p.1 ∪ p.2) := by fun_prop
 
 @[fun_prop]
 lemma Measurable.compl (hf : Measurable f) : Measurable fun a ↦ (f a)ᶜ :=
-  .of_eval fun _ ↦ hf.eval.not
+  .of_mem fun _ ↦ hf.mem.not
 
 lemma measurable_compl : Measurable ((·ᶜ) : Set α → Set α) := by fun_prop
 
