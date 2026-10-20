@@ -33,8 +33,8 @@ These tests cover the pure logic of the cache system, including:
 
 Anything that touches the network is left to CI, which exercises the
 `cache get`/`put` paths end-to-end on real containers. The unit tests spawn
-local processes only: `curl --version` and leantar on a nonexistent archive.
-Neither makes a network request.
+local processes only: `curl --version`, one curl `file://` copy, and one
+leantar run on a nonexistent archive; none makes a network request.
 
 ## Invariants these tests defend
 
