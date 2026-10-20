@@ -152,7 +152,7 @@ theorem le_rank_iff_exists_linearMap {n : ℕ} :
   refine le_rank_iff.trans ⟨fun ⟨v, v_ind⟩ ↦ ?_, fun ⟨f, f_inj⟩ ↦
     ⟨_, (Module.Basis.ofEquivFun <| .refl ..).linearIndependent.map_injOn f f_inj.injOn⟩⟩
   have := Injective.comp v_ind (Finsupp.linearEquivFunOnFinite R ..).symm.injective
-  exact ⟨Finsupp.linearCombination _ _ ∘ₗ _, this⟩
+  exact ⟨Finsupp.linearCombination R v ∘ₗ _, this⟩
 
 end Module
 
