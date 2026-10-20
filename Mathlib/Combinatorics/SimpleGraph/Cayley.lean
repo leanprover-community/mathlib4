@@ -242,13 +242,19 @@ theorem reachable_mulCayley_iff (u v : M) :
     have hreach := reachable_mulCayley_mul_of_mem_submonoidClosure h u
     simpa using hreach
 
+/-- The Cayley graph is preconnected if and only if `s` generates the group. -/
+@[to_additive /-- The Cayley graph is preconnected if and only if `s` generates the additive
+group. -/]
+theorem preconnected_mulCayley_iff : (mulCayley s).Preconnected ↔ Subgroup.closure s = ⊤ := by
+  rw [Preconnected, Subgroup.eq_top_iff']
+  simp_rw [reachable_mulCayley_iff]
+  exact ⟨fun h g ↦ by simpa using h 1 g, fun h u v ↦ h _⟩
+
 /-- The Cayley graph is connected if and only if `s` generates the group. -/
 @[to_additive /-- The Cayley graph is connected if and only if `s` generates the additive
 group. -/]
 theorem connected_mulCayley_iff : (mulCayley s).Connected ↔ Subgroup.closure s = ⊤ := by
-  rw [connected_iff_exists_forall_reachable, Subgroup.eq_top_iff']
-  simp_rw [reachable_mulCayley_iff]
-  exact ⟨fun ⟨v, hv⟩ g ↦ by simpa using hv (v * g), fun h ↦ ⟨1, fun w ↦ h _⟩⟩
+  rw [connected_iff, and_iff_left ⟨1⟩, preconnected_mulCayley_iff]
 
 end Group
 
