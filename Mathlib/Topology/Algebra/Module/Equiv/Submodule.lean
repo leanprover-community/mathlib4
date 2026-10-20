@@ -109,6 +109,7 @@ theorem ofSubmodule'_symm_apply (f : M ≃SL[σ₁₂] M₂) (U : Submodule R₂
 
 end ContinuousLinearEquiv
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The top submodule is continuous linearly equivalent to the module.
 This is the continuous version of `Submodule.topEquiv`. -/
 abbrev _root_.Submodule.topContEquiv : (⊤ : Submodule R M) ≃L[R] M where

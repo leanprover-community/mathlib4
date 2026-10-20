@@ -341,6 +341,7 @@ lemma frontier_range_modelWithCornersEuclideanQuadrant (n : ℕ) :
       apply range_euclideanQuadrant
     _ = { y | (∀ i : Fin n, 0 ≤ y i) ∧ ∃ i : Fin n, 0 = y i } := frontier_quadrant 2 _
 
+set_option fun_prop.reducibleApply false in
 /-- The left chart for the topological space `[x, y]`, defined on `[x,y)` and sending `x` to `0` in
 `EuclideanHalfSpace 1`.
 -/
@@ -375,7 +376,7 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
       this.preimage (@PiLp.continuous_apply 2 (Fin 1) (fun _ => ℝ) _ 0)
     exact this.preimage continuous_subtype_val
   continuousOn_toFun := by fun_prop
-  continuousOn_invFun := by fun_prop
+  continuousOn_invFun := by fun_prop [EuclideanHalfSpace]
 
 variable {x y : ℝ} [hxy : Fact (x < y)]
 
@@ -419,6 +420,7 @@ lemma IccLeftChart_extend_bot_mem_frontier :
   rw [IccLeftChart_extend_bot, frontier_range_modelWithCornersEuclideanHalfSpace,
     mem_ofPred, PiLp.zero_apply]
 
+set_option fun_prop.reducibleApply false in
 /-- The right chart for the topological space `[x, y]`, defined on `(x,y]` and sending `y` to `0` in
 `EuclideanHalfSpace 1`.
 -/
