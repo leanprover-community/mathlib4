@@ -5,10 +5,13 @@ Authors: Monica Omar
 -/
 module
 
-public import Mathlib.Algebra.Ring.Action.ConjAct
 public import Mathlib.Algebra.Module.Projective
+public import Mathlib.Algebra.Ring.Action.ConjAct
 
 import Mathlib.LinearAlgebra.Dual.Lemmas
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Algebra isomorphisms between endomorphisms of projective modules are inner

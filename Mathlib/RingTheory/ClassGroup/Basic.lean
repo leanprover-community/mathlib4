@@ -48,11 +48,11 @@ variable (R K)
 irreducible_def toPrincipalIdeal : Kˣ →* (FractionalIdeal R⁰ K)ˣ :=
   { toFun := fun x =>
       ⟨spanSingleton _ x, spanSingleton _ x⁻¹, by
-        simp only [spanSingleton_one, Units.mul_inv', spanSingleton_mul_spanSingleton], by
-        simp only [spanSingleton_one, Units.inv_mul', spanSingleton_mul_spanSingleton]⟩
+        simp only [map_one, Units.mul_inv', ← map_mul], by
+        simp only [map_one, Units.inv_mul', ← map_mul]⟩
     map_mul' := fun x y =>
-      ext (by simp only [Units.val_mul, spanSingleton_mul_spanSingleton])
-    map_one' := ext (by simp only [spanSingleton_one, Units.val_one]) }
+      ext (by simp only [Units.val_mul, map_mul])
+    map_one' := ext (by simp only [map_one, Units.val_one]) }
 
 variable {R K}
 
@@ -472,13 +472,13 @@ theorem FractionalIdeal.map_ringEquivOfRingEquiv_toPrincipalIdeal {S L : Type*} 
     rw [FractionalIdeal.ringEquivOfRingEquiv_spanSingleton]
   · use Units.mapEquiv (FractionalIdeal.ringEquivOfRingEquiv _ _ f).symm.toMulEquiv I
     refine ⟨?_, by simp [← Units.val_inj]⟩
-    · use Units.map (IsFractionRing.ringEquivOfRingEquiv f (K := K)
-        (L := L)).symm.toRingHom u
-      simp only [IsFractionRing.ringEquivOfRingEquiv_symm, RingEquiv.toRingHom_eq_coe,
-        Units.coe_map, MonoidHom.coe_ofClass, RingHom.coe_coe, RingEquiv.toMulEquiv_eq_coe,
-        RingEquiv.coe_toMulEquiv_symm, Units.coe_mapEquiv]
-      rw [← FractionalIdeal.ringEquivOfRingEquiv_spanSingleton,
-        ← FractionalIdeal.ringEquivOfRingEquiv_symm_eq, hu]
-      rfl
+    use Units.map (IsFractionRing.ringEquivOfRingEquiv f (K := K)
+      (L := L)).symm.toRingHom u
+    simp only [IsFractionRing.ringEquivOfRingEquiv_symm, RingEquiv.toRingHom_eq_coe,
+      Units.coe_map, MonoidHom.coe_ofClass, RingHom.coe_coe, RingEquiv.toMulEquiv_eq_coe,
+      RingEquiv.coe_toMulEquiv_symm, Units.coe_mapEquiv]
+    rw [← FractionalIdeal.ringEquivOfRingEquiv_spanSingleton,
+      ← FractionalIdeal.ringEquivOfRingEquiv_symm_eq, hu]
+    rfl
 
 end MulEquiv
