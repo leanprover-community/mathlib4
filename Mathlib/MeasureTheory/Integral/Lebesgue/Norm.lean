@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Group.Real
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Interactions between the Lebesgue integral and norms
 -/

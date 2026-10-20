@@ -13,6 +13,9 @@ import Mathlib.Analysis.MeanInequalities
 import Mathlib.Basic.ENNReal.BigOperators
 import Mathlib.Tactic.Positivity.Finset
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Direct sum of metric spaces
 
