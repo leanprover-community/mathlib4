@@ -6,9 +6,10 @@ Authors: Patrick Stevens, Thomas Browning
 module
 
 public import Mathlib.Data.Nat.Choose.Bounds
-public import Mathlib.Data.Nat.GCD.Basic
-public import Mathlib.Tactic.Ring
 public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.Ring
+
+import Mathlib.Data.Nat.GCD.Basic
 
 /-!
 # Central binomial coefficients
@@ -33,6 +34,7 @@ namespace Nat
 
 /-- The central binomial coefficient, `Nat.choose (2 * n) n`.
 -/
+@[oeis A000984]
 def centralBinom (n : ℕ) :=
   (2 * n).choose n
 
@@ -88,13 +90,13 @@ theorem succ_mul_centralBinom_succ (n : ℕ) :
 
 /-- An exponential lower bound on the central binomial coefficient.
 This bound is of interest because it appears in
-[Tochiori's refinement of Erdős's proof of Bertrand's postulate](tochiori_bertrand).
+[Tochiori's refinement of Erdős's proof of Bertrand's postulate][tochiori_bertrand].
 -/
 theorem four_pow_lt_mul_centralBinom (n : ℕ) (n_big : 4 ≤ n) : 4 ^ n < n * centralBinom n := by
   induction n using Nat.strong_induction_on with | _ n IH
   rcases lt_trichotomy n 4 with (hn | rfl | hn)
   · clear IH; exact False.elim ((not_lt.2 n_big) hn)
-  · norm_num [centralBinom, choose]
+  · simp [centralBinom, choose]
   obtain ⟨n, rfl⟩ : ∃ m, n = m + 1 := Nat.exists_eq_succ_of_ne_zero (Nat.ne_zero_of_lt hn)
   calc
     4 ^ (n + 1)
@@ -128,7 +130,7 @@ theorem four_pow_le_two_mul_add_one_mul_centralBinom (n : ℕ) :
     gcongr
     exact le_add_right (2 * n) 1
 
-@[deprecated four_pow_le_two_mul_add_one_mul_centralBinom (since := "2026-09-13")]
+@[deprecated four_pow_le_two_mul_add_one_mul_centralBinom +typeChanged (since := "2026-09-13")]
 theorem four_pow_le_two_mul_add_one_mul_central_binom (n : ℕ) :
     4 ^ n ≤ (2 * n + 1) * (2 * n).choose n :=
   four_pow_le_two_mul_add_one_mul_centralBinom n

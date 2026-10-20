@@ -5,11 +5,15 @@ Authors: Eric Rodriguez
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Order.Ring.Cast
 public import Mathlib.Basic.Sign.Defs
 public import Mathlib.Data.Fintype.BigOperators
+
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Sign function

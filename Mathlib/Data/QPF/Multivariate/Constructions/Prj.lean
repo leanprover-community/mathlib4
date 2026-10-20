@@ -5,8 +5,10 @@ Authors: Simon Hudon
 -/
 module
 
-public import Mathlib.Control.Functor.Multivariate
 public import Mathlib.Data.QPF.Multivariate.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Projection functors as QPFs

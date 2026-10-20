@@ -5,8 +5,11 @@ Authors: Miyahara Kō
 -/
 module
 
-public import Mathlib.Topology.Separation.Basic
 public import Mathlib.Topology.AlexandrovDiscrete
+public import Mathlib.Topology.Separation.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # T1 Alexandrov-discrete topology is discrete

@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.MorphismProperty.Comma
 public import Mathlib.RingTheory.FinitePresentation
 public import Mathlib.RingTheory.RingHomProperties
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of finitely generated `R`-algebras
 
@@ -91,7 +94,7 @@ instance : EssentiallySmall.{u} (FGAlgCat.{v} R) := by
     refine small_of_injective (f := f) fun u v h ↦ ?_
     ext a
     obtain ⟨a, rfl⟩ := eA.symm.surjective a
-    exact eB.injective (congr_fun h a)
+    exact eB.injective congr($h a)
 
 section Under
 

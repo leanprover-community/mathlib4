@@ -80,7 +80,7 @@ variable {p} in
 theorem nil_map_iff : (p.map f).Nil ↔ p.Nil := by
   cases p <;> simp
 
-@[deprecated nil_map_iff (since := "2026-05-12")]
+@[deprecated nil_map_iff +typeChanged (since := "2026-05-12")]
 theorem map_eq_nil_iff {p : G.Walk u u} : p.map f = nil ↔ p = nil := by cases p <;> simp
 
 @[simp]
@@ -243,9 +243,8 @@ protected def induce {u v : V} :
   | .nil, hw => rfl
   | .cons (v := u') huu' w, hw => by simp [map_induce]
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma map_induce_induceHomOfLE (hs : s ⊆ s') {u v : V} : ∀ (w : G.Walk u v) (hw),
-    (w.induce s hw).map (G.induceHomOfLE hs).toHom = w.induce s' (subset_trans hw hs)
+    (w.induce s hw).map (G.induceHomOfLE hs).toHom = w.induce s' (fun x hx ↦ hs (hw x hx))
   | .nil, hw => rfl
   | .cons (v := u') huu' w, hw => by simp [map_induce_induceHomOfLE]
 

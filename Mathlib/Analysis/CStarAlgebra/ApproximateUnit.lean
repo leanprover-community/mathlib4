@@ -6,10 +6,10 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
-public import Mathlib.Analysis.CStarAlgebra.SpecialFunctions.PosPart
-public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
 public import Mathlib.Topology.ApproximateUnit
+
 import Mathlib.Algebra.Order.Interval.Set.Group
+import Mathlib.Analysis.CStarAlgebra.SpecialFunctions.PosPart
 
 /-! # Nonnegative contractions in a C⋆-algebra form an approximate unit
 

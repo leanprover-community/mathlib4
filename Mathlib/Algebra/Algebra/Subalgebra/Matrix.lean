@@ -5,9 +5,11 @@ Authors: Bryan Wang
 -/
 module
 
-public import Mathlib.Data.Matrix.Basic
-public import Mathlib.Data.Matrix.Diagonal
 public import Mathlib.Algebra.Algebra.Subalgebra.Basic
+public import Mathlib.Data.Matrix.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Matrix subalgebras

@@ -7,11 +7,15 @@ module
 
 public import Mathlib.Analysis.Normed.Field.Basic
 public import Mathlib.NumberTheory.DirichletCharacter.Basic
-public import Mathlib.Data.Nat.Totient
-public import Mathlib.Data.Sym.Sym2
-public import Mathlib.Tactic.ContinuousFunctionalCalculus
-public import Mathlib.Tactic.NormNum.GCD
-public import Mathlib.Tactic.Positivity
+
+import Mathlib.Data.Nat.Totient
+import Mathlib.Data.Sym.Sym2
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Bounds for values of Dirichlet characters
