@@ -5,8 +5,9 @@ Authors: Kevin Kappelmann
 -/
 module
 
-import Mathlib.Algebra.ContinuedFractions.ContinuantsRecurrence
 public import Mathlib.Algebra.ContinuedFractions.TerminatedStable
+
+import Mathlib.Algebra.ContinuedFractions.ContinuantsRecurrence
 import Mathlib.Algebra.Field.Basic
 
 /-!

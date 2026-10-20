@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Algebra.Homology.HomologySequenceLemmas
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomologicalFunctor
 public import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
-public import Mathlib.Algebra.Homology.HomologySequenceLemmas
 public import Mathlib.Algebra.Homology.Refinements
 
 /-!

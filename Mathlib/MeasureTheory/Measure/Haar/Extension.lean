@@ -5,9 +5,10 @@ Authors: Thomas Browning
 -/
 module
 
-import Mathlib.MeasureTheory.Group.Integral
 public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
 public import Mathlib.Topology.Algebra.Group.Extension
+
+import Mathlib.MeasureTheory.Group.Integral
 
 /-!
 # Haar measures on group extensions

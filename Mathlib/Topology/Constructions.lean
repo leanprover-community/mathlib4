@@ -11,6 +11,7 @@ public import Mathlib.Data.Finset.Piecewise
 public import Mathlib.Order.Filter.Cofinite
 public import Mathlib.Order.Filter.Curry
 public import Mathlib.Topology.Constructions.SumProd
+
 import Mathlib.Topology.WithTopology
 
 /-!
@@ -295,8 +296,6 @@ namespace CofiniteTopology
 /-- The identity equivalence between `X` and `CofiniteTopology X`. -/
 def of : X ≃ CofiniteTopology X := (WithTopology.equiv _ _).symm
 
-instance [Inhabited X] : Inhabited (CofiniteTopology X) where default := of default
-
 theorem isOpen_iff {s : Set (CofiniteTopology X)} : IsOpen s ↔ s.Nonempty → sᶜ.Finite := by
   simp_rw [isOpen_coinduced, TopologicalSpace.cofinite, isOpen_mk, ← Set.preimage_compl,
     WithTopology.preimage_toTopology, image_nonempty,
@@ -499,7 +498,6 @@ theorem denseRange_inclusion_iff {s t : Set X} (hst : s ⊆ t) :
 theorem map_nhds_subtype_val {s : Set X} (x : s) : map ((↑) : s → X) (𝓝 x) = 𝓝[s] ↑x := by
   rw [IsInducing.subtypeVal.map_nhds_eq, Subtype.range_val]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem map_nhds_subtype_coe_eq_nhds {x : X} (hx : p x) (h : ∀ᶠ x in 𝓝 x, p x) :
     map ((↑) : Subtype p → X) (𝓝 ⟨x, hx⟩) = 𝓝 x :=
   map_nhds_induced_of_mem <| by rw [Subtype.range_val]; exact h
