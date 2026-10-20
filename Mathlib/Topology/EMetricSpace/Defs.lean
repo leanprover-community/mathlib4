@@ -70,6 +70,13 @@ def eball (x : α) (ε : ℝ≥0∞) : Set α :=
 theorem eball_subset_eball (h : ε₁ ≤ ε₂) : eball x ε₁ ⊆ eball x ε₂ := fun _y (yx : _ < ε₁) =>
   lt_of_lt_of_le yx h
 
+/-- The points at finite distance from `a`. -/
+def boundedComponent (a : α) : Set α := {x | edist a x ≠ ∞}
+
+@[simp]
+theorem mem_boundedComponent_iff {a x : α} :
+    x ∈ boundedComponent a ↔ edist a x ≠ ∞ := Iff.rfl
+
 end Metric
 
 /-- Creating a uniform space from an extended distance. -/
@@ -595,6 +602,12 @@ def edistLtTopSetoid : Setoid α where
       symm h := by rwa [edist_comm]
       trans hxy hyz := lt_of_le_of_lt (edist_triangle _ _ _) (ENNReal.add_lt_top.2 ⟨hxy, hyz⟩) }
 
+theorem boundedComponent_eq {a b : α} (h : b ∈ boundedComponent a) :
+    boundedComponent a = boundedComponent b := by
+  ext x
+  simp only [mem_boundedComponent_iff, ← lt_top_iff_ne_top] at h ⊢
+  exact ⟨edistLtTopSetoid.trans (edistLtTopSetoid.symm h), edistLtTopSetoid.trans h⟩
+
 @[simp]
 theorem eball_zero {α : Type*} [EDist α] {x : α} : eball x 0 = ∅ := by
   ext
@@ -609,20 +622,6 @@ theorem nhdsWithin_basis_closedEBall {α : Type*} [PseudoEMetricSpace α] {s : S
   nhdsWithin_hasBasis nhds_basis_closedEBall s
 
 end Metric
-
-/-- The points at finite distance from `a`. -/
-def boundedComponent {X : Type*} [EDist X] (a : X) : Set X := {x | edist a x ≠ ∞}
-
-@[simp]
-theorem mem_boundedComponent_iff {X : Type*} [EDist X] {a x : X} :
-    x ∈ boundedComponent a ↔ edist a x ≠ ∞ := Iff.rfl
-
-theorem boundedComponent_eq {a b : α} (h : b ∈ boundedComponent a) :
-    boundedComponent a = boundedComponent b := by
-  ext x
-  simp only [mem_boundedComponent_iff, ← lt_top_iff_ne_top] at h ⊢
-  exact ⟨fun ha ↦ Metric.edistLtTopSetoid.trans (Metric.edistLtTopSetoid.symm h) ha,
-    fun hb ↦ Metric.edistLtTopSetoid.trans h hb⟩
 
 namespace EMetric
 variable {x : α} {ε : ℝ≥0∞} {s t : Set α}

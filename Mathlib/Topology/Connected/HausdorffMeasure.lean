@@ -56,13 +56,12 @@ theorem IsPreconnected.subset_boundedComponent (hs : IsPreconnected s) (ha : a �
     s ⊆ boundedComponent a :=
   fun _ hb => hs.edist_ne_top ha hb
 
-attribute [local instance] boundedComponent.pseudoMetricSpace
-
 /-- The distance function `x => (edist a x).toReal` is Lipschitz on any preconnected set `s` that
 contains `a`. -/
 theorem lipschitzOnWith_toReal_edist (hs : IsPreconnected s) (ha : a ∈ s) :
     LipschitzOnWith 1 (fun x => (edist a x).toReal) s := by
   intro x hx y hy
+  let : PseudoMetricSpace (boundedComponent a) := boundedComponent.pseudoMetricSpace a
   exact LipschitzWith.dist_right (⟨a, by simp [boundedComponent]⟩ : boundedComponent a)
     ⟨x, hs.edist_ne_top ha hx⟩ ⟨y, hs.edist_ne_top ha hy⟩
 
