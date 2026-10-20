@@ -39,7 +39,7 @@ Possible reason for whitelisting are
 - `<;>`/`all_goals`/`any_goals`: if there is exactly 1 goal, then these are redundant.
   If there are no goals, then these could in principle not be redundant,
   but we lint against such cases as well.
-  `any_goals` can be replaced with `all_goals` when all goals were changed.
+  We also warn if `any_goals` can be replaced with `all_goals`, or with `on_goal n =>`.
 
 ## Notable exclusions
 
