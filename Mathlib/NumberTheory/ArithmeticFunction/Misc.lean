@@ -338,6 +338,9 @@ theorem cardDistinctFactors_eq_length_dedup_primeFactorsList {n : ℕ} :
     ω n = n.primeFactorsList.dedup.length :=
   rfl
 
+@[deprecated (since := "2026-10-20")]
+alias cardDistinctFactors_apply := cardDistinctFactors_eq_length_dedup_primeFactorsList
+
 theorem cardDistinctFactors_eq_card_primeFactors {n : ℕ} : ω n = n.primeFactors.card :=
   rfl
 
