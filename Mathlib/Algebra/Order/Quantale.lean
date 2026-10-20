@@ -182,9 +182,6 @@ theorem rightMulResiduation_le_iff_mul_le : x ≤ y ⇨ᵣ z ↔ y * x ≤ z whe
 
 section Zero
 
-variable {α : Type*} [Semigroup α] [CompleteLattice α] [IsQuantale α]
-variable {x : α}
-
 @[to_additive (attr := simp)]
 theorem bot_mul : ⊥ * x = ⊥ := by
   rw [← sSup_empty, sSup_mul_distrib]
