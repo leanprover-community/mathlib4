@@ -27,7 +27,7 @@ The symmetric nondegenerate structure gives an injective map from the center `Z(
 functionals `A ⧸ [A, A] →ₗ[k] k` vanishing on commutators. In practice, it could be very difficult
 to describe `Z(A)` explicitly, e.g. when `A` is the Hecke algebra of a `p`-adic reductive group with
 integer coefficients. On the other hands, the space `A ⧸ [A, A] →ₗ[k] k` is always abundant (and
-stricly  larger when `Z(A)` is infinite dimensional), since the trace of any `k`-finite
+stricly larger when `Z(A)` is infinite dimensional), since the trace of any `k`-finite
 `k`-projective `A`-module will provide such a non-zero functional. In this file we study those
 elements of `A` coming from the trace functionals.
 
@@ -35,14 +35,16 @@ We say that `f : A` is the trace representative of a `k`-linear `A`-module `V` i
 `⟨f, x⟩ = Trace_V(x)`.
 1) We prove that such an `f` is always central.
 2) Assume further that `V` is simple, we prove that `f W = 0` for any `k`-linear simple `A`-module
-`W` distinct from `V` using Jacobson's density theorem and Wedderburn-Artin theorem.
+`W` distinct from `V`, using Jacobson's density theorem and Wedderburn-Artin theorem.
 3) If we assume furthermore `f ^ 2 ≠ 0` and `k` is algebraically closed, we prove that there exists
 some scalar `r : k` such that `r • f` is idempotent satisfying `r • f = (1 : End_k(V)` using Schur's
 lemma. In other words, `r • f` is a central idempotent element isolating the `V`-isotypic component.
 
 A toy model is `A = ℂ[G]` for a finite group `G` where all central idempotents can be obtained
-this way and the condition `f ^ 2 ≠ 0` unnecessary. We warn the reader that `f ^ 2 ≠ 0` is genuinely
-unavoidable for general symmetric nondegenerate algebras, e.g. `𝔽_2[ℤ/2ℤ] = 𝔽_2[x]/(x ^ 2)`.
+this way and the condition `f ^ 2 ≠ 0` is unnecessary. We warn the reader that `f ^ 2 ≠ 0` is
+genuinely unavoidable for general symmetric nondegenerate algebras. For example, if we take
+`A = 𝔽_2[ℤ/2ℤ] = 𝔽_2[x]/(x ^ 2)`, then the trace of the trivial representation will produce a
+nilpotent central element `x`.
 
 Finally we remark that we do not have a general criterion for which representation the trace is
 representatble. It could happen that none of the nontrivial trace functionals is representable,
