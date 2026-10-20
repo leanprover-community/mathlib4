@@ -507,13 +507,9 @@ theorem span_eq_of_two_zsmul_oangle_eq_zero {x y : V} (hx : x ≠ 0) (hy : y ≠
   rw [Real.Angle.two_zsmul_eq_zero_iff, o.oangle_eq_zero_or_eq_pi_iff_right_eq_smul,
     or_iff_right hx] at h
   rw [Submodule.span_singleton_eq_span_singleton]
-  rcases h with ⟨r, hr⟩
-  have hr' : r ≠ 0 := by
-    contrapose! hy with hr₀
-    rw [hr₀, zero_smul] at hr
-    exact hr
-  use (Units.mk0 r hr')
-  rw [Units.smul_mk0, hr]
+  rcases h with ⟨r, rfl⟩
+  use (Units.mk0 r (by simp_all))
+  rw [Units.smul_mk0]
 
 /-- Twice angles with two vectors are zero if and only if the spans of two vectors are equal. -/
 theorem two_zsmul_oangle_eq_zero_iff_span_eq {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :

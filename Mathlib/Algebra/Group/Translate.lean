@@ -9,6 +9,9 @@ public import Mathlib.Algebra.BigOperators.Pi
 public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 public import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Translation operator
 

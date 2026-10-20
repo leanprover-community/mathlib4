@@ -69,9 +69,6 @@ theorem mem_of_finsetSum_eq_one_of_pow_smul_mem
   refine Submodule.smul_mem _ (⟨_, pow_mem (hs i) _⟩ : S') ?_
   exact ⟨⟨_, hn i⟩, rfl⟩
 
-@[deprecated (since := "2026-04-08")]
-alias mem_of_finset_sum_eq_one_of_pow_smul_mem := mem_of_finsetSum_eq_one_of_pow_smul_mem
-
 theorem mem_of_span_eq_top_of_smul_pow_mem
     (s : Set S) (l : s →₀ S) (hs : Finsupp.linearCombination S ((↑) : s → S) l = 1)
     (hs' : s ⊆ S') (hl : ∀ i, l i ∈ S') (x : S) (H : ∀ r : s, ∃ n : ℕ, (r : S) ^ n • x ∈ S') :
