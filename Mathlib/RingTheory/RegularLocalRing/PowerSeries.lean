@@ -18,7 +18,7 @@ over regular local rings are again regular.
 
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*} [CommRing R]
 
