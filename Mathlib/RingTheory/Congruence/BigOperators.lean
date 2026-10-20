@@ -8,6 +8,9 @@ module
 public import Mathlib.GroupTheory.Congruence.BigOperators
 public import Mathlib.RingTheory.Congruence.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Interactions between `∑, ∏` and `RingCon`
 
