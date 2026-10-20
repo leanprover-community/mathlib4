@@ -154,6 +154,7 @@ theorem comp_continuousWithinAt_iff (h : X ≃ₜ Y) (f : Z → X) (s : Set Z) (
   h.isInducing.continuousWithinAt_iff
 
 set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A homeomorphism `h : X ≃ₜ Y` lifts to a homeomorphism between subtypes corresponding to
 predicates `p : X → Prop` and `q : Y → Prop` so long as `p = q ∘ h`. -/
 @[simps!]
@@ -172,6 +173,7 @@ abbrev sets {s : Set X} {t : Set Y} (h : X ≃ₜ Y) (h_eq : s = h ⁻¹' t) : s
   h.subtype <| Set.ext_iff.mp h_eq
 
 set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If two sets are equal, then they are homeomorphic. -/
 def setCongr {s t : Set X} (h : s = t) : s ≃ₜ t where
   toEquiv := Set.equivOfEq h
@@ -351,6 +353,7 @@ def image (e : X ≃ₜ Y) (s : Set X) : s ≃ₜ e '' s where
   toEquiv := e.toEquiv.image s
 
 set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `Set.univ X` is homeomorphic to `X`. -/
 @[simps! -fullyApplied]
 def Set.univ (X : Type*) [TopologicalSpace X] : (univ : Set X) ≃ₜ X where

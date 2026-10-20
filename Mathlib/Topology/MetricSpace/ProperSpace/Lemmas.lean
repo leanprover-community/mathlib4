@@ -8,6 +8,8 @@ module
 public import Mathlib.Topology.Maps.Proper.CompactlyGenerated
 public import Mathlib.Topology.MetricSpace.Bounded
 
+import Mathlib.Topology.UniformSpace.Real
+
 set_option doc.verso true
 set_option doc.verso.suggestions false
 

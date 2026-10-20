@@ -80,6 +80,7 @@ noncomputable instance instBinomialRing : BinomialRing ℤ_[p] where
     simp [mul_div_cancel₀ _ (mod_cast k.factorial_ne_zero : (k.factorial : ℚ_[p]) ≠ 0),
       ← PadicInt.coe_inj, Polynomial.eval_eq_smeval]
 
+set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
 lemma continuous_multichoose (k : ℕ) : Continuous (fun x : ℤ_[p] ↦ Ring.multichoose x k) := by
   simp only [Ring.multichoose, BinomialRing.multichoose, Padic.lift]

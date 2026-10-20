@@ -494,6 +494,7 @@ section tsum_possemidef
 variable [Ring R] [TopologicalSpace R] [StarRing R] [IsTopologicalRing R] [ContinuousStar R]
 variable [PartialOrder R] [OrderClosedTopology R]
 
+set_option fun_prop.reducibleApply false in
 lemma isClosed_setOfPred_posSemidef : IsClosed {A : Matrix n n R | PosSemidef A} := by
   simp only [PosSemidef, Set.ofPred_and, Set.ofPred_forall]
   refine isClosed_setOfPred_isHermitian.inter
