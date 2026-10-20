@@ -7,7 +7,11 @@ module
 
 public import Mathlib.Algebra.Order.SuccPred
 public import Mathlib.Order.PartialSups
-public import Mathlib.Order.SuccPred.LinearLocallyFinite
+
+import Mathlib.Order.SuccPred.LinearLocallyFinite
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # `PartialSups` in a `SuccAddOrder`

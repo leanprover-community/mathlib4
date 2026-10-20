@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.Filter.CountableSeparatingOn
 public import Mathlib.Topology.Separation.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Countable separating families of sets in topological spaces
 

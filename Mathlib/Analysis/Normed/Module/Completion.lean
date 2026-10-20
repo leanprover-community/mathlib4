@@ -8,8 +8,10 @@ module
 public import Mathlib.Analysis.Normed.Group.Completion
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
 public import Mathlib.Topology.Algebra.LinearMapCompletion
-public import Mathlib.Topology.Algebra.UniformRing
 public import Mathlib.Topology.Algebra.UniformField
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Normed space structure on the completion of a normed space

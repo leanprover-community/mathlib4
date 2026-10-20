@@ -9,6 +9,9 @@ public import Mathlib.Data.Fintype.Order
 public import Mathlib.Order.Category.BddDistLat
 public import Mathlib.Order.Category.FinPartOrd
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of finite bounded distributive lattices
 
@@ -164,7 +167,7 @@ instance hasForgetToBddDistLat : HasForget₂ FinBddDistLat BddDistLat where
 
 instance hasForgetToFinPartOrd : HasForget₂ FinBddDistLat FinPartOrd where
   forget₂.obj X := ↧X
-  forget₂.map f := ConcreteCategory.ofHom (OrderHomClass.toOrderHom f.hom)
+  forget₂.map f := ConcreteCategory.ofHom (.ofClass f.hom)
 
 /-- Constructs an equivalence between finite distributive lattices from an order isomorphism
 between them. -/

@@ -5,7 +5,11 @@ Authors: Yury Kudryashov, Rémy Degenne
 -/
 module
 
+public import Mathlib.MeasureTheory.Measure.Filter
 public import Mathlib.MeasureTheory.Measure.Map
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Pullback of a measure

@@ -5,10 +5,11 @@ Authors: Kexing Ying, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Probability.ConditionalProbability
-public import Mathlib.MeasureTheory.Measure.Count
 public import Mathlib.MeasureTheory.Constructions.Pi
+public import Mathlib.Probability.ConditionalProbability
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Classical probability

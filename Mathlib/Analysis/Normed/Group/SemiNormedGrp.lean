@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Normed.Group.Hom
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of seminormed groups
 
@@ -236,6 +239,7 @@ instance : LargeCategory.{u} SemiNormedGrp₁ where
   id X := ⟨NormedAddGroupHom.id X, NormedAddGroupHom.NormNoninc.id⟩
   comp {_ _ _} f g := ⟨g.1.comp f.1, g.2.comp f.2⟩
 
+@[macro_inline]
 instance instFunLike (X Y : SemiNormedGrp₁) :
     FunLike { f : NormedAddGroupHom X Y // f.NormNoninc } X Y where
   coe f := f.1.toFun
@@ -299,7 +303,7 @@ lemma comp_apply {M N O : SemiNormedGrp₁} (f : M ⟶ N) (g : N ⟶ O) (r : M) 
 
 @[ext]
 lemma hom_ext {M N : SemiNormedGrp₁} {f g : M ⟶ N} (hf : f.hom = g.hom) : f = g :=
-  Hom.ext (congr_arg Subtype.val hf)
+  Hom.ext congr($(hf).val)
 
 @[simp]
 lemma hom_mkHom {M N : Type u} [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]

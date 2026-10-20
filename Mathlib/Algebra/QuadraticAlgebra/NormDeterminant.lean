@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.QuadraticAlgebra.Basic
 public import Mathlib.LinearAlgebra.Determinant
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Quadratic Algebra
 
@@ -30,7 +33,7 @@ theorem det_toLinearMap_eq_norm (z : QuadraticAlgebra R a b) :
   have : !![z.re, a * z.im; z.im, z.re + b * z.im].det = z.norm := by
     simp [norm]
     ring
-  convert! this
+  convert this
   apply LinearEquiv.eq_symm_apply _ |>.mp
   ext1 w
   apply basis .. |>.repr.injective

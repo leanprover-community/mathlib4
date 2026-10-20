@@ -5,9 +5,10 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Tactic.CategoryTheory.Elementwise
-public import Mathlib.CategoryTheory.Limits.HasLimits
 public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Elementwise lemmas for concrete categories

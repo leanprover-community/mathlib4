@@ -6,7 +6,7 @@ Authors: Eric Wieser, Frédéric Dupuis
 module
 
 public import Mathlib.Algebra.Star.Module
-public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 public import Mathlib.Topology.Algebra.Star
 
 /-!
