@@ -5,8 +5,8 @@ Authors: Michael Rothgang
 -/
 module
 
-public import Mathlib.Analysis.Normed.Module.TransferInstance
 public import Mathlib.Algebra.Group.Shrink
+public import Mathlib.Analysis.Normed.Module.TransferInstance
 
 /-!
 # Transfer normed algebraic structures from `α` to `Shrink α`

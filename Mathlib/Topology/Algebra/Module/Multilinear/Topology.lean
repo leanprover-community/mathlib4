@@ -11,6 +11,9 @@ public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 public import Mathlib.Topology.Algebra.Module.UniformConvergence
 public import Mathlib.Topology.Algebra.SeparationQuotient.Section
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topology on continuous multilinear maps
 

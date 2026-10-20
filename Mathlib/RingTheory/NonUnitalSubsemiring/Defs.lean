@@ -5,9 +5,12 @@ Authors: Jireh Loreaux
 -/
 module
 
+public import Mathlib.Algebra.Group.Submonoid.Defs
 public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Algebra.Ring.InjSurj
-public import Mathlib.Algebra.Group.Submonoid.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Bundled non-unital subsemirings

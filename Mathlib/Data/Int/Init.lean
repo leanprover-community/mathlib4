@@ -5,7 +5,6 @@ Authors: Jeremy Avigad
 -/
 module
 
-public import Batteries.Tactic.Alias
 public import Mathlib.Data.Int.Notation
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Tactic.DepRewrite
@@ -145,8 +144,6 @@ protected def leInduction {m : ℤ} {motive : ∀ n, m ≤ n → Sort*} (base : 
   fun n ↦ n.inductionOn' m
     (fun _ ↦ base) (fun k hle ih _ ↦ succ k hle <| ih hle) (fun _ _ _ _ ↦ False.elim <| by lia)
 
-@[deprecated (since := "2026-03-25")] protected alias le_induction := Int.leInduction
-
 theorem leInduction_base {m : ℤ} {motive : ∀ n, m ≤ n → Sort*} (base : motive m m.le_refl)
     (succ : ∀ n hmn, motive n hmn → motive (n + 1) (le_add_one hmn)) :
     Int.leInduction (motive := motive) base succ m m.le_refl = base := by
@@ -177,8 +174,6 @@ theorem leInductionDown_sub_one {m : ℤ} {motive : ∀ n, n ≤ m → Sort*} (b
       pred n hnm (Int.leInductionDown (motive := motive) base pred n hnm) := by
   rw [Int.leInductionDown, inductionOn'_sub_one hnm]
   rfl
-
-@[deprecated (since := "2026-03-25")] protected alias le_induction_down := Int.leInductionDown
 
 section strongRec
 
