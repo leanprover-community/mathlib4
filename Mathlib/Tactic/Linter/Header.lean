@@ -176,6 +176,18 @@ public def copyrightHeaderChecks (copyright : String) (expectedLicense : String)
     output := output.push (toSyntax copyright "-/", s!"Copyright too short!")
   return output
 
+/-- Given `modPath := foo/bar/A/B/C(.lean)` and a module name `A.B.C`, return `foo/bar/A.lean`.
+Return `none` if the name components do not match the path components. -/
+def modPathToRootPath (modPath : System.FilePath) (modName : Name) : Option System.FilePath :=
+  match modName with
+  | .str .anonymous root => do
+    guard <| modPath.fileStem == root
+    modPath.withExtension "lean"
+  | .str pre last => do
+    guard <| modPath.fileStem == last
+    modPathToRootPath (← modPath.parent) pre
+  | _ => none
+
 /--
 `isInLibraryRoot modName` returns `true` if `<root>.lean` imports the file `modName`, where
 `<root>` is the top-level component of `modName`. For example, for `Mathlib.Foo.Bar` this checks
@@ -184,8 +196,8 @@ This is used by the `Header` linter as a heuristic of whether it should inspect 
 so that the linter works in any project whose library root follows the standard Lean convention
 of being named after the top-level module.
 -/
-def isInLibraryRoot (modName : Name) : IO Bool := do
-  let rootPath := (modName.getRoot.toString : System.FilePath).addExtension "lean"
+def isInLibraryRoot (modPath : System.FilePath) (modName : Name) : IO Bool := do
+  let some rootPath := modPathToRootPath modPath modName | return false
   if ← rootPath.pathExists then
     let res ← parseImports' (← IO.FS.readFile rootPath) ""
     return res.imports.any (·.module == modName)
@@ -412,7 +424,7 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     match ← get with
     | some d => return d
     | none =>
-      let val ← isInLibraryRoot mainModule
+      let val ← isInLibraryRoot (← getFileName) mainModule
       -- We cache the answer to avoid recomputing it on every command. The fill runs under the mutex
       -- so that concurrent (async) linter runs don't all miss the cache and each redundantly parse
       -- the library root file; `mainModule` is fixed for the duration of the elaboration.
