@@ -131,6 +131,8 @@ infimum over the principal filters of all open sets containing `x`. -/
 def nhds (x : X) : Filter X :=
   ⨅ s ∈ { s : Set X | x ∈ s ∧ IsOpen s }, 𝓟 s
 
+alias nhds_def := nhds.eq_def
+
 @[inherit_doc]
 scoped[Topology] notation "𝓝" => nhds
 

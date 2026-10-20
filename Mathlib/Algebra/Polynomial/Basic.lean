@@ -951,13 +951,11 @@ protected theorem induction_on' {motive : R[X] → Prop} (p : R[X])
   | ⟨p⟩ => ⟨p.erase n⟩
 
 @[simp]
-theorem toFinsupp_erase (p : R[X]) (n : ℕ) : toFinsupp (p.erase n) = p.toFinsupp.erase n := by
-  simp only [erase_def]
+theorem toFinsupp_erase (p : R[X]) (n : ℕ) : toFinsupp (p.erase n) = p.toFinsupp.erase n := (rfl)
 
 @[simp]
 theorem ofFinsupp_erase (p : R[ℕ]) (n : ℕ) :
-    (⟨p.erase n⟩ : R[X]) = (⟨p⟩ : R[X]).erase n := by
-  simp only [erase_def]
+    (⟨p.erase n⟩ : R[X]) = (⟨p⟩ : R[X]).erase n := (rfl)
 
 @[simp]
 theorem support_erase (p : R[X]) (n : ℕ) : support (p.erase n) = (support p).erase n := by
@@ -969,10 +967,8 @@ theorem monomial_add_erase (p : R[X]) (n : ℕ) : monomial n (coeff p n) + p.era
   exact AddMonoidAlgebra.single_add_erase ..
 
 theorem coeff_erase (p : R[X]) (n i : ℕ) :
-    (p.erase n).coeff i = if i = n then 0 else p.coeff i := by
-  rcases p with ⟨⟩
-  simp only [erase_def, coeff]
-  exact ite_congr rfl (fun _ ↦ rfl) (fun _ ↦ rfl)
+    (p.erase n).coeff i = if i = n then 0 else p.coeff i :=
+  ite_congr rfl (fun _ ↦ rfl) (fun _ ↦ rfl)
 
 @[simp]
 theorem erase_zero (n : ℕ) : (0 : R[X]).erase n = 0 :=

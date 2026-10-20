@@ -68,6 +68,8 @@ for a finite-dimensional vector space (but 0 for an infinite-dimensional vector 
 protected def Module.rank : Cardinal :=
   ⨆ ι : { s : Set M // LinearIndepOn R id s }, (#ι.1)
 
+alias Module.rank_def := Module.rank.eq_def
+
 theorem rank_le_card : Module.rank R M ≤ #M :=
   ciSup_le' fun _ ↦ mk_set_le _
 

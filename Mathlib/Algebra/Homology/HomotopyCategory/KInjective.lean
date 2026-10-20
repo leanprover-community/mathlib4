@@ -46,7 +46,7 @@ class IsKInjective (L : CochainComplex C ℤ) : Prop where
 /-- A choice of homotopy to zero for a morphism from an acyclic
 cochain complex to a K-injective cochain complex. -/
 @[no_expose]
-def IsKInjective.homotopyZero {K L : CochainComplex C ℤ} (f : K ⟶ L)
+noncomputable def IsKInjective.homotopyZero {K L : CochainComplex C ℤ} (f : K ⟶ L)
     (hK : K.Acyclic) [L.IsKInjective] :
     Homotopy f 0 :=
   (IsKInjective.nonempty_homotopy_zero f hK).some
