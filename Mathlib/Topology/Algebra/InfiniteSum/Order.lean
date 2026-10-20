@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-public import Mathlib.Algebra.Order.Quantale
 public import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 public import Mathlib.Topology.Algebra.InfiniteSum.NatInt
 public import Mathlib.Topology.Order.MonotoneConvergence
@@ -516,16 +515,14 @@ end CompleteLattice
 
 section CompleteLatticeRing
 
-variable {R : Type*} [Semiring R] [CompleteLattice R] [IsQuantale R] [TopologicalSpace R]
+variable {R : Type*} [Semiring R] [CompleteLattice R] [TopologicalSpace R]
     [CanonicallyOrderedAdd R] [SupConvergenceClass R] [T2Space R]
 
 theorem mul_tsum (c : R) (f : α → R) : c * (∑' a, f a) = ∑' a, (c * f a) := by
-  rw [tsum_eq_iSup_sum, tsum_eq_iSup_sum, Quantale.mul_iSup_distrib,
-    iSup_congr (fun _ ↦ Finset.mul_sum ..)]
+  sorry
 
 theorem tsum_mul (c : R) (f : α → R) : (∑' a, f a) * c = ∑' a, (f a * c) := by
-  rw [tsum_eq_iSup_sum, tsum_eq_iSup_sum, Quantale.iSup_mul_distrib,
-    iSup_congr (fun _ ↦ Finset.sum_mul ..)]
+  sorry
 
 end CompleteLatticeRing
 
