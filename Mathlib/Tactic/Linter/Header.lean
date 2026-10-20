@@ -440,11 +440,11 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   -- Report on broad or duplicate imports.
   broadImportsCheck importRefs mainModule
   duplicateImportsCheck importRefs
-  if let some srcDir := rootPath.parent then
-    let errors ← directoryDependencyCheck srcDir mainModule
-    if errors.size > 0 then
-      Linter.logLint linter.directoryDependency (importRefs.back?.elim headerStx (·.stx)) <|
-        m!"\n\n".joinSep errors.toList
+  let srcDir := rootPath.parent.getD "."
+  let errors ← directoryDependencyCheck srcDir mainModule
+  if errors.size > 0 then
+    Linter.logLint linter.directoryDependency (importRefs.back?.elim headerStx (·.stx)) <|
+      m!"\n\n".joinSep errors.toList
   -- Report any errors about the copyright line.
   if mainModule != `Mathlib.Init && mainModule != `Mathlib.Tactic then
     let expectedLicense := linter.style.header.license.get (← getOptions)
