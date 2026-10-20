@@ -64,20 +64,17 @@ open FiniteGaloisIntermediateField AlgEquiv
 lemma fixingSubgroup_isClosed (L : IntermediateField k K) [IsGalois k K] :
     IsClosed (L.fixingSubgroup : Set Gal(K/k)) where
   isOpen_compl := isOpen_iff_mem_nhds.mpr fun σ h => by
-    apply mem_nhds_iff.mpr
-    rcases Set.not_subset.mp ((mem_fixingSubgroup_iff Gal(K/k)).not.mp h) with ⟨y, yL, ne⟩
-    use σ • ((adjoin k {y}).1.fixingSubgroup : Set Gal(K/k))
-    constructor
-    · intro f hf
-      rcases (Set.mem_smul_set.mp hf) with ⟨g, hg, eq⟩
-      simp only [Set.mem_compl_iff, SetLike.mem_coe, ← eq]
-      apply (mem_fixingSubgroup_iff Gal(K/k)).not.mpr
+    obtain ⟨y, yL, ne⟩ : ∃ y ∈ L, σ y ≠ y := by
+      simpa using (mem_fixingSubgroup_iff Gal(K/k)).not.mp h
+    refine mem_nhds_iff.2 ⟨σ • (adjoin k {y}).1.fixingSubgroup, fun f hf ↦ ?_, ?_⟩
+    · rw [Set.mem_smul_set_iff_inv_smul_mem, smul_eq_mul] at hf
+      simp only [Set.mem_compl_iff, SetLike.mem_coe, IntermediateField.mem_fixingSubgroup_iff,
+        not_forall, exists_prop]
       push Not
-      use y
-      simp only [yL, smul_eq_mul, AlgEquiv.smul_def, AlgEquiv.mul_apply, ne_eq, true_and]
-      have : g y = y := (mem_fixingSubgroup_iff Gal(K/k)).mp hg y <|
-        adjoin_simple_le_iff.mp le_rfl
-      simpa only [this, ne_eq, AlgEquiv.smul_def] using! ne
+      refine ⟨y, yL, ?_⟩
+      contrapose ne
+      simpa [ne, AlgEquiv.eq_symm_apply, eq_comm] using
+        (mem_fixingSubgroup_iff Gal(K/k)).mp hf y <| adjoin_simple_le_iff.mp le_rfl
     · simp only [(IntermediateField.fixingSubgroup_isOpen (adjoin k {y}).1).smul σ, true_and]
       use 1
       simp only [SetLike.mem_coe, smul_eq_mul, mul_one, and_true, Subgroup.one_mem]
@@ -101,7 +98,7 @@ lemma fixedField_fixingSubgroup (L : IntermediateField k K) [IsGalois k K] :
     rcases IntermediateField.mem_bot.mp this with ⟨y, hy⟩
     obtain ⟨rfl⟩ : y = x := congrArg Subtype.val hy
     exact y.2
-  · exact (IntermediateField.le_iff_le L.fixingSubgroup L).mpr le_rfl
+  · exact (IntermediateField.le_fixedField_iff_le_fixingSubgroup L.fixingSubgroup L).mpr le_rfl
 
 lemma fixedField_bot [IsGalois k K] :
     IntermediateField.fixedField (⊤ : Subgroup Gal(K/k)) = ⊥ := by
@@ -145,7 +142,7 @@ lemma restrict_fixedField (H : Subgroup Gal(K/k)) (L : IntermediateField k K) [N
 open IntermediateField in
 lemma fixingSubgroup_fixedField (H : ClosedSubgroup Gal(K/k)) [IsGalois k K] :
     (IntermediateField.fixedField H).fixingSubgroup = H.1 := by
-  apply le_antisymm _ ((IntermediateField.le_iff_le H.toSubgroup
+  apply le_antisymm _ ((IntermediateField.le_fixedField_iff_le_fixingSubgroup H.toSubgroup
     (IntermediateField.fixedField H.toSubgroup)).mp le_rfl)
   intro σ hσ
   by_contra h
@@ -202,7 +199,8 @@ def IntermediateFieldEquivClosedSubgroup [IsGalois k K] :
     simp_rw [fixingSubgroup_fixedField H]
     rfl
   map_rel_iff' {K L} := by
-    rw [← fixedField_fixingSubgroup L, IntermediateField.le_iff_le, fixedField_fixingSubgroup L]
+    rw [← fixedField_fixingSubgroup L, IntermediateField.le_fixedField_iff_le_fixingSubgroup,
+      fixedField_fixingSubgroup L]
     rfl
 
 /-- The Galois correspondence as a `GaloisInsertion` -/
@@ -218,7 +216,7 @@ def GaloisCoinsertionIntermediateFieldSubgroup [IsGalois k K] :
     GaloisCoinsertion (OrderDual.toDual ∘ fun (E : IntermediateField k K) ↦ E.fixingSubgroup)
       ((fun (H : Subgroup Gal(K/k)) ↦ IntermediateField.fixedField H) ∘ OrderDual.toDual) where
   choice H _ := IntermediateField.fixedField H
-  gc E H := (IntermediateField.le_iff_le H E).symm
+  gc E H := (IntermediateField.le_fixedField_iff_le_fixingSubgroup H E).symm
   u_l_le K := le_of_eq (fixedField_fixingSubgroup K)
   choice_eq _ _ := rfl
 
@@ -253,7 +251,7 @@ theorem isOpen_iff_finite (L : IntermediateField k K) [IsGalois k K] :
     isGalois := IsGalois.normalClosure k M K }
   have : L ≤ L'.1 := by
     apply le_trans _ (IntermediateField.le_normalClosure M)
-    rw [← fixedField_fixingSubgroup M, IntermediateField.le_iff_le]
+    rw [← fixedField_fixingSubgroup M, IntermediateField.le_fixedField_iff_le_fixingSubgroup]
     exact sub
   let _ : Algebra L L'.1 := RingHom.toAlgebra (IntermediateField.inclusion this)
   exact FiniteDimensional.left k L L'.1
