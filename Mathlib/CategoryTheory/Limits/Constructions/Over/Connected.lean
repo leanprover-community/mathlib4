@@ -5,8 +5,11 @@ Authors: Johan Commelin, Reid Barton, Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Preserves.Creates.Opposites
 public import Mathlib.CategoryTheory.Filtered.Final
+public import Mathlib.CategoryTheory.Limits.Preserves.Creates.Opposites
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Connected limits in the over category

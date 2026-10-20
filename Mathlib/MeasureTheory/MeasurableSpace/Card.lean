@@ -8,8 +8,11 @@ module
 public import Mathlib.MeasureTheory.MeasurableSpace.Defs
 public import Mathlib.SetTheory.Cardinal.Continuum
 
-import Mathlib.SetTheory.Cardinal.Regular
 import Mathlib.SetTheory.Cardinal.Ordinal
+import Mathlib.SetTheory.Cardinal.Regular
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Cardinal of sigma-algebras

@@ -24,8 +24,6 @@ transcendence
 
 public section
 
-noncomputable section
-
 open Function Set Subalgebra MvPolynomial Algebra
 
 universe u v
@@ -193,7 +191,7 @@ theorem iff_adjoin_image_compl (s : Set ι) :
 theorem iff_transcendental_adjoin_image (i : ι) :
     AlgebraicIndependent R x ↔ AlgebraicIndependent R (fun j : {j // j ≠ i} ↦ x j) ∧
       Transcendental (adjoin R (x '' {i}ᶜ)) (x i) :=
-  (iff_adjoin_image_compl _).trans <| and_congr_right
+  (iff_adjoin_image_compl {i}).trans <| and_congr_right
     fun _ ↦ algebraicIndependent_unique_type_iff (ι := {j // j = i})
 
 variable (hx : AlgebraicIndependent R x)

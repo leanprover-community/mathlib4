@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.GroupTheory.GroupAction.SubMulAction
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Closure and finiteness of `SubMulAction` and `SubAddAction`
 -/
