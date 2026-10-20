@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Group.Pi.Torsion
 public import Mathlib.Data.Finset.Max
 public import Mathlib.Data.Finsupp.Single
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Additive monoid structure on `ι →₀ M`
 -/
@@ -350,6 +353,9 @@ instance instAddMonoid : AddMonoid (ι →₀ M) :=
 
 instance instIsAddTorsionFree [IsAddTorsionFree M] : IsAddTorsionFree (ι →₀ M) :=
   DFunLike.coe_injective.isAddTorsionFree coeFnAddHom
+
+instance [HasUniqueDiv M] : HasUniqueDiv (ι →₀ M) :=
+  DFunLike.coe_injective.hasUniqueDiv coeFnAddHom
 
 end AddMonoid
 

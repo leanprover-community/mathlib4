@@ -5,9 +5,10 @@ Authors: Michael Stoll
 -/
 module
 
+public import Mathlib.GroupTheory.Perm.Cycle.Type
+
 import Mathlib.Algebra.CharP.Basic
 import Mathlib.Algebra.CharP.Lemmas
-public import Mathlib.GroupTheory.Perm.Cycle.Type
 import Mathlib.RingTheory.Coprime.Lemmas
 
 /-!

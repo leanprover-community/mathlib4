@@ -5,8 +5,12 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-import Mathlib.Topology.Algebra.Order.Field
 public import Mathlib.Topology.MetricSpace.Lipschitz
+
+import Mathlib.Topology.Algebra.Order.Field
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Lipschitz continuous functions

@@ -5,8 +5,12 @@ Authors: Kim Morrison, Patrick Massot, Kyle Miller
 -/
 module
 
-import Mathlib.Init
 public import Lean.Meta.Tactic.Rewrite
+
+import Mathlib.Init
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Additional declarations for `Lean.Meta.Tactic.Rewrite`

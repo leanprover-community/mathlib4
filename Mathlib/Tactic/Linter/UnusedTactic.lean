@@ -6,11 +6,11 @@ Authors: Damiano Testa
 module
 
 public meta import Lean.Elab.InfoTree.Util
+public meta import Lean.Parser.Syntax
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 public import Batteries.Tactic.Unreachable
-public import Lean.Parser.Syntax
 public import Mathlib.Tactic.Linter.UnusedTacticExtension
 
 /-!
@@ -68,15 +68,9 @@ public register_option linter.unusedTactic : Bool := {
 
 namespace UnusedTactic
 
-/-- The monad for collecting the ranges of the syntaxes that do not modify any goal. -/
-abbrev M := StateRefT (Std.HashMap Lean.Syntax.Range Syntax) IO
-
 -- Tactics that are expected to not change the state but should also not be flagged by the
 -- unused tactic linter.
 #allow_unused_tactic!
-  Lean.Parser.Term.byTactic
-  Lean.Parser.Tactic.tacticSeq
-  Lean.Parser.Tactic.tacticSeq1Indented
   Lean.Parser.Tactic.tacticTry_
   -- the following `SyntaxNodeKind`s play a role in silencing `test`s
   Lean.Parser.Tactic.guardHyp
@@ -103,7 +97,6 @@ initialize ignoreTacticKindsRef : IO.Ref NameHashSet ←
     `Batteries.Tactic.seq_focus,
     `Mathlib.Tactic.Hint.registerHintStx,
     `Mathlib.Tactic.LinearCombination.linearCombination,
-    `Mathlib.Tactic.LinearCombinationPrime.linearCombination',
     `Aesop.Frontend.Parser.addRules,
     `Aesop.Frontend.Parser.aesopTactic,
     `Aesop.Frontend.Parser.aesopTactic?,
@@ -123,18 +116,26 @@ public def isIgnoreTacticKind (ignoreTacticKinds : NameHashSet) (k : SyntaxNodeK
 Adds a new syntax kind whose children will be ignored by the `unusedTactic` linter.
 This should be called from an `initialize` block.
 -/
-public def addIgnoreTacticKind (kind : SyntaxNodeKind) : IO Unit :=
+public def addIgnoreTacticKind (kind : SyntaxNodeKind) : BaseIO Unit :=
   ignoreTacticKindsRef.modify (·.insert kind)
 
-/-- Accumulates the set of tactic syntaxes that should be evaluated at least once. -/
-@[specialize] partial def getTactics (ignoreTacticKinds : NameHashSet)
-    (isTacKind : SyntaxNodeKind → Bool) (stx : Syntax) : M Unit := do
+/-- Accumulates the set of all `tactic` and `conv` syntaxes.
+This includes `<;>` but excludes all other tactics whose syntax is atomic, such as `;`.
+-/
+partial def getTactics (ignoreTacticKinds : NameHashSet)
+    (tactics convs : Parser.SyntaxNodeKindSet) (stx : Syntax) :
+    StateRefT (Std.HashMap Syntax.Range (Syntax × Option MessageData)) BaseIO Unit := do
   if let .node _ k args := stx then
     if !isIgnoreTacticKind ignoreTacticKinds k then
-      args.forM (getTactics ignoreTacticKinds isTacKind)
-    if isTacKind k then
+      args.forM (getTactics ignoreTacticKinds tactics convs)
+    if tactics.contains k || convs.contains k then
       if let some r := stx.getRange? true then
-        modify fun m => m.insert r stx
+        modify (·.insert r (stx, none))
+      -- The `<;>` syntax is an atom, so to add it we special case it.
+      if k == ``Lean.Parser.Tactic.«tactic_<;>_» || k == ``Lean.Parser.Tactic.Conv.«conv_<;>_» then
+        if let some arg := args[1]? then
+          if let some r := arg.getRange? true then
+            modify (·.insert r (arg, none))
 
 /-- `getNames mctx` extracts the names of all the local declarations implied by the
 `MetavarContext` `mctx`. -/
@@ -143,29 +144,41 @@ def getNames (mctx : MetavarContext) : List Name :=
   let locDecls := (lcts.map (PersistentArray.toList ∘ LocalContext.decls)).flatten.reduceOption
   locDecls.map LocalDecl.userName
 
-/-- Search for tactic executions in the info tree and remove the syntax of the tactics that
-changed something. -/
-partial def eraseUsedTactics (exceptions : Std.HashSet SyntaxNodeKind)
-    (trees : PersistentArray InfoTree) : M Unit :=
-  let ranges := trees.foldl (init := #[]) <| InfoTree.foldInfo fun _ i ranges => Id.run do
+/--
+For each `TacticInfo` in the info tree that corresponds to a tactic syntax:
+- If the tactic is used, erase it from the set of tactics.
+- If the tactic is unused, add a message to this tactic, if it doesn't have a message already.
+-/
+def eraseUsedTactics (exceptions : Std.HashSet SyntaxNodeKind)
+    (trees : PersistentArray InfoTree)
+    (map : Std.HashMap Syntax.Range (Syntax × Option MessageData)) :
+    Std.HashMap Syntax.Range (Syntax × Option MessageData) :=
+  trees.foldl (init := map) <| InfoTree.foldInfo fun _ i ranges => Id.run do
     let .ofTacticInfo i := i | return ranges
     let stx := i.stx
     let some r := stx.getRange? true | return ranges
-    let kind := stx.getKind
-    -- if the tactic is allowed to not change the goals
-    if exceptions.contains kind then
-      return ranges.push r
-    -- if the goals have changed
-    if i.goalsAfter != i.goalsBefore then
-      return ranges.push r
-    -- bespoke check for `swap_var`: the only change that it does is
-    -- in the usernames of local declarations, so we check the names before and after
-    if (kind == `Mathlib.Tactic.«tacticSwap_var__,,») &&
-            (getNames i.mctxBefore != getNames i.mctxAfter) then
-      return ranges.push r
-    return ranges
-  for r in ranges do
-    modify (·.erase r)
+    let withMsg (msg : MessageData) := ranges.modify r fun (stx, msg?) ↦ (stx, msg?.getD msg)
+    match i.stx with
+    | .atom _ "<;>" =>
+      -- Bespoke check for `<;>`: if it generates at most 1 goal, we consider it unused.
+      match i.goalsAfter with
+      | [] => return withMsg m!"`<;>` can be removed"
+      | [_] => return withMsg m!"`<;>` can be replaced with `;`"
+      | _ => return ranges.erase r
+    | .node _ kind _ =>
+      -- if the tactic is allowed to not change the goals
+      if exceptions.contains kind then
+        return ranges.erase r
+      -- if the goals have changed
+      if i.goalsAfter != i.goalsBefore then
+        return ranges.erase r
+      -- bespoke check for `swap_var`: the only change that it does is
+      -- in the usernames of local declarations, so we check the names before and after
+      if (kind == `Mathlib.Tactic.«tacticSwap_var__,,») &&
+              (getNames i.mctxBefore != getNames i.mctxAfter) then
+        return ranges.erase r
+      return withMsg m!"`{stx}` does not change the goal"
+    | _ => return ranges
 
 /-- The main entry point to the unused tactic linter. -/
 def unusedTacticLinter : Linter where run := withSetOptionIn fun stx => do
@@ -182,18 +195,17 @@ def unusedTacticLinter : Linter where run := withSetOptionIn fun stx => do
     | return
   let trees ← getInfoTrees
   let exceptions := (← allowedRef.get).union <| allowedUnusedTacticExt.getState env
-  let go : M Unit := do
-    getTactics (← ignoreTacticKindsRef.get) (fun k => tactics.contains k || convs.contains k) stx
-    eraseUsedTactics exceptions trees
-  let (_, map) ← go.run {}
+  let (_, map) ← (getTactics (← ignoreTacticKindsRef.get) tactics convs stx).run {}
+  let map := eraseUsedTactics exceptions trees map
   let unused := map.toArray
   let key (r : Lean.Syntax.Range) := (r.start.byteIdx, (-r.stop.byteIdx : Int))
   let mut last : Lean.Syntax.Range := ⟨0, 0⟩
-  for (r, stx) in let _ := @lexOrd; let _ := @ltOfOrd.{0}; unused.qsort (key ·.1 < key ·.1) do
+  for (r, stx, msg?) in let _ := @lexOrd; let _ := @ltOfOrd.{0}; unused.qsort (key ·.1 < key ·.1) do
     if stx.getKind ∈ [``Batteries.Tactic.unreachable, ``Batteries.Tactic.unreachableConv] then
       continue
     if last.start ≤ r.start && r.stop ≤ last.stop then continue
-    Linter.logLint linter.unusedTactic stx m!"Unused tactic linter: `{stx}` does nothing"
+    let msg := msg?.getD m!"`{stx}` is never executed"
+    Linter.logLint linter.unusedTactic stx m!"Unused tactic linter: {msg}."
     last := r
 
 initialize addLinter unusedTacticLinter

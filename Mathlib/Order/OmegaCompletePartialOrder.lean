@@ -6,11 +6,11 @@ Authors: Simon Hudon, Ira Fesefeldt
 module
 
 public import Mathlib.Control.Monad.Basic
+public import Mathlib.Dynamics.FixedPoints.Defs
 public import Mathlib.Order.Iterate
 public import Mathlib.Order.Part
 public import Mathlib.Order.Preorder.Chain
 public import Mathlib.Order.ScottContinuity
-public import Mathlib.Dynamics.FixedPoints.Defs
 
 /-!
 # Omega Complete Partial Orders
@@ -113,8 +113,6 @@ def map : Chain β where toOrderHom := f.comp c.toOrderHom
 
 @[simp] lemma coe_map : ⇑(c.map f) = f ∘ c := rfl
 
-@[deprecated (since := "2026-03-27")] alias map_coe := coe_map
-
 variable {f}
 
 theorem mem_map (x : α) : x ∈ c → f x ∈ Chain.map c f :=
@@ -145,8 +143,6 @@ def zip (c₀ : Chain α) (c₁ : Chain β) : Chain (α × β) where
   toOrderHom := c₀.toOrderHom.prod c₁.toOrderHom
 
 @[simp] lemma zip_apply (c₀ : Chain α) (c₁ : Chain β) (n : ℕ) : c₀.zip c₁ n = (c₀ n, c₁ n) := rfl
-
-@[deprecated (since := "2026-03-27")] alias zip_coe := zip_apply
 
 /-- An example of a `Chain` constructed from an ordered pair. -/
 def pair (a b : α) (hab : a ≤ b) : Chain α where
@@ -286,7 +282,7 @@ lemma ωScottContinuous_iff_monotone_map_ωSup :
     ωScottContinuous f ↔ ∃ hf : Monotone f, ∀ c : Chain α, f (ωSup c) = ωSup (c.map ⟨f, hf⟩) := by
   refine ⟨fun hf ↦ ⟨hf.monotone, hf.map_ωSup⟩, ?_⟩
   intro hf _ ⟨c, hc⟩ _ _ _ hda
-  convert! isLUB_range_ωSup (c.map { toFun := f, monotone' := hf.1 })
+  convert isLUB_range_ωSup (c.map { toFun := f, monotone' := hf.1 })
   · simp [← hc, ← (Set.range_comp f ⇑c)]
   · rw [← hc] at hda
     rw [← hf.2 c, ωSup_eq_of_isLUB hda]

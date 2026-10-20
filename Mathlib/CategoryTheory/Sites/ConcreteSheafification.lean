@@ -5,8 +5,8 @@ Authors: Adam Topaz
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Plus
 public import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
+public import Mathlib.CategoryTheory.Sites.Plus
 
 /-!
 
@@ -369,8 +369,8 @@ theorem exists_of_sep (P : Cᵒᵖ ⥤ D)
       (by
         intro Y f hf
         apply Sieve.le_pullback_bind _ _ _ I.hf
-        · cases I
-          exact hf)
+        cases I
+        exact hf)
   use e0, 𝟙 _
   ext IV
   let IA : B.Arrow := ⟨_, (IV.f ≫ II.f) ≫ I.f,

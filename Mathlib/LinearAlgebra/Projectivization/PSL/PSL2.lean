@@ -6,8 +6,12 @@ Authors: Edison Xie
 module
 
 public import Mathlib.GroupTheory.GroupAction.Iwasawa
-import Mathlib.GroupTheory.IsPerfect
 public import Mathlib.LinearAlgebra.Projectivization.PSL.Stabilizer
+
+import Mathlib.GroupTheory.IsPerfect
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 -/

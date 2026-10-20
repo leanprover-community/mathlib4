@@ -7,6 +7,7 @@ module
 
 public import Mathlib.AlgebraicTopology.ModelCategory.CofibrantObjectHomotopy
 public import Mathlib.AlgebraicTopology.ModelCategory.FibrantObjectHomotopy
+
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions.OfAdjunction
 import Mathlib.CategoryTheory.Quotient.LocallySmall
 
@@ -173,7 +174,8 @@ lemma HoCat.homEquivLeft_apply (f : X ⟶ Y) :
 
 @[simp]
 lemma HoCat.homEquivLeft_symm_apply (f : X ⟶ Y) :
-    HoCat.homEquivRight.symm (toHoCat.map (homMk f)) = .mk f := rfl
+    HoCat.homEquivLeft.symm (toHoCat.map (homMk f)) = .mk f := by
+  simp [homEquivLeft]
 
 end
 

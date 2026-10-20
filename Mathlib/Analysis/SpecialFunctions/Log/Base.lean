@@ -5,9 +5,13 @@ Authors: Bolton Bailey, Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle S
 -/
 module
 
-import Mathlib.Algebra.BigOperators.Field
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.Data.Int.Log
+
+import Mathlib.Algebra.BigOperators.Field
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Real logarithm base `b`
