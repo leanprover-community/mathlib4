@@ -902,8 +902,8 @@ This is available in bundled forms as:
   map_add' _ _ := rfl
 
 @[simp] theorem toEquiv_piAddEquiv [∀ i, Add (β i)] :
-    (piAddEquiv (m := m) (n := n) (ι := ι) (β := β) : Matrix m n (Π i, β i) ≃ Π i, Matrix m n (β i)) =
-    piEquiv := rfl
+    (piAddEquiv (m := m) (n := n) (ι := ι) (β := β) :
+    Matrix m n (Π i, β i) ≃ Π i, Matrix m n (β i)) = piEquiv := rfl
 
 /-- `piEquiv` as a `LinearEquiv`. -/
 @[simps] def piLinearEquiv (R) [Semiring R] [∀ i, AddCommMonoid (β i)] [∀ i, Module R (β i)] :
