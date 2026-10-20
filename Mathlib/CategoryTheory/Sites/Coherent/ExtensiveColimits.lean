@@ -5,8 +5,9 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-import Mathlib.CategoryTheory.Preadditive.Biproducts
 public import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveSheaves
+
+import Mathlib.CategoryTheory.Preadditive.Biproducts
 import Mathlib.CategoryTheory.Sites.Limits
 /-!
 

@@ -5,9 +5,9 @@ Authors: Jujian Zhang, Eric Wieser
 -/
 module
 
+public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Submodule
 public import Mathlib.RingTheory.Ideal.BigOperators
 public import Mathlib.RingTheory.Ideal.Maps
-public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Submodule
 
 /-!
 # Homogeneous ideals of a graded algebra
