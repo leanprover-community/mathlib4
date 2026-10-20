@@ -340,10 +340,9 @@ lemma mul_mul_choose_dvd_lcmUpto {n : ℕ} (hn : n ≠ 0) :
   rw [← choose_symm_half]
   apply mul_choose_dvd_lcmUpto <;> lia
 
-lemma mul_four_pow_le_lcmUpto {n : ℕ} (hn : n ≠ 0) : n * 4 ^ n ≤ lcmUpto (2 * n + 1) := calc
-  _ ≤ _ := mul_le_mul_left _ (four_pow_le_add_one_mul_choose n)
-  _ = _ := (mul_assoc ..).symm
-  _ ≤ _ := le_of_dvd (lcmUpto_pos _) (mul_mul_choose_dvd_lcmUpto hn)
+lemma mul_four_pow_le_lcmUpto {n : ℕ} (hn : n ≠ 0) : n * 4 ^ n ≤ lcmUpto (2 * n + 1) := by
+  grw [four_pow_le_add_one_mul_choose, ← mul_assoc]
+  exact le_of_dvd (lcmUpto_pos _) (mul_mul_choose_dvd_lcmUpto hn)
 
 theorem two_pow_le_lcmUpto {n : ℕ} (hn : 7 ≤ n) : 2 ^ n ≤ lcmUpto n := by
   have p2 (k) : 2 ^ (2 * k) = 4 ^ k := by simp [pow_mul]
@@ -852,16 +851,13 @@ theorem pi_ge' {x : ℝ} (hx : 1 < x) :
   positivity
 
 lemma pi_ge_of_four_le {n : ℕ} (hn : 4 ≤ n) : n * log 2 / log n ≤ π n := by
-  obtain rfl | rfl | rfl | large : n = 4 ∨ n = 5 ∨ n = 6 ∨ 7 ≤ n := by lia
-  all_goals grw [div_le_iff₀ (log_pos (mod_cast (by lia)))]
-  on_goal 4 => grw [← psi_le_primeCounting_mul_log, psi_ge_of_seven_le large]
-  all_goals grw [← le_div_iff₀ (by positivity), mul_div_assoc, log_div_log,
-    ← div_le_iff₀' (mod_cast (by decide)), le_logb_iff_rpow_le one_lt_two (by simp)]
-  · norm_num [show π 4 = 2 by decide]
-  · grw [show π 5 = 3 by decide, div_eq_mul_inv, rpow_mul zero_le_two,
-      ← rpow_le_rpow_iff (by positivity) (by positivity) zero_lt_three, ← rpow_mul (by positivity)]
-    norm_num
-  · norm_num [show π 6 = 3 by decide]
+  rw [div_le_iff₀ (log_pos (mod_cast (by lia)))]
+  obtain hn' | hn' := le_or_gt 7 n
+  · grw [psi_ge_of_seven_le hn', ← psi_le_primeCounting_mul_log]
+  rw [← exp_le_exp]
+  iterate 2 rw [mul_comm, exp_mul, exp_log (by positivity)]
+  norm_cast
+  decide +revert
 
 theorem theta_le_pi_mul_log (n : ℕ) : θ n ≤ (π n) * log n :=
   (theta_le_psi n).trans (psi_le_primeCounting_mul_log n)
