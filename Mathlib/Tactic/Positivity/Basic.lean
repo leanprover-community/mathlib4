@@ -371,8 +371,8 @@ meta def evalPow : PositivityExt where eval {u α} zα pα? e := do
       haveI' : $b =Q 2 * $m := ⟨⟩
       haveI' : $e =Q $a ^ $b := ⟨⟩
       pure (.nonnegative q((even_two_mul $m).pow_nonneg $a))
-    let ra ← core zα pα a
     orElse result do
+      let ra ← core zα pα a
       let ofNonneg (pa : Q(0 ≤ $a)) (_rα : Q(Semiring $α)) (_oα : Q(IsOrderedRing $α)) :
           MetaM (Strictness zα e (some pα)) := do
         haveI' : $e =Q $a ^ $b := ⟨⟩
@@ -415,9 +415,8 @@ theorem abs_pos_of_ne_zero {α : Type*} [AddGroup α] [LinearOrder α]
 meta def evalAbs : PositivityExt where eval {_u} (α zα pα?) (e : Q($α)) :=
   match pα? with | none => pure .none | some pα' => do
   let ~q(@abs _ (_) (_) $a) := e | throwError "not |·|"
-  let ra ← core zα (some pα') a
   try
-    match ra with
+    match ← core zα (some pα') a with
     | .positive pa =>
       let pa' ← mkAppM ``abs_pos_of_pos #[pa]
       pure (.positive (pα := pα') pa')
@@ -494,27 +493,26 @@ meta def evalIntCast : PositivityExt where eval {u α} _zα pα? e := do
   let zα' : Q(Zero Int) := q(inferInstance)
   let pα' : Q(PartialOrder Int) := q(inferInstance)
   let ra ← core zα' pα' a
-  liftM <| catchNone do
-    match (dependent := true) ra, pα? with
-    | .positive pa, some _ =>
-      let _rα ← synthInstanceQ q(Ring $α)
-      let _oα ← synthInstanceQ q(IsOrderedRing $α)
-      let _nt ← synthInstanceQ q(Nontrivial $α)
-      assumeInstancesCommute
-      pure (.positive q(Int.cast_pos.mpr $pa))
-    | .nonnegative pa, some _ =>
-      let _rα ← synthInstanceQ q(Ring $α)
-      let _oα ← synthInstanceQ q(IsOrderedRing $α)
-      let _nt ← synthInstanceQ q(Nontrivial $α)
-      assumeInstancesCommute
-      pure (.nonnegative q(Int.cast_nonneg $pa))
-    | .nonzero pa, _ =>
-      let _oα ← synthInstanceQ q(AddGroupWithOne $α)
-      let _nt ← synthInstanceQ q(CharZero $α)
-      assumeInstancesCommute
-      pure (.nonzero q(Int.cast_ne_zero.mpr $pa))
-    | _ , _ =>
-      pure .none
+  match (dependent := true) ra, pα? with
+  | .positive pa, some _ =>
+    let _rα ← synthInstanceQ q(Ring $α)
+    let _oα ← synthInstanceQ q(IsOrderedRing $α)
+    let _nt ← synthInstanceQ q(Nontrivial $α)
+    assumeInstancesCommute
+    pure (.positive q(Int.cast_pos.mpr $pa))
+  | .nonnegative pa, some _ =>
+    let _rα ← synthInstanceQ q(Ring $α)
+    let _oα ← synthInstanceQ q(IsOrderedRing $α)
+    let _nt ← synthInstanceQ q(Nontrivial $α)
+    assumeInstancesCommute
+    pure (.nonnegative q(Int.cast_nonneg $pa))
+  | .nonzero pa, _ =>
+    let _oα ← synthInstanceQ q(AddGroupWithOne $α)
+    let _nt ← synthInstanceQ q(CharZero $α)
+    assumeInstancesCommute
+    pure (.nonzero q(Int.cast_ne_zero.mpr $pa))
+  | _ , _ =>
+    pure .none
 
 /-- Extension for `Nat.succ`. -/
 @[positivity Nat.succ _]

@@ -106,8 +106,6 @@ structure State where
   cache : ExprMap CachedResult := {}
   /-- Cache storing failed goals such that they are not tried again. -/
   failureCache : ExprSet := {}
-  /-- Count the number of steps and stop when maxSteps is reached. -/
-  numSteps := 0
 
 /-- Monad to run `positivity` tactic in. -/
 abbrev PositivityM := StateT Positivity.State MetaM
@@ -515,7 +513,7 @@ def findCached? (pα? : Option Q(PartialOrder $α)) (e : Q($α)) :
 def core (pα? : Option Q(PartialOrder $α)) (e : Q($α)) : PositivityM (Strictness zα e pα?) :=
   withReducible do
   let mut result := .none
-  trace[Tactic.positivity] "core: {e}"
+  trace[Tactic.positivity] "trying to prove positivity of {e}"
   if e ∈ (← get).failureCache then return .none else
   if let some r ← findCached? zα pα? e then
     trace[Tactic.positivity] "cached: {e} => {r.toString}"
@@ -525,14 +523,14 @@ def core (pα? : Option Q(PartialOrder $α)) (e : Q($α)) : PositivityM (Strictn
       result ← orElse result <| ext.eval zα pα? e
     catch err =>
       trace[Tactic.positivity] "{e} failed: {err.toMessageData}"
-  trace[Tactic.positivity] "extensions: {e} => {result.toString}"
+  trace[Tactic.positivity] "current result from positivity extensions: {result.toString}"
   match h : pα?, result with
   | some pα, res =>
-    trace[Tactic.positivity] "{α} has PartialOrder"
+    trace[Tactic.positivity] "{α} has some {pα}"
     let mut res ← orElse res <| normNumPositivity zα pα e
-    trace[Tactic.positivity] "normNum: {e} => {res.toString}"
+    trace[Tactic.positivity] "current result from normNum: {res.toString}"
     res ← orElse res <| positivityCanon zα pα e
-    trace[Tactic.positivity] "canonicity: {e} => {res.toString}"
+    trace[Tactic.positivity] "current result from canonicity: {res.toString}"
     if let .positive _ := res then
       trace[Tactic.positivity] "{e} => {res.toString}"
       cacheStrictness res
@@ -544,7 +542,7 @@ def core (pα? : Option Q(PartialOrder $α)) (e : Q($α)) : PositivityM (Strictn
     cacheStrictness res
     return h ▸ res
   | .none, _ =>
-    trace[Tactic.positivity] "{α} doesn't have PartialOrder"
+    trace[Tactic.positivity] "{α} has no PartialOrder"
     if let .nonzero _ := result then
       trace[Tactic.positivity] "{e} => {result.toString}"
       cacheStrictness result
@@ -552,9 +550,10 @@ def core (pα? : Option Q(PartialOrder $α)) (e : Q($α)) : PositivityM (Strictn
     for ldecl in ← getLCtx do
       if !ldecl.isImplementationDetail then
         result ← orElse result <| compareHypNonzero zα e ldecl
-    trace[Tactic.positivity] "after comparing hyps: {e} => {result.toString}"
+    trace[Tactic.positivity] "{e} => {result.toString}"
     cacheStrictness result
     return result
+
 
 private inductive OrderRel : Type
 | le : OrderRel -- `0 ≤ a`
@@ -571,7 +570,7 @@ inequality was established) together with the proof as an expression. -/
 def bestResult (e : Expr) : PositivityM (Bool × Expr) := do
   let ⟨u, α, _⟩ ← inferTypeQ' e
   let zα ← synthInstanceQ q(Zero $α)
-  let pα? ← synthInstanceQ? q(PartialOrder $α)
+  let pα? ← try? <| synthInstanceQ q(PartialOrder $α)
   assumeInstancesCommute
   match pα?, ← try? (Meta.Positivity.core zα pα? e) with
   | _, some (.positive pf) => pure (true, pf)
@@ -591,7 +590,7 @@ def solve (t : Q(Prop)) : MetaM Expr := do
   let rest {u : Level} (α : Q(Type u)) z e (relDesired : OrderRel) : MetaM Expr := do
     let zα ← synthInstanceQ q(Zero $α)
     let .true ← isDefEq z q(0 : $α) | throwError "not a positivity goal"
-    let pα? ← synthInstanceQ? q(PartialOrder $α)
+    let pα? ← try? <| synthInstanceQ q(PartialOrder $α)
     let r ← catchNone <| Meta.Positivity.core zα pα? e |>.run' {}
     let throw (a b : String) : MetaM Expr := throwError
       "failed to prove {a}, but it would be possible to prove {b} if desired"

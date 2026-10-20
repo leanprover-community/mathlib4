@@ -237,14 +237,40 @@ example (s : Finset ℕ) (f : ℕ → ℤ) (hf : ∀ n, 0 ≤ f n) : 0 ≤ s.pro
 because `compareHyp` can't look for assumptions behind binders.
 -/
 @[positivity Finset.prod _ _]
-meta def evalFinsetProd : PositivityExt where eval {u α} zα pα? e := do
+meta def evalFinsetProd : PositivityExt where eval {u α} zα pα? e :=
+  match pα? with | none => pure .none | some pα => do
   match e with
   | ~q(@Finset.prod $ι _ $instα $s $f) =>
     let i : Q($ι) ← mkFreshExprMVarQ q($ι) .syntheticOpaque
     have body : Q($α) := Expr.betaRev f #[i]
+    let rbody ← core zα pα body
     let _instαmon ← synthInstanceQ q(CommMonoidWithZero $α)
-    let proveNonzero {pα? : Option Q(PartialOrder $α)} (rbody : Strictness zα body pα?) :
-        MetaM (Strictness zα e pα?) := do
+    -- Try to show that the product is positive
+    let p_pos : Option Q(0 < $e) ← (do
+      let .positive pbody := rbody | pure none -- Fail if the body is not provably positive
+      -- TODO(https://github.com/leanprover-community/quote4/issues/38):
+      -- We must name the following, else `assertInstancesCommute` loops.
+      let .some _instαzeroone ← trySynthInstanceQ q(ZeroLEOneClass $α) | pure none
+      let .some _instαposmul ← trySynthInstanceQ q(PosMulStrictMono $α) | pure none
+      let .some _instαnontriv ← trySynthInstanceQ q(Nontrivial $α) | pure none
+      assertInstancesCommute
+      let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars #[i] pbody (binderInfoForMVars := .default)
+      pure <| some q(prod_pos fun i _ ↦ $pr i) : MetaM (Option Q(0 < $e)))
+    if let some p_pos := p_pos then return .positive p_pos
+    -- Try to show that the product is nonnegative
+    let p_nonneg : Option Q(0 ≤ $e) ← (do
+      let some pbody := rbody.toNonneg
+        | pure none -- Fail if the body is not provably nonnegative
+      let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody (binderInfoForMVars := .default)
+      -- TODO(https://github.com/leanprover-community/quote4/issues/38):
+      -- We must name the following, else `assertInstancesCommute` loops.
+      let .some _instαzeroone ← trySynthInstanceQ q(ZeroLEOneClass $α) | pure none
+      let .some _instαposmul ← trySynthInstanceQ q(PosMulMono $α) | pure none
+      assertInstancesCommute
+      pure <| some q(prod_nonneg fun i _ ↦ $pr i) : MetaM (Option Q(0 ≤ $e)))
+    if let some p_nonneg := p_nonneg then return .nonnegative p_nonneg
+    -- Fall back to showing that the product is nonzero
+    catchNone do
       let pbody ← rbody.toNonzero
       let pr : Q(∀ i, $f i ≠ 0) ← mkLambdaFVars #[i] pbody (binderInfoForMVars := .default)
       -- TODO(https://github.com/leanprover-community/quote4/issues/38):
@@ -252,38 +278,6 @@ meta def evalFinsetProd : PositivityExt where eval {u α} zα pα? e := do
       let _instαnontriv ← synthInstanceQ q(Nontrivial $α)
       let _instαnozerodiv ← synthInstanceQ q(NoZeroDivisors $α)
       assertInstancesCommute
-      pure <| .nonzero q(prod_ne_zero fun i _ ↦ $pr i)
-    match (dependent := true) pα? with
-    | some pα => (do
-      let rbody ← core zα (some pα) body
-      -- Try to show that the product is positive
-      let p_pos : Option Q(0 < $e) ← liftM <| try? do
-        let .positive pbody := rbody | failure
-        -- TODO(https://github.com/leanprover-community/quote4/issues/38):
-        -- We must name the following, else `assertInstancesCommute` loops.
-        let _instαzeroone ← synthInstanceQ q(ZeroLEOneClass $α)
-        let _instαposmul ← synthInstanceQ q(PosMulStrictMono $α)
-        let _instαnontriv ← synthInstanceQ q(Nontrivial $α)
-        assertInstancesCommute
-        let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars #[i] pbody (binderInfoForMVars := .default)
-        return q(prod_pos fun i _ ↦ $pr i)
-      if let some p_pos := p_pos then return .positive p_pos
-      -- Try to show that the product is nonnegative
-      let p_nonneg : Option Q(0 ≤ $e) ← liftM <| try? do
-        let some pbody := rbody.toNonneg | failure
-        let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody (binderInfoForMVars := .default)
-        -- TODO(https://github.com/leanprover-community/quote4/issues/38):
-        -- We must name the following, else `assertInstancesCommute` loops.
-        let _instαzeroone ← synthInstanceQ q(ZeroLEOneClass $α)
-        let _instαposmul ← synthInstanceQ q(PosMulMono $α)
-        assertInstancesCommute
-        return q(prod_nonneg fun i _ ↦ $pr i)
-      if let some p_nonneg := p_nonneg then return .nonnegative p_nonneg
-      -- Fall back to showing that the product is nonzero
-      catchNone <| proveNonzero rbody
-    )
-    | none =>
-      let rbody ← core zα none body
-      catchNone <| proveNonzero rbody
+      return .nonzero q(prod_ne_zero fun i _ ↦ $pr i)
 
 end Mathlib.Meta.Positivity
