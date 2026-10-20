@@ -48,25 +48,27 @@ open Polynomial
 
 namespace Mathlib.Tactic.Hessenberg
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [CommRing R] (n : ℕ) (H : Array R)
 
 /-- The characteristic polynomial of the leading `k × k` block of the `n × n` Hessenberg
 matrix represented by an array of entries in row-major ordering. -/
-noncomputable def hessP (n : ℕ) (H : Array R) : ℕ → R[X]
+noncomputable def hessP : ℕ → R[X]
   | 0 => 1
   | k + 1 =>
-    (X - C (H.getD (n * k + k) 0)) * hessP n H k -
+    (X - C (H.getD (n * k + k) 0)) * hessP k -
       ∑ t : Fin k, C (H.getD (n * (t : ℕ) + k) 0 *
-        ∏ j ∈ Finset.Ico (t : ℕ) k, H.getD (n * (j + 1) + j) 0) * hessP n H (t : ℕ)
+        ∏ j ∈ Finset.Ico (t : ℕ) k, H.getD (n * (j + 1) + j) 0) * hessP (t : ℕ)
 
 /-- The characteristic polynomial of an `n × n` Hessenberg matrix represented by an array of
 entries in row-major ordering. -/
-noncomputable abbrev hessCharPoly (n : ℕ) (H : Array R) : R[X] := hessP n H n
+noncomputable abbrev hessCharPoly : R[X] := hessP n H n
 
-theorem hessP_zero (n : ℕ) (H : Array R) : hessP n H 0 = 1 := by
+variable {n H}
+
+theorem hessP_zero : hessP n H 0 = 1 := by
   simp only [hessP]
 
-theorem hessP_succ (n k : ℕ) (H : Array R) :
+theorem hessP_succ (k : ℕ) :
     hessP n H (k + 1) =
       (X - C (H.getD (n * k + k) 0)) * hessP n H k -
         ∑ t : Fin k, C (H.getD (n * (t : ℕ) + k) 0 *
@@ -74,7 +76,7 @@ theorem hessP_succ (n k : ℕ) (H : Array R) :
           hessP n H (t : ℕ) := by
   simp only [hessP]
 
-theorem hessCharPoly_eq (n : ℕ) (H : Array R) : hessCharPoly n H = hessP n H n := rfl
+theorem hessCharPoly_eq : hessCharPoly n H = hessP n H n := rfl
 
 /-! ## The recurrence on coefficient lists
 
@@ -82,22 +84,24 @@ This section defines the recurrence on a polynomial representation (lists of coe
 kernel can compute.
 -/
 
+variable (n H)
+
 /-- Compute the coefficients of `∑_{t ≤ i} H[t][k] · r · (∏_{j=t}^{i-1} H[j+1][j]) · p_t` by
 recursion on `i`, where `p_t` is the polynomial defined in the coefficient list `ps[t]`. `r`
 accumulates the produuct of `H[k][k-1]` entries at each step. -/
 @[expose]
-def coeffHessSum (n : ℕ) (H : Array R) (kcol : ℕ) :
-    (i : ℕ) → (r : R) → Array (List R) → List R
-  | 0, r, ps => (ps.getD 0 []).map (H.getD (n * 0 + kcol) 0 * r * ·)
+def coeffHessSum (k : ℕ) :
+    (i : ℕ) → (r : R) → (ps : Array (List R)) → List R
+  | 0, r, ps => (ps.getD 0 []).map (H.getD (n * 0 + k) 0 * r * ·)
   | i + 1, r, ps =>
     List.zipWithAll (fun a b => a.getD 0 + b.getD 0)
-      ((ps.getD (i + 1) []).map (H.getD (n * (i + 1) + kcol) 0 * r * ·))
-      (coeffHessSum n H kcol i (r * H.getD (n * (i + 1) + i) 0) ps)
+      ((ps.getD (i + 1) []).map (H.getD (n * (i + 1) + k) 0 * r * ·))
+      (coeffHessSum k i (r * H.getD (n * (i + 1) + i) 0) ps)
 
 /-- Compute the coefficients of `pₖ` from the coefficient lists of `p₀, ..., p_{k-1}`. The
 coefficients of each polynomial are stored as a `List R` in `ps`. -/
 @[expose]
-def coeffHessStep (n : ℕ) (H : Array R) (k : ℕ) (ps : Array (List R)) : List R :=
+def coeffHessStep (k : ℕ) (ps : Array (List R)) : List R :=
   match k with
   | 0 => [1]
   | 1 =>
@@ -111,14 +115,16 @@ def coeffHessStep (n : ℕ) (H : Array R) (k : ℕ) (ps : Array (List R)) : List
 
 /-- Compute the coefficients of `hessCharPoly n H`. -/
 @[expose]
-def coeffHessCharPoly (n : ℕ) (H : Array R) : List R :=
+def coeffHessCharPoly : List R :=
   ((fun ps => ps.push (coeffHessStep n H ps.size ps))^[n] #[[1]]).getD n []
 
-theorem ofCoeffList_coeffHessSum (n : ℕ) (H : Array R) (kcol : ℕ) :
+variable {n H}
+
+theorem ofCoeffList_coeffHessSum (k : ℕ) :
     ∀ (i : ℕ) (r : R) (ps : Array (List R)),
-      ofCoeffList (coeffHessSum n H kcol i r ps) =
+      ofCoeffList (coeffHessSum n H k i r ps) =
         ∑ t : Fin (i + 1),
-          C (H.getD (n * (t : ℕ) + kcol) 0 *
+          C (H.getD (n * (t : ℕ) + k) 0 *
               (r * ∏ j ∈ Finset.Ico (t : ℕ) i, H.getD (n * (j + 1) + j) 0)) *
             ofCoeffList (ps.getD (t : ℕ) [])
   | 0, r, ps => by simp [coeffHessSum]
@@ -128,7 +134,7 @@ theorem ofCoeffList_coeffHessSum (n : ℕ) (H : Array R) (kcol : ℕ) :
     congrm ?_ + ∑ t, ?_ <;> simp [Finset.prod_Ico_succ_top, Fin.is_le]
     ring
 
-theorem ofCoeffList_coeffHessStep (n : ℕ) (H : Array R) (k : ℕ) (ps : Array (List R)) :
+theorem ofCoeffList_coeffHessStep (k : ℕ) (ps : Array (List R)) :
     ofCoeffList (coeffHessStep n H (k + 1) ps) =
       (X - C (H.getD (n * k + k) 0)) * ofCoeffList (ps.getD k []) -
         ∑ t : Fin k,
@@ -146,7 +152,7 @@ theorem ofCoeffList_coeffHessStep (n : ℕ) (H : Array R) (k : ℕ) (ps : Array 
     ring
 
 @[simp]
-theorem ofCoeffList_coeffHessCharPoly (n : ℕ) (H : Array R) :
+theorem ofCoeffList_coeffHessCharPoly :
     ofCoeffList (coeffHessCharPoly n H) = hessCharPoly n H := by
   let f (ps : Array (List R)) := ps.push (coeffHessStep n H ps.size ps)
   have hsize k : (f^[k] #[[1]]).size = k + 1 := by
