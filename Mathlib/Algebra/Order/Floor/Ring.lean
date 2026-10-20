@@ -56,9 +56,11 @@ meta def evalIntFloor : PositivityExt where eval {u α} _zα pα? e :=
   | 0, ~q(ℤ), ~q(@Int.floor $α' $ir $io $j $a) =>
     match ← core q(inferInstance) (some q(inferInstance)) a with
     | .positive pa =>
+      liftM <| catchNone do
         assertInstancesCommute
         pure (.nonnegative q(int_floor_nonneg_of_pos (α := $α') $pa))
     | .nonnegative pa =>
+      liftM <| catchNone do
         assertInstancesCommute
         pure (.nonnegative q(int_floor_nonneg (α := $α') $pa))
     | _ => pure .none
@@ -75,11 +77,11 @@ meta def evalNatCeil : PositivityExt where eval {u α} _zα pα? e :=
   match u, α, e with
   | 0, ~q(ℕ), ~q(@Nat.ceil $α' $ir $io $j $a) =>
     let _i ← synthInstanceQ q(LinearOrder $α')
-    assertInstancesCommute
     match ← core q(inferInstance) (some q(inferInstance)) a with
     | .positive pa =>
-      assertInstancesCommute
-      pure (.positive q(nat_ceil_pos (α := $α') $pa))
+      liftM <| catchNone do
+        assertInstancesCommute
+        pure (.positive q(nat_ceil_pos (α := $α') $pa))
     | _ => pure .none
   | _, _, _ => throwError "failed to match on Nat.ceil application"
 
@@ -94,9 +96,11 @@ meta def evalIntCeil : PositivityExt where eval {u α} _zα pα? e :=
   | 0, ~q(ℤ), ~q(@Int.ceil $α' $ir $io $j $a) =>
     match ← core q(inferInstance) (some q(inferInstance)) a with
     | .positive pa =>
+      liftM <| catchNone do
         assertInstancesCommute
         pure (.positive q(int_ceil_pos (α := $α') $pa))
     | .nonnegative pa =>
+      liftM <| catchNone do
         assertInstancesCommute
         pure (.nonnegative q(Int.ceil_nonneg (α := $α') $pa))
     | _ => pure .none

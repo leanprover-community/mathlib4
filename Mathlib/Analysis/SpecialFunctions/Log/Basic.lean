@@ -644,7 +644,7 @@ lemma log_nz_of_isRat_neg {n : ℤ} : (NormNum.IsRat e n d) → (decide (n / d <
 meta def evalLogNatCast : PositivityExt where eval {u α} _zα pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
-  | 0, ~q(ℝ), ~q(Real.log (Nat.cast $a)) =>
+  | 0, ~q(ℝ), ~q(Real.log (Nat.cast $a)) => liftM <| catchNone do
     assertInstancesCommute
     pure (.nonnegative q(Real.log_natCast_nonneg $a))
   | _, _, _ => throwError "not Real.log"
@@ -654,7 +654,7 @@ meta def evalLogNatCast : PositivityExt where eval {u α} _zα pα? e :=
 meta def evalLogIntCast : PositivityExt where eval {u α} _zα pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
-  | 0, ~q(ℝ), ~q(Real.log (Int.cast $a)) =>
+  | 0, ~q(ℝ), ~q(Real.log (Int.cast $a)) => liftM <| catchNone do
     assertInstancesCommute
     pure (.nonnegative q(Real.log_intCast_nonneg $a))
   | _, _, _ => throwError "not Real.log"

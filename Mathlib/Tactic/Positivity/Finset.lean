@@ -31,9 +31,10 @@ meta def evalFinsetCard : PositivityExt where eval {u α} _ pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Finset.card $s) =>
-    let some ps ← proveFinsetNonempty s | return .none
-    assertInstancesCommute
-    return .positive q(Finset.Nonempty.card_pos $ps)
+    return ← catchNone do
+      let some ps ← proveFinsetNonempty s | return .none
+      assertInstancesCommute
+      return .positive q(Finset.Nonempty.card_pos $ps)
   | _ => throwError "not Finset.card"
 
 /-- Extension for `Fintype.card`. `Fintype.card α` is positive if `α` is nonempty. -/
@@ -90,23 +91,27 @@ meta def evalFinsetSum : PositivityExt where eval {u α} zα pα? e :=
     let i : Q($ι) ← mkFreshExprMVarQ q($ι) .syntheticOpaque
     have body : Q($α) := .betaRev f #[i]
     let rbody ← core zα pα body
-    let p_pos : Option Q(0 < $e) ← do
+    let p_pos? ← try? (do
       let .positive pbody := rbody | pure none -- Fail if the body is not provably positive
       let some ps ← proveFinsetNonempty s | pure none
       let .some _pα' ← trySynthInstanceQ q(IsOrderedCancelAddMonoid $α) | pure none
       assertInstancesCommute
       let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars #[i] pbody
       pure <| some q(sum_pos (fun i _ ↦ $pr i) $ps)
+      : MetaM (Option Q(0 < $e)))
     -- Try to show that the sum is positive because all summands are
-    if let some p_pos := p_pos then
+    if let some (some p_pos) := p_pos? then
       return .positive p_pos
-    let pbody ← rbody.toNonneg
-    let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody
+    let some pbody := rbody.toNonneg | return .none
+    let some (pr : Q(∀ i, 0 ≤ $f i)) ← (try? (do
+      let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody
+      pure pr : MetaM Q(∀ i, 0 ≤ $f i))) | return .none
     -- Else try to show that the sum is positive because one summand is. We look for the witness
     -- among the assumptions of the form `a ∈ s`, since we have no other way of getting hold of an
     -- element of `s` at which `f` might be positive.
     let p_pos' : Option Q(0 < $e) ← (do
-      let .some _pα' ← trySynthInstanceQ q(IsOrderedCancelAddMonoid $α) | pure none
+      let some (.some _pα') ←
+        (try? (trySynthInstanceQ q(IsOrderedCancelAddMonoid $α))) | return none
       for ldecl in ← getLCtx do
         if ldecl.isImplementationDetail then continue
         unless ← Meta.isProp ldecl.type do continue
@@ -115,16 +120,20 @@ meta def evalFinsetSum : PositivityExt where eval {u α} zα pα? e :=
         let .some ⟨a, _⟩ ← isMemFinset? q($s) ty | continue
         have fa : Q($α) := .betaRev f #[a]
         let : $fa =Q $f $a := ⟨⟩
-        let .positive pa ← catchNone (core zα pα fa) | continue
-        assertInstancesCommute
-        return some q(sum_pos' (fun i _ ↦ $pr i) ⟨$a, $ha, $pa⟩)
-      return none)
+        let .positive pa ← core zα pα fa | continue
+        let some pf ← (try? (do
+          assertInstancesCommute
+          pure (q(sum_pos' (fun i _ ↦ $pr i) ⟨$a, $ha, $pa⟩) : Q(0 < $e))
+          : MetaM Q(0 < $e))) | continue
+        return some pf
+      return none : PositivityM (Option Q(0 < $e)))
     if let some p_pos' := p_pos' then
       return .positive p_pos'
     -- Fall back to showing that the sum is nonnegative
-    let _pα' ← synthInstanceQ q(AddLeftMono $α)
-    assertInstancesCommute
-    return .nonnegative q(sum_nonneg fun i _ ↦ $pr i)
+    return ← catchNone do
+      let _pα' ← synthInstanceQ q(AddLeftMono $α)
+      assertInstancesCommute
+      return .nonnegative q(sum_nonneg fun i _ ↦ $pr i)
   | _ => throwError "not Finset.sum"
 
 variable {α : Type*} {s : Finset α}

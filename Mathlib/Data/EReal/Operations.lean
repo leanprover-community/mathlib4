@@ -880,17 +880,22 @@ meta def evalERealAdd : PositivityExt where eval {u α} zα pα? e :=
   match pα? with | none => pure .none | some pα => do
   match u, α, e with
   | 0, ~q(EReal), ~q($a + $b) =>
-    assertInstancesCommute
     match ← core zα pα a with
     | .positive pa =>
-      match (← core zα pα b).toNonneg with
-      | some pb => pure (.positive q(EReal.add_pos_of_pos_of_nonneg $pa $pb))
-      | _ => pure .none
+      let rb ← core zα pα b
+      return ← catchNone do
+        assertInstancesCommute
+        match rb.toNonneg with
+        | some pb => pure (.positive q(EReal.add_pos_of_pos_of_nonneg $pa $pb))
+        | _ => pure .none
     | .nonnegative pa =>
-      match ← core zα pα b with
-      | .positive pb => pure (.positive q(Right.add_pos_of_nonneg_of_pos $pa $pb))
-      | .nonnegative pb => pure (.nonnegative q(add_nonneg $pa $pb))
-      | _ => pure .none
+      let rb ← core zα pα b
+      return ← catchNone do
+        assertInstancesCommute
+        match rb with
+        | .positive pb => pure (.positive q(Right.add_pos_of_nonneg_of_pos $pa $pb))
+        | .nonnegative pb => pure (.nonnegative q(add_nonneg $pa $pb))
+        | _ => pure .none
     | _ => pure .none
   | _, _, _ => throwError "not a sum of 2 `EReal`s"
 
@@ -900,22 +905,30 @@ meta def evalERealMul : PositivityExt where eval {u α} zα pα? e :=
   match pα? with | none => pure .none | some pα => do
   match u, α, e with
   | 0, ~q(EReal), ~q($a * $b) =>
-    assertInstancesCommute
     match ← core zα pα a with
     | .positive pa =>
-      match ← core zα pα b with
-      | .positive pb => pure <| .positive q(EReal.mul_pos $pa $pb)
-      | .nonnegative pb => pure <| .nonnegative q(EReal.mul_nonneg (le_of_lt $pa) $pb)
-      | .nonzero pb => pure <| .nonzero q(mul_ne_zero (ne_of_gt $pa) $pb)
-      | _ => pure .none
+      let rb ← core zα pα b
+      return ← catchNone do
+        assertInstancesCommute
+        match rb with
+        | .positive pb => pure <| .positive q(EReal.mul_pos $pa $pb)
+        | .nonnegative pb => pure <| .nonnegative q(EReal.mul_nonneg (le_of_lt $pa) $pb)
+        | .nonzero pb => pure <| .nonzero q(mul_ne_zero (ne_of_gt $pa) $pb)
+        | _ => pure .none
     | .nonnegative pa =>
-      match (← core zα pα b).toNonneg with
-      | some pb => pure (.nonnegative q(EReal.mul_nonneg $pa $pb))
-      | none => pure .none
+      let rb ← core zα pα b
+      return ← catchNone do
+        assertInstancesCommute
+        match rb.toNonneg with
+        | some pb => pure (.nonnegative q(EReal.mul_nonneg $pa $pb))
+        | none => pure .none
     | .nonzero pa =>
-      match (← core zα pα b).toNonzero with
-      | some pb => pure (.nonzero q(mul_ne_zero $pa $pb))
-      | none => pure .none
+      let rb ← core zα pα b
+      return ← catchNone do
+        assertInstancesCommute
+        match rb.toNonzero with
+        | some pb => pure (.nonzero q(mul_ne_zero $pa $pb))
+        | none => pure .none
     | _ => pure .none
   | _, _, _ => throwError "not a product of 2 `EReal`s"
 

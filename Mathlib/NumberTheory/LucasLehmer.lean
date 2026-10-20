@@ -83,11 +83,12 @@ meta def evalMersenne : PositivityExt where eval {u α} _zα pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(mersenne $a) =>
-    assertInstancesCommute
     let ra ← core q(inferInstance) (some q(inferInstance)) a
-    match ra with
-    | .positive pa => pure (.positive q(mersenne_pos_of_pos $pa))
-    | _ => pure (.nonnegative q(Nat.zero_le (mersenne $a)))
+    return ← catchNone do
+      assertInstancesCommute
+      match ra with
+      | .positive pa => pure (.positive q(mersenne_pos_of_pos $pa))
+      | _ => pure (.nonnegative q(Nat.zero_le (mersenne $a)))
   | _, _, _ => throwError "not mersenne"
 
 end Mathlib.Meta.Positivity

@@ -181,9 +181,10 @@ meta def evalTriangleRemovalBound : PositivityExt where eval {u α} _zα pα? e 
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(triangleRemovalBound $ε) =>
-    let .positive hε ← core q(inferInstance) (some q(inferInstance)) ε | failure
-    assertInstancesCommute
-    pure (.positive q(triangleRemovalBound_pos $hε))
+    let .positive hε ← core q(inferInstance) (some q(inferInstance)) ε | return .none
+    return ← catchNone do
+      assertInstancesCommute
+      pure (.positive q(triangleRemovalBound_pos $hε))
   | _, _, _ => throwError "failed to match on Int.ceil application"
 
 example (ε : ℝ) (hε : 0 < ε) : 0 < triangleRemovalBound ε := by positivity

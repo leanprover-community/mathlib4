@@ -1138,16 +1138,18 @@ meta def evalNNRealRpow : PositivityExt where eval {u α} _ pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ≥0), ~q($a ^ (0 : ℝ)) =>
-    assertInstancesCommute
-    pure (.positive q(NNReal.rpow_zero_pos $a))
+    liftM <| catchNone do
+      assertInstancesCommute
+      pure (.positive q(NNReal.rpow_zero_pos $a))
   | 0, ~q(ℝ≥0), ~q($a ^ ($b : ℝ)) =>
-    assertInstancesCommute
     let ra ← core q(inferInstance) (some q(inferInstance)) a
-    match ra with
-    | .positive pa =>
-      pure (.positive q(NNReal.rpow_pos $pa))
-    | _ =>
-      pure (.nonnegative q(zero_le (a := $e)))
+    return ← catchNone do
+      assertInstancesCommute
+      match ra with
+      | .positive pa =>
+        pure (.positive q(NNReal.rpow_pos $pa))
+      | _ =>
+        pure (.nonnegative q(zero_le (a := $e)))
   | _, _, _ => throwError "not NNReal.rpow"
 
 private meta def isFiniteM? (x : Q(ℝ≥0∞)) : MetaM (Option Q($x ≠ (⊤ : ℝ≥0∞))) := do
@@ -1168,22 +1170,24 @@ meta def evalENNRealRpow : PositivityExt where eval {u α} _ pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ≥0∞), ~q($a ^ (0 : ℝ)) =>
-    assertInstancesCommute
-    pure (.positive q(ENNReal.rpow_zero_pos $a))
+    liftM <| catchNone do
+      assertInstancesCommute
+      pure (.positive q(ENNReal.rpow_zero_pos $a))
   | 0, ~q(ℝ≥0∞), ~q($a ^ ($b : ℝ)) =>
-    assertInstancesCommute
     let ra ← core q(inferInstance) (some q(inferInstance)) a
-    let rb ← catchNone <| core q(inferInstance) (some q(inferInstance)) b
-    match ra, rb with
-    | .positive pa, .positive pb =>
-      pure (.positive q(ENNReal.rpow_pos_of_nonneg $pa <| le_of_lt $pb))
-    | .positive pa, .nonnegative pb =>
-      pure (.positive q(ENNReal.rpow_pos_of_nonneg $pa $pb))
-    | .positive pa, _ =>
-      let some ha ← isFiniteM? a | pure <| .nonnegative q(zero_le (a := $e))
-      pure <| .positive q(ENNReal.rpow_pos $pa $ha)
-    | _, _ =>
-      pure <| .nonnegative q(zero_le (a := $e))
+    let rb ← core q(inferInstance) (some q(inferInstance)) b
+    return ← catchNone do
+      assertInstancesCommute
+      match ra, rb with
+      | .positive pa, .positive pb =>
+        pure (.positive q(ENNReal.rpow_pos_of_nonneg $pa <| le_of_lt $pb))
+      | .positive pa, .nonnegative pb =>
+        pure (.positive q(ENNReal.rpow_pos_of_nonneg $pa $pb))
+      | .positive pa, _ =>
+        let some ha ← isFiniteM? a | pure <| .nonnegative q(zero_le (a := $e))
+        pure <| .positive q(ENNReal.rpow_pos $pa $ha)
+      | _, _ =>
+        pure <| .nonnegative q(zero_le (a := $e))
   | _, _, _ => throwError "not ENNReal.rpow"
 
 end Mathlib.Meta.Positivity

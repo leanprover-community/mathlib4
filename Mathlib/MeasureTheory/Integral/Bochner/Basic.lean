@@ -1409,10 +1409,11 @@ meta def evalIntegral : PositivityExt where eval {u α} zα pα? e :=
     let i : Q($i) ← mkFreshExprMVarQ q($i) .syntheticOpaque
     have body : Q(ℝ) := .betaRev f #[i]
     let rbody ← core zα pα body
-    let pbody ← rbody.toNonneg
-    let pr : Q(∀ x, 0 ≤ $f x) ← mkLambdaFVars #[i] pbody
-    assertInstancesCommute
-    return .nonnegative q(integral_nonneg $pr)
+    return ← catchNone do
+      let pbody ← rbody.toNonneg
+      let pr : Q(∀ x, 0 ≤ $f x) ← mkLambdaFVars #[i] pbody
+      assertInstancesCommute
+      return .nonnegative q(integral_nonneg $pr)
   | _ => throwError "not MeasureTheory.integral"
 
 end Mathlib.Meta.Positivity

@@ -665,9 +665,10 @@ meta def evalNonemptyIntervalLength : PositivityExt where
     match pα? with | none => pure .none | some _ => do
     let ~q(@NonemptyInterval.length _ $ig $ipo $a) := e |
       throwError "not NonemptyInterval.length"
-    let _i ← synthInstanceQ q(IsOrderedAddMonoid $α)
-    assertInstancesCommute
-    return .nonnegative q(NonemptyInterval.length_nonneg $a)
+    return ← catchNone do
+      let _i ← synthInstanceQ q(IsOrderedAddMonoid $α)
+      assertInstancesCommute
+      return .nonnegative q(NonemptyInterval.length_nonneg $a)
 
 /-- Extension for the `positivity` tactic: The length of an interval is always nonnegative. -/
 @[positivity Interval.length _]

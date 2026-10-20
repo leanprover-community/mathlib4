@@ -569,10 +569,12 @@ meta def evalERealInv : PositivityExt where eval {u α} zα pα? e :=
   match pα? with | none => pure .none | some pα => do
   match u, α, e with
   | 0, ~q(EReal), ~q($a⁻¹) =>
-    assertInstancesCommute
-    match (← core zα pα a).toNonneg with
-    | some pa => pure (.nonnegative q(EReal.inv_nonneg_of_nonneg <| $pa))
-    | none => pure .none
+    let ra ← core zα pα a
+    return ← catchNone do
+      assertInstancesCommute
+      match ra.toNonneg with
+      | some pa => pure (.nonnegative q(EReal.inv_nonneg_of_nonneg <| $pa))
+      | none => pure .none
   | _, _, _ => throwError "not an inverse of an `EReal`"
 
 /-- Extension for the `positivity` tactic: ratio of two `EReal`s. -/
@@ -581,13 +583,13 @@ meta def evalERealDiv : PositivityExt where eval {u α} zα pα? e :=
   match pα? with | none => pure .none | some pα => do
   match u, α, e with
   | 0, ~q(EReal), ~q($a / $b) =>
-    assertInstancesCommute
-    match (← core zα pα a).toNonneg with
-    | some pa =>
-      match (← core zα pα b).toNonneg with
+    let some pa := (← core zα pα a).toNonneg | return .none
+    let rb ← core zα pα b
+    return ← catchNone do
+      assertInstancesCommute
+      match rb.toNonneg with
       | some pb => pure (.nonnegative q(EReal.div_nonneg $pa $pb))
       | none => pure .none
-    | _ => pure .none
   | _, _, _ => throwError "not a ratio of 2 `EReal`s"
 
 end Mathlib.Meta.Positivity

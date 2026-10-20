@@ -478,10 +478,10 @@ meta def _root_.Mathlib.Meta.Positivity.evalGamma : PositivityExt where eval {u 
   match u, α, e with
   | 0, ~q(ℝ), ~q(Gamma $a) =>
     match ← core q(inferInstance) (some q(inferInstance)) a with
-    | .positive pa =>
+    | .positive pa => liftM <| catchNone do
       assertInstancesCommute
       pure (.positive q(Gamma_pos_of_pos $pa))
-    | .nonnegative pa =>
+    | .nonnegative pa => liftM <| catchNone do
       assertInstancesCommute
       pure (.nonnegative q(Gamma_nonneg_of_nonneg $pa))
     | _ => pure .none
