@@ -217,7 +217,7 @@ def rightSubalgebra_equiv : rightSubalgebra ψ ≃ₗ⁅R⁆ L where
     map_lie' := by
       intro x y
       dsimp [Bracket.bracket]
-    invFun := fun x ↦ ⟨⟨0,x⟩, (by unfold rightSubalgebra ; simp only [LieHom.mem_range,
+    invFun := fun x ↦ ⟨⟨0,x⟩, (by unfold rightSubalgebra; simp only [LieHom.mem_range,
       inr_eq_mk, mk.injEq, true_and, exists_eq])⟩
     left_inv := by
       intro x
