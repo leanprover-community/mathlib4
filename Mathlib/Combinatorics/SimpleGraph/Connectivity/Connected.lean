@@ -1042,7 +1042,6 @@ lemma Connected.induce_compl_singleton_of_degree_eq_one (hconn : G.Connected) {v
   obtain ⟨u, hadj, hu⟩ := degree_eq_one_iff_existsUnique_adj.mp hdeg
   rw [connected_iff]
   refine ⟨hconn.preconnected.induce_of_degree_eq_one ?_, ⟨u, by simpa using hadj.ne'⟩⟩
-  simp only [Set.notMem_compl_iff, Set.mem_singleton_iff, forall_eq]
-  exact fun x hx y hy ↦ (hu x hx).trans (hu y hy).symm
+  simp [← Set.ncard_le_one_iff_subsingleton, hdeg]
 
 end SimpleGraph
