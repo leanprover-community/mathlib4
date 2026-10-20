@@ -352,7 +352,7 @@ lemma LinearOrderedAddCommGroup.wellFoundedOn_setOfPred_le_lt_iff_nonempty_discr
   suffices Set.WellFoundedOn {x : G | 0 ≤ x} (· < ·) ↔ Nonempty (G ≃+o ℤ) by
     rw [← this]
     refine ⟨fun h ↦ (h.mapsTo (· + g) ?_).mono' ?_, fun h ↦ (h.mapsTo (· - g) ?_).mono' ?_⟩ <;>
-    · try intro
+    · intro
       simp [Function.onFun]
   constructor
   · intro h
