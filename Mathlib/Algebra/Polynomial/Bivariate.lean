@@ -88,8 +88,6 @@ lemma evalEval_finsetSum {ι : Type*} (s : Finset ι) (x y : R) (f : ι → R[X]
     (∑ i ∈ s, f i).evalEval x y = ∑ i ∈ s, (f i).evalEval x y := by
   simp only [evalEval, eval_finsetSum]
 
-@[deprecated (since := "2026-04-08")] alias evalEval_finset_sum := evalEval_finsetSum
-
 @[simp]
 lemma evalEval_smul [DistribSMul S R] [IsScalarTower S R R] (x y : R) (s : S)
     (p : R[X][Y]) : (s • p).evalEval x y = s • p.evalEval x y := by

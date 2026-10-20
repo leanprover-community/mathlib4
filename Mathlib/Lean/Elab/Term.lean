@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Init
 
-import Lean.Elab.Term
+meta import Lean.Elab.Term
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

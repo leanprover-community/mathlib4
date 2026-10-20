@@ -44,8 +44,6 @@ lemma tendsto_finsetProd_atTop :
     use (Finset.image Prod.fst b, Finset.image Prod.snd b)
     exact Finset.subset_product
 
-@[deprecated (since := "2026-04-08")] alias tendsto_finset_prod_atTop := tendsto_finsetProd_atTop
-
 @[to_dual]
 theorem prod_map_atTop_eq {α₁ α₂ β₁ β₂ : Type*} [Preorder β₁] [Preorder β₂]
     (u₁ : β₁ → α₁) (u₂ : β₂ → α₂) : map u₁ atTop ×ˢ map u₂ atTop = map (Prod.map u₁ u₂) atTop := by

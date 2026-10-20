@@ -32,9 +32,9 @@ attribute [local instance]
   WellFoundedLT.toOrderBot WellFoundedLT.conditionallyCompleteLinearOrderBot in
 theorem IsNormal.continuous {f : α → β} (hf : IsNormal f) : Continuous f := by
   rw [OrderTopology.continuous_iff]
-  refine fun b ↦ ⟨?_, ((isLowerSet_Iio b).preimage hf.strictMono.monotone).isOpen⟩
+  refine fun b ↦ ⟨?_, ((IsLowerSet.Iio b).preimage hf.strictMono.monotone).isOpen⟩
   rw [← isClosed_compl_iff, ← Set.preimage_compl, Set.compl_Ioi]
-  obtain ha | ⟨a, ha⟩ := ((isLowerSet_Iic b).preimage hf.strictMono.monotone).eq_univ_or_Iio
+  obtain ha | ⟨a, ha⟩ := ((IsLowerSet.Iic b).preimage hf.strictMono.monotone).eq_univ_or_Iio
   · exact ha ▸ isClosed_univ
   · obtain h | h := (f ⁻¹' Iic b).eq_empty_or_nonempty
     · exact h ▸ isClosed_empty

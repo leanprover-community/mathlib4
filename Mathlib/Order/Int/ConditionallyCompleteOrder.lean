@@ -27,7 +27,6 @@ noncomputable section
 
 namespace Int
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 instance : ConditionallyCompleteLinearOrder ℤ where
   __ := instLinearOrder

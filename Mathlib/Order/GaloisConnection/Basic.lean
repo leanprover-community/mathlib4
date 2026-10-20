@@ -314,9 +314,6 @@ theorem l_biInf_of_u_l_eq_self [CompleteLattice α] [CompleteLattice β] (gi : G
   rw [iInf_subtype', iInf_subtype']
   exact gi.l_iInf_of_u_l_eq_self _ fun _ => hf _ _
 
-@[deprecated (since := "2026-04-10")] alias l_iInf_of_ul_eq_self := l_iInf_of_u_l_eq_self
-@[deprecated (since := "2026-04-10")] alias l_biInf_of_ul_eq_self := l_biInf_of_u_l_eq_self
-
 @[to_dual]
 theorem isLUB_of_u_image [Preorder α] [Preorder β] (gi : GaloisInsertion l u) {s : Set β} {a : α}
     (hs : IsLUB (u '' s) a) : IsLUB s (l a) :=
@@ -407,9 +404,6 @@ end lift
 end GaloisInsertion
 
 namespace GaloisCoinsertion
-
-@[deprecated (since := "2026-04-10")] alias u_iSup_of_lu_eq_self := u_iSup_of_l_u_eq_self
-@[deprecated (since := "2026-04-10")] alias u_biSup_of_lu_eq_self := u_biSup_of_l_u_eq_self
 
 end GaloisCoinsertion
 

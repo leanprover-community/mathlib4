@@ -189,6 +189,13 @@ theorem sum_mul_self (s : Finset ι) (f : ι → R) :
     ((∑ i ∈ s, f i) * ∑ i ∈ s, f i) = ∑ i ∈ s, f i * f i :=
   map_sum mulSelfAddMonoidHom _ _
 
+theorem mul_self_injective [NoZeroDivisors R] : Function.Injective fun x : R ↦ x * x := by
+  intro x y h
+  rwa [← CharTwo.add_eq_zero, ← add_mul_self, mul_self_eq_zero, CharTwo.add_eq_zero] at h
+
+theorem mul_self_inj [NoZeroDivisors R] {x y : R} : x * x = y * y ↔ x = y :=
+  mul_self_injective.eq_iff
+
 end NonAssocCommSemiring
 
 section CommSemiring
@@ -210,8 +217,7 @@ theorem sum_sq (s : Finset ι) (f : ι → R) : (∑ i ∈ s, f i) ^ 2 = ∑ i �
 variable [NoZeroDivisors R]
 
 theorem sq_injective : Function.Injective fun x : R ↦ x ^ 2 := by
-  intro x y h
-  rwa [← CharTwo.add_eq_zero, ← add_sq, pow_eq_zero_iff two_ne_zero, CharTwo.add_eq_zero] at h
+  simpa only [sq] using mul_self_injective
 
 -- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]

@@ -20,7 +20,7 @@ public meta section
 
 namespace Mathlib.Tactic.ClickSuggestions
 
-open Lean Meta ProofWidgets Jsx
+open Lean Meta ProofWidgets
 
 /-- The structure for rewrite lemmas stored in the `RefinedDiscrTree`. -/
 structure RwLemma where
@@ -133,25 +133,26 @@ def RwLemma.try (i : RwInfo) (lem : RwLemma) (assignableMVars : Array Expr) :
     replacement := ← abstractMVars replacement
   }
   let tactic ← tacticSyntax lem rwKind (← getHypIdent?) proof justLemmaName
-  let isClosing ← (do
+  let solves ← (do
     if extraGoals.isEmpty then
       if let some rflTarget := i.rflTarget? then
         return ← withoutModifyingMCtx <| isDefEq replacement rflTarget
       else if (← read).pos == .root && (← read).hyp?.isNone then
         return ← succeeds (← mkFreshExprMVar replacement).mvarId!.applyRfl
     return false)
-  if isClosing then
-    addSolvedSuggestion tactic
+  if solves then
+    addSolvingSuggestion tactic
   let mut htmls := #[← exprToHtml replacement]
   for goal in extraGoals do
-    htmls := htmls.push <div> <strong className="goal-vdash">⊢ </strong> {← exprToHtml goal} </div>
+    htmls := htmls.push
+      jsx%{<div><strong className="goal-vdash">⊢ </strong>{← exprToHtml goal}</div>}
   let filtered ←
     if isRefl || unhelpfulMVars then
       pure none
     else
-      some <$> mkSuggestion tactic (.element "div" #[] htmls) (isClosing := isClosing)
-  htmls := htmls.push (<div> {← lem.name.toHtml} </div>)
-  let unfiltered ← mkSuggestion tactic (.element "div" #[] htmls) (isClosing := isClosing)
+      some <$> mkSuggestion tactic "rw" (.element "div" #[] htmls) (solves := solves)
+  htmls := htmls.push jsx%{<div>{← lem.name.toHtml}</div>}
+  let unfiltered ← mkSuggestion tactic "rw" (.element "div" #[] htmls) (solves := solves)
   let pattern ← do
     let (_, _, e) ← forallMetaTelescopeReducing (← lem.name.getType)
     let mkApp2 _ lhs rhs ← whnf e | throwError "Expected equation, not{indentExpr e}"
