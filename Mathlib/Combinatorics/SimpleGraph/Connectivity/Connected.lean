@@ -1040,15 +1040,9 @@ lemma Preconnected.induce_of_degree_eq_one (hG : G.Preconnected) {s : Set V}
 lemma Connected.induce_compl_singleton_of_degree_eq_one (hconn : G.Connected) {v : V}
     [Fintype ↑(G.neighborSet v)] (hdeg : G.degree v = 1) : (G.induce {v}ᶜ).Connected := by
   obtain ⟨u, hadj, hu⟩ := degree_eq_one_iff_existsUnique_adj.mp hdeg
-  refine {
-    preconnected := hconn.preconnected.induce_of_degree_eq_one ?_
-    nonempty := ⟨u, ?_⟩
-  }
-  · intro w hw
-    have hwv : w = v := by simpa using hw
-    subst w
-    intro x hx y hy
-    exact (hu x hx).trans (hu y hy).symm
-  · simpa using hadj.ne.symm
+  rw [connected_iff]
+  refine ⟨hconn.preconnected.induce_of_degree_eq_one ?_, ⟨u, by simpa using hadj.ne'⟩⟩
+  simp only [Set.notMem_compl_iff, Set.mem_singleton_iff, forall_eq]
+  exact fun x hx y hy ↦ (hu x hx).trans (hu y hy).symm
 
 end SimpleGraph
