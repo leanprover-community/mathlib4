@@ -5,14 +5,10 @@ Authors: Adam Topaz, Junyan Xu, Jack McKoen
 -/
 module
 
-public import Mathlib.RingTheory.Valuation.ValuationRing
-public import Mathlib.RingTheory.Localization.AsSubring
-public import Mathlib.Algebra.Algebra.Subalgebra.Tower
-public import Mathlib.Algebra.Ring.Subring.Pointwise
 public import Mathlib.Algebra.Ring.Action.Field
-public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
-public import Mathlib.RingTheory.KrullDimension.Basic
+public import Mathlib.Algebra.Ring.Subring.Pointwise
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
+public import Mathlib.RingTheory.Valuation.ValuationRing
 
 /-!
 
@@ -90,7 +86,7 @@ instance : CommRing A := inferInstanceAs <| CommRing A.toSubring
 instance : IsDomain A := inferInstanceAs <| IsDomain A.toSubring
 
 instance : Top (ValuationSubring K) :=
-  Top.mk <| { (⊤ : Subring K) with mem_or_inv_mem' := fun _ => Or.inl trivial }
+  Top.mk { (⊤ : Subring K) with mem_or_inv_mem' := fun _ => Or.inl trivial }
 
 @[simp]
 theorem toSubring_top : (⊤ : ValuationSubring K).toSubring = ⊤ := rfl
@@ -158,7 +154,7 @@ instance : IsFractionRing A K where
     rcases A.mem_or_inv_mem z with hh | hh
     · use (⟨z, hh⟩, 1); simp
     · refine ⟨⟨1, ⟨⟨_, hh⟩, ?_⟩⟩, mul_inv_cancel₀ h⟩
-      exact mem_nonZeroDivisors_iff_ne_zero.2 fun c => h (inv_eq_zero.mp (congr_arg Subtype.val c))
+      exact mem_nonZeroDivisors_iff_ne_zero.2 fun c => h (inv_eq_zero.mp congr($(c).val))
   exists_of_eq {a b} h := ⟨1, by ext; simpa using h⟩
 
 /-- The value group of the valuation associated to `A`. Note: it is actually a group with zero. -/
@@ -240,7 +236,7 @@ section Order
 
 instance : SemilatticeSup (ValuationSubring K) :=
   { (inferInstance : PartialOrder (ValuationSubring K)) with
-    sup := fun R S => ofLE R (R.toSubring ⊔ S.toSubring) <| le_sup_left
+    sup := fun R S => ofLE R (R.toSubring ⊔ S.toSubring) le_sup_left
     le_sup_left := fun R S _ hx => (le_sup_left : R.toSubring ≤ R.toSubring ⊔ S.toSubring) hx
     le_sup_right := fun R S _ hx => (le_sup_right : S.toSubring ≤ R.toSubring ⊔ S.toSubring) hx
     sup_le := fun R S T hR hT _ hx => (sup_le hR hT : R.toSubring ⊔ S.toSubring ≤ T.toSubring) hx }
@@ -399,7 +395,7 @@ instance le_total_ideal : @Std.Total {S // A ≤ S} (· ≤ ·) := by
 open scoped Classical in
 instance linearOrderOverring : LinearOrder {S // A ≤ S} where
   le_total := (le_total_ideal A).1
-  max_def a b := congr_fun₂ sup_eq_maxDefault a b
+  max_def a b := congr($sup_eq_maxDefault a b)
   toDecidableLE := _
 
 section
@@ -720,7 +716,7 @@ theorem principalUnitGroup_symm_apply (a : (Units.map (IsLocalRing.residue A).to
 
 /-- The canonical map from the unit group of `A` to the units of the residue field of `A`. -/
 def unitGroupToResidueFieldUnits : A.unitGroup →* (IsLocalRing.ResidueField A)ˣ :=
-  MonoidHom.comp (Units.map <| (Ideal.Quotient.mk _).toMonoidHom) A.unitGroupMulEquiv.toMonoidHom
+  MonoidHom.comp (Units.map (Ideal.Quotient.mk _).toMonoidHom) A.unitGroupMulEquiv.toMonoidHom
 
 @[simp]
 theorem coe_unitGroupToResidueFieldUnits_apply (x : A.unitGroup) :
@@ -870,6 +866,40 @@ theorem comap_comap (A : ValuationSubring J) (g : L →+* J) (f : K →+* L) :
 
 end
 
+section IsTrivialOn
+
+variable {k : Type*} [CommSemiring k] [Algebra k K]
+
+theorem algebraMap_mem_of_isTrivialOn [A.valuation.IsTrivialOn k] (a : k) :
+    algebraMap k K a ∈ A :=
+  (A.valuation_le_one_iff _).mp (Valuation.IsTrivialOn.valuation_algebraMap_le_one A.valuation a)
+
+theorem smul_mem_of_isTrivialOn [A.valuation.IsTrivialOn k] (c : k) {x : K} (hx : x ∈ A) :
+    c • x ∈ A := by
+  rw [Algebra.smul_def]
+  exact A.mul_mem _ _ (A.algebraMap_mem_of_isTrivialOn c) hx
+
+/-- If `A.valuation` is trivial on `k`, then the image of `k` under `algebraMap k K` lies in `A`,
+turning `A` into a `k`-algebra. The scalar action is the restriction of the action of `k` on `K`. -/
+instance algebraOfIsTrivialOn [A.valuation.IsTrivialOn k] : Algebra k A where
+  smul c x      := ⟨c • (x : K), A.smul_mem_of_isTrivialOn c x.2⟩
+  algebraMap    := (algebraMap k K).codRestrict A A.algebraMap_mem_of_isTrivialOn
+  commutes' _ _ := Subtype.ext <| Algebra.commutes ..
+  smul_def' _ _ := Subtype.ext <| Algebra.smul_def ..
+
+@[simp, norm_cast]
+theorem coe_algebraMap_of_isTrivialOn [A.valuation.IsTrivialOn k] (c : k) :
+    (algebraMap k A c : K) = algebraMap k K c := rfl
+
+@[simp, norm_cast]
+theorem coe_smul_of_isTrivialOn [A.valuation.IsTrivialOn k] (c : k) (x : A) :
+    ((c • x : A) : K) = c • (x : K) := rfl
+
+instance isScalarTowerOfIsTrivialOn [A.valuation.IsTrivialOn k] : IsScalarTower k A K :=
+  IsScalarTower.of_algebraMap_eq fun _ ↦ rfl
+
+end IsTrivialOn
+
 end ValuationSubring
 
 namespace Valuation
@@ -882,5 +912,11 @@ theorem mem_unitGroup_iff : x ∈ v.valuationSubring.unitGroup ↔ v x = 1 :=
 theorem mem_maximalIdeal_iff {a : v.valuationSubring} :
     a ∈ IsLocalRing.maximalIdeal (v.valuationSubring) ↔ v a < 1 :=
   Integer.not_isUnit_iff_valuation_lt_one
+
+/-- If `v : Valuation K Γ` is trivial on `A`, then so is the valuation of its valuation subring. -/
+instance isTrivialOn_valuationSubring_valuation (A : Type*) [CommSemiring A] [Algebra A K]
+    (v : Valuation K Γ) [IsTrivialOn A v] :
+    IsTrivialOn A v.valuationSubring.valuation :=
+  v.isEquiv_valuation_valuationSubring.isTrivialOn inferInstance
 
 end Valuation

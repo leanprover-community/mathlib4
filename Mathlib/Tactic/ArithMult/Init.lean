@@ -5,8 +5,8 @@ Authors: Arend Mellendijk
 -/
 module
 
+public meta import Aesop
 public import Mathlib.Init
-public import Aesop
 
 /-!
 # `arith_mult` Rule Set
