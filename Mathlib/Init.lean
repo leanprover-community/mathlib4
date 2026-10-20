@@ -28,9 +28,9 @@ public meta import Mathlib.Tactic.Linter.InternalConstructor
 -- The following module imports `Batteries.Tactic.Lint`, where `#lint` is defined.
 public meta import Mathlib.Tactic.Linter.Lint
 public meta import Mathlib.Tactic.Linter.Multigoal
-public meta import Mathlib.Tactic.Linter.OldObtain
 public meta import Mathlib.Tactic.Linter.PrivateModule
 public meta import Mathlib.Tactic.Linter.Style
+public meta import Mathlib.Tactic.Linter.SyntaxBased
 public meta import Mathlib.Tactic.Linter.TacticDocumentation
 public meta import Mathlib.Tactic.Linter.UnusedTactic
 -- The following import contains the environment extension for the unused tactic linter.
