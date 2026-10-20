@@ -9,6 +9,9 @@ public import Mathlib.Order.Hom.BoundedLattice
 public import Mathlib.Order.WithBot
 public import Mathlib.Tactic.ApplyFun
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adjoining `⊤` and `⊥` to order maps and lattice homomorphisms
 
@@ -64,9 +67,6 @@ theorem toDualBotEquiv_symm_top [LE α] : WithTop.toDualBotEquiv.symm (⊤ : (Wi
 theorem coe_toDualBotEquiv [LE α] :
     (WithTop.toDualBotEquiv : WithTop αᵒᵈ → (WithBot α)ᵒᵈ) = toDual ∘ WithTop.ofDual := by
   ext (- | x) <;> rfl
-
-@[deprecated (since := "2026-03-27")]
-alias _root_.WithBot.coe_toDualTopEquiv_eq := WithBot.coe_toDualTopEquiv
 
 /-- Embedding into `WithTop α`. -/
 @[to_dual (attr := simps) /-- Embedding into `WithBot α`. -/]

@@ -9,6 +9,9 @@ public import Mathlib.Data.ZMod.Basic
 
 import Mathlib.Tactic.NormNum
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Some facts about finite rings
 -/

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.GroupWithZero.Hom
 public import Mathlib.Algebra.GroupWithZero.Nat
 public import Mathlib.Algebra.Ring.Int.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about `Int.natAbs`
 

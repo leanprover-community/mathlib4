@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Opposite
 public import Mathlib.Algebra.Order.Monoid.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Order instances for `MulOpposite`/`AddOpposite`
 
