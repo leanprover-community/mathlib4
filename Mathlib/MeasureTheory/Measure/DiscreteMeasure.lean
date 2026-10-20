@@ -6,7 +6,7 @@ Authors: Peter Pfaffelhuber
 module
 
 public import Mathlib.MeasureTheory.Constructions.Polish.Basic
-public import Mathlib.MeasureTheory.Measure.Dirac
+public import Mathlib.MeasureTheory.Measure.Dirac.Basic
 
 /-!
 # Discrete Measures
@@ -54,7 +54,7 @@ noncomputable instance [MeasurableSpace α] : Coe (DiscreteMeasure α) (Measure 
 
 instance instFunLike : FunLike (DiscreteMeasure α) α ℝ≥0∞ where
   coe p a := p.weight a
-  coe_injective' p q h := by
+  coe_injective p q h := by
     cases p
     cases q
     simp_all
@@ -77,7 +77,7 @@ theorem apply_pos_iff (w : DiscreteMeasure α) (a : α) : 0 < w a ↔ a ∈ w.we
 lemma toMeasure_apply' [MeasurableSpace α] (μ : DiscreteMeasure α) {s : Set α}
     (hs : MeasurableSet s) : μ.toMeasure s = ∑' (a : α), (μ.weight a) • dirac a s := by
   rw [toMeasure, sum_apply (hs := hs)]
-  simp_rw [smul_apply]
+  simp_rw [Measure.smul_apply]
 
 lemma toMeasure_apply_eq_tsum_mul [MeasurableSpace α] [MeasurableSingletonClass α]
     (μ : DiscreteMeasure α) {s : Set α} (hs : MeasurableSet s) :
