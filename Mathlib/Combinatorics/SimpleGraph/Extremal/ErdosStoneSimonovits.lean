@@ -10,7 +10,6 @@ public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
 
 import Mathlib.Combinatorics.Pigeonhole
 import Mathlib.Combinatorics.SimpleGraph.Bipartite
-
 import Mathlib.Tactic.LinearCombination
 
 /-!
