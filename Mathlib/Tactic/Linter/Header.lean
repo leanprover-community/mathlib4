@@ -189,8 +189,8 @@ def modPathToRootPath (modPath : System.FilePath) (modName : Name) : Option Syst
   | _ => none
 
 /--
-`isInLibraryRoot modName` returns `true` if the file at `rootPath` (expected to be the root file of
-a library, `<root>.lean`) directly imports the file `modName`.
+`isInLibraryRoot rootPath modName` returns `true` if the file at `rootPath` (expected to be the
+root file of a library, `<root>.lean`) directly imports the file `modName`.
 
 For example, for ``isInLibraryRoot (srcDir / "Mathlib.lean") `Mathlib.Foo.Bar`` checks if
 `Mathlib.lean` directly imports `Mathlib.Foo.Bar`. (Note, however, that this does not enforce that
