@@ -295,9 +295,8 @@ theorem linfty_opNNNorm_def (A : Matrix m n α) :
     ‖A‖₊ = (Finset.univ : Finset m).sup fun i : m => ∑ j : n, ‖A i j‖₊ :=
   Subtype.ext <| linfty_opNorm_def A
 
-theorem nnnorm_apply_le_linfty_opNNNorm (A : Matrix m n α) (i : m) (j : n) : ‖A i j‖₊ ≤ ‖A‖₊ := by
-  grw [linfty_opNNNorm_def, ← Finset.le_sup_of_le (by simp)] -- these grws cannot be combined
-  grw [← Finset.single_le_sum] <;> simp
+theorem nnnorm_apply_le_linfty_opNNNorm (A : Matrix m n α) (i : m) (j : n) : ‖A i j‖₊ ≤ ‖A‖₊ :=
+  (PiLp.nnnorm_apply_le (toLp 1 (A i)) j).trans (nnnorm_le_pi_nnnorm (fun i ↦ toLp 1 (A i)) i)
 
 theorem norm_apply_le_linfty_opNorm (A : Matrix m n α) (i : m) (j : n) : ‖A i j‖ ≤ ‖A‖ :=
   nnnorm_apply_le_linfty_opNNNorm A i j
