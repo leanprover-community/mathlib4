@@ -152,14 +152,16 @@ theorem mul_sup_distrib : x * (y ⊔ z) = (x * y) ⊔ (x * z) := by
 theorem sup_mul_distrib : (x ⊔ y) * z = (x * z) ⊔ (y * z) := by
   rw [← (@iSup_pair _ _ _ (fun _? => _? * z) _ _), ← sSup_pair, sSup_mul_distrib]
 
+-- See note [lower instance priority]
 @[to_additive]
-instance : MulLeftMono α where
+instance (priority := 100) : MulLeftMono α where
   elim := by
     intro _ _ _; simp only; intro
     rwa [← left_eq_sup, ← mul_sup_distrib, sup_of_le_left]
 
+-- See note [lower instance priority]
 @[to_additive]
-instance : MulRightMono α where
+instance (priority := 100) : MulRightMono α where
   elim := by
     intro _ _ _; simp only; intro
     rwa [← left_eq_sup, ← sup_mul_distrib, sup_of_le_left]
