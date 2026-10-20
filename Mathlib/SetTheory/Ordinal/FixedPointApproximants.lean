@@ -81,7 +81,7 @@ theorem lfpApprox_def (a : Ordinal.{u}) : lfpApprox f x a = x ⊔ ⨆ b < a, f (
 
 theorem lfpApprox_mono_right : Monotone (lfpApprox f x) := by
   intro a b h
-  rw [lfpApprox, lfpApprox]
+  rw [lfpApprox_def, lfpApprox_def]
   apply sup_le_sup_left (iSup₂_mono' _)
   grind
 
