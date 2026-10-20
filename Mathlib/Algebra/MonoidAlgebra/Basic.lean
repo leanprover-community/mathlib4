@@ -336,6 +336,7 @@ theorem trans_domCongr_domCongr (e : M ≃* N) (f : N ≃* O) :
   ext
   simp
 
+variable (R A) in
 /-- `MonoidAlgebra.domCongr` as a `MonoidHom` from `MulAut`. -/
 @[to_additive (attr := simps) /-- `AddMonoidAlgebra.domCongr` as an `MonoidHom` from `AddAut`. -/]
 def domCongrAut : MulAut M →* A[M] ≃ₐ[R] A[M] where
