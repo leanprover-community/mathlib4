@@ -10,7 +10,7 @@ public meta import Mathlib.Tactic.FunProp.FunctionData
 public meta import Lean.Meta.Tactic.Simp
 
 /-!
-## `funProp`
+# `funProp`
 
 this file defines environment extension for `funProp`
 -/

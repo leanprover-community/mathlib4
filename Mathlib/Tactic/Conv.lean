@@ -10,7 +10,7 @@ public meta import Lean.Elab.Tactic.Conv.Basic
 public import Mathlib.Init
 
 /-!
-Additional `conv` tactics.
+# Additional `conv` tactics
 -/
 
 public meta section

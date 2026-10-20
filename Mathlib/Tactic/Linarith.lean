@@ -13,7 +13,7 @@ set_option doc.verso true
 set_option doc.verso.suggestions false
 
 /-!
-We register `linarith` with the `hint` tactic.
+# Registering `linarith` with the `hint` tactic
 -/
 
 public meta section
