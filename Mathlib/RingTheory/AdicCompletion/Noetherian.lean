@@ -6,8 +6,12 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.AdicCompletion.Basic
-public import Mathlib.RingTheory.Filtration
 public import Mathlib.RingTheory.HopkinsLevitzki
+
+import Mathlib.RingTheory.Filtration
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Hausdorff-ness for Noetherian rings

@@ -6,7 +6,9 @@ Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Ring.Action.Group
-public import Mathlib.Algebra.Ring.Aut
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Ring automorphisms
@@ -36,7 +38,7 @@ variable {G R : Type*} [Group G] [Semiring R]
 /-- The tautological action by the group of automorphism of a ring `R` on `R`. -/
 instance applyMulSemiringAction :
     MulSemiringAction (RingAut R) R where
-  smul := (· <| ·)
+  smul := (· ·)
   smul_zero := map_zero
   smul_add := map_add
   smul_one := map_one

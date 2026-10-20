@@ -6,8 +6,8 @@ Authors: Anne Baanen
 module
 
 public import Mathlib.Algebra.Field.Basic
-public import Mathlib.Algebra.Ring.Subring.Defs
 public import Mathlib.Algebra.Order.Ring.Unbundled.Rat
+public import Mathlib.Algebra.Ring.Subring.Defs
 
 /-!
 # Subfields
@@ -147,7 +147,7 @@ instance : SetLike (Subfield K) K where
   coe s := s.carrier
   coe_injective p q h := by cases p; cases q; congr; exact SetLike.ext' h
 
-instance : PartialOrder (Subfield K) := .ofSetLike (Subfield K) K
+instance : PartialOrder (Subfield K) := .ofSetLike (Subfield K)
 
 instance : SubfieldClass (Subfield K) K where
   add_mem {s} := s.add_mem'

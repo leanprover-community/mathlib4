@@ -6,7 +6,9 @@ Authors: Fernando Chu
 module
 
 public import Mathlib.CategoryTheory.Adjunction.Limits
-public import Mathlib.CategoryTheory.Skeletal
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # (Co)limits of the skeleton of a category

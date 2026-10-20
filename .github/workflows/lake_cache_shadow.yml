@@ -113,8 +113,6 @@ jobs:
         shell: bash -euo pipefail {0}
         run: echo "::notice::Lake cache shadow on ref ${{ inputs.mathlib_ref || 'master' }} run ${{ github.run_id }}"
 
-      - name: Setup jq
-        uses: dcarbone/install-jq-action@4fcb5062d7ce9bc4382d1a352d19ba3ba2c317c1 # v4.0.1
 
       - name: Checkout mathlib (pr-branch)
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -146,17 +144,12 @@ jobs:
         shell: bash -euo pipefail {0}
         run: |
           mkdir -p pr-branch/.lake/
-          mkdir -p _work
 
-      # These paths sit outside the pr-branch checkout, where `git clean` does
-      # not reach, so this step keeps a previous run's leftovers out of this
-      # one. The `df` line reports the headroom: the run needs a
-      # few GB for the build directories, the artifact cache and about 1 GB of
-      # staging, and some hosts carry a large baseline.
-      - name: Clean workspace leftovers & log disk headroom
+      # The run needs a few GB for the build directories, the artifact cache
+      # and about 1 GB of staging, and some hosts carry a large baseline.
+      - name: Log disk headroom
         shell: bash -euo pipefail {0}
         run: |
-          rm -rf lake-cache-staging
           echo "disk headroom: $(df -h --output=avail,pcent . | tail -1 | xargs) on $(hostname)"
 
       - name: install elan
@@ -167,10 +160,10 @@ jobs:
           ./elan-init.sh -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
-      # `elan which` below does not install a toolchain the repo does not pin.
-      # The uninstall forces a fresh download: elan skips a toolchain that is
-      # already present, and a pr-release tag is republished under the same
-      # name.
+      # `elan which` below does not auto-install non-pinned toolchains. The
+      # uninstall forces a fresh download: pr-release tags are republished in
+      # place, elan skips toolchains it already has, and the runner's `~/.elan`
+      # can already hold an older build under that name.
       - name: Install override toolchain
         if: ${{ env.TOOLCHAIN_OVERRIDE != '' }}
         shell: bash -euo pipefail {0}

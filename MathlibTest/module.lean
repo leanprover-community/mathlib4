@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
 module
+import Mathlib.Tactic.Abel
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Module
@@ -48,7 +49,7 @@ K : Type u_2
 t u v w x y z : V
 a b c d e f μ ν ρ : K
 inst✝ : AddCommMonoid V
-⊢ 1 = 2 * 1
+⊢ 1 = 2
 -/
 #guard_msgs in
 example : x + y = x + 2 • y := by match_scalars
@@ -211,7 +212,8 @@ variable [Ring K] [Module K V]
 
 example : a • x + b • x = (b + a) • x := by
   match_scalars
-  noncomm_ring
+  -- the coefficient goal `a + b = b + a` is purely additive
+  abel
 
 example : 2 • a • x = a • (2:ℤ) • x := by
   match_scalars
