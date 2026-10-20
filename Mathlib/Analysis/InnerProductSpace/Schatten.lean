@@ -56,15 +56,14 @@ theorem traceOfBasis_eq {A : E →L[ℂ] E} (hA : 0 ≤ A) {ι ι' : Type*}
   unfold traceOfBasis
   set S := CFC.sqrt A with hS
   have hS' : S.adjoint * S = A := by
-    simp [hS, CFC.sqrt_mul_sqrt_self A hA, (CFC.sqrt_nonneg A).isSelfAdjoint.adjoint_eq]
+    simp [hS, CFC.sqrt_mul_sqrt_self A, (CFC.sqrt_nonneg A).isSelfAdjoint.adjoint_eq]
   simp_rw +singlePass [← hS', mul_apply_eq_comp, ContinuousLinearMap.adjoint_inner_right,
-    ← b'.tsum_inner_mul_inner (S (b _)), ← inner_conj_symm (S (b _)),
-    ← b.tsum_inner_mul_inner (S (b' _)), ← inner_conj_symm (S (b' _)),
-    RCLike.conj_mul, ← RCLike.ofReal_pow, ← RCLike.ofReal_tsum]
-  simp only [Complex.coe_algebraMap, Complex.ofReal_inj]
+    ← b'.tsum_inner_mul_inner (S (b _)), ← b.tsum_inner_mul_inner (S (b' _)),
+    ← inner_conj_symm (S _), RCLike.conj_mul, ← RCLike.ofReal_pow, ← RCLike.ofReal_tsum]
+  congr
   have h (i : ι') (j : ι) : ‖⟪b' i, S (b j)⟫_ℂ‖ ^ 2 = ‖⟪b j, S (b' i)⟫_ℂ‖ ^ 2 := by
     rw [← (CFC.sqrt_nonneg A).isSelfAdjoint.isSymmetric.apply_clm (b' i) (b j), norm_inner_symm]
-  by_cases hs : Summable (Function.uncurry fun b_1 c ↦ ‖⟪b' b_1, S (b c)⟫_ℂ‖ ^ 2)
+  by_cases hs : Summable (Function.uncurry fun i j ↦ ‖⟪b' i, S (b j)⟫_ℂ‖ ^ 2)
   · rw [Summable.tsum_comm hs]
     simp [h]
   · rw [tsum_eq_zero_of_not_summable (fun hsum ↦ by
