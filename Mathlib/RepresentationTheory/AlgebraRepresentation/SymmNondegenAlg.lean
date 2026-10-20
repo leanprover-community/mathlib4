@@ -8,8 +8,6 @@ module
 public import Mathlib.LinearAlgebra.Trace
 public import Mathlib.RepresentationTheory.AlgebraRepresentation.Basic
 public import Mathlib.RingTheory.SimpleModule.WedderburnArtin
-public import Mathlib.RingTheory.SimpleRing.Congr
-public import Mathlib.RingTheory.SimpleRing.Matrix
 
 /-!
 # Symmetric Nondegenerate Algebras and Trace Representatives
