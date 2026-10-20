@@ -49,6 +49,7 @@ open Finset
 
 /-- The recursive definition of the sequence of Catalan numbers:
 `catalan (n + 1) = ∑ i : Fin n.succ, catalan i * catalan (n - i)` -/
+@[oeis A000108]
 def catalan : ℕ → ℕ
   | 0 => 1
   | n + 1 =>
