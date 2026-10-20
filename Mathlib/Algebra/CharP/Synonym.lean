@@ -28,6 +28,9 @@ instance [AddMonoidWithOne R] [CharZero R] : CharZero Rᵒᵈ := inferInstanceAs
 
 instance {p : ℕ} [AddMonoidWithOne R] [CharP R p] : CharP Rᵒᵈ p := inferInstanceAs <| CharP R p
 
+instance {p : ℕ} [AddMonoidWithOne R] [ExpChar R p] : ExpChar Rᵒᵈ p :=
+  inferInstanceAs <| ExpChar R p
+
 end OrderDual
 
 /-! ### Lexicographical order -/
@@ -38,4 +41,13 @@ instance [AddMonoidWithOne R] [CharZero R] : CharZero (Lex R) := inferInstanceAs
 
 instance {p : ℕ} [AddMonoidWithOne R] [CharP R p] : CharP (Lex R) p := inferInstanceAs <| CharP R p
 
+instance {p : ℕ} [AddMonoidWithOne R] [ExpChar R p] : ExpChar (Lex R) p :=
+  inferInstanceAs <| ExpChar R p
+
 end Lex
+
+theorem ringChar.orderDual [NonAssocSemiring R] : ringChar Rᵒᵈ = ringChar R :=
+  ringChar.eq Rᵒᵈ (ringChar R)
+
+theorem ringChar.lex [NonAssocSemiring R] : ringChar (Lex R) = ringChar R :=
+  ringChar.eq (Lex R) (ringChar R)
