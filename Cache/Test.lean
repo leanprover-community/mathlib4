@@ -1229,19 +1229,21 @@ def test_classifyDownload : IO Unit := do
   assertTrue "no status fails"
     (classifyDownload none 0 matches .failed)
 
-/-- Upload bodies use a regular file so curl can retry after a server error. -/
+/-- The put config discards every response body: stdout must carry only the
+per-transfer JSON reports (`--write-out '%{json}'`) that `monitorCurl`
+parses. -/
 def test_mkPutConfigContent : IO Unit := do
   IO.println "mkPutConfigContent:"
   let dest : Location :=
     { root := "https://example.invalid/mathlib4-master"
       label := "master"
       scope? := none }
-  let cfg := mkPutConfigContent dest #["/tmp/00000000deadbeef.ltar"] "/tmp/curl-1.body"
+  let cfg := mkPutConfigContent dest #["/tmp/00000000deadbeef.ltar"]
   assertTrue "uploads the file" ((cfg.splitOn "-T /tmp/00000000deadbeef.ltar").length == 2)
   assertTrue "addresses {root}/{filesDir}/{name}"
     ((cfg.splitOn
       "url = https://example.invalid/mathlib4-master/f/00000000deadbeef.ltar").length == 2)
-  assertTrue "sends the response body to the sink" ((cfg.splitOn "-o /tmp/curl-1.body").length == 2)
+  assertTrue "discards the response body" ((cfg.splitOn s!"-o {IO.nullDevice}").length == 2)
 
 /-- `classifyUpload`: a clean 200/201 delivers, a 409/412 skips for a
 non-overwrite put, and every other answer — a 404 included — is a failure. -/
