@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Constructions.Polish.StronglyMeasurable
 public import Mathlib.MeasureTheory.Integral.SetToL1.Function
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Convergence and measurability for set-to-function extensions
 
