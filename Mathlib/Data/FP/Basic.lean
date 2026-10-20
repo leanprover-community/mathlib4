@@ -13,9 +13,6 @@ public import Mathlib.Data.Semiquot
 
 import Mathlib.Algebra.Ring.Int.Defs
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Implementation of floating-point numbers (experimental).
 -/

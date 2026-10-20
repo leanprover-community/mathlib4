@@ -11,9 +11,6 @@ public import Mathlib.Order.GaloisConnection.Basic
 
 import Mathlib.Order.Bounds.OrderIso
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Upper/lower bounds in ordered monoids and groups
 

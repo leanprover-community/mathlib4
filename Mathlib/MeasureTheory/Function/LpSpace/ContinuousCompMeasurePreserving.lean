@@ -9,9 +9,6 @@ public import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
 
 import Mathlib.MeasureTheory.Measure.ContinuousPreimage
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Continuity of `MeasureTheory.Lp.compMeasurePreserving`
 

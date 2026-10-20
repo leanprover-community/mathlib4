@@ -11,9 +11,6 @@ public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 
 import Mathlib.MeasureTheory.Function.Jacobian
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Invariant measure on the upper half-plane
 
