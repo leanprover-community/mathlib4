@@ -201,10 +201,6 @@ theorem lt_lift_iff {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
 /-! ### Basic cardinals -/
 
 @[simp]
-theorem lift_eq_zero {a : Cardinal.{v}} : lift.{u} a = 0 ↔ a = 0 :=
-  lift_injective.eq_iff' lift_zero
-
-@[simp]
 theorem mk_fintype (α : Type u) [h : Fintype α] : #α = Fintype.card α :=
   mk_congr (Fintype.equivOfCardEq (by simp))
 
@@ -245,10 +241,6 @@ theorem power_mul {a b c : Cardinal} : a ^ (b * c) = (a ^ b) ^ c := by
 @[simp, norm_cast]
 theorem power_natCast (a : Cardinal.{u}) (n : ℕ) : a ^ (↑n : Cardinal.{u}) = a ^ n :=
   rfl
-
-@[simp]
-theorem lift_eq_one {a : Cardinal.{v}} : lift.{u} a = 1 ↔ a = 1 :=
-  lift_injective.eq_iff' lift_one
 
 @[simp]
 theorem lift_mul (a b : Cardinal.{u}) : lift.{v} (a * b) = lift.{v} a * lift.{v} b :=
@@ -612,18 +604,35 @@ theorem lift_ofNat (n : ℕ) [n.AtLeastTwo] :
   lift_natCast n
 
 @[simp]
-theorem lift_eq_nat_iff {a : Cardinal.{u}} {n : ℕ} : lift.{v} a = n ↔ a = n :=
+theorem lift_eq_natCast_iff {a : Cardinal.{u}} {n : ℕ} : lift.{v} a = n ↔ a = n :=
   lift_injective.eq_iff' (lift_natCast n)
+
+@[deprecated (since := "2026-10-20")] alias lift_eq_nat_iff := lift_eq_natCast_iff
 
 @[simp]
 theorem lift_eq_ofNat_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
     lift.{v} a = ofNat(n) ↔ a = OfNat.ofNat n :=
-  lift_eq_nat_iff
+  lift_eq_natCast_iff
 
 @[simp]
-theorem nat_eq_lift_iff {n : ℕ} {a : Cardinal.{u}} :
+theorem lift_eq_zero {a : Cardinal.{v}} : lift.{u} a = 0 ↔ a = 0 :=
+  lift_injective.eq_iff' lift_zero
+
+@[simp]
+theorem lift_eq_one {a : Cardinal.{v}} : lift.{u} a = 1 ↔ a = 1 :=
+  lift_injective.eq_iff' lift_one
+
+@[simp]
+theorem natCast_eq_lift_iff {n : ℕ} {a : Cardinal.{u}} :
     (n : Cardinal) = lift.{v} a ↔ (n : Cardinal) = a := by
   rw [← lift_natCast.{v, u} n, lift_inj]
+
+@[deprecated (since := "2026-10-20")] alias nat_eq_lift_iff := natCast_eq_lift_iff
+
+@[simp]
+theorem ofNat_eq_lift_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
+    (ofNat(n) : Cardinal) = lift.{v} a ↔ (OfNat.ofNat n : Cardinal) = a :=
+  natCast_eq_lift_iff
 
 @[simp]
 theorem zero_eq_lift_iff {a : Cardinal.{u}} :
@@ -636,65 +645,68 @@ theorem one_eq_lift_iff {a : Cardinal.{u}} :
   simp [eqComm]
 
 @[simp]
-theorem ofNat_eq_lift_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
-    (ofNat(n) : Cardinal) = lift.{v} a ↔ (OfNat.ofNat n : Cardinal) = a :=
-  nat_eq_lift_iff
-
-@[simp]
-theorem lift_le_nat_iff {a : Cardinal.{u}} {n : ℕ} : lift.{v} a ≤ n ↔ a ≤ n := by
+theorem lift_le_natCast_iff {a : Cardinal.{u}} {n : ℕ} : lift.{v} a ≤ n ↔ a ≤ n := by
   rw [← lift_natCast.{v, u}, lift_le]
 
-@[simp]
-theorem lift_le_one_iff {a : Cardinal.{u}} :
-    lift.{v} a ≤ 1 ↔ a ≤ 1 := by
-  simpa using lift_le_nat_iff (n := 1)
+@[deprecated (since := "2026-10-20")] alias lift_le_nat_iff := lift_le_natCast_iff
 
 @[simp]
 theorem lift_le_ofNat_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
     lift.{v} a ≤ ofNat(n) ↔ a ≤ OfNat.ofNat n :=
-  lift_le_nat_iff
+  lift_le_natCast_iff
 
 @[simp]
-theorem nat_le_lift_iff {n : ℕ} {a : Cardinal.{u}} : n ≤ lift.{v} a ↔ n ≤ a := by
+theorem lift_le_one_iff {a : Cardinal.{u}} :
+    lift.{v} a ≤ 1 ↔ a ≤ 1 := by
+  simpa using lift_le_natCast_iff (n := 1)
+
+@[simp]
+theorem natCast_le_lift_iff {n : ℕ} {a : Cardinal.{u}} : n ≤ lift.{v} a ↔ n ≤ a := by
   rw [← lift_natCast.{v, u}, lift_le]
 
-@[simp]
-theorem one_le_lift_iff {a : Cardinal.{u}} :
-    (1 : Cardinal) ≤ lift.{v} a ↔ 1 ≤ a := by
-  simpa using nat_le_lift_iff (n := 1)
+@[deprecated (since := "2026-10-20")] alias nat_le_lift_iff := natCast_le_lift_iff
 
 @[simp]
 theorem ofNat_le_lift_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
     (ofNat(n) : Cardinal) ≤ lift.{v} a ↔ (OfNat.ofNat n : Cardinal) ≤ a :=
-  nat_le_lift_iff
+  natCast_le_lift_iff
 
 @[simp]
-theorem lift_lt_nat_iff {a : Cardinal.{u}} {n : ℕ} : lift.{v} a < n ↔ a < n := by
+theorem one_le_lift_iff {a : Cardinal.{u}} :
+    (1 : Cardinal) ≤ lift.{v} a ↔ 1 ≤ a := by
+  simpa using natCast_le_lift_iff (n := 1)
+
+@[simp]
+theorem lift_lt_natCast_iff {a : Cardinal.{u}} {n : ℕ} : lift.{v} a < n ↔ a < n := by
   rw [← lift_natCast.{v, u}, lift_lt]
+
+@[deprecated (since := "2026-10-20")] alias lift_lt_nat_iff := lift_lt_natCast_iff
 
 @[simp]
 theorem lift_lt_ofNat_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
     lift.{v} a < ofNat(n) ↔ a < OfNat.ofNat n :=
-  lift_lt_nat_iff
+  lift_lt_natCast_iff
 
 @[simp]
-theorem nat_lt_lift_iff {n : ℕ} {a : Cardinal.{u}} : n < lift.{v} a ↔ n < a := by
+theorem natCast_lt_lift_iff {n : ℕ} {a : Cardinal.{u}} : n < lift.{v} a ↔ n < a := by
   rw [← lift_natCast.{v, u}, lift_lt]
 
-@[simp]
-theorem zero_lt_lift_iff {a : Cardinal.{u}} :
-    (0 : Cardinal) < lift.{v} a ↔ 0 < a := by
-  simpa using nat_lt_lift_iff (n := 0)
-
-@[simp]
-theorem one_lt_lift_iff {a : Cardinal.{u}} :
-    (1 : Cardinal) < lift.{v} a ↔ 1 < a := by
-  simpa using nat_lt_lift_iff (n := 1)
+@[deprecated (since := "2026-10-20")] alias nat_lt_lift_iff := natCast_lt_lift_iff
 
 @[simp]
 theorem ofNat_lt_lift_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
     (ofNat(n) : Cardinal) < lift.{v} a ↔ (OfNat.ofNat n : Cardinal) < a :=
-  nat_lt_lift_iff
+  natCast_lt_lift_iff
+
+@[simp]
+theorem zero_lt_lift_iff {a : Cardinal.{u}} :
+    (0 : Cardinal) < lift.{v} a ↔ 0 < a := by
+  simpa using natCast_lt_lift_iff (n := 0)
+
+@[simp]
+theorem one_lt_lift_iff {a : Cardinal.{u}} :
+    (1 : Cardinal) < lift.{v} a ↔ 1 < a := by
+  simpa using natCast_lt_lift_iff (n := 1)
 
 theorem mk_coe_finset {α : Type u} {s : Finset α} : #s = ↑(Finset.card s) := by simp
 
