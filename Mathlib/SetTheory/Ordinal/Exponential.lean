@@ -107,6 +107,11 @@ theorem opow_ne_zero {a : Ordinal} (b : Ordinal) (a0 : a ≠ 0) : a ^ b ≠ 0 :=
 theorem opow_eq_zero {a b : Ordinal} : a ^ b = 0 ↔ a = 0 ∧ b ≠ 0 := by
   by_cases a = 0 <;> by_cases b = 0 <;> simp_all [opow_ne_zero]
 
+theorem opow_le_one {a : Ordinal} (ha : a ≤ 1) (b : Ordinal) : a ^ b ≤ 1 := by
+  obtain rfl | rfl := Order.le_one_iff.1 ha
+  · exact zero_opow_le b
+  · rw [one_opow]
+
 @[simp, norm_cast]
 theorem opow_natCast (a : Ordinal) (n : ℕ) : a ^ (n : Ordinal) = a ^ n := by
   induction n with
