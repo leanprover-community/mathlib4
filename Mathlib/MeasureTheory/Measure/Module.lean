@@ -76,7 +76,7 @@ instance : Add (Measure α) :=
     { toOuterMeasure := μ₁.toOuterMeasure + μ₂.toOuterMeasure
       m_iUnion := fun s hs hd =>
         show μ₁ (⋃ i, s i) + μ₂ (⋃ i, s i) = ∑' i, (μ₁ (s i) + μ₂ (s i)) by
-          rw [ENNReal.tsum_add, measure_iUnion hd hs, measure_iUnion hd hs]
+          rw [tsum_add, measure_iUnion hd hs, measure_iUnion hd hs]
       trim_le := by rw [OuterMeasure.trim_add, μ₁.trimmed, μ₂.trimmed] }⟩
 
 @[simp]

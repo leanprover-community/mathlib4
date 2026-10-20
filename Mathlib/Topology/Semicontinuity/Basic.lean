@@ -706,7 +706,7 @@ variable {ι : Type*}
 theorem lowerSemicontinuousWithinAt_tsum {f : ι → α → ℝ≥0∞}
     (h : ∀ i, LowerSemicontinuousWithinAt (f i) s x) :
     LowerSemicontinuousWithinAt (fun x' => ∑' i, f i x') s x := by
-  simp_rw [ENNReal.tsum_eq_iSup_sum]
+  simp_rw [tsum_eq_iSup_sum]
   refine lowerSemicontinuousWithinAt_iSup fun b => ?_
   exact lowerSemicontinuousWithinAt_sum fun i _hi => h i
 

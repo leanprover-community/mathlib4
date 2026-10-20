@@ -195,7 +195,7 @@ proofs or statements do not apply directly.
 
 @[expose] public section
 
-open Set Filter ENNReal NNReal TopologicalSpace
+open Set Filter ENNReal NNReal TopologicalSpace CompleteLattice
 open scoped symmDiff Topology
 
 namespace MeasureTheory
@@ -463,8 +463,8 @@ lemma of_restrict [OpensMeasurableSpace α] {μ : Measure α} {s : ℕ → Set �
   refine ⟨⋃ n, U n, iUnion_mono hAU, isOpen_iUnion hUo, ?_⟩
   calc
     μ (⋃ n, U n) ≤ ∑' n, μ (U n) := measure_iUnion_le _
-    _ ≤ ∑' n, (μ (A n) + δ n) := ENNReal.tsum_le_tsum fun n => (hU n).le
-    _ = ∑' n, μ (A n) + ∑' n, δ n := ENNReal.tsum_add
+    _ ≤ ∑' n, (μ (A n) + δ n) := tsum_le_tsum fun n => (hU n).le
+    _ = ∑' n, μ (A n) + ∑' n, δ n := tsum_add
     _ = μ (⋃ n, A n) + ∑' n, δ n := congr($((measure_iUnion hAd hAm).symm) + _)
     _ < r := hδε
 
@@ -644,7 +644,7 @@ theorem weaklyRegular_of_finite [BorelSpace α] (μ : Measure α) [IsFiniteMeasu
     -- taking the union of these (finitely many) `F i`.
     have : Tendsto (fun t => (∑ k ∈ t, μ (s k)) + ε / 2) atTop (𝓝 <| μ (⋃ n, s n) + ε / 2) := by
       rw [measure_iUnion hsd hsm]
-      exact Tendsto.add ENNReal.summable.hasSum tendsto_const_nhds
+      exact Tendsto.add summable.hasSum tendsto_const_nhds
     rcases (this.eventually <| lt_mem_nhds <| ENNReal.lt_add_right hfin ε0').exists with ⟨t, ht⟩
     -- the approximating open set is constructed by taking for each `s n` an approximating open set
     -- `U n` with measure at most `μ (s n) + δ n` for a summable `δ`, and taking the union of these.
@@ -658,15 +658,15 @@ theorem weaklyRegular_of_finite [BorelSpace α] (μ : Measure α) [IsFiniteMeasu
           apply hF
         _ ≤ (∑ k ∈ t, μ (F k)) + ε / 2 + ε / 2 := by
           gcongr
-          exact (ENNReal.sum_le_tsum _).trans hδε.le
+          exact (sum_le_tsum _).trans hδε.le
         _ = μ (⋃ k ∈ t, F k) + ε := by
           rw [measure_biUnion_finset, add_assoc, ENNReal.add_halves]
           exacts [fun k _ n _ hkn => (hsd hkn).mono (hFs k) (hFs n),
             fun k _ => (hFc k).measurableSet]
     · calc
         μ (⋃ n, U n) ≤ ∑' n, μ (U n) := measure_iUnion_le _
-        _ ≤ ∑' n, (μ (s n) + δ n) := ENNReal.tsum_le_tsum hU
-        _ = μ (⋃ n, s n) + ∑' n, δ n := by rw [measure_iUnion hsd hsm, ENNReal.tsum_add]
+        _ ≤ ∑' n, (μ (s n) + δ n) := tsum_le_tsum hU
+        _ = μ (⋃ n, s n) + ∑' n, δ n := by rw [measure_iUnion hsd hsm, tsum_add]
         _ ≤ μ (⋃ n, s n) + ε := by grw [hδε, ENNReal.half_le_self]
 
 /-- In a metrizable space (or even a pseudometrizable space), an open set can be approximated from
@@ -800,14 +800,14 @@ instance {ι : Type*} {μ : ι → Measure α} [∀ i, InnerRegular (μ i)] :
   intro s hs r hr
   have : Tendsto (fun (a : Finset ι) ↦ ∑ i ∈ a, μ i s) atTop (𝓝 (Measure.sum μ s)) := by
     simp only [hs, Measure.sum_apply]
-    exact ENNReal.summable.hasSum
+    exact summable.hasSum
   obtain ⟨a, ha⟩ : ∃ (a : Finset ι), r < (∑ i ∈ a, μ i) s := by
     simp only [coe_finsetSum, Finset.sum_apply]
     exact ((tendsto_order.1 this).1 r hr).exists
   rcases MeasurableSet.exists_lt_isCompact hs ha with ⟨K, Ks, hK, h'K⟩
   refine ⟨K, Ks, hK, h'K.trans_le ?_⟩
   simp only [coe_finsetSum, Finset.sum_apply]
-  exact (ENNReal.sum_le_tsum _).trans (le_sum_apply _ _)
+  exact (sum_le_tsum _).trans (le_sum_apply _ _)
 
 end InnerRegular
 
