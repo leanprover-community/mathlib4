@@ -652,7 +652,7 @@ theorem lift_le_natCast_iff {a : Cardinal.{u}} {n : ℕ} : lift.{v} a ≤ n ↔ 
 
 @[simp]
 theorem lift_le_ofNat_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
-    lift.{v} a ≤ ofNat(n) ↔ a ≤ OfNat.ofNat n :=
+    lift.{v} a ≤ ofNat(n) ↔ a ≤ ofNat(n) :=
   lift_le_natCast_iff
 
 @[simp]
