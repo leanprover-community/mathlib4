@@ -5,8 +5,8 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Rat.Cast.CharZero
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Data.Rat.Cast.CharZero
 
 /-! # Casting lemmas for rational numbers involving sums and products
 -/

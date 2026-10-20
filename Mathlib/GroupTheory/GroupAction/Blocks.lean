@@ -159,7 +159,7 @@ theorem IsTrivialBlock.smul_iff {B : Set α} (g : M) :
     IsTrivialBlock (g • B) ↔ IsTrivialBlock B := by
   constructor
   · intro H
-    convert! IsTrivialBlock.smul H g⁻¹
+    convert IsTrivialBlock.smul H g⁻¹
     simp only [inv_smul_smul]
   · intro H
     exact IsTrivialBlock.smul H g
@@ -712,7 +712,7 @@ theorem of_subset (a : X) (hfB : B.Finite) :
   · simp [hfB_e]
   have hB'₀ : ∀ (k : G) (_ : a ∈ k • B), B' ≤ k • B := by
     intro k hk
-    exact Set.biInter_subset_of_mem hk
+    exact Set.iInter₂_subset k hk
   have hfB' : B'.Finite := by
     obtain ⟨b, hb : b ∈ B⟩ := hfB_ne
     obtain ⟨k, hk : k • b = a⟩ := exists_smul_eq G b a

@@ -5,8 +5,8 @@ Authors: Mario Carneiro, Johannes Hölzl
 -/
 module
 
-public import Mathlib.MeasureTheory.Function.SimpleFunc
 public import Mathlib.Algebra.Order.Pi
+public import Mathlib.MeasureTheory.Function.SimpleFunc
 
 /-!
 # Lower Lebesgue integral for `ℝ≥0∞`-valued functions
@@ -184,7 +184,7 @@ theorem exists_simpleFunc_forall_lintegral_sub_lt_of_pos {f : α → ℝ≥0∞}
         ∀ ψ : α →ₛ ℝ≥0, (∀ x, ↑(ψ x) ≤ f x) → (map (↑) (ψ - φ)).lintegral μ < ε := by
   rw [lintegral_eq_nnreal] at h
   have := ENNReal.lt_add_right h hε
-  erw [ENNReal.biSup_add] at this <;> [skip; exact ⟨0, fun x => zero_le⟩]
+  rw [ENNReal.biSup_add' ⟨0, fun x => by simp⟩] at this
   simp_rw [lt_iSup_iff, iSup_lt_iff, iSup_le_iff] at this
   rcases this with ⟨φ, hle : ∀ x, ↑(φ x) ≤ f x, b, hbφ, hb⟩
   refine ⟨φ, hle, fun ψ hψ => ?_⟩
@@ -449,9 +449,6 @@ theorem lintegral_finsetSum_measure {ι} (s : Finset ι) (f : α → ℝ≥0∞)
       map_add' := lintegral_add_measure f }
   map_sum F μ s
 
-@[deprecated (since := "2026-04-08")]
-alias lintegral_finset_sum_measure := lintegral_finsetSum_measure
-
 @[simp]
 theorem lintegral_sum_measure {m : MeasurableSpace α} {ι} (f : α → ℝ≥0∞) (μ : ι → Measure α) :
     ∫⁻ a, f a ∂Measure.sum μ = ∑' i, ∫⁻ a, f a ∂μ i := by
@@ -467,7 +464,7 @@ theorem hasSum_lintegral_measure {ι} {_ : MeasurableSpace α} (f : α → ℝ�
 theorem lintegral_of_isEmpty {α} [MeasurableSpace α] [IsEmpty α] (μ : Measure α) (f : α → ℝ≥0∞) :
     ∫⁻ x, f x ∂μ = 0 := by
   have : Subsingleton (Measure α) := inferInstance
-  convert! lintegral_zero_measure f
+  convert lintegral_zero_measure f
 
 theorem setLIntegral_empty (f : α → ℝ≥0∞) : ∫⁻ x in ∅, f x ∂μ = 0 := by
   rw [Measure.restrict_empty, lintegral_zero_measure]
@@ -477,7 +474,7 @@ theorem setLIntegral_univ (f : α → ℝ≥0∞) : ∫⁻ x in univ, f x ∂μ 
 
 theorem setLIntegral_measure_zero (s : Set α) (f : α → ℝ≥0∞) (hs' : μ s = 0) :
     ∫⁻ x in s, f x ∂μ = 0 := by
-  convert! lintegral_zero_measure _
+  convert lintegral_zero_measure _
   exact Measure.restrict_eq_zero.2 hs'
 
 -- TODO: Need a better way of rewriting inside of an integral

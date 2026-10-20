@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Exp
 public import Mathlib.Data.Nat.Factorization.Defs
+
 import Mathlib.Analysis.Normed.Module.RCLike.Real
 
 /-!
@@ -305,7 +306,7 @@ theorem log_sqrt {x : ℝ} (hx : 0 ≤ x) : log (√x) = log x / 2 := by
 
 theorem log_le_sub_one_of_pos {x : ℝ} (hx : 0 < x) : log x ≤ x - 1 := by
   rw [le_sub_iff_add_le]
-  convert! add_one_le_exp (log x)
+  convert add_one_le_exp (log x)
   rw [exp_log hx]
 
 lemma one_sub_inv_le_log_of_pos (hx : 0 < x) : 1 - x⁻¹ ≤ log x := by
@@ -373,7 +374,8 @@ theorem continuous_log : Continuous fun x : { x : ℝ // x ≠ 0 } => log x :=
 /-- The real logarithm is continuous as a function from positive reals. -/
 @[fun_prop]
 theorem continuous_log' : Continuous fun x : { x : ℝ // 0 < x } => log x :=
-  continuousOn_iff_continuous_domRestrict.1 <| continuousOn_log.mono fun _ hx => ne_of_gt hx
+  continuousOn_iff_continuous_domRestrict (s := .Ioi 0) |>.1 <|
+    continuousOn_log.mono fun _ ↦ ne_of_gt
 
 theorem continuousAt_log (hx : x ≠ 0) : ContinuousAt log x :=
   (continuousOn_log x hx).continuousAt <| isOpen_compl_singleton.mem_nhds hx
@@ -468,7 +470,7 @@ theorem isLittleO_const_log_atTop {c : ℝ} : (fun _ => c) =o[atTop] log := by
   open_source := isOpen_univ
   open_target := isOpen_Ioi
   continuousOn_toFun := continuousOn_exp
-  continuousOn_invFun x hx := (continuousAt_log (ne_of_gt hx)).continuousWithinAt
+  continuousOn_invFun x hx := (continuousAt_log hx.ne').continuousWithinAt
 
 @[simp]
 theorem image_log_Ioi {a : ℝ} (ha : 0 < a) : log '' Ioi a = Ioi (log a) :=
@@ -482,28 +484,32 @@ theorem image_log_Ici {a : ℝ} (ha : 0 < a) : log '' Ici a = Ici (log a) :=
 
 @[simp]
 theorem image_log_Icc {a b : ℝ} (ha : 0 < a) (hab : a ≤ b) : log '' Icc a b = Icc (log a) (log b) :=
-  (continuousOn_log.mono fun _ hx ↦ (ha.trans_le hx.1).ne').image_Icc_of_monotoneOn hab
-    (strictMonoOn_log.monotoneOn.mono fun _ hx ↦ ha.trans_le hx.1)
+  (continuousOn_log.mono fun x (hx : x ∈ Icc a b) ↦ (ha.trans_le hx.1).ne').image_Icc_of_monotoneOn
+    hab (strictMonoOn_log.monotoneOn.mono fun _ hx ↦ ha.trans_le hx.1)
 
 @[simp]
 theorem image_log_Ico {a b : ℝ} (ha : 0 < a) (hab : a ≤ b) : log '' Ico a b = Ico (log a) (log b) :=
-  (continuousOn_log.mono fun _ hx ↦ (ha.trans_le hx.1).ne').image_Ico_of_strictMonoOn hab
+  (continuousOn_log.mono (fun x (hx : x ∈ Icc a b) ↦
+    (ha.trans_le hx.1).ne')).image_Ico_of_strictMonoOn hab
     (strictMonoOn_log.mono fun _ hx ↦ ha.trans_le hx.1)
 
 @[simp]
 theorem image_log_Ioc {a b : ℝ} (ha : 0 < a) (hab : a ≤ b) : log '' Ioc a b = Ioc (log a) (log b) :=
-  (continuousOn_log.mono fun _ hx ↦ (ha.trans_le hx.1).ne').image_Ioc_of_strictMonoOn hab
+  (continuousOn_log.mono (fun x (hx : x ∈ Icc a b) ↦
+    (ha.trans_le hx.1).ne')).image_Ioc_of_strictMonoOn hab
     (strictMonoOn_log.mono fun _ hx ↦ ha.trans_le hx.1)
 
 @[simp]
 theorem image_log_Ioo {a b : ℝ} (ha : 0 < a) (hab : a ≤ b) : log '' Ioo a b = Ioo (log a) (log b) :=
-  (continuousOn_log.mono fun _ hx ↦ (ha.trans_le hx.1).ne').image_Ioo_of_strictMonoOn hab
+  (continuousOn_log.mono (fun x (hx : x ∈ Icc a b) ↦
+    (ha.trans_le hx.1).ne')).image_Ioo_of_strictMonoOn hab
     (strictMonoOn_log.mono fun _ hx ↦ ha.trans_le hx.1)
 
 @[simp]
 theorem image_log_uIcc {a b : ℝ} (ha : 0 < a) (hb : 0 < b) :
     log '' uIcc a b = uIcc (log a) (log b) :=
-  (continuousOn_log.mono fun _ hx ↦ ((lt_min ha hb).trans_le hx.1).ne').image_uIcc_of_monotoneOn
+  (continuousOn_log.mono (fun x (hx : x ∈ uIcc a b) ↦
+    ((lt_min ha hb).trans_le hx.1).ne')).image_uIcc_of_monotoneOn
     (strictMonoOn_log.monotoneOn.mono fun _ hx ↦ (lt_min ha hb).trans_le hx.1)
 
 @[simp]

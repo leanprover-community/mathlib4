@@ -6,10 +6,10 @@ Authors: Johannes Hölzl, Patrick Massot, Sébastien Gouëzel, Zhouhang Zhou, Re
 module
 
 public import Mathlib.Logic.Equiv.Fin.Basic
-public import Mathlib.Topology.Connected.LocallyConnected
-public import Mathlib.Topology.DenseEmbedding
-public import Mathlib.Topology.Connected.TotallyDisconnected
 public import Mathlib.Topology.Baire.Lemmas
+public import Mathlib.Topology.Connected.LocallyConnected
+public import Mathlib.Topology.Connected.TotallyDisconnected
+public import Mathlib.Topology.DenseEmbedding
 
 /-!
 # Further properties of homeomorphisms
@@ -114,7 +114,7 @@ protected lemma totallyDisconnectedSpace (h : X ≃ₜ Y) [tdc : TotallyDisconne
 
 @[simp]
 theorem map_punctured_nhds_eq (h : X ≃ₜ Y) (x : X) : map h (𝓝[≠] x) = 𝓝[≠] (h x) := by
-  convert! h.isEmbedding.map_nhdsWithin_eq ({ x }ᶜ) x
+  convert h.isEmbedding.map_nhdsWithin_eq ({ x }ᶜ) x
   rw [h.image_compl, Set.image_singleton]
 
 @[simp]
@@ -172,7 +172,6 @@ abbrev sets {s : Set X} {t : Set Y} (h : X ≃ₜ Y) (h_eq : s = h ⁻¹' t) : s
   h.subtype <| Set.ext_iff.mp h_eq
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- If two sets are equal, then they are homeomorphic. -/
 def setCongr {s t : Set X} (h : s = t) : s ≃ₜ t where
   toEquiv := Set.equivOfEq h

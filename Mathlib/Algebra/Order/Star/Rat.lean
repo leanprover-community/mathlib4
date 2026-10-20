@@ -6,9 +6,10 @@ Authors: Jireh Loreaux, Yaël Dillies
 module
 
 public import Mathlib.Algebra.Order.Monoid.Submonoid
+public import Mathlib.Algebra.Order.Star.Basic
+
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Algebra.Order.Ring.NNRat
-public import Mathlib.Algebra.Order.Star.Basic
 
 /-!
 # Star ordered ring structures on `ℚ` and `ℚ≥0`
@@ -48,7 +49,7 @@ namespace Rat
 
 @[simp] lemma addSubmonoid_closure_range_pow {n : ℕ} (hn₀ : n ≠ 0) (hn : Even n) :
     closure (range fun x : ℚ ↦ x ^ n) = nonneg _ := by
-  convert! (AddMonoidHom.map_mclosure NNRat.coeHom <| range fun x ↦ x ^ n).symm
+  convert (AddMonoidHom.map_mclosure NNRat.coeHom <| range fun x ↦ x ^ n).symm
   · have (x : ℚ) : ∃ y : ℚ≥0, y ^ n = x ^ n := ⟨x.nnabs, by simp [hn.pow_abs]⟩
     simp [subset_antisymm_iff, range_subset_iff, this]
   · ext

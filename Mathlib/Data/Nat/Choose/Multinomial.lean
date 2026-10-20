@@ -11,6 +11,7 @@ public import Mathlib.Data.List.ToFinsupp
 public import Mathlib.Data.Nat.Choose.Sum
 public import Mathlib.Data.Nat.Factorial.BigOperators
 public import Mathlib.Data.Nat.Factorial.DoubleFactorial
+
 /-!
 # Multinomial
 
@@ -323,7 +324,7 @@ theorem sum_pow_of_commute (x : α → R) (s : Finset α)
       swap
       · exact ⟨0, by simp [eq_iff_true_of_subsingleton]⟩
       convert! (@one_mul R _ _).symm
-      convert! @Nat.cast_one R _
+      convert @Nat.cast_one R _
       simp
     · rw [_root_.pow_succ, mul_zero]
       have : IsEmpty (Finset.sym (∅ : Finset α) n.succ) := Finset.instIsEmpty
