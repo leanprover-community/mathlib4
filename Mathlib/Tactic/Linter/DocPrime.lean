@@ -11,6 +11,9 @@ public meta import Lean.Elab.Command
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 public meta import Lean.Parser.Command
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The "docPrime" linter
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.Group.Pointwise.Bounds
 public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Infima/suprema in ordered monoids and groups
 
