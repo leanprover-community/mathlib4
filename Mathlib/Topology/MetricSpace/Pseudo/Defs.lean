@@ -1081,6 +1081,15 @@ abbrev PseudoEMetricSpace.toPseudoMetricSpace {α : Type u} [PseudoEMetricSpace 
     (h : ∀ x y : α, edist x y ≠ ⊤) : PseudoMetricSpace α :=
   PseudoEMetricSpace.toPseudoMetricSpaceOfDist (ENNReal.toReal <| edist · ·) (by simp) (by simp [h])
 
+/-- The points at finite distance from `a` form a pseudometric space, with distance given by the
+real part of the extended distance. -/
+abbrev boundedComponent.pseudoMetricSpace {X : Type*} [PseudoEMetricSpace X] (a : X) :
+    PseudoMetricSpace (boundedComponent a) :=
+  PseudoEMetricSpace.toPseudoMetricSpace fun p q ↦ by
+    refine ((edist_triangle p.1 a q.1).trans_lt (ENNReal.add_lt_top.2 ⟨?_, q.2.lt_top⟩)).ne
+    rw [edist_comm]
+    exact p.2.lt_top
+
 /-- Build a new pseudometric space from an old one where the bundled bornology structure is provably
 (but typically non-definitionaly) equal to some given bornology structure.
 See Note [forgetful inheritance].

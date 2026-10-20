@@ -610,6 +610,20 @@ theorem nhdsWithin_basis_closedEBall {α : Type*} [PseudoEMetricSpace α] {s : S
 
 end Metric
 
+/-- The points at finite distance from `a`. -/
+def boundedComponent {X : Type*} [EDist X] (a : X) : Set X := {x | edist a x ≠ ∞}
+
+@[simp]
+theorem mem_boundedComponent_iff {X : Type*} [EDist X] {a x : X} :
+    x ∈ boundedComponent a ↔ edist a x ≠ ∞ := Iff.rfl
+
+theorem boundedComponent_eq {a b : α} (h : b ∈ boundedComponent a) :
+    boundedComponent a = boundedComponent b := by
+  ext x
+  simp only [mem_boundedComponent_iff, ← lt_top_iff_ne_top] at h ⊢
+  exact ⟨fun ha ↦ Metric.edistLtTopSetoid.trans (Metric.edistLtTopSetoid.symm h) ha,
+    fun hb ↦ Metric.edistLtTopSetoid.trans h hb⟩
+
 namespace EMetric
 variable {x : α} {ε : ℝ≥0∞} {s t : Set α}
 
