@@ -36,14 +36,14 @@ def set_option_line(option: str, value: str = "false") -> str:
 
 def removable_pattern(option: str) -> re.Pattern:
     """Match bare `set_option X <value> in` lines (no trailing comment).
-    |value| can be a boolean (true or false), number or string (alphanumeric only)."""
+    |value| can be a boolean (true or false), number or string (not containing `"`)."""
     escaped = re.escape(option)
     return re.compile(rf'^\s*set_option {escaped} (true|false|\d+|"[^"]*") in\s*$')
 
 
 def commented_pattern(option: str) -> re.Pattern:
     """Match `set_option X <value> in -- ...` lines.
-    |value| can be a boolean (true or false), number or string (alphanumeric only)."""
+    |value| can be a boolean (true or false), number or string (not containing `"`)."""
     escaped = re.escape(option)
     return re.compile(rf'^\s*set_option {escaped} (true|false|\d+|"[^"]*") in\s+--')
 

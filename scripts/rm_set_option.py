@@ -186,7 +186,7 @@ def handle_lakefile(options: list[str], value: str) -> bool:
 def scan_files(dag: DAG, options: list[str]) -> dict[str, list[int]]:
     """Find files with removable set_option lines:
     we support options with Boolean, numeric or string values
-    (provided the string is alphabetic only).
+    (provided the string does not contain `"`).
 
     Returns dict of module_name -> list of 0-indexed line numbers.
     """
