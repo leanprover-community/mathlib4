@@ -22,8 +22,7 @@ public section
 
 namespace MeasureTheory
 
-open Set Filter ENNReal NNReal
-open SimpleFunc hiding mul_apply
+open Set Filter ENNReal NNReal SimpleFunc
 
 open scoped Topology
 

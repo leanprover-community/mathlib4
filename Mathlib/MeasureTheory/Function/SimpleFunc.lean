@@ -440,14 +440,14 @@ theorem coe_sup [Max β] (f g : α →ₛ β) : ⇑(f ⊔ g) = ⇑f ⊔ ⇑g :=
 theorem coe_inf [Min β] (f g : α →ₛ β) : ⇑(f ⊓ g) = ⇑f ⊓ ⇑g :=
   rfl
 
-@[deprecated (since := "2026-10-20")] alias add_apply := add_apply
-@[to_additive existing, deprecated (since := "2026-10-20")] alias mul_apply := mul_apply
+@[deprecated (since := "2026-10-20")] protected alias add_apply := add_apply
+@[to_additive existing, deprecated (since := "2026-10-20")] protected alias mul_apply := mul_apply
 
-@[deprecated (since := "2026-10-20")] alias sub_apply := sub_apply
-@[to_additive existing, deprecated (since := "2026-10-20")] alias div_apply := div_apply
+@[deprecated (since := "2026-10-20")] protected alias sub_apply := sub_apply
+@[to_additive existing, deprecated (since := "2026-10-20")] protected alias div_apply := div_apply
 
-@[deprecated (since := "2026-10-20")] alias neg_apply := neg_apply
-@[to_additive existing, deprecated (since := "2026-10-20")] alias inv_apply := inv_apply
+@[deprecated (since := "2026-10-20")] protected alias neg_apply := neg_apply
+@[to_additive existing, deprecated (since := "2026-10-20")] protected alias inv_apply := inv_apply
 
 theorem sup_apply [Max β] (f g : α →ₛ β) (a : α) : (f ⊔ g) a = f a ⊔ g a :=
   rfl
@@ -495,8 +495,8 @@ instance [SMul K β] : IsSMulApply K (α →ₛ β) where
 @[deprecated (since := "2026-10-20")] alias coe_vadd := FunLike.coe_vadd
 @[to_additive existing, deprecated (since := "2026-10-20")] alias coe_smul := FunLike.coe_smul
 
-@[deprecated (since := "2026-10-20")] alias vadd_apply := vadd_apply
-@[to_additive existing, deprecated (since := "2026-10-20")] alias smul_apply := smul_apply
+@[deprecated (since := "2026-10-20")] protected alias vadd_apply := vadd_apply
+@[to_additive existing, deprecated (since := "2026-10-20")] protected alias smul_apply := smul_apply
 
 instance hasNatSMul [AddMonoid β] : SMul ℕ (α →ₛ β) := inferInstance
 
@@ -512,7 +512,8 @@ instance [Monoid β] : IsPowApply ℕ (α →ₛ β) where
 @[to_additive existing coe_smul, deprecated (since := "2026-10-20")] alias coe_pow :=
   FunLike.coe_pow
 
-@[to_additive existing smul_apply, deprecated (since := "2026-10-20")] alias pow_apply := pow_apply
+@[to_additive existing smul_apply, deprecated (since := "2026-10-20")] protected alias pow_apply :=
+  pow_apply
 
 instance hasIntPow [DivInvMonoid β] : Pow (α →ₛ β) ℤ :=
   ⟨fun f n => f.map (· ^ n)⟩
