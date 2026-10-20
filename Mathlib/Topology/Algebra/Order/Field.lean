@@ -11,9 +11,6 @@ public import Mathlib.Topology.Algebra.Order.Group
 
 import Mathlib.Tactic.NormNum.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Topologies on linear ordered fields
 

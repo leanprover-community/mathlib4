@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Analysis.Analytic.CPolynomialDef
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Linear functions are analytic
 

@@ -10,9 +10,6 @@ public import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 import Mathlib.MeasureTheory.Measure.ContinuousPreimage
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Ergodicity from minimality
 

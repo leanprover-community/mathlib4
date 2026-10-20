@@ -9,9 +9,6 @@ public import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
 
 import Mathlib.Tactic.AdaptationNote
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Slash actions
 

@@ -11,9 +11,6 @@ public import Mathlib.SetTheory.Cardinal.Basic
 
 import Mathlib.Algebra.Ring.Rat
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Cardinality of ℚ
 
