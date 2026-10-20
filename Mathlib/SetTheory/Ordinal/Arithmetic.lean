@@ -885,7 +885,7 @@ theorem natCast_eq_lift_iff {n : ℕ} {a : Ordinal.{u}} :
 
 @[simp]
 theorem ofNat_eq_lift_iff {a : Ordinal.{u}} {n : ℕ} [n.AtLeastTwo] :
-    (ofNat(n) : Ordinal) = lift.{v} a ↔ (ofNat(n) : Ordinal) = a :=
+    ofNat(n) = lift.{v} a ↔ ofNat(n) = a :=
   natCast_eq_lift_iff
 
 @[simp]
@@ -928,7 +928,7 @@ theorem natCast_le_lift_iff {n : ℕ} {a : Ordinal.{u}} : n ≤ lift.{v} a ↔ n
 
 @[simp]
 theorem ofNat_le_lift_iff {a : Ordinal.{u}} {n : ℕ} [n.AtLeastTwo] :
-    (ofNat(n) : Ordinal) ≤ lift.{v} a ↔ (ofNat(n) : Ordinal) ≤ a :=
+    ofNat(n) ≤ lift.{v} a ↔ ofNat(n) ≤ a :=
   natCast_le_lift_iff
 
 @[simp]

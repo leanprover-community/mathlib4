@@ -631,7 +631,7 @@ theorem natCast_eq_lift_iff {n : ℕ} {a : Cardinal.{u}} :
 
 @[simp]
 theorem ofNat_eq_lift_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
-    (ofNat(n) : Cardinal) = lift.{v} a ↔ (ofNat(n) : Cardinal) = a :=
+    ofNat(n) = lift.{v} a ↔ ofNat(n) = a :=
   natCast_eq_lift_iff
 
 @[simp]
@@ -668,7 +668,7 @@ theorem natCast_le_lift_iff {n : ℕ} {a : Cardinal.{u}} : n ≤ lift.{v} a ↔ 
 
 @[simp]
 theorem ofNat_le_lift_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
-    (ofNat(n) : Cardinal) ≤ lift.{v} a ↔ (ofNat(n) : Cardinal) ≤ a :=
+    ofNat(n) ≤ lift.{v} a ↔ ofNat(n) ≤ a :=
   natCast_le_lift_iff
 
 @[simp]
@@ -695,7 +695,7 @@ theorem natCast_lt_lift_iff {n : ℕ} {a : Cardinal.{u}} : n < lift.{v} a ↔ n 
 
 @[simp]
 theorem ofNat_lt_lift_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
-    (ofNat(n) : Cardinal) < lift.{v} a ↔ (ofNat(n) : Cardinal) < a :=
+    ofNat(n) < lift.{v} a ↔ ofNat(n) < a :=
   natCast_lt_lift_iff
 
 @[simp]
