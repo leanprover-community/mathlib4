@@ -274,7 +274,9 @@ def validateCurl (upload := false) : IO Bool := do
   let _ := @lexOrd
   let _ := @leOfOrd
   let minimum := if upload then (8, 20) else (7, 84)
-  if version >= minimum then return true
+  -- curl 8.18 and 8.19 hang on a pending retry in parallel mode (curl issue #20669).
+  let hangs := version == (8, 18) || version == (8, 19)
+  if version >= minimum && !hangs then return true
   if upload then
     throw <| IO.userError s!"Cache uploads require curl ≥{minimum.1}.{minimum.2}. Found {found}."
   let arch ← (·.trimAscii.copy) <$> runCmd "uname" #["-m"] false
