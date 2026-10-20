@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.Restriction
 public import Mathlib.Topology.Constructions
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuity of the restriction function for functions indexed by a preorder
 

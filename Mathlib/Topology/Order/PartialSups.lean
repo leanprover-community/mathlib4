@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Order.Lattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuity of `partialSups`
 

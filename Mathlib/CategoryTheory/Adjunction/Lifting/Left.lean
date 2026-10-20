@@ -78,7 +78,7 @@ variable (adj₁ : F ⊣ U) (adj₂ : F' ⊣ R ⋙ U)
 /-- To show that `ε_X` is a coequalizer for `(FUε_X, ε_FUX)`, it suffices to assume it's always a
 coequalizer of something (i.e. a regular epi).
 -/
-def counitCoequalises (h : ∀ X : B, RegularEpi (adj₁.counit.app X)) (X : B) :
+def counitCoequalizes (h : ∀ X : B, RegularEpi (adj₁.counit.app X)) (X : B) :
     IsColimit (Cofork.ofπ (adj₁.counit.app X) (adj₁.counit_naturality _)) :=
   Cofork.IsColimit.mk' _ fun s => by
     have := fun Y ↦ h Y |>.epi
@@ -93,6 +93,12 @@ def counitCoequalises (h : ∀ X : B, RegularEpi (adj₁.counit.app X)) (X : B) 
       rw [← cancel_epi (adj₁.counit.app X)]
       apply hm.trans ((h _).desc' s.π _).2.symm
 
+/-- Deprecated alias for `counitCoequalizes`. -/
+@[deprecated counitCoequalizes (since := "2026-10-05")]
+abbrev counitCoequalises (h : ∀ X : B, RegularEpi (adj₁.counit.app X)) (X : B) :
+    IsColimit (Cofork.ofπ (adj₁.counit.app X) (adj₁.counit_naturality _)) :=
+  counitCoequalizes adj₁ h X
+
 /-- (Implementation)
 To construct the left adjoint, we use the coequalizer of `F' U ε_Y` with the composite
 
@@ -105,7 +111,6 @@ We will show that this coequalizer exists and that it forms the object map for a
 def otherMap (X) : F'.obj (U.obj (F.obj (U.obj X))) ⟶ F'.obj (U.obj X) :=
   F'.map (U.map (F.map (adj₂.unit.app _) ≫ adj₁.counit.app _)) ≫ adj₂.counit.app _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- `(F'Uε_X, otherMap X)` is a reflexive pair: in particular if `A` has reflexive coequalizers then
 this pair has a coequalizer.
 -/
@@ -158,11 +163,10 @@ noncomputable def constructLeftAdjointEquiv (h : ∀ X : B, RegularEpi (adj₁.c
         adj₁.homEquiv_counit, adj₁.homEquiv_counit, F.map_comp, assoc, U.map_comp, F.map_comp,
         assoc, adj₁.counit_naturality, adj₁.counit_naturality_assoc]
       apply eq_comm
-    _ ≃ (X ⟶ R.obj Y) := (Cofork.IsColimit.homIso (counitCoequalises adj₁ h X) _).symm
+    _ ≃ (X ⟶ R.obj Y) := (Cofork.IsColimit.homIso (counitCoequalizes adj₁ h X) _).symm
 
 attribute [local simp] Adjunction.homEquiv_counit
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Construct the left adjoint to `R`, with object map `constructLeftAdjointObj`. -/
 noncomputable def constructLeftAdjoint (h : ∀ X : B, RegularEpi (adj₁.counit.app X)) : B ⥤ A := by
   refine Adjunction.leftAdjointOfEquiv (fun X Y => constructLeftAdjointEquiv R _ adj₁ adj₂ h Y X) ?_

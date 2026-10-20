@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.Group.OrderIso
 public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Distributivity of group operations over supremum/infimum
 -/

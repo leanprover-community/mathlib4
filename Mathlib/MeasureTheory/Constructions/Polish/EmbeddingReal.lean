@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.Constructions.Polish.Basic
 
 import Mathlib.Analysis.Real.Cardinality
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A Polish Borel space is measurably equivalent to a set of reals
 -/
