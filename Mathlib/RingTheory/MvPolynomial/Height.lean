@@ -45,7 +45,7 @@ theorem le_height_span_X_image (s : Set σ) :
   let π := MvPolynomial.map (σ := σ) (Ideal.Quotient.mk (Ideal.comap C I))
   have h₁ : (Ideal.map π I).height ≤ I.height := by
     have : Function.Surjective π := MvPolynomial.map_surjective _ Ideal.Quotient.mk_surjective
-    grw [RingHom.height_le_height_comap_of_surjective this, Ideal.comap_map_of_surjective _ this]
+    grw [π.height_le_height_comap_of_surjective this, Ideal.comap_map_of_surjective _ this]
     simp [π, ← RingHom.ker_eq_comap_bot, ker_map, Ideal.map_comap_le]
   have h₂ : Ideal.span (X '' s) ≤ Ideal.map π I := by
     grw [← Ideal.map_mono hI.1.2, Ideal.map_span, Ideal.span_mono]
@@ -58,6 +58,6 @@ theorem height_span_X_image_eq [Nontrivial R] [IsNoetherianRing R] [Finite σ] (
     (Ideal.span (X (R := R) '' s)).height = s.encard := by
   refine le_antisymm ?_ (le_height_span_X_image ..)
   grw [Ideal.height_span_le_encard_of_span_ne_top, Set.encard_image_le]
-  exact (Ideal.ne_top_iff_one _).mpr (by simp [mem_ideal_span_X_image])
+  simp [Ideal.ne_top_iff_one, mem_ideal_span_X_image]
 
 end MvPolynomial
