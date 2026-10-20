@@ -90,6 +90,9 @@ variable {G M N : Type*} {α ι : Sort*} [CommMonoid M] [CommMonoid N]
 
 section
 
+/- Note: we use classical logic only for these definitions, to ensure that we do not write lemmas
+with `Classical.dec` in their statement. -/
+
 open scoped Classical in
 /-- Product of `f x` as `x` ranges over the elements of the multiplicative support of `f`, if it's
 finite. One otherwise. -/

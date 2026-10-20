@@ -330,6 +330,8 @@ This notion is sometimes called a "measurable hull" in the literature. -/
       ∀ u, MeasurableSet u → μ (t ∩ u) = μ (s ∩ u) then h'.choose
     else (exists_measurable_superset μ s).choose
 
+alias toMeasurable_def := toMeasurable.eq_def
+
 theorem subset_toMeasurable (μ : Measure α) (s : Set α) : s ⊆ toMeasurable μ s := by
   rw [toMeasurable]; split_ifs with hs h's
   exacts [hs.choose_spec.1, h's.choose_spec.1, (exists_measurable_superset μ s).choose_spec.1]
