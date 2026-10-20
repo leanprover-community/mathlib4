@@ -64,7 +64,8 @@ integral, and involutive quantales easier to add on later.
 open Function
 
 /-- An additive quantale is an additive semigroup distributing over a complete lattice. -/
-class IsAddQuantale (α : Type*) [AddSemigroup α] [CompleteLattice α] where
+class IsAddQuantale (α : Type*)
+    [outParam <| AddSemigroup α] [outParam <| CompleteLattice α] where
   /-- Addition is distributive over join in a quantale -/
   protected add_sSup_distrib (x : α) (s : Set α) : x + sSup s = ⨆ y ∈ s, x + y
   /-- Addition is distributive over join in a quantale -/
@@ -77,7 +78,8 @@ structure AddQuantale (α : Type*)
 
 /-- A quantale is a semigroup distributing over a complete lattice. -/
 @[to_additive]
-class IsQuantale (α : Type*) [Semigroup α] [CompleteLattice α] where
+class IsQuantale (α : Type*)
+    [outParam <| Semigroup α] [outParam <| CompleteLattice α] : Prop where
   /-- Multiplication is distributive over join in a quantale -/
   protected mul_sSup_distrib (x : α) (s : Set α) : x * sSup s = ⨆ y ∈ s, x * y
   /-- Multiplication is distributive over join in a quantale -/
@@ -91,7 +93,7 @@ structure Quantale (α : Type*)
 section
 
 variable {α : Type*} {x y : α} {s : Set α}
-variable [Semigroup α] [CompleteLattice α] [IsQuantale α]
+variable {_ : Semigroup α} {_ : CompleteLattice α} [IsQuantale α]
 
 @[to_additive]
 theorem mul_sSup_distrib : x * sSup s = ⨆ y ∈ s, x * y := IsQuantale.mul_sSup_distrib _ _
@@ -104,7 +106,7 @@ end
 namespace Quantale
 
 variable {α : Type*} {ι : Type*} {x y z : α} {f : ι → α}
-variable [Semigroup α] [CompleteLattice α] [IsQuantale α]
+variable {_ : Semigroup α} {_ : CompleteLattice α} [IsQuantale α]
 
 /-- Left- and right-residuation operators on a quantale are similar to the Heyting
 operator on complete lattices, but for a non-commutative logic.
@@ -113,7 +115,7 @@ I.e. `x ≤ y ⇨ₗ z ↔ x * y ≤ z` or alternatively `x ⇨ₗ y = sSup { z 
 /-- Left- and right- residuation operators on an additive quantale are similar
 to the Heyting operator on complete lattices, but for a non-commutative logic.
 I.e. `x ≤ y ⇨ₗ z ↔ x + y ≤ z` or alternatively `x ⇨ₗ y = sSup { z | z + x ≤ y }`. -/]
-def leftMulResiduation (x y : α) := sSup {z | z * x ≤ y}
+def leftMulResiduation [Semigroup α] [CompleteLattice α] (x y : α) := sSup {z | z * x ≤ y}
 
 /-- Left- and right- residuation operators on a quantale are similar to the Heyting
 operator on complete lattices, but for a non-commutative logic.
@@ -122,7 +124,7 @@ I.e. `x ≤ y ⇨ᵣ z ↔ y * x ≤ z` or alternatively `x ⇨ₗ y = sSup { z 
 /-- Left- and right- residuation operators on an additive quantale are similar
 to the Heyting operator on complete lattices, but for a non-commutative logic.
 I.e. `x ≤ y ⇨ᵣ z ↔ y + x ≤ z` or alternatively `x ⇨ₗ y = sSup { z | x + z ≤ y }`." -/]
-def rightMulResiduation (x y : α) := sSup {z | x * z ≤ y}
+def rightMulResiduation [Semigroup α] [CompleteLattice α] (x y : α) := sSup {z | x * z ≤ y}
 
 @[inherit_doc]
 scoped infixr:60 " ⇨ₗ " => leftMulResiduation
@@ -181,9 +183,6 @@ theorem rightMulResiduation_le_iff_mul_le : x ≤ y ⇨ᵣ z ↔ y * x ≤ z whe
   mpr h1 := le_sSup h1
 
 section Zero
-
-variable {α : Type*} [Semigroup α] [CompleteLattice α] [IsQuantale α]
-variable {x : α}
 
 @[to_additive (attr := simp)]
 theorem bot_mul : ⊥ * x = ⊥ := by
