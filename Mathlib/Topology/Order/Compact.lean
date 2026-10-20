@@ -105,7 +105,6 @@ lemma isCompact_closure_Ioc {a b : α} : IsCompact (closure (Ioc a b)) :=
   isCompact_Icc.of_isClosed_subset isClosed_closure <|
     closure_minimal Ioc_subset_Icc_self isClosed_Icc
 
-
 @[compactness .]
 lemma isCompact_closure_Ico {a b : α} : IsCompact (closure (Ico a b)) :=
   isCompact_Icc.of_isClosed_subset isClosed_closure <|
