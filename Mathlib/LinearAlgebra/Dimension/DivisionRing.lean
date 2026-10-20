@@ -148,7 +148,6 @@ section Quotient
 
 variable {K V : Type* } [DivisionRing K] [AddCommGroup V] [Module K V]
 
-
 lemma Submodule.elem_of_quot_rank_pos (p : Submodule K V) (h : 0 < Module.rank K (V ⧸ p)) :
     ∃ x : V, x ∉ p := by
   obtain ⟨y,hy⟩ := rank_pos_iff_exists_ne_zero.mp h

@@ -824,7 +824,6 @@ theorem submoduleOf_span_singleton_of_mem (N : Submodule R M) {x : M} (hx : x �
 @[simp] lemma ker_toSpanSingleton_eq_bot_iff {x : R} :
     ker (toSpanSingleton R R x) = ⊥ ↔ x ∈ nonZeroDivisorsRight R := le_bot_iff.symm
 
-
 end
 
 section AddCommMonoid
