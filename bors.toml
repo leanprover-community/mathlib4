@@ -17,7 +17,9 @@ delegated = "delegated"        # PR has at least one active (non-expired) delega
 # is open, unless the dependency is linked with it (`bors link` / `bors stack`) so
 # they merge together. bors reads the description, not the `blocked-by-other-PR`
 # label. These keywords must match those in .github/workflows/dependent-issues.yml
-# exactly, taken here as literal text rather than regular expressions.
+# exactly, taken here as literal text rather than regular expressions. Both read a
+# keyword in any case and with any whitespace for its spaces, so `- [X] depends on:`
+# counts too.
 [dependencies]
 keywords = ["- [ ] depends on:", "- [x] depends on:"]
 
