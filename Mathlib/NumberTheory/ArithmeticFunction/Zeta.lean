@@ -35,6 +35,7 @@ variable {R : Type*}
 namespace ArithmeticFunction
 
 /-- `ζ 0 = 0`, otherwise `ζ x = 1`. The Dirichlet Series is the Riemann `ζ`. -/
+@[oeis A057427]
 def zeta : ArithmeticFunction ℕ :=
   ⟨fun x => ite (x = 0) 0 1, rfl⟩
 
@@ -52,7 +53,6 @@ theorem zeta_apply {x : ℕ} : ζ x = if x = 0 then 0 else 1 :=
 theorem zeta_apply_ne {x : ℕ} (h : x ≠ 0) : ζ x = 1 :=
   ite_eq_right h
 
-set_option backward.isDefEq.respectTransparency false in
 theorem zeta_eq_zero {x : ℕ} : ζ x = 0 ↔ x = 0 := by simp [zeta]
 
 theorem zeta_pos {x : ℕ} : 0 < ζ x ↔ 0 < x := by simp [pos_iff_ne_zero]
@@ -85,7 +85,6 @@ theorem coe_zeta_mul_apply [Semiring R] {f : ArithmeticFunction R} {x : ℕ} :
     (ζ * f) x = ∑ i ∈ divisors x, f i :=
   coe_zeta_smul_apply
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coe_mul_zeta_apply [Semiring R] {f : ArithmeticFunction R} {x : ℕ} :
     (f * ζ) x = ∑ i ∈ divisors x, f i := by
   rw [← coe_zeta_mul_comm, coe_zeta_mul_apply]

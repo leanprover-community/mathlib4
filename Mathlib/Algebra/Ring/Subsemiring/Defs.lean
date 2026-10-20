@@ -142,7 +142,7 @@ instance : SetLike (Subsemiring R) R where
   coe s := s.carrier
   coe_injective p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
 
-instance : PartialOrder (Subsemiring R) := .ofSetLike (Subsemiring R) R
+instance : PartialOrder (Subsemiring R) := .ofSetLike (Subsemiring R)
 
 initialize_simps_projections Subsemiring (carrier → coe, as_prefix coe)
 
@@ -298,6 +298,10 @@ theorem coe_add (x y : s) : ((x + y : s) : R) = (x + y : R) :=
 
 @[simp, norm_cast]
 theorem coe_mul (x y : s) : ((x * y : s) : R) = (x * y : R) :=
+  rfl
+
+@[simp, norm_cast]
+theorem coe_natCast (n : ℕ) : ((n : s) : R) = (n : R) :=
   rfl
 
 instance nontrivial [Nontrivial R] : Nontrivial s :=

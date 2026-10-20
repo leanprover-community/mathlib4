@@ -5,10 +5,10 @@ Authors: Bhavik Mehta, Robin Carlier
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.ConeCategory
 public import Mathlib.CategoryTheory.Limits.Final
-public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 public import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
+
+import Mathlib.CategoryTheory.Limits.ConeCategory
 
 /-!
 # Reflexive coequalizers
@@ -286,8 +286,6 @@ def inclusionWalkingReflexivePair : WalkingParallelPair ⥤ WalkingReflexivePair
   map_comp := by
     intro _ _ _ f g; cases f <;> cases g <;> rfl
 
-variable {C : Type u} [Category.{v} C]
-
 instance (X : WalkingReflexivePair) :
     Nonempty (StructuredArrow X inclusionWalkingReflexivePair) := by
   cases X with
@@ -360,9 +358,9 @@ variable (f g : A ⟶ B) (s : B ⟶ A) {sl : s ≫ f = 𝟙 B} {sr : s ≫ g = �
 
 @[simp] lemma reflexivePair_obj_one : (reflexivePair f g s sl sr).obj one = A := rfl
 
-@[simp] lemma reflexivePair_map_right : (reflexivePair f g s sl sr).map .left = f := rfl
+@[simp] lemma reflexivePair_map_left : (reflexivePair f g s sl sr).map .left = f := rfl
 
-@[simp] lemma reflexivePair_map_left : (reflexivePair f g s sl sr).map .right = g := rfl
+@[simp] lemma reflexivePair_map_right : (reflexivePair f g s sl sr).map .right = g := rfl
 
 @[simp] lemma reflexivePair_map_reflexion : (reflexivePair f g s sl sr).map .reflexion = s := rfl
 
@@ -612,7 +610,6 @@ lemma ι_reflexiveCoequalizerIsoCoequalizer_hom :
   IsColimit.comp_coconePointUniqueUpToIso_hom
     ((ReflexiveCofork.isColimitEquiv F _).symm _) _ WalkingParallelPair.one
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma π_reflexiveCoequalizerIsoCoequalizer_inv :
     coequalizer.π _ _ ≫ (reflexiveCoequalizerIsoCoequalizer F).inv = colimit.ι F _ := by

@@ -86,7 +86,6 @@ theorem compProd_of_not_isSFiniteKernel_right (κ : Kernel α β) (η : Kernel (
     κ ⊗ₖ η = 0 := by
   simp [compProd, h]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem compProd_apply (hs : MeasurableSet s) (κ : Kernel α β) [IsSFiniteKernel κ]
     (η : Kernel (α × β) γ) [IsSFiniteKernel η] (a : α) :
     (κ ⊗ₖ η) a s = ∫⁻ b, η (a, b) (Prod.mk b ⁻¹' s) ∂κ a := by
@@ -203,7 +202,7 @@ lemma compProd_deterministic_apply [MeasurableSingletonClass γ] {f : α × β �
   let t := {b | (b, f (x, b)) ∈ s}
   have ht : MeasurableSet t := (measurable_id.prodMk (hf.comp measurable_prodMk_left)) hs
   rw [← lintegral_add_compl _ ht]
-  convert! add_zero _
+  convert add_zero _
   · suffices ∀ b ∈ tᶜ, (if f (x, b) ∈ Prod.mk b ⁻¹' s then (1 : ℝ≥0∞) else 0) = 0 by
       rw [setLIntegral_congr_fun ht.compl this, lintegral_zero]
     intro b hb
@@ -551,8 +550,6 @@ end CompositionProduct
 open scoped ProbabilityTheory
 
 section FstSnd
-
-variable {δ : Type*} {mδ : MeasurableSpace δ}
 
 /-- If `η` is a Markov kernel, use instead `fst_compProd` to get `(κ ⊗ₖ η).fst = κ`. -/
 lemma fst_compProd_apply (κ : Kernel α β) (η : Kernel (α × β) γ)

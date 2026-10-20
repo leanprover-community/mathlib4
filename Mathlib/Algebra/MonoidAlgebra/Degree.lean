@@ -205,9 +205,6 @@ theorem sup_support_coeff_finsetProd_le (degb0 : degb 0 ≤ 0)
 @[deprecated (since := "2026-06-18")]
 alias sup_support_finsetProd_le := sup_support_coeff_finsetProd_le
 
-@[deprecated (since := "2026-04-08")]
-alias sup_support_finset_prod_le := sup_support_coeff_finsetProd_le
-
 theorem le_inf_support_coeff_finsetProd (degt0 : 0 ≤ degt 0)
     (degtm : ∀ a b, degt a + degt b ≤ degt (a + b)) (s : Finset ι) (f : ι → R[A]) :
     (∑ i ∈ s, (f i).coeff.support.inf degt) ≤ (∏ i ∈ s, f i).coeff.support.inf degt :=
@@ -215,9 +212,6 @@ theorem le_inf_support_coeff_finsetProd (degt0 : 0 ≤ degt 0)
 
 @[deprecated (since := "2026-06-18")]
 alias le_inf_support_finsetProd := le_inf_support_coeff_finsetProd
-
-@[deprecated (since := "2026-04-08")]
-alias le_inf_support_finset_prod := le_inf_support_coeff_finsetProd
 
 end CommutativeLemmas
 
@@ -440,7 +434,6 @@ lemma supDegree_mem_support (hD : D.Injective) (hp : p ≠ 0) :
   obtain ⟨a, ha, he⟩ := exists_supDegree_mem_support D hp
   rwa [he, Function.leftInverse_invFun hD]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma leadingCoeff_eq_zero (hD : D.Injective) : p.leadingCoeff D = 0 ↔ p = 0 := by
   refine ⟨(fun h => ?_).mtr, fun h => h ▸ leadingCoeff_zero⟩
@@ -513,7 +506,6 @@ lemma coeff_supDegree_add_supDegree (hD : D.Injective) (hadd : ∀ a1 a2, D (a1 
 @[deprecated (since := "2026-06-18")]
 alias apply_supDegree_add_supDegree := coeff_supDegree_add_supDegree
 
-set_option backward.isDefEq.respectTransparency false in
 lemma supDegree_mul
     (hD : D.Injective) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
     (hpq : leadingCoeff D p * leadingCoeff D q ≠ 0)

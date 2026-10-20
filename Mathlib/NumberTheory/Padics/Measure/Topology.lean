@@ -6,7 +6,11 @@ Authors: David Loeffler
 module
 
 public import Mathlib.NumberTheory.Padics.Measure.Basic
-public import Mathlib.Topology.ContinuousMap.Compact
+public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
+
+import Mathlib.Analysis.Real.Sqrt
+import Mathlib.Data.EReal.Inv
+import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-!
 # Topologies on spaces of measures

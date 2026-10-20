@@ -5,9 +5,6 @@ Authors: Fangming Li, Jujian Zhang
 -/
 module
 
-public import Mathlib.Order.KrullDimension
-public import Mathlib.RingTheory.Ideal.Quotient.Defs
-public import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
 public import Mathlib.RingTheory.Jacobson.Radical
 public import Mathlib.RingTheory.Spectrum.Prime.Basic
 
@@ -38,13 +35,20 @@ variable {R S : Type*} [CommSemiring R] [CommSemiring S]
 lemma Ring.krullDimLE_iff {n : ℕ} :
     KrullDimLE n R ↔ ringKrullDim R ≤ n := Order.krullDimLE_iff n (PrimeSpectrum R)
 
+lemma ringKrullDim_eq_bot_iff_subsingleton : ringKrullDim R = ⊥ ↔ Subsingleton R := by
+  refine ⟨fun h ↦ ?_, fun h ↦ krullDim_eq_bot⟩
+  contrapose! h
+  exact WithBot.coe_bot_le.mp krullDim_nonneg
+
 @[nontriviality]
-lemma ringKrullDim_eq_bot_of_subsingleton [Subsingleton R] :
-    ringKrullDim R = ⊥ :=
+lemma ringKrullDim_eq_bot_of_subsingleton [Subsingleton R] : ringKrullDim R = ⊥ :=
   krullDim_eq_bot
 
-lemma ringKrullDim_nonneg_of_nontrivial [Nontrivial R] :
-    0 ≤ ringKrullDim R :=
+lemma zero_le_ringKrullDim_iff_nontrivial : 0 ≤ ringKrullDim R ↔ Nontrivial R := by
+  contrapose!
+  rw [WithBot.lt_zero_iff_eq_bot, ringKrullDim_eq_bot_iff_subsingleton]
+
+lemma ringKrullDim_nonneg_of_nontrivial [Nontrivial R] : 0 ≤ ringKrullDim R :=
   krullDim_nonneg
 
 /-- If `f : R →+* S` is surjective, then `ringKrullDim S ≤ ringKrullDim R`. -/

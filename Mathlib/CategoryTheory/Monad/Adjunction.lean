@@ -77,14 +77,12 @@ def toComonad (h : L ⊣ R) : Comonad D where
     rw [← L.map_comp]
     simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The monad induced by the Eilenberg-Moore adjunction is the original monad. -/
 @[simps!]
 def adjToMonadIso (T : Monad C) : T.adj.toMonad ≅ T :=
   MonadIso.mk (NatIso.ofComponents fun _ => Iso.refl _)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The comonad induced by the Eilenberg-Moore adjunction is the original comonad. -/
 @[simps!]
@@ -109,7 +107,6 @@ def unitAsIsoOfIso (adj : L ⊣ R) (i : L ⋙ R ≅ 𝟭 C) : 𝟭 C ≅ L ⋙ R
     ext X
     exact (adj.toMonad.transport i).right_unit X
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma isIso_unit_of_iso (adj : L ⊣ R) (i : L ⋙ R ≅ 𝟭 C) : IsIso adj.unit :=
   (inferInstanceAs (IsIso (unitAsIsoOfIso adj i).hom))
 
@@ -185,7 +182,7 @@ theorem Monad.left_comparison (h : L ⊣ R) : L ⋙ Monad.comparison h = h.toMon
   rfl
 
 instance [R.Faithful] (h : L ⊣ R) : (Monad.comparison h).Faithful where
-  map_injective {_ _} _ _ w := R.map_injective (congr_arg Monad.Algebra.Hom.f w :)
+  map_injective {_ _} _ _ w := R.map_injective congr($(w).f)
 
 instance (T : Monad C) : (Monad.comparison T.adj).Full where
   map_surjective {_ _} f := ⟨⟨f.f, by simpa using! f.h⟩, rfl⟩
@@ -235,7 +232,7 @@ theorem Comonad.left_comparison (h : L ⊣ R) : R ⋙ Comonad.comparison h = h.t
 
 instance Comonad.comparison_faithful_of_faithful [L.Faithful] (h : L ⊣ R) :
     (Comonad.comparison h).Faithful where
-  map_injective {_ _} _ _ w := L.map_injective (congr_arg Comonad.Coalgebra.Hom.f w :)
+  map_injective {_ _} _ _ w := L.map_injective congr($(w).f)
 
 instance (G : Comonad C) : (Comonad.comparison G.adj).Full where
   map_surjective f := ⟨⟨f.f, by simpa using! f.h⟩, rfl⟩

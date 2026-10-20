@@ -5,15 +5,13 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébas
 -/
 module
 
-public import Mathlib.Data.ENNReal.Real
-public import Mathlib.Tactic.Bound.Attribute
-public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Topology.Bornology.Basic
 public import Mathlib.Topology.EMetricSpace.Defs
-public import Mathlib.Topology.UniformSpace.Basic
+
+import Mathlib.Tactic.Basify.Attr
 
 /-!
-## Pseudo-metric spaces
+# Pseudo-metric spaces
 
 This file defines pseudo-metric spaces: these differ from metric spaces by not imposing the
 condition `dist x y = 0 → x = y`.
@@ -99,7 +97,7 @@ abbrev Bornology.ofDist {α : Type*} (dist : α → α → ℝ) (dist_comm : ∀
     fun z => ⟨dist z z, forall_eq.2 <| forall_eq.2 le_rfl⟩
 
 /-- The distance function (given an ambient metric space on `α`), which returns
-  a nonnegative real number `dist x y` given `x y : α`. -/
+a real number `dist x y` given `x y : α`. This type class does not enforce non-negativity. -/
 @[ext]
 class Dist (α : Type*) where
   /-- Distance between two points -/
@@ -138,6 +136,7 @@ ensures that we do not get a diamond when doing
 `[PseudoMetricSpace α] [PseudoMetricSpace β] : TopologicalSpace (α × β)`:
 The product metric and product topology agree, but not definitionally so.
 See Note [forgetful inheritance]. -/
+@[wikidata Q1397059]
 class PseudoMetricSpace (α : Type u) : Type u extends Dist α where
   dist_self : ∀ x : α, dist x x = 0
   dist_comm : ∀ x y : α, dist x y = dist y x
@@ -288,7 +287,7 @@ instance (priority := 100) PseudoMetricSpace.toNNDist : NNDist α :=
 /-- Express `dist` in terms of `nndist` -/
 theorem dist_nndist (x y : α) : dist x y = nndist x y := rfl
 
-@[simp, norm_cast]
+@[simp, norm_cast, basify_op]
 theorem coe_nndist (x y : α) : ↑(nndist x y) = dist x y := rfl
 
 /-- Express `edist` in terms of `nndist` -/
@@ -1017,7 +1016,7 @@ theorem Metric.eball_top (x : α) : eball x ⊤ = univ :=
   eq_univ_of_forall fun _ => edist_lt_top _ _
 
 /-- Build a new pseudometric space from an old one where the bundled uniform structure is provably
-(but typically non-definitionaly) equal to some given uniform structure.
+(but typically non-definitionally) equal to some given uniform structure.
 See Note [forgetful inheritance].
 See Note [reducible non-instances].
 -/
@@ -1039,7 +1038,7 @@ example {α} [U : UniformSpace α] (m : PseudoMetricSpace α)
   with_reducible_and_instances rfl
 
 /-- Build a new pseudometric space from an old one where the bundled topological structure is
-provably (but typically non-definitionaly) equal to some given topological structure.
+provably (but typically non-definitionally) equal to some given topological structure.
 See Note [forgetful inheritance].
 See Note [reducible non-instances].
 -/
@@ -1090,7 +1089,7 @@ abbrev boundedComponent.pseudoMetricSpace {X : Type*} [PseudoEMetricSpace X] (a 
     exact p.2.lt_top
 
 /-- Build a new pseudometric space from an old one where the bundled bornology structure is provably
-(but typically non-definitionaly) equal to some given bornology structure.
+(but typically non-definitionally) equal to some given bornology structure.
 See Note [forgetful inheritance].
 See Note [reducible non-instances].
 -/
@@ -1210,7 +1209,7 @@ theorem tendsto_iff_dist_tendsto_zero {f : β → α} {x : Filter β} {a : α} :
 
 namespace Metric
 
-variable {x y z : α} {ε ε₁ ε₂ : ℝ} {s : Set α}
+variable {x y : α} {ε : ℝ} {s : Set α}
 
 /-- If `f` is a positive radius tending to zero, then the sets of pairs with distance less than
 `f i` form a basis of the uniformity. -/
