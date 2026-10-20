@@ -178,9 +178,6 @@ The trailing underscore `_` makes the syntax valid, since `refine` expects somet
 elab "#show_kind " stx:tactic : command =>
   logInfoAt stx m!"The `{.ofConstName ``SyntaxNodeKind}` is `{stx.raw.getKind}`."
 
-/-- The monad for collecting the ranges of the syntaxes that do not modify any goal. -/
-abbrev M := StateRefT (Std.HashMap Lean.Syntax.Range Syntax) BaseIO
-
 /--
 A list of blocklisted syntax kinds, which are expected to have subterms that contain
 unused tactics.
