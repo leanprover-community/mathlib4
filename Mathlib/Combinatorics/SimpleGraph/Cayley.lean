@@ -6,9 +6,10 @@ Authors: Edward van de Meent
 module
 
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
-public import Mathlib.Algebra.Group.Subgroup.Pointwise
-public import Mathlib.Combinatorics.SimpleGraph.Basic
+public import Mathlib.Algebra.Group.Subgroup.Lattice
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+
+import Mathlib.Algebra.Group.Subgroup.Pointwise
 
 /-!
 ### Definition of Cayley graphs
