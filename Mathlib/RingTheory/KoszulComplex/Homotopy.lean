@@ -16,7 +16,7 @@ public import Mathlib.RingTheory.Regular.RegularSequence
 # Homotopy on Koszul complex
 -/
 
-public section
+@[expose] public section
 
 universe u v
 
