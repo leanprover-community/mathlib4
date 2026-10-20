@@ -57,7 +57,7 @@ protected alias Subgroup.isCyclic_iff_exists_zpowers_eq_top :=
 @[to_additive]
 instance Subgroup.isCyclic_zpowers [Group G] (g : G) :
     IsCyclic (Subgroup.zpowers g) :=
-  (Subgroup.isCyclic_iff_exists_zpowers_eq_top _).mpr ⟨g, rfl⟩
+  (Subgroup.isCyclic_iff_exists_zpowers_eq _).mpr ⟨g, rfl⟩
 
 variable [Group α] [Group G] [Group G']
 
