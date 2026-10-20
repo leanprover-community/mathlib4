@@ -932,11 +932,11 @@ This is available in bundled forms as:
   commutes' := (AlgHom.mk' (piRingEquiv (β := β) (n := n)).toRingHom fun _ _ ↦ rfl).commutes
 
 @[simp] theorem toRingEquiv_piAlgEquiv (R) [CommSemiring R] [∀ i, Semiring (β i)]
-  [∀ i, Algebra R (β i)] [Fintype n] [DecidableEq n] : (piAlgEquiv (n := n) (ι := ι) (β := β) R :
+    [∀ i, Algebra R (β i)] [Fintype n] [DecidableEq n] : (piAlgEquiv (n := n) (ι := ι) (β := β) R :
     Matrix n n (Π i, β i) ≃+* Π i, Matrix n n (β i)) = piRingEquiv := rfl
 
 @[simp] theorem toLinearEquiv_piAlgEquiv (R) [CommSemiring R] [∀ i, Semiring (β i)]
-  [∀ i, Algebra R (β i)] [Fintype n] [DecidableEq n] : (piAlgEquiv (n := n) (ι := ι) (β := β) R :
+    [∀ i, Algebra R (β i)] [Fintype n] [DecidableEq n] : (piAlgEquiv (n := n) (ι := ι) (β := β) R :
     Matrix n n (Π i, β i) ≃ₗ[R] Π i, Matrix n n (β i)) = piLinearEquiv R := rfl
 
 end Pi
@@ -985,8 +985,8 @@ def transposeLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] :
 
 @[simp]
 theorem toAddEquiv_transposeLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] :
-  (transposeLinearEquiv m n R α : Matrix m n α ≃+ Matrix n m α) =
-    transposeAddEquiv m n α := rfl
+    (transposeLinearEquiv m n R α : Matrix m n α ≃+ Matrix n m α) = transposeAddEquiv m n α :=
+  rfl
 
 @[simp]
 theorem transposeLinearEquiv_symm [Semiring R] [AddCommMonoid α] [Module R α] :
@@ -1031,7 +1031,7 @@ def transposeAlgEquiv [CommSemiring R] [CommSemiring α] [Fintype m] [DecidableE
 
 @[simp]
 theorem toRingEquiv_transposeAlgEquiv [CommSemiring R] [CommSemiring α] [Fintype m]
-  [DecidableEq m] [Algebra R α] : (transposeAlgEquiv m R α : Matrix m m α ≃+* (Matrix m m α)ᵐᵒᵖ) =
+    [DecidableEq m] [Algebra R α] : (transposeAlgEquiv m R α : Matrix m m α ≃+* (Matrix m m α)ᵐᵒᵖ) =
     transposeRingEquiv m α := rfl
 
 end Transpose
