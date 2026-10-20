@@ -12,7 +12,7 @@ example : 0 + 1 = 1 := by
   rfl
 
 /--
-warning: Unused tactic linter: `change 1 = 1` does nothing.
+warning: Unused tactic linter: `change 1 = 1` does not change the goal.
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
 -/
@@ -34,11 +34,11 @@ example : True ∧ True := by
 
 set_option linter.unusedTactic true
 /--
-warning: Unused tactic linter: `congr` does nothing.
+warning: Unused tactic linter: `congr` does not change the goal.
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
 ---
-warning: Unused tactic linter: `done` does nothing.
+warning: Unused tactic linter: `done` does not change the goal.
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
 -/
@@ -50,11 +50,11 @@ example : True := by
   done
 
 /--
-warning: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+warning: Unused tactic linter: `<;>` can be removed.
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
 ---
-warning: Unused tactic linter: `show False` does nothing.
+warning: Unused tactic linter: `show False` is never executed.
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
 -/
@@ -65,7 +65,7 @@ example : True := by
   trivial <;> show False -- But, if it doesn't run at all, `show` does warn.
 
 /--
-warning: Unused tactic linter: `simp` does nothing.
+warning: Unused tactic linter: `simp` does not change the goal.
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
 -/
@@ -84,7 +84,7 @@ example (a b : Nat) (h : a + 1 ≤ b + 1) : max a b ≤ b := by
 
 -- The linter works correctly with `on_goal`.
 /--
-warning: Unused tactic linter: `skip` does nothing.
+warning: Unused tactic linter: `skip` does not change the goal.
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
 -/
@@ -94,13 +94,34 @@ example : True ∧ True := by
   on_goal 1 => skip; trivial
   trivial
 
+-- The linter works correctly with `first`
+/--
+warning: Unused tactic linter: `rfl` does not change the goal.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+-/
+#guard_msgs in
+example : True := by
+  first | rfl | simp
+
+-- The linter works correctly with `try`
+/--
+warning: Unused tactic linter: `rfl` does not change the goal.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+-/
+#guard_msgs in
+example : True := by
+  try rfl
+  simp
+
 -- `<;>` leaving 0 goals
 /--
-warning: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+warning: Unused tactic linter: `<;>` can be removed.
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
 ---
-warning: Unused tactic linter: `simp` does nothing.
+warning: Unused tactic linter: `simp` is never executed.
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
 -/
@@ -110,7 +131,7 @@ example : True ∧ True := by simp <;> simp
 -- `<;>` leaving 1 goal
 /--
 @ +1:45...48
-warning: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+warning: Unused tactic linter: `<;>` can be replaced with `;`.
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
 -/
@@ -127,11 +148,11 @@ example : True ∧ True ∧ True := by
 
 -- `conv` mode `<;>` leaving 0 goals
 /--
-warning: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+warning: Unused tactic linter: `<;>` can be removed.
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
 ---
-warning: Unused tactic linter: `simp` does nothing.
+warning: Unused tactic linter: `simp` is never executed.
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
 -/
@@ -143,7 +164,7 @@ example : True ∧ True := by
 -- `conv` mode `<;>`  leaving 1 goal
 /--
 @ +2:15...18
-warning: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+warning: Unused tactic linter: `<;>` can be replaced with `;`.
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
 -/
@@ -199,7 +220,7 @@ macro_rules
 #eval Mathlib.Linter.UnusedTactic.addIgnoreTacticKind ``doNotEmitWarningStx
 
 /--
-warning: Unused tactic linter: `congr` does nothing.
+warning: Unused tactic linter: `congr` does not change the goal.
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
 -/

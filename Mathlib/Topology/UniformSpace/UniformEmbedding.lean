@@ -88,9 +88,6 @@ theorem IsUniformInducing.uniformContinuous_iff {f : α → β} {g : β → γ} 
   dsimp only [UniformContinuous, Tendsto]
   simp only [← hg.comap_uniformity, ← map_le_iff_le_comap, Filter.map_map, Function.comp_def]
 
-@[deprecated (since := "2026-03-17")]
-alias IsUniformInducing.isUniformInducing_comp_iff := IsUniformInducing.of_comp_iff
-
 theorem IsUniformInducing.uniformContinuousOn_iff {f : α → β} {g : β → γ} {S : Set α}
     (hg : IsUniformInducing g) :
     UniformContinuousOn f S ↔ UniformContinuousOn (g ∘ f) S := by
