@@ -106,7 +106,7 @@ def PARTSUFFIX :=
 
 /-- curl version at https://github.com/leanprover-community/static-curl -/
 def CURLVERSION :=
-  "7.88.1"
+  "8.23.0"
 
 def CURLBIN :=
   -- change file name if we ever need a more recent version to trigger re-download
