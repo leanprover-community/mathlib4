@@ -202,8 +202,9 @@ def eraseUsedTactics (exceptions : Std.HashSet SyntaxNodeKind)
           return withMsg "`any_goals` can be replaced with `all_goals`" stx[0]
         else if touched.isEmpty then
           return withMsg m!"`any_goals` failed on each goal" stx[0]
-        else if let [g] := touched then
-          return withMsg m!"`any_goals` can be replaced with `on_goal {i.goalsBefore.idxOf g} =>`"
+        else if let [goal] := touched then
+          let n := i.goalsBefore.idxOf goal + 1
+          return withMsg m!"`any_goals` can be replaced with `on_goal {n} =>`"
       | `Mathlib.Tactic.«tacticSwap_var__,,» =>
         -- `swap_var` is used if it changes the username of a free variable.
         if getNames i.mctxBefore == getNames i.mctxAfter then
