@@ -123,7 +123,6 @@ lemma isCompact_closure_uIoc [TopologicalSpace α] [LinearOrder α] [OrderClosed
   isCompact_uIcc.of_isClosed_subset isClosed_closure <|
     closure_minimal uIoc_subset_uIcc isClosed_Icc
 
-
 -- See note [lower instance priority]
 /-- A complete linear order is a compact space.
 
