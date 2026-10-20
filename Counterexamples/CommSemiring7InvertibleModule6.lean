@@ -159,21 +159,19 @@ instance : Nontrivial (CommRing.Pic R₇) where
 
 /-- It is not the case that every invertible semimodule over a finite commutative semiring has
 the same cardinality as the semiring. -/
-theorem not_cardinalMk_eq_of_moduleInvertible :
+public theorem not_cardinalMk_eq_of_moduleInvertible :
     ¬ ∀ (R M : Type) [CommSemiring R] [AddCommMonoid M] [Module R M] [Module.Invertible R M]
       [Finite R] [Finite M], Cardinal.mk R = Cardinal.mk M :=
   fun h ↦ have := h R₇ M₆; by rw [cardinalMk_R₇, cardinalMk_M₆] at this; simp at this
 
 /-- It is not the case that every finite commutative semiring has trivial Picard group. -/
-theorem not_subsingleton_Pic_of_finite :
+public theorem not_subsingleton_Pic_of_finite :
     ¬ ∀ (R : Type) [CommSemiring R] [Finite R], Subsingleton (CommRing.Pic R) :=
   fun h ↦ not_subsingleton _ (h R₇)
 
 /-- It is not the case that every semi-local commutative semiring has trivial Picard group. -/
-theorem not_subsingleton_Pic_of_finite_maximalSpectrum :
+public theorem not_subsingleton_Pic_of_finite_maximalSpectrum :
     ¬ ∀ (R : Type) [CommSemiring R] [Finite (MaximalSpectrum R)], Subsingleton (CommRing.Pic R) :=
   fun h ↦ not_subsingleton _ (h R₇)
 
 end Counterexample.FiniteInvertibleSemimodule
-
-set_option linter.privateModule false
