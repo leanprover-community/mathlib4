@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.Group.Cone
 public import Mathlib.Algebra.Ring.Subsemiring.Order
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Construct ordered rings from rings with a specified positive cone.
 
@@ -37,7 +40,7 @@ instance RingCone.instSetLike (R : Type*) [Ring R] : SetLike (RingCone R) R wher
   coe C := C.carrier
   coe_injective p q h := by cases p; cases q; congr; exact SetLike.ext' h
 
-instance (R : Type*) [Ring R] : PartialOrder (RingCone R) := .ofSetLike (RingCone R) R
+instance (R : Type*) [Ring R] : PartialOrder (RingCone R) := .ofSetLike (RingCone R)
 
 instance RingCone.instRingConeClass (R : Type*) [Ring R] :
     RingConeClass (RingCone R) R where

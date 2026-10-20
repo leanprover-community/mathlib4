@@ -8,7 +8,11 @@ module
 public import Mathlib.Analysis.Calculus.TangentCone.Defs
 public import Mathlib.LinearAlgebra.Prod
 public import Mathlib.Topology.Algebra.Monoid
+
 import Mathlib.Analysis.Calculus.TangentCone.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Product of sets with unique differentiability property
@@ -56,7 +60,7 @@ theorem UniqueDiffWithinAt.prod (hs : UniqueDiffWithinAt 𝕜 s x)
   refine ⟨?_, hs.2, ht.2⟩
   have : _ ≤ Submodule.span 𝕜 (tangentConeAt 𝕜 (s ×ˢ t) (x, y)) := Submodule.span_mono
     (union_subset (subset_tangentConeAt_prod_left ht.2) (subset_tangentConeAt_prod_right hs.2))
-  rw [LinearMap.span_inl_union_inr, SetLike.le_def] at this
+  rw [LinearMap.span_inl_union_inr, IsConcreteLE.le_iff] at this
   exact (hs.1.prod ht.1).mono this
 
 /-- The product of two sets of unique differentiability is a set of unique differentiability. -/

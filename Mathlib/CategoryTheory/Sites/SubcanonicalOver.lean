@@ -5,8 +5,10 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Canonical
 public import Mathlib.CategoryTheory.Sites.Over
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Topology on `Over X` is subcanonical if the base is

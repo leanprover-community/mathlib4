@@ -6,13 +6,15 @@ Authors: Yury Kudryashov, Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Calculus.Deriv.AffineMap
-public import Mathlib.Analysis.Calculus.Deriv.Comp
 public import Mathlib.Analysis.Calculus.Deriv.Mul
 public import Mathlib.Analysis.Calculus.Deriv.Slope
 public import Mathlib.Analysis.Calculus.LocalExtr.Rolle
 public import Mathlib.Analysis.Normed.Group.AddTorsor
 public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Topology.Algebra.Group.Order
+
+import Mathlib.Analysis.Calculus.Deriv.Comp
+
 /-!
 # Mean value theorem
 
@@ -104,12 +106,12 @@ theorem exists_ratio_hasDerivAt_eq_ratio_slope' {lfa lga lfb lgb : ℝ}
   have hha : Tendsto h (𝓝[>] a) (𝓝 <| lgb * lfa - lfb * lga) := by
     have : Tendsto h (𝓝[>] a) (𝓝 <| (lgb - lga) * lfa - (lfb - lfa) * lga) :=
       (tendsto_const_nhds.mul hfa).sub (tendsto_const_nhds.mul hga)
-    convert! this using 2
+    convert this using 2
     ring
   have hhb : Tendsto h (𝓝[<] b) (𝓝 <| lgb * lfa - lfb * lga) := by
     have : Tendsto h (𝓝[<] b) (𝓝 <| (lgb - lga) * lfb - (lfb - lfa) * lgb) :=
       (tendsto_const_nhds.mul hfb).sub (tendsto_const_nhds.mul hgb)
-    convert! this using 2
+    convert this using 2
     ring
   let h' x := (lgb - lga) * f' x - (lfb - lfa) * g' x
   have hhh' : ∀ x ∈ Ioo a b, HasDerivAt h (h' x) x := by
@@ -205,7 +207,7 @@ theorem not_differentiableWithinAt_of_deriv_tendsto_atTop_Ioi (f : ℝ → ℝ) 
           refine nhdsWithin_eq_nhdsWithin' (s := Ioi a) (Ioi_mem_nhds hz''.1) ?_
           simp only [Ioc_inter_Ioi, le_refl, sup_of_le_left]
           ext y
-          exact ⟨fun h => ⟨mem_Icc_of_Ioc h, mem_of_mem_inter_left h⟩, fun ⟨H1, H2⟩ => ⟨H2, H1.2⟩⟩
+          exact ⟨fun h => ⟨mem_Icc_of_Ioc h, h.1⟩, fun ⟨H1, H2⟩ => ⟨H2, H1.2⟩⟩
         rw [← hfinal]
         exact self_mem_nhdsWithin
       have hcont : ContinuousOn f (Icc a b) := by
@@ -285,7 +287,7 @@ of the real line. If `f` is differentiable on the interior of `D` and `C < f'`, 
 theorem Convex.mul_sub_lt_image_sub_of_lt_deriv {D : Set ℝ} (hD : Convex ℝ D) {f : ℝ → ℝ}
     (hf : ContinuousOn f D) (hf' : DifferentiableOn ℝ f (interior D)) {C}
     (hf'_gt : ∀ x ∈ interior D, C < deriv f x) :
-    ∀ᵉ (x ∈ D) (y ∈ D), x < y → C * (y - x) < f y - f x := by
+    ∀ x ∈ D, ∀ y ∈ D, x < y → C * (y - x) < f y - f x := by
   intro x hx y hy hxy
   have hxyD : Icc x y ⊆ D := hD.ordConnected.out hx hy
   have hxyD' : Ioo x y ⊆ interior D :=
@@ -309,7 +311,7 @@ of the real line. If `f` is differentiable on the interior of `D` and `C ≤ f'`
 theorem Convex.mul_sub_le_image_sub_of_le_deriv {D : Set ℝ} (hD : Convex ℝ D) {f : ℝ → ℝ}
     (hf : ContinuousOn f D) (hf' : DifferentiableOn ℝ f (interior D)) {C}
     (hf'_ge : ∀ x ∈ interior D, C ≤ deriv f x) :
-    ∀ᵉ (x ∈ D) (y ∈ D), x ≤ y → C * (y - x) ≤ f y - f x := by
+    ∀ x ∈ D, ∀ y ∈ D, x ≤ y → C * (y - x) ≤ f y - f x := by
   intro x hx y hy hxy
   rcases eq_or_lt_of_le hxy with hxy' | hxy'
   · rw [hxy', sub_self, sub_self, mul_zero]

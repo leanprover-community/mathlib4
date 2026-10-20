@@ -6,8 +6,10 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Geometry.RingedSpace.PresheafedSpace
-public import Mathlib.CategoryTheory.Limits.Final
 public import Mathlib.Topology.Sheaves.Stalks
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Stalks for presheafed spaces
