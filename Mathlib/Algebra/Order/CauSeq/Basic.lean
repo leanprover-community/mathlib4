@@ -165,6 +165,7 @@ instance : FunLike (CauSeq β abv) ℕ β where
   coe := Subtype.val
   coe_injective := Subtype.val_injective
 
+/-- Create a Cauchy sequence from the predicate `IsCauSeq`. -/
 def mk (f : ℕ → β) (hf : IsCauSeq abv f) : CauSeq β abv := ⟨f, hf⟩
 
 @[simp]
