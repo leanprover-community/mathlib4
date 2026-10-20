@@ -8,6 +8,9 @@ module
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
 public import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Quadratic forms over an algebraically closed field
 

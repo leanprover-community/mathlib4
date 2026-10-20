@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Finset.Lattice.Fold
 public import Mathlib.Data.Finset.Union
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Relating `Finset.biUnion` with lattice operations
 
