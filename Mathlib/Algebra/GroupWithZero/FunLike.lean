@@ -42,7 +42,7 @@ end Comp
 
 section PointwiseMul
 
-variable [FunLike F α β] [Zero F] [One F] [Mul F] [Pow F ℕ]
+variable [FunLike F α β] [Zero F] [One F] [Mul F] [Pow F ℕ+] [Pow F ℕ]
 
 /-- A `FunLike` type with `(f * g) x = f x * g x` is a `MulZeroClass` if `β` is a `MulZeroClass`. -/
 protected abbrev mulZeroClass [MulZeroClass β] [IsZeroApply F] [IsMulApply F] :
@@ -59,23 +59,24 @@ protected abbrev mulZeroOneClass [MulZeroOneClass β] [IsZeroApply F] [IsMulAppl
 /-- A `FunLike` type with `(f * g) x = f x * g x` is a `MonoidWithZero` if `β` is a
 `MonoidWithZero`. -/
 protected abbrev monoidWithZero [MonoidWithZero β] [IsZeroApply F] [IsMulApply F]
-    [IsOneApply F] [IsPowApply ℕ F] :
+    [IsOneApply F] [IsPowApply ℕ+ F] [IsPowApply ℕ F] :
     MonoidWithZero F :=
-  DFunLike.coe_injective.monoidWithZero _ coe_zero coe_one coe_mul coe_pow
+  DFunLike.coe_injective.monoidWithZero _ coe_zero coe_one coe_mul coe_pow coe_pow
 
 /-- A `FunLike` type with `(f * g) x = f x * g x` is a `CommMonoidWithZero` if `β` is a
 `CommMonoidWithZero`. -/
 protected abbrev commMonoidWithZero [CommMonoidWithZero β] [IsZeroApply F] [IsMulApply F]
-    [IsOneApply F] [IsPowApply ℕ F] :
+    [IsOneApply F] [IsPowApply ℕ+ F] [IsPowApply ℕ F] :
     CommMonoidWithZero F :=
   DFunLike.coe_injective.commMonoidWithZero _ coe_zero coe_one coe_mul
-    coe_pow
+    coe_pow coe_pow
 
 /-- A `FunLike` type with `(f * g) x = f x * g x` is a `SemigroupWithZero` if `β` is a
 `SemigroupWithZero`. -/
-protected abbrev semigroupWithZero [SemigroupWithZero β] [IsZeroApply F] [IsMulApply F] :
+protected abbrev semigroupWithZero [SemigroupWithZero β] [IsZeroApply F] [IsMulApply F]
+    [IsPowApply ℕ+ F] :
     SemigroupWithZero F :=
-  DFunLike.coe_injective.semigroupWithZero _ coe_zero coe_mul
+  DFunLike.coe_injective.semigroupWithZero _ coe_zero coe_mul coe_pow
 
 end PointwiseMul
 

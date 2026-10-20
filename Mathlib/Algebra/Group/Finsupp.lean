@@ -340,6 +340,10 @@ end AddZeroClass
 section AddMonoid
 variable [AddMonoid M]
 
+instance instPNatSMul : SMul ℕ+ (ι →₀ M) where smul n v := v.mapRange (n • ·) (psmul_zero _)
+
+@[simp, norm_cast] lemma coe_psmul (n : ℕ+) (f : ι →₀ M) : ⇑(n • f) = n • ⇑f := rfl
+
 /-- Note the general `SMul` instance for `Finsupp` doesn't apply as `ℕ` is not distributive
 unless `F i`'s addition is commutative. -/
 instance instNatSMul : SMul ℕ (ι →₀ M) where smul n v := v.mapRange (n • ·) (nsmul_zero _)
@@ -349,7 +353,7 @@ instance instNatSMul : SMul ℕ (ι →₀ M) where smul n v := v.mapRange (n �
 lemma nsmul_apply (n : ℕ) (f : ι →₀ M) (x : ι) : (n • f) x = n • f x := rfl
 
 instance instAddMonoid : AddMonoid (ι →₀ M) :=
-  fast_instance% DFunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ => rfl
+  fast_instance% DFunLike.coe_injective.addMonoid _ coe_zero coe_add (fun _ _ => rfl) fun _ _ => rfl
 
 instance instIsAddTorsionFree [IsAddTorsionFree M] : IsAddTorsionFree (ι →₀ M) :=
   DFunLike.coe_injective.isAddTorsionFree coeFnAddHom
@@ -364,7 +368,7 @@ variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid O]
 
 instance instAddCommMonoid : AddCommMonoid (ι →₀ M) :=
   fast_instance% DFunLike.coe_injective.addCommMonoid
-    DFunLike.coe coe_zero coe_add (fun _ _ => rfl)
+    DFunLike.coe coe_zero coe_add (fun _ _ => rfl) (fun _ _ => rfl)
 
 lemma single_add_single_eq_single_add_single {k l m n : ι} {u v : M} (hu : u ≠ 0) (hv : v ≠ 0) :
     single k u + single l v = single m u + single n v ↔
@@ -464,7 +468,7 @@ instance instIntSMul : SMul ℤ (ι →₀ G) :=
 
 instance instAddGroup : AddGroup (ι →₀ G) :=
   fast_instance% DFunLike.coe_injective.addGroup DFunLike.coe coe_zero coe_add coe_neg coe_sub
-    (fun _ _ => rfl) fun _ _ => rfl
+    (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 @[simp]
 lemma support_neg (f : ι →₀ G) : support (-f) = support f :=
@@ -507,6 +511,6 @@ end AddGroup
 
 instance instAddCommGroup [AddCommGroup G] : AddCommGroup (ι →₀ G) :=
   fast_instance% DFunLike.coe_injective.addCommGroup DFunLike.coe coe_zero coe_add coe_neg coe_sub
-    (fun _ _ => rfl) fun _ _ => rfl
+    (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 end Finsupp

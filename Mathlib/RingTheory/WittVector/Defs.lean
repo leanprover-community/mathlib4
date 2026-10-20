@@ -130,6 +130,10 @@ def wittAdd : ℕ → MvPolynomial (Fin 2 × ℕ) ℤ :=
   wittStructureInt p (X 0 + X 1)
 
 /-- The polynomials used for defining repeated addition of the ring of Witt vectors. -/
+def wittPSMul (n : ℕ+) : ℕ → MvPolynomial (Fin 1 × ℕ) ℤ :=
+  wittStructureInt p (n • X (0 : (Fin 1)))
+
+/-- The polynomials used for defining repeated addition of the ring of Witt vectors. -/
 def wittNSMul (n : ℕ) : ℕ → MvPolynomial (Fin 1 × ℕ) ℤ :=
   wittStructureInt p (n • X (0 : (Fin 1)))
 
@@ -148,6 +152,10 @@ def wittMul : ℕ → MvPolynomial (Fin 2 × ℕ) ℤ :=
 /-- The polynomials used for defining the negation of the ring of Witt vectors. -/
 def wittNeg : ℕ → MvPolynomial (Fin 1 × ℕ) ℤ :=
   wittStructureInt p (-X 0)
+
+/-- The polynomials used for defining repeated addition of the ring of Witt vectors. -/
+def wittPPow (n : ℕ+) : ℕ → MvPolynomial (Fin 1 × ℕ) ℤ :=
+  wittStructureInt p (X 0 ^ n)
 
 /-- The polynomials used for defining repeated addition of the ring of Witt vectors. -/
 def wittPow (n : ℕ) : ℕ → MvPolynomial (Fin 1 × ℕ) ℤ :=
@@ -191,6 +199,9 @@ instance : Add (𝕎 R) :=
 instance : Sub (𝕎 R) :=
   ⟨fun x y => eval (wittSub p) ![x, y]⟩
 
+instance hasPNatScalar : SMul ℕ+ (𝕎 R) :=
+  ⟨fun n x => eval (wittPSMul p n) ![x]⟩
+
 instance hasNatScalar : SMul ℕ (𝕎 R) :=
   ⟨fun n x => eval (wittNSMul p n) ![x]⟩
 
@@ -202,6 +213,9 @@ instance : Mul (𝕎 R) :=
 
 instance : Neg (𝕎 R) :=
   ⟨fun x => eval (wittNeg p) ![x]⟩
+
+instance hasPNatPow : Pow (𝕎 R) ℕ+ :=
+  ⟨fun x n => eval (wittPPow p n) ![x]⟩
 
 instance hasNatPow : Pow (𝕎 R) ℕ :=
   ⟨fun x n => eval (wittPow p n) ![x]⟩
@@ -338,6 +352,10 @@ theorem mul_coeff (x y : 𝕎 R) (n : ℕ) :
 theorem neg_coeff (x : 𝕎 R) (n : ℕ) : (-x).coeff n = peval (wittNeg p n) ![x.coeff] := by
   simp [Neg.neg, eval, Matrix.cons_fin_one]
 
+theorem psmul_coeff (m : ℕ+) (x : 𝕎 R) (n : ℕ) :
+    (m • x).coeff n = peval (wittPSMul p m n) ![x.coeff] := by
+  simp [(· • ·), SMul.smul, eval, Matrix.cons_fin_one]
+
 theorem nsmul_coeff (m : ℕ) (x : 𝕎 R) (n : ℕ) :
     (m • x).coeff n = peval (wittNSMul p m n) ![x.coeff] := by
   simp [(· • ·), SMul.smul, eval, Matrix.cons_fin_one]
@@ -345,6 +363,10 @@ theorem nsmul_coeff (m : ℕ) (x : 𝕎 R) (n : ℕ) :
 theorem zsmul_coeff (m : ℤ) (x : 𝕎 R) (n : ℕ) :
     (m • x).coeff n = peval (wittZSMul p m n) ![x.coeff] := by
   simp [(· • ·), SMul.smul, eval, Matrix.cons_fin_one]
+
+theorem ppow_coeff (m : ℕ+) (x : 𝕎 R) (n : ℕ) :
+    (x ^ m).coeff n = peval (wittPPow p m n) ![x.coeff] := by
+  simp [(· ^ ·), Pow.pow, eval, Matrix.cons_fin_one]
 
 theorem pow_coeff (m : ℕ) (x : 𝕎 R) (n : ℕ) :
     (x ^ m).coeff n = peval (wittPow p m n) ![x.coeff] := by
@@ -370,12 +392,20 @@ theorem wittMul_vars (n : ℕ) : (wittMul p n).vars ⊆ Finset.univ ×ˢ Finset.
 theorem wittNeg_vars (n : ℕ) : (wittNeg p n).vars ⊆ Finset.univ ×ˢ Finset.range (n + 1) :=
   wittStructureInt_vars _ _ _
 
+theorem wittPSMul_vars (m : ℕ+) (n : ℕ) :
+    (wittPSMul p m n).vars ⊆ Finset.univ ×ˢ Finset.range (n + 1) :=
+  wittStructureInt_vars _ _ _
+
 theorem wittNSMul_vars (m : ℕ) (n : ℕ) :
     (wittNSMul p m n).vars ⊆ Finset.univ ×ˢ Finset.range (n + 1) :=
   wittStructureInt_vars _ _ _
 
 theorem wittZSMul_vars (m : ℤ) (n : ℕ) :
     (wittZSMul p m n).vars ⊆ Finset.univ ×ˢ Finset.range (n + 1) :=
+  wittStructureInt_vars _ _ _
+
+theorem wittPPow_vars (m : ℕ+) (n : ℕ) :
+    (wittPPow p m n).vars ⊆ Finset.univ ×ˢ Finset.range (n + 1) :=
   wittStructureInt_vars _ _ _
 
 theorem wittPow_vars (m : ℕ) (n : ℕ) : (wittPow p m n).vars ⊆ Finset.univ ×ˢ Finset.range (n + 1) :=

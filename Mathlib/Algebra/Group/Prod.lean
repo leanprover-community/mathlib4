@@ -75,6 +75,9 @@ instance commMagma [CommMagma M] [CommMagma N] : CommMagma (M × N) where
 
 @[to_additive]
 instance instSemigroup [Semigroup M] [Semigroup N] : Semigroup (M × N) where
+  ppow := fun n a => ⟨PPow.ppow n a.1, PPow.ppow n a.2⟩
+  ppow_one _ := Prod.ext (Semigroup.ppow_one _) (Semigroup.ppow_one _)
+  ppow_succ _ _ := Prod.ext (Semigroup.ppow_succ _ _) (Semigroup.ppow_succ _ _)
   mul_assoc _ _ _ := by ext <;> exact mul_assoc ..
 
 @[to_additive]

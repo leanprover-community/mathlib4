@@ -171,7 +171,7 @@ instance [Subsingleton k] : Unique (SkewMonoidAlgebra k G) :=
 
 instance : AddMonoid (SkewMonoidAlgebra k G) where
   __ := coeff_injective.addMonoid _ coeff_zero coeff_add
-    (fun _ _ ↦ coeff_smul _ _)
+    (fun _ _ ↦ coeff_smul _ _) (fun _ _ ↦ coeff_smul _ _)
 
 section Support
 
@@ -359,7 +359,7 @@ variable [AddCommMonoid k]
 
 instance : AddCommMonoid (SkewMonoidAlgebra k G) where
   __ := coeff_injective.addCommMonoid _ coeff_zero coeff_add
-    (fun _ _ ↦ coeff_smul _ _)
+    (fun _ _ ↦ coeff_smul _ _) (fun _ _ ↦ coeff_smul _ _)
 
 section sum
 

@@ -124,11 +124,18 @@ variable [Semiring R] [PartialOrder R] [IsOrderedRing R]
 instance instMul : Mul (Icc (0 : R) 1) where
   mul p q := ⟨p * q, ⟨mul_nonneg p.2.1 q.2.1, by grw [p.2.2, one_mul, q.2.2]; exact q.2.1⟩⟩
 
+instance instPPow : Pow (Icc (0 : R) 1) ℕ+ where
+  pow p n := ⟨p.1 ^ n, ⟨ppow_nonneg p.2.1 n, ppow_le_one₀ p.2.1 p.2.2⟩⟩
+
 instance instPow : Pow (Icc (0 : R) 1) ℕ where
   pow p n := ⟨p.1 ^ n, ⟨pow_nonneg p.2.1 n, pow_le_one₀ p.2.1 p.2.2⟩⟩
 
 @[simp, norm_cast]
 theorem coe_mul (x y : Icc (0 : R) 1) : ↑(x * y) = (x * y : R) :=
+  rfl
+
+@[simp, norm_cast]
+theorem coe_ppow (x : Icc (0 : R) 1) (n : ℕ+) : ↑(x ^ n) = ((x : R) ^ n) :=
   rfl
 
 @[simp, norm_cast]
@@ -148,7 +155,7 @@ theorem mul_le_right {x y : Icc (0 : R) 1} : x * y ≤ y :=
   (mul_le_mul_of_nonneg_right x.2.2 y.2.1).trans_eq (one_mul _)
 
 instance instMonoidWithZero : MonoidWithZero (Icc (0 : R) 1) := fast_instance%
-  Subtype.coe_injective.monoidWithZero _ coe_zero coe_one coe_mul coe_pow
+  Subtype.coe_injective.monoidWithZero _ coe_zero coe_one coe_mul coe_ppow coe_pow
 
 /-- The coercion from `Set.Icc 0 1` as a `MonoidWithZeroHom`. -/
 @[simps]
@@ -170,7 +177,7 @@ end OrderedSemiring
 
 instance instCommMonoidWithZero [CommSemiring R] [PartialOrder R] [IsOrderedRing R] :
     CommMonoidWithZero (Icc (0 : R) 1) := fast_instance%
-  Subtype.coe_injective.commMonoidWithZero _ coe_zero coe_one coe_mul coe_pow
+  Subtype.coe_injective.commMonoidWithZero _ coe_zero coe_one coe_mul coe_ppow coe_pow
 
 instance instIsOrderedMonoid [CommSemiring R] [PartialOrder R] [IsOrderedRing R] :
     IsOrderedMonoid (Icc (0 : R) 1) := .of_mulLeftMono
@@ -245,8 +252,15 @@ instance instMul : Mul (Ico (0 : R) 1) where
   mul p q :=
     ⟨p * q, ⟨mul_nonneg p.2.1 q.2.1, by grw [p.2.2, one_mul, q.2.2]; exact q.2.1⟩⟩
 
+instance instPPow : Pow (Ico (0 : R) 1) ℕ+ where
+  pow p n := ⟨p.1 ^ n, ⟨ppow_nonneg p.2.1 n, ppow_lt_one₀ p.2.1 p.2.2 n⟩⟩
+
 @[simp, norm_cast]
 theorem coe_mul (x y : Ico (0 : R) 1) : ↑(x * y) = (x * y : R) :=
+  rfl
+
+@[simp, norm_cast]
+theorem coe_ppow (x : Ico (0 : R) 1) (n : ℕ+) : ↑(x ^ n) = ((x : R) ^ n) :=
   rfl
 
 instance instMulLeftMono : MulLeftMono (Ico (0 : R) 1) where
@@ -256,7 +270,7 @@ instance instMulRightMono : MulRightMono (Ico (0 : R) 1) where
   elim x _ _ h := Subtype.coe_le_coe.1 (mul_le_mul_of_nonneg_right h x.2.1)
 
 instance instSemigroup : Semigroup (Ico (0 : R) 1) := fast_instance%
-  Subtype.coe_injective.semigroup _ coe_mul
+  Subtype.coe_injective.semigroup _ coe_mul coe_ppow
 
 /-- The coercion from `Set.Ico 0 1` as a `MulHom`. -/
 @[simps]
@@ -266,7 +280,7 @@ def coeMulHom : (Ico (0 : R) 1) →ₙ* R where
 
 instance instSemigroupWithZero [NeZero (1 : R)] :
     SemigroupWithZero (Ico (0 : R) 1) := fast_instance%
-  Subtype.coe_injective.semigroupWithZero _ coe_zero coe_mul
+  Subtype.coe_injective.semigroupWithZero _ coe_zero coe_mul coe_ppow
 
 instance instIsLeftCancelMulZero [NeZero (1 : R)] [IsLeftCancelMulZero R] :
     IsLeftCancelMulZero (Ico (0 : R) 1) :=
@@ -283,7 +297,7 @@ end OrderedSemiring
 
 instance instCommSemigroup [CommSemiring R] [PartialOrder R] [IsOrderedRing R] :
     CommSemigroup (Ico (0 : R) 1) := fast_instance%
-  Subtype.coe_injective.commSemigroup _ coe_mul
+  Subtype.coe_injective.commSemigroup _ coe_mul coe_ppow
 
 end Set.Ico
 
@@ -335,11 +349,18 @@ variable [Semiring R] [PartialOrder R] [IsStrictOrderedRing R]
 instance instMul : Mul (Ioc (0 : R) 1) where
   mul p q := ⟨p.1 * q.1, ⟨mul_pos p.2.1 q.2.1, by grw [p.2.2, one_mul, q.2.2]; exact q.2.1.le⟩⟩
 
+instance instPPow : Pow (Ioc (0 : R) 1) ℕ+ where
+  pow p n := ⟨p.1 ^ n, ⟨ppow_pos p.2.1 n, ppow_le_one₀ (le_of_lt p.2.1) p.2.2⟩⟩
+
 instance instPow : Pow (Ioc (0 : R) 1) ℕ where
   pow p n := ⟨p.1 ^ n, ⟨pow_pos p.2.1 n, pow_le_one₀ (le_of_lt p.2.1) p.2.2⟩⟩
 
 @[simp, norm_cast]
 theorem coe_mul (x y : Ioc (0 : R) 1) : ↑(x * y) = (x * y : R) :=
+  rfl
+
+@[simp, norm_cast]
+theorem coe_ppow (x : Ioc (0 : R) 1) (n : ℕ+) : ↑(x ^ n) = ((x : R) ^ n) :=
   rfl
 
 @[simp, norm_cast]
@@ -357,10 +378,10 @@ instance instMulLeftMono : MulLeftMono (Ioc (0 : R) 1) := mulLeftMono_of_mulLeft
 instance instMulRightMono : MulRightMono (Ioc (0 : R) 1) := mulRightMono_of_mulRightStrictMono _
 
 instance instSemigroup : Semigroup (Ioc (0 : R) 1) := fast_instance%
-  Subtype.coe_injective.semigroup _ coe_mul
+  Subtype.coe_injective.semigroup _ coe_mul coe_ppow
 
 instance instMonoid : Monoid (Ioc (0 : R) 1) := fast_instance%
-  Subtype.coe_injective.monoid _ coe_one coe_mul coe_pow
+  Subtype.coe_injective.monoid _ coe_one coe_mul coe_ppow coe_pow
 
 /-- The coercion from `Set.Ioc 0 1` as a `MonoidHom`. -/
 @[simps]
@@ -388,11 +409,11 @@ end OrderedSemiring
 
 instance instCommSemigroup [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R] :
     CommSemigroup (Ioc (0 : R) 1) := fast_instance%
-  Subtype.coe_injective.commSemigroup _ coe_mul
+  Subtype.coe_injective.commSemigroup _ coe_mul coe_ppow
 
 instance instCommMonoid [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R] :
     CommMonoid (Ioc (0 : R) 1) := fast_instance%
-  Subtype.coe_injective.commMonoid _ coe_one coe_mul coe_pow
+  Subtype.coe_injective.commMonoid _ coe_one coe_mul coe_ppow coe_pow
 
 instance [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R] :
     IsOrderedMonoid (Ioc (0 : R) 1) := .of_mulLeftMono
@@ -426,8 +447,15 @@ instance instMul : Mul (Ioo (0 : R) 1) where
   mul p q :=
     ⟨p.1 * q.1, ⟨mul_pos p.2.1 q.2.1, by grw [p.2.2, one_mul, q.2.2]; exact q.2.1⟩⟩
 
+instance instPPow : Pow (Ioo (0 : R) 1) ℕ+ where
+  pow p n := ⟨p.1 ^ n, ⟨ppow_pos p.2.1 n, ppow_lt_one₀ (le_of_lt p.2.1) p.2.2 n⟩⟩
+
 @[simp, norm_cast]
 theorem coe_mul (x y : Ioo (0 : R) 1) : ↑(x * y) = (x * y : R) :=
+  rfl
+
+@[simp, norm_cast]
+theorem coe_ppow (x : Ioo (0 : R) 1) (n : ℕ+) : ↑(x ^ n) = ((x : R) ^ n) :=
   rfl
 
 instance instMulLeftStrictMono : MulLeftStrictMono (Ioo (0 : R) 1) where
@@ -441,7 +469,7 @@ instance instMulLeftMono : MulLeftMono (Ioo (0 : R) 1) := mulLeftMono_of_mulLeft
 instance instMulRightMono : MulRightMono (Ioo (0 : R) 1) := mulRightMono_of_mulRightStrictMono _
 
 instance instSemigroup : Semigroup (Ioo (0 : R) 1) := fast_instance%
-  Subtype.coe_injective.semigroup _ coe_mul
+  Subtype.coe_injective.semigroup _ coe_mul coe_ppow
 
 /-- The coercion from `Set.Ioo 0 1` as a `MulHom`. -/
 @[simps]
@@ -463,7 +491,7 @@ end OrderedSemiring
 
 instance instCommSemigroup [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R] :
     CommSemigroup (Ioo (0 : R) 1) := fast_instance%
-  Subtype.coe_injective.commSemigroup _ coe_mul
+  Subtype.coe_injective.commSemigroup _ coe_mul coe_ppow
 
 section OrderedAddCommGroup
 variable [AddCommGroupWithOne R] [PartialOrder R] [IsOrderedAddMonoid R]
