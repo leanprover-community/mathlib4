@@ -837,7 +837,7 @@ This is available in bundled forms as:
   map_add' _ _ := rfl
 
 @[simp] theorem toEquiv_prodAddEquiv [Add α] [Add β] :
-   (prodAddEquiv (m := m) (n := n) (α := α) (β := β) :
+    (prodAddEquiv (m := m) (n := n) (α := α) (β := β) :
       Matrix m n (α × β) ≃ Matrix m n α × Matrix m n β) = prodEquiv := rfl
 
 /-- `prodEquiv` as a `LinearEquiv`. -/
