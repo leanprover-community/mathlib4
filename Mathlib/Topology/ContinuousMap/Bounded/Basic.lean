@@ -525,8 +525,10 @@ instance instPow [Monoid R] [BoundedMul R] [ContinuousMul R] : Pow (α →ᵇ R)
 @[to_additive]
 instance [Monoid R] [BoundedMul R] [ContinuousMul R] : IsPowApply ℕ (α →ᵇ R) where
 
-@[deprecated (since := "2026-10-20")] alias coe_pow := FunLike.coe_pow
+@[deprecated (since := "2026-10-20")] alias coe_nsmul := FunLike.coe_smul
+@[to_additive existing, deprecated (since := "2026-10-20")] alias coe_pow := FunLike.coe_pow
 
+@[deprecated (since := "2026-10-20")] alias nsmul_apply := smul_apply
 @[deprecated (since := "2026-10-20")] protected alias pow_apply := pow_apply
 
 @[to_additive]
