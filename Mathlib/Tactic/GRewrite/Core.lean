@@ -49,7 +49,7 @@ public structure GRewriteResult where
 public structure Config extends Rewrite.Config where
   /-- When `useRewrite = true`, switch to using the default `rewrite` tactic when the goal is
   and equality or iff. -/
-  useRewrite : Bool := true
+  useRewrite : Bool := false
   /-- When `implicationHyp = true`, interpret the rewrite rule as an implication. -/
   implicationHyp : Bool := false
   /-- Whether to use `kabstract` to find the rewrites locations. -/
@@ -122,6 +122,26 @@ inductive Progress where
   out of scope. We store a local context in which the rewrite makes sense. -/
   | matchedOutOfScope (lctx : LocalContext)
 
+/-- A relation to rewrite by. -/
+inductive Relation where
+  /-- The relation is given by expression `rel`. -/
+  | rel : Expr → Relation
+  /-- The relation is implication. -/
+  | imp : Relation
+  /-- The relation is equality. -/
+  | eq : Relation
+deriving BEq
+
+instance : Hashable Relation where
+  hash | .rel e => hash e | .imp => 2 | .eq => 3
+
+instance : ToMessageData Relation where
+  toMessageData | .rel e => e | .imp => "→" | .eq => "="
+
+def Relation.instantiateMVars : Relation → MetaM Relation
+  | rel e => .rel <$> Lean.instantiateMVars e
+  | r => return r
+
 /-- The state used in `GRewriteM`. -/
 structure State where
   /-- The cache used in `grw` to avoid trying and failing to rewrite the same term multiple times.
@@ -129,7 +149,7 @@ structure State where
   and direction of the rewrite.
   This lets us avoid an exponential blowup when there are multiple `gcongr` lemmas for rewriting
   in the same place, such as `add_le_add`, `add_le_add_left` and `add_le_add_right`. -/
-  cache : Std.HashSet (Option Expr × Expr × Bool) := {}
+  cache : Std.HashSet (Relation × Expr × Bool) := {}
   /-- The current progress level. -/
   progress : Progress := .noMatch
 
@@ -148,7 +168,7 @@ structure GRewriteLemma where
   mvarIds : Array (MVarId × Array LocalDecl)
 
 /-- The monad used for `grw`. -/
-abbrev GRewriteM := ReaderT GRewriteLemma StateRefT State GCongr.GCongrM
+abbrev GRewriteM := ReaderT GRewriteLemma <| ReaderT Simp.Context StateRefT State GCongr.GCongrM
 
 /-- Unify the given generalized rewrite lemma with the goal, so as to rewrite with it.
 If `symm := true`, first use the `symm` tactic to swap the direction of the lemma.
@@ -184,8 +204,9 @@ def GRewriteLemma.apply (lem : GRewriteLemma) (goal : MVarId) (symm : Bool)
 
 /-- Create the `gcongr` goal corresponding to rewriting `e` by relation `rel?`,
 so that we can apply `gcongr` lemmas to it. -/
-def makeGCongrGoal (rel? : Option Expr) (e : Expr) (forward : Bool) : MetaM (Expr × Expr) := do
-  if let some rel := rel? then
+def makeGCongrGoal (rel : Relation) (e : Expr) (forward : Bool) : MetaM (Expr × Expr) := do
+  match rel with
+  | .rel rel =>
     let .forallE _ d₁ (.forallE _ d₂ _ _) _ ← whnf (← inferType rel) | throwFunctionExpected rel
     -- note that `@[gcongr]`'s checks should prevent this happening
     if d₂.hasLooseBVars then throwError "grw: {rel} is a dependent relation"
@@ -195,18 +216,26 @@ def makeGCongrGoal (rel? : Option Expr) (e : Expr) (forward : Bool) : MetaM (Exp
     else
       let mvar ← mkFreshExprMVar d₁
       return (mvar, ← mkFreshExprMVar <| mkApp2 rel mvar e)
-  else
+  | .imp =>
     let mvar ← mkFreshTypeMVar
     let target := if forward then .forallE `_a e mvar .default else .forallE `_a mvar e .default
     return (mvar, ← mkFreshExprMVar (some target))
+  | .eq =>
+    let α ← inferType e
+    let u ← getLevel α
+    let mvar ← mkFreshExprMVar α
+    let target :=
+      if forward then mkApp3 (.const ``Eq [u]) α e mvar else mkApp3 (.const ``Eq [u]) α mvar e
+    return (mvar, ← mkFreshExprMVar target)
 
 /-- Version of `getRel` that also returns the expression of the relation. -/
-def getRel' (e : Expr) : Option (Name × Option Expr × Expr × Expr) :=
+def getRel' (e : Expr) : Option (Name × Relation × Expr × Expr) :=
   match e with
-  | .app (.app rel lhs) rhs => rel.getAppFn.constName?.map (·, rel, lhs, rhs)
+  | mkApp3 (.const ``Eq _) _ lhs rhs => some (``Eq, .eq, lhs, rhs)
+  | mkApp2 rel lhs rhs => rel.getAppFn.constName?.map (·, .rel rel, lhs, rhs)
   | .forallE _ lhs rhs _ =>
     if !rhs.hasLooseBVars then
-      some (`_Implies, none, lhs, rhs)
+      some (`_Implies, .imp, lhs, rhs)
     else
       none
   | _ => none
@@ -231,11 +260,11 @@ mutual
 Returns whether we have done a rewrite in this subgoal, in which case it has been closed. -/
 partial def processGCongrHypothesisAux (goal : MVarId) (forward : Bool) (config : Config) :
     GRewriteM Bool := do
-  let some (relName, rel?, lhs, rhs) := getRel' (← whnf (← goal.getType)) |
+  let some (relName, rel, lhs, rhs) := getRel' (← whnf (← goal.getType)) |
     throwError "internal `grewrite` error: invalid `gcongr` goal {goal}"
   let (target, mvarApp) := if forward then (lhs, rhs) else (rhs, lhs)
-  let target ← instantiateMVars target; let rel? ← rel?.mapM instantiateMVars
-  if let some (result, proof) ← grewriteCore relName rel? target forward config then
+  let target ← instantiateMVars target; let rel ← rel.instantiateMVars
+  if let some (result, proof) ← grewriteCore relName rel target forward config then
     mvarApp.withApp fun mvar xs ↦ do
       /- Note: the names of the free variables `xs` end up in the new goal as lambda binders.
       `applyGCongrLemma` ensures that these are the binder names that appear in the original goal.
@@ -322,16 +351,15 @@ partial def processGCongrLemma (goal : MVarId) (lem : GCongrLemma) (forward : Bo
       dischargeSide mvarId
   return true
 
-partial def congr (e : Expr) (config : Config) : GRewriteM Simp.Result := fun c s c' s' ↦ do
+partial def congr (e : Expr) (config : Config) : GRewriteM Simp.Result :=
+  fun c simpCtx s c' s' ↦ do
   let methods := { pre e := do
-    let α ← inferType e
-    let eq := Expr.app (.const ``Eq [← getLevel α]) α
-    if let some (e', pf) ← grewriteCore ``Eq eq e true config c s c' s' then
+    if let some (e', pf) ← grewriteCore ``Eq .eq e true config c simpCtx s c' s' then
       return .done { expr := e', proof? := pf }
     else
       return .done { expr := e }
     }
-  (·.1) <$> (Simp.simpApp e).run (← Simp.mkContext Simp.neutralConfig) (methods := methods)
+  (·.1) <$> (Simp.simpApp e).run simpCtx (methods := methods)
 
 /-- The core of the `grw` implementation. Rewrite in the expression `e` which occurs under the
 relation `relName`/`rel?`, using the `GRewriteLemma` stored in `GRewriteM`.
@@ -341,18 +369,18 @@ If `e` itself cannot be rewritten, descend into subexpressions of `e` using `@[g
 unless the relation is `→`: `relName` is `_Implies` and `rel?` is `none`.
 
 Returns the new expression and a proof that it is related to `e`, if a rewrite was found. -/
-partial def grewriteCore (relName : Name) (rel? : Option Expr) (e : Expr) (forward : Bool)
+partial def grewriteCore (relName : Name) (rel : Relation) (e : Expr) (forward : Bool)
     (config : Config) : GRewriteM (Option (Expr × Expr)) :=
   withTraceNodeBefore `Meta.grewrite (fun _ ↦ return m!"visiting `{e}` in the \
-    {if forward then "LHS" else "RHS"} of relation `{rel?.elim m!"→" (m!"{·}")}`") do
-  let cacheKey := (rel?, e, forward)
+    {if forward then "LHS" else "RHS"} of relation `{rel}`") do
+  let cacheKey := (rel, e, forward)
   if (← get).cache.contains cacheKey then
     trace[Meta.grewrite] "cached: no rewrite"
     return none
-  let (mvar, goal) ← makeGCongrGoal rel? e forward
   -- Try the given grewrite lemma.
   let lem ← read
   if (e.toHeadIndex, e.headNumArgs) == lem.index then
+    let (mvar, goal) ← makeGCongrGoal rel e forward
     if ← lem.apply goal.mvarId! (forward == lem.symm) config then
       modify ({ · with progress := .matched })
       return (mvar, goal)
@@ -361,19 +389,22 @@ partial def grewriteCore (relName : Name) (rel? : Option Expr) (e : Expr) (forwa
     let mut lemmas ← findGCongrLemmas?' relName head forward args.size
     if relName == `_Implies then
       lemmas := lemmas ++ relImpRelLemma args.size
-    let mctx ← getMCtx
-    for gcongrLem in lemmas do
-      if gcongrLem.forGrw then
-        if ← processGCongrLemma goal.mvarId! gcongrLem forward config then
-          -- Preserve the binder name/info in a forall.
-          match e, ← instantiateMVars mvar with
-          | .forallE n _ _ bi, .forallE _ d b _ => return some (.forallE n d b bi, goal)
-          | _, result => return some (result, goal)
-        setMCtx mctx
+    unless lemmas.isEmpty do
+      let (mvar, goal) ← makeGCongrGoal rel e forward
+      let mctx ← getMCtx
+      for gcongrLem in lemmas do
+        if gcongrLem.forGrw then
+          if ← processGCongrLemma goal.mvarId! gcongrLem forward config then
+            -- Preserve the binder name/info in a forall.
+            match e, ← instantiateMVars mvar with
+            | .forallE n _ _ bi, .forallE _ d b _ => return some (.forallE n d b bi, goal)
+            | _, result => return some (result, goal)
+          setMCtx mctx
   if relName == ``Eq then
     if let .lam n _ _ bi := e then
+      let (mvar, goal) ← makeGCongrGoal rel e forward
       if ← processGCongrLemma goal.mvarId! funextLemma forward config then
-        -- Preserve the binder name/info in a forall.
+        -- Preserve the binder name/info in the lambda.
         match ← instantiateMVars mvar with
         | .lam _ d b _ => return some (.lam n d b bi, goal)
         | _ => throwError "internal `grw` error: {mvar} is not a lambda"
@@ -420,7 +451,7 @@ public def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr)
     let hrelType := hrelType.cleanupAnnotations
 
     -- If we can use the normal `rewrite` tactic, we default to using that.
-    if (hrelType.isAppOfArity ``Iff 2 || hrelType.isAppOfArity ``Eq 3) && config.useRewrite then
+    if config.useRewrite && (hrelType.isAppOfArity ``Iff 2 || hrelType.isAppOfArity ``Eq 3) then
       let { eNew, eqProof, mvarIds } ← goal.rewrite e hrel symm config.toConfig
       let mp := if forwardImp then ``Eq.mp else ``Eq.mpr
       let impProof ← mkAppOptM mp #[e, eNew, eqProof]
@@ -441,7 +472,8 @@ public def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr)
         (none, ·) <$> grewriteUsingKAbstract goal e hrel pattern replacement forwardImp config
       else
       withReducible do
-      let some (_, lhs', rhs') := GCongr.getRel (← whnf hrelType) |
+      let hrelType' ← whnf hrelType
+      let some (_, lhs', rhs') := GCongr.getRel hrelType' |
         throwTacticEx `grewrite goal m!"`{hrelType}` is not a valid relation"
       -- Support relations that flip their arguments when reduced, such as `≥`.
       let symm' ←
@@ -450,17 +482,19 @@ public def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr)
         else throwTacticEx `grewrite goal m!"`{hrelType}` is not a valid relation"
       let index := (pattern.toHeadIndex, pattern.headNumArgs)
       let mvarIds := mvarIds ++ newMVars.map (·.mvarId!, #[])
+      let isSymmetric ← withNewMCtxDepth
+        try _ ← (← mkFreshExprMVar hrelType').mvarId!.applySymm; pure true
+        catch _ => pure false
       let go := do
-        if let some r ← grewriteCore `_Implies none e (forward := forwardImp) config then
-          return some r
-        let α ← inferType e
-        let eq := Expr.app (.const ``Eq [← getLevel α]) α
-        if let some (eNew, eqProof) ← grewriteCore ``Eq eq e (forward := true) config then
-          let mp := if forwardImp then ``Eq.mp else ``Eq.mpr
-          return some (eNew, ← mkAppM mp #[eqProof])
-        return none
+        if !isSymmetric then
+          grewriteCore `_Implies .imp e (forward := forwardImp) config
+        else
+          (← grewriteCore ``Eq .eq e (forward := true) config).mapM fun (eNew, eqProof) ↦ do
+            let mp := if forwardImp then ``Eq.mp else ``Eq.mpr
+            return (eNew, ← mkAppM mp #[eqProof])
       if let ((some (eNew, impProof), { progress, .. }), s) ←
           go.run { symm := symm', proof := hrel, type := hrelType, index, mvarIds }
+          |>.run (← Simp.mkContext Simp.neutralConfig)
           |>.run {} |>.run then
         let lctx? := match progress with
           | .matchedOutOfScope lctx => some lctx
