@@ -19,7 +19,7 @@ Given a `k`-algebra `A` and a linear functional `Φ : A →ₗ[k] k`, we say tha
 (resp. nondegenerate) if the bilinear `⟨x, y⟩ := Φ (x * y)` is symmetric (resp. nondegenerate). For
 example, `A = k[G]` with `Φ` being taking coefficient at `1` is a symmetric nondegenerate algebra.
 When `k` is a field and `A` is finite dimensional over `k`, this notion is the same as (symmetric)
-Frobenius algebras. A more intricate exmaple is the Hecke algebra `A = End_G(ℂ[G ⧸ H])ᵒᵖ` with `Φ`
+Frobenius algebras. A more intricate example is the Hecke algebra `A = End_G(ℂ[G ⧸ H])ᵒᵖ` with `Φ`
 being taking coefficient at `1`. The `ℂ`-Hecke algebra is always nondegenerate. It is symmetric if
 and only if `H` is unimodular, i.e. `[HgH : H] = [Hg⁻¹H : H]` for all `g : G`.
 
