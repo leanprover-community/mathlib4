@@ -527,7 +527,7 @@ theorem isEmpty_linearEquiv_iff_forall_linearMap_eq_zero [IsSimpleModule R M] [I
   apply hv
   rw [← LinearEquiv.symm_apply_apply f v, ← f.coe_toLinearMap, hf f, zero_apply, map_zero]
 
-lemma isEmpty_linearEquiv_iff_subsingleton [IsSimpleModule R M] [IsSimpleModule R N] :
+theorem isEmpty_linearEquiv_iff_subsingleton [IsSimpleModule R M] [IsSimpleModule R N] :
     IsEmpty (M ≃ₗ[R] N) ↔ Subsingleton (M →ₗ[R] N):= by
   rw [isEmpty_linearEquiv_iff_forall_linearMap_eq_zero]
   exact ⟨fun h => ⟨fun _ _ => by simp [h]⟩, fun h f => h.elim f 0⟩
