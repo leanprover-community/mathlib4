@@ -875,7 +875,7 @@ variable (R) [CommSemiring R] [DecidableEq n]
       Matrix n n (α × β) ≃+* Matrix n n α × Matrix n n β) = prodRingEquiv  := rfl
 
 @[simp] theorem toLinearEquiv_prodAlgEquiv [Semiring α] [Algebra R α]
-  [Semiring β] [Algebra R β] : (prodAlgEquiv (n := n) (α := α) (β := β) R :
+    [Semiring β] [Algebra R β] : (prodAlgEquiv (n := n) (α := α) (β := β) R :
       Matrix n n (α × β) ≃ₗ[R] Matrix n n α × Matrix n n β) = prodLinearEquiv R := rfl
 
 end Prod
