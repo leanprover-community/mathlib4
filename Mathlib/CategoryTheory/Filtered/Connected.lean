@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Filtered.Basic
 public import Mathlib.CategoryTheory.IsConnected
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Filtered categories are connected
 -/
