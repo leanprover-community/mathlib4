@@ -482,7 +482,7 @@ theorem setToSimpleFunc_sub (T : Set α → E →L[ℝ] F) (h_add : FinMeasAddit
     sub_eq_add_neg]
   rw [integrable_iff] at hg ⊢
   intro x hx_ne
-  rw [SimpleFunc.coe_neg, Pi.neg_def, ← Function.comp_def, preimage_comp, neg_preimage,
+  rw [FunLike.coe_neg, Pi.neg_def, ← Function.comp_def, preimage_comp, neg_preimage,
     Set.neg_singleton]
   refine hg (-x) ?_
   simp [hx_ne]
@@ -556,7 +556,7 @@ theorem setToSimpleFunc_mono [IsOrderedAddMonoid G']
   rw [← sub_nonneg, ← setToSimpleFunc_sub T h_add hgi hfi]
   refine setToSimpleFunc_nonneg' T hT_nonneg _ ?_ (hgi.sub hfi)
   intro x
-  simp only [coe_sub, sub_nonneg, coe_zero, Pi.zero_apply, Pi.sub_apply]
+  simp only [FunLike.coe_sub, sub_nonneg, FunLike.coe_zero, Pi.zero_apply, Pi.sub_apply]
   exact hfg x
 
 end Order
