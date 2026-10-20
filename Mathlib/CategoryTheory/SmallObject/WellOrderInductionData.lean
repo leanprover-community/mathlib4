@@ -9,6 +9,11 @@ public import Mathlib.CategoryTheory.Category.Preorder
 public import Mathlib.CategoryTheory.Types.Basic
 public import Mathlib.Order.SuccPred.Limit
 
+import Mathlib.Order.LatticeIntervals
+import Mathlib.CategoryTheory.Limits.Final.Type
+import Mathlib.Order.Interval.Set.Final
+import Mathlib.Order.Interval.Set.Limit
+
 /-!
 # Limits of inverse systems indexed by well-ordered types
 
@@ -278,6 +283,95 @@ include d in
 lemma surjective :
     Function.Surjective ((fun s ↦ s (op ⊥)) ∘ Subtype.val : F.sections → F.obj (op ⊥)) :=
   fun val₀ ↦ ⟨d.sectionsMk val₀, d.sectionsMk_val_op_bot val₀⟩
+
+variable (t : J) in
+/-- Given a `F.WellOrderInductionData`, and a non-limit element, construct a
+`WellOrderInductionData` on the restriction of `F` to elemets `≥ t`.
+This is used as a way to construct sections of `F` from non-bot elements. -/
+private noncomputable def restrictIci (d : F.WellOrderInductionData)
+    (t : J) (ht : ¬ Order.IsSuccLimit t) :
+    ((Subtype.mono_coe (· ∈ Set.Ici t)).functor.op ⋙ F).WellOrderInductionData where
+  succ j hj p :=
+    have hj' : ¬IsMax j.val := by
+      rw [not_isMax_iff] at hj ⊢
+      obtain ⟨b, hb⟩ := hj
+      exact ⟨b, hb⟩
+    -- this is not a defeq so we have to manually cast our way around this
+    haveI : (Order.succ j).val = Order.succ j.val := by
+      rw [coe_succ_of_mem (by grind [Order.le_succ])]
+    letI e : F.obj (op (Order.succ j).val) ≃ F.obj (op (Order.succ j.val)) :=
+      Iso.toEquiv <| F.mapIso <| Iso.op <| eqToIso this.symm
+    e.symm <| d.succ j.val hj' p
+  map_succ u hu v := by
+    extract_lets hu'
+    dsimp at u v
+    conv_rhs => rw [← d.map_succ u hu' v]
+    simp only [Monotone.functor, homOfLE_leOfHom, comp_obj, op_obj, comp_map, op_map,
+      Iso.toEquiv_symm_apply, mapIso_inv, Iso.op_inv, eqToIso.inv, eqToHom_op]
+    generalize_proofs _ _ h1 s _ h2 h3
+    have : homOfLE h1 = homOfLE h2 ≫ eqToHom s := rfl
+    rw [this, op_comp, Functor.map_comp, ← ConcreteCategory.comp_apply, eqToHom_op,
+      ← F.map_comp_assoc]
+    simp
+  lift j hj p :=
+    /- The idea is to use that F and F restricted to `Ici t` have the same sections because
+    the inclusion Set.Iio j →o Set.Iio j.val is final -/
+    haveI hj' : Order.IsSuccLimit j.val := Set.Ici.isSuccLimit_coe j hj
+    haveI htj : t < j.val := by grind
+    let φ : Set.Iio j → Set.Iio j.val := fun u ↦ ⟨u, u.property⟩
+    haveI hφ : Monotone φ := by tauto
+    haveI hφ' : hφ.functor.Final := by
+      simp only [Monotone.final_functor_iff, Subtype.exists, Set.mem_Iio, Set.mem_Ici,
+        Subtype.forall, Subtype.mk_le_mk, exists_prop, exists_and_right, φ]
+      refine fun j₁ a ↦ ⟨max t (Order.succ j₁), ⟨?_, ?_⟩, ?_⟩
+      all_goals grind [Order.IsSuccLimit.succ_lt, Subtype.mk_lt_mk, Order.le_succ]
+    haveI ijm := (OrderHom.Subtype.val (· ∈ Set.Iio j)).monotone
+    haveI ijm' := (OrderHom.Subtype.val (· ∈ Set.Iio j.val)).monotone
+    haveI ccm := Subtype.mono_coe (· ∈ Set.Ici t)
+    let i₀ : ijm.functor.op ⋙ ccm.functor.op ≅ hφ.functor.op ⋙ ijm'.functor.op :=
+      /- We intentionally wrap this `rfl` in `id` to prevent matching eqToHom_refl in simp calls,
+      which would leave automation stuck with some badly-typed-at-implicit-reducible F.map (𝟙 _) -/
+      eqToIso (id rfl)
+    let e₁ :
+        (ijm.functor.op ⋙ ccm.functor.op ⋙ F).sections ≃
+        (hφ.functor.op ⋙ ijm'.functor.op ⋙ F).sections :=
+      ((Functor.sectionsFunctor (Set.Iio j)ᵒᵖ).mapIso <|
+        (Functor.associator ..).symm ≪≫ Functor.isoWhiskerRight i₀ F ≪≫
+          Functor.associator ..).toEquiv
+    let e₂ :
+        (hφ.functor.op ⋙ ijm'.functor.op ⋙ F).sections ≃ (ijm'.functor.op ⋙ F).sections :=
+      Equiv.symm <| Equiv.ofBijective _ <| hφ.functor.op.bijective_sectionsPrecomp <|
+        (OrderHom.Subtype.val (· ∈ Set.Iio j.val)).monotone.functor.op ⋙ F
+    d.lift j.val hj' (e₂ (e₁ p))
+  map_lift j hj s i hi := by
+    extract_lets φ i₀ e₁ e₂
+    have hj' : Order.IsSuccLimit j.val := Set.Ici.isSuccLimit_coe j hj
+    obtain ⟨s₁, hs₁⟩ := e₁.symm.surjective s
+    obtain ⟨s₂, hs₂⟩ := e₂.symm.surjective s₁
+    simp only [comp_obj, op_obj, Monotone.functor_obj, homOfLE_leOfHom, comp_map, op_map,
+      Quiver.Hom.unop_op, ← hs₁, ← hs₂, Equiv.apply_symm_apply]
+    have := d.map_lift _ hj' s₂ _ hi
+    suffices _ : s₂.val (op ⟨i.val, hi⟩) = F.map (i₀.inv.app (op ⟨i, hi⟩)) (s₁.val (op ⟨i, hi⟩)) by
+      simpa [Monotone.functor, d.map_lift _ hj' s₂ _ hi, sectionsFunctor, hs₂, e₁, hs₁]
+    simp only [comp_obj, op_obj, Monotone.functor_obj, eqToIso.inv, eqToHom_app, eqToHom_map, i₀]
+    exact congr($(hs₂).val (op ⟨i, hi⟩))
+
+omit [OrderBot J] in
+include d in
+lemma surjective' (t : J) (ht : ¬ Order.IsSuccLimit t) :
+    Function.Surjective ((fun s ↦ s (op t)) ∘ Subtype.val : F.sections → F.obj (op t)) := by
+  -- The idea is to apply `surjective` to Set.Ici t
+  let _ : OrderBot (Set.Ici t) := Set.Ici.orderBot
+  let F' : (Set.Ici t)ᵒᵖ ⥤ Type v := (Subtype.mono_coe (· ∈ Set.Ici t)).functor.op ⋙ F
+  let d' : F'.WellOrderInductionData := d.restrictIci t ht
+  intro u
+  obtain ⟨s, hs⟩ := d'.surjective u
+  have : (Subtype.mono_coe (· ∈ Set.Ici t)).functor.op.Initial := Functor.initial_op_of_final _
+  let e : F.sections ≃ F'.sections := Equiv.ofBijective _ <|
+    (Subtype.mono_coe (· ∈ Set.Ici t)).functor.op.bijective_sectionsPrecomp F
+  use ⟨e.symm s, by simp⟩
+  rw [← hs]
+  exact congr($(e.apply_symm_apply s).val (op ⊥))
 
 end WellOrderInductionData
 
