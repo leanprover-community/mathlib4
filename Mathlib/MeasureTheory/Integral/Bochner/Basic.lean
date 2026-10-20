@@ -192,13 +192,13 @@ theorem integral_eq [hE : CompleteSpace E] (f : α → E) (hf : Integrable f μ)
 theorem integral_eq_setToFun (f : α → E) :
     ∫ a, f a ∂μ = setToFun μ (weightedSMul μ) (dominatedFinMeasAdditive_weightedSMul μ) f := by
   by_cases hE : CompleteSpace E
-  · simp only [integral, hE, ↓reduceDIte, L1.integral, setToFun]
+  · simp only [integral, hE, ↓reduceDIte, L1.integral_eq, setToFun]
     rfl
   · simp [integral, hE, setToFun]
 
 theorem L1.integral_eq_integral [CompleteSpace E] (f : α →₁[μ] E) :
     L1.integral f = ∫ a, f a ∂μ := by
-  simp only [integral, L1.integral, integral_eq_setToFun]
+  simp only [L1.integral_eq, integral_eq_setToFun]
   exact (L1.setToFun_eq_setToL1 (dominatedFinMeasAdditive_weightedSMul μ) f).symm
 
 theorem integral_undef {f : α → G} (h : ¬Integrable f μ) : ∫ a, f a ∂μ = 0 := by
@@ -564,7 +564,7 @@ theorem tendsto_integral_approxOn_of_measurable [CompleteSpace E] [MeasurableSpa
     Tendsto (fun n => (SimpleFunc.approxOn f hfm s y₀ h₀ n).integral μ)
       atTop (𝓝 <| ∫ x, f x ∂μ) := by
   have hfi' := SimpleFunc.integrable_approxOn hfm hfi h₀ h₀i
-  simp only [SimpleFunc.integral_eq_integral _ (hfi' _), integral, L1.integral]
+  simp only [SimpleFunc.integral_eq_integral _ (hfi' _), integral, L1.integral_eq]
   exact tendsto_setToFun_approxOn_of_measurable (dominatedFinMeasAdditive_weightedSMul μ)
     hfi hfm hs h₀ h₀i
 

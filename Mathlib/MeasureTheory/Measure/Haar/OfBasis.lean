@@ -254,6 +254,8 @@ by the basis. -/
 @[no_expose] def addHaar (b : Basis ι ℝ E) : Measure E :=
   Measure.addHaarMeasure b.parallelepiped
 
+lemma addHaar_def (b : Basis ι ℝ E) : addHaar b = Measure.addHaarMeasure b.parallelepiped := (rfl)
+
 instance _root_.isAddHaarMeasure_basis_addHaar (b : Basis ι ℝ E) : IsAddHaarMeasure b.addHaar :=
   Measure.isAddHaarMeasure_addHaarMeasure _
 

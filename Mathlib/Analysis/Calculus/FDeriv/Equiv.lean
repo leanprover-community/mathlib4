@@ -490,7 +490,7 @@ theorem fderivWithin_comp_smul_eq_fderivWithin_smul (c : 𝕜) :
   rcases eq_or_ne c 0 with rfl | hc
   · simp
   · classical
-    simp only [fderivWithin, DifferentiableWithinAt, hasFDerivWithinAt_comp_smul_iff_smul hc]
+    simp only [fderivWithin_def, DifferentiableWithinAt, hasFDerivWithinAt_comp_smul_iff_smul hc]
 
 theorem fderivWithin_comp_smul (c : 𝕜) (hs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (f <| c • ·) s x = c • fderivWithin 𝕜 f (c • s) (c • x) := by

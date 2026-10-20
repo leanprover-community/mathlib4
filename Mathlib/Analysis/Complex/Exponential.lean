@@ -63,6 +63,8 @@ def exp' (z : ℂ) : CauSeq ℂ (‖·‖) :=
 def exp (z : ℂ) : ℂ :=
   CauSeq.lim (exp' z)
 
+alias exp_def := exp.eq_def
+
 /-- scoped notation for the complex exponential function -/
 scoped notation "cexp" => Complex.exp
 

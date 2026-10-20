@@ -278,9 +278,12 @@ noncomputable def IsMeasurableRatCDF.stieltjesFunctionAux (f : α → ℚ → �
     α → ℝ → ℝ :=
   fun a x ↦ ⨅ q : { q' : ℚ // x < q' }, f a q
 
-lemma IsMeasurableRatCDF.stieltjesFunctionAux_def' (f : α → ℚ → ℝ) (a : α) :
+lemma IsMeasurableRatCDF.stieltjesFunctionAux_def (f : α → ℚ → ℝ) (a : α) :
     IsMeasurableRatCDF.stieltjesFunctionAux f a
       = fun (t : ℝ) ↦ ⨅ r : { r' : ℚ // t < r' }, f a r := (rfl)
+
+@[deprecated (since := "2026-10-20")]
+alias IsMeasurableRatCDF.stieltjesFunctionAux_def' := IsMeasurableRatCDF.stieltjesFunctionAux_def
 
 lemma IsMeasurableRatCDF.stieltjesFunctionAux_unit_prod {f : α → ℚ → ℝ} (a : α) :
     IsMeasurableRatCDF.stieltjesFunctionAux (fun (p : Unit × α) ↦ f p.2) ((), a)

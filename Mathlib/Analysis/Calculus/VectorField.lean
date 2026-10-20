@@ -138,7 +138,7 @@ lemma lieBracket_smul_right {f : E → 𝕜} (hf : DifferentiableAt 𝕜 f x)
     (hW : DifferentiableAt 𝕜 W x) :
     lieBracket 𝕜 V (fun y ↦ f y • W y) x =
       (fderiv 𝕜 f x) (V x) • (W x) + (f x) • lieBracket 𝕜 V W x := by
-  simp_rw [← differentiableWithinAt_univ, ← lieBracketWithin_univ, fderiv] at hW hf ⊢
+  simp_rw [← differentiableWithinAt_univ, ← lieBracketWithin_univ, ← fderivWithin_univ] at hW hf ⊢
   exact lieBracketWithin_smul_right hf hW uniqueDiffWithinAt_univ
 
 /--
