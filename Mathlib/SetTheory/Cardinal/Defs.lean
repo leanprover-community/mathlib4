@@ -5,7 +5,9 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
 module
 
+public import Mathlib.Basic.IsEmpty.Basic
 public import Mathlib.Data.ULift
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.PPWithUniv
 public import Mathlib.Util.Delaborators
 
@@ -53,7 +55,7 @@ Cantor's theorem, König's theorem, Konig's theorem
 
 assert_not_exists Monoid
 
-open List Function Set
+open List
 
 noncomputable section
 
@@ -76,7 +78,7 @@ instance Cardinal.isEquivalent : Setoid (Type u) where
 /-- `Cardinal.{u}` is the type of cardinal numbers in `Type u`,
   defined as the quotient of `Type u` by existence of an equivalence
   (a bijection with explicit inverse). -/
-@[pp_with_univ]
+@[pp_with_univ, wikidata Q163875]
 def Cardinal : Type (u + 1) :=
   Quotient Cardinal.isEquivalent
 
@@ -165,9 +167,13 @@ theorem lift_id' (a : Cardinal.{max u v}) : lift.{u} a = a :=
   inductionOn a fun _ => mk_congr Equiv.ulift
 
 /-- A cardinal lifted to the same universe equals itself. -/
-@[simp]
 theorem lift_id (a : Cardinal) : lift.{u, u} a = a :=
   lift_id'.{u, u} a
+
+/-- The map lifting a cardinal to the same universe is equal to the identity. -/
+@[simp]
+theorem lift_eq_id : lift.{u, u} = id := by
+  funext; exact lift_id _
 
 /-- A cardinal lifted to the zero universe equals itself. -/
 @[simp]

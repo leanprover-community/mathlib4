@@ -6,11 +6,9 @@ Authors: Fox Thomson, Martin Dvorak, Rudy Peterson
 module
 
 public import Mathlib.Algebra.Order.Kleene
-public import Mathlib.Algebra.Ring.Hom.Defs
-public import Mathlib.Data.Set.Lattice
-public import Mathlib.Tactic.DeriveFintype
 public import Mathlib.Data.Fintype.Sum
 public import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Tactic.DeriveFintype
 
 /-!
 # Languages
@@ -55,7 +53,9 @@ with respect to other language operations.
 @[expose] public section
 
 
-open List Set Computability
+open List Set
+
+open scoped Computability
 
 universe v
 
@@ -186,6 +186,7 @@ theorem nil_mem_kstar (l : Language α) : [] ∈ l∗ :=
 instance : OrderedSub (Language α) where
   tsub_le_iff_right _ _ _ := sdiff_le_iff'
 
+set_option backward.isDefEq.respectTransparency false in
 instance instSemiring : Semiring (Language α) where
   add_assoc := sup_assoc
   zero_add := by simp [add_def, sup_def, zero_def]
@@ -234,9 +235,11 @@ def map (f : α → β) : Language α →+* Language β where
     simp only [mul_def, Function.comp_apply, ofSet.injEq]
     exact image_image2_distrib <| fun _ _ => map_append
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_id (l : Language α) : map id l = l := by simp [map]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_map (g : β → γ) (f : α → β) (l : Language α) : map g (map f l) = map (g ∘ f) l := by
   simp [map, image_image]
@@ -264,10 +267,6 @@ instance : MulLeftMono (Language α) where
 
 instance : MulRightMono (Language α) where
   elim _ _ _ := image2_subset_right
-
-@[deprecated mul_le_mul' (since := "2025-10-26")]
-theorem le_mul_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l₂ ≤ m₂ → l₁ * l₂ ≤ m₁ * m₂ :=
-  mul_le_mul'
 
 theorem mem_iSup {ι : Sort v} {l : ι → Language α} {x : List α} :
     (x ∈ ⨆ i, l i) ↔ ∃ i, x ∈ l i := by
@@ -369,10 +368,6 @@ instance : KleeneAlgebra (Language α) where
     | zero => simp
     | succ n ih => grw [pow_succ, ← mul_assoc m (l ^ n) l, ih, h]
 
-@[deprecated add_le_add (since := "2025-10-26")]
-theorem le_add_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l₂ ≤ m₂ → l₁ + l₂ ≤ m₁ + m₂ :=
-  add_le_add
-
 /-- **Arden's lemma** -/
 theorem self_eq_mul_add_iff {l m n : Language α} (hm : [] ∉ m) : l = m * l + n ↔ l = m∗ * n where
   mp h := by
@@ -441,6 +436,7 @@ lemma reverse_reverse (l : Language α) : l.reverse.reverse = l := reverse_invol
 @[simp]
 lemma reverse_add (l m : Language α) : (l + m).reverse = l.reverse + m.reverse := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma reverse_mul (l m : Language α) : (l * m).reverse = m.reverse * l.reverse := by
   simp only [mul_def, reverse_eq_image, image2_image_left, image2_image_right, image_image2,

@@ -16,7 +16,7 @@ Some lemmas on the combination of `Finsupp`, `Fintype` and `Infinite`.
 
 -/
 
-@[expose] public section
+public section
 
 variable {ι α : Type*} [DecidableEq ι] [Fintype ι] [Zero α] [Fintype α]
 

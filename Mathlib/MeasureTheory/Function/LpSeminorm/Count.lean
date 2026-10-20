@@ -7,11 +7,13 @@ module
 
 public import Mathlib.MeasureTheory.Function.LpSeminorm.Indicator
 
+import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
+
 /-!
 # `L^p`-seminorms on `count` and `dirac`
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Measure ENNReal Set Filter
 variable {α ε : Type*} [MeasurableSpace α] [MeasurableSingletonClass α]
@@ -22,37 +24,29 @@ namespace MeasureTheory
 @[simp]
 lemma eLpNorm_dirac (f : α → ε) (i : α) (hp : p ≠ 0) :
     eLpNorm f p (dirac i) = ‖f i‖ₑ := by
-  simp_rw [eLpNorm, if_neg hp]
+  have hf : AEStronglyMeasurable f (dirac i) := aestronglyMeasurable_dirac
+  simp_rw [eLpNorm, hf, ite_true, ite_eq_right hp]
   split_ifs
   · simp [eLpNormEssSup, essSup, limsup, limsSup, Set.Ici_def]
   · simp [eLpNorm', ENNReal.toReal_eq_zero_iff, *]
 
 lemma enorm_le_eLpNorm_count (f : α → ε) (i : α) (hp : p ≠ 0) :
     ‖f i‖ₑ ≤ eLpNorm f p count := by
-  calc
-    ‖f i‖ₑ = eLpNorm f p (dirac i) := by rw [eLpNorm_dirac f i hp]
-      _ = eLpNorm f p (count.restrict {i}) := by simp
-      _ ≤ eLpNorm f p count := eLpNorm_restrict_le ..
+  rw [← eLpNorm_dirac _ _ hp]
+  apply eLpNorm_mono_measure
+  exact le_sum dirac i
 
-lemma eLpNorm_count_lt_top_of_lt [Finite α] (h : ∀ i, ‖f i‖ₑ < ∞) :
-    eLpNorm f p .count < ∞ := by
-  letI _ := Fintype.ofFinite α
-  simp_rw [eLpNorm]
-  split_ifs with h2 h3
-  · exact ENNReal.zero_lt_top
-  · refine (essSup_le_of_ae_le (Finset.univ.sup (‖f ·‖ₑ)) ?_).trans_lt ?_
-    · filter_upwards with x
-      exact Finset.le_sup (f := (‖f ·‖ₑ)) (Finset.mem_univ _)
-    · simp_rw [Finset.sup_lt_iff ENNReal.zero_lt_top, h, implies_true]
-  · refine (ENNReal.rpow_lt_top_iff_of_pos ?_).mpr ?_
-    · rw [one_div, inv_pos]
-      exact ENNReal.toReal_pos h2 h3
-    · simp_rw [lintegral_count, tsum_eq_sum (s := Finset.univ) (by simp), ENNReal.sum_lt_top,
-        Finset.mem_univ, forall_const, ENNReal.rpow_lt_top_iff_of_pos (ENNReal.toReal_pos h2 h3), h,
-        implies_true]
+lemma eLpNorm_count_lt_top_of_lt [Finite α]
+    (h : ∀ i, ‖f i‖ₑ < ∞) : eLpNorm f p .count < ∞ := by
+  have := Fintype.ofFinite α
+  refine (eLpNorm_mono_enorm (by fun_prop)
+    (g := fun _ ↦ Finset.univ.sup (‖f ·‖ₑ)) ?_).trans_lt ?_
+  · exact fun x ↦ Finset.le_sup (f := (‖f ·‖ₑ)) (Finset.mem_univ x)
+  · exact (memLp_const_enorm <| by simp [h, LT.lt.ne]).eLpNorm_lt_top
 
 lemma eLpNorm_count_lt_top [Finite α] (hp : p ≠ 0) :
     eLpNorm f p .count < ∞ ↔ ∀ i, ‖f i‖ₑ < ∞ :=
-  ⟨fun h i ↦ (enorm_le_eLpNorm_count f i hp).trans_lt h, eLpNorm_count_lt_top_of_lt⟩
+  ⟨fun h i ↦ (enorm_le_eLpNorm_count f i hp).trans_lt h,
+    eLpNorm_count_lt_top_of_lt⟩
 
 end MeasureTheory

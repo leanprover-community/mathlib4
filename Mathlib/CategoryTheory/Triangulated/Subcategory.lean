@@ -5,12 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Localization.CalculusOfFractions
 public import Mathlib.CategoryTheory.Localization.Triangulated
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.CategoryTheory.ObjectProperty.FiniteProducts
 public import Mathlib.CategoryTheory.ObjectProperty.ShiftAdditive
-public import Mathlib.CategoryTheory.Shift.Localization
-public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-! # Triangulated subcategories
 
@@ -90,6 +88,30 @@ lemma ext_of_isTriangulatedClosed₃'
     (h₁ : P T.obj₁) (h₂ : P T.obj₂) : P.isoClosure T.obj₃ :=
   IsTriangulatedClosed₃.ext₃' T hT h₁ h₂
 
+protected lemma distinguished_cocone_triangle [P.IsTriangulatedClosed₃]
+    {X Y : C} (a : X ⟶ Y) (hX : P X) (hY : P Y) :
+    ∃ (Z : C) (_ : P Z) (b : Y ⟶ Z) (c : Z ⟶ X⟦(1 : ℤ)⟧), Triangle.mk a b c ∈ distTriang _ := by
+  obtain ⟨Z, b, c, h⟩ := distinguished_cocone_triangle a
+  obtain ⟨Z', hZ', ⟨e⟩⟩ := P.ext_of_isTriangulatedClosed₃' _ h hX hY
+  exact ⟨Z', hZ', b ≫ e.hom, e.inv ≫ c, isomorphic_distinguished _ h _
+    (Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) e.symm )⟩
+
+protected lemma distinguished_cocone_triangle₁ [P.IsTriangulatedClosed₁]
+    {Y Z : C} (b : Y ⟶ Z) (hY : P Y) (hZ : P Z) :
+    ∃ (X : C) (_ : P X) (a : X ⟶ Y) (c : Z ⟶ X⟦(1 : ℤ)⟧), Triangle.mk a b c ∈ distTriang _ := by
+  obtain ⟨X, a, c, h⟩ := distinguished_cocone_triangle₁ b
+  obtain ⟨X', hX', ⟨e⟩⟩ := P.ext_of_isTriangulatedClosed₁' _ h hY hZ
+  exact ⟨X', hX', e.inv ≫ a, c ≫ e.hom⟦1⟧', isomorphic_distinguished _ h _
+    (Triangle.isoMk _ _ e.symm (Iso.refl _) (Iso.refl _))⟩
+
+protected lemma distinguished_cocone_triangle₂ [P.IsTriangulatedClosed₂]
+    {X Z : C} (c : Z ⟶ X⟦(1 : ℤ)⟧) (hX : P X) (hZ : P Z) :
+    ∃ (Y : C) (_ : P Y) (a : X ⟶ Y) (b : Y ⟶ Z), Triangle.mk a b c ∈ distTriang _ := by
+  obtain ⟨Y, a, b, h⟩ := distinguished_cocone_triangle₂ c
+  obtain ⟨Y', hY', ⟨e⟩⟩ := P.ext_of_isTriangulatedClosed₂' _ h hX hZ
+  exact ⟨Y', hY', a ≫ e.hom, e.inv ≫ b, isomorphic_distinguished _ h _
+    (Triangle.isoMk _ _ (Iso.refl _) e.symm (Iso.refl _))⟩
+
 lemma ext_of_isTriangulatedClosed₁
     [P.IsTriangulatedClosed₁] [P.IsClosedUnderIsomorphisms]
     (T : Triangle C) (hT : T ∈ distTriang C)
@@ -125,6 +147,13 @@ lemma IsTriangulatedClosed₃.mk' [P.IsClosedUnderIsomorphisms]
       (_ : P T.obj₁) (_ : P T.obj₂), P T.obj₃) : P.IsTriangulatedClosed₃ where
   ext₃' := by simpa only [isoClosure_eq_self] using hP
 
+lemma IsTriangulatedClosed₂.of_isTriangulatedClosed₃
+    [P.IsTriangulatedClosed₃] [P.IsStableUnderShift ℤ] :
+    P.IsTriangulatedClosed₂ where
+  ext₂' _ hT h₁ h₃ :=
+    P.ext_of_isTriangulatedClosed₃' _ (inv_rot_of_distTriang _ hT)
+      (P.le_shift _ _ h₃) h₁
+
 variable (P)
 
 instance [P.IsTriangulatedClosed₂] : P.isoClosure.IsTriangulatedClosed₂ where
@@ -154,6 +183,12 @@ instance [P.IsTriangulated] : P.IsTriangulatedClosed₃ where
 
 instance [P.IsTriangulated] : P.isoClosure.IsTriangulated where
 
+instance {Q : ObjectProperty C} [P.IsTriangulated] [Q.IsTriangulated]
+    [Q.IsClosedUnderIsomorphisms] :
+    (P ⊓ Q).IsTriangulated where
+  ext₂' T hT h₁ h₃ := by
+    obtain ⟨Y, hY, ⟨e⟩⟩ := P.ext_of_isTriangulatedClosed₂' T hT h₁.1 h₃.1
+    exact ⟨Y, ⟨hY, Q.prop_of_iso e (Q.ext_of_isTriangulatedClosed₂ T hT h₁.2 h₃.2)⟩, ⟨e⟩⟩
 
 section
 
@@ -447,7 +482,13 @@ lemma trW_isoClosure : P.isoClosure.trW = P.trW := by
   · rintro ⟨Z, g, h, mem, hZ⟩
     exact ⟨Z, g, h, mem, ObjectProperty.le_isoClosure _ _ hZ⟩
 
-set_option backward.isDefEq.respectTransparency false in
+variable {P} in
+lemma trW_monotone {Q : ObjectProperty C} (h : P ≤ Q) : P.trW ≤ Q.trW := by
+  intro X Y f hf
+  rw [trW_iff] at hf ⊢
+  obtain ⟨Z, a, b, hT, hZ⟩ := hf
+  exact ⟨Z, a, b, hT, h _ hZ⟩
+
 instance : P.trW.RespectsIso where
   precomp {X' X Y} e (he : IsIso e) := by
     rintro f ⟨Z, g, h, mem, mem'⟩
@@ -464,12 +505,10 @@ instance [P.ContainsZero] : P.trW.ContainsIdentities := by
   rw [← trW_isoClosure]
   exact ⟨fun X => ⟨_, _, _, contractible_distinguished X, prop_zero _⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma trW_of_isIso [P.ContainsZero] {X Y : C} (f : X ⟶ Y) [IsIso f] : P.trW f := by
   refine (P.trW.arrow_mk_iso_iff ?_).1 (MorphismProperty.id_mem _ X)
   exact Arrow.isoMk (Iso.refl _) (asIso f)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma smul_mem_trW_iff {X Y : C} (f : X ⟶ Y) (n : ℤˣ) :
     P.trW (n • f) ↔ P.trW f :=
   P.trW.arrow_mk_iso_iff (Arrow.isoMk (n • (Iso.refl _)) (Iso.refl _))
@@ -513,7 +552,7 @@ lemma trW_iff_of_distinguished' [P.IsStableUnderShift ℤ]
     [P.IsClosedUnderIsomorphisms] (T : Triangle C) (hT : T ∈ distTriang C) :
     P.trW T.mor₂ ↔ P T.obj₁ := by
   simpa [P.prop_shift_iff_of_isStableUnderShift]
-    using P.trW_iff_of_distinguished _ (rot_of_distTriang _ hT)
+    using! P.trW_iff_of_distinguished _ (rot_of_distTriang _ hT)
 
 section
 
@@ -540,7 +579,6 @@ lemma inverseImage_trW_isInverted {E : Type*} [Category E]
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 instance [IsTriangulated C] [P.IsTriangulated] : P.trW.HasLeftCalculusOfFractions where
   exists_leftFraction X Y φ := by
     obtain ⟨Z, f, g, H, mem⟩ := φ.hs
@@ -559,7 +597,6 @@ instance [IsTriangulated C] [P.IsTriangulated] : P.trW.HasLeftCalculusOfFraction
       dsimp at eq
       rw [← sub_eq_zero, ← sub_comp, hq, assoc, eq, comp_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 instance [IsTriangulated C] [P.IsTriangulated] : P.trW.HasRightCalculusOfFractions where
   exists_rightFraction X Y φ := by
     obtain ⟨Z, f, g, H, mem⟩ := φ.hs
@@ -626,7 +663,7 @@ section
 
 variable [P.IsTriangulated]
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 noncomputable instance : Pretriangulated P.FullSubcategory where
   distinguishedTriangles := P.ι.mapTriangle.obj ⁻¹' (distTriang C)
   isomorphic_distinguished T₁ hT₁ T₂ e :=
@@ -659,7 +696,6 @@ instance : P.ι.IsTriangulated where
 instance [IsTriangulated C] : IsTriangulated P.FullSubcategory :=
   IsTriangulated.of_fully_faithful_triangulated_functor P.ι
 
-set_option backward.isDefEq.respectTransparency false in
 instance (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated] [F.Full] :
     F.essImage.IsTriangulated where
   isStableUnderShiftBy n :=

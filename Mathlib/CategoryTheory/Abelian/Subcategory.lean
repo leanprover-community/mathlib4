@@ -17,7 +17,7 @@ full subcategory defined by `P` is abelian.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.ObjectProperty
 

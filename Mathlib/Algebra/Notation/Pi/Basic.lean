@@ -20,7 +20,7 @@ assert_not_exists Monoid Preorder
 
 open Function
 
-variable {ι ι' α β : Type*} {G M N O : ι → Type*}
+variable {ι ι' α : Type*} {M N O : ι → Type*}
 
 namespace Pi
 variable [∀ i, One (M i)] [∀ i, One (N i)] [∀ i, One (O i)] [DecidableEq ι] {i : ι} {x : M i}
@@ -57,7 +57,7 @@ lemma mulSingle_ne_one_iff : mulSingle i x ≠ 1 ↔ x ≠ 1 :=
 @[to_additive]
 lemma apply_mulSingle (f' : ∀ i, M i → N i) (hf' : ∀ i, f' i 1 = 1) (i : ι) (x : M i) (j : ι) :
     f' j (mulSingle i x j) = mulSingle i (f' i x) j := by
-  simpa only [Pi.one_apply, hf', mulSingle] using Function.apply_update f' 1 i x j
+  simpa only [Pi.one_apply, hf', mulSingle] using! Function.apply_update f' 1 i x j
 
 @[to_additive apply_single₂]
 lemma apply_mulSingle₂ (f' : ∀ i, M i → N i → O i) (hf' : ∀ i, f' i 1 1 = 1) (i : ι)
@@ -88,6 +88,21 @@ lemma mulSingle_inj (i : ι) {x y : M i} : mulSingle i x = mulSingle i y ↔ x =
 
 variable {M : Type*} [One M]
 
+/--
+A congruence lemma for `Pi.mulSingle`, specialized for the non-dependent case. Without this,
+`simp` can't rewrite in the first and third argument (`i` and `j`) because of dependence.
+See also https://github.com/leanprover/lean4/issues/12478.
+-/
+@[to_additive (attr := congr) /--
+A congruence lemma for `Pi.single`, specialized for the non-dependent case. Without this,
+`simp` can't rewrite in the first and third argument (`i` and `j`) because of dependence.
+See also https://github.com/leanprover/lean4/issues/12478.
+-/]
+lemma mulSingle_congr {i₁ i₂ : ι} (hi : i₁ = i₂)
+    {x₁ x₂ : M} (hx : x₁ = x₂) {j₁ j₂ : ι} (hj : j₁ = j₂) :
+    (mulSingle i₁ x₁ : ι → M) j₁ = (mulSingle i₂ x₂ : ι → M) j₂ :=
+  update_congr rfl hi hx hj
+
 /-- On non-dependent functions, `Pi.mulSingle` can be expressed as an `ite` -/
 @[to_additive (attr := grind =)
   /-- On non-dependent functions, `Pi.single` can be expressed as an `ite` -/]
@@ -112,5 +127,20 @@ theorem curry_mulSingle (i : ι × ι') (b : M) :
 theorem uncurry_mulSingle_mulSingle (i : ι) (i' : ι') (b : M) :
     uncurry (Pi.mulSingle i (Pi.mulSingle i' b)) = Pi.mulSingle (i, i') b :=
   uncurry_update_update _ _ _ _
+
+@[to_additive]
+lemma mulSingle_eq_mulSingle_iff {j : ι} {m n : M} :
+    mulSingle (M := fun _ ↦ M) i m = mulSingle j n ↔ i = j ∧ m = n ∨ m = 1 ∧ n = 1 :=
+  Function.update_eq_update_iff
+
+@[to_additive]
+lemma mulSingle_left_injective {m : M} (hm : m ≠ 1) :
+    Function.Injective fun (i : ι) ↦ mulSingle (M := fun _ ↦ M) i m :=
+  Function.update_left_injective (fun _ ↦ by rwa [one_apply, ne_comm])
+
+@[to_additive]
+lemma mulSingle_left_inj {j : ι} {m : M} (hm : m ≠ 1) :
+    mulSingle (M := fun _ ↦ M) i m = mulSingle j m ↔ i = j :=
+  (mulSingle_left_injective hm).eq_iff
 
 end Pi

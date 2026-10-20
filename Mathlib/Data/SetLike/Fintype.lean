@@ -5,7 +5,6 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Data.Fintype.Powerset
 
 /-!
@@ -15,7 +14,7 @@ This file contains a fintype instance for set-like objects such as subgroups. If
 and `Fintype B` then `Fintype A`.
 -/
 
-@[expose] public section
+public section
 
 
 namespace SetLike

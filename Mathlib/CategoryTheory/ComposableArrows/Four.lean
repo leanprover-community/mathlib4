@@ -36,25 +36,21 @@ variable {C : Type*} [Category* C]
   {i₀ i₁ i₂ i₃ i₄ : C} (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶ i₂) (f₃ : i₂ ⟶ i₃) (f₄ : i₃ ⟶ i₄)
   (f₁₂ : i₀ ⟶ i₂) (f₂₃ : i₁ ⟶ i₃) (f₃₄ : i₂ ⟶ i₄)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The morphism `mk₃ f₁ f₂ f₃ ⟶ mk₃ f₁ f₂ f₃₄` when `f₃ ≫ f₃ = f₃₄`. -/
 def fourδ₄Toδ₃ (h₃₄ : f₃ ≫ f₄ = f₃₄ := by cat_disch) :
     mk₃ f₁ f₂ f₃ ⟶ mk₃ f₁ f₂ f₃₄ :=
   homMk₃ (𝟙 _) (𝟙 _) (𝟙 _) f₄
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The morphism `mk₃ f₁ f₂ f₃₄ ⟶ mk₃ f₁ f₂₃ f₄` when `f₂ ≫ f₂ = f₂₃` and `f₃ ≫ f₃ = f₃₄`. -/
 def fourδ₃Toδ₂ (h₂₃ : f₂ ≫ f₃ = f₂₃ := by cat_disch) (h₃₄ : f₃ ≫ f₄ = f₃₄ := by cat_disch) :
     mk₃ f₁ f₂ f₃₄ ⟶ mk₃ f₁ f₂₃ f₄ :=
   homMk₃ (𝟙 _) (𝟙 _) f₃ (𝟙 _)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The morphism `mk₃ f₁ f₂₃ f₄ ⟶ mk₃ f₁₂ f₃ f₄` when `f₁ ≫ f₂ = f₁₂` and `f₂ ≫ f₂ = f₂₃`. -/
 def fourδ₂Toδ₁ (h₁₂ : f₁ ≫ f₂ = f₁₂ := by cat_disch) (h₂₃ : f₂ ≫ f₃ = f₂₃ := by cat_disch) :
     mk₃ f₁ f₂₃ f₄ ⟶ mk₃ f₁₂ f₃ f₄ :=
   homMk₃ (𝟙 _) f₂ (𝟙 _) (𝟙 _)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The morphism `mk₃ f₁₂ f₃ f₄ ⟶ mk₃ f₂ f₃ f₄` when `f₁ ≫ f₂ = f₁₂`. -/
 def fourδ₁Toδ₀ (h₁₂ : f₁ ≫ f₂ = f₁₂ := by cat_disch) :
     mk₃ f₁₂ f₃ f₄ ⟶ mk₃ f₂ f₃ f₄ :=

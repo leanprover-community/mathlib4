@@ -6,8 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.Embedding.CochainComplex
-public import Mathlib.Algebra.Homology.HomotopyCategory.MappingCone
 public import Mathlib.Algebra.Homology.Factorizations.Basic
+public import Mathlib.Algebra.Homology.HomotopyCategory.MappingCone
 
 /-!
 # Factorization lemma
@@ -41,6 +41,7 @@ noncomputable def I : CochainComplex C ℤ where
   X n := Injective.under (K.X n)
   d _ _ := 0
 
+set_option backward.defeqAttrib.useBackward true in
 instance (n : ℤ) : Injective ((I K).X n) := by
   dsimp
   infer_instance

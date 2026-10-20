@@ -16,7 +16,7 @@ In this file we show:
 * `AlgCat.instSymmetricCategory : SymmetricCategory (AlgCat.{u} R)`
 -/
 
-@[expose] public section
+public section
 open CategoryTheory
 
 

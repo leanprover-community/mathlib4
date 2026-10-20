@@ -85,7 +85,6 @@ variable {f}
 theorem KernelFork.condition (s : KernelFork f) : Fork.ι s ≫ f = 0 := by
   rw [Fork.condition, HasZeroMorphisms.comp_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem KernelFork.app_one (s : KernelFork f) : s.π.app one = 0 := by
   simp
 
@@ -161,7 +160,6 @@ def KernelFork.IsLimit.ofι' {X Y K : C} {f : X ⟶ Y} (i : K ⟶ X) (w : i ≫ 
   ofι _ _ (fun {_} k hk => (h k hk).1) (fun {_} k hk => (h k hk).2) (fun {A} k hk m hm => by
     rw [← cancel_mono i, (h k hk).2, hm])
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Every kernel of `f` induces a kernel of `f ≫ g` if `g` is mono. -/
 def isKernelCompMono {c : KernelFork f} (i : IsLimit c) {Z} (g : Y ⟶ Z) [hg : Mono g] {h : X ⟶ Z}
     (hh : h = f ≫ g) : IsLimit (KernelFork.ofι c.ι (by simp [hh]) : KernelFork h) :=
@@ -177,7 +175,6 @@ theorem isKernelCompMono_lift {c : KernelFork f} (i : IsLimit c) {Z} (g : Y ⟶ 
       rw [← cancel_mono g, Category.assoc, ← hh]
       simp)) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Every kernel of `f ≫ g` is also a kernel of `f`, as long as `c.ι ≫ f` vanishes. -/
 def isKernelOfComp {W : C} (g : Y ⟶ W) (h : X ⟶ W) {c : KernelFork h} (i : IsLimit c)
     (hf : c.ι ≫ f = 0) (hfg : f ≫ g = h) : IsLimit (KernelFork.ofι c.ι hf) :=
@@ -200,7 +197,6 @@ def KernelFork.IsLimit.ofMonoOfIsZero {X Y : C} {f : X ⟶ Y} (c : KernelFork f)
 lemma KernelFork.IsLimit.isIso_ι {X Y : C} {f : X ⟶ Y} (c : KernelFork f)
     (hc : IsLimit c) (hf : f = 0) : IsIso c.ι := isIso_limit_cone_parallelPair_of_eq hf hc
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `c` is a limit kernel fork for `g : X ⟶ Y`, `e : X ≅ X'` and `g' : X' ⟶ Y` is a morphism,
 then there is a limit kernel fork for `g'` with the same point as `c` if for any
 morphism `φ : W ⟶ X`, there is an equivalence `φ ≫ g = 0 ↔ φ ≫ e.hom ≫ g' = 0`. -/
@@ -236,20 +232,21 @@ namespace KernelFork
 
 variable {f} {X' Y' : C} {f' : X' ⟶ Y'}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The morphism between points of kernel forks induced by a morphism
 in the category of arrows. -/
 def mapOfIsLimit (kf : KernelFork f) {kf' : KernelFork f'} (hf' : IsLimit kf')
     (φ : Arrow.mk f ⟶ Arrow.mk f') : kf.pt ⟶ kf'.pt :=
   hf'.lift (KernelFork.ofι (kf.ι ≫ φ.left) (by simp))
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma mapOfIsLimit_ι (kf : KernelFork f) {kf' : KernelFork f'} (hf' : IsLimit kf')
     (φ : Arrow.mk f ⟶ Arrow.mk f') :
     kf.mapOfIsLimit hf' φ ≫ kf'.ι = kf.ι ≫ φ.left :=
   hf'.fac _ _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism between points of limit kernel forks induced by an isomorphism
 in the category of arrows. -/
 @[simps]
@@ -381,7 +378,6 @@ def kernelZeroIsoSource : kernel (0 : X ⟶ Y) ≅ X :=
 @[simp]
 theorem kernelZeroIsoSource_hom : kernelZeroIsoSource.hom = kernel.ι (0 : X ⟶ Y) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem kernelZeroIsoSource_inv :
     kernelZeroIsoSource.inv = kernel.lift (0 : X ⟶ Y) (𝟙 X) (by simp) := by
@@ -392,7 +388,6 @@ theorem kernelZeroIsoSource_inv :
 def kernelIsoOfEq {f g : X ⟶ Y} [HasKernel f] [HasKernel g] (h : f = g) : kernel f ≅ kernel g :=
   HasLimit.isoOfNatIso (by rw [h])
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem kernelIsoOfEq_refl {h : f = f} : kernelIsoOfEq h = Iso.refl (kernel f) := by
   ext
@@ -468,11 +463,7 @@ def kernelIsIsoComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] [HasKernel
   hom := kernel.lift _ (kernel.ι _ ≫ f) (by simp)
   inv := kernel.lift _ (kernel.ι _ ≫ inv f) (by simp)
 
-/-- Equal maps have isomorphic kernels. -/
-@[simps] def kernel.congr {X Y : C} (f g : X ⟶ Y) [HasKernel f] [HasKernel g]
-    (h : f = g) : kernel f ≅ kernel g where
-  hom := kernel.lift _ (kernel.ι f) (by simp [← h])
-  inv := kernel.lift _ (kernel.ι g) (by simp [h])
+@[deprecated (since := "2026-07-03")] alias kernel.congr := kernelIsoOfEq
 
 lemma isZero_kernel_of_mono {X Y : C} (f : X ⟶ Y) [Mono f] [HasKernel f] :
     IsZero (kernel f) :=
@@ -518,12 +509,13 @@ def zeroKernelOfCancelZero {X Y : C} (f : X ⟶ Y)
     (hf : ∀ (Z : C) (g : Z ⟶ X) (_ : g ≫ f = 0), g = 0) :
     IsLimit (KernelFork.ofι (0 : 0 ⟶ X) (show 0 ≫ f = 0 by simp)) :=
   Fork.IsLimit.mk _ (fun _ => 0) (fun s => by rw [hf _ _ (KernelFork.condition s), zero_comp])
-    fun s m _ => by dsimp; apply HasZeroObject.to_zero_ext
+    fun s m _ => by apply HasZeroObject.to_zero_ext
 
 end HasZeroObject
 
 section Transport
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Transport an `IsKernel` across isomorphisms. -/
 def IsKernel.ofIso {X' Y' : C} {f' : X' ⟶ Y'} {s : KernelFork f} (hs : IsLimit s)
     (s' : KernelFork f') (eX : X ≅ X') (eY : Y ≅ Y') (e : s.pt ≅ s'.pt)
@@ -533,7 +525,6 @@ def IsKernel.ofIso {X' Y' : C} {f' : X' ⟶ Y'} {s : KernelFork f} (hs : IsLimit
   IsLimit.ofIsoLimit ((IsLimit.postcomposeHomEquiv α s).symm hs) <|
     Cone.ext e (by rintro (_ | _) <;> simp [α, ← H'])
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `i` is an isomorphism such that `l ≫ i.hom = f`, any kernel of `f` is a kernel of `l`. -/
 def IsKernel.ofCompIso {Z : C} (l : X ⟶ Z) (i : Z ≅ Y) (h : l ≫ i.hom = f) {s : KernelFork f}
     (hs : IsLimit s) :
@@ -570,11 +561,9 @@ end Transport
 
 section
 
-variable (X Y)
-
 /-- The kernel morphism of a zero morphism is an isomorphism -/
-theorem kernel.ι_of_zero : IsIso (kernel.ι (0 : X ⟶ Y)) :=
-  equalizer.ι_of_self _
+theorem kernel.ι_of_zero {f : X ⟶ Y} [HasKernel f] (eq : f = 0) :
+    IsIso (kernel.ι f) := equalizer.ι_of_eq eq
 
 end
 
@@ -590,7 +579,6 @@ variable {f}
 theorem CokernelCofork.condition (s : CokernelCofork f) : f ≫ s.π = 0 := by
   rw [Cofork.condition, zero_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem CokernelCofork.π_eq_zero (s : CokernelCofork f) : s.ι.app zero = 0 := by
   simp
 
@@ -651,7 +639,6 @@ def CokernelCofork.IsColimit.ofπ' {X Y Q : C} {f : X ⟶ Y} (p : Y ⟶ Q) (w : 
   ofπ _ _ (fun {_} k hk => (h k hk).1) (fun {_} k hk => (h k hk).2) (fun {A} k hk m hm => by
     rw [← cancel_epi p, (h k hk).2, hm])
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Every cokernel of `f` induces a cokernel of `g ≫ f` if `g` is epi. -/
 def isCokernelEpiComp {c : CokernelCofork f} (i : IsColimit c) {W} (g : W ⟶ X) [hg : Epi g]
     {h : W ⟶ Y} (hh : h = g ≫ f) :
@@ -678,7 +665,6 @@ theorem isCokernelEpiComp_desc {c : CokernelCofork f} (i : IsColimit c) {W} (g :
             simp)) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Every cokernel of `g ≫ f` is also a cokernel of `f`, as long as `f ≫ c.π` vanishes. -/
 def isCokernelOfComp {W : C} (g : W ⟶ X) (h : W ⟶ Y) {c : CokernelCofork h} (i : IsColimit c)
     (hf : f ≫ c.π = 0) (hfg : g ≫ f = h) : IsColimit (CokernelCofork.ofπ c.π hf) :=
@@ -703,7 +689,6 @@ lemma CokernelCofork.IsColimit.isIso_π {X Y : C} {f : X ⟶ Y} (c : CokernelCof
     (hc : IsColimit c) (hf : f = 0) : IsIso c.π :=
   isIso_colimit_cocone_parallelPair_of_eq hf hc
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `c` is a colimit cokernel cofork for `f : X ⟶ Y`, `e : Y ≅ Y'` and `f' : X' ⟶ Y` is a
 morphism, then there is a colimit cokernel cofork for `f'` with the same point as `c` if for any
 morphism `φ : Y ⟶ W`, there is an equivalence `f ≫ φ = 0 ↔ f' ≫ e.hom ≫ φ = 0`. -/
@@ -739,7 +724,6 @@ namespace CokernelCofork
 
 variable {f} {X' Y' : C} {f' : X' ⟶ Y'}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The morphism between points of cokernel coforks induced by a morphism
 in the category of arrows. -/
 def mapOfIsColimit {cc : CokernelCofork f} (hf : IsColimit cc) (cc' : CokernelCofork f')
@@ -747,13 +731,15 @@ def mapOfIsColimit {cc : CokernelCofork f} (hf : IsColimit cc) (cc' : CokernelCo
   hf.desc (CokernelCofork.ofπ (φ.right ≫ cc'.π) (by
     erw [← Arrow.w_assoc φ, condition, comp_zero]))
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma π_mapOfIsColimit {cc : CokernelCofork f} (hf : IsColimit cc) (cc' : CokernelCofork f')
     (φ : Arrow.mk f ⟶ Arrow.mk f') :
     cc.π ≫ mapOfIsColimit hf cc' φ = φ.right ≫ cc'.π :=
   hf.fac _ _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism between points of limit cokernel coforks induced by an isomorphism
 in the category of arrows. -/
 @[simps]
@@ -802,7 +788,6 @@ theorem cokernel.π_desc {W : C} (k : Y ⟶ W) (h : f ≫ k = 0) :
     cokernel.π f ≫ cokernel.desc f k h = k :=
   (cokernelIsCokernel f).fac (CokernelCofork.ofπ k h) WalkingParallelPair.one
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma colimit_ι_zero_cokernel_desc {C : Type*} [Category* C]
     [HasZeroMorphisms C] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : f ≫ g = 0) [HasCokernel f] :
@@ -898,7 +883,6 @@ theorem eq_zero_of_mono_cokernel [Mono (cokernel.π f)] : f = 0 :=
 def cokernelZeroIsoTarget : cokernel (0 : X ⟶ Y) ≅ Y :=
   coequalizer.isoTargetOfSelf 0
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem cokernelZeroIsoTarget_hom :
     cokernelZeroIsoTarget.hom = cokernel.desc (0 : X ⟶ Y) (𝟙 Y) (by simp) := by
@@ -913,7 +897,6 @@ def cokernelIsoOfEq {f g : X ⟶ Y} [HasCokernel f] [HasCokernel g] (h : f = g) 
     cokernel f ≅ cokernel g :=
   HasColimit.isoOfNatIso (by simp [h]; rfl)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem cokernelIsoOfEq_refl {h : f = f} : cokernelIsoOfEq h = Iso.refl (cokernel f) := by
   ext; simp [cokernelIsoOfEq]
@@ -993,11 +976,7 @@ def cokernelEpiComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [Epi f] [HasCokernel
         rw [← cancel_epi f, ← Category.assoc]
         simp)
 
-/-- Equal maps have isomorphic cokernels. -/
-@[simps] def cokernel.congr {X Y : C} (f g : X ⟶ Y) [HasCokernel f] [HasCokernel g]
-    (h : f = g) : cokernel f ≅ cokernel g where
-  hom := cokernel.desc _ (cokernel.π g) (by simp [h])
-  inv := cokernel.desc _ (cokernel.π f) (by simp [← h])
+@[deprecated (since := "2026-07-03")] alias cokernel.congr := cokernelIsoOfEq
 
 lemma isZero_cokernel_of_epi {X Y : C} (f : X ⟶ Y) [Epi f] [HasCokernel f] :
     IsZero (cokernel f) :=
@@ -1020,7 +999,6 @@ def cokernel.zeroCokernelCofork : CokernelCofork f :=
 @[simp]
 lemma cokernel.zeroCokernelCofork_π : (cokernel.zeroCokernelCofork f).π = 0 := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The morphism to the zero object is a cokernel of an epimorphism -/
 def cokernel.isColimitCoconeZeroCocone [Epi f] : IsColimit (cokernel.zeroCokernelCofork f) :=
   Cofork.IsColimit.mk _ (fun _ => 0)
@@ -1086,7 +1064,7 @@ variable (f : X ⟶ Y) [HasKernel f] [HasImage f] [HasKernel (factorThruImage f)
 
 /-- The kernel of the morphism `X ⟶ image f` is just the kernel of `f`. -/
 def kernelFactorThruImage : kernel (factorThruImage f) ≅ kernel f :=
-  (kernelCompMono (factorThruImage f) (image.ι f)).symm ≪≫ (kernel.congr _ _ (by simp))
+  (kernelCompMono (factorThruImage f) (image.ι f)).symm ≪≫ (kernelIsoOfEq (by simp))
 
 @[reassoc (attr := simp)]
 theorem kernelFactorThruImage_hom_comp_ι :
@@ -1104,11 +1082,9 @@ end HasImage
 
 section
 
-variable (X Y)
-
 /-- The cokernel of a zero morphism is an isomorphism -/
-theorem cokernel.π_of_zero : IsIso (cokernel.π (0 : X ⟶ Y)) :=
-  coequalizer.π_of_self _
+theorem cokernel.π_of_zero {f : X ⟶ Y} [HasCokernel f] (eq : f = 0) :
+    IsIso (cokernel.π f) := coequalizer.π_of_eq eq
 
 end
 
@@ -1140,7 +1116,6 @@ end HasZeroObject
 
 section Transport
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `i` is an isomorphism such that `i.hom ≫ l = f`, then any cokernel of `f` is a cokernel of
 `l`. -/
 def IsCokernel.ofIsoComp {Z : C} (l : Z ⟶ Y) (i : X ≅ Z) (h : i.hom ≫ l = f) {s : CokernelCofork f}
@@ -1171,6 +1146,7 @@ def IsCokernel.cokernelIso {Z : C} (l : Y ⟶ Z) {s : CokernelCofork f} (hs : Is
       · dsimp; rw [← h]; simp
       · exact h
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Transport an `IsCokernel` across isomorphisms. -/
 def IsCokernel.ofIso {X' Y' : C} {f' : X' ⟶ Y'} {s : CokernelCofork f} (hs : IsColimit s)
     (s' : CokernelCofork f') (eX : X ≅ X') (eY : Y ≅ Y') (e : s.pt ≅ s'.pt)
@@ -1280,9 +1256,8 @@ instance (priority := 100) hasCokernels_of_hasCoequalizers [HasCoequalizers C] :
 section HasKernels
 variable [HasKernels C]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The kernel of an arrow is natural. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def ker : Arrow C ⥤ C where
   obj f := kernel f.hom
   map {f g} u := kernel.lift _ (kernel.ι _ ≫ u.left) (by simp)
@@ -1297,9 +1272,8 @@ end HasKernels
 section HasCokernels
 variable [HasCokernels C]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The cokernel of an arrow is natural. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def coker : Arrow C ⥤ C where
   obj f := cokernel f.hom
   map {f g} u := cokernel.desc _ (u.right ≫ cokernel.π _) (by simp [← Arrow.w_assoc u])
@@ -1310,4 +1284,5 @@ noncomputable def coker : Arrow C ⥤ C where
 @[reassoc (attr := simp)] lemma coker.condition : Arrow.leftToRight ≫ π C = 0 := by cat_disch
 
 end HasCokernels
+
 end CategoryTheory.Limits

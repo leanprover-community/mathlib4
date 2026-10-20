@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Congr
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Invertible
 
 /-!
 # Fréchet derivative of constant functions
@@ -22,10 +23,8 @@ derivative, differentiable, Fréchet, calculus
 
 public section
 
-open Asymptotics Function Filter Set Metric
+open Asymptotics Function Filter Set
 open scoped Topology NNReal ENNReal
-
-noncomputable section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
@@ -183,7 +182,7 @@ theorem differentiableWithinAt_ofNat (n : ℕ) [OfNat F n] :
     DifferentiableWithinAt 𝕜 (ofNat(n) : E → F) s x := differentiableWithinAt_const _
 
 theorem fderivWithin_const_apply (c : F) : fderivWithin 𝕜 (fun _ => c) s x = 0 := by
-  rw [fderivWithin, if_pos]
+  rw [fderivWithin, ite_eq_left]
   apply hasFDerivWithinAt_const
 
 @[simp]
@@ -335,7 +334,7 @@ it is differentiable within `s` at `x`. -/
 lemma differentiableWithinAt_of_fderivWithin_injective (hf : Injective (fderivWithin 𝕜 f s x)) :
     DifferentiableWithinAt 𝕜 f s x := by
   nontriviality E
-  contrapose! hf
+  contrapose hf
   rw [fderivWithin_zero_of_not_differentiableWithinAt hf]
   exact not_injective_const
 
@@ -394,6 +393,3 @@ protected theorem HasCompactSupport.fderiv_apply (hf : HasCompactSupport f) (v :
   hf.of_isClosed_subset (isClosed_tsupport _) (tsupport_fderiv_apply_subset 𝕜 v)
 
 end Support
-
-
-end

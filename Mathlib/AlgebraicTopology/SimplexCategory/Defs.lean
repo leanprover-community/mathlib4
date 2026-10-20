@@ -6,7 +6,6 @@ Authors: Johan Commelin, Kim Morrison, Adam Topaz
 module
 
 public import Mathlib.CategoryTheory.Category.Preorder
-public import Mathlib.CategoryTheory.Opposites
 public import Mathlib.Order.Fin.Basic
 public import Mathlib.Util.Superscript
 
@@ -211,7 +210,7 @@ lemma Hom.tr_comp' {n : ℕ} {a b c : SimplexCategory} (f : a ⟶ b) {hb : b.len
   rfl
 
 /-- The inclusion of `Truncated n` into `Truncated m` when `n ≤ m`. -/
-def incl (n m : ℕ) (h : n ≤ m := by omega) : Truncated n ⥤ Truncated m :=
+abbrev incl (n m : ℕ) (h : n ≤ m := by lia) : Truncated n ⥤ Truncated m :=
   ObjectProperty.ιOfLE (fun _ h' ↦ h'.trans h)
 
 /-- For all `n ≤ m`, `inclusion n` factors through `Truncated m`. -/

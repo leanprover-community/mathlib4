@@ -6,7 +6,6 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Abelian
-public import Mathlib.CategoryTheory.Limits.Shapes.Images
 
 /-!
 # The category of R-modules has images.
@@ -17,10 +16,7 @@ from the fact that `ModuleCat R` is an abelian category.
 
 @[expose] public section
 
-
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory Limits
 
 universe u v
 
@@ -35,8 +31,7 @@ section
 
 -- implementation details of `HasImage` for ModuleCat; use the API, not these
 /-- The image of a morphism in `ModuleCat R` is just the bundling of `LinearMap.range f` -/
-def image : ModuleCat R :=
-  ModuleCat.of R (LinearMap.range f.hom)
+def image : ModuleCat R := ↧f.hom.range
 
 /-- The inclusion of `image f` into the target -/
 def image.ι : image f ⟶ H :=
@@ -56,6 +51,7 @@ attribute [local simp] image.fac
 
 variable {f}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The universal property for the image factorisation -/
 noncomputable def image.lift (F' : MonoFactorisation f) : image f ⟶ F'.I :=
   ofHom
@@ -97,7 +93,7 @@ noncomputable def isImage : IsImage (monoFactorisation f) where
 
 /-- The categorical image of a morphism in `ModuleCat R` agrees with the linear algebraic range. -/
 noncomputable def imageIsoRange {G H : ModuleCat.{v} R} (f : G ⟶ H) :
-    Limits.image f ≅ ModuleCat.of R (LinearMap.range f.hom) :=
+    Limits.image f ≅ ↧f.hom.range :=
   IsImage.isoExt (Image.isImage f) (isImage f)
 
 @[simp, reassoc, elementwise]

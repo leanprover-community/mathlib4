@@ -29,7 +29,7 @@ public section
 -- We don't need ordered structures to establish basic membership facts for submonoids
 assert_not_exists IsOrderedRing
 
-variable {M A B : Type*}
+variable {M B : Type*}
 
 section SubmonoidClass
 variable [Monoid M] [SetLike B M] [SubmonoidClass B M] {x : M} {S : B}
@@ -46,7 +46,7 @@ theorem coe_multiset_prod {M} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] 
   (SubmonoidClass.subtype S : _ →* M).map_multiset_prod m
 
 @[to_additive (attr := norm_cast, simp)]
-theorem coe_finset_prod {ι M} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] (f : ι → S)
+theorem coe_finsetProd {ι M} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] (f : ι → S)
     (s : Finset ι) : ↑(∏ i ∈ s, f i) = (∏ i ∈ s, f i : M) :=
   map_prod (SubmonoidClass.subtype S) f s
 
@@ -98,7 +98,7 @@ theorem coe_multiset_prod {M} [CommMonoid M] (S : Submonoid M) (m : Multiset S) 
   S.subtype.map_multiset_prod m
 
 @[to_additive (attr := norm_cast)]
-theorem coe_finset_prod {ι M} [CommMonoid M] (S : Submonoid M) (f : ι → S) (s : Finset ι) :
+theorem coe_finsetProd {ι M} [CommMonoid M] (S : Submonoid M) (f : ι → S) (s : Finset ι) :
     ↑(∏ i ∈ s, f i) = (∏ i ∈ s, f i : M) :=
   map_prod S.subtype f s
 
@@ -154,7 +154,6 @@ lemma mem_closure_iff_exists_finset_subset {s : Set M} :
     induction hx using closure_induction with
     | one => exact ⟨0, ∅, by simp⟩
     | mem x hx =>
-      simp only at hx
       exact ⟨Pi.single x 1, {x}, by simp [hx, Pi.single_apply]⟩
     | mul x y _ _ hx hy =>
     obtain ⟨f, t, hts, hf, rfl⟩ := hx

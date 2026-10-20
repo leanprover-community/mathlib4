@@ -20,7 +20,7 @@ This file defines a constructor to define a `Module` structure on a Type with an
 
 -/
 
-@[expose] public section
+public section
 
 universe u v
 

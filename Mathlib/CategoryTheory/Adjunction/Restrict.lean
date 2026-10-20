@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Adjunction.Basic
 public import Mathlib.CategoryTheory.HomCongr
+
 /-!
 
 # Restricting adjunctions
@@ -33,7 +34,6 @@ variable {iC : C ⥤ C'} {iD : D ⥤ D'}
 
 attribute [local simp] homEquiv_unit homEquiv_counit
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `C` is a full subcategory of `C'` and `D` is a full subcategory of `D'`, then we can restrict
 an adjunction `L' ⊣ R'` where `L' : C' ⥤ D'` and `R' : D' ⥤ C'` to `C` and `D`.
 The construction here is slightly more general, in that `C` is required only to have a full and
@@ -72,14 +72,13 @@ lemma map_restrictFullyFaithful_counit_app (X : D) :
   dsimp [restrictFullyFaithful]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma restrictFullyFaithful_homEquiv_apply {X : C} {Y : D} (f : L.obj X ⟶ Y) :
     (adj.restrictFullyFaithful hiC hiD comm1 comm2).homEquiv X Y f =
       hiC.preimage (adj.unit.app (iC.obj X) ≫ R'.map (comm1.hom.app X) ≫
         R'.map (iD.map f) ≫ comm2.hom.app Y) := by
   -- This proof was just `simp [restrictFullyFaithful]` before https://github.com/leanprover-community/mathlib4/pull/16317
   apply hiC.map_injective
-  simp only [homEquiv_apply, Functor.comp_obj, Functor.map_comp, map_restrictFullyFaithful_unit_app,
+  simp only [homEquiv_apply, Functor.map_comp, map_restrictFullyFaithful_unit_app,
     Functor.id_obj, assoc, Functor.FullyFaithful.map_preimage]
   congr 2
   exact (comm2.hom.naturality _).symm

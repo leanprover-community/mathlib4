@@ -20,7 +20,7 @@ Results specific to the additive circle over `ℝ`.
 
 noncomputable section
 
-open AddCommGroup Set Function AddSubgroup TopologicalSpace Topology
+open AddCommGroup Set Function AddSubgroup
 
 namespace AddCircle
 
@@ -47,6 +47,9 @@ section UnitAddCircle
 /-- The unit circle `ℝ ⧸ ℤ`. -/
 abbrev UnitAddCircle :=
   AddCircle (1 : ℝ)
+
+/-- The product indexed by `d` of copies of the unit circle. -/
+abbrev UnitAddTorus (d : Type*) := d → UnitAddCircle
 
 end UnitAddCircle
 

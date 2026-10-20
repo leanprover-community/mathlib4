@@ -46,7 +46,7 @@ but they are not left multiplication by some element.
 
 -/
 
-@[expose] public section
+public section
 
 open Module LinearMap LinearEquiv Set Finsupp
 
@@ -54,7 +54,12 @@ namespace LinearMap
 
 variable {R V : Type*}
 
-set_option backward.isDefEq.respectTransparency false in
+theorem mem_center_of_apply_eq_smul [Semiring R] [AddCommMonoid V]
+    [Module R V] {f : V →ₗ[R] V} {a : R}
+    (hf : ∀ x, f x = a • x) :
+    f ∈ center (End R V) := by
+  simp [mem_center_iff, isMulCentral_iff, commute_iff_eq, mul_assoc, LinearMap.ext_iff, hf]
+
 /-- A linear endomorphism of a free module of rank at least 2
 that commutes with transvections consists of homotheties with central ratio. -/
 theorem commute_transvections_iff_of_basis
@@ -77,7 +82,7 @@ theorem commute_transvections_iff_of_basis
   have h_allEq (i j : ι) : b.coord i (f (b i)) = b.coord j (f (b j)) := by
     by_cases hij : j = i
     · simp [hij]
-    simpa using congr_arg (b.coord i) (hcomm j i hij 1)
+    simpa using congr(b.coord i $(hcomm j i hij 1))
   replace hcomm (i : ι) (r : R) : r • f (b i) = b.coord i (f (b i)) • r • b i := by
     obtain ⟨j, hji⟩ := exists_ne i
     simpa [h_allEq j i] using hcomm j i hji r
@@ -90,7 +95,6 @@ theorem commute_transvections_iff_of_basis
   intro j _
   simp [Subring.smul_def, h_allEq i j, hcomm j]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Over a domain, an endomorphism `f` of a free module `V`
 of rank ≠ 1 such that `f v` and `v` are collinear, for all `v : V`,
 consists of homotheties with central ratio.
@@ -175,11 +179,10 @@ theorem exists_mem_center_apply_eq_smul_of_forall_notLinearIndependent_of_basis
     rw [commute_iff_eq, h' i j (Ne.symm hij), feq i j, feq i i]
     simp
   refine ⟨⟨b.coord i (f (b i)), ?_⟩, ?_⟩
-  · simpa  [Subring.mem_center_iff, commute_iff_eq, eq_comm] using ha
+  · simpa [Subring.mem_center_iff, commute_iff_eq, eq_comm] using ha
   apply b.ext
   simpa only [smul_apply, End.one_apply, Subring.smul_def] using feq i
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Over a domain `R`, an endomorphism `f` of a free module `V`
 of rank ≠ 1 such that `f v` and `v` are collinear, for all `v : V`,
 consists of homotheties with central ratio.

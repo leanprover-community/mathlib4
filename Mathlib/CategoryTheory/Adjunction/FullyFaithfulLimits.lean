@@ -5,8 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 public import Mathlib.CategoryTheory.Adjunction.Limits
+
+import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 
 /-!
 # Preservation of colimits and reflective adjunctions
@@ -20,7 +21,7 @@ iff it does so after precomposition with the sheafification functor.
 
 -/
 
-@[expose] public section
+public section
 
 universe v u v₁ v₂ v₃ u₁ u₂ u₃
 
@@ -35,6 +36,7 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 include adj
 
+set_option backward.defeqAttrib.useBackward true in
 lemma preservesColimitsOfShape_iff (J : Type u) [Category.{v} J]
     [HasColimitsOfShape J C] [G.Full] [G.Faithful] :
     PreservesColimitsOfShape J H ↔ PreservesColimitsOfShape J (F ⋙ H) := by

@@ -21,7 +21,7 @@ public section
 
 universe v u
 
-open CategoryTheory Opposite ObjectProperty
+open CategoryTheory Opposite
 
 namespace CategoryTheory
 

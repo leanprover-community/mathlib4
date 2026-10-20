@@ -22,7 +22,7 @@ This file defines instances for `MulAction` and related structures on `Pi` types
 * `Mathlib/Algebra/Group/Action/Sum.lean`
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero
 

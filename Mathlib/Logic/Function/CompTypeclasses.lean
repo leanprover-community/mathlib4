@@ -5,7 +5,7 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Init
+import Mathlib.Init
 
 /-!
 # Propositional typeclasses on several maps
@@ -22,7 +22,7 @@ TODO :
 
 -/
 
-@[expose] public section
+public section
 
 section CompTriple
 

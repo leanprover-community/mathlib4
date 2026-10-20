@@ -118,18 +118,15 @@ open ConcreteCategory
 map followed by an injective map. -/
 def functorialSurjectiveInjectiveFactorizationData :
     FunctorialSurjectiveInjectiveFactorizationData (Type u) where
-  Z :=
-    { obj f := Set.range f.hom
-      map φ y := ⟨φ.right y.1, by
-        obtain ⟨_, x, rfl⟩ := y
-        exact ⟨φ.left x, congr_fun φ.w x⟩ ⟩ }
+  Z.obj f := Set.range f.hom.hom
+  Z.map φ := ↾fun y ↦ ⟨φ.right y.1, by obtain ⟨_, x, rfl⟩ := y; exact ⟨φ.left x, congr_hom φ.w x⟩⟩
   i :=
-    { app f x := ⟨f.hom x, ⟨x, rfl⟩⟩
-      naturality f g φ := by
+    { app := fun f => ↾fun x => ⟨f.hom x, ⟨x, rfl⟩⟩
+      naturality := fun f g φ => by
         ext x
-        exact congr_fun φ.w x }
+        exact congr_hom φ.w x }
   p :=
-    { app _ y := y.1
+    { app := fun _ => ↾fun y => y.1
       naturality := by intros; rfl; }
   fac := rfl
   hi := by

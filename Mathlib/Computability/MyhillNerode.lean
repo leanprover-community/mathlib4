@@ -6,7 +6,8 @@ Authors: Chris Wong
 module
 
 public import Mathlib.Computability.DFA
-public import Mathlib.Data.Set.Finite.Basic
+
+import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Myhill–Nerode theorem

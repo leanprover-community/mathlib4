@@ -5,8 +5,8 @@ Authors: Eric Rodriguez
 -/
 module
 
-public import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
 public import Mathlib.FieldTheory.PolynomialGaloisGroup
+public import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
 
 /-!
 # Galois group of cyclotomic extensions
@@ -56,24 +56,11 @@ variable [CommRing L] [IsDomain L] (hμ : IsPrimitiveRoot μ n) [Algebra K L]
 field extension. -/
 theorem autToPow_injective : Function.Injective <| hμ.autToPow K := by
   intro f g hfg
-  apply_fun Units.val at hfg
-  simp only [IsPrimitiveRoot.coe_autToPow_apply] at hfg
-  generalize_proofs hf' hg' at hfg
-  have hf := hf'.choose_spec
-  have hg := hg'.choose_spec
-  generalize_proofs hζ at hf hg
-  suffices f (hμ.toRootsOfUnity : Lˣ) = g (hμ.toRootsOfUnity : Lˣ) by
-    apply AlgEquiv.coe_algHom_injective
+  have : f.toAlgHom = g.toAlgHom := by
     apply (hμ.powerBasis K).algHom_ext
-    exact this
-  rw [ZMod.natCast_eq_natCast_iff] at hfg
-  refine (hf.trans ?_).trans hg.symm
-  rw [← rootsOfUnity.coe_pow _ hf'.choose, ← rootsOfUnity.coe_pow _ hg'.choose]
-  congr 2
-  rw [pow_eq_pow_iff_modEq]
-  convert hfg
-  conv => enter [2]; rw [hμ.eq_orderOf, ← hμ.val_toRootsOfUnity_coe]
-  rw [orderOf_units, Subgroup.orderOf_coe]
+    rw [AlgEquiv.coe_toAlgHom, AlgEquiv.coe_toAlgHom, powerBasis_gen,
+      ← autToPow_spec K hμ g, ← autToPow_spec K hμ f, hfg]
+  exact AlgEquiv.coe_toAlgHom_injective this
 
 end IsPrimitiveRoot
 
@@ -94,7 +81,7 @@ noncomputable def autEquivPow (h : Irreducible (cyclotomic n K)) : Gal(L/K) ≃*
     invFun := fun t =>
       (hζ.powerBasis K).equivOfMinpoly ((hμ t).powerBasis K)
         (by
-          haveI := IsCyclotomicExtension.neZero' n K L
+          have := IsCyclotomicExtension.neZero' n K L
           simp only [IsPrimitiveRoot.powerBasis_gen]
           have hr :=
             IsPrimitiveRoot.minpoly_eq_cyclotomic_of_irreducible
@@ -102,9 +89,9 @@ noncomputable def autEquivPow (h : Irreducible (cyclotomic n K)) : Gal(L/K) ≃*
           exact ((zeta_spec n K L).minpoly_eq_cyclotomic_of_irreducible h).symm.trans hr)
     left_inv := fun f => by
       simp only [MonoidHom.toFun_eq_coe]
-      apply AlgEquiv.coe_algHom_injective
+      apply AlgEquiv.coe_toAlgHom_injective
       apply (hζ.powerBasis K).algHom_ext
-      simp only [AlgHom.coe_coe]
+      simp only [AlgEquiv.coe_toAlgHom]
       rw [PowerBasis.equivOfMinpoly_gen]
       simp only [IsPrimitiveRoot.powerBasis_gen, IsPrimitiveRoot.autToPow_spec]
     right_inv := fun x => by
