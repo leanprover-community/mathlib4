@@ -32,10 +32,10 @@ lemma LinearMap.baseChange_bijective_of_spanRank_eq [Module.Finite R M] [Module.
     Function.Bijective (f.baseChange 𝓀) := by
   have surj' := f.baseChange_surjective 𝓀 surj
   have : Module.finrank 𝓀 (TensorProduct R 𝓀 F₁) = Module.finrank 𝓀 (TensorProduct R 𝓀 M) := by
-    conv_lhs => rw [← (Submodule.topEquiv.baseChange (R := R) 𝓀).finrank_eq,
-      Module.finrank_eq_spanFinrank_of_free,
-      TensorProduct.spanFinrank_top_eq_of_residueField _ Module.Finite.fg_top]
     rw [← (Submodule.topEquiv.baseChange (R := R) 𝓀).finrank_eq,
+      Module.finrank_eq_spanFinrank_of_free,
+      TensorProduct.spanFinrank_top_eq_of_residueField _ Module.Finite.fg_top,
+      ← (Submodule.topEquiv.baseChange (R := R) 𝓀).finrank_eq,
       Module.finrank_eq_spanFinrank_of_free,
       TensorProduct.spanFinrank_top_eq_of_residueField _ Module.Finite.fg_top, hrk]
   exact ⟨(injective_iff_surjective_of_finrank_eq_finrank this).mpr surj', surj'⟩
@@ -72,14 +72,12 @@ lemma LinearMap.bijective_of_comp_eq_of_spanRank_eq (N : Submodule R M) (fg : N.
     (f : F₁ →ₗ[R] M) (g : F₂ →ₗ[R] M) (hrf : f.range = N) (hrg : g.range = N)
     (hrk1 : Module.rank R F₁ = N.spanFinrank) (hrk2 : Module.rank R F₂ = N.spanFinrank)
     (h : F₁ →ₗ[R] F₂) (eq : g.comp h = f) : Function.Bijective h := by
-  let f' := f.codRestrict N (fun _ ↦ hrf.le (LinearMap.mem_range_self _ _))
-  have surjf' : Function.Surjective f' := by
-    simp [f', ← LinearMap.range_eq_top, LinearMap.range_codRestrict, hrf]
-  let g' := g.codRestrict N (fun _ ↦ hrg.le (LinearMap.mem_range_self _ _))
-  have surjg' : Function.Surjective g' := by
-    simp [g', ← LinearMap.range_eq_top, LinearMap.range_codRestrict, hrg]
   have : Module.Finite R N := Module.Finite.iff_fg.mpr fg
-  apply LinearMap.bijective_of_comp_eq_of_spanRank_eq_of_surjective f' surjf' g' surjg' _ _ h _
+  refine LinearMap.bijective_of_comp_eq_of_spanRank_eq_of_surjective
+    (f.codRestrict N (fun _ ↦ hrf.le (LinearMap.mem_range_self _ _))) ?_
+    (g.codRestrict N (fun _ ↦ hrg.le (LinearMap.mem_range_self _ _))) ?_ ?_ ?_ h ?_
+  · simp [← LinearMap.range_eq_top, LinearMap.range_codRestrict, hrf]
+  · simp [← LinearMap.range_eq_top, LinearMap.range_codRestrict, hrg]
   · simp [Submodule.spanFinrank_top, hrk1]
   · simp [Submodule.spanFinrank_top, hrk2]
   · ext x
