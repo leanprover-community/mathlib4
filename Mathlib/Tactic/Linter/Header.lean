@@ -189,12 +189,19 @@ def modPathToRootPath (modPath : System.FilePath) (modName : Name) : Option Syst
   | _ => none
 
 /--
-`isInLibraryRoot modName` returns `true` if `<root>.lean` imports the file `modName`, where
-`<root>` is the top-level component of `modName`. For example, for `Mathlib.Foo.Bar` this checks
-`Mathlib.lean`; for `Cslib.Foo.Bar` this checks `Cslib.lean`.
-This is used by the `Header` linter as a heuristic of whether it should inspect the file or not,
-so that the linter works in any project whose library root follows the standard Lean convention
-of being named after the top-level module.
+`isInLibraryRoot modName` returns `true` if the file at `rootPath` (expected to be the root file of
+a library, `<root>.lean`) directly imports the file `modName`.
+
+For example, for ``isInLibraryRoot (srcDir / "Mathlib.lean") `Mathlib.Foo.Bar`` checks if
+`Mathlib.lean` directly imports `Mathlib.Foo.Bar`. (Note, however, that this does not enforce that
+the root component of `modName` is the same as the file stem of `rootPath`.)
+
+Note: for any library (like `Mathlib`) which names its root file after the library and locates it
+accordingly, the `rootPath` may be obtained with `modPathToRootPath fileName modName`.
+
+This is used by the header linter as a heuristic for whether it should lint the module `modName`
+or not, in order to avoid linting scratch files (which typically are not imported in the library
+root).
 -/
 def isInLibraryRoot (rootPath : System.FilePath) (modName : Name) : IO Bool := do
   if ← rootPath.pathExists then
