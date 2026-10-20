@@ -12,6 +12,9 @@ import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 import Mathlib.Data.Nat.Choose.Dvd
 import Mathlib.Data.Nat.Squarefree
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Primorial
 
@@ -33,6 +36,7 @@ open Nat
 
 /-- The primorial `n#` of `n` is the product of the primes less than or equal to `n`.
 -/
+@[oeis A034386]
 def primorial (n : ℕ) : ℕ := ∏ p ∈ range (n + 1) with p.Prime, p
 
 local notation x "#" => primorial x
@@ -139,8 +143,6 @@ theorem primorial_le_four_pow (n : ℕ) : n# ≤ 4 ^ n := by
   obtain rfl | hn := eq_or_ne n 0
   · decide
   · exact (primorial_lt_four_pow n hn).le
-
-@[deprecated (since := "2026-03-21")] alias primorial_le_4_pow := primorial_le_four_pow
 
 lemma squarefree_primorial (n : ℕ) : Squarefree (n#) := by
   rw [primorial_eq_prod_primesLE]

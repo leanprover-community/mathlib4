@@ -106,7 +106,7 @@ lemma card_mul_self_le [DecidableEq G] {A : Finset G} (hA : IsApproximateSubgrou
 lemma image {F H : Type*} [Group H] [FunLike F G H] [MonoidHomClass F G H] (f : F)
     (hA : IsApproximateSubgroup K A) : IsApproximateSubgroup K (f '' A) where
   one_mem := ⟨1, hA.one_mem, map_one _⟩
-  isSelfInv := hA.isSelfInv.image f
+  isSelfInv := Set.IsSelfInv.image f hA.isSelfInv
   sq_covBySMul := by
     classical
     obtain ⟨F, hF, hAF⟩ := hA.sq_covBySMul

@@ -495,8 +495,8 @@ theorem edgeDensity_chunk_not_uniform [Nonempty α] (hPα : #P.parts * 16 ^ #P.p
         simpa using edgeDensity_star_not_uniform hPα hPε hε₁ hUVne hUV
       · rw [sp, card_product]
         apply (edgeDensity_chunk_aux hP hPα hPε hU hV).trans
-        · rw [card_chunk (m_pos hPα).ne', card_chunk (m_pos hPα).ne', ← mul_pow]
-          simp
+        rw [card_chunk (m_pos hPα).ne', card_chunk (m_pos hPα).ne', ← mul_pow]
+        simp
 
 /-- Lower bound on the edge densities between parts of `SzemerediRegularity.increment`. This is the
 blanket lower bound used the uniform parts. -/

@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Nat.Bits
 public import Mathlib.Data.Nat.Pairing
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivalences involving `ℕ`
 

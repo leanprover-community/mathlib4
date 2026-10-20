@@ -1070,47 +1070,24 @@ theorem nnnorm_single (i : ι) (b : β i) : ‖single p i b‖₊ = ‖b‖₊ :
     intro j hij
     rw [toLp_apply, single_eq_of_ne _ hij, nnnorm_zero, NNReal.zero_rpow hp0]
 
-@[deprecated nnnorm_single +typeChanged (since := "2026-03-15")]
-theorem nnnorm_toLp_single (i : ι) (b : β i) : ‖toLp p (Pi.single i b)‖₊ = ‖b‖₊ :=
-  nnnorm_single p β i b
-
 @[simp]
 lemma norm_single (i : ι) (b : β i) : ‖single p i b‖ = ‖b‖ :=
   congr($(nnnorm_single p β i b))
-
-@[deprecated norm_single +typeChanged (since := "2026-03-15")]
-lemma norm_toLp_single (i : ι) (b : β i) : ‖toLp p (Pi.single i b)‖ = ‖b‖ :=
-  norm_single p β i b
 
 @[simp]
 lemma nndist_single_same (i : ι) (b₁ b₂ : β i) :
     nndist (single p i b₁) (single p i b₂) = nndist b₁ b₂ := by
   rw [nndist_eq_nnnorm, nndist_eq_nnnorm, ← single_sub, nnnorm_single]
 
-@[deprecated nndist_single_same +typeChanged (since := "2026-03-15")]
-lemma nndist_toLp_single_same (i : ι) (b₁ b₂ : β i) :
-    nndist (toLp p (Pi.single i b₁)) (toLp p (Pi.single i b₂)) = nndist b₁ b₂ :=
-  nndist_single_same p β i b₁ b₂
-
 @[simp]
 lemma dist_single_same (i : ι) (b₁ b₂ : β i) :
     dist (single p i b₁) (single p i b₂) = dist b₁ b₂ :=
   congr($(nndist_single_same p β i b₁ b₂))
 
-@[deprecated dist_single_same +typeChanged (since := "2026-03-15")]
-lemma dist_toLp_single_same (i : ι) (b₁ b₂ : β i) :
-    dist (toLp p (Pi.single i b₁)) (toLp p (Pi.single i b₂)) = dist b₁ b₂ :=
-  dist_single_same p β i b₁ b₂
-
 @[simp]
 lemma edist_single_same (i : ι) (b₁ b₂ : β i) :
     edist (single p i b₁) (single p i b₂) = edist b₁ b₂ := by
   simp only [edist_nndist, nndist_single_same p β i b₁ b₂]
-
-@[deprecated edist_single_same +typeChanged (since := "2026-03-15")]
-lemma edist_toLp_single_same (i : ι) (b₁ b₂ : β i) :
-    edist (toLp p (Pi.single i b₁)) (toLp p (Pi.single i b₂)) = edist b₁ b₂ :=
-  edist_single_same p β i b₁ b₂
 
 end Single
 
