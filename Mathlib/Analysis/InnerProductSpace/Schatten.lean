@@ -6,8 +6,9 @@ Authors: Tjeerd Jan Heeringa
 module
 
 public import Mathlib.Analysis.CStarAlgebra.Module.Constructions
-public import Mathlib.Analysis.InnerProductSpace.StarOrder
 public import Mathlib.Analysis.InnerProductSpace.l2Space
+public import Mathlib.Analysis.InnerProductSpace.StarOrder
+public import Mathlib.Analysis.InnerProductSpace.Trace
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
 public import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
 
@@ -102,6 +103,22 @@ theorem trace_smul (c : ℂ) : (c • A).trace = c * A.trace := by
 variable (A) in
 theorem trace_adjoint : A.adjoint.trace = conj A.trace := by
   simp [trace, traceOfBasis, Complex.conj_tsum, ContinuousLinearMap.adjoint_inner_right]
+
+theorem trace_nonneg (hA : 0 ≤ A) : 0 ≤ A.trace := by
+  unfold trace traceOfBasis
+  set b := Classical.choose (Classical.choose_spec (exists_hilbertBasis ℂ E))
+  exact tsum_nonneg fun i ↦ by
+    simpa only [sub_zero] using hA.inner_nonneg_right (b i)
+
+variable (A) in
+theorem toLinearMap_trace [FiniteDimensional ℂ E] :
+    A.toLinearMap.trace ℂ E = A.trace := by
+  unfold trace traceOfBasis
+  set ι := Classical.choose (exists_hilbertBasis ℂ E)
+  set b := Classical.choose (Classical.choose_spec (exists_hilbertBasis ℂ E))
+  let : Finite ι := b.orthonormal.linearIndependent.finite
+  let : Fintype ι := Fintype.ofFinite ι
+  simp [LinearMap.trace_eq_sum_inner _ b.toOrthonormalBasis]
 
 theorem _root_.Summable.of_add_nonneg {ι : Type*} {f g : ι → ℂ} (hf : ∀ i, 0 ≤ f i)
     (hg : ∀ i, 0 ≤ g i) (h : Summable fun i => f i + g i) : Summable f := by
