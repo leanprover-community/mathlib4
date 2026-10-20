@@ -82,6 +82,13 @@ instance (priority := low) : IsSemisimpleRing R :=
 theorem isIsotypic (M) [AddCommGroup M] [Module R M] : IsIsotypic R M :=
   (isSimpleRing_isArtinianRing_iff.mp ⟨‹_›, ‹_›⟩).2.1.of_self M
 
+theorem nonempty_linearEquiv_of_isSimpleModule (M N) [AddCommGroup M] [Module R M] [AddCommGroup N]
+    [Module R N] [IsSimpleModule R M] [IsSimpleModule R N] :
+    Nonempty (M ≃ₗ[R] N) := by
+  have := Submodule.topEquiv.isSimpleModule_iff.mpr (show IsSimpleModule R M by assumption)
+  obtain ⟨e⟩ := IsIsotypicOfType.of_isIsotypic_self M N (isIsotypic R R) ⊤
+  exact ⟨Submodule.topEquiv.symm.trans e⟩
+
 /-- The **Wedderburn–Artin Theorem**: an Artinian simple ring is isomorphic to a matrix
 ring over the opposite of the endomorphism ring of its simple module. -/
 theorem exists_ringEquiv_matrix_end_mulOpposite :

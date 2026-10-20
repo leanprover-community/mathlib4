@@ -6656,6 +6656,7 @@ public import Mathlib.Probability.StrongLaw
 public import Mathlib.Probability.UniformOn
 public import Mathlib.RepresentationTheory.Action
 public import Mathlib.RepresentationTheory.AlgebraRepresentation.Basic
+public import Mathlib/RepresentationTheory.AlgebraRepresentation.SymmNondegenAlg
 public import Mathlib.RepresentationTheory.Basic
 public import Mathlib.RepresentationTheory.Character
 public import Mathlib.RepresentationTheory.Coinduced

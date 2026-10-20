@@ -31,6 +31,27 @@ theorem IsSimpleModule.algebraMap_end_bijective_of_isAlgClosed :
     LinearMap.restrictScalars_injective _
   classical exact IsAlgClosed.algebraMap_bijective_of_isIntegral (k := k)
 
+variable (V) in
+theorem IsSimpleModule.lsmul_eq_smul_id_of_mul_comm {z : A} (hz : ∀ a, z * a = a * z) :
+    ∃ r : k, Algebra.lsmul k k V z = r • 1 := by
+  let z' : Module.End A V :=
+    { toFun := Algebra.lsmul k k V z
+      map_add' := by simp
+      map_smul' a x := by simpa [mul_smul] using congrArg (fun y ↦ y • x) (hz a) }
+  obtain ⟨r,hr⟩ := (IsSimpleModule.algebraMap_end_bijective_of_isAlgClosed k).surjective z'
+  exact ⟨r, LinearMap.ext fun x => by simpa [z'] using congrArg (fun y ↦ y • x) hr.symm⟩
+
+variable (A) in
+/-- Burnside's theorem: If `V` is simple module of a `k`-algebra `A` where `k` is an algebraically
+closed field `k`, then the algebra map `A → End_k(V)` is surjective. -/
+theorem IsSimpleModule.lsmul_surjective_of_isAlgClosed :
+    Function.Surjective (Algebra.lsmul k k V : A →ₐ[k] Module.End k V) := by
+  have : Module.Finite (Module.End A V) V := Module.Finite.of_restrictScalars_finite k _ V
+  intro f
+  obtain ⟨a, ha⟩ := Module.Finite.toModuleEnd_moduleEnd_surjective (R := A) <|
+    LinearMap.extendScalarsOfSurjective (algebraMap_end_bijective_of_isAlgClosed k).surjective f
+  exact ⟨a, LinearMap.ext fun m => congrArg (fun f => f m) ha⟩
+
 variable (A V)
 
 open scoped IsMulCommutative in
