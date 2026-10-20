@@ -482,7 +482,7 @@ attribute [simp, reassoc] MonoidalRightAction.actionHom_rightUnitor
 
 /-- A monoidal category acts on itself through the tensor product. -/
 @[simps!]
-instance selRightfAction [MonoidalCategory C] : MonoidalRightAction C C where
+instance selfRightAction [MonoidalCategory C] : MonoidalRightAction C C where
   actionObj x y := x ⊗ y
   actionHom f g := f ⊗ₘ g
   actionUnitIso x := ρ_ x
@@ -490,6 +490,30 @@ instance selRightfAction [MonoidalCategory C] : MonoidalRightAction C C where
   actionHomLeft f x := f ▷ x
   actionHomRight x _ _ f := x ◁ f
   actionHom_def := by simp [tensorHom_def]
+
+@[deprecated (since := "2026-09-17")]
+alias selRightfAction := selfRightAction
+
+@[deprecated (since := "2026-09-17")]
+alias selRightfAction_actionObj := selfRightAction_actionObj
+
+@[deprecated (since := "2026-09-17")]
+alias selRightfAction_actionHom := selfRightAction_actionHom
+
+@[deprecated (since := "2026-09-17")]
+alias selRightfAction_actionHomLeft := selfRightAction_actionHomLeft
+
+@[deprecated (since := "2026-09-17")]
+alias selRightfAction_actionHomRight := selfRightAction_actionHomRight
+
+@[deprecated (since := "2026-09-17")]
+alias selRightfAction_actionUnitIso := selfRightAction_actionUnitIso
+
+@[deprecated (since := "2026-09-17")]
+alias selRightfAction_actionAssocIso_hom := selfRightAction_actionAssocIso_hom
+
+@[deprecated (since := "2026-09-17")]
+alias selRightfAction_actionAssocIso_inv := selfRightAction_actionAssocIso_inv
 
 namespace MonoidalRightAction
 

@@ -39,7 +39,6 @@ In other words, a type that is `Inhabited` and a `Subsingleton`.
 The typeclass `Unique α` is implemented as a type,
 rather than a `Prop`-valued predicate,
 for good definitional properties of the default term.
-
 -/
 
 @[expose] public section
@@ -149,6 +148,11 @@ theorem unique_iff_subsingleton_and_nonempty (α : Sort u) :
     Nonempty (Unique α) ↔ Subsingleton α ∧ Nonempty α :=
   ⟨fun ⟨u⟩ ↦ by constructor <;> exact inferInstance,
    fun ⟨hs, hn⟩ ↦ nonempty_unique α⟩
+
+theorem subsingleton_iff_isEmpty_or_unique (α : Sort u) :
+    Subsingleton α ↔ IsEmpty α ∨ Nonempty (Unique α) := by
+  rw [isEmpty_iff, ← not_nonempty_iff_imp_false, unique_iff_subsingleton_and_nonempty,
+    or_and_left, or_iff_right_of_imp subsingleton_of_not_nonempty, and_iff_left (em' _)]
 
 variable {α : Sort*}
 

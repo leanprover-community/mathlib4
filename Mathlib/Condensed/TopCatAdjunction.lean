@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Condensed.TopComparison
 public import Mathlib.Topology.Category.CompactlyGenerated
+
 /-!
 
 # The adjunction between condensed sets and topological spaces
@@ -23,7 +24,7 @@ The counit is an isomorphism for compactly generated spaces, and we conclude tha
 
 universe u
 
-open Condensed CondensedSet CategoryTheory CompHaus
+open Condensed CategoryTheory CompHaus
 
 variable (X : CondensedSet.{u})
 
@@ -33,16 +34,18 @@ private def CondensedSet.coinducingCoprod :
     (Σ (i : (S : CompHaus.{u}) × X.obj.obj ⟨S⟩), i.fst) → X.obj.obj ⟨of PUnit⟩ :=
   fun ⟨⟨_, i⟩, s⟩ ↦ X.obj.map ((of PUnit.{u + 1}).const s).op i
 
+open CondensedSet
+
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- Let `X` be a condensed set. We define a topology on `X(*)` as the quotient topology of
 all the maps from compact Hausdorff `S` spaces to `X(*)`, corresponding to elements of `X(S)`.
 In other words, the topology coinduced by the map `CondensedSet.coinducingCoprod` above. -/
-local instance : TopologicalSpace (X.obj.obj ⟨CompHaus.of PUnit⟩) :=
+local instance : TopologicalSpace (X.obj.obj ⟨↧PUnit⟩) :=
   TopologicalSpace.coinduced (coinducingCoprod X) inferInstance
 
 /-- The object part of the functor `CondensedSet ⥤ TopCat` -/
-abbrev CondensedSet.toTopCat : TopCat.{u + 1} := TopCat.of (X.obj.obj ⟨of PUnit⟩)
+abbrev CondensedSet.toTopCat : TopCat.{u + 1} := ↧(X.obj.obj ⟨of PUnit⟩)
 
 namespace CondensedSet
 
@@ -154,7 +157,7 @@ instance (X : CondensedSet.{u}) :
 
 /-- The functor from condensed sets to topological spaces lands in compactly generated spaces. -/
 def condensedSetToCompactlyGenerated : CondensedSet.{u} ⥤ CompactlyGenerated.{u, u + 1} where
-  obj X := CompactlyGenerated.of (condensedSetToTopCat.obj X)
+  obj X := ↧(condensedSetToTopCat.obj X)
   map f := InducedCategory.homMk (toTopCatMap f)
 
 /--

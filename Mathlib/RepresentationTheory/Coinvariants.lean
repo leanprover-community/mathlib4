@@ -158,7 +158,7 @@ lemma Coinvariants.le_comap_ker (g : G) :
     ker (ρ.comp S.subtype) ≤ (ker <| ρ.comp S.subtype).comap (ρ g) :=
   Submodule.span_le.2 fun _ ⟨⟨s, x⟩, hs⟩ => by
     simpa [← hs] using mem_ker_of_eq
-      ⟨g * s * g⁻¹, Subgroup.Normal.conj_mem ‹_› s.1 s.2 g⟩ (ρ g x) _ <| by simp
+      ⟨g * s * g⁻¹, Subgroup.Normal.conj_mem s.1 s.2 g⟩ (ρ g x) _ <| by simp
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` restricts to a `G`-representation on
 the kernel of the quotient map to the coinvariants of `ρ|_S`. -/
@@ -347,7 +347,7 @@ variable (k G) [Monoid G] (A B : Rep.{w} k G)
 /-- The functor sending a representation to its coinvariants. -/
 @[implicit_reducible, simps! obj_carrier map_hom]
 noncomputable def coinvariantsFunctor : Rep.{w} k G ⥤ ModuleCat k where
-  obj A := ModuleCat.of k A.ρ.Coinvariants
+  obj A := ↧A.ρ.Coinvariants
   map f := ModuleCat.ofHom (Representation.Coinvariants.map _ _ f.hom)
   map_id _ := by simp
   map_comp _ _ := by ext; simp
@@ -371,7 +371,7 @@ lemma coinvariantsFunctor_hom_ext {M : ModuleCat k} {f g : (coinvariantsFunctor 
 /-- The linear map underlying a `G`-representation morphism `A ⟶ B`, where `B` has the trivial
 representation, factors through `A_G`. -/
 noncomputable abbrev desc [B.ρ.IsTrivial] (f : A ⟶ B) :
-    (coinvariantsFunctor k G).obj A ⟶ ModuleCat.of k B.V :=
+    (coinvariantsFunctor k G).obj A ⟶ ↧B.V :=
   ModuleCat.ofHom <| Representation.Coinvariants.lift _ f.hom.toLinearMap <| by
     simp [f.hom.2, isTrivial_def]
 
@@ -426,7 +426,7 @@ lemma coinvariantsTensorMk_apply {A B : Rep.{u} k G} (a : A) (b : B) :
 lemma coinvariantsTensor_hom_ext {A B : Rep.{u} k G} {M : ModuleCat k}
     {f g : ((coinvariantsTensor k G).obj A).obj B ⟶ M}
     (hfg : (coinvariantsTensorMk A B).compr₂ f.hom = (coinvariantsTensorMk A B).compr₂ g.hom) :
-    f = g := coinvariantsFunctor_hom_ext <| ModuleCat.hom_ext <| TensorProduct.ext <| hfg
+    f = g := coinvariantsFunctor_hom_ext <| ModuleCat.hom_ext <| TensorProduct.ext hfg
 
 instance (A : Rep.{u} k G) : ((coinvariantsTensor k G).obj A).Additive where
 
