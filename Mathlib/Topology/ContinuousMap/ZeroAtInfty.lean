@@ -320,19 +320,11 @@ instance instNonUnitalCommRing [NonUnitalCommRing β] [IsTopologicalRing β] :
 
 instance instIsScalarTower {R : Type*} [Semiring R] [NonUnitalNonAssocSemiring β]
     [IsTopologicalSemiring β] [Module R β] [ContinuousConstSMul R β] [IsScalarTower R β β] :
-    IsScalarTower R C₀(α, β) C₀(α, β) where
-  smul_assoc r f g := by
-    ext
-    simp only [smul_eq_mul, FunLike.coe_mul, FunLike.coe_smul, Pi.mul_apply, Pi.smul_apply]
-    rw [← smul_eq_mul, ← smul_eq_mul, smul_assoc]
+    IsScalarTower R C₀(α, β) C₀(α, β) := FunLike.isScalarTowerSelf
 
 instance instSMulCommClass {R : Type*} [Semiring R] [NonUnitalNonAssocSemiring β]
     [IsTopologicalSemiring β] [Module R β] [ContinuousConstSMul R β] [SMulCommClass R β β] :
-    SMulCommClass R C₀(α, β) C₀(α, β) where
-  smul_comm r f g := by
-    ext
-    simp only [smul_eq_mul, FunLike.coe_smul, FunLike.coe_mul, Pi.smul_apply, Pi.mul_apply]
-    rw [← smul_eq_mul, ← smul_eq_mul, smul_comm]
+    SMulCommClass R C₀(α, β) C₀(α, β) := FunLike.smulCommClassSelf
 
 end AlgebraicStructure
 
