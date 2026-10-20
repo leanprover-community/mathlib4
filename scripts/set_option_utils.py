@@ -18,16 +18,14 @@ DEFAULT_OPTIONS = [
     "backward.inferInstanceAs.wrap.data",
     "backward.inferInstanceAs.wrap.instances",
     "linter.auxLemma",
-    # TODO: the `rm_set_option.py` script does not fully check for code throwing warnings.
-    # Therefore, we omit many linter warnings here until this bug is fixed.
-    # "linter.checkUnivs",
+    "linter.checkUnivs",
     "linter.flexible",
     "linter.style.longFile",
-    # "linter.translate.overwrite",
-    # "linter.translate.warnInvalid",
-    # "linter.unusedDecidableInType",
-    # "linter.unusedVariables",
-    # "linter.unusedTactic",
+    "linter.translate.overwrite",
+    "linter.translate.warnInvalid",
+    "linter.unusedDecidableInType",
+    "linter.unusedVariables",
+    "linter.unusedTactic",
 ]
 
 
