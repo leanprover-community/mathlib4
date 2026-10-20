@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.MorphismProperty.Composition
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Wide subcategories
 

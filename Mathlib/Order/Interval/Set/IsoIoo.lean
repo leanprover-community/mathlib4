@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Order.Field.Basic
 public import Mathlib.Order.Monotone.Odd
 public import Mathlib.Tactic.FieldSimp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Order isomorphism between a linear ordered field and `(-1, 1)`
 

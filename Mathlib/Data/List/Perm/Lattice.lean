@@ -11,6 +11,9 @@ public import Mathlib.Data.List.TakeDrop
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.List.Nodup
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # List Permutations and list lattice operations.
 

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.End
 public import Mathlib.Logic.Embedding.Basic
 public import Mathlib.Logic.Equiv.Set
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Equiv.Perm.viaEmbedding`, a noncomputable analogue of `Equiv.Perm.viaFintypeEmbedding`.
 -/
