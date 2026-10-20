@@ -66,94 +66,86 @@ section Field
 variable [CommRing K]
 
 /-- The zero rational function. -/
-protected irreducible_def zero : K⟮X⟯ :=
+@[no_expose] protected def zero : K⟮X⟯ :=
   ⟨0⟩
 
 instance : Zero K⟮X⟯ :=
   ⟨RatFunc.zero⟩
 
-theorem ofFractionRing_zero : (ofFractionRing 0 : K⟮X⟯) = 0 :=
-  zero_def.symm
+theorem ofFractionRing_zero : (ofFractionRing 0 : K⟮X⟯) = 0 := (rfl)
 
 /-- Addition of rational functions. -/
-protected irreducible_def add : K⟮X⟯ → K⟮X⟯ → K⟮X⟯
+@[no_expose] protected def add : K⟮X⟯ → K⟮X⟯ → K⟮X⟯
   | ⟨p⟩, ⟨q⟩ => ⟨p + q⟩
 
 instance : Add K⟮X⟯ :=
   ⟨RatFunc.add⟩
 
 theorem ofFractionRing_add (p q : FractionRing K[X]) :
-    ofFractionRing (p + q) = ofFractionRing p + ofFractionRing q :=
-  (add_def _ _).symm
+    ofFractionRing (p + q) = ofFractionRing p + ofFractionRing q := (rfl)
 
 /-- Subtraction of rational functions. -/
-protected irreducible_def sub : K⟮X⟯ → K⟮X⟯ → K⟮X⟯
+@[no_expose] protected def sub : K⟮X⟯ → K⟮X⟯ → K⟮X⟯
   | ⟨p⟩, ⟨q⟩ => ⟨p - q⟩
 
 instance : Sub K⟮X⟯ :=
   ⟨RatFunc.sub⟩
 
 theorem ofFractionRing_sub (p q : FractionRing K[X]) :
-    ofFractionRing (p - q) = ofFractionRing p - ofFractionRing q :=
-  (sub_def _ _).symm
+    ofFractionRing (p - q) = ofFractionRing p - ofFractionRing q := (rfl)
 
 /-- Additive inverse of a rational function. -/
-protected irreducible_def neg : K⟮X⟯ → K⟮X⟯
+@[no_expose] protected def neg : K⟮X⟯ → K⟮X⟯
   | ⟨p⟩ => ⟨-p⟩
 
 instance : Neg K⟮X⟯ :=
   ⟨RatFunc.neg⟩
 
 theorem ofFractionRing_neg (p : FractionRing K[X]) :
-    ofFractionRing (-p) = -ofFractionRing p :=
-  (neg_def _).symm
+    ofFractionRing (-p) = -ofFractionRing p := (rfl)
 
 /-- The multiplicative unit of rational functions. -/
-protected irreducible_def one : K⟮X⟯ :=
+@[no_expose] protected def one : K⟮X⟯ :=
   ⟨1⟩
 
 instance : One K⟮X⟯ :=
   ⟨RatFunc.one⟩
 
-theorem ofFractionRing_one : (ofFractionRing 1 : K⟮X⟯) = 1 :=
-  one_def.symm
+theorem ofFractionRing_one : (ofFractionRing 1 : K⟮X⟯) = 1 := (rfl)
 
 /-- Multiplication of rational functions. -/
-protected irreducible_def mul : K⟮X⟯ → K⟮X⟯ → K⟮X⟯
+@[no_expose] protected def mul : K⟮X⟯ → K⟮X⟯ → K⟮X⟯
   | ⟨p⟩, ⟨q⟩ => ⟨p * q⟩
 
 instance : Mul K⟮X⟯ :=
   ⟨RatFunc.mul⟩
 
 theorem ofFractionRing_mul (p q : FractionRing K[X]) :
-    ofFractionRing (p * q) = ofFractionRing p * ofFractionRing q :=
-  (mul_def _ _).symm
+    ofFractionRing (p * q) = ofFractionRing p * ofFractionRing q := (rfl)
 
 section IsDomain
 
 variable [IsDomain K]
 
 /-- Division of rational functions. -/
-protected irreducible_def div : K⟮X⟯ → K⟮X⟯ → K⟮X⟯
+@[no_expose] protected def div : K⟮X⟯ → K⟮X⟯ → K⟮X⟯
   | ⟨p⟩, ⟨q⟩ => ⟨p / q⟩
 
 instance : Div K⟮X⟯ :=
   ⟨RatFunc.div⟩
 
 theorem ofFractionRing_div (p q : FractionRing K[X]) :
-    ofFractionRing (p / q) = ofFractionRing p / ofFractionRing q :=
-  (div_def _ _).symm
+    ofFractionRing (p / q) = ofFractionRing p / ofFractionRing q := (rfl)
 
 /-- Multiplicative inverse of a rational function. -/
-protected irreducible_def inv : K⟮X⟯ → K⟮X⟯
+@[no_expose] protected def inv : K⟮X⟯ → K⟮X⟯
   | ⟨p⟩ => ⟨p⁻¹⟩
 
 instance : Inv K⟮X⟯ :=
   ⟨RatFunc.inv⟩
 
 theorem ofFractionRing_inv (p : FractionRing K[X]) :
-    ofFractionRing p⁻¹ = (ofFractionRing p)⁻¹ :=
-  (inv_def _).symm
+    ofFractionRing p⁻¹ = (ofFractionRing p)⁻¹ := (rfl)
 
 -- Auxiliary lemma for the `Field` instance
 theorem mul_inv_cancel : ∀ {p : K⟮X⟯}, p ≠ 0 → p * p⁻¹ = 1
@@ -170,15 +162,14 @@ section SMul
 variable {R : Type*}
 
 /-- Scalar multiplication of rational functions. -/
-protected irreducible_def smul [SMul R (FractionRing K[X])] : R → K⟮X⟯ → K⟮X⟯
+@[no_expose] protected def smul [SMul R (FractionRing K[X])] : R → K⟮X⟯ → K⟮X⟯
   | r, ⟨p⟩ => ⟨r • p⟩
 
 instance [SMul R (FractionRing K[X])] : SMul R K⟮X⟯ :=
   ⟨RatFunc.smul⟩
 
 theorem ofFractionRing_smul [SMul R (FractionRing K[X])] (c : R) (p : FractionRing K[X]) :
-    ofFractionRing (c • p) = c • ofFractionRing p :=
-  (smul_def _ _).symm
+    ofFractionRing (c • p) = c • ofFractionRing p := (rfl)
 
 theorem toFractionRing_smul [SMul R (FractionRing K[X])] (c : R) (p : K⟮X⟯) :
     toFractionRing (c • p) = c • toFractionRing p := by
