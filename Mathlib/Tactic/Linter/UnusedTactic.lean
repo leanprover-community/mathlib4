@@ -10,7 +10,7 @@ public meta import Lean.Elab.InfoTree.Util
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 public import Batteries.Tactic.Unreachable
-public import Lean.Parser.Syntax
+public meta import Lean.Parser.Syntax
 public import Mathlib.Tactic.Linter.UnusedTacticExtension
 
 /-!
@@ -71,9 +71,6 @@ public register_option linter.unusedTactic : Bool := {
 
 namespace UnusedTactic
 
-/-- The monad for collecting the ranges of the syntaxes that do not modify any goal. -/
-abbrev M := StateRefT (Std.HashMap Lean.Syntax.Range Syntax) BaseIO
-
 -- Tactics that are expected to not change the state but should also not be flagged by the
 -- unused tactic linter.
 #allow_unused_tactic!
@@ -124,22 +121,23 @@ This should be called from an `initialize` block.
 public def addIgnoreTacticKind (kind : SyntaxNodeKind) : BaseIO Unit :=
   ignoreTacticKindsRef.modify (·.insert kind)
 
-/-- Accumulates the set of tactic syntaxes that should be evaluated at least once.
+/-- Accumulates the set of all `tactic` and `conv` syntaxes.
 This includes `<;>` but excludes all other tactics whose syntax is atomic, such as `;`.
 -/
-@[specialize] partial def getTactics (ignoreTacticKinds : NameHashSet)
-    (isTacKind : SyntaxNodeKind → Bool) (stx : Syntax) : M Unit := do
+partial def getTactics (ignoreTacticKinds : NameHashSet)
+    (tactics convs : Parser.SyntaxNodeKindSet) (stx : Syntax) :
+    StateRefT (Std.HashMap Syntax.Range (Syntax × Option MessageData)) BaseIO Unit := do
   if let .node _ k args := stx then
     if !isIgnoreTacticKind ignoreTacticKinds k then
-      args.forM (getTactics ignoreTacticKinds isTacKind)
-    if isTacKind k then
+      args.forM (getTactics ignoreTacticKinds tactics convs)
+    if tactics.contains k || convs.contains k then
       if let some r := stx.getRange? true then
-        modify (·.insert r stx)
-    -- The `<;>` syntax is an atom, so to add it we special case it.
-    if k == ``Lean.Parser.Tactic.«tactic_<;>_» || k == ``Lean.Parser.Tactic.Conv.«conv_<;>_» then
-      if let some arg := args[1]? then
-        if let some r := arg.getRange? true then
-          modify (·.insert r arg)
+        modify (·.insert r (stx, none))
+      -- The `<;>` syntax is an atom, so to add it we special case it.
+      if k == ``Lean.Parser.Tactic.«tactic_<;>_» || k == ``Lean.Parser.Tactic.Conv.«conv_<;>_» then
+        if let some arg := args[1]? then
+          if let some r := arg.getRange? true then
+            modify (·.insert r (arg, none))
 
 /-- `getNames mctx` extracts the names of all the local declarations implied by the
 `MetavarContext` `mctx`. -/
@@ -148,18 +146,27 @@ def getNames (mctx : MetavarContext) : List Name :=
   let locDecls := (lcts.map (PersistentArray.toList ∘ LocalContext.decls)).flatten.reduceOption
   locDecls.map LocalDecl.userName
 
-/-- Search for tactic executions in the info tree and remove the syntax of the tactics that
-changed something. -/
-partial def eraseUsedTactics (exceptions : Std.HashSet SyntaxNodeKind)
-    (trees : PersistentArray InfoTree) : M Unit :=
-  let ranges := trees.foldl (init := #[]) <| InfoTree.foldInfo fun _ i ranges => Id.run do
+/--
+For each `TacticInfo` in the info tree that corresponds to a tactic syntax:
+- If the tactic is used, erase it from the set of tactics.
+- If the tactic is unused, add a message to this tactic, if it doesn't have a message already.
+-/
+def eraseUsedTactics (exceptions : Std.HashSet SyntaxNodeKind)
+    (trees : PersistentArray InfoTree)
+    (map : Std.HashMap Syntax.Range (Syntax × Option MessageData)) :
+    Std.HashMap Syntax.Range (Syntax × Option MessageData) :=
+  trees.foldl (init := map) <| InfoTree.foldInfo fun _ i ranges => Id.run do
     let .ofTacticInfo i := i | return ranges
     let stx := i.stx
     let some r := stx.getRange? true | return ranges
+    let withMsg (msg : MessageData) := ranges.modify r fun (stx, msg?) ↦ (stx, msg?.getD msg)
     match i.stx with
     | .atom _ "<;>" =>
-      -- `<;>` is used if it generates at least 2 goals
-      return if i.goalsAfter matches [] | [_] then ranges else ranges.push r
+      -- Bespoke check for `<;>`: if it generates at most 1 goal, we consider it unused.
+      match i.goalsAfter with
+      | [] => return withMsg m!"`<;>` can be removed"
+      | [_] => return withMsg m!"`<;>` can be replaced with `;`"
+      | _ => return ranges.erase r
     | .node _ kind _ =>
       -- An excepted tactic is always considered to be used.
       if exceptions.contains kind then
@@ -178,8 +185,21 @@ partial def eraseUsedTactics (exceptions : Std.HashSet SyntaxNodeKind)
       -- The tactic is used if the goals have changed.
       return if i.goalsAfter != i.goalsBefore then ranges.push r else ranges
     | _ => return ranges
-  for r in ranges do
-    modify (·.erase r)
+
+/--
+The warning message emitted for `stx`. Also return the syntax on which to put the warning.
+This is for tactic combinators like `all_goals` so that the warning is only on `all_goals` itself.
+-/
+def unusedTacticMsg (stx : Syntax) : MessageData × Syntax :=
+  if stx.isAtom then
+    (m!"`<;>` can be replaced with `;` or be removed", stx)
+  else
+    match stx.getKind with
+    | ``Lean.Parser.Tactic.allGoals => (m!"`all_goals` can be removed", stx[0])
+    | ``Lean.Parser.Tactic.anyGoals =>
+      (m!"`any_goals` can be replaced with `all_goals` or be removed", stx[0])
+    | ``Lean.Parser.Tactic.tacticTry_ => (m!"`try` can be removed", stx[0])
+    | _ => (m!"`{stx}` does nothing", stx)
 
 /--
 The warning message emitted for `stx`. Also return the syntax on which to put the warning.
@@ -211,19 +231,16 @@ def unusedTacticLinter : Linter where run := withSetOptionIn fun stx => do
     | return
   let trees ← getInfoTrees
   let exceptions := (← allowedRef.get).union <| allowedUnusedTacticExt.getState env
-  let go : M Unit := do
-    getTactics (← ignoreTacticKindsRef.get) (fun k => tactics.contains k || convs.contains k) stx
-    eraseUsedTactics exceptions trees
-  let (_, map) ← go.run {}
-  let unused := map.toArray.map fun (r, stx) ↦
-    let (msg, stx) := unusedTacticMsg stx
-    (stx.getRange?.getD r, stx, msg)
+  let (_, map) ← (getTactics (← ignoreTacticKindsRef.get) tactics convs stx).run {}
+  let map := eraseUsedTactics exceptions trees map
+  let unused := map.toArray
   let key (r : Lean.Syntax.Range) := (r.start.byteIdx, (-r.stop.byteIdx : Int))
   let mut last : Lean.Syntax.Range := ⟨0, 0⟩
-  for (r, stx, msg) in let _ := @lexOrd; let _ := @ltOfOrd.{0}; unused.qsort (key ·.1 < key ·.1) do
+  for (r, stx, msg?) in let _ := @lexOrd; let _ := @ltOfOrd.{0}; unused.qsort (key ·.1 < key ·.1) do
     if stx.getKind ∈ [``Batteries.Tactic.unreachable, ``Batteries.Tactic.unreachableConv] then
       continue
     if last.start ≤ r.start && r.stop ≤ last.stop then continue
+    let msg := msg?.getD m!"`{stx}` is never executed"
     Linter.logLint linter.unusedTactic stx m!"Unused tactic linter: {msg}."
     last := r
 

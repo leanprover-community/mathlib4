@@ -168,8 +168,7 @@ def toPreimages : J ⥤ Type v where
   map g := ↾(MapsTo.restrict (F.map g) _ _ fun x h => by
     rw [mem_iInter] at h ⊢
     intro f
-    rw [← mem_preimage, preimage_preimage, mem_preimage]
-    convert h (g ≫ f); rw [F.map_comp]; rfl)
+    simpa using h (g ≫ f))
 
 instance toPreimages_finite [∀ j, Finite (F.obj j)] : ∀ j, Finite ((F.toPreimages s).obj j) :=
   fun _ => Subtype.finite
