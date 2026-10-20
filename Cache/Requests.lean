@@ -574,6 +574,8 @@ structure TransferState where
   failed : Nat := 0
   done : Nat := 0
   speed : Nat := 0
+  /-- Hashes of the hard failures (not 404 misses). Set on downloads only. -/
+  failedHashes : Std.HashSet UInt64 := ∅
   /-- Decompression pipeline state; used only when a `DecompConfig` is set. -/
   decomp : DecompState := {}
 
@@ -684,7 +686,7 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
     return msg
   let init : TransferState := { last := (← IO.monoMsNow), decomp := decompState }
   let s ← IO.runCurlStreaming args init fun a line => do
-    let mut {last, success, failed, done, speed, decomp} := a
+    let mut {last, success, failed, done, speed, failedHashes, decomp} := a
     let mut {pending, currentTask, lastBatchSize, decompressed, decompFailed} := decomp
     -- Classify each finished transfer: rename a delivered part file, report a
     -- failure, and remove the part file on any non-delivery.
@@ -743,6 +745,10 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
         else
           if verdict matches .failed then
             failed := failed + 1
+            if dir matches .download then
+              if let .ok fn := fn? then
+                if let some hash := hashFromFileName fn then
+                  failedHashes := failedHashes.insert hash
             let mkFailureMsg code? fn? msg? : String := Id.run do
               let mut msg := "Transfer failed"
               if let .ok fn := fn? then
@@ -787,7 +793,7 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
         IO.println s!"Non-JSON output from curl:\n  {line}\n{e}"
     let decompNow : DecompState :=
       {pending, currentTask, lastBatchSize, decompressed, decompFailed}
-    pure {last, success, failed, done, speed, decomp := decompNow}
+    pure {last, success, failed, done, speed, failedHashes, decomp := decompNow}
   if s.done > 0 then
     -- to avoid confusingly moving on without finishing the count
     IO.eprintln (mkStatus s)
@@ -795,7 +801,7 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
 
 /-- Run one location's download pass for the given hash map. Returns the
 `TransferState` from `monitorCurl` (synthesized in serial mode, where it
-carries only the transfer-failure count) and the set of hashes it fetched, so
+carries only the transfer-failure count and hashes) and the set of hashes it fetched, so
 the caller can carry the rest to the next location. `decompState` is the
 previous round's decompression pipeline state; the returned state's `decomp`
 continues it. Serial mode never pipelines and passes it through untouched.
@@ -824,15 +830,15 @@ private def downloadFilesFromLocation (location : Location)
         downloadFile location hash) :: acc
     -- Served hashes carry the remaining files to the next location; hard
     -- failures (anything but a 404 miss, including a task that threw)
-    -- feed `TransferState.failed`, so they drive the exit code exactly as the
-    -- parallel path threads its own `failed` count.
-    let (served, failed) := r.foldl (init := ((∅ : Std.HashSet UInt64), 0))
-      fun (served, failed) (hash, t) =>
-        match t.get with
-        | .ok .delivered => (served.insert hash, failed)
-        | .ok .miss => (served, failed)
-        | _ => (served, failed + 1)
-    return ({ failed, decomp := decompState }, served)
+    -- feed `TransferState.failedHashes`, as the parallel path records them.
+    let (served, failedHashes) :=
+      r.foldl (init := ((∅ : Std.HashSet UInt64), (∅ : Std.HashSet UInt64)))
+        fun (served, failedHashes) (hash, t) =>
+          match t.get with
+          | .ok .delivered => (served.insert hash, failedHashes)
+          | .ok .miss => (served, failedHashes)
+          | _ => (served, failedHashes.insert hash)
+    return ({ failed := failedHashes.size, failedHashes, decomp := decompState }, served)
 
 /-- Build read locations from bases paired with optional container identities.
 `Container.location` adds each container's segment. A URL without a container
@@ -896,7 +902,8 @@ If `decompress` is true, decompresses files as they're downloaded (pipelined).
 
 The download tries `locations` in order, one round per location (see
 `readLocations`). After each round, it drops the files that the round fetched,
-so the next location retries only genuine misses. With `unsafeMode` set, the
+so the next location retries only genuine misses. Hard failures that no
+location served get one more pass over the chain. With `unsafeMode` set, the
 download reports how many files each scoped round served (`cache get
 --unsafe`). `repo` names the read in messages. -/
 def downloadFiles
@@ -923,37 +930,50 @@ def downloadFiles
     pure none
 
   -- Walk the locations in trust order. After each round, drop files that
-  -- succeeded so the next round only retries genuine misses.
+  -- succeeded so the next round only retries genuine misses. Misses surface
+  -- as the "not found" hint keyed on `remaining`.
   let mut remaining := hashMap
   -- Decompression pipeline state, carried from each round into the next (see
   -- `DecompState`); `finalizeDecomp` below drains what the last round leaves.
   let mut decompState : DecompState := {}
-  -- Hard transfer failures (not 404 misses) drive the exit code; misses are
-  -- normal and instead surface as the "not found" hint keyed on `remaining`.
-  -- Accumulated across rounds: a failure at an early location counts even
-  -- when a later round serves the file.
-  let mut downloadFailed := 0
+  -- Hard transfer failures (not 404 misses) that no location served get one
+  -- more pass over the chain, in a fresh `curl`. The retries inside one `curl`
+  -- share its connections, and a reset pool stalls all of them while the
+  -- run's other transfers complete. The failures left after that pass drive
+  -- the exit code.
+  let mut failedHashes : Std.HashSet UInt64 := ∅
+  let mut retried := false
+  -- The files the current pass attempts: everything, then the hard failures.
+  let mut batch := hashMap
   -- For the `--unsafe` summary: how many files each scoped (forks) round supplied,
-  -- attributed by the drop in `remaining` across that round.
+  -- attributed by the drop in `batch` across that round.
   let mut scopeServed : Array (String × Nat) := #[]
-  for location in locations do
-    if remaining.isEmpty then break
-    let scopeNote := match location.sha? with | some s => s!" (scope {s})" | none => ""
-    IO.println s!"Attempting to download {remaining.size} file(s) from {repo} cache at \
-      {location.root}{scopeNote}"
-    let before := remaining.size
-    let (s, served) ← downloadFilesFromLocation location remaining parallel
-      decompConfig decompState
-    -- Carry the decompression pipeline into the next round and the drain
-    -- below: files left behind here are never decompressed. Drop the files
-    -- this round served so the next location only retries genuine misses,
-    -- regardless of what is already on disk.
-    decompState := s.decomp
-    downloadFailed := downloadFailed + s.failed
-    remaining := remaining.filter fun _ hash => !served.contains hash
-    if unsafeMode then
-      if let some sha := location.sha? then
-        scopeServed := scopeServed.push (sha, before - remaining.size)
+  repeat
+    for location in locations do
+      if batch.isEmpty then break
+      let scopeNote := match location.sha? with | some s => s!" (scope {s})" | none => ""
+      IO.println s!"Attempting to download {batch.size} file(s) from {repo} cache at \
+        {location.root}{scopeNote}"
+      let before := batch.size
+      let (s, served) ← downloadFilesFromLocation location batch parallel
+        decompConfig decompState
+      -- Carry the decompression pipeline into the next round and the drain
+      -- below: files left behind here are never decompressed. Drop the files
+      -- this round served so the next location only retries genuine misses,
+      -- regardless of what is already on disk.
+      decompState := s.decomp
+      failedHashes := failedHashes.insertMany s.failedHashes
+      batch := batch.filter fun _ hash => !served.contains hash
+      remaining := remaining.filter fun _ hash => !served.contains hash
+      if unsafeMode then
+        if let some sha := location.sha? then
+          scopeServed := scopeServed.push (sha, before - batch.size)
+    batch := batch.filter fun _ hash => failedHashes.contains hash
+    if retried || batch.isEmpty then break
+    retried := true
+    failedHashes := ∅
+    IO.println s!"Retrying {batch.size} failed download(s)"
+  let downloadFailed := batch.size
 
   -- `--unsafe`: report which fork commits actually contributed files, so the
   -- user knows whose artifacts they ended up trusting.
