@@ -1909,7 +1909,8 @@ Q1841237:
 
 Q1855610:
   title: Theorem of de Moivre–Laplace
-  # special case of the central limit theorem: binomial converges to the normal distribution
+  decl: ProbabilityTheory.tendstoInDistribution_binomial
+  authors: Michel Hua
 
 Q1888583:
   title: Holditch's theorem
