@@ -8,9 +8,6 @@ module
 public import Mathlib.Algebra.Polynomial.Bivariate
 public import Mathlib.FieldTheory.RatFunc.AsPolynomial
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Intermediate Fields of Rational Function Fields
 

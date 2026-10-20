@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Topology.ContinuousMap.Bounded.Normed
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Compactly supported bounded continuous functions
 

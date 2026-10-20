@@ -15,9 +15,6 @@ import Plausible.Arbitrary
 import Plausible.Gen
 import Plausible.Random
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 This module contains `Plausible.Shrinkable` and `Plausible.SampleableExt` instances for mathlib
 types.

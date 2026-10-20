@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Harmonic.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Functions Harmonic on a Domain and Continuous on Its Closure
 

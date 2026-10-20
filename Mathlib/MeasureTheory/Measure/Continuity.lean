@@ -9,9 +9,6 @@ public import Mathlib.MeasureTheory.Measure.Basic
 
 import Mathlib.Topology.Order.AtTopBotIxx
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Continuity of measures
 

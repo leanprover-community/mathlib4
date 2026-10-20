@@ -8,9 +8,6 @@ module
 public meta import Lean.Meta.Tactic.Delta
 public import Mathlib.Init
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Term elaborators for reduction
 -/

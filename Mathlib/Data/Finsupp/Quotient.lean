@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Data.Finsupp.Defs
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Lifts a `Finsupp` from an underlying type to a `Finsupp` on a quotient
 -/
