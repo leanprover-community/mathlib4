@@ -160,44 +160,38 @@ example {x y : ℝ} (hx : x ∈ Set.Icc (-0.5) 1.5) (hy₀ : -2 ≤ y) (hy₁ : 
 
 end Arithmetic
 
-section Artanh
+section Log
 
 open Real
 
-example {x : ℝ} (hx : x ∈ Set.Icc 0.5 0.8) : artanh x ∈ Set.Icc 0.549 1.099 := by
-  dyadic_interval [prec := 18]
+example {x : ℝ} (hx : x ∈ Set.Icc 0.5 4) : log x ∈ Set.Icc (-0.693148) 1.38630 := by
+  dyadic_interval [prec := 21]
 
-example : artanh 0 = 0 := by
+example : log 1 = 0 := by
   dyadic_interval
 
-example : artanh 1 = 0 := by
-  dyadic_interval
-
-example : artanh 2 = 0 := by
-  dyadic_interval
-
-example {x : ℝ} (hx : x ∈ Set.Icc 0.5 1) : 0 ≤ artanh x := by
+example : log 0 = 0 := by
   dyadic_interval
 
 example :
-  artanh (((1 / 2 : ℚ) : ℝ)) ∈ Set.Icc
-    0.54930614433405484569762261846126285232374527891137
-    0.54930614433405484569762261846126285232374527891138 := by
+  log 2 ∈ Set.Icc
+    0.69314718055994530941723212145817656807550013436025
+    0.69314718055994530941723212145817656807550013436026 := by
   dyadic_interval [prec := 168]
 
-example {x : ℝ} (hx : x ∈ Set.Icc 0 0.5) :
-    artanh (artanh x) ∈ Set.Icc 0 0.618 := by
-  dyadic_interval [prec := 11]
+example {x : ℝ} (hx : x ∈ Set.Icc 0 1) :
+    log (log (x ^ 2 + 1) + 2) ∈ Set.Icc 0.693 0.991 := by
+  dyadic_interval [prec := 14]
 
-example {x : ℝ} (hx : x ∈ Set.Icc (-0.5) 0.5) :
-    x ^ 3 + artanh x ∈ Set.Icc (-0.675) 0.675 := by
+example {x : ℝ} (hx : x ∈ Set.Icc (-1) 1) :
+    x ^ 3 + log (x + 2) ∈ Set.Icc (-1) 2.1 := by
   dyadic_interval [prec := 10]
 
-example {x y : ℝ} (hx : x ∈ Set.Icc 1 2) (hy : y ∈ Set.Icc (-0.5) 0.5) :
-    x ^ 2 + y ^ 2 + artanh y ∈ Set.Icc 0.45 4.8 := by
+example {x y : ℝ} (hx : x ∈ Set.Icc 1 2) (hy : y ∈ Set.Icc 1 2) :
+    x ^ 2 + y ^ 2 + log (x + y) ∈ Set.Icc 2.69 9.39 := by
   dyadic_interval [prec := 10]
 
-end Artanh
+end Log
 
 section Splitting
 
