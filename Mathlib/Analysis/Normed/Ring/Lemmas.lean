@@ -12,6 +12,9 @@ public import Mathlib.Analysis.Normed.Group.Uniform
 public import Mathlib.Analysis.Normed.Ring.Basic
 public import Mathlib.Topology.MetricSpace.Dilation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Normed rings
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Ordering.Basic
 public import Mathlib.Order.Defs.Unbundled
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Some `Ordering` lemmas
 -/
