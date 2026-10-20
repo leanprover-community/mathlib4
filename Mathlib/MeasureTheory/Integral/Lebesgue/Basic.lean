@@ -40,7 +40,7 @@ local infixr:25 " →ₛ " => SimpleFunc
 
 variable {α β γ : Type*}
 
-open SimpleFunc hiding add_apply sub_apply
+open SimpleFunc
 
 variable {m : MeasurableSpace α} {μ ν : Measure α} {s : Set α}
 
