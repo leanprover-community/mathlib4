@@ -98,7 +98,7 @@ lemma edgeDisjointTriangles_iff_mem_sym2_subsingleton :
     · rintro ⟨⟨c, d, e, hcd, hce, hde, rfl⟩, hab⟩
       simp only [mem_insert, mem_singleton] at hab
       obtain ⟨rfl | rfl | rfl, rfl | rfl | rfl⟩ := hab
-      any_goals
+      all_goals
         simp only [*, adj_comm, true_and, Ne, not_true] at *
       all_goals
         first
