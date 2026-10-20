@@ -76,9 +76,15 @@ theorem hessP_succ (n k : ℕ) (H : Array R) :
 
 theorem hessCharPoly_eq (n : ℕ) (H : Array R) : hessCharPoly n H = hessP n H n := rfl
 
-/-! ## The recurrence on coefficient lists -/
+/-! ## The recurrence on coefficient lists
 
-/-- The Array version of `hessP`. -/
+This section defines the recurrence on a polynomial representation (lists of coefficients) that the
+kernel can compute.
+-/
+
+/-- Compute the coefficients of `∑_{t ≤ i} H[t][k] · r · (∏_{j=t}^{i-1} H[j+1][j]) · p_t` by
+recursion on `i`, where `p_t` is the polynomial defined in the coefficient list `ps[t]`. `r`
+accumulates the produuct of `H[k][k-1]` entries at each step. -/
 @[expose]
 def coeffHessSum (n : ℕ) (H : Array R) (kcol : ℕ) :
     (i : ℕ) → (r : R) → Array (List R) → List R
@@ -88,7 +94,8 @@ def coeffHessSum (n : ℕ) (H : Array R) (kcol : ℕ) :
       ((ps.getD (i + 1) []).map (H.getD (n * (i + 1) + kcol) 0 * r * ·))
       (coeffHessSum n H kcol i (r * H.getD (n * (i + 1) + i) 0) ps)
 
-/-- The Array version of one step of `hessP`. -/
+/-- Compute the coefficients of `pₖ` from the coefficient lists of `p₀, ..., p_{k-1}`. The
+coefficients of each polynomial are stored as a `List R` in `ps`. -/
 @[expose]
 def coeffHessStep (n : ℕ) (H : Array R) (k : ℕ) (ps : Array (List R)) : List R :=
   match k with
@@ -102,7 +109,7 @@ def coeffHessStep (n : ℕ) (H : Array R) (k : ℕ) (ps : Array (List R)) : List
         ((ps.getD (k' + 1) []).map (H.getD (n * (k' + 1) + (k' + 1)) 0 * ·)))
       (coeffHessSum n H (k' + 1) k' (H.getD (n * (k' + 1) + k') 0) ps)
 
-/-- The Array version of `hessCharPoly`. -/
+/-- Compute the coefficients of `hessCharPoly n H`. -/
 @[expose]
 def coeffHessCharPoly (n : ℕ) (H : Array R) : List R :=
   ((fun ps => ps.push (coeffHessStep n H ps.size ps))^[n] #[[1]]).getD n []
