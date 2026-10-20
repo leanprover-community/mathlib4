@@ -9,6 +9,9 @@ public import Mathlib.Init
 
 import Mathlib.Tactic.Attr.Register
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # General operations on functions
 -/

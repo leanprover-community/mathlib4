@@ -5,7 +5,6 @@ Authors: Justus Springer
 -/
 module
 
-public import Mathlib.Algebra.Group.SelfInv
 public import Mathlib.Algebra.Group.Pointwise.Set.Lattice
 
 /-!
@@ -18,6 +17,11 @@ See also `Mathlib/Algebra/Group/Pointwise/Finset/SelfInv.lean` for the finset ve
 -/
 
 public section
+
+/- Ensure that `@[to_additive]` uses the right namespace. -/
+insert_to_additive_translation Set.IsSelfInv Set.IsSelfNeg
+
+namespace Set
 
 open Set
 open scoped Pointwise
@@ -68,7 +72,7 @@ protected lemma IsSelfInv.sInter {S : Set (Set α)} (h : ∀ s ∈ S, IsSelfInv 
     IsSelfInv (⋂₀ S) :=
   sInter_eq_iInter ▸ .iInter fun s ↦ h s s.2
 
-@[to_additive]
+@[to_additive Set.IsSelfNeg.prod]
 protected lemma IsSelfInv.prod {t : Set β} (hs : IsSelfInv s) (ht : IsSelfInv t) :
     IsSelfInv (s ×ˢ t) := by
   rw [isSelfInv_iff, inv_prod, hs, ht]
@@ -137,3 +141,5 @@ protected lemma IsSelfInv.image (f : F) (hs : IsSelfInv s) : IsSelfInv (f '' s) 
   rw [isSelfInv_iff, ← Set.image_inv, hs.inv_eq]
 
 end Group
+
+end Set

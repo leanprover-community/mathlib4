@@ -5,11 +5,11 @@ Authors: Fangming Li, Jujian Zhang
 -/
 module
 
-public import Mathlib.Order.KrullDimension
-public import Mathlib.RingTheory.Ideal.Quotient.Defs
-public import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
 public import Mathlib.RingTheory.Jacobson.Radical
 public import Mathlib.RingTheory.Spectrum.Prime.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Krull dimensions of (commutative) rings

@@ -8,7 +8,7 @@ module
 public import Mathlib.Geometry.Convex.Cone.Face.Basic
 
 /-!
-## Face
+# The face lattice of a pointed cone
 
 This file defines the concept of a face of a pointed cone. It also defines the complete lattice
 structure on the collection of all faces of such a cone.
@@ -60,7 +60,7 @@ instance : SetLike (Face C) M where
   coe C := C.toPointedCone
   coe_injective := SetLike.coe_injective.comp <| by rintro ⟨_, _⟩ ⟨_, _⟩ _; congr
 
-instance : PartialOrder (Face C) := .ofSetLike (Face C) M
+instance : PartialOrder (Face C) := .ofSetLike (Face C)
 
 lemma toPointedCone_le : F ≤ C := F.isFaceOf.le
 
@@ -110,6 +110,7 @@ instance : CompleteSemilatticeInf (Face C) where
 instance : CompleteLattice (Face C) where
   top := ⟨C, .refl _⟩
   le_top F := F.toPointedCone_le
+  __ := instSemilatticeInf
   __ := completeLatticeOfCompleteSemilatticeInf _
 
 instance : Inhabited (Face C) := ⟨⊤⟩
@@ -187,9 +188,7 @@ def prodOrderIso (C : PointedCone R M) (D : PointedCone R N) :
     simp only [Equiv.coe_fn_mk, ge_iff_le, Prod.mk_le_mk]
     intro F₁ F₂; constructor <;> intro a
     · simpa [fst_prod_snd, toPointedCone_le_toPointedCone] using Face.prod_mono a.1 a.2
-    · constructor; all_goals
-      try simpa only [prod_left, prod_right]
-      exact fun _ d ↦ Submodule.map_mono a d
+    · constructor <;> exact fun _ d ↦ Submodule.map_mono a d
 
 end Prod
 

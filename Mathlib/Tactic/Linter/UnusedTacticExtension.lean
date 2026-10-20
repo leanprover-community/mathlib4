@@ -9,7 +9,7 @@ module
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
-public import Lean.Exception
+public meta import Lean.Exception
 
 /-!
 This file defines the environment extension to keep track of which tactics are allowed to leave
@@ -54,10 +54,7 @@ This can be increased dynamically, using `#allow_unused_tactic`.
 public initialize allowedRef : IO.Ref (Std.HashSet SyntaxNodeKind) ←
   IO.mkRef <| .ofArray #[
     `Mathlib.Tactic.Says.says,
-    `Batteries.Tactic.«tacticOn_goal-_=>_»,
-    `by,
-    `null,
-    `«]»,
+    `Batteries.Tactic.«tacticOn_goal_=>_»,
     ``Lean.Parser.Tactic.show,
     -- the following `SyntaxNodeKind`s play a role in silencing `test`s
     `Mathlib.Tactic.successIfFailWithMsg,
@@ -117,6 +114,6 @@ The trailing underscore `_` makes the syntax valid, since `refine` expects somet
 -/
 elab "#show_kind " t:tactic : command => do
   let stx ← `(tactic| $t)
-  Lean.logInfoAt t m!"The `SyntaxNodeKind` is '{stx.raw.getKind}'."
+  Lean.logInfoAt t m!"The `SyntaxNodeKind` is `{stx.raw.getKind}`."
 
 end Mathlib.Linter.UnusedTactic

@@ -6,8 +6,12 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Data.Set.Finite.Basic
-public import Mathlib.Order.Hom.Set
 public import Mathlib.Order.Minimal
+
+import Mathlib.Order.Hom.Set
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Finite preorders and finite sets in a preorder
@@ -150,12 +154,6 @@ lemma Finite.exists_le_maximal (h : p a) : ∃ b, a ≤ b ∧ Maximal p b :=
 
 end Preorder
 
-@[elab_as_elim, deprecated "Use `WellFoundedLT.induction _ h` instead." (since := "2026-04-10")]
-lemma LinearOrder.strong_induction_of_finite
-    {α : Type*} [LinearOrder α] [Finite α] {motive : α → Prop}
-    (h : ∀ (j : α) (_ : ∀ (k : α), k < j → motive k), motive j) (i : α) :
-    motive i := WellFoundedLT.induction _ h
-
 lemma OrderEmbedding.range_eq_iff
     {α β : Type*} [LinearOrder α] [PartialOrder β] [Finite α]
     {f g : α ↪o β} :
@@ -178,9 +176,9 @@ lemma OrderHom.range_eq_iff {α β : Type*} [LinearOrder α] [PartialOrder β]
     Set.range f = Set.range g ↔ f = g := by
   refine ⟨fun h ↦ ?_, by rintro rfl; rfl⟩
   ext : 2
-  exact DFunLike.congr_fun ((OrderEmbedding.range_eq_iff
-    (f := .ofStrictMono f (f.monotone.strictMono_of_injective hf))
-    (g := .ofStrictMono g (g.monotone.strictMono_of_injective hg))).1 (by simpa)) _
+  congrm $((OrderEmbedding.range_eq_iff
+   (f := .ofStrictMono f (f.monotone.strictMono_of_injective hf))
+   (g := .ofStrictMono g (g.monotone.strictMono_of_injective hg))).1 (by simpa)) _
 
 lemma OrderHom.eq_id_of_injective {α : Type*} [LinearOrder α] [Finite α] (f : α →o α)
     (hf : Function.Injective f) :
@@ -196,4 +194,4 @@ theorem StrictMono.eq_id {α : Type*} [LinearOrder α] [Finite α] {f : α → �
 /-- A strictly monotone self-map of a finite linear order fixes every point. -/
 theorem StrictMono.apply_eq {α : Type*} [LinearOrder α] [Finite α] {f : α → α}
     {x : α} (hf : StrictMono f) : f x = x :=
-  congrFun hf.eq_id x
+  congr($hf.eq_id x)

@@ -6,9 +6,49 @@ on:
   workflow_dispatch:
 
 jobs:
-  update-dependencies:
+  lake-update:
+    name: Run lake update
     runs-on: ubuntu-latest
     if: github.repository == 'leanprover-community/mathlib4'
+    # `lake update` runs the lakefile code (and any `post_update` hooks) of every dependency at
+    # its new revision, before anyone has reviewed it. So this job must not get a write-capable
+    # token, an OIDC token, any secret or access to the Actions cache. The `update-pr` job reads
+    # its result as data.
+    permissions:
+      contents: read
+    cache-mode: none
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false # no later step needs git credentials
+
+      - name: Configure Lean
+        uses: leanprover/lean-action@f061402b660e0c34644504b324e830f2991d4865 # v1.6.1
+        with:
+          auto-config: false
+          use-github-cache: false
+          use-mathlib-cache: false
+
+      - name: Update dependencies
+        run: lake update -v
+
+      - name: Upload the updated manifest and toolchain
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: lake-update-result
+          path: |
+            lake-manifest.json
+            lean-toolchain
+          if-no-files-found: error
+          retention-days: 3
+
+  update-pr:
+    name: Open or update the PR
+    needs: lake-update
+    runs-on: ubuntu-latest
+    # Holds the app token. Nothing from the dependencies runs in this job: it only takes
+    # `lake-manifest.json` and `lean-toolchain` from the `lake-update` job's artifact.
     permissions:
       pull-requests: read
       id-token: write
@@ -17,7 +57,7 @@ jobs:
     steps:
       - name: Generate app token
         id: app-token
-        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@d6393a535c054122e507b6c5e1b2f4c31c604121
         with:
           app-id: ${{ secrets.MATHLIB_UPDATE_DEPENDENCIES_APP_ID }}
           key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
@@ -31,13 +71,6 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ steps.app-token.outputs.token }}
-
-      - name: Configure Lean
-        uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1.5.0
-        with:
-          auto-config: false
-          use-github-cache: false
-          use-mathlib-cache: false
 
       - name: Get branch SHA if it exists
         id: get-branch-sha
@@ -92,20 +125,54 @@ jobs:
             echo "modified=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Update dependencies
+      - name: Download the updated manifest and toolchain
         if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}
-        run: lake update -v
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: lake-update-result
+          path: ${{ runner.temp }}/lake-update-result
 
-      - name: Check if lean-toolchain was modified
-        if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}
+      - name: Check the toolchain and apply the updated manifest
         id: check_toolchain
+        # The artifact comes from a job that ran upstream code, so treat it as data: skip the PR if
+        # the toolchain changed, and otherwise take only the manifest, once it has the shape
+        # `lake update` writes.
+        if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}
+        env:
+          RESULT_DIR: ${{ runner.temp }}/lake-update-result
         run: |
-          if git diff --name-only | grep -q "lean-toolchain"; then
+          for f in lake-manifest.json lean-toolchain; do
+            if [ ! -f "$RESULT_DIR/$f" ] || [ -L "$RESULT_DIR/$f" ]; then
+              echo "::error::$f is missing from the lake-update-result artifact or is not a regular file"
+              exit 1
+            fi
+          done
+          if ! cmp -s lean-toolchain "$RESULT_DIR/lean-toolchain"; then
             echo "toolchain_modified=true" >> "$GITHUB_OUTPUT"
             echo "Lean toolchain file was modified. Skipping PR creation."
-          else
-            echo "toolchain_modified=false" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
+          if ! jq -e '.packages | type == "array" and all(.[]; .type == "git"
+                and (.rev | type == "string" and test("^[0-9a-f]{40}$"))
+                and (.url | type == "string" and startswith("https://"))
+                and (.inputRev | . == null or type == "string"))' \
+                "$RESULT_DIR/lake-manifest.json" > /dev/null; then
+            echo "::error::lake-manifest.json from the lake-update job does not look like a Lake manifest"
+            exit 1
+          fi
+          # Apart from the revisions, the manifest must match master's: the same packages, URLs and
+          # so on. A transitive package's `inputRev` is copied from its parent's manifest, so it may
+          # change too. When an update legitimately changes more, a maintainer should do it by hand.
+          # The packages are sorted rather than keyed by name, so a duplicate entry is a difference.
+          shape='del(.packages[].rev) | .packages |= (
+            map(if .inherited then del(.inputRev) else . end) | sort_by(.name)
+          )'
+          if ! diff <(jq -S "$shape" lake-manifest.json) <(jq -S "$shape" "$RESULT_DIR/lake-manifest.json"); then
+            echo "::error::lake update changed more than the dependencies' revisions (diff above: master, then the update); update the dependencies by hand"
+            exit 1
+          fi
+          cp "$RESULT_DIR/lake-manifest.json" lake-manifest.json
+          echo "toolchain_modified=false" >> "$GITHUB_OUTPUT"
 
       - name: Determine PR state
         # only run if check_toolchain ran and returned "false"
@@ -195,17 +262,29 @@ jobs:
           # this branch is referenced in update_dependencies_zulip.yml
           branch: ${{ env.BRANCH_NAME }}
           base: master
+          # Only the files this workflow means to change, whatever else is in the working tree.
+          add-paths: |
+            lake-manifest.json
+            .github/actions/get-mathlib-ci/action.yml
           title: "${{ env.pr_title }}"
           body: |
             This PR updates the Mathlib dependencies.
 
+            It is not merged automatically: a maintainer should look at what the new
+            dependency revisions bring in before sending it to bors.
+
             ---
 
             [workflow run for this PR](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
-          labels: "auto-merge-after-CI"
 
+  notify-failure:
+    name: Report a failure on Zulip
+    needs: [lake-update, update-pr]
+    if: ${{ failure() }}
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
       - name: Send Zulip message (failure)
-        if: ${{ failure() }}
         uses: zulip/github-actions-zulip/send-message@f675f2b4eb2a95fae974215476dcb7ad8dfeff6b # v2.0.2
         with:
           api-key: ${{ secrets.ZULIP_API_KEY }}

@@ -7,12 +7,10 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Finite
 public import Mathlib.AlgebraicTopology.SimplicialSet.NerveNondegenerate
-public import Mathlib.AlgebraicTopology.SimplicialSet.Op
-public import Mathlib.Data.Fin.VecNotation
-public import Mathlib.Logic.Equiv.Fin.Basic
-public import Mathlib.Order.Fin.Finset
-public import Mathlib.Order.Fin.SuccAboveOrderIso
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+public import Mathlib.Order.Fin.Finset
+
+import Mathlib.Order.Fin.SuccAboveOrderIso
 import Mathlib.Order.Preorder.Finite
 
 /-!
@@ -180,8 +178,6 @@ lemma _root_.SSet.yonedaEquiv_symm_zero {X : SSet.{u}} (x : X _⦋0⦌) :
 lemma yonedaEquiv_map {n m : SimplexCategory} (f : n ⟶ m) :
     yonedaEquiv.{u} (stdSimplex.map f) = stdSimplex.objEquiv.symm f :=
   yonedaEquiv.symm.injective rfl
-
-@[deprecated (since := "2026-03-21")] alias stdSimplex.yonedaEquiv_map := yonedaEquiv_map
 
 @[simp]
 lemma yonedaEquiv_symm_app {S : SSet} {n m : SimplexCategory} (x : S.obj (op n))
@@ -416,8 +412,7 @@ def faceRepresentableBy {n : ℕ} (S : Finset (Fin (n + 1)))
         induction j using SimplexCategory.rec with | _ j
         dsimp
         ext i : 2
-        exact congr_arg Subtype.val
-          (e.apply_symm_apply ⟨(objEquiv x).toOrderHom i, _⟩) }
+        congrm $(e.apply_symm_apply ⟨(objEquiv x).toOrderHom i, _⟩).val }
   homEquiv_comp f g := by aesop
 
 /-- If a simplicial set `X` is representable by `⦋m⦌` for some `m : ℕ`, then this is the
@@ -636,7 +631,7 @@ private lemma bijective_image_objEquiv_toOrderHom_univ (m : ℕ) :
     apply SimplexCategory.Hom.ext
     rw [← OrderHom.range_eq_iff h₁ h₂]
     ext x
-    simpa using congr_fun (congrArg Membership.mem h₃) x
+    simpa using congr(x ∈ $h₃)
   · intro ⟨S, hS⟩
     dsimp at hS
     let e := monoEquivOfFin S (k := m + 1) (by simpa using hS)
