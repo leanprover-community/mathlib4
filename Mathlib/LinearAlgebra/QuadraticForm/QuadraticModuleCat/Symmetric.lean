@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
 public import Mathlib.LinearAlgebra.QuadraticForm.QuadraticModuleCat.Monoidal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The monoidal structure on `QuadraticModuleCat` is symmetric.
 

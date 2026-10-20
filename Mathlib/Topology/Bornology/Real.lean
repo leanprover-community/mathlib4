@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.MetricSpace.Bounded
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The reals are equipped with their order bornology
 
