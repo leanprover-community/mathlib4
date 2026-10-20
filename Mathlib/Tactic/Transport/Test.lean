@@ -106,16 +106,23 @@ def Prod.forall_transfer {α α' β β' : Type*}
 def Finset.forall_option_transfer {p : Option (Set α) → Sort*} {q : Option (Finset α) → Sort*}
     (h : ∀ (s : Option (Finset α)) (s' : Option (Set α)), s.IsOption Finset.IsSet s' → p s' → q s) :
     (∀ s, p s) → (∀ s, q s) :=
-  fun h' b ↦ by
-    apply h b (b.map SetLike.coe)
-    · cases b with
-      | none => apply Option.IsOption.none
-      | some s =>
-        apply Option.IsOption.some
-        rfl
-    apply h'
+    Option.forall_transfer Finset.IsSet SetLike.coe (fun _ ↦ rfl) h
 
-example [DecidableEq α] (s : Finset α) (a : α) : insert a (∅ : Finset α) = {a} := by
+inductive Forall.IsForall {ι : Type*} {α β : ι → Type*} (r : ∀ {i}, α i → β i → Prop) :
+    (∀ i, α i) → (∀ i, β i) → Prop
+  | mk {a b} : (∀ i, r (a i) (b i)) → IsForall r a b
+
+def Forall.forall_transfer {ι : Type*} {α β : ι → Type*}
+    {p : (∀ i, α i) → Sort*} {q : (∀ i, β i) → Sort*}
+    (r : ∀ {i}, α i → β i → Prop) (f : ∀ {i}, β i → α i) (hf : ∀ {i}, ∀ b : β i, r (f b) b)
+    (h : ∀ a : ∀ i, α i, ∀ b : ∀ i, β i, IsForall r a b → p a → q b) :
+    (∀ a, p a) → (∀ b, q b) :=
+  fun h' b ↦ h (f <| b ·) b (IsForall.mk fun i ↦ hf (b i)) (h' _)
+
+
+
+
+  example [DecidableEq α] (s : Finset α) (a : α) : insert a (∅ : Finset α) = {a} := by
   transport
   sorry
 
