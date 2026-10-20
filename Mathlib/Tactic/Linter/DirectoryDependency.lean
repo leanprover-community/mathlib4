@@ -282,7 +282,8 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Testing, `Mathlib.Util),
 ]
 
-/-- The configuration file for `forbiddenImportDirs`, relative to the mathlib root directory.
+/-- The path to the configuration file for `forbiddenImportDirs`, relative to `srcDir`. This is
+`{srcDir}/scripts/forbiddenDirs.json`.
 
 Each key names a module prefix; modules matching that prefix may not import modules matching any
 of the prefixes in the corresponding list. Exceptions to these rules live in
@@ -301,13 +302,13 @@ initialize forbiddenImportDirsCache : IO.Ref (Option NamePrefixRel) ← IO.mkRef
 should not import modules with the second prefix (except if specifically allowed in
 `overrideAllowedImportDirs`).
 
-For example, `scripts/forbiddenDirs.json` contains the entry
+For example, `{srcDir}/scripts/forbiddenDirs.json` contains the entry
 `"Mathlib.Algebra.Notation": ["Mathlib.Algebra"]` and ``(`Mathlib.Algebra.Notation,
 `Mathlib.Algebra.Notation)`` is in `overrideAllowedImportDirs` because modules in
 `Mathlib/Algebra/Notation.lean` cannot import modules in `Mathlib.Algebra` that are
 outside `Mathlib/Algebra/Notation.lean`.
 
-This relation is read at runtime from `scripts/forbiddenDirs.json`, so that updating the
+This relation is read at runtime from `{srcDir}/scripts/forbiddenDirs.json`, so that updating the
 configuration does not require recompiling this linter (and everything importing it).
 -/
 def forbiddenImportDirs (srcDir : System.FilePath) : IO NamePrefixRel := do
