@@ -5,8 +5,8 @@ Authors: Anatole Dedecker, Moritz Doll
 -/
 module
 
-public import Mathlib.Analysis.Asymptotics.TVS
 public import Mathlib.Analysis.Asymptotics.Basic
+public import Mathlib.Analysis.Asymptotics.TVS
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 
 /-!
