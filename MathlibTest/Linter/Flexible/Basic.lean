@@ -9,7 +9,7 @@ import Mathlib.Tactic.TacticAnalysis.Declarations -- only needed temporarily for
 
 set_option linter.flexible true
 set_option linter.unusedVariables false
-
+set_option linter.unusedTactic false
 /-! # Basic tests for the flexible linter
 
 This file contains basic tests for the flexible linter, which do not require any advanced imports.

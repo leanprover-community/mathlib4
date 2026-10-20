@@ -134,7 +134,7 @@ example (p : Bool) (f : False) {h : 0 = 0} : 0 = 0 ∧ 0 = 1 := by
   cases p <;>
   constructor
   assumption'
-  any_goals cases f
+  all_goals cases f
 
 #guard_msgs in
 -- `focus` is ignored.
