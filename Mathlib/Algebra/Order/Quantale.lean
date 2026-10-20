@@ -64,8 +64,7 @@ integral, and involutive quantales easier to add on later.
 open Function
 
 /-- An additive quantale is an additive semigroup distributing over a complete lattice. -/
-class IsAddQuantale (α : Type*)
-    [outParam <| AddSemigroup α] [outParam <| CompleteLattice α] where
+class IsAddQuantale (α : Type*) [AddSemigroup α] [CompleteLattice α] where
   /-- Addition is distributive over join in a quantale -/
   protected add_sSup_distrib (x : α) (s : Set α) : x + sSup s = ⨆ y ∈ s, x + y
   /-- Addition is distributive over join in a quantale -/
@@ -78,8 +77,7 @@ structure AddQuantale (α : Type*)
 
 /-- A quantale is a semigroup distributing over a complete lattice. -/
 @[to_additive]
-class IsQuantale (α : Type*)
-    [outParam <| Semigroup α] [outParam <| CompleteLattice α] : Prop where
+class IsQuantale (α : Type*) [Semigroup α] [CompleteLattice α] : Prop where
   /-- Multiplication is distributive over join in a quantale -/
   protected mul_sSup_distrib (x : α) (s : Set α) : x * sSup s = ⨆ y ∈ s, x * y
   /-- Multiplication is distributive over join in a quantale -/
