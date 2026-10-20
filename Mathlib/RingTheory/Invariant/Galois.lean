@@ -5,8 +5,11 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.RingTheory.Invariant.Basic
 public import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
+public import Mathlib.RingTheory.Invariant.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Invariant Extensions of Rings and Galois Theory

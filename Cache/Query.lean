@@ -76,16 +76,15 @@ def headIsAncestorOfMaster : IO.CacheM Bool := do
   catch _ =>
     pure false
 
-/-- URL of the per-SHA marker of `sha` in `container` on the container's read
-base (`getBaseURL`), or `none` for a flat container. Marker writes
-use the upload location (`uploadLocation`). -/
+/-- URL of the per-SHA marker of `sha` in `container` on the read base
+(`getBaseURL`), or `none` for a flat container. -/
 def markerProbeURL (container : Container) (repo sha : String) : IO (Option String) := do
-  return (container.location (← getBaseURL container) repo (some sha)).markerURL?
+  return (container.location (← getBaseURL) repo (some sha)).markerURL?
 
 /-- Resolve the read location of a container at `sha` and check its marker. -/
 def probeContainerForSHA (container : Container) (repo sha : String) :
     IO Bool := do
-  checkMarker (container.location (← getBaseURL container) repo (some sha))
+  checkMarker (container.location (← getBaseURL) repo (some sha))
 
 /-- Default number of marked fork commits `cache get --unsafe` will try as SHA
 scopes: 1, namely just the latest cached SHA. Overridden by

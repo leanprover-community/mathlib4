@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Algebra.Group.TypeTags.Hom
 public import Mathlib.Tactic.Spread
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extensionality of monoid homs from `ℕ`
 -/

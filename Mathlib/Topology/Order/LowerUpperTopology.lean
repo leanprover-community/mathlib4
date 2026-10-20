@@ -256,7 +256,7 @@ theorem isClosed_upperClosure (h : s.Finite) : IsClosed (upperClosure s : Set α
 theorem isLowerSet_of_isOpen (h : IsOpen s) : IsLowerSet s := by
   replace h := isOpen_iff_generate_Ici_compl.1 h
   induction h with
-  | basic u h' => obtain ⟨a, rfl⟩ := h'; exact (isUpperSet_Ici a).compl
+  | basic u h' => obtain ⟨a, rfl⟩ := h'; exact (IsUpperSet.Ici a).compl
   | univ => exact isLowerSet_univ
   | inter u v _ _ hu2 hv2 => exact hu2.inter hv2
   | sUnion _ _ ih => exact isLowerSet_sUnion ih
@@ -275,7 +275,7 @@ $[a, ∞)$.
 -/
 @[simp]
 theorem closure_singleton (a : α) : closure {a} = Ici a :=
-  Subset.antisymm ((closure_minimal fun _ h => h.ge) isClosed_Ici) <|
+  Subset.antisymm (closure_minimal (fun _ h => h.ge) isClosed_Ici) <|
     (isUpperSet_of_isClosed isClosed_closure).Ici_subset <| subset_closure rfl
 
 protected theorem isTopologicalBasis : IsTopologicalBasis (lowerBasis α) := by
