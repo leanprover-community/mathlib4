@@ -334,26 +334,27 @@ theorem cardDistinctFactors_zero : ω 0 = 0 := by simp
 @[simp]
 theorem cardDistinctFactors_one : ω 1 = 0 := by simp [cardDistinctFactors]
 
-theorem cardDistinctFactors_apply {n : ℕ} : ω n = n.primeFactorsList.dedup.length :=
+theorem cardDistinctFactors_eq_length_dedup_primeFactorsList {n : ℕ} :
+    ω n = n.primeFactorsList.dedup.length :=
   rfl
 
-theorem cardDistinctFactors_apply' {n : ℕ} : ω n = n.primeFactors.card :=
+theorem cardDistinctFactors_eq_card_primeFactors {n : ℕ} : ω n = n.primeFactors.card :=
   rfl
 
 @[simp]
 theorem cardDistinctFactors_eq_zero {n : ℕ} : ω n = 0 ↔ n ≤ 1 := by
-  simp [cardDistinctFactors_apply, le_one_iff_eq_zero_or_eq_one]
+  simp [cardDistinctFactors_eq_length_dedup_primeFactorsList, le_one_iff_eq_zero_or_eq_one]
 
 @[simp]
 theorem cardDistinctFactors_pos {n : ℕ} : 0 < ω n ↔ 1 < n := by simp [pos_iff_ne_zero]
 
 theorem cardDistinctFactors_eq_cardFactors_iff_squarefree {n : ℕ} (h0 : n ≠ 0) :
     ω n = Ω n ↔ Squarefree n := by
-  rw [cardFactors_apply, cardDistinctFactors_apply, ← List.nodup_iff_length_dedup_eq,
-    squarefree_iff_nodup_primeFactorsList h0]
+  rw [cardFactors_apply, cardDistinctFactors_eq_length_dedup_primeFactorsList,
+    ← List.nodup_iff_length_dedup_eq, squarefree_iff_nodup_primeFactorsList h0]
 
 theorem cardDistinctFactors_eq_one_iff {n : ℕ} : ω n = 1 ↔ IsPrimePow n := by
-  rw [ArithmeticFunction.cardDistinctFactors_apply, isPrimePow_iff_card_primeFactors_eq_one,
+  rw [cardDistinctFactors_eq_length_dedup_primeFactorsList, isPrimePow_iff_card_primeFactors_eq_one,
     ← toFinset_factors, List.card_toFinset]
 
 @[simp]
@@ -366,7 +367,7 @@ theorem cardDistinctFactors_apply_prime {p : ℕ} (hp : p.Prime) : ω p = 1 := b
   rw [← pow_one p, cardDistinctFactors_apply_prime_pow hp one_ne_zero]
 
 theorem cardDistinctFactors_mul {m n : ℕ} (h : m.Coprime n) : ω (m * n) = ω m + ω n := by
-  simp_rw [cardDistinctFactors_apply', h.primeFactors_mul,
+  simp_rw [cardDistinctFactors_eq_card_primeFactors, h.primeFactors_mul,
     card_union_of_disjoint h.disjoint_primeFactors]
 
 open scoped Function in
