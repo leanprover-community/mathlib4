@@ -169,8 +169,19 @@ lemma lieSpan_range_union_eq_top_of_mem_rootSpace [IsKilling K L] (b : (rootSyst
       rintro - ⟨i, rfl⟩
       simpa only [← (ef_sl2 i).lie_e_f, SetLike.mem_coe] using lie_mem _ (e_mem_S i) (f_mem_S i)
     simpa [H_le]
+  #adaptation_note /-- nightly-2026-10-07
+  The `suffices` proof here was previously solved by `grind`. Previously, `grind` did not introduce
+  any arguments because of the `noImplicitLambda` metadata produced by `have` / `suffices`.
+  This lead to a variable `α : H.root` in scope which `grind` could use in `h`. However, after
+  https://github.com/leanprover/lean4/pull/15745, `grind` simply introduces the subtype `H.root`
+  with `cases eager Subtype`, leading to no value of type `α : H.root` being in scope and instead
+  only its components `val : Weight K (↥H) L` and `property : val ∈ {α | ¬α.IsZero}`. Because it
+  eagerly reduces the `Subtype.val` application in the goal here, it ends up not being able to
+  match against `h`, causing it to fail.
+  -/
   suffices h : ∀ α : H.root,
-    rootSpace H α ≤ S.toSubmodule ∧ rootSpace H (-α : Weight K H L) ≤ S.toSubmodule by grind
+      rootSpace H α ≤ S.toSubmodule ∧ rootSpace H (-α : Weight K H L) ≤ S.toSubmodule from
+    fun α => (h α).1
   refine fun α ↦ b.induction_add (p := fun α ↦
     rootSpace H α ≤ S.toSubmodule ∧ rootSpace H (-α : Weight K H L) ≤ S.toSubmodule) α ?_ ?_ ?_
   · rintro β hβ
