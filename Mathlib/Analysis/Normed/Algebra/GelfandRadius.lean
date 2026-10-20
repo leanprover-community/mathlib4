@@ -80,11 +80,14 @@ meta def evalGelfandRadius : PositivityExt where eval {u α} _ pα? e :=
 
 end Mathlib.Meta.Positivity
 
+theorem gelfandRadius_eq_of_norm_pow {B : Type*} [SeminormedRing B] (a : A) (b : B)
+    (h : ∀ n, ‖a ^ n‖ = ‖b ^ n‖) : gelfandRadius a = gelfandRadius b :=
+  tendsto_nhds_unique_of_forall (tendsto_gelfandRadius a) (tendsto_gelfandRadius b) (by simp [h])
+
 theorem Isometry.gelfandRadius_map {B F : Type*} [SeminormedRing B] [FunLike F A B]
     [MonoidWithZeroHomClass F A B] {f : F} (hf : Isometry f) (a : A) :
     gelfandRadius (f a) = gelfandRadius a :=
-  tendsto_nhds_unique (by simpa [← map_pow, hf.norm_map_of_map_zero (map_zero f)]
-    using tendsto_gelfandRadius (f a)) (tendsto_gelfandRadius a)
+  gelfandRadius_eq_of_norm_pow (f a) a (by simp [← map_pow, hf.norm_map_of_map_zero (map_zero f)])
 
 theorem gelfandRadius_le_norm (a : A) : gelfandRadius a ≤ ‖a‖ := by
   refine le_of_tendsto (tendsto_gelfandRadius' a) (Eventually.of_forall fun k ↦ ?_)
@@ -99,7 +102,7 @@ theorem gelfandRadius_zero : gelfandRadius (0 : A) = 0 :=
 
 @[simp]
 theorem gelfandRadius_neg (a : A) : gelfandRadius (-a) = gelfandRadius a :=
-  tendsto_nhds_unique (by simpa using tendsto_gelfandRadius (-a)) (tendsto_gelfandRadius a)
+  gelfandRadius_eq_of_norm_pow (-a) a (by simp)
 
 theorem gelfandRadius_smul (c : 𝕜) (a : A) :
     gelfandRadius (c • a) = ‖c‖ * gelfandRadius a := by
