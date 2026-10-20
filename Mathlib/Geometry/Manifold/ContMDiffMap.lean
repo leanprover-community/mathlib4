@@ -8,6 +8,9 @@ module
 public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 public import Mathlib.Geometry.Manifold.Notation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `C^n` bundled maps
 
@@ -57,8 +60,6 @@ instance instFunLike : FunLike C^n⟮I, M; I', M'⟯ M M' where
   coe_injective := Subtype.coe_injective
 
 protected theorem contMDiff (f : C^n⟮I, M; I', M'⟯) : CMDiff n f := f.prop
-
-attribute [to_additive_ignore_args 21] ContMDiffMap ContMDiffMap.instFunLike
 
 variable {f g : C^n⟮I, M; I', M'⟯}
 

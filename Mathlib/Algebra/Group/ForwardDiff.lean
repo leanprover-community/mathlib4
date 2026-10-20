@@ -5,8 +5,9 @@ Authors: Giulio Caflisch, David Loeffler, Yu Shao, Weijie Jiang, BeiBei Xiong
 -/
 module
 
-import Mathlib.Tactic.Abel
 public import Mathlib.Algebra.Polynomial.Eval.Degree
+
+import Mathlib.Tactic.Abel
 
 /-!
 # Forward difference operators and Newton series
@@ -113,8 +114,6 @@ open fwdDiff_aux
     Δ_[h] (∑ k ∈ s, f k) = ∑ k ∈ s, Δ_[h] (f k) :=
   map_sum (fwdDiffₗ M G h) f s
 
-@[deprecated (since := "2026-04-08")] alias fwdDiff_finset_sum := fwdDiff_finsetSum
-
 @[simp] lemma fwdDiff_iter_add (f g : M → G) (n : ℕ) :
     Δ_[h]^[n] (f + g) = Δ_[h]^[n] f + Δ_[h]^[n] g := by
   simpa only [coe_fwdDiffₗ_pow] using map_add (fwdDiffₗ M G h ^ n) f g
@@ -128,8 +127,6 @@ open fwdDiff_aux
 @[simp] lemma fwdDiff_iter_finsetSum {α : Type*} (s : Finset α) (f : α → M → G) (n : ℕ) :
     Δ_[h]^[n] (∑ k ∈ s, f k) = ∑ k ∈ s, Δ_[h]^[n] (f k) := by
   simpa only [coe_fwdDiffₗ_pow] using map_sum (fwdDiffₗ M G h ^ n) f s
-
-@[deprecated (since := "2026-04-08")] alias fwdDiff_iter_finset_sum := fwdDiff_iter_finsetSum
 
 section newton_formulae
 

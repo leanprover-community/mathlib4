@@ -103,10 +103,12 @@ theorem exists_lift_nhds {f : C(I × A, X)} {g : I × A → E} (g_lifts : p ∘ 
     rw [(q e).right_inv this, ← hpq e]; congrm $g'_lifts ta
   · rw [closure_le_eq continuous_fst continuous_const] at ht
     exact ⟨⟨hta.1.1, ht⟩, hta.2.2.1⟩
-  · simp_rw [not_le]; exact (ContinuousOn.congr ((q e).continuousOn_invFun.comp f.2.continuousOn
+  · simp_rw [not_le]
+    refine ContinuousOn.mono ?_
+      (Set.inter_subset_inter_right _ <| closure_lt_subset_le continuous_const continuous_fst)
+    exact ContinuousOn.congr ((q e).continuousOn_invFun.comp f.2.continuousOn
       fun _ h ↦ huv ⟨hu ⟨h.2, h.1.1.2⟩, h.1.2.1⟩)
-      fun _ h ↦ ite_eq_left <| huv ⟨hu ⟨h.2, h.1.1.2⟩, h.1.2.1⟩).mono
-        (Set.inter_subset_inter_right _ <| closure_lt_subset_le continuous_const continuous_fst)
+      fun _ h ↦ ite_eq_left <| huv ⟨hu ⟨h.2, h.1.1.2⟩, h.1.2.1⟩
   · ext ta; rw [Function.comp_apply]; split_ifs with _ hv
     · congrm $g'_lifts ta
     · rw [hpq e, (q e).right_inv hv]
@@ -190,7 +192,7 @@ theorem existsUnique_continuousMap_lifts [PathConnectedSpace A] [LocallyPathConn
       f.2.continuousOn <| by rintro _ ⟨t, rfl⟩; exact hUp (hγ _)) _ (by simp) (somePath a₀ x).source
       (by simp) (Γ_0 _ (somePath a₀ x).source) _ (Γ_lifts ..) (by simp)
     · ext
-      simp only [Function.comp, ContinuousMap.coe_coe, Path.trans_apply, ContinuousMap.coe_comp]
+      simp only [Function.comp, ContinuousMap.coe_ofClass, Path.trans_apply, ContinuousMap.coe_comp]
       split_ifs
       · apply congr_fun (Γ_lifts ..)
       · simp [Path.map', p.right_inv (hUp (hγ _))]
@@ -279,7 +281,7 @@ lemma liftPath_trans {x y z : X} {e : E} (hpe : x = p e) (γ : Path x y) (γ' : 
       ⟨cov.liftPath γ' (Γ 1) (by simpa using congr($(cov.liftPath_lifts γ ..) 1).symm),
         liftPath_zero .., rfl⟩ := by
   refine .symm <| (cov.eq_liftPath_iff' _).mpr ⟨funext fun _ ↦ ?_, by simp⟩
-  simp only [ContinuousMap.coe_coe, Function.comp_apply, Path.trans_apply]; split_ifs
+  simp only [ContinuousMap.coe_ofClass, Function.comp_apply, Path.trans_apply]; split_ifs
   · congrm $(cov.liftPath_lifts γ e (γ.source.trans hpe)) _
   · congrm $(cov.liftPath_lifts γ' _ ?_) _
     simpa using congr($(cov.liftPath_lifts γ ..) 1).symm
@@ -478,7 +480,8 @@ lemma injective_path_homotopic_map (e₀ e₁ : E) :
   simp only [Path.Homotopic.Quotient.mk''_eq_mk]
   simp_rw [← Path.Homotopic.Quotient.mk_map]
   iterate 2 rw [Path.Homotopic.Quotient.eq]
-  exact (cov.homotopicRel_iff_comp ⟨0, .inl rfl, γ₀.source.trans γ₁.source.symm⟩).mpr
+  exact (cov.homotopicRel_iff_comp (S := {0, 1})
+    ⟨0, .inl rfl, γ₀.source.trans γ₁.source.symm⟩).mpr
 
 /-- A continuous map `f` from a simply-connected, locally path-connected space `A` to another
   space `X` lifts uniquely through a covering map `p : E → X`, after specifying any lift
@@ -499,7 +502,6 @@ theorem existsUnique_continuousMap_lifts [SimplyConnectedSpace A] [LocallyPathCo
     rw [eq_liftPath_iff']
   exacts [⟨Γ_lifts, Γ_0⟩, ⟨Γ'_lifts, Γ'_0⟩]
 
-set_option backward.isDefEq.respectTransparency.types false in
 open FundamentalGroup Path.Homotopic.Quotient in
 /-- A continuous map `f` from a path connected, locally path-connected space `A` to another
   space `X` lifts uniquely through a covering map `p : E → X` (such that `f a₀` is lifted to `e₀`)

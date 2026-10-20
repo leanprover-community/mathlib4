@@ -5,9 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Subobject.Lattice
-public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
 public import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
+public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
+public import Mathlib.CategoryTheory.Subobject.Lattice
+
 import Mathlib.Order.OrderIsoNat
 
 /-!
@@ -83,7 +84,6 @@ lemma not_strictMono_of_isNoetherianObject
     ¬ StrictMono f :=
   (isNoetherianObject_iff_not_strictMono X).1 inferInstance f
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isNoetherianObject_iff_isEventuallyConstant :
     IsNoetherianObject X ↔ ∀ (F : ℕ ⥤ MonoOver X),
       IsFiltered.IsEventuallyConstant F := by

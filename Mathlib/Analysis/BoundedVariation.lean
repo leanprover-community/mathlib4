@@ -5,11 +5,12 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-import Mathlib.Analysis.Calculus.FDeriv.Equiv
-import Mathlib.Analysis.Calculus.FDeriv.Prod
 public import Mathlib.Analysis.Calculus.Monotone
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 public import Mathlib.Topology.EMetricSpace.VariationOnFromTo
+
+import Mathlib.Analysis.Calculus.FDeriv.Equiv
+import Mathlib.Analysis.Calculus.FDeriv.Prod
 
 /-!
 # Almost everywhere differentiability of functions with locally bounded variation

@@ -5,10 +5,13 @@ Authors: Benjamin Davidson
 -/
 module
 
-import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 public import Mathlib.Analysis.SpecialFunctions.NonIntegrable
 
+import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Integrability of Special Functions

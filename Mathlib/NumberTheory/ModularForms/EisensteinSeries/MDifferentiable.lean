@@ -5,10 +5,14 @@ Authors: Chris Birkbeck
 -/
 module
 
-public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.UniformConvergence
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
+public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.UniformConvergence
+
 import Mathlib.Analysis.Complex.LocallyUniformLimit
 import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Holomorphicity of Eisenstein series
@@ -19,8 +23,6 @@ MDifferentiable.
 -/
 
 public section
-
-noncomputable section
 
 open UpperHalfPlane Filter Function Complex CongruenceSubgroup
 

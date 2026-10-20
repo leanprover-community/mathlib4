@@ -8,7 +8,11 @@ module
 public import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
 public import Mathlib.Algebra.Order.Interval.Finset.Basic
 public import Mathlib.Algebra.Order.Sub.Basic
+
 import Mathlib.Data.Fintype.BigOperators
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Results about big operators over intervals

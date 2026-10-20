@@ -7,12 +7,12 @@ module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
 public import Mathlib.Algebra.Group.Submonoid.Defs
-import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Order.Filter.AtTopBot.BigOperators
 public import Mathlib.Topology.Algebra.InfiniteSum.Defs
 public import Mathlib.Topology.Algebra.Monoid.Defs
-public import Mathlib.Order.Filter.AtTopBot.BigOperators
 
 import Mathlib.Algebra.Group.Submonoid.BigOperators
+import Mathlib.Data.Fintype.BigOperators
 
 /-!
 # Lemmas on infinite sums and products in topological monoids
@@ -25,8 +25,6 @@ Results requiring a group (rather than monoid) structure on the target should go
 -/
 
 public section
-
-noncomputable section
 
 open Filter Finset Function Topology SummationFilter
 
@@ -140,12 +138,6 @@ set_option backward.isDefEq.respectTransparency false in
 theorem multipliable_of_hasFiniteMulSupport [L.HasSupport] (h : HasFiniteMulSupport f) :
     Multipliable f L := by
   apply multipliable_of_ne_finset_one (s := h.toFinset); simp
-
-@[deprecated (since := "2026-03-03")] alias
-  multipliable_of_finite_mulSupport := multipliable_of_hasFiniteMulSupport
-
-@[deprecated (since := "2026-03-03")] alias
-  summable_of_finite_support := summable_of_hasFiniteSupport
 
 @[to_additive]
 lemma Multipliable.of_finite [Finite β] [L.HasSupport] {f : β → α} : Multipliable f L :=
@@ -756,10 +748,15 @@ protected theorem Multipliable.tprod_mul_tprod_compl {s : Set β}
   (hs.hasProd.mul_compl hsc.hasProd).tprod_eq.symm
 
 @[to_additive]
-protected theorem Multipliable.tprod_union_disjoint {s t : Set β} (hd : Disjoint s t)
+protected theorem Multipliable.tprod_union_of_disjoint {s t : Set β} (hd : Disjoint s t)
     (hs : Multipliable (f ∘ (↑) : s → α)) (ht : Multipliable (f ∘ (↑) : t → α)) :
     ∏' x : ↑(s ∪ t), f x = (∏' x : s, f x) * ∏' x : t, f x :=
   (hs.hasProd.mul_disjoint hd ht.hasProd).tprod_eq
+
+@[deprecated (since := "2026-05-10")]
+alias Multipliable.tprod_union_disjoint := Multipliable.tprod_union_of_disjoint
+@[deprecated (since := "2026-05-10")]
+alias Summable.tsum_union_disjoint := Summable.tsum_union_of_disjoint
 
 @[to_additive]
 protected theorem Multipliable.tprod_finset_bUnion_disjoint {ι} {s : Finset ι} {t : ι → Set β}
