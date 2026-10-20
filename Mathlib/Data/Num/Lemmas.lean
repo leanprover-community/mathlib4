@@ -771,7 +771,7 @@ theorem castNum_eq_bitwise {f : Num → Num → Num} {g : Bool → Bool → Bool
     all_goals
       repeat rw [this']
       rw [Nat.bitwise_bit gff]
-    any_goals rw [Nat.bitwise_zero, p11]; cases g true true <;> rfl
+    · rw [Nat.bitwise_zero, p11]; cases g true true <;> rfl
     any_goals rw [Nat.bitwise_zero_left, ← Bool.cond_eq_ite, this, ← bit_to_nat, p1b]
     any_goals rw [Nat.bitwise_zero_right, ← Bool.cond_eq_ite, this, ← bit_to_nat, pb1]
     all_goals
