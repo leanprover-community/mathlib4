@@ -10,6 +10,9 @@ public import Mathlib.Tactic.Tauto
 import Mathlib.Basic.Logic.Basic
 import Mathlib.Tactic.SplitIfs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # More basic logic properties
 
