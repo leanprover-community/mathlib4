@@ -9,6 +9,9 @@ public import Batteries.Util.LibraryNote
 
 import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Documentation for `ext` tactic
 

@@ -5,11 +5,11 @@ Authors: Patrick Stevens, Bolton Bailey
 -/
 module
 
-public import Mathlib.Data.Nat.Choose.Factorization
 public import Mathlib.Analysis.Convex.SpecificFunctions.Basic
+public import Mathlib.Data.Nat.Choose.Factorization
 
-import Mathlib.NumberTheory.Primorial
 import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
+import Mathlib.NumberTheory.Primorial
 import Mathlib.Tactic.NormNum.Prime
 
 /-!
@@ -25,8 +25,8 @@ coefficient, and if the postulate does not hold, this upper bound conflicts with
 bound for large enough `n`. This proves the result holds for large enough `n`, and for smaller `n`
 an explicit list of primes is provided which covers the remaining cases.
 
-As in the [Metamath implementation](carneiro2015arithmetic), we rely on some optimizations from
-[Shigenori Tochiori](tochiori_bertrand). In particular we use the cleaner bound on the central
+As in the [Metamath implementation][carneiro2015arithmetic], we rely on some optimizations from
+[Shigenori Tochiori][tochiori_bertrand]. In particular we use the cleaner bound on the central
 binomial coefficient given in `Nat.four_pow_lt_mul_centralBinom`.
 
 ## References
@@ -39,6 +39,8 @@ binomial coefficient given in `Nat.four_pow_lt_mul_centralBinom`.
 
 Bertrand, prime, binomial coefficients
 -/
+
+open scoped Finset
 
 public section
 
@@ -177,7 +179,7 @@ theorem centralBinom_le_of_no_bertrand_prime (n : ℕ) (n_large : 2 < n)
   apply mul_le_mul'
   · refine (Finset.prod_le_prod fun p _ => (?_ : f p ≤ 2 * n)).trans ?_
     · exact pow_factorization_choose_le (mul_pos two_pos n_pos)
-    have : (Finset.Icc 1 (sqrt (2 * n))).card = sqrt (2 * n) := by rw [card_Icc, Nat.add_sub_cancel]
+    have : #(Finset.Icc 1 (sqrt (2 * n))) = sqrt (2 * n) := by rw [card_Icc, Nat.add_sub_cancel]
     rw [Finset.prod_const]
     refine pow_right_mono₀ n2_pos ((Finset.card_le_card fun x hx => ?_).trans this.le)
     obtain ⟨h1, h2⟩ := Finset.mem_filter.1 hx

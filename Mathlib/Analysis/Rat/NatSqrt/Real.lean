@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.Data.Rat.NatSqrt.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Rational approximations to square roots of naturals
 

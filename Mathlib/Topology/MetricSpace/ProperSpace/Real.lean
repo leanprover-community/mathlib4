@@ -12,6 +12,9 @@ public import Mathlib.Topology.UniformSpace.Real
 
 import Mathlib.Topology.Order.MonotoneContinuity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Second countability of the reals
 

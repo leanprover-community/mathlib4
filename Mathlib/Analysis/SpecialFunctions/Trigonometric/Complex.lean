@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Complex trigonometric functions
 
@@ -20,8 +23,6 @@ functions, or require additional imports which are not available in that file.
 
 public section
 
-
-noncomputable section
 
 namespace Complex
 

@@ -5,8 +5,11 @@ Authors: Robin Carlier
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 public import Mathlib.CategoryTheory.Functor.Currying
+public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # External product of diagrams in a monoidal category
