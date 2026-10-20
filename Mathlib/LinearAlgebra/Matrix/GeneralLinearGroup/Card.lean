@@ -10,6 +10,7 @@ public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 public import Mathlib.LinearAlgebra.Matrix.Rank
 
 import Mathlib.FieldTheory.Finiteness
+
 /-!
 # Cardinal of the general linear group over finite rings
 
