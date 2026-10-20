@@ -384,28 +384,28 @@ instance instOne [One β] : One (α →ₛ β) :=
   ⟨const α 1⟩
 
 @[to_additive]
-instance [One β] : IsOneApply (α →ₛ β) := ⟨fun _ ↦ rfl⟩
+instance [One β] : IsOneApply (α →ₛ β) where
 
 @[to_additive]
 instance instMul [Mul β] : Mul (α →ₛ β) :=
   ⟨fun f g => (f.map (· * ·)).seq g⟩
 
 @[to_additive]
-instance [Mul β] : IsMulApply (α →ₛ β) := ⟨fun _ _ _ ↦ rfl⟩
+instance [Mul β] : IsMulApply (α →ₛ β) where
 
 @[to_additive]
 instance instDiv [Div β] : Div (α →ₛ β) :=
   ⟨fun f g => (f.map (· / ·)).seq g⟩
 
 @[to_additive]
-instance [Div β] : IsDivApply (α →ₛ β) := ⟨fun _ _ _ ↦ rfl⟩
+instance [Div β] : IsDivApply (α →ₛ β) where
 
 @[to_additive]
 instance instInv [Inv β] : Inv (α →ₛ β) :=
   ⟨fun f => f.map Inv.inv⟩
 
 @[to_additive]
-instance [Inv β] : IsInvApply (α →ₛ β) := ⟨fun _ _ ↦ rfl⟩
+instance [Inv β] : IsInvApply (α →ₛ β) where
 
 instance instSup [Max β] : Max (α →ₛ β) :=
   ⟨fun f g => (f.map (· ⊔ ·)).seq g⟩
@@ -490,7 +490,7 @@ instance instSMul [SMul K β] : SMul K (α →ₛ β) :=
   ⟨fun k f => f.map (k • ·)⟩
 
 @[to_additive]
-instance [SMul K β] : IsSMulApply K (α →ₛ β) := ⟨fun _ _ _ ↦ rfl⟩
+instance [SMul K β] : IsSMulApply K (α →ₛ β) where
 
 @[deprecated (since := "2026-10-20")] alias coe_vadd := FunLike.coe_vadd
 @[to_additive existing, deprecated (since := "2026-10-20")] alias coe_smul := FunLike.coe_smul
@@ -500,14 +500,14 @@ instance [SMul K β] : IsSMulApply K (α →ₛ β) := ⟨fun _ _ _ ↦ rfl⟩
 
 instance hasNatSMul [AddMonoid β] : SMul ℕ (α →ₛ β) := inferInstance
 
-instance [AddMonoid β] : IsSMulApply ℕ (α →ₛ β) := inferInstance
+instance [AddMonoid β] : IsSMulApply ℕ (α →ₛ β) where
 
 @[to_additive existing hasNatSMul]
 instance hasNatPow [Monoid β] : Pow (α →ₛ β) ℕ :=
   ⟨fun f n => f.map (· ^ n)⟩
 
 @[to_additive existing instIsSMulApplyNat]
-instance [Monoid β] : IsPowApply ℕ (α →ₛ β) := ⟨fun _ _ _ ↦ rfl⟩
+instance [Monoid β] : IsPowApply ℕ (α →ₛ β) where
 
 @[to_additive existing coe_smul, deprecated (since := "2026-10-20")] alias coe_pow :=
   FunLike.coe_pow
@@ -517,7 +517,7 @@ instance [Monoid β] : IsPowApply ℕ (α →ₛ β) := ⟨fun _ _ _ ↦ rfl⟩
 instance hasIntPow [DivInvMonoid β] : Pow (α →ₛ β) ℤ :=
   ⟨fun f n => f.map (· ^ n)⟩
 
-instance [DivInvMonoid β] : IsPowApply ℤ (α →ₛ β) := ⟨fun _ _ _ ↦ rfl⟩
+instance [DivInvMonoid β] : IsPowApply ℤ (α →ₛ β) where
 
 @[simp]
 theorem coe_zpow [DivInvMonoid β] (f : α →ₛ β) (z : ℤ) : ⇑(f ^ z) = (⇑f) ^ z :=
@@ -530,32 +530,34 @@ theorem zpow_apply [DivInvMonoid β] (z : ℤ) (f : α →ₛ β) (a : α) : (f 
 -- argument order swap between `coe_smul` and `coe_pow`.
 section Additive
 
-instance instAddMonoid [AddMonoid β] : AddMonoid (α →ₛ β) := FunLike.addMonoid
+instance instAddMonoid [AddMonoid β] : AddMonoid (α →ₛ β) := fast_instance% FunLike.addMonoid
 
-instance instAddCommMonoid [AddCommMonoid β] : AddCommMonoid (α →ₛ β) := FunLike.addCommMonoid
+instance instAddCommMonoid [AddCommMonoid β] : AddCommMonoid (α →ₛ β) :=
+  fast_instance% FunLike.addCommMonoid
 
 instance instAddGroup [AddGroup β] : AddGroup (α →ₛ β) := FunLike.addGroup
 
-instance instAddCommGroup [AddCommGroup β] : AddCommGroup (α →ₛ β) := FunLike.addCommGroup
+instance instAddCommGroup [AddCommGroup β] : AddCommGroup (α →ₛ β) :=
+  fast_instance% FunLike.addCommGroup
 
 end Additive
 
 @[to_additive existing]
-instance instMonoid [Monoid β] : Monoid (α →ₛ β) := FunLike.monoid
+instance instMonoid [Monoid β] : Monoid (α →ₛ β) := fast_instance% FunLike.monoid
 
 @[to_additive existing]
-instance instCommMonoid [CommMonoid β] : CommMonoid (α →ₛ β) := FunLike.commMonoid
+instance instCommMonoid [CommMonoid β] : CommMonoid (α →ₛ β) := fast_instance% FunLike.commMonoid
 
 @[to_additive existing]
-instance instGroup [Group β] : Group (α →ₛ β) := FunLike.group
+instance instGroup [Group β] : Group (α →ₛ β) := fast_instance% FunLike.group
 
 @[to_additive existing]
-instance instCommGroup [CommGroup β] : CommGroup (α →ₛ β) := FunLike.commGroup
+instance instCommGroup [CommGroup β] : CommGroup (α →ₛ β) := fast_instance% FunLike.commGroup
 
-instance [Monoid K] [MulAction K β] : MulAction K (α →ₛ β) := FunLike.mulAction
+instance [Monoid K] [MulAction K β] : MulAction K (α →ₛ β) := fast_instance% FunLike.mulAction
 
 instance instModule [Semiring K] [AddCommMonoid β] [Module K β] : Module K (α →ₛ β) :=
-  FunLike.module
+  fast_instance% FunLike.module
 
 theorem smul_eq_map [SMul K β] (k : K) (f : α →ₛ β) : k • f = f.map (k • ·) :=
   rfl
@@ -564,41 +566,44 @@ lemma smul_const [SMul K β] (k : K) (b : β) :
     (k • const α b : α →ₛ β) = const α (k • b) := ext fun _ ↦ rfl
 
 instance [NonUnitalNonAssocSemiring β] : NonUnitalNonAssocSemiring (α →ₛ β) :=
-  FunLike.nonUnitalNonAssocSemiring
+  fast_instance% FunLike.nonUnitalNonAssocSemiring
 
-instance [NonUnitalSemiring β] : NonUnitalSemiring (α →ₛ β) := FunLike.nonUnitalSemiring
+instance [NonUnitalSemiring β] : NonUnitalSemiring (α →ₛ β) :=
+  fast_instance% FunLike.nonUnitalSemiring
 
 instance [NatCast β] : NatCast (α →ₛ β) where
   natCast n := const _ (NatCast.natCast n)
 
-instance [NatCast β] : IsNatCastApply (α →ₛ β) := ⟨fun _ _ ↦ rfl⟩
+instance [NatCast β] : IsNatCastApply (α →ₛ β) where
 
 @[deprecated (since := "2026-10-20")] alias coe_natCast := FunLike.coe_natCast
 
-instance [NonAssocSemiring β] : NonAssocSemiring (α →ₛ β) := FunLike.nonAssocSemiring
+instance [NonAssocSemiring β] : NonAssocSemiring (α →ₛ β) := fast_instance% FunLike.nonAssocSemiring
 
 instance [IntCast β] : IntCast (α →ₛ β) where
   intCast n := const _ (IntCast.intCast n)
 
-instance [IntCast β] : IsIntCastApply (α →ₛ β) := ⟨fun _ _ ↦ rfl⟩
+instance [IntCast β] : IsIntCastApply (α →ₛ β) where
 
 @[deprecated (since := "2026-10-20")] alias coe_intCast := FunLike.coe_intCast
 
-instance [NonAssocRing β] : NonAssocRing (α →ₛ β) := FunLike.nonAssocRing
+instance [NonAssocRing β] : NonAssocRing (α →ₛ β) := fast_instance% FunLike.nonAssocRing
 
-instance [NonUnitalCommSemiring β] : NonUnitalCommSemiring (α →ₛ β) := FunLike.nonUnitalCommSemiring
+instance [NonUnitalCommSemiring β] : NonUnitalCommSemiring (α →ₛ β) :=
+  fast_instance% FunLike.nonUnitalCommSemiring
 
-instance [CommSemiring β] : CommSemiring (α →ₛ β) := FunLike.commSemiring
+instance [CommSemiring β] : CommSemiring (α →ₛ β) := fast_instance% FunLike.commSemiring
 
-instance [NonUnitalCommRing β] : NonUnitalCommRing (α →ₛ β) := FunLike.nonUnitalCommRing
+instance [NonUnitalCommRing β] : NonUnitalCommRing (α →ₛ β) :=
+  fast_instance% FunLike.nonUnitalCommRing
 
-instance [CommRing β] : CommRing (α →ₛ β) := FunLike.commRing
+instance [CommRing β] : CommRing (α →ₛ β) := fast_instance% FunLike.commRing
 
-instance [Semiring β] : Semiring (α →ₛ β) := FunLike.semiring
+instance [Semiring β] : Semiring (α →ₛ β) := fast_instance% FunLike.semiring
 
-instance [NonUnitalRing β] : NonUnitalRing (α →ₛ β) := FunLike.nonUnitalRing
+instance [NonUnitalRing β] : NonUnitalRing (α →ₛ β) := fast_instance% FunLike.nonUnitalRing
 
-instance [Ring β] : Ring (α →ₛ β) := FunLike.ring
+instance [Ring β] : Ring (α →ₛ β) := fast_instance% FunLike.ring
 
 instance [SMul K γ] [SMul γ β] [SMul K β] [IsScalarTower K γ β] : IsScalarTower K γ (α →ₛ β) :=
   FunLike.isScalarTower
