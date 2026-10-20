@@ -66,6 +66,8 @@ but the definition we use is more useful without that assumption.
 @[no_expose] def tangentConeAt (s : Set E) (x : E) : Set E :=
   {y : E | ClusterPt y ((⊤ : Filter R) • 𝓝[(x + ·) ⁻¹' s] 0)}
 
+alias tangentConeAt_def := tangentConeAt.eq_def
+
 variable {R}
 
 /-- Let `c n` be a family of scalars, `d n` be a family of vectors, and `l` be a filter such that

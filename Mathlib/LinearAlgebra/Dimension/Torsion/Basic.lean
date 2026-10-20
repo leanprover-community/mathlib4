@@ -27,7 +27,7 @@ theorem rank_quotient_eq_of_le_torsion {R M : Type*} [CommRing R] [AddCommGroup 
     {M' : Submodule R M} (hN : M' ≤ torsion R M) : Module.rank R (M ⧸ M') = Module.rank R M :=
   (rank_quotient_le M').antisymm <| by
     nontriviality R
-    rw [Module.rank]
+    rw [Module.rank_def]
     refine ciSup_le fun ⟨s, hs⟩ ↦ LinearIndependent.cardinal_le_rank (v := (M'.mkQ ·)) ?_
     rw [LinearIndepOn, linearIndependent_iff'] at hs
     simp_rw [linearIndependent_iff', ← map_smul, ← map_sum, mkQ_apply, Quotient.mk_eq_zero]

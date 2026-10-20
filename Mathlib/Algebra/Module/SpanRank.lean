@@ -448,7 +448,7 @@ lemma Module.finrank_eq_spanFinrank_of_free [StrongRankCondition R] [Module.Free
 
 theorem Submodule.rank_le_spanRank [StrongRankCondition R] :
     Module.rank R M ≤ (⊤ : Submodule R M).spanRank := by
-  rw [Module.rank, Submodule.spanRank]
+  rw [Module.rank_def, Submodule.spanRank]
   refine ciSup_le' (fun ι ↦ (le_ciInf fun s ↦ ?_))
   have := linearIndependent_le_span'' ι.2 s.1 s.2
   simpa
