@@ -19,7 +19,7 @@ Given a `k`-algebra `A` and a linear functional `Φ : A →ₗ[k] k`, we say tha
 (resp. nondegenerate) if the bilinear `⟨x, y⟩ := Φ (x * y)` is symmetric (resp. nondegenerate). For
 example, `A = k[G]` with `Φ` being taking coefficient at `1` is a symmetric nondegenerate algebra.
 When `k` is a field and `A` is finite dimensional over `k`, this notion is the same as (symmetric)
-Frobenius algebras. A more intricate example is the Hecke algebra `A = End_G(ℂ[G ⧸ H])ᵒᵖ` with `Φ`
+Frobenius algebras. A more intricate exmaple is the Hecke algebra `A = End_G(ℂ[G ⧸ H])ᵒᵖ` with `Φ`
 being taking coefficient at `1`. The `ℂ`-Hecke algebra is always nondegenerate. It is symmetric if
 and only if `H` is unimodular, i.e. `[HgH : H] = [Hg⁻¹H : H]` for all `g : G`.
 
@@ -37,22 +37,22 @@ We say that `f : A` is the trace representative of a `k`-linear `A`-module `V` i
 2) Assume further that `V` is simple, we prove that `f W = 0` for any `k`-linear simple `A`-module
 `W` distinct from `V`, using Jacobson's density theorem and Wedderburn-Artin theorem.
 3) If we assume furthermore `f ^ 2 ≠ 0` and `k` is algebraically closed, we prove that there exists
-some scalar `r : k` such that `r • f` is idempotent satisfying `(r • f : End_k(V))= 1` using
+some scalar `r : k` such that `r • f` is idempotent satisfying `(r • f : Endₖ(V))= 1` using
 nondegeneracy and Schur's lemma. In other words, `r • f` is a central idempotent element isolating
 the `V`-isotypic component.
 
 A toy model is `A = ℂ[G]` for a finite group `G` where all central idempotents can be obtained
 this way and the condition `f ^ 2 ≠ 0` is unnecessary. We warn the reader that the condition
 `f ^ 2 ≠ 0` is genuinely unavoidable for general symmetric nondegenerate algebras. For example, if
-we take `A = 𝔽_2[ℤ/2ℤ] = 𝔽_2[x]/(x ^ 2)`, then the trace of the trivial representation will produce
+we take `A = 𝔽₂[ℤ/2ℤ] ≃ 𝔽₂[x]/(x²)`, then the trace of the trivial representation will produce
 a nilpotent central element `x`.
 
 Finally we remark that we do not have a general criterion for which representation the trace is
 representatble. It could happen that none of the nontrivial trace functionals is representable,
-e.g. `A = ℂ[ℤ] = ℂ[T, T⁻¹]`. This is exactly the case for the Hecke algebra of a `p`-adic reductive
+e.g. `A = ℂ[ℤ] ≃ ℂ[T, T⁻¹]`. This is exactly the case for the Hecke algebra of a `p`-adic reductive
 group with non-compact center, while in that case there is bridge call "unramified twist" connecting
-its representation theory to a subgroup with compact center where the trace of compact
-representations are representable. Thus materials from this file are still fundamental for the
+its representation theory to a subgroup with compact center where the trace of any compact
+representation is representable. Thus materials from this file are still fundamental for the
 smooth representation theory of `p`-adic reductive groups with non-compact center.
 
 TODO: investigate those interesting functionals not coming from the trace.
@@ -62,13 +62,13 @@ TODO: investigate those interesting functionals not coming from the trace.
 * `IsSymmNondegenAlg`: `(A, Φ)` is symmetric nondegenerate if the bilinear form
   `⟨x, y⟩ := Φ (x * y)` is symmetric nondegenerate.
 * `IsSymmNondegenAlg.IsTraceRepresentative`: `f : A` is the trace representative of a `k`-linear
-  `A`-module `V` if `⟨f, x⟩ = Trace ((x : End_k(V)))`.
+  `A`-module `V` if `⟨f, x⟩ = Trace ((x : Endₖ(V)))`.
 
 ## Main results
 
 * `IsSymmNondegenAlg.mul_comm_of_isTraceRepresentative`: Any trace representative is central.
 * `IsTraceRepresentative.lsmul_eq_zero_of_isEmpty`: If `V` is simple and its trace is represented by
-  `f : A`, then `(f : End_k(W))= 0` for any simple `A`-module `W` distinct from `V`.
+  `f : A`, then `(f : Endₖ(W)) = 0` for any simple `A`-module `W` distinct from `V`.
 * `IsSymmNondegenAlg.IsTraceRepresentative.ne_zero_of_isSimpleModule`: The trace representative of
   a simple `A`-module `V` is non-zero.
 * `IsSymmNondegenAlg.IsTraceRepresentative.normalization_isIdempotentElem` : The normalization of
@@ -95,7 +95,7 @@ variable {k A : Type*} [CommSemiring k] [NonUnitalNonAssocSemiring A] [Module k 
   [SMulCommClass k A A] [IsScalarTower k A A] {Φ : A →ₗ[k] k} [IsSymmNondegenAlg A Φ]
 
 variable (k A Φ) in
-/-- Given a symmetric nondegenerate algebra `(A, Φ)` this is the bilinear form
+/-- Given a symmetric nondegenerate algebra `(A, Φ)`, this is the bilinear form
 `⟨x, y⟩ := Φ (x * y)` -/
 abbrev bilinearForm : A →ₗ[k] A →ₗ[k] k := (LinearMap.mul k A).compr₂ Φ
 
@@ -123,7 +123,7 @@ variable {k A V W : Type*} [CommRing k] [Ring A] [Algebra k A] {Φ : A →ₗ[k]
 
 variable (Φ V) in
 /-- `f : A` is the trace representative of a `k`-linear `A`-module `V` if
-  `∀ x, ⟨f, x⟩ = Trace_V(x)`. -/
+  `∀ a, ⟨f, a⟩ = Trace_V(a)`. -/
 abbrev IsTraceRepresentative (f : A) : Prop :=
   IsRepresentativeOf Φ f (LinearMap.trace k V ∘ₗ Algebra.lsmul k k V (A := A))
 
@@ -285,7 +285,7 @@ lemma normalization_isIdempotentElem {f : A} (hf : IsTraceRepresentative V Φ f)
   by_cases ha : Φ (f * (f * a)) = 0
   · simp [normalization, ha]
   obtain ⟨r, hr⟩ :=
-    IsSimpleModule.lsmul_eq_smul_id_of_mul_comm V k (mul_comm_of_isTraceRepresentative hf)
+    IsSimpleModule.lsmul_eq_smul_one_of_mul_comm V k (mul_comm_of_isTraceRepresentative hf)
   refine (eq_iff Φ).mpr fun c => ?_
   obtain ⟨heq, hr_ne_zero⟩ := normalization_eq_smul_and_ne_zero hf ha hr
   simp [heq, pow_two, mul_assoc, isTraceRepresentative_apply hf, hr, hr_ne_zero]
@@ -294,7 +294,7 @@ lemma lsmul_normalization_eq_one {f a : A} (hf : IsTraceRepresentative V Φ f)
     (ha : Φ (f * (f * a)) ≠ 0) :
     Algebra.lsmul k k V (normalization Φ f a) = 1 := by
   obtain ⟨r, hr⟩ :=
-    IsSimpleModule.lsmul_eq_smul_id_of_mul_comm V k (mul_comm_of_isTraceRepresentative hf)
+    IsSimpleModule.lsmul_eq_smul_one_of_mul_comm V k (mul_comm_of_isTraceRepresentative hf)
   obtain ⟨heq, hr_ne_zero⟩ := normalization_eq_smul_and_ne_zero hf ha hr
   simp [heq, hr, hr_ne_zero]
 
@@ -302,7 +302,7 @@ lemma normalization_eq_normalization_of_ne_zero {a b f : A} (hf : IsTraceReprese
     (ha : (Φ (f * (f * a))) ≠ 0) (hb : (Φ (f * (f * b))) ≠ 0) :
     normalization Φ f a = normalization Φ f b := by
   obtain ⟨r, hr⟩ :=
-    IsSimpleModule.lsmul_eq_smul_id_of_mul_comm V k (mul_comm_of_isTraceRepresentative hf)
+    IsSimpleModule.lsmul_eq_smul_one_of_mul_comm V k (mul_comm_of_isTraceRepresentative hf)
   exact (normalization_eq_smul_and_ne_zero hf ha hr).left.trans
     (normalization_eq_smul_and_ne_zero hf hb hr).left.symm
 
@@ -311,7 +311,7 @@ lemma lsmul_normalization_eq_one_of_charZero [CharZero k] {f : A} (hf : IsTraceR
     Algebra.lsmul k k V (normalization Φ f 1) = 1 := by
   refine lsmul_normalization_eq_one hf ?_
   obtain ⟨c, hc⟩ :=
-    IsSimpleModule.lsmul_eq_smul_id_of_mul_comm V k (mul_comm_of_isTraceRepresentative hf)
+    IsSimpleModule.lsmul_eq_smul_one_of_mul_comm V k (mul_comm_of_isTraceRepresentative hf)
   have : c ≠ 0 := by
     by_contra
     refine hf2 <| (eq_iff Φ).mpr fun x => ?_
