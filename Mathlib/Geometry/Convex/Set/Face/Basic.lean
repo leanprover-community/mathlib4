@@ -90,13 +90,10 @@ protected theorem sInf {F : Set (Set M)} (hne : F.Nonempty) (h : ∀ f ∈ F, Is
     exact fun f hf ↦ (h f hf).left_mem_of_mem_Ioo hx hy (hz f hf) hseg
 
 protected theorem sInf' (hc : IsConvexSet R C) {F : Set (Set M)} (h : ∀ f ∈ F, IsFaceOf R f C) :
-    IsFaceOf R (C ∩ sInf F) C where
-  isConvexSet := IsConvexSet.inter hc <| IsConvexSet.sInter (fun f hf ↦ (h f hf).isConvexSet)
-  le _ sm := sm.1
-  left_mem_of_mem_Ioo := by
-    simp only [Set.sInf_eq_sInter, Set.mem_inter_iff, Set.mem_sInter, and_imp]
-    intro _ _ _ xc yc zc zf zs
-    simpa [xc] using fun f hf ↦ (h f hf).left_mem_of_mem_Ioo xc yc (zf f hf) zs
+    IsFaceOf R (C ∩ sInf F) C := by
+  by_cases hF : F.Nonempty
+  · exact inf_left (.refl hc) <| .sInf hF h
+  · simpa [Set.not_nonempty_iff_eq_empty.mp hF] using .refl hc
 
 /-- The face of a face of a set is also a face of the set. -/
 @[trans]
