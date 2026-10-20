@@ -9,6 +9,7 @@ public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 
 import Mathlib.Algebra.MvPolynomial.Monad
 import Mathlib.Data.List.Indexes
+
 /-!
 # Noether normalization lemma
 

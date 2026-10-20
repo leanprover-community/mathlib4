@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.Monoidal.Closed.Types
 public import Mathlib.CategoryTheory.Sites.CartesianClosed
 public import Mathlib.CategoryTheory.Sites.LeftExact
 public import Mathlib.Condensed.Basic
+
 /-!
 
 # Condensed sets form a Cartesian closed category

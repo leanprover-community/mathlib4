@@ -13,6 +13,7 @@ public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 public import Mathlib.CategoryTheory.Limits.Preserves.Opposites
 
 import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
+
 /-!
 # Representably flat functors
 

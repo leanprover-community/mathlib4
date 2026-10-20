@@ -11,6 +11,7 @@ public import Mathlib.LinearAlgebra.Basis.Basic
 public import Mathlib.LinearAlgebra.Prod
 
 import Mathlib.Algebra.Order.Group.Nat
+
 /-!
 # Adjoining elements to form subalgebras
 

@@ -56,7 +56,6 @@ instance id : IsMonoidal (𝟙 F₁) where
 instance comp (τ' : F₂ ⟶ F₃) [IsMonoidal τ] [IsMonoidal τ'] :
     IsMonoidal (τ ≫ τ') where
 
-set_option backward.defeqAttrib.useBackward true in
 instance hcomp {G₁ G₂ : D ⥤ E} [G₁.LaxMonoidal] [G₂.LaxMonoidal] (τ' : G₁ ⟶ G₂)
     [IsMonoidal τ] [IsMonoidal τ'] : IsMonoidal (τ ◫ τ') where
   unit := by
@@ -77,13 +76,10 @@ instance whiskerLeft {G₁ G₂ : D ⥤ E} [G₁.LaxMonoidal] [G₂.LaxMonoidal]
   rw [← Functor.id_hcomp]
   infer_instance
 
-set_option backward.defeqAttrib.useBackward true in
 instance (F : C ⥤ D) [F.LaxMonoidal] : NatTrans.IsMonoidal F.leftUnitor.hom where
 
-set_option backward.defeqAttrib.useBackward true in
 instance (F : C ⥤ D) [F.LaxMonoidal] : NatTrans.IsMonoidal F.rightUnitor.hom where
 
-set_option backward.defeqAttrib.useBackward true in
 instance (F : C ⥤ D) (G : D ⥤ E) (H : E ⥤ E') [F.LaxMonoidal] [G.LaxMonoidal] [H.LaxMonoidal] :
     NatTrans.IsMonoidal (Functor.associator F G H).hom where
   unit := by
@@ -135,7 +131,6 @@ namespace IsMonoidal
 
 variable [F.Monoidal] [G.LaxMonoidal] [adj.IsMonoidal]
 
-set_option backward.defeqAttrib.useBackward true in
 instance : NatTrans.IsMonoidal adj.unit where
   unit := by
     dsimp

@@ -8,10 +8,24 @@ from pathlib import Path
 PROJECT_DIR = Path(__file__).resolve().parent.parent
 
 DEFAULT_OPTIONS = [
+    "backward.defeqAttrib.useBackward",
     "backward.isDefEq.respectTransparency",
     "backward.isDefEq.respectTransparency.types",
+    "backward.isDefEq.respectTransparency.instanceSearchTypes",
+    "backward.privateInPublic",
     "backward.whnf.reducibleClassField",
     "backward.inferInstanceAs.wrap",
+    "backward.inferInstanceAs.wrap.data",
+    "backward.inferInstanceAs.wrap.instances",
+    "linter.auxLemma",
+    "linter.checkUnivs",
+    "linter.flexible",
+    "linter.style.longFile",
+    "linter.translate.overwrite",
+    "linter.translate.warnInvalid",
+    "linter.unusedDecidableInType",
+    "linter.unusedVariables",
+    "linter.unusedTactic",
 ]
 
 

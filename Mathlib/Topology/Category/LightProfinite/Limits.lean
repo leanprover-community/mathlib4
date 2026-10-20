@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Topology.Category.CompHausLike.Limits
 public import Mathlib.Topology.Category.LightProfinite.Basic
+
 /-!
 
 # Explicit limits and colimits

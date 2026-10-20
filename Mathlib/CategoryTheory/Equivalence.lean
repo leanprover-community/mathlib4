@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.EssentialImage
 public import Mathlib.CategoryTheory.Whiskering
 public import Mathlib.Tactic.CategoryTheory.Slice
+
 /-!
 # Equivalence of categories
 

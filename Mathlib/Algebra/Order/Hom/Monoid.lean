@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Group.Hom.Basic
 public import Mathlib.Algebra.Order.Group.Unbundled.Basic
 public import Mathlib.Algebra.Order.Monoid.OrderDual
 public import Mathlib.Order.Hom.Basic
+
 /-!
 # Ordered monoid and group homomorphisms
 

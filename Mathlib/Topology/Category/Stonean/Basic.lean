@@ -8,6 +8,7 @@ module
 public import Mathlib.Topology.Category.CompHaus.Projective
 public import Mathlib.Topology.Category.Profinite.Basic
 public import Mathlib.Topology.ExtremallyDisconnected
+
 /-!
 # Extremally disconnected sets
 

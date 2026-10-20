@@ -114,6 +114,18 @@ lemma discriminant_mul_discriminantEquiv (f : CuspForm 𝒮ℒ k) :
     Δ * (CuspForm.discriminantEquiv f : ℍ → ℂ) = f := by
   grind [Pi.mul_apply, discriminant_mul_discriminantEquiv_apply]
 
+/-- In the graded ring `⨁ k, ModularForm 𝒮ℒ k`, a cusp form of weight `k` is `Δ` times the
+form of weight `k - 12` that `CuspForm.discriminantEquiv` attaches to it. -/
+lemma cuspForm_eq_discriminant_mul (g : CuspForm 𝒮ℒ k) :
+    DirectSum.of (ModularForm 𝒮ℒ) k g = DirectSum.of (ModularForm 𝒮ℒ) 12 CuspForm.discriminant *
+      DirectSum.of (ModularForm 𝒮ℒ) (k - 12) (CuspForm.discriminantEquiv g) := by
+  rw [DirectSum.of_mul_of]
+  symm
+  -- The degrees agree as `12 + (k - 12) = k`, and `mcast` along this identity does not change
+  -- the underlying function, so the coercion goal is definitionally `Δ * (g / Δ) = g`.
+  refine DirectSum.of_eq_of_gradedMonoid_eq (gradedMonoid_eq_of_cast (add_sub_cancel _ _) ?_)
+  exact DFunLike.coe_injective (discriminant_mul_discriminantEquiv _)
+
 /-- The order of the q-expansion of the modular discriminant is 1: the zeroth coefficient
 vanishes (Δ is a cusp form) and the first coefficient equals 1. -/
 lemma discriminant_qExpansion_order : (qExpansion 1 Δ).order = 1 := by

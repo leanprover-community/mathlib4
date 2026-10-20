@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.Adjoin.Polynomial.Basic
 public import Mathlib.RingTheory.Polynomial.Tower
+
 /-!
 # Adjoin one single element
 

@@ -8,6 +8,7 @@ module
 public meta import Mathlib.Lean.Elab.Tactic.Basic
 public import Mathlib.Algebra.MvPolynomial.Funext
 public import Mathlib.RingTheory.WittVector.Basic
+
 /-!
 # The `IsPoly` predicate
 

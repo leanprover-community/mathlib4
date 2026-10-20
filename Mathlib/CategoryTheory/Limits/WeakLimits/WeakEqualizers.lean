@@ -63,7 +63,6 @@ theorem weakEqualizer.fork_π_app_zero :
 theorem weakEqualizer.condition : weakEqualizer.ι f g ≫ f = weakEqualizer.ι f g ≫ g :=
   Fork.condition <| weakLimit.cone <| parallelPair f g
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The weak equalizer built from `weakEqualizer.ι f g` is weakly limiting. -/
 def weakEqualizerIsWeakEqualizer : IsWeakLimit (Fork.ofι (weakEqualizer.ι f g)
     (weakEqualizer.condition f g)) :=

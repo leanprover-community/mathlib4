@@ -35,7 +35,6 @@ variable {C : Type u} [Category.{v} C]
   {F : J ⥤ Cᵒᵖ} (c : Cone F) {c' : Cocone (F.leftOp ⋙ shrinkYoneda.{w})}
   (hc : IsLimit c) (hc' : IsColimit c') (P : Cᵒᵖ ⥤ Type w)
 
-set_option backward.defeqAttrib.useBackward true in
 variable {P} in
 /-- Let `F : J ⥤ Cᵒᵖ` be a functor, `c'` a colimit cocone for `F.leftOp ⋙ shrinkYoneda.{w}`.
 For any `P : Cᵒᵖ ⥤ Type w`, this is the bijection between `c'.pt ⟶ P` and the type

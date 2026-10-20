@@ -85,9 +85,7 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
     let fileContent := (if useModule then "module  -- shake: keep-all --deprecated_module: ignore\n\n" else "") ++
       ("\n".intercalate (allFiles.map fun m =>
         (if useModule then "public " else "") ++
-        (if metaImports.contains m then "meta " else "") ++ "import " ++ m).toList) ++
-      (if d == "Mathlib" then "\n\nset_option linter.style.longLine false" else "") ++
-      "\n"
+        (if metaImports.contains m then "meta " else "") ++ "import " ++ m).toList) ++ "\n"
     if !fileExists then
       if check then
         IO.println s!"File '{fileName}' does not exist"

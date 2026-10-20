@@ -6,6 +6,7 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.Topology.Category.LightProfinite.EffectiveEpi
+
 /-!
 
 # Light condensed objects

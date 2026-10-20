@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Topology.OpenPartialHomeomorph.Composition
+
 /-!
 # Constructions of new partial homeomorphisms from old
 
