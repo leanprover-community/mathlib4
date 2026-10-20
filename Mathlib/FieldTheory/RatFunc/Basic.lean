@@ -687,7 +687,7 @@ theorem liftOn_div {P : Sort v} (p q : K[X]) (f : K[X] → K[X] → P) (f0 : ∀
 theorem liftOn'_div {P : Sort v} (p q : K[X]) (f : K[X] → K[X] → P) (f0 : ∀ p, f p 0 = f 0 1)
     (H) :
     (RatFunc.liftOn' (algebraMap _ K⟮X⟯ p / algebraMap _ _ q)) f @H = f p q := by
-  rw [RatFunc.liftOn', liftOn_div _ _ _ f0]
+  rw [RatFunc.liftOn'_def, liftOn_div _ _ _ f0]
   apply liftOn_condition_of_liftOn'_condition H
 
 /-- Induction principle for `K⟮X⟯`: if `f p q : P (p / q)` for all `p q : K[X]`,

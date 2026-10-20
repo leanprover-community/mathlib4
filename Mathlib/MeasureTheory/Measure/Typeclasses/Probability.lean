@@ -123,7 +123,7 @@ lemma isProbabilityMeasure_iff_real {μ : Measure α} :
 
 instance {f : α → β} : IsProbabilityMeasure (map f μ) where
   measure_univ := by
-    rw [Measure.map]
+    rw [Measure.map_def]
     split_ifs with hf hμ
     · simp [mapₗ_mk_apply_of_aemeasurable, hf]
     · have := measure_univ (μ := μ)

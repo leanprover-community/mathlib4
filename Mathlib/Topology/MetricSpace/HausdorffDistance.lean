@@ -259,6 +259,8 @@ is contained in the `r`-neighborhood of the other one -/
 @[no_expose] def hausdorffEDist {α : Type u} [PseudoEMetricSpace α] (s t : Set α) : ℝ≥0∞ :=
   (⨆ x ∈ s, infEDist x t) ⊔ ⨆ y ∈ t, infEDist y s
 
+alias hausdorffEDist_def := hausdorffEDist.eq_def
+
 section HausdorffEDist
 
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] {x y : α} {s t u : Set α} {Φ : α → β}

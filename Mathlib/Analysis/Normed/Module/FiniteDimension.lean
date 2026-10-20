@@ -185,7 +185,7 @@ theorem ContinuousLinearMap.continuous_det : Continuous fun f : E →L[𝕜] E =
     exact
       ((LinearMap.toMatrix b b).toLinearMap.comp
           (ContinuousLinearMap.coeLM 𝕜)).continuous_of_finiteDimensional
-  · rw [LinearMap.det]
+  · rw [LinearMap.det_def]
     simpa only [h, MonoidHom.one_apply, dite_eq_right, not_false_iff] using continuous_const
 
 /-- Any `K`-Lipschitz map from a subset `s` of a metric space `α` to a finite-dimensional real

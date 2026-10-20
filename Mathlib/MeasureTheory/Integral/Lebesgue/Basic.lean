@@ -48,6 +48,8 @@ variable {m : MeasurableSpace α} {μ ν : Measure α} {s : Set α}
 @[no_expose] noncomputable def lintegral (μ : Measure α) (f : α → ℝ≥0∞) : ℝ≥0∞ :=
   ⨆ (g : α →ₛ ℝ≥0∞) (_ : ⇑g ≤ f), g.lintegral μ
 
+alias lintegral_def := lintegral.eq_def
+
 /-! In the notation for integrals, an expression like `∫⁻ x, g ‖x‖ ∂μ` will not be parsed correctly,
   and needs parentheses. We do not set the binding power of `r` to `0`, because then
   `∫⁻ x, f x = 0` will be parsed incorrectly. -/

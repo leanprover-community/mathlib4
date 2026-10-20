@@ -155,6 +155,8 @@ Otherwise, it is set to `0`. We also set it to be zero, if zero is one of possib
     then Classical.choose h
   else 0
 
+alias fderivWithin_def := fderivWithin.eq_def
+
 /-- If `f` has a derivative at `x`, then `fderiv 𝕜 f x` is such a derivative. Otherwise, it is
 set to `0`. -/
 @[no_expose] def fderiv (f : E → F) (x : E) : E →L[𝕜] F :=

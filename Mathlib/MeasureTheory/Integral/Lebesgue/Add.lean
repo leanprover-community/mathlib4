@@ -273,7 +273,7 @@ lemma measure_support_eapprox_lt_top {f : α → ℝ≥0∞} (hf_meas : Measurab
 of their sum. The other inequality needs one of these functions to be (a.e.-)measurable. -/
 theorem le_lintegral_add (f g : α → ℝ≥0∞) :
     ∫⁻ a, f a ∂μ + ∫⁻ a, g a ∂μ ≤ ∫⁻ a, f a + g a ∂μ := by
-  simp only [lintegral]
+  simp only [lintegral_def]
   refine ENNReal.biSup_add_biSup_le' (p := fun h : α →ₛ ℝ≥0∞ => h ≤ f)
     (q := fun h : α →ₛ ℝ≥0∞ => h ≤ g) ⟨0, zero_le⟩ ⟨0, zero_le⟩ fun f' hf' g' hg' => ?_
   exact le_iSup₂_of_le (f' + g') (add_le_add hf' hg') (add_lintegral _ _).ge
@@ -405,11 +405,11 @@ theorem lintegral_const_mul'' (r : ℝ≥0∞) {f : α → ℝ≥0∞} (hf : AEM
 
 theorem lintegral_const_mul_le (r : ℝ≥0∞) (f : α → ℝ≥0∞) :
     r * ∫⁻ a, f a ∂μ ≤ ∫⁻ a, r * f a ∂μ := by
-  rw [lintegral, ENNReal.mul_iSup]
+  rw [lintegral_def, ENNReal.mul_iSup]
   refine iSup_le fun s => ?_
   rw [ENNReal.mul_iSup, iSup_le_iff]
   intro hs
-  rw [← SimpleFunc.const_mul_lintegral, lintegral]
+  rw [← SimpleFunc.const_mul_lintegral, lintegral_def]
   refine le_iSup_of_le (const α r * s) (le_iSup_of_le (fun x => ?_) le_rfl)
   dsimp
   grw [hs x]

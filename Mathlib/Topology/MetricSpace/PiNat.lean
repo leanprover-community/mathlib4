@@ -80,19 +80,24 @@ differ. If `x = y`, then by convention we set `firstDiff x x = 0`. -/
 @[no_expose] def firstDiff (x y : ∀ n, E n) : ℕ :=
   if h : x ≠ y then Nat.find (ne_iff.1 h) else 0
 
+open scoped Classical in
+lemma firstDiff_def (x y : ∀ n, E n) :
+    firstDiff x y = (if h : x ≠ y then Nat.find (ne_iff.1 h) else 0) :=
+  (rfl)
+
 theorem apply_firstDiff_ne {x y : ∀ n, E n} (h : x ≠ y) :
     x (firstDiff x y) ≠ y (firstDiff x y) := by
-  rw [firstDiff_def, dite_eq_left h]
+  rw [firstDiff, dite_eq_left h]
   classical
   exact Nat.find_spec (ne_iff.1 h)
 
 theorem apply_eq_of_lt_firstDiff {x y : ∀ n, E n} {n : ℕ} (hn : n < firstDiff x y) : x n = y n := by
-  rw [firstDiff_def] at hn
+  rw [firstDiff] at hn
   aesop
 
 theorem firstDiff_comm (x y : ∀ n, E n) : firstDiff x y = firstDiff y x := by
   classical
-  simp only [firstDiff_def, ne_comm]
+  simp only [firstDiff, ne_comm]
 
 theorem min_firstDiff_le (x y z : ∀ n, E n) (h : x ≠ z) :
     min (firstDiff x y) (firstDiff y z) ≤ firstDiff x z := by

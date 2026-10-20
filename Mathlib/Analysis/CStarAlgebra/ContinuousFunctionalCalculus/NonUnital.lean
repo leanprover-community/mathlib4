@@ -215,6 +215,14 @@ noncomputable def cfcₙ (f : R → R) (a : A) : A :=
     then cfcₙHom h.1 ⟨⟨_, h.2.1.domRestrict⟩, h.2.2⟩
     else 0
 
+open scoped Classical in
+lemma cfcₙ_def (f : R → R) (a : A) :
+    cfcₙ f a =
+    if h : p a ∧ ContinuousOn f (σₙ R a) ∧ f 0 = 0
+      then cfcₙHom h.1 ⟨⟨_, h.2.1.domRestrict⟩, h.2.2⟩
+      else 0 :=
+  (rfl)
+
 variable (f g : R → R) (a : A)
 variable (hf : ContinuousOn f (σₙ R a) := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac)
 variable (hg : ContinuousOn g (σₙ R a) := by cfc_cont_tac) (hg0 : g 0 = 0 := by cfc_zero_tac)

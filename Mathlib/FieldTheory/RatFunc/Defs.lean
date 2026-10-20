@@ -198,6 +198,14 @@ although many usages of `lift_on'` assume `f p 0 = f 0 1`.
     liftOn_condition_of_liftOn'_condition (@H) (nonZeroDivisors.ne_zero hq)
       (nonZeroDivisors.ne_zero hq')
 
+lemma liftOn'_def {P : Sort v} (x : K⟮X⟯) (f : K[X] → K[X] → P)
+    (H : ∀ {p q a} (_hq : q ≠ 0) (_ha : a ≠ 0), f (a * p) (a * q) = f p q) :
+    x.liftOn' f @H =
+    x.liftOn f fun {_p _q _p' _q'} hq hq' =>
+      liftOn_condition_of_liftOn'_condition (@H) (nonZeroDivisors.ne_zero hq)
+        (nonZeroDivisors.ne_zero hq') :=
+  (rfl)
+
 theorem liftOn'_mk {P : Sort v} (p q : K[X]) (f : K[X] → K[X] → P) (f0 : ∀ p, f p 0 = f 0 1)
     (H : ∀ {p q a} (_hq : q ≠ 0) (_ha : a ≠ 0), f (a * p) (a * q) = f p q) :
     (RatFunc.mk p q).liftOn' f @H = f p q := by
