@@ -183,19 +183,6 @@ theorem enum_succ_eq_top {o : Ordinal} :
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
-@[deprecated isSuccPrelimit_type_lt_iff +typeChanged (since := "2026-04-12")]
-theorem has_succ_of_type_succ_lt {α} {r : α → α → Prop} [wo : IsWellOrder α r]
-    (h : ∀ a < type r, succ a < type r) (x : α) : ∃ y, r x y := by
-  use enum r ⟨succ (typein r x), h _ (typein_lt_type r x)⟩
-  convert enum_lt_enum.mpr _
-  · rw [enum_typein]
-  · rw [Subtype.mk_lt_mk, lt_succ_iff]
-
-@[deprecated isSuccPrelimit_type_lt_iff +typeChanged (since := "2026-04-12")]
-theorem toType_noMax_of_succ_lt {o : Ordinal} (ho : ∀ a < o, succ a < o) : NoMaxOrder o.ToType :=
-  ⟨has_succ_of_type_succ_lt (type_toType _ ▸ ho)⟩
-
-set_option backward.isDefEq.respectTransparency false in
 theorem bounded_singleton {r : α → α → Prop} [IsWellOrder α r] (hr : IsSuccLimit (type r)) (x) :
     Bounded r {x} := by
   refine ⟨enum r ⟨succ (typein r x), hr.succ_lt (typein_lt_type r x)⟩, ?_⟩
@@ -641,10 +628,10 @@ theorem mul_add_div_mul {a c : Ordinal} (hc : c < a) (b d : Ordinal) :
   · have H := mul_ne_zero hc.ne_zero hd
     apply le_antisymm
     · rw [← lt_succ_iff, ← lt_mul_iff_div_lt H, mul_assoc]
-      · grw [hc, ← mul_succ]
-        gcongr
-        rw [succ_le_iff]
-        exact lt_mul_succ_div b hd
+      grw [hc, ← mul_succ]
+      gcongr
+      rw [succ_le_iff]
+      exact lt_mul_succ_div b hd
     · grw [← mul_le_iff_le_div H, mul_assoc, mul_div_le b d, ← le_self_add]
 
 theorem mul_div_mul_cancel {a : Ordinal} (ha : a ≠ 0) (b c) : a * b / (a * c) = b / c := by
