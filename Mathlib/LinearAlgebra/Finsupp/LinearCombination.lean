@@ -77,9 +77,9 @@ theorem linearCombination_zero_apply (x : α →₀ R) : (linearCombination R (0
 
 variable (α M)
 
-@[deprecated "by simp" (since := "2026-10-19")]
-theorem linearCombination_zero : linearCombination R (0 : α → M) = 0 := by
-  simp
+@[deprecated map_zero +typeChanged (since := "2026-10-19")]
+theorem linearCombination_zero : linearCombination R (0 : α → M) = 0 :=
+  map_zero _
 
 @[simp]
 theorem linearCombination_single_index (c : M) (a : α) (f : α →₀ R) [DecidableEq α] :
