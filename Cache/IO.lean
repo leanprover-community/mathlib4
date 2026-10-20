@@ -266,17 +266,27 @@ def curlVersion (curl : String) : IO (Nat × Nat) := do
     | _ => throw <| IO.userError "Invalidly formatted version of `curl`"
   | _ => throw <| IO.userError "Invalidly formatted response from `curl --version`"
 
-/-- Require a suitable system curl for uploads, or prepare curl for parallel downloads. -/
-def validateCurl (upload := false) : IO Bool := do
-  if !upload && (← CURLBIN.pathExists) then return true
+/-- How `cache get` drives curl: every transfer in one parallel curl run, with or
+without curl's retry flags, or one curl run per file. -/
+structure CurlMode where
+  parallel : Bool
+  retry : Bool := true
+
+/-- Require a suitable system curl for uploads, or choose how downloads drive curl. -/
+def validateCurl (upload := false) : IO CurlMode := do
+  if !upload && (← CURLBIN.pathExists) then return { parallel := true }
   let version ← curlVersion "curl"
   let found := s!"{version.1}.{version.2}"
   let _ := @lexOrd
   let _ := @leOfOrd
   let minimum := if upload then (8, 20) else (7, 84)
-  -- curl 8.18 and 8.19 hang on a pending retry in parallel mode (curl issue #20669).
-  let hangs := version == (8, 18) || version == (8, 19)
-  if version >= minimum && !hangs then return true
+  if version >= minimum then
+    -- curl 8.18 and 8.19 hang on a pending retry in parallel mode (curl issue #20669).
+    let retry := !(version == (8, 18) || version == (8, 19))
+    unless retry do
+      IO.println s!"Note: downloads run without curl retries: curl {found} hangs on a pending \
+        retry in parallel mode (curl issue #20669)."
+    return { parallel := true, retry }
   if upload then
     throw <| IO.userError s!"Cache uploads require curl ≥{minimum.1}.{minimum.2}. Found {found}."
   let arch ← (·.trimAscii.copy) <$> runCmd "uname" #["-m"] false
@@ -288,9 +298,9 @@ def validateCurl (upload := false) : IO Bool := do
       s!"https://github.com/leanprover-community/static-curl/releases/download/v{CURLVERSION}/curl-{arch}-linux-static",
       "-L", "-o", CURLBIN.toString]
     let _ ← runCmd "chmod" #["u+x", CURLBIN.toString]
-    return true
+    return { parallel := true }
   IO.println s!"Warning: curl {found} is unsupported for parallel cache downloads."
-  return false
+  return { parallel := false }
 
 /-- Recursively gets all files from a directory with a certain extension -/
 partial def getFilesWithExtension

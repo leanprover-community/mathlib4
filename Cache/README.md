@@ -322,9 +322,9 @@ The cache system automatically downloads and manages:
 - **curl** (>=7.84) - for parallel downloads
 - **leantar** - for `.ltar` compression/decompression
 
-Downloads use a static curl on supported Linux architectures if the system version is too old
-or is 8.18 or 8.19 (these versions hang on parallel retries).
-On other platforms, unsupported curl versions use serial downloads.
+Downloads use a static curl on supported Linux architectures if the system version is too old.
+On other platforms, older curl versions use serial downloads.
+curl 8.18 and 8.19 run parallel downloads without retries (these versions hang on parallel retries).
 Uploads require curl >=8.20 on `PATH`.
 CI installs a pinned release from [static-curl](https://github.com/leanprover-community/static-curl).
 

@@ -944,6 +944,10 @@ jobs:
           use-mathlib-cache: false # This can be re-enabled once we are confident in the cache again.
           reinstall-transient-toolchain: true
 
+      # Keep curl's retries after `ubuntu-latest` moves to Ubuntu 26.04: the
+      # tool runs the image's curl 8.18 without them.
+      - *install_curl
+
       - name: get cache for Mathlib
         run: |
           # Run once without --repo, so we can diagnose what `lake exe cache get` wants to do by itself.

@@ -246,7 +246,8 @@ def main (args : List String) : IO Unit := do
 
   let hashMemo ← getHashMemo roots
   let hashMap := hashMemo.hashMap
-  let goodCurl ← pure !curlArgs.contains (args.headD "") <||> validateCurl
+  let curlMode ← if curlArgs.contains (args.headD "") then validateCurl
+    else pure { parallel := true }
   let get (args : List String) (force := false) (decompress := true) := do
     let hashMap ← if args.isEmpty then pure hashMap else hashMemo.filterByRootModules roots.keys
     -- Resolve the repo once (single git-remote probe) and thread it through the
@@ -269,7 +270,7 @@ def main (args : List String) : IO Unit := do
           for s in scopes do IO.eprintln s!"  {s}"
         pure scopes
       | none => pure []
-    let missing ← getFiles resolvedRepo hashMap force force goodCurl decompress
+    let missing ← getFiles resolvedRepo hashMap force force curlMode decompress
       (unsafeScopes := unsafeScopes)
     -- Explain any files no location served — keyed on the actual outcome, so
     -- a read fully served by the configured locations stays silent even when
