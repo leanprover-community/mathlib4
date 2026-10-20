@@ -253,10 +253,10 @@ theorem splits_neg_iff {f : R[X]} : Splits (-f) ↔ Splits f :=
 theorem Splits.comp_neg_X {f : R[X]} (hf : f.Splits) : (f.comp (-X)).Splits := by
   refine Submonoid.closure_induction ?_ (by simp)
     (fun f g _ _ hf hg ↦ mul_comp_neg_X f g ▸ hf.mul hg) hf
-  rintro f (⟨a, rfl⟩ | ⟨a, rfl⟩)
-  · simp
-  · rw [add_comp, X_comp, C_comp, neg_add_eq_sub, ← neg_sub]
-    exact (X_sub_C a).neg
+  · rintro f (⟨a, rfl⟩ | ⟨a, rfl⟩)
+    · simp
+    · rw [add_comp, X_comp, C_comp, neg_add_eq_sub, ← neg_sub]
+      exact (X_sub_C a).neg
 
 end Ring
 
@@ -292,6 +292,11 @@ theorem eval_rootOfSplits (hf : f.Splits) (hfd : f.degree ≠ 0) :
 
 theorem Splits.comp_X_sub_C (hf : f.Splits) (a : R) : (f.comp (X - C a)).Splits :=
   hf.comp_of_natDegree_le_one_of_monic (natDegree_sub_C.trans_le natDegree_X_le) (monic_X_sub_C a)
+
+@[simp]
+lemma splits_taylor_iff {p : R[X]} (r : R) : (p.taylor r).Splits ↔ p.Splits := by
+  refine ⟨fun h ↦ ?_, fun h ↦ Splits.taylor h r⟩
+  simpa [taylor_taylor] using h.taylor (-r)
 
 variable [IsDomain R]
 
@@ -670,6 +675,7 @@ theorem Splits.of_degree_eq_two {x : R} (h₁ : f.degree = 2) (h₂ : f.eval x =
 
 end Field
 
+noncomputable section
 
 universe u v w
 
@@ -694,5 +700,7 @@ local infixl:50 " ~ᵤ " => Associated
 end UFD
 
 end Splits
+
+end
 
 end Polynomial

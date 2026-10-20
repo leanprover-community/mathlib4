@@ -5,14 +5,13 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 module
 
+import Mathlib.Algebra.Order.Group.Finset
 public import Mathlib.Algebra.Polynomial.Derivative
 public import Mathlib.Algebra.Polynomial.Eval.SMul
 public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.RingTheory.EuclideanDomain
 public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
-
 import Mathlib.Algebra.NoZeroSMulDivisors.Basic
-import Mathlib.Algebra.Order.Group.Finset
 
 /-!
 # Theory of univariate polynomials
@@ -453,15 +452,16 @@ theorem mul_mod (p₁ p₂ q : R[X]) : (p₁ * p₂) % q = (p₁ % q) * (p₂ % 
   simp_rw [Polynomial.mod_def]
   apply Polynomial.mul_modByMonic
 
-lemma eval_mod_eq_self_of_root {p q : R[X]} {x : R} (hx : eval x q = 0) :
-    (p % q).eval x = p.eval x :=
-  eval₂_modByMonic_eq_self_of_root (by simp [hx])
+section
 
-open EuclideanDomain in
+open EuclideanDomain
+
 theorem gcd_map [Field k] [DecidableEq R] [DecidableEq k] (f : R →+* k) :
     gcd (p.map f) (q.map f) = (gcd p q).map f :=
   GCD.induction p q (fun x => by simp_rw [Polynomial.map_zero, EuclideanDomain.gcd_zero_left])
     fun x y _ ih => by rw [gcd_val, ← map_mod, ih, ← gcd_val]
+
+end
 
 theorem eval₂_gcd_eq_zero [CommSemiring k] [DecidableEq R]
     {ϕ : R →+* k} {f g : R[X]} {α : k} (hf : f.eval₂ ϕ α = 0)
@@ -537,6 +537,9 @@ theorem exists_root_of_degree_eq_one (h : degree p = 1) : ∃ x, IsRoot p x :=
   ⟨-((p.coeff 1)⁻¹ * p.coeff 0), by
     rw [← mem_roots (by simp [← zero_le_degree_iff, h])]
     simp [roots_degree_eq_one h]⟩
+
+theorem exists_root_of_natDegree_eq_one (h : natDegree p = 1) : ∃ x, IsRoot p x :=
+  exists_root_of_degree_eq_one ((degree_eq_iff_natDegree_eq_of_pos Nat.one_pos).mpr h)
 
 theorem coeff_inv_units (u : R[X]ˣ) (n : ℕ) : ((↑u : R[X]).coeff n)⁻¹ = (↑u⁻¹ : R[X]).coeff n := by
   rw [eq_C_of_degree_eq_zero (degree_coe_units u), eq_C_of_degree_eq_zero (degree_coe_units u⁻¹),
@@ -620,8 +623,14 @@ theorem prime_of_degree_eq_one (hp1 : degree p = 1) : Prime p := by
       (monic_normalize fun hp0 ↦ absurd hp1 (by simp [hp0]))
   exact (normalize_associated _).prime this
 
+theorem prime_of_natDegree_eq_one (hp1 : natDegree p = 1) : Prime p :=
+  prime_of_degree_eq_one ((degree_eq_iff_natDegree_eq_of_pos one_pos).mpr hp1)
+
 theorem irreducible_of_degree_eq_one (hp1 : degree p = 1) : Irreducible p :=
   (prime_of_degree_eq_one hp1).irreducible
+
+theorem irreducible_of_natDegree_eq_one (hp1 : natDegree p = 1) : Irreducible p :=
+  (prime_of_natDegree_eq_one hp1).irreducible
 
 theorem not_irreducible_C (x : R) : ¬Irreducible (C x) := by
   by_cases H : x = 0
@@ -713,6 +722,25 @@ protected theorem mem_normalizedFactors_iff [DecidableEq R] (hq : q ≠ 0) :
   by_cases hp : p = 0
   · simpa [hp] using zero_notMem_normalizedFactors _
   · rw [mem_normalizedFactors_iff' hq, normalize_eq_self_iff_monic hp]
+
+open UniqueFactorizationMonoid in
+theorem sum_natDegree_normalizedFactors [DecidableEq R] (a : R[X]) :
+    ((normalizedFactors a).map natDegree).sum = a.natDegree := by
+  by_cases h0: a = 0
+  · simp [h0]
+  nth_rw 2 [← leadingCoeff_mul_prod_normalizedFactors a]
+  rw [Polynomial.natDegree_C_mul (by simp [h0]),
+      natDegree_multiset_prod _ (zero_notMem_normalizedFactors a)]
+
+/-- If every monic irreducible factor of a polynomial `f` has `natDegree` divisible by `n`,
+  then so does `f` itself. -/
+lemma dvd_natDegree_of_monic_of_irreducible (f : R[X]) {n : ℕ}
+    (h : ∀ d, Monic d → Irreducible d → d ∣ f → n ∣ d.natDegree) : n ∣ f.natDegree := by
+  classical
+  by_cases h0 : f = 0
+  · simp [h0]
+  · rw [← sum_natDegree_normalizedFactors]
+    grind [Multiset.dvd_sum, Multiset.mem_map, Polynomial.mem_normalizedFactors_iff]
 
 variable (p) in
 @[simp]
