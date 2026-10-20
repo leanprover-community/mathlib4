@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Category.MonCat.Basic
 public import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.CategoryTheory.Yoneda
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Yoneda embeddings
 
@@ -28,6 +31,7 @@ def CommMonCat.coyoneda : CommMonCatᵒᵖ ⥤ CommMonCat ⥤ CommMonCat where
   obj M := { obj N := of (M.unop →* N), map f := ofHom (.compHom f.hom) }
   map f := { app N := ofHom (.compHom' f.unop.hom) }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The `CommMonCat`-valued coyoneda embedding composed with the forgetful functor is the usual
 coyoneda embedding. -/
 @[to_additive (attr := simps!)
@@ -36,8 +40,8 @@ coyoneda embedding. -/]
 def CommMonCat.coyonedaForget :
     coyoneda ⋙ (Functor.whiskeringRight _ _ _).obj (forget _) ≅ CategoryTheory.coyoneda :=
   dsimp% NatIso.ofComponents fun X ↦ NatIso.ofComponents fun Y ↦ {
-    hom := TypeCat.ofHom (fun f ↦ ofHom f)
-    inv := TypeCat.ofHom (fun f ↦ f.hom) }
+    hom := ↾fun f ↦ ofHom f
+    inv := ↾fun f ↦ f.hom }
 
 /-- The Hom bifunctor sending a type `X` and a commutative monoid `M` to the commutative monoid
 `X → M` with pointwise operations.
@@ -52,5 +56,5 @@ This is also the coyoneda embedding of `Type` into `AddCommMonCat`-valued preshe
 monoids. -/]
 def CommMonCat.coyonedaType : Type uᵒᵖ ⥤ CommMonCat.{u} ⥤ CommMonCat.{u} where
   obj X := { obj M := of <| X.unop → M
-             map f := ofHom <| Pi.monoidHom fun i ↦ f.hom.comp <| Pi.evalMonoidHom _ i }
-  map f := { app N := ofHom <| Pi.monoidHom fun i ↦ Pi.evalMonoidHom _ <| f.unop i }
+             map f := ofHom <| MonoidHom.pi fun i ↦ f.hom.comp <| Pi.evalMonoidHom _ i }
+  map f := { app N := ofHom <| MonoidHom.pi fun i ↦ Pi.evalMonoidHom _ <| f.unop i }

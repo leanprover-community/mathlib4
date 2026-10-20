@@ -6,6 +6,7 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.Condensed.Light.Module
+
 /-!
 
 # Limits in categories of light condensed objects
@@ -13,7 +14,7 @@ public import Mathlib.Condensed.Light.Module
 This file adds some instances for limits in light condensed sets and modules.
 -/
 
-@[expose] public section
+public section
 
 universe u
 

@@ -18,7 +18,7 @@ Gδ set.
 
 -/
 
-@[expose] public section
+public section
 
 variable {X : Type*} [TopologicalSpace X]
 open TopologicalSpace Set
@@ -36,7 +36,7 @@ instance (priority := 500) [PseudoMetrizableSpace X] : PerfectlyNormalSpace X wh
     have := pseudoMetrizableSpaceUniformity_countably_generated X
     rcases (@uniformity_hasBasis_open X _).exists_antitone_subbasis with ⟨U, hUo, hU, -⟩
     rw [← hs.closure_eq, ← hU.biInter_biUnion_ball]
-    refine .biInter (to_countable _) fun n _ => IsOpen.isGδ ?_
+    refine .iInter fun n ↦ .iInter fun _ ↦ IsOpen.isGδ ?_
     exact isOpen_biUnion fun x _ => UniformSpace.isOpen_ball _ (hUo _).2
 
 instance (priority := 100) [MetrizableSpace X] : T4Space X where
@@ -48,16 +48,19 @@ end Metrizable
 section ContinuousAt
 variable {Y : Type*} [TopologicalSpace Y]
 
-theorem IsGδ.setOf_continuousAt [PseudoMetrizableSpace Y] (f : X → Y) :
+theorem IsGδ.setOfPred_continuousAt [PseudoMetrizableSpace Y] (f : X → Y) :
     IsGδ { x | ContinuousAt f x } := by
   let := pseudoMetrizableSpaceUniformity Y
   have := pseudoMetrizableSpaceUniformity_countably_generated Y
   obtain ⟨U, _, hU⟩ := (@uniformity_hasBasis_open_symmetric Y _).exists_antitone_subbasis
   simp only [Uniform.continuousAt_iff_prod, nhds_prod_eq]
   simp only [(nhds_basis_opens _).prod_self.tendsto_iff hU.toHasBasis,
-    forall_prop_of_true, setOf_forall]
+    forall_prop_of_true, ofPred_forall]
   refine .iInter fun k ↦ IsOpen.isGδ <| isOpen_iff_mem_nhds.2 fun x ↦ ?_
   rintro ⟨s, ⟨hsx, hso⟩, hsU⟩
   filter_upwards [IsOpen.mem_nhds hso hsx] with _ hy using ⟨s, ⟨hy, hso⟩, hsU⟩
+
+@[deprecated (since := "2026-07-09")]
+alias IsGδ.setOf_continuousAt := IsGδ.setOfPred_continuousAt
 
 end ContinuousAt

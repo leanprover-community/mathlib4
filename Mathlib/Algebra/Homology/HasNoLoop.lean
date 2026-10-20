@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.ComplexShape
 public import Mathlib.Algebra.Group.Int.Defs
 public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Algebra.Homology.ComplexShape
 
 /-!
 # Complex shapes with no loop
@@ -17,7 +17,7 @@ which expresses that `¬ c.Rel i i` for all `i : ι`.
 
 -/
 
-@[expose] public section
+public section
 
 namespace ComplexShape
 

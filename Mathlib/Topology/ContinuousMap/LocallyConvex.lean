@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.ContinuousMap.Algebra
 public import Mathlib.Topology.Algebra.Module.LocallyConvex
+public import Mathlib.Topology.ContinuousMap.Algebra
 
 /-!
 # The space of continuous maps is a locally convex space
@@ -15,7 +15,7 @@ In this file we prove that the space of continuous maps from a topological space
 to a locally convex topological vector space is a locally convex topological vector space.
 -/
 
-@[expose] public section
+public section
 
 open scoped Topology
 

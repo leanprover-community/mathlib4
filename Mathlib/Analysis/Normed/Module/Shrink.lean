@@ -5,28 +5,29 @@ Authors: Michael Rothgang
 -/
 module
 
+public import Mathlib.Algebra.Group.Shrink
 public import Mathlib.Analysis.Normed.Module.TransferInstance
 
 /-!
 # Transfer normed algebraic structures from `α` to `Shrink α`
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
 namespace Shrink
 
 universe v
-variable {R 𝕜 α : Type*} [Small.{v} α] [Semiring R] [NormedField 𝕜]
+variable {𝕜 α : Type*} [Small.{v} α] [NormedField 𝕜]
 
 instance [SeminormedAddCommGroup α] : SeminormedAddCommGroup (Shrink.{v} α) :=
-  (equivShrink α).symm.seminormedAddCommGroup
+  fast_instance% (equivShrink α).symm.seminormedAddCommGroup
 
 instance [NormedAddCommGroup α] : NormedAddCommGroup (Shrink.{v} α) :=
-  (equivShrink α).symm.normedAddCommGroup
+  fast_instance% (equivShrink α).symm.normedAddCommGroup
 
 instance [SeminormedAddCommGroup α] [NormedSpace 𝕜 α] : NormedSpace 𝕜 (Shrink.{v} α) :=
-  (equivShrink α).symm.normedSpace 𝕜
+  fast_instance% (Shrink.addEquiv (α := α)).normedSpace 𝕜
 
 end Shrink

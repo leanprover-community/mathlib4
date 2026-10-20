@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Calculus.Implicit
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Implicit function theorem — domain a product space
 
@@ -17,6 +20,9 @@ invertibility of `f₂u : E₂ →L[𝕜] F` its partial derivative with respect
 It proves the existence of `ψ : E₁ → E₂` such that for `v` in a neighbourhood of `u` we have
 `f v = f u ↔ ψ v.1 = v.2`. This is `HasStrictFDerivAt.implicitFunctionOfProdDomain`. A formula for
 its first derivative follows.
+
+A similar specialization is made to a curried bivariate function by `implicitFunctionOfBivariate` in
+a sister file .
 
 ## Tags
 
@@ -110,7 +116,7 @@ theorem hasStrictFDerivAt_implicitFunctionOfProdDomain
       (ContinuousLinearMap.fst_comp_prod _ _) this).snd
   ext
   rw [f'u.comp_apply, ← f'u.comp_inl_add_comp_inr]
-  simp [map_neg, if₂u]
+  simp [-ContinuousLinearMap.comp_apply, ContinuousLinearMap.coe_comp, map_neg, if₂u]
 
 theorem tendsto_implicitFunctionOfProdDomain
     (dfu : HasStrictFDerivAt f f'u u) (if₂u : (f'u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :

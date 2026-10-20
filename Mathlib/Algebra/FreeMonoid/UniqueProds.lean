@@ -9,11 +9,14 @@ public import Mathlib.Algebra.FreeMonoid.Basic
 public import Mathlib.Algebra.Group.UniqueProds.Basic
 public import Mathlib.Algebra.Order.Group.Nat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Free monoids have unique products
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Cardinal Subsemiring Algebra Submodule StarModule
 

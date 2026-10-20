@@ -5,8 +5,9 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
 public import Mathlib.CategoryTheory.Sites.Hypercover.Zero
+
+import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
 
 /-!
 # Locality conditions on object properties
@@ -24,7 +25,7 @@ We say that
 The covers appearing in the definitions have index type in the morphism universe of `C`.
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

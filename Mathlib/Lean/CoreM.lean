@@ -6,12 +6,16 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Init
+public import Lean.CoreM
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Additional functions using `CoreM` state.
 -/
 
-@[expose] public section
+public section
 
 open Lean Core
 

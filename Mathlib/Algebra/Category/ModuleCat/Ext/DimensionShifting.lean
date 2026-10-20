@@ -6,11 +6,12 @@ Authors: Nailin Guan
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Ext.HasExt
-public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.Data.Nat.Totient
 public import Mathlib.Data.Rat.Floor
 public import Mathlib.Tactic.Continuity
+
+import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
 
 /-!
 
@@ -18,11 +19,11 @@ public import Mathlib.Tactic.Continuity
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 
-variable {R : Type u} [CommRing R]
+variable {R : Type u} [Ring R]
 
 variable {M : Type v} [AddCommGroup M] [Module R M] {N : Type v} [AddCommGroup N] [Module R N]
 

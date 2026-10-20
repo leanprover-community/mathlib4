@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Topology.Category.CompHausLike.Limits
 public import Mathlib.Topology.Category.LightProfinite.Basic
+
 /-!
 
 # Explicit limits and colimits
@@ -16,7 +17,7 @@ the file `Mathlib/Topology/Category/CompHausLike/Limits.lean`) to the special ca
 `LightProfinite`.
 -/
 
-@[expose] public section
+public section
 
 namespace LightProfinite
 

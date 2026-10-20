@@ -5,8 +5,10 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Data.Fintype.Powerset
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Set-like fintype
@@ -15,7 +17,7 @@ This file contains a fintype instance for set-like objects such as subgroups. If
 and `Fintype B` then `Fintype A`.
 -/
 
-@[expose] public section
+public section
 
 
 namespace SetLike

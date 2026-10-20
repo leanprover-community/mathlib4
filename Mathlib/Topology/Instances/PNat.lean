@@ -7,13 +7,16 @@ module
 
 public import Mathlib.Topology.Instances.Nat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topology on the positive natural numbers
 
 The structure of a metric space on `ℕ+` is introduced in this file, induced from `ℝ`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

@@ -5,9 +5,7 @@ Authors: Ivan Sadofschi Costa
 -/
 module
 
-public import Mathlib.Topology.Order
 public import Mathlib.Topology.Sets.Opens
-public import Mathlib.Topology.ContinuousMap.Basic
 
 /-!
 # Any T0 space embeds in a product of copies of the Sierpinski space.
@@ -36,7 +34,7 @@ theorem eq_induced_by_maps_to_sierpinski (X : Type*) [t : TopologicalSpace X] :
   · intro u h
     rw [← generateFrom_iUnion_isOpen]
     apply isOpen_generateFrom_of_mem
-    simp only [Set.mem_iUnion, Set.mem_setOf_eq, isOpen_induced_iff]
+    simp only [Set.mem_iUnion, Set.mem_ofPred_eq, isOpen_induced_iff]
     exact ⟨⟨u, h⟩, {True}, isOpen_singleton_true, by simp [Set.preimage]⟩
 
 variable (X : Type*) [TopologicalSpace X]
@@ -49,7 +47,7 @@ def productOfMemOpens : C(X, Opens X → Prop) where
   continuous_toFun := continuous_pi_iff.2 fun u => continuous_Prop.2 u.isOpen
 
 theorem productOfMemOpens_isInducing : IsInducing (productOfMemOpens X) := by
-  convert inducing_iInf_to_pi fun (u : Opens X) (x : X) => x ∈ u
+  convert! inducing_iInf_to_pi fun (u : Opens X) (x : X) => x ∈ u
   apply eq_induced_by_maps_to_sierpinski
 
 theorem productOfMemOpens_injective [T0Space X] : Function.Injective (productOfMemOpens X) := by

@@ -8,6 +8,9 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Basic
 public import Mathlib.Data.Fintype.Sigma
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Darts in graphs
 
@@ -71,7 +74,7 @@ theorem Dart.edge_mem (d : G.Dart) : d.edge ∈ G.edgeSet :=
 /-- The dart with reversed orientation from a given dart. -/
 @[simps]
 def Dart.symm (d : G.Dart) : G.Dart :=
-  ⟨d.toProd.swap, G.symm d.adj⟩
+  ⟨d.toProd.swap, d.adj.symm⟩
 
 @[simp]
 theorem Dart.symm_mk {p : V × V} (h : G.Adj p.1 p.2) : (Dart.mk p h).symm = Dart.mk p.swap h.symm :=
@@ -130,7 +133,7 @@ theorem dartOfNeighborSet_injective (v : V) : Function.Injective (G.dartOfNeighb
   fun e₁ e₂ h =>
   Subtype.ext <| by
     injection h with h'
-    convert congr_arg Prod.snd h'
+    convert! congr($(h').snd)
 
 instance nonempty_dart_top [Nontrivial V] : Nonempty (⊤ : SimpleGraph V).Dart := by
   obtain ⟨v, w, h⟩ := exists_pair_ne V

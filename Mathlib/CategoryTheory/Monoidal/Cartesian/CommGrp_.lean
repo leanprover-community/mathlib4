@@ -6,8 +6,11 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.CommMon_
-public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp_
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
 public import Mathlib.CategoryTheory.Monoidal.CommGrp_
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Yoneda embedding of `CommGrp C`
@@ -30,7 +33,7 @@ class abbrev CommGrpObj := GrpObj X, IsCommMonObj X
 
 variable (X) in
 /-- If `X` represents a presheaf of commutative groups, then `X` is a commutative group object. -/
-@[implicit_reducible]
+@[instance_reducible]
 def CommGrpObj.ofRepresentableBy (F : Cᵒᵖ ⥤ CommGrpCat.{w})
     (α : (F ⋙ forget _).RepresentableBy X) : CommGrpObj X where
   __ := GrpObj.ofRepresentableBy X (F ⋙ forget₂ CommGrpCat GrpCat) α
@@ -45,8 +48,9 @@ def yonedaCommGrpGrpObj (G : CommGrp C) : (Grp C)ᵒᵖ ⥤ CommGrpCat where
     map_one' := by ext; simp [Mon.Hom.hom_one]
     map_mul' g h := by
       ext
-      simpa using ((yonedaGrpObj G.X).map f.unop.hom.hom.op).hom.map_mul g.hom.hom h.hom.hom }
+      simpa using! ((yonedaGrpObj G.X).map f.unop.hom.hom.op).hom.map_mul g.hom.hom h.hom.hom }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The yoneda embedding of `CommGrp C` into presheaves of groups. -/
 @[simps]

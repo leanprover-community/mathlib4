@@ -18,7 +18,7 @@ multiplicative actions.
 - The unit sphere in `𝕜` acts on open balls, closed balls, and spheres centered at `0` in `E`.
 -/
 
-@[expose] public section
+public section
 
 
 open Metric Set
@@ -186,7 +186,7 @@ variable [CharZero 𝕜]
 
 include 𝕜 in
 theorem ne_neg_of_mem_sphere {r : ℝ} (hr : r ≠ 0) (x : sphere (0 : E) r) : x ≠ -x :=
-  have : IsAddTorsionFree E := .of_isTorsionFree 𝕜 E
+  have : HasUniqueDiv E := .of_isTorsionFree 𝕜 E
   fun h => ne_zero_of_mem_sphere hr x (self_eq_neg.mp (by (conv_lhs => rw [h]); rfl))
 
 include 𝕜 in

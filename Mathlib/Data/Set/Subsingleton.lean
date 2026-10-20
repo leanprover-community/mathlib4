@@ -22,8 +22,6 @@ elements.
 
 assert_not_exists HeytingAlgebra RelIso
 
-open Function
-
 universe u v
 
 namespace Set
@@ -98,11 +96,9 @@ lemma subsingleton_of_subsingleton_inter_right (h : (s ∪ t).Subsingleton) :
 theorem subsingleton_of_subsingleton [Subsingleton α] {s : Set α} : s.Subsingleton :=
   subsingleton_univ.anti (subset_univ s)
 
+@[to_dual]
 theorem subsingleton_isTop (α : Type*) [PartialOrder α] : { x : α | IsTop x }.Subsingleton :=
   fun x hx _ hy => hx.isMax.eq_of_le (hy x)
-
-theorem subsingleton_isBot (α : Type*) [PartialOrder α] : { x : α | IsBot x }.Subsingleton :=
-  fun x hx _ hy => hx.isMin.eq_of_ge (hy x)
 
 theorem exists_eq_singleton_iff_nonempty_subsingleton :
     (∃ a : α, s = {a}) ↔ s.Nonempty ∧ s.Subsingleton := by
@@ -123,7 +119,7 @@ theorem eq_empty_or_singleton_of_unique [Unique α] (s : Set α) :
 @[simp, norm_cast]
 theorem subsingleton_coe (s : Set α) : Subsingleton s ↔ s.Subsingleton := by
   constructor
-  · refine fun h => fun a ha b hb => ?_
+  · intro h a ha b hb
     exact SetCoe.ext_iff.2 (@Subsingleton.elim s h ⟨a, ha⟩ ⟨b, hb⟩)
   · exact fun h => Subsingleton.intro fun a b => SetCoe.ext (h a.property b.property)
 
@@ -140,6 +136,10 @@ lemma Subsingleton.denselyOrdered {s : Set α} [LT α] (hs : s.Subsingleton) :
     DenselyOrdered s :=
   have := (subsingleton_coe _).mpr hs
   ⟨fun _ _ h ↦ ⟨_, h.trans_eq (Subsingleton.elim _ _), h⟩⟩
+
+theorem _root_.ExistsUnique.setSubsingleton {α : Type*} {p : α → Prop} (h : ExistsUnique p) :
+    {x | p x}.Subsingleton :=
+  fun _ hx _ hy => h.unique hx hy
 
 end Subsingleton
 
@@ -208,16 +208,16 @@ theorem nontrivial_of_lt [Preorder α] {x y} (hx : x ∈ s) (hy : y ∈ s) (hxy 
   ⟨x, hx, y, hy, ne_of_lt hxy⟩
 
 theorem nontrivial_of_exists_lt [Preorder α]
-    (H : ∃ᵉ (x ∈ s) (y ∈ s), x < y) : s.Nontrivial :=
+    (H : ∃ x ∈ s, ∃ y ∈ s, x < y) : s.Nontrivial :=
   let ⟨_, hx, _, hy, hxy⟩ := H
   nontrivial_of_lt hx hy hxy
 
-theorem Nontrivial.exists_lt [LinearOrder α] (hs : s.Nontrivial) : ∃ᵉ (x ∈ s) (y ∈ s), x < y :=
+theorem Nontrivial.exists_lt [LinearOrder α] (hs : s.Nontrivial) : ∃ x ∈ s, ∃ y ∈ s, x < y :=
   let ⟨x, hx, y, hy, hxy⟩ := hs
   Or.elim (lt_or_gt_of_ne hxy) (fun H => ⟨x, hx, y, hy, H⟩) fun H => ⟨y, hy, x, hx, H⟩
 
 theorem nontrivial_iff_exists_lt [LinearOrder α] :
-    s.Nontrivial ↔ ∃ᵉ (x ∈ s) (y ∈ s), x < y :=
+    s.Nontrivial ↔ ∃ x ∈ s, ∃ y ∈ s, x < y :=
   ⟨Nontrivial.exists_lt, nontrivial_of_exists_lt⟩
 
 protected theorem Nontrivial.nonempty (hs : s.Nontrivial) : s.Nonempty :=

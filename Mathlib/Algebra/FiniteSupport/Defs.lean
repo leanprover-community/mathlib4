@@ -8,13 +8,16 @@ module
 public import Mathlib.Algebra.Notation.Support
 public import Mathlib.Data.Set.Finite.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-# Make fun_prop work for finite (multiplicative) support
+# Make `fun_prop` work for finite (multiplicative) support
 
 We define a new predicate `HasFiniteMulSupport` (and its additivized version) on functions
 and provide the infrastructure so that `fun_prop` can prove it for functions that are
 built from other functions with finite multiplicative support. The relevant API lemmas
-are provided in [Mathlib.Algebra.FiniteSupport.Basic}(Mathlib/Algebra/FiniteSupport/Basic.lean).
+are provided in [Mathlib.Algebra.FiniteSupport.Basic](Mathlib/Algebra/FiniteSupport/Basic.lean).
 -/
 
 @[expose] public section

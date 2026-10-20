@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 public import Mathlib.LinearAlgebra.PiTensorProduct.Finsupp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basis for `PiTensorProduct`
 
@@ -20,12 +23,12 @@ section PiTensorProduct
 
 attribute [local ext] PiTensorProduct.ext
 
-open LinearMap PiTensorProduct Module TensorProduct
+open PiTensorProduct Module TensorProduct
 
 variable {ι R : Type*} {M : ι → Type*} {κ : ι → Type*} [CommSemiring R] [∀ i, AddCommMonoid (M i)]
   [∀ i, Module R (M i)]
 
-open Classical in
+open scoped Classical in
 /-- Let `ι` be a `Finite` type and `M` be a family of modules indexed by `ι`. If `b i : κ i → M i`
 is a basis for every `i` in `ι`, then `fun (p : Π i, κ i) ↦ ⨂ₜ[R] i, b i (p i)` is a basis
 of `⨂[R] i, M i`.
@@ -48,7 +51,7 @@ theorem Basis.piTensorProduct_repr_tprod_apply [Fintype ι] (b : Π i, Basis (κ
 @[simp]
 theorem Basis.piTensorProduct_apply [Finite ι] (b : Π i, Basis (κ i) R (M i)) (p : Π i, κ i) :
     Basis.piTensorProduct b p = ⨂ₜ[R] i, (b i) (p i) := by
-  haveI := Fintype.ofFinite ι
+  have := Fintype.ofFinite ι
   classical
   refine (Basis.piTensorProduct b).ext_elem (fun q ↦ ?_)
   simp [Finsupp.single_apply, Fintype.prod_ite_zero, ← funext_iff]

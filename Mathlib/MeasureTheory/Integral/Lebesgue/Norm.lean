@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Group.Real
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Interactions between the Lebesgue integral and norms
 -/
@@ -20,7 +23,7 @@ variable {α : Type*} [MeasurableSpace α] {μ : Measure α}
 
 theorem lintegral_ofReal_le_lintegral_enorm (f : α → ℝ) :
     ∫⁻ x, ENNReal.ofReal (f x) ∂μ ≤ ∫⁻ x, ‖f x‖ₑ ∂μ := by
-  simp_rw [← ofReal_norm_eq_enorm]
+  simp_rw [← ofReal_norm]
   refine lintegral_mono fun x => ENNReal.ofReal_le_ofReal ?_
   rw [Real.norm_eq_abs]
   exact le_abs_self (f x)

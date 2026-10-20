@@ -5,9 +5,9 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.RingTheory.Ideal.Colon
-public import Mathlib.RingTheory.Ideal.Operations
+
+import Mathlib.LinearAlgebra.Quotient.Basic
 
 /-!
 # Primary submodules
@@ -36,7 +36,7 @@ to define the nilpotency of `r : R`.
 
 @[expose] public section
 
-open Pointwise
+open scoped Pointwise
 
 namespace Submodule
 

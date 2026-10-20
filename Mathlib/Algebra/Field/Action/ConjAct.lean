@@ -9,11 +9,14 @@ public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.GroupWithZero.Action.ConjAct
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Conjugation action of a field on itself
 -/
 
-@[expose] public section
+public section
 
 namespace ConjAct
 

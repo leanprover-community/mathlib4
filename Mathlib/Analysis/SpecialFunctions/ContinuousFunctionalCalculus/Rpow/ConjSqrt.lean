@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Conjugating by the square root of a positive element in a C⋆-algebra
 
@@ -31,9 +34,6 @@ variable {A : Type*} [PartialOrder A] [Ring A] [StarRing A] [TopologicalSpace A]
 @[expose]
 noncomputable def conjSqrt (c : A) : A →L[ℝ] A where
   toLinearMap := .mulLeftRight ℝ (sqrt c, sqrt c)
-  cont := by
-    dsimp [LinearMap.mulLeftRight, LinearMap.mulLeft, LinearMap.mulRight]
-    fun_prop
 
 @[simp] lemma toLinearMap_conjSqrt (c : A) :
     (conjSqrt c).toLinearMap = .mulLeftRight ℝ (sqrt c, sqrt c) := rfl
@@ -54,6 +54,8 @@ lemma conjSqrt_le_conjSqrt {c a b : A} (h : a ≤ b) : conjSqrt c a ≤ conjSqrt
   conjSqrt_monotone h
 
 variable [IsSemitopologicalRing A] [T2Space A]
+
+set_option linter.overlappingInstances false
 
 @[grind =]
 lemma isStrictlyPositive_conjSqrt_iff (c a : A) (hc : IsStrictlyPositive c := by cfc_tac) :

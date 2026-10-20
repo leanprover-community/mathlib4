@@ -9,13 +9,16 @@ public import Mathlib.Algebra.Order.Group.Opposite
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Algebra.Ring.Opposite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ordered ring instances for `MulOpposite`/`AddOpposite`
 
 This file transfers ordered (semi)ring instances from `R` to `Rᵐᵒᵖ` and `Rᵃᵒᵖ`.
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*}
 

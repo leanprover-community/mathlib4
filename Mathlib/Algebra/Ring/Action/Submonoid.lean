@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.GroupTheory.GroupAction.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The subgroup of fixed points of an action
 -/
@@ -39,15 +42,13 @@ def FixedPoints.addSubgroup : AddSubgroup α where
   __ := addSubmonoid M α
   neg_mem' ha _ := by rw [smul_neg, ha]
 
-/-- The notation for `FixedPoints.addSubgroup`, chosen to resemble `αᴹ`. -/
-notation α "^+" M:51 => FixedPoints.addSubgroup M α
-
 @[simp]
-lemma FixedPoints.mem_addSubgroup (a : α) : a ∈ α^+M ↔ ∀ m : M, m • a = a :=
+lemma FixedPoints.mem_addSubgroup (a : α) : a ∈ FixedPoints.addSubgroup M α ↔ ∀ m : M, m • a = a :=
   Iff.rfl
 
 @[simp]
-lemma FixedPoints.addSubgroup_toAddSubmonoid : (α^+M).toAddSubmonoid = addSubmonoid M α :=
+lemma FixedPoints.addSubgroup_toAddSubmonoid :
+    (FixedPoints.addSubgroup M α).toAddSubmonoid = addSubmonoid M α :=
   rfl
 
 end AddGroup

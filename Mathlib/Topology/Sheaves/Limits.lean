@@ -5,15 +5,17 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Topology.Sheaves.Sheaf
 public import Mathlib.CategoryTheory.Sites.Limits
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.Topology.Sheaves.Sheaf
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Presheaves in `C` have limits and colimits when `C` does.
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -49,7 +51,7 @@ instance [HasLimits C] (X : TopCat) : CreatesLimits.{v, v} (Sheaf.forget C X) wh
 instance [HasLimits C] (X : TopCat.{v}) : HasLimitsOfSize.{v, v} (Sheaf.{v} C X) where
 
 set_option backward.isDefEq.respectTransparency false in
-theorem isSheaf_of_isLimit [HasLimitsOfShape J C] {X : TopCat} (F : J ⥤ Presheaf.{v} C X)
+theorem isSheaf_of_isLimit [HasLimitsOfShape J C] {X : TopCat.{v}} (F : J ⥤ Presheaf.{v} C X)
     (H : ∀ j, (F.obj j).IsSheaf) {c : Cone F} (hc : IsLimit c) : c.pt.IsSheaf := by
   let F' : J ⥤ Sheaf C X :=
     { obj := fun j => ⟨F.obj j, H j⟩
@@ -59,7 +61,7 @@ theorem isSheaf_of_isLimit [HasLimitsOfShape J C] {X : TopCat} (F : J ⥤ Preshe
     ((isLimitOfPreserves (Sheaf.forget C X) (limit.isLimit F')).conePointsIsoOfNatIso hc e)
     (limit F').2
 
-theorem limit_isSheaf [HasLimitsOfShape J C] {X : TopCat} (F : J ⥤ Presheaf.{v} C X)
+theorem limit_isSheaf [HasLimitsOfShape J C] {X : TopCat.{v}} (F : J ⥤ Presheaf.{v} C X)
     (H : ∀ j, (F.obj j).IsSheaf) : (limit F).IsSheaf :=
   isSheaf_of_isLimit F H (limit.isLimit F)
 

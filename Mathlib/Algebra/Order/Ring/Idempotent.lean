@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Ring.Idempotent
 public import Mathlib.Order.BooleanAlgebra.Defs
 public import Mathlib.Order.Hom.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Boolean algebra structure on idempotents in a commutative (semi)ring
 

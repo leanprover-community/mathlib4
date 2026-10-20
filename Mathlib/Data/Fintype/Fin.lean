@@ -5,8 +5,11 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.Order.Interval.Finset.Fin
 public import Mathlib.Data.Vector.Basic
+public import Mathlib.Order.Interval.Finset.Fin
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The structure of `Fintype (Fin n)`
@@ -20,8 +23,6 @@ public section
 open List (Vector)
 
 open Finset
-
-open Fintype
 
 namespace Fin
 

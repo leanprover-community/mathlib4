@@ -5,15 +5,19 @@ Authors: Monica Omar
 -/
 module
 
-public import Mathlib.Algebra.Group.Submonoid.Finite
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Algebra.Star.Pi
+
+import Mathlib.Algebra.Group.Submonoid.Finite
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Pi-types of star-ordered rings
 -/
 
-@[expose] public section
+public section
 
 variable {ι : Type*} [Finite ι]
   {A : ι → Type*} [Π i, PartialOrder (A i)] [Π i, NonUnitalSemiring (A i)]

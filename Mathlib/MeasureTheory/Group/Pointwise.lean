@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Group.Arithmetic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pointwise set operations on `MeasurableSet`s
 
@@ -18,7 +21,7 @@ no `MeasurableSet.mul` etc.
 public section
 
 
-open Pointwise
+open scoped Pointwise
 
 open Set
 

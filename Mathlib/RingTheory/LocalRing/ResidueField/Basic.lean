@@ -5,11 +5,10 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Ring.Action.End
 public import Mathlib.RingTheory.Finiteness.Cardinality
+public import Mathlib.RingTheory.Ideal.Over
 public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 public import Mathlib.RingTheory.LocalRing.RingHom.Basic
-public import Mathlib.RingTheory.Ideal.Over
 
 /-!
 
@@ -45,6 +44,8 @@ lemma residue_surjective :
     Function.Surjective (IsLocalRing.residue R) :=
   Ideal.Quotient.mk_surjective
 
+instance : RingHomSurjective (residue R) := ⟨residue_surjective⟩
+
 variable (R)
 
 instance ResidueField.algebra {R₀} [CommRing R₀] [Algebra R₀ R] :
@@ -63,6 +64,10 @@ theorem ResidueField.algebraMap_eq : algebraMap R (ResidueField R) = residue R :
 instance : IsLocalHom (IsLocalRing.residue R) :=
   ⟨fun _ ha =>
     Classical.not_not.mp (Ideal.Quotient.eq_zero_iff_mem.not.mp (isUnit_iff_ne_zero.mp ha))⟩
+
+#adaptation_note /-- Needed after leanprover/lean4#12564 -/
+noncomputable instance {R₀} [CommRing R₀] [Algebra R₀ R] : Module R₀ (ResidueField R) :=
+  inferInstanceAs <| Module R₀ (R ⧸ maximalIdeal R)
 
 instance {R₀} [CommRing R₀] [Algebra R₀ R] [Module.Finite R₀ R] :
     Module.Finite R₀ (ResidueField R) :=
@@ -113,17 +118,18 @@ theorem map_comp_residue (f : R →+* S) [IsLocalHom f] :
     (ResidueField.map f).comp (residue R) = (residue S).comp f :=
   rfl
 
+@[simp]
 theorem map_residue (f : R →+* S) [IsLocalHom f] (r : R) :
     ResidueField.map f (residue R r) = residue S (f r) :=
   rfl
 
 theorem map_id_apply (x : ResidueField R) : map (RingHom.id R) x = x :=
-  DFunLike.congr_fun map_id x
+  congr($map_id x)
 
 @[simp]
 theorem map_map (f : R →+* S) (g : S →+* T) (x : ResidueField R) [IsLocalHom f]
     [IsLocalHom g] : map g (map f x) = map (g.comp f) x :=
-  DFunLike.congr_fun (map_comp f g).symm x
+  congr($((map_comp f g).symm) x)
 
 /-- A ring isomorphism defines an isomorphism of residue fields. -/
 @[simps apply]
@@ -177,7 +183,7 @@ section FiniteDimensional
 variable [Algebra R S] [IsLocalHom (algebraMap R S)]
 
 instance : (maximalIdeal S).LiesOver (maximalIdeal R) :=
-  ⟨(((local_hom_TFAE (algebraMap R S)).out 0 4 rfl rfl).mp inferInstance).symm⟩
+  ⟨(((local_hom_TFAE (algebraMap R S)).out 1 5 rfl rfl).mp inferInstance).symm⟩
 
 instance : Algebra (ResidueField R) (ResidueField S) :=
   Ideal.Quotient.algebraOfLiesOver _ _
@@ -197,6 +203,10 @@ instance {R₀ : Type*} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsSca
   obtain ⟨x, rfl⟩ := residue_surjective x
   simp [← IsScalarTower.algebraMap_apply]
 
+#adaptation_note /-- Needed after leanprover/lean4#12564 -/
+noncomputable instance : Module (ResidueField R) (ResidueField S) :=
+  inferInstanceAs <| Module (R ⧸ maximalIdeal R) (S ⧸ maximalIdeal S)
+
 instance finite_of_module_finite [Module.Finite R S] :
     Module.Finite (ResidueField R) (ResidueField S) :=
   .of_restrictScalars_finite R _ _
@@ -205,6 +215,63 @@ lemma finite_of_finite [Module.Finite R S] (hfin : Finite (ResidueField R)) :
     Finite (ResidueField S) := Module.finite_of_finite (ResidueField R)
 
 end FiniteDimensional
+
+omit [IsLocalRing R]
+
+variable [Algebra R S] [Algebra R T]
+
+/-- A local algebra homomorphism induces an algebra homomorphism on the residue fields.
+
+See `mapAlgHom'` for a variant where the base ring `R` is also quotiented. -/
+noncomputable def mapAlgHom (e : S →ₐ[R] T) [IsLocalHom e] :
+    ResidueField S →ₐ[R] ResidueField T where
+  __ := map e
+  commutes' x := by
+    simp [IsScalarTower.algebraMap_apply R S (ResidueField S),
+      IsScalarTower.algebraMap_apply R T (ResidueField T)]
+
+@[simp]
+theorem mapAlgHom_residue (e : S →ₐ[R] T) [IsLocalHom e] (x : S) :
+    mapAlgHom e (residue S x) = residue T (e x) :=
+  rfl
+
+/-- A local algebra isomorphism induces an algebra isomorphism on the residue fields.
+
+See `mapAlgEquiv'` for a variant where the base ring `R` is also quotiented. -/
+noncomputable def mapAlgEquiv (e : S ≃ₐ[R] T) : ResidueField S ≃ₐ[R] ResidueField T where
+  __ := mapAlgHom e.toAlgHom
+  __ := mapEquiv e.toRingEquiv
+
+@[simp]
+theorem mapAlgEquiv_residue (e : S ≃ₐ[R] T) (x : S) :
+    mapAlgEquiv e (residue S x) = residue T (e x) :=
+  rfl
+
+variable [IsLocalHom (algebraMap R S)] [IsLocalHom (algebraMap R T)]
+
+/-- A local algebra homomorphism induces an algebra homomorphism on the residue fields.
+
+See `mapAlgHom` for a variant where the base ring `R` is not quotiented. -/
+noncomputable def mapAlgHom' (e : S →ₐ[R] T) [IsLocalHom e] :
+    ResidueField S →ₐ[ResidueField R] ResidueField T :=
+  (mapAlgHom e).extendScalarsOfSurjective residue_surjective
+
+@[simp]
+theorem mapAlgHom'_residue [IsLocalRing R] (e : S →ₐ[R] T) [IsLocalHom e] (x : S) :
+    mapAlgHom' e (residue S x) = residue T (e x) :=
+  rfl
+
+/-- A local algebra isomorphism induces an algebra isomorphism on the residue fields.
+
+See `mapAlgEquiv` for a variant where the base ring `R` is not quotiented. -/
+noncomputable def mapAlgEquiv' (e : S ≃ₐ[R] T) :
+    ResidueField S ≃ₐ[ResidueField R] ResidueField T :=
+  (mapAlgEquiv e).extendScalarsOfSurjective residue_surjective
+
+@[simp]
+theorem mapAlgEquiv'_residue [IsLocalRing R] (e : S ≃ₐ[R] T) (x : S) :
+    mapAlgEquiv' e (residue S x) = residue T (e x) :=
+  rfl
 
 end ResidueField
 

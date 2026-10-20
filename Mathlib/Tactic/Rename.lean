@@ -8,8 +8,12 @@ module
 public meta import Lean.Elab.Tactic.ElabTerm
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `rename'` tactic
+
 The `rename'` tactic renames one or several hypotheses.
 -/
 

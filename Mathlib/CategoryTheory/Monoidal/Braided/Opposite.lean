@@ -6,7 +6,9 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-public import Mathlib.CategoryTheory.Monoidal.Opposite
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # If `C` is braided, so is `Cᵒᵖ`.
@@ -14,7 +16,7 @@ public import Mathlib.CategoryTheory.Monoidal.Opposite
 Todo: we should also do `Cᵐᵒᵖ`.
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory MonoidalCategory BraidedCategory Opposite
 

@@ -5,9 +5,7 @@ Authors: Kim Morrison, Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.Const
 public import Mathlib.CategoryTheory.Discrete.Basic
-public import Mathlib.Data.ULift
 
 /-!
 # The category `Discrete PUnit`
@@ -18,7 +16,6 @@ and construct the equivalence `(Discrete PUnit ⥤ C) ≌ C`.
 -/
 
 @[expose] public section
-
 
 universe w v u
 
@@ -70,8 +67,8 @@ theorem equiv_punit_iff_unique :
   · rintro ⟨h⟩
     refine ⟨⟨h.inverse.obj ⟨⟨⟩⟩⟩, fun x y => Nonempty.intro ?_⟩
     let f : x ⟶ y := by
-      have hx : x ⟶ h.inverse.obj ⟨⟨⟩⟩ := by convert h.unit.app x
-      have hy : h.inverse.obj ⟨⟨⟩⟩ ⟶ y := by convert h.unitInv.app y
+      have hx : x ⟶ h.inverse.obj ⟨⟨⟩⟩ := by convert! h.unit.app x
+      have hy : h.inverse.obj ⟨⟨⟩⟩ ⟶ y := by convert! h.unitInv.app y
       exact hx ≫ hy
     suffices sub : Subsingleton (x ⟶ y) from uniqueOfSubsingleton f
     have : ∀ z, z = h.unit.app x ≫ (h.functor ⋙ h.inverse).map z ≫ h.unitInv.app y := by
@@ -81,10 +78,9 @@ theorem equiv_punit_iff_unique :
     rw [this a, this b]
     simp only [Functor.comp_map]
     congr 3
-    apply ULift.ext
     simp [eq_iff_true_of_subsingleton]
   · rintro ⟨⟨p⟩, h⟩
-    haveI := fun x y => (h x y).some
+    have := fun x y => (h x y).some
     refine
       Nonempty.intro
         (CategoryTheory.Equivalence.mk ((Functor.const _).obj ⟨⟨⟩⟩)

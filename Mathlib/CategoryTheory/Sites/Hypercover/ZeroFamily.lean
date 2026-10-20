@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Sites.Hypercover.Zero
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Defining precoverages via pre-`0`-hypercovers
 
@@ -94,6 +97,7 @@ lemma Precoverage.HasIsos.of_preZeroHypercoverFamily {P : PreZeroHypercoverFamil
     rw [← PreZeroHypercover.presieve₀_singleton.{_, _, max u v}]
     refine .mk _ (h _)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma Precoverage.IsStableUnderBaseChange.of_preZeroHypercoverFamily_of_isClosedUnderIsomorphisms
     {P : PreZeroHypercoverFamily C}

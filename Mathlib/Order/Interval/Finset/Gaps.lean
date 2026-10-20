@@ -6,7 +6,7 @@ Authors: Yizheng Zhu
 module
 
 public import Mathlib.Data.Finset.Sort
-public import Mathlib.Data.Prod.Lex
+public import Mathlib.Order.Prod.Lex.Basic
 
 /-!
 # Gaps of disjoint closed intervals
@@ -15,7 +15,7 @@ This file defines `Finset.intervalGapsWithin` that computes the complement of th
 collection of pairwise disjoint subintervals of `[a, b]`.
 
 If `LinearOrder α`, `F` is a finite subset of `α × α` such that for any `(x, y) ∈ F`,
-`a ≤ x ≤ y ≤ b` and all such `[x, y]`'s are pairwise disjoint, `h` is a proof of `F.card = k`,
+`a ≤ x ≤ y ≤ b` and all such `[x, y]`'s are pairwise disjoint, `h` is a proof of `#F = k`,
 `i` is in `Fin (k + 1)`, we order `F` from left to right as
 `(x 0, y 0), ..., (x (k - 1), y (k - 1))`, then `F.intervalGapsWithin h a b i` is
 - `(a, b)` if `0 = i = k`;
@@ -39,6 +39,8 @@ they are actually satisfied. If they are actually satisfied, then we show that
   for `j < k + 1`.
 -/
 
+open scoped Finset
+
 @[expose] public section
 
 open Fin Fin.NatCast Set
@@ -47,7 +49,7 @@ section IntervalGapsWithin
 
 namespace Finset
 
-variable {α : Type*} [LinearOrder α] (F : Finset (α × α)) {k : ℕ} (h : F.card = k) (a b : α)
+variable {α : Type*} [LinearOrder α] (F : Finset (α × α)) {k : ℕ} (h : #F = k) (a b : α)
   (j : ℕ)
 
 /-- We order `F` in the lexicographic order as `(x 0, y 0), ..., (x (k - 1), y (k - 1))`.
@@ -100,8 +102,8 @@ theorem intervalGapsWithin_mapsTo : (Set.Iio k).MapsTo
   intro j hj
   rw [mem_Iio] at hj
   simp only [intervalGapsWithin_snd_of_lt, intervalGapsWithin_succ_fst_of_lt,
-    Prod.mk.eta, SetLike.mem_coe, hj]
-  convert F.orderEmbOfFin_mem h ⟨j, hj⟩ using 1
+    SetLike.mem_coe, hj]
+  convert! F.orderEmbOfFin_mem h ⟨j, hj⟩ using 1
 
 theorem intervalGapsWithin_injOn : (Set.Iio k).InjOn
     (fun (j : ℕ) ↦ ((F.intervalGapsWithin h a b j).2, (F.intervalGapsWithin h a b j.succ).1)) := by
@@ -157,8 +159,7 @@ theorem intervalGapsWithin_fst_le_snd {a b : α} (hab : a ≤ b)
   have hk : k - 1 + 1 = k := by omega
   by_cases hj₂ : j = k
   · simp only [hj₂, natCast_eq_last, intervalGapsWithin_last_snd, ge_iff_le]
-    convert hFab (F.intervalGapsWithin_mapsTo h a b (x := j - 1) (by grind)) |>.right.right
-      using 1
+    convert hFab (F.intervalGapsWithin_mapsTo h a b (x := j - 1) (by grind)) |>.right.right using 1
     simp [hj₂, hk]
   rw [intervalGapsWithin_fst_of_lt_lt (hj₁ := by omega) (hj₂ := by omega),
       intervalGapsWithin_snd_of_lt (hj := by omega)]

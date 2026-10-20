@@ -21,7 +21,7 @@ The normal notation for this would be `N : P` which has already been taken by ty
 
 namespace Submodule
 
-open Pointwise
+open scoped Pointwise
 
 variable {R M : Type*}
 
@@ -38,7 +38,7 @@ def colon (N : Submodule R M) (S : Set M) : Ideal R where
     (Set.add_smul_subset _ _ _).trans ((Set.add_subset_add ha hb).trans_eq (by simp))
   zero_mem' := (Set.zero_smul_set_subset S).trans (by simp)
   smul_mem' r := by
-    simp only [Set.mem_setOf_eq, smul_eq_mul, mul_smul, Set.smul_set_subset_iff]
+    simp only [Set.mem_ofPred_eq, smul_eq_mul, mul_smul, Set.smul_set_subset_iff]
     intro x hx y hy
     exact N.smul_mem _ (hx hy)
 
@@ -58,8 +58,6 @@ theorem colon_univ {I : Ideal R} [I.IsTwoSided] : I.colon Set.univ = I := by
   simp_rw [SetLike.ext_iff, mem_colon, smul_eq_mul]
   exact fun x ↦ ⟨fun h ↦ mul_one x ▸ h 1 trivial, fun h _ _ ↦ I.mul_mem_right _ h⟩
 
-@[deprecated (since := "2026-01-11")] alias colon_top := colon_univ
-
 @[simp]
 theorem bot_colon : colon (⊥ : Submodule R M) (N : Set M) = N.annihilator := by
   ext x
@@ -75,15 +73,16 @@ theorem iInf_colon_iUnion (ι₁ : Sort*) (f : ι₁ → Submodule R M) (ι₂ :
     (⨅ i, f i).colon (⋃ j, g j) = ⨅ (i) (j), (f i).colon (g j) := by
   aesop (add simp mem_colon)
 
-@[deprecated (since := "2026-01-11")] alias iInf_colon_iSup := iInf_colon_iUnion
-
 /-- If `S ⊆ N₂`, then intersecting with `N₂` does not change the colon ideal. -/
 lemma colon_inf_eq_left_of_subset (h : S ⊆ (N₂ : Set M)) : (N₁ ⊓ N₂).colon S = N₁.colon S := by
   aesop (add simp mem_colon)
 
 @[simp]
-lemma colon_eq_top_iff_subset (S : Set M) : N.colon S = ⊤ ↔ S ⊆ N := by
+lemma colon_eq_top_iff_subset : N.colon S = ⊤ ↔ S ⊆ N := by
   aesop (add simp [mem_colon, Ideal.eq_top_iff_one])
+
+lemma colon_eq_top_iff_le : N₁.colon ↑N₂ = ⊤ ↔ N₂ ≤ N₁ := by
+  simp
 
 @[simp]
 lemma inf_colon : (N₁ ⊓ N₂).colon S = N₁.colon S ⊓ N₂.colon S := by
@@ -126,10 +125,6 @@ section CommSemiring
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 variable {N N' : Submodule R M} {S : Set M}
-
-@[deprecated mem_colon (since := "2026-01-15")]
-theorem mem_colon' {r} : r ∈ N.colon S ↔ S ≤ comap (r • (LinearMap.id : M →ₗ[R] M)) N :=
-  mem_colon
 
 theorem mem_colon_iff_le {r} : r ∈ N.colon N' ↔ r • N' ≤ N := by
   aesop (add simp SetLike.coe_subset_coe)

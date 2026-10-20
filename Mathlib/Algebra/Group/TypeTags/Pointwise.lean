@@ -8,13 +8,16 @@ module
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Group.TypeTags.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about pointwise operations in the presence of `Multiplicative` and `Additive`.
 -/
 
 public section
 
-open Pointwise
+open scoped Pointwise
 
 variable {M : Type*}
 

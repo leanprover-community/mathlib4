@@ -8,11 +8,14 @@ module
 public import Mathlib.Algebra.Module.LocalizedModule.Basic
 public import Mathlib.RingTheory.Ideal.Prime
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Localizations of modules at the complement of a prime ideal
 -/
 
-@[expose] public section
+public section
 
 /-- Given a prime ideal `P` and `f : M →ₗ[R] M'`, `IsLocalizedModule.AtPrime P f` states that `M'`
   is isomorphic to the localization of `M` at the complement of `P`. -/

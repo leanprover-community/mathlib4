@@ -5,9 +5,11 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Types.Filtered
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
-public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+public import Mathlib.CategoryTheory.Limits.Types.Filtered
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Filtered colimits in concrete categories
@@ -17,7 +19,7 @@ In this file, we provide analogues to some of the API in the
 forgetful functor preserves filtered colimits.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.Limits
 

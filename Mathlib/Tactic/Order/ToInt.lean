@@ -5,11 +5,15 @@ Authors: Vasilii Nesterov
 -/
 module
 
+public meta import Mathlib.Util.AtomM
+public meta import Mathlib.Util.Qq
+public meta import Std.Data.HashMap.AdditionalOperations
 public import Batteries.Data.List.Pairwise
 public import Batteries.Tactic.GeneralizeProofs
 public import Mathlib.Tactic.Order.CollectFacts
-public meta import Mathlib.Util.AtomM
-public import Mathlib.Util.Qq
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Translating linear orders to ℤ
@@ -88,11 +92,11 @@ theorem toInt_nlt_toInt : ¬toInt val i < toInt val j ↔ ¬val i < val j := by
 
 theorem toInt_sup_toInt_eq_toInt :
     toInt val i ⊔ toInt val j = toInt val k ↔ val i ⊔ val j = val k := by
-  simp [le_antisymm_iff, sup_le_iff, le_sup_iff, toInt_le_toInt]
+  simp [le_antisymm_iff, toInt_le_toInt]
 
 theorem toInt_inf_toInt_eq_toInt :
     toInt val i ⊓ toInt val j = toInt val k ↔ val i ⊓ val j = val k := by
-  simp [le_antisymm_iff, inf_le_iff, le_inf_iff, toInt_le_toInt]
+  simp [le_antisymm_iff, toInt_le_toInt]
 
 open Lean Meta Qq
 

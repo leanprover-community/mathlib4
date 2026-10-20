@@ -6,7 +6,6 @@ Authors: Anand Rao, Rémi Bottinelli
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Ends.Defs
-public import Mathlib.CategoryTheory.CofilteredSystem
 
 /-!
 # Properties of the ends of graphs
@@ -15,7 +14,7 @@ This file is meant to contain results about the ends of (locally finite connecte
 
 -/
 
-@[expose] public section
+public section
 
 
 variable {V : Type} (G : SimpleGraph V)
@@ -46,7 +45,6 @@ instance componentComplFunctor_finite [LocallyFinite G] [Fact G.Preconnected]
 /-- A locally finite preconnected infinite graph has at least one end. -/
 lemma nonempty_ends_of_infinite [LocallyFinite G] [Fact G.Preconnected] [Infinite V] :
     G.end.Nonempty := by
-  classical
   apply nonempty_sections_of_finite_inverse_system G.componentComplFunctor
 
 end SimpleGraph

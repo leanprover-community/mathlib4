@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Group.InjSurj
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `ULift` instances for groups and monoids
 
@@ -136,6 +139,6 @@ instance cancelCommMonoid [CancelCommMonoid α] : CancelCommMonoid (ULift α) :=
 instance nontrivial [Nontrivial α] : Nontrivial (ULift α) :=
   Equiv.ulift.symm.injective.nontrivial
 
--- TODO we don't do `OrderedCancelCommMonoid` or `OrderedCommGroup`
+-- TODO: We don't do `IsOrderedCancelMonoid`.
 -- We'd need to add instances for `ULift` in `Order.Basic`.
 end ULift

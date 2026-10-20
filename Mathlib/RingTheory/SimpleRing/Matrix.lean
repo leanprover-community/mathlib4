@@ -6,13 +6,15 @@ Authors: Jujian Zhang
 module
 
 public import Mathlib.LinearAlgebra.Matrix.Ideal
-public import Mathlib.RingTheory.SimpleRing.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 The matrix ring over a simple ring is simple
 -/
 
-@[expose] public section
+public section
 
 namespace IsSimpleRing
 

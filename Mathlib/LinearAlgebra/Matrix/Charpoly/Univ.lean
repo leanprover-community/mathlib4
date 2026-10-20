@@ -5,7 +5,6 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.Equiv
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
 public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 
@@ -31,7 +30,7 @@ of a matrix are homogeneous polynomials in the matrix entries.
   the `i`-th coefficient of `univ` is a homogeneous polynomial of degree `n - i`.
 -/
 
-@[expose] public section
+public section
 
 namespace Matrix.charpoly
 

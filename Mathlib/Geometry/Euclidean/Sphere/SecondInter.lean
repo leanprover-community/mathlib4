@@ -6,8 +6,9 @@ Authors: Joseph Myers
 module
 
 public import Mathlib.Analysis.Convex.Side
-public import Mathlib.Analysis.Convex.StrictCombination
 public import Mathlib.Geometry.Euclidean.Sphere.Basic
+
+import Mathlib.Analysis.Convex.StrictCombination
 
 /-!
 # Second intersection of a sphere and a line
@@ -27,7 +28,7 @@ through a point on that sphere.
 
 noncomputable section
 
-open RealInnerProductSpace
+open scoped RealInnerProductSpace
 
 namespace EuclideanGeometry
 
@@ -144,6 +145,37 @@ theorem Sphere.secondInter_secondInter (s : Sphere P) (p : P) (v : V) :
   convert zero_div (G₀ := ℝ) _
   ring
 
+/-- The difference between the second intersections of two spheres along a common
+direction `v` is `(2 * ⟪v, s₁.center -ᵥ s₂.center⟫ / ⟪v, v⟫) • v`. -/
+theorem Sphere.secondInter_vsub_secondInter (s₁ s₂ : Sphere P) (p : P) (v : V) :
+    s₁.secondInter p v -ᵥ s₂.secondInter p v = (2 * ⟪v, s₁.center -ᵥ s₂.center⟫ / ⟪v, v⟫) • v := by
+  rw [Sphere.secondInter, Sphere.secondInter, vadd_vsub_vadd_cancel_right, ← sub_smul,
+    ← vsub_sub_vsub_cancel_left s₁.center s₂.center p, inner_sub_right]
+  grind
+
+/-- The difference between the second intersections of two spheres along a common
+unit direction `v` is `(2 * ⟪v, s₁.center -ᵥ s₂.center⟫) • v`. -/
+theorem Sphere.secondInter_vsub_secondInter_of_norm_eq_one (s₁ s₂ : Sphere P) (p : P) {v : V}
+    (hv : ‖v‖ = 1) :
+    s₁.secondInter p v -ᵥ s₂.secondInter p v = (2 * ⟪v, s₁.center -ᵥ s₂.center⟫) • v := by
+  simp [hv, secondInter_vsub_secondInter]
+
+/-- The distance between the second intersections of two spheres along a common
+direction `v` is `2 * |⟪v, s₁.center -ᵥ s₂.center⟫| / ‖v‖`. -/
+theorem Sphere.dist_secondInter_secondInter (s₁ s₂ : Sphere P) (p : P) (v : V) :
+    dist (s₁.secondInter p v) (s₂.secondInter p v) = 2 * |⟪v, s₁.center -ᵥ s₂.center⟫| / ‖v‖ := by
+  rcases eq_or_ne v 0 with rfl | hv
+  · simp
+  simp [dist_eq_norm_vsub, secondInter_vsub_secondInter, norm_smul]
+  grind
+
+/-- The distance between the second intersections of two spheres along a common
+unit direction `v` is `2 * |⟪v, s₁.center -ᵥ s₂.center⟫|`. -/
+theorem Sphere.dist_secondInter_secondInter_of_norm_eq_one (s₁ s₂ : Sphere P) (p : P) {v : V}
+    (hv : ‖v‖ = 1) :
+    dist (s₁.secondInter p v) (s₂.secondInter p v) = 2 * |⟪v, s₁.center -ᵥ s₂.center⟫| := by
+  rw [dist_secondInter_secondInter, hv, div_one]
+
 /-- If the vector passed to `secondInter` is given by a subtraction involving the point in
 `secondInter`, the result of `secondInter` may be expressed using `lineMap`. -/
 theorem Sphere.secondInter_eq_lineMap (s : Sphere P) (p p' : P) :
@@ -232,13 +264,13 @@ lemma Sphere.sOppSide_faceOpposite_secondInter_of_mem_interior {s : Sphere P}
       (s.secondInter (sx.points i) (p' -ᵥ (sx.points i))) by
     rwa [hp', s.secondInter_smul _ _ hrpos.ne'] at this
   refine s.sOppSide_faceOpposite_secondInter_of_mem_interior_faceOpposite hi hsx ?_
-  simp_rw [p', ← Finset.univ.affineCombination_affineCombinationSingleWeights ℝ (sx.points)
+  simp_rw [p', ← Finset.univ.affineCombination_piSingle ℝ (sx.points)
     (Finset.mem_univ i), AffineMap.lineMap_apply, Finset.affineCombination_vsub,
     ← LinearMap.map_smul, Finset.weightedVSub_vadd_affineCombination,
     Affine.Simplex.faceOpposite]
   rw [Affine.Simplex.affineCombination_mem_interior_face_iff_pos]
   · simp only [Finset.mem_compl, Finset.mem_singleton, Pi.add_apply, Pi.smul_apply, Pi.sub_apply,
-      smul_eq_mul, Decidable.not_not, forall_eq, Finset.affineCombinationSingleWeights_apply_self]
+      smul_eq_mul, Decidable.not_not, forall_eq, Pi.single_eq_same]
     refine ⟨fun j hj ↦ ?_, by grind⟩
     simp [hj, hrpos, (hw01 j).1]
   · simp [Finset.sum_add_distrib, ← Finset.mul_sum, hw]

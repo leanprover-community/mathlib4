@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.UpperLower.Closure
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Upper and lower set product
 
@@ -99,7 +102,7 @@ theorem prod_sup_prod : s₁ ×ˢ t₁ ⊔ s₂ ×ˢ t₂ = (s₁ ⊔ s₂) ×ˢ
 
 variable {s s₁ s₂ t t₁ t₂}
 
-@[mono]
+@[gcongr, mono]
 theorem prod_mono : s₁ ≤ s₂ → t₁ ≤ t₂ → s₁ ×ˢ t₁ ≤ s₂ ×ˢ t₂ :=
   Set.prod_mono
 
