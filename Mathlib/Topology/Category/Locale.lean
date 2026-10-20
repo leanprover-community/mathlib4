@@ -5,8 +5,10 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Order.Category.Frm
 public import Mathlib.Topology.Category.CompHaus.Frm
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The category of locales
@@ -36,7 +38,12 @@ instance (X : Locale) : Frame X :=
 
 /-- Construct a bundled `Locale` from a `Frame`. -/
 def of (α : Type*) [Frame α] : Locale :=
-  op <| Frm.of α
+  op ↧α
+
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `Locale.of X` as `↧X`. -/
+@[app_delab Locale.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
 
 @[simp]
 theorem coe_of (α : Type*) [Frame α] : ↥(of α) = α :=
@@ -57,5 +64,4 @@ def topToLocale : TopCat ⥤ Locale :=
 instance CompHausToLocale.faithful : (compHausToTop ⋙ topToLocale.{u}).Faithful :=
   ⟨fun h => by
     dsimp at h
-    exact ConcreteCategory.ext (Opens.comap_injective (congr_arg Frm.Hom.hom
-      (Quiver.Hom.op_inj h)))⟩
+    exact ConcreteCategory.ext (Opens.comap_injective congr($(Quiver.Hom.op_inj h).hom))⟩

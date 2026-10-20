@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.Hom.CompleteLattice
 public import Mathlib.Order.UpperLower.Principal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `UpperSet.Ici` etc. as `Sup`/`sSup`/`Inf`/`sInf`-homomorphisms
 
@@ -19,8 +22,6 @@ In this file we define `UpperSet.iciSupHom` etc. These functions are `UpperSet.I
 
 
 variable {α : Type*}
-
-open OrderDual
 
 namespace UpperSet
 

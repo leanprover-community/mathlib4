@@ -6,9 +6,9 @@ Authors: Michael Howes, Newell Jensen
 module
 
 public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.GroupTheory.Coprod.Basic
 public import Mathlib.GroupTheory.FreeGroup.Basic
 public import Mathlib.GroupTheory.QuotientGroup.Defs
-public import Mathlib.GroupTheory.Coprod.Basic
 
 /-!
 # Defining a group given by generators and relations
@@ -91,7 +91,7 @@ theorem closure_range_of (rels : Set (FreeGroup α)) :
     Subgroup.closure (Set.range (PresentedGroup.of : α → PresentedGroup rels)) = ⊤ := by
   have : (PresentedGroup.of : α → PresentedGroup rels) = QuotientGroup.mk' _ ∘ FreeGroup.of := rfl
   rw [this, Set.range_comp, ← MonoidHom.map_closure (QuotientGroup.mk' _),
-    FreeGroup.closure_range_of, ← MonoidHom.range_eq_map]
+    FreeGroup.closure_range_of, Subgroup.map_top]
   exact MonoidHom.range_eq_top.2 (QuotientGroup.mk'_surjective _)
 
 @[induction_eliminator]

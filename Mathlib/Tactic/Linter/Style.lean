@@ -6,20 +6,21 @@ Authors: Michael Rothgang
 module
 
 public meta import Lean.Elab.Command
-public meta import Lean.Server.InfoUtils
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
-public import Lean.Parser.Command
+public meta import Batteries.Tactic.Lint.Basic
+public meta import Batteries.Util.ExtendedBinder
+public meta import Lean.Parser.Module
 public import Mathlib.Tactic.DeclarationNames
-public import Batteries.Tactic.Lint.Basic
+
+meta import Lean.Parser.Command
 
 /-!
 ## Style linters
 
 This file contain linters about stylistic aspects: these are only about coding style,
 but do not affect correctness nor global coherence of mathlib.
-Historically, some of these were ported from the `lint-style.py` Python script.
 
 This file defines the following linters:
 - the `setOption` linter checks for the presence of `set_option` commands activating
@@ -81,7 +82,7 @@ public def isSetOption : Syntax → Bool :=
 /-- The `setOption` linter: this lints any `set_option` command, term or tactic
 which sets a `debug`, `pp`, `profiler` or `trace` option.
 This also warns if an option containing `maxHeartbeats` (typically, the `maxHeartbeats` or
-`synthInstance.maxHeartbeats` option) or the `linter.flexible`, `linter.style.commandStart` or
+`synthInstance.maxHeartbeats` option) or the `linter.flexible` or
 `backward.inferInstanceAs.wrap.reuseSubInstances ` option is set.
 
 **Why is this bad?** The `debug`, `pp`, `profiler` and `trace` options are good for debugging,
@@ -92,8 +93,7 @@ explaining the need for them; another linter enforces this).
 The `linter.flexible` option should be scoped as `set_option opt in ...`.
 
 **How to fix this?** The `maxHeartbeats` and `linter.flexible` option changes can be scoped to
-individual commands, if they are truly necessary. The `linter.style.commandStart` option is
-deprecated and should be replaced by `linter.style.whitespace`.
+individual commands, if they are truly necessary.
 New `backward.inferInstanceAs.wrap.reuseSubInstances` instances are technical debt,
 and should not be introduced.
 
@@ -120,9 +120,6 @@ def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
           Please scope this to individual declarations, as in\n```\nset_option {name} in\n\
           -- comment explaining why this is necessary\n\
           example : ... := ...\n```"
-        else if name == `linter.style.commandStart then
-          logWarningAt stx "The `linter.style.commandStart` option is deprecated, \
-            use `linter.style.whitespace` instead."
         else if name == `backward.inferInstanceAs.wrap.reuseSubInstances then
           logWarningAt stx "The `backward.inferInstanceAs.wrap.reuseSubInstances` option \
             marks the introduction of technical debt, so please don't use it."
@@ -151,30 +148,30 @@ public register_option linter.style.missingEnd : Bool := {
 namespace Style.missingEnd
 
 @[inherit_doc Mathlib.Linter.linter.style.missingEnd]
-def missingEndLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    -- Only run this linter at the end of a module.
-    unless stx.isOfKind ``Lean.Parser.Command.eoi do return
-    if getLinterValue linter.style.missingEnd (← getLinterOptions) &&
-        !(← MonadState.get).messages.hasErrors then
-      let sc ← getScopes
-      -- The last scope is always the "base scope", corresponding to no active `section`s or
-      -- `namespace`s. We are interested in any *other* unclosed scopes.
-      if sc.length == 1 then return
-      let ends := sc.dropLast
-      -- If the outermost scope(s) correspond to `public/meta/noncomputable section`, we ignore
-      -- them.
-      let ends := ends.reverse
-        |>.dropWhile (fun sc ↦ sc.currNamespace.isAnonymous &&
-          (sc.isMeta || sc.isPublic || sc.isNoncomputable))
-        |>.reverse
-      -- If there are any further un-closed scopes, we emit a warning.
-      if !ends.isEmpty then
-        let ending := (ends.map (·.header)).foldl (init := "") fun a b ↦
-          a ++ s!"\n\nend{if b == "" then "" else " "}{b}"
-        Linter.logLint linter.style.missingEnd stx
-         m!"unclosed sections or namespaces; expected: '{ending}'"
+def missingEndLinter : ModuleLinter where run _ := do
+  if getLinterValue linter.style.missingEnd (← getLinterOptions) &&
+      !(← MonadState.get).messages.hasErrors then
+    let sc ← getScopes
+    -- The last scope is always the "base scope", corresponding to no active `section`s or
+    -- `namespace`s. We are interested in any *other* unclosed scopes.
+    if sc.length == 1 then return
+    let ends := sc.dropLast
+    -- If the outermost scope(s) correspond to `public/meta/noncomputable section`, we ignore
+    -- them.
+    let ends := ends.reverse
+      |>.dropWhile (fun sc ↦ sc.currNamespace.isAnonymous &&
+        (sc.isMeta || sc.isPublic || sc.isNoncomputable))
+      |>.reverse
+    -- If there are any further un-closed scopes, we emit a warning.
+    if !ends.isEmpty then
+      let ending := (ends.map (·.header)).foldl (init := "") fun a b ↦
+        a ++ s!"\n\nend{if b == "" then "" else " "}{b}"
+      let bottom := (← getFileMap).source.utf8ByteSize
+      let bottomOfFile := Syntax.atom (.synthetic ⟨bottom⟩ ⟨bottom⟩) ""
+      Linter.logLint linter.style.missingEnd bottomOfFile
+        m!"unclosed sections or namespaces; expected: '{ending}'"
 
-initialize addLinter missingEndLinter
+initialize addModuleLinter missingEndLinter
 
 end Style.missingEnd
 
@@ -458,14 +455,14 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
       return
     if stx.isOfKind ``Lean.Parser.Module.header then return
     -- if the linter reached the end of the file, then we scan the `import` syntax instead
-    let stx := ← do
+    let stx ← do
       if stx.isOfKind ``Lean.Parser.Command.eoi then
         let fileMap ← getFileMap
         -- `impMods` is the syntax for the modules imported in the current file
         let (impMods, _) ← Parser.parseHeader
           { inputString := fileMap.source, fileName := ← getFileName, fileMap := fileMap }
-        return impMods.raw
-      else return stx
+        pure impMods.raw
+      else pure stx
     let sstr := stx.getSubstring?
     let fm ← getFileMap
     let maxLineLength := linter.style.longLine.maxLineLength.get (← getOptions)
@@ -558,12 +555,15 @@ such names violate the naming convention. -/
   noErrorsFound := "no definitions with an underscore in their name found."
   errorsFound := "FOUND definitions with an underscore in their name."
   test declName := do
-    unless ((← getEnv).find? declName).get!.isDefinition && !(← isAutoDecl declName) do return none
+    unless ((← getEnv).find? declName).get!.isDefinition &&
+        -- TODO: lint private definitions with underscores for readability.
+        !(← isPrivateOrAutoDecl declName) do
+      return none
     -- We also exclude simprocs: these should be named like normal lemmas.
     -- check if their type is `Lean.Meta.Simp.Simproc`.
     if ((← getEnv).find? declName).get!.type.isConstOf `Lean.Meta.Simp.Simproc then return none
     if isBadNameWithUnderscore declName then
-      return m!"The definition `{declName}` contains an underscore. \
+      return m!"The definition `{.ofConstName declName true}` contains an underscore. \
         This almost surely violates mathlib's naming convention; \
         use lowerCamelCase or UpperCamelCase instead."
     else return none
@@ -632,35 +632,90 @@ public register_option linter.style.show : Bool := {
   descr := "enable the show linter"
 }
 
-namespace Style.show
+namespace Style
 
-@[inherit_doc Mathlib.Linter.linter.style.show]
-def showLinter : Linter where run := withSetOptionIn fun stx => do
-    unless getLinterValue linter.style.show (← getLinterOptions) do
-      return
-    if (← get).messages.hasErrors then
-      return
-    for tree in (← getInfoTrees) do
-      tree.foldInfoM (init := ()) fun ci i _ => do
-        let .ofTacticInfo tac := i | return
-        unless tac.stx.isOfKind ``Lean.Parser.Tactic.show do return
-        let some _ := tac.stx.getRange? true | return
-        let (goal :: goals) := tac.goalsBefore | return
-        let (goal' :: goals') := tac.goalsAfter | return
-        if goals != goals' then return -- `show` didn't act on first goal -> can't replace with `change`
-        -- Even if `goal == goal'`, the tactic may have assigned metavariables.
-        let diff ← ci.runCoreM do
-          let before ← (do instantiateMVars (← goal.getType)).run' {} { mctx := tac.mctxBefore }
-          let after ← (do instantiateMVars (← goal'.getType)).run' {} { mctx := tac.mctxAfter }
-          return before != after
-        if diff then
-          logLint linter.style.show tac.stx m!"\
-          The `show` tactic should only be used to indicate intermediate goal states for \
-          readability.\nHowever, this tactic invocation changed the goal. Please use `change` \
-          instead for these purposes."
+open Tactic
 
-initialize addLinter showLinter
+/-- Run the `show` tactic, with a linter warning when one should use `change` instead. -/
+def elabShow (newType : Term) : TacticM Unit := do
+  let goal :: goals ← getGoals | throwNoGoalsToBeSolved
+  let before ← instantiateMVars (← goal.getType)
+  evalTactic (← `(tactic| show $newType))
+  if getLinterValue linter.style.show (← getLinterOptions) then
+    let goal' :: goals' ← getGoals | return
+    if goals != goals' then return -- `show` didn't act on first goal -> can't replace with `change`
+    let after ← instantiateMVars (← goal'.getType)
+    if before != after then
+      logLint linter.style.show (← getRef) m!"\
+        The `show` tactic should only be used to indicate intermediate goal states for \
+        readability.\nHowever, this tactic invocation changed the goal. Please use `change` \
+        instead for these purposes."
 
-end Style.show
+-- `(priority := high)` ensures we avoid producing choice nodes, and thereby avoid unexpected
+-- behavior arising from choice node elaboration
+@[tactic_alt Tactic.show]
+elab (name := «show») (priority := high) "show " newType:term : tactic => elabShow newType
+
+end Style
+
+/-!
+### The extended binder linter
+
+In mathlib we prefer writing the basic `∀`/`∃` binders over `∀ᵉ`/`∃ᵉ`. This is because the latter
+was used quite infrequently, so the cost of needing to learn this notation was greater
+than the benefit.
+-/
+
+/--
+The `extendedBinder` linter flags uses of the `∀ᵉ`/`∃ᵉ` notation for combining universal and
+existential binders. Mathlib prefers basic `∀`/`∃` notation.
+-/
+public register_option linter.style.extendedBinder : Bool := {
+  defValue := false
+  descr := "enable the `extendedBinder` linter"
+}
+
+namespace Style.extendedBinder
+open Batteries ExtendedBinder
+
+/--
+`lintExtendedBinder` runs the `extendedBinder` linter on the given syntax. -/
+partial def lintExtendedBinder (stx : Syntax) : CommandElabM Unit := do
+  if let .node _ kind args := stx then
+    args.forM lintExtendedBinder
+    match kind with
+    | ``Batteries.ExtendedBinder.«term∃ᵉ_,_» => go "∃"
+    | ``Batteries.ExtendedBinder.«term∀ᵉ_,_» => go "∀"
+    | _ => pure ()
+where
+  go (symbol : String) : CommandElabM Unit := do
+    if stx[1].isAntiquot then return -- `∃ᵉ` can be used to define other notation, like `{_ | _}`.
+    let binders := match stx[1] with
+      | `(extBinders| $[($binders)]*) => binders.toList
+      | `(extBinder| $b) => [b]
+    let source := (← getFileMap).source
+    let suggestion := String.intercalate ", " <| binders.map fun b ↦
+      match b.raw.getRange? with
+      | none => s!"{symbol} {b.raw.reprint}"
+      | some { start, stop } => s!"{symbol} {start.extract source stop}"
+    if let some start := stx[0].getPos? then
+      if let some stop := stx[2].getPos? then
+        let ref := .ofRange { start, stop }
+        let sugg ← Command.liftCoreM <| Hint.mkSuggestionsMessage
+          #[{ toTryThisSuggestion := suggestion, diffGranularity := .char }] ref none false
+        logWarningAt ref m!"Try this:{sugg}\n\n\
+          The basic `{symbol}` syntax is preferred over `{symbol}ᵉ`."
+
+@[inherit_doc linter.style.extendedBinder]
+def extendedBinderLinter : Linter where run := withSetOptionIn fun stx ↦ do
+  unless getLinterValue linter.style.extendedBinder (← getLinterOptions) do
+    return
+  if (← MonadState.get).messages.hasErrors then
+    return
+  lintExtendedBinder stx
+
+initialize addLinter extendedBinderLinter
+
+end Style.extendedBinder
 
 end Mathlib.Linter

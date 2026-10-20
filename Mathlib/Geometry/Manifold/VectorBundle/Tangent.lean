@@ -6,6 +6,7 @@ Authors: Floris van Doorn, Heather Macbeth
 module
 
 public import Mathlib.Geometry.Manifold.VectorBundle.Basic
+
 import Mathlib.Geometry.Manifold.Notation
 
 /-! # Tangent bundles
@@ -170,7 +171,7 @@ lemma hasFDerivWithinAt_tangentCoordChange {x y z : M}
 
 lemma continuousOn_tangentCoordChange (x y : M) : ContinuousOn (tangentCoordChange I x y)
     ((extChartAt I x).source ∩ (extChartAt I y).source) := by
-  convert! (tangentBundleCore I M).continuousOn_coordChange (achart H x) (achart H y) <;>
+  convert (tangentBundleCore I M).continuousOn_coordChange (achart H x) (achart H y) <;>
   simp only [tangentBundleCore_baseSet, coe_achart, ← extChartAt_source I]
 
 end tangentCoordChange
@@ -239,7 +240,6 @@ theorem mem_chart_source_iff (p q : TM) :
     p ∈ (chartAt (ModelProd H E) q).source ↔ p.1 ∈ (chartAt H q.1).source := by
   simp only [FiberBundle.chartedSpace_chartAt, mfld_simps]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, mfld_simps]
 theorem mem_chart_target_iff (p : H × E) (q : TM) :
     p ∈ (chartAt (ModelProd H E) q).target ↔ p.1 ∈ (chartAt H q.1).target := by
@@ -401,14 +401,14 @@ def tangentBundleModelSpaceHomeomorph : TangentBundle I H ≃ₜ ModelProd H E :
       let p : TangentBundle I H := ⟨I.symm (0 : E), (0 : E)⟩
       have : Continuous (chartAt (ModelProd H E) p) := by
         rw [← continuousOn_univ]
-        convert! (chartAt (ModelProd H E) p).continuousOn
+        convert (chartAt (ModelProd H E) p).continuousOn
         simp only [mfld_simps]
       simpa only [mfld_simps] using this
     continuous_invFun := by
       let p : TangentBundle I H := ⟨I.symm (0 : E), (0 : E)⟩
       have : Continuous (chartAt (ModelProd H E) p).symm := by
         rw [← continuousOn_univ]
-        convert! (chartAt (ModelProd H E) p).symm.continuousOn
+        convert (chartAt (ModelProd H E) p).symm.continuousOn
         simp only [mfld_simps]
       simpa only [mfld_simps] using this }
 
@@ -446,7 +446,6 @@ theorem contMDiff_tangentBundleModelSpaceHomeomorph_symm :
   rintro a b x rfl
   simpa [PartialEquiv.prod] using ⟨rfl, rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 variable (H I) in
 /-- In the tangent bundle to the model space, the second projection is `C^n`. -/
 lemma contMDiff_snd_tangentBundle_modelSpace :
@@ -471,6 +470,7 @@ lemma contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt
     convert! h.contMDiffWithinAt with y
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A vector field on a vector space is `C^n` in the manifold sense iff it is `C^n` in the vector
 space sense. -/
 lemma contMDiffAt_vectorSpace_iff_contDiffAt
@@ -486,6 +486,7 @@ lemma contMDiffOn_vectorSpace_iff_contDiffOn
     CMDiff[s] n (T% V) ↔ ContDiffOn 𝕜 n V s := by
   simp only [ContMDiffOn, ContDiffOn, contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A vector field on a vector space is `C^n` in the manifold sense iff it is `C^n` in the vector
 space sense. -/
 lemma contMDiff_vectorSpace_iff_contDiff {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} :
@@ -508,14 +509,11 @@ variable (I I') in
 in charts around `g x`, `inTangentCoordinates I I' f g ϕ x₀ x` is a coordinate change of
 this continuous linear map that makes sense from charts around `f x₀` to charts around `g x₀`
 by composing it with appropriate coordinate changes.
-Note that the type of `ϕ` is more accurately
-`Π x : N, TangentSpace I (f x) →L[𝕜] TangentSpace I' (g x)`.
-We are unfolding `TangentSpace` in this type so that Lean recognizes that the type of `ϕ` doesn't
-actually depend on `f` or `g`.
 
 This is the underlying function of the trivializations of the hom of (pullbacks of) tangent spaces.
 -/
-def inTangentCoordinates (f : N → M) (g : N → M') (ϕ : N → E →L[𝕜] E') : N → N → E →L[𝕜] E' :=
+def inTangentCoordinates (f : N → M) (g : N → M')
+    (ϕ : Π x : N, TangentSpace I (f x) →L[𝕜] TangentSpace I' (g x)) : N → N → E →L[𝕜] E' :=
   fun x₀ x => inCoordinates E (TangentSpace I) E' (TangentSpace I') (f x₀) (f x) (g x₀) (g x) (ϕ x)
 
 theorem inTangentCoordinates_model_space (f : N → H) (g : N → H') (ϕ : N → E →L[𝕜] E') (x₀ : N) :
@@ -527,7 +525,8 @@ theorem inTangentCoordinates_model_space (f : N → H) (g : N → H') (ϕ : N �
 postcomposing it with suitable coordinate changes. For a concrete version expressing the
 change of coordinates as derivatives of extended charts,
 see `inTangentCoordinates_eq_mfderiv_comp`. -/
-theorem inTangentCoordinates_eq (f : N → M) (g : N → M') (ϕ : N → E →L[𝕜] E') {x₀ x : N}
+theorem inTangentCoordinates_eq (f : N → M) (g : N → M')
+    (ϕ : Π x : N, TangentSpace I (f x) →L[𝕜] TangentSpace I' (g x)) {x₀ x : N}
     (hx : f x ∈ (chartAt H (f x₀)).source) (hy : g x ∈ (chartAt H' (g x₀)).source) :
     inTangentCoordinates I I' f g ϕ x₀ x =
       (tangentBundleCore I' M').coordChange (achart H' (g x)) (achart H' (g x₀)) (g x) ∘L

@@ -38,7 +38,7 @@ variable {n : ℕ}
 /-- `Nat.Prime p` means that `p` is a prime number, that is, a natural number
   at least 2 whose only divisors are `p` and `1`.
   The theorem `Nat.prime_def` witnesses this description of a prime number. -/
-@[pp_nodot]
+@[pp_nodot, wikidata Q49008, oeis A000040]
 def Prime (p : ℕ) :=
   Irreducible p
 
@@ -162,6 +162,12 @@ much faster.
 instance decidablePrime (p : ℕ) : Decidable (Prime p) :=
   decidable_of_iff' _ prime_def_lt'
 
+/-!
+### Specific small primes
+
+It is recommended not to add further lemmas to this list; instead, import
+`Mathlib.Tactic.NormNum.Prime` in downstream files and use `norm_num` for primality proofs.
+-/
 theorem prime_two : Prime 2 := by decide
 
 theorem prime_three : Prime 3 := by decide
@@ -209,6 +215,7 @@ termination_by k => sqrt n + 2 - k
 decreasing_by simp_wf; apply minFac_lemma n k; assumption
 
 /-- Returns the smallest prime factor of `n ≠ 1`. -/
+@[oeis A020639 "the sequence skips `n = 0` which is a junk value"]
 def minFac (n : ℕ) : ℕ :=
   if 2 ∣ n then 2 else minFacAux n 3
 
@@ -226,13 +233,10 @@ theorem minFac_two : minFac 2 = 2 := by
 
 theorem minFac_eq (n : ℕ) : minFac n = if 2 ∣ n then 2 else minFacAux n 3 := rfl
 
-set_option backward.privateInPublic true in
 private def minFacProp (n k : ℕ) :=
   2 ≤ k ∧ k ∣ n ∧ ∀ m, 2 ≤ m → m ∣ n → k ≤ m
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-theorem minFacAux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
+private theorem minFacAux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
     ∀ k i, k = 2 * i + 3 → (∀ m, 2 ≤ m → m ∣ n → k ≤ m) → minFacProp n (minFacAux n k)
   | k => fun i e a => by
     rw [minFacAux]
@@ -263,9 +267,7 @@ theorem minFacAux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
       exact absurd this (by contradiction)
   termination_by k => sqrt n + 2 - k
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-theorem minFac_has_prop {n : ℕ} (n1 : n ≠ 1) : minFacProp n (minFac n) := by
+private theorem minFac_has_prop {n : ℕ} (n1 : n ≠ 1) : minFacProp n (minFac n) := by
   by_cases n0 : n = 0
   · simp [n0, minFacProp]
   have n2 : 2 ≤ n := by
@@ -339,7 +341,7 @@ def decidablePrime' (p : ℕ) : Decidable (Prime p) :=
   subsingleton
 
 theorem not_prime_iff_minFac_lt {n : ℕ} (n2 : 2 ≤ n) : ¬Prime n ↔ minFac n < n :=
-  (not_congr <| prime_def_minFac.trans <| and_iff_right n2).trans <|
+  (not_congr <| prime_def_minFac.trans <| and_iff_right n2).trans
     (lt_iff_le_and_ne.trans <| and_iff_right <| minFac_le <| le_of_succ_le n2).symm
 
 theorem minFac_le_div {n : ℕ} (pos : 0 < n) (np : ¬Prime n) : minFac n ≤ n / minFac n :=

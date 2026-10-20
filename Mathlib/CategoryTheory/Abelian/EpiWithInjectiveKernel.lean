@@ -6,8 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-public import Mathlib.CategoryTheory.MorphismProperty.Retract
-public import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
 public import Mathlib.CategoryTheory.Preadditive.Injective.LiftingProperties
 
 /-!
@@ -108,7 +106,7 @@ instance : (epiWithInjectiveKernel (C := C)).IsStableUnderRetracts where
     let r' : Retract (kernel f') (kernel f) :=
       { i := kernel.map _ _ r.i.left r.i.right (Arrow.w r.i).symm
         r := kernel.map _ _ r.r.left r.r.right (Arrow.w r.r).symm
-        retract := by ext; simp [dsimp% r.left.retract] }
+        retract := by ext; simp }
     exact ⟨inferInstance, r'.injective⟩
 
 lemma epiWithInjectiveKernel.hasLiftingProperty

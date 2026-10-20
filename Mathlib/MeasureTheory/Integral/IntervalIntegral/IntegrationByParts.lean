@@ -268,7 +268,7 @@ theorem integral_deriv_smul_comp''' (hf : ContinuousOn f [[a, b]])
       exact hf.surjOn_uIcc left_mem_uIcc (Ioo_subset_Icc_self hx)
     have h3g : StronglyMeasurableAtFilter g (𝓝[J] f x) :=
       hg_cont.stronglyMeasurableAtFilter_nhdsWithin measurableSet_Icc (f x)
-    haveI : Fact (f x ∈ J) := ⟨h2x⟩
+    have : Fact (f x ∈ J) := ⟨h2x⟩
     have : HasDerivWithinAt (fun u ↦ ∫ x in f a..u, g x) (g (f x)) J (f x) :=
       intervalIntegral.integral_hasDerivWithinAt_right h2g h3g (hg_cont (f x) h2x)
     refine (this.scomp x ((hff' x hx).Ioo_of_Ioi hd.1) ?_).Ioi_of_Ioo hd.1
@@ -277,9 +277,6 @@ theorem integral_deriv_smul_comp''' (hf : ContinuousOn f [[a, b]])
     exact Ioo_subset_Icc_self.trans ((Icc_subset_Icc_left hc.2.le).trans Icc_subset_uIcc)
   rw [← intervalIntegrable_iff'] at hg2
   simp_rw [integral_eq_sub_of_hasDeriv_right h_cont h_der hg2, integral_same, sub_zero]
-
-@[deprecated (since := "2026-03-19")]
-alias integral_comp_smul_deriv''' := integral_deriv_smul_comp'''
 
 /-- Change of variables for continuous integrands. If `f` is continuous on `[a, b]` and has
 continuous right-derivative `f'` in `(a, b)`, and `g` is continuous on `f '' [a, b]` then we can
@@ -296,9 +293,6 @@ theorem integral_deriv_smul_comp'' (hf : ContinuousOn f [[a, b]])
   rw [hf.image_uIcc] at hg ⊢
   exact hg.integrableOn_Icc
 
-@[deprecated (since := "2026-03-19")]
-alias integral_comp_smul_deriv'' := integral_deriv_smul_comp''
-
 /-- Change of variables. If `f` has continuous derivative `f'` on `[a, b]`,
 and `g` is continuous on `f '' [a, b]`, then we can substitute `u = f x` to get
 `∫ x in a..b, f' x • (g ∘ f) x = ∫ u in f a..f b, g u`.
@@ -313,9 +307,6 @@ theorem integral_deriv_smul_comp' (h : ∀ x ∈ uIcc a b, HasDerivAt f (f' x) x
   integral_deriv_smul_comp'' (fun x hx ↦ (h x hx).continuousAt.continuousWithinAt)
     (fun x hx ↦ (h x <| Ioo_subset_Icc_self hx).hasDerivWithinAt) h' hg
 
-@[deprecated (since := "2026-03-19")]
-alias integral_comp_smul_deriv' := integral_deriv_smul_comp'
-
 /-- Change of variables, most common version. If `f` has continuous derivative `f'` on `[a, b]`,
 and `g` is continuous, then we can substitute `u = f x` to get
 `∫ x in a..b, f' x • (g ∘ f) x = ∫ u in f a..f b, g u`.
@@ -326,9 +317,6 @@ theorem integral_deriv_smul_comp (h : ∀ x ∈ uIcc a b, HasDerivAt f (f' x) x)
     (h' : ContinuousOn f' (uIcc a b)) (hg : Continuous g) :
     (∫ x in a..b, f' x • (g ∘ f) x) = ∫ x in f a..f b, g x :=
   integral_deriv_smul_comp' h h' hg.continuousOn
-
-@[deprecated (since := "2026-03-19")]
-alias integral_comp_smul_deriv := integral_deriv_smul_comp
 
 /-- Change of variables for monotone functions.
 If `f` is continuous on `[a, b]` and has a nonnegative derivative `f'` in `(a, b)`,
@@ -469,17 +457,11 @@ theorem integral_deriv_smul_deriv_comp' (hf : ContinuousOn f [[a, b]])
     integral_eq_sub_of_hasDeriv_right hg hgg' (hg'.mono _).intervalIntegrable]
   exacts [rfl, intermediate_value_uIcc hf]
 
-@[deprecated (since := "2026-03-19")]
-alias integral_deriv_comp_smul_deriv' := integral_deriv_smul_deriv_comp'
-
 theorem integral_deriv_smul_deriv_comp (hf : ∀ x ∈ uIcc a b, HasDerivAt f (f' x) x)
     (hg : ∀ x ∈ uIcc a b, HasDerivAt g (g' (f x)) (f x)) (hf' : ContinuousOn f' (uIcc a b))
     (hg' : Continuous g') : (∫ x in a..b, f' x • (g' ∘ f) x) = (g ∘ f) b - (g ∘ f) a :=
   integral_eq_sub_of_hasDerivAt (fun x hx ↦ (hg x hx).scomp x <| hf x hx)
     (hf'.smul (hg'.comp_continuousOn <| HasDerivAt.continuousOn hf)).intervalIntegrable
-
-@[deprecated (since := "2026-03-19")]
-alias integral_deriv_comp_smul_deriv := integral_deriv_smul_deriv_comp
 
 end CompleteSpace
 
@@ -526,6 +508,7 @@ theorem integral_comp_mul_deriv' {f f' g : ℝ → ℝ} (h : ∀ x ∈ uIcc a b,
 and `g` is continuous, then we can substitute `u = f x` to get
 `∫ x in a..b, (g ∘ f) x * f' x = ∫ u in f a..f b, g u`.
 -/
+@[wikidata Q1071270]
 theorem integral_comp_mul_deriv {f f' g : ℝ → ℝ} (h : ∀ x ∈ uIcc a b, HasDerivAt f (f' x) x)
     (h' : ContinuousOn f' (uIcc a b)) (hg : Continuous g) :
     (∫ x in a..b, (g ∘ f) x * f' x) = ∫ x in f a..f b, g x :=

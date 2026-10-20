@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Action.Basic
 public import Mathlib.Algebra.Group.Action.Pi
 public import Mathlib.Algebra.Group.Opposite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Group actions on embeddings
 
@@ -18,7 +21,7 @@ instances defined by `Pi.mulAction`.
 Note that unlike the `Pi` instance, this requires `G` to be a group.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero
 

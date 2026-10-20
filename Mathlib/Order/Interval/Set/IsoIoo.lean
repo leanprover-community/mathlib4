@@ -5,9 +5,12 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Order.Monotone.Odd
 public import Mathlib.Algebra.Order.Field.Basic
+public import Mathlib.Order.Monotone.Odd
 public import Mathlib.Tactic.FieldSimp
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Order isomorphism between a linear ordered field and `(-1, 1)`
@@ -20,6 +23,7 @@ In this file we provide an order isomorphism `orderIsoIooNegOneOne` between the 
 
 open Set
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In a linear ordered field, the whole field is order isomorphic to the open interval `(-1, 1)`.
 We consider the actual implementation to be a "black box", so it is irreducible.
 -/

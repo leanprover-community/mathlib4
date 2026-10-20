@@ -5,9 +5,9 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Algebra.Group.DivInvMonoid
+public import Mathlib.Algebra.Notation.Defs
 public import Mathlib.Logic.Equiv.Defs
-public import Batteries.Tactic.Lint.Simp
 
 /-!
 # Multiplicative opposite and algebraic operations on it
@@ -73,12 +73,14 @@ postfix:max "ᵃᵒᵖ" => AddOpposite
 namespace MulOpposite
 
 /-- The element of `MulOpposite α` that represents `x : α`. -/
-@[to_additive /-- The element of `αᵃᵒᵖ` that represents `x : α`. -/]
+-- implicit-reducible so that `op_star` can be `rfl`
+@[to_additive /-- The element of `αᵃᵒᵖ` that represents `x : α`. -/, implicit_reducible]
 def op : α → αᵐᵒᵖ :=
   PreOpposite.op'
 
 /-- The element of `α` represented by `x : αᵐᵒᵖ`. -/
-@[to_additive (attr := pp_nodot) /-- The element of `α` represented by `x : αᵃᵒᵖ`. -/]
+@[to_additive (attr := pp_nodot) /-- The element of `α` represented by `x : αᵃᵒᵖ`. -/,
+  implicit_reducible] -- implicit-reducible so that `op_star` can be `rfl`
 def unop : αᵐᵒᵖ → α :=
   PreOpposite.unop'
 
@@ -173,7 +175,7 @@ instance instInvolutiveNeg [InvolutiveNeg α] : InvolutiveNeg αᵐᵒᵖ where
   neg_neg _ := unop_injective <| neg_neg _
 
 @[to_additive] instance instMul [Mul α] : Mul αᵐᵒᵖ where mul x y := op (unop y * unop x)
-@[to_additive] instance instInv [Inv α] : Inv αᵐᵒᵖ where inv x := op <| (unop x)⁻¹
+@[to_additive] instance instInv [Inv α] : Inv αᵐᵒᵖ where inv x := op (unop x)⁻¹
 
 @[to_additive]
 instance instInvolutiveInv [InvolutiveInv α] : InvolutiveInv αᵐᵒᵖ where

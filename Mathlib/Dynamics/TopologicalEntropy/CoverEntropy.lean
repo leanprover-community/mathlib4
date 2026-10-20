@@ -6,11 +6,11 @@ Authors: Damien Thomine, Pietro Monticone
 module
 
 public import Mathlib.Analysis.Asymptotics.ExpGrowth
-public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Dynamics.TopologicalEntropy.DynamicalEntourage
 
 /-!
 # Topological entropy via covers
+
 We implement Bowen-Dinaburg's definitions of the topological entropy, via covers.
 
 All is stated in the vocabulary of uniform spaces. For compact spaces, the uniform structure
@@ -62,8 +62,10 @@ Get versions of the topological entropy on (pseudo-e)metric spaces.
 
 @[expose] public section
 
-open Set SetRel Uniformity UniformSpace
-open scoped Finset
+open Set UniformSpace
+open SetRel hiding ball ball_mono ball_inter ball_iInter
+
+open scoped Uniformity Finset
 
 namespace Dynamics
 
@@ -143,8 +145,8 @@ lemma IsDynCoverOf.iterate_le_pow (F_inv : MapsTo T F F) [U.IsSymm] (n : ℕ) {s
     · exact inter_empt ▸ ⟨x, empty_subset _⟩
     · obtain ⟨y, y_int⟩ := inter_nemp
       refine ⟨y, fun z z_int ↦ ?_⟩
-      simp only [ball, dynEntourage, Prod.map_iterate, mem_iInter, Set.mem_preimage, Prod.map_apply,
-        mem_comp] at y_int z_int ⊢
+      simp only [ball, dynEntourage, Prod.map_iterate, SetRel.mem_ball, SetRel.mem_inv, mem_iInter,
+        Set.mem_preimage, Prod.map_apply, mem_comp] at y_int z_int ⊢
       intro k k_mn
       replace k_mn := Nat.div_lt_of_lt_mul k_mn
       specialize z_int ⟨(k / m), k_mn⟩ (k % m) (Nat.mod_lt k m_pos)
@@ -185,7 +187,8 @@ lemma exists_isDynCoverOf_of_isCompact_uniformContinuous [UniformSpace X]
   have uni_ite := dynEntourage_mem_uniformity h hV n
   let openCover x := ball x (dynEntourage T V n)
   obtain ⟨s, _, s_cover⟩ := F_comp.elim_nhds_subcover openCover fun x _ ↦ ball_mem_nhds x uni_ite
-  exact ⟨s, .of_entourage_subset hVU <| .of_subset_iUnion_ball s_cover⟩
+  exact ⟨s, .of_entourage_subset hVU <|
+    UniformSpace.isCover_iff_subset_iUnion_ball.2 s_cover⟩
 
 lemma exists_isDynCoverOf_of_isCompact_invariant [UniformSpace X]
     (F_comp : IsCompact F) (F_inv : MapsTo T F F) (U_uni : U ∈ 𝓤 X) (n : ℕ) :
@@ -193,7 +196,8 @@ lemma exists_isDynCoverOf_of_isCompact_invariant [UniformSpace X]
   obtain ⟨(V : SetRel X X), V_uni, V_symm, V_U⟩ := comp_symm_mem_uniformity_sets U_uni
   obtain ⟨s, _, s_cover⟩ := F_comp.elim_nhds_subcover (ball · V)
     fun (x : X) _ ↦ ball_mem_nhds x V_uni
-  have : IsDynCoverOf T F V 1 s := .of_subset_iUnion_ball <| by simpa using s_cover
+  have : IsDynCoverOf T F V 1 s :=
+    UniformSpace.isCover_iff_subset_iUnion_ball.2 <| by simpa using s_cover
   obtain ⟨t, t_dyncover, t_card⟩ := this.iterate_le_pow F_inv n
   rw [one_mul n] at t_dyncover
   exact ⟨t, t_dyncover.of_entourage_subset V_U⟩
@@ -217,25 +221,24 @@ lemma coverMincard_antitone (T : X → X) (F : Set X) (n : ℕ) :
     Antitone fun U : SetRel X X ↦ coverMincard T F U n :=
   fun _ _ U_V ↦ biInf_mono fun _ h ↦ h.of_entourage_subset U_V
 
-set_option backward.isDefEq.respectTransparency false in
 lemma coverMincard_finite_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ) :
     coverMincard T F U n < ⊤ ↔
     ∃ s : Finset X, IsDynCoverOf T F U n s ∧ s.card = coverMincard T F U n := by
   refine ⟨fun h_fin ↦ ?_, fun ⟨s, _, s_coverMincard⟩ ↦ s_coverMincard ▸ WithTop.coe_lt_top s.card⟩
-  obtain ⟨k, k_min⟩ := WithTop.ne_top_iff_exists.1 h_fin.ne
+  obtain ⟨k, k_min⟩ := ENat.ne_top_iff_exists.mp h_fin.ne
   rw [← k_min]
-  simp only [ENat.some_eq_coe, Nat.cast_inj]
+  simp only [Nat.cast_inj]
   have : Nonempty {s : Finset X // IsDynCoverOf T F U n s} := by
     by_contra h
-    apply ENat.coe_ne_top k
-    rw [← ENat.some_eq_coe, k_min, coverMincard, iInf₂_eq_top]
-    simp only [ENat.coe_ne_top, imp_false]
+    apply ENat.natCast_ne_top k
+    rw [k_min, coverMincard, iInf₂_eq_top]
+    simp only [ENat.natCast_ne_top, imp_false]
     rw [nonempty_subtype, not_exists] at h
     exact h
   have key := ciInf_mem fun s : {s : Finset X // IsDynCoverOf T F U n s} ↦ (s.val.card : ℕ∞)
   rw [coverMincard, iInf_subtype'] at k_min
   rw [← k_min, mem_range, Subtype.exists] at key
-  simp only [ENat.some_eq_coe, Nat.cast_inj, exists_prop] at key
+  simp only [Nat.cast_inj, exists_prop] at key
   exact key
 
 @[simp]
@@ -417,7 +420,7 @@ lemma coverEntropyEntourage_finite_of_isCompact_invariant [UniformSpace X]
   apply (coverEntropyEntourage_antitone T F V_U).trans_lt
   apply (s_cover.coverEntropyEntourage_le_log_card_div F_inv one_ne_zero).trans_lt
   rw [Nat.cast_one, div_one, log_lt_top_iff, ← ENat.toENNReal_top]
-  exact_mod_cast (ENat.coe_ne_top (Finset.card s)).lt_top
+  exact_mod_cast (ENat.natCast_ne_top (Finset.card s)).lt_top
 
 /-! ### Cover entropy -/
 

@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Algebra.Algebra.Pi
 public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
-public import Mathlib.LinearAlgebra.FreeModule.Basic
-public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 
 /-!
 # The standard basis
@@ -80,6 +78,7 @@ protected noncomputable def basis (s : ∀ j, Basis (ιs j) R (Ms j)) :
     ((LinearEquiv.piCongrRight fun j => (s j).repr) ≪≫ₗ
       (Finsupp.sigmaFinsuppLEquivPiFinsupp R).symm)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem basis_repr_single [DecidableEq η] (s : ∀ j, Basis (ιs j) R (Ms j)) (j i) :
     (Pi.basis s).repr (Pi.single j (s j i)) = Finsupp.single ⟨j, i⟩ 1 := by
@@ -136,7 +135,9 @@ theorem basisFun_equivFun : (Pi.basisFun R η).equivFun = LinearEquiv.refl _ _ :
 variable {η}
 
 /-- The `R`-submodule of `η → R` consisting of functions supported in the subset `s`. -/
-def spanSubset (s : Set η) : Submodule R (η → R) :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def spanSubset (s : Set η) : Submodule R (η → R) :=
   .span R (Pi.basisFun R η '' s)
 
 variable {R} {s : Set η}
@@ -165,7 +166,7 @@ lemma AlgHom.eq_piEvalAlgHom {k G : Type*} [CommSemiring k] [NoZeroDivisors k] [
   have h2 : ∀ t ≠ s, φ (Pi.single t 1) = 0 := by
     refine fun _ _ ↦ (eq_zero_or_eq_zero_of_mul_eq_zero ?_).resolve_left hs
     rw [← map_mul]
-    convert! map_zero φ
+    convert map_zero φ
     ext u
     by_cases u = s <;> simp_all
   have h3 : φ (Pi.single s 1) = 1 := by
@@ -176,8 +177,8 @@ lemma AlgHom.eq_piEvalAlgHom {k G : Type*} [CommSemiring k] [NoZeroDivisors k] [
 
 namespace Module
 
-variable (ι R M N : Type*) [Finite ι] [CommSemiring R]
-  [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
+variable (ι R M : Type*) [Finite ι] [CommSemiring R]
+  [AddCommMonoid M] [Module R M]
 
 /-- The natural linear equivalence: `Mⁱ ≃ Hom(Rⁱ, M)` for an `R`-module `M`. -/
 noncomputable def piEquiv : (ι → M) ≃ₗ[R] ((ι → R) →ₗ[R] M) := Basis.constr (Pi.basisFun R ι) R

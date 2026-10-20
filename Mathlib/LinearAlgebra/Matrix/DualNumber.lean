@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.DualNumber
 public import Mathlib.Data.Matrix.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Matrices of dual numbers are isomorphic to dual numbers over matrices
 
@@ -18,10 +21,11 @@ Showing this for the more general case of `TrivSqZeroExt R M` would require an a
 @[expose] public section
 
 
-variable {R n : Type} [CommSemiring R] [Fintype n] [DecidableEq n]
+variable {R n : Type*} [CommSemiring R] [Fintype n] [DecidableEq n]
 
 open Matrix TrivSqZeroExt
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Matrices over dual numbers and dual numbers over matrices are isomorphic. -/
 @[simps]
 def Matrix.dualNumberEquiv : Matrix n n (DualNumber R) ≃ₐ[R] DualNumber (Matrix n n R) where

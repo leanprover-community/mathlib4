@@ -7,7 +7,12 @@ module
 
 public import Mathlib.CategoryTheory.Types.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
+# The hom functor
+
 The hom functor, sending `(X, Y)` to the type `X ⟶ Y`.
 -/
 

@@ -5,8 +5,10 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Canonical
 public import Mathlib.CategoryTheory.Sites.Over
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Topology on `Over X` is subcanonical if the base is
@@ -21,7 +23,6 @@ namespace CategoryTheory.GrothendieckTopology
 variable {C : Type*} [Category* C]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance subcanonical_over (J : GrothendieckTopology C) [J.Subcanonical] (X : C) :
     (J.over X).Subcanonical := by
   refine .of_isSheaf_yoneda_obj _ fun E Z R hR t ht ↦ ?_

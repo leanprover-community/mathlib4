@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Field.IsField
 public import Mathlib.Algebra.Group.Units.Equiv
 public import Mathlib.Algebra.GroupWithZero.Equiv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # If a semiring is a field, any isomorphic semiring is also a field.
 
@@ -30,3 +33,6 @@ protected theorem IsLocalHom.isField [FunLike F A B] [MonoidWithZeroHomClass F A
 
 protected theorem MulEquiv.isField (hB : IsField B) (e : A ≃* B) : IsField A :=
   IsLocalHom.isField e.injective hB
+
+protected theorem MulEquiv.isField_congr (e : A ≃* B) : IsField A ↔ IsField B :=
+  ⟨e.symm.isField, e.isField⟩

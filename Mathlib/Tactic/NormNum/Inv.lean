@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Rat.Cast.CharZero
 public import Mathlib.Tactic.NormNum.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `norm_num` plugins for `Rat.cast` and `⁻¹`.
 -/

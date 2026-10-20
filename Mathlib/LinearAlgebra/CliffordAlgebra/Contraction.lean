@@ -5,10 +5,8 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
 public import Mathlib.LinearAlgebra.CliffordAlgebra.Fold
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
-public import Mathlib.LinearAlgebra.Dual.Defs
 
 /-!
 # Contraction in Clifford Algebras
@@ -242,8 +240,7 @@ def changeForm (h : B.toQuadraticMap = Q' - Q) : CliffordAlgebra Q →ₗ[R] Cli
   foldr Q (changeFormAux Q' B)
     (fun m x =>
       (changeFormAux_changeFormAux Q' B m x).trans <| by
-        dsimp only [← BilinMap.toQuadraticMap_apply]
-        rw [h, QuadraticMap.sub_apply, sub_sub_cancel])
+        rw [← BilinMap.toQuadraticMap_apply, h, sub_apply, sub_sub_cancel])
     1
 
 /-- Auxiliary lemma used as an argument to `CliffordAlgebra.changeForm` -/
@@ -255,12 +252,12 @@ variable (h : B.toQuadraticMap = Q' - Q) (h' : B'.toQuadraticMap = Q'' - Q')
 include h h' in
 /-- Auxiliary lemma used as an argument to `CliffordAlgebra.changeForm` -/
 theorem changeForm.add_proof : (B + B').toQuadraticMap = Q'' - Q :=
-  (congr_arg₂ (· + ·) h h').trans <| sub_add_sub_cancel' _ _ _
+  congr($h + $h').trans <| sub_add_sub_cancel' _ _ _
 
 include h in
 /-- Auxiliary lemma used as an argument to `CliffordAlgebra.changeForm` -/
 theorem changeForm.neg_proof : (-B).toQuadraticMap = Q - Q' :=
-  (congr_arg Neg.neg h).trans <| neg_sub _ _
+  congr(-$h).trans <| neg_sub _ _
 
 theorem changeForm.associated_neg_proof [Invertible (2 : R)] :
     (QuadraticMap.associated (R := R) (M := M) (-Q)).toQuadraticMap = 0 - Q := by
@@ -308,7 +305,7 @@ theorem changeForm_self_apply (x : CliffordAlgebra Q) : changeForm (Q' := Q)
 @[simp]
 theorem changeForm_self :
     changeForm changeForm.zero_proof = (LinearMap.id : CliffordAlgebra Q →ₗ[R] _) :=
-  LinearMap.ext <| changeForm_self_apply
+  LinearMap.ext changeForm_self_apply
 
 /-- This is [bourbaki2007] §9 Lemma 3. -/
 theorem changeForm_changeForm (x : CliffordAlgebra Q) :
@@ -346,13 +343,11 @@ theorem changeFormEquiv_symm :
 
 variable (Q)
 
-#adaptation_note /-- As of nightly-2026-04-29, the simpNF linter is failing here.
-Assistance investigating this would be appreciated. -/
 /-- The module isomorphism to the exterior algebra.
 
 Note that this holds more generally when `Q` is divisible by two, rather than only when `1` is
 divisible by two; but that would be more awkward to use. -/
-@[simp, nolint simpNF]
+@[simp]
 def equivExterior [Invertible (2 : R)] : CliffordAlgebra Q ≃ₗ[R] ExteriorAlgebra R M :=
   changeFormEquiv changeForm.associated_neg_proof
 

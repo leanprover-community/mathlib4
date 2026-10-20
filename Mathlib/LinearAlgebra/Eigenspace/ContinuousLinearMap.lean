@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Eigenspaces of continuous linear maps
 
@@ -26,8 +29,7 @@ variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] [TopologicalSp
 open Module End
 
 instance isClosed_genEigenspace : IsClosed (genEigenspace (f : End R M) μ n : Set M) := by
-  rw [genEigenspace_nat, one_eq_id, ← coe_id, ← toLinearMap_smul, ← toLinearMap_sub, ← coe_pow]
-  apply isClosed_ker
+  simpa [genEigenspace_nat] using isClosed_ker ↑((f - μ • 1) ^ n)
 
 instance isClosed_eigenspace : IsClosed (eigenspace (f : End R M) μ : Set M) :=
   isClosed_genEigenspace f μ 1

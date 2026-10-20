@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Finset.Lattice.Fold
 public import Mathlib.Data.Finset.Union
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Relating `Finset.biUnion` with lattice operations
 
@@ -20,7 +23,7 @@ Remove `Finset.biUnion` in favour of `Finset.sup`.
 
 public section
 
-open Function Multiset OrderDual
+open OrderDual
 
 variable {F α β γ ι κ : Type*}
 variable {s s₁ s₂ : Finset β} {f g : β → α} {a : α}

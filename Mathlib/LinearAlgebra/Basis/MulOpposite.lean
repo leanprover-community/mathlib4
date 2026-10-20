@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basis of an opposite space
 
@@ -58,7 +61,7 @@ instance [Semiring R] [AddCommMonoid H] [Module R H]
 
 theorem rank [Semiring R] [StrongRankCondition R] [AddCommMonoid H] [Module R H]
     [Module.Free R H] : Module.rank R Hᵐᵒᵖ = Module.rank R H :=
-  LinearEquiv.nonempty_equiv_iff_rank_eq.mp ⟨(opLinearEquiv R).symm⟩
+  Module.nonempty_linearEquiv_iff_rank_eq.mp ⟨(opLinearEquiv R).symm⟩
 
 theorem finrank [DivisionRing R] [AddCommGroup H] [Module R H] :
     Module.finrank R Hᵐᵒᵖ = Module.finrank R H := by

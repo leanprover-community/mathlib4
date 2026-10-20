@@ -7,19 +7,17 @@ Authors: Kim Morrison
 -- First import Aesop, Qq, and Plausible
 module  -- shake: keep-all, shake: keep-downstream
 
-public import Aesop
-public import Qq
-public import Plausible
+public meta import Aesop
+public meta import Qq
+public meta import Plausible
 
 -- Import common Batteries tactics and commands
 public import Batteries.Tactic.Basic
 public import Batteries.Tactic.Case
-public import Batteries.Tactic.HelpCmd
-public import Batteries.Tactic.Alias
 public import Batteries.Tactic.GeneralizeProofs
 
 -- Import Batteries code actions
-public import Batteries.CodeAction
+public meta import Batteries.CodeAction
 
 -- Import syntax for leansearch
 public import LeanSearchClient
@@ -42,6 +40,7 @@ public import Mathlib.Tactic.Choose
 public import Mathlib.Tactic.ClearExclamation
 public import Mathlib.Tactic.ClearExcept
 public import Mathlib.Tactic.Clear_
+public import Mathlib.Tactic.ClickSuggestions
 public import Mathlib.Tactic.Coe
 public import Mathlib.Tactic.CongrExclamation
 public import Mathlib.Tactic.CongrM
@@ -63,6 +62,7 @@ public import Mathlib.Tactic.Find
 public import Mathlib.Tactic.FunProp
 public import Mathlib.Tactic.GCongr
 public import Mathlib.Tactic.GRewrite
+public import Mathlib.Tactic.GrindAttrs
 public import Mathlib.Tactic.GuardGoalNums
 public import Mathlib.Tactic.GuardHypNums
 public import Mathlib.Tactic.HigherOrder
@@ -89,10 +89,11 @@ public import Mathlib.Tactic.RenameBVar
 public import Mathlib.Tactic.Says
 public import Mathlib.Tactic.ScopedNS
 public import Mathlib.Tactic.Set
+public import Mathlib.Tactic.Setm
 public import Mathlib.Tactic.SimpIntro
 public import Mathlib.Tactic.SimpRw
 public import Mathlib.Tactic.Simproc.ExistsAndEq
-public import Mathlib.Tactic.Simps.Basic
+public import Mathlib.Tactic.Simps
 public import Mathlib.Tactic.SplitIfs
 public import Mathlib.Tactic.Spread
 public import Mathlib.Tactic.Subsingleton
@@ -120,8 +121,8 @@ public import Mathlib.Util.CountHeartbeats
 public import Mathlib.Util.PrintSorries
 public import Mathlib.Util.TransImports
 public import Mathlib.Util.WhatsNew
-
-public import Lean.Elab.Tactic.Try
+public meta import Lean.Elab.Tactic.Try
+public meta import Lean.Meta.Tactic.Try.Collect
 
 /-!
 # Common tactics, linters, and utilities

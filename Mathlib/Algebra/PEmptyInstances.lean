@@ -5,7 +5,10 @@ Authors: Julian Kuelshammer
 -/
 module
 
-public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Algebra.Group.Semigroup
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Instances on pempty

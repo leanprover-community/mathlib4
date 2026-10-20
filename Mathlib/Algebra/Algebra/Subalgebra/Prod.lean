@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Algebra.Prod
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Products of subalgebras
 
@@ -25,7 +28,9 @@ namespace Subalgebra
 
 open Algebra
 
-variable {R A B : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
+variable {R A B C D : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
+         [Semiring C] [Algebra R C] [Semiring D] [Algebra R D]
+
 variable (S : Subalgebra R A) (S₁ : Subalgebra R B)
 
 /-- The product of two subalgebras is a subalgebra. -/
@@ -59,5 +64,10 @@ theorem prod_inf_prod {S T : Subalgebra R A} {S₁ T₁ : Subalgebra R B} :
 
 protected theorem center_prod : center R (A × B) = prod (center R A) (center R B) :=
   SetLike.coe_injective Set.center_prod
+
+@[simp]
+theorem _root_.AlgHom.range_prodMap (f : A →ₐ[R] B) (g : C →ₐ[R] D) :
+    (f.prodMap g).range = f.range.prod g.range :=
+  SetLike.coe_injective Set.range_prodMap
 
 end Subalgebra

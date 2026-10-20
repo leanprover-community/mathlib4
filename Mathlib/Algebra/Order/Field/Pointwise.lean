@@ -6,11 +6,15 @@ Authors: Alex J. Best, Yaël Dillies
 module
 
 public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Group.Action.Defs
 public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
-public import Mathlib.Algebra.GroupWithZero.Action.Defs
-public import Mathlib.Algebra.Order.GroupWithZero.OrderIso
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Order.Interval.Set.OrderIso
+
+import Mathlib.Algebra.Order.GroupWithZero.OrderIso
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Pointwise operations on ordered algebraic objects
@@ -20,7 +24,7 @@ This file contains lemmas about the effect of pointwise operations on sets with 
 
 public section
 
-open Function Set
+open Set
 open scoped Pointwise
 
 namespace LinearOrderedField

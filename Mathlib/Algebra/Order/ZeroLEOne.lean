@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Notation.Pi.Defs
 public import Mathlib.Algebra.Notation.Prod
 public import Mathlib.Order.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Typeclass expressing `0 ≤ 1`.
 -/
@@ -16,8 +19,6 @@ public import Mathlib.Order.Basic
 public section
 
 variable {α : Type*}
-
-open Function
 
 /-- Typeclass for expressing that the `0` of a type is less or equal to its `1`. -/
 class ZeroLEOneClass (α : Type*) [Zero α] [One α] [LE α] : Prop where

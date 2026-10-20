@@ -8,9 +8,24 @@ from pathlib import Path
 PROJECT_DIR = Path(__file__).resolve().parent.parent
 
 DEFAULT_OPTIONS = [
+    "backward.defeqAttrib.useBackward",
     "backward.isDefEq.respectTransparency",
+    "backward.isDefEq.respectTransparency.types",
+    "backward.isDefEq.respectTransparency.instanceSearchTypes",
+    "backward.privateInPublic",
     "backward.whnf.reducibleClassField",
     "backward.inferInstanceAs.wrap",
+    "backward.inferInstanceAs.wrap.data",
+    "backward.inferInstanceAs.wrap.instances",
+    "linter.auxLemma",
+    "linter.checkUnivs",
+    "linter.flexible",
+    "linter.style.longFile",
+    "linter.translate.overwrite",
+    "linter.translate.warnInvalid",
+    "linter.unusedDecidableInType",
+    "linter.unusedVariables",
+    "linter.unusedTactic",
 ]
 
 
@@ -31,6 +46,20 @@ def commented_pattern(option: str, value: str = "false") -> re.Pattern:
     escaped = re.escape(option)
     escaped_val = re.escape(value)
     return re.compile(rf"^\s*set_option {escaped} {escaped_val} in\s+--")
+
+
+def is_annotated(lines: list[str], idx: int) -> bool:
+    """Check whether line `idx` is immediately preceded by a `--` comment
+    or by a (possibly multi-line) `/-- ... -/` doc comment or `/- ... -/` block comment.
+    """
+    if idx == 0:
+        return False
+    prev = lines[idx - 1]
+    if re.search(r"^\s*--", prev):
+        return True
+    if re.search(r"-/\s*$", prev):
+        return True
+    return False
 
 
 def lakefile_pattern(option: str, value: str = "false") -> re.Pattern:
