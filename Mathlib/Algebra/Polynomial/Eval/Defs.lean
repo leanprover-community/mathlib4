@@ -53,7 +53,7 @@ variable (f : R →+* S) (x : S)
 
 /-- Evaluate a polynomial `p` given a ring hom `f` from the scalar ring
   to the target and a value `x` for the variable in the target -/
-irreducible_def eval₂ (p : R[X]) : S :=
+@[no_expose] def eval₂ (p : R[X]) : S :=
   p.sum fun e a => f a * x ^ e
 
 theorem eval₂_eq_sum {f : R →+* S} {x : S} : p.eval₂ f x = p.sum fun e a => f a * x ^ e := by

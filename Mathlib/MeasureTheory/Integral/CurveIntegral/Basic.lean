@@ -101,10 +101,11 @@ variable {𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace �
 
 This definition is used to factor out common parts of lemmas
 about `CurveIntegrable` and `curveIntegral`. -/
-noncomputable irreducible_def curveIntegralFun (lemma := curveIntegralFun_def')
-    (ω : E → E →L[𝕜] F) (γ : Path a b) (t : ℝ) : F :=
+@[no_expose] noncomputable def curveIntegralFun (ω : E → E →L[𝕜] F) (γ : Path a b) (t : ℝ) : F :=
   letI : NormedSpace ℝ E := .restrictScalars ℝ 𝕜 E
   ω (γ.extend t) (derivWithin γ.extend I t)
+
+alias curveIntegralFun_def' := curveIntegralFun.eq_def
 
 /-- A 1-form `ω` is *curve integrable* along a path `γ`,
 if the function `curveIntegralFun ω γ t = ω (γ t) (γ' t)` is integrable on `[0, 1]`.
@@ -121,10 +122,11 @@ defined as $\int_0^1 \omega(\gamma(t))(\gamma'(t))$.
 The actual definition uses `curveIntegralFun` which uses `Path.extend γ`
 and `derivWithin (Path.extend γ) (Set.Icc 0 1) t`,
 because calculus-related definitions in Mathlib expect globally defined functions as arguments. -/
-noncomputable irreducible_def curveIntegral (lemma := curveIntegral_def')
-    (ω : E → E →L[𝕜] F) (γ : Path a b) : F :=
+@[no_expose] noncomputable def curveIntegral (ω : E → E →L[𝕜] F) (γ : Path a b) : F :=
   letI : NormedSpace ℝ F := .restrictScalars ℝ 𝕜 F
   ∫ t in 0..1, curveIntegralFun ω γ t
+
+alias curveIntegral_def' := curveIntegral.eq_def
 
 @[inherit_doc curveIntegral]
 notation3 "∫ᶜ "(...)" in " γ ", "r:67:(scoped ω => curveIntegral ω γ) => r

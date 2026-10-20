@@ -45,7 +45,7 @@ open SimpleFunc
 variable {m : MeasurableSpace α} {μ ν : Measure α} {s : Set α}
 
 /-- The **lower Lebesgue integral** of a function `f` with respect to a measure `μ`. -/
-noncomputable irreducible_def lintegral (μ : Measure α) (f : α → ℝ≥0∞) : ℝ≥0∞ :=
+@[no_expose] noncomputable def lintegral (μ : Measure α) (f : α → ℝ≥0∞) : ℝ≥0∞ :=
   ⨆ (g : α →ₛ ℝ≥0∞) (_ : ⇑g ≤ f), g.lintegral μ
 
 /-! In the notation for integrals, an expression like `∫⁻ x, g ‖x‖ ∂μ` will not be parsed correctly,
@@ -665,7 +665,7 @@ theorem setLIntegral_compl {f : α → ℝ≥0∞} {s : Set α} (hsm : Measurabl
 theorem setLIntegral_iUnion_of_directed {ι : Type*} [Countable ι]
     (f : α → ℝ≥0∞) {s : ι → Set α} (hd : Directed (· ⊆ ·) s) :
     ∫⁻ x in ⋃ i, s i, f x ∂μ = ⨆ i, ∫⁻ x in s i, f x ∂μ := by
-  simp only [lintegral_def, iSup_comm (ι := ι),
+  simp only [lintegral, iSup_comm (ι := ι),
     SimpleFunc.lintegral_restrict_iUnion_of_directed _ hd]
 
 theorem lintegral_max {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :

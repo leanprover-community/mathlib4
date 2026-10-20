@@ -318,7 +318,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- In any abelian category with enough projectives,
 `ProjectiveResolution.of Z` constructs a projective resolution of the object `Z`.
 -/
-irreducible_def of : ProjectiveResolution Z where
+@[no_expose] def of : ProjectiveResolution Z where
   complex := ofComplex Z
   π := (ChainComplex.toSingle₀Equiv _ _).symm ⟨Projective.π Z, by
           rw [ofComplex_d_1_0, assoc, kernel.condition, comp_zero]⟩

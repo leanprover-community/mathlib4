@@ -36,7 +36,7 @@ are to Riemannian spaces we stick with the simpler name. This could be changed w
 manifolds are studied in mathlib.
 -/
 
-@[expose] public section
+public section
 
 open Set MeasureTheory
 open scoped Manifold ENNReal ContDiff Topology
@@ -63,7 +63,7 @@ considering functions on the manifold with boundary `Icc a b`, see
 We use `mfderiv` instead of `mfderivWithin` in the definition as these coincide (apart from the two
 endpoints which have zero measure) and `mfderiv` is easier to manipulate. However, we give
 a lemma `pathELength_eq_integral_mfderivWithin_Icc` to rewrite with the `mfderivWithin` form. -/
-irreducible_def pathELength (γ : ℝ → M) (a b : ℝ) : ℝ≥0∞ :=
+def pathELength (γ : ℝ → M) (a b : ℝ) : ℝ≥0∞ :=
   ∫⁻ t in Icc a b, ‖mfderiv% γ t 1‖ₑ
 
 lemma pathELength_eq_lintegral_mfderiv_Icc :
@@ -205,7 +205,7 @@ variable {x y z : M} {r : ℝ≥0∞} {a b : ℝ}
 variable (I) in
 /-- The Riemannian extended distance between two points, in a manifold where the tangent spaces
 have an extended norm, defined as the infimum of the lengths of `C^1` paths between the points. -/
-noncomputable irreducible_def riemannianEDist (x y : M) : ℝ≥0∞ :=
+noncomputable def riemannianEDist (x y : M) : ℝ≥0∞ :=
   ⨅ (γ : Path x y) (_ : CMDiff 1 γ), ∫⁻ x, ‖mfderiv% γ x 1‖ₑ
 
 /-- The Riemannian edistance is bounded above by the length of any `C^1` path from `x` to `y`.

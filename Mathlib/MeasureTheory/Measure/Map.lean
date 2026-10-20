@@ -95,8 +95,9 @@ open scoped Classical in
 we define it to be `0` if `μ = 0`, and to be an arbitrary Dirac mass otherwise. That way
 we always have `map f 0 = 0`, and the push-forward of a probability measure is always a
 probability measure. -/
+@[no_expose]
 noncomputable
-irreducible_def map [MeasurableSpace α] [MeasurableSpace β] (f : α → β) (μ : Measure α) :
+def map [MeasurableSpace α] [MeasurableSpace β] (f : α → β) (μ : Measure α) :
     Measure β :=
   if hf : AEMeasurable f μ
     then mapₗ (hf.mk f) μ

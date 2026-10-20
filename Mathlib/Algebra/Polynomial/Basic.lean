@@ -947,7 +947,7 @@ protected theorem induction_on' {motive : R[X] → Prop} (p : R[X])
     by rw [C_mul_X_pow_eq_monomial]; exact monomial _ _
 
 /-- `erase p n` is the polynomial `p` in which the `X^n` term has been erased. -/
-irreducible_def erase (n : ℕ) : R[X] → R[X]
+@[no_expose] def erase (n : ℕ) : R[X] → R[X]
   | ⟨p⟩ => ⟨p.erase n⟩
 
 @[simp]

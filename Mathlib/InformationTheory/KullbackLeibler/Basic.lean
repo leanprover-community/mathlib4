@@ -41,7 +41,7 @@ measures `μ ≪ ν`. This also makes `klDiv μ ν` equal to an f-divergence: it
 
 -/
 
-@[expose] public section
+public section
 
 open Real MeasureTheory Set
 
@@ -53,30 +53,27 @@ variable {α : Type*} {mα : MeasurableSpace α} {μ ν : Measure α}
 
 open scoped Classical in
 /-- Kullback-Leibler divergence between two measures. -/
-noncomputable irreducible_def klDiv (μ ν : Measure α) : ℝ≥0∞ :=
+noncomputable def klDiv (μ ν : Measure α) : ℝ≥0∞ :=
   if μ ≪ ν ∧ Integrable (llr μ ν) μ
     then ENNReal.ofReal (∫ x, llr μ ν x ∂μ + ν.real univ - μ.real univ)
     else ∞
 
 lemma klDiv_of_ac_of_integrable (h1 : μ ≪ ν) (h2 : Integrable (llr μ ν) μ) :
-    klDiv μ ν = ENNReal.ofReal (∫ x, llr μ ν x ∂μ + ν.real univ - μ.real univ) := by
-  rw [klDiv_def]
-  exact ite_eq_left ⟨h1, h2⟩
+    klDiv μ ν = ENNReal.ofReal (∫ x, llr μ ν x ∂μ + ν.real univ - μ.real univ) :=
+  ite_eq_left ⟨h1, h2⟩
 
 @[simp]
-lemma klDiv_of_not_ac (h : ¬ μ ≪ ν) : klDiv μ ν = ∞ := by
-  rw [klDiv_def]
-  exact ite_eq_right (not_and_of_not_left _ h)
+lemma klDiv_of_not_ac (h : ¬ μ ≪ ν) : klDiv μ ν = ∞ :=
+  ite_eq_right (not_and_of_not_left _ h)
 
 @[simp]
-lemma klDiv_of_not_integrable (h : ¬ Integrable (llr μ ν) μ) : klDiv μ ν = ∞ := by
-  rw [klDiv_def]
-  exact ite_eq_right (not_and_of_not_right _ h)
+lemma klDiv_of_not_integrable (h : ¬ Integrable (llr μ ν) μ) : klDiv μ ν = ∞ :=
+  ite_eq_right (not_and_of_not_right _ h)
 
 @[simp]
 lemma klDiv_self (μ : Measure α) [SigmaFinite μ] : klDiv μ μ = 0 := by
   have h := llr_self μ
-  rw [klDiv_def, ite_eq_left]
+  rw [klDiv, ite_eq_left]
   · simp [integral_congr_ae h]
   · rw [integrable_congr h]
     exact ⟨Measure.AbsolutelyContinuous.rfl, integrable_zero _ _ μ⟩
@@ -110,9 +107,8 @@ open scoped Classical in
 lemma klDiv_eq_integral_klFun :
     klDiv μ ν = if μ ≪ ν ∧ Integrable (llr μ ν) μ
       then ENNReal.ofReal (∫ x, klFun (μ.rnDeriv ν x).toReal ∂ν)
-      else ∞ := by
-  rw [klDiv_def]
-  exact if_ctx_congr Iff.rfl (fun h ↦ by rw [integral_klFun_rnDeriv h.1 h.2]) fun _ ↦ rfl
+      else ∞ :=
+  if_ctx_congr Iff.rfl (fun h ↦ by rw [integral_klFun_rnDeriv h.1 h.2]) fun _ ↦ rfl
 
 open scoped Classical in
 lemma klDiv_eq_lintegral_klFun :

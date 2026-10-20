@@ -356,8 +356,9 @@ variable {ρ : Measure (α × Ω)} [IsFiniteMeasure ρ]
 
 /-- Conditional kernel of a measure on a product space: a Markov kernel such that
 `ρ = ρ.fst ⊗ₘ ρ.condKernel` (see `MeasureTheory.Measure.compProd_fst_condKernel`). -/
+@[no_expose]
 noncomputable
-irreducible_def _root_.MeasureTheory.Measure.condKernel (ρ : Measure (α × Ω)) [IsFiniteMeasure ρ] :
+def _root_.MeasureTheory.Measure.condKernel (ρ : Measure (α × Ω)) [IsFiniteMeasure ρ] :
     Kernel α Ω :=
   comap (condKernelUnitBorel (const Unit ρ)) (fun a ↦ ((), a)) measurable_prodMk_left
 
@@ -400,8 +401,9 @@ open scoped Classical in
 `fst κ ⊗ₖ condKernel κ = κ` (see `MeasureTheory.Measure.compProd_fst_condKernel`).
 It exists whenever `Ω` is standard Borel and either `α` is countable
 or `β` is countably generated. -/
+@[no_expose]
 noncomputable
-irreducible_def condKernel : Kernel (α × β) Ω :=
+def condKernel : Kernel (α × β) Ω :=
   if hα : Countable α then
     condKernelCountable (fun a ↦ (κ a).condKernel)
       fun x y h ↦ by simp [apply_congr_of_mem_measurableAtom _ h]
@@ -409,11 +411,11 @@ irreducible_def condKernel : Kernel (α × β) Ω :=
 
 /-- `condKernel κ` is a Markov kernel. -/
 instance instIsMarkovKernelCondKernel : IsMarkovKernel (condKernel κ) := by
-  rw [condKernel_def]
+  rw [condKernel]
   split_ifs <;> infer_instance
 
 instance condKernel.instIsCondKernel : κ.IsCondKernel κ.condKernel where
-  disintegrate := by rw [condKernel_def]; split_ifs with hα <;> exact disintegrate _ _
+  disintegrate := by rw [condKernel]; split_ifs with hα <;> exact disintegrate _ _
 
 end CountableOrCountablyGenerated
 

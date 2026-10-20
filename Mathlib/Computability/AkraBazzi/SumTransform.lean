@@ -530,7 +530,7 @@ end
 
 variable (a b) in
 /-- The exponent `p` associated with a particular Akra-Bazzi recurrence. -/
-noncomputable irreducible_def p : ℝ := Function.invFun (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) 1
+@[no_expose] noncomputable def p : ℝ := Function.invFun (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) 1
 
 include R in
 -- Cannot be @[simp] because `T`, `g`, `r`, and `R` cannot be inferred by `simp`.

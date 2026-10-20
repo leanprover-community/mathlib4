@@ -77,7 +77,7 @@ namespace PiNat
 open scoped Classical in
 /-- In a product space `Π n, E n`, then `firstDiff x y` is the first index at which `x` and `y`
 differ. If `x = y`, then by convention we set `firstDiff x x = 0`. -/
-irreducible_def firstDiff (x y : ∀ n, E n) : ℕ :=
+@[no_expose] def firstDiff (x y : ∀ n, E n) : ℕ :=
   if h : x ≠ y then Nat.find (ne_iff.1 h) else 0
 
 theorem apply_firstDiff_ne {x y : ∀ n, E n} (h : x ≠ y) :

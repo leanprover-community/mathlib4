@@ -70,11 +70,11 @@ section Defs
 a type `α` and `l` is a filter on `α`, means that eventually for `l`, `‖f‖` is bounded by `C * ‖g‖`.
 In other words, `‖f‖ / ‖g‖` is eventually bounded by `C`, modulo division by zero issues that are
 avoided by this definition. Probably you want to use `IsBigO` instead of this relation. -/
-irreducible_def IsBigOWith (c : ℝ) (l : Filter α) (f : α → E) (g : α → F) : Prop :=
+@[no_expose] def IsBigOWith (c : ℝ) (l : Filter α) (f : α → E) (g : α → F) : Prop :=
   ∀ᶠ x in l, ‖f x‖ ≤ c * ‖g x‖
 
-/-- Definition of `IsBigOWith`. We record it in a lemma as `IsBigOWith` is irreducible. -/
-theorem isBigOWith_iff : IsBigOWith c l f g ↔ ∀ᶠ x in l, ‖f x‖ ≤ c * ‖g x‖ := by rw [IsBigOWith_def]
+/-- Definition of `IsBigOWith`. We record it in a lemma as `IsBigOWith` is not exposed. -/
+theorem isBigOWith_iff : IsBigOWith c l f g ↔ ∀ᶠ x in l, ‖f x‖ ≤ c * ‖g x‖ := .rfl
 
 alias ⟨IsBigOWith.bound, IsBigOWith.of_bound⟩ := isBigOWith_iff
 
@@ -82,19 +82,18 @@ alias ⟨IsBigOWith.bound, IsBigOWith.of_bound⟩ := isBigOWith_iff
 a filter on `α`, means that eventually for `l`, `‖f‖` is bounded by a constant multiple of `‖g‖`.
 In other words, `‖f‖ / ‖g‖` is eventually bounded, modulo division by zero issues that are avoided
 by this definition. -/
-irreducible_def IsBigO (l : Filter α) (f : α → E) (g : α → F) : Prop :=
+@[no_expose] def IsBigO (l : Filter α) (f : α → E) (g : α → F) : Prop :=
   ∃ c : ℝ, IsBigOWith c l f g
 
 @[inherit_doc]
 notation:100 f " =O[" l "] " g:100 => IsBigO l f g
 
 /-- Definition of `IsBigO` in terms of `IsBigOWith`. We record it in a lemma as `IsBigO` is
-irreducible. -/
-theorem isBigO_iff_isBigOWith : f =O[l] g ↔ ∃ c : ℝ, IsBigOWith c l f g := by rw [IsBigO_def]
+not exposed. -/
+theorem isBigO_iff_isBigOWith : f =O[l] g ↔ ∃ c : ℝ, IsBigOWith c l f g := .rfl
 
 /-- Definition of `IsBigO` in terms of filters. -/
-theorem isBigO_iff : f =O[l] g ↔ ∃ c : ℝ, ∀ᶠ x in l, ‖f x‖ ≤ c * ‖g x‖ := by
-  simp only [IsBigO_def, IsBigOWith_def]
+theorem isBigO_iff : f =O[l] g ↔ ∃ c : ℝ, ∀ᶠ x in l, ‖f x‖ ≤ c * ‖g x‖ := .rfl
 
 /-- Definition of `IsBigO` in terms of filters, with a positive constant. -/
 theorem isBigO_iff' {g : α → E'} :
@@ -166,21 +165,19 @@ lemma IsTheta.isBigO_symm (h : f =Θ[l] g) : g =O[l] f := h.2
 a filter on `α`, means that eventually for `l`, `‖f‖` is bounded by an arbitrarily small constant
 multiple of `‖g‖`. In other words, `‖f‖ / ‖g‖` tends to `0` along `l`, modulo division by zero
 issues that are avoided by this definition. -/
-irreducible_def IsLittleO (l : Filter α) (f : α → E) (g : α → F) : Prop :=
+@[no_expose] def IsLittleO (l : Filter α) (f : α → E) (g : α → F) : Prop :=
   ∀ ⦃c : ℝ⦄, 0 < c → IsBigOWith c l f g
 
 @[inherit_doc]
 notation:100 f " =o[" l "] " g:100 => IsLittleO l f g
 
 /-- Definition of `IsLittleO` in terms of `IsBigOWith`. -/
-theorem isLittleO_iff_forall_isBigOWith : f =o[l] g ↔ ∀ ⦃c : ℝ⦄, 0 < c → IsBigOWith c l f g := by
-  rw [IsLittleO_def]
+theorem isLittleO_iff_forall_isBigOWith : f =o[l] g ↔ ∀ ⦃c : ℝ⦄, 0 < c → IsBigOWith c l f g := .rfl
 
 alias ⟨IsLittleO.forall_isBigOWith, IsLittleO.of_isBigOWith⟩ := isLittleO_iff_forall_isBigOWith
 
 /-- Definition of `IsLittleO` in terms of filters. -/
-theorem isLittleO_iff : f =o[l] g ↔ ∀ ⦃c : ℝ⦄, 0 < c → ∀ᶠ x in l, ‖f x‖ ≤ c * ‖g x‖ := by
-  simp only [IsLittleO_def, IsBigOWith_def]
+theorem isLittleO_iff : f =o[l] g ↔ ∀ ⦃c : ℝ⦄, 0 < c → ∀ᶠ x in l, ‖f x‖ ≤ c * ‖g x‖ := .rfl
 
 alias ⟨IsLittleO.bound, IsLittleO.of_bound⟩ := isLittleO_iff
 

@@ -192,7 +192,7 @@ theorem ContinuousLinearMap.continuous_det : Continuous fun f : E →L[𝕜] E =
 vector space `E'` can be extended to a Lipschitz map on the whole space `α`, with a slightly worse
 constant `C * K` where `C` only depends on `E'`. We record a working value for this constant `C`
 as `lipschitzExtensionConstant E'`. -/
-irreducible_def lipschitzExtensionConstant (E' : Type*) [NormedAddCommGroup E'] [NormedSpace ℝ E']
+@[no_expose] def lipschitzExtensionConstant (E' : Type*) [NormedAddCommGroup E'] [NormedSpace ℝ E']
   [FiniteDimensional ℝ E'] : ℝ≥0 :=
   let A := (Basis.ofVectorSpace ℝ E').equivFun.toContinuousLinearEquiv
   max (‖A.symm.toContinuousLinearMap‖₊ * ‖A.toContinuousLinearMap‖₊) 1
