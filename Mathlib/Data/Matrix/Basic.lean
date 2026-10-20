@@ -818,7 +818,7 @@ namespace Matrix
 
 section Prod
 
-/-- Matrices over a product are in canonical bijection with product of matrices.
+/-- Matrices over a product are in canonical bijection with product of matrices
 
 This is available in bundled forms as:
 * `Matrix.prodAddEquiv`
