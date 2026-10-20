@@ -520,12 +520,9 @@ instance hasIntPow [DivInvMonoid β] : Pow (α →ₛ β) ℤ :=
 
 instance [DivInvMonoid β] : IsPowApply ℤ (α →ₛ β) where
 
-@[simp]
-theorem coe_zpow [DivInvMonoid β] (f : α →ₛ β) (z : ℤ) : ⇑(f ^ z) = (⇑f) ^ z :=
-  rfl
+@[deprecated (since := "2026-10-20")] alias coe_zpow := FunLike.coe_pow
 
-theorem zpow_apply [DivInvMonoid β] (z : ℤ) (f : α →ₛ β) (a : α) : (f ^ z) a = f a ^ z :=
-  rfl
+@[deprecated (since := "2026-10-20")] alias zpow_apply := pow_apply
 
 -- TODO: work out how to generate these instances with `to_additive`, which gets confused by the
 -- argument order swap between `coe_smul` and `coe_pow`.
