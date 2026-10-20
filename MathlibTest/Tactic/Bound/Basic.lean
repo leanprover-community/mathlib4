@@ -8,7 +8,7 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Tactic.Bound
 
 /-!
-## Tests for the `bound` tactic
+# Tests for the `bound` tactic
 -/
 
 open scoped NNReal

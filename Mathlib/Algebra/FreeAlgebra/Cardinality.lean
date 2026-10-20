@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.FreeAlgebra
 public import Mathlib.SetTheory.Cardinal.Free
 
-import Mathlib.Algebra.MonoidAlgebra.Cardinal
 
 /-!
 # Cardinality of free algebras

@@ -224,7 +224,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simps!]
 def equivMonComonCounitIsoApp (M : Mon (Comon C)) :
     (ofMonComon C ⋙ toMonComon C).obj M ≅ M :=
-  Mon.mkIso <| (equivMonComonCounitIsoAppX M)
+  Mon.mkIso (equivMonComonCounitIsoAppX M)
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The equivalence `Comon (Mon C) ≌ Mon (Comon C)` -/

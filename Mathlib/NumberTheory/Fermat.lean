@@ -6,7 +6,8 @@ Authors: Moritz Firsching, Ralf Stephan
 module
 
 public import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
-public import Mathlib.NumberTheory.LucasPrimality
+
+import Mathlib.NumberTheory.LucasPrimality
 
 /-!
 # Fermat numbers
@@ -31,6 +32,7 @@ namespace Nat
 open Finset Nat ZMod
 
 /-- Fermat numbers: the `n`-th Fermat number is defined as `2^(2^n) + 1`. -/
+@[oeis A000215]
 def fermatNumber (n : ℕ) : ℕ := 2 ^ (2 ^ n) + 1
 
 @[simp] theorem fermatNumber_zero : fermatNumber 0 = 3 := rfl

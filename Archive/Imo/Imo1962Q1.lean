@@ -3,7 +3,9 @@ Copyright (c) 2020 Kevin Lacker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Lacker
 -/
-import Mathlib.Data.Nat.Digits.Lemmas
+module
+
+public import Mathlib.Data.Nat.Digits.Lemmas
 
 /-!
 # IMO 1962 Q1
@@ -20,6 +22,7 @@ we define the problem as a predicate, and then prove a particular number is the 
 of a set satisfying it.
 -/
 
+@[expose] public section
 
 namespace Imo1962Q1
 

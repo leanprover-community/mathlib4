@@ -5,11 +5,10 @@ Authors: Christopher Hoskin, Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.Order.Antisymmetrization
 public import Mathlib.Order.CompleteLattice.Defs
 public import Mathlib.Order.UpperLower.Basic
 
-import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice.Bounded
 
 /-!
 # Sets closed under directed suprema
@@ -249,21 +248,29 @@ theorem DirSupInacc.mem_iff_of_antisymmRel (hs : DirSupInacc s) {a b : α}
     (h : AntisymmRel (· ≤ ·) a b) : a ∈ s ↔ b ∈ s := by
   simpa [not_iff_not] using hs.compl.mem_iff_of_antisymmRel h
 
-lemma dirSupClosed_Iic (a : α) : DirSupClosed (Iic a) :=
+protected theorem DirSupClosed.Iic (a : α) : DirSupClosed (Iic a) :=
   fun _d h _ _ _a ha ↦ (isLUB_le_iff ha).2 h
 
-lemma dirSupClosedOn_Iic (a : α) : DirSupClosedOn D (Iic a) :=
-  (dirSupClosed_Iic a).dirSupClosedOn
+@[deprecated (since := "2026-10-16")] alias dirSupClosed_Iic := DirSupClosed.Iic
 
-lemma dirSupInacc_Iic (a : α) : DirSupInacc (Iic a) :=
-  (isLowerSet_Iic a).dirSupInacc
+protected theorem DirSupClosedOn.Iic (a : α) : DirSupClosedOn D (Iic a) :=
+  (DirSupClosed.Iic a).dirSupClosedOn
 
-lemma dirSupInaccOn_Iic (a : α) : DirSupInaccOn D (Iic a) :=
-  (isLowerSet_Iic a).dirSupInaccOn
+@[deprecated (since := "2026-10-16")] alias dirSupClosedOn_Iic := DirSupClosedOn.Iic
+
+protected theorem DirSupInacc.Iic (a : α) : DirSupInacc (Iic a) :=
+  (IsLowerSet.Iic a).dirSupInacc
+
+@[deprecated (since := "2026-10-16")] alias dirSupInacc_Iic := DirSupInacc.Iic
+
+protected theorem DirSupInaccOn.Iic (a : α) : DirSupInaccOn D (Iic a) :=
+  (IsLowerSet.Iic a).dirSupInaccOn
+
+@[deprecated (since := "2026-10-16")] alias dirSupInaccOn_Iic := DirSupInaccOn.Iic
 
 end Preorder
 
-namespace PartialOrder
+section PartialOrder
 variable [PartialOrder α]
 
 theorem dirSupClosed_singleton (a : α) : DirSupClosed {a} := by
