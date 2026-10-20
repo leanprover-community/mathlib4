@@ -7,8 +7,8 @@ module
 
 public meta import Mathlib.Tactic.ToDual
 public import Mathlib.CategoryTheory.Category.Basic
-public import ProofWidgets.Component.PenroseDiagram
-public import ProofWidgets.Presentation.Expr
+public meta import ProofWidgets.Component.PenroseDiagram
+public meta import ProofWidgets.Presentation.Expr
 
 /-! This module defines tactic/meta infrastructure for displaying commutative diagrams in the
 infoview. -/
@@ -55,18 +55,17 @@ abbrev ExprEmbeds := Array (String × Expr)
 
 /-! ## Widget for general commutative diagrams -/
 
-open scoped Jsx in
 /-- Construct a commutative diagram from a Penrose `sub`stance program and expressions `embeds` to
 display as labels in the diagram. -/
 def mkCommDiag (sub : String) (embeds : ExprEmbeds) : MetaM Html := do
   let embeds ← embeds.mapM fun (s, h) =>
-      return (s, <InteractiveCode fmt={← Widget.ppExprTagged h} />)
-  return (
+      return (s, jsx%{<InteractiveCode fmt={← Widget.ppExprTagged h} />})
+  return jsx%{
     <PenroseDiagram
       embeds={embeds}
       dsl={include_str ".."/".."/".."/"widget"/"src"/"penrose"/"commutative.dsl"}
       sty={include_str ".."/".."/".."/"widget"/"src"/"penrose"/"commutative.sty"}
-      sub={sub} />)
+      sub={sub} />}
 
 /-! ## Commutative triangles -/
 
