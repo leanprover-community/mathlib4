@@ -196,8 +196,7 @@ This is used by the `Header` linter as a heuristic of whether it should inspect 
 so that the linter works in any project whose library root follows the standard Lean convention
 of being named after the top-level module.
 -/
-def isInLibraryRoot (modPath : System.FilePath) (modName : Name) : IO Bool := do
-  let some rootPath := modPathToRootPath modPath modName | return false
+def isInLibraryRoot (rootPath : System.FilePath) (modName : Name) : IO Bool := do
   if ← rootPath.pathExists then
     let res ← parseImports' (← IO.FS.readFile rootPath) ""
     return res.imports.any (·.module == modName)
@@ -433,11 +432,12 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
         and any necessary `set_option` commands.\n\
         Please, add a module doc-string (`/-! ... -/`) before `{stx}`.\
         {.hint' m!"Type `m(odule docstring) + [tab]` to insert a template via snippet."}"
+  let some rootPath := modPathToRootPath (← getFileName) mainModule | return
   let inLibraryRoot? ← inLibraryRootMutex.atomically do
     match ← get with
     | some d => return d
     | none =>
-      let val ← isInLibraryRoot (← getFileName) mainModule
+      let val ← isInLibraryRoot rootPath mainModule
       -- We cache the answer to avoid recomputing it on every command. The fill runs under the mutex
       -- so that concurrent (async) linter runs don't all miss the cache and each redundantly parse
       -- the library root file; `mainModule` is fixed for the duration of the elaboration.
@@ -457,10 +457,11 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   -- Report on broad or duplicate imports.
   broadImportsCheck importRefs mainModule
   duplicateImportsCheck importRefs
-  let errors ← directoryDependencyCheck mainModule
-  if errors.size > 0 then
-    Linter.logLint linter.directoryDependency (importRefs.back?.elim headerStx (·.stx)) <|
-      m!"\n\n".joinSep errors.toList
+  if let some srcDir := rootPath.parent then
+    let errors ← directoryDependencyCheck srcDir mainModule
+    if errors.size > 0 then
+      Linter.logLint linter.directoryDependency (importRefs.back?.elim headerStx (·.stx)) <|
+        m!"\n\n".joinSep errors.toList
   -- Report any errors about the copyright line.
   if mainModule != `Mathlib.Init && mainModule != `Mathlib.Tactic then
     let expectedLicense := linter.style.header.license.get (← getOptions)
