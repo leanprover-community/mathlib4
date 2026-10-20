@@ -15,7 +15,7 @@ import Mathlib.Tactic.Ring
 /-!
 # The characteristic polynomial recurrence for upper Hessenberg matrices
 
-`hessCharPoly n H` computes the characteristic polynomial of the `n × n` upper Hessenberg
+`hessCharPoly n H` defines the characteristic polynomial of the `n × n` upper Hessenberg
 matrix `H` (stored as an array of entries in row-major ordering).
 
 It uses a recursive algorithm given as equation 5.1 of [Rehman-Ipsen][rehmanipsen2011] that
@@ -28,8 +28,13 @@ p_0 := 1
 p_{k+1} = (X - C H[k][k]) p_k - ∑_{t<k} C (H[t][k] ∏_{j=t}^{k-1} H[j+1][j]) p_t
 ```
 
-`coeffHessCharPoly n H` is the same recurrence on lists of coefficients and
-`ofCoeffList_coeffHessCharPoly` interprets its result as `hessCharPoly n H`.
+This file defines both noncomputable, `hessCharPoly`, and computable `coeffHessCharPoly` (via
+representation of a polynomial as lists of coefficients) versions of the recurrence.
+
+We have both versions of the recurrence so that for a literal matrix `H` we can produce the
+coefficients of the characteristic polynomial by computing `coeffHessCharPoly` using the kernel. The
+theorem `ofCoeffList_coeffHessCharPoly` interprets the result as `hessCharPoly`, a polynomial in
+`R[X]`.
 
 ## References
 
