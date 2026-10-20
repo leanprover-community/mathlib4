@@ -5,12 +5,10 @@ Authors: Patrick Massot
 -/
 module
 
-public import Mathlib.Tactic.Widget.SelectPanelUtils
 public meta import ProofWidgets.Component.Basic
+public import Mathlib.Tactic.Widget.SelectPanelUtils
 
-import ProofWidgets.Component.Basic
-import ProofWidgets.Component.OfRpcMethod
-
+meta import ProofWidgets.Component.OfRpcMethod
 /-! # CongrM widget
 
 This file defines a `congrm?` tactic that displays a widget panel allowing to generate
