@@ -34,17 +34,21 @@ def set_option_line(option: str, value: str = "false") -> str:
     return f"set_option {option} {value} in\n"
 
 
-def removable_pattern(option: str, value: str = "false") -> re.Pattern:
-    """Match bare `set_option X <value> in` lines (no trailing comment)."""
+def removable_pattern(option: str, value: str | None = None) -> re.Pattern:
+    """Match bare `set_option X <value> in` lines (no trailing comment).
+    If no value is specified, we use a regular expression matching exactly
+    the values 'true' and 'false'."""
     escaped = re.escape(option)
-    escaped_val = re.escape(value)
+    escaped_val = re.escape(value) if value else "(?:true|false)"
     return re.compile(rf"^\s*set_option {escaped} {escaped_val} in\s*$")
 
 
-def commented_pattern(option: str, value: str = "false") -> re.Pattern:
-    """Match `set_option X <value> in -- ...` lines."""
+def commented_pattern(option: str, value: str | None = None) -> re.Pattern:
+    """Match `set_option X <value> in -- ...` lines.
+    If no value is specified, we use a regular expression matching exactly
+    the values 'true' and 'false'."""
     escaped = re.escape(option)
-    escaped_val = re.escape(value)
+    escaped_val = re.escape(value) if value else "(?:true|false)"
     return re.compile(rf"^\s*set_option {escaped} {escaped_val} in\s+--")
 
 

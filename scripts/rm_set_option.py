@@ -182,8 +182,10 @@ def handle_lakefile(options: list[str], value: str = "false") -> bool:
     return changed
 
 
-def scan_files(dag: DAG, options: list[str], value: str = "false") -> dict[str, list[int]]:
-    """Find files with removable set_option lines.
+def scan_files(dag: DAG, options: list[str], value: str | None) -> dict[str, list[int]]:
+    """Find files with removable set_option lines: each superfluous set_option line
+    setting an option in |options| to the value in |value| is removed.
+    If |value| is None, we allow either 'true' or 'false'.
 
     Returns dict of module_name -> list of 0-indexed line numbers.
     """
@@ -208,8 +210,10 @@ def scan_files(dag: DAG, options: list[str], value: str = "false") -> dict[str, 
     return results
 
 
-def count_skipped(filepath: Path, options: list[str], value: str = "false") -> int:
-    """Count set_option lines with trailing/preceding comments."""
+def count_skipped(filepath: Path, options: list[str], value: str | None = None) -> int:
+    """Count set_option lines with trailing/preceding comments.
+
+    If |value| is None, we allow either 'true' or 'false'."""
     commented_pats = [commented_pattern(opt, value) for opt in options]
     removable_pats = [removable_pattern(opt, value) for opt in options]
     lines = filepath.read_text().splitlines()
@@ -239,7 +243,7 @@ def make_process_file(
     options: list[str],
     timeout: int,
     traverser: DAGTraverser,
-    value: str = "false",
+    value: str | None,
 ) -> Callable:
     """Create the per-file action callback."""
 
@@ -338,7 +342,7 @@ def write_github_outputs(summary: Summary):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Remove unnecessary `set_option ... false in` lines in a Lean project.\n\n"
+        description="Remove unnecessary `set_option ... (true|false) in` lines in a Lean project.\n\n"
                     "To use outside mathlib, copy `rm_set_option.py`, `dag_traversal.py` and "
                     "`set_option_utils.py` to a subdirectory of your project named `scripts/` "
                     "and then run from the project root with `scripts/rm_set_option.py`.",
@@ -350,8 +354,7 @@ def main():
     )
     parser.add_argument(
         "--value",
-        default="false",
-        help="Value of the option to scan/remove (default: false)",
+        help="Value of the option to scan/remove (default: look for both true and false)",
     )
     parser.add_argument(
         "--dry-run",
