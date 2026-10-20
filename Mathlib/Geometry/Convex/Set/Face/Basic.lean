@@ -33,7 +33,7 @@ section Semiring
 variable [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] [ConvexSpace R M] [ConvexSpace R N]
 
 variable (R) in
-/-- A subset `F` of a set `F` is a face of `C` iff it is an extreme convex subset. -/
+/-- A subset `F` of a set `C` is a face of `C` iff it is an extreme convex subset. -/
 @[mk_iff]
 structure IsFaceOf (F C : Set M) : Prop where
   isConvexSet : IsConvexSet R F
@@ -49,8 +49,6 @@ namespace IsFaceOf
 @[refl, simp]
 protected theorem refl {C : Set M} (h : IsConvexSet R C) : IsFaceOf R C C :=
   ⟨h, fun _ a ↦ a, fun hx _ _ _ ↦ hx⟩
-
-protected theorem rfl {C : Set M} {h : IsConvexSet R C} : IsFaceOf R C C := .refl h
 
 /-- A face of a set is a face of another if and only if they are contained in each other. -/
 theorem isFaceOf_iff_le (h₁ : IsFaceOf R F₁ C) (h₂ : IsFaceOf R F₂ C) :
@@ -80,16 +78,7 @@ theorem inf_left (h₁ : IsFaceOf R F₁ C) (h₂ : IsFaceOf R F₂ C) : IsFaceO
 theorem inf_right (h₁ : IsFaceOf R F C₁) (h₂ : IsFaceOf R F C₂) : IsFaceOf R F (C₁ ∩ C₂) :=
   inf_idem F ▸ IsFaceOf.inf h₁ h₂
 
-protected theorem sInf (hc : IsConvexSet R C) {F : Set (Set M)} (h : ∀ f ∈ F, IsFaceOf R f C) :
-    IsFaceOf R (C ∩ sInf F) C where
-  isConvexSet := IsConvexSet.inter hc <| IsConvexSet.sInter (fun f hf ↦ (h f hf).isConvexSet)
-  le _ sm := sm.1
-  left_mem_of_mem_Ioo := by
-    simp only [Set.sInf_eq_sInter, Set.mem_inter_iff, Set.mem_sInter, and_imp]
-    intro _ _ _ xc yc zc zf zs
-    simpa [xc] using fun f hf ↦ (h f hf).left_mem_of_mem_Ioo xc yc (zf f hf) zs
-
-protected theorem sInf' {F : Set (Set M)} (hne : F.Nonempty) (h : ∀ f ∈ F, IsFaceOf R f C) :
+protected theorem sInf {F : Set (Set M)} (hne : F.Nonempty) (h : ∀ f ∈ F, IsFaceOf R f C) :
     IsFaceOf R (sInf F) C where
   isConvexSet := IsConvexSet.sInter (fun f hf ↦ (h f hf).isConvexSet)
   le := by
@@ -99,6 +88,15 @@ protected theorem sInf' {F : Set (Set M)} (hne : F.Nonempty) (h : ∀ f ∈ F, I
     intro x y z hx hy hz hseg
     rw [Set.sInf_eq_sInter, Set.mem_sInter] at hz ⊢
     exact fun f hf ↦ (h f hf).left_mem_of_mem_Ioo hx hy (hz f hf) hseg
+
+protected theorem sInf' (hc : IsConvexSet R C) {F : Set (Set M)} (h : ∀ f ∈ F, IsFaceOf R f C) :
+    IsFaceOf R (C ∩ sInf F) C where
+  isConvexSet := IsConvexSet.inter hc <| IsConvexSet.sInter (fun f hf ↦ (h f hf).isConvexSet)
+  le _ sm := sm.1
+  left_mem_of_mem_Ioo := by
+    simp only [Set.sInf_eq_sInter, Set.mem_inter_iff, Set.mem_sInter, and_imp]
+    intro _ _ _ xc yc zc zf zs
+    simpa [xc] using fun f hf ↦ (h f hf).left_mem_of_mem_Ioo xc yc (zf f hf) zs
 
 /-- The face of a face of a set is also a face of the set. -/
 @[trans]
