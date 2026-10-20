@@ -153,8 +153,8 @@ theorem ofCoeffList_coeffHessCharPoly (n : ℕ) (H : Array R) :
     rw [Function.iterate_succ_apply', Array.getD_eq_getD_getElem?, Array.getElem?_push, hsize]
     split_ifs with hmk
     · rw [Option.getD_some, hmk, ofCoeffList_coeffHessStep, hessP_succ]
-      simp (disch := omega) only [ih]
-    · rw [← Array.getD_eq_getD_getElem?, ih m (by omega)]
+      aesop
+    · rw [← Array.getD_eq_getD_getElem?, ih m (by lia)]
 
 end Mathlib.Tactic.Hessenberg
 

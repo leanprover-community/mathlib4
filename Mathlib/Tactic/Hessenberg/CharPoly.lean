@@ -232,10 +232,10 @@ theorem hessP_eq_charpoly {H : Array R} (hsize : H.size = n * n)
     cases k with
     | zero => rw [hessP_zero, charpoly_isEmpty]
     | succ k =>
-      rw [hessP_succ, charpoly_isUpperHessenberg _ (hH.leadingBlock hk)]
-      simp (disch := omega) only [ih, leadingBlock_leadingBlock, leadingBlock_apply,
-        ofArray_eq_of_getD, of_apply, Fin.val_castLE, Fin.val_castSucc, Fin.val_last, Fin.val_succ,
-        ← Fin.map_valEmbedding_Ici, prod_map, Fin.valEmbedding_apply]
+      have ih' (t : Fin k) := ih t (by lia) (by lia)
+      simp_rw [hessP_succ, charpoly_isUpperHessenberg _ (hH.leadingBlock hk),
+        ih k (by lia) (by lia), ih', ofArray_eq_of_getD, ← Fin.map_valEmbedding_Ici, prod_map]
+      aesop
 
 /-- The characteristic polynomial of an upper Hessenberg matrix is computed by the
 leading-principal-block recurrence on the row-major array of its entries. -/
