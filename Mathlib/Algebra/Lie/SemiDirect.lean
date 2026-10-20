@@ -150,6 +150,8 @@ lemma projl_inl_apply {x : K} : projl ψ (inl ψ x) = x := by simp
 lemma projr_surjective : Function.Surjective (projr ψ) :=
   fun x ↦ ⟨inr ψ x, by simp⟩
 
+/-- The left ideal of a semidirect product, given by the kernel of the
+projection onto the right factor. -/
 def leftIdeal : LieIdeal R (K ⋊⁅ψ⁆ L) := LieHom.ker (projr ψ)
 
 theorem leftIdeal_mem_iff (x : K ⋊⁅ψ⁆ L) :  (x ∈ (leftIdeal ψ)) ↔ x.right = 0 := by
@@ -157,7 +159,9 @@ theorem leftIdeal_mem_iff (x : K ⋊⁅ψ⁆ L) :  (x ∈ (leftIdeal ψ)) ↔ x.
   rw [LieHom.mem_ker (f:=projr ψ) (x:=x)]
   simp
 
-def leftIdeal_equiv : leftIdeal ψ ≃ₗ⁅R⁆ K where
+/-- The left ideal of a semidirect product is Lie algebra equivalent to
+the left factor. -/
+def leftIdealEquiv : leftIdeal ψ ≃ₗ⁅R⁆ K where
     toFun := fun x ↦ x.val.left
     map_add' _ _:= by simp
     map_smul' := by simp
@@ -193,6 +197,8 @@ theorem range_inl_eq_leftIdeal : LieHom.range (inl ψ) = (leftIdeal ψ).toLieSub
     · simp only [LieHom.coe_toLinearMap, inl_eq_mk]
     · exact hx.symm
 
+/-- The right subalgebra of a semidirect product, given by the range of
+the inclusion of the right factor. -/
 def rightSubalgebra : LieSubalgebra R (K ⋊⁅ψ⁆ L) := LieHom.range (inr ψ)
 
 @[simp]
@@ -210,7 +216,9 @@ theorem rightSubalgebra_mem_iff (x : K ⋊⁅ψ⁆ L) :  (x ∈ (rightSubalgebra
     congr
     exact hx.symm
 
-def rightSubalgebra_equiv : rightSubalgebra ψ ≃ₗ⁅R⁆ L where
+/-- The right subalgebra of a semidirect product is Lie algebra equivalent
+to the right factor. -/
+def rightSubalgebraEquiv : rightSubalgebra ψ ≃ₗ⁅R⁆ L where
     toFun := fun x ↦ x.val.right
     map_add' _ _:= by simp
     map_smul' := by simp
