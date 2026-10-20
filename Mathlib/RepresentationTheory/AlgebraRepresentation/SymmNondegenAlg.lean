@@ -49,7 +49,7 @@ representatble. It could happen that none of the nontrivial trace functionals is
 e.g. `A = ℂ[ℤ] = ℂ[T, T⁻¹]`. This is exactly the case for the Hecke algebra of a `p`-adic reductive
 group with non-compact center, while in that case there is bridge call "unramified twist" connecting
 its representation theory to a subgroup with compact center where the trace of compact
-representations are representable. Thus the materials from this file is still fundamental for the
+representations are representable. Thus materials from this file are still fundamental for the
 smooth representation theory of `p`-adic reductive groups with non-compact center.
 
 TODO: investigate those interesting functionals not coming from the trace.
