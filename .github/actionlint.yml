@@ -4,6 +4,8 @@ self-hosted-runner:
     - pr
     - doc-gen
     - lean4checker
+    # A GitHub-hosted label that actionlint's built-in list does not know yet.
+    - ubuntu-26.04
 paths:
   .github/workflows/*.yml:
     ignore:
