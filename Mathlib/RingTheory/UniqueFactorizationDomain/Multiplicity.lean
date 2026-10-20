@@ -68,8 +68,8 @@ theorem FiniteMultiplicity.of_prime_left {a b : α} (ha : Prime a) (hb : b ≠ 0
   .of_not_isUnit ha.not_isUnit hb
 
 /-- An element of a `WfDvdMonoid` has finite multiplicity at a prime iff it is nonzero. -/
-theorem Prime.finiteMultiplicity_iff_ne_zero [CommMonoidWithZero α] [IsCancelMulZero α]
-    [WfDvdMonoid α] {a p : α} (hp : Prime p) : FiniteMultiplicity p a ↔ a ≠ 0 :=
+theorem Prime.finiteMultiplicity_iff_ne_zero {a p : α} (hp : Prime p) :
+    FiniteMultiplicity p a ↔ a ≠ 0 :=
   ⟨FiniteMultiplicity.ne_zero, .of_prime_left hp⟩
 
 theorem WfDvdMonoid.exists_not_pow_inf'_multiplicity_succ_dvd (b : α) (hbI : Irreducible b)
@@ -113,7 +113,7 @@ theorem WfDvdMonoid.max_power_factor_of_finsupp' (b : α) (hbI : Irreducible b) 
     use hf, j
     refine ⟨by aesop, ?_⟩
     replace hf := hf j
-    contrapose! hj
+    contrapose hj
     obtain ⟨w, h⟩ := hj
     simp_all [← mul_assoc, pow_succ]
 
