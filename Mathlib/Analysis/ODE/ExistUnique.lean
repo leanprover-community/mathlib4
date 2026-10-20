@@ -31,10 +31,14 @@ normed spaces.
   field admits a local solution.
 * `ContDiffAt.exists_eventually_eq_hasDerivAt`: a `C¹` vector field admits a local flow.
 * `ODE_solution_unique` and variants: uniqueness statements for ODE solutions on various intervals.
+* `hasDerivAt_exp_smul_mul_integral`, `eq_exp_smul_mul_integral_of_hasDerivAt`: Duhamel's formula,
+  the solution of the linear ODE `y' = A * y + F t` with constant coefficient `A` in a Banach
+  algebra.
 
 ## Tags
 
-integral curve, vector field, existence, uniqueness, Picard-Lindelöf, Gronwall
+integral curve, vector field, existence, uniqueness, Picard-Lindelöf, Gronwall, Duhamel,
+variation of constants
 -/
 
 @[expose] public section
@@ -349,3 +353,38 @@ theorem ODE_solution_unique_univ
     grind
   exact ODE_solution_unique_of_mem_Ioo
     (fun t _ => hv t) Ht₀ (fun t _ => hf t) (fun t _ => hg t) heq Ht
+
+/-! ## Linear ODEs with constant coefficients -/
+
+section Linear
+
+open NormedSpace
+
+variable {𝔸 : Type*} [NormedRing 𝔸] [NormedAlgebra ℝ 𝔸] [CompleteSpace 𝔸]
+
+/-- **Duhamel's formula** (variation of constants): for `A : 𝔸` and a continuous `F`, the function
+`t ↦ exp ((t - t₀) • A) * (y₀ + ∫ s in t₀..t, exp ((t₀ - s) • A) * F s)` solves
+`y' = A * y + F t`. -/
+theorem hasDerivAt_exp_smul_mul_integral (A y₀ : 𝔸) {F : ℝ → 𝔸} (hF : Continuous F)
+    (t₀ t : ℝ) :
+    HasDerivAt (fun t ↦ exp ((t - t₀) • A) * (y₀ + ∫ s in t₀..t, exp ((t₀ - s) • A) * F s))
+      (A * (exp ((t - t₀) • A) * (y₀ + ∫ s in t₀..t, exp ((t₀ - s) • A) * F s)) + F t) t := by
+  have hc : Continuous fun s ↦ exp ((t₀ - s) • A) * F s :=
+    ((differentiable_exp_smul_const ℝ A).continuous.comp (by fun_prop)).mul hF
+  have h1 := (hasDerivAt_exp_smul_const' A (t - t₀)).comp_sub_const t t₀
+  convert h1.mul ((hc.integral_hasStrictDerivAt t₀ t).hasDerivAt.const_add y₀) using 1
+  rw [mul_assoc, ← mul_assoc (exp _), ← exp_add_of_commute_of_mem_ball (𝕂 := ℝ)
+    (((Commute.refl A).smul_left _).smul_right _) (by simp [expSeries_radius_eq_top])
+    (by simp [expSeries_radius_eq_top]), ← add_smul, sub_add_sub_cancel', sub_self, zero_smul,
+    exp_zero, one_mul, mul_add]
+
+theorem eq_exp_smul_mul_integral_of_hasDerivAt {A y₀ : 𝔸} {F y : ℝ → 𝔸} {t₀ : ℝ}
+    (hF : Continuous F) (hy : ∀ t, HasDerivAt y (A * y t + F t) t) (hy₀ : y t₀ = y₀) :
+    y = fun t ↦ exp ((t - t₀) • A) * (y₀ + ∫ s in t₀..t, exp ((t₀ - s) • A) * F s) := by
+  refine ODE_solution_unique_univ (v := fun t x ↦ A * x + F t) (s := fun _ ↦ univ) (t₀ := t₀)
+    (K := ‖A‖₊) (fun t ↦ (LipschitzWith.of_dist_le_mul fun x z ↦ ?_).lipschitzOnWith)
+    (fun t ↦ ⟨hy t, trivial⟩)
+    (fun t ↦ ⟨hasDerivAt_exp_smul_mul_integral A y₀ hF t₀ t, trivial⟩) (by simp [hy₀])
+  simpa [dist_eq_norm, ← mul_sub] using norm_mul_le A (x - z)
+
+end Linear
