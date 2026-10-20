@@ -105,28 +105,8 @@ theorem nodup_theClosedSix_theFourteen_iff : (theClosedSix s).Nodup ↔ TheSixIn
              not_or, nodup_singleton, and_true, ← ne_eq, and_assoc]
   -- The goal becomes 6 inequalities ↔ 15 inequalities.
   constructor -- Show both implications.
-  · -- One implication is almost trivial as the six inequalities are among the fifteen.
-    tauto
-  · intro h -- Introduce `TheSixIneq` as an assumption.
-    repeat obtain ⟨_, h⟩ := h -- Split the hypothesis into six different inequalities.
-    repeat refine .symm (.intro ?_ ?_) -- Split the goal into 15 inequalities.
-    all_goals
-      rw [ne_comm]
-      try assumption
-    -- Solve trivial goals (the six inequalities contained in `TheSixIneq`).
-    any_goals
-    /- Now eight other goals can be solved by simplifying
-      and then using one of the six given inequalities. -/
-      apply mt (congr_arg (k ·ᶜ))
-      first
-      | try repeat rw [kckckck_eq_kck, eq_comm]
-        assumption
-      | apply mt (congr_arg (k ·ᶜ))
-        try repeat rw [kckckck_eq_kck, eq_comm]
-        assumption
-    -- One last goal (`k (k (k sᶜ)ᶜ)ᶜ ≠ k s`) needs some other simplifying steps:
-    apply mt (congr_arg fun s ↦ k (k sᶜ)ᶜ)
-    rwa [kckckck_eq_kck]
+  · grind
+  · grind [kckckck_eq_kck]
 
 open Multiset in
 /-- `theFourteen s` contains no duplicates if and only if `theClosedSix s` has none,
