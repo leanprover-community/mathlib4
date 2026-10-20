@@ -34,22 +34,18 @@ def set_option_line(option: str, value: str = "false") -> str:
     return f"set_option {option} {value} in\n"
 
 
-def removable_pattern(option: str, value: str | None = None) -> re.Pattern:
+def removable_pattern(option: str) -> re.Pattern:
     """Match bare `set_option X <value> in` lines (no trailing comment).
-    If no value is specified, we use a regular expression matching exactly
-    the values 'true' and 'false'."""
+    |value| can be a boolean (true or false), number or string (alphanumeric only)."""
     escaped = re.escape(option)
-    escaped_val = re.escape(value) if value else "(?:true|false)"
-    return re.compile(rf"^\s*set_option {escaped} {escaped_val} in\s*$")
+    return re.compile(rf'^\s*set_option {escaped} (true|false|[0-9]*|"[A-Za-z]*") in\s*$')
 
 
-def commented_pattern(option: str, value: str | None = None) -> re.Pattern:
+def commented_pattern(option: str) -> re.Pattern:
     """Match `set_option X <value> in -- ...` lines.
-    If no value is specified, we use a regular expression matching exactly
-    the values 'true' and 'false'."""
+    |value| can be a boolean (true or false), number or string (alphanumeric only)."""
     escaped = re.escape(option)
-    escaped_val = re.escape(value) if value else "(?:true|false)"
-    return re.compile(rf"^\s*set_option {escaped} {escaped_val} in\s+--")
+    return re.compile(rf'^\s*set_option {escaped} (true|false|[0-9]*|"[A-Za-z]*") in\s+--')
 
 
 def is_annotated(lines: list[str], idx: int) -> bool:

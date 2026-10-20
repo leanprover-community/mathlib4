@@ -163,8 +163,9 @@ class _RemoveDisplay(Display):
             self._redraw()
 
 
-def handle_lakefile(options: list[str], value: str = "false") -> bool:
-    """Check and remove options from lakefile.lean. Returns True if changed."""
+def handle_lakefile(options: list[str], value: str) -> bool:
+    """Check and remove options with a prescribed value from lakefile.lean.
+    Return True if changed."""
     lakefile = PROJECT_DIR / "lakefile.lean"
     content = lakefile.read_text()
     changed = False
@@ -182,15 +183,15 @@ def handle_lakefile(options: list[str], value: str = "false") -> bool:
     return changed
 
 
-def scan_files(dag: DAG, options: list[str], value: str | None) -> dict[str, list[int]]:
-    """Find files with removable set_option lines: each superfluous set_option line
-    setting an option in |options| to the value in |value| is removed.
-    If |value| is None, we allow either 'true' or 'false'.
+def scan_files(dag: DAG, options: list[str]) -> dict[str, list[int]]:
+    """Find files with removable set_option lines:
+    we support options with Boolean, numeric or string values
+    (provided the string is alphabetic only).
 
     Returns dict of module_name -> list of 0-indexed line numbers.
     """
-    removable_pats = [removable_pattern(opt, value) for opt in options]
-    commented_pats = [commented_pattern(opt, value) for opt in options]
+    removable_pats = [removable_pattern(opt) for opt in options]
+    commented_pats = [commented_pattern(opt) for opt in options]
     results: dict[str, list[int]] = {}
     for name, info in dag.modules.items():
         filepath = dag.project_root / info.filepath
@@ -210,12 +211,10 @@ def scan_files(dag: DAG, options: list[str], value: str | None) -> dict[str, lis
     return results
 
 
-def count_skipped(filepath: Path, options: list[str], value: str | None = None) -> int:
-    """Count set_option lines with trailing/preceding comments.
-
-    If |value| is None, we allow either 'true' or 'false'."""
-    commented_pats = [commented_pattern(opt, value) for opt in options]
-    removable_pats = [removable_pattern(opt, value) for opt in options]
+def count_skipped(filepath: Path, options: list[str]) -> int:
+    """Count set_option lines with trailing/preceding comments."""
+    commented_pats = [commented_pattern(opt) for opt in options]
+    removable_pats = [removable_pattern(opt) for opt in options]
     lines = filepath.read_text().splitlines()
     count = 0
     for i, line in enumerate(lines):
@@ -243,14 +242,13 @@ def make_process_file(
     options: list[str],
     timeout: int,
     traverser: DAGTraverser,
-    value: str | None,
 ) -> Callable:
     """Create the per-file action callback."""
 
     def process_file(module_name: str, filepath: Path) -> FileResult:
         abs_path = filepath
         removable_lines = removable_map.get(module_name, [])
-        skipped = count_skipped(abs_path, options, value)
+        skipped = count_skipped(abs_path, options)
 
         if not removable_lines:
             save_progress(module_name, file_sha256(abs_path))
@@ -353,10 +351,6 @@ def main():
         help="Only scan/remove this specific option (default: all known options)",
     )
     parser.add_argument(
-        "--value",
-        help="Value of the option to scan/remove (default: look for both true and false)",
-    )
-    parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Scan and report without modifying files or building",
@@ -410,7 +404,7 @@ def main():
 
     # Step 1: lakefile.lean
     if not args.dry_run and (PROJECT_DIR / "lakefile.lean").exists():
-        handle_lakefile(options, args.value)
+        handle_lakefile(options, "false")
     elif (PROJECT_DIR / "lakefile.toml").exists():
         opts_str = ", ".join(options)
         print(
@@ -426,7 +420,7 @@ def main():
 
     # Step 3: scan for removable lines
     print("Scanning for removable set_option lines...", flush=True)
-    removable_map = scan_files(full_dag, options, args.value)
+    removable_map = scan_files(full_dag, options)
 
     if args.files:
         # Filter to requested files
@@ -517,7 +511,7 @@ def main():
         _timer.start()
 
     display = _RemoveDisplay()
-    action = make_process_file(removable_map, options, args.timeout, traverser, args.value)
+    action = make_process_file(removable_map, options, args.timeout, traverser)
 
     display.start(len(full_dag.modules))
     try:
