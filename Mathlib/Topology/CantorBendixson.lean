@@ -122,10 +122,10 @@ theorem iteratedDerivedSet_monotone : Monotone (iteratedDerivedSet (X := X)) :=
 @[deprecated (since := "2026-09-07")]
 alias iteratedDerivedSet_mono := iteratedDerivedSet_monotone
 
-@[deprecated iteratedDerivedSet_succ (since := "2026-09-07")]
+@[deprecated iteratedDerivedSet_add_one +typeChanged (since := "2026-09-07")]
 theorem mem_fixedPoints_of_iteratedDerivedSet_succ_eq (ha : sᵈ[a + 1] = sᵈ[a]) :
     sᵈ[a] ∈ fixedPoints relDerivedSet := by
-  rwa [Function.mem_fixedPoints_iff, ← iteratedDerivedSet_succ]
+  rwa [Function.mem_fixedPoints_iff, ← iteratedDerivedSet_add_one]
 
 theorem iteratedDerivedSet_mem_fixedPoints (s : Set X) :
     ∃ a : Ordinal, sᵈ[a] ∈ fixedPoints relDerivedSet :=
