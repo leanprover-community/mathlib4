@@ -76,6 +76,8 @@ avoided by this definition. Probably you want to use `IsBigO` instead of this re
 /-- Definition of `IsBigOWith`. We record it in a lemma as `IsBigOWith` is not exposed. -/
 theorem isBigOWith_iff : IsBigOWith c l f g ↔ ∀ᶠ x in l, ‖f x‖ ≤ c * ‖g x‖ := .rfl
 
+@[deprecated (since := "2026-10-20")] alias IsBigOWith_def := isBigOWith_iff
+
 alias ⟨IsBigOWith.bound, IsBigOWith.of_bound⟩ := isBigOWith_iff
 
 /-- The Landau notation `f =O[l] g` where `f` and `g` are two functions on a type `α` and `l` is
@@ -91,6 +93,8 @@ notation:100 f " =O[" l "] " g:100 => IsBigO l f g
 /-- Definition of `IsBigO` in terms of `IsBigOWith`. We record it in a lemma as `IsBigO` is
 not exposed. -/
 theorem isBigO_iff_isBigOWith : f =O[l] g ↔ ∃ c : ℝ, IsBigOWith c l f g := .rfl
+
+@[deprecated (since := "2026-10-20")] alias IsBigO_def := isBigO_iff_isBigOWith
 
 /-- Definition of `IsBigO` in terms of filters. -/
 theorem isBigO_iff : f =O[l] g ↔ ∃ c : ℝ, ∀ᶠ x in l, ‖f x‖ ≤ c * ‖g x‖ := .rfl
@@ -173,6 +177,8 @@ notation:100 f " =o[" l "] " g:100 => IsLittleO l f g
 
 /-- Definition of `IsLittleO` in terms of `IsBigOWith`. -/
 theorem isLittleO_iff_forall_isBigOWith : f =o[l] g ↔ ∀ ⦃c : ℝ⦄, 0 < c → IsBigOWith c l f g := .rfl
+
+@[deprecated (since := "2026-10-20")] alias IsLittleO_def := isLittleO_iff_forall_isBigOWith
 
 alias ⟨IsLittleO.forall_isBigOWith, IsLittleO.of_isBigOWith⟩ := isLittleO_iff_forall_isBigOWith
 

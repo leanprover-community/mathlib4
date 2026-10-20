@@ -76,7 +76,7 @@ variable (f : R →+* S)
 
 @[simp]
 theorem coeff_map (n : ℕ) : coeff (p.map f) n = f (coeff p n) := by
-  rw [map, eval₂_def, coeff_sum, sum]
+  rw [map, eval₂_eq_sum, coeff_sum, sum]
   simp_all
 
 lemma coeff_map_eq_comp (p : R[X]) (f : R →+* S) : (p.map f).coeff = f ∘ p.coeff := by

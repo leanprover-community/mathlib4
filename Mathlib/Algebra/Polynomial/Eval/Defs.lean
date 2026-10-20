@@ -58,6 +58,8 @@ variable (f : R →+* S) (x : S)
 
 theorem eval₂_eq_sum {f : R →+* S} {x : S} : p.eval₂ f x = p.sum fun e a => f a * x ^ e := (rfl)
 
+@[deprecated (since := "2026-10-20")] alias eval₂_def := eval₂_eq_sum
+
 theorem eval₂_congr {R S : Type*} [Semiring R] [Semiring S] {f g : R →+* S} {s t : S}
     {φ ψ : R[X]} : f = g → s = t → φ = ψ → eval₂ f s φ = eval₂ g t ψ := by
   rintro rfl rfl rfl; rfl
@@ -379,7 +381,7 @@ theorem comp_eq_sum_left : p.comp q = p.sum fun e a => C a * q ^ e := by rw [com
 
 @[simp]
 theorem comp_X : p.comp X = p := by
-  simp only [comp, eval₂, C_mul_X_pow_eq_monomial]
+  simp only [comp, eval₂_eq_sum, C_mul_X_pow_eq_monomial]
   exact sum_monomial_eq _
 
 @[simp]

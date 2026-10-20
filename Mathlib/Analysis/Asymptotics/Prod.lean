@@ -47,10 +47,10 @@ theorem isBigO_snd_prod : g' =O[l] fun x => (f' x, g' x) :=
   isBigOWith_snd_prod.isBigO
 
 theorem isBigO_fst_prod' {f' : α → E' × F'} : (fun x => (f' x).1) =O[l] f' := by
-  simpa [IsBigO_def, IsBigOWith_def] using! isBigO_fst_prod (E' := E') (F' := F')
+  simpa [isBigO_iff] using! isBigO_fst_prod (E' := E') (F' := F')
 
 theorem isBigO_snd_prod' {f' : α → E' × F'} : (fun x => (f' x).2) =O[l] f' := by
-  simpa [IsBigO_def, IsBigOWith_def] using! isBigO_snd_prod (E' := E') (F' := F')
+  simpa [isBigO_iff] using! isBigO_snd_prod (E' := E') (F' := F')
 
 section
 
