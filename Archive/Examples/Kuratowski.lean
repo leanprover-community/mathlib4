@@ -110,7 +110,7 @@ theorem nodup_theClosedSix_theFourteen_iff : (theClosedSix s).Nodup ↔ TheSixIn
   · intro h -- Introduce `TheSixIneq` as an assumption.
     repeat obtain ⟨_, h⟩ := h -- Split the hypothesis into six different inequalities.
     repeat refine .symm (.intro ?_ ?_) -- Split the goal into 15 inequalities.
-    any_goals
+    all_goals
       rw [ne_comm]
       try assumption
     -- Solve trivial goals (the six inequalities contained in `TheSixIneq`).
