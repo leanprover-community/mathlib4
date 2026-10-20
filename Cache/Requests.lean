@@ -929,26 +929,17 @@ def downloadFiles
   else
     pure none
 
-  -- Walk the locations in trust order. After each round, drop files that
-  -- succeeded so the next round only retries genuine misses. Misses surface
-  -- as the "not found" hint keyed on `remaining`.
-  let mut remaining := hashMap
-  -- Decompression pipeline state, carried from each round into the next (see
-  -- `DecompState`); `finalizeDecomp` below drains what the last round leaves.
-  let mut decompState : DecompState := {}
-  -- Hard transfer failures (not 404 misses) that no location served get one
-  -- more pass over the chain, in a fresh `curl`. The retries inside one `curl`
-  -- share its connections, and a reset pool stalls all of them while the
-  -- run's other transfers complete. The failures left after that pass drive
-  -- the exit code.
-  let mut failedHashes : Std.HashSet UInt64 := ∅
-  let mut retried := false
-  -- The files the current pass attempts: everything, then the hard failures.
+  -- Keep only the current batch; the result needs only the total missing count.
   let mut batch := hashMap
-  -- For the `--unsafe` summary: how many files each scoped (forks) round supplied,
-  -- attributed by the drop in `batch` across that round.
-  let mut scopeServed : Array (String × Nat) := #[]
-  repeat
+  let mut missing := hashMap.size
+  let mut decompState : DecompState := {}
+  let mut scopeServed : Std.HashMap String Nat := ∅
+  -- Try all files, then retry only unresolved hard failures in a fresh curl.
+  for retry in [false, true] do
+    if batch.isEmpty then break
+    if retry then
+      IO.println s!"Retrying {batch.size} failed download(s)"
+    let mut failedHashes : Std.HashSet UInt64 := ∅
     for location in locations do
       if batch.isEmpty then break
       let scopeNote := match location.sha? with | some s => s!" (scope {s})" | none => ""
@@ -957,36 +948,28 @@ def downloadFiles
       let before := batch.size
       let (s, served) ← downloadFilesFromLocation location batch parallel
         decompConfig decompState
-      -- Carry the decompression pipeline into the next round and the drain
-      -- below: files left behind here are never decompressed. Drop the files
-      -- this round served so the next location only retries genuine misses,
-      -- regardless of what is already on disk.
       decompState := s.decomp
       failedHashes := failedHashes.insertMany s.failedHashes
       batch := batch.filter fun _ hash => !served.contains hash
-      remaining := remaining.filter fun _ hash => !served.contains hash
-      if unsafeMode then
+      let fetched := before - batch.size
+      missing := missing - fetched
+      if unsafeMode && fetched > 0 then
         if let some sha := location.sha? then
-          scopeServed := scopeServed.push (sha, before - batch.size)
+          scopeServed := scopeServed.insert sha (scopeServed.getD sha 0 + fetched)
     batch := batch.filter fun _ hash => failedHashes.contains hash
-    if retried || batch.isEmpty then break
-    retried := true
-    failedHashes := ∅
-    IO.println s!"Retrying {batch.size} failed download(s)"
   let downloadFailed := batch.size
 
   -- `--unsafe`: report which fork commits actually contributed files, so the
   -- user knows whose artifacts they ended up trusting.
   if unsafeMode then
     if scopeServed.isEmpty then
-      IO.eprintln "--unsafe: no fork scopes were needed; \
-        all files were served by other locations."
+      IO.eprintln "--unsafe: no fork scopes supplied files."
     else
       IO.eprintln s!"--unsafe: cache served from {scopeServed.size} fork commit scope(s):"
       for (sha, n) in scopeServed do
         IO.eprintln s!"  {sha} → {n} file(s)"
-      if remaining.size > 0 then
-        IO.eprintln s!"  {remaining.size} file(s) still missing after all scopes."
+      if missing > 0 then
+        IO.eprintln s!"  {missing} file(s) still missing after all scopes."
 
   -- Drain the decompression pipeline accumulated across all rounds.
   if let some config := decompConfig then
@@ -998,7 +981,7 @@ def downloadFiles
 
   if downloadFailed > 0 then
     IO.println s!"{downloadFailed} download(s) failed"
-  return { failed := downloadFailed, missing := remaining.size }
+  return { failed := downloadFailed, missing }
 
 /-- Check if the project's `lean-toolchain` file matches mathlib's.
 Print and error and exit the process with error code 1 otherwise. -/
