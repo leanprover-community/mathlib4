@@ -62,7 +62,7 @@ def is_annotated(lines: list[str], idx: int) -> bool:
     return False
 
 
-def lakefile_pattern(option: str, value: str = "false") -> re.Pattern:
+def lakefile_pattern(option: str, value: str) -> re.Pattern:
     """Match lakefile entries for an option."""
     escaped = re.escape(option)
     escaped_val = re.escape(value)
