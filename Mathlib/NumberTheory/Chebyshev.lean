@@ -852,7 +852,7 @@ theorem pi_ge' {x : ℝ} (hx : 1 < x) :
 
 lemma pi_ge_of_four_le {n : ℕ} (hn : 4 ≤ n) : n * log 2 / log n ≤ π n := by
   rw [div_le_iff₀ (log_pos (mod_cast (by lia)))]
-  obtain hn' | hn' := le_or_gt 7 n
+  by_cases! hn' : 7 ≤ n
   · grw [psi_ge_of_seven_le hn', ← psi_le_primeCounting_mul_log]
   rw [← exp_le_exp]
   iterate 2 rw [mul_comm, exp_mul, exp_log (by positivity)]
