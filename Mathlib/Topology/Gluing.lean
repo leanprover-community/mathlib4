@@ -360,7 +360,7 @@ variable {α : Type u} [TopologicalSpace α] {J : Type u} (U : J → Opens α)
 def ofOpenSubsets : TopCat.GlueData.{u} :=
   mk'.{u}
     { J
-      U := fun i => (Opens.toTopCat <| TopCat.of α).obj (U i)
+      U := fun i => (Opens.toTopCat ↧α).obj (U i)
       V := fun _ j => (Opens.map <| Opens.inclusion' _).obj (U j)
       t := fun i j => ofHom ⟨fun x => ⟨⟨x.1.1, x.2⟩, x.1.2⟩, by fun_prop⟩
       V_id := fun i => by simp
@@ -372,7 +372,7 @@ def ofOpenSubsets : TopCat.GlueData.{u} :=
 This map is an open embedding (`fromOpenSubsetsGlue_isOpenEmbedding`),
 and its range is `⋃ i, (U i : Set α)` (`range_fromOpenSubsetsGlue`).
 -/
-def fromOpenSubsetsGlue : (ofOpenSubsets U).toGlueData.glued ⟶ TopCat.of α :=
+def fromOpenSubsetsGlue : (ofOpenSubsets U).toGlueData.glued ⟶ ↧α :=
   Multicoequalizer.desc _ _ (fun _ => Opens.inclusion' _) (by rintro ⟨i, j⟩; ext x; rfl)
 
 @[simp, elementwise nosimp]
@@ -397,11 +397,11 @@ theorem fromOpenSubsetsGlue_isOpenMap : IsOpenMap (fromOpenSubsetsGlue U) := by
   rw [isOpen_iff_forall_mem_open]
   rintro _ ⟨x, hx, rfl⟩
   obtain ⟨i, ⟨x, hx'⟩, rfl⟩ := (ofOpenSubsets U).ι_jointly_surjective x
-  use fromOpenSubsetsGlue U '' s ∩ Set.range (@Opens.inclusion' (TopCat.of α) (U i))
+  use fromOpenSubsetsGlue U '' s ∩ Set.range (@Opens.inclusion' ↧α (U i))
   use Set.inter_subset_left
   constructor
   · rw [← Set.image_preimage_eq_inter_range]
-    apply (Opens.isOpenEmbedding (X := TopCat.of α) (U i)).isOpenMap
+    apply (Opens.isOpenEmbedding (X := ↧α) (U i)).isOpenMap
     convert! hs i using 1
     rw [← ι_fromOpenSubsetsGlue, coe_comp, Set.preimage_comp]
     congr! 1

@@ -70,8 +70,8 @@ theorem measure_preimage_smul_le (c : G) (s : Set α) : μ ((c • ·) ⁻¹' s)
 
 /-- See also `smul_ae`. -/
 @[to_additive /-- See also `vadd_ae`. -/]
-theorem tendsto_smul_ae (c : G) : Filter.Tendsto (c • ·) (ae μ) (ae μ) := fun _s hs ↦
-  eq_bot_mono (measure_preimage_smul_le μ c _) hs
+theorem tendsto_smul_ae (c : G) : Filter.Tendsto (c • ·) (ae μ) (ae μ) := fun s hs ↦
+  eq_bot_mono (measure_preimage_smul_le μ c sᶜ) hs
 
 variable {μ}
 

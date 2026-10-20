@@ -76,6 +76,7 @@ lemma toCon_injective : Injective fun c : RingCon R ↦ c.toCon := fun c d ↦ b
 @[simp] lemma toCon_inj : c.toCon = d.toCon ↔ c = d := toCon_injective.eq_iff
 
 /-- A coercion from a congruence relation to its underlying binary relation. -/
+@[macro_inline]
 instance : FunLike (RingCon R) R (R → Prop) where
   coe c := c.r
   coe_injective := DFunLike.coe_injective.comp toCon_injective

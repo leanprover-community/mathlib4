@@ -176,7 +176,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 /-- The prelax functor from `Cat` to `Cat` defined with `WithTerminal`. -/
 @[simps]
 def prelaxfunctor : PrelaxFunctor Cat Cat where
-  obj C := Cat.of (WithTerminal C)
+  obj C := ↧(WithTerminal C)
   map F := (map F.toFunctor).toCatHom
   map₂ f := (map₂ f.toNatTrans).toCatHom₂
   map₂_id := by
@@ -349,7 +349,7 @@ def mkCommaObject (F : WithTerminal C ⥤ D) : Comma (𝟭 (C ⥤ D)) (Functor.c
   right := F.obj .star
   left := (incl ⋙ F)
   hom :=
-    { app x := F.map (starTerminal.from (.of x))
+    { app x := F.map (starTerminal.from ↧x)
       naturality x y f := by
         dsimp
         rw [Category.comp_id, ← F.map_comp]
@@ -437,7 +437,7 @@ set_option backward.privateInPublic true in
 private def widePullbackShapeEquivObj {J : Type*} :
     WidePullbackShape J ≃ WithTerminal (Discrete J) where
   toFun
-  | .some x => .of <| .mk x
+  | .some x => ↧(.mk x)
   | .none => .star
   invFun
   | .of x => .some <| Discrete.as x
@@ -591,7 +591,7 @@ def map₂ {D : Type*} [Category* D] {F G : C ⥤ D} (η : F ⟶ G) : map F ⟶ 
 /-- The prelax functor from `Cat` to `Cat` defined with `WithInitial`. -/
 @[simps]
 def prelaxfunctor : PrelaxFunctor Cat Cat where
-  obj C := Cat.of (WithInitial C)
+  obj C := ↧(WithInitial C)
   map F := (map F.toFunctor).toCatHom
   map₂ f := (map₂ f.toNatTrans).toCatHom₂
   map₂_id := by
@@ -765,7 +765,7 @@ def mkCommaObject (F : WithInitial C ⥤ D) : Comma (Functor.const C) (𝟭 (C �
   left := F.obj .star
   right := (incl ⋙ F)
   hom :=
-    { app x := F.map (starInitial.to (.of x))
+    { app x := F.map (starInitial.to ↧x)
       naturality x y f := by
         dsimp
         rw [Category.id_comp, ← F.map_comp]
@@ -847,7 +847,7 @@ open Opposite in
 def WithTerminal.opEquiv : (WithTerminal C)ᵒᵖ ≌ WithInitial Cᵒᵖ where
   functor :=
     { obj := fun ⟨x⟩ ↦ match x with
-      | of x => .of <| op x
+      | of x => ↧(op x)
       | star => .star
       map := fun {x y} ⟨f⟩ ↦
         match x, y, f with
@@ -911,7 +911,7 @@ def WithInitial.opEquiv : (WithInitial C)ᵒᵖ ≌ WithTerminal Cᵒᵖ where
   functor :=
     { obj := fun ⟨x⟩ ↦
         match x with
-        | of x => .of <| op x
+        | of x => ↧(op x)
         | star => .star
       map := fun {x y} ⟨f⟩ ↦
         match x, y, f with

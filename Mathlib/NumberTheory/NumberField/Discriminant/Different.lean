@@ -126,7 +126,6 @@ theorem discr_dvd_discr [Algebra K L] :
     mul_comm _ (discr K ^ _), mul_assoc]
   exact Int.dvd_mul_right _ _
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Let `K₁` and `K₂` be two number fields and assume that `K₁/ℚ` is Galois. If `discr K₁` and
 `discr K₂` are coprime, then they are linear disjoint over `ℚ`.

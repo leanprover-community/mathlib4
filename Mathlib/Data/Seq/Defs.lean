@@ -676,8 +676,7 @@ def map (f : α → β) : Seq α → Seq β
     ⟨s.map (Option.map f), fun {n} => by
       dsimp [Stream'.map, Stream'.get]
       rcases e : s n with - | e <;> intro
-      · rw [al e]
-        assumption
+      · rwa [al e]
       · contradiction⟩
 
 /-- Flatten a sequence of sequences. (It is required that the

@@ -119,6 +119,7 @@ lemma toMonoidWithZeroHom_injective :
     (toMonoidWithZeroHom : Valuation R Γ₀ → R →*₀ Γ₀).Injective := by
   rintro ⟨f, _⟩ g hfg; congr!
 
+@[macro_inline]
 instance : FunLike (Valuation R Γ₀) R Γ₀ where
   coe f := f.toMonoidWithZeroHom
   coe_injective := DFunLike.coe_injective.comp toMonoidWithZeroHom_injective
@@ -1090,6 +1091,7 @@ section Monoid
 variable [Ring R] [LinearOrderedAddCommMonoidWithTop Γ₀] [LinearOrderedAddCommMonoidWithTop Γ'₀]
   (v : AddValuation R Γ₀)
 
+@[macro_inline]
 instance : FunLike (AddValuation R Γ₀) R Γ₀ :=
   inferInstanceAs <| FunLike (Valuation R <| Multiplicative Γ₀ᵒᵈ) R <| Multiplicative Γ₀ᵒᵈ
 

@@ -141,14 +141,12 @@ abbrev pushoutInl (F : WalkingParallelPair ⥤ C) :
     F.obj WalkingParallelPair.one ⟶ constructCoequalizer F :=
   pushout.inl _ _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem pushoutInl_eq_pushout_inr (F : WalkingParallelPair ⥤ C) :
     pushoutInl F = pushout.inr _ _ := by
   convert!
       (whisker_eq Limits.coprod.inl pushout.condition : (_ : F.obj _ ⟶ constructCoequalizer _) = _)
     <;> simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Define the equalizing cocone -/
 abbrev coequalizerCocone (F : WalkingParallelPair ⥤ C) : Cocone F :=
   Cocone.ofCofork

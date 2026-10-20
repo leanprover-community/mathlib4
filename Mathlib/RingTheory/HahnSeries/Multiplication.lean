@@ -540,7 +540,7 @@ theorem orderTop_mul (x y : R⟦Γ⟧) [NoZeroDivisors R] :
 
 theorem orderTop_add_le_mul {x y : R⟦Γ⟧} : x.orderTop + y.orderTop ≤ (x * y).orderTop := by
   rw [← smul_eq_mul]
-  exact HahnModule.orderTop_vAdd_le_orderTop_smul fun i j ↦ rfl
+  exact HahnModule.orderTop_vAdd_le_orderTop_smul fun i j : Γ ↦ rfl
 
 theorem order_mul_of_ne_zero {x y : R⟦Γ⟧}
     (h : x.leadingCoeff * y.leadingCoeff ≠ 0) : (x * y).order = x.order + y.order := by

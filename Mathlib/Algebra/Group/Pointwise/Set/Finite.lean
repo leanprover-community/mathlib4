@@ -91,14 +91,15 @@ theorem Infinite.of_smul_set : (a • s).Infinite → s.Infinite :=
 
 end HasSMulSet
 
-section Vsub
+section SDiv
 
-variable [VSub α β] {s t : Set β}
+variable [SDiv α β] {s t : Set β}
 
-theorem Finite.vsub (hs : s.Finite) (ht : t.Finite) : Set.Finite (s -ᵥ t) :=
+@[to_additive]
+theorem Finite.sdiv (hs : s.Finite) (ht : t.Finite) : Set.Finite (s /ₛ t) :=
   hs.image2 _ ht
 
-end Vsub
+end SDiv
 
 section Cancel
 

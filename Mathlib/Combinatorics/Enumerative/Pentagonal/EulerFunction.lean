@@ -47,8 +47,8 @@ lemma pow_mul_prod_bound (k n : ℕ) {x : R} (hx : ‖x‖ < 1) :
   refine mul_le_mul_of_nonneg_left ?_ (by simp)
   trans ∏ i ∈ Ico (k + 1) (n + 1 + (k + 1)), (1 + ‖x‖ ^ i)
   · rw [prod_Ico_eq_prod_range, Nat.add_sub_cancel]
-    refine prod_le_prod (by simp) fun _ _ ↦ (norm_sub_le _ _).trans ?_
-    grind [norm_pow_le, norm_one]
+    gcongr
+    grw [norm_sub_le, norm_one, norm_pow_le, add_right_comm]
   have : Multipliable (1 + ‖x‖ ^ ·) := multipliable_one_add_of_summable (by simpa using hx)
   exact this.prod_le_tprod_of_nonneg (fun i _ ↦ by positivity) (by simp)
 

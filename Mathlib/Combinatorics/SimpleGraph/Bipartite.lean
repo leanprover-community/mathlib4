@@ -250,6 +250,10 @@ theorem isBipartiteWith_sum_degrees_eq [G.LocallyFinite] (h : G.IsBipartiteWith 
     sum_attach t fun v ↦ #(bipartiteBelow G.Adj s v)]
   exact sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow G.Adj
 
+protected theorem IsBipartiteWith.completeBipartiteGraph (V W : Type*) :
+    (completeBipartiteGraph V W).IsBipartiteWith (.range .inl) (.range .inr) := by
+  grind [IsBipartiteWith]
+
 variable [Fintype V] [DecidableRel G.Adj]
 
 lemma isBipartiteWith_sum_degrees_eq_twice_card_edges [DecidableEq V] (h : G.IsBipartiteWith s t) :
@@ -315,6 +319,14 @@ theorem chromaticNumber_eq_two_iff : G.chromaticNumber = 2 ↔ G.IsBipartite ∧
    fun ⟨h₁, h₂⟩ ↦ ENat.eq_of_forall_natCast_le_iff fun _ ↦
       ⟨fun h ↦ h.trans <| chromaticNumber_le_two_iff_isBipartite.mpr h₁,
        fun h ↦ h.trans <| two_le_chromaticNumber_iff_ne_bot.mpr h₂⟩⟩
+
+variable (V) in
+theorem IsBipartite.bot : (⊥ : SimpleGraph V).IsBipartite :=
+  ⟨0, by simp⟩
+
+theorem IsBipartite.completeBipartiteGraph (V W : Type*) :
+    (completeBipartiteGraph V W).IsBipartite :=
+  IsBipartiteWith.completeBipartiteGraph V W |>.isBipartite
 
 end IsBipartite
 
@@ -477,7 +489,7 @@ theorem edgeSet_completeBipartiteGraph :
     .range (fun x : W₁ × W₂ ↦ s(.inl x.1, .inr x.2)) := by
   refine Set.ext <| Sym2.ind fun u v ↦ ⟨fun h ↦ ?_, fun ⟨⟨a, b⟩, z⟩ ↦ ?_⟩
   · cases u <;> cases v <;> simp_all
-  · grind [completeBipartiteGraph_adj, mem_edgeSet]
+  · grind [mem_edgeSet]
 
 theorem encard_edgeSet_completeBipartiteGraph :
     (completeBipartiteGraph W₁ W₂).edgeSet.encard = ENat.card W₁ * ENat.card W₂ := by

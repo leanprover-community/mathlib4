@@ -242,10 +242,9 @@ lemma agm_pos (hx : 0 < x) (hy : 0 < y) : 0 < agm x y := (lt_min hx hy).trans_le
 
 lemma agm_eq_agm_agmSequences_fst_agmSequences_snd (n : ℕ) :
     agm x y = agm (agmSequences x y n).1 (agmSequences x y n).2 := by
-  refine tendsto_nhds_unique ?_ tendsto_agmSequences_snd_agm
   have key := @tendsto_agmSequences_snd_agm x y
   rw [← tendsto_add_atTop_iff_nat (n + 1)] at key
-  convert! key using 2 with m
+  refine tendsto_nhds_unique_of_forall key tendsto_agmSequences_snd_agm fun m ↦ ?_
   simp_rw [agmSequences, Prod.mk.eta, ← iterate_add_apply, add_right_comm]
 
 lemma agm_eq_agm_gm_am : agm x y = agm (sqrt (x * y)) ((x + y) / 2) := by

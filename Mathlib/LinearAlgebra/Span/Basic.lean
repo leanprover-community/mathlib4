@@ -347,7 +347,7 @@ theorem iSup_induction' {ι : Sort*} (p : ι → Submodule R M) {motive : ∀ x,
 
 theorem singleton_span_isCompactElement (x : M) :
     IsCompactElement (span R {x} : Submodule R M) := by
-  rw [CompleteLattice.isCompactElement_iff_le_of_directed_sSup_le]
+  rw [isCompactElement_iff_le_of_directed_sSup_le]
   intro d hemp hdir hsup
   have : x ∈ (sSup d) := (SetLike.le_def.mp hsup) (mem_span_singleton_self x)
   obtain ⟨y, ⟨hyd, hxy⟩⟩ := (mem_sSup_of_directed hemp hdir).mp this
@@ -359,8 +359,7 @@ theorem finset_span_isCompactElement (S : Finset M) :
   rw [span_eq_iSup_of_singleton_spans]
   simp only [Finset.mem_coe]
   rw [← Finset.sup_eq_iSup]
-  exact
-    CompleteLattice.isCompactElement_finsetSup S fun x _ => singleton_span_isCompactElement x
+  exact isCompactElement_finsetSup S fun x _ => singleton_span_isCompactElement x
 
 /-- The span of a finite subset is compact in the lattice of submodules. -/
 theorem finite_span_isCompactElement (S : Set M) (h : S.Finite) :
@@ -417,6 +416,15 @@ theorem prod_sup_prod : prod p q₁ ⊔ prod p' q₁' = prod (p ⊔ p') (q₁ �
   rcases mem_sup.1 hxx with ⟨x, hx, x', hx', rfl⟩
   rcases mem_sup.1 hyy with ⟨y, hy, y', hy', rfl⟩
   exact mem_sup.2 ⟨(x, y), ⟨hx, hy⟩, (x', y'), ⟨hx', hy'⟩, rfl⟩
+
+/-- The product submodule `p.prod q` is linearly equivalent to the product `p × q` of the
+submodules. -/
+@[simps]
+def prodEquiv (p : Submodule R M) (q : Submodule R M') : p.prod q ≃ₗ[R] p × q where
+  toFun x := (⟨x.1.1, (mem_prod.1 x.2).1⟩, ⟨x.1.2, (mem_prod.1 x.2).2⟩)
+  invFun y := ⟨(y.1.1, y.2.1), mem_prod.2 ⟨y.1.2, y.2.2⟩⟩
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
 
 /-- If a bilinear map takes values in a submodule along two sets, then the same is true along
 the span of these sets. -/

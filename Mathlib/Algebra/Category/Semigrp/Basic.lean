@@ -9,6 +9,7 @@ public import Mathlib.Algebra.PEmptyInstances
 public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+public import Mathlib.CategoryTheory.ConcreteCategory.Notation
 
 /-!
 # Category instances for `Mul`, `Add`, `Semigroup` and `AddSemigroup`
@@ -67,6 +68,20 @@ attribute [coe] AddMagmaCat.carrier MagmaCat.carrier
 abbrev of (M : Type u) [Mul M] : MagmaCat := ⟨M⟩
 
 end MagmaCat
+
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prints `AddMagmaCat.of X` as `↧X`. -/
+@[app_delab AddMagmaCat.of]
+meta def AddMagmaCat.delabOf : Delab := CategoryTheory.delabOf
+
+/-- This prints `MagmaCat.of X` as `↧X`. -/
+@[app_delab MagmaCat.of]
+meta def MagmaCat.delabOf : Delab := CategoryTheory.delabOf
+
+end Notation
 
 /-- The type of morphisms in `AddMagmaCat R`. -/
 @[ext]
@@ -187,7 +202,7 @@ lemma mulEquiv_coe_eq {X Y : Type _} [Mul X] [Mul Y] (e : X ≃* Y) :
 
 @[to_additive]
 instance : Inhabited MagmaCat :=
-  ⟨MagmaCat.of PEmpty⟩
+  ⟨↧PEmpty⟩
 
 end MagmaCat
 
@@ -222,6 +237,20 @@ attribute [coe] AddSemigrp.carrier Semigrp.carrier
 abbrev of (M : Type u) [Semigroup M] : Semigrp := ⟨M⟩
 
 end Semigrp
+
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prints `AddSemigrp.of X` as `↧X`. -/
+@[app_delab AddSemigrp.of]
+meta def AddSemigrp.delabOf : Delab := CategoryTheory.delabOf
+
+/-- This prints `Semigrp.of X` as `↧X`. -/
+@[app_delab Semigrp.of]
+meta def Semigrp.delabOf : Delab := CategoryTheory.delabOf
+
+end Notation
 
 /-- The type of morphisms in `AddSemigrp R`. -/
 @[ext]
@@ -343,12 +372,12 @@ lemma mulEquiv_coe_eq {X Y : Type _} [Semigroup X] [Semigroup Y] (e : X ≃* Y) 
 
 @[to_additive]
 instance : Inhabited Semigrp :=
-  ⟨Semigrp.of PEmpty⟩
+  ⟨↧PEmpty⟩
 
 @[to_additive]
 instance hasForgetToMagmaCat : HasForget₂ Semigrp MagmaCat where
   forget₂ :=
-    { obj R := MagmaCat.of R
+    { obj R := ↧R
       map f := MagmaCat.ofHom f.hom }
 
 end Semigrp

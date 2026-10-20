@@ -128,13 +128,10 @@ class CompletelyDistribLattice (α : Type u) extends CompleteLattice α, Biheyti
   protected iInf_iSup_eq {ι : Type u} {κ : ι → Type u} (f : ∀ a, κ a → α) :
     (⨅ a, ⨆ b, f a b) = ⨆ g : ∀ a, κ a, ⨅ a, f a (g a)
 
+@[to_dual iSup_iInf_le]
 theorem le_iInf_iSup [CompleteLattice α] {f : ∀ a, κ a → α} :
     (⨆ g : ∀ a, κ a, ⨅ a, f a (g a)) ≤ ⨅ a, ⨆ b, f a b :=
   iSup_le fun _ => le_iInf fun a => le_trans (iInf_le _ a) (le_iSup _ _)
-
-lemma iSup_iInf_le [CompleteLattice α] {f : ∀ a, κ a → α} :
-    ⨆ a, ⨅ b, f a b ≤ ⨅ g : ∀ a, κ a, ⨆ a, f a (g a) :=
-  le_iInf_iSup (α := αᵒᵈ)
 
 namespace Order.Frame.MinimalAxioms
 variable (s : Set α) (a b : α)

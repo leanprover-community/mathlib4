@@ -57,6 +57,7 @@ def x' : Id Nat := clean% by dsimp [Id]; exact 1
 -- def x' : Id Nat := 1
 ```
 -/
+@[deprecated "`clean%` is not used/needed anymore" (since := "2026-09-03")]
 syntax (name := cleanStx) "clean% " term : term
 
 @[term_elab cleanStx, inherit_doc cleanStx]
@@ -68,6 +69,7 @@ def elabClean : Term.TermElab := fun stx expectedType? =>
   | _ => throwUnsupportedSyntax
 
 /-- (Deprecated) `clean t` is a macro for `exact clean% t`. -/
+@[deprecated "`clean' is not used/needed anymore" (since := "2026-09-03")]
 macro "clean " t:term : tactic => `(tactic| exact clean% $t)
 
 end Mathlib.Tactic

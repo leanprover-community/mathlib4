@@ -53,7 +53,7 @@ theorem exists_hasEigenvalue_of_genEigenspace_eq_top [Nontrivial M] {f : End R M
     (hf : ⨆ μ, f.genEigenspace μ k = ⊤) :
     ∃ μ, f.HasEigenvalue μ := by
   suffices ∃ μ, f.HasUnifEigenvalue μ k by
-    peel this with μ hμ
+    gconvert this with μ hμ
     exact HasUnifEigenvalue.lt zero_lt_one hμ
   simp [HasUnifEigenvalue, ← not_forall, ← iSup_eq_bot, hf]
 

@@ -171,8 +171,7 @@ instance EssFiniteType.baseChange [h : EssFiniteType R S] : EssFiniteType T (T �
   obtain ⟨σ, hσ⟩ := h
   use σ.image Algebra.TensorProduct.includeRight
   intro s
-  induction s using TensorProduct.induction_on with
-  | zero => exact ⟨1, one_mem _, isUnit_one, by simp⟩
+  induction s using TensorProduct.inductionOn with
   | tmul x y =>
     obtain ⟨t, h₁, h₂, h₃⟩ := hσ y
     have H (x : S) (hx : x ∈ Algebra.adjoin R (σ : Set S)) :

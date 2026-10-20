@@ -6,8 +6,9 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Algebra.Module.Projective
-public import Mathlib.LinearAlgebra.Dimension.DivisionRing
 public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
+public import Mathlib.LinearAlgebra.Dimension.RankNullity
 
 /-!
 # The rank of a linear map

@@ -13,6 +13,7 @@ public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Data.List.Basic
 public import Mathlib.Tactic.ToDual
+public import Mathlib.Util.CompileInductive
 
 /-!
 # Free monoid over a given alphabet

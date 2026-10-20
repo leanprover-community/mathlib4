@@ -36,7 +36,6 @@ variable {X₁ Y₁ : C₁} {f₁ : X₁ ⟶ Y₁} {c₁ : CokernelCofork f₁} 
   [(F.obj c₁.pt).PreservesZeroMorphisms]
   [F.PreservesZeroMorphisms]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (c₁ c₂) in
 /-- Let `c₁` (resp. `c₂`) be a cokernel cofork for a morphism `f₁ : X₁ ⟶ Y₁`
 in a category `C₁` (resp. `f₂ : X₂ ⟶ Y₂` in `C₂`). Given a bifunctor `F : C₁ ⥤ C₂ ⥤ C`,

@@ -411,7 +411,6 @@ end reflective
 
 section Initial
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem hasStrictInitial_of_isUniversal [HasInitial C]
     (H : IsUniversalColimit (BinaryCofan.mk (𝟙 (⊥_ C)) (𝟙 (⊥_ C)))) : HasStrictInitialObjects C :=
@@ -517,7 +516,6 @@ theorem BinaryCofan.isVanKampen_mk {X Y : C} (c : BinaryCofan X Y)
     exact (BinaryCofan.mk _ _).isColimitCompRightIso e₂.hom
       ((BinaryCofan.mk _ _).isColimitCompLeftIso e₁.hom (h₂ f))
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem BinaryCofan.mono_inr_of_isVanKampen [HasInitial C] {X Y : C} {c : BinaryCofan X Y}
     (h : IsVanKampenColimit c) : Mono c.inr := by
@@ -529,7 +527,6 @@ theorem BinaryCofan.mono_inr_of_isVanKampen [HasInitial C] {X Y : C} {c : Binary
       dsimp
       infer_instance)).some
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem BinaryCofan.isPullback_initial_to_of_isVanKampen [HasInitial C] {c : BinaryCofan X Y}
     (h : IsVanKampenColimit c) : IsPullback (initial.to _) (initial.to _) c.inl c.inr := by
@@ -605,7 +602,6 @@ theorem isUniversalColimit_extendCofan {n : ℕ} (f : Fin (n + 1) → C)
   · simp only [Fin.cases_succ]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 theorem isVanKampenColimit_extendCofan {n : ℕ} (f : Fin (n + 1) → C)
     {c₁ : Cofan fun i : Fin n ↦ f i.succ} {c₂ : BinaryCofan (f 0) c₁.pt}
     (t₁ : IsVanKampenColimit c₁) (t₂ : IsVanKampenColimit c₂)

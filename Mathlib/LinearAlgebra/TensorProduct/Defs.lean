@@ -115,16 +115,6 @@ unsafe instance [Repr M] [Repr N] : Repr (M ⊗[R] N) where
       (if p > 65 then (Std.Format.bracketFill "(" · ")") else (.fill ·)) <|
         .joinSep parts f!" +{Std.Format.line}"
 
-@[elab_as_elim, induction_eliminator]
-protected theorem induction_on {motive : M ⊗[R] N → Prop} (z : M ⊗[R] N)
-    (zero : motive 0)
-    (tmul : ∀ x y, motive <| x ⊗ₜ[R] y)
-    (add : ∀ x y, motive x → motive y → motive (x + y)) : motive z :=
-  AddCon.induction_on z fun x =>
-    FreeAddMonoid.recOn x zero fun ⟨m, n⟩ y ih => by
-      rw [AddCon.coe_add]
-      exact add _ _ (tmul ..) ih
-
 variable (M) in
 @[simp]
 theorem zero_tmul (n : N) : (0 : M) ⊗ₜ[R] n = 0 :=
@@ -141,14 +131,30 @@ theorem tmul_zero (m : M) : m ⊗ₜ[R] (0 : N) = 0 :=
 theorem tmul_add (m : M) (n₁ n₂ : N) : m ⊗ₜ (n₁ + n₂) = m ⊗ₜ n₁ + m ⊗ₜ[R] n₂ :=
   Eq.symm <| Quotient.sound' <| AddConGen.Rel.of _ _ <| Eqv.of_add_right _ _ _
 
+@[elab_as_elim, induction_eliminator]
+protected theorem inductionOn {motive : M ⊗[R] N → Prop} (z : M ⊗[R] N)
+    (tmul : ∀ x y, motive <| x ⊗ₜ[R] y)
+    (add : ∀ x y, motive x → motive y → motive (x + y)) : motive z :=
+  AddCon.induction_on z fun x =>
+    FreeAddMonoid.recOn x (by simpa using! tmul 0 0) fun ⟨m, n⟩ y ih => by
+      simpa using! add _ _ (tmul ..) ih
+
+set_option linter.unusedVariables false
+@[deprecated "Use `TensorProduction.inductionOn` instead" (since := "2026-09-07")]
+protected theorem induction_on {motive : M ⊗[R] N → Prop} (z : M ⊗[R] N)
+    (zero : motive 0)
+    (tmul : ∀ x y, motive <| x ⊗ₜ[R] y)
+    (add : ∀ x y, motive x → motive y → motive (x + y)) : motive z :=
+  TensorProduct.inductionOn z tmul add
+
 instance uniqueLeft [Subsingleton M] : Unique (M ⊗[R] N) where
   default := 0
-  uniq z := z.induction_on rfl (fun x y ↦ by rw [Subsingleton.elim x 0, zero_tmul]) <| by
+  uniq z := z.inductionOn (fun x y ↦ by rw [Subsingleton.elim x 0, zero_tmul]) <| by
     rintro _ _ rfl rfl; apply add_zero
 
 instance uniqueRight [Subsingleton N] : Unique (M ⊗[R] N) where
   default := 0
-  uniq z := z.induction_on rfl (fun x y ↦ by rw [Subsingleton.elim y 0, tmul_zero]) <| by
+  uniq z := z.inductionOn (fun x y ↦ by rw [Subsingleton.elim y 0, tmul_zero]) <| by
     rintro _ _ rfl rfl; apply add_zero
 
 section
@@ -242,19 +248,19 @@ protected theorem smul_add (r : R') (x y : M ⊗[R] N) : r • (x + y) = r • x
 
 protected theorem zero_smul (x : M ⊗[R] N) : (0 : R'') • x = 0 :=
   have : ∀ (r : R'') (m : M) (n : N), r • m ⊗ₜ[R] n = (r • m) ⊗ₜ n := fun _ _ _ => rfl
-  x.induction_on (by rw [TensorProduct.smul_zero])
+  x.inductionOn
     (fun m n => by rw [this, zero_smul, zero_tmul]) fun x y ihx ihy => by
     rw [TensorProduct.smul_add, ihx, ihy, add_zero]
 
 protected theorem one_smul (x : M ⊗[R] N) : (1 : R') • x = x :=
   have : ∀ (r : R') (m : M) (n : N), r • m ⊗ₜ[R] n = (r • m) ⊗ₜ n := fun _ _ _ => rfl
-  x.induction_on (by rw [TensorProduct.smul_zero])
+  x.inductionOn
     (fun m n => by rw [this, one_smul])
     fun x y ihx ihy => by rw [TensorProduct.smul_add, ihx, ihy]
 
 protected theorem add_smul (r s : R'') (x : M ⊗[R] N) : (r + s) • x = r • x + s • x :=
   have : ∀ (r : R'') (m : M) (n : N), r • m ⊗ₜ[R] n = (r • m) ⊗ₜ n := fun _ _ _ => rfl
-  x.induction_on (by simp_rw [TensorProduct.smul_zero, add_zero])
+  x.inductionOn
     (fun m n => by simp_rw [this, add_smul, add_tmul]) fun x y ihx ihy => by
     simp_rw [TensorProduct.smul_add]
     rw [ihx, ihy, add_add_add_comm]
@@ -283,7 +289,7 @@ instance leftDistribMulAction : DistribMulAction R' (M ⊗[R] N) :=
   have : ∀ (r : R') (m : M) (n : N), r • m ⊗ₜ[R] n = (r • m) ⊗ₜ n := fun _ _ _ => rfl
   { smul_add := fun r x y => TensorProduct.smul_add r x y
     mul_smul := fun r s x =>
-      x.induction_on (by simp_rw [TensorProduct.smul_zero])
+      x.inductionOn
         (fun m n => by simp_rw [this, mul_smul]) fun x y ihx ihy => by
         simp_rw [TensorProduct.smul_add]
         rw [ihx, ihy]
@@ -317,7 +323,7 @@ instance : Module R (M ⊗[R] N) :=
 
 instance [Module R''ᵐᵒᵖ M] [IsCentralScalar R'' M] : IsCentralScalar R'' (M ⊗[R] N) where
   op_smul_eq_smul r x :=
-    x.induction_on (by rw [smul_zero, smul_zero])
+    x.inductionOn
       (fun x y => by rw [smul_tmul', smul_tmul', op_smul_eq_smul]) fun x y hx hy => by
       rw [smul_add, smul_add, hx, hy]
 
@@ -330,7 +336,7 @@ variable [SMulCommClass R R'₂ M]
 /-- `SMulCommClass R' R'₂ M` implies `SMulCommClass R' R'₂ (M ⊗[R] N)` -/
 instance smulCommClass_left [SMulCommClass R' R'₂ M] : SMulCommClass R' R'₂ (M ⊗[R] N) where
   smul_comm r' r'₂ x :=
-    TensorProduct.induction_on x (by simp_rw [TensorProduct.smul_zero])
+    TensorProduct.inductionOn x
       (fun m n => by simp_rw [smul_tmul', smul_comm]) fun x y ihx ihy => by
       simp_rw [TensorProduct.smul_add]; rw [ihx, ihy]
 
@@ -339,7 +345,7 @@ variable [SMul R'₂ R']
 /-- `IsScalarTower R'₂ R' M` implies `IsScalarTower R'₂ R' (M ⊗[R] N)` -/
 instance isScalarTower_left [IsScalarTower R'₂ R' M] : IsScalarTower R'₂ R' (M ⊗[R] N) :=
   ⟨fun s r x =>
-    x.induction_on (by simp)
+    x.inductionOn
       (fun m n => by rw [smul_tmul', smul_tmul', smul_tmul', smul_assoc]) fun x y ihx ihy => by
       rw [smul_add, smul_add, smul_add, ihx, ihy]⟩
 
@@ -349,7 +355,7 @@ variable [CompatibleSMul R R'₂ M N] [CompatibleSMul R R' M N]
 /-- `IsScalarTower R'₂ R' N` implies `IsScalarTower R'₂ R' (M ⊗[R] N)` -/
 instance isScalarTower_right [IsScalarTower R'₂ R' N] : IsScalarTower R'₂ R' (M ⊗[R] N) :=
   ⟨fun s r x =>
-    x.induction_on (by simp)
+    x.inductionOn
       (fun m n => by rw [← tmul_smul, ← tmul_smul, ← tmul_smul, smul_assoc]) fun x y ihx ihy => by
       rw [smul_add, smul_add, smul_add, ihx, ihy]⟩
 
@@ -410,8 +416,7 @@ variable (R M N)
 /-- The simple (aka pure) elements span the tensor product. -/
 theorem span_tmul_eq_top : Submodule.span R { t : M ⊗[R] N | ∃ m n, m ⊗ₜ n = t } = ⊤ := by
   ext t; simp only [Submodule.mem_top, iff_true]
-  refine t.induction_on ?_ ?_ ?_
-  · exact Submodule.zero_mem _
+  refine t.inductionOn ?_ ?_
   · intro m n
     apply Submodule.subset_span
     use m, n
@@ -427,9 +432,6 @@ theorem exists_eq_tmul_of_forall (x : TensorProduct R M N)
     (h : ∀ (m₁ m₂ : M) (n₁ n₂ : N), ∃ m n, m₁ ⊗ₜ n₁ + m₂ ⊗ₜ n₂ = m ⊗ₜ[R] n) :
     ∃ m n, x = m ⊗ₜ n := by
   induction x with
-  | zero =>
-    use 0, 0
-    rw [TensorProduct.zero_tmul]
   | tmul m n => use m, n
   | add x y h₁ h₂ =>
     obtain ⟨m₁, n₁, rfl⟩ := h₁

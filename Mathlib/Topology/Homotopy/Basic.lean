@@ -102,6 +102,7 @@ section
 
 variable {f₀ f₁ : C(X, Y)}
 
+@[macro_inline]
 instance instFunLike : FunLike (Homotopy f₀ f₁) (I × X) Y where
   coe f := f.toFun
   coe_injective f g h := by
@@ -393,6 +394,7 @@ section
 
 variable {f₀ f₁ : C(X, Y)} {P : C(X, Y) → Prop}
 
+@[macro_inline]
 instance instFunLike : FunLike (HomotopyWith f₀ f₁ P) (I × X) Y where
   coe F := ⇑F.toHomotopy
   coe_injective

@@ -5,19 +5,22 @@ Authors: María Inés de Frutos-Fernández, Xavier Généreux
 -/
 module
 
-public import Mathlib.RingTheory.Valuation.Discrete.Basic
 public import Mathlib.FieldTheory.RatFunc.Valuation
 
 /-!
 # Ostrowski's theorem for `K(X)`
 
 This file proves Ostrowski's theorem for the field of rational functions `K(X)`, where `K` is any
-field: if `v` is a discrete valuation on `K(X)` which is trivial on elements of `K`, then `v` is
+field: if `v` is a valuation on `K(X)` which is trivial on elements of `K`, then `v` is
 equivalent to either the `I`-adic valuation for some `I : HeightOneSpectrum K[X]`, or to the
 valuation at infinity `FunctionField.inftyValuation K`.
 
 ## Main results
 - `RatFunc.valuation_isEquiv_infty_or_adic`: Ostrowski's theorem for `K(X)`.
+
+### TODO
+- Show that a nontrivial valuation `v`, trivial on `K`, is a rank one discrete valuation. (*)
+
 -/
 
 @[expose] public noncomputable section
@@ -184,6 +187,7 @@ lemma exists_zpow_uniformizingPolynomial {f : RatFunc K} (hf : f ≠ 0) :
       valuation_eq_valuation_uniformizingPolynomial_pow_of_valuation_X_le_one hle
         (p := p) (by aesop)]
 
+-- TODO: remove the hypothesis [hv : IsRankOneDiscrete v] once TODO (*) is in Mathlib.
 lemma uniformizingPolynomial_isUniformizer [hv : IsRankOneDiscrete v] :
     v.IsUniformizer πᵥ := by
   have h0 : v πᵥ ≠ 0 := by simpa using uniformizingPolynomial_ne_zero hle
@@ -205,7 +209,7 @@ lemma uniformizingPolynomial_isUniformizer [hv : IsRankOneDiscrete v] :
       have : v ↑πᵥ ^ ka ≠ 0 := zpow_ne_zero _ h0
       simp [zpow_sub, ← Units.val_inj, ← coePolynomial_eq_algebraMap, field, ← hab]
 
-lemma valuation_isEquiv_valuationIdeal_adic_of_valuation_X_le_one [IsRankOneDiscrete v] :
+lemma valuation_isEquiv_valuationIdeal_adic_of_valuation_X_le_one :
     v.IsEquiv ((Pᵥ).valuation (RatFunc K)) := by
   rw [isEquiv_iff_val_le_one]
   intro f
@@ -214,14 +218,14 @@ lemma valuation_isEquiv_valuationIdeal_adic_of_valuation_X_le_one [IsRankOneDisc
   · induction f using RatFunc.induction_on with
     | f p q hq0 =>
       have hp0 : p ≠ 0 := by simp_all
-      set pi := πᵥ with hpi_def
-      have hpi : v.IsUniformizer (pi : RatFunc K) := uniformizingPolynomial_isUniformizer hle
+      have h0lt : 0 < v (algebraMap K[X] (RatFunc K) πᵥ) := by
+        simp [pos_of_ne_zero, ne_zero_iff v, uniformizingPolynomial_ne_zero hle]
       simp only [map_div₀, valuation_of_algebraMap, intValuation_def, exp_neg, ite_eq_right hp0,
-        ite_eq_right hq0, div_inv_eq_mul]
-      rw [valuation_eq_valuation_uniformizingPolynomial_pow_of_valuation_X_le_one hle hp0,
+        ite_eq_right hq0, div_inv_eq_mul,
+        valuation_eq_valuation_uniformizingPolynomial_pow_of_valuation_X_le_one hle hp0,
         valuation_eq_valuation_uniformizingPolynomial_pow_of_valuation_X_le_one hle hq0]
-      simp_all [div_le_one₀, ← exp_add,
-        (pow_le_pow_iff_right_of_lt_one₀ (by simp_all) (IsRankOneDiscrete.generator_lt_one v))]
+      simp_all [div_le_one₀, ← exp_add, (pow_le_pow_iff_right_of_lt_one₀ h0lt
+        (valuation_uniformizingPolynomial_lt_one hle))]
 
 end Associates
 
@@ -242,23 +246,19 @@ lemma adicValuation_ne_inftyValuation [DecidableEq (RatFunc K)]
   by_contra h
   exact absurd Valuation.IsEquiv.refl (h ▸ adicValuation_not_isEquiv_infty_valuation p)
 
-section Discrete
-
-variable [IsRankOneDiscrete v]
-
 section IsTrivialOn
 
-variable [v.IsTrivialOn K]
+variable [v.IsTrivialOn K] [v.IsNontrivial]
 
 lemma valuation_isEquiv_adic_of_valuation_X_le_one (hle : v X ≤ 1) :
     ∃ (u : HeightOneSpectrum K[X]), v.IsEquiv (u.valuation _) :=
   ⟨_, valuation_isEquiv_valuationIdeal_adic_of_valuation_X_le_one hle⟩
 
 /-- **Ostrowski's Theorem** for `K(X)` with `K` any field:
-A discrete valuation of rank 1 that is trivial on `K` is equivalent either to the valuation
-at infinity or to the `p`-adic valuation for a unique maximal ideal `p` of `K[X]`. -/
+A valuation trivial on `K` is equivalent either to the valuation at infinity or to
+the `p`-adic valuation for a unique maximal ideal `p` of `K[X]`. -/
 theorem valuation_isEquiv_infty_or_adic [DecidableEq (RatFunc K)] :
-    Xor (v.IsEquiv (RatFunc.inftyValuation K))
+    Xor (v.IsEquiv (inftyValuation K))
       (∃! (u : HeightOneSpectrum K[X]), v.IsEquiv (u.valuation _)) := by
   rcases lt_or_ge 1 (v X) with hlt | hge
   /- Infinity case -/
@@ -273,13 +273,11 @@ theorem valuation_isEquiv_infty_or_adic [DecidableEq (RatFunc K)] :
       fun hv ↦ absurd (hw.symm.trans hv) (adicValuation_not_isEquiv_infty_valuation pw)⟩
 
 lemma valuation_isEquiv_adic_of_not_isEquiv_infty [DecidableEq (RatFunc K)]
-    (hni : ¬ v.IsEquiv (RatFunc.inftyValuation K)) :
+    (hni : ¬ v.IsEquiv (inftyValuation K)) :
     ∃! (u : HeightOneSpectrum K[X]), v.IsEquiv (u.valuation _) :=
   valuation_isEquiv_infty_or_adic.or.resolve_left hni
 
 end IsTrivialOn
-
-end Discrete
 
 end RatFunc
 

@@ -28,13 +28,14 @@ variable {R : Type u} [CommRing R]
 
 /-- The exterior power of an object in `ModuleCat R`. -/
 def exteriorPower (M : ModuleCat.{v} R) (n : ℕ) : ModuleCat.{max u v} R :=
-  ModuleCat.of R (⋀[R]^n M)
+  ↧(⋀[R]^n M)
 
 -- this could be an abbrev, but using a def eases automation
 /-- The type of `n`-alternating maps on `M : ModuleCat R` to `N : ModuleCat R`. -/
 def AlternatingMap (M : ModuleCat.{v} R) (N : ModuleCat.{max u v} R) (n : ℕ) :=
   _root_.AlternatingMap R M N (Fin n)
 
+@[macro_inline]
 instance (M : ModuleCat.{v} R) (N : ModuleCat.{max u v} R) (n : ℕ) :
     FunLike (M.AlternatingMap N n) (Fin n → M) N :=
   inferInstanceAs (FunLike (M [⋀^(Fin n)]→ₗ[R] N) (Fin n → M) N)
@@ -106,7 +107,7 @@ noncomputable def functor (n : ℕ) : ModuleCat.{v} R ⥤ ModuleCat.{max u v} R 
   map f := map f n
 
 /-- The isomorphism `M.exteriorPower 0 ≅ ModuleCat.of R R`. -/
-noncomputable def iso₀ (M : ModuleCat.{u} R) : M.exteriorPower 0 ≅ ModuleCat.of R R :=
+noncomputable def iso₀ (M : ModuleCat.{u} R) : M.exteriorPower 0 ≅ ↧R :=
   (exteriorPower.zeroEquiv R M).toModuleIso
 
 @[simp]
@@ -137,7 +138,7 @@ variable (R)
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism `M.exteriorPower 0 ≅ ModuleCat.of R R`. -/
-noncomputable def natIso₀ : functor.{u} R 0 ≅ (Functor.const _).obj (ModuleCat.of R R) :=
+noncomputable def natIso₀ : functor.{u} R 0 ≅ (Functor.const _).obj ↧R :=
   NatIso.ofComponents iso₀
 
 set_option backward.defeqAttrib.useBackward true in

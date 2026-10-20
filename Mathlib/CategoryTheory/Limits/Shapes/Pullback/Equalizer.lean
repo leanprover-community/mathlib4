@@ -35,7 +35,6 @@ lemma isPullback_equalizer_prod [HasEqualizer f g] [HasBinaryProduct Y Y] :
   · exact fun s ↦ by simpa using congr($s.condition ≫ prod.fst)
   · exact fun s m hm _ ↦ by ext; simp [*]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The coequalizer of `f g : X ⟶ Y` is the pushout of the diagonal map `X ⨿ X ⟶ X`
 along the map `(f, g) : X ⨿ X ⟶ Y`. -/
 lemma isPushout_coequalizer_coprod [HasCoequalizer f g] [HasBinaryCoproduct X X] :

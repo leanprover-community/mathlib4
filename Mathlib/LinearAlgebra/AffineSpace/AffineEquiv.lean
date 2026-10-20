@@ -82,6 +82,7 @@ theorem toAffineMap_injective : Injective (toAffineMap : (P₁ ≃ᵃ[k] P₂) �
 theorem toAffineMap_inj {e e' : P₁ ≃ᵃ[k] P₂} : e.toAffineMap = e'.toAffineMap ↔ e = e' :=
   toAffineMap_injective.eq_iff
 
+@[macro_inline]
 instance equivLike : EquivLike (P₁ ≃ᵃ[k] P₂) P₁ P₂ where
   coe f := f.toFun
   inv f := f.invFun

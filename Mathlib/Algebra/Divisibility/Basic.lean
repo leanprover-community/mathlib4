@@ -172,8 +172,8 @@ theorem dvd_refl (a : α) : a ∣ a :=
 
 theorem dvd_rfl : ∀ {a : α}, a ∣ a := fun {a} => dvd_refl a
 
-instance : @Std.Refl α (· ∣ ·) :=
-  ⟨dvd_refl⟩
+instance : IsPreorder α (· ∣ ·) where
+  refl := dvd_refl
 
 theorem one_dvd (a : α) : 1 ∣ a :=
   Dvd.intro a (one_mul a)

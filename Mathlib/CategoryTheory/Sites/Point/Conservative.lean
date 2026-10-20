@@ -157,7 +157,7 @@ lemma jointly_reflect_ofArrows_mem
     have := ConcreteCategory.congr_hom
       (Φ.obj.shrinkYonedaCompPresheafFiberIso.inv.naturality (f i)) y
     dsimp at this ⊢
-    rw [this, ← Sigma.ι_desc (fun i ↦ shrinkYoneda.{w}.map (f i)) i, Functor.map_comp]
+    rw [this, ← Sigma.ι_comp_desc (fun i ↦ shrinkYoneda.{w}.map (f i)) i, Functor.map_comp]
     rfl
 
 lemma jointly_reflect_ofArrows_mem_of_small

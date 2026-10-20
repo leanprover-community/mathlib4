@@ -40,10 +40,10 @@ section Notation
 
 open Lean.PrettyPrinter.Delaborator
 
-/-- This prevents `SemiRingCat.of R` being printed as `{ carrier := R, semiring := ... }` by
-`delabStructureInstance`. -/
+/-- This prints `SemiRingCat.of R` as `↧R`, and in particular prevents it being printed as
+`{ carrier := R, semiring := ... }` by `delabStructureInstance`. -/
 @[app_delab SemiRingCat.of]
-meta def SemiRingCat.delabOf : Delab := delabApp
+meta def SemiRingCat.delabOf : Delab := CategoryTheory.delabOf
 
 end Notation
 
@@ -155,12 +155,12 @@ instance {R : SemiRingCat} : Semiring ((forget SemiRingCat).obj R) :=
 
 instance hasForgetToMonCat : HasForget₂ SemiRingCat MonCat where
   forget₂ :=
-    { obj := fun R ↦ MonCat.of R
+    { obj := fun R ↦ ↧R
       map := fun f ↦ MonCat.ofHom f.hom.toMonoidHom }
 
 instance hasForgetToAddCommMonCat : HasForget₂ SemiRingCat AddCommMonCat where
   forget₂ :=
-    { obj := fun R ↦ AddCommMonCat.of R
+    { obj := fun R ↦ ↧R
       map := fun f ↦ AddCommMonCat.ofHom f.hom.toAddMonoidHom }
 
 @[simp] lemma forget₂_monCat_map {R S : SemiRingCat} (f : R ⟶ S) (x) :
@@ -198,10 +198,10 @@ section Notation
 
 open Lean.PrettyPrinter.Delaborator
 
-/-- This prevents `RingCat.of R` being printed as `{ carrier := R, ring := ... }` by
-`delabStructureInstance`. -/
+/-- This prints `RingCat.of R` as `↧R`, and in particular prevents it being printed as
+`{ carrier := R, ring := ... }` by `delabStructureInstance`. -/
 @[app_delab RingCat.of]
-meta def RingCat.delabOf : Delab := delabApp
+meta def RingCat.delabOf : Delab := CategoryTheory.delabOf
 
 end Notation
 
@@ -317,7 +317,7 @@ instance {R : RingCat} : Ring ((forget RingCat).obj R) :=
 
 instance hasForgetToSemiRingCat : HasForget₂ RingCat SemiRingCat where
   forget₂ :=
-    { obj := fun R ↦ SemiRingCat.of R
+    { obj := fun R ↦ ↧R
       map := fun f ↦ SemiRingCat.ofHom f.hom }
 
 @[simp] lemma forget₂_map {R S : RingCat} (f : R ⟶ S) (x) :
@@ -333,7 +333,7 @@ instance : (forget₂ RingCat SemiRingCat).Full :=
 
 instance hasForgetToAddCommGrp : HasForget₂ RingCat AddCommGrpCat where
   forget₂ :=
-    { obj := fun R ↦ AddCommGrpCat.of R
+    { obj := fun R ↦ ↧R
       map := fun f ↦ AddCommGrpCat.ofHom f.hom.toAddMonoidHom }
 
 /-- Ring equivalences are isomorphisms in category of rings -/
@@ -365,10 +365,10 @@ section Notation
 
 open Lean.PrettyPrinter.Delaborator
 
-/-- This prevents `CommSemiRingCat.of R` being printed as `{ carrier := R, commSemiring := ... }` by
-`delabStructureInstance`. -/
+/-- This prints `CommSemiRingCat.of R` as `↧R`, and in particular prevents it being printed as
+`{ carrier := R, commSemiring := ... }` by `delabStructureInstance`. -/
 @[app_delab CommSemiRingCat.of]
-meta def CommSemiRingCat.delabOf : Delab := delabApp
+meta def CommSemiRingCat.delabOf : Delab := CategoryTheory.delabOf
 
 end Notation
 
@@ -495,7 +495,7 @@ instance : (forget₂ CommSemiRingCat SemiRingCat).Full :=
 /-- The forgetful functor from commutative rings to (multiplicative) commutative monoids. -/
 instance hasForgetToCommMonCat : HasForget₂ CommSemiRingCat CommMonCat where
   forget₂ :=
-    { obj := fun R ↦ CommMonCat.of R
+    { obj := fun R ↦ ↧R
       map := fun f ↦ CommMonCat.ofHom f.hom.toMonoidHom }
 
 /-- Ring equivalences are isomorphisms in category of commutative semirings -/
@@ -528,10 +528,10 @@ section Notation
 
 open Lean.PrettyPrinter.Delaborator
 
-/-- This prevents `CommRingCat.of R` being printed as `{ carrier := R, commRing := ... }` by
-`delabStructureInstance`. -/
+/-- This prints `CommRingCat.of R` as `↧R`, and in particular prevents it being printed as
+`{ carrier := R, commRing := ... }` by `delabStructureInstance`. -/
 @[app_delab CommRingCat.of]
-meta def CommRingCat.delabOf : Delab := delabApp
+meta def CommRingCat.delabOf : Delab := CategoryTheory.delabOf
 
 end Notation
 
@@ -646,7 +646,7 @@ instance {R : CommRingCat} : CommRing ((forget CommRingCat).obj R) :=
 
 instance hasForgetToRingCat : HasForget₂ CommRingCat RingCat where
   forget₂ :=
-    { obj := fun R ↦ RingCat.of R
+    { obj := fun R ↦ ↧R
       map := fun f ↦ RingCat.ofHom f.hom }
 
 /-- The forgetful functor from `CommRingCat` to `RingCat` is fully faithful. -/
@@ -667,12 +667,12 @@ instance : (forget₂ CommRingCat RingCat).Full :=
 
 instance hasForgetToAddCommMonCat : HasForget₂ CommRingCat CommSemiRingCat where
   forget₂ :=
-    { obj := fun R ↦ CommSemiRingCat.of R
+    { obj := fun R ↦ ↧R
       map := fun f ↦ CommSemiRingCat.ofHom f.hom }
 
 @[simps (nameStem := "commMon")]
 instance : HasForget₂ CommRingCat CommMonCat where
-  forget₂ := { obj M := .of M, map f := CommMonCat.ofHom f.hom }
+  forget₂ := { obj M := ↧M, map f := CommMonCat.ofHom f.hom }
   forget_comp := rfl
 
 /-- Ring equivalences are isomorphisms in category of commutative rings -/

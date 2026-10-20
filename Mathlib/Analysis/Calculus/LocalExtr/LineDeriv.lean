@@ -26,7 +26,7 @@ variable {E : Type*} [AddCommGroup E] [Module ℝ E] {f : E → ℝ} {s : Set E}
 
 theorem IsExtrFilter.hasLineDerivAt_eq_zero {l : Filter E} (h : IsExtrFilter f l a)
     (hd : HasLineDerivAt ℝ f f' a b) (h' : Tendsto (fun t : ℝ ↦ a + t • b) (𝓝 0) l) : f' = 0 :=
-  IsLocalExtr.hasDerivAt_eq_zero (IsExtrFilter.comp_tendsto (by simpa using h) h') hd
+  IsLocalExtr.hasDerivAt_eq_zero (IsExtrFilter.comp_of_tendsto (by simpa using h) h') hd
 
 theorem IsExtrFilter.lineDeriv_eq_zero {l : Filter E} (h : IsExtrFilter f l a)
     (h' : Tendsto (fun t : ℝ ↦ a + t • b) (𝓝 0) l) : lineDeriv ℝ f a b = 0 := by
@@ -46,19 +46,19 @@ theorem IsExtrOn.lineDeriv_eq_zero (h : IsExtrOn f s a) (h' : ∀ᶠ t : ℝ in 
 
 theorem IsMinOn.hasLineDerivAt_eq_zero (h : IsMinOn f s a) (hd : HasLineDerivAt ℝ f f' a b)
     (h' : ∀ᶠ t : ℝ in 𝓝 0, a + t • b ∈ s) : f' = 0 :=
-  h.isExtr.hasLineDerivAt_eq_zero hd h'
+  h.isExtrOn.hasLineDerivAt_eq_zero hd h'
 
 theorem IsMinOn.lineDeriv_eq_zero (h : IsMinOn f s a) (h' : ∀ᶠ t : ℝ in 𝓝 0, a + t • b ∈ s) :
     lineDeriv ℝ f a b = 0 :=
-  h.isExtr.lineDeriv_eq_zero h'
+  h.isExtrOn.lineDeriv_eq_zero h'
 
 theorem IsMaxOn.hasLineDerivAt_eq_zero (h : IsMaxOn f s a) (hd : HasLineDerivAt ℝ f f' a b)
     (h' : ∀ᶠ t : ℝ in 𝓝 0, a + t • b ∈ s) : f' = 0 :=
-  h.isExtr.hasLineDerivAt_eq_zero hd h'
+  h.isExtrOn.hasLineDerivAt_eq_zero hd h'
 
 theorem IsMaxOn.lineDeriv_eq_zero (h : IsMaxOn f s a) (h' : ∀ᶠ t : ℝ in 𝓝 0, a + t • b ∈ s) :
     lineDeriv ℝ f a b = 0 :=
-  h.isExtr.lineDeriv_eq_zero h'
+  h.isExtrOn.lineDeriv_eq_zero h'
 
 theorem IsExtrOn.hasLineDerivWithinAt_eq_zero (h : IsExtrOn f s a)
     (hd : HasLineDerivWithinAt ℝ f f' s a b) (h' : ∀ᶠ t : ℝ in 𝓝 0, a + t • b ∈ s) : f' = 0 :=
@@ -74,19 +74,19 @@ theorem IsExtrOn.lineDerivWithin_eq_zero (h : IsExtrOn f s a)
 
 theorem IsMinOn.hasLineDerivWithinAt_eq_zero (h : IsMinOn f s a)
     (hd : HasLineDerivWithinAt ℝ f f' s a b) (h' : ∀ᶠ t : ℝ in 𝓝 0, a + t • b ∈ s) : f' = 0 :=
-  h.isExtr.hasLineDerivWithinAt_eq_zero hd h'
+  h.isExtrOn.hasLineDerivWithinAt_eq_zero hd h'
 
 theorem IsMinOn.lineDerivWithin_eq_zero (h : IsMinOn f s a)
     (h' : ∀ᶠ t : ℝ in 𝓝 0, a + t • b ∈ s) : lineDerivWithin ℝ f s a b = 0 :=
-  h.isExtr.lineDerivWithin_eq_zero h'
+  h.isExtrOn.lineDerivWithin_eq_zero h'
 
 theorem IsMaxOn.hasLineDerivWithinAt_eq_zero (h : IsMaxOn f s a)
     (hd : HasLineDerivWithinAt ℝ f f' s a b) (h' : ∀ᶠ t : ℝ in 𝓝 0, a + t • b ∈ s) : f' = 0 :=
-  h.isExtr.hasLineDerivWithinAt_eq_zero hd h'
+  h.isExtrOn.hasLineDerivWithinAt_eq_zero hd h'
 
 theorem IsMaxOn.lineDerivWithin_eq_zero (h : IsMaxOn f s a)
     (h' : ∀ᶠ t : ℝ in 𝓝 0, a + t • b ∈ s) : lineDerivWithin ℝ f s a b = 0 :=
-  h.isExtr.lineDerivWithin_eq_zero h'
+  h.isExtrOn.lineDerivWithin_eq_zero h'
 end Module
 
 variable {E : Type*} [AddCommGroup E] [Module ℝ E]

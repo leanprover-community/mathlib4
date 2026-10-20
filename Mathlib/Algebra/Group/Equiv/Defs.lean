@@ -156,7 +156,7 @@ variable [Mul M] [Mul N] [Mul P]
 
 section coe
 
-@[to_additive]
+@[to_additive (attr := macro_inline)]
 instance : EquivLike (M ≃* N) M N where
   coe f := f.toFun
   inv f := f.invFun

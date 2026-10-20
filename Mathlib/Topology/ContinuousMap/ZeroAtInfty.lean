@@ -76,6 +76,7 @@ section Basics
 
 variable [TopologicalSpace β] [Zero β] [FunLike F α β] [ZeroAtInftyContinuousMapClass F α β]
 
+@[macro_inline]
 instance instFunLike : FunLike C₀(α, β) α β where
   coe f := f.toFun
   coe_injective f g h := by

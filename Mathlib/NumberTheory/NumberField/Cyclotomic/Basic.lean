@@ -659,7 +659,6 @@ theorem discr_prime [IsCyclotomicExtension {p} ℚ K] :
 
 variable (n) [hn : NeZero n]
 
-set_option backward.isDefEq.respectTransparency false in
 open Algebra IntermediateField Nat in
 /--
 Computes the absolute discriminant of the `n`-th cyclotomic field.
@@ -765,7 +764,6 @@ private theorem adjoin_singleton_eq_top_aux [NumberField K] (F₁ F₂ : Interme
 
 variable {n K}
 
-set_option backward.isDefEq.respectTransparency false in
 open IntermediateField Algebra in
 theorem adjoin_singleton_eq_top [hK : IsCyclotomicExtension {n} ℚ K]
     {ζ : K} (hζ : IsPrimitiveRoot ζ n) :

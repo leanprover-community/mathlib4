@@ -10,6 +10,8 @@ public import Mathlib.Data.Nat.Find
 public import Mathlib.Order.Fin.Basic
 public import Batteries.Data.Fin.Lemmas
 
+import Mathlib.Data.Set.Insert
+
 /-!
 # Operation on tuples
 

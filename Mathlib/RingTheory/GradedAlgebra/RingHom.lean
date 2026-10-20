@@ -70,6 +70,7 @@ end ofClass
 
 section coe
 
+@[macro_inline]
 instance : FunLike (𝒜 →+*ᵍ ℬ) A B where
   coe f := f.toFun
   coe_injective f g h := by

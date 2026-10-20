@@ -171,8 +171,7 @@ theorem map_comp (N : G(k, A ⊗[R] M; A)) :
   have hcomp : fAC = e.toLinearMap.comp fBC := by
     apply LinearMap.ext
     intro z
-    induction z using TensorProduct.induction_on with
-    | zero => simp [fAC, fBC, e]
+    induction z using TensorProduct.inductionOn with
     | tmul c m =>
       simp only [fAC, fBC, e, baseChangeMkQ, LinearMap.comp_apply, cancelBaseChange_symm_tmul,
          LinearMap.baseChange_tmul, Submodule.mkQ_apply, LinearEquiv.coe_trans, LinearEquiv.coe_coe,

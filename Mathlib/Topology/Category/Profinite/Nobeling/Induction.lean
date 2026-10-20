@@ -126,8 +126,7 @@ theorem Nobeling.isClosedEmbedding : IsClosedEmbedding (Nobeling.ι S) := by
   · dsimp +unfoldPartialApp [ι]
     refine continuous_pi ?_
     intro C
-    rw [← IsLocallyConstant.iff_continuous]
-    refine ((IsLocallyConstant.tfae _).out 1 4).mpr ?_
+    rw [← IsLocallyConstant.iff_continuous, IsLocallyConstant.iff_isOpen_fiber]
     rintro ⟨⟩
     · refine IsClopen.isOpen (isClopen_compl_iff.mp ?_)
       convert! C.2

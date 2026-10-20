@@ -63,6 +63,7 @@ structure Path (x y : X) extends C(I, X) where
   /-- The end point of a `Path`. -/
   target' : toFun 1 = y
 
+@[macro_inline]
 instance Path.instFunLike : FunLike (Path x y) I X where
   coe γ := ⇑γ.toContinuousMap
   coe_injective γ₁ γ₂ h := by

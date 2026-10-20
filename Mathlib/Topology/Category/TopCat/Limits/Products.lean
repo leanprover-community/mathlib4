@@ -29,13 +29,13 @@ noncomputable section
 namespace TopCat
 
 /-- The projection from the product as a bundled continuous map. -/
-abbrev piπ {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) : TopCat.of (∀ i, α i) ⟶ α i :=
+abbrev piπ {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) : ↧(∀ i, α i) ⟶ α i :=
   ofHom ⟨fun f => f i, continuous_apply i⟩
 
 /-- The explicit fan of a family of topological spaces given by the pi type. -/
 @[simps! pt π_app]
 def piFan {ι : Type v} (α : ι → TopCat.{max v u}) : Fan α :=
-  Fan.mk (TopCat.of (∀ i, α i)) (piπ.{v, u} α)
+  Fan.mk ↧(∀ i, α i) (piπ.{v, u} α)
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -54,7 +54,7 @@ def piFanIsLimit {ι : Type v} (α : ι → TopCat.{max v u}) : IsLimit (piFan �
 /-- The product is homeomorphic to the product of the underlying spaces,
 equipped with the product topology.
 -/
-def piIsoPi {ι : Type v} (α : ι → TopCat.{max v u}) : ∏ᶜ α ≅ TopCat.of (∀ i, α i) :=
+def piIsoPi {ι : Type v} (α : ι → TopCat.{max v u}) : ∏ᶜ α ≅ ↧(∀ i, α i) :=
   (limit.isLimit _).conePointUniqueUpToIso (piFanIsLimit.{v, u} α)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -70,7 +70,7 @@ theorem piIsoPi_hom_apply {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι)
     (x : (∏ᶜ α : TopCat.{max v u})) : (piIsoPi α).hom x i = (Pi.π α i :) x := rfl
 
 /-- The inclusion to the coproduct as a bundled continuous map. -/
-abbrev sigmaι {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) : α i ⟶ TopCat.of (Σ i, α i) := by
+abbrev sigmaι {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) : α i ⟶ ↧(Σ i, α i) := by
   refine ofHom (ContinuousMap.mk ?_ ?_)
   · apply Sigma.mk i
   · continuity
@@ -78,7 +78,7 @@ abbrev sigmaι {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) : α i ⟶ 
 /-- The explicit cofan of a family of topological spaces given by the sigma type. -/
 @[simps! pt ι_app]
 def sigmaCofan {ι : Type v} (α : ι → TopCat.{max v u}) : Cofan α :=
-  Cofan.mk (TopCat.of (Σ i, α i)) (sigmaι α)
+  Cofan.mk ↧(Σ i, α i) (sigmaι α)
 
 /-- The constructed cofan is indeed a colimit -/
 def sigmaCofanIsColimit {ι : Type v} (β : ι → TopCat.{max v u}) : IsColimit (sigmaCofan β) where
@@ -96,7 +96,7 @@ def sigmaCofanIsColimit {ι : Type v} (β : ι → TopCat.{max v u}) : IsColimit
 
 /-- The coproduct is homeomorphic to the disjoint union of the topological spaces.
 -/
-def sigmaIsoSigma {ι : Type v} (α : ι → TopCat.{max v u}) : ∐ α ≅ TopCat.of (Σ i, α i) :=
+def sigmaIsoSigma {ι : Type v} (α : ι → TopCat.{max v u}) : ∐ α ≅ ↧(Σ i, α i) :=
   (colimit.isColimit _).coconePointUniqueUpToIso (sigmaCofanIsColimit.{v, u} α)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -116,11 +116,11 @@ theorem sigmaIsoSigma_inv_apply {ι : Type v} (α : ι → TopCat.{max v u}) (i 
 section Prod
 
 /-- The first projection from the product. -/
-abbrev prodFst {X Y : TopCat.{u}} : TopCat.of (X × Y) ⟶ X :=
+abbrev prodFst {X Y : TopCat.{u}} : ↧(X × Y) ⟶ X :=
   ofHom { toFun := Prod.fst }
 
 /-- The second projection from the product. -/
-abbrev prodSnd {X Y : TopCat.{u}} : TopCat.of (X × Y) ⟶ Y :=
+abbrev prodSnd {X Y : TopCat.{u}} : ↧(X × Y) ⟶ Y :=
   ofHom { toFun := Prod.snd }
 
 /-- The explicit binary cofan of `X, Y` given by `X × Y`. -/
@@ -147,7 +147,7 @@ def prodBinaryFanIsLimit (X Y : TopCat.{u}) : IsLimit (prodBinaryFan X Y) where
 /-- The homeomorphism between `X ⨯ Y` and the set-theoretic product of `X` and `Y`,
 equipped with the product topology.
 -/
-def prodIsoProd (X Y : TopCat.{u}) : X ⨯ Y ≅ TopCat.of (X × Y) :=
+def prodIsoProd (X Y : TopCat.{u}) : X ⨯ Y ≅ ↧(X × Y) :=
   (limit.isLimit _).conePointUniqueUpToIso (prodBinaryFanIsLimit X Y)
 
 @[reassoc (attr := simp)]

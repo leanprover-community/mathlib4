@@ -74,6 +74,7 @@ namespace ContinuousMap
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
+@[macro_inline]
 instance instFunLike : FunLike C(X, Y) X Y where
   coe := ContinuousMap.toFun
   coe_injective f g h := by cases f; cases g; congr

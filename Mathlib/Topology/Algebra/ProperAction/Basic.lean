@@ -287,7 +287,8 @@ alias ProperVAdd.isCompact_setOf_inter_nonempty := ProperVAdd.isCompact_setOfPre
 
 /-- If `G` acts transitively on `X`, and the orbit map of a point in `X` is a proper map, then the
 action is proper. -/
-@[to_additive]
+@[to_additive /-- If `G` acts transitively on `X`, and the orbit map of a point in `X` is a proper
+map, then the action is proper. -/]
 lemma MulAction.properSMul_of_proper_orbitMap
     [ContinuousSMul G X] [IsTopologicalGroup G] [MulAction.IsPretransitive G X]
     {x : X} (hx : IsProperMap fun g : G ↦ g • x) : ProperSMul G X := by

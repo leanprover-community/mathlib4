@@ -6,6 +6,8 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Limits.Types.Limits
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
 
 /-!
 # Products in `Type`

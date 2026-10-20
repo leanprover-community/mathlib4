@@ -117,7 +117,6 @@ instance preservesPullbackInl' :
     HasPullback f coprod.inl :=
   hasPullback_symmetry _ _
 
-set_option backward.isDefEq.respectTransparency false in
 instance hasPullbackInr' :
     HasPullback f coprod.inr := by
   have : IsPullback (𝟙 _) (f ≫ (coprod.braiding X Y).hom) f (coprod.braiding Y X).hom :=
@@ -148,7 +147,6 @@ instance preservesPullbackInl' :
     PreservesLimit (cospan f coprod.inl) F :=
   preservesPullback_symmetry _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable
 instance preservesPullbackInr' :
     PreservesLimit (cospan f coprod.inr) F := by
@@ -287,16 +285,16 @@ section TopCat
 
 /-- (Implementation) An auxiliary lemma for the proof that `TopCat` is finitary extensive. -/
 noncomputable def finitaryExtensiveTopCatAux (Z : TopCat.{u})
-    (f : Z ⟶ TopCat.of (PUnit.{u + 1} ⊕ PUnit.{u + 1})) :
+    (f : Z ⟶ ↧(PUnit.{u + 1} ⊕ PUnit.{u + 1})) :
     IsColimit (BinaryCofan.mk
-      (TopCat.pullbackFst f (TopCat.binaryCofan (TopCat.of PUnit) (TopCat.of PUnit)).inl)
-      (TopCat.pullbackFst f (TopCat.binaryCofan (TopCat.of PUnit) (TopCat.of PUnit)).inr)) := by
-  have h₁ : Set.range (TopCat.pullbackFst f (TopCat.binaryCofan (.of PUnit) (.of PUnit)).inl) =
+      (TopCat.pullbackFst f (TopCat.binaryCofan ↧PUnit ↧PUnit).inl)
+      (TopCat.pullbackFst f (TopCat.binaryCofan ↧PUnit ↧PUnit).inr)) := by
+  have h₁ : Set.range (TopCat.pullbackFst f (TopCat.binaryCofan ↧PUnit ↧PUnit).inl) =
       f ⁻¹' Set.range Sum.inl := by
     apply le_antisymm
     · rintro _ ⟨x, rfl⟩; exact ⟨PUnit.unit, x.2.symm⟩
     · rintro x ⟨⟨⟩, hx⟩; refine ⟨⟨⟨x, PUnit.unit⟩, hx.symm⟩, rfl⟩
-  have h₂ : Set.range (TopCat.pullbackFst f (TopCat.binaryCofan (.of PUnit) (.of PUnit)).inr) =
+  have h₂ : Set.range (TopCat.pullbackFst f (TopCat.binaryCofan ↧PUnit ↧PUnit).inr) =
       f ⁻¹' Set.range Sum.inr := by
     apply le_antisymm
     · rintro _ ⟨x, rfl⟩; exact ⟨PUnit.unit, x.2.symm⟩
@@ -402,7 +400,6 @@ instance {C} [Category* C] {D} [Category* D] (F : C ⥤ D)
     {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [IsIso g] : PreservesLimit (cospan f g) F :=
   preservesPullback_symmetry _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem finitaryExtensive_of_preserves_and_reflects (F : C ⥤ D) [FinitaryExtensive D]
     [HasFiniteCoproducts C] [HasPullbacksOfInclusions C]
     [PreservesPullbacksOfInclusions F]

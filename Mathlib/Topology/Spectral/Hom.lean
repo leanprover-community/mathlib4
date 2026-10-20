@@ -109,6 +109,7 @@ variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] [Topo
 def toContinuousMap (f : SpectralMap α β) : ContinuousMap α β :=
   ⟨_, f.spectral'.continuous⟩
 
+@[macro_inline]
 instance instFunLike : FunLike (SpectralMap α β) α β where
   coe := SpectralMap.toFun
   coe_injective f g h := by cases f; cases g; congr

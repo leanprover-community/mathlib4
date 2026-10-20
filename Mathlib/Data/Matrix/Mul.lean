@@ -863,6 +863,16 @@ theorem single_vecMul_diagonal [Fintype n] [DecidableEq n] [NonUnitalNonAssocSem
   rw [vecMul_diagonal]
   exact Pi.apply_single (fun i x => x * v i) (fun i => zero_mul _) j x i
 
+theorem col_mul_eq_mulVec_col [NonUnitalNonAssocSemiring R] [Fintype m]
+    {M : Matrix l m R} {N : Matrix m n R} {i : n} :
+    (M * N).col i = M *ᵥ N.col i :=
+  rfl
+
+theorem row_mul_eq_vecMul_row [NonUnitalNonAssocSemiring R] [Fintype m]
+    {M : Matrix l m R} {N : Matrix m n R} {i : l} :
+    (M * N).row i = M.row i ᵥ* N :=
+  rfl
+
 end NonUnitalNonAssocSemiring
 
 section NonUnitalSemiring

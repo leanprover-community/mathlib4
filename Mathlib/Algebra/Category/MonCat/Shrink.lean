@@ -32,7 +32,7 @@ monoids are `w`-small. -/
 @[simps, pp_with_univ]
 noncomputable def MonCat.shrinkFunctor (F : C ⥤ MonCat.{w'}) [∀ X, Small.{w} (F.obj X)] :
     C ⥤ MonCat.{w} where
-  obj X := MonCat.of (Shrink.{w} (F.obj X))
+  obj X := ↧(Shrink.{w} (F.obj X))
   map {X Y} f := MonCat.ofHom <|
     (Shrink.mulEquiv.symm.toMonoidHom.comp (F.map f).hom).comp Shrink.mulEquiv.toMonoidHom
 

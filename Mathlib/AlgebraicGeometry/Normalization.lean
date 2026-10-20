@@ -495,7 +495,6 @@ section Coproduct
 variable {U V : Scheme} {iU : U ⟶ X} {iV : V ⟶ X} (e : IsColimit (BinaryCofan.mk iU iV))
     [QuasiCompact iU] [QuasiSeparated iU] [QuasiCompact iV] [QuasiSeparated iV]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The normalization of `Y` in a coproduct is isomorphic to the coproduct of the normalizations in
 each of the components. -/
 noncomputable def normalizationCoprodIso :
@@ -525,14 +524,12 @@ noncomputable def normalizationCoprodIso :
     rw [← cancel_epi (e.coconePointUniqueUpToIso (colimit.isColimit (pair U V))).inv]
     apply coprod.hom_ext <;> simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma toNormalization_inl_normalizationCoprodIso_hom :
     (iU ≫ f).toNormalization ≫ coprod.inl ≫ (f.normalizationCoprodIso e).hom =
       iU ≫ f.toNormalization := by
   simp [Scheme.Hom.normalizationCoprodIso]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma toNormalization_inr_normalizationCoprodIso_hom :
     (iV ≫ f).toNormalization ≫ coprod.inr ≫ (f.normalizationCoprodIso e).hom =
@@ -551,14 +548,12 @@ lemma inr_toNormalization_normalizationCoprodIso_inv :
       (iV ≫ f).toNormalization ≫ coprod.inr := by
   simp [← toNormalization_inr_normalizationCoprodIso_hom_assoc f e]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inl_normalizationCoprodIso_hom_fromNormalization :
     coprod.inl ≫ (f.normalizationCoprodIso e).hom ≫ f.fromNormalization =
       (iU ≫ f).fromNormalization := by
   simp [Scheme.Hom.normalizationCoprodIso]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inr_normalizationCoprodIso_hom_fromNormalization :
     coprod.inr ≫ (f.normalizationCoprodIso e).hom ≫ f.fromNormalization =

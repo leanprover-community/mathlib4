@@ -127,7 +127,7 @@ lemma covarianceBilin_map_const_add [CompleteSpace E] [IsProbabilityMeasure μ] 
     rw [covarianceBilin_apply h_Lp,
       covarianceBilin_apply h, integral_map (by fun_prop) (by fun_prop)]
     congr with z
-    rw [integral_map (by fun_prop) h_Lp.1]
+    rw [integral_map (by fun_prop) h_Lp.aestronglyMeasurable]
     simp only [id_eq]
     rw [integral_add (integrable_const _)]
     · simp
@@ -214,7 +214,7 @@ lemma covarianceOperator_apply (hμ : MemLp id 2 μ) (x : E) :
   rw [real_inner_comm, ← integral_inner]
   · simp_rw [inner_smul_right, ← continuousLinearMapOfBilin_apply, ← covarianceOperator_inner hμ]
     rfl
-  exact memLp_one_iff_integrable.1 <| hμ.smul (hμ.const_inner x)
+  exact memLp_one_iff_integrable.1 <| (hμ.const_inner x).smul hμ
 
 lemma isPositive_covarianceOperator : (covarianceOperator μ).toLinearMap.IsPositive := by
   by_cases hμ : MemLp id 2 μ

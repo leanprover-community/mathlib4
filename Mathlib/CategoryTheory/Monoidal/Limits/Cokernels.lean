@@ -38,8 +38,8 @@ point `c₁.pt ⊗ c₂.pt`. -/
 noncomputable abbrev tensor : CokernelCofork (coprod.desc (f₁ ▷ Y₂) (Y₁ ◁ f₂)) :=
   CokernelCofork.ofπ (c₁.π ⊗ₘ c₂.π) (by
     ext
-    · simp [tensorHom_def, ← comp_whiskerRight_assoc, coprod.inl_desc]
-    · simp [tensorHom_def', ← whiskerLeft_comp_assoc, coprod.inr_desc])
+    · simp [tensorHom_def, ← comp_whiskerRight_assoc]
+    · simp [tensorHom_def', ← whiskerLeft_comp_assoc])
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Given two colimit cokernel coforks `c₁` and `c₂` for `f₁ : X₁ ⟶ Y₁` and

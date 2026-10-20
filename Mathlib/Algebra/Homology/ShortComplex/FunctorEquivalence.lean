@@ -30,7 +30,6 @@ namespace FunctorEquivalence
 
 attribute [local simp] ShortComplex.Hom.comm₁₂ ShortComplex.Hom.comm₂₃
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The obvious functor `ShortComplex (J ⥤ C) ⥤ J ⥤ ShortComplex C`. -/
 @[simps]

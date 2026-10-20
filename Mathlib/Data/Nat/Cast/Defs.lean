@@ -5,9 +5,10 @@ Authors: Mario Carneiro, Gabriel Ebner
 -/
 module
 
-public import Mathlib.Algebra.Group.DivInvMonoid
 public import Mathlib.Data.Nat.Init
 public import Mathlib.Tactic.SplitIfs
+public import Mathlib.Algebra.Group.Monoid
+public import Mathlib.Tactic.OfNat
 
 /-!
 # Cast of natural numbers

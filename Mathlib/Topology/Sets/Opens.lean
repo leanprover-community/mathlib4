@@ -413,7 +413,7 @@ lemma IsBasis.of_isInducing {B : Set (Opens β)} (H : IsBasis B) {f : α → β}
 @[simp]
 theorem isCompactElement_iff (s : Opens α) :
     IsCompactElement s ↔ IsCompact (s : Set α) := by
-  rw [isCompact_iff_finite_subcover, CompleteLattice.isCompactElement_iff_exists_le_iSup_of_le_iSup]
+  rw [isCompact_iff_finite_subcover, isCompactElement_iff_exists_le_iSup_of_le_iSup]
   refine ⟨?_, fun H ι U hU => ?_⟩
   · introv H hU hU'
     obtain ⟨t, ht⟩ := H ι (fun i => ⟨U i, hU i⟩) (by simpa)

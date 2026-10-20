@@ -485,7 +485,6 @@ private lemma auxMemKer (z : T ⊗[S] P.toExtension.H1Cotangent) :
       ((LinearMap.lTensor T Extension.h1Cotangentι) z) ∈
         (Q.comp P).toExtension.cotangentComplex.ker := by
   induction z with
-  | zero => simp
   | tmul x y => simp [← Extension.CotangentSpace.map_cotangentComplex]
   | add x y hx hy => simpa using Submodule.add_mem _ hx hy
 
@@ -510,7 +509,6 @@ theorem exact_liftBaseChange_map_of_flat [Module.Flat S T] :
       P.toExtension.exact_hCotangentι_cotangentComplex).linearMap_ker_eq] at x_in
   rcases x_in with ⟨x, rfl⟩
   use x; induction x with
-  | zero => ext; simp
   | tmul x y => ext; simp
   | add x y hx hy => ext; simp [hx (auxMemKer Q P x), hy (auxMemKer Q P y)]
 

@@ -51,6 +51,7 @@ namespace ContMDiffMap
 
 variable {M} {M'} {n}
 
+@[macro_inline]
 instance instFunLike : FunLike C^n⟮I, M; I', M'⟯ M M' where
   coe := Subtype.val
   coe_injective := Subtype.coe_injective

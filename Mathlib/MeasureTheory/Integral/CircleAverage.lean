@@ -232,8 +232,8 @@ lemma ContinuousOn.eq_of_eqOn_Ioo {f : ℝ → ℝ} {c r R : ℝ}
     rw [nhdsWithin_le_iff, mem_nhdsLT_iff_exists_Ioo_subset]
     use r
     simp_all [Ioo_subset_Ioc_self]
-  apply tendsto_nhds_unique this (tendsto_const_nhds.congr' _)
-  apply Filter.eventuallyEq_of_mem (Ioo_mem_nhdsLT hR) (fun _ hx ↦ (h₂f hx).symm)
+  refine tendsto_nhds_unique_of_eventuallyEq this tendsto_const_nhds ?_
+  exact Filter.eventuallyEq_of_mem (Ioo_mem_nhdsLT hR) h₂f
 
 /-!
 ## Constant Functions

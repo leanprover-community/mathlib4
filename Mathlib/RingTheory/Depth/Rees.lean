@@ -80,7 +80,7 @@ lemma exists_isRegular_of_exists_subsingleton_ext [Small.{v} R] [IsNoetherianRin
     -- take a power of it to make `xᵏ` fall into `I`
     obtain ⟨k, hk⟩ := le_of_le_of_eq Ideal.le_radical h_supp mem_ann
     -- verify that `N` indeed make `M ⧸ xᵏM` satisfy the induction hypothesis
-    have h_ext' : ∀ i < n, Subsingleton (Ext N (ModuleCat.of R (QuotSMulTop (x ^ k) M)) i) := by
+    have h_ext' : ∀ i < n, Subsingleton (Ext N ↧(QuotSMulTop (x ^ k) M) i) := by
       intro i hi
       -- the vanishing of `Ext` is obtained from the (covariant) long exact sequence given by
       -- `M.smulShortComplex (x ^ k)`
@@ -89,7 +89,7 @@ lemma exists_isRegular_of_exists_subsingleton_ext [Small.{v} R] [IsNoetherianRin
       exact AddCommGrpCat.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
         ((Ext.covariant_sequence_exact₃' N (hx.pow k).smulShortComplex_shortExact) i (i + 1) rfl)
         (zero1.eq_zero_of_src _) (zero2.eq_zero_of_tgt _)
-    obtain ⟨rs, len, mem, reg⟩ := ih (ModuleCat.of R (QuotSMulTop (x ^ k) M))
+    obtain ⟨rs, len, mem, reg⟩ := ih ↧(QuotSMulTop (x ^ k) M)
       (smul_top_quotSMulTop_ne_top_of_smul_top_ne_top hk smul_lt.ne).lt_top h_ext'
     use x ^ k :: rs
     simpa [len, hk] using ⟨mem, hx.pow k, reg⟩
@@ -132,7 +132,7 @@ lemma subsingleton_ext_of_exists_isRegular [Small.{v} R] [IsNoetherianRing R] (I
         have mono_g : Mono g := by
           apply (Ext.covariant_sequence_exact₁' N reg.1.smulShortComplex_shortExact i (i + 1)
             rfl).mono_g ((AddCommGrpCat.isZero_of_iff_subsingleton.mpr ?_).eq_zero_of_src _)
-          apply ih (ModuleCat.of R (QuotSMulTop a M)) _ rs' mem.2 reg.2 len i (by omega)
+          apply ih ↧(QuotSMulTop a M) _ rs' mem.2 reg.2 len i (by omega)
           exact (smul_top_quotSMulTop_ne_top_of_smul_top_ne_top mem.1 smul_lt.ne).lt_top
         let gk := AddCommGrpCat.ofHom ((Ext.mk₀ (M.smulShortComplex (a ^ k)).f).postcomp N
           (add_zero (i + 1)))
@@ -159,7 +159,7 @@ lemma exists_isRegular_tfae [Small.{v} R] [IsNoetherianRing R] (I : Ideal R) (n 
     (M : ModuleCat.{v} R) [Module.Finite R M] (smul_lt : I • (⊤ : Submodule R M) < ⊤) :
     [∀ N : ModuleCat.{v} R, Nontrivial N → Module.Finite R N →
       Module.support R N ⊆ PrimeSpectrum.zeroLocus I → ∀ i < n, Subsingleton (Ext N M i),
-      ∀ i < n, Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M i),
+      ∀ i < n, Subsingleton (Ext ↧(Shrink.{v} (R ⧸ I)) M i),
       ∃ N : ModuleCat R, Nontrivial N ∧ Module.Finite R N ∧
       Module.support R N = PrimeSpectrum.zeroLocus I ∧ ∀ i < n, Subsingleton (Ext N M i),
       ∃ rs : List R, rs.length = n ∧ (∀ r ∈ rs, r ∈ I) ∧ RingTheory.Sequence.IsRegular M rs
@@ -171,9 +171,9 @@ lemma exists_isRegular_tfae [Small.{v} R] [IsNoetherianRing R] (I : Ideal R) (n 
     simp [eq] at smul_lt
   have suppQ : Module.support R (Shrink.{v} (R ⧸ I)) = PrimeSpectrum.zeroLocus I := by
     rw [(Shrink.linearEquiv R _).support_eq, Module.support_eq_zeroLocus, annihilator_quotient]
-  tfae_have 1 → 2 := fun h1 i hi ↦ h1 (ModuleCat.of R (Shrink.{v} (R ⧸ I)))
+  tfae_have 1 → 2 := fun h1 i hi ↦ h1 ↧(Shrink.{v} (R ⧸ I))
     inferInstance inferInstance suppQ.subset i hi
-  tfae_have 2 → 3 := fun h2 ↦ ⟨(ModuleCat.of R (Shrink.{v} (R ⧸ I))),
+  tfae_have 2 → 3 := fun h2 ↦ ⟨↧(Shrink.{v} (R ⧸ I)),
     inferInstance, Module.Finite.equiv (Shrink.linearEquiv R (R ⧸ I)).symm, suppQ, h2⟩
   tfae_have 3 → 4 := fun ⟨N, _, _, h_supp, h_ext⟩ ↦
     exists_isRegular_of_exists_subsingleton_ext I n M smul_lt N h_supp h_ext

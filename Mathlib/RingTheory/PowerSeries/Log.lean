@@ -72,7 +72,7 @@ theorem order_log [Nontrivial A] : (log A).order = 1 :=
   order_eq_nat.mpr ⟨by simp, fun i hi ↦ by simp [Nat.lt_one_iff.mp hi]⟩
 
 /-- The derivative of `log(1+X)` is the geometric series `1 - X + X² - X³ + ⋯ = 1/(1+X)`. -/
-theorem derivative_log : d⁄dX A (log A) = mk fun n ↦ (-1 : A) ^ n := by
+theorem derivative_log : d⁄dX (log A) = mk fun n ↦ (-1 : A) ^ n := by
   ext n
   have : (n + 1) = algebraMap ℚ A (n + 1) := by simp
   rw [coeff_derivative, coeff_log, coeff_mk]
@@ -81,7 +81,7 @@ theorem derivative_log : d⁄dX A (log A) = mk fun n ↦ (-1 : A) ^ n := by
 @[deprecated (since := "2026-08-29")] alias deriv_log := derivative_log
 
 /-- The derivative of `log(1+X)` is the inverse of `1 + X`. -/
-theorem derivative_log_mul_one_add_X : d⁄dX A (log A) * (1 + X) = 1 := by
+theorem derivative_log_mul_one_add_X : d⁄dX (log A) * (1 + X) = 1 := by
   rw [derivative_log, mk_neg_one_pow_mul_one_add_eq_one]
 
 /-! ## Substitution -/
@@ -114,14 +114,14 @@ theorem logOf_one_add_X : logOf (1 + X : A⟦X⟧) = log A := by
 
 omit [Algebra ℚ A] in
 theorem eq_of_derivative_mul_one_add_X_eq_self [IsAddTorsionFree A]
-    {g : A⟦X⟧} (hderiv : d⁄dX A g * (1 + X) = g) :
+    {g : A⟦X⟧} (hderiv : d⁄dX g * (1 + X) = g) :
     g = constantCoeff g • (1 + X) := by
   have : Invertible (1 + X : A⟦X⟧) := (isUnit_iff_constantCoeff.mpr (by simp)).invertible
   have hcu : constantCoeff (⅟(1 + X) : A⟦X⟧) = 1 := by
     have h := congrArg (constantCoeff (R := A)) (mul_invOf_self (1 + X : A⟦X⟧))
     rw [map_mul] at h
     simpa using h
-  have hg : g * ⅟(1 + X) = d⁄dX A g := by
+  have hg : g * ⅟(1 + X) = d⁄dX g := by
     conv_lhs => rw [← hderiv]
     rw [mul_assoc, mul_invOf_self, mul_one]
   have key : g * ⅟(1 + X) = C (constantCoeff g) := by
@@ -135,7 +135,7 @@ theorem eq_of_derivative_mul_one_add_X_eq_self [IsAddTorsionFree A]
 variable (A) in
 theorem subst_exp_log : (exp A).subst (log A) = 1 + X := by
   have : IsAddTorsionFree A := IsAddTorsionFree.of_module_rat A
-  have hderiv : d⁄dX A ((exp A).subst (log A)) * (1 + X) = (exp A).subst (log A) := by
+  have hderiv : d⁄dX ((exp A).subst (log A)) * (1 + X) = (exp A).subst (log A) := by
     rw [derivative_subst (hg := HasSubst.log), derivative_exp, mul_assoc,
       derivative_log_mul_one_add_X, mul_one]
   have hconst : constantCoeff ((exp A).subst (log A)) = 1 := by

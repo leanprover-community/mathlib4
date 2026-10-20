@@ -518,7 +518,6 @@ theorem rootMultiplicity_eq_multiplicity [DecidableEq R]
   · rfl
   rename_i h
   simp only [finiteMultiplicity_X_sub_C a h, ↓reduceDIte]
-  rw [untopD_coe_enat]
   congr
 
 @[simp]
@@ -534,7 +533,7 @@ theorem rootMultiplicity_C (r a : R) : rootMultiplicity a (C r) = 0 := by
   split_ifs with hr
   · rfl
   have h : natDegree (C r) < natDegree (X - C a) := by simp
-  simp_rw [multiplicity_eq_zero.mpr ((monic_X_sub_C a).not_dvd_of_natDegree_lt hr h)]
+  simp_rw [multiplicity_eq_zero_of_not_dvd ((monic_X_sub_C a).not_dvd_of_natDegree_lt hr h)]
 
 theorem pow_rootMultiplicity_dvd (p : R[X]) (a : R) : (X - C a) ^ rootMultiplicity a p ∣ p :=
   letI := Classical.decEq R
@@ -650,8 +649,10 @@ lemma IsRoot.dvd_coeff_zero {p : R[X]} {x : R} (h : p.IsRoot x) : x ∣ p.coeff 
 @[simp]
 theorem rootMultiplicity_eq_zero_iff {p : R[X]} {x : R} :
     rootMultiplicity x p = 0 ↔ IsRoot p x → p = 0 := by
+  by_cases hp : p = 0
+  · simp [hp]
   classical
-  simp only [rootMultiplicity_eq_multiplicity, ite_eq_left_iff, multiplicity_eq_zero,
+  simp [rootMultiplicity_eq_multiplicity, multiplicity_eq_zero (finiteMultiplicity_X_sub_C x hp),
     dvd_iff_isRoot, not_imp_not]
 
 theorem rootMultiplicity_eq_zero {p : R[X]} {x : R} (h : ¬IsRoot p x) : rootMultiplicity x p = 0 :=
@@ -675,9 +676,7 @@ theorem eval_divByMonic_pow_rootMultiplicity_ne_zero {p : R[X]} (a : R) (hp : p 
   have := pow_mul_divByMonic_rootMultiplicity_eq p a
   rw [hq, ← mul_assoc, ← pow_succ, rootMultiplicity_eq_multiplicity, ite_eq_right hp] at this
   exact
-    (finiteMultiplicity_of_degree_pos_of_monic
-      (show (0 : WithBot ℕ) < degree (X - C a) by rw [degree_X_sub_C]; decide)
-      (monic_X_sub_C _) hp).not_pow_dvd_of_multiplicity_lt
+    (finiteMultiplicity_X_sub_C a hp).not_pow_dvd_of_multiplicity_lt
       (Nat.lt_succ_self _) (dvd_of_mul_right_eq _ this)
 
 /-- See `Polynomial.self_mul_modByMonic` for the other multiplication order. This version, unlike

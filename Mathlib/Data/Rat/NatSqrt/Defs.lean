@@ -9,7 +9,10 @@ public import Mathlib.Tactic.Positivity
 public import Mathlib.Algebra.Order.Field.Basic
 
 /-!
-Rational approximation of the square root of a natural number.
+# Rational approximations to square roots of naturals
+
+This file defines `Nat.ratSqrt x prec`, a rational approximation of the square root of a
+natural number `x` to within `1 / prec`, and proves the basic bounds it satisfies.
 
 See also `Mathlib.Analysis.Rat.NatSqrt.Real` for comparisons with the real square root.
 -/

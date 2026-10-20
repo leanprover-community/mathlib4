@@ -436,7 +436,7 @@ def basis : Basis (Fin (natDegree f)) R S where
     ext i
     simp only [h.modByMonicHom_map, Finsupp.comapDomain_apply, Polynomial.toFinsupp_apply]
     rw [(Polynomial.modByMonic_eq_self_iff h.monic).mpr, Polynomial.coeff]
-    · rw [Finsupp.mapDomain_apply Fin.val_injective]
+    · rw [Finsupp.mapDomain_apply_of_injective Fin.val_injective]
     rw [degree_eq_natDegree h.monic.ne_zero, degree_lt_iff_coeff_zero]
     intro m hm
     rw [Polynomial.coeff]

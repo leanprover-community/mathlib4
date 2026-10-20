@@ -131,6 +131,7 @@ structure CircleDeg1Lift : Type extends ℝ →o ℝ where
 
 namespace CircleDeg1Lift
 
+@[macro_inline]
 instance : FunLike CircleDeg1Lift ℝ ℝ where
   coe f := f.toFun
   coe_injective | ⟨⟨_, _⟩, _⟩, ⟨⟨_, _⟩, _⟩, rfl => rfl
