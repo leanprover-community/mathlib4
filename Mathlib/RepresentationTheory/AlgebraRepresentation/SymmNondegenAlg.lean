@@ -37,12 +37,12 @@ We say that `f : A` is the trace representative of a `k`-linear `A`-module `V` i
 2) Assume further that `V` is simple, we prove that `f W = 0` for any `k`-linear simple `A`-module
 `W` distinct from `V`, using Jacobson's density theorem and Wedderburn-Artin theorem.
 3) If we assume furthermore `f ^ 2 ≠ 0` and `k` is algebraically closed, we prove that there exists
-some scalar `r : k` such that `r • f` is idempotent satisfying `(r • f : End_k(V))= 1` using 
+some scalar `r : k` such that `r • f` is idempotent satisfying `(r • f : End_k(V))= 1` using
 nondegeneracy and Schur's lemma. In other words, `r • f` is a central idempotent element isolating
 the `V`-isotypic component.
 
 A toy model is `A = ℂ[G]` for a finite group `G` where all central idempotents can be obtained
-this way and the condition `f ^ 2 ≠ 0` is unnecessary. We warn the reader that the condition 
+this way and the condition `f ^ 2 ≠ 0` is unnecessary. We warn the reader that the condition
 `f ^ 2 ≠ 0` is genuinely unavoidable for general symmetric nondegenerate algebras. For example, if
 we take `A = 𝔽_2[ℤ/2ℤ] = 𝔽_2[x]/(x ^ 2)`, then the trace of the trivial representation will produce
 a nilpotent central element `x`.
