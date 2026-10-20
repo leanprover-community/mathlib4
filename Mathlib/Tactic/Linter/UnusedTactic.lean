@@ -24,15 +24,22 @@ The linter inspects the goals before and after each tactic execution.
 If they are not identical, the linter is happy.
 If they are identical, then the linter checks if the tactic is whitelisted.
 Possible reason for whitelisting are
-* tactics that emit messages, such as `have?`, `extract_goal`, or `says`;
+* tactics that emit messages, such as `extract_goal` or `says`;
 * tactics that are in place to assert something, such as `guard`;
 * tactics that allow to work on a specific goal, such as `on_goal`;
 * "flow control" tactics, such as `success_if_fail` and related.
 
-The only tactic that has a bespoke criterion is `swap_var`: the reason is that the only change that
-`swap_var` has is to relabel the usernames of local declarations.
-Thus, to check that `swap_var` was used, so we inspect the names of all the local declarations
-before and after and see if there is some change.
+## Special cases
+
+- `swap_var`: the only change that `swap_var` makes is to rename local declarations.
+  Thus, to check that `swap_var` was used, we inspect the names of all the local declarations
+  before and after and see if there is some change.
+- `try`: the only thing `try` does is to do nothing if the inner tactic throws an error.
+  So, to check that `try` was used, we check that the goals did not change.
+- `<;>`/`all_goals`/`any_goals`: if there is exactly 1 goal, then these are redundant.
+  If there are no goals, then these could in principle not be redundant,
+  but we lint against such cases as well.
+  `any_goals` can be replaced with `all_goals` when all goals were changed.
 
 ## Notable exclusions
 
@@ -62,7 +69,7 @@ namespace Mathlib.Linter
 
 /--
 The unused tactic linter makes sure that every tactic call actually changes *something*.
-It has built in support for the tactics `<;>`, `all_goals`, `try`, `any_goals` and `swap_var`.
+It has special support for tactics `<;>`, `try`, `all_goals`, `any_goals` and `swap_var`.
 -/
 public register_option linter.unusedTactic : Bool := {
   defValue := true
@@ -153,14 +160,16 @@ For each `TacticInfo` in the info tree that corresponds to a tactic syntax:
 -/
 def eraseUsedTactics (exceptions : Std.HashSet SyntaxNodeKind)
     (trees : PersistentArray InfoTree)
+    (tactics convs : Parser.SyntaxNodeKindSet)
     (map : Std.HashMap Syntax.Range (Syntax × Option MessageData)) :
     Std.HashMap Syntax.Range (Syntax × Option MessageData) :=
   trees.foldl (init := map) <| InfoTree.foldInfo fun _ i ranges => Id.run do
     let .ofTacticInfo i := i | return ranges
     let stx := i.stx
     let some r := stx.getRange? true | return ranges
-    let withMsg (msg : MessageData) := ranges.modify r fun (stx, msg?) ↦ (stx, msg?.getD msg)
-    match i.stx with
+    let withMsg (msg : MessageData) (stx? : Option Syntax := none) :=
+      ranges.modify r fun | (stx, none) => (stx?.getD stx, msg) | x => x
+    match stx with
     | .atom _ "<;>" =>
       -- Bespoke check for `<;>`: if it generates at most 1 goal, we consider it unused.
       match i.goalsAfter with
@@ -168,53 +177,38 @@ def eraseUsedTactics (exceptions : Std.HashSet SyntaxNodeKind)
       | [_] => return withMsg m!"`<;>` can be replaced with `;`"
       | _ => return ranges.erase r
     | .node _ kind _ =>
-      -- An excepted tactic is always considered to be used.
+      unless tactics.contains kind || convs.contains kind do return ranges
+      -- if the tactic is allowed to not change the goals
       if exceptions.contains kind then
-        return ranges.push r
+        return ranges.erase r
+      if i.goalsBefore.isEmpty then
+        return withMsg m!"there are no goals left for `{stx}`"
       match kind with
+      | ``Lean.Parser.Tactic.tacticTry_ =>
+        -- `try` is unused if the inner tactic succeeded.
+        if i.goalsAfter != i.goalsBefore then
+          return withMsg "`try` can be removed" stx[0]
       | ``Lean.Parser.Tactic.allGoals =>
-        -- `all_goals` is used if it acts on at least 2 goals.
-        return if i.goalsBefore matches [] | [_] then ranges else ranges.push r
-      | ``Lean.Parser.Tactic.tacticTry_ | ``Lean.Parser.Tactic.anyGoals =>
-        -- `try`/`any_goals` is used if it leaves at least 1 goal.
-        return if i.goalsAfter matches [] then ranges else ranges.push r
+        -- `all_goals` is unused if it acts on 1 goal.
+        if i.goalsBefore matches [_] then
+          return withMsg m!"`all_goals` can be removed" stx[0]
+      | ``Lean.Parser.Tactic.anyGoals =>
+        -- `any_goals` is unused if it acts on 1 goal,
+        -- or if the inner tactic succeeded on all goals.
+        if i.goalsBefore matches [_] then
+          return withMsg "`any_goals` can be removed" stx[0]
+        if i.goalsAfter.all (!i.goalsBefore.contains ·) then
+          return withMsg "`any_goals` can be replaced with `all_goals`" stx[0]
       | `Mathlib.Tactic.«tacticSwap_var__,,» =>
         -- `swap_var` is used if it changes the username of a free variable.
-        return if getNames i.mctxBefore != getNames i.mctxAfter then ranges.push r else ranges
+        if getNames i.mctxBefore == getNames i.mctxAfter then
+          return withMsg m!"`swap_var` does not change the variable names in the goal"
       | _ =>
-      -- The tactic is used if the goals have changed.
-      return if i.goalsAfter != i.goalsBefore then ranges.push r else ranges
+        -- The tactic is unused if the goals stay the same.
+        if i.goalsAfter == i.goalsBefore then
+          return withMsg m!"`{stx}` does not change the goal"
+      return ranges.erase r
     | _ => return ranges
-
-/--
-The warning message emitted for `stx`. Also return the syntax on which to put the warning.
-This is for tactic combinators like `all_goals` so that the warning is only on `all_goals` itself.
--/
-def unusedTacticMsg (stx : Syntax) : MessageData × Syntax :=
-  if stx.isAtom then
-    (m!"`<;>` can be replaced with `;` or be removed", stx)
-  else
-    match stx.getKind with
-    | ``Lean.Parser.Tactic.allGoals => (m!"`all_goals` can be removed", stx[0])
-    | ``Lean.Parser.Tactic.anyGoals =>
-      (m!"`any_goals` can be replaced with `all_goals` or be removed", stx[0])
-    | ``Lean.Parser.Tactic.tacticTry_ => (m!"`try` can be removed", stx[0])
-    | _ => (m!"`{stx}` does nothing", stx)
-
-/--
-The warning message emitted for `stx`. Also return the syntax on which to put the warning.
-This is for tactic combinators like `all_goals` so that the warning is only on `all_goals` itself.
--/
-def unusedTacticMsg (stx : Syntax) : MessageData × Syntax :=
-  if stx.isAtom then
-    (m!"`<;>` can be replaced with `;` or be removed", stx)
-  else
-    match stx.getKind with
-    | ``Lean.Parser.Tactic.allGoals => (m!"`all_goals` can be removed", stx[0])
-    | ``Lean.Parser.Tactic.anyGoals =>
-      (m!"`any_goals` can be replaced with `all_goals` or be removed", stx[0])
-    | ``Lean.Parser.Tactic.tacticTry_ => (m!"`try` can be removed", stx[0])
-    | _ => (m!"`{stx}` does nothing", stx)
 
 /-- The main entry point to the unused tactic linter. -/
 def unusedTacticLinter : Linter where run := withSetOptionIn fun stx => do
@@ -232,7 +226,7 @@ def unusedTacticLinter : Linter where run := withSetOptionIn fun stx => do
   let trees ← getInfoTrees
   let exceptions := (← allowedRef.get).union <| allowedUnusedTacticExt.getState env
   let (_, map) ← (getTactics (← ignoreTacticKindsRef.get) tactics convs stx).run {}
-  let map := eraseUsedTactics exceptions trees map
+  let map := eraseUsedTactics exceptions trees tactics convs map
   let unused := map.toArray
   let key (r : Lean.Syntax.Range) := (r.start.byteIdx, (-r.stop.byteIdx : Int))
   let mut last : Lean.Syntax.Range := ⟨0, 0⟩
