@@ -387,7 +387,9 @@ def checkBlocklist (env : Environment) (forbidden : NamePrefixRel) (mainModule :
   | none => none
 
 /--
-Runs the `directoryDependency` linter on the current module, assuming that it is called `mainModule`. Detects imports between directories that are supposed to be independent. If this is the case, it emits a warning.
+Runs the `directoryDependency` linter on the current module, assuming that it is called
+`mainModule`. Detects imports between directories that are supposed to be independent. If this is
+the case, it emits a warning.
 
 Note: we look in `srcDir` for `scripts/forbiddenDirs.json` and, if in mathlib, for `Mathlib.Init`.
 `srcDir` is thus typically expected to be the package directory (e.g. `{path}/mathlib4`).
