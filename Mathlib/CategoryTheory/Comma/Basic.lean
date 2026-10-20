@@ -81,7 +81,6 @@ instance Comma.inhabited [Inhabited T] : Inhabited (Comma (𝟭 T) (𝟭 T)) whe
 
 variable {L : A ⥤ T} {R : B ⥤ T}
 
-set_option linter.translate.warnInvalid false in
 /-- A morphism between two objects in the comma category is a commutative square connecting the
 morphisms coming from the two objects using morphisms in the image of the functors `L` and `R`.
 -/

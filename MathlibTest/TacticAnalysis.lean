@@ -736,7 +736,6 @@ example : x = y := by
     lia
   rfl
 
-set_option linter.unusedVariables false in
 theorem create_a_few_goals (h1 : 1 + 1 = 2) (h2 : y = z) : x = y := rfl
 
 -- We should not complain about `omega` (and others) failing in an `any_goals` context.

@@ -25,7 +25,6 @@ example (a : Nat) : a = a := rfl
 -- exactly what the linter invoked internally for each declaration.
 /-- info: Used approximately 1000 heartbeats, which is less than the current maximum of 200000. -/
 #guard_msgs in
-set_option linter.unusedTactic false in
 #count_heartbeats approximately in
 example : True := by
   sleep_heartbeats 1000
@@ -36,7 +35,6 @@ example : True := by
 -- `example` and `def` bodies are elaborated synchronously and did not exhibit the bug.
 /-- info: Used approximately 5000 heartbeats, which is less than the current maximum of 200000. -/
 #guard_msgs in
-set_option linter.unusedTactic false in
 #count_heartbeats approximately in
 theorem countHeartbeatsCountsAsyncTheoremBody : True := by
   sleep_heartbeats 5000

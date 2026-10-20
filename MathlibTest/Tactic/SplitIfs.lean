@@ -66,7 +66,6 @@ example : True := by
   trivial
 
 open scoped Classical in
-set_option linter.unusedVariables false in
 example (P Q : Prop) (w : if P then (if Q then true else true) else true = true) : true := by
   split_ifs at w
   -- check that we've fully split w into three subgoals
@@ -74,7 +73,6 @@ example (P Q : Prop) (w : if P then (if Q then true else true) else true = true)
   · trivial
   · trivial
 
-set_option linter.unusedTactic false in
 example (u : Nat) : (if u = u then 0 else 1) = 0 := by
   have h : u = u := by rfl
   split_ifs

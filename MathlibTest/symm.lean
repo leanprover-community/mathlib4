@@ -17,7 +17,6 @@ set_option linter.defProp false in
 
 example (a b : Nat) : sameParity a b → sameParity b a := by intros; symm; assumption
 
-set_option linter.unusedTactic false in
 example (a b c : Nat) (ab : a = b) (bc : b = c) : c = a := by
   symm_saturate
   -- Run twice to check that we don't add repeated copies.

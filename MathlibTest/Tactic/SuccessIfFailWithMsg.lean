@@ -36,7 +36,6 @@ def err (t : Bool) := if t then
     "not that message
 ⊢ True"
 
-set_option linter.unusedVariables false in
 example (n : Nat) : True := by
   success_if_fail_with_msg (err true) rw [Nat.le_succ n]
   trivial

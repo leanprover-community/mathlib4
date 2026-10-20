@@ -484,7 +484,6 @@ variable {σ : Type*} [Inhabited σ]
 
 variable (M : Λ → TM1.Stmt Γ Λ σ)
 
-set_option linter.unusedVariables false in
 /-- The base machine state space is a pair of an `Option Stmt₁` representing the current program
 to be executed, or `none` for the halt state, and a `σ` which is the local state (stored in the TM,
 not the tape). Because there are an infinite number of programs, this state space is infinite, but

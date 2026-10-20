@@ -75,7 +75,6 @@ lemma Discrete.as_bijective {α : Type*} : (Discrete.as (α := α)).Bijective :=
 instance {α : Type u₁} [DecidableEq α] : DecidableEq (Discrete α) :=
   discreteEquiv.decidableEq
 
-set_option linter.translate.warnInvalid false in
 /-- The only morphisms in `Discrete α` are the identity morphisms. -/
 @[nolint structureInType, to_dual self (reorder := a b) (relevant_arg := _)]
 structure Discrete.Hom {α : Type u₁} (a b : α) : Type u₁ where

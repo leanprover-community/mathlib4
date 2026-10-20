@@ -106,7 +106,6 @@ example (n k : ℕ) (H : n % k + 1 ≤ k % n + 1) : n % k ≤ k % n := by
   fail_if_success gcongr
   linarith
 
-set_option linter.unusedVariables false in
 example {x : ℤ} (hx : x ≥ 12) (h : Even x) : Even x := by
   success_if_fail_with_msg "rel failed, goal not a relation" (rel [hx])
   exact h

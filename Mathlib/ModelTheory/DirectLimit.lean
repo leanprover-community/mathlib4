@@ -73,7 +73,6 @@ instance natLERec.directedSystem : DirectedSystem G' fun i j h => natLERec f' i 
 
 end DirectedSystem
 
-set_option linter.unusedVariables false in
 /-- Alias for `Σ i, G i`.
 
 Instead of `Σ i, G i`, we use the alias `Language.Structure.Sigma` which depends on `f`.

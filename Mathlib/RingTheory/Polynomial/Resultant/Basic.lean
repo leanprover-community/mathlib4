@@ -519,7 +519,6 @@ nonrec lemma resultant_eq_prod_eval [IsDomain R]
   simp only [eval_map_algebraMap, Function.comp_apply, Multiset.map_map, L]
   congr; ext; simp [aeval_algebraMap_apply]
 
-set_option linter.unusedVariables false in
 -- the variable names are used in the code action of `induction`.
 /-- An induction principle useful to prove statements about resultants.
 Let `P` be a predicate on a polynomial.

@@ -43,7 +43,6 @@ universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
-set_option linter.translate.warnInvalid false in
 /-- `NatTrans F G` represents a natural transformation between functors `F` and `G`.
 
 The field `app` provides the components of the natural transformation.

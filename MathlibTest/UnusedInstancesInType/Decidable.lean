@@ -129,7 +129,6 @@ section setOptionIn
 
 /-! Test workaround for lean4#11313 -/
 
-set_option linter.unusedDecidableInType false in
 theorem fooUsing₂' [DecidablePred Nonempty] [DecidableEq (Nat → Nat)] :
     UsesInstanceOf (DecidableEq (Nat → Nat)) → True :=
   fun _ => trivial

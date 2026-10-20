@@ -75,7 +75,6 @@ structure Order.Coframe.MinimalAxioms (α : Type u) [CompleteLattice α] where
 /-- A frame, aka complete Heyting algebra, is a complete lattice whose `⊓` distributes over `⨆`. -/
 class Order.Frame (α : Type*) extends CompleteLattice α, HeytingAlgebra α where
 
-set_option linter.translate.warnInvalid false in
 /-- A coframe, aka complete Brouwer algebra or complete co-Heyting algebra, is a complete lattice
 whose `⊔` distributes over `⨅`. -/
 @[to_dual]

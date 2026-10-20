@@ -86,7 +86,6 @@ def ExProd := Common.ExProd (BaseType sAlg) sA
 @[expose, inherit_doc Common.ExSum]
 def ExSum := Common.ExSum (BaseType sAlg) sA
 
-set_option linter.unusedVariables false in
 variable {a} in
 /-- Evaluates a numeric literal in the algebra `A` by lifting it through the base ring `R`. -/
 def evalCast (cR : Algebra.Cache q($sR)) (cA : Algebra.Cache q($sA)):

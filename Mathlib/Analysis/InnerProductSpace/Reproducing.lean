@@ -353,7 +353,6 @@ theorem _root_.Matrix.PosSemidef.re_sum_kernel' (h : K.PosSemidef) (vv : X →�
     0 ≤ RCLike.re (vv.sum fun x w ↦ vv.sum fun x' w' ↦ ⟪K x' x w, w'⟫_𝕜) :=
   (posSemidef_iff_re_sum_kernel'.mp h).2 vv
 
-set_option linter.unusedVariables false in
 /-- Auxiliary construction for `OfKernel`. TODO: Privatize -/
 @[nolint unusedArguments]
 abbrev H₀ (K : Matrix X X (V →L[𝕜] V)) := X × V →₀ 𝕜

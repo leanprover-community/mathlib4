@@ -20,7 +20,6 @@ The category `ReflQuiv` of (bundled) reflexive quivers, and the free/forgetful a
 namespace CategoryTheory
 universe v u v₁ v₂ u₁ u₂
 
-set_option linter.checkUnivs false in
 /-- Category of refl quivers. -/
 def ReflQuiv :=
   Bundled ReflQuiver.{v, u}

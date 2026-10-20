@@ -69,7 +69,6 @@ example : a ^ 50 * a ^ 37 = a ^ 23 * a ^ 64 := by noncomm_ring
 example (h : ∀ a : R, (2 : ℤ) • a = 0) : (a + 1) ^ 2 = a ^ 2 + 1 := by
   noncomm_ring [h]
 
-set_option linter.unusedVariables false in
 example (h : a = b) (h2 : a = c) : a = c := by
   fail_if_success noncomm_ring [h]
   noncomm_ring [h2]

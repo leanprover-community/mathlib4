@@ -230,7 +230,6 @@ def homToEquiv (α : X ≅ Y) {Z : C} : (Z ⟶ X) ≃ (Z ⟶ Y) where
 
 end Iso
 
-set_option linter.translate.warnInvalid false in
 /-- The `IsIso` typeclass expresses that a morphism is invertible.
 
 Given a morphism `f` with `IsIso f`, one can view `f` as an isomorphism via `asIso f` and get

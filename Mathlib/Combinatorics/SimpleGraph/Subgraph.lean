@@ -468,7 +468,6 @@ instance : BoundedOrder (Subgraph G) where
   le_top x := ⟨Set.subset_univ _, fun _ _ => x.adj_sub⟩
   bot_le _ := ⟨Set.empty_subset _, fun _ _ => False.elim⟩
 
-set_option linter.unusedVariables false in
 instance : CompleteLattice (Subgraph G) where
   isLUB_sSup _ :=
     ⟨fun G' hG' ↦ ⟨Set.subset_biUnion_of_mem hG', fun _ _ hab => ⟨G', hG', hab⟩⟩,

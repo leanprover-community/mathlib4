@@ -115,7 +115,6 @@ namespace FormalGroup
 
 variable {σ : Type*} (F : FormalGroup R)
 
-set_option linter.unusedVariables false in
 /-- `F.Point σ` represents the mathematical space of points of a formal group $F$
 taking values in the formal power series ring `MvPowerSeries σ R` with the property
 that constant coefficient is nilpotent.

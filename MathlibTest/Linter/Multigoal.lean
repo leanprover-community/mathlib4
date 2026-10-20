@@ -145,7 +145,6 @@ example : True ∧ True := by
   focus
     exact .intro
 
-set_option linter.unusedTactic false in
 example : 1 = 1 := by
   sleep_heartbeats 1000
   rfl
@@ -168,7 +167,6 @@ Testing that it does not flag tactics that do nothing.
 This used to trigger the multigoal linter.
 -/
 elab "my_skip" : tactic => pure ()
-set_option linter.unusedTactic false in
 example : True := by
   my_skip
   trivial

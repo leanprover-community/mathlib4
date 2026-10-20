@@ -105,7 +105,6 @@ lemma List.range_succ_eq_map' {n nn n' : ℕ} (pn : NormNum.IsNat n nn) (pn' : n
     List.range n = 0 :: List.map Nat.succ (List.range n') := by
   rw [pn.out, Nat.cast_id, pn', List.range_succ_eq_map]
 
-set_option linter.unusedVariables false in
 /-- Either show the expression `s : Q(List α)` is Nil, or remove one element from it.
 
 Fails if we cannot determine which of the alternatives apply to the expression.

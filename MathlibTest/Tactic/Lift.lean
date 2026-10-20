@@ -101,13 +101,11 @@ example (h : False) : let n : ℤ := 3; n = 3 := by
 
 instance canLift_unit : CanLift Unit Unit id (fun _ ↦ true) := ⟨fun x _ ↦ ⟨x, rfl⟩⟩
 
-set_option linter.unusedVariables false in
 example (n : ℤ) (hn : 0 < n) : True := by
   fail_if_success lift n to ℕ using hn
   fail_if_success lift (n : Option ℤ) to ℕ
   trivial
 
-set_option linter.unusedVariables false in
 example (n : ℤ) : ℕ := by
   fail_if_success lift n to ℕ
   exact 0
@@ -237,7 +235,6 @@ example {x : WithTop ℕ} (hx : x ≠ ⊤) (P : WithTop ℕ → Prop) (h : P x) 
 
 /-! Test that the `h` in `using h` is not cleared if the goal depends on it. -/
 
-set_option linter.unusedVariables false in
 def foo (n : Int) (hn : 0 ≤ n) : Int := n
 
 example (n : Int) (hn : 0 ≤ n) : foo n hn = n := by

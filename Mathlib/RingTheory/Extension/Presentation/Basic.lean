@@ -95,7 +95,6 @@ lemma quotientEquiv_mk (p : P.Ring) : P.quotientEquiv p = algebraMap P.Ring S p 
 lemma quotientEquiv_symm (x : S) : P.quotientEquiv.symm x = P.σ x :=
   rfl
 
-set_option linter.unusedVariables false in
 /--
 Dimension of a presentation defined as the cardinality of the generators
 minus the cardinality of the relations.
