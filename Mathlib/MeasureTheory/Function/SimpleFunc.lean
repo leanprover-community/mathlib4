@@ -384,16 +384,28 @@ instance instOne [One β] : One (α →ₛ β) :=
   ⟨const α 1⟩
 
 @[to_additive]
+instance [One β] : IsOneApply (α →ₛ β) := ⟨fun _ ↦ rfl⟩
+
+@[to_additive]
 instance instMul [Mul β] : Mul (α →ₛ β) :=
   ⟨fun f g => (f.map (· * ·)).seq g⟩
+
+@[to_additive]
+instance [Mul β] : IsMulApply (α →ₛ β) := ⟨fun _ _ _ ↦ rfl⟩
 
 @[to_additive]
 instance instDiv [Div β] : Div (α →ₛ β) :=
   ⟨fun f g => (f.map (· / ·)).seq g⟩
 
 @[to_additive]
+instance [Div β] : IsDivApply (α →ₛ β) := ⟨fun _ _ _ ↦ rfl⟩
+
+@[to_additive]
 instance instInv [Inv β] : Inv (α →ₛ β) :=
   ⟨fun f => f.map Inv.inv⟩
+
+@[to_additive]
+instance [Inv β] : IsInvApply (α →ₛ β) := ⟨fun _ _ ↦ rfl⟩
 
 instance instSup [Max β] : Max (α →ₛ β) :=
   ⟨fun f g => (f.map (· ⊔ ·)).seq g⟩
@@ -484,6 +496,9 @@ variable {K : Type*}
 instance instSMul [SMul K β] : SMul K (α →ₛ β) :=
   ⟨fun k f => f.map (k • ·)⟩
 
+@[to_additive]
+instance [SMul K β] : IsSMulApply K (α →ₛ β) := ⟨fun _ _ _ ↦ rfl⟩
+
 @[to_additive (attr := simp)]
 theorem coe_smul [SMul K β] (c : K) (f : α →ₛ β) : ⇑(c • f) = c • ⇑f :=
   rfl
@@ -549,11 +564,7 @@ instance instCommMonoid [CommMonoid β] : CommMonoid (α →ₛ β) :=
 
 @[to_additive (attr := simp, norm_cast)]
 lemma coe_finsetProd [CommMonoid β] (f : γ → α →ₛ β) (s : Finset γ) :
-    ⇑(∏ t ∈ s, f t) = ∏ t ∈ s, ⇑(f t) := by
-  classical
-  induction s using Finset.induction with
-  | empty => simp
-  | insert a s ha ih => rw [Finset.prod_insert ha, Finset.prod_insert ha, SimpleFunc.coe_mul, ih]
+    ⇑(∏ t ∈ s, f t) = ∏ t ∈ s, ⇑(f t) := FunLike.coe_prod ..
 
 @[to_additive existing]
 instance instGroup [Group β] : Group (α →ₛ β) :=
@@ -589,6 +600,8 @@ instance [NonUnitalSemiring β] : NonUnitalSemiring (α →ₛ β) :=
 instance [NatCast β] : NatCast (α →ₛ β) where
   natCast n := const _ (NatCast.natCast n)
 
+instance [NatCast β] : IsNatCastApply (α →ₛ β) := ⟨fun _ _ ↦ rfl⟩
+
 @[simp, norm_cast]
 lemma coe_natCast [NatCast β] (n : ℕ) :
     ⇑(↑n : α →ₛ β) = fun _ ↦ ↑n := rfl
@@ -599,6 +612,8 @@ instance [NonAssocSemiring β] : NonAssocSemiring (α →ₛ β) :=
 
 instance [IntCast β] : IntCast (α →ₛ β) where
   intCast n := const _ (IntCast.intCast n)
+
+instance [IntCast β] : IsIntCastApply (α →ₛ β) := ⟨fun _ _ ↦ rfl⟩
 
 @[simp, norm_cast]
 lemma coe_intCast [IntCast β] (n : ℤ) :
