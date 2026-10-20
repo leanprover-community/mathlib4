@@ -74,11 +74,9 @@ lemma genLTOne_unique_of_zpowers_eq {g1 g2 : G} (hg1 : g1 < 1) (hg2 : g2 < 1)
   rcases (Subgroup.zpowers g2).bot_or_nontrivial with (h' | h')
   · rw [h'] at h
     simp_all only [Subgroup.zpowers_eq_bot]
-  · have : Nontrivial ↥(Subgroup.zpowers g1) := by rw [h]; exact h'
-    have : IsCyclic ↥(Subgroup.zpowers g1) := by rw [h]; infer_instance
-    simp only [(Subgroup.zpowers g2).genLTOne_unique hg1 h]
-    simp only [← h]
-    simp only [(Subgroup.zpowers g1).genLTOne_unique hg2 h.symm]
+  · have : Nontrivial (Subgroup.zpowers g1) := h ▸ h'
+    rw [(Subgroup.zpowers g2).genLTOne_unique hg1 h]
+    simp_rw [← h, (Subgroup.zpowers g1).genLTOne_unique hg2 h.symm]
 
 end Subgroup
 
