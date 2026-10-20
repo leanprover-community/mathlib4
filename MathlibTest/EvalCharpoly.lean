@@ -102,6 +102,44 @@ example (a : ℚ) :
       1 - X * 2 + X ^ 2 + Matrix.charpoly (R := ℚ) !![a, 1; 1, a] := by
   simp only [norm_charpoly]
 
+/-! ## Integer matrices -/
+
+example : Matrix.charpoly (R := ℤ) !![] = 1 := by
+  eval_charpoly
+
+example : Matrix.charpoly (R := ℤ) !![3] = X - 3 := by
+  eval_charpoly
+
+example : Matrix.charpoly (R := ℤ) !![1, 2; 3, 4] = X ^ 2 - 5 * X - 2 := by
+  eval_charpoly
+
+-- compound entries are evaluated in `ℤ`: here `6 / 4 = 1`
+example : Matrix.charpoly (R := ℤ) !![1 + 1, 6 / 4; -(2 * 2), 5] = X ^ 2 - 7 * X + 14 := by
+  eval_charpoly
+
+-- the Hessenberg form of this matrix has fractional entries; the result has none
+example : Matrix.charpoly (R := ℤ) !![2, -3, 1; 0, 4, 1; -2, 5, 0] =
+    X ^ 3 - 6 * X ^ 2 + 5 * X - 4 := by
+  eval_charpoly
+
+example : Matrix.charpoly !![1, 2; 3, 4] = Matrix.charpoly (R := ℤ) !![4, 3; 2, 1] := by
+  simp only [norm_charpoly]
+
+-- the Cartan matrix of `E₈`
+example :
+    Matrix.charpoly
+      !![ 2,  0, -1,  0,  0,  0,  0,  0;
+          0,  2,  0, -1,  0,  0,  0,  0;
+         -1,  0,  2, -1,  0,  0,  0,  0;
+          0, -1, -1,  2, -1,  0,  0,  0;
+          0,  0,  0, -1,  2, -1,  0,  0;
+          0,  0,  0,  0, -1,  2, -1,  0;
+          0,  0,  0,  0,  0, -1,  2, -1;
+          0,  0,  0,  0,  0,  0, -1,  2] =
+      X ^ 8 - 16 * X ^ 7 + 105 * X ^ 6 - 364 * X ^ 5 + 714 * X ^ 4 - 784 * X ^ 3 + 440 * X ^ 2 -
+        96 * X + 1 := by
+  eval_charpoly
+
 /-! ## Failure tests -/
 
 -- the goal is left in the normal form of `ring_nf` when `ring1` cannot close it
@@ -145,17 +183,7 @@ example (a : ℚ) :
 error: `eval_charpoly` made no progress.
 Additional information may be available using `set_option trace.Tactic.evalCharpoly true`.
 ---
-trace: [Tactic.evalCharpoly] expected the element type to be ℚ, found ℤ
-      !![1, 2; 3, 4]
--/
-#guard_msgs in
-example : Matrix.charpoly (R := ℤ) !![1, 2; 3, 4] = X ^ 2 - 5 * X - 2 := by eval_charpoly
-
-/--
-error: `eval_charpoly` made no progress.
-Additional information may be available using `set_option trace.Tactic.evalCharpoly true`.
----
-trace: [Tactic.evalCharpoly] expected the element type to be ℚ, found ℝ
+trace: [Tactic.evalCharpoly] expected an `Algebra ℝ ℚ` instance
       !![1, 2; 3, 4]
 -/
 #guard_msgs in

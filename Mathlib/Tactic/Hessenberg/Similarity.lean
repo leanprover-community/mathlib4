@@ -15,7 +15,6 @@ public import Mathlib.Tactic.Hessenberg.Reduce
 public import Mathlib.Tactic.Matrix.Cert
 public import Mathlib.Tactic.Matrix.MulExpand
 public import Mathlib.Tactic.Matrix.Swaps
-public import Mathlib.Tactic.NormNum.Basic
 
 /-!
 # Certificate construction for Hessenberg similarity
@@ -39,8 +38,8 @@ The `mkHessenbergSimilarity` function certifies `Aσ * L = L * H` (where `Aσ` i
 `A` by `σ`) via the products `Aσ * L = P` and `L * H = P`, each proved by `certifyProductEq` on the
 lists of rows.
 
-The shape conditions, that `L` is lower triangular with nonzero diagonal, and `H` is upper
-Hessenberg, are decided by the kernel.
+The conditions that `L` is lower triangular with nonzero diagonal and `H` is
+upper Hessenberg are decided by the kernel.
 -/
 
 public meta section
@@ -60,21 +59,22 @@ structure SimilarityResult {n : ℕ} (A : Q(Matrix (Fin $n) (Fin $n) ℚ)) where
   /-- The reduction data underlying the certificate. -/
   red : Reduction
 
-/-- Produce the `Matrix.Hessenberg.Similarity` certificate and corresponding reduction of the
-`n × n` matrix literal `A` over `ℚ` with rows of entries `entries`. -/
-def mkHessenbergSimilarity (n : ℕ) (A : Q(Matrix (Fin $n) (Fin $n) ℚ))
-    (entries : Array (Array Expr)) : MetaM (SimilarityResult A) := do
-  -- Evaluate the entries and reduce the matrix to Hessenberg form.
-  let vals ← entries.mapM (·.mapM fun (e : Q(ℚ)) => do
-    let ⟨v, _, _, _⟩ ← Mathlib.Meta.NormNum.deriveRat e q(inferInstance)
-    return v)
+/-- Produce the `Matrix.Hessenberg.Similarity` certificate and corresponding reduction of `A.map f`
+for the `n × n` matrix literal `A` over `S` and the map `f : S → ℚ`, from the parsed entries
+`entries` of `A`, where `evalEntry` evaluates the image under `f` of an entry. -/
+def mkHessenbergSimilarity {u : Level} {S : Q(Type u)} (f : Q($S → ℚ)) (n : ℕ)
+    (A : Q(Matrix (Fin $n) (Fin $n) $S)) (entries : Array (Array Q($S)))
+    (evalEntry : Q($S) → MetaM ℚ) : MetaM (SimilarityResult q(($A).map $f)) := do
+  -- Evaluate the entries and reduce the matrix `M := A.map f` to Hessenberg form.
+  let M : Q(Matrix (Fin $n) (Fin $n) ℚ) := q(($A).map $f)
+  let vals ← entries.mapM (·.mapM evalEntry)
   let red := reduce n vals
   have σ : Q(Equiv.Perm (Fin $n)) := q(Equiv.symm (permOfSwaps $(← mkSwapsLitQ n red.swaps)))
 
   -- Construct the rows of `Aσ`, `L`, `H` and of the product `P := Aσ * L = L * H`.
-  let rows (M : Array (Array ℚ)) : List (List ℚ) := M.toList.map Array.toList
+  let rows (V : Array (Array ℚ)) : List (List ℚ) := V.toList.map Array.toList
   let pVals := ListMatrix.mul n n n (rows (red.arrange vals)) (rows red.L)
-  let aσRows : List (List Q(ℚ)) := (red.arrange entries).toList.map Array.toList
+  let aσRows : List (List Q(ℚ)) := (red.arrange entries).toList.map (·.toList.map fun e => q($f $e))
   let lRows ← red.L.toList.mapM (·.toList.mapM (mkRatNumeralQ q(ℚ)))
   let hRows ← red.H.toList.mapM (·.toList.mapM (mkRatNumeralQ q(ℚ)))
   let pRows ← pVals.mapM (·.mapM (mkRatNumeralQ q(ℚ)))
@@ -93,24 +93,24 @@ def mkHessenbergSimilarity (n : ℕ) (A : Q(Matrix (Fin $n) (Fin $n) ℚ))
     (q(inferInstance) : Q(Mul ℚ)) n n n aσRows lRows
   have Aσm : Q(Matrix (Fin $n) (Fin $n) ℚ) := q(ofLists $n $n $(mulAσL.A))
 
-  -- `A.reindex σ σ` unfolds to the literal `Aσ`
-  have hAσ : Q(Matrix.reindex $σ $σ $A = $Aσm) :=
-    mkExpectedPropHint q((Matrix.etaExpand_eq (Matrix.reindex $σ $σ $A)).symm)
-      q(Matrix.reindex $σ $σ $A = $Aσm)
+  -- `M.reindex σ σ` unfolds to the literal `Aσ`
+  have hAσ : Q(Matrix.reindex $σ $σ $M = $Aσm) :=
+    mkExpectedPropHint q((Matrix.etaExpand_eq (Matrix.reindex $σ $σ $M)).symm)
+      q(Matrix.reindex $σ $σ $M = $Aσm)
 
   -- The products `L * H = P` and `Aσ * L = P`
   have hLH : Q($Lm * $Hm = $Pm) := ← certifyProductEq none q(inferInstance) mulLH P
   have hAL : Q($Aσm * $Lm = $Pm) := ← certifyProductEq none q(inferInstance) mulAσL P
 
-  -- The similarity `A.reindex σ σ * L = L * H`
-  have hmul : Q((Matrix.reindex $σ $σ $A) * $Lm = $Lm * $Hm) :=
+  -- The similarity `M.reindex σ σ * L = L * H`
+  have hmul : Q((Matrix.reindex $σ $σ $M) * $Lm = $Lm * $Hm) :=
     q($hAσ ▸ ($hAL).trans ($hLH).symm)
 
   -- Check the certificate fields by decide
   let hhess ← mkDecideProofQ q(($Hm).IsUpperHessenberg)
   let hlower ← mkDecideProofQ q(($Lm).IsLowerTriangular)
   let hdiag ← mkDecideProofQ q(∀ i, ($Lm).diag i ≠ 0)
-  have cert : Q(Matrix.Hessenberg.Similarity $A) :=
+  have cert : Q(Matrix.Hessenberg.Similarity $M) :=
     q(⟨$Lm, $σ, $Hm, $hmul, $hlower, $hdiag, $hhess⟩)
 
   -- Certify the Hessenberg matrix array in row-major form

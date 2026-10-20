@@ -9,18 +9,23 @@ public meta import Mathlib.Tactic.Hessenberg.Charpoly
 public import Mathlib.Tactic.Hessenberg.Charpoly  -- shake: keep (Qq dependency)
 public import Mathlib.Tactic.Hessenberg.Similarity
 
+meta import Mathlib.Tactic.Hessenberg.Similarity
+
 /-!
 # Coefficient lists of characteristic polynomials from Hessenberg certificates
 
-This file contains `charpolyCoeffList`, which computes the coefficient list of the characteristic
-polynomial of a matrix literal over `ℚ` with its proof: the kernel evaluates `coeffHessCharpoly` on
-the row-major array of the Hessenberg matrix of a `Hessenberg.Similarity` certificate.
+This file contains the computation of the coefficient list of the characteristic polynomial of a
+matrix literal, by the recurrence coeffHessCharpoly on the Hessenberg matrix of a
+`Hessenberg.Similarity` certificate of the matrix, with a proof that Matrix.charpoly is the
+polynomial with these coefficients.
 
 ## Main definitions
 
-- `charpolyCoeffList`: the coefficient list of the characteristic polynomial of a matrix literal
-  over `ℚ`, with its proof.
-- `CoeffListResult`: the coefficient list together with its literal and proof.
+- `charpolyCoeffList`: computes the coefficient list of the characteristic polynomial of a matrix
+  literal with a proof that `Matrix.charpoly` is the polynomial with these coefficients.
+- `CoeffListResult`: the coefficient list literal of a matrix literal, with its proof.
+- `inferCharpolyRing`: checks that the characteristic polynomial computation can be performed on
+  `S`.
 -/
 
 public meta section
@@ -29,32 +34,63 @@ open Lean Meta Qq
 
 namespace Mathlib.Tactic.Hessenberg
 
-/-- The coefficient list of the characteristic polynomial of the matrix literal `M` over `ℚ`, with
-its proof. -/
-structure CoeffListResult {n : ℕ} (M : Q(Matrix (Fin $n) (Fin $n) ℚ)) where
-  /-- The coefficients, constant term first. -/
-  coeffs : List ℚ
-  /-- The list literal of `coeffs`. -/
-  cs : Q(List ℚ)
-  /-- The proof that `cs` is the coefficient list of the characteristic polynomial. -/
-  charpoly_eq : Q(Matrix.charpoly $M = Polynomial.ofCoeffList $cs)
+/-- The instances of a commutative ring `S` required to compute the characteristic polynomial. -/
+structure CharpolyRing {u : Level} (S : Q(Type u)) where
+  /-- The commutative ring instance on `S`. -/
+  cS : Q(CommRing $S)
+  /-- The algebra instance of `ℚ` over `S`. -/
+  aS : Q(Algebra $S ℚ)
+  /-- The faithfulness of the action of `S` on `ℚ`. -/
+  fS : Q(FaithfulSMul $S ℚ)
 
-/-- The coefficient list of the characteristic polynomial of the `n × n` matrix literal `M` over `ℚ`
-with rows of entries `entries`: the kernel evaluates `coeffHessCharpoly` on the row-major array of
-the Hessenberg matrix of the certificate. -/
-def charpolyCoeffList (n : ℕ) (M : Q(Matrix (Fin $n) (Fin $n) ℚ)) (entries : Array (Array Expr)) :
-    MetaM (CoeffListResult M) := do
-  let ⟨cert, Harr, hH, red⟩ ← mkHessenbergSimilarity n M entries
-  let coeffs := coeffHessCharpoly n red.H.flatten
-  have cs : Q(List ℚ) := mkListLitQ (← coeffs.mapM (mkRatNumeralQ q(ℚ)))
-  let hcs ← mkDecideProofQ q(coeffHessCharpoly $n $Harr = $cs)
-  -- `M.charpoly = cert.H.charpoly = hessCharpoly n cert.H.toArray`, interpreted as a polynomial
-  -- with `ofCoeffList`, then the coefficient list is replaced by its value
-  have charpoly_eq : Q(Matrix.charpoly $M = Polynomial.ofCoeffList $cs) :=
+/-- Check that `S` has the instances available for the characteristic polynomial to be computed. -/
+def inferCharpolyRing {u : Level} (S : Q(Type u)) :
+    MetaM (Except MessageData (CharpolyRing S)) := do
+  let .some cS ← trySynthInstanceQ q(CommRing $S)
+    | return .error m!"expected the element type to be a commutative ring"
+  let .some aS ← trySynthInstanceQ q(Algebra $S ℚ)
+    | return .error m!"expected an `Algebra {S} ℚ` instance"
+  let .some fS ← trySynthInstanceQ q(FaithfulSMul $S ℚ)
+    | return .error m!"expected a `FaithfulSMul {S} ℚ` instance"
+  return .ok { cS, aS, fS }
+
+/-- The coefficient list of the characteristic polynomial of the matrix literal `A` and a proof that
+it's equal to `Matrix.charpoly`. -/
+structure CoeffListResult {u : Level} {S : Q(Type u)} (cS : Q(CommRing $S)) {n : ℕ}
+    (A : Q(Matrix (Fin $n) (Fin $n) $S)) where
+  /-- The list literal of the coefficients, constant term first. -/
+  cs : Q(List $S)
+  /-- The proof that `cs` is the coefficient list of the characteristic polynomial. -/
+  charpoly_eq : Q(Matrix.charpoly $A = Polynomial.ofCoeffList $cs)
+
+/-- Compute the coefficient list of the characteristic polynomial of the matrix literal `A` with
+rows of entries `entries` with a proof that `Matrix.charpoly A` is the polynomial with these
+coefficients. -/
+def charpolyCoeffList {u : Level} (S : Q(Type u)) (r : CharpolyRing S) (n : ℕ)
+    (A : Q(Matrix (Fin $n) (Fin $n) $S)) (entries : Array (Array Expr)) :
+    MetaM (CoeffListResult r.cS A) := do
+  have ⟨_cS, _aS, _fS⟩ := r
+  let evalEntry (e : Q($S)) : MetaM ℚ := do
+    let some v := (← Mathlib.Meta.NormNum.derive e).toRat
+      | throwError "the following entry cannot be evaluated to a rational{indentExpr e}"
+    return v
+  let ⟨cert, Harr, hH, red⟩ ← mkHessenbergSimilarity q(algebraMap $S ℚ) n A entries evalEntry
+
+  -- The coefficients of the characteristic polynomial pulled by to `S`.
+  have cs : Q(List $S) :=
+    mkListLitQ (← (coeffHessCharpoly n red.H.flatten).mapM (mkRatNumeralQ S))
+
+  let hcs ← mkDecideProofQ q(coeffHessCharpoly $n $Harr = ($cs).map (algebraMap $S ℚ))
+  have hq : Q(Matrix.charpoly (($A).map (algebraMap $S ℚ)) =
+      Polynomial.ofCoeffList (($cs).map (algebraMap $S ℚ))) :=
     q(((($cert).charpoly_eq.symm.trans
           (charpoly_eq_hessCharpoly ($cert).H ($cert).isUpperHessenberg)).trans
         (ofCoeffList_coeffHessCharpoly (n := $n)).symm).trans
       (congrArg Polynomial.ofCoeffList ((congrArg (coeffHessCharpoly $n) $hH).trans $hcs)))
-  return { coeffs, cs, charpoly_eq }
+  have charpoly_eq : Q(Matrix.charpoly $A = Polynomial.ofCoeffList $cs) :=
+    q(Polynomial.map_injective (algebraMap $S ℚ) (FaithfulSMul.algebraMap_injective $S ℚ)
+      ((Matrix.charpoly_map $A (algebraMap $S ℚ)).symm.trans
+        (($hq).trans (Polynomial.map_ofCoeffList (algebraMap $S ℚ) $cs).symm)))
+  return { cs, charpoly_eq }
 
 end Mathlib.Tactic.Hessenberg
