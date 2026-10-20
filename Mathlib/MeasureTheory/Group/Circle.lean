@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Complex.Circle
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Measure-theoretic results about the circle
 

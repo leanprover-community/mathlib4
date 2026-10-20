@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Data.String.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Miscellaneous lemmas about strings
 -/
