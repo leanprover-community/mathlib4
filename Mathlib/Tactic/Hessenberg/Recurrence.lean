@@ -88,7 +88,7 @@ variable (n H)
 
 /-- Compute the coefficients of `∑_{t ≤ i} H[t][k] · r · (∏_{j=t}^{i-1} H[j+1][j]) · p_t` by
 recursion on `i`, where `p_t` is the polynomial defined in the coefficient list `ps[t]`. `r`
-accumulates the produuct of `H[k][k-1]` entries at each step. -/
+accumulates the product of `H[i+1][i]` entries at each step. -/
 @[expose]
 def coeffHessSum (k : ℕ) :
     (i : ℕ) → (r : R) → (ps : Array (List R)) → List R
