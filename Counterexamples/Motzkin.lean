@@ -51,7 +51,7 @@ private lemma motzkin_nonneg_aux (x y : K) :
 
 /-- The **Motzkin polynomial** is nonnegative everywhere. -/
 theorem motzkin_nonneg (r : Fin 2 → K) : 0 ≤ motzkin.eval r := by
-  simp [motzkin, MvPolynomial.eval, ← mul_assoc, motzkin_nonneg_aux]
+  simp [motzkin, eval, ← mul_assoc, motzkin_nonneg_aux]
 
 /-- If the Motzkin polynomial is expressible as a polynomial sum of squares ∑ gᵢ², then the degree
   of each gᵢ is at most three. -/
@@ -67,28 +67,26 @@ private lemma motzkin_ne_sos_aux₁ {ι : Type*} {s : Finset ι}
   have h1 := congr($h |>.homogeneousComponent (2 * d))
   -- lhs = 0.
   have : motzkin (K := K).homogeneousComponent (2 * d) = 0 := by
-    apply MvPolynomial.homogeneousComponent_eq_zero
+    apply homogeneousComponent_eq_zero
     refine lt_of_le_of_lt (b := 6) ?_ (by linarith)
     rw [motzkin]
-    refine le_trans (MvPolynomial.totalDegree_add _ _) (max_le ?_ ?_)
-    case refine_2 => simp
-    refine le_trans (MvPolynomial.totalDegree_sub _ _) (max_le ?_ ?_)
-    case refine_2 => simp [Finsupp.sum_single_add_single]
-    refine le_trans (MvPolynomial.totalDegree_add _ _) (max_le ?_ ?_)
+    refine le_trans (totalDegree_add _ _) (max_le ?_ (by simp))
+    refine le_trans (totalDegree_sub _ _) (max_le ?_ (by simp [Finsupp.sum_single_add_single]))
+    refine le_trans (totalDegree_add _ _) (max_le ?_ ?_)
     <;> simp [Finsupp.sum_single_add_single]
   rw [this] at h1
   -- Rewrite rhs as sos of homogeneous components of gᵢ's of degree d.
   have : ∀ i ∈ s, (g i ^ 2).homogeneousComponent (2 * d) = (g i).homogeneousComponent d ^ 2 := by
     intro i hi
-    refine MvPolynomial.homogeneousComponent_pow_eq_of_totalDegree_le ?_ 2
+    refine homogeneousComponent_pow_eq_of_totalDegree_le ?_ 2
     exact Finset.le_sup (f := fun i ↦ (g i).totalDegree) hi
   rw [map_sum, Finset.sum_congr rfl this] at h1
   -- For any choice of variables, rhs evaluates to zero. Hence, each homogeneous component in sos
   -- evaluates to zero. Hence, each homogeneous component in sos is zero.
-  simp only [MvPolynomial.funext_iff, map_zero, map_sum, map_pow] at h1
+  simp only [funext_iff, map_zero, map_sum, map_pow] at h1
   have h2 : ∀ i ∈ s, (g i).homogeneousComponent d = 0 := by
     intro i hi
-    simp only [MvPolynomial.funext_iff, map_zero]
+    simp only [funext_iff, map_zero]
     intro r
     specialize h1 r
     rw [eq_comm, Finset.sum_eq_zero_iff_of_nonneg fun _ _ ↦ sq_nonneg _] at h1
@@ -101,8 +99,7 @@ private lemma motzkin_ne_sos_aux₁ {ι : Type*} {s : Finset ι}
   specialize h2 i hi1
   rw [hd, hi2] at h2
   replace h2 := congr($h2 |>.totalDegree)
-  simp only [MvPolynomial.totalDegree_homogeneousComponent_totalDegree,
-    MvPolynomial.totalDegree_zero] at h2
+  simp only [totalDegree_homogeneousComponent_totalDegree, totalDegree_zero] at h2
   linarith
 
 /-- Sets the first variable in a bivariate polynomial to zero. -/
@@ -126,14 +123,14 @@ private lemma yZero_sq {R : Type*} [CommSemiring R] (f : MvPolynomial (Fin 2) R)
     yZero (f ^ 2) = yZero f ^ 2 := by simp [yZero]
 
 private lemma xZero_monomial {R : Type*} [CommSemiring R] (m : Fin 2 →₀ ℕ) (c : R) :
-    xZero (MvPolynomial.monomial m c) = if m 0 = 0 then Polynomial.monomial (m 1) c else 0 := by
+    xZero (monomial m c) = if m 0 = 0 then Polynomial.monomial (m 1) c else 0 := by
   by_cases! hm : m 0 = 0
-  <;> simp [hm, xZero, MvPolynomial.aeval_monomial, Polynomial.C_mul_X_pow_eq_monomial]
+  <;> simp [hm, xZero, aeval_monomial, Polynomial.C_mul_X_pow_eq_monomial]
 
 private lemma yZero_monomial {R : Type*} [CommSemiring R] (m : Fin 2 →₀ ℕ) (c : R) :
-    yZero (MvPolynomial.monomial m c) = if m 1 = 0 then Polynomial.monomial (m 0) c else 0 := by
+    yZero (monomial m c) = if m 1 = 0 then Polynomial.monomial (m 0) c else 0 := by
   by_cases! hm : m 1 = 0
-  <;> simp [hm, yZero, MvPolynomial.aeval_monomial, Polynomial.C_mul_X_pow_eq_monomial]
+  <;> simp [hm, yZero, aeval_monomial, Polynomial.C_mul_X_pow_eq_monomial]
 
 private lemma mem_support_xZero {R : Type*} [CommSemiring R] {f : MvPolynomial (Fin 2) R}
     {m : Fin 2 →₀ ℕ} (hm1 : m ∈ f.support) (hm2 : 0 ∉ m.support) : m 1 ∈ (xZero f).support := by
@@ -142,7 +139,7 @@ private lemma mem_support_xZero {R : Type*} [CommSemiring R] {f : MvPolynomial (
   simp only [xZero_monomial, apply_ite (Polynomial.coeff · (m 1)), Polynomial.coeff_monomial,
     Polynomial.coeff_zero, ← ite_and, ← hm2]
   have : ∀ d, d = m ↔ d 0 = m 0 ∧ d 1 = m 1 := by simp [Finsupp.ext_iff]
-  simp only [← this, Finset.sum_ite_eq', hm1, ite_true, ← MvPolynomial.mem_support_iff]
+  simp only [← this, Finset.sum_ite_eq', hm1, ite_true, ← mem_support_iff]
 
 private lemma mem_support_yZero {R : Type*} [CommSemiring R] {f : MvPolynomial (Fin 2) R}
     {m : Fin 2 →₀ ℕ} (hm1 : m ∈ f.support) (hm2 : 1 ∉ m.support) : m 0 ∈ (yZero f).support := by
@@ -151,7 +148,7 @@ private lemma mem_support_yZero {R : Type*} [CommSemiring R] {f : MvPolynomial (
   simp only [yZero_monomial, apply_ite (Polynomial.coeff · (m 0)), Polynomial.coeff_monomial,
     Polynomial.coeff_zero, ← ite_and, ← hm2, and_comm]
   have : ∀ d, d = m ↔ d 0 = m 0 ∧ d 1 = m 1 := by simp [Finsupp.ext_iff]
-  simp only [← this, Finset.sum_ite_eq', hm1, ite_true, ← MvPolynomial.mem_support_iff]
+  simp only [← this, Finset.sum_ite_eq', hm1, ite_true, ← mem_support_iff]
 
 /-- If the Motzkin polynomial is expressible as a polynomial sum of squares ∑ gᵢ², then for every i,
   each non-constant monomial in gᵢ contains both x and y. -/
@@ -166,7 +163,7 @@ private lemma motzkin_ne_sos_aux₂ {ι : Type*} {s : Finset ι}
     simp only [yZero_sum, yZero_sq] at h1
     -- lhs = 1.
     have : yZero (motzkin (K := K)) = 1 := by
-      simp [motzkin, yZero, MvPolynomial.aeval]
+      simp [motzkin, yZero, aeval]
     rw [this] at h1
     -- The degree of rhs is zero. Hence, the degree of every gᵢ, after setting y to zero, is zero.
     replace h1 := congr($h1 |>.natDegree)
@@ -182,7 +179,7 @@ private lemma motzkin_ne_sos_aux₂ {ι : Type*} {s : Finset ι}
     have h1 := congr(xZero $h)
     simp only [xZero_sum, xZero_sq] at h1
     have : xZero (motzkin (K := K)) = 1 := by
-      simp [motzkin, xZero, MvPolynomial.aeval]
+      simp [motzkin, xZero, aeval]
     rw [this] at h1
     replace h1 := congr($h1 |>.natDegree)
     rw [Polynomial.natDegree_one] at h1
@@ -201,7 +198,7 @@ private lemma motzkin_ne_sos_aux₃ {ι : Type*} {s : Finset ι}
     {g : ι → MvPolynomial (Fin 2) K} (h : motzkin = ∑ i ∈ s, g i ^ 2) :
     ∀ i ∈ s, (g i).support ⊆ t := by
   intro i hi m hm
-  have h1 : m.degree ≤ 3 := le_trans (MvPolynomial.le_totalDegree hm)
+  have h1 : m.degree ≤ 3 := le_trans (le_totalDegree hm)
     (motzkin_ne_sos_aux₁ h i hi)
   simp only [Finsupp.degree_eq_sum, Fin.sum_univ_two] at h1
   have h2 : 0 ∈ m.support ↔ 1 ∈ m.support := motzkin_ne_sos_aux₂ h i hi m hm
@@ -227,18 +224,18 @@ theorem motzkin_ne_sos {ι : Type*} (s : Finset ι) (g : ι → MvPolynomial (Fi
   have h := congr($hcontra |>.coeff ⟪2, 2⟫)
   -- The coefficient in the Motzkin polynomial is negative.
   have : motzkin (K := K).coeff ⟪2, 2⟫ < 0 := by
-    simp [motzkin, Finsupp.ext_iff, MvPolynomial.coeff_one]
+    simp [motzkin, Finsupp.ext_iff, coeff_one]
   -- From auxiliary lemmas, the coefficient in sos is sos of coefficients of xy.
   have : ∀ i ∈ s, (g i ^ 2).coeff ⟪2, 2⟫ = (g i).coeff ⟪1, 1⟫ ^ 2 := by
     intro i hi
     conv => left; rw [sq, (g i).as_sum, Finset.sum_mul_sum]
     have hit : (g i).support ⊆ t := motzkin_ne_sos_aux₃ hcontra i hi
-    rw [Finset.sum_subset hit (fun _ _ hm ↦ by simp [MvPolynomial.notMem_support_iff.mp hm])]
+    rw [Finset.sum_subset hit (fun _ _ hm ↦ by simp [notMem_support_iff.mp hm])]
     conv =>
       left; left; right; right; intro m
-      rw [Finset.sum_subset hit (fun _ _ hm ↦ by simp [MvPolynomial.notMem_support_iff.mp hm])]
-    simp [← Finset.sum_product', MvPolynomial.coeff_monomial, ← Finset.sum_filter, auxₜ, sq]
-  rw [MvPolynomial.coeff_sum, Finset.sum_congr rfl this] at h
+      rw [Finset.sum_subset hit (fun _ _ hm ↦ by simp [notMem_support_iff.mp hm])]
+    simp [← Finset.sum_product', coeff_monomial, ← Finset.sum_filter, auxₜ, sq]
+  rw [coeff_sum, Finset.sum_congr rfl this] at h
   -- Hence, it is nonnegative. Contradiction.
   have : 0 ≤ ∑ i ∈ s, (g i).coeff ⟪1, 1⟫ ^ 2 := Finset.sum_nonneg fun _ _ ↦ sq_nonneg _
   order
