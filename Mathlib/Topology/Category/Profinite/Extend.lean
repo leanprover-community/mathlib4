@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Filtered.Final
 public import Mathlib.Topology.Category.Profinite.AsLimit
 public import Mathlib.Topology.Category.Profinite.CofilteredLimit
+
 /-!
 
 # Extending cones in `Profinite`

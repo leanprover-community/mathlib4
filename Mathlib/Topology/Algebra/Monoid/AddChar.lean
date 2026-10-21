@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.AddChar
 public import Mathlib.Topology.DenseEmbedding
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Additive characters of topological monoids
 -/

@@ -8,8 +8,7 @@ module
 public meta import Lean.Elab.ConfigEval
 public import Mathlib.Tactic.FunProp.Core
 
-import Lean.Elab.ConfigEval
-import Lean.Elab.InfoTree.Main
+meta import Lean.Elab.InfoTree.Main
 import Mathlib.Tactic.InferParam
 
 /-!
