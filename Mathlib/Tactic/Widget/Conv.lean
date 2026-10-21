@@ -7,7 +7,7 @@ module
 
 public meta import Lean.PrettyPrinter.Delaborator.Builtins
 public meta import ProofWidgets.Component.Basic
-public import Mathlib.Lean.Name
+public meta import Mathlib.Lean.Name
 public import Mathlib.Tactic.Widget.SelectPanelUtils
 
 import ProofWidgets.Component.Basic
