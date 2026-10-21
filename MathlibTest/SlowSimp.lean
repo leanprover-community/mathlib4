@@ -1,7 +1,5 @@
-module
-
-public import Mathlib
-public import Mathlib.Topology.Category.TopCat.Basic
+import Mathlib
+import Mathlib.Topology.Category.TopCat.Basic
 
 /-!
 This test file serves as a sentinel against bad simp lemmas.
