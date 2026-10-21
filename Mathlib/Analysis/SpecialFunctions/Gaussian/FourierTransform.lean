@@ -93,7 +93,7 @@ theorem verticalIntegral_norm_le (hb : 0 < b.re) (c : ℝ) {T : ℝ} (hT : 0 ≤
     conv_lhs => simp only [mul_comm _ |c|]
     conv_rhs =>
       conv =>
-        congr
+        enter [1]
         rw [mul_comm]
       rw [mul_assoc]
   · intro y hy

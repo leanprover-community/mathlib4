@@ -331,8 +331,7 @@ theorem neg_def {X Y : C} (a : X ⟶ Y) : -a = 0 - a := rfl
 theorem sub_zero {X Y : C} (a : X ⟶ Y) : a - 0 = a := by
   rw [sub_def]
   conv_lhs =>
-    congr; congr; rw [← Category.comp_id a]
-    case a.g => rw [show 0 = a ≫ (0 : Y ⟶ Y) by simp]
+    rw [← Category.comp_id a, show 0 = a ≫ (0 : Y ⟶ Y) by simp]
   rw [← prod.comp_lift, Category.assoc, lift_σ, Category.comp_id]
 
 theorem sub_self {X Y : C} (a : X ⟶ Y) : a - a = 0 := by
@@ -354,7 +353,7 @@ theorem neg_sub {X Y : C} (a b : X ⟶ Y) : -a - b = -b - a := by
 theorem neg_neg {X Y : C} (a : X ⟶ Y) : - -a = a := by
   rw [neg_def, neg_def]
   conv_lhs =>
-    congr; rw [← sub_self a]
+    enter [1]; rw [← sub_self a]
   rw [sub_sub_sub, sub_zero, sub_self, sub_zero]
 
 theorem add_comm {X Y : C} (a b : X ⟶ Y) : a + b = b + a := by
@@ -362,9 +361,7 @@ theorem add_comm {X Y : C} (a b : X ⟶ Y) : a + b = b + a := by
   conv_lhs => rw [← neg_neg a]
   rw [neg_def, neg_def, neg_def, sub_sub_sub]
   conv_lhs =>
-    congr
-    next => skip
-    rw [← neg_def, neg_sub]
+    enter [2]; rw [← neg_def, neg_sub]
   rw [sub_sub_sub, add_def, ← neg_def, neg_neg b, neg_def]
 
 theorem add_neg {X Y : C} (a b : X ⟶ Y) : a + -b = a - b := by rw [add_def, neg_neg]
@@ -385,7 +382,7 @@ theorem sub_add {X Y : C} (a b c : X ⟶ Y) : a - b + c = a - (b - c) := by
 
 theorem add_assoc {X Y : C} (a b c : X ⟶ Y) : a + b + c = a + (b + c) := by
   conv_lhs =>
-    congr; rw [add_def]
+    enter [1]; rw [add_def]
   rw [sub_add, ← add_neg, neg_sub', neg_neg]
 
 theorem add_zero {X Y : C} (a : X ⟶ Y) : a + 0 = a := by rw [add_def, neg_def, sub_self, sub_zero]

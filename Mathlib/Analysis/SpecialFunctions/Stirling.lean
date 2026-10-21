@@ -172,9 +172,7 @@ https://proofwiki.org/wiki/Stirling%27s_Formula#Part_2
 theorem tendsto_self_div_two_mul_self_add_one :
     Tendsto (fun n : ℕ => (n : ℝ) / (2 * n + 1)) atTop (𝓝 (1 / 2)) := by
   conv =>
-    congr
-    · skip
-    · skip
+    enter [3]
     rw [one_div, ← add_zero (2 : ℝ)]
   refine (((tendsto_const_div_atTop_nhds_zero_nat 1).const_add (2 : ℝ)).inv₀
     ((add_zero (2 : ℝ)).symm ▸ two_ne_zero)).congr' (eventually_atTop.mpr ⟨1, fun n hn => ?_⟩)

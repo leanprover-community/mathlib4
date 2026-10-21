@@ -314,9 +314,7 @@ theorem Cofix.mk_dest {α : TypeVec n} (x : Cofix F α) : Cofix.mk (Cofix.dest x
   intro x y h
   rw [h]
   conv =>
-    lhs
-    congr
-    rfl
+    enter [1, 2]
     rw [Cofix.mk]
     rw [Cofix.dest_corec]
   rw [← comp_map, ← appendFun_comp, id_comp]
@@ -408,7 +406,7 @@ theorem Cofix.abs_repr {α} (x : Cofix F α) : Quot.mk _ (Cofix.repr x) = x := b
   dsimp [Cofix.dest, Cofix.abs]
   induction y using Quot.ind
   simp only [Cofix.repr, M.dest_corec, abs_map, MvQPF.abs_repr, Function.comp]
-  conv => congr; rfl; rw [Cofix.dest]
+  conv => enter [2]; rw [Cofix.dest]
   rw [MvFunctor.map_map, MvFunctor.map_map, ← appendFun_comp_id, ← appendFun_comp_id]
   apply liftR_map_last
   intros

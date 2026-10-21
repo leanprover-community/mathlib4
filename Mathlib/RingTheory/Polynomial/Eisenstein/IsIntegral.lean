@@ -55,12 +55,7 @@ theorem cyclotomic_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] :
     exact zero_ne_one h.symm
   · rw [cyclotomic_prime, geom_sum_X_comp_X_add_one_eq_sum, ← lcoeff_apply, map_sum]
     conv =>
-      congr
-      congr
-      next => skip
-      congr
-      next => skip
-      ext
+      enter [2, 2, _]
       rw [lcoeff_apply, ← C_eq_natCast, C_mul_X_pow_eq_monomial, coeff_monomial]
     rw [natDegree_comp, show (X + 1 : ℤ[X]) = X + C 1 by simp, natDegree_X_add_C, mul_one,
       natDegree_cyclotomic, Nat.totient_prime hp.out] at hi

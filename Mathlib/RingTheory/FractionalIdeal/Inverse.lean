@@ -136,7 +136,7 @@ theorem mul_generator_self_inv {R₁ : Type*} [CommRing R₁] [Algebra R₁ K] [
     (I : FractionalIdeal R₁⁰ K) [Submodule.IsPrincipal (I : Submodule R₁ K)] (h : I ≠ 0) :
     I * spanSingleton _ (generator (I : Submodule R₁ K))⁻¹ = 1 := by
   -- Rewrite only the `I` that appears alone.
-  conv_lhs => congr; rw [eq_spanSingleton_of_principal I]
+  conv_lhs => enter [1]; rw [eq_spanSingleton_of_principal I]
   rw [← map_mul, mul_inv_cancel₀, map_one]
   intro generator_I_eq_zero
   apply h

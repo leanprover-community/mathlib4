@@ -387,16 +387,12 @@ theorem traceMatrix_of_basis_mulVec [Fintype ι] (b : Basis ι A B) (z : B) :
     Matrix.mul_apply, traceMatrix]
   simp only [replicateCol_apply, traceForm_apply]
   conv_lhs =>
-    congr
-    rfl
-    ext
+    enter [2, _]
     rw [mul_comm _ (b.equivFun z _), ← smul_eq_mul, of_apply, ← map_smul]
   rw [← _root_.map_sum]
   congr
   conv_lhs =>
-    congr
-    rfl
-    ext
+    enter [2, _]
     rw [← mul_smul_comm]
   rw [← Finset.mul_sum, mul_comm z]
   congr

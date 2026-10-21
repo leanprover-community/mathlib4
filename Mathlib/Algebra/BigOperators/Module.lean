@@ -36,7 +36,7 @@ theorem sum_Ico_by_parts (hmn : m < n) :
   rw [sum_eq_sum_Ico_succ_bot hmn]
   conv in (occs := 3) (f _ • g _) => rw [← sum_range_succ_sub_sum g]
   simp_rw [smul_sub, sum_sub_distrib, h₂, h₁]
-  conv_lhs => congr; rfl; rw [← add_sub, add_comm, ← add_sub, ← sum_sub_distrib]
+  conv_lhs => enter [2]; rw [← add_sub, add_comm, ← add_sub, ← sum_sub_distrib]
   have : ∀ i, f i • G (i + 1) - f (i + 1) • G (i + 1) = -((f (i + 1) - f i) • G (i + 1)) := by
     intro i
     rw [sub_smul]
