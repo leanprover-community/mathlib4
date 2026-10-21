@@ -494,7 +494,7 @@ theorem count_maximal (w : HeightOneSpectrum R) [Decidable (w = v)] :
 theorem count_finprod_coprime (exps : HeightOneSpectrum R → ℤ) :
     count K v (∏ᶠ (w : HeightOneSpectrum R) (_ : w ≠ v),
       (w.asIdeal : (FractionalIdeal R⁰ K)) ^ exps w) = 0 := by
-  apply finprod_mem_induction fun I => count K v I = 0
+  apply finprod_mem_induction (s := {w | w ≠ v}) fun I => count K v I = 0
   · exact count_one K v
   · intro I I' hI hI'
     classical
@@ -817,9 +817,6 @@ theorem Ideal.map_algebraMap_eq_finsetProd_pow {p : Ideal S} [p.IsMaximal] (hp :
   · intro v hv
     simpa [maxPowDividing, Function.mem_mulSupport, IsPrime.ne_top _,
       Associates.count_ne_zero_iff_dvd h (irreducible v)] using hv
-
-@[deprecated (since := "2026-04-08")]
-alias Ideal.map_algebraMap_eq_finset_prod_pow := Ideal.map_algebraMap_eq_finsetProd_pow
 
 end primesOver
 
