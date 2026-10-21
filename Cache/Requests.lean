@@ -817,6 +817,13 @@ private def downloadFilesFromLocation (location : Location)
       classifyDownload (removeOnError := true)
       decompConfig decompState
     IO.FS.removeFile IO.CURLCFG
+    -- A transfer curl never reported (`s.done < size`) has an unknown outcome
+    -- and no hash of its own, so every unserved file goes to the retry pass.
+    -- A miss retried there reads as a miss again.
+    let s := if s.done < size then
+        { s with failedHashes := hashMap.fold (init := s.failedHashes) fun acc _ hash =>
+            if served.contains hash then acc else acc.insert hash }
+      else s
     return (s, served)
   else
     let r ← hashMap.foldM (init := []) fun acc _ hash => do
