@@ -537,3 +537,36 @@ omit hM in
 end Matrix.IsFiniteCartan
 
 end
+
+namespace CartanMatrix
+
+theorem isFiniteCartan_g₂ : G₂.IsFiniteCartan where
+  diag := by simp
+  offDiag_nonpos := by simp [G₂]
+  zero_comm := by simp [G₂]
+  exists_posDef := by
+    use ![1, 3]
+    have h : Matrix.diagonal ![1, 3] * G₂ = !![2, -3; -3, 6] := by
+      ext i j
+      fin_cases i <;> fin_cases j <;> rfl
+    simp only [h, Fin.forall_fin_two, Matrix.cons_val_zero, zero_lt_one, true_and,
+      Matrix.cons_val_one, Matrix.cons_val_fin_one, Nat.ofNat_pos, Int.reduceNeg]
+    apply Matrix.PosDef.of_dotProduct_mulVec_pos
+    · ext i j
+      fin_cases i <;> fin_cases j <;> simp
+    · intro x hx
+      have h : star x ⬝ᵥ !![2, -3; -3, 6].mulVec x =
+        2 * x 0 ^ 2 - 6 * x 0 * x 1 + 6 * x 1 ^ 2 := by
+        simp [show Matrix.vecHead x = x 0 by rfl,
+          show Matrix.vecHead (Matrix.vecTail x) = x 1 by rfl]
+        ring
+      rw [h]
+      by_cases h : x 1 = 0
+      · have h₀ : x 0 ≠ 0 := by
+          contrapose hx
+          ext i
+          fin_cases i <;> simp_all
+        simp [h, sq_pos_iff.mpr h₀]
+      · nlinarith [sq_pos_iff.mpr h, sq_nonneg (2 * x 0 - 3 * x 1)]
+
+end CartanMatrix
