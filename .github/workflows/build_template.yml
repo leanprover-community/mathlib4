@@ -702,6 +702,7 @@ jobs:
     name: Upload to cache
     needs: [build]
     runs-on: ubuntu-latest # These steps run on a GitHub runner; no landrun sandboxing is needed.
+    timeout-minutes: 20
     # Pins the OIDC `sub` claim to `...:environment:<cache_environment>`, which the cache writer
     # credentials are scoped to. A token minted by any job without this environment
     # (e.g. the untrusted build/post_steps/style_lint jobs) cannot satisfy that trust.
@@ -750,6 +751,22 @@ jobs:
           use-github-cache: false
           use-mathlib-cache: false # This can be re-enabled once we are confident in the cache again.
           reinstall-transient-toolchain: true
+
+      - &install_curl
+        name: Install curl
+        env:
+          PINNED_CURL_RELEASE: v8.23.0
+          PINNED_CURL_SHA256: 83a56256434a3d3f6edbdad2cbdb1f23a44fe8fd52968d18ab57763fdc0afba0
+        run: |
+          dir="$RUNNER_TEMP/curl-install"
+          mkdir -p "$dir"
+          cd "$dir"
+          curl -fsSL --retry 5 -o curl \
+            "https://github.com/leanprover-community/static-curl/releases/download/${PINNED_CURL_RELEASE}/curl-x86_64-linux-static"
+          echo "${PINNED_CURL_SHA256}  curl" | sha256sum -c -
+          chmod u+x curl
+          echo "$dir" >> "$GITHUB_PATH"
+          ./curl --version
 
       - &build_cache_executable
         name: build cache executable
@@ -828,6 +845,7 @@ jobs:
     # The upload is best effort: if it fails, later runs rebuild these test files.
     continue-on-error: true
     runs-on: ubuntu-latest # These steps run on a GitHub runner; no landrun sandboxing is needed.
+    timeout-minutes: 20
     # The environment of `upload_cache` gives this job the same OIDC `sub` claim.
     environment:
       name: ${{ inputs.cache_environment }}
@@ -843,6 +861,7 @@ jobs:
       - *checkout_tools_branch
       - *compute_cache_trust_dispatch
       - *configure_lean_for_cache
+      - *install_curl
       - *build_cache_executable
 
       - name: Download MathlibTest cache staging artifact
@@ -872,6 +891,7 @@ jobs:
     needs: [build, upload_cache]
     if: ${{ always() && needs.build.result == 'success' && (needs.upload_cache.result == 'success' || needs.upload_cache.result == 'skipped') }}
     runs-on: ubuntu-latest # Note these steps run on disposable GitHub runners, so no landrun sandboxing is needed.
+    timeout-minutes: 30
     # This job checks out and executes (potentially fork) PR code unsandboxed,
     # so it must not inherit any write-capable token.
     permissions:
@@ -924,6 +944,10 @@ jobs:
           use-mathlib-cache: false # This can be re-enabled once we are confident in the cache again.
           reinstall-transient-toolchain: true
 
+      # Keep curl's retries after `ubuntu-latest` moves to Ubuntu 26.04: the
+      # tool runs the image's curl 8.18 without them.
+      - *install_curl
+
       - name: get cache for Mathlib
         run: |
           # Run once without --repo, so we can diagnose what `lake exe cache get` wants to do by itself.
@@ -964,11 +988,15 @@ jobs:
             exit 0
           fi
 
+          missing="The cache is missing build outputs. The log above names the modules that Lake needs to rebuild."
+          retry_hint="Hint: to rule out a transient network error, push an empty commit to re-run all jobs: git commit --allow-empty -m 'chore: re-run CI' && git push. If the error persists, ask in the #mathlib4 channel on Zulip."
+
           # Only fork PRs read and write the cache with different binaries.
           # Every other build (master, bors, dev branches) uses one binary, so
           # a miss is a real gap.
           if [ "${HEAD_REPO_IS_FORK}" != "true" ]; then
-            echo "::error::Cache verification failed on an in-repo build; the uploaded cache is incomplete."
+            echo "::error title=Cache incomplete::${missing}"
+            echo "${retry_hint}"
             exit 1
           fi
 
@@ -983,16 +1011,18 @@ jobs:
           dout=$(diff -rq workflow-actions/Cache Cache 2>&1)
           dstat=$?
           if [ "${dstat}" -eq 0 ]; then
-            echo "::error::Cache verification failed and this PR's Cache/ matches master's, so the key spaces agree: the uploaded cache is incomplete."
+            echo "::error title=Cache incomplete::${missing}"
+            echo "${retry_hint}"
             exit 1
           elif [ "${dstat}" -eq 1 ]; then
-            echo "::warning::Cache verification incomplete, but this PR's Cache/ differs from master's. CI wrote the cache with master's binary and this job reads it with the PR branch's, so a changed key space (such as a rootHashGeneration bump) misses as expected. Continuing; the cache repopulates once this lands on master."
+            echo "::notice title=Cache check skipped::This PR changes Cache/, so CI cannot check the cache for this PR."
             echo "${dout}"
             # The downstream check below reads the same key space, so skip it.
             echo "key_space_changed=true" >> "$GITHUB_OUTPUT"
             exit 0
           else
-            echo "::error::Cache verification failed and master's Cache/ baseline could not be compared (diff status ${dstat}); treating as a failure."
+            echo "::error title=Cache incomplete::${missing}"
+            echo "Note: CI could not compare this PR's Cache/ with master's (diff exit status ${dstat})."
             echo "${dout}"
             exit 1
           fi

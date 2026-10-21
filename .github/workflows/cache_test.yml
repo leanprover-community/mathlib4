@@ -1,9 +1,15 @@
-# Runs the cache tool's unit tests (`lake exe cache-test`) on Linux and Windows
-# for PRs that touch the cache code. The suite is deliberately network-free (see
-# the module docstring in `Cache/Test.lean`), so the job only needs the toolchain
-# and the package dependencies' sources — not a Mathlib build — and finishes in a
-# few minutes on a hosted runner. The Windows job guards the tool's cross-platform
-# behavior, such as the null device the marker probe and tests discard output to.
+# Checks the cache tool for PRs that touch the cache code.
+#
+# `cache-test` runs the unit tests (`lake exe cache-test`) on Linux and Windows.
+# The suite is deliberately network-free (see the module docstring in
+# `Cache/Test.lean`), so the job only needs the toolchain and the package
+# dependencies' sources — not a Mathlib build — and finishes in a few minutes on
+# a hosted runner. The Windows job guards the tool's cross-platform behavior,
+# such as the null device the marker probe and tests discard output to.
+#
+# `cache-get` runs one `lake exe cache get` against the public cache on the
+# platforms the main CI never downloads on: Ubuntu 26.04, whose curl 8.18 the
+# tool runs without retries, and Windows.
 name: cache tests
 
 on:
@@ -62,3 +68,47 @@ jobs:
 
       - name: run cache tests
         run: lake exe cache-test
+
+  # Ubuntu 26.04 ships curl 8.18, which hangs on parallel retries, so on
+  # Linux this job covers the tool's retry-free parallel mode. On Windows it
+  # covers the download path with the system curl. Reads need no credential.
+  # The tool exits 1 on a transfer or decompression failure and 0 on cache
+  # misses, so a PR whose files are not in the cache (a toolchain bump, for
+  # example) still passes.
+  cache-get:
+    if: github.repository == 'leanprover-community/mathlib4'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-26.04, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: leanprover/lean-action@f061402b660e0c34644504b324e830f2991d4865 # v1.6.1
+        with:
+          auto-config: "false"
+          build: "false"
+          test: "false"
+          lint: "false"
+          use-mathlib-cache: "false"
+          use-github-cache: "false"
+
+      - name: build cache
+        run: lake build cache
+
+      - name: cache get
+        run: |
+          curl --version | head -n 1
+          lake exe cache get Mathlib.Data.Nat.Basic | tee cache-get.log
+
+      # The runner's curl must be 8.18 or 8.19, or this job no longer covers
+      # the retry-free mode. If this step fails after a runner image update,
+      # move the job to a runner whose curl the tool runs without retries.
+      - name: check that the tool ran without curl retries
+        if: runner.os == 'Linux'
+        run: grep "without curl retries" cache-get.log
