@@ -139,9 +139,12 @@
     result: https://github.com/b-mehta/combinatorics/blob/extras/src/inf_ramsey.lean
 32:
   title  : The Four Color Problem
-  authors: "Robert D. Barish and Claude Opus 5.5 (Anthropic) (Lean port); Georges Gonthier and contributors (original Rocq proof)"
+  authors: "Robert D. Barish (Lean port); Georges Gonthier and contributors (original Rocq proof)"
   links  :
     result: https://github.com/RBarish-UTokyo/FourColorTheorem-Lean4/blob/20fa34599f5189dd569d96dd22f306c94ab1c446/Solution.lean
+  note   : >-
+    The Lean port was produced using Claude Opus 5.5 (Anthropic),
+    under Robert D. Barish’s direction.
 33:
   title  : Fermat’s Last Theorem
   statement: FermatLastTheorem
