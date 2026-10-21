@@ -53,7 +53,8 @@ def getWorkspace : IO Lake.Workspace := do
     | throw <| IO.userError "failed to load Lake workspace"
   return ws
 
-/-- Given a `Config` and `only?` (supplied on the command line), find the lake `lean_lib`s to process. -/
+/-- Given a `Config`, find the lake `lean_lib`s to process, erroring if the config exlcudes
+libraries that don't exist. -/
 def Config.mkAllLibs (cfg : Config) (pkg : Lake.Package) : IO (Array Lake.LeanLib) := do
   let wronglyExcluded := cfg.excludedLibs.filter fun excludedLib =>
     !pkg.leanLibs.any (·.name == excludedLib)
@@ -125,14 +126,17 @@ def mkOnlyRoots (pkg : Lake.Package) (only : Array String) : IO (Array Root) := 
   let mut roots := #[]
   for root in only do
     if let some lib := pkg.leanLibs.findRev? (root == ·.name.toString (escape := false)) then
-      roots := roots ++ (← Root.ofLeanLib lib)
-    else
-      let name := root.toName
-      if name.isAnonymous then
-        throw <| IO.userError s!"`{root}` (from `--lib`) is neither a valid `lean_lib` nor a \
-          valid module name."
-      -- Add `only`s that are in libs but are not libs
-      roots := roots.push <|← findRoot pkg root.toName (rootOrigin := "`--lib`")
+      let libRoots ← Root.ofLeanLib lib
+      unless libRoots.isEmpty do
+        roots := roots ++ (← Root.ofLeanLib lib)
+        continue
+    -- Fall through to see if this is a module-style root, not a `lean_lib`
+    let name := root.toName
+    if name.isAnonymous then
+      throw <| IO.userError s!"`{root}` (from `--lib`) is neither a valid `lean_lib` nor a \
+        valid module name."
+    -- Add `only`s that are in libs but are not libs
+    roots := roots.push <|← findRoot pkg root.toName (rootOrigin := "`--lib`")
   return roots
 
 /-- Returns the `Root`s to process, with the roots that may be included as imports in future roots

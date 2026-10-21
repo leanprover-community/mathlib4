@@ -49,7 +49,7 @@ i.e. names of the form `Mathlib.Algebra.Algebra.Basic`. In addition, these names
 platform-independent order.
 
 `srcDir` is the part of the path that is not part of the module name, and should be specified when
-to using a top-level directory in order to peel off the correct number of components from the path
+not using a top-level directory in order to peel off the correct number of components from the path
 for the resulting names. -/
 def getAllModulesSorted (git : Bool) (dir : System.FilePath)
     (srcDir := dir.parent.getD ".") : IO (Array Name) := do
