@@ -594,7 +594,7 @@ lemma homogeneousComponent_monomial {R σ : Type*} [CommSemiring R] (m : σ →�
   · simp [h, homogeneousComponent_eq_self, isHomogeneous_monomial]
   · simp [h, homogeneousComponent_eq_zero']
 
-lemma homogeneousComponent_mul_of_totalDegree_le {R σ : Type*} [CommSemiring R]
+lemma homogeneousComponent_mul_eq_of_totalDegree_le {R σ : Type*} [CommSemiring R]
     {f g : MvPolynomial σ R} {n m : ℕ} (hn : f.totalDegree ≤ n) (hm : g.totalDegree ≤ m) :
     (f * g).homogeneousComponent (n + m) = f.homogeneousComponent n * g.homogeneousComponent m := by
   rw [f.as_sum, g.as_sum]
@@ -606,14 +606,14 @@ lemma homogeneousComponent_mul_of_totalDegree_le {R σ : Type*} [CommSemiring R]
   have : j.degree ≤ m := le_trans (le_totalDegree hj) hm
   grind
 
-lemma homogeneousComponent_pow_of_totalDegree_le {R σ : Type*} [CommSemiring R]
+lemma homogeneousComponent_pow_eq_of_totalDegree_le {R σ : Type*} [CommSemiring R]
     {f : MvPolynomial σ R} {n : ℕ} (hn : f.totalDegree ≤ n) (k : ℕ) :
     (f ^ k).homogeneousComponent (k * n) = f.homogeneousComponent n ^ k := by
   induction k
   case zero => simp
   case succ k hk =>
     rw [add_mul, one_mul, pow_succ, pow_succ, ← hk]
-    refine homogeneousComponent_mul_of_totalDegree_le ?_ hn
+    refine homogeneousComponent_mul_eq_of_totalDegree_le ?_ hn
     apply le_trans (totalDegree_pow _ _)
     exact mul_le_mul_right hn _
 
