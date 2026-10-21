@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.Monoid.WithTop
 public import Mathlib.Algebra.Regular.Basic
+
 import Mathlib.Tactic.Basify.Attr
 
 

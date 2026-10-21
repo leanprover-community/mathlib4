@@ -569,7 +569,7 @@ abbrev LinearMap.equivOfDetNeZero {𝕜 : Type*} [Field 𝕜] {M : Type*} [AddCo
 theorem LinearMap.associated_det_of_eq_comp (e : M ≃ₗ[R] M) (f f' : M →ₗ[R] M)
     (h : ∀ x, f x = f' (e x)) : Associated (LinearMap.det f) (LinearMap.det f') := by
   suffices Associated (LinearMap.det (f' ∘ₗ ↑e)) (LinearMap.det f') by
-    convert! this using 2
+    convert this using 2
     ext x
     exact h x
   rw [← mul_one (LinearMap.det f'), LinearMap.det_comp]
@@ -628,7 +628,7 @@ theorem is_basis_iff_det {v : ι → M} :
   · rintro ⟨hli, hspan⟩
     set v' := Basis.mk hli hspan.ge
     rw [e.det_apply]
-    convert! LinearEquiv.isUnit_det (LinearEquiv.refl R M) v' e using 2
+    convert LinearEquiv.isUnit_det (LinearEquiv.refl R M) v' e using 2
     ext i j
     simp [v']
   · intro h
@@ -660,7 +660,7 @@ theorem AlternatingMap.map_basis_eq_zero_iff {ι : Type*} [Finite ι] (e : Basis
     cases nonempty_fintype ι
     let := Classical.decEq ι
     simpa [h] using f.eq_smul_basis_det e,
-   fun h => h.symm ▸ AlternatingMap.zero_apply _⟩
+   fun h => h.symm ▸ zero_apply _⟩
 
 theorem AlternatingMap.map_basis_ne_zero_iff {ι : Type*} [Finite ι] (e : Basis ι R M)
     (f : M [⋀^ι]→ₗ[R] R) : f e ≠ 0 ↔ f ≠ 0 :=
