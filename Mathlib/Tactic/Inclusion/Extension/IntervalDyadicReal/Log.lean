@@ -62,8 +62,12 @@ theorem abs_log_two_sub_le (prec : ℕ) :
   grw [← sub_add_eq_add_sub, ← sub_add_eq_add_sub, ← add_sub, abs_add_le,
     ← sub_add_eq_add_sub, ← add_sub, abs_add_le]
   simp only [toReal_mul, toReal_ofNat, ← mul_sub, abs_mul, Nat.abs_ofNat]
-  grw [abs_sub_le ((prec + 7) / 8) (1 / 17)]
-  sorry
+  rw [show (1 / 2 ^ prec : ℝ) = (1 / 2 + 1 / 4 + 1 / 4) * (1 / 2 ^ prec) by norm_num,
+    _root_.add_mul, _root_.add_mul]
+  iterate 2 gcongr 1
+  · sorry
+  · sorry
+  · sorry
 
 end SmallArtanh
 
@@ -77,7 +81,7 @@ The error `δ ≤ 2 * x ^ (2 * n + 1) / (1 - x ^ 2) < 3 / 4 * (1 / 9) ^ n ≤ (1
 requires `n ≥ ((prec - 2) * log 2 + log 3) / (2 * log 3)`.
 Choosing `prec / 3` is good enough.
 -/
-def logSum (x : Dyadic) (prec : ℕ) : Dyadic :=
+protected def logSum (x : Dyadic) (prec : ℕ) : Dyadic :=
   2 * (Dyadic.smallArtanh (prec / 3) ((x - 1).toRat / (x + 1).toRat)).toDyadic prec
 
 /-- Computes the lower bound for `log x`. -/
@@ -90,9 +94,9 @@ def lowerLog (x : Dyadic) (prec : ℕ) : Dyadic :=
     let x' : Dyadic := .ofOdd n n.natAbs.log2 hn -- `|x'| ∈ [1, 2)`
     let wp : ℕ := prec + k.natAbs.log2 + 1
     if k ≥ 0 then
-      logSum x' prec + k * Dyadic.log_two wp
+      Dyadic.logSum x' prec + k * Dyadic.log_two wp
     else
-      logSum x' prec + k * (Dyadic.log_two wp + Dyadic.step wp)
+      Dyadic.logSum x' prec + k * (Dyadic.log_two wp + Dyadic.step wp)
 
 /-- Computes the upper bound for `log x`. -/
 def upperLog (x : Dyadic) (prec : ℕ) : Dyadic :=
@@ -162,6 +166,34 @@ theorem IntervalDyadicReal.mem_Ici_coe (x : ℝ) (a : Dyadic) :
     x ∈ Interval.Ici (↑a : WithBot Dyadic) ↔ a.toReal ≤ x := by
   simp [mem_iff_mem_map, Interval.Ici, Interval.map]
 
+@[simp]
+lemma _root_.Dyadic.toReal_zero : Dyadic.toReal (0 : Dyadic) = 0 := by
+  simp [Dyadic.toReal]
+
+theorem Interval.abs_lb_nonneg {α : Type*} [AddGroup α] [LinearOrder α] [AddLeftMono α]
+    (I : Interval α) : 0 ≤ I.abs.lb := by
+  -- no
+  fun_cases Interval.abs with
+  | case1 lb h hlb =>
+    rw [h]
+    apply WithBot.coe_nonneg.mpr ‹_›
+  | case2 => exact WithBot.coe_nonneg.mpr <| neg_nonneg.mpr ‹_›
+  | case3 | case4 => rfl
+  | case5 _ lb =>
+    rcases I with ⟨_, ⟨⟩ | ⟨ub⟩⟩
+    · simp only [lb]
+      rfl
+    · simp only [lb]
+      split_ifs with hub
+      · simp only [Ici, hub, ↓reduceIte]
+        exact WithBot.coe_nonneg.mpr <| neg_nonneg.mpr ‹_›
+      · simp [hub]
+        rfl
+
+-- don't use this, use `IsOrderedAddMonoid`.
+instance : AddLeftMono Dyadic where
+  elim a b c h := Dyadic.toReal_le_toReal.mp <| by simpa
+
 @[inclusion_op interval_dyadic_real]
 theorem log_mem {x : ℝ} {I : Interval Dyadic} (prec : ℕ) (hx : x ∈ I) : x.log ∈ I.log prec := by
   apply IntervalDyadicReal.abs_mem at hx
@@ -171,12 +203,15 @@ theorem log_mem {x : ℝ} {I : Interval Dyadic} (prec : ℕ) (hx : x ∈ I) : x.
   fun_cases Interval.log with
   | case1 I' hI' => apply Interval.mem_map_univ
   | case2 I' lb hI' hlb =>
-    simp
-    apply Dyadic.lowerLog_le lb prec |>.trans
-    apply Real.log_le_log
-    · sorry
-    · sorry
+    change x ∈ I' at hx
+    rw [hI'] at hx
+    refine IntervalDyadicReal.mem_Ici_coe _ _ |>.mpr <|
+      Dyadic.lowerLog_le lb prec |>.trans <| Real.log_le_log ?_ <|
+        IntervalDyadicReal.mem_Ici_coe x lb |>.mp hx
+    have := WithBot.coe_nonneg.mp <| hI' ▸ show 0 ≤ I'.lb from I.abs_lb_nonneg
+    simpa [← Dyadic.toReal_zero] using lt_of_le_of_ne this <| Ne.symm hlb
   | case3 I' hI' =>
+    -- bad proof
     suffices x.log = Dyadic.toReal 0 from this ▸ Interval.mem_map_singleton 0 Dyadic.toReal
     suffices x = 0 by simp [this, Dyadic.toReal]
     change x ∈ I' at hx
@@ -189,22 +224,28 @@ theorem log_mem {x : ℝ} {I : Interval Dyadic} (prec : ℕ) (hx : x ∈ I) : x.
     unfold Dyadic.toReal at hx
     simp at hx
     grind
-  | case4 I' ub hI' hub =>
-    simp [-WithTop.coe_sup]
-    rw [show (max (ub.upperLog prec) 0).toReal = max (ub.upperLog prec).toReal (0 : Dyadic).toReal from
-      Dyadic.toRealOrderEmbedding.monotone.map_max
-    ]
-    simp only [le_max_iff]
+  | case4 I' ub hub hI' =>
+    change x ∈ I' at hx
+    rw [hI'] at hx
+    replace hx : 0 ≤ x ∧ x ≤ ub.toReal :=
+      Dyadic.toReal_zero ▸ (IntervalDyadicReal.mem_mk_coe x 0 ub |>.mp hx)
+    refine IntervalDyadicReal.mem_Iic_coe _ _ |>.mpr ?_
+    rw [Monotone.map_max (f := Dyadic.toReal) Dyadic.toRealOrderEmbedding.monotone, ]
+    simp only [Dyadic.toReal_zero, le_max_iff]
     by_cases hx₀ : x = 0
     · simp [hx₀, Dyadic.toReal]
-    left
-    apply Dyadic.le_upperLog ub prec |>.trans'
-    apply Real.log_le_log
-    · grind
-    · sorry
+    · apply Or.inl <| Dyadic.le_upperLog ub prec |>.trans' <| Real.log_le_log (by grind) hx.right
   | case5 I' lb ub hI' hlb =>
-    simp
-    sorry
+    change x ∈ I' at hx
+    rw [hI'] at hx
+    replace hx : lb.toReal ≤ x ∧ x ≤ ub.toReal := IntervalDyadicReal.mem_mk_coe x _ _ |>.mp hx
+    simp only [IntervalDyadicReal.mem_mk_coe]
+    have : 0 < lb.toReal := by
+      -- duplicate proof
+      have := WithBot.coe_nonneg.mp <| hI' ▸ show 0 ≤ I'.lb from I.abs_lb_nonneg
+      simpa [← Dyadic.toReal_zero] using lt_of_le_of_ne this <| Ne.symm hlb
+    exact ⟨lb.lowerLog_le prec |>.trans <| Real.log_le_log this <| hx.left,
+      ub.le_upperLog prec |>.trans' <| Real.log_le_log (this.trans_le hx.left) hx.right⟩
   | case6 I' hI' => apply Interval.mem_map_univ
 
 end Inclusion
