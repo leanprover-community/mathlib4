@@ -75,8 +75,8 @@ def certifyRowsEq {u : Level} {α : Q(Type u)} (certifier : EntryCertifier α)
       return ⟨a, b, ← certifier.eq a b⟩
   return mkListCongr (α := q(List $α)) rowEqs
 
-/-- Prove the product `L * Aσ = U` from the expansion `mulEq` of the product of the row lists of
-`L` and `Aσ`, whose literals are `mulEq.A` and `mulEq.B`. -/
+/-- Prove the product `ofLists mulEq.A * ofLists mulEq.B = U` from the list-based expansion of
+`mulEq`. -/
 def certifyProductEq {u : Level} {m n : Nat} {α : Q(Type u)}
     (certifier? : Option (EntryCertifier α)) (cα : Q(AddCommMonoid $α))
     {zα : Q(Zero $α)} {aα : Q(Add $α)} {mα : Q(Mul $α)} (mulEq : MulEq zα aα mα m m n)
@@ -85,7 +85,7 @@ def certifyProductEq {u : Level} {m n : Nat} {α : Q(Type u)}
   let hmul : Q(ListMatrix.mul $m $m $n $(mulEq.A) $(mulEq.B) = $(U.lit)) ← match certifier? with
     | none =>
       -- Returns a proof with RHS being `mulEq.expr` without a bridge to `U.lit`.
-      -- A model passes `none` when equality of its literals is settled by kernel
+      -- A caller passes `none` when equality of its literals is settled by kernel
       -- evaluation, so the kernel establishes the defeq itself at `ofLists_mul`.
       pure mulEq.proof
     | some certifier => do
