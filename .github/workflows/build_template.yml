@@ -308,16 +308,9 @@ jobs:
             id: noisy
             run: |
               cd pr-branch
-              buildMsgs="$(
-                ##  we exploit `lake`s replay feature: since the cache is present, running
-                ##  `lake build` will reproduce all the outputs without having to recompute
-                lake build -q --iofail Mathlib Archive Counterexamples Wanted
-              )"
-              if [ -n "${buildMsgs}" ]
-              then
-                printf $'%s\n' "${buildMsgs}"
-                exit 1
-              fi
+              ## `lake` replays the saved output of every module, and `--iofail`
+              ## fails the step if any module logged anything.
+              lake build --no-build -q --iofail Mathlib Archive Counterexamples Wanted
 
           - name: stage Archive cache files
             if: ${{ steps.archive.outcome == 'success' }}
