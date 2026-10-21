@@ -14,6 +14,7 @@ public import Mathlib.Tactic.ModuleNF
 public import Mathlib.Tactic.NormNum.Ineq
 
 import Mathlib.Algebra.Module.Torsion.Field
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.LinearAlgebra.Finsupp.SumProd
 
 /-!
@@ -680,26 +681,17 @@ theorem linearIndependent_finCons {n} {v : Fin n → V} :
   rw [← linearIndependent_equiv (finSuccEquiv n).symm, linearIndependent_option]
   rfl
 
-@[deprecated (since := "2026-04-07")]
-alias linearIndependent_fin_cons := linearIndependent_finCons
-
 theorem linearIndependent_finSnoc {n} {v : Fin n → V} :
     LinearIndependent K (Fin.snoc v x : Fin (n + 1) → V) ↔
       LinearIndependent K v ∧ x ∉ Submodule.span K (range v) := by
   rw [Fin.snoc_eq_cons_rotate, ← Function.comp_def, linearIndependent_equiv,
     linearIndependent_finCons]
 
-@[deprecated (since := "2026-04-07")]
-alias linearIndependent_fin_snoc := linearIndependent_finSnoc
-
 /-- See `LinearIndependent.finCons'` for an uglier version that works if you
 only have a module over a semiring. -/
 theorem LinearIndependent.finCons {n} {v : Fin n → V} (hv : LinearIndependent K v)
     (hx : x ∉ Submodule.span K (range v)) : LinearIndependent K (Fin.cons x v : Fin (n + 1) → V) :=
   linearIndependent_finCons.2 ⟨hv, hx⟩
-
-@[deprecated (since := "2026-04-07")]
-alias LinearIndependent.fin_cons := LinearIndependent.finCons
 
 /-- See `LinearIndependent.finSnoc'` for an uglier version that works if you
 only have a module over a semiring, and `LinearIndependent.finSnoc_of_notMem_span_over` for a
@@ -740,15 +732,9 @@ theorem linearIndependent_finSucc {n} {v : Fin (n + 1) → V} :
       LinearIndependent K (Fin.tail v) ∧ v 0 ∉ Submodule.span K (range <| Fin.tail v) := by
   rw [← linearIndependent_finCons, Fin.cons_self_tail]
 
-@[deprecated (since := "2026-04-07")]
-alias linearIndependent_fin_succ := linearIndependent_finSucc
-
 theorem linearIndependent_finSucc' {n} {v : Fin (n + 1) → V} : LinearIndependent K v ↔
     LinearIndependent K (Fin.init v) ∧ v (Fin.last _) ∉ Submodule.span K (range <| Fin.init v) := by
   rw [← linearIndependent_finSnoc, Fin.snoc_init_self]
-
-@[deprecated (since := "2026-04-07")]
-alias linearIndependent_fin_succ' := linearIndependent_finSucc'
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Equivalence between `k + 1` vectors of length `n` and `k` vectors of length `n` along with a
@@ -923,3 +909,29 @@ theorem exists_finite_card_le_of_finite_of_linearIndependent_of_span {s t : Set 
   ⟨this, by rw [← Eq]; exact Finset.card_le_card <| Finset.coe_subset.mp <| by simp [hsu]⟩
 
 end Module
+
+lemma LinearMap.BilinForm.exists_pos_and_pos_apply_sum_smul {R M ι : Type*} [Fintype ι]
+    [CommRing R] [LinearOrder R] [IsOrderedRing R]
+    [AddCommGroup M] [Module R M]
+    {B : LinearMap.BilinForm R M} (hB : ∀ x ≠ 0, 0 < B x x)
+    {v : ι → M} (hv : LinearIndependent R v) (hv' : Pairwise fun k l ↦ B (v k) (v l) ≤ 0)
+    {c : ι → R} (hc : ¬ c ≤ 0) :
+    ∃ k, 0 < c k ∧ 0 < B (∑ l, c l • v l) (v k) := by
+  set x := ∑ k, c k • v k
+  let X := ∑ k, max (c k) 0 • v k
+  have hX : X ≠ 0 := fun hX ↦
+    hc fun k ↦ max_eq_right_iff.mp <| Fintype.linearIndependent_iff.mp hv _ hX k
+  have hx : x = X + ∑ k, min (c k) 0 • v k := by
+    simp only [x, X, ← Finset.sum_add_distrib, ← add_smul, max_add_min, add_zero]
+  have : 0 < B x X := by
+    rw [hx, map_add, LinearMap.add_apply]
+    refine add_pos_of_pos_of_nonneg (hB X hX) ?_
+    simp only [X, map_sum, map_smul, LinearMap.sum_apply, smul_eq_mul, Finset.mul_sum]
+    refine Finset.sum_nonneg fun k _ ↦ Finset.sum_nonneg fun l _ ↦ ?_
+    rcases eq_or_ne l k with rfl | hkl
+    · simp [← mul_assoc]
+    · specialize hv' hkl
+      exact mul_nonneg (le_max_right _ _) <| mul_nonneg_of_nonpos_of_nonpos (min_le_right _ _) hv'
+  simp only [X, map_sum, map_smul] at this
+  obtain ⟨k, -, hk⟩ := Finset.exists_lt_of_sum_lt <| Finset.sum_const_zero.trans_lt this
+  exact ⟨k, by simpa using pos_and_pos_or_neg_and_neg_of_mul_pos hk⟩
