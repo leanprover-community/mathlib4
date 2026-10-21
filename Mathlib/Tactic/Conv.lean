@@ -10,7 +10,30 @@ public meta import Lean.Elab.Tactic.Conv.Basic
 public import Mathlib.Init
 
 /-!
-Additional `conv` tactics.
+# Additional conversion tactics
+
+This file defines additional tactics related to [the conversion tactic
+mode](https://lean-lang.org/theorem_proving_in_lean4/The-Conversion-Tactic-Mode/).
+
+## Main definitions
+
+### Top-level commands
+
+* [`#conv tac => e`](##convCmd)
+* [`#whnf e`](##whnfCmd)
+* [`#whnfR e`](##whnfRCmd)
+* [`#simp => e` and `#simp only [lems] => e`](##simpCmd)
+
+### Tactics to enter the conversion mode
+
+* [`conv_lhs =>`](##convLHS)
+* [`conv_rhs =>`](##convRHS)
+
+### Tactics used inside the conversion mode
+
+* [`conv in pat => cs`](##convInConv)
+* [`discharge` and `discharge => tac`](##dischargeConv)
+* [`refine`](##refineConv)
 -/
 
 public meta section
@@ -65,7 +88,7 @@ The syntax also supports the `occs` clause. Example:
 conv in (occs := *) x + y => rw [add_comm]
 ```
 -/
-macro "conv" " in " occs?:(occs)? p:term " => " code:convSeq : conv =>
+macro (name := convInConv) "conv" " in " occs?:(occs)? p:term " => " code:convSeq : conv =>
   `(conv| conv => pattern $[$occs?]? $p; ($code:convSeq))
 
 /--
@@ -93,13 +116,13 @@ syntax (name := dischargeConv) "discharge" (" => " tacticSeq)? : conv
   | _ => Elab.throwUnsupportedSyntax
 
 /-- Use `refine` in `conv` mode. -/
-macro "refine " e:term : conv => `(conv| tactic => refine $e)
+macro (name := refineConv) "refine " e:term : conv => `(conv| tactic => refine $e)
 
 open Elab Tactic
 /--
 The command `#conv tac => e` will run a conv tactic `tac` on `e`, and display the resulting
 expression (discarding the proof).
-For example, `#conv rw [true_and_iff] => True ∧ False` displays `False`.
+For example, `#conv rw [true_and] => True ∧ False` displays `False`.
 There are also shorthand commands for several common conv tactics:
 
 * `#whnf e` is short for `#conv whnf => e`
@@ -107,7 +130,7 @@ There are also shorthand commands for several common conv tactics:
 * `#norm_num e` is short for `#conv norm_num => e`
 * `#push c => e` is short for `#conv push c => e`
 -/
-elab tk:"#conv " conv:conv " => " e:term : command =>
+elab (name := convCmd) tk:"#conv " conv:conv " => " e:term : command =>
   Command.runTermElabM fun _ ↦ do
     let e ← Elab.Term.elabTermAndSynthesize e none
     let (rhs, g) ← Conv.mkConvGoalFor e
@@ -141,13 +164,14 @@ so we can see from this much that the list is not empty,
 but the subterms `Nat.succ 1` and `List.map Nat.succ (List.cons 2 (List.cons 3 List.nil))` are
 still unevaluated. `#reduce` is equivalent to using `#whnf` on every subexpression.
 -/
-macro tk:"#whnf " e:term : command => `(command| #conv%$tk whnf => $e)
+macro (name := whnfCmd) tk:"#whnf " e:term : command => `(command| #conv%$tk whnf => $e)
 
 /--
 The command `#whnfR e` evaluates `e` to Weak Head Normal Form with Reducible transparency,
 that is, it uses `whnf` but only unfolding reducible definitions.
 -/
-macro tk:"#whnfR " e:term : command => `(command| #conv%$tk with_reducible whnf => $e)
+macro (name := whnfRCmd) tk:"#whnfR " e:term : command =>
+  `(command| #conv%$tk with_reducible whnf => $e)
 
 /--
 * `#simp => e` runs `simp` on the expression `e` and displays the resulting expression after
@@ -156,7 +180,7 @@ macro tk:"#whnfR " e:term : command => `(command| #conv%$tk with_reducible whnf 
 * The `=>` is optional, so `#simp e` and `#simp only [lems] e` have the same behavior.
   It is mostly useful for disambiguating the expression `e` from the lemmas.
 -/
-syntax "#simp" (&" only")? (simpArgs)? " =>"? ppSpace term : command
+syntax (name := simpCmd) "#simp" (&" only")? (simpArgs)? " =>"? ppSpace term : command
 macro_rules
   | `(#simp%$tk $[only%$o]? $[[$args,*]]? $[=>]? $e) =>
     `(#conv%$tk simp $[only%$o]? $[[$args,*]]? => $e)
