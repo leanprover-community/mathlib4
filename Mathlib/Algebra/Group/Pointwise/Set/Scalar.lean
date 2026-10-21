@@ -224,12 +224,16 @@ lemma smul_set_range [SMul α β] {ι : Sort*} (a : α) (f : ι → β) :
 
 end SMul
 
+open scoped Pointwise
+
 section SDiv
 variable [SDiv α β] {s s₁ s₂ t t₁ t₂ : Set β} {u : Set α} {a : α}
   {b c : β}
 
-@[to_additive]
-instance sdiv : SDiv (Set α) (Set β) where sdiv := image2 (· /ₛ ·)
+@[to_additive (attr := instance_reducible)]
+def sdiv : SDiv (Set α) (Set β) where sdiv := image2 (· /ₛ ·)
+
+scoped [Pointwise] attribute [instance] Set.sdiv Set.vsub
 
 @[to_additive (attr := simp)]
 lemma image2_sdiv : image2 (· /ₛ ·) s t = s /ₛ t := rfl
@@ -309,8 +313,6 @@ lemma union_sdiv_inter_subset_union : s₁ ∪ s₂ /ₛ t₁ ∩ t₂ ⊆ s₁ 
   image2_union_inter_subset_union
 
 end SDiv
-
-open scoped Pointwise
 
 @[to_additive]
 lemma image_smul_comm [SMul α β] [SMul α γ] (f : β → γ) (a : α) (s : Set β) :
