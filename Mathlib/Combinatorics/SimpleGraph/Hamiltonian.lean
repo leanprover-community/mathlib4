@@ -70,8 +70,7 @@ theorem isHamiltonian_iff_isPath_and_forall_mem_support :
   ⟨fun hp ↦ ⟨hp.isPath, hp.mem_support⟩, fun hp ↦ hp.left.isHamiltonian_of_mem hp.right⟩
 
 theorem IsHamiltonian.connected (hp : p.IsHamiltonian) : G.Connected where
-  preconnected u v :=
-    ⟨p.takeUntil u (hp.mem_support u) |>.reverse.append <| p.takeUntil v (hp.mem_support v)⟩
+  preconnected u v := reachable_of_mem_support (hp.mem_support u) (hp.mem_support v)
   nonempty := ⟨a⟩
 
 theorem IsHamiltonian.of_subsingleton [Subsingleton α] : p.IsHamiltonian := by
