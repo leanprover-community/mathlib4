@@ -59,10 +59,10 @@ def Config.mkAllLibs (cfg : Config) (pkg : Lake.Package) : IO (Array Lake.LeanLi
   let excludedButNonexistent := cfg.excludedLibs.filter fun excludedLib =>
     !pkg.leanLibs.any (·.name == excludedLib)
   unless excludedButNonexistent.isEmpty do
-    throw <| IO.userError s!"Could not find the libraries\
+    throw <| IO.userError s!"The `mk_all` config excludes the following libraries:\n\
       {String.join <| excludedButNonexistent.toList.map (s!"\n  {·.toString (escape := false)}")}\
-      \nwhich are excluded by the `mk_all` config among the libraries of the package \
-      {pkg.prettyName}. This package contains the libraries:\
+      \nbut these libraries could not be found among the libraries of the package \
+      {pkg.prettyName}. Note: this package contains the libraries:\
       {String.join <| pkg.leanLibs.toList.map (s!"\n  {·.name.toString (escape := false)}")}"
   return pkg.leanLibs.filter (!cfg.excludedLibs.contains ·.name)
 
