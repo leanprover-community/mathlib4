@@ -119,8 +119,7 @@ theorem isRoot_of_mem_roots (h : a ∈ p.roots) : IsRoot p a :=
 theorem roots_eq_zero_iff_not_isRoot (hp0 : p ≠ 0) : p.roots = 0 ↔ ∀ x, ¬ p.IsRoot x := by
   simp_rw [eq_zero_iff_forall_notMem, mem_roots hp0]
 
-@[deprecated "Use `Polynomial.roots_eq_zero_iff_not_isRoot` instead."
-(since := "2026-09-27")]
+@[deprecated Polynomial.roots_eq_zero_iff_not_isRoot +typeChanged (since := "2026-09-27")]
 theorem roots_eq_zero_iff_isRoot_eq_bot (hp0 : p ≠ 0) : p.roots = 0 ↔ p.IsRoot = ⊥ := by
   simp [roots_eq_zero_iff_not_isRoot hp0, funext_iff]
 
@@ -128,8 +127,8 @@ theorem roots_eq_zero_iff_eq_zero_or_not_isRoot : p.roots = 0 ↔ p = 0 ∨ ∀ 
   rcases eq_or_ne p 0 with rfl | hp0; · simp
   simp [roots_eq_zero_iff_not_isRoot hp0, hp0]
 
-@[deprecated "Use `Polynomial.roots_eq_zero_iff_eq_zero_or_not_isRoot` instead."
-(since := "2026-09-27")]
+@[deprecated
+Polynomial.roots_eq_zero_iff_eq_zero_or_not_isRoot +typeChanged (since := "2026-09-27")]
 theorem roots_eq_zero_iff_eq_zero_or_isRoot_eq_bot : p.roots = 0 ↔ p = 0 ∨ p.IsRoot = ⊥ := by
   simp [roots_eq_zero_iff_eq_zero_or_not_isRoot, funext_iff]
 
