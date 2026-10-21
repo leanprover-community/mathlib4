@@ -8,9 +8,6 @@ module
 public import Mathlib.Control.ULift
 public import Mathlib.Logic.Equiv.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Extra lemmas about `ULift` and `PLift`
 

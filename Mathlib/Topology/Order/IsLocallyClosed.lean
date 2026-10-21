@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Topology.Order.OrderClosed
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Intervals are locally closed
 

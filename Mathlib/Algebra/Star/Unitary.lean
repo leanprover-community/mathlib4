@@ -12,9 +12,6 @@ public import Mathlib.Algebra.Star.Prod
 public import Mathlib.Algebra.Star.StarProjection
 public import Mathlib.Tactic.ContinuousFunctionalCalculus
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Unitary elements of a star monoid
 

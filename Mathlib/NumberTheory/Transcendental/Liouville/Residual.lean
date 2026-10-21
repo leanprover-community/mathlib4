@@ -10,9 +10,6 @@ public import Mathlib.NumberTheory.Transcendental.Liouville.Basic
 import Mathlib.Topology.Baire.LocallyCompactRegular
 import Mathlib.Topology.Instances.Irrational
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Density of Liouville numbers
 
