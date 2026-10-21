@@ -52,6 +52,8 @@ is obtained by removing `x (l.pred _)` from the walk.
 
 -/
 
+open scoped Finset
+
 @[expose] public section
 
 universe u
@@ -581,7 +583,7 @@ set_option backward.defeqAttrib.useBackward true in
 /-- A weak rank function for `pairingCore k n`. -/
 noncomputable def weakRankFunction {m : ℕ} (k : Fin (m + 1)) (n : ℕ) :
     (pairingCore.{u} k n).WeakRankFunction ℕ where
-  rank s := (finset s.x rfl).card
+  rank s := #(finset s.x rfl)
   lt := by
     intro ⟨s, d, hds, is, hs⟩ ⟨t, d', hdt, it, ht⟩ ⟨h₁, h₂⟩ h₃
     obtain ⟨ds, s, hs₁, hs₂, rfl⟩ := Subcomplex.N.mk_surjective s
@@ -609,7 +611,7 @@ noncomputable def weakRankFunction {m : ℕ} (k : Fin (m + 1)) (n : ℕ) :
         simp [Sδ, Ss, stdSimplex.δ_apply]
       have hSt (i : Fin (d + 1)) : i ∈ Sδ ↔ it.succ.succAbove i ∈ St := by
         simp [Sδ, St, stdSimplex.δ_apply, hδ]
-      suffices Ss.card = Sδ.card ∧ St.card = Sδ.card + 1 by grind
+      suffices #Ss = #Sδ ∧ #St = #Sδ + 1 by grind
       constructor
       · suffices Ss = Finset.image is.castSucc.succAbove Sδ by
           rw [this]

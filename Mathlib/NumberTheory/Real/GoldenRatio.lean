@@ -32,6 +32,7 @@ open Polynomial
 namespace Real
 
 /-- The golden ratio `φ := (1 + √5)/2`. -/
+@[oeis A001622 "decimal expansion"]
 abbrev goldenRatio : ℝ := (1 + √5) / 2
 
 /-- The conjugate of the golden ratio `ψ := (1 - √5)/2`. -/
@@ -118,7 +119,7 @@ theorem neg_one_lt_goldenConj : -1 < ψ := by
 theorem goldenRatio_irrational : Irrational φ := by
   have := Nat.Prime.irrational_sqrt (show Nat.Prime 5 by norm_num)
   have := this.ratCast_add 1
-  convert! this.ratCast_mul (show (0.5 : ℚ) ≠ 0 by norm_num)
+  convert this.ratCast_mul (show (0.5 : ℚ) ≠ 0 by norm_num)
   simp
   ring
 
@@ -126,7 +127,7 @@ theorem goldenRatio_irrational : Irrational φ := by
 theorem goldenConj_irrational : Irrational ψ := by
   have := Nat.Prime.irrational_sqrt (show Nat.Prime 5 by norm_num)
   have := this.ratCast_sub 1
-  convert! this.ratCast_mul (show (0.5 : ℚ) ≠ 0 by norm_num)
+  convert this.ratCast_mul (show (0.5 : ℚ) ≠ 0 by norm_num)
   simp
   ring
 

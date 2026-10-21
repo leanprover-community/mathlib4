@@ -5,9 +5,10 @@ Authors: Nailin Guan
 -/
 module
 
+public import Mathlib.RingTheory.RegularLocalRing.Defs
+
 import Mathlib.RingTheory.Ideal.MonicSpan
 import Mathlib.RingTheory.KrullDimension.Polynomial
-public import Mathlib.RingTheory.RegularLocalRing.Defs
 
 /-!
 

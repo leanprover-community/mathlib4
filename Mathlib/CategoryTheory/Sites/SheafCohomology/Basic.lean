@@ -6,10 +6,11 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Category.Grp.Adjunctions
-public import Mathlib.CategoryTheory.Sites.Abelian
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
-import Mathlib.Algebra.Category.Grp.Zero
 public import Mathlib.CategoryTheory.Adjunction.Additive
+public import Mathlib.CategoryTheory.Sites.Abelian
+
+import Mathlib.Algebra.Category.Grp.Zero
 
 /-!
 # Sheaf cohomology
