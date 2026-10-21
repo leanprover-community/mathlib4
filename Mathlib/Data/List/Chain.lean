@@ -66,6 +66,17 @@ theorem IsChain.iff_of_mem_tail_imp {S : α → α → Prop} {l : List α}
   ⟨IsChain.imp_of_mem_tail_imp (Iff.mp <| H · · · ·),
   IsChain.imp_of_mem_tail_imp (Iff.mpr <| H · · · ·)⟩
 
+/-- If consecutive elements of `l` are related by `T`, then `IsChain R l` implies `IsChain S l` as
+soon as `R` implies `S` on `T`-related pairs. -/
+theorem IsChain.imp_of_isChain {S T : α → α → Prop} {l : List α} (hT : IsChain T l)
+    (H : ∀ a b, T a b → R a b → S a b) (hR : IsChain R l) : IsChain S l := by
+  induction hT with
+  | nil => exact .nil
+  | singleton => exact .singleton _
+  | cons_cons hab _ ih =>
+    rw [isChain_cons_cons] at hR ⊢
+    exact ⟨H _ _ hab hR.1, ih hR.2⟩
+
 theorem IsChain.iff_mem {l : List α} :
     IsChain R l ↔ IsChain (fun x y => x ∈ l ∧ y ∈ l ∧ R x y) l :=
   IsChain.iff_of_mem_imp <| by grind

@@ -23,6 +23,8 @@ We use this to show that the graph distance in the Cayley graph is given by the 
 * `Group.Generators.cayleySimpleGraph`: the Cayley graph of `G` with respect to a generating
   family `P`, realized as a `SimpleGraph G`.
 * `AddGroup.Generators.cayleySimpleGraph`: the additive version of the above.
+* `Group.Generators.walkWord`: the word read along a walk in the Cayley graph, one letter for
+  each dart.
 
 ## Main results
 
@@ -155,5 +157,30 @@ theorem dist_cayleySimpleGraph : P.cayleySimpleGraph.dist g h = P.wordLength (g�
 /-- The word length of `g` is its distance from `0` in the Cayley graph. -/]
 lemma dist_cayleySimpleGraph_one_left : P.cayleySimpleGraph.dist 1 g = P.wordLength g := by
   simp [dist_cayleySimpleGraph]
+
+/-! ### The word read along a walk -/
+
+/-- For a dart `d` of the Cayley graph, `d.fst⁻¹ * d.snd` is a letter of `P`. -/
+@[to_additive /-- For a dart `d` of the Cayley graph, `-d.fst + d.snd` is a letter of `P`. -/]
+lemma isLetter_dartFstInvMulSnd (d : P.cayleySimpleGraph.Dart) : P.IsLetter (d.fst⁻¹ * d.snd) :=
+  ((P.cayleySimpleGraph_adj d.fst d.snd).mp d.adj).2
+
+/-- A letter of `P` evaluating to `d.fst⁻¹ * d.snd`, for a dart `d` of the Cayley graph. -/
+@[to_additive
+/-- A letter of `P` evaluating to `-d.fst + d.snd`, for a dart `d` of the Cayley graph. -/]
+noncomputable def dartLetter (d : P.cayleySimpleGraph.Dart) : ι × Bool :=
+  (P.isLetter_dartFstInvMulSnd d).choose
+
+/-- The word read along a walk in the Cayley graph: the letters of its darts, in order. -/
+@[to_additive
+/-- The word read along a walk in the Cayley graph: the letters of its darts, in order. -/]
+noncomputable def walkWord {u v : G} (p : P.cayleySimpleGraph.Walk u v) : List (ι × Bool) :=
+  p.darts.map P.dartLetter
+
+/-- The letter of a dart `d` evaluates to `d.fst⁻¹ * d.snd`. -/
+@[to_additive (attr := simp) /-- The letter of a dart `d` evaluates to `-d.fst + d.snd`. -/]
+lemma wordProd_dartLetter (d : P.cayleySimpleGraph.Dart) :
+    P.wordProd [P.dartLetter d] = d.fst⁻¹ * d.snd :=
+  (P.isLetter_dartFstInvMulSnd d).choose_spec
 
 end Group.Generators
