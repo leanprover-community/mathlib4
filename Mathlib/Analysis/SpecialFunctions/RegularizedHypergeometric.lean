@@ -158,11 +158,8 @@ theorem mul_regularizedHGFunCoeff (n : ℕ) :
     _ = a.prod * (a.map fun x ↦ (ascPochhammer ℂ n).eval (x + 1)).prod /
         (n ! * (b.map fun x ↦ Gamma (x + (n + 1))).prod) := by
       simp [ascPochhammer, Multiset.prod_map_mul]
-    _ = a.prod * (a.map fun x ↦ (ascPochhammer ℂ n).eval (x + 1)).prod /
-        (n ! * (b.map fun x ↦ Gamma (x + 1 + n)).prod) := by
-      grind
     _ = _ := by
-      ring
+      grind
 
 @[simp]
 theorem regularizedHGFunCoeff_zero_neg_nat_add_one (n i : ℕ) :

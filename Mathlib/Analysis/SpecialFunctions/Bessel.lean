@@ -156,14 +156,9 @@ theorem mul_deriv_besselJ_eq_besselJ_add_one (a : ℂ) {x : ℂ} (h : x ∈ slit
       ring
     _ = (a * (x / 2) ^ a) * F₀₁(a + 1) (-(x / 2) ^ 2) + x *
         (x / 2) ^ a * (F₀₁(a + 1 + 1) (-(x / 2) ^ 2) * (-x / 2)) := by
-      congrm ?_ * _ + _
-      rw [_root_.deriv_cpow_const (by fun_prop) (by exact hx2)]
-      trans 2 * a * ((x / 2) ^ (a - 1) * (x / 2) ^ (1 : ℂ) * deriv (· / 2) x)
-      · norm_cast
-        ring
-      rw [← cpow_add _ _ hx0]
-      simp only [sub_add_cancel, deriv_div_const, deriv_id'', one_div]
-      ring
+      rw [_root_.deriv_cpow_const (by fun_prop) (by exact hx2), cpow_sub _ _ hx0]
+      simp
+      grind
     _ = _ := by
       grind [cpow_add, cpow_one]
 
