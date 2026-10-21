@@ -53,29 +53,20 @@ def getWorkspace : IO Lake.Workspace := do
     | throw <| IO.userError "failed to load Lake workspace"
   return ws
 
-/-- Given a `Config` and `only?` (supplied on the command line), find the lake libs to process. -/
-def Config.mkAllLibs (cfg : Config) (pkg : Lake.Package) (only? : Option (Array String) := none) :
-    IO (Array Lake.LeanLib) := do
-  if let some only := only? then
-    let mut libs := #[]
-    for libName in only do
-      let some lib := pkg.leanLibs.findRev? (libName == ·.name.toString (escape := false))
-        | continue -- perhaps these are pseudoroots, not libraries. We check later
-      libs := libs.push lib
-    return libs
-  else
-    let wronglyExcluded := cfg.excludedLibs.filter fun excludedLib =>
-      !pkg.leanLibs.any (·.name == excludedLib)
-    unless wronglyExcluded.isEmpty do
-      throw <| IO.userError s!"Could not find the libraries\
-        {String.join <| wronglyExcluded.toList.map (s!"\n  {·.toString (escape := false)}")}\
-        \nwhich are excluded by the `mk_all` config among the libraries of the package \
-        {pkg.prettyName}. This package contains the libraries:\
-        {String.join <| pkg.leanLibs.toList.map (s!"\n  {·.name.toString (escape := false)}")}"
-    return pkg.leanLibs.filter (!cfg.excludedLibs.contains ·.name)
+/-- Given a `Config` and `only?` (supplied on the command line), find the lake `lean_lib`s to process. -/
+def Config.mkAllLibs (cfg : Config) (pkg : Lake.Package) : IO (Array Lake.LeanLib) := do
+  let wronglyExcluded := cfg.excludedLibs.filter fun excludedLib =>
+    !pkg.leanLibs.any (·.name == excludedLib)
+  unless wronglyExcluded.isEmpty do
+    throw <| IO.userError s!"Could not find the libraries\
+      {String.join <| wronglyExcluded.toList.map (s!"\n  {·.toString (escape := false)}")}\
+      \nwhich are excluded by the `mk_all` config among the libraries of the package \
+      {pkg.prettyName}. This package contains the libraries:\
+      {String.join <| pkg.leanLibs.toList.map (s!"\n  {·.name.toString (escape := false)}")}"
+  return pkg.leanLibs.filter (!cfg.excludedLibs.contains ·.name)
 
 /-- The data necessary for updating or creating a root module. -/
-structure Root where
+structure Root where mkRaw ::
   /-- The name of the (putative) "root" module, e.g. `Mathlib` or `Mathlib.Tactic`. -/
   name : Name
   /-- The `lean_lib` this appears in. We assume `lib.isLocalModule name`. -/
@@ -98,13 +89,22 @@ def fileName : System.FilePath := modToFilePath r.lib.srcDir r.name "lean"
 def lt (r₁ r₂ : Root) : Bool :=
   r₁.realLibSrcDir == r₂.realLibSrcDir && r₁.name != r₂.name && r₂.name.isPrefixOf r₁.name
 
-/-- Checks that the root is a path. `rootOrigin : String` is used in the parenthetical
-`(from {rootOrigin})` to provide better error messages. `@[macro_inline]` to build `rootOrigin`
-lazily. -/
-@[macro_inline] def checkDir (rootOrigin : String) : IO Unit := do
-  unless ← r.dir.isDir do
-    throw <| IO.userError s!"Expected the root `{r.name}` (from {rootOrigin}) to be a \
-      directory at path:\n  {r.dir}"
+/-- Construct a `Root`. Also checks that the root is a path. `rootOrigin : String` is used in the
+parenthetical `(from {rootOrigin})` to provide better error messages. `@[macro_inline]` to build
+`rootOrigin` lazily. -/
+@[macro_inline] protected def mk (name : Name) (lib : Lake.LeanLib) (rootOrigin : String) :
+    IO Root := do
+  let root := { name, lib, realLibSrcDir := ← IO.FS.realPath lib.srcDir : Root }
+  unless ← root.dir.isDir do
+    throw <| IO.userError s!"Expected the root `{root.name}` (from {rootOrigin}) to be a \
+      directory at path:\n  {root.dir}"
+  return root
+
+/-- Makes an array of `Root`s for the roots of the given `LeanLib` which have directories. Skips those for which no directory exists. -/
+@[macro_inline] def ofLeanLib (lib : Lake.LeanLib) : IO (Array Root) :=
+  lib.roots.filterMapM fun name => do
+    let root := { name, lib, realLibSrcDir := ← IO.FS.realPath lib.srcDir : Root }
+    if ← root.dir.isDir then return root else return none
 
 end Root
 
@@ -119,29 +119,38 @@ def findRoot (pkg : Lake.Package) (name : Name) (rootOrigin : String) : IO Root 
       in which the root `{name}` (from {rootOrigin}) could live.\n\
       This package contains the libraries:\
       {String.join <| pkg.leanLibs.toList.map (s!"\n  {·.name.toString (escape := false)}")}"
-  let root := { name, lib, realLibSrcDir := ← IO.FS.realPath lib.srcDir : Root}
-  root.checkDir (rootOrigin := rootOrigin)
-  return root
+  Root.mk name lib (rootOrigin := rootOrigin)
+
+/-- Make the array of roots from the `--lib` flag. -/
+def mkOnlyRoots (pkg : Lake.Package) (only : Array String) : IO (Array Root) := do
+  let mut roots := #[]
+  for root in only do
+    if let some lib := pkg.leanLibs.findRev? (root == ·.name.toString (escape := false)) then
+      roots := roots ++ (← Root.ofLeanLib lib)
+    else
+      let name := root.toName
+      if name.isAnonymous then
+        throw <| IO.userError s!"`{root}` (from `--lib`) is neither a valid `lean_lib` nor a \
+          valid module name."
+      -- Add `only`s that are in libs but are not libs
+      roots := roots.push <|← findRoot pkg root.toName (rootOrigin := "`--lib`")
+  return roots
 
 /-- Returns the `Root`s to process, with the roots that may be included as imports in future roots
 first (e.g. `Mathlib.Tactic` precedes `Mathlib`). -/
 def Config.mkAllRoots (cfg : Config) (pkg : Lake.Package)
     (only? : Option (Array String) := none) :
     IO (Array Root) := do
-  let libs ← cfg.mkAllLibs pkg (only? := only?)
-  let mut roots ← libs.flatMapM fun lib => lib.roots.mapM fun name => do
-    let root := { name, lib, realLibSrcDir := ← IO.FS.realPath lib.srcDir : Root }
-    root.checkDir s!"`lean_lib {lib.name}`"
-    return root
-  if let some only := only? then
-    for root in only do
-      unless roots.any (·.name.toString (escape := false) == root) do
-        -- Add `only`s that are in libs but are not libs
-        roots := roots.push <|← findRoot pkg root.toName (rootOrigin := "`--lib`")
-  else
-    for name in cfg.extraRootModules do
-      roots := roots.push <|← findRoot pkg name
-        (rootOrigin := "the `mk_all` config's `extraRootModules")
+  let roots ← do
+    if let some only := only? then
+      mkOnlyRoots pkg only
+    else
+      let libs ← cfg.mkAllLibs pkg
+      let mut roots ← libs.flatMapM Root.ofLeanLib
+      for name in cfg.extraRootModules do
+        roots := roots.push <|← findRoot pkg name
+          (rootOrigin := "the `mk_all` config's `extraRootModules")
+      pure roots
   return roots.qsort (·.lt ·)
 
 /-- Handles a `Root` and updates the associated file, printing logs to stdout. Returns `true` if it
