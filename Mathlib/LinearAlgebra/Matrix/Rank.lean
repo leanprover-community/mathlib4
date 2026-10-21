@@ -35,8 +35,10 @@ corresponding linear map, and is therefore independent of the choice of bases.
 * `Matrix.rank_eq_finrank_span_cols`, `Matrix.rank_eq_finrank_span_row`: the rank equals the
 dimension of the space spanned by the columns (resp. rows).
 * `Matrix.rank_transpose`: transposing a matrix does not change its rank.
-* `Matrix.le_rank_iff_exists_det_submatrix_ne_zero`: the rank is at least `k` if and only if
-  there is a nonzero `k × k` minor.
+* `Matrix.le_rank_iff_exists_det_submatrix_ne_zero`: over a domain, the rank is at least `k` if
+  and only if there is a nonzero `k × k` minor. See also
+  `Matrix.le_cRank_iff_exists_det_submatrix_ne_zero` and
+  `Matrix.le_eRank_iff_exists_det_submatrix_ne_zero`.
 * `Matrix.rank_mul_le`: the rank of `A * B` is at most the rank of `A` and at most the rank of `B`.
 * `Matrix.rank_mul_eq_left_of_isUnit_det`, `Matrix.rank_mul_eq_right_of_isUnit_det`: multiplying by
 an invertible matrix does not change the rank.
@@ -621,22 +623,86 @@ theorem _root_.LinearIndependent.rank_matrix [Field R] [Fintype m]
     {M : Matrix m n R} (h : LinearIndependent R M.row) : M.rank = Fintype.card m := by
   rw [M.rank_eq_finrank_span_row, linearIndependent_iff_card_eq_finrank_span.mp h, Set.finrank]
 
-/-- The rank of a matrix is at least `k` if and only if the matrix has a nonzero `k × k` minor.
-The row and column selections of such a minor are necessarily injective. -/
-theorem le_rank_iff_exists_det_submatrix_ne_zero [Field R] {A : Matrix m n R} {k : ℕ} :
-    k ≤ A.rank ↔ ∃ (r : Fin k → m) (c : Fin k → n), (A.submatrix r c).det ≠ 0 := by
+/-- Over a field, a matrix of rank at least `k` has a nonzero `k × k` minor. -/
+private theorem exists_det_submatrix_ne_zero_of_le_rank_of_field [Field R] {A : Matrix m n R}
+    {k : ℕ} (hk : k ≤ A.rank) : ∃ (r : Fin k → m) (c : Fin k → n), (A.submatrix r c).det ≠ 0 := by
+  obtain ⟨r, hr⟩ := A.exists_linearIndependent_row_comp
+  let B := A.submatrix (r ∘ Fin.castLE hk) id
+  have hB : LinearIndependent R B.row := hr.comp _ (Fin.castLE_injective hk)
+  have hBt : Bᵀ.rank = k := by rw [rank_transpose, hB.rank_matrix, Fintype.card_fin]
+  obtain ⟨c, hc⟩ := Bᵀ.exists_linearIndependent_row_comp
+  refine ⟨r ∘ Fin.castLE hk, c ∘ Fin.cast hBt.symm, ?_⟩
+  rw [← isUnit_iff_ne_zero, ← isUnit_iff_isUnit_det]
+  exact linearIndependent_col_iff_isUnit.mp (hc.comp _ (Fin.cast_injective _))
+
+omit [Fintype n] in
+/-- Over a field, a matrix whose column space has rank at least `k` has a nonzero `k × k`
+minor. -/
+private theorem exists_det_submatrix_ne_zero_of_le_cRank_of_field [Field R] {A : Matrix m n R}
+    {k : ℕ} (hk : k ≤ A.cRank) :
+    ∃ (r : Fin k → m) (c : Fin k → n), (A.submatrix r c).det ≠ 0 := by
+  obtain ⟨t, ht, hspan, hli⟩ := exists_linearIndependent R (range A.col)
+  rw [cRank, ← hspan, rank_span_set hli] at hk
+  obtain ⟨s, hst, hs⟩ := le_mk_iff_exists_subset.mp hk
+  obtain ⟨e⟩ := mk_eq_nat_iff.mp hs
+  choose c hc using fun i ↦ ht (hst (e.symm i).2)
+  have hc' : LinearIndependent R (A.col ∘ c) := by
+    convert (hli.comp _ (inclusion_injective hst)).comp _ e.symm.injective using 1
+    exact funext hc
+  have hk' : k ≤ (A.submatrix id c).rank := by
+    rw [rank_eq_finrank_span_cols]
+    exact (finrank_span_eq_card hc').trans (Fintype.card_fin k) |>.ge
+  obtain ⟨r, c', hd⟩ := exists_det_submatrix_ne_zero_of_le_rank_of_field hk'
+  exact ⟨r, c ∘ c', hd⟩
+
+omit [Fintype n] in
+/-- The rank of a matrix over a domain, as a cardinal, is at least `k` if and only if the matrix
+has a nonzero `k × k` minor. The rows and columns may be indexed by infinite types. The row and
+column selections of such a minor are necessarily injective. -/
+theorem le_cRank_iff_exists_det_submatrix_ne_zero [CommRing R] [IsDomain R] {A : Matrix m n R}
+    {k : ℕ} : k ≤ A.cRank ↔ ∃ (r : Fin k → m) (c : Fin k → n), (A.submatrix r c).det ≠ 0 := by
   refine ⟨fun hk ↦ ?_, fun ⟨r, c, hd⟩ ↦ ?_⟩
-  · obtain ⟨r, hr⟩ := A.exists_linearIndependent_row_comp
-    let B := A.submatrix (r ∘ Fin.castLE hk) id
-    have hB : LinearIndependent R B.row := hr.comp _ (Fin.castLE_injective hk)
-    have hBt : Bᵀ.rank = k := by rw [rank_transpose, hB.rank_matrix, Fintype.card_fin]
-    obtain ⟨c, hc⟩ := Bᵀ.exists_linearIndependent_row_comp
-    refine ⟨r ∘ Fin.castLE hk, c ∘ Fin.cast hBt.symm, ?_⟩
-    rw [← isUnit_iff_ne_zero, ← isUnit_iff_isUnit_det]
-    exact linearIndependent_col_iff_isUnit.mp (hc.comp _ (Fin.cast_injective _))
-  · classical
-    calc k = (A.submatrix r c).rank := by rw [rank_of_det_ne_zero hd, Fintype.card_fin]
-      _ ≤ A.rank := A.rank_submatrix_le r c
+  · -- Pass to the fraction field, where linear independence is preserved.
+    let K := FractionRing R
+    let φ : (m → R) →ₗ[R] (m → K) := LinearMap.compLeft (Algebra.linearMap R K) m
+    have hφ : LinearMap.ker φ = ⊥ := LinearMap.ker_eq_bot.mpr fun x y h ↦
+      funext fun i ↦ IsFractionRing.injective R K (congrFun h i)
+    obtain ⟨v, hv⟩ := exists_linearIndependent_of_le_rank hk
+    have hmap : (span R (range A.col)).map φ ≤
+        (span K (range (A.map (algebraMap R K)).col)).restrictScalars R := by
+      rw [Submodule.map_span, span_le]
+      rintro _ ⟨_, ⟨j, rfl⟩, rfl⟩
+      exact subset_span ⟨j, rfl⟩
+    let w (i : Fin k) : span K (range (A.map (algebraMap R K)).col) :=
+      ⟨φ (v i), hmap ⟨v i, (v i).2, rfl⟩⟩
+    have hw : LinearIndependent K w := by
+      refine LinearIndependent.of_comp (span K _).subtype ?_
+      rw [← LinearIndependent.iff_fractionRing R K]
+      exact (hv.map' _ (ker_subtype _)).map' φ hφ
+    obtain ⟨r, c, hd⟩ := exists_det_submatrix_ne_zero_of_le_cRank_of_field
+      (A := A.map (algebraMap R K)) (k := k) (by simpa [cRank] using hw.cardinal_lift_le_rank)
+    refine ⟨r, c, fun h ↦ hd ?_⟩
+    rw [submatrix_map, ← RingHom.mapMatrix_apply, ← RingHom.map_det, h, map_zero]
+  · have hc : LinearIndependent R (A.col ∘ c) :=
+      LinearIndependent.of_comp (LinearMap.funLeft R R r) (linearIndependent_cols_of_det_ne_zero hd)
+    let w (i : Fin k) : span R (range A.col) := ⟨A.col (c i), subset_span ⟨c i, rfl⟩⟩
+    have hw : LinearIndependent R w := LinearIndependent.of_comp (span R _).subtype hc
+    simpa [cRank] using hw.cardinal_lift_le_rank
+
+omit [Fintype n] in
+/-- The rank of a matrix over a domain, as a term of `ℕ∞`, is at least `k` if and only if the matrix
+has a nonzero `k × k` minor. -/
+theorem le_eRank_iff_exists_det_submatrix_ne_zero [CommRing R] [IsDomain R] {A : Matrix m n R}
+    {k : ℕ} : k ≤ A.eRank ↔ ∃ (r : Fin k → m) (c : Fin k → n), (A.submatrix r c).det ≠ 0 := by
+  rw [eRank, Cardinal.natCast_le_toENat, le_cRank_iff_exists_det_submatrix_ne_zero]
+
+/-- The rank of a matrix over a domain is at least `k` if and only if the matrix has a nonzero
+`k × k` minor. Only the columns need to be finite. -/
+theorem le_rank_iff_exists_det_submatrix_ne_zero [CommRing R] [IsDomain R] {A : Matrix m n R}
+    {k : ℕ} : k ≤ A.rank ↔ ∃ (r : Fin k → m) (c : Fin k → n), (A.submatrix r c).det ≠ 0 := by
+  have hA : A.cRank < ℵ₀ := A.cRank_le_card_width.trans_lt (natCast_lt_aleph0)
+  rw [← le_cRank_iff_exists_det_submatrix_ne_zero, ← cRank_toNat_eq_rank,
+    ← toNat_le_iff_le_of_lt_aleph0 (natCast_lt_aleph0) hA, toNat_natCast]
 
 /-- `M.mulVec` is surjective iff `M` has full row rank. -/
 theorem mulVec_surjective_iff_rank_eq_card [Field R] [Fintype m] {M : Matrix m n R} :
