@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Ring.Rat
 public import Mathlib.Basic.Denumerable
 public import Mathlib.Data.Rat.Encodable
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Denumerability of ℚ
 
