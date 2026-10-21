@@ -96,8 +96,7 @@ noncomputable def quotSMulTopExtEquivExtQuotSMulTop (M : ModuleCat.{v} R) (n : �
   let S := M.smulShortComplex a
   have S_exact : S.ShortExact := reg.smulShortComplex_shortExact
   let f : Ext M N n →ₗ[R] Ext (ModuleCat.of R (QuotSMulTop a M)) N (n + 1) := {
-    toFun := S_exact.extClass.precomp N (add_comm 1 n)
-    map_add' := by simp
+    __ := S_exact.extClass.precomp N (add_comm 1 n)
     map_smul' := by simp } --here need set false
   have surj : Function.Surjective f := by
     have exac := Ext.contravariant_sequence_exact₃' S_exact N n (n + 1) (add_comm 1 n)
@@ -270,7 +269,6 @@ instance (M : Type v) [AddCommGroup M] [Module R M] (S : Submonoid R) :
     Small.{v} (LocalizedModule S M) :=
   small_of_surjective (IsLocalizedModule.mk'_surjective S (LocalizedModule.mkLinearMap S M))
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ext_succ_nontrivial_of_eq_of_le [IsNoetherianRing R] (M : ModuleCat.{v} R) [Module.Finite R M]
     {p q : PrimeSpectrum R} (lt : p < q) (eq_of_le : ∀ r : PrimeSpectrum R, p < r → r ≤ q → r = q)
     (i : ℕ) (ntr : Nontrivial (Ext (ModuleCat.of (Localization p.1.primeCompl)
@@ -483,7 +481,6 @@ lemma supportDim_le_injectiveDimension [IsLocalRing R] [IsNoetherianRing R] (M :
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 open Limits in
 lemma injectiveDimension_eq_depth [IsLocalRing R] [IsNoetherianRing R]
     (M : ModuleCat.{v} R) (h : injectiveDimension M ≠ ⊤) [Module.Finite R M] [Nontrivial M] :
@@ -637,7 +634,6 @@ lemma add_one_eq_top_iff (a : WithBot ℕ∞) : a + 1 = ⊤ ↔ a = ⊤ := by
 
 variable [IsLocalRing R]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma injectiveDimension_quotient_span_regular
     (x : R) (reg : IsSMulRegular R x) (mem : x ∈ maximalIdeal R) :
     injectiveDimension (ModuleCat.of (R ⧸ Ideal.span {x}) (R ⧸ Ideal.span {x})) + 1 =
@@ -664,7 +660,6 @@ lemma quotient_span_regular_isGorenstein_iff_isGorenstein
     ← injectiveDimension_quotient_span_regular R x reg mem]
   exact (add_one_eq_top_iff _).not
 
-set_option backward.isDefEq.respectTransparency false in
 open Ideal in
 lemma quotient_regular_isGorenstein_iff_isGorenstein (rs : List R) (reg : IsRegular R rs) :
     IsGorensteinLocalRing R ↔ IsGorensteinLocalRing (R ⧸ Ideal.ofList rs) := by
@@ -864,7 +859,7 @@ lemma isGorensteinLocalRing_of_exists (k : ℕ) (gt : ringKrullDim R < k)
           (Module.length_ne_top_of_support_subset _ (supp_le _))
         convert mono
         ext y
-        simp [Ext.mk₀_smul]
+        simp [Ext.mk₀_smul] --here needs set false
       have : x ∈ (Module.annihilator R (Ext (ModuleCat.of R (R ⧸ p))
         (ModuleCat.of R R) k)).jacobson := maximalIdeal_le_jacobson _ hx
       absurd Submodule.top_ne_pointwise_smul_of_mem_jacobson_annihilator this
