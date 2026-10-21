@@ -25,39 +25,37 @@ An isomorphism `α : X ≅ Y` defines
 
 @[expose] public section
 
-universe v u
-
 namespace CategoryTheory
 
 namespace Iso
 
-variable {C : Type u} [Category.{v} C]
+variable {C : Type*} [Category* C]
 
 variable {X Y : C} (α : X ≅ Y)
 
 /-- An isomorphism between two objects defines a monoid isomorphism between their
 monoid of endomorphisms. -/
-def conj : End X ≃* End Y :=
-  { homCongr α α with map_mul' := fun f g => homCongr_comp α α α g f }
+@[implicit_reducible, simps!]
+def conj : End X ≃* End Y where
+  toEquiv := End.homEquiv.trans ((homCongr α α).trans End.homEquiv.symm)
+  map_mul' := by cat_disch
 
-theorem conj_apply (f : End X) : α.conj f = α.inv ≫ f ≫ α.hom :=
-  rfl
+@[deprecated (since := "2026-09-12")] alias conj_apply := conj_apply_asHom
 
-@[simp]
-theorem conj_comp (f g : End X) : α.conj (f ≫ g) = α.conj f ≫ α.conj g :=
-  map_mul α.conj g f
+@[deprecated "use map_mul" (since := "2026-09-12")]
+theorem conj_comp (f g : End X) : α.conj (f * g) = α.conj f * α.conj g :=
+  map_mul _ _ _
 
-@[simp]
-theorem conj_id : α.conj (𝟙 X) = 𝟙 Y :=
-  map_one α.conj
+@[deprecated "use map_one" (since := "2026-09-12")]
+theorem conj_id : α.conj 1 = 1 := map_one _
 
 @[simp]
 theorem refl_conj (f : End X) : (Iso.refl X).conj f = f := by
-  rw [conj_apply, Iso.refl_inv, Iso.refl_hom, Category.id_comp, Category.comp_id]
+  cat_disch
 
 @[simp]
-theorem trans_conj {Z : C} (β : Y ≅ Z) (f : End X) : (α ≪≫ β).conj f = β.conj (α.conj f) :=
-  homCongr_trans α α β β f
+theorem trans_conj {Z : C} (β : Y ≅ Z) (f : End X) : (α ≪≫ β).conj f = β.conj (α.conj f) := by
+  cat_disch
 
 @[simp]
 theorem symm_self_conj (f : End X) : α.symm.conj (α.conj f) = f := by
@@ -71,30 +69,31 @@ theorem self_symm_conj (f : End Y) : α.conj (α.symm.conj f) = f :=
 theorem conj_pow (f : End X) (n : ℕ) : α.conj (f ^ n) = α.conj f ^ n :=
   α.conj.toMonoidHom.map_pow f n
 
--- TODO: change definition so that `conjAut_apply` becomes a `rfl`?
 /-- `conj` defines a group isomorphism between groups of automorphisms -/
 def conjAut : Aut X ≃* Aut Y :=
   (Aut.unitsEndEquivAut X).symm.trans <| (Units.mapEquiv α.conj).trans <| Aut.unitsEndEquivAut Y
 
-theorem conjAut_apply (f : Aut X) : α.conjAut f = α.symm ≪≫ f ≪≫ α := by cat_disch
+theorem conjAut_apply (f : Aut X) : (α.conjAut f).asIso = α.symm ≪≫ f.asIso ≪≫ α := by
+  cat_disch
 
 @[simp]
-theorem conjAut_hom (f : Aut X) : (α.conjAut f).hom = α.conj f.hom :=
+theorem conjAut_hom (f : Aut X) : (α.conjAut f).asIso.hom = (α.conj f.toEnd).asHom :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem trans_conjAut {Z : C} (β : Y ≅ Z) (f : Aut X) :
     (α ≪≫ β).conjAut f = β.conjAut (α.conjAut f) := by
-  simp only [conjAut_apply, Iso.trans_symm, Iso.trans_assoc]
+  cat_disch
 
 @[simp]
 theorem conjAut_mul (f g : Aut X) : α.conjAut (f * g) = α.conjAut f * α.conjAut g :=
   map_mul α.conjAut f g
 
 @[simp]
-theorem conjAut_trans (f g : Aut X) : α.conjAut (f ≪≫ g) = α.conjAut f ≪≫ α.conjAut g :=
-  conjAut_mul α g f
+theorem conjAut_trans (f g : X ≅ X) :
+    (α.conjAut (.of (f ≪≫ g))).asIso =
+      (α.conjAut (.of f)).asIso ≪≫ (α.conjAut (.of g)).asIso := by
+  cat_disch
 
 @[simp]
 theorem conjAut_pow (f : Aut X) (n : ℕ) : α.conjAut (f ^ n) = α.conjAut f ^ n :=
@@ -108,20 +107,17 @@ end Iso
 
 namespace Functor
 
-universe v₁ u₁
-
-variable {C : Type u} [Category.{v} C] {D : Type u₁} [Category.{v₁} D] (F : C ⥤ D)
+variable {C : Type*} [Category* C] {D : Type*} [Category* D] (F : C ⥤ D)
 
 theorem map_conj {X Y : C} (α : X ≅ Y) (f : End X) :
-    F.map (α.conj f) = (F.mapIso α).conj (F.map f) :=
-  map_homCongr F α α f
+    F.map (α.conj f).asHom =
+      ((F.mapIso α).conj (F.mapEnd X f)).asHom := by
+  cat_disch
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem map_conjAut (F : C ⥤ D) {X Y : C} (α : X ≅ Y) (f : Aut X) :
-    F.mapIso (α.conjAut f) = (F.mapIso α).conjAut (F.mapIso f) := by
-  ext; simp only [mapIso_hom, Iso.conjAut_hom, F.map_conj]
+    F.mapIso (α.conjAut f).asIso = ((F.mapIso α).conjAut (F.mapAut X f)).asIso := by
+  cat_disch
 
--- alternative proof: by simp only [Iso.conjAut_apply, F.mapIso_trans, F.mapIso_symm]
 end Functor
 
 end CategoryTheory

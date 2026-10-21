@@ -142,9 +142,11 @@ instance (priority := 100) GeneralizedBooleanAlgebra.toGeneralizedCoheytingAlgeb
         _ ≤ x ⊔ z ⊔ x := sup_le_sup_right h x
         _ ≤ z ⊔ x := by rw [sup_assoc, sup_comm, sup_assoc, sup_idem])⟩
 
+@[grind .]
 theorem disjoint_sdiff_self_left : Disjoint (y \ x) x :=
   disjoint_iff_inf_le.mpr inf_sdiff_self_left.le
 
+@[grind .]
 theorem disjoint_sdiff_self_right : Disjoint x (y \ x) :=
   disjoint_iff_inf_le.mpr inf_sdiff_self_right.le
 
@@ -154,6 +156,8 @@ lemma le_sdiff : x ≤ y \ z ↔ x ≤ y ∧ Disjoint x z :=
 
 @[simp] lemma sdiff_eq_left : x \ y = x ↔ Disjoint x y :=
   ⟨fun h ↦ disjoint_sdiff_self_left.mono_left h.ge, Disjoint.sdiff_eq_left⟩
+
+grind_pattern sdiff_eq_left => x \ y, Disjoint x y
 
 /- TODO: we could make an alternative constructor for `GeneralizedBooleanAlgebra` using
 `Disjoint x (y \ x)` and `x ⊔ (y \ x) = y` as axioms. -/
