@@ -5,12 +5,15 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.List.Chain
 public import Mathlib.Algebra.Group.Nat.Even
+public import Mathlib.Data.List.Chain
 
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.Monoid.NatCast
 import Mathlib.Algebra.Ring.Nat
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # List of Booleans

@@ -11,6 +11,9 @@ public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
 import Mathlib.NumberTheory.ModularForms.Identities
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Boundedness of Eisenstein series
 
@@ -28,8 +31,6 @@ we then use our bounds for Eisenstein series in these vertical strips to get the
 -/
 
 public section
-
-noncomputable section
 
 open ModularForm UpperHalfPlane Matrix SlashInvariantForm CongruenceSubgroup
 
