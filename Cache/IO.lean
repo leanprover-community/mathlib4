@@ -303,7 +303,8 @@ def validateCurl (upload := false) : IO CurlMode := do
       "-L", "-o", CURLBIN.toString]
     let _ ← runCmd "chmod" #["u+x", CURLBIN.toString]
     return { parallel := true }
-  IO.println s!"Warning: curl {found} is unsupported for parallel cache downloads."
+  IO.println s!"Warning: curl {found} is too old for parallel cache downloads. \
+    Note: downloads run one file at a time. Hint: install curl {minimum.1}.{minimum.2} or later."
   return { parallel := false }
 
 /-- Recursively gets all files from a directory with a certain extension -/
