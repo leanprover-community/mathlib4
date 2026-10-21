@@ -1145,7 +1145,6 @@ lemma hom_isPrincipal_of_injectiveDimension_eq_ringKrullDim_eq_zero [IsNoetheria
   ext
   simp [hh]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma linearMap_isPrincipal_iff (J : Ideal R) (hJ : J ≠ ⊤) :
     letI : IsLocalRing (R ⧸ J) :=
       have : Nontrivial (R ⧸ J) := Ideal.Quotient.nontrivial_iff.mpr hJ
@@ -1158,12 +1157,8 @@ lemma linearMap_isPrincipal_iff (J : Ideal R) (hJ : J ≠ ⊤) :
   have : IsLocalRing (R ⧸ J) :=
     IsLocalRing.of_surjective (Ideal.Quotient.mk J) Ideal.Quotient.mk_surjective
   let e : (R ⧸ maximalIdeal R) ≃ₗ[R] (R ⧸ J) ⧸ maximalIdeal (R ⧸ J) :=
-    LinearEquiv.ofBijective
-    { __ := ResidueField.map (Ideal.Quotient.mk J)
-      map_smul' r x := by
-        simp [Algebra.smul_def, IsLocalRing.ResidueField.map_residue,
-          IsScalarTower.algebraMap_eq R (R ⧸ J) (ResidueField (R ⧸ J))] }
-    (ResidueField.map_bijective_of_surjective (Ideal.Quotient.mk J) Ideal.Quotient.mk_surjective)
+    (DoubleQuot.quotQuotEquivQuotOfLEₐ R (le_maximalIdeal hJ)).symm.trans
+      (Ideal.quotientEquivAlgOfEq R (map_maximalIdeal_of_surjective _ Ideal.Quotient.mk_surjective))
   refine ⟨fun ⟨f, hf⟩ ↦ ?_, fun ⟨f, hf⟩ ↦ ?_⟩
   · use (f.comp e.symm.toLinearMap).extendScalarsOfSurjective Ideal.Quotient.mk_surjective
     apply ((Submodule.span_singleton_eq_top_iff _ _).mpr fun g ↦ ?_).symm
@@ -1211,7 +1206,6 @@ lemma ext_isPrincipal_of_injectiveDimension_eq_ringKrullDim [IsNoetherianRing R]
   exact hom_isPrincipal_of_injectiveDimension_eq_ringKrullDim_eq_zero
     ((injectiveDimension_eq_ringKrullDim_of_isGorensteinLocalRing _).trans h2') h2'
 
-set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 lemma injective_of_isPrincipal [IsArtinianRing R]
     (h : (⊤ : Submodule R (R ⧸ maximalIdeal R →ₗ[R] R)).IsPrincipal) :
@@ -1272,8 +1266,9 @@ lemma injective_of_isPrincipal [IsArtinianRing R]
       (Submodule.mkQ_surjective _)) (LinearMap.surjective_rangeRestrict _) this
     rw [(LinearMap.ringLmapEquivSelf R R R).length_eq, Module.length_eq_add_of_exact _ _
       (maximalIdeal R).subtype_injective (maximalIdeal R).mkQ_surjective exac,
-      leneq1, leneq1', add_comm 1, WithTop.add_right_inj WithTop.one_ne_top] at leneq
-    exact (lt_of_lt_of_le (Submodule.length_lt ne) (lenle (maximalIdeal R))).ne leneq.symm
+      leneq1, leneq1', add_comm 1] at leneq
+    exact (lt_of_lt_of_le (Submodule.length_lt ne) (lenle (maximalIdeal R))).ne
+      (ENat.add_left_injective_of_ne_top WithTop.one_ne_top leneq).symm
   let S : ShortComplex (ModuleCat.{u} R) :=
     ShortComplex.mk (ModuleCat.ofHom (maximalIdeal R).subtype)
       (ModuleCat.ofHom (maximalIdeal R).mkQ) (by
@@ -1321,7 +1316,6 @@ lemma isGorensteinLocalRing_iff_exists [IsNoetherianRing R] :
   exact (((extFunctor _).mapIso (Shrink.linearEquiv.{u} R (R ⧸ maximalIdeal R)).toModuleIso.op).app
     (ModuleCat.of R R)).symm.addCommGroupIsoToAddEquiv.subsingleton_congr
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isGroensteinLocalRing_tfae [IsNoetherianRing R] (n : ℕ) (h : ringKrullDim R = n) :
     [IsGorensteinLocalRing R, injectiveDimension (ModuleCat.of R R) = n,
      (∀ i ≠ n, Subsingleton (Ext.{u} (ModuleCat.of R (R ⧸ maximalIdeal R)) (ModuleCat.of R R) i)) ∧
