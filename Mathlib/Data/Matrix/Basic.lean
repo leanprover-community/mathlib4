@@ -931,8 +931,8 @@ This is available in bundled forms as:
   __ := piRingEquiv
   commutes' := (AlgHom.mk' (piRingEquiv (β := β) (n := n)).toRingHom fun _ _ ↦ rfl).commutes
 
-@[simp] theorem toRingEquiv_piAlgEquiv (R) [CommSemiring R] [∀ i, Semiring (β i)]
-    [∀ i, Algebra R (β i)] [Fintype n] [DecidableEq n] : (piAlgEquiv (n := n) (ι := ι) (β := β) R :
+@[simp] theorem toRingEquiv_piAlgEquiv (R) [CommSemiring R] [Π i, Semiring (β i)]
+    [Π i, Algebra R (β i)] [Fintype n] [DecidableEq n] : (piAlgEquiv (n := n) (ι := ι) (β := β) R :
     Matrix n n (Π i, β i) ≃+* Π i, Matrix n n (β i)) = piRingEquiv := rfl
 
 @[simp] theorem toLinearEquiv_piAlgEquiv (R) [CommSemiring R] [∀ i, Semiring (β i)]
