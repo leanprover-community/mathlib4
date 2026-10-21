@@ -101,7 +101,6 @@ noncomputable def reindex {X : C} (h : P.LimitOfShape J X) (G : J' ⥤ J) [G.Ini
   toLimitPresentation := h.toLimitPresentation.reindex G
   prop_diag_obj _ := h.prop_diag_obj _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given `P : ObjectProperty C`, and a presentation `P.LimitOfShape J X`
 of an object `X : C`, this is the induced functor `J ⥤ StructuredArrow P.ι X`. -/
 @[simps]
@@ -200,6 +199,13 @@ instance : IsClosedUnderLimitsOfShape (⊤ : ObjectProperty C) J where
   limitsOfShape_le _ _ := by trivial
 
 export IsClosedUnderLimitsOfShape (limitsOfShape_le)
+
+instance {ι : Type*} (P : ι → ObjectProperty C) [∀ i, (P i).IsClosedUnderLimitsOfShape J] :
+    (⨅ i, P i).IsClosedUnderLimitsOfShape J where
+  limitsOfShape_le := by
+    simp only [le_iInf_iff]
+    intro i
+    exact (limitsOfShape_monotone _ (iInf_le _ _)).trans (limitsOfShape_le (P i) J)
 
 section
 

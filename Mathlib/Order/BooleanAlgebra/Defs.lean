@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Bryan Gin-ge Chen
 -/
 module
 
-public import Aesop
+public meta import Aesop
 public import Mathlib.Order.Heyting.Basic
 
 /-!
