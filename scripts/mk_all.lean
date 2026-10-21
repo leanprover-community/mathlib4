@@ -199,17 +199,22 @@ def handleRoot (cfg : Config) (root : Root)
     \n"
   if let some (existingContent, s) := existing? then
     if existingContent != newFileContent then
-      if !clobber && existingContent.rawEndPos != s.pos then
+      let wouldBeClobbered := existingContent.rawEndPos != s.pos
+      if !clobber && wouldBeClobbered then
         IO.eprintln s!"The root file `{root.name}` at '{fileName}' contains more than \
           just imports. Are you sure you want to replace it with a generated file? If so, run \
           `lake exe mk_all{if git then " --git" else ""} --clobber` to update it."
       else if check then
-        IO.println s!"The root file `{root.name}` at '{fileName}' is out of date: \
-          run `lake exe mk_all{if git then " --git" else ""}` to update it"
+        IO.println s!"The root file `{root.name}` at '{fileName}' \
+          {if wouldBeClobbered then "would be successfully clobbered" else "is out of date"}: \
+          run `lake exe mk_all\
+            {if git then " --git" else ""}\
+            {if wouldBeClobbered then " --clobber" else ""}` to update it"
       -- If clobbering or if (as expected) the generated file is entirely header, proceed.
       -- TODO: should we also have an `extend` option which only overwrites the header?
       else
-        IO.println s!"Updating `{root.name}` at '{fileName}'"
+        IO.println s!"{if wouldBeClobbered then "Clobbering" else "Updating"} \
+          `{root.name}` at '{fileName}'"
         IO.FS.writeFile fileName newFileContent
     else
       return false -- This is the one case in which we do not need to update
