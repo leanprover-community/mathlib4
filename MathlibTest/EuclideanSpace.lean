@@ -1,4 +1,8 @@
-import Mathlib.Analysis.InnerProductSpace.PiL2
+module
+
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+
+@[expose] public section
 
 #guard_expr !₂[] = WithLp.toLp 2 (V := ∀ _ : Fin 0, _) ![]
 #guard_expr !₂[1, 2, 3] = WithLp.toLp 2 (V := ∀ _ : Fin 3, ℕ) ![1, 2, 3]

@@ -1,5 +1,9 @@
-import Mathlib.Tactic.ToFun
-import Mathlib.Analysis.Normed.Ring.Basic
+module
+
+public import Mathlib.Tactic.ToFun
+public import Mathlib.Analysis.Normed.Ring.Basic
+
+@[expose] public section
 
 set_option pp.unicode.fun true
 

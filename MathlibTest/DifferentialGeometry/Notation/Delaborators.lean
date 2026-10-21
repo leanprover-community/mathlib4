@@ -1,6 +1,8 @@
-import Mathlib.Geometry.Manifold.Notation
-import Mathlib.Geometry.Manifold.VectorBundle.Tangent
-import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
+module
+
+public import Mathlib.Geometry.Manifold.Notation
+public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
+public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 
 /-!
 # Tests for the differential geometry delaborators
@@ -8,6 +10,8 @@ import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 Specific tests for the delaborators corresponding to the custom elaborators.
 
 -/
+
+@[expose] public section
 
 set_option pp.unicode.fun true
 

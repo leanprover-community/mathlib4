@@ -1,5 +1,9 @@
-import Mathlib.CategoryTheory.Types.Monomorphisms
-import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
+module
+
+public import Mathlib.CategoryTheory.Types.Monomorphisms
+public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
+
+@[expose] public section
 
 universe v u
 

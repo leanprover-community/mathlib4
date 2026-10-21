@@ -1,10 +1,14 @@
-import Mathlib.Data.Nat.Factorial.Basic
+module
+
+public meta import Mathlib.Data.Nat.Factorial.Basic
 
 /-!
 We check that `1_000_000 !` evaluates in less than 10 seconds.
 (This should be a conservative upper bound that will work on most hardware,
 but still tight enough that we couldn't achieve it without binary splitting.)
 -/
+
+@[expose] public section
 
 open Nat
 

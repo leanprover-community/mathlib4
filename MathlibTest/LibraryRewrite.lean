@@ -1,6 +1,10 @@
-import Mathlib.Tactic.Widget.LibraryRewrite
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Data.Subtype
+module
+
+public import Mathlib.Tactic.Widget.LibraryRewrite
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Data.Subtype
+
+@[expose] public section
 
 -- set_option trace.profiler true
 -- set_option trace.rw?? true

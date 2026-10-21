@@ -1,4 +1,9 @@
-import Mathlib.Data.Finset.Sort
+module
+
+public import Mathlib.Data.Finset.Sort
+import Lean.Meta.Basic
+
+@[expose] public section
 
 run_cmd Lean.Elab.Command.liftTermElabM do
   unsafe guard <|

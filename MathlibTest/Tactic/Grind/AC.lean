@@ -1,3 +1,7 @@
+module
+
+@[expose] public section
+
 section CCAC1
 
 example (a b c : Nat) (f : Nat → Nat) : f (a + b + c) = f (c + b + a) := by

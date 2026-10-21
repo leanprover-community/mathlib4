@@ -1,5 +1,7 @@
-import Mathlib.Algebra.Field.ZMod
-import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
+module
+
+public import Mathlib.Algebra.Field.ZMod
+public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
 
 /-! Test for kernel reduction of elliptic curve `nsmul`
 
@@ -7,6 +9,8 @@ In `addOrderOf_basepoint`, the `decide` tests that the kernel is able to reduce 
 operation on an elliptic curve to check an equality. `nsmul` on elliptic curves implements
 multiplication by doubling and should be relatively fast.
 -/
+
+@[expose] public section
 
 open WeierstrassCurve Affine Point
 

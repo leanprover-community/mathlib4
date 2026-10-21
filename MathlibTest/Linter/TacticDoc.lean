@@ -1,5 +1,9 @@
-import Mathlib.Tactic.Linter.TacticDocumentation
-import Batteries.Tactic.Lint.Frontend
+module
+
+public import Mathlib.Tactic.Linter.TacticDocumentation
+public import Batteries.Tactic.Lint.Frontend
+
+@[expose] public section
 
 syntax "noDocs" : tactic
 

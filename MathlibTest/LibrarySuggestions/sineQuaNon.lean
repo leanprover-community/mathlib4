@@ -1,4 +1,8 @@
-import Mathlib
+module
+
+public import Mathlib
+
+@[expose] public section
 
 #adaptation_note /-- This test is disabled until lean4#15392 is fixed.
 Since v4.35.0-rc2, Lean builds the Sine Qua Non indexes on the first query in each process,

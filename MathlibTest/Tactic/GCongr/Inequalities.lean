@@ -3,13 +3,17 @@ Copyright (c) 2022 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Data.Finset.Lattice.Fold
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.GCongr
-import Mathlib.Tactic.SuccessIfFailWithMsg
-import Mathlib.Tactic.NormNum.OfScientific
+module
+
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.Field.Basic
+public import Mathlib.Data.Finset.Lattice.Fold
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.GCongr
+public import Mathlib.Tactic.SuccessIfFailWithMsg
+public import Mathlib.Tactic.NormNum.OfScientific
+
+@[expose] public section
 
 namespace GCongrTests
 

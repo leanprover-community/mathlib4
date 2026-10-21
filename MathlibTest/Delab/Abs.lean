@@ -1,4 +1,8 @@
-import Mathlib.Algebra.Order.Group.Unbundled.Abs
+module
+
+public import Mathlib.Algebra.Order.Group.Unbundled.Abs
+
+@[expose] public section
 
 variable {α β : Type*} [Lattice α] [Lattice β] [Group α] [AddGroup β] {a : α} {b : β}
 

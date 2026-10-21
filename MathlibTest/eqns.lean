@@ -1,4 +1,8 @@
-import Mathlib.Tactic.Eqns
+module
+
+public import Mathlib.Tactic.Eqns
+
+@[expose] public section
 def transpose {m n} (A : m → n → Nat) : n → m → Nat
   | i, j => A j i
 

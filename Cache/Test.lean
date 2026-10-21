@@ -3,15 +3,16 @@ Copyright (c) 2026 Marcelo Lynch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch
 -/
+module
 
-import Cache.Cli
-import Cache.Requests
-import Cache.Location
-import Cache.Marker
-import Cache.Upload
-import Cache.Query
-import Cache.Warning
-import Cache.Lean
+public import Cache.Cli
+public import Cache.Requests
+public import Cache.Location
+public import Cache.Marker
+public import Cache.Upload
+public import Cache.Query
+public import Cache.Warning
+public import Cache.Lean
 
 /-!
 # Unit tests for the cache CLI
@@ -66,6 +67,8 @@ single `testDriver`, and the enclosing `mathlib` package binds that to
 project, the `cache-test` `lean_exe` here can become that project's `testDriver`.
 -/
 
+@[expose] public section
+
 namespace Cache.Test
 
 open Cache.Requests
@@ -92,7 +95,7 @@ def assertEq (name expected actual : String) : IO Unit := do
 /-- Run `body` with the `--scope=` override (`scopeOverride`) restored on
 completion, including on exception, so a test that sets it leaves the tests
 after it unaffected. -/
-private def withSavedScopeOverride (body : IO Unit) : IO Unit := do
+def withSavedScopeOverride (body : IO Unit) : IO Unit := do
   let saved ← scopeOverride.get
   try body finally scopeOverride.set saved
 
@@ -100,7 +103,7 @@ private def withSavedScopeOverride (body : IO Unit) : IO Unit := do
 device. Restores both on completion, including on exception. Apply this to every
 production code call in tests so diagnostic prints never mix with test output,
 regardless of whether the production code currently produces any. -/
-private def withSuppressedOutput (action : IO α) : IO α := do
+def withSuppressedOutput (action : IO α) : IO α := do
   let savedOut ← IO.getStdout
   let savedErr ← IO.getStderr
   let sink ← IO.FS.Handle.mk Cache.IO.nullDevice IO.FS.Mode.append
@@ -120,7 +123,7 @@ private def withSuppressedOutput (action : IO α) : IO α := do
     throw e
 
 /-- Run a cache action with a controlled Mathlib path and suppress its diagnostics. -/
-private def withSuppressedCacheOutput (action : IO.CacheM α)
+def withSuppressedCacheOutput (action : IO.CacheM α)
     (mathlibDepPath : System.FilePath := ".") : IO α :=
   withSuppressedOutput (ReaderT.run action { mathlibDepPath, srcSearchPath := [] })
 
@@ -826,7 +829,7 @@ end NonDefaultScope
 section MissingFilesHints
 
 /-- `true` iff `needle` occurs in `haystack`; assertion helper for message pins. -/
-private def containsSub (haystack needle : String) : Bool :=
+def containsSub (haystack needle : String) : Bool :=
   (haystack.splitOn needle).length > 1
 
 /-- Content pins for the two missing-files messages: the fork variant names the
@@ -1757,7 +1760,7 @@ section DecompPipeline
 /-- Shared `DecompConfig` for the pipeline tests. `hashToMod` is unused here;
 `isMathlibRoot := true` makes `decompressBatch` treat pending paths as plain
 entries, so `mathlibDepPath` is unused too. -/
-private def testDecompConfig : DecompConfig :=
+def testDecompConfig : DecompConfig :=
   { hashToMod := ∅, force := false, isMathlibRoot := true, mathlibDepPath := "." }
 
 /-- `finalizeDecomp` drains the decompression pipeline after the last download

@@ -1,13 +1,17 @@
-import Mathlib.Algebra.Ring.Nat
-import Mathlib.Data.Nat.Prime.Defs
-import Mathlib.CategoryTheory.Category.Basic
-import Mathlib.Data.List.InsertIdx
-import Mathlib.Algebra.Group.Basic
+module
+
+public import Mathlib.Algebra.Ring.Nat
+public import Mathlib.Data.Nat.Prime.Defs
+public import Mathlib.CategoryTheory.Category.Basic
+public import Mathlib.Data.List.InsertIdx
+public import Mathlib.Algebra.Group.Basic
+
+@[expose] public section
 
 -- This is partially duplicative with the tests for `rw?` in Lean.
 -- It's useful to re-test here with a larger environment.
 
-private axiom test_sorry : ∀ {α}, α
+axiom test_sorry : ∀ {α}, α
 
 -- To see the (sorted) list of lemmas that `rw?` will try rewriting by, use:
 -- set_option trace.Tactic.rewrites.lemmas true

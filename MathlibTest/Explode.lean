@@ -1,5 +1,11 @@
-import Mathlib.Basic.Real.Basic
-import Mathlib.Tactic.Explode
+module
+
+public import Mathlib.Basic.Real.Basic
+public import Mathlib.Tactic.Explode
+-- Needed so that `#explode` can see the proof of `true_iff`
+import all Init.SimpLemmas
+
+@[expose] public section
 
 set_option linter.unusedVariables false
 

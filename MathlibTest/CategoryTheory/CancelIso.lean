@@ -1,8 +1,12 @@
-import Mathlib.Tactic.CategoryTheory.CancelIso
-import Mathlib.CategoryTheory.Functor.Category
-import Mathlib.CategoryTheory.Monoidal.Category
-import Mathlib.CategoryTheory.Bicategory.Basic
-import Mathlib.CategoryTheory.Opposites
+module
+
+public import Mathlib.Tactic.CategoryTheory.CancelIso
+public import Mathlib.CategoryTheory.Functor.Category
+public import Mathlib.CategoryTheory.Monoidal.Category
+public import Mathlib.CategoryTheory.Bicategory.Basic
+public import Mathlib.CategoryTheory.Opposites
+
+@[expose] public section
 
 open CategoryTheory
 open Opposite

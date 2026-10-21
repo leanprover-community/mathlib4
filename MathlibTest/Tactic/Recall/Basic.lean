@@ -1,6 +1,11 @@
-import Mathlib.Analysis.Calculus.Deriv.Basic
-import Mathlib.Analysis.Complex.Trigonometric
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Analysis.Complex.Trigonometric
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+import all Init.Data.List.Basic
+
+@[expose] public section
 
 set_option linter.style.setOption false
 -- Remark: When the test is run by make/CI, this option is not set, so we set it here.

@@ -1,5 +1,7 @@
-import Mathlib.Geometry.Manifold.Instances.Sphere
-import Mathlib.Geometry.Manifold.Notation
+module
+
+public import Mathlib.Geometry.Manifold.Instances.Sphere
+public import Mathlib.Geometry.Manifold.Notation
 
 /-! # Tests for the differential geometry elaborators for spheres in metric spaces
 
@@ -8,6 +10,8 @@ This file also acts as a test for the delaborators corresponding to the custom e
 so the resulting test output often does not show the inferred model with corners.
 As that output is also tested elsewhere, this is fine.
 -/
+
+@[expose] public section
 
 open Bundle Filter Function Topology Manifold
 

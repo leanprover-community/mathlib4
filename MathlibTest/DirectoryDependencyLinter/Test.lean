@@ -3,9 +3,11 @@ Copyright (c) 2025 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
-import Mathlib.Init
-import Mathlib.Util.AssertNoSorry
-import Qq
+module
+
+public import Mathlib.Init
+public import Mathlib.Util.AssertNoSorry
+public import Qq
 
 /--
 warning: The module doc-string for a file should be the first command after the imports
@@ -30,6 +32,8 @@ example := trivial
 /-!
 # Tests for the `directoryDependency` linter
 -/
+
+@[expose] public section
 
 -- Some unit-tests for internal functions.
 #guard Lean.Name.isPrefixOf `Mathlib.Util `Mathlib.Util.Basic == true

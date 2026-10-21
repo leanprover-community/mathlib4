@@ -1,15 +1,19 @@
-import Mathlib.Tactic.Lift
-import Batteries.Tactic.PermuteGoals
-import Mathlib.Tactic.Coe
-import Mathlib.Data.Set.Defs
-import Mathlib.Order.WithBot
-import Mathlib.Algebra.Group.WithOne.Defs
-import Mathlib.Data.Set.Image
-import Mathlib.Data.Set.List
-import Mathlib.Data.Rat.Defs
-import Mathlib.Data.PNat.Defs
+module
+
+public import Mathlib.Tactic.Lift
+public import Batteries.Tactic.PermuteGoals
+public import Mathlib.Tactic.Coe
+public import Mathlib.Data.Set.Defs
+public import Mathlib.Order.WithBot
+public import Mathlib.Algebra.Group.WithOne.Defs
+public import Mathlib.Data.Set.Image
+public import Mathlib.Data.Set.List
+public import Mathlib.Data.Rat.Defs
+public import Mathlib.Data.PNat.Defs
 
 /-! Some tests of the `lift` tactic. -/
+
+@[expose] public section
 
 example (n : ℤ) (hn : 0 ≤ n) : 0 ≤ n + 1 := by
   lift n to ℕ

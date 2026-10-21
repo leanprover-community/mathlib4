@@ -1,4 +1,8 @@
-import Mathlib.CategoryTheory.Profunctor.Bicategory
+module
+
+public import Mathlib.CategoryTheory.Profunctor.Bicategory
+
+@[expose] public section
 
 open CategoryTheory Bicategory
 

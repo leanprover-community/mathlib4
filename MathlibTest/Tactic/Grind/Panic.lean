@@ -1,11 +1,15 @@
-import Mathlib.Algebra.Ring.GrindInstances
-import Mathlib.Tactic.FastInstance
+module
+
+public import Mathlib.Algebra.Ring.GrindInstances
+public import Mathlib.Tactic.FastInstance
 
 /-!
 From `v4.23.0-rc2` through to `nightly-2025-09-02`, `grind` panicked here.
 
 We keep this example as a regression test in Mathlib.
 -/
+
+@[expose] public section
 
 set_option warn.sorry false
 

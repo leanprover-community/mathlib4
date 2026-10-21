@@ -1,10 +1,14 @@
-import Lean.Elab.Tactic.ElabTerm
-import Lean.Elab.Tactic.Rfl
-import Mathlib.Lean.Expr.Basic
-import Mathlib.Lean.Meta.Basic
-import Mathlib.Tactic.Relation.Rfl
+module
+
+public import Lean.Elab.Tactic.ElabTerm
+public import Lean.Elab.Tactic.Rfl
+public import Mathlib.Lean.Expr.Basic
+public meta import Mathlib.Lean.Meta.Basic
+public import Mathlib.Tactic.Relation.Rfl
 
 /-! # Tests for mathlib extensions to `Lean.Expr` and `Lean.Meta` -/
+
+@[expose] public section
 
 namespace Tests
 

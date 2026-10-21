@@ -1,5 +1,9 @@
-import Mathlib.Algebra.Algebra.Rat
-import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+module
+
+public import Mathlib.Algebra.Algebra.Rat
+public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+
+@[expose] public section
 
 variable {k : Type*} [Field k]
 

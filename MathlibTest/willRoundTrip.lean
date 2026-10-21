@@ -1,11 +1,15 @@
-import Mathlib.Lean.Name
+module
+
+public import Mathlib.Lean.Name
 
 /-! Tests that if `Lean.Name.willRoundTrip` is true for a name, then it roundtrips. We do not
 insist that if `Lean.Name.willRoundTrip` is false, then it does *not* roundtrip. -/
+
+@[expose] public section
 open Lean Name
 
 -- `fun $n : Prop => $n`
-def mkTestLambda (n : Name) : Expr :=
+meta def mkTestLambda (n : Name) : Expr :=
   .lam n (.sort 0) (.bvar 0) .default
 
 open Parser Elab Command in

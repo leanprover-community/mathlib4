@@ -1,5 +1,11 @@
-import Mathlib.Algebra.Polynomial.Basic
-import Mathlib.Algebra.Module.ULift
+module
+
+public import Mathlib.Algebra.Polynomial.Basic
+public import Mathlib.Algebra.Module.ULift
+public meta import Mathlib.Algebra.Polynomial.Basic
+public meta import Mathlib.Algebra.Module.ULift
+
+@[expose] public section
 
 open Polynomial
 

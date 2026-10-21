@@ -1,7 +1,11 @@
-import Mathlib.Tactic.Eval
-import Mathlib.Data.Finset.Powerset
-import Mathlib.Data.Finset.Sort
-import Mathlib.Util.Qq
+module
+
+public import Mathlib.Tactic.Eval
+public meta import Mathlib.Data.Finset.Powerset
+public import Mathlib.Data.Finset.Sort
+public import Mathlib.Util.Qq
+
+@[expose] public section
 
 #guard_expr eval% 2^10 =ₛ 1024
 

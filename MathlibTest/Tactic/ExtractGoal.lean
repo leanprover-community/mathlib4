@@ -1,6 +1,10 @@
-import Mathlib.Tactic.ExtractGoal
-import Mathlib.Order.Basic
-import Mathlib.Data.Nat.Basic
+module
+
+public import Mathlib.Tactic.ExtractGoal
+public import Mathlib.Order.Basic
+public import Mathlib.Data.Nat.Basic
+
+@[expose] public section
 
 set_option linter.style.setOption false
 set_option pp.unicode.fun true
@@ -48,7 +52,7 @@ example : n = n := by
   rfl
 
 /--
-info: theorem _example.extracted_1 {z : Int} :
+info: theorem _private.MathlibTest.Tactic.ExtractGoal.0._example.extracted_1 {z : Int} :
   @Exists.{1} Nat fun (n : Nat) ↦ @Eq.{1} Int (@Nat.cast.{0} Int instNatCastInt n) z := sorry
 ---
 warning: declaration uses `sorry`
@@ -177,7 +181,8 @@ example : ∀ n, n < n + 1 := by
   sorry
 
 /--
-info: theorem foralls_variants.extracted_1_1 : ∀ (n : ℕ), n + 0 = n → n + 1 + 0 = n + 1 := sorry
+info: theorem _private.MathlibTest.Tactic.ExtractGoal.0.foralls_variants.extracted_1_1 : ∀ (n : ℕ),
+  n + 0 = n → n + 1 + 0 = n + 1 := sorry
 ---
 info: theorem foralls_variants.extracted_1_3 (n : ℕ) : n + 0 = n → n + 1 + 0 = n + 1 := sorry
 -/

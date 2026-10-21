@@ -1,5 +1,9 @@
-import Mathlib.Util.Notation3
-import Mathlib.Data.Nat.Basic
+module
+
+public import Mathlib.Util.Notation3
+public import Mathlib.Data.Nat.Basic
+
+@[expose] public section
 
 set_option linter.style.setOption false
 set_option pp.unicode.fun true
@@ -25,7 +29,7 @@ Test that `pp.tagAppFns` causes tokens to be tagged with head constant.
 -/
 
 open Lean in
-def findWithTag (tag : Nat) (f : Format) : List Format :=
+meta def findWithTag (tag : Nat) (f : Format) : List Format :=
   match f with
   | .nil => []
   | .line => []
@@ -37,7 +41,7 @@ def findWithTag (tag : Nat) (f : Format) : List Format :=
   | .tag t f' => (if t = tag then [f'] else []) ++ findWithTag tag f'
 
 open Lean Elab Term in
-def testTagAppFns (n : Name) : TermElabM Unit := do
+meta def testTagAppFns (n : Name) : TermElabM Unit := do
   let stx ← `(∀ᶠ x in Filter.atTop, x < 3)
   let e ← elabTermAndSynthesize stx none
   let f ← Meta.ppExprWithInfos e

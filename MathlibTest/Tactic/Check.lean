@@ -1,4 +1,8 @@
-import Mathlib.Tactic.Check
+module
+
+public import Mathlib.Tactic.Check
+
+@[expose] public section
 
 set_option linter.unusedTactic false
 set_option linter.unusedVariables false

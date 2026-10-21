@@ -1,5 +1,7 @@
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Field.Defs
+module
+
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Algebra.Field.Defs
 
 /-!
 # Preliminary tests for `grind` using Mathlib typeclasses.
@@ -7,6 +9,8 @@ import Mathlib.Algebra.Field.Defs
 These are far from exhaustive tests, for now just testing the minimal functionality for `grind`
 using Mathlib's `CommRing` typeclass.
 -/
+
+@[expose] public section
 
 -- We mock ℝ here so that we don't have to import the dependencies.
 axiom Real : Type

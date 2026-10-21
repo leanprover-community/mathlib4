@@ -3,10 +3,13 @@ Copyright (c) 2022 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Frédéric Dupuis
 -/
+module
 
-import Mathlib.Logic.Equiv.PartialEquiv
+public import Mathlib.Logic.Equiv.PartialEquiv
 
-private axiom test_sorry : ∀ {α}, α
+@[expose] public section
+
+axiom test_sorry : ∀ {α}, α
 /-!
 This is a test file for the tactic `mfld_set_tac`. Because this tactic applies a simp-set which
 mostly contains lemmas in advanced parts of mathlib, it is currently impossible to truly test it

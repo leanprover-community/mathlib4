@@ -1,5 +1,9 @@
-import Mathlib.Tactic.HigherOrder
-import Mathlib.Control.Functor
+module
+
+public import Mathlib.Tactic.HigherOrder
+public meta import Mathlib.Control.Functor
+
+@[expose] public section
 
 set_option autoImplicit true
 namespace HigherOrderTest

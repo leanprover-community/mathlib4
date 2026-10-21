@@ -1,8 +1,13 @@
-import Mathlib.Tactic.Nontriviality
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Ring.Nat
+module
 
-private axiom test_sorry : ∀ {α}, α
+public import Mathlib.Tactic.Nontriviality
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Algebra.Ring.Nat
+public import Mathlib.Data.Set.Basic
+
+@[expose] public section
+
+axiom test_sorry : ∀ {α}, α
 /-! ### Test `nontriviality` with inequality hypotheses -/
 
 set_option autoImplicit true

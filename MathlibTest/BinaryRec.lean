@@ -1,4 +1,8 @@
-import Mathlib.Data.Nat.Bits
+module
+
+public import Mathlib.Data.Nat.Bits
+
+@[expose] public section
 
 def Nat.popcountTR (n : Nat) : Nat :=
   n.binaryRec (·) (fun b _ f x ↦ f (x + b.toNat)) 0

@@ -1,4 +1,6 @@
-import Mathlib.Tactic.Linter.Header
+module
+
+public import Mathlib.Tactic.Linter.Header
 
 set_option linter.style.header true
 
@@ -15,3 +17,5 @@ Note: This linter can be disabled with `set_option linter.style.header false`
 set_option linter.omit true -- Random linter option defined in core Lean
 
 /-! # Module doc ... -/
+
+@[expose] public section

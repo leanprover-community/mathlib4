@@ -1,8 +1,12 @@
-import Mathlib.Order.Interval.Finset.Basic
+module
+
+public import Mathlib.Order.Interval.Finset.Basic
 
 /-!
 # Examples of finset builder notation
 -/
+
+@[expose] public section
 
 open Finset
 

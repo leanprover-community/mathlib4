@@ -1,4 +1,8 @@
-import Mathlib
+module
+
+public import Mathlib
+
+@[expose] public section
 
 abbrev S1 : Fin 3 → Finset (Fin 4)
   | 0 => {0}

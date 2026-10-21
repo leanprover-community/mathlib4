@@ -1,8 +1,12 @@
-import Mathlib.Tactic.Widget.CommDiag
-import ProofWidgets.Component.Panel.SelectionPanel
-import ProofWidgets.Component.Panel.GoalTypePanel
+module
+
+public import Mathlib.Tactic.Widget.CommDiag
+public import ProofWidgets.Component.Panel.SelectionPanel
+public import ProofWidgets.Component.Panel.GoalTypePanel
 
 /-! # Example use of commutative diagram widgets -/
+
+@[expose] public section
 
 universe u
 namespace CategoryTheory

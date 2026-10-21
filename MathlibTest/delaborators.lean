@@ -1,5 +1,9 @@
-import Mathlib.Util.Delaborators
-import Mathlib.Data.Set.BooleanAlgebra
+module
+
+public import Mathlib.Util.Delaborators
+public import Mathlib.Data.Set.BooleanAlgebra
+
+@[expose] public section
 
 section PiNotation
 variable (P : Nat → Prop) (α : Nat → Type) (s : Set ℕ)

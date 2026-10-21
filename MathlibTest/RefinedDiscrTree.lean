@@ -1,5 +1,9 @@
-import Mathlib.Lean.Meta.RefinedDiscrTree.Encode
-import Mathlib
+module
+
+public import Mathlib.Lean.Meta.RefinedDiscrTree.Encode
+public import Mathlib
+
+@[expose] public section
 
 open Qq Lean Meta RefinedDiscrTree
 
