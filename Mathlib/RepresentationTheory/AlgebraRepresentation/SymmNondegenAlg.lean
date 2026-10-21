@@ -28,8 +28,8 @@ functionals `A ⧸ [A, A] →ₗ[k] k` vanishing on commutators. In practice, it
 to describe `Z(A)` explicitly, e.g. when `A` is the Hecke algebra of a `p`-adic reductive group with
 integer coefficients. On the other hands, the space `A ⧸ [A, A] →ₗ[k] k` is always abundant (and
 stricly larger when `Z(A)` is infinite dimensional), since the trace of any `k`-finite-projective
-`A`-module will provide such a non-zero functional. In this file we study those elements of `A`
-coming from the trace functionals.
+`A`-module will provide such a functional. In this file we study those elements of `A` coming from
+the trace functionals.
 
 We say that `f : A` is the trace representative of a `k`-linear `A`-module `V` if `∀ x : A` we have
 `⟨f, x⟩ = Trace_V(x)`.
@@ -85,35 +85,11 @@ nondegenerate. -/
 class IsSymmNondegenAlg {k : Type*} (A : Type*) [CommSemiring k] [NonUnitalNonAssocSemiring A]
     [Module k A] [SMulCommClass k A A] [IsScalarTower k A A] (Φ : A →ₗ[k] k) where
   isSymm : ∀ a b : A, Φ (a * b) = Φ (b * a)
-  separatingLeft (a : A) : (∀ b : A, Φ (a * b) = 0) → a = 0
-  separatingRight (a : A) : (∀ b : A, Φ (b * a) = 0) → a = 0 := by
-    simpa [isSymm] using separatingLeft a
+  separatingLeft : ∀ a : A, (∀ b : A, Φ (a * b) = 0) → a = 0
+  separatingRight : ∀ a : A, (∀ b : A, Φ (b * a) = 0) → a = 0 :=
+    fun a ha => separatingLeft a (fun b => by rw [isSymm a b, ha])
 
 namespace IsSymmNondegenAlg
-
-variable {k A : Type*} [CommSemiring k] [NonUnitalNonAssocSemiring A] [Module k A]
-  [SMulCommClass k A A] [IsScalarTower k A A] {Φ : A →ₗ[k] k} [IsSymmNondegenAlg A Φ]
-
-variable (k A Φ) in
-/-- Given a symmetric nondegenerate algebra `(A, Φ)`, this is the bilinear form
-`⟨x, y⟩ := Φ (x * y)` -/
-abbrev bilinearForm : A →ₗ[k] A →ₗ[k] k := (LinearMap.mul k A).compr₂ Φ
-
-lemma isSymm_bilinearForm :
-    (bilinearForm k A Φ).IsSymm := ⟨fun a b => IsSymmNondegenAlg.isSymm a b⟩
-
-lemma nondegenerate_bilinearForm :
-    (bilinearForm k A Φ).Nondegenerate := ⟨separatingLeft, separatingRight⟩
-
-variable (Φ) in
-/-- `f : A` is a representative of the functional `(F : A →ₗ[k] k)` if `∀ a, Φ (f * a)= F a`. -/
-def IsRepresentativeOf (f : A) (F : A →ₗ[k] k) : Prop :=
-  bilinearForm k A Φ f = F
-
-omit [IsSymmNondegenAlg A Φ] in
-lemma isRepresentativeOf_apply {f : A} {F : A →ₗ[k] k} (hf : IsRepresentativeOf Φ f F) (a : A) :
-    Φ (f * a) = F a :=
-  congrArg (fun f ↦ f a) hf
 
 section CommRing
 
@@ -124,12 +100,12 @@ variable {k A V W : Type*} [CommRing k] [Ring A] [Algebra k A] {Φ : A →ₗ[k]
 variable (Φ V) in
 /-- `f : A` is the trace representative of a `k`-linear `A`-module `V` if
   `∀ a, ⟨f, a⟩ = Trace_V(a)`. -/
-abbrev IsTraceRepresentative (f : A) : Prop :=
-  IsRepresentativeOf Φ f (LinearMap.trace k V ∘ₗ Algebra.lsmul k k V (A := A))
+def IsTraceRepresentative (f : A) : Prop :=
+  ∀ a, Φ (f * a) = LinearMap.trace k V (Algebra.lsmul k k V a)
 
-lemma isTraceRepresentative_apply {f : A} (hf : IsTraceRepresentative V Φ f) (a : A) :
-    Φ (f * a) = LinearMap.trace k V (Algebra.lsmul k k V a) := by
-  simp [isRepresentativeOf_apply hf]
+lemma isTraceRepresentative_iff {f : A} :
+    IsTraceRepresentative V Φ f ↔ ∀ a, Φ (f * a) = LinearMap.trace k V (Algebra.lsmul k k V a) := by
+  rfl
 
 variable [IsSymmNondegenAlg A Φ]
 
@@ -141,20 +117,15 @@ lemma eq_iff {a b : A} :
   rw [← sub_eq_zero]
   exact fun h => separatingLeft (a - b) (Φ := Φ) fun c => by simp [sub_mul, h]
 
-lemma unique_of_isRepresentativeOf {f g : A} {F : A →ₗ[k] k} (hf : IsRepresentativeOf Φ f F)
-    (hg : IsRepresentativeOf Φ g F) :
+lemma unique_of_isTraceRepresentative {f g : A} (hf : IsTraceRepresentative V Φ f)
+    (hg : IsTraceRepresentative V Φ g) :
     f = g :=
-  (eq_iff Φ).mpr <| by simp [isRepresentativeOf_apply hf, isRepresentativeOf_apply hg]
-
-lemma mul_comm_of_isRepresentativeOf {f : A} {F : A →ₗ[k] k} (hf : IsRepresentativeOf Φ f F)
-    (hF : ∀ a b, F (a * b) = F (b * a)) :
-    ∀ a, f * a = a * f :=
-  fun a => (eq_iff Φ).mpr <| by
-    simp [mul_assoc, isSymm a, isRepresentativeOf_apply hf, hF]
+  (eq_iff Φ).mpr <| fun c => by rw [hf c, hg c]
 
 lemma mul_comm_of_isTraceRepresentative {f : A} (hf : IsTraceRepresentative V Φ f) :
     ∀ a, f * a = a * f :=
-  mul_comm_of_isRepresentativeOf hf (by simp [LinearMap.trace_mul_comm])
+  fun a => (eq_iff Φ).mpr <| fun c => by
+    simp_rw [mul_assoc a f c, isSymm a, mul_assoc f, hf _, map_mul, LinearMap.trace_mul_comm]
 
 lemma IsTraceRepresentative.lsmul_eq_zero_of_isEmpty [IsSimpleModule A V] [IsSimpleModule A W]
     [IsEmpty (V ≃ₗ[A] W)] [Module.Finite (Module.End A V) V] {f : A}
@@ -167,7 +138,7 @@ lemma IsTraceRepresentative.lsmul_eq_zero_of_isEmpty [IsSimpleModule A V] [IsSim
     refine (eq_iff Φ).mpr fun c => ?_
     simp only [RingHom.mem_ker, Module.toModuleEnd_apply, I, toEndAV] at ha
     have : DistribSMul.toLinearMap EndAV V a = Algebra.lsmul k k V a := rfl
-    rw [mul_assoc, isTraceRepresentative_apply hf, map_mul, ← this, ha]
+    rw [mul_assoc, hf (a * c), map_mul, ← this, ha]
     simp
   by_cases hW : I • ⊤ = (0 : Submodule A W)
   · -- The idea is that `A ⧸ I` is isomorphic to `End_{End_A(V)}(V)` by Jacoboson's density theorem
@@ -249,7 +220,7 @@ lemma ne_zero_of_charZero [CharZero k] [Nontrivial V] {f : A} (hf : IsTraceRepre
     Φ f ≠ 0 := by
   by_contra
   have : Φ (f * 1) = 0 := by simp [this]
-  rw [isTraceRepresentative_apply hf] at this
+  rw [hf 1] at this
   simp_all [Module.finrank_eq_zero_iff_of_free, ← not_nontrivial_iff_subsingleton]
 
 lemma ne_zero_of_isSimpleModule [IsSimpleModule A V] [IsAlgClosed k] {f : A}
@@ -259,7 +230,7 @@ lemma ne_zero_of_isSimpleModule [IsSimpleModule A V] [IsAlgClosed k] {f : A}
   obtain ⟨v, hv⟩ := exists_ne (0 : V)
   obtain ⟨g, hg⟩ := Module.Projective.exists_dual_eq_one k hv
   obtain ⟨a, ha⟩ := (IsSimpleModule.lsmul_surjective_of_isAlgClosed (k := k) A) (g.smulRight v)
-  have h := isTraceRepresentative_apply hf a
+  have h := hf a
   rw [ha, LinearMap.trace_smulRight, hg] at h
   by_contra
   simp [this] at h
@@ -272,10 +243,10 @@ lemma normalization_eq_smul_and_ne_zero {f a : A} (hf : IsTraceRepresentative V 
   have hr_ne_zero : r ≠ 0 := by
     by_contra
     apply ha
-    simp [isTraceRepresentative_apply hf, hr, this]
+    simp [isTraceRepresentative_iff.mp hf, hr, this]
   have hr' : r' = r⁻¹ := by
     simp_rw [r', smul_eq_mul, inv_mul_eq_iff_eq_mul₀ ha, mul_comm _ r⁻¹]
-    simp [isTraceRepresentative_apply hf, hr, hr_ne_zero]
+    simp [isTraceRepresentative_iff.mp hf, hr, hr_ne_zero]
   exact ⟨by simp [r', normalization_def, mul_smul, ← hr'], hr_ne_zero⟩
 
 variable [IsSymmNondegenAlg A Φ] [IsSimpleModule A V] [IsAlgClosed k]
@@ -288,7 +259,7 @@ lemma normalization_isIdempotentElem {f : A} (hf : IsTraceRepresentative V Φ f)
     IsSimpleModule.lsmul_eq_smul_one_of_mul_comm V k (mul_comm_of_isTraceRepresentative hf)
   refine (eq_iff Φ).mpr fun c => ?_
   obtain ⟨heq, hr_ne_zero⟩ := normalization_eq_smul_and_ne_zero hf ha hr
-  simp [heq, pow_two, mul_assoc, isTraceRepresentative_apply hf, hr, hr_ne_zero]
+  simp [heq, pow_two, mul_assoc, isTraceRepresentative_iff.mp hf, hr, hr_ne_zero]
 
 lemma lsmul_normalization_eq_one {f a : A} (hf : IsTraceRepresentative V Φ f)
     (ha : Φ (f * (f * a)) ≠ 0) :
@@ -315,8 +286,8 @@ lemma lsmul_normalization_eq_one_of_charZero [CharZero k] {f : A} (hf : IsTraceR
   have : c ≠ 0 := by
     by_contra
     refine hf2 <| (eq_iff Φ).mpr fun x => ?_
-    simp [pow_two, mul_assoc, isTraceRepresentative_apply hf, hc, this]
-  simp [isTraceRepresentative_apply hf, hc, this, Module.finrank_eq_zero_iff_of_free,
+    simp [pow_two, mul_assoc, isTraceRepresentative_iff.mp hf, hc, this]
+  simp [isTraceRepresentative_iff.mp hf, hc, this, Module.finrank_eq_zero_iff_of_free,
     ← not_nontrivial_iff_subsingleton, IsSimpleModule.nontrivial A V]
 
 omit [IsAlgClosed k] [Module.Finite k V] in
