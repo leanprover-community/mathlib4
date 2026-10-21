@@ -7,9 +7,6 @@ module
 
 public meta import Mathlib.Tactic.Inclusion.ExtensionAPI.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Attributes for `inclusion` extensions
 

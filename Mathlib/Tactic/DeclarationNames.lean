@@ -12,9 +12,6 @@ public meta import Lean.ResolveName
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 This file contains functions that are used by multiple linters.
 -/

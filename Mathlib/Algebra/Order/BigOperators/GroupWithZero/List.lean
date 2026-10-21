@@ -9,9 +9,6 @@ public import Mathlib.Algebra.BigOperators.Group.List.Defs
 public import Mathlib.Algebra.Order.GroupWithZero.Basic
 public import Mathlib.Basic.FunLike.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Big operators on a list in ordered groups with zeros
 

@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Topology.CompactOpen
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Equivalence between `C(X, Σ i, Y i)` and `Σ i, C(X, Y i)`
 
