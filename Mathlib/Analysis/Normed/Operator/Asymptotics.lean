@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Asymptotics.Basic
 public import Mathlib.Analysis.Normed.Operator.Basic
+
 /-!
 # Asymptotic statements about the operator norm
 

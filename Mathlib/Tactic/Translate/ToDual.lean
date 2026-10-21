@@ -255,6 +255,8 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("comonad", ["Monad"]),
   ("monadic", ["Comonadic"]),
   ("comonadic", ["Monadic"]),
+  ("kleisli", ["Cokleisli"]),
+  ("cokleisli", ["Kleisli"]),
   ("section", ["Retraction"]),
   ("retraction", ["Section"]),
   ("ofπ", ["Ofι"]),
@@ -357,6 +359,7 @@ TODO: this currently doesn't accept the `(dont_translate := ...)`/`(relevant_arg
 -/
 elab tk:"to_dual_for" src:ident " := " tgt:term : command => Command.liftTermElabM do
   let src ← realizeGlobalConstNoOverloadWithInfo src
-  addTranslationFor data tk src tgt (dontTranslate := []) (relevantArg? := none)
+  withRef tk do
+    addTranslationFor data src tgt (dontTranslate := []) (relevantArg? := none)
 
 end Mathlib.Tactic.ToDual

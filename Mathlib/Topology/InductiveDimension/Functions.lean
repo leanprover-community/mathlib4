@@ -10,6 +10,9 @@ public import Mathlib.Topology.InductiveDimension.Classes
 
 import Mathlib.Data.Nat.Cast.Order.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Small inductive dimension
 
