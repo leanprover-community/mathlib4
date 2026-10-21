@@ -175,16 +175,34 @@ public def copyrightHeaderChecks (copyright : String) (expectedLicense : String)
     output := output.push (toSyntax copyright "-/", s!"Copyright too short!")
   return output
 
+/-- Given `modPath := foo/bar/A/B/C(.lean)` and a module name `A.B.C`, return `foo/bar/A.lean`.
+Return `none` if the name components do not match the path components. -/
+def modPathToRootPath (modPath : System.FilePath) (modName : Name) : Option System.FilePath :=
+  match modName with
+  | .str .anonymous root => do
+    guard <| modPath.fileStem == root
+    modPath.withExtension "lean"
+  | .str pre last => do
+    guard <| modPath.fileStem == last
+    modPathToRootPath (← modPath.parent) pre
+  | _ => none
+
 /--
-`isInLibraryRoot modName` returns `true` if `<root>.lean` imports the file `modName`, where
-`<root>` is the top-level component of `modName`. For example, for `Mathlib.Foo.Bar` this checks
-`Mathlib.lean`; for `Cslib.Foo.Bar` this checks `Cslib.lean`.
-This is used by the `Header` linter as a heuristic of whether it should inspect the file or not,
-so that the linter works in any project whose library root follows the standard Lean convention
-of being named after the top-level module.
+`isInLibraryRoot rootPath modName` returns `true` if the file at `rootPath` (expected to be the
+root file of a library, `<root>.lean`) directly imports the file `modName`.
+
+For example, for ``isInLibraryRoot (srcDir / "Mathlib.lean") `Mathlib.Foo.Bar`` checks if
+`Mathlib.lean` directly imports `Mathlib.Foo.Bar`. (Note, however, that this does not enforce that
+the root component of `modName` is the same as the file stem of `rootPath`.)
+
+Note: for any library (like `Mathlib`) which names its root file after the library and locates it
+accordingly, the `rootPath` may be obtained with `modPathToRootPath fileName modName`.
+
+This is used by the header linter as a heuristic for whether it should lint the module `modName`
+or not, in order to avoid linting scratch files (which typically are not imported in the library
+root).
 -/
-def isInLibraryRoot (modName : Name) : IO Bool := do
-  let rootPath := (modName.getRoot.toString : System.FilePath).addExtension "lean"
+def isInLibraryRoot (rootPath : System.FilePath) (modName : Name) : IO Bool := do
   if ← rootPath.pathExists then
     let res ← parseImports' (← IO.FS.readFile rootPath) ""
     return res.imports.any (·.module == modName)
@@ -420,11 +438,12 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
         and any necessary `set_option` commands.\n\
         Please, add a module doc-string (`/-! ... -/`) before `{stx}`.\
         {.hint' m!"Type `m(odule docstring) + [tab]` to insert a template via snippet."}"
+  let some rootPath := modPathToRootPath (← getFileName) mainModule | return
   let inLibraryRoot? ← inLibraryRootMutex.atomically do
     match ← get with
     | some d => return d
     | none =>
-      let val ← isInLibraryRoot mainModule
+      let val ← isInLibraryRoot rootPath mainModule
       -- We cache the answer to avoid recomputing it on every command. The fill runs under the mutex
       -- so that concurrent (async) linter runs don't all miss the cache and each redundantly parse
       -- the library root file; `mainModule` is fixed for the duration of the elaboration.
@@ -444,7 +463,8 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   -- Report on broad or duplicate imports.
   broadImportsCheck importRefs mainModule
   duplicateImportsCheck importRefs
-  let errors ← directoryDependencyCheck mainModule
+  let srcDir := rootPath.parent.getD "."
+  let errors ← directoryDependencyCheck srcDir mainModule
   if errors.size > 0 then
     Linter.logLint linter.directoryDependency (importRefs.back?.elim headerStx (·.stx)) <|
       m!"\n\n".joinSep errors.toList
