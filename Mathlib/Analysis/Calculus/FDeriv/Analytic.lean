@@ -189,7 +189,6 @@ theorem AnalyticOn.differentiableOn (h : AnalyticOn 𝕜 f s) : DifferentiableOn
 theorem AnalyticOnNhd.differentiableOn (h : AnalyticOnNhd 𝕜 f s) : DifferentiableOn 𝕜 f s :=
   fun y hy ↦ (h y hy).differentiableWithinAt
 
-@[fun_prop]
 theorem HasFPowerSeriesWithinOnBall.hasFDerivWithinAt [CompleteSpace F]
     (h : HasFPowerSeriesWithinOnBall f p s x r)
     {y : E} (hy : (‖y‖₊ : ℝ≥0∞) < r) (h'y : x + y ∈ insert x s) :
@@ -204,7 +203,6 @@ theorem HasFPowerSeriesWithinOnBall.hasFDerivWithinAt [CompleteSpace F]
     · exact self_mem_nhdsWithin
     · simpa using h''y
 
-@[fun_prop]
 theorem HasFPowerSeriesOnBall.hasFDerivAt [CompleteSpace F] (h : HasFPowerSeriesOnBall f p x r)
     {y : E} (hy : (‖y‖₊ : ℝ≥0∞) < r) :
     HasFDerivAt f (continuousMultilinearCurryFin1 𝕜 E F (p.changeOrigin y 1)) (x + y) :=
@@ -240,7 +238,6 @@ protected theorem FormalMultilinearSeries.fderiv_sum [CompleteSpace F] (h : ‖x
     fderiv 𝕜 p.sum x = p.derivSeries.sum x := by
   simpa using (p.hasFPowerSeriesOnBall (zero_le.trans_lt h)).fderiv.sum (by simpa using h)
 
-@[fun_prop]
 protected theorem FormalMultilinearSeries.hasFDerivAt_sum [CompleteSpace F] (h : ‖x‖ₑ < p.radius) :
     HasFDerivAt p.sum (p.derivSeries.sum x) x := by
   rw [← FormalMultilinearSeries.fderiv_sum h]
@@ -429,7 +426,6 @@ theorem AnalyticOnNhd.iteratedFDeriv_of_isOpen (h : AnalyticOnNhd 𝕜 f s) (hs 
 
 /-- If an open partial homeomorphism `f` is analytic at a point `a`, with invertible derivative,
 then its inverse is analytic at `f a`. -/
-@[fun_prop]
 theorem OpenPartialHomeomorph.analyticAt_symm' (f : OpenPartialHomeomorph E F) {a : E}
     {i : E ≃L[𝕜] F} (h0 : a ∈ f.source) (h : AnalyticAt 𝕜 f a) (h' : fderiv 𝕜 f a = i) :
     AnalyticAt 𝕜 f.symm (f a) := by
@@ -439,7 +435,6 @@ theorem OpenPartialHomeomorph.analyticAt_symm' (f : OpenPartialHomeomorph E F) {
 
 /-- If an open partial homeomorphism `f` is analytic at a point `f.symm a`, with invertible
 derivative, then its inverse is analytic at `a`. -/
-@[fun_prop]
 theorem OpenPartialHomeomorph.analyticAt_symm (f : OpenPartialHomeomorph E F) {a : F}
     {i : E ≃L[𝕜] F} (h0 : a ∈ f.target) (h : AnalyticAt 𝕜 f (f.symm a))
     (h' : fderiv 𝕜 f (f.symm a) = i) :
@@ -512,13 +507,11 @@ theorem HasFiniteFPowerSeriesOnBall.differentiableOn
     (h : HasFiniteFPowerSeriesOnBall f p x n r) : DifferentiableOn 𝕜 f (Metric.eball x r) :=
   fun _ hy ↦ (h.cpolynomialAt_of_mem hy).analyticAt.differentiableWithinAt
 
-@[fun_prop]
 theorem HasFiniteFPowerSeriesOnBall.hasStrictFDerivAt (h : HasFiniteFPowerSeriesOnBall f p x n r)
     {y : E} (hy : (‖y‖₊ : ℝ≥0∞) < r) :
     HasStrictFDerivAt f (continuousMultilinearCurryFin1 𝕜 E F (p.changeOrigin y 1)) (x + y) :=
   (h.changeOrigin hy).toHasFPowerSeriesOnBall.hasFPowerSeriesAt.hasStrictFDerivAt
 
-@[fun_prop]
 theorem HasFiniteFPowerSeriesOnBall.hasFDerivAt (h : HasFiniteFPowerSeriesOnBall f p x n r)
     {y : E} (hy : (‖y‖₊ : ℝ≥0∞) < r) :
     HasFDerivAt f (continuousMultilinearCurryFin1 𝕜 E F (p.changeOrigin y 1)) (x + y) :=
