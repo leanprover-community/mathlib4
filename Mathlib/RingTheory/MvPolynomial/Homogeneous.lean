@@ -586,11 +586,11 @@ lemma rename_homogeneousComponent {τ : Type*} {φ : σ → τ} (n : ℕ) (p : M
     split_ifs <;> simp [rename_monomial]
   | add p q hp hq => simp [map_add, hp, hq]
 
-@[simp]
+@[aesop simp]
 lemma homogeneousComponent_monomial {R σ : Type*} [CommSemiring R] (m : σ →₀ ℕ) (c : R) (n : ℕ) :
-    (monomial m c).homogeneousComponent n = if m.degree = n then (monomial m c) else 0 := by
+    (monomial m c).homogeneousComponent n = if m.degree = n then monomial m c else 0 := by
   classical
-  by_cases! h : m.degree = n
+  split_ifs with h
   · simp [h, homogeneousComponent_eq_self, isHomogeneous_monomial]
   · simp [h, homogeneousComponent_eq_zero']
 
@@ -609,9 +609,9 @@ lemma homogeneousComponent_mul_eq_of_totalDegree_le {R σ : Type*} [CommSemiring
 lemma homogeneousComponent_pow_eq_of_totalDegree_le {R σ : Type*} [CommSemiring R]
     {f : MvPolynomial σ R} {n : ℕ} (hn : f.totalDegree ≤ n) (k : ℕ) :
     (f ^ k).homogeneousComponent (k * n) = f.homogeneousComponent n ^ k := by
-  induction k
-  case zero => simp
-  case succ k hk =>
+  induction k with
+  | zero => simp
+  | succ k hk =>
     rw [add_mul, one_mul, pow_succ, pow_succ, ← hk]
     refine homogeneousComponent_mul_eq_of_totalDegree_le ?_ hn
     apply le_trans (totalDegree_pow _ _)
@@ -635,8 +635,8 @@ lemma homogeneousComponent_totalDegree_ne_zero {R σ : Type*} [CommSemiring R]
 lemma totalDegree_homogeneousComponent_totalDegree {R σ : Type*} [CommSemiring R]
     (f : MvPolynomial σ R) :
     (f.homogeneousComponent f.totalDegree).totalDegree = f.totalDegree := by
-  by_cases! h : f = 0
-  · simp [h]
+  obtain rfl | h := eq_or_ne f 0
+  · simp
   · exact homogeneousComponent_isHomogeneous f.totalDegree f |>.totalDegree
       (homogeneousComponent_totalDegree_ne_zero h)
 
