@@ -8,6 +8,9 @@ module
 public import Mathlib.Basic.Finite.Prod
 public import Mathlib.Data.Sym.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Vector α n` and `Sym α n` are fintypes when `α` is.
 -/

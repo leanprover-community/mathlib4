@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.Monotone.Monovary
 public import Mathlib.SetTheory.Cardinal.Order
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Interpreting monovarying functions as monotone functions
 

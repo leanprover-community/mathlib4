@@ -12,6 +12,7 @@ import Mathlib.Order.Fin.Tuple
 import Mathlib.Order.Interval.Set.Monotone
 import Mathlib.Topology.MetricSpace.Pseudo.Real
 import Mathlib.Topology.Order.MonotoneConvergence
+
 /-!
 # Rectangular boxes in `ℝⁿ`
 
