@@ -22,8 +22,8 @@ public meta section
 
 open Lean System.FilePath
 
-/-- `getAllFiles git ml` takes all `.lean` files in the directory `ml`
-(recursing into sub-directories) and returns the `Array` of `String`s
+/-- `getAllFiles git dir` takes all `.lean` files in the directory `dir`
+(recursing into sub-directories) and returns the `Array` of `System.FilePath`s
 ```
 #[file₁, ..., fileₙ]
 ```
@@ -33,27 +33,29 @@ The input `git` is a `Bool`ean flag:
 * `true` means that the command uses `git ls-files` to find the relevant files;
 * `false` means that the command recursively scans all dirs searching for `.lean` files.
 -/
-def getAllFiles (git : Bool) (ml : String) : IO (Array System.FilePath) := do
-  let ml.lean := addExtension ⟨ml⟩ "lean"  -- for example, `Mathlib.lean`
-  let allModules : Array System.FilePath ← (do
+def getAllFiles (git : Bool) (dir : System.FilePath) : IO (Array System.FilePath) := do
+  let allModules : Array System.FilePath ←
     if git then
-      let mlDir := ml.push pathSeparator   -- for example, `Mathlib/`
-      let allLean ← IO.Process.run { cmd := "git", args := #["ls-files", mlDir ++ "*.lean"] }
-      return (((allLean.dropEndWhile (· == '\n')).copy.splitOn "\n").map (⟨·⟩)).toArray
-    else do
-      let all ← walkDir ml
-      return all.filter (·.extension == some "lean"))
+      let dir ← IO.FS.realPath dir
+      let allLean ← IO.Process.run
+        { cmd := "git", args := #["ls-files", (dir / "*.lean").toString] }
+      pure <| ((allLean.dropEndWhile (· == '\n')).copy.splitOn "\n").toArray.map (⟨·⟩)
+    else
+      let all ← walkDir dir
+      pure <| all.filter (·.extension == some "lean")
   -- Filter out all files which do not exist.
   -- This check is helpful in case the `git` option is on and a local file has been removed.
-  return ← (allModules.erase ml.lean).filterMapM (fun f ↦ do
-    if ← pathExists f then pure (some f) else pure none
-  )
+  allModules.filterM fun modPath => modPath.pathExists
 
 /-- Like `getAllFiles`, but return an array of *module* names instead,
-i.e. names of the form `Mathlib/Algebra/Algebra/Basic.lean`.
-In addition, these names are sorted in a platform-independent order. -/
-def getAllModulesSorted (git : Bool) (ml : String) : IO (Array String) := do
-  let files ← getAllFiles git ml
-  let names ← files.mapM fun f => do
-     return (← moduleNameOfFileName f none).toString
-  return names.qsort (· < ·)
+i.e. names of the form `Mathlib.Algebra.Algebra.Basic`. In addition, these names are sorted in a
+platform-independent order.
+
+`srcDir` is the part of the path that is not part of the module name, and should be specified when
+ot using a top-level directory in order to peel off the correct number of components from the path
+for the resulting names. -/
+def getAllModulesSorted (git : Bool) (dir : System.FilePath)
+    (srcDir := dir.parent.getD ".") : IO (Array Name) := do
+  let files ← getAllFiles git dir
+  let names ← files.mapM fun f => moduleNameOfFileName f srcDir
+  return names.qsort (·.toString < ·.toString)
