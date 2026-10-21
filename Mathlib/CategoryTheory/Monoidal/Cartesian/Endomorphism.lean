@@ -41,49 +41,40 @@ scoped instance : Zero (End G) where
 scoped instance [BraidedCategory C] [IsCommAddMonObj G.X] : Add (End G) where
   add f g := .of (f.asHom + g.asHom)
 
+@[simp]
 lemma add_asHom (f g : End G) [BraidedCategory C] [IsCommAddMonObj G.X] :
   (f + g).asHom = f.asHom + g.asHom := rfl
 
+@[simp]
 lemma zero_asHom : (0 : End G).asHom = 0 := rfl
 
 /-- For a commutative addtitive monoid object `G`, the endomorphisms `End G` has
-an additive commutative monoid structure -/
-scoped instance [BraidedCategory C] [IsCommAddMonObj G.X] : AddCommMonoid (End G) where
+an semiring structure. -/
+scoped instance [BraidedCategory C] [IsCommAddMonObj G.X] : Semiring (End G) where
   add_assoc f g h := by
-    simp only [End.ext_iff, add_asHom, add_assoc f.asHom]
+    simp [End.ext_iff, add_assoc f.asHom]
   zero_add f := by
-    simp only [End.ext_iff, add_asHom, zero_asHom]
+    simp_rw [End.ext_iff]
     exact zero_add f.asHom
   add_zero f := by
-    simp only [End.ext_iff, add_asHom, zero_asHom]
+    simp_rw [End.ext_iff]
     exact add_zero f.asHom
   nsmul n f := .of (n • f.asHom)
   add_comm f g := by
-    simp only [End.ext_iff, add_asHom]
+    simp_rw [End.ext_iff]
     exact add_comm f.asHom g.asHom
-
-
-/-- For a commutative addtitive monoid object `G`, the endomorphisms `End G` has
-an semiring structure -/
-scoped instance [BraidedCategory C] [IsCommAddMonObj G.X] : Semiring (End G) where
-  zero_add := zero_add
-  add_zero := add_zero
-  one_mul := one_mul
-  mul_one := mul_one
   zero_mul f := by
-    simp only [End.ext_iff, End.mul_asHom, zero_asHom, Limits.comp_zero]
+    simp [End.ext_iff]
   mul_zero f := by
-    simp only [End.ext_iff, End.mul_asHom, zero_asHom, Limits.zero_comp]
+    simp [End.ext_iff]
   left_distrib f g h := by
-    simp only [End.ext_iff, mul_asHom, add_asHom, Hom.add_def]
+    simp_rw [End.ext_iff]
     ext
-    simp only [Category.assoc, comp_hom', monMonoidalStruct_tensorObj_X, lift_hom, hom_add,
-      IsAddMonHom.add_hom, lift_map_assoc]
+    simp [Hom.add_def]
   right_distrib f g h := by
-    simp only [End.ext_iff, mul_asHom, add_asHom]
+    simp_rw [End.ext_iff]
     ext
-    simp only [Hom.add_def, comp_hom', monMonoidalStruct_tensorObj_X, lift_hom, hom_add,
-      reassoc_of% (comp_lift h.asHom.hom f.asHom.hom g.asHom.hom).symm]
+    simp [Hom.add_def, reassoc_of% (comp_lift h.asHom.hom f.asHom.hom g.asHom.hom).symm]
 
 end AddMon.End
 
@@ -107,57 +98,45 @@ scoped instance : Zero (End G) where
 scoped instance [BraidedCategory C] [IsCommAddMonObj G.X] : Add (End G) where
   add f g := .of (f.asHom + g.asHom)
 
+@[simp]
 lemma add_asHom (f g : End G) [BraidedCategory C] [IsCommAddMonObj G.X] :
   (f + g).asHom = f.asHom + g.asHom := rfl
 
+@[simp]
 lemma zero_asHom : (0 : End G).asHom = 0 := rfl
 
 /-- For a commutative addtitive group object `G`, the endomorphisms `End G` has
-an additive commutative group structure -/
-scoped instance [BraidedCategory C] [IsCommAddMonObj G.X] : AddCommGroup (End G) where
+an ring structure. -/
+scoped instance [BraidedCategory C] [IsCommAddMonObj G.X] : Ring (End G) where
   add_assoc f g h := by
-    simp only [End.ext_iff, add_asHom, add_assoc f.asHom]
+    simp [End.ext_iff, add_assoc f.asHom]
   zero_add f := by
-    simp only [End.ext_iff, add_asHom, zero_asHom]
-    exact zero_add f.asHom
+    simp [End.ext_iff]
+    rfl
   add_zero f := by
-    simp only [End.ext_iff, add_asHom, zero_asHom]
-    exact add_zero f.asHom
+    simp [End.ext_iff]
+    rfl
   nsmul n f := .of (n • f.asHom)
+  add_comm f g := by
+    simp_rw [End.ext_iff]
+    exact add_comm f.asHom g.asHom
+  zero_mul f := by
+    simp [End.ext_iff]
+  mul_zero f := by
+    simp [End.ext_iff]
+  left_distrib f g h := by
+    simp [End.ext_iff, Hom.add_def]
+  right_distrib f g h := by
+    simp_rw [End.ext_iff]
+    have (H : f.asHom.hom = g.asHom.hom) : f.asHom = g.asHom :=
+      AddGrp.hom_ext_iff.mpr (congrArg AddMon.Hom.hom H)
+    ext
+    simp [Hom.add_def, reassoc_of% (comp_lift h.asHom.hom f.asHom.hom g.asHom.hom).symm]
   neg f := .of (- f.asHom)
   zsmul n f := .of (n • f.asHom)
   neg_add_cancel f := by
-    simp only [End.ext_iff, add_asHom, zero_asHom]
-    exact neg_add_cancel f.asHom
-  add_comm f g := by
-    simp only [End.ext_iff, add_asHom]
-    exact add_comm f.asHom g.asHom
-
-/-- For a commutative addtitive group object `G`, the endomorphisms `End G` has
-an ring structure -/
-scoped instance [BraidedCategory C] [IsCommAddMonObj G.X] : Ring (End G) where
-  zero_add := zero_add
-  add_zero := add_zero
-  one_mul := one_mul
-  mul_one := mul_one
-  zero_mul f := by
-    simp only [End.ext_iff, End.mul_asHom, zero_asHom, Limits.comp_zero]
-  mul_zero f := by
-    simp only [End.ext_iff, End.mul_asHom, zero_asHom, Limits.zero_comp]
-  left_distrib f g h := by
-    simp only [End.ext_iff, mul_asHom, add_asHom, Hom.add_def]
-    ext
-    simp only [Category.assoc, IsAddMonHom.add_hom, lift_map_assoc, comp', lift_hom,
-      AddMon.comp_hom', tensorObj_X, AddMon.lift_hom, hom_add]
-  right_distrib f g h := by
-    simp only [End.ext_iff, mul_asHom, add_asHom]
-    have (H : f.asHom.hom = g.asHom.hom) : f.asHom = g.asHom := by
-      exact AddGrp.hom_ext_iff.mpr (congrArg AddMon.Hom.hom H)
-    ext
-    simp only [Hom.add_def, comp', lift_hom, AddMon.comp_hom', tensorObj_X, AddMon.lift_hom,
-      hom_add, reassoc_of% (comp_lift h.asHom.hom f.asHom.hom g.asHom.hom).symm,
-      AddMon.monMonoidalStruct_tensorObj_X]
-  neg_add_cancel := neg_add_cancel
+    simp [End.ext_iff]
+    rfl
 
 end AddGrp.End
 
