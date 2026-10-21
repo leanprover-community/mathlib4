@@ -172,13 +172,12 @@ theorem gelfandRadius_star [StarRing A] [NormedStarGroup A] (a : A) :
   gelfandRadius_eq_of_norm_pow <| by simp [← star_pow]
 
 @[simp]
-theorem MulOpposite.gelfandRadius_op (a : A) : gelfandRadius (MulOpposite.op a) = gelfandRadius a :=
-  gelfandRadius_eq_of_norm_pow <| by simp [← MulOpposite.op_pow, MulOpposite.norm_op]
+theorem MulOpposite.gelfandRadius_op (a : A) : gelfandRadius (op a) = gelfandRadius a :=
+  gelfandRadius_eq_of_norm_pow <| by simp [← op_pow, norm_op]
 
 @[simp]
-theorem MulOpposite.gelfandRadius_unop (a : Aᵐᵒᵖ) :
-    gelfandRadius (MulOpposite.unop a) = gelfandRadius a := by
-  rw [← MulOpposite.gelfandRadius_op, op_unop]
+theorem MulOpposite.gelfandRadius_unop (a : Aᵐᵒᵖ) : gelfandRadius (unop a) = gelfandRadius a := by
+  rw [← gelfandRadius_op, op_unop]
 
 theorem Isometry.gelfandRadius_map {F : Type*} [FunLike F A B] [MonoidWithZeroHomClass F A B]
     {f : F} (hf : Isometry f) (a : A) :
