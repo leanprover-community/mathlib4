@@ -53,7 +53,7 @@ def getWorkspace : IO Lake.Workspace := do
     | throw <| IO.userError "failed to load Lake workspace"
   return ws
 
-/-- Given a `Config`, find the lake `lean_lib`s to process, erroring if the config exlcudes
+/-- Given a `Config`, find the lake `lean_lib`s to process, erroring if the config excludes
 libraries that don't exist. -/
 def Config.mkAllLibs (cfg : Config) (pkg : Lake.Package) : IO (Array Lake.LeanLib) := do
   let wronglyExcluded := cfg.excludedLibs.filter fun excludedLib =>
