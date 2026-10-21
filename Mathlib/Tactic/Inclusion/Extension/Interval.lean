@@ -269,6 +269,10 @@ theorem Interval.abs_mem [Zero α] [Neg α] [LinearOrder α] [AddCommGroup β]
     |x| ∈ I.abs.map f := by
   fun_cases Interval.abs with grind [Interval.Ici, abs_le']
 
+theorem Interval.abs_lb_nonneg {α : Type*} [AddGroup α] [LinearOrder α] [AddLeftMono α]
+    (I : Interval α) : 0 ≤ I.abs.lb := by
+  grind [Interval.abs, Interval.Ici, neg_nonneg]
+
 /-- Subtract one interval from another. -/
 def Interval.sub [Sub α] (I J : Interval α) : Interval α where
   lb := match I.lb, J.ub with
