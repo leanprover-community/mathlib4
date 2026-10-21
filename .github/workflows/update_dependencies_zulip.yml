@@ -48,7 +48,7 @@ jobs:
 
       - name: Generate app token
         id: app-token
-        uses: leanprover-community/mathlib-ci/.github/actions/mint-github-app-token@3100b8176f64a2ec14036e807c233b3e6f300a59
+        uses: leanprover-community/mathlib-ci/.github/actions/mint-github-app-token@5c94feb419bec2cb85cb6aea6199431aabc0847c
         with:
           broker-url: ${{ vars.MATHLIB_GITHUB_APP_BROKER_URL }}
           audience: mathlib-github-app-broker
@@ -130,7 +130,7 @@ jobs:
 
       - name: Generate app token
         id: app-token
-        uses: leanprover-community/mathlib-ci/.github/actions/mint-github-app-token@3100b8176f64a2ec14036e807c233b3e6f300a59
+        uses: leanprover-community/mathlib-ci/.github/actions/mint-github-app-token@5c94feb419bec2cb85cb6aea6199431aabc0847c
         with:
           broker-url: ${{ vars.MATHLIB_GITHUB_APP_BROKER_URL }}
           audience: mathlib-github-app-broker
