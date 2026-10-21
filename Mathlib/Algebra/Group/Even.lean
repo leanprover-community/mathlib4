@@ -188,4 +188,3 @@ example {G : Type*} [CommGroup G] {a b c d e : G} (ha : IsSquare a) {n : ℕ} {k
 
 example {G : Type*} [AddCommGroup G] {a b c d e : G} (ha : Even a) {n : ℕ} {k : ℤ} (hk : Even k) :
     Even <| a + (b + b) - 2 • c + k • d + (n + n) • e := by aesop
-#min_imports
