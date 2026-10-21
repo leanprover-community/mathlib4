@@ -37,7 +37,7 @@ lemma Ideal.ofList_height_le_length (rs : List R) (h : Ideal.ofList rs ≠ ⊤) 
 
 lemma IsLocalRing.Ideal.ofList_height_le_length' [IsLocalRing R] (rs : List R)
     (mem : ∀ r ∈ rs, r ∈ maximalIdeal R) : (Ideal.ofList rs).height ≤ rs.length :=
-  Ideal.ofList_height_le_length rs (lt_of_le_of_lt (span_le.mpr mem) IsPrime.ne_top'.lt_top).ne_top
+  Ideal.ofList_height_le_length rs (ne_top_of_le_ne_top IsPrime.ne_top' (span_le.mpr (mem ·)))
 
 lemma Ideal.ofList_height_eq_length_of_isWeaklyRegular (rs : List R) (reg : IsWeaklyRegular R rs)
     (h : Ideal.ofList rs ≠ ⊤) : (Ideal.ofList rs).height = rs.length := by
@@ -78,7 +78,7 @@ lemma Ideal.ofList_height_eq_length_of_isWeaklyRegular' [IsLocalRing R] (rs : Li
     (reg : IsWeaklyRegular R rs) (mem : ∀ r ∈ rs, r ∈ maximalIdeal R) :
     (Ideal.ofList rs).height = rs.length :=
   Ideal.ofList_height_eq_length_of_isWeaklyRegular rs reg
-    (lt_of_le_of_lt (span_le.mpr mem) IsPrime.ne_top'.lt_top).ne_top
+    (lt_of_le_of_lt (span_le.mpr (mem ·)) IsPrime.ne_top'.lt_top).ne_top
 
 omit [IsNoetherianRing R] in
 lemma IsLocalRing.height_eq_height_maximalIdeal_of_maximalIdeal_mem_minimalPrimes [IsLocalRing R]
@@ -289,7 +289,7 @@ lemma isRegular_of_ofList_height_eq_length_of_isCohenMacaulayLocalRing [IsCohenM
       (lt_of_lt_of_eq (Nat.lt_add_right rs'.length hi) List.length_append.symm)
     rw [List.take_append_of_le_length (le_of_lt hi)] at this
     simpa [List.getElem_append_left' hi rs'] using this
-  · simpa using! (ne_top_of_le_ne_top Ideal.IsPrime.ne_top' (span_le.mpr mem)).symm
+  · simpa using! (ne_top_of_le_ne_top Ideal.IsPrime.ne_top' (span_le.mpr (mem ·))).symm
 
 lemma Ideal.depth_le_height [IsLocalRing R] (I : Ideal R) (netop : I ≠ ⊤) :
     I.depth (ModuleCat.of R R) ≤ I.height := by
@@ -297,7 +297,7 @@ lemma Ideal.depth_le_height [IsLocalRing R] (I : Ideal R) (netop : I ≠ ⊤) :
     exists_prop, sSup_le_iff, Set.mem_ofPred_eq, forall_exists_index, and_imp]
   intro n rs reg mem len
   simpa [← len, ← ofList_height_eq_length_of_isWeaklyRegular' rs reg.1
-    (fun r hr ↦ le_maximalIdeal netop (mem r hr))] using! Ideal.height_mono (span_le.mpr mem)
+    (fun r hr ↦ le_maximalIdeal netop (mem r hr))] using! Ideal.height_mono (span_le.mpr (mem ·))
 
 lemma Ideal.exist_isRegular_length_eq_height [IsCohenMacaulayLocalRing R]
     (I : Ideal R) (netop : I ≠ ⊤) :

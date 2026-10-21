@@ -11,6 +11,9 @@ public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
 
 import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Convex combinations
 
