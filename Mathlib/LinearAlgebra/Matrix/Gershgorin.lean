@@ -6,8 +6,8 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Analysis.Normed.Field.Basic
-public import Mathlib.LinearAlgebra.Eigenspace.Basic
 public import Mathlib.LinearAlgebra.Determinant
+public import Mathlib.LinearAlgebra.Eigenspace.Basic
 
 /-!
 # Gershgorin's circle theorem
@@ -15,7 +15,7 @@ public import Mathlib.LinearAlgebra.Determinant
 This file gives the proof of Gershgorin's circle theorem `eigenvalue_mem_ball` on the eigenvalues
 of matrices and some applications.
 
-## Reference
+## References
 
 * https://en.wikipedia.org/wiki/Gershgorin_circle_theorem
 -/

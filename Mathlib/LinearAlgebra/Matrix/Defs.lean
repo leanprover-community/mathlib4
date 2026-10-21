@@ -5,7 +5,6 @@ Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu
 -/
 module
 
-public import Batteries.Data.Fin.Lemmas
 public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Basic.Nontrivial.Basic
 public import Mathlib.Tactic.Attr.Core
@@ -98,28 +97,6 @@ theorem of_apply (f : m → n → α) (i j) : of f i j = f i j :=
 @[simp]
 theorem of_symm_apply (f : Matrix m n α) (i j) : of.symm f i j = f i j :=
   rfl
-
-/-- Construct a matrix from an array in row-major ordering. -/
-def ofArray {m n : ℕ} (A : Array R) (hA : A.size = m * n) : Matrix (Fin m) (Fin n) R :=
-  fun i j => A[Fin.mkDivMod i j]
-
-@[simp]
-theorem ofArray_apply {m n : ℕ} (A : Array R) (hA : A.size = m * n) (i : Fin m) (j : Fin n) :
-    ofArray A hA i j = A[Fin.mkDivMod i j] := rfl
-
-/-- The matrix constructed from the row-major array of `A`'s entries is `A`. -/
-@[simp]
-theorem ofArray_ofFn {m n : ℕ} (A : Matrix (Fin m) (Fin n) R) :
-    ofArray (.ofFn fun k : Fin (m * n) ↦ A k.divNat k.modNat) Array.size_ofFn = A := by
-  ext i j
-  rw [ofArray_apply, Fin.getElem_fin, Array.getElem_ofFn, Fin.divNat_mkDivMod,
-    Fin.modNat_mkDivMod]
-
-lemma ofArray_eq_of_getD [Zero R] {m n : ℕ} (A : Array R) (hA : A.size = m * n) :
-    ofArray A hA = .of fun i j ↦ A.getD (n * i.val + j.val) 0 := by
-  ext i j
-  have : n * i.val + j.val < m * n := (Fin.mkDivMod i j).isLt
-  simp [ofArray, hA, this]
 
 /-- `M.map f` is the matrix obtained by applying `f` to each entry of the matrix `M`.
 
@@ -524,6 +501,14 @@ theorem submatrix_smul {R : Type*} [SMul R α] (r : R) (A : Matrix m n α) :
 theorem submatrix_map (f : α → β) (e₁ : l → m) (e₂ : o → n) (A : Matrix m n α) :
     (A.map f).submatrix e₁ e₂ = (A.submatrix e₁ e₂).map f :=
   rfl
+
+/-- Surjective reindexing functions make `submatrix` injective. -/
+theorem submatrix_injective {r : l → m} {c : o → n} (hr : r.Surjective) (hc : c.Surjective) :
+    Function.Injective (submatrix (α := α) · r c) :=
+  fun A B hAB => ext fun i j => by
+    obtain ⟨i', rfl⟩ := hr i
+    obtain ⟨j', rfl⟩ := hc j
+    exact congr($hAB i' j')
 
 /-- The natural map that reindexes a matrix's rows and columns with equivalent types is an
 equivalence.

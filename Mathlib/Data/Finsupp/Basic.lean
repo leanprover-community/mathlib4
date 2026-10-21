@@ -125,8 +125,6 @@ theorem mapRange_finsetSum (f : F) (s : Finset ι) (g : ι → α →₀ M) :
     mapRange f (map_zero f) (∑ x ∈ s, g x) = ∑ x ∈ s, mapRange f (map_zero f) (g x) :=
   map_sum (mapRange.addMonoidHom (f : M →+ N)) _ _
 
-@[deprecated (since := "2026-04-08")] alias mapRange_finset_sum := mapRange_finsetSum
-
 end Finsupp
 
 end MapRange
@@ -277,14 +275,17 @@ lemma mapDomain_apply (f : α → β) (x : α →₀ M) (b : β) :
   · intro _
     rw [single_zero, coe_zero, Pi.zero_apply]
 
-lemma mapDomain_of_not_mem_image_support {f : α → β} {x : α →₀ M} {b : β}
+lemma mapDomain_of_notMem_image_support {f : α → β} {x : α →₀ M} {b : β}
     (hb : b ∉ f '' x.support) : mapDomain f x b = 0 := by
   rw [mapDomain, sum_apply, sum, Finset.sum_eq_zero]
   exact fun a ha ↦ single_eq_of_ne fun eq => hb <| eq ▸ Set.mem_image_of_mem _ ha
 
+@[deprecated (since := "2026-09-28")]
+alias mapDomain_of_not_mem_image_support := mapDomain_of_notMem_image_support
+
 theorem mapDomain_of_notMem_range {f : α → β} (x : α →₀ M) (a : β) (h : a ∉ Set.range f) :
     mapDomain f x a = 0 :=
-  mapDomain_of_not_mem_image_support <| by grw [Set.image_subset_range]; exact h
+  mapDomain_of_notMem_image_support <| by grw [Set.image_subset_range]; exact h
 
 @[deprecated (since := "2026-07-15")] alias mapDomain_notin_range := mapDomain_of_notMem_range
 
@@ -359,8 +360,6 @@ theorem mapDomain_finsetSum {f : α → β} {s : Finset ι} {v : ι → α →�
     mapDomain f (∑ i ∈ s, v i) = ∑ i ∈ s, mapDomain f (v i) :=
   map_sum (mapDomain.addMonoidHom f) _ _
 
-@[deprecated (since := "2026-04-08")] alias mapDomain_finset_sum := mapDomain_finsetSum
-
 theorem mapDomain_sum [Zero N] {f : α → β} {s : α →₀ N} {v : α → N → α →₀ M} :
     mapDomain f (s.sum v) = s.sum fun a b => mapDomain f (v a b) :=
   map_finsuppSum (mapDomain.addMonoidHom f : (α →₀ M) →+ β →₀ M) _ _
@@ -378,7 +377,7 @@ theorem mapDomain_apply' (S : Set α) {f : α → β} (x : α →₀ M) (hS : (x
     simp_rw [single_apply]
     by_cases hax : a ∈ x.support
     · rw [← Finset.add_sum_erase _ _ hax, ite_eq_left rfl]
-      convert! add_zero (x a)
+      convert add_zero (x a)
       refine Finset.sum_eq_zero fun i hi => ite_eq_right ?_
       exact (hf.mono hS).ne (Finset.mem_of_mem_erase hi) hax (Finset.ne_of_mem_erase hi)
     · rw [notMem_support_iff.1 hax]
@@ -532,13 +531,16 @@ theorem eq_zero_of_comapDomain_eq_zero [Zero M] (f : α → β) (l : β →₀ M
   exact h b (hb.2.symm ▸ ha)
 
 @[simp]
-lemma comapDomain_single_of_not_mem_range [Zero M] {f : α → β} {b : β} (hb : b ∉ Set.range f)
+lemma comapDomain_single_of_notMem_range [Zero M] {f : α → β} {b : β} (hb : b ∉ Set.range f)
     (m : M) (hf) : comapDomain f (single b m) hf = 0 := by
   classical
   ext a
   simp only [comapDomain, single_apply, coe_mk, coe_zero, Pi.zero_apply, ite_eq_right_iff]
   rintro rfl
   simp at hb
+
+@[deprecated (since := "2026-09-28")]
+alias comapDomain_single_of_not_mem_range := comapDomain_single_of_notMem_range
 
 section FInjective
 
@@ -920,8 +922,6 @@ theorem mem_support_finsetSum [AddCommMonoid M] {s : Finset ι} {h : ι → α �
   let ⟨_, hf, hfa⟩ := mem_support_multiset_sum a ha
   let ⟨c, hc, Eq⟩ := Multiset.mem_map.1 hf
   ⟨c, hc, Eq.symm ▸ hfa⟩
-
-@[deprecated (since := "2026-04-08")] alias mem_support_finset_sum := mem_support_finsetSum
 
 /-! ### Declarations about `curry` and `uncurry` -/
 
@@ -1413,7 +1413,7 @@ end Sigma
 
 lemma mem_range_embDomain_iff [AddCommMonoid M] (f : α ↪ β) (x : β →₀ M) :
     x ∈ Set.range (embDomain f) ↔ ↑x.support ⊆ Set.range f := by
-  convert! mem_range_mapDomain_iff _ f.injective _
+  convert mem_range_mapDomain_iff _ f.injective _
   · ext; rw [embDomain_eq_mapDomain]
   · grind
 

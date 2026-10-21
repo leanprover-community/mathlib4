@@ -5,10 +5,11 @@ Authors: Xavier Roblot
 -/
 module
 
-import Mathlib.MeasureTheory.Function.Floor
 public import Mathlib.MeasureTheory.Integral.Asymptotics
 public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 public import Mathlib.Topology.Order.IsLocallyClosed
+
+import Mathlib.MeasureTheory.Function.Floor
 
 /-!
 # Abel's summation formula
@@ -44,8 +45,6 @@ Primed versions of the three results above are also stated for when the endpoint
 -/
 
 public section
-
-noncomputable section
 
 open Finset MeasureTheory
 
@@ -178,7 +177,7 @@ theorem _root_.sum_mul_eq_sub_sub_integral_mul' {n m : ℕ} (h : n ≤ m)
     ∑ k ∈ Ioc n m, f k * c k =
       f m * (∑ k ∈ Icc 0 m, c k) - f n * (∑ k ∈ Icc 0 n, c k) -
         ∫ t in Set.Ioc (n : ℝ) m, deriv f t * ∑ k ∈ Icc 0 ⌊t⌋₊, c k := by
-  convert! sum_mul_eq_sub_sub_integral_mul c n.cast_nonneg (Nat.cast_le.mpr h) hf_diff hf_int
+  convert sum_mul_eq_sub_sub_integral_mul c n.cast_nonneg (Nat.cast_le.mpr h) hf_diff hf_int
   all_goals rw [Nat.floor_natCast]
 
 end abelSummationProof
@@ -203,7 +202,7 @@ theorem sum_mul_eq_sub_integral_mul' (m : ℕ)
     ∑ k ∈ Icc 0 m, f k * c k =
       f m * (∑ k ∈ Icc 0 m, c k) -
         ∫ t in Set.Ioc (0 : ℝ) m, deriv f t * ∑ k ∈ Icc 0 ⌊t⌋₊, c k := by
-  convert! sum_mul_eq_sub_integral_mul c m.cast_nonneg hf_diff hf_int
+  convert sum_mul_eq_sub_integral_mul c m.cast_nonneg hf_diff hf_int
   all_goals rw [Nat.floor_natCast]
 
 /-- Specialized version of `sum_mul_eq_sub_integral_mul` when the first coefficient of the sequence
@@ -232,7 +231,7 @@ theorem sum_mul_eq_sub_integral_mul₀' (hc : c 0 = 0) (m : ℕ)
     ∑ k ∈ Icc 0 m, f k * c k =
       f m * (∑ k ∈ Icc 0 m, c k) -
         ∫ t in Set.Ioc (1 : ℝ) m, deriv f t * ∑ k ∈ Icc 0 ⌊t⌋₊, c k := by
-  convert! sum_mul_eq_sub_integral_mul₀ c hc m hf_diff hf_int
+  convert sum_mul_eq_sub_integral_mul₀ c hc m hf_diff hf_int
   all_goals rw [Nat.floor_natCast]
 
 /-- Specialized version of `sum_mul_eq_sub_integral_mul` when `c 0 = c 1 = 0`. -/
