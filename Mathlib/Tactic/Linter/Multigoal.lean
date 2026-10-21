@@ -85,6 +85,8 @@ abbrev exclusions : Std.HashSet SyntaxNodeKind := .ofArray #[
     ``Lean.Parser.Tactic.tacticSeq,
     `focus,
     ``Lean.Parser.Tactic.focus,
+    -- conv mode
+    ``Lean.Parser.Tactic.Conv.«conv·_»,
     -- grind interactive mode
     ``Lean.Parser.Tactic.Grind.grindSeq1Indented,
     ``Lean.Parser.Tactic.Grind.grindSeq,
