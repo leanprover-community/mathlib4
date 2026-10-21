@@ -8,9 +8,6 @@ module
 public import Mathlib.Topology.EMetricSpace.Basic
 public import Mathlib.Topology.UniformSpace.Pi
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Indexed product of extended metric spaces
 -/

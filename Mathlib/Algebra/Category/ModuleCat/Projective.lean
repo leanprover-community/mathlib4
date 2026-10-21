@@ -9,9 +9,6 @@ public import Mathlib.Algebra.Category.ModuleCat.EpiMono
 public import Mathlib.Algebra.Module.Projective
 public import Mathlib.CategoryTheory.Preadditive.Projective.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # The category of `R`-modules has enough projectives.
 -/

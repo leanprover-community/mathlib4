@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Analysis.Normed.Module.Multilinear.Curry
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Formal multilinear series
 

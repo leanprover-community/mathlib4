@@ -10,9 +10,6 @@ public import Mathlib.Tactic.Finiteness
 
 import Mathlib.Tactic.Basify.Attr
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Properties of addition, multiplication and subtraction on extended non-negative real numbers
 

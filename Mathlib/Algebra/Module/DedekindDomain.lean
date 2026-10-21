@@ -8,9 +8,6 @@ module
 public import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Modules over a Dedekind domain
 

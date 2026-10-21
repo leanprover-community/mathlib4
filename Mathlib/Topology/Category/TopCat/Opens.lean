@@ -13,9 +13,6 @@ public import Mathlib.Topology.Sets.Opens
 import Mathlib.CategoryTheory.Limits.Preorder
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # The category of open sets in a topological space.
 
