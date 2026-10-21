@@ -287,6 +287,21 @@ lemma isIndecomposable_iff_blockTriangular_const [Nontrivial α] [Finite m] [Zer
     obtain rfl : a₂ = a₁ := by simpa using congr($ha (e <| .inr <| Nonempty.some ⟨⟨0, by lia⟩⟩))
     exact le_refl _
 
+open Relation in
+lemma isIndecomposable_iff_reflTransGen [Finite m] [Zero R] (M : Matrix m m R) :
+    M.IsIndecomposable ↔ ∀ i j, ReflTransGen (fun i j ↦ M i j ≠ 0) i j := by
+  classical
+  rw [isIndecomposable_iff_blockTriangular_const (α := Bool)]
+  refine ⟨fun hconst i j ↦ ?_, fun hreach b hb ↦ ?_⟩
+  · obtain ⟨a, ha⟩ := hconst (fun k ↦ decide (ReflTransGen (fun i j ↦ M i j ≠ 0) i k))
+      fun x y hxy ↦ by grind [Bool.lt_iff]
+    simpa [ReflTransGen.refl] using (congrFun ha j).trans (congrFun ha i).symm
+  · have key (x y : m) : b x ≤ b y := by
+      induction hreach x y with grind [BlockTriangular]
+    rcases isEmpty_or_nonempty m with hm | ⟨⟨x⟩⟩
+    · exact ⟨false, funext hm.elim⟩
+    · exact ⟨b x, funext fun y ↦ le_antisymm (key y x) (key x y)⟩
+
 end LinearOrder
 
 theorem upper_two_blockTriangular [Zero R] [Preorder α] (A : Matrix m m R) (B : Matrix m n R)

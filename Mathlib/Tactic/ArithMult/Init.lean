@@ -5,7 +5,7 @@ Authors: Arend Mellendijk
 -/
 module
 
-public import Aesop
+public meta import Aesop
 public import Mathlib.Init
 
 /-!
