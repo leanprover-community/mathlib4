@@ -155,7 +155,7 @@ theorem mul_deriv_besselJ_eq_besselJ_add_one (a : ℂ) {x : ℂ} (h : x ∈ slit
       ring
     _ = _ := by
       rw [_root_.deriv_cpow_const (by fun_prop) (by exact hx2), deriv_div_const, deriv_id'']
-      grind [cpow_add, cpow_one, cpow_sub, deriv_div_const]
+      grind [cpow_add, cpow_one, cpow_sub]
 
 @[dlmf 10.6.E2]
 theorem mul_deriv_besselJ_eq_besselJ_sub_one (a : ℂ) {x : ℂ} (h : x ∈ slitPlane) :
