@@ -5,7 +5,7 @@ Authors: Paul Cadman
 -/
 module
 
-public meta import Mathlib.Data.Rat.Init
+public import Mathlib.Tactic.Matrix.Swaps
 
 /-!
 # Reduction of a matrix over ℚ to Hessenberg form
@@ -25,6 +25,8 @@ lower triangular matrix `L` and an upper Hessenberg matrix `H` such that `Aσ * 
 
 public meta section
 
+open Mathlib.Tactic.Matrix
+
 namespace Mathlib.Tactic.Hessenberg
 
 /-- A similarity `Aσ * L = L * H` of a rational matrix `A` to upper Hessenberg form, where
@@ -40,7 +42,7 @@ structure Reduction where
 /-- The row and column swaps of a `Reduction` represented as an indexed array. An entry `e` at index
 `i` means that row and column `e` of the original matrix move to position `i`. -/
 def Reduction.perm (d : Reduction) : Array ℕ :=
-  d.swaps.foldl (fun ord (a, b) => ord.swapIfInBounds a b) (Array.range d.L.size)
+  arrangementOfSwaps d.L.size d.swaps
 
 /-- Reduce the `n × n` matrix `A` over `ℚ`, given as an array of rows, to upper Hessenberg form by
 Gaussian elimination with row and column swaps. -/
