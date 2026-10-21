@@ -2,8 +2,6 @@ module
 
 public import Mathlib.LinearAlgebra.LinearIndependent.Defs
 
-@[expose] public section
-
 set_option linter.style.setOption false
 set_option pp.unicode.fun true
 

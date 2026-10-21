@@ -3,8 +3,6 @@ module
 public import Mathlib
 public import Mathlib.Lean.Meta.RefinedDiscrTree.Encode
 
-@[expose] public section
-
 open Qq Lean Meta RefinedDiscrTree
 
 macro "#log_keys" e:term : command =>

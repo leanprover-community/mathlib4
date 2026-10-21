@@ -2,8 +2,6 @@ module
 
 public meta import Mathlib.Tactic.GuardGoalNums
 
-@[expose] public section
-
 set_option linter.unusedTactic false
 
 example : true ∧ true := by

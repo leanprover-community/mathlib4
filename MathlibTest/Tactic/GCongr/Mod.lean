@@ -9,8 +9,6 @@ public import Mathlib.Data.Int.ModEq
 
 /-! # Modular arithmetic tests for the `gcongr` tactic -/
 
-@[expose] public section
-
 variable {a b n x : ℤ}
 
 example (ha : a ≡ 2 [ZMOD 4]) : a * b ^ 2 + a ^ 2 * b + 3 ≡ 2 * b ^ 2 + 2 ^ 2 * b + 3 [ZMOD 4] := by

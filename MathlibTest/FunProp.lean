@@ -17,8 +17,6 @@ Use this file for `fun_prop` tests that depend on mathlib
 `fun_prop_dev` is for unit and synthetic tests avoiding mathlib.
 -/
 
-@[expose] public section
-
 noncomputable
 def foo (x : ℝ) := x * (Real.log x) ^ 2 - Real.exp x / x
 

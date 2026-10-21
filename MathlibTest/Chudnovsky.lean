@@ -3,8 +3,6 @@ module
 public meta import Batteries.Data.Float.Rat
 public meta import Mathlib.Analysis.Real.Pi.Chudnovsky
 
-@[expose] public section
-
 -- Sanity check that when calculated in `Float` we get the right answer:
 /-- info: 3.141593 -/
 #guard_msgs in

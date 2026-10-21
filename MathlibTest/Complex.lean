@@ -3,8 +3,6 @@ module
 public meta import Mathlib.Algebra.DualNumber
 public meta import Mathlib.Basic.Complex.Basic
 
-@[expose] public section
-
 open DualNumber
 
 /--

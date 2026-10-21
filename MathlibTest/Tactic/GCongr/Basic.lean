@@ -6,8 +6,6 @@ public import Mathlib.MeasureTheory.Measure.CompleteLattice
 # Testing for the `gcongr` tactic
 -/
 
-@[expose] public section
-
 /-
 Test that `gcongr` lemmas are applied in the `reducible` transparency by default.
 Previously, `DFunLike.coe` would be unfolded when applying a `@[gcongr]` lemma.

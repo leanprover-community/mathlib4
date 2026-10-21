@@ -2,8 +2,6 @@ module
 
 public import Mathlib.RingTheory.Coalgebra.CoassocSimps
 
-@[expose] public section
-
 open TensorProduct
 
 open LinearMap (id)

@@ -10,8 +10,6 @@ operation on an elliptic curve to check an equality. `nsmul` on elliptic curves 
 multiplication by doubling and should be relatively fast.
 -/
 
-@[expose] public section
-
 open WeierstrassCurve Affine Point
 
 instance : Fact (Nat.Prime 29) := by decide

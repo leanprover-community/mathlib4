@@ -3,8 +3,6 @@ module
 public import Mathlib.Data.Nat.Basic
 public import Mathlib.Util.Notation3
 
-@[expose] public section
-
 set_option linter.style.setOption false
 set_option pp.unicode.fun true
 set_option autoImplicit true

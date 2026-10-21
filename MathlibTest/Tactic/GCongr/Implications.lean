@@ -2,8 +2,6 @@ module
 
 public import Mathlib.Tactic.GCongr
 
-@[expose] public section
-
 variable {a b c d : Prop}
 
 example (h : a → b) : (a ∧ ¬b) ∨ c → (b ∧ ¬a) ∨ c := by gcongr

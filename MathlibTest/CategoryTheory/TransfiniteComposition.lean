@@ -3,8 +3,6 @@ module
 public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
 public import Mathlib.CategoryTheory.Types.Monomorphisms
 
-@[expose] public section
-
 universe v u
 
 namespace CategoryTheory.Types

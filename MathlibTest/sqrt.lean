@@ -4,8 +4,6 @@ public import Mathlib.Analysis.Rat.NatSqrt.Real
 public import Mathlib.Tactic.Eval
 public import Mathlib.Tactic.NormNum.NatSqrt
 
-@[expose] public section
-
 open Nat
 
 /-

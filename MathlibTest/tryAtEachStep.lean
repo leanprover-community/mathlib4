@@ -3,8 +3,6 @@ module
 public import Mathlib.Tactic.Common
 public import Mathlib.Tactic.TacticAnalysis.Declarations
 
-@[expose] public section
-
 -- Disable timing in tests to avoid non-deterministic output
 set_option linter.tacticAnalysis.tryAtEachStep.showTiming false
 set_option linter.tacticAnalysis.tryAtEachStepAesop true

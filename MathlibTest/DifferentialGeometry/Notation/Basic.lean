@@ -3,8 +3,6 @@ module
 public import Mathlib.Geometry.Manifold.Notation
 public import Mathlib.Geometry.Manifold.VectorBundle.Basic
 
-@[expose] public section
-
 set_option pp.unicode.fun true
 
 open Bundle Filter Function Topology

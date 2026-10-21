@@ -3,8 +3,6 @@ module
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
 public import Mathlib.Tactic.Convert
 
-@[expose] public section
-
 private axiom test_sorry : ∀ {α}, α
 
 /-! `convert` should not pop up goals about instances. -/

@@ -2,8 +2,6 @@ module
 
 public import Mathlib.AlgebraicGeometry.Restrict
 
-@[expose] public section
-
 universe u
 
 open AlgebraicGeometry

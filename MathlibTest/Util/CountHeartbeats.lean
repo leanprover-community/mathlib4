@@ -3,8 +3,6 @@ module
 public import Mathlib.Util.CountHeartbeats
 public import Mathlib.Util.SleepHeartbeats
 
-@[expose] public section
-
 /-- info: Used approximately 0 heartbeats, which is less than the current maximum of 200000. -/
 #guard_msgs in
 #count_heartbeats approximately in

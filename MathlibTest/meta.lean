@@ -8,8 +8,6 @@ public import Mathlib.Tactic.Relation.Rfl
 
 /-! # Tests for mathlib extensions to `Lean.Expr` and `Lean.Meta` -/
 
-@[expose] public section
-
 namespace Tests
 
 open Lean Meta

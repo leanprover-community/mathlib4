@@ -3,8 +3,6 @@ module
 public import Mathlib.Data.Fin.Fin2
 public import Mathlib.Util.CompileInductive
 
-@[expose] public section
-
 compile_inductive% Fin2
 
 example := @Nat.rec

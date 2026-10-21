@@ -2,8 +2,6 @@ module
 
 public meta import Mathlib.Tactic.Trace
 
-@[expose] public section
-
 set_option linter.unusedTactic false
 
 /--

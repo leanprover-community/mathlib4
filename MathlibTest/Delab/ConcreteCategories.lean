@@ -2,8 +2,6 @@ module
 
 public import Mathlib
 
-@[expose] public section
-
 universe u
 
 variable (R : Type u) [Semiring R]

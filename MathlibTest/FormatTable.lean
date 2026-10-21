@@ -2,8 +2,6 @@ module
 
 public import Mathlib.Util.FormatTable
 
-@[expose] public section
-
 /--
 info:
 | first           | second header   | third \| header |

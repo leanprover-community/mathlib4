@@ -9,8 +9,6 @@ This has the advantage of not having to run javascript in the tests,
 and not having to invoke the parser.
 -/
 
-@[expose] public section
-
 private axiom test_sorry.{u} {α : Sort u} : α
 
 open Lean Meta Elab Tactic SubExpr

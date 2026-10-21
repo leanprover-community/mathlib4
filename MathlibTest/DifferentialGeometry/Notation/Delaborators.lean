@@ -11,8 +11,6 @@ Specific tests for the delaborators corresponding to the custom elaborators.
 
 -/
 
-@[expose] public section
-
 set_option pp.unicode.fun true
 
 open Bundle Filter Function Topology

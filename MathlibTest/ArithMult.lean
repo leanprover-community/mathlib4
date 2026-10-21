@@ -7,8 +7,6 @@ module
 
 public import Mathlib.NumberTheory.ArithmeticFunction.Moebius
 
-@[expose] public section
-
 
 open ArithmeticFunction
 

@@ -18,8 +18,6 @@ public import Mathlib.RingTheory.TensorProduct.Basic
 
 /-! # Tests that instances do not form diamonds -/
 
-@[expose] public section
-
 
 /-! ## Scalar action instances -/
 

@@ -4,8 +4,6 @@ public import Mathlib.Tactic.NormNum.OfScientific
 public import Mathlib.Tactic.Ring.Compare
 public import Mathlib.Tactic.Ring.RingNF
 
-@[expose] public section
-
 open Lean Elab Tactic
 
 elab "ring_le" : tactic => liftMetaFinishingTactic Mathlib.Tactic.Ring.proveLE

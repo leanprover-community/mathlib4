@@ -2,8 +2,6 @@ module
 
 public import Mathlib.Tactic.Simproc.Factors
 
-@[expose] public section
-
 example : Nat.primeFactorsList 0 = [] := by simp only [Nat.primeFactorsList_ofNat]
 example : Nat.primeFactorsList 1 = [] := by simp only [Nat.primeFactorsList_ofNat]
 example : Nat.primeFactorsList 2 = [2] := by simp only [Nat.primeFactorsList_ofNat]

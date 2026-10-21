@@ -4,8 +4,6 @@ public meta import Mathlib.Algebra.Quaternion
 public meta import Mathlib.Basic.Real.Basic
 public meta import Mathlib.NumberTheory.Zsqrtd.GaussianInt
 
-@[expose] public section
-
 open Quaternion
 /--
 info: { re := 0, imI := 0, imJ := 0, imK := 0 }

@@ -2,7 +2,6 @@ module
 
 public meta import Mathlib.Tactic.SuccessIfFailWithMsg
 
-@[expose] public section
 example : True := by
   success_if_fail_with_msg "No goals to be solved" trivial; trivial
   trivial

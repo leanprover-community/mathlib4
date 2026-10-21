@@ -9,8 +9,6 @@ public meta import Mathlib.Data.Finsupp.Notation
 # Testing computability (and runtime) of antidiagonal
 -/
 
-@[expose] public section
-
 open Finset
 
 section

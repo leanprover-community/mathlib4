@@ -2,8 +2,6 @@ module
 
 public import Mathlib.Tactic.Module
 
-@[expose] public section
-
 -- Register module as a try? helper
 register_try?_tactic module
 

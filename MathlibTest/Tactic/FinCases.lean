@@ -4,8 +4,6 @@ public import Mathlib.Order.Interval.Finset.Nat
 public import Mathlib.Tactic.FinCases
 public import Mathlib.Tactic.NormNum.Basic
 
-@[expose] public section
-
 example {x : Nat} (h : x ∈ [0, 2, 37]) : x ≤ 57 := by
   fin_cases h
   repeat decide

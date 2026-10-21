@@ -6,8 +6,6 @@ public meta import Mathlib.Data.Nat.Log
 These used to fail (ran out of heartbeats) but with a new faster `Nat.log`/`Nat.clog`, they succeed.
 -/
 
-@[expose] public section
-
 set_option exponentiation.threshold 10000000
 
 /-- info: 10000000 -/

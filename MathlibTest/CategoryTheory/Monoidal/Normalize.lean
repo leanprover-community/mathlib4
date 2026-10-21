@@ -2,8 +2,6 @@ module
 
 public import Mathlib.Tactic.CategoryTheory.Monoidal.Normalize
 
-@[expose] public section
-
 open CategoryTheory Mathlib.Tactic BicategoryLike
 open MonoidalCategory
 

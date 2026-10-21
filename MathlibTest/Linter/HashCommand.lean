@@ -4,8 +4,6 @@ public import Lean.Elab.GuardMsgs
 public import Mathlib.Tactic.AdaptationNote
 public import Mathlib.Tactic.Linter.HashCommandLinter
 
-@[expose] public section
-
 set_option linter.hashCommand true
 
 section ignored_commands

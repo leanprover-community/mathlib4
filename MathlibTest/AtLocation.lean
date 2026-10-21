@@ -9,8 +9,6 @@ public meta import Mathlib.Util.AtLocation
 
 /-! # Tests for `Location` traversal in `Mathlib.Util.AtLocation` -/
 
-@[expose] public section
-
 open Lean Elab Tactic Meta Mathlib.Tactic Parser.Tactic
 
 -- the probe tactics deliberately change no goal state

@@ -14,8 +14,6 @@ public import Mathlib.Tactic.Ring
 # Tests for the `field_simp` and `field` tactics
 -/
 
-@[expose] public section
-
 private axiom test_sorry : ∀ {α}, α
 
 open Lean Elab Tactic in

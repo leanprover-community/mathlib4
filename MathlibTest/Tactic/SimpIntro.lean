@@ -2,8 +2,6 @@ module
 
 public import Mathlib.Tactic.SimpIntro
 
-@[expose] public section
-
 set_option autoImplicit true
 
 example : x + 0 = y → x = y := by simp_intro h₁

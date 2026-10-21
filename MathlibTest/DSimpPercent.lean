@@ -12,8 +12,6 @@ public import Mathlib.Tactic.DSimpPercent
 Tests for the behavior of `dsimp%`.
 -/
 
-@[expose] public section
-
 def f : ℕ → ℕ → ℕ := fun a b => a + b
 
 @[simp]

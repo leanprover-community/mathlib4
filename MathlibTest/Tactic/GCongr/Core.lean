@@ -2,8 +2,6 @@ module
 
 public import Mathlib.Tactic.GCongr.Core
 
-@[expose] public section
-
 variable {a b c d : Prop}
 
 lemma imp_mono (h₁ : c → a) (h₂ : c → b → d) : (a → b) → c → d :=

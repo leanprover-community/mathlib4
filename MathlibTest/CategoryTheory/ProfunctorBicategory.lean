@@ -2,8 +2,6 @@ module
 
 public import Mathlib.CategoryTheory.Profunctor.Bicategory
 
-@[expose] public section
-
 open CategoryTheory Bicategory
 
 universe u

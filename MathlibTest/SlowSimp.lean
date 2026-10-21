@@ -21,8 +21,6 @@ After deleting some bad simp lemmas that were being tried everywhere
 it is back down to 19,000 heartbeats even with `import Mathlib`.
 -/
 
-@[expose] public section
-
 open CategoryTheory
 
 structure PointedSpace where

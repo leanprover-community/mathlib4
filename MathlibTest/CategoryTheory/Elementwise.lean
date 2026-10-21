@@ -4,8 +4,6 @@ public import Mathlib.Algebra.Category.MonCat.Basic
 public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 public import Mathlib.Tactic.CategoryTheory.Elementwise
 
-@[expose] public section
-
 set_option autoImplicit true
 
 namespace ElementwiseTest
