@@ -49,6 +49,12 @@ theorem HasDerivAt.hasFDerivAt_equiv {f : 𝕜 → 𝕜} {f' x : 𝕜} (hf : Has
     HasFDerivAt f (ContinuousLinearEquiv.unitsEquivAut 𝕜 (Units.mk0 f' hf') : 𝕜 →L[𝕜] 𝕜) x :=
   hf
 
+theorem HasDerivWithinAt.hasFDerivWithinAt_equiv {f : 𝕜 → 𝕜} {f' x : 𝕜} {s : Set 𝕜}
+    (hf : HasDerivWithinAt f f' s x) (hf' : f' ≠ 0) :
+    HasFDerivWithinAt f (ContinuousLinearEquiv.unitsEquivAut 𝕜 (Units.mk0 f' hf') : 𝕜 →L[𝕜] 𝕜)
+      s x :=
+  hf
+
 /-- If `f (g y) = y` for `y` in some neighborhood of `a`, `g` is continuous at `a`, and `f` has an
 invertible derivative `f'` at `g a` in the strict sense, then `g` has the derivative `f'⁻¹` at `a`
 in the strict sense.
@@ -77,6 +83,18 @@ theorem HasDerivAt.of_comp_left {f g h : 𝕜 → 𝕜} {f' h' a : 𝕜} (hst : 
   convert hf.hasFDerivAt.of_comp_of_leftInverse hst hh hcomp (f'symm := .toSpanSingleton 𝕜 f'⁻¹)
     (fun _ ↦ by simp [hf']) |>.hasDerivAt using 1
   simp [div_eq_mul_inv]
+
+/-- If `f (g y) = y` for `y` in a neighborhood of `a` within `s`, `g` maps a neighborhood of `a`
+within `s` to a neighborhood of `g a` within `t`, and `f` has an invertible derivative `f'` at
+`g a` within `t`, then `g` has the derivative `f'⁻¹` at `a` within `s`.
+
+This is one of the easy parts of the inverse function theorem: it assumes that we already have
+an inverse function. -/
+theorem HasDerivWithinAt.of_local_left_inverse {f g : 𝕜 → 𝕜} {f' a : 𝕜} {s t : Set 𝕜}
+    (hg : Tendsto g (𝓝[s] a) (𝓝[t] (g a))) (hf : HasDerivWithinAt f f' t (g a)) (hf' : f' ≠ 0)
+    (ha : a ∈ s) (hfg : ∀ᶠ y in 𝓝[s] a, f (g y) = y) :
+    HasDerivWithinAt g f'⁻¹ s a :=
+  (hf.hasFDerivWithinAt_equiv hf').of_local_left_inverse hg ha hfg
 
 /-- If `f (g y) = y` for `y` in some neighborhood of `a`, `g` is continuous at `a`, and `f` has an
 invertible derivative `f'` at `g a`, then `g` has the derivative `f'⁻¹` at `a`.
