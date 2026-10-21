@@ -2110,6 +2110,7 @@ public import Mathlib.Analysis.InnerProductSpace.LaxMilgram
 public import Mathlib.Analysis.InnerProductSpace.LinearMap
 public import Mathlib.Analysis.InnerProductSpace.LinearPMap
 public import Mathlib.Analysis.InnerProductSpace.MeanErgodic
+public import Mathlib.Analysis.InnerProductSpace.Modulus
 public import Mathlib.Analysis.InnerProductSpace.MulOpposite
 public import Mathlib.Analysis.InnerProductSpace.NormDet
 public import Mathlib.Analysis.InnerProductSpace.NormPow
@@ -2128,7 +2129,6 @@ public import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
 public import Mathlib.Analysis.InnerProductSpace.Rayleigh
 public import Mathlib.Analysis.InnerProductSpace.Reproducing
 public import Mathlib.Analysis.InnerProductSpace.Reproducing.Operations
-public import Mathlib.Analysis.InnerProductSpace.Schatten
 public import Mathlib.Analysis.InnerProductSpace.Semisimple
 public import Mathlib.Analysis.InnerProductSpace.SingularValues
 public import Mathlib.Analysis.InnerProductSpace.Spectrum

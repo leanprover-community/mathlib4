@@ -11,14 +11,16 @@ public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Abs
 public import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
 
 /-!
-# Schatten operators
+# Modulus
 
-This file defines the Schatten operators, and the required trace, modulus and polar maps in order
-to define them.
+This file defines the modulus `|T| = √(T†∘T)` for continuous linear maps `T : E →L[ℂ] F` between
+(potentially distinct) Hilbert spaces `E` and `F`.
 
-## Main definitions
- - `ContinuousLinearMap.modulus` the modulus `|T|` for continuous linear maps `T` between Hilbert
-   spaces.
+## Implementation details
+The modulus is similar to `CFC.abs T` for a continuous linear map
+`T : E →L[ℂ] E` acting on a Hilbert space `E`. They agree when `E = F`, see the theorem
+`modulus_eq_abs`. However, when `E ≠ F`, the adjoint is no longer a star operation and thus
+`CFC.abs T` is no longer defined.
 
 -/
 
@@ -28,13 +30,13 @@ namespace ContinuousLinearMap
 
 section Modulus
 
-open scoped ENNReal InnerProductSpace
+open scoped ENNReal
 
-variable (p : ℝ≥0∞) (q : ℝ) {E F : Type*}
+variable {E F : Type*}
   [NormedAddCommGroup E] [InnerProductSpace ℂ E] [CompleteSpace E]
   [NormedAddCommGroup F] [InnerProductSpace ℂ F] [CompleteSpace F]
 
-/-- The modulus `|T| = √(T†∘T) of a continuous linear map `T : E →L[ℂ] F`. -/
+/-- The modulus `|T| = √(T†∘T)` of a continuous linear map `T : E →L[ℂ] F`. -/
 def modulus (T : E →L[ℂ] F) : E →L[ℂ] E := CFC.sqrt (T.adjoint ∘L T)
 
 @[inherit_doc]
