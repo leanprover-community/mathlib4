@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Tactic.Linter.Header
 
-@[expose] public section
-
 set_option linter.style.header true
 
 set_option doc.verso.module true

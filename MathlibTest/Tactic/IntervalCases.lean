@@ -8,8 +8,6 @@ module
 public import Mathlib.Tactic.IntervalCases
 public import Mathlib.Tactic.Set
 
-@[expose] public section
-
 set_option linter.unusedVariables false in
 example (n : ℕ) : True := by
   fail_if_success interval_cases n

@@ -4,8 +4,6 @@ public meta import Mathlib.Data.DFinsupp.Notation
 public meta import Mathlib.LinearAlgebra.Multilinear.DFinsupp
 public import Mathlib.LinearAlgebra.Multilinear.Pi
 
-@[expose] public section
-
 /--
 info: fun₀
   | !["hello", "complicated", "world"] => 20

@@ -7,8 +7,6 @@ public import Mathlib.Tactic.DeriveFintype
 
 import all Mathlib.GroupTheory.Perm.Cycle.Factors
 
-@[expose] public section
-
 open Equiv
 
 #guard with_decl_name% ex₁ unsafe (reprStr (1 : Perm (Fin 4))) == "1"

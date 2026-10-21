@@ -13,8 +13,6 @@ public import ProofWidgets
 public import Qq
 public import Std
 
-@[expose] public section
-
 /-
 This file checks that every declaration and import that have been flagged with
 `assert_not_exists` or `assert_not_imported` is present in the environment once

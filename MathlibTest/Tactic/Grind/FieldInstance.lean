@@ -2,8 +2,6 @@ module
 
 public import Mathlib.FieldTheory.IntermediateField.Basic
 
-@[expose] public section
-
 #adaptation_note /-- This is currently broken by changes to Lean.
 The test case doesn't seem to be essential elsewhere in Mathlib.
 It can be made to work again by add `inv a := a⁻¹` back to `toGrindField`,

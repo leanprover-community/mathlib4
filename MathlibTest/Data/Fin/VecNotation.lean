@@ -6,8 +6,6 @@ module
 
 public meta import Mathlib.Data.Fin.VecNotation
 
-@[expose] public section
-
 open Lean
 open Lean.Meta
 open Qq

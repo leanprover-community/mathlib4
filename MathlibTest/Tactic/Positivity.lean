@@ -19,7 +19,6 @@ public import Mathlib.Topology.Algebra.InfiniteSum.Order
 This tactic proves goals of the form `0 ≤ a` and `0 < a`.
 -/
 
-@[expose] public section
 set_option autoImplicit true
 
 open Finset Function Nat NNReal ENNReal

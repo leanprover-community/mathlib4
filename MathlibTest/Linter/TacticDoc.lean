@@ -3,8 +3,6 @@ module
 public import Batteries.Tactic.Lint.Frontend
 public import Mathlib.Tactic.Linter.TacticDocumentation
 
-@[expose] public section
-
 syntax "noDocs" : tactic
 
 /-- `duplicate` is a tactic. -/

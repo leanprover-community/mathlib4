@@ -3,8 +3,6 @@ module
 public import Mathlib.Tactic.AdaptationNote
 public import Mathlib.Tactic.Observe
 
-@[expose] public section
-
 set_option linter.unusedVariables false
 
 /--

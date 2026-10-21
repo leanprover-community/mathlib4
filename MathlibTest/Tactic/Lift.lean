@@ -13,8 +13,6 @@ public import Mathlib.Tactic.Lift
 
 /-! Some tests of the `lift` tactic. -/
 
-@[expose] public section
-
 example (n : ℤ) (hn : 0 ≤ n) : 0 ≤ n + 1 := by
   lift n to ℕ
   guard_target =ₛ 0 ≤ n

@@ -2,8 +2,6 @@ module
 
 public import Mathlib.Tactic.Simproc.ExistsAndEq
 
-@[expose] public section
-
 universe u v
 
 variable (α : Type u) (β : Type v)

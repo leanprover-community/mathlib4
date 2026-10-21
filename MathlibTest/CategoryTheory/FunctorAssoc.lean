@@ -2,8 +2,6 @@ module
 
 public import Mathlib.CategoryTheory.Functor.Basic
 
-@[expose] public section
-
 namespace CategoryTheory.Functor
 
 variable {C₁ C₂ C₃ C₄ : Type*}

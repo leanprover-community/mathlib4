@@ -4,8 +4,6 @@ public meta import Mathlib.Control.Random
 public import Batteries.Lean.LawfulMonad
 public import Mathlib.Tactic.NormNum
 
-@[expose] public section
-
 open Random
 
 -- TODO(kmill): remove once the mathlib ToExpr Int instance is removed

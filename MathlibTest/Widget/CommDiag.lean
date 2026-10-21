@@ -6,8 +6,6 @@ public import ProofWidgets.Component.Panel.SelectionPanel
 
 /-! # Example use of commutative diagram widgets -/
 
-@[expose] public section
-
 universe u
 namespace CategoryTheory
 open ProofWidgets

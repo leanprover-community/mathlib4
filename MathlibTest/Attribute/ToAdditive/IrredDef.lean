@@ -3,8 +3,6 @@ module
 public import Mathlib.Algebra.Group.Defs
 public import Mathlib.Tactic.IrreducibleDef
 
-@[expose] public section
-
 set_option autoImplicit true
 @[to_additive]
 irreducible_def conj [Group G] (a b : G) := a⁻¹ * b * a

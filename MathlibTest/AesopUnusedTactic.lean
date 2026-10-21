@@ -8,8 +8,6 @@ module
 public import Aesop
 public import Mathlib.Tactic.Linter.UnusedTactic
 
-@[expose] public section
-
 set_option linter.unusedTactic true
 
 /-

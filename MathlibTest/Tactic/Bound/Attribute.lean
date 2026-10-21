@@ -14,8 +14,6 @@ public import Mathlib.Tactic.Bound
 Verify that our heuristic for the priority of a declaration produces the expected values.
 -/
 
-@[expose] public section
-
 open Mathlib.Tactic.Bound (declPriority)
 
 /-- info: 0 -/

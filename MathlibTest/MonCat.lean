@@ -2,8 +2,6 @@ module
 
 public import Mathlib.Algebra.Category.MonCat.Basic
 
-@[expose] public section
-
 -- We verify that the coercions of morphisms to functions work correctly:
 example {R S : MonCat} (f : R ⟶ S) : ↑R → ↑S := f
 

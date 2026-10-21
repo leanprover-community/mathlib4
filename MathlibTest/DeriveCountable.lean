@@ -8,8 +8,6 @@ public import Mathlib.Tactic.DeriveCountable
 # Tests of the `Countable` deriving handler
 -/
 
-@[expose] public section
-
 namespace Test
 
 /-!

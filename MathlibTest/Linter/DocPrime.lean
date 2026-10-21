@@ -3,8 +3,6 @@ module
 public import Mathlib.Init
 public import Mathlib.Tactic.Linter.DocPrime
 
-@[expose] public section
-
 set_option linter.docPrime true
 
 -- no warning on a primed-declaration with a doc-string containing `'`

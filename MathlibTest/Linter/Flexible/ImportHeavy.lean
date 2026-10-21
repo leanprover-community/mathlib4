@@ -19,8 +19,6 @@ public import Mathlib.Tactic.Ring
 public import Mathlib.Topology.Continuous
 public import Mathlib.Topology.Instances.Nat
 
-@[expose] public section
-
 set_option linter.flexible true
 set_option linter.unusedVariables false
 

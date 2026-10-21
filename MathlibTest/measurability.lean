@@ -11,8 +11,6 @@ public import Mathlib.MeasureTheory.Function.SpecialFunctions.Inner
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
 public import Mathlib.MeasureTheory.MeasurableSpace.Basic
 
-@[expose] public section
-
 
 open MeasureTheory TopologicalSpace
 

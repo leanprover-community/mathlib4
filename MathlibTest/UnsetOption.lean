@@ -2,8 +2,6 @@ module
 
 public import Mathlib.Tactic.UnsetOption
 
-@[expose] public section
-
 set_option linter.style.setOption false
 set_option linter.unusedTactic false
 set_option pp.all true

@@ -3,8 +3,6 @@ module
 public import Mathlib.Data.Nat.Factorial.Basic
 public import Mathlib.Data.Nat.Prime.Factorial
 
-@[expose] public section
-
 open Nat
 
 set_option maxHeartbeats 7000 in

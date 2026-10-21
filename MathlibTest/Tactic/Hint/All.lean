@@ -20,8 +20,6 @@ public import Mathlib.Tactic.Positivity.Core
 public import Mathlib.Tactic.Ring.RingNF
 public import Mathlib.Tactic.TautoSet
 
-@[expose] public section
-
 /--
 info: Try these:
   [apply] 🎉️ trivial

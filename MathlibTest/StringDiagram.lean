@@ -5,8 +5,6 @@ public import ProofWidgets.Component.Panel.SelectionPanel
 
 /-! # Example use of string diagram widgets -/
 
-@[expose] public section
-
 open ProofWidgets Mathlib.Tactic.Widget
 
 section MonoidalCategory

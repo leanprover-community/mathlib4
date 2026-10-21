@@ -9,8 +9,6 @@ module
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Rational
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Tactic
 
-@[expose] public section
-
 open Inclusion
 
 set_option linter.style.native true

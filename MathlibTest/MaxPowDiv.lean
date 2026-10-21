@@ -2,8 +2,6 @@ module
 
 public meta import Mathlib.NumberTheory.Padics.PadicVal.Basic
 
-@[expose] public section
-
 /--
 info: 100000
 -/

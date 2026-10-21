@@ -7,8 +7,6 @@ public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
 
 -/
 
-@[expose] public section
-
 set_option pp.unicode.fun true
 
 open Bundle Filter Function Topology

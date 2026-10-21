@@ -2,8 +2,6 @@ module
 
 public import Mathlib.Tactic.Recover
 
-@[expose] public section
-
 set_option linter.unusedTactic false
 
 /-- problematic tactic for testing recovery -/

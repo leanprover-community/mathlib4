@@ -3,8 +3,6 @@ module
 public import Mathlib.NumberTheory.Primorial
 public import Mathlib.Tactic.Simproc.Divisors
 
-@[expose] public section
-
 open Nat
 
 example :

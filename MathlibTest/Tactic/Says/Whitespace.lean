@@ -3,8 +3,6 @@ module
 public import Aesop
 public import Mathlib.Tactic.Says
 
-@[expose] public section
-
 set_option says.verify true
 
 variable {X Y Z : Type}

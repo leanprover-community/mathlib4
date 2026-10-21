@@ -3,8 +3,6 @@ module
 public meta import Mathlib.Lean.MessageData.ForExprs
 public import Qq
 
-@[expose] public section
-
 open Qq
 
 /--

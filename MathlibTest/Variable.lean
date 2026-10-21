@@ -8,7 +8,6 @@ public import Mathlib.Algebra.Ring.Regular
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
 public import Mathlib.Tactic.Variable
 
-@[expose] public section
 set_option autoImplicit true
 namespace Tests
 

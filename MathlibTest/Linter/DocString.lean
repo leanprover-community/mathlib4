@@ -5,8 +5,6 @@ public import Mathlib.Tactic.Linter.DocString
 
 /-! # Tests for the `docstring` linter -/
 
-@[expose] public section
-
 set_option linter.style.docString true
 
 #adaptation_note /--This comment is not inspected by the `docString` linter.-/

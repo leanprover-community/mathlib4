@@ -8,8 +8,6 @@ module
 
 public meta import Mathlib.Basic.Real.Basic
 
-@[expose] public section
-
 private axiom test_sorry : ∀ {α}, α
 meta unsafe def testRepr (r : ℝ) (s : String) : Lean.Elab.Command.CommandElabM Unit :=
 unless toString (repr r) = s do throwError "got {repr r}"

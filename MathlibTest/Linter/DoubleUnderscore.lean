@@ -2,8 +2,6 @@ module
 
 public import Mathlib.Tactic.Linter.Style
 
-@[expose] public section
-
 set_option linter.style.nameCheck true
 variable (n : Nat)
 

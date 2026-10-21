@@ -4,8 +4,6 @@ public import Mathlib.Tactic.DuplicateDecls
 
 /-! Theorems-/
 
-@[expose] public section
-
 theorem one_add_one : 1 + 1 = 2 := rfl
 theorem one_add_one' : 1 + 1 = 2 := rfl
 theorem one_add_one_alias : 1 + 1 = 2 := one_add_one -- this is an alias, so it won't be flagged

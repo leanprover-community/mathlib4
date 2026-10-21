@@ -33,8 +33,6 @@ example := trivial
 # Tests for the `directoryDependency` linter
 -/
 
-@[expose] public section
-
 -- Some unit-tests for internal functions.
 #guard Lean.Name.isPrefixOf `Mathlib.Util `Mathlib.Util.Basic == true
 #guard Lean.Name.isPrefixOf `Mathlib.Util `Mathlib.Util.Nested.Basic == true

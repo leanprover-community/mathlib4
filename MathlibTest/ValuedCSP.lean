@@ -15,8 +15,6 @@ This file shows two simple examples of General-Valued Constraint Satisfaction Pr
 The first example is an optimization problem. The second example is a decision problem.
 -/
 
-@[expose] public section
-
 def ValuedCSP.unaryTerm {D C : Type} [AddCommMonoid C] [PartialOrder C] [IsOrderedAddMonoid C]
     {Γ : ValuedCSP D C} {ι : Type*} {f : D → C}
     (ok : ⟨1, Function.OfArity.uncurry f⟩ ∈ Γ) (i : ι) : Γ.Term ι :=

@@ -2,8 +2,6 @@ module
 
 public import Mathlib.Data.Fintype.Defs
 
-@[expose] public section
-
 variable {α : Type*} [Fintype α] {p : α → Prop} {s : Finset α} {a : α}
     [DecidablePred p] [DecidableEq α] [Singleton α (Finset α)] [Compl (Finset α)]
 

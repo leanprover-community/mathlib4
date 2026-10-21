@@ -25,8 +25,6 @@ theory are tagged with `@[defeq]`.
 You should feel free to add more here when tagging definitions with `@[implicit_reducible]`.
 -/
 
-@[expose] public section
-
 /-- Throwaway command for this test: `#ensure_defeq foo` returns an error if
 the declaration `foo` does not have the `@[defeq]` tag (e.g., if it has
 the `@[backward_defeq]` tag instead). -/

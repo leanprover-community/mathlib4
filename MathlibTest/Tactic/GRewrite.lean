@@ -15,8 +15,6 @@ public import Mathlib.Tactic.GCongr
 public import Mathlib.Tactic.GRewrite
 public import Mathlib.Tactic.NormNum
 
-@[expose] public section
-
 /- In many examples in this module, we rewrite expressions which do not make it into the final term.
 
 This only happens because we are writing tests where we resolve the goal with a universal axiom, it

@@ -6,8 +6,6 @@ public import Mathlib.CategoryTheory.Monoidal.Category
 public import Mathlib.CategoryTheory.Opposites
 public import Mathlib.Tactic.CategoryTheory.CancelIso
 
-@[expose] public section
-
 open CategoryTheory
 open Opposite
 variable {C : Type*} [Category* C]

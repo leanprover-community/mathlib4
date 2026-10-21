@@ -9,8 +9,6 @@ public import Mathlib.Tactic.Linter.OldObtain
 
 /-! Tests for the `oldObtain` linter. -/
 
-@[expose] public section
-
 set_option linter.oldObtain true
 
 -- These cases are fine.

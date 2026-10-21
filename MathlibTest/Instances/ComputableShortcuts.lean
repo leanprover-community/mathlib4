@@ -21,8 +21,6 @@ version is available.
 TODO: test this more exhaustively.
 -/
 
-@[expose] public section
-
 macro "#guard_computable" t:term : command =>
   `(#guard_msgs (drop info) in #eval $t)
 

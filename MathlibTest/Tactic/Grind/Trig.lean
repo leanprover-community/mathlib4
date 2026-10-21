@@ -2,8 +2,6 @@ module
 
 public import Mathlib
 
-@[expose] public section
-
 open Real
 
 grind_pattern cos_sq_add_sin_sq => cos x

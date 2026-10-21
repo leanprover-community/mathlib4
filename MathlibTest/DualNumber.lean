@@ -2,8 +2,6 @@ module
 
 public meta import Mathlib.Algebra.DualNumber
 
-@[expose] public section
-
 open DualNumber
 
 -- TODO(kmill): make a ToExpr instance for DualNumber

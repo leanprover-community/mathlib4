@@ -17,5 +17,3 @@ Note: This linter can be disabled with `set_option linter.style.header false`
 set_option linter.omit true -- Random linter option defined in core Lean
 
 /-! # Module doc ... -/
-
-@[expose] public section

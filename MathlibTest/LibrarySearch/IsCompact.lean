@@ -3,8 +3,6 @@ module
 public import Mathlib.Topology.Instances.Real.Lemmas
 public import Mathlib.Topology.Order.Compact
 
-@[expose] public section
-
 -- TODO: uses sorry, but is hidden behind the `apply?`
 /-- warning: declaration uses `sorry` -/
 #guard_msgs(warning, drop info) in

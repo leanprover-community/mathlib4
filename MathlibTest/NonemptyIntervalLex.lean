@@ -2,8 +2,6 @@ module
 
 public meta import Mathlib.Order.Interval.Lex
 
-@[expose] public section
-
 -- Sanity check on the lexicographic ordering of `NonemptyInterval`.
 /-- info: [(3, 3), (2, 2), (2, 3), (1, 1), (1, 2), (1, 3)] -/
 #guard_msgs in

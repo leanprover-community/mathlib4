@@ -6,8 +6,6 @@ public import Mathlib.Basic.Complex.Basic
 # Tests for `simp`-reduction about `I ^ _`.
 -/
 
-@[expose] public section
-
 open Complex
 
 -- simp can reduce I ^ n for literal nats n, as well as literal ints n, but not for variables n.

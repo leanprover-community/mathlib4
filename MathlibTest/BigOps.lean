@@ -4,8 +4,6 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Data.Fintype.Basic
 public import Mathlib.Order.Interval.Finset.Nat
 
-@[expose] public section
-
 section
 variable {ι M : Type*} [CommMonoid M] [AddCommMonoid M] [Fintype ι] {s : Finset ι} {p : ι → Prop}
   [DecidablePred p] {f : ι → M}

@@ -11,8 +11,6 @@ public import Mathlib.Testing.Plausible.Functions
 public import Mathlib.Testing.Plausible.Sampleable
 public import Plausible
 
-@[expose] public section
-
 private axiom test_sorry : ∀ {α}, α
 
 /--

@@ -5,8 +5,6 @@ public import Mathlib.Data.Finset.Sort
 public import Mathlib.Tactic.Eval
 public import Mathlib.Util.Qq
 
-@[expose] public section
-
 #guard_expr eval% 2^10 =ₛ 1024
 
 #guard_expr (eval% 2^10 : Int) =ₛ (1024 : Int)

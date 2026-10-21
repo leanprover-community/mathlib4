@@ -7,8 +7,6 @@ public import Mathlib.Tactic.Linter.Multigoal
 public import Mathlib.Tactic.SuccessIfFailWithMsg
 public import Mathlib.Util.SleepHeartbeats
 
-@[expose] public section
-
 set_option linter.style.multiGoal true
 
 -- A deactivated linter does nothing.

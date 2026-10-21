@@ -2,8 +2,6 @@ module
 
 public import Mathlib.Topology.Order
 
-@[expose] public section
-
 open TopologicalSpace
 
 -- TODO If and when `(try)SynthInstance` in `#check` is fixed,

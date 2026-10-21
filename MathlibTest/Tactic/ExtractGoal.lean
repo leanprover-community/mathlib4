@@ -4,8 +4,6 @@ public import Mathlib.Data.Nat.Basic
 public import Mathlib.Order.Basic
 public import Mathlib.Tactic.ExtractGoal
 
-@[expose] public section
-
 set_option linter.style.setOption false
 set_option pp.unicode.fun true
 set_option autoImplicit true

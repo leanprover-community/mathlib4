@@ -10,8 +10,6 @@ public import Batteries.Tactic.PermuteGoals
 public import Lean.Meta.Tactic.SolveByElim
 public import Mathlib.Tactic.Constructor
 
-@[expose] public section
-
 
 example (h : Nat) : Nat := by solve_by_elim
 example {α β : Type} (f : α → β) (a : α) : β := by solve_by_elim

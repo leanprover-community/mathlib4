@@ -11,8 +11,6 @@ so the resulting test output often does not show the inferred model with corners
 As that output is also tested elsewhere, this is fine.
 -/
 
-@[expose] public section
-
 open Bundle Filter Function Topology Manifold
 
 -- Suppose `M` is a real manifold over `E` with model `I`.

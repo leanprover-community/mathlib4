@@ -2,8 +2,6 @@ module
 
 public import Lean
 
-@[expose] public section
-
 namespace DeriveToExprTests
 open Lean
 

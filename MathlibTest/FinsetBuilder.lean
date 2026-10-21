@@ -6,8 +6,6 @@ public import Mathlib.Order.Interval.Finset.Basic
 # Examples of finset builder notation
 -/
 
-@[expose] public section
-
 open Finset
 
 variable {α : Type*} (p : α → Prop) [DecidablePred p]

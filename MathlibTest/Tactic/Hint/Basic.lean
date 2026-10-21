@@ -2,8 +2,6 @@ module
 
 public import Mathlib.Tactic.Hint
 
-@[expose] public section
-
 /--
 error: No suggestions available
 -/

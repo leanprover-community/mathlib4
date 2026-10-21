@@ -16,8 +16,6 @@ public import Mathlib.Geometry.Manifold.VectorField.LieBracket
 # Tests for the differential geometry elaborators which require stronger imports
 -/
 
-@[expose] public section
-
 set_option pp.unicode.fun true
 -- We want to capture the output of the custom *elaborators* specifically: turning off all notation
 -- deactivates some notation for models with corners, but also the delaborators corresponding

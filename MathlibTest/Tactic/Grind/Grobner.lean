@@ -15,8 +15,6 @@ but uses the `grobner` tactic instead.
 (Recall `grobner` is a thin wrapper around `grind` disabling other modules.)
 -/
 
-@[expose] public section
-
 /-! ### Standard Cases over ℤ, ℚ, and ℝ -/
 
 example (x y : ℤ) (h1 : 3*x + 2*y = 10) :

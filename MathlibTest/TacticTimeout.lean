@@ -6,8 +6,6 @@ public import Mathlib.Tactic.Linarith
 # Test that tactics respond to a cancellation request
 -/
 
-@[expose] public section
-
 
 variable {α}
 

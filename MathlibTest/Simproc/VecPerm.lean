@@ -5,8 +5,6 @@ public import Mathlib.GroupTheory.Perm.Cycle.Concrete
 
 import all Mathlib.Tactic.Simproc.VecPerm
 
-@[expose] public section
-
 open Mathlib.Tactic.FinVec
 
 variable {α : Type*} (a b c d : α)

@@ -10,8 +10,6 @@ public import Mathlib.Tactic.Set
 public import Mathlib.Util.SleepHeartbeats
 public import Qq
 
-@[expose] public section
-
 example (x : Nat) (h : x = x) : x = x := by
   set! p := h
   set q : x = x := p

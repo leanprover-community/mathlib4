@@ -4,8 +4,6 @@ public import Mathlib.Data.Finset.Sort
 
 import Lean.Meta.Basic
 
-@[expose] public section
-
 run_cmd Lean.Elab.Command.liftTermElabM do
   unsafe guard <|
    (repr (0 : Multiset (List ℕ)) |>.pretty 15) = "0"
