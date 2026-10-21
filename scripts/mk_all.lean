@@ -56,11 +56,11 @@ def getWorkspace : IO Lake.Workspace := do
 /-- Given a `Config`, find the lake `lean_lib`s to process, erroring if the config excludes
 libraries that don't exist. -/
 def Config.mkAllLibs (cfg : Config) (pkg : Lake.Package) : IO (Array Lake.LeanLib) := do
-  let wronglyExcluded := cfg.excludedLibs.filter fun excludedLib =>
+  let excludedButNonexistent := cfg.excludedLibs.filter fun excludedLib =>
     !pkg.leanLibs.any (·.name == excludedLib)
-  unless wronglyExcluded.isEmpty do
+  unless excludedButNonexistent.isEmpty do
     throw <| IO.userError s!"Could not find the libraries\
-      {String.join <| wronglyExcluded.toList.map (s!"\n  {·.toString (escape := false)}")}\
+      {String.join <| excludedButNonexistent.toList.map (s!"\n  {·.toString (escape := false)}")}\
       \nwhich are excluded by the `mk_all` config among the libraries of the package \
       {pkg.prettyName}. This package contains the libraries:\
       {String.join <| pkg.leanLibs.toList.map (s!"\n  {·.name.toString (escape := false)}")}"
