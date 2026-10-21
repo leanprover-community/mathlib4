@@ -913,7 +913,7 @@ This is available in bundled forms as:
 
 @[simp] theorem toEquiv_piLinearEquiv (R) [Semiring R] [∀ i, AddCommMonoid (β i)]
     [∀ i, Module R (β i)] : (piLinearEquiv (m := m) (n := n) (ι := ι) (β := β) R :
-    Matrix m n (Π i, β i) ≃ Π i, Matrix m n (β i)) = piEquiv := rfl
+      Matrix m n (Π i, β i) ≃ Π i, Matrix m n (β i)) = piEquiv := rfl
 
 /-- `piEquiv` as a `RingEquiv`. -/
 @[simps!] def piRingEquiv [∀ i, AddCommMonoid (β i)] [∀ i, Mul (β i)] [Fintype n] :
