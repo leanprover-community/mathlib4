@@ -260,9 +260,6 @@ lemma isHomogeneous_toTupleMvPolynomial (p : R[X]) (i : Fin 2) :
   · simp [toTupleMvPolynomial]
   · simpa [toTupleMvPolynomial] using MvPolynomial.isHomogeneous_X_pow 1 p.natDegree
 
-@[deprecated (since := "2026-04-06")]
-alias isHomogenous_toTupleMvPolynomial := isHomogeneous_toTupleMvPolynomial
-
 lemma eval_X_toTupleMvPolynomial_zero_eq (p : R[X]) :
     MvPolynomial.aeval ![X, 1] (p.toTupleMvPolynomial 0) =
       p * MvPolynomial.aeval ![X, 1] (p.toTupleMvPolynomial 1) := by
