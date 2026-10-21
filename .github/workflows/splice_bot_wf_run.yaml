@@ -16,25 +16,19 @@ jobs:
     steps:
       - name: Mint splicebot token
         id: token
-        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@d6393a535c054122e507b6c5e1b2f4c31c604121
+        uses: leanprover-community/mathlib-ci/.github/actions/mint-github-app-token@3100b8176f64a2ec14036e807c233b3e6f300a59
         with:
-          app-id: ${{ secrets.MATHLIB_SPLICEBOT_APP_ID }}
-          key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
-          key-name: mathlib-splicebot-app-pk
-          azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_SPLICEBOT }}
-          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
-          owner: leanprover-community
+          broker-url: ${{ vars.MATHLIB_GITHUB_APP_BROKER_URL }}
+          audience: mathlib-github-app-broker
+          app: mathlib-splicebot
 
       - name: Mint branch token
         id: branch-token
-        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@d6393a535c054122e507b6c5e1b2f4c31c604121
+        uses: leanprover-community/mathlib-ci/.github/actions/mint-github-app-token@3100b8176f64a2ec14036e807c233b3e6f300a59
         with:
-          app-id: ${{ secrets.MATHLIB_COPY_SPLICEBOT_APP_ID }}
-          key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
-          key-name: mathlib-copy-splicebot-app-pk
-          azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_SPLICEBOT }}
-          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
-          owner: leanprover-community
+          broker-url: ${{ vars.MATHLIB_GITHUB_APP_BROKER_URL }}
+          audience: mathlib-github-app-broker
+          app: mathlib-copy-splicebot
 
       - name: Mint authz token
         id: authz-token

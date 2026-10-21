@@ -57,7 +57,7 @@ permissions:
   contents: read
   pull-requests: write   # required to post comments on PRs (issues: write alone is insufficient)
   issues: write          # PR comments use the issues API
-  id-token: write        # required for the Azure Key Vault token mint
+  id-token: write        # required for the GitHub App token mint
 
 concurrency:
   # Do not cancel a running validation on a new comment. Both runs are useful
@@ -196,15 +196,11 @@ jobs:
 
       - name: Mint App token (for downstream-reports)
         id: app_token
-        uses: ./ci-tools/.github/actions/azure-create-github-app-token
+        uses: ./ci-tools/.github/actions/mint-github-app-token
         with:
-          app-id: ${{ secrets.DOWNSTREAM_REPORTS_AUTOMATION_APP_ID }}
-          key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
-          key-name: downstream-reports-automation-app-pk
-          azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_DOWNSTREAM_REPORTS_AUTOMATION }}
-          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
-          owner: leanprover-community
-          repositories: downstream-reports
+          broker-url: ${{ vars.MATHLIB_GITHUB_APP_BROKER_URL }}
+          audience: mathlib-github-app-broker
+          app: downstream-reports-automation
 
       - name: Dispatch downstream-reports workflow
         env:
