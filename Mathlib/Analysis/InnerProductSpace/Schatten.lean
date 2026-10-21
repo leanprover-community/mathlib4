@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.StarOrder
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
+public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Abs
 public import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
 
 /-!
@@ -45,6 +46,8 @@ scoped notation "|" T "|" => modulus T
 @[simp] theorem modulus_modulus (T : E →L[ℂ] F) : |(|T|)| = |T| := by
   rw [modulus, T.modulus_nonneg.isSelfAdjoint.adjoint_eq]
   exact CFC.sqrt_mul_self |T|
+
+theorem modulus_eq_abs (T : E →L[ℂ] E) : |T| = CFC.abs T := by rfl
 
 theorem modulus_eq_zero (T : E →L[ℂ] F) : |T| = 0 ↔ T = 0 := by
   refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
