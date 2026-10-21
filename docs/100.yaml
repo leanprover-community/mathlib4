@@ -151,7 +151,11 @@
   authors: "Anthropic"
   links  :
     result: https://github.com/anthropics/fermats-last-theorem/blob/6e837e75355538c7f80bab5b956861e86c4eacc2/FinalCheck.lean
-  note   : "External Lean proof of FermatLastTheorem. The separate mathlib-based FLT project is at https://imperialcollegelondon.github.io/FLT/."
+    attribution: https://github.com/anthropics/fermats-last-theorem/blob/6e837e75355538c7f80bab5b956861e86c4eacc2/NOTICE
+  note   : >-
+    External Lean proof of FermatLastTheorem, building on the Imperial College FLT project,
+    flt-regular, and mathlib. The Imperial College FLT project is at
+    https://imperialcollegelondon.github.io/FLT/.
 34:
   title  : Divergence of the Harmonic Series
   decl   : Real.tendsto_sum_range_one_div_nat_succ_atTop
