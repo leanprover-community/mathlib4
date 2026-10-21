@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Set.Card
 public import Mathlib.MeasureTheory.MeasurableSpace.Constructions
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Measurability of `Set.encard` and `Set.ncard`
 
