@@ -5,8 +5,8 @@ Authors: Justin Thomas
 -/
 module
 
-public import Mathlib.FieldTheory.Minpoly.Field
 public import Mathlib.Algebra.Polynomial.Module.AEval
+public import Mathlib.FieldTheory.Minpoly.Field
 
 /-!
 # Annihilating Ideal
