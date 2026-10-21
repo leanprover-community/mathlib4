@@ -37,6 +37,7 @@ variable {E F : Type*}
   [NormedAddCommGroup F] [InnerProductSpace ℂ F] [CompleteSpace F]
 
 /-- The modulus `|T| = √(T†∘T)` of a continuous linear map `T : E →L[ℂ] F`. -/
+@[expose]
 def modulus (T : E →L[ℂ] F) : E →L[ℂ] E := CFC.sqrt (T.adjoint ∘L T)
 
 @[inherit_doc]
@@ -49,7 +50,7 @@ scoped notation "|" T "|" => modulus T
   rw [modulus, T.modulus_nonneg.isSelfAdjoint.adjoint_eq]
   exact CFC.sqrt_mul_self |T|
 
-theorem modulus_eq_abs (T : E →L[ℂ] E) : |T| = CFC.abs T := by rfl
+theorem modulus_eq_abs (T : E →L[ℂ] E) : |T| = CFC.abs T := rfl
 
 theorem modulus_eq_zero (T : E →L[ℂ] F) : |T| = 0 ↔ T = 0 := by
   refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
