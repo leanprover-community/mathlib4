@@ -59,7 +59,7 @@ def Config.mkAllLibs (cfg : Config) (pkg : Lake.Package) (only? : Option (Array 
   if let some only := only? then
     let mut libs := #[]
     for libName in only do
-      let some lib := pkg.leanLibs.find? (libName == ·.name.toString (escape := false))
+      let some lib := pkg.leanLibs.findRev? (libName == ·.name.toString (escape := false))
         | continue -- perhaps these are pseudoroots, not libraries. We check later
       libs := libs.push lib
     return libs
