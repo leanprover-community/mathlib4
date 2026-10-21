@@ -124,8 +124,13 @@ def Config.mkAllRoots (cfg : Config) (pkg : Lake.Package)
   if let some only := only? then
     for root in only do
       unless roots.any (·.name.toString (escape := false) == root) do
-        throw <| IO.userError s!"Could not find the root `{only}` among the libraries of the \
-          package {pkg.prettyName}. {libsMsg}"
+        -- Add `only`s that are roots of libs but not libs
+        let some (name, lib) := pkg.leanLibs.findSomeRev? fun lib => do
+            let rootName ← lib.roots.find? (·.toString (escape := false) == root)
+            some (rootName, lib)
+          | throw <| IO.userError s!"Could not find the root `{only}` among the libraries of the \
+              package {pkg.prettyName}. {libsMsg}"
+        roots := roots.push { name, lib, realLibSrcDir := ← IO.FS.realPath lib.srcDir }
   return roots.qsort (·.lt ·)
 
 /-- Handles a `Root` and updates the associated file, printing logs to stdout. Returns `true` if it
