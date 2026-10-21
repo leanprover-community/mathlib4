@@ -77,7 +77,7 @@ def lfpApprox (a : Ordinal.{u}) : α :=
 termination_by a
 
 theorem lfpApprox_def (a : Ordinal.{u}) : lfpApprox f x a = x ⊔ ⨆ b < a, f (lfpApprox f x b) := by
-  rw [lfpApprox]
+  rw [lfpApprox_def]
 
 theorem lfpApprox_mono_right : Monotone (lfpApprox f x) := by
   intro a b h
@@ -86,29 +86,29 @@ theorem lfpApprox_mono_right : Monotone (lfpApprox f x) := by
   grind
 
 theorem lfpApprox_zero : lfpApprox f x 0 = x := by
-  rw [lfpApprox]
+  rw [lfpApprox_def]
   simp
 
 theorem le_lfpApprox {a : Ordinal} : x ≤ lfpApprox f x a := by
-  rw [lfpApprox]
+  rw [lfpApprox_def]
   exact le_sup_left
 
 theorem apply_lfpApprox_le_lfpApprox_of_lt {a b : Ordinal} (h : a < b) :
     f (lfpApprox f x a) ≤ lfpApprox f x b := by
-  nth_rw 2 [lfpApprox]
+  nth_rw 2 [lfpApprox_def]
   exact le_sup_of_le_right <| le_iSup₂_of_le a h le_rfl
 
 theorem lfpApprox_add_one (hx : x ≤ f x) (a : Ordinal) :
     lfpApprox f x (a + 1) = f (lfpApprox f x a) := by
   apply (apply_lfpApprox_le_lfpApprox_of_lt f (lt_add_one a)).antisymm'
-  rw [lfpApprox]
+  rw [lfpApprox_def]
   apply sup_le <| hx.trans (f.mono (le_lfpApprox f))
   simpa using fun i h ↦ f.monotone.comp (lfpApprox_mono_right f) h
 
 theorem lfpApprox_of_isSuccLimit {a : Ordinal} (ha : Order.IsSuccLimit a) :
     lfpApprox f x a = ⨆ b : Set.Iio a, lfpApprox f x b := by
   apply (iSup_le fun b => lfpApprox_mono_right f b.2.le).antisymm'
-  rw [lfpApprox, sup_le_iff, iSup_le_iff]
+  rw [lfpApprox_def, sup_le_iff, iSup_le_iff]
   constructor
   · refine le_iSup_of_le ⟨0, ha.bot_lt⟩ (by simp [lfpApprox_zero])
   · exact fun b => iSup_mono' fun hab => ⟨⟨b + 1, ha.succ_lt hab⟩, (by
@@ -117,13 +117,13 @@ theorem lfpApprox_of_isSuccLimit {a : Ordinal} (ha : Order.IsSuccLimit a) :
 theorem lfpApprox_mono_left : Monotone (lfpApprox : (α →o α) → _) := by
   intro f g h x a
   induction a using WellFoundedLT.induction with | ind i IH
-  rw [lfpApprox, lfpApprox]
+  rw [lfpApprox_def, lfpApprox_def]
   exact sup_le_sup_left (iSup₂_mono fun j hj ↦ (f.mono (IH j hj)).trans (h _)) _
 
 theorem lfpApprox_mono_mid : Monotone (lfpApprox f) := by
   intro x₁ x₂ h a
   induction a using WellFoundedLT.induction with | ind i IH
-  rw [lfpApprox, lfpApprox]
+  rw [lfpApprox_def, lfpApprox_def]
   exact sup_le_sup h <| iSup₂_mono fun j hj ↦ f.mono (IH j hj)
 
 /-- The approximations of the least fixed point stabilize at a fixed point of `f` -/
@@ -132,7 +132,7 @@ theorem lfpApprox_eq_of_mem_fixedPoints (hab : a ≤ b)
   rw [mem_fixedPoints_iff] at hf
   induction b using WellFoundedLT.induction with | ind b IH
   apply (lfpApprox_mono_right f hab).antisymm'
-  rw [lfpApprox]
+  rw [lfpApprox_def]
   apply sup_le (le_lfpApprox ..)
   rw [iSup₂_le_iff]
   intro i hi
@@ -204,7 +204,7 @@ greater or equal than the initial value -/
 theorem lfpApprox_le_of_mem_fixedPoints {a : α}
     (ha : a ∈ fixedPoints f) (hxa : x ≤ a) (i : Ordinal) : lfpApprox f x i ≤ a := by
   induction i using WellFoundedLT.induction with | ind i IH
-  rw [lfpApprox]
+  rw [lfpApprox_def]
   apply sup_le hxa
   rw [iSup₂_le_iff, ← ha.eq]
   exact fun y hy ↦ f.mono (IH y hy)
