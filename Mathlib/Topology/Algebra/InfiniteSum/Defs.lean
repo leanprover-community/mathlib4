@@ -109,7 +109,7 @@ def HasProd (f : β → α) (a : α) (L := unconditional β) : Prop :=
 
 /-- `Multipliable f` means that `f` has some (infinite) product with respect to `L`. Use `tprod` to
 get the value. -/
-@[to_additive
+@[to_additive (attr := fun_prop)
 /-- `Summable f` means that `f` has some (infinite) sum with respect to `L`. Use `tsum` to get the
 value. -/]
 def Multipliable (f : β → α) (L := unconditional β) : Prop :=
