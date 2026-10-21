@@ -6,8 +6,9 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Probability.Independence.Kernel.IndepFun
-import Mathlib.Probability.Kernel.CompProdEqIff
 public import Mathlib.Probability.Kernel.Condexp
+
+import Mathlib.Probability.Kernel.CompProdEqIff
 
 /-!
 # Conditional Independence
@@ -912,6 +913,15 @@ lemma iCondIndepFun.of_subsingleton [Subsingleton ι] : iCondIndepFun m' hm' f �
   Kernel.iIndepFun.of_subsingleton
 
 /-- If `f` is a family of mutually conditionally independent random variables
+(`iCondIndepFun m' hm' m f μ`) and `S, T` are two disjoint index sets, then the tuple formed
+by `f i` for `i ∈ S` is conditionally independent of the tuple `(f i)_i` for `i ∈ T`. -/
+theorem iCondIndepFun.condIndepFun_set {β : ι → Type*}
+    {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i} (S T : Set ι) (hST : Disjoint S T)
+    (hf_Indep : iCondIndepFun m' hm' f μ) (hf_meas : ∀ i, Measurable (f i)) :
+    CondIndepFun m' hm' (fun a (i : S) => f i a) (fun a (i : T) => f i a) μ :=
+  Kernel.iIndepFun.indepFun_set S T hST hf_Indep hf_meas
+
+/-- If `f` is a family of mutually conditionally independent random variables
 (`iCondIndepFun m' hm' m f μ`) and `S, T` are two disjoint finite index sets, then the tuple formed
 by `f i` for `i ∈ S` is conditionally independent of the tuple `(f i)_i` for `i ∈ T`. -/
 theorem iCondIndepFun.condIndepFun_finset {β : ι → Type*}
@@ -996,14 +1006,6 @@ theorem iCondIndepFun.condIndepFun_finsetProd_of_notMem
     {s : Finset ι} {i : ι} (hi : i ∉ s) :
     CondIndepFun m' hm' (∏ j ∈ s, f j) (f i) μ :=
   Kernel.iIndepFun.indepFun_finsetProd_of_notMem hf_Indep hf_meas hi
-
-@[deprecated (since := "2026-04-08")]
-alias iCondIndepFun.condIndepFun_finset_sum_of_notMem :=
-  iCondIndepFun.condIndepFun_finsetSum_of_notMem
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias iCondIndepFun.condIndepFun_finset_prod_of_notMem :=
-  iCondIndepFun.condIndepFun_finsetProd_of_notMem
 
 @[to_additive]
 theorem iCondIndepFun.condIndepFun_prod_range_succ {f : ℕ → Ω → β}

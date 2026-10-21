@@ -5,9 +5,10 @@ Authors: Sébastien Gouëzel, Yaël Dillies
 -/
 module
 
-import Mathlib.Analysis.Normed.Group.Bounded
 public import Mathlib.Analysis.Normed.Group.Uniform
 public import Mathlib.Topology.MetricSpace.Thickening
+
+import Mathlib.Analysis.Normed.Group.Bounded
 
 /-!
 # Properties of pointwise addition of sets in normed groups

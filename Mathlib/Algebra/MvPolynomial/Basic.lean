@@ -7,12 +7,13 @@ module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 public import Mathlib.Algebra.MonoidAlgebra.Basic
-import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
-import Mathlib.Algebra.MonoidAlgebra.Support
 public import Mathlib.Algebra.Regular.Pow
 public import Mathlib.Data.Finsupp.Antidiagonal
 public import Mathlib.Data.Finsupp.Order
 public import Mathlib.Tactic.Polynomial.Core
+
+import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
+import Mathlib.Algebra.MonoidAlgebra.Support
 
 /-!
 # Multivariate polynomials
@@ -550,8 +551,6 @@ theorem coeff_zero_X (i : σ) : (X i : MvPolynomial σ R).coeff 0 = 0 :=
 @[simp]
 lemma coeff_addMonoidAlgebraMap (g : S₁ →+ R) (φ : MvPolynomial σ S₁) (m) :
     (φ.map g).coeff m = g (φ.coeff m) := rfl
-
-@[deprecated (since := "2026-03-27")] alias coeff_mapRange := coeff_addMonoidAlgebraMap
 
 /-- `AddMonoidAlgebra.coeff · m` but promoted to an `AddMonoidHom`. -/
 @[simps]

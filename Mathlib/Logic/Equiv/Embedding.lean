@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Logic.Embedding.Set
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivalences on embeddings
 

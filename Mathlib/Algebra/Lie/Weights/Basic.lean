@@ -5,11 +5,11 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Ring.Divisibility.Lemmas
 public import Mathlib.Algebra.Lie.Engel
+public import Mathlib.Algebra.Ring.Divisibility.Lemmas
 public import Mathlib.LinearAlgebra.Eigenspace.Pi
-public import Mathlib.LinearAlgebra.Trace
 public import Mathlib.LinearAlgebra.FreeModule.PID
+public import Mathlib.LinearAlgebra.Trace
 
 /-!
 # Weight spaces of Lie modules of nilpotent Lie algebras
@@ -38,7 +38,7 @@ Basic definitions and properties of the above ideas are provided in this file.
 
 ## References
 
-* [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 7--9*](bourbaki1975b)
+* [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 7--9*][bourbaki1975b]
 
 ## Tags
 
@@ -236,7 +236,7 @@ instance [Subsingleton M] : IsEmpty (Weight R L M) :=
 instance [Nontrivial (genWeightSpace M (0 : L → R))] : Zero (Weight R L M) :=
   ⟨0, fun e ↦ not_nontrivial (⊥ : LieSubmodule R L M) (e ▸ ‹_›)⟩
 
-instance [Nontrivial (genWeightSpace M (0 : L → R))] : IsZeroApply (Weight R L M) L R where
+instance [Nontrivial (genWeightSpace M (0 : L → R))] : IsZeroApply (Weight R L M) where
 
 @[deprecated (since := "2026-07-27")] alias coe_zero := FunLike.coe_zero
 
