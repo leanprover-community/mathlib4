@@ -575,7 +575,7 @@ as a Cauchy sequence of rationals with respect to the `p`-adic norm.
 The `n`th value of the sequence is `((f n r).val : ℚ)`.
 -/
 def nthHomSeq (r : R) : PadicSeq p :=
-  CauSeq.mk (fun n => nthHom f r n) (isCauSeq_nthHom f_compat r)
+  CauSeq.mk (nthHom f r ·) (isCauSeq_nthHom f_compat r)
 
 theorem nthHomSeq_one : nthHomSeq f_compat 1 ≈ 1 := by
   intro ε hε

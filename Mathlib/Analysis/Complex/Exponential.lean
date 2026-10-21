@@ -56,7 +56,7 @@ theorem isCauSeq_exp (z : ℂ) : IsCauSeq (‖·‖) fun n => ∑ m ∈ range n,
 the complex exponential function -/
 @[pp_nodot]
 def exp' (z : ℂ) : CauSeq ℂ (‖·‖) :=
-  ⟨fun n => ∑ m ∈ range n, z ^ m / m.factorial, isCauSeq_exp z⟩
+  .mk (fun n => ∑ m ∈ range n, z ^ m / m.factorial) (isCauSeq_exp z)
 
 /-- The complex exponential function, defined via its Taylor series -/
 @[pp_nodot]
@@ -92,7 +92,6 @@ namespace Complex
 
 variable (x y : ℂ)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem exp_zero : exp 0 = 1 := by
   rw [exp]
@@ -105,8 +104,7 @@ theorem exp_zero : exp 0 = 1 := by
     | zero => simp
     | succ j ih =>
       rw [← ih (by simp)]
-      simp only [sum_range_succ, pow_succ]
-      simp
+      simp [sum_range_succ]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem exp_add : exp (x + y) = exp x * exp y := by
@@ -179,10 +177,7 @@ theorem exp_conj : exp (conj x) = conj (exp x) := by
   simp only [exp]
   rw [← lim_conj]
   congrm CauSeq.lim $(CauSeq.ext fun _ => ?_)
-  dsimp [exp', Function.comp_def, cauSeqConj]
-  rw [map_sum (starRingEnd _)]
-  refine sum_congr rfl fun n _ => ?_
-  rw [map_div₀, map_pow, ← ofReal_natCast, conj_ofReal]
+  simp [exp']
 
 @[simp]
 theorem ofReal_exp_ofReal_re (x : ℝ) : ((exp x).re : ℂ) = exp x :=
@@ -248,12 +243,12 @@ open IsAbsoluteValue Nat
 
 theorem sum_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) (n : ℕ) : ∑ i ∈ range n, x ^ i / i ! ≤ exp x :=
   calc
-    ∑ i ∈ range n, x ^ i / i ! ≤ lim (⟨_, isCauSeq_re (exp' x)⟩ : CauSeq ℝ abs) := by
+    ∑ i ∈ range n, x ^ i / i ! ≤ lim (cauSeqRe (exp' x)) := by
       refine le_lim (CauSeq.le_of_exists ⟨n, fun j hj => ?_⟩)
-      simp only [exp', const_apply, re_sum]
+      simp only [const_apply, exp', cauSeqRe_apply, mk_apply, re_sum, div_natCast_re]
       norm_cast
       gcongr
-    _ = exp x := by rw [exp, Complex.exp, ← cauSeqRe, lim_re]
+    _ = exp x := by rw [exp, Complex.exp, lim_re]
 
 lemma pow_div_factorial_le_exp (hx : 0 ≤ x) (n : ℕ) : x ^ n / n ! ≤ exp x :=
   calc
