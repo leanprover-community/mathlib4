@@ -33,11 +33,11 @@ namespace AddMon.End
 
 open AddMon End
 
-/-- The zero homomorphism in `End G` for an additive commutative monoid object `G : AddMon C` -/
+/-- The zero homomorphism in `End G` for an additive monoid object `G : AddMon C` -/
 scoped instance : Zero (End G) where
   zero := .of 0
 
-/-- The addition in `End G` for a additive commutative monoid object `G : AddMon C` -/
+/-- The addition in `End G` for an additive commutative monoid object `G : AddMon C` -/
 scoped instance [BraidedCategory C] [IsCommAddMonObj G.X] : Add (End G) where
   add f g := .of (f.asHom + g.asHom)
 
@@ -48,8 +48,8 @@ lemma add_asHom (f g : End G) [BraidedCategory C] [IsCommAddMonObj G.X] :
 @[simp]
 lemma zero_asHom : (0 : End G).asHom = 0 := rfl
 
-/-- For a commutative addtitive monoid object `G`, the endomorphisms `End G` has
-an semiring structure. -/
+/-- For an additive commutative monoid object `G`, the endomorphisms `End G` have
+a semiring structure. -/
 scoped instance [BraidedCategory C] [IsCommAddMonObj G.X] : Semiring (End G) where
   add_assoc f g h := by
     simp [End.ext_iff, add_assoc f.asHom]
@@ -90,11 +90,11 @@ namespace AddGrp.End
 
 open AddGrp End
 
-/-- The zero homomorphism in `End G` for an additive commutative group object `G : GrpMon C` -/
+/-- The zero homomorphism in `End G` for an additive group object `G : AddGrp C` -/
 scoped instance : Zero (End G) where
   zero := .of 0
 
-/-- The addition in `End G` for a additive commutative group object `G : AddGrp C` -/
+/-- The addition in `End G` for an additive commutative group object `G : AddGrp C` -/
 scoped instance [BraidedCategory C] [IsCommAddMonObj G.X] : Add (End G) where
   add f g := .of (f.asHom + g.asHom)
 
@@ -105,8 +105,8 @@ lemma add_asHom (f g : End G) [BraidedCategory C] [IsCommAddMonObj G.X] :
 @[simp]
 lemma zero_asHom : (0 : End G).asHom = 0 := rfl
 
-/-- For a commutative addtitive group object `G`, the endomorphisms `End G` has
-an ring structure. -/
+/-- For an additive commutative group object `G`, the endomorphisms `End G` have
+a ring structure. -/
 scoped instance [BraidedCategory C] [IsCommAddMonObj G.X] : Ring (End G) where
   add_assoc f g h := by
     simp [End.ext_iff, add_assoc f.asHom]
