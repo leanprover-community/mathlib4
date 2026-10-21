@@ -5,8 +5,8 @@ Authors: Kalle Kytölä
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.FiniteMeasure
 public import Mathlib.MeasureTheory.Integral.Average
+public import Mathlib.MeasureTheory.Measure.FiniteMeasure
 
 /-!
 # Probability measures
@@ -488,7 +488,7 @@ theorem self_eq_mass_mul_normalize (s : Set Ω) : μ s = μ.mass * μ.normalize 
 theorem self_eq_mass_smul_normalize : μ = μ.mass • μ.normalize.toFiniteMeasure := by
   apply eq_of_forall_apply_eq
   intro s _s_mble
-  rw [μ.self_eq_mass_mul_normalize s, smul_apply, smul_eq_mul,
+  rw [μ.self_eq_mass_mul_normalize s, FiniteMeasure.smul_apply, smul_eq_mul,
     ProbabilityMeasure.coeFn_comp_toFiniteMeasure_eq_coeFn]
 
 theorem normalize_eq_of_nonzero (nonzero : μ ≠ 0) (s : Set Ω) : μ.normalize s = μ.mass⁻¹ * μ s := by
