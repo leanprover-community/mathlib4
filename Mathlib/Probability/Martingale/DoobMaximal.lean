@@ -8,10 +8,11 @@ module
 public import Mathlib.Probability.Martingale.Basic
 public import Mathlib.Probability.Notation
 public import Mathlib.Probability.Process.HittingTime
-import Mathlib.Analysis.SpecialFunctions.Pow.Integral
+
 import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import Mathlib.Probability.Martingale.OptionalStopping
+import Mathlib.Analysis.SpecialFunctions.Pow.Integral
 import Mathlib.MeasureTheory.Integral.MeanInequalities
+import Mathlib.Probability.Martingale.OptionalStopping
 
 /-! # Doob's martingale maximal inequality
 
