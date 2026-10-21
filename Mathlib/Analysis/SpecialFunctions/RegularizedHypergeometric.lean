@@ -427,7 +427,7 @@ theorem summable_pow_smul_coeff_derivSeries_regularizedHGFunSeries {z : ℂ}
   have hball : z ∈ Metric.eball 0 (regularizedHGFunSeries a b).radius := by simpa using hz
   have hdball : z ∈ Metric.eball 0 (regularizedHGFunSeries a b).derivSeries.radius := by
     simpa using hz.trans_le (FormalMultilinearSeries.radius_le_radius_derivSeries _)
-  simpa using ((regularizedHGFunSeries a b).derivSeries).summable hdball
+  simpa using (regularizedHGFunSeries a b).derivSeries.summable hdball
 
 theorem deriv_regularizedHGFun {z : ℂ} (hz : ‖z‖ₑ < (regularizedHGFunSeries a b).radius) :
     deriv (regularizedHGFun a b) z =
@@ -438,10 +438,7 @@ theorem deriv_regularizedHGFun {z : ℂ} (hz : ‖z‖ₑ < (regularizedHGFunSer
       a.prod * ∑' n, z ^ n * C (a.map (· + 1)) (b.map (· + 1)) n by
     simpa [FormalMultilinearSeries.sum,
       tsum_apply (summable_pow_smul_coeff_derivSeries_regularizedHGFunSeries hz)]
-  rw [← tsum_mul_left]
-  congr with n
-  rw [mul_regularizedHGFunCoeff]
-  ring
+  grind [tsum_mul_left, mul_regularizedHGFunCoeff]
 
 end Derivative
 
