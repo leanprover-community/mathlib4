@@ -9,6 +9,9 @@ public import Mathlib.Data.Int.Notation
 
 import Mathlib.Tactic.Push.Attr
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cast of integers to function types
 

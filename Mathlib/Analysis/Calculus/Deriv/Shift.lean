@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Calculus.Deriv.CompMul
 
 import Mathlib.Analysis.Calculus.Deriv.Comp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Invariance of the derivative under translation
 
