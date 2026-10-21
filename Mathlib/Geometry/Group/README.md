@@ -10,3 +10,4 @@ The geometric group theory topics currently covered are:
 * Growth of groups
 * The word metric of a group with respect to a generating family
 * The Cayley graph of a generating family, whose graph distance is the word metric
+* Words along walks in the Cayley graph
