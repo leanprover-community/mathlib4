@@ -5,17 +5,17 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public meta import Lean.PrettyPrinter.Delaborator.Builtins
-public meta import Mathlib.Data.String.Defs
-public import Batteries.Tactic.PermuteGoals
 public meta import Lean.Language.Lean.Util
+public meta import Lean.PrettyPrinter.Delaborator.Builtins
 public meta import Lean.Server.Utils
+public meta import Mathlib.Data.String.Defs
+public meta import ProofWidgets.Component.MakeEditLink
+public meta import ProofWidgets.Component.RefreshComponent
+public import Batteries.Tactic.PermuteGoals
 public import Mathlib.Tactic.DepRewrite
 public import Mathlib.Tactic.GRewrite
 public import Mathlib.Tactic.NthRewrite
 public import Mathlib.Tactic.SimpRw
-public meta import ProofWidgets.Component.MakeEditLink
-public meta import ProofWidgets.Component.RefreshComponent
 
 /-!
 # Various utilities used in `#click_suggestions`

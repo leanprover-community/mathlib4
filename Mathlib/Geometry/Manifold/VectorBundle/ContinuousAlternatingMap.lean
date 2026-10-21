@@ -5,10 +5,10 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Geometry.Manifold.VectorBundle.Hom
-public import Mathlib.Topology.VectorBundle.ContinuousAlternatingMap
-public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 public import Mathlib.Geometry.Manifold.Notation
+public import Mathlib.Geometry.Manifold.VectorBundle.Hom
+public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
+public import Mathlib.Topology.VectorBundle.ContinuousAlternatingMap
 
 /-! # The bundle of alternating maps between `C^n` vector bundles over the same base space is `C^n`
 

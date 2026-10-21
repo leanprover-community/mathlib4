@@ -10,6 +10,7 @@ public import Mathlib.Condensed.Equivalence
 public import Mathlib.Condensed.Module
 
 import Mathlib.CategoryTheory.Sites.Coherent.LocallySurjective
+
 /-!
 
 # Epimorphisms of condensed objects
