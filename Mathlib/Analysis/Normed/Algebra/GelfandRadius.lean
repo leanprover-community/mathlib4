@@ -93,7 +93,7 @@ theorem gelfandRadius_zero : gelfandRadius (0 : A) = 0 :=
 
 @[simp]
 theorem gelfandRadius_neg (a : A) : gelfandRadius (-a) = gelfandRadius a :=
-  gelfandRadius_eq_of_norm_pow (by simp)
+  tendsto_nhds_unique (by simpa using tendsto_gelfandRadius (-a)) (tendsto_gelfandRadius a)
 
 theorem gelfandRadius_smul (c : 𝕜) (a : A) :
     gelfandRadius (c • a) = ‖c‖ * gelfandRadius a := by
