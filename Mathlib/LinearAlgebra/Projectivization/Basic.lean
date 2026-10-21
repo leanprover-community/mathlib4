@@ -127,8 +127,7 @@ theorem mk_eq_mk_iff' (v w : V) (hv : v ≠ 0) (hw : w ≠ 0) :
 for the action of `Kˣ` on `{ v : V // v ≠ 0 }`. -/
 theorem mk'_eq_mk'_iff (v w : { v : V // v ≠ 0 }) :
     mk' K v = mk' K w ↔ ∃ a : Kˣ, a • w = v := by
-  rw [mk'_eq_mk, mk'_eq_mk, mk_eq_mk_iff]
-  simp only [Subtype.ext_iff, Units.smul_coe]
+  simp only [mk'_eq_mk, mk_eq_mk_iff, Subtype.ext_iff, Units.smul_coe]
 
 /-- The saturation of a set of nonzero vectors under `mk'` is the union of its translates by the
 units of `K`. -/
