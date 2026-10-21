@@ -798,7 +798,7 @@ lemma _root_.Irreducible.not_isRoot_of_natDegree_ne_one
 @[deprecated "Use `Irreducible.not_isRoot_of_natDegree_ne_one` instead."
 (since := "2026-09-27")]
 lemma _root_.Irreducible.isRoot_eq_bot_of_natDegree_ne_one
-    (hi : Irreducible p) (hdeg : p.natDegree ≠ 1) : p.IsRoot = ⊥ :=
+    (hi : Irreducible p) (hdeg : p.natDegree ≠ 1) : p.IsRoot = ⊥ := by
   simpa [funext_iff] using not_isRoot_of_natDegree_ne_one hi hdeg
 
 lemma _root_.Irreducible.subsingleton_isRoot
