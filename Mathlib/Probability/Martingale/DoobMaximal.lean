@@ -29,6 +29,9 @@ for all `ε : ℝ≥0`, we have `ε • μ {ε ≤ f* n} ≤ ∫ ω in {ε ≤ f
 * `MeasureTheory.maximal_ineq_Lp`: Doob's maximal inequality for Lp norms:
 for all `p > 1`, we have `eLpNorm' (f* n) p μ ≤ (p/(p-1)) * eLpNorm' (f n) p μ`
 
+### References
+
+This material is included in many probability textbooks, such as [durrett_probability].
 -/
 
 public section
