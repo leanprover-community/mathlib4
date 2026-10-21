@@ -48,8 +48,9 @@ theorem motzkin_polynomial_nonneg (r : Fin 2 → K) : 0 ≤ motzkin_polynomial.e
 
 /-- If the Motzkin polynomial is expressible as a polynomial sum of squares ∑ gᵢ², then the degree
   of each gᵢ is at most three. -/
-private lemma motzkin_polynomial_ne_sos_aux₁ {ι : Type*} {s : Finset ι} {g : ι → MvPolynomial (Fin 2) K}
-    (h : motzkin_polynomial = ∑ i ∈ s, g i ^ 2) : ∀ i ∈ s, (g i).totalDegree ≤ 3 := by
+private lemma motzkin_polynomial_ne_sos_aux₁ {ι : Type*} {s : Finset ι}
+    {g : ι → MvPolynomial (Fin 2) K} (h : motzkin_polynomial = ∑ i ∈ s, g i ^ 2) :
+    ∀ i ∈ s, (g i).totalDegree ≤ 3 := by
   intro i hi
   -- Let d be the maximum degree among gᵢ's. Assume d > 3.
   set d := s.sup fun i ↦ (g i).totalDegree with hd
