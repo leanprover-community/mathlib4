@@ -110,27 +110,23 @@ def Config.mkAllRoots (cfg : Config) (pkg : Lake.Package)
     return { name, lib, realLibSrcDir := ← IO.FS.realPath lib.srcDir : Root }
   let libsMsg := s!"This package contains the libraries:\
     {String.join <| pkg.leanLibs.toList.map (s!"\n  {·.name.toString (escape := false)}")}"
-  for name in cfg.extraRootModules do
-    if let some only := only? then
-      unless only.contains (name.toString (escape := false)) do
-        continue
-    -- Note that `isLocalModule` doesn't actually check that a module exists, just that the name
-    -- *could* be a module built by this library. This includes modules not imported in the root.
-    let some lib := pkg.leanLibs.findRev? (·.isLocalModule name)
-      | throw <| IO.userError s!"Could not find a `lean_lib` in the package {pkg.prettyName} \
-          in which the extra root `{name}` could live. {libsMsg}"
-    roots := roots.push { name, lib, realLibSrcDir := ← IO.FS.realPath lib.srcDir }
-  -- Error on any unfound `only`s
   if let some only := only? then
     for root in only do
       unless roots.any (·.name.toString (escape := false) == root) do
-        -- Add `only`s that are roots of libs but not libs
-        let some (name, lib) := pkg.leanLibs.findSomeRev? fun lib => do
-            let rootName ← lib.roots.find? (·.toString (escape := false) == root)
-            some (rootName, lib)
+        let name := root.toName
+        -- Add `only`s that are in libs but are not libs
+        let some lib := pkg.leanLibs.findRev? (·.isLocalModule name)
           | throw <| IO.userError s!"Could not find the root `{only}` among the libraries of the \
               package {pkg.prettyName}. {libsMsg}"
         roots := roots.push { name, lib, realLibSrcDir := ← IO.FS.realPath lib.srcDir }
+  else
+    for name in cfg.extraRootModules do
+      -- Note that `isLocalModule` doesn't actually check that a module exists, just that the name
+      -- *could* be a module built by this library. This includes modules not imported in the root.
+      let some lib := pkg.leanLibs.findRev? (·.isLocalModule name)
+        | throw <| IO.userError s!"Could not find a `lean_lib` in the package {pkg.prettyName} \
+            in which the extra root `{name}` from the `mk_all` config could live. {libsMsg}"
+      roots := roots.push { name, lib, realLibSrcDir := ← IO.FS.realPath lib.srcDir }
   return roots.qsort (·.lt ·)
 
 /-- Handles a `Root` and updates the associated file, printing logs to stdout. Returns `true` if it
