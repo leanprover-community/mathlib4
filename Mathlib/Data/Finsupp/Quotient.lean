@@ -8,9 +8,6 @@ module
 public import Mathlib.Data.Finsupp.Defs
 public import Mathlib.Data.Set.Finite.Lattice
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Lifts a `Finsupp` from an underlying type to a `Finsupp` on a quotient
 -/
