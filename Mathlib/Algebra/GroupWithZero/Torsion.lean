@@ -5,8 +5,12 @@ Authors: Kenny Lau, Xavier Roblot
 -/
 module
 
-import Mathlib.Algebra.Regular.Basic
 public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
+
+import Mathlib.Algebra.Regular.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Torsion-free monoids with zero

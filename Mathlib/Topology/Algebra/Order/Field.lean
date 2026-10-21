@@ -6,9 +6,13 @@ Authors: Benjamin Davidson, Devon Tuma, Eric Rodriguez, Oliver Nash
 module
 
 public import Mathlib.Order.Filter.AtTopBot.Field
-import Mathlib.Tactic.NormNum.Basic
 public import Mathlib.Topology.Algebra.Field
 public import Mathlib.Topology.Algebra.Order.Group
+
+import Mathlib.Tactic.NormNum.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Topologies on linear ordered fields

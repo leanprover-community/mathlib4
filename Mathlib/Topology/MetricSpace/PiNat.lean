@@ -6,10 +6,11 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Normed.Group.FunctionSeries
-import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
 public import Mathlib.Topology.MetricSpace.HausdorffDistance
-import Mathlib.Topology.Order.ProjIcc
 public import Mathlib.Topology.UnitInterval
+
+import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
+import Mathlib.Topology.Order.ProjIcc
 
 /-!
 # Topological study of spaces `Π (n : ℕ), E n`
@@ -56,6 +57,8 @@ in general), and `ι` is countable.
   continuous functions to metric spaces, can be embedded inside their product.
 
 -/
+
+open scoped Finset
 
 @[expose] public section
 
@@ -852,7 +855,7 @@ protected def pseudoEMetricSpace : PseudoEMetricSpace (∀ i, F i) where
         ((tendsto_order.1 <| ENNReal.tendsto_tsum_compl_atTop_zero
           (tsum_geometric_encode_lt_top ENNReal.one_half_lt_one).ne).2 _
             <| by simpa using hε.ne').exists
-      obtain ⟨δ, δpos, hδ⟩ : ∃ δ, 0 < δ ∧ δ * K.card < ε / 2 :=
+      obtain ⟨δ, δpos, hδ⟩ : ∃ δ, 0 < δ ∧ δ * #K < ε / 2 :=
         ENNReal.exists_pos_mul_lt (by simp) (by simpa using hε.ne')
       apply @mem_iInf_of_iInter _ _ _ _ _ K.finite_toSet fun i =>
           {p : (∀ i : ι, F i) × ∀ i : ι, F i | edist (p.fst i) (p.snd i) < δ}

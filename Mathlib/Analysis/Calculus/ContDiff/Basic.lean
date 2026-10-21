@@ -19,7 +19,7 @@ constants, products, composition with linear maps, etc.
 derivative, differentiability, higher derivative, `C^n`, multilinear, Taylor series, formal series
 -/
 
-public noncomputable section
+public section
 
 open Set Fin Filter Function
 
@@ -57,9 +57,6 @@ theorem iteratedFDerivWithin_fun_zero {i : ℕ} :
     iteratedFDerivWithin 𝕜 i (fun (_ : E) ↦ (0 : F)) s = 0 := by
   apply iteratedFDerivWithin_zero
 
-@[deprecated (since := "2026-03-18")]
-alias iteratedFDerivWithin_zero_fun := iteratedFDerivWithin_fun_zero
-
 @[simp]
 theorem ftaylorSeriesWithin_zero :
     ftaylorSeriesWithin 𝕜 (0 : E → F) = 0 := by
@@ -80,8 +77,6 @@ theorem iteratedFDeriv_zero {n : ℕ} :
 theorem iteratedFDeriv_fun_zero {n : ℕ} :
     iteratedFDeriv 𝕜 n (fun (_ : E) ↦ (0 : F)) = 0 := by
   apply iteratedFDeriv_zero
-
-@[deprecated (since := "2026-03-18")] alias iteratedFDeriv_zero_fun := iteratedFDeriv_fun_zero
 
 @[simp]
 theorem ftaylorSeries_zero :
@@ -351,7 +346,6 @@ theorem ContinuousLinearEquiv.comp_contDiff_iff (e : F ≃L[𝕜] G) :
     ContDiff 𝕜 n (e ∘ f) ↔ ContDiff 𝕜 n f := by
   simp only [← contDiffOn_univ, e.comp_contDiffOn_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f` admits a Taylor series `p` in a set `s`, and `g` is affine, then `f ∘ g` admits a Taylor
 series in `g ⁻¹' s`, whose `k`-th term at `x` is given
 by `p (g x) k (g.contLinear v₁, ..., g.contLinear vₖ)` . -/
@@ -372,7 +366,7 @@ theorem HasFTaylorSeriesUpToOn.comp_continuousAffineMap
   · intro m hm x hx
     convert!
       (hA m).hasFDerivAt.comp_hasFDerivWithinAt x
-        ((hf.fderivWithin m hm (g x) hx).comp x g.hasFDerivWithinAt (Subset.refl _))
+        ((hf.fderivWithin m hm (g x) hx).comp x g.hasFDerivWithinAt (mapsTo_preimage ..))
     ext y v
     change p (g x) (Nat.succ m) (g.contLinear ∘ cons y v)
       = p (g x) m.succ (cons (g.contLinear y) (g.contLinear ∘ v))

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Functor.CurryingFour
 public import Mathlib.CategoryTheory.Monoidal.Functor
+
 /-!
 
 # Constructing monoidal categories and monoidal functors from multifunctors
@@ -205,14 +206,12 @@ abbrev curriedTensorPostPost (F : C ⥤ D) : C ⥤ C ⥤ C ⥤ D :=
 abbrev curriedTensorPostPost' (F : C ⥤ D) : C ⥤ C ⥤ C ⥤ D :=
   bifunctorComp₂₃ (curriedTensorPost F) (curriedTensor C)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism of bifunctors `F - ⊗ F - ≅ F (- ⊗ -)`, given a monoidal functor `F`. -/
 @[simps!]
 def Functor.curriedTensorPreIsoPost (F : C ⥤ D) [F.Monoidal] :
     curriedTensorPre F ≅ curriedTensorPost F :=
   NatIso.ofComponents (fun _ ↦ NatIso.ofComponents (fun _ ↦ Monoidal.μIso F _ _))
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The functor which associates to a functor `F` the bifunctor `F - ⊗ F -`. -/
 @[simps]
 def curriedTensorPreFunctor : (C ⥤ D) ⥤ C ⥤ C ⥤ D where
@@ -239,7 +238,7 @@ namespace Functor.LaxMonoidal
 
 ## Lax monoidal functors
 
-Given a unit morphism `ε : 𝟙_ D ⟶ F.obj (𝟙_ C))` and a tensorator `μ : F - ⊗ F - ⟶ F (- ⊗ -)`
+Given a unit morphism `ε : 𝟙_ D ⟶ F.obj (𝟙_ C)` and a tensorator `μ : F - ⊗ F - ⟶ F (- ⊗ -)`
 such that the diagrams below commute, we define
 `CategoryTheory.Functor.LaxMonoidal.ofBifunctor : F.LaxMonoidal`.
 
@@ -409,7 +408,7 @@ variable {F : C ⥤ D}
       topMapᵣ ε ≫ ((flipFunctor _ _ _).map μ).app (𝟙_ C) ≫ bottomMapᵣ F)
 
 /--
-`F` is lax monoidal given a unit morphism `ε : 𝟙_ D ⟶ F.obj (𝟙_ C))` and a tensorator
+`F` is lax monoidal given a unit morphism `ε : 𝟙_ D ⟶ F.obj (𝟙_ C)` and a tensorator
 `μ : F - ⊗ F - ⟶ F (- ⊗ -)` as a natural transformation between bifunctors, satisfying the
 relevant compatibilities.
 -/
@@ -432,7 +431,7 @@ namespace OplaxMonoidal
 
 ## Oplax monoidal functors
 
-Given a counit morphism `η : F.obj (𝟙_ C)) ⟶ 𝟙_ D` and a tensorator `δ : F (- ⊗ -) ⟶ F - ⊗ F -`
+Given a counit morphism `η : F.obj (𝟙_ C) ⟶ 𝟙_ D` and a tensorator `δ : F (- ⊗ -) ⟶ F - ⊗ F -`
 such that the diagrams below commute, we define
 `CategoryTheory.Functor.OplaxMonoidal.ofBifunctor : F.OplaxMonoidal`.
 

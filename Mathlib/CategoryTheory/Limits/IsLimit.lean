@@ -482,8 +482,7 @@ a cocone on `F` with cone point `W`. -/]
 def homIso (h : IsLimit t) (W : C) : ULift.{u₁} (W ⟶ t.pt : Type v₃) ≅ (const J).obj W ⟶ F :=
   Equiv.toIso (Equiv.ulift.trans h.homEquiv)
 
--- TODO: `to_dual` doesn't yet know that it shouldn't translate the category on `Type _`.
-@[simp]
+@[to_dual (attr := simp)]
 theorem homIso_hom (h : IsLimit t) {W : C} :
     (IsLimit.homIso h W).hom = ↾fun f ↦ (t.extend f.down).π :=
   rfl
@@ -496,6 +495,9 @@ def natIso (h : IsLimit t) : yoneda.obj t.pt ⋙ uliftFunctor.{u₁} ≅ F.cones
 
 /-- Another, more explicit, formulation of the universal property of a limit cone.
 See also `homIso`. -/
+@[to_dual
+/-- Another, more explicit, formulation of the universal property of a colimit cocone.
+See also `homIso`. -/]
 def homIso' (h : IsLimit t) (W : C) :
     (ULift.{u₁} (W ⟶ t.pt : Type v₃)) ≅
       { p : ∀ j, W ⟶ F.obj j // ∀ {j j'} (f : j ⟶ j'), p j ≫ F.map f = p j' } :=
@@ -535,10 +537,13 @@ def mapConeEquiv {D : Type u₄} [Category.{v₄} D] {K : J ⥤ C} {F G : C ⥤ 
   apply postcomposeInvEquiv (isoWhiskerLeft K h :) (mapCone G c) _
   apply t.ofIsoLimit (postcomposeWhiskerLeftMapCone h.symm c).symm
 
--- TODO: `to_dual` doesn't yet know that it shouldn't translate the category on `Type _`.
 /-- A cone is a limit cone exactly if
 there is a unique cone morphism from any other cone.
 -/
+@[to_dual
+/-- A cocone is a colimit cocone exactly if
+there is a unique cocone morphism to any other cocone.
+-/]
 def isoUniqueConeMorphism {t : Cone F} :
     IsLimit t ≅ ∀ s, Unique (s ⟶ t) where
   hom := ↾fun h s ↦
@@ -636,42 +641,11 @@ namespace IsColimit
 
 variable {t : Cocone F}
 
-
-@[simp]
-theorem homIso_hom (h : IsColimit t) {W : C} :
-    (IsColimit.homIso h W).hom = ↾fun f ↦ (t.extend f.down).ι :=
-  rfl
-
 set_option backward.defeqAttrib.useBackward true in
 /-- The colimit of `F` represents the functor taking `W` to
   the set of cocones on `F` with cone point `W`. -/
 def natIso (h : IsColimit t) : coyoneda.obj (op t.pt) ⋙ uliftFunctor.{u₁} ≅ F.cocones :=
   NatIso.ofComponents (IsColimit.homIso h)
-
-/-- Another, more explicit, formulation of the universal property of a colimit cocone.
-See also `homIso`. -/
-def homIso' (h : IsColimit t) (W : C) :
-    (ULift.{u₁} (t.pt ⟶ W : Type v₃)) ≅
-      { p : ∀ j, F.obj j ⟶ W // ∀ {j j' : J} (f : j ⟶ j'), F.map f ≫ p j' = p j } :=
-  h.homIso W ≪≫
-    { hom := ↾fun ι =>
-        ⟨fun j => ι.app j, fun {j} {j'} f => by convert! ← ι.naturality f; apply comp_id⟩
-      inv := ↾fun p =>
-        { app := fun j => p.1 j
-          naturality := fun j j' f => by dsimp; rw [comp_id]; exact p.2 f } }
-
-
-/-- A cocone is a colimit cocone exactly if
-there is a unique cocone morphism from any other cocone.
--/
-def isoUniqueCoconeMorphism {t : Cocone F} :
-    IsColimit t ≅ ∀ s, Unique (t ⟶ s) where
-  hom := ↾fun h s ↦
-    { default := h.descCoconeMorphism s
-      uniq := fun _ => h.uniq_cocone_morphism }
-  inv := ↾fun h ↦
-    { desc := fun s => (h s).default.hom
-      uniq := fun s f w => congrArg CoconeMorphism.hom ((h s).uniq ⟨f, w⟩) }
 
 namespace OfNatIso
 

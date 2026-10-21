@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Algebra.DirectSum.LinearMap
 public import Mathlib.Algebra.Lie.Weights.Cartan
+public import Mathlib.Data.Int.Interval
+
 import Mathlib.Algebra.Order.Group.Pointwise.Interval
 import Mathlib.RingTheory.Finiteness.Nilpotent
-public import Mathlib.Data.Int.Interval
 
 /-!
 # Chains of roots and weights
@@ -89,7 +90,7 @@ lemma exists_genWeightSpace_smul_add_eq_bot :
   (Nat.eventually_pos.and <| eventually_genWeightSpace_smul_add_eq_bot M χ₁ χ₂ hχ₁).exists
 
 lemma exists₂_genWeightSpace_smul_add_eq_bot :
-    ∃ᵉ (p < (0 : ℤ)) (q > (0 : ℤ)),
+    ∃ p < (0 : ℤ), ∃ q > (0 : ℤ),
       genWeightSpace M (p • χ₁ + χ₂) = ⊥ ∧
       genWeightSpace M (q • χ₁ + χ₂) = ⊥ := by
   obtain ⟨q, hq₀, hq⟩ := exists_genWeightSpace_smul_add_eq_bot M χ₁ χ₂ hχ₁
@@ -147,11 +148,8 @@ lemma lie_mem_genWeightSpaceChain_of_genWeightSpace_eq_bot_right [LieRing.IsNilp
     obtain ⟨k, hk⟩ := k
     suffices genWeightSpace M ((k + 1) • α + χ) ≤ genWeightSpaceChain M α χ p q by
       apply this
-      -- was `simpa using! [...]` and very slow
-      -- (https://github.com/leanprover-community/mathlib4/issues/19751)
-      simpa only [zsmul_eq_mul, Int.cast_add, Pi.intCast_def, Int.cast_one] using!
-        (rootSpaceWeightSpaceProduct R L H M α (k • α + χ) ((k + 1) • α + χ)
-            (by rw [add_smul]; abel) (⟨x, hx⟩ ⊗ₜ ⟨z, hz⟩)).property
+      simpa using! (rootSpaceWeightSpaceProduct R L H M α (k • α + χ) ((k + 1) • α + χ)
+        (by rw [add_smul]; abel) (⟨x, hx⟩ ⊗ₜ ⟨z, hz⟩)).property
     rw [genWeightSpaceChain]
     rcases eq_or_ne (k + 1) q with rfl | hk'; · simp only [hq, bot_le]
     replace hk' : k + 1 ∈ Ioo p q := ⟨by linarith [hk.1], lt_of_le_of_ne hk.2 hk'⟩

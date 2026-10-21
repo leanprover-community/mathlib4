@@ -5,10 +5,14 @@ Authors: Andrew Yang
 -/
 module
 
-import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
-import Mathlib.RingTheory.LocalRing.Module
 public import Mathlib.RingTheory.Smooth.Basic
 public import Mathlib.RingTheory.TensorProduct.Free
+
+import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
+import Mathlib.RingTheory.LocalRing.Module
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Formally smooth local algebras

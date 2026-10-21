@@ -5,8 +5,8 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
 public import Mathlib.Lean.Meta.RefinedDiscrTree.Initialize
+public import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
 
 /-!
 # Refined discrimination trees
@@ -109,7 +109,7 @@ variable {α : Type}
 
 /-- Creates the core context used for initializing a tree using the current context. -/
 private def withTreeCtx (ctx : Core.Context) : Core.Context :=
-  { ctx with maxHeartbeats := 0, diag := getDiag ctx.options }
+  { ctx with maxHeartbeats := 0 }
 
 /-- Returns candidates from all imported modules that match the expression. -/
 def findImportMatches
