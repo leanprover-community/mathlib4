@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.CharP.Frobenius
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Results about characteristic p reduced rings
 -/

@@ -7,9 +7,9 @@ module
 
 public import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
 
+import Mathlib.Algebra.Group.Nat.Range
 import Mathlib.Data.Nat.Choose.Dvd
 import Mathlib.RingTheory.Norm.Transitivity
-import Mathlib.Algebra.Group.Nat.Range
 
 /-!
 # Eisenstein polynomials

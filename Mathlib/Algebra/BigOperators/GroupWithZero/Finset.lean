@@ -10,6 +10,9 @@ public import Mathlib.Algebra.GroupWithZero.Units.Basic
 public import Mathlib.Algebra.Notation.Indicator
 public import Mathlib.Data.Set.Lattice.Indexed
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Big operators on a finset in groups with zero
 

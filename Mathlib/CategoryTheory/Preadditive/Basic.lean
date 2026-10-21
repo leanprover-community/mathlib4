@@ -5,12 +5,12 @@ Authors: Markus Himmel, Jakob von Raumer
 -/
 module
 
-public import Mathlib.Algebra.Group.TransferInstance
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Algebra.Group.Action.Units
+public import Mathlib.Algebra.Group.TransferInstance
+public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.CategoryTheory.Endomorphism
 public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
-public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
-public import Mathlib.Algebra.Module.NatInt
 
 /-!
 # Preadditive categories
