@@ -126,7 +126,7 @@ protected theorem MeasureTheory.AEStronglyMeasurable.prod_swap [SFinite μ]
   by_cases hν : SFinite ν
   · rw [← prod_swap] at hf
     exact hf.comp_measurable measurable_swap
-  · simp [Measure.prod, hν]
+  · simp [Measure.prod_eq_zero_of_not_sfinite, hν]
 
 theorem MeasureTheory.AEStronglyMeasurable.comp_fst {γ} [TopologicalSpace γ] {f : α → γ}
     (hf : AEStronglyMeasurable f μ) : AEStronglyMeasurable (fun z : α × β => f z.1) (μ.prod ν) :=
@@ -442,7 +442,7 @@ theorem continuous_integral_integral :
   of the right-hand side is integrable. -/
 theorem integral_prod (f : α × β → E) (hf : Integrable f (μ.prod ν)) :
     ∫ z, f z ∂μ.prod ν = ∫ x, ∫ y, f (x, y) ∂ν ∂μ := by
-  by_cases hE : CompleteSpace E; swap; · simp only [integral, dite_eq_right hE]
+  by_cases hE : CompleteSpace E; swap; · simp only [integral_of_not_completeSpace hE]
   revert f
   apply Integrable.induction
   · intro c s hs h2s
@@ -526,7 +526,7 @@ theorem integral_prod_bilin {E F G 𝕜 : Type*} [RCLike 𝕜]
 
 theorem integral_prod_smul {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] (f : α → 𝕜) (g : β → E) :
     ∫ z, f z.1 • g z.2 ∂μ.prod ν = (∫ x, f x ∂μ) • ∫ y, g y ∂ν := by
-  by_cases hE : CompleteSpace E; swap; · simp [integral, hE]
+  by_cases hE : CompleteSpace E; swap; · simp [integral_of_not_completeSpace hE]
   by_cases h : Integrable (fun z : α × β => f z.1 • g z.2) (μ.prod ν)
   · rw [integral_prod _ h]
     simp_rw [integral_smul, integral_smul_const]

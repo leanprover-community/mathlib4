@@ -135,7 +135,7 @@ notation3 "∫ᶜ "(...)" in " γ ", "r:67:(scoped ω => curveIntegral ω γ) =>
 thus it is defined as zero whenever the codomain is not a complete space. -/
 theorem curveIntegral_of_not_completeSpace (h : ¬CompleteSpace F) (ω : E → E →L[𝕜] F)
     (γ : Path a b) : ∫ᶜ x in γ, ω x = 0 := by
-  simp [curveIntegral, intervalIntegral, integral, h]
+  simp [curveIntegral, intervalIntegral, integral_of_not_completeSpace, h]
 
 theorem curveIntegralFun_def [NormedSpace ℝ E] (ω : E → E →L[𝕜] F) (γ : Path a b) (t : ℝ) :
     curveIntegralFun ω γ t = ω (γ.extend t) (derivWithin γ.extend I t) := by

@@ -176,6 +176,9 @@ lemma prod_eq_of_sfinite (μ : Measure α) (ν : Measure β) [hν : SFinite ν] 
     μ.prod ν = bind μ (fun x : α => map (Prod.mk x) ν) := by
   simp [Measure.prod, hν]
 
+lemma prod_eq_zero_of_not_sfinite (hν : ¬ SFinite ν) : μ.prod ν = 0 := by
+  simp [Measure.prod, hν]
+
 instance prod.measureSpace {α β} [MeasureSpace α] [MeasureSpace β] : MeasureSpace (α × β) where
   volume := volume.prod volume
 
