@@ -6,6 +6,7 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.LinearAlgebra.RootSystem.WeylGroup
+
 import Mathlib.RepresentationTheory.Submodule
 
 /-!

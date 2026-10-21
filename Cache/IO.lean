@@ -3,9 +3,14 @@ Copyright (c) 2023 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Jon Eugster
 -/
-import Cache.Lean
-import Lake.Load.Toml
+module
+
+public import Cache.Lean
+public import Lake.Load.Toml
+
 import Batteries.Tactic.OpenPrivate
+
+public section
 
 variable {α : Type}
 
@@ -116,7 +121,7 @@ def nullDevice : String := if System.Platform.isWindows then "NUL" else "/dev/nu
 def LAKEPACKAGESDIR : FilePath :=
   ".lake" / "packages"
 
-def getCurl : IO String := do
+def getCurl : BaseIO String := do
   return if (← CURLBIN.pathExists) then CURLBIN.toString else "curl"
 
 /-- Path to the `leantar` binary bundled with the Lean toolchain.
@@ -128,7 +133,7 @@ private initialize leantarSysrootBin : String ← do
     if ← path.pathExists then return path.toString
   throw <| IO.userError "leantar not found in Lean sysroot. This toolchain may predate nightly-2026-03-09."
 
-def getLeanTar : IO String := return leantarSysrootBin
+def getLeanTar : BaseIO String := return leantarSysrootBin
 
 /-- Spawn a `leantar` process for decompression, writing the given JSON config to its stdin.
     Returns the process exit code. -/
@@ -170,7 +175,7 @@ structure CacheM.Context where
 abbrev CacheM := ReaderT CacheM.Context IO
 
 /-- Whether this is running on Mathlib repo or not -/
-def isMathlibRoot : IO Bool :=
+def isMathlibRoot : BaseIO Bool :=
   FilePath.mk "Mathlib" |>.pathExists
 
 section
@@ -286,7 +291,7 @@ def validateCurl : IO Bool := do
 
 /-- Recursively gets all files from a directory with a certain extension -/
 partial def getFilesWithExtension
-  (fp : FilePath) (extension : String) (acc : Array FilePath := #[]) :
+    (fp : FilePath) (extension : String) (acc : Array FilePath := #[]) :
     IO <| Array FilePath := do
   if ← fp.isDir then
     (← fp.readDir).foldlM (fun acc dir => getFilesWithExtension dir.path extension acc) acc
@@ -304,7 +309,7 @@ namespace ModuleHashMap
 If `keep` is true, the result will contain the entries that do exist;
 if `keep` is false, the result will contain the entries that do not exist.
 -/
-def filterExists (hashMap : ModuleHashMap) (keep : Bool) : IO ModuleHashMap :=
+def filterExists (hashMap : ModuleHashMap) (keep : Bool) : BaseIO ModuleHashMap :=
   hashMap.foldM (init := ∅) fun acc mod hash => do
     let exist ← (CACHEDIR / hash.asLTar).pathExists
     let add := if keep then exist else !exist
@@ -359,7 +364,7 @@ def mkBuildPaths (mod : Name) : CacheM <| List (FilePath × Bool) := do
     (packageDir / LIBDIR / path.withExtension "extra", false)]
 
 /-- Check that all required build files exist. -/
-def allExist (paths : List (FilePath × Bool)) : IO Bool := do
+def allExist (paths : List (FilePath × Bool)) : BaseIO Bool := do
   for (path, required) in paths do
     if required then if !(← path.pathExists) then return false
   pure true

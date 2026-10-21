@@ -219,7 +219,7 @@ lemma natDegree_eraseLead (h : f.nextCoeff ≠ 0) : f.eraseLead.natDegree = f.na
   have := natDegree_pos_of_nextCoeff_ne_zero h
   refine f.eraseLead_natDegree_le.antisymm <| le_natDegree_of_ne_zero ?_
   rwa [eraseLead_coeff_of_ne _ (tsub_lt_self _ _).ne, ← nextCoeff_of_natDegree_pos]
-  all_goals positivity
+  positivity
 
 lemma natDegree_eraseLead_add_one (h : f.nextCoeff ≠ 0) :
     f.eraseLead.natDegree + 1 = f.natDegree := by
@@ -323,13 +323,13 @@ theorem induction_with_natDegree_le (motive : R[X] → Prop) (N : ℕ) (zero : m
       motive f → motive g → motive (f + g)) (f : R[X]) (df : f.natDegree ≤ N) : motive f := by
   induction hf : #f.support generalizing f with
   | zero =>
-    convert! zero
+    convert zero
     simpa [support_eq_empty, card_eq_zero] using hf
   | succ c hc =>
     rw [← eraseLead_add_C_mul_X_pow f]
     cases c
     · convert C_mul_pow f.natDegree f.leadingCoeff ?_ df
-      · convert! zero_add (C (leadingCoeff f) * X ^ f.natDegree)
+      · convert zero_add (C (leadingCoeff f) * X ^ f.natDegree)
         rw [← card_support_eq_zero, card_support_eraseLead' hf]
       · rw [leadingCoeff_ne_zero, Ne, ← card_support_eq_zero, hf]
         exact zero_ne_one.symm

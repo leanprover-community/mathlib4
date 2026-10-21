@@ -5,9 +5,9 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.GroupTheory.GroupAction.Pointwise
 public import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 public import Mathlib.Analysis.Normed.Module.Seminorm.Norm
+public import Mathlib.GroupTheory.GroupAction.Pointwise
 
 /-!
 # Von Neumann Boundedness

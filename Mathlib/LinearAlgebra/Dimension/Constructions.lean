@@ -62,7 +62,7 @@ theorem LinearIndependent.sumElim_of_quotient
 theorem LinearIndepOn.union_of_quotient {s t : Set ι} {f : ι → M} (hs : LinearIndepOn R f s)
     (ht : LinearIndepOn R (mkQ (span R (f '' s)) ∘ f) t) : LinearIndepOn R f (s ∪ t) := by
   apply hs.union ht.of_comp
-  convert! (Submodule.range_ker_disjoint ht).symm
+  convert (Submodule.range_ker_disjoint ht).symm
   · simp
   aesop
 
@@ -330,7 +330,6 @@ variable {R}
 -- TODO: merge with the `Finrank` content
 /-- An `n`-dimensional `R`-vector space is equivalent to `Fin n → R`. -/
 def finDimVectorspaceEquiv (n : ℕ) (hn : Module.rank R M = n) : M ≃ₗ[R] Fin n → R := by
-  haveI := nontrivial_of_invariantBasisNumber R
   have : Cardinal.lift.{u} (n : Cardinal.{v}) = Cardinal.lift.{v} (n : Cardinal.{u}) := by simp
   have hn := Cardinal.lift_inj.{v, u}.2 hn
   rw [this] at hn
@@ -443,6 +442,11 @@ protected noncomputable def Set.finrank (s : Set M) : ℕ :=
 theorem finrank_span_le_card (s : Set M) [Fintype s] : finrank R (span R s) ≤ s.toFinset.card :=
   finrank_le_of_rank_le (by simpa using rank_span_le (R := R) s)
 
+theorem finrank_span_le_ncard (s : Set M) (hs : s.Finite) :
+    finrank R (Submodule.span R s) ≤ s.ncard :=
+  have := hs.fintype
+  Set.ncard_eq_toFinset_card' s ▸ finrank_span_le_card s
+
 theorem finrank_span_finset_le_card (s : Finset M) : (s : Set M).finrank R ≤ s.card :=
   calc
     (s : Set M).finrank R ≤ (s : Set M).toFinset.card := finrank_span_le_card (M := M) s
@@ -455,7 +459,7 @@ theorem finrank_range_le_card {ι : Type*} [Fintype ι] (b : ι → M) :
   rw [Set.toFinset_range]
   exact Finset.card_image_le
 
-theorem finrank_span_eq_card [Nontrivial R] {ι : Type*} [Fintype ι] {b : ι → M}
+theorem finrank_span_eq_card {ι : Type*} [Fintype ι] {b : ι → M}
     (hb : LinearIndependent R b) :
     finrank R (span R (Set.range b)) = Fintype.card ι :=
   finrank_eq_of_rank_eq
@@ -464,16 +468,18 @@ theorem finrank_span_eq_card [Nontrivial R] {ι : Type*} [Fintype ι] {b : ι �
       rwa [← lift_inj, mk_range_eq_of_injective hb.injective, Cardinal.mk_fintype, lift_natCast,
         lift_eq_nat_iff] at this)
 
+theorem finrank_span_set_eq_ncard {s : Set M} (hs : LinearIndepOn R id s) :
+    finrank R (span R s) = s.ncard := by
+  rw [finrank, rank_span_set hs]
+  rfl
+
 theorem finrank_span_set_eq_card {s : Set M} [Fintype s] (hs : LinearIndepOn R id s) :
-    finrank R (span R s) = s.toFinset.card :=
-  finrank_eq_of_rank_eq
-    (by
-      have : Module.rank R (span R s) = #s := rank_span_set hs
-      rwa [Cardinal.mk_fintype, ← Set.toFinset_card] at this)
+    finrank R (span R s) = s.toFinset.card := by
+  rw [finrank_span_set_eq_ncard hs, Set.ncard_eq_toFinset_card']
 
 theorem finrank_span_finset_eq_card {s : Finset M} (hs : LinearIndepOn R id (s : Set M)) :
     finrank R (span R (s : Set M)) = s.card := by
-  convert! finrank_span_set_eq_card (s := (s : Set M)) hs
+  convert finrank_span_set_eq_card (s := (s : Set M)) hs
   ext
   simp
 
@@ -482,18 +488,28 @@ theorem span_lt_of_subset_of_card_lt_finrank {s : Set M} [Fintype s] {t : Submod
   lt_of_le_of_finrank_lt_finrank (span_le.mpr subset)
     (lt_of_le_of_lt (finrank_span_le_card _) card_lt)
 
+theorem span_lt_of_subset_of_ncard_lt_finrank {s : Set M} (hs : s.Finite) {t : Submodule R M}
+    (subset : s ⊆ t) (card_lt : s.ncard < finrank R t) : Submodule.span R s < t :=
+  have := hs.fintype
+  span_lt_of_subset_of_card_lt_finrank subset (Set.ncard_eq_toFinset_card' s ▸ card_lt)
+
 theorem span_lt_top_of_card_lt_finrank {s : Set M} [Fintype s]
     (card_lt : s.toFinset.card < finrank R M) : span R s < ⊤ :=
   lt_top_of_finrank_lt_finrank (lt_of_le_of_lt (finrank_span_le_card _) card_lt)
+
+theorem span_lt_top_of_ncard_lt_finrank {s : Set M} (hs : s.Finite)
+    (card_lt : s.ncard < finrank R M) : Submodule.span R s < ⊤ :=
+  have := hs.fintype
+  span_lt_top_of_card_lt_finrank (Set.ncard_eq_toFinset_card' s ▸ card_lt)
 
 lemma finrank_le_of_span_eq_top {ι : Type*} [Fintype ι] {v : ι → M}
     (hv : Submodule.span R (Set.range v) = ⊤) : finrank R M ≤ Fintype.card ι := by
   classical
   rw [← finrank_top, ← hv]
-  exact (finrank_span_le_card _).trans (by convert! Fintype.card_range_le v; rw [Set.toFinset_card])
+  exact (finrank_span_le_card _).trans (by convert Fintype.card_range_le v; rw [Set.toFinset_card])
 
 @[simp]
-lemma Pi.dim_spanSubset [Finite ι] [Nontrivial R] {s : Set ι} :
+lemma Pi.dim_spanSubset [Finite ι] {s : Set ι} :
     Module.finrank R (Pi.spanSubset R s) = s.ncard := by
   classical
   have := Fintype.ofFinite ι
