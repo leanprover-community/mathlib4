@@ -6,8 +6,12 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
+
 import Mathlib.Analysis.LocallyConvex.Barrelled
 import Mathlib.Topology.Baire.CompleteMetrizable
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The Banach-Steinhaus theorem: Uniform Boundedness Principle

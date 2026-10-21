@@ -5,11 +5,15 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 module
 
-import Mathlib.Algebra.Field.IsField
 public import Mathlib.Algebra.Polynomial.Inductions
 public import Mathlib.Algebra.Polynomial.Monic
-import Mathlib.Order.Lattice.Nat
 public import Mathlib.RingTheory.Multiplicity
+
+import Mathlib.Algebra.Field.IsField
+import Mathlib.Order.Lattice.Nat
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Division of univariate polynomials

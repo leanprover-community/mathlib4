@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Integral.SetToL1.L1
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extension of set functions to integrable functions
 
@@ -168,14 +171,10 @@ theorem setToFun_finsetSum' (hT : DominatedFinMeasAdditive μ T C) {ι} (s : Fin
     · convert! integrable_finsetSum s fun i hi => hf i (Finset.mem_insert_of_mem hi) with x
       simp
 
-@[deprecated (since := "2026-04-08")] alias setToFun_finset_sum' := setToFun_finsetSum'
-
 theorem setToFun_finsetSum (hT : DominatedFinMeasAdditive μ T C) {ι} (s : Finset ι) {f : ι → α → E}
     (hf : ∀ i ∈ s, Integrable (f i) μ) :
     (setToFun μ T hT fun a => ∑ i ∈ s, f i a) = ∑ i ∈ s, setToFun μ T hT (f i) := by
   convert! setToFun_finsetSum' hT s hf with a; simp
-
-@[deprecated (since := "2026-04-08")] alias setToFun_finset_sum := setToFun_finsetSum
 
 theorem setToFun_neg (hT : DominatedFinMeasAdditive μ T C) (f : α → E) :
     setToFun μ T hT (-f) = -setToFun μ T hT f := by

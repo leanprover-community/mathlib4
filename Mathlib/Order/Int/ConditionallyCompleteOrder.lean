@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.ConditionallyCompleteLattice.Defs
 public import Mathlib.Order.Int.LeastGreatest
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `ℤ` forms a conditionally complete linear order
 
@@ -24,7 +27,6 @@ noncomputable section
 
 namespace Int
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 instance : ConditionallyCompleteLinearOrder ℤ where
   __ := instLinearOrder

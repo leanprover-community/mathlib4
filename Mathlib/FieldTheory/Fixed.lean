@@ -8,10 +8,11 @@ module
 public import Mathlib.Algebra.Polynomial.GroupRingAction
 public import Mathlib.Algebra.Ring.Action.Field
 public import Mathlib.Algebra.Ring.Action.Invariant
-import Mathlib.FieldTheory.Finiteness
 public import Mathlib.FieldTheory.Normal.Defs
 public import Mathlib.FieldTheory.Separable
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+
+import Mathlib.FieldTheory.Finiteness
 
 /-!
 # Fixed field under a group action.
