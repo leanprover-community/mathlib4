@@ -6,8 +6,12 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Analytic.IteratedFDeriv
-import Mathlib.Analysis.Calculus.Deriv.Pow
 public import Mathlib.Analysis.Calculus.MeanValue
+
+import Mathlib.Analysis.Calculus.Deriv.Pow
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Symmetry of the second derivative

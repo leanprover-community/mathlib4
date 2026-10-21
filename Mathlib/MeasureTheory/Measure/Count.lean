@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.Measure.Dirac.Basic
 
 import Mathlib.SetTheory.Cardinal.ENNReal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Counting measure
 

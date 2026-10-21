@@ -8,6 +8,9 @@ module
 public meta import Lean.Elab.Tactic.ElabTerm
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 Defines the `inhabit α` tactic, which tries to construct an `Inhabited α` instance,
 constructively or otherwise.

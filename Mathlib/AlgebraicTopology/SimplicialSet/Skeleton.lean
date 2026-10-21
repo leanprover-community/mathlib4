@@ -8,8 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
 public import Mathlib.AlgebraicTopology.SimplicialSet.Boundary
 public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexEvaluation
-import Mathlib.CategoryTheory.MorphismProperty.FunctorCategory
 public import Mathlib.CategoryTheory.Types.Monomorphisms
+
+import Mathlib.CategoryTheory.MorphismProperty.FunctorCategory
 
 /-!
 # The skeleton of a simplicial set

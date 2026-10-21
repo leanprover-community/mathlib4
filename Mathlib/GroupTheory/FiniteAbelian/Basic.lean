@@ -6,6 +6,7 @@ Authors: Pierre-Alexandre Bazin
 module
 
 public import Mathlib.Algebra.Module.PID
+
 import Mathlib.Data.ZMod.QuotientRing
 
 /-!

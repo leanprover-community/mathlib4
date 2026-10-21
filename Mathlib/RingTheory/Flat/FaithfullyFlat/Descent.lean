@@ -6,6 +6,7 @@ Authors: Christian Merten
 module
 
 public import Mathlib.RingTheory.RingHom.FaithfullyFlat
+
 import Mathlib.RingTheory.RingHom.Injective
 import Mathlib.RingTheory.RingHom.Surjective
 
