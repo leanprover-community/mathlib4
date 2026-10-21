@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Order.Group.Synonym
 public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Order.PiLex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lexicographic product of algebraic order structures
 
