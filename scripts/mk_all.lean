@@ -106,6 +106,9 @@ def ofLeanLib (lib : Lake.LeanLib) : IO (Array Root) :=
     let root := { name, lib, realLibSrcDir := ← IO.FS.realPath lib.srcDir : Root }
     if ← root.dir.isDir then return root else return none
 
+/-- Whether the `root` must be a `module`. -/
+def needsModule : Bool := r.lib.requiresModuleSystem && !r.lib.allowNonModules
+
 end Root
 
 /-- Given a putative (pseudo)root `name`, finds the `Root` associated with it. Errors if it is not
@@ -158,25 +161,29 @@ def Config.mkAllRoots (cfg : Config) (pkg : Lake.Package)
 
 /-- Handles a `Root` and updates the associated file, printing logs to stdout. Returns `true` if it
 performed an update and `false` if the resulting file was unchanged. -/
-def handleRoot (cfg : Config) (root : Root) (git : Bool) (check : Bool) (forceModule : Bool) :
+def handleRoot (cfg : Config) (root : Root)
+    (git : Bool) (check : Bool) (forceModule : Bool) (clobber : Bool) :
     IO Bool := do
   let fileName := root.fileName
-  -- The existing content and header. This is `none` if the file does not exist.
+  -- The existing state of parsing the header. This is `none` if the file does not exist.
   let existing? ← if !(← pathExists fileName) then pure none else do
     let existingContent ← IO.FS.readFile fileName
-    try
-      pure <| some (existingContent, ← Lean.parseImports' existingContent fileName.toString)
-    catch e =>
+    let s := ParseImports.main existingContent (ParseImports.whitespace existingContent {})
+    if let some err := s.error? then
+      let fileMap := existingContent.toFileMap
+      let pos := fileMap.toPosition s.pos
+      let err := s!"{fileName}:{pos.line}:{pos.column}: {err}"
       throw <| IO.userError s!"\
-        Could not parse the header of `{root.name}` at {fileName}: {e.toString}\n\
+        Could not parse the header of `{root.name}`:\n  {err}\n\
         Fix or delete the file, then re-run `mk_all`\
-        {if root.lib.requiresModuleSystem && !root.lib.allowNonModules then "" else
+        {if root.needsModule then "" else
           " (with `--module` if you want a module-style aggregator)"}."
+    else
+      pure <| some (existingContent, s)
   -- If `--module` was passed explicitly, honor it. If the library requires the module system,
   -- use `module`. Otherwise, if the aggregator file already exists, infer whether it uses the
   -- module system; if not, default to plain.
-  let useModule := forceModule || (root.lib.requiresModuleSystem && !root.lib.allowNonModules)
-      || existing?.any (·.2.isModule)
+  let useModule := forceModule || root.needsModule || existing?.any (·.2.isModule)
   let mut allMods ← getAllModulesSorted git root.dir (srcDir := root.realLibSrcDir)
   -- Prepend extra mods for this root
   if let some extraMods := cfg.extraRootImports.get? root.name then
@@ -190,11 +197,16 @@ def handleRoot (cfg : Config) (root : Root) (git : Bool) (check : Bool) (forceMo
       {if metaImports.contains mod then "meta " else ""}\
       import {mod}"}\
     \n"
-  if let some (existingContent, _) := existing? then
+  if let some (existingContent, s) := existing? then
     if existingContent != newFileContent then
-      if check then
+      if !clobber && existingContent.rawEndPos != s.pos then
+        IO.eprintln s!"The root file `{root.name}` at '{fileName}' contains more than \
+          just imports. Are you sure you want to replace it with a generated file? If so, run \
+          `lake exe mk_all{if git then " --git" else ""} --clobber` to update it."
+      else if check then
         IO.println s!"The root file `{root.name}` at '{fileName}' is out of date: \
           run `lake exe mk_all{if git then " --git" else ""}` to update it"
+      -- If clobbering or if (as expected) the generated file is entirely header, proceed.
       else
         IO.println s!"Updating `{root.name}` at '{fileName}'"
         IO.FS.writeFile fileName newFileContent
@@ -221,6 +233,8 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
   -- If `--module` is passed, force module style; otherwise infer from the existing
   -- aggregator file (when present), or default to plain.
   let forceModule := (args.flag? "module").isSome
+  -- Whether to overwrite files that are not just headers.
+  let clobber := (args.flag? "clobber").isSome
   -- Check whether the `--lib` flag was set. If so, process the root files specified.
   -- Else process all the libraries of the package.
   let onlyLibs? := args.flag? "lib" |>.map fun lib => lib.as! (Array String)
@@ -230,7 +244,7 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
   let roots ← cfg.mkAllRoots pkg (only? := onlyLibs?)
   let mut numUpdates : UInt32 := 0
   for root in roots do
-    if ← handleRoot cfg root git check forceModule then
+    if ← handleRoot cfg root git check forceModule clobber then
       numUpdates := numUpdates + 1
   if numUpdates == 0 then
     IO.println "No update necessary"
@@ -250,16 +264,18 @@ def mkAll : Cmd := `[Cli|
 
   FLAGS:
     lib : Array String;
-            "Create or update a module importing all Lean files from the specified \
-             library or subfolder(s). Multiple libraries may be provided and separated by commas. \
-             Module-style names of directories that are not actual `lean_libs` may also be used \
-             (e.g. `Mathlib.Tactic`)."
-    git;    "Use the folder content information from git."
-    check;  "Only check if the files are up-to-date; print an error if not"
-    module; "Force the aggregator file to be generated as a `module` with `public` imports. \
-             When this flag is omitted, a `module` is used if the library of the associated file \
-             requires the module system or the existing file is already a module. Otherwise, this \
-             defaults to a non-module import."
+             "Create or update a module importing all Lean files from the specified \
+              library or subfolder(s). Multiple libraries may be provided and separated by commas. \
+              Module-style names of directories that are not actual `lean_libs` may also be used \
+              (e.g. `Mathlib.Tactic`)."
+    git;     "Use the folder content information from git."
+    check;   "Only check if the files are up-to-date; print an error if not"
+    module;  "Force the aggregator file to be generated as a `module` with `public` imports. \
+              When this flag is omitted, a `module` is used if the library of the associated file \
+              requires the module system or the existing file is already a module. Otherwise, this \
+              defaults to a non-module import."
+    clobber; "Overwrite not only an out-of-date file, but a file with content besides just the
+              header."
 ]
 
 end Mathlib.Scripts
