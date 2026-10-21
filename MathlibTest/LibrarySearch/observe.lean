@@ -1,7 +1,7 @@
 module
 
-public import Mathlib.Tactic.Observe
 public import Mathlib.Tactic.AdaptationNote
+public import Mathlib.Tactic.Observe
 
 @[expose] public section
 

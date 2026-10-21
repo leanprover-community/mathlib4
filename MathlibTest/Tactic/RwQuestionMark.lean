@@ -1,10 +1,10 @@
 module
 
+public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Ring.Nat
-public import Mathlib.Data.Nat.Prime.Defs
 public import Mathlib.CategoryTheory.Category.Basic
 public import Mathlib.Data.List.InsertIdx
-public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Data.Nat.Prime.Defs
 
 @[expose] public section
 

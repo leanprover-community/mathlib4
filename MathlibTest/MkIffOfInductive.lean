@@ -1,7 +1,7 @@
 module
 
-public import Mathlib.Tactic.MkIffOfInductiveProp
 public import Mathlib.Data.List.Perm.Lattice
+public import Mathlib.Tactic.MkIffOfInductiveProp
 
 @[expose] public section
 

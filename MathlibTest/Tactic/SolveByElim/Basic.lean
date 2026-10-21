@@ -5,10 +5,10 @@ Authors: Kim Morrison
 -/
 module
 
+public meta import MathlibTest.Tactic.SolveByElim.DummyLabelAttr
+public import Batteries.Tactic.PermuteGoals
 public import Lean.Meta.Tactic.SolveByElim
 public import Mathlib.Tactic.Constructor
-public import Batteries.Tactic.PermuteGoals
-public meta import MathlibTest.Tactic.SolveByElim.DummyLabelAttr
 
 @[expose] public section
 

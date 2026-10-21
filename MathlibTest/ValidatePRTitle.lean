@@ -1,7 +1,7 @@
 module
 
-public meta import Mathlib.Tactic.Linter.ValidatePRTitle
 public meta import Lean.Elab.Command
+public meta import Mathlib.Tactic.Linter.ValidatePRTitle
 
 @[expose] public section
 

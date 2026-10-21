@@ -1,15 +1,15 @@
 module
 
-public import Mathlib.Tactic.Lift
 public import Batteries.Tactic.PermuteGoals
-public import Mathlib.Tactic.Coe
-public import Mathlib.Data.Set.Defs
-public import Mathlib.Order.WithBot
 public import Mathlib.Algebra.Group.WithOne.Defs
+public import Mathlib.Data.PNat.Defs
+public import Mathlib.Data.Rat.Defs
+public import Mathlib.Data.Set.Defs
 public import Mathlib.Data.Set.Image
 public import Mathlib.Data.Set.List
-public import Mathlib.Data.Rat.Defs
-public import Mathlib.Data.PNat.Defs
+public import Mathlib.Order.WithBot
+public import Mathlib.Tactic.Coe
+public import Mathlib.Tactic.Lift
 
 /-! Some tests of the `lift` tactic. -/
 

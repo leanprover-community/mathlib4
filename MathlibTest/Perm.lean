@@ -1,9 +1,10 @@
 
 module
 
-public import Mathlib.GroupTheory.Perm.Cycle.Concrete
 public meta import Mathlib.GroupTheory.Perm.Cycle.Concrete
+public import Mathlib.GroupTheory.Perm.Cycle.Concrete
 public import Mathlib.Tactic.DeriveFintype
+
 import all Mathlib.GroupTheory.Perm.Cycle.Factors
 
 @[expose] public section

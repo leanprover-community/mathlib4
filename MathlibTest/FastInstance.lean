@@ -1,7 +1,7 @@
 module
 
-public import Mathlib.Tactic.FastInstance
 public import Mathlib.Logic.Function.Defs
+public import Mathlib.Tactic.FastInstance
 public import Mathlib.Tactic.Spread
 
 @[expose] public section

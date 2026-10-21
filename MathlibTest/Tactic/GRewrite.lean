@@ -11,8 +11,8 @@ public import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.Data.Int.ModEq
 public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Order.Antisymmetrization
-public import Mathlib.Tactic.GRewrite
 public import Mathlib.Tactic.GCongr
+public import Mathlib.Tactic.GRewrite
 public import Mathlib.Tactic.NormNum
 
 @[expose] public section

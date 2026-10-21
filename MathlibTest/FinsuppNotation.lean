@@ -1,8 +1,8 @@
 module
 
 public meta import Mathlib.Data.Finsupp.Notation
-public import Mathlib.Data.DFinsupp.Notation -- to ensure it does not interfere
 public meta import Mathlib.Data.Nat.Factorization.Basic
+public import Mathlib.Data.DFinsupp.Notation -- to ensure it does not interfere
 
 @[expose] public section
 

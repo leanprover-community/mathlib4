@@ -5,11 +5,11 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.MeasureTheory.MeasurableSpace.Basic
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 public import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
 public import Mathlib.MeasureTheory.Function.SpecialFunctions.Inner
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
+public import Mathlib.MeasureTheory.MeasurableSpace.Basic
 
 @[expose] public section
 

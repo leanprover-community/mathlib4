@@ -1,15 +1,15 @@
 module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Basic
-public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
-public import Mathlib.MeasureTheory.MeasurableSpace.Basic
-public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
-public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
 public import Mathlib.Analysis.Complex.Trigonometric
 public import Mathlib.Analysis.Meromorphic.Basic
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Digamma
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
+public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
+public import Mathlib.MeasureTheory.MeasurableSpace.Basic
+public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
 /-! # Main test file for fun_prop
 

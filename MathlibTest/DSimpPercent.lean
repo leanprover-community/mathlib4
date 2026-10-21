@@ -5,8 +5,8 @@ Authors: Robin Carlier
 -/
 module
 
-public import Mathlib.Tactic.DSimpPercent
 public import Mathlib.Data.Nat.Basic
+public import Mathlib.Tactic.DSimpPercent
 
 /-!
 Tests for the behavior of `dsimp%`.

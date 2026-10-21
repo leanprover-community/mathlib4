@@ -1,8 +1,8 @@
 module
 
-public import Mathlib.Tactic.ExtractGoal
-public import Mathlib.Order.Basic
 public import Mathlib.Data.Nat.Basic
+public import Mathlib.Order.Basic
+public import Mathlib.Tactic.ExtractGoal
 
 @[expose] public section
 

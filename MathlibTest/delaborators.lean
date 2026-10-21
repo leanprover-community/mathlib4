@@ -1,7 +1,7 @@
 module
 
-public import Mathlib.Util.Delaborators
 public import Mathlib.Data.Set.BooleanAlgebra
+public import Mathlib.Util.Delaborators
 
 @[expose] public section
 

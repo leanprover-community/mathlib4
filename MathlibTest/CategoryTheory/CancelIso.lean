@@ -1,10 +1,10 @@
 module
 
-public import Mathlib.Tactic.CategoryTheory.CancelIso
+public import Mathlib.CategoryTheory.Bicategory.Basic
 public import Mathlib.CategoryTheory.Functor.Category
 public import Mathlib.CategoryTheory.Monoidal.Category
-public import Mathlib.CategoryTheory.Bicategory.Basic
 public import Mathlib.CategoryTheory.Opposites
+public import Mathlib.Tactic.CategoryTheory.CancelIso
 
 @[expose] public section
 

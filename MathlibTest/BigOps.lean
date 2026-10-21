@@ -1,8 +1,8 @@
 module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-public import Mathlib.Order.Interval.Finset.Nat
 public import Mathlib.Data.Fintype.Basic
+public import Mathlib.Order.Interval.Finset.Nat
 
 @[expose] public section
 

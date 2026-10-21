@@ -1,9 +1,9 @@
 module
 
-public import Mathlib.Tactic.Nontriviality
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Algebra.Ring.Nat
 public import Mathlib.Data.Set.Basic
+public import Mathlib.Tactic.Nontriviality
 
 @[expose] public section
 

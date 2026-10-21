@@ -1,9 +1,9 @@
 module
 
-public import Mathlib.Tactic.TacticAnalysis.Declarations
-public import Mathlib.Tactic.AdaptationNote
 public import Lean.LibrarySuggestions
 public import Mathlib.Algebra.BigOperators.Associated
+public import Mathlib.Tactic.AdaptationNote
+public import Mathlib.Tactic.TacticAnalysis.Declarations
 
 @[expose] public section
 
@@ -591,6 +591,10 @@ example : 1 + 1 = 2 := by
   rfl
 
 /--
+warning: Unused tactic linter: `skip` does not change the goal.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+---
 info: `skip` (+1 later steps) can be replaced with `grind`
 
 Note: This linter can be disabled with `set_option linter.tacticAnalysis.tryAtEachStepGrind false`
@@ -598,10 +602,6 @@ Note: This linter can be disabled with `set_option linter.tacticAnalysis.tryAtEa
 info: `rfl` can be replaced with `grind`
 
 Note: This linter can be disabled with `set_option linter.tacticAnalysis.tryAtEachStepGrind false`
----
-warning: Unused tactic linter: `skip` does not change the goal.
-
-Note: This linter can be disabled with `set_option linter.unusedTactic false`
 -/
 #guard_msgs in
 example : 1 + 1 = 2 := by

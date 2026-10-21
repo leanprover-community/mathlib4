@@ -5,9 +5,9 @@ Authors: David Ledvinka
 -/
 module
 
-public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Tactic
 -- `Tactic` imports the extensions in `Rational` privately, so they are not loaded in a module
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Rational
+public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Tactic
 
 @[expose] public section
 

@@ -1,7 +1,7 @@
 module
 
-public import Mathlib.Tactic.Widget.Conv
 public import Lean.Elab.Tactic.ElabTerm
+public import Mathlib.Tactic.Widget.Conv
 
 /-!
 Instead of testing `conv?` directly, we test the `insertEnterSyntax` function.

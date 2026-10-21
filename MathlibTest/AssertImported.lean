@@ -1,6 +1,5 @@
 module
 
-public import Mathlib
 -- Also explicitly import all dependencies, since `Mathlib` intentionally avoids importing
 -- internals of some of the dependencies. For example:
 -- ImportGraph asserts Lake.Workspace is not imported, but Mathlib doesn't import it either.
@@ -8,6 +7,7 @@ public import Aesop
 public import Batteries
 public import Lake
 public import Lean
+public import Mathlib
 public import Plausible
 public import ProofWidgets
 public import Qq

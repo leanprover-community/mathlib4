@@ -1,9 +1,9 @@
 module
 
-public meta import Mathlib.Util.Superscript
-public import Mathlib.Tactic.UnsetOption
 public meta import Lean.PrettyPrinter
 public meta import Lean.PrettyPrinter.Delaborator.Builtins
+public meta import Mathlib.Util.Superscript
+public import Mathlib.Tactic.UnsetOption
 
 @[expose] public section
 

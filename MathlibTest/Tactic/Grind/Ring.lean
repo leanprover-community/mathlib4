@@ -1,7 +1,7 @@
 module
 
-public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Order.Ring.Defs
 
 /-!
 # Preliminary tests for `grind` using Mathlib typeclasses.

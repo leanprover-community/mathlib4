@@ -1,15 +1,15 @@
 module
 
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
+public import Mathlib.Geometry.Manifold.BumpFunction
 public import Mathlib.Geometry.Manifold.Instances.Real
 public import Mathlib.Geometry.Manifold.Instances.UnitsOfNormedAlgebra
-public import Mathlib.Geometry.Manifold.Notation
-public import Mathlib.Geometry.Manifold.VectorBundle.ContMDiffSection
-public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 public import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
-public import Mathlib.Geometry.Manifold.BumpFunction
+public import Mathlib.Geometry.Manifold.Notation
+public import Mathlib.Geometry.Manifold.VectorBundle.ContMDiffSection
 public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
+public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 public import Mathlib.Geometry.Manifold.VectorField.LieBracket
 
 /-!

@@ -1,9 +1,9 @@
 module
 
+public meta import Mathlib.Lean.Meta.Basic
 public import Lean.Elab.Tactic.ElabTerm
 public import Lean.Elab.Tactic.Rfl
 public import Mathlib.Lean.Expr.Basic
-public meta import Mathlib.Lean.Meta.Basic
 public import Mathlib.Tactic.Relation.Rfl
 
 /-! # Tests for mathlib extensions to `Lean.Expr` and `Lean.Meta` -/

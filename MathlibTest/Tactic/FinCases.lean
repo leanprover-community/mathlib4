@@ -1,8 +1,8 @@
 module
 
+public import Mathlib.Order.Interval.Finset.Nat
 public import Mathlib.Tactic.FinCases
 public import Mathlib.Tactic.NormNum.Basic
-public import Mathlib.Order.Interval.Finset.Nat
 
 @[expose] public section
 

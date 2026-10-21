@@ -1,13 +1,13 @@
 module
 
-public import Lean
-public import Std
-public import Qq
-public import Batteries
 public import Aesop
-public import ProofWidgets
+public import Batteries
+public import Lean
 public import Mathlib
 public import Plausible
+public import ProofWidgets
+public import Qq
+public import Std
 
 @[expose] public section
 

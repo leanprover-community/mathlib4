@@ -6,13 +6,13 @@ Authors: Marcelo Lynch
 module
 
 public import Cache.Cli
-public import Cache.Requests
+public import Cache.Lean
 public import Cache.Location
 public import Cache.Marker
-public import Cache.Upload
 public import Cache.Query
+public import Cache.Requests
+public import Cache.Upload
 public import Cache.Warning
-public import Cache.Lean
 
 /-!
 # Unit tests for the cache CLI

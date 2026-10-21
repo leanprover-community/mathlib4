@@ -1,10 +1,10 @@
 module
 
 public meta import Mathlib.Algebra.Group.Fin.Basic
-public import Mathlib.Data.DFinsupp.Defs
-public import Mathlib.Data.Finsupp.Notation
 public meta import Mathlib.Data.Nat.Prime.Defs
 public meta import Mathlib.Data.PNat.Basic
+public import Mathlib.Data.DFinsupp.Defs
+public import Mathlib.Data.Finsupp.Notation
 public import Mathlib.Tactic.Have
 public import Mathlib.Tactic.SuccessIfFailWithMsg
 public import Mathlib.Testing.Plausible.Functions

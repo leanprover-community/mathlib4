@@ -1,8 +1,8 @@
 module
 
 public meta import Mathlib.Control.Random
-public import Mathlib.Tactic.NormNum
 public import Batteries.Lean.LawfulMonad
+public import Mathlib.Tactic.NormNum
 
 @[expose] public section
 

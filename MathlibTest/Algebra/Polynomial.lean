@@ -1,9 +1,9 @@
 module
 
-public import Mathlib.Algebra.Polynomial.Basic
-public import Mathlib.Algebra.Module.ULift
-public meta import Mathlib.Algebra.Polynomial.Basic
 public meta import Mathlib.Algebra.Module.ULift
+public meta import Mathlib.Algebra.Polynomial.Basic
+public import Mathlib.Algebra.Module.ULift
+public import Mathlib.Algebra.Polynomial.Basic
 
 @[expose] public section
 

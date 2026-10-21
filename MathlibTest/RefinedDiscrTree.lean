@@ -1,7 +1,7 @@
 module
 
-public import Mathlib.Lean.Meta.RefinedDiscrTree.Encode
 public import Mathlib
+public import Mathlib.Lean.Meta.RefinedDiscrTree.Encode
 
 @[expose] public section
 

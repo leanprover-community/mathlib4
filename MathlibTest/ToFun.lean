@@ -1,7 +1,7 @@
 module
 
-public import Mathlib.Tactic.ToFun
 public import Mathlib.Analysis.Normed.Ring.Basic
+public import Mathlib.Tactic.ToFun
 
 @[expose] public section
 

@@ -1,7 +1,7 @@
 module
 
-public import Mathlib.Tactic.NormNum.Basic
 public import Mathlib.Tactic.FunProp.Attr
+public import Mathlib.Tactic.NormNum.Basic
 
 @[expose] public section
 

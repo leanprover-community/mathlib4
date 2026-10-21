@@ -1,8 +1,8 @@
 module
 
-public import Mathlib.Tactic.Widget.LibraryRewrite
 public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Data.Subtype
+public import Mathlib.Tactic.Widget.LibraryRewrite
 
 @[expose] public section
 

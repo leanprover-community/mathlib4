@@ -1,7 +1,7 @@
 module
 
-public import Mathlib.Tactic.Says
 public import Aesop
+public import Mathlib.Tactic.Says
 
 @[expose] public section
 

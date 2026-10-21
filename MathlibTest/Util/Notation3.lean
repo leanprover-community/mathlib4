@@ -1,7 +1,7 @@
 module
 
-public import Mathlib.Util.Notation3
 public import Mathlib.Data.Nat.Basic
+public import Mathlib.Util.Notation3
 
 @[expose] public section
 

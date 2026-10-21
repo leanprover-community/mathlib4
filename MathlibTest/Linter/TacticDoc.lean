@@ -1,7 +1,7 @@
 module
 
-public import Mathlib.Tactic.Linter.TacticDocumentation
 public import Batteries.Tactic.Lint.Frontend
+public import Mathlib.Tactic.Linter.TacticDocumentation
 
 @[expose] public section
 

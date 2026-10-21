@@ -8,10 +8,10 @@ module
 public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 public import Mathlib.Algebra.Order.Field.Basic
 public import Mathlib.Data.Finset.Lattice.Fold
-public import Mathlib.Tactic.Linarith
 public import Mathlib.Tactic.GCongr
-public import Mathlib.Tactic.SuccessIfFailWithMsg
+public import Mathlib.Tactic.Linarith
 public import Mathlib.Tactic.NormNum.OfScientific
+public import Mathlib.Tactic.SuccessIfFailWithMsg
 
 @[expose] public section
 

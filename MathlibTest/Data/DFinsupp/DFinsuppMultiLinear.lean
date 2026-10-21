@@ -1,8 +1,8 @@
 module
 
+public meta import Mathlib.Data.DFinsupp.Notation
 public meta import Mathlib.LinearAlgebra.Multilinear.DFinsupp
 public import Mathlib.LinearAlgebra.Multilinear.Pi
-public meta import Mathlib.Data.DFinsupp.Notation
 
 @[expose] public section
 

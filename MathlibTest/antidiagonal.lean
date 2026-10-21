@@ -1,9 +1,9 @@
 module
 
 public meta import Mathlib.Algebra.Order.Antidiag.Finsupp
+public meta import Mathlib.Data.Fin.Tuple.NatAntidiagonal
 public meta import Mathlib.Data.Finset.Sort
 public meta import Mathlib.Data.Finsupp.Notation
-public meta import Mathlib.Data.Fin.Tuple.NatAntidiagonal
 
 /-!
 # Testing computability (and runtime) of antidiagonal

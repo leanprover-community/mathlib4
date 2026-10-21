@@ -1,12 +1,12 @@
 module
 
+public meta import Mathlib.Lean.Exception
 public import Mathlib.Algebra.Group.Defs
 public import Mathlib.Algebra.Notation.Defs
-public import Mathlib.Tactic.Simps
-public meta import Mathlib.Lean.Exception
-public import Mathlib.Logic.Equiv.Defs
 public import Mathlib.Data.Prod.Basic
+public import Mathlib.Logic.Equiv.Defs
 public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.Simps
 
 @[expose] public section
 

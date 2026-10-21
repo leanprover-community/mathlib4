@@ -1,8 +1,8 @@
 module
 
-public import Mathlib.Tactic.CategoryTheory.Elementwise
 public import Mathlib.Algebra.Category.MonCat.Basic
 public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
+public import Mathlib.Tactic.CategoryTheory.Elementwise
 
 @[expose] public section
 

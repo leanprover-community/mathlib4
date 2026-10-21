@@ -1,8 +1,8 @@
 module
 
 public import Mathlib.Tactic.Widget.CommDiag
-public import ProofWidgets.Component.Panel.SelectionPanel
 public import ProofWidgets.Component.Panel.GoalTypePanel
+public import ProofWidgets.Component.Panel.SelectionPanel
 
 /-! # Example use of commutative diagram widgets -/
 

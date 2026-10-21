@@ -1,8 +1,8 @@
 module
 
-public import Mathlib.Tactic.DepRewrite
 -- for `Type*`, which `DepRewrite` only imports privately
 public meta import Mathlib.Tactic.TypeStar
+public import Mathlib.Tactic.DepRewrite
 
 /-!
 # Tests for the `rewrite!` and `rw!` tactics

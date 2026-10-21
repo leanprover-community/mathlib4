@@ -1,7 +1,7 @@
 module
 
-public import Mathlib.Tactic.Simproc.Divisors
 public import Mathlib.NumberTheory.Primorial
+public import Mathlib.Tactic.Simproc.Divisors
 
 @[expose] public section
 

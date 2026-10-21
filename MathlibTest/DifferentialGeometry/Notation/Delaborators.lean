@@ -1,8 +1,8 @@
 module
 
+public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 public import Mathlib.Geometry.Manifold.Notation
 public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
-public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 
 /-!
 # Tests for the differential geometry delaborators

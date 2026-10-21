@@ -1,8 +1,8 @@
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.FundamentalGroupoid.Basic
-public import Mathlib.CategoryTheory.NatIso
 public import Mathlib.CategoryTheory.Functor.CurryingFour
+public import Mathlib.CategoryTheory.NatIso
 public import Mathlib.CategoryTheory.Products.Associator
 
 /-!
@@ -40,7 +40,6 @@ elab_rules : command
     match env.find? name with
     | none => throwError "Unknown identifier `{.ofConstName name}`"
     | some _ =>
-      -- imported theorems are exported as axioms, so check the original declaration kind
       unless wasOriginallyTheorem env name do
         throwError "#ensure_defeq can only be run on equality theorems."
       if defeqAttr.hasTag env name then

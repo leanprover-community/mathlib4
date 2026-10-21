@@ -3,8 +3,8 @@ module
 public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Module.Defs
-public import Mathlib.Algebra.Ring.Regular
 public import Mathlib.Algebra.Module.LinearMap.Basic
+public import Mathlib.Algebra.Ring.Regular
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
 public import Mathlib.Tactic.Variable
 

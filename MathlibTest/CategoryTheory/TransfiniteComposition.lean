@@ -1,7 +1,7 @@
 module
 
-public import Mathlib.CategoryTheory.Types.Monomorphisms
 public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
+public import Mathlib.CategoryTheory.Types.Monomorphisms
 
 @[expose] public section
 

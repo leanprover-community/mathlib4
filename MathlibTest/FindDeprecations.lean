@@ -1,7 +1,7 @@
 module
 
-public import Mathlib.Tactic.Linter.FindDeprecations
 public import Mathlib.Tactic.Linter.CommandRanges
+public import Mathlib.Tactic.Linter.FindDeprecations
 
 @[expose] public section
 

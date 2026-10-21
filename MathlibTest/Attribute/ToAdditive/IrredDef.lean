@@ -1,7 +1,7 @@
 module
 
-public import Mathlib.Tactic.IrreducibleDef
 public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Tactic.IrreducibleDef
 
 @[expose] public section
 

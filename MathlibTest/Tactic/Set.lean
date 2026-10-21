@@ -5,8 +5,8 @@ Authors: Ian Benway
 -/
 module
 
-public import Mathlib.Tactic.Set
 public import Mathlib.Tactic.Basic
+public import Mathlib.Tactic.Set
 public import Mathlib.Util.SleepHeartbeats
 public import Qq
 

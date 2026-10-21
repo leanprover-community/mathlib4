@@ -1,7 +1,7 @@
 module
 
-public import Mathlib.Tactic.Linter.DocPrime
 public import Mathlib.Init
+public import Mathlib.Tactic.Linter.DocPrime
 
 @[expose] public section
 

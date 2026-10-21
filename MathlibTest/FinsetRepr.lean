@@ -1,6 +1,7 @@
 module
 
 public import Mathlib.Data.Finset.Sort
+
 import Lean.Meta.Basic
 
 @[expose] public section
