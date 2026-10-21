@@ -5,9 +5,11 @@ Authors: Damiano Testa
 -/
 module
 
-public import Mathlib.Algebra.Group.Commute.Units
 public import Mathlib.Algebra.Group.Equiv.Opposite
 public import Mathlib.Algebra.Group.TypeTags.Basic
+public import Mathlib.Algebra.Group.Commute.Units
+public import Mathlib.Algebra.Group.Units.Defs
+public import Mathlib.Data.Set.Operations
 
 /-!
 # Squares and even elements
