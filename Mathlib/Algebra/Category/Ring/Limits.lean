@@ -11,9 +11,6 @@ public import Mathlib.Algebra.Ring.Pi
 public import Mathlib.Algebra.Ring.Shrink  -- shake: keep (Semiring (Shrink ...)), cf. lean#13417
 public import Mathlib.Algebra.Ring.Subring.Defs
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # The category of (commutative) rings has all limits
 

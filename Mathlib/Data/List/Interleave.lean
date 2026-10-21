@@ -11,9 +11,6 @@ public import Mathlib.Order.SuccPred.Nat
 import Mathlib.Data.List.Chain
 import Mathlib.Data.List.ChainOfFn
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Interleaving lists
 

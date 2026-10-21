@@ -8,9 +8,6 @@ module
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 public import Mathlib.NumberTheory.Divisors
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # `Nat.divisors` as a multiplicative homomorphism
 

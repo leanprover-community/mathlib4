@@ -10,9 +10,6 @@ public import Mathlib.Data.Nat.Multiplicity
 
 import Mathlib.Data.Nat.Choose.Sum
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Characteristic of semirings
 -/

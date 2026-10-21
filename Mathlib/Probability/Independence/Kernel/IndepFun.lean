@@ -12,9 +12,6 @@ public import Mathlib.Probability.Kernel.Composition.MeasureComp
 import Mathlib.MeasureTheory.Constructions.Cylinders
 import Mathlib.MeasureTheory.MeasurableSpace.Pi
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Independence of random variables with respect to a kernel and a measure
 
