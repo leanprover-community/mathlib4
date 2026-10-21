@@ -5,10 +5,9 @@ Authors: Damiano Testa
 -/
 module
 
+public import Mathlib.Algebra.Group.Commute.Units
 public import Mathlib.Algebra.Group.Equiv.Opposite
 public import Mathlib.Algebra.Group.TypeTags.Basic
-public import Mathlib.Algebra.Group.Commute.Units
-public import Mathlib.Algebra.Group.Units.Defs
 public import Mathlib.Data.Set.Operations
 
 /-!
@@ -189,3 +188,4 @@ example {G : Type*} [CommGroup G] {a b c d e : G} (ha : IsSquare a) {n : ℕ} {k
 
 example {G : Type*} [AddCommGroup G] {a b c d e : G} (ha : Even a) {n : ℕ} {k : ℤ} (hk : Even k) :
     Even <| a + (b + b) - 2 • c + k • d + (n + n) • e := by aesop
+#min_imports
