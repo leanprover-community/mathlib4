@@ -344,6 +344,7 @@ lemma orderAtInfty_prod_of_holo {ι : Type*} {s : Finset ι} {f : ι → ℍ →
 /-!
 ## Relation to the `q`-expansion
 -/
+
 /-- The order at infinity is the order of the `q`-expansion divided by the period. -/
 lemma orderAtInfty_eq_qExpansion_order (hh : 0 < h) (hfper : Periodic (f ∘ ofComplex) h)
     (hfhol : MDiff f) (hfbdd : IsBoundedAtImInfty f) :
