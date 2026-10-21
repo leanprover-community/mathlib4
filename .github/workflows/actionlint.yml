@@ -23,8 +23,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      # Using our fork's PR branch until upstream merges the improved error reporting:
-      # https://github.com/zgosalvez/github-actions-ensure-sha-pinned-actions/pull/288
-      # TODO: Update to upstream release once merged.
+      # Our fork of zgosalvez/github-actions-ensure-sha-pinned-actions. It reports every
+      # violation (not just the first) and checks the steps inside `parallel` groups.
       - name: Ensure all actions are pinned to SHA
-        uses: kim-em/github-actions-ensure-sha-pinned-actions@00f51cdb5bbc21f5bc873ef3a2dceef45df213af # improve-error-reporting
+        uses: leanprover-community/github-actions-ensure-sha-pinned-actions@538f919501d732b8cd7f5215aec5896df7d1df22 # improve-error-reporting

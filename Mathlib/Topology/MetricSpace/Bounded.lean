@@ -340,6 +340,11 @@ theorem compactSpace_iff_isBounded_univ [ProperSpace α] :
     CompactSpace α ↔ IsBounded (univ : Set α) :=
   ⟨@isBounded_of_compactSpace α _ _, fun hb => ⟨isCompact_of_isClosed_isBounded isClosed_univ hb⟩⟩
 
+@[compactness .]
+lemma isCompact_closure_ball [ProperSpace α] {x : α} {ε : ℝ} :
+    IsCompact (closure (Metric.ball x ε)) :=
+  Metric.isBounded_ball.isCompact_closure
+
 section CompactIccSpace
 
 variable [Preorder α] [CompactIccSpace α]
