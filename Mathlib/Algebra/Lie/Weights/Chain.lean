@@ -90,7 +90,7 @@ lemma exists_genWeightSpace_smul_add_eq_bot :
   (Nat.eventually_pos.and <| eventually_genWeightSpace_smul_add_eq_bot M χ₁ χ₂ hχ₁).exists
 
 lemma exists₂_genWeightSpace_smul_add_eq_bot :
-    ∃ᵉ (p < (0 : ℤ)) (q > (0 : ℤ)),
+    ∃ p < (0 : ℤ), ∃ q > (0 : ℤ),
       genWeightSpace M (p • χ₁ + χ₂) = ⊥ ∧
       genWeightSpace M (q • χ₁ + χ₂) = ⊥ := by
   obtain ⟨q, hq₀, hq⟩ := exists_genWeightSpace_smul_add_eq_bot M χ₁ χ₂ hχ₁
