@@ -34,11 +34,11 @@ open Filter
 
 open scoped Topology
 
-variable {𝕜 A : Type*}
+variable {𝕜 A B : Type*}
 
 section SeminormedRing
 
-variable [NormedField 𝕜] [SeminormedRing A] [NormedAlgebra 𝕜 A]
+variable [NormedField 𝕜] [SeminormedRing A] [SeminormedRing B] [NormedAlgebra 𝕜 A]
 
 /-- The limit `‖a ^ k‖ ^ (1 / k)` of an element `a` in a normed ring.
 We use `k : ℕ+` to ease the eventual generalization to `NonUnitalSeminormedRing`.
@@ -87,8 +87,8 @@ theorem gelfandRadius_le_norm (a : A) : gelfandRadius a ≤ ‖a‖ := by
 theorem gelfandRadius_of_norm_nonpos {a : A} (ha : ‖a‖ ≤ 0) : gelfandRadius a = 0 :=
   le_antisymm ((gelfandRadius_le_norm a).trans ha) (gelfandRadius_nonneg a)
 
-theorem gelfandRadius_le_of_norm_pow_le {B : Type*} [SeminormedRing B] {a : A} {b : B} (C : ℝ)
-    (h : ∀ n, ‖a ^ n‖ ≤ C * ‖b ^ n‖) : gelfandRadius a ≤ gelfandRadius b := by
+theorem gelfandRadius_le_of_norm_pow_le {a : A} {b : B} (C : ℝ) (h : ∀ n, ‖a ^ n‖ ≤ C * ‖b ^ n‖) :
+    gelfandRadius a ≤ gelfandRadius b := by
   by_cases! hC : C ≤ 0
   · specialize h 1
     grw [hC, zero_mul, pow_one] at h
@@ -98,8 +98,8 @@ theorem gelfandRadius_le_of_norm_pow_le {B : Type*} [SeminormedRing B] {a : A} {
         tendsto_inv_atTop_nhds_zero_nat).mul (tendsto_gelfandRadius b))
           fun n ↦ by grw [h, Real.mul_rpow] <;> positivity
 
-theorem gelfandRadius_eq_of_norm_pow {B : Type*} [SeminormedRing B] {a : A} {b : B}
-    (h : ∀ n, ‖a ^ n‖ = ‖b ^ n‖) : gelfandRadius a = gelfandRadius b :=
+theorem gelfandRadius_eq_of_norm_pow {a : A} {b : B} (h : ∀ n, ‖a ^ n‖ = ‖b ^ n‖) :
+    gelfandRadius a = gelfandRadius b :=
   le_antisymm (gelfandRadius_le_of_norm_pow_le 1 (by simp [h]))
     (gelfandRadius_le_of_norm_pow_le 1 (by simp [h]))
 
@@ -112,8 +112,8 @@ theorem gelfandRadius_star [StarRing A] [NormedStarGroup A] (a : A) :
 theorem gelfandRadius_op (a : A) : gelfandRadius (MulOpposite.op a) = gelfandRadius a :=
   gelfandRadius_eq_of_norm_pow <| by simp [← MulOpposite.op_pow, MulOpposite.norm_op]
 
-theorem Isometry.gelfandRadius_map {B F : Type*} [SeminormedRing B] [FunLike F A B]
-    [MonoidWithZeroHomClass F A B] {f : F} (hf : Isometry f) (a : A) :
+theorem Isometry.gelfandRadius_map {F : Type*} [FunLike F A B] [MonoidWithZeroHomClass F A B]
+    {f : F} (hf : Isometry f) (a : A) :
     gelfandRadius (f a) = gelfandRadius a :=
   gelfandRadius_eq_of_norm_pow <| by simp [← map_pow, hf.norm_map_of_map_zero (map_zero f)]
 
