@@ -5,9 +5,10 @@ Authors: Patrick Massot, Michael Rothgang, Heather Macbeth
 -/
 module
 
-import Mathlib.Analysis.InnerProductSpace.Dual
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Metric
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Torsion
+
+import Mathlib.Analysis.InnerProductSpace.Dual
 
 /-!
 # The Levi-Civita connection on a Riemannian manifold

@@ -6,6 +6,7 @@ Authors: Kenny Lau
 module
 
 public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
+
 import Mathlib.Tactic.SuppressCompilation
 
 /-!

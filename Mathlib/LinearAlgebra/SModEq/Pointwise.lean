@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Algebra.Operations
 public import Mathlib.LinearAlgebra.SModEq.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pointwise lemmas for modular equivalence
 

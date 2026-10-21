@@ -5,8 +5,8 @@ Authors: Damiano Testa
 -/
 module
 
-public import Mathlib.Data.Finsupp.Order
 public import Mathlib.Data.DFinsupp.Lex
+public import Mathlib.Data.Finsupp.Order
 public import Mathlib.Data.Finsupp.ToDFinsupp
 
 /-!

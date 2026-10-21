@@ -5,8 +5,11 @@ Authors: Jireh Loreaux, Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.Topology.Order.Basic
 public import Mathlib.Order.SuccPred.Limit
+public import Mathlib.Topology.Order.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Order topologies of successor or predecessor orders

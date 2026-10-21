@@ -60,11 +60,6 @@ protected theorem dual :
     LeftOrdContinuous f → RightOrdContinuous (toDual ∘ f ∘ ofDual) :=
   id
 
-@[deprecated (since := "2026-04-08")] alias rightOrdContinuous_dual := LeftOrdContinuous.dual
-
-@[deprecated (since := "2026-04-08")] alias _root_.RightOrdContinuous.orderDual :=
-  RightOrdContinuous.dual
-
 @[to_dual]
 theorem map_isGreatest (hf : LeftOrdContinuous f) {s : Set α} {x : α} (h : IsGreatest s x) :
     IsGreatest (f '' s) (f x) :=
