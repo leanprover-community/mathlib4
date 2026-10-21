@@ -87,7 +87,7 @@ theorem gelfandRadius_le_norm (a : A) : gelfandRadius a ≤ ‖a‖ := by
 theorem gelfandRadius_of_norm_nonpos {a : A} (ha : ‖a‖ ≤ 0) : gelfandRadius a = 0 :=
   le_antisymm ((gelfandRadius_le_norm a).trans ha) (gelfandRadius_nonneg a)
 
-theorem gelfandRadius_le_of_norm_pow_le {B : Type*} [SeminormedRing B] {a : A} {b : B} {C : ℝ}
+theorem gelfandRadius_le_of_norm_pow_le {B : Type*} [SeminormedRing B] {a : A} {b : B} (C : ℝ)
     (h : ∀ n, ‖a ^ n‖ ≤ C * ‖b ^ n‖) : gelfandRadius a ≤ gelfandRadius b := by
   by_cases! hC : C ≤ 0
   · specialize h 1
@@ -100,7 +100,8 @@ theorem gelfandRadius_le_of_norm_pow_le {B : Type*} [SeminormedRing B] {a : A} {
 
 theorem gelfandRadius_eq_of_norm_pow {B : Type*} [SeminormedRing B] {a : A} {b : B}
     (h : ∀ n, ‖a ^ n‖ = ‖b ^ n‖) : gelfandRadius a = gelfandRadius b :=
-  tendsto_nhds_unique_of_forall (tendsto_gelfandRadius a) (tendsto_gelfandRadius b) (by simp [h])
+  le_antisymm (gelfandRadius_le_of_norm_pow_le 1 (by grind))
+    (gelfandRadius_le_of_norm_pow_le 1 (by grind))
 
 @[simp]
 theorem gelfandRadius_star [StarRing A] [NormedStarGroup A] (a : A) :
