@@ -80,15 +80,6 @@ meta def evalGelfandRadius : PositivityExt where eval {u α} _ pα? e :=
 
 end Mathlib.Meta.Positivity
 
-theorem gelfandRadius_eq_of_norm_pow {B : Type*} [SeminormedRing B] (a : A) (b : B)
-    (h : ∀ n, ‖a ^ n‖ = ‖b ^ n‖) : gelfandRadius a = gelfandRadius b :=
-  tendsto_nhds_unique_of_forall (tendsto_gelfandRadius a) (tendsto_gelfandRadius b) (by simp [h])
-
-theorem Isometry.gelfandRadius_map {B F : Type*} [SeminormedRing B] [FunLike F A B]
-    [MonoidWithZeroHomClass F A B] {f : F} (hf : Isometry f) (a : A) :
-    gelfandRadius (f a) = gelfandRadius a :=
-  gelfandRadius_eq_of_norm_pow (f a) a (by simp [← map_pow, hf.norm_map_of_map_zero (map_zero f)])
-
 theorem gelfandRadius_le_norm (a : A) : gelfandRadius a ≤ ‖a‖ := by
   refine le_of_tendsto (tendsto_gelfandRadius' a) (Eventually.of_forall fun k ↦ ?_)
   grw [Real.rpow_inv_le_iff_of_pos, Real.rpow_natCast, norm_pow_le'] <;> positivity
@@ -96,13 +87,42 @@ theorem gelfandRadius_le_norm (a : A) : gelfandRadius a ≤ ‖a‖ := by
 theorem gelfandRadius_of_norm_nonpos {a : A} (ha : ‖a‖ ≤ 0) : gelfandRadius a = 0 :=
   le_antisymm ((gelfandRadius_le_norm a).trans ha) (gelfandRadius_nonneg a)
 
+theorem gelfandRadius_le_of_norm_pow_le {B : Type*} [SeminormedRing B] {a : A} {b : B} {C : ℝ}
+    (h : ∀ n, ‖a ^ n‖ ≤ C * ‖b ^ n‖) : gelfandRadius a ≤ gelfandRadius b := by
+  by_cases! hC : C ≤ 0
+  · specialize h 1
+    grw [hC, zero_mul, pow_one] at h
+    exact (gelfandRadius_of_norm_nonpos h).trans_le (gelfandRadius_nonneg b)
+  · exact le_of_tendsto_of_tendsto' (tendsto_gelfandRadius a)
+      (by simpa using (((C.continuous_const_rpow hC.ne').tendsto' 0 1 C.rpow_zero).comp
+        tendsto_inv_atTop_nhds_zero_nat).mul (tendsto_gelfandRadius b))
+          fun n ↦ by grw [h, Real.mul_rpow] <;> positivity
+
+theorem gelfandRadius_eq_of_norm_pow {B : Type*} [SeminormedRing B] {a : A} {b : B}
+    (h : ∀ n, ‖a ^ n‖ = ‖b ^ n‖) : gelfandRadius a = gelfandRadius b :=
+  tendsto_nhds_unique_of_forall (tendsto_gelfandRadius a) (tendsto_gelfandRadius b) (by simp [h])
+
+@[simp]
+theorem gelfandRadius_star [StarRing A] [NormedStarGroup A] (a : A) :
+    gelfandRadius (star a) = gelfandRadius a :=
+  gelfandRadius_eq_of_norm_pow <| by simp [← star_pow]
+
+@[simp]
+theorem gelfandRadius_op (a : A) : gelfandRadius (MulOpposite.op a) = gelfandRadius a :=
+  gelfandRadius_eq_of_norm_pow <| by simp [← MulOpposite.op_pow, MulOpposite.norm_op]
+
+theorem Isometry.gelfandRadius_map {B F : Type*} [SeminormedRing B] [FunLike F A B]
+    [MonoidWithZeroHomClass F A B] {f : F} (hf : Isometry f) (a : A) :
+    gelfandRadius (f a) = gelfandRadius a :=
+  gelfandRadius_eq_of_norm_pow <| by simp [← map_pow, hf.norm_map_of_map_zero (map_zero f)]
+
 @[simp]
 theorem gelfandRadius_zero : gelfandRadius (0 : A) = 0 :=
   gelfandRadius_of_norm_nonpos norm_zero.le
 
 @[simp]
 theorem gelfandRadius_neg (a : A) : gelfandRadius (-a) = gelfandRadius a :=
-  gelfandRadius_eq_of_norm_pow (-a) a (by simp)
+  gelfandRadius_eq_of_norm_pow (by simp)
 
 theorem gelfandRadius_smul (c : 𝕜) (a : A) :
     gelfandRadius (c • a) = ‖c‖ * gelfandRadius a := by
