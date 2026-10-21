@@ -241,9 +241,10 @@
   authors: mathlib
 53:
   title  : Pi is Transcendental
-  authors: "Trevor Morris"
+  authors: "Trevor Morris and Yuyang Zhao (independent formalizations)"
   links  :
-    result: https://github.com/gotrevor/lean-formalizations/blob/f656d414ec768d1c809e235cdbeef00e3c5fbd81/src/LeanFormalizations/NumberTheory/Transcendence/PiTranscendental.lean
+    Trevor Morris's proof: https://github.com/gotrevor/lean-formalizations/blob/f656d414ec768d1c809e235cdbeef00e3c5fbd81/src/LeanFormalizations/NumberTheory/Transcendence/PiTranscendental.lean
+    Yuyang Zhao's proof: https://github.com/astrainfinita/mathlib4/blob/5a0057ccc26b13a4e361f503f5f765bf56a8d353/Mathlib/NumberTheory/Transcendental/Lindemann/Basic.lean
 54:
   title  : Königsberg Bridges Problem
   decl   : Konigsberg.not_isEulerian
