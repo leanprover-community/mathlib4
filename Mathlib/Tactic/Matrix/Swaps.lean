@@ -21,7 +21,6 @@ permutations of matrix literals corresponding to those swaps.
 
 - `permOfSwaps`: the permutation `swap a₀ b₀ * swap a₁ b₁ * ⋯` of a list of swaps, with its sign
   `intCast_sign_permOfSwaps`.
-- `arrangementOfSwaps`: the arrangement of the row indices after the swaps.
 - `mkSwapsLitQ`: build the list literal of the swaps.
 - `certifyPermSign`, certify the sign of the permutation of swaps.
 - `certifyPermEq`: certify the row arrangement `A.submatrix σ id = Aσ` of a matrix literal.
@@ -45,12 +44,6 @@ theorem intCast_sign_permOfSwaps {α : Type*} [Ring α] {m : Type*} [DecidableEq
 meta section
 
 open Lean Meta Qq
-
-/-- The arrangement of the rows `0, …, n - 1` after the swaps, applied in order: the entry at
-position `i` is the original row index that the swaps move to position `i`, that is, `σ i` for the
-permutation `σ` of the swaps. -/
-def arrangementOfSwaps (n : Nat) (swaps : Array (Nat × Nat)) : Array Nat :=
-  swaps.foldl (fun ord (a, b) => ord.swapIfInBounds a b) (Array.range n)
 
 /-- Build the list literal of the recorded swaps, the argument of `permOfSwaps`. -/
 def mkSwapsLitQ (m : Nat) (swaps : Array (Nat × Nat)) : MetaM Q(List (Fin $m × Fin $m)) := do

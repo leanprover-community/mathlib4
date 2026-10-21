@@ -8,7 +8,6 @@ module
 public meta import Qq
 public import Mathlib.Init
 public import Mathlib.Tactic.Matrix.Cert
-public import Mathlib.Tactic.Matrix.Swaps
 
 /-!
 # Parameterized computation core for the Bareiss elimination
@@ -112,7 +111,7 @@ def BareissData.mapM {V W : Type} (f : V → MetaM W) (d : BareissData V) :
 /-- The row arrangement of the swaps: the entry at position `i` is the original row index
 that the swaps move to position `i`, that is, `σ i`. -/
 def BareissData.rowOrder {V : Type} (d : BareissData V) : Array Nat :=
-  arrangementOfSwaps d.L.size d.swaps
+  d.swaps.foldl (fun ord (a, b) => ord.swapIfInBounds a b) (Array.range d.L.size)
 
 /-- Core algorithm of fraction-free Gaussian elimination, with the arithmetic supplied
 by the model.
