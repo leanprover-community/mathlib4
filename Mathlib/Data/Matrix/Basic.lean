@@ -901,7 +901,7 @@ This is available in bundled forms as:
   __ := piEquiv
   map_add' _ _ := rfl
 
-@[simp] theorem toEquiv_piAddEquiv [∀ i, Add (β i)] :
+@[simp] theorem toEquiv_piAddEquiv [Π i, Add (β i)] :
     (piAddEquiv (m := m) (n := n) (ι := ι) (β := β) :
     Matrix m n (Π i, β i) ≃ Π i, Matrix m n (β i)) = piEquiv := rfl
 
