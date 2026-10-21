@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Algebra.Group.Neighborhood
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuous division in topological groups
 

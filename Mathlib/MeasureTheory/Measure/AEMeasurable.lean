@@ -5,8 +5,11 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.Trim
 public import Mathlib.MeasureTheory.MeasurableSpace.CountablyGenerated
+public import Mathlib.MeasureTheory.Measure.Trim
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Almost everywhere measurable functions
@@ -211,7 +214,8 @@ theorem exists_ae_eq_range_subset (H : AEMeasurable f μ) {t : Set β} (ht : ∀
 
 theorem exists_measurable_nonneg {β} [Preorder β] [Zero β] {mβ : MeasurableSpace β} {f : α → β}
     (hf : AEMeasurable f μ) (f_nn : ∀ᵐ t ∂μ, 0 ≤ f t) : ∃ g, Measurable g ∧ 0 ≤ g ∧ f =ᵐ[μ] g := by
-  obtain ⟨G, hG_meas, hG_mem, hG_ae_eq⟩ := hf.exists_ae_eq_range_subset f_nn ⟨0, le_rfl⟩
+  obtain ⟨G, hG_meas, hG_mem, hG_ae_eq⟩ :=
+    hf.exists_ae_eq_range_subset (t := {b | 0 ≤ b}) f_nn ⟨0, le_rfl⟩
   exact ⟨G, hG_meas, fun x => hG_mem (mem_range_self x), hG_ae_eq⟩
 
 theorem subtype_mk (h : AEMeasurable f μ) {s : Set β} {hfs : ∀ x, f x ∈ s} :
@@ -501,15 +505,34 @@ lemma AEMeasurable.const_eq [MeasurableSingletonClass β] (hf : AEMeasurable f �
   conv => enter [1, x]; rw [eq_comm]
   exact .eq_const hf a
 
+omit [MeasurableSpace β] [MeasurableSpace γ] in
+lemma aemeasurable_comap_iff {mγ : MeasurableSpace γ} {g : β → γ} (hg : g.Injective) :
+    @AEMeasurable α β (mγ.comap g) m0 f μ ↔ AEMeasurable (g ∘ f) μ := by
+  let := mγ.comap g
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · exact ⟨g ∘ h.mk f, measurable_comap_iff.1 h.measurable_mk,
+      h.ae_eq_mk.mono fun x hx ↦ congr(g $hx)⟩
+  cases isEmpty_or_nonempty α
+  · fun_prop
+  have : Nonempty β := .map f ‹_›
+  obtain ⟨h', hh', hrange, hfh'⟩ :=
+    h.exists_ae_eq_range_subset (.of_forall fun x ↦ mem_range_self (f x)) (range_nonempty g)
+  refine ⟨invFun g ∘ h', measurable_comap_iff.2 ?_, hfh'.mono fun x hx ↦ ?_⟩
+  · convert hh'
+    ext x
+    exact invFun_eq (hrange <| mem_range_self x)
+  · simp only [comp_apply] at hx ⊢
+    rw [← hx, leftInverse_invFun hg]
+
 section Set
 
 variable {β : Type*} {f g : α → Set β}
 
-lemma AEMeasurable.mem (hf : AEMeasurable f μ) (b : β) : AEMeasurable (b ∈ f ·) μ :=
-    hf.eval b
-
 lemma aemeasurable_set_iff [Countable β] : AEMeasurable f μ ↔ ∀ b, AEMeasurable (b ∈ f ·) μ :=
-  aemeasurable_pi_iff
+  (aemeasurable_comap_iff Set.mem_bijective.1).trans aemeasurable_pi_iff
+
+lemma AEMeasurable.mem (hf : AEMeasurable f μ) {b : β} : AEMeasurable (b ∈ f ·) μ :=
+  ((aemeasurable_comap_iff Set.mem_bijective.1).1 hf).eval b
 
 alias ⟨_, AEMeasurable.of_mem⟩ := aemeasurable_set_iff
 

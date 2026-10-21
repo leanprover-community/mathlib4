@@ -6,11 +6,11 @@ Authors: Alastair Irving, Terry Tao, Ruben Van de Velde
 module
 
 public import Mathlib.NumberTheory.AbelSummation
-public import Mathlib.NumberTheory.Primorial
 public import Mathlib.NumberTheory.ArithmeticFunction.VonMangoldt
+public import Mathlib.NumberTheory.Primorial
 
-import Mathlib.Algebra.Order.Floor.Semifield
 import Mathlib.Algebra.GCDMonoid.FinsetLemmas
+import Mathlib.Algebra.Order.Floor.Semifield
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.Analysis.SpecialFunctions.Log.InvLog
 import Mathlib.Data.Nat.Prime.Int
@@ -207,6 +207,7 @@ Basic facts about the least common multiple of the first `n` natural numbers
 -/
 
 /-- Least common multiple of `Icc 1 n`. -/
+@[oeis A003418]
 def lcmUpto (n : ℕ) : ℕ := (Icc 1 n).lcm id
 
 theorem lcmUpto_ne_zero (n : ℕ) : lcmUpto n ≠ 0 := by simp [lcmUpto]

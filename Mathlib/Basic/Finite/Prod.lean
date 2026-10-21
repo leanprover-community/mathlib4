@@ -5,8 +5,8 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Data.Fintype.Prod
 public import Mathlib.Data.Fintype.Pi
+public import Mathlib.Data.Fintype.Prod
 public import Mathlib.Data.Set.NAry
 
 import Mathlib.Data.ULift
