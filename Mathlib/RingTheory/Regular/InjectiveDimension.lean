@@ -273,7 +273,6 @@ lemma extClass_postcomp_bijective_of_isSMulRegular {M : ModuleCat.{v} R} {x : R}
       Ext.comp_smul, Ext.comp_smul, ← Ext.smul_comp, ← Ext.mk₀_smul]
     simp [ann]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The map `Ext N (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x ↑M)) n →+
   Ext ((ModuleCat.restrictScalars (Ideal.Quotient.mk (Ideal.span {x}))).obj N) M (n + 1)`
   is bijective. -/
@@ -286,15 +285,21 @@ theorem extClass_comp_mapExt_bijective {M : ModuleCat.{v} R} {x : R} (regR : IsS
   let Fr := (ModuleCat.restrictScalars.{v} (Ideal.Quotient.mk (Ideal.span {x})))
   induction n generalizing N with
   | zero =>
-    simp only [ModuleCat.smulShortComplex, Nat.reduceAdd, AddMonoidHom.coe_comp]
-    refine Function.Bijective.comp ?_ ?_
-    · apply extClass_postcomp_bijective_of_isSMulRegular regM
+    have bij1 : Function.Bijective (regM.smulShortComplex_shortExact.extClass.postcomp
+      ((ModuleCat.restrictScalars (Ideal.Quotient.mk (Ideal.span {x}))).obj N) (Eq.refl 1)) := by
+      apply extClass_postcomp_bijective_of_isSMulRegular regM
       ext u
-      simp
-    · change Function.Bijective (Ext.mapExactFunctor _)
-      rw [Ext.mapExactFunctor₀, Equiv.comp_bijective, Equiv.bijective_comp]
+      simp only [ModuleCat.hom_smul, ModuleCat.hom_id, LinearMap.smul_apply, LinearMap.id_coe,
+        id_eq, ModuleCat.restrictScalars.smul_def, Ideal.Quotient.mk_singleton_self,
+        ModuleCat.hom_zero, LinearMap.zero_apply]
+      exact zero_smul _ _
+    have bij2 : Function.Bijective ((ModuleCat.restrictScalars (Ideal.Quotient.mk
+      (Ideal.span {x}))).mapExtAddHom N ↧(QuotSMulTop x ↑M) 0) := by
+      rw [Functor.mapExtAddHom_coe, Ext.mapExactFunctor₀, Equiv.comp_bijective,
+        Equiv.bijective_comp]
       apply Functor.FullyFaithful.map_bijective
       exact ModuleCat.restrictScalarsFullyFaithfulOfSurjective _ Ideal.Quotient.mk_surjective
+    exact bij1.comp bij2
   | succ n ih =>
     let S := N.projectiveShortComplex
     have S_exact : S.ShortExact := N.shortExact_projectiveShortComplex
@@ -303,14 +308,14 @@ theorem extClass_comp_mapExt_bijective {M : ModuleCat.{v} R} {x : R} (regR : IsS
     let MxM := (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M))
     let f : Ext S.X₂ MxM n →+ Ext S.X₁ MxM n := (Ext.mk₀ S.f).precomp MxM (zero_add n)
     let g : Ext S.X₁ MxM n →+ Ext S.X₃ MxM (n + 1) := S_exact.extClass.precomp MxM (add_comm 1 n)
-    have exac1 : Function.Exact f g := (ShortComplex.ab_exact_iff_function_exact  _).mp
+    have exact1 : Function.Exact f g := (ShortComplex.ab_exact_iff_function_exact  _).mp
       (Ext.contravariant_sequence_exact₁' S_exact MxM n (n + 1) (add_comm 1 n))
     have surj1 : Function.Surjective g := precomp_extClass_surjective_of_projective_X₂ MxM S_exact n
     let f' : Ext (S.map Fr).X₂ M (n + 1) →+ Ext (S.map Fr).X₁ M (n + 1) :=
       (Ext.mk₀ (S.map Fr).f).precomp M (zero_add (n + 1))
     let g' : Ext (S.map Fr).X₁ M (n + 1) →+ Ext (S.map Fr).X₃ M (n + 2) :=
       (S_exact.map_of_exact Fr).extClass.precomp M (add_comm 1 (n + 1))
-    have exac2 : Function.Exact f' g' :=
+    have exact2 : Function.Exact f' g' :=
       (ShortComplex.ab_exact_iff_function_exact  _).mp (Ext.contravariant_sequence_exact₁'
       (S_exact.map_of_exact Fr) M (n + 1) (n + 2) (add_comm 1 (n + 1)))
     have isz2 : Limits.IsZero (AddCommGrpCat.of (Ext (S.map Fr).X₂ M (n + 2))) :=
@@ -324,7 +329,7 @@ theorem extClass_comp_mapExt_bijective {M : ModuleCat.{v} R} {x : R} (regR : IsS
       (Fr.mapExtAddHom N (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M)) m))
     apply AddMonoidHom.bijective_of_surjective_of_bijective_of_right_exact f g f' g'
       (ft S.X₂ n) (ft S.X₁ n) (ft S.X₃ (n + 1)) ?_ ?_
-      exac1 exac2 (ih S.X₂).2 (ih S.X₁) surj1 surj2
+      exact1 exact2 (ih S.X₂).2 (ih S.X₁) surj1 surj2
     · ext z
       have : (Ext.mk₀ (Fr.map S.f)).comp (z.mapExactFunctor Fr) (zero_add n) =
         (((Ext.mk₀ S.f).comp z (zero_add n)).mapExactFunctor Fr) := by
