@@ -22,8 +22,8 @@ namespace Mathlib.Tactic.ClickSuggestions
 
 open Lean Meta SubExpr ProofWidgets RefreshComponent Server
 
-partial def getHtmlComponentProps {Props} [RpcEncodable Props] (html : Html) (c : Component Props)
-    (arr : Array Props) : CoreM (Array Props) := do
+partial def getHtmlComponentProps {Props} [RpcEncodable Props] (html : ProofWidgets.Html)
+    (c : Component Props) (arr : Array Props) : CoreM (Array Props) := do
   match html with
   | .element _ _ htmls => htmls.foldlM (fun arr html ↦ getHtmlComponentProps html c arr) arr
   | .text _ => return arr
@@ -46,8 +46,8 @@ where
     | .ok props => return props
     | .error e => throwError "An error occurred when looking at the HTML: {e}"
 /- Wait until the state has finished refreshing, and the return the final HTML.
-This is useful for inspecting `Html` from within Lean. -/
-  getFinalHtml (info : RefreshRef) : BaseIO Html := do
+This is useful for inspecting `ProofWidgets.Html` from within Lean. -/
+  getFinalHtml (info : RefreshRef) : BaseIO ProofWidgets.Html := do
   let { curr, next, .. } ← info.ref.atomically get
   if next.get.isNone then
     return curr.get

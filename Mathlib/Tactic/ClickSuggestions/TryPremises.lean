@@ -108,7 +108,7 @@ private partial def foldTasksM {α β} (tasks : Array (Task β)) (init : α) (f 
 /-- Spawn tasks for the given candidate premises and
 return an HTML that shows the incoming results -/
 def runSuggestions (kind : SectionKind) (assignableMVars : Array Expr) :
-    Candidates → ClickSuggestionsM Html
+    Candidates → ClickSuggestionsM ProofWidgets.Html
   | .rw info arr => go "rw" (·.isDuplicate ·) arr (·.name) (·.try info assignableMVars)
   | .grw info arr => go "grw" (·.isDuplicate ·) arr (·.name) (·.try info assignableMVars)
   | .app arr => go "apply" (·.isDuplicate ·) arr (·.name) (·.try assignableMVars)
@@ -117,7 +117,7 @@ where
   @[specialize]
   go {α β} [Ord α] [Inhabited α] (tactic : String) (isDup : α → α → MetaM Bool)
       (candidates : Array β) (premise : β → Premise)
-      (mkSuggestion : β → ClickSuggestionsM (Result α)) : ClickSuggestionsM Html := do
+      (mkSuggestion : β → ClickSuggestionsM (Result α)) : ClickSuggestionsM ProofWidgets.Html := do
     let (html, token) ← mkRefreshComponent
     let tasks ← candidates.mapM fun lem ↦ spawnTask (premise lem) (mkSuggestion lem)
     discard <| BaseIO.asTask (prio := .dedicated) <| (← saveCtxM <| trackingComputation tactic do
