@@ -13,9 +13,6 @@ import Mathlib.Algebra.Order.Group.OrderIso
 import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # `Finset.sup` in a group
 -/

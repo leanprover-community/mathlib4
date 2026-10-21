@@ -11,9 +11,6 @@ public import Mathlib.CategoryTheory.Monoidal.Mon
 
 import Mathlib.Tactic.SuppressCompilation
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # `Mon (ModuleCat R) ≌ AlgCat R`
 

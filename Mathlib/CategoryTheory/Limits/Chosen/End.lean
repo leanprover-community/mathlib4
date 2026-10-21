@@ -7,9 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.End
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Chosen ends and coends
 
