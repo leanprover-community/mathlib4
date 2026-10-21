@@ -5,8 +5,8 @@ Authors: Anne Baanen, Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 
 /-!
 # Pi instances for NoZeroSMulDivisors
@@ -29,7 +29,7 @@ instance Pi.noZeroSMulDivisors (α) [Semiring α] [IsDomain α] [∀ i, AddCommG
     NoZeroSMulDivisors α (∀ i : I, f i) :=
   ⟨fun {_ _} h =>
     or_iff_not_imp_left.mpr fun hc =>
-      funext fun i => (smul_eq_zero.mp (congr_fun h i)).resolve_left hc⟩
+      funext fun i => (smul_eq_zero.mp congr($h i)).resolve_left hc⟩
 
 /-- A special case of `Pi.noZeroSMulDivisors` for non-dependent types. Lean struggles to
 synthesize this instance by itself elsewhere in the library. -/

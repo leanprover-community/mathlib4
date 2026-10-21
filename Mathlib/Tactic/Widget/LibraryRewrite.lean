@@ -5,13 +5,15 @@ Authors: Jovan Gerbscheid, Anand Rao
 -/
 module
 
-public meta import Mathlib.Lean.Meta.RefinedDiscrTree
-public meta import Mathlib.Tactic.Widget.SelectPanelUtils
 public meta import Mathlib.Lean.GoalsLocation
 public meta import Mathlib.Lean.Meta.KAbstractPositions
-public import Mathlib.Tactic.NthRewrite
-public import ProofWidgets.Component.FilterDetails
-public import ProofWidgets.Component.OfRpcMethod
+public meta import Mathlib.Lean.Meta.RefinedDiscrTree
+public meta import Mathlib.Tactic.Widget.SelectPanelUtils
+public meta import ProofWidgets.Component.FilterDetails
+public import Mathlib.Tactic.Widget.SelectPanelUtils
+
+meta import ProofWidgets.Component.OfRpcMethod
+import Mathlib.Tactic.NthRewrite
 
 /-!
 # Point & click library rewriting
@@ -256,7 +258,7 @@ def checkAndSortRewriteLemmas (e : Expr) (rewrites : Array RewriteLemma) :
     (compare a.1.extraGoals.size b.1.extraGoals.size).then <|
     (compare a.1.symm b.1.symm).then <|
     (compare a.2.toString.length b.2.toString.length).then <|
-    (compare a.1.stringLength b.1.stringLength).then <|
+    (compare a.1.stringLength b.1.stringLength).then
     (Name.cmp a.2 b.2)
   return rewrites.qsort lt
 
@@ -374,7 +376,7 @@ def tacticSyntax (rw : Rewrite) (occ : Option Nat) (loc : Option Name) :
   let proof ← withOptions (pp.mvars.anonymous.set · false) (PrettyPrinter.delab rw.proof)
   mkRewrite occ rw.symm proof loc
 
-open Widget ProofWidgets Jsx Server
+open Widget ProofWidgets Server
 
 /-- The structure with all data necessary for rendering a rewrite suggestion -/
 structure RewriteInterface where
@@ -462,7 +464,7 @@ def renderRewrites (e : Expr) (results : Array (Array RewriteInterface × Kind))
     MetaM Html := do
   let htmls ← results.filterMapM (renderSection showNames)
   if htmls.isEmpty then
-    return <p> No rewrites found for <InteractiveCode fmt={← ppExprTagged e}/> </p>
+    return jsx%{<p> No rewrites found for <InteractiveCode fmt={← ppExprTagged e}/></p>}
   else
     return .element "div" #[("style", json% {"marginLeft" : "4px"})] htmls
 where
@@ -473,31 +475,32 @@ where
       | .hypothesis => " (local hypotheses)"
       | .fromFile => " (lemmas from current file)"
       | .fromCache => ""
-    return <details «open»={true}>
+    let pat ← pattern head.lemmaType head.symm
+      (return jsx%{<InteractiveCode fmt={← ppExprTagged ·}/>})
+    return jsx%{<details open={true}>
       <summary className="mv2 pointer">
-        Pattern
-        {← pattern head.lemmaType head.symm (return <InteractiveCode fmt={← ppExprTagged ·}/>)}
-        {.text suffix}
+        Pattern {pat}{.text suffix}
       </summary>
       {renderSectionCore showNames sec.1}
-    </details>
+    </details>}
 
   /-- Render the list of rewrite results in one section. -/
   renderSectionCore (showNames : Bool) (sec : Array RewriteInterface) : Html :=
     .element "ul" #[("style", json% { "padding-left" : "30px"})] <|
     sec.map fun rw =>
-      <li> { .element "p" #[] <|
+      jsx%{<li>{ .element "p" #[] <|
         let button :=
-          <span className="font-code"> {
+          jsx%{<span className="font-code">{
             Html.ofComponent MakeEditLink
               (.ofReplaceRange doc.meta range rw.tactic)
               #[.text rw.replacementString] }
-          </span>
+          </span>}
         let extraGoals := rw.extraGoals.flatMap fun extraGoal =>
-          #[<br/>, <strong className="goal-vdash">⊢ </strong>, <InteractiveCode fmt={extraGoal}/>]
+          #[jsx%{<br/>}, jsx%{<strong className="goal-vdash">⊢ </strong>},
+            jsx%{<InteractiveCode fmt={extraGoal}/>}]
         #[button] ++ extraGoals ++
-          if showNames then #[<br/>, <InteractiveCode fmt={rw.prettyLemma}/>] else #[] }
-      </li>
+          if showNames then #[jsx%{<br/>}, jsx%{<InteractiveCode fmt={rw.prettyLemma}/>}] else #[] }
+      </li>}
 
 /-- The rpc method of the `rw??` widget. -/
 @[server_rpc_method]
@@ -520,7 +523,7 @@ def rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
       let some (subExpr, occ) ← withReducible <| viewKAbstractSubExpr rootExpr loc.pos |
         return .text "rw??: expressions with bound variables are not yet supported"
       unless ← kabstractIsTypeCorrect rootExpr subExpr loc.pos do
-        return .text <| "rw??: the selected expression cannot be rewritten, \
+        return .text "rw??: the selected expression cannot be rewritten, \
           because the motive is not type correct. \
           This usually occurs when trying to rewrite a term that appears as a dependent argument."
       let location ← loc.fvarId?.mapM FVarId.getUserName
@@ -528,11 +531,11 @@ def rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
       let (filtered, all) ← getRewriteInterfaces subExpr occ location loc.fvarId? props.replaceRange
       let filtered ← renderRewrites subExpr filtered props.replaceRange doc false
       let all      ← renderRewrites subExpr all      props.replaceRange doc true
-      return <FilterDetails
+      return jsx%{<FilterDetails
         summary={.text "Rewrite suggestions:"}
         all={all}
         filtered={filtered}
-        initiallyFiltered={true} />
+        initiallyFiltered={true} />}
 
 /-- The component called by the `rw??` tactic -/
 @[widget_module]

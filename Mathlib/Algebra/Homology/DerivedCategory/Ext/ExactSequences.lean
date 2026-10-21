@@ -17,6 +17,20 @@ when `S` is a short exact short complex in an abelian category `C`, `n₀ + 1 = 
 Similarly, if `Y : C`, there is a contravariant long exact sequence :
 `Ext S.X₃ Y n₀ → Ext S.X₂ Y n₀ → Ext S.X₁ Y n₀ → Ext S.X₃ Y n₁ → Ext S.X₂ Y n₁ → Ext S.X₁ Y n₁`.
 
+We first phrase these exact sequences by using the pre- or post-composition with
+the class in `Ext S.X₃ S.X₁ 1` attached to the short exact sequence.
+Our understanding is that for the covariant exact long exact sequence,
+the morphism `Ext X S.X₃ n₀ → Ext X S.X₁ n₁` we obtain in this way is the connecting
+homomorphism from [conrad2000]. However, for the contravariant
+long exact sequence, the precomposition `Ext S.X₁ Y n₀ → Ext S.X₃ Y n₁` with the class
+in `Ext S.X₃ S.X₁ 1` is the standard connecting homomorphism only up to the multiplication
+with the sign `(-1) ^ n₁`. This is the reason why we introduce a definition `Ext.δ`
+which is the "correct" connecting homomorphism, and the exactness properties are
+also restated using `Ext.δ` instead of the pre-composition with the class in `Ext S.X₃ S.X₁ 1`.
+
+## References
+* [Brian Conrad, Grothendieck duality and base change][conrad2000]
+
 -/
 
 @[expose] public section
@@ -67,7 +81,7 @@ lemma covariant_sequence_exact₂' (n : ℕ) :
         dsimp
         simp only [comp_assoc_of_third_deg_zero, mk₀_comp_mk₀, ShortComplex.zero, mk₀_zero,
           comp_zero])).Exact := by
-  letI := HasDerivedCategory.standard C
+  let := HasDerivedCategory.standard C
   have := (preadditiveCoyoneda.obj (op ((singleFunctor C 0).obj X))).homologySequence_exact₂ _
     (hS.singleTriangle_distinguished) n
   rw [ShortComplex.ab_exact_iff_function_exact] at this ⊢
@@ -88,7 +102,7 @@ lemma covariant_sequence_exact₃' :
         dsimp
         simp only [comp_assoc_of_second_deg_zero, ShortComplex.ShortExact.comp_extClass,
           comp_zero])).Exact := by
-  letI := HasDerivedCategory.standard C
+  let := HasDerivedCategory.standard C
   have := (preadditiveCoyoneda.obj (op ((singleFunctor C 0).obj X))).homologySequence_exact₃ _
     (hS.singleTriangle_distinguished) n₀ n₁ (by lia)
   rw [ShortComplex.ab_exact_iff_function_exact] at this ⊢
@@ -108,7 +122,7 @@ lemma covariant_sequence_exact₁' :
         dsimp
         simp only [comp_assoc_of_third_deg_zero, ShortComplex.ShortExact.extClass_comp,
           comp_zero])).Exact := by
-  letI := HasDerivedCategory.standard C
+  let := HasDerivedCategory.standard C
   have := (preadditiveCoyoneda.obj (op ((singleFunctor C 0).obj X))).homologySequence_exact₁ _
     (hS.singleTriangle_distinguished) n₀ n₁ (by lia)
   rw [ShortComplex.ab_exact_iff_function_exact] at this ⊢
@@ -204,7 +218,7 @@ lemma contravariant_sequence_exact₂' (n : ℕ) :
         ext
         dsimp
         simp only [mk₀_comp_mk₀_assoc, ShortComplex.zero, mk₀_zero, zero_comp])).Exact := by
-  letI := HasDerivedCategory.standard C
+  let := HasDerivedCategory.standard C
   have := (preadditiveYoneda.obj ((singleFunctor C 0).obj Y)).homologySequence_exact₂ _
     (op_distinguished _ hS.singleTriangle_distinguished) n
   rw [ShortComplex.ab_exact_iff_function_exact] at this ⊢
@@ -224,7 +238,7 @@ lemma contravariant_sequence_exact₁' :
         ext
         dsimp
         simp only [ShortComplex.ShortExact.extClass_comp_assoc])).Exact := by
-  letI := HasDerivedCategory.standard C
+  let := HasDerivedCategory.standard C
   have := (preadditiveYoneda.obj ((singleFunctor C 0).obj Y)).homologySequence_exact₃ _
     (op_distinguished _ hS.singleTriangle_distinguished) n₀ n₁ (by lia)
   rw [ShortComplex.ab_exact_iff_function_exact] at this ⊢
@@ -241,7 +255,7 @@ lemma contravariant_sequence_exact₃' :
         ext
         dsimp
         simp only [ShortComplex.ShortExact.comp_extClass_assoc])).Exact := by
-  letI := HasDerivedCategory.standard C
+  let := HasDerivedCategory.standard C
   have := (preadditiveYoneda.obj ((singleFunctor C 0).obj Y)).homologySequence_exact₁ _
     (op_distinguished _ hS.singleTriangle_distinguished) n₀ n₁ (by lia)
   rw [ShortComplex.ab_exact_iff_function_exact] at this ⊢
@@ -304,6 +318,31 @@ lemma precomp_mk₀_injective_of_epi (L : C) {M N : C} (g : M ⟶ N) [hg : Epi g
 lemma mono_precomp_mk₀_of_epi (L : C) {M N : C} (g : M ⟶ N) [hg : Epi g] :
     Mono (AddCommGrpCat.ofHom <| (Ext.mk₀ g).precomp L (zero_add 0)) :=
   (AddCommGrpCat.mono_iff_injective _).mpr (precomp_mk₀_injective_of_epi L g)
+
+variable {Y} in
+/-- The standard connecting homomorphism `Ext S.X₁ Y n₀ →+ Ext S.X₃ Y n₁`
+for the contravariant long sequence of `Ext` when `n₀ + 1 = n₁` and `S` is a
+short exact sequence. This definition should be consistent with [conrad2000].
+It is obtained by multiplying by `(-1) ^ n₁` the precomposition
+with `hS.extClass : Ext S.X₃ X₁ 1`. -/
+@[simps -isSimp]
+protected noncomputable def δ (n₀ n₁ : ℕ) (h : n₀ + 1 = n₁) :
+    Ext S.X₁ Y n₀ →+ Ext S.X₃ Y n₁ where
+  toFun e := Int.negOnePow n₁ • hS.extClass.comp e (by lia)
+  map_zero' := by simp
+  map_add' := by simp
+
+lemma δ_exact₁ {n₀ : ℕ} (x₁ : Ext S.X₁ Y n₀) {n₁ : ℕ} (hn₁ : n₀ + 1 = n₁)
+    (hx₁ : Ext.δ hS n₀ n₁ hn₁ x₁ = 0) :
+    ∃ (x₂ : Ext S.X₂ Y n₀), (mk₀ S.f).comp x₂ (zero_add n₀) = x₁ :=
+  contravariant_sequence_exact₁ hS Y x₁ (n₁ := n₁) (by lia)
+    (by simpa [δ_apply, Units.smul_def] using hx₁)
+
+lemma δ_exact₃ {n₁ : ℕ} (x₃ : Ext S.X₃ Y n₁) (hx₃ : (mk₀ S.g).comp x₃ (zero_add n₁) = 0)
+    {n₀ : ℕ} (hn₀ : n₀ + 1 = n₁) :
+    ∃ (x₁ : Ext S.X₁ Y n₀), Ext.δ hS n₀ n₁ hn₀ x₁ = x₃ := by
+  obtain ⟨x₁, hx₁⟩ := contravariant_sequence_exact₃ hS Y x₃ hx₃ (n₀ := n₀) (by lia)
+  exact ⟨Int.negOnePow n₁ • x₁, by simpa [δ_apply, smul_smul]⟩
 
 end ContravariantSequence
 

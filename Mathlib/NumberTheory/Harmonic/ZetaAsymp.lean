@@ -5,9 +5,11 @@ Authors: David Loeffler, Terence Tao
 -/
 module
 
-public import Mathlib.NumberTheory.LSeries.Dirichlet
 public import Mathlib.NumberTheory.Harmonic.GammaDeriv
-public import Mathlib.Analysis.Asymptotics.Lemmas
+public import Mathlib.NumberTheory.LSeries.Dirichlet
+
+import Mathlib.Analysis.Calculus.Deriv.Star
+import Mathlib.Analysis.Normed.Module.Connected
 
 /-!
 # Asymptotics of `ζ s` as `s → 1` or `s → 0`
@@ -25,6 +27,8 @@ The goal of this file is to evaluate the limit of `ζ s - 1 / (s - 1)` as `s →
   for certain entire functions `riemannZeta₀` and `riemannZeta₁`.
 * Asymptotics for `deriv riemannZeta s`, `log (riemannZeta s)`,
   `(deriv riemannZeta s) / (riemannZeta s)` and `(riemannZeta s)⁻¹` as `s → 1`.
+* `riemannZeta_conj`: the conjugation symmetry `ζ (conj s) = conj (ζ s)` (valid for all `s`,
+  since the junk value `ζ 1` is real).
 
 ### Outline of arguments
 
@@ -39,7 +43,9 @@ we obtain the limit along punctured neighbourhoods of 1 in `ℂ`.
 
 @[expose] public section
 
-open Set MeasureTheory Filter Topology
+open Set MeasureTheory Filter
+
+open scoped Topology
 
 @[inherit_doc] local notation "γ" => Real.eulerMascheroniConstant
 
@@ -146,7 +152,7 @@ lemma term_tsum_one : HasSum (fun n ↦ term (n + 1) 1) (1 - γ) := by
   refine Tendsto.add ?_ tendsto_const_nhds
   have := (tendsto_eulerMascheroniSeq'.comp (tendsto_add_atTop_nat 1)).neg
   refine this.congr' (Eventually.of_forall (fun n ↦ ?_))
-  simp_rw [Function.comp_apply, eulerMascheroniSeq', reduceCtorEq, if_false]
+  simp_rw [Function.comp_apply, eulerMascheroniSeq', reduceCtorEq, ite_false]
   push_cast
   abel
 
@@ -398,15 +404,16 @@ lemma tendsto_riemannZeta_sub_one_div_Gammaℝ :
     (𝓝 ((γ - Complex.log (4 * ↑π)) / 2)) := by
   have := tendsto_riemannZeta_sub_one_div.add tendsto_Gamma_term_aux
   simp_rw [sub_add_sub_cancel] at this
-  convert! this using 2
+  convert this using 2
   ring_nf
 
 end val_at_one
 
 end ZetaAsymptotics
 
-open scoped Real
 open Complex
+
+open scoped Real ComplexConjugate
 
 /-- Formula for `ζ 1`. Note that mathematically `ζ 1` is undefined, but our construction ascribes
 this particular value to it. -/
@@ -443,6 +450,66 @@ lemma riemannZeta_one_ne_zero : riemannZeta 1 ≠ 0 := by
   · rw [Real.lt_log_iff_exp_lt (by positivity)]
     exact (lt_trans Real.exp_one_lt_d9 (by norm_num)).trans_le
       <| mul_le_mul_of_nonneg_left Real.two_le_pi (by simp)
+
+/-- **Conjugation symmetry of the Riemann zeta function**: `ζ (conj s) = conj (ζ s)`.
+
+Since `ζ` has real Dirichlet coefficients, `conj (ζ (conj z)) = ζ z` holds termwise for
+`1 < re z`, and the identity principle propagates this to all `s ≠ 1`; the junk value `ζ 1` is
+real, so the identity also holds at `s = 1`. -/
+@[simp]
+theorem riemannZeta_conj (s : ℂ) : riemannZeta (conj s) = conj (riemannZeta s) := by
+  rcases eq_or_ne s 1 with rfl | hs
+  · have h : riemannZeta 1 = ((γ - Real.log (4 * π)) / 2 : ℝ) := by
+      rw [riemannZeta_one, ofReal_div, ofReal_sub, ofReal_log (by positivity : (0 : ℝ) ≤ 4 * π)]
+      norm_cast
+    rw [map_one, h, conj_ofReal]
+  · -- `conj ∘ ζ ∘ conj` is analytic on `{1}ᶜ` and agrees with `ζ` termwise on `1 < re z`, so
+    -- the identity principle propagates the equality to the connected set `{1}ᶜ`.
+    have hg_an : AnalyticOnNhd ℂ (fun z ↦ conj (riemannZeta (conj z))) {1}ᶜ :=
+      DifferentiableOn.analyticOnNhd
+        (fun z hz ↦ (differentiableAt_conj_conj_iff.mpr <| differentiableAt_riemannZeta <|
+          (map_ne_one_iff _ (starRingEnd ℂ).injective).mpr hz).differentiableWithinAt)
+        isOpen_compl_singleton
+    have hgz (z : ℂ) (hz : 1 < z.re) : conj (riemannZeta (conj z)) = riemannZeta z := by
+      rw [zeta_eq_tsum_one_div_nat_cpow (by rwa [conj_re]), conj_tsum,
+        zeta_eq_tsum_one_div_nat_cpow hz]
+      exact tsum_congr fun n ↦ by
+        rw [map_div₀, map_one, ← conj_cpow _ _ (by rw [natCast_arg]; positivity), conj_natCast]
+    have heq : EqOn (fun z ↦ conj (riemannZeta (conj z))) riemannZeta {1}ᶜ :=
+      hg_an.eqOn_of_preconnected_of_eventuallyEq analyticOn_riemannZeta
+        (isConnected_compl_singleton_of_one_lt_rank (by simp) 1).isPreconnected
+        (by simp : (2 : ℂ) ∈ _)
+        (eventuallyEq_of_mem
+          ((isOpen_lt continuous_const continuous_re).mem_nhds (by simp)) hgz)
+    simpa using congrArg (starRingEnd ℂ) (heq hs)
+
+/-- **Conjugation symmetry of the completed zeta function** for `0 < re s`, where the
+relation `Λ s = ζ s * Γ_ℝ s` is available. -/
+private theorem completedRiemannZeta_conj_of_re_pos {s : ℂ} (hs : 0 < s.re) :
+    completedRiemannZeta (conj s) = conj (completedRiemannZeta s) := by
+  have hcs : 0 < (conj s).re := by rwa [conj_re]
+  have key {z : ℂ} (hz : 0 < z.re) : completedRiemannZeta z = riemannZeta z * Gammaℝ z := by
+    have hz0 : z ≠ 0 := fun h ↦ by simp [h] at hz
+    rw [riemannZeta_def_of_ne_zero hz0]
+    exact (div_mul_cancel₀ _ (Gammaℝ_ne_zero_of_re_pos hz)).symm
+  rw [key hcs, key hs, map_mul, riemannZeta_conj, Complex.Gammaℝ_conj]
+
+-- TODO: prove the analogous conjugation symmetry for `completedHurwitzZetaEven`,
+-- `completedHurwitzZetaOdd` and `DirichletCharacter.completedLFunction`, and deduce this
+-- lemma as a special case.
+/-- **Conjugation symmetry of the completed zeta function**: `Λ (conj s) = conj (Λ s)`.
+
+For `0 < re s` this is `riemannZeta_conj` together with `Gammaℝ_conj`; the remaining
+half-plane follows from the functional equation `completedRiemannZeta_one_sub`. -/
+@[simp]
+theorem completedRiemannZeta_conj (s : ℂ) :
+    completedRiemannZeta (conj s) = conj (completedRiemannZeta s) := by
+  rcases lt_or_ge 0 s.re with hs | hs
+  · exact completedRiemannZeta_conj_of_re_pos hs
+  · have h1 : 0 < (1 - s).re := by simp only [sub_re, one_re]; linarith
+    have hcs : conj (1 - s) = 1 - conj s := by simp
+    have := completedRiemannZeta_conj_of_re_pos h1
+    rwa [hcs, completedRiemannZeta_one_sub, completedRiemannZeta_one_sub] at this
 
 lemma riemannZeta_eventually_ne_zero_nhds_one : ∀ᶠ s in 𝓝 1, riemannZeta s ≠ 0 := by
   filter_upwards [eventually_nhdsWithin_iff.1 <| riemannZeta_residue_one.eventually_ne one_ne_zero]
@@ -609,11 +676,14 @@ lemma log_deriv_riemannZeta_add_inv_sub_bounded :
     =O[𝓝[≠] 1] (fun _ ↦ (1 : ℂ)) :=
   (isBigO_const_one ..).sub_iff_left.mp log_deriv_riemannZeta_add_inv_sub_sub_isLittleO.isBigO
 
+lemma inv_riemannZeta_eq_sub_mul_of_ne_one {s : ℂ} (hs : s ≠ 1) :
+    (riemannZeta s)⁻¹ = (s - 1) * (riemannZeta₁ s)⁻¹ := by
+  rw [riemannZeta_eq_inv_sub_mul hs, mul_inv, inv_inv]
+
 lemma inv_riemannZeta_eq_sub_mul :
     ∀ᶠ s in 𝓝[≠] 1, (riemannZeta s)⁻¹ = (s - 1) * (riemannZeta₁ s)⁻¹ := by
-  filter_upwards [eventually_mem_nhdsWithin,
-    riemannZeta₁_ne_zero_of_near_one.filter_mono nhdsWithin_le_nhds] with s hs
-  simp [riemannZeta_eq_inv_sub_mul hs, field]
+  filter_upwards [eventually_mem_nhdsWithin] with s hs
+  exact inv_riemannZeta_eq_sub_mul_of_ne_one hs
 
 lemma inv_riemannZeta_sub_sub_isBigO :
     (fun s ↦ (riemannZeta s)⁻¹ - (s - 1)) =O[𝓝[≠] 1] (fun s ↦ (s - 1) ^ 2) := by

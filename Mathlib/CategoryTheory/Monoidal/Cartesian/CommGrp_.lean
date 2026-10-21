@@ -30,13 +30,12 @@ class abbrev CommGrpObj := GrpObj X, IsCommMonObj X
 
 variable (X) in
 /-- If `X` represents a presheaf of commutative groups, then `X` is a commutative group object. -/
-@[implicit_reducible]
+@[instance_reducible]
 def CommGrpObj.ofRepresentableBy (F : Cᵒᵖ ⥤ CommGrpCat.{w})
     (α : (F ⋙ forget _).RepresentableBy X) : CommGrpObj X where
   __ := GrpObj.ofRepresentableBy X (F ⋙ forget₂ CommGrpCat GrpCat) α
   __ := IsCommMonObj.ofRepresentableBy X (F ⋙ forget₂ CommGrpCat CommMonCat) α
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The yoneda embedding of `CommGrp C` into presheaves of groups. -/
 @[simps]
 def yonedaCommGrpGrpObj (G : CommGrp C) : (Grp C)ᵒᵖ ⥤ CommGrpCat where

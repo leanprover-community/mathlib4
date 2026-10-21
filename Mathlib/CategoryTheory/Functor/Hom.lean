@@ -8,6 +8,8 @@ module
 public import Mathlib.CategoryTheory.Types.Basic
 
 /-!
+# The hom functor
+
 The hom functor, sending `(X, Y)` to the type `X ⟶ Y`.
 -/
 

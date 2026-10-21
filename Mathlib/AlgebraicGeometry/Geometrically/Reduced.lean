@@ -51,15 +51,18 @@ lemma GeometricallyReduced.eq_geometrically :
 instance : IsStableUnderBaseChange @GeometricallyReduced :=
   GeometricallyReduced.eq_geometrically ▸ inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [GeometricallyReduced g] : GeometricallyReduced (pullback.fst f g) :=
   MorphismProperty.pullback_fst f g inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [GeometricallyReduced f] : GeometricallyReduced (pullback.snd f g) :=
   MorphismProperty.pullback_snd f g inferInstance
 
 instance (V : S.Opens) [GeometricallyReduced f] : GeometricallyReduced (f ∣_ V) :=
   MorphismProperty.of_isPullback (isPullback_morphismRestrict ..).flip ‹_›
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (s : S) [GeometricallyReduced f] :
     GeometricallyReduced (f.fiberToSpecResidueField s) :=
   MorphismProperty.pullback_snd _ _ inferInstance
@@ -88,7 +91,7 @@ lemma GeometricallyReduced.isReduced_of_flat_of_finite_irreducibleComponents
     let z : Z := Sigma.ι (fun Z ↦ Spec (pt Z)) ⟨_, irreducibleComponent_mem_irreducibleComponents y⟩
       (IsLocalRing.closedPoint _)
     have hz : g z ⤳ y := by
-      simp only [g, z, Z, ← Scheme.Hom.comp_apply, Sigma.ι_desc, pt,
+      simp only [g, z, Z, ← Scheme.Hom.comp_apply, Sigma.ι_comp_desc, pt,
         Scheme.fromSpecStalk_closedPoint]
       exact (IsIrreducible.isGenericPoint_genericPoint _
         isClosed_irreducibleComponent).specializes mem_irreducibleComponent

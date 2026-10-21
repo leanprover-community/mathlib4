@@ -6,8 +6,9 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.CategoryTheory.Functor.Flat
+public import Mathlib.CategoryTheory.Sites.Closed
 public import Mathlib.CategoryTheory.Sites.Continuous
-public import Mathlib.Tactic.ApplyFun
+
 /-!
 # Cover-preserving functors between sites.
 
@@ -39,8 +40,6 @@ public section
 
 
 universe w v₁ v₂ v₃ u₁ u₂ u₃
-
-noncomputable section
 
 open CategoryTheory Opposite CategoryTheory.Presieve.FamilyOfElements CategoryTheory.Presieve
   CategoryTheory.Limits
@@ -111,8 +110,6 @@ end
 
 open Limits.WalkingCospan
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 theorem compatiblePreservingOfFlat {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
     (K : GrothendieckTopology D) (G : C ⥤ D) [RepresentablyFlat G] : CompatiblePreserving K G := by
   constructor
@@ -141,7 +138,6 @@ theorem compatiblePreservingOfFlat {C : Type u₁} [Category.{v₁} C] {D : Type
   injection c'.π.naturality WalkingCospan.Hom.inr with _ e₂
   exact hx (c'.π.app left).right (c'.π.app right).right hg₁ hg₂ (e₁.symm.trans e₂)
 
-set_option backward.defeqAttrib.useBackward true in
 theorem compatiblePreservingOfDownwardsClosed (F : C ⥤ D) [F.Full] [F.Faithful]
     (hF : ∀ {c : C} {d : D} (_ : d ⟶ F.obj c), Σ c', F.obj c' ≅ d) : CompatiblePreserving K F := by
   constructor
@@ -192,6 +188,7 @@ lemma Functor.isContinuous_iff_coverPreserving [RepresentablyFlat F] :
   refine ⟨fun h ↦ .of_isContinuous _ _ _, fun h ↦ ?_⟩
   apply Functor.isContinuous_of_coverPreserving (compatiblePreservingOfFlat _ _) h
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `C` has pullbacks and `F : C ⥤ D` preserves pullbacks, any cover preserving
 functor preserves all `1`-hypercovers. -/

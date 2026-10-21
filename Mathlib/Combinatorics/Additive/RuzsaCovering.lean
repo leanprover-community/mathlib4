@@ -6,10 +6,10 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Group.Action.Pointwise.Finset
-public import Mathlib.Data.Real.Basic
-public import Mathlib.Order.Preorder.Finite
+public import Mathlib.Basic.Real.Basic
 public import Mathlib.SetTheory.Cardinal.Finite
-public import Mathlib.Tactic.Positivity.Finset
+
+import Mathlib.Tactic.Positivity.Finset
 
 /-!
 # Ruzsa's covering lemma
@@ -31,7 +31,7 @@ variable [DecidableEq G] {A B : Finset G}
 @[to_additive /-- **Ruzsa's covering lemma** -/]
 theorem ruzsa_covering_mul (hB : B.Nonempty) (hK : #(A * B) ≤ K * #B) :
     ∃ F ⊆ A, #F ≤ K ∧ A ⊆ F * (B / B) := by
-  haveI : ∀ F, Decidable ((F : Set G).PairwiseDisjoint (· • B)) := fun F ↦ Classical.dec _
+  have : ∀ F, Decidable ((F : Set G).PairwiseDisjoint (· • B)) := fun F ↦ Classical.dec _
   set C := {F ∈ A.powerset | (SetLike.coe F).PairwiseDisjoint (· • B)}
   obtain ⟨F, hFmax⟩ := C.exists_maximal <| filter_nonempty_iff.2
     ⟨∅, empty_mem_powerset _, by simp [coe_empty]⟩

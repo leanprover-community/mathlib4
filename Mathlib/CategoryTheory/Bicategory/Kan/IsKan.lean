@@ -168,9 +168,8 @@ theorem IsKan.ofIsKanTop_extension (Ht : IsKan t) (u : LeftExtension (f ≫ h) g
   rfl
 
 theorem IsKan.ofIsKanTop_fac (Ht : IsKan t) (u : LeftExtension (f ≫ h) g) :
-    t.unit ≫ f ◁ (Ht.ofIsKanTop u).unit = u.unit ≫ (α_ f h u.extension).hom := by
-  simpa [IsKan.ofIsKanTop] using
-    Ht.fac (.mk (h ≫ u.extension) (u.unit ≫ (α_ f h u.extension).hom))
+    t.unit ≫ f ◁ (Ht.ofIsKanTop u).unit = u.unit ≫ (α_ f h u.extension).hom :=
+  Ht.fac (.mk (h ≫ u.extension) (u.unit ≫ (α_ f h u.extension).hom))
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Pasting of left extensions preserves being Kan. -/
@@ -346,8 +345,8 @@ theorem IsKan.ofIsKanTop_lift (Ht : IsKan t) (u : LeftLift (h ≫ f) g) :
   rfl
 
 theorem IsKan.ofIsKanTop_fac (Ht : IsKan t) (u : LeftLift (h ≫ f) g) :
-    t.unit ≫ (Ht.ofIsKanTop u).unit ▷ f = u.unit ≫ (α_ u.lift h f).inv := by
-  simpa [IsKan.ofIsKanTop] using Ht.fac (.mk (u.lift ≫ h) (u.unit ≫ (α_ u.lift h f).inv))
+    t.unit ≫ (Ht.ofIsKanTop u).unit ▷ f = u.unit ≫ (α_ u.lift h f).inv :=
+  Ht.fac (.mk (u.lift ≫ h) (u.unit ≫ (α_ u.lift h f).inv))
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Pasting of left lifts preserves being Kan. -/
@@ -524,9 +523,8 @@ theorem IsKan.ofIsKanTop_extension (Ht : IsKan t) (u : RightExtension (f ≫ h) 
   rfl
 
 theorem IsKan.ofIsKanTop_fac (Ht : IsKan t) (u : RightExtension (f ≫ h) g) :
-    f ◁ (Ht.ofIsKanTop u).counit ≫ t.counit = (α_ f h u.extension).inv ≫ u.counit := by
-  simpa [IsKan.ofIsKanTop] using
-    Ht.fac (.mk (h ≫ u.extension) ((α_ f h u.extension).inv ≫ u.counit))
+    f ◁ (Ht.ofIsKanTop u).counit ≫ t.counit = (α_ f h u.extension).inv ≫ u.counit :=
+  Ht.fac (.mk (h ≫ u.extension) ((α_ f h u.extension).inv ≫ u.counit))
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Pasting of right extensions preserves being Kan. -/
@@ -701,8 +699,8 @@ theorem IsKan.ofIsKanTop_lift (Ht : IsKan t) (u : RightLift (h ≫ f) g) :
   rfl
 
 theorem IsKan.ofIsKanTop_fac (Ht : IsKan t) (u : RightLift (h ≫ f) g) :
-    (Ht.ofIsKanTop u).counit ▷ f ≫ t.counit = (α_ u.lift h f).hom ≫ u.counit := by
-  simpa [IsKan.ofIsKanTop] using Ht.fac (.mk (u.lift ≫ h) ((α_ u.lift h f).hom ≫ u.counit))
+    (Ht.ofIsKanTop u).counit ▷ f ≫ t.counit = (α_ u.lift h f).hom ≫ u.counit :=
+  Ht.fac (.mk (u.lift ≫ h) ((α_ u.lift h f).hom ≫ u.counit))
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Pasting of right lifts preserves being Kan. -/

@@ -50,7 +50,7 @@ In this file we define various operations on `Subsemigroup`s and `MulHom`s.
 ### Operations on `MulHom`s
 
 * `MulHom.srange`: range of a semigroup homomorphism as a subsemigroup of the codomain;
-* `MulHom.restrict`: restrict a semigroup homomorphism to a subsemigroup;
+* `MulHom.domRestrict`: restrict a semigroup homomorphism to a subsemigroup of its domain;
 * `MulHom.codRestrict`: restrict the codomain of a semigroup homomorphism to a subsemigroup;
 * `MulHom.srangeRestrict`: restrict a semigroup homomorphism to its range;
 
@@ -595,13 +595,20 @@ theorem map_mclosure (f : M →ₙ* N) (s : Set M) : (closure s).map f = closure
 
 /-- Restriction of a semigroup hom to a subsemigroup of the domain. -/
 @[to_additive /-- Restriction of an AddSemigroup hom to an `AddSubsemigroup` of the domain. -/]
-def restrict {N : Type*} [Mul N] [SetLike σ M] [MulMemClass σ M] (f : M →ₙ* N) (S : σ) : S →ₙ* N :=
+def domRestrict {N : Type*} [Mul N] [SetLike σ M] [MulMemClass σ M] (f : M →ₙ* N)
+    (S : σ) : S →ₙ* N :=
   f.comp (MulMemClass.subtype S)
 
 @[to_additive (attr := simp)]
-theorem restrict_apply {N : Type*} [Mul N] [SetLike σ M] [MulMemClass σ M] (f : M →ₙ* N) {S : σ}
-    (x : S) : f.restrict S x = f x :=
+theorem domRestrict_apply {N : Type*} [Mul N] [SetLike σ M] [MulMemClass σ M]
+    (f : M →ₙ* N) {S : σ} (x : S) : f.domRestrict S x = f x :=
   rfl
+
+@[deprecated (since := "2026-07-19")] alias restrict := domRestrict
+@[deprecated (since := "2026-07-19")] alias _root_.AddHom.restrict := _root_.AddHom.domRestrict
+@[deprecated (since := "2026-07-19")] alias restrict_apply := domRestrict_apply
+@[deprecated (since := "2026-07-19")]
+alias _root_.AddHom.restrict_apply := _root_.AddHom.domRestrict_apply
 
 /-- Restriction of a semigroup hom to a subsemigroup of the codomain. -/
 @[to_additive (attr := simps)
@@ -665,11 +672,11 @@ variable [Mul M] [Mul N] [Mul P] (S : Subsemigroup M)
 
 @[to_additive (attr := simp)]
 theorem srange_fst [Nonempty N] : (fst M N).srange = ⊤ :=
-  (fst M N).srange_eq_top_of_surjective <| Prod.fst_surjective
+  (fst M N).srange_eq_top_of_surjective Prod.fst_surjective
 
 @[to_additive (attr := simp)]
 theorem srange_snd [Nonempty M] : (snd M N).srange = ⊤ :=
-  (snd M N).srange_eq_top_of_surjective <| Prod.snd_surjective
+  (snd M N).srange_eq_top_of_surjective Prod.snd_surjective
 
 @[to_additive prod_eq_top_iff]
 theorem prod_eq_top_iff [Nonempty M] [Nonempty N] {s : Subsemigroup M} {t : Subsemigroup N} :
@@ -683,7 +690,7 @@ def inclusion {S T : Subsemigroup M} (h : S ≤ T) : S →ₙ* T :=
 
 @[to_additive (attr := simp)]
 theorem range_subtype (s : Subsemigroup M) : (MulMemClass.subtype s).srange = s :=
-  SetLike.coe_injective <| (coe_srange _).trans <| Subtype.range_coe
+  SetLike.coe_injective <| (coe_srange _).trans Subtype.range_coe
 
 @[to_additive]
 theorem eq_top_iff' : S = ⊤ ↔ ∀ x : M, x ∈ S :=
@@ -701,7 +708,7 @@ semigroup are equal. -/
       /-- Makes the identity additive isomorphism from a proof two
       subsemigroups of an additive semigroup are equal. -/]
 def subsemigroupCongr (h : S = T) : S ≃* T :=
-  { Equiv.setCongr <| congr_arg _ h with map_mul' := fun _ _ => rfl }
+  { Set.equivOfEq <| congr_arg _ h with map_mul' := fun _ _ => rfl }
 
 -- this name is primed so that the version to `f.range` instead of `f.srange` can be unprimed.
 /-- A semigroup homomorphism `f : M →ₙ* N` with a left-inverse `g : N → M` defines a multiplicative

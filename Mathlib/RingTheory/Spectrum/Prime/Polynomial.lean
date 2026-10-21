@@ -8,9 +8,7 @@ module
 public import Mathlib.LinearAlgebra.Charpoly.BaseChange
 public import Mathlib.LinearAlgebra.Eigenspace.Zero
 public import Mathlib.RingTheory.AdjoinRoot
-public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
-public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
 /-!
 
@@ -34,7 +32,7 @@ public section
 
 open Polynomial TensorProduct PrimeSpectrum
 
-variable {R M A} [CommRing R] [AddCommGroup M] [Module R M] [CommRing A] [Algebra R A]
+variable {R A} [CommRing R] [CommRing A] [Algebra R A]
 
 /-- If `A` is a finite free `R`-algebra, then `f : A` is nilpotent on `κ(𝔭) ⊗ A` for some
 prime `𝔭 ◃ R` if and only if every non-leading coefficient of `charpoly(f)` is in `𝔭`. -/
@@ -94,7 +92,7 @@ lemma mem_image_comap_zeroLocus_sdiff (f : A) (s : Set A) (x) :
     exact hqf this
   · intro H
     rw [← mem_nilradical, nilradical_eq_sInf, Ideal.mem_sInf] at H
-    simp only [Set.mem_setOf_eq, Algebra.TensorProduct.algebraMap_apply,
+    simp only [Set.mem_ofPred_eq, Algebra.TensorProduct.algebraMap_apply,
       Ideal.Quotient.algebraMap_eq, not_forall] at H
     obtain ⟨q, hq, hfq⟩ := H
     have : ∀ a ∈ s, Ideal.Quotient.mk (Ideal.span s) a ⊗ₜ[R] 1 ∈ q := fun a ha ↦ by
@@ -104,7 +102,7 @@ lemma mem_image_comap_zeroLocus_sdiff (f : A) (s : Set A) (x) :
       ← Algebra.TensorProduct.includeRight.comp_algebraMap, comap_comp_apply,
       Subsingleton.elim (α := PrimeSpectrum x.asIdeal.ResidueField) (comap _ _) ⊥]
     ext a
-    exact congr(a ∈ $(Ideal.ker_algebraMap_residueField _))
+    congrm a ∈ $(Ideal.ker_algebraMap_residueField _)
 
 /-- Let `A` be an `R`-algebra.
 `𝔭 : Spec R` is in the image of `D(f) ⊆ Spec S`
@@ -197,7 +195,6 @@ variable {σ : Type*}
 
 lemma mem_image_comap_C_basicOpen (f : MvPolynomial σ R) (x : PrimeSpectrum R) :
     x ∈ comap (C (σ := σ)) '' basicOpen f ↔ ∃ i, f.coeff i ∉ x.asIdeal := by
-  classical
   trans f.map (algebraMap R x.asIdeal.ResidueField) ≠ 0
   · refine (mem_image_comap_basicOpen _ _).trans (not_iff_not.mpr ?_)
     let e : x.asIdeal.ResidueField ⊗[R] MvPolynomial σ R ≃ₐ[x.asIdeal.ResidueField]
@@ -209,7 +206,7 @@ lemma mem_image_comap_C_basicOpen (f : MvPolynomial σ R) (x : PrimeSpectrum R) 
     congr!
     ext
     · simp [scalarRTensorAlgEquiv, e, Algebra.smul_def]
-    · simp [e, scalarRTensorAlgEquiv, coeff, map, X, monomial]
+    · simp [e, scalarRTensorAlgEquiv, map, X, monomial]
   · simp [MvPolynomial.ext_iff, coeff_map]
 
 lemma image_comap_C_basicOpen (f : MvPolynomial σ R) :

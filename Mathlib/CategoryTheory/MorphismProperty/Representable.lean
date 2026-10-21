@@ -213,10 +213,12 @@ case when the cone point is in the image of `F.obj`. -/
 noncomputable def lift [Full F] : c ⟶ hf.pullback g :=
   F.preimage <| PullbackCone.IsLimit.lift (hf.isPullback g).isLimit _ _ hi
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma lift_fst [Full F] : F.map (hf.lift i h hi) ≫ hf.fst g = i := by
   simpa [lift] using! PullbackCone.IsLimit.lift_fst _ _ _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma lift_snd [Full F] [Faithful F] : hf.lift i h hi ≫ hf.snd g = h :=
   F.map_injective <| by simpa [lift] using! PullbackCone.IsLimit.lift_snd _ _ _ _
@@ -342,7 +344,6 @@ lemma relative.property_snd {f : X ⟶ Y} (hf : P.relative F f) {a : C} (g : F.o
     P (hf.rep.snd g) :=
   hf.property g _ _ (hf.rep.isPullback g)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a morphism property `P` which respects isomorphisms, then to show that a morphism
 `f : X ⟶ Y` satisfies `P.relative` it suffices to show that:
 * The morphism is representable.
@@ -499,6 +500,7 @@ noncomputable def pullback₃.π : F.obj (pullback₃ hf₁ f₂ f₃) ⟶ X :=
 lemma pullback₃.map_p₁_comp : F.map (p₁ hf₁ f₂ f₃) ≫ f₁ = π _ _ _ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma pullback₃.map_p₂_comp : F.map (p₂ hf₁ f₂ f₃) ≫ f₂ = π _ _ _ := by
   simp [π, p₁, p₂, ← hf₁.w f₂]
@@ -550,6 +552,7 @@ lemma pullback₃.snd_fst'_eq_p₁ :
     pullback.snd (hf₁.fst' f₂) (hf₁.fst' f₃) ≫ hf₁.fst' f₃ = pullback₃.p₁ hf₁ f₂ f₃ :=
   pullback.condition.symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {hf₁ f₂ f₃} in
 @[ext]
 lemma pullback₃.hom_ext [Faithful F] {Z : C} {φ φ' : Z ⟶ pullback₃ hf₁ f₂ f₃}
@@ -571,7 +574,6 @@ variable [HasPullbacks D] [HasBinaryProducts D] [HasTerminal D]
 variable [Full F]
 variable [PreservesLimitsOfShape (Discrete WalkingPair) F]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Assume that
 1. `C` has binary products,
 2. `D` has pullbacks, binary products and a terminal object, and
@@ -622,8 +624,6 @@ lemma toPullbackTerminal {X : D} {a : C}
   apply (respectsIso F).toRespectsRight.postcomp _ (inferInstance : IsIso _) _
   exact map_preimage F (_ ≫ pbIso.hom) ▸ map F (F.preimage _)
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Assume that
 1. `C` has binary products and pullbacks,
 2. `D` has pullbacks, binary products and a terminal object, and

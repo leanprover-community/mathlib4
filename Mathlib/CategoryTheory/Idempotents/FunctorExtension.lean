@@ -28,7 +28,7 @@ namespace CategoryTheory
 
 namespace Idempotents
 
-open Category Karoubi Functor
+open Category Karoubi CategoryTheory.Functor
 
 variable {C D E : Type*} [Category* C] [Category* D] [Category* E]
 
@@ -115,7 +115,6 @@ def functorExtension₁CompWhiskeringLeftToKaroubiIso :
     (by cat_disch)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The counit isomorphism of the equivalence `(C ⥤ Karoubi D) ≌ (Karoubi C ⥤ Karoubi D)`. -/
 def KaroubiUniversal₁.counitIso :
     (whiskeringLeft C (Karoubi C) (Karoubi D)).obj (toKaroubi C) ⋙ functorExtension₁ C D ≅ 𝟭 _ :=
@@ -155,6 +154,7 @@ def KaroubiUniversal₁.counitIso :
 
 attribute [simps!] KaroubiUniversal₁.counitIso
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence of categories `(C ⥤ Karoubi D) ≌ (Karoubi C ⥤ Karoubi D)`. -/
 @[simps]
@@ -257,7 +257,6 @@ theorem whiskeringLeft_obj_preimage_app {F G : Karoubi C ⥤ D}
 end IsIdempotentComplete
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 variable {C D} in
 /-- The precomposition of functors with `toKaroubi C` is fully faithful. -/
 def whiskeringLeftObjToKaroubiFullyFaithful :

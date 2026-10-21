@@ -167,6 +167,7 @@ def equiv_mapSubmodule :
   map_add' x y := rfl
   map_smul' t x := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural `R[X]`-linear equivalence between the two ways to represent an invariant submodule.
 -/
 noncomputable def restrict_equiv_mapSubmodule :

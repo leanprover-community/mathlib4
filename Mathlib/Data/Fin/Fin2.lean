@@ -6,9 +6,6 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.Finset.Image
-public import Mathlib.Data.Fintype.Defs
-public import Mathlib.Data.Nat.Notation
-public import Mathlib.Logic.Function.Basic
 
 /-!
 # Inductive type variant of `Fin`
@@ -149,6 +146,7 @@ theorem rev_involutive {n} : Function.Involutive (@rev n) := rev_rev
 instance : Inhabited (Fin2 1) :=
   ⟨fz⟩
 
+set_option backward.isDefEq.respectTransparency false in
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 instance instFintype : ∀ n, Fintype (Fin2 n)
   | 0 => ⟨∅, Fin2.elim0⟩

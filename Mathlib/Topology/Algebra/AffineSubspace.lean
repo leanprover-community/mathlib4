@@ -5,9 +5,7 @@ Authors: Joseph Myers
 -/
 module
 
-public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 public import Mathlib.LinearAlgebra.AffineSpace.Restrict
-public import Mathlib.Topology.Algebra.ContinuousAffineMap
 public import Mathlib.Topology.Algebra.ContinuousAffineEquiv
 
 /-!
@@ -71,7 +69,7 @@ noncomputable def affineSubspaceMap (e : P ≃ᴬ[R] Q) (s : AffineSubspace R P)
       (e.continuous.comp continuous_subtype_val).congr fun _ => rfl
     continuous_invFun := by simpa [Topology.IsEmbedding.subtypeVal.continuous_iff] using!
       (e.continuous_invFun.comp continuous_subtype_val).congr fun x ↦
-        (e.apply_eq_iff_eq_symm_apply.mp
+        (e.eq_symm_apply.mpr
           (AffineEquiv.affineSubspaceMap_apply_symm_apply e.toAffineEquiv s x)).symm }
 
 @[simp]

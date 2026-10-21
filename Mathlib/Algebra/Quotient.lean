@@ -49,11 +49,5 @@ class HasQuotient (A : outParam <| Type u) (B : Type v) where
   /-- `HasQuotient.Quotient A b` (denoted as `A ⧸ b`) is the quotient of the type `A` by `b`. -/
   Quotient (A) : B → Type max u v
 
-/-- A deprecated variant of `HasQuotient.Quotient` -/
-@[deprecated HasQuotient.Quotient (since := "2025-12-18")]
-abbrev HasQuotient.quotient' {A : outParam <| Type u} {B : Type v}
-    [HasQuotient A B] (b : B) : Type max u v :=
-  HasQuotient.Quotient A b
-
 /-- Quotient notation based on the `HasQuotient` typeclass -/
 notation:35 G " ⧸ " H:34 => HasQuotient.Quotient G H

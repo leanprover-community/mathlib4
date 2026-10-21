@@ -153,7 +153,6 @@ decreasing_by
   cases r; grind [→ Array.sizeOf_lt_of_mem]
 
 instance : ToString ArgReorder := ⟨fun x ↦ x.toString⟩
-instance : ToMessageData ArgReorder := ⟨fun x ↦ x.toString⟩
 
 end ArgReorder
 
@@ -274,7 +273,8 @@ partial def guessReorder (src tgt : Expr) : MetaM ArgReorder := withReducible do
   forallBoundedTelescope tgt depth fun tgtVars tgt ↦ do
   let srcMap : Std.HashMap FVarId Nat := .ofArray <| srcVars.mapIdx fun i x => (x.fvarId!, i)
   let tgtMap : Std.HashMap FVarId Nat := .ofArray <| tgtVars.mapIdx fun i x => (x.fvarId!, i)
-  let perm := (visit src tgt (.replicate depth none) (srcMap, tgtMap)).elim [] decomposePerm
+  let perm := (← visit src tgt (.replicate depth none) |>.run (srcMap, tgtMap) |>.run' {} |>.run)
+    |>.elim [] decomposePerm
   -- Recursively guess the reorder in the hypotheses
   let mut argReorders := #[]
   for i in *...depth do
@@ -296,30 +296,33 @@ where
   /-- Determine for each `i : Fin n` to what `j : Fin n` it should get translated. -/
   visit (src tgt : Expr) {n : Nat} (map : Vector (Option (Fin n)) n) :
       ReaderT (Std.HashMap FVarId Nat × Std.HashMap FVarId Nat)
-      Option (Vector (Option (Fin n)) n) := do
-    match src, tgt with
-    | .forallE _ d₁ b₁ _, .forallE _ d₂ b₂ _ => visit d₁ d₂ map >>= visit b₁ b₂
-    | .lam _ d₁ b₁ _    , .lam _ d₂ b₂ _     => visit d₁ d₂ map >>= visit b₁ b₂
-    | .mdata _ e₁       , .mdata _ e₂        => visit e₁ e₂ map
-    | .letE _ t₁ v₁ b₁ _, .letE _ t₂ v₂ b₂ _ => visit t₁ t₂ map >>= visit v₁ v₂ >>= visit b₁ b₂
-    | .app f₁ a₁        , .app f₂ a₂         => visit f₁ f₂ map >>= visit a₁ a₂
-    | .proj _ _ e₁      , .proj _ _ e₂       => visit e₁ e₂ map
-    | .fvar fvarId₁  , .fvar fvarId₂  =>
-      let some i₁ := (← read).1[fvarId₁]? | some map
-      let some i₂ := (← read).2[fvarId₂]? | some map
-      if h : i₂ < n then
-        if let some i₂' := map[i₁]! then
-          guard (i₂ == i₂') -- If `i₂ ≠ i₂'`, it's not clear what `i₁` should be translated to.
-          some map
+      StateRefT (Std.HashSet (Expr × Expr)) (OptionT BaseIO) (Vector (Option (Fin n)) n) := do
+    if (← get).contains (src, tgt) then return map
+    let map ← match src, tgt with
+      | .forallE _ d₁ b₁ _, .forallE _ d₂ b₂ _ => visit d₁ d₂ map >>= visit b₁ b₂
+      | .lam _ d₁ b₁ _    , .lam _ d₂ b₂ _     => visit d₁ d₂ map >>= visit b₁ b₂
+      | .mdata _ e₁       , .mdata _ e₂        => visit e₁ e₂ map
+      | .letE _ t₁ v₁ b₁ _, .letE _ t₂ v₂ b₂ _ => visit t₁ t₂ map >>= visit v₁ v₂ >>= visit b₁ b₂
+      | .app f₁ a₁        , .app f₂ a₂         => visit f₁ f₂ map >>= visit a₁ a₂
+      | .proj _ _ e₁      , .proj _ _ e₂       => visit e₁ e₂ map
+      | .fvar fvarId₁  , .fvar fvarId₂  =>
+        let some i₁ := (← read).1[fvarId₁]? | pure map
+        let some i₂ := (← read).2[fvarId₂]? | pure map
+        if h : i₂ < n then
+          if let some i₂' := map[i₁]! then
+            guard (i₂ == i₂') -- If `i₂ ≠ i₂'`, it's not clear what `i₁` should be translated to.
+            pure map
+          else
+            pure <| map.set! i₁ (some ⟨i₂, h⟩)
         else
-          some <| map.set! i₁ (some ⟨i₂, h⟩)
-      else
-        panic! s!"index {i₂} is out of bounds ({n})"
-    /- To avoid false positives, we do a sanity check to make sure that the two expressions are
-    indeed of the same shape. Note that we cannot check for `e₁ == e₁`, because the universes
-    in `e₁` and `e₂` might be different (because we decide only later whether to swap them). -/
-    | .lit _, .lit _ | .bvar _, .bvar _ | .sort _, .sort _ | .const .., .const .. => some map
-    | _, _ => none
+          panic! s!"index {i₂} is out of bounds ({n})"
+      /- To avoid false positives, we do a sanity check to make sure that the two expressions are
+      indeed of the same shape. Note that we cannot check for `e₁ == e₁`, because the universes
+      in `e₁` and `e₂` might be different (because we decide only later whether to swap them). -/
+      | .lit _, .lit _ | .bvar _, .bvar _ | .sort _, .sort _ | .const .., .const .. => pure map
+      | _, _ => failure
+    modify (·.insert (src, tgt))
+    return map
 
 /-! ### Syntax for specifying a reorder -/
 

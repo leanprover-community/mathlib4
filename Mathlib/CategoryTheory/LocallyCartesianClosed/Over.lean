@@ -135,41 +135,53 @@ lemma lift_left {W Y Z : Over X} (f : W ⟶ Y) (g : W ⟶ Z) :
 @[simp]
 lemma toUnit_left {Z : Over X} : (toUnit Z).left = Z.hom := rfl
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma associator_hom_left_fst (R S T : Over X) :
     (α_ R S T).hom.left ≫ fst R.hom (snd S.hom T.hom ≫ T.hom) =
       fst (R ⊗ S).hom T.hom ≫ fst R.hom S.hom :=
-  congr_arg CommaMorphism.left (associator_hom_fst R S T)
+  congr($(associator_hom_fst R S T).left)
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma associator_hom_left_snd_fst (R S T : Over X) :
     (α_ R S T).hom.left ≫ snd R.hom (snd S.hom T.hom ≫ T.hom) ≫ fst S.hom T.hom =
       fst (R ⊗ S).hom T.hom ≫ snd R.hom S.hom :=
-  congr_arg CommaMorphism.left (associator_hom_snd_fst R S T)
+  congr($(associator_hom_snd_fst R S T).left)
 
 @[reassoc (attr := simp)]
 lemma associator_hom_left_snd_snd (R S T : Over X) :
     (α_ R S T).hom.left ≫ snd R.hom (snd S.hom T.hom ≫ T.hom) ≫ snd S.hom T.hom =
       snd (R ⊗ S).hom T.hom :=
-  congr_arg CommaMorphism.left (associator_hom_snd_snd R S T)
+  congr($(associator_hom_snd_snd R S T).left)
 
 @[reassoc (attr := simp)]
 lemma associator_inv_left_fst_fst (R S T : Over X) :
     (α_ R S T).inv.left ≫ fst (snd R.hom S.hom ≫ S.hom) T.hom ≫ fst R.hom S.hom =
       fst R.hom (S ⊗ T).hom :=
-  congr_arg CommaMorphism.left (associator_inv_fst_fst R S T)
+  congr($(associator_inv_fst_fst R S T).left)
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma associator_inv_left_fst_snd (R S T : Over X) :
     (α_ R S T).inv.left ≫ fst (snd R.hom S.hom ≫ S.hom) T.hom ≫ snd R.hom S.hom =
       snd R.hom (S ⊗ T).hom ≫ fst S.hom T.hom :=
-  congr_arg CommaMorphism.left (associator_inv_fst_snd R S T)
+  congr($(associator_inv_fst_snd R S T).left)
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma associator_inv_left_snd (R S T : Over X) :
     (α_ R S T).inv.left ≫ snd (snd R.hom S.hom ≫ S.hom) T.hom =
       snd R.hom (S ⊗ T).hom ≫ snd S.hom T.hom :=
-  congr_arg CommaMorphism.left (associator_inv_snd R S T)
+  congr($(associator_inv_snd R S T).left)
 
 @[simp]
 lemma leftUnitor_hom_left (Z : Over X) :
@@ -178,12 +190,12 @@ lemma leftUnitor_hom_left (Z : Over X) :
 @[reassoc (attr := simp)]
 lemma leftUnitor_inv_left_fst (Z : Over X) :
     (λ_ Z).inv.left ≫ fst (𝟙 X) Z.hom = Z.hom :=
-  congr_arg CommaMorphism.left (leftUnitor_inv_fst Z)
+  congr($(leftUnitor_inv_fst Z).left)
 
 @[reassoc (attr := simp)]
 lemma leftUnitor_inv_left_snd (Y : Over X) :
     (λ_ Y).inv.left ≫ snd (𝟙 X) Y.hom = 𝟙 Y.left :=
-  congr_arg CommaMorphism.left (leftUnitor_inv_snd Y)
+  congr($(leftUnitor_inv_snd Y).left)
 
 @[simp]
 lemma rightUnitor_hom_left (Y : Over X) :
@@ -192,12 +204,12 @@ lemma rightUnitor_hom_left (Y : Over X) :
 @[reassoc (attr := simp)]
 lemma rightUnitor_inv_left_fst (Y : Over X) :
     (ρ_ Y).inv.left ≫ fst Y.hom (𝟙 X) = 𝟙 Y.left :=
-  congr_arg CommaMorphism.left (rightUnitor_inv_fst Y)
+  congr($(rightUnitor_inv_fst Y).left)
 
 @[reassoc (attr := simp)]
 lemma rightUnitor_inv_left_snd (Y : Over X) :
     (ρ_ Y).inv.left ≫ snd Y.hom (𝟙 X) = Y.hom :=
-  congr_arg CommaMorphism.left (rightUnitor_inv_snd Y)
+  congr($(rightUnitor_inv_snd Y).left)
 
 lemma whiskerLeft_left {R S T : Over X} (f : S ⟶ T) :
     (R ◁ f).left = pullbackMap R.hom T.hom R.hom S.hom (𝟙 _) f.left (𝟙 _) :=
@@ -206,40 +218,52 @@ lemma whiskerLeft_left {R S T : Over X} (f : S ⟶ T) :
 @[reassoc (attr := simp)]
 lemma whiskerLeft_left_fst {R S T : Over X} (f : S ⟶ T) :
     (R ◁ f).left ≫ fst R.hom T.hom = fst R.hom S.hom :=
-  congr_arg CommaMorphism.left (whiskerLeft_fst R f)
+  congr($(whiskerLeft_fst R f).left)
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma whiskerLeft_left_snd {R S T : Over X} (f : S ⟶ T) :
     (R ◁ f).left ≫ snd R.hom T.hom = snd R.hom S.hom ≫ f.left :=
-  congr_arg CommaMorphism.left (whiskerLeft_snd R f)
+  congr($(whiskerLeft_snd R f).left)
 
 lemma whiskerRight_left {R S T : Over X} (f : S ⟶ T) :
     (f ▷ R).left = pullbackMap T.hom R.hom S.hom R.hom f.left (𝟙 _) (𝟙 _) :=
   rfl
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma whiskerRight_left_fst {R S T : Over X} (f : S ⟶ T) :
     (f ▷ R).left ≫ fst T.hom R.hom = fst S.hom R.hom ≫ f.left :=
-  congr_arg CommaMorphism.left (whiskerRight_fst f R)
+  congr($(whiskerRight_fst f R).left)
 
 @[reassoc (attr := simp)]
 lemma whiskerRight_left_snd {R S T : Over X} (f : S ⟶ T) :
     (f ▷ R).left ≫ snd T.hom R.hom = snd S.hom R.hom :=
-  congr_arg CommaMorphism.left (whiskerRight_snd f R)
+  congr($(whiskerRight_snd f R).left)
 
 lemma tensorHom_left {R S T U : Over X} (f : R ⟶ S) (g : T ⟶ U) :
     (f ⊗ₘ g).left = pullbackMap S.hom U.hom R.hom T.hom f.left g.left (𝟙 _) :=
   rfl
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma tensorHom_left_fst {R S T U : Over X} (f : R ⟶ S) (g : T ⟶ U) :
     (f ⊗ₘ g).left ≫ fst S.hom U.hom = fst R.hom T.hom ≫ f.left :=
-  congr_arg CommaMorphism.left (tensorHom_fst f g)
+  congr($(tensorHom_fst f g).left)
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma tensorHom_left_snd {R S T U : Over X} (f : R ⟶ S) (g : T ⟶ U) :
     (f ⊗ₘ g).left ≫ snd S.hom U.hom = snd R.hom T.hom ≫ g.left :=
-  congr_arg CommaMorphism.left (tensorHom_snd f g)
+  congr($(tensorHom_snd f g).left)
 
 end Over
 
@@ -273,6 +297,7 @@ def toOverUnit : C ⥤ Over (𝟙_ C) where
   obj X := Over.mk <| toUnit X
   map f := Over.homMk f
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The slice category over the terminal unit object is equivalent to the original category. -/
 @[simps]
@@ -286,6 +311,7 @@ variable {C}
 
 attribute [local instance] ChosenPullbacksAlong.cartesianMonoidalCategoryToUnit
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism of functors `toOverUnit C ⋙ ChosenPullbacksAlong.pullback (toUnit X)` and
 `toOver X`. -/
@@ -294,6 +320,7 @@ def toOverUnitPullback (X : C) :
     toOverUnit C ⋙ pullback (toUnit X) ≅ toOver X :=
   NatIso.ofComponents fun X => Iso.refl _
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The functor `toOver X` is the right adjoint to the functor `Over.forget X`. -/
 @[simps! unit_app counit_app]
@@ -311,6 +338,9 @@ theorem forgetAdjToOver.homEquiv_symm {X : C} (Z : Over X) (A : C) (f : Z ⟶ (t
 def toOverIsoToOverUnit : toOver (𝟙_ C) ≅ toOverUnit C :=
   (forgetAdjToOver (𝟙_ C)).rightAdjointUniq (equivToOverUnit C |>.toAdjunction)
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A natural isomorphism between the functors `toOver Y` and `toOver X ⋙ pullback f`
 for any morphism `f : X ⟶ Y`. -/
 @[simps!]
