@@ -289,8 +289,7 @@ def validateCurl (upload := false) : IO CurlMode := do
     -- curl 8.18 and 8.19 hang on a pending retry in parallel mode (curl issue #20669).
     let retry := !(version == (8, 18) || version == (8, 19))
     unless retry do
-      IO.println s!"Downloads run without curl retries. Note: curl {found} hangs on a pending \
-        retry in parallel mode (curl issue #20669)."
+      IO.println s!"Note: curl {found} runs parallel downloads without retries."
     return { parallel := true, retry }
   if upload then
     throw <| IO.userError s!"Cache uploads require curl ≥{minimum.1}.{minimum.2}. Found {found}."

@@ -111,4 +111,4 @@ jobs:
       # the tool runs without retries.
       - name: check that the tool ran without curl retries
         if: runner.os == 'Linux'
-        run: grep "without curl retries" cache-get.log
+        run: grep "without retries" cache-get.log
