@@ -9,8 +9,8 @@ public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.Algebra.MvPolynomial.Funext
 public import Mathlib.Algebra.Order.Ring.Finset
 public import Mathlib.Algebra.Order.Ring.Star
+public import Mathlib.Algebra.Order.Star.Int
 public import Mathlib.Algebra.Ring.IsFormallyReal
-public import Mathlib.Data.Int.Star
 public import Mathlib.Data.DFinsupp.Notation
 public import Mathlib.Order.Interval.Set.Infinite
 public import Mathlib.RingTheory.MvPolynomial.Homogeneous
@@ -29,10 +29,10 @@ variable {K : Type*} [CommRing K] [LinearOrder K] [IsStrictOrderedRing K]
 local notation "⟪" n ", " m "⟫"  => Finsupp.single (0 : Fin 2) n + Finsupp.single (1 : Fin 2) m
 
 open MvPolynomial in
-noncomputable def motzkin_polynomial : MvPolynomial (Fin 2) K :=
+public noncomputable def motzkin_polynomial : MvPolynomial (Fin 2) K :=
   monomial ⟪4, 2⟫ 1 + monomial ⟪2, 4⟫ 1 - monomial ⟪2, 2⟫ 3 + monomial 0 1
 
-lemma motzkin_polynomial_nonneg_aux (x y : K) :
+private lemma motzkin_polynomial_nonneg_aux (x y : K) :
     0 ≤ x ^ 4 * y ^ 2 + x ^ 2 * y ^ 4 - 3 * x ^ 2 * y ^ 2 + 1 := by
   by_cases hx : x = 0
   · simp [hx]
@@ -48,7 +48,7 @@ theorem motzkin_polynomial_nonneg (r : Fin 2 → K) : 0 ≤ motzkin_polynomial.e
 
 /-- If the Motzkin polynomial is expressible as a polynomial sum of squares ∑ gᵢ², then the degree
   of each gᵢ is at most three. -/
-lemma motzkin_polynomial_ne_sos_aux₁ {ι : Type*} {s : Finset ι} {g : ι → MvPolynomial (Fin 2) K}
+private lemma motzkin_polynomial_ne_sos_aux₁ {ι : Type*} {s : Finset ι} {g : ι → MvPolynomial (Fin 2) K}
     (h : motzkin_polynomial = ∑ i ∈ s, g i ^ 2) : ∀ i ∈ s, (g i).totalDegree ≤ 3 := by
   intro i hi
   -- Let d be the maximum degree among gᵢ's. Assume d > 3.
