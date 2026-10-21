@@ -7,7 +7,11 @@ module
 
 public import Batteries.Data.List.Lemmas
 public import Mathlib.Tactic.Common
+
 import Mathlib.Tactic.Finiteness.Attr
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Lemmas about `IsChain` and `ofFn`

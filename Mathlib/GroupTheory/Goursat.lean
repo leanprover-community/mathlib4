@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Graph
 public import Mathlib.Algebra.Group.Subgroup.Basic
 public import Mathlib.GroupTheory.QuotientGroup.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Goursat's lemma for subgroups
 

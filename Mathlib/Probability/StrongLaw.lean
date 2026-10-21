@@ -5,12 +5,13 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Probability.IdentDistrib
-import Mathlib.Probability.Independence.Integrable
 public import Mathlib.MeasureTheory.Integral.DominatedConvergence
-import Mathlib.Analysis.SpecificLimits.FloorPow
-import Mathlib.Analysis.PSeries
+public import Mathlib.Probability.IdentDistrib
+
 import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
+import Mathlib.Analysis.PSeries
+import Mathlib.Analysis.SpecificLimits.FloorPow
+import Mathlib.Probability.Independence.Integrable
 
 /-!
 # The strong law of large numbers

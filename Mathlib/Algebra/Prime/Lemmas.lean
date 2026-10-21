@@ -5,11 +5,15 @@ Authors: Johannes Hölzl, Jens Wagemaker
 -/
 module
 
-import Mathlib.Algebra.Divisibility.Hom
 public import Mathlib.Algebra.Group.Irreducible.Lemmas
 public import Mathlib.Algebra.GroupWithZero.Equiv
 public import Mathlib.Algebra.Prime.Defs
+
+import Mathlib.Algebra.Divisibility.Hom
 import Mathlib.Order.Monotone.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Associated, prime, and irreducible elements.
