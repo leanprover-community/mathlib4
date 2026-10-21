@@ -12,10 +12,7 @@ import Mathlib.Init
 /-!
 # Utility functions for finding all `.lean` files or modules in a project.
 
-TODO:
-`getLeanLibs` contains a hard-coded choice of which dependencies should be built and which ones
-should not.  Could this be made more structural and robust, possibly with extra `Lake` support?
-
+TODO: Could this be made more structural and robust, possibly with extra `Lake` support?
 -/
 
 public meta section
@@ -52,7 +49,7 @@ i.e. names of the form `Mathlib.Algebra.Algebra.Basic`. In addition, these names
 platform-independent order.
 
 `srcDir` is the part of the path that is not part of the module name, and should be specified when
-ot using a top-level directory in order to peel off the correct number of components from the path
+to using a top-level directory in order to peel off the correct number of components from the path
 for the resulting names. -/
 def getAllModulesSorted (git : Bool) (dir : System.FilePath)
     (srcDir := dir.parent.getD ".") : IO (Array Name) := do

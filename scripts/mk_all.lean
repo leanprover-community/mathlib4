@@ -96,9 +96,32 @@ def fileName : System.FilePath := modToFilePath r.lib.srcDir r.name "lean"
 
 /-- We have `r₁.lt r₂` if the root module designated by `r₁` might be included in `r₂`. -/
 def lt (r₁ r₂ : Root) : Bool :=
-  r₁.realLibSrcDir == r₁.realLibSrcDir && r₁.name != r₂.name && r₂.name.isPrefixOf r₁.name
+  r₁.realLibSrcDir == r₂.realLibSrcDir && r₁.name != r₂.name && r₂.name.isPrefixOf r₁.name
+
+/-- Checks that the root is a path. `rootOrigin : String` is used in the parenthetical
+`(from {rootOrigin})` to provide better error messages. `@[macro_inline]` to build `rootOrigin`
+lazily. -/
+@[macro_inline] def checkDir (rootOrigin : String) : IO Unit := do
+  unless ← r.dir.isDir do
+    throw <| IO.userError s!"Expected the root `{r.name}` (from {rootOrigin}) to be a \
+      directory at path:\n  {r.dir}"
 
 end Root
+
+/-- Given a putative (pseudo)root `name`, finds the `Root` associated with it. Errors if it is not
+already a directory (but allows it to not be a module). `rootOrigin : String` is used in the
+parenthetical `(from {rootOrigin})` to provide better error messages. -/
+def findRoot (pkg : Lake.Package) (name : Name) (rootOrigin : String) : IO Root := do
+  -- Note that `isLocalModule` doesn't actually check that a module exists, just that the name
+  -- *could* be a module built by this library. This includes modules not imported in the root.
+  let some lib := pkg.leanLibs.findRev? (·.isLocalModule name)
+    | throw <| IO.userError s!"Could not find a `lean_lib` in the package {pkg.prettyName} \
+      in which the root `{name}` (from {rootOrigin}) could live.\n\
+      This package contains the libraries:\
+      {String.join <| pkg.leanLibs.toList.map (s!"\n  {·.name.toString (escape := false)}")}"
+  let root := { name, lib, realLibSrcDir := ← IO.FS.realPath lib.srcDir : Root}
+  root.checkDir (rootOrigin := rootOrigin)
+  return root
 
 /-- Returns the `Root`s to process, with the roots that may be included as imports in future roots
 first (e.g. `Mathlib.Tactic` precedes `Mathlib`). -/
@@ -106,27 +129,19 @@ def Config.mkAllRoots (cfg : Config) (pkg : Lake.Package)
     (only? : Option (Array String) := none) :
     IO (Array Root) := do
   let libs ← cfg.mkAllLibs pkg (only? := only?)
-  let mut roots ← libs.flatMapM fun lib => lib.roots.mapM fun name =>
-    return { name, lib, realLibSrcDir := ← IO.FS.realPath lib.srcDir : Root }
-  let libsMsg := s!"This package contains the libraries:\
-    {String.join <| pkg.leanLibs.toList.map (s!"\n  {·.name.toString (escape := false)}")}"
+  let mut roots ← libs.flatMapM fun lib => lib.roots.mapM fun name => do
+    let root := { name, lib, realLibSrcDir := ← IO.FS.realPath lib.srcDir : Root }
+    root.checkDir s!"`lean_lib {lib.name}`"
+    return root
   if let some only := only? then
     for root in only do
       unless roots.any (·.name.toString (escape := false) == root) do
-        let name := root.toName
         -- Add `only`s that are in libs but are not libs
-        let some lib := pkg.leanLibs.findRev? (·.isLocalModule name)
-          | throw <| IO.userError s!"Could not find the root `{only}` among the libraries of the \
-              package {pkg.prettyName}. {libsMsg}"
-        roots := roots.push { name, lib, realLibSrcDir := ← IO.FS.realPath lib.srcDir }
+        roots := roots.push <|← findRoot pkg root.toName (rootOrigin := "`--lib`")
   else
     for name in cfg.extraRootModules do
-      -- Note that `isLocalModule` doesn't actually check that a module exists, just that the name
-      -- *could* be a module built by this library. This includes modules not imported in the root.
-      let some lib := pkg.leanLibs.findRev? (·.isLocalModule name)
-        | throw <| IO.userError s!"Could not find a `lean_lib` in the package {pkg.prettyName} \
-            in which the extra root `{name}` from the `mk_all` config could live. {libsMsg}"
-      roots := roots.push { name, lib, realLibSrcDir := ← IO.FS.realPath lib.srcDir }
+      roots := roots.push <|← findRoot pkg name
+        (rootOrigin := "the `mk_all` config's `extraRootModules")
   return roots.qsort (·.lt ·)
 
 /-- Handles a `Root` and updates the associated file, printing logs to stdout. Returns `true` if it

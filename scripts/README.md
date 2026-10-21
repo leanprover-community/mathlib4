@@ -226,7 +226,7 @@ to module `Foo.Bar` (no `srcDir` indirection).
   A wrapper script for `lake build` which collapses normal build into log groups and saves a build summary JSON file. See file for usage.
 - `mk_all.lean`
   run via `lake exe mk_all`, regenerates the import-only files
-  `Mathlib.lean`, `Mathlib/Tactic.lean`, `Archive.lean` and `Counterexamples.lean`
+  `Mathlib.lean`, `Mathlib/Tactic.lean`, `Archive.lean`, `Counterexamples.lean`, and `Wanted.lean`.
 - `lint-style.lean`: style linters written in Lean. Run via `lake exe lint-style`.
 - `check_title_labels.lean` verifies that a (non-WIP, non-draft) PR has a well-formed title.
   In the future, it may also check that a feature PR has a topic label.
