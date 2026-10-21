@@ -135,18 +135,18 @@ noncomputable def extQuotientLengthEquivOfIsRegular [IsLocalRing R] [IsNoetheria
   | succ n hn =>
     let a := rs[n]
     let rs' := rs.take n
-    have mem_max : ∀ x ∈ rs, x ∈ maximalIdeal R := by
+    have mem : ∀ x ∈ rs, x ∈ maximalIdeal R := by
       intro x hx
       apply IsLocalRing.le_maximalIdeal reg.2.symm
       simpa using (Ideal.mem_span x).mpr fun p a ↦ a hx
-    have mem_max' : ∀ x ∈ rs', x ∈ maximalIdeal R := fun x hx ↦ mem_max x (List.mem_of_mem_take hx)
+    have mem' : ∀ x ∈ rs', x ∈ maximalIdeal R := fun x hx ↦ mem x (List.mem_of_mem_take hx)
     have rs'reg : RingTheory.Sequence.IsRegular R rs' := by
       refine ⟨⟨fun i hi ↦ ?_⟩, ?_⟩
       · simp only [List.length_take, len, le_add_iff_nonneg_right, zero_le, inf_of_le_left,
           List.getElem_take, rs'] at hi ⊢
         rw [List.take_take, min_eq_left_of_lt hi]
         exact reg.1.1 i (lt_of_lt_of_eq (Nat.lt_add_right 1 hi) len.symm)
-      · simpa using! (ne_top_of_le_ne_top Ideal.IsPrime.ne_top' (Ideal.span_le.mpr mem_max')).symm
+      · simpa using! (ne_top_of_le_ne_top Ideal.IsPrime.ne_top' (Ideal.span_le.mpr (mem' ·))).symm
     have eqapp : rs = rs' ++ [a] := by simp [rs', a, len]
     have reg' : IsSMulRegular (R ⧸ Ideal.ofList rs' • (⊤ : Submodule R R)) a :=
       reg.1.1 n (lt_of_lt_of_eq (lt_add_one n) len.symm)
