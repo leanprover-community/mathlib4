@@ -944,8 +944,8 @@ jobs:
           use-mathlib-cache: false # This can be re-enabled once we are confident in the cache again.
           reinstall-transient-toolchain: true
 
-      # Keep curl's retries after `ubuntu-latest` moves to Ubuntu 26.04: the
-      # tool runs the image's curl 8.18 without them.
+      # The pinned curl keeps curl's retries on every runner image: the tool
+      # runs curl 8.18 (Ubuntu 26.04) without them.
       - *install_curl
 
       - name: get cache for Mathlib

@@ -78,7 +78,7 @@ def putFilesViaCurl
       IO.Process.exit 1
   else IO.println "No files to upload"
 
-/-- Upload the named staged files, then the location's marker if present.
+/-- Upload the named staged files, then the location's marker when it has one.
 `getSignArgs` supplies signing arguments for each upload.
 File failures exit with code 1; marker failures only warn. -/
 def putStagedViaCurl (dest : Location) (getSignArgs : IO (Array String))
