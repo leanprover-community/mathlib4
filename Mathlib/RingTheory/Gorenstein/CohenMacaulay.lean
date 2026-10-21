@@ -859,7 +859,7 @@ lemma isGorensteinLocalRing_of_exists (k : ℕ) (gt : ringKrullDim R < k)
           (Module.length_ne_top_of_support_subset _ (supp_le _))
         convert mono
         ext y
-        simp [Ext.mk₀_smul]
+        simp [Ext.mk₀_smul] --here needs set false
       have : x ∈ (Module.annihilator R (Ext (ModuleCat.of R (R ⧸ p))
         (ModuleCat.of R R) k)).jacobson := maximalIdeal_le_jacobson _ hx
       absurd Submodule.top_ne_pointwise_smul_of_mem_jacobson_annihilator this
