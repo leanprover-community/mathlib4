@@ -100,8 +100,8 @@ theorem gelfandRadius_le_of_norm_pow_le {B : Type*} [SeminormedRing B] {a : A} {
 
 theorem gelfandRadius_eq_of_norm_pow {B : Type*} [SeminormedRing B] {a : A} {b : B}
     (h : ∀ n, ‖a ^ n‖ = ‖b ^ n‖) : gelfandRadius a = gelfandRadius b :=
-  le_antisymm (gelfandRadius_le_of_norm_pow_le 1 (by grind))
-    (gelfandRadius_le_of_norm_pow_le 1 (by grind))
+  le_antisymm (gelfandRadius_le_of_norm_pow_le 1 (by simp [h]))
+    (gelfandRadius_le_of_norm_pow_le 1 (by simp [h]))
 
 @[simp]
 theorem gelfandRadius_star [StarRing A] [NormedStarGroup A] (a : A) :
