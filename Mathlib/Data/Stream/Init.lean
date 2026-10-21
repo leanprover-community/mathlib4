@@ -11,9 +11,6 @@ public import Mathlib.Tactic.Common
 
 import Mathlib.Data.Nat.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Streams a.k.a. infinite lists a.k.a. infinite sequences
 -/

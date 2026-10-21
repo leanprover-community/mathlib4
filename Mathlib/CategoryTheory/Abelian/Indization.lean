@@ -10,9 +10,6 @@ public import Mathlib.CategoryTheory.Preadditive.Indization
 
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.AbelianImages
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # The category of ind-objects is abelian
 

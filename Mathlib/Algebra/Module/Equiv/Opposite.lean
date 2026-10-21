@@ -8,9 +8,6 @@ module
 public import Mathlib.Algebra.Module.Equiv.Defs
 public import Mathlib.Algebra.Module.Opposite
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Module operations on `Mᵐᵒᵖ`
 

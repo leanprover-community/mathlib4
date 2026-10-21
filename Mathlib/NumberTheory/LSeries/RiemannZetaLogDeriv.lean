@@ -8,9 +8,6 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Digamma
 public import Mathlib.NumberTheory.LSeries.RiemannZeta
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # The functional equation for the logarithmic derivative of the Riemann zeta function
 
