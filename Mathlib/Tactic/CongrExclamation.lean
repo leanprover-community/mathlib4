@@ -16,8 +16,9 @@ public import Mathlib.Tactic.Relation.Rfl
 /-!
 # The `congr!` tactic
 
-This is a more powerful version of the `congr` tactic that knows about more congruence lemmas and
-can apply to more situations. It is similar to the `congr'` tactic from Mathlib 3.
+This is a more powerful version of the [`congr`](##Lean.Parser.Tactic.congr) tactic that knows about
+more congruence lemmas and can apply to more situations. It is similar to the `congr'` tactic from
+Mathlib 3.
 
 The `congr!` tactic is used by the `convert` and `convert_to` tactics.
 
@@ -37,7 +38,8 @@ congr! n with x y z
 Here, `n` is a natural number and `x`, `y`, `z` are `rintro` patterns (like `h`, `rfl`, `⟨x, y⟩`,
 `_`, `-`, `(h | h)`, etc.).
 
-The `congr!` tactic is similar to `congr` but is more insistent in trying to equate left-hand sides
+The `congr!` tactic is similar to [`congr`](##Lean.Parser.Tactic.congr) but is more insistent in
+trying to equate left-hand sides
 to right-hand sides of goals. Here is an exhaustive list of things it can try:
 
 - If `R` in `⊢ R x y` is a reflexive relation, it will convert the goal to `⊢ x = y` if possible.
@@ -48,9 +50,9 @@ to right-hand sides of goals. Here is an exhaustive list of things it can try:
 - If there is a user congruence lemma associated to the goal (for instance, a `@[congr]`-tagged
   lemma applying to `⊢ List.map f xs = List.map g ys`), then it will use that.
 
-- It uses a congruence lemma generator at least as capable as the one used by `congr` and `simp`.
-  If there is a subexpression that can be rewritten by `simp`, then `congr!` should be able
-  to generate an equality for it.
+- It uses a congruence lemma generator at least as capable as the one used by
+  [`congr`](##Lean.Parser.Tactic.congr) and `simp`. If there is a subexpression that can be
+  rewritten by `simp`, then `congr!` should be able to generate an equality for it.
 
 - It can do congruences of pi types using lemmas like `implies_congr` and `pi_congr`.
 
@@ -85,7 +87,7 @@ congr! (config := .unfoldSameFun)
 ```
 This only allows congruences between functions applications of definitionally equal functions,
 and it applies congruence lemmas at default transparency (rather than just reducible).
-This is somewhat like `congr`.
+This is somewhat like [`congr`](##Lean.Parser.Tactic.congr).
 
 See `Congr!.Config` for all options.
 -/
@@ -136,11 +138,12 @@ structure Congr!.Config where
 
   In this case, we might still consider `f = g x` if a pass generates a congruence lemma using the
   left-hand side. Use `sameFun := true` to ensure both sides are applications
-  of the same function (making it be similar to the `congr` tactic). -/
+  of the same function (making it be similar to the
+  [`congr`](##Lean.Parser.Tactic.congr) tactic). -/
   partialApp : Bool := true
   /-- Whether to require that both sides of an equality be applications of defeq functions.
   That is, if true, `f a = g x` is only considered if `f` and `g` are defeq (making it be similar
-  to the `congr` tactic). -/
+  to the [`congr`](##Lean.Parser.Tactic.congr) tactic). -/
   sameFun : Bool := false
   /-- The maximum number of arguments to consider when doing congruence of function applications.
   For example, with `f a b c = g w x y z`, setting `maxArgs := some 2` means it will only consider
@@ -181,8 +184,9 @@ structure Congr!.Config where
   /-- As a last pass, perform eta expansion of both sides of an equality. For example,
   this transforms a bare `HAdd.hAdd` into `fun x y => x + y`. -/
   etaExpand : Bool := false
-  /-- Whether to use the congruence generator that is used by `simp` and `congr`. This generator
-  is more strict, and it does not respect all configuration settings. It does respect
+  /-- Whether to use the congruence generator that is used by `simp` and
+  [`congr`](##Lean.Parser.Tactic.congr). This generator is more strict, and it does not respect all
+  configuration settings. It does respect
   `preferLHS`, `partialApp` and `maxArgs` and transparency settings. It acts as if `sameFun := true`
   and it ignores `typeEqs`. -/
   useCongrSimp : Bool := false
@@ -190,9 +194,9 @@ structure Congr!.Config where
   This synthesizes `LawfulBEq` instances to discharge equalities of `BEq` instances. -/
   beqEq : Bool := true
 
-/-- A configuration option that makes `congr!` do the sorts of aggressive unfoldings that `congr`
-does while also similarly preventing `congr!` from considering partial applications or congruences
-between different functions being applied. -/
+/-- A configuration option that makes `congr!` do the sorts of aggressive unfoldings that
+[`congr`](##Lean.Parser.Tactic.congr) does while also similarly preventing `congr!` from considering
+partial applications or congruences between different functions being applied. -/
 @[expose] def Congr!.Config.unfoldSameFun : Congr!.Config where
   partialApp := false
   sameFun := true
@@ -383,7 +387,8 @@ where
 Like `Lean.MVarId.congr?` but instead of using only the congruence lemma associated to the LHS,
 it tries the RHS too, in the order specified by `config.preferLHS`.
 
-It uses `Lean.Meta.mkCongrSimp?` to generate a congruence lemma, like in the `congr` tactic.
+It uses `Lean.Meta.mkCongrSimp?` to generate a congruence lemma, like in the
+[`congr`](##Lean.Parser.Tactic.congr) tactic.
 
 Applies the congruence generated congruence lemmas according to `config`.
 -/
@@ -746,7 +751,8 @@ declare_config_elab elabConfig Config
 goal of the form `⊢ f a1 a2 ... = f b1 b2 ...`, `congr!` will make new goals `⊢ a1 = b1`,
 `⊢ a2 = b2`, ...
 
-`congr!` is a more powerful version of the `congr` tactic that uses congruence lemmas (tagged with
+`congr!` is a more powerful version of the [`congr`](##Lean.Parser.Tactic.congr) tactic that uses
+congruence lemmas (tagged with
 `@[congr]`), reflexivity rules (tagged with `@[refl]`) and proof discharging strategies. The full
 list of congruence proof strategies is documented in the module `Mathlib.Tactic.CongrExclamation`.
 The `congr!` tactic is used by the `convert` and `convert_to` tactics.
