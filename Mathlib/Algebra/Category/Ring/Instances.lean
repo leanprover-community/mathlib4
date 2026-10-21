@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Category.Ring.Basic
 public import Mathlib.RingTheory.LocalRing.RingHom.Basic
 public import Mathlib.RingTheory.Localization.Away.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ring-theoretic results in terms of categorical language
 -/

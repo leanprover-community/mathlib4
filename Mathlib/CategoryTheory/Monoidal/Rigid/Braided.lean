@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 public import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Deriving `RigidCategory` instance for braided and left/right rigid categories.
 -/

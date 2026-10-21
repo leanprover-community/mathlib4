@@ -9,6 +9,9 @@ public import Mathlib.Tactic.Peel
 public import Mathlib.Topology.Compactness.Compact
 public import Mathlib.Topology.NhdsKer
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Compactness of the neighborhoods kernel of a set
 
