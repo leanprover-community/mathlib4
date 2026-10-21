@@ -167,54 +167,34 @@ instance Bot.isCyclic : IsCyclic (⊥ : Subgroup α) :=
   ⟨⟨1, fun x => ⟨0, Subtype.ext <| (zpow_zero (1 : α)).trans <| Eq.symm (Subgroup.mem_bot.1 x.2)⟩⟩⟩
 
 @[to_additive]
-instance Subgroup.isCyclic [IsCyclic α] (H : Subgroup α) : IsCyclic H :=
-  haveI := Classical.propDecidable
+instance Subgroup.isCyclic [IsCyclic α] (H : Subgroup α) : IsCyclic H := by
+  classical
   let ⟨g, hg⟩ := IsCyclic.exists_generator (α := α)
-  if hx : ∃ x : α, x ∈ H ∧ x ≠ (1 : α) then
-    let ⟨x, hx₁, hx₂⟩ := hx
-    let ⟨k, hk⟩ := hg x
-    have hk : g ^ k = x := hk
-    have hex : ∃ n : ℕ, 0 < n ∧ g ^ n ∈ H :=
-      ⟨k.natAbs,
-        Nat.pos_of_ne_zero fun h => hx₂ <| by
-          rw [← hk, Int.natAbs_eq_zero.mp h, zpow_zero], by
-            rcases k with k | k
-            · rw [Int.ofNat_eq_natCast, Int.natAbs_natCast k, ← zpow_natCast,
-                ← Int.ofNat_eq_natCast, hk]
-              exact hx₁
-            · rw [Int.natAbs_negSucc, ← Subgroup.inv_mem_iff H]; simp_all⟩
-    ⟨⟨⟨g ^ Nat.find hex, (Nat.find_spec hex).2⟩, fun ⟨x, hx⟩ =>
-        let ⟨k, hk⟩ := hg x
-        have hk : g ^ k = x := hk
-        have hk₂ : g ^ ((Nat.find hex : ℤ) * (k / Nat.find hex : ℤ)) ∈ H := by
-          rw [zpow_mul]
-          apply H.zpow_mem
-          exact mod_cast (Nat.find_spec hex).2
-        have hk₃ : g ^ (k % Nat.find hex : ℤ) ∈ H :=
-          (Subgroup.mul_mem_cancel_right H hk₂).1 <| by
-            rw [← zpow_add, Int.emod_add_mul_ediv, hk]; exact hx
-        have hk₄ : k % Nat.find hex = (k % Nat.find hex).natAbs := by
-          rw [Int.natAbs_of_nonneg
-              (Int.emod_nonneg _ (Int.natCast_ne_zero_iff_pos.2 (Nat.find_spec hex).1))]
-        have hk₅ : g ^ (k % Nat.find hex).natAbs ∈ H := by rwa [← zpow_natCast, ← hk₄]
-        have hk₆ : (k % (Nat.find hex : ℤ)).natAbs = 0 :=
-          by_contradiction fun h =>
-            Nat.find_min hex
-              (Int.ofNat_lt.1 <| by
-                rw [← hk₄]; exact Int.emod_lt_of_pos _ (Int.natCast_pos.2 (Nat.find_spec hex).1))
-              ⟨Nat.pos_of_ne_zero h, hk₅⟩
-        ⟨k / (Nat.find hex : ℤ),
-          Subtype.ext_iff.2
-            (by
-              suffices g ^ ((Nat.find hex : ℤ) * (k / Nat.find hex : ℤ)) = x by simpa [zpow_mul]
-              rw [Int.mul_ediv_cancel'
-                  (Int.dvd_of_emod_eq_zero (Int.natAbs_eq_zero.mp hk₆)),
-                hk])⟩⟩⟩
-  else by
-    have : H = (⊥ : Subgroup α) :=
-      Subgroup.ext fun x =>
-        ⟨fun h => by simp at *; tauto, fun h => by rw [Subgroup.mem_bot.1 h]; exact H.one_mem⟩
-    subst this; infer_instance
+  by_cases! hx : ¬ ∃ x : α, x ∈ H ∧ x ≠ (1 : α)
+  · obtain rfl : H = (⊥ : Subgroup α) := by aesop
+    infer_instance
+  obtain ⟨x, hx₁, hx₂⟩ := hx
+  simp_rw [mem_zpowers_iff] at hg
+  obtain ⟨k, rfl⟩ := hg x
+  have hex : ∃ n : ℕ, 0 < n ∧ g ^ n ∈ H := by
+    use k.natAbs
+    contrapose hx₂
+    cases k <;> simp_all
+  refine ⟨⟨⟨g ^ Nat.find hex, (Nat.find_spec hex).2⟩, fun ⟨x, hx⟩ ↦ ?_⟩⟩
+  obtain ⟨k, rfl⟩ := hg x
+  have hk := Int.natAbs_of_nonneg <|
+    Int.emod_nonneg k (Int.natCast_ne_zero_iff_pos.2 (Nat.find_spec hex).1)
+  refine ⟨k / Nat.find hex, Subtype.ext ?_⟩
+  dsimp
+  rw [← zpow_natCast, ← zpow_mul, Int.mul_ediv_cancel']
+  by_contra h
+  rw [Int.dvd_iff_emod_eq_zero, ← Int.natAbs_eq_zero] at h
+  refine Nat.find_min hex ?_ ⟨Nat.pos_of_ne_zero h, ?_⟩
+  · rw [← Int.ofNat_lt, hk]
+    exact Int.emod_lt_of_pos _ (Int.natCast_pos.2 (Nat.find_spec hex).1)
+  · rwa [← zpow_natCast, hk, ← H.mul_mem_cancel_right, ← zpow_add, Int.emod_add_mul_ediv]
+    rw [zpow_mul]
+    exact H.zpow_mem (mod_cast (Nat.find_spec hex).2) _
 
 @[to_additive]
 theorem isCyclic_of_injective [IsCyclic G'] (f : G →* G') (hf : Function.Injective f) :
