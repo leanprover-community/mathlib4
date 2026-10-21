@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Adjunction.Limits
 public import Mathlib.CategoryTheory.Bicategory.Extension
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
-public import Mathlib.Tactic.CategoryTheory.Bicategory.Basic
 
 /-!
 # Kan extensions and Kan lifts in bicategories
@@ -159,6 +158,7 @@ variable {t : LeftExtension f g} {s : LeftExtension h t.extension}
 
 /-- Given a left Kan extension `t` of `g` along `f`, a left extension `u` of `g` along `f ≫ h`
 induces, via the universal property of `t`, a left extension of `t.extension` along `h`. -/
+@[implicit_reducible]
 def IsKan.ofIsKanTop (Ht : IsKan t) (u : LeftExtension (f ≫ h) g) : LeftExtension h t.extension :=
   .mk u.extension (Ht.desc (.mk (h ≫ u.extension) (u.unit ≫ (α_ f h u.extension).hom)))
 
@@ -171,7 +171,6 @@ theorem IsKan.ofIsKanTop_fac (Ht : IsKan t) (u : LeftExtension (f ≫ h) g) :
     t.unit ≫ f ◁ (Ht.ofIsKanTop u).unit = u.unit ≫ (α_ f h u.extension).hom :=
   Ht.fac (.mk (h ≫ u.extension) (u.unit ≫ (α_ f h u.extension).hom))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Pasting of left extensions preserves being Kan. -/
 def IsKan.paste (Ht : IsKan t) (Hs : IsKan s) : IsKan (t.paste s) :=
   IsKan.mk
@@ -187,7 +186,6 @@ def IsKan.paste (Ht : IsKan t) (Hs : IsKan s) : IsKan (t.paste s) :=
       rw [homMk_right, Hs.fac, Ht.ofIsKanTop_fac, ← LeftExtension.w τ, paste_unit]
       bicategory)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a left extension `t` of `g` along `f` and a left extension `s` of `t` along `h`, if `t`
 and `t.paste s` are Kan, then so is `s`. -/
 def IsKan.ofPaste (Ht : IsKan t) (Hp : IsKan (t.paste s)) : IsKan s :=
@@ -205,7 +203,7 @@ def IsKan.ofPaste (Ht : IsKan t) (Hp : IsKan (t.paste s)) : IsKan s :=
 
 /-- Let `t` be a left Kan extension of `g` along `f` and `s` a left extension of `t` along `h`. Then
 `s` is Kan if and only if `t.paste s` is Kan. -/
-def isKanEquivIsKanPaste (Ht : IsKan t) : (IsKan s) ≃ (IsKan (t.paste s)) :=
+def isKanEquivIsKanPaste (Ht : IsKan t) : IsKan s ≃ IsKan (t.paste s) :=
   equivOfSubsingletonOfSubsingleton Ht.paste Ht.ofPaste
 
 /-- Pasting of left extensions preserves being absolute Kan. -/
@@ -222,7 +220,7 @@ noncomputable def IsAbsKan.ofPaste (H : IsAbsKan t) (Hp : IsAbsKan (t.paste s)) 
 /-- Let `t` be an absolute left Kan extension of `g` along `f` and `s` a left extension of `t` along
 `h`. Then `s` is absolute Kan if and only if `t.paste s` is absolute Kan. -/
 noncomputable def isAbsKanEquivIsAbsKanPaste (H : IsAbsKan t) :
-    (IsAbsKan s) ≃ (IsAbsKan (t.paste s)) :=
+    IsAbsKan s ≃ IsAbsKan (t.paste s) :=
   equivOfSubsingletonOfSubsingleton H.paste H.ofPaste
 
 end Paste
@@ -334,8 +332,8 @@ variable {f : b ⟶ a} {g : d ⟶ a} {h : c ⟶ b}
 variable {t : LeftLift f g} {s : LeftLift h t.lift}
 
 /-- Given a left Kan lift `t` of `g` along `f`, a left lift `u` of `g` along `h ≫ f` induces,
-via the universal property of `t`, a left lift of `t.lift` along `h`.
--/
+via the universal property of `t`, a left lift of `t.lift` along `h`. -/
+@[implicit_reducible]
 def IsKan.ofIsKanTop (Ht : IsKan t) (u : LeftLift (h ≫ f) g) : LeftLift h t.lift :=
   .mk u.lift (Ht.desc (.mk (u.lift ≫ h) (u.unit ≫ (α_ u.lift h f).inv)))
 
@@ -348,7 +346,6 @@ theorem IsKan.ofIsKanTop_fac (Ht : IsKan t) (u : LeftLift (h ≫ f) g) :
     t.unit ≫ (Ht.ofIsKanTop u).unit ▷ f = u.unit ≫ (α_ u.lift h f).inv :=
   Ht.fac (.mk (u.lift ≫ h) (u.unit ≫ (α_ u.lift h f).inv))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Pasting of left lifts preserves being Kan. -/
 def IsKan.paste (Ht : IsKan t) (Hs : IsKan s) : IsKan (t.paste s) :=
   IsKan.mk
@@ -364,7 +361,6 @@ def IsKan.paste (Ht : IsKan t) (Hs : IsKan s) : IsKan (t.paste s) :=
       rw [homMk_right, Hs.fac, Ht.ofIsKanTop_fac, ← LeftLift.w τ, paste_unit]
       bicategory)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a left lift `t` of `g` along `f` and a left lift `s` of `t` along `h`, if `t` and
 `t.paste s` are Kan, then so is `s`. -/
 def IsKan.ofPaste (Ht : IsKan t) (Hp : IsKan (t.paste s)) : IsKan s :=
@@ -382,7 +378,7 @@ def IsKan.ofPaste (Ht : IsKan t) (Hp : IsKan (t.paste s)) : IsKan s :=
 
 /-- Let `t` be a left Kan lift of `g` along `f` and `s` a left lift of `t` along `h`. Then `s` is
 Kan if and only if `t.paste s` is Kan. -/
-def isKanEquivIsKanPaste (Ht : IsKan t) : (IsKan s) ≃ (IsKan (t.paste s)) :=
+def isKanEquivIsKanPaste (Ht : IsKan t) : IsKan s ≃ IsKan (t.paste s) :=
   equivOfSubsingletonOfSubsingleton Ht.paste Ht.ofPaste
 
 /-- Pasting of left lifts preserves being absolute Kan. -/
@@ -399,7 +395,7 @@ noncomputable def IsAbsKan.ofPaste (H : IsAbsKan t) (Hp : IsAbsKan (t.paste s)) 
 /-- Let `t` be an absolute left Kan lift of `g` along `f` and `s` a left lift of `t` along `h`. Then
 `s` is absolute Kan if and only if `t.paste s` is absolute Kan. -/
 noncomputable def isAbsKanEquivIsAbsKanPaste (H : IsAbsKan t) :
-    (IsAbsKan s) ≃ (IsAbsKan (t.paste s)) :=
+    IsAbsKan s ≃ IsAbsKan (t.paste s) :=
   equivOfSubsingletonOfSubsingleton H.paste H.ofPaste
 
 end Paste
@@ -514,6 +510,7 @@ variable {t : RightExtension f g} {s : RightExtension h t.extension}
 
 /-- Given a right Kan extension `t` of `g` along `f`, a right extension `u` of `g` along `f ≫ h`
 induces, via the universal property of `t`, a right extension of `t.extension` along `h`. -/
+@[implicit_reducible]
 def IsKan.ofIsKanTop (Ht : IsKan t) (u : RightExtension (f ≫ h) g) : RightExtension h t.extension :=
   .mk u.extension (Ht.desc (.mk (h ≫ u.extension) ((α_ f h u.extension).inv ≫ u.counit)))
 
@@ -526,7 +523,6 @@ theorem IsKan.ofIsKanTop_fac (Ht : IsKan t) (u : RightExtension (f ≫ h) g) :
     f ◁ (Ht.ofIsKanTop u).counit ≫ t.counit = (α_ f h u.extension).inv ≫ u.counit :=
   Ht.fac (.mk (h ≫ u.extension) ((α_ f h u.extension).inv ≫ u.counit))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Pasting of right extensions preserves being Kan. -/
 def IsKan.paste (Ht : IsKan t) (Hs : IsKan s) : IsKan (t.paste s) :=
   IsKan.mk
@@ -542,7 +538,6 @@ def IsKan.paste (Ht : IsKan t) (Hs : IsKan s) : IsKan (t.paste s) :=
       rw [homMk_left, Hs.fac, Ht.ofIsKanTop_fac, ← RightExtension.w τ, paste_counit]
       bicategory)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a right extension `t` of `g` along `f` and a right extension `s` of `t` along `h`, if `t`
 and `t.paste s` are Kan, then so is `s`. -/
 def IsKan.ofPaste (Ht : IsKan t) (Hp : IsKan (t.paste s)) : IsKan s :=
@@ -560,7 +555,7 @@ def IsKan.ofPaste (Ht : IsKan t) (Hp : IsKan (t.paste s)) : IsKan s :=
 
 /-- Let `t` be a right Kan extension of `g` along `f` and `s` a right extension of `t` along `h`.
 Then `s` is Kan if and only if `t.paste s` is Kan. -/
-def isKanEquivIsKanPaste (Ht : IsKan t) : (IsKan s) ≃ (IsKan (t.paste s)) :=
+def isKanEquivIsKanPaste (Ht : IsKan t) : IsKan s ≃ IsKan (t.paste s) :=
   equivOfSubsingletonOfSubsingleton Ht.paste Ht.ofPaste
 
 /-- Pasting of right extensions preserves being absolute Kan. -/
@@ -577,7 +572,7 @@ noncomputable def IsAbsKan.ofPaste (H : IsAbsKan t) (Hp : IsAbsKan (t.paste s)) 
 /-- Let `t` be an absolute right Kan extension of `g` along `f` and `s` a right extension of `t`
 along `h`. Then `s` is absolute Kan if and only if `t.paste s` is absolute Kan. -/
 noncomputable def isAbsKanEquivIsAbsKanPaste (H : IsAbsKan t) :
-    (IsAbsKan s) ≃ (IsAbsKan (t.paste s)) :=
+    IsAbsKan s ≃ IsAbsKan (t.paste s) :=
   equivOfSubsingletonOfSubsingleton H.paste H.ofPaste
 
 end Paste
@@ -690,6 +685,7 @@ variable {t : RightLift f g} {s : RightLift h t.lift}
 
 /-- Given a right Kan lift `t` of `g` along `f`, a right lift `u` of `g` along `h ≫ f` induces,
 via the universal property of `t`, a right lift of `t.lift` along `h`. -/
+@[implicit_reducible]
 def IsKan.ofIsKanTop (Ht : IsKan t) (u : RightLift (h ≫ f) g) : RightLift h t.lift :=
   .mk u.lift (Ht.desc (.mk (u.lift ≫ h) ((α_ u.lift h f).hom ≫ u.counit)))
 
@@ -702,7 +698,6 @@ theorem IsKan.ofIsKanTop_fac (Ht : IsKan t) (u : RightLift (h ≫ f) g) :
     (Ht.ofIsKanTop u).counit ▷ f ≫ t.counit = (α_ u.lift h f).hom ≫ u.counit :=
   Ht.fac (.mk (u.lift ≫ h) ((α_ u.lift h f).hom ≫ u.counit))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Pasting of right lifts preserves being Kan. -/
 def IsKan.paste (Ht : IsKan t) (Hs : IsKan s) : IsKan (t.paste s) :=
   IsKan.mk
@@ -718,7 +713,6 @@ def IsKan.paste (Ht : IsKan t) (Hs : IsKan s) : IsKan (t.paste s) :=
       rw [homMk_left, Hs.fac, Ht.ofIsKanTop_fac, ← RightLift.w τ, paste_counit]
       bicategory)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a right lift `t` of `g` along `f` and a right lift `s` of `t` along `h`, if `t` and
 `t.paste s` are Kan, then so is `s`. -/
 def IsKan.ofPaste (Ht : IsKan t) (Hp : IsKan (t.paste s)) : IsKan s :=
@@ -735,7 +729,7 @@ def IsKan.ofPaste (Ht : IsKan t) (Hp : IsKan (t.paste s)) : IsKan s :=
 
 /-- Let `t` be a right Kan lift of `g` along `f` and `s` a right lift of `t` along `h`. Then `s` is
 Kan if and only if `t.paste s` is Kan. -/
-def isKanEquivIsKanPaste (Ht : IsKan t) : (IsKan s) ≃ (IsKan (t.paste s)) :=
+def isKanEquivIsKanPaste (Ht : IsKan t) : IsKan s ≃ IsKan (t.paste s) :=
   equivOfSubsingletonOfSubsingleton Ht.paste Ht.ofPaste
 
 /-- Pasting of right lifts preserves being absolute Kan. -/
@@ -752,7 +746,7 @@ noncomputable def IsAbsKan.ofPaste (H : IsAbsKan t) (Hp : IsAbsKan (t.paste s)) 
 /-- Let `t` be an absolute right Kan lift of `g` along `f` and `s` a right lift of `t` along `h`.
 Then `s` is absolute Kan if and only if `t.paste s` is absolute Kan. -/
 noncomputable def isAbsKanEquivIsAbsKanPaste (H : IsAbsKan t) :
-    (IsAbsKan s) ≃ (IsAbsKan (t.paste s)) :=
+    IsAbsKan s ≃ IsAbsKan (t.paste s) :=
   equivOfSubsingletonOfSubsingleton H.paste H.ofPaste
 
 end Paste

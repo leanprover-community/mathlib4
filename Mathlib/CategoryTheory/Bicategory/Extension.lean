@@ -202,7 +202,7 @@ section Paste
 
 variable {d : B} {f : a ⟶ b} {g : a ⟶ c} {h : b ⟶ d}
 
-/-- Given a left extension `t` of `g` along `f` and a left extension `s` of `t` along `h`, then we
+/-- Given a left extension `t` of `g` along `f` and a left extension `s` of `t` along `h`, we
 obtain a left extension `t.paste s` of `g` along `f ≫ h`.
 ```
   b                 d                    d
@@ -214,6 +214,7 @@ f |  ⇓  \         h |  ⇓  \        f ≫ h |  ⇓  \
        g                t.ext                 g
 ```
 -/
+@[implicit_reducible]
 def paste (t : LeftExtension f g) (s : LeftExtension h t.extension) : LeftExtension (f ≫ h) g :=
   .mk s.extension (t.unit ≫ f ◁ s.unit ≫ (α_ f h s.extension).inv)
 
@@ -279,14 +280,14 @@ abbrev homMk (η : s.lift ⟶ t.lift) (w : s.unit ≫ η ▷ f = t.unit := by ca
     s ⟶ t :=
   StructuredArrow.homMk η w
 
+@[reassoc (attr := simp)]
+theorem w (η : s ⟶ t) : s.unit ≫ η.right ▷ f = t.unit :=
+  StructuredArrow.w η
+
 @[simp]
 theorem homMk_right (η : s.lift ⟶ t.lift) (w : s.unit ≫ η ▷ f = t.unit) :
     (homMk η w).right = η :=
   rfl
-
-@[reassoc (attr := simp)]
-theorem w (η : s ⟶ t) : s.unit ≫ η.right ▷ f = t.unit :=
-  StructuredArrow.w η
 
 /-- The left lift along the identity. -/
 def alongId (g : c ⟶ a) : LeftLift (𝟙 a) g := .mk _ (ρ_ g).inv
@@ -406,18 +407,19 @@ section Paste
 
 variable {d : B} {f : b ⟶ a} {g : d ⟶ a} {h : c ⟶ b}
 
-/-- Given a left lift `t` of `g` along `f` and a left lift `s` of `t` along `h`, then we obtain a
-left lift `t.paste s` of `g` along `f ≫ h`.
+/-- Given a left lift `t` of `g` along `f` and a left lift `s` of `t` along `h`, we obtain a
+left lift `t.paste s` of `g` along `h ≫ f`.
 ```
             b                 c                     c
           ◹ |               ◹ |                   ◹ |
  t.lift /   |      s.lift /   |      paste.lift /   |
-      /  ⇑  | f         /  ⇑  | h             /  ⇑  | f ≫ h
+      /  ⇑  | f         /  ⇑  | h             /  ⇑  | h ≫ f
     /       ▽         /       ▽             /       ▽
   d - - - ▷ a       d - - - ▷ b           d - - - ▷ a
        g              t.lift                   g
 ```
 -/
+@[implicit_reducible]
 def paste (t : LeftLift f g) (s : LeftLift h t.lift) : LeftLift (h ≫ f) g :=
   .mk s.lift (t.unit ≫ s.unit ▷ f ≫ (α_ s.lift h f).hom)
 
@@ -610,7 +612,7 @@ section Paste
 
 variable {d : B} {f : a ⟶ b} {g : a ⟶ c} {h : b ⟶ d}
 
-/-- Given a right extension `t` of `g` along `f` and a right extension `s` of `t` along `h`, then we
+/-- Given a right extension `t` of `g` along `f` and a right extension `s` of `t` along `h`, we
 obtain a right extension `t.paste s` of `g` along `f ≫ h`.
 ```
   b                 d                    d
@@ -622,6 +624,7 @@ f |  ⇑  \         h |  ⇑  \        f ≫ h |  ⇑  \
        g                t.ext                 g
 ```
 -/
+@[implicit_reducible]
 def paste (t : RightExtension f g) (s : RightExtension h t.extension) : RightExtension (f ≫ h) g :=
   .mk s.extension ((α_ f h s.extension).hom ≫ f ◁ s.counit ≫ t.counit)
 
@@ -816,18 +819,19 @@ section Paste
 
 variable {d : B} {f : b ⟶ a} {g : d ⟶ a} {h : c ⟶ b}
 
-/-- Given a right lift `t` of `g` along `f` and a right lift `s` of `t` along `h`, then we obtain a
-right lift `t.paste s` of `g` along `f ≫ h`.
+/-- Given a right lift `t` of `g` along `f` and a right lift `s` of `t` along `h`, we obtain a
+right lift `t.paste s` of `g` along `h ≫ f`.
 ```
             b                 c                     c
           ◹ |               ◹ |                   ◹ |
  t.lift /   |      s.lift /   |      paste.lift /   |
-      /  ⇓  | f         /  ⇓  | h             /  ⇓  | f ≫ h
+      /  ⇓  | f         /  ⇓  | h             /  ⇓  | h ≫ f
     /       ▽         /       ▽             /       ▽
   d - - - ▷ a       d - - - ▷ b           d - - - ▷ a
        g              t.lift                   g
 ```
 -/
+@[implicit_reducible]
 def paste (t : RightLift f g) (s : RightLift h t.lift) : RightLift (h ≫ f) g :=
   .mk s.lift ((α_ s.lift h f).inv ≫ s.counit ▷ f ≫ t.counit)
 
