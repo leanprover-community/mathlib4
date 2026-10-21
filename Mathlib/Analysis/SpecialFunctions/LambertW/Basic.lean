@@ -127,13 +127,13 @@ theorem existsUnique_mem_Ico_mul_exp_eq_of_mem_Ico (hx : x ∈ Ico (-(rexp 1)⁻
 public theorem existsUnique_mem_Iic_mul_exp_eq_of_mem_Ico (hx : x ∈ Ico (-(rexp 1)⁻¹) 0) :
     ∃! t ∈ Iic (-1), t * rexp t = x := by
   -- `Iic (-1)` is unbounded, so first pick `S` with `t * rexp t < x` for all `t ≥ S`,
-  -- then apply the IVT on `[-(S ⊔ 1), -1]`
+  -- then apply the IVT on `[-(max S 1), -1]`
   obtain ⟨S, hS⟩ : ∃ S, ∀ b ≥ S, b ^ 1 * rexp (-b) < -x :=
     (tendsto_pow_mul_exp_neg_atTop_nhds_zero 1 |>.eventually <|
       eventually_lt_nhds <| neg_pos_of_neg hx.right).exists_forall_of_atTop
-  obtain ⟨t, ht, hteq⟩ : ∃ t ∈ Icc (-(S ⊔ 1)) (-1), t * rexp t = x :=
+  obtain ⟨t, ht, hteq⟩ : ∃ t ∈ Icc (-(max S 1)) (-1), t * rexp t = x :=
     intermediate_value_Icc' (by simp) (by fun_prop)
-      ⟨by grind [exp_neg], by grind [hS (S ⊔ 1), pow_one, exp_neg]⟩
+      ⟨by grind [exp_neg], by grind [hS (max S 1), pow_one, exp_neg]⟩
   exact ⟨t, ⟨ht.2, hteq⟩, fun y hy => exp_injective <| mul_log_strictAntiOn.injOn
     ⟨exp_nonneg y, exp_le_exp.mpr hy.left⟩ ⟨exp_nonneg t, exp_le_exp.mpr ht.right⟩
       (by grind [log_exp])⟩
@@ -280,7 +280,7 @@ def LambertW.solutionNormWAux (θ : ℝ) : ℝ -> ℝ := fun ϕ => (θ - ϕ) / s
 def LambertW.solutionNormZAux (θ : ℝ) : ℝ -> ℝ := fun ϕ =>
   solutionNormWAux θ ϕ * rexp (solutionNormWAux θ ϕ * cos ϕ)
 
-theorem LambertW.sin_pos_of_mem_Ioo_inf_pi (hϕ : ϕ ∈ Ioo 0 (θ ⊓ π)) : 0 < sin ϕ :=
+theorem LambertW.sin_pos_of_mem_Ioo_inf_pi (hϕ : ϕ ∈ Ioo 0 (min θ π)) : 0 < sin ϕ :=
   sin_pos_of_pos_of_lt_pi hϕ.1 <| hϕ.2.trans_le inf_le_right
 
 theorem LambertW.continuousOn_solutionNormWAux {s : Set ℝ} (hs : ∀ x ∈ s, sin x ≠ 0) :
@@ -301,7 +301,7 @@ theorem LambertW.deriv_solutionNormWAux {ϕ : ℝ} (hs : sin ϕ ≠ 0) :
     deriv (solutionNormWAux θ) ϕ = -(sin ϕ + (θ - ϕ) * cos ϕ) / sin ϕ ^ 2 :=
   hasDerivAt_solutionNormWAux θ hs |>.deriv
 
-theorem LambertW.deriv_solutionNormZAux_neg {ϕ : ℝ} (hϕ : ϕ ∈ Ioo 0 (θ ⊓ π)) :
+theorem LambertW.deriv_solutionNormZAux_neg {ϕ : ℝ} (hϕ : ϕ ∈ Ioo 0 (min θ π)) :
     deriv (solutionNormZAux θ) ϕ < 0 := by
   have hs₀ : 0 < sin ϕ := sin_pos_of_mem_Ioo_inf_pi hϕ
   have : DifferentiableAt ℝ (solutionNormWAux θ) ϕ :=
@@ -320,13 +320,13 @@ theorem LambertW.deriv_solutionNormZAux_neg {ϕ : ℝ} (hϕ : ϕ ∈ Ioo 0 (θ �
   positivity
 
 theorem LambertW.strictAntiOn_solutionNormZAux :
-    StrictAntiOn (solutionNormZAux θ) (Ioo 0 (θ ⊓ π)) :=
-  strictAntiOn_of_deriv_neg (convex_Ioo 0 (θ ⊓ π))
+    StrictAntiOn (solutionNormZAux θ) (Ioo 0 (min θ π)) :=
+  strictAntiOn_of_deriv_neg (convex_Ioo 0 (min θ π))
     (continuousOn_solutionNormZAux fun _ hx => sin_pos_of_mem_Ioo_inf_pi hx |>.ne')
     fun _ hϕ => deriv_solutionNormZAux_neg (by rwa [interior_Ioo] at hϕ)
 
 theorem LambertW.injOn_solutionNormZAux (θ : ℝ) :
-    InjOn (solutionNormZAux θ) (Ioo 0 (θ ⊓ π)) :=
+    InjOn (solutionNormZAux θ) (Ioo 0 (min θ π)) :=
   strictAntiOn_solutionNormZAux.injOn
 
 theorem LambertW.tendsto_solutionNormWAux_nhdsGT_zero (hθ : 0 < θ) :
@@ -349,7 +349,7 @@ theorem LambertW.tendsto_solutionNormWAux_pi_nhdsLT_pi :
 theorem LambertW.tendsto_solutionNormZAux_nhdsGT_zero (hθ : 0 < θ) :
     Tendsto (solutionNormZAux θ) (𝓝[>] 0) atTop := by
   refine tendsto_atTop_mono' (𝓝[>] 0) ?_ <| tendsto_solutionNormWAux_nhdsGT_zero hθ
-  filter_upwards [Ioo_mem_nhdsGT (a := θ ⊓ (π / 2)) (by grind [pi_pos])] with ϕ hϕ
+  filter_upwards [Ioo_mem_nhdsGT (a := min θ (π / 2)) (by grind [pi_pos])] with ϕ hϕ
   have hrϕ : 0 ≤ solutionNormWAux θ ϕ := div_nonneg (by grind) (by grind [sin_pos_of_pos_of_lt_pi])
   exact le_mul_of_one_le_right hrϕ <| one_le_exp <| mul_nonneg hrϕ <|
     cos_pos_of_mem_Ioo ⟨by grind [pi_pos], hϕ.right.trans_le inf_le_right⟩ |>.le
@@ -378,7 +378,7 @@ theorem LambertW.tendsto_solutionNormZAux_nhdsLT_pi (hθ : π < θ) :
   · exact tendsto_mul_exp_neg_div_two_atTop.comp (tendsto_solutionNormWAux_nhdsLT_pi hθ)
 
 theorem LambertW.tendsto_solutionNormZAux_nhdsLT_inf_pi (hθ1 : θ ≠ π) (hθ2 : 0 < θ) :
-    Tendsto (solutionNormZAux θ) (𝓝[<] (θ ⊓ π)) (𝓝 0) := by
+    Tendsto (solutionNormZAux θ) (𝓝[<] (min θ π)) (𝓝 0) := by
   rcases le_or_gt π θ with hθ' | hθ'
   · rw [min_eq_right hθ']
     exact tendsto_solutionNormZAux_nhdsLT_pi <| lt_of_le_of_ne hθ' <| Ne.symm hθ1
@@ -402,7 +402,7 @@ theorem LambertW.existsUnique_solutionNormZAux_pi (hρ : (rexp 1)⁻¹ < ρ) :
     hφ'.left hφ (hφ'.right.trans hφρ.symm)⟩
 
 theorem LambertW.existsUnique_solutionNormZAux (hθ1 : θ ≠ π) (hθ2 : 0 < θ) (hρ : 0 < ρ) :
-    ∃! ϕ ∈ Ioo 0 (θ ⊓ π), solutionNormZAux θ ϕ = ρ := by
+    ∃! ϕ ∈ Ioo 0 (min θ π), solutionNormZAux θ ϕ = ρ := by
   obtain ⟨ϕ, hϕ⟩ : ∃ ϕ ∈ Ioo 0 (min θ π), solutionNormZAux θ ϕ = ρ :=
     isPreconnected_Ioo.intermediate_value_Ioi
       (le_principal_iff.mpr <| Ioo_mem_nhdsLT <| lt_min hθ2 pi_pos)
@@ -420,12 +420,12 @@ theorem arg_mul_exp_ofReal_mul_I (hρ : 0 < ρ) (hϕ : ϕ ∈ Ioc (-π) π) :
   grind [arg_real_mul _ hρ, arg_exp_mul_I, toIocMod_eq_self]
 
 theorem LambertW.existsUnique_aux (hθ : 0 < θ) (hρ : 0 < ρ)
-    (H : ∃! ϕ ∈ Ioo 0 (θ ⊓ π), (θ - ϕ) / Real.sin ϕ *
+    (H : ∃! ϕ ∈ Ioo 0 (min θ π), (θ - ϕ) / Real.sin ϕ *
       rexp ((θ - ϕ) / Real.sin ϕ * Real.cos ϕ) = ρ) :
     ∃! w : ℂ, (w.arg ≠ π ∧ w.arg + w.im = θ) ∧ w * cexp w = ρ * cexp (θ * I) := by
   set r : ℝ → ℝ := fun ϕ => (θ - ϕ) / Real.sin ϕ with hr
   obtain ⟨ϕ, ⟨hϕ, hrρ⟩, Huniq⟩ := H
-  have hsin : ∀ ϕ ∈ Ioo 0 (θ ⊓ π), 0 < Real.sin ϕ := fun _ hϕ =>
+  have hsin : ∀ ϕ ∈ Ioo 0 (min θ π), 0 < Real.sin ϕ := fun _ hϕ =>
     Real.sin_pos_of_pos_of_lt_pi hϕ.left <| hϕ.right.trans_le inf_le_right
   have hsϕ : 0 < Real.sin ϕ := hsin ϕ hϕ
   have hϕπ : ϕ < π := hϕ.2.trans_le inf_le_right
@@ -444,7 +444,7 @@ theorem LambertW.existsUnique_aux (hθ : 0 < θ) (hρ : 0 < ρ)
   · rintro w' ⟨⟨hne, hw'θ⟩, hw'ρ⟩
     have hw'₀ : w' ≠ 0 := fun nh =>
       mul_ne_zero (ofReal_ne_zero.mpr hρ.ne') (exp_ne_zero _) <| by rw [← hw'ρ, nh, zero_mul]
-    have hargmem : w'.arg ∈ Ioo 0 (θ ⊓ π) :=
+    have hargmem : w'.arg ∈ Ioo 0 (min θ π) :=
       hw'θ ▸ arg_mem_Ioo_of_arg_add_im_pos hw'₀ hne (hw'θ ▸ hθ)
     have hw'r : ‖w'‖ = r w'.arg := by
       rwa [hr, eq_div_iff (hsin _ hargmem).ne', norm_mul_sin_arg w', eq_sub_iff_add_eq']
