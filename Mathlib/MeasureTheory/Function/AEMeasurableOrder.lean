@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Measurability criterion for ennreal-valued functions
 
