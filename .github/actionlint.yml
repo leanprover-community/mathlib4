@@ -9,3 +9,12 @@ paths:
     ignore:
       # actionlint 1.7.12 doesn't know the `cache-mode` key yet (rhysd/actionlint#745).
       - 'unexpected key "cache-mode" for "job" section'
+  .github/workflows/build_template.yml:
+    ignore:
+      # actionlint 1.7.12 doesn't know the parallel-steps keys (`background`,
+      # `parallel`, `wait`, `wait-all`) and doesn't see the steps inside a
+      # `parallel` group, so it reports the keys and the `steps.<id>` references
+      # to group members (rhysd/actionlint#694).
+      - 'unexpected key "background" for step'
+      - 'step must run script with "run" section or run action with "uses" section'
+      - 'property "(archive|counterexamples|wanted|noisy)" is not defined in object type'
