@@ -5,7 +5,6 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-
 public import Mathlib.GroupTheory.GroupAction.Iwasawa
 public import Mathlib.GroupTheory.GroupAction.SubMulAction.Combination
 public import Mathlib.GroupTheory.Solvable

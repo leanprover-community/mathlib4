@@ -6,8 +6,11 @@ Authors: Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
-public import Mathlib.CategoryTheory.Limits.Unit
 public import Mathlib.CategoryTheory.Limits.Preserves.Creates.Finite
+public import Mathlib.CategoryTheory.Limits.Unit
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Limits and colimits in comma categories

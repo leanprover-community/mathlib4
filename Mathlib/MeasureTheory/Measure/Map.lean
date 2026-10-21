@@ -6,8 +6,8 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.MeasureTheory.MeasurableSpace.Embedding
-public import Mathlib.MeasureTheory.Measure.Dirac.Def
 public import Mathlib.MeasureTheory.Measure.CompleteLattice
+public import Mathlib.MeasureTheory.Measure.Dirac.Def
 
 /-!
 # Pushforward of a measure

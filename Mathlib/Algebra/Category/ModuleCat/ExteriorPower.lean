@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.LinearAlgebra.ExteriorPower.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.LinearAlgebra.ExteriorPower.Basic
 
 /-!
 # The exterior powers as functors on the category of modules
