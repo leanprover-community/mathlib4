@@ -460,7 +460,7 @@ lemma biSup_comap_subtype_eq_top {ι : Type*} (s : Set ι) (p : ι → Submodule
   exact le_biSup p hi
 
 theorem _root_.LinearMap.exists_ne_zero_of_sSup_eq {N : Submodule R M} {f : N →ₛₗ[σ₁₂] M₂}
-    (h : f ≠ 0) (s : Set (Submodule R M)) (hs : sSup s = N):
+    (h : f ≠ 0) (s : Set (Submodule R M)) (hs : sSup s = N) :
     ∃ m, ∃ h : m ∈ s, f ∘ₛₗ inclusion ((le_sSup h).trans_eq hs) ≠ 0 :=
   have ⟨_, ⟨m, hm, rfl⟩, ne⟩ := LinearMap.exists_ne_zero_of_sSup_eq_top h (comap N.subtype '' s) <|
     by rw [sSup_eq_iSup] at hs; rw [sSup_image, ← hs, biSup_comap_subtype_eq_top]
