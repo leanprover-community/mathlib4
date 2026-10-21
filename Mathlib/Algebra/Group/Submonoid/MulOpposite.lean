@@ -5,10 +5,10 @@ Authors: Eric Wieser, Jujian Zhang
 -/
 module
 
+public import Mathlib.Algebra.Group.Equiv.Opposite
 public import Mathlib.Algebra.Group.Opposite
 public import Mathlib.Algebra.Group.Submonoid.Basic
 public import Mathlib.Algebra.Group.Subsemigroup.MulOpposite
-public import Mathlib.Algebra.Group.Equiv.Opposite
 
 /-!
 # Submonoid of opposite monoids
