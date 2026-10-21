@@ -35,6 +35,8 @@ corresponding linear map, and is therefore independent of the choice of bases.
 * `Matrix.rank_eq_finrank_span_cols`, `Matrix.rank_eq_finrank_span_row`: the rank equals the
 dimension of the space spanned by the columns (resp. rows).
 * `Matrix.rank_transpose`: transposing a matrix does not change its rank.
+* `Matrix.le_rank_iff_exists_det_submatrix_ne_zero`: the rank is at least `k` if and only if
+  there is a nonzero `k × k` minor.
 * `Matrix.rank_mul_le`: the rank of `A * B` is at most the rank of `A` and at most the rank of `B`.
 * `Matrix.rank_mul_eq_left_of_isUnit_det`, `Matrix.rank_mul_eq_right_of_isUnit_det`: multiplying by
 an invertible matrix does not change the rank.
@@ -577,15 +579,64 @@ theorem rank_self_mul_transpose [Field R] [LinearOrder R] [IsStrictOrderedRing R
     (A * Aᵀ).rank = A.rank := by
   simpa only [rank_transpose, transpose_transpose] using rank_transpose_mul_self Aᵀ
 
+omit [Fintype n] in
+/-- A matrix with finitely many columns has finitely many linearly independent rows spanning its
+row space, even if it has infinitely many rows. -/
+theorem exists_linearIndependent_row_comp_span_eq [Field R] [Finite n] (A : Matrix m n R) :
+    ∃ (k : ℕ) (r : Fin k → m), LinearIndependent R (A.row ∘ r) ∧
+      span R (range (A.row ∘ r)) = span R (range A.row) := by
+  obtain ⟨κ, a, -, hs, hi⟩ := exists_linearIndependent' R A.row
+  have := hi.finite_of_isNoetherian
+  let e := (Finite.equivFin κ).symm
+  refine ⟨Nat.card κ, a ∘ e, hi.comp e e.injective, ?_⟩
+  rw [← hs]
+  exact congrArg (span R) (e.surjective.range_comp (A.row ∘ a))
+
 /-- The rank of a matrix is the rank of the space spanned by its rows. -/
-theorem rank_eq_finrank_span_row [Field R] [Finite m] (A : Matrix m n R) :
+theorem rank_eq_finrank_span_row [Field R] (A : Matrix m n R) :
     A.rank = finrank R (Submodule.span R (Set.range A.row)) := by
-  cases nonempty_fintype m
-  rw [← rank_transpose, rank_eq_finrank_span_cols, col_transpose]
+  obtain ⟨k, r, -, hs⟩ := A.exists_linearIndependent_row_comp_span_eq
+  have hmem (i : m) : A.row i ∈ span R (range (A.row ∘ r)) := hs ▸ subset_span ⟨i, rfl⟩
+  choose c hc using fun i ↦ (mem_span_range_iff_exists_fun R).mp (hmem i)
+  have hA : of c * A.submatrix r id = A := by
+    ext i j
+    simpa [mul_apply, Finset.sum_apply] using congrFun (hc i) j
+  have hrank : A.rank = (A.submatrix r id).rank := by
+    refine le_antisymm ?_ (A.rank_submatrix_le r id)
+    calc A.rank = (of c * A.submatrix r id).rank := congrArg rank hA.symm
+      _ ≤ _ := rank_mul_le_right _ _
+  rw [hrank, ← rank_transpose, rank_eq_finrank_span_cols, col_transpose, ← hs]
+  rfl
+
+/-- A matrix has `A.rank` linearly independent rows. -/
+theorem exists_linearIndependent_row_comp [Field R] (A : Matrix m n R) :
+    ∃ r : Fin A.rank → m, LinearIndependent R (A.row ∘ r) := by
+  obtain ⟨k, r, hi, hs⟩ := A.exists_linearIndependent_row_comp_span_eq
+  have hk : k = A.rank := by
+    rw [rank_eq_finrank_span_row, ← hs, finrank_span_eq_card hi, Fintype.card_fin]
+  subst hk
+  exact ⟨r, hi⟩
 
 theorem _root_.LinearIndependent.rank_matrix [Field R] [Fintype m]
     {M : Matrix m n R} (h : LinearIndependent R M.row) : M.rank = Fintype.card m := by
   rw [M.rank_eq_finrank_span_row, linearIndependent_iff_card_eq_finrank_span.mp h, Set.finrank]
+
+/-- The rank of a matrix is at least `k` if and only if the matrix has a nonzero `k × k` minor.
+The row and column selections of such a minor are necessarily injective. -/
+theorem le_rank_iff_exists_det_submatrix_ne_zero [Field R] {A : Matrix m n R} {k : ℕ} :
+    k ≤ A.rank ↔ ∃ (r : Fin k → m) (c : Fin k → n), (A.submatrix r c).det ≠ 0 := by
+  refine ⟨fun hk ↦ ?_, fun ⟨r, c, hd⟩ ↦ ?_⟩
+  · obtain ⟨r, hr⟩ := A.exists_linearIndependent_row_comp
+    let B := A.submatrix (r ∘ Fin.castLE hk) id
+    have hB : LinearIndependent R B.row := hr.comp _ (Fin.castLE_injective hk)
+    have hBt : Bᵀ.rank = k := by rw [rank_transpose, hB.rank_matrix, Fintype.card_fin]
+    obtain ⟨c, hc⟩ := Bᵀ.exists_linearIndependent_row_comp
+    refine ⟨r ∘ Fin.castLE hk, c ∘ Fin.cast hBt.symm, ?_⟩
+    rw [← isUnit_iff_ne_zero, ← isUnit_iff_isUnit_det]
+    exact linearIndependent_col_iff_isUnit.mp (hc.comp _ (Fin.cast_injective _))
+  · classical
+    calc k = (A.submatrix r c).rank := by rw [rank_of_det_ne_zero hd, Fintype.card_fin]
+      _ ≤ A.rank := A.rank_submatrix_le r c
 
 /-- `M.mulVec` is surjective iff `M` has full row rank. -/
 theorem mulVec_surjective_iff_rank_eq_card [Field R] [Fintype m] {M : Matrix m n R} :
