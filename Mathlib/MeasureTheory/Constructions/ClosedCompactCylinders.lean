@@ -105,7 +105,7 @@ theorem isCompactSystem_closedCompactCylinders : IsCompactSystem (closedCompactC
   choose y hy using h_nonempty
   -- `T i` is the projection on coordinate `i` of the base of the first cylinder that depends on
   -- `i`. The points of the finite intersections can be modified to belong to the compact `pi T`.
-  let T : ∀ i, Set (X i) := fun i ↦
+  let T i : Set (X i) :=
     if h : ∃ n, i ∈ J n then (fun x ↦ x ⟨i, Nat.find_spec h⟩) '' K (Nat.find h) else {y 0 i}
   have hT_compact i : IsCompact (T i) := by
     simp only [T]
