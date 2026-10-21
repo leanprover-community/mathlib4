@@ -911,8 +911,8 @@ This is available in bundled forms as:
   __ := piAddEquiv
   map_smul' _ _ := rfl
 
-@[simp] theorem toEquiv_piLinearEquiv (R) [Semiring R] [∀ i, AddCommMonoid (β i)]
-    [∀ i, Module R (β i)] : (piLinearEquiv (m := m) (n := n) (ι := ι) (β := β) R :
+@[simp] theorem toEquiv_piLinearEquiv (R) [Semiring R] [Π i, AddCommMonoid (β i)]
+    [Π i, Module R (β i)] : (piLinearEquiv (m := m) (n := n) (ι := ι) (β := β) R :
       Matrix m n (Π i, β i) ≃ Π i, Matrix m n (β i)) = piEquiv := rfl
 
 /-- `piEquiv` as a `RingEquiv`. -/
