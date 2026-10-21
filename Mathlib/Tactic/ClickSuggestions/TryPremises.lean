@@ -6,7 +6,11 @@ Authors: Jovan Gerbscheid
 module
 
 public import Mathlib.Tactic.ClickSuggestions.FindPremises
+
 meta import Mathlib.Tactic.ClickSuggestions.FindPremises
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # generating lemma suggestions, given the the shortlist of candidate lemmas
@@ -16,7 +20,7 @@ meta section
 
 namespace Mathlib.Tactic.ClickSuggestions
 
-open Lean ProofWidgets Jsx
+open Lean ProofWidgets
 
 /-- An array of candidate lemmas, corresponding to a single section. -/
 inductive Candidates where
@@ -123,12 +127,12 @@ where
       discard <| foldTasksM tasks ({} : SectionState α) fun s ↦ fun
         | .ok (some res) => do
           let s ← s.insertResult res isDup
-          token.updateLazy (renderSection tactic kind s)
+          token.updateLazy (renderSection kind s)
           return s
         | .ok none => pure s
         | .error e => do
           let s := { s with errors := s.errors.push e }
-          token.updateLazy (renderSection tactic kind s)
+          token.updateLazy (renderSection kind s)
           return s
       ).catchExceptions fun ex ↦ do
         if let .internal ex := ex then
@@ -175,34 +179,34 @@ public def librarySearchSuggestions (rootExpr subExpr : Expr) (lctx : LocalConte
   }
 
   Core.checkInterrupted
-  token.update <div> loading local hypotheses ⏳️ </div>
+  token.update jsx%{<div> loading local hypotheses ⏳️ </div>}
   let pres ← computeLCtxDiscrTrees choice lctx fvarId?
   Core.checkInterrupted
   for cand in ← getCandidates rwInfo gpos pres do
     sections := sections.push (← runSuggestions .hyp assignableMVars cand)
 
   Core.checkInterrupted
-  token.update <div>
+  token.update jsx%{<div>
     {.element "div" #[] sections}
     <div> loading theorem in the current file ⏳️ </div>
-    </div>
+    </div>}
   let pres ← computeModuleDiscrTrees choice parentDecl?
   Core.checkInterrupted
   for cand in ← getCandidates rwInfo gpos pres do
     sections := sections.push (← runSuggestions .currFile assignableMVars cand)
 
   Core.checkInterrupted
-  token.update <div>
+  token.update jsx%{<div>
     {.element "div" #[] sections}
     <div> initializing discrimination trees ⏳️ </div>
-    </div>
+    </div>}
   computeImportDiscrTrees choice
   Core.checkInterrupted
   let reportProgress (tac : String) :=
-    token.update <div>
+    token.update jsx%{<div>
       {.element "div" #[] sections}
-      <div> {.text s!"loading imported `{tac}` theorems ⏳️"} </div>
-      </div>
+      <div>{.text s!"loading imported `{tac}` theorems ⏳️"}</div>
+      </div>}
   for cand in ← getImportCandidates rwInfo gpos reportProgress do
     sections := sections.push (← runSuggestions .imported assignableMVars cand)
 

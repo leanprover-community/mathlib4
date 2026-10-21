@@ -5,9 +5,10 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.ObjectProperty.ColimitsClosure
+
 import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 import Mathlib.CategoryTheory.Limits.FullSubcategory
-public import Mathlib.CategoryTheory.ObjectProperty.ColimitsClosure
 import Mathlib.Data.Fintype.Shrink
 
 /-!
@@ -164,7 +165,6 @@ instance (priority := 100) [P.IsClosedUnderColimitsOfShape (Discrete.{0} PEmpty)
     P.Nonempty :=
   nonempty_of_prop P.prop_initial
 
-set_option backward.defeqAttrib.useBackward true in
 lemma IsClosedUnderBinaryCoproducts.closedUnderIsomorphisms [HasInitial C]
     [P.IsClosedUnderColimitsOfShape (Discrete.{0} PEmpty)] [P.IsClosedUnderBinaryCoproducts] :
     P.IsClosedUnderIsomorphisms where

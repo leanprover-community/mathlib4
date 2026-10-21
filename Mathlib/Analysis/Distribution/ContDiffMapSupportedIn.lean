@@ -197,7 +197,7 @@ section AddCommGroup
 instance : Zero 𝓓^{n}_{K}(E, F) where
   zero := .mk 0 contDiff_zero_fun fun _ _ ↦ rfl
 
-instance : IsZeroApply 𝓓^{n}_{K}(E, F) E F where
+instance : IsZeroApply 𝓓^{n}_{K}(E, F) where
 
 @[deprecated (since := "2026-06-15")] alias coe_zero := FunLike.coe_zero
 
@@ -206,7 +206,7 @@ instance : Add 𝓓^{n}_{K}(E, F) where
     rw [← add_zero 0]
     exact f.zero_on_compl.comp_left₂ g.zero_on_compl
 
-instance : IsAddApply 𝓓^{n}_{K}(E, F) E F where
+instance : IsAddApply 𝓓^{n}_{K}(E, F) where
 
 @[deprecated (since := "2026-06-15")] alias coe_add := FunLike.coe_add
 
@@ -215,7 +215,7 @@ instance : Neg 𝓓^{n}_{K}(E, F) where
     rw [← neg_zero]
     exact f.zero_on_compl.comp_left
 
-instance : IsNegApply 𝓓^{n}_{K}(E, F) E F where
+instance : IsNegApply 𝓓^{n}_{K}(E, F) where
 
 @[deprecated (since := "2026-06-15")] alias coe_neg := FunLike.coe_neg
 
@@ -224,7 +224,7 @@ instance instSub : Sub 𝓓^{n}_{K}(E, F) where
     rw [← sub_zero 0]
     exact f.zero_on_compl.comp_left₂ g.zero_on_compl
 
-instance : IsSubApply 𝓓^{n}_{K}(E, F) E F where
+instance : IsSubApply 𝓓^{n}_{K}(E, F) where
 
 @[deprecated (since := "2026-06-15")] alias coe_sub := FunLike.coe_sub
 
@@ -235,7 +235,7 @@ instance instSMul {R} [DistribSMul R F] [SMulCommClass ℝ R F] [ContinuousConst
     exact f.zero_on_compl.comp_left
 
 instance {R} [DistribSMul R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
-    IsSMulApply R 𝓓^{n}_{K}(E, F) E F where
+    IsSMulApply R 𝓓^{n}_{K}(E, F) where
 
 @[deprecated (since := "2026-06-15")] alias coe_smul := FunLike.coe_smul
 

@@ -5,9 +5,10 @@ Authors: Joël Riou, Christian Merten
 -/
 module
 
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
+
 import Mathlib.CategoryTheory.Limits.EpiMono
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
 
 /-!
 # Families of functors which jointly reflect isomorphisms

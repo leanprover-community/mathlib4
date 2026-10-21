@@ -5,8 +5,9 @@ Authors: Joël Riou, Sophie Morel
 -/
 module
 
-import Mathlib.CategoryTheory.Adjunction.Additive
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Functor
+
+import Mathlib.CategoryTheory.Adjunction.Additive
 
 /-!
 # The adjoint functor is triangulated
@@ -48,7 +49,6 @@ namespace Adjunction
 variable {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) [F.CommShift ℤ] [G.CommShift ℤ]
   [adj.CommShift ℤ]
 
-set_option backward.defeqAttrib.useBackward true in
 include adj in
 /--
 The right adjoint of a triangulated functor is triangulated.
