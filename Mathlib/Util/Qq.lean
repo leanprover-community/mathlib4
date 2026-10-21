@@ -89,6 +89,17 @@ def mkNatLitQ (n : Nat) : Q(Nat) := mkNatLit n
 This is a Qq version of `Lean.mkIntLit`. -/
 def mkIntLitQ (n : Int) : Q(Int) := mkIntLit n
 
+/-- Build the numeral of the integer `i` in `α`: `mkNumeral` on the absolute value, negated if
+`i` is negative. -/
+def mkIntNumeralQ {u : Level} (α : Q(Type u)) (i : Int) : MetaM Q($α) := do
+  let n ← mkNumeral α i.natAbs
+  have n : Q($α) := n
+  if i < 0 then
+    let _ ← synthInstanceQ q(Neg $α)
+    return q(-$n)
+  else
+    return n
+
 /-- Build the numeral `i : Fin n`. -/
 def mkFinLitQ (n : Nat) (i : Nat) : MetaM Q(Fin $n) := do
   if h : i < n then return toExpr (⟨i, h⟩ : Fin n)
