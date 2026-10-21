@@ -68,9 +68,11 @@ workspace, so its mappings use the same upstream pins as the root build.
 1. `lake build <targets> -o .lake/outputs.jsonl` builds the targets, writes
    artifacts into the local Lake cache, and records mathlib's mappings.
    Lake records both compiled targets and targets that replay cached outputs.
-2. `lake build @<DEP> --package=<DEP> -o .lake/dep-outputs/<DEP>.jsonl` exports
-   each dependency's mappings. `@<DEP>` selects its default targets, including
-   modules that mathlib does not import.
+2. `lake build <modules> --package=<DEP> -o .lake/dep-outputs/<DEP>.jsonl` exports
+   each dependency's mappings. `<modules>` are the dependency's default modules,
+   from `lake query @<DEP>:defaultModules`, including modules that mathlib does
+   not import. Building them as modules links no executable, so the mappings
+   hold Lean module archives only.
 3. `lake cache stage` copies each package into its own staging directory.
    The tree travels to the upload job as a GitHub artifact. The build sandbox
    has no upload credentials.
