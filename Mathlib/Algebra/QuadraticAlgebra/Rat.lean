@@ -5,9 +5,11 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.Algebra.CharP.Invertible
 public import Mathlib.Algebra.QuadraticAlgebra.Discriminant
 public import Mathlib.Data.Rat.Squarefree
+
+import Mathlib.Algebra.CharP.Invertible
+import Mathlib.RingTheory.Localization.NumDen
 
 /-!
 # Quadratic algebras over `ℚ`
@@ -30,10 +32,10 @@ namespace QuadraticAlgebra.Rat
 
 /-- Every `QuadraticAlgebra ℚ a b` with nonzero discriminant is isomorphic to
 `QuadraticAlgebra ℚ d 0` for a squarefree integer `d`. -/
-theorem exists_squarefree_algEquiv (a b : ℚ) (hd : discr a b ≠ 0) :
+theorem exists_squarefree_algEquiv {a b : ℚ} (hd : discr a b ≠ 0) :
     ∃ d : ℤ, Squarefree d ∧
       Nonempty (QuadraticAlgebra ℚ a b ≃ₐ[ℚ] QuadraticAlgebra ℚ (d : ℚ) 0) := by
-  obtain ⟨r, d, hc, hd'⟩ := Rat.exists_sq_mul_squarefree (discr a b)
+  obtain ⟨r, d, hc, hd'⟩ := IsFractionRing.exists_sq_mul_squarefree ℤ (discr a b)
   have hr : r ≠ 0 := by
     intro rfl
     exact hd (by simpa using hc.symm)
