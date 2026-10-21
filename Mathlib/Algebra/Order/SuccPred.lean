@@ -5,10 +5,14 @@ Authors: Violeta Hernández Palacios, Yaël Dillies
 -/
 module
 
-import Mathlib.Algebra.Group.Basic
 public import Mathlib.Data.Int.Cast.Defs
 public import Mathlib.Order.SuccPred.Limit
 public import Mathlib.Order.SuccPred.WithBot
+
+import Mathlib.Algebra.Group.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Interaction between successors and arithmetic
