@@ -207,6 +207,7 @@ def handleRoot (cfg : Config) (root : Root)
         IO.println s!"The root file `{root.name}` at '{fileName}' is out of date: \
           run `lake exe mk_all{if git then " --git" else ""}` to update it"
       -- If clobbering or if (as expected) the generated file is entirely header, proceed.
+      -- TODO: should we also have an `extend` option which only overwrites the header?
       else
         IO.println s!"Updating `{root.name}` at '{fileName}'"
         IO.FS.writeFile fileName newFileContent
