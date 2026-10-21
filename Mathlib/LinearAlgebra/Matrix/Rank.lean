@@ -32,7 +32,7 @@ This definition does not depend on the choice of basis, see `Matrix.rank_eq_finr
 
 * `Matrix.rank_eq_finrank_range_toLin`: the rank equals the dimension of the range of the
 corresponding linear map, and is therefore independent of the choice of bases.
-* `Matrix.rank_eq_finrank_span_cols`, `Matrix.rank_eq_finrank_span_row`: the rank equals the
+* `Matrix.finrank_span_range_col`, `Matrix.finrank_span_range_row`: the rank equals the
 dimension of the space spanned by the columns (resp. rows).
 * `Matrix.rank_transpose`: transposing a matrix does not change its rank.
 * `Matrix.rank_mul_le`: the rank of `A * B` is at most the rank of `A` and at most the rank of `B`.
@@ -139,12 +139,15 @@ theorem cRank_toNat_eq_rank [Semiring R] (A : Matrix m n R) : A.cRank.toNat = A.
 theorem eRank_toNat_eq_rank [Semiring R] (A : Matrix m n R) : A.eRank.toNat = A.rank := rfl
 
 /-- The rank of a matrix is the rank of the space spanned by its columns. -/
-theorem rank_eq_finrank_span_cols [Semiring R] (A : Matrix m n R) :
-    A.rank = finrank R (Submodule.span R (Set.range A.col)) := rfl
+@[simp]
+theorem finrank_span_range_col [Semiring R] (A : Matrix m n R) :
+    finrank R (Submodule.span R (Set.range A.col)) = A.rank := rfl
+
+@[deprecated (since := "2026-10-21")] alias rank_eq_finrank_span_cols := finrank_span_range_col
 
 theorem finrank_range_mulVecLin [Fintype n] [CommSemiring R] (A : Matrix m n R) :
     finrank R A.mulVecLin.range = A.rank := by
-  rw [range_mulVecLin, rank_eq_finrank_span_cols]
+  rw [range_mulVecLin, ← finrank_span_range_col]
 
 @[simp]
 theorem rank_subsingleton [Semiring R] [Subsingleton R] (A : Matrix m n R) : A.rank = 1 :=
@@ -591,14 +594,16 @@ theorem rank_self_mul_transpose [Field R] [LinearOrder R] [IsStrictOrderedRing R
   simpa only [rank_transpose, transpose_transpose] using rank_transpose_mul_self Aᵀ
 
 /-- The rank of a matrix is the rank of the space spanned by its rows. -/
-theorem rank_eq_finrank_span_row [Field R] [Finite m] [Finite n] (A : Matrix m n R) :
-    A.rank = finrank R (Submodule.span R (Set.range A.row)) := by
+theorem finrank_span_range_row [Field R] [Finite m] [Finite n] (A : Matrix m n R) :
+    finrank R (Submodule.span R (Set.range A.row)) = A.rank := by
   cases nonempty_fintype m
-  rw [← rank_transpose, rank_eq_finrank_span_cols, col_transpose]
+  rw [← rank_transpose, ← finrank_span_range_col, col_transpose]
+
+@[deprecated (since := "2026-10-21")] alias rank_eq_finrank_span_row := finrank_span_range_row
 
 theorem _root_.LinearIndependent.rank_matrix [Field R] [Fintype m] [Finite n]
     {M : Matrix m n R} (h : LinearIndependent R M.row) : M.rank = Fintype.card m := by
-  rw [M.rank_eq_finrank_span_row, linearIndependent_iff_card_eq_finrank_span.mp h, Set.finrank]
+  rw [← finrank_span_range_row, linearIndependent_iff_card_eq_finrank_span.mp h, Set.finrank]
 
 /-- `M.mulVec` is surjective iff `M` has full row rank. -/
 theorem mulVec_surjective_iff_rank_eq_card [Fintype n] [Field R] [Fintype m] {M : Matrix m n R} :
