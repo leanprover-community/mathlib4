@@ -5738,6 +5738,7 @@ public import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.LebesgueDifferentiationThm
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.MeanValue
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.PeriodicRiemannSum
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Slope
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.TrapezoidalRule
 public import Mathlib.MeasureTheory.Integral.Layercake
