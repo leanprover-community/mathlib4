@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Adjunction.Limits
 public import Mathlib.CategoryTheory.Bicategory.Extension
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
+public import Mathlib.Tactic.CategoryTheory.Bicategory.Basic
 
 /-!
 # Kan extensions and Kan lifts in bicategories

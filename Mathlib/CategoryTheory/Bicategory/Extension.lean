@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Bicategory.Basic
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
-public import Mathlib.Tactic.CategoryTheory.Bicategory.Basic
 
 /-!
 # Extensions and lifts in bicategories
@@ -232,14 +231,7 @@ theorem paste_unit :
 /-- Whiskering a pasted left extension is isomorphic to pasting the whiskered left extensions. -/
 def pasteWhiskerIso (t : LeftExtension f g) (s : LeftExtension h t.extension) {x : B} (k : c ⟶ x) :
     (t.paste s).whisker k ≅ (t.whisker k).paste (s.whisker k) :=
-  { hom := LeftExtension.homMk (𝟙 _) <| by
-      dsimp only [paste_extension, paste_unit, whisker_extension, whisker_unit]
-      bicategory
-    inv := LeftExtension.homMk (𝟙 _) <| by
-      dsimp only [paste_extension, paste_unit, whisker_extension, whisker_unit]
-      bicategory
-    hom_inv_id := by ext; exact Category.id_comp _
-    inv_hom_id := by ext; exact Category.id_comp _ }
+  StructuredArrow.isoMk (Iso.refl _) <| by simp [precomp]
 
 end Paste
 
@@ -437,14 +429,7 @@ theorem paste_unit :
 /-- Whiskering a pasted left lift is isomorphic to pasting the whiskered left lifts. -/
 def pasteWhiskerIso (t : LeftLift f g) (s : LeftLift h t.lift) {x : B} (k : x ⟶ d) :
     (t.paste s).whisker k ≅ (t.whisker k).paste (s.whisker k) :=
-  { hom := LeftLift.homMk (𝟙 _) <| by
-      dsimp only [paste_lift, paste_unit, whisker_lift, whisker_unit]
-      bicategory
-    inv := LeftLift.homMk (𝟙 _) <| by
-      dsimp only [paste_lift, paste_unit, whisker_lift, whisker_unit]
-      bicategory
-    hom_inv_id := by ext; exact Category.id_comp _
-    inv_hom_id := by ext; exact Category.id_comp _ }
+  StructuredArrow.isoMk (Iso.refl _) <| by simp [postcomp]
 
 end Paste
 
@@ -643,14 +628,7 @@ theorem paste_counit :
 def pasteWhiskerIso (t : RightExtension f g) (s : RightExtension h t.extension) {x : B}
     (k : c ⟶ x) :
     (t.paste s).whisker k ≅ (t.whisker k).paste (s.whisker k) :=
-  { hom := RightExtension.homMk (𝟙 _) <| by
-      dsimp only [paste_extension, paste_counit, whisker_extension, whisker_counit]
-      bicategory
-    inv := RightExtension.homMk (𝟙 _) <| by
-      dsimp only [paste_extension, paste_counit, whisker_extension, whisker_counit]
-      bicategory
-    hom_inv_id := by ext; exact Category.id_comp _
-    inv_hom_id := by ext; exact Category.id_comp _ }
+  CostructuredArrow.isoMk (Iso.refl _) <| by simp [precomp]
 
 end Paste
 
@@ -849,14 +827,7 @@ theorem paste_counit :
 /-- Whiskering a pasted right lift is isomorphic to pasting the whiskered right lifts. -/
 def pasteWhiskerIso (t : RightLift f g) (s : RightLift h t.lift) {x : B} (k : x ⟶ d) :
     (t.paste s).whisker k ≅ (t.whisker k).paste (s.whisker k) :=
-  { hom := RightLift.homMk (𝟙 _) <| by
-      dsimp only [paste_lift, paste_counit, whisker_lift, whisker_counit]
-      bicategory
-    inv := RightLift.homMk (𝟙 _) <| by
-      dsimp only [paste_lift, paste_counit, whisker_lift, whisker_counit]
-      bicategory
-    hom_inv_id := by ext; exact Category.id_comp _
-    inv_hom_id := by ext; exact Category.id_comp _ }
+  CostructuredArrow.isoMk (Iso.refl _) <| by simp [postcomp]
 
 end Paste
 
