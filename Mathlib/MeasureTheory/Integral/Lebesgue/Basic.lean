@@ -191,7 +191,7 @@ theorem exists_simpleFunc_forall_lintegral_sub_lt_of_pos {f : α → ℝ≥0∞}
   have : (map (↑) φ).lintegral μ ≠ ∞ := ne_top_of_le_ne_top h (by grw [← le_iSup₂ φ hle])
   rw [← ENNReal.add_lt_add_iff_left this, ← add_lintegral, ← SimpleFunc.map_add @ENNReal.coe_add]
   refine (hb _ fun x => le_trans ?_ (max_le (hle x) (hψ x))).trans_lt hbφ
-  simp only [SimpleFunc.add_apply, SimpleFunc.sub_apply, add_tsub_eq_max]
+  simp only [add_apply, sub_apply, add_tsub_eq_max]
   rfl
 
 theorem iSup_lintegral_le {ι : Sort*} (f : ι → α → ℝ≥0∞) :
@@ -387,8 +387,8 @@ theorem exists_pos_setLIntegral_lt_of_measure_lt {f : α → ℝ≥0∞} (h : �
         (map (↑) φ).lintegral (μ.restrict s) + (map (↑) (ψ - φ)).lintegral (μ.restrict s) := by
       rw [← SimpleFunc.add_lintegral, ← SimpleFunc.map_add @ENNReal.coe_add]
       refine SimpleFunc.lintegral_mono (fun x => ?_) le_rfl
-      simp only [add_tsub_eq_max, le_max_right, coe_map, Function.comp_apply, SimpleFunc.coe_add,
-        SimpleFunc.coe_sub, Pi.add_apply, Pi.sub_apply, ENNReal.coe_max (φ x) (ψ x)]
+      simp only [add_tsub_eq_max, le_max_right, coe_map, Function.comp_apply, FunLike.coe_add,
+        FunLike.coe_sub, Pi.add_apply, Pi.sub_apply, ENNReal.coe_max (φ x) (ψ x)]
     _ ≤ (map (↑) φ).lintegral (μ.restrict s) + ε₁ := by
       gcongr
       refine le_trans ?_ (hφ _ hψ).le

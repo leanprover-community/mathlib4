@@ -100,8 +100,8 @@ notation3 "⨍⁻ " (...) " in " s ", " r:60:(scoped f => f) " ∂" μ:70 =>
 
 It is equal to `(volume s)⁻¹ * ∫⁻ x, f x`, so it takes value zero if `s` has infinite measure. If
 `s` has measure `1`, then the average of any function is equal to its integral. -/
-notation3 (prettyPrint := false)
-  "⨍⁻ " (...) " in " s ", " r:60:(scoped f => laverage Measure.restrict volume s f) => r
+notation3
+  "⨍⁻ " (...) " in " s ", " r:60:(scoped f => laverage (Measure.restrict volume s) f) => r
 
 @[simp]
 theorem laverage_zero : ⨍⁻ _x, (0 : ℝ≥0∞) ∂μ = 0 := by rw [laverage, lintegral_zero]

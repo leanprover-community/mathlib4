@@ -424,11 +424,11 @@ protected theorem inv₀ [GroupWithZero β] [ContinuousInv₀ β] [MetrizableSpa
   refine ⟨fun n => ((hf.approx n).restrict {x | f x ≠ 0})⁻¹, fun x => ?_⟩
   have : MeasurableSet {x | f x ≠ 0} := ((MeasurableSet.singleton 0).preimage hf.measurable).compl
   by_cases h : f x = 0
-  · simp_all only [ne_eq, measurableSet_setOfPred, SimpleFunc.coe_inv, SimpleFunc.coe_restrict,
+  · simp_all only [ne_eq, measurableSet_setOfPred, FunLike.coe_inv, SimpleFunc.coe_restrict,
       Pi.inv_apply, mem_ofPred, not_true_eq_false, not_false_eq_true, indicator_of_notMem,
       _root_.inv_zero]
     exact tendsto_const_nhds
-  · simp_all only [ne_eq, measurableSet_setOfPred, SimpleFunc.coe_inv, SimpleFunc.coe_restrict,
+  · simp_all only [ne_eq, measurableSet_setOfPred, FunLike.coe_inv, SimpleFunc.coe_restrict,
       Pi.inv_apply, mem_ofPred, not_false_eq_true, indicator_of_mem]
     apply (hf.tendsto_approx x).inv₀ h
 
@@ -451,11 +451,11 @@ theorem div [GroupWithZero β] [ContinuousMul β] [ContinuousInv₀ β] [Metriza
   refine ⟨fun n => hf.approx n / (hg.approx n).restrict {x | g x ≠ 0}, fun x => ?_⟩
   have : MeasurableSet {x | g x ≠ 0} := ((MeasurableSet.singleton 0).preimage hg.measurable).compl
   by_cases h : g x = 0
-  · simp_all only [ne_eq, SimpleFunc.coe_div, SimpleFunc.coe_restrict, Pi.div_apply, mem_ofPred,
+  · simp_all only [ne_eq, FunLike.coe_div, SimpleFunc.coe_restrict, Pi.div_apply, mem_ofPred,
       not_true_eq_false, not_false_eq_true, indicator_of_notMem, _root_.div_zero]
     exact tendsto_const_nhds
-  · simp_all only [ne_eq, SimpleFunc.coe_div, SimpleFunc.coe_restrict,
-      Pi.div_apply, mem_ofPred, not_false_eq_true, indicator_of_mem]
+  · simp_all only [ne_eq, FunLike.coe_div, SimpleFunc.coe_restrict,
+      Pi.div_apply, mem_ofPred_eq, not_false_eq_true, indicator_of_mem]
     exact (hf.tendsto_approx x).div (hg.tendsto_approx x) h
 
 @[to_additive]
@@ -1094,7 +1094,7 @@ end StronglyMeasurable
 theorem finStronglyMeasurable_zero {α β} {m : MeasurableSpace α} {μ : Measure α} [Zero β]
     [TopologicalSpace β] : FinStronglyMeasurable (0 : α → β) μ :=
   ⟨0, by
-    simp only [Pi.zero_apply, SimpleFunc.coe_zero, support_zero, measure_empty,
+    simp only [Pi.zero_apply, FunLike.coe_zero, support_zero, measure_empty,
       zero_lt_top, forall_const],
     fun _ => tendsto_const_nhds⟩
 
@@ -1197,7 +1197,7 @@ protected theorem const_smul {𝕜} [TopologicalSpace 𝕜] [Zero β]
     [SMulZeroClass 𝕜 β] [ContinuousSMul 𝕜 β] (hf : FinStronglyMeasurable f μ) (c : 𝕜) :
     FinStronglyMeasurable (c • f) μ := by
   refine ⟨fun n => c • hf.approx n, fun n => ?_, fun x => (hf.tendsto_approx x).const_smul c⟩
-  rw [SimpleFunc.coe_smul]
+  rw [FunLike.coe_smul]
   exact (measure_mono (support_const_smul_subset c _)).trans_lt (hf.fin_support_approx n)
 
 end Arithmetic
