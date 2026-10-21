@@ -222,9 +222,11 @@ theorem image_inv_eq_inv : (·⁻¹) '' s = s⁻¹ :=
 theorem inv_eq_empty : s⁻¹ = ∅ ↔ s = ∅ := by
   rw [← image_inv_eq_inv, image_eq_empty]
 
-@[to_additive (attr := simp)]
-instance involutiveInv : InvolutiveInv (Set α) where
+@[to_additive (attr := simp, instance_reducible)]
+def involutiveInv : InvolutiveInv (Set α) where
   inv_inv s := by simp only [← inv_preimage, preimage_preimage, inv_inv, preimage_id']
+
+scoped [Pointwise] attribute [instance] Set.involutiveInv Set.involutiveNeg
 
 @[to_additive (attr := simp)]
 theorem inv_subset_inv : s⁻¹ ⊆ t⁻¹ ↔ s ⊆ t :=

@@ -83,9 +83,11 @@ theorem iUnion_star {ι : Sort*} [Star α] (s : ι → Set α) : (⋃ i, s i)⋆
 @[simp]
 theorem compl_star [Star α] : sᶜ⋆ = s⋆ᶜ := preimage_compl
 
-@[simp]
-instance [InvolutiveStar α] : InvolutiveStar (Set α) where
+@[instance_reducible, simp]
+def instInvolutiveStar [InvolutiveStar α] : InvolutiveStar (Set α) where
   star_involutive s := by simp only [← star_preimage, preimage_preimage, star_star, preimage_id']
+
+scoped [Pointwise] attribute [instance] Set.instInvolutiveStar
 
 @[simp]
 theorem star_subset_star [InvolutiveStar α] {s t : Set α} : s⋆ ⊆ t⋆ ↔ s ⊆ t :=
@@ -126,6 +128,7 @@ protected theorem star_inv' [GroupWithZero α] [StarMul α] (s : Set α) : s⁻�
 
 end Set
 
+open scoped Pointwise in
 @[simp]
 lemma StarMemClass.star_coe_eq {S α : Type*} [InvolutiveStar α] [SetLike S α]
     [StarMemClass S α] (s : S) : star (s : Set α) = s := by
@@ -133,6 +136,8 @@ lemma StarMemClass.star_coe_eq {S α : Type*} [InvolutiveStar α] [SetLike S α]
   simpa using star_mem_iff
 
 namespace Set.Pairwise
+
+open scoped Pointwise
 
 @[simp]
 lemma commute_star_iff {α : Type*} [Mul α] [StarMul α] {s : Set α} :
