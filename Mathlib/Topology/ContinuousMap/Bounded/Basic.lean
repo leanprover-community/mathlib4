@@ -758,8 +758,6 @@ instance instModule : Module 𝕜 (α →ᵇ β) := fast_instance% FunLike.modul
 
 variable (𝕜)
 
-/- remove `_root_` when deprecations of `BoundedContinuousFunction.add_apply`
-and `BoundedContinuousFunction.smul_apply` are removed. -/
 /-- The evaluation at a point, as a continuous linear map from `α →ᵇ β` to `β`. -/
 @[simps]
 def evalCLM (x : α) : (α →ᵇ β) →L[𝕜] β where
