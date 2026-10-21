@@ -897,7 +897,7 @@ This is available in bundled forms as:
   invFun f := .of fun j k i ↦ f i j k
 
 /-- `piEquiv` as an `AddEquiv`. -/
-@[simps!] def piAddEquiv [∀ i, Add (β i)] : Matrix m n (Π i, β i) ≃+ Π i, Matrix m n (β i) where
+@[simps!] def piAddEquiv [Π i, Add (β i)] : Matrix m n (Π i, β i) ≃+ Π i, Matrix m n (β i) where
   __ := piEquiv
   map_add' _ _ := rfl
 
@@ -906,7 +906,7 @@ This is available in bundled forms as:
     Matrix m n (Π i, β i) ≃ Π i, Matrix m n (β i)) = piEquiv := rfl
 
 /-- `piEquiv` as a `LinearEquiv`. -/
-@[simps] def piLinearEquiv (R) [Semiring R] [∀ i, AddCommMonoid (β i)] [∀ i, Module R (β i)] :
+@[simps] def piLinearEquiv (R) [Semiring R] [Π i, AddCommMonoid (β i)] [Π i, Module R (β i)] :
     Matrix m n (Π i, β i) ≃ₗ[R] Π i, Matrix m n (β i) where
   __ := piAddEquiv
   map_smul' _ _ := rfl
@@ -916,7 +916,7 @@ This is available in bundled forms as:
       Matrix m n (Π i, β i) ≃ Π i, Matrix m n (β i)) = piEquiv := rfl
 
 /-- `piEquiv` as a `RingEquiv`. -/
-@[simps!] def piRingEquiv [∀ i, AddCommMonoid (β i)] [∀ i, Mul (β i)] [Fintype n] :
+@[simps!] def piRingEquiv [Π i, AddCommMonoid (β i)] [Π i, Mul (β i)] [Fintype n] :
     Matrix n n (Π i, β i) ≃+* Π i, Matrix n n (β i) where
   __ := piAddEquiv
   map_mul' _ _ := by ext; simp [Matrix.mul_apply]
@@ -926,7 +926,7 @@ This is available in bundled forms as:
     Matrix n n (Π i, β i) ≃+ Π i, Matrix n n (β i)) = piAddEquiv := rfl
 
 /-- `piEquiv` as an `AlgEquiv`. -/
-@[simps!] def piAlgEquiv (R) [CommSemiring R] [∀ i, Semiring (β i)] [∀ i, Algebra R (β i)]
+@[simps!] def piAlgEquiv (R) [CommSemiring R] [Π i, Semiring (β i)] [Π i, Algebra R (β i)]
     [Fintype n] [DecidableEq n] : Matrix n n (Π i, β i) ≃ₐ[R] Π i, Matrix n n (β i) where
   __ := piRingEquiv
   commutes' := (AlgHom.mk' (piRingEquiv (β := β) (n := n)).toRingHom fun _ _ ↦ rfl).commutes
