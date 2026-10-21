@@ -521,6 +521,9 @@ theorem aleph0_lt_aleph_one : ℵ₀ < ℵ₁ := by simp
 theorem preAleph_of_omega0_sq_le {o : Ordinal} (ho : ω ^ 2 ≤ o) : preAleph o = ℵ_ o := by
   simpa [← ord_inj] using preOmega_of_omega0_sq_le ho
 
+theorem _root_.Ordinal.card_le_aleph_iff {x y : Ordinal} : x.card ≤ ℵ_ y ↔ x < ω_ (y + 1) := by
+  rw [card_le_iff, succ_aleph, ord_aleph]
+
 theorem countable_toType_of_lt_omega_one {o : Ordinal} (h : o < ω₁) : Countable (ToType o) := by
   rwa [← mk_le_aleph0_iff, mk_toType, card_le_iff, succ_aleph0, ord_aleph]
 
