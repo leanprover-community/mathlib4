@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Polynomial.Coeff
 public import Mathlib.Algebra.Polynomial.Eval.Defs
 public import Mathlib.Data.Set.Finite.Lattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Evaluation of polynomials
 
@@ -214,7 +217,7 @@ theorem support_map_of_injective [Semiring R] [Semiring S] (p : R[X]) {f : R →
 
 variable [CommSemiring R] [CommSemiring S] (f : R →+* S)
 
-theorem IsRoot.map {f : R →+* S} {x : R} {p : R[X]} (h : IsRoot p x) : IsRoot (p.map f) (f x) := by
+theorem IsRoot.map (f : R →+* S) {x : R} {p : R[X]} (h : IsRoot p x) : IsRoot (p.map f) (f x) := by
   rw [IsRoot, eval_map, eval₂_hom, h.eq_zero, f.map_zero]
 
 theorem IsRoot.of_map {R} [Ring R] {f : R →+* S} {x : R} {p : R[X]} (h : IsRoot (p.map f) (f x))
@@ -223,7 +226,7 @@ theorem IsRoot.of_map {R} [Ring R] {f : R →+* S} {x : R} {p : R[X]} (h : IsRoo
 
 theorem isRoot_map_iff {R : Type*} [CommRing R] {f : R →+* S} {x : R} {p : R[X]}
     (hf : Function.Injective f) : IsRoot (p.map f) (f x) ↔ IsRoot p x :=
-  ⟨fun h => h.of_map hf, fun h => h.map⟩
+  ⟨fun h => h.of_map hf, fun h => h.map f⟩
 
 end Map
 
