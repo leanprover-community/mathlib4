@@ -312,8 +312,6 @@ theorem condExp_finsetSum {ι : Type*} {s : Finset ι} {f : ι → α → E}
       (integrable_finsetSum' _ <| Finset.forall_of_forall_insert hf) _).trans
         ((EventuallyEq.refl _ _).add <| heq <| Finset.forall_of_forall_insert hf)
 
-@[deprecated (since := "2026-04-08")] alias condExp_finset_sum := condExp_finsetSum
-
 theorem condExp_smul [NormedSpace 𝕜 E] (c : 𝕜) (f : α → E) (m : MeasurableSpace α) :
     μ[c • f | m] =ᵐ[μ] c • μ[f | m] := by
   by_cases hm : m ≤ m₀
