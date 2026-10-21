@@ -48,19 +48,20 @@ section Maximal
 
 open Finset
 
-
-def maximal_process (f : ℕ → Ω → ℝ) (n : ℕ) (ω : Ω) :=
+/-- `maximalProcess` is the supremum of a given real-valued stochastic process
+up to and including the given time. -/
+def maximalProcess (f : ℕ → Ω → ℝ) (n : ℕ) (ω : Ω) :=
   (range (n + 1)).sup' nonempty_range_add_one (f · ω)
 
 theorem smul_le_stoppedValue_hittingBtwn [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) {ε : ℝ≥0}
-    (n : ℕ) : ε • μ {ω | (ε : ℝ) ≤ maximal_process f n ω} ≤
+    (n : ℕ) : ε • μ {ω | (ε : ℝ) ≤ maximalProcess f n ω} ≤
     ENNReal.ofReal
-      (∫ ω in {ω | (ε : ℝ) ≤ maximal_process f n ω},
+      (∫ ω in {ω | (ε : ℝ) ≤ maximalProcess f n ω},
       stoppedValue f (fun ω ↦ (hittingBtwn f {y : ℝ | ε ≤ y} 0 n ω : ℕ)) ω ∂μ) := by
-  have : ∀ ω, ((ε : ℝ) ≤ maximal_process f n ω) →
+  have : ∀ ω, ((ε : ℝ) ≤ maximalProcess f n ω) →
       (ε : ℝ) ≤ stoppedValue f (fun ω ↦ (hittingBtwn f {y : ℝ | ε ≤ y} 0 n ω : ℕ)) ω := by
     intro ω hω
-    rw [maximal_process] at hω
+    rw [maximalProcess] at hω
     simp_rw [le_sup'_iff, mem_range, Nat.lt_succ_iff] at hω
     refine stoppedValue_hittingBtwn_mem (s := {y : ℝ | ε ≤ y}) ?_
     simp only [Set.mem_Icc, zero_le, true_and, Set.mem_ofPred_eq]
@@ -81,20 +82,20 @@ theorem smul_le_stoppedValue_hittingBtwn [IsFiniteMeasure μ] (hsub : Submarting
 we have `ε • μ {ε ≤ f* n} ≤ ∫ ω in {ε ≤ f* n}, f n` where `f* n ω = max_{k ≤ n}, f k ω`.
 -/
 theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnonneg : 0 ≤ f) {ε : ℝ≥0}
-    (n : ℕ) : ε * μ {ω | (ε : ℝ) ≤ maximal_process f n ω} ≤
+    (n : ℕ) : ε * μ {ω | (ε : ℝ) ≤ maximalProcess f n ω} ≤
     ENNReal.ofReal
-      (∫ ω in {ω | (ε : ℝ) ≤ maximal_process f n ω},
+      (∫ ω in {ω | (ε : ℝ) ≤ maximalProcess f n ω},
         f n ω ∂μ) := by
-  suffices ε • μ {ω | (ε : ℝ) ≤ maximal_process f n ω} +
+  suffices ε • μ {ω | (ε : ℝ) ≤ maximalProcess f n ω} +
       ENNReal.ofReal
-        (∫ ω in {ω | (maximal_process f n ω) < ε},
+        (∫ ω in {ω | (maximalProcess f n ω) < ε},
           f n ω ∂μ) ≤
       ENNReal.ofReal (μ[f n]) by
     have hadd : ENNReal.ofReal (∫ ω, f n ω ∂μ) =
       ENNReal.ofReal
-        (∫ ω in {ω | ε ≤ maximal_process f n ω}, f n ω ∂μ) +
+        (∫ ω in {ω | ε ≤ maximalProcess f n ω}, f n ω ∂μ) +
       ENNReal.ofReal
-        (∫ ω in {ω | (maximal_process f n ω) < ε},
+        (∫ ω in {ω | (maximalProcess f n ω) < ε},
           f n ω ∂μ) := by
       rw [← ENNReal.ofReal_add, ← setIntegral_union]
       · rw [← setIntegral_univ]
@@ -110,10 +111,10 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
     rwa [hadd, ENNReal.add_le_add_iff_right ENNReal.ofReal_ne_top] at this
   calc
     _ ≤ ENNReal.ofReal
-          (∫ ω in {ω | (ε : ℝ) ≤ maximal_process f n ω},
+          (∫ ω in {ω | (ε : ℝ) ≤ maximalProcess f n ω},
             stoppedValue f (fun ω ↦ (hittingBtwn f {y : ℝ | ε ≤ y} 0 n ω : ℕ)) ω ∂μ) +
         ENNReal.ofReal
-          (∫ ω in {ω | (maximal_process f n ω) < ε},
+          (∫ ω in {ω | (maximalProcess f n ω) < ε},
             stoppedValue f (fun ω ↦ (hittingBtwn f {y : ℝ | ε ≤ y} 0 n ω : ℕ)) ω ∂μ) := by
       gcongr with ω hω
       · exact smul_le_stoppedValue_hittingBtwn hsub n
@@ -159,17 +160,17 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
       simp [hittingBtwn_le]
 
 lemma maximal_process_of_nonneg_is_nonneg (hnonneg : 0 ≤ f)
-  : maximal_process f ≥ 0 := by
+  : maximalProcess f ≥ 0 := by
   intro n ω
   calc
   _ ≥ (f · ω) n := by
-      rewrite [maximal_process]
+      rewrite [maximalProcess]
       rewrite [ge_iff_le]
       exact (le_sup' (f · ω) (self_mem_range_succ n))
   _ ≥ 0 := (hnonneg n ω)
 
 lemma maximal_process_strongly_adapted (hsa : StronglyAdapted 𝒢 f) (n : ℕ)
-  : Measurable[𝒢 n] (maximal_process f n) := by
+  : Measurable[𝒢 n] (maximalProcess f n) := by
   let : MeasurableSpace Ω := 𝒢 n
   apply Finset.measurable_range_sup''
   intro k hk
@@ -179,11 +180,11 @@ lemma maximal_process_strongly_adapted (hsa : StronglyAdapted 𝒢 f) (n : ℕ)
 private lemma maximal_ineq_Lp_stage0 [IsFiniteMeasure μ]
   (hsub : Submartingale f 𝒢 μ) (hnonneg : 0 ≤ f)
   (p : ℝ) (hp : p > 1) (n : ℕ) :
-  ∫⁻ ω, ENNReal.ofReal (maximal_process f n ω) ^ p ∂μ ≤
+  ∫⁻ ω, ENNReal.ofReal (maximalProcess f n ω) ^ p ∂μ ≤
   ENNReal.ofReal (p/(p-1))
-  * ∫⁻ ω, ENNReal.ofReal (maximal_process f n ω) ^ (p-1) * ENNReal.ofReal (f n ω) ∂μ
+  * ∫⁻ ω, ENNReal.ofReal (maximalProcess f n ω) ^ (p-1) * ENNReal.ofReal (f n ω) ∂μ
   := by
-  let M_n := maximal_process f n
+  let M_n := maximalProcess f n
   have M_n_measurable: Measurable (M_n)
   := Measurable.le (𝒢.le' n)
     (maximal_process_strongly_adapted hsub.1 n)
@@ -402,7 +403,7 @@ we have `eLpNorm' (f* n) p μ ≤ p/(p-1) * eLpNorm' (f n) p μ` where `f* n ω 
 -/
 theorem maximal_ineq_Lp [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnonneg : 0 ≤ f)
   (p : ℝ) (hp : p > 1) (n : ℕ) :
-  eLpNorm' (maximal_process f n) p μ
+  eLpNorm' (maximalProcess f n) p μ
   ≤ (ENNReal.ofReal (p/(p-1))) * eLpNorm' (f n) p μ
   := by
     have hp0 : 0 < p := lt_trans zero_lt_one hp
@@ -429,10 +430,10 @@ theorem maximal_ineq_Lp [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (h
       simpa only [Real.norm_eq_abs, abs_of_nonneg (hnonneg k ω)] using hω
     have h_sum_Lp := memLp_finsetSum (Finset.range (n + 1))
       (fun k hk ↦ h_k_Lp k (Nat.le_of_lt_succ (Finset.mem_range.mp hk)))
-    have hmaxMeas : AEStronglyMeasurable (maximal_process f n) μ :=
+    have hmaxMeas : AEStronglyMeasurable (maximalProcess f n) μ :=
       (((maximal_process_strongly_adapted hsub.stronglyAdapted n).le
         (𝒢.le n)).stronglyMeasurable).aestronglyMeasurable
-    have hmaxLp : MemLp (maximal_process f n) (ENNReal.ofReal p) μ := by
+    have hmaxLp : MemLp (maximalProcess f n) (ENNReal.ofReal p) μ := by
       apply h_sum_Lp.mono' hmaxMeas
       filter_upwards with ω
       rw [Real.norm_eq_abs]
@@ -440,9 +441,9 @@ theorem maximal_ineq_Lp [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (h
       apply Finset.sup'_le
       intro k hk
       exact Finset.single_le_sum (fun j _ ↦ hnonneg j ω) hk
-    let maximal_process_ennreal := (fun ω ↦ ENNReal.ofReal (maximal_process f n ω))
+    let maximal_process_ennreal := (fun ω ↦ ENNReal.ofReal (maximalProcess f n ω))
     have hfinite : eLpNorm' maximal_process_ennreal p μ ≠ ∞ := by
-      have hmaxFinite : eLpNorm' (maximal_process f n) p μ ≠ ∞ := by
+      have hmaxFinite : eLpNorm' (maximalProcess f n) p μ ≠ ∞ := by
         rw [← norm_eq_norm' _ hmaxMeas]
         exact hmaxLp.eLpNorm_ne_top
       simpa only [maximal_process_ennreal, eLpNorm', enorm_eq_self,
