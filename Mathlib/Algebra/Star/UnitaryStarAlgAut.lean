@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Ring.Action.ConjAct
 public import Mathlib.Algebra.Star.StarAlgHom
 public import Mathlib.Algebra.Star.Unitary
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The ⋆-algebra automorphism given by a unitary element
 
