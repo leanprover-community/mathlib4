@@ -76,6 +76,11 @@ theorem closedCompactCylinders.eq_cylinder (ht : t ∈ closedCompactCylinders X)
     t = cylinder (closedCompactCylinders.finset ht) (closedCompactCylinders.set ht) :=
   ((mem_closedCompactCylinders t).mp ht).choose_spec.choose_spec.2.2
 
+theorem isClosed_of_mem_closedCompactCylinders (ht : t ∈ closedCompactCylinders X) :
+    IsClosed t := by
+  rw [closedCompactCylinders.eq_cylinder ht]
+  exact (closedCompactCylinders.isClosed ht).preimage (Finset.continuous_restrict _)
+
 theorem cylinder_mem_closedCompactCylinders (s : Finset ι) (S : Set (Π i : s, X i))
     (hS_closed : IsClosed S) (hS_compact : IsCompact S) :
     cylinder s S ∈ closedCompactCylinders X := by
@@ -99,9 +104,7 @@ theorem isCompactSystem_closedCompactCylinders : IsCompactSystem (closedCompactC
   let J n := closedCompactCylinders.finset (hC n)
   let K n := closedCompactCylinders.set (hC n)
   have hC_eq n : C n = cylinder (J n) (K n) := closedCompactCylinders.eq_cylinder (hC n)
-  have hC_closed n : IsClosed (C n) := by
-    rw [hC_eq]
-    exact (closedCompactCylinders.isClosed (hC n)).preimage (Finset.continuous_restrict _)
+  have hC_closed n : IsClosed (C n) := isClosed_of_mem_closedCompactCylinders (hC n)
   choose y hy using h_nonempty
   -- `T i` is the projection on coordinate `i` of the base of the first cylinder that depends on
   -- `i`. The points of the finite intersections can be modified to belong to the compact `pi T`.
