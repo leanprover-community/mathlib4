@@ -104,9 +104,7 @@ an inverse function. -/
 theorem HasDerivAt.of_local_left_inverse {f g : 𝕜 → 𝕜} {f' a : 𝕜} (hg : ContinuousAt g a)
     (hf : HasDerivAt f f' (g a)) (hf' : f' ≠ 0) (hfg : ∀ᶠ y in 𝓝 a, f (g y) = y) :
     HasDerivAt g f'⁻¹ a :=
-  (hf.hasDerivWithinAt.of_local_left_inverse
-    (hg.continuousWithinAt.tendsto_nhdsWithin (mapsTo_univ g univ)) hf' (mem_univ a)
-    (hfg.filter_mono nhdsWithin_le_nhds)).hasDerivAt univ_mem
+  (hf.hasFDerivAt_equiv hf').of_local_left_inverse hg hfg
 
 /-- If `f` is an open partial homeomorphism defined on a neighbourhood of `f.symm a`, and `f` has a
 nonzero derivative `f'` at `f.symm a`, then `f.symm` has the derivative `f'⁻¹` at `a`.
