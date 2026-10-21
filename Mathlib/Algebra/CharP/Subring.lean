@@ -29,7 +29,7 @@ theorem SubsemiringClass.charP_iff {R : Type u} {S : Type v} [SetLike S R]
 theorem CharP.charP_center_iff {R : Type u} [Ring R] {p : ℕ} :
     CharP (Subring.center R) p ↔ CharP R p := SubsemiringClass.charP_iff
 
-instance SubsemiringClass.charP {R : Type u} {S : Type v} [SetLike S R]
+instance {R : Type u} {S : Type v} [SetLike S R]
     [NonAssocSemiring R] [SubsemiringClass S R] {p : ℕ} [CharP R p] (s : S) :
     CharP s p := SubsemiringClass.charP_iff.2 ‹_›
 
@@ -47,7 +47,7 @@ theorem ExpChar.expChar_center_iff {R : Type u} [Ring R] {p : ℕ} :
     ExpChar (Subring.center R) p ↔ ExpChar R p :=
   (algebraMap (Subring.center R) R).expChar_iff Subtype.val_injective p
 
-instance SubsemiringClass.expChar {R : Type u} {S : Type v} [SetLike S R]
+instance {R : Type u} {S : Type v} [SetLike S R]
     [NonAssocSemiring R] [SubsemiringClass S R] {p : ℕ} [ExpChar R p] (s : S) :
     ExpChar s p := SubsemiringClass.expChar_iff.2 ‹_›
 
