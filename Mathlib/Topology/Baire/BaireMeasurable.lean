@@ -116,9 +116,9 @@ theorem iUnion {ι : Sort*} [Countable ι] {s : ι → Set α}
     (h : ∀ i, BaireMeasurableSet (s i)) : BaireMeasurableSet (⋃ i, s i) :=
   MeasurableSet.iUnion h
 
-theorem biUnion {ι : Type*} {s : ι → Set α} {t : Set ι} (ht : t.Countable)
-    (h : ∀ i ∈ t, BaireMeasurableSet (s i)) : BaireMeasurableSet (⋃ i ∈ t, s i) :=
-  MeasurableSet.biUnion ht h
+theorem biUnion {ι : Type*} {s : ι → Set α} {p : ι → Prop} (hp : {i | p i}.Countable)
+    (h : ∀ i, p i → BaireMeasurableSet (s i)) : BaireMeasurableSet (⋃ (i) (_ : p i), s i) :=
+  MeasurableSet.biUnion hp h
 
 theorem sUnion {s : Set (Set α)} (hs : s.Countable)
     (h : ∀ t ∈ s, BaireMeasurableSet t) : BaireMeasurableSet (⋃₀ s) :=
@@ -128,9 +128,9 @@ theorem iInter {ι : Sort*} [Countable ι] {s : ι → Set α}
     (h : ∀ i, BaireMeasurableSet (s i)) : BaireMeasurableSet (⋂ i, s i) :=
   MeasurableSet.iInter h
 
-theorem biInter {ι : Type*} {s : ι → Set α} {t : Set ι} (ht : t.Countable)
-    (h : ∀ i ∈ t, BaireMeasurableSet (s i)) : BaireMeasurableSet (⋂ i ∈ t, s i) :=
-  MeasurableSet.biInter ht h
+theorem biInter {ι : Type*} {s : ι → Set α} {p : ι → Prop} (hp : {i | p i}.Countable)
+    (h : ∀ i, p i → BaireMeasurableSet (s i)) : BaireMeasurableSet (⋂ (i) (_ : p i), s i) :=
+  MeasurableSet.biInter hp h
 
 theorem sInter {s : Set (Set α)} (hs : s.Countable)
     (h : ∀ t ∈ s, BaireMeasurableSet t) : BaireMeasurableSet (⋂₀ s) :=
