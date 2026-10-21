@@ -34,8 +34,9 @@ structure Config where
   /-- Which libraries of the current package should always be excluded from `mk_all`. -/
   excludedLibs : Array Name := #[]
   /-- Modules (like `Mathlib.Tactic`) which are not roots of any `lean_lib`, but should be treated
-  like one. Assumes that the folder they draw their imports from is located at the same path but
-  without `.lean`. -/
+  like one. Assumes that (as with `lean_lib` roots) the folder from which the given module should
+  import is adjacent to the module, e.g. `mathlib4/Mathlib/Tactic.lean` imports the modules in
+  `mathlib4/Mathlib/Tactic/`. -/
   extraRootModules : Array Name := #[]
 
 /-- The config used when in mathlib. -/
