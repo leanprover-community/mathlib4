@@ -90,9 +90,8 @@ def lt (r₁ r₂ : Root) : Bool :=
   r₁.realLibSrcDir == r₂.realLibSrcDir && r₁.name != r₂.name && r₂.name.isPrefixOf r₁.name
 
 /-- Construct a `Root`. Also checks that the root is a path. `rootOrigin : String` is used in the
-parenthetical `(from {rootOrigin})` to provide better error messages. `@[macro_inline]` to build
-`rootOrigin` lazily. -/
-@[macro_inline] protected def mk (name : Name) (lib : Lake.LeanLib) (rootOrigin : String) :
+parenthetical `(from {rootOrigin})` to provide better error messages. -/
+protected def mk (name : Name) (lib : Lake.LeanLib) (rootOrigin : String) :
     IO Root := do
   let root := { name, lib, realLibSrcDir := ← IO.FS.realPath lib.srcDir : Root }
   unless ← root.dir.isDir do
@@ -101,7 +100,7 @@ parenthetical `(from {rootOrigin})` to provide better error messages. `@[macro_i
   return root
 
 /-- Makes an array of `Root`s for the roots of the given `LeanLib` which have directories. Skips those for which no directory exists. -/
-@[macro_inline] def ofLeanLib (lib : Lake.LeanLib) : IO (Array Root) :=
+def ofLeanLib (lib : Lake.LeanLib) : IO (Array Root) :=
   lib.roots.filterMapM fun name => do
     let root := { name, lib, realLibSrcDir := ← IO.FS.realPath lib.srcDir : Root }
     if ← root.dir.isDir then return root else return none
