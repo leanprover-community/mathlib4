@@ -95,7 +95,8 @@ def dir : System.FilePath := modToFilePath r.lib.srcDir r.name ""
 def fileName : System.FilePath := modToFilePath r.lib.srcDir r.name "lean"
 
 /-- We have `r₁.lt r₂` if the root module designated by `r₁` might be included in `r₂`. -/
-def lt (r₁ r₂ : Root) : Bool := r₁.realLibSrcDir == r₁.realLibSrcDir && r₂.name.isPrefixOf r₁.name
+def lt (r₁ r₂ : Root) : Bool :=
+  r₁.realLibSrcDir == r₁.realLibSrcDir && r₁.name != r₂.name && r₂.name.isPrefixOf r₁.name
 
 end Root
 
@@ -141,12 +142,13 @@ def handleRoot (cfg : Config) (root : Root) (git : Bool) (check : Bool) (forceMo
       throw <| IO.userError s!"\
         Could not parse the header of `{root.name}` at {fileName}: {e.toString}\n\
         Fix or delete the file, then re-run `mk_all`\
-        {if root.lib.requiresModuleSystem then "" else
+        {if root.lib.requiresModuleSystem && !root.lib.allowNonModules then "" else
           " (with `--module` if you want a module-style aggregator)"}."
   -- If `--module` was passed explicitly, honor it. If the library requires the module system,
   -- use `module`. Otherwise, if the aggregator file already exists, infer whether it uses the
   -- module system; if not, default to plain.
-  let useModule := forceModule || root.lib.requiresModuleSystem || existing?.any (·.2.isModule)
+  let useModule := forceModule || (root.lib.requiresModuleSystem && !root.lib.allowNonModules)
+      || existing?.any (·.2.isModule)
   let mut allMods ← getAllModulesSorted git root.dir (srcDir := root.realLibSrcDir)
   -- Prepend extra mods for this root
   if let some extraMods := cfg.extraRootImports.get? root.name then
@@ -227,7 +229,9 @@ def mkAll : Cmd := `[Cli|
     git;    "Use the folder content information from git."
     check;  "Only check if the files are up-to-date; print an error if not"
     module; "Force the aggregator file to be generated as a `module` with `public` imports. \
-             When this flag is omitted, a `module` is used if the library of the associated file requires the module system or the existing file is already a module. Otherwise, this defaults to a non-module import."
+             When this flag is omitted, a `module` is used if the library of the associated file \
+             requires the module system or the existing file is already a module. Otherwise, this \
+             defaults to a non-module import."
 ]
 
 end Mathlib.Scripts
