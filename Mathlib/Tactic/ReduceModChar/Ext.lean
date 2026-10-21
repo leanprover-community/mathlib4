@@ -9,9 +9,6 @@ public meta import Lean.Meta.Tactic.Simp.Attr
 
 import Mathlib.Init
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # `@[reduce_mod_char]` attribute
 

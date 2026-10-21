@@ -5,11 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Init
 public import Lean.CoreM
-
-set_option doc.verso true
-set_option doc.verso.suggestions false
+public import Mathlib.Init
 
 /-!
 # Additional functions using `CoreM` state.
