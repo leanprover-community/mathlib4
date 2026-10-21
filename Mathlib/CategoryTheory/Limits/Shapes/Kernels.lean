@@ -100,7 +100,6 @@ section
 
 attribute [local aesop safe cases] WalkingParallelPair WalkingParallelPairHom
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Every kernel fork `s` is isomorphic (actually, equal) to `fork.ofι (fork.ι s) _`. -/
 def isoOfι (s : Fork f 0) : s ≅ Fork.ofι (Fork.ι s) (Fork.condition s) :=
   Cone.ext (Iso.refl _) <| by aesop
@@ -110,7 +109,6 @@ def ofιCongr {P : C} {ι ι' : P ⟶ X} {w : ι ≫ f = 0} (h : ι = ι') :
     KernelFork.ofι ι w ≅ KernelFork.ofι ι' (by rw [← h, w]) :=
   Cone.ext (Iso.refl _)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `F` is an equivalence, then applying `F` to a diagram indexing a (co)kernel of `f` yields
 the diagram indexing the (co)kernel of `F.map f`. -/
 def compNatIso {D : Type u'} [Category.{v} D] [HasZeroMorphisms D] (F : C ⥤ D) [F.IsEquivalence] :
@@ -212,7 +210,6 @@ def KernelFork.isLimitOfIsLimitOfIff {X Y : C} {g : X ⟶ Y} {c : KernelFork g} 
     (fun s hs ↦ by simp)
     (fun s hs m hm ↦ Fork.IsLimit.hom_ext hc (by simpa [← cancel_mono e.hom] using hm))
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `c` is a limit kernel fork for `g : X ⟶ Y`, and `g' : X ⟶ Y'` is another morphism,
 then there is a limit kernel fork for `g'` with the same point as `c` if for any
 morphism `φ : W ⟶ X`, there is an equivalence `φ ≫ g = 0 ↔ φ ≫ g' = 0`. -/
@@ -250,7 +247,6 @@ lemma mapOfIsLimit_ι (kf : KernelFork f) {kf' : KernelFork f'} (hf' : IsLimit k
     kf.mapOfIsLimit hf' φ ≫ kf'.ι = kf.ι ≫ φ.left :=
   hf'.fac _ _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism between points of limit kernel forks induced by an isomorphism
 in the category of arrows. -/
 @[simps]
@@ -283,7 +279,6 @@ theorem equalizer_as_kernel : equalizer.ι f 0 = kernel.ι f := rfl
 theorem kernel.condition : kernel.ι f ≫ f = 0 :=
   KernelFork.condition _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The kernel built from `kernel.ι f` is limiting. -/
 def kernelIsKernel : IsLimit (Fork.ofι (kernel.ι f) ((kernel.condition f).trans comp_zero.symm)) :=
   IsLimit.ofIsoLimit (limit.isLimit _) (Fork.ext (Iso.refl _) (by simp))
@@ -450,7 +445,6 @@ def kernelCompMono {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [HasKernel f] [Mono g
         simp)
   inv := kernel.lift _ (kernel.ι _) (by simp)
 
-set_option backward.defeqAttrib.useBackward true in
 instance hasKernel_iso_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] [HasKernel g] :
     HasKernel (f ≫ g) where
   exists_limit :=
@@ -522,7 +516,6 @@ end HasZeroObject
 section Transport
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- Transport an `IsKernel` across isomorphisms. -/
 def IsKernel.ofIso {X' Y' : C} {f' : X' ⟶ Y'} {s : KernelFork f} (hs : IsLimit s)
     (s' : KernelFork f') (eX : X ≅ X') (eY : Y ≅ Y') (e : s.pt ≅ s'.pt)
@@ -548,7 +541,6 @@ def kernel.ofCompIso [HasKernel f] {Z : C} (l : X ⟶ Z) (i : Z ≅ Y) (h : l �
       (KernelFork.ofι (kernel.ι f) <| show kernel.ι f ≫ l = 0 by simp [← i.comp_inv_eq.2 h.symm]) :=
   IsKernel.ofCompIso f l i h <| limit.isLimit _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `s` is any limit kernel cone over `f` and if `i` is an isomorphism such that
 `i.hom ≫ s.ι = l`, then `l` is a kernel of `f`. -/
 def IsKernel.isoKernel {Z : C} (l : Z ⟶ X) {s : KernelFork f} (hs : IsLimit s) (i : Z ≅ s.pt)
@@ -599,7 +591,6 @@ theorem CokernelCofork.π_ofπ {X Y P : C} (f : X ⟶ Y) (π : Y ⟶ P) (w : f �
     Cofork.π (CokernelCofork.ofπ π w) = π :=
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Every cokernel cofork `s` is isomorphic (actually, equal) to `cofork.ofπ (cofork.π s) _`. -/
 def isoOfπ (s : Cofork f 0) : s ≅ Cofork.ofπ (Cofork.π s) (Cofork.condition s) :=
   Cocone.ext (Iso.refl _) fun j => by cases j <;> cat_disch
@@ -615,7 +606,6 @@ def CokernelCofork.IsColimit.desc' {s : CokernelCofork f} (hs : IsColimit s) {W 
     (h : f ≫ k = 0) : { l : s.pt ⟶ W // Cofork.π s ≫ l = k } :=
   ⟨hs.desc <| CokernelCofork.ofπ _ h, hs.fac _ _⟩
 
-set_option backward.defeqAttrib.useBackward true in
 /-- This is a slightly more convenient method to verify that a cokernel cofork is a colimit cocone.
 It only asks for a proof of facts that carry any mathematical content -/
 def isColimitAux (t : CokernelCofork f) (desc : ∀ s : CokernelCofork f, t.pt ⟶ s.pt)
@@ -712,7 +702,6 @@ def CokernelCofork.isColimitOfIsColimitOfIff {X Y : C} {f : X ⟶ Y} {c : Cokern
     (fun s hs ↦ by simp)
     (fun s hs m hm ↦ Cofork.IsColimit.hom_ext hc (by simpa [← cancel_epi e.hom] using hm))
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `c` is a colimit cokernel cofork for `f : X ⟶ Y`, and `f' : X' ⟶ Y` is another
 morphism, then there is a colimit cokernel cofork for `f'` with the same point as `c` if for any
 morphism `φ : Y ⟶ W`, there is an equivalence `f ≫ φ = 0 ↔ f' ≫ φ = 0`. -/
@@ -784,7 +773,6 @@ theorem coequalizer_as_cokernel : coequalizer.π f 0 = cokernel.π f :=
 theorem cokernel.condition : f ≫ cokernel.π f = 0 :=
   CokernelCofork.condition _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The cokernel built from `cokernel.π f` is colimiting. -/
 def cokernelIsCokernel :
     IsColimit (Cofork.ofπ (cokernel.π f) ((cokernel.condition f).trans zero_comp.symm)) :=
@@ -949,7 +937,6 @@ theorem cokernel_not_mono_of_nonzero (w : f ≠ 0) : ¬Mono (cokernel.π f) := f
 theorem cokernel_not_iso_of_nonzero (w : f ≠ 0) : IsIso (cokernel.π f) → False := fun _ =>
   cokernel_not_mono_of_nonzero w inferInstance
 
-set_option backward.defeqAttrib.useBackward true in
 -- TODO the remainder of this section has obvious generalizations to `HasCoequalizer f g`.
 instance hasCokernel_comp_iso {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [HasCokernel f] [IsIso g] :
     HasCokernel (f ≫ g) where
@@ -1148,7 +1135,6 @@ def cokernel.ofIsoComp [HasCokernel f] {Z : C} (l : Z ⟶ Y) (i : X ≅ Z) (h : 
         show l ≫ cokernel.π f = 0 by simp [i.eq_inv_comp.2 h]) :=
   IsCokernel.ofIsoComp f l i h <| colimit.isColimit _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `s` is any colimit cokernel cocone over `f` and `i` is an isomorphism such that
 `s.π ≫ i.hom = l`, then `l` is a cokernel of `f`. -/
 def IsCokernel.cokernelIso {Z : C} (l : Y ⟶ Z) {s : CokernelCofork f} (hs : IsColimit s)
@@ -1161,7 +1147,6 @@ def IsCokernel.cokernelIso {Z : C} (l : Y ⟶ Z) {s : CokernelCofork f} (hs : Is
       · exact h
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- Transport an `IsCokernel` across isomorphisms. -/
 def IsCokernel.ofIso {X' Y' : C} {f' : X' ⟶ Y'} {s : CokernelCofork f} (hs : IsColimit s)
     (s' : CokernelCofork f') (eX : X ≅ X') (eY : Y ≅ Y') (e : s.pt ≅ s'.pt)
@@ -1277,13 +1262,9 @@ noncomputable def ker : Arrow C ⥤ C where
   obj f := kernel f.hom
   map {f g} u := kernel.lift _ (kernel.ι _ ≫ u.left) (by simp)
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- The kernel inclusion is natural. -/
 @[simps] def ker.ι : ker (C := C) ⟶ Arrow.leftFunc where app f := kernel.ι _
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)] lemma ker.condition : ι C ≫ Arrow.leftToRight = 0 := by cat_disch
 
 end HasKernels
@@ -1297,13 +1278,9 @@ noncomputable def coker : Arrow C ⥤ C where
   obj f := cokernel f.hom
   map {f g} u := cokernel.desc _ (u.right ≫ cokernel.π _) (by simp [← Arrow.w_assoc u])
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- The cokernel projection is natural. -/
 @[simps] def coker.π : Arrow.rightFunc ⟶ coker (C := C) where app f := cokernel.π _
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)] lemma coker.condition : Arrow.leftToRight ≫ π C = 0 := by cat_disch
 
 end HasCokernels

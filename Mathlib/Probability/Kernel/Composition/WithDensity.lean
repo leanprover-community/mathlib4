@@ -5,10 +5,9 @@ Authors: Rémy Degenne
 -/
 module
 
+public import Mathlib.Probability.Kernel.Composition.CompNotation
 public import Mathlib.Probability.Kernel.Composition.MeasureCompProd
 public import Mathlib.Probability.Kernel.WithDensity
-
-import Mathlib.Probability.Kernel.Composition.MeasureComp
 
 /-!
 # Composition of kernels and measures with density
