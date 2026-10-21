@@ -226,7 +226,6 @@ theorem rank_vecMulVec_le [Finite n] [CommSemiring R] [StrongRankCondition R] (w
     (v : n → R) : (Matrix.vecMulVec w v).rank ≤ 1 := by
   rw [Matrix.vecMulVec_eq Unit]
   refine le_trans (rank_mul_le_left _ _) ?_
-  nontriviality R
   exact rank_le_card_width _
 
 theorem rank_unit [Fintype n] [DecidableEq n] [CommSemiring R] [StrongRankCondition R]
