@@ -239,3 +239,5 @@ theorem motzkin_ne_sos {ι : Type*} (s : Finset ι) (g : ι → MvPolynomial (Fi
   -- Hence, it is nonnegative. Contradiction.
   have : 0 ≤ ∑ i ∈ s, (g i).coeff ⟪1, 1⟫ ^ 2 := Finset.sum_nonneg fun _ _ ↦ sq_nonneg _
   order
+
+end MvPolynomial
