@@ -8,14 +8,12 @@ public import Mathlib.Tactic.DepRewrite
 # Tests for the `rewrite!` and `rw!` tactics
 -/
 
-@[expose] public section
-
 /-! ## Basic tests for `rewrite!`. -/
 
 private axiom test_sorry : ∀ {α}, α
 
 /-- Turn a term into a sort for testing. -/
-axiom P.{u} {α : Sort u} : α → Prop
+private axiom P.{u} {α : Sort u} : α → Prop
 
 /-- Non-deprecated copy of `Fin.ofNat` for testing. -/
 private def finOfNat (n : Nat) (a : Nat) : Fin (n + 1) :=

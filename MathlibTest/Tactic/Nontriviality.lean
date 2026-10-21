@@ -5,9 +5,7 @@ public import Mathlib.Algebra.Ring.Nat
 public import Mathlib.Data.Set.Basic
 public import Mathlib.Tactic.Nontriviality
 
-@[expose] public section
-
-axiom test_sorry : ∀ {α}, α
+private axiom test_sorry : ∀ {α}, α
 /-! ### Test `nontriviality` with inequality hypotheses -/
 
 set_option autoImplicit true

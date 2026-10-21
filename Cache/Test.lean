@@ -67,8 +67,6 @@ single `testDriver`, and the enclosing `mathlib` package binds that to
 project, the `cache-test` `lean_exe` here can become that project's `testDriver`.
 -/
 
-@[expose] public section
-
 namespace Cache.Test
 
 open Cache.Requests
@@ -95,7 +93,7 @@ def assertEq (name expected actual : String) : IO Unit := do
 /-- Run `body` with the `--scope=` override (`scopeOverride`) restored on
 completion, including on exception, so a test that sets it leaves the tests
 after it unaffected. -/
-def withSavedScopeOverride (body : IO Unit) : IO Unit := do
+private def withSavedScopeOverride (body : IO Unit) : IO Unit := do
   let saved ← scopeOverride.get
   try body finally scopeOverride.set saved
 
@@ -103,7 +101,7 @@ def withSavedScopeOverride (body : IO Unit) : IO Unit := do
 device. Restores both on completion, including on exception. Apply this to every
 production code call in tests so diagnostic prints never mix with test output,
 regardless of whether the production code currently produces any. -/
-def withSuppressedOutput (action : IO α) : IO α := do
+private def withSuppressedOutput (action : IO α) : IO α := do
   let savedOut ← IO.getStdout
   let savedErr ← IO.getStderr
   let sink ← IO.FS.Handle.mk Cache.IO.nullDevice IO.FS.Mode.append
@@ -123,7 +121,7 @@ def withSuppressedOutput (action : IO α) : IO α := do
     throw e
 
 /-- Run a cache action with a controlled Mathlib path and suppress its diagnostics. -/
-def withSuppressedCacheOutput (action : IO.CacheM α)
+private def withSuppressedCacheOutput (action : IO.CacheM α)
     (mathlibDepPath : System.FilePath := ".") : IO α :=
   withSuppressedOutput (ReaderT.run action { mathlibDepPath, srcSearchPath := [] })
 
@@ -829,7 +827,7 @@ end NonDefaultScope
 section MissingFilesHints
 
 /-- `true` iff `needle` occurs in `haystack`; assertion helper for message pins. -/
-def containsSub (haystack needle : String) : Bool :=
+private def containsSub (haystack needle : String) : Bool :=
   (haystack.splitOn needle).length > 1
 
 /-- Content pins for the two missing-files messages: the fork variant names the
@@ -1760,7 +1758,7 @@ section DecompPipeline
 /-- Shared `DecompConfig` for the pipeline tests. `hashToMod` is unused here;
 `isMathlibRoot := true` makes `decompressBatch` treat pending paths as plain
 entries, so `mathlibDepPath` is unused too. -/
-def testDecompConfig : DecompConfig :=
+private def testDecompConfig : DecompConfig :=
   { hashToMod := ∅, force := false, isMathlibRoot := true, mathlibDepPath := "." }
 
 /-- `finalizeDecomp` drains the decompression pipeline after the last download
@@ -1963,7 +1961,7 @@ def runAll : IO Unit := do
 end Cache.Test
 
 open Cache Cache.Test Cache.Requests in
-def main : IO UInt32 := do
+public def main : IO UInt32 := do
   runAll
   let n ← failures.get
   if n == 0 then

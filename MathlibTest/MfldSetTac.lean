@@ -7,9 +7,7 @@ module
 
 public import Mathlib.Logic.Equiv.PartialEquiv
 
-@[expose] public section
-
-axiom test_sorry : ∀ {α}, α
+private axiom test_sorry : ∀ {α}, α
 /-!
 This is a test file for the tactic `mfld_set_tac`. Because this tactic applies a simp-set which
 mostly contains lemmas in advanced parts of mathlib, it is currently impossible to truly test it
