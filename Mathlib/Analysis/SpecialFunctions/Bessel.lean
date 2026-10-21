@@ -147,20 +147,15 @@ theorem mul_deriv_besselJ_eq_besselJ_add_one (a : ℂ) {x : ℂ} (h : x ∈ slit
   calc
     _ = x * (deriv (fun x ↦ (x / 2) ^ a) x * F₀₁(a + 1) (-(x / 2) ^ 2) +
         (x / 2) ^ a * deriv ((fun x ↦ F₀₁(a + 1) x) ∘ fun x ↦ -(x / 2) ^ 2) x) := by
-      rw [deriv_fun_mul (by fun_prop) (by fun_prop)]
-      rfl
+      rw [deriv_fun_mul (by fun_prop) (by fun_prop), Function.comp_def]
     _ = 2 * (x / 2) * deriv (fun x ↦ (x / 2) ^ a) x * F₀₁(a + 1) (-(x / 2) ^ 2) + x *
         (x / 2) ^ a * (F₀₁(a + 1 + 1) (-(x / 2) ^ 2) * (-x / 2)) := by
       rw [deriv_comp _ (by fun_prop) (by fun_prop), deriv_regularizedHGFun (by simp)]
       simp
       ring
-    _ = (a * (x / 2) ^ a) * F₀₁(a + 1) (-(x / 2) ^ 2) + x *
-        (x / 2) ^ a * (F₀₁(a + 1 + 1) (-(x / 2) ^ 2) * (-x / 2)) := by
-      rw [_root_.deriv_cpow_const (by fun_prop) (by exact hx2), cpow_sub _ _ hx0]
-      simp
-      grind
     _ = _ := by
-      grind [cpow_add, cpow_one]
+      rw [_root_.deriv_cpow_const (by fun_prop) (by exact hx2), deriv_div_const, deriv_id'']
+      grind [cpow_add, cpow_one, cpow_sub, deriv_div_const]
 
 @[dlmf 10.6.E2]
 theorem mul_deriv_besselJ_eq_besselJ_sub_one (a : ℂ) {x : ℂ} (h : x ∈ slitPlane) :
