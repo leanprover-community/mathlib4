@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Basic
+
 import Mathlib.CategoryTheory.Functor.RegularEpi
 
 /-!

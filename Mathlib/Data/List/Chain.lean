@@ -8,8 +8,12 @@ module
 public import Mathlib.Data.List.Forall2
 public import Mathlib.Data.List.Induction
 public import Mathlib.Data.List.Lex
-import Mathlib.Data.List.Pairwise
 public import Mathlib.Logic.Function.Iterate
+
+import Mathlib.Data.List.Pairwise
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Relation chain
@@ -284,7 +288,7 @@ theorem IsChain.append_overlap {l₁ l₂ l₃ : List α} (h₁ : IsChain R (l�
 
 lemma isChain_flatten : ∀ {L : List (List α)}, [] ∉ L →
     (IsChain R L.flatten ↔ (∀ l ∈ L, IsChain R l) ∧
-    L.IsChain (fun l₁ l₂ => ∀ᵉ (x ∈ l₁.getLast?) (y ∈ l₂.head?), R x y))
+    L.IsChain (fun l₁ l₂ => ∀ x ∈ l₁.getLast?, ∀ y ∈ l₂.head?, R x y))
 | [], _ => by simp
 | [l], _ => by simp [flatten]
 | (l₁ :: l₂ :: L), hL => by
@@ -437,6 +441,13 @@ lemma IsChain.iterate_eq_of_apply_eq {α : Type*} {f : α → α} {l : List α}
 
 theorem isChain_replicate_of_rel (n : ℕ) {a : α} (h : r a a) : IsChain r (replicate n a) := by
   induction n using Nat.twoStepInduction <;> grind
+
+/-- If `r a (f a)` holds for every `a`, then `List.iterate f a n` is a chain under `r`. -/
+protected theorem IsChain.iterate {f : α → α} {a : α} (h : ∀ x, r x (f x)) :
+    ∀ {n}, IsChain r (iterate f a n)
+  | 0 => .nil
+  | 1 => .singleton _
+  | n + 2 => .cons_cons (h a) (.iterate h (n := n + 1))
 
 theorem isChain_eq_iff_eq_replicate {l : List α} :
     IsChain (· = ·) l ↔ ∀ a ∈ l.head?, l = replicate l.length a := by
