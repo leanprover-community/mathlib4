@@ -10,7 +10,30 @@ public meta import Lean.Elab.Tactic.Conv.Basic
 public import Mathlib.Init
 
 /-!
-Additional `conv` tactics.
+# Additional conversion tactics
+
+This file defines additional tactics related to [the conversion tactic
+mode](https://lean-lang.org/theorem_proving_in_lean4/The-Conversion-Tactic-Mode/).
+
+## Main definitions
+
+### Top-level commands
+
+* [`#conv tac => e`](##«command#conv_=>_»)
+* [`#whnf e`](##«command#whnf_»)
+* [`#whnfR e`](##«command#whnfR_»)
+* [`simp => e` and `#simp only [lems] => e`](##«command#simpOnly_=>__»)
+
+### Tactics to enter the conversion mode
+
+* [`conv_lhs =>`](##convLHS)
+* [`conv_rhs =>`](##convRHS)
+
+### Tactics used inside the conversion mode
+
+* [`conv in pat => cs`](##«convConvIn__=>_»)
+* [`discharge` and `discharge => tac`](##dischargeConv)
+* [`refine`](##convRefine_)
 -/
 
 public meta section
@@ -99,7 +122,7 @@ open Elab Tactic
 /--
 The command `#conv tac => e` will run a conv tactic `tac` on `e`, and display the resulting
 expression (discarding the proof).
-For example, `#conv rw [true_and_iff] => True ∧ False` displays `False`.
+For example, `#conv rw [true_and] => True ∧ False` displays `False`.
 There are also shorthand commands for several common conv tactics:
 
 * `#whnf e` is short for `#conv whnf => e`
