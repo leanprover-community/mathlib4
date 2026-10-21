@@ -1,6 +1,10 @@
-import Lean.Elab.GuardMsgs
-import Mathlib.Tactic.AdaptationNote
-import Mathlib.Tactic.Linter.HashCommandLinter
+module
+
+public import Lean.Elab.GuardMsgs
+public import Mathlib.Tactic.AdaptationNote
+public import Mathlib.Tactic.Linter.HashCommandLinter
+
+@[expose] public section
 
 set_option linter.hashCommand true
 

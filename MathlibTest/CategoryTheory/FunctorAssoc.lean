@@ -1,4 +1,8 @@
-import Mathlib.CategoryTheory.Functor.Basic
+module
+
+public import Mathlib.CategoryTheory.Functor.Basic
+
+@[expose] public section
 
 namespace CategoryTheory.Functor
 

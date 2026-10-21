@@ -1,4 +1,9 @@
-import Mathlib.Tactic.Linter.ValidatePRTitle
+module
+
+public meta import Lean.Elab.Command
+public meta import Mathlib.Tactic.Linter.ValidatePRTitle
+
+@[expose] public section
 
 -- Tests for the PR title validation logic.
 open Lean in

@@ -1,5 +1,9 @@
-import Mathlib.Tactic.Says
-import Aesop
+module
+
+public import Aesop
+public import Mathlib.Tactic.Says
+
+@[expose] public section
 
 -- removing changes to the `simp` set after this test was created
 attribute [-simp] Nat.add_left_cancel_iff Nat.add_right_cancel_iff

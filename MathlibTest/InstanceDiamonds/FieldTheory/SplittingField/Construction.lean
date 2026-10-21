@@ -1,5 +1,9 @@
-import Mathlib.Algebra.Algebra.Rat
-import Mathlib.FieldTheory.SplittingField.Construction
+module
+
+public import Mathlib.Algebra.Algebra.Rat
+public import Mathlib.FieldTheory.SplittingField.Construction
+
+@[expose] public section
 
 universe u v w
 

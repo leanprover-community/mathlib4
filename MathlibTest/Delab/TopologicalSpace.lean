@@ -1,4 +1,8 @@
-import Mathlib.Topology.Order
+module
+
+public import Mathlib.Topology.Order
+
+@[expose] public section
 
 open TopologicalSpace
 

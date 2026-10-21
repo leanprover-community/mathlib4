@@ -3,7 +3,9 @@ Copyright (c) 2022 Dhruv Bhatia. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dhruv Bhatia, Robert Y. Lewis, Mario Carneiro, Kim Morrison
 -/
-import Mathlib
+module
+
+public import Mathlib
 
 /-!
 Mathlib used to have a tactic (`polyrith`) that communicated with a remote Sage server
@@ -12,6 +14,8 @@ This test file is adapted from the test file for `polyrith`,
 but uses the `grobner` tactic instead.
 (Recall `grobner` is a thin wrapper around `grind` disabling other modules.)
 -/
+
+@[expose] public section
 
 /-! ### Standard Cases over ℤ, ℚ, and ℝ -/
 

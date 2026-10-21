@@ -1,4 +1,8 @@
-import Mathlib.Tactic.SimpIntro
+module
+
+public import Mathlib.Tactic.SimpIntro
+
+@[expose] public section
 
 set_option autoImplicit true
 

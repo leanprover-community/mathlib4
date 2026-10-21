@@ -1,4 +1,8 @@
-import Mathlib.RingTheory.Coalgebra.CoassocSimps
+module
+
+public import Mathlib.RingTheory.Coalgebra.CoassocSimps
+
+@[expose] public section
 
 open TensorProduct
 

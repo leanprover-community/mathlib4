@@ -1,5 +1,7 @@
-import Mathlib
-import Mathlib.Topology.Category.TopCat.Basic
+module
+
+public import Mathlib
+public import Mathlib.Topology.Category.TopCat.Basic
 
 /-!
 This test file serves as a sentinel against bad simp lemmas.
@@ -18,6 +20,8 @@ After deleting some bad simp lemmas that were being tried everywhere
 
 it is back down to 19,000 heartbeats even with `import Mathlib`.
 -/
+
+@[expose] public section
 
 open CategoryTheory
 

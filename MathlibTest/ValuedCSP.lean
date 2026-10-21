@@ -1,9 +1,11 @@
-import Mathlib.Algebra.Order.AbsoluteValue.Basic
-import Mathlib.Algebra.Order.Ring.Rat
-import Mathlib.Combinatorics.Optimization.ValuedCSP
-import Mathlib.Data.Fin.Tuple.Curry
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Tactic.Positivity
+module
+
+public import Mathlib.Algebra.Order.AbsoluteValue.Basic
+public import Mathlib.Algebra.Order.Ring.Rat
+public import Mathlib.Combinatorics.Optimization.ValuedCSP
+public import Mathlib.Data.Fin.Tuple.Curry
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Tactic.Positivity
 
 /-!
 # VCSP examples
@@ -12,6 +14,8 @@ This file shows two simple examples of General-Valued Constraint Satisfaction Pr
 [ValuedCSP definition](Mathlib/Combinatorics/Optimization/ValuedCSP.lean)).
 The first example is an optimization problem. The second example is a decision problem.
 -/
+
+@[expose] public section
 
 def ValuedCSP.unaryTerm {D C : Type} [AddCommMonoid C] [PartialOrder C] [IsOrderedAddMonoid C]
     {Γ : ValuedCSP D C} {ι : Type*} {f : D → C}

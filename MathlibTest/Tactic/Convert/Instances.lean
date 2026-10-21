@@ -1,5 +1,9 @@
-import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
-import Mathlib.Tactic.Convert
+module
+
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
+public import Mathlib.Tactic.Convert
+
+@[expose] public section
 
 private axiom test_sorry : ∀ {α}, α
 

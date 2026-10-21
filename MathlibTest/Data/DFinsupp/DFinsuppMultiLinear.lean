@@ -1,6 +1,10 @@
-import Mathlib.LinearAlgebra.Multilinear.DFinsupp
-import Mathlib.LinearAlgebra.Multilinear.Pi
-import Mathlib.Data.DFinsupp.Notation
+module
+
+public meta import Mathlib.Data.DFinsupp.Notation
+public meta import Mathlib.LinearAlgebra.Multilinear.DFinsupp
+public import Mathlib.LinearAlgebra.Multilinear.Pi
+
+@[expose] public section
 
 /--
 info: fun₀

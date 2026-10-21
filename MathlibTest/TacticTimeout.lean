@@ -1,8 +1,12 @@
-import Mathlib.Tactic.Linarith
+module
+
+public import Mathlib.Tactic.Linarith
 
 /-!
 # Test that tactics respond to a cancellation request
 -/
+
+@[expose] public section
 
 
 variable {α}
@@ -14,9 +18,9 @@ section catch_interrupted
 attribute [-instance]
   Lean.instMonadExceptOfExceptionCoreM Lean.Elab.Tactic.instMonadExceptExceptionTacticM
 
-def Meta.tryCatchAll (m : MetaM α) (h : Exception → MetaM α) : MetaM α := tryCatch m h
-def Term.tryCatchAll (m : TermElabM α) (h : Exception → TermElabM α) : TermElabM α := tryCatch m h
-def Tactic.tryCatchAll (x : TacticM α) (h : Exception → TacticM α) : TacticM α := do
+meta def Meta.tryCatchAll (m : MetaM α) (h : Exception → MetaM α) : MetaM α := tryCatch m h
+meta def Term.tryCatchAll (m : TermElabM α) (h : Exception → TermElabM α) : TermElabM α := tryCatch m h
+meta def Tactic.tryCatchAll (x : TacticM α) (h : Exception → TacticM α) : TacticM α := do
   let b ← saveState
   try x catch ex => b.restore; h ex
 
@@ -24,7 +28,7 @@ end catch_interrupted
 
 section test_infra
 
-def Tactic.withTimeout (ms : UInt32) (t : TacticM α) : TacticM (α ⊕ Nat) := do
+meta def Tactic.withTimeout (ms : UInt32) (t : TacticM α) : TacticM (α ⊕ Nat) := do
   let tk ← IO.CancelToken.new
   withTheReader Core.Context (fun s => { s with cancelTk? := some tk }) do
     let t0 ← IO.monoMsNow

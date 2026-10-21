@@ -1,9 +1,13 @@
-import Batteries.Tactic.PermuteGoals
-import Mathlib.Tactic.Basic
-import Mathlib.Tactic.Conv
-import Mathlib.Tactic.Linter.Multigoal
-import Mathlib.Util.SleepHeartbeats
-import Mathlib.Tactic.SuccessIfFailWithMsg
+module
+
+public import Batteries.Tactic.PermuteGoals
+public import Mathlib.Tactic.Basic
+public import Mathlib.Tactic.Conv
+public import Mathlib.Tactic.Linter.Multigoal
+public import Mathlib.Tactic.SuccessIfFailWithMsg
+public import Mathlib.Util.SleepHeartbeats
+
+@[expose] public section
 
 set_option linter.style.multiGoal true
 

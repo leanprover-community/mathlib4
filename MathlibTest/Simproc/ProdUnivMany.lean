@@ -1,4 +1,8 @@
-import Mathlib.Data.Fin.Tuple.Reflection
+module
+
+public import Mathlib.Data.Fin.Tuple.Reflection
+
+@[expose] public section
 
 @[to_additive]
 lemma prod_test (R : Type) [CommMonoid R] (f : Fin 10 → R) :

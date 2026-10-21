@@ -1,4 +1,8 @@
-import Mathlib.Tactic.GCongr
+module
+
+public import Mathlib.Tactic.GCongr
+
+@[expose] public section
 
 variable {a b c d : Prop}
 

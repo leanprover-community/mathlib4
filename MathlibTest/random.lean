@@ -1,6 +1,10 @@
-import Mathlib.Control.Random
-import Mathlib.Tactic.NormNum
-import Batteries.Lean.LawfulMonad
+module
+
+public meta import Mathlib.Control.Random
+public import Batteries.Lean.LawfulMonad
+public import Mathlib.Tactic.NormNum
+
+@[expose] public section
 
 open Random
 

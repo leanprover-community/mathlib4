@@ -1,5 +1,9 @@
-import Mathlib.Data.Nat.Prime.Factorial
-import Mathlib.Data.Nat.Factorial.Basic
+module
+
+public import Mathlib.Data.Nat.Factorial.Basic
+public import Mathlib.Data.Nat.Prime.Factorial
+
+@[expose] public section
 
 open Nat
 

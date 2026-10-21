@@ -1,5 +1,9 @@
-import Mathlib.Tactic.IrreducibleDef
-import Mathlib.Util.WhatsNew
+module
+
+public meta import Mathlib.Tactic.IrreducibleDef
+public import Mathlib.Util.WhatsNew
+
+@[expose] public section
 
 set_option autoImplicit true
 /-- Add two natural numbers, but not during unification. -/

@@ -1,8 +1,12 @@
-import Mathlib.Basic.Complex.Basic
+module
+
+public import Mathlib.Basic.Complex.Basic
 
 /-!
 # Tests for `simp`-reduction about `I ^ _`.
 -/
+
+@[expose] public section
 
 open Complex
 

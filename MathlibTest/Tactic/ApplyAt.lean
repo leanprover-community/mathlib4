@@ -1,6 +1,10 @@
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Basic.Real.Basic
-import Mathlib.Tactic.ApplyAt
+module
+
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Basic.Real.Basic
+public import Mathlib.Tactic.ApplyAt
+
+@[expose] public section
 
 example {α β : Type*} (f : α → β) (a : α) : β := by
   apply f at a

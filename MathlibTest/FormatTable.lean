@@ -1,4 +1,8 @@
-import Mathlib.Util.FormatTable
+module
+
+public import Mathlib.Util.FormatTable
+
+@[expose] public section
 
 /--
 info:

@@ -3,11 +3,14 @@ Copyright (c) 2022 Ian Benway. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ian Benway
 -/
+module
 
-import Mathlib.Tactic.Set
-import Mathlib.Tactic.Basic
-import Mathlib.Util.SleepHeartbeats
-import Qq
+public import Mathlib.Tactic.Basic
+public import Mathlib.Tactic.Set
+public import Mathlib.Util.SleepHeartbeats
+public import Qq
+
+@[expose] public section
 
 example (x : Nat) (h : x = x) : x = x := by
   set! p := h
