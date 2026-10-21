@@ -134,9 +134,9 @@ protected theorem iUnion {ι : Sort*} [Countable ι] {s : ι → Set α}
     (h : ∀ i, NullMeasurableSet (s i) μ) : NullMeasurableSet (⋃ i, s i) μ :=
   MeasurableSet.iUnion h
 
-protected theorem biUnion {f : ι → Set α} {p : ι → Prop} (hs : {b | p b}.Countable)
+protected theorem biUnion {f : ι → Set α} {p : ι → Prop} (hp : {b | p b}.Countable)
     (h : ∀ b, p b → NullMeasurableSet (f b) μ) : NullMeasurableSet (⋃ (b : ι) (_ : p b), f b) μ :=
-  MeasurableSet.biUnion hs h
+  MeasurableSet.biUnion hp h
 
 protected theorem sUnion {s : Set (Set α)} (hs : s.Countable) (h : ∀ t ∈ s, NullMeasurableSet t μ) :
     NullMeasurableSet (⋃₀ s) μ := by
@@ -148,9 +148,9 @@ protected theorem iInter {ι : Sort*} [Countable ι] {f : ι → Set α}
     (h : ∀ i, NullMeasurableSet (f i) μ) : NullMeasurableSet (⋂ i, f i) μ :=
   MeasurableSet.iInter h
 
-protected theorem biInter {f : β → Set α} {s : Set β} (hs : s.Countable)
-    (h : ∀ b ∈ s, NullMeasurableSet (f b) μ) : NullMeasurableSet (⋂ b ∈ s, f b) μ :=
-  MeasurableSet.biInter hs h
+protected theorem biInter {f : β → Set α} {p : β → Prop} (hp : {b | p b}.Countable)
+    (h : ∀ b, p b → NullMeasurableSet (f b) μ) : NullMeasurableSet (⋂ (b : β) (_ : p b), f b) μ :=
+  MeasurableSet.biInter hp h
 
 protected theorem sInter {s : Set (Set α)} (hs : s.Countable) (h : ∀ t ∈ s, NullMeasurableSet t μ) :
     NullMeasurableSet (⋂₀ s) μ :=
@@ -344,9 +344,10 @@ theorem _root_.Set.Finite.nullMeasurableSet_sUnion {s : Set (Set α)} (hs : s.Fi
     (h : ∀ t ∈ s, NullMeasurableSet t μ) : NullMeasurableSet (⋃₀ s) μ :=
   Finite.measurableSet_sUnion hs h
 
-theorem _root_.Set.Finite.nullMeasurableSet_biInter {f : ι → Set α} {s : Set ι} (hs : s.Finite)
-    (h : ∀ b ∈ s, NullMeasurableSet (f b) μ) : NullMeasurableSet (⋂ b ∈ s, f b) μ :=
-  Finite.measurableSet_biInter hs h
+theorem _root_.Set.Finite.nullMeasurableSet_biInter
+    {f : ι → Set α} {p : ι → Prop} (hp : {b | p b}.Finite)
+    (h : ∀ b, p b → NullMeasurableSet (f b) μ) : NullMeasurableSet (⋂ (b : ι) (_ : p b), f b) μ :=
+  Finite.measurableSet_biInter hp h
 
 theorem _root_.Finset.nullMeasurableSet_biInter {f : ι → Set α} (s : Finset ι)
     (h : ∀ b ∈ s, NullMeasurableSet (f b) μ) : NullMeasurableSet (⋂ b ∈ s, f b) μ :=
