@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.List.Forall2
+
 /-!
 # List sections
 

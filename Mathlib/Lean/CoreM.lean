@@ -5,6 +5,7 @@ Authors: Kim Morrison
 -/
 module
 
+public import Lean.CoreM
 public import Mathlib.Init
 
 /-!
