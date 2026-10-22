@@ -44,7 +44,7 @@ general `Monoid.FG` and `Group.FG`, but the new `IsMulFG` defines the general pr
 
 open scoped Finset
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero
 

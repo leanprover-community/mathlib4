@@ -25,7 +25,7 @@ This file collects ring-theoretic properties of `QuadraticAlgebra R a b` as an `
 * `Algebra.discr_quadraticAlgebra`: `Algebra.discr R (basis a b)` equals `discr a b`.
 -/
 
-@[expose] public section
+public section
 
 open QuadraticAlgebra
 
