@@ -11,9 +11,6 @@ public import Mathlib.Order.SuccPred.InitialSeg
 
 import Mathlib.Order.SuccPred.CompleteLinearOrder
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Normal functions
 

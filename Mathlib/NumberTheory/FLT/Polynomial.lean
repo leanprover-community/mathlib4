@@ -10,9 +10,6 @@ public import Mathlib.NumberTheory.FLT.MasonStothers
 
 import Mathlib.RingTheory.Polynomial.IsIntegral
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Fermat's Last Theorem for polynomials over a field
 

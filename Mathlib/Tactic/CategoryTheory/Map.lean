@@ -7,9 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Functor.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # The `map` attribute
 

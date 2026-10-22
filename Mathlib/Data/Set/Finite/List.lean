@@ -9,9 +9,6 @@ public import Mathlib.Data.Set.Finite.Lattice
 
 import Mathlib.Data.Fintype.Vector
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Finiteness of sets of lists
 

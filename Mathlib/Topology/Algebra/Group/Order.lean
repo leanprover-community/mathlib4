@@ -9,9 +9,6 @@ public import Mathlib.Topology.Algebra.Group.ContinuousDiv
 
 import Mathlib.Algebra.Order.Group.Pointwise.Interval
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Ordered topological groups
 

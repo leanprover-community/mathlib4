@@ -8,9 +8,6 @@ module
 public meta import Mathlib.Tactic.Inclusion.ExtensionAPI.Attr
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Init
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Hypothesis operations for dyadic real intervals
 
