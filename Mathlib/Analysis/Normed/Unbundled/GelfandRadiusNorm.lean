@@ -39,28 +39,22 @@ section matrices
 open scoped Matrix.Norms.Operator
 
 -- PRed
-theorem Matrix.nnnorm_apply_le_linfty_opNNNorm {α β γ : Type*} [SeminormedAddCommGroup γ]
-    [Fintype α] [Fintype β] (M : Matrix α β γ) (i : α) (j : β) : ‖M i j‖₊ ≤ ‖M‖₊ := by
-  grw [Matrix.linfty_opNNNorm_def, ← Finset.le_sup_of_le (by simp)] -- these grws cannot be combined
-  grw [← Finset.single_le_sum (by simp) (by simp)]
+theorem Matrix.linfty_opNNNorm_sum_le_card_mul
+    {α β γ κ : Type*} [Fintype α] [Fintype β] [SeminormedAddCommGroup γ] [IsUltrametricDist γ]
+    (M : κ → Matrix α β γ) (s : Finset κ) (B : NNReal) (hM : ∀ i ∈ s, ‖M i‖₊ ≤ B) :
+    ‖∑ k ∈ s, M k‖₊ ≤ Fintype.card β * B := by
+  have h i j : ‖(∑ k ∈ s, M k) i j‖₊ ≤ B := by
+    grw [sum_apply, s.nnnorm_sum_le_sup_nnnorm, nnnorm_apply_le_linfty_opNNNorm,
+      hM _ (by simpa), Finset.sup_const_le]
+  grw [linfty_opNNNorm_def, h]
+  simp
 
 -- PRed
-theorem Matrix.norm_apply_le_linfty_opNorm {α β γ : Type*} [SeminormedAddCommGroup γ]
-    [Fintype α] [Fintype β] (M : Matrix α β γ) (i : α) (j : β) : ‖M i j‖ ≤ ‖M‖ := by
-  grw [← coe_nnnorm, nnnorm_apply_le_linfty_opNNNorm, coe_nnnorm]
-
 theorem Matrix.linfty_opNorm_sum_le_card_mul
     {α β γ κ : Type*} [Fintype α] [Fintype β] [SeminormedAddCommGroup γ] [IsUltrametricDist γ]
     (M : κ → Matrix α β γ) (s : Finset κ) (B : ℝ) (hB : 0 ≤ B) (hM : ∀ i ∈ s, ‖M i‖ ≤ B) :
-    ‖∑ k ∈ s, M k‖ ≤ Fintype.card β * B := by
-  let B' : NNReal := NNReal.mk B hB
-  have h i j k (hk : k ∈ s) : ‖M k i j‖₊ ≤ B' :=
-    (nnnorm_apply_le_linfty_opNNNorm (M k) i j).trans (hM k hk)
-  replace h i j : ‖∑ k ∈ s, M k i j‖₊ ≤ B' :=
-    IsUltrametricDist.norm_sum_le_of_forall_le_of_nonneg hB (h i j)
-  have h i j : ‖(∑ k ∈ s, M k) i j‖₊ ≤ B' := by grw [sum_apply, h]
-  grw [linfty_opNorm_def, h, Finset.sup_const_le]
-  simp [B']
+    ‖∑ k ∈ s, M k‖ ≤ Fintype.card β * B :=
+  Matrix.linfty_opNNNorm_sum_le_card_mul M s (NNReal.mk B hB) hM
 
 theorem Matrix.linfty_opNorm_add_le_card_mul_max
     {α β γ : Type*} [SeminormedAddCommGroup γ] [IsUltrametricDist γ] [Fintype α] [Fintype β]
