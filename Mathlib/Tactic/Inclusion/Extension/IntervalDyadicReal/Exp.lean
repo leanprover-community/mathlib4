@@ -83,7 +83,7 @@ theorem expRatTaylor_mem (a : ℤ) {b : ℕ} (hb : b ≠ 0) (hab : a.natAbs ≤ 
 not carry an unnecessary number of bits (e.g. due to taking a large power in the case of `exp`). -/
 @[expose]
 def roundOut (I : Interval Dyadic) (prec : ℕ) : Interval Dyadic :=
-  ⟨I.lb.map (Dyadic.roundDown · prec), I.ub.map (Dyadic.roundUp · prec)⟩
+  ⟨I.lb.map (fun l ↦ Dyadic.roundDown l prec), I.ub.map (fun u ↦ Dyadic.roundUp u prec)⟩
 
 theorem roundOut_mem {x : ℝ} {I : Interval Dyadic} (hx : x ∈ I) (prec : ℕ) :
     x ∈ roundOut I prec := by
@@ -105,7 +105,7 @@ Some relevant precision constants are chosen as follows:
   `m * exp (x / m) ^ (m - 1)`. So `precTaylor` adds three amounts to `prec`.
   + `powerBits` is at least `⌈ log₂ m ⌉`.
   + `sizeBits = ⌊ 1.5x ⌋ + 1` (`1.5 > log₂ e`) which bounds the number of bits above 1 for `exp x`.
-  + a constant (`8` here) so that the the powered interval is narrower than the requested
+  + a constant (`8` here) so that the powered interval is narrower than the requested
   precision, to make it more likely that the resulting interval has width `2^{-prec}`.
 - `taylorTerms` terms bring the Taylor remainder below `2 ^{-precTaylor}`. Each term shrinks the
   remainder by at least 5 bits due to the `1/32` bound on the exponent, with further shrinking
@@ -130,40 +130,41 @@ theorem expPoint_mem (x : Dyadic) (prec : ℕ) : Real.exp x.toReal ∈ expPoint 
   have hm0 : m ≠ 0 := by lia
   have hred : Real.exp x.toReal =
       Real.exp ((x.toRat.num : ℝ) / ((x.toRat.den * m : ℕ) : ℝ)) ^ m := by
-    have hm' : (m : ℝ) ≠ 0 := by norm_cast
     rw [← Real.exp_nat_mul, Dyadic.toReal, Rat.cast_def]
     push_cast
     field_simp
   have hab : x.toRat.num.natAbs ≤ x.toRat.den * m := by
     have := Nat.lt_mul_div_succ (2 * x.toRat.num.natAbs) (Nat.pos_of_ne_zero hb)
-    rw [← hm, Nat.mul_left_comm]
+    rw [← hm]
     lia
   rw [hred]
-  exact roundOut_mem (pow_mem m (expRatTaylor_mem _ (Nat.mul_ne_zero hb hm0) hab (by lia) _)) _
+  refine roundOut_mem (pow_mem m ?_) prec
+  exact expRatTaylor_mem x.toRat.num (Nat.mul_ne_zero hb hm0) hab (by lia) _
 
 /-- The exponential of an interval, from the enclosures `expPoint` at its endpoints. -/
 @[expose]
 def exp (I : Interval Dyadic) (prec : ℕ) : Interval Dyadic where
   lb := match I.lb with
-    | ⊥ => (0 : Dyadic)
-    | WithBot.some l => (expPoint l prec).lb
+    | some l => (expPoint l prec).lb
+    | ⊥ => 0
   ub := match I.ub with
+    | some u => (expPoint u prec).ub
     | ⊤ => ⊤
-    | WithTop.some u => (expPoint u prec).ub
 
 @[inclusion_op interval_dyadic_real]
 theorem exp_mem {x : ℝ} {I : Interval Dyadic} (hx : x ∈ I) (prec : ℕ) :
     Real.exp x ∈ exp I prec := by
   rw [mem_iff_mem_map, Interval.mem_map_iff] at hx
-  have h0 : Dyadic.toReal 0 ≤ Real.exp x := by simpa [Dyadic.toReal] using (Real.exp_pos x).le
+  have h0 : Dyadic.toReal 0 ≤ Real.exp x := by
+    simpa [Dyadic.toReal] using (Real.exp_pos x).le
   have h0I := Interval.mem_map_singleton (0 : Dyadic) Dyadic.toReal
   rw [mem_iff_mem_map]
-  rcases hl : I.lb with _ | l <;> rcases hu : I.ub with _ | u <;> simp only [exp, hl, hu]
+  rcases I with ⟨_ | l, _ | u⟩ <;> simp only [exp]
   · exact Interval.mem_Ici_of_le h0 h0I
-  · exact Interval.mem_Icc_of_le h0I h0 (Real.exp_le_exp.mpr (hx.2 u hu)) (expPoint_mem u prec)
-  · exact Interval.mem_Ici_of_le (Real.exp_le_exp.mpr (hx.1 l hl)) (expPoint_mem l prec)
-  · exact Interval.mem_Icc_of_le (expPoint_mem l prec) (Real.exp_le_exp.mpr (hx.1 l hl))
-      (Real.exp_le_exp.mpr (hx.2 u hu)) (expPoint_mem u prec)
+  · exact Interval.mem_Icc_of_le h0I h0 (Real.exp_le_exp.mpr (hx.2 u rfl)) (expPoint_mem u prec)
+  · exact Interval.mem_Ici_of_le (Real.exp_le_exp.mpr (hx.1 l rfl)) (expPoint_mem l prec)
+  · exact Interval.mem_Icc_of_le (expPoint_mem l prec) (Real.exp_le_exp.mpr (hx.1 l rfl))
+      (Real.exp_le_exp.mpr (hx.2 u rfl)) (expPoint_mem u prec)
 
 end IntervalDyadicReal
 
