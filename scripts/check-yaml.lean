@@ -10,7 +10,8 @@ import Lean.Linter.Deprecated
 
 /-! # Script to check `undergrad.yaml`, `overview.yaml`, `100.yaml` and `1000.yaml`
 
-This assumes `yaml_check.py` has first translated these to `json` files.
+This assumes `yaml_check.py` has first translated these to `json` files. The script reads them
+from the directory that `--dir DIR` names, by default the current directory.
 
 It verifies that the referenced declarations exist and are not deprecated, and prints an error
 otherwise.
@@ -27,8 +28,8 @@ def readJsonFile (α) [FromJson α] (path : System.FilePath) : IO α := do
 def databases : List String :=
   ["undergrad", "overview", "100", "1000"]
 
-def processDb (env : Environment) (file : String) : IO Bool := do
-  let lines ← readJsonFile DBFile s!"{file}.json"
+def processDb (env : Environment) (dir : System.FilePath) (file : String) : IO Bool := do
+  let lines ← readJsonFile DBFile (dir / s!"{file}.json")
   let mut (missing, deprecated) := (#[], #[])
   for entry@(_, decl) in lines do
     if !env.contains decl then
@@ -47,9 +48,15 @@ def processDb (env : Environment) (file : String) : IO Bool := do
       IO.println s!"  {key}: '{newName}' (previously '{decl}')"
   return missing.isEmpty && deprecated.isEmpty
 
-public unsafe def main : IO Unit := do
+public unsafe def main (args : List String) : IO Unit := do
+  let dir : System.FilePath ← match args with
+    | [] => pure "."
+    | ["--dir", dir] => pure dir
+    | _ =>
+      IO.eprintln "Usage: check-yaml [--dir DIR]"
+      IO.Process.exit 2
   initSearchPath (← findSysroot)
   withImportModules #[`Mathlib, `Archive] ∅ (trustLevel := 1024) fun env => do
-    let results ← databases.mapM (fun p ↦ processDb env p)
+    let results ← databases.mapM (fun p ↦ processDb env dir p)
     unless results.all id do
       IO.Process.exit 1

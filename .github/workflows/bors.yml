@@ -43,4 +43,6 @@ jobs:
       tools_branch_ref: ${{ github.sha }}
       # We don't want 'bors try' runs to compete with merge-candidates, so we pool trying with PR runs
       runs_on: ${{ github.ref_name == 'trying' && 'pr' || 'bors' }}
+      # A merge candidate's cache serves everyone once it lands.
+      gate_cache_verification: true
     secrets: inherit

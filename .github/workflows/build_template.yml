@@ -37,6 +37,13 @@ on:
         type: boolean
         required: false
         default: false
+      gate_cache_verification:
+        # A failure of the `cache_verify` job fails the run. Set by the callers that
+        # write the `master` container: bors, master pushes and release tags.
+        # Elsewhere a gap in the cache is a warning.
+        type: boolean
+        required: false
+        default: false
 
 env:
   # Disable Lake's automatic fetching of cloud builds.
@@ -290,6 +297,14 @@ jobs:
             exit 1
           fi
 
+      # `check-yaml` imports `Mathlib` and `Archive`, whose oleans this job holds.
+      - name: check declarations in db files
+        if: ${{ steps.archive.outcome == 'success' }}
+        run: |
+          cd pr-branch
+          python3 scripts/yaml_check.py --out .lake/yaml docs/100.yaml docs/1000.yaml docs/overview.yaml docs/undergrad.yaml
+          lake exe check-yaml --dir .lake/yaml
+
       - name: prepare staging directory
         if: ${{ always() && (steps.build.outcome == 'success' || steps.build.outcome == 'failure' || steps.build.outcome == 'cancelled') }}
         shell: bash
@@ -419,7 +434,7 @@ jobs:
     needs: [build]
     # Runs `test` and `lint` on the same self-hosted pool as `build`, but as a
     # separate job so it runs in parallel with the GitHub-hosted post-build chain
-    # (upload_cache -> post_steps) rather than ahead of it. `build` and `test_lint`
+    # (upload_cache -> cache_verify, summary) rather than ahead of it. `build` and `test_lint`
     # run sequentially on the pool, so peak per-run concurrency is unchanged; the
     # only cost is a second setup prefix on a fresh runner.
     #
@@ -667,6 +682,39 @@ jobs:
           action: remove
           linters: gcc
 
+      # Elaborating `export_crossrefs.lean` runs the export, which doubles as a smoke test of
+      # the `export_crossrefs.yml` workflow. Its output goes under `.lake/`, the only path
+      # this sandbox can write.
+      - name: check all scripts build successfully
+        if: ${{ !cancelled() && env.RUN_TESTS == 'true' }}
+        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env CROSSREFS_OUT -- bash -euxo pipefail {0}
+        env:
+          CROSSREFS_OUT: .lake/crossrefs.json
+        run: |
+          cd pr-branch
+          # This builds `Cli`, which `autolabel.lean` imports.
+          lake exe check_title_labels --labels "t-algebra" "feat: dummy PR for testing"
+          lake env lean scripts/create_deprecated_modules.lean
+          lake env lean scripts/autolabel.lean
+          lake env lean scripts/export_crossrefs.lean
+
+      - name: build everything
+        # make sure everything is available for test/import_all.lean
+        # and that miscellaneous executables still work
+        if: ${{ !cancelled() && env.RUN_TESTS == 'true' }}
+        run: |
+          cd pr-branch
+          lake build Batteries Qq Aesop ProofWidgets Plausible
+
+      - name: build AesopTest (nightly-testing only)
+        if: ${{ !cancelled() && env.RUN_TESTS == 'true' && github.repository == 'leanprover-community/mathlib4-nightly-testing' }}
+        run: |
+          cd pr-branch
+          lake build AesopTest
+
+      # We no longer run `lean4checker` in regular CI, as it is quite expensive for little benefit.
+      # Instead we run it in a cron job on master: see `daily.yml`.
+
       # Generate a fresh token just before posting comments.
       # GitHub App tokens expire after 1 hour, and the build can take longer than that.
       - name: Generate batteries-pr-testing app token
@@ -705,7 +753,7 @@ jobs:
     timeout-minutes: 20
     # Pins the OIDC `sub` claim to `...:environment:<cache_environment>`, which the cache writer
     # credentials are scoped to. A token minted by any job without this environment
-    # (e.g. the untrusted build/post_steps/style_lint jobs) cannot satisfy that trust.
+    # (e.g. the untrusted build/cache_verify/summary/style_lint jobs) cannot satisfy that trust.
     environment:
       name: ${{ inputs.cache_environment }}
       # Skip creating a GitHub deployment record/UI; we use the environment only to
@@ -733,7 +781,7 @@ jobs:
           fetch-depth: 1
           persist-credentials: false # no later step needs git credentials
 
-      # Same trust dispatch as in the `build` and `post_steps` jobs, loaded from
+      # Same trust dispatch as in the `build`, `cache_verify` and `summary` jobs, loaded from
       # the tools-branch checkout above.
       - &compute_cache_trust_dispatch
         name: Compute cache trust dispatch
@@ -886,19 +934,24 @@ jobs:
           MATHLIB_CACHE_PUT_URL: ${{ secrets.MATHLIB_CACHE_R2_PUT_URL }}
         run: lake env "$CACHE_BIN" put-staged --backend=s3 --staging-dir="cache-staging"
 
-  post_steps:
-    name: Post-Build Step
+  # Reads this commit's oleans back from the cache on a clean machine, with the
+  # branch's own `lake exe cache get`, and from a downstream project.
+  cache_verify:
+    name: Cache verification
     needs: [build, upload_cache]
     if: ${{ always() && needs.build.result == 'success' && (needs.upload_cache.result == 'success' || needs.upload_cache.result == 'skipped') }}
     runs-on: ubuntu-latest # Note these steps run on disposable GitHub runners, so no landrun sandboxing is needed.
     timeout-minutes: 30
+    # A failure fails the run only where the caller sets `gate_cache_verification`.
+    continue-on-error: ${{ !inputs.gate_cache_verification }}
     # This job checks out and executes (potentially fork) PR code unsandboxed,
     # so it must not inherit any write-capable token.
     permissions:
       contents: read
     steps:
-
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - &checkout_pr_branch
+        name: Checkout PR branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ inputs.pr_branch_ref }}
           # Untrusted (potentially fork) checkout: don't persist the GITHUB_TOKEN into its .git/config.
@@ -929,20 +982,15 @@ jobs:
       # up the trust-class-appropriate read fallback automatically. Every job
       # that reads or writes the cache gets this policy from the same composite
       # action.
-      - name: Compute cache trust dispatch
+      - &compute_cache_trust_dispatch_from_workflow
+        name: Compute cache trust dispatch
         uses: ./workflow-actions/.github/actions/cache-trust-dispatch
         with:
           repo: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
           branch: ${{ github.head_ref || github.ref_name }}
           head-sha: ${{ github.event.pull_request.head.sha || github.sha }}
 
-      - name: Configure Lean
-        uses: leanprover/lean-action@24581d74d674803a25a81b10b059c5c0cdd344c6 # v1.6.2
-        with:
-          auto-config: false # Don't run `lake build`, `lake test`, or `lake lint` automatically.
-          use-github-cache: false
-          use-mathlib-cache: false # This can be re-enabled once we are confident in the cache again.
-          reinstall-transient-toolchain: true
+      - *configure_lean_for_cache
 
       # The pinned curl keeps curl's retries on every runner image: the tool
       # runs curl 8.18 (Ubuntu 26.04) without them.
@@ -976,6 +1024,7 @@ jobs:
           # GitHub sets this from the event payload; it is empty for pushes
           # (master, bors), so those fail closed below.
           HEAD_REPO_IS_FORK: ${{ github.event.pull_request.head.repo.fork }}
+          GATE: ${{ inputs.gate_cache_verification }}
         run: |
           set +e
           fail=0
@@ -991,13 +1040,26 @@ jobs:
           missing="The cache is missing build outputs. The log above names the modules that Lake needs to rebuild."
           retry_hint="Hint: to rule out a transient network error, push an empty commit to re-run all jobs: git commit --allow-empty -m 'chore: re-run CI' && git push. If the error persists, ask in the #mathlib4 channel on Zulip."
 
+          # A gap fails the job where the caller gates on this check. Elsewhere it is a
+          # warning, and the step summary records it.
+          report_gap() {
+            if [ "${GATE}" = "true" ]; then
+              echo "::error title=Cache incomplete::${missing}"
+              echo "${retry_hint}"
+              exit 1
+            fi
+            echo "::warning title=Cache incomplete::${missing}"
+            echo "${retry_hint}"
+            echo "Cache verification: the cache is missing build outputs." >> "$GITHUB_STEP_SUMMARY"
+            echo "incomplete=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          }
+
           # Only fork PRs read and write the cache with different binaries.
           # Every other build (master, bors, dev branches) uses one binary, so
           # a miss is a real gap.
           if [ "${HEAD_REPO_IS_FORK}" != "true" ]; then
-            echo "::error title=Cache incomplete::${missing}"
-            echo "${retry_hint}"
-            exit 1
+            report_gap
           fi
 
           # `workflow-actions/Cache` is master's cache tool at
@@ -1011,9 +1073,7 @@ jobs:
           dout=$(diff -rq workflow-actions/Cache Cache 2>&1)
           dstat=$?
           if [ "${dstat}" -eq 0 ]; then
-            echo "::error title=Cache incomplete::${missing}"
-            echo "${retry_hint}"
-            exit 1
+            report_gap
           elif [ "${dstat}" -eq 1 ]; then
             echo "::notice title=Cache check skipped::This PR changes Cache/, so CI cannot check the cache for this PR."
             echo "${dout}"
@@ -1021,10 +1081,9 @@ jobs:
             echo "key_space_changed=true" >> "$GITHUB_OUTPUT"
             exit 0
           else
-            echo "::error title=Cache incomplete::${missing}"
             echo "Note: CI could not compare this PR's Cache/ with master's (diff exit status ${dstat})."
             echo "${dout}"
-            exit 1
+            report_gap
           fi
 
       - name: check the cache from a downstream project
@@ -1034,7 +1093,7 @@ jobs:
         # the cached oleans in a dependency context. The path dependency shares mathlib's
         # `.lake/build`, so Mathlib's oleans are already in place from the steps above;
         # the dependencies' oleans are fetched into `DownstreamTest/.lake/packages/`.
-        if: steps.verify_cache.outputs.key_space_changed != 'true'
+        if: steps.verify_cache.outputs.key_space_changed != 'true' && steps.verify_cache.outputs.incomplete != 'true'
         env:
           REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
         run: |
@@ -1045,14 +1104,22 @@ jobs:
           lake exe cache --repo="${REPO}" get
           lake build --no-build Mathlib
 
-      - name: check declarations in db files
-        run: |
-          python3 scripts/yaml_check.py docs/100.yaml docs/1000.yaml docs/overview.yaml docs/undergrad.yaml
-          lake exe check-yaml
-
-      - name: generate our import graph
-        run: |
-          lake exe graph
+  # Produces the `import-graph` artifact that `decls-diff.yml` reads for the PR
+  # summary comment. The merge gate does not wait for this job, and its failure
+  # does not fail the run.
+  summary:
+    name: Summary
+    needs: [build, upload_cache]
+    if: ${{ always() && needs.build.result == 'success' && (needs.upload_cache.result == 'success' || needs.upload_cache.result == 'skipped') }}
+    runs-on: ubuntu-latest # Note these steps run on disposable GitHub runners, so no landrun sandboxing is needed.
+    timeout-minutes: 30
+    continue-on-error: true
+    # This job checks out and executes (potentially fork) PR code unsandboxed,
+    # so it must not inherit any write-capable token.
+    permissions:
+      contents: read
+    steps:
+      - *checkout_pr_branch
 
       - name: Checkout local actions
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -1062,6 +1129,18 @@ jobs:
           sparse-checkout: .github/actions
           path: workflow-actions
           persist-credentials: false # no later step needs git credentials
+
+      - *compute_cache_trust_dispatch_from_workflow
+      - *configure_lean_for_cache
+      - *install_curl
+
+      - name: get cache for Mathlib
+        run: |
+          lake exe cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} get
+
+      - name: generate our import graph
+        run: |
+          lake exe graph
 
       - name: Get mathlib-ci
         uses: ./workflow-actions/.github/actions/get-mathlib-ci
@@ -1099,33 +1178,6 @@ jobs:
           ## can consume the dumps from the artifact. Other branches: 7 days.
           retention-days: ${{ github.ref == 'refs/heads/master' && '90' || '7' }}
 
-      - name: clean up the import graph file
-        run: rm -f import_graph.dot decls.txt imports.json pr_number.txt
-
-      - name: check all scripts build successfully
-        run: |
-          lake env lean scripts/create_deprecated_modules.lean
-          lake env lean scripts/autolabel.lean
-          # Executing this also runs the export and writes a (gitignored) `crossrefs.json`,
-          # which doubles as a smoke test of the `export_crossrefs.yml` workflow.
-          lake env lean scripts/export_crossrefs.lean
-          lake exe check_title_labels --labels "t-algebra" "feat: dummy PR for testing"
-
-      - name: build everything
-        # make sure everything is available for test/import_all.lean
-        # and that miscellaneous executables still work
-        run: |
-          lake build Batteries Qq Aesop ProofWidgets Plausible
-
-      - name: build AesopTest (nightly-testing only)
-        # Only run on the mathlib4-nightly-testing repository
-        if: github.repository == 'leanprover-community/mathlib4-nightly-testing'
-        run: |
-          lake build AesopTest
-
-      # We no longer run `lean4checker` in regular CI, as it is quite expensive for little benefit.
-      # Instead we run it in a cron job on master: see `daily.yml`.
-
   style_lint:
     name: Lint style
     runs-on: ubuntu-latest
@@ -1143,8 +1195,8 @@ jobs:
   final:
     name: Post-CI job
     # ensure that this runs iff direct dependencies succeeded even if transitive dependencies  were skipped
-    if: ${{ always() && inputs.run_post_ci && needs.style_lint.result == 'success' && needs.build.result == 'success' && needs.test_lint.result == 'success' && needs.post_steps.result == 'success' }}
-    needs: [style_lint, build, test_lint, post_steps]
+    if: ${{ always() && inputs.run_post_ci && needs.style_lint.result == 'success' && needs.build.result == 'success' && needs.test_lint.result == 'success' && (needs.cache_verify.result == 'success' || !inputs.gate_cache_verification) }}
+    needs: [style_lint, build, test_lint, cache_verify]
     runs-on: ubuntu-latest
     steps:
       - id: PR

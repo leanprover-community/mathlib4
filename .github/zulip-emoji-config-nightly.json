@@ -16,7 +16,7 @@
   },
 
   "ci": {
-    "check_names": ["Build", "Lint style", "Post-Build Step", "Check workflows"]
+    "check_names": ["Build", "Lint style", "Test and lint", "Check workflows"]
   },
 
   "states": [
