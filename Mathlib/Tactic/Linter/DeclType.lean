@@ -68,7 +68,7 @@ def runConcreteLinter (constVal : ConstantVal) (bodyRef : Syntax) : CommandElabM
     -- A seemingly redundant `Decidable` hypothesis can be added to make a declaration compatible
     -- with all potential `Decidable` instance, so we allow this.
     if clsName == ``Decidable then continue
-    if ← trySynthInstance cls matches .some _ then
+    if (← trySynthInstance cls) matches .some _ then
       logLint linter.concreteInstances ref
         m!"There exists a global instance of type class `{cls}`.\n\
         Please rely on this instance and remove the `{.sbracket cls}` assumption."
