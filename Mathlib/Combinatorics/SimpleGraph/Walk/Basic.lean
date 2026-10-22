@@ -157,10 +157,6 @@ theorem getLast_support {G : SimpleGraph V} {a b : V} (p : G.Walk a b) :
 lemma cons_tail_support (p : G.Walk u v) : u :: p.support.tail = p.support := by
   cases p <;> simp
 
-@[deprecated cons_tail_support +typeChanged (since := "2026-03-16")]
-theorem support_eq_cons {u v : V} (p : G.Walk u v) : p.support = u :: p.support.tail := by
-  cases p <;> simp
-
 @[simp]
 theorem start_mem_support {u v : V} (p : G.Walk u v) : u ∈ p.support := by cases p <;> simp
 
@@ -267,6 +263,10 @@ theorem length_darts {u v : V} (p : G.Walk u v) : p.darts.length = p.length := b
 
 @[simp, grind =]
 theorem length_edges {u v : V} (p : G.Walk u v) : p.edges.length = p.length := by simp [edges]
+
+theorem edge_mem_edges_of_mem_darts {d : G.Dart} {p : G.Walk v w} (hd : d ∈ p.darts) :
+    d.edge ∈ p.edges :=
+  List.mem_map_of_mem hd
 
 /-- Use `edge_getElem_darts` to rewrite in the reverse direction. -/
 theorem getElem_edges_eq_edge_getElem_darts {p : G.Walk u v} {i : ℕ} (h : i < p.edges.length) :

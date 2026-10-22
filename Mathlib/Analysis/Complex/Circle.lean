@@ -5,8 +5,8 @@ Authors: Heather Macbeth
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public import Mathlib.Analysis.Normed.Field.UnitBall
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 
 /-!
 # The circle

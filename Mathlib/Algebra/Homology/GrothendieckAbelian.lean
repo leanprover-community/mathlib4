@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
 public import Mathlib.CategoryTheory.Generator.HomologicalComplex
-public import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 
 /-!
 # Homological complexes in a Grothendieck abelian category
