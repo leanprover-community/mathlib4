@@ -114,11 +114,8 @@ end
 variable [h_obj : ∀ (j : J), IsLocalRing (F.obj j)]
 
 lemma residueField_exists_rep (hc : IsColimit c) [IsLocalRing c.pt]
-    [∀ (j : J), IsLocalHom (c.ι.app j).hom] :
-    haveI (j : J) : IsLocalRing (((Functor.const J).obj c.pt).obj j) := ‹_›
-    ∀ (x : ResidueField c.pt), ∃ (j : J) (y : ResidueField (F.obj j)),
-      x = ResidueField.map (c.ι.app j).hom y := by
-  intro x
+    [∀ (j : J), IsLocalHom (c.ι.app j).hom] (x : ResidueField c.pt) :
+    ∃ (j : J) (y : ResidueField (F.obj j)), x = ResidueField.map (S := c.pt) (c.ι.app j).hom y := by
   obtain ⟨y, rfl⟩ := Ideal.Quotient.mk_surjective x
   obtain ⟨j, z, rfl⟩ := Concrete.isColimit_exists_rep F hc y
   exact ⟨j, residue _ z, rfl⟩
@@ -192,9 +189,8 @@ theorem isLocalHom_desc (hc : IsColimit c) : IsLocalHom (hc.desc s).hom := by
   rintro _ ⟨x, hx, rfl⟩
   obtain ⟨j, x, hx', rfl⟩ :=
     Set.mem_iUnion.mp ((maximalIdeal_eq_iUnion_of_isColimit F hc).le hx)
-  have : IsLocalRing (((Functor.const J).obj s.pt).obj j) := s_pt
   rw [← comp_apply, hc.fac]
-  exact map_nonunit (s.ι.app j).hom x hx'
+  exact map_nonunit (S := s.pt) (s.ι.app j).hom x hx'
 
 theorem residueField_map_desc_eq_isColimitResidueFieldCocone_desc (hc : IsColimit c) :
     haveI := isLocalRing_of_isColimit F hc
