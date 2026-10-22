@@ -181,11 +181,21 @@ jobs:
       - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
         id: mk_all
         continue-on-error: true # Allow workflow to continue, outcome checked later
-        # This runs `mk_all --check` from the `pr-branch` inside landrun
+        # This runs `mk_all --check` from the `pr-branch` inside landrun. The prebuilt tool runs
+        # when its toolchain and sources match the branch's; otherwise Lake builds the branch's own.
         run: |
           cd pr-branch
-          echo "Running mk_all --check (from pr-branch)..."
-          lake exe mk_all --check
+          tools=../tools-branch
+          if [ -x "${tools}/.lake/build/bin/mk_all" ] \
+            && cmp -s "${tools}/lean-toolchain" lean-toolchain \
+            && cmp -s "${tools}/scripts/mk_all.lean" scripts/mk_all.lean \
+            && cmp -s "${tools}/Mathlib/Util/GetAllModules.lean" Mathlib/Util/GetAllModules.lean; then
+            echo "Running the prebuilt mk_all --check (from pr-branch)..."
+            lake env "${tools}/.lake/build/bin/mk_all" --check
+          else
+            echo "Running mk_all --check (from pr-branch)..."
+            lake exe mk_all --check
+          fi
 
       - name: begin gh-problem-match-wrap for build step
         uses: leanprover-community/gh-problem-matcher-wrap@65a654fcdf7b64ff7633bc7a558f7b46d59a27bf # 2026-06-25
