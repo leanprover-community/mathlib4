@@ -251,6 +251,25 @@ protected theorem SupIndep.insert [DecidableEq ι] {i : ι} {s : Finset ι} {f :
     (hs : s.SupIndep f) (h : Disjoint (f i) (s.sup f)) : (insert i s).SupIndep f := by
   grind [insert_eq, SupIndep.union, sup_singleton]
 
+protected theorem SupIndep.sup_inter [DecidableEq ι] {s₁ s₂ : Finset ι} (hs : s.SupIndep f)
+    (hs₁ : s₁ ⊆ s) (hs₂ : s₂ ⊆ s) : (s₁ ∩ s₂).sup f = s₁.sup f ⊓ s₂.sup f := by
+  symm
+  conv_lhs => rw [← sup_inf_sdiff s₁ s₂, inf_eq_inter, sup_eq_union]
+  rw [sup_union, sup_inf_assoc_of_le _ <| sup_mono inter_subset_right, sup_eq_left,
+    (hs.disjoint_sup_sup (sdiff_subset.trans hs₁) hs₂ disjoint_sdiff_self_left).eq_bot]
+  exact bot_le
+
+protected theorem SupIndep.sup_inf' [DecidableEq ι] {t : Finset ι'} {g : ι' → Finset ι}
+    (hs : s.SupIndep f) (ht : t.Nonempty) (hg : ∀ j ∈ t, g j ⊆ s) :
+    (t.inf' ht g).sup f = t.inf' ht (fun x ↦ (g x).sup f) := by
+  induction ht using Finset.Nonempty.cons_induction with
+  | singleton => simp
+  | cons j t _ ht ih =>
+    rw [forall_mem_cons] at hg
+    simp_rw [inf'_cons ht, inf_eq_inter]
+    rw [hs.sup_inter hg.1 ?_, ih hg.2]
+    grw [inf'_mono_fun hg.2, inf'_const]
+
 end IsModularLattice
 
 section DistribLattice
