@@ -22,16 +22,16 @@ public section
 variable {A V : Type*} (k : Type*) [Field k] [Ring A] [Algebra k A] [AddCommGroup V] [Module k V]
   [Module A V] [IsScalarTower k A V] [IsSimpleModule A V] [FiniteDimensional k V] [IsAlgClosed k]
 
-/-- Schur's Lemma: If `V` is a `k`-linear simple module of a `k`-algebra `A` where `k` is an
-algebraically closed field `k`, then any endomorphism of `V` is scalar. -/
+/-- Schur's Lemma: If `V` is a simple module of a `k`-algebra `A` where `k` is an algebraically
+closed field, then any endomorphism of `V` is a scalar. -/
 theorem IsSimpleModule.algebraMap_end_bijective_of_isAlgClosed :
     Function.Bijective (algebraMap k (Module.End A V)) := by
   have : Module.Finite k (Module.End A V) := .of_injective (LinearMap.restrictScalarsₗ k A V V k) <|
     LinearMap.restrictScalars_injective _
   classical exact IsAlgClosed.algebraMap_bijective_of_isIntegral (k := k)
 
-/-- Burnside's theorem: If `V` is a `k`-linear simple module of a `k`-algebra `A` where `k` is an
-algebraically closed field `k`, then the algebra map `A → End_k(V)` is surjective. -/
+/-- Burnside's theorem: If `V` is a simple module of a `k`-algebra `A` where `k` is an algebraically
+closed field, then the algebra map `A → Endₖ(V)` is surjective. -/
 theorem IsSimpleModule.lsmul_surjective_of_isAlgClosed :
     Function.Surjective (Algebra.lsmul k k V : A →ₐ[k] Module.End k V) := by
   have : Module.Finite (Module.End A V) V := Module.Finite.of_restrictScalars_finite k _ V
