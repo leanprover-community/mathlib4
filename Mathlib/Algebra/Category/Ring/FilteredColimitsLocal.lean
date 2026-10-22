@@ -176,8 +176,8 @@ noncomputable def isColimitResidueFieldCocone (hc : IsColimit c) :
     inferInstanceAs <| Nontrivial (ResidueField _)
   haveI := isLocalHom_ι F hc
   isColimitOfReflects (forget CommRingCat.{u}) <| Types.FilteredColimit.isColimitOf' _ _
-  (fun x ↦ residueField_exists_rep F hc x)
-  (fun i x y hxy ↦ ⟨i, 𝟙 i, ((residueFieldCocone F hc).ι.app i).hom.injective (by simpa)⟩)
+    (fun x ↦ residueField_exists_rep F hc x)
+      (fun i x y hxy ↦ ⟨i, 𝟙 i, ((residueFieldCocone F hc).ι.app i).hom.injective (by simpa)⟩)
 
 variable (s : Cocone F) [s_pt : IsLocalRing s.pt] [s_ι : ∀ j, IsLocalHom (s.ι.app j).hom]
 
@@ -185,8 +185,7 @@ theorem isLocalHom_desc (hc : IsColimit c) : IsLocalHom (hc.desc s).hom := by
   have : IsLocalRing c.pt := isLocalRing_of_isColimit F hc
   refine ((IsLocalRing.local_hom_TFAE (hc.desc s).hom).out 1 2).mpr ?_
   rintro _ ⟨x, hx, rfl⟩
-  obtain ⟨j, x, hx', rfl⟩ :=
-    Set.mem_iUnion.mp ((maximalIdeal_eq_iUnion_of_isColimit F hc).le hx)
+  obtain ⟨j, x, hx', rfl⟩ := Set.mem_iUnion.mp ((maximalIdeal_eq_iUnion_of_isColimit F hc).le hx)
   rw [← comp_apply, hc.fac]
   exact map_nonunit (S := s.pt) (s.ι.app j).hom x hx'
 
@@ -201,15 +200,16 @@ theorem residueField_map_desc_eq_isColimitResidueFieldCocone_desc (hc : IsColimi
   simp only [residueFieldCocone', residueFieldCocone, ← hc.fac s j]
   apply (ofHom_comp _ _).symm.trans
   congr 1
-  exact (@ResidueField.map_comp _ _ _ _ (isLocalRing_of_isColimit F hc) _ s_pt _ _ _ _
-    (isLocalHom_ι F hc j) (isLocalHom_desc F s hc)).symm
+  have := isLocalRing_of_isColimit F hc
+  have := isLocalHom_ι F hc j
+  have := isLocalHom_desc F s hc
+  exact (ResidueField.map_comp (R := c.pt) (S := s.pt) _ _).symm
 
 theorem residueField_map_desc_eq_isColimitResidueFieldCocone_desc' (hc : IsColimit c) :
     haveI := isLocalRing_of_isColimit F hc
     haveI := isLocalHom_desc F s hc
     ((isColimitResidueFieldCocone F hc).desc (residueFieldCocone' F s)).hom =
     ResidueField.map (hc.desc s).hom := by
-  simpa using congr(CommRingCat.Hom.hom
-    $(residueField_map_desc_eq_isColimitResidueFieldCocone_desc F s hc))
+  simpa using congr(Hom.hom $(residueField_map_desc_eq_isColimitResidueFieldCocone_desc F s hc))
 
 end CommRingCat.FilteredColimit
