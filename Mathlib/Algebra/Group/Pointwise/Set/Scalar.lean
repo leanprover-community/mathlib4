@@ -230,7 +230,11 @@ section SDiv
 variable [SDiv α β] {s s₁ s₂ t t₁ t₂ : Set β} {u : Set α} {a : α}
   {b c : β}
 
-@[to_additive (attr := instance_reducible)]
+/-- The pointwise scalar division of sets `s /ₛ t` is defined as `{x /ₛ y | x ∈ s, y ∈ t}` in
+scope `Pointwise`. -/
+@[to_additive (attr := instance_reducible)
+  /-- The pointwise subtraction of sets `s -ᵥ t` is defined as `{x -ᵥ y | x ∈ s, y ∈ t}` in
+  scope `Pointwise`. -/]
 def sdiv : SDiv (Set α) (Set β) where sdiv := image2 (· /ₛ ·)
 
 scoped [Pointwise] attribute [instance] Set.sdiv Set.vsub

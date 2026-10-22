@@ -83,6 +83,7 @@ theorem iUnion_star {ι : Sort*} [Star α] (s : ι → Set α) : (⋃ i, s i)⋆
 @[simp]
 theorem compl_star [Star α] : sᶜ⋆ = s⋆ᶜ := preimage_compl
 
+/-- Pointwise star on sets is involutive in scope `Pointwise`. -/
 @[instance_reducible, simp]
 def instInvolutiveStar [InvolutiveStar α] : InvolutiveStar (Set α) where
   star_involutive s := by simp only [← star_preimage, preimage_preimage, star_star, preimage_id']
