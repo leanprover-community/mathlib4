@@ -9,6 +9,7 @@ public import Cache.Cli
 import Cache.Requests
 import Cache.Upload
 import Cache.Query
+import Cache.LakeDeps
 import Cache.Warning
 
 public section
@@ -40,6 +41,10 @@ Commands:
   stage!       Move all linked cache files to an output directory
   unstage      Copy *.ltar files from the staging directory to the local cache
   unstage!     Copy *.ltar files from the staging directory to the local cache (overwrite existing files)
+
+  # Lake's cache
+  lake-dep put|get  Upload or download a package's Lake mappings with separate revision and
+                    artifact scopes; run `cache lake-dep` for its options
 
 The upload commands (put, put!, put-staged) and their options and variables
 are internal to mathlib CI. To operate an external cache, 'stage' the
@@ -108,6 +113,9 @@ def curlArgs : List String :=
 
 open Cache Cli IO Hashing Requests System in
 def main (args : List String) : IO Unit := do
+  -- `lake-dep` drives Lake's own cache and parses its own options.
+  if let "lake-dep" :: rest := args then
+    Process.exit (← LakeDeps.main rest).toUInt8
   if args.isEmpty || parseFlagOpt "help" args then
     println help
     Process.exit 0

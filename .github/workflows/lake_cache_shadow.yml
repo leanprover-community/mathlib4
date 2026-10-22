@@ -94,7 +94,6 @@ jobs:
       # deriving them again.
       tcslug: ${{ steps.plan.outputs.tcslug }}
       scope: ${{ steps.plan.outputs.scope }}
-      dep_scope: ${{ steps.plan.outputs.dep_scope }}
     env:
       LAKE_CACHE_DIR: .lake/cache
       LAKE_NO_CACHE: true
@@ -105,6 +104,8 @@ jobs:
       # resolves from git.
       LAKE_ARTIFACT_CACHE: true
       STAGE_TARGETS: ${{ inputs.targets || 'Mathlib' }}
+      DEP_ARTIFACT_ENDPOINT: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT_PUBLIC }}
+      DEP_REVISION_ENDPOINT: ${{ vars.LAKE_CACHE_REVISION_ENDPOINT_PUBLIC }}
     defaults:
       run:
         shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LAKE_CACHE_DIR --env LAKE_NO_CACHE --env LAKE_ARTIFACT_CACHE --env STAGE_TARGETS --env CACHE_SCOPE -- bash -euxo pipefail {0}
@@ -226,24 +227,13 @@ jobs:
           tcslug="$(printf %s "$(cat lean-toolchain)" | tr -c 'A-Za-z0-9._-' '-')"
           echo "TCSLUG=$tcslug" >> "$GITHUB_ENV"
           echo "tcslug=$tcslug" >> "$GITHUB_OUTPUT"
-          # A pinned run owns the base scope. An override run runs a commit on
-          # a second toolchain, and mathlib's revision file carries no
-          # toolchain, so the two would write each other's revision files. The
-          # slug gives the override its own namespace. It loses no hits: the
-          # analysis chain is already per toolchain, so an override run only
-          # ever warm starts from its own lineage.
-          scope="$SHADOW_SCOPE"
-          if [ -n "$TOOLCHAIN_OVERRIDE" ]; then
-            scope="$SHADOW_SCOPE/$tcslug"
-            echo "::notice::override run: writing to scope $scope"
-          fi
+          # mathlib's scope. A dependency's revision files sit under
+          # `<scope>/deps/<name>`, named by the mathlib commit, and its
+          # artifacts under `$SHADOW_SCOPE/<name>/<tcslug>`; see the
+          # `lake-dep` command of the cache tool.
+          scope="$SHADOW_SCOPE/mathlib/$tcslug"
           echo "CACHE_SCOPE=$scope" >> "$GITHUB_ENV"
           echo "scope=$scope" >> "$GITHUB_OUTPUT"
-          # Each dependency has one manifest per mathlib commit and toolchain.
-          # Its own revision does not fix the revisions of its upstreams.
-          dep_scope="$SHADOW_SCOPE/deps/$tcslug"
-          echo "DEP_CACHE_SCOPE=$dep_scope" >> "$GITHUB_ENV"
-          echo "dep_scope=$dep_scope" >> "$GITHUB_OUTPUT"
           # `analysis/<tcslug>/_latest.txt` holds the mathlib sha of the
           # previous run on this toolchain. It returns 404 on a chain that has
           # never run, and that run has no warm start.
@@ -283,6 +273,15 @@ jobs:
       # previous run on this toolchain, at the pointer the plan step resolved.
       # The incremental build below then compiles the churn since that run.
       # The first run on a toolchain has no pointer and builds from source.
+      # `lake exe cache lake-dep` reads and writes the dependency mappings.
+      # The build runs in the sandbox, like every step that runs this
+      # checkout's code.
+      - name: Build the cache tool
+        if: ${{ env.CACHE_DEPS == 'true' }}
+        run: |
+          cd pr-branch
+          lake build cache
+
       - name: Warm start from shadow scope
         shell: bash -euo pipefail {0}
         env:
@@ -298,6 +297,8 @@ jobs:
 
       # Fetch dependencies from the same mathlib snapshot as the root warm
       # start. Matching input hashes replay even when a dependency pin changes.
+      # `lake-dep get` reads the revision file under mathlib's scope and the
+      # artifacts under the dependency's own scope.
       - name: Warm start dependencies
         if: ${{ env.CACHE_DEPS == 'true' }}
         shell: bash -euo pipefail {0}
@@ -310,8 +311,10 @@ jobs:
             exit 0
           fi
           while read -r name; do
-            lake cache get --service=shadow --package="$name" \
-              --scope="$DEP_CACHE_SCOPE/$name" --rev="$CHAIN_PREV" \
+            .lake/build/bin/cache lake-dep get --package="$name" --service=shadow \
+              --artifact-endpoint="$DEP_ARTIFACT_ENDPOINT" --revision-endpoint="$DEP_REVISION_ENDPOINT" \
+              --scope="$SHADOW_SCOPE/$name/$TCSLUG" --rev-scope="$CACHE_SCOPE/deps/$name" \
+              --rev="$CHAIN_PREV" \
               || echo "::warning::dep warm start missed for $name; it will build from source"
           done < .lake/dep-plan/deps.txt
 
@@ -467,7 +470,9 @@ jobs:
       LAKE_CONFIG: ${{ github.workspace }}/shadow-services.toml
       MATHLIB_SHA: ${{ needs.build_and_stage.outputs.sha }}
       CACHE_SCOPE: ${{ needs.build_and_stage.outputs.scope }}
-      DEP_CACHE_SCOPE: ${{ needs.build_and_stage.outputs.dep_scope }}
+      TCSLUG: ${{ needs.build_and_stage.outputs.tcslug }}
+      DEP_ARTIFACT_ENDPOINT: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT }}
+      DEP_REVISION_ENDPOINT: ${{ vars.LAKE_CACHE_REVISION_ENDPOINT }}
     steps:
       - name: Write cache services config
         env:
@@ -511,6 +516,14 @@ jobs:
           name: lake-cache-staging-${{ github.run_id }}
           path: lake-cache-staging
 
+      # The dependency uploads use `lake exe cache lake-dep put`. This step
+      # builds the tool from the checkout before `LAKE_CACHE_KEY` enters the
+      # environment.
+      - name: Build the cache tool
+        run: |
+          cd pr-branch
+          lake build cache
+
       - name: Resolve LAKE_CACHE_KEY (trim whitespace)
         env:
           LAKE_CACHE_KEY_RAW: ${{ secrets.LAKE_CACHE_KEY }}
@@ -531,9 +544,12 @@ jobs:
             --scope="$CACHE_SCOPE" \
             --rev="$MATHLIB_SHA" 2>&1 | tee /tmp/put.log
 
-      # Each dependency uses the mathlib revision, which fixes every upstream
-      # pin. Its scope includes the toolchain and the package name. Artifact
-      # keys omit the revision, so snapshots share identical content.
+      # Each dependency's revision file goes under mathlib's scope, at
+      # `<scope>/deps/<name>/<mathlib sha>.jsonl`: the mathlib commit fixes
+      # every upstream pin. Its artifacts go under the dependency's own scope,
+      # `$SHADOW_SCOPE/<name>/<tcslug>`, which carries no revision, so every
+      # mathlib commit shares identical content. `lake exe cache lake-dep put`
+      # makes Lake's upload calls with these two scopes.
       #
       # `continue-on-error` keeps a failed dependency upload from failing the
       # run: the root upload has already succeeded, and the run still carries
@@ -550,9 +566,9 @@ jobs:
           ok=0 fail=0
           : > /tmp/dep-put.log
           while read -r name; do
-            if lake cache put-staged "../lake-cache-staging/deps/$name" \
-                --service=shadow \
-                --scope="$DEP_CACHE_SCOPE/$name" \
+            if .lake/build/bin/cache lake-dep put "../lake-cache-staging/deps/$name" \
+                --artifact-endpoint="$DEP_ARTIFACT_ENDPOINT" --revision-endpoint="$DEP_REVISION_ENDPOINT" \
+                --scope="$SHADOW_SCOPE/$name/$TCSLUG" --rev-scope="$CACHE_SCOPE/deps/$name" \
                 --rev="$MATHLIB_SHA" 2>&1 | tee -a /tmp/dep-put.log; then
               ok=$((ok+1))
             else
@@ -676,7 +692,9 @@ jobs:
       LAKE_CACHE_DIR: .lake/cache
       MATHLIB_SHA: ${{ needs.build_and_stage.outputs.sha }}
       CACHE_SCOPE: ${{ needs.build_and_stage.outputs.scope }}
-      DEP_CACHE_SCOPE: ${{ needs.build_and_stage.outputs.dep_scope }}
+      TCSLUG: ${{ needs.build_and_stage.outputs.tcslug }}
+      DEP_ARTIFACT_ENDPOINT: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT_PUBLIC }}
+      DEP_REVISION_ENDPOINT: ${{ vars.LAKE_CACHE_REVISION_ENDPOINT_PUBLIC }}
     steps:
       - name: Write cache services config
         env:
@@ -730,8 +748,9 @@ jobs:
             --scope="$CACHE_SCOPE" \
             --rev="$MATHLIB_SHA"
 
-      # Fetch each dependency from this mathlib snapshot. All packages use
-      # the same mathlib SHA, so later snapshots retain these mappings.
+      # Fetch each dependency from this mathlib snapshot with
+      # `lake exe cache lake-dep get`: the revision file from mathlib's scope,
+      # the artifacts from the dependency's own scope.
       - name: lake cache get dependencies
         if: ${{ env.CACHE_DEPS == 'true' }}
         run: |
@@ -740,8 +759,10 @@ jobs:
           while read -r name; do
             if [[ " $DEP_SKIP " == *" $name "* ]]; then continue; fi
             total=$((total+1))
-            if lake cache get --service=shadow --package="$name" \
-                --scope="$DEP_CACHE_SCOPE/$name" --rev="$MATHLIB_SHA"; then
+            if lake exe cache lake-dep get --package="$name" --service=shadow \
+                --artifact-endpoint="$DEP_ARTIFACT_ENDPOINT" --revision-endpoint="$DEP_REVISION_ENDPOINT" \
+                --scope="$SHADOW_SCOPE/$name/$TCSLUG" --rev-scope="$CACHE_SCOPE/deps/$name" \
+                --rev="$MATHLIB_SHA"; then
               hits=$((hits+1))
             else
               echo "::warning::dep cache miss for $name; it will build from source"
@@ -839,7 +860,9 @@ jobs:
       EFFECTIVE_TOOLCHAIN: ${{ needs.build_and_stage.outputs.toolchain }}
       MATHLIB_SHA: ${{ needs.build_and_stage.outputs.sha }}
       CACHE_SCOPE: ${{ needs.build_and_stage.outputs.scope }}
-      DEP_CACHE_SCOPE: ${{ needs.build_and_stage.outputs.dep_scope }}
+      TCSLUG: ${{ needs.build_and_stage.outputs.tcslug }}
+      DEP_ARTIFACT_ENDPOINT: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT_PUBLIC }}
+      DEP_REVISION_ENDPOINT: ${{ vars.LAKE_CACHE_REVISION_ENDPOINT_PUBLIC }}
       # `cache get` saves the revision file it fetched under this directory.
       LAKE_CACHE_DIR: .lake/cache
     steps:
@@ -902,8 +925,9 @@ jobs:
           EOF
           lake update --keep-toolchain
 
-      # Read the snapshot SHA from the resolved mathlib dependency. Every
-      # package fetch uses that SHA, including transitive dependencies.
+      # Read the snapshot SHA from the resolved mathlib dependency. mathlib
+      # comes from `lake cache get`; each transitive dependency comes from
+      # `lake exe cache lake-dep get` at the same SHA.
       - name: lake cache get (mathlib + transitive deps)
         run: |
           cd downstream
@@ -911,14 +935,17 @@ jobs:
           snapshot="$(jq -er '.packages[] | select(.name == "mathlib") | .rev' lake-manifest.json)"
           while read -r name; do
             if [[ " $DEP_SKIP " == *" $name "* ]]; then continue; fi
-            if [ "$name" = mathlib ]; then
-              scope="$CACHE_SCOPE"
-            else
-              scope="$DEP_CACHE_SCOPE/$name"
-            fi
             total=$((total+1))
-            if lake cache get --service=shadow --package="$name" \
-                --scope="$scope" --rev="$snapshot"; then
+            if [ "$name" = mathlib ]; then
+              fetch=(lake cache get --service=shadow --package=mathlib \
+                --scope="$CACHE_SCOPE" --rev="$snapshot")
+            else
+              fetch=(lake exe cache lake-dep get --package="$name" --service=shadow \
+                --artifact-endpoint="$DEP_ARTIFACT_ENDPOINT" --revision-endpoint="$DEP_REVISION_ENDPOINT" \
+                --scope="$SHADOW_SCOPE/$name/$TCSLUG" --rev-scope="$CACHE_SCOPE/deps/$name" \
+                --rev="$snapshot")
+            fi
+            if "${fetch[@]}"; then
               hits=$((hits+1))
             else
               echo "::warning::downstream cache miss for $name; it will build from source"

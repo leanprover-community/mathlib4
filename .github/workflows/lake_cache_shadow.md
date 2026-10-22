@@ -5,15 +5,14 @@ live mathlib4 master branch. It runs beside the regular master CI and stays
 independent of it, in a bucket that only this pipeline reads.
 
 The pipeline caches mathlib and every git dependency in its manifest. Each
-package has one revision file per mathlib commit:
+package has one revision file per mathlib commit, all under mathlib's scope:
 
     revisions/<SCOPE>/<mathlib-sha>.jsonl
-    revisions/<DEP_SCOPE>/<name>/<mathlib-sha>.jsonl
+    revisions/<SCOPE>/deps/<name>/<mathlib-sha>.jsonl
 
-`<SCOPE>` is `mathlib4-master-shadow`, with a toolchain suffix for override
-runs. `<DEP_SCOPE>` is `mathlib4-master-shadow/deps/<toolchain-slug>`.
-`<name>` is the dependency's package name in mathlib's manifest. A dispatched
-run can set `cache_deps` to false to omit dependency caches.
+`<SCOPE>` is `mathlib4-master-shadow/mathlib/<toolchain-slug>`. `<name>` is the
+dependency's package name in mathlib's manifest. A dispatched run can set
+`cache_deps` to false to omit dependency caches.
 
 ## Jobs
 
@@ -43,22 +42,28 @@ S3 endpoints, and `LAKE_CACHE_KEY` signs its requests.
 
 ## The key of a package
 
-mathlib passes `--scope=<SCOPE> --rev=<mathlib-sha>`. Each dependency passes
-`--scope=<DEP_SCOPE>/<name> --rev=<mathlib-sha>`. Lake uses these plain scopes
-verbatim. The workflow supplies the toolchain in `<DEP_SCOPE>` explicitly.
-All jobs use the Linux runner platform.
+mathlib passes `--scope=<SCOPE> --rev=<mathlib-sha>` to `lake cache`.
+
+A dependency uses two scopes. Its revision file goes to `<SCOPE>/deps/<name>`,
+named by the mathlib commit. Its artifacts go to
+`mathlib4-master-shadow/<name>/<toolchain-slug>`, which carries no revision.
+`lake cache put-staged` and `lake cache get` take a single scope, so the
+dependency commands are `lake exe cache lake-dep put` and
+`lake exe cache lake-dep get` in `Cache/LakeDeps.lean`. They make the same
+Lake calls with the two scopes. All jobs use the Linux runner platform.
 
 The mathlib SHA fixes the complete dependency pin set. A dependency's own
 revision fixes only its source: its upstream dependencies can change between
 mathlib commits. For example, two mathlib commits can pin the same aesop
-revision and different batteries revisions. The two aesop manifests then use
-different mathlib SHAs, so both sets of mappings remain available.
+revision and different batteries revisions. The two aesop revision files are
+then named by different mathlib SHAs, so both sets of mappings remain
+available. Their artifacts share one scope, so an output with identical bytes
+is stored once.
 
-Every pull supplies the full mathlib SHA, including pulls for dependencies.
-Lake accepts a full SHA as the cache revision even when that commit belongs
-to another repository. A downstream consumer reads this SHA from the mathlib
-entry in its own `lake-manifest.json` and fetches all packages at that SHA.
-The consumer must use mathlib's dependency pins to replay the complete cache.
+The revision files sit under mathlib's scope, so a dependency's scope holds
+only content-addressed artifacts. A downstream consumer reads the mathlib SHA
+from its own `lake-manifest.json`, fetches mathlib with `lake cache get`, and
+fetches each dependency with `lake exe cache lake-dep get`.
 
 ## Push
 
@@ -76,10 +81,12 @@ workspace, so its mappings use the same upstream pins as the root build.
 3. `lake cache stage` copies each package into its own staging directory.
    The tree travels to the upload job as a GitHub artifact. The build sandbox
    has no upload credentials.
-4. `lake cache put-staged` uploads each package. mathlib passes
-   `--scope=<SCOPE> --rev=<mathlib-sha>`. Each dependency passes
-   `--scope=<DEP_SCOPE>/<name> --rev=<mathlib-sha>`.
-   Lake uploads the artifacts first and the revision file last.
+4. `lake cache put-staged --scope=<SCOPE> --rev=<mathlib-sha>` uploads
+   mathlib. `lake exe cache lake-dep put` uploads each dependency, with
+   `--scope=mathlib4-master-shadow/<name>/<toolchain-slug>`,
+   `--rev-scope=<SCOPE>/deps/<name>` and `--rev=<mathlib-sha>`. Both upload
+   the artifacts first and the revision file last. The upload job builds the
+   cache tool before `LAKE_CACHE_KEY` enters its environment.
 
 A run whose staging tree exceeds 2 GB fails before the upload. The cap protects
 the R2 free tier and the lifecycle budget.
@@ -89,8 +96,8 @@ the R2 free tier and the lifecycle budget.
 The `consume` job sets `LAKE_NO_CACHE` and builds from the shadow bucket:
 
 1. `lake cache get --scope=<SCOPE> --rev=<mathlib-sha>` fetches mathlib.
-2. `lake cache get --package=<DEP> --scope=<DEP_SCOPE>/<name>
-   --rev=<mathlib-sha>` fetches each dependency.
+2. `lake exe cache lake-dep get --package=<DEP>` fetches each dependency,
+   with the same two scopes and revision as its upload.
 3. `lake build <targets>` replays both.
 
 The `downstream` job uses the same commands with `--package=mathlib` on the
@@ -106,14 +113,15 @@ the report, including dependencies on the skip list.
 One bucket holds these keys:
 
     revisions/<SCOPE>/<mathlib-sha>.jsonl
-    revisions/<DEP_SCOPE>/<name>/<mathlib-sha>.jsonl
+    revisions/<SCOPE>/deps/<name>/<mathlib-sha>.jsonl
     artifacts/<SCOPE>/<content-hash>.art
-    artifacts/<DEP_SCOPE>/<name>/<content-hash>.art
+    artifacts/mathlib4-master-shadow/<name>/<toolchain-slug>/<content-hash>.art
     analysis/<toolchain-slug>/_latest.txt
     analysis/<toolchain-slug>/<mathlib-sha>.txt
 
-A revision file maps input hashes to artifacts. `lake cache get` downloads the
-artifacts from the same scope. The workflow owns the `analysis/` prefix; Lake
+A revision file maps input hashes to artifacts. For mathlib, `lake cache get`
+downloads the artifacts from the same scope. For a dependency,
+`lake-dep get` downloads them from the dependency's own scope. The workflow owns the `analysis/` prefix; Lake
 owns the other two. `_latest.txt` holds the SHA for the next warm start.
 `<mathlib-sha>.txt` holds the carryover baseline.
 
@@ -133,8 +141,8 @@ Both warm starts use `analysis/<toolchain-slug>/_latest.txt` as the previous
 mathlib SHA:
 
 - The root fetch uses `--scope=<SCOPE> --rev=<previous-sha>`.
-- Each dependency fetch uses `--package=<DEP> --scope=<DEP_SCOPE>/<name>
-  --rev=<previous-sha>`.
+- Each dependency fetch uses `lake-dep get --package=<DEP>
+  --rev=<previous-sha>`, with the dependency's two scopes.
 
 Lake replays outputs whose input hashes match the current workspace. The
 build compiles changed modules and dependencies that the previous snapshot
@@ -163,9 +171,8 @@ to the pinned Lean release is one example.
 
 The analysis chain is per toolchain, under `analysis/<toolchain-slug>/`.
 The slug replaces characters outside `A-Za-z0-9._-` with `-`.
-Dependencies always use this slug in their scope. An override run also appends
-it to mathlib's root scope: `mathlib4-master-shadow/<toolchain-slug>`.
-This separates snapshots of one mathlib commit on different toolchains.
+Every scope carries this slug, mathlib's included. This separates snapshots
+of one mathlib commit on different toolchains.
 To compare two toolchains, dispatch both runs with the same `mathlib_ref`.
 
 A republished toolchain tag keeps the same scope but can change input hashes.
