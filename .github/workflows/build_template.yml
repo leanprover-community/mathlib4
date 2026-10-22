@@ -1151,29 +1151,22 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
-          SHA: ${{ github.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
-          # The open PR this run belongs to: the event's PR on pull_request_target, otherwise
-          # the open PR whose head is the pushed commit, preferring an exact head match when
-          # the commit is on several branches. Outputs: pr_found, number, pr_url, pr_labels
-          # (comma-separated label names).
+          # The open PR whose head is the commit this run built: the event's PR on
+          # pull_request_target, otherwise the PR from the pushed branch. A run for an older commit
+          # finds no PR, so it never acts for a head that has not passed CI. An API error fails the
+          # step. Outputs: pr_found, number, pr_url, pr_labels (comma-separated label names).
+          filter='map(select(.state == "open" and .head.sha == $ENV.HEAD_SHA)) | first // empty
+            | "pr_found=true", "number=\(.number)", "pr_url=\(.html_url)",
+              "pr_labels=\([.labels[].name] | join(","))"'
           if [ -n "$PR_NUMBER" ]; then
-            pr=$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" | jq -c 'select(.state == "open")')
+            out=$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq "[.] | $filter")
           else
-            pr=$(gh api "repos/${GITHUB_REPOSITORY}/commits/${SHA}/pulls" |
-              jq -c --arg sha "$SHA" \
-                '[.[] | select(.state == "open")] | (map(select(.head.sha == $sha)) | first) // first // empty')
+            out=$(gh api -X GET "repos/${GITHUB_REPOSITORY}/pulls" -f state=open \
+              -f head="${GITHUB_REPOSITORY_OWNER}:${GITHUB_REF_NAME}" --jq "$filter")
           fi
-          if [ -z "$pr" ]; then
-            echo "pr_found=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          {
-            echo "pr_found=true"
-            echo "number=$(jq -r '.number' <<< "$pr")"
-            echo "pr_url=$(jq -r '.html_url' <<< "$pr")"
-            echo "pr_labels=$(jq -r '[.labels[].name] | join(",")' <<< "$pr")"
-          } >> "$GITHUB_OUTPUT"
+          echo "${out:-pr_found=false}" | tee -a "$GITHUB_OUTPUT"
 
       - id: remove_labels
         name: Remove "awaiting-CI"
