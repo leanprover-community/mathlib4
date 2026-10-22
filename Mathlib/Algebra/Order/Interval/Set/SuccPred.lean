@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Order.SuccPred
+
 import Mathlib.Order.Interval.Set.SuccPred
 
 /-!
@@ -250,7 +251,7 @@ lemma Ici_add_one_eq_Ioi (a : α) : Ici (a + 1) = Ioi a := by
 end SuccAddOrder
 
 section PredSubOrder
-variable [Sub α] [PredSubOrder α] {a a : α}
+variable [Sub α] [PredSubOrder α] {a : α}
 
 lemma Ioi_sub_one_eq_Ici_of_not_isMin (ha : ¬ IsMin a) : Ioi (a - 1) = Ici a := by
   simpa [pred_eq_sub_one] using Ioi_pred_eq_Ici_of_not_isMin ha

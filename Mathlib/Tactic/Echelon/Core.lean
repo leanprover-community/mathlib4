@@ -5,7 +5,9 @@ Authors: Rao Xiaojia
 -/
 module
 
+public meta import Qq
 public import Mathlib.Init
+public import Mathlib.Tactic.Matrix.Cert
 
 /-!
 # Parameterized computation core for the Bareiss elimination
@@ -19,6 +21,15 @@ elimination with the scales folded back into `L` afterwards.
 A computation model supplies the carrier, its arithmetic operations (`RingOps`) and the
 encoding between entry syntax and values, and the tactic selects a model through the `bareiss_ext`
 extension registry.
+
+## Main definitions
+
+- `RingOps`: the arithmetic of a model's carrier.
+- `Model`: the computation model of a ring, including the encode/decode between the ring element
+  and the carrier representation, and an optional entry certifier.
+- `bareissDecomp`: runs fraction-free elimination over a model's carrier.
+- `BareissData`: raw data of the computed decomposition.
+- `bareiss_ext`: the attribute registering a computation model.
 
 ## Implementation notes
 
@@ -40,7 +51,9 @@ so `L` is conjugated by the matrix of `τ`, as in LU factorisation with partial 
 
 public meta section
 
-open Lean Meta
+open Lean Meta Qq Mathlib.Tactic.Matrix
+
+initialize registerTraceClass `Tactic.evalRank
 
 namespace Mathlib.Tactic.Echelon
 
@@ -168,19 +181,26 @@ abbrev Carrier.type : Carrier → Type
   | .int => Int
   | .expr => Expr
 
-/-- A computation model of a ring on the carrier `V`. -/
-structure Model (V : Type) where
+/-- A computation model of the ring `α` on the carrier `V`. -/
+structure Model {u : Level} (α : Q(Type u)) (V : Type) where
   /-- The arithmetic of the carrier. -/
   ops : RingOps V
   /-- Evaluate an entry to a value with an optional denominator for the row scaling.
   `(n, some d)` denotes `n / d` with `d` nonzero, and `(n, none)` denotes `n`. -/
-  evalEntry : Expr → MetaM (V × Option V)
+  evalEntry : Q($α) → MetaM (V × Option V)
   /-- A nonzero common multiple for eliminating the denominators (`ops.mul` by default). A
   carrier type with a cheap lcm could supply it as an optimisation to keep the scaled entries
   small. -/
   commonMultiple : V → V → V := ops.mul
   /-- The expression of the ring denoting a value. -/
-  mkEntry : V → MetaM Expr
+  mkEntry : V → MetaM Q($α)
+  /-- An optional certifier for the ring, or `none` to leave the conditions to the kernel.
+  With `none`, the kernel checks the decomposition product `L * A_σ = U` by evaluating the
+  list-based form as a whole without assembling it from per-entry proofs, which is faster than
+  applying `Mathlib.Tactic.Matrix.decideCertifier` on every entry. As a result this field is
+  optional rather than taking a default value, so that `Mathlib.Tactic.Matrix.certifyProductEq`
+  can perform this optimization. -/
+  entryCertifier? : Option (EntryCertifier α) := none
 
 /-- Clear the denominators of the rows before the decomposition algorithm. -/
 def scaleRows {V : Type} (ops : RingOps V) (commonMultiple : V → V → V)
@@ -210,9 +230,9 @@ def restoreScaling {V : Type} (ops : RingOps V) (scales : Array (Option V))
 
 /-- An extension of the Bareiss ring computation model. -/
 structure BareissExt where
-  /-- The model for the element type `R` and its carrier, or `none` if the extension does not
-  handle `R`. -/
-  model? (R : Expr) : MetaM (Option ((c : Carrier) × Model c.type))
+  /-- The model for the element type `α` and its carrier, or `none` if the extension does not
+  handle `α`. -/
+  model? {u : Level} (α : Q(Type u)) : MetaM (Option ((c : Carrier) × Model α c.type))
 
 /-- Read a `bareiss_ext` extension from a declaration of the right type. -/
 def mkBareissExt (n : Name) : ImportM BareissExt := do

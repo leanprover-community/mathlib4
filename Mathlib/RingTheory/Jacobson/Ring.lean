@@ -532,8 +532,7 @@ theorem quotient_mk_comp_C_isIntegral_of_isJacobsonRing :
   have : IsMaximal (Ideal.map (mapRingHom (Ideal.Quotient.mk (comap C P))) P) :=
     Or.recOn (map_eq_top_or_isMaximal_of_surjective f hf hP)
       (fun h => absurd (_root_.trans (h ▸ hPJ : P = comap f ⊤) comap_top : P = ⊤) hP.ne_top) id
-  apply quotient_mk_comp_C_isIntegral_of_jacobson' _ ?_ (fun x hx => ?_)
-  any_goals exact isJacobsonRing_quotient
+  refine quotient_mk_comp_C_isIntegral_of_jacobson' _ isJacobsonRing_quotient (fun x hx ↦ ?_)
   obtain ⟨z, rfl⟩ := Ideal.Quotient.mk_surjective x
   rwa [Quotient.eq_zero_iff_mem, mem_comap, hPJ, mem_comap, coe_mapRingHom, map_C]
 
@@ -657,7 +656,7 @@ theorem comp_C_integral_of_surjective_of_isJacobsonRing {R : Type*} [CommRing R]
     rw [← hfg, coe_comp] at hf'
     exact Function.Surjective.of_comp hf'
   rw [RingHom.comp_assoc] at this
-  convert! this
+  convert this
   refine RingHom.ext fun x => ?_
   exact ((renameEquiv R e).commutes' x).symm
 
