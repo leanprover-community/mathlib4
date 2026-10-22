@@ -23,8 +23,8 @@ on:
         required: true
       large_runs_on:
         # The runner label for builds with a large predicted cascade. The `route` job
-        # sends `build` and `test_lint` there when the change rebuilds at least 3,000
-        # Mathlib modules. Empty disables the routing.
+        # sends `build` there when the change rebuilds at least 3,000 Mathlib modules.
+        # Empty disables the routing.
         type: string
         required: false
         default: ''
@@ -60,6 +60,9 @@ jobs:
     name: Route
     if: ${{ inputs.large_runs_on != '' }}
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # A failure sets no pool, and `build` runs on the caller's pool.
+    continue-on-error: true
     permissions:
       contents: read
       actions: read
@@ -103,10 +106,11 @@ jobs:
               return
             fi
             [ -n "${mb}" ] || return
-            run="$(gh api "repos/${REPO}/actions/runs?head_sha=${mb}&event=push&status=success&branch=master" \
+            # A master build uploads the import graph even when a later job fails.
+            run="$(gh api "repos/${REPO}/actions/runs?head_sha=${mb}&event=push&status=completed&branch=master" \
                     --jq '[.workflow_runs[] | select(.name=="continuous integration")] | .[0].id // ""')" || return
             if [ -z "${run}" ]; then
-              echo "No successful master build for the merge-base ${mb}."
+              echo "No completed master build for the merge-base ${mb}."
               return
             fi
             gh run download "${run}" --repo "${REPO}" --name import-graph --dir import-graph || return
@@ -491,7 +495,7 @@ jobs:
 
   test_lint:
     name: Test and lint
-    needs: [route, build]
+    needs: [build]
     # Runs `test` and `lint` on the same self-hosted pool as `build`, but as a
     # separate job so it runs in parallel with the GitHub-hosted post-build chain
     # (upload_cache -> post_steps) rather than ahead of it. `build` and `test_lint`
@@ -510,7 +514,7 @@ jobs:
     # best-effort over whatever oleans were built. The per-step conditions below
     # match: `test` only on a clean build, `lint` on success-or-failure.
     if: ${{ always() && (needs.build.result == 'success' || needs.build.result == 'failure') }}
-    runs-on: ${{ needs.route.outputs.pool || inputs.runs_on }}
+    runs-on: ${{ inputs.runs_on }}
     # Same as `build`: this job runs (potentially fork) PR code, so it must not
     # inherit any write-capable token.
     permissions:

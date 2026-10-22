@@ -9,8 +9,8 @@ directly or transitively.
 `import_graph.dot` is the output of `lake exe graph` at the merge-base: an
 edge `"A" -> "B"` means that module `B` imports module `A`. The changed files
 are paths relative to the repository root, one per line. A file that is not
-a Mathlib module, or a module that is new and so is not in the graph,
-counts as one module.
+a Mathlib module counts as no module, and a new module that is not in the
+graph counts as one module.
 
 A change to `lakefile.lean`, `lake-manifest.json` or `lean-toolchain`
 rebuilds every module, so the count is then the number of modules in the
