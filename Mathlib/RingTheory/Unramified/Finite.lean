@@ -279,7 +279,7 @@ lemma baseChange_sec (f : M →ₗ[S] N) (x : M) :
     (f.restrictScalars R).baseChange S (sec R S M x) = sec R S N (f x) :=
   (congr($(sec_comp R S f) x)).symm
 
-variable {M N} in
+variable {M} in
 lemma sec_mem_baseChange (P : Submodule S M) {x : M} (hx : x ∈ P) :
     sec R S M x ∈ (P.restrictScalars R).baseChange S :=
   ⟨sec R S P ⟨x, hx⟩, baseChange_sec R S P.subtype ⟨x, hx⟩⟩
