@@ -9,9 +9,6 @@ public import Mathlib.Data.List.Find
 public import Mathlib.Data.Multiset.AddSub
 public import Mathlib.Data.Multiset.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Finding subsingleton elements within multisets
 

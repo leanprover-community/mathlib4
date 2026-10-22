@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Infinite sum in the reals
 
