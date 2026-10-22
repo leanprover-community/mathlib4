@@ -32,7 +32,7 @@ Commands:
   clean          Delete non-linked files
   clean!         Delete everything on the local cache
   lookup [ARGS]  Show information about cache files for the given Lean files
-  hashes [ARGS]  Print `MODULE FILE.ltar` for each linked module, sorted by module
+  hashes [ARGS]  Print `MODULE FILE.ltar` for each module, sorted by module name
   query [REF]    Without REF: find the most recent cached Mathlib commit.
                  With REF (e.g. HEAD, a SHA): boolean probe; exit 0 if cached, 1 if not.
 
@@ -315,6 +315,10 @@ def main (args : List String) : IO Unit := do
   | ["collect"] => IO.println "TODO"
   | "lookup" :: _ => lookup hashMap roots.keys
   | "hashes" :: args =>
+    let missing := roots.keys.filter (!hashMemo.hashMap.contains ·)
+    unless missing.isEmpty do
+      IO.eprintln s!"hashes: no cache hash for {missing}; a source file is missing"
+      IO.Process.exit 1
     let hashMap ← if args.isEmpty then pure hashMap else hashMemo.filterByRootModules roots.keys
     for line in hashMap.ltarLines do IO.println line
   | [] => println help -- unreachable: options are already partitioned out

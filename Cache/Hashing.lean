@@ -57,7 +57,7 @@ public def HashMemo.filterByRootModules (hashMemo : HashMemo) (modules : List Na
   for mod in modules do
     if hashMemo.hashMap.contains mod then
       hashMap := insertDeps hashMap mod hashMemo
-    else IO.println s!"{mod} is not covered by the olean cache."
+    else IO.eprintln s!"{mod} is not covered by the olean cache."
   return hashMap
 
 /-- We cache the hash of each file and their dependencies for later lookup -/
@@ -121,7 +121,7 @@ partial def getHash (mod : Name) (sourceFile : FilePath) (visited : Std.HashSet 
   | some hash? => return hash?
   | none =>
     if !(← sourceFile.pathExists) then
-      IO.println s!"Warning: {sourceFile} not found. Skipping all files that depend on it."
+      IO.eprintln s!"Warning: {sourceFile} not found. Skipping all files that depend on it."
       modify fun stt => { stt with cache := stt.cache.insert mod none }
       return none
     let content ← IO.FS.readFile sourceFile

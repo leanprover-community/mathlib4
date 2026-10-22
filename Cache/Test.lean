@@ -479,7 +479,14 @@ def test_ltarLines : IO Unit := do
   assertEq "lines are sorted by module name"
     "Mathlib.Algebra.Group.Defs 0000000000000001.ltar\nMathlib.Order.Basic 0000000000000abc.ltar"
     ("\n".intercalate m.ltarLines.toList)
-  assertEq "an empty map prints nothing" "" ("\n".intercalate (∅ : Cache.IO.ModuleHashMap).ltarLines.toList)
+  assertEq "an empty map prints nothing" ""
+    ("\n".intercalate (∅ : Cache.IO.ModuleHashMap).ltarLines.toList)
+  let m' : Cache.IO.ModuleHashMap := (∅ : Cache.IO.ModuleHashMap)
+    |>.insert `Mathlib.alpha 2
+    |>.insert `Mathlib.Zeta 3
+  assertEq "the order is byte order, so upper case sorts first"
+    "Mathlib.Zeta 0000000000000003.ltar\nMathlib.alpha 0000000000000002.ltar"
+    ("\n".intercalate m'.ltarLines.toList)
 
 end UInt64Formatting
 

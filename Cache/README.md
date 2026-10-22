@@ -37,7 +37,7 @@ lake exe cache get Mathlib.Algebra.Group.Basic
 | `clean`         | Delete non-linked files                                             |
 | `clean!`        | Delete everything on the local cache                                |
 | `lookup [ARGS]` | Show information about cache files for the given Lean files         |
-| `hashes [ARGS]` | Print `MODULE FILE.ltar` for each linked module, sorted by module   |
+| `hashes [ARGS]` | Print `MODULE FILE.ltar` for each module, sorted by module name     |
 | `query`         | Find the most recent commit with cached entries on the current branch |
 
 
@@ -80,7 +80,7 @@ The `get`, `get!`, `get-`, `lookup`, and `hashes` commands accept:
 - Folder names: `Mathlib/Data/` (finds all Lean files inside)
 - Glob patterns: `Mathlib/**/Order/*.lean` (via shell expansion)
 
-When arguments are provided, only the specified files and their transitive imports are downloaded.
+When arguments are provided, the command processes only the specified files and their transitive imports.
 
 ### Options
 
