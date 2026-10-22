@@ -369,10 +369,8 @@ theorem add_nsmul_le_weightedOrder_prod_sub_prod {R ι : Type*} [CommRing R] {n 
   | empty => simp
   | cons i s hi ih =>
     simp only [Finset.mem_cons, forall_eq_or_imp] at ha hb h
-    have : a i * ∏ j ∈ s, a j - b i * ∏ j ∈ s, b j =
-        a i * (∏ j ∈ s, a j - ∏ j ∈ s, b j) + (a i - b i) * ∏ j ∈ s, b j := by
-      rw [mul_sub, sub_mul, sub_add_sub_cancel]
-    rw [Finset.prod_cons, Finset.prod_cons, this, Finset.card_cons, Nat.add_sub_cancel]
+    rw [Finset.prod_cons, Finset.prod_cons, ← sub_add_sub_cancel (b := a i * ∏ j ∈ s, b j),
+      ← sub_mul, ← mul_sub, Finset.card_cons, Nat.add_sub_cancel]
     refine (le_min ?_ ?_).trans (min_weightedOrder_le_add w)
     · rcases s.eq_empty_or_nonempty with rfl | hs
       · simp
