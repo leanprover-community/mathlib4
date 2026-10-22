@@ -100,8 +100,51 @@ structure MultilinearMap (R : Type uR) {ι : Type uι} (M₁ : ι → Type v₁)
     ∀ [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) (c : R) (x : M₁ i),
       toFun (update m i (c • x)) = c • toFun (update m i x)
 
-/-- `M →ₘₗ[R] N` is the type of `R`-multilinear maps from `M` to `N`. -/
-notation:25 M " →ₘₗ[" R:25 "] " N:0 => MultilinearMap R M N
+section Meta
+
+/-- Eta-reduce `fun (x : dom) => f x` to `f` when `f` has the same `BinderInfo` and domain `dom`. -/
+meta partial def Lean.Meta.etaReduce (e : Expr) : MetaM Expr := do
+  match e with
+  | .lam name dom body bi =>
+    let body' ← withLocalDecl name bi dom fun x => do
+      return (← etaReduce (body.instantiate1 x)).abstract #[x]
+    if let .app f (.bvar 0) := body' then
+      if !f.hasLooseBVar 0 then
+        let f := f.lowerLooseBVars 1 1
+        if let .forallE _ fDom _ fBi ← whnfR (← inferType f) then
+          if fBi == bi
+              && (← instantiateMVars fDom).cleanupAnnotations == dom.cleanupAnnotations then
+            return f
+    return e.updateLambdaE! dom body'
+  | _ => return e
+
+open Lean Meta Elab Term PrettyPrinter Delaborator SubExpr
+local syntax "pi_to_lam% " term : term
+
+elab_rules : term
+  | `(pi_to_lam% $M) => do
+    let eM ← whnfR (← elabType M)
+    let .forallE name dom body bi := eM
+      | throwErrorAt M "expected a function or Pi type, got{indentExpr eM}"
+    etaReduce (.lam name dom body bi)
+
+/-- `(Π i, M i) →ₘₗ[R] N` is the type of `R`-multilinear maps from `Π i, M i` to `N`. -/
+notation:25 M " →ₘₗ[" R:25 "] " N:0 => MultilinearMap R (pi_to_lam% M) N
+
+@[app_delab MultilinearMap]
+public meta def delabMultilinearMap : Delab := whenPPOption getPPNotation do
+  let e ← getExpr
+  guard <| e.isAppOfArity ``MultilinearMap 9
+  let R ← withNaryArg 0 delab
+  let M ← withNaryArg 2 do
+    let piExpr : Expr := match ← getExpr with
+      | .lam name dom body bi => .forallE name dom body bi
+      | eM => .forallE `i (e.getArg! 1) (.app (eM.liftLooseBVars 0 1) (.bvar 0)) .default
+    withTheReader SubExpr (fun cfg => { cfg with expr := piExpr }) delab
+  let N ← withNaryArg 3 delab
+  `($M →ₘₗ[$R] $N)
+
+end Meta
 
 namespace MultilinearMap
 
