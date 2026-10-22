@@ -5,10 +5,9 @@ Authors: Michael Rothgang, Damiano Testa, Thomas R. Murrills
 -/
 module
 
-public meta import Lean.Elab.Command
-public import Lean.Parser.Module
-public import Mathlib.Tactic.Linter.DirectoryDependency
+public meta import ImportGraph.Imports.Pretty
 public meta import Lean.Linter.Basic
+public import Mathlib.Tactic.Linter.DirectoryDependency
 
 /-!
 # The "header" linter
@@ -51,7 +50,7 @@ instead of a re-parse of the file.
 
 meta section
 
-open Lean Elab Command Linter
+open ImportGraph Lean Elab Command Linter
 
 namespace Mathlib.Linter
 
@@ -180,16 +179,34 @@ public def copyrightHeaderChecks (copyright : String) (expectedLicense : String)
     output := output.push (toSyntax copyright "-/", s!"Copyright too short!")
   return output
 
+/-- Given `modPath := foo/bar/A/B/C(.lean)` and a module name `A.B.C`, return `foo/bar/A.lean`.
+Return `none` if the name components do not match the path components. -/
+def modPathToRootPath (modPath : System.FilePath) (modName : Name) : Option System.FilePath :=
+  match modName with
+  | .str .anonymous root => do
+    guard <| modPath.fileStem == root
+    modPath.withExtension "lean"
+  | .str pre last => do
+    guard <| modPath.fileStem == last
+    modPathToRootPath (← modPath.parent) pre
+  | _ => none
+
 /--
-`isInLibraryRoot modName` returns `true` if `<root>.lean` imports the file `modName`, where
-`<root>` is the top-level component of `modName`. For example, for `Mathlib.Foo.Bar` this checks
-`Mathlib.lean`; for `Cslib.Foo.Bar` this checks `Cslib.lean`.
-This is used by the `Header` linter as a heuristic of whether it should inspect the file or not,
-so that the linter works in any project whose library root follows the standard Lean convention
-of being named after the top-level module.
+`isInLibraryRoot rootPath modName` returns `true` if the file at `rootPath` (expected to be the
+root file of a library, `<root>.lean`) directly imports the file `modName`.
+
+For example, for ``isInLibraryRoot (srcDir / "Mathlib.lean") `Mathlib.Foo.Bar`` checks if
+`Mathlib.lean` directly imports `Mathlib.Foo.Bar`. (Note, however, that this does not enforce that
+the root component of `modName` is the same as the file stem of `rootPath`.)
+
+Note: for any library (like `Mathlib`) which names its root file after the library and locates it
+accordingly, the `rootPath` may be obtained with `modPathToRootPath fileName modName`.
+
+This is used by the header linter as a heuristic for whether it should lint the module `modName`
+or not, in order to avoid linting scratch files (which typically are not imported in the library
+root).
 -/
-def isInLibraryRoot (modName : Name) : IO Bool := do
-  let rootPath := (modName.getRoot.toString : System.FilePath).addExtension "lean"
+def isInLibraryRoot (rootPath : System.FilePath) (modName : Name) : IO Bool := do
   if ← rootPath.pathExists then
     let res ← parseImports' (← IO.FS.readFile rootPath) ""
     return res.imports.any (·.module == modName)
@@ -238,34 +255,16 @@ public register_option linter.style.header.license : String := {
   descr := "The text required as the second line of the copyright header."
 }
 
-/-- Extends `Import` with ``stx : TSyntax `Lean.Parser.Module.import`` to allow reporting at the
-given import. -/
-structure ImportRef extends Import where
-  stx : TSyntax ``Parser.Module.import
-
-/-- Returns the module `Ident` (following `(public)? (meta)? import (all)?` of a given
-`ImportRef`. -/
-def ImportRef.getIdent (i : ImportRef) : Ident :=
-  match i.stx with
-  | `(Parser.Module.import|
-      $[public]? $[meta]? import $[all]? $n:ident) => n
-  | _ => ⟨.missing⟩
-
-/-- Destructures header syntax (`(module)? (prelude)? $imports*`) into an array of `ImportRef`s. -/
-def headerToImportRefs (header : TSyntax ``Parser.Module.header) : Array ImportRef :=
-  match header with
-  | `(Parser.Module.header| $[module%$moduleTk]? $[prelude]? $imports*) =>
-    imports.filterMap fun
-      | stx@`(Parser.Module.import|
-          $[public%$publicTk]? $[meta%$metaTk]? import $[all%$allTk]? $n:ident) =>
-        some {
-          module := n.getId
-          importAll := allTk.isSome
-          isExported := publicTk.isSome || moduleTk.isNone
-          isMeta := metaTk.isSome
-          stx := ⟨stx⟩ }
-      | _ => none
-  | _ => #[]
+/--
+Whether to reformat import blocks in the module system according to the style convention. Note that
+this only has an effect if `linter.style.header` is `true` and the header is participating in the
+module system. This does not remove redundant imports.
+-/
+public register_option linter.style.header.imports : Bool := {
+  defValue := true
+  descr := "Whether to reformat module system import blocks according to the style convention when \
+    `linter.style.header` is `true`."
+}
 
 /-- Returns the `module` token from header syntax, if there is one. -/
 def headerToModuleTk? (header : TSyntax ``Parser.Module.header) : Option Syntax :=
@@ -288,6 +287,8 @@ because they are files that test the linter.
 def headerTestFiles : NameSet := .ofList [
   `MathlibTest.Linter.Header.Basic,
   `MathlibTest.Linter.Header.Fail,
+  `MathlibTest.Linter.Header.ImportFormat,
+  `MathlibTest.Linter.Header.ImportFormatOff,
   `MathlibTest.Linter.Header.Verso,
   `MathlibTest.Linter.Header.MinImportsPayload,
   `MathlibTest.DirectoryDependencyLinter.Test]
@@ -318,11 +319,14 @@ def broadImportsCheck (imports : Array ImportRef) (mainModule : Name) : CommandE
           please do not use it in mathlib."
     | modName =>
       if modName.getRoot == `Lake then
-      Linter.logLint linter.style.header i.getIdent
-        "In the past, importing `Lake` in mathlib has led to dramatic slow-downs of the linter \
-        (see e.g. https://github.com/leanprover-community/mathlib4/pull/13779). \
-        Please consider carefully if this import is useful and \
-        make sure to benchmark it. If this is fine, feel free to silence this linter."
+        Linter.logLint linter.style.header i.getIdent
+          "In the past, importing `Lake` in mathlib has led to dramatic slow-downs of the linter \
+          (see e.g. https://github.com/leanprover-community/mathlib4/pull/13779). \
+          Please consider carefully if this import is useful and \
+          make sure to benchmark it. If this is fine, feel free to silence this linter."
+      else if modName.getRoot == `Init && !i.importAll then
+        Linter.logLint linter.style.header i.getIdent
+          "Importing anything from `Init` is redundant, because it is already imported by default."
 
 /-- Check the syntax `imports` for syntactically duplicate imports.
 Two imports are considered duplicates only if they import the same module with the same modifiers.
@@ -337,6 +341,82 @@ def duplicateImportsCheck (imports : Array ImportRef) : CommandElabM Unit := do
     else
       importsSoFar := importsSoFar.insert imp.toImport
 
+/--
+If we are in the module system and `linter.style.header.imports` is `true`, reformat imports.
+
+Note that this assumes the check for `linter.style.header` has already been performed.
+-/
+def formatImports (imports : Array (ImportRef × Import.Whitespace)) : CommandElabM Unit := do
+  unless
+    (← getEnv).header.isModule && getLinterValue linter.style.header.imports (← getLinterOptions)
+  do
+    return
+  let some (lastImportRef, _) := imports.back? | return
+  let impsRef := mkNullNode <| imports.map (·.1.stx)
+  let some (msg, errs) ← liftCoreM <|
+      Import.mkImportSuggestionMessage impsRef (imports.map (·.1.toImport)) imports
+    | return
+  let note := .note m!"This linter can be disabled by writing \
+    `set_option {linter.style.header.imports.name} false` just after the import block."
+  if errs.isEmpty then
+    -- Note: when `errs.isEmpty`, `Import.mkImportSuggestionMessage` gives us a clickable widget
+    -- that uses `diffGranularity := .word`. This effectively gives us a newline before `{msg}`,
+    -- meaning we don't need one after `reformatted:` here.
+    logWarningAt lastImportRef.stx m!"Imports can be reformatted:{msg}{note}"
+  else
+    logWarningAt lastImportRef.stx m!"Imports can be reformatted, but some comments could not be \
+      carried over. Please review the comment that will be inserted after the imports.\n{msg}{note}"
+
+section HeaderParser
+
+open Lean.ParseImports
+
+/-! We extend the import parser to also parse Verso `set_option` commands that need to go before
+the module doc-string. We only use the parser for determining whether a given string matches
+and ignore the other bits of the state.
+
+This approach may be unneeded in the future when using stateful linters. -/
+
+/-- Allow zero or more repetitions of the parser before the parser errors.
+
+Backtracks to the start of parse at any failure.
+-/
+@[specialize] partial def many (p : Parser) : Parser := fun input s ↦
+  let newS := p input s
+  if newS.error?.isSome then
+    s
+  else
+    many p input newS
+
+/-- Allow any of the given parsers, committing to the first that succeeded. -/
+def anyOf (ps : List Parser) : Parser := fun input s ↦ Id.run do
+  for p in ps do
+    let newS := p input s
+    if newS.error?.isSome then
+      continue
+    else
+      return newS
+  return {s with error? := some "no alternative matches"}
+
+/-- Accepts either the keyword "false" or the keyword "true". -/
+@[inline] def boolLit : Parser := anyOf [keyword "false", keyword "true"]
+
+/-- Parser for all the module header code allowed before the module docs. -/
+partial def allowedHeaderParser : Parser :=
+  ParseImports.main >>
+  many (keyword "set_option" >> anyOf [
+    keyword "doc.verso.suggestions",
+    keyword "doc.verso.module",
+    -- check last, otherwise it prevents hitting the ones it is a prefix of
+    keyword "doc.verso",
+    keyword "linter.style.header.license",
+    keyword "linter.style.header.imports",
+    -- check last, otherwise it prevents hitting the ones it is a prefix of
+    keyword "linter.style.header" -- for testing and downstream
+  ] >> boolLit)
+
+end HeaderParser
+
 @[inherit_doc Mathlib.Linter.linter.style.header]
 def headerPost (stx : Syntax) (self : HeaderState) : CommandElabM HeaderState := do
   unless getLinterValue linter.style.header (← getLinterOptions) do
@@ -345,10 +425,15 @@ def headerPost (stx : Syntax) (self : HeaderState) : CommandElabM HeaderState :=
     return self
   let map ← getFileMap
   -- This is essentially the same as calling `parseImports'`, but we need access to `s.pos`.
-  let s := ParseImports.main map.source (ParseImports.whitespace map.source {})
-  unless (← read).cmdPos == s.pos do
-    -- Only a command that starts at the end of the header can be the first command of the
-    -- module. Later commands start further down, so the linter has no work left in this module.
+  let s := allowedHeaderParser map.source (ParseImports.whitespace map.source {})
+  let cmdPos := (← read).cmdPos
+  -- The `set_option` commands that `allowedHeaderParser` accepts start before `s.pos`. The command
+  -- that the linter checks comes after them.
+  if cmdPos < s.pos then
+    return self
+  unless cmdPos == s.pos do
+    -- Only the command that starts at `s.pos` is subject to the checks. Later commands start
+    -- further down, so the linter has no work left in this module.
     return { self with settled := true }
   let mainModule ← getMainModule
   if Parser.isTerminalCommand stx ||
@@ -362,21 +447,29 @@ def headerPost (stx : Syntax) (self : HeaderState) : CommandElabM HeaderState :=
   then return { self with settled := true }
   unless stx.isOfKind ``Parser.Command.moduleDoc do
     Linter.logLint linter.style.header stx
-      m!"The module doc-string for a file should be the first command after the imports.\n\
+      m!"The module doc-string for a file should be the first command after the imports\n\
+        and any necessary `set_option` commands.\n\
         Please, add a module doc-string (`/-! ... -/`) before `{stx}`.\
         {.hint' m!"Type `m(odule docstring) + [tab]` to insert a template via snippet."}"
+  let some rootPath := modPathToRootPath (← getFileName) mainModule |
+    return { self with settled := true }
   -- The linter skips files not imported in their library root (e.g. `Mathlib.lean`), to avoid
   -- linting "scratch files". It is however active in the test files for the linter itself.
-  unless (← isInLibraryRoot mainModule) || headerTestFiles.contains mainModule do
+  unless (← isInLibraryRoot rootPath mainModule) || headerTestFiles.contains mainModule do
     return { self with settled := true }
   -- Re-parse the header slowly, to get the leading whitespace and nice source locations for imports
   let (headerStx, _, log) ← Parser.parseHeader (Parser.mkInputContext map.source (← getFileName))
   if log.hasErrors then return { self with settled := true }
-  let importRefs := headerToImportRefs headerStx
+  let importRefsWithWhitespace := headerToImportRefsWithWhitespace headerStx
+  -- TODO: Enable this more broadly (Archive, etc., and downstream)
+  if mainModule.getRoot == `Mathlib || headerTestFiles.contains mainModule then
+    formatImports importRefsWithWhitespace
+  let importRefs := importRefsWithWhitespace.map (·.1)
   -- Report on broad or duplicate imports.
   broadImportsCheck importRefs mainModule
   duplicateImportsCheck importRefs
-  let errors ← directoryDependencyCheck mainModule
+  let srcDir := rootPath.parent.getD "."
+  let errors ← directoryDependencyCheck srcDir mainModule
   if errors.size > 0 then
     Linter.logLint linter.directoryDependency (importRefs.back?.elim headerStx (·.stx)) <|
       m!"\n\n".joinSep errors.toList

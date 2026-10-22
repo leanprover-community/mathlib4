@@ -6,7 +6,6 @@ Authors: Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
-public import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
 public import Mathlib.CategoryTheory.Monad.Coequalizer
 public import Mathlib.CategoryTheory.Monad.Limits
 
@@ -66,7 +65,7 @@ instance main_pair_reflexive (A : adj.toMonad.Algebra) :
     IsReflexivePair (F.map A.a) (adj.counit.app (F.obj A.A)) := by
   apply IsReflexivePair.mk' (F.map (adj.unit.app _)) _ _
   · rw [← F.map_comp, ← F.map_id]
-    exact congr_arg F.map A.unit
+    congrm F.map $A.unit
   · dsimp
     rw [adj.left_triangle_components]
 
@@ -145,7 +144,7 @@ theorem comparisonAdjunction_unit_f_aux
     ((comparisonAdjunction adj).unit.app A).f =
       adj.homEquiv A.A _
         (coequalizer.π (F.map A.a) (adj.counit.app (F.obj A.A))) :=
-  congr_arg (adj.homEquiv _ _) (Category.comp_id _)
+  congr((adj.homEquiv ..) $(Category.comp_id _))
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- This is a cofork which is helpful for establishing monadicity: the morphism from the Beck
@@ -306,13 +305,13 @@ def monadicOfHasPreservesReflectsGSplitCoequalizers [HasCoequalizerOfIsSplitPair
     have : ∀ (X : Algebra adj.toMonad), IsIso ((comparisonAdjunction adj).unit.app X) := by
       intro X
       apply @isIso_of_reflects_iso _ _ _ _ _ _ _ (Monad.forget adj.toMonad) ?_ _
-      · change IsIso ((comparisonAdjunction adj).unit.app X).f
-        rw [comparisonAdjunction_unit_f]
-        change
-          IsIso
-            (IsColimit.coconePointUniqueUpToIso (beckCoequalizer X)
-                (unitColimitOfPreservesCoequalizer X)).hom
-        exact (IsColimit.coconePointUniqueUpToIso _ _).isIso_hom
+      change IsIso ((comparisonAdjunction adj).unit.app X).f
+      rw [comparisonAdjunction_unit_f]
+      change
+        IsIso
+          (IsColimit.coconePointUniqueUpToIso (beckCoequalizer X)
+              (unitColimitOfPreservesCoequalizer X)).hom
+      exact (IsColimit.coconePointUniqueUpToIso _ _).isIso_hom
     have : ∀ (Y : D), IsIso ((comparisonAdjunction adj).counit.app Y) := by
       intro Y
       rw [comparisonAdjunction_counit_app]
@@ -408,10 +407,10 @@ def monadicOfHasPreservesReflexiveCoequalizersOfReflectsIsomorphisms : MonadicRi
       intro X
       apply
         @isIso_of_reflects_iso _ _ _ _ _ _ _ (Monad.forget adj.toMonad) ?_ _
-      · change IsIso ((comparisonAdjunction adj).unit.app X).f
-        rw [comparisonAdjunction_unit_f]
-        exact (IsColimit.coconePointUniqueUpToIso (beckCoequalizer X)
-          (unitColimitOfPreservesCoequalizer X)).isIso_hom
+      change IsIso ((comparisonAdjunction adj).unit.app X).f
+      rw [comparisonAdjunction_unit_f]
+      exact (IsColimit.coconePointUniqueUpToIso (beckCoequalizer X)
+        (unitColimitOfPreservesCoequalizer X)).isIso_hom
     have : ∀ (Y : D), IsIso ((comparisonAdjunction adj).counit.app Y) := by
       intro Y
       rw [comparisonAdjunction_counit_app]

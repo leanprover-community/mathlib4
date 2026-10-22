@@ -5,8 +5,8 @@ Authors: Damiano Testa
 -/
 module
 
-public meta import ImportGraph.Imports.ImportGraph
 public meta import ImportGraph.Graph.TransitiveClosure
+public meta import ImportGraph.Imports.ImportGraph
 -- The `headerLinter` handle comes from `Mathlib.Tactic.Linter.Header`, which `Mathlib.Init`
 -- imports: `linter.checkInitImports` requires the import of `Mathlib.Init` here.
 public meta import Mathlib.Init
