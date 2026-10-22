@@ -1250,3 +1250,5 @@ theorem aharoni_korman_false :
     rw [Hollom.exists_partition_iff_nonempty_spinalMap hC] at h
     obtain ⟨f⟩ := h
     exact Hollom.no_spinalMap hC f
+
+-- ci-dev probe (fix2-cancel-group): comment edit
