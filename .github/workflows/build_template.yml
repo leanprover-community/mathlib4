@@ -21,6 +21,13 @@ on:
       runs_on:
         type: string
         required: true
+      large_runs_on:
+        # The runner label for builds with a large predicted cascade. The `route` job
+        # sends `build` and `test_lint` there when the change rebuilds at least 3,000
+        # Mathlib modules. Empty disables the routing.
+        type: string
+        required: false
+        default: ''
       mathlib_ci_ref:
         type: string
         required: false
@@ -49,9 +56,77 @@ env:
   MATHLIB_CACHE_PARALLEL_MAX: ${{ vars.MATHLIB_CACHE_PARALLEL_MAX }}
 
 jobs:
+  route:
+    name: Route
+    if: ${{ inputs.large_runs_on != '' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      pool: ${{ steps.route.outputs.pool }}
+    steps:
+      - name: Checkout the cascade script
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 1
+          sparse-checkout: scripts/predict_cascade.py
+          sparse-checkout-cone-mode: false
+          path: workflow-scripts
+          persist-credentials: false # no later step needs git credentials
+
+      # Predicts the cascade from the files the change touches and the import graph
+      # at the merge-base with master, and picks the pool. Any error picks the
+      # caller's pool. The compare API lists at most 300 files, so a longer list
+      # picks the large pool.
+      - name: Pick the runner pool
+        id: route
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          POOL: ${{ inputs.runs_on }}
+          LARGE_POOL: ${{ inputs.large_runs_on }}
+        run: |
+          set -uo pipefail
+          pool="${POOL}"
+          route() {
+            local compare mb nfiles run modules
+            compare="$(gh api "repos/${REPO}/compare/master...${HEAD_SHA}")" || return
+            mb="$(jq -r '.merge_base_commit.sha // empty' <<< "${compare}")"
+            nfiles="$(jq '.files | length' <<< "${compare}")" || return
+            jq -r '.files[] | .filename, (.previous_filename // empty)' <<< "${compare}" > changed.txt || return
+            if [ "${nfiles}" -ge 300 ]; then
+              echo "The change touches ${nfiles} or more files."
+              pool="${LARGE_POOL}"
+              return
+            fi
+            [ -n "${mb}" ] || return
+            run="$(gh api "repos/${REPO}/actions/runs?head_sha=${mb}&event=push&status=success&branch=master" \
+                    --jq '[.workflow_runs[] | select(.name=="continuous integration")] | .[0].id // ""')" || return
+            if [ -z "${run}" ]; then
+              echo "No successful master build for the merge-base ${mb}."
+              return
+            fi
+            gh run download "${run}" --repo "${REPO}" --name import-graph --dir import-graph || return
+            modules="$(python3 workflow-scripts/scripts/predict_cascade.py import-graph/import_graph.dot changed.txt)" || return
+            echo "The change rebuilds ${modules} Mathlib modules (merge-base ${mb})."
+            if [ "${modules}" -ge 3000 ]; then
+              pool="${LARGE_POOL}"
+            fi
+          }
+          route
+          echo "Runner pool: ${pool}"
+          echo "pool=${pool}" >> "$GITHUB_OUTPUT"
+
   build:
     name: Build
-    runs-on: ${{ inputs.runs_on }}
+    needs: [route]
+    # `route` runs only when the caller enables the routing. A skipped or failed `route`
+    # sets no pool, and the job runs on the caller's pool.
+    if: ${{ !cancelled() }}
+    runs-on: ${{ needs.route.outputs.pool || inputs.runs_on }}
     # This job builds (potentially fork) PR code, so it must not inherit any
     # write-capable token. `actions: read` lets get-tools and get-cache download
     # artifacts from master's runs.
@@ -416,7 +491,7 @@ jobs:
 
   test_lint:
     name: Test and lint
-    needs: [build]
+    needs: [route, build]
     # Runs `test` and `lint` on the same self-hosted pool as `build`, but as a
     # separate job so it runs in parallel with the GitHub-hosted post-build chain
     # (upload_cache -> post_steps) rather than ahead of it. `build` and `test_lint`
@@ -435,7 +510,7 @@ jobs:
     # best-effort over whatever oleans were built. The per-step conditions below
     # match: `test` only on a clean build, `lint` on success-or-failure.
     if: ${{ always() && (needs.build.result == 'success' || needs.build.result == 'failure') }}
-    runs-on: ${{ inputs.runs_on }}
+    runs-on: ${{ needs.route.outputs.pool || inputs.runs_on }}
     # Same as `build`: this job runs (potentially fork) PR code, so it must not
     # inherit any write-capable token.
     permissions:
