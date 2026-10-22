@@ -9,9 +9,6 @@ public import Mathlib.MeasureTheory.Measure.Basic
 
 import Mathlib.Topology.Order.AtTopBotIxx
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Continuity of measures
 
@@ -192,7 +189,7 @@ theorem measure_iInter_eq_iInf_measure_iInter_le [Countable ι] [Preorder ι] [I
   · rw [iInter_comm]
     exact congrArg μ <| iInter_congr fun i ↦ (biInf_const nonempty_Ici).symm
   · exact fun i j h ↦ biInter_mono (Iic_subset_Iic.2 h) fun _ _ ↦ Set.Subset.rfl
-  · exact fun i ↦ .biInter (s := {j | j ≤ i}) (to_countable _) fun _ _ ↦ h _
+  · exact fun i ↦ .biInter (to_countable _) fun _ _ ↦ h _
   · refine hfin.imp fun k hk ↦ ne_top_of_le_ne_top hk <| measure_mono <| iInter₂_subset k ?_
     rfl
 

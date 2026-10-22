@@ -299,13 +299,14 @@ def curlFollowRedirectArgs : Array String :=
   #["--location", "--proto-redir", "=https", "--max-redirs", "5"]
 
 /--
-Retry flags for a cache transfer. Set `supportLegacyCurl` to omit
-`--retry-all-errors` on paths that support older curl versions.
+Retry flags for a cache transfer. Set `supportLegacyCurl` on a path that must
+run on a curl older than 7.71, which rejects `--retry-all-errors`.
 -/
 def curlRetryArgs (supportLegacyCurl : Bool) : Array String :=
   #["--retry", "5"] ++ (if supportLegacyCurl then #[] else #["--retry-all-errors"])
 
-/-- Set curl's parallel transfer limit from `MATHLIB_CACHE_PARALLEL_MAX`. -/
+/-- The `--parallel-max` flag from `MATHLIB_CACHE_PARALLEL_MAX`; empty when the
+variable is unset or not a number. -/
 def curlParallelMaxArgs : IO (Array String) := do
   let some value ← getEnvNonEmpty "MATHLIB_CACHE_PARALLEL_MAX" | return #[]
   let some n := value.toNat? | do

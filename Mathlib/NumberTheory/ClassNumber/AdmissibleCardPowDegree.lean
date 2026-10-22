@@ -11,9 +11,6 @@ public import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
 
 import Mathlib.RingTheory.LocalRing.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Admissible absolute values on polynomials
 

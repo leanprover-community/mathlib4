@@ -7,9 +7,6 @@ module
 
 public import Mathlib.NumberTheory.ArithmeticFunction.Moebius
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # The Moebius function on a unique factorization monoid
 

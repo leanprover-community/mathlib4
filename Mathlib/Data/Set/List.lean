@@ -8,9 +8,6 @@ module
 public import Mathlib.Data.List.Defs
 public import Mathlib.Data.Set.Image
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Lemmas about `List`s and `Set.range`
 

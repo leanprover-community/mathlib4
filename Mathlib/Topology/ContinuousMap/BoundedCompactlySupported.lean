@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Topology.ContinuousMap.Bounded.Normed
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Compactly supported bounded continuous functions
 
@@ -48,7 +45,8 @@ lemma exist_norm_eq [c : Nonempty α] {f : α →ᵇ γ} (h : f ∈ C_cb(α, γ)
     · exact hmax hy
     · simp [image_eq_zero_of_notMem_tsupport hy]
   · suffices f = 0 by simp [this]
-    rwa [not_nonempty_iff_eq_empty, tsupport_eq_empty_iff, ← coe_zero, ← DFunLike.ext'_iff] at hs
+    rwa [not_nonempty_iff_eq_empty, tsupport_eq_empty_iff, ← FunLike.coe_zero (F := α →ᵇ γ),
+      ← DFunLike.ext'_iff] at hs
 
 theorem norm_lt_iff_of_compactlySupported {f : α →ᵇ γ} (h : f ∈ C_cb(α, γ)) {M : ℝ}
     (M0 : 0 < M) : ‖f‖ < M ↔ ∀ (x : α), ‖f x‖ < M := by

@@ -7,9 +7,6 @@ module
 
 public import Mathlib.FieldTheory.PolynomialGaloisGroup
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # The Abel-Ruffini Theorem
 

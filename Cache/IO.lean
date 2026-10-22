@@ -109,7 +109,7 @@ def CURLVERSION :=
   "8.23.0"
 
 def CURLBIN :=
-  -- change file name if we ever need a more recent version to trigger re-download
+  -- The file name carries the version, so a bump triggers a fresh download.
   IO.CACHEDIR / s!"curl-{CURLVERSION}"
 
 def EXE := if System.Platform.isWindows then ".exe" else ""
@@ -121,7 +121,8 @@ def nullDevice : String := if System.Platform.isWindows then "NUL" else "/dev/nu
 def LAKEPACKAGESDIR : FilePath :=
   ".lake" / "packages"
 
-/-- Use the system curl for uploads and prefer the cached binary for downloads. -/
+/-- The curl binary to run: the system curl for uploads; for downloads, the cached
+static binary when it exists. -/
 def getCurl (upload := false) : BaseIO String := do
   return if !upload && (← CURLBIN.pathExists) then CURLBIN.toString else "curl"
 
@@ -221,7 +222,8 @@ def getSrcDir (sp : SearchPath) (mod : Name) : IO FilePath := do
 
   return srcDir
 
-/-- Process curl's stdout line by line. Return the final state, exit code, and stderr. -/
+/-- Run curl and pass each stdout line to `processLine`. Return the final state,
+curl's exit code, and its stderr. -/
 partial def runCurlStreaming (args : Array String) (init : α)
     (processLine : α → String → IO α) (upload := false) : IO (α × UInt32 × String) := do
   let child ← IO.Process.spawn { cmd := ← getCurl upload, args, stdout := .piped, stderr := .piped }
@@ -272,7 +274,10 @@ structure CurlMode where
   parallel : Bool
   retry : Bool := true
 
-/-- Require a suitable system curl for uploads, or choose how downloads drive curl. -/
+/-- For uploads, require a system curl of 8.20 or later. For downloads, choose the
+`CurlMode`: the cached static binary or a system curl of 7.84 or later runs in
+parallel, without retries on 8.18 and 8.19. For an older curl, the tool downloads
+a static binary on Linux x86_64 and aarch64, and runs serially elsewhere. -/
 def validateCurl (upload := false) : IO CurlMode := do
   if !upload && (← CURLBIN.pathExists) then return { parallel := true }
   let version ← curlVersion "curl"
@@ -284,8 +289,7 @@ def validateCurl (upload := false) : IO CurlMode := do
     -- curl 8.18 and 8.19 hang on a pending retry in parallel mode (curl issue #20669).
     let retry := !(version == (8, 18) || version == (8, 19))
     unless retry do
-      IO.println s!"Note: downloads run without curl retries: curl {found} hangs on a pending \
-        retry in parallel mode (curl issue #20669)."
+      IO.println s!"Note: curl {found} runs parallel downloads without retries."
     return { parallel := true, retry }
   if upload then
     throw <| IO.userError s!"Cache uploads require curl ≥{minimum.1}.{minimum.2}. Found {found}."
@@ -299,7 +303,8 @@ def validateCurl (upload := false) : IO CurlMode := do
       "-L", "-o", CURLBIN.toString]
     let _ ← runCmd "chmod" #["u+x", CURLBIN.toString]
     return { parallel := true }
-  IO.println s!"Warning: curl {found} is unsupported for parallel cache downloads."
+  IO.println s!"Warning: curl {found} is too old for parallel cache downloads, so files download \
+    one at a time. Install curl {minimum.1}.{minimum.2} or later."
   return { parallel := false }
 
 /-- Recursively gets all files from a directory with a certain extension -/

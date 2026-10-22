@@ -46,8 +46,8 @@ unless the environment names one), and region; every other `RCLONE_S3_*`
 option inherits from the environment.
 
 The curl tool's non-overwrite guard relies on the store honoring
-`If-None-Match: *`. Parallel curl uploads use `MATHLIB_CACHE_PARALLEL_MAX`
-transfers (50 by default).
+`If-None-Match: *`. The jobs that run the tool on a GitHub runner install a
+pinned curl release from [static-curl](https://github.com/leanprover-community/static-curl).
 
 ## Environment variables
 

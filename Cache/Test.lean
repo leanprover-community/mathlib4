@@ -1820,7 +1820,8 @@ def test_monitorCurl_carries_decomp_state : IO Unit := do
   assertTrue "the decompressed counter survives the round" (s.decomp.decompressed == 42)
   assertTrue "the decompFailed counter survives the round" (s.decomp.decompFailed == 1)
 
-/-- A successful curl exit with missing reports still counts as a failed transfer pass. -/
+/-- A curl run that exits 0 without a report for every transfer counts the missing
+reports as failures. -/
 def test_monitorCurl_counts_unreported_transfers : IO Unit := do
   IO.println "monitorCurl counts unreported transfers as failed:"
   let (s, _) ← withSuppressedOutput <|
