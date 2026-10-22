@@ -34,6 +34,53 @@ by `Algebra.FormallyUnramified.descentMultiplier`.
 
 open scoped Pointwise TensorProduct
 
+namespace Algebra.FormallyUnramified
+
+open Algebra.TensorProduct
+
+variable (A B : Type*) [CommRing A] [CommRing B] [Algebra A B]
+  [FormallyUnramified A B] [EssFiniteType A B]
+  {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
+
+/-- The separability tensor evaluated at the identity and the action of `g`. Modulo an ideal
+`Q`, it equals `1` exactly when `g` belongs to `Q.inertia G`. -/
+noncomputable def smulIdempotent (g : G) : B :=
+  productMap (AlgHom.id A B) (MulSemiringAction.toAlgHom A B g) (elem A B)
+
+lemma isIdempotentElem_smulIdempotent (g : G) : IsIdempotentElem (smulIdempotent A B g) :=
+  (isIdempotentElem_elem A B).map (productMap (AlgHom.id A B) (MulSemiringAction.toAlgHom A B g))
+
+lemma smulIdempotent_mul_smul (g : G) (b : B) :
+    smulIdempotent A B g * (g • b) = smulIdempotent A B g * b := by
+  simpa [smulIdempotent, mul_comm] using
+    congr(productMap (AlgHom.id A B) (MulSemiringAction.toAlgHom A B g) $(one_tmul_mul_elem b))
+
+@[simp]
+lemma smulIdempotent_one : smulIdempotent A B (1 : G) = 1 := by
+  have h : productMap (AlgHom.id A B) (MulSemiringAction.toAlgHom A B (1 : G)) = lmul' A := by
+    ext <;> simp
+  simpa [smulIdempotent, h] using lmul_elem
+
+@[simp]
+lemma mk_smulIdempotent_eq_one_iff (Q : Ideal B) (g : G) :
+    Ideal.Quotient.mk Q (smulIdempotent A B g) = 1 ↔ g ∈ Q.inertia G := by
+  simp_rw [Q.mem_inertia, ← Ideal.Quotient.mk_eq_mk_iff_sub_mem]
+  refine ⟨fun he b ↦ ?_, fun hg ↦ ?_⟩
+  · simpa [he] using congr(Ideal.Quotient.mk Q $(smulIdempotent_mul_smul A B g b))
+  · rw [← map_one (Ideal.Quotient.mk Q), ← smulIdempotent_one A B (G := G)]
+    simp_rw [smulIdempotent, ← Ideal.Quotient.mkₐ_eq_mk A, ← AlgHom.comp_apply]
+    congr 1
+    ext <;> simp [hg]
+
+open Classical in
+lemma mk_smulIdempotent (Q : Ideal B) [Q.IsPrime] (g : G) :
+    Ideal.Quotient.mk Q (smulIdempotent A B g) = if g ∈ Q.inertia G then 1 else 0 := by
+  have h := IsIdempotentElem.iff_eq_zero_or_one.mp
+    ((isIdempotentElem_smulIdempotent A B g).map (Ideal.Quotient.mk Q))
+  grind [mk_smulIdempotent_eq_one_iff]
+
+end Algebra.FormallyUnramified
+
 -- PRed
 namespace Algebra.FormallyUnramified
 
@@ -126,48 +173,9 @@ namespace Algebra.FormallyUnramified
 
 open Algebra.TensorProduct
 
-variable (A B : Type*) [CommRing A] [CommRing B] [Algebra A B]
+variable {A B G : Type*} [CommRing A] [CommRing B] [Algebra A B]
   [FormallyUnramified A B] [EssFiniteType A B]
-  {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
-
-/-- The separability tensor evaluated at the identity and the action of `g`. Modulo an ideal
-`Q`, it equals `1` exactly when `g` belongs to `Q.inertia G`. -/
-noncomputable def smulIdempotent (g : G) : B :=
-  productMap (AlgHom.id A B) (MulSemiringAction.toAlgHom A B g) (elem A B)
-
-lemma isIdempotentElem_smulIdempotent (g : G) : IsIdempotentElem (smulIdempotent A B g) :=
-  (isIdempotentElem_elem A B).map (productMap (AlgHom.id A B) (MulSemiringAction.toAlgHom A B g))
-
-lemma smulIdempotent_mul_smul (g : G) (b : B) :
-    smulIdempotent A B g * (g • b) = smulIdempotent A B g * b := by
-  simpa [smulIdempotent, mul_comm] using
-    congr(productMap (AlgHom.id A B) (MulSemiringAction.toAlgHom A B g) $(one_tmul_mul_elem b))
-
-@[simp]
-lemma smulIdempotent_one : smulIdempotent A B (1 : G) = 1 := by
-  have h : productMap (AlgHom.id A B) (MulSemiringAction.toAlgHom A B (1 : G)) = lmul' A := by
-    ext <;> simp
-  simpa [smulIdempotent, h] using lmul_elem
-
-@[simp]
-lemma mk_smulIdempotent_eq_one_iff (Q : Ideal B) (g : G) :
-    Ideal.Quotient.mk Q (smulIdempotent A B g) = 1 ↔ g ∈ Q.inertia G := by
-  simp_rw [Q.mem_inertia, ← Ideal.Quotient.mk_eq_mk_iff_sub_mem]
-  refine ⟨fun he b ↦ ?_, fun hg ↦ ?_⟩
-  · simpa [he] using congr(Ideal.Quotient.mk Q $(smulIdempotent_mul_smul A B g b))
-  · rw [← map_one (Ideal.Quotient.mk Q), ← smulIdempotent_one A B (G := G)]
-    simp_rw [smulIdempotent, ← Ideal.Quotient.mkₐ_eq_mk A, ← AlgHom.comp_apply]
-    congr 1
-    ext <;> simp [hg]
-
-open Classical in
-lemma mk_smulIdempotent (Q : Ideal B) [Q.IsPrime] (g : G) :
-    Ideal.Quotient.mk Q (smulIdempotent A B g) = if g ∈ Q.inertia G then 1 else 0 := by
-  have h := IsIdempotentElem.iff_eq_zero_or_one.mp
-    ((isIdempotentElem_smulIdempotent A B g).map (Ideal.Quotient.mk Q))
-  grind [mk_smulIdempotent_eq_one_iff]
-
-variable {A B}
+  [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
 
 section Linearize
 
