@@ -173,3 +173,6 @@ theorem exists_not_solvable_by_rad : ∃ x : ℂ, IsAlgebraic ℚ x ∧ x ∉ so
   exact ⟨x, ⟨Φ ℚ 4 2, (monic_Phi 4 2).ne_zero, hx⟩, not_solvable_by_rad' x hx⟩
 
 end AbelRuffini
+
+-- ci-dev probe (fix-broken): deliberate build error
+theorem parsteps_probe_failure : (1 : Nat) = 2 := rfl
