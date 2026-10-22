@@ -1,5 +1,7 @@
 # Get this commit's oleans, in two phases:
-#   1. Warm the cache from the `cache-snapshot` GitHub artifact (canonical repo only).
+#   1. Warm the cache from the `cache-snapshot` GitHub artifact (canonical repo only). With
+#      `warm_from_staging`, also warm it from the `cache-staging` artifact of this commit's
+#      staging run.
 #   2. Fetch this commit's oleans from the remote cache with the trusted master-built binary.
 # The fetch is HEAD-scoped (reads only this commit's own cache scope). The warm is fail-safe
 # (any failure → just the remote fetch) and its source is hardcoded, so nothing can redirect
@@ -13,6 +15,12 @@ inputs:
   cache_bin:
     description: Path to the trusted `cache` binary, relative to `working_directory`.
     required: true
+  warm_from_staging:
+    description: >
+      'true' to also warm the cache from the `cache-staging` artifact of the bors staging run
+      at this commit. Only master pushes set it: bors fast-forwards master to a staging commit.
+    required: false
+    default: 'false'
 runs:
   using: composite
   steps:
@@ -96,6 +104,46 @@ runs:
         path: /home/lean/.cache/mathlib
         repository: leanprover-community/mathlib4
         run-id: ${{ steps.resolve.outputs.run_id }}
+        github-token: ${{ github.token }}
+
+    # The staging run at this commit built the files that the snapshot of the previous master
+    # commit does not hold. Staging is the trusted lane that uploaded them to the master
+    # container, so its artifact holds the same trusted files.
+    - name: Resolve staging cache artifact
+      id: resolve_staging
+      if: ${{ inputs.warm_from_staging == 'true' && github.repository == 'leanprover-community/mathlib4' }}
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        set -uo pipefail
+        api() { local out; out=$(gh api "$@" 2>/dev/null) && printf '%s\n' "${out}"; }
+        cutoff=$(date -u -d '2 days ago' +%Y-%m-%dT%H:%M:%SZ)
+        # bors fast-forwards master once the required jobs pass, so the staging run can still
+        # be in progress: select runs by commit, not by conclusion.
+        run_ids=$(api "repos/leanprover-community/mathlib4/actions/workflows/bors.yml/runs?branch=staging&event=push&head_sha=${GITHUB_SHA}&created=>=${cutoff}&per_page=10" \
+          --jq '.workflow_runs[].id')
+        run_id=""
+        for id in ${run_ids}; do
+          if api "repos/leanprover-community/mathlib4/actions/runs/${id}/artifacts?name=cache-staging&per_page=100" \
+              --jq '[.artifacts[] | select(.name == "cache-staging" and .expires_at > (now | todate))][0] // empty' \
+              | grep -q .; then
+            run_id="${id}"
+            break
+          fi
+        done
+        echo "Resolved staging cache-staging run_id: '${run_id}'"
+        echo "run_id=${run_id}" >> "$GITHUB_OUTPUT"
+
+    - name: Warm cache from the staging artifact
+      if: ${{ steps.resolve_staging.outputs.run_id != '' }}
+      continue-on-error: true # fail-safe: fall back to the remote fetch (step 2)
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      with:
+        name: cache-staging
+        path: /home/lean/.cache/mathlib
+        repository: leanprover-community/mathlib4
+        run-id: ${{ steps.resolve_staging.outputs.run_id }}
         github-token: ${{ github.token }}
 
     # 2. Fetch this commit's oleans from the remote cache with the trusted `cache` binary.
