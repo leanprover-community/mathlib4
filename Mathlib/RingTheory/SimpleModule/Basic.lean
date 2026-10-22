@@ -516,20 +516,17 @@ theorem linearEquiv_of_ne_zero [IsSemisimpleModule R M] [IsSimpleModule R N]
     exists_ne_zero_of_sSup_eq_top h _ (IsSemisimpleModule.sSup_simples_eq_top ..)
   ⟨m, ⟨.symm <| .ofBijective _ ((bijective_or_eq_zero _).resolve_right ne)⟩⟩
 
-theorem isEmpty_linearEquiv_iff_forall_linearMap_eq_zero [IsSimpleModule R M] [IsSimpleModule R N] :
-    IsEmpty (M ≃ₗ[R] N) ↔ ∀ f : M →ₗ[R] N, f = 0 := by
-  refine Iff.intro (fun h _ => ?_) fun hf => ?_
-  · by_contra
-    exact h.false (LinearEquiv.ofBijective _ (bijective_of_ne_zero this))
-  refine ⟨fun f => ?_⟩
-  have : Nontrivial M := IsSimpleModule.nontrivial R M
-  obtain ⟨v, hv⟩ := exists_ne (0 : M)
-  apply hv
-  rw [← LinearEquiv.symm_apply_apply f v, ← f.coe_toLinearMap, hf f, zero_apply, map_zero]
+theorem _root_.IsSimpleModule.nonempty_linearEquiv_iff_exists_ne_zero [IsSimpleModule R M]
+    [IsSimpleModule R N] : Nonempty (M ≃ₗ[R] N) ↔ ∃ f : M →ₗ[R] N, f ≠ 0 := by
+  refine Iff.intro (fun ⟨h⟩ => ⟨h, ?_⟩) fun ⟨f, hf⟩ => ?_
+  · have : Nontrivial M := IsSimpleModule.nontrivial R M
+    exact LinearMap.ne_zero_of_injective h.injective
+  exact ⟨LinearEquiv.ofBijective _ (bijective_of_ne_zero hf)⟩
 
-theorem isEmpty_linearEquiv_iff_subsingleton [IsSimpleModule R M] [IsSimpleModule R N] :
-    IsEmpty (M ≃ₗ[R] N) ↔ Subsingleton (M →ₗ[R] N) := by
-  rw [isEmpty_linearEquiv_iff_forall_linearMap_eq_zero, subsingleton_iff_forall_eq]
+theorem _root_.IsSimpleModule.isEmpty_linearEquiv_iff_subsingleton [IsSimpleModule R M]
+    [IsSimpleModule R N] : IsEmpty (M ≃ₗ[R] N) ↔ Subsingleton (M →ₗ[R] N) := by
+  rw [subsingleton_iff_forall_eq 0, ← not_iff_not, not_isEmpty_iff]
+  simp [IsSimpleModule.nonempty_linearEquiv_iff_exists_ne_zero]
 
 /-- Schur's Lemma makes the endomorphism ring of a simple module a division ring. -/
 noncomputable instance _root_.Module.End.instDivisionRing
