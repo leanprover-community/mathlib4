@@ -131,6 +131,7 @@ elab_rules : term
 /-- `(Π i, M i) →ₘₗ[R] N` is the type of `R`-multilinear maps from `Π i, M i` to `N`. -/
 notation:25 M " →ₘₗ[" R:25 "] " N:0 => MultilinearMap R (pi_to_lam% M) N
 
+/-- Delaborator for `MultilinearMap`. -/
 @[app_delab MultilinearMap]
 public meta def delabMultilinearMap : Delab := whenPPOption getPPNotation do
   let e ← getExpr
