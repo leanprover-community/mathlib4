@@ -620,8 +620,7 @@ theorem le_frobenius_nnnorm_iff {A : Matrix m n α} {r : ℝ≥0} :
   simp
 
 theorem nnnorm_apply_le_frobenius_nnnorm (A : Matrix m n α) (i : m) (j : n) : ‖A i j‖₊ ≤ ‖A‖₊ := by
-  grw [frobenius_nnnorm_def, ← NNReal.sqrt_eq_rpow, NNReal.le_sqrt_iff_sq_le, ← NNReal.rpow_ofNat,
-    ← Finset.single_le_sum, ← Finset.single_le_sum] <;> simp
+  grw [le_frobenius_nnnorm_iff, ← Finset.single_le_sum, ← Finset.single_le_sum] <;> simp
 
 theorem norm_apply_le_frobenius_norm (A : Matrix m n α) (i : m) (j : n) : ‖A i j‖ ≤ ‖A‖ :=
   nnnorm_apply_le_frobenius_nnnorm A i j
@@ -767,10 +766,9 @@ lemma norm_le_frobenius_norm [SeminormedAddCommGroup R] (A : Matrix m n R) :
 lemma frobenius_nnnorm_le_sqrt_card_mul_nnnorm [SeminormedAddCommGroup R] (A : Matrix m n R) :
     (open scoped Norms.Frobenius in ‖A‖₊) ≤
       .sqrt (Fintype.card m * Fintype.card n) * (open scoped Norms.Elementwise in ‖A‖₊) := by
-  rw [frobenius_nnnorm_le_iff, mul_pow, NNReal.sq_sqrt, mul_assoc]
-  simp_rw [← nsmul_eq_mul]
-  refine Finset.sum_le_card_nsmul _ _ _ fun i _ => Finset.sum_le_card_nsmul _ _ _ fun j _ => ?_
-  exact pow_le_pow_left₀ zero_le (nnnorm_apply_le_nnnorm A) 2
+  rw [frobenius_nnnorm_le_iff, mul_pow, NNReal.sq_sqrt]
+  grw [nnnorm_apply_le_nnnorm A]
+  simp [mul_assoc]
 
 /-- The Frobenius norm is bounded by a multiple of the elementwise norm. -/
 lemma frobenius_norm_le_sqrt_card_mul_norm [SeminormedAddCommGroup R] (A : Matrix m n R) :
