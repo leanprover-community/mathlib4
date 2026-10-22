@@ -369,19 +369,19 @@ theorem Matrix.conjTranspose_tsum [StarAddMonoid R] [ContinuousStar R] [T2Space 
     continuous_id.matrix_conjTranspose continuous_id.matrix_conjTranspose
     conjTranspose_conjTranspose
 
+lemma Matrix.isClosed_ofPred_isHermitian [StarAddMonoid R] [ContinuousStar R] [T2Space R] :
+    IsClosed {X : Matrix n n R | X.IsHermitian} :=
+  isClosed_ofPred_isSelfAdjoint
+
 lemma Matrix.IsHermitian.of_hasSum [StarAddMonoid R] [ContinuousStar R] [T2Space R] [L.NeBot]
     {f : X → Matrix n n R} {a : Matrix n n R} (h : HasSum f a L) (hf : ∀ i, (f i).IsHermitian) :
     a.IsHermitian :=
-  h.matrix_conjTranspose.unique (by simpa only [show ∀ i, (f i)ᴴ = f i from hf] using h)
+  h.isSelfAdjoint hf
 
 lemma Matrix.IsHermitian.tsum [StarAddMonoid R] [ContinuousStar R] [T2Space R]
     {f : X → Matrix n n R} (hf : ∀ i, (f i).IsHermitian) :
     (∑'[L] a, f a).IsHermitian :=
   IsSelfAdjoint.tsum hf
-
-lemma Matrix.isClosed_ofPred_isHermitian [StarAddMonoid R] [ContinuousStar R] [T2Space R] :
-    IsClosed {X : Matrix n n R | X.IsHermitian} :=
-  isClosed_ofPred_isSelfAdjoint
 
 theorem HasSum.matrix_diagonal [DecidableEq n] {f : X → n → R} {a : n → R} (hf : HasSum f a L) :
     HasSum (fun x => diagonal (f x)) (diagonal a) L :=
@@ -491,7 +491,7 @@ end BlockMatrices
 
 end tsum
 
-section tsum_posdef
+section tsum_possemidef
 variable [Ring R] [TopologicalSpace R] [StarRing R] [IsTopologicalRing R] [ContinuousStar R]
 variable [PartialOrder R] [OrderClosedTopology R]
 
@@ -506,13 +506,11 @@ lemma PosSemidef.of_hasSum [IsOrderedAddMonoid R]
     {f : α → Matrix n n R} {a : Matrix n n R} {L : SummationFilter α} [L.NeBot] (h : HasSum f a L)
     (hf : ∀ i, (f i).PosSemidef) :
     a.PosSemidef :=
-  ⟨.of_hasSum h fun i ↦ (hf i).1, fun x ↦
-    (hasSum_sum fun r _ ↦ hasSum_sum fun c _ ↦
-      (((Pi.hasSum.mp (Pi.hasSum.mp h r) c).mul_left _).mul_right _)).nonneg fun i ↦ (hf i).2 x⟩
+  h.mem (s := PosSemidef.addSubmonoid n R) isClosed_ofPred_posSemidef hf
 
 lemma PosSemidef.tsum [IsOrderedAddMonoid R]
     {f : α → Matrix n n R} {L : SummationFilter α} (hf : ∀ i, (f i).PosSemidef) :
     (∑'[L] a, f a).PosSemidef :=
   tsum_mem (s := PosSemidef.addSubmonoid n R) isClosed_ofPred_posSemidef hf L
 
-end tsum_posdef
+end tsum_possemidef
