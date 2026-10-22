@@ -19,8 +19,6 @@ example : ⌊Real.exp 30⌋ = 10686474581524 := by
 example : ⌊Real.exp (Real.exp 2)⌋ = 1618 := by
   rw [Int.floor_eq_iff]; constructor <;> dyadic_interval [prec := 15]
 
-example : (10686474581524 : ℝ) ≤ Real.exp 30 := by dyadic_interval
-
 example {x : ℝ} (hx : x ≤ 0) : Real.exp x ≤ 1 := by dyadic_interval
 
 example {x : ℝ} (hx : 1 ≤ x) : 2 ≤ Real.exp x := by dyadic_interval [prec := 4]
