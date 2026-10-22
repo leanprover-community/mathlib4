@@ -5,9 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 public import Mathlib.CategoryTheory.Shift.Opposite
 public import Mathlib.CategoryTheory.Shift.Pullback
+
+import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 
 /-!
 # The shift on the opposite category of a pretriangulated category

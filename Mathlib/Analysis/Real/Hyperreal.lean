@@ -7,10 +7,11 @@ module
 
 public import Mathlib.Algebra.Order.Ring.StandardPart
 public import Mathlib.Order.Filter.FilterProduct
-public import Mathlib.Algebra.Order.Module.Field
-public import Mathlib.Data.EReal.Inv
-public import Mathlib.Topology.Algebra.InfiniteSum.Order
 public import Mathlib.Topology.MetricSpace.Bounded
+
+import Mathlib.Algebra.Order.Module.Field
+import Mathlib.Data.EReal.Inv
+import Mathlib.Topology.Algebra.InfiniteSum.Order
 
 /-!
 # Construction of the hyperreal numbers as an ultraproduct of real sequences
@@ -166,8 +167,10 @@ theorem archimedeanClassMk_coe_nonneg (x : ℝ) : 0 ≤ mk (x : ℝ*) :=
   mk_map_nonneg_of_archimedean coeRingHom x
 
 @[simp]
-theorem archimdeanClassMk_coe {x : ℝ} (hx : x ≠ 0) : mk (x : ℝ*) = 0 :=
+theorem archimedeanClassMk_coe {x : ℝ} (hx : x ≠ 0) : mk (x : ℝ*) = 0 :=
   mk_map_of_archimedean' coeRingHom hx
+
+@[deprecated (since := "2026-09-17")] alias archimdeanClassMk_coe := archimedeanClassMk_coe
 
 @[simp]
 theorem stdPart_coe (x : ℝ) : stdPart (x : ℝ*) = x :=

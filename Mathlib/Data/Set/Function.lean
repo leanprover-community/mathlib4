@@ -782,7 +782,7 @@ theorem BijOn.insert (h₁ : BijOn f s t) (h₂ : f a ∉ t) :
 
 theorem BijOn.sdiff_singleton (h₁ : BijOn f s t) (h₂ : a ∈ s) :
     BijOn f (s \ {a}) (t \ {f a}) := by
-  convert! h₁.subset_left sdiff_subset
+  convert h₁.subset_left sdiff_subset
   simp [h₁.injOn.image_sdiff, h₁.image_eq, h₂, inter_eq_self_of_subset_right]
 
 end bijOn
@@ -910,9 +910,6 @@ theorem image_eq_preimage_of_leftInvOn_injOn {f : α → β} {g : β → α} {s 
     refine ⟨g x, hx, Set.InjOn.rightInvOn_of_leftInvOn ginj hgf (Set.mapsTo_preimage g s) ?_ hx⟩
     intro y hy
     simpa [hgf hy] using hy
-
-@[deprecated (since := "2026-03-27")]
-alias image_eq_preimage_of_leftInvOn_injOn_mapsTo := image_eq_preimage_of_leftInvOn_injOn
 
 end RightInvOn
 

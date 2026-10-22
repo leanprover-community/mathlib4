@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Group.EvenFunction
 public import Mathlib.Data.ZMod.Units
 public import Mathlib.NumberTheory.MulChar.Basic
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Dirichlet Characters
@@ -314,7 +313,7 @@ theorem changeLevel_primitiveCharacter :
 lemma primitiveCharacter_isPrimitive : IsPrimitive (χ.primitiveCharacter) := by
   by_cases h : χ.conductor = 0
   · rw [isPrimitive_def]
-    convert! conductor_eq_zero_iff_level_eq_zero.mpr h
+    convert conductor_eq_zero_iff_level_eq_zero.mpr h
   · exact le_antisymm (Nat.le_of_dvd (Nat.pos_of_ne_zero h) (conductor_dvd_level _)) <|
       conductor_le_conductor_mem_conductorSet <| conductor_mem_conductorSet χ
 
@@ -382,7 +381,7 @@ theorem primitiveCharacter_changeLevel_apply [Nontrivial R] {m : ℕ} [NeZero m]
   by_cases ha : IsCoprime a χ.conductor
   · suffices changeLevel (dvd_of_eq <| conductor_changeLevel ..)
         (changeLevel hm χ).primitiveCharacter = χ.primitiveCharacter by
-      have := DFunLike.congr_fun this (a : ZMod _)
+      have := congr($this ((a : ZMod _)))
       rwa [changeLevel_eq_cast_of_dvd' _ _ ha] at this
     apply changeLevel_injective (χ.conductor_dvd_level.trans hm)
     rw [← changeLevel_trans, changeLevel_primitiveCharacter,

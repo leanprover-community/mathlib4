@@ -6,8 +6,8 @@ Authors: Timo Kraenzle, Judith Ludwig, Bryan Wang, Christian Merten,
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Properties
 public import Mathlib.AlgebraicGeometry.Fiber
+public import Mathlib.AlgebraicGeometry.Properties
 
 /-!
 # Geometrically-`P` schemes over a field
@@ -114,7 +114,7 @@ lemma geometrically_iff_forall_fiberToSpecResidueField :
   apply H y (Spec.map φ) p snd
   simp only [Scheme.SpecToEquivOfField, Equiv.coe_fn_symm_mk] at h
   refine .flip (.of_bot (.flip ?_) ?_ (IsPullback.of_hasPullback f (Y.fromSpecResidueField y)).flip)
-  · convert! h
+  · convert h
     simp [p]
   · simp [p, Scheme.Hom.fiberToSpecResidueField]
 

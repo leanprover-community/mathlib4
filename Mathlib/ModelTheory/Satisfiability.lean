@@ -5,10 +5,11 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.ModelTheory.Ultraproducts
 public import Mathlib.ModelTheory.Bundled
-public import Mathlib.ModelTheory.Skolem
-public import Mathlib.Order.Filter.AtTopBot.Basic
+
+import Mathlib.ModelTheory.Skolem
+import Mathlib.ModelTheory.Ultraproducts
+import Mathlib.Order.Filter.AtTopBot.Basic
 
 /-!
 # First-Order Satisfiability
