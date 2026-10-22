@@ -269,6 +269,8 @@ jobs:
               # it reads its context from LEAN_SRC_PATH (forwarded above), and no PR code
               # runs with write access to `cache-staging/`. Use the trusted toolchain's
               # `lean`/`leantar` (see setup-build-env).
+              # PROBE: hold the member open so that a cancel lands while it runs.
+              echo "probe: staging member sleeps 300 s"; sleep 300; echo "probe: staging member woke up"
               export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
               cd pr-branch
               ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage
