@@ -9,9 +9,6 @@ public import Mathlib.Order.Bounds.Basic
 public import Mathlib.Order.SetNotation
 public import Mathlib.Order.WellFounded
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Definitions of conditionally complete lattices
 

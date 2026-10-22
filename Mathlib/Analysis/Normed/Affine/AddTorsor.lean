@@ -13,9 +13,6 @@ public import Mathlib.Topology.Instances.RealVectorSpace
 
 import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Torsors of normed space actions.
 

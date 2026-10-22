@@ -8,9 +8,6 @@ module
 public import Mathlib.Topology.Algebra.Affine
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Continuous affine maps.
 
