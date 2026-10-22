@@ -49,6 +49,7 @@ theorem LinearMap.exists_map_addHaar_eq_smul_addHaar' (h : Function.Surjective L
   follows from these two and linear algebra, as `L` can be interpreted as the composition of the
   projection `P` on a complement `T` to its kernel `S`, together with a linear equivalence. -/
   have : FiniteDimensional 𝕜 E := .of_locallyCompactSpace 𝕜
+  have : FiniteDimensional 𝕜 F := .of_surjective L h
   have : ProperSpace F := by
     rcases subsingleton_or_nontrivial E with hE | hE
     · have : Subsingleton F := Function.Surjective.subsingleton h
