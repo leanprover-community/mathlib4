@@ -89,7 +89,7 @@ def ExSum := Common.ExSum (BaseType sAlg) sA
 set_option linter.unusedVariables false in
 variable {a} in
 /-- Evaluates a numeric literal in the algebra `A` by lifting it through the base ring `R`. -/
-def evalCast (cR : Algebra.Cache q($sR)) (cA : Algebra.Cache q($sA)):
+def evalCast (cR : Algebra.Cache q($sR)) (cA : Algebra.Cache q($sA)) :
     NormNum.Result a → Option (Common.Result (ExSum sAlg) q($a))
   | .isNat _ (.lit (.natVal 0)) p => do
     assumeInstancesCommute

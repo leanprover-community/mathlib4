@@ -34,11 +34,11 @@ open Filter
 
 open scoped Topology
 
-variable {𝕜 A : Type*}
+variable {𝕜 A B : Type*}
 
 section SeminormedRing
 
-variable [NormedField 𝕜] [SeminormedRing A] [NormedAlgebra 𝕜 A]
+variable [NormedField 𝕜] [SeminormedRing A] [SeminormedRing B] [NormedAlgebra 𝕜 A]
 
 /-- The limit `‖a ^ k‖ ^ (1 / k)` of an element `a` in a normed ring.
 We use `k : ℕ+` to ease the eventual generalization to `NonUnitalSeminormedRing`.
@@ -159,6 +159,36 @@ theorem gelfandRadius_le_of_bound {a : A} {C r : ℝ} (hr : 0 ≤ r)
   filter_upwards [eventually_ne_atTop 0] with n hn
   grw [h n, Real.mul_rpow hC.le (by positivity), Real.pow_rpow_inv_natCast hr hn]
 
+theorem gelfandRadius_le_of_norm_pow_le {a : A} {b : B} (C : ℝ) (h : ∀ n, ‖a ^ n‖ ≤ C * ‖b ^ n‖) :
+    gelfandRadius a ≤ gelfandRadius b := by
+  refine le_of_forall_gt_imp_ge_of_dense fun r hr ↦ ?_
+  have ⟨D, _, hD⟩ := norm_pow_le_mul_pow_of_gelfandRadius_lt b hr
+  exact gelfandRadius_le_of_bound (C := max C 0 * D) ((gelfandRadius_nonneg b).trans hr.le)
+    fun _ ↦ by grw [h, le_max_left C 0, hD, mul_assoc]
+
+theorem gelfandRadius_eq_of_norm_pow_eq {a : A} {b : B} (h : ∀ n, ‖a ^ n‖ = ‖b ^ n‖) :
+    gelfandRadius a = gelfandRadius b :=
+  le_antisymm (gelfandRadius_le_of_norm_pow_le 1 (by simp [h]))
+    (gelfandRadius_le_of_norm_pow_le 1 (by simp [h]))
+
+@[simp]
+theorem gelfandRadius_star [StarRing A] [NormedStarGroup A] (a : A) :
+    gelfandRadius (star a) = gelfandRadius a :=
+  gelfandRadius_eq_of_norm_pow_eq <| by simp [← star_pow]
+
+@[simp]
+theorem MulOpposite.gelfandRadius_op (a : A) : gelfandRadius (op a) = gelfandRadius a :=
+  gelfandRadius_eq_of_norm_pow_eq <| by simp [← op_pow, norm_op]
+
+@[simp]
+theorem MulOpposite.gelfandRadius_unop (a : Aᵐᵒᵖ) : gelfandRadius (unop a) = gelfandRadius a := by
+  rw [← gelfandRadius_op, op_unop]
+
+theorem Isometry.gelfandRadius_map {F : Type*} [FunLike F A B] [MonoidWithZeroHomClass F A B]
+    {f : F} (hf : Isometry f) (a : A) :
+    gelfandRadius (f a) = gelfandRadius a :=
+  gelfandRadius_eq_of_norm_pow_eq <| by simp [← map_pow, hf.norm_map_of_map_zero (map_zero f)]
+
 theorem Commute.gelfandRadius_add_le {a b : A} (h : Commute a b) :
     gelfandRadius (a + b) ≤ gelfandRadius a + gelfandRadius b := by
   refine le_add_of_forall_lt fun x hx y hy ↦ ?_
@@ -177,7 +207,7 @@ theorem Commute.gelfandRadius_mul_le {a b : A} (h : Commute a b) :
   simp_rw [h.mul_pow]
   grw [norm_mul_le, Real.mul_rpow] <;> positivity
 
-theorem Pi.gelfandRadius_eq {ι : Type*} [Fintype ι] {A : ι → Type*} [∀ i, SeminormedRing (A i)]
+theorem Pi.gelfandRadius_eq {ι : Type*} [Fintype ι] {A : ι → Type*} [Π i, SeminormedRing (A i)]
     (a : Π i, A i) : gelfandRadius a = ⨆ i, gelfandRadius (a i) := by
   rcases isEmpty_or_nonempty ι
   · simp [Subsingleton.elim a 0]

@@ -42,12 +42,7 @@ theorem gelfandRadius_mul_comm (A : Matrix m n R) (B : Matrix n m R) :
 
 theorem gelfandRadius_blockDiagonal (M : n → Matrix m m R) :
     gelfandRadius (Matrix.blockDiagonal M) = ⨆ i, gelfandRadius (M i) := by
-  let f : (n → Matrix m m R) →*₀ Matrix (m × n) (m × n) R :=
-  { toFun := blockDiagonal
-    map_zero' := blockDiagonal_zero
-    map_one' := blockDiagonal_one
-    map_mul' := blockDiagonal_mul }
-  have hf : Isometry f := isometry_blockDiagonal
-  exact (hf.gelfandRadius_apply_eq M).trans (Pi.gelfandRadius_eq M)
+  have h : Isometry (Matrix.blockDiagonalRingHom m n R) := linfty_opNorm_isometry_blockDiagonal
+  exact (h.gelfandRadius_map M).trans (Pi.gelfandRadius_eq M)
 
 end Matrix
