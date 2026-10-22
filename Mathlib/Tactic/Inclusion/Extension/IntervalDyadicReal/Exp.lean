@@ -62,11 +62,11 @@ theorem ratBall_mem {x : ℝ} {c r : ℤ} {d : ℕ} (hx : |x - c / d| ≤ r / d)
 bound of `Real.exp_bound`, rounded outward to precision `prec`. This is only intended for use
 when `| a / b | ≤ 1`. -/
 @[expose]
-def expRat (a : ℤ) (b n prec : ℕ) : Interval Dyadic :=
+def expRatTaylor (a : ℤ) (b n prec : ℕ) : Interval Dyadic :=
   ratBall (n * expPartialSumNum a b n) ((n + 1) * |a ^ n|) (n * (b ^ n * n.factorial)) prec
 
-theorem expRat_mem (a : ℤ) {b : ℕ} (hb : b ≠ 0) (hab : a.natAbs ≤ b) {n : ℕ} (hn : 0 < n)
-    (prec : ℕ) : Real.exp (a / b) ∈ expRat a b n prec := by
+theorem expRatTaylor_mem (a : ℤ) {b : ℕ} (hb : b ≠ 0) (hab : a.natAbs ≤ b) {n : ℕ} (hn : 0 < n)
+    (prec : ℕ) : Real.exp (a / b) ∈ expRatTaylor a b n prec := by
   have hy : |(a : ℝ) / b| ≤ 1 := by
     rw [abs_div, Nat.abs_cast, div_le_one (by positivity), ← Int.cast_abs, ← Int.natCast_natAbs]
     norm_cast
@@ -78,7 +78,9 @@ theorem expRat_mem (a : ℤ) {b : ℕ} (hb : b ≠ 0) (hab : a.natAbs ≤ b) {n 
   push_cast
   field_simp
 
-/-- Round the endpoints of `I` outward to precision `prec`. -/
+-- TODO: refactor this to a general util file once there's a second user.
+/-- Round the endpoints of `I` outward to precision `prec`. This allows downstream intervals to
+not carry an unnecessary number of bits (e.g. due to taking a large power in the case of `exp`). -/
 @[expose]
 def roundOut (I : Interval Dyadic) (prec : ℕ) : Interval Dyadic :=
   ⟨I.lb.map (Dyadic.roundDown · prec), I.ub.map (Dyadic.roundUp · prec)⟩
@@ -92,14 +94,33 @@ theorem roundOut_mem {x : ℝ} {I : Interval Dyadic} (hx : x ∈ I) (prec : ℕ)
   · obtain ⟨u, hu, rfl⟩ := WithTop.map_eq_some_iff.mp hc
     exact (hx.2 u hu).trans (Dyadic.toReal_le_toReal.mpr Dyadic.le_roundUp)
 
-/-- An enclosure of `exp x` as `exp (x / m) ^ m`, rounded outward to the working precision `p`
-right after the power. `m = 16 (⌊2 |x|⌋ + 1)` makes `|x / m| < 1 / 32`, so each Taylor term gains
-at least 5 bits plus the factorial's, and `(p + 1) / 8 + 4` terms reach `2 ^ -p`. -/
+/-- An enclosure of `exp x` by rewriting as `exp (x / m) ^ m` so that `|x / m| < 1 / 32` to make
+the Taylor series converge quickly. The interval is rounded outward after the power to drop the
+redundant bits for the consumers.
+
+Some relevant precision constants are chosen as follows:
+- `m = 16 (⌊2 |x|⌋ + 1)` to shrink the exponent below `1/32`.
+- `precTaylor` is the precision of `exp (x / m)` requested. The power turns an absolute error `δ` on
+  `exp (x / m)` into about `m * exp x * δ` on `exp x`, since its derivative is
+  `m * exp (x / m) ^ (m - 1)`. So `precTaylor` adds three amounts to `prec`.
+  + `powerBits` is at least `⌈ log₂ m ⌉`.
+  + `sizeBits = ⌊ 1.5x ⌋ + 1` (`1.5 > log₂ e`) which bounds the number of bits above 1 for `exp x`.
+  + a constant (`8` here) so that the the powered interval is narrower than the requested
+  precision, to make it more likely that the resulting interval has width `2^{-prec}`.
+- `taylorTerms` terms bring the Taylor remainder below `2 ^{-precTaylor}`. Each term shrinks the
+  remainder by at least 5 bits due to the `1/32` bound on the exponent, with further shrinking
+  from the factorial. It's sufficient for the number of terms `n` to satisfy
+  `5n + log₂ (n!) ≥ precTaylor + 1`, and we take a very crude bound here using `log₂(n!) ≥ n - 1`.
+-/
 @[expose]
 def expPoint (x : Dyadic) (prec : ℕ) : Interval Dyadic :=
-  let m := 16 * (2 * x.toRat.num.natAbs / x.toRat.den + 1)
-  let p := prec + Nat.log2 m + 1 + 3 * x.toRat.num.toNat / (2 * x.toRat.den) + 8
-  roundOut ((expRat x.toRat.num (x.toRat.den * m) ((p + 1) / 8 + 4) p).pow m) p
+  let r := x.toRat
+  let m := 16 * (2 * r.num.natAbs / r.den + 1)
+  let powerBits := Nat.log2 m + 1
+  let sizeBits := 3 * r.num.toNat / (2 * r.den) + 1
+  let precTaylor := prec + powerBits + sizeBits + 8
+  let taylorTerms := (precTaylor + 2) / 6 + 1
+  roundOut ((expRatTaylor r.num (r.den * m) taylorTerms precTaylor).pow m) prec
 
 theorem expPoint_mem (x : Dyadic) (prec : ℕ) : Real.exp x.toReal ∈ expPoint x prec := by
   have hb : x.toRat.den ≠ 0 := x.toRat.den_nz
@@ -109,7 +130,7 @@ theorem expPoint_mem (x : Dyadic) (prec : ℕ) : Real.exp x.toReal ∈ expPoint 
   have hm0 : m ≠ 0 := by lia
   have hred : Real.exp x.toReal =
       Real.exp ((x.toRat.num : ℝ) / ((x.toRat.den * m : ℕ) : ℝ)) ^ m := by
-    have hm' : (m : ℝ) ≠ 0 := by exact_mod_cast hm0
+    have hm' : (m : ℝ) ≠ 0 := by norm_cast
     rw [← Real.exp_nat_mul, Dyadic.toReal, Rat.cast_def]
     push_cast
     field_simp
@@ -118,7 +139,7 @@ theorem expPoint_mem (x : Dyadic) (prec : ℕ) : Real.exp x.toReal ∈ expPoint 
     rw [← hm, Nat.mul_left_comm]
     lia
   rw [hred]
-  exact roundOut_mem (pow_mem m (expRat_mem _ (Nat.mul_ne_zero hb hm0) hab (by lia) _)) _
+  exact roundOut_mem (pow_mem m (expRatTaylor_mem _ (Nat.mul_ne_zero hb hm0) hab (by lia) _)) _
 
 /-- The exponential of an interval, from the enclosures `expPoint` at its endpoints. -/
 @[expose]
