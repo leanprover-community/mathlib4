@@ -35,6 +35,7 @@ variable {R : Type*}
 namespace ArithmeticFunction
 
 /-- `ζ 0 = 0`, otherwise `ζ x = 1`. The Dirichlet Series is the Riemann `ζ`. -/
+@[oeis A057427]
 def zeta : ArithmeticFunction ℕ :=
   ⟨fun x => ite (x = 0) 0 1, rfl⟩
 

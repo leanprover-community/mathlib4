@@ -93,16 +93,17 @@ theorem summableLocallyUniformlyOn_iteratedDerivWithin_smul_cexp (k l : ℕ) {f 
     have h1 : cexp (2 * π * I * (x / p)) = cexp (2 * π * I * x / p) := by
       ring_nf
     simpa using h1 ▸ norm_exp_two_pi_I_lt_one ⟨((x : ℂ) / p), by aesop⟩
-  refine ⟨_, by simpa using (summable_norm_mul_geometric_of_norm_lt_one' hr
-    (Asymptotics.isBigO_norm_left.mpr (aux_IsBigO_mul k l p hf))), fun n z hz ↦ ?_⟩
+  refine ⟨fun n ↦ ‖f n‖ * (2 * π * n / |p|) ^ k * |r| ^ n, by
+    simpa using (summable_norm_mul_geometric_of_norm_lt_one' hr
+      (Asymptotics.isBigO_norm_left.mpr (aux_IsBigO_mul k l p hf))), fun n z hz ↦ ?_⟩
   have h0 := pow_le_pow_left₀ (norm_nonneg _) (norm_coe_le_norm (mkOfCompact c) ⟨z, hz⟩) n
   simp only [norm_mkOfCompact, mkOfCompact_apply, ContinuousMap.coe_mk, ← exp_nsmul', Pi.smul_apply,
     iteratedDerivWithin_cexp_aux k n p isOpen_upperHalfPlaneSet (hK hz), smul_eq_mul,
     norm_mul, norm_pow, Complex.norm_div, norm_ofNat, norm_real, Real.norm_eq_abs, norm_I, mul_one,
-    norm_natCast, abs_norm, ge_iff_le, r, c] at *
+    norm_natCast, abs_norm, ge_iff_le, Real.abs_pi, r, c] at *
   rw [← mul_assoc]
   gcongr
-  convert! h0
+  convert h0
   rw [← norm_pow, ← exp_nsmul']
 
 /-- This is a version of `summableLocallyUniformlyOn_iteratedDerivWithin_smul_cexp` for level one
@@ -114,7 +115,7 @@ theorem summableLocallyUniformlyOn_iteratedDerivWithin_cexp (k : ℕ) :
     simp only [Asymptotics.isBigO_iff, norm_one, norm_pow, Real.norm_natCast, eventually_atTop]
     exact ⟨1, 1, fun b hb ↦ by norm_cast; simp [hb]⟩
   simpa using summableLocallyUniformlyOn_iteratedDerivWithin_smul_cexp k 1 (p := 1)
-    (by norm_num) h0
+    (by simp) h0
 
 lemma differentiableAt_iteratedDerivWithin_cexp (n a : ℕ) {s : Set ℂ} (hs : IsOpen s)
     {r : ℂ} (hr : r ∈ s) : DifferentiableAt ℂ
@@ -193,7 +194,7 @@ lemma summable_pow_mul_cexp (k : ℕ) (e : ℕ+) (z : ℍ) :
   have he : 0 < (e * (z : ℂ)).im := by
     simpa using z.2
   apply ((summableLocallyUniformlyOn_iteratedDerivWithin_smul_cexp 0 k (p := 1)
-    (f := fun n ↦ (n ^ k : ℂ)) (by norm_num)
+    (f := fun n ↦ (n ^ k : ℂ)) (by simp)
     (by simp [← Complex.isBigO_ofReal_right, Asymptotics.isBigO_refl])).summable he).congr
   grind [ofReal_one, iteratedDerivWithin_zero, Pi.smul_apply, smul_eq_mul]
 
@@ -298,7 +299,7 @@ private lemma eisensteinSeries_coeff_identity {k : ℕ} (hk2 : Even k) (hkn0 : k
 lemma EisensteinSeries.q_expansion_bernoulli {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (z : ℍ) :
     E hk z = 1 - (2 * k / bernoulli k) *
     ∑' n : ℕ+, σ (k - 1) n * cexp (2 * π * I * z) ^ (n : ℤ) := by
-  convert! q_expansion_riemannZeta hk hk2 z using 1
+  convert q_expansion_riemannZeta hk hk2 z using 1
   rw [eisensteinSeries_coeff_identity hk2 (by grind), neg_mul, ← sub_eq_add_neg]
 
 section NonZero
@@ -339,7 +340,7 @@ lemma EisensteinSeries.E_qExpansion_coeff {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k
     rw [this, ← tsum_pnat_eq_tsum_succ (f := fun n ↦ (σ (k - 1) n : ℂ) * cexp (2 * π * I * τ) ^ n)]
     ring
   rw [hval]
-  convert! (hS.mul_left β).hasSum using 1
+  convert (hS.mul_left β).hasSum using 1
   · grind [Periodic.qParam, ofReal_one, div_one]
   · rw [tsum_mul_left]
 

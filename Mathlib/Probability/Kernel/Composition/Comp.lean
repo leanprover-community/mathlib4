@@ -116,8 +116,8 @@ theorem ae_ae_of_ae_comp (h : ∀ᵐ z ∂(η ∘ₖ κ) a, p z) :
 
 lemma ae_comp_of_ae_ae (hp : MeasurableSet {z | p z})
     (h : ∀ᵐ y ∂κ a, ∀ᵐ z ∂η y, p z) : ∀ᵐ z ∂(η ∘ₖ κ) a, p z := by
-  rwa [ae_iff, comp_null] at *
-  exact hp.compl
+  rw [ae_iff, comp_null] at *
+  exacts [h, hp.compl]
 
 lemma ae_comp_iff (hp : MeasurableSet {z | p z}) :
     (∀ᵐ z ∂(η ∘ₖ κ) a, p z) ↔ ∀ᵐ y ∂κ a, ∀ᵐ z ∂η y, p z :=

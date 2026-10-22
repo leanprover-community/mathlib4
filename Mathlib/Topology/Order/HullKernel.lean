@@ -111,22 +111,22 @@ Lower topology.
 -/
 lemma isTopologicalBasis_relativeLower (hT : ∀ p ∈ T, InfPrime p) :
     IsTopologicalBasis { S : Set T | ∃ (a : α), (hull T a)ᶜ = S } := by
-  convert! isTopologicalBasis_subtype Topology.IsLower.isTopologicalBasis (· ∈ T)
-  ext R
-  simp only [preimage_compl, mem_ofPred_eq, IsLower.lowerBasis, mem_image, exists_exists_and_eq_and]
-  constructor <;> intro ha
-  · obtain ⟨a, ha'⟩ := ha
+  convert isTopologicalBasis_subtype Topology.IsLower.isTopologicalBasis (· ∈ T)
+  simp only [preimage_compl, mem_ofPred_eq, mem_eq_mem, IsLower.lowerBasis, mem_image,
+    exists_exists_and_eq_and]
+  constructor
+  · rintro ⟨a, ha'⟩
     use {a}
-    rw [← (Function.Injective.preimage_image Subtype.val_injective R), ← ha']
+    rw [← ha', ← Subtype.val_injective.preimage_image (hull T a)ᶜ]
     simp only [finite_singleton, upperClosure_singleton, UpperSet.coe_Ici, image_val_compl,
       Subtype.image_preimage_coe, sdiff_self_inter, preimage_sdiff, Subtype.coe_preimage_self,
       true_and]
     exact compl_eq_univ_sdiff (Subtype.val ⁻¹' Ici a)
-  · obtain ⟨F, hF⟩ := ha
-    lift F to Finset α using hF.1
+  · rintro ⟨F, hFfin, hF⟩
+    lift F to Finset α using hFfin
     use Finset.inf F id
     ext
-    simp [hull_finsetInf hT, ← hF.2]
+    simp [hull_finsetInf hT, ← hF]
 
 end PrimitiveSpectrum
 

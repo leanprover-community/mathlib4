@@ -68,8 +68,8 @@ variable [AddCommMonoid N] [Module R N]
 variable [AddCommMonoid P] [Module R P] [Module A P]
 variable [IsScalarTower R A P]
 variable [AddCommMonoid Q] [Module R Q]
-variable [AddCommMonoid P'] [Module R P'] [Module A P'] [Module B P']
-variable [IsScalarTower R A P'] [IsScalarTower R B P'] [SMulCommClass A B P']
+variable [AddCommMonoid P'] [Module R P'] [Module A P']
+variable [IsScalarTower R A P']
 variable [AddCommMonoid Q'] [Module R Q']
 
 theorem smul_eq_lsmul_rTensor (a : A) (x : M ⊗[R] N) : a • x = (lsmul R R M a).rTensor N x :=
@@ -96,8 +96,7 @@ See note [partially-applied ext lemmas]. -/
 @[ext high]
 nonrec theorem curry_injective : Function.Injective (curry : (M ⊗ N →ₗ[A] P) → M →ₗ[A] N →ₗ[R] P) :=
   fun _ _ h =>
-  LinearMap.restrictScalars_injective R <|
-    curry_injective <| (congr_arg (LinearMap.restrictScalars R) h :)
+  LinearMap.restrictScalars_injective R <| curry_injective congr(LinearMap.restrictScalars R $h)
 
 theorem ext {g h : M ⊗[R] N →ₗ[A] P} (H : ∀ x y, g (x ⊗ₜ y) = h (x ⊗ₜ y)) : g = h :=
   curry_injective <| LinearMap.ext₂ H
@@ -321,12 +320,12 @@ variable {R A B M N P Q}
 /-- Heterobasic version of `TensorProduct.congr` -/
 def congr (f : M ≃ₗ[A] P) (g : N ≃ₗ[R] Q) : (M ⊗[R] N) ≃ₗ[A] (P ⊗[R] Q) :=
   LinearEquiv.ofLinearMap (map f g) (map f.symm g.symm)
-    (ext fun _m _n => congr_arg₂ (· ⊗ₜ ·) (f.apply_symm_apply _) (g.apply_symm_apply _))
-    (ext fun _m _n => congr_arg₂ (· ⊗ₜ ·) (f.symm_apply_apply _) (g.symm_apply_apply _))
+    (ext fun _m _n => congr($(f.apply_symm_apply _) ⊗ₜ $(g.apply_symm_apply _)))
+    (ext fun _m _n => congr($(f.symm_apply_apply _) ⊗ₜ $(g.symm_apply_apply _)))
 
 @[simp]
 theorem congr_refl : congr (.refl A M) (.refl R N) = .refl A _ :=
-  LinearEquiv.toLinearMap_injective <| map_id
+  LinearEquiv.toLinearMap_injective map_id
 
 theorem congr_trans (f₁ : M ≃ₗ[A] P) (f₂ : P ≃ₗ[A] P') (g₁ : N ≃ₗ[R] Q) (g₂ : Q ≃ₗ[R] Q') :
     congr (f₁.trans f₂) (g₁.trans g₂) = (congr f₁ g₁).trans (congr f₂ g₂) :=
@@ -474,11 +473,9 @@ theorem distribBaseChange_symm_tmul
 lemma cancelBaseChange_self_eq_lid :
     cancelBaseChange R A A A N = TensorProduct.lid A (A ⊗[R] N) := by
   ext x
-  induction x using TensorProduct.induction_on with
-  | zero => simp only [map_zero]
+  induction x using TensorProduct.inductionOn with
   | tmul b y =>
-    induction y using TensorProduct.induction_on with
-    | zero => simp
+    induction y using TensorProduct.inductionOn with
     | tmul a m =>
       simp only [cancelBaseChange_tmul, lid_tmul, smul_tmul', smul_eq_mul, mul_comm]
     | add x y hx hy =>
@@ -664,13 +661,15 @@ def baseChange (f : M →ₗ[R] N) : A ⊗[R] M →ₗ[A] A ⊗[R] N :=
 theorem baseChange_tmul (a : A) (x : M) : f.baseChange A (a ⊗ₜ x) = a ⊗ₜ f x :=
   rfl
 
-theorem baseChange_eq_ltensor : (f.baseChange A : A ⊗ M → A ⊗ N) = f.lTensor A :=
+theorem baseChange_eq_lTensor : (f.baseChange A : A ⊗ M → A ⊗ N) = f.lTensor A :=
   rfl
+
+@[deprecated (since := "2026-09-28")] alias baseChange_eq_ltensor := baseChange_eq_lTensor
 
 @[simp]
 theorem baseChange_add : (f + g).baseChange A = f.baseChange A + g.baseChange A := by
   ext
-  simp [baseChange_eq_ltensor, -baseChange_tmul]
+  simp [baseChange_eq_lTensor, -baseChange_tmul]
 
 @[simp]
 theorem baseChange_zero : baseChange A (0 : M →ₗ[R] N) = 0 := by
@@ -754,7 +753,7 @@ theorem _root_.LinearEquiv.baseChange_trans (e : M ≃ₗ[R] N) (f : N ≃ₗ[R]
     (e.trans f).baseChange R A M P = (e.baseChange R A M N).trans (f.baseChange R A N P) := by
   ext x
   simp only [← LinearEquiv.coe_toLinearMap, LinearEquiv.coe_baseChange, LinearEquiv.trans_apply,
-    LinearEquiv.coe_trans, baseChange_eq_ltensor, lTensor_comp_apply]
+    LinearEquiv.coe_trans, baseChange_eq_lTensor, lTensor_comp_apply]
 
 theorem _root_.LinearEquiv.baseChange_mul (e : M ≃ₗ[R] M) (f : M ≃ₗ[R] M) :
     (e * f).baseChange R A M M = (e.baseChange R A M M) * (f.baseChange R A M M) := by
@@ -765,7 +764,7 @@ theorem _root_.LinearEquiv.baseChange_symm (e : M ≃ₗ[R] N) :
   ext x
   rw [LinearEquiv.eq_symm_apply]
   simp [← LinearEquiv.coe_toLinearMap, LinearEquiv.coe_baseChange,
-    baseChange_eq_ltensor, ← lTensor_comp_apply]
+    baseChange_eq_lTensor, ← lTensor_comp_apply]
 
 theorem _root_.LinearEquiv.baseChange_inv (e : M ≃ₗ[R] M) :
     (e⁻¹).baseChange R A M M = (e.baseChange R A M M)⁻¹ :=
@@ -791,7 +790,7 @@ variable {R A M N} in
 theorem rTensor_baseChange (φ : A →ₐ[R] B) (t : A ⊗[R] M) (f : M →ₗ[R] N) :
     (φ.toLinearMap.rTensor N) (f.baseChange A t) =
       (f.baseChange B) (φ.toLinearMap.rTensor M t) := by
-  simp [LinearMap.baseChange_eq_ltensor, ← LinearMap.comp_apply]
+  simp [LinearMap.baseChange_eq_lTensor, ← LinearMap.comp_apply]
 
 end Semiring
 

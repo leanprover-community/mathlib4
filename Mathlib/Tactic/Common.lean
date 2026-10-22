@@ -7,19 +7,17 @@ Authors: Kim Morrison
 -- First import Aesop, Qq, and Plausible
 module  -- shake: keep-all, shake: keep-downstream
 
-public import Aesop
-public import Qq
-public import Plausible
+public meta import Aesop
+public meta import Qq
+public meta import Plausible
 
 -- Import common Batteries tactics and commands
 public import Batteries.Tactic.Basic
 public import Batteries.Tactic.Case
-public import Batteries.Tactic.HelpCmd
-public import Batteries.Tactic.Alias
 public import Batteries.Tactic.GeneralizeProofs
 
 -- Import Batteries code actions
-public import Batteries.CodeAction
+public meta import Batteries.CodeAction
 
 -- Import syntax for leansearch
 public import LeanSearchClient
@@ -91,6 +89,7 @@ public import Mathlib.Tactic.RenameBVar
 public import Mathlib.Tactic.Says
 public import Mathlib.Tactic.ScopedNS
 public import Mathlib.Tactic.Set
+public import Mathlib.Tactic.Setm
 public import Mathlib.Tactic.SimpIntro
 public import Mathlib.Tactic.SimpRw
 public import Mathlib.Tactic.Simproc.ExistsAndEq
@@ -122,8 +121,11 @@ public import Mathlib.Util.CountHeartbeats
 public import Mathlib.Util.PrintSorries
 public import Mathlib.Util.TransImports
 public import Mathlib.Util.WhatsNew
-public import Lean.Elab.Tactic.Try
+public meta import Lean.Elab.Tactic.Try
 public meta import Lean.Meta.Tactic.Try.Collect
+
+-- Preserve custom import ordering:
+set_option linter.style.header.imports false
 
 /-!
 # Common tactics, linters, and utilities
