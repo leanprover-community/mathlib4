@@ -46,13 +46,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Set up Python
-      uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
-      with:
-        python-version: '3.x'
-    - uses: leanprover-community/mathlib-ci/.github/actions/secure-pip@57ff84f8ccaf936f3161b333e04761842ebc3778
     - name: Install Zulip API client
-      run: python -m pip install zulip 'certifi>=2026.10.19'
+      run: |
+        # Ubuntu's pip and requests trust the system CA store. Refresh it so the root of the
+        # compromised eMudhra chains is gone (https://discuss.python.org/t/109576). Drop this
+        # once the runner image ships ca-certificates 20260816ubuntu0.24.04.1 or newer.
+        sudo apt-get update -q && sudo apt-get install -y ca-certificates
+        pip install zulip
 
     - name: Check last message and post if necessary
       env:
@@ -400,16 +400,6 @@ jobs:
 
     # Deliberately not conditioned on `open_bump_prs`: both the creation path and the
     # `Report skipped bump-branch attempt to Zulip` step below need the Zulip client.
-    - name: Set up Python for Zulip
-      if: steps.tag.outputs.is_nightly == 'true' && steps.check_branch.outputs.result == 'false'
-      uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
-      with:
-        python-version: '3.x'
-
-    - name: Update Python certificate stores
-      if: steps.tag.outputs.is_nightly == 'true' && steps.check_branch.outputs.result == 'false'
-      uses: leanprover-community/mathlib-ci/.github/actions/secure-pip@57ff84f8ccaf936f3161b333e04761842ebc3778
-
     - name: Setup Zulip client and git identity
       if: steps.tag.outputs.is_nightly == 'true' && steps.check_branch.outputs.result == 'false'
       env:
@@ -418,7 +408,9 @@ jobs:
         SHA: ${{ env.SHA }}
       run: |
         echo "Installing zulip CLI..."
-        python -m pip install zulip 'certifi>=2026.10.19'
+        # See "Install Zulip API client" in report_success.
+        sudo apt-get update -q && sudo apt-get install -y ca-certificates
+        pip install zulip
         echo "Configuring git identity for mathlib4-bot..."
         git config --global user.name "mathlib4-bot"
         git config --global user.email "github-mathlib4-bot@leanprover.zulipchat.com"
