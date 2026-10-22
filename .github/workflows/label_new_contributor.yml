@@ -33,32 +33,29 @@ jobs:
             const { owner, repo } = context.repo;
             core.setOutput('should_welcome', 'false');
 
+            // Organization members and repository collaborators are not new contributors.
+            const association = context.payload.pull_request.author_association;
+            if (['OWNER', 'MEMBER', 'COLLABORATOR'].includes(association)) {
+              console.log(`Skipping the check: the author association is ${association}`);
+              return;
+            }
+
             console.log(`Checking closed issues for user: ${creator}`);
 
             let mergedByBorsPRs = [];
             let totalIssuesChecked = 0;
 
-            // The issues listing sometimes returns no issues for a user who has closed issues.
-            // A new contributor also has no closed issues, so list again before the PR gets the label.
-            async function* listClosedIssues() {
-              const MAX_ATTEMPTS = 3;
-              for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-                let found = false;
-                const params = { owner, repo, creator, state: 'closed', per_page: 100 };
-                for await (const response of github.paginate.iterator(github.rest.issues.listForRepo, params)) {
-                  found ||= response.data.length > 0;
-                  yield response;
-                }
-                if (found || attempt === MAX_ATTEMPTS) {
-                  return;
-                }
-                console.log('Found no closed issues, listing them again in 5 seconds');
-                await new Promise(resolve => setTimeout(resolve, 5000));
-              }
-            }
-
             // Paginate through issues, stopping when we have more than MIN_MERGED qualifying PRs
-            for await (const response of listClosedIssues()) {
+            for await (const response of github.paginate.iterator(
+              github.rest.issues.listForRepo,
+              {
+                owner,
+                repo,
+                creator,
+                state: 'closed',
+                per_page: 100
+              }
+            )) {
               totalIssuesChecked += response.data.length;
 
               // Filter this page for PRs with "[Merged by Bors] -" in the title
