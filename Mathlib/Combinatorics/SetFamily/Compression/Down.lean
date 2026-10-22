@@ -129,7 +129,7 @@ lemma memberSubfamily_image_insert (h𝒜 : ∀ s ∈ 𝒜, a ∉ s) :
   simp only [mem_memberSubfamily, mem_image]
   refine ⟨?_, fun hs ↦ ⟨⟨s, hs, rfl⟩, h𝒜 _ hs⟩⟩
   rintro ⟨⟨t, ht, hts⟩, hs⟩
-  rwa [← insert_injOn_notMem a (h𝒜 _ ht) hs hts]
+  rwa [← insert_erase_invOn.2.injOn (h𝒜 _ ht) hs hts]
 
 @[simp] lemma nonMemberSubfamily_image_insert : (𝒜.image <| insert a).nonMemberSubfamily a = ∅ := by
   simp [eq_empty_iff_forall_notMem]

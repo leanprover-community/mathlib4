@@ -119,7 +119,7 @@ lemma pairwiseDisjoint_pair_insert [DecidableEq α] {a : α} (ha : a ∉ s) :
   rintro i hi j hj
   simp only [Set.Nonempty, Set.mem_inter_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
     exists_eq_or_imp, exists_eq_left, or_imp, imp_self, true_and]
-  refine ⟨?_, ?_, insert_injOn_notMem a (notMem_mono hi ha) (notMem_mono hj ha)⟩ <;>
+  refine ⟨?_, ?_, insert_erase_invOn.2.injOn (notMem_mono hi ha) (notMem_mono hj ha)⟩ <;>
     rintro rfl <;>
     cases Finset.notMem_mono ‹_› ha (Finset.mem_insert_self _ _)
 
