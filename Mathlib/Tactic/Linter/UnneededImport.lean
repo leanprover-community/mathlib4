@@ -5,8 +5,8 @@ Authors: Marcelo Lynch
 -/
 module
 
-public meta import ImportGraph.Imports.ImportGraph
 public meta import ImportGraph.Graph.TransitiveClosure
+public meta import ImportGraph.Imports.ImportGraph
 public meta import Mathlib.Tactic.Linter.DeclaredNames
 
 /-! # The `unneededImport` linter

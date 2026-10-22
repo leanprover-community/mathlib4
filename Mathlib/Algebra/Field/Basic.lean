@@ -6,12 +6,10 @@ Authors: Robert Y. Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.Algebra.Field.Defs
-public import Mathlib.Algebra.Ring.GrindInstances
-public import Mathlib.Algebra.Ring.Commute
-public import Mathlib.Algebra.Ring.Invertible
-public import Mathlib.Order.OrderDual
-public import Mathlib.Order.Lex
 public import Mathlib.Algebra.Order.Ring.Synonym
+public import Mathlib.Algebra.Ring.Commute
+public import Mathlib.Algebra.Ring.GrindInstances
+public import Mathlib.Algebra.Ring.Invertible
 
 import Mathlib.Tactic.Tauto
 
@@ -126,6 +124,9 @@ theorem inv_eq_self₀ {a : K} : a⁻¹ = a ↔ a = -1 ∨ a = 0 ∨ a = 1 := by
 
 theorem self_eq_inv₀ {a : K} : a = a⁻¹ ↔ a = -1 ∨ a = 0 ∨ a = 1 := by
   rw [eq_comm, inv_eq_self₀]
+
+theorem isSelfInv_iff_eq_neg_one_or_eq_zero_or_eq_one {a : K} :
+    IsSelfInv a ↔ a = -1 ∨ a = 0 ∨ a = 1 := inv_eq_self₀
 
 -- see Note [lower instance priority]
 instance (priority := 100) DivisionRing.isDomain : IsDomain K :=
