@@ -10,9 +10,6 @@ public import Mathlib.Algebra.Group.ModEq
 public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 public import Mathlib.GroupTheory.QuotientGroup.Defs
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Congruence modulo multiples and congruence modulo `AddSubgroup.zmultiples _`
 

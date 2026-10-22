@@ -11,9 +11,6 @@ public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 
 import Mathlib.LinearAlgebra.Dual.Lemmas
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Continuous Perfect Pairing for `topDualPairing`
 

@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Data.List.Nodup
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Antidiagonals in ℕ × ℕ as lists
 

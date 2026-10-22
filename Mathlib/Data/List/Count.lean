@@ -11,9 +11,6 @@ public import Mathlib.Tactic.Common
 import Batteries.Data.List.Perm
 import Mathlib.Tactic.Attr.Core
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Counting in lists
 

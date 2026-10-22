@@ -9,9 +9,6 @@ public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 
 import Mathlib.Analysis.Normed.Affine.AddTorsorBases
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Convex sets are null-measurable
 

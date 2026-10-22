@@ -7,9 +7,6 @@ module
 
 public import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Almost everywhere disjoint sets
 

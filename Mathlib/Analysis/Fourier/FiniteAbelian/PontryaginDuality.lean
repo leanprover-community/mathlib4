@@ -13,9 +13,6 @@ import Mathlib.Algebra.Field.ModEq
 import Mathlib.GroupTheory.FiniteAbelian.Basic
 import Mathlib.Topology.Instances.AddCircle.Real
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Pontryagin duality for finite abelian groups
 
