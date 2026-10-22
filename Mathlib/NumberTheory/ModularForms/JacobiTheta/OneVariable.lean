@@ -111,7 +111,7 @@ theorem norm_jacobiTheta_sub_one_le {τ : ℂ} (hτ : 0 < im τ) :
 /-- The norm of `jacobiTheta τ - 1` decays exponentially as `im τ → ∞`. -/
 theorem isBigO_at_im_infty_jacobiTheta_sub_one :
     (fun τ => jacobiTheta τ - 1) =O[comap im atTop] fun τ => rexp (-π * τ.im) := by
-  simp_rw [IsBigO, IsBigOWith, Filter.eventually_comap, Filter.eventually_atTop]
+  simp_rw [isBigO_iff, Filter.eventually_comap, Filter.eventually_atTop]
   refine ⟨2 / (1 - rexp (-(π * 1))), 1, fun y hy τ hτ =>
     (norm_jacobiTheta_sub_one_le (hτ.symm ▸ zero_lt_one.trans_le hy : 0 < im τ)).trans ?_⟩
   rw [Real.norm_eq_abs, Real.abs_exp, hτ, neg_mul]

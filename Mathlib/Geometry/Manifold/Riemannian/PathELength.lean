@@ -67,7 +67,7 @@ def pathELength (γ : ℝ → M) (a b : ℝ) : ℝ≥0∞ :=
   ∫⁻ t in Icc a b, ‖mfderiv% γ t 1‖ₑ
 
 lemma pathELength_eq_lintegral_mfderiv_Icc :
-    pathELength I γ a b = ∫⁻ t in Icc a b, ‖mfderiv% γ t 1‖ₑ := by simp [pathELength]
+    pathELength I γ a b = ∫⁻ t in Icc a b, ‖mfderiv% γ t 1‖ₑ := (rfl)
 
 lemma pathELength_eq_lintegral_mfderiv_Ioo :
     pathELength I γ a b = ∫⁻ t in Ioo a b, ‖mfderiv% γ t 1‖ₑ := by
@@ -207,6 +207,12 @@ variable (I) in
 have an extended norm, defined as the infimum of the lengths of `C^1` paths between the points. -/
 noncomputable def riemannianEDist (x y : M) : ℝ≥0∞ :=
   ⨅ (γ : Path x y) (_ : CMDiff 1 γ), ∫⁻ x, ‖mfderiv% γ x 1‖ₑ
+
+variable (I) in
+omit [∀ (x : M), ENormSMulClass ℝ (TangentSpace I x)] in
+lemma riemannianEDist_def (x y : M) :
+    riemannianEDist I x y = ⨅ (γ : Path x y) (_ : CMDiff 1 γ), ∫⁻ x, ‖mfderiv% γ x 1‖ₑ :=
+  (rfl)
 
 /-- The Riemannian edistance is bounded above by the length of any `C^1` path from `x` to `y`.
 Here, we express this using a path defined on the whole real line, considered on
