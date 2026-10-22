@@ -8,9 +8,6 @@ module
 public import Mathlib.Basic.FunLike.Equiv
 public import Mathlib.Logic.Pairwise
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Interaction of equivalences with `Pairwise`
 -/

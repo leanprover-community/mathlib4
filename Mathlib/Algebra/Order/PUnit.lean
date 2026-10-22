@@ -8,9 +8,6 @@ module
 public import Mathlib.Algebra.Group.PUnit
 public import Mathlib.Algebra.Order.AddGroupWithTop
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Instances on PUnit
 

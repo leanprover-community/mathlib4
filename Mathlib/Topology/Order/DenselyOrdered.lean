@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Topology.Order.IsLUB
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Order topology on a densely ordered set
 -/

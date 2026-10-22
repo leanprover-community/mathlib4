@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Data.Nat.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # More `Char` instances
 

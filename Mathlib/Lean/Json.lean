@@ -8,9 +8,6 @@ module
 public import Lean.Data.Json.FromToJson.Basic
 public import Mathlib.Init
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Json serialization typeclass for `PUnit` & `Fin n` & `Subtype p`
 -/
