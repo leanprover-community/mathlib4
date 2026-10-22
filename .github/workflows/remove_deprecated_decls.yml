@@ -172,21 +172,7 @@ jobs:
         echo "Deleting ${tmplean}"
         rm "${tmplean}"
 
-    - name: Get branch SHA if it exists
-      id: get-branch-sha
-      run: |
-        # Check if the branch exists remotely
-        SHA=$(git ls-remote --heads origin "$BRANCH_NAME" | awk '{print $1}')
-        if [ -n "$SHA" ]; then
-          echo "Branch '$BRANCH_NAME' exists with SHA: $SHA"
-          echo "sha=$SHA" >> "${GITHUB_OUTPUT}"
-        else
-          echo "Branch '$BRANCH_NAME' does not exist"
-          echo "sha=" >> "${GITHUB_OUTPUT}"
-        fi
-
     - name: Get PR
-      if: ${{ steps.get-branch-sha.outputs.sha != '' }}
       id: find-pr
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

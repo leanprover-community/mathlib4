@@ -25,29 +25,40 @@ jobs:
         with:
           script: |
             // In each issue or PR of this repository that cross-references the closed (reopened)
-            // item, check (uncheck) the `- [ ]` list items that mention the item by `#<number>`
-            // or by URL.
+            // item, check (uncheck) the task list items that mention the item by `#<number>` or
+            // by URL.
             const item = context.payload.issue ?? context.payload.pull_request;
-            const closed = context.payload.action === 'closed';
-            const [from, to] = closed ? [' ', 'x'] : ['[xX]', ' '];
-            const url = item.html_url.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
-            // `#12` must not match `#123` or `other/repo#12`, and the URL must not match `.../123`.
-            const ref = `(?:${url}|(?<![\\w.-])#${item.number})(?!\\d)`;
-            const re = new RegExp(`^([ \\t]*)- \\[${from}\\]([ \\t].*?${ref}.*)$`, 'gm');
             const { owner, repo } = context.repo;
+            const closed = context.payload.action === 'closed';
+            const oldBox = closed ? String.raw`\[ \]` : String.raw`\[[xX]\]`;
+            const newBox = closed ? '[x]' : '[ ]';
+            // `#12` must not match `#123` or `other/repo#12`, and `.../pull/12` must not match
+            // `.../pull/123`.
+            const url = RegExp.escape(item.html_url);
+            const mention = String.raw`(?:${url}|(?<![\w.-])#${item.number})(?!\d)`;
+            // Group 1 is the indentation and the bullet. The lookahead finds the mention later on
+            // the line.
+            const task = new RegExp(String.raw`^([ \t]*- )${oldBox}(?=[ \t].*${mention})`, 'gm');
+
             const events = await github.paginate(github.rest.issues.listEventsForTimeline, {
               owner, repo, issue_number: item.number, per_page: 100,
             });
+            // The timeline also lists cross-references from other repositories, which the token
+            // cannot edit.
             const sources = new Map(events
-              .filter(e => e.event === 'cross-referenced' && e.source?.issue?.repository?.full_name === `${owner}/${repo}`)
-              .map(e => [e.source.issue.number, e.source.issue]));
+              .filter(e => e.event === 'cross-referenced')
+              .filter(e => e.source?.issue?.repository?.full_name === `${owner}/${repo}`)
+              .map(e => [e.source.issue.number, e.source.issue.body]));
             core.info(`found ${sources.size} references in ${owner}/${repo}`);
-            for (const [number, source] of sources) {
-              if (!(source.body ?? '').match(re)) continue;
-              // Re-read the body just before the write, so an edit since the timeline read survives.
-              const { data: { body } } = await github.rest.issues.get({ owner, repo, issue_number: number });
-              const updated = (body ?? '').replace(re, `$1- [${to}]$2`);
-              if (updated === body) continue;
+
+            for (const [number, timelineBody] of sources) {
+              if (!timelineBody?.match(task)) continue;
+              // Read the body again just before the write, so an edit since the timeline read
+              // survives.
+              const { data: { body } } =
+                await github.rest.issues.get({ owner, repo, issue_number: number });
+              if (!body?.match(task)) continue;
               core.info(`updating #${number}`);
+              const updated = body.replace(task, `$1${newBox}`);
               await github.rest.issues.update({ owner, repo, issue_number: number, body: updated });
             }
