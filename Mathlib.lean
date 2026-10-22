@@ -5437,6 +5437,7 @@ public import Mathlib.LinearAlgebra.Projectivization.Constructions
 public import Mathlib.LinearAlgebra.Projectivization.Independence
 public import Mathlib.LinearAlgebra.Projectivization.PSL.PSL2
 public import Mathlib.LinearAlgebra.Projectivization.PSL.Stabilizer
+public import Mathlib.LinearAlgebra.Projectivization.Pascal
 public import Mathlib.LinearAlgebra.Projectivization.Subspace
 public import Mathlib.LinearAlgebra.QuadraticForm.AlgClosed
 public import Mathlib.LinearAlgebra.QuadraticForm.Basic

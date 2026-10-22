@@ -123,6 +123,8 @@
   authors: Joseph Myers
 28:
   title  : Pascal’s Hexagon Theorem
+  decl   : Projectivization.pascal
+  authors: Ari Hallak
 29:
   title  : Feuerbach’s Theorem
   authors: "Daniele Cappello (UNICO/NOUS)"
