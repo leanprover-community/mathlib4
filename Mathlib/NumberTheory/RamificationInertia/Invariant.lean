@@ -48,13 +48,16 @@ lemma liftBaseChange_comp_baseChange {P} [AddCommMonoid P] [Module R P]
   ext
   simp
 
-lemma le_comap_liftBaseChange (l : M →ₗ[R] N) (p : Submodule R M) (q : Submodule A N)
-    (hl : p ≤ (q.restrictScalars R).comap l) : p.baseChange A ≤ q.comap (l.liftBaseChange A) := by
-  rw [Submodule.baseChange, LinearMap.range_le_iff_comap, ← Submodule.comap_comp,
-    liftBaseChange_comp_baseChange, ← LinearMap.range_le_iff_comap,
-    LinearMap.range_liftBaseChange, Submodule.span_le]
-  rintro _ ⟨x, rfl⟩
-  exact hl x.property
+lemma baseChange_le_comap_liftBaseChange_iff_map_le_restrictScalars
+    {l : M →ₗ[R] N} {p : Submodule R M} {q : Submodule A N} :
+    p.baseChange A ≤ q.comap (l.liftBaseChange A) ↔ p.map l ≤ q.restrictScalars R := by
+  have h : (l.liftBaseChange A).restrictScalars R ∘ₗ TensorProduct.mk R A M 1 = l :=
+    (LinearMap.liftBaseChangeEquiv A).symm_apply_apply l
+  rw [Submodule.baseChange_eq_span, Submodule.span_le]
+  change p.map (TensorProduct.mk R A M 1) ≤
+    (q.restrictScalars R).comap ((l.liftBaseChange A).restrictScalars R) ↔ _
+  rw [Submodule.map_le_iff_le_comap, ← Submodule.comap_comp, h]
+  rw [Submodule.map_le_iff_le_comap]
 
 end LinearMap
 
@@ -165,8 +168,10 @@ lemma linearize_apply (f : M →ₗ[A] N) : linearize B f = (f.liftBaseChange B)
 
 lemma le_comap_linearize (f : M →ₗ[A] N) (P : Submodule B M) (Q : Submodule B N)
     (hf : P.restrictScalars A ≤ (Q.restrictScalars A).comap f) : P ≤ Q.comap (linearize B f) := by
+  rw [← Submodule.map_le_iff_le_comap,
+    ← LinearMap.baseChange_le_comap_liftBaseChange_iff_map_le_restrictScalars] at hf
   intro x hx
-  exact f.le_comap_liftBaseChange B (P.restrictScalars A) Q hf (sec_mem_baseChange A B P hx)
+  exact hf (sec_mem_baseChange A B P hx)
 
 @[simp]
 lemma linearize_comp (f : M →ₗ[A] N) (g : L →ₗ[B] M) :
