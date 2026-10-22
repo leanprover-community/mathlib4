@@ -6,6 +6,7 @@ Authors: Heather Macbeth, Eric Wieser
 module
 
 public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Analysis.Normed.Group.Ultra
 
 /-!
 # Matrices as a normed space
@@ -340,6 +341,21 @@ theorem linfty_opNNNorm_blockDiagonal [DecidableEq l] (M : l → Matrix m n α) 
 theorem linfty_opNorm_blockDiagonal [DecidableEq l] (M : l → Matrix m n α) :
     ‖blockDiagonal M‖ = ‖M‖ :=
   congr($(linfty_opNNNorm_blockDiagonal M))
+
+theorem linfty_opNNNorm_sum_le_card_mul_of_forall_le [IsUltrametricDist α]
+    (M : β → Matrix m n α) (s : Finset β) (B : NNReal) (hM : ∀ i ∈ s, ‖M i‖₊ ≤ B) :
+    ‖∑ k ∈ s, M k‖₊ ≤ Fintype.card n * B := by
+  have h i j : ‖(∑ k ∈ s, M k) i j‖₊ ≤ B := by
+    grw [sum_apply, s.nnnorm_sum_le_sup_nnnorm, nnnorm_apply_le_linfty_opNNNorm,
+      hM _ (by simpa), Finset.sup_const_le]
+  grw [linfty_opNNNorm_def, h]
+  simp
+
+theorem linfty_opNorm_sum_le_card_mul_of_forall_le
+    {α β γ κ : Type*} [Fintype α] [Fintype β] [SeminormedAddCommGroup γ] [IsUltrametricDist γ]
+    (M : κ → Matrix α β γ) (s : Finset κ) (B : ℝ) (hB : 0 ≤ B) (hM : ∀ i ∈ s, ‖M i‖ ≤ B) :
+    ‖∑ k ∈ s, M k‖ ≤ Fintype.card β * B :=
+  Matrix.linfty_opNNNorm_sum_le_card_mul_of_forall_le M s (NNReal.mk B hB) hM
 
 end SeminormedAddCommGroup
 
