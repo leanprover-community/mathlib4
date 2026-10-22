@@ -54,7 +54,7 @@ local notation "|" T "|" => abs T
   rw [abs, T.abs_nonneg.isSelfAdjoint.adjoint_eq]
   exact CFC.sqrt_mul_self |T|
 
-theorem abs_eq_abs (T : E →L[ℂ] E) : |T| = CFC.abs T := rfl
+theorem abs_eq_cfcAbs (T : E →L[ℂ] E) : |T| = CFC.abs T := rfl
 
 theorem abs_eq_zero (T : E →L[ℂ] F) : |T| = 0 ↔ T = 0 := by
   refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
