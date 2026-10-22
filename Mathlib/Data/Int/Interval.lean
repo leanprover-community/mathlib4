@@ -11,9 +11,6 @@ public import Mathlib.Algebra.Ring.CharZero
 public import Mathlib.Algebra.Ring.Int.Defs
 public import Mathlib.Order.Interval.Finset.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Finite intervals of integers
 

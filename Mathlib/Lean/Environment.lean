@@ -11,9 +11,6 @@ public import Lean.Environment
 -- this file has a valid copyright header and module docstring.
 import Mathlib.Tactic.Linter.Header  -- shake: keep
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Additional utilities for `Lean.Environment`
 -/

@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # The Gromov product
 

@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Logic.Encodable.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Lattice operations on encodable types
 
