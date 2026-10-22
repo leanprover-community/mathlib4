@@ -10,6 +10,8 @@ public import Mathlib.LinearAlgebra.Dimension.Finrank
 public import Mathlib.LinearAlgebra.Dimension.Subsingleton
 public import Mathlib.LinearAlgebra.InvariantBasisNumber
 
+import Mathlib.SetTheory.Cardinal.Pigeonhole
+
 /-!
 # Lemmas about rank and `finrank` in rings satisfying strong rank condition.
 

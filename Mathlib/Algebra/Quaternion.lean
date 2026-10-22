@@ -10,6 +10,7 @@ public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 
 import Mathlib.Algebra.Module.Torsion.Prod
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-!
 # Quaternions
