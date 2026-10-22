@@ -216,7 +216,8 @@ noncomputable def cfcₙ (f : R → R) (a : A) : A :=
     else 0
 
 open scoped Classical in
-@[deprecated "use `cfcₙ_apply` or `cfcₙ_apply_of_not_and_and` or " (since := "2026-10-22")]
+@[deprecated "use any of `cfcₙ_apply`, `cfcₙ_apply_of_not_and_and`, `cfcₙ_apply_of_not_predicate` \n
+  or `cfcₙ_apply_of_not_continuousOn`" (since := "2026-10-22")]
 lemma cfcₙ_def (f : R → R) (a : A) :
     cfcₙ f a =
     if h : p a ∧ ContinuousOn f (σₙ R a) ∧ f 0 = 0
