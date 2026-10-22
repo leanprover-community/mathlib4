@@ -538,6 +538,53 @@ end Matrix.IsFiniteCartan
 
 namespace CartanMatrix
 
+theorem isFiniteCartan_f₄ : F₄.IsFiniteCartan where
+  diag := by simp
+  offDiag_nonpos := by
+    intro i j
+    fin_cases i <;> fin_cases j <;> simp [F₄]
+  zero_comm := by
+    intro i j
+    fin_cases i <;> fin_cases j <;> simp [F₄]
+  exists_posDef := by
+    use ![1, 1, 2, 2]
+    have h : diagonal ![1, 1, 2, 2] * F₄
+        = !![2, -1, 0, 0; -1, 2, -2, 0; 0, -2, 4, -2; 0, 0, -2, 4] := by
+      ext i j
+      fin_cases i <;> fin_cases j <;> simp [F₄]
+    rw [h]
+    refine ⟨fun i ↦ by fin_cases i <;> simp, PosDef.of_dotProduct_mulVec_pos ?_ ?_⟩
+    · ext i j
+      fin_cases i <;> fin_cases j <;> rfl
+    · intro x hx
+      have h : star x ⬝ᵥ !![2, -1, 0, 0; -1, 2, -2, 0; 0, -2, 4, -2; 0, 0, -2, 4] *ᵥ x
+          = 2 * x 0 ^ 2 + 2 * x 1 ^ 2 + 4 * x 2 ^ 2 + 4 * x 3 ^ 2
+          - 2 * x 0 * x 1 - 4 * x 1 * x 2 - 4 * x 2 * x 3 := by
+        simp [show vecHead x = x 0 by rfl, show vecHead (vecTail x) = x 1 by rfl,
+          show vecHead (vecTail (vecTail x)) = x 2 by rfl,
+          show vecHead (vecTail (vecTail (vecTail x))) = x 3 by rfl]
+        ring
+      rw [h]
+      apply pos_of_mul_pos_right (a := 6) ?_ (by positivity)
+      have h : 6 * (2 * x 0 ^ 2 + 2 * x 1 ^ 2 + 4 * x 2 ^ 2 + 4 * x 3 ^ 2
+          - 2 * x 0 * x 1 - 4 * x 1 * x 2 - 4 * x 2 * x 3)
+          = 3 * (2 * x 0 - x 1) ^ 2 + (3 * x 1 - 4 * x 2) ^ 2 + 2 * (2 * x 2 - 3 * x 3) ^ 2
+          + 6 * x 3 ^ 2 := by ring
+      rw [h]
+      apply lt_of_le_of_ne
+      · positivity
+      · symm
+        contrapose hx
+        repeat rw [add_eq_zero_iff_of_nonneg (by positivity) (by positivity)] at hx
+        obtain ⟨⟨⟨h₀, h₁⟩, h₂⟩, h₃⟩ := hx
+        ext i
+        rw [Pi.zero_apply]
+        have h₃ : x 3 = 0 := by simp_all
+        have h₂ : x 2 = 0 := by simp_all
+        have h₁ : x 1 = 0 := by simp_all
+        have h₀ : x 0 = 0 := by simp_all
+        fin_cases i <;> assumption
+
 theorem isFiniteCartan_g₂ : G₂.IsFiniteCartan where
   diag := by simp
   offDiag_nonpos := by simp [G₂]
