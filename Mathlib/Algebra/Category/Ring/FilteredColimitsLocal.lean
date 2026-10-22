@@ -47,6 +47,8 @@ private lemma nonunits_le_of_isColimit (hc : IsColimit c) :
   obtain ⟨j, y, rfl⟩ := Concrete.isColimit_exists_rep F hc x
   exact Set.mem_iUnion.mpr ⟨j, y, fun h ↦ hx (h.map _), rfl⟩
 
+section
+
 variable [h_hom : ∀ {j j'} (f : j ⟶ j'), IsLocalHom (F.map f).hom]
 
 lemma isLocalHom_ι (hc : IsColimit c) (j : J) :
@@ -99,9 +101,12 @@ lemma maximalIdeal_eq_iSup_of_isColimit (hc : IsColimit c) :
   · have : IsLocalRing (((Functor.const J).obj c.pt).obj j) := isLocalRing_of_isColimit F hc
     exact ((IsLocalRing.local_hom_TFAE (c.ι.app j).hom).out 1 3).mp (isLocalHom_ι F hc j)
 
-lemma residueField_exists_rep (hc : IsColimit c) :
-    haveI := isLocalRing_of_isColimit F hc
-    haveI := isLocalHom_ι F hc
+end
+
+variable [h_obj : ∀ (j : J), IsLocalRing (F.obj j)]
+
+lemma residueField_exists_rep (hc : IsColimit c) [IsLocalRing c.pt]
+    [∀ (j : J), IsLocalHom (c.ι.app j).hom] :
     haveI (j : J) : IsLocalRing (((Functor.const J).obj c.pt).obj j) := ‹_›
     ∀ (x : ResidueField c.pt), ∃ (j : J) (y : ResidueField (F.obj j)),
       x = ResidueField.map (c.ι.app j).hom y := by
@@ -110,15 +115,16 @@ lemma residueField_exists_rep (hc : IsColimit c) :
   obtain ⟨j, z, rfl⟩ := Concrete.isColimit_exists_rep F hc y
   exact ⟨j, residue _ z, rfl⟩
 
-lemma residueField_eq_iUnion_fieldRange_of_isColimit (hc : IsColimit c) :
-    haveI := isLocalRing_of_isColimit F hc
-    haveI := isLocalHom_ι F hc
+lemma residueField_eq_iUnion_fieldRange_of_isColimit (hc : IsColimit c) [IsLocalRing c.pt]
+    [∀ (j : J), IsLocalHom (c.ι.app j).hom] :
     haveI (j : J) : IsLocalRing (((Functor.const J).obj c.pt).obj j) := ‹_›
     ⋃ (j : J), (ResidueField.map (c.ι.app j).hom).fieldRange.carrier =
       (⊤ : Set (ResidueField c.pt)) := by
   ext x
   obtain ⟨j, y, rfl⟩ := residueField_exists_rep F hc x
   simpa using ⟨j, y, rfl⟩
+
+variable [h_hom : ∀ {j j'} (f : j ⟶ j'), IsLocalHom (F.map f).hom]
 
 /--
 The functor of taking residue fields from a functor `F : J ⥤ CommRingCat`, when the `F.obj` are
@@ -138,9 +144,7 @@ noncomputable def residueFieldCocone' [c_pt : IsLocalRing c.pt]
     [c_ι : ∀ j, IsLocalHom (c.ι.app j).hom] : Cocone (residueFieldFunctor F) where
   pt := CommRingCat.of <| ResidueField c.pt
   ι := {
-    app j :=
-      haveI := c_ι j
-      CommRingCat.ofHom <| ResidueField.map (c.ι.app j).hom
+    app j := CommRingCat.ofHom <| ResidueField.map (c.ι.app j).hom
     naturality j j' f := by
       simp [residueFieldFunctor, Functor.const, ← ofHom_comp, ← ResidueField.map_comp, ← hom_comp]
   }
@@ -166,6 +170,7 @@ noncomputable def isColimitResidueFieldCocone (hc : IsColimit c) :
   haveI := isLocalRing_of_isColimit F hc
   haveI (j : J) : Nontrivial (((Functor.const J).obj (residueFieldCocone F hc).pt).obj j) :=
     inferInstanceAs <| Nontrivial (ResidueField _)
+  haveI := isLocalHom_ι F hc
   isColimitOfReflects (forget CommRingCat.{u}) <| Types.FilteredColimit.isColimitOf' _ _
   (fun x ↦ residueField_exists_rep F hc x)
   (fun i x y hxy ↦ ⟨i, 𝟙 i, ((residueFieldCocone F hc).ι.app i).hom.injective (by simpa)⟩)
