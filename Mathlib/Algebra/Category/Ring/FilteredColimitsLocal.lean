@@ -20,7 +20,7 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 In this file, we deal with filtered colimit of local ring via local homomorphisms, proving it is
 again local, with maximal ideal equal to the union of images of maximal ideals.
 
-# Main results
+## Main results
 
 * `CommRingCat.FilteredColimit.isLocalRing_of_isColimit` : Filtered colimit of local ring
   via local homomorphisms is local ring.
@@ -32,12 +32,11 @@ again local, with maximal ideal equal to the union of images of maximal ideals.
 
 @[expose] public section
 
-universe u v w
+universe u
 
 open CategoryTheory Limits IsLocalRing
 
 variable {J : Type u} [SmallCategory J] [IsFiltered J] (F : J ⥤ CommRingCat.{u}) {c : Cocone F}
-
 
 namespace CommRingCat.FilteredColimit
 
@@ -47,7 +46,7 @@ private lemma nonunits_le_of_isColimit (hc : IsColimit c) :
   obtain ⟨j, y, rfl⟩ := Concrete.isColimit_exists_rep F hc x
   exact Set.mem_iUnion.mpr ⟨j, y, fun h ↦ hx (h.map _), rfl⟩
 
-variable [h_hom : ∀ (j j' : J) (f : j ⟶ j'), IsLocalHom (F.map f).hom]
+variable [h_hom : ∀ {j j'} (f : j ⟶ j'), IsLocalHom (F.map f).hom]
 
 lemma isLocalHom_ι (hc : IsColimit c) (j : J) :
     IsLocalHom (c.ι.app j).hom := by
@@ -83,7 +82,7 @@ theorem isLocalRing_of_isColimit (hc : IsColimit c) : IsLocalRing c.pt := by
   simp only [h_nonunits_eq, Set.mem_iUnion, Set.mem_image] at ha hb
   obtain ⟨j, a, ha, rfl⟩ := ha
   obtain ⟨j', b, hb, rfl⟩ := hb
-  obtain ⟨j'', f, g, _⟩ := IsFilteredOrEmpty.cocone_objs j j'
+  obtain ⟨j'', f, g, -⟩ := IsFilteredOrEmpty.cocone_objs j j'
   refine ⟨j'', ⟨F.map f a + F.map g b, (h_obj j'').nonunits_add
     ((map_mem_nonunits_iff _ _).mpr ha) ((map_mem_nonunits_iff _ _).mpr hb), ?_⟩⟩
   simp only [map_add, ← comp_apply]
@@ -111,7 +110,7 @@ lemma residueField_exists_rep (hc : IsColimit c) :
     haveI := isLocalHom_ι F hc
     haveI (j : J) : IsLocalRing (((Functor.const J).obj c.pt).obj j) := ‹_›
     ∀ (x : ResidueField c.pt), ∃ (j : J) (y : ResidueField (F.obj j)),
-      x = ResidueField.map (c.ι.app j).hom y:= by
+      x = ResidueField.map (c.ι.app j).hom y := by
   intro x
   obtain ⟨y, rfl⟩ := Ideal.Quotient.mk_surjective x
   obtain ⟨j, z, rfl⟩ := Concrete.isColimit_exists_rep F hc y
@@ -122,7 +121,7 @@ lemma residueField_eq_iUnion_fieldRange_of_isColimit (hc : IsColimit c) :
     haveI := isLocalHom_ι F hc
     haveI (j : J) : IsLocalRing (((Functor.const J).obj c.pt).obj j) := ‹_›
     ⋃ (j : J), (ResidueField.map (c.ι.app j).hom).fieldRange.carrier =
-      (⊤ : Set (ResidueField c.pt)):= by
+      (⊤ : Set (ResidueField c.pt)) := by
   ext x
   obtain ⟨j, y, rfl⟩ := residueField_exists_rep F hc x
   simpa using ⟨j, y, rfl⟩
@@ -138,7 +137,6 @@ we don't have the category of local rings.
 noncomputable def residueFieldFunctor : J ⥤ CommRingCat.{u} where
   obj j := CommRingCat.of <| ResidueField (F.obj j)
   map f := CommRingCat.ofHom <| ResidueField.map (F.map f).hom
-
 
 variable (c) in
 /-- The cocone of residue fields from a cocone of local homomorphisms between local rings. -/
