@@ -101,6 +101,10 @@ lemma maximalIdeal_eq_iSup_of_isColimit (hc : IsColimit c) :
   · have : IsLocalRing (((Functor.const J).obj c.pt).obj j) := isLocalRing_of_isColimit F hc
     exact ((IsLocalRing.local_hom_TFAE (c.ι.app j).hom).out 1 3).mp (isLocalHom_ι F hc j)
 
+instance : IsLocalRing (colimit F : CommRingCat) := isLocalRing_of_isColimit F (colimit.isColimit F)
+
+instance (j : J) : IsLocalHom (colimit.ι F j).hom := isLocalHom_ι F (colimit.isColimit F) j
+
 end
 
 variable [h_obj : ∀ (j : J), IsLocalRing (F.obj j)]
