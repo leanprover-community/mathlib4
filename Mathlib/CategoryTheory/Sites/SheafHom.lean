@@ -39,7 +39,6 @@ variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
 
 variable (F G : Cᵒᵖ ⥤ A)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Given two presheaves `F` and `G` on a category `C` with values in a category `A`,
 this `presheafHom F G` is the presheaf of types which sends an object `X : C`
@@ -133,7 +132,6 @@ namespace PresheafHom.IsSheafFor
 
 variable (x : Presieve.FamilyOfElements (presheafHom F G) S.arrows) {Y : C}
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 include hG in
 lemma exists_app (hx : x.Compatible) (g : Y ⟶ X) :
@@ -227,10 +225,10 @@ def sheafHom' (F G : Sheaf J A) : Cᵒᵖ ⥤ Type _ where
   map f := ↾((J.overMapPullback A f.unop).map)
   map_id X := by
     ext φ : 4
-    exact ConcreteCategory.congr_hom ((presheafHom F.1 G.1).map_id X) φ.1
+    congrm $((presheafHom F.1 G.1).map_id X) φ.1
   map_comp f g := by
     ext φ : 4
-    exact ConcreteCategory.congr_hom ((presheafHom F.1 G.1).map_comp f g) φ.1
+    congrm $((presheafHom F.1 G.1).map_comp f g) φ.1
 
 /-- The canonical isomorphism `sheafHom' F G ≅ presheafHom F.1 G.1`. -/
 def sheafHom'Iso (F G : Sheaf J A) :

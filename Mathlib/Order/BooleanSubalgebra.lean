@@ -37,7 +37,7 @@ instance instSetLike : SetLike (BooleanSubalgebra α) α where
   coe L := L.carrier
   coe_injective L M h := by obtain ⟨⟨_, _⟩, _⟩ := L; congr
 
-instance : PartialOrder (BooleanSubalgebra α) := .ofSetLike (BooleanSubalgebra α) α
+instance : PartialOrder (BooleanSubalgebra α) := .ofSetLike (BooleanSubalgebra α)
 
 lemma coe_inj : (L : Set α) = M ↔ L = M := SetLike.coe_set_eq
 
@@ -378,6 +378,18 @@ lemma closure_bot_sup_induction {p : ∀ g ∈ closure s, Prop} (mem : ∀ x hx,
       bot_mem' := ⟨_, bot⟩
       compl_mem' := fun ⟨_, hb⟩ ↦ ⟨_, compl _ _ hb⟩ }
   closure_le (L := L).mpr (fun y hy ↦ ⟨subset_closure hy, mem y hy⟩) hx |>.elim fun _ ↦ id
+
+lemma closure_eq_latticeClosure (hs1 : ⊥ ∈ s) (hs2 : compl '' s = s) :
+    closure s = latticeClosure s := by
+  refine subset_antisymm ?_ latticeClosure_subset_closure
+  intro t ht
+  induction ht using closure_bot_sup_induction with
+  | mem _ hx => apply subset_latticeClosure hx
+  | bot => apply subset_latticeClosure hs1
+  | sup _ _ _ _ hx hy => apply isSublattice_latticeClosure.supClosed hx hy
+  | compl _ _ h =>
+    rw [← compl_image_latticeClosure_eq_of_compl_image_eq_self hs2]
+    exact mem_image_of_mem compl h
 
 section sdiff_sup
 

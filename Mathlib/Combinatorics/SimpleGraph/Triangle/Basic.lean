@@ -5,14 +5,11 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Algebra.Order.Field.Basic
-public import Mathlib.Algebra.Order.Ring.Abs
-public import Mathlib.Combinatorics.Enumerative.DoubleCounting
 public import Mathlib.Combinatorics.SimpleGraph.Clique
-public import Mathlib.Data.Finset.Sym
-public import Mathlib.Data.Nat.Choose.Bounds
-public import Mathlib.Tactic.GCongr
 public import Mathlib.Tactic.Positivity
+
+import Mathlib.Combinatorics.Enumerative.DoubleCounting
+import Mathlib.Data.Nat.Choose.Bounds
 
 /-!
 # Triangles in graphs
@@ -101,9 +98,9 @@ lemma edgeDisjointTriangles_iff_mem_sym2_subsingleton :
     · rintro ⟨⟨c, d, e, hcd, hce, hde, rfl⟩, hab⟩
       simp only [mem_insert, mem_singleton] at hab
       obtain ⟨rfl | rfl | rfl, rfl | rfl | rfl⟩ := hab
-      any_goals
+      all_goals
         simp only [*, adj_comm, true_and, Ne, not_true] at *
-      any_goals
+      all_goals
         first
         | exact ⟨c, by aesop⟩
         | exact ⟨d, by aesop⟩

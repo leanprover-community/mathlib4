@@ -6,7 +6,8 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 module
 
 public import Mathlib.Topology.UniformSpace.Basic
-public import Mathlib.Topology.Compactness.Compact
+
+import Mathlib.Topology.Compactness.Compact
 
 /-!
 # Compact sets in uniform spaces
@@ -24,13 +25,14 @@ variable {α : Type ua} {β : Type ub} {γ : Type uc} {ι : Sort*}
 
 section Compact
 
-open Uniformity Set Filter UniformSpace
-open scoped SetRel Topology
+open Set Filter UniformSpace
+
+open scoped Uniformity SetRel Topology
 
 variable [UniformSpace α] {K : Set α}
 
-/-- Let `c : ι → Set α` be an open cover of a compact set `s`. Then there exists an entourage
-`n` such that for each `x ∈ s` its `n`-neighborhood is contained in some `c i`. -/
+/-- Let `U : ι → Set α` be an open cover of a compact set `K`. Then there exists an entourage
+`V` such that for each `x ∈ K` its `V`-neighborhood is contained in some `U i`. -/
 theorem lebesgue_number_lemma {ι : Sort*} {U : ι → Set α} (hK : IsCompact K)
     (hopen : ∀ i, IsOpen (U i)) (hcover : K ⊆ ⋃ i, U i) :
     ∃ V ∈ 𝓤 α, ∀ x ∈ K, ∃ i, ball x V ⊆ U i := by
@@ -107,8 +109,8 @@ protected theorem Filter.HasBasis.lebesgue_number_lemma_nhdsWithin {ι' : Sort*}
   exact fun s t hst ht x hx ↦ (ht x hx).imp
     fun y hy ↦ Subset.trans (Set.inter_subset_inter_left K (ball_mono hst _)) hy
 
-/-- Let `c : Set (Set α)` be an open cover of a compact set `s`. Then there exists an entourage
-`n` such that for each `x ∈ s` its `n`-neighborhood is contained in some `t ∈ c`. -/
+/-- Let `S : Set (Set α)` be an open cover of a compact set `K`. Then there exists an entourage
+`V` such that for each `x ∈ K` its `V`-neighborhood is contained in some `s ∈ S`. -/
 theorem lebesgue_number_lemma_sUnion {S : Set (Set α)}
     (hK : IsCompact K) (hopen : ∀ s ∈ S, IsOpen s) (hcover : K ⊆ ⋃₀ S) :
     ∃ V ∈ 𝓤 α, ∀ x ∈ K, ∃ s ∈ S, ball x V ⊆ s := by

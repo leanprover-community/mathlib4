@@ -126,8 +126,7 @@ theorem invFun_monomial (n : ℕ) (a : A) :
   eval₂_monomial _ _
 
 theorem left_inv (x : A ⊗ R[X]) : invFun R A ((toFunAlgHom R A) x) = x := by
-  refine TensorProduct.induction_on x ?_ ?_ ?_
-  · simp [invFun]
+  refine TensorProduct.inductionOn x ?_ ?_
   · intro a p
     dsimp only [invFun]
     rw [toFunAlgHom_apply_tmul, eval₂_sum]

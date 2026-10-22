@@ -5,10 +5,11 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.FieldTheory.Finite.Basic
 public import Mathlib.RingTheory.Invariant.Basic
-public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 public import Mathlib.RingTheory.Unramified.Locus
+
+import Mathlib.FieldTheory.Finite.Basic
+import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 
 /-!
 # Frobenius elements
@@ -84,7 +85,7 @@ def restrict : S ⧸ Q →ₐ[R ⧸ Q.under R] S ⧸ Q where
   toRingHom := Ideal.quotientMap Q φ H.le_comap
   commutes' x := by
     obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
-    exact DFunLike.congr_arg (Ideal.Quotient.mk Q) (φ.commutes x)
+    congrm Ideal.Quotient.mk Q $(φ.commutes x)
 
 lemma restrict_apply (x : S ⧸ Q) :
     H.restrict x = x ^ Nat.card (R ⧸ Q.under R) := by
@@ -236,7 +237,7 @@ lemma exists_of_isInvariant [Q.IsPrime] [Finite (S ⧸ Q)] : ∃ σ : G, IsArith
   obtain ⟨σ, hσ⟩ := Ideal.Quotient.stabilizerHom_surjective G P Q l
   refine ⟨σ, fun x ↦ ?_⟩
   rw [← Ideal.Quotient.eq, Nat.card_eq_fintype_card, hk]
-  exact DFunLike.congr_fun hσ (Ideal.Quotient.mk Q x)
+  congrm $hσ (Ideal.Quotient.mk Q x)
 
 variable (S G) in
 lemma exists_primesOver_isConj (P : Ideal R)
@@ -274,7 +275,7 @@ lemma _root_.isConj_arithFrobAt
     (H : Q.under R = Q'.under R) : IsConj (arithFrobAt R G Q) (arithFrobAt R G Q') := by
   obtain ⟨P, hP, h₁, h₂⟩ : ∃ P : Ideal R, P.IsPrime ∧ P = Q.under R ∧ P = Q'.under R :=
     ⟨Q.under R, inferInstance, rfl, H⟩
-  convert!
+  convert
     (exists_primesOver_isConj S G P ⟨⟨Q, ‹_›, ⟨h₁⟩⟩, ‹Finite (S ⧸ Q)›⟩).choose_spec.2 ⟨Q, ‹_›, ⟨h₁⟩⟩
       ⟨Q', ‹_›, ⟨h₂⟩⟩
   · subst h₁; rfl

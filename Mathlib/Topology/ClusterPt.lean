@@ -20,7 +20,9 @@ In particular the notion of cluster point of a sequence `u` is `MapClusterPt x a
 
 public section
 
-open Set Filter Topology
+open Set Filter
+
+open scoped Topology
 
 universe u v w
 

@@ -6,10 +6,10 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 module
 
 public import Mathlib.Algebra.Order.GroupWithZero.Canonical
-public import Mathlib.Algebra.Order.Monoid.Unbundled.TypeTags
-public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 
 /-!
+# `WithZero (Multiplicative α)` is equivalent to `Multiplicative (WithBot α)`
+
 Making an additive monoid multiplicative then adding a zero is the same as adding a bottom
 element then making it multiplicative.
 -/

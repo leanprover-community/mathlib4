@@ -5,8 +5,8 @@ Authors: Moritz Doll, Anatole Dedecker
 -/
 module
 
-public import Mathlib.Analysis.Distribution.TemperedDistribution
 public import Mathlib.Analysis.Distribution.Distribution
+public import Mathlib.Analysis.Distribution.TemperedDistribution
 
 /-! # Support of distributions
 
@@ -259,7 +259,9 @@ end TemperedDistribution
 
 /-! ## Classical distributions -/
 
-open TopologicalSpace Distributions
+open TopologicalSpace
+
+open scoped Distributions
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
