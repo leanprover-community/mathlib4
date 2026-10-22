@@ -40,45 +40,41 @@ jobs:
 
             // The issues listing sometimes returns no issues for a user who has closed issues.
             // A new contributor also has no closed issues, so list again before the PR gets the label.
-            const MAX_ATTEMPTS = 3;
-            for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-              mergedByBorsPRs = [];
-              totalIssuesChecked = 0;
-
-              // Paginate through issues, stopping when we have more than MIN_MERGED qualifying PRs
-              for await (const response of github.paginate.iterator(
-                github.rest.issues.listForRepo,
-                {
-                  owner,
-                  repo,
-                  creator,
-                  state: 'closed',
-                  per_page: 100
+            async function* listClosedIssues() {
+              const MAX_ATTEMPTS = 3;
+              for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+                let found = false;
+                const params = { owner, repo, creator, state: 'closed', per_page: 100 };
+                for await (const response of github.paginate.iterator(github.rest.issues.listForRepo, params)) {
+                  found ||= response.data.length > 0;
+                  yield response;
                 }
-              )) {
-                totalIssuesChecked += response.data.length;
-
-                // Filter this page for PRs with "[Merged by Bors] -" in the title
-                const pageMatches = response.data.filter(item =>
-                  item.pull_request && item.title.startsWith('[Merged by Bors] -')
-                );
-
-                mergedByBorsPRs.push(...pageMatches);
-
-                console.log(`Checked ${totalIssuesChecked} closed issues, found ${mergedByBorsPRs.length} PRs merged by Bors so far`);
-
-                // Stop early if we've found more than MIN_MERGED
-                if (mergedByBorsPRs.length > MIN_MERGED) {
-                  console.log(`Found more than ${MIN_MERGED} PRs, stopping pagination early`);
-                  break;
+                if (found || attempt === MAX_ATTEMPTS) {
+                  return;
                 }
+                console.log('Found no closed issues, listing them again in 5 seconds');
+                await new Promise(resolve => setTimeout(resolve, 5000));
               }
+            }
 
-              if (totalIssuesChecked > 0 || attempt === MAX_ATTEMPTS) {
+            // Paginate through issues, stopping when we have more than MIN_MERGED qualifying PRs
+            for await (const response of listClosedIssues()) {
+              totalIssuesChecked += response.data.length;
+
+              // Filter this page for PRs with "[Merged by Bors] -" in the title
+              const pageMatches = response.data.filter(item =>
+                item.pull_request && item.title.startsWith('[Merged by Bors] -')
+              );
+
+              mergedByBorsPRs.push(...pageMatches);
+
+              console.log(`Checked ${totalIssuesChecked} closed issues, found ${mergedByBorsPRs.length} PRs merged by Bors so far`);
+
+              // Stop early if we've found more than MIN_MERGED
+              if (mergedByBorsPRs.length > MIN_MERGED) {
+                console.log(`Found more than ${MIN_MERGED} PRs, stopping pagination early`);
                 break;
               }
-              console.log('Found no closed issues, listing them again in 5 seconds');
-              await new Promise(resolve => setTimeout(resolve, 5000));
             }
 
             const pullRequestCount = mergedByBorsPRs.length;
