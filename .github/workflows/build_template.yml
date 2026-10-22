@@ -1008,18 +1008,22 @@ jobs:
       - *install_curl
 
       - name: get cache for Mathlib
+        env:
+          CACHE_REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
         run: |
           # Run once without --repo, so we can diagnose what `lake exe cache get` wants to do by itself.
           lake exe cache get
           # Run again with --repo, so ensure we actually get the oleans.
-          lake exe cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} get
+          lake exe cache --repo="${CACHE_REPO}" get
 
       - name: get cache for Archive and Counterexamples
+        env:
+          CACHE_REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
         run: |
           # Run once without --repo, so we can diagnose what `lake exe cache get` wants to do by itself.
           lake exe cache get Archive Counterexamples
           # Run again with --repo, so ensure we actually get the oleans.
-          lake exe cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} get Archive Counterexamples
+          lake exe cache --repo="${CACHE_REPO}" get Archive Counterexamples
 
       - name: verify that everything was available in the cache
         id: verify_cache
@@ -1146,8 +1150,10 @@ jobs:
       - *install_curl
 
       - name: get cache for Mathlib
+        env:
+          CACHE_REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
         run: |
-          lake exe cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} get
+          lake exe cache --repo="${CACHE_REPO}" get
 
       - name: generate our import graph
         run: |
