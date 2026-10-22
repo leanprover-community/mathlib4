@@ -89,7 +89,7 @@ lemma HasInducedTStructure.mk' {P : ObjectProperty C} [P.IsTriangulated] {t : TS
         P.le_isoClosure _ ((h X hX _).1), P.le_isoClosure _ ((h X hX _).2)⟩
 
 set_option backward.defeqAttrib.useBackward true in
-lemma mem_of_hasInductedTStructure (P : ObjectProperty C) [P.IsTriangulated] (t : TStructure C)
+lemma mem_of_hasInducedTStructure (P : ObjectProperty C) [P.IsTriangulated] (t : TStructure C)
     [P.IsClosedUnderIsomorphisms] [P.HasInducedTStructure t]
     (T : Triangle C) (hT : T ∈ distTriang C)
     (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (h₁ : t.IsLE T.obj₁ n₀) (h₂ : P T.obj₂)
@@ -103,6 +103,9 @@ lemma mem_of_hasInductedTStructure (P : ObjectProperty C) [P.IsTriangulated] (t 
   exact ⟨(P.prop_iff_of_iso (Triangle.π₁.mapIso e)).2 (P.prop_ι_obj _),
     (P.prop_iff_of_iso (Triangle.π₃.mapIso e)).2 (P.prop_ι_obj _)⟩
 
+@[deprecated (since := "2026-10-13")]
+alias mem_of_hasInductedTStructure := mem_of_hasInducedTStructure
+
 set_option backward.defeqAttrib.useBackward true in
 instance (P P' : ObjectProperty C) [P.IsTriangulated] [P'.IsTriangulated] (t : TStructure C)
     [P.HasInducedTStructure t] [P'.HasInducedTStructure t]
@@ -111,13 +114,13 @@ instance (P P' : ObjectProperty C) [P.IsTriangulated] [P'.IsTriangulated] (t : T
   .mk' (by
     rintro X ⟨hX, hX'⟩ n
     exact
-      ⟨⟨(P.mem_of_hasInductedTStructure t _ (t.triangleLEGE_distinguished n _ rfl X) n _ rfl
+      ⟨⟨(P.mem_of_hasInducedTStructure t _ (t.triangleLEGE_distinguished n _ rfl X) n _ rfl
           (by dsimp; infer_instance) hX (by dsimp; infer_instance)).1,
-        (P'.mem_of_hasInductedTStructure t _ (t.triangleLEGE_distinguished n _ rfl X) n _ rfl
+        (P'.mem_of_hasInducedTStructure t _ (t.triangleLEGE_distinguished n _ rfl X) n _ rfl
           (by dsimp; infer_instance) hX' (by dsimp; infer_instance)).1⟩,
-          ⟨(P.mem_of_hasInductedTStructure t _ (t.triangleLEGE_distinguished (n - 1) n (by lia) X)
+          ⟨(P.mem_of_hasInducedTStructure t _ (t.triangleLEGE_distinguished (n - 1) n (by lia) X)
           (n - 1) n (by lia) (by dsimp; infer_instance) hX (by dsimp; infer_instance)).2,
-        (P'.mem_of_hasInductedTStructure t _ (t.triangleLEGE_distinguished (n - 1) n (by lia) X)
+        (P'.mem_of_hasInducedTStructure t _ (t.triangleLEGE_distinguished (n - 1) n (by lia) X)
           (n - 1) n (by lia) (by dsimp; infer_instance) hX' (by dsimp; infer_instance)).2⟩⟩)
 
 end ObjectProperty

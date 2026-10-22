@@ -23,6 +23,7 @@ permissions:
 
 env:
   MATHLIB_CACHE_BASE_URL: ${{ vars.MATHLIB_CACHE_BASE_URL }}
+  MATHLIB_CACHE_PARALLEL_MAX: ${{ vars.MATHLIB_CACHE_PARALLEL_MAX }}
 
 jobs:
   check:
@@ -183,7 +184,7 @@ jobs:
           cd pr-branch
           lake env "$CACHE_BIN" get
           # Run again with --repo in case this is a fork PR: fork PRs upload
-          # their oleans to the fork's Azure container, not the upstream one.
+          # their oleans to the `forks` container, not the upstream one.
           lake env "$CACHE_BIN" --repo="${{ steps.pr_info.outputs.head_repo }}" get
 
       - name: Check PR head oleans
@@ -272,7 +273,7 @@ jobs:
           fi
 
       - name: Upload full olean diff
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: olean-diff-full
           path: olean_diff_full.txt
@@ -280,7 +281,7 @@ jobs:
           retention-days: 5
 
       - name: Upload olean report comment
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: olean-report-comment
           path: comment_body.md
@@ -303,7 +304,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download olean report comment
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: olean-report-comment
 
