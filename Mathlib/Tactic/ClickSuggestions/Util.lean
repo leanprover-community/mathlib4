@@ -31,12 +31,12 @@ section
 open Widget PrettyPrinter.Delaborator
 
 /-- Turn an `Expr` into an HTML with hover info. -/
-def exprToHtml (e : Expr) : MetaM Html :=
+def exprToHtml (e : Expr) : MetaM ProofWidgets.Html :=
   return jsx%{<InteractiveCode fmt={← Widget.ppExprTagged e}/>}
 
 /-- Turn a constant into an HTML with hover info.
 This avoids the `@` that may appear when using `exprToHtml`. -/
-def constToHtml (n : Name) : MetaM Html := do
+def constToHtml (n : Name) : MetaM ProofWidgets.Html := do
   let delab := withOptionAtCurrPos `pp.tagAppFns true delabConst
   let ⟨fmt, infos⟩ ← PrettyPrinter.ppExprWithInfos (delab := delab) (← mkConstWithLevelParams n)
   let tt := TaggedText.prettyTagged fmt
@@ -105,7 +105,7 @@ def toMessageData : Premise → MessageData
   | .fvar fvarId => .ofExpr (.fvar fvarId)
 
 /-- Print a premise using HTML. -/
-def toHtml : Premise → MetaM Html
+def toHtml : Premise → MetaM ProofWidgets.Html
   | .const name => constToHtml name
   | .fvar fvarId => exprToHtml (.fvar fvarId)
 
@@ -119,7 +119,7 @@ structure State where
   and no progress has been made, then inform the user. -/
   progress : Bool := false
   /-- The suggestions that close the goal. -/
-  solvedSuggestions : Array Html := #[]
+  solvedSuggestions : Array ProofWidgets.Html := #[]
 
 /-- The information required for pasting a suggestion into the editor. -/
 structure Context where
@@ -321,8 +321,8 @@ open Widget
 /-- Generate a suggestion for inserting `tac`, with message `html`.
 `button` will be used as the text on the clickable button.
 If `solves := true`, then a `🎉️` emoji is added. -/
-def mkSuggestion (tac : TSyntax `tactic) (button : String) (html : Html) (solves : Bool) :
-    ClickSuggestionsM Html := do
+def mkSuggestion (tac : TSyntax `tactic) (button : String) (html : ProofWidgets.Html)
+    (solves : Bool) : ClickSuggestionsM ProofWidgets.Html := do
   let tac ← match (← read).onGoal with
     | some n => `(tactic| on_goal $(Syntax.mkNatLit (n + 1)):num => $tac:tactic)
     | none => pure tac

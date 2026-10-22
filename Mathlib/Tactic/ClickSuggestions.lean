@@ -96,7 +96,7 @@ public def generateSuggestions (loc : SubExpr.GoalsLocation) (parentDecl? : Opti
     | some fvarId => fvarId.getType
     | none => loc.mvarId.getType
   viewKAbstractSubExpr' rootExpr pos fun subExpr rwKind ↦ do
-  let mut htmls : Array Html := #[]
+  let mut htmls : Array ProofWidgets.Html := #[]
 
   if let some html ← suggestUnfold subExpr rwKind then
     markProgress
@@ -115,7 +115,7 @@ public def generateSuggestions (loc : SubExpr.GoalsLocation) (parentDecl? : Opti
 
 /-- Rpc function for the `#click_suggestions` widget. -/
 @[server_rpc_method]
-public def rpc (props : PanelWidgetProps) : RequestM (RequestTask Html) :=
+public def rpc (props : PanelWidgetProps) : RequestM (RequestTask ProofWidgets.Html) :=
   RequestM.asTask do
   let some loc := props.selectedLocations.back? |
     return .text "Shift-click an expression in the tactic state to get suggestions."
