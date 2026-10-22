@@ -31,7 +31,8 @@ working with.
 
 ## Main definitions
 
-* `Abelian` is the type class indicating that a category is abelian. It extends `Preadditive`.
+* `Abelian` is the (`Prop`-valued) type class indicating that a preadditive category is abelian.
+  It takes the `Preadditive` structure as a parameter.
 * `Abelian.image f` is `kernel (cokernel.π f)`, and
 * `Abelian.coimage f` is `cokernel (kernel.ι f)`.
 
@@ -55,9 +56,15 @@ working with.
 
 ## Implementation notes
 
+The typeclass `Abelian` is `Prop`-valued: it takes the `Preadditive` structure as a parameter
+rather than extending it, so that assumptions are written `[Preadditive C] [Abelian C]`.
+Being abelian is then a property of a preadditive category, and constructions such as
+`Abelian.ofCoimageImageComparisonIsIso` or `abelianOfEquivalence` are theorems.
+
 The typeclass `Abelian` does not extend `NonPreadditiveAbelian`,
 to avoid having to deal with comparing the two `HasZeroMorphisms` instances
-(one from `Preadditive` in `Abelian`, and the other a field of `NonPreadditiveAbelian`).
+(one from the `Preadditive` parameter of `Abelian`, and the other a field of
+`NonPreadditiveAbelian`).
 As a consequence, at the beginning of this file we trivially build
 a `NonPreadditiveAbelian` instance from an `Abelian` instance,
 and use this to restate a number of theorems,
@@ -97,7 +104,7 @@ universe v u
 namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C]
-variable (C)
+variable (C) [Preadditive C]
 
 /-- A (preadditive) category `C` is called abelian if it has all finite products,
 all kernels and cokernels, and if every monomorphism is the kernel of some morphism
@@ -108,7 +115,7 @@ finite products give a terminal object, and in a preadditive category
 any terminal object is a zero object.)
 -/
 @[wikidata Q318737]
-class Abelian extends Preadditive C, IsNormalMonoCategory C, IsNormalEpiCategory C where
+class Abelian : Prop extends IsNormalMonoCategory C, IsNormalEpiCategory C where
   [has_finite_products : HasFiniteProducts C]
   [has_kernels : HasKernels C]
   [has_cokernels : HasCokernels C]
@@ -254,15 +261,14 @@ attribute [local instance] OfCoimageImageComparisonIsIso.isNormalEpiCategory
 in which the coimage-image comparison morphism is always an isomorphism,
 is an abelian category. -/
 @[stacks 0109
-"The Stacks project uses this characterisation at the definition of an abelian category.",
-  instance_reducible]
-def ofCoimageImageComparisonIsIso : Abelian C where
+"The Stacks project uses this characterisation at the definition of an abelian category."]
+theorem ofCoimageImageComparisonIsIso : Abelian C where
 
 end CategoryTheory.Abelian
 
 namespace CategoryTheory.Abelian
 
-variable {C : Type u} [Category.{v} C] [Abelian C]
+variable {C : Type u} [Category.{v} C] [Preadditive C] [Abelian C]
 
 -- Porting note: this should be an instance,
 -- but triggers https://github.com/leanprover/lean4/issues/2055
@@ -287,7 +293,7 @@ section ToNonPreadditiveAbelian
 /-- Every abelian category is, in particular, `NonPreadditiveAbelian`. -/
 @[instance_reducible]
 def nonPreadditiveAbelian : NonPreadditiveAbelian C :=
-  { ‹Abelian C› with }
+  { Preadditive.preadditiveHasZeroMorphisms, ‹Abelian C› with }
 
 end ToNonPreadditiveAbelian
 
@@ -803,12 +809,12 @@ namespace CategoryTheory.NonPreadditiveAbelian
 
 variable (C : Type u) [Category.{v} C] [NonPreadditiveAbelian C]
 
-/-- Every `NonPreadditiveAbelian` category can be promoted to an abelian category. -/
-@[instance_reducible]
-def abelian : Abelian C where
-  toPreadditive := NonPreadditiveAbelian.preadditive
-  normalMonoOfMono := fun f _ ↦ ⟨normalMonoOfMono f⟩
-  normalEpiOfEpi := fun f _ ↦ ⟨normalEpiOfEpi f⟩
+/-- Every `NonPreadditiveAbelian` category can be promoted to an abelian category,
+using the preadditive structure `NonPreadditiveAbelian.preadditive`. -/
+theorem abelian : @Abelian C _ NonPreadditiveAbelian.preadditive :=
+  letI := NonPreadditiveAbelian.preadditive (C := C)
+  { normalMonoOfMono := fun f _ ↦ ⟨normalMonoOfMono f⟩
+    normalEpiOfEpi := fun f _ ↦ ⟨normalEpiOfEpi f⟩ }
 
 end CategoryTheory.NonPreadditiveAbelian
 
@@ -852,8 +858,7 @@ preadditive, has finite products, and that any morphism `f : X ⟶ Y` has
 a kernel `i : K ⟶ X`, a cokernel `p : Y ⟶ Q` such that `f` factors as `f = π ≫ ι`
 where `π : X ⟶ I` is a cokernel of `i` and `ι : I ⟶ Y` is a kernel of `p`.
 This assumption is packaged in a structure `AbelianStruct f`. -/
-@[instance_reducible]
-noncomputable def mk' [HasFiniteProducts C]
+theorem mk' [HasFiniteProducts C]
     (h : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), Nonempty (AbelianStruct f)) :
     Abelian C where
   has_kernels := ⟨fun f ↦ ⟨_, (h f).some.isLimitKernelFork⟩⟩

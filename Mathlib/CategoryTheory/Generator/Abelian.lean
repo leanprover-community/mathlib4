@@ -32,7 +32,7 @@ universe v u
 
 namespace CategoryTheory.Abelian
 
-variable {C : Type u} [Category.{v} C] [Abelian C]
+variable {C : Type u} [Category.{v} C] [Preadditive C] [Abelian C]
 
 theorem has_injective_coseparator [HasLimits C] [EnoughInjectives C] (G : C) (hG : IsSeparator G) :
     ∃ G : C, Injective G ∧ IsCoseparator G := by

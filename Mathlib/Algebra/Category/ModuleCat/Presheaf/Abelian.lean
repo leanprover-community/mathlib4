@@ -36,6 +36,6 @@ noncomputable instance : IsNormalMonoCategory (PresheafOfModules.{v} R) where
     (evaluationJointlyReflectsLimits _ _ (fun _ =>
       Abelian.isLimitMapConeOfKernelForkOfι _ _))⟩
 
-noncomputable instance : Abelian (PresheafOfModules.{v} R) where
+instance : Abelian (PresheafOfModules.{v} R) where
 
 end PresheafOfModules

@@ -814,7 +814,7 @@ end HomologicalComplex
 
 namespace CochainComplex
 
-variable {C : Type*} [Category* C] [Abelian C]
+variable {C : Type*} [Category* C] [Preadditive C] [Abelian C]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma isIso_liftCycles_iff (K : CochainComplex C ℕ) {X : C} (φ : X ⟶ K.X 0)
@@ -836,7 +836,7 @@ end CochainComplex
 
 namespace ChainComplex
 
-variable {C : Type*} [Category* C] [Abelian C]
+variable {C : Type*} [Category* C] [Preadditive C] [Abelian C]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma isIso_descOpcycles_iff (K : ChainComplex C ℕ) {X : C} (φ : K.X 0 ⟶ X)

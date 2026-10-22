@@ -31,8 +31,8 @@ namespace Ext
 
 section Ring
 
-variable {R : Type t} [Ring R] {C : Type u} [Category.{v} C] [Abelian C] [Linear R C]
-  [HasExt.{w} C]
+variable {R : Type t} [Ring R] {C : Type u} [Category.{v} C] [Preadditive C] [Abelian C]
+  [Linear R C] [HasExt.{w} C]
 
 variable {X Y : C} {n : ℕ}
 
@@ -99,7 +99,7 @@ end Ring
 
 section CommRing
 
-variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C]
+variable {C : Type u} [Category.{v} C] [Preadditive C] [Abelian C] [HasExt.{w} C]
 
 /-- The composition of `Ext`, as a bilinear map. -/
 @[simps!]
@@ -131,8 +131,8 @@ end Ext
 
 section
 
-variable (R : Type t) [CommRing R] {C : Type u} [Category.{v} C] [Abelian C] [Linear R C]
-  [HasExt.{w} C]
+variable (R : Type t) [CommRing R] {C : Type u} [Category.{v} C] [Preadditive C] [Abelian C]
+  [Linear R C] [HasExt.{w} C]
 
 /-- Auxiliary definition for `linearExtFunctor`. -/
 @[implicit_reducible, simps]

@@ -339,7 +339,7 @@ end
 
 section
 
-variable {A : Type*} [Category* A] [HasCoproducts.{w} A] [Abelian A]
+variable {A : Type*} [Category* A] [HasCoproducts.{w} A] [Preadditive A] [Abelian A]
   (P : SSetPair.{w}) (R : A)
 
 lemma shortExact_chainComplexShortComplex :

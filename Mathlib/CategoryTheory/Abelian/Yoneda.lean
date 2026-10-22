@@ -26,7 +26,7 @@ open CategoryTheory Opposite Limits
 
 universe v v' u u'
 
-variable {C : Type u} [Category.{v} C] [Abelian C]
+variable {C : Type u} [Category.{v} C] [Preadditive C] [Abelian C]
 
 namespace CategoryTheory.Abelian
 

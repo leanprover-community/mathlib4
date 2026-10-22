@@ -38,8 +38,8 @@ namespace CategoryTheory
 
 open Category Limits ZeroObject MorphismProperty
 
-variable {C : Type u} [Category.{v} C] [Abelian C]
-  {D : Type u'} [Category.{v'} D] [Abelian D]
+variable {C : Type u} [Category.{v} C] [Preadditive C] [Abelian C]
+  {D : Type u'} [Category.{v'} D] [Preadditive D] [Abelian D]
 
 namespace ObjectProperty
 
@@ -166,6 +166,7 @@ instance : P.isoModSerre.HasTwoOutOfThreeProperty where
     ⟨P.prop_X₂_of_exact ((kernelCokernelCompSequence_exact f g).exact 1) hfg.1 hf.2,
       P.prop_of_epi (cokernel.map (f ≫ g) g f (𝟙 _) (by simp)) hfg.2⟩
 
+omit [Abelian D] in
 lemma le_kernel_of_isoModSerre_isInvertedBy (F : C ⥤ D) [F.PreservesZeroMorphisms]
     (hF : P.isoModSerre.IsInvertedBy F) :
     P ≤ F.kernel := by

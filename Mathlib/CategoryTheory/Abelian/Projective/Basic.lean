@@ -25,7 +25,7 @@ namespace CategoryTheory
 
 open Limits Projective Opposite
 
-variable {C : Type u} [Category.{v} C] [Abelian C]
+variable {C : Type u} [Category.{v} C] [Preadditive C] [Abelian C]
 
 /-- The preadditive co-Yoneda functor on `P` preserves homology if `P` is projective. -/
 noncomputable instance preservesHomology_preadditiveCoyonedaObj_of_projective

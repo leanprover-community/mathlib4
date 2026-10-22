@@ -18,7 +18,7 @@ namespace CategoryTheory.ObjectProperty.hasFiniteResolutionOfLength
 
 open Limits
 
-variable {A : Type*} [Category* A] [Abelian A] {X : A} {n : ℕ}
+variable {A : Type*} [Category* A] [Preadditive A] [Abelian A] {X : A} {n : ℕ}
 
 theorem hasProjectiveDimensionLE (hX : (isProjective A).hasFiniteResolutionOfLength n X) :
     HasProjectiveDimensionLE X n := by

@@ -37,7 +37,7 @@ open Limits ComposableArrows
 
 namespace Abelian
 
-variable {C ι : Type*} [Category* C] [Category* ι] [Abelian C]
+variable {C ι : Type*} [Category* C] [Category* ι] [Preadditive C] [Abelian C]
 
 namespace SpectralObject
 
@@ -95,6 +95,7 @@ def shortComplexMap (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂
   comm₂₃ := δ_naturality ..
 
 set_option backward.defeqAttrib.useBackward true in
+omit [Abelian C] in
 @[simp]
 lemma shortComplexMap_id (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
     X.shortComplexMap f₁ f₂ f₃ f₁ f₂ f₃ (𝟙 _) n₀ n₁ n₂ hn₁ hn₂ = 𝟙 _ := by
@@ -102,6 +103,7 @@ lemma shortComplexMap_id (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 =
   all_goals dsimp; convert (X.H _).map_id _; cat_disch
 
 set_option backward.defeqAttrib.useBackward true in
+omit [Abelian C] in
 @[reassoc, simp]
 lemma shortComplexMap_comp (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
     X.shortComplexMap f₁ f₂ f₃ f₁'' f₂'' f₃'' (α ≫ β) n₀ n₁ n₂ hn₁ hn₂ =
@@ -150,10 +152,12 @@ section
 
 variable {i j k : ι} (f : i ⟶ j) (g : j ⟶ k)
 
+omit [Abelian C] in
 lemma δ_eq_zero_of_isIso₁ (hf : IsIso f) (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁ := by lia) :
     X.δ f g n₀ n₁ hn₁ = 0 := by
   simpa only [Preadditive.IsIso.comp_left_eq_zero] using X.zero₃ f g _ rfl n₀ n₁
 
+omit [Abelian C] in
 lemma δ_eq_zero_of_isIso₂ (hg : IsIso g) (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁ := by lia) :
     X.δ f g n₀ n₁ hn₁ = 0 := by
   simpa only [Preadditive.IsIso.comp_right_eq_zero] using X.zero₁ f g _ rfl n₀ n₁
@@ -161,6 +165,7 @@ lemma δ_eq_zero_of_isIso₂ (hg : IsIso g) (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 
 end
 
 set_option backward.defeqAttrib.useBackward true in
+omit [Abelian C] in
 lemma isZero_H_obj_of_isIso {i j : ι} (f : i ⟶ j) (hf : IsIso f) (n : ℤ) :
     IsZero ((X.H n).obj (mk₁ f)) := by
   let e : mk₁ (𝟙 i) ≅ mk₁ f := isoMk₁ (Iso.refl _) (asIso f) (by simp)

@@ -27,9 +27,9 @@ universe w₁ w₂ w₃
 
 open CategoryTheory Category Limits Localization
 
-variable {C₁ : Type*} [Category* C₁] [Abelian C₁] [HasDerivedCategory.{w₁} C₁]
-  {C₂ : Type*} [Category* C₂] [Abelian C₂] [HasDerivedCategory.{w₂} C₂]
-  {C₃ : Type*} [Category* C₃] [Abelian C₃] [HasDerivedCategory.{w₃} C₃]
+variable {C₁ : Type*} [Category* C₁] [Preadditive C₁] [Abelian C₁] [HasDerivedCategory.{w₁} C₁]
+  {C₂ : Type*} [Category* C₂] [Preadditive C₂] [Abelian C₂] [HasDerivedCategory.{w₂} C₂]
+  {C₃ : Type*} [Category* C₃] [Preadditive C₃] [Abelian C₃] [HasDerivedCategory.{w₃} C₃]
 
 namespace CategoryTheory
 

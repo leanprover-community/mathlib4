@@ -29,7 +29,7 @@ assert_not_exists TwoSidedIdeal
 open CategoryTheory Category ComplexShape HomotopyCategory Limits
   HomologicalComplex.HomologySequence Pretriangulated Preadditive
 
-variable {C : Type*} [Category* C] [Abelian C]
+variable {C : Type*} [Category* C] [Preadditive C] [Abelian C]
 
 namespace CochainComplex
 
@@ -176,7 +176,7 @@ lemma descShortComplex_naturality {S₁ S₂ : ShortComplex (CochainComplex C �
   · simp [map]
   · simp [map, ← HomologicalComplex.comp_f, f.comm₂₃]
 
-variable {D : Type*} [Category* D] [Abelian D]
+variable {D : Type*} [Category* D] [Preadditive D] [Abelian D]
 
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]

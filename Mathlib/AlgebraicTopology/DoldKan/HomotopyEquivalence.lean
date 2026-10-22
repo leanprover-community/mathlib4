@@ -79,7 +79,7 @@ def homotopyPInftyToId : Homotopy (PInfty : K[X] ⟶ _) (𝟙 _) where
 is a homotopy equivalence -/
 @[simps]
 def homotopyEquivNormalizedMooreComplexAlternatingFaceMapComplex {A : Type*} [Category* A]
-    [Abelian A] {Y : SimplicialObject A} :
+    [Preadditive A] [Abelian A] {Y : SimplicialObject A} :
     HomotopyEquiv ((normalizedMooreComplex A).obj Y) ((alternatingFaceMapComplex A).obj Y) where
   hom := inclusionOfMooreComplexMap Y
   inv := PInftyToNormalizedMooreComplex Y

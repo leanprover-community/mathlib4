@@ -29,7 +29,7 @@ namespace CategoryTheory
 open Localization Limits MorphismProperty
 
 variable {C D : Type*} [Category* C] [Category* D]
-  [Abelian C] [Abelian D] (G : D ⥤ C)
+  [Preadditive C] [Abelian C] [Preadditive D] [Abelian D] (G : D ⥤ C)
   [PreservesFiniteLimits G] [PreservesFiniteColimits G]
 
 namespace Abelian

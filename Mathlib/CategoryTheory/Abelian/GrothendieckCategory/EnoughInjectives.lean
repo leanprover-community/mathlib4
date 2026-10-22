@@ -98,7 +98,7 @@ lemma isomorphisms_le_pushouts_generatingMonomorphisms [HasZeroMorphisms C] :
   MorphismProperty.isomorphisms_le_pushouts _
     (fun _ ↦ ⟨_, _, _, ⟨⊤⟩, 0, inferInstance⟩)
 
-variable [Abelian C]
+variable [Preadditive C] [Abelian C]
 
 namespace generatingMonomorphisms
 

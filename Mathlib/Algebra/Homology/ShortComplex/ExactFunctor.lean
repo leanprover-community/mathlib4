@@ -89,9 +89,11 @@ end
 
 section
 
-variable {C D : Type*} [Category* C] [Category* D] [Abelian C] [Abelian D]
+variable {C D : Type*} [Category* C] [Category* D] [Preadditive C] [Abelian C]
+  [Preadditive D] [Abelian D]
 variable (F : C ⥤ D) [F.Additive]
 
+omit [Abelian D] in
 /--
 If a functor `F : C ⥤ D` preserves short exact sequences on the left-hand side, (i.e.
 if `0 ⟶ A ⟶ B ⟶ C ⟶ 0` is exact then `0 ⟶ F(A) ⟶ F(B) ⟶ F(C)` is exact)
@@ -151,6 +153,7 @@ lemma preservesFiniteLimits_iff_forall_exact_map_and_mono :
       ∀ (S : ShortComplex C), S.ShortExact → (S.map F).Exact ∧ Mono (F.map S.f) :=
   (Functor.preservesFiniteLimits_tfae F).out 4 1
 
+omit [Abelian D] in
 /--
 If a functor `F : C ⥤ D` preserves exact sequences on the right-hand side (i.e.
 if `0 ⟶ A ⟶ B ⟶ C ⟶ 0` is exact then `F(A) ⟶ F(B) ⟶ F(C) ⟶ 0` is exact),

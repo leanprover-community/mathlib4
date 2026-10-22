@@ -43,7 +43,7 @@ namespace DoldKan
 
 universe v
 
-variable {A : Type*} [Category* A] [Abelian A] {X : SimplicialObject A}
+variable {A : Type*} [Category* A] [Preadditive A] [Abelian A] {X : SimplicialObject A}
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

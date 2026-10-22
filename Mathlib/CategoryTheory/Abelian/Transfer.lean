@@ -50,7 +50,7 @@ universe v₁ v₂ u₁ u₂
 namespace AbelianOfAdjunction
 
 variable {C : Type u₁} [Category.{v₁} C] [Preadditive C]
-variable {D : Type u₂} [Category.{v₂} D] [Abelian D]
+variable {D : Type u₂} [Category.{v₂} D] [Preadditive D] [Abelian D]
 variable (F : C ⥤ D)
 variable (G : D ⥤ C) [Functor.PreservesZeroMorphisms G]
 
@@ -82,13 +82,13 @@ we have `F : C ⥤ D` `G : D ⥤ C` (with `G` preserving zero morphisms),
 `G` is left exact (that is, preserves finite limits),
 and further we have `adj : G ⊣ F` and `i : F ⋙ G ≅ 𝟭 C`,
 then `C` is also abelian. -/
-@[stacks 03A3, instance_reducible]
-def abelianOfAdjunction {C : Type u₁} [Category.{v₁} C] [Preadditive C] [HasFiniteProducts C]
-    {D : Type u₂} [Category.{v₂} D] [Abelian D] (F : C ⥤ D)
+@[stacks 03A3]
+theorem abelianOfAdjunction {C : Type u₁} [Category.{v₁} C] [Preadditive C] [HasFiniteProducts C]
+    {D : Type u₂} [Category.{v₂} D] [Preadditive D] [Abelian D] (F : C ⥤ D)
     (G : D ⥤ C) [Functor.PreservesZeroMorphisms G] [PreservesFiniteLimits G] (i : F ⋙ G ≅ 𝟭 C)
     (adj : G ⊣ F) : Abelian C := by
-  haveI := hasKernels F G i
-  haveI := hasCokernels F G i adj
+  have := hasKernels F G i
+  have := hasCokernels F G i adj
   have : ∀ {X Y : C} (f : X ⟶ Y), IsIso (Abelian.coimageImageComparison f) := by
     intro X Y f
     let arrowIso : Arrow.mk (G.map (F.map f)) ≅ Arrow.mk f :=
@@ -106,9 +106,8 @@ def abelianOfAdjunction {C : Type u₁} [Category.{v₁} C] [Preadditive C] [Has
 via a functor that preserves zero morphisms,
 then `C` is also abelian.
 -/
-@[instance_reducible]
-def abelianOfEquivalence {C : Type u₁} [Category.{v₁} C] [Preadditive C] [HasFiniteProducts C]
-    {D : Type u₂} [Category.{v₂} D] [Abelian D] (F : C ⥤ D)
+theorem abelianOfEquivalence {C : Type u₁} [Category.{v₁} C] [Preadditive C] [HasFiniteProducts C]
+    {D : Type u₂} [Category.{v₂} D] [Preadditive D] [Abelian D] (F : C ⥤ D)
     [F.IsEquivalence] : Abelian C :=
   abelianOfAdjunction F F.inv F.asEquivalence.unitIso.symm F.asEquivalence.symm.toAdjunction
 
@@ -143,7 +142,7 @@ instance hasFiniteLimits [HasFiniteLimits C] :
 end Preadditive
 
 variable (C) in
-noncomputable instance abelian [Abelian C] :
+instance abelian [Preadditive C] [Abelian C] :
     Abelian.{w} (ShrinkHoms C) := abelianOfEquivalence (inverse C)
 
 end ShrinkHoms
@@ -180,7 +179,7 @@ instance hasFiniteLimits [HasFiniteLimits C] :
 end Preadditive
 
 variable (C) in
-noncomputable instance abelian [Abelian C] :
+instance abelian [Preadditive C] [Abelian C] :
     Abelian (AsSmall.{w} C) := abelianOfEquivalence equiv.inverse
 
 end AsSmall

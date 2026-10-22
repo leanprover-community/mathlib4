@@ -66,7 +66,7 @@ universe w v u
 
 open CategoryTheory Limits Pretriangulated
 
-variable (C : Type u) [Category.{v} C] [Abelian C]
+variable (C : Type u) [Category.{v} C] [Preadditive C] [Abelian C]
 
 /-- The assumption that a localized category for
 `(HomologicalComplex.quasiIso C (ComplexShape.up ℤ))` has been chosen, and that the morphisms

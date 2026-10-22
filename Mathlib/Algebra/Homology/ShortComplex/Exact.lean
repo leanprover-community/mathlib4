@@ -852,7 +852,7 @@ end Preadditive
 
 section Abelian
 
-variable [Abelian C]
+variable [Preadditive C] [Abelian C]
 
 section
 

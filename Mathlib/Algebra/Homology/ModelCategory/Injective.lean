@@ -38,7 +38,7 @@ open CategoryTheory HomotopicalAlgebra Limits
 
 namespace CochainComplex.Plus.modelCategoryQuillen
 
-variable {C : Type*} [Category C] [Abelian C]
+variable {C : Type*} [Category C] [Preadditive C] [Abelian C]
 
 /-- The weak equivalences in the category `CochainComplex.Plus C` of bounded
 below cochain complexes are quasi-isomorphisms. -/
@@ -68,6 +68,7 @@ instance : (cofibrations (Plus C)).IsStableUnderRetracts :=
 instance : (fibrations (Plus C)).IsStableUnderRetracts :=
   inferInstanceAs (degreewiseEpiWithInjectiveKernel.inverseImage (ι C)).IsStableUnderRetracts
 
+omit [Abelian C] in
 lemma cofibration_iff {X Y : Plus C} (f : X ⟶ Y) :
     Cofibration f ↔ Mono f :=
   HomotopicalAlgebra.cofibration_iff _

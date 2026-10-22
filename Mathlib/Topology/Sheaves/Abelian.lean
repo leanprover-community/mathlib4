@@ -35,27 +35,39 @@ variable {X : TopCat.{u}}
 
 section
 
-variable {C : Type v₁} [Category.{v₂} C] [HasSheafify (Opens.grothendieckTopology X) C] [Abelian C]
+variable {C : Type v₁} [Category.{v₂} C] [Preadditive C]
 
-noncomputable instance : Abelian (Presheaf C X) := inferInstanceAs (Abelian (_ ⥤ _))
+instance : Preadditive (Presheaf C X) := inferInstanceAs (Preadditive (_ ⥤ _))
+
+instance : Preadditive (Sheaf C X) := inferInstanceAs (Preadditive (CategoryTheory.Sheaf _ _))
+
+end
+
+section
+
+variable {C : Type v₁} [Category.{v₂} C] [HasSheafify (Opens.grothendieckTopology X) C]
+  [Preadditive C] [Abelian C]
+
+instance : Abelian (Presheaf C X) := inferInstanceAs (Abelian (_ ⥤ _))
 
 namespace Sheaf
 
-noncomputable instance : Abelian (Sheaf C X) :=
+instance : Abelian (Sheaf C X) :=
   inferInstanceAs (Abelian (CategoryTheory.Sheaf _ _))
 
 instance : (Sheaf.forget C X).Additive where
 
-instance {D : Type*} [Category.{u} D] [Abelian D] [IsGrothendieckAbelian.{u} D]
+instance {D : Type*} [Category.{u} D] [Preadditive D] [Abelian D] [IsGrothendieckAbelian.{u} D]
     [HasSheafify (Opens.grothendieckTopology X) D] : IsGrothendieckAbelian.{u} (Sheaf D X) :=
-  inferInstanceAs (IsGrothendieckAbelian (CategoryTheory.Sheaf _ _))
+  inferInstanceAs <|
+    IsGrothendieckAbelian.{u} (CategoryTheory.Sheaf (Opens.grothendieckTopology X) D)
 
 end Sheaf
 
 end
 
 /-- The stalk functor is additive -/
-instance (p₀ : X) {C : Type v} [Category.{u} C] [Abelian C] [HasColimits C] :
+instance (p₀ : X) {C : Type v} [Category.{u} C] [Preadditive C] [HasColimits C] :
     (Presheaf.stalkFunctor C p₀).Additive := by
   dsimp [Presheaf.stalkFunctor]
   have : ((Functor.whiskeringLeft _ _ C).obj (OpenNhds.inclusion p₀).op).Additive := ⟨by cat_disch⟩
@@ -68,7 +80,7 @@ open Presheaf
 variable {C : Type v} [Category.{u} C] [HasColimits C] [HasLimits C]
   {FC : C → C → Type*} {CC : C → Type u} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
   [instCC : ConcreteCategory C FC] [PreservesFilteredColimits (CategoryTheory.forget C)]
-  [PreservesLimits (CategoryTheory.forget C)] [Abelian C]
+  [PreservesLimits (CategoryTheory.forget C)] [Preadditive C] [Abelian C]
   {X : TopCat.{u}} (p₀ : X)
 
 instance : Limits.PreservesFiniteLimits (forget C X ⋙ stalkFunctor C p₀) :=

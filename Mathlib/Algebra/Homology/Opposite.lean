@@ -36,7 +36,7 @@ open Opposite CategoryTheory CategoryTheory.Limits
 
 section
 
-variable {V : Type*} [Category* V] [Abelian V]
+variable {V : Type*} [Category* V] [Preadditive V] [Abelian V]
 
 theorem imageToKernel_op {X Y Z : V} (f : X ⟶ Y) (g : Y ⟶ Z) (w : f ≫ g = 0) :
     imageToKernel g.op f.op (by rw [← op_comp, w, op_zero]) =

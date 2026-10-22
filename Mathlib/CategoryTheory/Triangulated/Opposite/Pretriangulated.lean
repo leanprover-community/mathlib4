@@ -199,7 +199,7 @@ open Pretriangulated.Opposite Pretriangulated
 
 variable {C}
 
-lemma map_distinguished_op_exact {A : Type*} [Category* A] [Abelian A] (F : Cᵒᵖ ⥤ A)
+lemma map_distinguished_op_exact {A : Type*} [Category* A] [Preadditive A] (F : Cᵒᵖ ⥤ A)
     [F.IsHomological] (T : Triangle C) (hT : T ∈ distTriang C) :
     ((shortComplexOfDistTriangle T hT).op.map F).Exact :=
   F.map_distinguished_exact _ (op_distinguished T hT)

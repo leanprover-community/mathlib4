@@ -42,7 +42,7 @@ open CategoryTheory Limits Abelian
 
 namespace CategoryTheory.IsGrothendieckAbelian
 
-variable {C : Type u} [Category.{v} C] [Abelian C] [IsGrothendieckAbelian.{v} C]
+variable {C : Type u} [Category.{v} C] [Preadditive C] [Abelian C] [IsGrothendieckAbelian.{v} C]
 
 instance {G : C} : (preadditiveCoyonedaObj G).IsRightAdjoint :=
   isRightAdjoint_of_preservesLimits_of_isCoseparating.{v} (isCoseparator_coseparator _) _

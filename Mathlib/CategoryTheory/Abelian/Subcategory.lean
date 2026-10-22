@@ -31,7 +31,8 @@ lemma preservesMonomorphisms_ι_of_isNormalEpiCategory [HasZeroMorphisms C] [Has
   have := P.preservesKernels_ι
   NormalEpiCategory.preservesMonomorphisms_of_preservesKernels P.ι
 
-instance [Abelian C] [P.ContainsZero] [P.IsClosedUnderKernels] [P.IsClosedUnderCokernels] :
+instance [Preadditive C] [Abelian C] [P.ContainsZero] [P.IsClosedUnderKernels]
+    [P.IsClosedUnderCokernels] :
     IsNormalMonoCategory P.FullSubcategory where
   normalMonoOfMono {X Y} f :=
     have := P.preservesMonomorphisms_ι_of_isNormalEpiCategory
@@ -47,7 +48,8 @@ lemma preservesEpimorphisms_ι_of_isNormalMonoCategory [HasZeroMorphisms C] [Has
   have := P.preservesCokernels_ι
   NormalMonoCategory.preservesEpimorphisms_of_preservesCokernels P.ι
 
-instance [Abelian C] [P.ContainsZero] [P.IsClosedUnderKernels] [P.IsClosedUnderCokernels] :
+instance [Preadditive C] [Abelian C] [P.ContainsZero] [P.IsClosedUnderKernels]
+    [P.IsClosedUnderCokernels] :
     IsNormalEpiCategory P.FullSubcategory where
   normalEpiOfEpi {X Y} f :=
     have := P.preservesEpimorphisms_ι_of_isNormalMonoCategory
@@ -57,7 +59,8 @@ instance [Abelian C] [P.ContainsZero] [P.IsClosedUnderKernels] [P.IsClosedUnderC
       isColimit := isColimitOfReflects P.ι ((CokernelCofork.isColimitMapCoconeEquiv _ _).symm
         (Abelian.epiIsCokernelOfKernel _ (kernelIsKernel (P.ι.map f)) :))}⟩
 
-instance [Abelian C] [P.ContainsZero] [P.IsClosedUnderKernels] [P.IsClosedUnderCokernels]
-    [P.IsClosedUnderFiniteProducts] : Abelian P.FullSubcategory where
+instance [Preadditive C] [Abelian C] [P.ContainsZero] [P.IsClosedUnderKernels]
+    [P.IsClosedUnderCokernels] [P.IsClosedUnderFiniteProducts] :
+    Abelian P.FullSubcategory where
 
 end CategoryTheory.ObjectProperty

@@ -43,7 +43,7 @@ namespace CategoryTheory
 
 open Opposite DerivedCategory Pretriangulated Pretriangulated.Opposite
 
-variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C]
+variable {C : Type u} [Category.{v} C] [Preadditive C] [Abelian C] [HasExt.{w} C]
 
 namespace Abelian
 
