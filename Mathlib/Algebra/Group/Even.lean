@@ -7,10 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Equiv.Opposite
 public import Mathlib.Algebra.Group.TypeTags.Basic
-public import Mathlib.Algebra.Group.Units.Defs
 public import Mathlib.Data.Set.Operations
-
-import Mathlib.Algebra.Group.Commute.Units
 
 /-!
 # Squares and even elements
@@ -148,13 +145,6 @@ lemma IsSquare.pow (n : ℕ) (ha : IsSquare a) : IsSquare (a ^ n) := by
 
 @[to_additive (attr := aesop unsafe 90%) Even.nsmul_left]
 lemma Even.isSquare_pow (hn : Even n) : ∀ a : α, IsSquare (a ^ n) := by aesop (add simp pow_add)
-
-/-- If a is a unit, then it is a square if and only if its underlying element in the monoid is a
-square. -/
-@[to_additive (attr := simp)]
-lemma Units.isSquare_coe_iff {a : αˣ} : IsSquare (a : α) ↔ IsSquare a :=
-  ⟨fun ⟨b, hb⟩ ↦ ⟨(isUnit_mul_self_iff.mp <| hb ▸ a.isUnit).unit, Units.ext hb⟩,
-    fun ⟨b, hb⟩ ↦ ⟨b.val, by simp [hb]⟩⟩
 
 end Monoid
 
