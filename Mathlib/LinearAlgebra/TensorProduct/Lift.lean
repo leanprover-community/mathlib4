@@ -45,9 +45,14 @@ lemma liftBaseChange_one_tmul (l : M →ₗ[R] N) (y) : l.liftBaseChange A (1 �
 lemma liftBaseChangeEquiv_symm_apply (l : A ⊗[R] M →ₗ[A] N) (x) :
     (liftBaseChangeEquiv A).symm l x = l (1 ⊗ₜ x) := rfl
 
-lemma liftBaseChange_comp {P} [AddCommMonoid P] [Module A P] [Module R P] [IsScalarTower R A P]
+lemma comp_liftBaseChange {P} [AddCommMonoid P] [Module A P] [Module R P] [IsScalarTower R A P]
     (l : M →ₗ[R] N) (l' : N →ₗ[A] P) :
       l' ∘ₗ l.liftBaseChange A = (l'.restrictScalars R ∘ₗ l).liftBaseChange A := by
+  ext
+  simp
+
+lemma liftBaseChange_comp {P} [AddCommMonoid P] [Module R P] (l : M →ₗ[R] N) (l' : P →ₗ[R] M) :
+    (l.comp l').liftBaseChange A = (l.liftBaseChange A).comp (l'.baseChange A) := by
   ext
   simp
 
@@ -64,5 +69,13 @@ lemma range_liftBaseChange (l : M →ₗ[R] N) :
   · rw [Submodule.span_le]
     rintro _ ⟨x, rfl⟩
     exact ⟨1 ⊗ₜ x, by simp⟩
+
+-- lemma le_comap_liftBaseChange (l : M →ₗ[R] N) (p : Submodule R M) (q : Submodule A N)
+--     (hl : p ≤ (q.restrictScalars R).comap l) : p.baseChange A ≤ q.comap (l.liftBaseChange A) := by
+--   rw [Submodule.baseChange, LinearMap.range_le_iff_comap, ← Submodule.comap_comp,
+--     liftBaseChange_comp_baseChange, ← LinearMap.range_le_iff_comap,
+--     LinearMap.range_liftBaseChange, Submodule.span_le]
+--   rintro _ ⟨x, rfl⟩
+--   exact hl x.property
 
 end LinearMap
