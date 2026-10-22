@@ -109,7 +109,7 @@ instance instCommSemiringAdjoinSingleton :
         mul_comm p' q']
 
 instance instCommRingAdjoinSingleton {R A : Type*} [CommRing R] [Ring A] [Algebra R A] (x : A) :
-    CommRing <| R[x] where
+    CommRing R[x] where
 
 end aeval
 

@@ -5,8 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 public import Mathlib.CategoryTheory.Adjunction.Limits
+
+import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 
 /-!
 # Preservation of colimits and reflective adjunctions

@@ -6,12 +6,11 @@ Authors: David Loeffler
 module
 
 public import Mathlib.Analysis.Fourier.FourierTransform
-public import Mathlib.Analysis.InnerProductSpace.Dual
-public import Mathlib.Analysis.InnerProductSpace.EuclideanDist
-public import Mathlib.MeasureTheory.Function.ContinuousMapDense
-public import Mathlib.MeasureTheory.Group.Integral
-public import Mathlib.MeasureTheory.Integral.Bochner.Set
 public import Mathlib.MeasureTheory.Measure.Haar.Unique
+
+import Mathlib.Analysis.InnerProductSpace.Dual
+import Mathlib.Analysis.InnerProductSpace.EuclideanDist
+import Mathlib.MeasureTheory.Function.ContinuousMapDense
 
 /-!
 # The Riemann-Lebesgue Lemma
@@ -44,8 +43,6 @@ equivalence to an inner-product space.
 -/
 
 public section
-
-noncomputable section
 
 open MeasureTheory Filter Complex Set Module
 
@@ -198,7 +195,7 @@ theorem tendsto_integral_exp_inner_smul_cocompact :
     simp_rw [← integral_sub ((Real.fourierIntegral_convergent_iff w).2 hfi)
       ((Real.fourierIntegral_convergent_iff w).2 (hg_cont.integrable_of_hasCompactSupport hg_supp)),
       ← smul_sub, ← Pi.sub_apply]
-    exact VectorFourier.norm_fourierIntegral_le_integral_norm 𝐞 _ (innerₗ V) (f - g) w
+    exact Real.norm_fourier_le_integral_norm (f - g) w
   replace := add_lt_add_of_le_of_lt this hI
   rw [add_halves] at this
   refine ((le_of_eq ?_).trans (norm_add_le _ _)).trans_lt this

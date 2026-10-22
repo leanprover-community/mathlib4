@@ -5,9 +5,8 @@ Authors: Chris Birkbeck, David Loeffler
 -/
 module
 
-public import Mathlib.Algebra.Module.Submodule.Basic
-public import Mathlib.Analysis.Asymptotics.Lemmas
 public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.Analysis.Asymptotics.Lemmas
 
 /-!
 # Zero and Bounded at filter

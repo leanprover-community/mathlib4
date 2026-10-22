@@ -5,13 +5,9 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.GroupTheory.GroupAction.Pointwise
-public import Mathlib.Analysis.LocallyConvex.Basic
 public import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 public import Mathlib.Analysis.Normed.Module.Seminorm.Norm
-public import Mathlib.Topology.Bornology.Basic
-public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
-public import Mathlib.Topology.UniformSpace.Cauchy
+public import Mathlib.GroupTheory.GroupAction.Pointwise
 
 /-!
 # Von Neumann Boundedness
@@ -523,7 +519,7 @@ theorem isBounded_iff_subset_smul_closedBall {s : Set E} :
     Bornology.IsBounded s ↔ ∃ a : 𝕜, s ⊆ a • Metric.closedBall (0 : E) 1 := by
   constructor
   · rw [isBounded_iff_subset_smul_ball 𝕜]
-    exact Exists.imp fun a ha => ha.trans <| Set.smul_set_mono <| Metric.ball_subset_closedBall
+    exact Exists.imp fun a ha => ha.trans <| Set.smul_set_mono Metric.ball_subset_closedBall
   · rw [← isVonNBounded_iff 𝕜]
     rintro ⟨a, ha⟩
     exact ((isVonNBounded_closedBall 𝕜 E 1).image (a • (1 : E →L[𝕜] E))).subset ha

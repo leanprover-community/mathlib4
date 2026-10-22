@@ -98,7 +98,7 @@ variable [IsDirectedOrder ι]
 /-- The setoid on the sigma type defining the direct limit. -/
 @[instance_reducible]
 def setoid : Setoid (Σ i, F i) where
-  r x y := ∃ᵉ (i) (hx : x.1 ≤ i) (hy : y.1 ≤ i), f _ _ hx x.2 = f _ _ hy y.2
+  r x y := ∃ i, ∃ hx : x.1 ≤ i, ∃ hy : y.1 ≤ i, f _ _ hx x.2 = f _ _ hy y.2
   iseqv := ⟨fun x ↦ ⟨x.1, le_rfl, le_rfl, rfl⟩, fun ⟨i, hx, hy, eq⟩ ↦ ⟨i, hy, hx, eq.symm⟩,
     fun ⟨j, hx, _, jeq⟩ ⟨k, _, hz, keq⟩ ↦
       have ⟨i, hji, hki⟩ := exists_ge_ge j k
@@ -300,7 +300,7 @@ then `piLT X i` is the limit of all `piLT X j` for `j < i`. -/
     ext j l
     set k := hi.mid (l.2.trans j.2)
     obtain le | le := le_total j ⟨k, k.2.2⟩
-    exacts [congr_fun (f.2 le) l, (congr_fun (f.2 le) ⟨l, _⟩).symm]
+    exacts [congr($(f.2 le) l), congr($(f.2 le) ⟨l, _⟩).symm]
 
 theorem piLTLim_symm_apply {f} (k : Iio i) {l : Iio i} (hl : l.1 < k.1) :
     (piLTLim (X := X) hi).symm f l = f.1 k ⟨l, hl⟩ := by
@@ -466,9 +466,10 @@ variable (hi : IsSuccPrelimit i) (e : ∀ j : Iio i, PEquivOn f equivSucc (Iic j
 obtaining a partial family over a right-open interval. -/
 noncomputable def pEquivOnGlue : PEquivOn f equivSucc (Iio i) where
   equiv := (piLTLim (X := fun j ↦ F j ≃ piLT X j) hi).symm
-    ⟨fun j ↦ ((e j).restrict fun _ h ↦ h.le).equiv, fun _ _ h ↦ funext fun _ ↦
-      pEquivOn_apply_eq ((isLowerSet_Iio _).inter <| isLowerSet_Iio _)⟩
-  nat j k hj hk h := by rw [piLTLim_symm_apply]; exacts [(e _).nat _ _ _, h.trans_lt (hi.mid _).2.1]
+    ⟨fun j ↦ ((e j).restrict fun _ h ↦ le_of_lt h).equiv, fun _ _ h ↦ funext fun _ ↦
+      pEquivOn_apply_eq ((IsLowerSet.Iio _).inter <| .Iio _)⟩
+  nat j k hj hk h := by
+    rw [piLTLim_symm_apply]; exacts [(e _).nat _ _ _, lt_of_le_of_lt h (hi.mid _).2.1]
   compat hj := have k := hi.mid hj
     by rw [piLTLim_symm_apply hi ⟨_, k.2.2⟩ (by exact k.2.1)]; apply (e _).compat
 
@@ -502,7 +503,7 @@ theorem globalEquiv_naturality ⦃i j⦄ (h : i ≤ j) (x : F j) :
     letI e := globalEquiv equivSucc equivLim
     e i (f h x) = piLTProj h (e j x) := by
   refine (DFunLike.congr_fun ?_ _).trans ((globalEquivAux equivSucc equivLim j).nat le_rfl h h x)
-  exact pEquivOn_apply_eq ((isLowerSet_Iic _).inter <| isLowerSet_Iic _)
+  exact pEquivOn_apply_eq ((IsLowerSet.Iic _).inter <| .Iic _)
 
 theorem globalEquiv_compatibility ⦃i⦄ (hi : ¬IsMax i) (x) :
     globalEquiv equivSucc equivLim i⁺ x ⟨i, lt_succ_of_not_isMax hi⟩ = ((equivSucc i hi).1 x).2 :=
