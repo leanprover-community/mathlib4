@@ -618,18 +618,17 @@ lemma homogeneousComponent_pow_eq_of_totalDegree_le {R σ : Type*} [CommSemiring
     exact mul_le_mul_right hn _
 
 lemma homogeneousComponent_ne_zero {R σ : Type*} [CommSemiring R]
-    {f : MvPolynomial σ R} {n : ℕ} (hn : ∃ d ∈ f.support, d.degree = n) :
+    {f : MvPolynomial σ R} {d : σ →₀ ℕ} (hd : d ∈ f.support) {n : ℕ} (hn : n = d.degree) :
     f.homogeneousComponent n ≠ 0 := by
   rw [ne_zero_iff]
-  obtain ⟨d, hd1, hd2⟩ := hn
   use d
-  simpa [coeff_homogeneousComponent, hd2] using hd1
+  simpa [coeff_homogeneousComponent, hn] using hd
 
 lemma homogeneousComponent_totalDegree_ne_zero {R σ : Type*} [CommSemiring R]
     {f : MvPolynomial σ R} (h : f ≠ 0) : f.homogeneousComponent f.totalDegree ≠ 0 := by
-  refine homogeneousComponent_ne_zero ?_
-  conv => right; intro d; right; rw [eq_comm]
-  exact Finset.exists_mem_eq_sup _ (support_nonempty.mpr h) _
+  obtain ⟨d, hd1, hd2⟩ := f.support.exists_mem_eq_sup (support_nonempty.mpr h)
+    fun d ↦ d.sum fun x e ↦ e
+  exact homogeneousComponent_ne_zero hd1 hd2
 
 @[simp]
 lemma totalDegree_homogeneousComponent_totalDegree {R σ : Type*} [CommSemiring R]
