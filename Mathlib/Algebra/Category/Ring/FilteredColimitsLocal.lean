@@ -18,6 +18,10 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 In this file, we deal with filtered colimit of local ring via local homomorphisms, proving it is
 again local, with maximal ideal equal to the union of images of maximal ideals.
 
+Since currently we currently don't have the category of local rings and local homomorphisms,
+some parts of this file is stated in an ad hoc way, for example the residue field related parts,
+we are not able to directly write that the residue field functor preserves colimits.
+
 ## Main results
 
 * `CommRingCat.FilteredColimit.isLocalRing_of_isColimit` : Filtered colimit of local ring
