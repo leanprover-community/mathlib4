@@ -143,6 +143,7 @@ The purpose of this functor is to describe the residue field of colimit of local
 homomorphisms is colimit of the residue fields. It is currently only implemented on diagrams, since
 we don't have the category of local rings.
 -/
+@[simps]
 noncomputable def residueFieldFunctor : J ⥤ CommRingCat.{u} where
   obj j := CommRingCat.of <| ResidueField (F.obj j)
   map f := CommRingCat.ofHom <| ResidueField.map (F.map f).hom
