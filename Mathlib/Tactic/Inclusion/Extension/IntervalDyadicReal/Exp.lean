@@ -23,56 +23,64 @@ namespace Inclusion
 
 namespace IntervalDyadicReal
 
-/-- The numerator of `∑ m ∈ range n, (a / b) ^ m / m!` over the denominator `b ^ n * n!`. -/
+/-- The numerator of the partial Taylor sum `∑ m ∈ range n, (a / b) ^ m / m!` as an unreduced
+fraction over the common denominator `b ^ n * n!`. -/
 @[expose]
-def expNum (a : ℤ) (b : ℕ) : ℕ → ℤ
+def expPartialSumNum (a : ℤ) (b n : ℕ) : ℤ :=
+  match n with
   | 0 => 0
-  | n + 1 => (expNum a b n + a ^ n) * (b * (n + 1) : ℕ)
+  | n + 1 => (expPartialSumNum a b n + a ^ n) * (b * (n + 1) : ℕ)
 
-theorem expNum_div (a : ℤ) {b : ℕ} (hb : b ≠ 0) (n : ℕ) :
-    (expNum a b n : ℝ) / (b ^ n * n.factorial) =
+theorem expPartialSumNum_div (a : ℤ) {b : ℕ} (hb : b ≠ 0) (n : ℕ) :
+    (expPartialSumNum a b n : ℝ) / (b ^ n * n.factorial) =
       ∑ m ∈ range n, ((a : ℝ) / b) ^ m / m.factorial := by
   induction n with
-  | zero => simp [expNum]
+  | zero => simp [expPartialSumNum]
   | succ n ih =>
-    rw [sum_range_succ, ← ih, expNum, Nat.factorial_succ]
+    rw [sum_range_succ, ← ih, expPartialSumNum, Nat.factorial_succ]
     push_cast [div_pow]
     field_simp
     ring
 
-/-- An enclosure of `exp (a / b)` by the first `n` terms of its Taylor series and the remainder
-bound of `Real.exp_bound`, rounded outward to precision `prec`. -/
+/-- The interval `[(c - r) / d, (c + r) / d]`, rounded outward to precision `prec`. -/
 @[expose]
-def expTaylor (a : ℤ) (b n prec : ℕ) : Interval Dyadic :=
-  let N := expNum a b n
-  let D := b ^ n * n.factorial
-  Interval.Icc (rat (mkRat (n * N - (n + 1) * |a ^ n|) (n * D)) prec).lb
-    (rat (mkRat (n * N + (n + 1) * |a ^ n|) (n * D)) prec).ub
+def ratClosedBall (c r : ℤ) (d prec : ℕ) : Interval Dyadic :=
+  Interval.Icc (rat (mkRat (c - r) d) prec).lb (rat (mkRat (c + r) d) prec).ub
 
-theorem expTaylor_mem (a : ℤ) {b : ℕ} (hb : b ≠ 0) (hab : a.natAbs ≤ b) {n : ℕ} (hn : 0 < n)
-    (prec : ℕ) : Real.exp (a / b) ∈ expTaylor a b n prec := by
+theorem ratClosedBall_mem {x : ℝ} {c r : ℤ} {d : ℕ} (hx : |x - c / d| ≤ r / d) (prec : ℕ) :
+    x ∈ ratClosedBall c r d prec := by
+  obtain ⟨h₁, h₂⟩ := abs_sub_le_iff.mp hx
+  refine mem_iff_mem_map.mpr
+    (Interval.mem_Icc_of_le (ratCast_mem _ prec) ?_ ?_ (ratCast_mem _ prec))
+  · push_cast [Rat.mkRat_eq_div, sub_div]
+    exact sub_le_comm.mp h₂
+  · push_cast [Rat.mkRat_eq_div, add_div]
+    exact sub_le_iff_le_add'.mp h₁
+
+/-- An enclosure of `exp (a / b)` by the first `n` terms of its Taylor series and the remainder
+bound of `Real.exp_bound`, rounded outward to precision `prec`. This holds when `b ≠ 0`,
+`|a| ≤ b` and `0 < n`. -/
+@[expose]
+def expRat (a : ℤ) (b n prec : ℕ) : Interval Dyadic :=
+  ratClosedBall (n * expPartialSumNum a b n) ((n + 1) * |a ^ n|) (n * (b ^ n * n.factorial)) prec
+
+theorem expRat_mem (a : ℤ) {b : ℕ} (hb : b ≠ 0) (hab : a.natAbs ≤ b) {n : ℕ} (hn : 0 < n)
+    (prec : ℕ) : Real.exp (a / b) ∈ expRat a b n prec := by
   have hy : |(a : ℝ) / b| ≤ 1 := by
     rw [abs_div, Nat.abs_cast, div_le_one (by positivity), ← Int.cast_abs, ← Int.natCast_natAbs]
     exact_mod_cast hab
-  have hbound := abs_sub_le_iff.mp (Real.exp_bound hy hn)
-  rw [← expNum_div a hb n] at hbound
-  have hR : (n + 1) * |(a : ℝ) ^ n| / (n * (b ^ n * n.factorial)) =
-      |(a : ℝ) / b| ^ n * (n.succ / (n.factorial * n)) := by
-    rw [abs_div, Nat.abs_cast, abs_pow, div_pow]
-    push_cast
-    field_simp
-  refine mem_iff_mem_map.mpr
-    (Interval.mem_Icc_of_le (ratCast_mem _ prec) ?_ ?_ (ratCast_mem _ prec))
-  all_goals
-    rw [Rat.cast_mkRat_of_ne_zero _ (by positivity)]
-    push_cast
-    simp only [sub_div, add_div, mul_div_mul_left _ _ (show (n : ℝ) ≠ 0 by positivity), hR]
-    linarith [hbound.1, hbound.2]
+  refine ratClosedBall_mem ?_ prec
+  push_cast
+  rw [mul_div_mul_left _ _ (by positivity), expPartialSumNum_div a hb n]
+  refine (Real.exp_bound hy hn).trans_eq ?_
+  rw [abs_div, Nat.abs_cast, abs_pow, div_pow]
+  push_cast
+  field_simp
 
 /-- Round the endpoints of `I` outward to precision `prec`. -/
 @[expose]
 def roundOut (I : Interval Dyadic) (prec : ℕ) : Interval Dyadic :=
-  ⟨I.lb.map fun d : Dyadic ↦ d.roundDown prec, I.ub.map fun d : Dyadic ↦ d.roundUp prec⟩
+  ⟨I.lb.map (Dyadic.roundDown · prec), I.ub.map (Dyadic.roundUp · prec)⟩
 
 theorem roundOut_mem {x : ℝ} {I : Interval Dyadic} (hx : x ∈ I) (prec : ℕ) :
     x ∈ roundOut I prec := by
@@ -89,9 +97,8 @@ at least 5 bits plus the factorial's, and `(p + 1) / 8 + 4` terms reach `2 ^ -p`
 @[expose]
 def expPoint (x : Dyadic) (prec : ℕ) : Interval Dyadic :=
   let m := 16 * (2 * x.toRat.num.natAbs / x.toRat.den + 1)
-  let p := prec + Nat.log2 m + 1 +
-    (if 0 ≤ x.toRat.num then 3 * x.toRat.num.natAbs / (2 * x.toRat.den) else 0) + 8
-  roundOut ((expTaylor x.toRat.num (x.toRat.den * m) ((p + 1) / 8 + 4) p).pow m) p
+  let p := prec + Nat.log2 m + 1 + 3 * x.toRat.num.toNat / (2 * x.toRat.den) + 8
+  roundOut ((expRat x.toRat.num (x.toRat.den * m) ((p + 1) / 8 + 4) p).pow m) p
 
 theorem expPoint_mem (x : Dyadic) (prec : ℕ) : Real.exp x.toReal ∈ expPoint x prec := by
   have hb : x.toRat.den ≠ 0 := x.toRat.den_nz
@@ -110,7 +117,7 @@ theorem expPoint_mem (x : Dyadic) (prec : ℕ) : Real.exp x.toReal ∈ expPoint 
     rw [← hm, Nat.mul_left_comm]
     lia
   rw [hred]
-  exact roundOut_mem (pow_mem m (expTaylor_mem _ (Nat.mul_ne_zero hb hm0) hab (by lia) _)) _
+  exact roundOut_mem (pow_mem m (expRat_mem _ (Nat.mul_ne_zero hb hm0) hab (by lia) _)) _
 
 /-- The exponential of an interval, from the enclosures `expPoint` at its endpoints. -/
 @[expose]
@@ -123,7 +130,7 @@ def exp (I : Interval Dyadic) (prec : ℕ) : Interval Dyadic where
     | WithTop.some u => (expPoint u prec).ub
 
 @[inclusion_op interval_dyadic_real]
-theorem exp_mem (prec : ℕ) {x : ℝ} {I : Interval Dyadic} (hx : x ∈ I) :
+theorem exp_mem {x : ℝ} {I : Interval Dyadic} (hx : x ∈ I) (prec : ℕ) :
     Real.exp x ∈ exp I prec := by
   rw [mem_iff_mem_map, Interval.mem_map_iff] at hx
   have h0 : Dyadic.toReal 0 ≤ Real.exp x := by simpa [Dyadic.toReal] using (Real.exp_pos x).le
