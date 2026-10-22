@@ -266,11 +266,11 @@ protected theorem DirSupInacc.Iic (a : α) : DirSupInacc (Iic a) :=
 protected theorem DirSupInaccOn.Iic (a : α) : DirSupInaccOn D (Iic a) :=
   (IsLowerSet.Iic a).dirSupInaccOn
 
-@[deprecated (since := "2026-10-16")] alias dirSupInaccOn_Iic.Iicc_Iic := DirSupInaccOn.Iic
+@[deprecated (since := "2026-10-16")] alias dirSupInaccOn_Iic := DirSupInaccOn.Iic
 
 end Preorder
 
-namespace PartialOrder
+section PartialOrder
 variable [PartialOrder α]
 
 theorem dirSupClosed_singleton (a : α) : DirSupClosed {a} := by
