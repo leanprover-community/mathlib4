@@ -5,7 +5,6 @@ Authors: Damiano Testa
 -/
 module
 
-public import Mathlib.Algebra.Group.Equiv.Basic
 public import Mathlib.Algebra.Group.Equiv.Opposite
 public import Mathlib.Algebra.Group.TypeTags.Basic
 public import Mathlib.Data.Set.Operations
@@ -55,6 +54,9 @@ for some root `r : α`. -/
 @[to_additive /-- An element `a` of a type `α` with addition satisfies `Even a` if `a = r + r`,
 for some `r : α`. -/]
 def IsSquare (a : α) : Prop := ∃ r, a = r * r
+
+attribute [oeis A000290] IsSquare
+attribute [oeis A005843] Even
 
 @[to_additive]
 lemma isSquare_iff_exists_mul_self (a : α) : IsSquare a ↔ ∃ r, a = r * r := .rfl

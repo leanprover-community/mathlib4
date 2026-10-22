@@ -6,7 +6,6 @@ Authors: Sophie Morel
 module
 
 public import Mathlib.CategoryTheory.Limits.WeakLimits.WeakEqualizers
-public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 public import Mathlib.CategoryTheory.Preadditive.Basic
 
 /-!
@@ -67,7 +66,6 @@ theorem weakEqualizer_as_weakKernel : weakEqualizer.ι f 0 = weakKernel.ι f := 
 theorem weakKernel.condition : weakKernel.ι f ≫ f = 0 :=
   KernelFork.condition _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The weak kernel built from `weakKernel.ι f` is weakly limiting. -/
 def weakKernelIsWeakKernel :
     IsWeakLimit (Fork.ofι (weakKernel.ι f) ((weakKernel.condition f).trans comp_zero.symm)) :=

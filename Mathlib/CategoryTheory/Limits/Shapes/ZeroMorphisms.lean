@@ -6,9 +6,8 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Algebra.Notation.Pi.Basic
-public import Mathlib.CategoryTheory.Limits.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.Shapes.Images
-public import Mathlib.CategoryTheory.IsomorphismClasses
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 
 /-!
@@ -110,7 +109,7 @@ open Opposite HasZeroMorphisms
 
 instance hasZeroMorphismsOpposite [HasZeroMorphisms C] : HasZeroMorphisms Cᵒᵖ where
   zero X Y := ⟨(0 : unop Y ⟶ unop X).op⟩
-  comp_zero f Z := congr_arg Quiver.Hom.op (HasZeroMorphisms.zero_comp (unop Z) f.unop)
+  comp_zero f Z := congr($(HasZeroMorphisms.zero_comp (unop Z) f.unop).op)
   zero_comp X {Y Z} (f : Y ⟶ Z) :=
     congrArg Quiver.Hom.op (HasZeroMorphisms.comp_zero f.unop (unop X))
 
@@ -623,75 +622,45 @@ variable [HasZeroMorphisms C] (X Y : C) [HasBinaryProduct X Y]
 
 /-- If a category `C` has 0-morphisms, there is a canonical inclusion from the first component `X`
 into any product of objects `X ⨯ Y`. -/
+@[to_dual fst
+/-- If a category `C` has 0-morphisms, there is a canonical projection from a coproduct `X ⨿ Y` to
+its first component `X`. -/]
 def prod.inl : X ⟶ X ⨯ Y :=
   prod.lift (𝟙 _) 0
 
 /-- If a category `C` has 0-morphisms, there is a canonical inclusion from the second component `Y`
 into any product of objects `X ⨯ Y`. -/
+@[to_dual snd
+/-- If a category `C` has 0-morphisms, there is a canonical projection from a coproduct `X ⨿ Y` to
+its second component `Y`. -/]
 def prod.inr : Y ⟶ X ⨯ Y :=
   prod.lift 0 (𝟙 _)
 
-@[reassoc (attr := simp)]
+@[to_dual (attr := reassoc (attr := simp))]
 lemma prod.inl_fst : prod.inl X Y ≫ prod.fst = 𝟙 X := by
   simp [prod.inl]
 
-@[reassoc (attr := simp)]
+@[to_dual (attr := reassoc (attr := simp)) inr_fst]
 lemma prod.inl_snd : prod.inl X Y ≫ prod.snd = 0 := by
   simp [prod.inl]
 
-@[reassoc (attr := simp)]
+@[to_dual (attr := reassoc (attr := simp)) inl_snd]
 lemma prod.inr_fst : prod.inr X Y ≫ prod.fst = 0 := by
   simp [prod.inr]
 
-@[reassoc (attr := simp)]
+@[to_dual (attr := reassoc (attr := simp))]
 lemma prod.inr_snd : prod.inr X Y ≫ prod.snd = 𝟙 Y := by
   simp [prod.inr]
 
+@[to_dual instEpiFst]
 instance : Mono (prod.inl X Y) where
   right_cancellation _ _ e := by simpa using congrArg (· ≫ prod.fst) e
 
+@[to_dual instEpiSnd]
 instance : Mono (prod.inr X Y) where
   right_cancellation _ _ e := by simpa using congrArg (· ≫ prod.snd) e
 
 end ProdInlInr
-
-section CoprodFstSnd
-
-variable [HasZeroMorphisms C] (X Y : C) [HasBinaryCoproduct X Y]
-
-/-- If a category `C` has 0-morphisms, there is a canonical projection from a coproduct `X ⨿ Y` to
-its first component `X`. -/
-def coprod.fst : X ⨿ Y ⟶ X :=
-  coprod.desc (𝟙 _) 0
-
-/-- If a category `C` has 0-morphisms, there is a canonical projection from a coproduct `X ⨿ Y` to
-its second component `Y`. -/
-def coprod.snd : X ⨿ Y ⟶ Y :=
-  coprod.desc 0 (𝟙 _)
-
-@[reassoc (attr := simp)]
-lemma coprod.inl_fst : coprod.inl ≫ coprod.fst X Y = 𝟙 X := by
-  simp [coprod.fst]
-
-@[reassoc (attr := simp)]
-lemma coprod.inr_fst : coprod.inr ≫ coprod.fst X Y = 0 := by
-  simp [coprod.fst]
-
-@[reassoc (attr := simp)]
-lemma coprod.inl_snd : coprod.inl ≫ coprod.snd X Y = 0 := by
-  simp [coprod.snd]
-
-@[reassoc (attr := simp)]
-lemma coprod.inr_snd : coprod.inr ≫ coprod.snd X Y = 𝟙 Y := by
-  simp [coprod.snd]
-
-instance : Epi (coprod.fst X Y) where
-  left_cancellation _ _ e := by simpa using congrArg (coprod.inl ≫ ·) e
-
-instance : Epi (coprod.snd X Y) where
-  left_cancellation _ _ e := by simpa using congrArg (coprod.inr ≫ ·) e
-
-end CoprodFstSnd
 
 end Limits
 
