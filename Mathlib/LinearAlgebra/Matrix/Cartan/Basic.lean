@@ -541,9 +541,7 @@ namespace CartanMatrix
 theorem isFiniteCartan_f₄ : F₄.IsFiniteCartan where
   diag := F₄_diag
   offDiag_nonpos := F₄_off_diag_nonpos
-  zero_comm := by
-    intro i j
-    fin_cases i <;> fin_cases j <;> simp [F₄]
+  zero_comm i j := by fin_cases i <;> fin_cases j <;> simp [F₄]
   exists_posDef := by
     use ![1, 1, 2, 2]
     have h : diagonal ![1, 1, 2, 2] * F₄
