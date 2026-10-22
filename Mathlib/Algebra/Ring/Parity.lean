@@ -183,9 +183,10 @@ end Ring
 section Monoid
 variable [Monoid α]
 
-/-- If a is a unit, then it is a square if and only if its underlying element in the monoid is a
+/-- If `a` is a unit, then it is a square if and only if its underlying element in the monoid is a
 square. -/
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) /-- If `a` is an additive unit, then it is even if and only if its
+underlying element in the additive monoid is even. -/]
 lemma Units.isSquare_coe_iff {a : αˣ} : IsSquare (a : α) ↔ IsSquare a :=
   ⟨fun ⟨b, hb⟩ ↦ ⟨(isUnit_mul_self_iff.mp <| hb ▸ a.isUnit).unit, Units.ext hb⟩,
     fun ⟨b, hb⟩ ↦ ⟨b.val, by simp [hb]⟩⟩
