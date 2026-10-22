@@ -10,9 +10,6 @@ public import Mathlib.CategoryTheory.Category.ULift
 public import Mathlib.CategoryTheory.Skeletal
 public import Mathlib.Logic.Small.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Essentially small categories.
 

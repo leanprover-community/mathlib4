@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Topology.Bornology.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Locally bounded maps
 

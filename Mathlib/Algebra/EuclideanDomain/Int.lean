@@ -11,9 +11,6 @@ public import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Algebra.Order.Group.Unbundled.Int
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Instances for Euclidean domains
 
