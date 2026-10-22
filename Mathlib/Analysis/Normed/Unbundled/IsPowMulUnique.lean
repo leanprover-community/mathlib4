@@ -11,9 +11,6 @@ public import Mathlib.Analysis.Normed.Unbundled.SeminormFromConst
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Uniqueness of power-multiplicative norms
 

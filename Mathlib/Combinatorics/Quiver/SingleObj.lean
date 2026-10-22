@@ -8,9 +8,6 @@ module
 public import Mathlib.Combinatorics.Quiver.Cast
 public import Mathlib.Combinatorics.Quiver.Symmetric
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Single-object quiver
 

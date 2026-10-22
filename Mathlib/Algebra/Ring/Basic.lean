@@ -14,9 +14,6 @@ public import Mathlib.Tactic.TFAE
 
 import Mathlib.Algebra.GroupWithZero.NeZero
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Semirings and rings
 

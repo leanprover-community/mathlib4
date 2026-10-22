@@ -8,9 +8,6 @@ module
 public import Mathlib.Algebra.GroupWithZero.Defs
 public import Mathlib.Algebra.NeZero
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # `NeZero 1` in a nontrivial `MulZeroOneClass`.
 

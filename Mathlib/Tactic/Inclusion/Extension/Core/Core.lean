@@ -8,9 +8,6 @@ module
 public meta import Mathlib.Tactic.Inclusion.Extension.Core.Init
 public meta import Mathlib.Tactic.Inclusion.ExtensionAPI.Attr
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Core extensions for the `inclusion` tactic
 

@@ -9,11 +9,11 @@ public meta import Mathlib.Lean.GoalsLocation
 public meta import Mathlib.Lean.Meta.KAbstractPositions
 public meta import Mathlib.Lean.Meta.RefinedDiscrTree
 public meta import Mathlib.Tactic.Widget.SelectPanelUtils
-public import Mathlib.Tactic.Widget.SelectPanelUtils
 public meta import ProofWidgets.Component.FilterDetails
+public import Mathlib.Tactic.Widget.SelectPanelUtils
 
-import Mathlib.Tactic.NthRewrite
 meta import ProofWidgets.Component.OfRpcMethod
+import Mathlib.Tactic.NthRewrite
 
 /-!
 # Point & click library rewriting
@@ -461,7 +461,7 @@ def pattern {α} (type : Expr) (symm : Bool) (k : Expr → MetaM α) : MetaM α 
 /-- Render the given rewrite results. -/
 def renderRewrites (e : Expr) (results : Array (Array RewriteInterface × Kind))
     (range : Lsp.Range) (doc : FileWorker.EditableDocument) (showNames : Bool) :
-    MetaM Html := do
+    MetaM ProofWidgets.Html := do
   let htmls ← results.filterMapM (renderSection showNames)
   if htmls.isEmpty then
     return jsx%{<p> No rewrites found for <InteractiveCode fmt={← ppExprTagged e}/></p>}
@@ -469,7 +469,8 @@ def renderRewrites (e : Expr) (results : Array (Array RewriteInterface × Kind))
     return .element "div" #[("style", json% {"marginLeft" : "4px"})] htmls
 where
   /-- Render one section of rewrite results. -/
-  renderSection (showNames : Bool) (sec : Array RewriteInterface × Kind) : MetaM (Option Html) := do
+  renderSection (showNames : Bool) (sec : Array RewriteInterface × Kind) :
+      MetaM (Option ProofWidgets.Html) := do
     let some head := sec.1[0]? | return none
     let suffix := match sec.2 with
       | .hypothesis => " (local hypotheses)"
@@ -485,7 +486,7 @@ where
     </details>}
 
   /-- Render the list of rewrite results in one section. -/
-  renderSectionCore (showNames : Bool) (sec : Array RewriteInterface) : Html :=
+  renderSectionCore (showNames : Bool) (sec : Array RewriteInterface) : ProofWidgets.Html :=
     .element "ul" #[("style", json% { "padding-left" : "30px"})] <|
     sec.map fun rw =>
       jsx%{<li>{ .element "p" #[] <|
@@ -504,7 +505,7 @@ where
 
 /-- The rpc method of the `rw??` widget. -/
 @[server_rpc_method]
-def rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
+def rpc (props : SelectInsertParams) : RequestM (RequestTask ProofWidgets.Html) :=
   RequestM.asTask do
   let doc ← RequestM.readDoc
   let some loc := props.selectedLocations.back? |
