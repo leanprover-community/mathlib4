@@ -11,9 +11,6 @@ public import Mathlib.Algebra.Group.Units.Defs
 public import Mathlib.Tactic.Convert
 public import Mathlib.Tactic.Push
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Action of regular elements on a module
 
