@@ -97,7 +97,7 @@ instance instFourierSMul : FourierSMul 𝕜 𝓢(V, E) 𝓢(V, E) where
 instance instContinuousFourier : ContinuousFourier 𝓢(V, E) 𝓢(V, E) where
   continuous_fourier := ContinuousLinearMap.continuous _
 
-@[simp ←, norm_cast]
+@[simp ←]
 lemma fourier_coe (f : 𝓢(V, E)) : 𝓕 f = 𝓕 (f : V → E) := rfl
 
 @[simp]
@@ -118,7 +118,7 @@ instance instFourierInvSMul : FourierInvSMul 𝕜 𝓢(V, E) 𝓢(V, E) where
 instance instContinuousFourierInv : ContinuousFourierInv 𝓢(V, E) 𝓢(V, E) where
   continuous_fourierInv := ContinuousLinearMap.continuous _
 
-@[simp ←, norm_cast]
+@[simp ←]
 lemma fourierInv_coe (f : 𝓢(V, E)) : 𝓕⁻ f = 𝓕⁻ (f : V → E) := by
   ext x
   exact (fourierInv_eq_fourier_neg f x).symm
