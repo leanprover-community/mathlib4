@@ -376,7 +376,9 @@ jobs:
           # Use the trusted toolchain's `lean`/`leantar` (see setup-build-env).
           export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
           cd pr-branch
-          ../tools-branch/.lake/build/bin/cache clean Archive.lean Counterexamples.lean Wanted.lean
+          # A `cache` binary that takes no roots prunes to Mathlib alone.
+          ../tools-branch/.lake/build/bin/cache clean Archive.lean Counterexamples.lean Wanted.lean \
+            || ../tools-branch/.lake/build/bin/cache clean
 
       # Publish this run's pruned `.ltar` set as `cache-snapshot` for other runs to warm
       # from. The files are already zstd-compressed, so the upload skips compression.
