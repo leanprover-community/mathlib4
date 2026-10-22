@@ -159,7 +159,7 @@ theorem mul_abs_sin_le_norm_circleMap_zero_sub {r : ℝ} (hr : 0 ≤ r) (θ : �
     r * |Real.sin ((θ - a.arg) / 2)| ≤ ‖circleMap 0 r θ - a‖ := by
   refine le_of_pow_le_pow_left₀ two_ne_zero (norm_nonneg _) ?_
   rw [mul_pow, sq_abs, norm_circleMap_zero_sub_sq']
-  nlinarith [mul_nonneg (sub_nonneg.2 (Real.sin_sq_le_one ((θ - a.arg) / 2)))
+  linarith [mul_nonneg (sub_nonneg.2 (Real.sin_sq_le_one ((θ - a.arg) / 2)))
       (sq_nonneg (r - ‖a‖)),
     mul_nonneg (mul_nonneg (sq_nonneg (Real.sin ((θ - a.arg) / 2))) (norm_nonneg a))
       (by positivity : (0 : ℝ) ≤ 2 * r + ‖a‖)]
