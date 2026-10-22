@@ -186,3 +186,5 @@ theorem_wanted isMonHom_of_one_comp {A B : Over (Spec (.of k))}
     [GrpObj B] (f : A ⟶ B) (hf : η[A] ≫ f = η[B]) : IsMonHom f
 
 end AlgebraicGeometry
+
+-- ci-dev probe (round 3 base, 2026-10-22): comment edit so this module rebuilds
