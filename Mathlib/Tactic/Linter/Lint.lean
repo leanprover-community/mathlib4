@@ -32,6 +32,7 @@ Linter that checks whether a structure should be in Prop.
 @[env_linter] public def structureInType : Linter where
   noErrorsFound := "no structures that should be in Prop found."
   errorsFound := "FOUND STRUCTURES THAT SHOULD BE IN PROP."
+  isLocal := true
   test declName := do
     unless isStructure (← getEnv) declName do return none
     -- remark: using `Lean.Meta.isProp` doesn't suffice here, because it doesn't (always?)

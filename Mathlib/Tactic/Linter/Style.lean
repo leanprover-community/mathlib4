@@ -554,6 +554,7 @@ such names violate the naming convention. -/
 @[env_linter] public def defsWithUnderscore : Batteries.Tactic.Lint.Linter where
   noErrorsFound := "no definitions with an underscore in their name found."
   errorsFound := "FOUND definitions with an underscore in their name."
+  isLocal := true
   test declName := do
     unless ((← getEnv).find? declName).get!.isDefinition &&
         -- TODO: lint private definitions with underscores for readability.
