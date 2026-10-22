@@ -5,10 +5,11 @@ Authors: Wenrong Zou
 -/
 module
 
-public import Mathlib.RingTheory.MvPowerSeries.Basic
-public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Finiteness.Defs
-public import Mathlib.RingTheory.Ideal.BigOperators
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.MvPowerSeries.Basic
+
+import Mathlib.RingTheory.Ideal.BigOperators
 
 
 /-!

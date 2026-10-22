@@ -6,7 +6,6 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.MeasureTheory.MeasurableSpace.CountablyGenerated
-public import Mathlib.MeasureTheory.Measure.Dirac.Def
 public import Mathlib.MeasureTheory.Measure.MutuallySingular
 public import Mathlib.MeasureTheory.Measure.Typeclasses.NullSingletonClass
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
@@ -210,9 +209,11 @@ theorem dirac_eq_one_iff_mem (hs : MeasurableSet s) : dirac a s = 1 ↔ a ∈ s 
   rw [← prob_compl_eq_zero_iff hs, ← mem_ae_iff]
   apply mem_ae_dirac_iff hs
 
-theorem dirac_eq_zero_iff_not_mem (hs : MeasurableSet s) : dirac a s = 0 ↔ a ∉ s := by
+theorem dirac_eq_zero_iff_notMem (hs : MeasurableSet s) : dirac a s = 0 ↔ a ∉ s := by
   rw [← compl_compl s, ← mem_ae_iff, notMem_compl_iff]
   apply mem_ae_dirac_iff (MeasurableSet.compl_iff.mpr hs)
+
+@[deprecated (since := "2026-09-28")] alias dirac_eq_zero_iff_not_mem := dirac_eq_zero_iff_notMem
 
 theorem restrict_dirac' (hs : MeasurableSet s) [Decidable (a ∈ s)] :
     (Measure.dirac a).restrict s = if a ∈ s then Measure.dirac a else 0 := by
@@ -241,7 +242,7 @@ lemma dirac_eq_dirac_iff_forall_mem_iff_mem {x y : α} :
     Measure.dirac x = Measure.dirac y ↔ ∀ A, MeasurableSet A → (x ∈ A ↔ y ∈ A) := by
   constructor
   · intro h A A_mble
-    have obs := congr_arg (fun μ ↦ μ A) h
+    have obs := congr($h A)
     simp only [Measure.dirac_apply' _ A_mble] at obs
     by_cases x_in_A : x ∈ A
     · simpa only [x_in_A, indicator_of_mem, Pi.one_apply, true_iff, Eq.comm (a := (1 : ℝ≥0∞)),

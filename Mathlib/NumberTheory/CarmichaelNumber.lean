@@ -5,10 +5,11 @@ Authors: Felix Pernegger
 -/
 module
 
-public import Mathlib.Data.Nat.Factorization.PrimePow
 public import Mathlib.NumberTheory.ArithmeticFunction.Carmichael
 public import Mathlib.NumberTheory.FermatPsp
-public import Mathlib.Tactic.Simproc.Factors
+
+import Mathlib.Data.Nat.Factorization.PrimePow
+import Mathlib.Tactic.Simproc.Factors
 
 /-!
 # Carmichael numbers
@@ -43,7 +44,7 @@ open ArithmeticFunction
 
 /-- We say a natural number `n` is a Carmichael number if it is greater than 2, composite and
 for all natural numbers `b` coprime to `n` we have `n ∣ b ^ (n - 1) - 1`. -/
-@[expose]
+@[expose, oeis A002997]
 def IsCarmichael (n : ℕ) : Prop :=
   2 < n ∧ ¬ n.Prime ∧ ∀ b, b.Coprime n → ProbablePrime n b
 
