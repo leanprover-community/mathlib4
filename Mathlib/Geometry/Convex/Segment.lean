@@ -92,33 +92,34 @@ theorem convexCombPair_mem_Ico {a b : R} (ha : 0 < a) (hb : 0 ≤ b) (hab : a + 
     convexCombPair a b ha.le hb hab x y ∈ Ico R x y :=
   ⟨a, b, ha, hb, hab, rfl⟩
 
-theorem forall_mem_Icc_iff (p : X → Prop) : (∀ z ∈ Icc R x y, p z) ↔
-    ∀ {a b : R} (ha : 0 ≤ a) (hb : 0 ≤ b) (hab : a + b = 1),
-    p (convexCombPair a b ha hb hab x y) := by
+theorem forall_mem_Icc_iff (p : X → Prop) :
+    (∀ z ∈ Icc R x y, p z) ↔ ∀ {a b : R} (ha : 0 ≤ a) (hb : 0 ≤ b) (hab : a + b = 1),
+      p (convexCombPair a b ha hb hab x y) := by
   grind [Icc]
 
-theorem forall_mem_Ioo_iff (p : X → Prop) : (∀ z ∈ Ioo R x y, p z) ↔
-    ∀ {a b : R} (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1),
-    p (convexCombPair a b ha.le hb.le hab x y) := by
+theorem forall_mem_Ioo_iff (p : X → Prop) :
+   (∀ z ∈ Ioo R x y, p z) ↔ ∀ {a b : R} (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1),
+      p (convexCombPair a b ha.le hb.le hab x y) := by
   grind [Ioo]
 
-theorem forall_mem_Ico_iff (p : X → Prop) : (∀ z ∈ Ico R x y, p z) ↔
-    ∀ {a b : R} (ha : 0 < a) (hb : 0 ≤ b) (hab : a + b = 1),
-    p (convexCombPair a b ha.le hb hab x y) := by
+theorem forall_mem_Ico_iff (p : X → Prop) :
+    (∀ z ∈ Ico R x y, p z) ↔ ∀ {a b : R} (ha : 0 < a) (hb : 0 ≤ b) (hab : a + b = 1),
+      p (convexCombPair a b ha.le hb hab x y) := by
   grind [Ico]
 
-theorem Icc_subset_iff : Icc R x y ⊆ s ↔ ∀ {a b : R} (ha : 0 ≤ a) (hb : 0 ≤ b) (hab : a + b = 1),
-    convexCombPair a b ha hb hab x y ∈ s :=
+theorem Icc_subset_iff :
+    Icc R x y ⊆ s ↔ ∀ {a b : R} (ha : 0 ≤ a) (hb : 0 ≤ b) (hab : a + b = 1),
+      convexCombPair a b ha hb hab x y ∈ s :=
   forall_mem_Icc_iff ..
 
 theorem Ioo_subset_iff :
     Ioo R x y ⊆ s ↔ ∀ {a b : R} (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1),
-    convexCombPair a b ha.le hb.le hab x y ∈ s :=
+      convexCombPair a b ha.le hb.le hab x y ∈ s :=
   forall_mem_Ioo_iff ..
 
 theorem Ico_subset_iff :
     Ico R x y ⊆ s ↔ ∀ {a b : R} (ha : 0 < a) (hb : 0 ≤ b) (hab : a + b = 1),
-    convexCombPair a b ha.le hb hab x y ∈ s :=
+      convexCombPair a b ha.le hb hab x y ∈ s :=
   forall_mem_Ico_iff ..
 
 end
@@ -174,21 +175,19 @@ namespace IsAffineMap
 
 variable {R} {Y} [ConvexSpace R Y] {f : X → Y}
 
-theorem image_Icc (hf : IsAffineMap R f) (a b : X) :
-    f '' Icc R a b = Icc R (f a) (f b) :=
+theorem image_Icc (hf : IsAffineMap R f) (a b : X) : f '' Icc R a b = Icc R (f a) (f b) :=
   Set.ext fun _ ↦ by simp [Icc, IsAffineMap.map_convexCombPair hf]
 
-theorem mem_Icc_image (hf : IsAffineMap R f) {a b c : X}
-    (h : c ∈ Icc R a b) : f c ∈ Icc R (f a) (f b) := by
+theorem mem_Icc_image (hf : IsAffineMap R f) {a b c : X} (h : c ∈ Icc R a b) :
+    f c ∈ Icc R (f a) (f b) := by
   rw [← image_Icc hf, Set.mem_image]
   exact ⟨c, ⟨h, rfl⟩⟩
 
-theorem image_Ioo (hf : IsAffineMap R f) (a b : X) :
-    f '' Ioo R a b = Ioo R (f a) (f b) :=
+theorem image_Ioo (hf : IsAffineMap R f) (a b : X) : f '' Ioo R a b = Ioo R (f a) (f b) :=
   Set.ext fun _ ↦ by simp [Ioo, IsAffineMap.map_convexCombPair hf]
 
-theorem mem_Ioo_image (hf : IsAffineMap R f) {a b c : X}
-    (h : c ∈ Ioo R a b) : f c ∈ Ioo R (f a) (f b) := by
+theorem mem_Ioo_image (hf : IsAffineMap R f) {a b c : X} (h : c ∈ Ioo R a b) :
+    f c ∈ Ioo R (f a) (f b) := by
   rw [← image_Ioo hf, Set.mem_image]
   exact ⟨c, ⟨h, rfl⟩⟩
 
