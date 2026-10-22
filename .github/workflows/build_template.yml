@@ -1157,7 +1157,7 @@ jobs:
           # pull_request_target, otherwise the PR from the pushed branch. A run for an older commit
           # finds no PR, so it never acts for a head that has not passed CI. An API error fails the
           # step. Outputs: pr_found, number, pr_url, pr_labels (comma-separated label names).
-          filter='map(select(.state == "open" and .head.sha == $ENV.HEAD_SHA)) | first // empty
+          filter='map(select(.state == "open" and .head.sha == env.HEAD_SHA)) | first // empty
             | "pr_found=true", "number=\(.number)", "pr_url=\(.html_url)",
               "pr_labels=\([.labels[].name] | join(","))"'
           if [ -n "$PR_NUMBER" ]; then
