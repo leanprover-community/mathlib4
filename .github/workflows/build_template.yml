@@ -638,11 +638,24 @@ jobs:
         run: |
           cd pr-branch
           set -o pipefail
+          # `lake lint` builds `runLinter` from the branch's Batteries. When the branch has the
+          # toolchain, lakefile and Batteries revision of the CI tools, the prebuilt driver from
+          # the tools runs instead, after the builtin lints that `lake lint` runs before its driver.
+          lint=(lake lint -- --trace)
+          runlinter=../tools-branch/.lake/packages/batteries/.lake/build/bin/runLinter
+          batteries_rev() { jq -r '.packages[] | select(.name == "batteries") | .rev' "$1"; }
+          if [[ -x "${runlinter}" ]] && cmp -s ../tools-branch/lean-toolchain lean-toolchain \
+              && cmp -s ../tools-branch/lakefile.lean lakefile.lean \
+              && [[ "$(batteries_rev ../tools-branch/lake-manifest.json)" == "$(batteries_rev lake-manifest.json)" ]]; then
+            echo "Linting with the prebuilt runLinter of the CI tools."
+            lake lint --builtin-only
+            lint=(lake env "${runlinter}" Mathlib --trace)
+          fi
           # If lint fails because the PR predates lake-lint configuration or the
           # old --trace argument-parsing behavior, ask the author to merge master.
           # We use .lake/ for the output file because landrun restricts /tmp access
           for attempt in 1 2; do
-            if timeout 10m env LEAN_ABORT_ON_PANIC=1 stdbuf -oL lake lint -- --trace 2>&1 | tee ".lake/lint_output_attempt_${attempt}.txt"; then
+            if timeout 10m env LEAN_ABORT_ON_PANIC=1 stdbuf -oL "${lint[@]}" 2>&1 | tee ".lake/lint_output_attempt_${attempt}.txt"; then
               break
             fi
             status=${PIPESTATUS[0]}

@@ -74,6 +74,16 @@ jobs:
             echo "::warning::mk_all did not build; the tools artifact ships without it."
             rm -f .lake/build/bin/mk_all
           fi
+          # `runLinter`, the lint driver from Batteries, links `Batteries.Tactic.Lint`, whose
+          # oleans and C files come from the master cache container through
+          # `Mathlib/Tactic/Linter/Lint.lean`. Without it, the artifact ships without the driver
+          # and the lint step runs `lake lint`.
+          if lake exe cache get Mathlib/Tactic/Linter/Lint.lean && lake build batteries/runLinter; then
+            ls .lake/packages/batteries/.lake/build/bin/runLinter
+          else
+            echo "::warning::runLinter did not build; the tools artifact ships without it."
+            rm -f .lake/packages/batteries/.lake/build/bin/runLinter
+          fi
 
       - name: bundle tools
         shell: bash
@@ -97,19 +107,25 @@ jobs:
           #   - scripts/mk_all.lean, Mathlib/Util/GetAllModules.lean: the sources of
           #                                     `mk_all`; the build job runs the prebuilt
           #                                     binary only when the branch has the same.
+          #   - .lake/packages/batteries/.lake/build/bin/runLinter: the lint driver.
+          #   - lakefile.lean, lake-manifest.json: the lint configuration and the Batteries
+          #                                     revision of `runLinter`; the lint step runs
+          #                                     the prebuilt driver only when the branch has
+          #                                     the same.
           #   - lean-toolchain:                 the toolchain this binary was built with;
           #                                     the consumer installs it (via elan) so the
           #                                     binary has a matching Lean to run against,
           #                                     even when the PR uses a newer toolchain.
+          files=(.lake/build scripts/lake-build-with-retry.sh scripts/lake-build-wrapper.py
+            scripts/mk_all.lean Mathlib/Util/GetAllModules.lean lakefile.lean lake-manifest.json
+            lean-toolchain)
+          if [[ -x .lake/packages/batteries/.lake/build/bin/runLinter ]]; then
+            files+=(.lake/packages/batteries/.lake/build/bin/runLinter)
+          fi
           tar -czf "${GITHUB_WORKSPACE}/tools-bin.tar.gz" \
             --exclude=.lake/build/lib/lean/Mathlib \
             --exclude=.lake/build/ir/Mathlib \
-            .lake/build \
-            scripts/lake-build-with-retry.sh \
-            scripts/lake-build-wrapper.py \
-            scripts/mk_all.lean \
-            Mathlib/Util/GetAllModules.lean \
-            lean-toolchain
+            "${files[@]}"
           ls -l "${GITHUB_WORKSPACE}/tools-bin.tar.gz"
 
       - name: upload tools artifact
