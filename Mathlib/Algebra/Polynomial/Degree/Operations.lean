@@ -231,20 +231,9 @@ theorem degree_add_eq_of_leadingCoeff_add_ne_zero (h : leadingCoeff p + leadingC
       rw [degree_add_eq_left_of_degree_lt hlt, max_eq_left_of_lt hlt]
 
 theorem natDegree_add_eq_of_leadingCoeff_add_ne_zero (h : leadingCoeff p + leadingCoeff q ≠ 0) :
-    natDegree (p + q) = max p.natDegree q.natDegree :=
-  le_antisymm (natDegree_add_le _ _) <|
-    match lt_trichotomy (natDegree p) (natDegree q) with
-    | Or.inl hlt => by
-      rw [natDegree_add_eq_right_of_natDegree_lt hlt, max_eq_right_of_lt hlt]
-    | Or.inr (Or.inl HEq) =>
-      le_of_not_gt fun hlt : max (natDegree p) (natDegree q) > natDegree (p + q) =>
-        h <|
-          show leadingCoeff p + leadingCoeff q = 0 by
-            rw [HEq, max_self] at hlt
-            rw [leadingCoeff, leadingCoeff, HEq, ← coeff_add]
-            exact coeff_eq_zero_of_natDegree_lt hlt
-    | Or.inr (Or.inr hlt) => by
-      rw [natDegree_add_eq_left_of_natDegree_lt hlt, max_eq_left_of_lt hlt]
+    natDegree (p + q) = max p.natDegree q.natDegree := by
+  rw [natDegree, degree_add_eq_of_leadingCoeff_add_ne_zero h]
+  exact Monotone.map_max <| WithBot.unbotD_bot_monotone (α := ℕ)
 
 lemma degree_add_of_leadingCoeff_nonneg [PartialOrder R] [AddLeftMono R]
     {f g : R[X]} (hf : 0 ≤ f.leadingCoeff) (hg : 0 ≤ g.leadingCoeff) :
@@ -311,13 +300,13 @@ theorem leadingCoeff_add_of_degree_eq (h : degree p = degree q)
     rw [degree_add_eq_of_leadingCoeff_add_ne_zero hlc, h, max_self]
   simp only [leadingCoeff, this, natDegree_eq_of_degree_eq h, coeff_add]
 
-lemma leadingCoeff_add_eq_left [PartialOrder R]
-    {f g : R[X]} (h : g.natDegree < f.natDegree) : (f + g).leadingCoeff = f.leadingCoeff := by
+lemma leadingCoeff_add_eq_left {f g : R[X]} (h : g.natDegree < f.natDegree) :
+    (f + g).leadingCoeff = f.leadingCoeff := by
   rw [leadingCoeff, natDegree_add_eq_left_of_natDegree_lt h, coeff_add,
     ← leadingCoeff, coeff_eq_zero_of_natDegree_lt h, add_zero]
 
-lemma leadingCoeff_add_eq_right [PartialOrder R]
-    {f g : R[X]} (h : f.natDegree < g.natDegree) : (f + g).leadingCoeff = g.leadingCoeff := by
+lemma leadingCoeff_add_eq_right {f g : R[X]} (h : f.natDegree < g.natDegree) :
+    (f + g).leadingCoeff = g.leadingCoeff := by
   rw [leadingCoeff, natDegree_add_eq_right_of_natDegree_lt h, coeff_add,
     ← leadingCoeff, coeff_eq_zero_of_natDegree_lt h, zero_add]
 

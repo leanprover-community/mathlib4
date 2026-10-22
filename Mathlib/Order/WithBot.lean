@@ -543,6 +543,12 @@ section Preorder
 variable [Preorder α] [Preorder β] {x y : WithBot α}
 
 @[to_dual]
+theorem unbotD_bot_monotone [OrderBot α] :
+    Monotone (WithBot.unbotD ⊥ : WithBot α → α) := by
+  intro a b
+  cases a <;> cases b <;> simp
+
+@[to_dual]
 theorem coe_strictMono : StrictMono (fun (a : α) => (a : WithBot α)) := fun _ _ => coe_lt_coe.2
 
 @[to_dual]
