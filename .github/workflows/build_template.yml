@@ -297,10 +297,11 @@ jobs:
           # Clean the staging directory first, though it should be empty at this point, to be safe
           rm -rf cache-staging
           mkdir -p cache-staging
-          # The CPUs and memory that the stage step below packs with.
-          echo "nproc: $(nproc); online CPUs: $(getconf _NPROCESSORS_ONLN)"
-          echo "cgroup cpu.max: $(cat /sys/fs/cgroup/cpu.max 2>/dev/null || echo unknown)"
-          free -m
+          # The CPUs and memory that the stage step below packs with, and the pressure counters
+          # before it starts.
+          echo "nproc: $(nproc)"
+          free -m || true
+          cat /sys/fs/cgroup/cpu.pressure /sys/fs/cgroup/io.pressure 2>/dev/null || true
 
       - name: stage Mathlib cache files
         if: ${{ always() && (steps.build.outcome == 'success' || steps.build.outcome == 'failure' || steps.build.outcome == 'cancelled') }}
@@ -312,9 +313,16 @@ jobs:
           # `lean`/`leantar` (see setup-build-env).
           export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
           cd pr-branch
-          # `time -v` reports the user, system and elapsed time and the file system inputs of
-          # the packing.
+          # `time -v` reports the user, system and elapsed time, the percent of CPU, the context
+          # switches and the file system inputs of the packing. A percent of CPU near 100 times
+          # `nproc` means the packing uses every CPU; far below it, with many file system inputs or
+          # involuntary context switches, means it waits on the disk or on other processes.
           /usr/bin/time -v ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage
+
+      - name: report the pressure counters after the stage step
+        if: ${{ always() && (steps.build.outcome == 'success' || steps.build.outcome == 'failure' || steps.build.outcome == 'cancelled') }}
+        shell: bash
+        run: cat /sys/fs/cgroup/cpu.pressure /sys/fs/cgroup/io.pressure 2>/dev/null || true
 
       - name: stage Archive cache files
         if: ${{ steps.archive.outcome == 'success' }}
