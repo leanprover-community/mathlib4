@@ -49,7 +49,7 @@ of a matrix.
 We also show:
 
 * `Matrix.norm_le_linfty_opNorm`
-* `Matrix.linfty_opNorm_le_card_mul_norm`
+* `Matrix.linfty_opNorm_le_card_nsmul_norm`
 * `Matrix.norm_le_frobenius_norm`
 
 The norm induced by the identification of `Matrix m n 𝕜` with
@@ -525,17 +525,17 @@ lemma norm_le_linfty_opNorm [SeminormedAddCommGroup R] (A : Matrix m n R) :
   nnnorm_le_linfty_opNNNorm _
 
 /-- The $L_\infty$ operator norm is bounded by a multiple of the elementwise norm. -/
-lemma linfty_opNNNorm_le_card_mul_nnnorm [SeminormedAddCommGroup R] (A : Matrix m n R) :
+lemma linfty_opNNNorm_le_card_nsmul_nnnorm [SeminormedAddCommGroup R] (A : Matrix m n R) :
     (open scoped Matrix.Norms.Operator in ‖A‖₊) ≤
       Fintype.card n • (open scoped Matrix.Norms.Elementwise in ‖A‖₊) := by
   rw [linfty_opNNNorm_def]
   exact Finset.sup_le fun i _ => Finset.sum_le_card_nsmul _ _ _ fun j _ => nnnorm_apply_le_nnnorm A
 
 /-- The $L_\infty$ operator norm is bounded by a multiple of the elementwise norm. -/
-lemma linfty_opNorm_le_card_mul_norm [SeminormedAddCommGroup R] (A : Matrix m n R) :
+lemma linfty_opNorm_le_card_nsmul_norm [SeminormedAddCommGroup R] (A : Matrix m n R) :
     (open scoped Matrix.Norms.Operator in ‖A‖) ≤
       Fintype.card n • (open scoped Matrix.Norms.Elementwise in ‖A‖) :=
-  linfty_opNNNorm_le_card_mul_nnnorm _
+  linfty_opNNNorm_le_card_nsmul_nnnorm _
 
 /-! ### The Frobenius norm
 
