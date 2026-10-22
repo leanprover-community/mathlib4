@@ -27,8 +27,6 @@ variable (H ρ) in
 Hecke algebra `End_G(k[G ⧸ H])ᵒᵖ`. -/
 abbrev HeckeModule := (ofMulAction k G (G ⧸ H)).IntertwiningMap ρ
 
-section heckeModule
-
 open MonoidAlgebra
 
 variable (k) in
@@ -81,7 +79,5 @@ noncomputable def HeckeModule.invariantsEquiv :
 lemma HeckeModule.invariantsEquiv_apply_apply (g : G) (v : invariants (ρ.comp H.subtype)) :
     invariantsEquiv v (cosetVector k g) = ρ g v := by
   simp [invariantsEquiv]
-
-end heckeModule
 
 end Representation
