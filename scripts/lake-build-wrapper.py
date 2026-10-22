@@ -333,7 +333,9 @@ class BuildOutputProcessor:
             return
         file = file_info.get('file') or ''
         line = 0
-        message = messages[0] if messages else ''
+        # The block's `trace:` lines hold the command line, not the error.
+        errors = [m for m in messages if 'error' in m and not m.lstrip().startswith('trace:')]
+        message = errors[0] if errors else ''
         for m in messages:
             match = ERROR_LOCATION.search(m)
             if match:

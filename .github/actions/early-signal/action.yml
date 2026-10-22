@@ -1,0 +1,72 @@
+# Polls the current run for the artifact of the Build job's first-error watch while Build runs.
+# On the first error it creates a failed `first error` check run on the head commit. When Build
+# succeeds, it marks every `first error` check run on the head commit neutral, including those
+# of earlier attempts. When Build fails, the step fails too, so "Re-run failed jobs" re-runs it.
+# The artifact is data that PR code influenced, so the title and summary use only its
+# validated fields.
+
+name: Report the first build error
+description: Report the first error of the running Build job as a check run.
+
+inputs:
+  artifact:
+    description: The name of the first-error artifact of this run attempt.
+    required: true
+  head_sha:
+    description: The commit that the check run belongs to.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Report the first build error
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+        REPO: ${{ github.repository }}
+        RUN_ID: ${{ github.run_id }}
+        ARTIFACT: ${{ inputs.artifact }}
+        HEAD_SHA: ${{ inputs.head_sha }}
+      run: |
+        set -uo pipefail
+        neutralize() {
+          gh api "repos/${REPO}/commits/${HEAD_SHA}/check-runs?check_name=first%20error&per_page=100" \
+              --jq '.check_runs[] | select(.conclusion == "failure") | .id' 2>/dev/null |
+            while read -r id; do
+              gh api -X PATCH "repos/${REPO}/check-runs/${id}" -f conclusion=neutral \
+                -f 'output[title]=The build succeeded' \
+                -f 'output[summary]=The build reported an error, then succeeded on a later attempt.' > /dev/null
+            done
+        }
+        read_artifact=""
+        polls=0
+        while true; do
+          sleep 120
+          polls=$((polls + 1))
+          if [ -z "$read_artifact" ] && [ -n "$(gh api "repos/${REPO}/actions/runs/${RUN_ID}/artifacts?name=${ARTIFACT}" --jq '.artifacts[0].id // empty' 2>/dev/null)" ]; then
+            read_artifact=true
+            rm -rf first-error
+            if gh run download "$RUN_ID" --repo "$REPO" --name "$ARTIFACT" --dir first-error \
+               && record="$(jq -ec 'select((.file | type == "string" and test("^[A-Za-z0-9_./'"'"'-]{1,200}\\.lean$"))
+                                           and (.line | type == "number") and (.message | type == "string"))' \
+                            first-error/first_error.json)"; then
+              file="$(jq -r .file <<< "$record")"
+              line="$(jq -r '.line | floor' <<< "$record")"
+              summary="$(jq -r '"The build of this commit reported its first error after \(.elapsed) s; the build continues.\n\n```\n\(.message[:300])\n```"' <<< "$record")"
+              check="$(gh api -X POST "repos/${REPO}/check-runs" -f name='first error' -f head_sha="$HEAD_SHA" \
+                        -f status=completed -f conclusion=failure \
+                        -f "output[title]=${file}:${line}" -f "output[summary]=${summary}" --jq .id)" || check=""
+              echo "First error ${file}:${line}; check run ${check:-not created}."
+            fi
+          fi
+          # The jobs listing is read every second poll, or every poll once the error is reported.
+          if [ -n "$read_artifact" ] || [ $((polls % 2)) -eq 0 ]; then
+            build="$(gh api "repos/${REPO}/actions/runs/${RUN_ID}/jobs?per_page=100" \
+                      --jq '[.jobs[] | select(.name | endswith("/ Build"))][0] | "\(.status) \(.conclusion)"' 2>/dev/null)" || build=""
+            case "$build" in
+              "completed success") neutralize; exit 0 ;;
+              "completed failure") exit 1 ;;
+              completed*) exit 0 ;;
+            esac
+          fi
+        done

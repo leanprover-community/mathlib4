@@ -1,6 +1,6 @@
 # Watches for the first error file that `scripts/lake-build-wrapper.py` writes, and uploads
-# it as an artifact as soon as it appears, while the build continues. The `early_signal` job
-# of build_template.yml reads the artifact and reports the error as a check run.
+# it as an artifact as soon as it appears, while the build continues. The `early-signal`
+# action reads the artifact and reports the error as a check run.
 #
 # The build runs PR code, which can write anything under `.lake/`, so the file is read as
 # data: the watcher accepts only a regular file inside the given directory, with the keys
@@ -36,7 +36,7 @@ runs:
         OUT: ${{ runner.temp }}/first-error
       run: |
         python3 -I - <<'PY'
-        import json, os, re, time
+        import json, os, re, stat, time
 
         file, root, stop, out = (os.environ[k] for k in ('FILE', 'ROOT', 'STOP', 'OUT'))
         LEAN_FILE = re.compile(r"[A-Za-z0-9_./'-]{1,200}\.lean")
@@ -45,9 +45,11 @@ runs:
             real = os.path.realpath(file)
             if os.path.commonpath([real, os.path.realpath(root)]) != os.path.realpath(root):
                 return None
-            fd = os.open(real, os.O_RDONLY | os.O_NOFOLLOW)
+            if not stat.S_ISREG(os.lstat(real).st_mode):
+                return None
+            fd = os.open(real, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
             with os.fdopen(fd) as f:
-                if not os.path.isfile(real):
+                if not stat.S_ISREG(os.fstat(f.fileno()).st_mode):
                     return None
                 data = json.loads(f.read(65536))
             if not (isinstance(data, dict) and set(data) == {'file', 'line', 'message', 'elapsed'}):

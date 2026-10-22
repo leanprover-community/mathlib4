@@ -32,8 +32,8 @@ on:
         type: string
         required: true
       early_signal:
-        # Report the first error of the Mathlib build as a `first error` check run on the
-        # head commit while the build continues. The caller must grant `checks: write`.
+        # Upload the first error of the Mathlib build as the `first-error-<attempt>` artifact
+        # while the build continues, for a caller job that reports it as a check run.
         type: boolean
         required: false
         default: false
@@ -199,7 +199,7 @@ jobs:
           action: add # In order to be able to run a multiline script, we need to add/remove the problem matcher before and after.
           linters: lean
       # Uploads the first error of the build below as soon as the wrapper writes it, for
-      # the `early_signal` job. The build continues after its first error, so that the
+      # the caller's `early_signal` job. The build continues after its first error, so that the
       # oleans of every other module are staged and cached.
       - name: watch for the first build error
         id: first_error
@@ -448,68 +448,6 @@ jobs:
           else
             echo "'mk_all --check' passed successfully."
           fi
-
-  early_signal:
-    name: First error
-    if: ${{ inputs.early_signal }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 300
-    permissions:
-      actions: read
-      checks: write
-    steps:
-      # Polls the run for the artifact of the `build` job's first-error watch while
-      # `build` runs. On the first error it creates a failed `first error` check run on
-      # the head commit, and marks it neutral if `build` later succeeds. The artifact is
-      # data that PR code influenced, so the title and summary use only its validated
-      # fields.
-      - name: Report the first build error
-        env:
-          GH_TOKEN: ${{ github.token }}
-          REPO: ${{ github.repository }}
-          RUN_ID: ${{ github.run_id }}
-          ARTIFACT: first-error-${{ github.run_attempt }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-        run: |
-          set -uo pipefail
-          check=""
-          read_artifact=""
-          polls=0
-          while true; do
-            sleep 90
-            polls=$((polls + 1))
-            if [ -z "$read_artifact" ] && [ -n "$(gh api "repos/${REPO}/actions/runs/${RUN_ID}/artifacts?name=${ARTIFACT}" --jq '.artifacts[0].id // empty' 2>/dev/null)" ]; then
-              read_artifact=true
-              rm -rf first-error
-              if gh run download "$RUN_ID" --repo "$REPO" --name "$ARTIFACT" --dir first-error \
-                 && record="$(jq -ec 'select((.file | type == "string" and test("^[A-Za-z0-9_./'"'"'-]{1,200}\\.lean$"))
-                                             and (.line | type == "number") and (.message | type == "string"))' \
-                              first-error/first_error.json)"; then
-                file="$(jq -r .file <<< "$record")"
-                line="$(jq -r '.line | floor' <<< "$record")"
-                summary="$(jq -r '"The build of this commit reported its first error after \(.elapsed) s; the build continues.\n\n```\n\(.message[:300])\n```"' <<< "$record")"
-                check="$(gh api -X POST "repos/${REPO}/check-runs" -f name='first error' -f head_sha="$HEAD_SHA" \
-                          -f status=completed -f conclusion=failure \
-                          -f "output[title]=${file}:${line}" -f "output[summary]=${summary}" --jq .id)" || check=""
-                echo "First error ${file}:${line}; check run ${check:-not created}."
-              fi
-            fi
-            # The jobs listing is read every third poll, or every poll once the check exists.
-            if [ -n "$check" ] || [ $((polls % 3)) -eq 0 ]; then
-              build="$(gh api "repos/${REPO}/actions/runs/${RUN_ID}/jobs?per_page=100" \
-                        --jq '[.jobs[] | select(.name | endswith("/ Build"))][0] | "\(.status) \(.conclusion)"' 2>/dev/null)" || build=""
-              case "$build" in
-                "completed success")
-                  if [ -n "$check" ]; then
-                    gh api -X PATCH "repos/${REPO}/check-runs/${check}" -f conclusion=neutral \
-                      -f 'output[title]=The build succeeded on a later attempt' \
-                      -f 'output[summary]=The build reported an error, then succeeded when it was retried.' > /dev/null
-                  fi
-                  break ;;
-                completed*) break ;;
-              esac
-            fi
-          done
 
   test_lint:
     name: Test and lint
