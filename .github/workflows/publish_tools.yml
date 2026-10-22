@@ -65,10 +65,10 @@ jobs:
           # still compile; `cache` and `mk_all` are consumed by path.
           lake build cache check-yaml graph
           ls .lake/build/bin/cache
-          # `mk_all` links the import closure of `Mathlib/Util/GetAllModules.lean`, whose
-          # oleans and C files come from the master cache container. Without `mk_all`, the
+          # `mk_all` is built from this commit's sources, not from the cache: this job runs
+          # outside a sandbox and produces the tools that CI trusts. Without `mk_all`, the
           # artifact ships `cache` alone and the build job runs `lake exe mk_all`.
-          if lake exe cache get Mathlib/Util/GetAllModules.lean && lake build mk_all; then
+          if lake build mk_all; then
             ls .lake/build/bin/mk_all
           else
             echo "::warning::mk_all did not build; the tools artifact ships without it."
