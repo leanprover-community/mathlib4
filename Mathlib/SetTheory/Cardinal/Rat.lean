@@ -6,9 +6,10 @@ Authors: Chris Hughes, Floris Van Doorn
 module
 
 public import Mathlib.Algebra.CharZero.Infinite
-public import Mathlib.Algebra.Ring.Rat
 public import Mathlib.Data.Rat.Encodable
 public import Mathlib.SetTheory.Cardinal.Basic
+
+import Mathlib.Algebra.Ring.Rat
 
 /-!
 # Cardinality of ℚ

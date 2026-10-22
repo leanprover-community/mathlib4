@@ -64,6 +64,7 @@ section Basics
 variable [TopologicalSpace α] [PseudoMetricSpace β] [PseudoMetricSpace γ]
 variable {f g : α →ᵇ β} {x : α} {C : ℝ}
 
+@[macro_inline]
 instance instFunLike : FunLike (α →ᵇ β) α β where
   coe f := f.toFun
   coe_injective f g h := by
@@ -112,7 +113,7 @@ theorem isBounded_image (f : α →ᵇ β) (s : Set α) : IsBounded (f '' s) :=
   f.isBounded_range.subset <| image_subset_range _ _
 
 theorem eq_of_empty [h : IsEmpty α] (f g : α →ᵇ β) : f = g :=
-  ext <| h.elim
+  ext h.elim
 
 /-- A continuous function with an explicit bound is a bounded continuous function. -/
 def mkOfBound (f : C(α, β)) (C : ℝ) (h : ∀ x y : α, dist (f x) (f y) ≤ C) : α →ᵇ β :=
@@ -155,7 +156,6 @@ theorem dist_coe_le_dist (x : α) : dist (f x) (g x) ≤ dist f g :=
 useless afterwards as it will be superseded by the general result that the distance is nonnegative
 in metric spaces. -/
 
-set_option backward.privateInPublic true in
 private theorem dist_nonneg' : 0 ≤ dist f g :=
   le_csInf dist_set_exists fun _ => And.left
 
@@ -182,7 +182,7 @@ theorem dist_lt_iff_of_compact [CompactSpace α] (C0 : (0 : ℝ) < C) :
   · by_cases h : Nonempty α
     · exact dist_lt_of_nonempty_compact
     · rintro -
-      convert! C0
+      convert C0
       apply le_antisymm _ dist_nonneg'
       rw [dist_eq]
       exact csInf_le ⟨0, fun C => And.left⟩ ⟨le_rfl, fun x => False.elim (h (Nonempty.intro x))⟩
@@ -191,13 +191,11 @@ theorem dist_lt_iff_of_nonempty_compact [Nonempty α] [CompactSpace α] :
     dist f g < C ↔ ∀ x : α, dist (f x) (g x) < C :=
   ⟨fun w x => lt_of_le_of_lt (dist_coe_le_dist x) w, dist_lt_of_nonempty_compact⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The type of bounded continuous functions, with the uniform distance, is a pseudometric space. -/
 instance instPseudoMetricSpace : PseudoMetricSpace (α →ᵇ β) where
-  dist_self f := le_antisymm ((dist_le le_rfl).2 fun x => by simp) dist_nonneg'
+  dist_self f := private le_antisymm ((dist_le le_rfl).2 fun x => by simp) dist_nonneg'
   dist_comm f g := by simp [dist_eq, dist_comm]
-  dist_triangle _ _ _ := (dist_le (add_nonneg dist_nonneg' dist_nonneg')).2
+  dist_triangle _ _ _ := private (dist_le (add_nonneg dist_nonneg' dist_nonneg')).2
     fun _ => le_trans (dist_triangle _ _ _) (add_le_add (dist_coe_le_dist _) (dist_coe_le_dist _))
 
 /-- The type of bounded continuous functions, with the uniform distance, is a metric space. -/
@@ -262,7 +260,7 @@ theorem isInducing_coeFn : IsInducing (UniformFun.ofFun ∘ (⇑) : (α →ᵇ �
 
 -- TODO: upgrade to `IsUniformEmbedding`
 theorem isEmbedding_coeFn : IsEmbedding (UniformFun.ofFun ∘ (⇑) : (α →ᵇ β) → α →ᵤ β) :=
-  ⟨isInducing_coeFn, fun _ _ h => ext fun x => congr_fun h x⟩
+  ⟨isInducing_coeFn, fun _ _ h => ext fun x => congr($h x)⟩
 
 variable (α) in
 /-- Constant as a continuous bounded function. -/
@@ -464,7 +462,7 @@ end Extend
 @[simps]
 noncomputable def indicator (s : Set α) (hs : IsClopen s) : BoundedContinuousFunction α ℝ where
   toFun := s.indicator 1
-  continuous_toFun := continuous_indicator (by simp [hs]) <| continuous_const.continuousOn
+  continuous_toFun := continuous_indicator (by simp [hs]) continuous_const.continuousOn
   map_bounded' := ⟨1, fun x y ↦ by by_cases hx : x ∈ s <;> by_cases hy : y ∈ s <;> simp [hx, hy]⟩
 
 end Basics
@@ -475,8 +473,11 @@ variable [TopologicalSpace α] [PseudoMetricSpace β] [One β]
 
 @[to_additive] instance instOne : One (α →ᵇ β) := ⟨const α 1⟩
 
-@[to_additive (attr := simp)]
-theorem coe_one : ((1 : α →ᵇ β) : α → β) = 1 := rfl
+@[to_additive]
+instance : IsOneApply (α →ᵇ β) where
+
+@[deprecated (since := "2026-10-20")] alias coe_zero := FunLike.coe_zero
+@[to_additive existing, deprecated (since := "2026-10-20")] alias coe_one := FunLike.coe_one
 
 @[to_additive (attr := simp)]
 theorem mkOfCompact_one [CompactSpace α] : mkOfCompact (1 : C(α, β)) = 1 := rfl
@@ -503,18 +504,14 @@ instance instMul [Mul R] [BoundedMul R] [ContinuousMul R] :
       continuous_toFun := f.continuous.mul g.continuous
       map_bounded' := mul_bounded_of_bounded_of_bounded (map_bounded f) (map_bounded g) }
 
-@[to_additive (attr := simp)]
-theorem coe_mul [Mul R] [BoundedMul R] [ContinuousMul R] (f g : α →ᵇ R) : ⇑(f * g) = f * g := rfl
-
 @[to_additive]
-theorem mul_apply [Mul R] [BoundedMul R] [ContinuousMul R] (f g : α →ᵇ R) (x : α) :
-    (f * g) x = f x * g x := rfl
+instance [Mul R] [BoundedMul R] [ContinuousMul R] : IsMulApply (α →ᵇ R) where
 
-@[deprecated "dont use `nsmulRec` directly" (since := "2026-03-06")]
-theorem coe_nsmulRec [PseudoMetricSpace β] [AddMonoid β] [BoundedAdd β] [ContinuousAdd β]
-    (f : α →ᵇ β) : ∀ n, ⇑(nsmulRec n f) = n • ⇑f
-  | 0 => by rw [nsmulRec, zero_smul, coe_zero]
-  | n + 1 => by rw [nsmulRec, succ_nsmul, coe_add, coe_nsmulRec _ n]
+@[deprecated (since := "2026-10-20")] alias coe_add := FunLike.coe_add
+@[to_additive existing, deprecated (since := "2026-10-20")] alias coe_mul := FunLike.coe_mul
+
+@[deprecated (since := "2026-10-20")] protected alias add_apply := add_apply
+@[to_additive existing, deprecated (since := "2026-10-20")] protected alias mul_apply := mul_apply
 
 @[to_additive]
 instance instPow [Monoid R] [BoundedMul R] [ContinuousMul R] : Pow (α →ᵇ R) ℕ where
@@ -526,30 +523,25 @@ instance instPow [Monoid R] [BoundedMul R] [ContinuousMul R] : Pow (α →ᵇ R)
         exact ⟨C, fun x y ↦ hC (by simp) (by simp)⟩ }
 
 @[to_additive]
-theorem coe_pow [Monoid R] [BoundedMul R] [ContinuousMul R] (n : ℕ) (f : α →ᵇ R) :
-    ⇑(f ^ n) = (⇑f) ^ n := rfl
+instance [Monoid R] [BoundedMul R] [ContinuousMul R] : IsPowApply ℕ (α →ᵇ R) where
 
-@[to_additive (attr := simp)]
-theorem pow_apply [Monoid R] [BoundedMul R] [ContinuousMul R] (n : ℕ) (f : α →ᵇ R) (x : α) :
-    (f ^ n) x = f x ^ n := rfl
+@[deprecated (since := "2026-10-20")] alias coe_nsmul := FunLike.coe_smul
+@[to_additive existing, deprecated (since := "2026-10-20")] alias coe_pow := FunLike.coe_pow
+
+@[deprecated (since := "2026-10-20")] alias nsmul_apply := smul_apply
+@[deprecated (since := "2026-10-20")] protected alias pow_apply := pow_apply
 
 @[to_additive]
 instance instMonoid [Monoid R] [BoundedMul R] [ContinuousMul R] :
-    Monoid (α →ᵇ R) := fast_instance%
-  Injective.monoid _ DFunLike.coe_injective rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    Monoid (α →ᵇ R) := fast_instance% FunLike.monoid
 
 @[to_additive]
 instance instCommMonoid [CommMonoid R] [BoundedMul R] [ContinuousMul R] :
-    CommMonoid (α →ᵇ R) := fast_instance%
-  Injective.commMonoid _ DFunLike.coe_injective rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    CommMonoid (α →ᵇ R) := fast_instance% FunLike.commMonoid
 
-/-- Coercion of a `BoundedContinuousFunction` is a `MonoidHom`. Similar to `MonoidHom.coeFn`. -/
-@[to_additive (attr := simps) /-- Coercion of a `BoundedContinuousFunction` is an `AddMonoidHom`.
-Similar to `AddMonoidHom.coeFn`. -/]
-def coeFnMonoidHom [Monoid R] [BoundedMul R] [ContinuousMul R] : (α →ᵇ R) →* α → R where
-  toFun := (⇑)
-  map_one' := coe_one
-  map_mul' := coe_mul
+@[deprecated (since := "2026-10-20")] alias coeFnAddMonoidHom := FunLike.coeAddMonoidHom
+@[to_additive existing, deprecated (since := "2026-10-20")] alias coeFnMonoidHom :=
+  FunLike.coeMonoidHom
 
 variable (α R) in
 /-- The multiplicative map forgetting that a bounded continuous function is bounded. -/
@@ -563,19 +555,16 @@ def toContinuousMapMonoidHom [Monoid R] [BoundedMul R] [ContinuousMul R] : (α �
     ext
     simp
 
-@[to_additive (attr := simp)]
-lemma coe_prod {ι : Type*} (s : Finset ι) [CommMonoid R] [BoundedMul R] [ContinuousMul R]
-    (f : ι → α →ᵇ R) :
-    ⇑(∏ i ∈ s, f i) = ∏ i ∈ s, ⇑(f i) := map_prod coeFnMonoidHom f s
+@[deprecated (since := "2026-10-20")] alias coe_sum := FunLike.coe_sum
+@[to_additive existing, deprecated (since := "2026-10-20")] alias coe_prod := FunLike.coe_prod
 
-@[to_additive]
-lemma prod_apply {ι : Type*} (s : Finset ι) [CommMonoid R] [BoundedMul R] [ContinuousMul R]
-    (f : ι → α →ᵇ R) (a : α) :
-    (∏ i ∈ s, f i) a = ∏ i ∈ s, f i a := by simp
+@[deprecated (since := "2026-10-20")] protected alias sum_apply := sum_apply
+@[to_additive existing, deprecated (since := "2026-10-20")] protected alias prod_apply :=
+  _root_.prod_apply
 
 @[to_additive]
 instance instMulOneClass [MulOneClass R] [BoundedMul R] [ContinuousMul R] : MulOneClass (α →ᵇ R) :=
-  fast_instance% DFunLike.coe_injective.mulOneClass _ coe_one coe_mul
+  fast_instance% FunLike.mulOneClass
 
 /-- Composition on the left by a (lipschitz-continuous) homomorphism of topological monoids, as a
 `MonoidHom`. Similar to `MonoidHom.compLeftContinuous`. -/
@@ -650,10 +639,11 @@ instance instSub : Sub (α →ᵇ R) where
     { toFun := fun x ↦ (f x - g x),
       map_bounded' := sub_bounded_of_bounded_of_bounded f.map_bounded' g.map_bounded' }
 
-theorem sub_apply {x : α} : (f - g) x = f x - g x := rfl
+instance : IsSubApply (α →ᵇ R) where
 
-@[simp]
-theorem coe_sub : ⇑(f - g) = f - g := rfl
+@[deprecated (since := "2026-10-20")] alias coe_sub := FunLike.coe_sub
+
+@[deprecated (since := "2026-10-20")] protected alias sub_apply := sub_apply
 
 end sub
 
@@ -663,21 +653,21 @@ variable [TopologicalSpace α] {β : Type*} [PseudoMetricSpace β]
 
 instance [NatCast β] : NatCast (α →ᵇ β) := ⟨fun n ↦ BoundedContinuousFunction.const _ n⟩
 
-@[simp]
-theorem natCast_apply [NatCast β] (n : ℕ) (x : α) : (n : α →ᵇ β) x = n := rfl
+instance [NatCast β] : IsNatCastApply (α →ᵇ β) where
+
+@[deprecated (since := "2026-10-20")] alias natCast_apply := natCast_apply_eq_const
 
 instance [IntCast β] : IntCast (α →ᵇ β) := ⟨fun m ↦ BoundedContinuousFunction.const _ m⟩
 
-@[simp]
-theorem intCast_apply [IntCast β] (m : ℤ) (x : α) : (m : α →ᵇ β) x = m := rfl
+instance [IntCast β] : IsIntCastApply (α →ᵇ β) where
+
+@[deprecated (since := "2026-10-20")] alias intCast_apply := intCast_apply_eq_const
 
 end casts
 
 instance instSemiring {R : Type*} [TopologicalSpace α] [PseudoMetricSpace R]
     [Semiring R] [BoundedMul R] [ContinuousMul R] [BoundedAdd R] [ContinuousAdd R] :
-    Semiring (α →ᵇ R) := fast_instance%
-  Injective.semiring _ DFunLike.coe_injective
-    rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
+    Semiring (α →ᵇ R) := fast_instance% FunLike.semiring
 
 section IsBoundedSMul
 
@@ -707,23 +697,22 @@ instance instSMul : SMul 𝕜 (α →ᵇ β) where
           gcongr
           apply hb⟩ }
 
-@[simp]
-theorem coe_smul (c : 𝕜) (f : α →ᵇ β) : ⇑(c • f) = fun x => c • f x := rfl
+instance : IsSMulApply 𝕜 (α →ᵇ β) where
 
-theorem smul_apply (c : 𝕜) (f : α →ᵇ β) (x : α) : (c • f) x = c • f x := rfl
+@[deprecated (since := "2026-10-20")] alias coe_smul := FunLike.coe_smul
+
+@[deprecated (since := "2026-10-20")] protected alias smul_apply := smul_apply
 
 instance instIsScalarTower {𝕜' : Type*} [PseudoMetricSpace 𝕜'] [Zero 𝕜'] [SMul 𝕜' β]
     [IsBoundedSMul 𝕜' β] [SMul 𝕜' 𝕜] [IsScalarTower 𝕜' 𝕜 β] :
-    IsScalarTower 𝕜' 𝕜 (α →ᵇ β) where
-  smul_assoc _ _ _ := ext fun _ ↦ smul_assoc ..
+    IsScalarTower 𝕜' 𝕜 (α →ᵇ β) := FunLike.isScalarTower
 
 instance instSMulCommClass {𝕜' : Type*} [PseudoMetricSpace 𝕜'] [Zero 𝕜'] [SMul 𝕜' β]
     [IsBoundedSMul 𝕜' β] [SMulCommClass 𝕜' 𝕜 β] :
-    SMulCommClass 𝕜' 𝕜 (α →ᵇ β) where
-  smul_comm _ _ _ := ext fun _ ↦ smul_comm ..
+    SMulCommClass 𝕜' 𝕜 (α →ᵇ β) := FunLike.smulCommClass
 
-instance instIsCentralScalar [SMul 𝕜ᵐᵒᵖ β] [IsCentralScalar 𝕜 β] : IsCentralScalar 𝕜 (α →ᵇ β) where
-  op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
+instance instIsCentralScalar [SMul 𝕜ᵐᵒᵖ β] [IsCentralScalar 𝕜 β] : IsCentralScalar 𝕜 (α →ᵇ β) :=
+  FunLike.isCentralScalar
 
 instance instIsBoundedSMul : IsBoundedSMul 𝕜 (α →ᵇ β) where
   dist_smul_pair' c f₁ f₂ := by
@@ -745,8 +734,7 @@ section MulAction
 
 variable [MonoidWithZero 𝕜] [Zero β] [MulAction 𝕜 β] [IsBoundedSMul 𝕜 β]
 
-instance instMulAction : MulAction 𝕜 (α →ᵇ β) := fast_instance%
-  DFunLike.coe_injective.mulAction _ coe_smul
+instance instMulAction : MulAction 𝕜 (α →ᵇ β) := fast_instance% FunLike.mulAction
 
 end MulAction
 
@@ -755,8 +743,8 @@ section DistribMulAction
 variable [MonoidWithZero 𝕜] [AddMonoid β] [DistribMulAction 𝕜 β] [IsBoundedSMul 𝕜 β]
 variable [BoundedAdd β] [ContinuousAdd β]
 
-instance instDistribMulAction : DistribMulAction 𝕜 (α →ᵇ β) := fast_instance%
-  DFunLike.coe_injective.distribMulAction ⟨⟨_, coe_zero⟩, coe_add⟩ coe_smul
+instance instDistribMulAction : DistribMulAction 𝕜 (α →ᵇ β) :=
+  fast_instance% FunLike.distribMulAction
 
 end DistribMulAction
 
@@ -766,8 +754,7 @@ variable [Semiring 𝕜] [AddCommMonoid β] [Module 𝕜 β] [IsBoundedSMul 𝕜
 variable {f : α →ᵇ β} {x : α} {C : ℝ}
 variable [BoundedAdd β] [ContinuousAdd β]
 
-instance instModule : Module 𝕜 (α →ᵇ β) := fast_instance%
-  DFunLike.coe_injective.module _ ⟨⟨_, coe_zero⟩, coe_add⟩  coe_smul
+instance instModule : Module 𝕜 (α →ᵇ β) := fast_instance% FunLike.module
 
 variable (𝕜)
 
@@ -794,7 +781,6 @@ end IsBoundedSMul
 theorem NNReal.upper_bound {α : Type*} [TopologicalSpace α] (f : α →ᵇ ℝ≥0) (x : α) :
     f x ≤ nndist f 0 := by
   have key : nndist (f x) ((0 : α →ᵇ ℝ≥0) x) ≤ nndist f 0 := @dist_coe_le_dist α ℝ≥0 _ _ f 0 x
-  simp only [coe_zero, Pi.zero_apply] at key
-  rwa [NNReal.nndist_zero_eq_val' (f x)] at key
+  rwa [zero_apply, NNReal.nndist_zero_eq_val' (f x)] at key
 
 end BoundedContinuousFunction

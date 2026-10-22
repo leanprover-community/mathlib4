@@ -31,8 +31,7 @@ theorem mem_smulAntidiagonal_of_group [Group G] [MulAction G P] [Semiring R] [Ze
     gh ∈ Finset.SMulAntidiagonal p
       (Set.SMulAntidiagonal.finite_of_finite_fst f.coeff.support.finite_toSet x.support p) ↔
       f.coeff gh.1 ≠ 0 ∧ x gh.2 ≠ 0 ∧ gh.2 = gh.1⁻¹ • p := by
-  rw [Finset.mem_smulAntidiagonal, eq_inv_smul_iff, Function.mem_support, Finset.mem_coe,
-    Finsupp.mem_support_iff]
+  grind [Finset.mem_smulAntidiagonal, eq_inv_smul_iff]
 
 /-- A convolution-type scalar multiplication of the monoid algebra on the set of formal
 functions. -/
