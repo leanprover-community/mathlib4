@@ -7,9 +7,9 @@ module
 
 public meta import Lean.Elab.Tactic.NormCast
 public import Mathlib.Tactic.ClickSuggestions.Util
+public import Mathlib.Tactic.Push
 public import Mathlib.Tactic.Widget.Conv
 public import Mathlib.Util.AtomM
-public import Mathlib.Tactic.Push
 
 /-!
 # Normalizing tactics in `#click_suggestions`
@@ -55,7 +55,7 @@ Note that some tactics have no `conv` analogue, so in that case we
 default to suggesting the usual version of the tactic.
 -/
 def suggestNormalize (old new : Expr) (info : PositionInfo) (stx : NormStx) :
-    ClickSuggestionsM (Option Html) := do
+    ClickSuggestionsM (Option ProofWidgets.Html) := do
   if ← isExplicitEq old new then return none
   let tac ← match ← stx.convStx.run, info.convPath? with
     | some convStx, some path => Conv.pathToStx convStx path info.hyp?
@@ -124,7 +124,7 @@ def getHead (e : Expr) : Option Push.Head :=
 If the constant is `Not`, then also suggest `push +distrib Not` if that does something different.
 -/
 public def suggestPush (e : Expr) (info : PositionInfo)
-  (update : Html → ClickSuggestionsM Unit) : ClickSuggestionsM Unit := do
+  (update : ProofWidgets.Html → ClickSuggestionsM Unit) : ClickSuggestionsM Unit := do
   let some head := getHead (← whnfR e) | return
   if let .const headConst := head then
     -- Make sure that there are actually push theorems for this constant, otherwise return.
@@ -182,7 +182,7 @@ def runSimp (e : Expr) : MetaM Expr := do
 Only suggest a tactic if it gives a different result from the previous one.
 -/
 public def suggestSimp (e : Expr) (info : PositionInfo)
-    (update : Html → ClickSuggestionsM Unit) : ClickSuggestionsM Unit := do
+    (update : ProofWidgets.Html → ClickSuggestionsM Unit) : ClickSuggestionsM Unit := do
   let e₁ ← runDSimpOnly e
   if let some html ← suggestNormalize e e₁ info dsimpOnlyStx then
     update html
@@ -203,7 +203,7 @@ The suggestions are shown incrementally, so they show up as soon as they are com
 We currently use one thread for these, but we might parallelize it in the future.
 -/
 public def suggestNormTactics (e rootExpr : Expr) (fvarId? : Option FVarId) (pos : SubExpr.Pos) :
-    ClickSuggestionsM Html :=
+    ClickSuggestionsM ProofWidgets.Html :=
   mkIncrementalSuggestions "Normalization" fun update ↦ withNewMCtxDepth do
     let info : PositionInfo := {
       hyp? := ← fvarId?.mapM (·.getUserName)

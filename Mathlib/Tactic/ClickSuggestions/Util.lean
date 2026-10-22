@@ -351,7 +351,8 @@ def addSolvingSuggestion (tac : TSyntax `tactic) : ClickSuggestionsM Unit := do
 /-- Make a list of suggestions by running `k` in a separate thread,
 letting it add them one by one. -/
 def mkIncrementalSuggestions (title : String)
-    (k : (Html → ClickSuggestionsM Unit) → ClickSuggestionsM Unit) : ClickSuggestionsM Html :=
+    (k : (ProofWidgets.Html → ClickSuggestionsM Unit) → ClickSuggestionsM Unit) :
+    ClickSuggestionsM ProofWidgets.Html :=
   mkRefreshComponentM (.text "") fun token ↦ trackingComputation title do
     let htmls ← IO.mkRef #[]
     k fun html ↦ do
