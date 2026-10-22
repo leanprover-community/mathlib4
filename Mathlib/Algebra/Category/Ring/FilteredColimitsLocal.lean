@@ -7,10 +7,8 @@ module
 
 public import Mathlib.Algebra.Category.Ring.Colimits
 public import Mathlib.Algebra.Category.Ring.FilteredColimits
-public import Mathlib.Algebra.EuclideanDomain.Field
 public import Mathlib.Algebra.Field.Subfield.Basic
 public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
-public import Mathlib.CategoryTheory.Limits.Filtered
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
 /-!
@@ -27,6 +25,9 @@ again local, with maximal ideal equal to the union of images of maximal ideals.
 
 * `CommRingCat.FilteredColimit.maximalIdeal_eq_iUnion_of_isColimit` : Filtered colimit of local ring
   via local homomorphisms has maximal ideal equal to union of images of maximal ideals.
+
+* `CommRingCat.isColimitResidueFieldCocone` : The residue field of filtered colimit of local ring
+  via local homomorphisms is colimit of the residue field of these local rings.
 
 -/
 
