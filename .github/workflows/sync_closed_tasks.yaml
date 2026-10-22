@@ -1,0 +1,53 @@
+name: Cross off linked issues
+
+on:
+  # the closed event type causes unchecked checkbox references to be checked / marked complete
+  # the reopened event type causes checked checkbox references to be unchecked / marked incomplete
+  issues:
+    types: [closed, reopened]
+
+  # `pull_request_target` because PRs come from forks, whose `pull_request` token is read-only
+  # (no PR code is checked out)
+  pull_request_target:
+    types: [closed, reopened]
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  build:
+    name: "Cross off linked issues"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cross off any linked issue and PR references
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            // In each issue or PR of this repository that cross-references the closed (reopened)
+            // item, check (uncheck) the `- [ ]` list items that mention the item by `#<number>`
+            // or by URL.
+            const item = context.payload.issue ?? context.payload.pull_request;
+            const closed = context.payload.action === 'closed';
+            const [from, to] = closed ? [' ', 'x'] : ['[xX]', ' '];
+            const url = item.html_url.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+            // `#12` must not match `#123` or `other/repo#12`, and the URL must not match `.../123`.
+            const ref = `(?:${url}|(?<![\\w.-])#${item.number})(?!\\d)`;
+            const re = new RegExp(`^([ \\t]*)- \\[${from}\\]([ \\t].*?${ref}.*)$`, 'gm');
+            const { owner, repo } = context.repo;
+            const events = await github.paginate(github.rest.issues.listEventsForTimeline, {
+              owner, repo, issue_number: item.number, per_page: 100,
+            });
+            const sources = new Map(events
+              .filter(e => e.event === 'cross-referenced' && e.source?.issue?.repository?.full_name === `${owner}/${repo}`)
+              .map(e => [e.source.issue.number, e.source.issue]));
+            core.info(`found ${sources.size} references in ${owner}/${repo}`);
+            for (const [number, source] of sources) {
+              if (!(source.body ?? '').match(re)) continue;
+              // Re-read the body just before the write, so an edit since the timeline read survives.
+              const { data: { body } } = await github.rest.issues.get({ owner, repo, issue_number: number });
+              const updated = (body ?? '').replace(re, `$1- [${to}]$2`);
+              if (updated === body) continue;
+              core.info(`updating #${number}`);
+              await github.rest.issues.update({ owner, repo, issue_number: number, body: updated });
+            }
