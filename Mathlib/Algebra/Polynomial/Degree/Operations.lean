@@ -233,7 +233,7 @@ theorem degree_add_eq_of_leadingCoeff_add_ne_zero (h : leadingCoeff p + leadingC
 theorem natDegree_add_eq_of_leadingCoeff_add_ne_zero (h : leadingCoeff p + leadingCoeff q ≠ 0) :
     natDegree (p + q) = max p.natDegree q.natDegree := by
   rw [natDegree, degree_add_eq_of_leadingCoeff_add_ne_zero h]
-  exact Monotone.map_max <| WithBot.unbotD_bot_monotone (α := ℕ)
+  exact Monotone.map_max <| WithBot.unbotD_bot_monotone ℕ
 
 lemma degree_add_of_leadingCoeff_nonneg [PartialOrder R] [AddLeftMono R]
     {f g : R[X]} (hf : 0 ≤ f.leadingCoeff) (hg : 0 ≤ g.leadingCoeff) :

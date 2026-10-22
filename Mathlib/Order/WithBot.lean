@@ -542,6 +542,7 @@ section Preorder
 
 variable [Preorder α] [Preorder β] {x y : WithBot α}
 
+variable (α) in
 @[to_dual]
 theorem unbotD_bot_monotone [OrderBot α] :
     Monotone (WithBot.unbotD ⊥ : WithBot α → α) := by
