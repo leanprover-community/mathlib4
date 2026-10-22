@@ -187,8 +187,8 @@ def scan_files(dag: DAG, options: list[str], value: str = "false") -> dict[str, 
 
     Returns dict of module_name -> list of 0-indexed line numbers.
     """
-    removable_pats = [removable_pattern(opt, "true" if "Att" in opt else value) for opt in options]
-    commented_pats = [commented_pattern(opt, "true" if "Att" in opt else value) for opt in options]
+    removable_pats = [removable_pattern(opt, value) for opt in options]
+    commented_pats = [commented_pattern(opt, value) for opt in options]
     results: dict[str, list[int]] = {}
     for name, info in dag.modules.items():
         filepath = dag.project_root / info.filepath
