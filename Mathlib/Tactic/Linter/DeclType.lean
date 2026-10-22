@@ -35,9 +35,9 @@ section concreteInstances
 
 /--
 The `concreteInstances` linter flags any instance assumption without variables.
-If such a type class has an instance, then this should be declared as a instance globally,
-instead of assumed as a local hypothesis. And if there is no instance, then the assumption
-can never be satisfied.
+If there is an instance of the type class, then it should be declared globally,
+instead of assumed as a local hypothesis. And if there is no instance,
+then the assumption can never be satisfied.
 -/
 register_option linter.concreteInstances : Bool := {
   defValue := true
@@ -65,10 +65,10 @@ def runConcreteLinter (constVal : ConstantVal) (bodyRef : Syntax) : CommandElabM
   Command.liftCoreM do MetaM.run' do
   for cls in classes do
     let some clsName ← isClass? cls | continue
-    -- A redundant `Decidable` hypothesis can allow a declaration to be compatible with
-    -- all potential `Decidable` instance, so we allow this.
+    -- A seemingly redundant `Decidable` hypothesis can be added to make a declaration compatible
+    -- with all potential `Decidable` instance, so we allow this.
     if clsName == ``Decidable then continue
-    if (← trySynthInstance cls) matches .some _ then
+    if ← trySynthInstance cls matches .some _ then
       logLint linter.concreteInstances ref
         m!"There exists a global instance of type class `{cls}`.\n\
         Please rely on this instance and remove the `{.sbracket cls}` assumption."
