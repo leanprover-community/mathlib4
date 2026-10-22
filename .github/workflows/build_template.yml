@@ -33,7 +33,7 @@ on:
         required: true
       incremental_lint:
         # Lint only the modules whose cache file is not in the master `cache-snapshot` when the
-        # snapshot's commit passed the full lint. Set by callers for pull requests into `master`.
+        # snapshot's commit passed the full lint. Set by callers for PR builds and branch pushes.
         type: boolean
         required: false
         default: false
@@ -376,6 +376,7 @@ jobs:
       # current cache. The local directory can also hold other `.ltar` files, such as
       # the snapshot this run warmed from or files that the runner image provides.
       - name: prune local cache to this commit's set
+        id: prune
         if: ${{ inputs.publish_cache && steps.build.outcome == 'success' }}
         continue-on-error: true # best-effort; never fail the build
         shell: bash # only master pushes publish the cache, so the checkout is trusted
@@ -387,9 +388,11 @@ jobs:
 
       # Publish this run's pruned `.ltar` set as `cache-snapshot` for other runs to warm
       # from. The files are already zstd-compressed, so the upload skips compression.
-      # The retention covers how far back a PR's merge-base can be matched.
+      # The retention covers how far back a PR's merge-base can be matched. The PR lint
+      # scope treats the snapshot as exactly this commit's set, so an unpruned set is not
+      # published.
       - name: upload cache snapshot warming artifact
-        if: ${{ inputs.publish_cache && steps.build.outcome == 'success' }}
+        if: ${{ inputs.publish_cache && steps.build.outcome == 'success' && steps.prune.outcome == 'success' }}
         continue-on-error: true # best-effort; never fail the build
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
@@ -611,9 +614,6 @@ jobs:
           # The `.ltar` files are already zstd-compressed; recompressing wastes CPU.
           compression-level: 0
 
-      # `lint` runs on a build that succeeded or failed (not cancelled). On a failed
-      # build it lints best-effort over whatever oleans the cache has, so partial
-      # lint feedback is still reported. The problem-matcher wrap is gated to match.
       # The lint scope. Each module whose cache file is in the snapshot has the same source and
       # import closure as at the snapshot's commit, where the bors run passed the full lint.
       # `runLinter` lints only the other modules when the global inputs of the linters (the
@@ -667,7 +667,7 @@ jobs:
           HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           set -uo pipefail
-          cd pr-branch
+          cd pr-branch || exit 1
           # PR code can write `.lake/`, and this step runs outside landrun, so it writes only
           # under the runner's temporary directory.
           scope="${RUNNER_TEMP}/lint-scope"
@@ -679,12 +679,15 @@ jobs:
             exit 0
           }
           [[ -n "${SNAPSHOT_SHA}" && -s "${SNAPSHOT_LTARS:-}" ]] || full "no cache snapshot"
-          [[ -s .lake/module-ltars.txt ]] || full "the module cache files could not be listed"
-          # Files that change the verdicts on every module: the suppression list, the build
-          # configuration (toolchain and dependencies, Batteries' linters included), and each
-          # module that declares an environment linter.
-          { printf '%s\n' scripts/nolints.json lakefile.lean lake-manifest.json lean-toolchain
-            grep -rlF '@[env_linter' Mathlib || true; } > "${scope}/inputs.txt"
+          # PR code can write `.lake/`: read the listing only as a regular file, through a copy.
+          [[ -f .lake/module-ltars.txt && ! -L .lake/module-ltars.txt ]] \
+            || full "the module cache files could not be listed"
+          cp .lake/module-ltars.txt "${scope}/module-ltars.txt"
+          [[ -s "${scope}/module-ltars.txt" ]] || full "the module cache files could not be listed"
+          # Files that change the verdicts on every module: the suppression list and the build
+          # configuration (toolchain and dependencies, Batteries' linters included).
+          printf '%s\n' scripts/nolints.json lakefile.lean lake-manifest.json lean-toolchain \
+            > "${scope}/inputs.txt"
           # The comparison API returns at most 300 files.
           changed_files() {
             gh api "repos/leanprover-community/mathlib4/compare/$1...$2" \
@@ -699,7 +702,14 @@ jobs:
           fi
           awk 'NR == FNR { snapshot[$1] = 1; next }
                !($2 in snapshot) && ($1 == "Mathlib" || index($1, "Mathlib.") == 1) { print $1 }' \
-            "${SNAPSHOT_LTARS}" .lake/module-ltars.txt > "${scope}/changed-modules.txt"
+            "${SNAPSHOT_LTARS}" "${scope}/module-ltars.txt" > "${scope}/changed-modules.txt"
+          # A module that declares an environment linter, or anything it imports, changes the
+          # linter's code: a changed cache file of such a module gives the full lint.
+          grep -rlE '@\[env_linter|attribute \[env_linter' Mathlib \
+            | sed -e 's/\.lean$//' -e 's|/|.|g' > "${scope}/linter-modules.txt" || true
+          if hit=$(grep -xFf "${scope}/linter-modules.txt" "${scope}/changed-modules.txt"); then
+            full "the environment linter module $(head -1 <<< "${hit}") differs from ${SNAPSHOT_SHA}"
+          fi
           baseline=false
           [[ -s "${RUNNER_TEMP}/lint-baseline/lint-fingerprint.json" ]] && baseline=true
           echo "Lint scope: $(wc -l < "${scope}/changed-modules.txt") modules differ from ${SNAPSHOT_SHA}; its lint fingerprint is present: ${baseline}." \
@@ -707,6 +717,9 @@ jobs:
           echo "only_modules=true" >> "$GITHUB_OUTPUT"
           echo "baseline=${baseline}" >> "$GITHUB_OUTPUT"
 
+      # `lint` runs on a build that succeeded or failed (not cancelled). On a failed
+      # build it lints best-effort over whatever oleans the cache has, so partial
+      # lint feedback is still reported. The problem-matcher wrap is gated to match.
       - name: begin gh-problem-match-wrap for shake and lint steps
         if: ${{ always() && (needs.build.outputs.build-outcome == 'success' || needs.build.outputs.build-outcome == 'failure') }}
         uses: leanprover-community/gh-problem-matcher-wrap@65a654fcdf7b64ff7633bc7a558f7b46d59a27bf # 2026-06-25
@@ -775,11 +788,12 @@ jobs:
 
       - name: upload the lint fingerprint
         if: ${{ github.repository == 'leanprover-community/mathlib4' && github.ref == 'refs/heads/staging' && steps.lint.outcome == 'success' }}
+        continue-on-error: true # best-effort; a missing fingerprint gives later PRs the full lint
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: lint-fingerprint
           path: pr-branch/.lake/lint-fingerprint.json
-          if-no-files-found: error
+          if-no-files-found: warn
 
       - name: end gh-problem-match-wrap for shake and lint steps
         if: ${{ always() && (needs.build.outputs.build-outcome == 'success' || needs.build.outputs.build-outcome == 'failure') }}

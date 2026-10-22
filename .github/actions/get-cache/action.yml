@@ -115,6 +115,7 @@ runs:
     # this run's `cache-staging` artifact.
     - name: Unpack cache snapshot
       id: unpack_snapshot
+      continue-on-error: true # fail-safe: fall back to the remote fetch (step 2)
       shell: bash
       run: |
         set -euo pipefail
@@ -123,7 +124,7 @@ runs:
         : > "${list}"
         if [[ -d "${dir}" ]]; then
           find "${dir}" -maxdepth 1 -type f -name '*.ltar' -printf '%f\n' | sort > "${list}"
-          find "${dir}" -maxdepth 1 -type f -name '*.ltar' -exec mv -n -t /home/lean/.cache/mathlib/ {} +
+          find "${dir}" -maxdepth 1 -type f -name '*.ltar' -exec mv -f -t /home/lean/.cache/mathlib/ {} +
           rm -rf "${dir}"
         fi
         echo "The cache snapshot holds $(wc -l < "${list}") .ltar files."
