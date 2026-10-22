@@ -207,9 +207,7 @@ theorem mem_adjoin_of_dvd_coeff_of_dvd_aeval {A B : Type*} [CommSemiring A] [Rin
   choose! f hf using hQ
   rw [aeval_eq_sum_range, sum_range] at hz
   conv_lhs at hz =>
-    congr
-    next => skip
-    ext i
+    enter [2, i]
     rw [hf i (mem_range.2 (Fin.is_lt i)), ← smul_smul]
   rw [← smul_sum] at hz
   rw [← smul_right_injective _ hp hz]
