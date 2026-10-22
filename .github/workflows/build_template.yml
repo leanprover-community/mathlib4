@@ -32,8 +32,8 @@ on:
         type: string
         required: true
       incremental_lint:
-        # Lint only the modules whose cache file is not in the master `cache-snapshot` when the
-        # snapshot's commit passed the full lint. Set by callers for PR builds and branch pushes.
+        # Lint only the modules whose cache file is not in the master `cache-snapshot`. Set by
+        # callers for PR builds and branch pushes; the bors run lints everything.
         type: boolean
         required: false
         default: false
@@ -613,9 +613,10 @@ jobs:
 
       # The lint scope. Each module whose cache file is in the master snapshot has the same
       # source and import closure as at a master commit, where the bors run passed the full
-      # lint. The local linters (`Linter.isLocal`) lint only the other modules; the other
-      # linters lint everything. Any doubt gives the full lint. The bors run always lints
-      # everything.
+      # lint. Every linter lints only the other modules. For the local linters
+      # (`Linter.isLocal`) this gives the full lint's verdict; for the others, such as
+      # `simpNF`, a change can affect a declaration of an unchanged module, which only the bors
+      # run, which always lints everything, reports. Any doubt gives the full lint.
       - name: list the module cache files
         if: ${{ inputs.incremental_lint && always() && (needs.build.outputs.build-outcome == 'success' || needs.build.outputs.build-outcome == 'failure') }}
         continue-on-error: true
@@ -680,7 +681,7 @@ jobs:
           if hit=$(grep -xFf "${scope}/linter-modules.txt" "${scope}/changed-modules.txt"); then
             full "the environment linter module $(head -1 <<< "${hit}") differs from ${SNAPSHOT_SHA}"
           fi
-          echo "Lint scope: the local linters lint the $(wc -l < "${scope}/changed-modules.txt") modules that differ from ${SNAPSHOT_SHA}." \
+          echo "Lint scope: the linters lint the $(wc -l < "${scope}/changed-modules.txt") modules that differ from ${SNAPSHOT_SHA}. The bors run lints all modules." \
             | tee -a "$GITHUB_STEP_SUMMARY"
           echo "only_modules=true" >> "$GITHUB_OUTPUT"
 
@@ -713,6 +714,9 @@ jobs:
           runlinter=.lake/packages/batteries/scripts/runLinter.lean
           if ${{ steps.lint_scope.outputs.only_modules == 'true' }} && grep -qF -- '--only-modules=' "${runlinter}"; then
             args+=(--only-modules='${{ runner.temp }}/lint-scope/changed-modules.txt')
+            if grep -qF -- '--restrict-all-linters' "${runlinter}"; then
+              args+=(--restrict-all-linters)
+            fi
           fi
           # If lint fails because the PR predates lake-lint configuration or the
           # old --trace argument-parsing behavior, ask the author to merge master.
