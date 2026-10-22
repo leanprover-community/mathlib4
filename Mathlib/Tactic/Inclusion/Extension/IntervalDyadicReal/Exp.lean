@@ -13,6 +13,20 @@ public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Rational
 
 This file defines an inclusion operation for the `interval_dyadic_real` inclusion family that
 encloses `Real.exp` of an interval.
+
+## Implementation notes
+The `exp` of the endpoints is constructed by evaluating the Taylor partial sum up to the required
+precision level. The exponent is rewritten as `exp x = exp (x / m) ^ m`, where `m` is an integer
+chosen so that `|x / m| < 1 / 32`, so that the Taylor series converges faster.
+
+This file is opt-in so that `dyadic_interval` doesn't import unnecessary theories.
+
+## TODO
+
+For larger exponents, we would eventually want to implement another optimisation that shifts the
+`exp` exponent by multiples of `log 2` (which only shifts the exponent of the dyadic result).
+This is deferred since it requires a certified computation of `log 2` to arbitrary precision, which
+is a separate from the main instance.
 -/
 
 public section
@@ -155,8 +169,7 @@ def exp (I : Interval Dyadic) (prec : ℕ) : Interval Dyadic where
 theorem exp_mem {x : ℝ} {I : Interval Dyadic} (hx : x ∈ I) (prec : ℕ) :
     Real.exp x ∈ exp I prec := by
   rw [mem_iff_mem_map, Interval.mem_map_iff] at hx
-  have h0 : Dyadic.toReal 0 ≤ Real.exp x := by
-    simpa [Dyadic.toReal] using (Real.exp_pos x).le
+  have h0 : Dyadic.toReal 0 ≤ Real.exp x := by simpa [Dyadic.toReal] using (Real.exp_pos x).le
   have h0I := Interval.mem_map_singleton (0 : Dyadic) Dyadic.toReal
   rw [mem_iff_mem_map]
   rcases I with ⟨_ | l, _ | u⟩ <;> simp only [exp]
