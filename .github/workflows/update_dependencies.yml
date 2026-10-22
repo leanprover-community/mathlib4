@@ -105,10 +105,12 @@ jobs:
           prUrl: ${{ steps.PR.outputs.pr_url }}
 
       # Each update of the branch rebuilds all of Mathlib on the pr pool, and its merge
-      # rebuilds all of Mathlib on staging. While bors has PRs on its queue, the update
-      # waits, unless master's dependencies are more than 24 hours old.
+      # rebuilds all of Mathlib on staging. While bors has PRs on its queue, a scheduled
+      # update waits, unless master's `lake-manifest.json` last changed more than 24 hours
+      # ago. A manual run does not wait.
       - name: Check the merge queue
         id: queue
+        if: ${{ github.event_name != 'workflow_dispatch' }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
