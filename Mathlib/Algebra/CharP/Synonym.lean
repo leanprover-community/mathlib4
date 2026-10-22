@@ -31,6 +31,10 @@ instance {p : ℕ} [AddMonoidWithOne R] [CharP R p] : CharP Rᵒᵈ p := inferIn
 instance {p : ℕ} [AddMonoidWithOne R] [ExpChar R p] : ExpChar Rᵒᵈ p :=
   inferInstanceAs <| ExpChar R p
 
+@[simp]
+theorem ringChar_eq [NonAssocSemiring R] : ringChar Rᵒᵈ = ringChar R :=
+  ringChar.eq Rᵒᵈ (ringChar R)
+
 end OrderDual
 
 /-! ### Lexicographical order -/
@@ -44,10 +48,8 @@ instance {p : ℕ} [AddMonoidWithOne R] [CharP R p] : CharP (Lex R) p := inferIn
 instance {p : ℕ} [AddMonoidWithOne R] [ExpChar R p] : ExpChar (Lex R) p :=
   inferInstanceAs <| ExpChar R p
 
-end Lex
-
-theorem ringChar.orderDual [NonAssocSemiring R] : ringChar Rᵒᵈ = ringChar R :=
-  ringChar.eq Rᵒᵈ (ringChar R)
-
-theorem ringChar.lex [NonAssocSemiring R] : ringChar (Lex R) = ringChar R :=
+@[simp]
+theorem ringChar_eq [NonAssocSemiring R] : ringChar (Lex R) = ringChar R :=
   ringChar.eq (Lex R) (ringChar R)
+
+end Lex
