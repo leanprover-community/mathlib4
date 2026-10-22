@@ -1120,6 +1120,8 @@ jobs:
           # which doubles as a smoke test of the `export_crossrefs.yml` workflow.
           lake env lean scripts/export_crossrefs.lean
           lake exe check_title_labels --labels "t-algebra" "feat: dummy PR for testing"
+          # The Build job runs a prebuilt `mk_all` when its sources match; this builds the branch's own.
+          lake build mk_all
 
       - name: build everything
         # make sure everything is available for test/import_all.lean

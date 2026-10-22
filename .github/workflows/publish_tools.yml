@@ -1,5 +1,5 @@
-# Builds the trusted CI tooling (`cache` binary + the `lake-build-*` helper scripts)
-# from `master` and publishes them as a small artifact (`tools-bin`).
+# Builds the trusted CI tooling (the `cache` and `mk_all` binaries + the `lake-build-*`
+# helper scripts) from `master` and publishes it as a small artifact (`tools-bin`).
 #
 # CI runs (build_template.yml, via the `get-tools` composite action) download this
 # artifact and use the tools directly, saving a full `master` checkout plus a ~30s
@@ -64,10 +64,16 @@ jobs:
           # `check-yaml` and `graph` are built as a smoke test that master's tools
           # still compile; `cache` and `mk_all` are consumed by path.
           lake build cache check-yaml graph
-          # `mk_all` imports `Mathlib.Init`: fetch those oleans rather than build them.
-          lake exe cache get Mathlib/Util/GetAllModules.lean
-          lake build mk_all
-          ls .lake/build/bin/cache .lake/build/bin/mk_all
+          ls .lake/build/bin/cache
+          # `mk_all` links the import closure of `Mathlib/Util/GetAllModules.lean`, whose
+          # oleans and C files come from the master cache container. Without `mk_all`, the
+          # artifact ships `cache` alone and the build job runs `lake exe mk_all`.
+          if lake exe cache get Mathlib/Util/GetAllModules.lean && lake build mk_all; then
+            ls .lake/build/bin/mk_all
+          else
+            echo "::warning::mk_all did not build; the tools artifact ships without it."
+            rm -f .lake/build/bin/mk_all
+          fi
 
       - name: bundle tools
         shell: bash
