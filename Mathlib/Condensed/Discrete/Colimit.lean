@@ -279,7 +279,6 @@ def isoLocallyConstantOfIsColimit
     lanPresheafExt (isoFinYoneda F ≪≫ (locallyConstantIsoFinYoneda F).symm) ≪≫
       lanPresheafNatIso fun _ ↦ isColimitLocallyConstantPresheafDiagram _ _
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma isoLocallyConstantOfIsColimit_inv (X : Profinite.{u}ᵒᵖ ⥤ Type (u + 1))
     [PreservesFiniteProducts X]
@@ -299,8 +298,7 @@ lemma isoLocallyConstantOfIsColimit_inv (X : Profinite.{u}ᵒᵖ ⥤ Type (u + 1
   simp only [← Category.assoc, op_obj, functorToPresheaves_obj_obj]
   congr
   ext f
-  simp only [toProfinite_obj, TypeCat.Fun.toFun_apply, CategoryTheory.comp_apply,
-    ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk, counitApp_app]
+  simp only [counitApp_app]
   apply presheaf_ext.{u, u + 1} (X := X) (Y := X) (f := f)
   intro x
   dsimp [toProfinite_obj]
@@ -310,8 +308,8 @@ lemma isoLocallyConstantOfIsColimit_inv (X : Profinite.{u}ᵒᵖ ⥤ Type (u + 1
     Finite.of_injective (sigmaIncl.{u, u + 1} f x).1 Subtype.val_injective
   apply injective_of_mono (isoFinYonedaComponents X (fiber.{u, u + 1} f x)).hom
   ext y
-  simp only [toProfinite_obj, isoFinYonedaComponents_hom, ConcreteCategory.hom_ofHom,
-    TypeCat.Fun.coe_mk, ← Functor.map_comp_apply, ← op_comp]
+  simp only [isoFinYonedaComponents_hom, ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk,
+    ← Functor.map_comp_apply, ← op_comp]
   rw [show (Profinite.of PUnit.{u + 1}).const y ≫
     IsTerminal.from _ (fiber.{u, u + 1} f x) = 𝟙 _ from rfl]
   simp only [op_comp, Functor.map_comp_apply, op_id, Functor.map_id_apply]

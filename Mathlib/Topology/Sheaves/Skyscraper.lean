@@ -134,7 +134,6 @@ section
 -- We need to restrict universe level.
 variable {C : Type v} [Category.{u} C] (A : C) [HasTerminal C]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The cocone at `A` for the stalk functor of `skyscraperPresheaf p₀ A` when `y ∈ closure {p₀}`
 -/
@@ -148,8 +147,7 @@ def skyscraperPresheafCoconeOfSpecializes {y : X} (h : p₀ ⤳ y) :
         change dite _ _ _ ≫ _ = _; rw [dite_eq_left]
         swap
         · exact h.mem_open V.unop.1.2 V.unop.2
-        · simp only [Functor.comp_obj, Functor.op_obj, skyscraperPresheaf_obj, unop_op,
-            Functor.const_obj_obj, eqToHom_trans, Functor.const_obj_map, Category.comp_id] }
+        · simp }
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

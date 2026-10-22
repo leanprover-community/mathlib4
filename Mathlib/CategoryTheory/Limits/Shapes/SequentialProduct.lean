@@ -116,7 +116,6 @@ lemma functorMap_commSq {n m : ℕ} (h : ¬(m < n)) :
       congr 1
       exact functorMap_commSq_aux f (by lia) (by lia)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 The cone over the tower
@@ -133,9 +132,8 @@ noncomputable def cone : Cone (Functor.ofOpSequence (functorMap f)) where
         f m ≫ eqToHom (functorObj_eq_neg h).symm) (fun n ↦ ?_)
     apply Limits.Pi.hom_ext
     intro m
-    simp only [Functor.const_obj_obj, dite_eq_ite, Functor.ofOpSequence_obj, homOfLE_leOfHom,
-      Functor.const_obj_map, Category.id_comp, Pi.map_π, Functor.ofOpSequence_map_homOfLE_succ,
-      functorMap, Category.assoc, Pi.map_π_assoc]
+    simp only [Pi.map_π, Functor.ofOpSequence_map_homOfLE_succ, functorMap, Category.assoc,
+      Pi.map_π_assoc]
     split
     · simp [dite_eq_left (by lia : m < n + 1)]
     · split
