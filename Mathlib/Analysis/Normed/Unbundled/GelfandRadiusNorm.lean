@@ -12,7 +12,7 @@ public import Mathlib.Analysis.Normed.Unbundled.AlgebraNorm
 /-!
 # The Gelfand radius as an algebra norm
 
-This file uses the Gelfand radius to define an algebra norm on finite extension of a normed field.
+This file uses the Gelfand radius to define an algebra norm on a finite extension of a normed field.
 
 ## Main definitions
 
@@ -23,6 +23,7 @@ This file uses the Gelfand radius to define an algebra norm on finite extension 
 
 * `isPowMul_gelfandRadiusNorm`: the Gelfand radius norm is power-multiplicative.
 * `gelfandRadiusNorm_algebraMap`: the Gelfand radius norm is invariant under algebra maps.
+* `gelfandRadiusNorm_map`: the Gelfand radius norm is invariant under algebra homomorphisms.
 -/
 
 public section
@@ -63,6 +64,7 @@ variable {K} in
 theorem gelfandRadiusNorm_eq_norm (x : K) : gelfandRadiusNorm K K x = ‖x‖ := by
   simpa using map_smul_eq_mul (gelfandRadiusNorm K K) x 1
 
+/-- The Gelfand radius norm is power-multiplicative. -/
 theorem isPowMul_gelfandRadiusNorm : IsPowMul (gelfandRadiusNorm K L) := by
   have : NeZero (Module.finrank K L) := ⟨Module.finrank_pos.ne'⟩
   intro x k hk
@@ -77,6 +79,7 @@ theorem Module.Basis.gelfandRadiusNorm_apply
     Matrix.gelfandRadius_mul_comm, linearMap_toMatrix_mul_basis_toMatrix]
 
 variable {L} in
+/-- The Gelfand radius norm is invariant under algebra maps. -/
 @[simp]
 theorem gelfandRadiusNorm_algebraMap (M : Type*) [Field M] [Algebra K M] [Algebra L M]
     [IsScalarTower K L M] [FiniteDimensional K M] (x : L) :
@@ -89,6 +92,7 @@ theorem gelfandRadiusNorm_algebraMap (M : Type*) [Field M] [Algebra K M] [Algebr
     Matrix.gelfandRadius_blockDiagonal, ciSup_const, bKL.gelfandRadiusNorm_apply]
 
 variable {K L} in
+/-- The Gelfand radius norm is invariant under algebra homomorphisms. -/
 @[simp]
 theorem gelfandRadiusNorm_map {M : Type*} [Field M] [Algebra K M] [FiniteDimensional K M]
     {F : Type*} [FunLike F L M] [AlgHomClass F K L M] (f : F) (x : L) :
