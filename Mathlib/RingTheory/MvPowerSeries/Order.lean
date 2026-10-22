@@ -122,7 +122,7 @@ namespace MvPowerSeries
 
 noncomputable section
 
-open ENat Finsupp
+open ENat Finsupp Finset
 
 variable {σ R : Type*} [Semiring R]
 
@@ -357,23 +357,6 @@ theorem coeff_mul_prod_one_sub_of_lt_weightedOrder {R ι : Type*} [CommRing R] (
     rw [Finset.prod_insert ha, ← mul_assoc, mul_right_comm,
       coeff_mul_left_one_sub_of_lt_weightedOrder w h.1, ih h.2]
 
-/-- If `a i - b i` has weighted order at least `n` for all `i ∈ s`, then so does
-`∏ i ∈ s, a i - ∏ i ∈ s, b i`. -/
-theorem le_weightedOrder_prod_sub_prod {R ι : Type*} [CommRing R] {n : ℕ∞}
-    {a b : ι → MvPowerSeries σ R} {s : Finset ι}
-    (h : ∀ i ∈ s, n ≤ (a i - b i).weightedOrder w) :
-    n ≤ (∏ i ∈ s, a i - ∏ i ∈ s, b i).weightedOrder w := by
-  induction s using Finset.cons_induction with
-  | empty => simp
-  | cons i s hi ih =>
-    simp only [Finset.mem_cons, forall_eq_or_imp] at h
-    have : a i * ∏ j ∈ s, a j - b i * ∏ j ∈ s, b j =
-        a i * (∏ j ∈ s, a j - ∏ j ∈ s, b j) + (a i - b i) * ∏ j ∈ s, b j := by
-      rw [mul_sub, sub_mul, sub_add_sub_cancel]
-    rw [Finset.prod_cons, Finset.prod_cons, this]
-    exact (le_min ((ih h.2).trans (le_add_self.trans (le_weightedOrder_mul w)))
-      (h.1.trans (le_self_add.trans (le_weightedOrder_mul w)))).trans (min_weightedOrder_le_add w)
-
 /-- If `a i - b i` has weighted order at least `n`, and `a i`, `b i` have weighted order at
 least `k`, for all `i ∈ s`, then `∏ i ∈ s, a i - ∏ i ∈ s, b i` has weighted order at least
 `n + (#s - 1) • k`. -/
@@ -381,7 +364,7 @@ theorem add_nsmul_le_weightedOrder_prod_sub_prod {R ι : Type*} [CommRing R] {n 
     {a b : ι → MvPowerSeries σ R} {s : Finset ι}
     (ha : ∀ i ∈ s, k ≤ (a i).weightedOrder w) (hb : ∀ i ∈ s, k ≤ (b i).weightedOrder w)
     (h : ∀ i ∈ s, n ≤ (a i - b i).weightedOrder w) :
-    n + (s.card - 1) • k ≤ (∏ i ∈ s, a i - ∏ i ∈ s, b i).weightedOrder w := by
+    n + (#s - 1) • k ≤ (∏ i ∈ s, a i - ∏ i ∈ s, b i).weightedOrder w := by
   induction s using Finset.cons_induction with
   | empty => simp
   | cons i s hi ih =>
@@ -399,6 +382,14 @@ theorem add_nsmul_le_weightedOrder_prod_sub_prod {R ι : Type*} [CommRing R] {n 
         _ ≤ _ := (add_le_add ha.1 (ih ha.2 hb.2 h.2)).trans (le_weightedOrder_mul w)
     · exact (add_le_add h.1 ((s.card_nsmul_le_sum _ k hb.2).trans
         (le_weightedOrder_prod w b s))).trans (le_weightedOrder_mul w)
+
+/-- If `a i - b i` has weighted order at least `n` for all `i ∈ s`, then so does
+`∏ i ∈ s, a i - ∏ i ∈ s, b i`. -/
+theorem le_weightedOrder_prod_sub_prod {R ι : Type*} [CommRing R] {n : ℕ∞}
+    {a b : ι → MvPowerSeries σ R} {s : Finset ι}
+    (h : ∀ i ∈ s, n ≤ (a i - b i).weightedOrder w) :
+    n ≤ (∏ i ∈ s, a i - ∏ i ∈ s, b i).weightedOrder w := by
+  simpa using add_nsmul_le_weightedOrder_prod_sub_prod w (k := 0) (by simp) (by simp) h
 
 @[simp]
 theorem weightedOrder_neg (f : MvPowerSeries σ R) : (-f).weightedOrder w = f.weightedOrder w := by
