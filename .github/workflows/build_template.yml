@@ -262,6 +262,7 @@ jobs:
               # results of build at pr-branch/.lake/build_summary_Archive_Counterexamples_Wanted.json
 
           - name: stage Mathlib cache files
+            id: stage_mathlib
             if: ${{ always() && (steps.build.outcome == 'success' || steps.build.outcome == 'failure' || steps.build.outcome == 'cancelled') }}
             shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX -- bash -euxo pipefail {0}
             run: |
@@ -272,6 +273,21 @@ jobs:
               export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
               cd pr-branch
               ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage
+
+      # A cancelled run does not start the members of a parallel group,
+      # including the members with `always()`. This step stages the Mathlib
+      # cache files of a cancelled run when the group did not stage them, so
+      # the next run can use the modules that this run built. `cache stage`
+      # skips the `.ltar` files that it already packed, and `cp` overwrites
+      # the staged files, so the step can follow an interrupted staging.
+      - name: stage Mathlib cache files after a cancellation
+        if: ${{ cancelled() && (steps.build.outcome == 'success' || steps.build.outcome == 'failure' || steps.build.outcome == 'cancelled') && steps.stage_mathlib.outcome != 'success' && steps.stage_mathlib.outcome != 'failure' }}
+        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX -- bash -euxo pipefail {0}
+        run: |
+          # No `lake env`, trusted toolchain: see "stage Mathlib cache files".
+          export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
+          cd pr-branch
+          ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage
 
       # The three checks ask Lake whether each target is up to date and free
       # of warnings, so each target reports its own outcome to the staging
