@@ -104,7 +104,7 @@ variable (C X)
 /-- A `TopCat.Sheaf C X` is a presheaf of objects from `C` over a (bundled) topological space `X`,
 satisfying the sheaf condition.
 -/
-nonrec def Sheaf : Type max u v w :=
+nonrec abbrev Sheaf : Type max u v w :=
   Sheaf (Opens.grothendieckTopology X) C
 deriving Category
 
