@@ -336,6 +336,11 @@ def filterExists (hashMap : ModuleHashMap) (keep : Bool) : BaseIO ModuleHashMap 
 def hashes (hashMap : ModuleHashMap) : Std.TreeSet UInt64 compare :=
   hashMap.fold (init := ∅) fun acc _ hash => acc.insert hash
 
+/-- One `MODULE FILE.ltar` line per module, sorted by module name. -/
+def ltarLines (hashMap : ModuleHashMap) : Array String :=
+  (hashMap.toArray.qsort (fun a b => a.1.toString < b.1.toString)).map
+    fun (mod, hash) => s!"{mod} {hash.asLTar}"
+
 end ModuleHashMap
 
 /--

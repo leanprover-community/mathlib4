@@ -469,6 +469,18 @@ def test_UInt64_asLTar : IO Unit := do
     "ffffffffffffffff.ltar"
     (0xffffffffffffffff : UInt64).asLTar
 
+/-- `hashes` prints one `MODULE FILE.ltar` line per module, sorted by module name, so its
+output can be compared line by line with a listing of `.ltar` files. -/
+def test_ltarLines : IO Unit := do
+  IO.println "ModuleHashMap.ltarLines:"
+  let m : Cache.IO.ModuleHashMap := (∅ : Cache.IO.ModuleHashMap)
+    |>.insert `Mathlib.Order.Basic 0xabc
+    |>.insert `Mathlib.Algebra.Group.Defs 1
+  assertEq "lines are sorted by module name"
+    "Mathlib.Algebra.Group.Defs 0000000000000001.ltar\nMathlib.Order.Basic 0000000000000abc.ltar"
+    ("\n".intercalate m.ltarLines.toList)
+  assertEq "an empty map prints nothing" "" ("\n".intercalate (∅ : Cache.IO.ModuleHashMap).ltarLines.toList)
+
 end UInt64Formatting
 
 section RoundTrip
@@ -1919,6 +1931,7 @@ def runAll : IO Unit := do
   test_tempFileNames
   test_isRemoteURL
   test_UInt64_asLTar
+  test_ltarLines
   test_hash_roundtrip
   test_markerURL
   test_markerProbeURL

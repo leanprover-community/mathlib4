@@ -32,6 +32,7 @@ Commands:
   clean          Delete non-linked files
   clean!         Delete everything on the local cache
   lookup [ARGS]  Show information about cache files for the given Lean files
+  hashes [ARGS]  Print `MODULE FILE.ltar` for each linked module, sorted by module
   query [REF]    Without REF: find the most recent cached Mathlib commit.
                  With REF (e.g. HEAD, a SHA): boolean probe; exit 0 if cached, 1 if not.
 
@@ -73,11 +74,12 @@ Options:
 * Commands that end with '!' do not skip files: use them manually when a
   hot-fix must force a re-download, a re-pack, or an overwrite
 
-# The arguments for 'get', 'get!', 'get-' and 'lookup'
+# The arguments for 'get', 'get!', 'get-', 'lookup' and 'hashes'
 
-'get', 'get!', 'get-' and 'lookup' can process a list of module names or file names.
+'get', 'get!', 'get-', 'lookup' and 'hashes' can process a list of module names or file names.
 
 'get [ARGS]' will only get the cache for the specified Lean files and all files imported by one.
+'hashes [ARGS]' lists the same set of modules.
 
 Valid arguments are:
 
@@ -312,6 +314,9 @@ def main (args : List String) : IO Unit := do
     stage stagingDir?.get! (unpackedOnly := false)
   | ["collect"] => IO.println "TODO"
   | "lookup" :: _ => lookup hashMap roots.keys
+  | "hashes" :: args =>
+    let hashMap ← if args.isEmpty then pure hashMap else hashMemo.filterByRootModules roots.keys
+    for line in hashMap.ltarLines do IO.println line
   | [] => println help -- unreachable: options are already partitioned out
   | cmd :: _ =>
     IO.eprintln s!"Unknown command '{cmd}'"

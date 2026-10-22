@@ -37,6 +37,7 @@ lake exe cache get Mathlib.Algebra.Group.Basic
 | `clean`         | Delete non-linked files                                             |
 | `clean!`        | Delete everything on the local cache                                |
 | `lookup [ARGS]` | Show information about cache files for the given Lean files         |
+| `hashes [ARGS]` | Print `MODULE FILE.ltar` for each linked module, sorted by module   |
 | `query`         | Find the most recent commit with cached entries on the current branch |
 
 
@@ -72,7 +73,7 @@ MATHLIB_CACHE_GET_URL=https://cache.example.org/my-prefix lake exe cache get
 
 ### Arguments
 
-The `get`, `get!`, `get-`, and `lookup` commands accept:
+The `get`, `get!`, `get-`, `lookup`, and `hashes` commands accept:
 
 - Module names: `Mathlib.Algebra.Group.Basic`
 - File paths: `Mathlib/Algebra/Group/Basic.lean`
