@@ -450,17 +450,17 @@ theorem Gamma_eq_zero_iff (s : ℂ) : Gamma s = 0 ↔ ∃ m : ℕ, s = -m := by
   · contrapose!; exact Gamma_ne_zero
   · rintro ⟨m, rfl⟩; exact Gamma_neg_nat_eq_zero m
 
-theorem norm_Gamma_le_norm_Gamma_iff (s : ℂ) :
+theorem norm_Gamma_le_norm_Gamma_add_one_iff (s : ℂ) :
     ‖Gamma s‖ ≤ ‖Gamma (s + 1)‖ ↔ s = 0 ∨ 1 ≤ ‖s‖ := by
   by_cases hs : Gamma s = 0
   · grind [Nat.cast_eq_zero, norm_neg, RCLike.norm_natCast, Nat.one_le_cast]
   have hs0 : s ≠ 0 := fun h ↦ by simp [h] at hs
-  rw [Gamma_add_one _ hs0, norm_mul, le_mul_iff_one_le_left (by simp [hs])]
-  simp [hs0]
+  have hs' : 0 < ‖Gamma s‖ := by simp [hs]
+  grind [norm_mul, le_mul_iff_one_le_left]
 
 theorem norm_Gamma_le_norm_Gamma_add_one {s : ℂ} (hs : 1 ≤ ‖s‖) :
-    ‖Gamma s‖ ≤ ‖Gamma (s + 1)‖ :=
-  (norm_Gamma_le_norm_Gamma_iff s).mpr <| Or.inr hs
+    ‖Gamma s‖ ≤ ‖Gamma (s + 1)‖ := by
+  grind [norm_Gamma_le_norm_Gamma_add_one_iff]
 
 /-- This bound is not tight and is provided for convenience. -/
 theorem norm_Gamma_le_norm_Gamma_add_of_one_le_re {s : ℂ} (hs : 1 ≤ s.re) (n : ℕ) :
@@ -469,7 +469,7 @@ theorem norm_Gamma_le_norm_Gamma_add_of_one_le_re {s : ℂ} (hs : 1 ≤ s.re) (n
   | zero => simp
   | succ n ih =>
     grw [ih, norm_Gamma_le_norm_Gamma_add_one (le_trans (by simp; grind) (Complex.re_le_norm _))]
-    simp [add_assoc]
+    grind
 
 /-- A weaker, but easier-to-apply, version of `Complex.Gamma_ne_zero`. -/
 theorem Gamma_ne_zero_of_re_pos {s : ℂ} (hs : 0 < re s) : Gamma s ≠ 0 := by
