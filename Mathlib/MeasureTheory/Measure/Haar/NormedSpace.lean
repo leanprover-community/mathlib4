@@ -34,12 +34,10 @@ example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [Nontrivial E] [F
 
 section LinearEquiv
 
-variable {𝕜 G H : Type*} [MeasurableSpace G] [MeasurableSpace H] [NontriviallyNormedField 𝕜]
+variable {𝕜 G H : Type*} [MeasurableSpace G] [MeasurableSpace H] [NormedField 𝕜]
   [TopologicalSpace G] [TopologicalSpace H] [AddCommGroup G] [AddCommGroup H]
   [IsTopologicalAddGroup G] [IsTopologicalAddGroup H] [Module 𝕜 G] [Module 𝕜 H] (μ : Measure G)
-  [IsAddHaarMeasure μ] [BorelSpace G] [BorelSpace H]
-  [CompleteSpace 𝕜] [T2Space G] [FiniteDimensional 𝕜 G] [ContinuousSMul 𝕜 G]
-  [ContinuousSMul 𝕜 H] [T2Space H]
+  [IsAddHaarMeasure μ] [BorelSpace G] [BorelSpace H] [IsModuleTopology 𝕜 G] [IsModuleTopology 𝕜 H]
 
 instance MapLinearEquiv.isAddHaarMeasure (e : G ≃ₗ[𝕜] H) : IsAddHaarMeasure (μ.map e) :=
   e.toContinuousLinearEquiv.isAddHaarMeasure_map _

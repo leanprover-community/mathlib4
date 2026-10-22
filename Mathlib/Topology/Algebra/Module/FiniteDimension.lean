@@ -298,10 +298,13 @@ theorem continuous_equivFun_basis [T2Space E] {ι : Type*} [Finite ι] (ξ : Bas
 
 namespace LinearMap
 
-variable [IsModuleTopology 𝕜 E]
+variable {𝕜 E F : Type*} [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+  [TopologicalSpace E] [AddCommGroup F] [Module 𝕜 F]
+  [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F]
+  [IsModuleTopology 𝕜 E]
 
 /-- The continuous linear map induced by a linear map on a finite-dimensional space -/
-def toContinuousLinearMap : (E →ₗ[𝕜] F') ≃ₗ[𝕜] E →L[𝕜] F' where
+def toContinuousLinearMap : (E →ₗ[𝕜] F) ≃ₗ[𝕜] E →L[𝕜] F where
   toFun f := ⟨f, IsModuleTopology.continuous_of_linearMap f⟩
   invFun := (↑)
   map_add' _ _ := rfl
@@ -310,37 +313,32 @@ def toContinuousLinearMap : (E →ₗ[𝕜] F') ≃ₗ[𝕜] E →L[𝕜] F' whe
 
 /-- Algebra equivalence between the linear maps and continuous linear maps on a finite-dimensional
 space. -/
-def _root_.Module.End.toContinuousLinearMap (E : Type v) [NormedAddCommGroup E]
-    [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E] : (E →ₗ[𝕜] E) ≃ₐ[𝕜] (E →L[𝕜] E) :=
+def _root_.Module.End.toContinuousLinearMap [IsTopologicalAddGroup E] :
+    (E →ₗ[𝕜] E) ≃ₐ[𝕜] (E →L[𝕜] E) :=
   { LinearMap.toContinuousLinearMap with
     map_mul' := fun _ _ ↦ rfl
     commutes' := fun _ ↦ rfl }
 
-omit [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E] [CompleteSpace 𝕜] in
 @[simp]
-theorem coe_toContinuousLinearMap' (f : E →ₗ[𝕜] F') : ⇑(LinearMap.toContinuousLinearMap f) = f :=
+theorem coe_toContinuousLinearMap' (f : E →ₗ[𝕜] F) : ⇑(LinearMap.toContinuousLinearMap f) = f :=
   rfl
 
-omit [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E] [CompleteSpace 𝕜] in
 @[simp]
-theorem coe_toContinuousLinearMap (f : E →ₗ[𝕜] F') :
-    ((LinearMap.toContinuousLinearMap f) : E →ₗ[𝕜] F') = f :=
+theorem coe_toContinuousLinearMap (f : E →ₗ[𝕜] F) :
+    ((LinearMap.toContinuousLinearMap f) : E →ₗ[𝕜] F) = f :=
   rfl
 
-omit [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E] [CompleteSpace 𝕜] in
 @[simp]
 theorem coe_toContinuousLinearMap_symm :
-    ⇑(toContinuousLinearMap : (E →ₗ[𝕜] F') ≃ₗ[𝕜] E →L[𝕜] F').symm =
-      ((↑) : (E →L[𝕜] F') → E →ₗ[𝕜] F') :=
+    ⇑(toContinuousLinearMap : (E →ₗ[𝕜] F) ≃ₗ[𝕜] E →L[𝕜] F).symm =
+      ((↑) : (E →L[𝕜] F) → E →ₗ[𝕜] F) :=
   rfl
 
-omit [CompleteSpace 𝕜] in
 @[simp]
-theorem det_toContinuousLinearMap (f : E →ₗ[𝕜] E) :
+theorem det_toContinuousLinearMap [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E] (f : E →ₗ[𝕜] E) :
     (LinearMap.toContinuousLinearMap f).det = LinearMap.det f :=
   rfl
 
-omit [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E] [CompleteSpace 𝕜] in
 /-- A surjective linear map `f` with finite-dimensional codomain is an open map. -/
 theorem isOpenMap_of_finiteDimensional (f : F →ₗ[𝕜] E) (hf : Function.Surjective f) :
     IsOpenMap f :=
@@ -349,13 +347,13 @@ theorem isOpenMap_of_finiteDimensional (f : F →ₗ[𝕜] E) (hf : Function.Sur
 instance canLiftContinuousLinearMap : CanLift (E →ₗ[𝕜] F) (E →L[𝕜] F) (↑) fun _ => True :=
   ⟨fun f _ => ⟨LinearMap.toContinuousLinearMap f, rfl⟩⟩
 
-omit [CompleteSpace 𝕜] in
-lemma toContinuousLinearMap_eq_iff_eq_toLinearMap (f : E →ₗ[𝕜] E) (g : E →L[𝕜] E) :
+lemma toContinuousLinearMap_eq_iff_eq_toLinearMap [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
+    (f : E →ₗ[𝕜] E) (g : E →L[𝕜] E) :
     f.toContinuousLinearMap = g ↔ f = g.toLinearMap := by
   simp [ContinuousLinearMap.ext_iff, LinearMap.ext_iff]
 
-omit [CompleteSpace 𝕜] in
-lemma _root_.ContinuousLinearMap.toLinearMap_eq_iff_eq_toContinuousLinearMap (g : E →L[𝕜] E)
+lemma _root_.ContinuousLinearMap.toLinearMap_eq_iff_eq_toContinuousLinearMap
+    [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E] (g : E →L[𝕜] E)
     (f : E →ₗ[𝕜] E) : g.toLinearMap = f ↔ g = f.toContinuousLinearMap := by
   simp [ContinuousLinearMap.ext_iff, LinearMap.ext_iff]
 
@@ -367,6 +365,11 @@ variable [IsModuleTopology 𝕜 E] [IsModuleTopology 𝕜 F]
 
 namespace LinearEquiv
 
+variable {𝕜 E F : Type*} [NormedField 𝕜]
+  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [IsTopologicalAddGroup E]
+  [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [IsTopologicalAddGroup F]
+  [IsModuleTopology 𝕜 E] [IsModuleTopology 𝕜 F]
+
 /-- The continuous linear equivalence induced by a linear equivalence on a finite-dimensional
 space. -/
 def toContinuousLinearEquiv (e : E ≃ₗ[𝕜] F) : E ≃L[𝕜] F :=
@@ -374,35 +377,29 @@ def toContinuousLinearEquiv (e : E ≃ₗ[𝕜] F) : E ≃L[𝕜] F :=
     continuous_toFun := IsModuleTopology.continuous_of_linearMap e.toLinearMap
     continuous_invFun := IsModuleTopology.continuous_of_linearMap e.symm.toLinearMap }
 
-omit [CompleteSpace 𝕜] in
 @[simp]
 theorem coe_toContinuousLinearEquiv (e : E ≃ₗ[𝕜] F) : (e.toContinuousLinearEquiv : E →ₗ[𝕜] F) = e :=
   rfl
 
-omit [CompleteSpace 𝕜] in
 @[simp]
 theorem coe_toContinuousLinearEquiv' (e : E ≃ₗ[𝕜] F) : (e.toContinuousLinearEquiv : E → F) = e :=
   rfl
 
-omit [CompleteSpace 𝕜] in
 @[simp]
 theorem coe_toContinuousLinearEquiv_symm (e : E ≃ₗ[𝕜] F) :
     (e.toContinuousLinearEquiv.toLinearEquiv.symm : F →ₗ[𝕜] E) = e.symm := rfl
 
-omit [CompleteSpace 𝕜] in
 @[simp]
 theorem coe_toContinuousLinearEquiv_symm' (e : E ≃ₗ[𝕜] F) :
     (e.toContinuousLinearEquiv.symm : F → E) = e.symm :=
   rfl
 
-omit [CompleteSpace 𝕜] in
 @[simp]
 theorem toLinearEquiv_toContinuousLinearEquiv (e : E ≃ₗ[𝕜] F) :
     e.toContinuousLinearEquiv.toLinearEquiv = e := by
   ext x
   rfl
 
-omit [CompleteSpace 𝕜] in
 theorem toLinearEquiv_toContinuousLinearEquiv_symm (e : E ≃ₗ[𝕜] F) :
     e.toContinuousLinearEquiv.symm.toLinearEquiv = e.symm := by
   ext x
@@ -416,14 +413,14 @@ end LinearEquiv
 
 variable [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F]
 
-omit [CompleteSpace 𝕜] in
+omit [CompleteSpace 𝕜] [ContinuousSMul 𝕜 E] [ContinuousSMul 𝕜 F] in
 /-- Two finite-dimensional topological vector spaces over a complete normed field are continuously
 linearly equivalent if they have the same (finite) dimension. -/
 theorem FiniteDimensional.nonempty_continuousLinearEquiv_of_finrank_eq
     (cond : finrank 𝕜 E = finrank 𝕜 F) : Nonempty (E ≃L[𝕜] F) :=
   (nonempty_linearEquiv_of_finrank_eq cond).map LinearEquiv.toContinuousLinearEquiv
 
-omit [CompleteSpace 𝕜] in
+omit [CompleteSpace 𝕜] [ContinuousSMul 𝕜 E] [ContinuousSMul 𝕜 F] in
 /-- Two finite-dimensional topological vector spaces over a complete normed field are continuously
 linearly equivalent if and only if they have the same (finite) dimension. -/
 theorem FiniteDimensional.nonempty_continuousLinearEquiv_iff_finrank_eq :
