@@ -18,7 +18,6 @@ Workflow                     dispatch: decide, plan, read
   ▼
 Workflow/Public              workflows: flags, hosts, options
 Workflow/Developer
-Workflow/Nightly
   │
   ▼
 Workflow/Chain               read mechanisms
@@ -30,11 +29,13 @@ Workflow/Defs
 Cli                          command vocabulary
   │
   ▼
-Requests, Repo,              transport, git, backends
-Upload, Upload/*             (Commands also imports Upload)
+Upload, Upload/*             backends (Commands also imports Upload)
   │
   ▼
-Infra, Scope, Marker         domain
+Marker, Requests             transport, git
+  │
+  ▼
+Location, Infra, Scope       domain
   │
   ▼
 Env                          environment
@@ -45,10 +46,11 @@ Env                          environment
 | Command | Reads the decision variables once per command (`Settings.read`). Turns an error into exit status 1 (`reportErrors`). |
 | Dispatch | Decides the workflow of a read, plans it, and runs it. |
 | Workflows | Each owns its flags, its read hosts, and its option checks. Reads no environment variable and does not exit: it takes `Settings` from `ReadContext` and throws on an invalid option (`fail`). |
-| Read mechanisms | The chain read, the security notice, and the marker probes. The caller gives each read URL. |
+| Read mechanisms | The chain read, the security notice, and the marker probes. The caller gives the read base of each container. |
 | Command vocabulary | The flag value types, the flags no workflow owns (`CommonFlag`), and `Scope.flag` and `Scope.parse`. |
-| Transport, git, backends | The download rounds, the repository detection, and the upload backends. A backend reads its own credentials. |
-| Domain | The containers, their layouts and paths, the read base rule, the scope, and the marker paths. |
+| Backends | The upload location (`uploadLocationFrom`) and the upload backends. A backend reads its own credentials. |
+| Transport, git | The download rounds over a list of locations, the repository detection, the git lookups in the Mathlib checkout (`CacheM`), and the marker probe and write. |
+| Domain | The containers, the locations (`Location`: the layout, the file paths, and the marker path), the read base rule, and the scope. |
 | Environment | The `Settings` record and the rules that parse a variable's value. |
 
 `Hashing`, `IO`, and `Lean` compute the file hashes and hold the local cache
@@ -75,9 +77,9 @@ Workflow.plan                parse and check the workflow's options
 hashMemoFor                  hash the files
   │
 Plan.read
-  ├── Public.get             one flat round ─────────────┐
-  └── Developer.get,         notice, then                │
-      Nightly.get            Chain.readRounds ───────────┤
+  ├── Public.get             one flat location ──────────┐
+  └── Developer.get          notice, then                │
+                             Chain.readLocations ────────┤
                                                          ▼
                                               Requests.getFiles
 ```
@@ -87,8 +89,8 @@ expensive step. The decision is pure (`forRead`). The chain-read triggers are
 a fixed list in `Workflow` (`chainReadFlags`, `chainReadVariables`), apart
 from the flags each workflow declares.
 
-A `put` decides its destination (`Upload.decide`, which calls
-`stagedUploadDestFrom`) before it packs, then transfers on the selected
+A `put` decides its location (`Upload.decide`, which calls
+`uploadLocationFrom`) before it packs, then transfers on the selected
 backend (`uploadFiles`). `query` resolves the repository and calls
 `Developer.query`, which returns the exit status. The local commands (`pack`,
 `unpack`, `clean`, `lookup`, and the staging commands) use no workflow.
@@ -108,8 +110,8 @@ decision unless you add it to `chainReadFlags`.
 To add a decision variable, add a field to `Settings` and read it in
 `Settings.read`. A workflow reads it from `ctx.settings`.
 
-To change the hosts of a workflow, change its `readURL` (or `Public.url`).
-`readBase` applies `MATHLIB_CACHE_BASE_URL` and the legacy switch to every
+To change the hosts of a workflow, change `Developer.containerBase` (or
+`Public.location`). `readBase` applies `MATHLIB_CACHE_BASE_URL` to every
 host.
 
 To add a workflow:
@@ -123,7 +125,7 @@ To add a workflow:
 
 To add a container, add a constructor to `Container` with its `name`, and
 add it to `Container.all`. Set its layout (`flatPath`) and whether it has
-per-commit namespaces (`perCommit`). `pathSegment` and `azureURL` follow the
+per-commit namespaces (`perCommit`). `pathSegment` follows the
 `mathlib4-{name}` convention. Then add it to the chains and the trust
 dispatch that use it.
 
@@ -133,13 +135,14 @@ To add an upload backend:
    entry in `all`.
 2. Add a module under `Cache/Upload/` with the credential resolution and the
    transfer.
-3. Add a case to `uploadFiles`, and to `stagedUploadDestFrom` for the
-   default root.
+3. Add a case to `uploadFiles`.
 
 ## Tests
 
 `lake exe cache-test` runs `Cache/Test.lean`. The pure decisions (`forRead`,
 `Workflow.plan` and the option parsers, `Upload.decide`,
-`stagedUploadDestFrom`, `Chain.rounds`, `Notice.reason?`) take their inputs
+`uploadLocationFrom`, `Chain.locations`, `Notice.reason?`) take their inputs
 as values, so a test passes a `Settings` value and a parsed command line
-(`Commands.cache.process`) and reads no process environment.
+(`Commands.cache.process`) and reads no process environment. A test of a
+function that runs in `CacheM` names the Mathlib checkout its git lookups
+use.

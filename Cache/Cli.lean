@@ -3,11 +3,12 @@ Copyright (c) 2026 Marcelo Lynch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch
 -/
+module
 
-import Cli
-import Cache.Requests
-import Cache.Scope
-import Cache.Upload.Defs
+public import Cli
+public import Cache.Requests
+public import Cache.Scope
+public import Cache.Upload.Defs
 
 /-!
 # The command line's shared vocabulary
@@ -20,6 +21,8 @@ validates a container or a backend name itself), the flags no workflow owns
 (`Scope.flag`, `Scope.parse`). The command tree is `Cache.Commands`; each read
 workflow declares its own flags (`Cache.Workflow`).
 -/
+
+public section
 
 namespace Cache
 
@@ -68,9 +71,8 @@ def container : Cli.Flag := {
   longName := "container"
   description := s!"The container the upload writes, one of \
     {", ".intercalate (Container.all.map Container.name)}. It decides the layout: flat for \
-    master, repo-namespaced for the others, and with --scope the per-commit namespace of \
-    forks. The files go under the container on the Azure storage account, or under the root \
-    MATHLIB_CACHE_PUT_URL names."
+    master, repo-namespaced for forks, and with --scope the per-commit namespace of forks. \
+    The files go under the container's root, which MATHLIB_CACHE_PUT_URL names."
   type := Container }
 
 /-- The `--container` of the parsed command line `p`, if given. -/
@@ -81,12 +83,12 @@ def containerOf (p : Cli.Parsed) : Option Container :=
 def backend : Cli.Flag := {
   longName := "backend"
   description := s!"The storage backend of an upload, one of \
-    {", ".intercalate (UploadBackend.all.map UploadBackend.name)} (default azure)."
+    {", ".intercalate (UploadBackend.all.map UploadBackend.name)} (default s3)."
   type := UploadBackend }
 
-/-- The `--backend` of the parsed command line `p`, `azure` by default. -/
+/-- The `--backend` of the parsed command line `p`, `s3` by default. -/
 def backendOf (p : Cli.Parsed) : UploadBackend :=
-  ((p.flag? backend.longName).map (·.as! UploadBackend)).getD .azure
+  ((p.flag? backend.longName).map (·.as! UploadBackend)).getD .s3
 
 /-- `--staging-dir=DIR`: the staging directory. -/
 def stagingDir : Cli.Flag := {
@@ -124,15 +126,16 @@ def ofSettings (s : Settings) : IO (Option Scope) :=
 /--
 The scope of the parsed command line `p`: `--scope=REF` (`flag`), else
 `MATHLIB_CACHE_REPO_SCOPE` (`ofSettings`), else none. `--scope` accepts any
-git ref `git rev-parse` resolves in `cwd` (HEAD, branch, tag, SHA) and falls
-through to the literal value when git cannot (a bare SHA outside a git
-checkout). Throws on a value that is not a SHA (`Scope.ofString`).
+git ref `git rev-parse` resolves in the Mathlib checkout (HEAD, branch, tag,
+SHA) and falls through to the literal value when git cannot (a bare SHA
+outside a git checkout). Throws on a value that is not a SHA
+(`Scope.ofString`).
 -/
-def parse (p : Cli.Parsed) (s : Settings) (cwd : FilePath := ".") : IO (Option Scope) := do
+def parse (p : Cli.Parsed) (s : Settings) : IO.CacheM (Option Scope) := do
   match p.flag? flag.longName with
   | some f =>
     let ref := f.as! String
-    let sha ← try resolveGitRef ref cwd catch _ => pure ref
+    let sha ← try resolveGitRef ref catch _ => pure ref
     some <$> Scope.ofString sha .flag
   | none => ofSettings s
 

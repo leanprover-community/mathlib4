@@ -5,9 +5,10 @@ Authors: Weiyi Wang
 -/
 module
 
+public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
 public import Mathlib.MeasureTheory.Measure.Haar.Unique
 public import Mathlib.MeasureTheory.Measure.Hausdorff
-public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
+public import Mathlib.Topology.Algebra.Module.Equiv.Submodule
 
 import Mathlib.Geometry.Euclidean.Projection
 import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
@@ -298,7 +299,7 @@ theorem AffineSubspace.euclideanHausdorffMeasure_eq_lintegral (s : AffineSubspac
       ∂μHE[finrank ℝ s.direction] := by
   obtain p := hs.some
   rw [← (s.direction.measurePreserving_measurableEquivProd p.val).symm.measure_preimage_equiv,
-    volume_eq_prod, prod_apply (by measurability), euclideanHausdorffMeasure_eq,
+    volume_eq_prod, Measure.prod_apply (by measurability), euclideanHausdorffMeasure_eq,
     MeasurableEmbedding.lintegral_map
         (by simpa using (IsometryEquiv.vaddConst p).toHomeomorph.measurableEmbedding)]
   congr with x

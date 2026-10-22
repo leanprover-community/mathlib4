@@ -3,17 +3,20 @@ Copyright (c) 2026 Marcelo Lynch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch
 -/
+module
 
 /-!
 # The per-commit scope
 
 The scope a fork read or write addresses: the SHA whose per-commit namespace
 in the `forks` container the round reads or the upload fills. The developer
-and nightly workflows read at it. An upload to `forks` writes under it, and an
-upload to another container rejects it (`stagedUploadDestFrom`). The command
-line reads it from `--scope=REF` or `MATHLIB_CACHE_REPO_SCOPE`
-(`Scope.flag`, `Scope.parse` in `Cache.Cli`).
+workflow reads at it. An upload to `forks` writes under it, and an upload to
+another container rejects it (`uploadLocationFrom`). The command line reads it
+from `--scope=REF` or `MATHLIB_CACHE_REPO_SCOPE` (`Scope.flag`, `Scope.parse`
+in `Cache.Cli`).
 -/
+
+public section
 
 namespace Cache
 

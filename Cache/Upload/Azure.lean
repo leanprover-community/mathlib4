@@ -3,22 +3,19 @@ Copyright (c) 2026 Marcelo Lynch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch
 -/
+module
 
-import Cache.Upload.Dest
-import Cache.Upload.Curl
+public import Cache.Upload.Curl
 
 /-!
 # The Azure Blob Storage backend
 
-The azure upload path: the credential resolution (`azureAuthFrom`), the
-request signing (`azureBearerCurlArgs`), and the transfer entry point
-(`azurePutStaged`). rclone signs only S3 requests, so the backend always
-transfers with the curl tool. The destination defaults to the container on
-the storage account (`Container.azureURL`, see `stagedUploadDestFrom`).
-
-The storage account URL and the container model live in `Cache/Infra.lean`,
-because the read side uses them too.
+The azure upload path: the credential (`azureAuthFrom`), the request signing
+(`azureBearerCurlArgs`), and the transfer (`azurePutStaged`). The tool always
+uploads with curl on this backend, because rclone signs only S3 requests.
 -/
+
+public section
 
 namespace Cache.Requests
 
@@ -58,9 +55,8 @@ def azureAuthFrom (bearer? : Option String) : Except String String :=
   match bearer? with
   | some token => .ok token
   | none => .error
-      "the azure backend (the default) uploads with an Azure OIDC bearer token: \
-      set MATHLIB_CACHE_AZURE_BEARER_TOKEN, or pass --backend=s3 to upload \
-      with the S3 credential pair"
+      "the azure backend needs an Azure OIDC bearer token: \
+      set MATHLIB_CACHE_AZURE_BEARER_TOKEN"
 
 /-- Retrieves the azure upload credential from the environment via
 `azureAuthFrom`. -/
@@ -71,9 +67,8 @@ def getAzureAuth : IO String := do
 The staged put on the azure backend: the curl tool against `dest`, each
 request signed with the bearer token (`azureBearerCurlArgs`).
 -/
-def azurePutStaged (dest : StagedUploadDest) (token : String) (srcDir : FilePath)
-    (fileNames : Array String) (overwrite : Bool) (markerSha? : Option String) :
-    IO Unit :=
-  putStagedViaCurl dest (azureBearerCurlArgs token) srcDir fileNames overwrite markerSha?
+def azurePutStaged (dest : Location) (token : String) (srcDir : FilePath)
+    (fileNames : Array String) (overwrite : Bool) : IO Unit :=
+  putStagedViaCurl dest (azureBearerCurlArgs token) srcDir fileNames overwrite
 
 end Cache.Requests

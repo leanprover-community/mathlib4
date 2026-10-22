@@ -3,6 +3,7 @@ Copyright (c) 2026 Marcelo Lynch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch
 -/
+module
 
 /-!
 # Cache environment variable parsing
@@ -14,6 +15,8 @@ and a boolean flag accepts `1`/`true` and `0`/`false`.
 `Settings` holds the variables that decide what a command does, read once per
 command (`Settings.read`).
 -/
+
+public section
 
 namespace Cache
 
@@ -29,7 +32,7 @@ def nonEmptyEnvValue (value? : Option String) : Option String :=
   (value?.map (·.trimAscii.copy)).filter (!·.isEmpty)
 
 /-- Reads `name` from the environment through `nonEmptyEnvValue`. -/
-def getEnvNonEmpty (name : String) : IO (Option String) := do
+def getEnvNonEmpty (name : String) : BaseIO (Option String) := do
   return nonEmptyEnvValue (← IO.getEnv name)
 
 /--
@@ -67,9 +70,6 @@ structure Settings where
   getURL? : Option String := none
   /-- `MATHLIB_CACHE_BASE_URL`: the host of every container read. -/
   baseURL? : Option String := none
-  /-- `MATHLIB_CACHE_DEBUG_USE_LEGACY`: read every container from the Azure
-  storage account. -/
-  useLegacy : Bool := false
   /-- `MATHLIB_CACHE_FROM`: the chain of a chain read, unparsed. -/
   cacheFrom? : Option String := none
   /-- `MATHLIB_CACHE_REPO_SCOPE`: the per-commit scope, unvalidated. -/
@@ -83,7 +83,6 @@ def Settings.read : IO Settings := do
   return {
     getURL? := normalizeBaseURL (← IO.getEnv "MATHLIB_CACHE_GET_URL")
     baseURL? := normalizeBaseURL (← IO.getEnv "MATHLIB_CACHE_BASE_URL")
-    useLegacy := ← getEnvFlag "MATHLIB_CACHE_DEBUG_USE_LEGACY" (ifUnset := false)
     cacheFrom? := ← getEnvNonEmpty "MATHLIB_CACHE_FROM"
     repoScope? := ← getEnvNonEmpty "MATHLIB_CACHE_REPO_SCOPE"
     putURL? := normalizeBaseURL (← IO.getEnv "MATHLIB_CACHE_PUT_URL") }

@@ -3,18 +3,20 @@ Copyright (c) 2026 Marcelo Lynch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch
 -/
+module
 
-import Cache.Workflow.Chain
+public import Cache.Workflow.Chain
 
 /-!
 # The non-default-scope notice
 
-The stderr-only security warning a chain read (the developer and nightly
-workflows) prints before reading when the read is taken off the workflow's
-default trust boundary: a scope other than HEAD, a `--cache-from` that differs
-from the workflow's chain, a `--repo` that diverges from the git remote, or
-`--unsafe`.
+The stderr-only security warning a chain read (the developer workflow) prints
+before reading when the read is taken off the workflow's default trust
+boundary: a scope other than HEAD, a `--cache-from` that differs from the
+workflow's chain, a `--repo` that diverges from the git remote, or `--unsafe`.
 -/
+
+public section
 
 namespace Cache.Workflow.Notice
 
@@ -35,22 +37,20 @@ structure Read where
   scope? : Option Scope := none
   /-- The `--unsafe` window, if set. -/
   unsafeWindow? : Option Nat := none
-  /-- The mathlib checkout whose HEAD a scope is compared with. -/
-  cwd : FilePath := "."
 
 /--
-`true` iff `scope` equals the checked-out HEAD of `cwd`.
+`true` iff `scope` equals the HEAD of the Mathlib checkout.
 
 A HEAD scope only serves artifacts built from the commit already checked out,
 and it is what an unscoped chain read reads anyway — the forks round defaults
-to the HEAD namespace (see `Cache.Workflow.Chain.rounds`). So an explicit HEAD scope
+to the HEAD namespace (see `Cache.Workflow.Chain.locations`). So an explicit HEAD scope
 (e.g. CI's `MATHLIB_CACHE_REPO_SCOPE`, set to the build SHA on every fork
 build) just pins the default behavior and warrants no warning.
 
 `false` when HEAD cannot be determined.
 -/
-def scopeIsHead (scope : Scope) (cwd : FilePath := ".") : IO Bool := do
-  let head ← try getGitCommitHash cwd catch _ => return false
+def scopeIsHead (scope : Scope) : IO.CacheM Bool := do
+  let head ← try getGitCommitHash catch _ => return false
   return head == scope.sha
 
 /--
@@ -60,7 +60,7 @@ their command line.
 
 1. `--unsafe` was passed (`unsafeWindow?`): the read walks several fork
    commits and trusts whoever built each of them
-2. a scope is set (`scope?`) and differs from the checked-out HEAD of `cwd`
+2. a scope is set (`scope?`) and differs from the HEAD of the Mathlib checkout
    (see `scopeIsHead`)
 3. `--cache-from` was passed (`chain.cli?`) and differs from `defaultChain`,
    the workflow's own chain
@@ -71,13 +71,13 @@ their command line.
 `detectedRepo?` is the repo reported by the git remote (from `resolveRepo`,
 probed once per command); it is `none` if it could not be determined.
 -/
-def reason? (r : Read) : IO (Option String) := do
+def reason? (r : Read) : IO.CacheM (Option String) := do
   if let some window := r.unsafeWindow? then
     return some s!"--unsafe (automatic walk over up to {window} fork commit(s); \
       trusting whoever built them)"
   -- A HEAD scope is exempt: trust-equivalent to no scope (see `scopeIsHead`).
   if let some scope := r.scope? then
-    unless (← scopeIsHead scope r.cwd) do
+    unless (← scopeIsHead scope) do
       return some <| match scope.source with
         | .flag => s!"--scope={scope.sha} (explicit per-commit scope)"
         | .env => s!"MATHLIB_CACHE_REPO_SCOPE={scope.sha} (explicit per-commit scope)"
@@ -130,7 +130,7 @@ Print the non-default-scope warning when it applies, before a chain read for
 `repo`. The warning is informational only — it never prompts, so it stays safe
 to run in CI.
 -/
-def emit (r : Read) (repo : String) : IO Unit := do
+def emit (r : Read) (repo : String) : IO.CacheM Unit := do
   if let some reason ← reason? r then
     printNonDefaultScopeWarning repo reason
 

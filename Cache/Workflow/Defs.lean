@@ -3,9 +3,10 @@ Copyright (c) 2026 Marcelo Lynch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch
 -/
+module
 
-import Cache.Cli
-import Cache.Requests
+public import Cache.Cli
+public import Cache.Requests
 
 /-!
 # What the read workflows receive
@@ -15,12 +16,15 @@ workflow modules take them: the transfer itself (`ReadRequest`), and the
 repository and the settings of the read (`ReadContext`). Each workflow parses
 its own flags from the parsed command line; the check a workflow uses to
 reject what is not its own (`checkForeignFlags`) and the missing-files warning
-they share (`warnMissing`) live here too.
+they share (`missingFilesGenericLines`, `warnMissing`) live here too.
 
 The workflow layer reads no environment variable and does not exit: a
 workflow takes the settings from `ReadContext`, and an invalid option throws
-(`fail`), which the command reports (`Cache.Commands`).
+(`fail`), which the command reports (`Cache.Commands`). Git lookups run in the
+Mathlib checkout that `CacheM` selects.
 -/
+
+public section
 
 namespace Cache.Workflow
 
@@ -35,8 +39,8 @@ structure ReadRequest where
   forceDownload : Bool
   /-- Decompress as the files arrive. -/
   decompress : Bool
-  /-- Transfer in parallel (curl is recent enough). -/
-  parallel : Bool
+  /-- How curl runs the transfers (`IO.validateCurl`). -/
+  mode : IO.CurlMode
 
 /-- The repository a read is for, resolved by the command (see `resolveRepo`),
 and the settings of the read. -/
@@ -49,9 +53,6 @@ structure ReadContext where
   detectedRepo? : Option String
   /-- The environment of the read. -/
   settings : Settings := {}
-  /-- The mathlib checkout the git probes run in: `.` on a mathlib checkout,
-  the dependency checkout when Mathlib is a dependency. -/
-  mathlibCwd : FilePath
 
 /-- The flags of the parsed command line `p` that are neither common
 (`CommonFlag.names`) nor among a workflow's `own` flags. -/
@@ -75,20 +76,22 @@ def checkForeignFlags (workflow : String) (own : Array Cli.Flag) (p : Cli.Parsed
     fail s!"{names}: not an option of the {workflow} workflow."
 
 /--
-Print the warning for the files no round served (`ReadResult.missing`), with
-the workflow's own `hints` after the ones every read shares.
+Lines for the missing-files warning that every workflow can print: the
+generic divergence explanation for `missing` files that no location served.
 -/
-def warnMissing (result : ReadResult) (hints : List String := []) : IO Unit := do
-  if result.missing == 0 then return
-  let lines := [
-    s!"Warning: {result.missing} file(s) were not found in the cache.",
-    "This usually means that your local checkout of mathlib4 has diverged from upstream.",
-    "",
-    "  * If you push your commits to a PR to the mathlib4 repository",
-    "    (use a draft PR if it is not ready for review),",
-    "    then CI will build the oleans and they will be available later.",
-    "  * If you have already opened a PR, this may mean",
-    "    the CI build has failed part-way through building."] ++ hints
+def missingFilesGenericLines (missing : Nat) : List String := [
+  s!"Warning: {missing} file(s) were not found in the cache.",
+  "This usually means that your local checkout of mathlib4 has diverged from upstream.",
+  "",
+  "  * If you push your commits to a PR to the mathlib4 repository",
+  "    (use a draft PR if it is not ready for review),",
+  "    then CI will build the oleans and they will be available later.",
+  "  * If you have already opened a PR, this may mean",
+  "    the CI build has failed part-way through building.",
+]
+
+/-- Print `lines`, the warning for the files no location served, to stderr. -/
+def warnMissing (lines : List String) : IO Unit := do
   for line in lines do
     IO.eprintln line
 

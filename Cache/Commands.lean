@@ -3,9 +3,10 @@ Copyright (c) 2023 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Jon Eugster, Marcelo Lynch
 -/
+module
 
-import Cache.Workflow
-import Cache.Upload
+public import Cache.Workflow
+public import Cache.Upload
 
 /-!
 # The `cache` command tree
@@ -15,7 +16,7 @@ declares its flags and arguments, and its handler runs it. `get` is the
 command that chooses a workflow: it declares the flags of every read workflow
 (`Workflow.flags`), resolves the repository, decides the workflow, and plans
 the read before it hashes, so an invalid option fails fast (`Cache.Workflow`).
-A `put` decides its destination (`Upload.decide`) from the container
+A `put` decides its location (`Upload.decide`) from the container
 `--container` names and `MATHLIB_CACHE_PUT_URL`; `query` is a developer-cache
 command; the local commands (`pack`, `unpack`, `clean`, `lookup`, and the
 staging commands) depend on none of this. `main` is the entry point.
@@ -23,6 +24,8 @@ staging commands) depend on none of this. `main` is the entry point.
 This is the one layer that reads the decision variables (`Settings.read`,
 once per command) and turns an error into an exit status (`reportErrors`).
 -/
+
+public section
 
 namespace Cache.Commands
 
@@ -51,7 +54,7 @@ def furtherInformation : String := "ARGUMENTS
     are the local cache files with corresponding Lean sources.
 
 WORKFLOWS
-    get runs one of three workflows, chosen from the repository the checkout
+    get runs one of two workflows, chosen from the repository the checkout
     names (its git remote, or --repo) and the flags. Each workflow accepts its
     own flags and rejects the others'.
 
@@ -59,40 +62,35 @@ WORKFLOWS
         Mathlib, or any get with MATHLIB_CACHE_GET_URL set. get fetches from the
         public cache at https://cache.mathlib.org/mathlib4-master (or from that
         URL) and nothing else. No flags of its own.
-    developer cache: a fork checkout, or a get on the canonical repository
-        with --cache-from, --scope or --unsafe (or MATHLIB_CACHE_FROM,
-        MATHLIB_CACHE_REPO_SCOPE set). get walks the trust-ordered container
-        chain: master from the public cache, then the fork's per-commit
-        namespace in forks from the developer cache at
-        https://r2devcache.mathlib.org. Flags: --cache-from, --scope, --unsafe,
-        --unsafe-window.
-    nightly: the nightly-testing repository. get walks its own chain,
-        nightly-testing then forks, through https://cache.mathlib.org. Flags:
-        --cache-from, --scope.
+    developer cache: a fork checkout (the nightly-testing repository
+        included), or a get on the canonical repository with --cache-from,
+        --scope or --unsafe (or MATHLIB_CACHE_FROM, MATHLIB_CACHE_REPO_SCOPE
+        set). get walks the trust-ordered container chain: master from the
+        public cache, then the fork's per-commit namespace in forks from the
+        developer cache at https://r2devcache.mathlib.org. Flags: --cache-from,
+        --scope, --unsafe, --unsafe-window.
 
     In a project that depends on Mathlib, a fork remote on the dependency
     checkout does not select the developer-cache workflow; --repo does.
-    Cache/WORKFLOWS.md describes the three workflows in full.
 
     The upload commands (put, put!, put-staged) and their flags and variables
     are internal to mathlib CI. An upload writes the container
     --container=NAME names, in the container's layout: flat (f/) for master,
-    f/REPO/ for the others, and f/REPO/SHA/ with its marker for forks with
-    --scope. The files go under the container on the Azure storage account,
-    or under the root MATHLIB_CACHE_PUT_URL names. To operate an external
-    cache, stage the artifacts, upload the staging directory under your
-    endpoint's f/ path with any storage client, and serve it to readers via
+    f/REPO/ for forks, and f/REPO/SHA/ with its marker for forks with
+    --scope. The files go under the container's root, which
+    MATHLIB_CACHE_PUT_URL names. To operate an external cache, stage the
+    artifacts, upload the staging directory under your endpoint's f/ path
+    with any storage client, and serve it to readers via
     MATHLIB_CACHE_GET_URL.
 
 ENVIRONMENT VARIABLES
     MATHLIB_CACHE_DIR       Local cache directory (default: ~/.cache/mathlib)
-    MATHLIB_CACHE_DEBUG_USE_LEGACY
-                            Set to 1 or true to read from the Azure storage
-                            account instead of the cache endpoints.
-                            For troubleshooting only.
     MATHLIB_CACHE_GET_URL   Download from this single URL as a flat namespace.
                             Allows third parties to use their own cache endpoint.
-                            An empty value means unset."
+                            An empty value means unset.
+    MATHLIB_CACHE_PARALLEL_MAX
+                            Number of simultaneous curl transfers (default: 50).
+                            Keep it well below the open-file limit (`ulimit -n`)."
 
 /-- The roots the module arguments of `p` name, `Mathlib` when there are none,
 and the hash memo over them. -/
@@ -114,21 +112,15 @@ once, decide the workflow, plan the read, then hash and read. -/
 def runGet (force decompress : Bool) (p : Parsed) : IO UInt32 := CacheM.run do
   let settings ← Settings.read
   let repoExplicit? := CommonFlag.repoOf p
-  let mathlibDepPath := (← read).mathlibDepPath
-  let isMathlibRoot ← IO.isMathlibRoot
-  let (detectedRepo?, repo) ← resolveRepo repoExplicit? mathlibDepPath isMathlibRoot
-  let ctx : ReadContext := {
-    repoExplicit?, repo, detectedRepo?, settings,
-    -- The workflows' git probes run in the mathlib checkout: the dependency
-    -- checkout when Mathlib is a dependency.
-    mathlibCwd := if isMathlibRoot then "." else mathlibDepPath }
+  let (detectedRepo?, repo) ← resolveRepo repoExplicit? (← IO.isMathlibRoot)
+  let ctx : ReadContext := { repoExplicit?, repo, detectedRepo?, settings }
   let workflow := Workflow.forRead repo settings.getURL? (Workflow.chainReadRequested p settings)
   IO.println s!"Cache workflow: {workflow.name}"
   let plan ← workflow.plan p ctx
   let (roots, hashMemo) ← hashMemoFor p
   let hashMap ← if p.variableArgs.isEmpty then pure hashMemo.hashMap
     else hashMemo.filterByRootModules roots.keys
-  plan.read ctx { hashMap, forceDownload := force, decompress, parallel := ← validateCurl }
+  plan.read ctx { hashMap, forceDownload := force, decompress, mode := ← validateCurl }
   return 0
 
 /-- `pack` and `pack!` (`overwrite`). -/
@@ -160,11 +152,11 @@ def runLookup (p : Parsed) : IO UInt32 := CacheM.run do
   lookup hashMemo.hashMap roots.keys
   return 0
 
-/-- The decision of a `put` (`Upload.decide`): the destination and the scope,
-from the flags, `MATHLIB_CACHE_PUT_URL`, and `MATHLIB_CACHE_REPO_SCOPE`. A
-mismatch fails here, before any packing. The destination is printed, as `get`
-prints its workflow. -/
-def uploadOf (p : Parsed) : IO Upload := do
+/-- The location of a `put` (`Upload.decide`), from the flags,
+`MATHLIB_CACHE_PUT_URL`, and `MATHLIB_CACHE_REPO_SCOPE`. A mismatch fails
+here, before any packing. The location is printed, as `get` prints its
+workflow. -/
+def uploadOf (p : Parsed) : CacheM Location := do
   let settings ← Settings.read
   let options : Upload.Options := {
     container? := CommonFlag.containerOf p
@@ -172,9 +164,9 @@ def uploadOf (p : Parsed) : IO Upload := do
     scope? := ← Scope.parse p settings
     putURL? := settings.putURL?
     backend := CommonFlag.backendOf p }
-  let upload ← IO.ofExcept <| (Upload.decide options).mapError IO.userError
-  IO.println s!"Cache upload: {upload.dest.label} at {upload.dest.base}"
-  return upload
+  let dest ← IO.ofExcept <| (Upload.decide options).mapError IO.userError
+  IO.println s!"Cache upload: {dest.label} at {dest.root}"
+  return dest
 
 /-- `put` and `put!` (`overwrite`): `pack`, then upload. The hash memo scopes
 the file list to what this checkout's build links, so nothing else in the
@@ -189,7 +181,7 @@ def runPut (overwrite : Bool) (p : Parsed) : IO UInt32 := CacheM.run do
 
 /-- `put-staged`: upload the `.ltar` files of the staging directory. It needs
 no hash memo. -/
-def runPutStaged (p : Parsed) : IO UInt32 := do
+def runPutStaged (p : Parsed) : IO UInt32 := CacheM.run do
   let some stagingDir := CommonFlag.stagingDirOf p | return 1
   if !(← stagingDir.isDir) then
     IO.eprintln "--staging-dir must be a directory"
@@ -217,7 +209,7 @@ def runUnstage (overwrite : Bool) (p : Parsed) : IO UInt32 := do
 
 /-- `query [REF]`, a developer-cache command. It needs no hash memo: git and
 one HTTP probe. -/
-def runQuery (p : Parsed) : IO UInt32 := do
+def runQuery (p : Parsed) : IO UInt32 := CacheM.run do
   let refs := p.variableArgsAs! String
   if refs.size > 1 then
     IO.eprintln "Usage: cache query [REF]"
@@ -318,6 +310,9 @@ def cache : Cmd :=
 /-- The entry point: the command tree. A first argument that names no command
 is reported as such. -/
 def main (args : List String) : IO UInt32 := do
+  if ← getEnvFlag "MATHLIB_CACHE_DEBUG_USE_LEGACY" (ifUnset := false) then
+    IO.eprintln "Warning: MATHLIB_CACHE_DEBUG_USE_LEGACY is retired; \
+      cache reads use https://cache.mathlib.org"
   if let some cmd := args.head? then
     if !cmd.startsWith "-" && !cache.hasSubCmd cmd then
       cache.printError s!"Unknown command `{cmd}`."

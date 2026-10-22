@@ -3,21 +3,24 @@ Copyright (c) 2026 Marcelo Lynch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch
 -/
+module
 
-import Cache.Workflow.Defs
+public import Cache.Workflow.Defs
 
 /-!
 # The container-chain read
 
-The read mechanism the developer and nightly workflows share: a trust-ordered
-chain of containers, each read from the URL the workflow gives it, with the
+The read mechanism of the developer workflow: a trust-ordered chain of
+containers, each read under the base the workflow gives it, with the
 per-commit scope on the rounds of the containers that have per-commit
 namespaces (`Container.perCommit`). The workflow supplies its default chain
-(`Cache.Workflow.Developer.containers`, `Cache.Workflow.Nightly.containers`);
-the chain options (`ChainOptions`, from `--cache-from` and
-`MATHLIB_CACHE_FROM`) replace it. The public-cache workflow has no chain; it
-reads one URL (`Cache.Workflow.Public.url`).
+(`Cache.Workflow.Developer.containers`); the chain options (`ChainOptions`,
+from `--cache-from` and `MATHLIB_CACHE_FROM`) replace it. The public-cache
+workflow has no chain; it reads one location
+(`Cache.Workflow.Public.location`).
 -/
+
+public section
 
 namespace Cache.Workflow
 
@@ -74,14 +77,15 @@ namespace Chain
 def resolve (default : List Container) (options : ChainOptions) : List Container :=
   options.chain?.getD default
 
-/-- Pair each container in a chain with its read URL, which the workflow
-decides (`readURL`). The result keeps the chain's trust order. -/
-def withURLs (chain : List Container) (readURL : Container → String) :
+/-- Pair each container in a chain with its read base, which the workflow
+decides (`readBase`). The result keeps the chain's trust order. -/
+def withBases (chain : List Container) (readBase : Container → String) :
     List (Container × String) :=
-  chain.map fun c => (c, readURL c)
+  chain.map fun c => (c, readBase c)
 
 /--
-Expand a chain, paired with URLs, into the download rounds to run.
+Expand a chain, paired with read bases, into the locations to read for
+`repo`, one download round each.
 
 A scope applies to the containers with per-commit namespaces
 (`Container.perCommit`, that is `forks`) and to no other. Without `--unsafe`
@@ -93,33 +97,33 @@ non-empty) the container expands into one round per discovered SHA, most
 recent first, and `sha?` is dropped; the walk probed the markers of those SHAs.
 Every other container reads unscoped.
 -/
-def rounds (chain : List (Container × String)) (sha? : Option String)
+def locations (chain : List (Container × String)) (repo : String) (sha? : Option String)
     (unsafeScopes : List String) (headScope? : Option String := none) :
-    List DownloadRound :=
-  chain.flatMap fun (c, url) =>
+    List Location :=
+  chain.flatMap fun (c, base) =>
     if c.perCommit then
-      if unsafeScopes.isEmpty then [{ container? := some c, url, scope? := sha? <|> headScope? }]
-      else unsafeScopes.map fun sha => { container? := some c, url, scope? := some sha }
-    else [{ container? := some c, url }]
+      if unsafeScopes.isEmpty then [c.location base repo (sha? <|> headScope?)]
+      else unsafeScopes.map fun sha => c.location base repo (some sha)
+    else [c.location base repo none]
 
 /--
-The download rounds of a chain read: the chain (`resolve default options`)
-paired with its read URLs and expanded into rounds (`rounds`), with `scope?`
-and, absent one, the HEAD of the mathlib checkout at `mathlibCwd` for the
+The locations of a chain read for `repo`: the chain (`resolve default
+options`) paired with its read bases and expanded into rounds (`locations`),
+with `scope?` and, absent one, the HEAD of the Mathlib checkout for the
 per-commit rounds. `unsafeScopes` is the `--unsafe` walk's result, empty
 otherwise.
 -/
-def readRounds (default : List Container) (readURL : Container → String)
-    (options : ChainOptions) (scope? : Option Scope) (mathlibCwd : FilePath)
-    (unsafeScopes : List String := []) : IO (List DownloadRound) := do
-  let chain := withURLs (resolve default options) readURL
+def readLocations (default : List Container) (readBase : Container → String)
+    (options : ChainOptions) (scope? : Option Scope) (repo : String)
+    (unsafeScopes : List String := []) : IO.CacheM (List Location) := do
+  let chain := withBases (resolve default options) readBase
   -- With no explicit scope, the per-commit round defaults to HEAD. This adds
   -- no trust over an unscoped forks read: the namespace can only hold
   -- artifacts built from the commit the reader already has.
   let headScope? ← if scope?.isNone && unsafeScopes.isEmpty then
-      try pure (some (← getGitCommitHash mathlibCwd)) catch _ => pure none
+      try pure (some (← getGitCommitHash)) catch _ => pure none
     else pure none
-  return rounds chain (scope?.map (·.sha)) unsafeScopes headScope?
+  return locations chain repo (scope?.map (·.sha)) unsafeScopes headScope?
 
 end Chain
 

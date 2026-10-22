@@ -3,39 +3,32 @@ Copyright (c) 2026 Marcelo Lynch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch
 -/
+module
 
-import Cache.Upload.Defs
-import Cache.Scope
+public import Cache.Upload.Defs
+public import Cache.Scope
 
 /-!
 # The upload operation
 
 `Upload.decide` and `uploadFiles` implement the complete `put` from the command
-inputs. The routing is the backend: the shared arbitration resolves the
-destination (`stagedUploadDestFrom`, through `Upload.decide`), and the selected
-backend resolves its credentials and transfer tool and runs the transfer
-(`azurePutStaged` in `Cache/Upload/Azure.lean`, `s3PutStaged` in
+inputs. `Upload.decide` resolves the location (`uploadLocationFrom`), and the
+selected backend resolves its credentials and transfer tool and runs the
+transfer (`azurePutStaged` in `Cache/Upload/Azure.lean`, `s3PutStaged` in
 `Cache/Upload/S3.lean`).
 
 The whole upload path is internal to mathlib CI: the commands, the backends,
-and their credential and destination variables follow the CI storage layout.
+and their credential and location variables follow the CI storage layout.
 An external cache should not build on it: its operator publishes a staged
 artifact set (`stage`) with any storage client and serves readers through
 `MATHLIB_CACHE_GET_URL`, one flat location.
 -/
 
+public section
+
 namespace Cache.Requests
 
 open System (FilePath)
-
-/-- A decided upload: where the files go, and the per-commit scope whose
-marker follows them. -/
-structure Upload where
-  /-- The destination: the container's layout under its root. -/
-  dest : StagedUploadDest
-  /-- The per-commit scope; the marker is written iff it is set. -/
-  scope? : Option String
-  deriving Repr, BEq
 
 namespace Upload
 
@@ -50,39 +43,38 @@ structure Options where
   /-- `MATHLIB_CACHE_PUT_URL`. -/
   putURL? : Option String := none
   /-- `--backend`. -/
-  backend : UploadBackend := .azure
+  backend : UploadBackend := .s3
   deriving Inhabited
 
-/-- The decision of a `put` (`stagedUploadDestFrom`). The repository defaults
-to the canonical one, whose own PR branches build with fork trust. -/
-def decide (o : Options) : Except String Upload := do
-  let scope? := o.scope?.map (·.sha)
-  let dest ← stagedUploadDestFrom o.backend o.putURL? o.container? (o.repo?.getD MATHLIBREPO)
-    scope?
-  return { dest, scope? }
+/-- The location of a `put` (`uploadLocationFrom`). The repository defaults
+to the canonical one, whose own PR branches build with fork trust. The
+location derives the marker that follows the files when the upload has a
+scope. -/
+def decide (o : Options) : Except String Location :=
+  uploadLocationFrom o.backend o.putURL? o.container? (o.repo?.getD MATHLIBREPO)
+    (o.scope?.map (·.sha))
 
 end Upload
 
 /--
-The complete `put` operation, for the decided upload `u`: resolve the
+The complete `put` operation, for the decided location `dest`: resolve the
 backend's credentials, then upload the `.ltar` files `getFileNames` produces
-under `srcDir` to `u.dest` on the selected backend. The resolutions run before
+under `srcDir` on the selected backend. The resolutions run before
 `getFileNames`, so a misconfiguration fails before `put`'s expensive packing
-pass. The per-SHA marker is written when the upload has a scope, from
-`--scope` or `MATHLIB_CACHE_REPO_SCOPE`: it lets `cache query` discover cached
-commits with a cheap HEAD probe.
+pass. The upload writes the marker derived by `Location.marker?`, if present.
+The marker lets `cache query` discover cached commits with a cheap HEAD probe.
 -/
-def uploadFiles [Monad m] [MonadLiftT IO m] (u : Upload) (backend : UploadBackend)
+def uploadFiles [Monad m] [MonadLiftT IO m] (dest : Location) (backend : UploadBackend)
     (srcDir : FilePath) (getFileNames : m (Array String)) (overwrite : Bool) : m Unit := do
   match backend with
   | .azure =>
     let token ← getAzureAuth
     let fileNames ← getFileNames
-    azurePutStaged u.dest token srcDir fileNames overwrite u.scope?
+    azurePutStaged dest token srcDir fileNames overwrite
   | .s3 =>
     let creds ← getS3Auth
     let region ← getS3Region
     let fileNames ← getFileNames
-    s3PutStaged u.dest creds region srcDir fileNames overwrite u.scope?
+    s3PutStaged dest creds region srcDir fileNames overwrite
 
 end Cache.Requests

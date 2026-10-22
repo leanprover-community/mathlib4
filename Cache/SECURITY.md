@@ -16,15 +16,13 @@ or below.
 
 ## Trust hierarchy and containers
 
-The model spans four storage containers, each written by a distinct class of
+The model spans two storage containers, each written by a distinct class of
 CI job and assigned a trust level:
 
 | Container             | Who may write                                          | Trust  |
 |-----------------------|--------------------------------------------------------|--------|
 | `master`              | mathlib4 `master`/`staging`, `v4.*` release tags       | high   |
-| `forks`               | mathlib4 PR builds, non-master branches, `bors try`    | medium |
-| `nightly-testing`     | nightly-testing's trusted branches                     | medium |
-| `pr-toolchain-tests`  | nightly-testing's experimental toolchain branches      | low    |
+| `forks`               | mathlib4 PR builds, non-master branches, `bors try`, and every nightly-testing push build | medium |
 
 Each writer identity is granted write access to exactly one container, enforced
 by the storage backend. An upload aimed at any other container is rejected,
@@ -38,7 +36,7 @@ storage boundary, not only a per-container grant, isolates the fork-trust
 writers. The cache resolver, `https://cache.mathlib.org`, serves every
 container for reads.
 
-Before a read, the tool chooses one of three workflows from the resolved repo
+Before a read, the tool chooses one of two workflows from the resolved repo
 and the flags (`Cache/Workflow.lean`, described in
 [`WORKFLOWS.md`](./WORKFLOWS.md)). Each workflow names the host it reads each
 container from. An upload writes the container that `--container` names (see
@@ -49,27 +47,24 @@ dispatch routes the uploads of that class to:
 | Workflow        | Who                                                   | Read                              | CI uploads                               |
 |-----------------|-------------------------------------------------------|-----------------------------------|------------------------------------------|
 | public cache    | canonical mathlib4 checkouts, projects that depend on Mathlib, reads with `MATHLIB_CACHE_GET_URL` | one URL | `master`, unscoped |
-| developer cache | forks (PRs); the canonical repo with a chain, scope, or `--unsafe` | `master`, `forks`         | `forks`, in the per-commit namespace      |
-| nightly         | the nightly-testing repository                        | `nightly-testing`, `forks`        | `nightly-testing` / `pr-toolchain-tests`, unscoped |
+| developer cache | forks (PRs), nightly-testing; the canonical repo with a chain, scope, or `--unsafe` | `master`, `forks` | `forks`, in the per-commit namespace |
 
 The public-cache workflow touches no container chain, no per-commit scope,
 and no marker. Only the `forks` container has per-commit namespaces, so only
-its round reads at a scope. The nightly chain includes `forks`
-because PRs from that repo into mathlib4 upload there; it excludes
-`pr-toolchain-tests`, so a poisoned upload from an experimental toolchain
-branch cannot reach a trusted nightly consumer.
+its round reads at a scope.
 
-Branches that legitimately need to read their own prior low-trust uploads opt
-into a wider chain explicitly.
+The nightly-testing repo is a fork in this model. Its builds, including those
+of experimental toolchain branches, upload under its repo and commit namespace
+in `forks` (see [Per-commit namespace for fork uploads](#per-commit-namespace-for-fork-uploads)).
 
 The resolved repo is the checkout's git remote, or `--repo=`. In a project
-that depends on Mathlib, only a canonical detection counts, so such a project
-fetches fork or toolchain-experiment artifacts only when its user names a
-fork with `--repo=` or a chain with `--cache-from=`; both print the security
-notice when they widen the read. A dependency pinned to the nightly-testing
-repo reads that repo's chain, because its artifacts exist nowhere else. The
-tool takes its endpoints and lookup chains from its build and its
-environment; the working tree supplies none.
+that depends on Mathlib, only a detection of the canonical repo or of the
+nightly-testing repo counts, so such a project fetches fork artifacts only
+when its user names a fork with `--repo=`, which prints the security notice.
+A dependency pinned to the nightly-testing repo reads that repo's cache,
+because its artifacts exist nowhere else. The tool takes its endpoints and
+lookup chains from its build and its environment; the working tree supplies
+none.
 
 ## Four enforcement layers
 
@@ -84,11 +79,16 @@ only when the workflow's identity — stamped by GitHub from the repo, event
 type, and ref — matches a pre-registered grant. The credential's scope is
 fixed when it is issued and cannot be widened afterward.
 
-Two credential mechanisms implement this. Azure writes mint an OIDC-federated
-bearer token whose RBAC role covers exactly one container. An S3-compatible
-destination takes a short-lived credential pair scoped to one container's
-namespace, and the tool signs each request with it (SigV4); CI mints the
-pair per job the same OIDC-gated way.
+CI mints the credential per job. It is an S3-compatible key pair scoped to
+one container's namespace, and the cache tool signs each request with it
+(SigV4).
+
+The nightly-testing credential is narrower than one container: it reaches only
+the namespace of the commit being built.
+
+The `forks` credential covers the whole container. Inside it, the trusted upload
+tool selects the repo and commit namespace from GitHub's event data (Layer 2),
+so a fork PR cannot choose where its artifacts land.
 
 This is the boundary's anchor: a compromised cache binary, a tampered workflow,
 or a malicious PR that captures and replays the credential still cannot upload
@@ -136,12 +136,12 @@ workflow and opt into a wider chain explicitly.
 
 ## Per-commit namespace for fork uploads
 
-Within the fork container, uploads are further namespaced by the PR's head
+Within the fork container, uploads are further namespaced by the build's head
 commit. This closes a replay window: artifacts from a closed, hidden, or
-force-pushed-away PR live under a different commit, so a later honest PR from
-the same fork cannot read them. Uploads to the other containers are not
-commit-scoped — each receives uploads from a single trust level, so the
-container boundary alone isolates them.
+force-pushed-away PR, or from an experimental nightly-testing branch, live
+under a different commit, so a later honest build of the same repo cannot read
+them. Uploads to `master` are not commit-scoped: `master` receives uploads from
+a single trust level, so the container boundary alone isolates them.
 
 By default a `cache get` reads the fork namespace at the checked-out HEAD: it
 can only serve artifacts built from the commit the reader already has, so it
@@ -170,7 +170,8 @@ The trust model does not attempt to defend against:
   `https://r2devcache.mathlib.org`, or a host named by
   `MATHLIB_CACHE_GET_URL` or `MATHLIB_CACHE_BASE_URL`.
 - **Substituted write endpoint** — the cache does not verify the host it uploads
-  to: whichever host `MATHLIB_CACHE_PUT_URL` names receives the upload, and on the azure backend the bearer token with it.
+  to: whichever host `MATHLIB_CACHE_PUT_URL` names receives the upload, and on
+  the azure backend the bearer token with it.
   The trusted branch's workflow defines the upload job's environment, and a
   token captured this way stays bounded by Layer 1.
 - **Sandbox escape via kernel vulnerability** — invalidates Layer 3.
@@ -185,23 +186,24 @@ The trust model does not attempt to defend against:
 
 | Concern                                        | File(s)                                                          |
 |------------------------------------------------|------------------------------------------------------------------|
-| Container model, layouts, read base rule       | [`Cache/Infra.lean`](Infra.lean) (`Container`, `fileDirPath`, `readBase`) |
+| Container model, layouts, read base rule       | [`Cache/Infra.lean`](Infra.lean) (`Container`, `readBase`)       |
+| Where files live: the URLs of reads and uploads | [`Cache/Location.lean`](Location.lean) (`Location`)             |
 | Repo resolution                                | [`Cache/Requests.lean`](Requests.lean) (`resolveRepo`, `resolveDownstreamRepo`) |
 | The command line: commands and their flags     | [`Cache/Commands.lean`](Commands.lean), [`Cache/Cli.lean`](Cli.lean) (`CommonFlag`) |
 | The environment a command reads                | [`Cache/Env.lean`](Env.lean) (`Settings`) |
 | Read options (chain, scope, flat endpoint)     | [`Cache/Workflow/Chain.lean`](Workflow/Chain.lean) (`ChainOptions`), [`Cache/Scope.lean`](Scope.lean) (`Scope`), [`Cache/Cli.lean`](Cli.lean) (`Scope.parse`), [`Cache/Workflow/Defs.lean`](Workflow/Defs.lean) (`ReadContext`) |
 | Workflow decision and dispatch (reads)         | [`Cache/Workflow.lean`](Workflow.lean) (`Workflow.forRead`, `Workflow.plan`) |
-| Upload destination: the container write        | [`Cache/Upload/Defs.lean`](Upload/Defs.lean) (`stagedUploadDestFrom`) |
-| The three workflows and their read hosts       | [`Cache/Workflow/Public.lean`](Workflow/Public.lean) (`url`), [`Cache/Workflow/Developer.lean`](Workflow/Developer.lean) (`readURL`), [`Cache/Workflow/Nightly.lean`](Workflow/Nightly.lean) (`readURL`) |
-| Container-chain read (developer, nightly)      | [`Cache/Workflow/Chain.lean`](Workflow/Chain.lean) (`Chain.resolve`, `Chain.rounds`) |
+| The two workflows and their read hosts         | [`Cache/Workflow/Public.lean`](Workflow/Public.lean) (`location`), [`Cache/Workflow/Developer.lean`](Workflow/Developer.lean) (`containerBase`) |
+| Container-chain read                           | [`Cache/Workflow/Chain.lean`](Workflow/Chain.lean) (`Chain.resolve`, `Chain.locations`) |
 | Non-default-scope notice                       | [`Cache/Workflow/Notice.lean`](Workflow/Notice.lean) (`Notice.reason?`) |
 | Fork per-commit probes, `query`, `--unsafe` walk | [`Cache/Workflow/Developer/Query.lean`](Workflow/Developer/Query.lean) |
 | Transfers, download rounds                     | [`Cache/Requests.lean`](Requests.lean) (`getFiles`, `downloadFiles`) |
-| Backend selection, the transfer                | [`Cache/Upload/Defs.lean`](Upload/Defs.lean) (`UploadBackend`), [`Cache/Upload.lean`](Upload.lean) (`uploadFiles`) |
+| Upload location: the container write           | [`Cache/Upload/Defs.lean`](Upload/Defs.lean) (`uploadLocationFrom`) |
+| Backend selection, the transfer                | [`Cache/Upload/Defs.lean`](Upload/Defs.lean) (`UploadBackend`), [`Cache/Upload.lean`](Upload.lean) (`Upload.decide`, `uploadFiles`) |
 | Upload backends: credentials, signing, transfer | [`Cache/Upload/Azure.lean`](Upload/Azure.lean), [`Cache/Upload/S3.lean`](Upload/S3.lean) |
-| Transfer tool mechanics                        | [`Cache/Upload/Curl.lean`](Upload/Curl.lean), [`Cache/Upload/Rclone.lean`](Upload/Rclone.lean), [`Cache/Upload/Dest.lean`](Upload/Dest.lean) |
+| Transfer tool mechanics                        | [`Cache/Upload/Curl.lean`](Upload/Curl.lean), [`Cache/Upload/Rclone.lean`](Upload/Rclone.lean) |
 | Trust property tests                           | [`Cache/Test.lean`](Test.lean)                                   |
 | User-facing CLI surface, env vars              | [`Cache/Commands.lean`](Commands.lean), [`Cache/README.md`](README.md), [`Cache/WORKFLOWS.md`](WORKFLOWS.md), [`Cache/CI.md`](CI.md) |
-| OIDC mint + per-job dispatch                   | [`.github/workflows/build_template.yml`](../.github/workflows/build_template.yml) (`upload_cache` job) |
+| OIDC mint + per-job dispatch                   | [`.github/workflows/build_template.yml`](../.github/workflows/build_template.yml) (`upload_cache` and `upload_test_cache` jobs) |
 | (repo, ref) → trust class policy table         | [`.github/actions/cache-trust-dispatch/action.yml`](../.github/actions/cache-trust-dispatch/action.yml) |
-| Caller `cache_application_id` wiring           | [`.github/workflows/build.yml`](../.github/workflows/build.yml), [`bors.yml`](../.github/workflows/bors.yml), [`build_fork.yml`](../.github/workflows/build_fork.yml), [`ci_dev.yml`](../.github/workflows/ci_dev.yml), [`release_cache.yml`](../.github/workflows/release_cache.yml) |
+| Caller `cache_environment` wiring              | [`.github/workflows/build.yml`](../.github/workflows/build.yml), [`bors.yml`](../.github/workflows/bors.yml), [`build_fork.yml`](../.github/workflows/build_fork.yml), [`ci_dev.yml`](../.github/workflows/ci_dev.yml), [`release_cache.yml`](../.github/workflows/release_cache.yml) |

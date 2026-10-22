@@ -6,7 +6,7 @@ This directory contains the implementation of Mathlib's build cache system (`lak
 
 > **Trust model & security**: see [`SECURITY.md`](./SECURITY.md) for the
 > trust model behind the multi-container split, [`WORKFLOWS.md`](./WORKFLOWS.md)
-> for the three workflows the tool runs, and [`INTERNALS.md`](./INTERNALS.md) for
+> for the two workflows the tool runs, and [`INTERNALS.md`](./INTERNALS.md) for
 > the structure of the code.
 
 ## Quick Start
@@ -100,14 +100,14 @@ Options follow the command: `lake exe cache get --repo=OWNER/REPO`.
 | `--unsafe-window=N` | Number of cached fork commits `--unsafe` will try (default `1`). Implies `--unsafe`. |
 | `--staging-dir=DIR` | For `stage`/`stage!`/`unstage`/`unstage!`: the staging directory. |
 
-Container names (for `--cache-from`): `master`, `forks`, `nightly-testing`, `pr-toolchain-tests`.
+Container names (for `--cache-from`): `master`, `forks`.
 
 ## Workflows
 
-`lake exe cache get` runs one of three workflows, chosen from the repository
+`lake exe cache get` runs one of two workflows, chosen from the repository
 your checkout names (its git remote, or `--repo=OWNER/REPO`) and the flags,
 and prints the one it runs. [`WORKFLOWS.md`](./WORKFLOWS.md) describes the
-three in full.
+two in full.
 
 **If you have Mathlib as a dependency**, or work on a checkout of
 `leanprover-community/mathlib4` itself, `lake exe cache get` runs the
@@ -118,34 +118,15 @@ needed.
 **If you are a mathlib developer working on a fork**, `lake exe cache get`
 runs the developer-cache workflow. It reads mathlib's `master` cache first,
 then your fork's own cache for the commit you have checked out, which CI
-fills when it builds your PR. `lake exe cache query` lists the commits of your
+fills when it builds your PR. `lake exe cache query` finds the commits of your
 branch that CI has cached, and `--scope=SHA` reads one of them. Reading
 another commit's artifacts means trusting whoever built them, so the tool
-prints a security notice when you do.
-
-The nightly workflow serves the nightly-testing repository.
+prints a security notice when you do. The nightly-testing repository is a
+fork for the cache, and reads the developer cache too.
 
 ## Public cache endpoint
 
 `cache get` reads artifacts through `https://cache.mathlib.org`, the public cache endpoint for mathlib artifacts.
-
-### Troubleshooting
-
-The public cache endpoint has been available since September 2026. The cache client provides an environment variable `MATHLIB_CACHE_DEBUG_USE_LEGACY` to revert to the behavior before this endpoint was available, for troubleshooting any issues that might arise in the transition to this new endpoint:
-
-```bash
-# bash, zsh, Git Bash
-MATHLIB_CACHE_DEBUG_USE_LEGACY=1 lake exe cache get
-
-# PowerShell
-$env:MATHLIB_CACHE_DEBUG_USE_LEGACY = 1; lake exe cache get
-
-# Windows CMD
-set MATHLIB_CACHE_DEBUG_USE_LEGACY=1
-lake exe cache get
-```
-
-The variable is intended as a troubleshooting fallback and it might be retired at any time.
 
 ## Environment Variables
 
@@ -153,7 +134,6 @@ The variable is intended as a troubleshooting fallback and it might be retired a
 |----------------------------------|------------------------------------|-------------------------------------------------|
 | `MATHLIB_CACHE_DIR`              | Directory for cached `.ltar` files | `$XDG_CACHE_HOME/mathlib` or `~/.cache/mathlib` |
 | `MATHLIB_CACHE_GET_URL`          | Download from this single URL as a flat namespace (see [Operating an external cache](#operating-an-external-cache)) | unset |
-| `MATHLIB_CACHE_DEBUG_USE_LEGACY` | See [Troubleshooting](#troubleshooting) | unset |
 
 An empty value means unset. The variables of the chain read
 (`MATHLIB_CACHE_FROM`, `MATHLIB_CACHE_REPO_SCOPE`) are listed in
@@ -206,6 +186,11 @@ The cache covers these packages:
 - `ProofWidgets`
 - `Archive`
 - `Counterexamples`
+- `MathlibTest`
+
+CI uploads `MathlibTest` only for commits that write the `master` container.
+`lake exe cache get` without arguments does not fetch it. To fetch it, run
+`lake exe cache get 'MathlibTest.+'`.
 
 ## Tests
 
@@ -228,10 +213,13 @@ Mathlib or `MathlibTest`. Exits 0 on success, non-zero on failure.
 
 The cache system automatically downloads and manages:
 
-- **curl** (>=7.75, preferably >=7.84) - for HTTP transfers
+- **curl** (>=7.84) - for parallel downloads
 - **leantar** - for `.ltar` compression/decompression
 
-If your system curl is too old, a static binary is downloaded automatically on Linux.
+Downloads use a static curl on Linux x86_64 and aarch64 if the system version is too old.
+On other platforms, older curl versions use serial downloads.
+curl 8.18 and 8.19 run parallel downloads without retries (these versions hang on parallel retries).
+Uploads require curl >=8.20 on `PATH`.
 
 ## File Locations
 
