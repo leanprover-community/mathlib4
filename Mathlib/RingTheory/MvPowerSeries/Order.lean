@@ -361,15 +361,14 @@ theorem coeff_mul_prod_one_sub_of_lt_weightedOrder {R ι : Type*} [CommRing R] (
 least `k`, for all `i ∈ s`, then `∏ i ∈ s, a i - ∏ i ∈ s, b i` has weighted order at least
 `n + (#s - 1) • k`. -/
 theorem add_nsmul_le_weightedOrder_prod_sub_prod {R ι : Type*} [CommRing R] {n k : ℕ∞}
-    {a b : ι → MvPowerSeries σ R} {s : Finset ι}
-    (ha : ∀ i ∈ s, k ≤ (a i).weightedOrder w) (hb : ∀ i ∈ s, k ≤ (b i).weightedOrder w)
-    (h : ∀ i ∈ s, n ≤ (a i - b i).weightedOrder w) :
+    {a b : ι → MvPowerSeries σ R} {s : Finset ι} (ha : ∀ i ∈ s, k ≤ (a i).weightedOrder w)
+    (hb : ∀ i ∈ s, k ≤ (b i).weightedOrder w) (h : ∀ i ∈ s, n ≤ (a i - b i).weightedOrder w) :
     n + (#s - 1) • k ≤ (∏ i ∈ s, a i - ∏ i ∈ s, b i).weightedOrder w := by
-  induction s using Finset.cons_induction with
+  induction s using cons_induction with
   | empty => simp
   | cons i s hi ih =>
-    simp only [Finset.mem_cons, forall_eq_or_imp] at ha hb h
-    rw [Finset.prod_cons, Finset.prod_cons, ← sub_add_sub_cancel (b := a i * ∏ j ∈ s, b j),
+    simp only [mem_cons, forall_eq_or_imp] at ha hb h
+    rw [prod_cons, prod_cons, ← sub_add_sub_cancel (b := a i * ∏ j ∈ s, b j),
       ← sub_mul, ← mul_sub, Finset.card_cons, Nat.add_sub_cancel]
     refine (le_min ?_ ?_).trans (min_weightedOrder_le_add w)
     · rcases s.eq_empty_or_nonempty with rfl | hs
@@ -384,8 +383,7 @@ theorem add_nsmul_le_weightedOrder_prod_sub_prod {R ι : Type*} [CommRing R] {n 
 /-- If `a i - b i` has weighted order at least `n` for all `i ∈ s`, then so does
 `∏ i ∈ s, a i - ∏ i ∈ s, b i`. -/
 theorem le_weightedOrder_prod_sub_prod {R ι : Type*} [CommRing R] {n : ℕ∞}
-    {a b : ι → MvPowerSeries σ R} {s : Finset ι}
-    (h : ∀ i ∈ s, n ≤ (a i - b i).weightedOrder w) :
+    {a b : ι → MvPowerSeries σ R} {s : Finset ι} (h : ∀ i ∈ s, n ≤ (a i - b i).weightedOrder w) :
     n ≤ (∏ i ∈ s, a i - ∏ i ∈ s, b i).weightedOrder w := by
   simpa using add_nsmul_le_weightedOrder_prod_sub_prod w (k := 0) (by simp) (by simp) h
 
