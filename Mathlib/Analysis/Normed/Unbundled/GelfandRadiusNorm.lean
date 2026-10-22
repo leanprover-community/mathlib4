@@ -6,7 +6,6 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.Analysis.Matrix.GelfandRadius
-public import Mathlib.Analysis.Normed.Ring.Ultra
 public import Mathlib.Analysis.Normed.Unbundled.AlgebraNorm
 
 /-!
