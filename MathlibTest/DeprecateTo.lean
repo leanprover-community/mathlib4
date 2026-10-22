@@ -1,7 +1,7 @@
 import Mathlib.Tactic.DeprecateTo
 import Mathlib.Tactic.ToAdditive
 
-set_option linter.translateRedundant false in
+set_option linter.translate.redundant false in
 /--
 info: * Pairings:
 #[(new_name_mul, mul_easy_deprecated), (new_name_add, add_easy_deprecated)]
@@ -21,7 +21,7 @@ Try this:
   alias add_easy_deprecated := new_name_add
 -/
 #guard_msgs in
-deprecate to new_name_mul new_name_add "YYYY-MM-DD"
+#deprecate to new_name_mul new_name_add "YYYY-MM-DD"
 /-- I also have a doc-string -/
 @[to_additive /-- With its additive doc-string -/]
 theorem mul_easy_deprecated : True := .intro

@@ -8,8 +8,9 @@ module
 public import Mathlib.FieldTheory.KrullTopology
 public import Mathlib.NumberTheory.Padics.RingHoms
 public import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
-public import Mathlib.RingTheory.RootsOfUnity.Minpoly
-public import Mathlib.Topology.Algebra.Group.Units
+
+import Mathlib.RingTheory.RootsOfUnity.Minpoly
+import Mathlib.Topology.Algebra.Group.Units
 
 /-!
 
@@ -102,7 +103,7 @@ theorem modularCyclotomicCharacter.pow_dvd_aux_pow_sub_aux_pow
     (g : L ≃+* L) (p : ℕ) [Fact p.Prime] [∀ i, HasEnoughRootsOfUnity L (p ^ i)]
     {i k : ℕ} (hi : k ≤ i) : (p : ℤ) ^ k ∣ aux g (p ^ i) - aux g (p ^ k) := by
   obtain ⟨i, rfl⟩ := exists_add_of_le hi
-  obtain ⟨ζ, hζ⟩ := HasEnoughRootsOfUnity.exists_primitiveRoot L (p ^ (k + i))
+  obtain ⟨ζ, hζ⟩ := HasEnoughRootsOfUnity.exists_isPrimitiveRoot L (p ^ (k + i))
   have h := hζ.pow (a := p ^ i) (Nat.pos_of_neZero _) (Nat.pow_add' _ _ _)
   have h_unit : (h.isUnit NeZero.out).unit =
       (hζ.isUnit NeZero.out).unit ^ (p ^ i) := by ext; rfl
@@ -212,7 +213,7 @@ of unity. -/
 noncomputable def modularCyclotomicCharacter {n : ℕ} [NeZero n]
     (hn : Nat.card { x // x ∈ rootsOfUnity n L } = n) :
     (L ≃+* L) →* (ZMod n)ˣ :=
-  (Units.mapEquiv <| (ZMod.ringEquivCongr hn).toMulEquiv).toMonoidHom.comp
+  (Units.mapEquiv (ZMod.ringEquivCongr hn).toMulEquiv).toMonoidHom.comp
   (modularCyclotomicCharacter' L n)
 
 namespace modularCyclotomicCharacter
@@ -249,7 +250,7 @@ lemma IsPrimitiveRoot.autToPow_eq_modularCyclotomicCharacter (n : ℕ) [NeZero n
     MulEquiv.toMonoidHom_eq_coe, modularCyclotomicCharacter', MonoidHom.coe_comp,
     MonoidHom.coe_ofClass, Function.comp_apply, Units.coe_mapEquiv, MonoidHom.coe_toHomUnits,
     MonoidHom.coe_mk, OneHom.coe_mk, RingEquiv.coe_toMulEquiv, ZMod.ringEquivCongr_val,
-    AlgEquiv.coe_ringEquiv] using modularCyclotomicCharacter.toFun_spec'' g hμ
+    AlgEquiv.coe_toRingEquiv] using modularCyclotomicCharacter.toFun_spec'' g hμ
 
 /-
 
@@ -278,7 +279,7 @@ theorem toFun_apply :
     cyclotomicCharacter.toFun p g =
       PadicInt.ofIntSeq _ (PadicInt.isCauSeq_padicNorm_of_pow_dvd_sub
         (aux g <| p ^ ·) _ fun i ↦ pow_dvd_aux_pow_sub_aux_pow g p i.le_succ) :=
-  dite_eq_left fun _ ↦ HasEnoughRootsOfUnity.exists_primitiveRoot _ _
+  dite_eq_left fun _ ↦ HasEnoughRootsOfUnity.exists_isPrimitiveRoot _ _
 
 open modularCyclotomicCharacter in
 theorem toZModPow_toFun (n : ℕ) :
