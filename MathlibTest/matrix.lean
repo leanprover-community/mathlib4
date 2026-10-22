@@ -1,7 +1,11 @@
+module
+
 /-
 manually ported from
 https://github.com/leanprover-community/mathlib/blob/4f4a1c875d0baa92ab5d92f3fb1bb258ad9f3e5b/test/matrix.lean
 -/
+
+public import Lean
 import Mathlib.GroupTheory.Perm.Fin
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.LinearAlgebra.Matrix.Determinant.Bird.Defs
@@ -9,11 +13,11 @@ import Mathlib.LinearAlgebra.Matrix.Notation
 import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.NormDet
-import Qq
+meta import Mathlib.Data.Fin.VecNotation
+meta import Mathlib.Data.Matrix.Basic
+meta import Qq
 
 open Qq
-
-variable {α β : Type} [Semiring α] [Ring β]
 
 namespace Matrix
 
@@ -113,6 +117,8 @@ section delaborators
 #guard_msgs in #check (!![] : Matrix (Fin 0) (Fin 0) ℕ)
 
 end delaborators
+
+variable {α β : Type} [Semiring α] [Ring β]
 
 example {a a' b b' c c' d d' : α} :
   !![a, b; c, d] + !![a', b'; c', d'] = !![a + a', b + b'; c + c', d + d'] := by
@@ -247,6 +253,18 @@ example {K : Type*} [Field K] (x i j k : K) (hx : x ≠ 0) : Matrix.det
     !![x ^ 3, 0, 0; i, 1 / x, 0; j, k, 1 / x ^ 2] = 1 := by
   eval_det
   field_simp [hx]
+
+example : Matrix.det !![0, 1; 1, 0] = (-1 : Polynomial ℚ) := by
+  eval_det
+
+example : Matrix.det
+    !![1 / 2, 3 / 4,  5 / 6;
+       2 / 3, 1 / 6,  4 / 9;
+       3 / 4, 7 / 10, 1 / 6] = (223 / 720 : ℚ) := by
+  eval_det
+
+example : Matrix.det !![1, 2; 3, 4] = (-2 : ℤ × ℤ) := by
+  eval_det
 
 end NormDet
 

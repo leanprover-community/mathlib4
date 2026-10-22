@@ -5,8 +5,8 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.RingTheory.AdjoinRoot
 public import Mathlib.Algebra.MvPolynomial.PDeriv
+public import Mathlib.RingTheory.AdjoinRoot
 public import Mathlib.RingTheory.Derivation.MapCoeffs
 
 /-!
@@ -85,8 +85,6 @@ lemma evalEval_finsetSum {ι : Type*} (s : Finset ι) (x y : R) (f : ι → R[X]
     (∑ i ∈ s, f i).evalEval x y = ∑ i ∈ s, (f i).evalEval x y := by
   simp only [evalEval, eval_finsetSum]
 
-@[deprecated (since := "2026-04-08")] alias evalEval_finset_sum := evalEval_finsetSum
-
 @[simp]
 lemma evalEval_smul [DistribSMul S R] [IsScalarTower S R R] (x y : R) (s : S)
     (p : R[X][Y]) : (s • p).evalEval x y = s • p.evalEval x y := by
@@ -131,8 +129,7 @@ lemma evalEval_prod {ι : Type*} (s : Finset ι) (x y : R) (p : ι → R[X][Y]) 
 
 lemma evalEval_list_prod (x y : R) (l : List R[X][Y]) :
     l.prod.evalEval x y = (l.map <| evalEval x y).prod := by
-  simp only [evalEval, eval_list_prod, List.map_map]
-  rfl -- todo: add the missing lemma
+  simp [evalEval, eval_list_prod, Function.comp_def]
 
 lemma evalEval_multiset_prod (x y : R) (l : Multiset R[X][Y]) :
     l.prod.evalEval x y = (l.map <| evalEval x y).prod := by
@@ -293,7 +290,7 @@ theorem Bivariate.aevalAeval_swap (x y : A) (p : R[X][Y]) :
     induction a using Polynomial.induction_on' <;> aesop (add norm add_mul)
 
 attribute [local instance] Polynomial.algebra in
-theorem Bivariate.aveal_eq_map_swap (x : A) (p : R[X][Y]) :
+theorem Bivariate.aeval_eq_map_swap (x : A) (p : R[X][Y]) :
     aeval (C x) p = mapAlgHom (aeval x) (swap p) := by
   induction p using Polynomial.induction_on' with
   | add => aesop
@@ -301,6 +298,9 @@ theorem Bivariate.aveal_eq_map_swap (x : A) (p : R[X][Y]) :
       simp
       induction a using Polynomial.induction_on'
         <;> aesop (add norm [add_mul, C_mul_X_pow_eq_monomial])
+
+@[deprecated (since := "2026-09-17")]
+alias Bivariate.aveal_eq_map_swap := Bivariate.aeval_eq_map_swap
 
 end
 

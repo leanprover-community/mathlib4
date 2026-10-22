@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel, Felix Weilacher
 module
 
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
-public import Mathlib.Tactic.CrossRefAttribute
+public import Mathlib.MeasureTheory.Measure.Typeclasses.ZeroOne
 public import Mathlib.Topology.MetricSpace.Perfect
 public import Mathlib.Topology.Separation.CountableSeparatingOn
 
@@ -64,7 +64,9 @@ We use this to prove several versions of the Borel isomorphism theorem.
 @[expose] public section
 
 
-open Set Function PolishSpace PiNat TopologicalSpace Bornology Metric Filter Topology MeasureTheory
+open Set Function PolishSpace PiNat TopologicalSpace Bornology Metric Filter MeasureTheory
+
+open scoped Topology
 
 /-! ### Standard Borel Spaces -/
 
@@ -321,7 +323,7 @@ theorem _root_.MeasurableSet.analyticSet {α : Type*} [t : TopologicalSpace α] 
       ∃ t' : TopologicalSpace α, t' ≤ t ∧ @PolishSpace α t' ∧ IsClosed[t'] s ∧ IsOpen[t'] s :=
     hs.isClopenable
   have A := @IsClosed.analyticSet α t' t'_polish s s_closed
-  convert! @AnalyticSet.image_of_continuous α t' α t s A id (continuous_id_of_le t't)
+  convert @AnalyticSet.image_of_continuous α t' α t s A id (continuous_id_of_le t't)
   simp only [id, image_id']
 
 /-- Given a Borel-measurable function from a Polish space to a second-countable space, there exists
@@ -366,7 +368,7 @@ protected lemma AnalyticSet.preimage {X Y : Type*} [TopologicalSpace X] [Topolog
     AnalyticSet (f ⁻¹' s) := by
   rcases analyticSet_iff_exists_polishSpace_range.1 hs with ⟨Z, _, _, g, hg, rfl⟩
   have : IsClosed {x : X × Z | f x.1 = g x.2} := isClosed_eq hf.fst' hg.snd'
-  convert! this.analyticSet.image_of_continuous continuous_fst
+  convert this.analyticSet.image_of_continuous continuous_fst
   ext x
   simp [eq_comm]
 
@@ -464,7 +466,7 @@ theorem measurablySeparable_range_of_disjoint [T2Space α] [MeasurableSpace α]
   -- by design, the cylinders around these points have images which are not Borel-separable.
   have M : ∀ n, ¬MeasurablySeparable (f '' cylinder x n) (g '' cylinder y n) := by
     intro n
-    convert! (p n).2 using 3
+    convert (p n).2 using 3
     · rw [pn_fst, ← mem_cylinder_iff_eq, mem_cylinder_iff]
       intro i hi
       rw [hx]
@@ -576,7 +578,7 @@ if and only if the set is measurable in `Set.range f`. -/
 theorem measurableSet_preimage_iff_preimage_val {f : X → Z} [CountablySeparated (range f)]
     (hf : Measurable f) {s : Set Z} :
     MeasurableSet (f ⁻¹' s) ↔ MeasurableSet ((↑) ⁻¹' s : Set (range f)) :=
-  have hf' : Measurable (rangeFactorization f) := hf.subtype_mk
+  have hf' : Measurable (rangeFactorization f) := by fun_prop
   hf'.measurableSet_preimage_iff_of_surjective (s := Subtype.val ⁻¹' s)
     rangeFactorization_surjective
 
@@ -723,7 +725,7 @@ theorem MeasureTheory.measurableSet_range_of_continuous_injective {β : Type*} [
       exact ball_mem_nhds _ (half_pos (u_pos n))
     have diam_s : diam s ≤ u n := by
       apply (diam_mono hs isBounded_ball).trans
-      convert! diam_ball (x := y) (half_pos (u_pos n)).le
+      convert diam_ball (x := y) (half_pos (u_pos n)).le
       ring
     refine mem_iUnion.2 ⟨⟨s, sb⟩, ?_⟩
     refine mem_iUnion.2 ⟨⟨isBounded_ball.subset hs, diam_s⟩, ?_⟩
@@ -748,7 +750,7 @@ theorem MeasureTheory.measurableSet_range_of_continuous_injective {β : Type*} [
     have I : ∀ m n, ((s m).1 ∩ (s n).1).Nonempty := by
       intro m n
       rw [← not_disjoint_iff_nonempty_inter]
-      by_contra! h
+      by_contra h
       have A : x ∈ q ⟨(s m, s n), h⟩ \ q ⟨(s n, s m), h.symm⟩ :=
         haveI := mem_iInter.1 (hxs m).2 (s n)
         (mem_iInter.1 this h :)
@@ -895,7 +897,7 @@ theorem MeasureTheory.borel_eq_borel_of_le {t t' : TopologicalSpace γ}
   have e := @Continuous.measurableEmbedding
     _ _ (@borel _ t') t' _ _ (@BorelSpace.mk _ _ (borel γ) rfl)
     t _ (@borel _ t) (@BorelSpace.mk _ t (@borel _ t) rfl) (continuous_id_of_le hle) injective_id
-  convert! e.measurableSet_image.2 hs
+  convert e.measurableSet_image.2 hs
   simp only [id_eq, image_id']
 
 /-- In a Polish space, a set is clopenable if and only if it is Borel-measurable. -/
@@ -1110,6 +1112,65 @@ theorem MeasurableSet.standardBorel {s : Set α} (hs : MeasurableSet s) :
   obtain ⟨_, _, _, s_closed, _⟩ := hs.isClopenable'
   have := s_closed.polishSpace
   infer_instance
+
+/-- In a standard Borel space, a zero-one measure that is not the zero measure is a Dirac
+measure. -/
+theorem MeasureTheory.IsZeroOneMeasure.exists_eq_dirac
+    {μ : Measure α} [IsZeroOneMeasure μ] [NeZero μ] : ∃ x₀, μ = Measure.dirac x₀ := by
+  have : IsProbabilityMeasure μ := by
+    rcases IsZeroOrProbabilityMeasure.measure_univ (μ := μ) with (h | h)
+    · simp_all
+    · exact ⟨h⟩
+  obtain ⟨A, hAm, hAsep⟩ := exists_seq_separating (α := α) MeasurableSet.univ univ
+  let B := fun n => if h : μ (A n) = 1 then A n else (A n)ᶜ
+  have mBn : MeasurableSet (⋂ n, B n) := by
+    refine MeasurableSet.iInter fun n ↦ ?_
+    simp only [dite_eq_ite, B]
+    split_ifs
+    · exact hAm n
+    · exact (hAm n).compl
+  have hBn : μ (⋂ n, B n) = 1 := by
+    refine (prob_compl_eq_zero_iff mBn).mp ?_
+    simp only [dite_eq_ite, compl_iInter, measure_iUnion_null_iff, B]
+    intro n
+    split_ifs with h
+    · simp_all
+    · rw [compl_compl]
+      rcases μ.zero_one (A n) with (h₀ | h₁)
+      · exact h₀
+      · simp_all
+  obtain ⟨x₀, hx₀⟩ : ∃ x₀, ⋂ n, B n = {x₀} := by
+    simp_rw [eq_singleton_iff_unique_mem]
+    have neBn : (⋂ n, B n).Nonempty := by
+      by_contra! h
+      rw [h] at hBn
+      simp_all
+    refine ⟨neBn.some, neBn.some_mem, fun y hy ↦ ?_⟩
+    refine hAsep y (by trivial) neBn.some (by trivial) fun n ↦ ?_
+    have hsome := neBn.some_mem
+    simp only [dite_eq_ite, mem_iInter, B] at hsome hy
+    specialize hsome n
+    specialize hy n
+    constructor
+    · intro h
+      split_ifs at hy with hμAn
+      · simpa [hμAn] using! hsome
+      · contradiction
+    · intro h
+      split_ifs at hsome with hμAn
+      · simpa [hμAn] using! hy
+      · contradiction
+  use x₀
+  ext s hs
+  by_cases h : x₀ ∈ s
+  · simp [h]
+    have : μ {x₀} ≤ μ s := measure_mono (μ := μ) (by grind)
+    rw [← hx₀, hBn] at this
+    simp_all
+  · simp [h]
+    have : μ s ≤ μ {x₀}ᶜ := measure_mono (μ := μ) (by grind)
+    rw [← hx₀, measure_compl mBn (by simp), MeasureTheory.measure_univ, hBn] at this
+    simp_all
 
 end StandardBorelSpace
 

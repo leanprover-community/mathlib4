@@ -3,7 +3,9 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
 
 /-!
 # IMO 1961 Q3
@@ -21,7 +23,7 @@ website.
 
 open Real
 
-theorem Imo1961Q3 {n : ℕ} {x : ℝ} (h₀ : n ≠ 0) :
+public theorem Imo1961Q3 {n : ℕ} {x : ℝ} (h₀ : n ≠ 0) :
     (cos x) ^ n - (sin x) ^ n = 1 ↔
       (∃ k : ℤ, k * π = x) ∧ Even n ∨ (∃ k : ℤ, k * (2 * π) = x) ∧ Odd n ∨
         (∃ k : ℤ, -(π / 2) + k * (2 * π) = x) ∧ Odd n := by

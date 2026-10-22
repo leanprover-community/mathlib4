@@ -5,11 +5,8 @@ Authors: Alvaro Belmonte, Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.EqToHom
-public import Mathlib.CategoryTheory.Pi.Basic
-public import Mathlib.Data.ULift
-public import Mathlib.CategoryTheory.Category.Cat
 public import Mathlib.CategoryTheory.Adjunction.Basic
+public import Mathlib.CategoryTheory.Category.Cat
 
 /-!
 # Codiscrete categories
@@ -130,7 +127,7 @@ def oppositeEquivalence (A : Type*) : (Codiscrete A)ᵒᵖ ≌ Codiscrete A wher
 
 /-- `Codiscrete.functorToCat` turns a type into a codiscrete category. -/
 def functorToCat : Type u ⥤ Cat.{0, u} where
-  obj A := Cat.of (Codiscrete A)
+  obj A := ↧(Codiscrete A)
   map f := (functorOfFun f).toCatHom
 
 open Adjunction Cat

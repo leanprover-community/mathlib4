@@ -43,20 +43,13 @@ reals, conditionally complete, ordered field, uniqueness
 
 @[expose] public section
 
-variable {F α β γ : Type*}
+variable {α β γ : Type*}
 
 noncomputable section
 
 open Function Rat Set
 
 open scoped Pointwise
-
-/-- A field which is both linearly ordered and conditionally complete with respect to the order.
-This axiomatizes the reals. -/
-@[deprecated "Use `[Field α] [ConditionallyCompleteLinearOrder α] [IsStrictOrderedRing α]` instead."
-  (since := "2026-02-23")]
-structure ConditionallyCompleteLinearOrderedField (α : Type*) extends
-    Field α, ConditionallyCompleteLinearOrder α, IsStrictOrderedRing α where
 
 -- see Note [lower instance priority]
 /-- Any conditionally complete linearly ordered field is archimedean. -/
@@ -93,7 +86,8 @@ another linear ordered field. -/
 def cutMap (a : α) : Set β :=
   (Rat.cast : ℚ → β) '' {t | ↑t < a}
 
-theorem cutMap_mono (h : a₁ ≤ a₂) : cutMap β a₁ ⊆ cutMap β a₂ := image_mono fun _ => h.trans_lt'
+@[gcongr]
+theorem cutMap_mono (h : a₁ ≤ a₂) : cutMap β a₁ ⊆ cutMap β a₂ := by unfold cutMap; gcongr
 
 variable {β}
 
@@ -109,7 +103,7 @@ theorem cutMap_self (a : α) : cutMap α a = Iio a ∩ range (Rat.cast : ℚ →
 end DivisionRing
 
 variable (β) [IsStrictOrderedRing α] [Field β] [LinearOrder β] [IsStrictOrderedRing β]
-  {a a₁ a₂ : α} {b : β} {q : ℚ}
+  {a : α} {b : β} {q : ℚ}
 
 theorem cutMap_coe (q : ℚ) : cutMap β (q : α) = Rat.cast '' {r : ℚ | (r : β) < q} := by
   simp_rw [cutMap, Rat.cast_lt]
@@ -167,6 +161,7 @@ def inducedMap (x : α) : β :=
 
 variable [Archimedean α]
 
+@[gcongr]
 theorem inducedMap_mono : Monotone (inducedMap α β) := fun _ _ h =>
   csSup_le_csSup (cutMap_bddAbove β _) (cutMap_nonempty β _) (cutMap_mono β h)
 
@@ -188,8 +183,8 @@ theorem inducedMap_one : inducedMap α β 1 = 1 := mod_cast inducedMap_rat α β
 
 variable {α β} {a : α} {b : β} {q : ℚ}
 
-theorem inducedMap_nonneg (ha : 0 ≤ a) : 0 ≤ inducedMap α β a :=
-  (inducedMap_zero α _).ge.trans <| inducedMap_mono _ _ ha
+theorem inducedMap_nonneg (ha : 0 ≤ a) : 0 ≤ inducedMap α β a := by
+  grw [← ha, inducedMap_zero]
 
 theorem coe_lt_inducedMap_iff : (q : β) < inducedMap α β a ↔ (q : α) < a := by
   refine ⟨fun h => ?_, fun hq => ?_⟩
@@ -266,7 +261,7 @@ def inducedOrderRingHom : α →+*o β :=
       suffices ∀ x, 0 < x → inducedAddHom α β (x * x) = inducedAddHom α β x * inducedAddHom α β x by
         intro x
         obtain h | rfl | h := lt_trichotomy x 0
-        · convert! this (-x) (neg_pos.2 h) using 1
+        · convert this (-x) (neg_pos.2 h) using 1
           · rw [neg_mul, mul_neg, neg_neg]
           · simp_rw [map_neg, neg_mul, mul_neg, neg_neg]
         · simp only [mul_zero, map_zero]
@@ -289,7 +284,7 @@ def inducedOrderRingIso : β ≃+*o γ :=
     map_le_map_iff' := by
       dsimp
       refine ⟨fun h => ?_, fun h => inducedMap_mono _ _ h⟩
-      convert! inducedMap_mono γ β h <;>
+      convert inducedMap_mono γ β h <;>
       · rw [inducedOrderRingHom, AddMonoidHom.coe_fn_mkRingHomOfMulSelfOfTwoNeZero, inducedAddHom]
         dsimp
         rw [inducedMap_inv_self β γ _] }
@@ -319,50 +314,3 @@ scoped instance uniqueOrderRingIso : Unique (β ≃+*o γ) :=
 end InducedMap
 
 end ConditionallyCompleteLinearOrderedField
-
-namespace LinearOrderedField
-
-@[deprecated (since := "2026-02-24")]
-alias inducedMap := ConditionallyCompleteLinearOrderedField.inducedMap
-@[deprecated (since := "2026-02-24")]
-alias inducedMap_mono := ConditionallyCompleteLinearOrderedField.inducedMap_mono
-@[deprecated (since := "2026-02-24")]
-alias inducedMap_rat := ConditionallyCompleteLinearOrderedField.inducedMap_rat
-@[deprecated (since := "2026-02-24")]
-alias inducedMap_zero := ConditionallyCompleteLinearOrderedField.inducedMap_zero
-@[deprecated (since := "2026-02-24")]
-alias inducedMap_one := ConditionallyCompleteLinearOrderedField.inducedMap_one
-@[deprecated (since := "2026-02-24")]
-alias inducedMap_nonneg := ConditionallyCompleteLinearOrderedField.inducedMap_nonneg
-@[deprecated (since := "2026-02-24")]
-alias coe_lt_inducedMap_iff := ConditionallyCompleteLinearOrderedField.coe_lt_inducedMap_iff
-@[deprecated (since := "2026-02-24")]
-alias lt_inducedMap_iff := ConditionallyCompleteLinearOrderedField.lt_inducedMap_iff
-@[deprecated (since := "2026-02-24")]
-alias inducedMap_self := ConditionallyCompleteLinearOrderedField.inducedMap_self
-@[deprecated (since := "2026-02-24")]
-alias inducedMap_inducedMap := ConditionallyCompleteLinearOrderedField.inducedMap_inducedMap
-@[deprecated (since := "2026-02-24")]
-alias inducedMap_inv_self := ConditionallyCompleteLinearOrderedField.inducedMap_inv_self
-@[deprecated (since := "2026-02-24")]
-alias inducedMap_add := ConditionallyCompleteLinearOrderedField.inducedMap_add
-@[deprecated (since := "2026-02-24")]
-alias le_inducedMap_mul_self_of_mem_cutMap :=
-  ConditionallyCompleteLinearOrderedField.le_inducedMap_mul_self_of_mem_cutMap
-@[deprecated (since := "2026-02-24")]
-alias exists_mem_cutMap_mul_self_of_lt_inducedMap_mul_self :=
-  ConditionallyCompleteLinearOrderedField.exists_mem_cutMap_mul_self_of_lt_inducedMap_mul_self
-@[deprecated (since := "2026-02-24")]
-alias inducedAddHom := ConditionallyCompleteLinearOrderedField.inducedAddHom
-@[deprecated (since := "2026-02-24")]
-alias inducedOrderRingHom := ConditionallyCompleteLinearOrderedField.inducedOrderRingHom
-@[deprecated (since := "2026-02-24")]
-alias inducedOrderRingIso := ConditionallyCompleteLinearOrderedField.inducedOrderRingIso
-@[deprecated (since := "2026-02-24")]
-alias coe_inducedOrderRingIso := ConditionallyCompleteLinearOrderedField.coe_inducedOrderRingIso
-@[deprecated (since := "2026-02-24")]
-alias inducedOrderRingIso_symm := ConditionallyCompleteLinearOrderedField.inducedOrderRingIso_symm
-@[deprecated (since := "2026-02-24")]
-alias inducedOrderRingIso_self := ConditionallyCompleteLinearOrderedField.inducedOrderRingIso_self
-
-end LinearOrderedField

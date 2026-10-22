@@ -6,8 +6,9 @@ Authors: Johannes Hölzl, Jens Wagemaker, Anne Baanen
 module
 
 public import Mathlib.Algebra.BigOperators.Finsupp.Basic
-public import Mathlib.Algebra.Group.Submonoid.Membership
 public import Mathlib.Algebra.GroupWithZero.Associated
+
+import Mathlib.Algebra.Group.Submonoid.Membership
 
 /-!
 # Products of associated, prime, and irreducible elements.
@@ -73,7 +74,7 @@ theorem Associated.prod {M : Type*} [CommMonoid M] {ι : Type*} (s : Finset ι) 
 theorem exists_associated_mem_of_dvd_prod [CommMonoidWithZero M₀] [IsCancelMulZero M₀]
     {p : M₀} (hp : Prime p)
     {s : Multiset M₀} : (∀ r ∈ s, Prime r) → p ∣ s.prod → ∃ q ∈ s, p ~ᵤ q :=
-  Multiset.induction_on s (by simp [mt isUnit_iff_dvd_one.2 hp.not_unit]) fun a s ih hs hps => by
+  Multiset.induction_on s (by simp [mt isUnit_iff_dvd_one.2 hp.not_isUnit]) fun a s ih hs hps => by
     rw [Multiset.prod_cons] at hps
     rcases hp.dvd_or_dvd hps with h | h
     · have hap := hs a (Multiset.mem_cons.2 (Or.inl rfl))
@@ -165,8 +166,6 @@ theorem finsetProd_mk {p : Finset ι} {f : ι → M} :
   rw [Finset.prod_eq_multiset_prod, ← Function.comp_def, ← Multiset.map_map, prod_mk,
     ← Finset.prod_eq_multiset_prod]
 
-@[deprecated (since := "2026-04-08")] alias finset_prod_mk := finsetProd_mk
-
 theorem rel_associated_iff_map_eq_map {p q : Multiset M} :
     Multiset.Rel Associated p q ↔ p.map Associates.mk = q.map Associates.mk := by
   rw [← Multiset.rel_eq, Multiset.rel_map]
@@ -222,13 +221,9 @@ theorem Prime.dvd_finsetProd_iff {S : Finset M₀} {p : M} (pp : Prime p) (g : M
     p ∣ S.prod g ↔ ∃ a ∈ S, p ∣ g a :=
   ⟨pp.exists_mem_finset_dvd, fun ⟨_, ha1, ha2⟩ => dvd_trans ha2 (dvd_prod_of_mem g ha1)⟩
 
-@[deprecated (since := "2026-04-08")] alias Prime.dvd_finset_prod_iff := Prime.dvd_finsetProd_iff
-
 theorem Prime.not_dvd_finsetProd {S : Finset M₀} {p : M} (pp : Prime p) {g : M₀ → M}
     (hS : ∀ a ∈ S, ¬p ∣ g a) : ¬p ∣ S.prod g := by
   exact mt (Prime.dvd_finsetProd_iff pp _).1 <| not_exists.2 fun a => not_and.2 (hS a)
-
-@[deprecated (since := "2026-04-08")] alias Prime.not_dvd_finset_prod := Prime.not_dvd_finsetProd
 
 theorem Prime.dvd_finsuppProd_iff {f : M₀ →₀ M} {g : M₀ → M → ℕ} {p : ℕ} (pp : Prime p) :
     p ∣ f.prod g ↔ ∃ a ∈ f.support, p ∣ g a (f a) :=

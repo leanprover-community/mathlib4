@@ -351,7 +351,7 @@ def outsidePart : DyckWord :=
 include h in
 @[simp]
 lemma insidePart_add : (p + q).insidePart = p.insidePart := by
-  simp_rw [insidePart, firstReturn_add, add_eq_zero', h, false_and, dite_false, ite_false,
+  simp_rw [insidePart, firstReturn_add, add_eq_zero, h, false_and, dite_false, ite_false,
     DyckWord.ext_iff, take]
   congr 3
   exact take_append_of_le_length (firstReturn_lt_length h)
@@ -359,14 +359,14 @@ lemma insidePart_add : (p + q).insidePart = p.insidePart := by
 include h in
 @[simp]
 lemma outsidePart_add : (p + q).outsidePart = p.outsidePart + q := by
-  simp_rw [outsidePart, firstReturn_add, add_eq_zero', h, false_and, dite_false, ite_false,
+  simp_rw [outsidePart, firstReturn_add, add_eq_zero, h, false_and, dite_false, ite_false,
     DyckWord.ext_iff, drop]
   exact drop_append_of_le_length (firstReturn_lt_length h)
 
 @[simp]
 lemma insidePart_nest : p.nest.insidePart = p := by
   simp_rw [insidePart, nest_ne_zero, dite_false, firstReturn_nest]
-  convert! p.denest_nest; rw [DyckWord.ext_iff]; apply take_of_length_le
+  convert p.denest_nest; rw [DyckWord.ext_iff]; apply take_of_length_le
   simp_rw [nest, length_append, length_singleton]; lia
 
 @[simp]
@@ -470,7 +470,7 @@ lemma strictMono_semilength : StrictMono semilength := fun p q pq ↦ by
   obtain ⟨plq, pnq⟩ := lt_iff_le_and_ne.mp pq
   apply lt_of_le_of_ne (monotone_semilength plq)
   contrapose pnq
-  replace pnq := congr(2 * $(pnq))
+  replace pnq := congr(2 * $pnq)
   simp_rw [two_mul_semilength_eq_length] at pnq
   exact DyckWord.ext ((infix_of_le plq).eq_of_length pnq)
 
@@ -532,8 +532,6 @@ lemma numNodes_toTree (p : DyckWord) : p.toTree.numNodes = p.semilength := by
 termination_by p.semilength
 decreasing_by exacts [semilength_insidePart_lt h, semilength_outsidePart_lt h]
 
-@[deprecated (since := "2026-02-03")] alias semilength_eq_numNodes_equivTree := numNodes_toTree
-
 /-- Equivalence between Dyck words of semilength `n` and rooted binary trees with
 `n` internal nodes. -/
 @[simps!]
@@ -547,7 +545,7 @@ instance {n : ℕ} : Fintype { p : DyckWord // p.semilength = n } :=
 theorem card_dyckWord_semilength_eq_catalan (n : ℕ) :
     Fintype.card { p : DyckWord // p.semilength = n } = catalan n := by
   rw [← Fintype.ofEquiv_card (equivTreesOfNumNodesEq n), ← treesOfNumNodesEq_card_eq_catalan]
-  convert! Fintype.card_coe _
+  convert Fintype.card_coe _
 
 end BinaryTree
 
@@ -555,7 +553,7 @@ end DyckWord
 
 namespace Mathlib.Meta.Positivity
 
-open Lean Meta Qq
+open Lean Qq
 
 /-- Extension for the `positivity` tactic: `p.firstReturn` is positive if `p` is nonzero. -/
 @[positivity DyckWord.firstReturn _]

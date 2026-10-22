@@ -5,8 +5,9 @@ Authors: Jingting Wang, Nailin Guan
 -/
 module
 
-public import Mathlib.Algebra.FiveLemma
 public import Mathlib.RingTheory.Flat.Basic
+
+import Mathlib.Algebra.FiveLemma
 
 /-!
 
@@ -33,7 +34,7 @@ N₁ --g₁--> N₂ --g₂--> N₃
 
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*} [CommRing R] (S : Type*) [CommRing S] [Algebra R S]
 
