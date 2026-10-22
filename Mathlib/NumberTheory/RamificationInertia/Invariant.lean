@@ -34,8 +34,44 @@ by `Algebra.FormallyUnramified.descentMultiplier`.
 
 open scoped Pointwise TensorProduct
 
+-- PRed
+namespace Algebra.FormallyUnramified
+
+variable (R S M : Type*) [CommRing R] [CommRing S] [Algebra R S] [FormallyUnramified R S]
+  [EssFiniteType R S] [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
+
+lemma sec_apply (x : M) :
+    sec R S M x = ((LinearMap.toSpanSingleton S M x).restrictScalars R).baseChange S (elem R S) :=
+  rfl
+
+@[simp]
+lemma sec_one : sec R S S 1 = elem R S := by
+  simp [sec_apply, LinearMap.toSpanSingleton_one_eq_algebraLinearMap]
+
+variable {M} in
+lemma sec_comp {N : Type*} [AddCommGroup N]
+    [Module R N] [Module S N] [IsScalarTower R S N] (f : M →ₗ[S] N) :
+    (sec R S N).comp f = ((f.restrictScalars R).baseChange S).comp (sec R S M) := by
+  ext x
+  simp [sec_apply, ← f.comp_toSpanSingleton, LinearMap.baseChange_comp]
+
+variable {M} in
+@[simp]
+lemma baseChange_sec {N : Type*} [AddCommGroup N]
+    [Module R N] [Module S N] [IsScalarTower R S N] (f : M →ₗ[S] N) (x : M) :
+    (f.restrictScalars R).baseChange S (sec R S M x) = sec R S N (f x) :=
+  (congr($(sec_comp R S f) x)).symm
+
+variable {M} in
+lemma sec_mem_baseChange (P : Submodule S M) {x : M} (hx : x ∈ P) :
+    sec R S M x ∈ (P.restrictScalars R).baseChange S :=
+  ⟨sec R S P ⟨x, hx⟩, baseChange_sec R S P.subtype ⟨x, hx⟩⟩
+
+end Algebra.FormallyUnramified
+
 section LiftBaseChange
 
+-- PRed
 theorem Submodule.baseChange_le_iff_le_comap {R M A : Type*} [CommSemiring R] [Semiring A]
     [Algebra R A] [AddCommMonoid M] [Module R M] (p : Submodule R M) (q : Submodule A (A ⊗[R] M)) :
     p.baseChange A ≤ q ↔ p ≤ (q.restrictScalars R).comap (TensorProduct.mk R A M 1) := by
@@ -76,54 +112,15 @@ variable {A} in
 lemma Submodule.baseChange_le_comap_liftBaseChange_iff
     {l : M →ₗ[R] N} {p : Submodule R M} {q : Submodule A N} :
     p.baseChange A ≤ q.comap (l.liftBaseChange A) ↔ p ≤ (q.restrictScalars R).comap l := by
+  -- seems like we're missing some API lemma for `LinearMap.liftBaseChangeEquiv_symm`
   have h : (l.liftBaseChange A).restrictScalars R ∘ₗ TensorProduct.mk R A M 1 = l :=
     (LinearMap.liftBaseChangeEquiv A).symm_apply_apply l
-  rw [Submodule.baseChange_le_iff_le_comap, Submodule.restrictScalars_comap, ← Submodule.comap_comp, h]
+  rw [Submodule.baseChange_le_iff_le_comap, Submodule.restrictScalars_comap,
+    ← Submodule.comap_comp, h]
 
 end LinearMap
 
 end LiftBaseChange
-
-section Sec
-
-namespace Algebra.FormallyUnramified
-
-variable (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
-  [FormallyUnramified R S] [EssFiniteType R S]
-  (M : Type*) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
-
-lemma sec_apply (x : M) : sec R S M x =
-    ((LinearMap.toSpanSingleton S M x).restrictScalars R).baseChange S (elem R S) :=
-  rfl
-
-@[simp]
-lemma sec_one : sec R S S 1 = elem R S := by
-  rw [sec_apply]
-  have h : LinearMap.toSpanSingleton S S 1 = LinearMap.id := by ext; simp
-  simp [h]
-
-variable {M} in
-lemma sec_comp {N : Type*} [AddCommGroup N]
-    [Module R N] [Module S N] [IsScalarTower R S N] (f : M →ₗ[S] N) :
-    (sec R S N).comp f = ((f.restrictScalars R).baseChange S).comp (sec R S M) := by
-  ext x
-  simp [sec_apply, ← f.comp_toSpanSingleton, LinearMap.baseChange_comp]
-
-variable {M} in
-@[simp]
-lemma baseChange_sec {N : Type*} [AddCommGroup N]
-    [Module R N] [Module S N] [IsScalarTower R S N] (f : M →ₗ[S] N) (x : M) :
-    (f.restrictScalars R).baseChange S (sec R S M x) = sec R S N (f x) :=
-  (congr($(sec_comp R S f) x)).symm
-
-variable {M} in
-lemma sec_mem_baseChange (P : Submodule S M) {x : M} (hx : x ∈ P) :
-    sec R S M x ∈ (P.restrictScalars R).baseChange S :=
-  ⟨sec R S P ⟨x, hx⟩, baseChange_sec R S P.subtype ⟨x, hx⟩⟩
-
-end Algebra.FormallyUnramified
-
-end Sec
 
 namespace Algebra.FormallyUnramified
 
@@ -189,7 +186,7 @@ lemma linearize_apply (f : M →ₗ[A] N) : linearize B f = (f.liftBaseChange B)
 
 lemma le_comap_linearize (f : M →ₗ[A] N) (P : Submodule B M) (Q : Submodule B N)
     (hf : P.restrictScalars A ≤ (Q.restrictScalars A).comap f) : P ≤ Q.comap (linearize B f) :=
-  fun _ hx ↦ LinearMap.baseChange_le_comap_liftBaseChange_iff.mpr hf (sec_mem_baseChange A B P hx)
+  fun _ hx ↦ Submodule.baseChange_le_comap_liftBaseChange_iff.mpr hf (sec_mem_baseChange A B P hx)
 
 @[simp]
 lemma linearize_comp (f : M →ₗ[A] N) (g : L →ₗ[B] M) :
