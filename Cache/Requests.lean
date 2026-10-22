@@ -795,8 +795,8 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
 
 /-- Run one location's download pass for the given hash map. Returns the
 `TransferState` from `monitorCurl` (synthesized in serial mode, where it
-carries only the transfer-failure count and hashes) and the set of hashes it fetched, so
-the caller can carry the rest to the next location. `decompState` is the
+carries only the hard failures) and the set of hashes it fetched, so the
+caller can carry the rest to the next location. `decompState` is the
 previous round's decompression pipeline state; the returned state's `decomp`
 continues it. Serial mode never pipelines and passes it through untouched.
 Side effect: fetched files are written to `CACHEDIR` with their final names. -/
@@ -830,9 +830,8 @@ private def downloadFilesFromLocation (location : Location)
     let r ← hashMap.foldM (init := []) fun acc _ hash => do
       pure <| (hash, ← IO.asTask do
         downloadFile location hash) :: acc
-    -- Served hashes carry the remaining files to the next location; hard
-    -- failures (anything but a 404 miss, including a task that threw)
-    -- feed `TransferState.failedHashes`, as the parallel path records them.
+    -- Every result other than a delivery or a 404 miss is a hard failure,
+    -- including a task that threw.
     let (served, failedHashes) :=
       r.foldl (init := ((∅ : Std.HashSet UInt64), (∅ : Std.HashSet UInt64)))
         fun (served, failedHashes) (hash, t) =>
@@ -888,10 +887,11 @@ def readLocations (repo : String) (unsafeScopes : List String := []) :
     else pure none
   return readLocationsFrom repo containerBases scope? unsafeScopes headScope?
 
-/-- Outcome of a multi-round download. `failed` counts hard transfer errors
-(anything but a 404 miss) and drives the caller's exit code; `missing` counts
-files no round served, a normal outcome (e.g. a fork PR's unique files before
-CI has built them) that the caller may explain to the user. -/
+/-- Outcome of a multi-round download. `failed` counts the files whose last
+attempt was a hard transfer error (anything but a 404 miss), and it drives the
+caller's exit code. `missing` counts the files no round served. A miss is a
+normal outcome (for example, a fork PR's unique files before CI has built them)
+that the caller may explain to the user. -/
 structure DownloadResult where
   failed : Nat := 0
   missing : Nat := 0
@@ -904,10 +904,10 @@ If `decompress` is true, decompresses files as they're downloaded (pipelined).
 
 The download tries `locations` in order, one round per location (see
 `readLocations`). After each round, it drops the files that the round fetched,
-so the next location retries only genuine misses. Hard failures that no
-location served get one more pass over the chain. With `unsafeMode` set, the
-download reports how many files each scoped round served (`cache get
---unsafe`). `repo` names the read in messages. -/
+so the next location retries only genuine misses. The hard failures that no
+location served get one more pass over the chain, in a fresh `curl`. With
+`unsafeMode` set, the download reports how many files each scoped round served
+(`cache get --unsafe`). `repo` names the read in messages. -/
 def downloadFiles
     (repo : String) (locations : List Location) (hashMap : IO.ModuleHashMap)
     (forceDownload : Bool) (mode : IO.CurlMode)
@@ -931,12 +931,14 @@ def downloadFiles
   else
     pure none
 
-  -- Keep only the current batch; the result needs only the total missing count.
+  -- `batch` holds the files the current pass still needs. `missing` counts the
+  -- files that no round has served.
   let mut batch := hashMap
   let mut missing := hashMap.size
   let mut decompState : DecompState := {}
   let mut scopeServed : Std.HashMap String Nat := ∅
-  -- Try all files, then retry only unresolved hard failures in a fresh curl.
+  -- The first pass tries every file. The second pass retries the hard failures
+  -- that no location served.
   for retry in [false, true] do
     if batch.isEmpty then break
     if retry then
