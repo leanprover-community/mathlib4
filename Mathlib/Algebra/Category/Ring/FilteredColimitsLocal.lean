@@ -125,10 +125,9 @@ lemma residueField_exists_rep (hc : IsColimit c) [IsLocalRing c.pt]
 
 lemma residueField_eq_iUnion_fieldRange_of_isColimit (hc : IsColimit c) [IsLocalRing c.pt]
     [∀ (j : J), IsLocalHom (c.ι.app j).hom] :
-    haveI (j : J) : IsLocalRing (((Functor.const J).obj c.pt).obj j) := ‹_›
-    ⋃ (j : J), ((ResidueField.map (c.ι.app j).hom).fieldRange :
-      Set (ResidueField (((Functor.const J).obj c.pt).obj j))) =
-        (Set.univ : Set (ResidueField c.pt)) := by
+    ⋃ (j : J),
+      ((ResidueField.map (S := c.pt) (c.ι.app j).hom).fieldRange : Set (ResidueField c.pt)) =
+        Set.univ := by
   ext x
   obtain ⟨j, y, rfl⟩ := residueField_exists_rep F hc x
   simpa using ⟨j, y, rfl⟩
