@@ -525,8 +525,8 @@ theorem _root_.IsSimpleModule.nonempty_linearEquiv_iff_exists_ne_zero [IsSimpleM
 
 theorem _root_.IsSimpleModule.isEmpty_linearEquiv_iff_subsingleton [IsSimpleModule R M]
     [IsSimpleModule R N] : IsEmpty (M ≃ₗ[R] N) ↔ Subsingleton (M →ₗ[R] N) := by
-  rw [subsingleton_iff_forall_eq 0, ← not_iff_not, not_isEmpty_iff]
-  simp [IsSimpleModule.nonempty_linearEquiv_iff_exists_ne_zero]
+  rw [subsingleton_iff_forall_eq 0, ← not_iff_not, not_isEmpty_iff, not_forall,
+    IsSimpleModule.nonempty_linearEquiv_iff_exists_ne_zero]
 
 /-- Schur's Lemma makes the endomorphism ring of a simple module a division ring. -/
 noncomputable instance _root_.Module.End.instDivisionRing
