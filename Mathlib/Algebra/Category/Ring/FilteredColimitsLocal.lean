@@ -190,6 +190,8 @@ theorem isLocalHom_desc (hc : IsColimit c) : IsLocalHom (hc.desc s).hom := by
   rw [← comp_apply, hc.fac]
   exact map_nonunit (S := s.pt) (s.ι.app j).hom x hx'
 
+instance : IsLocalHom (colimit.desc F s).hom := isLocalHom_desc F s (colimit.isColimit F)
+
 theorem residueField_map_desc_eq_isColimitResidueFieldCocone_desc (hc : IsColimit c) :
     haveI := isLocalRing_of_isColimit F hc
     haveI := isLocalHom_desc F s hc
