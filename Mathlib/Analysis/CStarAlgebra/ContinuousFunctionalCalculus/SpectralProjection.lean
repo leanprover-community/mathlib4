@@ -5,9 +5,9 @@ Authors: Pablo Cohen
 -/
 module
 
+public import Mathlib.Algebra.GroupWithZero.Indicator
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Ideal
 public import Mathlib.Topology.Algebra.Indicator
-public import Mathlib.Algebra.GroupWithZero.Indicator
 
 /-!
 # Spectral projections from clopen subsets of the quasispectrum
