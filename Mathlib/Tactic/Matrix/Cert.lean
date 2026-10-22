@@ -6,6 +6,7 @@ Authors: Rao Xiaojia
 module
 
 public meta import Mathlib.Tactic.Matrix.MulExpand
+public import Mathlib.LinearAlgebra.Matrix.Array  -- shake: keep (Qq dependency)
 public import Mathlib.Tactic.Matrix.MulExpand
 public import Mathlib.Tactic.Matrix.OfLists  -- shake: keep (Qq dependency)
 
@@ -22,6 +23,8 @@ proofs about the lists of their rows.
   expansion of the product by `MulExpand`.
 - `certifyRowsEq`: certify the equality of two row literals from the equations of their entries.
 - `decideCertifier`: the entry certifier that leaves each fact to the kernel's `decide`.
+- `certifyOfArray`: certifies that the row-major array of a matrix literal is equal to the array of
+  the matrix's entries.
 -/
 
 public meta section
@@ -54,11 +57,15 @@ structure ListMatrixLit {u : Level} (α : Q(Type u)) (m n : Nat) where
   rows : List (List Q($α))
 
 /-- The `ListMatrixLit` of the matrix with rows `rows`. -/
-def ListMatrixLit.ofArray {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (m n : Nat)
-    (rows : Array (Array Q($α))) : ListMatrixLit α m n :=
-  let rows := rows.toList.map Array.toList
+def ListMatrixLit.ofRows {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (m n : Nat)
+    (rows : List (List Q($α))) : ListMatrixLit α m n :=
   let lit : Q(List (List $α)) := mkListLitQ (α := q(List $α)) (rows.map mkListLitQ)
   { matrix := q(ofLists $m $n $lit), lit, rows }
+
+/-- The `ListMatrixLit` of the matrix with rows `rows`, given as an array of rows. -/
+def ListMatrixLit.ofArray {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (m n : Nat)
+    (rows : Array (Array Q($α))) : ListMatrixLit α m n :=
+  .ofRows zα m n (rows.toList.map Array.toList)
 
 /-- The certifier that leaves each fact to the kernel's `decide`. -/
 def decideCertifier {u : Level} (α : Q(Type u)) : EntryCertifier α where
@@ -96,6 +103,22 @@ def certifyProductEq {u : Level} {m n : Nat} {α : Q(Type u)}
   assertInstancesCommute
   return mkExpectedPropHint q(ofLists_mul $hmul)
     q((ofLists $m $m $(mulEq.A)) * ofLists $m $n $(mulEq.B) = $(U.matrix))
+
+/-- The literal of the row-major array of the entries of the matrix literal `L`. -/
+def ListMatrixLit.array {u : Level} {m n : Nat} {α : Q(Type u)} (L : ListMatrixLit α m n) :
+    Q(Array $α) :=
+  q(List.toArray $(mkListLitQ L.rows.flatten))
+
+/-- Prove that the row-major array of the `m × n` matrix literal `L` is the literal `L.array`. -/
+def certifyOfArray {u : Level} {m n : Nat} {α : Q(Type u)} (zα : Q(Zero $α))
+    (L : ListMatrixLit α m n) : MetaM Q(($(L.matrix)).toArray = $(L.array)) := do
+  let l : Q(List $α) := mkListLitQ L.rows.flatten
+  have : $(L.matrix) =Q ofLists $m $n $(L.lit) := ⟨⟩
+  let hsize ← mkDecideProofQ q((List.toArray $l).size = $m * $n)
+  let hrows ← mkDecideProofQ q(∀ row ∈ $(L.lit), row.length = $n)
+  have hflat : Q(($(L.lit)).flatten = $l) :=
+    mkExpectedPropHint q(Eq.refl $l) q(($(L.lit)).flatten = $l)
+  return q(toArray_ofLists $hrows $hflat $hsize)
 
 end Mathlib.Tactic.Matrix
 
