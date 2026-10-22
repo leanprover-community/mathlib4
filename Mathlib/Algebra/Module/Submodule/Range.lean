@@ -354,7 +354,7 @@ lemma restrictScalars_map [SMul R R₂] [Module R₂ M] [Module R M₂] [IsScala
 
 theorem restrictScalars_comap [SMul R R₂] [Module R₂ M] [Module R M₂] [IsScalarTower R R₂ M]
     [IsScalarTower R R₂ M₂] (f : M →ₗ[R₂] M₂) (M' : Submodule R₂ M₂) :
-    (comap f M').restrictScalars R = (M'.restrictScalars R).comap (f.restrictScalars R) := rfl
+    (M'.comap f).restrictScalars R = (M'.restrictScalars R).comap (f.restrictScalars R) := rfl
 
 /-- If `N ⊆ M` then submodules of `N` are the same as submodules of `M` contained in `N`.
 
