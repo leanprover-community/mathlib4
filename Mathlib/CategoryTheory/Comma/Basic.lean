@@ -5,9 +5,6 @@ Authors: Kim Morrison, Johan Commelin, Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Iso
-public import Mathlib.CategoryTheory.Functor.Category
-public import Mathlib.CategoryTheory.EqToHom
 public import Mathlib.CategoryTheory.Products.Unitor
 
 /-!
@@ -96,19 +93,8 @@ structure CommaMorphism (X Y : Comma L R) where
   right : X.right ⟶ Y.right
   w : L.map left ≫ Y.hom = X.hom ≫ R.map right := by cat_disch
 
-@[to_dual existing w]
-theorem CommaMorphism.w' {X Y : Comma R L} (self : CommaMorphism Y X) :
-    Y.hom ≫ L.map self.right = R.map self.left ≫ X.hom :=
-  self.w.symm
-
-/-- `CommaMorphism.mk'` is the dual of `CommaMorphism.mk`, which we need for `to_dual`.
-Please avoid using this directly. -/
-@[to_dual existing mk]
-abbrev CommaMorphism.mk' {X Y : Comma R L}
-    (right : Y.right ⟶ X.right) (left : Y.left ⟶ X.left)
-    (w : Y.hom ≫ L.map right = R.map left ≫ X.hom) :
-    CommaMorphism Y X where
-  left; right; w := w.symm
+to_dual_for CommaMorphism.w := self.w.symm
+to_dual_for CommaMorphism.mk := { left := right, right := left, w := w.symm }
 
 -- Satisfying the inhabited linter
 instance CommaMorphism.inhabited [Inhabited (Comma L R)] :
@@ -260,8 +246,8 @@ theorem map_obj_hom' (X : Comma L R) :
 instance faithful_map [F₁.Faithful] [F₂.Faithful] : (map α β).Faithful where
   map_injective {X Y} f g h := by
     ext
-    · exact F₁.map_injective (congr_arg CommaMorphism.left h)
-    · exact F₂.map_injective (congr_arg CommaMorphism.right h)
+    · exact F₁.map_injective congr($(h).left)
+    · exact F₂.map_injective congr($(h).right)
 
 @[to_dual self (reorder := A B, 2 4, A' B', 8 10, L R, L' R', F₁ F₂, α β, 23 24, 25 26)]
 instance full_map [F.Faithful] [F₁.Full] [F₂.Full] [IsIso α] [IsIso β] : (map α β).Full where

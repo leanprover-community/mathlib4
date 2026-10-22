@@ -116,8 +116,7 @@ theorem isCompl_orthogonal_of_hasOrthogonalProjection [K.HasOrthogonalProjection
 @[simp]
 theorem orthogonalComplement_eq_orthogonalComplement {L : Submodule 𝕜 E} [K.HasOrthogonalProjection]
     [L.HasOrthogonalProjection] : Kᗮ = Lᗮ ↔ K = L :=
-  ⟨fun h ↦ by simpa using congr(Submodule.orthogonal $(h)),
-    fun h ↦ congr(Submodule.orthogonal $(h))⟩
+  ⟨fun h ↦ by simpa using congr($(h).orthogonal), fun h ↦ congr($(h).orthogonal)⟩
 
 @[simp]
 theorem orthogonal_eq_bot_iff [K.HasOrthogonalProjection] : Kᗮ = ⊥ ↔ K = ⊤ := by
@@ -168,7 +167,7 @@ theorem starProjection_tendsto_self {ι : Type*} [Preorder ι]
   have : (⨆ i, U i).topologicalClosure.HasOrthogonalProjection := by
     rw [top_unique hU']
     infer_instance
-  convert! starProjection_tendsto_closure_iSup U hU x
+  convert starProjection_tendsto_closure_iSup U hU x
   rw [eq_comm, starProjection_eq_self_iff, top_unique hU']
   trivial
 

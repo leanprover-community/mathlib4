@@ -7,9 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.LinearAlgebra.Charpoly.ToMatrix
-public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
-public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 public import Mathlib.RingTheory.Artinian.Module
 
 /-!
@@ -70,7 +68,7 @@ lemma charpoly_nilpotent_tfae [IsNoetherian R M] (φ : Module.End R M) :
     simpa only [h, map_pow, aeval_X] using φ.aeval_self_charpoly
   tfae_have 3 → 1
   | h => by
-    obtain ⟨n, hn⟩ := Filter.eventually_atTop.mp <| φ.eventually_iSup_ker_pow_eq
+    obtain ⟨n, hn⟩ := Filter.eventually_atTop.mp φ.eventually_iSup_ker_pow_eq
     use n
     ext x
     rw [zero_apply, ← mem_ker, ← hn n le_rfl]
