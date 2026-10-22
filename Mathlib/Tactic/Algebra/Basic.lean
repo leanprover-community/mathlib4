@@ -6,9 +6,9 @@ Authors: Arend Mellendijk
 module
 
 public meta import Lean.Meta.Tactic.NormCast
+public import Mathlib.Algebra.Algebra.Basic
 public import Mathlib.Tactic.Algebra.Lemmas  -- shake: keep (Qq output dependency)
 public import Mathlib.Tactic.Ring.RingNF  -- shake: keep (`initialize`s `Ring.ringCleanupRef`)
-public import Mathlib.Algebra.Algebra.Basic
 
 /-!
 # The `algebra` tactic
@@ -89,7 +89,7 @@ def ExSum := Common.ExSum (BaseType sAlg) sA
 set_option linter.unusedVariables false in
 variable {a} in
 /-- Evaluates a numeric literal in the algebra `A` by lifting it through the base ring `R`. -/
-def evalCast (cR : Algebra.Cache q($sR)) (cA : Algebra.Cache q($sA)):
+def evalCast (cR : Algebra.Cache q($sR)) (cA : Algebra.Cache q($sA)) :
     NormNum.Result a → Option (Common.Result (ExSum sAlg) q($a))
   | .isNat _ (.lit (.natVal 0)) p => do
     assumeInstancesCommute

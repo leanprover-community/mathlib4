@@ -6,9 +6,9 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Congr
+public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ApproximatesLinearOn
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 public import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
-public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ApproximatesLinearOn
 
 /-!
 # Change of variables in higher-dimensional integrals
@@ -308,7 +308,7 @@ theorem addHaar_image_le_mul_of_det_lt (A : E →L[ℝ] E) {m : ℝ≥0}
     have L2 :
       Tendsto (fun ε => μ (closedBall 0 ε + A '' closedBall 0 1)) (𝓝[>] 0)
         (𝓝 (d * μ (closedBall 0 1))) := by
-      convert! L1
+      convert L1
       exact (addHaar_image_continuousLinearMap _ _ _).symm
     have I : d * μ (closedBall 0 1) < m * μ (closedBall 0 1) := by
       gcongr; exacts [(measure_closedBall_pos μ _ zero_lt_one).ne', measure_closedBall_lt_top.ne]
@@ -655,7 +655,8 @@ theorem addHaar_image_eq_zero_of_det_fderivWithin_eq_zero
   have A : ∀ (ε : ℝ≥0), 0 < ε → μ (f '' (s ∩ closedBall 0 R)) ≤ ε * μ (closedBall 0 R) :=
     fun ε εpos =>
     addHaar_image_eq_zero_of_det_fderivWithin_eq_zero_aux μ
-      (fun x hx => (hf' x hx.1).mono inter_subset_left) R inter_subset_right ε εpos
+      (fun x (hx : x ∈ s ∩ closedBall 0 R) => (hf' x hx.1).mono inter_subset_left) R
+      inter_subset_right ε εpos
       fun x hx => h'f' x hx.1
   have B : Tendsto (fun ε : ℝ≥0 => (ε : ℝ≥0∞) * μ (closedBall 0 R)) (𝓝[>] 0) (𝓝 0) := by
     have :

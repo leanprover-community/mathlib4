@@ -5,8 +5,8 @@ Authors: Kexing Ying
 -/
 module
 
-public import Mathlib.MeasureTheory.VectorMeasure.Basic
 public import Mathlib.MeasureTheory.Function.AEEqOfIntegral
+public import Mathlib.MeasureTheory.VectorMeasure.Relations
 
 /-!
 

@@ -5,8 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Data.Finsupp.Basic
 public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Data.Finsupp.Basic
 
 /-!
 # Operations on `Finsupp`s with an `Option` domain

@@ -5,8 +5,9 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 -/
 module
 
+public import Mathlib.Analysis.Asymptotics.Basic
 public import Mathlib.Analysis.Normed.Operator.Basic
-public import Mathlib.Analysis.Asymptotics.Defs
+
 /-!
 # Asymptotic statements about the operator norm
 
