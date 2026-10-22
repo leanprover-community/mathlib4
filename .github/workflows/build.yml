@@ -53,5 +53,9 @@ jobs:
       # A push by anyone else runs every check.
       revalidate: ${{ !(github.repository == 'leanprover-community/mathlib4' && github.event_name == 'push' && github.ref == 'refs/heads/master' && github.actor == 'mathlib-bors[bot]') }}
       run_post_ci: ${{ !(github.repository == 'leanprover-community/mathlib4' && github.event_name == 'push' && github.ref == 'refs/heads/master' && github.actor == 'mathlib-bors[bot]') }}
+      # A master push that runs the checks writes the `master` container, which serves
+      # everyone. The nightly-testing builds advance `nightly-testing-green` only on a complete
+      # cache.
+      gate_cache_verification: ${{ (github.repository == 'leanprover-community/mathlib4' && github.event_name == 'push' && github.ref == 'refs/heads/master') || github.repository == 'leanprover-community/mathlib4-nightly-testing' }}
       runs_on: pr
     secrets: inherit
