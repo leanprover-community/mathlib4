@@ -344,6 +344,7 @@ theorem IsKan.ofIsKanTop_lift (Ht : IsKan t) (u : LeftLift (h ≫ f) g) :
     (Ht.ofIsKanTop u).lift = u.lift :=
   rfl
 
+@[reassoc (attr := simp)]
 theorem IsKan.ofIsKanTop_fac (Ht : IsKan t) (u : LeftLift (h ≫ f) g) :
     t.unit ≫ (Ht.ofIsKanTop u).unit ▷ f = u.unit ≫ (α_ u.lift h f).inv :=
   Ht.fac (.mk (u.lift ≫ h) (u.unit ≫ (α_ u.lift h f).inv))
@@ -521,6 +522,7 @@ theorem IsKan.ofIsKanTop_extension (Ht : IsKan t) (u : RightExtension (f ≫ h) 
     (Ht.ofIsKanTop u).extension = u.extension :=
   rfl
 
+@[reassoc (attr := simp)]
 theorem IsKan.ofIsKanTop_fac (Ht : IsKan t) (u : RightExtension (f ≫ h) g) :
     f ◁ (Ht.ofIsKanTop u).counit ≫ t.counit = (α_ f h u.extension).inv ≫ u.counit :=
   Ht.fac (.mk (h ≫ u.extension) ((α_ f h u.extension).inv ≫ u.counit))
@@ -696,6 +698,7 @@ theorem IsKan.ofIsKanTop_lift (Ht : IsKan t) (u : RightLift (h ≫ f) g) :
     (Ht.ofIsKanTop u).lift = u.lift :=
   rfl
 
+@[reassoc (attr := simp)]
 theorem IsKan.ofIsKanTop_fac (Ht : IsKan t) (u : RightLift (h ≫ f) g) :
     (Ht.ofIsKanTop u).counit ▷ f ≫ t.counit = (α_ u.lift h f).hom ≫ u.counit :=
   Ht.fac (.mk (u.lift ≫ h) ((α_ u.lift h f).hom ≫ u.counit))
