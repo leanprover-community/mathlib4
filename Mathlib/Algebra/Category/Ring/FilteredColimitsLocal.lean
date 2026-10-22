@@ -13,25 +13,27 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
 /-!
 
-# Filtered colimit of local ring via local homomorphisms is local ring
+# Filtered colimits of local rings via local homomorphisms are local rings
 
-In this file, we deal with filtered colimit of local ring via local homomorphisms, proving it is
-again local, with maximal ideal equal to the union of images of maximal ideals.
+In this file, we deal with filtered colimits of local rings via local homomorphisms, proving that
+such a colimit is again local, with maximal ideal equal to the union of the images of the maximal
+ideals.
 
-Since currently we currently don't have the category of local rings and local homomorphisms,
-some parts of this file is stated in an ad hoc way, for example the residue field related parts,
-we are not able to directly write that the residue field functor preserves colimits.
+Since we currently don't have the category of local rings and local homomorphisms, some parts of
+this file are stated in an ad hoc way. For example, in the residue field related parts, we are not
+able to directly write that the residue field functor preserves colimits.
 
 ## Main results
 
-* `CommRingCat.FilteredColimit.isLocalRing_of_isColimit` : Filtered colimit of local ring
-  via local homomorphisms is local ring.
+* `CommRingCat.FilteredColimit.isLocalRing_of_isColimit` : a filtered colimit of local rings
+  via local homomorphisms is a local ring.
 
-* `CommRingCat.FilteredColimit.maximalIdeal_eq_iUnion_of_isColimit` : Filtered colimit of local ring
-  via local homomorphisms has maximal ideal equal to union of images of maximal ideals.
+* `CommRingCat.FilteredColimit.maximalIdeal_eq_iUnion_of_isColimit` : the maximal ideal of a
+  filtered colimit of local rings via local homomorphisms is the union of the images of the
+  maximal ideals.
 
-* `CommRingCat.isColimitResidueFieldCocone` : The residue field of filtered colimit of local ring
-  via local homomorphisms is colimit of the residue field of these local rings.
+* `CommRingCat.FilteredColimit.isColimitResidueFieldCocone` : the residue field of a filtered
+  colimit of local rings via local homomorphisms is the colimit of the residue fields.
 
 -/
 
