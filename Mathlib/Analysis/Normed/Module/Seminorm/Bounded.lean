@@ -16,8 +16,6 @@ a *real* `C` such that for all `x`, `p x ≤ C * q x`.
 Two seminorms `p, q` are equivalent if there exists `C ≥ 0` such that `p ≤ C • q` and `q ≤ C • p`
 or equivalently, if `p` is bounded by `q` and `q` is bounded by `p`.
 
-
-
 -/
 
 @[expose] public noncomputable section
@@ -176,8 +174,7 @@ theorem les_smul (h : p ≲ q) {a : ℝ≥0} (ha : a ≠ 0) : p ≲ a • q := b
     _ = _ := by module
 
 @[grind .]
-theorem add_les_add (h : p ≲ q) (h' : p' ≲ q') :
-    p + p' ≲ q + q' := by
+theorem add_les_add (h : p ≲ q) (h' : p' ≲ q') : p + p' ≲ q + q' := by
   obtain ⟨C, h⟩ := h
   obtain ⟨C', h'⟩ := h'
   use max C C'
@@ -187,8 +184,7 @@ theorem add_les_add (h : p ≲ q) (h' : p' ≲ q') :
     _ = _ := by simp
 
 @[grind .]
-theorem add_les (h : p ≲ q) (h' : p' ≲ q) :
-    p + p' ≲ q := calc
+theorem add_les (h : p ≲ q) (h' : p' ≲ q) : p + p' ≲ q := calc
   p + p' ≲ q + q := by grind
   _ = 2 • q := by grind
   _ ≲ q := by grind
@@ -200,8 +196,8 @@ section Module
 variable [SeminormedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
 
 @[gcongr]
-theorem les_congr_sup {p q : ι → Seminorm 𝕜 E} {s : Finset ι}
-    (h : ∀ i ∈ s, p i ≲ q i) : s.sup p ≲ s.sup q := by
+theorem les_congr_sup {p q : ι → Seminorm 𝕜 E} {s : Finset ι} (h : ∀ i ∈ s, p i ≲ q i) :
+    s.sup p ≲ s.sup q := by
   choose C hC using h
   classical
   use s.sup (fun i ↦ if h : i ∈ s then C i h else 0)
@@ -213,8 +209,8 @@ theorem les_congr_sup {p q : ι → Seminorm 𝕜 E} {s : Finset ι}
   · grind [Finset.le_sup]
 
 @[grind ., gcongr]
-theorem les_sup_mono {p : ι → Seminorm 𝕜 E} {s s' : Finset ι}
-    (h : s ⊆ s') : s.sup p ≲ s'.sup p := by
+theorem les_sup_mono {p : ι → Seminorm 𝕜 E} {s s' : Finset ι} (h : s ⊆ s') :
+    s.sup p ≲ s'.sup p := by
   use 1
   grind [one_smul, Finset.sup_le_iff, Finset.le_sup]
 
