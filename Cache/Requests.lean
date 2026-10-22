@@ -565,7 +565,7 @@ structure TransferState where
   failed : Nat := 0
   done : Nat := 0
   speed : Nat := 0
-  /-- Hashes of the hard failures (not 404 misses). Set on downloads only. -/
+  /-- Hashes of failed downloads. An incomplete download round adds every unserved hash. -/
   failedHashes : Std.HashSet UInt64 := ∅
   /-- Decompression pipeline state; used only when a `DecompConfig` is set. -/
   decomp : DecompState := {}
@@ -793,13 +793,10 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
     IO.eprintln (mkStatus s)
   return (s, ← servedRef.get)
 
-/-- Run one location's download pass for the given hash map. Returns the
-`TransferState` from `monitorCurl` (synthesized in serial mode, where it
-carries only the hard failures) and the set of hashes it fetched, so the
-caller can carry the rest to the next location. `decompState` is the
-previous round's decompression pipeline state; the returned state's `decomp`
-continues it. Serial mode never pipelines and passes it through untouched.
-Side effect: fetched files are written to `CACHEDIR` with their final names. -/
+/-- Download files from one location and return the transfer state and delivered hashes.
+Write delivered files to `CACHEDIR` with their final names.
+Parallel mode continues the decompression pipeline in `decompState`.
+Serial mode records failed hashes and preserves `decompState`. -/
 private def downloadFilesFromLocation (location : Location)
     (hashMap : IO.ModuleHashMap)
     (mode : IO.CurlMode) (decompConfig : Option DecompConfig) (decompState : DecompState) :
@@ -818,9 +815,8 @@ private def downloadFilesFromLocation (location : Location)
       classifyDownload (removeOnError := true)
       decompConfig decompState
     IO.FS.removeFile IO.CURLCFG
-    -- A transfer without a report (`s.done < size`) has an unknown outcome and
-    -- no hash, so every unserved file goes to the retry pass. A miss retried
-    -- there reads as a miss again.
+    -- If curl omits reports, retry every unserved hash because the missing
+    -- reports cannot be matched to files.
     let s := if s.done < size then
         { s with failedHashes := hashMap.fold (init := s.failedHashes) fun acc _ hash =>
             if served.contains hash then acc else acc.insert hash }
@@ -839,7 +835,7 @@ private def downloadFilesFromLocation (location : Location)
           | .ok .delivered => (served.insert hash, failedHashes)
           | .ok .miss => (served, failedHashes)
           | _ => (served, failedHashes.insert hash)
-    return ({ failed := failedHashes.size, failedHashes, decomp := decompState }, served)
+    return ({ failedHashes, decomp := decompState }, served)
 
 /-- Build read locations from bases paired with optional container identities.
 `Container.location` adds each container's segment. A URL without a container
@@ -887,27 +883,24 @@ def readLocations (repo : String) (unsafeScopes : List String := []) :
     else pure none
   return readLocationsFrom repo containerBases scope? unsafeScopes headScope?
 
-/-- Outcome of a multi-round download. `failed` counts the files whose last
-attempt was a hard transfer error (anything but a 404 miss), and it drives the
-caller's exit code. `missing` counts the files no round served. A miss is a
-normal outcome (for example, a fork PR's unique files before CI has built them)
-that the caller may explain to the user. -/
+/-- Outcome of a multi-round download. `failed` counts files that no location
+served and that a location marked as failed in the final pass.
+Hard errors mark individual files; incomplete curl reports mark every unserved file at that location.
+`missing` counts all unserved files, including failures. `failed` determines the caller's exit code. -/
 structure DownloadResult where
   failed : Nat := 0
   missing : Nat := 0
 
-/-- Call `curl` to download files from the server to `CACHEDIR` (`.cache`).
-Returns the hard-failure and miss counts (see `DownloadResult`); explaining
-the misses to the user is the caller's job, since classifying them needs the
-marker probe from a module downstream of this one.
-If `decompress` is true, decompresses files as they're downloaded (pipelined).
+/-- Download files to `CACHEDIR` and return their failure and missing-file counts
+(see `DownloadResult`).
+The caller explains missing files.
+Parallel mode decompresses files during download when `decompress` is true.
 
-The download tries `locations` in order, one round per location (see
-`readLocations`). After each round, it drops the files that the round fetched,
-so the next location retries only genuine misses. The hard failures that no
-location served get one more pass over the chain, in a fresh `curl`. With
-`unsafeMode` set, the download reports how many files each scoped round served
-(`cache get --unsafe`). `repo` names the read in messages. -/
+The download tries `locations` in order (see `readLocations`) and removes delivered files
+after each round.
+It retries unserved hard failures once over the location chain, with fresh `curl` processes.
+With `unsafeMode`, it reports how many files each commit scope served (`cache get --unsafe`).
+`repo` labels the download messages. -/
 def downloadFiles
     (repo : String) (locations : List Location) (hashMap : IO.ModuleHashMap)
     (forceDownload : Bool) (mode : IO.CurlMode)
