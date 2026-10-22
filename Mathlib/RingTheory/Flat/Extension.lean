@@ -444,7 +444,7 @@ colimit in `CommRingCat`. -/
 noncomputable def coconeOfCoconeForgetPt (hc : IsColimit c) : FlatExtension R K := by
   let j := Classical.choice ‹IsFiltered J›.2
   let : IsLocalRing c.pt := @CommRingCat.FilteredColimit.isLocalRing_of_isColimit _ _ _ _ _
-      (fun _ _ f ↦ inferInstanceAs (IsLocalHom (F.map f).algHom.toRingHom))
+      (fun f ↦ inferInstanceAs (IsLocalHom (F.map f).algHom.toRingHom))
       (fun j ↦ inferInstanceAs (IsLocalRing (F.obj j))) hc
   let : Algebra R c.pt := ((c.ι.app j).hom.comp (algebraMap R (F.obj j))).toAlgebra
   let : Algebra c.pt K := (hc.desc (algebraMapKCocone F)).hom.toAlgebra
@@ -475,7 +475,7 @@ noncomputable def coconeOfCoconeForgetPt (hc : IsColimit c) : FlatExtension R K 
   · refine le_antisymm (fun x hx ↦ ?_) (((local_hom_TFAE (algebraMap R c.pt)).out 1 3).mp ?_)
     · obtain ⟨j, x, hx', rfl⟩ := Set.mem_iUnion.mp <| (le_of_eq <|
         @CommRingCat.FilteredColimit.maximalIdeal_eq_iUnion_of_isColimit _ _ _ _
-        c (fun _ _ f ↦ inferInstanceAs (IsLocalHom (F.map f).algHom.toRingHom))
+        c (fun f ↦ inferInstanceAs (IsLocalHom (F.map f).algHom.toRingHom))
         (fun j ↦ (F.obj j).isLocalRing) hc) hx
       change x ∈ maximalIdeal (F.obj j) at hx'
       rw [(F.obj j).eqmap] at hx'
@@ -486,7 +486,7 @@ noncomputable def coconeOfCoconeForgetPt (hc : IsColimit c) : FlatExtension R K 
       exact Ideal.mem_map_of_mem g hx'
     · exact @RingHom.isLocalHom_comp _ _ _ _ _ _ (c.ι.app j).hom (algebraMap R (F.obj j))
         (@CommRingCat.FilteredColimit.isLocalHom_ι  _ _ _ _ _
-          (fun _ _ f ↦ inferInstanceAs (IsLocalHom (F.map f).algHom.toRingHom)) hc j)
+          (fun f ↦ inferInstanceAs (IsLocalHom (F.map f).algHom.toRingHom)) hc j)
             (instIsLocalHomRingRingHomAlgebraMap R K _)
 
 /-- The cocone for colimit in `FlatExtension`. -/
