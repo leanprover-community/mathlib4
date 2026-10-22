@@ -3,6 +3,8 @@ Copyright (c) 2024 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
+module
+
 import Cli.Basic
 import Mathlib.Tactic.Linter.ValidatePRTitle
 
@@ -56,4 +58,4 @@ def checkTitleLabels : Cmd := `[Cli|
 ]
 
 /-- The entrypoint to the `lake exe check-title-labels` command. -/
-def main (args : List String) : IO UInt32 := checkTitleLabels.validate args
+public def main (args : List String) : IO UInt32 := checkTitleLabels.validate args

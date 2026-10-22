@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch
 -/
 
+module
+
 import Cache.Cli
 import Cache.Requests
 import Cache.Location
@@ -1971,7 +1973,7 @@ def runAll : IO Unit := do
 end Cache.Test
 
 open Cache Cache.Test Cache.Requests in
-def main : IO UInt32 := do
+public def main : IO UInt32 := do
   runAll
   let n ← failures.get
   if n == 0 then
