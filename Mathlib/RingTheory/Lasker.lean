@@ -83,10 +83,10 @@ lemma isPrimary_decomposition_pairwise_ne_radical {N : Submodule R M}
     contrapose hIJ
     suffices (I'.colon Set.univ).radical = (J'.colon Set.univ).radical by
       rw [← hI, ← hJ, this]
-    · rw [← hI, colon_finsetInf,
-        radical_finset_inf (i := I') (by simp [hI']) (by simp), id_eq] at hIJ
-      rw [hIJ, ← hJ, colon_finsetInf,
-        radical_finset_inf (i := J') (by simp [hJ']) (by simp), id_eq]
+    rw [← hI, colon_finsetInf,
+      radical_finset_inf (i := I') (by simp [hI']) (by simp), id_eq] at hIJ
+    rw [hIJ, ← hJ, colon_finsetInf,
+      radical_finset_inf (i := J') (by simp [hJ']) (by simp), id_eq]
 
 lemma exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition
     {N : Submodule R M} {s : Finset (Submodule R M)}

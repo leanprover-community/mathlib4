@@ -5,8 +5,8 @@ Authors: Mario Carneiro, Yaël Dillies, Patrick Stevens
 -/
 module
 
-public import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Data.Nat.Cast.Basic
 
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 

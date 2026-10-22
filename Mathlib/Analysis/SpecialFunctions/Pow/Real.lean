@@ -6,8 +6,8 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Sébasti
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 public meta import Mathlib.Data.Nat.NthRoot.Defs
+public import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 
 /-! # Power function on `ℝ`
 
