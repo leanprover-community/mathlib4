@@ -174,17 +174,13 @@ variable (s : Cocone F) [s_pt : IsLocalRing s.pt] [s_ι : ∀ j, IsLocalHom (s.�
 
 theorem isLocalHom_desc (hc : IsColimit c) : IsLocalHom (hc.desc s).hom := by
   have : IsLocalRing c.pt := isLocalRing_of_isColimit F hc
-  refine (IsLocalRing.local_hom_TFAE (hc.desc s).hom).out 1 4 |>.mpr fun x hx ↦
-    Ideal.mem_comap.mpr ?_
-  obtain ⟨j, x, hx', rfl⟩ := Set.mem_iUnion.mp <|
-    (le_of_eq <| maximalIdeal_eq_iUnion_of_isColimit F hc) hx
-  change ((c.ι.app j) ≫ (hc.desc s)) x ∈ _
-  simp only [Functor.const]
-  rw [hc.fac s j, ← Ideal.mem_comap]
+  refine ((IsLocalRing.local_hom_TFAE (hc.desc s).hom).out 1 2).mpr ?_
+  rintro _ ⟨x, hx, rfl⟩
+  obtain ⟨j, x, hx', rfl⟩ :=
+    Set.mem_iUnion.mp ((maximalIdeal_eq_iUnion_of_isColimit F hc).le hx)
   have : IsLocalRing (((Functor.const J).obj s.pt).obj j) := s_pt
-  have : _ ≤ Ideal.comap _ (maximalIdeal s.pt) :=
-    ((IsLocalRing.local_hom_TFAE _).out 1 4 |>.mp (s_ι j))
-  exact this hx'
+  rw [← comp_apply, hc.fac]
+  exact map_nonunit (s.ι.app j).hom x hx'
 
 theorem residueField_map_desc_eq_isColimitResidueFieldCocone_desc (hc : IsColimit c) :
     haveI := isLocalRing_of_isColimit F hc
