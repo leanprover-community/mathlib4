@@ -268,20 +268,30 @@ jobs:
           done < <(jq -r '.packages[] | select(.type == "git") | .name' lake-manifest.json)
           echo "::notice::caching $(wc -l < .lake/dep-plan/deps.txt) dependencies"
 
+      # `cache lake-dep` reads and writes the dependency mappings. The tool
+      # comes from the workflow's own commit, not from the mathlib commit
+      # under test, which may predate the command.
+      - name: Checkout the cache tool
+        if: ${{ env.CACHE_DEPS == 'true' }}
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          path: tools
+          fetch-depth: 1
+
+      - name: Build the cache tool
+        if: ${{ env.CACHE_DEPS == 'true' }}
+        shell: bash -euo pipefail {0}
+        run: |
+          cd tools
+          lake build cache
+          echo "CACHE_TOOL=$PWD/.lake/build/bin/cache" >> "$GITHUB_ENV"
+
       # The primary root hydration, an optimization. It seeds Lake's artifact
       # cache from the
       # previous run on this toolchain, at the pointer the plan step resolved.
       # The incremental build below then compiles the churn since that run.
       # The first run on a toolchain has no pointer and builds from source.
-      # `lake exe cache lake-dep` reads and writes the dependency mappings.
-      # The build runs in the sandbox, like every step that runs this
-      # checkout's code.
-      - name: Build the cache tool
-        if: ${{ env.CACHE_DEPS == 'true' }}
-        run: |
-          cd pr-branch
-          lake build cache
-
       - name: Warm start from shadow scope
         shell: bash -euo pipefail {0}
         env:
@@ -311,7 +321,7 @@ jobs:
             exit 0
           fi
           while read -r name; do
-            .lake/build/bin/cache lake-dep get --package="$name" --service=shadow \
+            "$CACHE_TOOL" lake-dep get --package="$name" --service=shadow \
               --artifact-endpoint="$DEP_ARTIFACT_ENDPOINT" --revision-endpoint="$DEP_REVISION_ENDPOINT" \
               --scope="$SHADOW_SCOPE/$name/$TCSLUG" --rev-scope="$CACHE_SCOPE/deps/$name" \
               --rev="$CHAIN_PREV" \
@@ -516,13 +526,23 @@ jobs:
           name: lake-cache-staging-${{ github.run_id }}
           path: lake-cache-staging
 
-      # The dependency uploads use `lake exe cache lake-dep put`. This step
-      # builds the tool from the checkout before `LAKE_CACHE_KEY` enters the
-      # environment.
+      # `cache lake-dep` reads and writes the dependency mappings. The tool
+      # comes from the workflow's own commit, not from the mathlib commit
+      # under test, which may predate the command. It is built before
+      # `LAKE_CACHE_KEY` enters the environment.
+      - name: Checkout the cache tool
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          path: tools
+          fetch-depth: 1
+
       - name: Build the cache tool
+        shell: bash -euo pipefail {0}
         run: |
-          cd pr-branch
+          cd tools
           lake build cache
+          echo "CACHE_TOOL=$PWD/.lake/build/bin/cache" >> "$GITHUB_ENV"
 
       - name: Resolve LAKE_CACHE_KEY (trim whitespace)
         env:
@@ -548,7 +568,7 @@ jobs:
       # `<scope>/deps/<name>/<mathlib sha>.jsonl`: the mathlib commit fixes
       # every upstream pin. Its artifacts go under the dependency's own scope,
       # `$SHADOW_SCOPE/<name>/<tcslug>`, which carries no revision, so every
-      # mathlib commit shares identical content. `lake exe cache lake-dep put`
+      # mathlib commit shares identical content. `cache lake-dep put`
       # makes Lake's upload calls with these two scopes.
       #
       # `continue-on-error` keeps a failed dependency upload from failing the
@@ -566,7 +586,7 @@ jobs:
           ok=0 fail=0
           : > /tmp/dep-put.log
           while read -r name; do
-            if .lake/build/bin/cache lake-dep put "../lake-cache-staging/deps/$name" \
+            if "$CACHE_TOOL" lake-dep put "../lake-cache-staging/deps/$name" \
                 --artifact-endpoint="$DEP_ARTIFACT_ENDPOINT" --revision-endpoint="$DEP_REVISION_ENDPOINT" \
                 --scope="$SHADOW_SCOPE/$name/$TCSLUG" --rev-scope="$CACHE_SCOPE/deps/$name" \
                 --rev="$MATHLIB_SHA" 2>&1 | tee -a /tmp/dep-put.log; then
@@ -737,6 +757,25 @@ jobs:
           cd pr-branch
           lake env
 
+      # `cache lake-dep` reads and writes the dependency mappings. The tool
+      # comes from the workflow's own commit, not from the mathlib commit
+      # under test, which may predate the command.
+      - name: Checkout the cache tool
+        if: ${{ env.CACHE_DEPS == 'true' }}
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          path: tools
+          fetch-depth: 1
+
+      - name: Build the cache tool
+        if: ${{ env.CACHE_DEPS == 'true' }}
+        shell: bash -euo pipefail {0}
+        run: |
+          cd tools
+          lake build cache
+          echo "CACHE_TOOL=$PWD/.lake/build/bin/cache" >> "$GITHUB_ENV"
+
       # One fetch for the root package. The revision file for this mathlib
       # sha maps mathlib's own input hashes. The dependencies follow in the
       # next step.
@@ -749,7 +788,7 @@ jobs:
             --rev="$MATHLIB_SHA"
 
       # Fetch each dependency from this mathlib snapshot with
-      # `lake exe cache lake-dep get`: the revision file from mathlib's scope,
+      # `cache lake-dep get`: the revision file from mathlib's scope,
       # the artifacts from the dependency's own scope.
       - name: lake cache get dependencies
         if: ${{ env.CACHE_DEPS == 'true' }}
@@ -759,7 +798,7 @@ jobs:
           while read -r name; do
             if [[ " $DEP_SKIP " == *" $name "* ]]; then continue; fi
             total=$((total+1))
-            if lake exe cache lake-dep get --package="$name" --service=shadow \
+            if "$CACHE_TOOL" lake-dep get --package="$name" --service=shadow \
                 --artifact-endpoint="$DEP_ARTIFACT_ENDPOINT" --revision-endpoint="$DEP_REVISION_ENDPOINT" \
                 --scope="$SHADOW_SCOPE/$name/$TCSLUG" --rev-scope="$CACHE_SCOPE/deps/$name" \
                 --rev="$MATHLIB_SHA"; then
@@ -887,6 +926,23 @@ jobs:
           ./elan-init.sh -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
+      # `cache lake-dep` reads and writes the dependency mappings. The tool
+      # comes from the workflow's own commit, not from the mathlib commit
+      # under test, which may predate the command.
+      - name: Checkout the cache tool
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          path: tools
+          fetch-depth: 1
+
+      - name: Build the cache tool
+        shell: bash -euo pipefail {0}
+        run: |
+          cd tools
+          lake build cache
+          echo "CACHE_TOOL=$PWD/.lake/build/bin/cache" >> "$GITHUB_ENV"
+
       # A small project that depends on mathlib at the revision this run
       # built. The three files below render as:
       #
@@ -927,7 +983,7 @@ jobs:
 
       # Read the snapshot SHA from the resolved mathlib dependency. mathlib
       # comes from `lake cache get`; each transitive dependency comes from
-      # `lake exe cache lake-dep get` at the same SHA.
+      # `cache lake-dep get` at the same SHA.
       - name: lake cache get (mathlib + transitive deps)
         run: |
           cd downstream
@@ -940,7 +996,7 @@ jobs:
               fetch=(lake cache get --service=shadow --package=mathlib \
                 --scope="$CACHE_SCOPE" --rev="$snapshot")
             else
-              fetch=(lake exe cache lake-dep get --package="$name" --service=shadow \
+              fetch=("$CACHE_TOOL" lake-dep get --package="$name" --service=shadow \
                 --artifact-endpoint="$DEP_ARTIFACT_ENDPOINT" --revision-endpoint="$DEP_REVISION_ENDPOINT" \
                 --scope="$SHADOW_SCOPE/$name/$TCSLUG" --rev-scope="$CACHE_SCOPE/deps/$name" \
                 --rev="$snapshot")
