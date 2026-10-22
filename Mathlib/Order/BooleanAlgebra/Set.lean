@@ -565,6 +565,15 @@ lemma insert_erase_invOn :
     InvOn (insert a) (fun s ↦ s \ {a}) {s : Set α | a ∈ s} {s : Set α | a ∉ s} :=
   ⟨fun _s ha ↦ insert_sdiff_self_of_mem ha, fun _s ↦ insert_sdiff_self_of_notMem⟩
 
+/-- `insert a` is injective on sets not containing `a`. -/
+lemma insert_injOn_notMem (a : α) : {s : Set α | a ∉ s}.InjOn (insert a) :=
+  fun _s hs _t ht h ↦ by rw [← insert_sdiff_self_of_notMem hs, h, insert_sdiff_self_of_notMem ht]
+
+/-- `· \ {a}` is injective on sets containing `a`. -/
+lemma sdiff_singleton_injOn_mem (a : α) : {s : Set α | a ∈ s}.InjOn (· \ {a}) :=
+  fun _s (hs : a ∈ _s) _t (ht : a ∈ _t) (h : _ \ _ = _ \ _) ↦ by
+    rw [← insert_sdiff_self_of_mem hs, h, insert_sdiff_self_of_mem ht]
+
 @[simp]
 lemma sdiff_singleton_eq_self (h : a ∉ s) : s \ {a} = s :=
   sdiff_eq_self_iff_disjoint.2 <| by simp [h]

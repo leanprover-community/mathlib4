@@ -176,6 +176,10 @@ theorem erase_subset_iff_of_mem (h : a ∈ t) : s.erase a ⊆ t ↔ s ⊆ t := b
 theorem erase_injOn' (a : α) : { s : Finset α | a ∈ s }.InjOn fun s => s.erase a :=
   fun s hs t ht (h : s.erase a = _) => by rw [← insert_erase hs, ← insert_erase ht, h]
 
+/-- `insert a` is injective on finsets not containing `a`. See also `Finset.erase_injOn'`. -/
+theorem insert_injOn_notMem (a : α) : { s : Finset α | a ∉ s }.InjOn (insert a) :=
+  fun s hs t ht (h : insert a s = _) ↦ by rw [← erase_insert hs, ← erase_insert ht, h]
+
 end Erase
 
 lemma Nontrivial.exists_cons_eq {s : Finset α} (hs : s.Nontrivial) :
