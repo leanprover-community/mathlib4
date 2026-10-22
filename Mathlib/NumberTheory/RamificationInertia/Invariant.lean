@@ -35,19 +35,23 @@ by `Algebra.FormallyUnramified.descentMultiplier`.
 open scoped Pointwise TensorProduct
 
 section LiftBaseChange
-#print Submodule.baseChange
-theorem Submodule.baseChange_le_iff {R M A : Type*} [CommSemiring R] [Semiring A]
-  [Algebra R A] [AddCommMonoid M] [Module R M] (p : Submodule R M) (q : Submodule A (A ⊗[R] M)) :
-  p.baseChange A ≤ q ↔ (p.map ((TensorProduct.mk R A M) 1)) ≤ q.restrictScalars R := by
-  rw [Submodule.baseChange_eq_span, Submodule.span_le]
+
+theorem Submodule.restrictScalars_comap {R R₂ M M₂ : Type*} [Semiring R] [Semiring R₂]
+    [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R₂ M₂] [SMul R R₂] [Module R₂ M]
+    [Module R M₂] [IsScalarTower R R₂ M] [IsScalarTower R R₂ M₂]
+    (f : M →ₗ[R₂] M₂) (M' : Submodule R₂ M₂) :
+    restrictScalars R (comap f M') = comap (f.restrictScalars R) (restrictScalars R M') := by
   rfl
 
-theorem Submodule.baseChange_le_iff' {R M A : Type*} [CommSemiring R] [Semiring A]
+theorem Submodule.baseChange_le_iff {R M A : Type*} [CommSemiring R] [Semiring A]
   [Algebra R A] [AddCommMonoid M] [Module R M] (p : Submodule R M) (q : Submodule A (A ⊗[R] M)) :
-  p.baseChange A ≤ q ↔ p ≤ (q.restrictScalars R).comap (TensorProduct.mk R A M 1) := by
-  rw [← map_le_iff_le_comap]
-  rw [Submodule.baseChange_eq_span, Submodule.span_le]
-  rfl
+  p.baseChange A ≤ q ↔ (p.map (TensorProduct.mk R A M 1)) ≤ q.restrictScalars R := by
+  rw [baseChange_eq_span, span_le, ← q.coe_restrictScalars R, SetLike.coe_subset_coe]
+
+theorem Submodule.baseChange_le_iff' {R M A : Type*} [CommSemiring R] [Semiring A]
+    [Algebra R A] [AddCommMonoid M] [Module R M] (p : Submodule R M) (q : Submodule A (A ⊗[R] M)) :
+    p.baseChange A ≤ q ↔ p ≤ (q.restrictScalars R).comap (TensorProduct.mk R A M 1) := by
+  rw [baseChange_le_iff, map_le_iff_le_comap]
 
 namespace LinearMap
 
@@ -55,6 +59,7 @@ variable {R M N : Type*} (A : Type*) [CommSemiring R] [CommSemiring A] [Algebra 
   [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
   [Module A N] [IsScalarTower R A N]
 
+-- PRed
 lemma liftBaseChange_comp_baseChange {P} [AddCommMonoid P] [Module R P]
     (l : M →ₗ[R] N) (l' : P →ₗ[R] M) :
     (l.liftBaseChange A).comp (l'.baseChange A) = (l.comp l').liftBaseChange A := by
@@ -66,11 +71,8 @@ lemma baseChange_le_comap_liftBaseChange_iff_map_le_restrictScalars
     p.baseChange A ≤ q.comap (l.liftBaseChange A) ↔ p.map l ≤ q.restrictScalars R := by
   have h : (l.liftBaseChange A).restrictScalars R ∘ₗ TensorProduct.mk R A M 1 = l :=
     (LinearMap.liftBaseChangeEquiv A).symm_apply_apply l
-  rw [Submodule.baseChange_le_iff', Submodule.map_le_iff_le_comap]
-  change p ≤
-    ((q.restrictScalars R).comap ((l.liftBaseChange A).restrictScalars R)).comap
-      (TensorProduct.mk R A M 1) ↔ _
-  rw [← Submodule.comap_comp, h]
+  rw [Submodule.baseChange_le_iff', Submodule.map_le_iff_le_comap,
+    Submodule.restrictScalars_comap, ← Submodule.comap_comp, h]
 
 end LinearMap
 
