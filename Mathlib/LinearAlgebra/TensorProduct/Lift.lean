@@ -70,12 +70,4 @@ lemma range_liftBaseChange (l : M →ₗ[R] N) :
     rintro _ ⟨x, rfl⟩
     exact ⟨1 ⊗ₜ x, by simp⟩
 
--- lemma le_comap_liftBaseChange (l : M →ₗ[R] N) (p : Submodule R M) (q : Submodule A N)
---     (hl : p ≤ (q.restrictScalars R).comap l) : p.baseChange A ≤ q.comap (l.liftBaseChange A) := by
---   rw [Submodule.baseChange, LinearMap.range_le_iff_comap, ← Submodule.comap_comp,
---     liftBaseChange_comp_baseChange, ← LinearMap.range_le_iff_comap,
---     LinearMap.range_liftBaseChange, Submodule.span_le]
---   rintro _ ⟨x, rfl⟩
---   exact hl x.property
-
 end LinearMap
