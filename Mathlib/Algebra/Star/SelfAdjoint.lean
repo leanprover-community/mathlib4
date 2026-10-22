@@ -377,11 +377,15 @@ end IsSelfAdjoint
 
 variable (R)
 
-/-- The self-adjoint elements of a star additive group, as an additive subgroup. -/
-def selfAdjoint [AddGroup R] [StarAddMonoid R] : AddSubgroup R where
+/-- Prefer `selfAdjoint` over this definition. -/
+def selfAdjointAddSubmonoid [AddMonoid R] [StarAddMonoid R] : AddSubmonoid R where
   carrier := { x | IsSelfAdjoint x }
   zero_mem' := star_zero R
   add_mem' hx := hx.add
+
+/-- The self-adjoint elements of a star additive group, as an additive subgroup. -/
+def selfAdjoint [AddGroup R] [StarAddMonoid R] : AddSubgroup R where
+  __ := selfAdjointAddSubmonoid R
   neg_mem' hx := hx.neg
 
 /-- The skew-adjoint elements of a star additive group, as an additive subgroup. -/

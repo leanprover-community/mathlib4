@@ -364,13 +364,11 @@ theorem summable_star_iff' : Summable (star f) L ↔ Summable f L :=
 theorem tsum_star [T2Space α] : star (∑'[L] b, f b) = ∑'[L] b, star (f b) :=
   Function.LeftInverse.map_tsum (g := starAddEquiv) f continuous_star continuous_star star_star
 
-#check IsSelfAdjoint
+theorem isClosed_ofPred_isSelfAdjoint [T2Space α] : IsClosed {a : α | IsSelfAdjoint a} :=
+  isClosed_eq continuous_star continuous_id
+
 theorem IsSelfAdjoint.tsum [T2Space α] (h : ∀ b, IsSelfAdjoint (f b)) :
     IsSelfAdjoint (∑'[L] b, f b) :=
-  let aux : AddSubmonoid α :=
-    { carrier := {x | IsSelfAdjoint x}, add_mem' := .add, zero_mem' := .zero}
-  tsum_mem (s := aux) _ h
-  -- Function.LeftInverse.map_tsum (g := starAddEquiv) f continuous_star continuous_star star_star
-
+  tsum_mem (s := selfAdjointAddSubmonoid α) (L := L) isClosed_ofPred_isSelfAdjoint h
 
 end ContinuousStar
