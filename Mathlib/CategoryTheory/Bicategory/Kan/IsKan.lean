@@ -168,6 +168,7 @@ theorem IsKan.ofIsKanTop_extension (Ht : IsKan t) (u : LeftExtension (f ≫ h) g
     (Ht.ofIsKanTop u).extension = u.extension :=
   rfl
 
+@[reassoc (attr := simp)]
 theorem IsKan.ofIsKanTop_fac (Ht : IsKan t) (u : LeftExtension (f ≫ h) g) :
     t.unit ≫ f ◁ (Ht.ofIsKanTop u).unit = u.unit ≫ (α_ f h u.extension).hom :=
   Ht.fac (.mk (h ≫ u.extension) (u.unit ≫ (α_ f h u.extension).hom))
