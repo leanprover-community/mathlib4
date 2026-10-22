@@ -5,16 +5,16 @@ Authors: Johan Commelin, Eric Wieser
 -/
 module
 
+public import Mathlib.Data.Nat.Totient
+public import Mathlib.LinearAlgebra.Dimension.Localization
 public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 public import Mathlib.LinearAlgebra.Dual.Lemmas
-public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.Diagonal
 public import Mathlib.LinearAlgebra.Matrix.DotProduct
 public import Mathlib.LinearAlgebra.Matrix.Dual
-public import Mathlib.LinearAlgebra.Matrix.Transvection
-public import Mathlib.Data.Nat.Totient
 public import Mathlib.LinearAlgebra.Matrix.Nondegenerate
+public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Rank of matrices
@@ -139,14 +139,14 @@ theorem rank_subsingleton [CommSemiring R] [Subsingleton R] (A : Matrix m n R) :
   finrank_subsingleton
 
 @[simp]
-theorem cRank_one [Semiring R] [Nontrivial R] [DecidableEq m] [StrongRankCondition R] :
+theorem cRank_one [Semiring R] [DecidableEq m] [StrongRankCondition R] :
     (cRank (1 : Matrix m m R)) = lift.{uR} #m := by
   have h : LinearIndependent R (1 : Matrix m m R).col := by
     convert! Pi.linearIndependent_single_one m R
     simp [funext_iff, one_apply, Pi.single_apply]
   rw [cRank, rank_span h, ← lift_umax, ← Cardinal.mk_range_eq_of_injective h.injective, lift_id']
 
-@[simp] theorem eRank_one [Semiring R] [Nontrivial R] [DecidableEq m] [StrongRankCondition R] :
+@[simp] theorem eRank_one [Semiring R] [DecidableEq m] [StrongRankCondition R] :
     (eRank (1 : Matrix m m R)) = ENat.card m := by
   rw [eRank, cRank_one, toENat_lift, ENat.card]
 
@@ -180,13 +180,11 @@ theorem rank_le_width [CommSemiring R] [StrongRankCondition R] {m n : ℕ}
 
 theorem rank_mul_le_left [CommSemiring R] [StrongRankCondition R] (A : Matrix m n R)
     (B : Matrix n o R) : (A * B).rank ≤ A.rank := by
-  nontriviality R
   rw [rank, rank, mulVecLin_mul]
   exact Cardinal.toNat_le_toNat (LinearMap.rank_comp_le_left ..) (rank_lt_aleph0 R _)
 
 theorem rank_mul_le_right [CommSemiring R] [StrongRankCondition R] (A : Matrix m n R)
     (B : Matrix n o R) : (A * B).rank ≤ B.rank := by
-  nontriviality R
   rw [rank, rank, mulVecLin_mul]
   exact finrank_le_finrank_of_rank_le_rank (LinearMap.lift_rank_comp_le_right _ _)
     (rank_lt_aleph0 _ _)
@@ -195,11 +193,24 @@ theorem rank_mul_le [CommSemiring R] [StrongRankCondition R] (A : Matrix m n R) 
     (A * B).rank ≤ min A.rank B.rank :=
   le_min (rank_mul_le_left _ _) (rank_mul_le_right _ _)
 
+theorem rank_mul_ge [CommRing R] [IsDomain R] (A : Matrix m n R) (B : Matrix n o R) :
+    A.rank + B.rank ≤ (A * B).rank + Fintype.card n := by
+  have hker : finrank R (A.mulVecLin.comp B.mulVecLin).ker ≤
+      finrank R A.mulVecLin.ker + finrank R B.mulVecLin.ker := by
+    have H := B.mulVecLin.lift_rank_comap_le A.mulVecLin.ker
+    simp only [← Submodule.finrank_eq_rank, Cardinal.lift_natCast] at H
+    exact_mod_cast H
+  have hf := A.mulVecLin.finrank_range_add_finrank_ker
+  have hg := B.mulVecLin.finrank_range_add_finrank_ker
+  have hfg := (A.mulVecLin.comp B.mulVecLin).finrank_range_add_finrank_ker
+  simp only [Module.finrank_fintype_fun_eq_card] at hf hg hfg
+  rw [rank, rank, rank, mulVecLin_mul]
+  lia
+
 theorem rank_vecMulVec_le [CommSemiring R] [StrongRankCondition R] (w : m → R) (v : n → R) :
     (Matrix.vecMulVec w v).rank ≤ 1 := by
   rw [Matrix.vecMulVec_eq Unit]
   refine le_trans (rank_mul_le_left _ _) ?_
-  nontriviality R
   exact rank_le_card_width _
 
 theorem rank_unit [DecidableEq n] [CommSemiring R] [StrongRankCondition R] (A : (Matrix n n R)ˣ) :
@@ -286,7 +297,6 @@ lemma rank_mul_eq_right_of_isUpperTriangular {R : Type*} [CommRing R] [IsDomain 
 /-- Taking a subset of the rows and columns reduces the rank. -/
 theorem rank_submatrix_le [CommSemiring R] [StrongRankCondition R] [Fintype n₀] (A : Matrix m n R)
     (r : m₀ → m) (c : n₀ → n) : (A.submatrix r c).rank ≤ A.rank := by
-  nontriviality R
   have := Module.Finite.span_of_finite R (Set.finite_range (A.submatrix r id).col)
   calc
     _ = (((A.submatrix r id)ᵀᵀ.submatrix id c)ᵀᵀ).rank := by simp
@@ -337,7 +347,7 @@ theorem cRank_reindex {m₀ : Type um} {n : Type un} [Semiring R] (A : Matrix m 
 @[simp]
 theorem eRank_submatrix {n : Type un} [Semiring R] (A : Matrix m n R) (em : m₀ ≃ m) (en : n₀ ≃ n) :
     eRank (A.submatrix em en) = eRank A := by
-  simpa [-lift_cRank_submatrix] using! congr_arg Cardinal.toENat <| A.lift_cRank_submatrix em en
+  simpa [-lift_cRank_submatrix] using! congr(Cardinal.toENat $(A.lift_cRank_submatrix em en))
 
 theorem eRank_reindex {m₀ : Type um} {n : Type un} [Semiring R] (A : Matrix m n R) (em : m ≃ m₀)
     (en : n ≃ n₀) : eRank (A.reindex em en) = eRank A :=
@@ -459,7 +469,7 @@ theorem cRank_diagonal [DecidableEq m] (w : m → R) :
   have h : LinearIndependent R w' := by
     have hli' := Pi.linearIndependent_single_of_ne_zero (R := R)
       (v := fun i : m ↦ if w i = 0 then (1 : R) else w i) (by simp [ite_eq_iff'])
-    convert! hli'.comp Subtype.val Subtype.val_injective
+    convert hli'.comp Subtype.val Subtype.val_injective
     ext ⟨j, hj⟩ k
     simp [w', diagonal, hj, Pi.single_apply, eq_comm]
   have hrw : insert 0 (range (diagonal w).col) = insert 0 (range w') := by
@@ -534,7 +544,7 @@ theorem ker_mulVecLin_transpose_mul_self (A : Matrix m n R) :
   simp only [LinearMap.mem_ker, mulVecLin_apply, ← mulVec_mulVec]
   constructor
   · intro h
-    replace h := congr_arg (dotProduct x) h
+    replace h := congr(dotProduct x $h)
     rwa [dotProduct_mulVec, dotProduct_zero, vecMul_transpose, dotProduct_self_eq_zero] at h
   · intro h
     rw [h, mulVec_zero]
@@ -572,6 +582,34 @@ theorem rank_eq_finrank_span_row [Field R] [Finite m] (A : Matrix m n R) :
 theorem _root_.LinearIndependent.rank_matrix [Field R] [Fintype m]
     {M : Matrix m n R} (h : LinearIndependent R M.row) : M.rank = Fintype.card m := by
   rw [M.rank_eq_finrank_span_row, linearIndependent_iff_card_eq_finrank_span.mp h, Set.finrank]
+
+/-- `M.mulVec` is surjective iff `M` has full row rank. -/
+theorem mulVec_surjective_iff_rank_eq_card [Field R] [Fintype m] {M : Matrix m n R} :
+    M.mulVec.Surjective ↔ M.rank = Fintype.card m := by
+  rw [← coe_mulVecLin, ← LinearMap.range_eq_top, rank, ← Module.finrank_pi R]
+  exact ⟨fun h ↦ by rw [h, finrank_top], Submodule.eq_top_of_finrank_eq⟩
+
+/-- A matrix over a semisimple ring with linearly independent rows has surjective `mulVec`. -/
+theorem _root_.LinearIndependent.mulVec_surjective [Ring R] [IsSemisimpleRing R]
+    {M : Matrix m n R} (h : LinearIndependent R M.row) : M.mulVec.Surjective := by
+  nontriviality R using M.mulVec.surjective_to_subsingleton
+  have := @Fintype.ofFinite m h.finite_of_isNoetherian
+  classical
+  have ⟨f, hf⟩ := IsSemisimpleModule.extension_property M.toLinearMapRight'
+    (vecMul_injective_iff.mpr h) .id
+  have : M * f.toMatrixRight' = 1 := toLinearMapRight'.injective <| by simpa using hf
+  exact fun v ↦ ⟨f.toMatrixRight' *ᵥ v, by simp [this]⟩
+
+/-- `M.vecMul` is surjective iff `M` has full column rank. -/
+theorem vecMul_surjective_iff_rank_eq_card [Field R] [Fintype m] {M : Matrix m n R} :
+    M.vecMul.Surjective ↔ M.rank = Fintype.card n := by
+  simp [← mulVec_transpose, mulVec_surjective_iff_rank_eq_card]
+
+omit [Fintype n] in
+/-- A matrix with linearly independent columns has surjective `vecMul`. -/
+theorem _root_.LinearIndependent.vecMul_surjective [CommRing R] [IsSemisimpleRing R]
+    [Fintype m] {M : Matrix m n R} (h : LinearIndependent R M.col) : M.vecMul.Surjective := by
+  simpa [← mulVec_transpose] using h.mulVec_surjective
 
 lemma rank_add_rank_le_card_of_mul_eq_zero [Field R] [Finite l] [Fintype m]
     {A : Matrix l m R} {B : Matrix m n R} (hAB : A * B = 0) :

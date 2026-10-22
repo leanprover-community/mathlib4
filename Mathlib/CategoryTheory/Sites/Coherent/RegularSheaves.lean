@@ -11,6 +11,7 @@ public import Mathlib.CategoryTheory.Preadditive.Projective.Basic
 public import Mathlib.CategoryTheory.Sites.Canonical
 public import Mathlib.CategoryTheory.Sites.Coherent.Basic
 public import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
+
 /-!
 
 # Sheaves for the regular topology
@@ -285,7 +286,7 @@ lemma isSheaf_yoneda_obj [Preregular C] (W : C) :
   obtain ⟨t, t_amalg, t_uniq⟩ :=
     (Sieve.forallYonedaIsSheaf_iff_colimit S).mpr ⟨h_colim⟩ W x_ext hx_ext
   refine ⟨t, ?_, ?_⟩
-  · convert!
+  · convert
     Presieve.isAmalgamation_restrict
       (Sieve.le_generate (Presieve.ofArrows (fun () ↦ Y) (fun () ↦ f))) _ _ t_amalg
     exact (Presieve.restrict_extend hx).symm

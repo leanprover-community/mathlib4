@@ -7,7 +7,9 @@ Authors: Floris van Doorn
 module
 
 public import Lean.Meta.Tactic.Grind.RegisterCommand
-public import Mathlib.Init
+public import Std.Data.HashSet.Basic
+
+import Mathlib.Init
 
 /-!
 # Custom grind-sets

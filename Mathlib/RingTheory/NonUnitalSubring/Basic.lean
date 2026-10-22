@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Algebra.Group.Subgroup.Basic
 public import Mathlib.Algebra.Group.Submonoid.BigOperators
-public import Mathlib.GroupTheory.Subsemigroup.Center
 public import Mathlib.RingTheory.NonUnitalSubring.Defs
 public import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+
+import Mathlib.Order.CompleteLattice.Finset
 
 /-!
 # `NonUnitalSubring`s
@@ -564,15 +565,6 @@ theorem isMulCommutative_closure {R : Type*} [NonUnitalRing R] {s : Set R}
   .of_setLike_mul_comm fun _ h₁ _ h₂ ↦
     Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂)
 
-open scoped IsMulCommutative in
-/-- If all the elements of a set `s` commute, then `closure s` is a non-unital commutative
-ring. -/
-@[deprecated isMulCommutative_closure +typeChanged (since := "2026-03-11")]
-abbrev closureNonUnitalCommRingOfComm {R : Type*} [NonUnitalRing R] {s : Set R}
-    (hcomm : s.Pairwise Commute) : NonUnitalCommRing (closure s) :=
-  have := isMulCommutative_closure hcomm
-  inferInstance
-
 instance instIsMulCommutative_closure {S R : Type*} [NonUnitalRing R]
     [SetLike S R] [MulMemClass S R] (s : S) [IsMulCommutative s] :
     IsMulCommutative (closure (s : Set R)) :=
@@ -712,6 +704,11 @@ theorem mem_sSup_of_directedOn {S : Set (NonUnitalSubring R)} (Sne : S.Nonempty)
 theorem coe_sSup_of_directedOn {S : Set (NonUnitalSubring R)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) : (↑(sSup S) : Set R) = ⋃ s ∈ S, ↑s :=
   Set.ext fun x => by simp [mem_sSup_of_directedOn Sne hS]
+
+theorem coe_iSup_eq_iUnion_finset_coe_biSup {ι : Type*} (S : ι → NonUnitalSubring R) :
+    ((⨆ i, S i : NonUnitalSubring R) : Set R) =
+      ⋃ s : Finset ι, (⨆ i ∈ s, S i : NonUnitalSubring R) := by
+  rw [iSup_eq_iSup_finset, coe_iSup_of_directed <| Monotone.directed_le fun _ _ ↦ biSup_mono]
 
 theorem isMulCommutative_iSup {ι : Sort*} [Nonempty ι] {S : ι → NonUnitalSubring R}
     [hS : ∀ i, IsMulCommutative (S i)] (dir : Directed (· ≤ ·) S) :

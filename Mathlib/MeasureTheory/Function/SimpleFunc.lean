@@ -384,16 +384,28 @@ instance instOne [One β] : One (α →ₛ β) :=
   ⟨const α 1⟩
 
 @[to_additive]
+instance [One β] : IsOneApply (α →ₛ β) where
+
+@[to_additive]
 instance instMul [Mul β] : Mul (α →ₛ β) :=
   ⟨fun f g => (f.map (· * ·)).seq g⟩
+
+@[to_additive]
+instance [Mul β] : IsMulApply (α →ₛ β) where
 
 @[to_additive]
 instance instDiv [Div β] : Div (α →ₛ β) :=
   ⟨fun f g => (f.map (· / ·)).seq g⟩
 
 @[to_additive]
+instance [Div β] : IsDivApply (α →ₛ β) where
+
+@[to_additive]
 instance instInv [Inv β] : Inv (α →ₛ β) :=
   ⟨fun f => f.map Inv.inv⟩
+
+@[to_additive]
+instance [Inv β] : IsInvApply (α →ₛ β) where
 
 instance instSup [Max β] : Max (α →ₛ β) :=
   ⟨fun f g => (f.map (· ⊔ ·)).seq g⟩
@@ -408,21 +420,17 @@ instance instLE [LE β] : LE (α →ₛ β) :=
 theorem const_one [One β] : const α (1 : β) = 1 :=
   rfl
 
-@[to_additive (attr := simp, norm_cast)]
-theorem coe_one [One β] : ⇑(1 : α →ₛ β) = 1 :=
-  rfl
+@[deprecated (since := "2026-10-20")] alias coe_zero := FunLike.coe_zero
+@[to_additive existing, deprecated (since := "2026-10-20")] alias coe_one := FunLike.coe_one
 
-@[to_additive (attr := simp, norm_cast)]
-theorem coe_mul [Mul β] (f g : α →ₛ β) : ⇑(f * g) = ⇑f * ⇑g :=
-  rfl
+@[deprecated (since := "2026-10-20")] alias coe_add := FunLike.coe_add
+@[to_additive existing, deprecated (since := "2026-10-20")] alias coe_mul := FunLike.coe_mul
 
-@[to_additive (attr := simp, norm_cast)]
-theorem coe_inv [Inv β] (f : α →ₛ β) : ⇑(f⁻¹) = (⇑f)⁻¹ :=
-  rfl
+@[deprecated (since := "2026-10-20")] alias coe_neg := FunLike.coe_neg
+@[to_additive existing, deprecated (since := "2026-10-20")] alias coe_inv := FunLike.coe_inv
 
-@[to_additive (attr := simp, norm_cast)]
-theorem coe_div [Div β] (f g : α →ₛ β) : ⇑(f / g) = ⇑f / ⇑g :=
-  rfl
+@[deprecated (since := "2026-10-20")] alias coe_sub := FunLike.coe_sub
+@[to_additive existing, deprecated (since := "2026-10-20")] alias coe_div := FunLike.coe_div
 
 @[simp, norm_cast]
 theorem coe_sup [Max β] (f g : α →ₛ β) : ⇑(f ⊔ g) = ⇑f ⊔ ⇑g :=
@@ -432,17 +440,14 @@ theorem coe_sup [Max β] (f g : α →ₛ β) : ⇑(f ⊔ g) = ⇑f ⊔ ⇑g :=
 theorem coe_inf [Min β] (f g : α →ₛ β) : ⇑(f ⊓ g) = ⇑f ⊓ ⇑g :=
   rfl
 
-@[to_additive]
-theorem mul_apply [Mul β] (f g : α →ₛ β) (a : α) : (f * g) a = f a * g a :=
-  rfl
+@[deprecated (since := "2026-10-20")] protected alias add_apply := add_apply
+@[to_additive existing, deprecated (since := "2026-10-20")] protected alias mul_apply := mul_apply
 
-@[to_additive]
-theorem div_apply [Div β] (f g : α →ₛ β) (x : α) : (f / g) x = f x / g x :=
-  rfl
+@[deprecated (since := "2026-10-20")] protected alias sub_apply := sub_apply
+@[to_additive existing, deprecated (since := "2026-10-20")] protected alias div_apply := div_apply
 
-@[to_additive]
-theorem inv_apply [Inv β] (f : α →ₛ β) (x : α) : f⁻¹ x = (f x)⁻¹ :=
-  rfl
+@[deprecated (since := "2026-10-20")] protected alias neg_apply := neg_apply
+@[to_additive existing, deprecated (since := "2026-10-20")] protected alias inv_apply := inv_apply
 
 theorem sup_apply [Max β] (f g : α →ₛ β) (a : α) : (f ⊔ g) a = f a ⊔ g a :=
   rfl
@@ -484,85 +489,73 @@ variable {K : Type*}
 instance instSMul [SMul K β] : SMul K (α →ₛ β) :=
   ⟨fun k f => f.map (k • ·)⟩
 
-@[to_additive (attr := simp)]
-theorem coe_smul [SMul K β] (c : K) (f : α →ₛ β) : ⇑(c • f) = c • ⇑f :=
-  rfl
+@[to_additive]
+instance [SMul K β] : IsSMulApply K (α →ₛ β) where
 
-@[to_additive (attr := simp)]
-theorem smul_apply [SMul K β] (k : K) (f : α →ₛ β) (a : α) : (k • f) a = k • f a :=
-  rfl
+@[deprecated (since := "2026-10-20")] alias coe_vadd := FunLike.coe_vadd
+@[to_additive existing, deprecated (since := "2026-10-20")] alias coe_smul := FunLike.coe_smul
+
+@[deprecated (since := "2026-10-20")] protected alias vadd_apply := vadd_apply
+@[to_additive existing, deprecated (since := "2026-10-20")] protected alias smul_apply := smul_apply
 
 instance hasNatSMul [AddMonoid β] : SMul ℕ (α →ₛ β) := inferInstance
+
+instance [AddMonoid β] : IsSMulApply ℕ (α →ₛ β) where
 
 @[to_additive existing hasNatSMul]
 instance hasNatPow [Monoid β] : Pow (α →ₛ β) ℕ :=
   ⟨fun f n => f.map (· ^ n)⟩
 
-@[simp]
-theorem coe_pow [Monoid β] (f : α →ₛ β) (n : ℕ) : ⇑(f ^ n) = (⇑f) ^ n :=
-  rfl
+@[to_additive existing instIsSMulApplyNat]
+instance [Monoid β] : IsPowApply ℕ (α →ₛ β) where
 
-theorem pow_apply [Monoid β] (n : ℕ) (f : α →ₛ β) (a : α) : (f ^ n) a = f a ^ n :=
-  rfl
+@[to_additive existing coe_smul, deprecated (since := "2026-10-20")] alias coe_pow :=
+  FunLike.coe_pow
+
+@[to_additive existing smul_apply, deprecated (since := "2026-10-20")] protected alias pow_apply :=
+  pow_apply
 
 instance hasIntPow [DivInvMonoid β] : Pow (α →ₛ β) ℤ :=
   ⟨fun f n => f.map (· ^ n)⟩
 
-@[simp]
-theorem coe_zpow [DivInvMonoid β] (f : α →ₛ β) (z : ℤ) : ⇑(f ^ z) = (⇑f) ^ z :=
-  rfl
+instance [DivInvMonoid β] : IsPowApply ℤ (α →ₛ β) where
 
-theorem zpow_apply [DivInvMonoid β] (z : ℤ) (f : α →ₛ β) (a : α) : (f ^ z) a = f a ^ z :=
-  rfl
+@[deprecated (since := "2026-10-20")] alias coe_zpow := FunLike.coe_pow
+
+@[deprecated (since := "2026-10-20")] alias zpow_apply := pow_apply
 
 -- TODO: work out how to generate these instances with `to_additive`, which gets confused by the
 -- argument order swap between `coe_smul` and `coe_pow`.
 section Additive
 
-instance instAddMonoid [AddMonoid β] : AddMonoid (α →ₛ β) :=
-  fast_instance% Function.Injective.addMonoid (fun f => show α → β from f) coe_injective coe_zero
-    coe_add fun _ _ => coe_smul _ _
+instance instAddMonoid [AddMonoid β] : AddMonoid (α →ₛ β) := fast_instance% FunLike.addMonoid
 
 instance instAddCommMonoid [AddCommMonoid β] : AddCommMonoid (α →ₛ β) :=
-  fast_instance% Function.Injective.addCommMonoid (fun f => show α → β from f)
-    coe_injective coe_zero coe_add fun _ _ => coe_smul _ _
+  fast_instance% FunLike.addCommMonoid
 
-instance instAddGroup [AddGroup β] : AddGroup (α →ₛ β) :=
-  Function.Injective.addGroup (fun f => show α → β from f) coe_injective coe_zero coe_add coe_neg
-    coe_sub (fun _ _ => coe_smul _ _) fun _ _ => coe_smul _ _
+instance instAddGroup [AddGroup β] : AddGroup (α →ₛ β) := FunLike.addGroup
 
 instance instAddCommGroup [AddCommGroup β] : AddCommGroup (α →ₛ β) :=
-  fast_instance% Function.Injective.addCommGroup (fun f => show α → β from f) coe_injective
-    coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_smul _ _) fun _ _ => coe_smul _ _
+  fast_instance% FunLike.addCommGroup
 
 end Additive
 
 @[to_additive existing]
-instance instMonoid [Monoid β] : Monoid (α →ₛ β) :=
-  fast_instance% Function.Injective.monoid (fun f => show α → β from f) coe_injective coe_one
-    coe_mul coe_pow
+instance instMonoid [Monoid β] : Monoid (α →ₛ β) := fast_instance% FunLike.monoid
 
 @[to_additive existing]
-instance instCommMonoid [CommMonoid β] : CommMonoid (α →ₛ β) :=
-  fast_instance% Function.Injective.commMonoid (fun f => show α → β from f) coe_injective coe_one
-    coe_mul coe_pow
+instance instCommMonoid [CommMonoid β] : CommMonoid (α →ₛ β) := fast_instance% FunLike.commMonoid
 
 @[to_additive existing]
-instance instGroup [Group β] : Group (α →ₛ β) :=
-  fast_instance% Function.Injective.group (fun f => show α → β from f) coe_injective coe_one
-    coe_mul coe_inv coe_div coe_pow coe_zpow
+instance instGroup [Group β] : Group (α →ₛ β) := fast_instance% FunLike.group
 
 @[to_additive existing]
-instance instCommGroup [CommGroup β] : CommGroup (α →ₛ β) :=
-  fast_instance% Function.Injective.commGroup (fun f => show α → β from f) coe_injective coe_one
-    coe_mul coe_inv coe_div coe_pow coe_zpow
+instance instCommGroup [CommGroup β] : CommGroup (α →ₛ β) := fast_instance% FunLike.commGroup
 
-instance [Monoid K] [MulAction K β] : MulAction K (α →ₛ β) :=
-  fast_instance% Function.Injective.mulAction (fun f => show α → β from f) coe_injective coe_smul
+instance [Monoid K] [MulAction K β] : MulAction K (α →ₛ β) := fast_instance% FunLike.mulAction
 
 instance instModule [Semiring K] [AddCommMonoid β] [Module K β] : Module K (α →ₛ β) :=
-  fast_instance% Function.Injective.module K ⟨⟨fun f => show α → β from f, coe_zero⟩, coe_add⟩
-    coe_injective coe_smul
+  fast_instance% FunLike.module
 
 theorem smul_eq_map [SMul K β] (k : K) (f : α →ₛ β) : k • f = f.map (k • ·) :=
   rfl
@@ -571,68 +564,50 @@ lemma smul_const [SMul K β] (k : K) (b : β) :
     (k • const α b : α →ₛ β) = const α (k • b) := ext fun _ ↦ rfl
 
 instance [NonUnitalNonAssocSemiring β] : NonUnitalNonAssocSemiring (α →ₛ β) :=
-  fast_instance% Function.Injective.nonUnitalNonAssocSemiring (fun f => show α → β from f)
-    coe_injective coe_zero coe_add coe_mul coe_smul
+  fast_instance% FunLike.nonUnitalNonAssocSemiring
 
 instance [NonUnitalSemiring β] : NonUnitalSemiring (α →ₛ β) :=
-  fast_instance% Function.Injective.nonUnitalSemiring (fun f => show α → β from f)
-    SimpleFunc.coe_injective coe_zero coe_add coe_mul coe_smul
+  fast_instance% FunLike.nonUnitalSemiring
 
 instance [NatCast β] : NatCast (α →ₛ β) where
   natCast n := const _ (NatCast.natCast n)
 
-@[simp, norm_cast]
-lemma coe_natCast [NatCast β] (n : ℕ) :
-    ⇑(↑n : α →ₛ β) = fun _ ↦ ↑n := rfl
+instance [NatCast β] : IsNatCastApply (α →ₛ β) where
 
-instance [NonAssocSemiring β] : NonAssocSemiring (α →ₛ β) :=
-  fast_instance% Function.Injective.nonAssocSemiring (fun f => show α → β from f)
-    coe_injective coe_zero coe_one coe_add coe_mul coe_smul coe_natCast
+@[deprecated (since := "2026-10-20")] alias coe_natCast := FunLike.coe_natCast
+
+instance [NonAssocSemiring β] : NonAssocSemiring (α →ₛ β) := fast_instance% FunLike.nonAssocSemiring
 
 instance [IntCast β] : IntCast (α →ₛ β) where
   intCast n := const _ (IntCast.intCast n)
 
-@[simp, norm_cast]
-lemma coe_intCast [IntCast β] (n : ℤ) :
-    ⇑(↑n : α →ₛ β) = fun _ ↦ ↑n := rfl
+instance [IntCast β] : IsIntCastApply (α →ₛ β) where
 
-instance [NonAssocRing β] : NonAssocRing (α →ₛ β) :=
-  fast_instance% Function.Injective.nonAssocRing (fun f => show α → β from f) coe_injective
-    coe_zero coe_one coe_add coe_mul coe_neg coe_sub coe_smul coe_smul coe_natCast coe_intCast
+@[deprecated (since := "2026-10-20")] alias coe_intCast := FunLike.coe_intCast
+
+instance [NonAssocRing β] : NonAssocRing (α →ₛ β) := fast_instance% FunLike.nonAssocRing
 
 instance [NonUnitalCommSemiring β] : NonUnitalCommSemiring (α →ₛ β) :=
-  fast_instance% Function.Injective.nonUnitalCommSemiring (fun f => show α → β from f)
-    coe_injective coe_zero coe_add coe_mul coe_smul
+  fast_instance% FunLike.nonUnitalCommSemiring
 
-instance [CommSemiring β] : CommSemiring (α →ₛ β) :=
-  fast_instance% Function.Injective.commSemiring (fun f => show α → β from f)
-    coe_injective coe_zero coe_one coe_add coe_mul coe_smul coe_pow coe_natCast
+instance [CommSemiring β] : CommSemiring (α →ₛ β) := fast_instance% FunLike.commSemiring
 
 instance [NonUnitalCommRing β] : NonUnitalCommRing (α →ₛ β) :=
-  fast_instance% Function.Injective.nonUnitalCommRing (fun f => show α → β from f)
-    coe_injective coe_zero coe_add coe_mul coe_neg coe_sub coe_smul coe_smul
+  fast_instance% FunLike.nonUnitalCommRing
 
-instance [CommRing β] : CommRing (α →ₛ β) :=
-  fast_instance% Function.Injective.commRing (fun f => show α → β from f) coe_injective coe_zero
-    coe_one coe_add coe_mul coe_neg coe_sub coe_smul coe_smul coe_pow coe_natCast coe_intCast
+instance [CommRing β] : CommRing (α →ₛ β) := fast_instance% FunLike.commRing
 
-instance [Semiring β] : Semiring (α →ₛ β) :=
-  fast_instance% Function.Injective.semiring (fun f => show α → β from f) coe_injective coe_zero
-    coe_one coe_add coe_mul coe_smul coe_pow coe_natCast
+instance [Semiring β] : Semiring (α →ₛ β) := fast_instance% FunLike.semiring
 
-instance [NonUnitalRing β] : NonUnitalRing (α →ₛ β) :=
-  fast_instance% Function.Injective.nonUnitalRing (fun f => show α → β from f) coe_injective
-    coe_zero coe_add coe_mul coe_neg coe_sub coe_smul coe_smul
+instance [NonUnitalRing β] : NonUnitalRing (α →ₛ β) := fast_instance% FunLike.nonUnitalRing
 
-instance [Ring β] : Ring (α →ₛ β) :=
-  fast_instance% Function.Injective.ring (fun f => show α → β from f) coe_injective coe_zero
-    coe_one coe_add coe_mul coe_neg coe_sub coe_smul coe_smul coe_pow coe_natCast coe_intCast
+instance [Ring β] : Ring (α →ₛ β) := fast_instance% FunLike.ring
 
-instance [SMul K γ] [SMul γ β] [SMul K β] [IsScalarTower K γ β] : IsScalarTower K γ (α →ₛ β) where
-  smul_assoc _ _ _ := ext fun _ ↦ smul_assoc ..
+instance [SMul K γ] [SMul γ β] [SMul K β] [IsScalarTower K γ β] : IsScalarTower K γ (α →ₛ β) :=
+  FunLike.isScalarTower
 
-instance [SMul γ β] [SMul K β] [SMulCommClass K γ β] : SMulCommClass K γ (α →ₛ β) where
-  smul_comm _ _ _ := ext fun _ ↦ smul_comm ..
+instance [SMul γ β] [SMul K β] [SMulCommClass K γ β] : SMulCommClass K γ (α →ₛ β) :=
+  FunLike.smulCommClass
 
 instance [CommSemiring K] [Semiring β] [Algebra K β] : Algebra K (α →ₛ β) where
   algebraMap := {
@@ -758,7 +733,7 @@ theorem restrict_of_not_measurable {f : α →ₛ β} {s : Set α} (hs : ¬Measu
 theorem coe_restrict (f : α →ₛ β) {s : Set α} (hs : MeasurableSet s) :
     ⇑(restrict f s) = indicator s f := by
   classical
-  rw [restrict, dite_eq_left hs, coe_piecewise, coe_zero, piecewise_eq_indicator]
+  rw [restrict, dite_eq_left hs, coe_piecewise, FunLike.coe_zero, piecewise_eq_indicator]
 
 @[simp]
 theorem restrict_univ (f : α →ₛ β) : restrict f univ = f := by simp [restrict]
@@ -886,7 +861,7 @@ theorem eapprox_lt_top (f : α → ℝ≥0∞) (n : ℕ) (a : α) : eapprox f n 
   rw [Finset.sup_lt_iff (α := ℝ≥0∞) bot_lt_top]
   intro b _
   split_ifs
-  · simp only [coe_zero, coe_piecewise, piecewise_eq_indicator, coe_const]
+  · simp only [FunLike.coe_zero, coe_piecewise, piecewise_eq_indicator, coe_const]
     calc
       { a : α | ennrealRatEmbed b ≤ f a }.indicator (fun _ => ennrealRatEmbed b) a ≤
           ennrealRatEmbed b :=
@@ -936,7 +911,7 @@ theorem sum_eapproxDiff (f : α → ℝ≥0∞) (n : ℕ) (a : α) :
     simp [eapproxDiff, (eapprox_lt_top f 0 a).ne]
   | succ n IH =>
     rw [Finset.sum_range_succ, IH, eapproxDiff, coe_map, Function.comp_apply,
-      coe_sub, Pi.sub_apply, ENNReal.coe_toNNReal,
+      FunLike.coe_sub, Pi.sub_apply, ENNReal.coe_toNNReal,
       add_tsub_cancel_of_le (monotone_eapprox f (Nat.le_succ _) _)]
     apply (lt_of_le_of_lt _ (eapprox_lt_top f (n + 1) a)).ne
     rw [tsub_le_iff_right]
@@ -1036,11 +1011,9 @@ theorem lintegral_finsetSum {ι} (f : α →ₛ ℝ≥0∞) (μ : ι → Measure
     f.lintegral (∑ i ∈ s, μ i) = ∑ i ∈ s, f.lintegral (μ i) :=
   map_sum (lintegralₗ f) ..
 
-@[deprecated (since := "2026-04-08")] alias lintegral_finset_sum := lintegral_finsetSum
-
 theorem lintegral_sum {m : MeasurableSpace α} {ι} (f : α →ₛ ℝ≥0∞) (μ : ι → Measure α) :
     f.lintegral (Measure.sum μ) = ∑' i, f.lintegral (μ i) := by
-  simp only [lintegral, Measure.sum_apply, f.measurableSet_preimage, ← Finset.tsum_subtype, ←
+  simp only [lintegral, Measure.sum_apply, f.measurableSet_preimage, ← (Finset.tsum_subtype), ←
     ENNReal.tsum_mul_left]
   apply ENNReal.tsum_comm
 
@@ -1201,7 +1174,7 @@ theorem map_iff {g : β → γ} (hg : ∀ {b}, g b = 0 ↔ b = 0) :
 protected theorem pair {g : α →ₛ γ} (hf : f.FinMeasSupp μ) (hg : g.FinMeasSupp μ) :
     (pair f g).FinMeasSupp μ :=
   calc
-    μ (support <| pair f g) = μ (support f ∪ support g) := congr_arg μ <| support_prodMk f g
+    μ (support <| pair f g) = μ (support f ∪ support g) := congr(μ $(support_prodMk f g))
     _ ≤ μ (support f) + μ (support g) := measure_union_le _ _
     _ < _ := add_lt_top.2 ⟨hf, hg⟩
 
@@ -1273,7 +1246,7 @@ protected theorem induction {α γ} [MeasurableSpace α] [AddZeroClass γ]
   induction s using Finset.induction generalizing f with
   | empty =>
     rw [Finset.coe_empty, sdiff_eq_empty, range_subset_singleton] at h
-    convert! const 0 MeasurableSet.univ
+    convert const 0 MeasurableSet.univ
     ext x
     simp [h]
   | insert x s hxs ih =>
@@ -1285,10 +1258,10 @@ protected theorem induction {α γ} [MeasurableSpace α] [AddZeroClass γ]
       rw [image_compl_preimage, union_sdiff_distrib, sdiff_sdiff_comm, h, Finset.coe_insert,
         insert_sdiff_self_of_notMem, sdiff_eq_empty.mpr, Set.empty_union]
       · rw [Set.image_subset_iff]
-        convert! Set.subset_univ _
+        convert Set.subset_univ _
         exact preimage_const_of_mem (mem_singleton _)
       · rwa [Finset.mem_coe]
-    convert! add _ Pg (const x mx)
+    convert add _ Pg (const x mx)
     · ext1 y
       by_cases hy : y ∈ f ⁻¹' {x}
       · simpa [g, hy]
@@ -1315,7 +1288,7 @@ protected theorem induction' {α γ} [MeasurableSpace α] [Nonempty γ] {P : Sim
   induction s using Finset.induction generalizing f with
   | empty =>
     rw [Finset.coe_empty, sdiff_eq_empty, range_subset_singleton] at h
-    convert! const c
+    convert const c
     ext x
     simp [h]
   | insert x s hxs ih =>
@@ -1327,14 +1300,14 @@ protected theorem induction' {α γ} [MeasurableSpace α] [Nonempty γ] {P : Sim
       rw [image_compl_preimage, union_sdiff_distrib, sdiff_sdiff_comm, h, Finset.coe_insert,
         insert_sdiff_self_of_notMem, sdiff_eq_empty.mpr, Set.empty_union]
       · rw [Set.image_subset_iff]
-        convert! Set.subset_univ _
+        convert Set.subset_univ _
         exact preimage_const_of_mem (mem_singleton _)
       · rwa [Finset.mem_coe]
-    convert! pcw mx.compl Pg (const x)
-    · ext1 y
-      by_cases hy : y ∈ f ⁻¹' {x}
-      · simpa [g, hy]
-      · simp [g, hy]
+    convert pcw mx.compl Pg (const x)
+    ext1 y
+    by_cases hy : y ∈ f ⁻¹' {x}
+    · simpa [g, hy]
+    · simp [g, hy]
 
 /-- In a topological vector space, the addition of a measurable function and a simple function is
 measurable. -/
