@@ -277,12 +277,12 @@ lemma firstReturn_lt_length : p.firstReturn < p.toList.length := by
   exact ⟨by lia, by rw [Nat.sub_add_cancel lp, take_of_length_le (le_refl _),
     p.count_U_eq_count_D]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 include h in
 lemma count_take_firstReturn_add_one :
     (p.toList.take (p.firstReturn + 1)).count U = (p.toList.take (p.firstReturn + 1)).count D := by
   have := findIdx_getElem
     (w := (length_range (n := p.toList.length)).symm ▸ firstReturn_lt_length h)
+  generalize_proofs at this
   simpa using! this
 
 lemma count_D_lt_count_U_of_lt_firstReturn {i : ℕ} (hi : i < p.firstReturn) :
@@ -375,12 +375,13 @@ lemma outsidePart_nest : p.nest.outsidePart = 0 := by
   rw [DyckWord.ext_iff]; apply drop_of_length_le
   simp_rw [nest, length_append, length_singleton]; lia
 
-set_option backward.isDefEq.respectTransparency false in
 include h in
 @[simp]
 theorem nest_insidePart_add_outsidePart : p.insidePart.nest + p.outsidePart = p := by
-  simp_rw [insidePart, outsidePart, h, dite_false, nest_denest, DyckWord.ext_iff]
-  apply take_append_drop
+  simp_rw [insidePart, outsidePart, dite_eq_right h]
+  generalize_proofs
+  simp_rw [nest_denest, DyckWord.ext_iff]
+  exact take_append_drop ..
 
 include h in
 lemma semilength_insidePart_add_semilength_outsidePart_add_one :
