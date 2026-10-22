@@ -55,6 +55,15 @@ Summary JSON format:
   - messages: list of strings (subset of lines in the block that include typical markers like "warning:", "error:", or "info:")
   - full_output: string (the entire contiguous block)
 
+First error file:
+- on the first error block, the wrapper writes `<output_file>.first_error.json` next to the
+  summary (for `.lake/build_summary_Mathlib.json`: `.lake/build_summary_Mathlib.first_error.json`)
+  and continues; an existing file is kept, so a retried build reports its first attempt's error
+- keys: `file` (string, the `.lean` file of the error, or the target's file), `line` (integer,
+  0 when unknown), `message` (string, the first error line), `elapsed` (seconds since the
+  wrapper started)
+- the write is atomic: the file appears complete or not at all
+
 Relevant parts of `lake`:
 - `lake build`'s log output is generated [here](https://github.com/leanprover/lean4/blob/59573646c227d940962c08a1e77ce51177a024ea/src/lake/Lake/Build/Run.lean#L132)
 - icons (other than ✔) are defined [here](https://github.com/leanprover/lean4/blob/59573646c227d940962c08a1e77ce51177a024ea/src/lake/Lake/Util/Log.lean#L87)
@@ -64,11 +73,18 @@ import sys
 import subprocess
 import re
 import json
+import os
+import time
 from typing import Dict, Any
 from enum import Enum, auto
 
+ERROR_LOCATION = re.compile(r'error:\s*(\S+\.lean):(\d+):\d+:\s*(.*)')
+
+
 class BuildOutputProcessor:
-    def __init__(self):
+    def __init__(self, first_error_file=None):
+        self.first_error_file = first_error_file
+        self.start_time = time.monotonic()
         self.warnings = []
         self.errors = []
         self.infos = []
@@ -301,6 +317,8 @@ class BuildOutputProcessor:
 
         if self.current_kind is not None:
             self.block_lists[self.current_kind].append(block_data)
+        if self.current_kind == self.BlockKind.ERROR:
+            self.write_first_error(file_info, messages)
 
         # Close the group for this block; lines were already streamed.
         self.close_group()
@@ -308,6 +326,32 @@ class BuildOutputProcessor:
         self.current_block = []
         self.current_kind = None
         self.state = self.State.OUTSIDE
+
+    def write_first_error(self, file_info: Dict[str, Any], messages):
+        """Write the first error file, unless it exists."""
+        if self.first_error_file is None or os.path.exists(self.first_error_file):
+            return
+        file = file_info.get('file') or ''
+        line = 0
+        message = messages[0] if messages else ''
+        for m in messages:
+            match = ERROR_LOCATION.search(m)
+            if match:
+                file, line, message = match.group(1), int(match.group(2)), match.group(3)
+                break
+        record = {
+            'file': file,
+            'line': line,
+            'message': message,
+            'elapsed': round(time.monotonic() - self.start_time),
+        }
+        tmp = self.first_error_file + '.tmp'
+        try:
+            with open(tmp, 'w') as f:
+                json.dump(record, f)
+            os.replace(tmp, self.first_error_file)
+        except OSError as e:
+            print(f"Could not write {self.first_error_file}: {e}", file=sys.stderr)
 
     def finalize(self):
         """Finalize processing"""
@@ -331,7 +375,8 @@ def main():
         print("Usage: lake-build-wrapper.py <output_file.json> <command> [args...]", file=sys.stderr)
         sys.exit(1)
 
-    processor = BuildOutputProcessor()
+    summary_file = sys.argv[1]
+    processor = BuildOutputProcessor(os.path.splitext(summary_file)[0] + '.first_error.json')
 
     # Run the command and process output line by line
     process = subprocess.Popen(
@@ -356,7 +401,6 @@ def main():
 
         # Write summary as JSON string
         summary = processor.get_summary()
-        summary_file = sys.argv[1]
         with open(summary_file, 'w') as f:
             json.dump(summary, f)
 

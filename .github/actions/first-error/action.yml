@@ -1,0 +1,89 @@
+# Watches for the first error file that `scripts/lake-build-wrapper.py` writes, and uploads
+# it as an artifact as soon as it appears, while the build continues. The `early_signal` job
+# of build_template.yml reads the artifact and reports the error as a check run.
+#
+# The build runs PR code, which can write anything under `.lake/`, so the file is read as
+# data: the watcher accepts only a regular file inside the given directory, with the keys
+# and value shapes the wrapper writes, and uploads a copy that it writes itself.
+
+name: Upload the first build error
+description: Upload the first error of a running build as an artifact.
+
+inputs:
+  file:
+    description: The first error file the wrapper writes.
+    required: true
+  root:
+    description: The directory the file must resolve into.
+    required: true
+  stop:
+    description: A path; the watch ends when it exists.
+    required: true
+  artifact:
+    description: The artifact name.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Wait for the first error
+      id: watch
+      shell: bash
+      env:
+        FILE: ${{ inputs.file }}
+        ROOT: ${{ inputs.root }}
+        STOP: ${{ inputs.stop }}
+        OUT: ${{ runner.temp }}/first-error
+      run: |
+        python3 -I - <<'PY'
+        import json, os, re, time
+
+        file, root, stop, out = (os.environ[k] for k in ('FILE', 'ROOT', 'STOP', 'OUT'))
+        LEAN_FILE = re.compile(r"[A-Za-z0-9_./'-]{1,200}\.lean")
+
+        def read():
+            real = os.path.realpath(file)
+            if os.path.commonpath([real, os.path.realpath(root)]) != os.path.realpath(root):
+                return None
+            fd = os.open(real, os.O_RDONLY | os.O_NOFOLLOW)
+            with os.fdopen(fd) as f:
+                if not os.path.isfile(real):
+                    return None
+                data = json.loads(f.read(65536))
+            if not (isinstance(data, dict) and set(data) == {'file', 'line', 'message', 'elapsed'}):
+                return None
+            if not (isinstance(data['file'], str) and LEAN_FILE.fullmatch(data['file'])
+                    and type(data['line']) is int and type(data['elapsed']) is int
+                    and isinstance(data['message'], str)):
+                return None
+            message = ''.join(c for c in data['message'] if c.isprintable())[:300]
+            return {'file': data['file'], 'line': data['line'], 'message': message,
+                    'elapsed': data['elapsed']}
+
+        found = None
+        while found is None and not os.path.exists(stop):
+            if os.path.lexists(file):
+                try:
+                    found = read()
+                except (OSError, ValueError) as e:
+                    print(f"Could not read {file}: {e}")
+                if found is None:
+                    break
+            else:
+                time.sleep(5)
+        if found is not None:
+            os.makedirs(out, exist_ok=True)
+            with open(os.path.join(out, 'first_error.json'), 'w') as f:
+                json.dump(found, f)
+            print(f"First error: {found['file']}:{found['line']}")
+        with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+            f.write(f"found={'true' if found else 'false'}\n")
+        PY
+
+    - name: Upload the first error
+      if: ${{ steps.watch.outputs.found == 'true' }}
+      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+      with:
+        name: ${{ inputs.artifact }}
+        path: ${{ runner.temp }}/first-error/first_error.json
+        retention-days: 1
