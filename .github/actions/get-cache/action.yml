@@ -149,14 +149,16 @@ runs:
         run-id: ${{ steps.resolve_staging.outputs.run_id }}
         github-token: ${{ github.token }}
 
+    # `.ltar` names are content hashes, so replacing a file of the same name changes nothing.
     - name: Warm cache from the staging artifact
       if: ${{ steps.download_staging.outcome == 'success' }}
+      continue-on-error: true # fail-safe: fall back to the remote fetch (step 2)
       shell: bash
       run: |
         set -euo pipefail
         dir="${RUNNER_TEMP}/staging-ltar"
         count=$(find "${dir}" -maxdepth 1 -type f -name '*.ltar' | wc -l)
-        find "${dir}" -maxdepth 1 -type f -name '*.ltar' -exec mv -n -t /home/lean/.cache/mathlib {} +
+        find "${dir}" -maxdepth 1 -type f -name '*.ltar' -exec mv -f -t /home/lean/.cache/mathlib {} +
         rm -rf "${dir}"
         echo "Moved ${count} .ltar file(s) from the staging artifact into the local cache."
 
