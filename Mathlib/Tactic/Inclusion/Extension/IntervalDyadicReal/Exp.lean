@@ -42,13 +42,14 @@ theorem expPartialSumNum_div (a : ℤ) {b : ℕ} (hb : b ≠ 0) (n : ℕ) :
     field_simp
     ring
 
+-- TODO: move this to Rational.lean once there's a second user.
 /-- The interval `[(c - r) / d, (c + r) / d]`, rounded outward to precision `prec`. -/
 @[expose]
-def ratClosedBall (c r : ℤ) (d prec : ℕ) : Interval Dyadic :=
+def ratBall (c r : ℤ) (d prec : ℕ) : Interval Dyadic :=
   Interval.Icc (rat (mkRat (c - r) d) prec).lb (rat (mkRat (c + r) d) prec).ub
 
-theorem ratClosedBall_mem {x : ℝ} {c r : ℤ} {d : ℕ} (hx : |x - c / d| ≤ r / d) (prec : ℕ) :
-    x ∈ ratClosedBall c r d prec := by
+theorem ratBall_mem {x : ℝ} {c r : ℤ} {d : ℕ} (hx : |x - c / d| ≤ r / d) (prec : ℕ) :
+    x ∈ ratBall c r d prec := by
   obtain ⟨h₁, h₂⟩ := abs_sub_le_iff.mp hx
   refine mem_iff_mem_map.mpr
     (Interval.mem_Icc_of_le (ratCast_mem _ prec) ?_ ?_ (ratCast_mem _ prec))
@@ -58,18 +59,18 @@ theorem ratClosedBall_mem {x : ℝ} {c r : ℤ} {d : ℕ} (hx : |x - c / d| ≤ 
     exact sub_le_iff_le_add'.mp h₁
 
 /-- An enclosure of `exp (a / b)` by the first `n` terms of its Taylor series and the remainder
-bound of `Real.exp_bound`, rounded outward to precision `prec`. This holds when `b ≠ 0`,
-`|a| ≤ b` and `0 < n`. -/
+bound of `Real.exp_bound`, rounded outward to precision `prec`. This is only intended for use
+when `| a / b | ≤ 1`. -/
 @[expose]
 def expRat (a : ℤ) (b n prec : ℕ) : Interval Dyadic :=
-  ratClosedBall (n * expPartialSumNum a b n) ((n + 1) * |a ^ n|) (n * (b ^ n * n.factorial)) prec
+  ratBall (n * expPartialSumNum a b n) ((n + 1) * |a ^ n|) (n * (b ^ n * n.factorial)) prec
 
 theorem expRat_mem (a : ℤ) {b : ℕ} (hb : b ≠ 0) (hab : a.natAbs ≤ b) {n : ℕ} (hn : 0 < n)
     (prec : ℕ) : Real.exp (a / b) ∈ expRat a b n prec := by
   have hy : |(a : ℝ) / b| ≤ 1 := by
     rw [abs_div, Nat.abs_cast, div_le_one (by positivity), ← Int.cast_abs, ← Int.natCast_natAbs]
-    exact_mod_cast hab
-  refine ratClosedBall_mem ?_ prec
+    norm_cast
+  refine ratBall_mem ?_ prec
   push_cast
   rw [mul_div_mul_left _ _ (by positivity), expPartialSumNum_div a hb n]
   refine (Real.exp_bound hy hn).trans_eq ?_
