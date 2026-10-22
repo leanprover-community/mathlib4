@@ -54,11 +54,7 @@ lemma isLocalHom_ι (hc : IsColimit c) (j : J) :
   rintro x ⟨y, hy⟩
   obtain ⟨j1, z, hz⟩ := Concrete.isColimit_exists_rep F hc (y⁻¹).1
   obtain ⟨j2, f', g', -⟩ := IsFilteredOrEmpty.cocone_objs j j1
-  have : (c.ι.app j2).hom ((F.map f' x) * (F.map g' z)) = (c.ι.app j2).hom 1 := by
-    simp only [map_mul, map_one, ← comp_apply]
-    simp only [NatTrans.naturality, Functor.const_obj_map, hom_comp, RingHom.coe_comp,
-      Function.comp_apply, ← hy, hz]
-    exact y.mul_inv
+  have : (c.ι.app j2).hom ((F.map f' x) * (F.map g' z)) = (c.ι.app j2).hom 1 := by simp [← hy, hz]
   obtain ⟨j3, f3, g3, hfg3⟩ := Concrete.isColimit_exists_of_rep_eq F hc _ _ this
   obtain ⟨j4, i4, h4⟩ := IsFilteredOrEmpty.cocone_maps f3 g3
   refine isUnit_of_map_unit (F.map (f' ≫ f3 ≫ i4)).hom x <| isUnit_iff_exists_inv.mpr <|
@@ -85,10 +81,7 @@ theorem isLocalRing_of_isColimit (hc : IsColimit c) : IsLocalRing c.pt := by
   obtain ⟨j'', f, g, -⟩ := IsFilteredOrEmpty.cocone_objs j j'
   refine ⟨j'', ⟨F.map f a + F.map g b, (h_obj j'').nonunits_add
     ((map_mem_nonunits_iff _ _).mpr ha) ((map_mem_nonunits_iff _ _).mpr hb), ?_⟩⟩
-  simp only [map_add, ← comp_apply]
-  simp only [NatTrans.naturality, Functor.const_obj_map, hom_comp, RingHom.coe_comp,
-    Function.comp_apply]
-  rfl
+  simp
 
 lemma maximalIdeal_eq_iUnion_of_isColimit (hc : IsColimit c) :
     (isLocalRing_of_isColimit F hc).maximalIdeal =
