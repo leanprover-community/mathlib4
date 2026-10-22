@@ -342,6 +342,10 @@ theorem linfty_opNorm_blockDiagonal [DecidableEq l] (M : l → Matrix m n α) :
     ‖blockDiagonal M‖ = ‖M‖ :=
   congr($(linfty_opNNNorm_blockDiagonal M))
 
+theorem linfty_opNorm_isometry_blockDiagonal [DecidableEq l] :
+    Isometry (blockDiagonal : (l → Matrix m n α) → Matrix (m × l) (n × l) α) :=
+  AddMonoidHomClass.isometry_of_norm (blockDiagonalAddMonoidHom m n l α) linfty_opNorm_blockDiagonal
+
 theorem linfty_opNNNorm_sum_le_card_mul_of_forall_le [IsUltrametricDist α]
     (M : β → Matrix m n α) (s : Finset β) (B : ℝ≥0) (hM : ∀ i ∈ s, ‖M i‖₊ ≤ B) :
     ‖∑ k ∈ s, M k‖₊ ≤ Fintype.card n * B := by
