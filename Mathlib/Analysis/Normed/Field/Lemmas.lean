@@ -306,3 +306,5 @@ lemma NormedField.completeSpace_iff_isComplete_closedBall {K : Type*} [NormedFie
   simp [div_mul_cancel₀ _ hx']
 
 end Complete
+
+-- ci-dev probe (fix-cancel-build): comment edit so downstream modules rebuild
