@@ -20,6 +20,8 @@ to an `m'` by `n'` matrix, as long as `m ≃ m'` and `n ≃ n'`.
 * `Matrix.reindexLinearEquiv R A`: `Matrix.reindex` is an `R`-linear equivalence between
   `A`-matrices.
 * `Matrix.reindexAlgEquiv R A`: `Matrix.reindex` is an `R`-algebra equivalence between `A`-matrices.
+* `Matrix.reindexStarAlgEquiv R A`: `Matrix.reindex` is an `R`-⋆-algebra equivalence between
+  `A`-matrices.
 
 ## Tags
 
@@ -261,6 +263,56 @@ theorem reindexAlgEquiv_mul (e : m ≃ n) (M : Matrix m m A) (N : Matrix m m A) 
   map_mul ..
 
 end Algebra
+
+section StarAlgebra
+
+variable [CommSemiring R] [Fintype n] [Fintype m] [Fintype o] [Semiring A] [Algebra R A]
+  [StarRing A]
+
+/-- For square matrices with coefficients in a ⋆-algebra over a commutative semiring, the natural
+map that reindexes a matrix's rows and columns with equivalent types,
+`Matrix.reindex`, is an equivalence of ⋆-algebras. -/
+def reindexStarAlgEquiv (e : m ≃ n) : Matrix m m A ≃⋆ₐ[R] Matrix n n A where
+  __ := reindexRingEquiv A e
+  __ := reindexLinearEquiv R A e e
+  map_star' _ := rfl
+
+@[simp]
+theorem coe_reindexStarAlgEquiv (e : m ≃ n) : ⇑(reindexStarAlgEquiv R A e) = reindex e e :=
+  rfl
+
+@[simp]
+theorem toEquiv_reindexStarAlgEquiv (e : m ≃ n) :
+    (reindexStarAlgEquiv R A e : Matrix m m A ≃ Matrix n n A) = reindex e e :=
+  rfl
+
+@[simp]
+theorem toAddEquiv_reindexStarAlgEquiv (e : m ≃ n) :
+    (reindexStarAlgEquiv R A e : Matrix m m A ≃+ Matrix n n A) = reindexAddEquiv A e e :=
+  rfl
+
+@[simp]
+theorem toRingEquiv_reindexStarAlgEquiv (e : m ≃ n) :
+    (reindexStarAlgEquiv R A e).toRingEquiv = reindexRingEquiv A e :=
+  rfl
+
+@[simp]
+theorem symm_reindexStarAlgEquiv (e : m ≃ n) :
+    (reindexStarAlgEquiv R A e).symm = reindexStarAlgEquiv R A e.symm :=
+  rfl
+
+@[simp]
+theorem reindexStarAlgEquiv_refl :
+    reindexStarAlgEquiv R A (Equiv.refl m) = StarAlgEquiv.refl .. :=
+  rfl
+
+@[simp]
+theorem reindexStarAlgEquiv_trans_reindexStarAlgEquiv (e : m ≃ n) (e' : n ≃ o) :
+    .trans (reindexStarAlgEquiv R A e) (reindexStarAlgEquiv R A e') =
+      reindexStarAlgEquiv R A (.trans e e') :=
+  rfl
+
+end StarAlgebra
 
 /-- Reindexing both indices along the same equivalence preserves the determinant.
 
