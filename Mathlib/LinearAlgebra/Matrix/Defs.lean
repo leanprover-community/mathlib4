@@ -641,6 +641,14 @@ lemma col_apply' (A : Matrix m n α) (i : n) : A.col i = fun j ↦ A j i := rfl
 
 section
 
+theorem row_injective : (row : Matrix m n α → _).Injective := row.injective
+
+theorem col_injective : (col : Matrix m n α → _).Injective := col.injective
+
+theorem row_inj {A B : Matrix m n α} : A.row = B.row ↔ A = B := row_injective.eq_iff
+
+theorem col_inj {A B : Matrix m n α} : A.col = B.col ↔ A = B := col_injective.eq_iff
+
 /-- Two matrices agree if their rows agree. -/
 @[local ext]
 lemma ext_row {A B : Matrix m n α} (h : ∀ i, A.row i = B.row i) : A = B :=
@@ -650,12 +658,6 @@ lemma ext_row {A B : Matrix m n α} (h : ∀ i, A.row i = B.row i) : A = B :=
 @[local ext]
 lemma ext_col {A B : Matrix m n α} (h : ∀ j, A.col j = B.col j) : A = B :=
   ext fun i j => congr($(h j) i)
-
-theorem row_injective : (row : Matrix m n α → _).Injective :=
-  Function.injective_id
-
-theorem col_injective : (col : Matrix m n α → _).Injective :=
-  transpose_injective
 
 end
 
