@@ -216,6 +216,7 @@ noncomputable def cfcₙ (f : R → R) (a : A) : A :=
     else 0
 
 open scoped Classical in
+@[deprecated "use `cfcₙ_apply` or `cfcₙ_apply_of_not_and_and` or " (since := "2026-10-22")]
 lemma cfcₙ_def (f : R → R) (a : A) :
     cfcₙ f a =
     if h : p a ∧ ContinuousOn f (σₙ R a) ∧ f 0 = 0
@@ -241,12 +242,12 @@ lemma cfcₙ_apply_pi {ι : Type*} (f : ι → R → R) (a : A) (ha := by cfc_ta
 
 lemma cfcₙ_apply_of_not_and_and {f : R → R} (a : A)
     (ha : ¬ (p a ∧ ContinuousOn f (σₙ R a) ∧ f 0 = 0)) :
-    cfcₙ f a = 0 := by
-  rw [cfcₙ, dite_eq_right ha]
+    cfcₙ f a = 0 :=
+  dite_eq_right ha
 
 lemma cfcₙ_apply_of_not_predicate {f : R → R} (a : A) (ha : ¬ p a) :
-    cfcₙ f a = 0 := by
-  rw [cfcₙ, dite_eq_right (not_and_of_not_left _ ha)]
+    cfcₙ f a = 0 :=
+  dite_eq_right (not_and_of_not_left _ ha)
 
 grind_pattern cfcₙ_apply_of_not_predicate => cfcₙ f a where
   guard ¬ p a

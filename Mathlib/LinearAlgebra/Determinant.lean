@@ -156,7 +156,7 @@ theorem detAux_comp (b : Trunc <| Basis ι A M) (f g : M →ₗ[A] M) :
 section
 
 open scoped Classical in
--- Stop the elaborator from unfolding `det` and producing a huge term by making it `no_expose`.
+-- Stop the elaborator from unfolding `det` and producing a huge term by marking it `no_expose`.
 /-- The determinant of an endomorphism independent of basis.
 
 If there is no finite basis on `M`, the result is `1` instead.
@@ -169,7 +169,7 @@ open scoped Classical in
 lemma det_def : LinearMap.det =
     if H : ∃ s : Finset M, Nonempty (Basis s A M)
     then LinearMap.detAux (Trunc.mk H.choose_spec.some) else 1 :=
-  det.eq_def
+  (rfl)
 
 open scoped Classical in
 theorem coe_det [DecidableEq M] :
