@@ -264,11 +264,8 @@ private theorem continuous_equivFun_basis_aux [T2Space E] {ι : Type v} [Finite 
     change Continuous (ξ.coord i)
     exact H₂ (ξ.coord i)
 
-/-- A finite-dimensional t2 vector space over a complete field must carry the module topology.
-
-Not declared as a global instance only for performance reasons. -/
-@[local instance]
-lemma isModuleTopologyOfFiniteDimensional [T2Space E] [FiniteDimensional 𝕜 E] :
+/-- A finite-dimensional t2 vector space over a complete field must carry the module topology. -/
+instance isModuleTopologyOfFiniteDimensional [T2Space E] [FiniteDimensional 𝕜 E] :
     IsModuleTopology 𝕜 E :=
   -- for the proof, go to a model vector space `b → 𝕜` thanks to `continuous_equivFun_basis`, and
   -- use that it has the module topology
@@ -301,11 +298,11 @@ theorem continuous_equivFun_basis [T2Space E] {ι : Type*} [Finite ι] (ξ : Bas
 
 namespace LinearMap
 
-variable [T2Space E] [FiniteDimensional 𝕜 E]
+variable [IsModuleTopology 𝕜 E]
 
 /-- The continuous linear map induced by a linear map on a finite-dimensional space -/
 def toContinuousLinearMap : (E →ₗ[𝕜] F') ≃ₗ[𝕜] E →L[𝕜] F' where
-  toFun f := ⟨f, f.continuous_of_finiteDimensional⟩
+  toFun f := ⟨f, IsModuleTopology.continuous_of_linearMap f⟩
   invFun := (↑)
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
@@ -319,26 +316,31 @@ def _root_.Module.End.toContinuousLinearMap (E : Type v) [NormedAddCommGroup E]
     map_mul' := fun _ _ ↦ rfl
     commutes' := fun _ ↦ rfl }
 
+omit [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E] [CompleteSpace 𝕜] in
 @[simp]
 theorem coe_toContinuousLinearMap' (f : E →ₗ[𝕜] F') : ⇑(LinearMap.toContinuousLinearMap f) = f :=
   rfl
 
+omit [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E] [CompleteSpace 𝕜] in
 @[simp]
 theorem coe_toContinuousLinearMap (f : E →ₗ[𝕜] F') :
     ((LinearMap.toContinuousLinearMap f) : E →ₗ[𝕜] F') = f :=
   rfl
 
+omit [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E] [CompleteSpace 𝕜] in
 @[simp]
 theorem coe_toContinuousLinearMap_symm :
     ⇑(toContinuousLinearMap : (E →ₗ[𝕜] F') ≃ₗ[𝕜] E →L[𝕜] F').symm =
       ((↑) : (E →L[𝕜] F') → E →ₗ[𝕜] F') :=
   rfl
 
+omit [CompleteSpace 𝕜] in
 @[simp]
 theorem det_toContinuousLinearMap (f : E →ₗ[𝕜] E) :
     (LinearMap.toContinuousLinearMap f).det = LinearMap.det f :=
   rfl
 
+omit [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E] [CompleteSpace 𝕜] in
 /-- A surjective linear map `f` with finite-dimensional codomain is an open map. -/
 theorem isOpenMap_of_finiteDimensional (f : F →ₗ[𝕜] E) (hf : Function.Surjective f) :
     IsOpenMap f :=
@@ -347,10 +349,12 @@ theorem isOpenMap_of_finiteDimensional (f : F →ₗ[𝕜] E) (hf : Function.Sur
 instance canLiftContinuousLinearMap : CanLift (E →ₗ[𝕜] F) (E →L[𝕜] F) (↑) fun _ => True :=
   ⟨fun f _ => ⟨LinearMap.toContinuousLinearMap f, rfl⟩⟩
 
+omit [CompleteSpace 𝕜] in
 lemma toContinuousLinearMap_eq_iff_eq_toLinearMap (f : E →ₗ[𝕜] E) (g : E →L[𝕜] E) :
     f.toContinuousLinearMap = g ↔ f = g.toLinearMap := by
   simp [ContinuousLinearMap.ext_iff, LinearMap.ext_iff]
 
+omit [CompleteSpace 𝕜] in
 lemma _root_.ContinuousLinearMap.toLinearMap_eq_iff_eq_toContinuousLinearMap (g : E →L[𝕜] E)
     (f : E →ₗ[𝕜] E) : g.toLinearMap = f ↔ g = f.toContinuousLinearMap := by
   simp [ContinuousLinearMap.ext_iff, LinearMap.ext_iff]
@@ -359,7 +363,7 @@ end LinearMap
 
 section
 
-variable [T2Space E] [T2Space F] [FiniteDimensional 𝕜 E]
+variable [IsModuleTopology 𝕜 E] [IsModuleTopology 𝕜 F]
 
 namespace LinearEquiv
 
@@ -367,34 +371,38 @@ namespace LinearEquiv
 space. -/
 def toContinuousLinearEquiv (e : E ≃ₗ[𝕜] F) : E ≃L[𝕜] F :=
   { e with
-    continuous_toFun := e.toLinearMap.continuous_of_finiteDimensional
-    continuous_invFun :=
-      haveI : FiniteDimensional 𝕜 F := e.finiteDimensional
-      e.symm.toLinearMap.continuous_of_finiteDimensional }
+    continuous_toFun := IsModuleTopology.continuous_of_linearMap e.toLinearMap
+    continuous_invFun := IsModuleTopology.continuous_of_linearMap e.symm.toLinearMap }
 
+omit [CompleteSpace 𝕜] in
 @[simp]
 theorem coe_toContinuousLinearEquiv (e : E ≃ₗ[𝕜] F) : (e.toContinuousLinearEquiv : E →ₗ[𝕜] F) = e :=
   rfl
 
+omit [CompleteSpace 𝕜] in
 @[simp]
 theorem coe_toContinuousLinearEquiv' (e : E ≃ₗ[𝕜] F) : (e.toContinuousLinearEquiv : E → F) = e :=
   rfl
 
+omit [CompleteSpace 𝕜] in
 @[simp]
 theorem coe_toContinuousLinearEquiv_symm (e : E ≃ₗ[𝕜] F) :
     (e.toContinuousLinearEquiv.toLinearEquiv.symm : F →ₗ[𝕜] E) = e.symm := rfl
 
+omit [CompleteSpace 𝕜] in
 @[simp]
 theorem coe_toContinuousLinearEquiv_symm' (e : E ≃ₗ[𝕜] F) :
     (e.toContinuousLinearEquiv.symm : F → E) = e.symm :=
   rfl
 
+omit [CompleteSpace 𝕜] in
 @[simp]
 theorem toLinearEquiv_toContinuousLinearEquiv (e : E ≃ₗ[𝕜] F) :
     e.toContinuousLinearEquiv.toLinearEquiv = e := by
   ext x
   rfl
 
+omit [CompleteSpace 𝕜] in
 theorem toLinearEquiv_toContinuousLinearEquiv_symm (e : E ≃ₗ[𝕜] F) :
     e.toContinuousLinearEquiv.symm.toLinearEquiv = e.symm := by
   ext x
@@ -406,14 +414,16 @@ instance canLiftContinuousLinearEquiv :
 
 end LinearEquiv
 
-variable [FiniteDimensional 𝕜 F]
+variable [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F]
 
+omit [CompleteSpace 𝕜] in
 /-- Two finite-dimensional topological vector spaces over a complete normed field are continuously
 linearly equivalent if they have the same (finite) dimension. -/
 theorem FiniteDimensional.nonempty_continuousLinearEquiv_of_finrank_eq
     (cond : finrank 𝕜 E = finrank 𝕜 F) : Nonempty (E ≃L[𝕜] F) :=
   (nonempty_linearEquiv_of_finrank_eq cond).map LinearEquiv.toContinuousLinearEquiv
 
+omit [CompleteSpace 𝕜] in
 /-- Two finite-dimensional topological vector spaces over a complete normed field are continuously
 linearly equivalent if and only if they have the same (finite) dimension. -/
 theorem FiniteDimensional.nonempty_continuousLinearEquiv_iff_finrank_eq :
@@ -488,6 +498,7 @@ theorem toContinuousLinearEquivOfDetNeZero_apply (f : E →L[𝕜] E) (hf : f.de
     f.toContinuousLinearEquivOfDetNeZero hf x = f x :=
   rfl
 
+omit [CompleteSpace 𝕜] in
 theorem _root_.Matrix.toLin_finTwoProd_toContinuousLinearMap (a b c d : 𝕜) :
     LinearMap.toContinuousLinearMap
       (Matrix.toLin (Basis.finTwoProd 𝕜) (Basis.finTwoProd 𝕜) !![a, b; c, d]) =
