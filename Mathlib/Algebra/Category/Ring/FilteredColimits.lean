@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Category.Grp.FilteredColimits
 public import Mathlib.Algebra.Category.Ring.Basic
+public import Mathlib.Algebra.Category.Ring.Colimits
 
 import Mathlib.Algebra.Ring.ULift
 
@@ -361,6 +362,9 @@ instance forget₂Ring_preservesFilteredColimits :
 
 instance forget_preservesFilteredColimits : PreservesFilteredColimits (forget CommRingCat.{u}) :=
   Limits.comp_preservesFilteredColimits (forget₂ CommRingCat RingCat) (forget RingCat.{u})
+
+instance forget_reflectsFilteredColimits : ReflectsFilteredColimits (forget CommRingCat.{u}) where
+  reflects_filtered_colimits _ := {reflectsColimit := reflectsColimit_of_reflectsIsomorphisms _ _}
 
 omit [IsFiltered J] in
 protected lemma nontrivial {F : J ⥤ CommRingCat.{v}} [IsFilteredOrEmpty J]

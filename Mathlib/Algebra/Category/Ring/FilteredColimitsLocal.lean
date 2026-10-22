@@ -5,7 +5,6 @@ Authors: Nailin Guan, Jingting Wang
 -/
 module
 
-public import Mathlib.Algebra.Category.Ring.Colimits
 public import Mathlib.Algebra.Category.Ring.FilteredColimits
 public import Mathlib.Algebra.Field.Subfield.Basic
 public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
@@ -162,9 +161,6 @@ rings. -/
 noncomputable def residueFieldCocone (hc : IsColimit c) : Cocone (residueFieldFunctor F) :=
   residueFieldCocone' F c (c_pt := isLocalRing_of_isColimit F hc)
     (c_ι := fun j ↦ isLocalHom_ι F hc j)
-
-instance : ReflectsFilteredColimits (forget CommRingCat.{u}) where
-  reflects_filtered_colimits _ := {reflectsColimit := reflectsColimit_of_reflectsIsomorphisms _ _}
 
 /--
 For a filtered colimit cocone `c` of local homomorphisms between local rings,
