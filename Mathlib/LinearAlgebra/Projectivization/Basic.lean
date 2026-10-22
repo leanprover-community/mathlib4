@@ -126,8 +126,8 @@ theorem mk_eq_mk_iff' (v w : V) (hv : v ≠ 0) (hw : w ≠ 0) :
 /-- Two nonzero vectors have the same image under `mk'` iff one is a unit multiple of the other,
 for the action of `Kˣ` on `{ v : V // v ≠ 0 }`. -/
 theorem mk'_eq_mk'_iff (v w : { v : V // v ≠ 0 }) :
-    mk' K v = mk' K w ↔ ∃ a : Kˣ, a • w = v := by
-  simp only [mk'_eq_mk, mk_eq_mk_iff, Subtype.ext_iff, Units.smul_coe]
+    mk' K v = mk' K w ↔ ∃ a : Kˣ, a • w = v :=
+  Quotient.eq''.trans (Units.orbitRel_nonZero_iff K V v w).symm
 
 /-- The saturation of a set of nonzero vectors under `mk'` is the union of its translates by the
 units of `K`. -/

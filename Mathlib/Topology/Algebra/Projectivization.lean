@@ -67,6 +67,7 @@ section Map
 variable {L W : Type*} [DivisionRing L] [AddCommGroup W] [Module L W] [TopologicalSpace W]
 
 /-- An injective continuous semilinear map induces a continuous map on projective spaces. -/
+@[fun_prop]
 theorem continuous_map {σ : K →+* L} {f : V →ₛₗ[σ] W} (hf : Function.Injective f)
     (hfc : Continuous f) : Continuous (map f hf) :=
   continuous_iff.2 <| continuous_mk (hfc.comp continuous_subtype_val) _
