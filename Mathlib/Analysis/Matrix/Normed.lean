@@ -46,6 +46,11 @@ In this file we provide the following non-instances for norms on matrices:
 These are not declared as instances because there are several natural choices for defining the norm
 of a matrix.
 
+We also show:
+
+* `Matrix.norm_le_frobenius_norm`
+* `Matrix.norm_le_linfty_opNorm`
+
 The norm induced by the identification of `Matrix m n 𝕜` with
 `EuclideanSpace n 𝕜 →L[𝕜] EuclideanSpace m 𝕜` (i.e., the ℓ² operator norm) can be found in
 `Mathlib/Analysis/CStarAlgebra/Matrix.lean` and `open scoped Matrix.Norms.L2Operator`.
@@ -508,6 +513,16 @@ end Norms.Operator
 
 end LinftyOp
 
+/-- The elementwise norm never exceeds the $L_\infty$ operator norm. -/
+lemma nnnorm_le_linfty_opNNNorm [SeminormedAddCommGroup R] (A : Matrix m n R) :
+    open scoped Matrix.Norms.Elementwise in ‖A‖₊ ≤ open scoped Matrix.Norms.Operator in ‖A‖₊ :=
+  nnnorm_le_iff.2 <| nnnorm_apply_le_linfty_opNNNorm A
+
+/-- The elementwise norm never exceeds the $L_\infty$ operator norm. -/
+lemma norm_le_linfty_opNorm [SeminormedAddCommGroup R] (A : Matrix m n R) :
+    open scoped Matrix.Norms.Elementwise in ‖A‖ ≤ open scoped Matrix.Norms.Operator in ‖A‖ :=
+  nnnorm_le_linfty_opNNNorm _
+
 /-! ### The Frobenius norm
 
 This is defined as $\|A\| = \sqrt{\sum_{i,j} \|A_{ij}\|^2}$.
@@ -710,5 +725,15 @@ attribute [scoped instance]
   Matrix.frobeniusIsBoundedSMul
   Matrix.frobeniusNormSMulClass
 end Norms.Frobenius
+
+/-- The elementwise norm never exceeds the frobenius norm. -/
+lemma nnnorm_le_frobenius_nnnorm [SeminormedAddCommGroup R] (A : Matrix m n R) :
+    open scoped Matrix.Norms.Elementwise in ‖A‖₊ ≤ open scoped Matrix.Norms.Frobenius in ‖A‖₊ :=
+  nnnorm_le_iff.2 <| nnnorm_apply_le_frobenius_nnnorm A
+
+/-- The elementwise norm never exceeds the frobenius norm. -/
+lemma norm_le_frobenius_norm [SeminormedAddCommGroup R] (A : Matrix m n R) :
+    open scoped Matrix.Norms.Elementwise in ‖A‖ ≤ open scoped Matrix.Norms.Frobenius in ‖A‖ :=
+  nnnorm_le_frobenius_nnnorm _
 
 end Matrix
