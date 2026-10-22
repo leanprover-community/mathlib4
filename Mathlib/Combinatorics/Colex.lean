@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Order.Ring.GeomSum
 public import Mathlib.Data.Finset.Slice
 public import Mathlib.Data.Nat.BitIndices
+public import Mathlib.Order.PiLex
 public import Mathlib.Order.UpperLower.Closure
 
 import Mathlib.Order.SupClosed
@@ -291,6 +292,37 @@ lemma toColex_lt_toColex_iff_exists_forall_lt :
 lemma lt_iff_exists_forall_lt {s t : Colex (Finset α)} :
     s < t ↔ ∃ a ∈ ofColex t, a ∉ ofColex s ∧ ∀ b ∈ ofColex s, b ∉ ofColex t → b < a :=
   toColex_lt_toColex_iff_exists_forall_lt
+
+-- a form that matches the definition `Pi.Lex` more
+lemma toColex_lt_toColex_iff_exists :
+    toColex s < toColex t ↔ ∃ a, (∀ b > a, b ∈ s ↔ b ∈ t) ∧ a ∈ t ∧ a ∉ s := by
+  simp_rw [lt_iff_le_and_ne, Colex.le_def, ofColex_toColex, toColex.injective.ne_iff]
+  refine ⟨fun hlt ↦ ?_, by grind⟩
+  obtain ⟨a, ha⟩ := exists_maximal (s := t \ s) (by grind)
+  simp_rw [mem_sdiff] at ha
+  exact ⟨a, by grind [Maximal]⟩
+
+-- a form that matches the definition `Pi.Lex` more
+lemma lt_iff_exists {s t : Colex (Finset α)} :
+    s < t ↔ ∃ a, (∀ b > a, b ∈ ofColex s ↔ b ∈ ofColex t) ∧ a ∈ ofColex t ∧ a ∉ ofColex s :=
+  toColex_lt_toColex_iff_exists
+
+lemma toColex_lt_toColex_iff_pi_lex_lt_pi_lex {π : α → Type*}
+    [∀ a, PartialOrder (π a)] {f g : ∀ a, π a} (h : ∀ a, f a > g a) :
+    toColex s < toColex t ↔ Pi.Lex (· > ·) (· < ·) (s.piecewise f g) (t.piecewise f g) := by
+  unfold Pi.Lex
+  convert toColex_lt_toColex_iff_exists
+  all_goals grind [Finset.piecewise]
+
+lemma lt_iff_pi_lex_lt_pi_lex {s t : Colex (Finset α)} {π : α → Type*}
+    [∀ a, PartialOrder (π a)] {f g : ∀ a, π a} (h : ∀ a, f a > g a) :
+    s < t ↔ Pi.Lex (· > ·) (· < ·) ((ofColex s).piecewise f g) ((ofColex t).piecewise f g) :=
+  toColex_lt_toColex_iff_pi_lex_lt_pi_lex h
+
+lemma strictMono_toColex_piecewise_ofColex {π : α → Type*}
+    [∀ a, PartialOrder (π a)] {f g : ∀ a, π a} (h : ∀ a, f a > g a) :
+    StrictMono (fun l ↦ toColex <| Finset.piecewise (ofColex l) f g) :=
+  fun _ _ ↦ lt_iff_pi_lex_lt_pi_lex h |>.mp
 
 lemma toColex_le_toColex_iff_max'_mem :
     toColex s ≤ toColex t ↔ ∀ hst : s ≠ t, (s ∆ t).max' (symmDiff_nonempty.2 hst) ∈ t := by
