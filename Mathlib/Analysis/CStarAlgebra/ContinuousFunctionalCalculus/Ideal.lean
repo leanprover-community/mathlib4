@@ -5,9 +5,9 @@ Authors: Pablo Cohen
 -/
 module
 
-public import Mathlib.RingTheory.TwoSidedIdeal.Basic
 public import Mathlib.Analysis.CStarAlgebra.ApproximateUnit
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
+public import Mathlib.RingTheory.TwoSidedIdeal.Basic
 public import Mathlib.Topology.ContinuousMap.StoneWeierstrass
 
 /-!
@@ -56,7 +56,7 @@ closed two-sided ideal in a C⋆-algebra is invariant under the canonical approx
 theorem smul_mem_of_isClosed {𝕜 : Type*} [SMul 𝕜 A] [ContinuousConstSMul 𝕜 A]
     [IsScalarTower 𝕜 A A] {I : TwoSidedIdeal A} (hI : IsClosed (I : Set A)) {y : A}
     (hy : y ∈ I) (r : 𝕜) : r • y ∈ I := by
-  haveI : (approximateUnit A).NeBot := (increasingApproximateUnit A).neBot
+  have : (approximateUnit A).NeBot := (increasingApproximateUnit A).neBot
   have h : Tendsto (fun x => r • (x * y)) (approximateUnit A) (𝓝 (r • y)) :=
     ((increasingApproximateUnit A).tendsto_mul_right y).const_smul r
   refine hI.mem_of_tendsto h (Eventually.of_forall fun x => ?_)
