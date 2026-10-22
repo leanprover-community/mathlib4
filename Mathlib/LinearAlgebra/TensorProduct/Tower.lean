@@ -844,6 +844,12 @@ lemma baseChange_eq_span : p.baseChange A = span A (p.map (TensorProduct.mk R A 
     exact smul_mem _ a (subset_span ⟨m, m.2, rfl⟩)
   · refine span_le.2 fun _ ⟨m, hm, h⟩ ↦ h ▸ ⟨1 ⊗ₜ[R] ⟨m, hm⟩, rfl⟩
 
+variable {A p} in
+theorem baseChange_le_iff_le_comap {q : Submodule A (A ⊗[R] M)} :
+    p.baseChange A ≤ q ↔ p ≤ (q.restrictScalars R).comap (TensorProduct.mk R A M 1) := by
+  rw [baseChange_eq_span, span_le, ← q.coe_restrictScalars R, SetLike.coe_subset_coe,
+    map_le_iff_le_comap]
+
 @[simp]
 lemma baseChange_bot : (⊥ : Submodule R M).baseChange A = ⊥ := by simp [baseChange_eq_span]
 
@@ -854,9 +860,7 @@ lemma baseChange_top : (⊤ : Submodule R M).baseChange A = ⊤ := by
 
 variable {p q} in
 theorem baseChange_mono (h : p ≤ q) : p.baseChange A ≤ q.baseChange A := by
-  rw [baseChange, LinearMap.baseChange, ← subtype_comp_inclusion p q h,
-    ← LinearMap.id_comp LinearMap.id, AlgebraTensorModule.map_comp]
-  apply LinearMap.range_comp_le_range
+  grw [baseChange_le_iff_le_comap, h, ← baseChange_le_iff_le_comap]
 
 @[simp]
 lemma baseChange_span (s : Set M) :
