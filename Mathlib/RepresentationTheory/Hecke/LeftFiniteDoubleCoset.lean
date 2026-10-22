@@ -53,8 +53,7 @@ instance (x : DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G)) :
 @[simp]
 lemma coe_smul_leftDecomposition {x : DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G)} (h : H₁)
     (y : x.leftDecomposition) :
-    ((h • y : x.leftDecomposition) : G ⧸ H₂) = (h : G) • (y : G ⧸ H₂) :=
-  rfl
+    ((h • y : x.leftDecomposition) : G ⧸ H₂) = (h : G) • (y : G ⧸ H₂) := rfl
 
 lemma mem_leftDecomposition_eq_smul {x : DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G)}
     {c d : G ⧸ H₂} (hc : c ∈ x.leftDecomposition) (hd : d ∈ x.leftDecomposition) :
@@ -65,13 +64,10 @@ lemma mem_leftDecomposition_eq_smul {x : DoubleCoset.Quotient (H₁ : Set G) (H�
   exact ⟨_, hh₁, by rw [← QuotientGroup.out_eq' c, h]; simp [hh₂, ← MulAction.Quotient.mk_smul_out]⟩
 
 lemma stabilizer_leftCoset :
-    MulAction.stabilizer H₁ (g : G ⧸ H₂) = (ConjAct.toConjAct g • H₂).subgroupOf H₁ := by
+    MulAction.stabilizer H₁ (g : G ⧸ H₂) = (MulAut.conj g • H₂).subgroupOf H₁ := by
   ext h
-  have (x : G) : x ∈ ConjAct.toConjAct g • H₂ ↔ g⁻¹ * x * g ∈ H₂ := by
-    rw [Subgroup.mem_pointwise_smul_iff_inv_smul_mem, ← ConjAct.toConjAct_inv, ConjAct.smul_def,
-      ConjAct.ofConjAct_toConjAct, inv_inv]
-  simp [Subgroup.mem_subgroupOf, this, eq_comm, QuotientGroup.eq, MulAction.subgroup_smul_def,
-    mul_assoc]
+  simp [Subgroup.mem_subgroupOf, Subgroup.mem_pointwise_smul_iff_inv_smul_mem, eq_comm,
+    QuotientGroup.eq, MulAction.subgroup_smul_def, mul_assoc]
 
 variable (H₁ H₂ g) in
 /-- The quotient `H₁ ⧸ (H₁ ∩ gH₂g⁻¹)` indexing the left cosets `h₁gH₂` inside the double coset
@@ -79,6 +75,10 @@ variable (H₁ H₂ g) in
 abbrev leftDecompQuotient := H₁ ⧸ MulAction.stabilizer H₁ (g : G ⧸ H₂)
 
 namespace leftDecompQuotient
+
+lemma natCard_eq_relIndex :
+    Nat.card (leftDecompQuotient H₁ H₂ g) = (MulAut.conj g • H₂).relIndex H₁ := by
+  rw [leftDecompQuotient, Subgroup.relIndex, Subgroup.index, stabilizer_leftCoset]
 
 /-- The map sending `⟦h₁⟧` to `h₁gH₂`. -/
 def toLeftCoset :
