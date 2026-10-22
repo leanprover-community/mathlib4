@@ -280,6 +280,34 @@ jobs:
       # the next run can use the modules that this run built. `cache stage`
       # skips the `.ltar` files that it already packed, and `cp` overwrites
       # the staged files, so the step can follow an interrupted staging.
+      # PROBE: the values that the fallback condition reads.
+      - name: "probe: outcomes"
+        if: always()
+        shell: bash
+        run: |
+          echo "job_status=${{ job.status }}"
+          echo "build_outcome=[${{ steps.build.outcome }}] stage_outcome=[${{ steps.stage_mathlib.outcome }}] stage_conclusion=[${{ steps.stage_mathlib.conclusion }}] libraries_outcome=[${{ steps.libraries.outcome }}]"
+
+      - name: "probe: cancelled"
+        if: ${{ cancelled() }}
+        shell: bash
+        run: echo "cancelled() is true"
+
+      - name: "probe: always and build"
+        if: ${{ always() && (steps.build.outcome == 'success' || steps.build.outcome == 'failure' || steps.build.outcome == 'cancelled') }}
+        shell: bash
+        run: echo "build clause is true"
+
+      - name: "probe: always and member"
+        if: ${{ always() && steps.stage_mathlib.outcome != 'success' && steps.stage_mathlib.outcome != 'failure' }}
+        shell: bash
+        run: echo "member clause is true"
+
+      - name: "probe: full fallback"
+        if: ${{ cancelled() && (steps.build.outcome == 'success' || steps.build.outcome == 'failure' || steps.build.outcome == 'cancelled') && steps.stage_mathlib.outcome != 'success' && steps.stage_mathlib.outcome != 'failure' }}
+        shell: bash
+        run: echo "full fallback condition is true"
+
       - name: stage Mathlib cache files after a cancellation
         if: ${{ cancelled() && (steps.build.outcome == 'success' || steps.build.outcome == 'failure' || steps.build.outcome == 'cancelled') && steps.stage_mathlib.outcome != 'success' && steps.stage_mathlib.outcome != 'failure' }}
         shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX -- bash -euxo pipefail {0}

@@ -25,3 +25,5 @@ theorem WithTop.range_eq (f : WithTop α → β) :
   Option.range_eq f
 
 -- ci-dev probe (fix-cancel-build): leaf edit
+
+-- ci-dev probe (diag 2)
