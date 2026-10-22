@@ -144,8 +144,8 @@ Law of cosines for the chord from a point of the circle `circleMap 0 r` to an ar
 half-angle form. For `r = 1` and `a = 1`, see also `Complex.norm_exp_I_mul_ofReal_sub_one`.
 -/
 theorem norm_circleMap_zero_sub_sq' (r θ : ℝ) (a : ℂ) :
-    ‖circleMap 0 r θ - a‖ ^ 2
-      = (r - ‖a‖) ^ 2 + 4 * r * ‖a‖ * Real.sin ((θ - a.arg) / 2) ^ 2 := by
+    ‖circleMap 0 r θ - a‖ ^ 2 =
+      (r - ‖a‖) ^ 2 + 4 * r * ‖a‖ * Real.sin ((θ - a.arg) / 2) ^ 2 := by
   have h := Real.sin_sq_eq_half_sub ((θ - a.arg) / 2)
   rw [show 2 * ((θ - a.arg) / 2) = θ - a.arg by ring] at h
   rw [norm_circleMap_zero_sub_sq]
