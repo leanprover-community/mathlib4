@@ -79,7 +79,7 @@ theorem to_Module_monoidAlgebra_map_aux {k G : Type*} [CommRing k] [Monoid G] (V
   apply MonoidAlgebra.induction_on r
   · intro g
     simp only [one_smul, MonoidAlgebra.lift_single, MonoidAlgebra.of_apply]
-    exact LinearMap.congr_fun (w g) x
+    congrm $(w g) x
   · intro g h gw hw; simp only [map_add, LinearMap.add_apply, hw, gw]
   · intro r g w
     simp only [map_smul, w, LinearMap.smul_apply]
@@ -94,7 +94,7 @@ def toModuleMonoidAlgebraMap {V W : Rep.{w} k G} (f : V ⟶ W) :
 
 /-- Functorially convert a representation of `G` into a module over `k[G]`. -/
 def toModuleMonoidAlgebra : Rep.{w} k G ⥤ ModuleCat k[G] where
-  obj V := ModuleCat.of _ V.ρ.asModule
+  obj V := ↧V.ρ.asModule
   map f := toModuleMonoidAlgebraMap f
 
 set_option backward.isDefEq.respectTransparency false in

@@ -31,7 +31,7 @@ theorem pi_gt_sqrtTwoAddSeries (n : ℕ) : 2 ^ (n + 1) * √(2 - sqrtTwoAddSerie
     focus
       apply sin_lt
       apply div_pos pi_pos
-    all_goals apply pow_pos; norm_num
+    all_goals apply pow_pos; simp
   refine lt_of_le_of_lt (le_of_eq ?_) this
   rw [pow_succ' _ (n + 1), ← mul_assoc, div_mul_cancel₀, mul_comm]; simp
 
@@ -52,7 +52,7 @@ theorem pi_lt_sqrtTwoAddSeries (n : ℕ) :
   all_goals norm_num
 
 /-- From an upper bound on `sqrtTwoAddSeries 0 n = 2 cos (π / 2 ^ (n+1))` of the form
-`sqrtTwoAddSeries 0 n ≤ 2 - (a / 2 ^ (n + 1)) ^ 2)`, one can deduce the lower bound `a < π`
+`sqrtTwoAddSeries 0 n ≤ 2 - (a / 2 ^ (n + 1)) ^ 2`, one can deduce the lower bound `a < π`
 thanks to basic trigonometric inequalities as expressed in `pi_gt_sqrtTwoAddSeries`. -/
 theorem pi_lower_bound_start (n : ℕ) {a}
     (h : sqrtTwoAddSeries ((0 : ℕ) / (1 : ℕ)) n ≤ (2 : ℝ) - (a / (2 : ℝ) ^ (n + 1)) ^ 2) :

@@ -6,12 +6,9 @@ Yuyang Zhao
 -/
 module
 
-public import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
 public import Mathlib.Algebra.Order.IsBotOne
-public import Mathlib.Data.Ordering.Basic
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
 public import Mathlib.Order.MinMax
-public import Mathlib.Tactic.Contrapose
-public import Mathlib.Tactic.Use
 public import Mathlib.Tactic.GRewrite
 
 /-!
@@ -226,19 +223,9 @@ variable [PartialOrder α]
 instance [MulLeftReflectLE α] : IsLeftCancelMul α where
   mul_left_cancel _ _ _ h := (le_of_mul_le_mul_left' h.le).antisymm (le_of_mul_le_mul_left' h.ge)
 
-@[deprecated (since := "2026-03-14")]
-alias add_left_cancel'' := add_left_cancel
-@[to_additive existing, deprecated (since := "2026-03-14")]
-alias mul_left_cancel'' := mul_left_cancel
-
 @[to_additive]
 instance [MulRightReflectLE α] : IsRightCancelMul α where
   mul_right_cancel _ _ _ h := (le_of_mul_le_mul_right' h.le).antisymm (le_of_mul_le_mul_right' h.ge)
-
-@[deprecated (since := "2026-03-14")]
-alias add_right_cancel'' := add_right_cancel
-@[to_additive existing, deprecated (since := "2026-03-14")]
-alias mul_right_cancel'' := mul_right_cancel
 
 @[to_additive] lemma mul_le_mul_iff_of_ge [MulLeftStrictMono α]
     [MulRightStrictMono α] {a₁ a₂ b₁ b₂ : α} (ha : a₁ ≤ a₂) (hb : b₁ ≤ b₂) :
@@ -370,7 +357,6 @@ theorem min_mul_min_le_min_mul_mul' : min a c * min b d ≤ min (a * b) (c * d) 
 end LinearOrder
 end Mul
 
--- using one
 section MulOneClass
 
 variable [MulOneClass α]
@@ -444,6 +430,9 @@ theorem lt_mul_of_one_lt_right' [MulLeftStrictMono α] (a : α) (h : 1 < b) : a 
 @[to_additive add_lt_of_neg_right]
 theorem mul_lt_of_lt_one_right' [MulLeftStrictMono α] (a : α) (h : b < 1) : a * b < a := by
   simpa using mul_lt_mul_right h a
+
+attribute [to_dual existing mul_lt_of_lt_one_right'] lt_mul_of_one_lt_right'
+attribute [to_dual existing add_lt_of_neg_right] lt_add_of_pos_right
 
 @[to_additive lt_add_of_pos_left]
 theorem lt_mul_of_one_lt_left' [MulRightStrictMono α] (a : α) (h : 1 < b) : a < b * a := by

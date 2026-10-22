@@ -630,7 +630,7 @@ theorem norm_integral_le_integral_norm :
     _ ≤ ‖B‖ * ENNReal.toReal (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ.variation) :=
       norm_integral_le_lintegral_norm
     _ = ‖B‖ * ∫ a, ‖f a‖ ∂μ.variation := by
-      rw [integral_eq_lintegral_of_nonneg_ae le_ae <| h.norm]
+      rw [integral_eq_lintegral_of_nonneg_ae le_ae h.norm]
   · rw [integral_non_aestronglyMeasurable h, norm_zero]
     positivity
 
@@ -732,8 +732,10 @@ lemma tendsto_integral_of_L1' {ι} (f : X → E)
     (hF : Tendsto (fun i ↦ eLpNorm (F i - f) 1 μ.variation) l (𝓝 0)) :
     Tendsto (fun i ↦ ∫ᵛ x, F i x ∂[B; μ]) l (𝓝 (∫ᵛ x, f x ∂[B; μ])) := by
   refine tendsto_integral_of_L1 f hfi hFi ?_
-  simp_rw [eLpNorm_one_eq_lintegral_enorm, Pi.sub_apply] at hF
-  exact hF
+  apply hF.congr'
+  filter_upwards [hFi] with i hi
+  rw [eLpNorm_one_eq_lintegral_enorm (hi.aestronglyMeasurable.sub hfi)]
+  rfl
 
 variable {Y : Type*} [TopologicalSpace Y] [FirstCountableTopology Y]
 
