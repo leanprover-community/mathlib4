@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Topology.Order.ExtendFrom
 public import Mathlib.Topology.Order.Compact
+
 import Mathlib.Topology.Order.T5
 
 /-!

@@ -8,7 +8,7 @@ module
 public import Mathlib.Geometry.Convex.Cone.Face.Basic
 
 /-!
-## Face
+# The face lattice of a pointed cone
 
 This file defines the concept of a face of a pointed cone. It also defines the complete lattice
 structure on the collection of all faces of such a cone.
@@ -110,6 +110,7 @@ instance : CompleteSemilatticeInf (Face C) where
 instance : CompleteLattice (Face C) where
   top := ⟨C, .refl _⟩
   le_top F := F.toPointedCone_le
+  __ := instSemilatticeInf
   __ := completeLatticeOfCompleteSemilatticeInf _
 
 instance : Inhabited (Face C) := ⟨⊤⟩

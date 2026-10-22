@@ -583,7 +583,7 @@ theorem mono_iff_stalk_mono {F G : Sheaf C X} (f : F ⟶ G) :
 
 /-- For surjectivity, we are given an arbitrary section `t` and need to find a preimage for it.
 We claim that it suffices to find preimages *locally*. That is, for each `x : U` we construct
-a neighborhood `V ≤ U` and a section `s : F.obj (op V))` such that `f.app (op V) s` and `t`
+a neighborhood `V ≤ U` and a section `s : F.obj (op V)` such that `f.app (op V) s` and `t`
 agree on `V`. -/
 theorem app_surjective_of_injective_of_locally_surjective {F G : Sheaf C X} (f : F ⟶ G)
     (U : Opens X) (hinj : ∀ x ∈ U, Function.Injective ((stalkFunctor C x).map f.1))

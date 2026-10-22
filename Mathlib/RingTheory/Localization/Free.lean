@@ -6,9 +6,10 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Module.FinitePresentation
+public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
+
 import Mathlib.RingTheory.Localization.Finiteness
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 
 /-!
 # Free modules and localization

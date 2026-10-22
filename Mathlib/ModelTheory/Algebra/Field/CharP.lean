@@ -5,9 +5,10 @@ Authors: Chris Hughes
 -/
 module
 
-import Mathlib.Algebra.CharP.Basic
 public import Mathlib.ModelTheory.Algebra.Ring.FreeCommRing
 public import Mathlib.ModelTheory.Algebra.Field.Basic
+
+import Mathlib.Algebra.CharP.Basic
 
 /-!
 # First-order theory of fields

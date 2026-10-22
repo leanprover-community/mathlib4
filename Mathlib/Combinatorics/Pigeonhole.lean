@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.Module.BigOperators
 public import Mathlib.Data.Nat.ModEq
-import Mathlib.Order.Preorder.Finite
 
+import Mathlib.Order.Preorder.Finite
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
 
 /-!

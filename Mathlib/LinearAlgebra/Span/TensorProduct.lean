@@ -8,9 +8,10 @@ module
 public import Mathlib.Algebra.Algebra.Epi
 public import Mathlib.RingTheory.Flat.Basic
 public import Mathlib.Combinatorics.Matroid.Init
+public import Mathlib.LinearAlgebra.FreeModule.PID
+
 import Mathlib.Data.Nat.Totient
 import Mathlib.Data.Sym.Sym2
-public import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.Tactic.NormNum.GCD
 import Mathlib.Tactic.Positivity

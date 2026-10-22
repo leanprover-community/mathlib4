@@ -6,8 +6,9 @@ Authors: Bhavik Mehta
 module
 
 public import Mathlib.Analysis.Convex.Extreme
-import Mathlib.Combinatorics.Hall.Basic
 public import Mathlib.Analysis.Convex.DoublyStochasticMatrix
+
+import Mathlib.Combinatorics.Hall.Basic
 
 /-!
 # Birkhoff's theorem

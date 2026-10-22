@@ -8,8 +8,9 @@ module
 public import Mathlib.LinearAlgebra.Dimension.Finite
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 public import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.RingTheory.Finiteness.Lattice
 public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+
+import Mathlib.RingTheory.Finiteness.Lattice
 
 /-!
 # Finite-dimensional vector spaces

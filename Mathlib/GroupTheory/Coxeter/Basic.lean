@@ -7,8 +7,9 @@ module
 
 public import Mathlib.GroupTheory.Coxeter.Matrix
 public import Mathlib.GroupTheory.PresentedGroup
-import Mathlib.Tactic.NormNum.DivMod
 public import Mathlib.Tactic.Ring
+
+import Mathlib.Tactic.NormNum.DivMod
 
 /-!
 # Coxeter groups and Coxeter systems

@@ -712,7 +712,7 @@ theorem Dense.sdiff_finset [T1Space X] [∀ x : X, NeBot (𝓝[≠] x)] {s : Set
 obtains a dense set. -/
 theorem Dense.sdiff_finite [T1Space X] [∀ x : X, NeBot (𝓝[≠] x)] {s : Set X} (hs : Dense s)
     {t : Set X} (ht : t.Finite) : Dense (s \ t) := by
-  convert! hs.sdiff_finset ht.toFinset
+  convert hs.sdiff_finset ht.toFinset
   exact (Finite.coe_toFinset _).symm
 
 @[deprecated (since := "2026-06-03")] alias Dense.diff_finite := Dense.sdiff_finite

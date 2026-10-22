@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.Ideal.CotangentBaseChange
 public import Mathlib.RingTheory.Extension.Cotangent.Basic
+
 import Mathlib.Algebra.FiveLemma
 import Mathlib.RingTheory.Kaehler.TensorProduct
 

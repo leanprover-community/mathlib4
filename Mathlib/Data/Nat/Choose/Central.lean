@@ -6,9 +6,10 @@ Authors: Patrick Stevens, Thomas Browning
 module
 
 public import Mathlib.Data.Nat.Choose.Bounds
-import Mathlib.Data.Nat.GCD.Basic
 public import Mathlib.Tactic.Ring
 public import Mathlib.Tactic.Linarith
+
+import Mathlib.Data.Nat.GCD.Basic
 
 /-!
 # Central binomial coefficients

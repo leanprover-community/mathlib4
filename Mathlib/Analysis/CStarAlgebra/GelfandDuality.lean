@@ -11,6 +11,7 @@ public import Mathlib.Analysis.CStarAlgebra.Fuglede
 public import Mathlib.Analysis.Normed.Algebra.Basic
 public import Mathlib.Topology.ContinuousMap.Units
 public import Mathlib.Topology.ContinuousMap.Ideals
+
 import Mathlib.Topology.ContinuousMap.StoneWeierstrass
 
 /-!

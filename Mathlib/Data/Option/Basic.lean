@@ -9,9 +9,10 @@ public import Mathlib.Control.Combinators
 public import Mathlib.Data.Option.Defs
 public import Mathlib.Logic.Relator
 public import Aesop
-import Batteries.Tactic.Lint.Simp
 public import Mathlib.Logic.Function.Basic
 public import Mathlib.Basic.IsEmpty.Defs
+
+import Batteries.Tactic.Lint.Simp
 
 /-!
 # Option of a type

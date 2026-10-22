@@ -5,12 +5,13 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 module
 
-import Mathlib.Algebra.Order.Group.Finset
 public import Mathlib.Algebra.Polynomial.Derivative
 public import Mathlib.Algebra.Polynomial.Eval.SMul
 public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.RingTheory.EuclideanDomain
 public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
+
+import Mathlib.Algebra.Order.Group.Finset
 import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!

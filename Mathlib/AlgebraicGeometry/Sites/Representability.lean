@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.MorphismProperty.Representable
 public import Mathlib.AlgebraicGeometry.GluingOneHypercover
+
 import Mathlib.CategoryTheory.Sites.LocallyBijective
 
 /-!

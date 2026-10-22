@@ -5,9 +5,10 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 -/
 module
 
-import Batteries.Data.List.Perm
 public import Mathlib.Tactic.Common
 public import Batteries.Data.List.Lemmas
+
+import Batteries.Data.List.Perm
 import Mathlib.Tactic.Attr.Core
 
 /-!

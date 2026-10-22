@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Lean.Meta.Simp
 public import Batteries.Logic
+public import Batteries.Tactic.Alias
 public import Batteries.Util.LibraryNote
 public import Mathlib.Tactic.Attr.Register
 

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Normed.Operator.Banach
 public import Mathlib.Analysis.InnerProductSpace.Orthogonal
+
 import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Idempotent
 
 /-!

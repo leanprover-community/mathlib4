@@ -309,10 +309,10 @@ In particular, we merge sequences of `rw`, `simp_rw` and `grw`. -/
 partial def mergeTactics? {m} [Monad m] [MonadQuotation m] (stx₁ stx₂ : TSyntax `tactic) :
     m (Option (TSyntax `tactic)) := do
   match stx₁, stx₂ with
-  | `(tactic| on_goal $n₁ => $tac₁:tactic), `(tactic| on_goal $n₂ => $tac₂:tactic) =>
+  | `(tactic| on_goal $n₁:num => $tac₁:tactic), `(tactic| on_goal $n₂:num => $tac₂:tactic) =>
     if n₁.getNat == n₂.getNat then
       if let some tac ← mergeTactics? tac₁ tac₂ then
-        return ← `(tactic| on_goal $n₁ => $tac:tactic)
+        return ← `(tactic| on_goal $n₁:num => $tac:tactic)
   | `(tactic| rw [$[$rules₁],*] $[at $h₁:ident]?),
     `(tactic| rw [$[$rules₂],*] $[at $h₂:ident]?) =>
     if h₁.map (·.getId) == h₂.map (·.getId) then
@@ -360,7 +360,7 @@ The button is `[apply]` if the tactic does not close the goal, and `[done]` if i
 def mkSuggestion (tac : TSyntax `tactic) (html : Html) (isClosing := false) :
     ClickSuggestionsM Html := do
   let tac ← match (← read).onGoal with
-    | some n => `(tactic| on_goal $(Syntax.mkNatLit (n + 1)) => $tac:tactic)
+    | some n => `(tactic| on_goal $(Syntax.mkNatLit (n + 1)):num => $tac:tactic)
     | none => pure tac
   let (range, newText) ← mkInsertion tac (← read)
   let buttonText := if isClosing then "[done] " else "[apply] "

@@ -7,8 +7,9 @@ module
 
 public import Mathlib.SetTheory.Cardinal.Cofinality.Enum
 public import Mathlib.SetTheory.Ordinal.Enum
-import Mathlib.Topology.Order.Monotone
 public import Mathlib.Topology.Order.SuccPred
+
+import Mathlib.Topology.Order.Monotone
 
 /-!
 # Topology of ordinals

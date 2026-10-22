@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
 public import Mathlib.Topology.Algebra.OpenSubgroup
+
 import Mathlib.Topology.Separation.Profinite
 import Mathlib.Topology.Separation.Connected
 /-!

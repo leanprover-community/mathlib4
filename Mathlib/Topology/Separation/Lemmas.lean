@@ -5,8 +5,9 @@ Authors: Geoffrey Irving, Bryan Wang, Oliver Nash
 -/
 module
 
-import Mathlib.Topology.GDelta.MetrizableSpace
 public import Mathlib.Topology.Separation.CompletelyRegular
+
+import Mathlib.Topology.GDelta.MetrizableSpace
 import Mathlib.Topology.Separation.Profinite
 
 /-!

@@ -7,9 +7,10 @@ module
 
 public meta import Mathlib.Tactic.Core
 public meta import Mathlib.Lean.Expr.Basic
-import Mathlib.Data.Finset.Attr
 public import Mathlib.Data.Fintype.Defs
 public meta import Mathlib.Tactic.ToDual
+
+import Mathlib.Data.Finset.Attr
 
 /-!
 # The `fin_cases` tactic.

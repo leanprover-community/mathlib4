@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Subobject.Lattice
 public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
 public import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
+
 import Mathlib.Order.OrderIsoNat
 
 /-!

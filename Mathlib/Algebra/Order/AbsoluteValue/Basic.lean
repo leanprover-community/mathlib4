@@ -5,10 +5,11 @@ Authors: Mario Carneiro, Anne Baanen
 -/
 module
 
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 public import Mathlib.Algebra.Order.Hom.RingNorm
 public import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.Tactic.Positivity.Core
+
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 
 /-!
 # Absolute values

@@ -8,6 +8,7 @@ module
 
 public import Mathlib.Analysis.RCLike.ContinuousMap
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
+
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Range
 import Mathlib.Analysis.CStarAlgebra.Hom
 

@@ -7,8 +7,9 @@ module
 
 public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
 public import Mathlib.Algebra.Polynomial.Expand
-import Mathlib.RingTheory.Adjoin.Polynomial.Basic
 public import Mathlib.RingTheory.Finiteness.Subalgebra
+
+import Mathlib.RingTheory.Adjoin.Polynomial.Basic
 import Mathlib.RingTheory.Polynomial.Tower
 
 /-!

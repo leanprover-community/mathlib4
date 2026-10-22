@@ -98,17 +98,20 @@ abbrev star : SingleObj M :=
 
 /-- The endomorphisms monoid of the only object in `SingleObj M` is equivalent to the original
 monoid `M`. -/
-def toEnd : M ≃* End (SingleObj.star M) :=
-  { Equiv.refl M with map_mul' := fun _ _ => rfl }
+@[implicit_reducible, simps! -isSimp]
+def toEnd : M ≃* End (SingleObj.star M) where
+  toEquiv := (End.homEquiv (X := star M)).symm
+  map_mul' := by cat_disch
 
-theorem toEnd_def (x : M) : toEnd M x = x :=
+theorem toEnd_def (x : M) : toEnd M x = .of x :=
   rfl
 
 variable (N : Type v) [Monoid N]
 
 /-- There is a 1-1 correspondence between monoid homomorphisms `M → N` and functors between the
 corresponding single-object categories. It means that `SingleObj` is a fully faithful functor. -/
-@[stacks 001F "We do not characterize when the functor is full or faithful."]
+@[implicit_reducible, simps,
+stacks 001F "We do not characterize when the functor is full or faithful."]
 def mapHom : (M →* N) ≃ SingleObj M ⥤ SingleObj N where
   toFun f :=
     { obj := id
@@ -116,9 +119,9 @@ def mapHom : (M →* N) ≃ SingleObj M ⥤ SingleObj N where
       map_id := fun _ => f.map_one
       map_comp := fun x y => f.map_mul y x }
   invFun f :=
-    { toFun := fun x => f.map ((toEnd M) x)
-      map_one' := f.map_id _
-      map_mul' := fun x y => f.map_comp y x }
+    { toFun x := (f.mapEnd _ (toEnd M x)).asHom
+      map_one' := by cat_disch
+      map_mul' := by cat_disch }
   left_inv := by cat_disch
   right_inv := by cat_disch
 
@@ -148,12 +151,12 @@ def differenceFunctor (f : C → G) : C ⥤ SingleObj G where
 
 /-- A monoid homomorphism `f: M → End X` into the endomorphisms of an object `X` of a category `C`
 induces a functor `SingleObj M ⥤ C`. -/
-@[simps]
+@[implicit_reducible, simps]
 def functor {X : C} (f : M →* End X) : SingleObj M ⥤ C where
   obj _ := X
-  map a := f a
-  map_id _ := map_one f
-  map_comp a b := map_mul f b a
+  map a := (f a).asHom
+  map_id _ := by simp [id_as_one]
+  map_comp := by simp [comp_as_mul]
 
 /-- Construct a natural transformation between functors `SingleObj M ⥤ C` by
 giving a compatible morphism `SingleObj.star M`. -/
@@ -195,20 +198,14 @@ namespace MulEquiv
 
 variable {M : Type u} {N : Type v} [Monoid M] [Monoid N]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Reinterpret a monoid isomorphism `f : M ≃* N` as an equivalence `SingleObj M ≌ SingleObj N`. -/
 @[simps!]
 def toSingleObjEquiv (e : M ≃* N) : SingleObj M ≌ SingleObj N where
   functor := e.toMonoidHom.toFunctor
   inverse := e.symm.toMonoidHom.toFunctor
-  unitIso := eqToIso (by
-    rw [← MonoidHom.comp_toFunctor, ← MonoidHom.id_toFunctor]
-    congr 1
-    simp)
-  counitIso := eqToIso (by
-    rw [← MonoidHom.comp_toFunctor, ← MonoidHom.id_toFunctor]
-    congr 1
-    simp)
+  unitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _)
+  counitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _)
+  functor_unitIso_comp _ := by simp [SingleObj.id_as_one]; rfl
 
 end MulEquiv
 
@@ -218,17 +215,13 @@ variable (M : Type u) [Monoid M]
 
 /-- The units in a monoid are (multiplicatively) equivalent to
 the automorphisms of `star` when we think of the monoid as a single-object category. -/
+@[implicit_reducible, simps!]
 def toAut : Mˣ ≃* Aut (SingleObj.star M) :=
   MulEquiv.trans (Units.mapEquiv (SingleObj.toEnd M))
     (Aut.unitsEndEquivAut (SingleObj.star M))
 
-@[simp]
-theorem toAut_hom (x : Mˣ) : (toAut M x).hom = SingleObj.toEnd M x :=
-  rfl
-
-@[simp]
-theorem toAut_inv (x : Mˣ) : (toAut M x).inv = SingleObj.toEnd M (x⁻¹ : Mˣ) :=
-  rfl
+@[deprecated (since := "2026-09-12")] alias toAut_hom := Units.toAut_apply_asIso_hom
+@[deprecated (since := "2026-09-12")] alias toAut_inv := Units.toAut_apply_asIso_inv
 
 end Units
 
@@ -237,6 +230,7 @@ namespace MonCat
 open CategoryTheory
 
 /-- The fully faithful functor from `MonCat` to `Cat`. -/
+@[implicit_reducible]
 def toCat : MonCat ⥤ Cat where
   obj x := ↧(SingleObj x)
   map {x y} f := (SingleObj.mapHom x y f.hom).toCatHom
@@ -246,7 +240,6 @@ instance toCat_full : toCat.Full where
     let ⟨x, h⟩ := (SingleObj.mapHom _ _).surjective y.toFunctor
     ⟨ofHom x, Cat.Hom.ext h⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance toCat_faithful : toCat.Faithful where
   map_injective h := MonCat.hom_ext <| by simpa [toCat] using congr(($h).toFunctor)
 

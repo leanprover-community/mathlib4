@@ -7,10 +7,10 @@ module
 
 public import Mathlib.MeasureTheory.Function.UniformIntegrable
 public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.RadonNikodym
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
 
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondJensen
 import Mathlib.MeasureTheory.Function.LpSeminorm.LpNorm
-public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
 
 /-!
 
@@ -28,9 +28,6 @@ This file proves some results regarding the conditional expectation of real-valu
 -/
 
 public section
-
-
-noncomputable section
 
 open ENNReal Filter
 

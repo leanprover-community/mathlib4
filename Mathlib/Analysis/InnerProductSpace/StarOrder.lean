@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Positive
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
+
 import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
 
 /-!

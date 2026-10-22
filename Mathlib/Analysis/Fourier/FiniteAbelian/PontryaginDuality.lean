@@ -5,9 +5,10 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
-import Mathlib.Algebra.DirectSum.AddChar
 public import Mathlib.Analysis.Fourier.FiniteAbelian.Orthogonality
 public import Mathlib.Analysis.SpecialFunctions.Complex.Circle
+
+import Mathlib.Algebra.DirectSum.AddChar
 import Mathlib.GroupTheory.FiniteAbelian.Basic
 import Mathlib.Topology.Instances.AddCircle.Real
 import Mathlib.Algebra.Field.ModEq

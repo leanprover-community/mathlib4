@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.RingTheory.LocalProperties.Submodule
-import Mathlib.RingTheory.Localization.Algebra
 public import Mathlib.Algebra.Module.LocalizedModule.AtPrime
+
+import Mathlib.RingTheory.Localization.Algebra
 
 /-!
 # Local properties about linear maps

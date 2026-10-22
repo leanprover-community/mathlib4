@@ -5,9 +5,10 @@ Authors: Yury Kudryashov
 -/
 module
 
-import Mathlib.Topology.Instances.Irrational
 public import Mathlib.Topology.Instances.Rat
 public import Mathlib.Topology.Compactification.OnePoint.Basic
+
+import Mathlib.Topology.Instances.Irrational
 import Mathlib.Topology.Metrizable.Uniformity
 
 /-!

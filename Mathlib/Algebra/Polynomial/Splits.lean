@@ -670,7 +670,6 @@ theorem Splits.of_degree_eq_two {x : R} (h₁ : f.degree = 2) (h₂ : f.eval x =
 
 end Field
 
-noncomputable section
 
 universe u v w
 
@@ -695,7 +694,5 @@ local infixl:50 " ~ᵤ " => Associated
 end UFD
 
 end Splits
-
-end
 
 end Polynomial

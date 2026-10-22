@@ -65,20 +65,20 @@ instance : (functorToContAction F).EssSurj := by
        (fun X ↦ by
           rw [Action.isContinuous_def]
           change Continuous ((fun p ↦ (FintypeCat.uSwitchEquiv X.obj.V).symm p) ∘
-              (fun p : Aut F' × _ ↦ (X.obj.ρ p.1).hom p.2) ∘
+              (fun p : Aut F' × _ ↦ (X.obj.ρ p.1).asHom.hom p.2) ∘
               (fun p : Aut F' × _ ↦ (p.1, FintypeCat.uSwitchEquiv _ p.2)))
           exact Continuous.comp (by fun_prop) (Continuous.comp X.2.1 (by fun_prop)))
        (fun X ↦ by
           rw [Action.isContinuous_def]
           change Continuous ((fun p ↦ (FintypeCat.uSwitchEquiv X.obj.V).symm p) ∘
-              (fun p : Aut F' × _ ↦ (X.obj.ρ p.1).hom p.2) ∘
+              (fun p : Aut F' × _ ↦ (X.obj.ρ p.1).asHom.hom p.2) ∘
               (fun p : Aut F' × _ ↦ (p.1, FintypeCat.uSwitchEquiv _ p.2)))
           exact Continuous.comp (by fun_prop) (Continuous.comp X.2.1 (by fun_prop)))).trans <|
       ContAction.resEquiv _ f
   have : functorToContAction F ≅ functorToContAction F' ⋙ equiv.functor :=
     NatIso.ofComponents
       (fun X ↦ ObjectProperty.isoMk _ (Action.mkIso (FintypeCat.uSwitchEquivalence.unitIso.app _)
-      (fun g ↦ FintypeCat.uSwitchEquivalence.unitIso.hom.naturality (g.hom.app X))))
+      (fun g ↦ FintypeCat.uSwitchEquivalence.unitIso.hom.naturality (g.asIso.hom.app X))))
       (fun f ↦ by
         ext : 2
         exact FintypeCat.uSwitchEquivalence.unitIso.hom.naturality (F.map f))

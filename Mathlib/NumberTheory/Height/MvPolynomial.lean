@@ -6,11 +6,11 @@ Authors: Michael Stoll
 module
 
 public import Mathlib.NumberTheory.Height.Basic
+public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 
 import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 import Mathlib.Data.Fintype.Order
 import all Mathlib.NumberTheory.Height.Basic
-public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 
 /-!
 # Height bounds for linear and polynomial maps

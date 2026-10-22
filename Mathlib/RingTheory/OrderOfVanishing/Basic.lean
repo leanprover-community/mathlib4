@@ -5,9 +5,10 @@ Authors: Raphael Douglas Giles
 -/
 module
 
-import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 public import Mathlib.RingTheory.Length
 public import Mathlib.RingTheory.HopkinsLevitzki
+
+import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 import Mathlib.Algebra.Ring.Hom.InjSurj
 import Mathlib.RingTheory.Ideal.Quotient.Noetherian
 

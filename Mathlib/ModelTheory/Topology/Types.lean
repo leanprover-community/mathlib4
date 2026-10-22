@@ -7,8 +7,9 @@ Authors: Jonas van der Schaaf, Anish Rajeev
 module
 
 public import Mathlib.ModelTheory.Types
-import Mathlib.Topology.Connected.Separation
 public import Mathlib.Topology.Baire.LocallyCompactRegular
+
+import Mathlib.Topology.Connected.Separation
 
 /-!
 # Topology on the space of complete types

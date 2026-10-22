@@ -7,9 +7,10 @@ module
 
 public import Mathlib.FieldTheory.Minpoly.MinpolyDiv
 public import Mathlib.FieldTheory.PurelyInseparable.Basic
-import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
 public import Mathlib.LinearAlgebra.Vandermonde
 public import Mathlib.RingTheory.Trace.Defs
+
+import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
 
 /-!
 # Trace for (finite) ring extensions.

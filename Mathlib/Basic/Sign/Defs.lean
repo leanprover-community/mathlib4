@@ -7,10 +7,11 @@ module
 
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Tactic.DeriveFintype  -- shake: keep (deriving handlers not tracked yet)
-import Mathlib.Data.Multiset.Defs
-import Mathlib.Data.Fintype.Defs
 public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Group.Int.Defs
+
+import Mathlib.Data.Multiset.Defs
+import Mathlib.Data.Fintype.Defs
 
 /-!
 # Sign type

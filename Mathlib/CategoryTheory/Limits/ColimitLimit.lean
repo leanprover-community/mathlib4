@@ -5,8 +5,9 @@ Authors: Kim Morrison
 -/
 module
 
-import Mathlib.CategoryTheory.Limits.Types.Limits
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+
+import Mathlib.CategoryTheory.Limits.Types.Limits
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
 /-!

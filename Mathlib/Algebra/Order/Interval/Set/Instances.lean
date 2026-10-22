@@ -355,8 +355,11 @@ theorem one_sub_mem {t : β} (ht : t ∈ Ioo (0 : β) 1) : 1 - t ∈ Ioo (0 : β
 theorem mem_iff_one_sub_mem {t : β} : t ∈ Ioo (0 : β) 1 ↔ 1 - t ∈ Ioo (0 : β) 1 :=
   ⟨one_sub_mem, fun h => sub_sub_cancel 1 t ▸ one_sub_mem h⟩
 
-theorem one_minus_pos (x : Ioo (0 : β) 1) : 0 < 1 - (x : β) := by simpa using x.2.2
+theorem one_sub_pos (x : Ioo (0 : β) 1) : 0 < 1 - (x : β) := by simpa using x.2.2
 
-theorem one_minus_lt_one (x : Ioo (0 : β) 1) : 1 - (x : β) < 1 := by simpa using x.2.1
+theorem one_sub_lt_one (x : Ioo (0 : β) 1) : 1 - (x : β) < 1 := by simpa using x.2.1
+
+@[deprecated (since := "2026-10-06")] alias one_minus_pos := one_sub_pos
+@[deprecated (since := "2026-10-06")] alias one_minus_lt_one := one_sub_lt_one
 
 end Set.Ioo

@@ -5,11 +5,12 @@ Authors: Aaron Anderson
 -/
 module
 
+public import Mathlib.ModelTheory.Complexity
+public import Mathlib.ModelTheory.Fraisse
+
 import Mathlib.Algebra.CharZero.Infinite
 import Mathlib.Data.Rat.Encodable
 import Mathlib.Data.Finset.Sort
-public import Mathlib.ModelTheory.Complexity
-public import Mathlib.ModelTheory.Fraisse
 import Mathlib.Order.CountableDenseLinearOrder
 
 /-!
@@ -488,7 +489,7 @@ lemma dlo_isExtensionPair
   let g' :
     ((Substructure.closure Language.order).toFun {m} ⊔ S : Language.order.Substructure M) ↪o N :=
     ((Set.orderIsoOfEq _ _ (by
-      convert!
+      convert
         LowerAdjoint.closure_eq_self_of_mem_closed _
           (Substructure.mem_closed_of_isRelational Language.order
             ((insert m hS.toFinset : Finset M) : Set M))

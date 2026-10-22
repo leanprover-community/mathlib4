@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Homology.ComplexShape
 public import Mathlib.Algebra.Ring.Int.Defs
 public import Mathlib.Algebra.Group.Nat.Defs
+
 import Mathlib.Tactic.Push
 
 /-! # Embeddings of complex shapes

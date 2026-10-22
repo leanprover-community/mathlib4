@@ -54,7 +54,7 @@ This can be increased dynamically, using `#allow_unused_tactic`.
 public initialize allowedRef : IO.Ref (Std.HashSet SyntaxNodeKind) ←
   IO.mkRef <| .ofArray #[
     `Mathlib.Tactic.Says.says,
-    `Batteries.Tactic.«tacticOn_goal-_=>_»,
+    `Batteries.Tactic.«tacticOn_goal_=>_»,
     `by,
     `null,
     `«]»,

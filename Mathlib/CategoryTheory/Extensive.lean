@@ -7,11 +7,12 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Types.Coproducts
 public import Mathlib.CategoryTheory.Limits.Types.Products
-import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 public import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 public import Mathlib.CategoryTheory.Limits.VanKampen
 public import Mathlib.CategoryTheory.Limits.MonoCoprod
 public import Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
+
+import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 
 /-!
 
@@ -253,7 +254,7 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
       rcases f x with (⟨⟨⟩⟩ | ⟨⟨⟩⟩)
       exacts [Or.inl rfl, Or.inr rfl]
     let eX : { p : Z × PUnit // f p.fst = Sum.inl p.snd } ≃ { x : Z // f x = Sum.inl PUnit.unit } :=
-      ⟨fun p => ⟨p.1.1, by convert! p.2⟩, fun x => ⟨⟨_, _⟩, x.2⟩, fun _ => by ext; rfl,
+      ⟨fun p => ⟨p.1.1, by convert p.2⟩, fun x => ⟨⟨_, _⟩, x.2⟩, fun _ => by ext; rfl,
         fun _ => by ext; rfl⟩
     let eY : { p : Z × PUnit // f p.fst = Sum.inr p.snd } ≃ { x : Z // f x = Sum.inr PUnit.unit } :=
       ⟨fun p => ⟨p.1.1, p.2.trans congr(Sum.inr $(Subsingleton.elim ..))⟩,

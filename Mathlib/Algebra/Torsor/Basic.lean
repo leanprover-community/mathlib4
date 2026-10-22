@@ -6,10 +6,11 @@ Authors: Joseph Myers, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Torsor.Defs
-import Mathlib.Algebra.Group.Action.Basic
 public import Mathlib.Algebra.Group.Action.Pi
 public import Mathlib.Algebra.Group.End
 public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
+
+import Mathlib.Algebra.Group.Action.Basic
 
 /-!
 # Torsors of group actions

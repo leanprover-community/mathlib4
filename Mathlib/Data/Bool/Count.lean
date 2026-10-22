@@ -5,10 +5,11 @@ Authors: Yury Kudryashov
 -/
 module
 
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Algebra.Order.Monoid.NatCast
 public import Mathlib.Data.List.Chain
 public import Mathlib.Algebra.Group.Nat.Even
+
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Monoid.NatCast
 import Mathlib.Algebra.Ring.Nat
 
 /-!

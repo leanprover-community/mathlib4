@@ -72,15 +72,14 @@ The dual simpset is `pull_end`.
 register_simp_attr push_end
 
 /--
-The simpset `mfld_simps` records several simp lemmas that are
-especially useful in manifolds. It is a subset of the whole set of simp lemmas, but it makes it
-possible to have quicker proofs (when used with `squeeze_simp` or `simp only`) while retaining
-readability.
+The simpset `mfld_simps` records several simp lemmas that are especially useful in manifolds.
+It is a subset of the whole set of simp lemmas, but it makes it possible to have quicker proofs
+(when used with `simp?` or `simp only`) while retaining readability.
 
 The typical use case is the following, in a file on manifolds:
-If `simp [foo, bar]` is slow, replace it with `squeeze_simp [foo, bar, mfld_simps]` and paste
-its output. The list of lemmas should be reasonable (contrary to the output of
-`squeeze_simp [foo, bar]` which might contain tens of lemmas), and the outcome should be quick
+If `simp [foo, bar]` is slow, replace it with `simp? [foo, bar, mfld_simps]` and click the
+"Try this" suggestion in the infoview. The list of lemmas should be reasonable (contrary to the
+output of `simp? [foo, bar]` which might contain tens of lemmas), and the outcome should be quick
 enough.
 -/
 register_simp_attr mfld_simps

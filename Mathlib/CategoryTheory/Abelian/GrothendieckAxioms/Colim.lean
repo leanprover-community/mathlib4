@@ -5,9 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-import Mathlib.CategoryTheory.Filtered.Final
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
+
+import Mathlib.CategoryTheory.Filtered.Final
 
 /-!
 # Exactness of colimits

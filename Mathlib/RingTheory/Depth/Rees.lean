@@ -5,11 +5,12 @@ Authors: Nailin Guan
 -/
 module
 
-import Mathlib.Algebra.Category.Grp.Zero
 public import Mathlib.Algebra.Category.ModuleCat.Ext.Basic
-import Mathlib.RingTheory.Regular.Category
 public import Mathlib.RingTheory.Regular.LinearMap
 public import Mathlib.RingTheory.Regular.RegularSequence
+
+import Mathlib.Algebra.Category.Grp.Zero
+import Mathlib.RingTheory.Regular.Category
 import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 /-!

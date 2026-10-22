@@ -6,11 +6,11 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.BigOperators.Expect
-import Mathlib.Algebra.Module.Rat
 public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Module.Field
 public import Mathlib.Algebra.Order.Module.Rat
 
+import Mathlib.Algebra.Module.Rat
+import Mathlib.Algebra.Order.Module.Field
 import Mathlib.Algebra.Module.Torsion.Field
 
 /-!

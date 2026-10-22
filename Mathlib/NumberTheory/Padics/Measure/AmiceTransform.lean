@@ -7,9 +7,10 @@ module
 
 public import Mathlib.NumberTheory.Padics.Measure.Basic
 public import Mathlib.RingTheory.PowerSeries.Basic
+public import Mathlib.NumberTheory.Padics.MahlerBasis
+
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 import Mathlib.Algebra.Order.Field.Power
-public import Mathlib.NumberTheory.Padics.MahlerBasis
 
 /-!
 # The Amice transform

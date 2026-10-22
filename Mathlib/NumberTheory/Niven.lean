@@ -5,10 +5,11 @@ Authors: Alex Meiburg, Snir Broshi
 -/
 module
 
-import Mathlib.Analysis.Complex.IsIntegral
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public import Mathlib.RingTheory.Polynomial.RationalRoot
 public import Mathlib.NumberTheory.Real.Irrational
+
+import Mathlib.Analysis.Complex.IsIntegral
 import Mathlib.Tactic.Peel
 import Mathlib.Tactic.Rify
 import Mathlib.Tactic.Qify
@@ -139,7 +140,7 @@ theorem niven (hθ : ∃ r : ℚ, θ = r * π) (hcos : ∃ q : ℚ, cos θ = q) 
 /-- Niven's theorem, but stated for `sin` instead of `cos`. -/
 theorem niven_sin (hθ : ∃ r : ℚ, θ = r * π) (hcos : ∃ q : ℚ, sin θ = q) :
     sin θ ∈ ({-1, -1 / 2, 0, 1 / 2, 1} : Set ℝ) := by
-  convert! ← niven (θ := θ - π / 2) ?_ ?_ using 1
+  convert ← niven (θ := θ - π / 2) ?_ ?_ using 1
   · exact cos_sub_pi_div_two θ
   · exact hθ.imp' (· - 1 / 2) (by intros; push_cast; linarith)
   · simpa [cos_sub_pi_div_two]

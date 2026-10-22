@@ -6,9 +6,10 @@ Authors: Kevin Kappelmann
 module
 
 public import Mathlib.Algebra.ContinuedFractions.Computation.Translations
+public import Mathlib.Order.Filter.AtTopBot.Basic
+
 import Mathlib.Algebra.ContinuedFractions.TerminatedStable
 import Mathlib.Algebra.ContinuedFractions.ContinuantsRecurrence
-public import Mathlib.Order.Filter.AtTopBot.Basic
 import Mathlib.Tactic.Ring
 
 /-!

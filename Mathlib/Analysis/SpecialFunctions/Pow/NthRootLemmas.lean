@@ -6,10 +6,11 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Data.Nat.NthRoot.Defs
+public import Mathlib.Algebra.Order.Ring.Pow
+
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring.Basic
 import Mathlib.Tactic.Zify
-public import Mathlib.Algebra.Order.Ring.Pow
 
 /-!
 # Lemmas about `Nat.nthRoot`
@@ -76,7 +77,7 @@ private theorem nthRoot.lt_pow_go_succ_aux0 (hb : b ≠ 0) :
     (ha := by positivity) (Hsq := by positivity) (Hsq' := by positivity) (H := by omega)
     (n := n + 1)
   rw [← sub_nonneg] at h ⊢
-  convert! h using 1
+  convert h using 1
   rw [pow_succ]; push_cast; ring1
 
 private theorem nthRoot.always_exists (n a : ℕ) :

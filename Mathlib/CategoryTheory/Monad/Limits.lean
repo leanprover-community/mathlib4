@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Monad.Adjunction
 public import Mathlib.CategoryTheory.Adjunction.Limits
+
 import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
 
 /-!

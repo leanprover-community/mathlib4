@@ -10,11 +10,12 @@ public import Mathlib.Data.Finset.Order
 public import Mathlib.Data.Set.Lattice.Order
 public import Mathlib.Order.Atoms
 public import Mathlib.Order.Interval.Set.OrderIso
-import Mathlib.Order.OrderIsoNat
 public import Mathlib.Order.SupClosed
 public import Mathlib.Order.SupIndep
 public import Mathlib.Order.Zorn
 public import Mathlib.Tactic.TFAE
+
+import Mathlib.Order.OrderIsoNat
 
 /-!
 # Compactness properties for complete lattices

@@ -6,8 +6,9 @@ Authors: William Coram
 module
 
 public import Mathlib.RingTheory.MvPowerSeries.Basic
-import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 public import Mathlib.Analysis.Normed.Group.Basic
+
+import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 
 /-!
 # Gauss norm for multivariate power series

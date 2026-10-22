@@ -8,9 +8,9 @@ module
 public import Mathlib.Algebra.FreeMonoid.Basic
 public import Mathlib.Algebra.Free
 public import Mathlib.Algebra.Group.WithOne.Basic
-import Mathlib.Algebra.Group.Units.Basic
 public import Mathlib.Data.Set.Operations
 
+import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Data.Set.Insert
 
 /-!

@@ -5,8 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-import Mathlib.CategoryTheory.CatCommSq
 public import Mathlib.CategoryTheory.GuitartExact.Basic
+
+import Mathlib.CategoryTheory.CatCommSq
 
 /-!
 # Vertical composition of Guitart exact squares

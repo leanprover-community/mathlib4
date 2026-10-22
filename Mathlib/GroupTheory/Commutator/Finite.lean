@@ -5,9 +5,10 @@ Authors: Jordan Brown, Thomas Browning, Patrick Lutz
 -/
 module
 
-import Mathlib.Algebra.Group.Subgroup.Finite
 public import Mathlib.GroupTheory.Rank
 public import Mathlib.GroupTheory.Index
+
+import Mathlib.Algebra.Group.Subgroup.Finite
 
 /-!
 # Commutators of finite direct products

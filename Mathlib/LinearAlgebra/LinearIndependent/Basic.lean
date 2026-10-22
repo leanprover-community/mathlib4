@@ -45,8 +45,6 @@ public section
 
 assert_not_exists Cardinal
 
-noncomputable section
-
 open Function Set Submodule
 
 universe u' u
@@ -161,7 +159,7 @@ theorem LinearIndepOn_iff_linearIndepOn_image_injOn [Nontrivial R] :
 theorem linearIndepOn_congr {w : ι → M} (h : EqOn v w s) :
     LinearIndepOn R v s ↔ LinearIndepOn R w s := by
   rw [LinearIndepOn, LinearIndepOn]
-  convert! Iff.rfl using 2
+  convert Iff.rfl using 2
   ext x
   exact h.symm x.2
 
@@ -184,7 +182,7 @@ theorem LinearIndependent.group_smul_iff {G : Type*} [hG : Group G] [MulAction G
     [MulAction G M] [IsScalarTower G R M] [SMulCommClass G R M] (v : ι → M) (w : ι → G) :
     LinearIndependent R (w • v) ↔ LinearIndependent R v := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.group_smul w⟩
-  convert! h.group_smul (fun i ↦ (w i)⁻¹)
+  convert h.group_smul (fun i ↦ (w i)⁻¹)
   simp [funext_iff]
 
 -- This lemma cannot be proved with `LinearIndependent.group_smul` since the action of
@@ -202,7 +200,7 @@ theorem LinearIndependent.units_smul {v : ι → M} (hv : LinearIndependent R v)
 theorem LinearIndependent.units_smul_iff (v : ι → M) (w : ι → Rˣ) :
     LinearIndependent R (w • v) ↔ LinearIndependent R v := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.units_smul w⟩
-  convert! h.units_smul (fun i ↦ (w i)⁻¹)
+  convert h.units_smul (fun i ↦ (w i)⁻¹)
   simp [funext_iff]
 
 protected theorem LinearIndependent.codRestrict (hs : LinearIndependent R v) (N : Submodule R M)
@@ -274,9 +272,19 @@ theorem LinearIndependent.linearCombination_ne_of_notMem_support [Nontrivial R]
 
 end Subtype
 
-theorem LinearIndepOn.id_imageₛ {s : Set M} {f : M →ₗ[R] M'} (hs : LinearIndepOn R id s)
-    (hf_inj : Set.InjOn f (span R s)) : LinearIndepOn R id (f '' s) :=
-  id_image <| hs.map_injOn f (by simpa using hf_inj)
+theorem linearIndepOn_id_imageₛ_iff {s : Set M} {f : M →ₗ[R] M'} (hf_inj : Set.InjOn f (span R s)) :
+    LinearIndepOn R id (f '' s) ↔ LinearIndepOn R id s := by
+  rw [← linearIndepOn_iff_image (hf_inj.mono subset_span)]
+  exact f.linearIndepOn_iff_of_injOn (by simpa using hf_inj)
+
+alias ⟨_, LinearIndepOn.id_imageₛ⟩ := linearIndepOn_id_imageₛ_iff
+
+open scoped Pointwise in
+@[simp]
+theorem linearIndepOn_id_smul_set_iff {G : Type*} [Group G] [DistribMulAction G M]
+    [SMulCommClass G R M] (a : G) (s : Set M) :
+    LinearIndepOn R id (a • s) ↔ LinearIndepOn R id s :=
+  linearIndepOn_id_imageₛ_iff (DistribMulAction.toLinearEquiv R M a).injective.injOn
 
 theorem surjective_of_linearIndependent_of_span [Nontrivial R] (hv : LinearIndependent R v)
     (f : ι' ↪ ι) (hss : range v ⊆ span R (range (v ∘ f))) : Surjective f := by
@@ -305,12 +313,12 @@ theorem eq_of_linearIndepOn_id_of_span_subtype [Nontrivial R] {s t : Set M}
     ⟨fun x => ⟨x.1, h x.2⟩, fun a b hab => Subtype.coe_injective (Subtype.mk.inj hab)⟩
   have h_surj : Surjective f := by
     apply surjective_of_linearIndependent_of_span hs f _
-    convert! hst <;> simp [f, comp_def]
+    convert hst <;> simp [f, comp_def]
   change s = t
   apply Subset.antisymm _ h
   intro x hx
   rcases h_surj ⟨x, hx⟩ with ⟨y, hy⟩
-  convert! y.mem
+  convert y.mem
   rw [← Subtype.mk.inj hy]
 
 theorem le_of_span_le_span [Nontrivial R] {s t u : Set M} (hl : LinearIndepOn R id u)
@@ -480,7 +488,7 @@ theorem linearIndepOn_union_iff {t : Set ι} (hdj : Disjoint s t) :
     LinearIndepOn R v s ∧ LinearIndepOn R v t ∧ Disjoint (span R (v '' s)) (span R (v '' t)) := by
   refine ⟨fun h ↦ ⟨h.mono subset_union_left, h.mono subset_union_right, ?_⟩,
     fun h ↦ h.1.union h.2.1 h.2.2⟩
-  convert! h.disjoint_span_image (s := (↑) ⁻¹' s) (t := (↑) ⁻¹' t) (hdj.preimage _) <;>
+  convert h.disjoint_span_image (s := (↑) ⁻¹' s) (t := (↑) ⁻¹' t) (hdj.preimage _) <;>
   aesop
 
 theorem linearIndepOn_id_union_iff {s t : Set M} (hdj : Disjoint s t) :

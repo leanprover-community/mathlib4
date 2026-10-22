@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.Group.Unbundled.Int
 public import Mathlib.Data.Rat.Defs
+
 import Mathlib.Algebra.Ring.Int.Defs
 
 /-!

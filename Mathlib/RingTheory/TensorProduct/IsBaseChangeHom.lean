@@ -5,9 +5,10 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-import Mathlib.LinearAlgebra.TensorProduct.Prod
 public import Mathlib.RingTheory.TensorProduct.IsBaseChangeFree
 public import Mathlib.LinearAlgebra.Determinant
+
+import Mathlib.LinearAlgebra.TensorProduct.Prod
 
 /-! # Base change properties for modules of linear maps
 

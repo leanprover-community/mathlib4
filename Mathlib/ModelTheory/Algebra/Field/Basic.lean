@@ -7,6 +7,7 @@ module
 
 public import Mathlib.ModelTheory.Algebra.Ring.Basic
 public import Mathlib.Algebra.Field.MinimalAxioms
+
 import Mathlib.Data.Nat.Cast.Order.Ring
 
 /-!

@@ -6,8 +6,9 @@ Authors: Kevin Kappelmann
 module
 
 public import Mathlib.Algebra.ContinuedFractions.Computation.Basic
-import Mathlib.Algebra.ContinuedFractions.Translations
 public import Mathlib.Algebra.Order.Floor.Ring
+
+import Mathlib.Algebra.ContinuedFractions.Translations
 
 /-!
 # Basic Translation Lemmas Between Structures Defined for Computing Continued Fractions

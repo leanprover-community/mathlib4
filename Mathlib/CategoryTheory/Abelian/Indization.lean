@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Preadditive.Indization
 public import Mathlib.CategoryTheory.Abelian.FunctorCategory
+
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.AbelianImages
 
 /-!

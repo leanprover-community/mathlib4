@@ -5,12 +5,13 @@ Authors: Fabrizio Barroero, Kevin H. Wilson
 -/
 module
 
-import Mathlib.Analysis.Analytic.Polynomial
-import Mathlib.Analysis.Complex.Polynomial.Basic
 public import Mathlib.Analysis.Polynomial.Norm
 public import Mathlib.Analysis.SpecialFunctions.Integrals.PosLog
-import Mathlib.Analysis.Convex.Integral
 public import Mathlib.Analysis.Polynomial.Fourier
+
+import Mathlib.Analysis.Analytic.Polynomial
+import Mathlib.Analysis.Complex.Polynomial.Basic
+import Mathlib.Analysis.Convex.Integral
 
 /-!
 # Mahler measure of complex polynomials

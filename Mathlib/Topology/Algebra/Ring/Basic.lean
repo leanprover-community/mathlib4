@@ -10,8 +10,9 @@ public import Mathlib.Algebra.Ring.Subring.Defs
 public import Mathlib.Algebra.Ring.Subsemiring.Basic
 public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 public import Mathlib.Topology.Algebra.Group.GroupTopology
-import Mathlib.Topology.Algebra.Group.Neighborhood
 public import Mathlib.Topology.Algebra.Group.Subgroup
+
+import Mathlib.Topology.Algebra.Group.Neighborhood
 
 /-!
 

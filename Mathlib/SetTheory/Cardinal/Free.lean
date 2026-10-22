@@ -6,12 +6,13 @@ Authors: Eric Wieser, Daniel Weber
 module
 
 public import Mathlib.Algebra.FreeAbelianGroup.Finsupp
+public import Mathlib.RingTheory.FreeCommRing
+public import Mathlib.Algebra.MonoidAlgebra.Cardinal
+
 import Mathlib.Algebra.Ring.TransferInstance
 import Mathlib.Data.Finsupp.Fintype
 import Mathlib.Data.ZMod.Defs
 import Mathlib.GroupTheory.FreeGroup.Reduce
-public import Mathlib.RingTheory.FreeCommRing
-public import Mathlib.Algebra.MonoidAlgebra.Cardinal
 
 /-!
 # Cardinalities of free constructions

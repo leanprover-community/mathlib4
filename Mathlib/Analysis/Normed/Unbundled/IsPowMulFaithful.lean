@@ -6,6 +6,7 @@ Authors: María Inés de Frutos-Fernández
 module
 
 public import Mathlib.Analysis.Normed.Unbundled.AlgebraNorm
+
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 
 /-!

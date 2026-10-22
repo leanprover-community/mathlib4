@@ -13,8 +13,9 @@ public import Mathlib.Algebra.Group.Nat.Hom
 public import Mathlib.Algebra.Group.Submonoid.MulOpposite
 public import Mathlib.Algebra.Group.Submonoid.Operations
 public import Mathlib.Data.Fintype.EquivFin
-import Mathlib.Data.Int.Basic
 public import Mathlib.Algebra.Group.Int.Defs
+
+import Mathlib.Data.Int.Basic
 
 /-!
 # Submonoids: membership criteria

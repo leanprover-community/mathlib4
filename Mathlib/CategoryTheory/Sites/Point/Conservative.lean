@@ -6,8 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Sites.Point.Category
-import Mathlib.CategoryTheory.Sites.Point.Skyscraper
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Jointly
+
+import Mathlib.CategoryTheory.Sites.Point.Skyscraper
 import Mathlib.CategoryTheory.Types.Epimorphisms
 
 /-!

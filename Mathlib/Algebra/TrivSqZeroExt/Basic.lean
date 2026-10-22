@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.Prod
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+
 import Mathlib.Algebra.Order.Group.Nat
 
 /-!
@@ -707,7 +708,7 @@ abbrev invertibleFstOfInvertible (x : tsze R M) [Invertible x] : Invertible x.fs
 
 theorem fst_invOf (x : tsze R M) [Invertible x] [Invertible x.fst] : (⅟x).fst = ⅟(x.fst) := by
   let := invertibleFstOfInvertible x
-  convert! (rfl : _ = ⅟x.fst)
+  convert (rfl : _ = ⅟x.fst)
 
 theorem mul_left_eq_one (r : R) (x : tsze R M) (h : r * x.fst = 1) :
     (inl r + inr (-((r •> x.snd) <• r))) * x = 1 := by
@@ -729,17 +730,17 @@ set_option backward.isDefEq.respectTransparency false in
 abbrev invertibleOfInvertibleFst (x : tsze R M) [Invertible x.fst] : Invertible x where
   invOf := (⅟x.fst, -(⅟x.fst •> x.snd <• ⅟x.fst))
   invOf_mul_self := by
-    convert! mul_left_eq_one _ _ (invOf_mul_self x.fst)
+    convert mul_left_eq_one _ _ (invOf_mul_self x.fst)
     ext <;> simp
   mul_invOf_self := by
-    convert! mul_right_eq_one _ _ (mul_invOf_self x.fst)
+    convert mul_right_eq_one _ _ (mul_invOf_self x.fst)
     ext <;> simp [smul_comm]
 
 theorem snd_invOf (x : tsze R M) [Invertible x] [Invertible x.fst] :
     (⅟x).snd = -(⅟x.fst •> x.snd <• ⅟x.fst) := by
   let := invertibleOfInvertibleFst x
   convert! congr(TrivSqZeroExt.snd (R := R) (M := M) $((_ : _ = ⅟x)))
-  convert! rfl
+  convert rfl
 
 /-- Together `TrivSqZeroExt.detInvertibleOfInvertible` and `TrivSqZeroExt.invertibleOfDetInvertible`
 form an equivalence, although both sides of the equiv are subsingleton anyway. -/

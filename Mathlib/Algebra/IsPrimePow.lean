@@ -5,10 +5,11 @@ Authors: Bhavik Mehta
 -/
 module
 
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Order.Nat
 public import Mathlib.Data.Nat.Log
 public import Mathlib.Data.Nat.Prime.Pow
+
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Order.Nat
 
 /-!
 # Prime powers

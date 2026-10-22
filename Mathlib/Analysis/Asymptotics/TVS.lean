@@ -6,8 +6,9 @@ Authors: Yury Kudryashov, Eric Wieser
 module
 
 public import Mathlib.Analysis.Convex.EGauge
-import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 public import Mathlib.Analysis.Asymptotics.Defs
+
+import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 import Mathlib.Tactic.Peel
 
 /-!

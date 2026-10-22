@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Topology.UrysohnsLemma
 public import Mathlib.Topology.Compactification.StoneCech
-import Mathlib.Topology.Order.Lattice
 public import Mathlib.Analysis.Real.Cardinality
 
+import Mathlib.Topology.Order.Lattice
 import Mathlib.Topology.Algebra.Indicator
 
 /-!
