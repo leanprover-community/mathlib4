@@ -5,9 +5,10 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Calculus.ContDiff.WithLp
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
+
+import Mathlib.Analysis.Calculus.ContDiff.WithLp
 
 /-!
 # Constructing examples of manifolds over ℝ
@@ -55,7 +56,7 @@ open scoped Manifold ContDiff ENNReal
 /-- The half-space in `ℝ^n`, used to model manifolds with boundary. We only define it when
 `1 ≤ n`, as the definition only makes sense in this case.
 -/
-@[implicit_reducible]
+@[implicit_reducible, wikidata Q644719]
 def EuclideanHalfSpace (n : ℕ) [NeZero n] : Type :=
   { x : EuclideanSpace ℝ (Fin n) // 0 ≤ x 0 }
 deriving TopologicalSpace
@@ -118,7 +119,7 @@ instance : LocallyPathConnectedSpace (EuclideanQuadrant n) :=
 
 theorem range_euclideanHalfSpace (n : ℕ) [NeZero n] :
     range (Subtype.val : EuclideanHalfSpace n → _) = { y | 0 ≤ y 0 } :=
-  Subtype.range_val
+  Subtype.range_coe_subtype
 
 @[simp]
 theorem interior_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
@@ -150,11 +151,13 @@ theorem frontier_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
   rw [frontier, closure_halfSpace, interior_halfSpace]
   ext y
   simpa only [mem_sdiff, mem_ofPred_eq, not_lt] using antisymm_iff
+
 theorem range_euclideanQuadrant (n : ℕ) :
     range (Subtype.val : EuclideanQuadrant n → _) = { y | ∀ i : Fin n, 0 ≤ y i } :=
-  Subtype.range_val
+  Subtype.range_coe_subtype
 
-theorem interior_euclideanQuadrant (n : ℕ) (p : ℝ≥0∞) (a : ℝ) :
+@[simp]
+theorem interior_quadrant {n : ℕ} (p : ℝ≥0∞) (a : ℝ) :
     interior { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } =
       { y | ∀ i : Fin n, a < y i } := by
   let f i : PiLp p (fun _ : Fin n ↦ ℝ) → ℝ := fun x ↦ x i
@@ -166,6 +169,27 @@ theorem interior_euclideanQuadrant (n : ℕ) (p : ℝ≥0∞) (a : ℝ) :
   apply iInter_congr fun i ↦ ?_
   rw [← (PiLp.isOpenMap_apply p _ i).preimage_interior_eq_interior_preimage, interior_Ici]
   fun_prop
+
+@[deprecated (since := "2026-09-30")] alias interior_euclideanQuadrant := interior_quadrant
+
+@[simp]
+theorem closure_quadrant {n : ℕ} (p : ℝ≥0∞) (a : ℝ) :
+    closure { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } =
+      { y | ∀ i : Fin n, a ≤ y i } := by
+  rw [closure_eq_iff_isClosed]
+  have h : ∀ t ∈ {{y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } | i : Fin n}, IsClosed t := by
+    rintro - ⟨i, rfl⟩
+    rw [← closure_eq_iff_isClosed]
+    exact closure_halfSpace p a i
+  convert isClosed_sInter h
+  simp
+
+@[simp]
+theorem frontier_quadrant {n : ℕ} (p : ℝ≥0∞) (a : ℝ) :
+    frontier { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } =
+      { y | (∀ i : Fin n, a ≤ y i) ∧ ∃ i : Fin n, a = y i } := by
+  rw [frontier, closure_quadrant, interior_quadrant]
+  ext; simp; grind
 
 end
 
@@ -222,10 +246,10 @@ def modelWithCornersEuclideanQuadrant (n : ℕ) :
     rw [range_euclideanQuadrant]
     exact EuclideanQuadrant.convex
   nonempty_interior' := by
-    rw [range_euclideanQuadrant, interior_euclideanQuadrant]
+    rw [range_euclideanQuadrant, interior_quadrant]
     exact ⟨toLp 2 fun i ↦ 1, by simp⟩
   continuous_toFun := continuous_subtype_val
-  continuous_invFun := Continuous.subtype_mk ((PiLp.continuous_toLp 2 _).comp <|
+  continuous_invFun := Continuous.subtype_mk ((PiLp.continuous_toLp 2 _).comp
     (continuous_pi fun i ↦ ((PiLp.continuous_apply 2 _ i).max continuous_const))) _
 
 /-- The model space used to define `n`-dimensional real manifolds without boundary. -/
@@ -240,12 +264,27 @@ scoped[Manifold]
     (modelWithCornersEuclideanHalfSpace n :
       ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n))
 
-@[simp] lemma modelWithCornersEuclideanHalfSpace_toFun (n : ℕ) [NeZero n] :
+/-- The model space used to define `n`-dimensional real manifolds with corners. -/
+scoped[Manifold]
+  notation3 "𝓡c " n =>
+    (modelWithCornersEuclideanQuadrant n :
+      ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanQuadrant n))
+
+lemma modelWithCornersEuclideanHalfSpace_toFun (n : ℕ) [NeZero n] :
     (𝓡∂ n : _ → _) = Subtype.val := rfl
+
+@[simp]
+lemma modelWithCornersEuclideanHalfSpace_apply (n : ℕ) [NeZero n] {p : EuclideanHalfSpace n} :
+    (𝓡∂ n) p = p.val := rfl
 
 lemma modelWithCornersEuclideanHalfSpace_symm_apply {n : ℕ} [NeZero n]
     (x : EuclideanSpace ℝ (Fin n)) :
     (𝓡∂ n).symm x = ⟨toLp 2 (update x 0 (max (x 0) 0)), by simp⟩ := rfl
+
+lemma modelWithCornersEuclideanHalfSpace_symm_apply_of_le {n : ℕ} [NeZero n]
+    {x : EuclideanSpace ℝ (Fin n)} (hx : 0 ≤ x 0) :
+    (𝓡∂ n).symm x = ⟨x, hx⟩ := by
+  simp [modelWithCornersEuclideanHalfSpace_symm_apply, hx]
 
 lemma modelWithCornersEuclideanHalfSpace_zero {n : ℕ} [NeZero n] : (𝓡∂ n) 0 = 0 := rfl
 
@@ -256,17 +295,51 @@ lemma interior_range_modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
     interior (range (𝓡∂ n)) = { y | 0 < y 0 } := by
   calc interior (range (𝓡∂ n))
     _ = interior ({ y | 0 ≤ y 0}) := by
-      congr!
-      apply range_euclideanHalfSpace
+      congr 1
+      exact range_euclideanHalfSpace n
     _ = { y | 0 < y 0 } := interior_halfSpace _ _ _
 
 lemma frontier_range_modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
     frontier (range (𝓡∂ n)) = { y | 0 = y 0 } := by
   calc frontier (range (𝓡∂ n))
     _ = frontier ({ y | 0 ≤ y 0 }) := by
-      congr!
-      apply range_euclideanHalfSpace
+      congr 1
+      exact range_euclideanHalfSpace n
     _ = { y | 0 = y 0 } := frontier_halfSpace 2 _ _
+
+@[simp]
+lemma modelWithCornersEuclideanQuadrant_apply (n : ℕ) {p : EuclideanQuadrant n} :
+    (𝓡c n) p = p.val := rfl
+
+lemma modelWithCornersEuclideanQuadrant_symm_apply {n : ℕ} (x : EuclideanSpace ℝ (Fin n)) :
+    (𝓡c n).symm x = ⟨toLp 2 fun i ↦ max (x i) 0,
+    fun i ↦ by simp only [le_sup_right]⟩ := rfl
+
+lemma modelWithCornersEuclideanQuadrant_symm_apply_of_le {n : ℕ}
+    {x : EuclideanSpace ℝ (Fin n)} (hx : ∀ i, 0 ≤ x i) :
+    (𝓡c n).symm x = ⟨x, hx⟩ := by
+  simp [modelWithCornersEuclideanQuadrant_symm_apply, hx]
+
+lemma modelWithCornersEuclideanQuadrant_zero {n : ℕ} : (𝓡c n) 0 = 0 := rfl
+
+lemma range_modelWithCornersEuclideanQuadrant (n : ℕ) :
+    range (𝓡c n) = { y | ∀ i, 0 ≤ y i } := range_euclideanQuadrant n
+
+lemma interior_range_modelWithCornersEuclideanQuadrant (n : ℕ) :
+    interior (range (𝓡c n)) = { y | ∀ i, 0 < y i } := by
+  calc interior (range (𝓡c n))
+    _ = interior ({ y | ∀ i, 0 ≤ y i}) := by
+      congr 1
+      apply range_euclideanQuadrant n
+    _ = { y | ∀ i, 0 < y i } := interior_quadrant _ _
+
+lemma frontier_range_modelWithCornersEuclideanQuadrant (n : ℕ) :
+    frontier (range (𝓡c n)) = { y | (∀ i : Fin n, 0 ≤ y i) ∧ ∃ i : Fin n, 0 = y i } := by
+  calc frontier (range (𝓡c n))
+    _ = frontier ({ y | ∀ i, 0 ≤ y i }) := by
+      congr
+      apply range_euclideanQuadrant
+    _ = { y | (∀ i : Fin n, 0 ≤ y i) ∧ ∃ i : Fin n, 0 = y i } := frontier_quadrant 2 _
 
 /-- The left chart for the topological space `[x, y]`, defined on `[x,y)` and sending `x` to `0` in
 `EuclideanHalfSpace 1`.
@@ -339,7 +412,7 @@ lemma iccLeftChart_extend_zero {p : Set.Icc x y} :
 lemma IccLeftChart_extend_interior_pos {p : Set.Icc x y} (hp : x < p.val ∧ p.val < y) :
     0 < (IccLeftChart x y).extend (𝓡∂ 1) p 0 := by
   simp_rw [iccLeftChart_extend_zero]
-  norm_num [hp.1]
+  simp [hp.1]
 
 lemma IccLeftChart_extend_bot_mem_frontier :
     (IccLeftChart x y).extend (𝓡∂ 1) ⊥ ∈ frontier (range (𝓡∂ 1)) := by
@@ -419,9 +492,9 @@ instance instIccChartedSpace (x y : ℝ) [h : Fact (x < y)] :
   chartAt z := if z.val < y then IccLeftChart x y else IccRightChart x y
   mem_chart_source z := by
     by_cases h' : z.val < y
-    · simp only [h', if_true]
+    · simp only [h', ite_true]
       exact h'
-    · simp only [h', if_false]
+    · simp only [h', ite_false]
       apply lt_of_lt_of_le h.out
       simpa only [not_lt] using h'
   chart_mem_atlas z := by by_cases h' : (z : ℝ) < y <;> simp [h']

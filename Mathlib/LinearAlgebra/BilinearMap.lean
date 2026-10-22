@@ -6,7 +6,6 @@ Authors: Kenny Lau, Mario Carneiro
 module
 
 public import Mathlib.Algebra.Module.Submodule.Equiv
-public import Mathlib.Algebra.Module.Torsion.Free
 
 /-!
 # Basics on bilinear maps
@@ -99,7 +98,7 @@ theorem ext₂ {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} (H : ∀ m 
   LinearMap.ext fun m => LinearMap.ext fun n => H m n
 
 theorem congr_fun₂ {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} (h : f = g) (x y) : f x y = g x y :=
-  LinearMap.congr_fun (LinearMap.congr_fun h x) y
+  congr($h x y)
 
 theorem ext_iff₂ {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} : f = g ↔ ∀ m n, f m n = g m n :=
   ⟨congr_fun₂, ext₂⟩
@@ -364,7 +363,7 @@ theorem compl₁₂_inj [SMulCommClass R₂ R₁ Pₗ]
     ext x y
     obtain ⟨x', rfl⟩ := hₗ x
     obtain ⟨y', rfl⟩ := hᵣ y
-    convert! LinearMap.congr_fun₂ h x' y' using 0
+    convert! congr($h x' y') using 0
   · -- B₁ = B₂ → B₁.comp l r = B₂.comp l r
     subst h; rfl
 
@@ -428,8 +427,8 @@ variable [CommSemiring R₂] [CommSemiring R₃] [CommSemiring R₄]
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q]
 variable [Module R M] [Module R₂ N] [Module R₃ P] [Module R₄ Q]
 variable {σ₁₂ : R →+* R₂} {σ₁₃ : R →+* R₃} {σ₁₄ : R →+* R₄} {σ₂₃ : R₂ →+* R₃}
-variable {σ₂₄ : R₂ →+* R₄} {σ₃₄ : R₃ →+* R₄} {σ₄₂ : R₄ →+* R₂} {σ₄₃ : R₄ →+* R₃}
-variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₄₂ σ₂₃ σ₄₃]
+variable {σ₂₄ : R₂ →+* R₄} {σ₃₄ : R₃ →+* R₄} {σ₄₃ : R₄ →+* R₃}
+variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 variable [RingHomCompTriple σ₂₃ σ₃₄ σ₂₄] [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄]
 variable [RingHomCompTriple σ₂₄ σ₄₃ σ₂₃]
 
@@ -509,11 +508,11 @@ def lsmul : R →ₗ[R] M →ₗ[R] M :=
 
 variable {R}
 
-lemma lsmul_eq_distribSMultoLinearMap (r : R) :
+lemma lsmul_eq_distribSMulToLinearMap (r : R) :
     lsmul R M r = DistribSMul.toLinearMap R M r := rfl
 
-@[deprecated (since := "2026-01-07")]
-alias lsmul_eq_DistribMulAction_toLinearMap := lsmul_eq_distribSMultoLinearMap
+@[deprecated (since := "2026-09-17")]
+alias lsmul_eq_distribSMultoLinearMap := lsmul_eq_distribSMulToLinearMap
 
 variable {M}
 
@@ -526,6 +525,7 @@ protected abbrev BilinMap : Type _ := M →ₗ[R] M →ₗ[R] Nₗ
 
 variable (R M) in
 /-- For convenience, a shorthand for the type of bilinear forms from `M` to `R`. -/
+@[wikidata Q837924]
 protected abbrev BilinForm : Type _ := LinearMap.BilinMap R M R
 
 end CommSemiring

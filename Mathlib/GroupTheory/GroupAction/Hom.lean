@@ -141,7 +141,7 @@ abbrev MulActionHomClass (F : Type*) (M : outParam Type*)
     (X Y : outParam Type*) [SMul M X] [SMul M Y] [FunLike F X Y] :=
   MulActionSemiHomClass F (@id M) X Y
 
-@[to_additive] instance : FunLike (MulActionHom φ X Y) X Y where
+@[to_additive (attr := macro_inline)] instance : FunLike (MulActionHom φ X Y) X Y where
   coe := MulActionHom.toFun
   coe_injective f g h := by cases f; cases g; congr
 
@@ -591,7 +591,7 @@ variable (C : Type*) [Monoid C] [MulDistribMulAction P C]
 variable (A' : Type*) [Group A'] [MulDistribMulAction M A']
 variable (B' : Type*) [Group B'] [MulDistribMulAction N B']
 
-set_option linter.translateOverwrite false in
+set_option linter.translate.overwrite false in
 attribute [to_additive existing (dont_translate := M) DistribMulAction]
   MulDistribMulAction
 
@@ -672,7 +672,7 @@ abbrev MulDistribMulActionHomClass (F : Type*) (M : outParam Type*)
 
 namespace MulDistribMulActionHom
 
-@[to_additive (dont_translate := M N)]
+@[to_additive (attr := macro_inline) (dont_translate := M N)]
 instance : FunLike (A →ₑ*[φ] B) A B where
   coe m := m.toFun
   coe_injective f g h := by
@@ -853,7 +853,6 @@ section Semiring
 
 variable (R : Type*) [Semiring R] [MulSemiringAction M R]
 variable (S : Type*) [Semiring S] [MulSemiringAction N S]
-variable (T : Type*) [Semiring T] [MulSemiringAction P T]
 
 variable {R S N'}
 variable [AddMonoid N'] [DistribMulAction S N']
@@ -913,6 +912,7 @@ abbrev MulSemiringActionHomClass
 
 namespace MulSemiringActionHom
 
+@[macro_inline]
 instance : FunLike (R →ₑ+*[φ] S) R S where
   coe m := m.toFun
   coe_injective f g h := by

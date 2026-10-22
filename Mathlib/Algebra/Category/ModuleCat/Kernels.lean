@@ -6,7 +6,6 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.EpiMono
-public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.LinearAlgebra.Isomorphisms
 
@@ -52,7 +51,7 @@ def isLimitKernelFork (f : M ⟶ N) (g : N ⟶ P) (H : Function.Exact f.hom g.ho
   refine IsLimit.ofIsoLimit (kernelIsLimit g) <|
     Cone.ext ((LinearEquiv.ofInjective _ H₂).trans
         (LinearEquiv.ofEq _ _ (LinearMap.exact_iff.mp H).symm)).toModuleIso.symm ?_
-  · rintro ⟨⟩ <;> ext x <;> simp [kernelCone]
+  rintro ⟨⟩ <;> ext x <;> simp [kernelCone]
 
 /-- The cokernel cocone induced by the projection onto the quotient. -/
 def cokernelCocone : CokernelCofork f :=
@@ -77,9 +76,9 @@ def isColimitCokernelCofork (f : M ⟶ N) (g : N ⟶ P) (H : Function.Exact f.ho
   refine IsColimit.ofIsoColimit (ModuleCat.cokernelIsColimit f) <|
     Cocone.ext (((Submodule.quotEquivOfEq _ _ (LinearMap.exact_iff.mp H)).toModuleIso).symm
     ≪≫ ((LinearMap.quotKerEquivOfSurjective _ H₂).toModuleIso)) ?_
-  · rintro ⟨⟩ <;> ext x
-    · simpa using! (Function.Exact.apply_apply_eq_zero H x).symm
-    · rfl
+  rintro ⟨⟩ <;> ext x
+  · simpa using! (Function.Exact.apply_apply_eq_zero H x).symm
+  · rfl
 
 end
 
@@ -103,7 +102,7 @@ variable {G H : ModuleCat.{v} R} (f : G ⟶ H)
 agrees with the usual module-theoretical kernel.
 -/
 noncomputable def kernelIsoKer {G H : ModuleCat.{v} R} (f : G ⟶ H) :
-    kernel f ≅ ModuleCat.of R f.hom.ker :=
+    kernel f ≅ ↧f.hom.ker :=
   limit.isoLimitCone ⟨_, kernelIsLimit f⟩
 
 -- We now show this isomorphism commutes with the inclusion of the kernel into the source.
@@ -120,7 +119,7 @@ theorem kernelIsoKer_hom_ker_subtype :
 agrees with the usual module-theoretical quotient.
 -/
 noncomputable def cokernelIsoRangeQuotient {G H : ModuleCat.{v} R} (f : G ⟶ H) :
-    cokernel f ≅ ModuleCat.of R (H ⧸ f.hom.range) :=
+    cokernel f ≅ ↧(H ⧸ f.hom.range) :=
   colimit.isoColimitCocone ⟨_, cokernelIsColimit f⟩
 
 -- We now show this isomorphism commutes with the projection of target to the cokernel.

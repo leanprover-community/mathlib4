@@ -58,8 +58,9 @@ variable {𝕜 E F G : Type*}
 variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
-open Topology NNReal Filter ENNReal Set Asymptotics
-open scoped Pointwise
+open NNReal Filter ENNReal Set Asymptotics
+
+open scoped Topology Pointwise
 
 /-! ### Expanding a function as a power series -/
 
@@ -115,6 +116,7 @@ def AnalyticWithinAt (f : E → F) (s : Set E) (x : E) : Prop :=
 
 /-- Given a function `f : E → F`, we say that `f` is analytic on a set `s` if it is analytic around
 every point of `s`. -/
+@[fun_prop]
 def AnalyticOnNhd (f : E → F) (s : Set E) :=
   ∀ x, x ∈ s → AnalyticAt 𝕜 f x
 
@@ -522,7 +524,7 @@ theorem AnalyticWithinAt.mono_of_mem_nhdsWithin
 theorem AnalyticWithinAt.congr_set (h : AnalyticWithinAt 𝕜 f s x) (hst : s =ᶠ[𝓝 x] t) :
     AnalyticWithinAt 𝕜 f t x := by
   refine h.mono_of_mem_nhdsWithin ?_
-  simp [← nhdsWithin_eq_iff_eventuallyEq.mpr hst, self_mem_nhdsWithin]
+  simp [← nhdsWithin_eq_iff_eventuallyEqSet.mpr hst, self_mem_nhdsWithin]
 
 lemma AnalyticOn.mono {f : E → F} {s t : Set E} (h : AnalyticOn 𝕜 f t)
     (hs : s ⊆ t) : AnalyticOn 𝕜 f s :=
@@ -854,7 +856,7 @@ in any smaller ball, the norm of the difference `f y - f z - p 1 (fun _ ↦ y - 
 by `C * (max ‖y - x‖ ‖z - x‖) * ‖y - z‖`. -/
 theorem HasFPowerSeriesWithinOnBall.image_sub_sub_deriv_le
     (hf : HasFPowerSeriesWithinOnBall f p s x r) (hr : r' < r) :
-    ∃ C, ∀ᵉ (y ∈ insert x s ∩ Metric.eball x r') (z ∈ insert x s ∩ Metric.eball x r'),
+    ∃ C, ∀ y ∈ insert x s ∩ Metric.eball x r', ∀ z ∈ insert x s ∩ Metric.eball x r',
       ‖f y - f z - p 1 fun _ => y - z‖ ≤ C * max ‖y - x‖ ‖z - x‖ * ‖y - z‖ := by
   have := hf.isBigO_image_sub_image_sub_deriv_principal hr
   simp only [isBigO_principal, mem_inter_iff, Metric.mem_eball, Prod.edist_eq, max_lt_iff, mem_prod,
@@ -867,7 +869,7 @@ ball, the norm of the difference `f y - f z - p 1 (fun _ ↦ y - z)` is bounded 
 `C * (max ‖y - x‖ ‖z - x‖) * ‖y - z‖`. -/
 theorem HasFPowerSeriesOnBall.image_sub_sub_deriv_le
     (hf : HasFPowerSeriesOnBall f p x r) (hr : r' < r) :
-    ∃ C, ∀ᵉ (y ∈ Metric.eball x r') (z ∈ Metric.eball x r'),
+    ∃ C, ∀ y ∈ Metric.eball x r', ∀ z ∈ Metric.eball x r',
       ‖f y - f z - p 1 fun _ => y - z‖ ≤ C * max ‖y - x‖ ‖z - x‖ * ‖y - z‖ := by
   rw [← hasFPowerSeriesWithinOnBall_univ] at hf
   simpa only [mem_univ, insert_eq_of_mem, univ_inter] using hf.image_sub_sub_deriv_le hr

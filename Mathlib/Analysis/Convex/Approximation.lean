@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.LocallyConvex.Separation
 
 import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.Topology.Semicontinuity.Lindelof
 
 /-!
@@ -36,7 +35,7 @@ open Function Set RCLike ContinuousLinearMap
 
 namespace ConvexOn
 
-variable {𝕜 E F : Type*} {s : Set E} {φ : E → ℝ} [RCLike 𝕜]
+variable {𝕜 E : Type*} {s : Set E} {φ : E → ℝ} [RCLike 𝕜]
 
 theorem convex_re_epigraph [AddCommMonoid E] [Module ℝ E] (hφcv : ConvexOn ℝ s φ) :
     Convex ℝ { p : E × 𝕜 | p.1 ∈ s ∧ φ p.1 ≤ re p.2 } := by
@@ -169,7 +168,7 @@ theorem sSup_of_nat_affine_eq [HereditarilyLindelofSpace E] (hsc : IsClosed s)
       · simp_all [domRestrict_def]
       · ext; simp_all
     · obtain ⟨x, hx⟩ := Function.ne_iff.1 hsφ
-      have : s = ∅ := by have := congrFun h𝓕'.2.1 x; simp_all
+      have : s = ∅ := by have := congr($(h𝓕'.2.1) x); simp_all
       grind
 
 /-- A function `φ : E → ℝ` that is convex and lower-semicontinuous is the supremum of a family of
@@ -186,7 +185,7 @@ theorem univ_sSup_affine_eq (hφc : LowerSemicontinuous φ) (hφcv : ConvexOn �
     ext f
     refine ⟨fun ⟨hp, l, c, hlc⟩ => ⟨f ∘ Subtype.val, ⟨fun x => hp (Subtype.val x), ⟨l, c, ?_⟩⟩, ?_⟩,
       fun ⟨a, ⟨⟨h, ⟨l, c, hlc⟩⟩, hb⟩⟩ => ⟨fun x => ?_, ⟨l, c, ?_⟩⟩⟩
-    · ext x; simpa using! congrFun hlc x
+    · ext x; simpa using! congr($hlc x)
     · ext; simp
     · simpa using! hb ▸ h ⟨x, trivial⟩
     · subst hlc; simpa using! hb.symm
@@ -225,7 +224,7 @@ theorem univ_sSup_of_nat_affine_eq [HereditarilyLindelofSpace E]
     (lowerSemicontinuousOn_univ_iff.2 hφc)
   refine ⟨l, c, fun i x ↦ hle i ⟨x, trivial⟩, ?_⟩
   ext x
-  simpa using congrFun hsup ⟨x, trivial⟩
+  simpa using congr($hsup ⟨x, trivial⟩)
 
 end RCLike
 

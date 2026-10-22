@@ -20,7 +20,7 @@ In this file we continue building the theory of (semi)normed rings.
 
 @[expose] public section
 
-variable {α : Type*} {β : Type*} {ι : Type*}
+variable {α : Type*} {ι : Type*}
 
 open Filter Bornology
 open scoped Topology NNReal Pointwise
@@ -168,7 +168,7 @@ instance (priority := 100) NonUnitalSeminormedRing.toContinuousMul [NonUnitalSem
             _ ≤ ‖e.1‖ * ‖e.2 - x.2‖ + ‖e.1 - x.1‖ * ‖x.2‖ :=
               norm_add_le_of_le (norm_mul_le _ _) (norm_mul_le _ _)
         refine squeeze_zero (fun e => norm_nonneg _) this ?_
-        convert!
+        convert
           ((continuous_fst.tendsto x).norm.mul
                 ((continuous_snd.tendsto x).sub tendsto_const_nhds).norm).add
             (((continuous_fst.tendsto x).sub tendsto_const_nhds).norm.mul tendsto_const_nhds)
@@ -214,8 +214,8 @@ lemma lipschitzWith_sub : LipschitzWith 2 (fun (p : ℝ≥0 × ℝ≥0) ↦ p.1 
   have : Isometry (Prod.map ((↑) : ℝ≥0 → ℝ) ((↑) : ℝ≥0 → ℝ)) :=
     NNReal.isometry_coe.prodMap NNReal.isometry_coe
   convert!
-    (((LipschitzWith.prod_fst.comp this.lipschitz).sub
-          (LipschitzWith.prod_snd.comp this.lipschitz)).max_const
+    (((LipschitzWith.prod_fst.comp this.lipschitzWith).sub
+          (LipschitzWith.prod_snd.comp this.lipschitzWith)).max_const
       0)
   norm_num
 
