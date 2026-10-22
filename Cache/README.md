@@ -34,7 +34,7 @@ lake exe cache get Mathlib.Algebra.Group.Basic
 | `pack!`         | Compress build files into the local cache (no skipping)             |
 | `unpack`        | Decompress linked already downloaded files                          |
 | `unpack!`       | Decompress linked already downloaded files (no skipping)            |
-| `clean`         | Delete non-linked files                                             |
+| `clean [ARGS]`  | Delete non-linked files; also keep the files linked from `ARGS`     |
 | `clean!`        | Delete everything on the local cache                                |
 | `lookup [ARGS]` | Show information about cache files for the given Lean files         |
 | `query`         | Find the most recent commit with cached entries on the current branch |

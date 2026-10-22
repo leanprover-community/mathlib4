@@ -234,9 +234,7 @@ jobs:
           # Use the trusted toolchain's `lean`/`leantar` (see setup-build-env).
           export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
           cd pr-branch
-          ../tools-branch/.lake/build/bin/cache get Archive.lean
-          ../tools-branch/.lake/build/bin/cache get Counterexamples.lean
-          ../tools-branch/.lake/build/bin/cache get Wanted.lean
+          ../tools-branch/.lake/build/bin/cache get Archive.lean Counterexamples.lean Wanted.lean
 
       # One `lake build` builds the three libraries, so their modules share one
       # scheduler, and Lake keeps building the other targets when one fails.
@@ -367,8 +365,9 @@ jobs:
           compression-level: 0
 
       # Prune to this commit's `.ltar` set so the published snapshot is exactly master's
-      # current cache. The local directory can also hold other `.ltar` files, such as
-      # the snapshot this run warmed from or files that the runner image provides.
+      # current cache: Mathlib, Archive, Counterexamples and Wanted. The local directory
+      # can also hold other `.ltar` files, such as the snapshot this run warmed from or
+      # files that the runner image provides.
       - name: prune local cache to this commit's set
         if: ${{ inputs.publish_cache && steps.build.outcome == 'success' }}
         continue-on-error: true # best-effort; never fail the build
@@ -377,7 +376,7 @@ jobs:
           # Use the trusted toolchain's `lean`/`leantar` (see setup-build-env).
           export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
           cd pr-branch
-          ../tools-branch/.lake/build/bin/cache clean
+          ../tools-branch/.lake/build/bin/cache clean Archive.lean Counterexamples.lean Wanted.lean
 
       # Publish this run's pruned `.ltar` set as `cache-snapshot` for other runs to warm
       # from. The files are already zstd-compressed, so the upload skips compression.
