@@ -932,7 +932,7 @@ open Lean.Meta Qq
 meta def evalCosh : PositivityExt where eval {u α} _ pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
-  | 0, ~q(ℝ), ~q(Real.cosh $a) =>
+  | 0, ~q(ℝ), ~q(Real.cosh $a) => liftM <| catchNone do
     assertInstancesCommute
     return .positive q(Real.cosh_pos $a)
   | _, _, _ => throwError "not Real.cosh"

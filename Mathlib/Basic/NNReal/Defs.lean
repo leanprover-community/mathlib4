@@ -1013,11 +1013,12 @@ meta def evalNNRealtoReal : PositivityExt where eval {u α} _zα pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(NNReal.toReal $a) =>
-    assertInstancesCommute
     let ra ← core q(inferInstance) (some q(inferInstance)) a
-    match ra with
-    | .positive pa => pure (.positive q(nnreal_coe_pos $pa))
-    | _ => pure (.nonnegative q(NNReal.coe_nonneg $a))
+    liftM <| catchNone do
+      assertInstancesCommute
+      match ra with
+      | .positive pa => pure (.positive q(nnreal_coe_pos $pa))
+      | _ => pure (.nonnegative q(NNReal.coe_nonneg $a))
   | _, _, _ => throwError "not NNReal.toReal"
 
 /-- Extension for the `positivity` tactic: `Real.toNNReal` -/
@@ -1026,10 +1027,12 @@ meta def evalRealToNNReal : PositivityExt where eval {u α} _zα pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ≥0), ~q(Real.toNNReal $a) =>
-    assertInstancesCommute
-    match (← core q(inferInstance) (some q(inferInstance)) a) with
-    | .positive pa => pure (.positive q(toNNReal_pos.mpr $pa))
-    | _ => failure
+    let ra ← core q(inferInstance) (some q(inferInstance)) a
+    liftM <| catchNone do
+      assertInstancesCommute
+      match ra with
+      | .positive pa => pure (.positive q(toNNReal_pos.mpr $pa))
+      | _ => failure
   | _, _, _ => throwError "not Real.toNNReal"
 
 alias ⟨_, nnabs_pos_of_pos⟩ := Real.nnabs_pos
@@ -1040,10 +1043,12 @@ meta def evalRealNNAbs : PositivityExt where eval {u α} _zα pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ≥0), ~q(Real.nnabs $a) =>
-    assertInstancesCommute
-    match (← core q(inferInstance) (some q(inferInstance)) a).toNonzero with
-    | some pa => pure (.positive q(nnabs_pos_of_pos $pa))
-    | _ => failure
+    let ra ← core q(inferInstance) (some q(inferInstance)) a
+    liftM <| catchNone do
+      assertInstancesCommute
+      match ra.toNonzero with
+      | some pa => pure (.positive q(nnabs_pos_of_pos $pa))
+      | _ => failure
   | _, _, _ => throwError "not Real.nnabs"
 
 end Mathlib.Meta.Positivity

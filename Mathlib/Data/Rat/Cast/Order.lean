@@ -262,51 +262,57 @@ open Lean Qq
 @[positivity Rat.cast _]
 meta def evalRatCast : PositivityExt where eval {u α} _zα pα? e := do
   let ~q(@Rat.cast _ (_) ($a : ℚ)) := e | throwError "not Rat.cast"
-  match ← core q(inferInstance) (some q(inferInstance)) a with
-  | .positive pa => id <|
-    match pα? with
-    | none => do
+  let ra ← core q(inferInstance) (some q(inferInstance)) a
+  return ← catchNone do
+    match ra with
+    | .positive pa => id <|
+      match pα? with
+      | none => do
+        let _oα ← synthInstanceQ q(DivisionRing $α)
+        let _cα ← synthInstanceQ q(CharZero $α)
+        assumeInstancesCommute
+        return .nonzero q((Rat.cast_ne_zero (α := $α)).mpr ($pa).ne')
+      | some _ => do
+        let _oα ← synthInstanceQ q(Field $α)
+        let _oα ← synthInstanceQ q(LinearOrder $α)
+        let _oα ← synthInstanceQ q(IsStrictOrderedRing $α)
+        assumeInstancesCommute
+        return .positive q((Rat.cast_pos (K := $α)).mpr $pa)
+    | .nonnegative pa => id <|
+      match pα? with
+      | none => pure .none
+      | some _ => do
+        let _oα ← synthInstanceQ q(Field $α)
+        let _oα ← synthInstanceQ q(LinearOrder $α)
+        let _oα ← synthInstanceQ q(IsStrictOrderedRing $α)
+        assumeInstancesCommute
+        return .nonnegative q((Rat.cast_nonneg (K := $α)).mpr $pa)
+    | .nonzero pa =>
       let _oα ← synthInstanceQ q(DivisionRing $α)
       let _cα ← synthInstanceQ q(CharZero $α)
       assumeInstancesCommute
-      return .nonzero q((Rat.cast_ne_zero (α := $α)).mpr ($pa).ne')
-    | some _ => do
-      let _oα ← synthInstanceQ q(Field $α)
-      let _oα ← synthInstanceQ q(LinearOrder $α)
-      let _oα ← synthInstanceQ q(IsStrictOrderedRing $α)
-      assumeInstancesCommute
-      return .positive q((Rat.cast_pos (K := $α)).mpr $pa)
-  | .nonnegative pa => id <|
-    match pα? with | none => pure .none | some _ => do
-    let _oα ← synthInstanceQ q(Field $α)
-    let _oα ← synthInstanceQ q(LinearOrder $α)
-    let _oα ← synthInstanceQ q(IsStrictOrderedRing $α)
-    assumeInstancesCommute
-    return .nonnegative q((Rat.cast_nonneg (K := $α)).mpr $pa)
-  | .nonzero pa =>
-    let _oα ← synthInstanceQ q(DivisionRing $α)
-    let _cα ← synthInstanceQ q(CharZero $α)
-    assumeInstancesCommute
-    return .nonzero q((Rat.cast_ne_zero (α := $α)).mpr $pa)
-  | .none => pure .none
+      return .nonzero q((Rat.cast_ne_zero (α := $α)).mpr $pa)
+    | .none => pure .none
 
 /-- Extension for NNRat.cast. -/
 @[positivity NNRat.cast _]
 meta def evalNNRatCast : PositivityExt where eval {u α} _zα pα? e :=
   match pα? with | none => pure .none | some _ => do
   let ~q(@NNRat.cast _ (_) ($a : ℚ≥0)) := e | throwError "not NNRat.cast"
-  match ← core q(inferInstance) (some q(inferInstance)) a with
-  | .positive pa =>
-    let _oα ← synthInstanceQ q(Semifield $α)
-    let _oα ← synthInstanceQ q(LinearOrder $α)
-    let _oα ← synthInstanceQ q(IsStrictOrderedRing $α)
-    assumeInstancesCommute
-    return .positive q((NNRat.cast_pos (K := $α)).mpr $pa)
-  | _ =>
-    let _oα ← synthInstanceQ q(Semifield $α)
-    let _oα ← synthInstanceQ q(LinearOrder $α)
-    let _oα ← synthInstanceQ q(IsStrictOrderedRing $α)
-    assumeInstancesCommute
-    return .nonnegative q(NNRat.cast_nonneg _)
+  let ra ← core q(inferInstance) (some q(inferInstance)) a
+  return ← catchNone do
+    match ra with
+    | .positive pa =>
+      let _oα ← synthInstanceQ q(Semifield $α)
+      let _oα ← synthInstanceQ q(LinearOrder $α)
+      let _oα ← synthInstanceQ q(IsStrictOrderedRing $α)
+      assumeInstancesCommute
+      return .positive q((NNRat.cast_pos (K := $α)).mpr $pa)
+    | _ =>
+      let _oα ← synthInstanceQ q(Semifield $α)
+      let _oα ← synthInstanceQ q(LinearOrder $α)
+      let _oα ← synthInstanceQ q(IsStrictOrderedRing $α)
+      assumeInstancesCommute
+      return .nonnegative q(NNRat.cast_nonneg _)
 
 end Mathlib.Meta.Positivity

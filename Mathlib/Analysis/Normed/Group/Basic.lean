@@ -1075,7 +1075,7 @@ on non-one inputs. -/
 meta def evalMulNorm : PositivityExt where eval {u α} _ pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
-  | 0, ~q(ℝ), ~q(@Norm.norm $E $_n $a) =>
+  | 0, ~q(ℝ), ~q(@Norm.norm $E $_n $a) => liftM <| catchNone do
     let _seminormedGroup_E ← synthInstanceQ q(SeminormedGroup $E)
     assertInstancesCommute
     -- Check whether we are in a normed group and whether the context contains a `a ≠ 1` assumption
@@ -1098,7 +1098,7 @@ on non-zero inputs. -/
 meta def evalAddNorm : PositivityExt where eval {u α} _ pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
-  | 0, ~q(ℝ), ~q(@Norm.norm $E $_n $a) =>
+  | 0, ~q(ℝ), ~q(@Norm.norm $E $_n $a) => liftM <| catchNone do
     let _seminormedAddGroup_E ← synthInstanceQ q(SeminormedAddGroup $E)
     assertInstancesCommute
     -- Check whether we are in a normed group and whether the context contains a `a ≠ 0` assumption

@@ -224,27 +224,29 @@ meta def evalFinsetExpect : PositivityExt where eval {u α} zα pα? e :=
     let i : Q($ι) ← mkFreshExprMVarQ q($ι) .syntheticOpaque
     have body : Q($α) := .betaRev f #[i]
     let rbody ← core zα pα body
-    let p_pos : Option Q(0 < $e) ← do
-      let .positive pbody := rbody | pure none -- Fail if the body is not provably positive
-      let some ps ← proveFinsetNonempty s | pure none
-      let .some pα' ← trySynthInstanceQ q(IsOrderedCancelAddMonoid $α) | pure none
-      let .some instαordsmul ← trySynthInstanceQ q(PosSMulStrictMono ℚ≥0 $α) | pure none
-      assumeInstancesCommute
-      let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars #[i] pbody
-      pure <| some
-        q(@expect_pos $ι $α $instα $pα $pα' $instmod $instαordsmul $s $f (fun i _ ↦ $pr i) $ps)
-    -- Try to show that the sum is positive
-    if let some p_pos := p_pos then
-      return .positive p_pos
-    -- Fall back to showing that the sum is nonnegative
-    else
-      let pbody ← rbody.toNonneg
-      let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody
-      let instαordmon ← synthInstanceQ q(IsOrderedAddMonoid $α)
-      let instαordsmul ← synthInstanceQ q(PosSMulMono ℚ≥0 $α)
-      assumeInstancesCommute
-      return .nonnegative
-        q(@expect_nonneg $ι $α $instα $pα $instαordmon $instmod $s $f $instαordsmul fun i _ ↦ $pr i)
+    return ← catchNone do
+      let p_pos : Option Q(0 < $e) ← do
+        let .positive pbody := rbody | pure none -- Fail if the body is not provably positive
+        let some ps ← proveFinsetNonempty s | pure none
+        let .some pα' ← trySynthInstanceQ q(IsOrderedCancelAddMonoid $α) | pure none
+        let .some instαordsmul ← trySynthInstanceQ q(PosSMulStrictMono ℚ≥0 $α) | pure none
+        assumeInstancesCommute
+        let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars #[i] pbody
+        pure <| some
+          q(@expect_pos $ι $α $instα $pα $pα' $instmod $instαordsmul $s $f (fun i _ ↦ $pr i) $ps)
+      -- Try to show that the sum is positive
+      if let some p_pos := p_pos then
+        return .positive p_pos
+      -- Fall back to showing that the sum is nonnegative
+      else
+        let pbody ← rbody.toNonneg
+        let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody
+        let instαordmon ← synthInstanceQ q(IsOrderedAddMonoid $α)
+        let instαordsmul ← synthInstanceQ q(PosSMulMono ℚ≥0 $α)
+        assumeInstancesCommute
+        return .nonnegative
+          q(@expect_nonneg $ι $α $instα $pα $instαordmon $instmod $s $f
+            $instαordsmul fun i _ ↦ $pr i)
   | _ => throwError "not Finset.expect"
 
 example (n : ℕ) (a : ℕ → ℚ) : 0 ≤ 𝔼 j ∈ range n, a j ^ 2 := by positivity

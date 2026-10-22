@@ -744,12 +744,15 @@ such that `positivity` successfully recognises both `a` and `b`. -/
   let ⟨_f_eq⟩ ← withNewMCtxDepth <| assertDefEqQ q($f) q(HDiv.hDiv)
   match (dependent := true) pα? with
   | none =>
-    match ← core zα pα? a, ← core zα pα? b with
-    | .nonzero pa, .nonzero pb =>
-      let _a ← synthInstanceQ q(GroupWithZero $α)
-      assumeInstancesCommute
-      pure (.nonzero q(div_ne_zero $pa $pb))
-    | _, _ => pure .none
+    let ra ← core zα pα? a
+    let rb ← core zα pα? b
+    return ← catchNone do
+      match ra, rb with
+      | .nonzero pa, .nonzero pb =>
+        let _a ← synthInstanceQ q(GroupWithZero $α)
+        assumeInstancesCommute
+        pure (.nonzero q(div_ne_zero $pa $pb))
+      | _, _ => pure .none
   | some pα =>
     let _a ← synthInstanceQ q(GroupWithZero $α)
     let _a ← synthInstanceQ q(PosMulReflectLT $α)
@@ -775,12 +778,14 @@ meta def evalInv : PositivityExt where eval {u α} zα pα? e := do
   let ⟨_f_eq⟩ ← withNewMCtxDepth <| assertDefEqQ q($f) q(Inv.inv)
   match (dependent := true) pα? with
   | none =>
-    match ← core zα pα? a with
-    | .nonzero pa =>
-      let _a ← synthInstanceQ q(GroupWithZero $α)
-      assumeInstancesCommute
-      pure (.nonzero q(inv_ne_zero $pa))
-    | _ => pure .none
+    let ra ← core zα pα? a
+    return ← catchNone do
+      match ra with
+      | .nonzero pa =>
+        let _a ← synthInstanceQ q(GroupWithZero $α)
+        assumeInstancesCommute
+        pure (.nonzero q(inv_ne_zero $pa))
+      | _ => pure .none
   | some pα =>
     let _a ← synthInstanceQ q(GroupWithZero $α)
     let _a ← synthInstanceQ q(PartialOrder $α)
