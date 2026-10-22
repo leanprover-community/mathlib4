@@ -7,11 +7,8 @@ module
 
 public import Mathlib.Algebra.Torsor.Defs
 public import Mathlib.GroupTheory.GroupAction.SubMulAction
-public import Mathlib.Order.Filter.Pointwise
-public import Mathlib.Topology.Algebra.Constructions
 public import Mathlib.Topology.Algebra.ConstMulAction
 public import Mathlib.Topology.Algebra.Group.Defs
-public import Mathlib.Topology.Connected.Basic
 
 /-!
 # Continuous monoid action
@@ -248,7 +245,8 @@ instance Units.continuousSMul : ContinuousSMul Mˣ X :=
 
 /-- If an action is continuous, then composing this action with a continuous homomorphism gives
 again a continuous action. -/
-@[to_additive]
+@[to_additive /-- If an action is continuous, then composing this action with a continuous
+homomorphism gives again a continuous action. -/]
 theorem MulAction.continuousSMul_compHom
     {N : Type*} [TopologicalSpace N] [Monoid N] {f : N →* M} (hf : Continuous f) :
     letI : MulAction N X := MulAction.compHom _ f
@@ -295,7 +293,7 @@ theorem continuousSMul_iff_stabilizer_isOpen [DiscreteTopology X] :
   have hU : IsOpen U := by
     by_cases hU' : U ≠ ∅
     · obtain ⟨m, (hm : m • y = x)⟩ := Set.nonempty_iff_empty_ne.mpr hU'.symm
-      convert! (h x).preimage (by fun_prop : Continuous fun m' : M ↦ m' * m⁻¹)
+      convert (h x).preimage (by fun_prop : Continuous fun m' : M ↦ m' * m⁻¹)
       ext; simp [← smul_smul, U, eq_inv_smul_iff.mpr hm]
     simp_all
   simpa using! hU
@@ -388,7 +386,7 @@ include G in
 it loops for a group as a torsor over itself. -/
 protected theorem AddTorsor.connectedSpace : ConnectedSpace P :=
   { isPreconnected_univ := by
-      convert!
+      convert
         isPreconnected_univ.image (Equiv.vaddConst (Classical.arbitrary P) : G → P)
           (continuous_id.vadd continuous_const).continuousOn
       rw [Set.image_univ, Equiv.range_eq_univ]

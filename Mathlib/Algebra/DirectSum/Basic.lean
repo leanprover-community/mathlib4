@@ -5,7 +5,6 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.Group.Submonoid.Operations
 public import Mathlib.Data.DFinsupp.Sigma
 public import Mathlib.Data.DFinsupp.Submonoid
 
@@ -459,8 +458,6 @@ theorem hasFiniteSupport (A : ι → S) (x : DirectSum ι fun i => A i) :
     (fun i => (x i : M)).HasFiniteSupport := by
   classical
   exact (DFinsupp.support x).finite_toSet.subset (DirectSum.support_subset _ x)
-
-@[deprecated (since := "2026-03-03")] alias finite_support := hasFiniteSupport
 
 section map
 

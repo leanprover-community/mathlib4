@@ -5,10 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Tactic.GCongr
+public import Mathlib.SetTheory.Cardinal.Order
 public import Mathlib.Topology.Compactness.Paracompact
 public import Mathlib.Topology.EMetricSpace.Basic
-public import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 # (Extended) metric spaces are paracompact
@@ -32,7 +31,9 @@ public section
 
 variable {α : Type*}
 
-open ENNReal Topology Set
+open ENNReal Set
+
+open scoped Topology
 
 namespace Metric
 
@@ -55,7 +56,7 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
   obtain ⟨_, wf⟩ := exists_wellFoundedLT ι
   -- Let `ind x` be the minimal index `s : S` such that `x ∈ s`.
   let ind (x : α) : ι := wellFounded_lt.min { i : ι | x ∈ s i } (hcov x)
-  have mem_ind (x) : x ∈ s (ind x) := wellFounded_lt.min_mem _ (hcov x)
+  have mem_ind (x) : x ∈ s (ind x) := wellFounded_lt.min_mem {i : ι | x ∈ s i} (hcov x)
   have notMem_of_lt_ind {x i} (hlt : i < ind x) (hxi : x ∈ s i) : False :=
     wellFounded_lt.not_lt_min {i | x ∈ s i} hxi hlt
   /- The refinement `D : ℕ → ι → Set α` is defined recursively. For each `n` and `i`, `D n i`

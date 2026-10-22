@@ -30,7 +30,9 @@ Implementation Note: Like `circleMap`, `circleAverage`s are defined for negative
 
 @[expose] public section
 
-open Complex Filter Metric Real Set Topology
+open Complex Filter Metric Real Set
+
+open scoped Topology
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -230,8 +232,8 @@ lemma ContinuousOn.eq_of_eqOn_Ioo {f : ℝ → ℝ} {c r R : ℝ}
     rw [nhdsWithin_le_iff, mem_nhdsLT_iff_exists_Ioo_subset]
     use r
     simp_all [Ioo_subset_Ioc_self]
-  apply tendsto_nhds_unique this (tendsto_const_nhds.congr' _)
-  apply Filter.eventuallyEq_of_mem (Ioo_mem_nhdsLT hR) (fun _ hx ↦ (h₂f hx).symm)
+  refine tendsto_nhds_unique_of_eventuallyEq this tendsto_const_nhds ?_
+  exact Filter.eventuallyEq_of_mem (Ioo_mem_nhdsLT hR) h₂f
 
 /-!
 ## Constant Functions
@@ -286,15 +288,20 @@ theorem circleAverage_mono_on_of_le_circle {f : ℂ → ℝ} {a : ℝ} (hf : Cir
   exact intervalIntegral.integral_mono_on_of_le_Ioo (le_of_lt two_pi_pos) hf
     intervalIntegrable_const (fun θ _ ↦ h₂f (circleMap c R θ) (circleMap_mem_sphere' c R θ))
 
+theorem norm_circleAverage_le_circleAverage_norm :
+    ‖circleAverage f c R‖ ≤ circleAverage (fun z ↦ ‖f z‖) c R := by
+  simp only [circleAverage_def, norm_smul, smul_eq_mul]
+  gcongr
+  · simp [abs_of_nonneg pi_nonneg]
+  · exact intervalIntegral.norm_integral_le_integral_norm (by positivity)
+
 /--
 Analogue of `intervalIntegral.abs_integral_le_integral_abs`: The absolute value of a circle average
 is less than or equal to the circle average of the absolute value of the function.
 -/
 theorem abs_circleAverage_le_circleAverage_abs {f : ℂ → ℝ} :
     |circleAverage f c R| ≤ circleAverage |f| c R := by
-  rw [circleAverage, circleAverage, smul_eq_mul, smul_eq_mul, abs_mul,
-    abs_of_pos (inv_pos.2 two_pi_pos), mul_le_mul_iff_of_pos_left (inv_pos.2 two_pi_pos)]
-  exact intervalIntegral.abs_integral_le_integral_abs (le_of_lt two_pi_pos)
+  simpa [← norm_eq_abs, Pi.abs_def] using norm_circleAverage_le_circleAverage_norm
 
 /--
 The circle average of a nonnegative function is nonnegative.

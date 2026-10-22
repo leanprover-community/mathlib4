@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.DoldKan.Projections
-public import Mathlib.CategoryTheory.Idempotents.FunctorCategories
 public import Mathlib.CategoryTheory.Idempotents.FunctorExtension
 
 /-!
@@ -27,7 +26,9 @@ projection on the normalized Moore subcomplex, with kernel the degenerate subcom
 
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Preadditive
-  CategoryTheory.SimplicialObject CategoryTheory.Idempotents Opposite Simplicial DoldKan
+  CategoryTheory.SimplicialObject CategoryTheory.Idempotents Opposite
+
+open scoped Simplicial DoldKan
 
 namespace AlgebraicTopology
 
@@ -134,7 +135,7 @@ theorem PInfty_add_QInfty : (PInfty : K[X] ⟶ _) + QInfty = 𝟙 _ := by
   simp only [add_sub_cancel]
 
 theorem PInfty_f_add_QInfty_f (n : ℕ) : (PInfty.f n : X _⦋n⦌ ⟶ _) + QInfty.f n = 𝟙 _ :=
-  HomologicalComplex.congr_hom PInfty_add_QInfty n
+  congr($(PInfty_add_QInfty).f n)
 
 variable (C)
 

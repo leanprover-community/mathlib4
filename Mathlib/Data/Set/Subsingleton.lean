@@ -208,16 +208,16 @@ theorem nontrivial_of_lt [Preorder α] {x y} (hx : x ∈ s) (hy : y ∈ s) (hxy 
   ⟨x, hx, y, hy, ne_of_lt hxy⟩
 
 theorem nontrivial_of_exists_lt [Preorder α]
-    (H : ∃ᵉ (x ∈ s) (y ∈ s), x < y) : s.Nontrivial :=
+    (H : ∃ x ∈ s, ∃ y ∈ s, x < y) : s.Nontrivial :=
   let ⟨_, hx, _, hy, hxy⟩ := H
   nontrivial_of_lt hx hy hxy
 
-theorem Nontrivial.exists_lt [LinearOrder α] (hs : s.Nontrivial) : ∃ᵉ (x ∈ s) (y ∈ s), x < y :=
+theorem Nontrivial.exists_lt [LinearOrder α] (hs : s.Nontrivial) : ∃ x ∈ s, ∃ y ∈ s, x < y :=
   let ⟨x, hx, y, hy, hxy⟩ := hs
   Or.elim (lt_or_gt_of_ne hxy) (fun H => ⟨x, hx, y, hy, H⟩) fun H => ⟨y, hy, x, hx, H⟩
 
 theorem nontrivial_iff_exists_lt [LinearOrder α] :
-    s.Nontrivial ↔ ∃ᵉ (x ∈ s) (y ∈ s), x < y :=
+    s.Nontrivial ↔ ∃ x ∈ s, ∃ y ∈ s, x < y :=
   ⟨Nontrivial.exists_lt, nontrivial_of_exists_lt⟩
 
 protected theorem Nontrivial.nonempty (hs : s.Nontrivial) : s.Nonempty :=

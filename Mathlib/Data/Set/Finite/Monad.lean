@@ -5,9 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 -/
 module
 
-public import Mathlib.Data.Finite.Prod
 public import Mathlib.Data.Set.Finite.Lattice
 public import Mathlib.Data.Set.Functor
+
+import Mathlib.Basic.Finite.Prod
 
 /-!
 # Finiteness of the Set monad operations
@@ -25,7 +26,7 @@ open Set
 
 universe u v w x
 
-variable {α : Type u} {β : Type v} {ι : Sort w} {γ : Type x}
+variable {α : Type u} {β : Type v}
 
 namespace Set
 

@@ -5,7 +5,7 @@ Authors: Aaron Anderson, Gabin Kolly
 -/
 module
 
-public import Mathlib.Data.Finite.Sum
+public import Mathlib.Basic.Finite.Sum
 public import Mathlib.Data.Fintype.Order
 public import Mathlib.ModelTheory.FinitelyGenerated
 public import Mathlib.ModelTheory.Quotients
@@ -171,7 +171,7 @@ theorem equiv_iff {x y : Σˣ f} {i : ι} (hx : x.1 ≤ i) (hy : y.1 ≤ i) :
   refine ⟨fun xy => ?_, fun xy => ⟨i, hx, hy, xy⟩⟩
   obtain ⟨j, _, _, h⟩ := xy
   obtain ⟨k, ik, jk⟩ := directed_of (· ≤ ·) i j
-  have h := congr_arg (f j k jk) h
+  have h := congr(f j k jk $h)
   apply (f i k ik).injective
   rw [DirectedSystem.map_map, DirectedSystem.map_map] at *
   exact h

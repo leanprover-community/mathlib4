@@ -3,11 +3,13 @@ Copyright (c) 2024 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Algebra.Order.Sub.Basic
-import Mathlib.Algebra.Ring.Parity
-import Mathlib.Data.Fintype.Pigeonhole
-import Mathlib.Data.Nat.Nth
-import Mathlib.Tactic.ApplyFun
+module
+
+public import Mathlib.Algebra.Order.Sub.Basic
+public import Mathlib.Algebra.Ring.Parity
+public import Mathlib.Data.Fintype.Pigeonhole
+public import Mathlib.Data.Nat.Nth
+public import Mathlib.Tactic.ApplyFun
 
 /-!
 # IMO 2024 Q3
@@ -28,6 +30,7 @@ A further detailed analysis of the eventual behavior of the sequence ends up sho
 sequence of small numbers is eventually periodic with period at most $k$ (in fact exactly $k$).
 -/
 
+@[expose] public section
 
 open scoped Finset
 
@@ -372,8 +375,7 @@ alias bddAbove_setOf_k_lt_card := bddAbove_setOfPred_k_lt_card
 lemma k_pos : 0 < k a := by
   by_contra! hn
   apply nonpos_iff_eq_zero.mp hn ▸ hc.infinite_setOfPred_apply_eq_k
-  convert! Set.finite_empty
-  ext i
+  convert Set.finite_empty with i
   simp [(hc.pos i).ne']
 
 lemma small_one : Small a 1 := by

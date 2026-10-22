@@ -5,10 +5,11 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.Data.Set.Finite.Lattice
 public import Mathlib.Order.Atoms
 public import Mathlib.Order.Interval.Finset.Defs
-public import Mathlib.Order.Preorder.Finite
+
+import Mathlib.Data.Set.Finite.Lattice
+import Mathlib.Order.Preorder.Finite
 
 /-!
 # Atoms, Coatoms, Simple Lattices, and Finiteness
@@ -24,7 +25,7 @@ This module contains some results on atoms and simple lattices in the finite con
 public section
 
 
-variable {α β : Type*}
+variable {α : Type*}
 
 namespace IsSimpleOrder
 
