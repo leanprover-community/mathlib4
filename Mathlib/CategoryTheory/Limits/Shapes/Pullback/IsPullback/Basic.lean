@@ -9,9 +9,6 @@ public import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Pullback and pushout squares
 

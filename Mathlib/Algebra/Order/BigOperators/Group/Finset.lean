@@ -17,9 +17,6 @@ public import Mathlib.Tactic.Bound.Attribute
 
 import Mathlib.Algebra.Order.Monoid.OrderDual
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Big operators on a finset in ordered groups
 

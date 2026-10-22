@@ -9,9 +9,6 @@ public import Mathlib.MeasureTheory.Function.LpSeminorm.Indicator
 
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # `L^p`-seminorms on `count` and `dirac`
 -/

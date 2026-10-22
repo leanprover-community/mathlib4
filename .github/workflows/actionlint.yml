@@ -12,7 +12,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: suggester / actionlint
-        uses: reviewdog/action-actionlint@50842263c20a7c46bd0065b9e624d3c569db061e # v1.73.0
+        uses: reviewdog/action-actionlint@419a49378266e892f40c773b4f2fc6de9aa87499 # v1.80.4
         with:
           tool_name: actionlint
           fail_level: any
@@ -33,8 +33,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      # Using our fork's PR branch until upstream merges the improved error reporting:
-      # https://github.com/zgosalvez/github-actions-ensure-sha-pinned-actions/pull/288
-      # TODO: Update to upstream release once merged.
+      # Our fork of zgosalvez/github-actions-ensure-sha-pinned-actions. It reports every
+      # violation (not just the first) and checks the steps inside `parallel` groups.
       - name: Ensure all actions are pinned to SHA
-        uses: kim-em/github-actions-ensure-sha-pinned-actions@00f51cdb5bbc21f5bc873ef3a2dceef45df213af # improve-error-reporting
+        uses: leanprover-community/github-actions-ensure-sha-pinned-actions@538f919501d732b8cd7f5215aec5896df7d1df22 # improve-error-reporting

@@ -7,9 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Transport rigid structures over a monoidal equivalence.
 -/

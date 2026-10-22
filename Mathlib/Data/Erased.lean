@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Logic.Equiv.Defs
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # A type for VM-erased data
 
