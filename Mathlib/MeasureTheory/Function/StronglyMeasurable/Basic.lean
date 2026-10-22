@@ -455,7 +455,7 @@ theorem div [GroupWithZero β] [ContinuousMul β] [ContinuousInv₀ β] [Metriza
       not_true_eq_false, not_false_eq_true, indicator_of_notMem, _root_.div_zero]
     exact tendsto_const_nhds
   · simp_all only [ne_eq, FunLike.coe_div, SimpleFunc.coe_restrict,
-      Pi.div_apply, mem_ofPred_eq, not_false_eq_true, indicator_of_mem]
+      Pi.div_apply, mem_ofPred, not_false_eq_true, indicator_of_mem]
     exact (hf.tendsto_approx x).div (hg.tendsto_approx x) h
 
 @[to_additive]
