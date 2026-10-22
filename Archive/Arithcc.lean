@@ -348,3 +348,5 @@ example (x y t : Register) :
 end Test
 
 end Arithcc
+
+-- ci-dev probe (broken Archive, 2026-10-22): comment edit so this module rebuilds

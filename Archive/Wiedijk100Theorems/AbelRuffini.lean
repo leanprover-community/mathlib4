@@ -173,3 +173,6 @@ theorem exists_not_solvable_by_rad : ∃ x : ℂ, IsAlgebraic ℚ x ∧ x ∉ so
   exact ⟨x, ⟨Φ ℚ 4 2, (monic_Phi 4 2).ne_zero, hx⟩, not_solvable_by_rad' x hx⟩
 
 end AbelRuffini
+
+-- CI experiment (broken Archive, 2026-10-22): deliberate build error to exercise the failure path of the parallel groups.
+theorem parsteps_probe_failure : (1 : Nat) = 2 := rfl
