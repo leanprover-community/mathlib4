@@ -6,6 +6,7 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialCategory.Basic
+
 /-!
 
 # The simplicial nerve of a simplicial category

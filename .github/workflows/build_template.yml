@@ -25,18 +25,10 @@ on:
         type: string
         required: false
         default: ''
-      cache_application_id:
-        # The Azure writer app for the `upload_cache` job. Only builds that write
-        # the `master` container set it. When it is empty, the job skips the Azure
-        # upload.
-        type: string
-        required: false
-        default: ''
       cache_environment:
         # GitHub environment for the `upload_cache` and `upload_test_cache` jobs. Its only
         # role is to fix the OIDC `sub` claim to `...:environment:<name>`, which the cache
-        # writer credentials are scoped to; it must match the writer
-        # `cache_application_id` when that is set.
+        # writer credentials are scoped to.
         type: string
         required: true
       publish_cache:
@@ -54,6 +46,7 @@ env:
   # not necessarily satisfy this property.
   LAKE_NO_CACHE: true
   MATHLIB_CACHE_BASE_URL: ${{ vars.MATHLIB_CACHE_BASE_URL }}
+  MATHLIB_CACHE_PARALLEL_MAX: ${{ vars.MATHLIB_CACHE_PARALLEL_MAX }}
 
 jobs:
   build:
@@ -236,7 +229,7 @@ jobs:
 
       - name: fetch archive, counterexamples and wanted cache
         # Same sandbox as "Fetch cache from remote" in get-cache.
-        shell: landrun --unrestricted-network --rox /usr --rox /etc --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rwx /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env CI --env TERM --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX --env MATHLIB_CACHE_FROM --env MATHLIB_CACHE_REPO_SCOPE --env MATHLIB_CACHE_GET_URL --env MATHLIB_CACHE_BASE_URL -- bash -euxo pipefail {0}
+        shell: landrun --unrestricted-network --rox /usr --rox /etc --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rwx /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env CI --env TERM --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX --env MATHLIB_CACHE_FROM --env MATHLIB_CACHE_REPO_SCOPE --env MATHLIB_CACHE_GET_URL --env MATHLIB_CACHE_BASE_URL --env MATHLIB_CACHE_PARALLEL_MAX -- bash -euxo pipefail {0}
         run: |
           # Use the trusted toolchain's `lean`/`leantar` (see setup-build-env).
           export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
@@ -387,8 +380,8 @@ jobs:
           ../tools-branch/.lake/build/bin/cache clean
 
       # Publish this run's pruned `.ltar` set as `cache-snapshot` for other runs to warm
-      # from. Already on disk (no Azure egress) and already zstd-compressed (skip
-      # recompression); retention covers how far back a PR's merge-base can be matched.
+      # from. The files are already zstd-compressed, so the upload skips compression.
+      # The retention covers how far back a PR's merge-base can be matched.
       - name: upload cache snapshot warming artifact
         if: ${{ inputs.publish_cache && steps.build.outcome == 'success' }}
         continue-on-error: true # best-effort; never fail the build
@@ -431,10 +424,10 @@ jobs:
     # only cost is a second setup prefix on a fresh runner.
     #
     # It does not depend on `upload_cache`: it reconstitutes this run's oleans
-    # without the paid Azure round-trip, by downloading the `cache-staging` artifact
-    # `build` produces (this commit's freshly-built delta) and warming the rest from
-    # the master `cache-snapshot` via the `get-cache` action. The `verify the Mathlib
-    # cache is complete` step below fails loudly if that reconstitution is incomplete,
+    # from the `cache-staging` artifact `build` produces (this commit's
+    # freshly-built delta) and warms the rest from the master `cache-snapshot`
+    # via the `get-cache` action. The `verify the Mathlib cache is complete`
+    # step below fails loudly if that reconstitution is incomplete,
     # rather than silently rebuilding under landrun (which has no network).
     #
     # Gating: runs when `build` succeeded or failed (not cancelled/skipped). Running
@@ -495,8 +488,7 @@ jobs:
       # Pre-populate the local cache with this commit's freshly-built delta: the
       # `cache-staging` artifact `build` produces holds its newly-built `.ltar` —
       # the oleans not already in the master snapshot. `get-cache` below then warms
-      # the unchanged bulk from the master `cache-snapshot` and unpacks everything,
-      # so the bulk of the cache is not re-downloaded from paid Azure storage.
+      # the unchanged bulk from the master `cache-snapshot` and unpacks everything.
       # Gated on `cache-staging-has-files`: a full cache hit stages nothing (no
       # artifact is uploaded), and `get-cache` alone then covers the commit.
       - name: download cache staging artifact
@@ -508,8 +500,8 @@ jobs:
 
       # Warm the unchanged bulk from the master `cache-snapshot` and fetch/unpack
       # this commit's oleans. The staged `.ltar` placed above are already local, so
-      # `get-cache`'s `cache get` decompresses them rather than re-downloading; only
-      # anything still missing is pulled from Azure.
+      # `get-cache`'s `cache get` decompresses them and downloads only the missing
+      # files.
       - name: Get cache
         uses: ./workflow-actions/.github/actions/get-cache
         with:
@@ -534,7 +526,7 @@ jobs:
         if: ${{ env.RUN_TESTS == 'true' }}
         continue-on-error: true
         # Same sandbox as "Fetch cache from remote" in get-cache.
-        shell: landrun --unrestricted-network --rox /usr --rox /etc --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rwx /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env CI --env TERM --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX --env MATHLIB_CACHE_FROM --env MATHLIB_CACHE_REPO_SCOPE --env MATHLIB_CACHE_GET_URL --env MATHLIB_CACHE_BASE_URL --env CACHE_REPO -- bash -euxo pipefail {0}
+        shell: landrun --unrestricted-network --rox /usr --rox /etc --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rwx /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env CI --env TERM --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX --env MATHLIB_CACHE_FROM --env MATHLIB_CACHE_REPO_SCOPE --env MATHLIB_CACHE_GET_URL --env MATHLIB_CACHE_BASE_URL --env MATHLIB_CACHE_PARALLEL_MAX --env CACHE_REPO -- bash -euxo pipefail {0}
         env:
           CACHE_REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
         run: |
@@ -710,6 +702,7 @@ jobs:
     name: Upload to cache
     needs: [build]
     runs-on: ubuntu-latest # These steps run on a GitHub runner; no landrun sandboxing is needed.
+    timeout-minutes: 20
     # Pins the OIDC `sub` claim to `...:environment:<cache_environment>`, which the cache writer
     # credentials are scoped to. A token minted by any job without this environment
     # (e.g. the untrusted build/post_steps/style_lint jobs) cannot satisfy that trust.
@@ -758,6 +751,22 @@ jobs:
           use-github-cache: false
           use-mathlib-cache: false # This can be re-enabled once we are confident in the cache again.
           reinstall-transient-toolchain: true
+
+      - &install_curl
+        name: Install curl
+        env:
+          PINNED_CURL_RELEASE: v8.23.0
+          PINNED_CURL_SHA256: 83a56256434a3d3f6edbdad2cbdb1f23a44fe8fd52968d18ab57763fdc0afba0
+        run: |
+          dir="$RUNNER_TEMP/curl-install"
+          mkdir -p "$dir"
+          cd "$dir"
+          curl -fsSL --retry 5 -o curl \
+            "https://github.com/leanprover-community/static-curl/releases/download/${PINNED_CURL_RELEASE}/curl-x86_64-linux-static"
+          echo "${PINNED_CURL_SHA256}  curl" | sha256sum -c -
+          chmod u+x curl
+          echo "$dir" >> "$GITHUB_PATH"
+          ./curl --version
 
       - &build_cache_executable
         name: build cache executable
@@ -830,31 +839,13 @@ jobs:
           echo "Uploading cache to R2 (container: $MATHLIB_CACHE_PRIMARY)..."
           lake env "$CACHE_BIN" put-staged --backend=s3 "${container_args[@]}" --staging-dir="cache-staging" --repo="$REPO"
 
-      # Builds that write `master` also upload the staged set to Azure. A failed
-      # upload fails the job.
-      - name: Azure CLI OIDC login and mint storage bearer token
-        if: inputs.cache_application_id != ''
-        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-cache-token@d6393a535c054122e507b6c5e1b2f4c31c604121
-        with:
-          azure-client-id: ${{ inputs.cache_application_id }}
-          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
-
-      - name: Upload staged cache to Azure
-        if: inputs.cache_application_id != ''
-        shell: bash
-        env:
-          REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
-        run: |
-          # $MATHLIB_CACHE_PRIMARY is the container the dispatch selected.
-          echo "Uploading cache to Azure (container: $MATHLIB_CACHE_PRIMARY)..."
-          lake env "$CACHE_BIN" put-staged --container="$MATHLIB_CACHE_PRIMARY" --staging-dir="cache-staging" --repo="$REPO"
-
   upload_test_cache:
     name: Upload tests to cache
     needs: [test_lint]
     # The upload is best effort: if it fails, later runs rebuild these test files.
     continue-on-error: true
     runs-on: ubuntu-latest # These steps run on a GitHub runner; no landrun sandboxing is needed.
+    timeout-minutes: 20
     # The environment of `upload_cache` gives this job the same OIDC `sub` claim.
     environment:
       name: ${{ inputs.cache_environment }}
@@ -870,6 +861,7 @@ jobs:
       - *checkout_tools_branch
       - *compute_cache_trust_dispatch
       - *configure_lean_for_cache
+      - *install_curl
       - *build_cache_executable
 
       - name: Download MathlibTest cache staging artifact
@@ -899,6 +891,7 @@ jobs:
     needs: [build, upload_cache]
     if: ${{ always() && needs.build.result == 'success' && (needs.upload_cache.result == 'success' || needs.upload_cache.result == 'skipped') }}
     runs-on: ubuntu-latest # Note these steps run on disposable GitHub runners, so no landrun sandboxing is needed.
+    timeout-minutes: 30
     # This job checks out and executes (potentially fork) PR code unsandboxed,
     # so it must not inherit any write-capable token.
     permissions:
@@ -951,6 +944,10 @@ jobs:
           use-mathlib-cache: false # This can be re-enabled once we are confident in the cache again.
           reinstall-transient-toolchain: true
 
+      # The pinned curl keeps curl's retries on every runner image: the tool
+      # runs curl 8.18 (Ubuntu 26.04) without them.
+      - *install_curl
+
       - name: get cache for Mathlib
         run: |
           # Run once without --repo, so we can diagnose what `lake exe cache get` wants to do by itself.
@@ -991,11 +988,15 @@ jobs:
             exit 0
           fi
 
+          missing="The cache is missing build outputs. The log above names the modules that Lake needs to rebuild."
+          retry_hint="Hint: to rule out a transient network error, push an empty commit to re-run all jobs: git commit --allow-empty -m 'chore: re-run CI' && git push. If the error persists, ask in the #mathlib4 channel on Zulip."
+
           # Only fork PRs read and write the cache with different binaries.
           # Every other build (master, bors, dev branches) uses one binary, so
           # a miss is a real gap.
           if [ "${HEAD_REPO_IS_FORK}" != "true" ]; then
-            echo "::error::Cache verification failed on an in-repo build; the uploaded cache is incomplete."
+            echo "::error title=Cache incomplete::${missing}"
+            echo "${retry_hint}"
             exit 1
           fi
 
@@ -1010,16 +1011,18 @@ jobs:
           dout=$(diff -rq workflow-actions/Cache Cache 2>&1)
           dstat=$?
           if [ "${dstat}" -eq 0 ]; then
-            echo "::error::Cache verification failed and this PR's Cache/ matches master's, so the key spaces agree: the uploaded cache is incomplete."
+            echo "::error title=Cache incomplete::${missing}"
+            echo "${retry_hint}"
             exit 1
           elif [ "${dstat}" -eq 1 ]; then
-            echo "::warning::Cache verification incomplete, but this PR's Cache/ differs from master's. CI wrote the cache with master's binary and this job reads it with the PR branch's, so a changed key space (such as a rootHashGeneration bump) misses as expected. Continuing; the cache repopulates once this lands on master."
+            echo "::notice title=Cache check skipped::This PR changes Cache/, so CI cannot check the cache for this PR."
             echo "${dout}"
             # The downstream check below reads the same key space, so skip it.
             echo "key_space_changed=true" >> "$GITHUB_OUTPUT"
             exit 0
           else
-            echo "::error::Cache verification failed and master's Cache/ baseline could not be compared (diff status ${dstat}); treating as a failure."
+            echo "::error title=Cache incomplete::${missing}"
+            echo "Note: CI could not compare this PR's Cache/ with master's (diff exit status ${dstat})."
             echo "${dout}"
             exit 1
           fi
