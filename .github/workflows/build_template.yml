@@ -297,13 +297,18 @@ jobs:
             exit 1
           fi
 
-      # `check-yaml` imports `Mathlib` and `Archive`, whose oleans this job holds.
+      # `check-yaml` imports `Mathlib` and `Archive`, whose oleans this job holds. Both tools
+      # write and read their JSON files in the working directory, which is under `.lake/`
+      # because this sandbox can write only there. The outcome is checked at the end of the job.
       - name: check declarations in db files
+        id: yaml
         if: ${{ steps.archive.outcome == 'success' }}
+        continue-on-error: true
         run: |
-          cd pr-branch
-          python3 scripts/yaml_check.py --out .lake/yaml docs/100.yaml docs/1000.yaml docs/overview.yaml docs/undergrad.yaml
-          lake exe check-yaml --dir .lake/yaml
+          mkdir -p pr-branch/.lake/yaml
+          cd pr-branch/.lake/yaml
+          python3 ../../scripts/yaml_check.py ../../docs/100.yaml ../../docs/1000.yaml ../../docs/overview.yaml ../../docs/undergrad.yaml
+          lake -d ../.. exe check-yaml
 
       - name: prepare staging directory
         if: ${{ always() && (steps.build.outcome == 'success' || steps.build.outcome == 'failure' || steps.build.outcome == 'cancelled') }}
@@ -429,6 +434,12 @@ jobs:
             echo "'mk_all --check' passed successfully."
           fi
 
+      - name: Check declarations in db files
+        if: ${{ always() && steps.yaml.outcome == 'failure' }}
+        run: |
+          echo "Entries in docs/*.yaml refer to missing or deprecated declarations: see the 'check declarations in db files' step."
+          exit 1
+
   test_lint:
     name: Test and lint
     needs: [build]
@@ -463,7 +474,7 @@ jobs:
     # `RUN_TESTS` is true on a clean build: `build` itself, the `mk_all` check, and
     # the archive, counterexamples, and Wanted builds all succeeded. It reads these
     # from the outputs of `build`. It gates `test`, the problem-matcher wrap of
-    # `test`, and the MathlibTest cache fetch.
+    # `test`, the MathlibTest cache fetch, the scripts build and `build everything`.
     env:
       RUN_TESTS: ${{ needs.build.outputs.build-outcome == 'success' && needs.build.outputs.mk_all-outcome == 'success' && needs.build.outputs.archive-outcome == 'success' && needs.build.outputs.counterexamples-outcome == 'success' && needs.build.outputs.wanted-outcome == 'success' }}
     defaults: # The self-hosted runner image provides landrun.
@@ -712,8 +723,8 @@ jobs:
           cd pr-branch
           lake build AesopTest
 
-      # We no longer run `lean4checker` in regular CI, as it is quite expensive for little benefit.
-      # Instead we run it in a cron job on master: see `daily.yml`.
+      # `lean4checker` is expensive for little benefit, so it runs in a daily cron job on master
+      # (`daily.yml`), not here.
 
       # Generate a fresh token just before posting comments.
       # GitHub App tokens expire after 1 hour, and the build can take longer than that.

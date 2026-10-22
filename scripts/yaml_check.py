@@ -3,12 +3,10 @@ This file reads in the four yaml files, and translates them to simpler json file
 that are easier to process in Lean.
 
 Usage:
-  python3 yaml_check.py [--out DIR] <100.yaml> <1000.yaml> <overview.yaml> <undergrad.yaml>
+  python3 yaml_check.py <100.yaml> <1000.yaml> <overview.yaml> <undergrad.yaml>
 
 (Each <name> is the path to a yaml file containing information about the respective class
  of theorems. The order of these files is important.)
-
-The json files are written to DIR, by default the current directory.
 
 """
 
@@ -16,7 +14,6 @@ from typing import Dict, Mapping, Optional, Union, Tuple, List
 from dataclasses import dataclass
 import yaml
 import json
-import os
 import sys
 
 TieredDict = Dict[str, Union[Optional[str], "TieredDict"]]
@@ -99,13 +96,10 @@ class ThousandPlusTheorem:
     comment: Optional[str] = None
 
 
-args = sys.argv[1:]
-out_dir = "."
-if args[:1] == ["--out"]:
-    out_dir = args[1]
-    args = args[2:]
-os.makedirs(out_dir, exist_ok=True)
-hundred_yaml, thousand_yaml, overview_yaml, undergrad_yaml = args
+hundred_yaml = sys.argv[1]
+thousand_yaml = sys.argv[2]
+overview_yaml = sys.argv[3]
+undergrad_yaml = sys.argv[4]
 
 with open(hundred_yaml, "r", encoding="utf8") as hy:
     hundred = yaml.safe_load(hy)
@@ -187,13 +181,13 @@ undergrad_decls = tiered_extract(undergrad)
 assert all(len(n) >= 3 for n, _ in undergrad_decls), "Expected more nesting"
 undergrad_decls = flatten_names(undergrad_decls)
 
-with open(os.path.join(out_dir, "100.json"), "w", encoding="utf8") as f:
+with open("100.json", "w", encoding="utf8") as f:
     json.dump(hundred_decls, f)
-with open(os.path.join(out_dir, "1000.json"), "w", encoding="utf8") as f:
+with open("1000.json", "w", encoding="utf8") as f:
     json.dump(thousand_decls, f)
-with open(os.path.join(out_dir, "overview.json"), "w", encoding="utf8") as f:
+with open("overview.json", "w", encoding="utf8") as f:
     json.dump(overview_decls, f)
-with open(os.path.join(out_dir, "undergrad.json"), "w", encoding="utf8") as f:
+with open("undergrad.json", "w", encoding="utf8") as f:
     json.dump(undergrad_decls, f)
 
 if errors:
