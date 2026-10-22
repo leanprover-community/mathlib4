@@ -1,5 +1,6 @@
 module  -- shake: keep-all --deprecated_module: ignore
 
+public import Std
 public import Batteries
 public import Mathlib.Algebra.AddConstMap.Basic
 public import Mathlib.Algebra.AddConstMap.Equiv
@@ -316,6 +317,7 @@ public import Mathlib.Algebra.EuclideanDomain.Int
 public import Mathlib.Algebra.Exact
 public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.Algebra.Exact.Sequence
+public meta import Mathlib.Algebra.Expr
 public import Mathlib.Algebra.Field.Action.ConjAct
 public import Mathlib.Algebra.Field.Basic
 public import Mathlib.Algebra.Field.Defs
@@ -5114,15 +5116,36 @@ public import Mathlib.InformationTheory.KullbackLeibler.DataProcessing
 public import Mathlib.InformationTheory.KullbackLeibler.KLFun
 public import Mathlib.Init
 public import Mathlib.Lean.ContextInfo
+public meta import Mathlib.Lean.CoreM
+public meta import Mathlib.Lean.Elab.InfoTree
 public import Mathlib.Lean.Elab.Tactic.Basic
 public import Mathlib.Lean.Elab.Tactic.Meta
 public import Mathlib.Lean.Elab.Term
+public meta import Mathlib.Lean.EnvExtension
+public meta import Mathlib.Lean.Environment
+public meta import Mathlib.Lean.Exception
+public meta import Mathlib.Lean.Expr.Basic
+public meta import Mathlib.Lean.Expr.ExtraRecognizers
+public meta import Mathlib.Lean.Expr.Rat
 public import Mathlib.Lean.FoldEnvironment
+public meta import Mathlib.Lean.GoalsLocation
 public import Mathlib.Lean.Json
 public import Mathlib.Lean.Linter
+public meta import Mathlib.Lean.LocalContext
+public meta import Mathlib.Lean.MessageData.ForExprs
+public meta import Mathlib.Lean.MessageData.Trace
 public import Mathlib.Lean.Meta
 public import Mathlib.Lean.Meta.Basic
 public import Mathlib.Lean.Meta.CongrTheorems
+public meta import Mathlib.Lean.Meta.DiscrTree
+public meta import Mathlib.Lean.Meta.KAbstractPositions
+public meta import Mathlib.Lean.Meta.RefinedDiscrTree
+public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
+public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Encode
+public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Initialize
+public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
+public meta import Mathlib.Lean.Meta.Simp
+public meta import Mathlib.Lean.Meta.Tactic.Rewrite
 public import Mathlib.Lean.Name
 public import Mathlib.Lean.PrettyPrinter.Delaborator
 public import Mathlib.Lean.Thunk
@@ -8626,6 +8649,7 @@ public import Mathlib.Util.Notation3
 public import Mathlib.Util.PPOptions
 public import Mathlib.Util.ParseCommand
 public import Mathlib.Util.PrintSorries
+public meta import Mathlib.Util.Qq
 public import Mathlib.Util.Simp
 public import Mathlib.Util.SleepHeartbeats
 public import Mathlib.Util.Superscript
@@ -8635,27 +8659,3 @@ public import Mathlib.Util.TermReduce
 public import Mathlib.Util.TransImports
 public import Mathlib.Util.WhatsNew
 public import Mathlib.Util.WithWeakNamespace
-public import Std
-public meta import Mathlib.Algebra.Expr
-public meta import Mathlib.Lean.CoreM
-public meta import Mathlib.Lean.Elab.InfoTree
-public meta import Mathlib.Lean.EnvExtension
-public meta import Mathlib.Lean.Environment
-public meta import Mathlib.Lean.Exception
-public meta import Mathlib.Lean.Expr.Basic
-public meta import Mathlib.Lean.Expr.ExtraRecognizers
-public meta import Mathlib.Lean.Expr.Rat
-public meta import Mathlib.Lean.GoalsLocation
-public meta import Mathlib.Lean.LocalContext
-public meta import Mathlib.Lean.MessageData.ForExprs
-public meta import Mathlib.Lean.MessageData.Trace
-public meta import Mathlib.Lean.Meta.DiscrTree
-public meta import Mathlib.Lean.Meta.KAbstractPositions
-public meta import Mathlib.Lean.Meta.RefinedDiscrTree
-public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
-public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Encode
-public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Initialize
-public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
-public meta import Mathlib.Lean.Meta.Simp
-public meta import Mathlib.Lean.Meta.Tactic.Rewrite
-public meta import Mathlib.Util.Qq
