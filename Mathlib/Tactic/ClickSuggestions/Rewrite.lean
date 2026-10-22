@@ -9,9 +9,6 @@ public meta import Mathlib.Control.Basic
 public meta import Mathlib.Tactic.ClickSuggestions.Util
 public import Mathlib.Tactic.ClickSuggestions.SectionState
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Support for `rw` suggestions in `#click_suggestions`
 -/

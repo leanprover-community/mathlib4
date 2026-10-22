@@ -9,9 +9,6 @@ public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Shift.Basic
 public import Mathlib.Data.Int.Cast.Defs
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Differential objects in a category.
 

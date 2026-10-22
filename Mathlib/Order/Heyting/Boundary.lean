@@ -10,9 +10,6 @@ public import Mathlib.Tactic.Common
 
 import Mathlib.Tactic.Attr.Core
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Co-Heyting boundary
 

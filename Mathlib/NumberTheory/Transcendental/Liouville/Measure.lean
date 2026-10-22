@@ -11,9 +11,6 @@ public import Mathlib.NumberTheory.Transcendental.Liouville.LiouvilleWith
 import Mathlib.Analysis.PSeries
 import Mathlib.NumberTheory.Transcendental.Liouville.Residual
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Volume of the set of Liouville numbers
 

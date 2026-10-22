@@ -11,9 +11,6 @@ public import Mathlib.Geometry.Euclidean.Inversion.Basic
 import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Tactic.AdaptationNote
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Derivative of the inversion
 
