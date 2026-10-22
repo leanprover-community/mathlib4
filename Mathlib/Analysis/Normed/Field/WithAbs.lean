@@ -181,28 +181,29 @@ theorem locallyCompactSpace [LocallyCompactSpace L] (h : Isometry f) :
 
 end Completion
 
-section localDegree
+section degree
 
 variable [Algebra v.Completion w.Completion] [IsScalarTower K v.Completion w.Completion]
   [ContinuousSMul v.Completion w.Completion]
 
 variable (K) in
-noncomputable def localDegree : ℕ :=
+/-- The degree of an extension of absolute values is the degree of their completions. -/
+noncomputable def degree : ℕ :=
   letI v := w.under K
   letI := Completion.algebraOfLiesOver v w
   Module.finrank v.Completion w.Completion
 
-theorem localDegree_eq : w.localDegree K = Module.finrank v.Completion w.Completion := by
+theorem degree_eq : w.degree K = Module.finrank v.Completion w.Completion := by
   have := LiesOver.under_eq w v
   subst this
-  rw [localDegree, Completion.algebra_eq (w.under K) w]
+  rw [degree, Completion.algebra_eq (w.under K) w]
 
-theorem localDegree_mul_localDegree : v.localDegree J * w.localDegree K = w.localDegree J := by
+theorem degree_mul_degree : v.degree J * w.degree K = w.degree J := by
   let u := v.under J
   let : Algebra u.Completion v.Completion := Completion.algebraOfLiesOver u v
   let : Algebra u.Completion w.Completion := Completion.algebraOfLiesOver u w
-  rw [localDegree_eq u v, localDegree_eq v w, localDegree_eq u w, Module.finrank_mul_finrank]
+  rw [degree_eq u v, degree_eq v w, degree_eq u w, Module.finrank_mul_finrank]
 
-end localDegree
+end degree
 
 end AbsoluteValue
