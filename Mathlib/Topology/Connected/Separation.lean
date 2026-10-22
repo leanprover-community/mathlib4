@@ -5,8 +5,8 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.Topology.Separation.Hausdorff
 public import Mathlib.Topology.Connected.TotallyDisconnected
+
 /-!
 
 # Separation and (dis)connectedness properties of topological spaces.
