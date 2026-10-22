@@ -1,5 +1,13 @@
 # GitHub Workflows Summary
 
+Python package installs in CI use mathlib-ci's `secure-pip` action after
+`actions/setup-python`. It updates the Ubuntu CA store, installs pip 26.2.2
+from a wheel with a fixed SHA-256, and requires certifi 2026.10.19 or later.
+The pre-commit job also requires virtualenv 21.14.12 or later and uses a new
+cache key to discard hook environments with old pip installations.
+These changes address the [eMudhra incident](https://discuss.python.org/t/109576).
+Self-hosted runner images and their bundled Node.js runtime need separate updates.
+
 ### Note
 
 - The grouping below is done mainly by primary trigger (the main event that causes runs).
