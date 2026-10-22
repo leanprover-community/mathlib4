@@ -93,10 +93,6 @@ Valid arguments are:
 # Environment variables
 
 * MATHLIB_CACHE_DIR       Local cache directory (default: ~/.cache/mathlib)
-* MATHLIB_CACHE_DEBUG_USE_LEGACY
-                          Set to 1 or true to read from the Azure storage
-                          account instead of https://cache.mathlib.org.
-                          For troubleshooting only.
 * MATHLIB_CACHE_GET_URL   Download from this single URL as a flat namespace.
                           Allows third parties to use their own cache endpoint.
                           An empty value means unset.
@@ -127,8 +123,9 @@ def main (args : List String) : IO Unit := do
       IO.eprintln help
       Process.exit 1
 
-  -- Resolve the legacy switch once, before anything builds a read URL.
-  useLegacy.set (← getEnvFlag "MATHLIB_CACHE_DEBUG_USE_LEGACY" (ifUnset := false))
+  if ← getEnvFlag "MATHLIB_CACHE_DEBUG_USE_LEGACY" (ifUnset := false) then
+    IO.eprintln "Warning: MATHLIB_CACHE_DEBUG_USE_LEGACY is retired; \
+      cache reads use https://cache.mathlib.org"
 
   let repo? ← parseNamedOpt "repo" options
   let stagingDir? ← parseNamedOpt "staging-dir" options
@@ -139,9 +136,9 @@ def main (args : List String) : IO Unit := do
   let unsafeWindowStr? ← parseNamedOpt "unsafe-window" options
   let backendStr? ← parseNamedOpt "backend" options
 
-  -- Parse `--backend=NAME`; `azure` is the default.
+  -- Parse `--backend=NAME`; `s3` is the default.
   let backend ← match backendStr? with
-    | none => pure UploadBackend.azure
+    | none => pure UploadBackend.s3
     | some s => match UploadBackend.parse? s with
       | some b => pure b
       | none =>
@@ -249,7 +246,8 @@ def main (args : List String) : IO Unit := do
 
   let hashMemo ← getHashMemo roots
   let hashMap := hashMemo.hashMap
-  let goodCurl ← pure !curlArgs.contains (args.headD "") <||> validateCurl
+  let curlMode ← if curlArgs.contains (args.headD "") then validateCurl
+    else pure { parallel := true }
   let get (args : List String) (force := false) (decompress := true) := do
     let hashMap ← if args.isEmpty then pure hashMap else hashMemo.filterByRootModules roots.keys
     -- Resolve the repo once (single git-remote probe) and thread it through the
@@ -272,7 +270,7 @@ def main (args : List String) : IO Unit := do
           for s in scopes do IO.eprintln s!"  {s}"
         pure scopes
       | none => pure []
-    let missing ← getFiles resolvedRepo hashMap force force goodCurl decompress
+    let missing ← getFiles resolvedRepo hashMap force force curlMode decompress
       (unsafeScopes := unsafeScopes)
     -- Explain any files no location served — keyed on the actual outcome, so
     -- a read fully served by the configured locations stays silent even when

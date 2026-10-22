@@ -35,13 +35,13 @@ failures without the argument list (`showArgsOnError := false`).
 def uploadPutArgs (signArgs : Array String) (overwrite : Bool) : Array String :=
   if overwrite then signArgs else signArgs ++ #["-H", "If-None-Match: *"]
 
-/-- Build the upload config. Response bodies go to `bodySink`, leaving stdout
-for transfer reports. The sink must support truncation for retries (curl issue #17371). -/
-def mkPutConfigContent (dest : Location) (files : Array FilePath) (bodySink : FilePath) :
-    String :=
+/-- Formats the curl config file that lists the files to upload: each staged
+file goes to `dest.fileURL`. The response body goes to the null device: stdout
+must carry only the per-transfer JSON reports that `monitorCurl` parses. -/
+def mkPutConfigContent (dest : Location) (files : Array FilePath) : String :=
   let l := files.toList.map fun file : FilePath =>
     s!"-T {file.toString}\nurl = {dest.fileURL file.fileName.get!}\n\
-      -o {bodySink.toString}"
+      -o {IO.nullDevice}"
   "\n".intercalate l
 
 /-- Upload files with curl and exit with code 1 if any transfer fails.
@@ -52,9 +52,7 @@ def putFilesViaCurl
   -- TODO: reimplement using HEAD requests?
   let size := files.size
   if size > 0 then
-    -- A shared regular file supports truncation when curl retries.
-    let bodySink := tempConfigFilePath.withExtension "body"
-    IO.FS.writeFile tempConfigFilePath (mkPutConfigContent dest files bodySink)
+    IO.FS.writeFile tempConfigFilePath (mkPutConfigContent dest files)
     IO.println
       s!"Attempting to upload {size} file(s) under {dest.root}/{dest.filesDir} \
         (location: {dest.label})"
@@ -72,7 +70,6 @@ def putFilesViaCurl
     let (s, _) ← monitorCurl args size "Uploaded" "speed_upload"
       (classifyUpload · · !overwrite) (removeOnError := false) (decompConfig := none)
     IO.FS.removeFile tempConfigFilePath
-    if ← bodySink.pathExists then IO.FS.removeFile bodySink
     -- Surface genuine upload failures. `monitorCurl` excuses already-present
     -- blobs (409/412 on a non-overwrite put), so a re-upload of files the
     -- server already has does not trip this.
@@ -81,7 +78,7 @@ def putFilesViaCurl
       IO.Process.exit 1
   else IO.println "No files to upload"
 
-/-- Upload the named staged files, then the location's marker if present.
+/-- Upload the named staged files, then the location's marker when it has one.
 `getSignArgs` supplies signing arguments for each upload.
 File failures exit with code 1; marker failures only warn. -/
 def putStagedViaCurl (dest : Location) (getSignArgs : IO (Array String))

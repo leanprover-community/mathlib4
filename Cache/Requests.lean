@@ -241,11 +241,12 @@ all repos use `cs` instead.
 -/
 initialize cacheFromOverride : IO.Ref (Option (List Container)) ← IO.mkRef none
 
-/-- Pair each container in a lookup chain with its read base. The result
-keeps the chain's trust order. -/
+/-- Pair each container in a lookup chain with the read base (`getBaseURL`), in
+the chain's trust order. -/
 private def chainWithGetBases (containers : List Container) :
-    BaseIO (List (Option Container × String)) :=
-  containers.mapM fun c => do return (some c, ← getBaseURL c)
+    BaseIO (List (Option Container × String)) := do
+  let base ← getBaseURL
+  return containers.map (some ·, base)
 
 /--
 Resolve the read bases for a GitHub repo. Each base carries its container
@@ -298,13 +299,14 @@ def curlFollowRedirectArgs : Array String :=
   #["--location", "--proto-redir", "=https", "--max-redirs", "5"]
 
 /--
-Retry flags for a cache transfer. Set `supportLegacyCurl` to omit
-`--retry-all-errors` on paths that support older curl versions.
+Retry flags for a cache transfer. Set `supportLegacyCurl` on a path that must
+run on a curl older than 7.71, which rejects `--retry-all-errors`.
 -/
 def curlRetryArgs (supportLegacyCurl : Bool) : Array String :=
   #["--retry", "5"] ++ (if supportLegacyCurl then #[] else #["--retry-all-errors"])
 
-/-- Set curl's parallel transfer limit from `MATHLIB_CACHE_PARALLEL_MAX`. -/
+/-- The `--parallel-max` flag from `MATHLIB_CACHE_PARALLEL_MAX`; empty when the
+variable is unset or not a number. -/
 def curlParallelMaxArgs : IO (Array String) := do
   let some value ← getEnvNonEmpty "MATHLIB_CACHE_PARALLEL_MAX" | return #[]
   let some n := value.toNat? | do
@@ -794,16 +796,17 @@ continues it. Serial mode never pipelines and passes it through untouched.
 Side effect: fetched files are written to `CACHEDIR` with their final names. -/
 private def downloadFilesFromLocation (location : Location)
     (hashMap : IO.ModuleHashMap)
-    (parallel : Bool) (decompConfig : Option DecompConfig) (decompState : DecompState) :
+    (mode : IO.CurlMode) (decompConfig : Option DecompConfig) (decompState : DecompState) :
     IO (TransferState × Std.HashSet UInt64) := do
   let size := hashMap.size
-  if parallel then
+  if mode.parallel then
     IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent location hashMap)
     let args := #["--request", "GET", "--parallel", "--silent", "--show-error"] ++
       (← curlParallelMaxArgs) ++
       -- Avoid passing `--fail` here: it slows parallel transfers on curl
       -- 8.13.0, and it makes `--retry-all-errors` retry every 404 miss.
-      curlFollowRedirectArgs ++ curlRetryArgs (supportLegacyCurl := false) ++
+      curlFollowRedirectArgs ++
+      (if mode.retry then curlRetryArgs (supportLegacyCurl := false) else #[]) ++
       #["--write-out", curlGetWriteOut, "--config", IO.CURLCFG.toString]
     let (s, served) ← monitorCurl args size "Downloaded" "speed_download"
       classifyDownload (removeOnError := true)
@@ -893,7 +896,7 @@ download reports how many files each scoped round served (`cache get
 --unsafe`). `repo` names the read in messages. -/
 def downloadFiles
     (repo : String) (locations : List Location) (hashMap : IO.ModuleHashMap)
-    (forceDownload : Bool) (parallel : Bool)
+    (forceDownload : Bool) (mode : IO.CurlMode)
     (decompress : Bool := false) (forceUnpack : Bool := false)
     (isMathlibRoot : Bool := false) (mathlibDepPath : FilePath := ".")
     (unsafeMode : Bool := false) : IO DownloadResult := do
@@ -934,7 +937,7 @@ def downloadFiles
     IO.println s!"Attempting to download {remaining.size} file(s) from {repo} cache at \
       {location.root}{scopeNote}"
     let before := remaining.size
-    let (s, served) ← downloadFilesFromLocation location remaining parallel
+    let (s, served) ← downloadFilesFromLocation location remaining mode
       decompConfig decompState
     -- Carry the decompression pipeline into the next round and the drain
     -- below: files left behind here are never decompressed. Drop the files
@@ -1057,7 +1060,7 @@ explicit scopes, and the forks HEAD fallback. Without an override, the fork
 lookup chain starts with `master`, which supplies shared upstream artifacts. -/
 def getFiles
     (repo : String) (hashMap : IO.ModuleHashMap)
-    (forceDownload forceUnpack parallel decompress : Bool)
+    (forceDownload forceUnpack : Bool) (mode : IO.CurlMode) (decompress : Bool)
     (unsafeScopes : List String := [])
     : IO.CacheM Nat := do
   let isMathlibRoot ← IO.isMathlibRoot
@@ -1084,7 +1087,7 @@ def getFiles
   else pure none
 
   let result ← downloadFiles repo (← readLocations repo unsafeScopes) hashMap forceDownload
-    parallel
+    mode
     (decompress := decompress) (forceUnpack := forceUnpack)
     isMathlibRoot mathlibDepPath (unsafeMode := !unsafeScopes.isEmpty)
   if result.failed > 0 then
@@ -1105,7 +1108,7 @@ def getFiles
 
   let elapsed := (← IO.monoMsNow) - startTime
   if decompress then
-    if bgDecomp.isSome && parallel then
+    if bgDecomp.isSome && mode.parallel then
       -- Background task handled pre-cached files, download pipeline handled new files
       IO.println s!"Completed successfully in {elapsed} ms!"
     else
