@@ -107,6 +107,13 @@ lemma isTraceRepresentative_iff {f : A} :
     IsTraceRepresentative V Φ f ↔ ∀ a, Φ (f * a) = LinearMap.trace k V (Algebra.lsmul k k V a) := by
   rfl
 
+lemma IsTraceRepresentative.ne_zero_of_charZero [CharZero k] [Nontrivial V] [Module.Finite k V]
+    [Module.Free k V] {f : A} (hf : IsTraceRepresentative V Φ f) :
+    Φ f ≠ 0 := by
+  by_contra
+  rw [← mul_one f, hf 1] at this
+  simp_all [Module.finrank_eq_zero_iff_of_free, ← not_nontrivial_iff_subsingleton]
+
 variable [IsSymmNondegenAlg A Φ]
 
 variable (Φ) in
@@ -215,13 +222,6 @@ lemma normalization_def {a f : A} :
   rw [normalization]
 
 namespace IsTraceRepresentative
-
-lemma ne_zero_of_charZero [CharZero k] [Nontrivial V] {f : A} (hf : IsTraceRepresentative V Φ f) :
-    Φ f ≠ 0 := by
-  by_contra
-  have : Φ (f * 1) = 0 := by simp [this]
-  rw [hf 1] at this
-  simp_all [Module.finrank_eq_zero_iff_of_free, ← not_nontrivial_iff_subsingleton]
 
 lemma ne_zero_of_isSimpleModule [IsSimpleModule A V] [IsAlgClosed k] {f : A}
     (hf : IsTraceRepresentative V Φ f) :
