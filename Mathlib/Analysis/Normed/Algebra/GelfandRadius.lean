@@ -161,7 +161,7 @@ theorem gelfandRadius_le_of_norm_pow_le {a : A} {b : B} (C : ℝ) (h : ∀ n, �
   exact gelfandRadius_le_of_bound (C := max C 0 * D) ((gelfandRadius_nonneg b).trans hr.le)
     fun _ ↦ by grw [h, le_max_left C 0, hD, mul_assoc]
 
-theorem gelfandRadius_eq_of_norm_pow {a : A} {b : B} (h : ∀ n, ‖a ^ n‖ = ‖b ^ n‖) :
+theorem gelfandRadius_eq_of_norm_pow_eq {a : A} {b : B} (h : ∀ n, ‖a ^ n‖ = ‖b ^ n‖) :
     gelfandRadius a = gelfandRadius b :=
   le_antisymm (gelfandRadius_le_of_norm_pow_le 1 (by simp [h]))
     (gelfandRadius_le_of_norm_pow_le 1 (by simp [h]))
@@ -169,11 +169,11 @@ theorem gelfandRadius_eq_of_norm_pow {a : A} {b : B} (h : ∀ n, ‖a ^ n‖ = �
 @[simp]
 theorem gelfandRadius_star [StarRing A] [NormedStarGroup A] (a : A) :
     gelfandRadius (star a) = gelfandRadius a :=
-  gelfandRadius_eq_of_norm_pow <| by simp [← star_pow]
+  gelfandRadius_eq_of_norm_pow_eq <| by simp [← star_pow]
 
 @[simp]
 theorem MulOpposite.gelfandRadius_op (a : A) : gelfandRadius (op a) = gelfandRadius a :=
-  gelfandRadius_eq_of_norm_pow <| by simp [← op_pow, norm_op]
+  gelfandRadius_eq_of_norm_pow_eq <| by simp [← op_pow, norm_op]
 
 @[simp]
 theorem MulOpposite.gelfandRadius_unop (a : Aᵐᵒᵖ) : gelfandRadius (unop a) = gelfandRadius a := by
@@ -182,7 +182,7 @@ theorem MulOpposite.gelfandRadius_unop (a : Aᵐᵒᵖ) : gelfandRadius (unop a)
 theorem Isometry.gelfandRadius_map {F : Type*} [FunLike F A B] [MonoidWithZeroHomClass F A B]
     {f : F} (hf : Isometry f) (a : A) :
     gelfandRadius (f a) = gelfandRadius a :=
-  gelfandRadius_eq_of_norm_pow <| by simp [← map_pow, hf.norm_map_of_map_zero (map_zero f)]
+  gelfandRadius_eq_of_norm_pow_eq <| by simp [← map_pow, hf.norm_map_of_map_zero (map_zero f)]
 
 theorem Commute.gelfandRadius_add_le {a b : A} (h : Commute a b) :
     gelfandRadius (a + b) ≤ gelfandRadius a + gelfandRadius b := by
