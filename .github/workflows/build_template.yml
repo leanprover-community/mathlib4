@@ -38,12 +38,18 @@ on:
         required: false
         default: false
       gate_cache_verification:
-        # A failure of the `cache_verify` job fails the run. Set by the callers that
-        # write the `master` container: bors, master pushes and release tags.
-        # Elsewhere a gap in the cache is a warning.
+        # A failure of the `cache_verify` job fails the run. Set by the callers whose
+        # cache serves everyone once it lands: bors and release tags. Elsewhere a gap
+        # in the cache is a warning.
         type: boolean
         required: false
         default: false
+      revalidate:
+        # Run the `test_lint` and `cache_verify` jobs. The master push build turns them
+        # off: bors validated the same commit on `staging`.
+        type: boolean
+        required: false
+        default: true
 
 env:
   # Disable Lake's automatic fetching of cloud builds.
@@ -449,7 +455,7 @@ jobs:
     # on build FAILURE too means `lint` still reports results on a failed build,
     # best-effort over whatever oleans were built. The per-step conditions below
     # match: `test` only on a clean build, `lint` on success-or-failure.
-    if: ${{ always() && (needs.build.result == 'success' || needs.build.result == 'failure') }}
+    if: ${{ always() && inputs.revalidate && (needs.build.result == 'success' || needs.build.result == 'failure') }}
     runs-on: ${{ inputs.runs_on }}
     # Same as `build`: this job runs (potentially fork) PR code, so it must not
     # inherit any write-capable token.
@@ -939,7 +945,7 @@ jobs:
   cache_verify:
     name: Cache verification
     needs: [build, upload_cache]
-    if: ${{ always() && needs.build.result == 'success' && (needs.upload_cache.result == 'success' || needs.upload_cache.result == 'skipped') }}
+    if: ${{ always() && inputs.revalidate && needs.build.result == 'success' && (needs.upload_cache.result == 'success' || needs.upload_cache.result == 'skipped') }}
     runs-on: ubuntu-latest # Note these steps run on disposable GitHub runners, so no landrun sandboxing is needed.
     timeout-minutes: 30
     # A failure fails the run only where the caller sets `gate_cache_verification`.
