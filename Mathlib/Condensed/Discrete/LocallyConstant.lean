@@ -9,6 +9,7 @@ public import Mathlib.Condensed.Discrete.Basic
 public import Mathlib.Condensed.TopComparison
 public import Mathlib.Topology.Category.CompHausLike.SigmaComparison
 public import Mathlib.Topology.FiberPartition
+
 /-!
 
 # The sheaf of locally constant maps on `CompHausLike P`
@@ -237,9 +238,6 @@ def functor :
   ObjectProperty.lift _ (functorToPresheaves.{u, w}) (fun X ↦ by
     rw [Presheaf.isSheaf_of_iso_iff (functorToPresheavesIso P hs X)]
     exact ((TopCat.discrete.obj X).toSheafCompHausLike P hs).property)
-
-@[deprecated (since := "2026-03-20")] alias functor_obj_obj := functor_obj_obj_obj
-@[deprecated (since := "2026-03-20")] alias functor_map_hom := functor_map_hom_app
 
 /--
 `CompHausLike.LocallyConstant.functor` is naturally isomorphic to the restriction of

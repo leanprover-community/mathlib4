@@ -129,12 +129,13 @@ runs:
           --env PATH --env HOME --env CI --env TERM --env LEAN_SRC_PATH \
           --env MATHLIB_CACHE_FROM --env MATHLIB_CACHE_REPO_SCOPE \
           --env MATHLIB_CACHE_GET_URL --env MATHLIB_CACHE_BASE_URL \
-          --env MATHLIB_CACHE_UNSAFE_WINDOW --env CACHE_BIN --env CACHE_REPO \
+          --env MATHLIB_CACHE_PARALLEL_MAX --env MATHLIB_CACHE_UNSAFE_WINDOW \
+          --env CACHE_BIN --env CACHE_REPO \
           -- bash -euo pipefail -c \
           'rm -rf .lake/build/lib/lean/Mathlib; exec "${CACHE_BIN}" --repo="${CACHE_REPO}" ${MATHLIB_CACHE_UNSAFE_WINDOW:+--unsafe-window="$MATHLIB_CACHE_UNSAFE_WINDOW"} get' \
           2>&1 | tee "${log}"
         # Warmth = how much the snapshot covered HEAD: files already cached locally
-        # (just decompressed) vs downloaded from Azure. Parsed best-effort from the log.
+        # (just decompressed) vs downloaded. Parsed best-effort from the log.
         warm=$(grep -oE 'Decompressing [0-9]+ already-cached' "${log}" | grep -oE '[0-9]+' | head -1 || true)
         cold=$(grep -oE 'Attempting to download [0-9]+' "${log}" | grep -oE '[0-9]+' | head -1 || true)
-        echo "Cache warmth: ${warm:-0} already-cached (warm) / ${cold:-0} downloaded from Azure (cold)"
+        echo "Cache warmth: ${warm:-0} already-cached (warm) / ${cold:-0} downloaded (cold)"

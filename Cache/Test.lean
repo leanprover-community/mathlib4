@@ -148,18 +148,6 @@ def test_Container_parse : IO Unit := do
   assertTrue "unknown rejected"       (Container.parse? "bogus" == none)
   assertTrue "empty rejected"         (Container.parse? "" == none)
 
-/-- The Azure URL each container resolves to: `mathlib4-{name}`. These URLs go into every
-request, and changing one means re-coordinating the Azure side with every
-consumer, so they are pinned here. -/
-def test_Container_azureURL : IO Unit := do
-  IO.println "Container.azureURL:"
-  assertEq "master URL"
-    "https://lakecache.blob.core.windows.net/mathlib4-master"
-    Container.master.azureURL
-  assertEq "forks URL"
-    "https://lakecache.blob.core.windows.net/mathlib4-forks"
-    Container.forks.azureURL
-
 /-- A variable that names a read URL or a read chain arrives trimmed, and an
 empty or whitespace-only value means unset. `MATHLIB_CACHE_BASE_URL`,
 `MATHLIB_CACHE_GET_URL`, and `MATHLIB_CACHE_FROM` follow that rule. CI wires
@@ -182,27 +170,18 @@ def test_envValueNormalization : IO Unit := do
     (shown (normalizeBaseURL (some "https://cache.example.org///")))
   assertEq "a slash-only value reads as unset" "<unset>" (shown (normalizeBaseURL (some "/")))
 
-/-- The read base follows `MATHLIB_CACHE_BASE_URL` when the variable is set. Without
-it, reads address `publicCacheEndpoint`, and reads of the `master` container
-address the Azure account when `MATHLIB_CACHE_DEBUG_USE_LEGACY` selects the
-legacy read host. `getBaseURLFrom` is pure, so this test covers every branch;
-the environment-reading wrapper (`getBaseURL`) adds no logic of its own. -/
+/-- `getBaseURLFrom` returns `MATHLIB_CACHE_BASE_URL` when the variable is set, and
+`publicCacheEndpoint` otherwise. -/
 def test_getBaseURLFrom : IO Unit := do
   IO.println "getBaseURLFrom:"
   assertEq "no override → the read endpoint"
-    "https://cache.mathlib.org" (getBaseURLFrom .master none false)
-  assertEq "legacy → the storage account for master"
-    "https://lakecache.blob.core.windows.net" (getBaseURLFrom .master none true)
-  assertEq "legacy leaves forks on the read endpoint"
-    publicCacheEndpoint (getBaseURLFrom .forks none true)
+    "https://cache.mathlib.org" (getBaseURLFrom none)
   assertEq "override → the given base"
-    "https://cache.example.org" (getBaseURLFrom .master (some "https://cache.example.org") false)
-  assertEq "override wins over legacy"
-    "https://cache.example.org" (getBaseURLFrom .master (some "https://cache.example.org") true)
+    "https://cache.example.org" (getBaseURLFrom (some "https://cache.example.org"))
   -- A GitHub Actions `${{ vars.… }}` lookup yields "" while the variable is
   -- undefined, so an empty value must keep the default.
   assertEq "empty value counts as unset"
-    publicCacheEndpoint (getBaseURLFrom .master (some "") false)
+    publicCacheEndpoint (getBaseURLFrom (some ""))
 
 end ContainerModel
 
@@ -213,15 +192,11 @@ order and stops at the first hit, so both membership and ordering are part of
 the trust boundary. Key points the tests pin:
 - The fork chain leads with `master` (shared upstream deps), then `forks`
   (PR-specific files).
-- The nightly-testing repo reads the fork chain.
 -/
 def test_defaultContainersForRepo : IO Unit := do
   IO.println "defaultContainersForRepo:"
   assertTrue "canonical repo → [master]"
     (defaultContainersForRepo MATHLIBREPO == [.master])
-  assertTrue "nightly-testing repo → [master, forks]"
-    (defaultContainersForRepo NIGHTLY_TESTING_REPO == [.master, .forks])
-  assertTrue "nightly-testing is not canonical" (!isCanonicalRepo NIGHTLY_TESTING_REPO)
   assertTrue "fork repo → [master, forks]"
     (defaultContainersForRepo "alice/mathlib4" == [.master, .forks])
   assertTrue "unknown repo falls back to the fork chain"
@@ -237,14 +212,14 @@ def test_effectiveGetBases : IO Unit := do
       (← getEnvNonEmpty "MATHLIB_CACHE_FROM").isSome then
     IO.println "  skipped: MATHLIB_CACHE_GET_URL or MATHLIB_CACHE_FROM is set"
     return
-  let base ← getBaseURL .master
+  let base ← getBaseURL
   assertTrue "default chain pairs each container with its read base"
     ((← effectiveGetBases MATHLIBREPO) ==
       [(some .master, base)])
   cacheFromOverride.set (some [.forks, .master])
   assertTrue "--cache-from override keeps its order"
     ((← effectiveGetBases MATHLIBREPO) ==
-      [(some .forks, ← getBaseURL .forks), (some .master, base)])
+      [(some .forks, base), (some .master, base)])
   cacheFromOverride.set none
 
 end PerRepoAllowlist
@@ -283,9 +258,6 @@ def test_fileURL : IO Unit := do
   assertEq "forks prefixes by repo for a fork repo"
     "https://cache.example.org/mathlib4-forks/f/alice/mathlib4/abc.ltar"
     (fileURLOf (some .forks) "alice/mathlib4" base "abc.ltar")
-  assertEq "forks prefixes by repo for the nightly-testing repo"
-    "https://cache.example.org/mathlib4-forks/f/leanprover-community/mathlib4-nightly-testing/abc.ltar"
-    (fileURLOf (some .forks) NIGHTLY_TESTING_REPO base "abc.ltar")
   -- No container (user-supplied URL): the shape follows the repo — flat for the
   -- canonical repo, prefixed otherwise.
   assertEq "user URL is flat for the canonical repo"
@@ -524,13 +496,9 @@ probes with a HEAD request (`Location.markerURL?`). The marker lives at
 all artifacts for the commit were uploaded. -/
 def test_markerURL : IO Unit := do
   IO.println "Location.markerURL?:"
-  let dest (backend : UploadBackend) (container? : Option Container)
-      (putBase? : Option String) : String :=
-    ((uploadLocationFrom backend none putBase? container? "alice/mathlib4"
+  let dest (container? : Option Container) (putBase? : Option String) : String :=
+    ((uploadLocationFrom .s3 none putBase? container? "alice/mathlib4"
       (some "abc123")).toOption.bind (·.markerURL?)).getD "(unresolved)"
-  assertEq "forks marker URL under the Azure base"
-    "https://lakecache.blob.core.windows.net/mathlib4-forks/m/alice/mathlib4/abc123"
-    (dest .azure (some .forks) none)
   -- The marker lives under `/m/`, its own namespace, and is keyed by repo.
   assertEq "marker is under /m/, keyed by repo"
     "m/leanprover-community/mathlib4/deadbeef"
@@ -540,7 +508,7 @@ def test_markerURL : IO Unit := do
   -- location, rooted at `{base}/{container}` (`uploadLocationFrom`).
   assertEq "marker URL follows a rebased upload destination"
     "https://bucket.example.org/mirror/mathlib4-forks/m/alice/mathlib4/abc123"
-    (dest .s3 (some .forks) (some "https://bucket.example.org/mirror"))
+    (dest (some .forks) (some "https://bucket.example.org/mirror"))
   -- The repo segment is lowercased, so an upload and a probe for the same fork
   -- meet at one path regardless of how the owner name was capitalized.
   assertEq "marker repo is lowercased in the path"
@@ -548,11 +516,11 @@ def test_markerURL : IO Unit := do
     (((Container.forks.location "U" "Alice/Mathlib4" (some "abc123")).marker?.map
       (·.path)).getD "(no marker)")
 
-/-- Marker probes use the container's read base (`markerProbeURL`). Marker
-writes use the upload location (`Location.markerURL?`). -/
+/-- `markerProbeURL` builds the marker probe URL on the read base, and
+`Location.markerURL?` builds the marker write URL on the upload location. -/
 def test_markerProbeURL : IO Unit := do
   IO.println "markerProbeURL:"
-  let base ← getBaseURL .forks
+  let base ← getBaseURL
   assertEq "probe URL follows the read base"
     s!"{base}/mathlib4-forks/m/alice/mathlib4/abc123"
     ((← markerProbeURL .forks "alice/mathlib4" "abc123").getD "(no marker)")
@@ -616,30 +584,29 @@ def test_readLocations : IO Unit := do
       "user.email=cache-test@example.invalid", "-c", "commit.gpgsign=false",
       "commit", "--quiet", "--allow-empty", "--no-verify", "-m", "cache test"]
     let head := (← IO.runCmd "git" #["log", "-1", "--format=%H"]).trimAsciiEnd.copy
-    let masterBase ← getBaseURL .master
-    let forksBase ← getBaseURL .forks
+    let base ← getBaseURL
     let paths (locations : List Location) :=
       locations.map fun l => (l.fileURL "x.ltar", l.sha?, l.label)
     cacheFromOverride.set none
     scopeOverride.set none
     assertTrue "the default fork chain uses HEAD only for forks"
       (paths (← withSuppressedCacheOutput (readLocations "Alice/Mathlib4") dir) ==
-        [(s!"{masterBase}/mathlib4-master/f/x.ltar", none, "master"),
-         (s!"{forksBase}/mathlib4-forks/f/alice/mathlib4/{head}/x.ltar", some head, "forks")])
+        [(s!"{base}/mathlib4-master/f/x.ltar", none, "master"),
+         (s!"{base}/mathlib4-forks/f/alice/mathlib4/{head}/x.ltar", some head, "forks")])
     assertTrue "the canonical default chain contains only master"
       (paths (← withSuppressedCacheOutput (readLocations MATHLIBREPO) dir) ==
-        [(s!"{masterBase}/mathlib4-master/f/x.ltar", none, "master")])
+        [(s!"{base}/mathlib4-master/f/x.ltar", none, "master")])
     scopeOverride.set (some "abc1")
     assertTrue "an explicit scope replaces HEAD"
       (paths (← withSuppressedCacheOutput (readLocations "Alice/Mathlib4") dir) ==
-        [(s!"{masterBase}/mathlib4-master/f/x.ltar", none, "master"),
-         (s!"{forksBase}/mathlib4-forks/f/alice/mathlib4/abc1/x.ltar", some "abc1", "forks")])
+        [(s!"{base}/mathlib4-master/f/x.ltar", none, "master"),
+         (s!"{base}/mathlib4-forks/f/alice/mathlib4/abc1/x.ltar", some "abc1", "forks")])
     cacheFromOverride.set (some [.forks, .master])
     assertTrue "unsafe rounds preserve the requested container and SHA order"
       (paths (← withSuppressedCacheOutput (readLocations "Alice/Mathlib4" ["abc2", "abc3"]) dir) ==
-        [(s!"{forksBase}/mathlib4-forks/f/alice/mathlib4/abc2/x.ltar", some "abc2", "forks"),
-         (s!"{forksBase}/mathlib4-forks/f/alice/mathlib4/abc3/x.ltar", some "abc3", "forks"),
-         (s!"{masterBase}/mathlib4-master/f/x.ltar", none, "master")])
+        [(s!"{base}/mathlib4-forks/f/alice/mathlib4/abc2/x.ltar", some "abc2", "forks"),
+         (s!"{base}/mathlib4-forks/f/alice/mathlib4/abc3/x.ltar", some "abc3", "forks"),
+         (s!"{base}/mathlib4-master/f/x.ltar", none, "master")])
     cacheFromOverride.set (some [])
     assertTrue "an empty container override produces no locations"
       ((← withSuppressedCacheOutput (readLocations "alice/mathlib4") dir).isEmpty)
@@ -1110,7 +1077,6 @@ def test_parseFlagOpt : IO Unit := do
 
 /-- A boolean environment variable is on for `1` and `true`, off for `0` and
 `false`, and `ifUnset` for an absent or blank value.
-`MATHLIB_CACHE_DEBUG_USE_LEGACY` reads this way with `ifUnset := false`.
 
 `ifUnset` decides the unset case alone: a variable that defaults on still reads
 `0` as off, and a value the parser cannot read warns and falls back to
@@ -1309,8 +1275,8 @@ def test_uploadBackendParse : IO Unit := do
   assertTrue "s3 parses, case-insensitively" (UploadBackend.parse? "S3" == some .s3)
   assertTrue "an unknown name is rejected" ((UploadBackend.parse? "gcs").isNone)
 
-/-- `azureAuthFrom` resolves the azure backend's credential: the bearer
-token. A missing bearer errors naming the fix. -/
+/-- `azureAuthFrom` returns the bearer token, or an error when the token is
+missing. -/
 def test_azureAuthFrom : IO Unit := do
   IO.println "azureAuthFrom:"
   assertTrue "bearer token" (azureAuthFrom (some "bear") matches .ok "bear")
@@ -1400,12 +1366,8 @@ def test_locationNormalization : IO Unit := do
     "https://cache.example/bucket/mathlib4-forks/f/alice/mathlib4/abc1/x.ltar"
     (container.fileURL "x.ltar")
 
-/-- `uploadLocationFrom` resolves the upload location per backend. Each
-backend writes the container layout under the base that
-`MATHLIB_CACHE_PUT_BASE_URL` names. The azure backend defaults to the Azure
-account, and the s3 backend has no default. `MATHLIB_CACHE_PUT_URL` overrides
-both with one endpoint (`Location.ofEndpoint`). Each case pins the URL of a
-file, the URL of the marker, and the label. -/
+/-- `uploadLocationFrom` resolves the upload location per backend. Each case
+pins the URL of a file, the URL of the marker, and the label. -/
 def test_uploadLocationFrom : IO Unit := do
   IO.println "uploadLocationFrom:"
   let urls (r : Except String Location) : Option (String × Option String × String) :=
@@ -1441,39 +1403,30 @@ def test_uploadLocationFrom : IO Unit := do
   assertTrue "s3: a PUT_URL without a bucket path errors"
     (uploadLocationFrom .s3 (some "https://my.example.org") none none MATHLIBREPO none
       matches .error _)
-  assertTrue "azure: the Azure account for the container"
-    (urls (uploadLocationFrom .azure none none (some .forks) "alice/mathlib4" (some "sha1")) ==
-      some (s!"{azureAccountURL}/mathlib4-forks/f/alice/mathlib4/sha1/x.ltar",
-        some s!"{azureAccountURL}/mathlib4-forks/m/alice/mathlib4/sha1", "forks"))
-  -- Each backend errors when the configuration is incomplete for it: a
-  -- missing container, or a missing s3 base.
-  assertTrue "azure: no container errors"
+  assertTrue "azure: no PUT_URL errors"
     (uploadLocationFrom .azure none none none "alice/mathlib4" none
       matches .error _)
+  assertTrue "azure: a container with PUT_URL errors"
+    (uploadLocationFrom .azure (some "https://upload.example/bucket") none
+      (some .forks) MATHLIBREPO none matches .error _)
   assertTrue "s3: a put base without a container errors"
     (uploadLocationFrom .s3 none (some "https://s3.example.org/x") none MATHLIBREPO none
       matches .error _)
   assertTrue "s3: no put base errors"
     (uploadLocationFrom .s3 none none (some .forks) "alice/mathlib4" none
       matches .error _)
-  assertTrue "azure: a put base rebases the container write"
-    (urls (uploadLocationFrom .azure none (some putBase) (some .forks)
-        "Alice/Mathlib4" (some "sha1")) == forksScoped)
+  assertTrue "azure: a put base without a PUT_URL still errors"
+    (uploadLocationFrom .azure none (some putBase) none
+      "alice/mathlib4" (some "sha1") matches .error _)
   -- PUT_URL keeps the opposite empty rule from every read variable: any set
   -- value counts, an empty one included, so a misconfigured endpoint fails
   -- the upload rather than divert it to the backend's location.
   assertTrue "an empty PUT_URL still counts"
     ((uploadLocationFrom .azure (some "") none none MATHLIBREPO none).toOption.map (·.root) ==
       some "")
-  assertTrue "an empty PUT_URL does not select a configured fallback container"
-    ((uploadLocationFrom .azure (some "") (some putBase) (some .forks)
-      "alice/mathlib4" none).toOption.map (·.root) == some "")
   assertTrue "s3: an empty PUT_URL errors despite a valid fallback container"
     (uploadLocationFrom .s3 (some "") (some putBase) (some .forks)
       "alice/mathlib4" none matches .error _)
-  assertTrue "azure: an empty put base means unset"
-    ((uploadLocationFrom .azure none (some "") (some .forks) "alice/mathlib4" none).toOption.map
-      (·.root) == some Container.forks.azureURL)
   assertTrue "s3: an empty put base means unset, so it errors"
     (uploadLocationFrom .s3 none (some "") (some .forks) "alice/mathlib4" none
       matches .error _)
@@ -1483,23 +1436,23 @@ def test_uploadLocationFrom : IO Unit := do
       some "https://s3.example.org/bucket-prefix/mathlib4-forks")
 
 /-- Flat locations have no commit scope. Repo-namespaced locations take the
-supplied SHA, on either backend. -/
+supplied SHA. -/
 def test_uploadLocationScope : IO Unit := do
   IO.println "uploadLocationScope:"
-  for backend in [UploadBackend.azure, .s3] do
-    for scope? in [none, some "abc1"] do
-      for (putURL?, container?) in
-          [(some "https://upload.example/bucket", none),
-           (none, some Container.master), (none, some Container.forks)] do
-        let result := uploadLocationFrom backend putURL? (some "https://upload.example/bucket")
-          container? MATHLIBREPO scope?
-        match result with
-        | .ok location =>
-          assertTrue s!"{repr backend}: endpoint {putURL?}, \
-            container {repr container?}, scope {scope?}"
-            (location.sha? == if putURL?.isSome || container? == some Container.master
-              then none else scope?)
-        | .error error => assertTrue s!"scope test resolves: {error}" false
+  for scope? in [none, some "abc1"] do
+    for (backend, putURL?, container?) in
+        [(UploadBackend.azure, some "https://upload.example/bucket", none),
+         (.s3, some "https://upload.example/bucket", none),
+         (.s3, none, some Container.master), (.s3, none, some Container.forks)] do
+      let result := uploadLocationFrom backend putURL? (some "https://upload.example/bucket")
+        container? MATHLIBREPO scope?
+      match result with
+      | .ok location =>
+        assertTrue s!"{repr backend}: endpoint {putURL?}, \
+          container {repr container?}, scope {scope?}"
+          (location.sha? == if putURL?.isSome || container? == some Container.master
+            then none else scope?)
+      | .error error => assertTrue s!"scope test resolves: {error}" false
 
 /-- The curl arguments an s3 upload signs each request with (`s3CurlArgs`),
 and the `If-None-Match: *` guard the curl tool adds to a non-overwrite put on
@@ -1867,6 +1820,16 @@ def test_monitorCurl_carries_decomp_state : IO Unit := do
   assertTrue "the decompressed counter survives the round" (s.decomp.decompressed == 42)
   assertTrue "the decompFailed counter survives the round" (s.decomp.decompFailed == 1)
 
+/-- A curl run that exits 0 without a report for every transfer counts the missing
+reports as failures. -/
+def test_monitorCurl_counts_unreported_transfers : IO Unit := do
+  IO.println "monitorCurl counts unreported transfers as failed:"
+  let (s, _) ← withSuppressedOutput <|
+    monitorCurl #["--version"] 3 "Uploaded" "speed_upload"
+      (classifyUpload · · true)
+  assertTrue "no transfer reported" (s.done == 0 && s.success == 0)
+  assertTrue "the unreported transfers count as failed" (s.failed == 3)
+
 end DecompPipeline
 
 section TransferDiagnostics
@@ -1944,7 +1907,6 @@ end TransferDiagnostics
 def runAll : IO Unit := do
   test_Container_name
   test_Container_parse
-  test_Container_azureURL
   test_envValueNormalization
   test_getBaseURLFrom
   test_defaultContainersForRepo
@@ -2001,6 +1963,7 @@ def runAll : IO Unit := do
   test_readLocationsFrom
   test_finalizeDecomp
   test_monitorCurl_carries_decomp_state
+  test_monitorCurl_counts_unreported_transfers
   test_splitWriteOut
   test_curlGetWriteOut_real_curl
   test_transferDiagnostics
@@ -2009,9 +1972,6 @@ end Cache.Test
 
 open Cache Cache.Test Cache.Requests in
 def main : IO UInt32 := do
-  -- Resolve the legacy switch the way the tool's `main` does, so the read-base
-  -- assertions see the setting the environment names.
-  useLegacy.set (← getEnvFlag "MATHLIB_CACHE_DEBUG_USE_LEGACY" (ifUnset := false))
   runAll
   let n ← failures.get
   if n == 0 then

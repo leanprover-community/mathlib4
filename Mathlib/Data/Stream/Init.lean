@@ -6,8 +6,8 @@ Authors: Leonardo de Moura
 module
 
 public import Mathlib.Data.Stream.Defs
-public import Mathlib.Tactic.Common
 public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.Common
 
 import Mathlib.Data.Nat.Basic
 

@@ -26,11 +26,8 @@ open System (FilePath)
 /-- The full name of the main Mathlib GitHub repository. -/
 def MATHLIBREPO := "leanprover-community/mathlib4"
 
-/-- The full name of the Mathlib nightly-testing GitHub repository. -/
-def NIGHTLY_TESTING_REPO := "leanprover-community/mathlib4-nightly-testing"
-
-/-- Whether `repo` is the canonical Mathlib repo. Every other repo, nightly-testing
-included, caches into the per-commit `forks` namespace. -/
+/-- Whether `repo` is the canonical Mathlib repo. Every other repo caches into the
+per-commit `forks` namespace. -/
 def isCanonicalRepo (repo : String) : Bool :=
   repo == MATHLIBREPO
 
@@ -61,9 +58,6 @@ inductive Container where
   push build on the nightly-testing repo. -/
   | forks
   deriving DecidableEq, Repr, BEq, Inhabited
-
-/-- Base URL of the `lakecache` Azure Blob Storage account. -/
-def azureAccountURL : String := "https://lakecache.blob.core.windows.net"
 
 namespace Container
 
@@ -98,10 +92,6 @@ or an upload base that serves the `/{container}/{key}` namespace. -/
 def urlUnder (c : Container) (base : String) : String :=
   s!"{base}/{c.pathSegment}"
 
-/-- Public Azure Blob Storage base URL for a container. -/
-def azureURL (c : Container) : String :=
-  c.urlUnder azureAccountURL
-
 /--
 Whether file lookups in this container use the flat `/f/<hash>` layout, or
 namespace under `/f/<repo>/<hash>`.
@@ -125,35 +115,15 @@ def flatPath : Container → Bool
 end Container
 
 /--
-The public Mathlib cache endpoint. It serves the same `/{container}/{key}`
-namespace as the storage account and caches artifacts at its edge, so reads
-cost the project less and land nearer the reader.
+The public Mathlib cache endpoint. It serves the `/{container}/{key}`
+namespace and caches artifacts at its edge.
 -/
 def publicCacheEndpoint : String := "https://cache.mathlib.org"
 
 /--
-Whether reads of the `master` container address the Azure storage account
-instead of `publicCacheEndpoint`. `main` sets this from
-`MATHLIB_CACHE_DEBUG_USE_LEGACY` at startup. Every other container reads from
-`publicCacheEndpoint` either way.
-
-The variable is a troubleshooting fallback for the transition to the public
-endpoint, enabled in September 2026, and it should be retired together with
-direct reads from the storage account.
--/
-initialize useLegacy : IO.Ref Bool ← IO.mkRef false
-
-/--
-Default base URL for reads of container `c`: `publicCacheEndpoint`, or
-`azureAccountURL` for the `master` container when `useLegacy` is set.
--/
-def defaultGetBaseURL (c : Container) (useLegacy : Bool) : String :=
-  if useLegacy && c == .master then azureAccountURL else publicCacheEndpoint
-
-/--
-Base URL for reads of container `c`: `MATHLIB_CACHE_BASE_URL` if set,
-otherwise `defaultGetBaseURL c useLegacy`. `normalizeBaseURL` reads the value, so it
-arrives trimmed, free of trailing slashes, and unset when empty.
+Base URL for reads: `MATHLIB_CACHE_BASE_URL` if set, otherwise
+`publicCacheEndpoint`. `normalizeBaseURL` reads the value: it trims it,
+removes trailing slashes, and treats an empty value as unset.
 
 A read URL is `{base}/{pathSegment}/{key}`, the namespace every cache
 host serves. Any host that mirrors that namespace is therefore a valid base.
@@ -163,18 +133,18 @@ lookup chain. `MATHLIB_CACHE_BASE_URL` serves internal consumers, that is,
 CI and contributors to the mathlib4 repository. It keeps the lookup chain and
 rebases each container read under the given host.
 
-Only reads follow this base. Uploads and marker writes use the location of
-the selected backend (`uploadLocation`).
+The tool uses this base only for reads, and `uploadLocation` for uploads and
+marker writes.
 -/
-def getBaseURLFrom (c : Container) (envValue? : Option String) (useLegacy : Bool) : String :=
-  (normalizeBaseURL envValue?).getD (defaultGetBaseURL c useLegacy)
+def getBaseURLFrom (envValue? : Option String) : String :=
+  (normalizeBaseURL envValue?).getD publicCacheEndpoint
 
 /--
-Base URL for reads of container `c`, resolved from the environment.
+Base URL for reads, resolved from the environment.
 Written on top of the pure function above, which is separate to be testable.
 -/
-def getBaseURL (c : Container) : BaseIO String := do
-  return getBaseURLFrom c (← IO.getEnv "MATHLIB_CACHE_BASE_URL") (← useLegacy.get)
+def getBaseURL : BaseIO String := do
+  return getBaseURLFrom (← IO.getEnv "MATHLIB_CACHE_BASE_URL")
 
 /--
 Comma-separated list parser for `--cache-from=a,b,c`.
@@ -194,8 +164,6 @@ Fork chains lead with `master`. The layout is fixed per container
 whatever the `repo` is, and a fork build finds the master-built deps that make
 up the bulk of its files there; the fork's own container then supplies the
 PR-specific files at `/f/{repo}/...`.
-
-The nightly-testing repo is a fork in this model.
 -/
 def defaultContainersForRepo (repo : String) : List Container :=
   if repo == MATHLIBREPO then

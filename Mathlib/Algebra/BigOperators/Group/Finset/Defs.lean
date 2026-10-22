@@ -5,11 +5,11 @@ Authors: Johannes Hölzl
 -/
 module
 
+public meta import Mathlib.Tactic.ToDual
 public import Mathlib.Algebra.Group.Equiv.Opposite
 public import Mathlib.Algebra.Group.TypeTags.Basic
 public import Mathlib.Data.Fintype.Sets
 public import Mathlib.Data.Multiset.Bind
-public meta import Mathlib.Tactic.ToDual
 
 /-!
 # Big operators
@@ -723,12 +723,6 @@ lemma prod_bijective (e : ι → κ) (he : e.Bijective) (f : ι → M) (g : κ �
 
 @[to_additive] alias _root_.Function.Bijective.finsetProd := prod_bijective
 
-@[deprecated (since := "2026-04-08")]
-alias _root_.Function.Bijective.finset_sum := _root_.Function.Bijective.finsetSum
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias _root_.Function.Bijective.finset_prod := _root_.Function.Bijective.finsetProd
-
 /-- `Fintype.prod_equiv` is a specialization of `Finset.prod_bij` that
 automatically fills in most arguments.
 
@@ -804,13 +798,9 @@ theorem disjoint_finsetSum_left {i : Finset ι} {f : ι → Multiset α} {a : Mu
   convert! @disjoint_sum_left _ a (map f i.val)
   simp
 
-@[deprecated (since := "2026-04-08")] alias disjoint_finset_sum_left := disjoint_finsetSum_left
-
 theorem disjoint_finsetSum_right {i : Finset ι} {f : ι → Multiset α}
     {a : Multiset α} : Disjoint a (i.sum f) ↔ ∀ b ∈ i, Disjoint a (f b) := by
   simpa only [disjoint_comm] using disjoint_finsetSum_left
-
-@[deprecated (since := "2026-04-08")] alias disjoint_finset_sum_right := disjoint_finsetSum_right
 
 variable [DecidableEq α]
 
