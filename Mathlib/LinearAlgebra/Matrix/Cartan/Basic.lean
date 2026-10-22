@@ -539,10 +539,8 @@ end Matrix.IsFiniteCartan
 namespace CartanMatrix
 
 theorem isFiniteCartan_f₄ : F₄.IsFiniteCartan where
-  diag := by simp
-  offDiag_nonpos := by
-    intro i j
-    fin_cases i <;> fin_cases j <;> simp [F₄]
+  diag := F₄_diag
+  offDiag_nonpos := F₄_off_diag_nonpos
   zero_comm := by
     intro i j
     fin_cases i <;> fin_cases j <;> simp [F₄]
@@ -586,8 +584,8 @@ theorem isFiniteCartan_f₄ : F₄.IsFiniteCartan where
         fin_cases i <;> assumption
 
 theorem isFiniteCartan_g₂ : G₂.IsFiniteCartan where
-  diag := by simp
-  offDiag_nonpos := by simp [G₂]
+  diag := G₂_diag
+  offDiag_nonpos := G₂_off_diag_nonpos
   zero_comm := by simp [G₂]
   exists_posDef := by
     use ![1, 3]
