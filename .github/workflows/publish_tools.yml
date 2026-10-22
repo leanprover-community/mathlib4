@@ -74,11 +74,10 @@ jobs:
             echo "::warning::mk_all did not build; the tools artifact ships without it."
             rm -f .lake/build/bin/mk_all
           fi
-          # `runLinter`, the lint driver from Batteries, links `Batteries.Tactic.Lint`, whose
-          # oleans and C files come from the master cache container through
-          # `Mathlib/Tactic/Linter/Lint.lean`. Without it, the artifact ships without the driver
-          # and the lint step runs `lake lint`.
-          if lake exe cache get Mathlib/Tactic/Linter/Lint.lean && lake build batteries/runLinter; then
+          # `runLinter`, the lint driver from Batteries, is built from source for the same reason
+          # as `mk_all`. Without it, the artifact ships without the driver and the lint step runs
+          # `lake lint`.
+          if lake build batteries/runLinter; then
             ls .lake/packages/batteries/.lake/build/bin/runLinter
           else
             echo "::warning::runLinter did not build; the tools artifact ships without it."
