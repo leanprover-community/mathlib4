@@ -13,6 +13,15 @@ inputs:
   cache_bin:
     description: Path to the trusted `cache` binary, relative to `working_directory`.
     required: true
+outputs:
+  snapshot-sha:
+    description: The master commit of the `cache-snapshot` this job warmed from; empty when it warmed from none.
+    value: ${{ steps.resolve.outputs.sha }}
+  snapshot-ltars:
+    description: >
+      A file that lists the `.ltar` names of that snapshot, one per line, sorted; empty when the
+      job warmed from no snapshot.
+    value: ${{ steps.unpack_snapshot.outputs.list }}
 runs:
   using: composite
   steps:
@@ -84,8 +93,11 @@ runs:
           fi
         fi
 
-        echo "Resolved cache-snapshot run_id: '${run_id}' (merge-base: ${mb:-unknown})"
+        sha=""
+        [[ -n "${run_id}" ]] && sha=$(api "repos/leanprover-community/mathlib4/actions/runs/${run_id}" --jq '.head_sha')
+        echo "Resolved cache-snapshot run_id: '${run_id}' at '${sha}' (merge-base: ${mb:-unknown})"
         echo "run_id=${run_id}" >> "$GITHUB_OUTPUT"
+        echo "sha=${sha}" >> "$GITHUB_OUTPUT"
 
     - name: Warm cache from GitHub artifact
       if: ${{ steps.resolve.outputs.run_id != '' }}
@@ -93,10 +105,29 @@ runs:
       uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
       with:
         name: cache-snapshot
-        path: /home/lean/.cache/mathlib
+        path: ${{ runner.temp }}/cache-snapshot
         repository: leanprover-community/mathlib4
         run-id: ${{ steps.resolve.outputs.run_id }}
         github-token: ${{ github.token }}
+
+    # List the snapshot's `.ltar` files, then move them into the local cache. The list holds
+    # the snapshot alone: the local cache can also hold files from the runner image or from
+    # this run's `cache-staging` artifact.
+    - name: Unpack cache snapshot
+      id: unpack_snapshot
+      shell: bash
+      run: |
+        set -euo pipefail
+        dir="${RUNNER_TEMP}/cache-snapshot"
+        list="${RUNNER_TEMP}/snapshot-ltars.txt"
+        : > "${list}"
+        if [[ -d "${dir}" ]]; then
+          find "${dir}" -maxdepth 1 -type f -name '*.ltar' -printf '%f\n' | sort > "${list}"
+          find "${dir}" -maxdepth 1 -type f -name '*.ltar' -exec mv -n -t /home/lean/.cache/mathlib/ {} +
+          rm -rf "${dir}"
+        fi
+        echo "The cache snapshot holds $(wc -l < "${list}") .ltar files."
+        echo "list=${list}" >> "$GITHUB_OUTPUT"
 
     # 2. Fetch this commit's oleans from the remote cache with the trusted `cache` binary.
     #    Runs on every repo; the warm above just gives the canonical repo a local head

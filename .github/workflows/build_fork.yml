@@ -124,5 +124,6 @@ jobs:
       concurrency_group: ${{ github.workflow }}-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
       pr_branch_ref: ${{ github.event.pull_request.head.sha }}
       cache_environment: cache-upload-forks
+      incremental_lint: ${{ github.repository == 'leanprover-community/mathlib4' && github.base_ref == 'master' }}
       runs_on: pr
     secrets: inherit

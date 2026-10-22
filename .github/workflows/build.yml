@@ -46,6 +46,8 @@ jobs:
                && 'cache-upload-forks'
           || 'cache-upload-nightly-testing'
         }}
+      # pull requests from branches of this repository, not `master` or `bump/*` pushes
+      incremental_lint: ${{ github.repository == 'leanprover-community/mathlib4' && github.ref != 'refs/heads/master' && !startsWith(github.ref, 'refs/heads/bump/') }}
       # the single producer: the master `push` build
       publish_cache: ${{ github.repository == 'leanprover-community/mathlib4' && github.event_name == 'push' && github.ref == 'refs/heads/master' }}
       runs_on: pr

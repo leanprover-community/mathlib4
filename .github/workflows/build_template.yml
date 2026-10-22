@@ -31,6 +31,12 @@ on:
         # writer credentials are scoped to.
         type: string
         required: true
+      incremental_lint:
+        # Lint only the modules whose cache file is not in the master `cache-snapshot` when the
+        # snapshot's commit passed the full lint. Set by callers for pull requests into `master`.
+        type: boolean
+        required: false
+        default: false
       publish_cache:
         # On a successful build, publish this run's `.ltar` set as `cache-snapshot`.
         # Set by callers ONLY for the master-`push` build — the single producer.
@@ -503,6 +509,7 @@ jobs:
       # `get-cache`'s `cache get` decompresses them and downloads only the missing
       # files.
       - name: Get cache
+        id: get_cache
         uses: ./workflow-actions/.github/actions/get-cache
         with:
           working_directory: pr-branch
@@ -607,6 +614,99 @@ jobs:
       # `lint` runs on a build that succeeded or failed (not cancelled). On a failed
       # build it lints best-effort over whatever oleans the cache has, so partial
       # lint feedback is still reported. The problem-matcher wrap is gated to match.
+      # The lint scope. Each module whose cache file is in the snapshot has the same source and
+      # import closure as at the snapshot's commit, where the bors run passed the full lint.
+      # `runLinter` lints only the other modules when the global inputs of the linters (the
+      # simp set, instances, attributes) match the fingerprint that bors run wrote. Any doubt
+      # gives the full lint. The bors run always lints everything.
+      - name: list the module cache files
+        if: ${{ inputs.incremental_lint && always() && (needs.build.outputs.build-outcome == 'success' || needs.build.outputs.build-outcome == 'failure') }}
+        continue-on-error: true
+        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX -- bash -euxo pipefail {0}
+        run: |
+          # No `lake env`, trusted toolchain: see "stage Mathlib cache files".
+          export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
+          cd pr-branch
+          ../tools-branch/.lake/build/bin/cache hashes > .lake/module-ltars.txt
+
+      - name: find the lint fingerprint of the snapshot commit
+        id: lint_baseline
+        if: ${{ inputs.incremental_lint && steps.get_cache.outputs.snapshot-sha != '' && always() && (needs.build.outputs.build-outcome == 'success' || needs.build.outputs.build-outcome == 'failure') }}
+        continue-on-error: true
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SNAPSHOT_SHA: ${{ steps.get_cache.outputs.snapshot-sha }}
+        run: |
+          set -euo pipefail
+          run_id=$(gh api "repos/leanprover-community/mathlib4/actions/workflows/bors.yml/runs?branch=staging&event=push&status=success&head_sha=${SNAPSHOT_SHA}&per_page=1" \
+            --jq '.workflow_runs[0].id // empty')
+          echo "bors run at ${SNAPSHOT_SHA}: '${run_id}'"
+          echo "run_id=${run_id}" >> "$GITHUB_OUTPUT"
+
+      - name: download the lint fingerprint
+        if: ${{ steps.lint_baseline.outputs.run_id != '' }}
+        continue-on-error: true
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: lint-fingerprint
+          path: ${{ runner.temp }}/lint-baseline
+          repository: leanprover-community/mathlib4
+          run-id: ${{ steps.lint_baseline.outputs.run_id }}
+          github-token: ${{ github.token }}
+
+      - name: choose the lint scope
+        id: lint_scope
+        if: ${{ inputs.incremental_lint && always() && (needs.build.outputs.build-outcome == 'success' || needs.build.outputs.build-outcome == 'failure') }}
+        continue-on-error: true
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SNAPSHOT_SHA: ${{ steps.get_cache.outputs.snapshot-sha }}
+          SNAPSHOT_LTARS: ${{ steps.get_cache.outputs.snapshot-ltars }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -uo pipefail
+          cd pr-branch
+          # PR code can write `.lake/`, and this step runs outside landrun, so it writes only
+          # under the runner's temporary directory.
+          scope="${RUNNER_TEMP}/lint-scope"
+          mkdir -p "${scope}"
+          full() {
+            echo "Full lint: $1." | tee -a "$GITHUB_STEP_SUMMARY"
+            echo "only_modules=false" >> "$GITHUB_OUTPUT"
+            echo "baseline=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          }
+          [[ -n "${SNAPSHOT_SHA}" && -s "${SNAPSHOT_LTARS:-}" ]] || full "no cache snapshot"
+          [[ -s .lake/module-ltars.txt ]] || full "the module cache files could not be listed"
+          # Files that change the verdicts on every module: the suppression list, the build
+          # configuration (toolchain and dependencies, Batteries' linters included), and each
+          # module that declares an environment linter.
+          { printf '%s\n' scripts/nolints.json lakefile.lean lake-manifest.json lean-toolchain
+            grep -rlF '@[env_linter' Mathlib || true; } > "${scope}/inputs.txt"
+          # The comparison API returns at most 300 files.
+          changed_files() {
+            gh api "repos/leanprover-community/mathlib4/compare/$1...$2" \
+              --jq 'if (.files | length) < 300 then .files[].filename else error("300 files") end'
+          }
+          forward=$(changed_files "${SNAPSHOT_SHA}" "${HEAD_SHA}") \
+            || full "the comparison with ${SNAPSHOT_SHA} failed or lists 300 files"
+          backward=$(changed_files "${HEAD_SHA}" "${SNAPSHOT_SHA}") \
+            || full "the comparison with ${SNAPSHOT_SHA} failed or lists 300 files"
+          if hit=$(printf '%s\n%s\n' "${forward}" "${backward}" | grep -xFf "${scope}/inputs.txt"); then
+            full "$(head -1 <<< "${hit}") differs from ${SNAPSHOT_SHA}"
+          fi
+          awk 'NR == FNR { snapshot[$1] = 1; next }
+               !($2 in snapshot) && ($1 == "Mathlib" || index($1, "Mathlib.") == 1) { print $1 }' \
+            "${SNAPSHOT_LTARS}" .lake/module-ltars.txt > "${scope}/changed-modules.txt"
+          baseline=false
+          [[ -s "${RUNNER_TEMP}/lint-baseline/lint-fingerprint.json" ]] && baseline=true
+          echo "Lint scope: $(wc -l < "${scope}/changed-modules.txt") modules differ from ${SNAPSHOT_SHA}; its lint fingerprint is present: ${baseline}." \
+            | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "only_modules=true" >> "$GITHUB_OUTPUT"
+          echo "baseline=${baseline}" >> "$GITHUB_OUTPUT"
+
       - name: begin gh-problem-match-wrap for shake and lint steps
         if: ${{ always() && (needs.build.outputs.build-outcome == 'success' || needs.build.outputs.build-outcome == 'failure') }}
         uses: leanprover-community/gh-problem-matcher-wrap@65a654fcdf7b64ff7633bc7a558f7b46d59a27bf # 2026-06-25
@@ -628,11 +728,24 @@ jobs:
         run: |
           cd pr-branch
           set -o pipefail
+          args=(--trace)
+          # The scope chosen by "choose the lint scope", for a `runLinter` that accepts it. The
+          # bors run writes the fingerprint that later pull requests compare against.
+          runlinter=.lake/packages/batteries/scripts/runLinter.lean
+          if ${{ steps.lint_scope.outputs.only_modules == 'true' }} && grep -qF -- '--only-modules=' "${runlinter}"; then
+            args+=(--only-modules='${{ runner.temp }}/lint-scope/changed-modules.txt')
+            if ${{ steps.lint_scope.outputs.baseline == 'true' }} && grep -qF -- '--baseline-global-fingerprint=' "${runlinter}"; then
+              args+=(--baseline-global-fingerprint='${{ runner.temp }}/lint-baseline/lint-fingerprint.json')
+            fi
+          fi
+          if ${{ github.repository == 'leanprover-community/mathlib4' && github.ref == 'refs/heads/staging' }} && grep -qF -- '--write-global-fingerprint=' "${runlinter}"; then
+            args+=(--write-global-fingerprint=.lake/lint-fingerprint.json)
+          fi
           # If lint fails because the PR predates lake-lint configuration or the
           # old --trace argument-parsing behavior, ask the author to merge master.
           # We use .lake/ for the output file because landrun restricts /tmp access
           for attempt in 1 2; do
-            if timeout 10m env LEAN_ABORT_ON_PANIC=1 stdbuf -oL lake lint -- --trace 2>&1 | tee ".lake/lint_output_attempt_${attempt}.txt"; then
+            if timeout 10m env LEAN_ABORT_ON_PANIC=1 stdbuf -oL lake lint -- "${args[@]}" 2>&1 | tee ".lake/lint_output_attempt_${attempt}.txt"; then
               break
             fi
             status=${PIPESTATUS[0]}
@@ -659,6 +772,14 @@ jobs:
             fi
             exit $status
           done
+
+      - name: upload the lint fingerprint
+        if: ${{ github.repository == 'leanprover-community/mathlib4' && github.ref == 'refs/heads/staging' && steps.lint.outcome == 'success' }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: lint-fingerprint
+          path: pr-branch/.lake/lint-fingerprint.json
+          if-no-files-found: error
 
       - name: end gh-problem-match-wrap for shake and lint steps
         if: ${{ always() && (needs.build.outputs.build-outcome == 'success' || needs.build.outputs.build-outcome == 'failure') }}
