@@ -5,11 +5,12 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Geometry.Manifold.Algebra.Structures
 public import Mathlib.Geometry.Manifold.BumpFunction
 public import Mathlib.Geometry.Manifold.VectorBundle.ContMDiffSection
 public import Mathlib.Topology.MetricSpace.PartitionOfUnity
-public import Mathlib.Topology.ShrinkingLemma
+
+import Mathlib.Geometry.Manifold.Algebra.Structures
+import Mathlib.Topology.ShrinkingLemma
 
 /-!
 # Smooth partition of unity
@@ -137,6 +138,7 @@ namespace SmoothPartitionOfUnity
 
 variable {s : Set M} (f : SmoothPartitionOfUnity ι I M s) {n : ℕ∞}
 
+@[macro_inline]
 instance {s : Set M} : FunLike (SmoothPartitionOfUnity ι I M s) ι C^∞⟮I, M; 𝓘(ℝ), ℝ⟯ where
   coe := toFun
   coe_injective f g h := by cases f; cases g; congr
@@ -726,9 +728,7 @@ theorem IsOpen.exists_contMDiff_support_eq {s : Set M} (hs : IsOpen s) :
         simp [(chartAt H c).left_inv (hf c Hx), hx, (chartAt H c).map_source (hf c Hx)]
       apply finsum_pos (fun c ↦ h''g c x) B
       apply (f.locallyFinite.point_finite x).subset
-      apply compl_subset_compl.2
-      rintro c (hc : f c x = 0)
-      simpa only [mul_eq_zero] using! Or.inl hc
+      exact fun c hc h ↦ hc <| by simp [h]
     · apply finsum_eq_zero_of_forall_eq_zero
       intro c
       by_cases Hx : x ∈ tsupport (f c)

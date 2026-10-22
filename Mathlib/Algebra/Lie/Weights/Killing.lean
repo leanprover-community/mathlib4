@@ -5,12 +5,13 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Lie.Derivation.Killing
 public import Mathlib.Algebra.Lie.Killing
 public import Mathlib.Algebra.Lie.Sl2
 public import Mathlib.Algebra.Lie.Weights.Chain
-public import Mathlib.LinearAlgebra.Eigenspace.Semisimple
-public import Mathlib.LinearAlgebra.JordanChevalley
+
+import Mathlib.Algebra.Lie.Derivation.Killing
+import Mathlib.LinearAlgebra.Eigenspace.Semisimple
+import Mathlib.LinearAlgebra.JordanChevalley
 
 /-!
 # Roots of Lie algebras with non-degenerate Killing forms
@@ -160,7 +161,7 @@ variable [FiniteDimensional K L] [IsKilling K L]
 instance : InvolutiveNeg (Weight K H L) where
   neg α := ⟨-α, by
     by_cases hα : α.IsZero
-    · convert! α.genWeightSpace_ne_bot; rw [hα, neg_zero]
+    · convert α.genWeightSpace_ne_bot; rw [hα, neg_zero]
     · intro e
       obtain ⟨x, hx, x_ne0⟩ := α.exists_ne_zero
       have := mem_ker_killingForm_of_mem_rootSpace_of_forall_rootSpace_neg K L H hx
@@ -546,7 +547,7 @@ lemma traceForm_eq_zero_of_mem_ker_of_mem_span_coroot {α : Weight K H L} {x y :
       rwa [hyp]
     have : α.ker = β.ker := by
       rw [← orthogonal_span_coroot_eq_ker α, hyp, orthogonal_span_coroot_eq_ker]
-    suffices (α : H →ₗ[K] K) = β by ext x; simpa using LinearMap.congr_fun this x
+    suffices (α : H →ₗ[K] K) = β by ext x; simpa using congr($this x)
     apply Module.Dual.eq_of_ker_eq_of_apply_eq (coroot α) this
     · rw [Weight.toLinear_apply, root_apply_coroot hα, hyp, Weight.toLinear_apply,
         root_apply_coroot hβ]
@@ -573,7 +574,7 @@ lemma exists_isSl2Triple_of_weight_isNonZero {α : Weight K H L} (hα : α.IsNon
       mul_one, two_smul, two_smul]
   refine ⟨⁅e, f⁆, e, f, ⟨fun contra ↦ ?_, rfl, hef, ?_⟩, heα, Submodule.smul_mem _ _ hfα⟩
   · rw [contra] at hef
-    have : IsAddTorsionFree L := .of_isTorsionFree K L
+    have : HasUniqueDiv L := .of_isTorsionFree K L
     simp only [zero_lie, eq_comm (a := (0 : L)), smul_eq_zero, OfNat.ofNat_ne_zero, false_or] at hef
     contradiction
   · have : ⁅⁅e, f'⁆, f'⁆ = - α h • f' := lie_eq_smul_of_mem_rootSpace hfα h
@@ -592,7 +593,7 @@ lemma _root_.IsSl2Triple.h_eq_coroot {α : Weight K H L} (hα : α.IsNonZero)
     exact smul_left_injective K ht.e_ne_zero this.symm
   suffices ∃ s : K, s • h = coroot α by
     obtain ⟨s, hs⟩ := this
-    replace this : s = 1 := by simpa [root_apply_coroot hα, key] using congr_arg α hs
+    replace this : s = 1 := by simpa [root_apply_coroot hα, key] using congr(α $hs)
     rwa [this, one_smul] at hs
   set α' := (cartanEquivDual H).symm α with hα'
   have h_eq : h = killingForm K L e f • α' := by
