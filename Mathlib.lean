@@ -7762,6 +7762,7 @@ public import Mathlib.Tactic.Matrix.ListMatrix
 public import Mathlib.Tactic.Matrix.MulExpand
 public import Mathlib.Tactic.Matrix.OfLists
 public import Mathlib.Tactic.Matrix.Parsing
+public import Mathlib.Tactic.Matrix.View
 public import Mathlib.Tactic.Measurability
 public import Mathlib.Tactic.Measurability.Init
 public import Mathlib.Tactic.MinImports

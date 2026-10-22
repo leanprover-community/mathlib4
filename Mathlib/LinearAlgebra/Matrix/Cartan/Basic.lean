@@ -456,19 +456,19 @@ theorem not_isSimplyLaced_F₄ : ¬ IsSimplyLaced F₄ := by decide
 theorem not_isSimplyLaced_G₂ : ¬ IsSimplyLaced G₂ := by decide
 
 theorem isIndecomposable_E_six : (E 6).IsIndecomposable := by
-  simp only [E_six_eq, reduceIsIndecomposable]
+  simp only [reduceIsIndecomposable]
 
 theorem isIndecomposable_E_seven : (E 7).IsIndecomposable := by
-  simp only [E_seven_eq, reduceIsIndecomposable]
+  simp only [reduceIsIndecomposable]
 
 theorem isIndecomposable_E_eight : (E 8).IsIndecomposable := by
-  simp only [E_eight_eq, reduceIsIndecomposable]
+  simp only [reduceIsIndecomposable]
 
 theorem isIndecomposable_F₄ : F₄.IsIndecomposable := by
-  simp only [F₄, reduceIsIndecomposable]
+  simp only [reduceIsIndecomposable]
 
 theorem isIndecomposable_G₂ : G₂.IsIndecomposable := by
-  simp only [G₂, reduceIsIndecomposable]
+  simp only [reduceIsIndecomposable]
 
 end Properties
 
