@@ -6,8 +6,8 @@ Authors: Pablo Cohen
 module
 
 public import Mathlib.RingTheory.TwoSidedIdeal.Lattice
-public import Mathlib.Topology.Algebra.Ring.Basic
 public import Mathlib.Topology.Algebra.IsOpenUnits
+public import Mathlib.Topology.Algebra.Ring.Basic
 
 /-!
 # Closures of two-sided ideals in topological rings
