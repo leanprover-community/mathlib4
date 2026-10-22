@@ -518,7 +518,7 @@ theorem linearEquiv_of_ne_zero [IsSemisimpleModule R M] [IsSimpleModule R N]
 
 theorem _root_.IsSimpleModule.nonempty_linearEquiv_iff_exists_ne_zero [IsSimpleModule R M]
     [IsSimpleModule R N] : Nonempty (M ≃ₗ[R] N) ↔ ∃ f : M →ₗ[R] N, f ≠ 0 := by
-  refine Iff.intro (fun ⟨h⟩ => ⟨h, ?_⟩) fun ⟨f, hf⟩ => ?_
+  refine ⟨fun ⟨h⟩ => ⟨h, ?_⟩, fun ⟨f, hf⟩ => ?_⟩
   · have : Nontrivial M := IsSimpleModule.nontrivial R M
     exact LinearMap.ne_zero_of_injective h.injective
   exact ⟨LinearEquiv.ofBijective _ (bijective_of_ne_zero hf)⟩
