@@ -12,7 +12,7 @@ public import Mathlib.Analysis.Normed.Unbundled.AlgebraNorm
 /-!
 # The Gelfand radius as an algebra norm
 
-This file uses the Gelfand radius to define an algebra norm on finite extension of a normed field.
+This file uses the Gelfand radius to define an algebra norm on a finite extension of a normed field.
 
 ## Main definitions
 
@@ -25,14 +25,7 @@ This file uses the Gelfand radius to define an algebra norm on finite extension 
 * `gelfandRadiusNorm_algebraMap`: the Gelfand radius norm is invariant under algebra maps.
 -/
 
-
-/-!
-# The Gelfand radius as an algebra norm
-
-This file uses the Gelfand radius to define an algebra norm on finite extension of a normed field.
--/
-
-@[expose] public section
+public section
 
 section matrices
 
@@ -61,23 +54,6 @@ theorem Matrix.linfty_opNorm_add_le_card_mul_max
     (M N : Matrix α β γ) : ‖M + N‖ ≤ Fintype.card β * max ‖M‖ ‖N‖ := by
   simpa using linfty_opNorm_sum_le_card_mul (Bool.rec N M) Finset.univ _ (by simp) (by simp)
 
--- PRed
-theorem Matrix.gelfandRadius_blockDiagonal {R m n : Type*} (M : n → Matrix m m R)
-    [DecidableEq m] [DecidableEq n] [Fintype m] [Fintype n] [NormedCommRing R] :
-    gelfandRadius (Matrix.blockDiagonal M) = ⨆ i, gelfandRadius (M i) := by
-  rcases isEmpty_or_nonempty n
-  · simp [Subsingleton.elim M 0]
-  let s : Finset n := Finset.univ
-  have hs : s.Nonempty := Finset.univ_nonempty
-  rw [← Finset.sup'_univ_eq_ciSup]
-  refine tendsto_nhds_unique_of_forall (tendsto_gelfandRadius (blockDiagonal M))
-    (Filter.Tendsto.finset_sup'_nhds_apply hs fun i hi ↦ tendsto_gelfandRadius (M i)) fun k ↦ ?_
-  have h (x y : NNReal) : max (x : ℝ) y ^ (k : ℝ)⁻¹ = max (x ^ (k : ℝ)⁻¹) (y ^ (k : ℝ)⁻¹) := by
-    simp [Real.rpow_max]
-  rw [← blockDiagonal_pow, linfty_opNorm_blockDiagonal, Pi.pow_def, Pi.norm_def, ← s.sup'_eq_sup hs,
-    s.apply_sup'_eq_sup'_comp hs (f := fun x ↦ ‖M x ^ k‖₊) (fun x ↦ (x : ℝ) ^ (k : ℝ)⁻¹) h]
-  simp [Function.comp_def]
-
 end matrices
 
 variable (K L M : Type*) [NormedField K] [Field L] [Field M] [Algebra K L] [Algebra K M]
@@ -103,7 +79,7 @@ noncomputable def gelfandRadiusNorm : AlgebraNorm K L where
 
 variable {L} in
 theorem gelfandRadiusNorm_def (x : L) :
-    gelfandRadiusNorm K L x = gelfandRadius (Algebra.leftMulMatrix (Module.finBasis K L) x) :=
+    gelfandRadiusNorm K L x = gelfandRadius (Algebra.leftMulMatrix (Module.finBasis K L) x) := by
   rfl
 
 @[simp]
@@ -116,6 +92,7 @@ variable {K} in
 theorem gelfandRadiusNorm_eq_norm (x : K) : gelfandRadiusNorm K K x = ‖x‖ := by
   simpa using map_smul_eq_mul (gelfandRadiusNorm K K) x 1
 
+/-- The Gelfand radius norm is power-multiplicative. -/
 theorem isPowMul_gelfandRadiusNorm : IsPowMul (gelfandRadiusNorm K L) := by
   have : NeZero (Module.finrank K L) := ⟨Module.finrank_pos.ne'⟩
   intro x k hk
@@ -130,8 +107,10 @@ theorem Module.Basis.gelfandRadiusNorm_apply
     Matrix.gelfandRadius_mul_comm, linearMap_toMatrix_mul_basis_toMatrix]
 
 variable {L} in
+/-- The Gelfand radius norm is invariant under algebra maps. -/
 @[simp]
-theorem gelfandRadiusNorm_algebraMap (x : L) :
+theorem gelfandRadiusNorm_algebraMap (M : Type*) [Field M] [Algebra K M] [Algebra L M]
+    [IsScalarTower K L M] [FiniteDimensional K M] (x : L) :
     gelfandRadiusNorm K M (algebraMap L M x) = gelfandRadiusNorm K L x := by
   have : FiniteDimensional L M := .of_restrictScalars_finite K L M
   have : NeZero (Module.finrank L M) := ⟨Module.finrank_pos.ne'⟩
@@ -139,6 +118,15 @@ theorem gelfandRadiusNorm_algebraMap (x : L) :
   let bLM := Module.finBasis L M
   rw [(bKL.smulTower bLM).gelfandRadiusNorm_apply, Algebra.smulTower_leftMulMatrix_algebraMap,
     Matrix.gelfandRadius_blockDiagonal, ciSup_const, bKL.gelfandRadiusNorm_apply]
+
+variable {K L} in
+/-- The Gelfand radius norm is invariant under algebra homomorphisms. -/
+@[simp]
+theorem gelfandRadiusNorm_map {M : Type*} [Field M] [Algebra K M] [FiniteDimensional K M]
+    {F : Type*} [FunLike F L M] [AlgHomClass F K L M] (f : F) (x : L) :
+    gelfandRadiusNorm K M (f x) = gelfandRadiusNorm K L x :=
+  let := (AlgHom.ofClass f).toAlgebra
+  gelfandRadiusNorm_algebraMap K M x
 
 open Filter Topology in
 theorem isNonarchimedean_gelfandRadiusNorm [IsUltrametricDist K] :
