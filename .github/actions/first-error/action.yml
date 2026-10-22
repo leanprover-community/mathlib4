@@ -41,13 +41,18 @@ runs:
         file, root, stop, out = (os.environ[k] for k in ('FILE', 'ROOT', 'STOP', 'OUT'))
         LEAN_FILE = re.compile(r"[A-Za-z0-9_./'-]{1,200}\.lean")
 
+        if os.path.dirname(os.path.normpath(file)) != os.path.normpath(root):
+            raise SystemExit(f"{file} is not directly inside {root}")
+
         def read():
-            real = os.path.realpath(file)
-            if os.path.commonpath([real, os.path.realpath(root)]) != os.path.realpath(root):
-                return None
-            if not stat.S_ISREG(os.lstat(real).st_mode):
-                return None
-            fd = os.open(real, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+            # Opened relative to the directory, without following symbolic links, so that no
+            # path that PR code can change between a check and the open is resolved again.
+            dfd = os.open(root, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+            try:
+                fd = os.open(os.path.basename(file), os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK,
+                             dir_fd=dfd)
+            finally:
+                os.close(dfd)
             with os.fdopen(fd) as f:
                 if not stat.S_ISREG(os.fstat(f.fileno()).st_mode):
                     return None
@@ -67,7 +72,7 @@ runs:
             if os.path.lexists(file):
                 try:
                     found = read()
-                except (OSError, ValueError) as e:
+                except (OSError, ValueError, RecursionError) as e:
                     print(f"Could not read {file}: {e}")
                 if found is None:
                     break
