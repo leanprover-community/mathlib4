@@ -594,10 +594,11 @@ such as in expressions like `Set.Injective A.row` and `Set.range A.row`.
 this is now called `Matrix.replicateRow`)
 
 This is available in bundled forms as:
+* `Matrix.rowEquiv`
 * `Matrix.rowAddEquiv`
 * `Matrix.rowLinearEquiv`
 -/
-def row : Matrix m n α ≃ (m → n → α) := .refl _
+def row (A : Matrix m n α) : m → n → α := A
 
 /-- For an `m × n` `α`-matrix `A`, `A.col j` is the `j`th column of `A` as a vector in `m → α`.
 `A.col` is defeq to `Aᵀ`, but refers to the 'column function' of `A`
@@ -608,10 +609,11 @@ and `Set.range A.col`.
 this is now called `Matrix.replicateCol`)
 
 This is available in bundled forms as:
+* `Matrix.colEquiv`
 * `Matrix.colAddEquiv`
 * `Matrix.colLinearEquiv`
 -/
-def col : Matrix m n α ≃ (n → m → α) := .functionSwap ..
+def col (A : Matrix m n α) : n → m → α := Aᵀ
 
 lemma row_eq_self (A : Matrix m n α) : A.row = of.symm A := rfl
 
@@ -640,10 +642,29 @@ lemma col_apply (A : Matrix m n α) (i : n) (j : m) : A.col i j = A j i := rfl
 lemma col_apply' (A : Matrix m n α) (i : n) : A.col i = fun j ↦ A j i := rfl
 
 section
+variable (m n α)
 
-theorem row_injective : (row : Matrix m n α → _).Injective := row.injective
+/-- `Matrix.row` as an `Equiv` -/
+def rowEquiv : Matrix m n α ≃ (m → n → α) := .refl _
 
-theorem col_injective : (col : Matrix m n α → _).Injective := col.injective
+/-- `Matrix.col` as an `Equiv` -/
+def colEquiv : Matrix m n α ≃ (n → m → α) := .functionSwap ..
+
+@[simp] theorem coe_rowEquiv : ↑(rowEquiv m n α) = row := rfl
+
+@[simp] theorem coe_colEquiv : ↑(colEquiv m n α) = col := rfl
+
+@[simp] theorem symm_rowEquiv : (rowEquiv m n α).symm = of := rfl
+
+theorem symm_of : of.symm = rowEquiv m n α := rfl
+
+end
+
+section
+
+theorem row_injective : (row : Matrix m n α → _).Injective := rowEquiv m n α |>.injective
+
+theorem col_injective : (col : Matrix m n α → _).Injective := colEquiv m n α |>.injective
 
 theorem row_inj {A B : Matrix m n α} : A.row = B.row ↔ A = B := row_injective.eq_iff
 
