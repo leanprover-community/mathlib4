@@ -9,9 +9,6 @@ public import Mathlib.Analysis.InnerProductSpace.Basic
 
 import Mathlib.Analysis.SpecificLimits.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Existence of minimizers (Hilbert projection theorem)
 

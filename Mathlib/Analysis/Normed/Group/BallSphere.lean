@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Analysis.Normed.Group.Uniform
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Negation on spheres and balls
 

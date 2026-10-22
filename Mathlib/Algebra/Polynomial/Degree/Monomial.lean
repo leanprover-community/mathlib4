@@ -9,9 +9,6 @@ public import Mathlib.Algebra.Polynomial.Degree.Defs
 
 import Mathlib.Algebra.Polynomial.Monomial
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Degree of univariate monomials
 -/

@@ -7,9 +7,6 @@ module
 
 public import Mathlib.RingTheory.Artinian.Module
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Modules of finite length
 

@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Algebra.Lie.Abelian
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Tensor products of Lie modules
 
