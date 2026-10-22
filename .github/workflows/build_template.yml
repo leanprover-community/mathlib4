@@ -297,6 +297,10 @@ jobs:
           # Clean the staging directory first, though it should be empty at this point, to be safe
           rm -rf cache-staging
           mkdir -p cache-staging
+          # The CPUs and memory that the stage step below packs with.
+          echo "nproc: $(nproc); online CPUs: $(getconf _NPROCESSORS_ONLN)"
+          echo "cgroup cpu.max: $(cat /sys/fs/cgroup/cpu.max 2>/dev/null || echo unknown)"
+          free -m
 
       - name: stage Mathlib cache files
         if: ${{ always() && (steps.build.outcome == 'success' || steps.build.outcome == 'failure' || steps.build.outcome == 'cancelled') }}
@@ -308,7 +312,9 @@ jobs:
           # `lean`/`leantar` (see setup-build-env).
           export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
           cd pr-branch
-          ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage
+          # `time -v` reports the user, system and elapsed time and the file system inputs of
+          # the packing.
+          /usr/bin/time -v ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage
 
       - name: stage Archive cache files
         if: ${{ steps.archive.outcome == 'success' }}
