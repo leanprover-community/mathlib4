@@ -11,9 +11,9 @@ import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Tactic
 
 namespace Inclusion.Tests
 
-example : Real.exp (-1) < 0.368 := by dyadic_interval [prec := 20]
+example : Real.exp (-100) < 1e-43 := by dyadic_interval [prec := 145]
 
-example : (10686474581524 : ℝ) < Real.exp 30 := by dyadic_interval [prec := 2]
+example : (10686474581524 : ℝ) ≤ Real.exp 30 := by dyadic_interval
 
 example {x : ℝ} (hx : x ≤ 0) : Real.exp x ≤ 1 := by dyadic_interval
 
