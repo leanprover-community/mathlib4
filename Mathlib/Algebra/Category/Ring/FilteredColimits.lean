@@ -363,8 +363,8 @@ instance forget₂Ring_preservesFilteredColimits :
 instance forget_preservesFilteredColimits : PreservesFilteredColimits (forget CommRingCat.{u}) :=
   Limits.comp_preservesFilteredColimits (forget₂ CommRingCat RingCat) (forget RingCat.{u})
 
-instance forget_reflectsFilteredColimits : ReflectsFilteredColimits (forget CommRingCat.{u}) where
-  reflects_filtered_colimits _ := {reflectsColimit := reflectsColimit_of_reflectsIsomorphisms _ _}
+instance forget_reflectsFilteredColimits : ReflectsFilteredColimits (forget CommRingCat.{u}) :=
+  ⟨fun _ ↦ reflectsColimitsOfShape_of_reflectsIsomorphisms⟩
 
 omit [IsFiltered J] in
 protected lemma nontrivial {F : J ⥤ CommRingCat.{v}} [IsFilteredOrEmpty J]
