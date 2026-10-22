@@ -19,7 +19,7 @@ on:
         type: boolean
         default: false # We shouldn't need this job in typical experiments
       revalidate:
-        description: Run the test, lint and cache verification jobs? Turn off to run the master push lane.
+        description: Run the test, lint and cache verification jobs? Turn off to run the job set of a bors master push.
         required: false
         type: boolean
         default: true

@@ -48,9 +48,10 @@ jobs:
         }}
       # the single producer: the master `push` build
       publish_cache: ${{ github.repository == 'leanprover-community/mathlib4' && github.event_name == 'push' && github.ref == 'refs/heads/master' }}
-      # A master push lands the tree that the bors staging build of the same commit validated.
-      # It publishes the cache and the summary, and does not run the checks again.
-      revalidate: ${{ !(github.repository == 'leanprover-community/mathlib4' && github.event_name == 'push' && github.ref == 'refs/heads/master') }}
-      run_post_ci: ${{ !(github.repository == 'leanprover-community/mathlib4' && github.event_name == 'push' && github.ref == 'refs/heads/master') }}
+      # A bors push to master lands the tree that the bors staging build of the same commit
+      # validated. It publishes the cache and the summary, and does not run the checks again.
+      # A push by anyone else runs every check.
+      revalidate: ${{ !(github.repository == 'leanprover-community/mathlib4' && github.event_name == 'push' && github.ref == 'refs/heads/master' && github.actor == 'mathlib-bors[bot]') }}
+      run_post_ci: ${{ !(github.repository == 'leanprover-community/mathlib4' && github.event_name == 'push' && github.ref == 'refs/heads/master' && github.actor == 'mathlib-bors[bot]') }}
       runs_on: pr
     secrets: inherit
