@@ -20,7 +20,7 @@ public section
 
 open Filter
 
-open Topology
+open scoped Topology
 
 variable {X Y : Type*} [TopologicalSpace X]
 

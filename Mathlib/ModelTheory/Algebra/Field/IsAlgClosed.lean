@@ -5,7 +5,6 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Data.Nat.PrimeFin
 public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 public import Mathlib.FieldTheory.IsAlgClosed.Classification
 public import Mathlib.ModelTheory.Algebra.Field.CharP
@@ -61,7 +60,6 @@ for `X`. -/
 noncomputable def genericMonicPoly (n : ℕ) : FreeCommRing (Fin (n + 1)) :=
   of (Fin.last _) ^ n + ∑ i : Fin n, of i.castSucc * of (Fin.last _) ^ (i : ℕ)
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem lift_genericMonicPoly [CommRing K] [Nontrivial K] {n : ℕ} (v : Fin (n + 1) → K) :
     FreeCommRing.lift v (genericMonicPoly n) =
     (((monicEquivDegreeLT n).trans (degreeLTEquiv K n).toEquiv).symm (v ∘ Fin.castSucc)).1.eval
@@ -214,7 +212,8 @@ theorem finite_ACF_prime_not_realize_of_ACF_zero_realize
     simp only [s, Finset.mem_biUnion, Finset.mem_attach, true_and,
       Subtype.exists, not_exists] at hpψ
     exact (f ψ (hT0 hψ)).2 p (hpψ _ hψ)
-  refine Set.Finite.subset (Finset.finite_toSet s) (Set.compl_subset_comm.2 ?_)
+  refine Set.Finite.subset (Finset.finite_toSet s)
+    ((Set.compl_subset_comm (s := {p : Nat.Primes | Theory.ACF ↑p ⊨ᵇ φ})).2 ?_)
   intro p hp
   exact Theory.models_of_models_theory (fun ψ hψ => hs p ψ hψ hp) h
 

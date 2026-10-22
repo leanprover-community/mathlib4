@@ -5,8 +5,8 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.ModelTheory.ElementarySubstructures
 public import Mathlib.CategoryTheory.ConcreteCategory.Bundled
+public import Mathlib.ModelTheory.ElementarySubstructures
 
 /-!
 # Bundled First-Order Structures
@@ -34,7 +34,7 @@ protected instance CategoryTheory.Bundled.structure {L : FirstOrder.Language.{u,
     (M : CategoryTheory.Bundled.{w} L.Structure) : L.Structure M :=
   M.str
 
-open FirstOrder Cardinal
+open FirstOrder
 
 namespace Equiv
 

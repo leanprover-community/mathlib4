@@ -5,8 +5,8 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.Star.Basic
 public import Mathlib.Algebra.FreeAlgebra
+public import Mathlib.Algebra.Star.Basic
 
 /-!
 # A \*-algebra structure on the free algebra.

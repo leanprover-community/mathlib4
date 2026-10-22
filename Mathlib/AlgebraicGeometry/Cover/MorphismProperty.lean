@@ -6,7 +6,6 @@ Authors: Christian Merten, Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.Sites.MorphismProperty
-public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
 # Covers of schemes
@@ -30,7 +29,7 @@ immersions can be used to deduce these assumptions in the general case.
 
 noncomputable section
 
-open TopologicalSpace CategoryTheory Opposite CategoryTheory.Limits
+open CategoryTheory CategoryTheory.Limits
 
 universe v v₁ v₂ u
 
@@ -102,7 +101,7 @@ def Cover.mkOfCovers (J : Type*) (obj : J → Scheme.{u}) (map : (j : J) → obj
   f := map
   mem₀ := by
     simp_rw [presieve₀_mem_precoverage_iff, Set.mem_range]
-    grind
+    exact ⟨covers, map_prop⟩
 
 /-- An isomorphism `X ⟶ Y` is a `P`-cover of `Y`. -/
 @[simps! I₀ X f]

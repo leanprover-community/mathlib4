@@ -5,7 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Logic.Equiv.Option
+public meta import Aesop
+public import Mathlib.Data.Subtype
+
+import Mathlib.Util.CompileInductive
 
 /-!
 # Extending a function from the complement of a singleton

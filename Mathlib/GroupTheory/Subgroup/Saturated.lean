@@ -38,13 +38,6 @@ theorem powSaturated_iff_npow {H : Submonoid G} :
 
 end Submonoid
 
-@[deprecated (since := "2026-03-03")] alias Subgroup.Saturated := Submonoid.PowSaturated
-@[deprecated (since := "2026-03-03")] alias AddSubgroup.Saturated := AddSubmonoid.NSMulSaturated
-@[deprecated (since := "2026-03-03")]
-alias Subgroup.saturated_iff_npow := Submonoid.powSaturated_iff_npow
-@[deprecated (since := "2026-03-03")]
-alias AddSubgroup.saturated_iff_nsmul := AddSubmonoid.nsmulSaturated_iff_nsmul
-
 namespace Subgroup
 
 variable {G : Type*} [Group G]
@@ -63,5 +56,3 @@ theorem ker_saturated {A₁ A₂ : Type*} [AddGroup A₁] [AddMonoid A₂] [IsAd
     (f : A₁ →+ A₂) : f.ker.NSMulSaturated := by simp [NSMulSaturated, or_comm]
 
 end AddSubmonoid
-
-@[deprecated (since := "2026-03-03")] alias AddSubgroup.ker_saturated := AddSubmonoid.ker_saturated

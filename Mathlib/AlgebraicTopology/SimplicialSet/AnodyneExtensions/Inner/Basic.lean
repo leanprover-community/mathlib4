@@ -7,8 +7,8 @@ module
 
 public import Mathlib.AlgebraicTopology.Quasicategory.InnerFibration
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Basic
-public import Mathlib.AlgebraicTopology.SimplicialSet.Presentable
-public import Mathlib.CategoryTheory.SmallObject.Basic
+
+import Mathlib.AlgebraicTopology.SimplicialSet.Presentable
 
 /-!
 # Inner anodyne extensions
@@ -29,7 +29,9 @@ public section
 
 universe u
 
-open CategoryTheory HomotopicalAlgebra Simplicial
+open CategoryTheory HomotopicalAlgebra
+
+open scoped Simplicial
 
 namespace SSet
 

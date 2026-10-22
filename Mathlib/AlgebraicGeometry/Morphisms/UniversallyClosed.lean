@@ -6,8 +6,8 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
-public import Mathlib.AlgebraicGeometry.PullbackCarrier
-public import Mathlib.Topology.LocalAtTarget
+
+import Mathlib.AlgebraicGeometry.PullbackCarrier
 
 /-!
 # Universally closed morphism
@@ -26,7 +26,7 @@ public section
 
 noncomputable section
 
-open CategoryTheory CategoryTheory.Limits Opposite TopologicalSpace
+open CategoryTheory CategoryTheory.Limits TopologicalSpace
 
 universe v u
 

@@ -29,7 +29,7 @@ rectangular box, box partition
 
 noncomputable section
 
-open Finset Function ENNReal NNReal Set
+open Finset Function NNReal Set
 
 namespace BoxIntegral
 
@@ -47,7 +47,7 @@ structure TaggedPrepartition (I : Box ι) extends Prepartition I where
 
 namespace TaggedPrepartition
 
-variable {I J J₁ J₂ : Box ι} (π : TaggedPrepartition I) {x : ι → ℝ}
+variable {I J : Box ι} (π : TaggedPrepartition I) {x : ι → ℝ}
 
 instance : Membership (Box ι) (TaggedPrepartition I) :=
   ⟨fun π J => J ∈ π.boxes⟩

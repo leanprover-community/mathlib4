@@ -5,8 +5,10 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.NumberTheory.ArithmeticFunction.Misc
+
+import Mathlib.Algebra.Order.Ring.Abs
+
 /-!
 # The Möbius function and Möbius inversion
 
@@ -48,6 +50,7 @@ open scoped zeta
 /-- `μ` is the Möbius function. If `n` is squarefree with an even number of distinct prime factors,
   `μ n = 1`. If `n` is squarefree with an odd number of distinct prime factors, `μ n = -1`.
   If `n` is not squarefree, `μ n = 0`. -/
+@[oeis A008683 "the sequence skips `n = 0`"]
 def moebius : ArithmeticFunction ℤ :=
   ⟨fun n => if Squarefree n then (-1) ^ cardFactors n else 0, by simp⟩
 
@@ -151,8 +154,6 @@ theorem IsMultiplicative.prodPrimeFactors_one_sub_of_squarefree [CommRing R]
     ring
   · rw [(isMultiplicative_moebius.intCast.pmul hf).prodPrimeFactors_one_add_of_squarefree hn]
     simp_rw [pmul_apply, intCoe_apply]
-
-open UniqueFactorizationMonoid
 
 @[simp]
 theorem moebius_mul_coe_zeta : (μ * ζ : ArithmeticFunction ℤ) = 1 := by

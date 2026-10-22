@@ -5,9 +5,11 @@ Authors: Rémi Bottinelli
 -/
 module
 
-public import Mathlib.Data.Set.Function
-public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Topology.EMetricSpace.VariationOnFromTo
+
+import Mathlib.Algebra.Order.BigOperators.Expect
+import Mathlib.Analysis.Real.Sqrt
+import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-!
 # Constant speed
@@ -47,7 +49,7 @@ open scoped NNReal ENNReal
 
 open Set
 
-variable {α : Type*} [LinearOrder α] {E : Type*} [PseudoEMetricSpace E]
+variable {α : Type*} [LinearOrder α] {E : Type*} [TopologicalSpace E] [WeakPseudoEMetricSpace E]
 variable (f : ℝ → E) (s : Set ℝ) (l : ℝ≥0)
 
 /-- `f` has constant speed `l` on `s` if the variation of `f` on `s ∩ Icc x y` is equal to
@@ -115,7 +117,7 @@ theorem HasConstantSpeedOnWith.union {t : Set ℝ} (hfs : HasConstantSpeedOnWith
         exacts [Or.inl ⟨ws, zw, hs.2 ws⟩, Or.inr ⟨wt, ht.2 wt, wy⟩]
       · rintro (⟨ws, zw, wx⟩ | ⟨wt, xw, wy⟩)
         exacts [⟨Or.inl ws, zw, wx.trans (ht.2 yt)⟩, ⟨Or.inr wt, (hs.2 zs).trans xw, wy⟩]
-    rw [this, @eVariationOn.union _ _ _ _ f _ _ x, hfs zs hs.1 (hs.2 zs), hft ht.1 yt (ht.2 yt)]
+    rw [this, eVariationOn.union (f := f) (x := x), hfs zs hs.1 (hs.2 zs), hft ht.1 yt (ht.2 yt)]
     · have q := ENNReal.ofReal_add (mul_nonneg l.prop (sub_nonneg.mpr (hs.2 zs)))
         (mul_nonneg l.prop (sub_nonneg.mpr (ht.2 yt)))
       simp only [NNReal.val_eq_coe] at q
@@ -150,7 +152,7 @@ theorem HasConstantSpeedOnWith.Icc_Icc {x y z : ℝ} (hfs : HasConstantSpeedOnWi
       inf_of_le_right vz]
 
 theorem hasConstantSpeedOnWith_zero_iff :
-    HasConstantSpeedOnWith f s 0 ↔ ∀ᵉ (x ∈ s) (y ∈ s), edist (f x) (f y) = 0 := by
+    HasConstantSpeedOnWith f s 0 ↔ ∀ x ∈ s, ∀ y ∈ s, edist (f x) (f y) = 0 := by
   dsimp [HasConstantSpeedOnWith]
   simp only [zero_mul, ENNReal.ofReal_zero, ← eVariationOn.eq_zero_iff]
   constructor
@@ -253,7 +255,7 @@ theorem has_unit_speed_naturalParameterization (f : α → E) {s : Set α}
     rw [←
       eVariationOn.comp_inter_Icc_eq_of_monotoneOn (naturalParameterization f s a) _
         (variationOnFromTo.monotoneOn hf as) bs cs]
-    rw [@eVariationOn.eq_of_edist_zero_on _ _ _ _ _ f]
+    rw [eVariationOn.eq_of_edist_zero_on (f' := f)]
     · rw [variationOnFromTo.eq_of_le _ _ bc, ENNReal.ofReal_toReal (hf b c bs cs)]
     · rintro x ⟨xs, _, _⟩
       exact edist_naturalParameterization_eq_zero hf as xs

@@ -29,7 +29,7 @@ public section
 
 noncomputable section
 
-open Topology
+open scoped Topology
 
 open Filter Set
 

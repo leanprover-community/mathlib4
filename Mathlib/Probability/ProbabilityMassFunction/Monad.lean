@@ -27,7 +27,7 @@ noncomputable section
 
 variable {α β γ : Type*}
 
-open NNReal ENNReal
+open ENNReal
 
 open MeasureTheory
 
@@ -114,7 +114,7 @@ theorem bind_apply (b : β) : p.bind f b = ∑' a, p a * f a b := rfl
 
 @[simp]
 theorem support_bind : (p.bind f).support = ⋃ a ∈ p.support, (f a).support :=
-  Set.ext fun b => by simp [mem_support_iff, ENNReal.tsum_eq_zero, not_or]
+  Set.ext fun b => by simp [mem_support_iff, not_or]
 
 theorem mem_support_bind_iff (b : β) :
     b ∈ (p.bind f).support ↔ ∃ a ∈ p.support, b ∈ (f a).support := by
@@ -174,7 +174,7 @@ theorem toMeasure_bind_apply [MeasurableSpace β] (hs : MeasurableSet s) :
   (toMeasure_apply_eq_toOuterMeasure_apply (p.bind f) hs).trans
     ((toOuterMeasure_bind_apply p f s).trans
       (tsum_congr fun a =>
-        congr_arg (fun x => p a * x) (toMeasure_apply_eq_toOuterMeasure_apply (f a) hs).symm))
+        congr(p a * $((toMeasure_apply_eq_toOuterMeasure_apply (f a) hs).symm))))
 
 end Measure
 

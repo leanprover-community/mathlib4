@@ -24,8 +24,6 @@ public section
 
 universe u v w w'
 
-open Cardinal CategoryTheory
-
 open FirstOrder
 
 namespace FirstOrder

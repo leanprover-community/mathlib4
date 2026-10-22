@@ -6,9 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
-public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
-public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
-public import Mathlib.CategoryTheory.Limits.Types.Coproducts
+public import Mathlib.CategoryTheory.Limits.Types.Colimits
 
 /-!
 # `sigmaConst.obj` preserves colimits
@@ -29,7 +27,6 @@ namespace CategoryTheory.Limits
 variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /- If the morphisms in `C` were in `Type w`, the functor
 `sigmaConst.{w}`
 would be a left adjoint (see `sigmaConstAdj`). In general, we cannot
@@ -48,13 +45,13 @@ instance [HasCoproducts.{w} C] (R : C) :
       fac s j := by
         dsimp
         ext k
-        simp [dsimp% hc.fac_apply, dsimp% Sigma.ι_desc (hc.desc (coconeTypes s)), coconeTypes]
+        simp [dsimp% hc.fac_apply, dsimp% Sigma.ι_comp_desc (hc.desc (coconeTypes s)), coconeTypes]
       uniq s m hm := by
         dsimp
         ext x
         obtain ⟨j, k, rfl⟩ := Functor.CoconeTypes.IsColimit.ι_jointly_surjective hc x
         simp [coconeTypes, ← hm, dsimp% hc.fac_apply,
-          dsimp% Sigma.ι_desc (hc.desc (coconeTypes s))] }⟩⟩⟩
+          dsimp% Sigma.ι_comp_desc (hc.desc (coconeTypes s))] }⟩⟩⟩
 
 section
 
@@ -68,7 +65,7 @@ open scoped Classical in
 @[simps! pt, implicit_reducible]
 noncomputable def sigmaConstCokernelCofork :
     CokernelCofork
-      (Sigma.map' (f := fun (_ : α) ↦ R) (g := fun (_ : β) ↦ R) f (fun _ ↦ 𝟙 R)) :=
+      (Sigma.map' (f := fun _ ↦ R) (g := fun _ ↦ R) f (fun _ ↦ 𝟙 R)) :=
   CokernelCofork.ofπ (Z := ∐ fun (_ : ((Set.range f)ᶜ : Set _)) ↦ R)
     (Sigma.desc (fun b ↦
       if hb : b ∈ (Set.range f)ᶜ then Sigma.ι (fun _ ↦ R) ⟨b, hb⟩ else 0))
@@ -80,7 +77,7 @@ lemma ι_sigmaConstCokernelCofork_π (b : β) (hb : b ∉ Set.range f) :
     dsimp% Sigma.ι (fun _ ↦ R) b ≫ (sigmaConstCokernelCofork R f).π =
       Sigma.ι (fun _ ↦ R) ⟨b, hb⟩ := by
   dsimp [sigmaConstCokernelCofork]
-  rw [Sigma.ι_desc]
+  rw [Sigma.ι_comp_desc]
   apply dite_eq_left
 
 set_option backward.defeqAttrib.useBackward true in
@@ -88,11 +85,10 @@ set_option backward.defeqAttrib.useBackward true in
 lemma ι_sigmaConstCokernelCofork_π_eq_zero (a : α) :
     dsimp% Sigma.ι (fun _ ↦ R) (f a) ≫ (sigmaConstCokernelCofork R f).π = 0 := by
   dsimp [sigmaConstCokernelCofork]
-  rw [Sigma.ι_desc]
+  rw [Sigma.ι_comp_desc]
   exact dite_eq_right (by simp)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The cokernel of the map `∐ fun (_ : α) ↦ R ⟶ ∐ fun (_ : β) ↦ R` induced
 by a map `f : α → β` identifies to the coproduct of copies of `R`
 indexed by the complement of the range of `f`. -/
@@ -109,10 +105,10 @@ noncomputable def isColimitSigmaConstCokernelCofork :
     (fun s m hm ↦ by
       dsimp
       ext ⟨b, hb⟩
-      rw [Sigma.ι_desc, ← hm, ι_sigmaConstCokernelCofork_π_assoc])
+      rw [Sigma.ι_comp_desc, ← hm, ι_sigmaConstCokernelCofork_π_assoc])
 
 instance :
-    HasCokernel (Sigma.map' (f := fun (_ : α) ↦ R) (g := fun (_ : β) ↦ R) f (fun _ ↦ 𝟙 R)) :=
+    HasCokernel (Sigma.map' (f := fun _ ↦ R) (g := fun _ ↦ R) f (fun _ ↦ 𝟙 R)) :=
   ⟨_, isColimitSigmaConstCokernelCofork R f⟩
 
 end
