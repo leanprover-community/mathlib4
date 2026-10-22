@@ -48,8 +48,9 @@ of a matrix.
 
 We also show:
 
-* `Matrix.norm_le_frobenius_norm`
 * `Matrix.norm_le_linfty_opNorm`
+* `Matrix.linfty_opNorm_le_card_mul_norm`
+* `Matrix.norm_le_frobenius_norm`
 
 The norm induced by the identification of `Matrix m n 𝕜` with
 `EuclideanSpace n 𝕜 →L[𝕜] EuclideanSpace m 𝕜` (i.e., the ℓ² operator norm) can be found in
@@ -515,13 +516,26 @@ end LinftyOp
 
 /-- The elementwise norm never exceeds the $L_\infty$ operator norm. -/
 lemma nnnorm_le_linfty_opNNNorm [SeminormedAddCommGroup R] (A : Matrix m n R) :
-    open scoped Matrix.Norms.Elementwise in ‖A‖₊ ≤ open scoped Matrix.Norms.Operator in ‖A‖₊ :=
+    (open scoped Matrix.Norms.Elementwise in ‖A‖₊) ≤ (open scoped Matrix.Norms.Operator in ‖A‖₊) :=
   nnnorm_le_iff.2 <| nnnorm_apply_le_linfty_opNNNorm A
 
 /-- The elementwise norm never exceeds the $L_\infty$ operator norm. -/
 lemma norm_le_linfty_opNorm [SeminormedAddCommGroup R] (A : Matrix m n R) :
-    open scoped Matrix.Norms.Elementwise in ‖A‖ ≤ open scoped Matrix.Norms.Operator in ‖A‖ :=
+    (open scoped Matrix.Norms.Elementwise in ‖A‖) ≤ (open scoped Matrix.Norms.Operator in ‖A‖) :=
   nnnorm_le_linfty_opNNNorm _
+
+/-- The $L_\infty$ operator norm is bounded by a multiple of the elementwise norm. -/
+lemma linfty_opNNNorm_le_card_mul_nnnorm [SeminormedAddCommGroup R] (A : Matrix m n R) :
+    (open scoped Matrix.Norms.Operator in ‖A‖₊) ≤
+      Fintype.card n • (open scoped Matrix.Norms.Elementwise in ‖A‖₊) := by
+  rw [linfty_opNNNorm_def]
+  exact Finset.sup_le fun i _ => Finset.sum_le_card_nsmul _ _ _ fun j _ => nnnorm_apply_le_nnnorm A
+
+/-- The $L_\infty$ operator norm is bounded by a multiple of the elementwise norm. -/
+lemma linfty_opNorm_le_card_mul_norm [SeminormedAddCommGroup R] (A : Matrix m n R) :
+    (open scoped Matrix.Norms.Operator in ‖A‖) ≤
+      Fintype.card n • (open scoped Matrix.Norms.Elementwise in ‖A‖) :=
+  linfty_opNNNorm_le_card_mul_nnnorm _
 
 /-! ### The Frobenius norm
 
@@ -728,12 +742,12 @@ end Norms.Frobenius
 
 /-- The elementwise norm never exceeds the frobenius norm. -/
 lemma nnnorm_le_frobenius_nnnorm [SeminormedAddCommGroup R] (A : Matrix m n R) :
-    open scoped Matrix.Norms.Elementwise in ‖A‖₊ ≤ open scoped Matrix.Norms.Frobenius in ‖A‖₊ :=
+    (open scoped Matrix.Norms.Elementwise in ‖A‖₊) ≤ (open scoped Matrix.Norms.Frobenius in ‖A‖₊) :=
   nnnorm_le_iff.2 <| nnnorm_apply_le_frobenius_nnnorm A
 
 /-- The elementwise norm never exceeds the frobenius norm. -/
 lemma norm_le_frobenius_norm [SeminormedAddCommGroup R] (A : Matrix m n R) :
-    open scoped Matrix.Norms.Elementwise in ‖A‖ ≤ open scoped Matrix.Norms.Frobenius in ‖A‖ :=
+    (open scoped Matrix.Norms.Elementwise in ‖A‖) ≤ (open scoped Matrix.Norms.Frobenius in ‖A‖) :=
   nnnorm_le_frobenius_nnnorm _
 
 end Matrix
