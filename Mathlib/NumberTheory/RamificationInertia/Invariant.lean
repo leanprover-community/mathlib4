@@ -35,6 +35,19 @@ by `Algebra.FormallyUnramified.descentMultiplier`.
 open scoped Pointwise TensorProduct
 
 section LiftBaseChange
+#print Submodule.baseChange
+theorem Submodule.baseChange_le_iff {R M : Type*} (A : Type*) [CommSemiring R] [Semiring A]
+  [Algebra R A] [AddCommMonoid M] [Module R M] (p : Submodule R M) (q : Submodule A (A ⊗[R] M)) :
+  p.baseChange A ≤ q ↔ (p.map ((TensorProduct.mk R A M) 1)) ≤ q.restrictScalars R := by
+  rw [Submodule.baseChange_eq_span, Submodule.span_le]
+  rfl
+
+theorem Submodule.baseChange_le_iff' {R M : Type*} (A : Type*) [CommSemiring R] [Semiring A]
+  [Algebra R A] [AddCommMonoid M] [Module R M] (p : Submodule R M) (q : Submodule A (A ⊗[R] M)) :
+  p.baseChange A ≤ q ↔ p ≤ (q.restrictScalars R).comap ((TensorProduct.mk R A M) 1) := by
+  rw [← map_le_iff_le_comap]
+  rw [Submodule.baseChange_eq_span, Submodule.span_le]
+  rfl
 
 namespace LinearMap
 
@@ -53,7 +66,7 @@ lemma baseChange_le_comap_liftBaseChange_iff_map_le_restrictScalars
     p.baseChange A ≤ q.comap (l.liftBaseChange A) ↔ p.map l ≤ q.restrictScalars R := by
   have h : (l.liftBaseChange A).restrictScalars R ∘ₗ TensorProduct.mk R A M 1 = l :=
     (LinearMap.liftBaseChangeEquiv A).symm_apply_apply l
-  rw [Submodule.baseChange_eq_span, Submodule.span_le]
+  rw [Submodule.baseChange_le_iff]
   change p.map (TensorProduct.mk R A M 1) ≤
     (q.restrictScalars R).comap ((l.liftBaseChange A).restrictScalars R) ↔ _
   rw [Submodule.map_le_iff_le_comap, ← Submodule.comap_comp, h]
