@@ -75,7 +75,8 @@ theorem cfcₙHom_mem_of_isClosed {I : TwoSidedIdeal A} (hI : IsClosed (I : Set 
   | add f g hf hg => rw [map_add]; exact I.add_mem hf hg
   | mul f g hf hg => rw [map_mul]; exact I.mul_mem_left _ _ hg
   | smul r f hf => rw [map_smul]; exact smul_mem_of_isClosed hI hf r
-  | frequently f h => exact h.mem_of_closed (hI.preimage (cfcₙHom_continuous ha'))
+  | frequently f h =>
+    exact hI.mem_of_frequently_of_tendsto h ((cfcₙHom_continuous ha').tendsto f)
 
 /-- **The non-unital continuous functional calculus maps into closed two-sided ideals.** If `I` is a
 closed two-sided ideal of a non-unital C⋆-algebra `A`, `a ∈ I`, and `f : ℝ → ℝ`, then
