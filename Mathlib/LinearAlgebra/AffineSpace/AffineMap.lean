@@ -448,6 +448,7 @@ theorem linear_bijective_iff (f : P1 →ᵃ[k] P2) :
     Function.Bijective f.linear ↔ Function.Bijective f :=
   and_congr f.linear_injective_iff f.linear_surjective_iff
 
+open scoped Pointwise in
 theorem image_vsub_image {s t : Set P1} (f : P1 →ᵃ[k] P2) :
     f '' s -ᵥ f '' t = f.linear '' (s -ᵥ t) := by
   ext v

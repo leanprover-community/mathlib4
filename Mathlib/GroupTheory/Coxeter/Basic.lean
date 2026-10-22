@@ -242,6 +242,7 @@ theorem subgroup_closure_range_simple : Subgroup.closure (range cs.simple) = ⊤
     PresentedGroup.closure_range_of, Subgroup.map_top]
   exact MonoidHom.range_eq_top.2 (MulEquiv.surjective _)
 
+open scoped Pointwise in
 /-- The simple reflections of `W` generate `W` as a monoid. -/
 theorem submonoid_closure_range_simple : Submonoid.closure (range cs.simple) = ⊤ := by
   have : range cs.simple = range cs.simple ∪ (range cs.simple)⁻¹ := by

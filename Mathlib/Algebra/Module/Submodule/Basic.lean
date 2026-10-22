@@ -140,6 +140,7 @@ theorem toAddSubgroup_toAddSubmonoid (p : Submodule R M) :
   rfl
 
 -- See `neg_coe_set`
+open scoped Pointwise in
 theorem neg_coe : -(p : Set M) = p :=
   Set.ext fun _ => p.neg_mem_iff
 

@@ -35,6 +35,8 @@ into an ordered ring, and vice versa.
 
 @[expose] public section
 
+open scoped Pointwise
+
 /-!
 #### Preorderings
 -/
