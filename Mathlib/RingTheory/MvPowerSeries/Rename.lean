@@ -300,10 +300,9 @@ lemma HasSubst.X_comp : HasSubst (X ∘ f : σ → MvPowerSeries τ R) :=
 variable {f} in
 omit [TendstoCofinite f] in
 theorem HasSubst.comp_injective (ha : HasSubst a) (hf : f.Injective) : HasSubst (a ∘ f) :=
-  have := Filter.tendstoCofinite_of_injective hf
+  have := tendstoCofinite_of_injective hf
   ha.comp_tendstoCofinite f
 
-omit [TendstoCofinite f] in
 theorem HasSubst.curry {a : γ × σ → MvPowerSeries τ R} (ha : HasSubst a) (k : γ) :
     HasSubst (Function.curry a k) :=
   ha.comp_injective (Prod.mk_right_injective k)
