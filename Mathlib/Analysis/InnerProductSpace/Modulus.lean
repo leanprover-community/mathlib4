@@ -41,7 +41,7 @@ variable {E F : Type*}
 def modulus (T : E →L[ℂ] F) : E →L[ℂ] E := CFC.sqrt (T.adjoint ∘L T)
 
 @[inherit_doc]
-scoped notation "|" T "|" => modulus T
+local notation "|" T "|" => modulus T
 
 @[simp] theorem modulus_zero : |(0 : E →L[ℂ] F)| = 0 := by simp [modulus]
 @[simp] theorem modulus_neg (T : E →L[ℂ] F) : |-T| = |T| := by simp [modulus]
