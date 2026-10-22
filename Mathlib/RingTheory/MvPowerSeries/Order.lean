@@ -576,10 +576,9 @@ theorem le_order_prod_sub_prod {R ι : Type*} [CommRing R] {n : ℕ∞}
 /-- If `a i - b i` has order at least `n`, and `a i`, `b i` have order at least `k`, for all
 `i ∈ s`, then `∏ i ∈ s, a i - ∏ i ∈ s, b i` has order at least `n + (#s - 1) • k`. -/
 theorem add_nsmul_le_order_prod_sub_prod {R ι : Type*} [CommRing R] {n k : ℕ∞}
-    {a b : ι → MvPowerSeries σ R} {s : Finset ι}
-    (ha : ∀ i ∈ s, k ≤ (a i).order) (hb : ∀ i ∈ s, k ≤ (b i).order)
-    (h : ∀ i ∈ s, n ≤ (a i - b i).order) :
-    n + (s.card - 1) • k ≤ (∏ i ∈ s, a i - ∏ i ∈ s, b i).order :=
+    {a b : ι → MvPowerSeries σ R} {s : Finset ι} (ha : ∀ i ∈ s, k ≤ (a i).order)
+    (hb : ∀ i ∈ s, k ≤ (b i).order) (h : ∀ i ∈ s, n ≤ (a i - b i).order) :
+    n + (#s - 1) • k ≤ (∏ i ∈ s, a i - ∏ i ∈ s, b i).order :=
   add_nsmul_le_weightedOrder_prod_sub_prod _ ha hb h
 
 @[simp]
