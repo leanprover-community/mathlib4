@@ -529,8 +529,7 @@ theorem isEmpty_linearEquiv_iff_forall_linearMap_eq_zero [IsSimpleModule R M] [I
 
 theorem isEmpty_linearEquiv_iff_subsingleton [IsSimpleModule R M] [IsSimpleModule R N] :
     IsEmpty (M ≃ₗ[R] N) ↔ Subsingleton (M →ₗ[R] N) := by
-  rw [isEmpty_linearEquiv_iff_forall_linearMap_eq_zero]
-  exact ⟨fun h => ⟨fun _ _ => by simp [h]⟩, fun h f => h.elim f 0⟩
+  rw [isEmpty_linearEquiv_iff_forall_linearMap_eq_zero, subsingleton_iff_forall_eq]
 
 /-- Schur's Lemma makes the endomorphism ring of a simple module a division ring. -/
 noncomputable instance _root_.Module.End.instDivisionRing
