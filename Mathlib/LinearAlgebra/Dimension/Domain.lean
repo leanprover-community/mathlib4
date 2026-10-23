@@ -125,7 +125,7 @@ include h
 When `M` is a module over an algebra `S/R` of domains such that `(R⁰)⁻¹ S` is a field,
 we obtain a tower law.
 
-See `Module.finrank_mul_finrank` for when your modules are free.
+See `_root.lift_rank_mul_lift_rank` for when your modules are free.
 -/
 theorem lift_rank_mul_lift_rank_of_field_isLocalization :
     lift.{w} (rank R S) * lift.{v} (rank S M) = lift.{v} (rank R M) :=
