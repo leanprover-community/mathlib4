@@ -211,9 +211,9 @@ instance : Module ℝ≥0 (StieltjesFunction R) where
   add_smul _ _ _ := ext fun _ ↦ add_mul _ _ _
   zero_smul _ := ext fun _ ↦ zero_mul _
 
-@[simp] lemma zero_apply (x : R) : (0 : StieltjesFunction R) x = 0 := rfl
+@[simp] protected lemma zero_apply (x : R) : (0 : StieltjesFunction R) x = 0 := rfl
 
-@[simp] lemma add_apply (f g : StieltjesFunction R) (x : R) : (f + g) x = f x + g x := rfl
+@[simp] protected lemma add_apply (f g : StieltjesFunction R) (x : R) : (f + g) x = f x + g x := rfl
 
 /-- If a function `f : R → ℝ` is monotone, then the function mapping `x` to the right limit of `f`
 at `x` is a Stieltjes function, i.e., it is monotone and right-continuous. -/
@@ -784,7 +784,7 @@ lemma measure_add (f g : StieltjesFunction R) : (f + g).measure = f.measure + g.
     · simp [leftLim_eq_of_eq_bot _ ha]
     · exact tendsto_nhds_unique ((f + g).mono.tendsto_leftLim a)
         ((f.mono.tendsto_leftLim a).add (g.mono.tendsto_leftLim a))
-  simp only [measure_Icc, add_apply, Measure.coe_add, Pi.add_apply, this]
+  simp only [measure_Icc, StieltjesFunction.add_apply, this, add_apply]
   rw [← ENNReal.ofReal_add (sub_nonneg_of_le (f.mono.leftLim_le h))
     (sub_nonneg_of_le (g.mono.leftLim_le h))]
   ring_nf
@@ -792,7 +792,7 @@ lemma measure_add (f g : StieltjesFunction R) : (f + g).measure = f.measure + g.
 @[simp]
 lemma measure_smul (c : ℝ≥0) (f : StieltjesFunction R) : (c • f).measure = c • f.measure := by
   refine Measure.ext_of_Icc _ _ (fun a b h ↦ ?_)
-  simp only [measure_Icc, Measure.smul_apply]
+  simp only [measure_Icc, smul_apply]
   change ofReal (c * f b - leftLim (c • f) a) = c • ofReal (f b - leftLim f a)
   have : leftLim (c • f) a = c * leftLim f a := by
     rcases Filter.eq_or_neBot (𝓝[<] a) with ha | ha
