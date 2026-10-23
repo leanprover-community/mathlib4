@@ -78,13 +78,11 @@ class NegMemClass (S : Type*) (G : outParam Type*) [Neg G] [SetLike S G] : Prop 
 export NegMemClass (neg_mem)
 
 /-- Typeclass for substructures `s` such that `s ∪ -s = G`. -/
-@[deprecated "Use AddSubmonoid.IsSpanning" +typeChanged (since := "2026-10-23")]
 class HasMemOrNegMem {S G : Type*} [Neg G] [SetLike S G] (s : S) : Prop where
   mem_or_neg_mem (s) (a : G) : a ∈ s ∨ -a ∈ s
 
-set_option linter.existingAttributeWarning false in
 /-- Typeclass for substructures `s` such that `s ∪ s⁻¹ = G`. -/
-@[to_additive, deprecated "Use Submonoid.IsMulSpanning" +typeChanged (since := "2026-10-23")]
+@[to_additive]
 class HasMemOrInvMem {S G : Type*} [Inv G] [SetLike S G] (s : S) : Prop where
   mem_or_inv_mem (s) (a : G) : a ∈ s ∨ a⁻¹ ∈ s
 
@@ -93,17 +91,15 @@ export HasMemOrInvMem (mem_or_inv_mem)
 
 namespace HasMemOrInvMem
 
-variable {S G : Type*} [Inv G] [SetLike S G] (s : S)
+variable {S G : Type*} [Inv G] [SetLike S G] (s : S) [HasMemOrInvMem s]
 
-set_option linter.deprecated false in
-@[to_additive (attr := deprecated "no replacement" (since := "2026-10-23"), aesop unsafe 70% apply)]
-theorem inv_mem_of_notMem [HasMemOrInvMem s] (x : G) (h : x ∉ s) : x⁻¹ ∈ s := by
+@[to_additive (attr := aesop unsafe 70% apply)]
+theorem inv_mem_of_notMem (x : G) (h : x ∉ s) : x⁻¹ ∈ s := by
   have := mem_or_inv_mem s x
   simp_all
 
-set_option linter.deprecated false in
-@[to_additive (attr := deprecated "no replacement" (since := "2026-10-23"), aesop unsafe 70% apply)]
-theorem mem_of_inv_notMem [HasMemOrInvMem s] (x : G) (h : x⁻¹ ∉ s) : x ∈ s := by
+@[to_additive (attr := aesop unsafe 70% apply)]
+theorem mem_of_inv_notMem (x : G) (h : x⁻¹ ∉ s) : x ∈ s := by
   have := mem_or_inv_mem s x
   simp_all
 
