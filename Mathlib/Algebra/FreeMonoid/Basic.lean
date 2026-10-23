@@ -170,40 +170,49 @@ variable {a : FreeMonoid α}
 (a + b).length = a.length + b.length -/]
 def length (a : FreeMonoid α) : ℕ := a.toList.length
 
-@[to_additive (attr := deprecated "use `a.toList.length` instead" (since := "2026-10-23"))]
+set_option linter.deprecated false in
+@[to_additive (attr := deprecated List.length_nil (since := "2026-10-23"))]
 theorem length_one : length (1 : FreeMonoid α) = 0 := rfl
 
-@[to_additive (attr := deprecated "use `a.toList.length` instead" (since := "2026-10-23"))]
+set_option linter.deprecated false in
+@[to_additive (attr := deprecated List.length_eq_zero_iff (since := "2026-10-23"))]
 theorem length_eq_zero : length a = 0 ↔ a = 1 := by
   simp only [FreeMonoid.ext_iff]; exact List.length_eq_zero_iff
 
-@[to_additive (attr := deprecated "use `a.toList.length` instead" (since := "2026-10-23"))]
+set_option linter.deprecated false in
+@[to_additive (attr := deprecated List.length_singleton (since := "2026-10-23"))]
 theorem length_of (m : α) : length (of m) = 1 := rfl
 
-@[to_additive (attr := deprecated "use `a.toList.length` instead" (since := "2026-10-23"))]
+set_option linter.deprecated false in
+@[to_additive (attr := deprecated "no replacement" (since := "2026-10-23"))]
 theorem length_surjective [Nonempty α] : (@length α).Surjective :=
   ‹Nonempty α›.elim fun a n => ⟨FreeMonoid.ofList (List.replicate n a), by simp [length]⟩
 
-@[to_additive (attr := deprecated "use `a.toList.length` instead" (since := "2026-10-23"))
+set_option linter.deprecated false in
+@[to_additive (attr := deprecated List.length_eq_one_iff (since := "2026-10-23"))
 FreeAddMonoid.length_eq_one]
 theorem length_eq_one : length a = 1 ↔ ∃ m, a = of m := by
   simp only [FreeMonoid.ext_iff]; exact List.length_eq_one_iff
 
-@[to_additive (attr := deprecated "use `a.toList.length` instead" (since := "2026-10-23"))]
+set_option linter.deprecated false in
+@[to_additive (attr := deprecated List.length_eq_two (since := "2026-10-23"))]
 theorem length_eq_two {v : FreeMonoid α} : v.length = 2 ↔ ∃ a b, v = of a * of b := by
   simp only [FreeMonoid.ext_iff]; exact List.length_eq_two
 
-@[to_additive (attr := deprecated "use `a.toList.length` instead" (since := "2026-10-23"))]
+set_option linter.deprecated false in
+@[to_additive (attr := deprecated List.length_eq_three (since := "2026-10-23"))]
 theorem length_eq_three {v : FreeMonoid α} :
     v.length = 3 ↔ ∃ (a b c : α), v = of a * of b * of c := by
   simp only [FreeMonoid.ext_iff]; exact List.length_eq_three
 
-@[to_additive (attr := deprecated "use `a.toList.length` instead" (since := "2026-10-23"))]
+set_option linter.deprecated false in
+@[to_additive (attr := deprecated List.length_eq_four (since := "2026-10-23"))]
 theorem length_eq_four {v : FreeMonoid α} :
     v.length = 4 ↔ ∃ (a b c d : α), v = of a * of b * of c * of d := by
   simp only [FreeMonoid.ext_iff]; exact List.length_eq_four
 
-@[to_additive (attr := deprecated "use `a.toList.length` instead" (since := "2026-10-23"))]
+set_option linter.deprecated false in
+@[to_additive (attr := deprecated List.length_append (since := "2026-10-23"))]
 theorem length_mul (a b : FreeMonoid α) : (a * b).length = a.length + b.length :=
   List.length_append
 
@@ -468,19 +477,23 @@ section Reverse
 /-- Reverses the symbols in a `FreeAddMonoid α`. -/]
 def reverse (x : FreeMonoid α) : FreeMonoid α := ⟨x.toList.reverse⟩
 
+set_option linter.deprecated false in
 @[to_additive (attr := deprecated "use `star_of` in `Mathlib.Algebra.Star.Free` instead"
 (since := "2026-10-23"))]
 theorem reverse_of (a : α) : reverse (of a) = of a := rfl
 
+set_option linter.deprecated false in
 @[to_additive (attr := deprecated "use `star_mul` instead" (since := "2026-10-23"))]
 theorem reverse_mul {a b : FreeMonoid α} : reverse (a * b) = reverse b * reverse a := by
   ext1; exact List.reverse_append
 
+set_option linter.deprecated false in
 @[to_additive (attr := deprecated "use `star_star` instead" (since := "2026-10-23"))]
 theorem reverse_reverse {a : FreeMonoid α} : reverse (reverse a) = a := by
   ext1; apply List.reverse_reverse
 
-@[to_additive (attr := deprecated "use `x.toList.reverse` instead" (since := "2026-10-23"))]
+set_option linter.deprecated false in
+@[to_additive (attr := deprecated List.length_reverse (since := "2026-10-23"))]
 theorem length_reverse {a : FreeMonoid α} : a.reverse.length = a.length :=
   List.length_reverse
 
