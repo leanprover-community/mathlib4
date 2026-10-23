@@ -157,9 +157,7 @@ theorem finrank_mul_finrank_of_field_isLocalization :
 
 end field_isLocalization
 
-variable
-  (M : Type w) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
-  (M₁ : Type v) [AddCommGroup M₁] [Module R M₁] [Module S M₁] [IsScalarTower R S M₁]
+variable (M : Type w) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
 
 /-- **Tower law for torsion-free modules.**
 The tower law for ENat `Module.rank` of a `S`-torsion-free module over an algebra `S/R` of domains.
