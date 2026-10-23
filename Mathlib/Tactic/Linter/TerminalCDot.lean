@@ -55,5 +55,5 @@ def terminalCDotLinter : TacticAnalysis.Config where run seq := do
     if seq[seq.size - 2].tacI.stx.isOfKind ``cdot then
       return
   logWarningAt last.tacI.stx[0]
-    m!"Unnecessary focusing dot `·`: you should be able to remove it, \
-    or move it earlier up in the proof, as necessary."
+    m!"Unnecessary focusing dot `·`: you should be able to remove it.\n\
+    If this `·` follows a `<;>` combinator, consider using `all_goals` instead of `<;>`."

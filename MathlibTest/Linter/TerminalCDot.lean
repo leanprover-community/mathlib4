@@ -3,7 +3,8 @@ module
 import Mathlib.Init
 
 /--
-warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
+warning: Unnecessary focusing dot `·`: you should be able to remove it.
+If this `·` follows a `<;>` combinator, consider using `all_goals` instead of `<;>`.
 
 Note: This linter can be disabled with `set_option linter.style.terminalCDot false`
 -/
@@ -18,7 +19,8 @@ example : 1 = 1 ∧ 1 = 1 ∧ 1 = 1 := by
       · rfl
 
 /--
-warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
+warning: Unnecessary focusing dot `·`: you should be able to remove it.
+If this `·` follows a `<;>` combinator, consider using `all_goals` instead of `<;>`.
 
 Note: This linter can be disabled with `set_option linter.style.terminalCDot false`
 -/
@@ -27,11 +29,13 @@ example : True := by
   · trivial
 
 /--
-warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
+warning: Unnecessary focusing dot `·`: you should be able to remove it.
+If this `·` follows a `<;>` combinator, consider using `all_goals` instead of `<;>`.
 
 Note: This linter can be disabled with `set_option linter.style.terminalCDot false`
 ---
-warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
+warning: Unnecessary focusing dot `·`: you should be able to remove it.
+If this `·` follows a `<;>` combinator, consider using `all_goals` instead of `<;>`.
 
 Note: This linter can be disabled with `set_option linter.style.terminalCDot false`
 -/
@@ -40,11 +44,13 @@ example : True := by
   · · exact .intro
 
 /--
-warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
+warning: Unnecessary focusing dot `·`: you should be able to remove it.
+If this `·` follows a `<;>` combinator, consider using `all_goals` instead of `<;>`.
 
 Note: This linter can be disabled with `set_option linter.style.terminalCDot false`
 ---
-warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
+warning: Unnecessary focusing dot `·`: you should be able to remove it.
+If this `·` follows a `<;>` combinator, consider using `all_goals` instead of `<;>`.
 
 Note: This linter can be disabled with `set_option linter.style.terminalCDot false`
 -/
