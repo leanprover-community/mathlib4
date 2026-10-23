@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Johan Commelin
 -/
 module
 
+public import Mathlib.Algebra.Divisibility.Hom
 public import Mathlib.Algebra.Group.TypeTags.Basic
 public import Mathlib.Algebra.Group.WithOne.Defs
 public import Mathlib.Algebra.GroupWithZero.Equiv
@@ -43,7 +44,7 @@ open Function
 assert_not_exists DenselyOrdered Ring
 
 namespace WithZero
-variable {α β γ : Type*}
+variable {M α β γ : Type*}
 
 section One
 variable [One α]
@@ -76,10 +77,28 @@ lemma unzero_mul {x y : WithZero α} (hxy : x * y ≠ 0) :
 
 instance instNoZeroDivisors : NoZeroDivisors (WithZero α) := ⟨Option.map₂_eq_none_iff.1⟩
 
+/-- `WithZero.coe` as a mul hom. -/
+@[simps apply]
+def coeMulHom : MulHom α (WithZero α) where
+  toFun := (↑)
+  map_mul' _ _ := rfl
+
 end Mul
 
-instance instSemigroupWithZero [Semigroup α] : SemigroupWithZero (WithZero α) where
+section Semigroup
+variable [Semigroup M] {a b : M}
+
+instance instSemigroupWithZero : SemigroupWithZero (WithZero M) where
   mul_assoc _ _ _ := Option.map₂_assoc mul_assoc
+
+@[simp]
+lemma coe_dvd_coe_iff : (a : WithZero M) ∣ b ↔ a ∣ b := by
+  refine ⟨fun ⟨c, hc⟩ ↦ ?_, map_dvd coeMulHom⟩
+  induction c using recZeroCoe with
+  | zero => simp at hc
+  | coe c => exact ⟨c, mod_cast hc⟩
+
+end Semigroup
 
 instance instCommSemigroup [CommSemigroup α] : CommSemigroup (WithZero α) where
   mul_comm _ _ := Option.map₂_comm mul_comm
@@ -92,13 +111,11 @@ instance instMulZeroOneClass [MulOneClass α] : MulZeroOneClass (WithZero α) wh
 
 variable [MulOneClass α]
 
-set_option linter.style.whitespace false in -- manual alignment is not recognised
-/-- Coercion as a monoid hom. -/
-@[simps apply]
+/-- `WithZero.coe` as a monoid hom. -/
+@[simps! apply]
 def coeMonoidHom : α →* WithZero α where
-  toFun        := (↑)
-  map_one'     := rfl
-  map_mul' _ _ := rfl
+  toMulHom := coeMulHom
+  map_one' := rfl
 
 section lift
 variable [MulZeroOneClass β]
