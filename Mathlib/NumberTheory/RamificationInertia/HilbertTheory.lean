@@ -150,8 +150,8 @@ theorem IsDecompositionRing.finrank_bot [P.IsDecompositionRing G R] :
   have : Module.Finite R B := Module.Finite.right A R B
   rw [← mul_left_inj' (c := Module.finrank R B) Module.finrank_pos.ne',
     Module.finrank_mul_finrank' B, IsDecompositionRing.finrank_top G P R p,
-    ← IsGaloisGroup.card_eq_finrank' G A B,
-    ← ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn p B G]
+    ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn p B G,
+    IsGaloisGroup.card_eq_finrank' G A B]
 
 /-- The degree `[R : A]` of the inertia ring `R` over `A` equals the product of the number of
 prime ideals of `B` lying over `p` and the inertia degree of `p` in `B`. -/
@@ -176,7 +176,7 @@ theorem IsInertiaRing.finrank_decompositionRing (R' : Type*) [CommRing R'] [Alge
   have : Module.Finite R' B := Module.Finite.right R R' B
   rw [← mul_left_inj' (c := Module.finrank R' B) Module.finrank_pos.ne',
     Module.finrank_mul_finrank' B, IsInertiaRing.finrank_top G P R' p,
-    IsDecompositionRing.finrank_top G P R p, mul_comm (p.ramificationIdxIn B)]
+    IsDecompositionRing.finrank_top G P R p, mul_comm]
 
 end rank
 
