@@ -8,9 +8,6 @@ module
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.LinearAlgebra.Basis.MulOpposite
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Inner product space on `Hᵐᵒᵖ`
 

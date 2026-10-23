@@ -11,9 +11,6 @@ public import Mathlib.Data.Nat.Factorial.Cast
 
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Cast of binomial coefficients
 

@@ -7,9 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.FinCategory.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Finite categories are equivalent to categories in `Type 0`.
 -/
