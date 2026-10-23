@@ -266,7 +266,7 @@ def mkAll : Cmd := `[Cli|
    from `Mathlib/`, including nested subdirectories). \
    By default, `mk_all` generates the root files of the current package's Lean libraries \
    (as long as a folder is adjacent). \
-   Non-root files with adjacent folders may also be generated via `--lib`, e.g. \
+   Arbitrary files that are not the root of a Lean library may also be generated via `--lib`, e.g. \
    `lake exe mk_all --lib Mathlib.Tactic,Mathlib.Foo.Bar,Mathlib.Baz`."
 
   FLAGS:
