@@ -5,11 +5,12 @@ Authors: Johan Commelin
 -/
 module
 
-import Mathlib.Algebra.Ring.Hom.InjSurj
 public import Mathlib.LinearAlgebra.Dimension.Localization
 public import Mathlib.RingTheory.Algebraic.Basic
 public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 public import Mathlib.RingTheory.Polynomial.Subring
+
+import Mathlib.Algebra.Ring.Hom.InjSurj
 
 /-!
 # Algebraic elements and integral elements

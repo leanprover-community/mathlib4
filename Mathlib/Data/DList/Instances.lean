@@ -7,6 +7,7 @@ module
 
 public import Batteries.Data.DList.Lemmas
 public import Mathlib.Control.Traversable.Equiv
+
 import Mathlib.Control.Traversable.Instances
 
 /-!

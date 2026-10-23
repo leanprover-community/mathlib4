@@ -5,8 +5,8 @@ Authors: Junyan Xu, Andrew Yang
 -/
 module
 
-public import Mathlib.Topology.Sheaves.SheafCondition.Sites
 public import Mathlib.CategoryTheory.Sites.Pullback
+public import Mathlib.Topology.Sheaves.SheafCondition.Sites
 
 /-!
 # functors between categories of sheaves

@@ -5,10 +5,11 @@ Authors: Rémy Degenne
 -/
 module
 
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 public import Mathlib.MeasureTheory.Measure.GiryMonad
 public import Mathlib.MeasureTheory.Measure.Stieltjes
+
 import Mathlib.Analysis.Normed.Order.Lattice
-public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 
 /-!
 # Measurable parametric Stieltjes functions

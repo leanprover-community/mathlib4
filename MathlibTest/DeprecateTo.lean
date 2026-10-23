@@ -1,7 +1,11 @@
-import Mathlib.Tactic.DeprecateTo
-import Mathlib.Tactic.ToAdditive
+module
 
-set_option linter.translateRedundant false in
+public import Mathlib.Tactic.DeprecateTo
+public import Mathlib.Tactic.ToAdditive
+
+@[expose] public section
+
+set_option linter.translate.redundant false in
 /--
 info: * Pairings:
 #[(new_name_mul, mul_easy_deprecated), (new_name_add, add_easy_deprecated)]
