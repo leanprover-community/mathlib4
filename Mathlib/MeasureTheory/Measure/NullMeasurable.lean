@@ -405,7 +405,6 @@ protected theorem NullMeasurable.measurable' (h : NullMeasurable f μ) :
   h
 
 omit [MeasurableSpace β] in
-/-- `NullMeasurable` version of `measurable_generateFrom`. -/
 theorem nullMeasurable_generateFrom {s : Set (Set β)}
     (h : ∀ t ∈ s, NullMeasurableSet (f ⁻¹' t) μ) :
     @NullMeasurable _ _ _ (MeasurableSpace.generateFrom s) f μ :=
