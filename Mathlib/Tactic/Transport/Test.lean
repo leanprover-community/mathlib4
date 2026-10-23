@@ -88,10 +88,10 @@ class MapClass (r : outParam <| α → β → Prop) extends SemiMapClass r where
   map_eq_of_rel {a b} : r a b → map a = b
 
 class InjMapClass (r : outParam <| α → β → Prop) extends MapClass r where
-  rel_inj : Function.Injective map
+  map_inj (r) : Function.Injective map
 
-class SurjMapClass (r : outParam <| α → β → Prop) extends MapClass r where
-  rel_surj : Function.Surjective map
+class SurjMapClass (r : outParam <| α → β → Prop) extends SemiMapClass r where
+  map_surj (r) : Function.Surjective map
 
 class EquivMapClass (r : outParam <| α → β → Prop) extends InjMapClass r, SurjMapClass r
 
@@ -99,8 +99,8 @@ instance : EquivMapClass (@Eq α) where
   map := (·)
   rel_map _ := rfl
   map_eq_of_rel := id
-  rel_inj := Function.injective_id
-  rel_surj := Function.surjective_id
+  map_inj := Function.injective_id
+  map_surj := Function.surjective_id
 
 open SemiMapClass
 
@@ -108,7 +108,7 @@ variable (r : α → β → Prop) {p : α → Sort*} {q : β → Sort*}
 
 @[transport intro]
 def forall_transport [SemiMapClass r]
-    (h : ∀ (a b), r a b → q b → p a) :
+    (h : ∀ a b, r a b → q b → p a) :
     (∀ b, q b) → (∀ a, p a) :=
   fun h' a ↦ h _ _ (rel_map a) (h' (map a))
 
@@ -116,21 +116,23 @@ variable {p : α → Prop} {q : β → Prop}
 
 @[transport intro]
 theorem exists_transport [SemiMapClass r]
-    (h : ∀ (a b), r a b → p a → q b) :
+    (h : ∀ a b, r a b → p a → q b) :
     (∃ a, p a) → (∃ b, q b) :=
   fun ⟨a, ha⟩ ↦ ⟨map a, h _ _ (rel_map a) ha⟩
 
 @[transport intro]
-theorem forall_transport_eq [SemiMapClass r] [SemiMapClass (flip r)]
-    (h : ∀ (a b), r a b → q b = p a) :
-    (∀ b, q b) = (∀ a, p a) :=
-  propext
-    ⟨forall_transport r fun _ _ ↦ (h _ _ · |>.mp),
-    forall_transport (flip r) fun _ _ ↦ (h _ _ · |>.mpr)⟩
+theorem forall_transport_eq [SurjMapClass r]
+    (h : ∀ a b, r a b → q b = p a) :
+    (∀ b, q b) = (∀ a, p a) := by
+  refine propext ⟨forall_transport r fun _ _ ↦ (h _ _ · |>.mp), ?_⟩
+  intro h' b
+  obtain ⟨a, rfl⟩ := SurjMapClass.map_surj (r := r) b
+  exact (h _ _ (rel_map a)).mpr (h' a)
+
 
 @[transport intro]
 theorem exists_transport_eq [SemiMapClass r] [SemiMapClass (flip r)]
-    (h : ∀ (a b), r a b → p a = q b) :
+    (h : ∀ a b, r a b → p a = q b) :
     (∃ a, p a) = (∃ b, q b) :=
   propext
     ⟨exists_transport r fun _ _ ↦ (h _ _ · |>.mp),
@@ -142,7 +144,7 @@ instance : InjMapClass (Finset.IsSet (α := α)) where
   map := (↑)
   rel_map _ := by rfl
   map_eq_of_rel h := by exact h
-  rel_inj := Finset.coe_injective
+  map_inj := Finset.coe_injective
 
 
 section Eq
@@ -160,14 +162,14 @@ theorem eq_transport_eq {α β : Type*} {r : α → β → Prop} [InjMapClass r]
     (h : r a b) (h' : r a' b') : (a = a') = (b = b') := by
   refine propext ⟨eq_transport h h', ?_⟩
   rintro rfl
-  exact InjMapClass.rel_inj <|
+  exact InjMapClass.map_inj r <|
     (MapClass.map_eq_of_rel h).trans (MapClass.map_eq_of_rel h').symm
 
 @[transport intro]
 theorem ne_transport {α β : Type*} {r : α → β → Prop} [MapClass r]
     {a a' : α} {b b' : β}
     (h : r a b) (h' : r a' b') : b ≠ b' → a ≠ a' := by
-  contrapose!
+  contrapose
   exact eq_transport h h'
 
 @[transport intro]
@@ -200,7 +202,7 @@ instance (r : α → β → Prop) [MapClass r] : MapClass (Option.IsOption r) wh
     | .some h => congr(some $(map_eq_of_rel h))
 
 instance (r : α → β → Prop) [InjMapClass r] : InjMapClass (Option.IsOption r) where
-  rel_inj := Option.map_injective InjMapClass.rel_inj
+  map_inj := Option.map_injective (InjMapClass.map_inj r)
 
 -- instance (r : α → β → Prop) [SurjMapClass r] : SurjMapClass (Option.IsOption r) where
 --   rel_surj := by sorry
@@ -254,12 +256,12 @@ def Forall.forall_transport {ι : Type*} {α β : ι → Type*}
 -- set_option trace.Meta.synthInstance true in
 -- set_option trace.Meta.grewrite true in
 example [DecidableEq α] (s : Finset α) (a : α) : insert a (∅ : Finset α) = {a} := by
-  transport
+  transport Finset α to Set α
   guard_target = insert a (∅ : Set α) = {a}
   sorry
 
 example [DecidableEq α] (a : α) : ∀ s : Finset α, insert a ∅ = s := by
-  show_term transport
+  show_term transport Finset α to Set α
   guard_target = ∀ s : Set α, insert a ∅ = s
   sorry
 
@@ -268,19 +270,19 @@ example [DecidableEq α] (a : α) : ∀ s : Finset α, insert a ∅ = s := by
 -- set_option trace.Meta.grewrite true in
 
 example [DecidableEq α] (a : α) : ∀ s : Finset α, Finset.erase ∅ a = s := by
-  transport
+  transport Finset α to Set α
   guard_target = ∀ s : Set α, (∅ : Set α) \ {a} = s
   sorry
 
 example [DecidableEq α] (a : α) : ¬ ∀ s : Set α, insert a ∅ = s := by
-  transport
+  transport Set α to Finset α
   guard_target = ¬ ∀ s : Finset α, insert a ∅ = s
   sorry
 
 -- Yay, this now works
 example [DecidableEq α] (a : α) (s : Option (Finset α)) : s.elim {a} (·.erase a) = ∅ := by
   revert s a
-  transport
+  transport Finset α to Set α
   guard_target = ∀ a : α, ∀ s : Option (Set α), s.elim {a} (· \ {a}) = ∅
   sorry
 

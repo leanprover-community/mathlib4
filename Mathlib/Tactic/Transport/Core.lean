@@ -60,16 +60,13 @@ structure TransportLemma where
   deriving Inhabited
 
 
-def translateType (type : Expr) : MetaM Expr :=
-  match type with
-  | .app (.const ``Option us) α => return .app (.const ``Option us) (← translateType α)
-  | .app (.const ``Set us) α => return .app (.const ``Finset us) α
-  | .app (.const ``Finset us) α => return .app (.const ``Set us) α
-  | _ => return type
+structure Context where
+  translateType : Expr → MetaM Expr
 
+abbrev TransportM := ReaderT Context GCongrM
 
 /-- Run the `intro` tactic `n` times on the given goal. -/
-private def introN (goal : MVarId) (n : Nat) : GCongrM (List MVarId) := do
+private def introN (goal : MVarId) (n : Nat) : TransportM (List MVarId) := do
   let (goals, patterns) ← goal.rintroWithPats (← get).patterns n
   modify ({· with patterns})
   return goals
@@ -88,7 +85,7 @@ In the main subgoals, the forall binders are introduced. They are named using th
 binder names are preserved in the goal.
 -/
 def applyGCongrLemma (g : MVarId) (lem : TransportLemma) :
-    GCongrM (Array (MVarId × Bool) × Array MVarId) := do
+    TransportM (Array (MVarId × Bool) × Array MVarId) := do
   let const ← mkConstWithFreshMVarLevels lem.declName
   let type ← inferType const
   -- Use `withDefault` so that we can unfold `Monotone`.
@@ -101,7 +98,7 @@ def applyGCongrLemma (g : MVarId) (lem : TransportLemma) :
       throwError "expected `{.ofConstName lem.declName}` to have at least {j} arguments"
     let α ← instantiateMVars α; let β ← instantiateMVars β
     let setType (oldType mvar : Expr) := do
-      let newType ← translateType oldType
+      let newType ← (← read).translateType oldType
       unless ← isDefEq newType mvar do throwError "failed to assing {mvar} with `{newType}`"
     match α.isMVar, β.isMVar with
     | false, true => setType α β
@@ -337,7 +334,7 @@ structure GRewriteLemma where
 
 
 /-- The monad used for `grw`. -/
-abbrev GRewriteM := ReaderT GRewriteLemma StateRefT State GCongr.GCongrM
+abbrev GRewriteM := ReaderT GRewriteLemma StateRefT State TransportM
 
 /-- Create the `gcongr` goal corresponding to rewriting `e` by relation `rel?`,
 so that we can apply `gcongr` lemmas to it. -/
@@ -364,7 +361,7 @@ mutual
 
 Returns whether we have done a rewrite in this subgoal, in which case it has been closed. -/
 partial def processGCongrHypothesis (goal : MVarId) (forward : Bool) :
-    MetaM Bool := do
+    ReaderT Context MetaM Bool := do
   goal.withContext do
   let some (relName, rel?, lhs, rhs) := getRel' (← whnf (← goal.getType)) |
     throwError "internal `grewrite` error: invalid `gcongr` goal {goal}"
@@ -390,10 +387,11 @@ and we try to discharge the side goals.
 
 Returns whether we have done a rewrite in this subgoal, in which case it has been closed. -/
 partial def processGCongrLemma (goal : MVarId) (lem : TransportLemma) (forward : Bool) :
-    MetaM Bool :=
+    ReaderT Context MetaM Bool :=
   withTraceNode `Meta.grewrite (fun _ ↦
-    return m!"applying `gcongr` lemma `{.ofConstName lem.declName}`") do
-  let ((mainGoals, sideGoals), _) ← try (applyGCongrLemma goal lem).run catch _ => return false
+    return m!"applying transport lemma `{.ofConstName lem.declName}`") do
+  let ((mainGoals, sideGoals), _) ←
+    try ((applyGCongrLemma goal lem).run (← read)).run catch _ => return false
   -- Recursively rewrite in the main subgoals
   for (goal, isContra) in mainGoals do
     if ← processGCongrHypothesis goal (forward != isContra) then
@@ -425,7 +423,7 @@ unless the relation is `→`: `relName` is `_Implies` and `rel?` is `none`.
 Returns the new expression and a proof that it is related to `e`, if a rewrite was found. -/
 partial def transportCore (relKind : RelKind) (rel? : Option Expr) (e : Expr) (forward : Bool)
     (inSimp := false) :
-    MetaM (Option (Expr × Expr)) :=
+    ReaderT Context MetaM (Option (Expr × Expr)) :=
   withTraceNodeBefore `Meta.grewrite (fun _ ↦ return m!"visiting `{e}` in the \
     {if forward then "LHS" else "RHS"} of relation `{rel?.elim m!"→" (m!"{·}")}`") do
   -- Try all applicable `@[gcongr]` lemmas.
@@ -465,11 +463,12 @@ partial def transportCore (relKind : RelKind) (rel? : Option Expr) (e : Expr) (f
             | _, result => return some (result, goal)
           setMCtx mctx
   if relKind matches .eq | .imp && !inSimp then
+    let ctx ← read
     let methods := { pre e := do
       unless e.isApp do return .continue
       let α ← inferType e
       let some (e', pf) ←
-          transportCore .eq (Expr.app (.const `Eq [← getLevel α]) α) e true true |
+          transportCore .eq (Expr.app (.const `Eq [← getLevel α]) α) e true true |>.run ctx |
         return .continue
       return .done { expr := e', proof? := pf }
       }
@@ -485,11 +484,27 @@ end
 
 open Elab Tactic
 
-elab "transport" : tactic => do
+partial def translateDefault (k : Expr → MetaM Expr) (type : Expr) : MetaM Expr :=
+  match_expr type with
+  | f@Option α => return .app f (← translateDefault k α)
+  | f@Prod α β => return mkApp2 f (← translateDefault k α) (← translateDefault k β)
+  | _ => k type
+
+def translateGiven (translations : Array (Expr × Expr)) (type : Expr) : MetaM Expr := do
+  for (before, after) in translations do
+    if ← withoutModifyingMCtx (isDefEqI type before) then
+      return after
+  return type
+
+
+elab "transport" translations:(term "to" term),* : tactic => do
+  let translations ← translations.getElems.mapM fun ⟨stx⟩ ↦
+    return (← elabTerm stx[0] none, ← elabTerm stx[2] none)
+  let translateType := translateDefault (translateGiven translations)
   let mvarId ← getMainGoal
   mvarId.withContext do withReducible do
     let type ← mvarId.getType
-    let some (e, pf) ← transportCore .imp none type false |
+    let some (e, pf) ← transportCore .imp none type false |>.run { translateType } |
       throwError "transport made no progress"
     let newGoal ← mkFreshExprMVar e
     mvarId.assign (.app pf newGoal)
