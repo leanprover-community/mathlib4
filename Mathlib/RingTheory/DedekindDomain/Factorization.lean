@@ -663,30 +663,6 @@ lemma IsDedekindDomain.exists_eq_span_pair {I : Ideal R} {x : R} (hxI : x ∈ I)
   simp_rw [← Ideal.span_union, Set.union_singleton, Set.pair_comm x]
   use y
 
-/-- In a Dedekind domain, every ideal class contains an integral ideal coprime to a given nonzero
-ideal `J`. -/
-theorem ClassGroup.exists_mk0_eq_and_isCoprime (C : ClassGroup R) {J : Ideal R} (hJ : J ≠ ⊥) :
-    ∃ I : (Ideal R)⁰, mk0 I = C ∧ IsCoprime (I : Ideal R) J := by
-  obtain rfl | hJtop := eq_or_ne J ⊤
-  · obtain ⟨I, rfl⟩ := mk0_surjective C
-    exact ⟨I, rfl, by simp [Ideal.isCoprime_iff_sup_eq]⟩
-  obtain ⟨I₀, hI₀⟩ := mk0_surjective C⁻¹
-  have hI₀0 := nonZeroDivisors.coe_ne_zero I₀
-  obtain ⟨a, ha⟩ := IsDedekindDomain.exists_sup_span_eq (Ideal.mul_le_left : I₀.1 * J ≤ I₀)
-    (mul_ne_zero hI₀0 hJ)
-  obtain ⟨I, hI⟩ := Ideal.dvd_iff_le.mpr (ha ▸ le_sup_right : Ideal.span {a} ≤ I₀)
-  have ha0 : a ≠ 0 := by
-    rintro rfl
-    rw [Ideal.span_singleton_zero, sup_bot_eq] at ha
-    exact hJtop (mul_left_cancel₀ hI₀0 (ha.trans (Ideal.mul_top _).symm))
-  have hI0 : I ≠ 0 := right_ne_zero_of_mul (hI ▸ (by simpa using ha0 : Ideal.span {a} ≠ 0))
-  refine ⟨⟨I, mem_nonZeroDivisors_of_ne_zero hI0⟩, ?_, ?_⟩
-  · rw [← inv_inv C, ← hI₀]
-    exact mk0_eq_mk0_inv_iff.mpr ⟨a, ha0, by rw [mul_comm, ← hI]⟩
-  · rw [Ideal.isCoprime_iff_sup_eq, sup_comm]
-    refine mul_left_cancel₀ hI₀0 ?_
-    rw [Ideal.mul_sup, Ideal.mul_top, ← hI, ha]
-
 lemma IsDedekindDomain.exists_add_spanSingleton_mul_eq
     {a b c : FractionalIdeal R⁰ K} (hac : a ≤ c) (ha : a ≠ 0) (hb : b ≠ 0) :
     ∃ x : K, a + FractionalIdeal.spanSingleton R⁰ x * b = c := by
@@ -717,6 +693,27 @@ lemma IsDedekindDomain.exists_add_spanSingleton_mul_eq
       mul_comm c, FractionalIdeal.den_mul_self_eq_num', mul_comm]
     simp_rw [← FractionalIdeal.coeIdeal_span_singleton, ← FractionalIdeal.coeIdeal_mul,
       ← hx, ← FractionalIdeal.coeIdeal_sup]
+
+/-- In a Dedekind domain, every ideal class contains an integral ideal coprime to a given nonzero
+ideal `J`. -/
+theorem ClassGroup.exists_mk0_eq_and_isCoprime (C : ClassGroup R) {J : Ideal R} (hJ : J ≠ ⊥) :
+    ∃ I : (Ideal R)⁰, mk0 I = C ∧ IsCoprime (I : Ideal R) J := by
+  obtain rfl | hJ_ne := eq_or_ne J ⊤
+  · obtain ⟨I, rfl⟩ := mk0_surjective C
+    exact ⟨I, rfl, by simp [Ideal.isCoprime_iff_sup_eq]⟩
+  obtain ⟨I₀, hI₀⟩ := mk0_surjective C⁻¹
+  have hI₀_nz := nonZeroDivisors.coe_ne_zero I₀
+  obtain ⟨a, ha⟩ := exists_sup_span_eq (Ideal.mul_le_left : I₀.1 * J ≤ I₀) (mul_ne_zero hI₀_nz hJ)
+  have ha₀ : a ≠ 0 := by
+    intro rfl
+    exact hJ_ne (mul_left_cancel₀ hI₀_nz (by simpa using ha))
+  obtain ⟨I, hI⟩ := Ideal.dvd_iff_le.mpr (ha ▸ le_sup_right : Ideal.span {a} ≤ I₀)
+  rw [hI, ← Ideal.mul_sup, mul_eq_left₀ hI₀_nz, Ideal.one_eq_top] at ha
+  refine ⟨⟨I, mem_nonZeroDivisors_of_ne_zero ?_⟩, ?_, by rwa [Ideal.isCoprime_iff_sup_eq, sup_comm]⟩
+  · contrapose! ha
+    rwa [ha, sup_zero]
+  · rw [← inv_inv C, ← hI₀]
+    exact mk0_eq_mk0_inv_iff.mpr ⟨a, ha₀, by rw [mul_comm, ← hI]⟩
 
 namespace FractionalIdeal
 
