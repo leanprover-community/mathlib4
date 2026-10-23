@@ -43,14 +43,14 @@ def inferBareissRing {u : Level} (α : Q(Type u)) :
 /-- Select the first registered computation model for the element type `α`, or the default
 rational model. -/
 def modelFor {u : Level} (α : Q(Type u)) (rα : Q(CommRing $α)) :
-    MetaM ((c : Carrier) × Model α c.type) := do
+    MetaM (Model α) := do
   for (name, ext) in bareissExt.getState (← getEnv) do
     if let some model ← ext.model? α then
       trace[Tactic.evalRank] "selected the model `{name}` for{indentExpr α}"
       return model
   trace[Tactic.evalRank] "no registered model handles the element type; using the rational \
     model for{indentExpr α}"
-  return ⟨.int, ← ratModel α rα⟩
+  ratModel α rα
 
 /-- The result of producer evaluation and certificate construction, together with the computation
 model. -/
@@ -58,23 +58,21 @@ structure BareissResult {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommRi
     (A : Q(Matrix (Fin $m) (Fin $n) $α)) where
   /-- The decomposition certificate with its reusable intermediate certificates. -/
   cert : DecompositionCert rα A
-  /-- The carrier of the computation model. -/
-  carrier : Carrier
   /-- The computation model that produced the decomposition. -/
-  model : Model α carrier.type
+  model : Model α
   /-- The decomposition data underlying the certificate, on the model's carrier. -/
-  data : BareissData carrier.type
+  data : BareissData ModelType
 
 /-- Produce the decomposition of the matrix literal `A` and elaborate its certificates. -/
 def mkBareissDecomposition {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommRing $α))
     (A : Q(Matrix (Fin $m) (Fin $n) $α)) (entries : Array (Array Q($α))) :
     MetaM (BareissResult rα A) := do
-  let ⟨carrier, model⟩ ← modelFor α rα
+  let model ← modelFor α rα
   let fractions ← entries.mapM fun row => row.mapM model.evalEntry
   let (values, scales) := scaleRows model.ops model.commonMultiple fractions
   let data := restoreScaling model.ops scales (← bareissDecomp model.ops values)
   let exprData ← data.mapM model.mkEntry
   let cert ← certifyDecomposition model.entryCertifier? rα A entries exprData
-  return { cert, carrier, model, data }
+  return { cert, model, data }
 
 end Mathlib.Tactic.Echelon
