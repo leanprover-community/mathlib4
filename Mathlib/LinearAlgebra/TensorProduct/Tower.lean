@@ -867,6 +867,11 @@ lemma baseChange_top : (⊤ : Submodule R M).baseChange A = ⊤ := by
 lemma baseChange_sup : (p ⊔ q).baseChange A = p.baseChange A ⊔ q.baseChange A :=
   (baseChange_gc R M A).l_sup
 
+@[simp]
+lemma baseChange_iSup {ι : Type*} (p : ι → Submodule R M) :
+    (⨆ i, p i).baseChange A = ⨆ i, (p i).baseChange A :=
+  (baseChange_gc R M A).l_iSup
+
 variable {p q} in
 theorem baseChange_mono (h : p ≤ q) : p.baseChange A ≤ q.baseChange A :=
   (baseChange_gc R M A).monotone_l h
