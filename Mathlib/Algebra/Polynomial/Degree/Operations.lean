@@ -322,6 +322,19 @@ lemma leadingCoeff_add_nonneg [PartialOrder R] [AddLeftMono R]
   rw [leadingCoeff, coeff_add, this, ← leadingCoeff, h, ← leadingCoeff]
   exact add_nonneg hf hg
 
+lemma le_leadingCoeff_add_of_nonneg [SemilatticeInf R] [AddLeftMono R]
+    {f g : R[X]} (hf : 0 ≤ f.leadingCoeff) (hg : 0 ≤ g.leadingCoeff) :
+    f.leadingCoeff ⊓ g.leadingCoeff ≤ (f + g).leadingCoeff := by
+  rcases lt_trichotomy f.natDegree g.natDegree with h | h | h
+  rotate_right
+  · exact inf_le_of_left_le (le_of_eq (leadingCoeff_add_eq_left h).symm)
+  · exact inf_le_of_right_le (le_of_eq (leadingCoeff_add_eq_right h).symm)
+  refine inf_le_of_left_le ?_
+  have := natDegree_add_of_leadingCoeff_nonneg hf hg
+  rw [← h, max_self] at this
+  rw [leadingCoeff, leadingCoeff, this, coeff_add, ← leadingCoeff, h, ← leadingCoeff]
+  exact le_add_of_nonneg_right hg
+
 @[simp]
 theorem coeff_mul_degree_add_degree (p q : R[X]) :
     coeff (p * q) (natDegree p + natDegree q) = leadingCoeff p * leadingCoeff q :=

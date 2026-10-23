@@ -77,7 +77,20 @@ lemma leadingCoeff_sum_nonneg {R ι : Type*} [Semiring R] [PartialOrder R] [AddL
   | insert i s his h =>
     obtain ⟨hi, hs⟩ := (Finset.forall_mem_insert _ _ _).mp hf
     rw [Finset.sum_insert his]
-    refine leadingCoeff_add_nonneg hi (h hs)
+    exact leadingCoeff_add_nonneg hi (h hs)
+
+lemma le_leadingCoeff_sum_of_forall_nonneg {R ι : Type*}
+    [Semiring R] [CompleteLattice R] [AddLeftMono R]
+    {f : ι → R[X]} {s : Finset ι} (hs : s.Nonempty) (hf : ∀ i ∈ s, 0 ≤ (f i).leadingCoeff) :
+    (⨅ i ∈ s, (f i).leadingCoeff) ≤ (∑ i ∈ s, f i).leadingCoeff := by
+  classical
+  induction hs using Finset.Nonempty.cons_induction with
+  | singleton i => simp
+  | cons i t hit htne hd =>
+    obtain ⟨hi, ht⟩ := (Finset.forall_mem_cons _ _).mp hf
+    rw [Finset.cons_eq_insert, Finset.iInf_insert, Finset.sum_insert hit]
+    exact le_trans (inf_le_inf_left _ (hd ht))
+      (le_leadingCoeff_add_of_nonneg hi (leadingCoeff_sum_nonneg ht))
 
 lemma degree_sum_of_leadingCoeff_nonneg {R ι : Type*} [Semiring R] [PartialOrder R]
     [AddLeftMono R] {f : ι → R[X]} {s : Finset ι} (hf : ∀ i ∈ s, 0 ≤ (f i).leadingCoeff) :
