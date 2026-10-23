@@ -202,7 +202,7 @@ noncomputable def lTensor.toFun (hfg : Exact f g) :
     rw [LinearMap.range_le_iff_comap, ← LinearMap.ker_comp,
       ← lTensor_comp, hfg.linearMap_comp_eq_zero, lTensor_zero, ker_zero]
 
-/-- The inverse map in `lTensor.linearEquiv_of_rightInverse` (computably, given a right inverse) -/
+/-- The inverse map in `lTensor.linearEquiv_of_rightInverse` (computably, given a right inverse). -/
 noncomputable def lTensor.inverse_of_rightInverse {h : P → N} (hfg : Exact f g)
     (hgh : Function.RightInverse h g) :
     Q ⊗[R] P →ₗ[R] Q ⊗[R] N ⧸ LinearMap.range (lTensor Q f) :=
@@ -263,7 +263,7 @@ lemma lTensor.inverse_comp_lTensor :
 
 /-- For a surjective `g : N → P`,
   the natural equivalence between `Q ⊗ N ⧸ (image of (id Q) ⊗ f)` to `Q ⊗ P`
-  (computably, given a right inverse) -/
+  (computably, given a right inverse). -/
 noncomputable
 def lTensor.linearEquiv_of_rightInverse {h : P → N} (hgh : Function.RightInverse h g) :
     ((Q ⊗[R] N) ⧸ (LinearMap.range (lTensor Q f))) ≃ₗ[R] (Q ⊗[R] P) := {
@@ -280,7 +280,7 @@ def lTensor.linearEquiv_of_rightInverse {h : P → N} (hgh : Function.RightInver
     simp only [lTensor.toFun, Submodule.liftQ_apply] }
 
 /-- For a surjective `g : N → P`,
-  the natural equivalence between `Q ⊗ N ⧸ (image of (id Q) ⊗ f)` to `Q ⊗ P` -/
+  the natural equivalence between `Q ⊗ N ⧸ (image of (id Q) ⊗ f)` to `Q ⊗ P`. -/
 noncomputable def lTensor.equiv :
     ((Q ⊗[R] N) ⧸ (LinearMap.range (lTensor Q f))) ≃ₗ[R] (Q ⊗[R] P) :=
   lTensor.linearEquiv_of_rightInverse Q hfg (Function.rightInverse_surjInv hg)
@@ -368,7 +368,7 @@ lemma rTensor.inverse_comp_rTensor :
 
 /-- For a surjective `g : N → P`,
   the natural equivalence between `N ⊗ Q ⧸ (image of f ⊗ (id Q))` and `P ⊗ Q`
-  (computably, given a right inverse) -/
+  (computably, given a right inverse). -/
 noncomputable
 def rTensor.linearEquiv_of_rightInverse {h : P → N} (hgh : Function.RightInverse h g) :
     ((N ⊗[R] Q) ⧸ (range (rTensor Q f))) ≃ₗ[R] (P ⊗[R] Q) := {
@@ -385,7 +385,7 @@ def rTensor.linearEquiv_of_rightInverse {h : P → N} (hgh : Function.RightInver
     simp only [rTensor.toFun, Submodule.liftQ_apply] }
 
 /-- For a surjective `g : N → P`,
-  the natural equivalence between `N ⊗ Q ⧸ (image of f ⊗ (id Q))` and `P ⊗ Q` -/
+  the natural equivalence between `N ⊗ Q ⧸ (image of f ⊗ (id Q))` and `P ⊗ Q`. -/
 noncomputable def rTensor.equiv :
     ((N ⊗[R] Q) ⧸ (LinearMap.range (rTensor Q f))) ≃ₗ[R] (P ⊗[R] Q) :=
   rTensor.linearEquiv_of_rightInverse Q hfg (Function.rightInverse_surjInv hg)
