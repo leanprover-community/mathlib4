@@ -58,28 +58,11 @@ theorem mem_jacobson_iff_isUnit_one_add_mul :
   · intro h a
     exact (h a).exists_left_inv
 
-/-- Swapping the two factors in `1 + a * b` preserves invertibility. -/
-private theorem isUnit_one_add_mul_swap {a b : R} (h : IsUnit (1 + a * b)) :
-    IsUnit (1 + b * a) := by
-  obtain ⟨u, hu⟩ := h
-  have hl : (↑u⁻¹ : R) * (1 + a * b) = 1 := by rw [← hu]; exact u.inv_val
-  have hr : (1 + a * b) * (↑u⁻¹ : R) = 1 := by rw [← hu]; exact u.val_inv
-  refine ⟨⟨1 + b * a, 1 - b * ↑u⁻¹ * a, ?_, ?_⟩, rfl⟩
-  · calc
-      (1 + b * a) * (1 - b * ↑u⁻¹ * a) =
-          1 + b * a - b * ((1 + a * b) * ↑u⁻¹) * a := by noncomm_ring
-      _ = 1 := by rw [hr]; noncomm_ring
-  · calc
-      (1 - b * ↑u⁻¹ * a) * (1 + b * a) =
-          1 + b * a - b * (↑u⁻¹ * (1 + a * b)) * a := by noncomm_ring
-      _ = 1 := by rw [hl]; noncomm_ring
-
 /-- The equivalent unit criterion with multiplication on the other side. -/
 theorem mem_jacobson_iff_isUnit_one_add_mul' :
     x ∈ jacobson R ↔ ∀ a : R, IsUnit (1 + x * a) := by
   rw [mem_jacobson_iff_isUnit_one_add_mul]
-  exact ⟨fun h a ↦ isUnit_one_add_mul_swap (h a),
-    fun h a ↦ isUnit_one_add_mul_swap (h a)⟩
+  exact forall_congr' fun a ↦ isUnit_one_add_mul_comm a x
 
 /-- The Jacobson radical is invariant under passage to the opposite ring. -/
 @[simp]
