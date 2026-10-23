@@ -28,7 +28,7 @@ open CategoryTheory Functor MonoidalCategory
 
 namespace CategoryTheory.FunctorToTypes
 
-variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
+variable {C : Type u} [Category.{v} C]
 
 variable (F : C ⥤ Type (max w v u))
 
@@ -48,8 +48,6 @@ def rightAdj : (C ⥤ Type (max w v u)) ⥤ C ⥤ Type (max w v u) where
       have := a.naturality g h
       change (F.map g ≫ a.app _ (h ≫ g)) ≫ _ = _
       aesop  }}
-
-@[deprecated "Use `(rightAdj F).map instead" (since := "2026-04-08")] alias rightAdj_map := rightAdj
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

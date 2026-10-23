@@ -5,10 +5,7 @@ Authors: Andrew Yang, Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Sheaf
 public import Mathlib.CategoryTheory.Sites.CoverLifting
-public import Mathlib.CategoryTheory.Sites.CoverPreserving
-public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 public import Mathlib.CategoryTheory.Sites.LocallyFullyFaithful
 
 /-!
@@ -43,7 +40,7 @@ that factors through images of the functor for each object in `D`.
 
 ## References
 
-* [Elephant]: *Sketches of an Elephant*, ℱ. T. Johnstone: C2.2.
+* [Elephant]: *Sketches of an Elephant*, P. T. Johnstone: C2.2.
 * https://ncatlab.org/nlab/show/dense+sub-site
 * https://ncatlab.org/nlab/show/comparison+lemma
 
@@ -55,9 +52,8 @@ universe w v u
 
 namespace CategoryTheory
 
-variable {C : Type*} [Category* C] {D : Type*} [Category* D] {E : Type*} [Category* E]
+variable {C : Type*} [Category* C] {D : Type*} [Category* D]
 variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
-variable {L : GrothendieckTopology E}
 
 /-- An auxiliary structure that witnesses the fact that `f` factors through an image object of `G`.
 -/
@@ -171,7 +167,7 @@ theorem naturality_apply [G.IsLocallyFull K] {X Y : C} (i : G.obj X ⟶ G.obj Y)
     ℱ'.1.map i.op (α.app _ x) = α.app _ (ℱ.map i.op x) := by
   have {X Y} (i : X ⟶ Y) (x) :
       ℱ'.1.map (G.map i).op (α.app _ x) = α.app _ (ℱ.map (G.map i).op x) := by
-    exact ConcreteCategory.congr_hom (α.naturality i.op).symm x
+    congrm $((α.naturality i.op).symm) x
   refine IsLocallyFull.ext G _ i fun V iVX iVY e ↦ ?_
   simp only [← Functor.map_comp_apply, ← op_comp, ← e, this]
 
@@ -193,7 +189,6 @@ noncomputable def pushforwardFamily {X} (x : ℱ.obj (op X)) :
     pushforwardFamily α x = fun _ _ hf =>
     ℱ'.obj.map hf.some.lift.op <| α.app (op _) (ℱ.map hf.some.map.op x) := rfl
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem pushforwardFamily_apply [G.IsLocallyFull K]
     {X} (x : ℱ.obj (op X)) {Y : C} (f : G.obj Y ⟶ X) :
@@ -346,7 +341,7 @@ noncomputable def sheafYonedaHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.obj) :
       naturality := fun X Y f => by simpa using! congr_app (α.naturality f) U }
   naturality U V i := by
     ext X x
-    exact ConcreteCategory.congr_hom (((sheafCoyonedaHom α).app X).naturality i) x
+    congrm $(((sheafCoyonedaHom α).app X).naturality i) x
 
 /--
 Given a natural transformation `G ⋙ ℱ ⟶ G ⋙ ℱ'` between presheaves of arbitrary category,
@@ -481,7 +476,7 @@ lemma restrictHomEquivHom_naturality_left
 -/
 theorem iso_of_restrict_iso {ℱ ℱ' : Sheaf K A} (α : ℱ ⟶ ℱ') (i : IsIso (whiskerLeft G.op α.hom)) :
     IsIso α := by
-  convert! (sheafIso (asIso (whiskerLeft G.op α.hom))).isIso_hom using 1
+  convert (sheafIso (asIso (whiskerLeft G.op α.hom))).isIso_hom using 1
   ext1
   apply (sheafHom_eq _ _).symm
 
@@ -508,7 +503,6 @@ instance full_sheafPushforwardContinuous [G.IsContinuous J K] :
     Full (G.sheafPushforwardContinuous A J K) where
   map_surjective α := ⟨⟨sheafHom α.hom⟩, Sheaf.hom_ext <| sheafHom_restrict_eq α.hom⟩
 
-set_option backward.defeqAttrib.useBackward true in
 instance faithful_sheafPushforwardContinuous [G.IsContinuous J K] :
     Faithful (G.sheafPushforwardContinuous A J K) where
   map_injective := by

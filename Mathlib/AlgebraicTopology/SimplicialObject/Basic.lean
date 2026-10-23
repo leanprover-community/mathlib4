@@ -7,11 +7,7 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplexCategory.Basic
 public import Mathlib.CategoryTheory.Adjunction.Reflective
-public import Mathlib.CategoryTheory.Comma.Arrow
 public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-public import Mathlib.CategoryTheory.Opposites
-public import Mathlib.Util.Superscript
 
 /-!
 # Simplicial objects in a category.
@@ -272,6 +268,7 @@ end Truncated
 section Truncation
 
 /-- The truncation functor from simplicial objects to truncated simplicial objects. -/
+@[implicit_reducible]
 def truncation (n : ℕ) : SimplicialObject C ⥤ SimplicialObject.Truncated C n :=
   (whiskeringLeft _ _ _).obj (SimplexCategory.Truncated.inclusion n).op
 
@@ -577,7 +574,6 @@ def σ {n} (i : Fin (n + 1)) : X ^⦋n + 1⦌ ⟶ X ^⦋n⦌ :=
 def eqToIso {n m : ℕ} (h : n = m) : X ^⦋n⦌ ≅ X ^⦋m⦌ :=
   X.mapIso (CategoryTheory.eqToIso (by rw [h]))
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem eqToIso_refl {n : ℕ} (h : n = n) : X.eqToIso h = Iso.refl _ := by
   simp [eqToIso]
@@ -794,7 +790,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma w_app {X Y : Augmented C} {η : X ⟶ Y} {n : SimplexCategory} :
     dsimp% η.left ≫ Y.hom.app n = X.hom.app n ≫ η.right.app n :=
-  NatTrans.congr_app η.w n
+  congr($(η.w).app n)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The functor from augmented objects to arrows. -/
@@ -944,7 +940,6 @@ def CosimplicialObject.Augmented.leftOpRightOpIso (X : CosimplicialObject.Augmen
 
 variable (C)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A functorial version of `SimplicialObject.Augmented.rightOp`. -/
 @[simps]
@@ -956,9 +951,6 @@ def simplicialToCosimplicialAugmented :
       right := NatTrans.rightOp f.unop.left
       w := by
         ext x
-        dsimp
-        simp_rw [← op_comp]
-        congr 1
         exact (congr_app f.unop.w (op x)).symm }
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -969,7 +961,7 @@ def cosimplicialToSimplicialAugmented :
     CosimplicialObject.Augmented Cᵒᵖ ⥤ (SimplicialObject.Augmented C)ᵒᵖ where
   obj X := Opposite.op X.leftOp
   map f :=
-    Quiver.Hom.op <|
+    Quiver.Hom.op
       { left := NatTrans.leftOp f.right
         right := f.left.unop
         w := by

@@ -5,8 +5,9 @@ Authors: Tomáš Skřivan
 -/
 module
 
+public meta import Lean.Meta.Tactic.Simp
 public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
-public import Mathlib.Tactic.FunProp.FunctionData
+public meta import Mathlib.Tactic.FunProp.FunctionData
 
 /-!
 ## `funProp`

@@ -65,8 +65,8 @@ namespace CauchyFilter
 section
 
 variable {α : Type u} [UniformSpace α]
-variable {β : Type v} {γ : Type w}
-variable [UniformSpace β] [UniformSpace γ]
+variable {β : Type v}
+variable [UniformSpace β]
 
 instance (f : CauchyFilter α) : NeBot f.1 := f.2.1
 
@@ -418,7 +418,7 @@ theorem ext {Y : Type*} [TopologicalSpace Y] [T2Space Y] {f g : Completion α �
 theorem ext' {Y : Type*} [TopologicalSpace Y] [T2Space Y] {f g : Completion α → Y}
     (hf : Continuous f) (hg : Continuous g) (h : ∀ a : α, f a = g a) (a : Completion α) :
     f a = g a :=
-  congr_fun (ext hf hg h) a
+  congr($(ext hf hg h) a)
 
 section Extension
 

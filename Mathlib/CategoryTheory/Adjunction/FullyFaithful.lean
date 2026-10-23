@@ -6,8 +6,6 @@ Authors: Kim Morrison, Dagur Asgeirsson
 module
 
 public import Mathlib.CategoryTheory.Adjunction.Basic
-public import Mathlib.CategoryTheory.MorphismProperty.Basic
-public import Mathlib.CategoryTheory.EpiMono
 
 /-!
 # Adjoints of fully faithful functors
@@ -52,13 +50,11 @@ variable {L : C ⥤ D} {R : D ⥤ C} (h : L ⊣ R)
 
 attribute [local simp] homEquiv_unit homEquiv_counit
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If the left adjoint is faithful, then each component of the unit is a monomorphism. -/
 instance unit_mono_of_L_faithful [L.Faithful] (X : C) : Mono (h.unit.app X) where
   right_cancellation {Y} f g hfg :=
     L.map_injective <| (h.homEquiv Y (L.obj X)).injective <| by simpa using hfg
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If the left adjoint is full, then each component of the unit is a split epimorphism. -/
 noncomputable def unitSplitEpiOfLFull [L.Full] (X : C) : SplitEpi (h.unit.app X) where
   section_ := L.preimage (h.counit.app (L.obj X))
@@ -80,7 +76,6 @@ instance counit_epi_of_R_faithful [R.Faithful] (X : D) : Epi (h.counit.app X) wh
   left_cancellation {Y} f g hfg :=
     R.map_injective <| (h.homEquiv (R.obj X) Y).symm.injective <| by simpa using! hfg
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If the right adjoint is full, then each component of the counit is a split monomorphism. -/
 noncomputable def counitSplitMonoOfRFull [R.Full] (X : D) : SplitMono (h.counit.app X) where
   retraction := R.preimage (h.unit.app (R.obj X))
@@ -122,7 +117,6 @@ theorem inv_counit_map {X : D} [IsIso (h.counit.app X)] :
 noncomputable def whiskerLeftRUnitIsoOfIsIsoCounit [IsIso h.counit] : R ⋙ L ⋙ R ≅ R :=
   (R.associator L R).symm ≪≫ isoWhiskerRight (asIso h.counit) R ≪≫ Functor.leftUnitor _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If each component of the unit is a monomorphism, then the left adjoint is faithful. -/
 lemma faithful_L_of_mono_unit_app [∀ X, Mono (h.unit.app X)] : L.Faithful where
   map_injective {X Y f g} hfg := by
@@ -143,7 +137,6 @@ lemma full_L_of_isSplitEpi_unit_app [∀ X, IsSplitEpi (h.unit.app X)] : L.Full 
 noncomputable def fullyFaithfulLOfIsIsoUnit [IsIso h.unit] : L.FullyFaithful where
   preimage {_ Y} f := h.homEquiv _ (L.obj Y) f ≫ inv (h.unit.app Y)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If each component of the counit is an epimorphism, then the right adjoint is faithful. -/
 lemma faithful_R_of_epi_counit_app [∀ X, Epi (h.counit.app X)] : R.Faithful where
   map_injective {X Y f g} hfg := by
@@ -262,7 +255,6 @@ instance [R.IsEquivalence] : IsIso h.counit := by
   have := h.isEquivalence_left_of_isEquivalence_right
   infer_instance
 
-set_option backward.defeqAttrib.useBackward true in
 theorem isIso_map_unit_of_isLeftAdjoint_comp {E : Type*} [Category* E]
     {T : C ⥤ E} {S : E ⥤ D} {X : C} (adj2 : T ⊣ S ⋙ R) [R.Faithful] [R.Full] :
     IsIso (T.map (h.unit.app X)) := by

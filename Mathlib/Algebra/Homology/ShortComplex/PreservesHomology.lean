@@ -97,7 +97,6 @@ lemma IsPreservedBy.hg : PreservesLimit (parallelPair S.g 0) F :=
 preserves the cokernel of `h.f' : S.X₁ ⟶ h.K`. -/
 lemma IsPreservedBy.hf' : PreservesColimit (parallelPair h.f' 0) F := IsPreservedBy.f'
 
-set_option backward.isDefEq.respectTransparency false in
 /-- When a left homology data `h` of a short complex `S` is preserved by a functor `F`,
 this is the induced left homology data `h.map F` for the short complex `S.map F`. -/
 @[simps]
@@ -134,7 +133,6 @@ lemma map_f' : (h.map F).f' = F.map h.f' := by
 
 end LeftHomologyData
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a left homology map data `ψ : LeftHomologyMapData φ h₁ h₂` such that
 both left homology data `h₁` and `h₂` are preserved by a functor `F`, this is
 the induced left homology map data for the morphism `F.mapShortComplex.map φ`. -/
@@ -181,7 +179,6 @@ preserves the kernel of `h.g' : h.Q ⟶ S.X₃`. -/
 lemma IsPreservedBy.hg' : PreservesLimit (parallelPair h.g' 0) F :=
   @IsPreservedBy.g' _ _ _ _ _ _ _ h F _ _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- When a right homology data `h` of a short complex `S` is preserved by a functor `F`,
 this is the induced right homology data `h.map F` for the short complex `S.map F`. -/
 @[simps]
@@ -219,7 +216,6 @@ lemma map_g' : (h.map F).g' = F.map h.g' := by
 
 end RightHomologyData
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a right homology map data `ψ : RightHomologyMapData φ h₁ h₂` such that
 both right homology data `h₁` and `h₂` are preserved by a functor `F`, this is
 the induced right homology map data for the morphism `F.mapShortComplex.map φ`. -/
@@ -276,7 +272,7 @@ end ShortComplex
 
 namespace Functor
 
-variable (F : C ⥤ D) [PreservesZeroMorphisms F] (S : ShortComplex C) {S₁ S₂ : ShortComplex C}
+variable (F : C ⥤ D) [PreservesZeroMorphisms F] (S : ShortComplex C)
 
 /-- A functor preserves the left homology of a short complex `S` if it preserves all the
 left homology data of `S`. -/
@@ -539,7 +535,6 @@ lemma mapCyclesIso_hom_naturality [S₁.HasLeftHomology] [S₂.HasLeftHomology]
   simp only [LeftHomologyData.map_cyclesMap', Functor.mapShortComplex_obj, ← cyclesMap'_comp,
     comp_id, id_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma mapCyclesIso_inv_naturality [S₁.HasLeftHomology] [S₂.HasLeftHomology]
     [F.PreservesLeftHomologyOf S₁] [F.PreservesLeftHomologyOf S₂] :
@@ -560,7 +555,6 @@ lemma mapLeftHomologyIso_hom_naturality [S₁.HasLeftHomology] [S₂.HasLeftHomo
   simp only [LeftHomologyData.map_leftHomologyMap', Functor.mapShortComplex_obj,
     ← leftHomologyMap'_comp, comp_id, id_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma mapLeftHomologyIso_inv_naturality [S₁.HasLeftHomology] [S₂.HasLeftHomology]
     [F.PreservesLeftHomologyOf S₁] [F.PreservesLeftHomologyOf S₂] :
@@ -581,7 +575,6 @@ lemma mapOpcyclesIso_hom_naturality [S₁.HasRightHomology] [S₂.HasRightHomolo
   simp only [RightHomologyData.map_opcyclesMap', Functor.mapShortComplex_obj, ← opcyclesMap'_comp,
     comp_id, id_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma mapOpcyclesIso_inv_naturality [S₁.HasRightHomology] [S₂.HasRightHomology]
     [F.PreservesRightHomologyOf S₁] [F.PreservesRightHomologyOf S₂] :
@@ -602,7 +595,6 @@ lemma mapRightHomologyIso_hom_naturality [S₁.HasRightHomology] [S₂.HasRightH
   simp only [RightHomologyData.map_rightHomologyMap', Functor.mapShortComplex_obj,
     ← rightHomologyMap'_comp, comp_id, id_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma mapRightHomologyIso_inv_naturality [S₁.HasRightHomology] [S₂.HasRightHomology]
     [F.PreservesRightHomologyOf S₁] [F.PreservesRightHomologyOf S₂] :

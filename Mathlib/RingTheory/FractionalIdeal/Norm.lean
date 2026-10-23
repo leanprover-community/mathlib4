@@ -5,9 +5,10 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.RingTheory.FractionalIdeal.Basic
 public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
-public import Mathlib.RingTheory.Localization.NormTrace
+
+import Mathlib.RingTheory.Localization.NormTrace
+import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 
@@ -42,15 +43,15 @@ variable {K : Type*} [CommRing K] [Algebra R K] [IsFractionRing R K]
 
 section
 
-variable [Infinite R] [Ring.HasFiniteQuotients R]
+variable [Ring.HasFiniteQuotients R]
 
 theorem absNorm_div_absNorm_span_eq {I : FractionalIdeal R⁰ K} (a : R⁰) (I₀ : Ideal R)
     (h : a • (I : Submodule R K) = Submodule.map (Algebra.linearMap R K) I₀) :
     (Ideal.absNorm I.num : ℚ) / (Ideal.absNorm (Ideal.span {(I.den : R)}) : ℚ) =
       (Ideal.absNorm I₀ : ℚ) / (Ideal.absNorm (Ideal.span {(a : R)}) : ℚ) := by
   rw [div_eq_div_iff]
-  · replace h := congr_arg (I.den • ·) h
-    have h' := congr_arg (a • ·) (den_mul_self_eq_num I)
+  · replace h := congr(I.den • $h)
+    have h' := congr(a • $(den_mul_self_eq_num I))
     rw [smul_comm] at h
     rw [h, Submonoid.smul_def, Submonoid.smul_def, ← Submodule.ideal_span_singleton_smul,
       ← Submodule.ideal_span_singleton_smul, ← Submodule.map_smul'', ← Submodule.map_smul'',
@@ -58,7 +59,7 @@ theorem absNorm_div_absNorm_span_eq {I : FractionalIdeal R⁰ K} (a : R⁰) (I�
     · simp_rw [← Nat.cast_mul]
       rw [← map_mul, ← map_mul, mul_comm, ← h', mul_comm]
     · exact LinearMap.ker_eq_bot.mpr (IsFractionRing.injective R K)
-  all_goals simp [Ideal.absNorm_eq_zero_iff, nonZeroDivisors.coe_ne_zero]
+  all_goals simp [Ideal.absNorm_eq_zero_iff', nonZeroDivisors.coe_ne_zero]
 
 /-- The absolute norm of the fractional ideal `I` extending by multiplicativity the absolute norm
 on (integral) ideals. -/
@@ -90,14 +91,14 @@ theorem absNorm_nonneg (I : FractionalIdeal R⁰ K) : 0 ≤ absNorm I := by dsim
 
 theorem absNorm_bot : absNorm (⊥ : FractionalIdeal R⁰ K) = 0 := absNorm.map_zero'
 
-theorem absNorm_one : absNorm (1 : FractionalIdeal R⁰ K) = 1 := by convert! absNorm.map_one'
+theorem absNorm_one : absNorm (1 : FractionalIdeal R⁰ K) = 1 := by convert absNorm.map_one'
 
 theorem absNorm_eq_zero_iff {I : FractionalIdeal R⁰ K} : absNorm I = 0 ↔ I = 0 := by
   have : IsDomain K := IsFractionRing.isDomain R
   refine ⟨fun h ↦ zero_of_num_eq_bot zero_notMem_nonZeroDivisors ?_, fun h ↦ h ▸ absNorm_bot⟩
   rw [absNorm_eq_absNorm_span, div_eq_zero_iff] at h
-  refine Ideal.absNorm_eq_zero_iff.mp <| Nat.cast_eq_zero.mp <| h.resolve_right ?_
-  simp [Ideal.absNorm_eq_zero_iff, nonZeroDivisors.coe_ne_zero]
+  refine Ideal.absNorm_eq_zero_iff'.mp <| Nat.cast_eq_zero.mp <| h.resolve_right ?_
+  simp [Ideal.absNorm_eq_zero_iff', nonZeroDivisors.coe_ne_zero]
 
 theorem coeIdeal_absNorm (I₀ : Ideal R) :
     absNorm (I₀ : FractionalIdeal R⁰ K) = Ideal.absNorm I₀ := by
@@ -112,6 +113,10 @@ variable [Module.Free ℤ R] [Module.Finite ℤ R]
 -- even a `ℤ`-specific version would be tried on every `Infinite` goal. Declaring it one locally is
 -- safe: the cost is confined to this file, and `Infinite` is a `Prop`, so any two instances agree.
 local instance : Infinite R := Module.Free.infinite ℤ R
+
+-- A module-finite ℤ-algebra has finite quotients; local to this section, where it lets the
+-- results below be deduced from the ones above.
+local instance : Ring.HasFiniteQuotients R := .of_module_finite ℤ R
 
 theorem absNorm_eq (I : FractionalIdeal R⁰ K) :
     absNorm I = (Ideal.absNorm I.num : ℚ) / |Algebra.norm ℤ (I.den : R)| := by

@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 public import Mathlib.Analysis.Calculus.FDeriv.Defs
-public import Mathlib.Analysis.Normed.Operator.Asymptotics
 public import Mathlib.Analysis.Calculus.TangentCone.Basic
+public import Mathlib.Analysis.Normed.Operator.Asymptotics
+
 import Mathlib.Analysis.Asymptotics.Lemmas
 import Mathlib.Analysis.Calculus.TangentCone.DimOne
 
@@ -111,8 +112,6 @@ public section
 
 open Filter Asymptotics ContinuousLinearMap Set Topology NNReal
 
-noncomputable section
-
 section
 section DerivativeUniqueness
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -181,8 +180,8 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
 variable {F : Type*} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
 
-variable {f f₀ f₁ g : E → F}
-variable {f' f₀' f₁' g' : E →L[𝕜] F}
+variable {f : E → F}
+variable {f' : E →L[𝕜] F}
 variable {x : E}
 variable {s t : Set E}
 variable {L L₁ L₂ : Filter (E × E)}
@@ -736,7 +735,7 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 variable {f : E → F}
 variable {f' : E →L[𝕜] F}
-variable {x x₀ : E}
+variable {x : E}
 variable {s : Set E}
 variable {L : Filter (E × E)}
 

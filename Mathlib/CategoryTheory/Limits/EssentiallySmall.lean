@@ -6,7 +6,6 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Products
-public import Mathlib.CategoryTheory.EssentiallySmall
 
 /-!
 # Limits over essentially small indexing categories
@@ -21,8 +20,6 @@ public section
 
 
 universe w₁ w₂ v₁ v₂ u₁ u₂
-
-noncomputable section
 
 open CategoryTheory
 

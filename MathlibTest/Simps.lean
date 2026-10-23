@@ -1,9 +1,14 @@
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Tactic.Simps
-import Mathlib.Lean.Exception
-import Mathlib.Logic.Equiv.Defs
-import Mathlib.Data.Prod.Basic
-import Mathlib.Tactic.Common
+module
+
+public meta import Mathlib.Lean.Exception
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Algebra.Notation.Defs
+public import Mathlib.Data.Prod.Basic
+public import Mathlib.Logic.Equiv.Defs
+public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.Simps
+
+@[expose] public section
 
 -- set_option trace.simps.debug true
 -- set_option trace.simps.verbose true
@@ -14,7 +19,7 @@ set_option backward.defeqAttrib.useBackward true
 open Lean Meta Elab Term Command Simps
 
 /-- Tests whether `declName` has the `@[simp]` attribute in `env`. -/
-def hasSimpAttribute (env : Environment) (declName : Name) : Bool :=
+meta def hasSimpAttribute (env : Environment) (declName : Name) : Bool :=
   simpExtension.getState env |>.lemmaNames.contains <| .decl declName
 
 
@@ -502,7 +507,12 @@ structure Prefunctor (C : Type u) [CategoryStruct C] (D : Type v) [CategoryStruc
   /-- The action of a (pre)functor on edges/arrows/morphisms. -/
   map : ∀ {X Y : C}, (X ⟶ Y) → (obj X ⟶ obj Y)
 
-@[simps]
+/--
+trace: [simps] Adding `IdentityPreunctor_obj` :
+      ∀ (x : Type u), IdentityPreunctor.obj x = 5
+-/
+#guard_msgs in
+@[simps?]
 def IdentityPreunctor : Prefunctor (Type u) Nat where
   obj _ := 5
   map _ := ⟨⟨rfl⟩⟩

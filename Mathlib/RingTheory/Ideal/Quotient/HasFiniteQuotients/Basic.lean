@@ -20,8 +20,6 @@ quotient `R ⧸ I` is finite.
 - `Ring.HasFiniteQuotients.instIsNoetherianRing` : A ring with finite quotients is noetherian.
 - `Ring.HasFiniteQuotients.of_module_finite`: Assume that `R` has finite quotients and that `S` is
   a domain and a finite `R`-module. Then `S` has finite quotients.
-- `Ring.HasFiniteQuotients.instOfIsDomainOfFG`: A domain that is also a finite `ℤ`-module
-  has finite quotients.
 
 -/
 
@@ -44,6 +42,11 @@ instance [Finite R] : Ring.HasFiniteQuotients R where
 section properties
 
 variable [HasFiniteQuotients R]
+
+/-- A quotient of a ring with finite quotients by a nonzero ideal is finite. -/
+instance {I : Ideal R} [NeZero I] :
+    Finite (R ⧸ I) :=
+  finiteQuotient (NeZero.ne I)
 
 /-- A nonzero prime ideal of a ring with finite quotients is maximal. -/
 theorem maximalOfPrime {P : Ideal R} [P.IsPrime] (hp : P ≠ ⊥) :
@@ -100,8 +103,20 @@ instance : HasFiniteQuotients ℤ where
     have : NeZero n := ⟨by simpa using hI⟩
     exact inferInstanceAs <| Finite (ℤ ⧸ Ideal.span {n})
 
-/-- A domain that is finitely generated has finite quotients. -/
-instance [IsDomain R] [Module.Finite ℤ R] : HasFiniteQuotients R :=
-  .of_module_finite ℤ R
-
 end Ring.HasFiniteQuotients
+
+namespace Ideal
+
+variable {S : Type*} [CommRing S] [Ring.HasFiniteQuotients S]
+
+/-- A version of `finiteIndex` for a ring with finite quotients. -/
+lemma finiteIndex' {I : Ideal S} (hI : I ≠ ⊥) : I.toAddSubgroup.FiniteIndex :=
+  AddSubgroup.finiteIndex_iff_finite_quotient.mpr (Ring.HasFiniteQuotients.finiteQuotient hI)
+
+/-- A version of `isFiniteRelIndex` for a ring with finite quotients. -/
+lemma isFiniteRelIndex' {I : Ideal S} (hI : I ≠ ⊥) (J : Ideal S) :
+    I.toAddSubgroup.IsFiniteRelIndex J.toAddSubgroup :=
+  have := finiteIndex' hI
+  AddSubgroup.isFiniteRelIndex_of_finiteIndex
+
+end Ideal

@@ -5,6 +5,7 @@ Authors: Anatole Dedecker, Yury Kudryashov
 -/
 module
 
+public import Mathlib.Topology.Algebra.Algebra.Equiv
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.RestrictScalars
 public import Mathlib.Topology.Algebra.Module.Spaces.UniformConvergenceCLM
 
@@ -36,7 +37,7 @@ Here is a list of type aliases for `E →L[𝕜] F` endowed with various topolog
 
 ## Main statements
 
-* `ContinuousLinearMap.topologicalAddGroup` and
+* `ContinuousLinearMap.isTopologicalAddGroup` and
   `ContinuousLinearMap.continuousSMul` register these facts as instances for the special
   case of bounded convergence.
 
@@ -71,9 +72,11 @@ instance topologicalSpace [TopologicalSpace F] [IsTopologicalAddGroup F] :
     TopologicalSpace (E →SL[σ] F) :=
   fast_instance% UniformConvergenceCLM.instTopologicalSpace σ F { S | IsVonNBounded 𝕜₁ S }
 
-instance topologicalAddGroup [TopologicalSpace F] [IsTopologicalAddGroup F] :
+instance isTopologicalAddGroup [TopologicalSpace F] [IsTopologicalAddGroup F] :
     IsTopologicalAddGroup (E →SL[σ] F) :=
   UniformConvergenceCLM.instIsTopologicalAddGroup σ F _
+
+@[deprecated (since := "2026-08-21")] alias topologicalAddGroup := isTopologicalAddGroup
 
 instance continuousSMul [RingHomSurjective σ] [RingHomIsometric σ] [TopologicalSpace F]
     [IsTopologicalAddGroup F] [ContinuousSMul 𝕜₂ F] : ContinuousSMul 𝕜₂ (E →SL[σ] F) :=
@@ -514,6 +517,19 @@ def arrowCongrSL (e₁₂ : E ≃SL[σ₁₂] F) (e₄₃ : H ≃SL[σ₄₃] G)
       (precomp H e₁₂.symm.toContinuousLinearMap)).continuous
     continuous_invFun := ((precomp H e₁₂.toContinuousLinearMap).comp
       (postcomp F e₄₃.symm.toContinuousLinearMap)).continuous }
+
+variable (F σ₁₂) in
+/-- The partly continuous semilinear map obtained by applying a continuous semilinear map
+at a given vector. -/
+@[simps apply_apply] def _root_.ContinuousLinearMap.applyₗ
+    [ContinuousSMul 𝕜 E] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜₂ F] :
+    E →ₛₗ[σ₁₂] (E →SL[σ₁₂] F) →L[𝕜₂] F where
+  toFun x :=
+    { toFun f := f x
+      map_add' _ _ := rfl
+      map_smul' _ _ := rfl }
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
 
 end Semilinear
 

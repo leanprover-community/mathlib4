@@ -5,6 +5,7 @@ Authors: Monica Omar
 -/
 module
 
+public import Mathlib.LinearAlgebra.Projection
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 
 /-!

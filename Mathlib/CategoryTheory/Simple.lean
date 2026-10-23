@@ -5,8 +5,6 @@ Authors: Markus Himmel, Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
-public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 public import Mathlib.CategoryTheory.Abelian.Basic
 public import Mathlib.CategoryTheory.Subobject.Lattice
 public import Mathlib.Order.Atoms
@@ -123,7 +121,7 @@ theorem id_nonzero (X : C) [Simple.{v} X] : 𝟙 X ≠ 0 :=
   (Simple.mono_isIso_iff_nonzero (𝟙 X)).mp (by infer_instance)
 
 instance (X : C) [Simple.{v} X] : Nontrivial (End X) :=
-  nontrivial_of_ne 1 _ (id_nonzero X)
+  nontrivial_of_ne 1 (.of 0) (fun h ↦ id_nonzero X (by simpa [End.ext_iff] using h))
 
 section
 
