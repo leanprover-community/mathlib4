@@ -305,6 +305,11 @@ theorem coe_bilinearCombination :
 theorem bilinearCombination_apply : bilinearCombination R S v = linearCombination R v :=
   rfl
 
+@[simp]
+theorem toAddMonoidHom_bilinearCombination :
+    (bilinearCombination (α := α) (M := M) R S).toAddMonoidHom = linearCombination R :=
+  rfl
+
 end LinearCombination
 
 end Finsupp
