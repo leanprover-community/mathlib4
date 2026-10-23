@@ -8,9 +8,8 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.Boundary
 public import Mathlib.AlgebraicTopology.SimplicialSet.CategoryWithFibrations
 public import Mathlib.AlgebraicTopology.SimplicialSet.Monomorphisms
-public import Mathlib.AlgebraicTopology.SimplicialSet.NonsingularColimit
 public import Mathlib.AlgebraicTopology.SimplicialSet.NonemptyFiniteChains
-public import Mathlib.CategoryTheory.Limits.Presheaf
+public import Mathlib.AlgebraicTopology.SimplicialSet.NonsingularColimit
 public import Mathlib.CategoryTheory.MorphismProperty.FunctorCategory
 public import Mathlib.CategoryTheory.MorphismProperty.PreserveLimits
 public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
