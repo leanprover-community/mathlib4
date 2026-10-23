@@ -282,8 +282,7 @@ theorem linearIndependent_le_span'' {ι : Type v} {v : ι → M} (i : LinearInde
   apply card_le_of_injective'' <| linearCombination R (Span.repr R w ⟨v ·, s ▸ trivial⟩)
   intro f g h
   apply_fun linearCombination R ((↑) : w → M) at h
-  simp only [linearCombination_linearCombination,
-              Span.finsupp_linearCombination_repr] at h
+  simp only [linearCombination_linearCombination, Span.finsupp_linearCombination_repr] at h
   exact i h
 
 /-- Let `R` satisfy the strong rank condition. If `m` elements of a free rank `n` `R`-module are
