@@ -7,6 +7,8 @@ module
 
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder
 
+import Mathlib.RingTheory.MvPolynomial.Ideal
+
 /-! # Division algorithm with respect to monomial orders
 
 We provide a division algorithm with respect to monomial orders in polynomial rings.
@@ -37,7 +39,7 @@ The proof is done by induction, using two standard constructions
 * `MonomialOrder.div_single` is the variant of `MonomialOrder.div` for a single polynomial.
 
 
-## Reference : [Becker-Weispfenning1993]
+## Reference : [Becker-Weispfenning1993], [MOLLER1988345]
 
 -/
 
@@ -118,6 +120,54 @@ theorem degree_reduce_lt {f b : MvPolynomial σ R} (hb : IsUnit (m.leadingCoeff 
     rw [H', degree_zero] at K
     exact hf K.symm
 
+attribute [local instance] WellFoundedLT.toWellFoundedRelation in
+open Classical in
+theorem weakDiv {ι : Type*} (b : ι → MvPolynomial σ R) (f : MvPolynomial σ R) :
+    ∃ (g : ι →₀ (MvPolynomial σ R)) (r : MvPolynomial σ R),
+      f = Finsupp.linearCombination _ b g + r ∧
+        (∀ i, m.withBotDegree (b i) + m.withBotDegree (g i) ≼'[m] m.withBotDegree f) ∧
+        ∀ e ∈ r.support, monomial e (r.coeff e) ∉ Ideal.span (Set.range <| m.leadingTerm ∘ b) := by
+  classical
+  by_cases! hb :
+    ∀ e ∈ f.support, monomial e (f.coeff e) ∉ Ideal.span (Set.range (m.leadingTerm ∘ b))
+  · exact ⟨0, f, by simp, by simp, hb⟩
+  have hf0 : f ≠ 0 := by contrapose hb with rfl; simp
+  obtain ⟨deg, hdeg_mem, hdeg_sum⟩ := hb
+  simp_rw [m.monomial_mem_span_range_leadingTerm_tfae.out 1 5] at hdeg_sum
+  rcases hdeg_sum with ⟨g_, hg_deg, hg_sum⟩
+  have ⟨g', r', hg'sum, hg'deg, hdeg'sum⟩ := weakDiv (b := b) (f - g_.linearCombination _ b)
+  use g_ + g', r'
+  rw [sub_eq_iff_eq_add', ← add_assoc, ← map_add] at hg'sum
+  refine ⟨hg'sum, fun i ↦ ?_, hdeg'sum⟩
+  simp_rw [map_add] at ⊢ hg_deg hg'deg
+  rcases le_max_iff.mp <| m.withBotDegree_add_le (g_ i) (g' i) with hle | hle
+  · apply le_trans <| add_le_add (le_refl ..) hle
+    apply le_trans <| hg_deg _
+    exact m.le_withBotDegree hdeg_mem
+  apply le_trans <| add_le_add (le_refl ..) hle
+  apply le_trans <| hg'deg _
+  exact m.withBotDegree_sub_le_withBotDegree hg_sum.symm
+termination_by toColex <| f.support.image m.toSyn
+decreasing_by exact m.toColex_support_sub_lt_toColex_support_of_leadingTerm_eq hdeg_mem hg_sum.symm
+
+theorem weakDiv_set {B : Set (MvPolynomial σ R)} (f : MvPolynomial σ R) :
+    (∃ (g : B →₀ (MvPolynomial σ R)) (r : MvPolynomial σ R),
+      f = Finsupp.linearCombination _ (fun (b : B) ↦ (b : MvPolynomial σ R)) g + r ∧
+      (∀ (b : B), m.withBotDegree b.val + m.withBotDegree (g b) ≼'[m] m.withBotDegree f) ∧
+      ∀ e ∈ r.support, monomial e (r.coeff e) ∉ Ideal.span (m.leadingTerm '' B)) := by
+  obtain ⟨g, r, H⟩ := m.weakDiv (b := fun (p : B) ↦ p) f
+  refine ⟨g, r, H.1, H.2.1, fun e he hb ↦ H.2.2 e he <| by simpa [Set.range_comp]⟩
+
+lemma monomial_mem_span_range_leadingTerm_iff_of_isUnit {R ι} [CommSemiring R]
+    {e : σ →₀ ℕ} {c : R}
+    {b : ι → MvPolynomial σ R} (hb : ∀ i, IsUnit (m.leadingCoeff (b i))) (hc : c ≠ 0) :
+    monomial e c ∈ Ideal.span (Set.range (m.leadingTerm ∘ b)) ↔ ∃ i, m.degree (b i) ≤ e := by
+  classical
+  rw [Set.range_comp, m.span_leadingTerm_eq_span_monomial (by simpa using hb),
+    ← Function.comp_def (monomial · (1 : R)) (m.degree (R := R)), Set.image_comp,
+    mem_ideal_span_monomial_image]
+  simp [support_monomial, hc]
+
 /-- Division by a family of multivariate polynomials
 whose leading coefficients are invertible with respect to a monomial order -/
 theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
@@ -126,93 +176,15 @@ theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
       f = Finsupp.linearCombination _ b g + r ∧
         (∀ i, m.degree (b i * (g i)) ≼[m] m.degree f) ∧
         (∀ c ∈ r.support, ∀ i, ¬ (m.degree (b i) ≤ c)) := by
-  by_cases! hb' : ∃ i, m.degree (b i) = 0
-  · obtain ⟨i, hb0⟩ := hb'
-    use Finsupp.single i ((hb i).unit⁻¹ • f), 0
-    constructor
-    · simp only [Finsupp.linearCombination_single, smul_eq_mul, add_zero]
-      simp only [smul_mul_assoc, ← smul_eq_iff_eq_inv_smul, Units.smul_isUnit]
-      nth_rewrite 2 [eq_C_of_degree_eq_zero hb0]
-      rw [mul_comm, smul_eq_C_mul]
-    constructor
-    · intro j
-      by_cases hj : j = i
-      · apply le_trans degree_mul_le
-        simp only [hj, hb0, Finsupp.single_eq_same, zero_add]
-        apply le_of_eq
-        simp only [EmbeddingLike.apply_eq_iff_eq]
-        apply degree_smul_of_isRegular (Units.isRegular _)
-      · simp only [Finsupp.single_eq_of_ne hj, mul_zero, degree_zero, map_zero]
-        apply bot_le
-    · simp
-  by_cases hf0 : f = 0
-  · refine ⟨0, 0, by simp [hf0], ?_, by simp⟩
-    intro b
-    simp only [Finsupp.coe_zero, Pi.zero_apply, mul_zero, degree_zero, map_zero]
-    exact bot_le
-  by_cases! hf : ∃ i, m.degree (b i) ≤ m.degree f
-  · obtain ⟨i, hf⟩ := hf
-    have deg_reduce : m.degree (m.reduce (hb i) f) ≺[m] m.degree f := by
-      apply degree_reduce_lt (hb i) hf
-      intro hf0'
-      apply hb' i
-      simpa [hf0'] using hf
-    obtain ⟨g', r', H'⟩ := div hb (m.reduce (hb i) f)
-    use g' +
-      Finsupp.single i (monomial (m.degree f - m.degree (b i)) ((hb i).unit⁻¹ * m.leadingCoeff f))
-    use r'
-    constructor
-    · rw [map_add, add_assoc, add_comm _ r', ← add_assoc, ← H'.1]
-      simp [reduce]
-    constructor
-    · rintro j
-      simp only [Finsupp.coe_add, Pi.add_apply]
-      rw [mul_add]
-      apply le_trans degree_add_le
-      simp only [sup_le_iff]
-      constructor
-      · exact le_trans (H'.2.1 _) (le_of_lt deg_reduce)
-      · classical
-        rw [Finsupp.single_apply]
-        split_ifs with hc
-        · subst j
-          grw [degree_mul_le, map_add, degree_monomial_le, ← map_add, add_tsub_cancel_of_le hf]
-        · simp only [mul_zero, degree_zero, map_zero]
-          exact bot_le
-    · exact H'.2.2
-  · suffices ∃ (g' : ι →₀ MvPolynomial σ R), ∃ r',
-        (m.subLTerm f = Finsupp.linearCombination (MvPolynomial σ R) b g' + r') ∧
-        (∀ i, m.degree ((b i) * (g' i)) ≼[m] m.degree (m.subLTerm f)) ∧
-        (∀ c ∈ r'.support, ∀ i, ¬ m.degree (b i) ≤ c) by
-      obtain ⟨g', r', H'⟩ := this
-      use g', r' + monomial (m.degree f) (m.leadingCoeff f)
-      constructor
-      · simp [← add_assoc, ← H'.1, subLTerm]
-      constructor
-      · exact fun b ↦ le_trans (H'.2.1 b) (degree_sub_LTerm_le f)
-      · intro c hc i
-        by_cases hc' : c ∈ r'.support
-        · exact H'.2.2 c hc' i
-        · convert hf i
-          classical
-          have := MvPolynomial.support_add hc
-          rw [Finset.mem_union, Classical.or_iff_not_imp_left] at this
-          simpa only [Finset.mem_singleton] using support_monomial_subset (this hc')
-    by_cases hf'0 : m.subLTerm f = 0
-    · refine ⟨0, 0, by simp [hf'0], ?_, by simp⟩
-      intro b
-      simp only [Finsupp.coe_zero, Pi.zero_apply, mul_zero, degree_zero, map_zero]
-      exact bot_le
-    · exact (div hb) (m.subLTerm f)
-termination_by WellFounded.wrap m.wellFoundedLT_syn (m.toSyn (m.degree f))
-decreasing_by
-  · exact deg_reduce
-  · apply degree_sub_LTerm_lt
-    intro hf0
-    apply hf'0
-    simp only [subLTerm, sub_eq_zero]
-    nth_rewrite 1 [eq_C_of_degree_eq_zero hf0, hf0]
-    simp
+  obtain ⟨g, r, hsum, hdeg, hr⟩ := m.weakDiv b f
+  use g, r, hsum
+  split_ands
+  · intro i
+    apply m.degree_le_degree_of_withBotDegree_le_withBotDegree
+    exact le_trans (m.withBotDegree_mul_le ..) (hdeg i)
+  intro e he
+  specialize hr e he
+  simpa [monomial_mem_span_range_leadingTerm_iff_of_isUnit hb (mem_support_iff.mp he)] using hr
 
 /-!
 Module doc as workaround for a parser error that prevents using `set_option`

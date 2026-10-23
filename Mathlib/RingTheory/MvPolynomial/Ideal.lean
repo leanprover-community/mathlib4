@@ -231,4 +231,95 @@ lemma sPolynomial_mem_ideal {R : Type*} [CommRing R]
     (hp : p ∈ I) (hq : q ∈ I) : m.sPolynomial p q ∈ I :=
   sub_mem (mul_mem_left I _ hp) (mul_mem_left I _ hq)
 
+open MvPolynomial in
+lemma monomial_mem_span_range_leadingTerm_tfae {R ι} [CommSemiring R] {e : σ →₀ ℕ} {c : R}
+    {b : ι → MvPolynomial σ R} :
+    List.TFAE [
+      monomial e c ∈ Ideal.span (Set.range (m.leadingTerm ∘ b)),
+      c ≠ 0 → c ∈ Ideal.span (m.leadingCoeff '' b '' {i | m.degree (b i) ≤ e}),
+      c ≠ 0 → ∃ cs : ι →₀ R,
+        (∀ i ∈ cs.support, m.degree (b i) ≤ e) ∧ c = cs.linearCombination _ (m.leadingCoeff ∘ b),
+      ∃ g : ι →₀ MvPolynomial σ R,
+        (∀ i, m.withBotDegree (b i) + m.withBotDegree (g i) ≼'[m] e) ∧
+        monomial e c = Finsupp.linearCombination _ (m.leadingTerm ∘ b) g,
+      ∃ g : ι →₀ MvPolynomial σ R,
+        (∀ i, m.withBotDegree (b i) + m.withBotDegree (g i) ≼'[m] e) ∧
+        monomial e c = m.leadingTerm (Finsupp.linearCombination _ b g)]
+      := by
+  classical
+  tfae_have 1 ↔ 2 := by
+    by_cases hc0 : c = 0
+    · simp [hc0]
+    simp_rw [Set.range_comp, leadingTerm.eq_1, MvPolynomial.mem_ideal_span_monomial_image',
+      Set.ofPred_mem_range, ← Set.image_comp, support_monomial, ne_eq, hc0, ite_false,
+      not_false_iff, true_imp_iff, Finset.mem_singleton, forall_eq, coeff_monomial, ite_true]
+  tfae_have 2 ↔ 3 := by
+    simp_rw [← Set.image_comp, Finsupp.mem_span_image_iff_linearCombination, eq_comm]
+    exact Iff.rfl
+  tfae_have 3 → 4 := by
+    by_cases hc0 : c = 0
+    · simpa [hc0] using ⟨0, by simp⟩
+    intro h
+    rcases h hc0 with ⟨cs, h⟩
+    use Finsupp.onFinset cs.support (fun i ↦ monomial (e - m.degree (b i)) (cs i)) (by simp)
+    split_ands
+    · intro i
+      by_cases! h0 : cs i = 0 ∨ b i = 0
+      · rcases h0 with h0 | h0 <;> simp [h0]
+      -- how can it happen?
+      simp [m.withBotDegree_monomial, h0, m.withBotDegree_eq_coe_degree_iff .. |>.mpr,
+        ← WithBot.coe_add, add_tsub_cancel_of_le <| h.1 _ <| cs.mem_support_iff.mpr h0.1]
+    · simp only [Finsupp.linearCombination_apply, Function.comp_apply, smul_eq_mul, zero_mul,
+        implies_true, Finsupp.sum_onFinset] at h ⊢
+      simp_rw [h.2, Finsupp.sum, map_sum]
+      apply Finset.sum_congr rfl
+      intro _ hd
+      simp_rw [leadingTerm, monomial_mul_monomial, tsub_add_cancel_of_le <| h.1 _ hd]
+  tfae_have 4 → 5 := by
+    by_cases hc0 : c = 0
+    · exact fun _ ↦ ⟨0, by simp [hc0]⟩
+    rintro ⟨g, ⟨hdeg, hg⟩⟩
+    use g, hdeg
+    suffices c = ((Finsupp.linearCombination (MvPolynomial σ R) b) g).coeff e by
+      subst this
+      rw [leadingTerm, monomial_eq_monomial_iff]
+      apply show ∀ a b, a ∧ (a → b) → a ∧ b ∨ _ by tauto
+      nth_rw 1 [← m.toSyn.apply_eq_iff_eq, le_antisymm_iff]
+      refine ⟨⟨m.le_degree_of_mem_support <| by simpa using hc0, ?_⟩, (by rw [leadingCoeff, ·])⟩
+      apply m.degree_le_of_withBotDegree_le_coe
+      rw [Finsupp.linearCombination_apply, Finsupp.sum]
+      refine le_trans m.withBotDegree_sum_le <| Finset.sup_le_iff.mpr fun i _ ↦ ?_
+      exact le_trans (mul_comm (b i) (g i) ▸ m.withBotDegree_mul_le ..) <| by simpa using hdeg i
+    apply_fun (AddMonoidAlgebra.coeff · e) at hg
+    simp only [coeff_monomial, ↓reduceIte, Finsupp.linearCombination_apply, Function.comp_apply,
+      smul_eq_mul, AddMonoidAlgebra.coeff_finsuppSum, Finsupp.sum_apply] at hg ⊢
+    rw [hg]
+    apply Finsupp.sum_congr
+    intro i hi
+    rw [mul_comm, mul_comm (g i), m.coeff_mul_of_withBotDegree_add_withBotDegree_le (hdeg _),
+      m.coeff_mul_of_withBotDegree_add_withBotDegree_le (by simpa using hdeg _)]
+    simp
+  tfae_have 5 → 3 := by
+    rintro ⟨g, hdeg, hg⟩ hc
+    simp only [leadingTerm, leadingCoeff, monomial_eq_monomial_iff, hc, coeff_degree_eq_zero_iff,
+      false_and, or_false] at hg
+    rcases hg with ⟨hdeg', hg⟩
+    simp_rw [← hdeg', Finsupp.linearCombination_apply, Finsupp.sum, coeff_sum, smul_eq_mul,
+      mul_comm (g _), m.coeff_mul_of_withBotDegree_add_withBotDegree_le (hdeg _)] at hg
+    use g.mapRange m.leadingCoeff (by simp) |>.filter
+      fun i ↦ m.withBotDegree (b i) + m.withBotDegree (g i) = e
+    split_ands
+    · simp only [Finsupp.support_filter, Finset.mem_filter, Finsupp.mem_support_iff,
+        Finsupp.mapRange_apply, ne_eq, leadingCoeff_eq_zero_iff, and_imp]
+      intro i hgi0
+      by_cases hbi0 : b i = 0
+      · simp [hbi0]
+      rw [m.withBotDegree_eq_coe_degree_iff _ |>.mpr hbi0,
+        m.withBotDegree_eq_coe_degree_iff _ |>.mpr hgi0, ← WithBot.coe_add, WithBot.coe_eq_coe]
+      exact le_of_add_le_left ∘ le_of_eq
+    simp [Finsupp.linearCombination_apply, Finsupp.sum, Finsupp.filter_apply,
+      Finsupp.support_mapRange' fun _ ↦ m.leadingCoeff_eq_zero_iff.mp, Finset.sum_filter, ← ite_and,
+      mul_comm (m.leadingCoeff <| g _), hg]
+  tfae_finish
+
 end MonomialOrder
