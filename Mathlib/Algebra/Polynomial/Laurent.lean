@@ -570,6 +570,15 @@ theorem eval₂_C_mul_T_neg_n (r : R) (n : ℕ) : eval₂ f x (C r * T (-n)) = f
 theorem eval₂_C_mul_T (r : R) (n : ℤ) : eval₂ f x (C r * T n) = f r * (x ^ n).val := by
   simp
 
+theorem eval₂_mapRingHom {R' : Type*} [CommSemiring R'] (g : R' →+* R) (p : R'[T;T⁻¹]) :
+    eval₂ f x (AddMonoidAlgebra.mapRingHom ℤ g p) = eval₂ (f.comp g) x p := by
+  induction p using LaurentPolynomial.induction_on' with
+  | add p q hp hq => simp [hp, hq]
+  | C_mul_T n a =>
+    rw [← single_eq_C_mul_T, AddMonoidAlgebra.mapRingHom_single, single_eq_C_mul_T,
+      single_eq_C_mul_T]
+    simp
+
 end CommSemiring
 
 section Inversion
