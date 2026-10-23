@@ -575,6 +575,44 @@ theorem isFiniteCartan_e₆ : (E 6).IsFiniteCartan where
       rw [Pi.zero_apply]
       fin_cases i <;> simp_all
 
+theorem isFiniteCartan_e₇ : (E 7).IsFiniteCartan where
+  diag := E_diag 7
+  offDiag_nonpos := E_off_diag_nonpos 7
+  zero_comm i j := by fin_cases i <;> fin_cases j <;> rfl
+  exists_posDef := by
+    rw [E_seven_eq]
+    use 1
+    simp only [Pi.one_apply, zero_lt_one, implies_true, diagonal_one', Int.reduceNeg, one_mul,
+      true_and]
+    apply PosDef.of_dotProduct_mulVec_pos
+    · ext i j
+      fin_cases i <;> fin_cases j <;> rfl
+    intro x hx
+    simp only [star_trivial, Int.reduceNeg, cons_mulVec, cons_dotProduct, zero_mul,
+      show vecHead x = x 0 by rfl, Fin.isValue, show vecHead (vecTail x) = x 1 by rfl,
+      show vecHead (vecTail (vecTail x)) = x 2 by rfl, neg_mul, one_mul,
+      show vecHead (vecTail (vecTail (vecTail x))) = x 3 by rfl,
+      show vecHead (vecTail (vecTail (vecTail (vecTail x)))) = x 4 by rfl,
+      show vecHead (vecTail (vecTail (vecTail (vecTail (vecTail x))))) = x 5 by rfl,
+      show vecHead (vecTail (vecTail (vecTail (vecTail (vecTail (vecTail x)))))) = x 6 by rfl,
+      dotProduct_of_isEmpty, add_zero, zero_add, empty_mulVec, dotProduct_cons]
+    apply pos_of_mul_pos_right (a := 12) ?_ (by positivity)
+    have : 12 * (x 0 * (2 * x 0 + -x 2) + (x 1 * (2 * x 1 + -x 3) + (x 2 * (-x 0 + (2 * x 2 + -x 3))
+        + (x 3 * (-x 1 + (-x 2 + (2 * x 3 + -x 4))) + (x 4 * (-x 3 + (2 * x 4 + -x 5)) + (x 5 *
+        (-x 4 + (2 * x 5 + -x 6)) + x 6 * (-x 5 + 2 * x 6))))))) = 6 * (2 * x 0 - x 2) ^ 2
+        + 2 * (3 * x 2 - 2 * x 3) ^ 2 + 6 * (2 * x 1 - x 3) ^ 2 + (4 * x 4 - 3 * x 3) ^ 2
+        + 2 * (3 * x 5 - 2 * x 4) ^ 2 + 6 * (2 * x 6 - x 5) ^ 2 + x 3 ^ 2 := by ring
+    rw [this]
+    apply lt_of_le_of_ne
+    · positivity
+    · symm
+      contrapose hx
+      repeat rw [add_eq_zero_iff_of_nonneg (by positivity) (by positivity)] at hx
+      obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := hx
+      ext i
+      rw [Pi.zero_apply]
+      fin_cases i <;> simp_all
+
 theorem isFiniteCartan_f₄ : F₄.IsFiniteCartan where
   diag := F₄_diag
   offDiag_nonpos := F₄_off_diag_nonpos
