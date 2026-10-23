@@ -8,8 +8,9 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.NumberTheory.Real.Irrational
 public import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Qify
 public import Mathlib.Tactic.Rify
+
+import Mathlib.Tactic.Qify
 
 /-! # `norm_num` extension for `Irrational`
 

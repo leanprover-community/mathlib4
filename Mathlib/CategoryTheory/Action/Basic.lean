@@ -7,11 +7,12 @@ module
 
 public import Mathlib.Algebra.Category.Grp.Basic
 public import Mathlib.Algebra.Ring.PUnit
-import Mathlib.CategoryTheory.Adjunction.Limits
 public import Mathlib.CategoryTheory.Conj
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 public import Mathlib.CategoryTheory.SingleObj
+
+import Mathlib.CategoryTheory.Adjunction.Limits
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.Tactic.ApplyFun
 
 /-!

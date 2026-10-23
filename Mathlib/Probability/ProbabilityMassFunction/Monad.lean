@@ -121,7 +121,7 @@ theorem bind_apply (p : PMF α) (f : α → PMF β) (b : β) :
 @[deprecated Measure.bind_apply +typeChanged (since := "2026-08-17")]
 theorem support_bind (p : PMF α) (f : α → PMF β) :
     (p.bind f).support = ⋃ a ∈ p.support, (f a).support :=
-  Set.ext fun b => by simp [mem_support_iff, ENNReal.tsum_eq_zero, not_or, bind_apply]
+  Set.ext fun b => by simp [mem_support_iff, not_or, bind_apply]
 
 @[deprecated Measure.bind_apply +typeChanged (since := "2026-08-17")]
 theorem mem_support_bind_iff (p : PMF α) (f : α → PMF β) (b : β) :

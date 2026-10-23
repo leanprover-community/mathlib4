@@ -10,7 +10,6 @@ public meta import Plausible.Testable
 
 import Mathlib.Tactic.Basic
 import Plausible.Gen
-public import Plausible.Testable
 
 /-!
 This module contains `Plausible.Testable` and `Plausible.PrintableProb` instances for mathlib types.

@@ -7,11 +7,12 @@ module
 
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 public import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Regular.Basic
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Ring.Subsemiring.Defs
 public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.Data.Matrix.Diagonal
-public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+
+import Mathlib.Algebra.Regular.Basic
 
 /-!
 # Matrix multiplication
@@ -559,6 +560,11 @@ lemma pow_apply_nonneg [Fintype n] [DecidableEq n] [PartialOrder α] [IsOrderedR
   | succ m ih =>
     intro i j; rw [pow_succ, mul_apply]
     exact Finset.sum_nonneg fun l _ => mul_nonneg (ih i l) (hA l j)
+
+protected lemma mul_pow_mul [Fintype n] [Fintype m] [DecidableEq n] [DecidableEq m]
+    (A : Matrix m n α) (B : Matrix n m α) : ∀ k : ℕ, (A * B) ^ k * A = A * (B * A) ^ k
+  | 0 => by simp
+  | k + 1 => by simp [pow_succ', ← Matrix.mul_pow_mul, Matrix.mul_assoc]
 
 end Semiring
 

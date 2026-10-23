@@ -5,8 +5,9 @@ Authors: Christian Merten
 -/
 module
 
-import Mathlib.Basic.Finite.Sum
 public import Mathlib.CategoryTheory.Galois.GaloisObjects
+
+import Mathlib.Basic.Finite.Sum
 import Mathlib.CategoryTheory.Limits.Shapes.CombinedProducts
 
 /-!

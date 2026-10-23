@@ -5,8 +5,9 @@ Authors: Stefan Kebekus
 -/
 module
 
-import Mathlib.Analysis.Complex.Liouville
 public import Mathlib.Analysis.Complex.Harmonic.Analytic
+
+import Mathlib.Analysis.Complex.Liouville
 import Mathlib.Analysis.Normed.Module.HahnBanach
 
 /-!

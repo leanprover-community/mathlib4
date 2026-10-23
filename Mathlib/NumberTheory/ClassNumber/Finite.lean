@@ -6,10 +6,11 @@ Authors: Anne Baanen
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.LinearAlgebra.Matrix.AbsoluteValue
 public import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
 public import Mathlib.RingTheory.ClassGroup.Basic
 public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
+
+import Mathlib.LinearAlgebra.Matrix.AbsoluteValue
 import Mathlib.RingTheory.Norm.Basic
 
 /-!

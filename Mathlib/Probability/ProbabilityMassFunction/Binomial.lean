@@ -23,9 +23,10 @@ This file defines the probability mass function of the binomial distribution.
 namespace PMF
 
 open ENNReal NNReal
+
 /-- The binomial `PMF`: the probability of observing exactly `i` “heads” in a sequence of `n`
 independent coin tosses, each having probability `p` of coming up “heads”. -/
-@[deprecated ProbabilityTheory.binomial +typeChanged (since := "2026-04-07")]
+@[deprecated ProbabilityTheory.binomial +typeChanged (since := "2026-05-31")]
 def binomial (p : ℝ≥0) (h : p ≤ 1) (n : ℕ) : PMF (Fin (n + 1)) :=
   .ofFintype (fun i =>
       ↑(p ^ (i : ℕ) * (1 - p) ^ ((Fin.last n - i) : ℕ) * (n.choose i : ℕ))) (by
@@ -38,22 +39,22 @@ def binomial (p : ℝ≥0) (h : p ≤ 1) (n : ℕ) : PMF (Fin (n + 1)) :=
       rw [dite_eq_left hi]
     · rw [add_tsub_cancel_of_le (mod_cast h), one_pow])
 
-@[deprecated ProbabilityTheory.binomial_real_singleton +typeChanged (since := "2026-04-07")]
+@[deprecated ProbabilityTheory.binomial_real_singleton +typeChanged (since := "2026-05-31")]
 theorem binomial_apply (p : ℝ≥0) (h : p ≤ 1) (n : ℕ) (i : Fin (n + 1)) :
     binomial p h n i = p ^ (i : ℕ) * (1 - p) ^ ((Fin.last n - i) : ℕ) * (n.choose i : ℕ) := by
   simp [binomial, ofFintype_apply]
 
-@[deprecated ProbabilityTheory.binomial_real_zero +typeChanged (since := "2026-04-07")]
+@[deprecated ProbabilityTheory.binomial_real_zero +typeChanged (since := "2026-05-31")]
 theorem binomial_apply_zero (p : ℝ≥0) (h : p ≤ 1) (n : ℕ) :
     binomial p h n 0 = (1 - p) ^ n := by
   simp [binomial_apply]
 
-@[deprecated ProbabilityTheory.binomial_real_self +typeChanged (since := "2026-04-07")]
+@[deprecated ProbabilityTheory.binomial_real_self +typeChanged (since := "2026-05-31")]
 theorem binomial_apply_last (p : ℝ≥0) (h : p ≤ 1) (n : ℕ) :
     binomial p h n (.last n) = p ^ n := by
   simp [binomial_apply]
 
-@[deprecated ProbabilityTheory.binomial_real_self +typeChanged (since := "2026-04-07")]
+@[deprecated ProbabilityTheory.binomial_real_self +typeChanged (since := "2026-05-31")]
 theorem binomial_apply_self (p : ℝ≥0) (h : p ≤ 1) (n : ℕ) :
     binomial p h n (.last n) = p ^ n := by simp [binomial_apply_last]
 
@@ -64,7 +65,7 @@ theorem binomial_one_eq_bernoulli (p : ℝ≥0) (h : p ≤ 1) :
     binomial p h 1 = (bernoulli p h).map (cond · 1 0) := by
   refine PMF.ext fun i ↦ ?_; fin_cases i <;> simp [binomial_apply, map_apply, bernoulli_apply]
 
-@[deprecated ProbabilityTheory.binomial_singleton +typeChanged (since := "2026-04-07")]
+@[deprecated ProbabilityTheory.binomial_singleton +typeChanged (since := "2026-05-31")]
 theorem binomial_apply_of_le {k b : ℕ} (hb : k ≤ b) {x : ℝ≥0} (h : x ≤ 1) :
     ENNReal.ofReal ((b.choose k) * x ^ k * (1 - x) ^ (b - k))
     = PMF.binomial x h b (Fin.ofNat (b + 1) k) := by
