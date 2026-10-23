@@ -87,7 +87,6 @@ lemma Dvd.dvd.even (hab : a ∣ b) (ha : Even a) : Even b := ha.trans_dvd hab
   ext x
   simp [eq_comm, two_mul, Even]
 
-
 lemma even_two_mul (a : α) : Even (2 * a) := ⟨a, two_mul _⟩
 
 lemma Even.pow_of_ne_zero (ha : Even a) : ∀ {n : ℕ}, n ≠ 0 → Even (a ^ n)
@@ -182,7 +181,17 @@ theorem Odd.of_isUnit_two (h : IsUnit (2 : α)) (a : α) : Odd a := by
 end Ring
 
 section Monoid
-variable [Monoid α] [HasDistribNeg α] {n : ℕ}
+variable [Monoid α]
+
+/-- If `a` is a unit, then it is a square if and only if its underlying element in the monoid is a
+square. -/
+@[to_additive (attr := simp) /-- If `a` is an additive unit, then it is even if and only if its
+underlying element in the additive monoid is even. -/]
+lemma Units.isSquare_coe_iff {a : αˣ} : IsSquare (a : α) ↔ IsSquare a :=
+  ⟨fun ⟨b, hb⟩ ↦ ⟨(isUnit_mul_self_iff.mp <| hb ▸ a.isUnit).unit, Units.ext hb⟩,
+    fun ⟨b, hb⟩ ↦ ⟨b.val, by simp [hb]⟩⟩
+
+variable [HasDistribNeg α] {n : ℕ}
 
 lemma Odd.neg_pow : Odd n → ∀ a : α, (-a) ^ n = -a ^ n := by
   rintro ⟨c, rfl⟩ a; simp_rw [pow_add, pow_mul, neg_sq, pow_one, mul_neg]
