@@ -119,11 +119,11 @@ end basic
 
 section rank
 
-/-! ### Degree formulas -/
+/-! ## Degree formulas -/
 
 variable [IsDomain B] {A : Type*} [CommRing A] [IsDomain A] [Algebra A B] [Module.Finite A B]
-  [Module.Flat A B] [IsGaloisGroup G A B] (p : Ideal A) [P.LiesOver p] [p.IsPrime]
-  [Algebra.HasSeparableResidueFieldsAt A B p] [FaithfulSMul R B] [P.IsPrime]
+  [Module.Flat A B] [FaithfulSMul R B] [IsGaloisGroup G A B] (p : Ideal A) [p.IsPrime]
+  [P.IsPrime] [P.LiesOver p] [Algebra.HasSeparableResidueFieldsAt A B p]
 
 /-- The degree `[B : R]` of `B` over the decomposition ring `R` equals the product of the
 ramification index and the inertia degree of `p` in `B`. -/
