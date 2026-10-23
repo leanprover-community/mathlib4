@@ -5,6 +5,7 @@ Authors: Floris van Doorn
 -/
 module
 
+public import Mathlib.Algebra.Group.AddChar
 public import Mathlib.MeasureTheory.Group.Prod
 public import Mathlib.MeasureTheory.Measure.Content
 public import Mathlib.Topology.Algebra.Group.Compact
@@ -702,3 +703,94 @@ end Group
 end Measure
 
 end MeasureTheory
+
+open MeasureTheory Measure
+
+/-!
+### Continuity from measurability
+-/
+
+variable {G H : Type*} [MeasurableSpace G] [Group G] [TopologicalSpace G]
+  [IsTopologicalGroup G] [BorelSpace G] [LocallyCompactSpace G]
+  [Group H] [TopologicalSpace H] [IsTopologicalGroup H]
+
+variable [SeparableSpace H] [MeasurableSpace H] [OpensMeasurableSpace H]
+
+open Pointwise in
+/-- A Haar-null-measurable group hom from a locally compact group to a separable topological group
+is continuous. -/
+@[to_additive
+/-- A Haar-null-measurable group hom from a locally compact group to a separable topological group
+is continuous. -/]
+theorem MonoidHom.continuous_of_nullMeasurable_of_separableSpace (μ : Measure G)
+    [IsHaarMeasure μ] [μ.InnerRegularCompactLTTop] (f : G →* H) (hf : NullMeasurable f μ) :
+    Continuous f := by
+  let K₀ : PositiveCompacts G := Classical.arbitrary _
+  set S : Set G := interior K₀ with hS
+  have hSpos : 0 < μ S := isOpen_interior.measure_pos _ K₀.interior_nonempty
+  have hSfin : μ S ≠ ∞ :=
+    ne_top_of_le_ne_top K₀.isCompact.measure_ne_top (measure_mono interior_subset)
+  have hSf (U : Set H) (hU : IsOpen U) : NullMeasurableSet (S ∩ f ⁻¹' U) μ :=
+    isOpen_interior.measurableSet.nullMeasurableSet.inter (hf hU.measurableSet)
+  refine continuous_of_continuousAt_one _ fun V hV ↦ ?_
+  rw [map_one] at hV
+  rw [Filter.mem_map]
+  obtain ⟨U, hUo, hU1, hUV⟩ := exists_open_nhds_one_mul_subset hV
+  set W : Set H := U ∩ U⁻¹ with hW
+  have hWo : IsOpen W := hUo.inter hUo.inv
+  have hW1 : (1 : H) ∈ W := ⟨hU1, by simpa using hU1⟩
+  let h : ℕ → H := TopologicalSpace.denseSeq H
+  obtain ⟨n, hn⟩ : ∃ n : ℕ, 0 < μ (S ∩ f ⁻¹' ((· * (h n)⁻¹) ⁻¹' W)) := by
+    by_contra!
+    have hcover : ⋃ n, (· * (h n)⁻¹) ⁻¹' W = (univ : Set H) := by
+      refine eq_univ_of_forall fun y ↦ mem_iUnion.2 ?_
+      exact (TopologicalSpace.denseRange_denseSeq H).exists_mem_open
+        (hWo.preimage (f := (y * ·⁻¹)) (by fun_prop)) ⟨y, by simpa using hW1⟩
+    simp_rw [nonpos_iff_eq_zero, ← measure_iUnion_null_iff, ← inter_iUnion, ← preimage_iUnion,
+      hcover, preimage_univ, inter_univ] at this
+    exact hSpos.ne' this
+  obtain ⟨B, hBA, hBmeas, hBA'⟩ :=
+    (hSf _ (hWo.preimage (f := (· * (h n)⁻¹)) (by fun_prop))).exists_measurable_subset_ae_eq
+  rw [← hBA'.measure_eq] at hn
+  have hnhds := div_mem_nhds_one_of_haar_pos_ne_top μ B hBmeas hn
+    (mt (measure_mono_top <| hBA.trans inter_subset_left) hSfin)
+  refine Filter.mem_of_superset hnhds ?_
+  rintro _ ⟨a, ha, b, hb, rfl⟩
+  have ha := (hBA ha).2
+  have hb := (hBA hb).2
+  have := hUV (mul_mem_mul ha.1 (by simpa using hb.2))
+  simpa [div_eq_mul_inv] using this
+
+/-- A measurable group hom from a locally compact group to a separable topological group is
+continuous. -/
+@[to_additive
+/-- A measurable group hom from a locally compact group to a separable topological group is
+continuous.
+
+See also `AddMonoidHom.continuous_of_measurable_of_normedSpace` for a version where the assumption
+that `H` is separable is replaced by `H` being a normed space. -/]
+lemma MonoidHom.continuous_of_measurable_of_separableSpace (f : G →* H) (hf : Measurable f) :
+    Continuous f :=
+  f.continuous_of_nullMeasurable_of_separableSpace (haarMeasure (Classical.arbitrary _))
+    hf.nullMeasurable
+
+namespace AddChar
+variable {A M : Type*} [MeasurableSpace A] [AddGroup A] [TopologicalSpace A]
+  [IsTopologicalAddGroup A] [BorelSpace A] [LocallyCompactSpace A]
+  [MeasurableSpace M] [Group M] [TopologicalSpace M] [IsTopologicalGroup M]
+  [SeparableSpace M] [OpensMeasurableSpace M]
+
+/-- A Haar-null-measurable additive character from a locally compact group to a separable
+topological group is continuous. -/
+lemma continuous_of_nullMeasurable_of_separableSpace (μ : Measure A) [IsAddHaarMeasure μ]
+    [μ.InnerRegularCompactLTTop] (ψ : AddChar A M) (hψ : NullMeasurable ψ μ) : Continuous ψ :=
+  ψ.toAddMonoidHom.continuous_of_nullMeasurable_of_separableSpace μ
+    (measurable_ofMul.comp_nullMeasurable hψ)
+
+/-- A measurable additive character from a locally compact group to a separable topological group
+is continuous. -/
+lemma continuous_of_measurable_of_separableSpace (ψ : AddChar A M) (hψ : Measurable ψ) :
+    Continuous ψ :=
+  ψ.toAddMonoidHom.continuous_of_measurable_of_separableSpace hψ
+
+end AddChar
