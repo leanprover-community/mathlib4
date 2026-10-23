@@ -81,13 +81,15 @@ compact.
 
 It also exists as a grind attribute, and can be combined with other grind attributes using
 `grind only [compactness, ...]`.
+
+* `compactness?`: shows the suggestions from grind?`
 -/
 macro (name := compactnessTac) "compactness" config:optConfig : tactic =>
   -- note: directly giving `compactness` as argument in the syntax quotation below is treated
   -- as an unknown identifier by the hygiene system.
   `(tactic|grind $config only [$(mkIdent `compactness):term])
 
-@[inherit_doc compactnessTac]
+@[tactic_alt compactnessTac]
 macro "compactness?" config:optConfig : tactic =>
     `(tactic|grind? $config only [$(mkIdent `compactness):term])
 
@@ -102,13 +104,15 @@ It is implemented using `grind`, and has the same configuration options as `grin
 
 It also exists as a grind attribute, and can be combined with other grind attributes using
 `grind only [closedness, ...]`.
+
+* `closedness?`: shows the suggestions from grind?`
 -/
 macro (name := closednessTac) "closedness" config:optConfig : tactic =>
   -- note: directly giving `closedness` as argument in the syntax quotation below is treated
   -- as an unknown identifier by the hygiene system.
   `(tactic|grind $config only [$(mkIdent `closedness):term])
 
-@[inherit_doc closednessTac]
+@[tactic_alt closednessTac]
 macro "closedness?" config:optConfig : tactic =>
     `(tactic|grind? $config only [$(mkIdent `closedness):term])
 
@@ -124,12 +128,14 @@ It is implemented using `grind`, and has the same configuration options as `grin
 
 It also exists as a grind attribute, and can be combined with other grind attributes using
 `grind only [membership, ...]`.
+
+* `membership?`: shows the suggestions from grind?`
 -/
 macro (name := membershipTac) "membership" config:optConfig : tactic =>
   -- note: directly giving `membership` as argument in the syntax quotation below is treated
   -- as an unknown identifier by the hygiene system.
   `(tactic|grind $config only [$(mkIdent `membership):term])
 
-@[inherit_doc membershipTac]
+@[tactic_alt membershipTac]
 macro "membership?" config:optConfig : tactic =>
     `(tactic|grind? $config only [$(mkIdent `membership):term])
