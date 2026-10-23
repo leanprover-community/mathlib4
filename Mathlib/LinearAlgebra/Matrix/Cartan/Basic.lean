@@ -543,10 +543,9 @@ theorem isFiniteCartan_e₆ : (E 6).IsFiniteCartan where
   offDiag_nonpos := E_off_diag_nonpos 6
   zero_comm i j := by fin_cases i <;> fin_cases j <;> rfl
   exists_posDef := by
-    rw [E_six_eq]
     use 1
-    simp only [Pi.one_apply, zero_lt_one, implies_true, diagonal_one', Int.reduceNeg, one_mul,
-      true_and]
+    simp only [Pi.one_apply, zero_lt_one, implies_true, diagonal_one', E_six_eq, Int.reduceNeg,
+      one_mul, true_and]
     apply PosDef.of_dotProduct_mulVec_pos
     · ext i j
       fin_cases i <;> fin_cases j <;> rfl
@@ -580,10 +579,9 @@ theorem isFiniteCartan_e₇ : (E 7).IsFiniteCartan where
   offDiag_nonpos := E_off_diag_nonpos 7
   zero_comm i j := by fin_cases i <;> fin_cases j <;> rfl
   exists_posDef := by
-    rw [E_seven_eq]
     use 1
-    simp only [Pi.one_apply, zero_lt_one, implies_true, diagonal_one', Int.reduceNeg, one_mul,
-      true_and]
+    simp only [Pi.one_apply, zero_lt_one, implies_true, diagonal_one', E_seven_eq, Int.reduceNeg,
+      one_mul, true_and]
     apply PosDef.of_dotProduct_mulVec_pos
     · ext i j
       fin_cases i <;> fin_cases j <;> rfl
@@ -618,10 +616,9 @@ theorem isFiniteCartan_e₈ : (E 8).IsFiniteCartan where
   offDiag_nonpos := E_off_diag_nonpos 8
   zero_comm i j := by fin_cases i <;> fin_cases j <;> rfl
   exists_posDef := by
-    rw [E_eight_eq]
     use 1
-    simp only [Pi.one_apply, zero_lt_one, implies_true, diagonal_one', Int.reduceNeg, one_mul,
-      true_and]
+    simp only [Pi.one_apply, zero_lt_one, implies_true, diagonal_one', E_eight_eq, Int.reduceNeg,
+      one_mul, true_and]
     apply PosDef.of_dotProduct_mulVec_pos
     · ext i j
       fin_cases i <;> fin_cases j <;> rfl
