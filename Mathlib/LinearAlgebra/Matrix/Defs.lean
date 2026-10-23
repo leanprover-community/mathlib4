@@ -273,9 +273,6 @@ section
 theorem zero_apply [Zero α] (i : m) (j : n) : (0 : Matrix m n α) i j = 0 := rfl
 
 @[simp]
-theorem of_symm_zero [Zero α] : of.symm (0 : Matrix m n α) = (0 : m → n → α) := rfl
-
-@[simp]
 theorem add_apply [Add α] (A B : Matrix m n α) (i : m) (j : n) :
     (A + B) i j = (A i j) + (B i j) := rfl
 
@@ -304,6 +301,10 @@ protected theorem ite_apply (P : Prop) [Decidable P]
 end
 
 /-! simp-normal form pulls `of` to the outside. -/
+
+@[simp]
+theorem transpose_of (f : m → n → α) : (of f)ᵀ = of (Function.swap f) :=
+  rfl
 
 @[simp]
 theorem of_zero [Zero α] : of (0 : m → n → α) = 0 :=
@@ -615,15 +616,16 @@ This is available in bundled forms as:
 -/
 def col (A : Matrix m n α) : n → m → α := Aᵀ
 
-lemma row_eq_self (A : Matrix m n α) : A.row = of.symm A := rfl
+@[simp]
+lemma row_of (f : m → n → α) : (of f).row = f := rfl
 
-lemma col_eq_transpose (A : Matrix m n α) : A.col = of.symm Aᵀ := rfl
+@[deprecated (since := "2026-10-23")] alias of_row := row_of
 
 @[simp]
-lemma of_row (f : m → n → α) : (Matrix.of f).row = f := rfl
+theorem col_of (f : m → n → α) : (of f).col = Function.swap f := rfl
 
-@[simp]
-lemma of_col (f : m → n → α) : (Matrix.of f)ᵀ.col = f := rfl
+@[deprecated "by simp" (since := "2026-10-23")]
+lemma of_col (f : m → n → α) : (of f)ᵀ.col = f := by simp
 
 lemma row_def (A : Matrix m n α) : A.row = fun i ↦ A i := rfl
 
@@ -656,7 +658,10 @@ def colEquiv : Matrix m n α ≃ (n → m → α) := .functionSwap ..
 
 @[simp] theorem symm_rowEquiv : (rowEquiv m n α).symm = of := rfl
 
-theorem symm_of : of.symm = rowEquiv m n α := rfl
+@[simp] theorem symm_of : of.symm = rowEquiv m n α := rfl
+
+@[deprecated symm_of +typeChanged (since := "2026-10-23")]
+lemma row_eq_self (A : Matrix m n α) : A.row = of.symm A := by simp
 
 end
 
@@ -687,6 +692,9 @@ theorem row_zero [Zero α] : (0 : Matrix m n α).row = 0 := rfl
 
 @[simp]
 theorem col_zero [Zero α] : (0 : Matrix m n α).col = 0 := rfl
+
+@[deprecated "by simp" (since := "2026-10-23")]
+theorem of_symm_zero [Zero α] : of.symm (0 : Matrix m n α) = (0 : m → n → α) := by simp
 
 @[simp, push]
 theorem row_add [Add α] (A B : Matrix m n α) : (A + B).row = A.row + B.row := rfl
@@ -733,6 +741,9 @@ lemma row_transpose (A : Matrix m n α) : Aᵀ.row = A.col := rfl
 
 @[simp]
 lemma col_transpose (A : Matrix m n α) : Aᵀ.col = A.row := rfl
+
+@[deprecated "by simp" (since := "2026-10-23")]
+lemma col_eq_transpose (A : Matrix m n α) : A.col = of.symm Aᵀ := by simp
 
 end RowCol
 
