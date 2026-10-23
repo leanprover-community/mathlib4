@@ -1,5 +1,7 @@
-import Mathlib.Geometry.Manifold.Instances.Sphere
-import Mathlib.Geometry.Manifold.Notation
+module
+
+public import Mathlib.Geometry.Manifold.Instances.Sphere
+public import Mathlib.Geometry.Manifold.Notation
 
 /-! # Tests for the differential geometry elaborators for spheres in metric spaces
 
