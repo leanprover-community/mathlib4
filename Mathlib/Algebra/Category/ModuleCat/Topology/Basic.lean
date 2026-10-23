@@ -5,7 +5,7 @@ Authors: Richard Hill, Andrew Yang
 -/
 module
 
-public import Lean.Meta.Tactic.Rfl
+public meta import Lean.Meta.Tactic.Rfl
 public import Mathlib.Algebra.Category.ModuleCat.Colimits
 public import Mathlib.Algebra.Category.ModuleCat.Limits
 public import Mathlib.Topology.Algebra.Module.ModuleTopology

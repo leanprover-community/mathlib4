@@ -8,7 +8,6 @@ module
 public meta import Lean.Elab.ConfigEval
 public meta import Lean.Elab.Eval
 public meta import Lean.Elab.Tactic.ElabTerm
-public import Lean.Elab.ConfigEval
 public import Mathlib.Init
 
 /-!
