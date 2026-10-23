@@ -170,7 +170,7 @@ lemma sum_mk (f : HeckeBimodule k H₁ H₂) :
 /-- The linearization of `mk` gives a linear equivalence from `DoubleCoset₀ H₁ H₂ →₀ k` to the
 Hecke bimodule `Hom_G(k[G ⧸ H₁], k[G ⧸ H₂])`. -/
 @[simps! -isSimp apply symm_apply]
-noncomputable def mkLinearEquiv₀ :
+noncomputable def mkLinearEquiv :
     (DoubleCoset₀ H₁ H₂ →₀ k) ≃ₗ[k] HeckeBimodule k H₁ H₂ where
   toLinearMap := Finsupp.lift _ k _ mk
   invFun f := f.coeff
@@ -178,23 +178,23 @@ noncomputable def mkLinearEquiv₀ :
   right_inv x := by exact sum_mk x
 
 @[simp]
-lemma mkLinearEquiv₀_apply_single (x : DoubleCoset₀ H₁ H₂) (r : k) :
-    mkLinearEquiv₀ (.single x r) = r • mk x := by
-  simp [mkLinearEquiv₀]
+lemma mkLinearEquiv_apply_single (x : DoubleCoset₀ H₁ H₂) (r : k) :
+    mkLinearEquiv (.single x r) = r • mk x := by
+  simp [mkLinearEquiv]
 
 @[simp]
-lemma mkLinearEquiv₀_symm_apply_mk (x : DoubleCoset₀ H₁ H₂) :
-    mkLinearEquiv₀.symm (mk x) = .single x (1 : k) :=
-  (mkLinearEquiv₀ (k := k)).injective (by simp)
+lemma mkLinearEquiv_symm_apply_mk (x : DoubleCoset₀ H₁ H₂) :
+    mkLinearEquiv.symm (mk x) = .single x (1 : k) :=
+  (mkLinearEquiv (k := k)).injective (by simp)
 
 lemma inductionOn (f : HeckeBimodule k H₁ H₂) {p : HeckeBimodule k H₁ H₂ → Prop}
     (zero : p 0)
     (mk' : ∀ (g : DoubleCoset₀ H₁ H₂), p (mk g))
     (smul : ∀ (r : k) (x : HeckeBimodule k H₁ H₂), p x → p (r • x))
     (add : ∀ x y, p x → p y → p (x + y)) : p f := by
-  rw [← mkLinearEquiv₀.apply_symm_apply f]
-  refine Finsupp.induction_linear (mkLinearEquiv₀.symm f) (by simp [zero]) ?_ ?_
-  · exact fun x y hx hy => by simpa using add (mkLinearEquiv₀ x) (mkLinearEquiv₀ y) hx hy
+  rw [← mkLinearEquiv.apply_symm_apply f]
+  refine Finsupp.induction_linear (mkLinearEquiv.symm f) (by simp [zero]) ?_ ?_
+  · exact fun x y hx hy => by simpa using add (mkLinearEquiv x) (mkLinearEquiv y) hx hy
   · exact fun x r => by simpa using smul r (mk x) (mk' x)
 
 section Action
@@ -234,9 +234,9 @@ section BaseChange
 /-- The isomorphism between `Hom_G(k[G ⧸ H₁], k[G ⧸ H₂])` and `k ⨂ Hom_G(ℤ[G ⧸ H₁], ℤ[G ⧸ H₂])`. -/
 noncomputable def baseChange :
     HeckeBimodule k H₁ H₂ ≃ₗ[k] TensorProduct ℤ k (HeckeBimodule ℤ H₁ H₂) :=
-  open scoped Classical in mkLinearEquiv₀.symm.trans <|
+  open scoped Classical in mkLinearEquiv.symm.trans <|
     (TensorProduct.finsuppScalarRight ℤ k k (DoubleCoset₀ H₁ H₂)).symm.trans <|
-    LinearEquiv.baseChange ℤ k _ _ mkLinearEquiv₀
+    LinearEquiv.baseChange ℤ k _ _ mkLinearEquiv
 
 @[simp]
 lemma baseChange_mk (x : DoubleCoset₀ H H) :
@@ -249,28 +249,5 @@ lemma baseChang_symm_mk (r : k) (x : DoubleCoset₀ H H) :
   baseChange.injective (by simp [TensorProduct.smul_tmul'])
 
 end BaseChange
-
-section global
-
-/-- The linearization of `mk` gives a linear equivalence from `k[H₁\G/H₂]` to the Hecke bimodule
-`Hom_G(k[G ⧸ H₁], k[G ⧸ H₂])`, provided a global `IsLeftFinite` instance. -/
-@[simps! -isSimp]
-noncomputable def mkLinearEquiv [h : ∀ g, IsLeftFinite H₁ H₂ g] :
-    (Quotient (H₁ : Set G) (H₂ : Set G) →₀ k) ≃ₗ[k] HeckeBimodule k H₁ H₂ :=
-  (Finsupp.mapDomain.linearEquiv k k DoubleCoset.Quotient.equiv₀).trans mkLinearEquiv₀
-
-@[simp]
-lemma mkLinearEquiv_apply_single [∀ g, IsLeftFinite H₁ H₂ g] (r : k)
-    (x : Quotient (H₁ : Set G) (H₂ : Set G)) :
-    mkLinearEquiv (.single x r) = r • mk x.equiv₀ := by
-  simp [mkLinearEquiv_apply]
-
-@[simp]
-lemma mkLinearEquiv_symm_apply_mk [∀ g, IsLeftFinite H₁ H₂ g]
-    (x : Quotient (H₁ : Set G) (H₂ : Set G)) :
-    mkLinearEquiv.symm (mk x.equiv₀) = .single x (1 : k) := by
-  simp [mkLinearEquiv_symm_apply]
-
-end global
 
 end Representation.HeckeBimodule
