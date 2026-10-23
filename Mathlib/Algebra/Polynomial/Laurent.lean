@@ -575,8 +575,7 @@ theorem eval₂_mapRingHom {R' : Type*} [CommSemiring R'] (g : R' →+* R) (p : 
   induction p using LaurentPolynomial.induction_on' with
   | add p q hp hq => simp [hp, hq]
   | C_mul_T n a =>
-    rw [← single_eq_C_mul_T, AddMonoidAlgebra.mapRingHom_single, single_eq_C_mul_T,
-      single_eq_C_mul_T]
+    rw [← single_eq_C_mul_T, AddMonoidAlgebra.mapRingHom_single]
     simp
 
 end CommSemiring
