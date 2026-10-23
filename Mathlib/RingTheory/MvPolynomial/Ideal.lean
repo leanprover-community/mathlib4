@@ -42,6 +42,12 @@ theorem mem_ideal_span_monomial_image {x : MvPolynomial σ R} {s : Set (σ →�
   simp_rw [le_iff_exists_add, add_comm]
   rfl
 
+theorem mem_ideal_span_monomial_image' {ι}
+    {x : MvPolynomial σ R} {s : Set ι} {fm : ι → σ →₀ ℕ} {fc : ι → R} :
+    x ∈ Ideal.span ((fun i => monomial (fm i) (fc i)) '' s) ↔
+      ∀ xi ∈ x.support, x.coeff xi ∈ Ideal.span (fc '' {i ∈ s | fm i ≤ xi}) := by
+  simpa [le_iff_exists_add', monomial] using x.mem_ideal_span_single_image (fm := fm) (fc := fc)
+
 theorem mem_ideal_span_monomial_image_iff_dvd {x : MvPolynomial σ R} {s : Set (σ →₀ ℕ)} :
     x ∈ Ideal.span ((fun s => monomial s (1 : R)) '' s) ↔
       ∀ xi ∈ x.support, ∃ si ∈ s, monomial si 1 ∣ monomial xi (x.coeff xi) := by
