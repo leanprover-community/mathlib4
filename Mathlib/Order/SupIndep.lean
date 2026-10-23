@@ -258,6 +258,11 @@ protected theorem SupIndep.sup_inter [DecidableEq ι] {s₁ s₂ : Finset ι} (h
     (hs.disjoint_sup_sup (sdiff_subset.trans hs₁) hs₂ disjoint_sdiff_self_left).eq_bot,
     sup_bot_eq]
 
+theorem supIndep_iff_sup_inter_eq [DecidableEq ι] :
+    s.SupIndep f ↔ ∀ s₁ ⊆ s, ∀ s₂ ⊆ s, (s₁ ∩ s₂).sup f = s₁.sup f ⊓ s₂.sup f := by
+  refine ⟨fun hs s₁ hs₁ s₂ hs₂ ↦ hs.sup_inter hs₁ hs₂, fun h t ht i hi hit ↦ ?_⟩
+  simpa [hit, disjoint_iff] using (h {i} (singleton_subset_iff.mpr hi) t ht).symm
+
 protected theorem SupIndep.sup_inf' [DecidableEq ι] {t : Finset ι'} {g : ι' → Finset ι}
     (hs : s.SupIndep f) (ht : t.Nonempty) (hg : ∀ j ∈ t, g j ⊆ s) :
     (t.inf' ht g).sup f = t.inf' ht fun x ↦ (g x).sup f := by
