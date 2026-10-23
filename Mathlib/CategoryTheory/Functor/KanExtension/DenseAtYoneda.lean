@@ -5,9 +5,9 @@ Authors: Joël Riou, Bhavik Mehta
 -/
 module
 
+public import Mathlib.CategoryTheory.Comma.Presheaf.Basic
 public import Mathlib.CategoryTheory.Functor.KanExtension.Dense
 public import Mathlib.CategoryTheory.Limits.Over
-public import Mathlib.CategoryTheory.Comma.Presheaf.Basic
 
 /-!
 # The Yoneda embedding is dense

@@ -5,8 +5,8 @@ Authors: Joël Riou, Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
 public import Mathlib.CategoryTheory.Functor.KanExtension.DenseAtYoneda
+public import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
 public import Mathlib.CategoryTheory.RestrictedYoneda
 
 /-!

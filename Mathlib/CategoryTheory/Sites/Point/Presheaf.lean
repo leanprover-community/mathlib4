@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Point.Conservative
 public import Mathlib.CategoryTheory.Limits.Elements
+public import Mathlib.CategoryTheory.Sites.Point.Conservative
 
 /-!
 # Points of presheaf toposes
