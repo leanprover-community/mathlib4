@@ -151,6 +151,14 @@ theorem toList_of_mul (x : α) (xs : FreeMonoid α) : toList (of x * xs) = x :: 
 theorem of_injective : Function.Injective (@of α) := fun x y e ↦ by
   rwa [FreeMonoid.ext_iff, toList_of, toList_of, List.singleton_inj] at e
 
+@[to_additive]
+lemma «forall» {p : FreeMonoid α → Prop} : (∀ x, p x) ↔ ∀ l, p (ofList l) :=
+  ⟨fun h l ↦ h ⟨l⟩, fun a x ↦ a x.toList⟩
+
+@[to_additive]
+lemma «exists» {p : FreeMonoid α → Prop} : (∃ x, p x) ↔ ∃ l, p (ofList l) :=
+  ⟨fun h ↦ h.imp' _ fun _ ↦ id, fun h ↦ h.imp' _ fun _ ↦ id⟩
+
 /-! ### Length -/
 
 section Length
@@ -236,18 +244,18 @@ end Mem
 @[to_additive (attr := elab_as_elim, induction_eliminator)
 /-- Recursor for `FreeAddMonoid` using `0` and `FreeAddMonoid.of x + xs`. -/]
 def mulRecOn {motive : FreeMonoid α → Sort*} (xs : FreeMonoid α) (one : motive 1)
-    (of_mul : ∀ x xs, motive xs → motive (of x * xs)) : motive xs := sorry
+    (of_mul : ∀ x xs, motive xs → motive (of x * xs)) : motive xs := by
+  cases xs with | _ xs => exact List.recOn xs one fun x xs ↦ of_mul x ⟨xs⟩
 
 @[to_additive (attr := simp)]
 theorem mulRecOn_one {motive : FreeMonoid α → Sort*} (one : motive 1)
     (of_mul : ∀ x xs, motive xs → motive (of x * xs)) :
-    @mulRecOn α motive 1 one of_mul = one := sorry
+    @mulRecOn α motive 1 one of_mul = one := rfl
 
 @[to_additive (attr := simp)]
 theorem mulRecOn_of_mul {motive : FreeMonoid α → Sort*} (x : α) (xs : FreeMonoid α) (one : motive 1)
     (of_mul : ∀ x xs, motive xs → motive (of x * xs)) :
-    @mulRecOn α motive (of x * xs) one of_mul = of_mul x xs (mulRecOn xs one of_mul) :=
-  sorry
+    @mulRecOn α motive (of x * xs) one of_mul = of_mul x xs (mulRecOn xs one of_mul) := rfl
 
 @[deprecated (since := "2026-10-23")] alias recOn_one := mulRecOn_one
 @[deprecated (since := "2026-10-23")] alias recOn_of_mul := mulRecOn_of_mul

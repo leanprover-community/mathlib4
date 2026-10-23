@@ -32,7 +32,9 @@ variable (α : Type u)
 section Infinite
 
 @[to_additive]
-instance [Nonempty α] : Infinite (FreeMonoid α) := inferInstanceAs <| Infinite (List α)
+instance [Nonempty α] : Infinite (FreeMonoid α) := by
+  rw [Equiv.infinite_iff ⟨_, _, FreeMonoid.ofList_toList, FreeMonoid.toList_ofList⟩]
+  infer_instance
 
 @[to_additive]
 instance [Nonempty α] : Infinite (FreeGroup α) := by
@@ -51,7 +53,8 @@ section Countable
 variable [Countable α]
 
 @[to_additive]
-instance : Countable (FreeMonoid α) := inferInstanceAs <| Countable (List α)
+instance : Countable (FreeMonoid α) :=
+  Countable.of_equiv _ ⟨_, _, FreeMonoid.toList_ofList, FreeMonoid.ofList_toList⟩
 
 @[to_additive]
 instance : Countable (FreeGroup α) := inferInstanceAs <| Countable (Quot _)
@@ -72,8 +75,9 @@ theorem mk_abelianization_le (G : Type u) [Group G] :
     #(Abelianization G) ≤ #G := Cardinal.mk_le_of_surjective Quotient.mk_surjective
 
 @[to_additive (attr := simp)]
-theorem mk_freeMonoid [Nonempty α] : #(FreeMonoid α) = max #α ℵ₀ :=
-  Cardinal.mk_list_eq_max_mk_aleph0 _
+theorem mk_freeMonoid [Nonempty α] : #(FreeMonoid α) = max #α ℵ₀ := by
+  rw [← Cardinal.mk_list_eq_max_mk_aleph0 _]
+  exact mk_congr ⟨_, _, FreeMonoid.ofList_toList, FreeMonoid.toList_ofList⟩
 
 @[to_additive (attr := simp)]
 theorem mk_freeGroup [Nonempty α] : #(FreeGroup α) = max #α ℵ₀ := by
