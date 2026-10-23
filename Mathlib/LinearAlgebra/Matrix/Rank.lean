@@ -474,7 +474,7 @@ theorem cRank_diagonal [DecidableEq m] (w : m → R) :
     suffices ∀ a, (diagonal w).row a = 0 ∨ ∃ b, w b ≠ 0 ∧ (diagonal w).row b = (diagonal w).row a by
       ext
       simp_rw [← row_transpose, diagonal_transpose, mem_insert_iff, mem_range, Subtype.exists]
-      aesop
+      grind
     simp_rw [or_iff_not_imp_right, not_exists, not_and, not_imp_not]
     simp +contextual [funext_iff, diagonal]
   rw [cRank, ← span_insert_zero, hrw, span_insert_zero, rank_span h,
