@@ -135,14 +135,6 @@ lemma range_faceOpposite_zero_points [NeZero n] :
     refine ⟨j.succ, Fin.succ_ne_zero j, ?_⟩
     rw [points_succ]
 
-/-- The closed interior of the face of `Affine.stdAffineSimplex` opposite the vertex `0` is the
-standard simplex `stdSimplex 𝕜 (Fin n)`. -/
-lemma faceOpposite_zero_eq_stdSimplex [NeZero n] (𝕜 : Type*) [Field 𝕜] [LinearOrder 𝕜]
-    [IsStrictOrderedRing 𝕜] :
-    ((stdAffineSimplex n 𝕜).faceOpposite 0).closedInterior = stdSimplex 𝕜 (Fin n) := by
-  rw [← convexHull_eq_closedInterior, range_faceOpposite_zero_points]
-  exact convexHull_rangle_single_eq_stdSimplex 𝕜 (Fin n)
-
 end stdAffineSimplex
 
 end Affine
