@@ -569,11 +569,11 @@ theorem isFiniteCartan_a (n : ℕ) : (A n).IsFiniteCartan where
     funext ⟨k, hk⟩
     induction k with
     | zero =>
-      have hpos (z : Fin n → ℤ) : (∑ j : Fin n, (if 0 = j.castSucc then (1 : ℤ) else 0) * z j)
+      have hpos (z : Fin n → ℤ) : (∑ j : Fin n, (if 0 = j.castSucc then 1 else 0) * z j)
           = z ⟨0, hk⟩ := calc
-        _ = ∑ j : Fin n, (if j = ⟨0, hk⟩ then (1 : ℤ) else 0) * z j := by grind
+        _ = ∑ j : Fin n, (if j = ⟨0, hk⟩ then 1 else 0) * z j := by grind
         _ = z ⟨0, hk⟩ := by simp
-      have hneg (z : Fin n → ℤ) : (∑ j : Fin n, (if 0 = j.succ then (-1 : ℤ) else 0) * z j)
+      have hneg (z : Fin n → ℤ) : (∑ j : Fin n, (if 0 = j.succ then -1 else 0) * z j)
         = 0 := by grind [Finset.sum_eq_zero]
       have h (z : Fin n → ℤ) : (M.mulVec z) 0 = z ⟨0, hk⟩ := by
         simp_rw [mulVec_apply_eq_sum, M, add_mul, Finset.sum_add_distrib, hpos z, hneg z, add_zero]
@@ -581,13 +581,13 @@ theorem isFiniteCartan_a (n : ℕ) : (A n).IsFiniteCartan where
       rwa [h x, h y] at heq
     | succ k =>
       have hk' : k < n := Nat.lt_of_succ_lt hk
-      have hpos (z : Fin n → ℤ) : (∑ j : Fin n, (if Fin.succ ⟨k, hk'⟩ = j.castSucc then (1 : ℤ)
-          else 0) * z j) = z ⟨k + 1, hk⟩ := calc
-        _ = ∑ j : Fin n, (if j = ⟨k + 1, hk⟩ then (1 : ℤ) else 0) * z j := by grind
+      have hpos (z : Fin n → ℤ) : (∑ j : Fin n, (if Fin.succ ⟨k, hk'⟩ = j.castSucc then 1 else 0)
+          * z j) = z ⟨k + 1, hk⟩ := calc
+        _ = ∑ j : Fin n, (if j = ⟨k + 1, hk⟩ then 1 else 0) * z j := by grind
         _ = _ := by simp
-      have hneg (z : Fin n → ℤ) : (∑ j : Fin n, (if Fin.succ ⟨k, hk'⟩ = j.succ then (-1 : ℤ)
-          else 0) * z j) = -z ⟨k, hk'⟩ := calc
-        _ = ∑ j : Fin n, (if j = ⟨k, hk'⟩ then (-1 : ℤ) else 0) * z j := by grind
+      have hneg (z : Fin n → ℤ) : (∑ j : Fin n, (if Fin.succ ⟨k, hk'⟩ = j.succ then -1 else 0)
+          * z j) = -z ⟨k, hk'⟩ := calc
+        _ = ∑ j : Fin n, (if j = ⟨k, hk'⟩ then -1 else 0) * z j := by grind
         _ = _ := by simp
       have h (z : Fin n → ℤ) : (M.mulVec z) (Fin.succ ⟨k, hk'⟩) = z ⟨k + 1, hk⟩ - z ⟨k, hk'⟩ := by
         simp_rw [mulVec_apply_eq_sum, M, add_mul, Finset.sum_add_distrib, hpos z, hneg z,
