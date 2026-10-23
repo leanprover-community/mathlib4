@@ -27,7 +27,7 @@ them: this is the analogue for `R[T;T⁻¹]` of `Polynomial.eq_zero_of_infinite_
 
 namespace LaurentPolynomial
 
-variable {R S : Type*} [CommRing S] [IsDomain S]
+variable {R S : Type*} [CommSemiring R] [CommRing S] [IsDomain S] [Algebra R S] [FaithfulSMul R S]
 
 /-- A Laurent polynomial over a domain `S` vanishing at infinitely many units of `S` is zero. -/
 theorem eq_zero_of_infinite_eval₂_id_eq_zero (p : S[T;T⁻¹])
