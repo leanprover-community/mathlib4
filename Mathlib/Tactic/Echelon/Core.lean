@@ -207,6 +207,7 @@ abbrev Model {u : Level} (α : Q(Type u)) : Type := ModelAux α ModelType
 Construct a `Model` from a `ModelAux` by casting the carrier type using `unsafeCast`.
 This is safe if you use only one `Model` at a time.
 -/
+@[nolint unusedArguments]
 def Model.mk {u : Level} {α : Q(Type u)} (V : Type) [Nonempty V] (model : ModelAux α V) : Model α :=
   unsafe unsafeCast model
 
