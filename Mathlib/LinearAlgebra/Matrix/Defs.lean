@@ -302,7 +302,7 @@ end
 
 /-! simp-normal form pulls `of` to the outside. -/
 
-@[simp]
+@[simp, push]
 theorem transpose_of (f : m → n → α) : (of f)ᵀ = of (Function.swap f) :=
   rfl
 
