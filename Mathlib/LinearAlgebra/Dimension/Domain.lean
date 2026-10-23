@@ -194,16 +194,10 @@ theorem IsTorsionFree.erank_mul_erank [IsTorsionFree S M] :
     let : Field FS := fieldOfFiniteDimensional FR FS
     simpa using congr($(lift_rank_mul_lift_rank_of_field_isLocalization R S FS M).toENat)
   · rw [toENat_eq_top.mpr hRS, ENat.top_mul (by simpa using rank_pos.ne'), eq_comm, toENat_eq_top]
-    by_contra! hRM : rank R M < .aleph0
-    replace hRM : Module.Finite FR M' := by
-      rwa [← rank_lt_aleph0_iff, ← lift_id'.{w, v} (rank FR M'), hM'.lift_rank_eq, lift_lt_aleph0]
-    -- it would also suffice to have FaithfulSMul FS M' (and Nontrivial M') at this point
-    have ⟨m, hm⟩ := exists_ne (0 : M)
-    let f : S →ₗ[R] M := LinearMap.lsmul S M |>.flip m
-    have : Module.Finite FR FS :=
-      .of_injective (IsLocalizedModule.mapExtendScalars R⁰ pS pM FR f) <|
-        IsLocalizedModule.map_injective (h_inj := smul_left_injective _ hm) ..
-    exact hRS.not_gt <| hFS.rank_eq ▸ rank_lt_aleph0 ..
+    obtain ⟨m, hm⟩ := exists_ne (0 : M)
+    have hSM := ((LinearMap.toSpanSingleton S M m).restrictScalars R).lift_rank_le_of_injective
+      (smul_left_injective _ hm)
+    exact aleph0_le_lift.mp <| (aleph0_le_lift.mpr hRS).trans hSM
 
 /-- **Tower law for torsion-free modules.**
 The tower law for `Module.finrank` of a `S`-torsion-free module over an algebra `S/R` of domains.
