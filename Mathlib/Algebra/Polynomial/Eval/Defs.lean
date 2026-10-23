@@ -475,9 +475,10 @@ theorem pow_comp {R : Type*} [CommSemiring R] (p q : R[X]) (n : ℕ) :
 
 theorem comp_assoc {R : Type*} [CommSemiring R] (φ ψ χ : R[X]) :
     (φ.comp ψ).comp χ = φ.comp (ψ.comp χ) := by
-  refine Polynomial.induction_on φ ?_ ?_ ?_ <;>
-    · intros
-      simp_all only [add_comp, mul_comp, C_comp, X_comp, pow_succ, ← mul_assoc]
+  refine Polynomial.induction_on φ ?_ ?_ ?_
+  all_goals
+    intros
+    simp_all only [add_comp, mul_comp, C_comp, X_comp, pow_succ, ← mul_assoc]
 
 @[simp] lemma sum_comp (s : Finset ι) (p : ι → R[X]) (q : R[X]) :
     (∑ i ∈ s, p i).comp q = ∑ i ∈ s, (p i).comp q := Polynomial.eval₂_finsetSum _ _ _ _

@@ -312,7 +312,7 @@ def toDFA : DFA α (Set σ) where
 theorem toDFA_correct : M.toDFA.accepts = M.accepts := by
   ext x
   rw [mem_accepts, DFA.mem_accepts]
-  constructor <;> · exact fun ⟨w, h2, h3⟩ => ⟨w, h3, h2⟩
+  constructor <;> exact fun ⟨w, h2, h3⟩ => ⟨w, h3, h2⟩
 
 theorem pumping_lemma [Fintype σ] {x : List α} (hx : x ∈ M.accepts)
     (hlen : Fintype.card (Set σ) ≤ List.length x) :

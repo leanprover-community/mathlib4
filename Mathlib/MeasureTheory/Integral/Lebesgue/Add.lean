@@ -184,13 +184,14 @@ theorem lintegral_iSup_directed [Countable β] {f : β → α → ℝ≥0∞} (h
   have h_ae_seq_directed : Directed LE.le (aeSeq hf p) := by
     intro b₁ b₂
     obtain ⟨z, hz₁, hz₂⟩ := h_directed b₁ b₂
-    refine ⟨z, ?_, ?_⟩ <;>
-      · intro x
-        by_cases hx : x ∈ aeSeqSet hf p
-        · repeat rw [aeSeq.aeSeq_eq_fun_of_mem_aeSeqSet hf hx]
-          apply_rules [hz₁, hz₂]
-        · simp only [aeSeq, hx, ite_false]
-          exact le_rfl
+    refine ⟨z, ?_, ?_⟩
+    all_goals
+      intro x
+      by_cases hx : x ∈ aeSeqSet hf p
+      · repeat rw [aeSeq.aeSeq_eq_fun_of_mem_aeSeqSet hf hx]
+        apply_rules [hz₁, hz₂]
+      · simp only [aeSeq, hx, ite_false]
+        exact le_rfl
   convert lintegral_iSup_directed_of_measurable (aeSeq.measurable hf p) h_ae_seq_directed using 1
   · simp_rw [← iSup_apply]
     rw [lintegral_congr_ae (aeSeq.iSup hf hp).symm]
@@ -303,9 +304,10 @@ theorem lintegral_add_aux {f g : α → ℝ≥0∞} (hf : Measurable f) (hg : Me
         dsimp
         gcongr <;> exact monotone_eapprox _ h _
     _ = (⨆ n, (eapprox f n).lintegral μ) + ⨆ n, (eapprox g n).lintegral μ := by
-      refine (ENNReal.iSup_add_iSup_of_monotone ?_ ?_).symm <;>
-        · intro i j h
-          exact SimpleFunc.lintegral_mono (monotone_eapprox _ h) le_rfl
+      refine (ENNReal.iSup_add_iSup_of_monotone ?_ ?_).symm
+      all_goals
+        intro i j h
+        exact SimpleFunc.lintegral_mono (monotone_eapprox _ h) le_rfl
     _ = ∫⁻ a, f a ∂μ + ∫⁻ a, g a ∂μ := by
       rw [lintegral_eq_iSup_eapprox_lintegral hf, lintegral_eq_iSup_eapprox_lintegral hg]
 

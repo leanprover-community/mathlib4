@@ -444,9 +444,10 @@ theorem IsRotated.reverse (h : l ~r l') : l.reverse ~r l'.reverse := by
   exact ⟨_, (reverse_rotate _ _).symm⟩
 
 theorem isRotated_reverse_comm_iff : l.reverse ~r l' ↔ l ~r l'.reverse := by
-  constructor <;>
-    · intro h
-      simpa using h.reverse
+  constructor
+  all_goals
+    intro h
+    simpa using h.reverse
 
 @[simp]
 theorem isRotated_reverse_iff : l.reverse ~r l'.reverse ↔ l ~r l' := by

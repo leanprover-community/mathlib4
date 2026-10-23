@@ -956,8 +956,9 @@ lemma IsTrail.notMem_support_of_subsingleton_neighborSet (hw : w.IsTrail) (hxu :
     (hxv : x ≠ v) (hx : (G.neighborSet x).Subsingleton) : x ∉ w.support := by
   rintro hxw
   obtain ⟨y, -, hxy⟩ := adj_of_mem_walk_support w (by rintro ⟨⟩; simp_all) hxw
-  refine hw.notMem_support_of_not_reachable (x := y) ?_ ?_ hxw <;>
-  · rintro ⟨p⟩
+  refine hw.notMem_support_of_not_reachable (x := y) ?_ ?_ hxw
+  all_goals
+    rintro ⟨p⟩
     obtain ⟨hx₂, -, hy₂⟩ : G.Adj x p.penultimate ∧ _ ∧ ¬p.penultimate = y := by
       simpa using p.reverse.adj_snd (not_nil_of_ne ‹_›)
     exact hy₂ <| hx hx₂ hxy

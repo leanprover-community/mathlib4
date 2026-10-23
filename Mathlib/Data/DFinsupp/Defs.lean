@@ -1234,13 +1234,15 @@ def mapRange.addEquiv (e : ∀ i, β₁ i ≃+ β₂ i) : (Π₀ i, β₁ i) ≃
     toFun := mapRange (fun i x => e i x) fun i => (e i).map_zero
     invFun := mapRange (fun i x => (e i).symm x) fun i => (e i).symm.map_zero
     left_inv := fun x => by
-      rw [← mapRange_comp] <;>
-        · simp_rw [AddEquiv.symm_comp_self]
-          simp
+      rw [← mapRange_comp]
+      all_goals
+        simp_rw [AddEquiv.symm_comp_self]
+        simp
     right_inv := fun x => by
-      rw [← mapRange_comp] <;>
-        · simp_rw [AddEquiv.self_comp_symm]
-          simp }
+      rw [← mapRange_comp]
+      all_goals
+        simp_rw [AddEquiv.self_comp_symm]
+        simp }
 
 @[simp]
 theorem mapRange.addEquiv_refl :

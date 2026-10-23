@@ -800,9 +800,10 @@ theorem eventually_prod_nhds_iff {f : Filter ι} {x₀ : α} {p : ι × α → P
     (∀ᶠ x in f ×ˢ 𝓝 x₀, p x) ↔ ∃ pa : ι → Prop, (∀ᶠ i in f, pa i) ∧
       ∃ ε > 0, ∀ ⦃i⦄, pa i → ∀ ⦃x⦄, dist x x₀ < ε → p (i, x) := by
   rw [eventually_swap_iff, Metric.eventually_nhds_prod_iff]
-  constructor <;>
-    · rintro ⟨a1, a2, a3, a4, a5⟩
-      exact ⟨a3, a4, a1, a2, fun _ b1 b2 b3 => a5 b3 b1⟩
+  constructor
+  all_goals
+    rintro ⟨a1, a2, a3, a4, a5⟩
+    exact ⟨a3, a4, a1, a2, fun _ b1 b2 b3 => a5 b3 b1⟩
 
 theorem nhds_basis_closedBall : (𝓝 x).HasBasis (fun ε : ℝ => 0 < ε) (closedBall x) :=
   nhds_basis_uniformity uniformity_basis_dist_le

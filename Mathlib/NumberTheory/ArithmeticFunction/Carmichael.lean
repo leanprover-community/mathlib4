@@ -153,8 +153,9 @@ theorem carmichael_two_pow_of_ne_two {n : ℕ} (hn : n ≠ 2) :
 
 theorem two_mul_carmichael_two_pow_of_three_le_eq_totient {n : ℕ} (hn : 3 ≤ n) :
     2 * carmichael (2 ^ n) = (2 ^ n).totient := by
-  rw [carmichael_two_pow_of_ne_two, ← pow_succ', totient_prime_pow prime_two] <;>
-  · #adaptation_note /-- After https://github.com/leanprover/lean4/pull/13593
+  rw [carmichael_two_pow_of_ne_two, ← pow_succ', totient_prime_pow prime_two]
+  all_goals
+    #adaptation_note /-- After https://github.com/leanprover/lean4/pull/13593
     we need to re-enable model-based theory combination in `lia` for this to go through. -/
     lia +mbtc
 

@@ -133,8 +133,7 @@ def parallelFamily : WalkingParallelFamily J ⥤ C where
     | _, _, Hom.id _ => 𝟙 _
     | _, _, line j => f j
   map_comp := by
-    rintro _ _ _ ⟨⟩ ⟨⟩ <;>
-      · cat_disch
+    rintro _ _ _ ⟨⟩ ⟨⟩ <;> cat_disch
 
 @[simp]
 theorem parallelFamily_obj_zero : (parallelFamily f).obj zero = X :=

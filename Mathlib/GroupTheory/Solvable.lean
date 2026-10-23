@@ -259,9 +259,10 @@ theorem IsSimpleGroup.comm_iff_isSolvable : (∀ a b : G, a * b = b * a) ↔ Gro
   ⟨Group.isSolvable_of_comm, fun ⟨⟨n, hn⟩⟩ => by
     cases n
     · intro a b
-      refine (mem_bot.1 ?_).trans (mem_bot.1 ?_).symm <;>
-        · rw [← hn]
-          exact mem_top _
+      refine (mem_bot.1 ?_).trans (mem_bot.1 ?_).symm
+      all_goals
+        rw [← hn]
+        exact mem_top _
     · rw [IsSimpleGroup.derivedSeries_succ] at hn
       intro a b
       rw [← mul_inv_eq_one, mul_inv_rev, ← mul_assoc, ← mem_bot, ← hn, commutator_eq_closure]

@@ -127,9 +127,10 @@ theorem continuousOn_iff' :
     intro t
     rw [isOpen_induced_iff, Set.domRestrict_eq, Set.preimage_comp]
     simp only [Subtype.preimage_coe_eq_preimage_coe_iff]
-    constructor <;>
-      · rintro ⟨u, ou, useq⟩
-        exact ⟨u, ou, by simpa only [Set.inter_comm, eq_comm] using useq⟩
+    constructor
+    all_goals
+      rintro ⟨u, ou, useq⟩
+      exact ⟨u, ou, by simpa only [Set.inter_comm, eq_comm] using useq⟩
   rw [continuousOn_iff_continuous_domRestrict, continuous_def]; simp only [this]
 
 /-- If a function is continuous on a set for some topologies, then it is

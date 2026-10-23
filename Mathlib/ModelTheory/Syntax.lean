@@ -216,7 +216,7 @@ def constantsVarsEquiv : L[[γ]].Term α ≃ L.Term (γ ⊕ α) :=
     intro t
     induction t with
     | var x => cases x <;> rfl
-    | @func n f _ ih => cases n <;> · simp [varsToConstants, constantsToVars, ih]⟩
+    | @func n f _ ih => cases n <;> simp [varsToConstants, constantsToVars, ih]⟩
 
 /-- A bijection between terms with constants and terms with extra variables. -/
 def constantsVarsEquivLeft : L[[γ]].Term (α ⊕ β) ≃ L.Term ((γ ⊕ α) ⊕ β) :=

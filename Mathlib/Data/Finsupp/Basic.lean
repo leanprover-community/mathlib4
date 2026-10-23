@@ -487,9 +487,10 @@ theorem mapDomain_injOn (S : Set α) {f : α → β} (hf : Set.InjOn f S) :
   ext a
   classical
     by_cases h : a ∈ v₁.support ∪ v₂.support
-    · rw [← mapDomain_apply' S _ hv₁ hf _, ← mapDomain_apply' S _ hv₂ hf _, eq] <;>
-        · apply Set.union_subset hv₁ hv₂
-          exact mod_cast h
+    · rw [← mapDomain_apply' S _ hv₁ hf _, ← mapDomain_apply' S _ hv₂ hf _, eq]
+      all_goals
+        apply Set.union_subset hv₁ hv₂
+        exact mod_cast h
     · simp_all
 
 theorem equivMapDomain_eq_mapDomain {M} [AddCommMonoid M] (f : α ≃ β) (l : α →₀ M) :
@@ -665,9 +666,10 @@ def filter (p : α → Prop) [DecidablePred p] (f : α →₀ M) : α →₀ M w
   toFun a := if p a then f a else 0
   support := f.support.filter p
   mem_support_toFun a := by
-    split_ifs with h <;>
-      · simp only [h, mem_filter, mem_support_iff]
-        tauto
+    split_ifs with h
+    all_goals
+      simp only [h, mem_filter, mem_support_iff]
+      tauto
 
 theorem filter_apply (a : α) : f.filter p a = if p a then f a else 0 := rfl
 

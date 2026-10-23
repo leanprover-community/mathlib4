@@ -117,7 +117,7 @@ theorem chainHeight_empty : (∅ : Set α).chainHeight r = 0 :=
 theorem one_le_chainHeight_iff : 1 ≤ s.chainHeight r ↔ s.Nonempty := by
   constructor
   all_goals
-  · intros
+    intros
     by_contra! hh
     simp_all
 
@@ -135,7 +135,7 @@ theorem chainHeight_mono (s t : Set α) (h : s ⊆ t) : s.chainHeight r ≤ t.ch
 theorem chainHeight_flip : s.chainHeight (flip r) = s.chainHeight r := by
   refine eq_of_forall_natCast_le_iff fun n ↦ ⟨fun hn ↦ ?_, fun hn ↦ ?_⟩
   all_goals
-  · obtain ⟨a, ha₁, ha₂, ha₃⟩ := exists_isChain_of_le_chainHeight n hn
+    obtain ⟨a, ha₁, ha₂, ha₃⟩ := exists_isChain_of_le_chainHeight n hn
     exact ha₂ ▸ encard_le_chainHeight_of_isChain _ _ ha₁ <|
       fun _ hx _ hy hne ↦ by simpa [flip, Or.comm] using ha₃ hx hy hne
 

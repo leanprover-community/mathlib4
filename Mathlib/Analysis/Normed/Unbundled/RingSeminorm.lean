@@ -121,10 +121,11 @@ instance [DecidableEq R] : One (RingSeminorm R) :=
   ⟨{ (1 : AddGroupSeminorm R) with
       mul_le' := fun x y => by
         by_cases h : x * y = 0
-        · refine (ite_eq_left h).trans_le (mul_nonneg ?_ ?_) <;>
-            · change _ ≤ ite _ _ _
-              split_ifs
-              exacts [le_rfl, zero_le_one]
+        · refine (ite_eq_left h).trans_le (mul_nonneg ?_ ?_)
+          all_goals
+            change _ ≤ ite _ _ _
+            split_ifs
+            exacts [le_rfl, zero_le_one]
         · change ite _ _ _ ≤ ite _ _ _ * ite _ _ _
           simp only [ite_false, h, left_ne_zero_of_mul h, right_ne_zero_of_mul h, mul_one,
             le_refl] }⟩

@@ -107,8 +107,9 @@ theorem mem_span_pow {x y : S} {d : ℕ} (hd : d ≠ 0) :
     y ∈ Submodule.span R (Set.range fun i : Fin d => x ^ (i : ℕ)) ↔
       ∃ f : R[X], f.natDegree < d ∧ y = aeval x f := by
   rw [mem_span_pow']
-  constructor <;>
-  · rintro ⟨f, h, hy⟩
+  constructor
+  all_goals
+    rintro ⟨f, h, hy⟩
     refine ⟨f, ?_, hy⟩
     by_cases hf : f = 0
     · simp only [hf, natDegree_zero, Polynomial.degree_zero] at h ⊢

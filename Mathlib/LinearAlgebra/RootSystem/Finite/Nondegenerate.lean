@@ -217,8 +217,9 @@ lemma posRootForm_posForm_anisotropic :
 
 lemma posRootForm_posForm_nondegenerate :
     (P.posRootForm S).posForm.Nondegenerate := by
-  constructor <;>
-  · intro x
+  constructor
+  all_goals
+    intro x
     contrapose!
     exact fun hx ↦ ⟨x, (posRootForm_posForm_pos_of_ne_zero P S hx).ne'⟩
 

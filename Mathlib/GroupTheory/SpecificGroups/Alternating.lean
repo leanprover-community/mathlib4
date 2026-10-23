@@ -251,8 +251,9 @@ theorem closure_cycleType_eq_two_two_eq_alternatingGroup (h5 : 5 ≤ Nat.card α
     have H : g = (swap a (g a) * (swap b c)) * (swap b c * (swap (g a) (g (g a)))) := by
       simp [mul_assoc, ← hg3.eq_swap_mul_swap_iff_mem_support.mpr ha]
     rw [H]
-    apply mul_mem <;>
-    · apply Subgroup.subset_closure
+    apply mul_mem
+    all_goals
+      apply Subgroup.subset_closure
       exact cycleType_swap_mul_swap_of_nodup (by grind [Finset.mem_compl])
 
 theorem cycleType_eq_two_two_subset_alternatingGroup :

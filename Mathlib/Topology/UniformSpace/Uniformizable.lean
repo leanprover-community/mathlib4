@@ -71,8 +71,9 @@ theorem urysohns_main {c u : Set X} (IsThickeningcu : IsThickening c u) :
   refine ⟨ball x (ds ○ uc ○ ds), isOpen_ball x ho, ?_, subset_trans ?_ hsub,
       ⟨x, uc, ds, huc, ucu, rfl, subset_rfl, hdsu⟩,
       ⟨x, ds ○ uc ○ ds, ds, ho, mem_of_superset ucu (right_subset_comp.trans left_subset_comp),
-        rfl, hsub, hdsu⟩⟩ <;>
-  · refine closure_ball_subset.trans (ball_mono ?_ x)
+        rfl, hsub, hdsu⟩⟩
+  all_goals
+    refine closure_ball_subset.trans (ball_mono ?_ x)
     rw [closure_eq_inter_uniformity]
     exact iInter₂_subset_of_subset ds hdsu (by simp [comp_assoc])
 

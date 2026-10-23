@@ -76,10 +76,11 @@ theorem Lex.mono_right (hs : ∀ i a b, s₁ i a b → s₂ i a b) {a b : Σ i, 
   h.mono (fun _ _ => id) hs
 
 theorem lex_swap : Lex (Function.swap r) s a b ↔ Lex r (fun i => Function.swap (s i)) b a := by
-  constructor <;>
-    · rintro (⟨a, b, h⟩ | ⟨a, b, h⟩)
-      · exact Lex.left _ _ h
-      · exact Lex.right _ _ h
+  constructor
+  all_goals
+    rintro (⟨a, b, h⟩ | ⟨a, b, h⟩)
+    · exact Lex.left _ _ h
+    · exact Lex.right _ _ h
 
 instance [∀ i, Std.Refl (s i)] : Std.Refl (Lex r s) :=
   ⟨fun ⟨_, _⟩ => Lex.right _ _ <| refl _⟩

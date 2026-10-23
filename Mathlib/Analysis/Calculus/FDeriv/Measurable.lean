@@ -204,9 +204,10 @@ theorem differentiable_set_subset_D :
   obtain ⟨n, hn⟩ : ∃ n : ℕ, (1 / 2) ^ n < R :=
     exists_pow_lt_of_lt_one R_pos (by norm_num : (1 : ℝ) / 2 < 1)
   simp only [mem_iUnion, mem_iInter, B, mem_inter_iff]
-  refine ⟨n, fun p hp q hq => ⟨fderiv 𝕜 f x, hx.2, ⟨?_, ?_⟩⟩⟩ <;>
-    · refine hR _ ⟨by positivity, lt_of_le_of_lt ?_ hn⟩
-      exact pow_le_pow_of_le_one (by norm_num) (by norm_num) (by assumption)
+  refine ⟨n, fun p hp q hq => ⟨fderiv 𝕜 f x, hx.2, ⟨?_, ?_⟩⟩⟩
+  all_goals
+    refine hR _ ⟨by positivity, lt_of_le_of_lt ?_ hn⟩
+    exact pow_le_pow_of_le_one (by norm_num) (by norm_num) (by assumption)
 
 /-- Harder inclusion: at a point in `D f K`, the function `f` has a derivative, in `K`. -/
 theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete K) :

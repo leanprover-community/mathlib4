@@ -139,10 +139,11 @@ lemma filter_nsmul (s : Multiset α) (n : ℕ) : filter p (n • s) = n • filt
   · intro a ha ih
     rw [nsmul_cons, filter_add, ih, filter_cons, nsmul_add]
     congr
-    split_ifs with hp <;>
-      · simp only [filter_eq_self, nsmul_zero, filter_eq_nil]
-        intro b hb
-        rwa [mem_singleton.mp (mem_of_mem_nsmul hb)]
+    split_ifs with hp
+    all_goals
+      simp only [filter_eq_self, nsmul_zero, filter_eq_nil]
+      intro b hb
+      rwa [mem_singleton.mp (mem_of_mem_nsmul hb)]
 
 /-! ### countP -/
 

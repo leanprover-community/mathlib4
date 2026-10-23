@@ -543,7 +543,7 @@ lemma AffineIndependent.convexHull_inter (hs : AffineIndependent R ((↑) : s �
   · simp only [and_imp, Finset.mem_inter]
     exact fun y hy₁ _ ↦ h₁w₁ y hy₁
   all_goals
-  · rwa [sum_subset inter_subset_left]
+    rwa [sum_subset inter_subset_left]
     rintro x
     simp_intro hx₁ hx₂
     simp [ht x hx₁ hx₂]

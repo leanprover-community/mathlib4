@@ -274,8 +274,9 @@ lemma even_or_odd' (n : ℕ) : ∃ k, n = 2 * k ∨ n = 2 * k + 1 := by
   simpa only [← two_mul, exists_or, Odd, Even] using even_or_odd n
 
 lemma even_xor_odd' (n : ℕ) : ∃ k, Xor (n = 2 * k) (n = 2 * k + 1) := by
-  obtain ⟨k, rfl⟩ | ⟨k, rfl⟩ := even_or_odd n <;>
-  · use k
+  obtain ⟨k, rfl⟩ | ⟨k, rfl⟩ := even_or_odd n
+  all_goals
+    use k
     grind
 
 lemma odd_add_one {n : ℕ} : Odd (n + 1) ↔ ¬ Odd n := by grind

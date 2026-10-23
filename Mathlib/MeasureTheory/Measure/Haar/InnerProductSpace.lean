@@ -198,7 +198,7 @@ theorem WithLp.volume_preserving_symm_measurableEquiv_toLp_prod :
   refine (measurePreserving_sumPiEquivProdPi _).trans ?_
   refine MeasurePreserving.prod ?_ ?_
   all_goals
-  · refine (EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp _).symm.trans ?_
+    refine (EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp _).symm.trans ?_
     exact (LinearIsometryEquiv.measurePreserving _)
 
 /-- A copy of `WithLp.volume_preserving_symm_measurableEquiv_toLp_prod`

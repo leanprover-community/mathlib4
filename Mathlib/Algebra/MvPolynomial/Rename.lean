@@ -237,9 +237,10 @@ section
 variable (f : R →+* S) (k : σ → τ) (g : τ → S) (p : MvPolynomial σ R)
 
 theorem eval₂_rename : (rename k p).eval₂ f g = p.eval₂ f (g ∘ k) := by
-  apply MvPolynomial.induction_on p <;>
-    · intros
-      simp [*]
+  apply MvPolynomial.induction_on p
+  all_goals
+    intros
+    simp [*]
 
 theorem eval_rename (g : τ → R) (p : MvPolynomial σ R) : eval g (rename k p) = eval (g ∘ k) p :=
   eval₂_rename _ _ _ _
@@ -256,21 +257,24 @@ lemma aeval_comp_rename [Algebra R S] :
 
 theorem rename_eval₂ (g : τ → MvPolynomial σ R) :
     rename k (p.eval₂ C (g ∘ k)) = (rename k p).eval₂ C (rename k ∘ g) := by
-  apply MvPolynomial.induction_on p <;>
-    · intros
-      simp [*]
+  apply MvPolynomial.induction_on p
+  all_goals
+    intros
+    simp [*]
 
 theorem rename_prod_mk_eval₂ (j : τ) (g : σ → MvPolynomial σ R) :
     rename (Prod.mk j) (p.eval₂ C g) = p.eval₂ C fun x => rename (Prod.mk j) (g x) := by
-  apply MvPolynomial.induction_on p <;>
-    · intros
-      simp [*]
+  apply MvPolynomial.induction_on p
+  all_goals
+    intros
+    simp [*]
 
 theorem eval₂_rename_prod_mk (g : σ × τ → S) (i : σ) (p : MvPolynomial τ R) :
     (rename (Prod.mk i) p).eval₂ f g = eval₂ f (fun j => g (i, j)) p := by
-  apply MvPolynomial.induction_on p <;>
-    · intros
-      simp [*]
+  apply MvPolynomial.induction_on p
+  all_goals
+    intros
+    simp [*]
 
 theorem eval_rename_prod_mk (g : σ × τ → R) (i : σ) (p : MvPolynomial τ R) :
     eval g (rename (Prod.mk i) p) = eval (fun j => g (i, j)) p :=

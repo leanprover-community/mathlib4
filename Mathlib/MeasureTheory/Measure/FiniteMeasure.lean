@@ -961,8 +961,9 @@ lemma tendsto_map_of_tendsto_of_continuous {ι : Type*} {L : Filter ι}
     Tendsto (fun i ↦ (νs i).map f) L (𝓝 (ν.map f)) := by
   rw [FiniteMeasure.tendsto_iff_forall_lintegral_tendsto] at lim ⊢
   intro g
-  convert! lim (g.compContinuous ⟨f, f_cont⟩) <;>
-  · simp only [map, compContinuous_apply, ContinuousMap.coe_mk]
+  convert! lim (g.compContinuous ⟨f, f_cont⟩)
+  all_goals
+    simp only [map, compContinuous_apply, ContinuousMap.coe_mk]
     refine lintegral_map ?_ f_cont.measurable
     exact (ENNReal.continuous_coe.comp g.continuous).measurable
 

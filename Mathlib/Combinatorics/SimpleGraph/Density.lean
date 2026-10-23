@@ -229,10 +229,11 @@ theorem abs_edgeDensity_sub_edgeDensity_le_two_mul (hs : s₂ ⊆ s₁) (ht : t�
   · exact (abs_edgeDensity_sub_edgeDensity_le_two_mul_sub_sq r hs ht hδ h hscard htcard).trans
       ((sub_le_self_iff _).2 <| sq_nonneg δ)
   rw [two_mul]
-  refine (abs_sub _ _).trans (add_le_add (le_trans ?_ h) (le_trans ?_ h)) <;>
-    · rw [abs_of_nonneg]
-      · exact mod_cast edgeDensity_le_one r _ _
-      · exact mod_cast edgeDensity_nonneg r _ _
+  refine (abs_sub _ _).trans (add_le_add (le_trans ?_ h) (le_trans ?_ h))
+  all_goals
+    rw [abs_of_nonneg]
+    · exact mod_cast edgeDensity_le_one r _ _
+    · exact mod_cast edgeDensity_nonneg r _ _
 
 end Asymmetric
 

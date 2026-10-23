@@ -268,8 +268,9 @@ lemma a_cube_b_cube_congr_one_or_neg_one :
 /-- Given `S' : Solution'`, we have that `λ ^ 4` divides `S'.c ^ 3`. -/
 lemma lambda_pow_four_dvd_c_cube : λ ^ 4 ∣ S'.c ^ 3 := by
   rcases a_cube_b_cube_congr_one_or_neg_one S' with
-    ⟨⟨x, hx⟩, ⟨y, hy⟩⟩ | ⟨⟨x, hx⟩, ⟨y, hy⟩⟩ <;>
-  · refine ⟨S'.u⁻¹ * (x + y), ?_⟩
+    ⟨⟨x, hx⟩, ⟨y, hy⟩⟩ | ⟨⟨x, hx⟩, ⟨y, hy⟩⟩
+  all_goals
+    refine ⟨S'.u⁻¹ * (x + y), ?_⟩
     symm
     calc _ = S'.u⁻¹ * (λ ^ 4 * x + λ ^ 4 * y) := by ring
     _ = S'.u⁻¹ * (S'.a ^ 3 + S'.b ^ 3) := by rw [← hx, ← hy]; ring

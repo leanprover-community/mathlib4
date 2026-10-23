@@ -257,12 +257,12 @@ instance : Preadditive (Free R C) where
   homGroup _ _ := Finsupp.instAddCommGroup
   add_comp X Y Z f f' g := by
     dsimp +instances [CategoryTheory.categoryFree]
-    rw [Finsupp.sum_add_index'] <;> · simp [add_mul]
+    rw [Finsupp.sum_add_index'] <;> simp [add_mul]
   comp_add X Y Z f g g' := by
     dsimp +instances [CategoryTheory.categoryFree]
     rw [← Finsupp.sum_add]
     congr; ext r h
-    rw [Finsupp.sum_add_index'] <;> · simp [mul_add]
+    rw [Finsupp.sum_add_index'] <;> simp [mul_add]
 
 instance : Linear R (Free R C) where
   homModule _ _ := Finsupp.module _ R

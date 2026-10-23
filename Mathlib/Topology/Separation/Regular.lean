@@ -908,11 +908,11 @@ instance [T2Space X] [TotallyDisconnectedSpace X] [WeaklyLocallyCompactSpace X] 
     have f0 : IsEmbedding ((↑) : u → X) := IsEmbedding.subtypeVal.comp IsEmbedding.subtypeVal
     have f1 : IsOpenEmbedding ((↑) : u → X) := by
       refine ⟨f0, ?_⟩
-      · have : Set.range ((↑) : u → X) = interior s := by
-          rw [this, Set.range_comp, Subtype.range_coe, Subtype.image_preimage_coe]
-          apply Set.inter_eq_self_of_subset_right interior_subset
-        rw [this]
-        apply isOpen_interior
+      have : Set.range ((↑) : u → X) = interior s := by
+        rw [this, Set.range_comp, Subtype.range_coe, Subtype.image_preimage_coe]
+        apply Set.inter_eq_self_of_subset_right interior_subset
+      rw [this]
+      apply isOpen_interior
     have f2 : IsOpen v := VisClopen.2.preimage continuous_subtype_val
     have f3 : ((↑) : s → X) '' V = ((↑) : u → X) '' v := by
       rw [this, image_comp, Subtype.image_preimage_coe, inter_eq_self_of_subset_right V_sub]

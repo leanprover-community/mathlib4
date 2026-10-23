@@ -1120,8 +1120,9 @@ theorem inner_le_Lp_mul_Lq (hpq : p.HolderConjugate q) :
   simp_rw [coe_mul, one_div, coe_rpow_of_nonneg _ (inv_nonneg.mpr hpq.pos.le),
     coe_rpow_of_nonneg _ (inv_nonneg.mpr hpq.symm.pos.le), ofNNReal_finsetSum,
     coe_rpow_of_nonneg _ hpq.pos.le, coe_rpow_of_nonneg _ hpq.symm.pos.le] at this
-  convert this using 1 <;> [skip; congr 2] <;> [skip; skip; simp; skip; simp] <;>
-  · refine Finset.sum_congr rfl fun i hi ↦ ?_
+  convert this using 1 <;> [skip; congr 2] <;> [skip; skip; simp; skip; simp]
+  all_goals
+    refine Finset.sum_congr rfl fun i hi ↦ ?_
     simp [H'.1 i hi, H'.2 i hi, -WithZero.coe_mul]
 
 /-- **Weighted Hölder inequality**. -/

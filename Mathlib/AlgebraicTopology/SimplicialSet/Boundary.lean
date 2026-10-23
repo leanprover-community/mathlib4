@@ -107,7 +107,7 @@ lemma op_boundary (n : ℕ) :
     stdSimplex.opObjEquiv_opObjEquiv_symm_apply, not_exists]
   constructor
   all_goals
-  · rintro ⟨k, hk⟩
+    rintro ⟨k, hk⟩
     exact ⟨k.rev, fun l _ ↦ hk l.rev (by aesop)⟩
 
 namespace stdSimplex

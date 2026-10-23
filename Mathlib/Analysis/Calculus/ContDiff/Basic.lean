@@ -573,8 +573,9 @@ theorem iteratedFDerivWithin_prodMk {f : E → F} {g : E → G} (hf : ContDiffWi
     (hg : ContDiffWithinAt 𝕜 n g s x) (hs : UniqueDiffOn 𝕜 s) (ha : x ∈ s) {i : ℕ} (hi : i ≤ n) :
     iteratedFDerivWithin 𝕜 i (fun x ↦ (f x, g x)) s x =
       (iteratedFDerivWithin 𝕜 i f s x).prod (iteratedFDerivWithin 𝕜 i g s x) := by
-  ext <;>
-  · rw [← ContinuousLinearMap.iteratedFDerivWithin_comp_left _ (hf.prodMk hg) hs ha hi]
+  ext
+  all_goals
+    rw [← ContinuousLinearMap.iteratedFDerivWithin_comp_left _ (hf.prodMk hg) hs ha hi]
     simp [Function.comp_def]
 
 theorem iteratedFDeriv_prodMk {f : E → F} {g : E → G} (hf : ContDiffAt 𝕜 n f x)
