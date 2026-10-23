@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.UrysohnsLemma
 public import Mathlib.Topology.ContinuousMap.Bounded.Basic
+public import Mathlib.Topology.UrysohnsLemma
 
 /-!
 # Urysohn's lemma for bounded continuous functions
@@ -55,4 +55,4 @@ theorem exists_bounded_mem_Icc_of_closed_of_le {X : Type*} [TopologicalSpace X] 
   let ⟨f, hfs, hft, hf01⟩ := exists_bounded_zero_one_of_closed hs ht hd
   ⟨BoundedContinuousFunction.const X a + (b - a) • f, fun x hx => by simp [hfs hx], fun x hx => by
     simp [hft hx], fun x =>
-    ⟨by dsimp; nlinarith [(hf01 x).1], by dsimp; nlinarith [(hf01 x).2]⟩⟩
+    ⟨by simp; nlinarith [(hf01 x).1], by simp; nlinarith [(hf01 x).2]⟩⟩

@@ -5,14 +5,13 @@ Authors: Mantas Bakšys, Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Order.Monovary
 public import Mathlib.Algebra.Order.Rearrangement
-public import Mathlib.GroupTheory.Perm.Cycle.Basic
-public import Mathlib.Tactic.GCongr
 public import Mathlib.Tactic.Positivity
 
 import Mathlib.Algebra.BigOperators.Module
+import Mathlib.Algebra.Order.Monovary
 import Mathlib.Data.Multiset.Fintype
+import Mathlib.GroupTheory.Perm.Cycle.Basic
 
 /-!
 # Chebyshev's sum inequality and Abel's inequality

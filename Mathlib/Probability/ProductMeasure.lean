@@ -5,7 +5,6 @@ Authors: Etienne Marion
 -/
 module
 
-public import Mathlib.Probability.Kernel.Composition.MeasureComp
 public import Mathlib.Probability.Kernel.IonescuTulcea.Traj
 
 /-!
@@ -392,11 +391,11 @@ theorem eq_infinitePi {ν : Measure (Π i, X i)}
   rw [Measure.map_apply, restrict_preimage_univ, hν, ← prod_attach, univ_eq_attach]
   · congr with i
     rw [dite_eq_left i.2]
-  any_goals fun_prop
   · rintro i
     split_ifs with hi
     · exact ht ⟨i, hi⟩
     · exact .univ
+  · fun_prop
   · exact .univ_pi ht
 
 lemma infinitePi_pi {s : Finset ι} {t : (i : ι) → Set (X i)}

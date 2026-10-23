@@ -143,6 +143,11 @@ protected def id (r : α → α → Prop) : r →r r :=
 protected def comp (g : s →r t) (f : r →r s) : r →r t :=
   ⟨fun x => g (f x), fun h => g.2 (f.2 h)⟩
 
+/-- The identity relation homomorphism from a subrelation to its containing relation. -/
+@[simps]
+protected def ofLE {r' : α → α → Prop} (le : r ≤ r') : r →r r' :=
+  ⟨id, @le⟩
+
 theorem comp_assoc (h : r →r s) (g : s →r t) (f : t →r u) :
   (f.comp g).comp h = f.comp (g.comp h) := rfl
 
@@ -667,7 +672,7 @@ lemma apply_eq_iff_eq (f : r ≃r s) {x y : α} : f x = f y ↔ x = y := EquivLi
 lemma symm_apply_eq (e : r ≃r s) {x y} : e.symm x = y ↔ x = e y := e.toEquiv.symm_apply_eq
 lemma eq_symm_apply (e : r ≃r s) {x y} : y = e.symm x ↔ e y = x := e.toEquiv.eq_symm_apply
 
-@[deprecated eq_symm_apply (since := "2026-07-26")]
+@[deprecated eq_symm_apply +typeChanged (since := "2026-07-26")]
 lemma apply_eq_iff_eq_symm_apply {x : α} {y : β} (f : r ≃r s) : f x = y ↔ x = f.symm y :=
   f.eq_symm_apply.symm
 
