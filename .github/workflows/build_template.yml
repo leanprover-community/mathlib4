@@ -245,6 +245,7 @@ jobs:
           # Clean the staging directory first, though it should be empty at this point, to be safe
           rm -rf cache-staging
           mkdir -p cache-staging
+          touch "${{ runner.temp }}/staging-start"
 
       # The library build and the Mathlib staging are independent: `lake build`
       # writes only the three library targets, and `cache stage` reads
@@ -271,6 +272,10 @@ jobs:
               # `lean`/`leantar` (see setup-build-env).
               export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
               cd pr-branch
+              # PROBE: pack, then hold the member open so that a cancel lands
+              # after the packing and before the copy.
+              ../tools-branch/.lake/build/bin/cache pack
+              echo "probe: packed; staging member sleeps 600 s"; sleep 600
               ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage
 
       # A cancelled run does not start the members of a parallel group,
@@ -286,6 +291,9 @@ jobs:
         run: |
           # No `lake env`, trusted toolchain: see "stage Mathlib cache files".
           export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
+          # PROBE (proposed fix): repack the `.ltar` files packed since the
+          # staging began, so `cache stage` copies them too.
+          find "$HOME/.cache/mathlib" -maxdepth 1 -name '*.ltar' -newer "${{ runner.temp }}/staging-start" -print -delete
           cd pr-branch
           ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage
 
