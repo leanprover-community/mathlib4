@@ -13,7 +13,6 @@ set_option linter.style.header false
 # Script to create a file importing all files from a folder
 
 This file declares a command to gather all Lean files from a folder into a single Lean file.
-
 -/
 
 open Lean System.FilePath
