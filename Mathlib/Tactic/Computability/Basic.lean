@@ -5,8 +5,8 @@ Authors: Edwin Park
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.LabelAttribute
+public import Mathlib.Init
 
 /-! # Tactics/macros for computability arguments -/
 

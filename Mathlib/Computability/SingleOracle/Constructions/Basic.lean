@@ -5,8 +5,8 @@ Authors: Edwin Park
 -/
 module
 
-public import Mathlib.Computability.SingleOracle.Constructions.Primitive
 public import Mathlib.Computability.SingleOracle.Constructions.Eval
+public import Mathlib.Computability.SingleOracle.Constructions.Primitive
 
 /-!
 # Construction of codes of basic non-primrec functions

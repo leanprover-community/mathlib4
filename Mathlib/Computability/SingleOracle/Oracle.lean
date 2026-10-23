@@ -6,9 +6,10 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Computability.RecursiveIn
+
+import Mathlib.Data.Nat.Find
 import Mathlib.Data.Nat.Pairing
 import Mathlib.Data.PFun
-import Mathlib.Data.Nat.Find
 
 /-!
 # Oracle.lean

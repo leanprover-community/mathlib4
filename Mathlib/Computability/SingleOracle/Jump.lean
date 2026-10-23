@@ -6,8 +6,8 @@ Authors: Edwin Park
 module
 
 public import Mathlib.Computability.SingleOracle.Constructions.Basic
-public import Mathlib.Computability.SingleOracle.Constructions.Primitive
 public import Mathlib.Computability.SingleOracle.Constructions.Meta
+public import Mathlib.Computability.SingleOracle.Constructions.Primitive
 public import Mathlib.Computability.SingleOracle.Order
 
 /-!

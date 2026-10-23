@@ -5,8 +5,8 @@ Authors: Edwin Park
 -/
 module
 
-public import Mathlib.Computability.SingleOracle.Constructions.EvalAux
 public import Mathlib.Computability.SingleOracle.Constructions.CovRec
+public import Mathlib.Computability.SingleOracle.Constructions.EvalAux
 
 /-!
 # Eval.lean

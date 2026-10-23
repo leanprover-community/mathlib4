@@ -6,9 +6,10 @@ Authors: Edwin Park
 module
 
 public import Mathlib.Computability.SingleOracle.Encoding
-import Mathlib.Tactic.Computability.Basic
-import Mathlib.Data.PFun
+
 import Mathlib.Data.Nat.BitIndices
+import Mathlib.Data.PFun
+import Mathlib.Tactic.Computability.Basic
 
 /-!
 # Notations, helper functions
