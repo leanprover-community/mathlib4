@@ -697,6 +697,26 @@ theorem measurable_of_Ici {f : δ → α} (hf : ∀ x, MeasurableSet (f ⁻¹' I
   simp_rw [← compl_Ici, preimage_compl, MeasurableSet.compl_iff]
   assumption
 
+/-- `NullMeasurable` version of `measurable_of_Iio`. -/
+theorem nullMeasurable_of_Iio {μ : Measure δ} {f : δ → α}
+    (hf : ∀ x, NullMeasurableSet (f ⁻¹' Iio x) μ) : NullMeasurable f μ :=
+  measurable_of_Iio hf
+
+/-- `NullMeasurable` version of `measurable_of_Ioi`. -/
+theorem nullMeasurable_of_Ioi {μ : Measure δ} {f : δ → α}
+    (hf : ∀ x, NullMeasurableSet (f ⁻¹' Ioi x) μ) : NullMeasurable f μ :=
+  measurable_of_Ioi hf
+
+/-- `NullMeasurable` version of `measurable_of_Iic`. -/
+theorem nullMeasurable_of_Iic {μ : Measure δ} {f : δ → α}
+    (hf : ∀ x, NullMeasurableSet (f ⁻¹' Iic x) μ) : NullMeasurable f μ :=
+  measurable_of_Iic hf
+
+/-- `NullMeasurable` version of `measurable_of_Ici`. -/
+theorem nullMeasurable_of_Ici {μ : Measure δ} {f : δ → α}
+    (hf : ∀ x, NullMeasurableSet (f ⁻¹' Ici x) μ) : NullMeasurable f μ :=
+  measurable_of_Ici hf
+
 /-- If a function is the least upper bound of countably many measurable functions,
 then it is measurable. -/
 theorem Measurable.isLUB {ι} [Countable ι] {f : ι → δ → α} {g : δ → α} (hf : ∀ i, Measurable (f i))
