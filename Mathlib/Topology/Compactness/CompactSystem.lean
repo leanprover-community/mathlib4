@@ -38,6 +38,10 @@ This file defines compact systems of sets.
   compact system.
 * `isCompactSystem_compactClosedSquareCylinders`: Compact and closed square cylinders form a
   compact system.
+
+## References
+
+* [S. He, J. Wang and J. Yan, *Semimartingale theory and stochastic calculus*][hewangyan1992]
 -/
 
 @[expose] public section
@@ -241,7 +245,9 @@ protected theorem supClosure (hS : IsCompactSystem S) :
   · exact hCL n ▸ subset_sUnion_of_mem (hfL n (A n) (hA n))
 
 /-- If `T` is a compact system, then the projection on the first coordinate commutes with the
-intersection of a decreasing sequence of finite unions of products `s ×ˢ t` with `t ∈ T`. -/
+intersection of a decreasing sequence of finite unions of products `s ×ˢ t` with `t ∈ T`.
+
+This is equation (35.1) in the proof of Theorem 1.35 of [hewangyan1992]. -/
 theorem fst_image_iInter {β : Type*} {T : Set (Set β)} (hT : IsCompactSystem T)
     {B : ℕ → Set (α × β)} (hB_anti : Antitone B)
     (hB : ∀ n, B n ∈ supClosure (image2 (· ×ˢ ·) S T)) :
