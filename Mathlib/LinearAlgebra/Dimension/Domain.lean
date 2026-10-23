@@ -210,8 +210,7 @@ end Module
 
 namespace Algebra.IsAlgebraic
 
-variable
-  [h : Algebra.IsAlgebraic R S]
+variable [Algebra.IsAlgebraic R S]
   (M : Type w) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
   (M₁ : Type v) [AddCommGroup M₁] [Module R M₁] [Module S M₁] [IsScalarTower R S M₁]
 
