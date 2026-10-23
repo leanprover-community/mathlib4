@@ -308,7 +308,7 @@ jobs:
           # `lean`/`leantar` (see setup-build-env).
           export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
           cd pr-branch
-          ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage
+          ../tools-branch/.lake/build/bin/cache stage --staging-dir="../cache-staging"
 
       - name: stage Archive cache files
         if: ${{ steps.archive.outcome == 'success' }}
@@ -317,7 +317,7 @@ jobs:
           # No `lake env`, trusted toolchain: see "stage Mathlib cache files".
           export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
           cd pr-branch
-          ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage Archive.lean
+          ../tools-branch/.lake/build/bin/cache stage --staging-dir="../cache-staging" Archive.lean
 
       - name: stage Counterexamples cache files
         if: ${{ steps.counterexamples.outcome == 'success' }}
@@ -326,7 +326,7 @@ jobs:
           # No `lake env`, trusted toolchain: see "stage Mathlib cache files".
           export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
           cd pr-branch
-          ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage Counterexamples.lean
+          ../tools-branch/.lake/build/bin/cache stage --staging-dir="../cache-staging" Counterexamples.lean
 
       - name: stage Wanted cache files
         if: ${{ steps.wanted.outcome == 'success' }}
@@ -335,7 +335,7 @@ jobs:
           # No `lake env`, trusted toolchain: see "stage Mathlib cache files".
           export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
           cd pr-branch
-          ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage Wanted.lean
+          ../tools-branch/.lake/build/bin/cache stage --staging-dir="../cache-staging" Wanted.lean
 
       - name: check cache staging contents
         id: cache_staging_check
@@ -533,7 +533,7 @@ jobs:
           # Use the trusted toolchain's `lean`/`leantar` (see setup-build-env).
           export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
           cd pr-branch
-          ../tools-branch/.lake/build/bin/cache --repo="${CACHE_REPO}" get 'MathlibTest.+'
+          ../tools-branch/.lake/build/bin/cache get --repo="${CACHE_REPO}" 'MathlibTest.+'
 
       - name: begin gh-problem-match-wrap for test step
         if: ${{ env.RUN_TESTS == 'true' }}
@@ -576,7 +576,7 @@ jobs:
           # No `lake env`, trusted toolchain: see "stage Mathlib cache files".
           export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
           cd pr-branch
-          ../tools-branch/.lake/build/bin/cache --staging-dir="../test-cache-staging" stage 'MathlibTest.+'
+          ../tools-branch/.lake/build/bin/cache stage --staging-dir="../test-cache-staging" 'MathlibTest.+'
 
       - name: check MathlibTest cache staging contents
         id: test_cache_staging
@@ -785,11 +785,11 @@ jobs:
           name: cache-staging
           path: cache-staging
 
-      # Upload the staged set to R2. `master` writes the public cache bucket,
-      # flat. `forks` writes the developer cache bucket in the container's
-      # layout, which the cache resolver serves. The mint action returns
-      # short-lived S3 credentials as masked step outputs. A failed mint or
-      # upload fails the job.
+      # Upload the staged set to R2: the container write under the
+      # container's root in its bucket. `master` goes to the public cache
+      # bucket, flat; `forks` goes to the developer cache bucket, in the
+      # container's layout. The mint action returns short-lived S3 credentials
+      # as masked step outputs. A failed mint or upload fails the job.
       - &mint_r2_credentials
         name: Mint R2 credentials
         id: mint-r2
@@ -807,14 +807,14 @@ jobs:
           MATHLIB_CACHE_S3_SESSION_TOKEN: ${{ steps.mint-r2.outputs.session-token }}
           # R2 signs every request in the region `auto`.
           MATHLIB_CACHE_S3_REGION: auto
-          # The public cache bucket's master prefix, `https://<endpoint>/<bucket>/mathlib4`.
-          # The flat write puts `{url}/f/{hash}.ltar` under it, which the cache
-          # resolver serves.
+          # The root of the `master` container in the public cache bucket,
+          # `https://<endpoint>/<bucket>/mathlib4`. The container's flat layout
+          # puts `{url}/f/{hash}.ltar` under it, which the cache resolver serves.
           MASTER_PUT_URL: ${{ secrets.MATHLIB_CACHE_R2_PUT_URL }}
-          # The developer cache bucket, `https://<endpoint>/<bucket>`. The container
-          # write puts `{base}/mathlib4-forks/f/{repo}/{sha}/{hash}.ltar` under it,
-          # with the completeness marker `{base}/mathlib4-forks/m/{repo}/{sha}`, for
-          # the per-commit scope the dispatch sets.
+          # The developer cache bucket, `https://<endpoint>/<bucket>`. The root of
+          # the `forks` container is `{base}/mathlib4-forks`, where the container's
+          # layout puts `f/{repo}/{sha}/{hash}.ltar` and the completeness marker
+          # `m/{repo}/{sha}` for the per-commit scope the dispatch sets.
           DEVELOPER_PUT_BASE_URL: ${{ secrets.MATHLIB_CACHE_R2_DEVELOPER_PUT_BASE_URL }}
         run: |
           # $MATHLIB_CACHE_PRIMARY is the container the dispatch selected.
@@ -825,19 +825,17 @@ jobs:
                 exit 1
               fi
               export MATHLIB_CACHE_PUT_URL="$MASTER_PUT_URL"
-              container_args=()
               ;;
             forks)
               if [ -z "$DEVELOPER_PUT_BASE_URL" ]; then
                 echo "::error::the secret MATHLIB_CACHE_R2_DEVELOPER_PUT_BASE_URL is unset"
                 exit 1
               fi
-              export MATHLIB_CACHE_PUT_BASE_URL="$DEVELOPER_PUT_BASE_URL"
-              container_args=(--container=forks)
+              export MATHLIB_CACHE_PUT_URL="${DEVELOPER_PUT_BASE_URL%/}/mathlib4-forks"
               ;;
           esac
           echo "Uploading cache to R2 (container: $MATHLIB_CACHE_PRIMARY)..."
-          lake env "$CACHE_BIN" put-staged --backend=s3 "${container_args[@]}" --staging-dir="cache-staging" --repo="$REPO"
+          lake env "$CACHE_BIN" put-staged --backend=s3 --container="$MATHLIB_CACHE_PRIMARY" --staging-dir="cache-staging" --repo="$REPO"
 
   upload_test_cache:
     name: Upload tests to cache
@@ -881,10 +879,10 @@ jobs:
           MATHLIB_CACHE_S3_SECRET_ACCESS_KEY: ${{ steps.mint-r2.outputs.secret-access-key }}
           MATHLIB_CACHE_S3_SESSION_TOKEN: ${{ steps.mint-r2.outputs.session-token }}
           MATHLIB_CACHE_S3_REGION: auto
-          # The flat write under the public bucket's master prefix. An unset secret
-          # fails the upload.
+          # The root of the `master` container in the public cache bucket, where
+          # its flat layout puts the files. An unset secret fails the upload.
           MATHLIB_CACHE_PUT_URL: ${{ secrets.MATHLIB_CACHE_R2_PUT_URL }}
-        run: lake env "$CACHE_BIN" put-staged --backend=s3 --staging-dir="cache-staging"
+        run: lake env "$CACHE_BIN" put-staged --backend=s3 --container=master --staging-dir="cache-staging"
 
   post_steps:
     name: Post-Build Step
@@ -925,10 +923,10 @@ jobs:
           path: workflow-actions
           persist-credentials: false # no later step needs git credentials
 
-      # Sets MATHLIB_CACHE_FROM in env so the `cache get` calls below pick
-      # up the trust-class-appropriate read fallback automatically. Every job
-      # that reads or writes the cache gets this policy from the same composite
-      # action.
+      # Sets MATHLIB_CACHE_REPO_SCOPE in env for a fork-trust build, so the
+      # `cache get` calls below read the developer cache at this commit. Every
+      # job that reads or writes the cache gets this policy from the same
+      # composite action.
       - name: Compute cache trust dispatch
         uses: ./workflow-actions/.github/actions/cache-trust-dispatch
         with:
@@ -953,14 +951,14 @@ jobs:
           # Run once without --repo, so we can diagnose what `lake exe cache get` wants to do by itself.
           lake exe cache get
           # Run again with --repo, so ensure we actually get the oleans.
-          lake exe cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} get
+          lake exe cache get --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }}
 
       - name: get cache for Archive and Counterexamples
         run: |
           # Run once without --repo, so we can diagnose what `lake exe cache get` wants to do by itself.
           lake exe cache get Archive Counterexamples
           # Run again with --repo, so ensure we actually get the oleans.
-          lake exe cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} get Archive Counterexamples
+          lake exe cache get --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} Archive Counterexamples
 
       - name: verify that everything was available in the cache
         id: verify_cache
@@ -1042,7 +1040,7 @@ jobs:
           cp ../lean-toolchain .
           # Skip mathlib's `post_update` hook, so that the `cache get` below is the one tested.
           MATHLIB_NO_CACHE_ON_UPDATE=1 lake update
-          lake exe cache --repo="${REPO}" get
+          lake exe cache get --repo="${REPO}"
           lake build --no-build Mathlib
 
       - name: check declarations in db files

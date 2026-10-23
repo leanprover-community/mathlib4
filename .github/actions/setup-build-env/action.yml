@@ -28,10 +28,11 @@ inputs:
 runs:
   using: composite
   steps:
-    # Compute the trust-classified container target and read fallback for this
-    # job. Sets MATHLIB_CACHE_FROM / MATHLIB_CACHE_PRIMARY in env so every
-    # subsequent `cache get` inherits them without per-call flag plumbing. Loaded
-    # from the trust-rooted `workflow-actions/` checkout, not the PR branch.
+    # Compute the trust-classified container target and read scope for this
+    # job. Sets MATHLIB_CACHE_PRIMARY and, for a fork-trust build,
+    # MATHLIB_CACHE_REPO_SCOPE in env so every subsequent `cache get` inherits
+    # them without per-call flag plumbing. Loaded from the trust-rooted
+    # `workflow-actions/` checkout, not the PR branch.
     - name: Compute cache trust dispatch
       uses: ./workflow-actions/.github/actions/cache-trust-dispatch
       with:

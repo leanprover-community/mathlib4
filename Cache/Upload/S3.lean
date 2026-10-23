@@ -15,14 +15,14 @@ The complete s3 upload path. This module holds:
 
 * the credential set (`S3Credentials`), its resolution (`s3AuthFrom`), and the
   signing region (`s3RegionFrom`);
-* the location resolution (`s3UploadLocationFrom`);
 * the transfer-tool policy (`s3UploadToolFrom`);
 * the SigV4 curl arguments (`s3CurlArgs`);
 * the rclone tool's configuration (`rcloneEnv`);
 * the transfer entry point (`s3PutStaged`).
 
 `Cache/Upload/Rclone.lean` validates S3 URLs (`s3EndpointSplit`) and derives
-the rclone remote paths from the upload location.
+the rclone remote paths from the upload location, the container's root that
+`MATHLIB_CACHE_PUT_URL` names (`uploadLocationFrom`).
 -/
 
 public section
@@ -103,30 +103,6 @@ def s3CurlArgs (creds : S3Credentials) (region : String) : Array String :=
     | none => #[]
   #["--aws-sigv4", s!"aws:amz:{region}:s3", "--user", s!"{creds.keyId}:{creds.secret}",
     "-H", "x-amz-content-sha256: UNSIGNED-PAYLOAD"] ++ sessionArgs
-
-/--
-The upload location for the s3 backend: the container write rebased under
-the bucket endpoint `MATHLIB_CACHE_PUT_BASE_URL` names (`putBase?`), as
-`MATHLIB_CACHE_BASE_URL` rebases reads. A bucket URL is account-specific, so
-the backend has no default endpoint and an unset base errors. A base without
-`--container` errors, since a base rebases a container write.
--/
-def s3UploadLocationFrom (putBase? : Option String) (container? : Option Container)
-    (repo : String) (scope? : Option String) : Except String Location :=
-  match putBase?, container? with
-  | some base, some c => do
-    -- Validate the base before the container's segment joins it. Otherwise a
-    -- base without a bucket, such as `https://host`, passes the check with the
-    -- segment as the bucket name.
-    discard (s3EndpointSplit base)
-    return c.location base repo scope?
-  | some _, none => .error
-      "MATHLIB_CACHE_PUT_BASE_URL is set, which rebases a container write; \
-      pass --container=NAME to name the container."
-  | none, _ => .error
-      "the s3 backend uploads to the bucket endpoint MATHLIB_CACHE_PUT_BASE_URL \
-      names (https://host/bucket): set it, or set MATHLIB_CACHE_PUT_URL for a \
-      flat upload"
 
 /--
 The rclone S3 backend configuration. It is passed in the child environment,

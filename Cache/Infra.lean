@@ -11,10 +11,10 @@ public import Cache.Env
 # Cache backend infrastructure
 
 The multi-container model: the trust-classified storage containers, the
-per-repo lookup chain, and the GitHub repo names that the cache tool dispatches on.
+read hosts, and the GitHub repo names that the cache tool dispatches on.
 
-This lives apart from `Cache.Requests` so the container model and trust ordering
-stand on their own, independent of the HTTP/curl machinery that consumes them.
+This lives apart from `Cache.Requests` so the container model stands on its
+own, independent of the HTTP/curl machinery that consumes it.
 -/
 
 public section
@@ -112,6 +112,16 @@ def flatPath : Container → Bool
   | .master => true
   | .forks => false
 
+/--
+Whether the container holds per-commit namespaces, `/f/{repo}/{sha}/...`,
+which a scope addresses. Only `forks` does: each fork PR build uploads under
+its head commit, so one commit's artifacts never serve another commit on the
+same fork.
+-/
+def perCommit : Container → Bool
+  | .master => false
+  | .forks => true
+
 end Container
 
 /--
@@ -121,9 +131,10 @@ namespace and caches artifacts at its edge.
 def publicCacheEndpoint : String := "https://cache.mathlib.org"
 
 /--
-Base URL for reads: `MATHLIB_CACHE_BASE_URL` if set, otherwise
-`publicCacheEndpoint`. `normalizeBaseURL` reads the value: it trims it,
-removes trailing slashes, and treats an empty value as unset.
+Base URL for the reads of a workflow whose own host is `endpoint`:
+`MATHLIB_CACHE_BASE_URL` (`baseEnv?`) if set, otherwise `endpoint`.
+`normalizeBaseURL` reads the value: it trims it, removes trailing slashes, and
+treats an empty value as unset.
 
 A read URL is `{base}/{pathSegment}/{key}`, the namespace every cache
 host serves. Any host that mirrors that namespace is therefore a valid base.
@@ -133,18 +144,15 @@ lookup chain. `MATHLIB_CACHE_BASE_URL` serves internal consumers, that is,
 CI and contributors to the mathlib4 repository. It keeps the lookup chain and
 rebases each container read under the given host.
 
-The tool uses this base only for reads, and `uploadLocation` for uploads and
-marker writes.
+The tool uses this base only for reads. An upload writes under the root
+`MATHLIB_CACHE_PUT_URL` names (`uploadLocationFrom`).
 -/
-def getBaseURLFrom (envValue? : Option String) : String :=
-  (normalizeBaseURL envValue?).getD publicCacheEndpoint
+def readBaseFrom (endpoint : String) (baseEnv? : Option String) : String :=
+  (normalizeBaseURL baseEnv?).getD endpoint
 
-/--
-Base URL for reads, resolved from the environment.
-Written on top of the pure function above, which is separate to be testable.
--/
-def getBaseURL : BaseIO String := do
-  return getBaseURLFrom (← IO.getEnv "MATHLIB_CACHE_BASE_URL")
+/-- `readBaseFrom` under the settings `s`. -/
+def readBase (s : Settings) (endpoint : String) : String :=
+  readBaseFrom endpoint s.baseURL?
 
 /--
 Comma-separated list parser for `--cache-from=a,b,c`.
@@ -154,21 +162,3 @@ Returns `none` if any element is unrecognized.
 def parseCacheFromList (s : String) : Option (List Container) := do
   let parts := s.splitOn ","
   parts.mapM (fun p => Container.parse? p.trimAscii.toString)
-
-/--
-Trust-ordered containers to try when downloading for a given GitHub repo, most
-trusted first. Each repo reads from its own trust-level container.
-
-Fork chains lead with `master`. The layout is fixed per container
-(`Container.flatPath`), so the `master` container is read flat at `/f/{hash}`
-whatever the `repo` is, and a fork build finds the master-built deps that make
-up the bulk of its files there; the fork's own container then supplies the
-PR-specific files at `/f/{repo}/...`.
--/
-def defaultContainersForRepo (repo : String) : List Container :=
-  if repo == MATHLIBREPO then
-    [.master]
-  else
-    -- Forks and everything else: `master` for shared upstream deps, the fork's
-    -- own container for PR-specific files.
-    [.master, .forks]

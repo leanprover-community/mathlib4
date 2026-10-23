@@ -96,16 +96,15 @@ runs:
                   # container canonical checkouts read. Tag creation is
                   # restricted to release managers by a tag ruleset, and the
                   # `cache-upload-master` environment admits `v4.*` tag refs,
-                  # so these builds carry master trust. Reads use the tool's
-                  # default for the canonical repo, `master` alone, for the
-                  # same fill-in reason as the master/staging arm below.
+                  # so these builds carry master trust. They read the public
+                  # cache alone, for the same fill-in reason as the
+                  # master/staging arm below.
                   PRIMARY="master"
                   ;;
                 *)
                   # Other tags have no trust class of their own:
                   # fork-equivalent, like the dev-branch arm below.
                   PRIMARY="forks"
-                  READ_CHAIN="master,forks"
                   ;;
               esac
             else
@@ -113,31 +112,29 @@ runs:
                 "master"|"staging")
                   # Master, staging, and `v4.*` release tags (above) are the
                   # only writers that feed `master` (`staging` is bors's merge
-                  # candidate, which fast-forwards to `master`). Reads use the
-                  # tool's default for the canonical repo, `master` alone, and
-                  # the chain must not widen: files the read chain serves are
-                  # skipped at stage time, so every file missing from `master`
-                  # is a miss that gets rebuilt and uploaded, and `master`
-                  # fills itself into a standalone cache. (Only PRIMARY=master
-                  # does this; other runs write to `forks` and widen the
-                  # chain.)
+                  # candidate, which fast-forwards to `master`). A canonical
+                  # checkout with no chain or scope set reads the public cache
+                  # alone, the `master` container. Files the read serves are
+                  # skipped at stage time, so every other file is a miss that
+                  # gets rebuilt and uploaded, and `master` fills itself into
+                  # a standalone cache.
                   PRIMARY="master"
                   ;;
                 *)
                   # `bors trying`, `ci-dev/*`, maintainer dev branches on the
                   # canonical repo: trust level is fork-equivalent (the
-                  # minted credential scopes them to `forks`). Reads must widen
-                  # past the default [master] so the post-build verification
-                  # finds the just-uploaded fork-trust artifacts.
+                  # minted credential scopes them to `forks`). The per-commit
+                  # scope set below selects the developer-cache workflow,
+                  # whose chain [master, forks] lets the post-build
+                  # verification find the just-uploaded fork-trust artifacts.
                   PRIMARY="forks"
-                  READ_CHAIN="master,forks"
                   ;;
               esac
             fi
             ;;
           *)
             # Foreign fork, or the nightly-testing repo, which is a fork in
-            # the cache's model. The cache tool's default chain for a fork repo
+            # the cache's model. A fork reads the developer cache, whose chain
             # is [master, forks] (master-first): master supplies the
             # bulk of unchanged upstream deps, forks supplies PR-specific
             # files. No widening needed, so MATHLIB_CACHE_FROM stays unset.

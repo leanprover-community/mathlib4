@@ -15,13 +15,13 @@ optionally, a commit. Files use the scope as a directory under `f`. A commit
 marker uses the same scope as a file under `m`. Flat locations and repo
 scopes without a commit have no marker.
 
-`Container.location` selects the layout of a known container.
-`Location.ofEndpoint` selects the layout of a user-supplied endpoint.
-Both constructors trim whitespace and remove trailing slashes from URLs.
-The location constructs the file paths and derives its marker. Reads try
-locations in trust order (`readLocations`). Uploads write to one location
-(`uploadLocation`). `Cache/Marker.lean` defines the marker read and write
-operations.
+`Container.location` and `Container.locationAt` select the layout of a known
+container. `Location.flat` is the flat layout of a user-supplied endpoint.
+The constructors trim whitespace and remove trailing slashes from URLs.
+The location constructs the file paths and derives its marker. A read tries
+the locations its workflow builds, in trust order (`Cache.Workflow`). An
+upload writes to one location (`uploadLocationFrom`). `Cache/Marker.lean`
+defines the marker read and write operations.
 -/
 
 public section
@@ -29,13 +29,13 @@ public section
 namespace Cache.Requests
 
 /-- The repo namespace, optionally restricted to a commit. -/
-structure Scope where
+structure Location.Scope where
   repo : String
   sha? : Option String
   deriving Repr, BEq, Inhabited
 
 /-- The shared path under the file and marker trees. -/
-def Scope.path (scope : Scope) : String :=
+def Location.Scope.path (scope : Location.Scope) : String :=
   let repo := normalizeRepo scope.repo
   match scope.sha? with
   | none => repo
@@ -46,7 +46,7 @@ def Scope.path (scope : Scope) : String :=
 structure Location where
   root : String
   label : String
-  scope? : Option Scope
+  scope? : Option Location.Scope
   deriving Repr, BEq, Inhabited
 
 namespace Location
@@ -92,20 +92,26 @@ def marker? (location : Location) : Option Marker := do
 def markerURL? (location : Location) : Option String :=
   location.marker?.map (·.url)
 
-/-- An endpoint follows the repo's layout: flat for the canonical repo. -/
-def ofEndpoint (url label repo : String) (sha? : Option String) : Location :=
-  { root := normalizeRoot url, label,
-    scope? := if normalizeRepo repo == MATHLIBREPO then none
-      else some { repo, sha? } }
+/-- A user-supplied endpoint, read flat at `{url}/f/{fileName}` whatever the
+repo. -/
+def flat (url label : String) : Location :=
+  { root := normalizeRoot url, label, scope? := none }
 
 end Location
 
-/-- The location of container `c` under `base`. The constructor adds the
-container segment and selects a flat layout or a repo scope. The location
-constructs the file and marker paths. -/
+/-- The location of container `c` at `root`, the URL that holds the
+container's `f/` and `m/` trees. The container selects a flat layout or a repo
+scope. The location constructs the file and marker paths. -/
+def Container.locationAt (c : Container) (root repo : String)
+    (sha? : Option String) : Location :=
+  { root := Location.normalizeRoot root, label := c.name,
+    scope? := if c.flatPath then none else some { repo, sha? } }
+
+/-- The location of container `c` under `base`, a host that serves the
+`/{container}/{key}` namespace: `Container.locationAt` at the container's
+URL under `base`. -/
 def Container.location (c : Container) (base repo : String)
     (sha? : Option String) : Location :=
-  { root := c.urlUnder (Location.normalizeRoot base), label := c.name,
-    scope? := if c.flatPath then none else some { repo, sha? } }
+  c.locationAt (c.urlUnder (Location.normalizeRoot base)) repo sha?
 
 end Cache.Requests

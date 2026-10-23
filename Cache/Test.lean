@@ -4,13 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch
 -/
 
-import Cache.Cli
-import Cache.Requests
-import Cache.Location
-import Cache.Marker
-import Cache.Upload
-import Cache.Query
-import Cache.Warning
+import Cache.Commands
 import Cache.Lean
 
 /-!
@@ -18,11 +12,13 @@ import Cache.Lean
 
 These tests cover the pure logic of the cache system, including:
 - Container model (trust levels, URL shapes)
-- Trust-ordered fallback chains per repo
+- The read workflows: the decision (`Workflow.forRead`), the read hosts, and
+  the trust-ordered chain; the upload decision (`Upload.decide`)
 - URL construction (`Location`) with support for per-SHA scoping
-- CLI flag parsing (`--cache-from`, `--scope`, `--unsafe`, `--repo`, etc.)
-- `--unsafe` read locations (`readLocationsFrom`) and the
-  non-default-scope security warning it triggers
+- The command line (`Commands.cache`): `--cache-from`, `--scope`, `--unsafe`,
+  `--repo`, and the upload flags
+- `--unsafe` read locations (`Chain.locations`) and the non-default-scope
+  security notice it triggers (`Notice.reason?`)
 - Decompression-pipeline carry across download rounds (`DecompState`,
   `finalizeDecomp`, `monitorCurl`)
 - Transfer classification (`classifyDownload`/`classifyUpload`): delivered,
@@ -39,7 +35,7 @@ leantar run on a nonexistent archive; none makes a network request.
 ## Invariants these tests defend
 
 1. Trust boundary per container: each container has a dedicated writer (an
-   OIDC-scoped credential per container) and reads follow a per-repo
+   OIDC-scoped credential per container) and reads follow a per-workflow
    trust-ordered list, so a PR cannot upload to a higher-trust container.
 2. Per-SHA namespace for fork uploads: fork uploads land at `/f/{repo}/{sha}/{hash}`,
    so one commit's artifacts never serve another commit on the same fork.
@@ -51,9 +47,9 @@ leantar run on a nonexistent archive; none makes a network request.
    pipeline state is carried from each download round into the next and
    drained after the last one, so a fork-PR `get` leaves no downloaded file
    compressed on disk.
-7. Missing-file guidance is keyed on the download's outcome, not on upfront
+6. Missing-file guidance is keyed on the download's outcome, not on upfront
    proxies: a read fully served by the locations prints nothing, and the
-   fork-workflow hint replaces the generic divergence warning only for naive
+   fork-workflow hint replaces the generic divergence warning only for plain
    fork reads whose HEAD has no published fork cache.
 
 ## Running the tests
@@ -69,6 +65,7 @@ project, the `cache-test` `lean_exe` here can become that project's `testDriver`
 namespace Cache.Test
 
 open Cache.Requests
+open Cache.Workflow
 
 /-- Counter for failed assertions. -/
 initialize failures : IO.Ref Nat ← IO.mkRef 0
@@ -88,13 +85,6 @@ def assertEq (name expected actual : String) : IO Unit := do
   else
     IO.eprintln s!"  FAIL: {name}\n    expected: {expected}\n    actual:   {actual}"
     failures.modify (· + 1)
-
-/-- Run `body` with the `--scope=` override (`scopeOverride`) restored on
-completion, including on exception, so a test that sets it leaves the tests
-after it unaffected. -/
-private def withSavedScopeOverride (body : IO Unit) : IO Unit := do
-  let saved ← scopeOverride.get
-  try body finally scopeOverride.set saved
 
 /-- Run `action` with both stdout and stderr redirected to the platform null
 device. Restores both on completion, including on exception. Apply this to every
@@ -152,9 +142,8 @@ def test_Container_parse : IO Unit := do
 empty or whitespace-only value means unset. `MATHLIB_CACHE_BASE_URL`,
 `MATHLIB_CACHE_GET_URL`, and `MATHLIB_CACHE_FROM` follow that rule. CI wires
 them from a GitHub Actions `vars` lookup, which yields `""` for an undefined
-variable, and such a value behaves as an absent one. The upload endpoint
-`MATHLIB_CACHE_PUT_URL` keeps the opposite rule: an empty value there fails the
-upload rather than divert it to the fallback container. -/
+variable, and such a value behaves as an absent one. `MATHLIB_CACHE_PUT_URL`
+follows the same rule: an empty value means unset. -/
 def test_envValueNormalization : IO Unit := do
   IO.println "nonEmptyEnvValue / normalizeBaseURL:"
   -- `<unset>` stands in for `none`, so a failure shows both sides as strings.
@@ -170,72 +159,225 @@ def test_envValueNormalization : IO Unit := do
     (shown (normalizeBaseURL (some "https://cache.example.org///")))
   assertEq "a slash-only value reads as unset" "<unset>" (shown (normalizeBaseURL (some "/")))
 
-/-- `getBaseURLFrom` returns `MATHLIB_CACHE_BASE_URL` when the variable is set, and
-`publicCacheEndpoint` otherwise. -/
-def test_getBaseURLFrom : IO Unit := do
-  IO.println "getBaseURLFrom:"
-  assertEq "no override → the read endpoint"
-    "https://cache.mathlib.org" (getBaseURLFrom none)
-  assertEq "override → the given base"
-    "https://cache.example.org" (getBaseURLFrom (some "https://cache.example.org"))
+/-- The read base rule every workflow applies to its own host:
+`MATHLIB_CACHE_BASE_URL` over the workflow's endpoint. `readBaseFrom` is pure,
+so this test covers every branch; `readBase` applies it to the fields of
+`Settings`. -/
+def test_readBaseFrom : IO Unit := do
+  IO.println "readBaseFrom:"
+  let endpoint := "https://host.example.org"
+  assertEq "no override → the workflow's endpoint" endpoint (readBaseFrom endpoint none)
+  assertEq "base override → the given base"
+    "https://cache.example.org" (readBaseFrom endpoint (some "https://cache.example.org"))
   -- A GitHub Actions `${{ vars.… }}` lookup yields "" while the variable is
   -- undefined, so an empty value must keep the default.
-  assertEq "empty value counts as unset"
-    publicCacheEndpoint (getBaseURLFrom (some ""))
+  assertEq "empty value counts as unset" endpoint (readBaseFrom endpoint (some ""))
+  assertEq "whitespace-only value counts as unset"
+    endpoint (readBaseFrom endpoint (some " \n"))
+  assertEq "override is trimmed"
+    "https://cache.example.org" (readBaseFrom endpoint (some "https://cache.example.org\n"))
+  -- A base written with a trailing slash must not double the separator in
+  -- `{base}/{container}/{key}`.
+  assertEq "trailing slash is stripped"
+    "https://cache.example.org" (readBaseFrom endpoint (some "https://cache.example.org/"))
+  assertEq "readBase reads MATHLIB_CACHE_BASE_URL from the settings"
+    "https://mirror.example.org"
+    (readBase { baseURL? := some "https://mirror.example.org" } endpoint)
+
+/-- The layout of each container: `master` is flat for every repo (one
+writer, no collisions possible); `forks` is prefixed for every repo, including
+the canonical one, so fork-trust uploads from the canonical repo coexist with
+fork uploads. Only `forks` holds per-commit namespaces, so a scope addresses
+`forks` alone. -/
+def test_Container_layout : IO Unit := do
+  IO.println "Container.flatPath / perCommit:"
+  assertTrue "master is flat" Container.master.flatPath
+  assertTrue "forks is prefixed" (!Container.forks.flatPath)
+  assertTrue "forks is the only per-commit container"
+    (Container.all.filter Container.perCommit == [.forks])
 
 end ContainerModel
 
-section PerRepoAllowlist
+section ReadWorkflows
 
-/-- Trust-ordered read chain per GitHub repo: the tool tries containers in this
-order and stops at the first hit, so both membership and ordering are part of
-the trust boundary. Key points the tests pin:
-- The fork chain leads with `master` (shared upstream deps), then `forks`
-  (PR-specific files).
--/
-def test_defaultContainersForRepo : IO Unit := do
-  IO.println "defaultContainersForRepo:"
-  assertTrue "canonical repo → [master]"
-    (defaultContainersForRepo MATHLIBREPO == [.master])
-  assertTrue "fork repo → [master, forks]"
-    (defaultContainersForRepo "alice/mathlib4" == [.master, .forks])
-  assertTrue "unknown repo falls back to the fork chain"
-    (defaultContainersForRepo "some/other-repo" == [.master, .forks])
+/-- The chain the developer workflow owns leads with `master`: the
+master-built deps make up the bulk of any fork's files, and only PR-specific
+files come from `forks`. -/
+def test_workflowContainers : IO Unit := do
+  IO.println "Developer.containers:"
+  assertTrue "developer chain → [master, forks]"
+    (Developer.containers == [.master, .forks])
 
-/-- `effectiveGetBases` pairs the lookup chain with read bases in trust order.
-This test covers the default chain and the `--cache-from` override. The
-`MATHLIB_CACHE_GET_URL` and `MATHLIB_CACHE_FROM` branches need process state,
-so the CI integration tests exercise them instead. -/
-def test_effectiveGetBases : IO Unit := do
-  IO.println "effectiveGetBases:"
-  if (← getEnvNonEmpty "MATHLIB_CACHE_GET_URL").isSome ||
-      (← getEnvNonEmpty "MATHLIB_CACHE_FROM").isSome then
-    IO.println "  skipped: MATHLIB_CACHE_GET_URL or MATHLIB_CACHE_FROM is set"
-    return
-  let base ← getBaseURL
-  assertTrue "default chain pairs each container with its read base"
-    ((← effectiveGetBases MATHLIBREPO) ==
-      [(some .master, base)])
-  cacheFromOverride.set (some [.forks, .master])
-  assertTrue "--cache-from override keeps its order"
-    ((← effectiveGetBases MATHLIBREPO) ==
-      [(some .forks, base), (some .master, base)])
-  cacheFromOverride.set none
+/-- `Workflow.forRead` is the boundary between the two read workflows. A read
+on the canonical repo is public unless a chain, a scope, or `--unsafe` names
+the container-chain read. Without `MATHLIB_CACHE_GET_URL`, every other repo,
+the nightly-testing repo included, is a fork and reads the developer cache,
+whatever the options. -/
+def test_Workflow_decision : IO Unit := do
+  IO.println "Workflow.forRepo / forRead:"
+  assertTrue "canonical repo → public cache"
+    (Workflow.forRepo MATHLIBREPO == .publicCache)
+  assertTrue "a fork → developer"
+    (Workflow.forRepo "alice/mathlib4" == .developer)
+  assertTrue "an unknown repo → developer"
+    (Workflow.forRepo "some/other-repo" == .developer)
+  assertTrue "the nightly-testing repo → developer"
+    (Workflow.forRepo NIGHTLY_TESTING_REPO == .developer)
+  -- Reads: the repo, the flat endpoint, and whether a chain read was requested
+  -- (a chain-read flag, `MATHLIB_CACHE_FROM`, or `MATHLIB_CACHE_REPO_SCOPE`).
+  let flat := some "https://cache.example.org/my-prefix"
+  assertTrue "canonical repo, no chain read → public cache"
+    (Workflow.forRead MATHLIBREPO none false == .publicCache)
+  assertTrue "a chain read on the canonical repo → developer"
+    (Workflow.forRead MATHLIBREPO none true == .developer)
+  assertTrue "a fork → developer, chain read or not"
+    (Workflow.forRead "alice/mathlib4" none false == .developer &&
+      Workflow.forRead "alice/mathlib4" none true == .developer)
+  -- A flat endpoint is a public cache served elsewhere: public, whatever the repo.
+  assertTrue "MATHLIB_CACHE_GET_URL → public cache for the canonical repo"
+    (Workflow.forRead MATHLIBREPO flat false == .publicCache)
+  assertTrue "MATHLIB_CACHE_GET_URL → public cache for a fork, even with a chain read"
+    (Workflow.forRead "alice/mathlib4" flat true == .publicCache)
 
-end PerRepoAllowlist
+/-- `Upload.decide` is the decision of a `put`: the container `--container`
+names, written in its own layout under the root `MATHLIB_CACHE_PUT_URL` names
+(`uploadLocationFrom`), with the marker that follows the files when the
+upload has a scope. The layouts themselves are pinned by
+`test_uploadLocationFrom`. -/
+def test_Upload : IO Unit := do
+  IO.println "Upload.decide:"
+  let envScope : Scope := ⟨"abc123", .env⟩
+  let masterRoot := "https://acct.example/pubbucket/mathlib4"
+  let forksRoot := "https://acct.example/devbucket/mathlib4-forks"
+  let urls (o : Upload.Options) : Option (String × Option String) :=
+    (Upload.decide o).toOption.map fun l => (l.fileURL "x.ltar", l.markerURL?)
+  let fails (o : Upload.Options) : Bool := (Upload.decide o) matches .error _
+  -- CI's R2 lines, per trust class.
+  assertTrue "master class: flat under the container's root, no marker"
+    (urls { container? := some .master, repo? := some MATHLIBREPO, putURL? := some masterRoot } ==
+      some (s!"{masterRoot}/f/x.ltar", none))
+  let forksClass : Upload.Options :=
+    { container? := some .forks, repo? := some "alice/mathlib4", scope? := some envScope,
+      putURL? := some forksRoot }
+  assertTrue "forks class: the repo's per-commit namespace and its marker"
+    (urls forksClass ==
+      some (s!"{forksRoot}/f/alice/mathlib4/abc123/x.ltar",
+        some s!"{forksRoot}/m/alice/mathlib4/abc123"))
+  assertTrue "without --repo the upload is for the canonical repository"
+    (urls { container? := some .forks, putURL? := some forksRoot } ==
+      some (s!"{forksRoot}/f/leanprover-community/mathlib4/x.ltar", none))
+  assertTrue "the default backend is s3"
+    (({} : Upload.Options).backend == .s3)
+  assertTrue "no container fails" (fails { putURL? := some forksRoot })
+  assertTrue "a scope on master fails"
+    (fails { container? := some .master, scope? := some envScope, putURL? := some masterRoot })
+  assertTrue "no put URL fails" (fails { container? := some .forks })
+  assertTrue "azure without a put URL fails" (fails { container? := some .forks, backend := .azure })
+
+/-- Downstream repo resolution honors only a canonical or nightly-testing
+detection, so a fork remote on the dependency checkout can never steer a
+downstream read into that fork's artifacts; the nightly-testing repo passes
+through because its artifacts exist nowhere else. -/
+def test_resolveDownstreamRepo : IO Unit := do
+  IO.println "resolveDownstreamRepo:"
+  assertEq "no detection → canonical mathlib"
+    MATHLIBREPO (resolveDownstreamRepo none)
+  assertEq "canonical detection passes through"
+    MATHLIBREPO (resolveDownstreamRepo (some MATHLIBREPO))
+  assertEq "nightly-testing detection passes through"
+    NIGHTLY_TESTING_REPO (resolveDownstreamRepo (some NIGHTLY_TESTING_REPO))
+  assertEq "a fork detection is ignored"
+    MATHLIBREPO (resolveDownstreamRepo (some "alice/mathlib4"))
+  assertEq "an unrelated detection is ignored"
+    MATHLIBREPO (resolveDownstreamRepo (some "some/other-repo"))
+
+/-- Integration check of `resolveRepo` in a project that depends on Mathlib:
+against a real git checkout whose `origin` is a fork, the probe reports the
+fork (`detectedRepo?`, which feeds the `--repo` notice), and the resolved
+repo, which the read uses, is canonical. The same checkout resolves to the
+fork on a mathlib checkout, and an explicit `--repo` wins in both. Skipped
+when git is unavailable. -/
+def test_resolveRepo_downstream : IO Unit := do
+  IO.println "resolveRepo (downstream):"
+  let dir ← IO.FS.createTempDir
+  try
+    let git (args : Array String) : IO Bool := do
+      try
+        let out ← IO.Process.output {cmd := "git", args, cwd := dir}
+        pure (out.exitCode == 0)
+      catch _ => pure false
+    unless (← git #["init", "-q"]) do
+      IO.println "  skipped: git unavailable"
+      return
+    discard <| git #["remote", "add", "origin", "https://github.com/alice/mathlib4.git"]
+    let (detected?, resolved) ← withSuppressedCacheOutput (resolveRepo none false) dir
+    assertTrue "the probe reports the fork remote"
+      (detected? == some "alice/mathlib4")
+    assertEq "the downstream resolution ignores the fork remote"
+      MATHLIBREPO resolved
+    let (_, rootResolved) ← withSuppressedCacheOutput (resolveRepo none true) dir
+    assertEq "a mathlib checkout honors the fork remote" "alice/mathlib4" rootResolved
+    let (_, explicitResolved) ←
+      withSuppressedCacheOutput (resolveRepo (some "bob/mathlib4") false) dir
+    assertEq "an explicit --repo wins downstream" "bob/mathlib4" explicitResolved
+  finally
+    IO.FS.removeDirAll dir
+
+/-- Each workflow owns the hosts it reads: the public-cache workflow reads the
+`master` container on the public endpoint, and the developer workflow reads
+`forks` on the developer cache's host and its other containers on the public
+endpoint. The chain pairs each container with its base in trust order. This
+test covers `Public.location`, `Developer.containerBase`, `Chain.withBases`,
+and `Chain.resolve` under the chain options. -/
+def test_readBases : IO Unit := do
+  IO.println "Public.location / Developer.containerBase / Chain.withBases / Chain.resolve:"
+  let default : Settings := {}
+  assertEq "the public cache is the master container on cache.mathlib.org"
+    "https://cache.mathlib.org/mathlib4-master/f/x.ltar"
+    ((Public.location default).fileURL "x.ltar")
+  assertEq "MATHLIB_CACHE_GET_URL replaces the public cache and is read flat"
+    "https://cache.example.org/my-prefix/f/x.ltar"
+    ((Public.location { getURL? := some "https://cache.example.org/my-prefix" }).fileURL "x.ltar")
+  assertTrue "developer chain: forks on the developer bucket, the rest on the public endpoint"
+    (Chain.withBases Developer.containers (Developer.containerBase default) ==
+      [(.master, "https://cache.mathlib.org"), (.forks, "https://r2devcache.mathlib.org")])
+  let mirror : Settings := { baseURL? := some "https://mirror.example.org" }
+  assertEq "MATHLIB_CACHE_BASE_URL replaces every host"
+    "https://mirror.example.org" (Developer.containerBase mirror .forks)
+  assertEq "MATHLIB_CACHE_BASE_URL replaces the public cache host"
+    "https://mirror.example.org/mathlib4-master" (Public.location mirror).root
+  assertEq "MATHLIB_CACHE_GET_URL wins over MATHLIB_CACHE_BASE_URL"
+    "https://cache.example.org"
+    (Public.location { mirror with getURL? := some "https://cache.example.org" }).root
+  -- `Chain.resolve`: the workflow's chain, or the options' chain in its order;
+  -- `--cache-from` wins over `MATHLIB_CACHE_FROM`.
+  assertTrue "no chain option → the workflow's default chain"
+    (Chain.resolve Developer.containers {} == Developer.containers)
+  assertTrue "--cache-from replaces the chain and keeps its order"
+    (Chain.resolve Developer.containers { cli? := some [.forks, .master] } == [.forks, .master])
+  assertTrue "MATHLIB_CACHE_FROM replaces the chain"
+    (Chain.resolve Developer.containers { env? := some [.forks] } == [.forks])
+  assertTrue "--cache-from wins over MATHLIB_CACHE_FROM"
+    (Chain.resolve Developer.containers
+      { cli? := some [.master], env? := some [.forks] } == [.master])
+
+end ReadWorkflows
 
 section FileURL
 
-/-- The file URL of one read location from a base or endpoint, with no HEAD
-fallback. -/
+/-- The file URL of one read location: a container under a base, or a flat
+endpoint for `none`. -/
 def fileURLOf (container? : Option Container) (repo url fileName : String)
     (scope? : Option String := none) : String :=
-  ((readLocationsFrom repo [(container?, url)] scope? []).head!).fileURL fileName
+  let location := match container? with
+    | some c => c.location url repo scope?
+    | none => Location.flat url "endpoint"
+  location.fileURL fileName
 
 /-- URL construction for a cache file. The path shape follows the container
 (`Container.flatPath`), not the repo, so the same repo lands flat in `master`
-and prefixed in `forks`. A `none` container is the user-supplied-URL case
-(`MATHLIB_CACHE_GET_URL` / `_PUT_URL`), where the shape follows the repo alone.
+and prefixed in `forks`. A `none` container is the flat endpoint
+`MATHLIB_CACHE_GET_URL` names, where the path is flat whatever the repo.
 
 A per-SHA scope (`MATHLIB_CACHE_REPO_SCOPE`) inserts `{sha}` between repo and
 hash on prefixed paths only — `/f/{repo}/{sha}/{hash}` — keeping each commit's
@@ -258,13 +400,13 @@ def test_fileURL : IO Unit := do
   assertEq "forks prefixes by repo for a fork repo"
     "https://cache.example.org/mathlib4-forks/f/alice/mathlib4/abc.ltar"
     (fileURLOf (some .forks) "alice/mathlib4" base "abc.ltar")
-  -- No container (user-supplied URL): the shape follows the repo — flat for the
-  -- canonical repo, prefixed otherwise.
-  assertEq "user URL is flat for the canonical repo"
+  -- No container (the flat endpoint `MATHLIB_CACHE_GET_URL` names): flat
+  -- whatever the repo.
+  assertEq "a flat endpoint is flat for the canonical repo"
     "https://custom.example/cache/f/abc.ltar"
     (fileURLOf none MATHLIBREPO "https://custom.example/cache" "abc.ltar")
-  assertEq "user URL prefixes by repo for a fork repo"
-    "https://custom.example/cache/f/alice/mathlib4/abc.ltar"
+  assertEq "a flat endpoint is flat for a fork repo too"
+    "https://custom.example/cache/f/abc.ltar"
     (fileURLOf none "alice/mathlib4" "https://custom.example/cache" "abc.ltar")
   -- A scope adds a `{sha}` path segment on prefixed paths.
   assertEq "scope adds a SHA segment on a fork path"
@@ -496,19 +638,19 @@ probes with a HEAD request (`Location.markerURL?`). The marker lives at
 all artifacts for the commit were uploaded. -/
 def test_markerURL : IO Unit := do
   IO.println "Location.markerURL?:"
-  let dest (container? : Option Container) (putBase? : Option String) : String :=
-    ((uploadLocationFrom .s3 none putBase? container? "alice/mathlib4"
+  let dest (container? : Option Container) (putURL? : Option String) : String :=
+    ((uploadLocationFrom .s3 putURL? container? "alice/mathlib4"
       (some "abc123")).toOption.bind (·.markerURL?)).getD "(unresolved)"
   -- The marker lives under `/m/`, its own namespace, and is keyed by repo.
   assertEq "marker is under /m/, keyed by repo"
     "m/leanprover-community/mathlib4/deadbeef"
     (((Container.forks.location "U" MATHLIBREPO (some "deadbeef")).marker?.map
       (·.path)).getD "(no marker)")
-  -- A put base rebases the marker with the artifacts it marks: both use one
-  -- location, rooted at `{base}/{container}` (`uploadLocationFrom`).
-  assertEq "marker URL follows a rebased upload destination"
+  -- `MATHLIB_CACHE_PUT_URL` moves the marker with the artifacts it marks: one
+  -- container root feeds both (`uploadLocationFrom`).
+  assertEq "marker URL follows the container root the put URL names"
     "https://bucket.example.org/mirror/mathlib4-forks/m/alice/mathlib4/abc123"
-    (dest (some .forks) (some "https://bucket.example.org/mirror"))
+    (dest (some .forks) (some "https://bucket.example.org/mirror/mathlib4-forks"))
   -- The repo segment is lowercased, so an upload and a probe for the same fork
   -- meet at one path regardless of how the owner name was capitalized.
   assertEq "marker repo is lowercased in the path"
@@ -516,118 +658,125 @@ def test_markerURL : IO Unit := do
     (((Container.forks.location "U" "Alice/Mathlib4" (some "abc123")).marker?.map
       (·.path)).getD "(no marker)")
 
-/-- `markerProbeURL` builds the marker probe URL on the read base, and
-`Location.markerURL?` builds the marker write URL on the upload location. -/
+/-- Marker probes read the `forks` container under the read base of the
+developer workflow (`Container.location`); marker writes follow the upload
+location (`uploadLocationFrom`). Both meet at `{container root}/m/{repo}/{sha}`
+when the put URL names the container under that base. -/
 def test_markerProbeURL : IO Unit := do
-  IO.println "markerProbeURL:"
-  let base ← getBaseURL
-  assertEq "probe URL follows the read base"
-    s!"{base}/mathlib4-forks/m/alice/mathlib4/abc123"
-    ((← markerProbeURL .forks "alice/mathlib4" "abc123").getD "(no marker)")
+  IO.println "marker probe URL:"
+  let base := "https://host.example.org"
+  let probe (repo : String) : String :=
+    ((Container.forks.location base repo (some "abc123")).markerURL?).getD "(no marker)"
+  assertEq "probe URL is under the container on the read base"
+    s!"{base}/mathlib4-forks/m/alice/mathlib4/abc123" (probe "alice/mathlib4")
   assertEq "probe repo is lowercased in the path"
-    s!"{base}/mathlib4-forks/m/alice/mathlib4/abc123"
-    ((← markerProbeURL .forks "Alice/Mathlib4" "abc123").getD "(no marker)")
+    s!"{base}/mathlib4-forks/m/alice/mathlib4/abc123" (probe "Alice/Mathlib4")
   assertTrue "a flat container has no marker to probe"
-    ((← markerProbeURL .master MATHLIBREPO "abc123").isNone)
+    ((Container.master.location base MATHLIBREPO (some "abc123")).markerURL?.isNone)
+  assertEq "the probe meets the marker write under the same container root"
+    (((uploadLocationFrom .s3 (some s!"{base}/mathlib4-forks") (some .forks) "alice/mathlib4"
+      (some "abc123")).toOption.bind (·.markerURL?)).getD "(unresolved)")
+    (probe "alice/mathlib4")
 
 end Marker
 
 section ScopeResolution
 
-/-- `getRepoScope` answers "is the user reading from a SHA-scoped namespace?".
-It reads the `--scope=` flag (the `scopeOverride` ref) first, then the
-`MATHLIB_CACHE_REPO_SCOPE` env var, so an explicit flag is never overridden by
-an inherited env var. The flag value is returned as given. The env-var branch
-needs process state, so it is exercised by the CI integration tests rather than
-here. -/
-def test_getRepoScope : IO Unit := do
-  IO.println "getRepoScope:"
-  withSavedScopeOverride do
-    scopeOverride.set none
-    assertTrue "no scope set returns none" ((← withSuppressedOutput getRepoScope) == none)
-
-    scopeOverride.set (some "abc123")
-    assertTrue "the flag value is returned" ((← withSuppressedOutput getRepoScope) == some "abc123")
-
-    -- The flag value is returned as-is, without trimming or normalization.
-    scopeOverride.set (some "deadbeef")
-    assertTrue "the flag value is returned verbatim"
-      ((← withSuppressedOutput getRepoScope) == some "deadbeef")
-
-    scopeOverride.set none
-    assertTrue "clearing the flag returns none" ((← withSuppressedOutput getRepoScope) == none)
+/-- `Scope.ofString` admits a hex SHA and rejects anything that could reach a
+URL path or a file name unchecked; it keeps the source for the notice.
+`Scope.parse` reads `--scope` first, then `MATHLIB_CACHE_REPO_SCOPE`, so an
+explicit flag is never overridden by an inherited variable. -/
+def test_Scope : IO Unit := do
+  IO.println "Scope.ofString / Scope.parse:"
+  let flag ← Scope.ofString "abc123" .flag
+  assertTrue "a hex SHA from the flag is kept verbatim with its source"
+    (flag == ⟨"abc123", .flag⟩)
+  let env ← Scope.ofString "DEADBEEF" .env
+  assertTrue "a hex SHA from the environment keeps its source" (env == ⟨"DEADBEEF", .env⟩)
+  let rejected ← try discard <| Scope.ofString "refs/heads/x" .flag; pure false catch _ => pure true
+  assertTrue "a ref name is rejected" rejected
+  let rejected ← try discard <| Scope.ofString "" .env; pure false catch _ => pure true
+  assertTrue "an empty scope is rejected" rejected
+  -- `Scope.parse` reads `--scope` from the parsed command line; a value git
+  -- cannot resolve is taken literally. No commit has the all-zero SHA.
+  let zeros := "0000000000000000000000000000000000000000"
+  match Commands.cache.process ["get", s!"--scope={zeros}"] with
+  | .ok (_, p) =>
+    assertTrue "--scope with an unresolvable SHA is taken literally, from the flag"
+      ((← withSuppressedCacheOutput (Scope.parse p { repoScope? := some "abc123" })) ==
+        some ⟨zeros, .flag⟩)
+  | .error (_, msg) => assertTrue s!"get --scope parses ({msg})" false
+  match Commands.cache.process ["get"] with
+  | .ok (_, p) =>
+    assertTrue "no --scope → MATHLIB_CACHE_REPO_SCOPE"
+      ((← withSuppressedCacheOutput (Scope.parse p { repoScope? := some "abc123" })) ==
+        some ⟨"abc123", .env⟩)
+    assertTrue "no --scope and no variable → no scope"
+      ((← withSuppressedCacheOutput (Scope.parse p {})) == none)
+    let threw ← try
+        discard <| withSuppressedCacheOutput (Scope.parse p { repoScope? := some "/tmp/pwned" })
+        pure false
+      catch _ => pure true
+    assertTrue "a malformed MATHLIB_CACHE_REPO_SCOPE throws" threw
+  | .error (_, msg) => assertTrue s!"get parses ({msg})" false
 
 end ScopeResolution
 
 section ReadLocations
 
-/-- Exercise the read resolver, including the HEAD fallback and the order of
-unsafe rounds. Expected paths do not use the location builders. -/
+/-- Exercise the developer read resolver (`Chain.readLocations`), including
+the HEAD fallback and the order of unsafe rounds. Expected paths do not use
+the location builders. -/
 def test_readLocations : IO Unit := do
-  IO.println "readLocations:"
-  if (← getEnvNonEmpty "MATHLIB_CACHE_GET_URL").isSome ||
-      (← getEnvNonEmpty "MATHLIB_CACHE_FROM").isSome ||
-      (← getEnvNonEmpty "MATHLIB_CACHE_REPO_SCOPE").isSome ||
-      (← getEnvNonEmpty "GIT_DIR").isSome ||
-      (← getEnvNonEmpty "GIT_WORK_TREE").isSome then
-    IO.println "  skipped: cache read overrides or Git directory overrides are set"
+  IO.println "Chain.readLocations:"
+  if (← getEnvNonEmpty "GIT_DIR").isSome || (← getEnvNonEmpty "GIT_WORK_TREE").isSome then
+    IO.println "  skipped: Git directory overrides are set"
     return
-  let savedContainers ← cacheFromOverride.get
-  let savedScope ← scopeOverride.get
-  let cwd ← IO.Process.getCurrentDir
   let dir ← IO.FS.createTempDir
   try
     -- A temporary checkout makes HEAD resolution independent of the caller's checkout.
     discard <| IO.runCmd "git" #["init", "--quiet", "--template=", dir.toString]
-    IO.Process.setCurrentDir dir
-    discard <| IO.runCmd "git" #["-c", "user.name=cache-test", "-c",
+    let git (args : Array String) : IO String := do
+      let out ← IO.Process.output { cmd := "git", args, cwd := dir }
+      unless out.exitCode == 0 do
+        throw <| IO.userError s!"test git command failed: {out.stderr}"
+      return out.stdout.trimAscii.toString
+    discard <| git #["-c", "user.name=cache-test", "-c",
       "user.email=cache-test@example.invalid", "-c", "commit.gpgsign=false",
       "commit", "--quiet", "--allow-empty", "--no-verify", "-m", "cache test"]
-    let head := (← IO.runCmd "git" #["log", "-1", "--format=%H"]).trimAsciiEnd.copy
-    let base ← getBaseURL
+    let head ← git #["rev-parse", "HEAD"]
+    let base := Developer.containerBase {}
+    let pub := "https://cache.mathlib.org"
+    let dev := "https://r2devcache.mathlib.org"
     let paths (locations : List Location) :=
       locations.map fun l => (l.fileURL "x.ltar", l.sha?, l.label)
-    cacheFromOverride.set none
-    scopeOverride.set none
+    let resolve (options : ChainOptions) (scope? : Option Scope) (unsafeScopes : List String) :=
+      withSuppressedCacheOutput (Chain.readLocations Developer.containers base options scope?
+        "Alice/Mathlib4" unsafeScopes) dir
     assertTrue "the default fork chain uses HEAD only for forks"
-      (paths (← withSuppressedCacheOutput (readLocations "Alice/Mathlib4") dir) ==
-        [(s!"{base}/mathlib4-master/f/x.ltar", none, "master"),
-         (s!"{base}/mathlib4-forks/f/alice/mathlib4/{head}/x.ltar", some head, "forks")])
-    assertTrue "the canonical default chain contains only master"
-      (paths (← withSuppressedCacheOutput (readLocations MATHLIBREPO) dir) ==
-        [(s!"{base}/mathlib4-master/f/x.ltar", none, "master")])
-    scopeOverride.set (some "abc1")
+      (paths (← resolve {} none []) ==
+        [(s!"{pub}/mathlib4-master/f/x.ltar", none, "master"),
+         (s!"{dev}/mathlib4-forks/f/alice/mathlib4/{head}/x.ltar", some head, "forks")])
     assertTrue "an explicit scope replaces HEAD"
-      (paths (← withSuppressedCacheOutput (readLocations "Alice/Mathlib4") dir) ==
-        [(s!"{base}/mathlib4-master/f/x.ltar", none, "master"),
-         (s!"{base}/mathlib4-forks/f/alice/mathlib4/abc1/x.ltar", some "abc1", "forks")])
-    cacheFromOverride.set (some [.forks, .master])
+      (paths (← resolve {} (some ⟨"abc1", .flag⟩) []) ==
+        [(s!"{pub}/mathlib4-master/f/x.ltar", none, "master"),
+         (s!"{dev}/mathlib4-forks/f/alice/mathlib4/abc1/x.ltar", some "abc1", "forks")])
     assertTrue "unsafe rounds preserve the requested container and SHA order"
-      (paths (← withSuppressedCacheOutput (readLocations "Alice/Mathlib4" ["abc2", "abc3"]) dir) ==
-        [(s!"{base}/mathlib4-forks/f/alice/mathlib4/abc2/x.ltar", some "abc2", "forks"),
-         (s!"{base}/mathlib4-forks/f/alice/mathlib4/abc3/x.ltar", some "abc3", "forks"),
-         (s!"{base}/mathlib4-master/f/x.ltar", none, "master")])
-    cacheFromOverride.set (some [])
+      (paths (← resolve { cli? := some [.forks, .master] } none ["abc2", "abc3"]) ==
+        [(s!"{dev}/mathlib4-forks/f/alice/mathlib4/abc2/x.ltar", some "abc2", "forks"),
+         (s!"{dev}/mathlib4-forks/f/alice/mathlib4/abc3/x.ltar", some "abc3", "forks"),
+         (s!"{pub}/mathlib4-master/f/x.ltar", none, "master")])
     assertTrue "an empty container override produces no locations"
-      ((← withSuppressedCacheOutput (readLocations "alice/mathlib4") dir).isEmpty)
+      ((← resolve { cli? := some [] } none []).isEmpty)
   finally
-    IO.Process.setCurrentDir cwd
-    cacheFromOverride.set savedContainers
-    scopeOverride.set savedScope
     IO.FS.removeDirAll dir
 
 /-- Scope refs and default fork reads use Mathlib's HEAD, even from a downstream checkout. -/
 def test_mathlibGitLookups : IO Unit := do
   IO.println "Mathlib Git lookup context:"
-  if (← getEnvNonEmpty "GIT_DIR").isSome ||
-      (← getEnvNonEmpty "GIT_WORK_TREE").isSome ||
-      (← getEnvNonEmpty "MATHLIB_CACHE_GET_URL").isSome ||
-      (← getEnvNonEmpty "MATHLIB_CACHE_FROM").isSome ||
-      (← getEnvNonEmpty "MATHLIB_CACHE_REPO_SCOPE").isSome then
-    IO.println "  skipped: cache read overrides or Git directory overrides are set"
+  if (← getEnvNonEmpty "GIT_DIR").isSome || (← getEnvNonEmpty "GIT_WORK_TREE").isSome then
+    IO.println "  skipped: Git directory overrides are set"
     return
-  let savedScope ← scopeOverride.get
-  let savedContainers ← cacheFromOverride.get
   let cwd ← IO.Process.getCurrentDir
   let dir ← IO.FS.createTempDir
   let mathlibPath := dir / "mathlib"
@@ -647,159 +796,140 @@ def test_mathlibGitLookups : IO Unit := do
         "commit", "--quiet", "--allow-empty", "--no-verify", "-m", message]
     let mathlibHead ← git mathlibPath #["rev-parse", "HEAD"]
     IO.Process.setCurrentDir downstreamPath
-    scopeOverride.set none
-    cacheFromOverride.set none
     assertEq "scope refs resolve in the Mathlib checkout" mathlibHead
       (← withSuppressedCacheOutput (resolveGitRef "HEAD") mathlibPath)
-    let locations ← withSuppressedCacheOutput (readLocations "alice/mathlib4") mathlibPath
+    let locations ← withSuppressedCacheOutput
+      (Chain.readLocations Developer.containers (Developer.containerBase {}) {} none
+        "alice/mathlib4") mathlibPath
     assertTrue "the default fork read uses Mathlib's HEAD scope"
       (locations.map (·.sha?) == [none, some mathlibHead])
   finally
     IO.Process.setCurrentDir cwd
-    scopeOverride.set savedScope
-    cacheFromOverride.set savedContainers
     IO.FS.removeDirAll dir
 
 end ReadLocations
 
 section NonDefaultScope
 
-/-- `shouldWarnNonDefaultScope` decides whether `cache get` prints the
-non-default-scope security warning. It warns when any of three inputs takes the
-reader off the repo's default trust boundary:
+/-- `Notice.reason?` decides whether a chain read prints the non-default-scope
+security warning. It warns when any of these takes the reader off the
+workflow's default trust boundary:
 
-1. a scope is set (`--scope=` or `MATHLIB_CACHE_REPO_SCOPE`) and differs from
-   the checked-out HEAD;
-2. `--cache-from=LIST` differs from the repo's default chain (passing the
-   default explicitly is not widening);
+1. a scope is set and differs from the checked-out HEAD;
+2. `--cache-from=LIST` differs from the workflow's chain (passing the chain
+   itself is not widening; `MATHLIB_CACHE_FROM`, CI's setting, is not a trigger);
 3. `--repo=` is given and differs from the detected git remote, or names a
-   non-canonical repo with no detectable remote to compare against.
+   non-canonical repo with no detectable remote to compare against;
+4. `--unsafe` is set.
 
 The behavior the tests pin most carefully: a plain `cache get` with no flags
 never warns, even on a fork checkout whose remote isn't the canonical repo.
 `detectedRepo?` is passed in (resolved once by `resolveRepo`), so the cases are
 deterministic without needing a real checkout. -/
-def test_shouldWarnNonDefaultScope : IO Unit := do
-  IO.println "shouldWarnNonDefaultScope:"
-  withSavedScopeOverride do
-    scopeOverride.set none
+def test_Notice_applies : IO Unit := do
+  IO.println "Notice.reason? (whether it applies):"
+  let chain := Developer.containers
+  let base : Notice.Read := { defaultChain := chain }
+  let applies (r : Notice.Read) (detected? : Option String := none) : IO Bool :=
+    return (← withSuppressedCacheOutput
+      (Notice.reason? { r with detectedRepo? := detected? })).isSome
 
-    assertTrue "plain get with no flags does not warn"
-      (!(← withSuppressedCacheOutput (shouldWarnNonDefaultScope none none none MATHLIBREPO)))
+  assertTrue "plain get with no flags does not warn" (!(← applies base))
+  assertTrue "a set scope warns" (← applies { base with scope? := some ⟨"abc123", .flag⟩ })
+  assertTrue "a scope from the environment warns too"
+    (← applies { base with scope? := some ⟨"abc123", .env⟩ })
 
-    scopeOverride.set (some "abc123")
-    assertTrue "a set scope warns"
-      (← withSuppressedCacheOutput (shouldWarnNonDefaultScope none none none MATHLIBREPO))
-    scopeOverride.set none
+  -- A scope equal to HEAD is trust-equivalent to no scope (CI's normal mode).
+  -- Skipped when HEAD can't be resolved (not in a git checkout).
+  let head? ← try some <$> withSuppressedCacheOutput getGitCommitHash catch _ => pure none
+  if let some head := head? then
+    assertTrue "a scope equal to HEAD does not warn"
+      (!(← applies { base with scope? := some ⟨head, .env⟩ }))
 
-    -- A scope equal to HEAD is trust-equivalent to no scope (CI's normal mode).
-    -- Skipped when HEAD can't be resolved (not in a git checkout).
-    let head? ← try some <$> withSuppressedCacheOutput getGitCommitHash catch _ => pure none
-    if let some head := head? then
-      scopeOverride.set (some head)
-      assertTrue "a scope equal to HEAD does not warn"
-        (!(← withSuppressedCacheOutput (shouldWarnNonDefaultScope none none none MATHLIBREPO)))
-      scopeOverride.set none
+  -- --cache-from equal to the workflow's chain is not widening.
+  assertTrue "--cache-from equal to the chain does not warn"
+    (!(← applies { base with chain := { cli? := some chain } }))
+  assertTrue "--cache-from narrowing the chain warns"
+    (← applies { base with chain := { cli? := some [.forks] } })
+  assertTrue "--cache-from reordering the chain warns"
+    (← applies { base with chain := { cli? := some [.forks, .master] } })
+  assertTrue "MATHLIB_CACHE_FROM is CI's setting and does not warn"
+    (!(← applies { base with chain := { env? := some [.master] } }))
 
-    -- --cache-from equal to the repo's default chain is not widening.
-    let mathlibDefault := defaultContainersForRepo MATHLIBREPO
-    assertTrue "--cache-from equal to the default does not warn"
-      (!(← withSuppressedCacheOutput
-          (shouldWarnNonDefaultScope none none (some mathlibDefault) MATHLIBREPO)))
+  -- A fork checkout without an explicit --repo prints no notice.
+  assertTrue "a fork checkout without --repo does not warn"
+    (!(← applies base (some "alice/mathlib4")))
+  assertTrue "--repo differing from the remote warns"
+    (← applies { base with repoExplicit? := some "bob/mathlib4" } (some "alice/mathlib4"))
+  assertTrue "--repo matching the remote does not warn"
+    (!(← applies { base with repoExplicit? := some "alice/mathlib4" } (some "alice/mathlib4")))
 
-    assertTrue "--cache-from widening the chain warns"
-      (← withSuppressedCacheOutput
-          (shouldWarnNonDefaultScope none none (some [.master, .forks]) MATHLIBREPO))
+  -- With no detectable remote there is nothing to compare --repo against, so
+  -- a non-canonical --repo warns on the flag alone (the flag alone selects
+  -- that fork's cache); a canonical --repo is the default trust boundary and
+  -- prints no notice.
+  assertTrue "a non-canonical --repo with no detectable remote warns"
+    (← applies { base with repoExplicit? := some "bob/mathlib4" })
+  assertTrue "a canonical --repo with no detectable remote does not warn"
+    (!(← applies { base with repoExplicit? := some MATHLIBREPO }))
 
-    -- A fork checkout (remote ≠ resolved repo) stays silent without an explicit --repo.
-    assertTrue "a fork checkout without --repo does not warn"
-      (!(← withSuppressedCacheOutput
-          (shouldWarnNonDefaultScope none (some "alice/mathlib4") none "alice/mathlib4")))
+  -- `--unsafe` (any window) always warns; it walks several untrusted scopes.
+  assertTrue "--unsafe warns regardless of other inputs"
+    (← applies { base with unsafeWindow? := some 5 })
 
-    assertTrue "--repo differing from the remote warns"
-      (← withSuppressedCacheOutput
-          (shouldWarnNonDefaultScope (some "bob/mathlib4") (some "alice/mathlib4") none "bob/mathlib4"))
+/-- `Notice.reason?` produces the `Reason:` line in the warning, naming the
+specific option that triggered it so the user can match it to their command
+line. When several apply at once it reports the most specific first —
+`--unsafe`, then the scope (named by its source), then `--cache-from`, then
+`--repo` — and that order is pinned here. -/
+def test_Notice_reason : IO Unit := do
+  IO.println "Notice.reason? (the reason line):"
+  let chain := Developer.containers
+  let base : Notice.Read := { defaultChain := chain }
+  let reason (r : Notice.Read) (detected? : Option String := none) : IO String :=
+    return (← withSuppressedCacheOutput
+      (Notice.reason? { r with detectedRepo? := detected? })).getD "(no notice)"
+  let withScope : Notice.Read := { base with scope? := some ⟨"abc123", .flag⟩ }
 
-    assertTrue "--repo matching the remote does not warn"
-      (!(← withSuppressedCacheOutput
-          (shouldWarnNonDefaultScope (some "alice/mathlib4") (some "alice/mathlib4") none
-            "alice/mathlib4")))
+  assertEq "no trigger yields no notice" "(no notice)" (← reason base)
+  assertEq "a flag scope names the flag and SHA"
+    "--scope=abc123 (explicit per-commit scope)" (← reason withScope)
+  assertEq "an environment scope names the variable"
+    "MATHLIB_CACHE_REPO_SCOPE=abc123 (explicit per-commit scope)"
+    (← reason { base with scope? := some ⟨"abc123", .env⟩ })
+  -- Scope outranks cache-from when both apply.
+  assertEq "scope is reported ahead of cache-from"
+    "--scope=abc123 (explicit per-commit scope)"
+    (← reason { withScope with chain := { cli? := some [.forks] } })
 
-    -- With no detectable remote there is nothing to compare --repo against.
-    assertTrue "--repo with no detectable remote does not warn"
-      (!(← withSuppressedCacheOutput
-          (shouldWarnNonDefaultScope (some "bob/mathlib4") none none "bob/mathlib4")))
+  -- A HEAD scope is exempt from the scope condition, so a simultaneous
+  -- cache-from trigger is reported instead of the scope.
+  let head? ← try some <$> withSuppressedCacheOutput getGitCommitHash catch _ => pure none
+  if let some head := head? then
+    assertEq "a HEAD scope yields the cache-from reason"
+      "--cache-from=forks, master (explicit container override)"
+      (← reason { base with
+        scope? := some ⟨head, .env⟩, chain := { cli? := some [.forks, .master] } })
 
-    -- `--unsafe` (any window) always warns; it walks several untrusted scopes.
-    assertTrue "--unsafe warns regardless of other inputs"
-      (← withSuppressedCacheOutput
-          (shouldWarnNonDefaultScope none none none MATHLIBREPO (unsafeWindow? := some 5)))
-    assertTrue "no --unsafe (none window) does not warn on its own"
-      (!(← withSuppressedCacheOutput
-          (shouldWarnNonDefaultScope none none none MATHLIBREPO (unsafeWindow? := none))))
-
-/-- `getNonDefaultScopeReason` produces the `Reason:` line in the warning, naming
-the specific input that triggered it so the user can match it to their command
-line. When several inputs apply at once it reports the most specific first —
-scope, then `--cache-from`, then `--repo` — and that order is pinned here. -/
-def test_getNonDefaultScopeReason : IO Unit := do
-  IO.println "getNonDefaultScopeReason:"
-  withSavedScopeOverride do
-    scopeOverride.set none
-
-    -- A placeholder rather than a crash if nothing matches.
-    let reason ← withSuppressedCacheOutput (getNonDefaultScopeReason none none none MATHLIBREPO)
-    assertTrue "no trigger yields a placeholder reason" (reason == "unknown reason")
-
-    scopeOverride.set (some "abc123")
-    let reason ← withSuppressedCacheOutput (getNonDefaultScopeReason none none none MATHLIBREPO)
-    assertTrue "scope reason names the flag and SHA"
-      (reason == "--scope=abc123 (explicit per-commit scope)")
-
-    -- Scope outranks cache-from when both apply.
-    let reason ← withSuppressedCacheOutput
-      (getNonDefaultScopeReason none none (some [.forks]) MATHLIBREPO)
-    assertTrue "scope is reported ahead of cache-from"
-      (reason == "--scope=abc123 (explicit per-commit scope)")
-    scopeOverride.set none
-
-    -- A HEAD scope is exempt from condition 1, so a simultaneous cache-from
-    -- trigger is reported instead of the scope.
-    let head? ← try some <$> withSuppressedCacheOutput getGitCommitHash catch _ => pure none
-    if let some head := head? then
-      scopeOverride.set (some head)
-      let reason ←
-        withSuppressedCacheOutput
-          (getNonDefaultScopeReason none none (some [.forks, .master]) MATHLIBREPO)
-      assertTrue "a HEAD scope yields the cache-from reason"
-        (reason == "--cache-from=forks, master (explicit container override)")
-      scopeOverride.set none
-
-    let reason ←
-      withSuppressedCacheOutput
-        (getNonDefaultScopeReason none none (some [.forks, .master]) MATHLIBREPO)
-    assertTrue "cache-from reason names the container list"
-      (reason == "--cache-from=forks, master (explicit container override)")
-
-    let reason ← withSuppressedCacheOutput
-      (getNonDefaultScopeReason (some "bob/mathlib4") (some "alice/mathlib4") none "bob/mathlib4")
-    assertTrue "repo reason names the override and the detected remote"
-      (reason == "--repo=bob/mathlib4 (overrides detected git remote: alice/mathlib4)")
-
-    -- --cache-from equal to the default is not a trigger, so no reason applies.
-    let reason ←
-      withSuppressedCacheOutput (getNonDefaultScopeReason none none (some [.master]) MATHLIBREPO)
-    assertTrue "cache-from equal to the default yields the placeholder"
-      (reason == "unknown reason")
-
-    -- `--unsafe` outranks every other trigger and names its window.
-    scopeOverride.set (some "abc123")
-    let reason ← withSuppressedCacheOutput
-      (getNonDefaultScopeReason (some "bob/mathlib4") (some "alice/mathlib4") (some [.forks])
-        "bob/mathlib4" (unsafeWindow? := some 7))
-    assertTrue "unsafe reason names the window and outranks scope/cache-from/repo"
-      (reason == "--unsafe (automatic walk over up to 7 fork commit(s); trusting whoever built them)")
-    scopeOverride.set none
+  assertEq "cache-from reason names the container list"
+    "--cache-from=forks, master (explicit container override)"
+    (← reason { base with chain := { cli? := some [.forks, .master] } })
+  assertEq "repo reason names the override and the detected remote"
+    "--repo=bob/mathlib4 (overrides detected git remote: alice/mathlib4)"
+    (← reason { base with repoExplicit? := some "bob/mathlib4" } (some "alice/mathlib4"))
+  assertEq "a non-canonical --repo with no remote says so"
+    "--repo=bob/mathlib4 (no git remote to compare against; reads that fork's cache)"
+    (← reason { base with repoExplicit? := some "bob/mathlib4" })
+  -- --cache-from equal to the chain is not a trigger, so no reason applies.
+  assertEq "cache-from equal to the chain yields no notice"
+    "(no notice)" (← reason { base with chain := { cli? := some chain } })
+  -- `--unsafe` outranks every other trigger and names its window.
+  let everything : Notice.Read := { withScope with
+    repoExplicit? := some "bob/mathlib4", chain := { cli? := some [.forks] },
+    unsafeWindow? := some 7 }
+  assertEq "unsafe reason names the window and outranks scope/cache-from/repo"
+    "--unsafe (automatic walk over up to 7 fork commit(s); trusting whoever built them)"
+    (← reason everything (some "alice/mathlib4"))
 
 /-- `findMostRecentSHAWithCache` returns the first candidate SHA whose per-SHA
 marker exists in the `forks` container, used by `cache query` to find the most
@@ -808,7 +938,7 @@ HEAD probe per SHA) and aren't unit-tested; here we pin that an empty list
 returns `none` with no probe. -/
 def test_findMostRecentSHAWithCache : IO Unit := do
   IO.println "findMostRecentSHAWithCache:"
-  let result ← withSuppressedOutput (findMostRecentSHAWithCache [] MATHLIBREPO)
+  let result ← withSuppressedOutput (Developer.findMostRecentSHAWithCache "" [] MATHLIBREPO)
   assertTrue "empty SHA list returns none without probing" (result == none)
 
 /-- `findRecentSHAsWithCache` collects up to `limit` marked SHAs. The non-empty
@@ -816,9 +946,9 @@ cases hit the network (a marker HEAD probe per SHA); here we pin that an empty
 candidate list returns `[]` for any limit, with no probe. -/
 def test_findRecentSHAsWithCache : IO Unit := do
   IO.println "findRecentSHAsWithCache:"
-  let result ← withSuppressedOutput (findRecentSHAsWithCache [] MATHLIBREPO 5)
+  let result ← withSuppressedOutput (Developer.findRecentSHAsWithCache "" [] MATHLIBREPO 5)
   assertTrue "empty SHA list returns [] without probing" (result == [])
-  let result ← withSuppressedOutput (findRecentSHAsWithCache [] MATHLIBREPO 0)
+  let result ← withSuppressedOutput (Developer.findRecentSHAsWithCache "" [] MATHLIBREPO 0)
   assertTrue "limit 0 returns [] without probing" (result == [])
 
 end NonDefaultScope
@@ -835,7 +965,7 @@ the generic variant reports the count. These are user-facing guidance, so a
 rewording must be a deliberate edit to this test. -/
 def test_missingFilesLines : IO Unit := do
   IO.println "missingFilesLines:"
-  let fork := "\n".intercalate (missingFilesForkLines "alice/mathlib4" "cafe0123" 7)
+  let fork := "\n".intercalate (Developer.missingFilesForkLines "alice/mathlib4" "cafe0123" 7)
   assertTrue "fork hint names the fork" (containsSub fork "alice/mathlib4")
   assertTrue "fork hint names the HEAD SHA" (containsSub fork "cafe0123")
   assertTrue "fork hint reports the miss count" (containsSub fork "7 file(s)")
@@ -853,30 +983,16 @@ git-dependent guards (ancestor-of-master, HEAD resolution) and the probe
 itself are exercised by the CI integration tests. -/
 def test_forkHintSHA_guards : IO Unit := do
   IO.println "forkHintSHA? guards:"
-  let savedScope ← scopeOverride.get
-  let savedCacheFrom ← cacheFromOverride.get
-  try
-    scopeOverride.set none
-    cacheFromOverride.set none
-
-    assertTrue "--unsafe mode suppresses the hint"
-      ((← withSuppressedCacheOutput <| forkHintSHA? "alice/mathlib4" true) == none)
-
-    scopeOverride.set (some "cafe0123")
-    assertTrue "an explicit scope suppresses the hint"
-      ((← withSuppressedCacheOutput <| forkHintSHA? "alice/mathlib4" false) == none)
-    scopeOverride.set none
-
-    cacheFromOverride.set (some [Container.master])
-    assertTrue "a --cache-from override suppresses the hint"
-      ((← withSuppressedCacheOutput <| forkHintSHA? "alice/mathlib4" false) == none)
-    cacheFromOverride.set none
-
-    assertTrue "the canonical repo suppresses the hint"
-      ((← withSuppressedCacheOutput <| forkHintSHA? MATHLIBREPO false) == none)
-  finally
-    scopeOverride.set savedScope
-    cacheFromOverride.set savedCacheFrom
+  let hint (options : Developer.Options) (repo : String) : IO (Option String) :=
+    withSuppressedCacheOutput (Developer.forkHintSHA? options "" repo)
+  assertTrue "--unsafe mode suppresses the hint"
+    ((← hint { unsafeWindow? := some 1 } "alice/mathlib4") == none)
+  assertTrue "an explicit scope suppresses the hint"
+    ((← hint { scope? := some ⟨"cafe0123", .flag⟩ } "alice/mathlib4") == none)
+  assertTrue "a --cache-from override suppresses the hint"
+    ((← hint { chain := { cli? := some [.master] } } "alice/mathlib4") == none)
+  assertTrue "the canonical repo suppresses the hint"
+    ((← hint {} MATHLIBREPO) == none)
 
 end MissingFilesHints
 
@@ -897,9 +1013,8 @@ Two distinct failure modes are tested:
   every git command exits non-zero. The existing exit-code checks already handle
   this path; the test pins that `none` is returned here too.
 
-In both cases `resolveRepo` must fall back to `MATHLIBREPO`, giving the
-master-only container chain (no `forks`) — exactly what a dependency build
-should read from. -/
+In both cases `resolveRepo` must fall back to `MATHLIBREPO`, which selects the
+public-cache workflow — exactly what a dependency build should read from. -/
 def test_getRemoteRepo_gitFallback : IO Unit := do
   IO.println "getRemoteRepo git fallback:"
   -- Case 1: nonexistent cwd causes IO.Process.output to throw.
@@ -914,19 +1029,16 @@ def test_getRemoteRepo_gitFallback : IO Unit := do
   assertTrue "getRemoteRepo returns none in a non-git directory" (r2 == none)
 
   -- resolveRepo propagates the fallback correctly:
-  --   detected? = none, resolved = MATHLIBREPO → master-only chain.
-  let (detected?, resolved) ← withSuppressedCacheOutput (resolveRepo none) fakePath
+  --   detected? = none, resolved = MATHLIBREPO → the public-cache workflow.
+  let (detected?, resolved) ← withSuppressedCacheOutput (resolveRepo none true) fakePath
   assertTrue "resolveRepo detected? is none on git failure" (detected? == none)
   assertTrue "resolveRepo falls back to MATHLIBREPO on git failure" (resolved == MATHLIBREPO)
-  assertTrue "fallback chain includes master"
-    ((defaultContainersForRepo resolved).contains .master)
-  assertTrue "fallback chain excludes forks (no fork container for dependency builds)"
-    (!(defaultContainersForRepo resolved).contains .forks)
+  assertTrue "the fallback reads the public cache"
+    (Workflow.forRead resolved none false == .publicCache)
 
-/-- `headIsAncestorOfMaster` gates the uncached-fork-HEAD note: when HEAD is
-already part of master's history, `master` (first in the fork lookup chain)
-serves every file by hash, so the note would be a false positive and is
-suppressed.
+/-- `headIsAncestorOfMaster` gates the fork hint of the missing-files warning:
+when HEAD is already part of master's history, misses are master-container
+lag, which no fork scope can serve.
 
 Like `getRemoteRepo`, this helper must never throw — it runs on the read path,
 including inside dependency builds where the checkout may not be a git repo (or
@@ -944,136 +1056,139 @@ how the other git-walking helpers are tested. -/
 def test_headIsAncestorOfMaster_gitFallback : IO Unit := do
   IO.println "headIsAncestorOfMaster git fallback:"
   let fakePath := "/tmp/surely-nonexistent-mathlib-cache-test-xyz-9999999"
-  let r1 ← withSuppressedCacheOutput headIsAncestorOfMaster fakePath
+  let r1 ← withSuppressedCacheOutput Developer.headIsAncestorOfMaster fakePath
   assertTrue "headIsAncestorOfMaster returns false when git throws (nonexistent cwd)"
     (r1 == false)
-  let r2 ← withSuppressedCacheOutput headIsAncestorOfMaster "/tmp"
+  let r2 ← withSuppressedCacheOutput Developer.headIsAncestorOfMaster "/tmp"
   assertTrue "headIsAncestorOfMaster returns false in a non-git directory" (r2 == false)
 
 end GitFallback
 
-section CliOptions
+section CommandLine
 
-open Cache.Cli
-
-/-- `isKnownOpt` is the gatekeeper that decides whether a `--`-prefixed token
-in the command line is a recognized option or a typo. Unknown options error
-out with a help message rather than being silently ignored — important so a
-typo like `--scoop=abc` doesn't silently disable the scope flag.
-
-The recognition rule:
-- A named option matches if `--{name}=` is a prefix of the token.
-- A flag matches if the token is exactly `--{name}` (no `=`).
-
-These tests pin the contract so a future refactor can't accidentally accept
-unknown options or reject known ones. -/
-def test_isKnownOpt : IO Unit := do
-  IO.println "isKnownOpt:"
-  -- Every named option is recognized when used with `=value` form.
-  assertTrue "--repo=foo is known"           (isKnownOpt "--repo=foo")
-  assertTrue "--cache-from=master is known"  (isKnownOpt "--cache-from=master")
-  assertTrue "--scope=HEAD is known"         (isKnownOpt "--scope=HEAD")
-  assertTrue "--container=master is known"   (isKnownOpt "--container=master")
-  assertTrue "--staging-dir=/tmp is known"   (isKnownOpt "--staging-dir=/tmp")
-  assertTrue "--unsafe-window=5 is known" (isKnownOpt "--unsafe-window=5")
-  assertTrue "--backend=s3 is known"         (isKnownOpt "--backend=s3")
-
-  -- Empty value passes recognition (parseNamedOpt returns the empty string
-  -- for these — callers decide whether to treat that as an error).
-  assertTrue "--scope= (empty value) is known" (isKnownOpt "--scope=")
-
-  -- Flags use the bare `--name` form, no `=`.
-  assertTrue "--help (no =) is known" (isKnownOpt "--help")
-  assertTrue "--unsafe (no =) is known" (isKnownOpt "--unsafe")
-
-  -- `--unsafe` is a flag, not a named option: the `=value` form is a user error.
-  assertTrue "--unsafe=5 is NOT known (flags don't take values)"
-    (!isKnownOpt "--unsafe=5")
-
-  -- A typo on a known option name should fail recognition, not be silently
-  -- accepted. This is the regression-guard: if `--scoop=` were accepted, the
-  -- user's `--scope=` would be silently dropped and reads would fall back to
-  -- the default chain with no warning.
-  assertTrue "--scoop=foo (typo on scope) is NOT known" (!isKnownOpt "--scoop=foo")
-  assertTrue "--bogus=foo (unknown name) is NOT known" (!isKnownOpt "--bogus=foo")
-
-  -- A named option without `=` must NOT be accepted as a flag — `--scope`
-  -- (no value) is a user error, distinct from the `--help` flag form.
-  assertTrue "--scope (no =) is NOT known (named opts require value)"
-    (!isKnownOpt "--scope")
-
-  -- Symmetric: a flag with `=` must NOT be accepted as a named opt.
-  assertTrue "--help=foo is NOT known (flags don't take values)"
-    (!isKnownOpt "--help=foo")
-
-  -- A bare positional doesn't even look like an option. The cache binary
-  -- splits args by `startsWith "--"` before consulting `isKnownOpt`, so this
-  -- case should never reach us, but we pin it anyway for safety.
-  assertTrue "bare positional 'scope' is NOT known" (!isKnownOpt "scope")
-
-/-- `parseNamedOpt` extracts the value of a `--name=value` option from a
-list of args. The rules tests pin:
-
-- Missing option → `none`.
-- Single occurrence → the value after `=`.
-- Empty value (`--scope=`) → `some ""` (caller decides what to do).
-- Multiple occurrences → the *last* one wins (`findRev?`). This mirrors
-  conventional shell semantics where `--scope=a --scope=b` resolves to `b`.
-- Non-matching args are ignored, even if they look similar (e.g.,
-  `--scope-other=` is a different option name).
--/
-def test_parseNamedOpt : IO Unit := do
-  IO.println "parseNamedOpt:"
-  -- Empty arg list.
-  let v ← parseNamedOpt "scope" []
-  assertTrue "empty args → none" (v == none)
-
-  -- Args without the target option.
-  let v ← parseNamedOpt "scope" ["--repo=foo", "get"]
-  assertTrue "no matching option → none" (v == none)
-
-  -- Single occurrence.
-  let v ← parseNamedOpt "scope" ["--scope=abc123"]
-  assertTrue "single occurrence → some value" (v == some "abc123")
-
-  -- `--scope=` is recognized with the empty string as its value, distinct from
-  -- "not passed" (none).
-  let v ← parseNamedOpt "scope" ["--scope="]
-  assertTrue "empty value → some \"\"" (v == some "")
-
-  -- Multiple occurrences: last wins, matching shell precedence.
-  let v ← parseNamedOpt "scope" ["--scope=first", "--scope=second"]
-  assertTrue "duplicate option → last value wins" (v == some "second")
-
-  -- Surrounding positionals and other options don't interfere.
-  let v ← parseNamedOpt "scope" ["get", "--repo=foo", "--scope=mid", "Mathlib/Init.lean"]
-  assertTrue "found among other args" (v == some "mid")
-
-  -- A longer lookalike name must not match.
-  let v ← parseNamedOpt "scope" ["--scope-other=foo"]
-  assertTrue "--scope-other does not match --scope" (v == none)
-
-/-- `parseFlagOpt` checks whether a bare `--name` flag is present in args.
-Used for `--help` today. The contract is strict equality — `--help` matches,
-`--help=true` and `--help-me` do not. -/
-def test_parseFlagOpt : IO Unit := do
-  IO.println "parseFlagOpt:"
-  -- Empty args.
-  assertTrue "empty args → false" (!parseFlagOpt "help" [])
-
-  -- Bare `--help` present.
-  assertTrue "--help present → true" (parseFlagOpt "help" ["--help"])
-
-  -- `--help=` with a value is NOT a bare flag. (`isKnownOpt` would also
-  -- reject it; this is the parser-level guarantee.)
-  assertTrue "--help=true is NOT a bare flag" (!parseFlagOpt "help" ["--help=true"])
-
-  -- Flag absent among other args.
-  assertTrue "no flag among args → false"
-    (!parseFlagOpt "help" ["get", "--repo=foo"])
-
-  -- Lookalike: `--help-me` isn't the `--help` flag.
-  assertTrue "lookalike prefix doesn't match" (!parseFlagOpt "help" ["--help-me"])
+/-- The command line is the tool's contract with CI and with users, parsed by
+the `Cli` library: each command declares its flags, a `get` the flags of every
+workflow and a `put` the upload flags, so the parser rejects a typo, a flag
+the command does not take, a value of the wrong type, and a duplicate flag
+before anything runs. A flag before the command is an error. -/
+def test_commandLine : IO Unit := do
+  IO.println "command line:"
+  let parses (args : List String) : Bool := (Commands.cache.process args) matches .ok _
+  let errorOf (args : List String) : String :=
+    match Commands.cache.process args with
+    | .error (_, msg) => msg
+    | .ok _ => ""
+  -- Reads.
+  assertTrue "get accepts the read flags of every workflow"
+    (parses ["get", "--repo=alice/mathlib4", "--cache-from=master,forks", "--scope=HEAD",
+      "--unsafe-window=3"])
+  assertTrue "get accepts module arguments" (parses ["get", "Mathlib/Init.lean", "Mathlib.Data.+"])
+  assertTrue "--unsafe is a flag without a value" (parses ["get", "--unsafe"])
+  assertTrue "a typo on a flag is rejected" (!parses ["get", "--scoop=abc"])
+  assertTrue "a value on --unsafe is rejected" (!parses ["get", "--unsafe=5"])
+  assertTrue "--scope without a value is rejected" (!parses ["get", "--scope"])
+  assertTrue "an unknown container in --cache-from is rejected"
+    (!parses ["get", "--cache-from=master,bogus"])
+  assertTrue "a non-numeric --unsafe-window is rejected" (!parses ["get", "--unsafe-window=many"])
+  assertTrue "a duplicate flag is rejected" (!parses ["get", "--scope=a", "--scope=b"])
+  assertTrue "an upload flag on get is rejected" (!parses ["get", "--container=forks"])
+  assertTrue "the unknown-flag error names the flag"
+    ((errorOf ["get", "--scoop=abc"]).startsWith "Unknown flag `--scoop`")
+  -- Writes.
+  assertTrue "put-staged accepts the upload flags"
+    (parses ["put-staged", "--staging-dir=/tmp", "--container=forks", "--repo=alice/mathlib4",
+      "--scope=abc", "--backend=s3"])
+  assertTrue "--unsafe on put is rejected" (!parses ["put", "--unsafe"])
+  assertTrue "put accepts --container" (parses ["put", "--container=master"])
+  assertTrue "an unknown container is rejected" (!parses ["put", "--container=bogus"])
+  assertTrue "CI's upload lines parse"
+    (parses ["put-staged", "--backend=s3", "--container=forks", "--staging-dir=/tmp",
+       "--repo=alice/mathlib4"] &&
+     parses ["put-staged", "--backend=s3", "--container=master", "--staging-dir=/tmp",
+       "--repo=a/b"])
+  assertTrue "put-staged requires --staging-dir" (!parses ["put-staged", "--container=forks"])
+  assertTrue "an unknown backend is rejected" (!parses ["put", "--backend=ftp"])
+  assertTrue "stage requires --staging-dir" (!parses ["stage"])
+  assertTrue "unstage accepts --staging-dir alone" (parses ["unstage!", "--staging-dir=/tmp"])
+  -- Commands.
+  assertTrue "query takes an optional ref"
+    (parses ["query"] && parses ["query", "HEAD", "--repo=alice/mathlib4"])
+  assertTrue "an unknown command is rejected" (!parses ["fetch"])
+  assertTrue "collect is not a command" (!parses ["collect"])
+  assertTrue "pack takes no flags" (!parses ["pack", "--repo=alice/mathlib4"])
+  assertTrue "a flag before the command is rejected" (!parses ["--repo=a/b", "get"])
+  -- The chain-read triggers are the decision's own list, pinned here: a flag
+  -- a workflow adds does not move a canonical read to another workflow.
+  assertTrue "the chain-read flags are --cache-from, --scope, --unsafe, --unsafe-window"
+    (Workflow.chainReadFlags.map (·.longName) ==
+      ["cache-from", "scope", "unsafe", "unsafe-window"])
+  assertTrue "the chain-read variables are MATHLIB_CACHE_FROM and MATHLIB_CACHE_REPO_SCOPE"
+    ((Workflow.chainReadVariables {}).map (·.1) ==
+      ["MATHLIB_CACHE_FROM", "MATHLIB_CACHE_REPO_SCOPE"])
+  -- The chain-read flags select the developer workflow on the canonical repo,
+  -- and each workflow takes its own flags and no other's.
+  match Commands.cache.process ["get", "--cache-from=forks,master", "--unsafe-window=2"] with
+  | .ok (_, p) =>
+    assertTrue "--cache-from requests a chain read" (Workflow.chainReadFlagged p)
+    let options ← withSuppressedCacheOutput (Developer.parseOptions p)
+    assertTrue "the developer workflow reads --cache-from in order"
+      (options.chain.cli? == some [.forks, .master])
+    assertTrue "the developer workflow reads --unsafe-window" (options.unsafeWindow? == some 2)
+    let foreignTo (own : Array Cli.Flag) : List String :=
+      (foreignFlags own p).toList.map (·.flag.longName)
+    assertTrue "no flag is foreign to the developer workflow"
+      ((foreignTo Developer.flags).isEmpty)
+    assertTrue "both flags are foreign to the public-cache workflow"
+      (foreignTo Public.flags == ["cache-from", "unsafe-window"])
+  | .error (_, msg) => assertTrue s!"the chain-read line parses ({msg})" false
+  -- The workflows fail on an invalid option before anything is hashed (`plan`),
+  -- with a message, not an exit, so each failure is checked here.
+  let fails (act : IO Unit) : IO Bool := do
+    try act; pure false catch _ => pure true
+  let parsed (args : List String) : Cli.Parsed :=
+    match Commands.cache.process args with
+    | .ok (_, p) => p
+    | .error _ => default
+  let plain := parsed ["get"]
+  assertTrue "a chain-read variable requests a chain read"
+    (Workflow.chainReadRequested plain { cacheFrom? := some "master" } &&
+     Workflow.chainReadRequested plain { repoScope? := some "abc" } &&
+     !Workflow.chainReadRequested plain {})
+  assertTrue "the public cache fails on a set MATHLIB_CACHE_FROM"
+    (← fails (discard <| Public.plan plain { cacheFrom? := some "master" }))
+  assertTrue "the public cache fails on a set MATHLIB_CACHE_REPO_SCOPE"
+    (← fails (discard <| Public.plan plain { repoScope? := some "abc" }))
+  assertEq "the public cache plans its location"
+    "https://cache.mathlib.org/mathlib4-master/f/x.ltar"
+    ((← Public.plan plain {}).fileURL "x.ltar")
+  assertTrue "the public cache fails on a flag of another workflow"
+    (← fails (discard <| Public.plan (parsed ["get", "--unsafe"]) {}))
+  assertTrue "--unsafe-window=0 fails"
+    (← fails (discard <| withSuppressedCacheOutput
+      (Developer.parseOptions (parsed ["get", "--unsafe-window=0"]))))
+  assertTrue "--unsafe with --scope fails"
+    (← fails (discard <| withSuppressedCacheOutput
+      (Developer.parseOptions (parsed ["get", "--unsafe", "--scope=abc"]))))
+  let fromSettings ← withSuppressedCacheOutput
+    (Developer.parseOptions plain { cacheFrom? := some "forks" })
+  assertTrue "the developer workflow reads MATHLIB_CACHE_FROM from the settings"
+    (fromSettings.chain.env? == some [.forks])
+  match Commands.cache.process ["get", "--repo=alice/mathlib4", "Mathlib.Init"] with
+  | .ok (_, p) =>
+    assertTrue "--repo alone requests no chain read" (!Workflow.chainReadFlagged p)
+    assertTrue "--repo reads as the repo" (CommonFlag.repoOf p == some "alice/mathlib4")
+    assertTrue "the module arguments are kept" (p.variableArgsAs! String == #["Mathlib.Init"])
+  | .error (_, msg) => assertTrue s!"the plain line parses ({msg})" false
+  match Commands.cache.process ["put-staged", "--staging-dir=/tmp/x", "--container=forks",
+      "--backend=azure"] with
+  | .ok (_, p) =>
+    assertTrue "the backend, the staging directory, and the container read typed"
+      (CommonFlag.backendOf p == .azure && CommonFlag.stagingDirOf p == some "/tmp/x" &&
+        CommonFlag.containerOf p == some .forks)
+  | .error (_, msg) => assertTrue s!"the write line parses ({msg})" false
+  match Commands.cache.process ["put-staged", "--staging-dir=/tmp/x", "--container=forks"] with
+  | .ok (_, p) => assertTrue "the backend is s3 by default" (CommonFlag.backendOf p == .s3)
+  | .error (_, msg) => assertTrue s!"the write line parses ({msg})" false
 
 /-- A boolean environment variable is on for `1` and `true`, off for `0` and
 `false`, and `ifUnset` for an absent or blank value.
@@ -1113,7 +1228,7 @@ def test_parseEnvFlag : IO Unit := do
   let (quiet, _) ← IO.FS.withIsolatedStreams (parseEnvFlag "MY_FLAG" (some "0") false)
   assertEq "a readable value warns about nothing" "" quiet
 
-end CliOptions
+end CommandLine
 
 section ReadRedirects
 
@@ -1310,7 +1425,7 @@ def test_s3RegionFrom : IO Unit := do
 /-- `isValidScope` gates every scope before it reaches a URL path or a file
 name (the fork namespace, the marker path, and the marker's local temp file):
 hex SHAs pass; a value with path characters or ref syntax is rejected, and
-`getRepoScope` throws on it. -/
+`Scope.ofString` throws on it. -/
 def test_isValidScope : IO Unit := do
   IO.println "isValidScope:"
   assertTrue "a full SHA passes"
@@ -1324,15 +1439,6 @@ def test_isValidScope : IO Unit := do
   assertTrue "a ref name is rejected" (!isValidScope "HEAD")
   assertTrue "a branch name is rejected" (!isValidScope "nightly-testing")
   assertTrue "an overlong value is rejected" (!isValidScope (String.ofList (List.replicate 65 'a')))
-  -- The IO accessor enforces the guard for both scope sources.
-  withSavedScopeOverride do
-    scopeOverride.set (some "/tmp/pwned")
-    let threw ← try discard <| withSuppressedOutput getRepoScope; pure false
-      catch _ => pure true
-    assertTrue "getRepoScope throws on a malformed scope" threw
-    scopeOverride.set (some "deadbeef")
-    assertTrue "getRepoScope passes a hex scope through"
-      ((← withSuppressedOutput getRepoScope) == some "deadbeef")
 
 /-- The location derives the file directory from its scope. -/
 def test_filesDir : IO Unit := do
@@ -1344,115 +1450,102 @@ def test_filesDir : IO Unit := do
   assertEq "scope appends the per-commit segment"
     "f/alice/mathlib4/sha1"
     ((Container.forks.location "U" "alice/mathlib4" (some "sha1")).filesDir)
-  assertEq "an endpoint follows the repo (flat for canonical)"
-    "f" ((Location.ofEndpoint "U" "endpoint" MATHLIBREPO (some "sha1")).filesDir)
-  assertEq "a scoped fork endpoint keeps the repo and SHA"
+  assertEq "a container at its root keeps the container's layout"
     "f/alice/mathlib4/sha1"
-    ((Location.ofEndpoint "U" "endpoint" "alice/mathlib4" (some "sha1")).filesDir)
+    ((Container.forks.locationAt "U" "alice/mathlib4" (some "sha1")).filesDir)
+  assertEq "a flat endpoint is flat"
+    "f" ((Location.flat "U" "endpoint").filesDir)
   assertEq "the repo is lowercased"
     "f/alice/mathlib4" ((Container.forks.location "U" "Alice/Mathlib4" none).filesDir)
 
 /-- Constructors normalize their roots, including bases with a prefix. -/
 def test_locationNormalization : IO Unit := do
   IO.println "Location URL normalization:"
-  let endpoint := Location.ofEndpoint " https://cache.example/bucket/// \n"
-    "endpoint" "alice/mathlib4" (some "abc1")
-  assertEq "an endpoint normalizes its file URL"
-    "https://cache.example/bucket/f/alice/mathlib4/abc1/x.ltar"
+  let endpoint := Location.flat " https://cache.example/bucket/// \n" "endpoint"
+  assertEq "a flat endpoint normalizes its file URL"
+    "https://cache.example/bucket/f/x.ltar"
     (endpoint.fileURL "x.ltar")
   let container := Container.forks.location " https://cache.example/bucket/// \n"
     "alice/mathlib4" (some "abc1")
   assertEq "a container normalizes its base before adding its segment"
     "https://cache.example/bucket/mathlib4-forks/f/alice/mathlib4/abc1/x.ltar"
     (container.fileURL "x.ltar")
+  let root := Container.forks.locationAt " https://cache.example/bucket/mathlib4-forks/ \n"
+    "alice/mathlib4" (some "abc1")
+  assertEq "a container root is normalized and gets no segment"
+    "https://cache.example/bucket/mathlib4-forks/f/alice/mathlib4/abc1/x.ltar"
+    (root.fileURL "x.ltar")
 
-/-- `uploadLocationFrom` resolves the upload location per backend. Each case
-pins the URL of a file, the URL of the marker, and the label. -/
+/-- `uploadLocationFrom` resolves the location of the `--container` write:
+the container's layout under the root `MATHLIB_CACHE_PUT_URL` names, on every
+backend. Each case pins the URL of a file, the URL of the marker, and the
+label. -/
 def test_uploadLocationFrom : IO Unit := do
   IO.println "uploadLocationFrom:"
   let urls (r : Except String Location) : Option (String × Option String × String) :=
     r.toOption.map fun l => (l.fileURL "x.ltar", l.markerURL?, l.label)
-  let putBase := "https://s3.example.org/bucket-prefix"
-  let forksScoped := some (s!"{putBase}/mathlib4-forks/f/alice/mathlib4/sha1/x.ltar",
-    some s!"{putBase}/mathlib4-forks/m/alice/mathlib4/sha1", "forks")
-  assertTrue "s3: put base + forks + scope"
-    (urls (uploadLocationFrom .s3 none (some putBase) (some .forks)
+  let forksRoot := "https://s3.example.org/devbucket/mathlib4-forks"
+  let masterRoot := "https://s3.example.org/bucket/mathlib4"
+  let forksScoped := some (s!"{forksRoot}/f/alice/mathlib4/sha1/x.ltar",
+    some s!"{forksRoot}/m/alice/mathlib4/sha1", "forks")
+  assertTrue "s3: put URL + forks + scope"
+    (urls (uploadLocationFrom .s3 (some forksRoot) (some .forks)
         "Alice/Mathlib4" (some "sha1")) == forksScoped)
-  assertTrue "s3: put base + master is flat"
-    (urls (uploadLocationFrom .s3 none (some putBase) (some .master) MATHLIBREPO none) ==
-      some (s!"{putBase}/mathlib4-master/f/x.ltar",
-        none, "master"))
-  assertTrue "PUT_URL is flat with the container policy off"
-    (urls (uploadLocationFrom .azure (some "https://my.example.org") none none
-        MATHLIBREPO none) ==
-      some ("https://my.example.org/f/x.ltar",
-        none, "MATHLIB_CACHE_PUT_URL"))
-  assertTrue "PUT_URL applies on the s3 backend too"
-    (urls (uploadLocationFrom .s3 (some "https://my.example.org/bucket") none none
-        MATHLIBREPO none) ==
-      some ("https://my.example.org/bucket/f/x.ltar",
-        none, "MATHLIB_CACHE_PUT_URL"))
-  assertTrue "s3: a PUT_URL loses whitespace and trailing slashes before validation"
-    (urls (uploadLocationFrom .s3 (some " https://my.example.org/bucket/// ")
-      none none MATHLIBREPO none) ==
-      some ("https://my.example.org/bucket/f/x.ltar", none, "MATHLIB_CACHE_PUT_URL"))
-  -- A base without a bucket path fails at resolution.
-  assertTrue "s3: a put base without a bucket path errors"
-    (uploadLocationFrom .s3 none (some "https://s3.example.org") (some .forks)
+  assertTrue "s3: put URL + master is flat"
+    (urls (uploadLocationFrom .s3 (some masterRoot) (some .master) MATHLIBREPO none) ==
+      some (s!"{masterRoot}/f/x.ltar", none, "master"))
+  assertTrue "master is flat whatever --repo says"
+    (urls (uploadLocationFrom .s3 (some masterRoot) (some .master) "alice/mathlib4" none) ==
+      some (s!"{masterRoot}/f/x.ltar", none, "master"))
+  assertTrue "forks without a scope is repo-namespaced and has no marker"
+    (urls (uploadLocationFrom .s3 (some forksRoot) (some .forks) "alice/mathlib4" none) ==
+      some (s!"{forksRoot}/f/alice/mathlib4/x.ltar", none, "forks"))
+  assertTrue "azure: the put URL is the container's root too"
+    (urls (uploadLocationFrom .azure (some forksRoot) (some .forks)
+        "Alice/Mathlib4" (some "sha1")) == forksScoped)
+  assertTrue "a put URL loses whitespace and trailing slashes before validation"
+    ((uploadLocationFrom .s3 (some s!" {forksRoot}// ") (some .forks) "alice/mathlib4"
+      none).toOption.map (·.root) == some forksRoot)
+  -- Every upload names its container, and the container decides what the
+  -- upload may carry.
+  assertTrue "no container errors"
+    (uploadLocationFrom .s3 (some forksRoot) none MATHLIBREPO none matches .error _)
+  assertTrue "a scope on master errors"
+    (uploadLocationFrom .s3 (some masterRoot) (some .master) MATHLIBREPO (some "sha1")
+      matches .error _)
+  assertTrue "s3: no put URL errors"
+    (uploadLocationFrom .s3 none (some .forks) "alice/mathlib4" none matches .error _)
+  assertTrue "azure: no put URL errors"
+    (uploadLocationFrom .azure none (some .forks) "alice/mathlib4" none matches .error _)
+  assertTrue "an empty put URL means unset, so it errors"
+    (uploadLocationFrom .s3 (some "") (some .forks) "alice/mathlib4" none matches .error _)
+  assertTrue "s3: a put URL without a bucket path errors"
+    (uploadLocationFrom .s3 (some "https://s3.example.org") (some .forks)
       "alice/mathlib4" none matches .error _)
-  assertTrue "s3: a PUT_URL without a bucket path errors"
-    (uploadLocationFrom .s3 (some "https://my.example.org") none none MATHLIBREPO none
-      matches .error _)
-  assertTrue "azure: no PUT_URL errors"
-    (uploadLocationFrom .azure none none none "alice/mathlib4" none
-      matches .error _)
-  assertTrue "azure: a container with PUT_URL errors"
-    (uploadLocationFrom .azure (some "https://upload.example/bucket") none
-      (some .forks) MATHLIBREPO none matches .error _)
-  assertTrue "s3: a put base without a container errors"
-    (uploadLocationFrom .s3 none (some "https://s3.example.org/x") none MATHLIBREPO none
-      matches .error _)
-  assertTrue "s3: no put base errors"
-    (uploadLocationFrom .s3 none none (some .forks) "alice/mathlib4" none
-      matches .error _)
-  assertTrue "azure: a put base without a PUT_URL still errors"
-    (uploadLocationFrom .azure none (some putBase) none
-      "alice/mathlib4" (some "sha1") matches .error _)
-  -- PUT_URL keeps the opposite empty rule from every read variable: any set
-  -- value counts, an empty one included, so a misconfigured endpoint fails
-  -- the upload rather than divert it to the backend's location.
-  assertTrue "an empty PUT_URL still counts"
-    ((uploadLocationFrom .azure (some "") none none MATHLIBREPO none).toOption.map (·.root) ==
-      some "")
-  assertTrue "s3: an empty PUT_URL errors despite a valid fallback container"
-    (uploadLocationFrom .s3 (some "") (some putBase) (some .forks)
-      "alice/mathlib4" none matches .error _)
-  assertTrue "s3: an empty put base means unset, so it errors"
-    (uploadLocationFrom .s3 none (some "") (some .forks) "alice/mathlib4" none
-      matches .error _)
-  assertTrue "s3: a put base loses its trailing slashes"
-    ((uploadLocationFrom .s3 none (some "https://s3.example.org/bucket-prefix//") (some .forks)
-      "alice/mathlib4" none).toOption.map (·.root) ==
-      some "https://s3.example.org/bucket-prefix/mathlib4-forks")
+  -- The resolved location follows the read-side path policy: a write to a
+  -- container's root meets a read of that container under its base.
+  assertEq "a write meets the read of the same container"
+    ((Container.forks.location "https://s3.example.org/devbucket" "Alice/Mathlib4"
+      (some "sha1")).fileURL "x.ltar")
+    (((uploadLocationFrom .s3 (some forksRoot) (some .forks) "Alice/Mathlib4"
+      (some "sha1")).toOption.map (·.fileURL "x.ltar")).getD "(unresolved)")
 
-/-- Flat locations have no commit scope. Repo-namespaced locations take the
-supplied SHA. -/
+/-- A `forks` location takes the supplied SHA; a scope on the flat `master`
+container is an error, on every backend. -/
 def test_uploadLocationScope : IO Unit := do
   IO.println "uploadLocationScope:"
-  for scope? in [none, some "abc1"] do
-    for (backend, putURL?, container?) in
-        [(UploadBackend.azure, some "https://upload.example/bucket", none),
-         (.s3, some "https://upload.example/bucket", none),
-         (.s3, none, some Container.master), (.s3, none, some Container.forks)] do
-      let result := uploadLocationFrom backend putURL? (some "https://upload.example/bucket")
-        container? MATHLIBREPO scope?
-      match result with
-      | .ok location =>
-        assertTrue s!"{repr backend}: endpoint {putURL?}, \
-          container {repr container?}, scope {scope?}"
-          (location.sha? == if putURL?.isSome || container? == some Container.master
-            then none else scope?)
-      | .error error => assertTrue s!"scope test resolves: {error}" false
+  for backend in [UploadBackend.azure, .s3] do
+    for container in [Container.master, .forks] do
+      for scope? in [none, some "abc1"] do
+        let result := uploadLocationFrom backend (some "https://upload.example/bucket")
+          (some container) MATHLIBREPO scope?
+        match result with
+        | .ok location =>
+          assertTrue s!"{repr backend}: container {repr container}, scope {scope?}"
+            (location.sha? == scope? && (container.perCommit || scope?.isNone))
+        | .error _ =>
+          assertTrue s!"{repr backend}: container {repr container}, scope {scope?} errors"
+            (!container.perCommit && scope?.isSome)
 
 /-- The curl arguments an s3 upload signs each request with (`s3CurlArgs`),
 and the `If-None-Match: *` guard the curl tool adds to a non-overwrite put on
@@ -1514,7 +1607,7 @@ put; and both remotes are the same `{prefix}/{name}` shape every other tool
 addresses. -/
 def test_rcloneArgs : IO Unit := do
   IO.println "rcloneArgs:"
-  if let .ok dest := uploadLocationFrom .s3 none (some "https://acct.example/devbucket")
+  if let .ok dest := uploadLocationFrom .s3 (some "https://acct.example/devbucket/mathlib4-forks")
       (some .forks) "alice/mathlib4" (some "abc1") then
     -- The bucket path the s3 backend derives from the location's root.
     let bucketPath := ((s3EndpointSplit dest.root).toOption.map (·.2)).getD ""
@@ -1617,7 +1710,7 @@ def test_putStagedViaRclone : IO Unit := do
       s!"if [ \"$1\" = copyto ]; then cp \"$2\" \"{dir}/marker-content\"; exit 3; fi\n" ++
       "exit 0\n"
     discard <| IO.runCmd "chmod" #["+x", fake.toString]
-    let .ok dest := uploadLocationFrom .s3 none (some "https://acct.example/devbucket")
+    let .ok dest := uploadLocationFrom .s3 (some "https://acct.example/devbucket/mathlib4-forks")
         (some .forks) "alice/mathlib4" (some "abc1")
       | assertTrue "rclone destination resolves" false
     withSuppressedOutput <| putStagedViaRclone dest
@@ -1654,40 +1747,40 @@ def test_putStagedViaRclone : IO Unit := do
       "copy\ncopyto\n" (← IO.FS.readFile (dir / "calls"))
     assertEq "the marker content is the upload scope"
       "abc1\n" (← IO.FS.readFile (dir / "marker-content"))
-    -- Exercise scoped and repo-only endpoint resolution through the transfer.
+    -- Exercise scoped and unscoped forks writes under another root through the transfer.
     for scope? in [some "abc2", none] do
       IO.FS.writeFile (dir / "calls") ""
       for name in ["args-copyto", "marker-content"] do
         if ← (dir / name).pathExists then IO.FS.removeFile (dir / name)
-      let .ok endpoint := uploadLocationFrom .s3 (some "https://acct.example/devbucket/prefix")
-          none none "alice/mathlib4" scope?
-        | assertTrue "endpoint destination resolves" false
-      withSuppressedOutput <| putStagedViaRclone endpoint #[] staging
+      let .ok root := uploadLocationFrom .s3 (some "https://acct.example/devbucket/prefix")
+          (some .forks) "alice/mathlib4" scope?
+        | assertTrue "the container root resolves" false
+      withSuppressedOutput <| putStagedViaRclone root #[] staging
         #["aa.ltar"] (overwrite := false) (rclone := fake.toString)
-      assertTrue "endpoint file copies derive the bucket prefix from the location"
+      assertTrue "file copies derive the bucket prefix from the location"
         (((← IO.FS.readFile (dir / "args-copy")).splitOn "\n").contains
           (match scope? with
             | some sha => s!":s3:devbucket/prefix/f/alice/mathlib4/{sha}"
             | none => ":s3:devbucket/prefix/f/alice/mathlib4"))
       match scope? with
       | some _ =>
-        assertEq "a scoped endpoint uploads files before its marker"
+        assertEq "a scoped write uploads files before its marker"
           "copy\ncopyto\n" (← IO.FS.readFile (dir / "calls"))
         if ← (dir / "marker-content").pathExists then
-          assertEq "an endpoint marker contains its scope"
+          assertEq "the marker contains its scope"
             "abc2\n" (← IO.FS.readFile (dir / "marker-content"))
         else
-          assertTrue "a scoped endpoint writes a marker file" false
+          assertTrue "a scoped write writes a marker file" false
         if ← (dir / "args-copyto").pathExists then
-          assertTrue "an endpoint marker uses its repo scope"
+          assertTrue "the marker uses its repo scope"
             (((← IO.FS.readFile (dir / "args-copyto")).splitOn "\n").contains
               ":s3:devbucket/prefix/m/alice/mathlib4/abc2")
         else
-          assertTrue "a scoped endpoint invokes the marker copy" false
+          assertTrue "a scoped write invokes the marker copy" false
       | none =>
-        assertEq "an unscoped endpoint uploads only files"
+        assertEq "an unscoped write uploads only files"
           "copy\n" (← IO.FS.readFile (dir / "calls"))
-        assertTrue "an unscoped endpoint does not invoke the marker copy"
+        assertTrue "an unscoped write does not invoke the marker copy"
           (!(← (dir / "args-copyto").pathExists))
   finally
     IO.FS.removeDirAll dir
@@ -1696,21 +1789,23 @@ end UploadDestination
 
 section ReadLocationPolicy
 
-/-- Pin the file URLs and scopes of resolved reads, including endpoint
-exceptions and unsafe expansion. Expected paths are independent literals. -/
-def test_readLocationsFrom : IO Unit := do
-  IO.println "readLocationsFrom:"
-  let chain : List (Option Container × String) :=
-    [(some .master, "U_m"), (some .forks, "U_f")]
+/-- `Chain.locations` expands a chain, paired with read bases, into the
+locations to read. Only a container with per-commit namespaces
+(`Container.perCommit`, that is `forks`) reads at a scope: the explicit scope,
+else the caller's HEAD scope, else one location per `--unsafe` SHA. Every other
+container reads unscoped. Expected paths are independent literals. -/
+def test_chainLocations : IO Unit := do
+  IO.println "Chain.locations:"
+  let chain : List (Container × String) := [(.master, "U_m"), (.forks, "U_f")]
   let paths (locations : List Location) :=
     locations.map fun l => (l.fileURL "x.ltar", l.sha?)
   let resolve scope? unsafeScopes headScope? :=
-    paths (readLocationsFrom "Alice/Mathlib4" chain scope? unsafeScopes headScope?)
+    paths (Chain.locations chain "Alice/Mathlib4" scope? unsafeScopes headScope?)
   assertTrue "no scope gives unscoped locations"
     (resolve none [] none ==
       [("U_m/mathlib4-master/f/x.ltar", none),
        ("U_f/mathlib4-forks/f/alice/mathlib4/x.ltar", none)])
-  assertTrue "an explicit scope applies to repo-namespaced locations"
+  assertTrue "an explicit scope applies to the forks location only"
     (resolve (some "abc1") [] none ==
       [("U_m/mathlib4-master/f/x.ltar", none),
        ("U_f/mathlib4-forks/f/alice/mathlib4/abc1/x.ltar", some "abc1")])
@@ -1732,23 +1827,10 @@ def test_readLocationsFrom : IO Unit := do
        ("U_f/mathlib4-forks/f/alice/mathlib4/abc3/x.ltar", some "abc3"),
        ("U_f/mathlib4-forks/f/alice/mathlib4/abc4/x.ltar", some "abc4")])
   assertTrue "unsafe scopes have no effect without forks"
-    (paths (readLocationsFrom "Alice/Mathlib4" [(some .master, "U_m")] none ["abc3", "abc4"]) ==
+    (paths (Chain.locations [(.master, "U_m")] "Alice/Mathlib4" none ["abc3", "abc4"]) ==
       [("U_m/mathlib4-master/f/x.ltar", none)])
-  assertTrue "a fork endpoint retains its explicit scope"
-    (paths (readLocationsFrom "Alice/Mathlib4" [(none, "U_e")]
-      (some "abc1") [] (some "abc2")) ==
-      [("U_e/f/alice/mathlib4/abc1/x.ltar", some "abc1")])
-  assertTrue "an endpoint does not inherit the forks HEAD fallback"
-    (paths (readLocationsFrom "Alice/Mathlib4" [(none, "U_e")]
-      none [] (some "abc2")) == [("U_e/f/alice/mathlib4/x.ltar", none)])
-  assertTrue "a canonical endpoint stays flat and has no commit scope"
-    (paths (readLocationsFrom MATHLIBREPO [(none, "U_e")] (some "abc1") []) ==
-      [("U_e/f/x.ltar", none)])
-  assertTrue "unsafe scopes do not expand an endpoint"
-    (paths (readLocationsFrom "Alice/Mathlib4" [(none, "U_e")]
-      (some "abc1") ["abc3", "abc4"]) == [("U_e/f/alice/mathlib4/x.ltar", none)])
   assertTrue "an empty chain gives no locations"
-    ((readLocationsFrom "Alice/Mathlib4" [] (some "abc1") ["abc3"]).isEmpty)
+    ((Chain.locations [] "Alice/Mathlib4" (some "abc1") ["abc3"]).isEmpty)
 
 end ReadLocationPolicy
 
@@ -1908,9 +1990,14 @@ def runAll : IO Unit := do
   test_Container_name
   test_Container_parse
   test_envValueNormalization
-  test_getBaseURLFrom
-  test_defaultContainersForRepo
-  test_effectiveGetBases
+  test_readBaseFrom
+  test_Container_layout
+  test_workflowContainers
+  test_Workflow_decision
+  test_Upload
+  test_resolveDownstreamRepo
+  test_resolveRepo_downstream
+  test_readBases
   test_fileURL
   test_parseCacheFromList
   test_extractRepoFromUrl
@@ -1922,21 +2009,19 @@ def runAll : IO Unit := do
   test_hash_roundtrip
   test_markerURL
   test_markerProbeURL
-  test_getRepoScope
+  test_Scope
   test_readLocations
   test_mathlibGitLookups
-  test_shouldWarnNonDefaultScope
-  test_getNonDefaultScopeReason
+  test_Notice_applies
+  test_Notice_reason
   test_missingFilesLines
   test_forkHintSHA_guards
   test_findMostRecentSHAWithCache
   test_findRecentSHAsWithCache
   test_getRemoteRepo_gitFallback
   test_headIsAncestorOfMaster_gitFallback
+  test_commandLine
   test_parseEnvFlag
-  test_isKnownOpt
-  test_parseNamedOpt
-  test_parseFlagOpt
   test_curlFollowRedirectArgs
   test_curlRetryArgs
   test_runCmd_showArgsOnError
@@ -1960,7 +2045,7 @@ def runAll : IO Unit := do
   test_rcloneArgs
   test_rcloneEnv
   test_putStagedViaRclone
-  test_readLocationsFrom
+  test_chainLocations
   test_finalizeDecomp
   test_monitorCurl_carries_decomp_state
   test_monitorCurl_counts_unreported_transfers

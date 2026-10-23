@@ -216,74 +216,61 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO (Option RepoInfo) := do
     return none
 
 /--
+The full name of the nightly-testing repository. It builds Mathlib under
+non-release toolchains, and CI caches its builds as a fork's.
+-/
+def NIGHTLY_TESTING_REPO := "leanprover-community/mathlib4-nightly-testing"
+
+/--
+The repo a read in a project that depends on Mathlib resolves to, given what
+the dependency checkout's git remote reports.
+
+A detection of the canonical repo or of the nightly-testing repo is honored:
+a project whose Mathlib dependency is the nightly-testing repo reads that
+repo's cache, because its artifacts exist nowhere else. Everything else, a
+fork remote or no detection at all, resolves to `MATHLIBREPO`, so a
+dependency checkout's remote cannot steer a downstream read into a fork's
+artifacts. An explicit `--repo=` is the opt-in for that; `resolveRepo`
+applies it before this function is consulted.
+-/
+def resolveDownstreamRepo (detected? : Option String) : String :=
+  match detected? with
+  | some repo => if repo == MATHLIBREPO || repo == NIGHTLY_TESTING_REPO then repo else MATHLIBREPO
+  | none => MATHLIBREPO
+
+/--
 Resolve the GitHub repo for cache reads from a single `getRemoteRepo` probe.
 
 Returns `(detectedRepo?, resolvedRepo)`:
 * `detectedRepo?` is what the git remote reports (`none` if it can't be
-  determined); the warning path compares it against an explicit `--repo=` to
+  determined); the notice compares it against an explicit `--repo=` to
   tell whether the user is overriding the checkout's repo.
-* `resolvedRepo` applies the override precedence `--repo=` > git remote >
-  `MATHLIBREPO`, and is what the read path uses.
+* `resolvedRepo` is what the read path uses. An explicit `--repo=` wins. On a
+  mathlib checkout (`isMathlibRoot`, canonical or fork) the detection is next,
+  then `MATHLIBREPO`. In a project that depends on Mathlib the detection goes
+  through `resolveDownstreamRepo`, so a fork remote on the dependency checkout
+  cannot take the read off the public cache.
 
 `getRemoteRepo` shells out to git and prints branch/remote diagnostics;
-resolving here lets the read path, the warning, and the HEAD hint share a
-single probe keyed on `mathlibDepPath`.
+resolving here lets the read path and the notice share a single probe keyed
+on `mathlibDepPath`.
 -/
-def resolveRepo (repo? : Option String) : IO.CacheM (Option String × String) := do
+def resolveRepo (repo? : Option String) (isMathlibRoot : Bool) :
+    IO.CacheM (Option String × String) := do
   let mathlibDepPath := (← read).mathlibDepPath
   let detected? := (← getRemoteRepo mathlibDepPath).map (·.repo)
-  return (detected?, repo?.getD (detected?.getD MATHLIBREPO))
-
-/--
-Process-wide override for the container fallback list, set by the `--cache-from`
-CLI flag. When `none`, downloads use `defaultContainersForRepo`; when `some cs`,
-all repos use `cs` instead.
--/
-initialize cacheFromOverride : IO.Ref (Option (List Container)) ← IO.mkRef none
-
-/-- Pair each container in a lookup chain with the read base (`getBaseURL`), in
-the chain's trust order. -/
-private def chainWithGetBases (containers : List Container) :
-    BaseIO (List (Option Container × String)) := do
-  let base ← getBaseURL
-  return containers.map (some ·, base)
-
-/--
-Resolve the read bases for a GitHub repo. Each base carries its container
-identity. The bases retain the lookup chain's trust order. A user-supplied
-endpoint has no container identity and names its complete root URL.
-
-Precedence (most specific wins):
-1. `MATHLIB_CACHE_GET_URL` env var: a single anonymous URL that bypasses the
-   container logic entirely.
-2. `--cache-from` CLI override (via `cacheFromOverride`).
-3. `MATHLIB_CACHE_FROM` env var (same comma-separated shape as `--cache-from`):
-   how CI widens the lookup chain to match its write target without touching
-   each `cache get` call. The (repo, branch) → chain mapping lives in CI config,
-   not here.
-4. `defaultContainersForRepo repo`: the repo-level fallback when nothing
-   overrides it.
-
-An empty value means unset for both variables here, as it does for
-`MATHLIB_CACHE_BASE_URL`. `nonEmptyEnvValue` holds that rule.
--/
-def effectiveGetBases (repo : String) : IO (List (Option Container × String)) := do
-  if let some url := normalizeBaseURL (← IO.getEnv "MATHLIB_CACHE_GET_URL") then
-    return [(none, url)]
-  if let some cliOverride ← cacheFromOverride.get then
-    return ← chainWithGetBases cliOverride
-  let envOverride? ← do
-    match (← getEnvNonEmpty "MATHLIB_CACHE_FROM") with
-    | none => pure none
-    | some s =>
-      match parseCacheFromList s with
-      | some cs => pure (some cs)
-      | none =>
-        IO.eprintln s!"Warning: ignoring MATHLIB_CACHE_FROM={s} \
-          (unrecognized container name). Known containers: \
-          {", ".intercalate (Container.all.map Container.name)}."
-        pure none
-  chainWithGetBases (envOverride?.getD (defaultContainersForRepo repo))
+  if let some repo := repo? then
+    return (detected?, repo)
+  if isMathlibRoot then
+    return (detected?, detected?.getD MATHLIBREPO)
+  let resolved := resolveDownstreamRepo detected?
+  -- The probe above prints "Using cache from ...: {detected}"; correct the
+  -- record when the downstream resolution discards that detection.
+  if let some detected := detected? then
+    if detected != resolved then
+      IO.println s!"Dependency checkout points at {detected}; a project \
+        using Mathlib reads the {resolved} cache (pass --repo to override)."
+  return (detected?, resolved)
 
 /--
 `curl` flags that let a cache read follow a redirect, so a read base may answer
@@ -340,41 +327,6 @@ def splitWriteOut (line : String) : String × List String :=
   match line.splitOn curlFieldSep with
   | report :: headers => (report, headers)
   | [] => (line, [])
-
-/--
-Process-wide override for the per-SHA scope, set by the `--scope=` CLI flag.
-When set, it wins over `MATHLIB_CACHE_REPO_SCOPE`.
--/
-initialize scopeOverride : IO.Ref (Option String) ← IO.mkRef none
-
-/--
-Whether `scope` is a well-formed per-commit scope: a nonempty run of hex
-digits, at most 64 of them (a commit SHA, abbreviated or full). The scope
-lands in URL paths and in file names — the fork namespace `f/{repo}/{scope}/`,
-the marker `m/{repo}/{scope}`, and the marker's local temp file — so anything
-else (a path separator, `..`, an unresolved ref name) is a misconfiguration
-that must fail loudly rather than leak into a path.
--/
-def isValidScope (scope : String) : Bool :=
-  !scope.isEmpty && scope.length ≤ 64 &&
-    scope.all fun c => c.isDigit || ('a' ≤ c && c ≤ 'f') || ('A' ≤ c && c ≤ 'F')
-
-/--
-Resolved repo-scope SHA. Precedence: `--scope=` flag > `MATHLIB_CACHE_REPO_SCOPE`
-env var > `none`. Both sources mean "the user has explicitly opted into a
-SHA-scoped read"; the non-default-scope warning fires for either. A scope that
-is not a hex SHA (see `isValidScope`) throws: every consumer embeds the scope
-in a URL path or a file name.
--/
-def getRepoScope : IO (Option String) := do
-  let scope? ← do
-    if let some s ← scopeOverride.get then pure (some s)
-    else getEnvNonEmpty "MATHLIB_CACHE_REPO_SCOPE"
-  let some scope := scope? | return none
-  unless isValidScope scope do
-    throw <| IO.userError s!"invalid cache scope '{scope}': a scope is a commit SHA (hex \
-      digits; --scope also accepts any ref `git rev-parse` can resolve from inside a git checkout)"
-  return some scope
 
 /-- Resolve a Git ref in the Mathlib checkout selected by `CacheM`. -/
 def resolveGitRef (ref : String) : IO.CacheM String := do
@@ -829,77 +781,31 @@ private def downloadFilesFromLocation (location : Location)
         | _ => (served, failed + 1)
     return ({ failed, decomp := decompState }, served)
 
-/-- Build read locations from bases paired with optional container identities.
-`Container.location` adds each container's segment. A URL without a container
-identity is the complete root of a user-supplied endpoint.
-
-Without `--unsafe` (`unsafeScopes` empty), produce one location per input base
-at `scope?`. When no explicit scope applies, `headScope?` supplies the scope
-only for the `forks` container. This lets a plain `cache get` read the fork
-artifacts for the checked-out commit. Other locations do not inherit HEAD.
-
-With `--unsafe`, produce one forks location per discovered SHA, in the supplied
-order. Every other input base produces one unscoped location, including an
-endpoint override. The explicit `scope?` and `headScope?` are ignored. -/
-def readLocationsFrom (repo : String) (containerBases : List (Option Container × String))
-    (scope? : Option String) (unsafeScopes : List String)
-    (headScope? : Option String := none) : List Location :=
-  containerBases.flatMap fun (c, base) =>
-    let location scope? := match c with
-      | some c => c.location base repo scope?
-      | none => Location.ofEndpoint base "MATHLIB_CACHE_GET_URL" repo scope?
-    if unsafeScopes.isEmpty then
-      [location (if c == some Container.forks then scope? <|> headScope? else scope?)]
-    else if c == some Container.forks then
-      unsafeScopes.map fun sha => location (some sha)
-    else
-      [location none]
-
-/--
-The locations a read for `repo` tries, most trusted first: the lookup chain of
-`effectiveGetBases`, resolved by `readLocationsFrom` at the
-resolved scope (`getRepoScope`), with the Mathlib checkout's HEAD as the default
-scope of the `forks` round. `unsafeScopes` is the list of SHA scopes
-discovered by `cache get --unsafe` (empty for a normal read).
--/
-def readLocations (repo : String) (unsafeScopes : List String := []) :
-    IO.CacheM (List Location) := do
-  let containerBases ← effectiveGetBases repo
-  let scope? ← getRepoScope
-  -- With no explicit scope, the forks round defaults to HEAD: `cache get` on a
-  -- checked-out commit retrieves what CI built for exactly that commit, fork
-  -- included. This adds no trust over an unscoped forks read — the namespace
-  -- can only hold artifacts built from the commit the reader already has.
-  let headScope? ← if scope?.isNone && unsafeScopes.isEmpty then
-      try pure (some (← getGitCommitHash)) catch _ => pure none
-    else pure none
-  return readLocationsFrom repo containerBases scope? unsafeScopes headScope?
-
-/-- Outcome of a multi-round download. `failed` counts hard transfer errors
-(anything but a 404 miss) and drives the caller's exit code; `missing` counts
-files no round served, a normal outcome (e.g. a fork PR's unique files before
-CI has built them) that the caller may explain to the user. -/
+/-- What a read did. `failed` counts hard transfer errors (anything but a 404
+miss) and drives the caller's exit code. `served` lists each location the read
+tried, in order, with the number of files it served. `missing` counts files no
+location served, a normal outcome (e.g. a fork PR's unique files before CI has
+built them) that the workflow may explain to the user. -/
 structure DownloadResult where
   failed : Nat := 0
+  served : List (Location × Nat) := []
   missing : Nat := 0
 
 /-- Call `curl` to download files from the server to `CACHEDIR` (`.cache`).
-Returns the hard-failure and miss counts (see `DownloadResult`); explaining
-the misses to the user is the caller's job, since classifying them needs the
-marker probe from a module downstream of this one.
-If `decompress` is true, decompresses files as they're downloaded (pipelined).
+Returns what the read did (see `DownloadResult`); explaining the misses to the
+user is the workflow's job. If `decompress` is true, decompresses files as
+they're downloaded (pipelined).
 
-The download tries `locations` in order, one round per location (see
-`readLocations`). After each round, it drops the files that the round fetched,
-so the next location retries only genuine misses. With `unsafeMode` set, the
-download reports how many files each scoped round served (`cache get
---unsafe`). `repo` names the read in messages. -/
+The download tries `locations` in order, one round per location; the workflow
+builds them (`Cache.Workflow`). After each round, it drops the files that the
+round fetched, so the next location retries only genuine misses. `repo` names
+the read in messages. -/
 def downloadFiles
     (repo : String) (locations : List Location) (hashMap : IO.ModuleHashMap)
     (forceDownload : Bool) (mode : IO.CurlMode)
     (decompress : Bool := false) (forceUnpack : Bool := false)
-    (isMathlibRoot : Bool := false) (mathlibDepPath : FilePath := ".")
-    (unsafeMode : Bool := false) : IO DownloadResult := do
+    (isMathlibRoot : Bool := false) (mathlibDepPath : FilePath := ".") :
+    IO DownloadResult := do
   let hashMap ← if forceDownload then pure hashMap else hashMap.filterExists false
   if hashMap.isEmpty then IO.println "No files to download"; return {}
   IO.FS.createDirAll IO.CACHEDIR
@@ -924,20 +830,19 @@ def downloadFiles
   -- `DecompState`); `finalizeDecomp` below drains what the last round leaves.
   let mut decompState : DecompState := {}
   -- Hard transfer failures (not 404 misses) drive the exit code; misses are
-  -- normal and instead surface as the "not found" hint keyed on `remaining`.
+  -- normal and reach the workflow as `DownloadResult.missing`.
   -- Accumulated across rounds: a failure at an early location counts even
   -- when a later round serves the file.
   let mut downloadFailed := 0
-  -- For the `--unsafe` summary: how many files each scoped (forks) round supplied,
-  -- attributed by the drop in `remaining` across that round.
-  let mut scopeServed : Array (String × Nat) := #[]
+  -- The files each round served, attributed by the drop in `remaining`.
+  let mut served : Array (Location × Nat) := #[]
   for location in locations do
     if remaining.isEmpty then break
     let scopeNote := match location.sha? with | some s => s!" (scope {s})" | none => ""
     IO.println s!"Attempting to download {remaining.size} file(s) from {repo} cache at \
       {location.root}{scopeNote}"
     let before := remaining.size
-    let (s, served) ← downloadFilesFromLocation location remaining mode
+    let (s, fetched) ← downloadFilesFromLocation location remaining mode
       decompConfig decompState
     -- Carry the decompression pipeline into the next round and the drain
     -- below: files left behind here are never decompressed. Drop the files
@@ -945,23 +850,8 @@ def downloadFiles
     -- regardless of what is already on disk.
     decompState := s.decomp
     downloadFailed := downloadFailed + s.failed
-    remaining := remaining.filter fun _ hash => !served.contains hash
-    if unsafeMode then
-      if let some sha := location.sha? then
-        scopeServed := scopeServed.push (sha, before - remaining.size)
-
-  -- `--unsafe`: report which fork commits actually contributed files, so the
-  -- user knows whose artifacts they ended up trusting.
-  if unsafeMode then
-    if scopeServed.isEmpty then
-      IO.eprintln "--unsafe: no fork scopes were needed; \
-        all files were served by other locations."
-    else
-      IO.eprintln s!"--unsafe: cache served from {scopeServed.size} fork commit scope(s):"
-      for (sha, n) in scopeServed do
-        IO.eprintln s!"  {sha} → {n} file(s)"
-      if remaining.size > 0 then
-        IO.eprintln s!"  {remaining.size} file(s) still missing after all scopes."
+    remaining := remaining.filter fun _ hash => !fetched.contains hash
+    served := served.push (location, before - remaining.size)
 
   -- Drain the decompression pipeline accumulated across all rounds.
   if let some config := decompConfig then
@@ -973,7 +863,7 @@ def downloadFiles
 
   if downloadFailed > 0 then
     IO.println s!"{downloadFailed} download(s) failed"
-  return { failed := downloadFailed, missing := remaining.size }
+  return { failed := downloadFailed, served := served.toList, missing := remaining.size }
 
 /-- Check if the project's `lean-toolchain` file matches mathlib's.
 Print and error and exit the process with error code 1 otherwise. -/
@@ -1049,20 +939,18 @@ def checkForManifestMismatch : IO.CacheM Unit := do
         precedence, then run `lake update`."
     IO.Process.exit 1
 
-/-- Downloads missing files, and unpacks files.
+/-- Downloads missing files, and unpacks files. Returns what the read did,
+which the workflow reports.
 
-Returns the number of files no location served, so the caller can print the
-appropriate missing-files guidance (see `warnIfMissingFiles`).
-
-`repo` is the already-resolved GitHub repo (see `resolveRepo`). `readLocations`
-resolves the locations to try, including endpoint and container overrides,
-explicit scopes, and the forks HEAD fallback. Without an override, the fork
-lookup chain starts with `master`, which supplies shared upstream artifacts. -/
+`locations` are the locations the workflow resolved (see `Cache.Workflow`);
+`repo` is the resolved repo they read for (see `resolveRepo`). This function
+is the shared read mechanism under every workflow: the toolchain and manifest
+checks of a project that depends on Mathlib, the download rounds, and the
+decompression. -/
 def getFiles
-    (repo : String) (hashMap : IO.ModuleHashMap)
-    (forceDownload forceUnpack : Bool) (mode : IO.CurlMode) (decompress : Bool)
-    (unsafeScopes : List String := [])
-    : IO.CacheM Nat := do
+    (repo : String) (locations : List Location) (hashMap : IO.ModuleHashMap)
+    (forceDownload forceUnpack : Bool) (mode : IO.CurlMode) (decompress : Bool) :
+    IO.CacheM DownloadResult := do
   let isMathlibRoot ← IO.isMathlibRoot
   unless isMathlibRoot do
     checkForToolchainMismatch
@@ -1086,10 +974,8 @@ def getFiles
     else pure none
   else pure none
 
-  let result ← downloadFiles repo (← readLocations repo unsafeScopes) hashMap forceDownload
-    mode
-    (decompress := decompress) (forceUnpack := forceUnpack)
-    isMathlibRoot mathlibDepPath (unsafeMode := !unsafeScopes.isEmpty)
+  let result ← downloadFiles repo locations hashMap forceDownload mode
+    (decompress := decompress) (forceUnpack := forceUnpack) isMathlibRoot mathlibDepPath
   if result.failed > 0 then
     IO.println s!"Downloading {result.failed} files failed"
     IO.Process.exit 1
@@ -1118,7 +1004,7 @@ def getFiles
     IO.println "Downloaded all files successfully!"
   else
     IO.println s!"Downloaded all available files ({result.missing} not in the cache)."
-  return result.missing
+  return result
 
 end Get
 
