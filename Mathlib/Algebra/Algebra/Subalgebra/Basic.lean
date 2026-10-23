@@ -569,7 +569,7 @@ theorem coe_algebraMap_compatibleMaps (r : R) :
 
 /-- Restricting an endomorphism of `M` that preserves `p` gives an endomorphism of `p`;
 this is an `R`-algebra homomorphism. -/
-def _root_.Module.End.restrictAlgHom : q.compatibleMaps q →ₐ[R] Module.End R q where
+def _root_.Module.End.restrict : q.compatibleMaps q →ₐ[R] Module.End R q where
   toFun f := f.1.restrict f.2
   map_one' := rfl
   map_mul' _ _ := rfl
