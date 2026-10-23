@@ -863,6 +863,10 @@ lemma baseChange_top : (⊤ : Submodule R M).baseChange A = ⊤ := by
   rw [eq_top_iff, ← span_eq_top_of_span_eq_top R A _ (span_tmul_eq_top R ..)]
   exact span_le.2 fun _ ⟨a, m, h⟩ ↦ h ▸ tmul_mem_baseChange_of_mem _ trivial
 
+@[simp]
+lemma baseChange_sup : (p ⊔ q).baseChange A = p.baseChange A ⊔ q.baseChange A :=
+  (baseChange_gc R M A).l_sup
+
 variable {p q} in
 theorem baseChange_mono (h : p ≤ q) : p.baseChange A ≤ q.baseChange A :=
   (baseChange_gc R M A).monotone_l h
