@@ -190,7 +190,7 @@ theorem tendstoInDistribution_inv_sqrt_smul_sum
   have hY' : HasLaw Y' (gaussianReal 0 (‖t‖ ^ 2).toNNReal) P' := by
     rw [← multivariateGaussian_zero_one] at hY
     simpa [Y', dotProduct, ← pow_two, ← EuclideanSpace.real_norm_sq_eq] using
-        hY.inner_multivariateGaussian Matrix.PosSemidef.one t
+        hY.multivariateGaussian_inner Matrix.PosSemidef.one t
   have hY0 : P[Y 0] = 0 := by
     dsimp [Y]
     calc
