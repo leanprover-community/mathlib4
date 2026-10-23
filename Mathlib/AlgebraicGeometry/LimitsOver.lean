@@ -7,7 +7,6 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.Basic
 public import Mathlib.CategoryTheory.Limits.MorphismProperty
-public import Mathlib.CategoryTheory.Limits.Over
 
 /-!
 # (Co)limits in over categories

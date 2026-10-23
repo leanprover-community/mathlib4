@@ -19,7 +19,7 @@ file `CategoryTheory.Yoneda` for the other variants `yoneda` and
 
 @[expose] public section
 
-universe w w' w'' v v' u u'
+universe w w' w'' v v' u
 
 namespace CategoryTheory
 
