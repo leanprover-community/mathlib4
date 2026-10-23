@@ -77,8 +77,8 @@ theorem IsIsotypicOfType.of_isSimpleModule [IsSimpleModule R M] : IsIsotypicOfTy
 
 variable {R}
 
-theorem IsIsotypicOfType.of_isIsotypic_self [IsSemisimpleRing R] [IsSimpleModule R S]
-    (h : IsIsotypic R R) : IsIsotypicOfType R M S :=
+theorem IsIsotypic.isIsotypicOfType [IsSemisimpleRing R] [IsSimpleModule R S] (h : IsIsotypic R R) :
+    IsIsotypicOfType R M S :=
   fun m ↦
     have ⟨_, ⟨e⟩⟩ := IsSemisimpleRing.exists_linearEquiv_ideal_of_isSimpleModule R S
     have ⟨_, ⟨e'⟩⟩ := IsSemisimpleRing.exists_linearEquiv_ideal_of_isSimpleModule R m
@@ -87,7 +87,7 @@ theorem IsIsotypicOfType.of_isIsotypic_self [IsSemisimpleRing R] [IsSimpleModule
     ⟨e'.trans <| (h _ _).some.trans e.symm⟩
 
 theorem IsIsotypic.of_self [IsSemisimpleRing R] (h : IsIsotypic R R) : IsIsotypic R M :=
-  fun m _ ↦ IsIsotypicOfType.of_isIsotypic_self M m h
+  fun m _ ↦ h.isIsotypicOfType M m
 
 variable {M N S}
 
