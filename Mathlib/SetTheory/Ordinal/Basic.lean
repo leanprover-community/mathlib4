@@ -748,6 +748,15 @@ theorem lt_lift_iff {a : Ordinal.{u}} {b : Ordinal.{max u v}} :
     b < lift.{v} a ↔ ∃ a' < a, lift.{v} a' = b :=
   liftInitialSeg.lt_apply_iff
 
+theorem lift_sSup {s : Set Ordinal} (hs : BddAbove s) : lift (sSup s) = sSup (lift '' s) := by
+  obtain (rfl | hs₀) := s.eq_empty_or_nonempty
+  · simp
+  · exact liftInitialSeg.isNormal.map_sSup hs₀ hs
+
+theorem lift_iSup {f : β → Ordinal} (hf : BddAbove (range f)) :
+    lift (⨆ i, f i) = ⨆ i, lift (f i) := by
+  rw [iSup, lift_sSup hf, ← range_comp, sSup_range]; rfl
+
 @[simp]
 theorem _root_.Cardinal.mk_Iio_ordinal (o : Ordinal.{u}) :
     #(Iio o) = Cardinal.lift.{u + 1} o.card := by
