@@ -29,6 +29,9 @@ This file defines compact systems of sets.
 * `isCompactSystem_isCompact`: In a `T2Space`, the set of compact sets is a compact system.
 * `IsCompactSystem.supClosure`: If `S` is a compact system, then the set of finite unions of sets
   in `S` is also a compact system.
+* `IsCompactSystem.fst_image_iInter`: If `T` is a compact system, then the projection on the first
+  coordinate commutes with the intersection of a decreasing sequence of finite unions of products
+  `s ×ˢ t` with `t ∈ T`.
 * `IsCompactSystem.countableInfClosure`: If `S` is a compact system, then the set of countable
   intersections of sets in `S` is a compact system.
 * `IsCompactSystem.prod`, `IsCompactSystem.pi`: Products of sets from compact systems form a
@@ -236,6 +239,27 @@ protected theorem supClosure (hS : IsCompactSystem S) :
     (iInter_mono fun n ↦ ?_)
   · exact hAK n ▸ (hA (n + 1)).exists
   · exact hCL n ▸ subset_sUnion_of_mem (hfL n (A n) (hA n))
+
+/-- If `T` is a compact system, then the projection on the first coordinate commutes with the
+intersection of a decreasing sequence of finite unions of products `s ×ˢ t` with `t ∈ T`. -/
+theorem fst_image_iInter {β : Type*} {T : Set (Set β)} (hT : IsCompactSystem T)
+    {B : ℕ → Set (α × β)} (hB_anti : Antitone B)
+    (hB : ∀ n, B n ∈ supClosure (image2 (· ×ˢ ·) S T)) :
+    Prod.fst '' ⋂ n, B n = ⋂ n, Prod.fst '' B n := by
+  refine subset_antisymm (image_iInter_subset _ _) fun x hx ↦ ?_
+  -- the fibers of the sets `B n` over `x` are finite unions of sets of `insert ∅ T`
+  have h_fiber n : {y | (x, y) ∈ B n} ∈ supClosure (insert ∅ T) := by
+    refine supClosure_min (t := {u | {y | (x, y) ∈ u} ∈ supClosure (insert ∅ T)}) ?_
+      (fun u hu v hv ↦ supClosed_supClosure hu hv) (hB n)
+    rintro _ ⟨s, -, t, ht, rfl⟩
+    refine subset_supClosure ?_
+    by_cases hxs : x ∈ s <;> simp [hxs]; grind
+  -- the fibers are nonempty and decreasing, and `supClosure (insert ∅ T)` is a compact system
+  have h_nonempty n : (dissipate (fun n ↦ {y | (x, y) ∈ B n}) n).Nonempty := by
+    obtain ⟨⟨x', y⟩, hy, rfl⟩ := mem_iInter.mp hx n
+    exact ⟨y, mem_dissipate.mpr fun i hi ↦ hB_anti hi hy⟩
+  obtain ⟨y, hy⟩ := hT.insert_empty.supClosure.nonempty_iInter h_fiber h_nonempty
+  exact ⟨(x, y), mem_iInter.mpr fun n ↦ mem_iInter.mp hy n, rfl⟩
 
 /-- If `S` is a compact system, then the set of countable intersections of sets in `S` is also a
 compact system. -/
