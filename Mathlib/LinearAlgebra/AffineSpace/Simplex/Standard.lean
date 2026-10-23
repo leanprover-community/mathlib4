@@ -36,15 +36,11 @@ This file constructs simplices from bases and relates them to the standard simpl
 
 @[expose] public noncomputable section
 
-open Finset Function Module
+open Finset Function Module Affine Affine.Simplex
 open scoped Affine
 
 variable {n : ℕ}
 variable {k V P : Type*} [Ring k] [AddCommGroup V] [Module k V] [AffineSpace V P]
-
-section ofBasis
-
-open Affine Affine.Simplex
 
 /-- The simplex in `P` whose vertices are the points of an affine basis indexed by
 `Fin (n + 1)`. -/
@@ -57,7 +53,8 @@ abbrev Module.Basis.toSimplex (b : Basis (Fin n) k V) : Simplex k V n := b.toAff
 
 namespace AffineBasis
 
-@[simp] lemma toSimplex_points (b : AffineBasis (Fin (n + 1)) k P) :
+@[simp]
+lemma toSimplex_points (b : AffineBasis (Fin (n + 1)) k P) :
     (b.toSimplex).points = ⇑b := rfl
 
 lemma affineSpan_range_toSimplex (b : AffineBasis (Fin (n + 1)) k P) :
