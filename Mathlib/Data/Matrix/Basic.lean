@@ -961,13 +961,11 @@ section RowCol
 variable (m n R α)
 
 /-- `Matrix.row` as an `AddEquiv` -/
-@[simps toEquiv]
 def rowAddEquiv [Add α] : Matrix m n α ≃+ (m → n → α) where
   __ := rowEquiv m n α
   map_add' := row_add
 
 /-- `Matrix.col` as an `AddEquiv` -/
-@[simps toEquiv]
 def colAddEquiv [Add α] : Matrix m n α ≃+ (n → m → α) where
   __ := colEquiv m n α
   map_add' := col_add
@@ -1009,16 +1007,6 @@ theorem coe_colLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] :
   rfl
 
 @[simp]
-theorem rowLinearEquiv_toEquiv [Semiring R] [AddCommMonoid α] [Module R α] :
-    (rowLinearEquiv m n R α).toEquiv = rowEquiv m n α :=
-  rfl
-
-@[simp]
-theorem colLinearEquiv_toEquiv [Semiring R] [AddCommMonoid α] [Module R α] :
-    (colLinearEquiv m n R α).toEquiv = colEquiv m n α :=
-  rfl
-
-@[simp]
 theorem toEquiv_rowLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] :
     rowLinearEquiv m n R α = rowEquiv m n α :=
   rfl
@@ -1026,16 +1014,6 @@ theorem toEquiv_rowLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] :
 @[simp]
 theorem toEquiv_colLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] :
     colLinearEquiv m n R α = colEquiv m n α :=
-  rfl
-
-@[simp]
-theorem rowLinearEquiv_toAddEquiv [Semiring R] [AddCommMonoid α] [Module R α] :
-    (rowLinearEquiv m n R α).toAddEquiv = rowAddEquiv m n α :=
-  rfl
-
-@[simp]
-theorem colLinearEquiv_toAddEquiv [Semiring R] [AddCommMonoid α] [Module R α] :
-    (colLinearEquiv m n R α).toAddEquiv = colAddEquiv m n α :=
   rfl
 
 @[simp]
