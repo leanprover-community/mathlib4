@@ -542,13 +542,7 @@ namespace CartanMatrix
 theorem isFiniteCartan_a (n : ℕ) : (A n).IsFiniteCartan where
   diag i := diag_apply (A n) i ▸ congr_fun (A_diag n) i
   offDiag_nonpos := A_apply_le_zero_of_ne n
-  zero_comm i j := by
-    dsimp [A]
-    by_cases i = j
-    · grind
-    by_cases i.val + 1 = j.val ∨ j.val + 1 = i.val
-    · aesop
-    aesop
+  zero_comm i j := by dsimp [A]; grind
   exists_posDef := by
     use 1
     simp only [Pi.one_apply, zero_lt_one, implies_true, diagonal_one', one_mul, true_and]
