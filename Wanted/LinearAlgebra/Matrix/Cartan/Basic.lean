@@ -8,14 +8,6 @@ module
 public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.Cartan.Basic
 
-namespace CartanMatrix
-
-variable (n : ℕ)
-
-theorem_wanted isFiniteCartan_d : (D n).IsFiniteCartan
-
-end CartanMatrix
-
 theorem_wanted Matrix.IsFiniteCartan.exists_A_or_B_or_C_or_D_or_E_or_F_or_G
     {l : Type*} [Fintype l] [DecidableEq l]
     {M : Matrix l l ℤ} (hM : M.IsFiniteCartan) (hM' : M.IsIndecomposable) :

@@ -708,6 +708,102 @@ theorem isFiniteCartan_c (n : ℕ) : (C n).IsFiniteCartan where
         ring
       grind [congrFun hxy (Fin.succ ⟨k, hk'⟩)]
 
+theorem isFiniteCartan_d (n : ℕ) : (D n).IsFiniteCartan where
+  diag := D_diag n
+  offDiag_nonpos := D_off_diag_nonpos n
+  zero_comm i j := by
+    dsimp [D]
+    split_ifs <;> grind
+  exists_posDef := by
+    use 1
+    by_cases hn : n ≤ 2
+    · interval_cases n <;> simp only [Pi.one_apply, zero_lt_one, implies_true, diagonal_one',
+        one_mul, true_and] <;> exact PosDef.ofNat 2
+    let M : Matrix (Fin (n + 1)) (Fin n) ℤ := fun i j ↦ (if i = j.castSucc then 1 else 0)
+      + (if i = j.succ then if j.val + 1 = n then 0 else -1 else 0)
+      + (if j.val + 1 = n ∧ i.val + 2 = n then 1 else 0)
+    have h (a b : Fin (n + 1)) (hab : a ≠ b) (c₁ c₂ : ℤ) (f : Fin (n + 1) → ℤ) : (∑ x, if x = a
+        then c₁ * f x else if x = b then c₂ * f x else 0) = c₁ * f a + c₂ * f b := calc
+      _ = ∑ x, ((if x = a then c₁ * f x else 0) + if x = b then c₂ * f x else 0) := by grind
+      _ = _ := by simp [Finset.sum_add_distrib]
+    have h (j : Fin n) (f : Fin (n + 1) → ℤ) : (∑ x, M x j * f x) = if j.val + 1 = n then
+        f ⟨n - 2, by omega⟩ + f ⟨n - 1, by omega⟩ else f j.castSucc - f j.succ := by
+      by_cases hj : j.val + 1 = n
+      · let a : Fin (n + 1) := ⟨n - 2, by simp⟩
+        let b : Fin (n + 1) := ⟨n - 1, by simp⟩
+        calc
+          _ = ∑ x, (if x = a then 1 * f x else if x = b then 1 * f x else 0) := by grind
+          _ = f a + f b := by simpa using h a b (by grind) 1 1 f
+          _ = _ := by simp [hj, a, b]
+      · calc
+        _ = ∑ x, (if x = j.castSucc then f x else if x = j.succ then -1 * f x else 0) := by grind
+          _ = _ := by grind [h j.castSucc j.succ (by grind) 1 (-1) f]
+    have h : D n = Mᴴ * M := by
+      ext i j
+      have h : (∑ x, M x i * M x j) =if j.val + 1 = n then M ⟨n - 2, by simp⟩ i
+          + M ⟨n - 1, by simp⟩ i else M j.castSucc i - M j.succ i := calc
+        _ = _ := by grind
+        _ = _ := h j (fun x ↦ M x i)
+      simp_rw [conjTranspose_eq_transpose_of_trivial, mul_apply, transpose_apply, h]
+      dsimp [D, M]
+      simp only [Fin.ext_iff, hn, ↓reduceIte, Int.reduceNeg, Fin.val_castSucc, Fin.val_succ,
+        Nat.pred_eq_succ_iff, Nat.add_right_cancel_iff]
+      omega
+    simp only [Pi.one_apply, zero_lt_one, implies_true, diagonal_one',
+      conjTranspose_eq_transpose_of_trivial, one_mul, true_and, h]
+    apply PosDef.conjTranspose_mul_self
+    intro x y hxy
+    funext ⟨k, hk⟩
+    induction k with
+    | zero =>
+      have h (hk : 0 < n) (z : Fin n → ℤ) : (M.mulVec z) 0 = z ⟨0, hk⟩ := by
+        have hp : (∑ j, (if 0 = j.castSucc then 1 else 0) * z j) = z ⟨0, hk⟩ := calc
+          _ = ∑ j, (if j = ⟨0, hk⟩ then 1 else 0) * z j := by grind
+          _ = _ := by simp
+        have hn : (∑ j, (if 0 = j.succ then (if j.val + 1 = n then 0 else -1)
+            else 0) * z j) = 0 := by
+          apply Finset.sum_eq_zero
+          intro j _
+          simp [show 0 ≠ j.succ by grind]
+        have hz : (∑ j, (if j.val + 1 = n ∧ (0 : Fin (n + 1)).val + 2 = n
+            then 1 else 0) * z j) = 0 := by
+          exact Finset.sum_eq_zero (by grind)
+        simp_rw [mulVec_apply_eq_sum, M, add_mul, Finset.sum_add_distrib, hp, hn, hz, add_zero]
+      have heq := congrFun hxy (0 : Fin (n + 1))
+      change (M.mulVec x) 0 = (M.mulVec y) 0 at heq
+      rwa [h hk x, h hk y] at heq
+    | succ k =>
+      have hm : n - 1 < n := Nat.sub_one_lt_of_lt hk
+      have hk' : k < n := Nat.lt_of_succ_lt hk
+      have h (l : ℕ) (hl' : l < n) (hl : l + 1 < n) (z : Fin n → ℤ) : (M.mulVec z) (Fin.succ
+          ⟨l, hl'⟩) = z ⟨l + 1, hl⟩ - z ⟨l, hl'⟩ + (if l + 3 = n then z ⟨n - 1, hm⟩ else 0) := by
+        have hp : (∑ j, (if Fin.succ ⟨l, hl'⟩ = j.castSucc then 1 else 0) * z j)
+            = z ⟨l + 1, hl⟩ := calc
+          _ = ∑ j, (if j = ⟨l + 1, hl⟩ then 1 else 0) * z j := by grind
+          _ = _ := by simp
+        have hn : (∑ j, (if Fin.succ ⟨l, hl'⟩ = j.succ then (if j.val + 1
+            = n then 0 else -1) else 0) * z j) = -z ⟨l, hl'⟩ := calc
+          _ = ∑ j, (if j = ⟨l, hl'⟩ then -1 else 0) * z j := by grind
+          _ = _ := by simp
+        have hz : (∑ j, (if j.val + 1 = n ∧ (Fin.succ ⟨l, hl'⟩).val + 2 = n then 1 else 0) * z j)
+            = (if l + 3 = n then z ⟨n - 1, hm⟩ else 0) := by
+          by_cases hc : l + 3 = n
+          · calc
+              _ = ∑ j, (if j = ⟨n - 1, hm⟩ then 1 else 0) * z j := by grind
+              _ = _ := by
+                simp only [ite_mul, one_mul, zero_mul, Finset.sum_ite_eq', Finset.mem_univ,
+                  ↓reduceIte, left_eq_ite_iff]
+                intro _
+                contradiction
+          · simp [hc]
+        simp_rw [mulVec_apply_eq_sum, M, add_mul, Finset.sum_add_distrib, hp, hn, hz,
+          Int.add_neg_eq_sub]
+      have h := congrFun hxy (Fin.succ ⟨k, hk'⟩)
+      change (M.mulVec x) (Fin.succ ⟨k, hk'⟩) = (M.mulVec y) (Fin.succ ⟨k, hk'⟩) at h
+      have h := congrFun hxy (Fin.succ ⟨k + 1, hk⟩)
+      change (M.mulVec x) (Fin.succ ⟨k + 1, hk⟩) = (M.mulVec y) (Fin.succ ⟨k + 1, hk⟩) at h
+      grind
+
 theorem isFiniteCartan_e₆ : (E 6).IsFiniteCartan where
   diag := E_diag 6
   offDiag_nonpos := E_off_diag_nonpos 6
