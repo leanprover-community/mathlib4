@@ -1132,6 +1132,66 @@ lemma withBotDegree_le_withBotDegree_of_support_subset
   rw [m.withBotDegree_le_withBotDegree_iff_of_ne_zero _ hg]
   exact m.degree_le_degree_of_support_subset h
 
+lemma toWithBotSyn_monotone : Monotone m.toWithBotSyn := by
+  simp [toWithBotSyn, toSyn_monotone]
+
+lemma withBotDegree_le_coe_degree (f : MvPolynomial σ R) :
+    m.withBotDegree f ≤ m.degree f := by
+  by_cases hf : f = 0
+  · simp [hf]
+  simp [m.withBotDegree_eq_coe_degree_iff f |>.mpr hf]
+
+lemma notMem_support_of_degree_lt' {a}
+    {f : MvPolynomial σ R} (h : m.degree f ≺[m] a) :
+    a ∉ f.support := by
+  simp [coeff_eq_zero_of_lt h]
+
+lemma degree_le_of_withBotDegree_le_coe {e : m.syn} {f : MvPolynomial σ R}
+    (h : m.toWithBotSyn (m.withBotDegree f) ≤ e) :
+    m.toSyn (m.degree f) ≤ e := by
+  by_cases hf : f = 0
+  · simp [hf]
+  simpa [m.withBotDegree_eq_coe_degree_iff _ |>.mpr hf] using h
+
+lemma degree_le_degree_of_withBotDegree_le_withBotDegree {f g : MvPolynomial σ R}
+    (h : m.toWithBotSyn (m.withBotDegree f) ≤ m.toWithBotSyn (m.withBotDegree g)) :
+    m.toSyn (m.degree f) ≤ m.toSyn (m.degree g) :=
+  degree_le_of_withBotDegree_le_coe <| le_trans h <|
+    m.toWithBotSyn_monotone <| m.withBotDegree_le_coe_degree g
+
+lemma coeff_mul_of_degree_add_degree_le {d : σ →₀ ℕ} {f g : MvPolynomial σ R}
+    [Decidable (m.degree f + m.degree g = d)] (h : m.degree f + m.degree g ≼[m] d) :
+    (f * g).coeff d =
+      if m.degree f + m.degree g = d then m.leadingCoeff f * m.leadingCoeff g else 0 := by
+  by_cases! hfg0 : f = 0 ∨ g = 0
+  · rcases hfg0 with h0 | h0 <;> simp [h0]
+  split_ifs with h'
+  · rw [← h', coeff_mul_of_degree_add]
+  rw [← notMem_support_iff]
+  apply m.notMem_support_of_degree_lt'
+  exact lt_of_le_of_lt m.degree_mul_le <| lt_of_le_of_ne h <| m.toSyn.apply_eq_iff_eq.not.mpr h'
+
+lemma coeff_mul_of_withBotDegree_add_withBotDegree_le {d : σ →₀ ℕ} {f g : MvPolynomial σ R}
+    [Decidable (m.withBotDegree f + m.withBotDegree g = d)]
+    (h : m.withBotDegree f + m.withBotDegree g ≼'[m] d) :
+    (f * g).coeff d =
+      if m.withBotDegree f + m.withBotDegree g = d then
+        m.leadingCoeff f * m.leadingCoeff g else 0 := by
+  by_cases! hfg0 : f = 0 ∨ g = 0
+  · rcases hfg0 with h0 | h0 <;> simp [h0]
+  classical convert m.coeff_mul_of_degree_add_degree_le ?_
+  <;> simp_all only [m.withBotDegree_eq_coe_degree_iff _ |>.mpr hfg0.1,
+    m.withBotDegree_eq_coe_degree_iff _ |>.mpr hfg0.2, ← WithBot.coe_add,
+    m.toWithBotSyn_apply_coe, WithBot.coe_le_coe, WithBot.coe_eq_coe]
+
+lemma withBotDegree_le_withBotDegree_of_toColex_support_le_toColex_support {f g : MvPolynomial σ R}
+    (h : toColex (f.support.image m.toSyn) ≤ toColex (g.support.image m.toSyn)) :
+    m.toWithBotSyn (m.withBotDegree f) ≤ m.toWithBotSyn (m.withBotDegree g) := by
+  have := Finset.Colex.max_ofColex_le_max_ofColex_of_le h
+  simp_rw [ofColex_toColex, Finset.max_eq_sup_coe, Finset.sup_image] at this
+  -- todo: the two sub-goals should be a lemma or definition in #40010 later
+  convert this <;> simp [toWithBotSyn, withBotDegree, Finset.max_eq_sup_coe]
+
 end withBotDegree
 
 end Semiring
@@ -1245,6 +1305,35 @@ theorem degree_sub_leadingTerm_lt_iff {f : MvPolynomial σ R} :
   intro h h'
   simp only [h', map_zero] at h
   exact not_lt_bot h
+
+lemma toColex_support_sub_lt_toColex_support_of_leadingTerm_eq {e : σ →₀ ℕ} {f g : MvPolynomial σ R}
+    (he : e ∈ f.support) (h : m.leadingTerm g = monomial e (f.coeff e)) :
+    toColex ((f - g).support.image m.toSyn) < toColex (f.support.image m.toSyn) := by
+  simp_rw [Finset.Colex.toColex_lt_toColex_iff_exists_forall_lt, ← m.toSyn.coe_toEquiv,
+    Equiv.image_eq_preimage_symm_of_finset, m.toSyn.coe_toEquiv_symm, Finset.mem_preimage]
+  use m.toSyn e
+  simp only [leadingTerm, leadingCoeff, monomial_eq_monomial_iff, coeff_degree_eq_zero_iff,
+    mem_support_iff.mp he, and_false, or_false] at h
+  rcases h with ⟨rfl, h⟩
+  simp_rw [m.toSyn.symm_apply_apply, and_iff_right he, mem_support_iff, coeff_sub, h, not_ne_iff]
+  refine ⟨by simp, fun b hb hfb ↦ ?_⟩
+  simp only [hfb, zero_sub, ne_eq, neg_eq_zero] at hb
+  apply lt_of_le_of_ne (m.toSyn.apply_symm_apply b ▸ m.le_degree <| mem_support_iff.mpr hb)
+  grind [m.toSyn.symm_apply_apply]
+
+lemma toColex_support_sub_le_toColex_support_of_leadingTerm_eq {e : σ →₀ ℕ} {f g : MvPolynomial σ R}
+    (h : m.leadingTerm g = monomial e (f.coeff e)) :
+    toColex ((f - g).support.image m.toSyn) ≤ toColex (f.support.image m.toSyn) := by
+  by_cases he : e ∈ f.support
+  · exact le_of_lt <| m.toColex_support_sub_lt_toColex_support_of_leadingTerm_eq he h
+  rw [notMem_support_iff.mp he, monomial_zero, leadingTerm_eq_zero_iff] at h
+  simp [h]
+
+lemma withBotDegree_sub_le_withBotDegree {e : σ →₀ ℕ} {f g : MvPolynomial σ R}
+    (h : m.leadingTerm g = monomial e (f.coeff e)) :
+    m.withBotDegree (f - g) ≼'[m] m.withBotDegree f :=
+  withBotDegree_le_withBotDegree_of_toColex_support_le_toColex_support <|
+    toColex_support_sub_le_toColex_support_of_leadingTerm_eq h
 
 lemma sPolynomial_antisymm (f g : MvPolynomial σ R) :
     m.sPolynomial f g = - m.sPolynomial g f :=
