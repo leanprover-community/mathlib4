@@ -67,3 +67,5 @@ lemma normalize_mul_star (z : ℂ) : NormedSpace.normalize z * star z = ‖z‖ 
     mul_conj, normSq_eq_norm_sq, ofReal_pow, pow_two, mul_self_div_self]
 
 end Complex
+
+-- ci-dev probe (parsteps re-staging, probe): comment edit so downstream modules rebuild

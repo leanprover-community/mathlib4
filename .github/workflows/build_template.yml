@@ -271,6 +271,10 @@ jobs:
               # `lean`/`leantar` (see setup-build-env).
               export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
               cd pr-branch
+              # PROBE: pack, then hold the member open so that a cancel lands
+              # after the packing and before the copy.
+              ../tools-branch/.lake/build/bin/cache pack
+              echo "probe: packed; staging member sleeps 600 s"; sleep 600
               ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage
 
       # A cancelled run does not start the members of a parallel group,
