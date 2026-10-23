@@ -32,16 +32,17 @@ public section
 namespace QuadraticAlgebra
 
 variable {R K : Type*} [CommRing R] [CommRing K] [Algebra R K] {a b : K}
+  {z : QuadraticAlgebra K a b}
 
 @[simp]
-theorem isIntegral_star_iff {z : QuadraticAlgebra K a b} :
+theorem isIntegral_star_iff :
     IsIntegral R (star z) ↔ IsIntegral R z :=
   isIntegral_algEquiv (starAlgEquiv.restrictScalars R) (x := z)
 
 open Polynomial in
 /-- An element whose trace and norm lie in `R` is integral over `R`. -/
-theorem isIntegral_of_trace_mem_range_of_norm_mem_range {z : QuadraticAlgebra K a b}
-    (ht : trace z ∈ Set.range (algebraMap R K)) (hn : norm z ∈ Set.range (algebraMap R K)) :
+theorem isIntegral_of_trace_mem_range_of_norm_mem_range (ht : trace z ∈ Set.range (algebraMap R K))
+    (hn : norm z ∈ Set.range (algebraMap R K)) :
     IsIntegral R z := by
   obtain ⟨t, ht⟩ := ht
   obtain ⟨n, hn⟩ := hn
@@ -60,14 +61,14 @@ theorem isIntegral_omega (ha : a ∈ Set.range (algebraMap R K))
 variable [IsIntegrallyClosedIn R K]
 
 /-- The trace of an element integral over `R` lies in `R`. -/
-theorem trace_mem_range_of_isIntegral {z : QuadraticAlgebra K a b} (hz : IsIntegral R z) :
+theorem trace_mem_range_of_isIntegral (hz : IsIntegral R z) :
     trace z ∈ Set.range (algebraMap R K) :=
   IsIntegrallyClosedIn.isIntegral_iff.mp <|
     (algebraMap_trace_eq_add_star z ▸ hz.add (isIntegral_star_iff.mpr hz)).tower_bot
       algebraMap_injective
 
 /-- The norm of an element integral over `R` lies in `R`. -/
-theorem norm_mem_range_of_isIntegral {z : QuadraticAlgebra K a b} (hz : IsIntegral R z) :
+theorem norm_mem_range_of_isIntegral (hz : IsIntegral R z) :
     norm z ∈ Set.range (algebraMap R K) :=
   IsIntegrallyClosedIn.isIntegral_iff.mp <|
     (algebraMap_norm_eq_mul_star z ▸ hz.mul (isIntegral_star_iff.mpr hz)).tower_bot
@@ -76,7 +77,7 @@ theorem norm_mem_range_of_isIntegral {z : QuadraticAlgebra K a b} (hz : IsIntegr
 /-- If `a` and `b` lie in `R`, `z` is integral over `R` and `z.im` lies in `R`, then `z.re` also
 lies in `R`. -/
 theorem re_mem_range_of_im_mem_range (ha : a ∈ Set.range (algebraMap R K))
-    (hb : b ∈ Set.range (algebraMap R K)) {z : QuadraticAlgebra K a b} (h : IsIntegral R z)
+    (hb : b ∈ Set.range (algebraMap R K)) (h : IsIntegral R z)
     (him : z.im ∈ Set.range (algebraMap R K)) : z.re ∈ Set.range (algebraMap R K) := by
   obtain ⟨m, hm⟩ := him
   have : IsIntegral R (z - m • ω) := h.sub ((isIntegral_omega ha hb).smul _)
@@ -86,7 +87,7 @@ theorem re_mem_range_of_im_mem_range (ha : a ∈ Set.range (algebraMap R K))
 
 /-- An element of `QuadraticAlgebra K a b` is integral over `R` iff its trace and its norm lie
 in `R`. -/
-theorem isIntegral_iff {z : QuadraticAlgebra K a b} :
+theorem isIntegral_iff :
     IsIntegral R z ↔
       trace z ∈ Set.range (algebraMap R K) ∧ norm z ∈ Set.range (algebraMap R K) :=
   ⟨fun h ↦ ⟨trace_mem_range_of_isIntegral h, norm_mem_range_of_isIntegral h⟩,

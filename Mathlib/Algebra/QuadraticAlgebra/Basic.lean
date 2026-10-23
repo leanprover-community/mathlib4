@@ -246,8 +246,9 @@ theorem sub_star (z : QuadraticAlgebra R a b) :
   ext <;> simp <;> ring
 
 /-- Conjugation as an `R`-algebra automorphism of `QuadraticAlgebra R a b`. -/
-def starAlgEquiv : QuadraticAlgebra R a b ≃ₐ[R] QuadraticAlgebra R a b :=
-  { starRingAut with commutes' _ := by ext <;> simp }
+def starAlgEquiv : QuadraticAlgebra R a b ≃ₐ[R] QuadraticAlgebra R a b where
+  __ := starRingAut
+  commutes' _ := by ext <;> simp
 
 @[simp]
 theorem starAlgEquiv_apply (z : QuadraticAlgebra R a b) : starAlgEquiv z = star z := rfl
