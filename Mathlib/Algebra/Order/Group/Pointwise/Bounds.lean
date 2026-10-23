@@ -5,9 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Order.Group.OrderIso
 public import Mathlib.Order.GaloisConnection.Basic
-public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 import Mathlib.Order.Bounds.OrderIso
 

@@ -6,12 +6,12 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-public import Mathlib.Analysis.Normed.Group.Lemmas
 public import Mathlib.Analysis.Normed.Affine.Isometry
+public import Mathlib.Analysis.Normed.Group.Lemmas
 public import Mathlib.Analysis.Normed.Module.RieszLemma
+public import Mathlib.LinearAlgebra.Dimension.LinearMap
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Topology.Instances.Matrix
-public import Mathlib.LinearAlgebra.Dimension.LinearMap
 
 import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 import Mathlib.Topology.Algebra.InfiniteSum.Module
@@ -331,7 +331,7 @@ alias isOpen_setOf_linearIndependent := isOpen_setOfPred_linearIndependent
 theorem isOpen_setOfPred_nat_le_rank (n : ℕ) :
     IsOpen { f : E →L[𝕜] F | ↑n ≤ (f : E →ₗ[𝕜] F).rank } := by
   simp only [LinearMap.le_rank_iff_exists_linearIndependent_finset, ofPred_exists, ← exists_prop]
-  refine isOpen_biUnion fun t _ => ?_
+  refine isOpen_iUnion fun t => isOpen_iUnion fun _ => ?_
   have : Continuous fun f : E →L[𝕜] F => fun x : (t : Set E) => f x :=
     continuous_pi fun x => (ContinuousLinearMap.apply 𝕜 F (x : E)).continuous
   exact isOpen_setOfPred_linearIndependent.preimage this

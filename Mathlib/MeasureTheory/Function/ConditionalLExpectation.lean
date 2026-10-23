@@ -340,8 +340,6 @@ theorem condLExp_finsetSum (s : Finset ι) {X : ι → Ω → ℝ≥0∞}
   · simp [Finset.sum_attach]
   · simp [Finset.sum_attach _ (f := (P⁻[X ·|mΩ]))]
 
-@[deprecated (since := "2026-04-08")] alias condLExp_finset_sum := condLExp_finsetSum
-
 end Sum
 
 end MeasureTheory
