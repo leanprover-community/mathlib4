@@ -17,7 +17,7 @@ public import Mathlib.Topology.Sets.BaseChangeNhds
 We define K-sheaves on a T2 topological space with value in an arbitrary category.
 
 One may expect this notion to come from sheaves on a site of compact subset of a topological space
-but there is no coresponding Grothendieck topology on compact subsets, in particular
+but there is no corresponding Grothendieck topology on compact subsets, in particular
 because the `nonempty_isColimit_coconeOfCompacts` condition can't be expressed as a
 limit condition.
 -/
@@ -82,9 +82,9 @@ lemma hom_K_ext (P : KPresheaf A X) {K : Compacts X} (h : (IsColimit (P.coconeOf
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The Ksheaf condition. It's a generalisation of the one of J.Pardon that
-corespond to the one of J.Lurie in the case of usual categories.
+correspond to the one of J.Lurie in the case of usual categories.
 
-There is no coresponding Grothendieck topology on compact subsets, in particular
+There is no corresponding Grothendieck topology on compact subsets, in particular
 because the nonempty_isColimit_coconeOfCompacts condition can't be expressed as a
 limit condition. -/
 structure IsKSheaf (P : KPresheaf A X) : Prop where
