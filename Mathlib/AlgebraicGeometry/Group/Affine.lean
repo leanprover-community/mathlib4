@@ -324,6 +324,7 @@ instance [X.Over (Spec R)] [IsAffine X] : X.isoSpec.hom.IsOver (Spec R) :=
   inferInstanceAs (X.toSpecΓ.IsOver (Spec R))
 
 /-- The global sections of an affine monoid scheme over `Spec R` are a `R`-bialgebra. -/
+@[nolint instanceDiamonds] -- TODO: understand or fix the linter error
 instance [M.Over (Spec R)] [MonObj (M.asOver (Spec R))] [IsAffine M] :
     Bialgebra R Γ(M, ⊤) := by
   have : MonObj ((algSpec R).obj <| .op ↧Γ(M, ⊤)) :=
@@ -333,6 +334,7 @@ instance [M.Over (Spec R)] [MonObj (M.asOver (Spec R))] [IsAffine M] :
     .op <| .mk <| .op <| .of R Γ(M, ⊤)).bialgebra
 
 /-- The global sections of an affine group scheme over `Spec R` are a `R`-Hopf algebra. -/
+@[nolint instanceDiamonds] -- TODO: understand or fix the linter error
 instance [G.Over (Spec R)] [GrpObj (G.asOver (Spec R))] [IsAffine G] :
     HopfAlgebra R Γ(G, ⊤) := by
   have : GrpObj ((algSpec R).obj <| .op ↧Γ(G, ⊤)) :=
