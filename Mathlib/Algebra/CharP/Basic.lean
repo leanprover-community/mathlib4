@@ -97,14 +97,19 @@ lemma cast_ne_zero_of_ne_of_prime [Nontrivial R]
   · exact false_of_nontrivial_of_char_one (R := R)
   · exact hneq h
 
-lemma ringChar_of_prime_eq_zero [Nontrivial R] {p : ℕ} (hprime : Nat.Prime p)
+lemma of_prime_eq_zero [Nontrivial R] {p : ℕ} (hp : Nat.Prime p) (hp0 : (p : R) = 0) :
+    CharP R p := by
+  obtain ⟨q, hqp, hq⟩ := exists_CharP_dvd_of_cast_eq_zero R hp.ne_zero hp0
+  obtain rfl | rfl : q = 1 ∨ q = p := (Nat.dvd_prime hp).mp hqp
+  exacts [absurd rfl (char_ne_one R 1), hq]
+
+lemma ringChar_of_prime_eq_zero [Nontrivial R] [IsLeftCancelAdd R] {p : ℕ} (hprime : Nat.Prime p)
     (hp0 : (p : R) = 0) : ringChar R = p :=
-  Or.resolve_left ((Nat.dvd_prime hprime).1 (ringChar.dvd hp0)) ringChar_ne_one
+  let := of_prime_eq_zero hprime hp0; ringChar.eq R p
 
 lemma charP_iff_prime_eq_zero [Nontrivial R] {p : ℕ} (hp : p.Prime) :
     CharP R p ↔ (p : R) = 0 :=
-  ⟨fun _ => cast_eq_zero R p,
-   fun hp0 => (ringChar_of_prime_eq_zero hp hp0) ▸ inferInstance⟩
+  ⟨fun _ => cast_eq_zero R p, of_prime_eq_zero hp⟩
 
 end NonAssocSemiring
 end CharP
@@ -112,10 +117,9 @@ end CharP
 section
 
 /-- We have `2 ≠ 0` in a nontrivial ring whose characteristic is not `2`. -/
-protected lemma Ring.two_ne_zero {R : Type*} [NonAssocSemiring R] [Nontrivial R]
-    (hR : ringChar R ≠ 2) : (2 : R) ≠ 0 := by
-  rw [Ne, (by norm_cast : (2 : R) = (2 : ℕ)), ringChar.spec, Nat.dvd_prime Nat.prime_two]
-  exact mt (or_iff_left hR).mp CharP.ringChar_ne_one
+protected lemma Ring.two_ne_zero {R : Type*} [NonAssocSemiring R] [Nontrivial R] [IsLeftCancelAdd R]
+    (hR : ringChar R ≠ 2) : (2 : R) ≠ 0 :=
+  fun h => hR (CharP.ringChar_of_prime_eq_zero Nat.prime_two h)
 
 -- We have `CharP.neg_one_ne_one`, which assumes `[Ring R] (p : ℕ) [CharP R p] [Fact (2 < p)]`.
 -- This is a version using `ringChar` instead.
@@ -139,8 +143,9 @@ variable (S : Type*) [AddMonoidWithOne R] [AddMonoidWithOne S] (p q : ℕ) [Char
 /-- The characteristic of the product of rings is the least common multiple of the
 characteristics of the two rings. -/
 instance Nat.lcm.charP [CharP S q] : CharP (R × S) (Nat.lcm p q) where
-  cast_eq_zero_iff := by
-    simp [Prod.ext_iff, CharP.cast_eq_zero_iff R p, CharP.cast_eq_zero_iff S q, Nat.lcm_dvd_iff]
+  cast_eq_iff_mod_eq a b := by
+    simp_rw [Prod.ext_iff, Prod.fst_natCast, Prod.snd_natCast, CharP.cast_eq_iff_mod_eq]
+    exact modEq_and_modEq_iff_modEq_lcm
 
 /-- The characteristic of the product of two rings of the same characteristic
   is the same as the characteristic of the rings -/
@@ -156,10 +161,10 @@ instance Prod.charZero_of_right [CharZero S] : CharZero (R × S) where
 end Prod
 
 instance ULift.charP [AddMonoidWithOne R] (p : ℕ) [CharP R p] : CharP (ULift R) p where
-  cast_eq_zero_iff n := Iff.trans ULift.ext_iff <| CharP.cast_eq_zero_iff R p n
+  cast_eq_iff_mod_eq a b := Iff.trans ULift.ext_iff <| CharP.cast_eq_iff_mod_eq R p a b
 
 instance MulOpposite.charP [AddMonoidWithOne R] (p : ℕ) [CharP R p] : CharP Rᵐᵒᵖ p where
-  cast_eq_zero_iff n := MulOpposite.unop_inj.symm.trans <| CharP.cast_eq_zero_iff R p n
+  cast_eq_iff_mod_eq a b := MulOpposite.unop_inj.symm.trans <| CharP.cast_eq_iff_mod_eq R p a b
 
 section
 
@@ -193,7 +198,8 @@ open Fin.NatCast
 
 /-- The characteristic of `F_p` is `p`. -/
 @[stacks 09FS "First part. We don't require `p` to be a prime in mathlib."]
-instance charP (n : ℕ) [NeZero n] : CharP (Fin n) n where cast_eq_zero_iff _ := natCast_eq_zero
+instance charP (n : ℕ) [NeZero n] : CharP (Fin n) n where
+  cast_eq_iff_mod_eq _ _ := Fin.ext_iff
 
 end Fin
 
@@ -211,10 +217,9 @@ end AddMonoidWithOne
 
 section CommRing
 
-instance (α : Type*) [Semiring α] [IsLeftCancelAdd α] (n : ℕ) [CharP α n] :
-    Lean.Grind.IsCharP α n where
+instance (α : Type*) [Semiring α] (n : ℕ) [CharP α n] : Lean.Grind.IsCharP α n where
   ofNat_ext_iff {a b} := by
     rw [Lean.Grind.Semiring.ofNat_eq_natCast, Lean.Grind.Semiring.ofNat_eq_natCast]
-    exact CharP.cast_eq_iff_mod_eq α n
+    exact CharP.cast_eq_iff_mod_eq α n a b
 
 end CommRing

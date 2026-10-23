@@ -54,7 +54,7 @@ instance {σ R : Type*} [CommSemiring R] [Small.{u} R] [Small.{u} σ] :
 section CharP
 
 instance [CharP R p] : CharP (MvPolynomial σ R) p where
-  cast_eq_zero_iff n := by rw [← C_eq_coe_nat, ← C_0, C_inj, CharP.cast_eq_zero_iff R p]
+  cast_eq_iff_mod_eq a b := by rw [← C_eq_coe_nat, ← C_eq_coe_nat, C_inj, CharP.cast_eq_iff_mod_eq]
 
 end CharP
 

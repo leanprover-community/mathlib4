@@ -2,7 +2,6 @@ module  -- shake: keep-all --deprecated_module: ignore
 
 public import Counterexamples.AharoniKorman
 public import Counterexamples.CanonicallyOrderedCommSemiringTwoMul
-public import Counterexamples.CharPZeroNeCharZero
 public import Counterexamples.CliffordAlgebraNotInjective
 public import Counterexamples.Cyclotomic105
 public import Counterexamples.DimensionPolynomial

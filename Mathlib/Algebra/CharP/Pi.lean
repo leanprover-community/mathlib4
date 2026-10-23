@@ -31,7 +31,7 @@ instance Pi.instCharZero [Π i, AddMonoidWithOne (α i)] [∀ i, CharZero (α i)
 
 instance Pi.instCharP [Π i, AddMonoidWithOne (α i)] (p : ℕ) [∀ i, CharP (α i) p] :
     CharP (Π i, α i) p where
-  cast_eq_zero_iff x := by simp [funext_iff, CharP.cast_eq_zero_iff _ p x]
+  cast_eq_iff_mod_eq a b := by simp [funext_iff, CharP.cast_eq_iff_mod_eq]
 
 instance Pi.instExpChar [Π i, AddMonoidWithOne (α i)] (p : ℕ) [∀ i, ExpChar (α i) p] :
     ExpChar (Π i, α i) p := by

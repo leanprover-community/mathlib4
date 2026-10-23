@@ -245,8 +245,9 @@ def toMonoidWithZeroHom {R : Type*} [CommMonoidWithZero R] [Nontrivial R] (χ : 
   map_mul' := χ.map_mul'
 
 /-- If the domain is a ring `R`, then `χ (ringChar R) = 0`. -/
-theorem map_ringChar {R : Type*} [CommSemiring R] [Nontrivial R] (χ : MulChar R R') :
-    χ (ringChar R) = 0 := by rw [ringChar.Nat.cast_ringChar, χ.map_zero]
+theorem map_ringChar {R : Type*} [CommSemiring R] [Nontrivial R] [IsLeftCancelAdd R]
+    (χ : MulChar R R') : χ (ringChar R) = 0 := by
+  rw [ringChar.Nat.cast_ringChar, χ.map_zero]
 
 noncomputable instance hasOne : One (MulChar R R') :=
   ⟨trivial R R'⟩
