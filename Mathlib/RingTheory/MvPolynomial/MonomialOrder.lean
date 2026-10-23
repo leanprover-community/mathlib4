@@ -1137,14 +1137,12 @@ lemma withBotDegree_le_withBotDegree_of_support_subset
 lemma toWithBotSyn_monotone : Monotone m.toWithBotSyn := by
   simp [toWithBotSyn, toSyn_monotone]
 
-lemma withBotDegree_le_coe_degree (f : MvPolynomial σ R) :
-    m.withBotDegree f ≤ m.degree f := by
+lemma withBotDegree_le_coe_degree (f : MvPolynomial σ R) : m.withBotDegree f ≤ m.degree f := by
   by_cases hf : f = 0
   · simp [hf]
   simp [m.withBotDegree_eq_coe_degree_iff f |>.mpr hf]
 
-lemma notMem_support_of_degree_lt' {a}
-    {f : MvPolynomial σ R} (h : m.degree f ≺[m] a) :
+lemma notMem_support_of_degree_lt' {a} {f : MvPolynomial σ R} (h : m.degree f ≺[m] a) :
     a ∉ f.support := by
   simp [coeff_eq_zero_of_lt h]
 
@@ -1165,8 +1163,6 @@ lemma coeff_mul_of_degree_add_degree_le {d : σ →₀ ℕ} {f g : MvPolynomial 
     [Decidable (m.degree f + m.degree g = d)] (h : m.degree f + m.degree g ≼[m] d) :
     (f * g).coeff d =
       if m.degree f + m.degree g = d then m.leadingCoeff f * m.leadingCoeff g else 0 := by
-  by_cases! hfg0 : f = 0 ∨ g = 0
-  · rcases hfg0 with h0 | h0 <;> simp [h0]
   split_ifs with h'
   · rw [← h', coeff_mul_of_degree_add]
   rw [← notMem_support_iff]
