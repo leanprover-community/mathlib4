@@ -40,6 +40,36 @@ variable (R : Type u) (S : Type v) [CommRing R] [CommRing S] [NoZeroDivisors S] 
 
 namespace Module
 
+private lemma lift_rank_mul_lift_rank_of_isFractionRing_localization
+    [IsFractionRing S (Localization (algebraMapSubmonoid S R⁰))]
+    (M : Type w) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M] :
+    lift.{w} (rank R S) * lift.{v} (rank S M) = lift.{v} (rank R M) := by
+  by_cases h : FaithfulSMul R S
+  case neg =>
+    have : ¬ FaithfulSMul R M := mt (·.tower_bot ..) h
+    simp [rank_eq_zero_of_not_faithfulSMul, h, this]
+  nontriviality R using subsingleton R S
+  have : NoZeroDivisors R := .of_faithfulSMul R S
+  have : Nontrivial S := FaithfulSMul.algebraMap_injective R S |>.nontrivial
+  have : IsDomain S := {}
+  let FR := FractionRing R
+  let mS := algebraMapSubmonoid S R⁰
+  let FS := Localization mS
+  let M' := LocalizedModule mS M
+  let : Field FS := IsFractionRing.toField S
+  let f : M →ₗ[S] M' := LocalizedModule.mkLinearMap ..
+  let : Module FR M' := .restrictScalars _ FS M'
+  have : IsScalarTower FR FS M' := .restrictScalars ..
+  have : IsScalarTower R FR M' := .to₁₂₄ (P := FS) ..
+  have h₀ := IsLocalizedModule.isBaseChange R⁰ FR (IsScalarTower.toAlgHom R S FS).toLinearMap
+    |>.rank_eq
+  have h₁ := IsLocalizedModule.isBaseChange mS FS f |>.lift_rank_eq
+  have h₂ := IsLocalizedModule.restrictScalars R⁰ f |>.isBaseChange R⁰ FR |>.lift_rank_eq
+  rw [lift_id'.{w, v}, lift_umax] at h₁ h₂
+  have := lift_rank_mul_lift_rank FR FS M'
+  rw [lift_id'.{v, w}, lift_id'.{v, w}, lift_umax] at this
+  rw [← h₀, ← h₁, ← h₂, this]
+
 section isFractionRing_isLocalization
 
 variable
@@ -56,38 +86,10 @@ we obtain a tower law.
 See `_root.lift_rank_mul_lift_rank` for when your modules are free.
 -/
 theorem lift_rank_mul_lift_rank_of_isFractionRing_isLocalization :
-    lift.{w} (rank R S) * lift.{v} (rank S M) = lift.{v} (rank R M) := by
-  by_cases h : FaithfulSMul R S
-  case neg =>
-    have : ¬ FaithfulSMul R M := mt (·.tower_bot ..) h
-    simp [rank_eq_zero_of_not_faithfulSMul, h, this]
-  nontriviality R using subsingleton R S
-  have : NoZeroDivisors R := .of_faithfulSMul R S
-  have : Nontrivial S := FaithfulSMul.algebraMap_injective R S |>.nontrivial
-  have : IsDomain S := {}
-  let : Field FS := IsFractionRing.toField S
-  let FR := FractionRing R
-  let M' := LocalizedModule S⁰ M
-  let f : M →ₗ[S] M' := LocalizedModule.mkLinearMap ..
-  let : Algebra R FS := .restrictScalars R S FS
-  let : Algebra FR FS := localizationAlgebra R⁰ S
-  have : IsScalarTower R S FS := .of_algebraMap_eq' rfl
-  have : IsScalarTower R FR FS := isScalarTower_localizationAlgebra R⁰ S
-  let : Module FS M' := LocalizedModule.moduleOfIsLocalization
-  let : Module FR M' := .restrictScalars _ FS M'
-  have : IsScalarTower R FS M' := .to₁₃₄ (N := S) ..
-  have : IsScalarTower FR FS M' := .restrictScalars ..
-  have : IsScalarTower R FR M' := .to₁₂₄ (P := FS) ..
-  have h₀ := IsLocalizedModule.isBaseChange R⁰ FR (IsScalarTower.toAlgHom R S FS).toLinearMap
-  have h₁ := IsLocalizedModule.isBaseChange S⁰ FS f
-  have h₂ : IsBaseChange FR (f : M →ₗ[R] M') :=
-    isLocalizedModule_iff_isBaseChange .. |>.mpr h₁ |>.restrictScalars.isBaseChange R⁰ ..
-  have a := h₀.lift_rank_eq
-  have b := h₁.lift_rank_eq
-  have c := h₂.lift_rank_eq
-  rw [lift_id', lift_umax] at b c
-  rw [← b, ← c, ← lift_inj.{_, v'}, lift_mul, ← lift_rank_mul_lift_rank FR FS M',
-    ← lift_lift.{v, w}, a, lift_lift, lift_lift]
+    lift.{w} (rank R S) * lift.{v} (rank S M) = lift.{v} (rank R M) :=
+  have : IsFractionRing S (Localization (algebraMapSubmonoid S R⁰)) :=
+    .of_algEquiv <| IsLocalization.algEquiv (algebraMapSubmonoid S R⁰) FS _
+  lift_rank_mul_lift_rank_of_isFractionRing_localization ..
 
 /-- **Tower law over domains.**
 When `M` is a module over an algebra `S/R` of domains such that `(R⁰)⁻¹ S = (S⁰)⁻¹ S`,
