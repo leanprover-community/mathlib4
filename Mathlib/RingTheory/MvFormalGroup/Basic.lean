@@ -34,7 +34,7 @@ structure MvFormalGroup (σ : Type*) (R : Type*) [CommRing R] [DecidableEq σ] w
   /-- The coordinate power series `F(i)(X, Y)`. -/
   toPowerSeries : σ → MvPowerSeries (Fin 2 × σ) R
   /-- Every coordinate has zero constant term. -/
-  zero_constantCoeff : ∀ i, constantCoeff (toPowerSeries i) = 0
+  zero_constantCoeff i : constantCoeff (toPowerSeries i) = 0
   /-- The coefficient of `Xⱼ` in `F(i)` is the Kronecker delta. -/
   lin_coeff_X i j : coeff (single (0, j) 1) (toPowerSeries i) = (1 : Matrix σ σ R) j i
   /-- The coefficient of `Yⱼ` in `F(i)` is the Kronecker delta. -/
@@ -62,10 +62,12 @@ section Basic
 variable (F : MvFormalGroup σ R) {S : Type*} [CommRing S] [Algebra R S]
   {x y z : σ → MvPowerSeries τ S}
 
+@[simp]
 lemma lin_coeff_X_eq_ite {i j : σ} :
     (F.toPowerSeries i).coeff (single (0, j) 1) = if j = i then 1 else 0 := by
   rw [lin_coeff_X, Matrix.one_apply]
 
+@[simp]
 lemma lin_coeff_Y_eq_ite {i j : σ} :
     (F.toPowerSeries i).coeff (single (1, j) 1) = if j = i then 1 else 0 := by
   rw [lin_coeff_Y, Matrix.one_apply]
@@ -214,7 +216,7 @@ private theorem eq_X_of_idempotent (g : σ → MvPowerSeries σ R) (hg : HasSubs
       omega
   exact funext fun i ↦ sub_eq_zero.mp (order_eq_top_iff.mp (ENat.eq_top_iff_forall_ge.mpr (h · i)))
 
-/-- Zero is a right identity: `F(X, 0) = X`. -/
+/-- `0 : σ → MvPowerSeries σ R` is a right identity: `F(X, 0) = X`. -/
 @[simp]
 theorem Xzero_eq_X : F.Xzero = X := by
   refine eq_X_of_idempotent F.Xzero (F.hasSubst_subst_pair .X .zero)
@@ -222,7 +224,7 @@ theorem Xzero_eq_X : F.Xzero = X := by
   simpa using F.two_le_order_subst_sub (x := X) (y := 0) .X .zero (S := R)
     constantCoeff_X (by simp) j
 
-/-- Zero is a left identity: `F(0, X) = X`. -/
+/-- `0 : σ → MvPowerSeries σ R` is a left identity: `F(0, X) = X`. -/
 @[simp]
 theorem zeroX_eq_X : F.zeroX = X := by
   refine eq_X_of_idempotent F.zeroX (F.hasSubst_subst_pair .zero .X)
@@ -230,7 +232,7 @@ theorem zeroX_eq_X : F.zeroX = X := by
   simpa using F.two_le_order_subst_sub (x := 0) (y := X) .zero .X (S := R)
     (by simp) constantCoeff_X j
 
-/-- Zero is a right identity after any admissible substitution. -/
+/-- `0 : σ → MvPowerSeries τ S` is a right identity after any admissible substitution. -/
 @[simp]
 theorem add_zero (hx : HasSubst x) (i : σ) :
     (F.toPowerSeries i).subst (uncurry ![x, 0]) = x i := by
@@ -239,7 +241,7 @@ theorem add_zero (hx : HasSubst x) (i : σ) :
   simpa only [Pi.zero_apply, ← substAlgHom_apply hx, map_zero, substAlgHom_X,
     ← Pi.zero_def] using h
 
-/-- Zero is a left identity after any admissible substitution. -/
+/-- `0 : σ → MvPowerSeries τ S` is a left identity after any admissible substitution. -/
 @[simp]
 theorem zero_add (hx : HasSubst x) (i : σ) :
     (F.toPowerSeries i).subst (uncurry ![0, x]) = x i := by
