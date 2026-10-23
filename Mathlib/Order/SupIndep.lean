@@ -261,7 +261,7 @@ protected theorem SupIndep.sup_inter [DecidableEq ι] {s₁ s₂ : Finset ι} (h
 
 protected theorem SupIndep.sup_inf' [DecidableEq ι] {t : Finset ι'} {g : ι' → Finset ι}
     (hs : s.SupIndep f) (ht : t.Nonempty) (hg : ∀ j ∈ t, g j ⊆ s) :
-    (t.inf' ht g).sup f = t.inf' ht (fun x ↦ (g x).sup f) := by
+    (t.inf' ht g).sup f = t.inf' ht fun x ↦ (g x).sup f := by
   induction ht using Finset.Nonempty.cons_induction with
   | singleton => simp
   | cons j t _ ht ih =>
