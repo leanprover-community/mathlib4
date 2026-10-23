@@ -970,7 +970,7 @@ def trStmts₁ : Λ' → Finset Λ'
 theorem trStmts₁_trans {q q'} : q' ∈ trStmts₁ q → trStmts₁ q' ⊆ trStmts₁ q := by
   induction q with
   | move _ _ _ q q_ih => _ | clear _ _ q q_ih => _ | copy q q_ih => _ | push _ _ q q_ih => _
-  | read q q_ih => _ | succ q q_ih => _ | pred q₁ q₂ q₁_ih q₂_ih => _ | ret => _ <;>
+  | read q q_ih => _ | succ q q_ih => _ | pred q₁ q₂ q₁_ih q₂_ih => _ | ret => _
   all_goals
     simp +contextual only [trStmts₁, Finset.mem_insert, Finset.mem_union,
       or_imp, Finset.mem_singleton, Finset.Subset.refl, imp_true_iff, true_and]

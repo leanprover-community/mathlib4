@@ -7,9 +7,9 @@ module
 
 public meta import Lean.PrettyPrinter.Delaborator.Builtins
 public meta import Mathlib.Lean.PrettyPrinter.Delaborator
+public meta import Qq
 public import Mathlib.Tactic.Simps
 public import Mathlib.Tactic.ToDual
-public import Qq
 
 /-!
 # Notation classes for lattice operations
@@ -141,9 +141,9 @@ class HImp (α : Type*) where
   /-- Heyting implication `⇨` -/
   himp : α → α → α
 
-set_option linter.translateOverwrite false in
+set_option linter.translate.overwrite false in
 attribute [to_dual existing (reorder := 3 4) sdiff] HImp.himp
-set_option linter.translateOverwrite false in
+set_option linter.translate.overwrite false in
 attribute [to_dual existing (reorder := himp (1 2))] HImp.mk
 
 /-- Syntax typeclass for Heyting negation `￢`.
