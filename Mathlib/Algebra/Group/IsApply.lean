@@ -117,14 +117,6 @@ class IsMulApplyEqComp (F : Type*) {α : outParam Type*} [FunLike F α α] [Mul 
 @[simp, grind =]
 alias mul_apply_eq_comp := IsMulApplyEqComp.mul_apply_eq_comp
 
-@[simp, grind =]
-lemma pow_apply_eq_iterate {F α : Type*} [FunLike F α α] [Monoid F] [IsOneApplyEqSelf F]
-    [IsMulApplyEqComp F] (f : F) (n : ℕ) (x : α) :
-    (f ^ n) x = f^[n] x := by
-  induction n with
-  | zero => simp
-  | succ n ih => simp [pow_succ', ih, ← Function.iterate_succ_apply']
-
 end Add
 
 section Sub
@@ -175,6 +167,20 @@ class IsPowApply (M F : Type*) {α β : outParam Type*} [FunLike F α β] [Pow �
 
 @[to_additive (attr := simp, grind =, to_additive) smul_apply]
 alias pow_apply := IsPowApply.pow_apply
+
+/-- `IsNPowApplyEqIterate F` states for all `x : α`, `(f ^ n) x = f^[n] x`. -/
+class IsNPowApplyEqIterate (F : Type*) {α : outParam Type*} [FunLike F α α] [NPow F] where
+  pow_apply_eq_iterate (f : F) (n : ℕ) (x : α) : (f ^ n) x = f^[n] x := by intros; rfl
+
+@[simp, grind =]
+alias pow_apply_eq_iterate := IsNPowApplyEqIterate.pow_apply_eq_iterate
+
+instance {F α : Type*} [FunLike F α α] [Monoid F] [IsOneApplyEqSelf F] [IsMulApplyEqComp F] :
+    IsNPowApplyEqIterate F where
+  pow_apply_eq_iterate f n x := by
+    induction n with
+    | zero => simp
+    | succ n ih => simp [pow_succ', ih, ← Function.iterate_succ_apply']
 
 end SMul
 
@@ -269,7 +275,7 @@ theorem coe_mul_eq_comp [Mul F'] [IsMulApplyEqComp F'] (f g : F') : ↑(f * g) =
   ext; simp
 
 @[simp, norm_cast]
-lemma coe_pow_eq_iterate [Monoid F'] [IsMulApplyEqComp F'] [IsOneApplyEqSelf F']
+lemma coe_pow_eq_iterate [NPow F'] [IsNPowApplyEqIterate F']
     (f : F') (n : ℕ) : ⇑(f ^ n) = f^[n] :=
   funext <| pow_apply_eq_iterate f n
 

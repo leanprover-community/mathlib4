@@ -26,8 +26,8 @@ variable {F α β : Type*}
 
 section Comp
 
-variable [FunLike F α α] [Zero F] [One F] [Mul F] [Zero α]
-  [IsZeroApply F] [IsOneApplyEqSelf F] [IsMulApplyEqComp F]
+variable [FunLike F α α] [Zero F] [One F] [Mul F] [NPow F] [Zero α]
+  [IsZeroApply F] [IsOneApplyEqSelf F] [IsMulApplyEqComp F] [IsNPowApplyEqIterate F]
   [ZeroHomClass F α α]
 
 /-- A `FunLike` type with `(f * g) x = f (g x)` is a `MonoidWithZero` -/
@@ -37,6 +37,8 @@ protected abbrev compMonoidWithZero : MonoidWithZero F where
   mul_one _ := by apply DFunLike.ext; simp
   one_mul _ := by apply DFunLike.ext; simp
   mul_assoc _ _ _ := by apply DFunLike.ext; simp
+  npow_zero _ := by apply DFunLike.ext; simp
+  npow_succ _ _ := by apply DFunLike.ext; simp
 
 end Comp
 
