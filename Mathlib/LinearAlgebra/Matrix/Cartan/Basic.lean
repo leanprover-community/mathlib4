@@ -592,7 +592,68 @@ theorem isFiniteCartan_a (n : ℕ) : (A n).IsFiniteCartan where
       have h (z : Fin n → ℤ) : (M.mulVec z) (Fin.succ ⟨k, hk'⟩) = z ⟨k + 1, hk⟩ - z ⟨k, hk'⟩ := by
         simp_rw [mulVec_apply_eq_sum, M, add_mul, Finset.sum_add_distrib, hpos z, hneg z,
           Int.add_neg_eq_sub]
-      grind [congrFun hxy (Fin.succ ⟨k, hk'⟩), h x, h y]
+      grind [congrFun hxy (Fin.succ ⟨k, hk'⟩)]
+
+theorem isFiniteCartan_b (n : ℕ) : (B n).IsFiniteCartan where
+  diag := B_diag n
+  offDiag_nonpos := B_off_diag_nonpos n
+  zero_comm i j := by
+    dsimp [B]
+    split_ifs <;> grind
+  exists_posDef := by
+    let d : Fin n → ℤ := fun i ↦ if i.val + 1 = n then 2 else 1
+    use d
+    refine ⟨fun i ↦ by grind, ?_⟩
+    let M : Matrix (Fin (n + 1)) (Fin n) ℤ := fun i j ↦ (if i = j.castSucc then d j else 0) +
+      (if i = j.succ then if j.val + 1 = n then 0 else -1 else 0)
+    have h (a b : Fin (n + 1)) (hab : a ≠ b) (c₁ c₂ : ℤ) (f : Fin (n + 1) → ℤ) : (∑ x, if x = a
+        then c₁ * f x else if x = b then c₂ * f x else 0) = c₁ * f a + c₂ * f b := calc
+      _ = ∑ x, ((if x = a then c₁ * f x else 0) + if x = b then c₂ * f x else 0) := by grind
+      _ = _ := by simp [Finset.sum_add_distrib]
+    have h : diagonal d * B n = Mᴴ * M := by
+      ext i j
+      have : (∑ x : Fin (n + 1), M x i * M x j) = d j * M (j.castSucc) i
+          + (if j.val + 1 = n then 0 else -1) * M (j.succ) i := calc
+        _ = _ := by grind
+        _ = _ := h j.castSucc j.succ (by grind) (d j) (if j + 1 = n then 0 else -1) (fun x ↦ M x i)
+      calc
+        _ = d i * B n i j := by simp [diagonal, mul_apply]
+        _ = ∑ x : Fin (n + 1), M x i * M x j := by dsimp [B, d, M]; grind
+        _ = _ := by simp_rw [conjTranspose_eq_transpose_of_trivial, mul_apply, transpose_apply]
+    rw [h]
+    apply PosDef.conjTranspose_mul_self
+    intro _ _ hxy
+    funext ⟨k, hk⟩
+    induction k with
+    | zero =>
+      have hpos (z : Fin n → ℤ) : (∑ j : Fin n, (if 0 = j.castSucc then d j else 0)
+          * z j) = d ⟨0, hk⟩ * z ⟨0, hk⟩ := calc
+        _ = ∑ j : Fin n, (if j = (⟨0, hk⟩ : Fin n) then d j else 0) * z j := by grind
+        _ = _ := by simp
+      have hneg (z : Fin n → ℤ) : (∑ j : Fin n, (if 0 = j.succ then (if j.val + 1
+          = n then 0 else -1) else 0) * z j) = 0 := by
+        apply Finset.sum_eq_zero
+        intro j _
+        simp [show (0 : Fin (n + 1)) ≠ j.succ by grind]
+      have (z : Fin n → ℤ) : (M.mulVec z) 0 = d ⟨0, hk⟩ * z ⟨0, hk⟩ := by
+        simp_rw [mulVec_apply_eq_sum, M, add_mul, Finset.sum_add_distrib, hpos z, hneg z, add_zero]
+      have := congrFun hxy 0
+      grind
+    | succ k =>
+      have hk' : k < n := Nat.lt_of_succ_lt hk
+      have hpos (z : Fin n → ℤ) : (∑ j : Fin n, (if Fin.succ ⟨k, hk'⟩ = j.castSucc then d j else 0)
+          * z j) = d ⟨k + 1, hk⟩ * z ⟨k + 1, hk⟩ := calc
+        _ = ∑ j : Fin n, (if j = ⟨k + 1, hk⟩ then d j else 0) * z j := by grind
+        _ = _ := by simp
+      have hneg (z : Fin n → ℤ) : (∑ j : Fin n, (if Fin.succ ⟨k, hk'⟩ = j.succ then
+          (if j.val + 1 = n then 0 else -1) else 0) * z j) = -z ⟨k, hk'⟩ := calc
+        _ = ∑ j : Fin n, (if j = ⟨k, hk'⟩ then -1 else 0) * z j := by grind
+        _ = _ := by simp
+      have h (z : Fin n → ℤ) : (M.mulVec z) (Fin.succ ⟨k, hk'⟩) = d ⟨k + 1, hk⟩ * z ⟨k + 1, hk⟩
+          - z ⟨k, hk'⟩ := by
+        simp_rw [mulVec_apply_eq_sum, M, add_mul, Finset.sum_add_distrib, hpos z, hneg z,
+          Int.add_neg_eq_sub]
+      grind [congrFun hxy (Fin.succ ⟨k, hk'⟩)]
 
 theorem isFiniteCartan_e₆ : (E 6).IsFiniteCartan where
   diag := E_diag 6
