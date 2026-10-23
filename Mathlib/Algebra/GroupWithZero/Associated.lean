@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Jens Wagemaker
 -/
 module
 
-public import Mathlib.Algebra.Order.IsBotOne
 public import Mathlib.Algebra.Prime.Lemmas
 
 /-!
@@ -19,7 +18,7 @@ and prove basic properties of this quotient.
 
 @[expose] public section
 
-assert_not_exists IsOrderedMonoid Multiset Ring
+assert_not_exists DenselyOrdered IsOrderedMonoid Multiset Ring
 
 variable {M : Type*}
 
@@ -342,9 +341,7 @@ theorem Associated.of_mul_right [CommMonoidWithZero M] [IsCancelMulZero M] {a b 
 theorem Associated.of_pow_associated_of_prime [CommMonoidWithZero M] [IsCancelMulZero M]
     {p₁ p₂ : M} {k₁ k₂ : ℕ}
     (hp₁ : Prime p₁) (hp₂ : Prime p₂) (hk₁ : 0 < k₁) (h : p₁ ^ k₁ ~ᵤ p₂ ^ k₂) : p₁ ~ᵤ p₂ := by
-  have : p₁ ∣ p₂ ^ k₂ := by
-    rw [← h.dvd_iff_dvd_right]
-    apply dvd_pow_self _ hk₁.ne'
+  have : p₁ ∣ p₂ ^ k₂ := by rw [← h.dvd_iff_dvd_right]; exact dvd_pow_self _ (by lia)
   rw [← hp₁.dvd_prime_iff_associated hp₂]
   exact hp₁.dvd_of_dvd_pow this
 
@@ -497,11 +494,6 @@ instance instCommMonoid : CommMonoid (Associates M) where
   mul_comm a' b' :=
     Quotient.inductionOn₂ a' b' fun a b => show ⟦a * b⟧ = ⟦b * a⟧ by rw [mul_comm]
 
-instance instPreorder : Preorder (Associates M) where
-  le := Dvd.dvd
-  le_refl := dvd_refl
-  le_trans _ _ _ := dvd_trans
-
 /-- `Associates.mk` as a `MonoidHom`. -/
 protected def mkMonoidHom : M →* Associates M where
   toFun := Associates.mk
@@ -519,9 +511,6 @@ theorem associated_map_mk {f : Associates M →* M} (hinv : Function.RightInvers
 theorem mk_pow (a : M) (n : ℕ) : Associates.mk (a ^ n) = Associates.mk a ^ n := by
   induction n <;> simp [*, pow_succ, Associates.mk_mul_mk.symm]
 
-theorem dvd_eq_le : ((· ∣ ·) : Associates M → Associates M → Prop) = (· ≤ ·) :=
-  rfl
-
 instance uniqueUnits : Unique (Associates M)ˣ where
   uniq := by
     rintro ⟨a, b, hab, hba⟩
@@ -535,38 +524,11 @@ theorem coe_unit_eq_one (u : (Associates M)ˣ) : (u : Associates M) = 1 := by
 theorem isUnit_iff_eq_one (a : Associates M) : IsUnit a ↔ a = 1 :=
   Iff.intro (fun ⟨_, h⟩ => h ▸ coe_unit_eq_one _) fun h => h.symm ▸ isUnit_one
 
-theorem isUnit_iff_eq_bot {a : Associates M} : IsUnit a ↔ a = ⊥ := by
-  rw [Associates.isUnit_iff_eq_one, bot_eq_one]
-
 theorem isUnit_mk {a : M} : IsUnit (Associates.mk a) ↔ IsUnit a :=
   calc
     IsUnit (Associates.mk a) ↔ a ~ᵤ 1 := by
       rw [isUnit_iff_eq_one, one_eq_mk_one, mk_eq_mk_iff_associated]
     _ ↔ IsUnit a := associated_one_iff_isUnit
-
-section Order
-
-theorem mul_mono {a b c d : Associates M} (h₁ : a ≤ b) (h₂ : c ≤ d) : a * c ≤ b * d :=
-  let ⟨x, hx⟩ := h₁
-  let ⟨y, hy⟩ := h₂
-  ⟨x * y, by simp [hx, hy, mul_comm, mul_left_comm]⟩
-
-instance : IsBotOneClass (Associates M) where
-  isBot_one a := Dvd.intro _ (one_mul a)
-
-instance instOrderBot : OrderBot (Associates M) where
-  bot_le _ := one_le
-
-@[deprecated _root_.one_le +typeChanged (since := "2026-05-07")]
-protected theorem one_le {a : Associates M} : 1 ≤ a :=
-  one_le
-
-theorem le_mul_right {a b : Associates M} : a ≤ a * b :=
-  ⟨b, rfl⟩
-
-theorem le_mul_left {a b : Associates M} : a ≤ b * a := by rw [mul_comm]; exact le_mul_right
-
-end Order
 
 @[simp]
 theorem mk_dvd_mk {a b : M} : Associates.mk a ∣ Associates.mk b ↔ a ∣ b := by
@@ -577,14 +539,6 @@ theorem mk_dvd_mk {a b : M} : Associates.mk a ∣ Associates.mk b ↔ a ∣ b :=
     exact ⟨_, mul_assoc ..⟩
   · rintro ⟨c, rfl⟩
     use c
-
-theorem dvd_of_mk_le_mk {a b : M} : Associates.mk a ≤ Associates.mk b → a ∣ b :=
-  mk_dvd_mk.mp
-
-theorem mk_le_mk_of_dvd {a b : M} : a ∣ b → Associates.mk a ≤ Associates.mk b :=
-  mk_dvd_mk.mpr
-
-theorem mk_le_mk_iff_dvd {a b : M} : Associates.mk a ≤ Associates.mk b ↔ a ∣ b := mk_dvd_mk
 
 @[simp]
 theorem isPrimal_mk {a : M} : IsPrimal (Associates.mk a) ↔ IsPrimal a := by
@@ -646,21 +600,9 @@ instance instCommMonoidWithZero : CommMonoidWithZero (Associates M) where
     zero_mul := forall_associated.2 fun a ↦ by rw [← mk_zero, mk_mul_mk, zero_mul]
     mul_zero := forall_associated.2 fun a ↦ by rw [← mk_zero, mk_mul_mk, mul_zero]
 
-instance instOrderTop : OrderTop (Associates M) where
-  top := 0
-  le_top := dvd_zero
-
-@[simp] protected theorem le_zero (a : Associates M) : a ≤ 0 := le_top
-
-instance instBoundedOrder : BoundedOrder (Associates M) where
-
 instance [DecidableRel ((· ∣ ·) : M → M → Prop)] :
     DecidableRel ((· ∣ ·) : Associates M → Associates M → Prop) := fun a b =>
   Quotient.recOnSubsingleton₂ a b fun _ _ => decidable_of_iff' _ mk_dvd_mk
-
-theorem Prime.le_or_le {p : Associates M} (hp : Prime p) {a b : Associates M} (h : p ≤ a * b) :
-    p ≤ a ∨ p ≤ b :=
-  hp.2.2 a b h
 
 @[simp]
 theorem prime_mk {p : M} : Prime (Associates.mk p) ↔ Prime p := by
@@ -691,17 +633,6 @@ theorem mk_dvdNotUnit_mk_iff {a b : M} :
   · rintro ⟨x, ⟨hx, rfl⟩⟩
     use x
 
-theorem dvdNotUnit_of_lt {a b : Associates M} (hlt : a < b) : DvdNotUnit a b := by
-  constructor
-  · rintro rfl
-    apply not_lt_of_ge _ hlt
-    apply dvd_zero
-  rcases hlt with ⟨⟨x, rfl⟩, ndvd⟩
-  refine ⟨x, ?_, rfl⟩
-  contrapose ndvd
-  rcases ndvd with ⟨u, rfl⟩
-  simp
-
 theorem irreducible_iff_prime_iff :
     (∀ a : M, Irreducible a ↔ Prime a) ↔ ∀ a : Associates M, Irreducible a ↔ Prime a := by
   simp_rw [forall_associated, irreducible_mk, prime_mk]
@@ -711,10 +642,6 @@ end CommMonoidWithZero
 section CancelCommMonoidWithZero
 
 variable [CommMonoidWithZero M] [IsCancelMulZero M]
-
-instance instPartialOrder : PartialOrder (Associates M) where
-  le_antisymm := mk_surjective.forall₂.2 fun _a _b hab hba => mk_eq_mk_iff_associated.2 <|
-    associated_of_dvd_dvd (dvd_of_mk_le_mk hab) (dvd_of_mk_le_mk hba)
 
 instance instIsCancelMulZero : IsCancelMulZero (Associates M) :=
   @IsLeftCancelMulZero.to_isCancelMulZero _ _ _
@@ -728,21 +655,6 @@ theorem _root_.associates_irreducible_iff_prime [DecompositionMonoid M] {p : Ass
     Irreducible p ↔ Prime p := irreducible_iff_prime
 
 instance : NoZeroDivisors (Associates M) := by infer_instance
-
-theorem le_of_mul_le_mul_left (a b c : Associates M) (ha : a ≠ 0) : a * b ≤ a * c → b ≤ c
-  | ⟨d, hd⟩ => ⟨d, mul_left_cancel₀ ha <| by rwa [← mul_assoc]⟩
-
-theorem one_or_eq_of_le_of_prime {p m : Associates M} (hp : Prime p) (hle : m ≤ p) :
-    m = 1 ∨ m = p := by
-  rcases mk_surjective p with ⟨p, rfl⟩
-  rcases mk_surjective m with ⟨m, rfl⟩
-  simpa [mk_eq_mk_iff_associated, Associated.comm]
-    using (prime_mk.1 hp).irreducible.dvd_iff.mp (mk_le_mk_iff_dvd.1 hle)
-
-theorem dvdNotUnit_iff_lt {a b : Associates M} : DvdNotUnit a b ↔ a < b :=
-  dvd_and_not_dvd_iff.symm
-
-theorem le_one_iff {p : Associates M} : p ≤ 1 ↔ p = 1 := by rw [← Associates.bot_eq_one, le_bot_iff]
 
 end CancelCommMonoidWithZero
 
@@ -813,6 +725,6 @@ theorem dvd_prime_pow [CommMonoidWithZero M] [IsCancelMulZero M] {p q : M} (hp :
       refine ⟨i + 1, Nat.succ_le_succ hi, (hq.mul_left p).trans ?_⟩
       rw [pow_succ']
     · obtain ⟨i, hi, hq⟩ := ih.mp hno
-      exact ⟨i, hi.trans n.le_succ, hq⟩
+      exact ⟨i, by lia, hq⟩
 
 end CancelCommMonoidWithZero
