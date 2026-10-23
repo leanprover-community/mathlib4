@@ -115,7 +115,7 @@ theorem of_field [Field K] [Algebra R K] [FaithfulSMul R K]
 
 theorem of_semifield_isLocalization
     {R : Type*} [CommSemiring R] [NoZeroDivisors R] (S : Submonoid R)
-    (K : Type*) [hK : Semifield K] [Algebra R K] [h : IsLocalization S K] :
+    (K : Type*) [Semifield K] [Algebra R K] [IsLocalization S K] :
     IsFractionRing R K :=
   of_le S R⁰
     (fun s hs ↦ mem_nonZeroDivisors_of_ne_zero <| ne_zero_of_map <| (map_units K ⟨s, hs⟩).ne_zero)
