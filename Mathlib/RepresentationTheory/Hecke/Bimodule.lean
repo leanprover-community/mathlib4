@@ -91,7 +91,7 @@ lemma coeff_def (f : HeckeBimodule k H₁ H₂) (x : DoubleCoset₀ H₁ H₂) :
 
 @[simp]
 lemma coeff_mk_apply_of_eq {x : DoubleCoset₀ H₂ H₃} {c : G ⧸ H₂} {d : G ⧸ H₃}
-    (h : relPosition c d = x) :
+    (h : relPosition c d = x.val) :
     ((mk x) (cosetVector k c)).coeff d = (1 : k) := by
   nth_rw 1 [← QuotientGroup.out_eq' c, ← mul_one c.out, ← smul_eq_mul, ← MulAction.Quotient.smul_mk,
     ← ofMulAction_apply_cosetVector, IntertwiningMap.isIntertwining, mk_apply, coeff_ofMulAction]
@@ -132,9 +132,9 @@ lemma coeff_mk_of_ne {x y : DoubleCoset₀ H₁ H₂} (h : x ≠ y) : (mk x).coe
     simp_all [eq_comm, ← Subtype.ext_iff]
   simp [coeff, this]
 
-lemma coeff_mk (x y : DoubleCoset₀ H₁ H₂) [Decidable (x = y)] :
-    (mk x).coeff y = if x = y then (1 : k) else 0 := by
-  by_cases h : x = y <;> simp [h]
+lemma coeff_mk (x : DoubleCoset₀ H₁ H₂) :
+    (mk x).coeff = .single x (1 : k) := by
+  ext y; by_cases h : x = y <;> simp [h]
 
 lemma ext_coeff {x y : HeckeBimodule k H₁ H₂} (hxy : ∀ z, x.coeff z = y.coeff z) :
     x = y := by
@@ -159,8 +159,8 @@ lemma ext_coeff {x y : HeckeBimodule k H₁ H₂} (hxy : ∀ z, x.coeff z = y.co
 
 @[simp]
 lemma coeff_sum (f : DoubleCoset₀ H₁ H₂ →₀ k) (x : DoubleCoset₀ H₁ H₂) :
-    (f.sum fun y r ↦ r • mk y).coeff x (k := k) = f x := by classical
-  simp [map_finsuppSum, coeff_mk, eq_comm]
+    (f.sum fun y r ↦ r • mk y).coeff x (k := k) = f x := by
+  simp [map_finsuppSum, coeff_mk]
 
 @[simp]
 lemma sum_mk (f : HeckeBimodule k H₁ H₂) :
@@ -221,7 +221,8 @@ theorem action_mk_mk (x : DoubleCoset₀ H₁ H₂) (y : DoubleCoset₀ H₂ H�
     (mk x).action (mk y) (k := k) = (x.structureConst y).sum fun w n => (n : k) • (mk w) := by
   refine ext_coeff fun z => calc
   _ = (x.structureConst y z : k) := by
-    rw [← DoubleCoset₀.mk_rep z, DoubleCoset₀.structureConst_coe, structureConst_mk, coeff_def]
+    rw [← DoubleCoset₀.mk_rep z, DoubleCoset₀.structureConst_coe, DoubleCoset₀.val_mk,
+      structureConst_mk, coeff_def]
     classical simp [action_mk_apply, coeff_mk_apply]
   _ = _ := by
     classical simpa [map_finsuppSum, Finsupp.single_apply, coeff_mk] using fun h => by simp [h]
@@ -248,5 +249,27 @@ lemma baseChang_symm_mk (r : k) (x : DoubleCoset₀ H H) :
   baseChange.injective (by simp [TensorProduct.smul_tmul'])
 
 end BaseChange
+
+section global
+
+/-- The linearization of `mk` gives a linear equivalence from `k[H₁\G/H₂]` to the
+Hecke bimodule `Hom_G(k[G ⧸ H₁], k[G ⧸ H₂])`, provided global `IsLeftFinite` instance. -/
+noncomputable def mkLinearEquiv₀ [h : ∀ g, IsLeftFinite H₁ H₂ g] :
+    (Quotient (H₁ : Set G) (H₂ : Set G) →₀ k) ≃ₗ[k] HeckeBimodule k H₁ H₂ :=
+  (Finsupp.mapDomain.linearEquiv k k DoubleCoset.Quotient.equiv₀).trans mkLinearEquiv
+
+@[simp]
+lemma mkLinearEquiv₀_apply_single [∀ g, IsLeftFinite H₁ H₂ g] (r : k)
+    (x : Quotient (H₁ : Set G) (H₂ : Set G)) :
+    mkLinearEquiv₀ (.single x r) = r • mk x.equiv₀ := by
+  simp [mkLinearEquiv₀]
+
+@[simp]
+lemma mkLinearEquiv₀_symm_apply_mk [∀ g, IsLeftFinite H₁ H₂ g]
+    (x : Quotient (H₁ : Set G) (H₂ : Set G)) :
+    mkLinearEquiv₀.symm (mk x.equiv₀) = .single x (1 : k) := by
+  simp [mkLinearEquiv₀]
+
+end global
 
 end Representation.HeckeBimodule
