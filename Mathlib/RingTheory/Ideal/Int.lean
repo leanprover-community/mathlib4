@@ -98,7 +98,7 @@ theorem absNorm_under_dvd_absNorm {S : Type*} [CommRing S] [IsDedekindDomain S]
     have h_main {d : ℕ} : (d : S) ∈ I ↔ ∀ (x : S ⧸ I), d • x = 0 := by
       simp_rw [nsmul_eq_mul, ← map_natCast (Ideal.Quotient.mk I), ← Quotient.eq_zero_iff_mem]
       exact ⟨fun h _ ↦ by simp [h], fun h ↦ by simpa using h 1⟩
-    rw [Ideal.absNorm_of_ne_bot hI, Submodule.cardQuot_apply, Nat.card_eq_fintype_card]
+    rw [absNorm_of_ne_bot hI, Submodule.cardQuot_apply, Nat.card_eq_fintype_card]
     simp_rw [absNorm_under_eq_sInf, h_main, ← AddMonoid.exponent_eq_sInf]
     exact AddGroup.exponent_dvd_card (G := S ⧸ I)
   · rw [absNorm_of_ne_bot hI, Submodule.cardQuot_apply, Nat.card_eq_zero_of_infinite]
