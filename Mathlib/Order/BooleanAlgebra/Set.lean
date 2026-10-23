@@ -565,14 +565,23 @@ lemma insert_erase_invOn :
     InvOn (insert a) (fun s ↦ s \ {a}) {s : Set α | a ∈ s} {s : Set α | a ∉ s} :=
   ⟨fun _s ha ↦ insert_sdiff_self_of_mem ha, fun _s ↦ insert_sdiff_self_of_notMem⟩
 
-/-- `insert a` is injective on sets not containing `a`. -/
-lemma insert_injOn_notMem (a : α) : {s : Set α | a ∉ s}.InjOn (insert a) :=
-  fun _s hs _t ht h ↦ by rw [← insert_sdiff_self_of_notMem hs, h, insert_sdiff_self_of_notMem ht]
+lemma disjoint_injOn_union_left (s : Set α) : {t | Disjoint s t}.InjOn (· ∪ s) := by
+  grind [Set.InjOn, union_sdiff_right, Disjoint.sdiff_eq_left]
 
-/-- `· \ {a}` is injective on sets containing `a`. -/
-lemma sdiff_singleton_injOn_mem (a : α) : {s : Set α | a ∈ s}.InjOn (· \ {a}) :=
-  fun _s (hs : a ∈ _s) _t (ht : a ∈ _t) (h : _ \ _ = _ \ _) ↦ by
-    rw [← insert_sdiff_self_of_mem hs, h, insert_sdiff_self_of_mem ht]
+/-- See also `sdiff_left_inj`. -/
+lemma superset_injOn_sdiff (s : Set α) : {t | s ⊆ t}.InjOn (· \ s) := by
+  grind [Set.InjOn, sdiff_union_of_subset]
+
+lemma insert_inj_right (hs : a ∉ s) (ht : a ∉ t) : insert a s = insert a t ↔ s = t := by
+  grind
+
+lemma insert_injOn_notMem (a : α) : {s : Set α | a ∉ s}.InjOn (insert a) := by
+  intro s hs t ht h
+  exact (insert_inj_right hs ht).1 h
+
+lemma sdiff_singleton_injOn_mem (a : α) : {s : Set α | a ∈ s}.InjOn (· \ {a}) := by
+  intro s hs t ht h
+  exact superset_injOn_sdiff {a} (singleton_subset_iff.2 hs) (singleton_subset_iff.2 ht) h
 
 @[simp]
 lemma sdiff_singleton_eq_self (h : a ∉ s) : s \ {a} = s :=
