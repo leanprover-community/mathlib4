@@ -535,7 +535,7 @@ theorem LinearIndependent.of_pairwise_dual_eq_zero_one (v : ι → M) (f : ι �
 
 end Module
 
-/-- A finite generating family `s` of `M` has a linearly independent subfamily whose span contains
+/-- A finite generating family `v` of `M` has a linearly independent subfamily whose span contains
 `a • M` for some `a ≠ 0`. -/
 theorem exists_linearIndepOn_smul_mem_span [CommRing R] [IsDomain R] [AddCommGroup M]
     [Module R M] [Finite ι] {v : ι → M} (hs : Submodule.span R (Set.range v) = ⊤) :
