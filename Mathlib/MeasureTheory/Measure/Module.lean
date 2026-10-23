@@ -32,13 +32,13 @@ instance : Zero (Measure α) :=
       m_iUnion := fun _f _hf _hd => tsum_zero.symm
       trim_le := OuterMeasure.trim_zero.le }⟩
 
+instance : IsZeroApply (Measure α) where
+
 @[simp]
 theorem zero_toOuterMeasure : (0 : Measure α).toOuterMeasure = 0 :=
   rfl
 
-@[simp, norm_cast]
-theorem coe_zero : ⇑(0 : Measure α) = 0 :=
-  rfl
+@[deprecated (since := "2026-10-23")] alias coe_zero := FunLike.coe_zero
 
 variable [mα] in
 @[simp] lemma _root_.MeasureTheory.OuterMeasure.toMeasure_zero
@@ -79,18 +79,16 @@ instance : Add (Measure α) :=
           rw [ENNReal.tsum_add, measure_iUnion hd hs, measure_iUnion hd hs]
       trim_le := by rw [OuterMeasure.trim_add, μ₁.trimmed, μ₂.trimmed] }⟩
 
+instance : IsAddApply (Measure α) where
+
 @[simp]
 theorem add_toOuterMeasure (μ₁ μ₂ : Measure α) :
     (μ₁ + μ₂).toOuterMeasure = μ₁.toOuterMeasure + μ₂.toOuterMeasure :=
   rfl
 
-@[simp, norm_cast]
-theorem coe_add (μ₁ μ₂ : Measure α) : ⇑(μ₁ + μ₂) = μ₁ + μ₂ :=
-  rfl
+@[deprecated (since := "2026-10-23")] alias coe_add := FunLike.coe_add
 
-theorem add_apply (μ₁ μ₂ : Measure α) (s : Set α) :
-    (μ₁ + μ₂) s = μ₁ s + μ₂ s :=
-  rfl
+@[deprecated (since := "2026-10-23")] protected alias add_apply := add_apply
 
 section SMul
 
@@ -104,68 +102,49 @@ instance : SMul R (Measure α) :=
           measure_iUnion hd hs]
       trim_le := by rw [OuterMeasure.trim_smul, μ.trimmed] }⟩
 
+instance : IsSMulApply R (Measure α) where
+
 @[simp]
 theorem smul_toOuterMeasure (c : R) (μ : Measure α) :
     (c • μ).toOuterMeasure = c • μ.toOuterMeasure :=
   rfl
 
-@[simp, norm_cast]
-theorem coe_smul (c : R) (μ : Measure α) : ⇑(c • μ) = c • ⇑μ :=
-  rfl
+@[deprecated (since := "2026-10-23")] alias coe_smul := FunLike.coe_smul
 
 @[simp]
 lemma coe_nnreal_smul (c : ℝ≥0) (μ : Measure α) : (c : ℝ≥0∞) • μ = c • μ := rfl
 
-@[simp]
-theorem smul_apply (c : R) (μ : Measure α) (s : Set α) :
-    (c • μ) s = c • μ s :=
-  rfl
+@[deprecated (since := "2026-10-23")] protected alias smul_apply := smul_apply
 
 instance [SMulCommClass R R' ℝ≥0∞] :
-    SMulCommClass R R' (Measure α) :=
-  ⟨fun _ _ _ => ext fun _ _ => smul_comm _ _ _⟩
+    SMulCommClass R R' (Measure α) := FunLike.smulCommClass
 
 instance [SMul R R'] [IsScalarTower R R' ℝ≥0∞] :
-    IsScalarTower R R' (Measure α) :=
-  ⟨fun _ _ _ => ext fun _ _ => smul_assoc _ _ _⟩
+    IsScalarTower R R' (Measure α) := FunLike.isScalarTower
 
 instance [SMul Rᵐᵒᵖ ℝ≥0∞] [IsCentralScalar R ℝ≥0∞] :
-    IsCentralScalar R (Measure α) :=
-  ⟨fun _ _ => ext fun _ _ => op_smul_eq_smul _ _⟩
+    IsCentralScalar R (Measure α) := FunLike.isCentralScalar
 
 end SMul
 
 instance [Monoid R] [MulAction R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] : MulAction R (Measure α) :=
-  Injective.mulAction _ toOuterMeasure_injective smul_toOuterMeasure
+  FunLike.mulAction
 
-instance : AddCommMonoid (Measure α) :=
-  toOuterMeasure_injective.addCommMonoid toOuterMeasure zero_toOuterMeasure add_toOuterMeasure
-    fun _ _ => smul_toOuterMeasure _ _
+noncomputable instance : AddCommMonoid (Measure α) := FunLike.addCommMonoid
 
-/-- Coercion to function as an additive monoid homomorphism. -/
-def coeAddHom : Measure α →+ Set α → ℝ≥0∞ where
-  toFun := (⇑)
-  map_zero' := coe_zero
-  map_add' := coe_add
+@[deprecated (since := "2026-10-23")] protected alias coeAddHom := FunLike.coeAddHom
 
-@[simp]
-theorem coeAddHom_apply (μ : Measure α) : coeAddHom μ = ⇑μ := rfl
+@[deprecated (since := "2026-10-23")] protected alias coeAddHom_apply := FunLike.coeAddHom_apply
 
-@[simp]
-theorem coe_finsetSum (I : Finset ι) (μ : ι → Measure α) :
-    ⇑(∑ i ∈ I, μ i) = ∑ i ∈ I, ⇑(μ i) := map_sum coeAddHom μ I
+@[deprecated (since := "2026-10-23")] alias coe_finsetSum := FunLike.coe_sum
 
-theorem finsetSum_apply (I : Finset ι) (μ : ι → Measure α) (s : Set α) :
-    (∑ i ∈ I, μ i) s = ∑ i ∈ I, μ i s := by rw [coe_finsetSum, Finset.sum_apply]
+@[deprecated (since := "2026-10-23")] alias finsetSum_apply := sum_apply
 
-instance [Monoid R] [DistribMulAction R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] :
-    DistribMulAction R (Measure α) :=
-  Injective.distribMulAction ⟨⟨toOuterMeasure, zero_toOuterMeasure⟩, add_toOuterMeasure⟩
-    toOuterMeasure_injective smul_toOuterMeasure
+noncomputable instance [Monoid R] [DistribMulAction R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] :
+    DistribMulAction R (Measure α) := FunLike.distribMulAction
 
-instance [Semiring R] [Module R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] : Module R (Measure α) :=
-  Injective.module R ⟨⟨toOuterMeasure, zero_toOuterMeasure⟩, add_toOuterMeasure⟩
-    toOuterMeasure_injective smul_toOuterMeasure
+noncomputable instance [Semiring R] [Module R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] :
+    Module R (Measure α) := FunLike.module
 
 instance [Semiring R] [Module R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
     [Module.IsTorsionFree R ℝ≥0∞] : Module.IsTorsionFree R (Measure α) :=
@@ -229,7 +208,7 @@ theorem measure_toMeasurable_add_inter_left (hs : MeasurableSet s) (ht : (μ + �
       measure_eq_left_of_subset_of_measure_add_eq ?_ (subset_toMeasurable _ _)
         (measure_toMeasurable t).symm
     rwa [measure_toMeasurable t]
-  · simp only [not_or, ENNReal.add_eq_top, Pi.add_apply, Ne, coe_add] at ht
+  · simp only [Ne, add_apply, ENNReal.add_eq_top, not_or] at ht
     exact ht.1
 
 theorem measure_toMeasurable_add_inter_right (hs : MeasurableSet s) (ht : (μ + ν) t ≠ ∞) :
