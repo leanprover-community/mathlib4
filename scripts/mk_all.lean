@@ -263,11 +263,12 @@ open Cli in
 /-- Setting up command line options and help text for `lake exe mk_all`. -/
 def mkAll : Cmd := `[Cli|
   mk_all VIA mkAllCLI; ["0.0.1"]
-  "Generate a file importing all the files of a Lean folder. \
-   By default, it generates the files for the Lean libraries of the package. \
-   In the case of `Mathlib`, it removes the libraries `Cache` and `MathlibTest` \
-   and it adds `Mathlib/Tactic`. \
-   If you are working in a project downstream of mathlib, use `lake exe mk_all --lib MyProject`."
+  "Generate a Lean file importing all the Lean files of an adjacent folder (e.g. `Mathlib.lean`
+   from `Mathlib/`, including nested subdirectories). \
+   By default, `mk_all` generates the root files of the current package's Lean libraries \
+   (as long as a folder is adjacent). \
+   Non-root files with adjacent folders may also be generated via `--lib`, e.g. \
+   `lake exe mk_all --lib Mathlib.Tactic,Mathlib.Foo.Bar,Mathlib.Baz`."
 
   FLAGS:
     lib : Array String;
