@@ -5,11 +5,12 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.MonoidAlgebra.MapDomain
+public import Mathlib.Algebra.MonoidAlgebra.Defs
 public import Mathlib.RingTheory.Ideal.Span
-public import Mathlib.RingTheory.Ideal.Maps
 
+import Mathlib.Algebra.MonoidAlgebra.MapDomain
 import Mathlib.RingTheory.Ideal.BigOperators
+import Mathlib.RingTheory.Ideal.Maps
 
 /-!
 # Lemmas about ideals of `MonoidAlgebra` and `AddMonoidAlgebra`
