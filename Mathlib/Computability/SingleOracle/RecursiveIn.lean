@@ -76,7 +76,7 @@ set_option backward.isDefEq.respectTransparency false in
     simp only [PFun.coe_val, Function.comp_apply, Part.coe_some, Part.bind_eq_bind, Part.bind_some]
   rw [h3]
   exact comp h1 h2
-@[simp] lemma id {O : ℕ → ℕ} : RecursiveIn O fun x => x := of_primrecIn PrimrecIn.id
+lemma id {O : ℕ → ℕ} : RecursiveIn O fun x => x := of_primrecIn PrimrecIn.id
 @[simp] lemma someTotal (O : ℕ → ℕ) (f : ℕ → ℕ) (h1 : RecursiveIn O f) :
   RecursiveIn O fun x => Part.some (f x) := by
   apply totalComp
@@ -90,7 +90,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma totalComp' {O : ℕ → ℕ} {f g : ℕ → ℕ}
     (hf : RecursiveIn O f) (hg : RecursiveIn O g) :
     (RecursiveIn O (fun x => (f (g x)) : ℕ → ℕ) ) := totalComp (hf) (hg)
-@[simp] lemma comp₂ {O : ℕ → ℕ} {f : ℕ → ℕ →. ℕ} {g h : ℕ → ℕ}
+lemma comp₂ {O : ℕ → ℕ} {f : ℕ → ℕ →. ℕ} {g h : ℕ → ℕ}
     (hf : RecursiveIn O fun x => f x.unpair.1 x.unpair.2)
     (hg : RecursiveIn O g) (hh : RecursiveIn O h) :
     (RecursiveIn O (fun x => (f (g x) (h x))) ) := by
@@ -103,7 +103,7 @@ set_option backward.isDefEq.respectTransparency false in
   refine partCompTotal hf ?_
   · rw [pair']
     apply pair hg hh
-@[simp] lemma totalComp₂ {O : ℕ → ℕ} {f : ℕ → ℕ → ℕ} {g h : ℕ → ℕ}
+lemma totalComp₂ {O : ℕ → ℕ} {f : ℕ → ℕ → ℕ} {g h : ℕ → ℕ}
     (hf : RecursiveIn O fun x => f x.unpair.1 x.unpair.2)
     (hg : RecursiveIn O g) (hh : RecursiveIn O h) :
     (RecursiveIn O (fun x => (f (g x) (h x)) : ℕ → ℕ) ) := by
@@ -122,7 +122,7 @@ set_option backward.isDefEq.respectTransparency false in
     (h1 : PrimrecIn O f) (h2 : PrimrecIn O g) : PrimrecIn O ↑(f∘g) := by
   rw [show (f∘g) = fun x => f (g x) from rfl]
   exact PrimrecIn.comp h1 h2
-@[simp] lemma PrimrecIn.comp₂ {O : ℕ → ℕ} {f : ℕ → ℕ → ℕ} {g h : ℕ → ℕ}
+lemma PrimrecIn.comp₂ {O : ℕ → ℕ} {f : ℕ → ℕ → ℕ} {g h : ℕ → ℕ}
     (hf : PrimrecIn O fun x => f x.unpair.1 x.unpair.2)
     (hg : PrimrecIn O g) (hh : PrimrecIn O h) :
     (PrimrecIn O (fun x => (f (g x) (h x)) : ℕ → ℕ) ) := by
@@ -151,10 +151,10 @@ theorem eval_K_computable {O : ℕ → ℕ} :
 
 end Oracle.Single.RecursiveIn.Rin
 namespace Oracle.Single.Code
-def c_pair_proj (x : ℕ) : Code := pair (c_const x) c_id
-theorem c_pair_proj_evp {O x} : evalp O (c_pair_proj x) = Nat.pair x := by simp [c_pair_proj]
+def cPairProj (x : ℕ) : Code := pair (cConst x) cId
+theorem cPairProj_evp {O x} : evalp O (cPairProj x) = Nat.pair x := by simp [cPairProj]
 lemma PrimrecIn.pair_proj {O x} : PrimrecIn O (Nat.pair x) := by
-  rw [←c_pair_proj_evp]
-  exact code_prim_prop
+  rw [←cPairProj_evp]
+  exact isPrim_prop
 
 end Oracle.Single.Code

@@ -16,14 +16,15 @@ register_label_attr cp
 
 open Lean
 
-macro "apply_cp":tactic =>
+macro (name := applyCp) "apply_cp" : tactic =>
   `(tactic|
     apply_rules
       (maxDepth := 30) (symm := false) (exfalso := false) (transparency := .reducible)
       only [*] using $(mkIdent `cp)
   )
 
-macro "apply_cp" n:num:tactic =>
+@[tactic_alt applyCp]
+macro (name := applyCpDepth) "apply_cp" n:num : tactic =>
   `(tactic|
     apply_rules
       (maxDepth := $n) (symm := false) (exfalso := false) (transparency := .reducible)

@@ -48,10 +48,10 @@ namespace Oracle.Single.Code
 We implement
 -/
 def dovetailn (c : Code) : Code :=
-  c_rfind <|
-  c_if_eq'.comp₂
-  (c_evaln.comp₃ (pair left (left.comp right)) (c_const c) (right.comp right))
-  (c_const 1)
+  cRfind <|
+  cIfEq'.comp₂
+  (cEvaln.comp₃ (pair left (left.comp right)) (cConst c) (right.comp right))
+  (cConst 1)
 
 set_option linter.unusedVariables false in -- why does hdvt give a warning?
 set_option backward.isDefEq.respectTransparency false in
@@ -62,14 +62,14 @@ evaln O dvt.right c ⟪x, dvt.left⟫=Option.some 0 := by
   unfold dovetailn at h hdvt
   have := Part.get_mem h
   rw [← hdvt] at this
-  simp only [c_rfind_ev, mem_rfind, ev_simps] at this
+  simp only [cRfind_ev, mem_rfind, ev_simps] at this
   simp? at this says
     simp only [unpair_pair, coe_some, map_eq_map, map_some, unpair1_to_l, bind_eq_bind, bind_some,
     unpair2_to_r, Part.map_bind, mem_bind_iff, mem_map_iff, decide_eq_true_eq, exists_eq_right,
     decide_eq_false_iff_not] at this
   rcases this with ⟨⟨h2, h3, h4⟩, h5⟩; clear h5
   simp? [Seq.seq]  at h3 says
-    simp only [Seq.seq, map_some, bind_some, c_evaln_ev, Nat.n2c, n2c_c2n, coe_some,
+    simp only [Seq.seq, map_some, bind_some, cEvaln_ev, Nat.n2c, n2c_c2n, coe_some,
       mem_some_iff] at h3
   rw [h3] at h4; clear h3;
   simp only [pair_l, pair_r] at h4
@@ -111,7 +111,7 @@ theorem dovetailn_ev_1' {O : ℕ → ℕ} {c : Code} {x : ℕ} :
     intro s y h
     apply Part.not_none_iff_dom.mpr
     unfold dovetailn
-    simp only [c_rfind_ev]
+    simp only [cRfind_ev]
     simp only [comp₂, comp₃] -- without this theres a recursion depth error. why?
     simp? says
       simp only [rfind_dom, map_eq_map, mem_map_iff, decide_eq_true_eq, exists_eq_right, map_Dom]

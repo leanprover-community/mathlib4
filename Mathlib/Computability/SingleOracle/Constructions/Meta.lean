@@ -17,14 +17,14 @@ This file constructs "meta-codes" (codes which implement functions from codes to
 functions.
 
 We first define such codes for constructors of `Code`;
-`c_zero`, where `evalp O c_zero = c2n zero`, `c_succ`, and so on.
+`cZero`, where `evalp O cZero = c2n zero`, `cSucc`, and so on.
 
 Then, the meta-code for any subsequent code `c` can be
 implemented by replacing each of its components with its corresponding meta-code.
 
 For example, suppose `c = comp succ left`.
 
-Then the meta-code, named `c_c`, will be: `c_c = c_comp.comp₂ c_succ c_left`.
+Then the meta-code, named `c_c`, will be: `c_c = cComp.comp₂ cSucc cLeft`.
 
 ## Notation/quirks
 
@@ -38,200 +38,200 @@ open Oracle.Single.Code
 
 section constructors
 namespace Oracle.Single.Code
-def c_zero := c_const (c2n zero)
-@[cp] theorem c_zero_prim : code_prim c_zero := by unfold c_zero; apply_cp
-@[simp, evp_simps] theorem c_zero_evp {O x} : evalp O c_zero x = c2n zero := by simp [c_zero]
-@[simp, evp_simps] theorem c_zero_evp' {O : ℕ → ℕ} : evalp O c_zero = fun _ : ℕ => c2n zero := by
+def cZero := cConst (c2n zero)
+@[cp] theorem cZero_prim : IsPrim cZero := by unfold cZero; apply_cp
+@[simp, evp_simps] theorem cZero_evp {O x} : evalp O cZero x = c2n zero := by simp [cZero]
+@[simp, evp_simps] theorem cZero_evp' {O : ℕ → ℕ} : evalp O cZero = fun _ : ℕ => c2n zero := by
   funext x; simp
-@[simp, ev_simps] theorem c_zero_ev {O x} : eval O c_zero x = c2n zero := by
-  rw [← evalp_eq_eval c_zero_prim]; simp
-@[simp] theorem PrimrecIn.c_zero {O : ℕ → ℕ} : PrimrecIn O (fun _ : ℕ => c2n zero) := by
-  rw [←c_zero_evp']; exact code_prim_prop
-def c_succ := c_const (c2n succ)
-@[cp] theorem c_succ_prim : code_prim c_succ := by unfold c_succ; apply_cp
-@[simp, evp_simps] theorem c_succ_evp {O x} : evalp O c_succ x = c2n succ := by simp [c_succ]
-@[simp, evp_simps] theorem c_succ_evp' {O : ℕ → ℕ} : evalp O c_succ = fun _ : ℕ => c2n succ := by
+@[simp, ev_simps] theorem cZero_ev {O x} : eval O cZero x = c2n zero := by
+  rw [← evalp_eq_eval cZero_prim]; simp
+@[simp] theorem PrimrecIn.cZero {O : ℕ → ℕ} : PrimrecIn O (fun _ : ℕ => c2n zero) := by
+  rw [←cZero_evp']; exact isPrim_prop
+def cSucc := cConst (c2n succ)
+@[cp] theorem cSucc_prim : IsPrim cSucc := by unfold cSucc; apply_cp
+@[simp, evp_simps] theorem cSucc_evp {O x} : evalp O cSucc x = c2n succ := by simp [cSucc]
+@[simp, evp_simps] theorem cSucc_evp' {O : ℕ → ℕ} : evalp O cSucc = fun _ : ℕ => c2n succ := by
   funext x; simp
-@[simp, ev_simps] theorem c_succ_ev {O x} : eval O c_succ x = c2n succ := by
-  rw [← evalp_eq_eval c_succ_prim]; simp
-@[simp] theorem PrimrecIn.c_succ {O : ℕ → ℕ} : PrimrecIn O (fun _ : ℕ => c2n succ) := by
-  rw [←c_succ_evp']; exact code_prim_prop
-def c_left := c_const (c2n left)
-@[cp] theorem c_left_prim : code_prim c_left := by unfold c_left; apply_cp
-@[simp, evp_simps] theorem c_left_evp {O x} : evalp O c_left x = c2n left := by simp [c_left]
-@[simp, evp_simps] theorem c_left_evp' {O : ℕ → ℕ} : evalp O c_left = fun _ : ℕ => c2n left := by
+@[simp, ev_simps] theorem cSucc_ev {O x} : eval O cSucc x = c2n succ := by
+  rw [← evalp_eq_eval cSucc_prim]; simp
+@[simp] theorem PrimrecIn.cSucc {O : ℕ → ℕ} : PrimrecIn O (fun _ : ℕ => c2n succ) := by
+  rw [←cSucc_evp']; exact isPrim_prop
+def cLeft := cConst (c2n left)
+@[cp] theorem cLeft_prim : IsPrim cLeft := by unfold cLeft; apply_cp
+@[simp, evp_simps] theorem cLeft_evp {O x} : evalp O cLeft x = c2n left := by simp [cLeft]
+@[simp, evp_simps] theorem cLeft_evp' {O : ℕ → ℕ} : evalp O cLeft = fun _ : ℕ => c2n left := by
   funext x; simp
-@[simp, ev_simps] theorem c_left_ev {O x} : eval O c_left x = c2n left := by
-  rw [← evalp_eq_eval c_left_prim]; simp
-@[simp] theorem PrimrecIn.c_left {O : ℕ → ℕ} : PrimrecIn O (fun _ : ℕ => c2n left) := by
-  rw [←c_left_evp']; exact code_prim_prop
-def c_right := c_const (c2n right)
-@[cp] theorem c_right_prim : code_prim c_right := by unfold c_right; apply_cp
-@[simp, evp_simps] theorem c_right_evp {O x} : evalp O c_right x = c2n right := by simp [c_right]
-@[simp, evp_simps] theorem c_right_evp' {O : ℕ → ℕ} : evalp O c_right = fun _ : ℕ => c2n right := by
+@[simp, ev_simps] theorem cLeft_ev {O x} : eval O cLeft x = c2n left := by
+  rw [← evalp_eq_eval cLeft_prim]; simp
+@[simp] theorem PrimrecIn.cLeft {O : ℕ → ℕ} : PrimrecIn O (fun _ : ℕ => c2n left) := by
+  rw [←cLeft_evp']; exact isPrim_prop
+def cRight := cConst (c2n right)
+@[cp] theorem cRight_prim : IsPrim cRight := by unfold cRight; apply_cp
+@[simp, evp_simps] theorem cRight_evp {O x} : evalp O cRight x = c2n right := by simp [cRight]
+@[simp, evp_simps] theorem cRight_evp' {O : ℕ → ℕ} : evalp O cRight = fun _ : ℕ => c2n right := by
   funext x; simp
-@[simp, ev_simps] theorem c_right_ev {O x} : eval O c_right x = c2n right := by
-  rw [← evalp_eq_eval c_right_prim]; simp
-@[simp] theorem PrimrecIn.c_right {O : ℕ → ℕ} : PrimrecIn O (fun _ : ℕ => c2n right) := by
-  rw [←c_right_evp']; exact code_prim_prop
-def c_oracle := c_const (c2n oracle)
-@[cp] theorem c_oracle_prim : code_prim c_oracle := by unfold c_oracle; apply_cp
-@[simp, evp_simps] theorem c_oracle_evp {O x} : evalp O c_oracle x = c2n oracle := by
-  simp [c_oracle]
-@[simp, evp_simps] theorem c_oracle_evp' {O : ℕ → ℕ} :
-    evalp O c_oracle = fun _ : ℕ => c2n oracle := by
+@[simp, ev_simps] theorem cRight_ev {O x} : eval O cRight x = c2n right := by
+  rw [← evalp_eq_eval cRight_prim]; simp
+@[simp] theorem PrimrecIn.cRight {O : ℕ → ℕ} : PrimrecIn O (fun _ : ℕ => c2n right) := by
+  rw [←cRight_evp']; exact isPrim_prop
+def cOracle := cConst (c2n oracle)
+@[cp] theorem cOracle_prim : IsPrim cOracle := by unfold cOracle; apply_cp
+@[simp, evp_simps] theorem cOracle_evp {O x} : evalp O cOracle x = c2n oracle := by
+  simp [cOracle]
+@[simp, evp_simps] theorem cOracle_evp' {O : ℕ → ℕ} :
+    evalp O cOracle = fun _ : ℕ => c2n oracle := by
   funext x; simp
-@[simp, ev_simps] theorem c_oracle_ev {O x} : eval O c_oracle x = c2n oracle := by
-  rw [← evalp_eq_eval c_oracle_prim]; simp
-@[simp] theorem PrimrecIn.c_oracle {O : ℕ → ℕ} : PrimrecIn O (fun _ : ℕ => c2n oracle) := by
-  rw [←c_oracle_evp']; exact code_prim_prop
+@[simp, ev_simps] theorem cOracle_ev {O x} : eval O cOracle x = c2n oracle := by
+  rw [← evalp_eq_eval cOracle_prim]; simp
+@[simp] theorem PrimrecIn.cOracle {O : ℕ → ℕ} : PrimrecIn O (fun _ : ℕ => c2n oracle) := by
+  rw [←cOracle_evp']; exact isPrim_prop
 
-def c_pair := c_add.comp₂ (c_mul2.comp <| c_mul2) (c_const 5)
-@[cp] theorem c_pair_prim : code_prim c_pair := by unfold c_pair; apply_cp
-@[simp, evp_simps] theorem c_pair_evp {O a b} :
-  evalp O c_pair ⟪a, b⟫ = c2n (pair (n2c a) (n2c b)) := by simp [c2n, c_pair, Nat.mul_comm]
-@[simp, evp_simps] theorem c_pair_evp' {O : ℕ → ℕ} :
-    evalp O c_pair = fun ab : ℕ => c2n (pair (n2c ab.left) (n2c ab.right)) := by
-  simp [c2n, c_pair, Nat.mul_comm]
-@[simp, ev_simps] theorem c_pair_ev {O a b} :
-    eval O c_pair ⟪a, b⟫ = c2n (pair (n2c a) (n2c b)) := by
-  rw [← evalp_eq_eval c_pair_prim]; simp
-@[simp] theorem PrimrecIn.c_pair {O : ℕ → ℕ} :
+def cPair := cAdd.comp₂ (cMul2.comp <| cMul2) (cConst 5)
+@[cp] theorem cPair_prim : IsPrim cPair := by unfold cPair; apply_cp
+@[simp, evp_simps] theorem cPair_evp {O a b} :
+  evalp O cPair ⟪a, b⟫ = c2n (pair (n2c a) (n2c b)) := by simp [c2n, cPair, Nat.mul_comm]
+@[simp, evp_simps] theorem cPair_evp' {O : ℕ → ℕ} :
+    evalp O cPair = fun ab : ℕ => c2n (pair (n2c ab.left) (n2c ab.right)) := by
+  simp [c2n, cPair, Nat.mul_comm]
+@[simp, ev_simps] theorem cPair_ev {O a b} :
+    eval O cPair ⟪a, b⟫ = c2n (pair (n2c a) (n2c b)) := by
+  rw [← evalp_eq_eval cPair_prim]; simp
+@[simp] theorem PrimrecIn.cPair {O : ℕ → ℕ} :
     PrimrecIn O (fun ab : ℕ => c2n (pair (n2c ab.left) (n2c ab.right))) := by
-  rw [←c_pair_evp']; exact code_prim_prop
+  rw [←cPair_evp']; exact isPrim_prop
 
-def c_comp := c_add.comp₂ (c_mul2.comp <| c_mul2) (c_const 6)
-@[cp] theorem c_comp_prim : code_prim c_comp := by unfold c_comp; apply_cp
-@[simp, evp_simps] theorem c_comp_evp {O a b} :
-  evalp O c_comp ⟪a, b⟫ = c2n (comp (n2c a) (n2c b)) := by simp [c2n, c_comp, Nat.mul_comm]
-@[simp, evp_simps] theorem c_comp_evp' {O : ℕ → ℕ} :
-    evalp O c_comp = fun ab : ℕ => c2n (comp (n2c ab.left) (n2c ab.right)) := by
-  simp [c2n, c_comp, Nat.mul_comm]
-@[simp, ev_simps] theorem c_comp_ev {O a b} :
-    eval O c_comp ⟪a, b⟫ = c2n (comp (n2c a) (n2c b)) := by
-  rw [← evalp_eq_eval c_comp_prim]; simp
-@[simp] theorem PrimrecIn.c_comp {O : ℕ → ℕ} :
+def cComp := cAdd.comp₂ (cMul2.comp <| cMul2) (cConst 6)
+@[cp] theorem cComp_prim : IsPrim cComp := by unfold cComp; apply_cp
+@[simp, evp_simps] theorem cComp_evp {O a b} :
+  evalp O cComp ⟪a, b⟫ = c2n (comp (n2c a) (n2c b)) := by simp [c2n, cComp, Nat.mul_comm]
+@[simp, evp_simps] theorem cComp_evp' {O : ℕ → ℕ} :
+    evalp O cComp = fun ab : ℕ => c2n (comp (n2c ab.left) (n2c ab.right)) := by
+  simp [c2n, cComp, Nat.mul_comm]
+@[simp, ev_simps] theorem cComp_ev {O a b} :
+    eval O cComp ⟪a, b⟫ = c2n (comp (n2c a) (n2c b)) := by
+  rw [← evalp_eq_eval cComp_prim]; simp
+@[simp] theorem PrimrecIn.cComp {O : ℕ → ℕ} :
     PrimrecIn O (fun ab : ℕ => c2n (comp (n2c ab.left) (n2c ab.right))) := by
-  rw [←c_comp_evp']; exact code_prim_prop
+  rw [←cComp_evp']; exact isPrim_prop
 
-def c_prec := c_add.comp₂ (c_mul2.comp <| c_mul2) (c_const 7)
-@[cp] theorem c_prec_prim : code_prim c_prec := by unfold c_prec; apply_cp
-@[simp, evp_simps] theorem c_prec_evp {O a b} :
-    evalp O c_prec ⟪a, b⟫ = c2n (prec (n2c a) (n2c b)) := by
-  simpa [c2n, c_prec, evp_simps, Nat.mul_comm] using (by rfl)
-@[simp, evp_simps] theorem c_prec_evp' {O : ℕ → ℕ} :
-    evalp O c_prec = fun ab : ℕ => c2n (prec (n2c ab.left) (n2c ab.right)) := by
-  simpa [c2n, c_prec, evp_simps, Nat.mul_comm] using (by rfl)
-@[simp] theorem PrimrecIn.c_prec {O : ℕ → ℕ} :
+def cPrec := cAdd.comp₂ (cMul2.comp <| cMul2) (cConst 7)
+@[cp] theorem cPrec_prim : IsPrim cPrec := by unfold cPrec; apply_cp
+@[simp, evp_simps] theorem cPrec_evp {O a b} :
+    evalp O cPrec ⟪a, b⟫ = c2n (prec (n2c a) (n2c b)) := by
+  simpa [c2n, cPrec, evp_simps, Nat.mul_comm] using (by rfl)
+@[simp, evp_simps] theorem cPrec_evp' {O : ℕ → ℕ} :
+    evalp O cPrec = fun ab : ℕ => c2n (prec (n2c ab.left) (n2c ab.right)) := by
+  simpa [c2n, cPrec, evp_simps, Nat.mul_comm] using (by rfl)
+@[simp] theorem PrimrecIn.cPrec {O : ℕ → ℕ} :
     PrimrecIn O (fun ab : ℕ => c2n (prec (n2c ab.left) (n2c ab.right))) := by
-  rw [← c_prec_evp']; exact code_prim_prop
-@[simp, ev_simps] theorem c_prec_ev {O a b} :
-    eval O c_prec ⟪a, b⟫ = c2n (prec (n2c a) (n2c b)) := by
-  rw [← evalp_eq_eval c_prec_prim]; simp
+  rw [← cPrec_evp']; exact isPrim_prop
+@[simp, ev_simps] theorem cPrec_ev {O a b} :
+    eval O cPrec ⟪a, b⟫ = c2n (prec (n2c a) (n2c b)) := by
+  rw [← evalp_eq_eval cPrec_prim]; simp
 
-def c_rfind' := c_add.comp₂ (c_mul2.comp <| c_mul2) (c_const 8)
-@[cp] theorem c_rfind'_prim : code_prim c_rfind' := by unfold c_rfind'; apply_cp
-@[simp, evp_simps] theorem c_rfind'_evp {O c} : evalp O c_rfind' c = c2n (rfind' <| n2c c) := by
-  simpa [c2n, c_rfind', evp_simps, Nat.mul_comm] using (by rfl)
-@[simp, ev_simps] theorem c_rfind'_ev {O c} : eval O c_rfind' c = c2n (rfind' <| n2c c) := by
-  rw [← evalp_eq_eval c_rfind'_prim]; simp
+def cRfind' := cAdd.comp₂ (cMul2.comp <| cMul2) (cConst 8)
+@[cp] theorem cRfind'_prim : IsPrim cRfind' := by unfold cRfind'; apply_cp
+@[simp, evp_simps] theorem cRfind'_evp {O c} : evalp O cRfind' c = c2n (rfind' <| n2c c) := by
+  simpa [c2n, cRfind', evp_simps, Nat.mul_comm] using (by rfl)
+@[simp, ev_simps] theorem cRfind'_ev {O c} : eval O cRfind' c = c2n (rfind' <| n2c c) := by
+  rw [← evalp_eq_eval cRfind'_prim]; simp
 
-def c_c_const := (c_nat_iterate (c_comp.comp₂ (c_const <| c2n succ) (c_id))).comp₂ zero c_id
-@[cp] theorem c_c_const_prim : code_prim c_c_const := by unfold c_c_const; apply_cp
-@[simp, evp_simps] theorem c_c_const_evp {O n} : evalp O c_c_const n = c2n (c_const n) := by
-  unfold c_const
-  unfold c_c_const
+def cCConst := (cNatIterate (cComp.comp₂ (cConst <| c2n succ) (cId))).comp₂ zero cId
+@[cp] theorem cCConst_prim : IsPrim cCConst := by unfold cCConst; apply_cp
+@[simp, evp_simps] theorem cCConst_evp {O n} : evalp O cCConst n = c2n (cConst n) := by
+  unfold cConst
+  unfold cCConst
   simp only [n2c_c2n, evp_simps]
   induction n with
   | zero => simp [c2n]
   | succ n ih =>
     simp only [Function.iterate_succ', Function.comp_apply]
-    rewrite [ih, c_const.eq_def, n2c_c2n]
+    rewrite [ih, cConst.eq_def, n2c_c2n]
     simp only
-theorem c_c_const_evp' {O : ℕ → ℕ} : evalp O c_c_const = c_const := by
+theorem cCConst_evp' {O : ℕ → ℕ} : evalp O cCConst = cConst := by
   funext x
-  simpa only [c_c_const_evp] using (by rfl)
-@[simp, ev_simps] theorem c_c_const_ev {O c} : eval O c_c_const c = c2n (c_const c) := by
-  rw [← evalp_eq_eval c_c_const_prim]; simp
-@[simp] theorem PrimrecIn.c_const {O : ℕ → ℕ} : PrimrecIn O c_const := by
-  rw [← c_c_const_evp']; exact code_prim_prop
+  simpa only [cCConst_evp] using (by rfl)
+@[simp, ev_simps] theorem cCConst_ev {O c} : eval O cCConst c = c2n (cConst c) := by
+  rw [← evalp_eq_eval cCConst_prim]; simp
+@[simp] theorem PrimrecIn.cConst {O : ℕ → ℕ} : PrimrecIn O cConst := by
+  rw [← cCConst_evp']; exact isPrim_prop
 
-def c_ev_const := c_comp.comp₂ left (c_c_const.comp right)
-@[cp] theorem c_ev_const_prim : code_prim c_ev_const := by unfold c_ev_const; apply_cp
-theorem c_ev_const_evp' {O x} :
-    evalp O c_ev_const x = c2n (comp (n2c x.left) (c_const x.right)) := by
-  simp [c_ev_const]
-@[simp, evp_simps] theorem c_ev_const_evp {O e x} :
-  evalp O c_ev_const ⟪e, x⟫ = c2n (comp (n2c e) (c_const x)) := by simp [c_ev_const_evp']
-theorem c_ev_const_ev' {O x} : eval O c_ev_const x = c2n (comp (n2c x.left) (c_const x.right)) := by
-  rw [← evalp_eq_eval c_ev_const_prim]; simp [c_ev_const_evp']
-@[simp, ev_simps] theorem c_ev_const_ev {O x e} :
-    eval O c_ev_const ⟪e, x⟫ = c2n (comp (n2c e) (c_const x)) := by
-  rw [← evalp_eq_eval c_ev_const_prim]; simp
+def cEvConst := cComp.comp₂ left (cCConst.comp right)
+@[cp] theorem cEvConst_prim : IsPrim cEvConst := by unfold cEvConst; apply_cp
+theorem cEvConst_evp' {O x} :
+    evalp O cEvConst x = c2n (comp (n2c x.left) (cConst x.right)) := by
+  simp [cEvConst]
+@[simp, evp_simps] theorem cEvConst_evp {O e x} :
+  evalp O cEvConst ⟪e, x⟫ = c2n (comp (n2c e) (cConst x)) := by simp [cEvConst_evp']
+theorem cEvConst_ev' {O x} : eval O cEvConst x = c2n (comp (n2c x.left) (cConst x.right)) := by
+  rw [← evalp_eq_eval cEvConst_prim]; simp [cEvConst_evp']
+@[simp, ev_simps] theorem cEvConst_ev {O x e} :
+    eval O cEvConst ⟪e, x⟫ = c2n (comp (n2c e) (cConst x)) := by
+  rw [← evalp_eq_eval cEvConst_prim]; simp
 end Oracle.Single.Code
 end constructors
 
 namespace Oracle.Single.Code
-section c_comp₂
-def c_comp₂ :=
+section cComp₂
+def cComp₂ :=
   let a := left
   let b := left.comp right
   let c := right.comp right
-  c_comp.comp₂ a <| c_pair.comp₂ b c
-@[cp] theorem c_comp₂_prim : code_prim c_comp₂ := by unfold c_comp₂; apply_cp
-@[simp, evp_simps] theorem c_comp₂_evp {O a b c} : evalp O c_comp₂ ⟪a,b,c⟫ = c2n (comp₂ a b c) := by
-  simp [c_comp₂]; rfl
-@[simp, ev_simps] theorem c_comp₂_ev {O a b c} : eval O c_comp₂ ⟪a,b,c⟫ = c2n (comp₂ a b c) := by
-  rw [← evalp_eq_eval c_comp₂_prim]; simp
-end c_comp₂
-section c_comp₃
-def c_comp₃ :=
+  cComp.comp₂ a <| cPair.comp₂ b c
+@[cp] theorem cComp₂_prim : IsPrim cComp₂ := by unfold cComp₂; apply_cp
+@[simp, evp_simps] theorem cComp₂_evp {O a b c} : evalp O cComp₂ ⟪a,b,c⟫ = c2n (comp₂ a b c) := by
+  simp [cComp₂]; rfl
+@[simp, ev_simps] theorem cComp₂_ev {O a b c} : eval O cComp₂ ⟪a,b,c⟫ = c2n (comp₂ a b c) := by
+  rw [← evalp_eq_eval cComp₂_prim]; simp
+end cComp₂
+section cComp₃
+def cComp₃ :=
   let a := left.comp left
   let b := left.comp right
   let c := right.comp left
   let d := right.comp right
-  c_comp.comp₂ (a) (c_pair.comp₂ c (c_pair.comp₂ b d))
-@[cp] theorem c_comp₃_prim : code_prim c_comp₃ := by unfold c_comp₃; apply_cp
-@[simp, evp_simps] theorem c_comp₃_evp {O a b c d} :
-    evalp O c_comp₃ ⟪⟪a,b⟫,⟪c,d⟫⟫ = c2n (comp₃ a b c d) := by
-  simp [c_comp₃]; rfl
-@[simp, ev_simps] theorem c_comp₃_ev {O a b c d} :
-    eval O c_comp₃ ⟪⟪a,b⟫,⟪c,d⟫⟫ = c2n (comp₃ a b c d) := by
-  rw [← evalp_eq_eval c_comp₃_prim]; simp
-end c_comp₃
+  cComp.comp₂ (a) (cPair.comp₂ c (cPair.comp₂ b d))
+@[cp] theorem cComp₃_prim : IsPrim cComp₃ := by unfold cComp₃; apply_cp
+@[simp, evp_simps] theorem cComp₃_evp {O a b c d} :
+    evalp O cComp₃ ⟪⟪a,b⟫,⟪c,d⟫⟫ = c2n (comp₃ a b c d) := by
+  simp [cComp₃]; rfl
+@[simp, ev_simps] theorem cComp₃_ev {O a b c d} :
+    eval O cComp₃ ⟪⟪a,b⟫,⟪c,d⟫⟫ = c2n (comp₃ a b c d) := by
+  rw [← evalp_eq_eval cComp₃_prim]; simp
+end cComp₃
 
-section c_c_rfind
-@[irreducible] def c_c_rfind := c_comp.comp₂ c_rfind' (c_pair.comp₂ (c_const c_id) (c_zero))
-@[cp] theorem c_c_rfind_prim : code_prim c_c_rfind := by unfold c_c_rfind; apply_cp
-@[simp, evp_simps] theorem c_c_rfind_evp {O : ℕ → ℕ} :
-    evalp O c_c_rfind = fun x : ℕ => c2n (c_rfind x) := by
-  simp [c_c_rfind, c_rfind]
-end c_c_rfind
+section cCRfind
+@[irreducible] def cCRfind := cComp.comp₂ cRfind' (cPair.comp₂ (cConst cId) (cZero))
+@[cp] theorem cCRfind_prim : IsPrim cCRfind := by unfold cCRfind; apply_cp
+@[simp, evp_simps] theorem cCRfind_evp {O : ℕ → ℕ} :
+    evalp O cCRfind = fun x : ℕ => c2n (cRfind x) := by
+  simp [cCRfind, cRfind]
+end cCRfind
 
-def c_dovetailn := c_c_rfind.comp <|
-  c_comp₂.comp₃
-  (c_const c_if_eq')
-  (c_comp₃.comp₄
-    (c_const c_evaln)
-    (c_pair.comp₂ c_left (c_comp.comp₂ c_left c_right))
-    (c_c_const)
-    (c_comp.comp₂ c_right c_right))
-  (c_const (c_const 1))
-@[cp] theorem c_dovetailn_prim : code_prim c_dovetailn := by unfold c_dovetailn; apply_cp
-@[simp, evp_simps] theorem c_dovetailn_evp {O : ℕ → ℕ} :
-  evalp O c_dovetailn = fun x ↦ c2n (dovetailn <| n2c x) := by
-  -- just doing simp [c_dovetailn, dovetailn] should work, but gives a kernel recursion error. why?
+def cDovetailn := cCRfind.comp <|
+  cComp₂.comp₃
+  (cConst cIfEq')
+  (cComp₃.comp₄
+    (cConst cEvaln)
+    (cPair.comp₂ cLeft (cComp.comp₂ cLeft cRight))
+    (cCConst)
+    (cComp.comp₂ cRight cRight))
+  (cConst (cConst 1))
+@[cp] theorem cDovetailn_prim : IsPrim cDovetailn := by unfold cDovetailn; apply_cp
+@[simp, evp_simps] theorem cDovetailn_evp {O : ℕ → ℕ} :
+  evalp O cDovetailn = fun x ↦ c2n (dovetailn <| n2c x) := by
+  -- just doing simp [cDovetailn, dovetailn] should work, but gives a kernel recursion error. why?
   -- this was fixed by moving simp from def of comp_n to the comp_n_evp theorems.
-  simp [c_dovetailn, dovetailn]
-def c_dovetail := c_comp.comp₂ c_left c_dovetailn
-@[cp] theorem c_dovetail_prim : code_prim c_dovetail := by unfold c_dovetail; apply_cp
-@[simp, evp_simps] theorem c_dovetail_evp {O : ℕ → ℕ} :
-  evalp O c_dovetail = fun x ↦ c2n (dovetail <| n2c x) := by
-  simp [c_dovetail, dovetail]
+  simp [cDovetailn, dovetailn]
+def cDovetail := cComp.comp₂ cLeft cDovetailn
+@[cp] theorem cDovetail_prim : IsPrim cDovetail := by unfold cDovetail; apply_cp
+@[simp, evp_simps] theorem cDovetail_evp {O : ℕ → ℕ} :
+  evalp O cDovetail = fun x ↦ c2n (dovetail <| n2c x) := by
+  simp [cDovetail, dovetail]
 
-def c_c_ifdom := c_comp₂.comp₃ (c_const c_add) (c_comp.comp₂ c_zero left) right
-@[cp] theorem c_c_ifdom_prim : code_prim c_c_ifdom := by unfold c_c_ifdom; apply_cp
-@[simp, evp_simps] theorem c_c_ifdom_evp {O : ℕ → ℕ} :
-    evalp O c_c_ifdom = fun x ↦ c2n (c_ifdom x.left x.right) := by
-  simp [c_c_ifdom, c_ifdom]
+def cCIfdom := cComp₂.comp₃ (cConst cAdd) (cComp.comp₂ cZero left) right
+@[cp] theorem cCIfdom_prim : IsPrim cCIfdom := by unfold cCIfdom; apply_cp
+@[simp, evp_simps] theorem cCIfdom_evp {O : ℕ → ℕ} :
+    evalp O cCIfdom = fun x ↦ c2n (cIfdom x.left x.right) := by
+  simp [cCIfdom, cIfdom]
 end Oracle.Single.Code

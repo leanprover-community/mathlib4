@@ -54,19 +54,19 @@ namespace Oracle.Single.Code
 
 section jump_decode
 /--
-The code `c_jump_decode` is intended for use where the output of a query to `K0`
+The code `cJumpDecode` is intended for use where the output of a query to `K0`
 has to be "decoded".
 
 (Note that `K0` encodes Part.none with 0, and Part.some x with x+1.)
 -/
-def c_jump_decode (c : Code) := c_ite c c_diverge (c_pred.comp c)
+def cJumpDecode (c : Code) := cIte c cDiverge (cPred.comp c)
 set_option backward.isDefEq.respectTransparency false in
 open Classical in
-@[simp, ev_simps] theorem c_jump_decode_ev {O : ℕ → ℕ} {c : Code} {x : ℕ} (hc : code_total O c) :
-    eval O (c_jump_decode c) x =
+@[simp, ev_simps] theorem cJumpDecode_ev {O : ℕ → ℕ} {c : Code} {x : ℕ} (hc : IsTotal O c) :
+    eval O (cJumpDecode c) x =
     if eval O c x = Part.some 0 then Part.none else (Nat.pred <$> eval O c x) := by
-  simp only [c_jump_decode, ev_simps, Part.map_eq_map]
-  simp only [c_ite_ev hc, c_diverge_ev]
+  simp only [cJumpDecode, ev_simps, Part.map_eq_map]
+  simp only [cIte_ev hc, cDiverge_ev]
   congr
   simp only [ev_simps, Part.bind_eq_bind]
   if h : (eval O c x).Dom then
@@ -75,23 +75,23 @@ open Classical in
   else
     simp [Part.eq_none_iff'.mpr h]
 open Classical in
-@[simp, ev_simps] theorem c_jump_decode_ev' {O c} (hc : code_total O c) :
-    eval O (c_jump_decode c) =
+@[simp, ev_simps] theorem cJumpDecode_ev' {O c} (hc : IsTotal O c) :
+    eval O (cJumpDecode c) =
     fun x => if eval O c x = Part.some 0 then Part.none else (Nat.pred <$> eval O c x) := by
   funext xs
-  exact c_jump_decode_ev hc
+  exact cJumpDecode_ev hc
 end jump_decode
 
 set_option backward.isDefEq.respectTransparency false in
 /--
 We can retrieve the value of `O x` from `(K0 O) x` by
-decoding it with `c_jump_decode`.
+decoding it with `cJumpDecode`.
 -/
 theorem le_K0 (O : ℕ → ℕ) :  O ≤ᵀᶠ (K0 O) := by
   apply exists_code.mpr  -- changes goal to: ∃ c, eval (K0 O) c = O
-  let q := oracle.comp (pair (c_const oracle) c_id)
-  use c_jump_decode q
-  have compute_total : code_total (K0 O) q := by apply prim_total; apply_cp
+  let q := oracle.comp (pair (cConst oracle) cId)
+  use cJumpDecode q
+  have compute_total : IsTotal (K0 O) q := by apply prim_total; apply_cp
   simpa [compute_total, q, ev_simps, Seq.seq] using by exact rfl
 theorem le_jump (O : ℕ → ℕ) : O ≤ᵀᶠ O⌜ := le_K0 O
 
@@ -102,25 +102,25 @@ We use the fact that `K O x = K0 O ⟪x, x⟫`.
 -/
 theorem K_le_K0 (O : ℕ → ℕ) : (K O) ≤ᵀᶠ (K0 O) := by
   apply exists_code.mpr
-  use oracle.comp <| pair c_id c_id
+  use oracle.comp <| pair cId cId
   simpa [ev_simps, Seq.seq] using by exact rfl
 
 set_option backward.isDefEq.respectTransparency false in
 open Classical in
 /--
 We wish to calculate `K0 O x` i.e. `eval O x.left x.r` with access to `K`.
-We use `c_ev_const`, which returns the code of the function that
+We use `cEvConst`, which returns the code of the function that
 calculates `eval O x.left x.r` for all inputs.
 By querying this to `K`, we are done.
 -/
 theorem K0_le_K (O : ℕ → ℕ) : (K0 O) ≤ᵀᶠ (K O) := by
   apply exists_code.mpr
-  let compute := oracle.comp c_ev_const
+  let compute := oracle.comp cEvConst
   use compute
-  have compute_total : code_total (K O) compute := by apply prim_total; apply_cp
+  have compute_total : IsTotal (K O) compute := by apply prim_total; apply_cp
   funext x
   rw [eval_total_comp compute_total]
-  simp [eval, c_ev_const_ev']
+  simp [eval, cEvConst_ev']
 
 theorem K_eq_K0 {O : ℕ → ℕ} : (K O)  ≡ᵀᶠ (K0 O) := ⟨K_le_K0 O,K0_le_K O⟩
 theorem K0_eq_K {O : ℕ → ℕ} : (K0 O) ≡ᵀᶠ (K O) := K_eq_K0.symm
@@ -140,7 +140,7 @@ A contradiction arises if we ask whether `g` converges on itself.
 theorem not_jump_le (O : ℕ → ℕ) : ¬(O⌜ ≤ᵀᶠ O) := by
   intro h
   rcases exists_code.mp h with ⟨c_jump, hc_jump⟩
-  let g := c_ite (c_jump.comp (pair c_id c_id)) zero c_diverge
+  let g := cIte (c_jump.comp (pair cId cId)) zero cDiverge
   have hg :
       eval O g = fun (x : ℕ) =>
       if (O⌜) (Nat.pair x x) = 0 then
@@ -149,9 +149,9 @@ theorem not_jump_le (O : ℕ → ℕ) : ¬(O⌜ ≤ᵀᶠ O) := by
         Part.none := by
     unfold g
     funext x
-    have : code_total O (c_jump.comp (pair c_id c_id)) := by
+    have : IsTotal O (c_jump.comp (pair cId cId)) := by
       intro x; simp [eval, hc_jump, Seq.seq]
-    simp [c_ite_ev this, eval, hc_jump, Seq.seq]
+    simp [cIte_ev this, eval, hc_jump, Seq.seq]
   cases Classical.em (eval O g g).Dom with
   | inl h => have h' := h; rw [hg] at h'; simp [h] at h'
   | inr h => have h' := h; rw [hg] at h'; simp [h] at h'

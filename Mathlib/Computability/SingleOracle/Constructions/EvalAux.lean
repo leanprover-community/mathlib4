@@ -31,42 +31,47 @@ theorem rfind'_eqv_rfind {O : ℕ → ℕ} {c : Code} {x : ℕ} :
   simpa using by rfl
 
 section rfind
-/-- `[c_rfind c](x)=smallest n s.t. [c](x,n)=0.` -/
-def c_rfind : Oracle.Single.Code→Oracle.Single.Code := fun c ↦ (rfind' c).comp (pair c_id zero)
+/-- `[cRfind c](x)=smallest n s.t. [c](x,n)=0.` -/
+def cRfind : Oracle.Single.Code→Oracle.Single.Code := fun c ↦ (rfind' c).comp (pair cId zero)
 /-- Given a code `c` -/
 abbrev rfind (O : ℕ → ℕ) : Code → ℕ →. ℕ :=
   fun c ↦ fun a ↦ Nat.rfind fun n ↦ (fun m ↦ m = 0) <$> eval O c (Nat.pair a n)
-theorem c_rfind_ev {O c a} : eval O (c_rfind c) a = rfind O c a := by
-  unfold c_rfind
+theorem cRfind_ev {O c a} : eval O (cRfind c) a = rfind O c a := by
+  unfold cRfind
   unfold rfind
   rw [←rfind'_eqv_rfind]
   simp [eval,Seq.seq]
-theorem c_rfind_ev' {O c a} :
-    eval O (c_rfind c) a = (Nat.rfind (fun x => n2b' <$> eval O c (Nat.pair a x))) := by
-  simp only [c_rfind_ev, ev_simps]
+theorem cRfind_ev' {O c a} :
+    eval O (cRfind c) a = (Nat.rfind (fun x => n2b' <$> eval O c (Nat.pair a x))) := by
+  simp only [cRfind_ev, ev_simps]
   simp only [rfind, Part.map_eq_map]
   unfold n2b'
   simp
-theorem c_rfind_ev'' {O c} :
-    eval O (c_rfind c) = fun a => (Nat.rfind (fun x => n2b' <$> eval O c (Nat.pair a x))) := by
+theorem cRfind_ev'' {O c} :
+    eval O (cRfind c) = fun a => (Nat.rfind (fun x => n2b' <$> eval O c (Nat.pair a x))) := by
   funext a
-  exact c_rfind_ev'
+  exact cRfind_ev'
 theorem rfind_real {O f} (h : RecursiveIn O f) :
     RecursiveIn O (fun a =>
         Nat.rfind fun n => (fun m => m = 0) <$> f (Nat.pair a n)) := by
   rcases exists_code.mp h with ⟨c, hc⟩
   rw [← hc]
   apply exists_code.mpr
-  use c_rfind c
-  simp [c_rfind_ev'']
+  use cRfind c
+  simp only [cRfind_ev'', Part.map_eq_map]
+  funext a
   congr
+  funext x
+  congr
+  funext m
+  simp [n2b']
 end rfind
 
-def c_ppred := c_rfind (c_if_eq'.comp₂ left (succ.comp right))
+def cPpred := cRfind (cIfEq'.comp₂ left (succ.comp right))
 set_option backward.isDefEq.respectTransparency false in
-@[simp, ev_simps] theorem c_ppred_ev {O y} : eval O c_ppred y = Nat.ppred y := by
-  unfold c_ppred
-  simp only [c_rfind_ev', ev_simps]
+@[simp, ev_simps] theorem cPpred_ev {O y} : eval O cPpred y = Nat.ppred y := by
+  unfold cPpred
+  simp only [cRfind_ev', ev_simps]
   simp? [Seq.seq] says
     simp only [Seq.seq, unpair_pair, Part.coe_some, Part.map_eq_map, Part.map_some,
       Part.bind_eq_bind, Part.bind_some, pair_l, pair_r]
@@ -79,24 +84,24 @@ set_option backward.isDefEq.respectTransparency false in
     unfold n2b'
     aesop
 
-def c_ofOption (c : Code) := c_ppred.comp c
+def cOfOption (c : Code) := cPpred.comp c
 set_option backward.isDefEq.respectTransparency false in
-theorem c_ofOption_ev {O : ℕ → ℕ} {c : Code} {x : ℕ} (hc1 : code_total O c) :
-    eval O (c_ofOption c) x = ↑(n2o ((eval O c x).get (hc1 x))) := by
-  unfold c_ofOption
+theorem cOfOption_ev {O : ℕ → ℕ} {c : Code} {x : ℕ} (hc1 : IsTotal O c) :
+    eval O (cOfOption c) x = ↑(n2o ((eval O c x).get (hc1 x))) := by
+  unfold cOfOption
   simp only [ev_simps]
-  simp only [Part.Dom.bind (hc1 x), Part.bind_eq_bind, c_ppred_ev]
+  simp only [Part.Dom.bind (hc1 x), Part.bind_eq_bind, cPpred_ev]
   cases (eval O c x).get (hc1 x) with
   | zero => simp;
   | succ n => simp;
 
-def c_rfindOpt (c : Code) := (c_ofOption c).comp₂ c_id (c_rfind (c_isSome.comp (c)))
+def cRfindOpt (c : Code) := (cOfOption c).comp₂ cId (cRfind (cIsSome.comp (c)))
 set_option backward.isDefEq.respectTransparency false in
-@[simp, ev_simps] theorem c_rfindOpt_ev {O : ℕ → ℕ} {c : Code} {x : ℕ} (hc1 : code_total O c) :
-    eval O (c_rfindOpt c) x =
+@[simp, ev_simps] theorem cRfindOpt_ev {O : ℕ → ℕ} {c : Code} {x : ℕ} (hc1 : IsTotal O c) :
+    eval O (cRfindOpt c) x =
     Nat.rfindOpt (fun y => n2o <| (eval O c (Nat.pair x y)).get (hc1 (Nat.pair x y))) := by
-  unfold c_rfindOpt
-  simp only [c_rfind_ev', ev_simps]
+  unfold cRfindOpt
+  simp only [cRfind_ev', ev_simps]
   unfold rfindOpt
   simp? [n2b', b'2n] says
     simp only [Part.coe_some, Part.map_eq_map, Part.map_some, b'2n, Part.bind_eq_bind,
@@ -116,7 +121,7 @@ set_option backward.isDefEq.respectTransparency false in
   if hh: (Nat.rfind fun n ↦ Part.some (n2o ((eval O c ⟪x, n⟫).get (hc1 ⟪x, n⟫))).isSome).Dom then
     simp [Part.Dom.bind hh]
     simp [Seq.seq]
-    simp [c_ofOption_ev hc1]
+    simp [cOfOption_ev hc1]
     simp [Part.Dom.bind hh]
   else
     simp [Part.eq_none_iff'.mpr hh]

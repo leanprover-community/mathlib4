@@ -61,9 +61,9 @@ end pair
 section conversions
 abbrev Nat.n2l : ℕ → List ℕ := @Denumerable.ofNat (List ℕ) _
 abbrev Nat.l2n : List ℕ → ℕ := @Encodable.encode (List ℕ) _
-instance {lN} : OfNat (List ℕ) lN where ofNat := n2l lN
-instance : Coe ℕ (List ℕ) := ⟨n2l⟩
-instance : Coe (List ℕ) ℕ := ⟨l2n⟩
+instance instOfNatListNat {lN} : OfNat (List ℕ) lN where ofNat := n2l lN
+instance instCoeNatList : Coe ℕ (List ℕ) := ⟨n2l⟩
+instance instCoeListNat : Coe (List ℕ) ℕ := ⟨l2n⟩
 
 def n2b (n : ℕ) : Bool := if n = 0 then false else true
 def b2n (b : Bool) : ℕ := if b then 1 else 0
@@ -77,47 +77,47 @@ abbrev o2n := @encode (Option ℕ) _
 @[simp] theorem encode_zero_opt : (Denumerable.ofNat (Option ℕ) 0) = Option.none := rfl
 @[simp] theorem encode_succ_opt {x} : (Denumerable.ofNat (Option ℕ) (x+1)) = Option.some (x) := rfl
 
-namespace Oracle.Single.Code.nc_to_nn
+namespace Oracle.Single.Code.NcToNn
 @[coe] protected def lift (f : ℕ → Code) : ℕ → ℕ := fun x => c2n (f x)
-instance : Coe (ℕ → Code) (ℕ → ℕ) := ⟨Oracle.Single.Code.nc_to_nn.lift⟩
-end Oracle.Single.Code.nc_to_nn
-namespace Oracle.Single.Code.cc_to_nn
+instance : Coe (ℕ → Code) (ℕ → ℕ) := ⟨Oracle.Single.Code.NcToNn.lift⟩
+end Oracle.Single.Code.NcToNn
+namespace Oracle.Single.Code.CcToNn
 @[coe] protected def lift (f : Code → Code) : ℕ → ℕ := c2n ∘ f ∘ n2c
-instance : Coe (Code → Code) (ℕ → ℕ) := ⟨Oracle.Single.Code.cc_to_nn.lift⟩
-end Oracle.Single.Code.cc_to_nn
+instance : Coe (Code → Code) (ℕ → ℕ) := ⟨Oracle.Single.Code.CcToNn.lift⟩
+end Oracle.Single.Code.CcToNn
 end conversions
 
 section primrec
 -- templates for primrec constructions as codes
 namespace Oracle.Single.Code
-@[aesop safe, cp] inductive code_prim : Code → Prop
-| zero : code_prim zero
-| succ : code_prim succ
-| left : code_prim left
-| right : code_prim right
-| oracle : code_prim oracle
-| pair {a b : Code} (ha : code_prim a) (hb : code_prim b) : code_prim (pair a b)
-| comp {a b : Code} (ha : code_prim a) (hb : code_prim b) : code_prim (comp a b)
-| prec {a b : Code} (ha : code_prim a) (hb : code_prim b) : code_prim (prec a b)
-@[cp] theorem zero_prim : code_prim zero := code_prim.zero
-@[cp] theorem succ_prim : code_prim succ := code_prim.succ
-@[cp] theorem left_prim : code_prim left := code_prim.left
-@[cp] theorem right_prim : code_prim right := code_prim.right
-@[cp] theorem oracle_prim : code_prim oracle := code_prim.oracle
-@[cp] theorem pair_prim {a b} (ha : code_prim a) (hb : code_prim b) : code_prim (pair a b) :=
-  code_prim.pair ha hb
-@[cp] theorem comp_prim {a b} (ha : code_prim a) (hb : code_prim b) : code_prim (comp a b) :=
-  code_prim.comp ha hb
-@[cp] theorem prec_prim {a b} (ha : code_prim a) (hb : code_prim b) : code_prim (prec a b) :=
-  code_prim.prec ha hb
-def code_total (O) (c : Code) := ∀x, (eval O c x).Dom
-@[simp] theorem zero_total {O : ℕ → ℕ} : code_total O zero := fun _ ↦ trivial
-@[simp] theorem left_total {O : ℕ → ℕ} : code_total O left := fun _ ↦ trivial
-@[simp] theorem right_total {O : ℕ → ℕ} : code_total O right := fun _ ↦ trivial
-@[simp] theorem succ_total {O : ℕ → ℕ} : code_total O succ := fun _ ↦ trivial
-@[simp] theorem oracle_total {O : ℕ → ℕ} : code_total O oracle := fun _ ↦ trivial
-theorem prim_total {O : ℕ → ℕ} {c} (h : code_prim c) : code_total O c := by
-  unfold code_total
+@[aesop safe, cp] inductive IsPrim : Code → Prop
+| zero : IsPrim zero
+| succ : IsPrim succ
+| left : IsPrim left
+| right : IsPrim right
+| oracle : IsPrim oracle
+| pair {a b : Code} (ha : IsPrim a) (hb : IsPrim b) : IsPrim (pair a b)
+| comp {a b : Code} (ha : IsPrim a) (hb : IsPrim b) : IsPrim (comp a b)
+| prec {a b : Code} (ha : IsPrim a) (hb : IsPrim b) : IsPrim (prec a b)
+@[cp] theorem zero_prim : IsPrim zero := IsPrim.zero
+@[cp] theorem succ_prim : IsPrim succ := IsPrim.succ
+@[cp] theorem left_prim : IsPrim left := IsPrim.left
+@[cp] theorem right_prim : IsPrim right := IsPrim.right
+@[cp] theorem oracle_prim : IsPrim oracle := IsPrim.oracle
+@[cp] theorem pair_prim {a b} (ha : IsPrim a) (hb : IsPrim b) : IsPrim (pair a b) :=
+  IsPrim.pair ha hb
+@[cp] theorem comp_prim {a b} (ha : IsPrim a) (hb : IsPrim b) : IsPrim (comp a b) :=
+  IsPrim.comp ha hb
+@[cp] theorem prec_prim {a b} (ha : IsPrim a) (hb : IsPrim b) : IsPrim (prec a b) :=
+  IsPrim.prec ha hb
+def IsTotal (O) (c : Code) := ∀x, (eval O c x).Dom
+@[simp] theorem zero_total {O : ℕ → ℕ} : IsTotal O zero := fun _ ↦ trivial
+@[simp] theorem left_total {O : ℕ → ℕ} : IsTotal O left := fun _ ↦ trivial
+@[simp] theorem right_total {O : ℕ → ℕ} : IsTotal O right := fun _ ↦ trivial
+@[simp] theorem succ_total {O : ℕ → ℕ} : IsTotal O succ := fun _ ↦ trivial
+@[simp] theorem oracle_total {O : ℕ → ℕ} : IsTotal O oracle := fun _ ↦ trivial
+theorem prim_total {O : ℕ → ℕ} {c} (h : IsPrim c) : IsTotal O c := by
+  unfold IsTotal
   induction h with
   | zero                   => simp [eval];
   | succ                   => simp [eval];
@@ -149,7 +149,7 @@ theorem prim_total {O : ℕ → ℕ} {c} (h : code_prim c) : code_total O c := b
   n.rec (evalp O cf z) fun y IH => (evalp O cg) (z.pair (y.pair IH))
 | rfind' _   => fun _ ↦ 0
 set_option backward.isDefEq.respectTransparency false in
-theorem evalp_eq_eval {O : ℕ → ℕ} {c} (h : code_prim c) : evalp O c = eval O c := by
+theorem evalp_eq_eval {O : ℕ → ℕ} {c} (h : IsPrim c) : evalp O c = eval O c := by
   induction h with
   | zero => exact rfl
   | succ => exact rfl
@@ -206,9 +206,9 @@ theorem evalp_eq_eval {O : ℕ → ℕ} {c} (h : code_prim c) : evalp O c = eval
         prev_input =
         Part.some (evalp O b prev_input) := congrFun (_root_.id (Eq.symm hb_ih)) prev_input
       rw [a0]
-theorem evalp_eq_eval_ext {O : ℕ → ℕ} {c : Code} {x : ℕ} (h : code_prim c) :
+theorem evalp_eq_eval_ext {O : ℕ → ℕ} {c : Code} {x : ℕ} (h : IsPrim c) :
   eval O c x = evalp O c x := congrFun (_root_.id (Eq.symm (@evalp_eq_eval O c h))) x
-@[simp 1000] theorem code_prim_prop {O : ℕ → ℕ} {c} : PrimrecIn O (evalp O c) := by
+@[simp 1000] theorem isPrim_prop {O : ℕ → ℕ} {c} : PrimrecIn O (evalp O c) := by
   induction c with
   | zero => exact PrimrecIn.zero
   | succ => exact PrimrecIn.succ
@@ -219,33 +219,33 @@ theorem evalp_eq_eval_ext {O : ℕ → ℕ} {c : Code} {x : ℕ} (h : code_prim 
   | comp ha hb ha_ih hb_ih => unfold evalp; exact PrimrecIn.comp ha_ih hb_ih
   | prec ha hb ha_ih hb_ih => unfold evalp; exact PrimrecIn.prec ha_ih hb_ih
   | rfind' ha ha_ih => exact PrimrecIn.zero
-theorem code_prim_of_primrecIn {O f} (h : PrimrecIn O f) : ∃ c, code_prim c ∧ f=evalp O c := by
+theorem isPrim_of_primrecIn {O f} (h : PrimrecIn O f) : ∃ c, IsPrim c ∧ f=evalp O c := by
   induction h with
-  | zero => use Code.zero; exact ⟨code_prim.zero,rfl⟩
-  | succ => use Code.succ; exact ⟨code_prim.succ,rfl⟩
-  | left => use Code.left; exact ⟨code_prim.left,rfl⟩
-  | right => use Code.right; exact ⟨code_prim.right,rfl⟩
-  | oracle => use Code.oracle; exact ⟨code_prim.oracle,rfl⟩
+  | zero => use Code.zero; exact ⟨IsPrim.zero,rfl⟩
+  | succ => use Code.succ; exact ⟨IsPrim.succ,rfl⟩
+  | left => use Code.left; exact ⟨IsPrim.left,rfl⟩
+  | right => use Code.right; exact ⟨IsPrim.right,rfl⟩
+  | oracle => use Code.oracle; exact ⟨IsPrim.oracle,rfl⟩
   | pair pf pg ef eg =>
     rcases ef with ⟨cf,hcf⟩
     rcases eg with ⟨cg,hcg⟩
     use Code.pair cf cg;
     constructor
-    · exact code_prim.pair hcf.left hcg.left
+    · exact IsPrim.pair hcf.left hcg.left
     · simp only [evalp]; rw [hcf.right, hcg.right]
   | comp pf pg ef eg =>
     rcases ef with ⟨cf,hcf⟩
     rcases eg with ⟨cg,hcg⟩
     use Code.comp cf cg;
     constructor
-    · exact code_prim.comp hcf.left hcg.left
+    · exact IsPrim.comp hcf.left hcg.left
     · simp only [evalp]; rw [hcf.right, hcg.right]
   | prec pf pg ef eg =>
     rcases ef with ⟨cf,hcf⟩
     rcases eg with ⟨cg,hcg⟩
     use Code.prec cf cg;
     constructor
-    · exact code_prim.prec hcf.left hcg.left
+    · exact IsPrim.prec hcf.left hcg.left
     · simp only [evalp]; rw [hcf.right, hcg.right]
 end Oracle.Single.Code
 end primrec
@@ -253,39 +253,39 @@ end primrec
 section total
 namespace Oracle.Single.Code
 /-- A total evaluation function, requiring proof that the given code is total. -/
-def evalt (O : ℕ → ℕ) (c : Code) (h : code_total O c) : ℕ → ℕ := fun x ↦ (eval O c x).get (h x)
+def evalt (O : ℕ → ℕ) (c : Code) (h : IsTotal O c) : ℕ → ℕ := fun x ↦ (eval O c x).get (h x)
 theorem total_pair_iff {O cf cg} :
-    (code_total O cf) ∧ (code_total O cg) ↔ (code_total O (pair cf cg)) :=
+    (IsTotal O cf) ∧ (IsTotal O cg) ↔ (IsTotal O (pair cf cg)) :=
   ⟨
     fun h x ↦ ⟨h.left x, h.right x⟩,
     fun h ↦ ⟨fun x ↦ Part.left_dom_of_sub_dom (h x) , fun x ↦ Part.right_dom_of_div_dom (h x)⟩
   ⟩
-@[simp] theorem total_pair_of {O cf cg} (hcf : code_total O cf) (hcg : code_total O cg) :
-  (code_total O (pair cf cg)) := total_pair_iff.mp ⟨hcf,hcg⟩
-theorem total_comp_of {O cf cg} (hcf : code_total O cf) (hcg : code_total O cg) :
-    (code_total O (comp cf cg)) := by
+@[simp] theorem total_pair_of {O cf cg} (hcf : IsTotal O cf) (hcg : IsTotal O cg) :
+  (IsTotal O (pair cf cg)) := total_pair_iff.mp ⟨hcf,hcg⟩
+theorem total_comp_of {O cf cg} (hcf : IsTotal O cf) (hcg : IsTotal O cg) :
+    (IsTotal O (comp cf cg)) := by
   intro x
   simp only [eval]
   use hcg x
   exact hcf ((eval O cg x).get (hcg x))
-@[simp] theorem total_of_pair_left {O cf cg} (h : code_total O (pair cf cg)) : code_total O cf :=
+theorem total_of_pair_left {O cf cg} (h : IsTotal O (pair cf cg)) : IsTotal O cf :=
   (total_pair_iff.mpr h).left
-@[simp] theorem total_of_pair_right {O cf cg} (h : code_total O (pair cf cg)) : code_total O cg :=
+theorem total_of_pair_right {O cf cg} (h : IsTotal O (pair cf cg)) : IsTotal O cg :=
   (total_pair_iff.mpr h).right
-@[simp] theorem total_of_comp_left {O cf cg} (h : code_total O (comp cf cg)) : code_total O cg := by
+theorem total_of_comp_left {O cf cg} (h : IsTotal O (comp cf cg)) : IsTotal O cg := by
   intro h2
   exact Part.Dom.of_bind (h h2)
-@[simp] theorem total_of_comp_right {O cf cg} (h : code_total O (comp cf cg)) :
+@[simp] theorem total_of_comp_right {O cf cg} (h : IsTotal O (comp cf cg)) :
     ∀ x, (eval O cf ((eval O cg x).get (Part.Dom.of_bind (h x)))).Dom := by
   exact fun x ↦ Part.right_dom_of_div_dom (h x)
-@[simp] theorem total_of_prec_left {O cf cg} (h : code_total O (prec cf cg)) : code_total O cf := by
+theorem total_of_prec_left {O cf cg} (h : IsTotal O (prec cf cg)) : IsTotal O cf := by
   intro x
-  unfold code_total at h
+  unfold IsTotal at h
   simp only [eval, unpaired, unpair1_to_l, Part.bind_eq_bind, unpair2_to_r] at h
   have hx := h (Nat.pair x 0)
   simp only [pair_l, pair_r, rec_zero] at hx
   exact hx
-theorem eval_total_comp {O cf cg x} (h : code_total O (comp cf cg)) :
+theorem eval_total_comp {O cf cg x} (h : IsTotal O (comp cf cg)) :
     eval O (comp cf cg) x =
     Part.some
     ((eval O cf ((eval O cg x).get (Part.Dom.of_bind (h x)))).get (total_of_comp_right h x)) := by
