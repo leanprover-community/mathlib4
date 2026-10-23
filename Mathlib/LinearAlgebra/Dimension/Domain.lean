@@ -30,13 +30,13 @@ We obtain the following tower laws:
 
 public section
 
-universe u v v' w
+universe v w
 
 open Algebra Cardinal Module
 open Module (rank)
 open scoped nonZeroDivisors
 
-variable (R : Type u) (S : Type v) [CommRing R] [CommRing S] [NoZeroDivisors S] [Algebra R S]
+variable (R : Type*) (S : Type v) [CommRing R] [CommRing S] [NoZeroDivisors S] [Algebra R S]
 
 namespace Module
 
@@ -73,7 +73,7 @@ private lemma lift_rank_mul_lift_rank_of_isFractionRing_localization
 section isFractionRing_isLocalization
 
 variable
-  (FS : Type v') [CommRing FS] [Algebra S FS] [IsFractionRing S FS]
+  (FS : Type*) [CommRing FS] [Algebra S FS] [IsFractionRing S FS]
   [h : IsLocalization (algebraMapSubmonoid S R⁰) FS]
   (M : Type w) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
   (M₁ : Type v) [AddCommGroup M₁] [Module R M₁] [Module S M₁] [IsScalarTower R S M₁]
@@ -117,7 +117,7 @@ end isFractionRing_isLocalization
 section field_isLocalization
 
 variable
-  (FS : Type v') [Field FS] [Algebra S FS]
+  (FS : Type*) [Field FS] [Algebra S FS]
   [h : IsLocalization (algebraMapSubmonoid S R⁰) FS]
   (M : Type w) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
   (M₁ : Type v) [AddCommGroup M₁] [Module R M₁] [Module S M₁] [IsScalarTower R S M₁]
