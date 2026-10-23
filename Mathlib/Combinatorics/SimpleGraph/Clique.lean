@@ -68,6 +68,9 @@ attribute [wikidata Q1060343] IsIndepSet
 theorem isClique_iff : G.IsClique s ↔ s.Pairwise G.Adj :=
   Iff.rfl
 
+theorem isIndepSet_iff_pairwise_not : G.IsIndepSet s ↔ s.Pairwise (¬G.Adj · ·) :=
+  .rfl
+
 lemma not_isClique_iff : ¬ G.IsClique s ↔ ∃ (v w : s), v ≠ w ∧ ¬ G.Adj v w := by
   aesop (add simp [isClique_iff, Set.Pairwise])
 
