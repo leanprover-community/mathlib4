@@ -125,14 +125,6 @@ theorem Submodule.baseChange_le_iff_le_comap {R M A : Type*} [CommSemiring R] [S
   rw [baseChange_eq_span, span_le, ← q.coe_restrictScalars R, SetLike.coe_subset_coe,
     map_le_iff_le_comap]
 
--- PRed
-theorem Submodule.restrictScalars_comap {R R₂ M M₂ : Type*} [Semiring R] [Semiring R₂]
-    [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R₂ M₂] [SMul R R₂] [Module R₂ M]
-    [Module R M₂] [IsScalarTower R R₂ M] [IsScalarTower R R₂ M₂]
-    (f : M →ₗ[R₂] M₂) (M' : Submodule R₂ M₂) :
-    restrictScalars R (comap f M') = comap (f.restrictScalars R) (restrictScalars R M') := by
-  rfl
-
 lemma Submodule.baseChange_le_comap_liftBaseChange_iff
     {R M N A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
   [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N] [Module A N] [IsScalarTower R A N]
@@ -147,13 +139,6 @@ namespace LinearMap
 
 variable {R M N : Type*} (A : Type*) [CommSemiring R] [CommSemiring A] [Algebra R A]
   [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N] [Module A N] [IsScalarTower R A N]
-
--- PRed
-lemma liftBaseChange_comp_baseChange {P} [AddCommMonoid P] [Module R P]
-    (l : M →ₗ[R] N) (l' : P →ₗ[R] M) :
-    (l.liftBaseChange A).comp (l'.baseChange A) = (l.comp l').liftBaseChange A := by
-  ext
-  simp
 
 variable {A} in
 lemma Submodule.baseChange_le_comap_liftBaseChange_iff
@@ -200,7 +185,7 @@ lemma le_comap_linearize (f : M →ₗ[A] N) (P : Submodule B M) (Q : Submodule 
 lemma linearize_comp (f : M →ₗ[A] N) (g : L →ₗ[B] M) :
     linearize B (f.comp (g.restrictScalars A)) = (linearize B f).comp g := by
   rw [linearize_apply, linearize_apply, LinearMap.comp_assoc, sec_comp,
-    ← LinearMap.comp_assoc, LinearMap.liftBaseChange_comp_baseChange]
+    ← LinearMap.comp_assoc, LinearMap.liftBaseChange_comp]
 
 @[simp]
 lemma linearize_comp_mulLeft (f : B →ₗ[A] N) (b : B) :
@@ -210,7 +195,7 @@ lemma linearize_comp_mulLeft (f : B →ₗ[A] N) (b : B) :
 @[simp]
 lemma comp_linearize (g : N →ₗ[B] L) (f : M →ₗ[A] N) :
     linearize B ((g.restrictScalars A).comp f) = g.comp (linearize B f) := by
-  rw [linearize_apply, linearize_apply, ← LinearMap.comp_assoc, LinearMap.liftBaseChange_comp]
+  rw [linearize_apply, linearize_apply, ← LinearMap.comp_assoc, LinearMap.comp_liftBaseChange]
 
 @[simp]
 lemma linearize_id : linearize B (LinearMap.id : M →ₗ[A] M) = LinearMap.id :=
