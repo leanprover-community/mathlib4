@@ -136,7 +136,7 @@ theorem lift_rank_mul_lift_rank_of_field_isLocalization :
 When `M` is a module over an algebra `S/R` of domains such that `(R⁰)⁻¹ S` is a field,
 we obtain a tower law.
 
-See `Module.finrank_mul_finrank` for when your modules are free.
+See `_root.rank_mul_rank` for when your modules are free.
 -/
 theorem rank_mul_rank_of_field_isLocalization :
     rank R S * rank S M₁ = rank R M₁ :=
