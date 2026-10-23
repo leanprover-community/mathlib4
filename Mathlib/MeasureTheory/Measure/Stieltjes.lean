@@ -767,8 +767,8 @@ lemma eq_of_measure_of_eq (g : StieltjesFunction R) {y : R}
 @[simp]
 lemma measure_const (c : ℝ) : (StieltjesFunction.const R c).measure = 0 := by
   apply Measure.ext_of_Icc _ _ (fun a b hab ↦ ?_)
-  simp only [measure_Icc, const_apply, Measure.coe_zero, Pi.ofNat_apply, ofReal_eq_zero,
-    tsub_le_iff_right, zero_add]
+  simp only [measure_Icc, const_apply, zero_apply, ofReal_eq_zero, tsub_le_iff_right,
+    zero_add]
   rw [ContinuousWithinAt.leftLim_eq]
   · simp
   · exact continuousWithinAt_const

@@ -203,7 +203,7 @@ section IsZeroOrProbabilityMeasure
 instance isZeroOrProbabilityMeasureSMul :
     IsZeroOrProbabilityMeasure ((μ univ)⁻¹ • μ) := by
   rcases eq_zero_or_neZero μ with rfl | h
-  · rw [Measure.coe_zero, Pi.zero_apply, inv_zero, smul_zero]; infer_instance
+  · rw [FunLike.coe_zero, Pi.zero_apply, inv_zero, smul_zero]; infer_instance
   rcases eq_top_or_lt_top (μ univ) with h | h
   · rw [h, inv_top, zero_smul]; infer_instance
   have : IsFiniteMeasure μ := ⟨h⟩

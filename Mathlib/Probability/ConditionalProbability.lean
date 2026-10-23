@@ -154,8 +154,7 @@ theorem cond_isProbabilityMeasure_of_finite (hcs : μ s ≠ 0) (hs : μ s ≠ �
     IsProbabilityMeasure μ[|s] :=
   ⟨by
     unfold ProbabilityTheory.cond
-    simp only [Measure.coe_smul, Pi.smul_apply, MeasurableSet.univ, Measure.restrict_apply,
-      Set.univ_inter, smul_eq_mul]
+    simp only [smul_apply, MeasurableSet.univ, Measure.restrict_apply, univ_inter, smul_eq_mul]
     exact ENNReal.inv_mul_cancel hcs hs⟩
 
 /-- The conditional probability measure of any finite measure on any set of positive measure
@@ -165,8 +164,8 @@ theorem cond_isProbabilityMeasure [IsFiniteMeasure μ] (hcs : μ s ≠ 0) :
 
 instance : IsZeroOrProbabilityMeasure μ[|s] := by
   constructor
-  simp only [cond, Measure.coe_smul, Pi.smul_apply, MeasurableSet.univ, Measure.restrict_apply,
-    univ_inter, smul_eq_mul, ← ENNReal.div_eq_inv_mul]
+  simp only [cond, smul_apply, MeasurableSet.univ, Measure.restrict_apply, univ_inter, smul_eq_mul,
+    ← ENNReal.div_eq_inv_mul, ENNReal.div_eq_zero_iff]
   rcases eq_or_ne (μ s) 0 with h | h
   · simp [h]
   rcases eq_or_ne (μ s) ∞ with h' | h'
@@ -214,10 +213,10 @@ lemma cond_eq_zero_of_meas_eq_zero (hμs : μ s = 0) : μ[|s] = 0 := by simp [h�
 /-- The axiomatic definition of conditional probability derived from a measure-theoretic one. -/
 theorem cond_apply (hms : MeasurableSet s) (μ : Measure Ω) (t : Set Ω) :
     μ[t | s] = (μ s)⁻¹ * μ (s ∩ t) := by
-  rw [cond, Measure.smul_apply, Measure.restrict_apply' hms, Set.inter_comm, smul_eq_mul]
+  rw [cond, smul_apply, Measure.restrict_apply' hms, Set.inter_comm, smul_eq_mul]
 
 theorem cond_apply' (ht : MeasurableSet t) (μ : Measure Ω) : μ[t | s] = (μ s)⁻¹ * μ (s ∩ t) := by
-  rw [cond, Measure.smul_apply, Measure.restrict_apply ht, Set.inter_comm, smul_eq_mul]
+  rw [cond, smul_apply, Measure.restrict_apply ht, Set.inter_comm, smul_eq_mul]
 
 @[simp] lemma cond_apply_self (hs₀ : μ s ≠ 0) (hs : μ s ≠ ∞) : μ[s | s] = 1 := by
   simpa [cond] using ENNReal.inv_mul_cancel hs₀ hs
@@ -302,8 +301,7 @@ lemma sum_meas_smul_cond_fiber {X : Ω → α} (hX : Measurable X) (μ : Measure
   ext E hE
   calc
     _ = ∑ x, μ (X ⁻¹' {x} ∩ E) := by
-      simp only [Measure.coe_finsetSum, Measure.coe_smul, Finset.sum_apply,
-        Pi.smul_apply, smul_eq_mul]
+      simp only [sum_apply, smul_apply, smul_eq_mul]
       simp_rw [mul_comm (μ _), cond_mul_eq_inter (hX (.singleton _))]
     _ = _ := by
       have : ⋃ x ∈ Finset.univ, X ⁻¹' {x} ∩ E = E := by ext; simp
