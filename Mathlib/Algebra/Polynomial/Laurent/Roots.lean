@@ -11,10 +11,9 @@ import Mathlib.Algebra.Polynomial.Roots
 /-!
 # Roots of Laurent polynomials
 
-A Laurent polynomial mapping injectively into an integral domain is determined by its values at
-the units of the domain, as soon as there are infinitely many of them: this is the analogue for
-`R[T;T⁻¹]` of `Polynomial.eq_zero_of_infinite_isRoot`, and it follows from it by clearing
-denominators.
+Let `S` be an `R`-algebra such that `IsDomain S` and `FaithfulSMul R S`.  Then a Laurent polynomial
+over `R` is determined by its values at the units of `S`, as soon as there are infinitely many of
+them: this is the analogue for `R[T;T⁻¹]` of `Polynomial.eq_zero_of_infinite_isRoot`.
 
 ## Main results
 
@@ -31,21 +30,20 @@ namespace LaurentPolynomial
 variable {R S : Type*} [CommRing S] [IsDomain S]
 
 /-- A Laurent polynomial vanishing at infinitely many units is zero. -/
-theorem eq_zero_of_infinite_eval₂_eq_zero [CommSemiring R] {f : R →+* S}
-    (hf : Function.Injective f) (p : R[T;T⁻¹])
-    (h : {x : Sˣ | eval₂ f x p = 0}.Infinite) : p = 0 := by
+theorem eq_zero_of_infinite_eval₂_eq_zero [CommSemiring R] [Algebra R S] [FaithfulSMul R S]
+    (p : R[T;T⁻¹]) (h : {x : Sˣ | eval₂ (algebraMap R S) x p = 0}.Infinite) : p = 0 := by
   obtain ⟨n, q, hq⟩ := exists_T_pow p
   have hq0 : q = 0 := by
-    rw [← Polynomial.map_eq_zero_iff hf]
+    rw [← Polynomial.map_eq_zero_iff (FaithfulSMul.algebraMap_injective R S)]
     refine Polynomial.eq_zero_of_infinite_isRoot _
       (Set.infinite_of_injOn_mapsTo Units.val_injective.injOn (fun x hx ↦ ?_) h)
-    simpa [Polynomial.IsRoot, Polynomial.eval_map, ← eval₂_toLaurent, hq] using hx
+    simpa [Polynomial.eval_map, ← eval₂_toLaurent, hq] using hx
   rw [hq0, map_zero] at hq
   exact (isUnit_T (n : ℤ)).mul_left_eq_zero.mp hq.symm
 
 /-- Two Laurent polynomials agreeing at infinitely many units are equal. -/
-theorem eq_of_infinite_eval₂_eq [CommRing R] {f : R →+* S} (hf : Function.Injective f)
-    {p q : R[T;T⁻¹]} (h : {x : Sˣ | eval₂ f x p = eval₂ f x q}.Infinite) : p = q :=
-  sub_eq_zero.mp <| eq_zero_of_infinite_eval₂_eq_zero hf _ <| by simpa [sub_eq_zero] using h
+theorem eq_of_infinite_eval₂_eq [CommRing R] [Algebra R S] [FaithfulSMul R S] {p q : R[T;T⁻¹]}
+    (h : {x : Sˣ | eval₂ (algebraMap R S) x p = eval₂ (algebraMap R S) x q}.Infinite) : p = q :=
+  sub_eq_zero.mp <| eq_zero_of_infinite_eval₂_eq_zero (S := S) _ <| by simpa [sub_eq_zero] using h
 
 end LaurentPolynomial
