@@ -251,6 +251,10 @@ instance : CompleteLattice (Subsemiring R) :=
 theorem eq_top_iff' (A : Subsemiring R) : A = ⊤ ↔ ∀ x : R, x ∈ A :=
   eq_top_iff.trans ⟨fun h m => h <| mem_top m, fun h m _ => h m⟩
 
+@[simp] theorem top_toSubmonoid : (⊤ : Subsemiring R).toSubmonoid = ⊤ := rfl
+
+@[simp] theorem top_toAddSubmonoid : (⊤ : Subsemiring R).toAddSubmonoid = ⊤ := rfl
+
 section NonAssocSemiring
 
 variable (R)

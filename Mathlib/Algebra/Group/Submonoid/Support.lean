@@ -133,9 +133,19 @@ theorem _root_.Subgroup.mulSupport_eq (H : Subgroup G) : H.mulSupport = H :=
 theorem mulSupport_bot : (⊥ : Submonoid G).mulSupport = ⊥ := by
   simpa using (⊥ : Subgroup G).mulSupport_eq
 
+variable (G) in
+@[to_additive]
+theorem bot_isMulPointed : (⊥ : Submonoid G).IsMulPointed := by
+  simp [isMulPointed_iff_mulSupport_eq_bot]
+
 @[to_additive (attr := simp)]
 theorem mulSupport_top : (⊤ : Submonoid G).mulSupport = ⊤ :=
   Subgroup.gc_toSubmonoid_mulSupport.u_top
+
+variable (G) in
+@[to_additive]
+theorem not_top_isMulPointed [Nontrivial G] : ¬ (⊤ : Submonoid G).IsMulPointed := by
+  simp [isMulPointed_iff_mulSupport_eq_bot]
 
 variable {M N} in
 @[to_additive]

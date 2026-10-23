@@ -34,8 +34,6 @@ namespace Subsemiring
 
 variable {R : Type*} [CommRing R]
 
--- TODO : membership tag on definition of support
-
 /--
 An ordering `O` on a ring `R` is a subsemiring of `R` such that `O ∪ -O = R` and
 the support `O ∩ -O` of `O` forms a prime ideal.
@@ -62,15 +60,14 @@ theorem IsOrdering.of_isPrime_supportIdeal {S : Subsemiring R} (hS : S.IsSpannin
 
 /-- A preordering on a ring `R` is a subsemiring of `R` that contains all squares, but not `-1`. -/
 structure IsPreordering (S : Subsemiring R) : Prop where
-  mem_of_isSquare (S) {x} (hx : IsSquare x) : x ∈ S := by grind -- by membership
-  neg_one_notMem (S) : -1 ∉ S := by grind -- by membership
+  mem_of_isSquare (S) {x} (hx : IsSquare x) : x ∈ S := by grind
+  neg_one_notMem (S) : -1 ∉ S := by grind
 
 export IsPreordering (mem_of_isSquare)
 export IsPreordering (neg_one_notMem)
 
 namespace IsPreordering
 
--- TODO : membership tag
 protected theorem mem_of_isSumSq {S : Subsemiring R} (hS : IsPreordering S)
     {x : R} (hx : IsSumSq x) : x ∈ S := by
   induction hx with
@@ -80,12 +77,10 @@ protected theorem mem_of_isSumSq {S : Subsemiring R} (hS : IsPreordering S)
 theorem sumSq_le {R : Type*} [CommRing R] {S : Subsemiring R} (hS : IsPreordering S) :
     Subsemiring.sumSq R ≤ S := fun _ ↦ by simp_all [Subsemiring.IsPreordering.mem_of_isSumSq]
 
--- TODO : membership tag
 @[simp]
 protected theorem mul_self_mem {S : Subsemiring R} (hS : IsPreordering S) (x : R) :
     x * x ∈ S := by simp_all [Subsemiring.IsPreordering.mem_of_isSumSq]
 
--- TODO : membership tag
 @[simp]
 protected theorem pow_two_mem {S : Subsemiring R} (hS : IsPreordering S) (x : R) :
     x ^ 2 ∈ S := by simpa [pow_two] using Subsemiring.IsPreordering.mul_self_mem hS x
@@ -106,16 +101,6 @@ theorem IsPreordering.of_ne_top {S : Subsemiring R} (hS : S.IsSpanning) (h : S �
     rcases hS x with hx | hx
     · simpa using hx
     · simpa using mul_mem hc hx
-
--- TODO : move to right place
-@[simp]
-theorem top_toSubmonoid :
-    (⊤ : Subsemiring R).toSubmonoid = ⊤ := rfl
-
--- TODO : move to right place
-@[simp]
-theorem top_toAddSubmonoid :
-    (⊤ : Subsemiring R).toAddSubmonoid = ⊤ := rfl
 
 /- An ordering is a preordering. -/
 theorem IsOrdering.isPreordering {S : Subsemiring R} (hS : S.IsOrdering) : S.IsPreordering :=

@@ -38,7 +38,6 @@ theorem of_le (hP : P.IsPreordering) {Q : Subsemiring R} (hPQ : P ≤ Q) (hQ : -
     Q.IsPreordering where
   mem_of_isSquare := by grind [IsConcreteLE.le_iff, IsPreordering.mem_of_isSquare]
 
--- TODO : membership
 theorem unitsInv_mem (hP : P.IsPreordering) {a : Rˣ} (ha : ↑a ∈ P) : ↑a⁻¹ ∈ P := by
   simpa using show (a * (a⁻¹ * a⁻¹) : R) ∈ P by grind [mul_mem, IsPreordering.mul_self_mem]
 
@@ -61,7 +60,7 @@ theorem isOrdering_iff (hP : P.IsPreordering) :
   mpr h := by
     refine ⟨?_, hP.support_ne_top, fun {x y} ↦ ?_⟩
     · simp [AddSubmonoid.IsSpanning]
-      grind [hP.mul_self_mem, neg_mul, mul_neg, neg_neg] -- TODO : figure out why `grind` doesn't know `neg_neg`
+      grind [hP.mul_self_mem, neg_mul, mul_neg, neg_neg]
     · simp_rw [Subsemiring.mem_support]
       by_contra
       have := h (-x) y
@@ -76,13 +75,13 @@ theorem smul_mem_support_of_isUnit_two (hP : P.IsPreordering) (h : IsUnit (2 : R
   rw [Subsemiring.mem_support] at *
   suffices ((1 + x) * half) ^ 2 * a + ((1 - x) * half) ^ 2 * (- a) ∈ P ∧
            ((1 + x) * half) ^ 2 * (- a) + ((1 - x) * half) ^ 2 * a ∈ P by grind
-  grind [add_mem, mul_mem, mul_neg_mem, IsPreordering.pow_two_mem] -- membership
+  grind [add_mem, mul_mem, mul_neg_mem, IsPreordering.pow_two_mem]
 
 end IsPreordering
 
 theorem IsPreordering.of_isSpanning_of_isPointed [Nontrivial R]
     (hP₁ : P.IsSpanning) (hP₂ : P.IsPointed) : P.IsPreordering :=
-  .of_ne_top hP₁ fun hc ↦ one_ne_zero' R (by simp_all [AddSubmonoid.IsPointed]) -- TODO : ¬ T.IsPointed
+  .of_ne_top hP₁ fun _ ↦ by simp_all [AddSubmonoid.not_top_isPointed]
 
 theorem IsPreordering.of_isPointed [Nontrivial R]
     (hP : P.IsPointed) (h : .sumSq R ≤ P) : P.IsPreordering where
@@ -97,13 +96,14 @@ theorem IsOrdering.of_isSpanning_of_isPointed [IsDomain R]
   support_ne_top := by simp [hP₂]
   mem_support_or_mem_support := by simp [hP₂]
 
+end CommRing
+
 section Field
 
 variable {F : Type*} [Field F] {P : Subsemiring F}
 
 namespace IsPreordering
 
--- TODO : membership
 theorem inv_mem (hP : IsPreordering P) {a : F} (ha : a ∈ P) : a⁻¹ ∈ P := by
   suffices a * (a⁻¹ * a⁻¹) ∈ P by grind
   grind [mul_mem, IsPreordering.mul_self_mem]
@@ -299,3 +299,5 @@ theorem isOrdering_iff {P : RingPreordering R} :
     cases (by aesop : x ∈ P ∨ -x ∈ P) <;> simp_all [mem_support]
 
 end RingPreordering
+
+end Subsemiring
