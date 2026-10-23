@@ -25,7 +25,6 @@ We obtain the following tower laws:
   wrapper for the above that only asks `(R⁰)⁻¹ S` to be a field.
 - `Module.IsTorsionFree.erank_mul_erank`, `Module.IsTorsionFree.finrank_mul_finrank`:
   when `M` is torsion-free over `S`. We only get truncated cardinalities.
-- `Module.finrank_mul_finrank'`: alias for the above.
 - `Algebra.IsAlgebraic.rank_mul_rank` & variants: when `S/R` is algebraic.
 -/
 

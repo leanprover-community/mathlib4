@@ -71,7 +71,7 @@ $\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$
 
 For non-free modules over domains, there are the following variants:
 - `Algebra.IsAlgebraic.finrank_mul_finrank` for when `S/R` is algebraic.
-- `Module.finrank_mul_finrank'` for when the top module is torsion-free.
+- `Module.IsTorsionFree.finrank_mul_finrank` for when the top module is torsion-free.
 -/
 theorem Module.finrank_mul_finrank : finrank F K * finrank K A = finrank F A := by
   simp_rw [finrank]
