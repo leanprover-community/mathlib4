@@ -8,7 +8,6 @@ module
 public import Mathlib.NumberTheory.LegendreSymbol.QuadraticChar.Basic
 
 /-!
-
 # Legendre symbol
 
 This file contains results about Legendre symbols.
