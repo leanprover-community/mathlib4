@@ -37,9 +37,9 @@ theorem IsSimpleModule.lsmul_eq_smul_one_of_mul_comm {z : A} (hz : ∀ a, z * a 
   let z' : Module.End A V :=
     { toFun := Algebra.lsmul k k V z
       map_add' := by simp
-      map_smul' a x := by simpa [mul_smul] using congrArg (fun y ↦ y • x) (hz a) }
+      map_smul' a x := by simpa [mul_smul] using congr($(hz a) • x) }
   obtain ⟨r,hr⟩ := (IsSimpleModule.algebraMap_end_bijective_of_isAlgClosed k).surjective z'
-  exact ⟨r, fun x => by simpa [z'] using congrArg (fun y ↦ y • x) hr.symm⟩
+  exact ⟨r, fun x => by simpa [z'] using congr($(hr.symm) • x)⟩
 
 variable (A V)
 
