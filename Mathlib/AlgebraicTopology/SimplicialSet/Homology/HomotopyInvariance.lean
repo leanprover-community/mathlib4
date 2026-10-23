@@ -45,7 +45,7 @@ assert_not_exists TopologicalSpace
 
 universe v u w
 
-open CategoryTheory Limits AlgebraicTopology.SSet
+open CategoryTheory Limits
 
 variable {C : Type u} [Category.{v} C] [Preadditive C] [HasCoproducts.{w} C]
   {X Y : SSet.{w}} {f g : X ⟶ Y}
@@ -64,10 +64,6 @@ noncomputable def sSetChainComplexMap
     _root_.Homotopy (SSet.chainComplexMap f R) (SSet.chainComplexMap g R) :=
   toChainHomotopy (H.whiskerRight _)
 
-@[deprecated (since := "2026-04-05")]
-alias singularChainComplexFunctorObjMap :=
-  sSetChainComplexMap
-
 open HomologicalComplex in
 /--
 Simplicially homotopic maps of simplicial sets induce the same map on
@@ -80,9 +76,6 @@ theorem congr_sSetHomologyMap [CategoryWithHomology C]
     (H : SimplicialObject.Homotopy f g) (R : C) (n : ℕ) :
     SSet.homologyMap f R n = SSet.homologyMap g R n :=
   (H.sSetChainComplexMap R).homologyMap_eq n
-
-@[deprecated (since := "2026-04-05")] alias congr_homologyMap_singularChainComplexFunctor :=
-  congr_sSetHomologyMap
 
 end CategoryTheory.SimplicialObject.Homotopy
 
@@ -97,9 +90,6 @@ noncomputable def chainComplexMap
     _root_.Homotopy (SSet.chainComplexMap f R) (SSet.chainComplexMap g R)  :=
   H.toSimplicialObjectHomotopy.sSetChainComplexMap R
 
-@[deprecated (since := "2026-04-05")]
-alias singularChainComplexFunctorObjMap := chainComplexMap
-
 open HomologicalComplex in
 /--
 Homotopic maps of simplicial sets induce the same map on homology of the singular
@@ -109,8 +99,5 @@ theorem congr_homologyMap [CategoryWithHomology C]
     (H : SSet.Homotopy f g) (R : C) (n : ℕ) :
     SSet.homologyMap f R n = SSet.homologyMap g R n :=
   (H.chainComplexMap R).homologyMap_eq n
-
-@[deprecated (since := "2026-04-05")]
-alias congr_homologyMap_singularChainComplexFunctor := congr_homologyMap
 
 end SSet.Homotopy
