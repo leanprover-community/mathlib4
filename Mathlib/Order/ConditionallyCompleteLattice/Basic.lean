@@ -903,3 +903,16 @@ noncomputable instance WithBot.WithTop.completeLinearOrder {α : Type*}
   __ := linearOrder.toBiheytingAlgebra
 
 end WithTopBot
+
+namespace OrderIso
+variable {α β : Type*} [Lattice α] [ConditionallyCompleteLattice β]
+
+/-- Transfer a `ConditionallyCompleteLattice` structure on `β` across an order isomorphism
+`α ≃o β`, keeping the existing `Lattice` structure on `α`. -/
+-- See note [reducible non-instances]
+noncomputable abbrev conditionallyCompleteLattice (e : α ≃o β) : ConditionallyCompleteLattice α :=
+  @conditionallyCompleteLatticeOfLatticeOfsSup α _ ⟨fun S ↦ e.symm (sSup (e '' S))⟩
+    fun S hb hn ↦ e.isLUB_image'.1 (by
+      simpa using isLUB_csSup (hn.image e) (e.monotone.map_bddAbove hb))
+
+end OrderIso
