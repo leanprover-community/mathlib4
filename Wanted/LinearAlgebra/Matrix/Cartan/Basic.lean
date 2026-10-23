@@ -20,8 +20,6 @@ theorem_wanted isFiniteCartan_c : (C n).IsFiniteCartan
 
 theorem_wanted isFiniteCartan_d : (D n).IsFiniteCartan
 
-theorem_wanted isFiniteCartan_e₆ : (E 6).IsFiniteCartan
-
 theorem_wanted isFiniteCartan_e₇ : (E 7).IsFiniteCartan
 
 theorem_wanted isFiniteCartan_e₈ : (E 8).IsFiniteCartan
