@@ -174,18 +174,8 @@ theorem IsTorsionFree.erank_mul_erank [IsTorsionFree S M] :
   have : IsDomain S := {}
   nontriviality M using rank_subsingleton'
   let FR := FractionRing R
-  let mS := algebraMapSubmonoid S R⁰
-  let FS := Localization mS
-  let M' := LocalizedModule mS M
-  let pS : S →ₗ[R] FS := IsScalarTower.toAlgHom R S FS |>.toLinearMap
-  let pM : M →ₗ[R] M' := LocalizedModule.mkLinearMap .. |>.restrictScalars R
-  let : Module FR M' := .restrictScalars _ FS _
-  have : IsScalarTower FR FS M' := .restrictScalars ..
-  have : IsScalarTower R FR M' := .to₁₂₄ (P := FS) ..
-  have hFS := IsLocalizedModule.isBaseChange R⁰ FR pS
-  have : IsLocalizedModule R⁰ pM :=
-    localizedModuleIsLocalizedModule mS |>.restrictScalars R⁰
-  have hM' := this.isBaseChange R⁰ FR
+  let FS := Localization (algebraMapSubmonoid S R⁰)
+  have hFS := IsLocalizedModule.isBaseChange R⁰ FR <| IsScalarTower.toAlgHom R S FS |>.toLinearMap
   by_cases! hRS : rank R S < .aleph0
   · have : Module.Finite FR FS := rank_lt_aleph0_iff.mp <| hFS.rank_eq ▸ hRS
     have : IsDomain FS := IsLocalization.isDomain_localization <|
