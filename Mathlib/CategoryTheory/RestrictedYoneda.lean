@@ -10,6 +10,12 @@ public import Mathlib.CategoryTheory.ShrinkYoneda
 /-!
 # The restricted Yoneda functor
 
+If `F : C ⥤ D` is a functor and `D` is a locally `w`-small category,
+we define a functor `Presheaf.restrictedShrinkYoneda : D ⥤ Cᵒᵖ ⥤ Type w`
+which sends `Y : D` and `X : Cᵒᵖ` to a type that is equivalent to
+`F.obj X.unop ⟶ Y`. (We also provide `restrictedYoneda` and
+`restrictedULiftYoneda` variants.)
+
 ## References
 * [S. MacLane, I. Moerdijk, *Sheaves in Geometry and Logic*][MM92]
 

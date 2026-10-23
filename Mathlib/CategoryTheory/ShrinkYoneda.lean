@@ -19,7 +19,7 @@ file `CategoryTheory.Yoneda` for the other variants `yoneda` and
 
 @[expose] public section
 
-universe w w' w'' v u
+universe w w' w'' v v' u u'
 
 namespace CategoryTheory
 
@@ -318,6 +318,23 @@ lemma shrinkYonedaMap_app_shrinkYonedaObjObjEquiv_symm (F : C ⥤ D) {X Y : C} (
   simp [shrinkYonedaMap]
 
 end
+
+lemma comp_shrinkYonedaMap_comp_eq_yonedaMap
+    {C D : Type*} [Category.{v} C] [Category.{v} D] (F : C ⥤ D) (X : C) :
+    shrinkYonedaIsoYoneda.inv.app _ ≫ shrinkYonedaMap.{v} F X ≫
+      Functor.whiskerLeft _ (shrinkYonedaIsoYoneda.hom.app _) = yonedaMap F X := by
+  ext
+  simp [shrinkYonedaMap_app_hom_apply.{v}]
+
+lemma comp_shrinkYonedaMap_comp_eq_uliftYonedaMap
+    {C : Type*} [Category.{v} C] {D : Type*} [Category.{v'} D] (F : C ⥤ D) (X : C) :
+    uliftYonedaIsoShrinkYoneda.hom.app _ ≫ shrinkYonedaMap.{max w v v'} F X ≫
+      Functor.whiskerLeft _ (uliftYonedaIsoShrinkYoneda.inv.app _) =
+    uliftYonedaMap.{w} F X := by
+  ext
+  simp [shrinkYonedaMap_app_hom_apply.{max w v v'}, uliftYonedaMap,
+    uliftYonedaIsoShrinkYoneda_inv_app_app,
+    uliftYonedaIsoShrinkYoneda_hom_app_app]
 
 end Yoneda
 

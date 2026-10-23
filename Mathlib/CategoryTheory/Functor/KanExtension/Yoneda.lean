@@ -29,25 +29,6 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 namespace Presheaf
 
--- to be moved
-lemma comp_shrinkYonedaMap_comp_eq_yonedaMap
-    {D : Type*} [Category.{v₁} D] (F : C ⥤ D) (X : C) :
-    shrinkYonedaIsoYoneda.inv.app _ ≫ shrinkYonedaMap.{v₁} F X ≫
-      Functor.whiskerLeft _ (shrinkYonedaIsoYoneda.hom.app _) = yonedaMap F X := by
-  ext
-  simp [shrinkYonedaMap_app_hom_apply.{v₁}]
-
--- to be moved
-lemma comp_shrinkYonedaMap_comp_eq_uliftYonedaMap
-    (F : C ⥤ D) (X : C) :
-    uliftYonedaIsoShrinkYoneda.hom.app _ ≫ shrinkYonedaMap.{max w v₁ v₂} F X ≫
-      Functor.whiskerLeft _ (uliftYonedaIsoShrinkYoneda.inv.app _) =
-    uliftYonedaMap.{w} F X := by
-  ext
-  simp [shrinkYonedaMap_app_hom_apply.{max w v₁ v₂}, uliftYonedaMap,
-    uliftYonedaIsoShrinkYoneda_inv_app_app,
-    uliftYonedaIsoShrinkYoneda_hom_app_app]
-
 open Limits Opposite
 
 section shrinkYoneda

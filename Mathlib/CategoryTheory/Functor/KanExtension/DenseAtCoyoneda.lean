@@ -28,51 +28,6 @@ namespace CategoryTheory
 
 open Opposite Limits
 
-namespace Equivalence -- to be moved
-
-variable {C D : Type*} [Category* C] [Category* D] (e : C ≌ D) (P : D ⥤ Type w)
-
-@[implicit_reducible, simps]
-def congrElements : P.Elements ≌ (e.functor ⋙ P).Elements where
-  functor.obj x :=
-    Functor.elementsMk _ (e.inverse.obj x.1) (P.map (e.counitIso.inv.app x.1) x.2)
-  functor.map f :=
-    Functor.Elements.homMk (e.inverse.map f.1) (by
-      simp only [← f.2, ← ConcreteCategory.comp_apply, ← Functor.map_comp,
-        fun_inv_map, Functor.comp_obj, Functor.id_obj, Iso.inv_hom_id_app_assoc,
-        Functor.comp_map])
-  inverse.obj x := Functor.elementsMk _ (e.functor.obj x.1) x.2
-  inverse.map f := Functor.Elements.homMk (e.functor.map f.1) f.2
-  unitIso :=
-    NatIso.ofComponents
-      (fun x ↦ Functor.Elements.isoMk (e.counitIso.symm.app x.1) (by cat_disch))
-  counitIso :=
-    NatIso.ofComponents
-      (fun x ↦ Functor.Elements.isoMk (e.unitIso.symm.app x.1) (by
-        simp [← ConcreteCategory.comp_apply, ← Functor.map_comp]))
-
-end Equivalence
-
-namespace Limits -- to be moved
-
-variable {C J J' E : Type*} [Category* C] [Category* J] [Category* J'] [Category* E]
-  [HasColimitsOfShape J' E] (F : J' ⥤ J) (G : C ⥤ J ⥤ E)
-
-@[implicit_reducible, simps]
-noncomputable def colim.coconeCompFlip : Cocone (F ⋙ G.flip) where
-  pt := G ⋙ (Functor.whiskeringLeft _ _ _).obj F ⋙ colim
-  ι.app j' := { app X := colimit.ι (F ⋙ G.obj X) j' }
-  ι.naturality j' j'' f := by
-    ext X
-    simpa using colimit.w (F ⋙ G.obj X) f
-
-@[no_expose]
-noncomputable def colim.isColimitCoconeCompFlip :
-    IsColimit (coconeCompFlip F G) :=
-  evaluationJointlyReflectsColimits _ (fun _ ↦ colimit.isColimit _)
-
-end Limits -- to be moved
-
 variable {C : Type u} [Category.{v} C]
 
 namespace Functor.Elements

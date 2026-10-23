@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.Functor.KanExtension.Yoneda
 /-!
 # Colimit of representables
 
-All the definitions in this file are deprecated. The results in this file
+All the definitions in this file are deprecated. The results from this file
 are now in the folder `Mathlib/CategoryTheory/Functor/KanExtension/`.
 In particular, the fact that any presheaf of types is a colimit of
 representable presheaves is now proven in the fil

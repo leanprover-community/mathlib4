@@ -460,4 +460,27 @@ theorem to_comma_map_right (F : C ⥤ Type w) {X Y} (f : X ⟶ Y) :
 
 end CategoryOfElements
 
+/-- If `e : C ≌ D` is an equivalence of categories and `P : D ⥤ Type w` a functor
+to types, this is the equivalence between the category of elements of `P`
+and the category of elements of `e.functor ⋙ P`. -/
+@[implicit_reducible, simps]
+def Equivalence.congrElements {D : Type*} [Category* D] (e : C ≌ D) (P : D ⥤ Type w) :
+    P.Elements ≌ (e.functor ⋙ P).Elements where
+  functor.obj x :=
+    Functor.elementsMk _ (e.inverse.obj x.obj) (P.map (e.counitIso.inv.app x.obj) x.val)
+  functor.map f :=
+    Functor.Elements.homMk (e.inverse.map f.hom) (by
+      simp only [← f.map_val, ← ConcreteCategory.comp_apply, ← Functor.map_comp,
+        fun_inv_map, Functor.comp_obj, Functor.id_obj, Iso.inv_hom_id_app_assoc,
+        Functor.comp_map])
+  inverse.obj x := Functor.elementsMk _ (e.functor.obj x.obj) x.val
+  inverse.map f := Functor.Elements.homMk (e.functor.map f.hom) f.map_val
+  unitIso :=
+    NatIso.ofComponents
+      (fun x ↦ Functor.Elements.isoMk (e.counitIso.symm.app x.obj) (by cat_disch))
+  counitIso :=
+    NatIso.ofComponents
+      (fun x ↦ Functor.Elements.isoMk (e.unitIso.symm.app x.obj) (by
+        simp [← ConcreteCategory.comp_apply, ← Functor.map_comp]))
+
 end CategoryTheory
