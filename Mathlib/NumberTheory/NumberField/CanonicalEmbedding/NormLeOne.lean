@@ -501,8 +501,8 @@ theorem expMapBasis_apply' (x : realSpace K) :
          ∏ i : {w // w ≠ w₀}, w (fundSystem K (equivFinRank.symm i)) ^ x i := by
   simp_rw [expMapBasis_apply, Basis.equivFun_symm_apply, Fintype.sum_eq_add_sum_subtype_ne _ w₀,
     expMap_add, expMap_smul, expMap_basis_of_eq, Pi.pow_def, Real.exp_one_rpow, Pi.mul_def,
-    expMap_sum, expMap_smul, expMap_basis_of_ne, Pi.smul_def, smul_eq_mul, prod_apply, Pi.pow_apply,
-    normAtAllPlaces_mixedEmbedding]
+    expMap_sum, expMap_smul, expMap_basis_of_ne, Pi.smul_def, smul_eq_mul, Finset.prod_apply,
+    Pi.pow_apply, normAtAllPlaces_mixedEmbedding]
 
 open scoped Classical in
 theorem expMapBasis_apply'' (x : realSpace K) :
