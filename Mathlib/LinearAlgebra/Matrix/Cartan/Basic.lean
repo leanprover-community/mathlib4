@@ -5,6 +5,7 @@ Authors: Oliver Nash, Jonathan Reich, Rida Hamadani
 -/
 module
 
+public import Mathlib.Algebra.Order.Star.Int
 public import Mathlib.GroupTheory.Perm.Cycle.Concrete
 public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.PosDef
@@ -537,6 +538,67 @@ omit hM in
 end Matrix.IsFiniteCartan
 
 namespace CartanMatrix
+
+theorem isFiniteCartan_a (n : ℕ) : (A n).IsFiniteCartan where
+  diag i := diag_apply (A n) i ▸ congr_fun (A_diag n) i
+  offDiag_nonpos := A_apply_le_zero_of_ne n
+  zero_comm i j := by
+    dsimp [A]
+    by_cases i = j
+    · grind
+    by_cases i.val + 1 = j.val ∨ j.val + 1 = i.val
+    · aesop
+    aesop
+  exists_posDef := by
+    use 1
+    simp only [Pi.one_apply, zero_lt_one, implies_true, diagonal_one', one_mul, true_and]
+    let M : Matrix (Fin (n + 1)) (Fin n) ℤ := fun i j ↦
+        (if i = j.castSucc then 1 else 0) + if i = j.succ then -1 else 0
+    have hsum (a b : Fin (n + 1)) (hab : a ≠ b) (f : Fin (n + 1) → ℤ) :
+        (∑ x, if x = a then f x else if x = b then -f x else 0) = f a - f b := calc
+      _ = ∑ x, ((if x = a then f x else 0) + (if x = b then -f x else 0)) := by
+        apply Finset.sum_congr rfl
+        intro x hx
+        by_cases hxa : x = a
+        · simp [hxa, hab]
+        · by_cases x = b <;> simp [hxa]
+      _ = _ := by simp [Finset.sum_add_distrib, Int.add_neg_eq_sub]
+    have h : A n = Mᴴ * M := by
+      ext i j
+      rw [conjTranspose_eq_transpose_of_trivial, mul_apply]
+      dsimp [A]
+      grind [transpose_apply, hsum j.castSucc j.succ (by grind) (fun x ↦ if x = i.castSucc then 1
+        else if x = i.succ then -1 else 0)]
+    rw [h]
+    apply PosDef.conjTranspose_mul_self
+    intro x y hxy
+    funext ⟨k, hk⟩
+    induction k with
+    | zero =>
+      have hpos (z : Fin n → ℤ) : (∑ j : Fin n, (if 0 = j.castSucc then (1 : ℤ) else 0) * z j)
+          = z ⟨0, hk⟩ := calc
+        _ = ∑ j : Fin n, (if j = ⟨0, hk⟩ then (1 : ℤ) else 0) * z j := by grind
+        _ = z ⟨0, hk⟩ := by simp
+      have hneg (z : Fin n → ℤ) : (∑ j : Fin n, (if 0 = j.succ then (-1 : ℤ) else 0) * z j)
+        = 0 := by grind [Finset.sum_eq_zero]
+      have h (z : Fin n → ℤ) : (M.mulVec z) 0 = z ⟨0, hk⟩ := by
+        simp_rw [mulVec_apply_eq_sum, M, add_mul, Finset.sum_add_distrib, hpos z, hneg z, add_zero]
+      have heq := congrFun hxy 0
+      rwa [h x, h y] at heq
+    | succ k =>
+      have hk' : k < n := Nat.lt_of_succ_lt hk
+      have hpos (z : Fin n → ℤ) : (∑ j : Fin n, (if Fin.succ ⟨k, hk'⟩ = j.castSucc then (1 : ℤ)
+          else 0) * z j) = z ⟨k + 1, hk⟩ := calc
+        _ = ∑ j : Fin n, (if j = ⟨k + 1, hk⟩ then (1 : ℤ) else 0) * z j := by grind
+        _ = _ := by simp
+      have hneg (z : Fin n → ℤ) : (∑ j : Fin n, (if Fin.succ ⟨k, hk'⟩ = j.succ then (-1 : ℤ)
+          else 0) * z j) = -z ⟨k, hk'⟩ := calc
+        _ = ∑ j : Fin n, (if j = ⟨k, hk'⟩ then (-1 : ℤ) else 0) * z j := by grind
+        _ = _ := by simp
+      have h (z : Fin n → ℤ) : (M.mulVec z) (Fin.succ ⟨k, hk'⟩) = z ⟨k + 1, hk⟩ - z ⟨k, hk'⟩ := by
+        simp_rw [mulVec_apply_eq_sum, M, add_mul, Finset.sum_add_distrib, hpos z, hneg z,
+          Int.add_neg_eq_sub]
+      grind [congrFun hxy (Fin.succ ⟨k, hk'⟩), h x, h y]
 
 theorem isFiniteCartan_e₆ : (E 6).IsFiniteCartan where
   diag := E_diag 6

@@ -12,8 +12,6 @@ namespace CartanMatrix
 
 variable (n : ℕ)
 
-theorem_wanted isFiniteCartan_a : (A n).IsFiniteCartan
-
 theorem_wanted isFiniteCartan_b : (B n).IsFiniteCartan
 
 theorem_wanted isFiniteCartan_c : (C n).IsFiniteCartan
