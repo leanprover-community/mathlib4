@@ -8,7 +8,7 @@ module
 public meta import Lean.Elab.Command
 public meta import Lean.Elab.ParseImportsFast
 public meta import Lean.Elab.AssertExists
-public import Lean.Message
+public meta import Lean.Message
 
 meta import Lean.Data.Json.FromToJson.Extra
 
@@ -282,12 +282,14 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Testing, `Mathlib.Util),
 ]
 
-/-- The configuration file for `forbiddenImportDirs`, relative to the mathlib root directory.
+/-- The path to the configuration file for `forbiddenImportDirs`, relative to `srcDir`. This is
+`{srcDir}/scripts/forbiddenDirs.json`.
 
 Each key names a module prefix; modules matching that prefix may not import modules matching any
 of the prefixes in the corresponding list. Exceptions to these rules live in
 `overrideAllowedImportDirs` below. -/
-def forbiddenDirsPath : System.FilePath := "scripts" / "forbiddenDirs.json"
+def forbiddenDirsPath (srcDir : System.FilePath) : System.FilePath :=
+  srcDir / "scripts" / "forbiddenDirs.json"
 
 /-- The root modules of the libraries built from the mathlib repository itself.
 When elaborating one of their modules, the linter configuration file must be present. -/
@@ -300,19 +302,19 @@ initialize forbiddenImportDirsCache : IO.Ref (Option NamePrefixRel) ← IO.mkRef
 should not import modules with the second prefix (except if specifically allowed in
 `overrideAllowedImportDirs`).
 
-For example, `scripts/forbiddenDirs.json` contains the entry
+For example, `{srcDir}/scripts/forbiddenDirs.json` contains the entry
 `"Mathlib.Algebra.Notation": ["Mathlib.Algebra"]` and ``(`Mathlib.Algebra.Notation,
 `Mathlib.Algebra.Notation)`` is in `overrideAllowedImportDirs` because modules in
 `Mathlib/Algebra/Notation.lean` cannot import modules in `Mathlib.Algebra` that are
 outside `Mathlib/Algebra/Notation.lean`.
 
-This relation is read at runtime from `scripts/forbiddenDirs.json`, so that updating the
+This relation is read at runtime from `{srcDir}/scripts/forbiddenDirs.json`, so that updating the
 configuration does not require recompiling this linter (and everything importing it).
 -/
-def forbiddenImportDirs : IO NamePrefixRel := do
+def forbiddenImportDirs (srcDir : System.FilePath) : IO NamePrefixRel := do
   if let some rel ← forbiddenImportDirsCache.get then
     return rel
-  let json ← IO.ofExcept <| Json.parse (← IO.FS.readFile forbiddenDirsPath)
+  let json ← IO.ofExcept <| Json.parse (← IO.FS.readFile <| forbiddenDirsPath srcDir)
   let entries : Std.TreeMap String (Array String) ← IO.ofExcept <| fromJson? json
   let rel := NamePrefixRel.ofArray <|
     entries.toArray.flatMap fun (n₁, ns) ↦ ns.map fun n₂ ↦ (n₁.toName, n₂.toName)
@@ -386,8 +388,16 @@ def checkBlocklist (env : Environment) (forbidden : NamePrefixRel) (mainModule :
       on a module starting with {n₂} but a module with that prefix was not found in the import graph."
   | none => none
 
-@[inherit_doc Mathlib.Linter.linter.directoryDependency]
-public def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array MessageData) := do
+/--
+Runs the `directoryDependency` linter on the current module, assuming that it is called
+`mainModule`. Detects imports between directories that are supposed to be independent. If this is
+the case, it emits a warning.
+
+Note: we look in `srcDir` for `scripts/forbiddenDirs.json` and, if in mathlib, for `Mathlib.Init`.
+`srcDir` is thus typically expected to be the package directory (e.g. `{path}/mathlib4`).
+-/
+public def directoryDependencyCheck (srcDir : System.FilePath) (mainModule : Name) :
+    CommandElabM (Array MessageData) := do
   unless Linter.getLinterValue linter.directoryDependency (← Linter.getLinterOptions) do
     return #[]
   let env ← getEnv
@@ -398,15 +408,12 @@ public def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array Me
   let matchingPrefixes := mainModule.prefixes.filter (fun prf ↦ allowedImportDirs.containsKey prf)
   if matchingPrefixes.isEmpty then
     -- Otherwise, we fall back to the blocklist `forbiddenImportDirs`.
-    unless ← forbiddenDirsPath.pathExists do
-      -- When mathlib is used as a dependency, its configuration file is not available;
-      -- in that case, there is nothing to check.
-      -- Within mathlib itself, the file must exist: fail loudly if it does not.
+    unless ← (forbiddenDirsPath srcDir).pathExists do
       if mathlibRoots.contains mainModule.getRoot then
-        throwError "directoryDependency linter: configuration file '{forbiddenDirsPath}' \
-          not found; was mathlib built from its root directory?"
+        throwError "directoryDependency linter: configuration file '{forbiddenDirsPath srcDir}' \
+          not found."
       return #[]
-    if let some msg := checkBlocklist env (← forbiddenImportDirs) mainModule imports then
+    if let some msg := checkBlocklist env (← forbiddenImportDirs srcDir) mainModule imports then
       return #[msg]
     else return #[]
   else
@@ -414,7 +421,7 @@ public def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array Me
     -- from `Init`, `Lean` and `Std`, as well as imports in `Aesop`, `Qq`, `Plausible`,
     -- `ImportGraph`, `ProofWidgets` or `LeanSearchClient` (as these are imported in Tactic.Common).
     -- We also allow transitive imports of Mathlib.Init, as well as Mathlib.Init itself.
-    let initImports := (← findImports ("Mathlib" / "Init.lean")).append
+    let initImports := (← findImports (srcDir / "Mathlib" / "Init.lean")).append
       #[`Mathlib.Init, `Mathlib.Tactic.DeclarationNames]
     let exclude := [
       `Init, `Std, `Lean,
@@ -432,12 +439,12 @@ public def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array Me
       if !allowedImportDirs.contains mainModule imported then
         let importPath := env.importPath imported
         let mut msg := m!"Module {mainModule} depends on {imported},\n\
-        but is only allowed to import modules starting with one of \
-        {allRules.toArray.qsort (·.toString < ·.toString)}.\n\
-        Note: module {imported}"
+          but is only allowed to import modules starting with one of \
+          {allRules.toArray.qsort (·.toString < ·.toString)}.\n\
+          Note: module {imported}"
         let mut superseded := false
         match importPath.toList with
-        | [] => msg := msg ++ " is directly imported by this module"
+        | [] => msg := m!"{msg} is directly imported by this module"
         | a :: rest =>
           -- Only add messages about imports that aren't themselves transitive imports of
           -- forbidden imports.
@@ -445,14 +452,14 @@ public def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array Me
           if !allowedImportDirs.contains mainModule a then
             superseded := true
           else
-            msg := msg ++ s!" is imported by {a},\n"
+            msg := m!"{msg} is imported by {a},\n"
             for dep in rest do
               if !allowedImportDirs.contains mainModule dep then
                 superseded := true
                 break
-              msg := msg ++ m!"which is imported by {dep},\n"
-            msg := msg ++ m!"which is imported by this module."
-            msg := msg ++ "(Exceptions can be added to `allowedImportDirs`.)"
+              msg := m!"{msg}which is imported by {dep},\n"
+            msg := m!"{msg}which is imported by this module.\n\
+              (Exceptions can be added to `allowedImportDirs`.)"
         if !superseded then
           messages := messages.push msg
     return messages

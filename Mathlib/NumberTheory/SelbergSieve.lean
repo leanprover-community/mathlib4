@@ -208,8 +208,8 @@ theorem siftedSum_le_sum_of_upperMoebius (muPlus : ℕ → ℝ) (h : IsUpperMoeb
     simp_rw [mul_sum, ← sum_filter]
     congr with n
     congr
-    · rw [← divisors_filter_dvd_of_dvd prodPrimes_ne_zero (Nat.gcd_dvd_left _ _)]
-      ext x; simp +contextual [dvd_gcd_iff]
+    rw [← divisors_filter_dvd_of_dvd prodPrimes_ne_zero (Nat.gcd_dvd_left _ _)]
+    ext x; simp +contextual [dvd_gcd_iff]
   case caseC =>
     rw [sum_comm]
     simp_rw [multSum, ← sum_filter, mul_sum, mul_comm]
@@ -315,7 +315,8 @@ theorem nu_inv_eq_sum_divisors_inv_selbergTerms {d : ℕ} (hdP : d ∣ s.prodPri
   rw [eq_comm, ← sum_filter, Nat.divisors_filter_dvd_of_dvd prodPrimes_ne_zero hdP]
   have hd_pos : 0 < d := Nat.pos_of_ne_zero <| ne_zero_of_dvd_ne_zero prodPrimes_ne_zero hdP
   revert hdP; revert d
-  apply (ArithmeticFunction.sum_eq_iff_sum_mul_moebius_eq_on _ (fun _ _ ↦ Nat.dvd_trans)).mpr
+  apply (ArithmeticFunction.sum_eq_iff_sum_mul_moebius_eq_on {d | d ∣ s.prodPrimes}
+    (fun _ _ ↦ Nat.dvd_trans)).mpr
   intro l _ hlP
   exact inv_selbergTerms_eq_sum_divisors_moebius_nu
     (Squarefree.squarefree_of_dvd hlP s.prodPrimes_squarefree)

@@ -316,7 +316,9 @@ theorem conj_ofReal (r : ℝ) : conj (r : K) = (r : K) := by
   rw [ext_iff]
   simp only [ofReal_im, conj_im, conj_re, and_self_iff, neg_zero]
 
-theorem conj_nat_cast (n : ℕ) : conj (n : K) = n := map_natCast _ _
+theorem conj_natCast (n : ℕ) : conj (n : K) = n := map_natCast _ _
+
+@[deprecated (since := "2026-10-13")] alias conj_nat_cast := conj_natCast
 
 theorem conj_ofNat (n : ℕ) [n.AtLeastTwo] : conj (ofNat(n) : K) = ofNat(n) :=
   map_ofNat _ _
@@ -1292,7 +1294,7 @@ section
 
 /-- A mixin over a normed field, saying that the norm field structure is the same as `ℝ` or `ℂ`.
 To endow such a field with a compatible `RCLike` structure in a proof, use
-`letI := IsRCLikeNormedField.rclike 𝕜`. -/
+`let := IsRCLikeNormedField.rclike 𝕜`. -/
 class IsRCLikeNormedField (𝕜 : Type*) [hk : NormedField 𝕜] : Prop where
   out : ∃ h : RCLike 𝕜, hk = h.toNormedField
 

@@ -5,9 +5,9 @@ Authors: María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.RingTheory.UniqueFactorizationDomain.Finsupp
 public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 public import Mathlib.RingTheory.RamificationInertia.Ramification
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Finsupp
 
 /-!
 # Factorization of ideals and fractional ideals of Dedekind domains
@@ -120,8 +120,6 @@ theorem hasFiniteMulSupport {I : Ideal R} (hI : I ≠ 0) :
     exact hv hv'
   Finite.subset (Filter.eventually_cofinite.mp (Associates.finite_factors hI)) h_subset
 
-@[deprecated (since := "2026-03-03")] alias finite_mulSupport := hasFiniteMulSupport
-
 /-- For every nonzero ideal `I` of `v`, there are finitely many maximal ideals `v` such that
 `v^(val_v(I))`, regarded as a fractional ideal, is not `(1)`. -/
 @[fun_prop]
@@ -132,8 +130,6 @@ theorem hasFiniteMulSupport_coe {I : Ideal R} (hI : I ≠ 0) :
   simp_rw [Ne, zpow_natCast, ← FractionalIdeal.coeIdeal_pow, FractionalIdeal.coeIdeal_eq_one]
   exact hasFiniteMulSupport hI
 
-@[deprecated (since := "2026-03-03")] alias finite_mulSupport_coe := hasFiniteMulSupport_coe
-
 /-- For every nonzero ideal `I` of `v`, there are finitely many maximal ideals `v` such that
 `v^-(val_v(I))` is not the unit ideal. -/
 @[fun_prop]
@@ -143,8 +139,6 @@ theorem hasFiniteMulSupport_inv {I : Ideal R} (hI : I ≠ 0) :
   rw [HasFiniteMulSupport, mulSupport]
   simp_rw [zpow_neg, Ne, inv_eq_one]
   exact hasFiniteMulSupport_coe hI
-
-@[deprecated (since := "2026-03-03")] alias finite_mulSupport_inv := hasFiniteMulSupport_inv
 
 /-- For every nonzero ideal `I` of `v`, `v^(val_v(I) + 1)` does not divide `∏_v v^(val_v(I))`. -/
 theorem finprod_not_dvd (I : Ideal R) (hI : I ≠ 0) :
@@ -500,7 +494,7 @@ theorem count_maximal (w : HeightOneSpectrum R) [Decidable (w = v)] :
 theorem count_finprod_coprime (exps : HeightOneSpectrum R → ℤ) :
     count K v (∏ᶠ (w : HeightOneSpectrum R) (_ : w ≠ v),
       (w.asIdeal : (FractionalIdeal R⁰ K)) ^ exps w) = 0 := by
-  apply finprod_mem_induction fun I => count K v I = 0
+  apply finprod_mem_induction (s := {w | w ≠ v}) fun I => count K v I = 0
   · exact count_one K v
   · intro I I' hI hI'
     classical
@@ -823,9 +817,6 @@ theorem Ideal.map_algebraMap_eq_finsetProd_pow {p : Ideal S} [p.IsMaximal] (hp :
   · intro v hv
     simpa [maxPowDividing, Function.mem_mulSupport, IsPrime.ne_top _,
       Associates.count_ne_zero_iff_dvd h (irreducible v)] using hv
-
-@[deprecated (since := "2026-04-08")]
-alias Ideal.map_algebraMap_eq_finset_prod_pow := Ideal.map_algebraMap_eq_finsetProd_pow
 
 end primesOver
 
