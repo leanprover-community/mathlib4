@@ -38,7 +38,7 @@ theorem eq_zero_of_infinite_smeval_eq_zero (p : R[T;T⁻¹])
     rw [← Polynomial.map_eq_zero_iff (FaithfulSMul.algebraMap_injective R S)]
     refine Polynomial.eq_zero_of_infinite_isRoot _
       (Set.infinite_of_injOn_mapsTo Units.val_injective.injOn (fun x hx ↦ ?_) h)
-    have hx : eval₂ (algebraMap R S) x p = 0 := (eval₂_eq_smeval p x).trans hx
+    rw [Set.mem_ofPred_eq, ← eval₂_eq_smeval] at hx
     simpa [Polynomial.eval_map, hx] using congr(eval₂ (algebraMap R S) x $hq)
   rw [hq0, map_zero] at hq
   exact (isUnit_T (n : ℤ)).mul_left_eq_zero.mp hq.symm
