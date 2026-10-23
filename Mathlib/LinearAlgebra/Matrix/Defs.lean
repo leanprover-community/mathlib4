@@ -645,7 +645,7 @@ section
 variable (m n α)
 
 /-- `Matrix.row` as an `Equiv` -/
-def rowEquiv : Matrix m n α ≃ (m → n → α) := .refl _
+def rowEquiv : Matrix m n α ≃ (m → n → α) := of.symm
 
 /-- `Matrix.col` as an `Equiv` -/
 def colEquiv : Matrix m n α ≃ (n → m → α) := .functionSwap ..
