@@ -379,8 +379,10 @@ theorem norm_mul (f g : PadicSeq p) : (f * g).norm = f.norm * g.norm := by
 theorem eq_zero_iff_equiv_zero (f : PadicSeq p) : mk f = 0 ↔ f ≈ 0 :=
   mk_eq
 
-theorem ne_zero_iff_nequiv_zero (f : PadicSeq p) : mk f ≠ 0 ↔ ¬f ≈ 0 :=
+theorem ne_zero_iff_not_equiv_zero (f : PadicSeq p) : mk f ≠ 0 ↔ ¬f ≈ 0 :=
   eq_zero_iff_equiv_zero _ |>.not
+
+@[deprecated (since := "2026-10-13")] alias ne_zero_iff_nequiv_zero := ne_zero_iff_not_equiv_zero
 
 theorem norm_const (q : ℚ) : norm (const (padicNorm p) q) = padicNorm p q := by
   obtain rfl | hq := eq_or_ne q 0
@@ -664,7 +666,7 @@ theorem eq_padic_norm' (q : ℚ) : padicNormE (q : ℚ_[p]) = padicNorm p q :=
 
 protected theorem image' {q : ℚ_[p]} : q ≠ 0 → ∃ n : ℤ, padicNormE q = (p : ℚ) ^ (-n) :=
   Quotient.inductionOn q fun f hf ↦
-    have : ¬f ≈ 0 := (ne_zero_iff_nequiv_zero f).1 hf
+    have : ¬f ≈ 0 := (ne_zero_iff_not_equiv_zero f).1 hf
     norm_values_discrete f this
 
 end Embedding
@@ -879,7 +881,7 @@ instance : NontriviallyNormedField ℚ_[p] :=
 
 protected theorem padicNormE.image {q : ℚ_[p]} : q ≠ 0 → ∃ n : ℤ, ‖q‖ = ↑((p : ℚ) ^ (-n)) :=
   Quotient.inductionOn q fun f hf ↦
-    have : ¬f ≈ 0 := (PadicSeq.ne_zero_iff_nequiv_zero f).1 hf
+    have : ¬f ≈ 0 := (PadicSeq.ne_zero_iff_not_equiv_zero f).1 hf
     let ⟨n, hn⟩ := PadicSeq.norm_values_discrete f this
     ⟨n, by rw [← hn]; rfl⟩
 
@@ -1187,7 +1189,7 @@ noncomputable def mulValuation : Valuation ℚ_[p] ℤᵐ⁰ where
   map_mul' _ _ := by split_ifs <;> simp_all [add_comm]
   map_add_le_max' _ _ := by
     split_ifs
-    any_goals simp_all
+    all_goals simp_all
     simpa using le_valuation_add ‹_›
 
 lemma comap_mulValuation_eq_padicValuation :

@@ -106,10 +106,10 @@ def PARTSUFFIX :=
 
 /-- curl version at https://github.com/leanprover-community/static-curl -/
 def CURLVERSION :=
-  "7.88.1"
+  "8.23.0"
 
 def CURLBIN :=
-  -- change file name if we ever need a more recent version to trigger re-download
+  -- The file name carries the version, so a bump triggers a fresh download.
   IO.CACHEDIR / s!"curl-{CURLVERSION}"
 
 def EXE := if System.Platform.isWindows then ".exe" else ""
@@ -121,8 +121,10 @@ def nullDevice : String := if System.Platform.isWindows then "NUL" else "/dev/nu
 def LAKEPACKAGESDIR : FilePath :=
   ".lake" / "packages"
 
-def getCurl : BaseIO String := do
-  return if (← CURLBIN.pathExists) then CURLBIN.toString else "curl"
+/-- The curl binary to run: the system curl for uploads; for downloads, the cached
+static binary when it exists. -/
+def getCurl (upload := false) : BaseIO String := do
+  return if !upload && (← CURLBIN.pathExists) then CURLBIN.toString else "curl"
 
 /-- Path to the `leantar` binary bundled with the Lean toolchain.
     This has been bundled since `nightly-2026-03-09` (lean4#12822). -/
@@ -220,11 +222,17 @@ def getSrcDir (sp : SearchPath) (mod : Name) : IO FilePath := do
 
   return srcDir
 
-/-- Runs a terminal command and retrieves its output, passing the lines to `processLine` -/
+/-- Run curl and pass each stdout line to `processLine`. Return the final state,
+curl's exit code, and its stderr. -/
 partial def runCurlStreaming (args : Array String) (init : α)
-    (processLine : α → String → IO α) : IO α := do
-  let child ← IO.Process.spawn { cmd := ← getCurl, args, stdout := .piped, stderr := .piped }
-  loop child.stdout init
+    (processLine : α → String → IO α) (upload := false) : IO (α × UInt32 × String) := do
+  let child ← IO.Process.spawn { cmd := ← getCurl upload, args, stdout := .piped, stderr := .piped }
+  -- Drain stderr concurrently: a full stderr pipe blocks curl.
+  let stderr ← IO.asTask (prio := .dedicated) child.stderr.readToEnd
+  let a ← loop child.stdout init
+  let exitCode ← child.wait
+  let stderr ← IO.ofExcept stderr.get
+  return (a, exitCode, stderr)
 where
   loop (h : IO.FS.Handle) (a : α) : IO α := do
     let line ← h.getLine
@@ -244,9 +252,10 @@ def runCmd (cmd : String) (args : Array String)
     IO.eprintln out.stderr
   return out.stdout
 
-def runCurl (args : Array String) (throwFailure stderrAsErr showArgsOnError := true) :
-    IO String := do
-  runCmd (← getCurl) (#["--no-progress-meter"] ++ args) throwFailure stderrAsErr showArgsOnError
+def runCurl (args : Array String) (throwFailure stderrAsErr showArgsOnError := true)
+    (upload := false) : IO String := do
+  runCmd (← getCurl upload) (#["--no-progress-meter"] ++ args)
+    throwFailure stderrAsErr showArgsOnError
 
 /-- The major and minor version of the curl binary `curl`, read from `curl --version`. -/
 def curlVersion (curl : String) : IO (Nat × Nat) := do
@@ -259,35 +268,44 @@ def curlVersion (curl : String) : IO (Nat × Nat) := do
     | _ => throw <| IO.userError "Invalidly formatted version of `curl`"
   | _ => throw <| IO.userError "Invalidly formatted response from `curl --version`"
 
-def validateCurl : IO Bool := do
-  if (← CURLBIN.pathExists) then return true
+/-- How `cache get` drives curl: every transfer in one parallel curl run, with or
+without curl's retry flags, or one curl run per file. -/
+structure CurlMode where
+  parallel : Bool
+  retry : Bool := true
+
+/-- For uploads, require a system curl of 8.20 or later. For downloads, choose the
+`CurlMode`: the cached static binary or a system curl of 7.84 or later runs in
+parallel, without retries on 8.18 and 8.19. For an older curl, the tool downloads
+a static binary on Linux x86_64 and aarch64, and runs serially elsewhere. -/
+def validateCurl (upload := false) : IO CurlMode := do
+  if !upload && (← CURLBIN.pathExists) then return { parallel := true }
   let version ← curlVersion "curl"
   let found := s!"{version.1}.{version.2}"
   let _ := @lexOrd
   let _ := @leOfOrd
-  -- The get path's write-out reads response headers with `%header{…}` (curl 7.84).
-  if version >= (7, 84) then return true
-  -- TODO: support more platforms if the need arises
+  let minimum := if upload then (8, 20) else (7, 84)
+  if version >= minimum then
+    -- curl 8.18 and 8.19 hang on a pending retry in parallel mode (curl issue #20669).
+    let retry := !(version == (8, 18) || version == (8, 19))
+    unless retry do
+      IO.println s!"Note: curl {found} runs parallel downloads without retries."
+    return { parallel := true, retry }
+  if upload then
+    throw <| IO.userError s!"Cache uploads require curl ≥{minimum.1}.{minimum.2}. Found {found}."
   let arch ← (·.trimAscii.copy) <$> runCmd "uname" #["-m"] false
   let kernel ← (·.trimAscii.copy) <$> runCmd "uname" #["-s"] false
   if kernel == "Linux" && arch ∈ ["x86_64", "aarch64"] then
-    IO.println s!"curl is too old; downloading more recent version"
+    IO.println s!"Downloading curl {CURLVERSION} (found {found})"
     IO.FS.createDirAll IO.CACHEDIR
     let _ ← runCmd "curl" (stderrAsErr := false) #[
       s!"https://github.com/leanprover-community/static-curl/releases/download/v{CURLVERSION}/curl-{arch}-linux-static",
       "-L", "-o", CURLBIN.toString]
     let _ ← runCmd "chmod" #["u+x", CURLBIN.toString]
-    return true
-  -- The parallel transfer paths pass `--retry-all-errors` (curl 7.71)
-  -- and read the `exitcode` and `errormsg` fields of the per-transfer
-  -- JSON report (curl 7.75); an older curl rejects the flag or omits
-  -- the fields.
-  if version >= (7, 75) then
-    IO.println s!"Warning: recommended `curl` version ≥7.84. Found {found}"
-    return true
-  else
-    IO.println s!"Warning: recommended `curl` version ≥7.75. Found {found}. Can't use `--parallel`."
-    return false
+    return { parallel := true }
+  IO.println s!"Warning: curl {found} is too old for parallel cache downloads, so files download \
+    one at a time. Install curl {minimum.1}.{minimum.2} or later."
+  return { parallel := false }
 
 /-- Recursively gets all files from a directory with a certain extension -/
 partial def getFilesWithExtension

@@ -58,8 +58,9 @@ def s3AuthFrom (keyId? secret? session? : Option String) :
   | none, some _ => .error
       "MATHLIB_CACHE_S3_SECRET_ACCESS_KEY is set but MATHLIB_CACHE_S3_ACCESS_KEY_ID is not"
   | none, none => .error
-      "--backend=s3 uploads with the S3 credential pair: set \
-      MATHLIB_CACHE_S3_ACCESS_KEY_ID and MATHLIB_CACHE_S3_SECRET_ACCESS_KEY"
+      "the s3 backend needs the S3 credential pair: set \
+      MATHLIB_CACHE_S3_ACCESS_KEY_ID and MATHLIB_CACHE_S3_SECRET_ACCESS_KEY; \
+      for Azure, pass --backend=azure and set MATHLIB_CACHE_PUT_URL"
 
 /-- Retrieves the s3 upload credentials from the environment via
 `s3AuthFrom`. -/
@@ -81,7 +82,7 @@ def s3RegionFrom (region? : Option String) : Except String String :=
   | some region =>
     if region.all (fun c => c.isAlphanum || c == '-') then .ok region
     else .error s!"MATHLIB_CACHE_S3_REGION '{region}' is not a region name"
-  | none => .error "--backend=s3 needs MATHLIB_CACHE_S3_REGION"
+  | none => .error "the s3 backend needs MATHLIB_CACHE_S3_REGION"
 
 /-- Retrieves the s3 signing region from the environment via `s3RegionFrom`. -/
 def getS3Region : IO String := do
