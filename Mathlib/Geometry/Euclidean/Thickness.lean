@@ -12,18 +12,24 @@ public import Mathlib.Topology.MetricSpace.AffineThickness
 /-!
 # Thickness of a set in a Euclidean affine space
 
-In a Euclidean affine space a strict affine subspace admits a unit vector orthogonal to its
-direction. Pushing a point along such a vector gives lower bounds for `Metric.ethickness` that
-are unavailable in a general metric affine space, and which complement the upper bounds
+In a Euclidean affine space,
+a strict affine subspace admits a unit vector orthogonal to its direction.
+Pushing a point along such a vector gives lower bounds for `Metric.ethickness`
+that are unavailable in a general metric affine space,
+and which complement the upper bounds
 `Metric.ethickness_cthickening_le` and `Metric.ethickness_closedBall_le`.
 
 ## Main results
 
-* `infDist_add_le_of_closedBall_subset_cthickening`: if the closed `ρ`-ball around `x` lies in
-  the closed `r`-thickening of a proper affine subspace `A`, then `infDist x A + ρ ≤ r`.
-* `Metric.le_ethickness_cthickening`: thickening a nonempty set by `ρ` increases its
-  `ethickness` by at least `ρ`, at every rank below the ambient dimension.
-* `Metric.le_ethickness_closedBall`: the closed ball of radius `r` has `ethickness` at least `r`
+* `infDist_add_le_of_closedBall_subset_cthickening`:
+  if the closed `ρ`-ball around `x` lies
+  in the closed `r`-thickening of a proper affine subspace `A`,
+  then `infDist x A + ρ ≤ r`.
+* `Metric.le_ethickness_cthickening`:
+  thickening a nonempty set by `ρ` increases its `ethickness` by at least `ρ`,
+  at every rank below the ambient dimension.
+* `Metric.le_ethickness_closedBall`:
+  the closed ball of radius `r` has `ethickness` at least `r`
   at every rank below the ambient dimension.
 -/
 
@@ -36,9 +42,10 @@ open Metric EuclideanGeometry
 variable {V E : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace E]
   [NormedAddTorsor V E]
 
-/-- If the closed `ρ`-ball around `x` lies in the closed `r`-thickening of an affine subspace `A`
-whose direction is not everything, then `infDist x A + ρ ≤ r`: move `x` by `ρ` away from `A`
-along a unit vector orthogonal to `A`. -/
+/-- If the closed `ρ`-ball around `x` lies
+in the closed `r`-thickening of an affine subspace `A` whose direction is not everything,
+then `infDist x A + ρ ≤ r`:
+move `x` by `ρ` away from `A` along a unit vector orthogonal to `A`. -/
 lemma infDist_add_le_of_closedBall_subset_cthickening
     {A : AffineSubspace ℝ E} [Nonempty A] [A.direction.HasOrthogonalProjection]
     (hA : A.directionᗮ ≠ ⊥) {x : E} {ρ : ℝ} (hρ : 0 ≤ ρ) {r : ℝ≥0}
@@ -64,8 +71,9 @@ namespace Metric
 
 variable [FiniteDimensional ℝ V]
 
-/-- Thickening a nonempty set by `ρ` increases its `ethickness` by at least `ρ`, at every rank
-below the ambient dimension. See `Metric.ethickness_cthickening_le` for the reverse inequality. -/
+/-- Thickening a nonempty set by `ρ` increases its `ethickness` by at least `ρ`,
+at every rank below the ambient dimension.
+See `Metric.ethickness_cthickening_le` for the reverse inequality. -/
 theorem le_ethickness_cthickening {s : Set E} (hs : s.Nonempty) {ρ : ℝ} {n : ℕ}
     (hn : n < Module.finrank ℝ V) :
     ethickness ℝ s n + ENNReal.ofReal ρ ≤ ethickness ℝ (cthickening ρ s) n := by
@@ -93,8 +101,9 @@ theorem le_ethickness_cthickening {s : Set E} (hs : s.Nonempty) {ρ : ℝ} {n : 
   grw [this, ← ENNReal.ofReal_add (sub_nonneg.2 hρr) hρ.le, sub_add_cancel,
     ENNReal.ofReal_coe_nnreal]
 
-/-- The closed ball of radius `r` has `ethickness` at least `r`, at every rank below the ambient
-dimension. See `Metric.ethickness_closedBall_le` for the reverse inequality. -/
+/-- The closed ball of radius `r` has `ethickness` at least `r`,
+at every rank below the ambient dimension.
+See `Metric.ethickness_closedBall_le` for the reverse inequality. -/
 theorem le_ethickness_closedBall {x : E} (r : ℝ≥0) {n : ℕ}
     (hn : n < Module.finrank ℝ V) :
     (r : ℝ≥0∞) ≤ ethickness ℝ (closedBall x r) n := by
