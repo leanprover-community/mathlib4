@@ -681,6 +681,17 @@ def leval : R[T;T⁻¹] →ₗ[R] S where
 
 end Module
 
+section Algebra
+
+variable [CommSemiring R] [CommSemiring S] [Algebra R S]
+
+theorem eval₂_eq_smeval (p : R[T;T⁻¹]) (x : Sˣ) : eval₂ (algebraMap R S) x p = p.smeval x := by
+  induction p using LaurentPolynomial.induction_on' with
+  | add p q hp hq => simp [hp, hq]
+  | C_mul_T n a => simp [Algebra.smul_def]
+
+end Algebra
+
 end Smeval
 
 end LaurentPolynomial
