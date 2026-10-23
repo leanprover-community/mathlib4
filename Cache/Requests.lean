@@ -299,19 +299,14 @@ def curlFollowRedirectArgs : Array String :=
   #["--location", "--proto-redir", "=https", "--max-redirs", "5"]
 
 /--
-`curl` retry flags for a cache transfer. `--retry` covers timeouts and
-408/429/5xx; every supported curl accepts it. With
-`supportLegacyCurl := false`, `--retry-all-errors` also retries transport
-errors on a fresh connection, with exponential backoff. That flag needs
-curl 7.71; `validateCurl` gates parallel mode at 7.75, which also
-guarantees the per-transfer JSON report fields `monitorCurl` reads. Pass
-`supportLegacyCurl := true` on paths that must work on older curls.
+Retry flags for a cache transfer. Set `supportLegacyCurl` on a path that must
+run on a curl older than 7.71, which rejects `--retry-all-errors`.
 -/
 def curlRetryArgs (supportLegacyCurl : Bool) : Array String :=
   #["--retry", "5"] ++ (if supportLegacyCurl then #[] else #["--retry-all-errors"])
 
-/-- `curl` flag that sets the number of simultaneous transfers in a parallel
-download from `MATHLIB_CACHE_PARALLEL_MAX`. -/
+/-- The `--parallel-max` flag from `MATHLIB_CACHE_PARALLEL_MAX`; empty when the
+variable is unset or not a number. -/
 def curlParallelMaxArgs : IO (Array String) := do
   let some value ← getEnvNonEmpty "MATHLIB_CACHE_PARALLEL_MAX" | return #[]
   let some n := value.toNat? | do
@@ -334,10 +329,7 @@ def curlGetHeaders : List String := ["cf-ray", "cf-cache-status", "content-lengt
 value of each header in `curlGetHeaders`, each after `curlFieldSep`.
 curl writes a header value unescaped, so the values stay outside the JSON.
 
-`%header{…}` needs curl 7.84. curl 7.83 shipped it as experimental only.
-Below 7.84, `validateCurl` downloads a newer curl on Linux. A curl that
-old on another platform prints `%header{…}` as literal text, and that text
-appears only in a failure line.
+`%header{…}` requires curl 7.84 or later.
 -/
 def curlGetWriteOut : String :=
   "%{json}" ++ String.join (curlGetHeaders.map (curlFieldSep ++ "%header{" ++ · ++ "}")) ++ "\n"
@@ -502,7 +494,6 @@ def downloadFile (location : Location) (hash : UInt64) : IO (TransferVerdict .do
   let out ← IO.Process.output
     { cmd := (← IO.getCurl),
       args := #[url, "--silent"] ++ curlFollowRedirectArgs ++
-        -- This path serves curls below 7.71, which reject `--retry-all-errors`.
         curlRetryArgs (supportLegacyCurl := true) ++
         #["--write-out", "%{http_code}", "-o", partPath.toString] }
   -- Anything short of a delivery leaves at most an error body in the part file.
@@ -683,7 +674,7 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
       msg := msg ++ "\x1b[K"
     return msg
   let init : TransferState := { last := (← IO.monoMsNow), decomp := decompState }
-  let s ← IO.runCurlStreaming args init fun a line => do
+  let (s, exitCode, stderr) ← IO.runCurlStreaming (upload := dir == .upload) args init fun a line => do
     let mut {last, success, failed, done, speed, decomp} := a
     let mut {pending, currentTask, lastBatchSize, decompressed, decompFailed} := decomp
     -- Classify each finished transfer: rename a delivered part file, report a
@@ -697,8 +688,6 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
       | .ok result =>
         let code? := result.getObjValAs? Nat "http_code"
         let fn? := result.getObjValAs? String "filename_effective"
-        -- The per-transfer JSON report carries `exitcode` from curl 7.75 on;
-        -- an absent field reads as 0.
         let exitCode := (result.getObjValAs? Nat "exitcode").toOption.getD 0
         let verdict := classify code?.toOption exitCode
         if verdict matches .delivered then
@@ -771,7 +760,6 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
           -- (miss); remove it either way.
           if removeOnError then
             if let .ok fn := fn? then
-              -- `curl --remove-on-error` can already do this, but only from 7.83 onwards
               if (← System.FilePath.pathExists fn) && fn.endsWith IO.PARTSUFFIX then
                 IO.FS.removeFile fn
         done := done + 1
@@ -788,6 +776,12 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
     let decompNow : DecompState :=
       {pending, currentTask, lastBatchSize, decompressed, decompFailed}
     pure {last, success, failed, done, speed, decomp := decompNow}
+  -- Count transfers without a completion report as failures.
+  let s ← if s.done < size then do
+      IO.eprintln s!"\ncurl exited with code {exitCode} after it reported {s.done} of {size} transfers"
+      unless stderr.isEmpty do IO.eprintln stderr.trimAscii
+      pure { s with failed := s.failed + (size - s.done) }
+    else pure s
   if s.done > 0 then
     -- to avoid confusingly moving on without finishing the count
     IO.eprintln (mkStatus s)
@@ -802,16 +796,17 @@ continues it. Serial mode never pipelines and passes it through untouched.
 Side effect: fetched files are written to `CACHEDIR` with their final names. -/
 private def downloadFilesFromLocation (location : Location)
     (hashMap : IO.ModuleHashMap)
-    (parallel : Bool) (decompConfig : Option DecompConfig) (decompState : DecompState) :
+    (mode : IO.CurlMode) (decompConfig : Option DecompConfig) (decompState : DecompState) :
     IO (TransferState × Std.HashSet UInt64) := do
   let size := hashMap.size
-  if parallel then
+  if mode.parallel then
     IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent location hashMap)
-    let args := #["--request", "GET", "--parallel", "--silent"] ++
+    let args := #["--request", "GET", "--parallel", "--silent", "--show-error"] ++
       (← curlParallelMaxArgs) ++
       -- Avoid passing `--fail` here: it slows parallel transfers on curl
       -- 8.13.0, and it makes `--retry-all-errors` retry every 404 miss.
-      curlFollowRedirectArgs ++ curlRetryArgs (supportLegacyCurl := false) ++
+      curlFollowRedirectArgs ++
+      (if mode.retry then curlRetryArgs (supportLegacyCurl := false) else #[]) ++
       #["--write-out", curlGetWriteOut, "--config", IO.CURLCFG.toString]
     let (s, served) ← monitorCurl args size "Downloaded" "speed_download"
       classifyDownload (removeOnError := true)
@@ -901,7 +896,7 @@ download reports how many files each scoped round served (`cache get
 --unsafe`). `repo` names the read in messages. -/
 def downloadFiles
     (repo : String) (locations : List Location) (hashMap : IO.ModuleHashMap)
-    (forceDownload : Bool) (parallel : Bool)
+    (forceDownload : Bool) (mode : IO.CurlMode)
     (decompress : Bool := false) (forceUnpack : Bool := false)
     (isMathlibRoot : Bool := false) (mathlibDepPath : FilePath := ".")
     (unsafeMode : Bool := false) : IO DownloadResult := do
@@ -942,7 +937,7 @@ def downloadFiles
     IO.println s!"Attempting to download {remaining.size} file(s) from {repo} cache at \
       {location.root}{scopeNote}"
     let before := remaining.size
-    let (s, served) ← downloadFilesFromLocation location remaining parallel
+    let (s, served) ← downloadFilesFromLocation location remaining mode
       decompConfig decompState
     -- Carry the decompression pipeline into the next round and the drain
     -- below: files left behind here are never decompressed. Drop the files
@@ -1065,7 +1060,7 @@ explicit scopes, and the forks HEAD fallback. Without an override, the fork
 lookup chain starts with `master`, which supplies shared upstream artifacts. -/
 def getFiles
     (repo : String) (hashMap : IO.ModuleHashMap)
-    (forceDownload forceUnpack parallel decompress : Bool)
+    (forceDownload forceUnpack : Bool) (mode : IO.CurlMode) (decompress : Bool)
     (unsafeScopes : List String := [])
     : IO.CacheM Nat := do
   let isMathlibRoot ← IO.isMathlibRoot
@@ -1092,7 +1087,7 @@ def getFiles
   else pure none
 
   let result ← downloadFiles repo (← readLocations repo unsafeScopes) hashMap forceDownload
-    parallel
+    mode
     (decompress := decompress) (forceUnpack := forceUnpack)
     isMathlibRoot mathlibDepPath (unsafeMode := !unsafeScopes.isEmpty)
   if result.failed > 0 then
@@ -1113,7 +1108,7 @@ def getFiles
 
   let elapsed := (← IO.monoMsNow) - startTime
   if decompress then
-    if bgDecomp.isSome && parallel then
+    if bgDecomp.isSome && mode.parallel then
       -- Background task handled pre-cached files, download pipeline handled new files
       IO.println s!"Completed successfully in {elapsed} ms!"
     else

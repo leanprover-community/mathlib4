@@ -489,7 +489,7 @@ theorem prod_alternatingWord_eq_mul_pow (i i' : B) (m : ℕ) :
 
 theorem prod_alternatingWord_eq_prod_alternatingWord_sub (i i' : B) (m : ℕ) (hm : m ≤ M i i' * 2) :
     π (alternatingWord i i' m) = π (alternatingWord i' i (M i i' * 2 - m)) := by
-  simp_rw [prod_alternatingWord_eq_mul_pow, ← Int.even_coe_nat]
+  simp_rw [prod_alternatingWord_eq_mul_pow, ← Int.even_natCast]
   /- Rewrite everything in terms of an integer m' which is equal to m.
   The resulting equation holds for all integers m'. -/
   simp_rw [← zpow_natCast, Int.natCast_ediv, Int.ofNat_sub hm]
