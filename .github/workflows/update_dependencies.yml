@@ -2,7 +2,7 @@ name: Update Mathlib Dependencies
 
 on:
   schedule:
-    - cron: '0 * * * *'  # This will run every hour
+    - cron: '17 0 * * *'  # Daily at 00:17 UTC
   workflow_dispatch:
 
 jobs:
@@ -104,31 +104,6 @@ jobs:
           prNumber: ${{ steps.PR.outputs.number }}
           prUrl: ${{ steps.PR.outputs.pr_url }}
 
-      # Each update of the branch rebuilds all of Mathlib on the pr pool, and its merge
-      # rebuilds all of Mathlib on staging. While bors has PRs on its queue, a scheduled
-      # update waits, unless master's `lake-manifest.json` last changed more than 24 hours
-      # ago. A manual run does not wait.
-      - name: Check the merge queue
-        id: queue
-        if: ${{ github.event_name != 'workflow_dispatch' }}
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPO: ${{ github.repository }}
-        run: |
-          set -uo pipefail
-          hold=false
-          if queued="$(gh pr list --repo "$REPO" --state open --label ready-to-merge \
-                        --json headRefName --jq "[.[] | select(.headRefName != \"$BRANCH_NAME\")] | length")"; then
-            age=$(( $(date +%s) - $(git log -1 --format=%ct origin/master -- lake-manifest.json) ))
-            echo "PRs on the merge queue: ${queued}; master's dependencies were updated ${age} s ago."
-            if [ "$queued" -gt 0 ] && [ "$age" -lt 86400 ]; then
-              hold=true
-            fi
-          else
-            echo "::warning::Could not list the merge queue; not holding the update."
-          fi
-          echo "hold=$hold" >> "$GITHUB_OUTPUT"
-
       - name: Get latest mathlib-ci SHA
         if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}
         id: mathlib-ci-sha
@@ -217,12 +192,12 @@ jobs:
           # branch_stale : working tree differs from branch tip → CPR would push
           #
           # States (checked in priority order):
+          #   IDLE       : no open PR + !needs_update → skip CPR
           #   SUPERSEDED : open PR + !needs_update  → call CPR to close PR
           #   CONFLICT   : merge-conflict label     → call CPR to rebase
           #   STALE      : open PR + branch_stale   → call CPR to update branch
-          #   ABSENT     : no branch or no open PR  → call CPR to create/clean up
+          #   ABSENT     : needs_update + (no branch or no open PR) → call CPR to create PR
           #   PENDING    : open PR + needs_update + !branch_stale → skip CPR
-          #   HELD       : STALE or ABSENT while the merge queue holds the update → skip CPR
 
           # ── inputs ──────────────────────────────────────────────────────────
           needs_update=false
@@ -248,7 +223,9 @@ jobs:
           echo "merge_conflict=$merge_conflict"
 
           # ── state ───────────────────────────────────────────────────────────
-          if [ "$pr_open" == "true" ] && [ "$needs_update" == "false" ]; then
+          if [ "$pr_open" != "true" ] && [ "$needs_update" == "false" ]; then
+            state="IDLE"
+          elif [ "$pr_open" == "true" ] && [ "$needs_update" == "false" ]; then
             state="SUPERSEDED"
           elif [ "$merge_conflict" == "true" ]; then
             state="CONFLICT"
@@ -260,15 +237,10 @@ jobs:
             state="PENDING"
           fi
 
-          if [ "${{ steps.queue.outputs.hold }}" == "true" ] && { [ "$state" == "STALE" ] || [ "$state" == "ABSENT" ]; }; then
-            echo "The merge queue holds the update in state $state."
-            state="HELD"
-          fi
-
           echo "State: $state"
           echo "state=$state" >> "$GITHUB_OUTPUT"
 
-          if [ "$state" == "PENDING" ] || [ "$state" == "HELD" ]; then
+          if [ "$state" == "PENDING" ] || [ "$state" == "IDLE" ]; then
             create_pr=false
           else
             create_pr=true
