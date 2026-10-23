@@ -66,7 +66,7 @@ def lakefile_pattern(option: str) -> re.Pattern:
     """Match lakefile entries for an option."""
     escaped = re.escape(option)
     return re.compile(
-        rf'^\s*⟨`{escaped},\s*(true|false|\d+|"[^"]*")⟩,?\s*\n',
+        rf'^\s*⟨\s*`{escaped}\s*,\s*(true|false|\.ofNat\s+\d+|"[^"]*")\s*⟩\s*,?\s*\n',
         re.MULTILINE,
     )
 
