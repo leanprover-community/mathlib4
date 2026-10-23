@@ -566,7 +566,9 @@ attribute [local instance] FractionRing.liftAlgebra in
 `Module.finrank_mul_finrank` that assumes the rings are domains instead of the modules being
 free. -/
 @[deprecated
-  "Use the more general theorem `Module.IsTorsionFree.finrank_mul_finrank` instead."
+  "Use the more general theorem `Module.IsTorsionFree.finrank_mul_finrank` instead.
+  (Note that this theorem's hypotheses imply `IsDomain S`, and hence `NoZeroDivisors S`, via
+  `IsDomain.of_faithfulSMul S T`.)"
   +typeChanged (since := "2026-09-20")]
 theorem Module.finrank_mul_finrank' (T : Type*) [CommRing T] [IsDomain T]
     [Algebra S T] [Algebra R T] [IsScalarTower R S T] [FaithfulSMul S T] :
