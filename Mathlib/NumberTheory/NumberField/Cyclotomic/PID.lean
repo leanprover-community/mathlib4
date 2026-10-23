@@ -71,9 +71,8 @@ theorem seven_pid [IsCyclotomicExtension {7} ℚ K] : IsPrincipalIdealRing (𝓞
   -- The Minkowski bound is `4`.
   have hM : ⌊(M K)⌋₊ = 4 := by
     have : Fact (Nat.Prime 7) := ⟨Nat.prime_seven⟩
-    rw [discr_prime 7 K, IsCyclotomicExtension.finrank (n := 7) K
-      (irreducible_rat (by simp)), nrComplexPlaces_eq_totient_div_two 7,
-      totient_prime Nat.prime_seven]
+    rw [discr_prime 7 K, IsCyclotomicExtension.finrank (n := 7) K (irreducible_rat (by simp)),
+      nrComplexPlaces_eq_totient_div_two 7, totient_prime Nat.prime_seven]
     simp only [Nat.add_one_sub_one, reduceDiv, cast_ofNat, Int.reduceNeg, Int.reducePow,
       reduceSub, neg_mul, one_mul, Int.cast_neg, Int.cast_ofNat, abs_neg, abs_ofNat]
     refine (floor_eq_iff (by positivity)).mpr ⟨?_, ?_⟩
