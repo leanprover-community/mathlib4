@@ -39,6 +39,11 @@ theorem isSpanning_def : S.IsSpanning ↔ ∀ a, a ∈ S ∨ -a ∈ S := by simp
 theorem _root_.AddSubmonoid.IsPointed.neg_one_notMem [Nontrivial R] (hS : S.IsPointed) :
     -1 ∉ S := by grind [isPointed_def, one_mem, zero_ne_one']
 
+/--
+The support `S ∩ -S` of a subsemiring `S`, as an ideal.
+We restrict to subsemirings that span the whole ring as subrings
+because the support of a subsemiring does not form an ideal in general.
+-/
 @[expose, simps!]
 def supportIdeal (hS : S.IsSpanning) : Ideal R where
   __ : AddSubgroup R := S.toAddSubmonoid.support
