@@ -10,11 +10,16 @@ public import Mathlib.Tactic.TacticAnalysis
 /-!
 # Terminal cdot linter
 
+This linter flags uses of the focus dot (`·`) where there is only one goal,
+and where the preceding tactic is not wrapped in a focus dot.
+A sequence of tactics each starting with `·` is allowed because it looks nice.
+
+Usually, the `·` can simply be removed
+
 ## Implementation notes
 
-This linter needs to decide whether to flag a use of `·` based on the preceding tactic,
-which makes it tricky to integrate this linter into the unused tactic linter.
-Instead, we implement it using the `tacticAnalysis` framework,
+This linter has to look at the preceding tactic, so it is hard to integrate
+into the unused tactic linter. Instead, we implement it using the `tacticAnalysis` framework,
 because that already computes the tactic sequences for us.
 -/
 
@@ -45,7 +50,7 @@ register_option linter.style.terminalCDot : Bool := {
 @[tacticAnalysis linter.style.terminalCDot, inherit_doc linter.style.terminalCDot]
 def terminalCDotLinter : TacticAnalysis.Config where run seq := do
   let some last := seq.back? | return
-  unless last.tacI.goalsAfter.isEmpty && last.tacI.stx.isOfKind ``cdot do return
+  unless last.tacI.stx.isOfKind ``cdot && last.tacI.goalsBefore matches [_] do return
   if h : 2 ≤ seq.size then
     if seq[seq.size - 2].tacI.stx.isOfKind ``cdot then
       return
