@@ -239,7 +239,6 @@ lemma restrict_comp {p : Submodule R M} {p₂ : Submodule R₂ M₂} {p₃ : Sub
     (g ∘ₛₗ f).restrict hfg = (g.restrict hg) ∘ₛₗ (f.restrict hf) :=
   rfl
 
--- TODO Consider defining `Algebra R (p.compatibleMaps p)`, `AlgHom` version of `LinearMap.restrict`
 lemma restrict_smul_one
     {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] {p : Submodule R M}
     (μ : R) (h : ∀ x ∈ p, (μ • (1 : Module.End R M)) x ∈ p := fun _ ↦ p.smul_mem μ) :

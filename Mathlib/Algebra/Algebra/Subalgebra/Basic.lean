@@ -531,6 +531,59 @@ theorem _root_.Subalgebra.toSubmodule_toSubalgebra (S : Subalgebra R A) :
     (S.toSubmodule.toSubalgebra S.one_mem fun _ _ => S.mul_mem) = S :=
   SetLike.coe_injective rfl
 
+section compatibleMaps
+
+variable {M : Type*} [AddCommMonoid M] [Module R M] (q : Submodule R M)
+
+/-- The endomorphisms of `M` that map `q` into itself form a semiring under composition. -/
+instance : Semiring (q.compatibleMaps q) :=
+  inferInstanceAs <| Semiring <|
+    (q.compatibleMaps q).toSubalgebra (one_mem_compatibleMaps q)
+      fun _ _ hf hg ↦ comp_mem_compatibleMaps hg hf
+
+/-- The endomorphisms of `M` that map `p` into itself form an `R`-algebra. -/
+instance : Algebra R (q.compatibleMaps q) :=
+  inferInstanceAs <| Algebra R <|
+    (q.compatibleMaps q).toSubalgebra (one_mem_compatibleMaps q)
+      fun _ _ hf hg ↦ comp_mem_compatibleMaps hg hf
+
+@[simp, norm_cast]
+theorem coe_one_compatibleMaps : ((1 : q.compatibleMaps q) : Module.End R M) = 1 :=
+  rfl
+
+@[simp, norm_cast]
+theorem coe_mul_compatibleMaps (f g : q.compatibleMaps q) :
+    ((f * g : q.compatibleMaps q) : Module.End R M) = f * g :=
+  rfl
+
+@[simp, norm_cast]
+theorem coe_pow_compatibleMaps (f : q.compatibleMaps q) (n : ℕ) :
+    ((f ^ n : q.compatibleMaps q) : Module.End R M) = (f : Module.End R M) ^ n :=
+  rfl
+
+@[simp, norm_cast]
+theorem coe_algebraMap_compatibleMaps (r : R) :
+    ((algebraMap R (q.compatibleMaps q) r : q.compatibleMaps q) : Module.End R M) =
+      algebraMap R (Module.End R M) r :=
+  rfl
+
+/-- Restricting an endomorphism of `M` that preserves `p` gives an endomorphism of `p`;
+this is an `R`-algebra homomorphism. -/
+def _root_.Module.End.restrictAlgHom : q.compatibleMaps q →ₐ[R] Module.End R q where
+  toFun f := f.1.restrict f.2
+  map_one' := rfl
+  map_mul' _ _ := rfl
+  map_zero' := rfl
+  map_add' _ _ := rfl
+  commutes' _ := rfl
+
+@[simp]
+theorem _root_.Module.End.coe_restrictAlgHom_apply (f : q.compatibleMaps q) (x : q) :
+    (Module.End.restrictAlgHom q f x : M) = (f : Module.End R M) x :=
+  rfl
+
+end compatibleMaps
+
 end Submodule
 
 namespace AlgHom
