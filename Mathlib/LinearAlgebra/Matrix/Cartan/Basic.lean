@@ -737,7 +737,7 @@ theorem isFiniteCartan_d (n : ℕ) : (D n).IsFiniteCartan where
           _ = _ := by simp [hj, a, b]
       · calc
         _ = ∑ x, (if x = j.castSucc then f x else if x = j.succ then -1 * f x else 0) := by grind
-          _ = _ := by grind [h j.castSucc j.succ (by grind) 1 (-1) f]
+        _ = _ := by grind [h j.castSucc j.succ (by grind) 1 -1 f]
     have h : D n = Mᴴ * M := by
       ext i j
       have h : (∑ x, M x i * M x j) =if j.val + 1 = n then M ⟨n - 2, by simp⟩ i
