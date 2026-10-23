@@ -30,7 +30,7 @@ We obtain the following tower laws:
 
 public section
 
-universe u u' v v' w w'
+universe u v v' w
 
 open Algebra Cardinal Module
 open Module (rank)
