@@ -254,6 +254,7 @@ section global
 
 /-- The linearization of `mk` gives a linear equivalence from `k[H₁\G/H₂]` to the Hecke bimodule
 `Hom_G(k[G ⧸ H₁], k[G ⧸ H₂])`, provided a global `IsLeftFinite` instance. -/
+@[simps! -isSimp]
 noncomputable def mkLinearEquiv [h : ∀ g, IsLeftFinite H₁ H₂ g] :
     (Quotient (H₁ : Set G) (H₂ : Set G) →₀ k) ≃ₗ[k] HeckeBimodule k H₁ H₂ :=
   (Finsupp.mapDomain.linearEquiv k k DoubleCoset.Quotient.equiv₀).trans mkLinearEquiv₀
@@ -262,13 +263,13 @@ noncomputable def mkLinearEquiv [h : ∀ g, IsLeftFinite H₁ H₂ g] :
 lemma mkLinearEquiv_apply_single [∀ g, IsLeftFinite H₁ H₂ g] (r : k)
     (x : Quotient (H₁ : Set G) (H₂ : Set G)) :
     mkLinearEquiv (.single x r) = r • mk x.equiv₀ := by
-  simp [mkLinearEquiv]
+  simp [mkLinearEquiv_apply]
 
 @[simp]
 lemma mkLinearEquiv_symm_apply_mk [∀ g, IsLeftFinite H₁ H₂ g]
     (x : Quotient (H₁ : Set G) (H₂ : Set G)) :
     mkLinearEquiv.symm (mk x.equiv₀) = .single x (1 : k) := by
-  simp [mkLinearEquiv]
+  simp [mkLinearEquiv_symm_apply]
 
 end global
 
