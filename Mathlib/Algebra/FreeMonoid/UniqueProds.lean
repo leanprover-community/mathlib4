@@ -21,13 +21,12 @@ open Finset
 
 /-- Any `FreeMonoid` has the `TwoUniqueProds` property. -/
 instance FreeMonoid.instTwoUniqueProds {κ : Type*} : TwoUniqueProds (FreeMonoid κ) :=
-  .of_mulHom ⟨Multiplicative.ofAdd ∘ FreeMonoid.length, fun _ _ ↦ congr_arg _ List.length_append⟩
-    (fun _ _ _ _ h h' ↦ by
-      simp only [FreeMonoid.ext_iff] at h ⊢
-      exact List.append_inj h h'.1)
+  .of_mulHom ⟨Multiplicative.ofAdd ∘ (·.toList.length), by simp⟩ (fun _ _ _ _ h h' ↦ by
+    simp only [FreeMonoid.ext_iff] at h ⊢
+    exact List.append_inj h h'.1)
 
 /-- Any `FreeAddMonoid` has the `TwoUniqueSums` property. -/
 instance FreeAddMonoid.instTwoUniqueSums {κ : Type*} : TwoUniqueSums (FreeAddMonoid κ) :=
-  .of_addHom ⟨_, FreeAddMonoid.length_add⟩ (fun _ _ _ _ h h' ↦ by
+  .of_addHom ⟨(·.toList.length), by simp⟩ (fun _ _ _ _ h h' ↦ by
     simp only [FreeAddMonoid.ext_iff] at h ⊢
     exact List.append_inj h h'.1)

@@ -165,51 +165,59 @@ section Length
 variable {a : FreeMonoid α}
 
 /-- The length of a free monoid element: 1.length = 0 and (a * b).length = a.length + b.length -/
-@[to_additive /-- The length of a free additive monoid element: 0.length = 0 and
+@[to_additive (attr := deprecated "use `a.toList.length` instead" (since := "2026-10-23"))
+/-- The length of a free additive monoid element: 0.length = 0 and
 (a + b).length = a.length + b.length -/]
 def length (a : FreeMonoid α) : ℕ := a.toList.length
 
-@[to_additive (attr := simp)]
+set_option linter.deprecated false in
+@[to_additive (attr := deprecated "use `a.toList.length` instead" (since := "2026-10-23"))]
 theorem length_one : length (1 : FreeMonoid α) = 0 := rfl
 
-@[to_additive (attr := simp)]
+set_option linter.deprecated false in
+@[to_additive (attr := deprecated "use `a.toList.length` instead" (since := "2026-10-23"))]
 theorem length_eq_zero : length a = 0 ↔ a = 1 := by
   simp only [FreeMonoid.ext_iff]; exact List.length_eq_zero_iff
 
-@[to_additive (attr := simp)]
+set_option linter.deprecated false in
+@[to_additive (attr := deprecated "use `a.toList.length` instead" (since := "2026-10-23"))]
 theorem length_of (m : α) : length (of m) = 1 := rfl
 
-@[to_additive]
+set_option linter.deprecated false in
+@[to_additive (attr := deprecated "use `a.toList.length` instead" (since := "2026-10-23"))]
 theorem length_surjective [Nonempty α] : (@length α).Surjective :=
   ‹Nonempty α›.elim fun a n => ⟨FreeMonoid.ofList (List.replicate n a), by simp [length]⟩
 
-@[to_additive FreeAddMonoid.length_eq_one]
+set_option linter.deprecated false in
+@[to_additive (attr := deprecated "use `a.toList.length` instead" (since := "2026-10-23"))
+FreeAddMonoid.length_eq_one]
 theorem length_eq_one : length a = 1 ↔ ∃ m, a = of m := by
   simp only [FreeMonoid.ext_iff]; exact List.length_eq_one_iff
 
-@[to_additive]
+set_option linter.deprecated false in
+@[to_additive (attr := deprecated "use `a.toList.length` instead" (since := "2026-10-23"))]
 theorem length_eq_two {v : FreeMonoid α} : v.length = 2 ↔ ∃ a b, v = of a * of b := by
   simp only [FreeMonoid.ext_iff]; exact List.length_eq_two
 
-@[to_additive]
+set_option linter.deprecated false in
+@[to_additive (attr := deprecated "use `a.toList.length` instead" (since := "2026-10-23"))]
 theorem length_eq_three {v : FreeMonoid α} :
     v.length = 3 ↔ ∃ (a b c : α), v = of a * of b * of c := by
   simp only [FreeMonoid.ext_iff]; exact List.length_eq_three
 
-@[to_additive]
+set_option linter.deprecated false in
+@[to_additive (attr := deprecated "use `a.toList.length` instead" (since := "2026-10-23"))]
 theorem length_eq_four {v : FreeMonoid α} :
     v.length = 4 ↔ ∃ (a b c d : α), v = of a * of b * of c * of d := by
   simp only [FreeMonoid.ext_iff]; exact List.length_eq_four
 
-@[to_additive (attr := simp)]
+set_option linter.deprecated false in
+@[to_additive (attr := deprecated "use `a.toList.length` instead" (since := "2026-10-23"))]
 theorem length_mul (a b : FreeMonoid α) : (a * b).length = a.length + b.length :=
   List.length_append
 
 @[to_additive (attr := simp)]
-theorem of_ne_one (a : α) : of a ≠ 1 := by
-  intro h
-  have := congrArg FreeMonoid.length h
-  simp only [length_of, length_one, Nat.succ_ne_self] at this
+theorem of_ne_one (a : α) : of a ≠ 1 := fun h ↦ by simpa using congr(($h).toList.length)
 
 @[to_additive (attr := simp)]
 theorem one_ne_of (a : α) : 1 ≠ of a := of_ne_one _ |>.symm
@@ -220,22 +228,23 @@ section Mem
 variable {m : α}
 
 /-- Membership in a free monoid element -/
-@[to_additive /-- Membership in a free additive monoid element -/]
+@[to_additive (attr := deprecated "use `m ∈ a.toList` instead" (since := "2026-10-23"))
+/-- Membership in a free additive monoid element -/]
 def mem (a : FreeMonoid α) (m : α) := m ∈ toList a
 
-@[to_additive]
-instance : Membership α (FreeMonoid α) := ⟨mem⟩
+@[to_additive (attr := deprecated "use `m ∈ a.toList` instead" (since := "2026-10-23"))]
+instance : Membership α (FreeMonoid α) := ⟨fun a m ↦ m ∈ a.toList⟩
 
-@[to_additive]
+@[to_additive (attr := deprecated "use `m ∈ a.toList` instead" (since := "2026-10-23"))]
 theorem notMem_one : m ∉ (1 : FreeMonoid α) := List.not_mem_nil
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := deprecated "use `m ∈ a.toList` instead" (since := "2026-10-23"))]
 theorem mem_of {n : α} : m ∈ of n ↔ m = n := List.mem_singleton
 
-@[to_additive]
+@[to_additive (attr := deprecated "use `m ∈ a.toList` instead" (since := "2026-10-23"))]
 theorem mem_of_self : m ∈ of m := List.mem_singleton_self _
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := deprecated "use `m ∈ a.toList` instead" (since := "2026-10-23"))]
 theorem mem_mul {a b : FreeMonoid α} : m ∈ a * b ↔ m ∈ a ∨ m ∈ b := List.mem_append
 
 end Mem
@@ -442,29 +451,20 @@ instance : Unique (FreeMonoid α)ˣ where
 
 @[to_additive (attr := simp)]
 theorem map_surjective {f : α → β} : Function.Surjective (map f) ↔ Function.Surjective f := by
-  constructor
-  · intro fs d
-    rcases fs (FreeMonoid.of d) with ⟨b, hb⟩
+  constructor <;> intro fs d
+  · rcases fs (of d) with ⟨b, hb⟩
     induction b using FreeMonoid.inductionOn' with
-    | one =>
-      have H := congr(length $hb)
-      simp only [length_one, length_of, Nat.zero_ne_one, map_one] at H
-    | of_mul head _ _ =>
-      simp only [map_mul, map_of] at hb
-      use head
-      have H := congr(length $hb)
-      simp only [length_mul, length_of, add_eq_left, length_eq_zero] at H
-      rw [H, mul_one] at hb
-      exact FreeMonoid.of_injective hb
-  intro fs d
+    | one => simpa using congr(($hb).toList.length)
+    | of_mul head x hx =>
+      simp only [show x = 1 by
+        simpa [← toList_one, ← FreeMonoid.ext_iff] using congr(($hb).toList.length)] at hb
+      exact ⟨head, of_injective hb⟩
   induction d using FreeMonoid.inductionOn' with
   | one => use 1; rfl
   | of_mul head tail ih =>
-    specialize fs head
-    rcases fs with ⟨a, rfl⟩
-    rcases ih with ⟨b, rfl⟩
-    use FreeMonoid.of a * b
-    rfl
+    obtain ⟨a, rfl⟩:= fs head
+    obtain ⟨b, rfl⟩ := ih
+    exact ⟨of a * b, rfl⟩
 
 end Map
 
@@ -472,21 +472,26 @@ end Map
 
 section Reverse
 /-- Reverse the symbols in a `FreeMonoid α`. -/
-@[to_additive /-- Reverses the symbols in a `FreeAddMonoid α`. -/]
+@[to_additive (attr := deprecated "use `x.toList.reverse` instead" (since := "2026-10-23"))
+/-- Reverses the symbols in a `FreeAddMonoid α`. -/]
 def reverse (x : FreeMonoid α) : FreeMonoid α := ⟨x.toList.reverse⟩
 
-@[to_additive (attr := simp)]
+set_option linter.deprecated false in
+@[to_additive (attr := deprecated "use `x.toList.reverse` instead" (since := "2026-10-23"))]
 theorem reverse_of (a : α) : reverse (of a) = of a := rfl
 
-@[to_additive]
+set_option linter.deprecated false in
+@[to_additive (attr := deprecated "use `x.toList.reverse` instead" (since := "2026-10-23"))]
 theorem reverse_mul {a b : FreeMonoid α} : reverse (a * b) = reverse b * reverse a := by
   ext1; exact List.reverse_append
 
-@[to_additive (attr := simp)]
+set_option linter.deprecated false in
+@[to_additive (attr := deprecated "use `x.toList.reverse` instead" (since := "2026-10-23"))]
 theorem reverse_reverse {a : FreeMonoid α} : reverse (reverse a) = a := by
   ext1; apply List.reverse_reverse
 
-@[to_additive (attr := simp)]
+set_option linter.deprecated false in
+@[to_additive (attr := deprecated "use `x.toList.reverse` instead" (since := "2026-10-23"))]
 theorem length_reverse {a : FreeMonoid α} : a.reverse.length = a.length :=
   List.length_reverse
 

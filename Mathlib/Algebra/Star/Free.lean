@@ -26,9 +26,9 @@ namespace FreeMonoid
 variable {α : Type*}
 
 instance : StarMul (FreeMonoid α) where
-  star := reverse
-  star_involutive _ := reverse_reverse
-  star_mul _ _ := reverse_mul
+  star := ofList ∘ .reverse ∘ toList
+  star_involutive _ := by simp
+  star_mul _ _ := by simp
 
 @[simp]
 theorem star_of (x : α) : star (of x) = of x :=

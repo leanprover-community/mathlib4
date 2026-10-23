@@ -311,20 +311,12 @@ theorem foldrM.ofFreeMonoid_comp_of {m} [Monad m] [LawfulMonad m] (f : β → α
   ext
   simp [(· ∘ ·), Monoid.foldrM.ofFreeMonoid, Monoid.foldrM.mk, Function.flip_def]
 
-theorem toList_spec (xs : t α) : toList xs = FreeMonoid.toList (foldMap FreeMonoid.of xs) :=
-  Eq.symm <|
-    calc
-      FreeMonoid.toList (foldMap FreeMonoid.of xs) =
-          FreeMonoid.toList (foldMap FreeMonoid.of xs).reverse.reverse := by
-          simp only [FreeMonoid.reverse_reverse]
-      _ = (List.foldr cons [] (foldMap FreeMonoid.of xs).toList.reverse).reverse := by simp
-      _ = (ConcreteCategory.hom
-          (unop (Foldl.ofFreeMonoid (flip cons) (foldMap FreeMonoid.of xs))).asHom []).reverse := by
-            simp [Function.flip_def, List.foldr_reverse, Foldl.ofFreeMonoid, unop_op]
-      _ = toList xs := by
-            rw [foldMap_hom_free (Foldl.ofFreeMonoid (flip <| @cons α))]
-            simp only [toList, foldl, Foldl.get, foldl.ofFreeMonoid_comp_of,
-              Function.comp_apply]
+theorem toList_spec (xs : t α) : toList xs = FreeMonoid.toList (foldMap FreeMonoid.of xs) := calc
+  _ = (ConcreteCategory.hom
+      (unop (Foldl.ofFreeMonoid (flip cons) (foldMap FreeMonoid.of xs))).asHom []).reverse := by
+    rw [foldMap_hom_free]
+    simp [toList, foldl, Foldl.get]
+  _ = _ := by simp [Function.flip_def]
 
 set_option backward.isDefEq.respectTransparency.types false in
 theorem foldMap_map [Monoid γ] (f : α → β) (g : β → γ) (xs : t α) :

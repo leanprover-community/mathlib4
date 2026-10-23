@@ -76,7 +76,7 @@ theorem mk_abelianization_le (G : Type u) [Group G] :
 
 @[to_additive (attr := simp)]
 theorem mk_freeMonoid [Nonempty α] : #(FreeMonoid α) = max #α ℵ₀ := by
-  rw [← Cardinal.mk_list_eq_max_mk_aleph0 _]
+  rw [← mk_list_eq_max_mk_aleph0]
   exact mk_congr ⟨_, _, FreeMonoid.ofList_toList, FreeMonoid.toList_ofList⟩
 
 @[to_additive (attr := simp)]
