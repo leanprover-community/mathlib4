@@ -265,7 +265,7 @@ private theorem continuous_equivFun_basis_aux [T2Space E] {ι : Type v} [Finite 
     exact H₂ (ξ.coord i)
 
 /-- A finite-dimensional t2 vector space over a complete field must carry the module topology. -/
-instance (priority := 100) isModuleTopologyOfFiniteDimensional [T2Space E] [FiniteDimensional 𝕜 E] :
+instance (priority := 50) isModuleTopologyOfFiniteDimensional [T2Space E] [FiniteDimensional 𝕜 E] :
     IsModuleTopology 𝕜 E :=
   -- for the proof, go to a model vector space `b → 𝕜` thanks to `continuous_equivFun_basis`, and
   -- use that it has the module topology
