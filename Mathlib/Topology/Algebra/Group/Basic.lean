@@ -175,8 +175,9 @@ instance [Group G] [Group H] [TopologicalSpace G] [MulDistribMulAction H G]
     DiscreteTopology ↑(h • 𝒢) := by
   simp only [← SetLike.coe_sort_coe, ← isDiscrete_iff_discreteTopology] at *
   refine IsDiscrete.image_of_isOpenMap ‹_› ?_ fun x y ↦ by simp
-  apply IsOpenMap.of_inverse (f' := fun x ↦ h⁻¹ • x) (continuous_const_smul _) <;>
-  · intro x
+  apply IsOpenMap.of_inverse (f' := fun x ↦ h⁻¹ • x) (continuous_const_smul _)
+  all_goals
+    intro x
     simp
 
 variable [TopologicalSpace G] [Inv G] [Mul G]
