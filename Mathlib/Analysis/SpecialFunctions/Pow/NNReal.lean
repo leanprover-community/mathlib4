@@ -224,8 +224,6 @@ lemma finsetProd_rpow {ι} (s : Finset ι) (f : ι → ℝ≥0) (r : ℝ) :
     (∏ i ∈ s, f i ^ r) = (∏ i ∈ s, f i) ^ r :=
   multiset_prod_map_rpow _ _ _
 
-@[deprecated (since := "2026-04-08")] alias finset_prod_rpow := finsetProd_rpow
-
 -- note: these don't really belong here, but they're much easier to prove in terms of the above
 
 section Real
@@ -258,8 +256,6 @@ theorem _root_.Real.finsetProd_rpow
     {ι} (s : Finset ι) (f : ι → ℝ) (hs : ∀ i ∈ s, 0 ≤ f i) (r : ℝ) :
     (∏ i ∈ s, f i ^ r) = (∏ i ∈ s, f i) ^ r :=
   Real.multiset_prod_map_rpow s.val f hs r
-
-@[deprecated (since := "2026-04-08")] alias _root_.Real.finset_prod_rpow := Real.finsetProd_rpow
 
 end Real
 
@@ -1031,6 +1027,26 @@ lemma add_rpow_le_two_rpow_mul_rpow_add_rpow {p : ℝ} (a b : ℝ≥0∞) (hp : 
   _ = 2 ^ p * (max a b) ^ p := mul_rpow_of_nonneg _ _ hp
   _ = 2 ^ p * max (a ^ p) (b ^ p) := by rw [max_rpow hp]
   _ ≤ 2 ^ p * (a ^ p + b ^ p) := by gcongr; apply max_le_add_of_nonneg <;> simp
+
+lemma iSup_rpow_of_pos {ι : Sort*} {r : ℝ} (hr : 0 < r) (f : ι → ℝ≥0∞) :
+    (⨆ i, f i) ^ r = ⨆ i, f i ^ r :=
+  (orderIsoRpow r hr).map_iSup f
+
+lemma iSup_rpow_of_nonneg {ι : Sort*} [Nonempty ι] {r : ℝ} (hr : 0 ≤ r) (f : ι → ℝ≥0∞) :
+    (⨆ i, f i) ^ r = ⨆ i, f i ^ r := by
+  rcases eq_or_lt_of_le hr with rfl | hr
+  · simp
+  · exact iSup_rpow_of_pos hr f
+
+lemma iInf_rpow_of_pos {ι : Sort*} {r : ℝ} (hr : 0 < r) (f : ι → ℝ≥0∞) :
+    (⨅ i, f i) ^ r = ⨅ i, f i ^ r :=
+  (orderIsoRpow r hr).map_iInf f
+
+lemma iInf_rpow_of_nonneg {ι : Sort*} [Nonempty ι] {r : ℝ} (hr : 0 ≤ r) (f : ι → ℝ≥0∞) :
+    (⨅ i, f i) ^ r = ⨅ i, f i ^ r := by
+  rcases eq_or_lt_of_le hr with rfl | hr
+  · simp
+  · exact iInf_rpow_of_pos hr f
 
 end ENNReal
 

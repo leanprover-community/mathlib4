@@ -1,49 +1,47 @@
 module  -- shake: keep-all, shake: keep-downstream
 
--- This import makes the `alias` command available globally.
-public import Batteries.Tactic.Alias
 -- This import makes the `#help` command available globally.
-public import Batteries.Tactic.HelpCmd
--- This import makes the `proof_wanted` command available globally.
-public import Batteries.Util.ProofWanted
+public meta import Batteries.Tactic.HelpCmd
 -- This import makes the `#redundant_imports`/`#min_imports`/`#find_home`/`#import_diff` commands
 -- available globally.
-public import ImportGraph.Tools
-public import Lean.LibrarySuggestions.Default -- for `+suggestions` modes in tactics
-public import Lean.Linter.Sets -- for the definition of linter sets
-public import Mathlib.Lean.Linter -- linter utilities; will be transitively imported in #31134
-public import Mathlib.Tactic.AdaptationNote -- make #adaptation_note available everywhere
-public import Mathlib.Tactic.Lemma
-public import Mathlib.Tactic.Linter.AuxLemma
-public import Mathlib.Tactic.Linter.DeclType
-public import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
-public import Mathlib.Tactic.Linter.DirectoryDependency
-public import Mathlib.Tactic.Linter.DocPrime
-public import Mathlib.Tactic.Linter.DocString
-public import Mathlib.Tactic.Linter.EmptyLine
-public import Mathlib.Tactic.Linter.FlexibleLinter
-public import Mathlib.Tactic.Linter.HashCommandLinter
-public import Mathlib.Tactic.Linter.HaveILetI
-public import Mathlib.Tactic.Linter.Header
-public import Mathlib.Tactic.Linter.InternalConstructor
+public meta import ImportGraph.Tools
+public meta import Lean.LibrarySuggestions.Default -- for `+suggestions` modes in tactics
+public meta import Lean.Linter.Sets -- for the definition of linter sets
+public meta import Mathlib.Lean.Linter -- linter utilities; will be transitively imported in #31134
+public meta import Mathlib.Tactic.AdaptationNote -- make #adaptation_note available everywhere
+public meta import Mathlib.Tactic.Lemma
+public meta import Mathlib.Tactic.Linter.AuxLemma
+public meta import Mathlib.Tactic.Linter.DeclType
+public meta import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
+public meta import Mathlib.Tactic.Linter.DirectoryDependency
+public meta import Mathlib.Tactic.Linter.DocPrime
+public meta import Mathlib.Tactic.Linter.DocString
+public meta import Mathlib.Tactic.Linter.EmptyLine
+public meta import Mathlib.Tactic.Linter.FlexibleLinter
+public meta import Mathlib.Tactic.Linter.HashCommandLinter
+public meta import Mathlib.Tactic.Linter.HaveILetI
+public meta import Mathlib.Tactic.Linter.Header
+public meta import Mathlib.Tactic.Linter.InternalConstructor
 -- The following module imports `Batteries.Tactic.Lint`, where `#lint` is defined.
-public import Mathlib.Tactic.Linter.Lint
-public import Mathlib.Tactic.Linter.Multigoal
-public import Mathlib.Tactic.Linter.OldObtain
-public import Mathlib.Tactic.Linter.PrivateModule
-public import Mathlib.Tactic.Linter.Style
-public import Mathlib.Tactic.Linter.TacticDocumentation
-public import Mathlib.Tactic.Linter.TerminalCDot
-public import Mathlib.Tactic.Linter.UnusedTactic
--- The following import contains the environment extension for the unused tactic linter.
-public import Mathlib.Tactic.Linter.UnusedTacticExtension
-public import Mathlib.Tactic.Linter.Whitespace
+public meta import Mathlib.Tactic.Linter.Lint
+public meta import Mathlib.Tactic.Linter.Multigoal
+public meta import Mathlib.Tactic.Linter.OldObtain
+public meta import Mathlib.Tactic.Linter.PrivateModule
+public meta import Mathlib.Tactic.Linter.Style
+public meta import Mathlib.Tactic.Linter.TacticDocumentation
+public meta import Mathlib.Tactic.Linter.TerminalCDot
+public meta import Mathlib.Tactic.Linter.UnusedTactic
+public meta import Mathlib.Tactic.Linter.Whitespace
 -- This import makes the `#min_imports in` command available globally.
-public import Mathlib.Tactic.MinImports
-public import Mathlib.Tactic.TacticAnalysis.Declarations
-public import Mathlib.Tactic.TypeStar
+public meta import Mathlib.Tactic.MinImports
+public meta import Mathlib.Tactic.TacticAnalysis.Declarations
+public meta import Mathlib.Tactic.TypeStar
 -- This import makes the binder plicity code action available globally
-public import Mathlib.Util.CodeActions
+public meta import Mathlib.Util.CodeActions
+-- This import makes the `alias` command available globally.
+public import Batteries.Tactic.Alias
+-- This import makes the `proof_wanted` command available globally.
+public import Batteries.Util.ProofWanted
 
 /-!
 This is the root file in Mathlib: it is imported by virtually *all* Mathlib files.
@@ -101,6 +99,7 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.docString
   linter.style.dollarSyntax
   linter.style.emptyLine
+  linter.style.extendedBinder
   linter.style.header
   linter.style.lambdaSyntax
   linter.style.longLine
@@ -155,4 +154,4 @@ run_cmd liftTermElabM do
     if !cinfo.type.isAppOf ``Lean.Option then
       throwError "{.ofConstName mlRes} is not an option, it is a{indentD cinfo.type}"
 
-#allow_unused_tactic! Mathlib.Linter.Style.show
+allow_unused_tactic Mathlib.Linter.Style.show
