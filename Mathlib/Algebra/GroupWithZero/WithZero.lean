@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Divisibility.Hom
 public import Mathlib.Algebra.Group.TypeTags.Basic
 public import Mathlib.Algebra.Group.WithOne.Defs
+public import Mathlib.Algebra.GroupWithZero.Associated
 public import Mathlib.Algebra.GroupWithZero.Equiv
 public import Mathlib.Algebra.GroupWithZero.Units.Basic
 public import Mathlib.Data.Nat.Cast.Defs
@@ -94,6 +95,13 @@ instance instSemigroupWithZero : SemigroupWithZero (WithZero M) where
 @[simp]
 lemma coe_dvd_coe_iff : (a : WithZero M) ∣ b ↔ a ∣ b := by
   refine ⟨fun ⟨c, hc⟩ ↦ ?_, map_dvd coeMulHom⟩
+  induction c using recZeroCoe with
+  | zero => simp at hc
+  | coe c => exact ⟨c, mod_cast hc⟩
+
+@[simp]
+lemma coe_rightDvd_coe_iff : (a : WithZero M) ∣ᵣ b ↔ a ∣ᵣ b := by
+  refine ⟨fun ⟨c, hc⟩ ↦ ?_, map_rightDvd coeMulHom⟩
   induction c using recZeroCoe with
   | zero => simp at hc
   | coe c => exact ⟨c, mod_cast hc⟩
@@ -211,7 +219,10 @@ instance pow : Pow (WithZero α) ℕ where
 
 end Pow
 
-instance instMonoidWithZero [Monoid α] : MonoidWithZero (WithZero α) where
+section Monoid
+variable [Monoid M] {a b : M}
+
+instance instMonoidWithZero : MonoidWithZero (WithZero M) where
   npow n a := a ^ n
   npow_zero
     | 0 => rfl
@@ -219,6 +230,27 @@ instance instMonoidWithZero [Monoid α] : MonoidWithZero (WithZero α) where
   npow_succ
     | n, 0 => by simp only [mul_zero]; rfl
     | n, some _ => congr(some $(pow_succ ..))
+
+/-- Adjoining `0` to a monoid doesn't change its units. -/
+@[simps]
+def unitsWithZeroEquivUnits : (WithZero M)ˣ ≃* Mˣ where
+  toFun a := ⟨unzero a.ne_zero, unzero a⁻¹.ne_zero, by simp [← coe_inj], by simp [← coe_inj]⟩
+  invFun := Units.map coeMonoidHom
+  left_inv _ := by ext; simp
+  right_inv _ := by ext; simp
+  map_mul' _ _ := by ext; simp [← coe_inj]
+
+@[simp] lemma coe_unitsWithZeroEquivUnits_apply (u : (WithZero M)ˣ) :
+    ((unitsWithZeroEquivUnits u : Mˣ) : M) = unzero u.ne_zero := rfl
+
+@[simp] lemma coe_unitsWithZeroEquivUnits_symm :
+    (unitsWithZeroEquivUnits.symm : Mˣ → (WithZero M)ˣ) = .map coeMonoidHom := rfl
+
+@[simp]
+lemma associated_coe_iff : Associated (a : WithZero M) b ↔ Associated a b :=
+  unitsWithZeroEquivUnits.exists_congr <| by simp [← coe_inj (α := M)]
+
+end Monoid
 
 instance instCommMonoidWithZero [CommMonoid α] : CommMonoidWithZero (WithZero α) :=
   { WithZero.instMonoidWithZero, WithZero.instCommSemigroup with }
@@ -308,19 +340,15 @@ instance instGroupWithZero : GroupWithZero (WithZero α) where
     apply mul_inv_cancel
 
 /-- Any group is isomorphic to the units of itself adjoined with `0`. -/
-@[simps]
-def unitsWithZeroEquiv : (WithZero α)ˣ ≃* α where
-  toFun a := unzero a.ne_zero
-  invFun a := Units.mk0 a coe_ne_zero
-  left_inv _ := Units.ext <| by simp only [coe_unzero, Units.mk0_val]
-  map_mul' _ _ := coe_inj.mp <| by simp only [Units.val_mul, coe_unzero, coe_mul]
+@[simps!]
+def unitsWithZeroEquiv : (WithZero α)ˣ ≃* α := unitsWithZeroEquivUnits.trans toUnits.symm
 
 instance [Nontrivial α] : Nontrivial (WithZero α)ˣ :=
   unitsWithZeroEquiv.toEquiv.surjective.nontrivial
 
 theorem coe_unitsWithZeroEquiv_eq_units_val (γ : (WithZero α)ˣ) :
     ↑(unitsWithZeroEquiv γ) = γ.val := by
-  simp only [WithZero.unitsWithZeroEquiv, MulEquiv.coe_mk, Equiv.coe_fn_mk, WithZero.coe_unzero]
+  simp [unitsWithZeroEquiv]
 
 /-- Any group with zero is isomorphic to adjoining `0` to the units of itself. -/
 @[simps]
