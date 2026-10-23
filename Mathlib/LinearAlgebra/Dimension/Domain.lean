@@ -216,8 +216,7 @@ variable
   (M₁ : Type v) [AddCommGroup M₁] [Module R M₁] [Module S M₁] [IsScalarTower R S M₁]
 
 /-- **Tower law over algebraic extensions of domains.**
-if `R` and `S` have no zero divisors, `S` is an algebraic `R`-algebra, and
-`M` is a `S`-module, then
+If `S` has no zero divisors, `S` is algebraic over `R`, and `M` is a `S`-module, then
 $$\operatorname{rank}_R(S) * \operatorname{rank}_S(M) = \operatorname{rank}_R(M)$$.
 
 See `Algebra.IsAlgebraic.rank_mul_rank` for a non–universe polymorphic version, and
@@ -231,8 +230,7 @@ theorem lift_rank_mul_lift_rank :
   apply lift_rank_mul_lift_rank_of_isFractionRing_isLocalization (FS := FractionRing S) ..
 
 /-- **Tower law over algebraic extensions of domains.**
-if `R` and `S` have no zero divisors, `S` is an algebraic `R`-algebra, and
-`M` is a `S`-module, then
+If `S` has no zero divisors, `S` is algebraic over `R`, and `M` is a `S`-module, then
 $$\operatorname{rank}_R(S) * \operatorname{rank}_S(M) = \operatorname{rank}_R(M)$$.
 
 See `Algebra.IsAlgebraic.lift_rank_mul_lift_rank` for a universe polymorphic version, and
@@ -245,8 +243,7 @@ theorem rank_mul_rank : rank R S * rank S M₁ = rank R M₁ := by
   apply rank_mul_rank_of_isFractionRing_isLocalization (FS := FractionRing S) ..
 
 /-- **Tower law over algebraic extensions of domains.**
-if `R` and `S` have no zero divisors, `S` is an algebraic `R`-algebra, and
-`M` is a `S`-module, then
+If `S` has no zero divisors, `S` is algebraic over `R`, and `M` is a `S`-module, then
 $$\operatorname{rank}_R(S) * \operatorname{rank}_S(M) = \operatorname{rank}_R(M)$$.
 
 See `Module.finrank_mul_finrank` for when your modules are free. -/
