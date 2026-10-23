@@ -130,7 +130,7 @@ instance instOrderBot {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] 
 @[deprecated (since := "2026-06-30")] alias finsetSum_apply := sum_apply
 
 theorem finsetSum_apply' (I : Finset ι) (κ : ι → Kernel α β) (a : α) (s : Set β) :
-    (∑ i ∈ I, κ i) a s = ∑ i ∈ I, κ i a s := by rw [sum_apply, Measure.finsetSum_apply]
+    (∑ i ∈ I, κ i) a s = ∑ i ∈ I, κ i a s := by rw [sum_apply, sum_apply]
 
 end Kernel
 
@@ -303,22 +303,22 @@ protected noncomputable def sum [Countable ι] (κ : ι → Kernel α β) : Kern
     simp_rw [Measure.sum_apply _ hs]
     exact Measurable.tsum fun n => Kernel.measurable_coe (κ n) hs
 
-theorem sum_apply [Countable ι] (κ : ι → Kernel α β) (a : α) :
+protected theorem sum_apply [Countable ι] (κ : ι → Kernel α β) (a : α) :
     Kernel.sum κ a = Measure.sum fun n => κ n a :=
   rfl
 
 theorem sum_apply' [Countable ι] (κ : ι → Kernel α β) (a : α) {s : Set β} (hs : MeasurableSet s) :
-    Kernel.sum κ a s = ∑' n, κ n a s := by rw [sum_apply κ a, Measure.sum_apply _ hs]
+    Kernel.sum κ a s = ∑' n, κ n a s := by rw [Kernel.sum_apply κ a, Measure.sum_apply _ hs]
 
 @[simp]
 theorem sum_zero [Countable ι] : (Kernel.sum fun _ : ι => (0 : Kernel α β)) = 0 := by
   ext a s hs
   rw [sum_apply' _ a hs]
-  simp only [zero_apply, Measure.coe_zero, Pi.zero_apply, tsum_zero]
+  simp
 
 theorem sum_comm [Countable ι] (κ : ι → ι → Kernel α β) :
     (Kernel.sum fun n => Kernel.sum (κ n)) = Kernel.sum fun m => Kernel.sum fun n => κ n m := by
-  ext a s; simp_rw [sum_apply]; rw [Measure.sum_comm]
+  ext a s; simp_rw [Kernel.sum_apply]; rw [Measure.sum_comm]
 
 @[simp]
 theorem sum_fintype [Fintype ι] (κ : ι → Kernel α β) : Kernel.sum κ = ∑ i, κ i := by
@@ -328,8 +328,7 @@ theorem sum_fintype [Fintype ι] (κ : ι → Kernel α β) : Kernel.sum κ = �
 theorem sum_add [Countable ι] (κ η : ι → Kernel α β) :
     (Kernel.sum fun n => κ n + η n) = Kernel.sum κ + Kernel.sum η := by
   ext a s hs
-  simp only [add_apply, sum_apply, Measure.sum_apply _ hs, Pi.add_apply,
-    Measure.coe_add, ENNReal.summable.tsum_add ENNReal.summable]
+  simp [Kernel.sum_apply, Measure.sum_apply _ hs, ENNReal.summable.tsum_add ENNReal.summable]
 
 end Sum
 

@@ -130,7 +130,7 @@ theorem withDensity_kernel_sum [Countable ι] (κ : ι → Kernel α β) (hκ : 
     withDensity (Kernel.sum κ) f = Kernel.sum fun i => withDensity (κ i) f := by
   by_cases hf : Measurable (Function.uncurry f)
   · ext1 a
-    simp_rw [sum_apply, Kernel.withDensity_apply _ hf, sum_apply,
+    simp_rw [Kernel.sum_apply, Kernel.withDensity_apply _ hf, Kernel.sum_apply,
       withDensity_sum (fun n => κ n a) (f a)]
   · simp_rw [withDensity_of_not_measurable _ hf]
     exact sum_zero.symm

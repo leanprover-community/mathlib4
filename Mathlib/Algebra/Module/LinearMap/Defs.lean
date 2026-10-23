@@ -740,7 +740,7 @@ instance : SMul S (M →ₛₗ[σ₁₂] M₂) :=
       map_smul' := fun c x ↦ by simp [Pi.smul_apply, smul_comm] }⟩
 
 @[simp]
-theorem smul_apply (a : S) (f : M →ₛₗ[σ₁₂] M₂) (x : M) : (a • f) x = a • f x :=
+protected theorem smul_apply (a : S) (f : M →ₛₗ[σ₁₂] M₂) (x : M) : (a • f) x = a • f x :=
   rfl
 
 @[simp]

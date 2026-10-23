@@ -166,7 +166,7 @@ theorem laverage_add_measure :
   · rw [not_isFiniteMeasure_iff] at hν
     simp [laverage_eq, hν]
   simp only [← ENNReal.mul_div_right_comm, measure_mul_laverage, ← ENNReal.add_div,
-    ← lintegral_add_measure, ← Measure.add_apply, ← laverage_eq]
+    ← lintegral_add_measure, ← add_apply, ← laverage_eq]
 
 theorem measure_mul_setLAverage (f : α → ℝ≥0∞) (h : μ s ≠ ∞) :
     μ s * ⨍⁻ x in s, f x ∂μ = ∫⁻ x in s, f x ∂μ := by
