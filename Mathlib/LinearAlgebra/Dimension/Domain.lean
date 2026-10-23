@@ -203,9 +203,9 @@ theorem IsTorsionFree.erank_mul_erank [IsTorsionFree S M] :
 The tower law for `Module.finrank` of a `S`-torsion-free module over an algebra `S/R` of domains.
 See `Module.finrank_mul_finrank` for when your modules are free.
 -/
-theorem IsTorsionFree.finrank_mul_finrank [h : IsTorsionFree S M] :
+theorem IsTorsionFree.finrank_mul_finrank [IsTorsionFree S M] :
     finrank R S * finrank S M = finrank R M := by
-  simpa [finrank] using congr($(h.erank_mul_erank R S M).toNat)
+  simpa [finrank] using congr($(erank_mul_erank R S M).toNat)
 
 end Module
 
