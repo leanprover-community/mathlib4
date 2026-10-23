@@ -850,8 +850,13 @@ theorem baseChange_le_iff_le_comap {q : Submodule A (A ⊗[R] M)} :
   rw [baseChange_eq_span, span_le, ← q.coe_restrictScalars R, SetLike.coe_subset_coe,
     map_le_iff_le_comap]
 
+variable (R M) in
+theorem baseChange_gc : GaloisConnection (baseChange A)
+    fun q ↦ (q.restrictScalars R).comap (TensorProduct.mk R A M 1) :=
+  fun _ _ ↦ baseChange_le_iff_le_comap
+
 @[simp]
-lemma baseChange_bot : (⊥ : Submodule R M).baseChange A = ⊥ := by simp [baseChange_eq_span]
+lemma baseChange_bot : (⊥ : Submodule R M).baseChange A = ⊥ := (baseChange_gc R M A).l_bot
 
 @[simp]
 lemma baseChange_top : (⊤ : Submodule R M).baseChange A = ⊤ := by
@@ -859,8 +864,8 @@ lemma baseChange_top : (⊤ : Submodule R M).baseChange A = ⊤ := by
   exact span_le.2 fun _ ⟨a, m, h⟩ ↦ h ▸ tmul_mem_baseChange_of_mem _ trivial
 
 variable {p q} in
-theorem baseChange_mono (h : p ≤ q) : p.baseChange A ≤ q.baseChange A := by
-  grw [baseChange_le_iff_le_comap, h, ← baseChange_le_iff_le_comap]
+theorem baseChange_mono (h : p ≤ q) : p.baseChange A ≤ q.baseChange A :=
+  (baseChange_gc R M A).monotone_l h
 
 @[simp]
 lemma baseChange_span (s : Set M) :
