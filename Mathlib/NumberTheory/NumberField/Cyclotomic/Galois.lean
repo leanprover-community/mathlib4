@@ -61,9 +61,8 @@ noncomputable abbrev galEquivZMod : Gal(K/ℚ) ≃* (ZMod n)ˣ :=
   IsCyclotomicExtension.autEquivPow K <| Polynomial.cyclotomic.irreducible_rat (NeZero.pos n)
 
 theorem galEquivZMod_apply_of_pow_eq (σ : Gal(K/ℚ)) {x : K} (hx : x ^ n = 1) :
-    σ x = x ^ (galEquivZMod n K σ).val.val := by
-  obtain ⟨a, -, rfl⟩ := (zeta_spec n ℚ K).eq_pow_of_pow_eq_one hx
-  rw [map_pow, pow_right_comm, galEquivZMod, autEquivPow_apply_zeta]
+    σ x = x ^ (galEquivZMod n K σ).val.val :=
+  autEquivPow_apply_of_pow_eq_one K _ σ hx
 
 set_option backward.isDefEq.respectTransparency false in
 theorem galEquivZMod_smul_of_pow_eq (σ : Gal(K/ℚ)) {x : 𝓞 K} (hx : x ^ n = 1) :

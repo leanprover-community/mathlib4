@@ -73,7 +73,6 @@ variable {K} (L)
 
 /-- The `MulEquiv` that takes an automorphism `f` to the element `k : (ZMod n)ˣ` such that
   `f μ = μ ^ k` for any root of unity `μ`. A strengthening of `IsPrimitiveRoot.autToPow`. -/
-@[simps -isSimp symm_apply]
 noncomputable def autEquivPow (h : Irreducible (cyclotomic n K)) : Gal(L/K) ≃* (ZMod n)ˣ :=
   let hζ := zeta_spec n K L
   let hμ t := hζ.pow_of_coprime _ (ZMod.val_coe_unit_coprime t)
@@ -113,16 +112,32 @@ theorem autEquivPow_apply (h : Irreducible (cyclotomic n K)) (f : Gal(L/K)) :
     autEquivPow L h f = (zeta_spec n K L).autToPow K f :=
   rfl
 
-theorem autEquivPow_apply_zeta (h : Irreducible (cyclotomic n K)) (f : Gal(L/K)) :
+theorem autEquivPow_spec (h : Irreducible (cyclotomic n K)) (f : Gal(L/K)) :
     f (zeta n K L) = zeta n K L ^ (autEquivPow L h f : ZMod n).val :=
   ((zeta_spec n K L).autToPow_spec K f).symm
 
+theorem autEquivPow_apply_of_pow_eq_one (h : Irreducible (cyclotomic n K)) (f : Gal(L/K))
+    {x : L} (hx : x ^ n = 1) : f x = x ^ (autEquivPow L h f : ZMod n).val := by
+  obtain ⟨a, -, rfl⟩ := (zeta_spec n K L).eq_pow_of_pow_eq_one hx
+  rw [map_pow, pow_right_comm, autEquivPow_spec L h]
+
 theorem autEquivPow_symm_apply_zeta (h : Irreducible (cyclotomic n K)) (t : (ZMod n)ˣ) :
     (autEquivPow L h).symm t (zeta n K L) = zeta n K L ^ (t : ZMod n).val := by
-  rw [autEquivPow_apply_zeta L h, MulEquiv.apply_symm_apply]
+  rw [autEquivPow_spec L h, MulEquiv.apply_symm_apply]
 
-attribute [deprecated autEquivPow_symm_apply_zeta +typeChanged (since := "2026-10-19")]
-  autEquivPow_symm_apply
+@[deprecated autEquivPow_symm_apply_zeta +typeChanged (since := "2026-10-19")]
+theorem autEquivPow_symm_apply (h : Irreducible (cyclotomic n K)) (t : (ZMod n)ˣ) :
+    (autEquivPow L h).symm t =
+      ((zeta_spec n K L).powerBasis K).equivOfMinpoly
+        (((zeta_spec n K L).pow_of_coprime _ (ZMod.val_coe_unit_coprime t)).powerBasis K)
+        (by
+          have := IsCyclotomicExtension.neZero' n K L
+          simp only [IsPrimitiveRoot.powerBasis_gen]
+          have hr :=
+            IsPrimitiveRoot.minpoly_eq_cyclotomic_of_irreducible
+              ((zeta_spec n K L).pow_of_coprime _ (ZMod.val_coe_unit_coprime t)) h
+          exact ((zeta_spec n K L).minpoly_eq_cyclotomic_of_irreducible h).symm.trans hr) :=
+  rfl
 
 variable (h : Irreducible (cyclotomic n K)) {L}
 
