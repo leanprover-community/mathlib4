@@ -10,8 +10,8 @@ public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Finite
 public import Mathlib.LinearAlgebra.Eigenspace.Matrix
 public import Mathlib.LinearAlgebra.Matrix.PosDef
 
-import Mathlib.Algebra.Order.Star.Real
 import Mathlib.Algebra.Group.Pi.Units
+import Mathlib.Algebra.Order.Star.Real
 import Mathlib.Tactic.Positivity.Finset
 
 /-!
@@ -255,7 +255,7 @@ lemma linearIndependent_lapMatrix_ker_basis_aux :
   rw [h] at h0
   intro c
   obtain ⟨i, h'⟩ : ∃ i : V, G.connectedComponentMk i = c := Quot.exists_rep c
-  exact h' ▸ congrFun h0 i
+  exact h' ▸ congr($h0 i)
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma top_le_span_range_lapMatrix_ker_basis_aux :

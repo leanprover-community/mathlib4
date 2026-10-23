@@ -124,7 +124,7 @@ theorem coe_linearMap_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R]
   AlgHom.toLinearMap_injective.comp coe_toAlgHom_injective
 
 theorem coe_ringHom_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) → A →+* B) :=
-  AlgHom.coe_ringHom_injective.comp coe_toAlgHom_injective
+  AlgHom.toRingHom_injective.comp coe_toAlgHom_injective
 
 theorem toMonoidHom_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) → A →* B) :=
   AlgHom.toMonoidHom_injective.comp coe_toAlgHom_injective
@@ -140,11 +140,11 @@ alias coe_addMonoidHom_injective := toAddMonoidHom_injective
 
 /-- Consider using `congr($H x)` instead. -/
 protected theorem congr_fun {f₁ f₂ : 𝒜 →ₐᵍ[R] ℬ} (H : f₁ = f₂) (x : A) : f₁ x = f₂ x :=
-  DFunLike.congr_fun H x
+  congr($H x)
 
 /-- Consider using `congr(f $h)` instead. -/
 protected theorem congr_arg (f : 𝒜 →ₐᵍ[R] ℬ) {x y : A} (h : x = y) : f x = f y :=
-  DFunLike.congr_arg f h
+  congr(f $h)
 
 @[ext]
 theorem ext {f₁ f₂ : 𝒜 →ₐᵍ[R] ℬ} (H : ∀ x, f₁ x = f₂ x) : f₁ = f₂ :=
