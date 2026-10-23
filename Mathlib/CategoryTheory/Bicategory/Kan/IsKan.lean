@@ -160,32 +160,32 @@ variable {t : LeftExtension f g} {s : LeftExtension h t.extension}
 /-- Given a left Kan extension `t` of `g` along `f`, a left extension `u` of `g` along `f ≫ h`
 induces, via the universal property of `t`, a left extension of `t.extension` along `h`. -/
 @[implicit_reducible]
-def IsKan.ofIsKanTop (Ht : IsKan t) (u : LeftExtension (f ≫ h) g) : LeftExtension h t.extension :=
+def IsKan.unpaste (Ht : IsKan t) (u : LeftExtension (f ≫ h) g) : LeftExtension h t.extension :=
   .mk u.extension (Ht.desc (.mk (h ≫ u.extension) (u.unit ≫ (α_ f h u.extension).hom)))
 
 @[simp]
-theorem IsKan.ofIsKanTop_extension (Ht : IsKan t) (u : LeftExtension (f ≫ h) g) :
-    (Ht.ofIsKanTop u).extension = u.extension :=
+theorem IsKan.unpaste_extension (Ht : IsKan t) (u : LeftExtension (f ≫ h) g) :
+    (Ht.unpaste u).extension = u.extension :=
   rfl
 
 @[reassoc (attr := simp)]
-theorem IsKan.ofIsKanTop_fac (Ht : IsKan t) (u : LeftExtension (f ≫ h) g) :
-    t.unit ≫ f ◁ (Ht.ofIsKanTop u).unit = u.unit ≫ (α_ f h u.extension).hom :=
+theorem IsKan.unpaste_fac (Ht : IsKan t) (u : LeftExtension (f ≫ h) g) :
+    t.unit ≫ f ◁ (Ht.unpaste u).unit = u.unit ≫ (α_ f h u.extension).hom :=
   Ht.fac (.mk (h ≫ u.extension) (u.unit ≫ (α_ f h u.extension).hom))
 
 /-- Pasting of left extensions preserves being Kan. -/
 def IsKan.paste (Ht : IsKan t) (Hs : IsKan s) : IsKan (t.paste s) :=
   IsKan.mk
     (fun u ↦
-      LeftExtension.homMk (Hs.desc (Ht.ofIsKanTop u)) <| by
-        rw [paste_unit, ← cancel_mono (α_ f h u.extension).hom, ← Ht.ofIsKanTop_fac,
-          ← Hs.fac (Ht.ofIsKanTop u)]
+      LeftExtension.homMk (Hs.desc (Ht.unpaste u)) <| by
+        rw [paste_unit, ← cancel_mono (α_ f h u.extension).hom, ← Ht.unpaste_fac,
+          ← Hs.fac (Ht.unpaste u)]
         bicategory)
     (fun u τ ↦ by
       ext
       apply Hs.hom_ext
       apply Ht.hom_ext
-      rw [homMk_right, Hs.fac, Ht.ofIsKanTop_fac, ← LeftExtension.w τ, paste_unit]
+      rw [homMk_right, Hs.fac, Ht.unpaste_fac, ← LeftExtension.w τ, paste_unit]
       bicategory)
 
 /-- Given a left extension `t` of `g` along `f` and a left extension `s` of `t` along `h`, if `t`
@@ -336,32 +336,32 @@ variable {t : LeftLift f g} {s : LeftLift h t.lift}
 /-- Given a left Kan lift `t` of `g` along `f`, a left lift `u` of `g` along `h ≫ f` induces,
 via the universal property of `t`, a left lift of `t.lift` along `h`. -/
 @[implicit_reducible]
-def IsKan.ofIsKanTop (Ht : IsKan t) (u : LeftLift (h ≫ f) g) : LeftLift h t.lift :=
+def IsKan.unpaste (Ht : IsKan t) (u : LeftLift (h ≫ f) g) : LeftLift h t.lift :=
   .mk u.lift (Ht.desc (.mk (u.lift ≫ h) (u.unit ≫ (α_ u.lift h f).inv)))
 
 @[simp]
-theorem IsKan.ofIsKanTop_lift (Ht : IsKan t) (u : LeftLift (h ≫ f) g) :
-    (Ht.ofIsKanTop u).lift = u.lift :=
+theorem IsKan.unpaste_lift (Ht : IsKan t) (u : LeftLift (h ≫ f) g) :
+    (Ht.unpaste u).lift = u.lift :=
   rfl
 
 @[reassoc (attr := simp)]
-theorem IsKan.ofIsKanTop_fac (Ht : IsKan t) (u : LeftLift (h ≫ f) g) :
-    t.unit ≫ (Ht.ofIsKanTop u).unit ▷ f = u.unit ≫ (α_ u.lift h f).inv :=
+theorem IsKan.unpaste_fac (Ht : IsKan t) (u : LeftLift (h ≫ f) g) :
+    t.unit ≫ (Ht.unpaste u).unit ▷ f = u.unit ≫ (α_ u.lift h f).inv :=
   Ht.fac (.mk (u.lift ≫ h) (u.unit ≫ (α_ u.lift h f).inv))
 
 /-- Pasting of left lifts preserves being Kan. -/
 def IsKan.paste (Ht : IsKan t) (Hs : IsKan s) : IsKan (t.paste s) :=
   IsKan.mk
     (fun u ↦
-      LeftLift.homMk (Hs.desc (Ht.ofIsKanTop u)) <| by
-        rw [paste_unit, ← cancel_mono (α_ u.lift h f).inv, ← Ht.ofIsKanTop_fac,
-          ← Hs.fac (Ht.ofIsKanTop u)]
+      LeftLift.homMk (Hs.desc (Ht.unpaste u)) <| by
+        rw [paste_unit, ← cancel_mono (α_ u.lift h f).inv, ← Ht.unpaste_fac,
+          ← Hs.fac (Ht.unpaste u)]
         bicategory)
     (fun u τ ↦ by
       ext
       apply Hs.hom_ext
       apply Ht.hom_ext
-      rw [homMk_right, Hs.fac, Ht.ofIsKanTop_fac, ← LeftLift.w τ, paste_unit]
+      rw [homMk_right, Hs.fac, Ht.unpaste_fac, ← LeftLift.w τ, paste_unit]
       bicategory)
 
 /-- Given a left lift `t` of `g` along `f` and a left lift `s` of `t` along `h`, if `t` and
@@ -514,32 +514,32 @@ variable {t : RightExtension f g} {s : RightExtension h t.extension}
 /-- Given a right Kan extension `t` of `g` along `f`, a right extension `u` of `g` along `f ≫ h`
 induces, via the universal property of `t`, a right extension of `t.extension` along `h`. -/
 @[implicit_reducible]
-def IsKan.ofIsKanTop (Ht : IsKan t) (u : RightExtension (f ≫ h) g) : RightExtension h t.extension :=
+def IsKan.unpaste (Ht : IsKan t) (u : RightExtension (f ≫ h) g) : RightExtension h t.extension :=
   .mk u.extension (Ht.desc (.mk (h ≫ u.extension) ((α_ f h u.extension).inv ≫ u.counit)))
 
 @[simp]
-theorem IsKan.ofIsKanTop_extension (Ht : IsKan t) (u : RightExtension (f ≫ h) g) :
-    (Ht.ofIsKanTop u).extension = u.extension :=
+theorem IsKan.unpaste_extension (Ht : IsKan t) (u : RightExtension (f ≫ h) g) :
+    (Ht.unpaste u).extension = u.extension :=
   rfl
 
 @[reassoc (attr := simp)]
-theorem IsKan.ofIsKanTop_fac (Ht : IsKan t) (u : RightExtension (f ≫ h) g) :
-    f ◁ (Ht.ofIsKanTop u).counit ≫ t.counit = (α_ f h u.extension).inv ≫ u.counit :=
+theorem IsKan.unpaste_fac (Ht : IsKan t) (u : RightExtension (f ≫ h) g) :
+    f ◁ (Ht.unpaste u).counit ≫ t.counit = (α_ f h u.extension).inv ≫ u.counit :=
   Ht.fac (.mk (h ≫ u.extension) ((α_ f h u.extension).inv ≫ u.counit))
 
 /-- Pasting of right extensions preserves being Kan. -/
 def IsKan.paste (Ht : IsKan t) (Hs : IsKan s) : IsKan (t.paste s) :=
   IsKan.mk
     (fun u ↦
-      RightExtension.homMk (Hs.desc (Ht.ofIsKanTop u)) <| by
-        rw [paste_counit, ← cancel_epi (α_ f h u.extension).inv, ← Ht.ofIsKanTop_fac,
-          ← Hs.fac (Ht.ofIsKanTop u)]
+      RightExtension.homMk (Hs.desc (Ht.unpaste u)) <| by
+        rw [paste_counit, ← cancel_epi (α_ f h u.extension).inv, ← Ht.unpaste_fac,
+          ← Hs.fac (Ht.unpaste u)]
         bicategory)
     (fun u τ ↦ by
       ext
       apply Hs.hom_ext
       apply Ht.hom_ext
-      rw [homMk_left, Hs.fac, Ht.ofIsKanTop_fac, ← RightExtension.w τ, paste_counit]
+      rw [homMk_left, Hs.fac, Ht.unpaste_fac, ← RightExtension.w τ, paste_counit]
       bicategory)
 
 /-- Given a right extension `t` of `g` along `f` and a right extension `s` of `t` along `h`, if `t`
@@ -690,32 +690,32 @@ variable {t : RightLift f g} {s : RightLift h t.lift}
 /-- Given a right Kan lift `t` of `g` along `f`, a right lift `u` of `g` along `h ≫ f` induces,
 via the universal property of `t`, a right lift of `t.lift` along `h`. -/
 @[implicit_reducible]
-def IsKan.ofIsKanTop (Ht : IsKan t) (u : RightLift (h ≫ f) g) : RightLift h t.lift :=
+def IsKan.unpaste (Ht : IsKan t) (u : RightLift (h ≫ f) g) : RightLift h t.lift :=
   .mk u.lift (Ht.desc (.mk (u.lift ≫ h) ((α_ u.lift h f).hom ≫ u.counit)))
 
 @[simp]
-theorem IsKan.ofIsKanTop_lift (Ht : IsKan t) (u : RightLift (h ≫ f) g) :
-    (Ht.ofIsKanTop u).lift = u.lift :=
+theorem IsKan.unpaste_lift (Ht : IsKan t) (u : RightLift (h ≫ f) g) :
+    (Ht.unpaste u).lift = u.lift :=
   rfl
 
 @[reassoc (attr := simp)]
-theorem IsKan.ofIsKanTop_fac (Ht : IsKan t) (u : RightLift (h ≫ f) g) :
-    (Ht.ofIsKanTop u).counit ▷ f ≫ t.counit = (α_ u.lift h f).hom ≫ u.counit :=
+theorem IsKan.unpaste_fac (Ht : IsKan t) (u : RightLift (h ≫ f) g) :
+    (Ht.unpaste u).counit ▷ f ≫ t.counit = (α_ u.lift h f).hom ≫ u.counit :=
   Ht.fac (.mk (u.lift ≫ h) ((α_ u.lift h f).hom ≫ u.counit))
 
 /-- Pasting of right lifts preserves being Kan. -/
 def IsKan.paste (Ht : IsKan t) (Hs : IsKan s) : IsKan (t.paste s) :=
   IsKan.mk
     (fun u ↦
-      RightLift.homMk (Hs.desc (Ht.ofIsKanTop u)) <| by
-        rw [paste_counit, ← cancel_epi (α_ u.lift h f).hom, ← Ht.ofIsKanTop_fac,
-          ← Hs.fac (Ht.ofIsKanTop u)]
+      RightLift.homMk (Hs.desc (Ht.unpaste u)) <| by
+        rw [paste_counit, ← cancel_epi (α_ u.lift h f).hom, ← Ht.unpaste_fac,
+          ← Hs.fac (Ht.unpaste u)]
         bicategory)
     (fun u τ ↦ by
       ext
       apply Hs.hom_ext
       apply Ht.hom_ext
-      rw [homMk_left, Hs.fac, Ht.ofIsKanTop_fac, ← RightLift.w τ, paste_counit]
+      rw [homMk_left, Hs.fac, Ht.unpaste_fac, ← RightLift.w τ, paste_counit]
       bicategory)
 
 /-- Given a right lift `t` of `g` along `f` and a right lift `s` of `t` along `h`, if `t` and
