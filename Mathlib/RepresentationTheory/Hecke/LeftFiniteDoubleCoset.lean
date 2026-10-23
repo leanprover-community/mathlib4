@@ -214,7 +214,7 @@ instance : Coe (DoubleCoset₀ H₁ H₂) (DoubleCoset.Quotient (H₁ : Set G) (
 namespace DoubleCoset₀
 
 /-- The Hecke double coset represented by `g`. -/
-abbrev mk (H₁ H₂ : Subgroup G) (g : G) [IsLeftFinite H₁ H₂ g] :
+def mk (H₁ H₂ : Subgroup G) (g : G) [IsLeftFinite H₁ H₂ g] :
     DoubleCoset₀ H₁ H₂ := ⟨DoubleCoset.mk H₁ H₂ g, IsLeftFinite.degreeNeZero⟩
 
 /-- A representative of the underlying double coset in the ambient group. -/
@@ -235,8 +235,8 @@ instance (x : DoubleCoset₀ H₁ H₂) : IsLeftFinite H₁ H₂ x.rep := by
   simp [isLeftFinite_iff, rep, DoubleCoset.out_eq']
 
 @[simp]
-lemma coe_mk (g : G) [IsLeftFinite H₁ H₂ g] :
-    (mk H₁ H₂ g : DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G)) = DoubleCoset.mk H₁ H₂ g := rfl
+lemma val_mk (g : G) [IsLeftFinite H₁ H₂ g] :
+    (mk H₁ H₂ g).val = DoubleCoset.mk H₁ H₂ g := rfl
 
 @[simp]
 lemma mk_rep (x : DoubleCoset₀ H₁ H₂) :
@@ -250,11 +250,11 @@ lemma mk_rep_eq_val (x : DoubleCoset₀ H₁ H₂) :
 
 lemma mk_degree [IsLeftFinite H₁ H₂ g] :
     (mk H₁ H₂ g).degree = Nat.card (leftDecompQuotient H₁ H₂ g) := by
-  simpa using DoubleCoset.mk_degree g (H₁ := H₁) (H₂ := H₂)
+  simpa using! DoubleCoset.mk_degree g (H₁ := H₁) (H₂ := H₂)
 
 lemma mk_eq {g g' : G} [IsLeftFinite H₁ H₂ g] [IsLeftFinite H₁ H₂ g'] :
     mk H₁ H₂ g = mk H₁ H₂ g' ↔ ∃ h₁ ∈ H₁, ∃ h₂ ∈ H₂, g' = h₁ * g * h₂ := by
-  rw [Subtype.ext_iff, DoubleCoset.eq]
+  rw [Subtype.ext_iff, ← DoubleCoset.eq, val_mk, val_mk]
 
 @[simp]
 lemma mk_mem_mul [IsLeftFinite H₁ H₂ g] (h₁ : H₁) :
@@ -271,3 +271,11 @@ noncomputable instance (x : DoubleCoset₀ H₁ H₂) : Fintype x.leftDecomposit
   infer_instance
 
 end DoubleCoset₀
+
+/-- If a global `∀ g, IsLeftFinite H₁ H₂ g` instance is available, one can use the dot notation
+`x.equiv₀` to construct an element of `DoubleCoset₀` from `DoubleCoset.Quotient`. -/
+@[simps]
+def DoubleCoset.Quotient.equiv₀ [h : ∀ g, IsLeftFinite H₁ H₂ g] :
+    DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G) ≃ DoubleCoset₀ H₁ H₂  where
+  toFun x := ⟨x, by simpa [out_eq'] using (isLeftFinite_iff H₁ H₂ x.out).mp (h x.out)⟩
+  invFun := Subtype.val
