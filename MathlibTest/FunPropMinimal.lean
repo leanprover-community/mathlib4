@@ -3,17 +3,21 @@ Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
-import Aesop
-import Mathlib.Basic.FunLike.Basic
-import Mathlib.Logic.Function.Basic
-import Mathlib.Tactic.FunProp
-import Mathlib.Tactic.SuccessIfFailWithMsg
+module
+
+public import Aesop
+public import Mathlib.Basic.FunLike.Basic
+public import Mathlib.Logic.Function.Basic
+public import Mathlib.Tactic.FunProp
+public import Mathlib.Tactic.SuccessIfFailWithMsg
 
 /-! # Tests for the `fun_prop` tactic
 
 This file is designed for development of fun_prop and does not depend on most of mathlib. It defines
 two function properties `Con` and `Lin` which roughly correspond to `Continuity` and `IsLinearMap`.
 -/
+
+@[expose] public section
 
 set_option linter.style.longLine false
 
@@ -395,9 +399,9 @@ example (f : β → γ) (g : α → β) (h : B) : Con (fun x => f (g x)) := by f
 end MultipleLambdaTheorems
 
 
-/-- info: `?m` is not a `fun_prop` goal! -/
+/-- error: `?m` is not a `fun_prop` goal! -/
 #guard_msgs in
-#check_failure ((by fun_prop) : ?m)
+#check ((by fun_prop) : ?m)
 
 /-- error: `Injective Nat.succ` is not a `fun_prop` goal!
 Consider marking `Function.Injective` with `@[fun_prop]`. -/

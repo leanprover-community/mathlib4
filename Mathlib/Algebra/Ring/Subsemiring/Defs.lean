@@ -303,6 +303,10 @@ theorem coe_add (x y : s) : ((x + y : s) : R) = (x + y : R) :=
 theorem coe_mul (x y : s) : ((x * y : s) : R) = (x * y : R) :=
   rfl
 
+@[simp, norm_cast]
+theorem coe_natCast (n : ℕ) : ((n : s) : R) = (n : R) :=
+  rfl
+
 instance nontrivial [Nontrivial R] : Nontrivial s :=
   nontrivial_of_ne 0 1 fun H => zero_ne_one (congr_arg Subtype.val H)
 
