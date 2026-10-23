@@ -292,27 +292,12 @@ private noncomputable def restrictIci (d : F.WellOrderInductionData)
     (t : J) (ht : ¬ Order.IsSuccLimit t) :
     ((Subtype.mono_coe (· ∈ Set.Ici t)).functor.op ⋙ F).WellOrderInductionData where
   succ j hj p :=
-    have hj' : ¬IsMax j.val := by
-      rw [not_isMax_iff] at hj ⊢
-      obtain ⟨b, hb⟩ := hj
-      exact ⟨b, hb⟩
-    -- this is not a defeq so we have to manually cast our way around this
-    haveI : (Order.succ j).val = Order.succ j.val := by
-      rw [coe_succ_of_mem (by grind [Order.le_succ])]
-    letI e : F.obj (op (Order.succ j).val) ≃ F.obj (op (Order.succ j.val)) :=
-      Iso.toEquiv <| F.mapIso <| Iso.op <| eqToIso this.symm
-    e.symm <| d.succ j.val hj' p
+    (F.map (homOfLE (by dsimp; rw [coe_succ_of_mem (by grind [Order.le_succ])])).op)
+      (d.succ j.val (fun h ↦ hj (fun _ h' ↦ h h')) p)
   map_succ u hu v := by
-    extract_lets hu'
-    dsimp at u v
-    conv_rhs => rw [← d.map_succ u hu' v]
-    simp only [Monotone.functor, homOfLE_leOfHom, comp_obj, op_obj, comp_map, op_map,
-      Iso.toEquiv_symm_apply, mapIso_inv, Iso.op_inv, eqToIso.inv, eqToHom_op]
-    generalize_proofs _ _ h1 s _ h2 h3
-    have : homOfLE h1 = homOfLE h2 ≫ eqToHom s := rfl
-    rw [this, op_comp, Functor.map_comp, ← ConcreteCategory.comp_apply, eqToHom_op,
-      ← F.map_comp_assoc]
-    simp
+    dsimp
+    rw [← ConcreteCategory.comp_apply, ← F.map_comp, ← op_comp]
+    apply d.map_succ
   lift j hj p :=
     /- The idea is to use that F and F restricted to `Ici t` have the same sections because
     the inclusion Set.Iio j →o Set.Iio j.val is final -/
