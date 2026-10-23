@@ -93,6 +93,8 @@ and a monomial order `m : MonomialOrder σ`.
 
 -/
 
+set_option linter.style.longFile 1600
+
 @[expose] public section
 
 namespace MonomialOrder
@@ -1184,14 +1186,6 @@ lemma coeff_mul_of_withBotDegree_add_withBotDegree_le {d : σ →₀ ℕ} {f g :
     m.withBotDegree_eq_coe_degree_iff _ |>.mpr hfg0.2, ← WithBot.coe_add,
     m.toWithBotSyn_apply_coe, WithBot.coe_le_coe, WithBot.coe_eq_coe]
 
-lemma withBotDegree_le_withBotDegree_of_toColex_support_le_toColex_support {f g : MvPolynomial σ R}
-    (h : toColex (f.support.image m.toSyn) ≤ toColex (g.support.image m.toSyn)) :
-    m.toWithBotSyn (m.withBotDegree f) ≤ m.toWithBotSyn (m.withBotDegree g) := by
-  have := Finset.Colex.max_ofColex_le_max_ofColex_of_le h
-  simp_rw [ofColex_toColex, Finset.max_eq_sup_coe, Finset.sup_image] at this
-  -- todo: the two sub-goals should be a lemma or definition in #40010 later
-  convert this <;> simp [toWithBotSyn, withBotDegree, Finset.max_eq_sup_coe]
-
 end withBotDegree
 
 end Semiring
@@ -1305,35 +1299,6 @@ theorem degree_sub_leadingTerm_lt_iff {f : MvPolynomial σ R} :
   intro h h'
   simp only [h', map_zero] at h
   exact not_lt_bot h
-
-lemma toColex_support_sub_lt_toColex_support_of_leadingTerm_eq {e : σ →₀ ℕ} {f g : MvPolynomial σ R}
-    (he : e ∈ f.support) (h : m.leadingTerm g = monomial e (f.coeff e)) :
-    toColex ((f - g).support.image m.toSyn) < toColex (f.support.image m.toSyn) := by
-  simp_rw [Finset.Colex.toColex_lt_toColex_iff_exists_forall_lt, ← m.toSyn.coe_toEquiv,
-    Equiv.image_eq_preimage_symm_of_finset, m.toSyn.coe_toEquiv_symm, Finset.mem_preimage]
-  use m.toSyn e
-  simp only [leadingTerm, leadingCoeff, monomial_eq_monomial_iff, coeff_degree_eq_zero_iff,
-    mem_support_iff.mp he, and_false, or_false] at h
-  rcases h with ⟨rfl, h⟩
-  simp_rw [m.toSyn.symm_apply_apply, and_iff_right he, mem_support_iff, coeff_sub, h, not_ne_iff]
-  refine ⟨by simp, fun b hb hfb ↦ ?_⟩
-  simp only [hfb, zero_sub, ne_eq, neg_eq_zero] at hb
-  apply lt_of_le_of_ne (m.toSyn.apply_symm_apply b ▸ m.le_degree <| mem_support_iff.mpr hb)
-  grind [m.toSyn.symm_apply_apply]
-
-lemma toColex_support_sub_le_toColex_support_of_leadingTerm_eq {e : σ →₀ ℕ} {f g : MvPolynomial σ R}
-    (h : m.leadingTerm g = monomial e (f.coeff e)) :
-    toColex ((f - g).support.image m.toSyn) ≤ toColex (f.support.image m.toSyn) := by
-  by_cases he : e ∈ f.support
-  · exact le_of_lt <| m.toColex_support_sub_lt_toColex_support_of_leadingTerm_eq he h
-  rw [notMem_support_iff.mp he, monomial_zero, leadingTerm_eq_zero_iff] at h
-  simp [h]
-
-lemma withBotDegree_sub_le_withBotDegree {e : σ →₀ ℕ} {f g : MvPolynomial σ R}
-    (h : m.leadingTerm g = monomial e (f.coeff e)) :
-    m.withBotDegree (f - g) ≼'[m] m.withBotDegree f :=
-  withBotDegree_le_withBotDegree_of_toColex_support_le_toColex_support <|
-    toColex_support_sub_le_toColex_support_of_leadingTerm_eq h
 
 lemma sPolynomial_antisymm (f g : MvPolynomial σ R) :
     m.sPolynomial f g = - m.sPolynomial g f :=
