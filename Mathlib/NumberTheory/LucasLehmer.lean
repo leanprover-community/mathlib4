@@ -193,7 +193,7 @@ theorem sZMod_eq_s (p' : ℕ) (i : ℕ) : sZMod (p' + 2) i = (s i : ZMod (2 ^ (p
   | succ i ih => push_cast [s, sZMod, ih]; rfl
 
 theorem sZMod_eq_sMod (p : ℕ) (i : ℕ) : sZMod p i = (sMod p i : ZMod (2 ^ p - 1)) := by
-  induction i <;> push_cast [← Int.coe_nat_two_pow_pred p, sMod, sZMod, *] <;> rfl
+  induction i <;> push_cast [← Int.natCast_two_pow_pred p, sMod, sZMod, *] <;> rfl
 
 /-- The Lucas-Lehmer residue is `s p (p-2)` in `ZMod (2^p - 1)`. -/
 def lucasLehmerResidue (p : ℕ) : ZMod (2 ^ p - 1) :=

@@ -1,4 +1,8 @@
-import Mathlib.CategoryTheory.Category.Basic
+module
+
+public import Mathlib.CategoryTheory.Category.Basic
+
+@[expose] public section
 
 structure Foo where
   x : Nat
