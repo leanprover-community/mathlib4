@@ -1,5 +1,9 @@
-import Mathlib.Tactic.CrossRefAttribute
-import Mathlib.Util.ParseCommand
+module
+
+public import Mathlib.Tactic.CrossRefAttribute
+public import Mathlib.Util.ParseCommand
+
+@[expose] public section
 
 /-- info: No tags found. -/
 #guard_msgs in
@@ -207,11 +211,59 @@ info:
 
 end DLMF
 
+namespace OEIS
+
+@[oeis A123456 "A vacuous comment"]
+theorem test : 1 + 1 = 2 := by
+  rfl
+
+@[oeis A123456]
+theorem test' : 1 + 1 = 2 := by
+  rfl
+
+/-- error: <input>:1:11: OEIS ids must be the letter A followed by exactly six digits, e.g. A123456. -/
+#guard_msgs in
+run_cmd
+  Lean.ofExcept <| Lean.Parser.runParserCategory (← Lean.getEnv)
+    `command "@[oeis A123] theorem test'' : True := .intro"
+
+/--
+info: some ([OEIS A123456](https://oeis.org/A123456) (A vacuous comment))
+-/
+#guard_msgs in
+run_cmd
+  Lean.logInfo m!"{← Lean.findDocString? (← Lean.getEnv) ``OEIS.test}"
+
+/-- error: <input>:1:6: OEIS ids must be the letter A followed by exactly six digits, e.g. A123456. -/
+#guard_msgs in #parse Mathlib.CrossRef.oeisIdFn => "search"
+
+/-- error: <input>:1:4: OEIS ids must be the letter A followed by exactly six digits, e.g. A123456. -/
+#guard_msgs in #parse Mathlib.CrossRef.oeisIdFn => "A123"
+
+/-- error: <input>:1:7: OEIS ids must be the letter A followed by exactly six digits, e.g. A123456. -/
+#guard_msgs in #parse Mathlib.CrossRef.oeisIdFn => "A123ABC"
+
+/-- error: <input>:1:7: OEIS ids must be the letter A followed by exactly six digits, e.g. A123456. -/
+#guard_msgs in #parse Mathlib.CrossRef.oeisIdFn => "B123456"
+
+/-- info: A123456 -/
+#guard_msgs in #parse Mathlib.CrossRef.oeisIdFn => "A123456"
+
+/--
+info:
+[OEIS A123456](https://oeis.org/A123456) corresponds to declaration `test'`.
+[OEIS A123456](https://oeis.org/A123456) corresponds to declaration `test`. (A vacuous comment)
+-/
+#guard_msgs in
+#oeis_tags
+
+end OEIS
+
 section errors
 
 open Lean Parser Mathlib.CrossRef
 
-def captureException (env : Environment) (s : ParserFn) (input : String) : Except String Syntax :=
+meta def captureException (env : Environment) (s : ParserFn) (input : String) : Except String Syntax :=
   let ictx := mkInputContext input "<input>"
   let s := s.run ictx { env, options := {} } (getTokenTable env) (mkParserState input)
   if !s.allErrors.isEmpty then
