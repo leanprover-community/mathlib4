@@ -107,15 +107,14 @@ end Ring.HasFiniteQuotients
 
 namespace Ideal
 
-variable {R : Type*} [CommRing R] [Ring.HasFiniteQuotients R]
+variable {S : Type*} [CommRing S] [Ring.HasFiniteQuotients S]
 
 /-- A version of `finiteIndex` for a ring with finite quotients. -/
-lemma finiteIndex' {I : Ideal R} (hI : I ≠ ⊥) : I.toAddSubgroup.FiniteIndex := by
-  have : Finite (R ⧸ I.toAddSubgroup) := Ring.HasFiniteQuotients.finiteQuotient hI
-  exact AddSubgroup.finiteIndex_of_finite_quotient
+lemma finiteIndex' {I : Ideal S} (hI : I ≠ ⊥) : I.toAddSubgroup.FiniteIndex :=
+  AddSubgroup.finiteIndex_iff_finite_quotient.mpr (Ring.HasFiniteQuotients.finiteQuotient hI)
 
 /-- A version of `isFiniteRelIndex` for a ring with finite quotients. -/
-lemma isFiniteRelIndex' {I : Ideal R} (hI : I ≠ ⊥) (J : Ideal R) :
+lemma isFiniteRelIndex' {I : Ideal S} (hI : I ≠ ⊥) (J : Ideal S) :
     I.toAddSubgroup.IsFiniteRelIndex J.toAddSubgroup :=
   have := finiteIndex' hI
   AddSubgroup.isFiniteRelIndex_of_finiteIndex

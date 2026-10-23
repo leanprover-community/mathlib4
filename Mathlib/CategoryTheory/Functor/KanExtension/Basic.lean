@@ -32,8 +32,6 @@ are obtained as `leftKanExtension L F` and `rightKanExtension L F`.
 
 -/
 
-set_option backward.defeqAttrib.useBackward true
-
 @[expose] public section
 
 namespace CategoryTheory
@@ -685,6 +683,7 @@ def LeftExtension.isUniversalPrecomp₂
     simp [← a_w_t, hb_fac_app, u, hα_fac_app]
   apply IsInitial.ofUnique
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency.types false in
 /-- If the left extension defined by `α : F₀ ⟶ L ⋙ F₁` is universal,
 then for every `L' : D ⥤ D'`, `F₁ : D ⥤ H`, if an extension
@@ -729,7 +728,7 @@ def LeftExtension.isUniversalPrecomp₂Equiv
   left_inv x := by subsingleton
   right_inv x := by subsingleton
 
-
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency.types false in
 theorem isLeftKanExtension_iff_postcompose [F₁.IsLeftKanExtension α]
     {F₂ : D' ⥤ H} (L'' : C ⥤ D') (e : L ⋙ L' ≅ L'') (β : F₁ ⟶ L' ⋙ F₂)
@@ -837,6 +836,7 @@ noncomputable def coconeOfIsLeftKanExtension (c : Cocone F) : Cocone F' where
   pt := c.pt
   ι := F'.descOfIsLeftKanExtension α _ c.ι
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `c` is a colimit cocone for a functor `F : C ⥤ H` and `α : F ⟶ L ⋙ F'` is the unit of any
 left Kan extension `F' : D ⥤ H` of `F` along `L : C ⥤ D`, then `coconeOfIsLeftKanExtension α c` is
