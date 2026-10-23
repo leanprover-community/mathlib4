@@ -15,7 +15,6 @@ import Mathlib.Analysis.Normed.Field.Instances
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Topology.Algebra.UniformField
 
-
 /-!
 # WithAbs for fields
 
