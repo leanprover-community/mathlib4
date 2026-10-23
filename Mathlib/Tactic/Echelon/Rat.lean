@@ -18,7 +18,7 @@ other model matches the ring.
 
 public meta section
 
-open Lean Meta Qq
+open Lean Meta Qq Mathlib.Tactic.Matrix
 
 namespace Mathlib.Tactic.Echelon
 
