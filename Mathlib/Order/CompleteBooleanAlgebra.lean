@@ -862,6 +862,16 @@ protected abbrev completeAtomicBooleanAlgebra [CompleteAtomicBooleanAlgebra β] 
 
 end Equiv
 
+namespace OrderIso
+variable [CompleteLattice α] [Order.Coframe β]
+
+/-- Transfer the minimal axioms of a coframe across an order isomorphism. -/
+lemma coframeMinimalAxioms (e : α ≃o β) : Coframe.MinimalAxioms α where
+  iInf_sup_le_sup_sInf a s := e.map_rel_iff.1 <| by
+   simp [map_iInf₂, map_sup, map_sInf, sup_iInf₂_eq]
+
+end OrderIso
+
 end lift
 
 namespace PUnit
