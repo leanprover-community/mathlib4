@@ -86,7 +86,7 @@ theorem nonempty_linearEquiv_of_isSimpleModule (M N) [AddCommGroup M] [Module R 
     [Module R N] [IsSimpleModule R M] [IsSimpleModule R N] :
     Nonempty (M ≃ₗ[R] N) := by
   have := Submodule.topEquiv.isSimpleModule_iff.mpr (show IsSimpleModule R M by assumption)
-  obtain ⟨e⟩ := IsIsotypicOfType.of_isIsotypic_self M N (isIsotypic R R) ⊤
+  obtain ⟨e⟩ := (isIsotypic R R).isIsotypicOfType M N ⊤
   exact ⟨Submodule.topEquiv.symm.trans e⟩
 
 /-- The **Wedderburn–Artin Theorem**: an Artinian simple ring is isomorphic to a matrix
