@@ -163,7 +163,7 @@ variable (M : Type w) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower 
 The tower law for ENat `Module.rank` of a `S`-torsion-free module over an algebra `S/R` of domains.
 See `Module.IsTorsionFree.finrank_mul_finrank` for a `finrank` version.
 -/
-theorem IsTorsionFree.erank_mul_erank [hM : IsTorsionFree S M] :
+theorem IsTorsionFree.erank_mul_erank [IsTorsionFree S M] :
     toENat (rank R S) * toENat (rank S M) = toENat (rank R M) := by
   by_cases h : FaithfulSMul R S
   case neg =>
