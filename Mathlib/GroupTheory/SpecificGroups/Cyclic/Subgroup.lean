@@ -170,27 +170,24 @@ instance Bot.isCyclic : IsCyclic (⊥ : Subgroup α) :=
 instance Subgroup.isCyclic [IsCyclic α] (H : Subgroup α) : IsCyclic H := by
   classical
   let ⟨g, hg⟩ := IsCyclic.exists_generator (α := α)
-  rcases eq_or_ne H ⊥ with rfl | hx
+  rcases eq_or_ne H ⊥ with rfl | hH
   · infer_instance
-  obtain ⟨x, hx₁, hx₂⟩ := H.bot_or_exists_ne_one.resolve_left hx
-  obtain ⟨k, rfl⟩ := hg x
   have hex : ∃ n : ℕ, 0 < n ∧ g ^ n ∈ H := by
+    obtain ⟨x, hx₁, hx₂⟩ := H.bot_or_exists_ne_one.resolve_left hH
+    obtain ⟨k, rfl⟩ := hg x
     use k.natAbs
     contrapose hx₂
     cases k <;> simp_all
-  refine ⟨⟨⟨g ^ Nat.find hex, (Nat.find_spec hex).2⟩, fun ⟨x, hx⟩ ↦ ?_⟩⟩
+  obtain ⟨hn0, hn⟩ := Nat.find_spec hex
+  set n := Nat.find hex
+  refine ⟨⟨⟨g ^ n, hn⟩, fun ⟨x, hx⟩ ↦ ?_⟩⟩
   obtain ⟨k, rfl⟩ := hg x
-  have hk := Int.natAbs_of_nonneg <|
-    Int.emod_nonneg k (Int.natCast_ne_zero_iff_pos.2 (Nat.find_spec hex).1)
-  refine ⟨k / Nat.find hex, Subtype.ext ?_⟩
-  dsimp
-  rw [← zpow_natCast, ← zpow_mul, Int.mul_ediv_cancel' ?_]
-  rw [Int.dvd_iff_emod_eq_zero, ← Int.natAbs_eq_zero]
-  refine by_contra fun h ↦ Nat.find_min hex ?_ ⟨Nat.pos_of_ne_zero h, ?_⟩
-  · rw [← Int.ofNat_lt, hk]
-    exact Int.emod_lt_of_pos _ (Int.natCast_pos.2 (Nat.find_spec hex).1)
-  · rwa [← zpow_natCast, hk, ← H.mul_mem_cancel_right ?_, ← zpow_add, Int.emod_add_mul_ediv]
-    simp [zpow_mul, H.zpow_mem (Nat.find_spec hex).2]
+  refine ⟨k / n, Subtype.ext ?_⟩
+  suffices ↑n ∣ k by simpa [zpow_mul] using congr(g ^ $(Int.mul_ediv_cancel' this))
+  rw [Int.ofNat_dvd_left, Nat.dvd_iff_mod_eq_zero]
+  suffices g ^ (k.natAbs % n) ∈ H by grind [Nat.find_min hex (k.natAbs.mod_lt hn0)]
+  rw [← H.mul_mem_cancel_left (H.pow_mem hn (k.natAbs / n)), ← pow_mul, ← pow_add, Nat.div_add_mod]
+  cases k <;> simpa using hx
 
 @[to_additive]
 theorem isCyclic_of_injective [IsCyclic G'] (f : G →* G') (hf : Function.Injective f) :
