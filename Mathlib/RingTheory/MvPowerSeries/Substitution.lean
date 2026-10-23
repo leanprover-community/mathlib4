@@ -139,8 +139,8 @@ theorem HasSubst.smul_X (a : σ → R) :
 theorem HasSubst.sumElim {γ : Type*} {a : σ → MvPowerSeries γ R} {b : τ → MvPowerSeries γ R}
     (ha : HasSubst a) (hb : HasSubst b) : HasSubst (Sum.elim a b) where
   const_coeff := by rintro (s | t) <;> simp [ha.const_coeff, hb.const_coeff]
-  coeff_zero d := ((ha.coeff_zero d).image .inl).union ((hb.coeff_zero d).image .inr)|>.subset
-    <| by rintro (s | t) h <;> simpa
+  coeff_zero d := (((ha.coeff_zero d).image .inl).union ((hb.coeff_zero d).image .inr)).subset
+    (by rintro (s | t) _ <;> simpa)
 
 /-- Stacking finitely many substitutable families gives a substitutable family. -/
 theorem HasSubst.uncurry {γ : Type*} [Finite γ] {a : γ → σ → MvPowerSeries τ R}
