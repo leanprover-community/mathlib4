@@ -18,13 +18,11 @@ This file states some results about evaluating cyclotomic polynomials in various
 
 ## Main definitions
 * `Polynomial.eval(₂)_one_cyclotomic_prime(_pow)`: `eval 1 (cyclotomic p^k R) = p`.
-* `Polynomial.eval_one_cyclotomic_not_prime_pow`: Otherwise, `eval 1 (cyclotomic n R) = 1`.
-* `Polynomial.eval_one_cyclotomic_not_isPrimePow`: if `n` is neither `1` nor a prime power,
-  `eval 1 (cyclotomic n R) = 1`.
+* `Polynomial.eval_one_cyclotomic_of_not_isPrimePow`: if `n` is neither `1` nor a prime power,
+  then `eval 1 (cyclotomic n R) = 1`.
 * `Polynomial.cyclotomic_pos` : `∀ x, 0 < eval x (cyclotomic n R)` if `2 < n`.
-* `IsPrimitiveRoot.isUnit_sub_one_iff`: if `ζ` is a primitive `n`-th root of unity with `1 < n`
-  in a domain `R` such that `algebraMap ℤ R` is a local homomorphism, then `ζ - 1` is a unit iff
-  `n` is not a prime power.
+* `IsPrimitiveRoot.isUnit_sub_one_iff`: if no prime number is a unit in `R`, then `ζ - 1` is a unit
+  precisely when the order of `ζ` is not a prime power.
 -/
 
 public section
@@ -141,11 +139,11 @@ theorem cyclotomic_nonneg (n : ℕ) {R}
 
 /-- The `n`-th cyclotomic polynomial takes the value `1` at `1` when `n` is neither `1` nor a prime
 power. -/
-theorem eval_one_cyclotomic_not_isPrimePow {R : Type*} [Ring R] {n : ℕ} (hn : n ≠ 1)
+theorem eval_one_cyclotomic_of_not_isPrimePow {R : Type*} [Ring R] {n : ℕ} (hn : n ≠ 1)
     (h : ¬ IsPrimePow n) : eval 1 (cyclotomic n R) = 1 := by
   rcases n.eq_zero_or_pos with (rfl | hn')
   · simp
-  have hn : 1 < n := one_lt_iff_ne_zero_and_ne_one.mpr ⟨hn'.ne', hn⟩
+  replace hn : 1 < n := one_lt_iff_ne_zero_and_ne_one.mpr ⟨hn'.ne', hn⟩
   rsuffices h | h : eval 1 (cyclotomic n ℤ) = 1 ∨ eval 1 (cyclotomic n ℤ) = -1
   · have := eval_intCast_map (Int.castRingHom R) (cyclotomic n ℤ) 1
     simpa only [map_cyclotomic, Int.cast_one, h, eq_intCast] using this
@@ -175,9 +173,11 @@ theorem eval_one_cyclotomic_not_isPrimePow {R : Type*} [Ring R] {n : ℕ} (hn : 
     apply Nat.succ_injective
     exact Nat.pow_right_injective hp.two_le hxy
 
+/-- A version of `eval_one_cyclotomic_of_not_isPrimePow` with the hypothesis stated without
+`IsPrimePow`. -/
 theorem eval_one_cyclotomic_not_prime_pow {R : Type*} [Ring R] {n : ℕ}
     (h : ∀ {p : ℕ}, p.Prime → ∀ k : ℕ, p ^ k ≠ n) : eval 1 (cyclotomic n R) = 1 :=
-  eval_one_cyclotomic_not_isPrimePow (h Nat.prime_two 0).symm
+  eval_one_cyclotomic_of_not_isPrimePow (h Nat.prime_two 0).symm
     fun ⟨_, k, hp, _, hk⟩ ↦ h (Nat.prime_iff.mpr hp) k hk
 
 theorem sub_one_pow_totient_lt_cyclotomic_eval {n : ℕ} {q : ℝ} (hn' : 2 ≤ n) (hq' : 1 < q) :
@@ -342,9 +342,9 @@ theorem isUnit_sub_one_iff_isUnit_eval_one_cyclotomic [NeZero n] (hζ : IsPrimit
 /-- If the order of `ζ` is not a prime power, then `ζ - 1` is a unit. -/
 theorem isUnit_sub_one_of_not_isPrimePow (hζ : IsPrimitiveRoot ζ n) (hn : 1 < n)
     (hn' : ¬ IsPrimePow n) : IsUnit (ζ - 1) := by
-  have : NeZero n := ⟨by lia⟩
+  have := NeZero.of_gt hn
   simp [hζ.isUnit_sub_one_iff_isUnit_eval_one_cyclotomic,
-    eval_one_cyclotomic_not_isPrimePow hn.ne' hn']
+    eval_one_cyclotomic_of_not_isPrimePow hn.ne' hn']
 
 /-- If the order of `ζ` is a power of the prime `p`, then `ζ - 1` is a unit precisely when `p` is
 a unit in `R`. -/
@@ -352,7 +352,8 @@ theorem isUnit_sub_one_iff_of_prime_pow {p k : ℕ} [Fact p.Prime]
     (hζ : IsPrimitiveRoot ζ (p ^ (k + 1))) : IsUnit (ζ - 1) ↔ IsUnit (p : R) := by
   simp [hζ.isUnit_sub_one_iff_isUnit_eval_one_cyclotomic]
 
-/-- The element `ζ - 1` is a unit precisely when the order `n` of `ζ` is not a prime power. -/
+/-- If no prime number is a unit in `R`, then `ζ - 1` is a unit precisely when the order of `ζ` is
+not a prime power. -/
 theorem isUnit_sub_one_iff [IsLocalHom (algebraMap ℤ R)] (hζ : IsPrimitiveRoot ζ n)
     (hn : 1 < n) : IsUnit (ζ - 1) ↔ ¬ IsPrimePow n := by
   refine ⟨fun h hpp ↦ ?_, hζ.isUnit_sub_one_of_not_isPrimePow hn⟩
