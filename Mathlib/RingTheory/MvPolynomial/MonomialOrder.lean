@@ -93,6 +93,8 @@ and a monomial order `m : MonomialOrder σ`.
 
 -/
 
+set_option linter.style.longFile 1600
+
 @[expose] public section
 
 namespace MonomialOrder
