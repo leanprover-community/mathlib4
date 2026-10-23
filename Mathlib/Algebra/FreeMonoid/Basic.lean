@@ -472,21 +472,23 @@ end Map
 
 section Reverse
 /-- Reverse the symbols in a `FreeMonoid α`. -/
-@[to_additive (attr := deprecated "use `x.toList.reverse` instead" (since := "2026-10-23"))
+@[to_additive (attr := deprecated "use `star` in `Mathlib.Algebra.Star.Free` instead"
+(since := "2026-10-23"))
 /-- Reverses the symbols in a `FreeAddMonoid α`. -/]
 def reverse (x : FreeMonoid α) : FreeMonoid α := ⟨x.toList.reverse⟩
 
 set_option linter.deprecated false in
-@[to_additive (attr := deprecated "use `x.toList.reverse` instead" (since := "2026-10-23"))]
+@[to_additive (attr := deprecated "use `star_of` in `Mathlib.Algebra.Star.Free` instead"
+(since := "2026-10-23"))]
 theorem reverse_of (a : α) : reverse (of a) = of a := rfl
 
 set_option linter.deprecated false in
-@[to_additive (attr := deprecated "use `x.toList.reverse` instead" (since := "2026-10-23"))]
+@[to_additive (attr := deprecated "use `star_mul` instead" (since := "2026-10-23"))]
 theorem reverse_mul {a b : FreeMonoid α} : reverse (a * b) = reverse b * reverse a := by
   ext1; exact List.reverse_append
 
 set_option linter.deprecated false in
-@[to_additive (attr := deprecated "use `x.toList.reverse` instead" (since := "2026-10-23"))]
+@[to_additive (attr := deprecated "use `star_star` instead" (since := "2026-10-23"))]
 theorem reverse_reverse {a : FreeMonoid α} : reverse (reverse a) = a := by
   ext1; apply List.reverse_reverse
 

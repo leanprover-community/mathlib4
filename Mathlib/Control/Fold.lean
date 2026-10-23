@@ -314,8 +314,7 @@ theorem foldrM.ofFreeMonoid_comp_of {m} [Monad m] [LawfulMonad m] (f : β → α
 theorem toList_spec (xs : t α) : toList xs = FreeMonoid.toList (foldMap FreeMonoid.of xs) := calc
   _ = (ConcreteCategory.hom
       (unop (Foldl.ofFreeMonoid (flip cons) (foldMap FreeMonoid.of xs))).asHom []).reverse := by
-    rw [foldMap_hom_free]
-    simp [toList, foldl, Foldl.get]
+    simp [foldMap_hom_free, toList, foldl, Foldl.get]
   _ = _ := by simp [Function.flip_def]
 
 set_option backward.isDefEq.respectTransparency.types false in
