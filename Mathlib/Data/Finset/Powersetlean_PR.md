@@ -1,4 +1,4 @@
-# Powerset.lean Reading Notes  
+# Powerset.lean Reading Notes
 
 ---
 
