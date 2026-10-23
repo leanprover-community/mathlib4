@@ -8,10 +8,10 @@ module
 public meta import Lean.Elab.App
 public meta import Mathlib.Lean.Name
 public meta import Mathlib.Lean.PrettyPrinter.Delaborator
-public import Mathlib.Tactic.Translate.GuessName
-public import Mathlib.Util.AddRelatedDecl
 -- Import the other `max`/`min` delaborator to ensure it gets a lower priority.
 public import Mathlib.Order.Notation -- shake: keep
+public import Mathlib.Tactic.Translate.GuessName
+public import Mathlib.Util.AddRelatedDecl
 
 /-!
 # Set notation for order operations
