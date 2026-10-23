@@ -54,7 +54,7 @@ the file `Mathlib/MeasureTheory/Measure/Haar/Unique.lean`.
   Hausdorff group is a scalar multiple of the Haar measure.
 
 ## References
-* Paul Halmos (1950), Measure Theory, §53
+* [P. R. Halmos, *Measure Theory*][halmos1950measure], §53
 * Jonathan Gleason, Existence and Uniqueness of Haar Measure
   - Note: step 9, page 8 contains a mistake: the last defined `μ` does not extend the `μ` on compact
     sets, see Halmos (1950) p. 233, bottom of the page. This makes some other steps (like step 11)
@@ -69,7 +69,7 @@ noncomputable section
 
 open Set Inv Function TopologicalSpace MeasurableSpace
 
-open scoped NNReal ENNReal Pointwise Topology
+open scoped NNReal ENNReal Pointwise Topology Finset
 
 namespace MeasureTheory
 
@@ -150,7 +150,7 @@ variable [IsTopologicalGroup G]
   there is a finite set `t` satisfying the desired properties. -/]
 theorem index_defined {K V : Set G} (hK : IsCompact K) (hV : (interior V).Nonempty) :
     ∃ n : ℕ, n ∈ Finset.card '' { t : Finset G | K ⊆ ⋃ g ∈ t, (fun h => g * h) ⁻¹' V } := by
-  rcases compact_covered_by_mul_left_translates hK hV with ⟨t, ht⟩; exact ⟨t.card, t, ht, rfl⟩
+  rcases compact_covered_by_mul_left_translates hK hV with ⟨t, ht⟩; exact ⟨#t, t, ht, rfl⟩
 
 @[to_additive addIndex_elim]
 theorem index_elim {K V : Set G} (hK : IsCompact K) (hV : (interior V).Nonempty) :
@@ -210,7 +210,7 @@ theorem index_union_eq (K₁ K₂ : Compacts G) {V : Set G} (hV : (interior V).N
   apply le_antisymm (index_union_le K₁ K₂ hV)
   rcases index_elim (K₁.2.union K₂.2) hV with ⟨s, h1s, h2s⟩; rw [← h2s]
   have (K : Set G) (hK : K ⊆ ⋃ g ∈ s, (g * ·) ⁻¹' V) :
-      index K V ≤ {g ∈ s | ((g * ·) ⁻¹' V ∩ K).Nonempty}.card := by
+      index K V ≤ #{g ∈ s | ((g * ·) ⁻¹' V ∩ K).Nonempty} := by
     apply Nat.sInf_le; refine ⟨_, ?_, rfl⟩; rw [mem_ofPred_eq]
     intro g hg; rcases hK hg with ⟨_, ⟨g₀, rfl⟩, _, ⟨h1g₀, rfl⟩, h2g₀⟩
     simp only [mem_preimage] at h2g₀

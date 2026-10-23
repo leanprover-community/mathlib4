@@ -379,12 +379,12 @@ private lemma isCompatible_α : horn.IsCompatible (fun j hj ↦ α h₀₂ h₁�
         obtain rfl | hk := hk.eq_or_lt
         · rw [α_of_lt, comp_const]
         · rw [Fin.castSucc_lt_iff_succ_le] at hk
-          · obtain rfl | hk := hk.eq_or_lt
-            · rw [α_castSucc_succ_succ, h.δ_map_of_lt _ (by grind)]
-            · rw [Fin.succ_castSucc, Fin.castSucc_lt_iff_succ_le] at hk
-              obtain rfl | hk := hk.eq_or_lt
-              · rw [α_succ_succ_succ, h₀₂.δ_map_of_lt _ (by grind)]
-              · rw [α_of_gt .., comp_const]
+          obtain rfl | hk := hk.eq_or_lt
+          · rw [α_castSucc_succ_succ, h.δ_map_of_lt _ (by grind)]
+          · rw [Fin.succ_castSucc, Fin.castSucc_lt_iff_succ_le] at hk
+            obtain rfl | hk := hk.eq_or_lt
+            · rw [α_succ_succ_succ, h₀₂.δ_map_of_lt _ (by grind)]
+            · rw [α_of_gt .., comp_const]
   · obtain rfl | hj' := hj'.eq_or_lt
     · rw [α_castSucc_castSucc_castSucc]
       replace hjk := hjk.lt_of_ne' (by simpa using hk)

@@ -876,7 +876,7 @@ namespace IsDedekindDomain
 prime powers.
 See `IsDedekindDomain.inf_pow_eq_prod_of_prime` for the version in terms of `Ideal R`. -/
 theorem HeightOneSpectrum.inf_pow_eq_prod (s : Finset ι) (e : ι → ℕ)
-    (f : ι → HeightOneSpectrum R) (coprime : ∀ᵉ (i ∈ s) (j ∈ s), i ≠ j → f i ≠ f j) :
+    (f : ι → HeightOneSpectrum R) (coprime : ∀ i ∈ s, ∀ j ∈ s, i ≠ j → f i ≠ f j) :
     (s.inf fun i => (f i).asIdeal ^ e i) = ∏ i ∈ s, (f i).asIdeal ^ e i := by
   rw [prod_eq_iInf_of_pairwise_isCoprime]
   · rw [Finset.inf_eq_iInf s fun i ↦ (f i).asIdeal ^ e i]
@@ -886,7 +886,7 @@ theorem HeightOneSpectrum.inf_pow_eq_prod (s : Finset ι) (e : ι → ℕ)
 /-- The intersection of distinct prime powers in a Dedekind domain is the product of these
 prime powers. -/
 theorem inf_pow_eq_prod_of_prime (s : Finset ι) (f : ι → Ideal R)
-    (e : ι → ℕ) (prime : ∀ i ∈ s, Prime (f i)) (coprime : ∀ᵉ (i ∈ s) (j ∈ s), i ≠ j → f i ≠ f j) :
+    (e : ι → ℕ) (prime : ∀ i ∈ s, Prime (f i)) (coprime : ∀ i ∈ s, ∀ j ∈ s, i ≠ j → f i ≠ f j) :
     (s.inf fun i => f i ^ e i) = ∏ i ∈ s, f i ^ e i := by
   rw [prod_eq_iInf_of_pairwise_isCoprime, Finset.inf_eq_iInf s fun i ↦ (f i) ^ e i]
   intro i hi j hj hij
@@ -894,9 +894,6 @@ theorem inf_pow_eq_prod_of_prime (s : Finset ι) (f : ι → Ideal R)
     (IsPrime.isMaximal (isPrime_of_prime (prime i hi)) (prime i hi).ne_zero)
     (IsPrime.isMaximal (isPrime_of_prime (prime j hj)) (prime j hj).ne_zero)
     (coprime i hi j hj hij)))
-
-@[deprecated (since := "2026-03-10")] alias inf_prime_pow_eq_prod :=
-  inf_pow_eq_prod_of_prime
 
 /-- **Chinese remainder theorem** for a Dedekind domain: if the ideal `I` factors as
 `∏ i, P i ^ e i`, then `R ⧸ I` factors as `Π i, R ⧸ (P i ^ e i)`.
@@ -946,7 +943,7 @@ the product to a finite subset `s` of a potentially infinite indexing type `ι`.
 -/
 def quotientEquivPiOfFinsetProdEq {ι : Type*} {s : Finset ι}
     (I : Ideal R) (P : ι → Ideal R) (e : ι → ℕ) (prime : ∀ i ∈ s, Prime (P i))
-    (coprime : ∀ᵉ (i ∈ s) (j ∈ s), i ≠ j → P i ≠ P j)
+    (coprime : ∀ i ∈ s, ∀ j ∈ s, i ≠ j → P i ≠ P j)
     (prod_eq : ∏ i ∈ s, P i ^ e i = I) : R ⧸ I ≃+* ∀ i : s, R ⧸ P i ^ e i :=
   quotientEquivPiOfProdEq I (fun i : s => P i) (fun i : s => e i)
     (fun i => prime i i.2) (fun i j h => coprime i i.2 j j.2 (Subtype.coe_injective.ne h))
@@ -956,7 +953,7 @@ def quotientEquivPiOfFinsetProdEq {ι : Type*} {s : Finset ι}
 we can choose a representative `y : R` such that `y ≡ x i (mod P i ^ e i)`. -/
 theorem exists_representative_mod_finset {ι : Type*} {s : Finset ι}
     (P : ι → Ideal R) (e : ι → ℕ) (prime : ∀ i ∈ s, Prime (P i))
-    (coprime : ∀ᵉ (i ∈ s) (j ∈ s), i ≠ j → P i ≠ P j) (x : ∀ i : s, R ⧸ P i ^ e i) :
+    (coprime : ∀ i ∈ s, ∀ j ∈ s, i ≠ j → P i ≠ P j) (x : ∀ i : s, R ⧸ P i ^ e i) :
     ∃ y, ∀ (i) (hi : i ∈ s), Ideal.Quotient.mk (P i ^ e i) y = x ⟨i, hi⟩ := by
   let f := quotientEquivPiOfFinsetProdEq _ P e prime coprime rfl
   obtain ⟨y, rfl⟩ := f.surjective x
@@ -967,7 +964,7 @@ theorem exists_representative_mod_finset {ι : Type*} {s : Finset ι}
 we can choose a representative `y : R` such that `y - x i ∈ P i ^ e i`. -/
 theorem exists_forall_sub_mem_ideal {ι : Type*} {s : Finset ι} (P : ι → Ideal R)
     (e : ι → ℕ) (prime : ∀ i ∈ s, Prime (P i))
-    (coprime : ∀ᵉ (i ∈ s) (j ∈ s), i ≠ j → P i ≠ P j) (x : s → R) :
+    (coprime : ∀ i ∈ s, ∀ j ∈ s, i ≠ j → P i ≠ P j) (x : s → R) :
     ∃ y, ∀ (i) (hi : i ∈ s), y - x ⟨i, hi⟩ ∈ P i ^ e i := by
   obtain ⟨y, hy⟩ :=
     exists_representative_mod_finset P e prime coprime fun i =>
@@ -1193,7 +1190,8 @@ of the maximal ideal `p` in `B` and the primes over `p` in `B`.
 -/
 noncomputable def equivPrimesOver (hp : p ≠ 0) :
     {v : HeightOneSpectrum B // v.asIdeal ∣ map (algebraMap A B) p} ≃ p.primesOver B :=
-  Set.BijOn.equiv HeightOneSpectrum.asIdeal
+  Set.BijOn.equiv (s := {v : HeightOneSpectrum B | v.asIdeal ∣ map (algebraMap A B) p})
+    (t := ↑(p.primesOver B)) HeightOneSpectrum.asIdeal
     ⟨fun v hv ↦ ⟨v.isPrime, by rwa [liesOver_iff_dvd_map v.isPrime.ne_top]⟩,
     fun _ _ _ _ h ↦ HeightOneSpectrum.ext_iff.mpr h,
     fun Q hQ ↦ ⟨⟨Q, hQ.1, ne_bot_of_mem_primesOver hp hQ⟩,
