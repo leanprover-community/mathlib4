@@ -541,7 +541,7 @@ instance : Semiring (q.compatibleMaps q) :=
     (q.compatibleMaps q).toSubalgebra (one_mem_compatibleMaps q)
       fun _ _ hf hg ↦ comp_mem_compatibleMaps hg hf
 
-/-- The endomorphisms of `M` that map `p` into itself form an `R`-algebra. -/
+/-- The endomorphisms of `M` that map `q` into itself form an `R`-algebra. -/
 instance : Algebra R (q.compatibleMaps q) :=
   inferInstanceAs <| Algebra R <|
     (q.compatibleMaps q).toSubalgebra (one_mem_compatibleMaps q)
