@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies, Bhavik Mehta
+Authors: Yaël Dillies, Bhavik Mehta, Snir Broshi
 -/
 module
 
@@ -11,6 +11,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Paths
 public import Mathlib.Data.Finset.Pairwise
 public import Mathlib.Data.Fintype.Pigeonhole
 public import Mathlib.Order.Lattice.Nat
+public import Mathlib.Tactic.Translate.ToCompl
 
 import Mathlib.SetTheory.Cardinal.NatCard
 
@@ -43,10 +44,27 @@ section Clique
 
 variable {s t : Set α}
 
+to_compl_for Adj := self.Adjᶜ
+to_compl_name_hint IsClique IsIndepSet
+to_compl_name_hint IsNClique IsNIndepSet
+to_compl_name_hint CliqueFree IndepSetFree
+to_compl_name_hint CliqueSet IndepSetSet
+to_compl_name_hint CliqueNum IndepNum
+to_compl_name_hint IsMaximalClique IsMaximalIndepSet
+to_compl_name_hint IsMaximumClique IsMaximumIndepSet
+to_compl_name_hint MaximumClique MaximumIndepSet
+to_compl_name_hint CliqueFinset IndepSetFinset
+
 /-- A clique in a graph is a set of vertices that are pairwise adjacent. -/
+@[to_compl
+/-- An independent set in a graph is a set of vertices that are pairwise not adjacent. -/]
 abbrev IsClique (s : Set α) : Prop :=
   s.Pairwise G.Adj
 
+attribute [wikidata Q761631] IsClique
+attribute [wikidata Q1060343] IsIndepSet
+
+@[to_compl]
 theorem isClique_iff : G.IsClique s ↔ s.Pairwise G.Adj :=
   Iff.rfl
 
@@ -70,15 +88,19 @@ theorem isClique_iff_induce_eq : G.IsClique s ↔ G.induce s = ⊤ :=
 theorem isClique_iff_isChain_adj : G.IsClique s ↔ IsChain G.Adj s := by
   simp [IsChain, G.symm.iff]
 
+@[to_compl none]
 instance [DecidableEq α] [DecidableRel G.Adj] {s : Finset α} : Decidable (G.IsClique s) :=
   decidable_of_iff' _ G.isClique_iff
 
 variable {G H} {a b : α}
 
+@[to_compl]
 lemma isClique_empty : G.IsClique ∅ := by simp
 
+@[to_compl]
 lemma isClique_singleton (a : α) : G.IsClique {a} := by simp
 
+@[to_compl]
 theorem IsClique.of_subsingleton {G : SimpleGraph α} (hs : s.Subsingleton) : G.IsClique s :=
   hs.pairwise G.Adj
 
@@ -104,7 +126,7 @@ lemma IsClique.insert (hs : G.IsClique s) (h : ∀ b ∈ s, a ≠ b → G.Adj a 
 @[gcongr]
 theorem IsClique.mono (h : G ≤ H) : G.IsClique s → H.IsClique s := Set.Pairwise.mono' h
 
-@[gcongr]
+@[to_compl (attr := gcongr)]
 theorem IsClique.subset (h : t ⊆ s) : G.IsClique s → G.IsClique t := Set.Pairwise.mono h
 
 variable (s) in
@@ -126,16 +148,20 @@ protected theorem IsClique.map (h : G.IsClique s) {f : α ↪ β} : (G.map f).Is
   rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ hab
   exact ⟨hab, a, b, h ha hb <| ne_of_apply_ne _ hab, rfl, rfl⟩
 
+@[to_compl]
 theorem IsClique.inter_left {s : Set α} (hs : G.IsClique s) (t : Set α) : G.IsClique <| s ∩ t :=
   Set.Pairwise.inter_left hs t
 
+@[to_compl]
 theorem IsClique.inter_right {s : Set α} (hs : G.IsClique s) (t : Set α) : G.IsClique <| t ∩ s :=
   Set.Pairwise.inter_right hs t
 
+@[to_compl]
 theorem isClique_sUnion {S : Set (Set α)} (hd : DirectedOn (· ⊆ ·) S) :
     G.IsClique (⋃₀ S) ↔ ∀ s ∈ S, G.IsClique s :=
   Set.pairwise_sUnion hd
 
+@[to_compl]
 theorem isClique_iUnion {ι : Type*} {s : ι → Set α} (hd : Directed (· ⊆ ·) s) :
     G.IsClique (⋃ i, s i) ↔ ∀ i, G.IsClique (s i) :=
   Set.pairwise_iUnion hd
@@ -241,23 +267,33 @@ section NClique
 
 variable {n : ℕ} {s : Finset α}
 
+/-- An `n`-independent set in a graph is a set of `n` vertices which are pairwise nonadjacent. -/
+@[mk_iff]
+structure IsNIndepSet (n : ℕ) (s : Finset α) : Prop where
+  isIndepSet : G.IsIndepSet s
+  card_eq : s.card = n
+
 /-- An `n`-clique in a graph is a set of `n` vertices which are pairwise connected. -/
+@[to_compl existing]
 structure IsNClique (n : ℕ) (s : Finset α) : Prop where
   isClique : G.IsClique s
   card_eq : #s = n
 
+@[to_compl existing]
 theorem isNClique_iff : G.IsNClique n s ↔ G.IsClique s ∧ #s = n :=
   ⟨fun h ↦ ⟨h.1, h.2⟩, fun h ↦ ⟨h.1, h.2⟩⟩
 
+@[to_compl none]
 instance [DecidableEq α] [DecidableRel G.Adj] {n : ℕ} {s : Finset α} :
     Decidable (G.IsNClique n s) :=
   decidable_of_iff' _ G.isNClique_iff
 
 variable {G H} {a b c : α}
 
-@[simp] lemma isNClique_empty : G.IsNClique n ∅ ↔ n = 0 := by simp [isNClique_iff, eq_comm]
+@[to_compl (attr := simp)]
+lemma isNClique_empty : G.IsNClique n ∅ ↔ n = 0 := by simp [isNClique_iff, eq_comm]
 
-@[simp]
+@[to_compl (attr := simp)]
 lemma isNClique_singleton : G.IsNClique n {a} ↔ n = 1 := by simp [isNClique_iff, eq_comm]
 
 theorem IsNClique.mono (h : G ≤ H) : G.IsNClique n s → H.IsNClique n s := by
@@ -285,11 +321,11 @@ theorem isNClique_bot_iff : (⊥ : SimpleGraph α).IsNClique n s ↔ n ≤ 1 ∧
   rintro rfl
   exact card_le_one.symm
 
-@[simp]
+@[to_compl (attr := simp)]
 theorem isNClique_zero : G.IsNClique 0 s ↔ s = ∅ := by
   simp only [isNClique_iff, Finset.card_eq_zero, and_iff_right_iff_imp]; rintro rfl; simp
 
-@[simp]
+@[to_compl (attr := simp)]
 theorem isNClique_one : G.IsNClique 1 s ↔ ∃ a, s = {a} := by
   simp only [isNClique_iff, card_eq_one, and_iff_right_iff_imp]; rintro ⟨a, rfl⟩; simp
 
@@ -304,6 +340,7 @@ protected theorem IsNClique.insert (hs : G.IsNClique n s) (h : ∀ b ∈ s, G.Ad
     exact hs.1.insert fun b hb _ => h _ hb
   · rw [card_insert_of_notMem fun ha => (h _ ha).ne rfl, hs.2]
 
+@[to_compl]
 lemma IsNClique.erase_of_mem (hs : G.IsNClique n s) (ha : a ∈ s) :
     G.IsNClique (n - 1) (s.erase a) where
   isClique := hs.isClique.subset <| by simp
@@ -375,11 +412,13 @@ section CliqueFree
 variable {m n : ℕ}
 
 /-- `G.CliqueFree n` means that `G` has no `n`-cliques. -/
+@[to_compl /-- `G.IndepSetFree n` means that `G` has no `n`-independent sets. -/]
 def CliqueFree (n : ℕ) : Prop :=
   ∀ t, ¬G.IsNClique n t
 
 variable {G H} {s : Finset α}
 
+@[to_compl]
 theorem IsNClique.not_cliqueFree (hG : G.IsNClique n s) : ¬G.CliqueFree n :=
   fun h ↦ h _ hG
 
@@ -425,7 +464,8 @@ theorem IsContained.not_cliqueFree_card [Fintype α] (f : completeGraph α ⊑ G
   rw [not_cliqueFree_iff_top_isContained]
   exact (Iso.completeGraph <| equivFin α).isContained'.trans f
 
-@[simp] lemma not_cliqueFree_zero : ¬ G.CliqueFree 0 :=
+@[to_compl (attr := simp)]
+lemma not_cliqueFree_zero : ¬ G.CliqueFree 0 :=
   fun h ↦ h ∅ <| isNClique_empty.mpr rfl
 
 @[simp]
@@ -434,7 +474,7 @@ theorem cliqueFree_bot (h : 2 ≤ n) : (⊥ : SimpleGraph α).CliqueFree n := by
   have := le_trans h (isNClique_bot_iff.1 ht).1
   contradiction
 
-@[gcongr]
+@[to_compl (attr := gcongr)]
 theorem CliqueFree.mono (h : m ≤ n) : G.CliqueFree m → G.CliqueFree n := by
   intro hG s hs
   obtain ⟨t, hts, ht⟩ := exists_subset_card_eq (h.trans hs.card_eq.ge)
@@ -531,7 +571,7 @@ protected theorem CliqueFree.replaceVertex [DecidableEq α] (h : G.CliqueFree n)
     conv at hφ => enter [a, b]; rw [G.adj_replaceVertex_iff_of_ne _ (mt a) (mt b)]
     exact hφ
 
-@[simp]
+@[to_compl (attr := simp)]
 lemma cliqueFree_one : G.CliqueFree 1 ↔ IsEmpty α := by
   simp [CliqueFree, isEmpty_iff]
 
@@ -580,12 +620,16 @@ section CliqueFreeOn
 variable {s s₁ s₂ : Set α} {a : α} {m n : ℕ}
 
 /-- `G.CliqueFreeOn s n` means that `G` has no `n`-cliques contained in `s`. -/
+@[to_compl
+/-- `G.IndepSetFreeOn s n` means that `G` has no `n`-independent sets contained in `s`. -/]
 def CliqueFreeOn (G : SimpleGraph α) (s : Set α) (n : ℕ) : Prop :=
   ∀ ⦃t⦄, ↑t ⊆ s → ¬G.IsNClique n t
 
+@[to_compl]
 theorem CliqueFreeOn.subset (hs : s₁ ⊆ s₂) (h₂ : G.CliqueFreeOn s₂ n) : G.CliqueFreeOn s₁ n :=
   fun _t hts => h₂ <| hts.trans hs
 
+@[to_compl]
 theorem CliqueFreeOn.mono (hmn : m ≤ n) (hG : G.CliqueFreeOn s m) : G.CliqueFreeOn s n := by
   rintro t hts ht
   obtain ⟨u, hut, hu⟩ := exists_subset_card_eq (hmn.trans ht.card_eq.ge)
@@ -594,22 +638,24 @@ theorem CliqueFreeOn.mono (hmn : m ≤ n) (hG : G.CliqueFreeOn s m) : G.CliqueFr
 theorem CliqueFreeOn.anti (hGH : G ≤ H) (hH : H.CliqueFreeOn s n) : G.CliqueFreeOn s n :=
   fun _t hts ht => hH hts <| ht.mono hGH
 
-@[simp]
+@[to_compl (attr := simp)]
 theorem cliqueFreeOn_empty : G.CliqueFreeOn ∅ n ↔ n ≠ 0 := by
   simp [CliqueFreeOn, Set.subset_empty_iff]
 
-@[simp]
+@[to_compl (attr := simp)]
 theorem cliqueFreeOn_singleton : G.CliqueFreeOn {a} n ↔ 1 < n := by
   obtain _ | _ | n := n <;>
     simp [CliqueFreeOn, isNClique_iff, ← subset_singleton_iff', (Nat.succ_ne_zero _).symm]
 
-@[simp]
+@[to_compl (attr := simp)]
 theorem cliqueFreeOn_univ : G.CliqueFreeOn Set.univ n ↔ G.CliqueFree n := by
   simp [CliqueFree, CliqueFreeOn]
 
+@[to_compl]
 protected theorem CliqueFree.cliqueFreeOn (hG : G.CliqueFree n) : G.CliqueFreeOn s n :=
   fun _t _ ↦ hG _
 
+@[to_compl]
 theorem cliqueFreeOn_of_card_lt {s : Finset α} (h : #s < n) : G.CliqueFreeOn s n :=
   fun _t hts ht => h.not_ge <| ht.2.symm.trans_le <| card_mono hts
 
@@ -650,19 +696,21 @@ section CliqueSet
 variable {n : ℕ} {s : Finset α}
 
 /-- The `n`-cliques in a graph as a set. -/
+@[to_compl /-- The `n`-independent sets in a graph as a set. -/]
 def cliqueSet (n : ℕ) : Set (Finset α) :=
   { s | G.IsNClique n s }
 
 variable {G H}
 
-@[simp]
+@[to_compl (attr := simp)]
 theorem mem_cliqueSet_iff : s ∈ G.cliqueSet n ↔ G.IsNClique n s :=
   Iff.rfl
 
-@[simp]
+@[to_compl (attr := simp)]
 theorem cliqueSet_eq_empty_iff : G.cliqueSet n = ∅ ↔ G.CliqueFree n := by
   simp_rw [CliqueFree, Set.eq_empty_iff_forall_notMem, mem_cliqueSet_iff]
 
+@[to_compl (attr := simp)]
 protected alias ⟨_, CliqueFree.cliqueSet⟩ := cliqueSet_eq_empty_iff
 
 @[gcongr, mono]
@@ -672,10 +720,10 @@ theorem cliqueSet_mono (h : G ≤ H) : G.cliqueSet n ⊆ H.cliqueSet n :=
 theorem cliqueSet_mono' (h : G ≤ H) : G.cliqueSet ≤ H.cliqueSet :=
   fun _ ↦ cliqueSet_mono h
 
-@[simp]
+@[to_compl (attr := simp)]
 theorem cliqueSet_zero (G : SimpleGraph α) : G.cliqueSet 0 = {∅} := Set.ext fun s => by simp
 
-@[simp]
+@[to_compl (attr := simp)]
 theorem cliqueSet_one (G : SimpleGraph α) : G.cliqueSet 1 = Set.range singleton :=
   Set.ext fun s => by simp [eq_comm]
 
@@ -720,9 +768,11 @@ section CliqueNumber
 variable {α : Type*} {G : SimpleGraph α}
 
 /-- The maximum number of vertices in a clique of a graph `G`. -/
+@[to_compl /-- The maximal number of vertices of an independent set in a graph `G`. -/]
 noncomputable def cliqueNum (G : SimpleGraph α) : ℕ := sSup {n | ∃ s, G.IsNClique n s}
 
 -- TODO: generalize from `Finite α` to `Finite G.edgeSet`
+@[to_compl]
 private lemma finite_cliqueNum_bddAbove [Finite α] : BddAbove {n | ∃ s, G.IsNClique n s} := by
   have := ofFinite α
   use card α
@@ -732,30 +782,35 @@ private lemma finite_cliqueNum_bddAbove [Finite α] : BddAbove {n | ∃ s, G.IsN
   exact Finset.card_le_card (Finset.subset_univ s)
 
 -- TODO: generalize from `Finite α` to `Finite G.edgeSet`
+@[to_compl]
 lemma IsClique.card_le_cliqueNum [Finite α] {t : Finset α} (tc : G.IsClique t) : #t ≤ G.cliqueNum :=
   le_csSup G.finite_cliqueNum_bddAbove ⟨t, tc, rfl⟩
 
 -- TODO: generalize from `Finite α` to `Finite G.edgeSet`
 variable (G) in
+@[to_compl]
 theorem cliqueNum_ne_zero_of_finite [Nonempty α] [Finite α] : G.cliqueNum ≠ 0 := by
   refine (Nat.not_succ_le_zero 0 <| le_of_le_of_eq ?_ ·)
   exact IsClique.card_le_cliqueNum (t := {Classical.arbitrary α}) <| by simp
 
+@[to_compl]
 lemma exists_isNClique_cliqueNum : ∃ s, G.IsNClique G.cliqueNum s := by
   by_cases h : BddAbove {n | ∃ s, G.IsNClique n s}
   · exact Nat.sSup_mem ⟨0, by simp⟩ h
   · simp [cliqueNum, h]
 
 variable (G) in
-@[simp]
+@[to_compl (attr := simp)]
 theorem cliqueNum_of_isEmpty [IsEmpty α] : G.cliqueNum = 0 :=
   Nat.le_zero.mp <| csSup_le' fun n ⟨s, h⟩ ↦ by simp [s.eq_empty_of_isEmpty, ← h.card_eq]
 
 variable (G) in
+@[to_compl]
 theorem cliqueNum_le_natCard [Finite α] : G.cliqueNum ≤ Nat.card α :=
   csSup_le' fun _ ⟨s, h⟩ ↦ s.card_le_natCard |>.trans_eq' h.card_eq
 
 variable (G) in
+@[to_compl]
 theorem cliqueNum_le_enatCard : G.cliqueNum ≤ ENat.card α := by
   cases finite_or_infinite α
   · grw [ENat.card_eq_coe_natCard, Nat.cast_le, cliqueNum_le_natCard]
@@ -800,21 +855,32 @@ theorem cliqueNum_induce_le [Finite α] (s : Set α) :
   rw [isNClique_induce_iff] at tc
   exact tc.card_eq ▸ tc.isClique.card_le_cliqueNum
 
+/-- An independent set in a graph `G` such that there is no independent set with more vertices. -/
+-- TODO: replace with `MaximalFor (G.IsIndepSet ∘ (↑)) card s`
+@[mk_iff]
+structure IsMaximumIndepSet [Finite α] (G : SimpleGraph α) (s : Finset α) : Prop where
+  isIndepSet : G.IsIndepSet s
+  maximum : ∀ t : Finset α, G.IsIndepSet t → #t ≤ #s
+
 /-- A maximum clique in a graph `G` is a clique with the largest possible size. -/
 -- TODO: replace with `MaximalFor (G.IsClique ∘ (↑)) card s`
+@[to_compl existing]
 structure IsMaximumClique [Finite α] (G : SimpleGraph α) (s : Finset α) : Prop where
   isClique : G.IsClique s
   maximum : ∀ t : Finset α, G.IsClique t → #t ≤ #s
 
+@[to_compl existing]
 theorem isMaximumClique_iff [Finite α] {s : Finset α} :
     G.IsMaximumClique s ↔ G.IsClique s ∧ ∀ t : Finset α, G.IsClique t → #t ≤ #s :=
   ⟨fun h ↦ ⟨h.1, h.2⟩, fun h ↦ ⟨h.1, h.2⟩⟩
 
 /-- A maximal clique in a graph `G` is a clique that cannot be extended by adding more vertices. -/
+@[to_compl]
 theorem isMaximalClique_iff {s : Set α} :
     Maximal G.IsClique s ↔ G.IsClique s ∧ ∀ t : Set α, G.IsClique t → s ⊆ t → t ⊆ s :=
   Iff.rfl
 
+@[to_compl]
 lemma IsMaximumClique.isMaximalClique [Finite α] (s : Finset α) (M : G.IsMaximumClique s) :
     Maximal G.IsClique s :=
   ⟨ M.isClique,
@@ -827,12 +893,14 @@ lemma IsMaximumClique.isMaximalClique [Finite α] (s : Finset α) (M : G.IsMaxim
         card_lt_card (ssubset_of_ne_of_subset ne (Set.subset_toFinset.mpr hsub))
       exact lt_irrefl _ (lt_of_lt_of_le hlt hle) ⟩
 
+@[to_compl]
 lemma maximumClique_card_eq_cliqueNum [Finite α] (s : Finset α) (sm : G.IsMaximumClique s) :
     #s = G.cliqueNum := by
   obtain ⟨sc, sm⟩ := sm
   obtain ⟨t, tc, tcard⟩ := G.exists_isNClique_cliqueNum
   exact eq_of_le_of_not_lt sc.card_le_cliqueNum (by simp [← tcard, sm t tc])
 
+@[to_compl]
 lemma maximumClique_exists [Finite α] : ∃ (s : Finset α), G.IsMaximumClique s := by
   obtain ⟨s, snc⟩ := G.exists_isNClique_cliqueNum
   exact ⟨s, ⟨snc.isClique, fun t ht => snc.card_eq.symm ▸ ht.card_le_cliqueNum⟩⟩
@@ -847,25 +915,28 @@ section CliqueFinset
 variable [Fintype α] [DecidableEq α] [DecidableRel G.Adj] {n : ℕ} {s : Finset α}
 
 /-- The `n`-cliques in a graph as a finset. -/
+@[to_compl /-- The `n`-independent sets in a graph as a finset. -/]
 def cliqueFinset (n : ℕ) : Finset (Finset α) := {s | G.IsNClique n s}
 
 variable {G} in
-@[simp]
+@[to_compl (attr := simp)]
 theorem mem_cliqueFinset_iff : s ∈ G.cliqueFinset n ↔ G.IsNClique n s :=
   mem_filter.trans <| and_iff_right <| mem_univ _
 
-@[simp, norm_cast]
+@[to_compl (attr := simp, norm_cast)]
 theorem coe_cliqueFinset (n : ℕ) : (G.cliqueFinset n : Set (Finset α)) = G.cliqueSet n :=
   Set.ext fun _ ↦ mem_cliqueFinset_iff
 
 variable {G}
 
-@[simp]
+@[to_compl (attr := simp)]
 theorem cliqueFinset_eq_empty_iff : G.cliqueFinset n = ∅ ↔ G.CliqueFree n := by
   simp_rw [CliqueFree, eq_empty_iff_forall_notMem, mem_cliqueFinset_iff]
 
+@[to_compl]
 protected alias ⟨_, CliqueFree.cliqueFinset⟩ := cliqueFinset_eq_empty_iff
 
+@[to_compl]
 theorem card_cliqueFinset_le : #(G.cliqueFinset n) ≤ (card α).choose n := by
   rw [← card_univ, ← card_powersetCard]
   refine card_mono fun s => ?_
@@ -898,14 +969,6 @@ section IndepSet
 
 variable {s : Set α}
 
-/-- An independent set in a graph is a set of vertices that are pairwise not adjacent. -/
-@[wikidata Q1060343]
-abbrev IsIndepSet (s : Set α) : Prop :=
-  s.Pairwise (fun v w ↦ ¬G.Adj v w)
-
-theorem isIndepSet_iff : G.IsIndepSet s ↔ s.Pairwise (fun v w ↦ ¬G.Adj v w) :=
-  .rfl
-
 theorem isIndepSet_iff_isAntichain_adj : G.IsIndepSet s ↔ IsAntichain G.Adj s :=
   .rfl
 
@@ -919,7 +982,7 @@ theorem isIndepSet_iff_isAntichain_adj : G.IsIndepSet s ↔ IsAntichain G.Adj s 
   rw [isIndepSet_iff, isClique_iff]; repeat rw [Set.Pairwise]
   simp_all [compl_adj]
 
-instance [DecidableEq α] [DecidableRel G.Adj] {s : Finset α} : Decidable (G.IsIndepSet s) :=
+instance [DecidableEq α] [DecidableRel G.Adjᶜ] {s : Finset α} : Decidable (G.IsIndepSet s) :=
   decidable_of_iff' _ G.isIndepSet_iff
 
 /-- If `s` is an independent set, its complement meets every edge of `G`. -/
@@ -935,10 +998,8 @@ lemma IsIndepSet.nonempty_mem_compl_mem_edge {s : Set α} (indA : G.IsIndepSet s
 theorem isIndepSet_neighborSet_of_triangleFree (h : G.CliqueFree 3) (v : α) :
     G.IsIndepSet (G.neighborSet v) := by
   classical
-  by_contra nind
-  rw [IsIndepSet, Set.Pairwise] at nind
-  push Not at nind
-  simp_rw [mem_neighborSet] at nind
+  simp_rw [Set.Pairwise, Pi.compl_apply, compl_iff_not, mem_neighborSet]
+  by_contra! nind
   obtain ⟨j, avj, k, avk, _, ajk⟩ := nind
   exact h {v, j, k} (is3Clique_triple_iff.mpr (by simp [avj, avk, ajk]))
 
@@ -959,12 +1020,6 @@ section NIndepSet
 
 variable {n : ℕ} {s : Finset α}
 
-/-- An `n`-independent set in a graph is a set of `n` vertices which are pairwise nonadjacent. -/
-@[mk_iff]
-structure IsNIndepSet (n : ℕ) (s : Finset α) : Prop where
-  isIndepSet : G.IsIndepSet s
-  card_eq : s.card = n
-
 /-- An `n`-independent set is an `n`-clique in the complement graph and vice versa. -/
 @[simp] theorem isNClique_compl : Gᶜ.IsNClique n s ↔ G.IsNIndepSet n s := by
   rw [isNIndepSet_iff]
@@ -975,7 +1030,7 @@ structure IsNIndepSet (n : ℕ) (s : Finset α) : Prop where
   rw [isNClique_iff]
   simp [isNIndepSet_iff]
 
-instance [DecidableEq α] [DecidableRel G.Adj] {n : ℕ} {s : Finset α} :
+instance [DecidableEq α] [DecidableRel G.Adjᶜ] {n : ℕ} {s : Finset α} :
     Decidable (G.IsNIndepSet n s) :=
   decidable_of_iff' _ (G.isNIndepSet_iff n s)
 
@@ -996,10 +1051,6 @@ section IndepSetFree
 
 variable {n : ℕ}
 
-/-- `G.IndepSetFree n` means that `G` has no `n`-independent sets. -/
-def IndepSetFree (n : ℕ) : Prop :=
-  ∀ t, ¬G.IsNIndepSet n t
-
 /-- A graph is `n`-independent set free iff its complement is `n`-clique free. -/
 @[simp] theorem cliqueFree_compl : Gᶜ.CliqueFree n ↔ G.IndepSetFree n := by
   simp [IndepSetFree, CliqueFree]
@@ -1007,10 +1058,6 @@ def IndepSetFree (n : ℕ) : Prop :=
 /-- A graph's complement is `n`-independent set free iff it is `n`-clique free. -/
 @[simp] theorem indepSetFree_compl : Gᶜ.IndepSetFree n ↔ G.CliqueFree n := by
   simp [IndepSetFree, CliqueFree]
-
-/-- `G.IndepSetFreeOn s n` means that `G` has no `n`-independent sets contained in `s`. -/
-def IndepSetFreeOn (G : SimpleGraph α) (s : Set α) (n : ℕ) : Prop :=
-  ∀ ⦃t⦄, ↑t ⊆ s → ¬G.IsNIndepSet n t
 
 end IndepSetFree
 
@@ -1021,15 +1068,7 @@ section IndepSetSet
 
 variable {n : ℕ} {s : Finset α}
 
-/-- The `n`-independent sets in a graph as a set. -/
-def indepSetSet (n : ℕ) : Set (Finset α) :=
-  { s | G.IsNIndepSet n s }
-
 variable {G}
-
-@[simp]
-theorem mem_indepSetSet_iff : s ∈ G.indepSetSet n ↔ G.IsNIndepSet n s :=
-  Iff.rfl
 
 end IndepSetSet
 
@@ -1040,31 +1079,11 @@ section IndepNumber
 
 variable {α : Type*} {G : SimpleGraph α}
 
-/-- The maximal number of vertices of an independent set in a graph `G`. -/
-noncomputable def indepNum (G : SimpleGraph α) : ℕ := sSup {n | ∃ s, G.IsNIndepSet n s}
-
 @[simp] lemma cliqueNum_compl : Gᶜ.cliqueNum = G.indepNum := by
   simp [indepNum, cliqueNum]
 
 @[simp] lemma indepNum_compl : Gᶜ.indepNum = G.cliqueNum := by
   simp [indepNum, cliqueNum]
-
-theorem IsIndepSet.card_le_indepNum
-    [Finite α] {t : Finset α} (tc : G.IsIndepSet t) : #t ≤ G.indepNum := by
-  rw [← isClique_compl] at tc
-  simp_rw [indepNum, ← isNClique_compl]
-  exact tc.card_le_cliqueNum
-
-lemma exists_isNIndepSet_indepNum : ∃ s, G.IsNIndepSet G.indepNum s := by
-  simp_rw [indepNum, ← isNClique_compl]
-  exact exists_isNClique_cliqueNum
-
-/-- An independent set in a graph `G` such that there is no independent set with more vertices. -/
--- TODO: replace with `MaximalFor (G.IsIndepSet ∘ (↑)) card s`
-@[mk_iff]
-structure IsMaximumIndepSet [Finite α] (G : SimpleGraph α) (s : Finset α) : Prop where
-  isIndepSet : G.IsIndepSet s
-  maximum : ∀ t : Finset α, G.IsIndepSet t → #t ≤ #s
 
 @[simp] lemma isMaximumClique_compl [Finite α] (s : Finset α) :
     Gᶜ.IsMaximumClique s ↔ G.IsMaximumIndepSet s := by
@@ -1074,11 +1093,6 @@ structure IsMaximumIndepSet [Finite α] (G : SimpleGraph α) (s : Finset α) : P
     Gᶜ.IsMaximumIndepSet s ↔ G.IsMaximumClique s := by
   simp [isMaximumIndepSet_iff, isMaximumClique_iff]
 
-/-- An independent set in a graph `G` that cannot be extended by adding more vertices. -/
-theorem isMaximalIndepSet_iff {s : Set α} :
-    Maximal G.IsIndepSet s ↔ G.IsIndepSet s ∧ ∀ t : Set α, G.IsIndepSet t → s ⊆ t → t ⊆ s :=
-  Iff.rfl
-
 @[simp] lemma isMaximalClique_compl (s : Finset α) :
     Maximal Gᶜ.IsClique s ↔ Maximal G.IsIndepSet s := by
   simp [isMaximalIndepSet_iff, isMaximalClique_iff]
@@ -1086,21 +1100,6 @@ theorem isMaximalIndepSet_iff {s : Set α} :
 @[simp] lemma isMaximalIndepSet_compl (s : Finset α) :
     Maximal Gᶜ.IsIndepSet s ↔ Maximal G.IsClique s := by
   simp [isMaximalIndepSet_iff, isMaximalClique_iff]
-
-lemma IsMaximumIndepSet.isMaximalIndepSet
-    [Finite α] (s : Finset α) (M : G.IsMaximumIndepSet s) : Maximal G.IsIndepSet s := by
-  rw [← isMaximalClique_compl]
-  rw [← isMaximumClique_compl] at M
-  exact IsMaximumClique.isMaximalClique s M
-
-theorem maximumIndepSet_card_eq_indepNum
-    [Finite α] (t : Finset α) (tmc : G.IsMaximumIndepSet t) : #t = G.indepNum := by
-  rw [← isMaximumClique_compl] at tmc
-  simp_rw [indepNum, ← isNClique_compl]
-  exact Gᶜ.maximumClique_card_eq_cliqueNum t tmc
-
-lemma maximumIndepSet_exists [Finite α] : ∃ (s : Finset α), G.IsMaximumIndepSet s := by
-  simp [← isMaximumClique_compl, maximumClique_exists]
 
 end IndepNumber
 
@@ -1110,14 +1109,6 @@ end IndepNumber
 section IndepSetFinset
 
 variable [Fintype α] [DecidableEq α] [DecidableRel G.Adj] {n : ℕ} {s : Finset α}
-
-/-- The `n`-independent sets in a graph as a finset. -/
-def indepSetFinset (n : ℕ) : Finset (Finset α) := {s | G.IsNIndepSet n s}
-
-variable {G} in
-@[simp]
-theorem mem_indepSetFinset_iff : s ∈ G.indepSetFinset n ↔ G.IsNIndepSet n s :=
-  mem_filter.trans <| and_iff_right <| mem_univ _
 
 end IndepSetFinset
 
