@@ -172,7 +172,7 @@ instance Subgroup.isCyclic [IsCyclic α] (H : Subgroup α) : IsCyclic H := by
   let ⟨g, hg⟩ := IsCyclic.exists_generator (α := α)
   rcases eq_or_ne H ⊥ with rfl | hH
   · infer_instance
-  have hex : ∃ n : ℕ, 0 < n ∧ g ^ n ∈ H := by
+  have hex : ∃ n > 0, g ^ n ∈ H := by
     obtain ⟨x, hx₁, hx₂⟩ := H.bot_or_exists_ne_one.resolve_left hH
     obtain ⟨k, rfl⟩ := hg x
     use k.natAbs
