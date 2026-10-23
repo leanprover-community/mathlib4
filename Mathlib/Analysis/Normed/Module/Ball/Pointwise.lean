@@ -44,7 +44,7 @@ theorem ediam_smul₀ (c : 𝕜) (s : Set E) : ediam (c • s) = ‖c‖₊ • 
 theorem diam_smul₀ (c : 𝕜) (x : Set E) : diam (c • x) = ‖c‖ * diam x := by
   simp_rw [diam, ediam_smul₀, ENNReal.toReal_smul, NNReal.smul_def, coe_nnnorm, smul_eq_mul]
 
-theorem infEDist_smul₀_of_nonempty (c : 𝕜) {s : Set E} (hs : s.Nonempty) (x : E) :
+theorem infEDist_smul_of_nonempty₀ (c : 𝕜) {s : Set E} (hs : s.Nonempty) (x : E) :
     infEDist (c • x) (c • s) = ‖c‖₊ • infEDist x s := by
   have : Nonempty s := hs.to_subtype
   simp_rw [infEDist, ← Set.image_smul, iInf_image, edist_smul₀, iInf_subtype']
@@ -54,13 +54,13 @@ theorem infEDist_smul₀ {c : 𝕜} (hc : c ≠ 0) (s : Set E) (x : E) :
     infEDist (c • x) (c • s) = ‖c‖₊ • infEDist x s := by
   obtain rfl | hs := s.eq_empty_or_nonempty
   · simp [ENNReal.smul_def, hc]
-  exact infEDist_smul₀_of_nonempty c hs x
+  exact infEDist_smul_of_nonempty₀ c hs x
 
 theorem infDist_smul₀ (c : 𝕜) (s : Set E) (x : E) :
     infDist (c • x) (c • s) = ‖c‖ * infDist x s := by
   obtain rfl | hs := s.eq_empty_or_nonempty
   · simp
-  simp [infDist, infEDist_smul₀_of_nonempty c hs, ENNReal.toReal_smul, NNReal.smul_def]
+  simp [infDist, infEDist_smul_of_nonempty₀ c hs, ENNReal.toReal_smul, NNReal.smul_def]
 
 end NormedRing
 
