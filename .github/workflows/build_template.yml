@@ -1144,7 +1144,7 @@ jobs:
           # This job runs with only `contents: read` and no persisted credentials,
           # so checking out fork PR code under pull_request_target is safe.
           allow-unsafe-pr-checkout: true
-      - uses: leanprover-community/lint-style-action@a02378f74c5e33adc64fcafb1cf2d00726e15a94 # 2026-10-05
+      - uses: leanprover-community/lint-style-action@c1e9eda133c7710e4d1c7da18afc4c116e588441 # 2026-10-23
         with:
           mode: check
           lint-bib-file: true
