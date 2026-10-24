@@ -151,6 +151,12 @@ lemma smul_some_eq_ite {g : GL (Fin 2) K} {k : K} :
       if g 1 0 * k + g 1 1 = 0 then ∞ else (g 0 0 * k + g 0 1) / (g 1 0 * k + g 1 1) := by
   simp [Equiv.smul_def, mulVec_eq_sum, div_eq_inv_mul, mul_comm, Units.smul_def]
 
+@[simp] lemma neg_smul (g : GL (Fin 2) K) (c : OnePoint K) :
+    -g • c = g • c := by
+  induction c using OnePoint.rec with
+  | infty => simp [OnePoint.smul_infty_eq_ite]
+  | coe x => simp [OnePoint.smul_some_eq_ite]; grind
+
 lemma map_smul {L : Type*} [Field L] [DecidableEq L]
     (f : K →+* L) (g : GL (Fin 2) K) (c : OnePoint K) :
     OnePoint.map f (g • c) = (g.map f) • (c.map f) := by
