@@ -6,7 +6,6 @@ Authors: Ashvni Narayanan, Anne Baanen
 module
 
 public import Mathlib.Algebra.CharZero.AddMonoidHom
-public import Mathlib.Algebra.CharZero.Infinite
 public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients.Basic
 
@@ -110,8 +109,6 @@ namespace RingOfIntegers
 
 instance [NumberField K] : CharZero (𝓞 K) :=
   inferInstanceAs (CharZero (integralClosure _ _))
-
-instance [NumberField K] : Infinite (𝓞 K) := inferInstance
 
 instance {L : Type*} [Ring L] [Algebra K L] : Algebra (𝓞 K) L :=
   inferInstanceAs (Algebra (integralClosure _ _) L)

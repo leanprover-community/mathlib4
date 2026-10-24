@@ -59,7 +59,7 @@ theorem absNorm_div_absNorm_span_eq {I : FractionalIdeal R⁰ K} (a : R⁰) (I�
     · simp_rw [← Nat.cast_mul]
       rw [← map_mul, ← map_mul, mul_comm, ← h', mul_comm]
     · exact LinearMap.ker_eq_bot.mpr (IsFractionRing.injective R K)
-  all_goals simp [Ideal.absNorm_eq_zero_iff', nonZeroDivisors.coe_ne_zero]
+  all_goals simp
 
 /-- The absolute norm of the fractional ideal `I` extending by multiplicativity the absolute norm
 on (integral) ideals. -/
@@ -98,7 +98,7 @@ theorem absNorm_eq_zero_iff {I : FractionalIdeal R⁰ K} : absNorm I = 0 ↔ I =
   refine ⟨fun h ↦ zero_of_num_eq_bot zero_notMem_nonZeroDivisors ?_, fun h ↦ h ▸ absNorm_bot⟩
   rw [absNorm_eq_absNorm_span, div_eq_zero_iff] at h
   refine Ideal.absNorm_eq_zero_iff'.mp <| Nat.cast_eq_zero.mp <| h.resolve_right ?_
-  simp [Ideal.absNorm_eq_zero_iff', nonZeroDivisors.coe_ne_zero]
+  simp
 
 theorem coeIdeal_absNorm (I₀ : Ideal R) :
     absNorm (I₀ : FractionalIdeal R⁰ K) = Ideal.absNorm I₀ := by
@@ -109,13 +109,8 @@ end
 
 variable [Module.Free ℤ R] [Module.Finite ℤ R]
 
--- `Module.Free.infinite` cannot be an instance: its conclusion does not mention the base ring, and
--- even a `ℤ`-specific version would be tried on every `Infinite` goal. Declaring it one locally is
--- safe: the cost is confined to this file, and `Infinite` is a `Prop`, so any two instances agree.
-local instance : Infinite R := Module.Free.infinite ℤ R
-
--- A module-finite ℤ-algebra has finite quotients; local to this section, where it lets the
--- results below be deduced from the ones above.
+-- A module-finite `ℤ`-algebra has finite quotients; declared locally so that the results below
+-- can be deduced from the ones above.
 local instance : Ring.HasFiniteQuotients R := .of_module_finite ℤ R
 
 theorem absNorm_eq (I : FractionalIdeal R⁰ K) :
