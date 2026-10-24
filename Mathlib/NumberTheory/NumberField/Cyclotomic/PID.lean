@@ -9,6 +9,7 @@ public import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
 
 import Mathlib.NumberTheory.NumberField.ClassNumber
 import Mathlib.NumberTheory.NumberField.Cyclotomic.Ideal
+import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Tactic
 import Mathlib.Tactic.NormNum.Prime
 
 /-!
@@ -71,23 +72,13 @@ theorem seven_pid [IsCyclotomicExtension {7} ℚ K] : IsPrincipalIdealRing (𝓞
   -- The Minkowski bound is `4`.
   have hM : ⌊(M K)⌋₊ = 4 := by
     have : Fact (Nat.Prime 7) := ⟨Nat.prime_seven⟩
-    rw [discr_prime 7 K, IsCyclotomicExtension.finrank (n := 7) K (irreducible_rat (by simp)),
+    have : π ∈ Set.Ioo 3 3.15 := ⟨pi_gt_three, pi_lt_d2⟩
+    rw [floor_eq_iff (by positivity), discr_prime 7 K,
+      IsCyclotomicExtension.finrank (n := 7) K (irreducible_rat (by simp)),
       nrComplexPlaces_eq_totient_div_two 7, totient_prime Nat.prime_seven]
-    simp only [Nat.add_one_sub_one, reduceDiv, cast_ofNat, Int.reduceNeg, Int.reducePow,
-      reduceSub, neg_mul, one_mul, Int.cast_neg, Int.cast_ofNat, abs_neg, abs_ofNat]
-    refine (floor_eq_iff (by positivity)).mpr ⟨?_, ?_⟩
-    · calc
-        (4 : ℝ) ≤ (4 / 3.15) ^ 3 * (6! / 6 ^ 6 * 129) := by norm_num
-        _ ≤ (4 / π) ^ 3 * (6! / 6 ^ 6 * √16807) := by
-          gcongr
-          · exact pi_lt_d2.le
-          · exact (le_sqrt (by norm_num) (by norm_num)).mpr (by norm_num)
-    · calc
-        (4 / π) ^ 3 * (6! / 6 ^ 6 * √16807) ≤ (4 / 3) ^ 3 * (6! / 6 ^ 6 * 130) := by
-          gcongr
-          · exact pi_gt_three.le
-          · exact (sqrt_le_left (by norm_num)).mpr (by norm_num)
-        _ < _ := by norm_num
+    norm_num
+    field_simp
+    dyadic_interval [prec := 5]
   refine isPrincipalIdealRing_of_isPrincipal_of_lt_or_isPrincipal_of_mem_primesOver_of_mem_Icc
     fun p hp hprime ↦ ?_
   have : (span {(p : ℤ)}).IsPrime :=
