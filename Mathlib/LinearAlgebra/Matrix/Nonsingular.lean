@@ -70,7 +70,7 @@ theorem Nonsingular.of_linearIndependent_col (ind : LinearIndependent R A.col) :
   refine ind (funext fun i ↦ ?_)
   let Ai := A.submatrix (Option.rec i f) (Option.rec j₀ g)
   have (s : ℤˣ) : Ai.detp s = ∑ j, (Aj j).detp (-s) * A.col (g j) i + D.detp s * A.col j₀ i := by
-    simp_rw [mul_comm]; rw [detp_option_expand_row_none, add_comm]
+    simp_rw [mul_comm <| detp ..]; rw [detp_option_expand_row_none, add_comm]
     congr!; aesop (add simp Function.update)
   have (a b : R) : (v a b).linearCombination R A.col i = a * Ai.detp 1 + b * Ai.detp (-1) := by
     simp [v, Finset.sum_add_distrib, mul_assoc, ← Finset.mul_sum, add_add_add_comm, mul_add, this]
