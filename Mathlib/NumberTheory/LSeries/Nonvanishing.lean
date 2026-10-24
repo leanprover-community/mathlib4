@@ -432,6 +432,10 @@ theorem completedLFunction_ne_zero_of_one_le_re ⦃s : ℂ⦄ (hχs : χ ≠ 1 �
 
 variable {χ}
 
+omit [NeZero N] in
+theorem IsPrimitive.inv (hχ : χ.IsPrimitive) : χ⁻¹.IsPrimitive := by
+  grind [isPrimitive_def, conductor_inv]
+
 /-- The root numbers of a primitive Dirichlet character and of its inverse multiply to `1`.
 -/
 theorem rootNumber_mul_rootNumber_inv (hχ : χ.IsPrimitive) :
@@ -443,12 +447,17 @@ theorem rootNumber_mul_rootNumber_inv (hχ : χ.IsPrimitive) :
     convert hχ.completedLFunction_one_sub (-1) <;> norm_num
   have : completedLFunction χ⁻¹ (-1)
       = (N : ℂ) ^ (3 / 2 : ℂ) * rootNumber χ⁻¹ * completedLFunction χ 2 := by
-    have : χ⁻¹.IsPrimitive := by grind [isPrimitive_def, conductor_inv]
+    have := hχ.inv
     convert this.completedLFunction_one_sub 2 <;> norm_num
   grind [cpow_neg]
 
 theorem rootNumber_ne_zero (hχ : χ.IsPrimitive) : rootNumber χ ≠ 0 := by
   grind [rootNumber_mul_rootNumber_inv]
+
+theorem gaussSum_inv : ‖gaussSum χ⁻¹ ZMod.stdAddChar‖ = ‖gaussSum χ ZMod.stdAddChar‖ := by
+  rw [← norm_star, star_gaussSum_eq, AddChar.inv_mulShift,
+    (by simp : (-1 : ZMod N) = ((-1 : (ZMod N)ˣ) : ZMod N)), gaussSum_mulShift_eq]
+  simp_all
 
 /-- **The root number of a primitive Dirichlet character has absolute value one.** -/
 theorem norm_rootNumber (hχ : χ.IsPrimitive) : ‖rootNumber χ‖ = 1 := by
@@ -459,7 +468,7 @@ theorem norm_rootNumber (hχ : χ.IsPrimitive) : ‖rootNumber χ‖ = 1 := by
   have : ‖rootNumber χ‖ = ‖rootNumber χ⁻¹‖ := by simp [rootNumber, -pow_ite, this]
   have : ‖rootNumber χ‖ * ‖rootNumber χ⁻¹‖ = 1 := by
     simp [← norm_mul, rootNumber_mul_rootNumber_inv hχ]
-  nlinarith [norm_nonneg (rootNumber χ)]
+  nlinarith [norm_nonneg (rootNumber χ), χ.gaussSum_inv]
 
 /-- **The Gauss sum of a primitive Dirichlet character has absolute value `√N`.** -/
 theorem norm_gaussSum_stdAddChar (hχ : χ.IsPrimitive) :
@@ -474,8 +483,8 @@ theorem LFunction_eq_zero_iff_of_re_nonpos (hχ : χ.IsPrimitive) {s : ℂ} (hs 
     LFunction χ s = 0 ↔ χ.gammaFactor s = 0 ∧ (N ≠ 1 ∨ s ≠ 0):= by
   have := NeZero.ne N
   by_cases hχs : χ = 1 ∧ s = 0
-  · rw [hχs.1, hχs.2, ← changeLevel_one (d := 1), LFunction_changeLevel, gammaFactor_eq_zero_even]
-    <;> simp [LFunction_modOne_eq, riemannZeta_zero, this]
+  · rw [hχs.1, hχs.2, ← changeLevel_one (d := 1), LFunction_changeLevel,
+    gammaFactor_eq_zero_iff_of_even] <;> simp [LFunction_modOne_eq, riemannZeta_zero, this]
   have : s ≠ 0 ∨ N ≠ 1 := by contrapose! hχs; simp_all [level_one']
   suffices completedLFunction χ (1 - (1 - s)) ≠ 0 by grind [LFunction_eq_completed_div_gammaFactor]
   rw [hχ.completedLFunction_one_sub]
@@ -487,7 +496,7 @@ theorem LFunction_eq_zero_iff_of_re_nonpos (hχ : χ.IsPrimitive) {s : ℂ} (hs 
 theorem _root_.riemannZeta_eq_zero_iff_of_re_nonpos {s : ℂ} (hs : s.re ≤ 0) :
     riemannZeta s = 0 ↔ ∃ n : ℕ, s = -2 * (n + 1) := by
   rw [← LFunction_modOne_eq (χ := 1), LFunction_eq_zero_iff_of_re_nonpos
-    isPrimitive_one_level_one hs, gammaFactor_eq_zero_even (by simp)]
+    isPrimitive_one_level_one hs, gammaFactor_eq_zero_iff_of_even (by simp)]
   constructor
   · rintro ⟨⟨n, rfl⟩, _⟩; exact ⟨n - 1, by simp_all; norm_cast; grind⟩
   · rintro ⟨n, rfl⟩; exact ⟨⟨n + 1, by norm_cast⟩, by grind⟩
