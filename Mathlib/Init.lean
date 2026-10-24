@@ -22,13 +22,13 @@ public meta import Mathlib.Tactic.Linter.HashCommandLinter
 public meta import Mathlib.Tactic.Linter.HaveILetI
 public meta import Mathlib.Tactic.Linter.Header
 public meta import Mathlib.Tactic.Linter.InternalConstructor
--- The following module imports `Batteries.Tactic.Lint`, where `#lint` is defined.
 public meta import Mathlib.Tactic.Linter.Lint
 public meta import Mathlib.Tactic.Linter.Multigoal
 public meta import Mathlib.Tactic.Linter.OldObtain
 public meta import Mathlib.Tactic.Linter.PrivateModule
 public meta import Mathlib.Tactic.Linter.Style
 public meta import Mathlib.Tactic.Linter.TacticDocumentation
+public meta import Mathlib.Tactic.Linter.UnregisteredTraceClass
 public meta import Mathlib.Tactic.Linter.UnusedTactic
 public meta import Mathlib.Tactic.Linter.Whitespace
 -- This import makes the `#min_imports in` command available globally.
@@ -113,6 +113,7 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.whitespace
   linter.unusedDecidableInType
   linter.unusedFintypeInType
+  linter.unregisteredTraceClass
   -- The `docPrime` linter is disabled: https://github.com/leanprover-community/mathlib4/issues/20560
 
 /-- Define a set of linters that are used in the `nightly-testing` branch
