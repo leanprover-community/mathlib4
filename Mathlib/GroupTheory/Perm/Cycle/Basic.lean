@@ -718,23 +718,21 @@ theorem isCycle_iff_exists_isCycleOn :
 theorem IsCycleOn.apply_mem_iff (hf : f.IsCycleOn s) : f x ∈ s ↔ x ∈ s :=
   ⟨fun hx => by simpa using hf.1.perm_inv.1 hx, fun hx => hf.1.mapsTo hx⟩
 
+protected theorem IsCycleOn.subtypePerm {p : α → Prop} (hp : ∀ x : α, p (f x) ↔ p x)
+    (h : f.IsCycleOn s) : (f.subtypePerm hp).IsCycleOn ((↑) ⁻¹' s) := by
+  refine ⟨h.1.subtypePerm hp, fun _ hx _ hy ↦ ?_⟩
+  have ⟨i, hi⟩ := h.2 hx hy
+  exact ⟨i, f.subtypePerm_zpow i hp ▸ Subtype.ext hi⟩
+
+/-- Note that the identity satisfies `IsCycleOn` for any subsingleton set, but not `IsCycle`. -/
+theorem IsCycleOn.subtypePerm_univ (hf : f.IsCycleOn s) :
+    (f.subtypePerm fun _ ↦ hf.apply_mem_iff).IsCycleOn .univ := by
+  simpa using hf.subtypePerm fun _ ↦ hf.apply_mem_iff
+
 /-- Note that the identity satisfies `IsCycleOn` for any subsingleton set, but not `IsCycle`. -/
 theorem IsCycleOn.isCycle_subtypePerm (hf : f.IsCycleOn s) (hs : s.Nontrivial) :
-    (f.subtypePerm fun _ => hf.apply_mem_iff : Perm s).IsCycle := by
-  obtain ⟨a, ha⟩ := hs.nonempty
-  exact
-    ⟨⟨a, ha⟩, ne_of_apply_ne ((↑) : s → α) (hf.apply_ne hs ha), fun b _ =>
-      (hf.2 (⟨a, ha⟩ : s).2 b.2).subtypePerm⟩
-
-/-- Note that the identity is a cycle on any subsingleton set, but not a cycle. -/
-protected theorem IsCycleOn.subtypePerm (hf : f.IsCycleOn s) :
-    (f.subtypePerm fun _ => hf.apply_mem_iff : Perm s).IsCycleOn _root_.Set.univ := by
-  obtain hs | hs := s.subsingleton_or_nontrivial
-  · have := hs.coe_sort
-    exact isCycleOn_of_subsingleton _ _
-  convert (hf.isCycle_subtypePerm hs).isCycleOn using 1
-  rw [eq_comm, Set.eq_univ_iff_forall]
-  exact fun x => ne_of_apply_ne ((↑) : s → α) (hf.apply_ne hs x.2)
+    (f.subtypePerm fun _ ↦ hf.apply_mem_iff).IsCycle :=
+  isCycle_iff_exists_isCycleOn.mpr ⟨_, by simp [hs], hf.subtypePerm_univ, by simp⟩
 
 -- TODO: Theory of order of an element under an action
 theorem IsCycleOn.pow_apply_eq {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈ s) {n : ℕ} :
