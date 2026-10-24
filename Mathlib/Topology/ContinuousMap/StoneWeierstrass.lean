@@ -603,7 +603,7 @@ theorem AlgHom.closure_ker_inter {F S K A : Type*} [CommRing K] [Ring A] [Algebr
   · intro x ⟨hxs, (hxφ : φ x = 0)⟩
     rw [mem_closure_iff_clusterPt, ClusterPt] at hxs
     have : Tendsto (fun y ↦ y - φ y • 1) (𝓝 x ⊓ 𝓟 s) (𝓝 x) := by
-      conv => congr; rfl; rfl; rw [← sub_zero x, ← zero_smul K 1, ← hxφ]
+      conv => enter [3]; rw [← sub_zero x, ← zero_smul K 1, ← hxφ]
       exact Filter.tendsto_inf_left (Continuous.tendsto (by fun_prop) x)
     refine mem_closure_of_tendsto this <| eventually_inf_principal.mpr ?_
     filter_upwards [] with g hg using

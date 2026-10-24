@@ -1043,8 +1043,7 @@ def cokernelImageι {X Y : C} (f : X ⟶ Y) [HasImage f] [HasCokernel (image.ι 
       (by
         have w := cokernel.condition f
         conv at w =>
-          lhs
-          congr
+          enter [1, 1]
           rw [← image.fac f]
         rw [← HasZeroMorphisms.comp_zero (Limits.factorThruImage f), Category.assoc,
           cancel_epi] at w
@@ -1053,8 +1052,7 @@ def cokernelImageι {X Y : C} (f : X ⟶ Y) [HasImage f] [HasCokernel (image.ι 
     cokernel.desc _ (cokernel.π _)
       (by
         conv =>
-          lhs
-          congr
+          enter [1, 1]
           rw [← image.fac f]
         rw [Category.assoc, cokernel.condition, HasZeroMorphisms.comp_zero])
 

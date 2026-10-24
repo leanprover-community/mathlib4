@@ -344,8 +344,7 @@ theorem exp_add_of_commute_of_mem_ball [CharZero 𝕂] {x y : 𝔸} (hxy : Commu
       (norm_expSeries_summable_of_mem_ball' x hx) (norm_expSeries_summable_of_mem_ball' y hy)]
   dsimp only
   conv_lhs =>
-    congr
-    ext
+    enter [1, _]
     rw [hxy.add_pow' _, Finset.smul_sum]
   refine tsum_congr fun n => Finset.sum_congr rfl fun kl hkl => ?_
   rw [← Nat.cast_smul_eq_nsmul 𝕂, smul_smul, smul_mul_smul_comm, ← Finset.mem_antidiagonal.mp hkl,

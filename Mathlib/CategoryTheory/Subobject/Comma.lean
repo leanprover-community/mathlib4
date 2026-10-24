@@ -169,7 +169,7 @@ theorem unop_left_comp_underlyingIso_hom_unop {A : CostructuredArrow S T}
     f.unop.left ≫ (Subobject.underlyingIso f.unop.left.op).hom.unop =
       (Subobject.mk f.unop.left.op).arrow.unop := by
   conv_lhs =>
-    congr
+    enter [1]
     rw [← Quiver.Hom.unop_op f.unop.left]
   rw [← unop_comp, Subobject.underlyingIso_hom_comp_eq_mk]
 
@@ -197,7 +197,7 @@ theorem unop_left_comp_ofMkLEMk_unop {A : CostructuredArrow S T} {P Q : (Costruc
     (h : Subobject.mk f.unop.left.op ≤ Subobject.mk g.unop.left.op) :
     g.unop.left ≫ (Subobject.ofMkLEMk f.unop.left.op g.unop.left.op h).unop = f.unop.left := by
   conv_lhs =>
-    congr
+    enter [1]
     rw [← Quiver.Hom.unop_op g.unop.left]
   rw [← unop_comp]
   simp only [Subobject.ofMkLEMk_comp, Quiver.Hom.unop_op]

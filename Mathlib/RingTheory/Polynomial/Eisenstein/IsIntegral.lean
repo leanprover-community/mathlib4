@@ -55,12 +55,7 @@ theorem cyclotomic_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] :
     exact zero_ne_one h.symm
   · rw [cyclotomic_prime, geom_sum_X_comp_X_add_one_eq_sum, ← lcoeff_apply, map_sum]
     conv =>
-      congr
-      congr
-      next => skip
-      congr
-      next => skip
-      ext
+      enter [2, 2, _]
       rw [lcoeff_apply, ← C_eq_natCast, C_mul_X_pow_eq_monomial, coeff_monomial]
     rw [natDegree_comp, show (X + 1 : ℤ[X]) = X + C 1 by simp, natDegree_X_add_C, mul_one,
       natDegree_cyclotomic, Nat.totient_prime hp.out] at hi
@@ -212,9 +207,7 @@ theorem mem_adjoin_of_dvd_coeff_of_dvd_aeval {A B : Type*} [CommSemiring A] [Rin
   choose! f hf using hQ
   rw [aeval_eq_sum_range, sum_range] at hz
   conv_lhs at hz =>
-    congr
-    next => skip
-    ext i
+    enter [2, i]
     rw [hf i (mem_range.2 (Fin.is_lt i)), ← smul_smul]
   rw [← smul_sum] at hz
   rw [← smul_right_injective _ hp hz]

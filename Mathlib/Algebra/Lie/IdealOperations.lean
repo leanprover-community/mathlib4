@@ -291,8 +291,7 @@ theorem map_comap_bracket_eq {J₁ J₂ : LieIdeal R L'} (h : f.IsIdealMorphism)
 theorem comap_bracket_incl {I₁ I₂ : LieIdeal R L} :
     ⁅comap I.incl I₁, comap I.incl I₂⁆ = comap I.incl ⁅I ⊓ I₁, I ⊓ I₂⁆ := by
   conv_rhs =>
-    congr
-    next => skip
+    enter [2]
     rw [← I.incl_idealRange]
   rw [comap_bracket_eq]
   · simp
