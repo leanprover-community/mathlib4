@@ -34,6 +34,11 @@ $$
 $$
 in order to avoid using real exponents. For real exponents we prove both this and standard versions.
 
+We also prove that $p \mapsto \sqrt[p]{\sum_{i\in s} z_i^p}$ is antitone on $(0, \infty)$
+(`NNReal.rpow_sum_rpow_le`), together with the superadditivity of $x \mapsto x^p$ for $p ≥ 1$
+(`NNReal.sum_rpow_le_rpow_sum`) and its subadditivity for $0 < p ≤ 1$
+(`NNReal.rpow_sum_le_sum_rpow`), with versions in `ℝ`, `ℝ≥0` and `ℝ≥0∞`.
+
 ## TODO
 
 - each inequality `A ≤ B` should come with a theorem `A = B ↔ _`; one of the ways to prove them
@@ -184,6 +189,32 @@ theorem rpow_add_le_add_rpow {p : ℝ} (a b : ℝ≥0) (hp : 0 ≤ p) (hp1 : p �
   repeat' rw [NNReal.rpow_one] at h
   exact (NNReal.le_rpow_inv_iff hp_pos).mp h
 
+/-- For `1 ≤ p`, the function `x ↦ x ^ p` is superadditive.
+See `NNReal.add_rpow_le_rpow_add` for two summands. -/
+theorem sum_rpow_le_rpow_sum (f : ι → ℝ≥0) {p : ℝ} (hp1 : 1 ≤ p) :
+    ∑ i ∈ s, f i ^ p ≤ (∑ i ∈ s, f i) ^ p := by
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons i s hi ih =>
+    simp_rw [sum_cons]
+    grw [ih, add_rpow_le_rpow_add _ _ hp1]
+
+/-- The `ℓ^p` (quasi)norm `(∑ i ∈ s, f i ^ p) ^ (1 / p)` is antitone in `p > 0`.
+See `NNReal.rpow_add_rpow_le` for two summands. -/
+theorem rpow_sum_rpow_le (f : ι → ℝ≥0) {p q : ℝ} (hp_pos : 0 < p) (hpq : p ≤ q) :
+    (∑ i ∈ s, f i ^ q) ^ (1 / q) ≤ (∑ i ∈ s, f i ^ p) ^ (1 / p) := by
+  have hq_pos := hp_pos.trans_le hpq
+  have h := sum_rpow_le_rpow_sum s (fun i ↦ f i ^ p) ((one_le_div hp_pos).2 hpq)
+  simp_rw [← NNReal.rpow_mul, mul_div_cancel₀ _ hp_pos.ne'] at h
+  grw [h, ← NNReal.rpow_mul, div_mul_div_cancel₀' hq_pos.ne']
+
+/-- For `0 < p ≤ 1`, the function `x ↦ x ^ p` is subadditive.
+See `NNReal.rpow_add_le_add_rpow` for two summands. -/
+theorem rpow_sum_le_sum_rpow (f : ι → ℝ≥0) {p : ℝ} (hp_pos : 0 < p) (hp1 : p ≤ 1) :
+    (∑ i ∈ s, f i) ^ p ≤ ∑ i ∈ s, f i ^ p :=
+  le_sum_of_subadditive (· ^ p) (by simp [hp_pos.ne'])
+    (fun a b ↦ rpow_add_le_add_rpow a b hp_pos.le hp1) s f
+
 end NNReal
 
 namespace Real
@@ -213,6 +244,35 @@ lemma rpow_add_le_add_rpow {p : ℝ} {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (
   lift a to NNReal using ha
   lift b to NNReal using hb
   exact_mod_cast NNReal.rpow_add_le_add_rpow a b hp hp1
+
+/-- For `1 ≤ p`, the function `x ↦ x ^ p` is superadditive on nonnegative reals.
+See `Real.add_rpow_le_rpow_add` for two summands. -/
+lemma sum_rpow_le_rpow_sum {f : ι → ℝ} (hf : ∀ i ∈ s, 0 ≤ f i) {p : ℝ} (hp1 : 1 ≤ p) :
+    ∑ i ∈ s, f i ^ p ≤ (∑ i ∈ s, f i) ^ p := by
+  induction s using Finset.cons_induction with
+  | empty => simp [zero_rpow_nonneg]
+  | cons i s hi ih =>
+    rw [forall_mem_cons] at hf
+    simp_rw [sum_cons]
+    grw [ih hf.2, add_rpow_le_rpow_add hf.1 (sum_nonneg hf.2) hp1]
+
+/-- The `ℓ^p` (quasi)norm `(∑ i ∈ s, f i ^ p) ^ (1 / p)` of a nonnegative vector is antitone in
+`p > 0`. See `Real.rpow_add_rpow_le` for two summands. -/
+lemma rpow_sum_rpow_le {f : ι → ℝ} (hf : ∀ i ∈ s, 0 ≤ f i) {p q : ℝ} (hp_pos : 0 < p)
+    (hpq : p ≤ q) :
+    (∑ i ∈ s, f i ^ q) ^ (1 / q) ≤ (∑ i ∈ s, f i ^ p) ^ (1 / p) := by
+  have hf' (r : ℝ) : ∑ i ∈ s, f i ^ r = ∑ i ∈ s, ((f i).toNNReal : ℝ) ^ r :=
+    sum_congr rfl fun i hi ↦ by rw [Real.coe_toNNReal _ (hf i hi)]
+  simp only [hf']
+  exact_mod_cast NNReal.rpow_sum_rpow_le s _ hp_pos hpq
+
+/-- For `0 < p ≤ 1`, the function `x ↦ x ^ p` is subadditive on nonnegative reals.
+See `Real.rpow_add_le_add_rpow` for two summands. -/
+lemma rpow_sum_le_sum_rpow {f : ι → ℝ} (hf : ∀ i ∈ s, 0 ≤ f i) {p : ℝ} (hp_pos : 0 < p)
+    (hp1 : p ≤ 1) :
+    (∑ i ∈ s, f i) ^ p ≤ ∑ i ∈ s, f i ^ p :=
+  le_sum_of_subadditive_on_pred (· ^ p) (0 ≤ ·) (by simp [hp_pos.ne'])
+    (fun _ _ ha hb ↦ rpow_add_le_add_rpow ha hb hp_pos.le hp1) (fun _ _ ↦ add_nonneg) f hf
 
 end Real
 
@@ -318,6 +378,32 @@ theorem rpow_add_le_add_rpow {p : ℝ} (a b : ℝ≥0∞) (hp : 0 ≤ p) (hp1 : 
   rw [one_div_one, one_div] at h
   repeat' rw [ENNReal.rpow_one] at h
   exact (ENNReal.le_rpow_inv_iff hp_pos).mp h
+
+/-- For `1 ≤ p`, the function `x ↦ x ^ p` is superadditive.
+See `ENNReal.add_rpow_le_rpow_add` for two summands. -/
+theorem sum_rpow_le_rpow_sum (f : ι → ℝ≥0∞) {p : ℝ} (hp1 : 1 ≤ p) :
+    ∑ i ∈ s, f i ^ p ≤ (∑ i ∈ s, f i) ^ p := by
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons i s hi ih =>
+    simp_rw [sum_cons]
+    grw [ih, add_rpow_le_rpow_add _ _ hp1]
+
+/-- The `ℓ^p` (quasi)norm `(∑ i ∈ s, f i ^ p) ^ (1 / p)` is antitone in `p > 0`.
+See `ENNReal.rpow_add_rpow_le` for two summands. -/
+theorem rpow_sum_rpow_le (f : ι → ℝ≥0∞) {p q : ℝ} (hp_pos : 0 < p) (hpq : p ≤ q) :
+    (∑ i ∈ s, f i ^ q) ^ (1 / q) ≤ (∑ i ∈ s, f i ^ p) ^ (1 / p) := by
+  have hq_pos := hp_pos.trans_le hpq
+  have h := sum_rpow_le_rpow_sum s (fun i ↦ f i ^ p) ((one_le_div hp_pos).2 hpq)
+  simp_rw [← ENNReal.rpow_mul, mul_div_cancel₀ _ hp_pos.ne'] at h
+  grw [h, ← ENNReal.rpow_mul, div_mul_div_cancel₀' hq_pos.ne']
+
+/-- For `0 < p ≤ 1`, the function `x ↦ x ^ p` is subadditive.
+See `ENNReal.rpow_add_le_add_rpow` for two summands. -/
+theorem rpow_sum_le_sum_rpow (f : ι → ℝ≥0∞) {p : ℝ} (hp_pos : 0 < p) (hp1 : p ≤ 1) :
+    (∑ i ∈ s, f i) ^ p ≤ ∑ i ∈ s, f i ^ p :=
+  le_sum_of_subadditive (· ^ p) (by simp [hp_pos])
+    (fun a b ↦ rpow_add_le_add_rpow a b hp_pos.le hp1) s f
 
 /-- A constant for the inequality `‖f + g‖_{L^p} ≤ C * (‖f‖_{L^p} + ‖g‖_{L^p})`. It is equal to `1`
 for `p ≥ 1` or `p = 0`, and `2^(1/p-1)` in the more tricky interval `(0, 1)`. -/
