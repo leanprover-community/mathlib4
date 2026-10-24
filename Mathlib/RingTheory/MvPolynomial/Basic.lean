@@ -8,8 +8,6 @@ module
 public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.MvPolynomial.Degrees
 public import Mathlib.Data.DFinsupp.Small
-public import Mathlib.Data.Fintype.Pi
-public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
 /-!
@@ -56,14 +54,14 @@ instance {σ R : Type*} [CommSemiring R] [Small.{u} R] [Small.{u} σ] :
 section CharP
 
 instance [CharP R p] : CharP (MvPolynomial σ R) p where
-  cast_eq_zero_iff n := by rw [← C_eq_coe_nat, ← C_0, C_inj, CharP.cast_eq_zero_iff R p]
+  cast_eq_zero_iff n := by rw [← C_eq_natCast, ← C_0, C_inj, CharP.cast_eq_zero_iff R p]
 
 end CharP
 
 section CharZero
 
 instance [CharZero R] : CharZero (MvPolynomial σ R) where
-  cast_injective x y hxy := by rwa [← C_eq_coe_nat, ← C_eq_coe_nat, C_inj, Nat.cast_inj] at hxy
+  cast_injective x y hxy := by rwa [← C_eq_natCast, ← C_eq_natCast, C_inj, Nat.cast_inj] at hxy
 
 end CharZero
 

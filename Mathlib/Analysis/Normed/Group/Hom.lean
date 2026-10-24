@@ -209,7 +209,8 @@ theorem le_opNorm (x : V₁) : ‖f x‖ ≤ ‖f‖ * ‖x‖ := by
   obtain ⟨C, _Cpos, hC⟩ := f.bound
   replace hC := hC x
   by_cases h : ‖x‖ = 0
-  · rwa [h, mul_zero] at hC ⊢
+  · rw [h, mul_zero] at hC ⊢
+    assumption
   have hlt : 0 < ‖x‖ := lt_of_le_of_ne (norm_nonneg x) (Ne.symm h)
   exact
     (div_le_iff₀ hlt).mp
@@ -222,13 +223,16 @@ theorem le_of_opNorm_le {c : ℝ} (h : ‖f‖ ≤ c) (x : V₁) : ‖f x‖ ≤
   (f.le_opNorm x).trans (by gcongr)
 
 /-- continuous linear maps are Lipschitz continuous. -/
-theorem lipschitz : LipschitzWith ⟨‖f‖, opNorm_nonneg f⟩ f :=
+theorem lipschitzWith : LipschitzWith ⟨‖f‖, opNorm_nonneg f⟩ f :=
   LipschitzWith.of_dist_le_mul fun x y => by
     rw [dist_eq_norm, dist_eq_norm, ← map_sub]
     apply le_opNorm
 
+@[deprecated (since := "2026-09-27")]
+alias lipschitz := lipschitzWith
+
 protected theorem uniformContinuous (f : NormedAddGroupHom V₁ V₂) : UniformContinuous f :=
-  f.lipschitz.uniformContinuous
+  f.lipschitzWith.uniformContinuous
 
 @[continuity]
 protected theorem continuous (f : NormedAddGroupHom V₁ V₂) : Continuous f :=

@@ -5,7 +5,6 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 module
 
-public import Mathlib.Algebra.MonoidAlgebra.Support
 public import Mathlib.Algebra.Polynomial.Degree.Operations
 
 /-!
@@ -18,8 +17,6 @@ public import Mathlib.Algebra.Polynomial.Degree.Operations
 -/
 
 public section
-
-noncomputable section
 
 open Finsupp Finset
 
