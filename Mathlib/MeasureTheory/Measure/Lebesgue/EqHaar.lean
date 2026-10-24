@@ -320,7 +320,7 @@ theorem addHaar_image_continuousLinearEquiv (f : E ≃L[ℝ] E) (s : Set E) :
 
 theorem LinearMap.quasiMeasurePreserving (f : E →ₗ[ℝ] E) (hf : LinearMap.det f ≠ 0) :
     QuasiMeasurePreserving f μ μ := by
-  refine ⟨f.continuous_of_finiteDimensional.measurable.aemeasurable, ?_⟩
+  refine ⟨f.continuous_of_finiteDimensional.aemeasurable, ?_⟩
   rw [map_linearMap_addHaar_eq_smul_addHaar μ hf]
   exact smul_absolutelyContinuous
 

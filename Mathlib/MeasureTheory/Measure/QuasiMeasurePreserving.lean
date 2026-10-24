@@ -48,6 +48,9 @@ attribute [fun_prop] QuasiMeasurePreserving.aemeasurable
 
 namespace QuasiMeasurePreserving
 
+@[deprecated QuasiMeasurePreserving.aemeasurable (since := "2026-10-24")]
+protected alias measurable := QuasiMeasurePreserving.aemeasurable
+
 @[fun_prop]
 protected theorem id {_m0 : MeasurableSpace α} (μ : Measure α) : QuasiMeasurePreserving id μ μ :=
   ⟨aemeasurable_id, map_id.absolutelyContinuous⟩
@@ -59,8 +62,6 @@ protected theorem _root_.AEMeasurable.quasiMeasurePreserving
     QuasiMeasurePreserving f μ (μ.map f) :=
   ⟨hf, AbsolutelyContinuous.rfl⟩
 
-@[deprecated _root_.AEMeasurable.quasiMeasurePreserving
-  "use hf.aemeasurable.quasiMeasurePreserving" +typeChanged (since := "2026-09-06")]
 protected theorem _root_.Measurable.quasiMeasurePreserving
     {_m0 : MeasurableSpace α} (hf : Measurable f) (μ : Measure α) :
     QuasiMeasurePreserving f μ (μ.map f) :=
@@ -93,9 +94,8 @@ protected theorem iterate {f : α → α} (hf : QuasiMeasurePreserving f μa μa
   | n + 1 => (hf.iterate n).comp hf
 
 protected theorem congr (hf : QuasiMeasurePreserving f μa μb) {f' : α → β}
-    (hf' : AEMeasurable f' μa)
     (h : f =ᵐ[μa] f') : QuasiMeasurePreserving f' μa μb := by
-  refine ⟨hf', ?_⟩
+  refine ⟨hf.aemeasurable.congr h, ?_⟩
   rw [Measure.map_congr h.symm]
   exact hf.absolutelyContinuous
 
@@ -199,11 +199,9 @@ protected theorem restrict {ν : Measure β} {f : α → β}
   absolutelyContinuous := AbsolutelyContinuous.mk fun u hum hu ↦ by
     have hfr : AEMeasurable f (μ.restrict s) := hf.aemeasurable.restrict
     rw [restrict_apply hum] at hu
-    rw [map_apply_of_aemeasurable hfr hum, restrict_apply₀ (hfr.nullMeasurableSet_preimage hum)]
-    refine measure_mono_null ?_ (hf.preimage_null hu)
-    rw [preimage_inter]
-    gcongr
-    assumption
+    rw [map_apply_of_aemeasurable hfr hum, restrict_apply₀ (hfr.nullMeasurableSet_preimage hum),
+      measure_mono_null _ (hf.preimage_null hu)]
+    grw [preimage_inter, hmaps.subset_preimage]
 
 open scoped Pointwise
 
@@ -255,6 +253,9 @@ theorem AEDisjoint.preimage {ν : Measure β} {f : α → β} {s t : Set β} (ht
 protected alias Measure.QuasiMeasurePreserving := MeasureTheory.QuasiMeasurePreserving
 @[deprecated (since := "2026-09-23")]
 protected alias Measure.QuasiMeasurePreserving.mk := MeasureTheory.QuasiMeasurePreserving.mk
+@[deprecated (since := "2026-09-23")]
+protected alias Measure.QuasiMeasurePreserving.measurable :=
+  MeasureTheory.QuasiMeasurePreserving.aemeasurable
 @[deprecated (since := "2026-09-23")]
 protected alias Measure.QuasiMeasurePreserving.absolutelyContinuous :=
   MeasureTheory.QuasiMeasurePreserving.absolutelyContinuous
