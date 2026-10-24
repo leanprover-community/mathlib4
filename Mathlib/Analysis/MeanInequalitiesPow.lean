@@ -214,6 +214,25 @@ lemma rpow_add_le_add_rpow {p : ℝ} {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (
   lift b to NNReal using hb
   exact_mod_cast NNReal.rpow_add_le_add_rpow a b hp hp1
 
+/-- For an exponent in `[0, 1]`, the absolute difference of powers of nonnegative reals is
+bounded by the power of their absolute difference. -/
+lemma abs_rpow_sub_rpow_le {p a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (hp : 0 ≤ p)
+    (hp1 : p ≤ 1) : |a ^ p - b ^ p| ≤ |a - b| ^ p := by
+  have ordered : ∀ u v : ℝ, 0 ≤ v → v ≤ u →
+      u ^ p - v ^ p ≤ (u - v) ^ p := by
+    intro u v hv hvu
+    have h := rpow_add_le_add_rpow hv (sub_nonneg.mpr hvu) hp hp1
+    have heq : v + (u - v) = u := by ring
+    rw [heq] at h
+    linarith only [h]
+  rcases le_total b a with hab | hab
+  · have hm := rpow_le_rpow hb hab hp
+    rw [abs_of_nonneg (sub_nonneg.mpr hm), abs_of_nonneg (sub_nonneg.mpr hab)]
+    exact ordered a b hb hab
+  · have hm := rpow_le_rpow ha hab hp
+    rw [abs_of_nonpos (sub_nonpos.mpr hm), abs_of_nonpos (sub_nonpos.mpr hab)]
+    simpa only [neg_sub] using ordered b a ha hab
+
 end Real
 
 namespace ENNReal
