@@ -50,6 +50,14 @@ lemma mulSingle_eq_one_iff : mulSingle i x = 1 ↔ x = 1 := by
   refine ⟨fun h => ?_, fun h => h.symm ▸ mulSingle_one i⟩
   rw [← mulSingle_eq_same i x, h, one_apply]
 
+@[to_additive (attr := simp)]
+lemma mulSingle_eq_one_iff' {j : ι} : mulSingle i x j = 1 ↔ j = i → x = 1 := by
+  refine ⟨by rintro h₁ rfl; rwa [mulSingle_eq_same] at h₁, fun hij => ?_⟩
+  by_cases h : j = i
+  · subst h
+    simp [hij rfl]
+  · simp [h]
+
 @[to_additive]
 lemma mulSingle_ne_one_iff : mulSingle i x ≠ 1 ↔ x ≠ 1 :=
   mulSingle_eq_one_iff.ne
