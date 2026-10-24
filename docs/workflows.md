@@ -37,7 +37,7 @@ This is an overview of the most important triggers used by Mathlib CI. For a com
 ### The main CI pipelines above all use this reusable workflow for the base logic:
 | File  | Description |
 |---|---|
-| [`build_template.yml`](../.github/workflows/build_template.yml) | Reusable CI workflow (`workflow_call`) that performs Lean setup, build/test/lint steps, cache/artifact handling, and reporting. Cache uploads have a 20-minute timeout; post-build checks have a 30-minute timeout. |
+| [`build_template.yml`](../.github/workflows/build_template.yml) | Reusable CI workflow (`workflow_call`) that performs Lean setup, build/test/lint steps, cache/artifact handling, and reporting. Cache uploads have a 20-minute timeout; post-build checks have a 30-minute timeout. Upload jobs install rclone when the repository variable `MATHLIB_CACHE_UPLOAD_TOOL` is `rclone`. |
 
 ## Pull requests
 
