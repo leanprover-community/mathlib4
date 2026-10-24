@@ -763,36 +763,28 @@ abbrev NormedSpace.ofCore {𝕜 : Type*} {E : Type*} [NormedField 𝕜] [Seminor
 
 end Core
 
-variable {G H : Type*} [SeminormedAddCommGroup G] [SeminormedAddCommGroup H] [NormedSpace ℝ H]
-  {s : Set G}
+variable {G H : Type*} [AddGroup G] [TopologicalSpace G] [IsTopologicalAddGroup G]
+  [SeminormedAddCommGroup H] [NormedSpace ℝ H] {s : Set G}
 
-/-- A group homomorphism from a normed group to a real normed space,
+/-- A group homomorphism from a topological group to a real normed space,
 bounded on a neighborhood of `0`, must be continuous. -/
 lemma AddMonoidHom.continuous_of_isBounded_nhds_zero (f : G →+ H) (hs : s ∈ 𝓝 (0 : G))
     (hbounded : IsBounded (f '' s)) : Continuous f := by
-  obtain ⟨δ, hδ, hUε⟩ := Metric.mem_nhds_iff.mp hs
-  obtain ⟨C, hC⟩ := (isBounded_iff_subset_ball 0).1 (hbounded.subset <| image_mono hUε)
-  refine continuous_of_continuousAt_zero _ (continuousAt_iff.2 fun ε (hε : _ < _) => ?_)
-  simp only [dist_zero_right, map_zero]
-  simp only [subset_def, mem_image, mem_ball, dist_zero_right, forall_exists_index, and_imp,
-    forall_apply_eq_imp_iff₂] at hC
-  have hC₀ : 0 < C := (norm_nonneg _).trans_lt <| hC 0 (by simpa)
+  obtain ⟨C, hC⟩ := isBounded_iff_forall_norm_le.1 hbounded
+  have hC₀ : 0 ≤ C := (norm_nonneg _).trans <| hC _ ⟨0, mem_of_mem_nhds hs, map_zero _⟩
+  refine continuous_of_continuousAt_zero _ ?_
+  rw [ContinuousAt, map_zero, Metric.nhds_basis_ball.tendsto_right_iff]
+  intro ε hε
   obtain ⟨n, hn⟩ := exists_nat_gt (C / ε)
-  have hnpos : 0 < (n : ℝ) := (div_pos hC₀ hε).trans hn
-  have hn₀ : n ≠ 0 := by rintro rfl; simp at hnpos
-  refine ⟨δ / n, div_pos hδ hnpos, fun {x} hxδ => ?_⟩
+  have hn₀ : 0 < n := mod_cast (div_nonneg hC₀ hε.le).trans_lt hn
+  have : ∀ᶠ x in 𝓝 0, n • x ∈ s := (continuous_nsmul n).tendsto 0 <| by simpa
+  filter_upwards [this] with x hx
+  rw [mem_ball_zero_iff]
   calc
     ‖f x‖
-    _ = ‖(n : ℝ)⁻¹ • f (n • x)‖ := by simp [← Nat.cast_smul_eq_nsmul ℝ, hn₀]
-    _ ≤ ‖(n : ℝ)⁻¹‖ * ‖f (n • x)‖ := norm_smul_le ..
-    _ < ‖(n : ℝ)⁻¹‖ * C := by
-      gcongr
-      · simpa [pos_iff_ne_zero]
-      · refine hC _ <| norm_nsmul_le.trans_lt ?_
-        simpa only [norm_mul, Real.norm_natCast, lt_div_iff₀ hnpos, mul_comm] using hxδ
-    _ = (n : ℝ)⁻¹ * C := by simp
-    _ < (C / ε : ℝ)⁻¹ * C := by gcongr
-    _ = ε := by simp [hC₀.ne']
+    _ = ‖(n : ℝ)⁻¹ • f (n • x)‖ := by simp [← Nat.cast_smul_eq_nsmul ℝ, hn₀.ne']
+    _ ≤ (n : ℝ)⁻¹ * C := by grw [norm_smul, norm_inv, Real.norm_natCast, hC _ ⟨_, hx, rfl⟩]
+    _ < ε := by field_simp at *; linarith
 
 attribute [local instance] IsUnital.toSeminormedRing in
 /-- A unital non-unital normed algebra is a normed algebra.
