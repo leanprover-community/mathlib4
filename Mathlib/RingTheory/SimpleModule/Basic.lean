@@ -516,6 +516,18 @@ theorem linearEquiv_of_ne_zero [IsSemisimpleModule R M] [IsSimpleModule R N]
     exists_ne_zero_of_sSup_eq_top h _ (IsSemisimpleModule.sSup_simples_eq_top ..)
   ⟨m, ⟨.symm <| .ofBijective _ ((bijective_or_eq_zero _).resolve_right ne)⟩⟩
 
+theorem _root_.IsSimpleModule.nonempty_linearEquiv_iff_exists_ne_zero [IsSimpleModule R M]
+    [IsSimpleModule R N] : Nonempty (M ≃ₗ[R] N) ↔ ∃ f : M →ₗ[R] N, f ≠ 0 := by
+  refine ⟨fun ⟨h⟩ => ⟨h, ?_⟩, fun ⟨f, hf⟩ => ?_⟩
+  · have : Nontrivial M := IsSimpleModule.nontrivial R M
+    exact LinearMap.ne_zero_of_injective h.injective
+  exact ⟨LinearEquiv.ofBijective _ (bijective_of_ne_zero hf)⟩
+
+theorem _root_.IsSimpleModule.isEmpty_linearEquiv_iff_subsingleton [IsSimpleModule R M]
+    [IsSimpleModule R N] : IsEmpty (M ≃ₗ[R] N) ↔ Subsingleton (M →ₗ[R] N) := by
+  rw [subsingleton_iff_forall_eq 0, ← not_iff_not, not_isEmpty_iff, not_forall,
+    IsSimpleModule.nonempty_linearEquiv_iff_exists_ne_zero]
+
 /-- Schur's Lemma makes the endomorphism ring of a simple module a division ring. -/
 noncomputable instance _root_.Module.End.instDivisionRing
     [DecidableEq (Module.End R M)] [IsSimpleModule R M] : DivisionRing (Module.End R M) where
