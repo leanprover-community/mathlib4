@@ -100,8 +100,10 @@ lemma infinite_of_forall_exists_gt (h : ∀ a, ∃ b ∈ s, a < b) : s.Infinite 
     (strictMono_nat_of_lt_succ fun n => (h _).choose_spec.2).injective hf
 
 @[to_dual existing infinite_of_forall_exists_gt]
-lemma infinite_of_forall_exists_lt (h : ∀ a, ∃ b ∈ s, b < a) : s.Infinite :=
-  infinite_of_forall_exists_gt (α := αᵒᵈ) h
+lemma infinite_of_forall_exists_lt (h : ∀ a, ∃ b ∈ s, b < a) : s.Infinite := by
+  replace h (a : αᵒᵈ) : ∃ b ∈ OrderDual.toDual '' s, a < b := by
+    simpa [OrderDual.lt_toDual] using h (OrderDual.ofDual a)
+  exact (infinite_of_forall_exists_gt h).of_image _
 
 end Preorder
 
