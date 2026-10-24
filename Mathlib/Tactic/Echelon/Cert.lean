@@ -47,6 +47,11 @@ open Lean Meta Qq Mathlib.Tactic.Matrix
 
 namespace Mathlib.Tactic.Echelon
 
+/-- The certifier that leaves each fact to the kernel's `decide`. -/
+def decideCertifier {u : Level} (α : Q(Type u)) : EntryCertifier α where
+  eq a b := mkDecideProofQ q($a = $b)
+  neZero _zα a := mkDecideProofQ q($a ≠ 0)
+
 /-- Construct the list-based `IsLowerTriangularDiagList k c rows` cert. -/
 def certifyLowerTriangularDiagList {u : Level} {α : Q(Type u)} (certifier : EntryCertifier α)
     (zα : Q(Zero $α)) (k c : Nat) (kQ cQ : Q(Nat)) (rows : Q(List (List $α))) :
@@ -146,7 +151,7 @@ def certifyDecomposition {u : Level} {m n : Nat} {α : Q(Type u)}
   let U := ListMatrixLit.ofArray zα m n data.U
   let Um := U.matrix
   have hperm : Q(($A).submatrix $σ id = $Aσm) := certifyPermEq A Aσm σ
-  let hprod : Q($Lm * $Aσm = $Um) ← certifyProductEq certifier? cα mulEq U
+  let hprod : Q($Lm * $Aσm = $Um) ← certifyProductEq (certifier?.map (·.eq)) cα mulEq U
   let hU : Q($Lm * ($A).submatrix $σ id = $Um) := q($hperm ▸ $hprod)
   let certifier := certifier?.getD (decideCertifier α)
   let hpivot : Q(($Um).IsPivotedBy $pivot) ← certifyPivotedBy certifier zα U cols pivots
