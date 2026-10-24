@@ -96,8 +96,7 @@ lemma finite_of_free_aux (I) [DecidableEq I] (b : Basis I R S)
     simp only [TensorProduct.tmul_mul_tmul, one_mul, mul_comm x (b _),
       ← show ∀ i, Finsupp.linearCombination _ b (a i) = b i * x from
           fun _ ↦ b.linearCombination_repr _]
-  conv_lhs => simp only [Finsupp.linearCombination, Finsupp.coe_lsum,
-    LinearMap.coe_smulRight, LinearMap.id_coe, id_eq, Finsupp.sum, TensorProduct.tmul_sum,
+  conv_lhs => simp only [Finsupp.linearCombination_apply, Finsupp.sum, TensorProduct.tmul_sum,
     ← TensorProduct.smul_tmul]
   have h₁ : ∀ k,
     (Finsupp.sum (Finsupp.sum f fun i y ↦ a i k • b.repr y) fun j z ↦ z • b j ⊗ₜ[R] b k) =
