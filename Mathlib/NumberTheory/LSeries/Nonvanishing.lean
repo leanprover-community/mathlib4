@@ -427,8 +427,8 @@ lemma _root_.riemannZeta_ne_zero_of_one_le_re ⦃s : ℂ⦄ (hs : 1 ≤ s.re) :
 except when `χ` is trivial and `s = 1`. -/
 theorem completedLFunction_ne_zero_of_one_le_re ⦃s : ℂ⦄ (hχs : χ ≠ 1 ∨ s ≠ 1)
     (hs : 1 ≤ s.re) : completedLFunction χ s ≠ 0 :=
-  fun _ ↦ LFunction_ne_zero_of_one_le_re χ hχs hs (by grind [zero_re,
-    LFunction_eq_completed_div_gammaFactor])
+  fun _ ↦ LFunction_ne_zero_of_one_le_re χ hχs hs
+    (by grind [zero_re, LFunction_eq_completed_div_gammaFactor])
 
 variable {χ}
 
