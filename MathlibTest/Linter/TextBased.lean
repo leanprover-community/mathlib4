@@ -16,6 +16,8 @@ import all MathlibTest.AModuleWithAVeryLongModuleNameToTestTheLineLengthLinterXX
 /-! Tests for the `setOption` linter -/
 section setOption
 set_option linter.style.setOption true
+-- These tests intentionally include `set_option ... in section`.
+set_option linter.style.inSection false
 
 -- All types of options are supported: Boolean, numeric and string-valued.
 -- On the top level, i.e. as commands.
