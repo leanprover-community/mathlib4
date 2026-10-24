@@ -381,7 +381,28 @@ theorem iSup_eq_range_dfinsupp_lsum (p : ι → Submodule R N) :
 `DFinsupp.sumAddHom` composed with `DFinsupp.filter_add_monoid_hom`; that is, every element in the
 bounded `iSup` can be produced from taking a finite number of non-zero elements from the `S i` that
 satisfy `p i`, coercing them to `γ`, and summing them. -/
-theorem biSup_eq_range_dfinsupp_lsum (p : ι → Prop) [DecidablePred p] (S : ι → Submodule R N) :
+theorem biSup_eq_range_dfinsupp_lsum (R' : Type*) [Semiring R'] [Module R' N]
+    [SMulCommClass R R' N] (p : ι → Prop) [DecidablePred p] (S : ι → Submodule R N) :
+    ⨆ (i) (_ : p i), S i =
+      LinearMap.range (LinearMap.comp
+        (DFinsupp.lsum R' (fun i => (S i).subtype))
+          (DFinsupp.filterLinearMap R _ p)) := by
+  apply le_antisymm
+  · refine iSup₂_le fun i hi y hy => ⟨DFinsupp.single i ⟨y, hy⟩, ?_⟩
+    rw [LinearMap.comp_apply, filterLinearMap_apply, filter_single_pos _ _ hi]
+    simp only [lsum_apply_apply, sumAddHom_single, LinearMap.toAddMonoidHom_coe, coe_subtype]
+  · rintro x ⟨v, rfl⟩
+    refine dfinsuppSumAddHom_mem _ _ _ fun i _ => ?_
+    refine mem_iSup_of_mem i ?_
+    by_cases hp : p i
+    · simp [hp]
+    · simp [hp]
+
+/-- The bounded supremum of a family of commutative additive submonoids is equal to the range of
+`DFinsupp.sumAddHom` composed with `DFinsupp.filter_add_monoid_hom`; that is, every element in the
+bounded `iSup` can be produced from taking a finite number of non-zero elements from the `S i` that
+satisfy `p i`, coercing them to `γ`, and summing them. -/
+theorem biSup_eq_range_dfinsupp_lsum' (p : ι → Prop) [DecidablePred p] (S : ι → Submodule R N) :
     ⨆ (i) (_ : p i), S i =
       LinearMap.range
         (LinearMap.comp
@@ -397,6 +418,8 @@ theorem biSup_eq_range_dfinsupp_lsum (p : ι → Prop) [DecidablePred p] (S : ι
     by_cases hp : p i
     · simp [hp]
     · simp [hp]
+
+
 
 /-- A characterisation of the span of a family of submodules.
 
@@ -415,12 +438,13 @@ theorem mem_iSup_iff_exists_dfinsupp' (p : ι → Submodule R N) [∀ (i) (x : p
   simp_rw [DFinsupp.lsum_apply_apply, DFinsupp.sumAddHom_apply,
     LinearMap.toAddMonoidHom_coe, coe_subtype]
 
-theorem mem_biSup_iff_exists_dfinsupp (p : ι → Prop) [DecidablePred p] (S : ι → Submodule R N)
+theorem mem_biSup_iff_exists_dfinsupp (R' : Type*) [Semiring R'] [Module R' N]
+    [SMulCommClass R R' N] (p : ι → Prop) [DecidablePred p] (S : ι → Submodule R N)
     (x : N) :
     (x ∈ ⨆ (i) (_ : p i), S i) ↔
       ∃ f : Π₀ i, S i,
-        DFinsupp.lsum ℕ (fun i => (S i).subtype) (f.filter p) = x :=
-  SetLike.ext_iff.mp (biSup_eq_range_dfinsupp_lsum p S) x
+        DFinsupp.lsum R' (fun i => (S i).subtype) (f.filter p) = x :=
+  SetLike.ext_iff.mp (biSup_eq_range_dfinsupp_lsum R' p S) x
 
 end DecidableEq
 
@@ -487,7 +511,7 @@ theorem iSupIndep_iff_forall_dfinsupp (p : ι → Submodule R N) :
       ∀ (i) (x : p i) (v : Π₀ i : ι, ↥(p i)),
         lsum ℕ (fun i => (p i).subtype) (erase i v) = x → x = 0 := by
   simp_rw [iSupIndep_def, Submodule.disjoint_def,
-    Submodule.mem_biSup_iff_exists_dfinsupp, exists_imp, filter_ne_eq_erase]
+    Submodule.mem_biSup_iff_exists_dfinsupp ℕ, exists_imp, filter_ne_eq_erase]
   refine forall_congr' fun i => Subtype.forall'.trans ?_
   simp_rw [Submodule.coe_eq_zero]
 
