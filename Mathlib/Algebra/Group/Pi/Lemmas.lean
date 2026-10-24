@@ -103,11 +103,11 @@ def Pi.evalMulHom (i : I) : (∀ i, f i) →ₙ* f i where
 
 /-- A family of MulHom's `f i : M i →ₙ* N i` defines a MulHom
 `MulHom.piMap f : (Π i, M i) →ₙ* (Π i, N i)`
-given by `MulHom.piMap f x i = f i x`. This is `Pi.map` for `MulHom`s. -/
+given by `MulHom.piMap f x i = f i x`. This is `Function.map` for `MulHom`s. -/
 @[to_additive (attr := simps!)
   /-- A family of AddHom's `f i : M i →ₙ+ N i` defines an AddHom
   `AddHom.piMap f : (Π i, M i) →ₙ+ (Π i, N i)`
-  given by `AddHom.piMap f x i = f i x`. This is `Pi.map` for `AddHom`s. -/]
+  given by `AddHom.piMap f x i = f i x`. This is `Function.map` for `AddHom`s. -/]
 def MulHom.piMap [Π i, Mul (M i)] [Π i, Mul (N i)] (g : Π i, M i →ₙ* N i) :
     (Π i, M i) →ₙ* (Π i, N i) :=
   .pi fun i ↦ (g i).comp (Pi.evalMulHom M i)
@@ -191,11 +191,11 @@ lemma Pi.coe_evalMonoidHom (i : I) : ⇑(evalMonoidHom f i) = Function.eval i :=
 
 /-- A family of monoid homomorphisms `f i : M i →* N i` defines a monoid homomorphism
 `MonoidHom.piMap f : (Π i, M i) →* (Π i, N i)`
-given by `MonoidHom.piMap f x i = f i x`. This is `Pi.map` for `MonoidHom`s. -/
+given by `MonoidHom.piMap f x i = f i x`. This is `Function.map` for `MonoidHom`s. -/
 @[to_additive (attr := simps!)
   /-- A family of additive monoid homomorphisms `f i : M i →+ N i` defines an additive monoid
   homomorphism  `AddMonoidHom.piMap f : (Π i, M i) →+ (Π i, N i)`
-  given by `AddMonoidHom.piMap f x i = f i x`. This is `Pi.map` for `AddMonoidHom`s. -/]
+  given by `AddMonoidHom.piMap f x i = f i x`. This is `Function.map` for `AddMonoidHom`s. -/]
 def MonoidHom.piMap [Π i, MulOneClass (M i)] [Π i, MulOneClass (N i)] (g : Π i, M i →* N i) :
     (Π i, M i) →* (Π i, N i) :=
   .pi fun i ↦ (g i).comp (Pi.evalMonoidHom M i)
