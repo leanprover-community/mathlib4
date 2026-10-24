@@ -109,6 +109,7 @@ variable {Ω : Type*} [MeasurableSpace Ω]
 def Measure.toProbabilityMeasure (μ : Measure Ω) [IsProbabilityMeasure μ] :
     ProbabilityMeasure Ω := ⟨μ, inferInstance⟩
 
+@[simp]
 theorem Measure.toProbabilityMeasure_inj (μ ν : Measure Ω)
     [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] :
     μ.toProbabilityMeasure = ν.toProbabilityMeasure ↔ μ = ν :=
@@ -627,6 +628,10 @@ namespace ProbabilityMeasure
 noncomputable def map (ν : ProbabilityMeasure Ω) (f : Ω → Ω') :
     ProbabilityMeasure Ω' :=
   ⟨(ν : Measure Ω).map f, inferInstance⟩
+
+@[simp]
+lemma toProbabilityMeasure_map {ν : Measure Ω} [IsProbabilityMeasure ν] {f : Ω → Ω'} :
+    (ν.map f).toProbabilityMeasure = ν.toProbabilityMeasure.map f := rfl
 
 @[simp] lemma toMeasure_map (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} :
     (ν.map f).toMeasure = ν.toMeasure.map f := rfl
