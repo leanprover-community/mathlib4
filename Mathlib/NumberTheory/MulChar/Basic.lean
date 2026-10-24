@@ -220,6 +220,15 @@ theorem apply_eq_zero_iff [Nontrivial R'] {χ : MulChar R R'} {a : R} :
     χ a = 0 ↔ ¬ IsUnit a := by
   simpa using χ.apply_ne_zero_iff.not
 
+/-- We can define a MulChar as a composition of a MulChar and a local homomorphism. -/
+@[simps]
+def compMonoidHom {S F : Type*} [CommMonoid S] [FunLike F S R] [MonoidHomClass F S R]
+    (χ : MulChar R R') (f : F) [IsLocalHom f] : MulChar S R' where
+  toFun m' := χ (f m')
+  map_one' := by simp
+  map_mul' := by simp
+  map_nonunit' m' hm' := map_nonunit χ (isUnit_map_iff f m' |>.not.mpr hm')
+
 /-!
 ### Commutative group structure on multiplicative characters
 
