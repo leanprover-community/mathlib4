@@ -22,8 +22,6 @@ lattice factors through it.
 
 ## Todo
 
-- Build the order isomorphism `DedekindCut ℚ ≃o EReal`.
-
 - Make the `to_dual` tactic work so that some lemmas are created automatically, eg
   `DedekindCut.le_principal_iff` from `DedekindCut.principal_le_iff`.
   See [https://github.com/leanprover-community/mathlib4/pull/37939#discussion_r3328958630]
@@ -66,6 +64,9 @@ abbrev left (A : DedekindCut α) : Set α := A.extent
 /-- The right set of a Dedekind cut. This is an alias for `Concept.intent`. -/
 @[to_dual existing]
 abbrev right (A : DedekindCut α) : Set α := A.intent
+
+@[simp] theorem left_mk (l r : Set α) (hl hr) : left (mk l r hl hr) = l := rfl
+@[simp] theorem right_mk (l r : Set α) (hl hr) : right (mk l r hl hr) = r := rfl
 
 /-- See `DedekindCut.ext'` for a version using the right set instead. -/
 @[ext] theorem ext {A B : DedekindCut α} (h : A.left = B.left) : A = B := Concept.ext h
