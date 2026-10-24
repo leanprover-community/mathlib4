@@ -29,9 +29,11 @@ open Nat
 
 namespace Fintype
 
+/-- A type with exactly one element embeds into `β` in exactly `Fintype.card β` ways. This is the
+`Unique α` case of `Fintype.card_embedding_eq`, with `(Fintype.card β).descFactorial 1` already
+evaluated to `Fintype.card β`. -/
 theorem card_embedding_eq_of_unique {α β : Type*} [Unique α] [Fintype β] [Fintype (α ↪ β)] :
-    ‖α ↪ β‖ = ‖β‖ :=
-  card_congr Equiv.uniqueEmbeddingEquivResult
+    ‖α ↪ β‖ = ‖β‖ := card_congr Embedding.oneEmbeddingEquiv
 
 -- Establishes the cardinality of the type of all injections between two finite types.
 -- Porting note: `induction α using Fintype.induction_empty_option` can't work with the `Fintype α`
