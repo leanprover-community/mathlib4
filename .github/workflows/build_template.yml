@@ -1134,11 +1134,14 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: leanprover-community/lint-style-action@a52329f904d58af9f3e1fc6ef3b986e8f753cc54 # mathlib4-compat
+      - uses: leanprover-community/lint-style-action@67c4795bbf3f87605e3f6d1ea8058502140a2d91 # mathlib4-compat
         with:
           mode: check
           lint-bib-file: true
           ref: ${{ inputs.pr_branch_ref }}
+          # `build_fork.yml` runs this job on `pull_request_target` for fork PRs.
+          # `actions/checkout` refuses that checkout unless the caller opts in.
+          allow-unsafe-pr-checkout: true
 
   final:
     name: Post-CI job
