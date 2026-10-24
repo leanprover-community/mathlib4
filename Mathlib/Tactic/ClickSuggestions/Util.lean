@@ -51,37 +51,6 @@ def constToHtml (n : Name) : MetaM ProofWidgets.Html := do
   }
   return jsx%{<InteractiveCode fmt={← tagCodeInfos ctx infos tt}/>}
 
-/-- Display `fmt` with a docstring as if it is the constant `n`. -/
-def formatToHtmlWithDoc (fmt : Format) (n : Name) : MetaM ProofWidgets.Html := do
-  let tag := 0
-  -- Hack: use `.ofCommandInfo` instead of `.ofTacticInfo` to avoid printing `n` and its type.
-  -- Unfortunately, there is still a loose dangling ` : `.
-  let infos := .insert ∅ tag <| .ofCommandInfo
-    { elaborator := `ClickSuggestions, stx := .node .none n #[] }
-  let tt := TaggedText.prettyTagged <| .tag tag fmt
-  let ctx := {
-    env           := (← getEnv)
-    mctx          := (← getMCtx)
-    options       := (← getOptions)
-    currNamespace := (← getCurrNamespace)
-    openDecls     := (← getOpenDecls)
-    fileMap       := default
-    ngen          := (← getNGen)
-  }
-  -- TODO: I would love to print this using the same keyword colour used by the editor,
-  -- but I don't think this is possible. Additionally, `InteractiveCode` already overwrites the
-  -- colour and style of the text (namely the expression style)
-  return jsx%{<InteractiveCode fmt={← tagCodeInfos ctx infos tt} />}
-
-
-/-- Pretty print a tactic with its docstring as hover info.
-
-I would love to print `tac` with another colour, e.g. the keyword highlighting used by the editor,
-but I have no idea how to do this.
--/
-def tacticToHtml (tac : TSyntax `tactic) : MetaM ProofWidgets.Html := do
-  formatToHtmlWithDoc (← PrettyPrinter.ppTactic tac) tac.1.getKind
-
 end
 
 /-- Let `#click_suggestions` show the candidate lemmas that failed to apply. -/
@@ -238,37 +207,31 @@ where
 section Meta
 
 /-- Determine whether the explicit parts of two expressions are equal,
-and the implicit parts are definitionally equal, up to `reducible_and_instances` transparency.
+and the implicit parts are definitionally equal, up to `implicit` transparency.
 This says whether two expressions are 'morally equal', and is used for deduplicating suggestions. -/
 partial def isExplicitEq (t s : Expr) : MetaM Bool := do
   let t := t.cleanupAnnotations; let s := s.cleanupAnnotations
   if t == s then
     return true
-  unless t.getAppNumArgs == s.getAppNumArgs && t.getAppFn == s.getAppFn do
+  -- Unify lambdas and foralls
+  if t.isLambda && s.isLambda || t.isForall && s.isForall then
+    unless ← withNewMCtxDepth <| withImplicit <| isDefEq t.bindingDomain! s.bindingDomain! do
+      return false
+    return ← withLocalDeclD `_ t.bindingDomain! fun x ↦
+      isExplicitEq (t.bindingBody!.instantiate1 x) (s.bindingBody!.instantiate1 x)
+  -- Unify applications of the same head function.
+  unless t.isApp && t.getAppNumArgs == s.getAppNumArgs do
+    return false
+  unless ← isExplicitEq t.getAppFn s.getAppFn do
     return false
   let tArgs := t.getAppArgs
   let sArgs := s.getAppArgs
-  -- TODO: let's just use `getFunInfo`.
-  let bis ← getBinderInfos t.getAppFn tArgs
-  t.getAppNumArgs.allM fun i _ =>
-    if bis[i]!.isExplicit then
+  let info ← getFunInfoNArgs t.getAppFn t.getAppNumArgs
+  t.getAppNumArgs.allM fun i _ => do
+    if info.paramInfo[i]!.isExplicit then
       isExplicitEq tArgs[i]! sArgs[i]!
     else
-      withNewMCtxDepth <| withReducibleAndInstances <| isDefEq tArgs[i]! sArgs[i]!
-where
-  /-- Get the `BinderInfo`s for the arguments of `mkAppN fn args`. -/
-  getBinderInfos (fn : Expr) (args : Array Expr) : MetaM (Array BinderInfo) := do
-    let mut fnType ← inferType fn
-    let mut result := Array.mkEmpty args.size
-    let mut j := 0
-    for i in [:args.size] do
-      unless fnType.isForall do
-        fnType ← whnfD (fnType.instantiateRevRange j i args)
-        j := i
-      let .forallE _ _ b bi := fnType | throwError m! "expected function type {indentExpr fnType}"
-      fnType := b
-      result := result.push bi
-    return result
+      withNewMCtxDepth <| withImplicit <| isDefEq tArgs[i]! sArgs[i]!
 
 end Meta
 
@@ -384,6 +347,27 @@ def addSolvingSuggestion (tac : TSyntax `tactic) : ClickSuggestionsM Unit := do
     </summary>
     {.element "div" #[] (← get).solvedSuggestions}
     </details>}
+
+/-- Make a list of suggestions by running `k` in a separate thread,
+letting it add them one by one. -/
+def mkIncrementalSuggestions (title : String)
+    (k : (ProofWidgets.Html → ClickSuggestionsM Unit) → ClickSuggestionsM Unit) :
+    ClickSuggestionsM ProofWidgets.Html :=
+  mkRefreshComponentM (.text "") fun token ↦ trackingComputation title do
+    let htmls ← IO.mkRef #[]
+    k fun html ↦ do
+      markProgress
+      htmls.modify (·.push html)
+      token.update jsx%{<details open={true}>
+          <summary className="mv2 pointer">{.text title}⏳️</summary>
+          {.element "div" #[] (← htmls.get)}
+        </details>}
+    let htmls ← htmls.get
+    unless htmls.isEmpty do
+      token.update jsx%{<details open={true}>
+          <summary className="mv2 pointer">{.text title}</summary>
+          {.element "div" #[] htmls}
+        </details>}
 
 end Widget
 
