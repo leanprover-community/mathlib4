@@ -602,16 +602,12 @@ theorem sumAssoc_symm_apply_inr_inr : (sumAssoc α β γ).symm (inr (inr c)) = i
   rfl
 
 /-- `orderDual` is distributive over `⊕` up to an order isomorphism. -/
-def sumDualDistrib (α β : Type*) [LE α] [LE β] : (α ⊕ β)ᵒᵈ ≃o αᵒᵈ ⊕ βᵒᵈ :=
-  { Equiv.refl _ with
-    map_rel_iff' := by
-      rintro (a | a) (b | b)
-      · change inl (toDual a) ≤ inl (toDual b) ↔ toDual (inl a) ≤ toDual (inl b)
-        simp [toDual_le_toDual, inl_le_inl_iff]
-      · exact iff_of_false (@not_inl_le_inr (OrderDual β) (OrderDual α) _ _ _ _) not_inr_le_inl
-      · exact iff_of_false (@not_inr_le_inl (OrderDual α) (OrderDual β) _ _ _ _) not_inl_le_inr
-      · change inr (toDual a) ≤ inr (toDual b) ↔ toDual (inr a) ≤ toDual (inr b)
-        simp [toDual_le_toDual, inr_le_inr_iff] }
+def sumDualDistrib (α β : Type*) [LE α] [LE β] : (α ⊕ β)ᵒᵈ ≃o αᵒᵈ ⊕ βᵒᵈ where
+  toFun s := (ofDual s).map toDual toDual
+  invFun s := toDual (s.map ofDual ofDual)
+  left_inv s := by simp
+  right_inv s := by simp
+  map_rel_iff' := by simp
 
 @[simp]
 theorem sumDualDistrib_inl : sumDualDistrib α β (toDual (inl a)) = inl (toDual a) :=
@@ -698,22 +694,13 @@ theorem sumLexAssoc_symm_apply_inr_inr : (sumLexAssoc α β γ).symm (inr (inr c
   rfl
 
 /-- `OrderDual` is antidistributive over `⊕ₗ` up to an order isomorphism. -/
-def sumLexDualAntidistrib (α β : Type*) [LE α] [LE β] : (α ⊕ₗ β)ᵒᵈ ≃o βᵒᵈ ⊕ₗ αᵒᵈ :=
-  { Equiv.sumComm α β with
-    map_rel_iff' := fun {a b} => by
-      rcases a with (a | a) <;> rcases b with (b | b)
-      · change
-          toLex (inr <| toDual a) ≤ toLex (inr <| toDual b) ↔
-            toDual (toLex <| inl a) ≤ toDual (toLex <| inl b)
-        simp [toDual_le_toDual]
-      · exact iff_of_false (@Lex.not_inr_le_inl (OrderDual β) (OrderDual α) _ _ _ _)
-          Lex.not_inr_le_inl
-      · exact iff_of_true (@Lex.inl_le_inr (OrderDual β) (OrderDual α) _ _ _ _)
-          (Lex.inl_le_inr _ _)
-      · change
-          toLex (inl <| toDual a) ≤ toLex (inl <| toDual b) ↔
-            toDual (toLex <| inr a) ≤ toDual (toLex <| inr b)
-        simp [toDual_le_toDual] }
+def sumLexDualAntidistrib (α β : Type*) [LE α] [LE β] : (α ⊕ₗ β)ᵒᵈ ≃o βᵒᵈ ⊕ₗ αᵒᵈ where
+  toFun s := (ofDual s).swap.map toDual toDual
+  invFun s := toDual (s.map ofDual ofDual).swap
+  left_inv s := by unfold _root_.Lex at s; simp [_root_.Lex]
+  right_inv s := by unfold _root_.Lex at s; simp [_root_.Lex]
+  map_rel_iff' {a b} := by
+    sorry
 
 @[simp]
 theorem sumLexDualAntidistrib_inl :

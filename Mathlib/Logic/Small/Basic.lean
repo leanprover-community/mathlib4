@@ -77,6 +77,6 @@ instance small_quotient {α : Type u} [Small.{v} α] (s : Setoid α) : Small.{v}
   small_of_surjective Quotient.mk_surjective
 
 instance small_orderDual {α : Type*} [h : Small.{v} α] : Small.{v} αᵒᵈ where
-  equiv_small := by
-    obtain ⟨S, ⟨e⟩⟩ := h.equiv_small
-    exact ⟨S, ⟨Equiv.trans ⟨_, _, OrderDual.toDual_ofDual, OrderDual.ofDual_toDual⟩ e⟩⟩
+  equiv_small :=
+    let ⟨S, ⟨e⟩⟩ := h.equiv_small
+    ⟨S, ⟨OrderDual.equiv.symm.trans e⟩⟩

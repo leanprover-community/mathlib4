@@ -226,14 +226,18 @@ instance unique_of_wellFoundedLT [LinearOrder α] [WellFoundedLT α] : Unique (�
 instance subsingleton_of_wellFoundedGT [LinearOrder α] [WellFoundedGT α] [Preorder β] :
     Subsingleton (α ≃o β) := by
   refine ⟨fun f g ↦ ?_⟩
-  change f.dual.dual = g.dual.dual
-  rw [Subsingleton.elim f.dual]
+  have := Subsingleton.elim f.dual g.dual
+  simp only [OrderIso.dual, RelIso.mk.injEq, Equiv.mk.injEq] at this
+  ext a
+  simpa using congrFun this.1 (toDual a)
 
 instance subsingleton_of_wellFoundedGT' [LinearOrder β] [WellFoundedGT β] [Preorder α] :
     Subsingleton (α ≃o β) := by
   refine ⟨fun f g ↦ ?_⟩
-  change f.dual.dual = g.dual.dual
-  rw [Subsingleton.elim f.dual]
+  have := Subsingleton.elim f.dual g.dual
+  simp only [OrderIso.dual, RelIso.mk.injEq, Equiv.mk.injEq] at this
+  ext a
+  simpa using congrFun this.1 (toDual a)
 
 instance unique_of_wellFoundedGT [LinearOrder α] [WellFoundedGT α] : Unique (α ≃o α) := Unique.mk' _
 

@@ -47,14 +47,16 @@ section LinearOrderedCommGroup
 variable {α : Type*} [CommGroup α] [LinearOrder α] [IsOrderedMonoid α]
 
 @[to_additive min_neg_neg]
-theorem min_inv_inv' (a b : α) : min a⁻¹ b⁻¹ = (max a b)⁻¹ :=
-  Eq.symm <| (@Monotone.map_max α αᵒᵈ _ _ Inv.inv a b) fun _ _ =>
-    inv_le_inv_iff.mpr
+theorem min_inv_inv' (a b : α) : min a⁻¹ b⁻¹ = (max a b)⁻¹ := by
+  have := @Monotone.map_max _ _ _ _ (Inv.inv ∘ OrderDual.toDual) a b fun _ _ ↦ inv_le_inv_iff.mpr
+  rw [← toDual_inf, OrderDual.toDual_inj] at this
+  exact this.symm
 
 @[to_additive max_neg_neg]
-theorem max_inv_inv' (a b : α) : max a⁻¹ b⁻¹ = (min a b)⁻¹ :=
-  Eq.symm <| (@Monotone.map_min α αᵒᵈ _ _ Inv.inv a b) fun _ _ =>
-    inv_le_inv_iff.mpr
+theorem max_inv_inv' (a b : α) : max a⁻¹ b⁻¹ = (min a b)⁻¹ := by
+  have := @Monotone.map_min _ _ _ _ (Inv.inv ∘ OrderDual.toDual) a b fun _ _ ↦ inv_le_inv_iff.mpr
+  rw [← toDual_sup, OrderDual.toDual_inj] at this
+  exact this.symm
 
 @[to_additive min_sub_sub_right]
 theorem min_div_div_right' (a b c : α) : min (a / c) (b / c) = min a b / c := by

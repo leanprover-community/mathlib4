@@ -161,6 +161,12 @@ theorem lt_toDual [LT α] {a : αᵒᵈ} {b : α} : a < toDual b ↔ b < ofDual 
 @[deprecated (since := "2026-10-20")] alias toDual_trans_ofDual := toDual_comp_ofDual
 @[deprecated (since := "2026-10-20")] alias ofDual_trans_toDual := ofDual_comp_toDual
 
+/-- The natural equivalence between `α` and `αᵒᵈ`. -/
+@[simps]
+def equiv : α ≃ αᵒᵈ where
+  toFun := toDual
+  invFun := ofDual
+
 end OrderDual
 
 /-! ### `DenselyOrdered` for `OrderDual` -/

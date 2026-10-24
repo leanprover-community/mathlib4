@@ -292,10 +292,10 @@ instance Ordering.fintype : Fintype Ordering :=
   ⟨⟨{.lt, .eq, .gt}, by simp⟩, fun x => by cases x <;> simp⟩
 
 instance OrderDual.fintype (α : Type*) [Fintype α] : Fintype αᵒᵈ :=
-  ‹Fintype α›
+  sorry
 
 instance OrderDual.finite (α : Type*) [Finite α] : Finite αᵒᵈ :=
-  ‹Finite α›
+  sorry
 
 instance Lex.fintype (α : Type*) [Fintype α] : Fintype (Lex α) :=
   ‹Fintype α›

@@ -476,10 +476,9 @@ variable [LE α] [OrderTop α] [LE β] [OrderTop β] [LE γ] [OrderTop γ]
 /-- Reinterpret a top homomorphism as a bot homomorphism between the dual lattices. -/
 @[to_dual (attr := simps) /--
 Reinterpret a bot homomorphism as a top homomorphism between the dual lattices. -/]
-protected def dual :
-    TopHom α β ≃ BotHom αᵒᵈ βᵒᵈ where
-  toFun f := ⟨f, f.map_top'⟩
-  invFun f := ⟨f, f.map_bot'⟩
+protected def dual : TopHom α β ≃ BotHom αᵒᵈ βᵒᵈ where
+  toFun f := ⟨toDual ∘ f ∘ ofDual, by simp⟩
+  invFun f := ⟨ofDual ∘ f ∘ toDual, by simp⟩
 
 @[to_dual (attr := simp)]
 theorem dual_id : TopHom.dual (TopHom.id α) = BotHom.id _ :=
@@ -508,12 +507,10 @@ variable [Preorder α] [BoundedOrder α] [Preorder β] [BoundedOrder β] [Preord
 /-- Reinterpret a bounded order homomorphism as a bounded order homomorphism between the dual
 orders. -/
 @[simps]
-protected def dual :
-    BoundedOrderHom α β ≃
-      BoundedOrderHom αᵒᵈ
-        βᵒᵈ where
-  toFun f := ⟨f.toOrderHom.dual, f.map_bot', f.map_top'⟩
-  invFun f := ⟨OrderHom.dual.symm f.toOrderHom, f.map_bot', f.map_top'⟩
+protected def dual : BoundedOrderHom α β ≃ BoundedOrderHom αᵒᵈ βᵒᵈ where
+  toFun f := ⟨f.toOrderHom.dual, by simpa using f.map_bot', by simpa using f.map_top'⟩
+  invFun f := ⟨OrderHom.dual.symm f.toOrderHom, by simpa using f.map_bot',
+    by simpa using f.map_top'⟩
 
 @[simp]
 theorem dual_id : (BoundedOrderHom.id α).dual = BoundedOrderHom.id _ :=
