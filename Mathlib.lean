@@ -6209,6 +6209,7 @@ public import Mathlib.Order.Atoms
 public import Mathlib.Order.Atoms.Finite
 public import Mathlib.Order.Basic
 public import Mathlib.Order.Birkhoff
+public import Mathlib.Order.BitwiseOrder
 public import Mathlib.Order.BooleanAlgebra.Basic
 public import Mathlib.Order.BooleanAlgebra.Defs
 public import Mathlib.Order.BooleanAlgebra.Set
