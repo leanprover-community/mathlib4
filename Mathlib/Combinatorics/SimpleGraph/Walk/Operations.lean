@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Traversal
 
-import Mathlib.Data.List.Zip
-
 /-!
 # Operations on walks
 
@@ -358,12 +356,6 @@ theorem dropLast_support_concat (p : G.Walk u v) : p.support.dropLast ++ [v] = p
   cases p with | nil => rfl | cons h p
   have ⟨_, _, _, hp⟩ := p.exists_cons_eq_concat h
   simp [hp]
-
-lemma ext_support {u v} {p q : G.Walk u v} (h : p.support = q.support) : p = q := by
-  refine darts_injective (Dart.toProd_injective.list_map (List.rightInverse_unzip_zip.injective ?_))
-  have : Prod.fst ∘ Dart.toProd = fun d : G.Dart ↦ d.fst := rfl
-  have : Prod.snd ∘ Dart.toProd = fun d : G.Dart ↦ d.snd := rfl
-  grind [map_fst_darts, map_snd_darts]
 
 @[simp]
 theorem mem_tail_support_append_iff {t u v w : V} (p : G.Walk u v) (p' : G.Walk v w) :
@@ -865,9 +857,6 @@ lemma snd_dropLast_eq_snd {p : G.Walk u v} (h : p.length ≠ 1) : p.dropLast.snd
 lemma penultimate_tail_eq_penultimate {p : G.Walk u v} (h : p.length ≠ 1) :
     p.tail.penultimate = p.penultimate := by
   match p with | nil | cons _ (cons ..) => simp [penultimate]
-
-lemma support_injective {u v : V} : (support (G := G) (u := u) (v := v)).Injective :=
-  fun _ _ ↦ ext_support
 
 lemma ext_getVert_le_length {u v} {p q : G.Walk u v} (hl : p.length = q.length)
     (h : ∀ k ≤ p.length, p.getVert k = q.getVert k) :
