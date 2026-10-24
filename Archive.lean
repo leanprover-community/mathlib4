@@ -60,6 +60,7 @@ public import Archive.Imo.Imo2021Q1
 public import Archive.Imo.Imo2024Q1
 public import Archive.Imo.Imo2024Q2
 public import Archive.Imo.Imo2024Q3
+public import Archive.Imo.Imo2024Q4
 public import Archive.Imo.Imo2024Q5
 public import Archive.Imo.Imo2024Q6
 public import Archive.Imo.Imo2025Q3
