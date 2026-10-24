@@ -210,10 +210,9 @@ variable {k A V W : Type*} [Field k] [Ring A] [Algebra k A] {Φ : A →ₗ[k] k}
 
 namespace IsTraceRepresentative
 
-set_option linter.unusedVariables false
 /-- A scalar multiple of `f` which becomes idempotent if `f` is the trace representative of some
 simple `A`-module over an algebraically closed field `k`. -/
-def normalization {f : A} (hf : IsTraceRepresentative V Φ f) (a : A) :
+def normalization {f : A} (_hf : IsTraceRepresentative V Φ f) (a : A) :
     A := (Φ (f * (f * a)))⁻¹ • Φ (f * a) • f
 
 lemma normalization_def {a f : A} (hf : IsTraceRepresentative V Φ f) :
