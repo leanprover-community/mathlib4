@@ -46,6 +46,7 @@ def IsAtMostAlmostPrime (k n : ℕ) : Prop :=
   n ≠ 0 ∧ Ω n ≤ k
 
 /-- A semiprime is a `2`-almost-prime number. -/
+@[oeis A001358]
 abbrev IsSemiprime (n : ℕ) : Prop :=
   IsAlmostPrime 2 n
 
