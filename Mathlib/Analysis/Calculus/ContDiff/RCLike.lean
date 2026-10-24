@@ -58,25 +58,32 @@ theorem ContDiffAt.hasStrictDerivAt' {f : 𝕂 → F'} {f' : F'} {x : 𝕂} (hf 
 
 /-- If a function is `C^n` with `1 ≤ n` around a point, then the derivative of `f` at this point
 is also a strict derivative. -/
-theorem ContDiffAt.hasStrictFDerivAt {f : E' → F'} {x : E'} (hf : ContDiffAt 𝕂 n f x) (hn : n ≠ 0) :
+theorem ContDiffAt.hasStrictFDerivAt_fderiv
+    {f : E' → F'} {x : E'} (hf : ContDiffAt 𝕂 n f x) (hn : n ≠ 0) :
     HasStrictFDerivAt f (fderiv 𝕂 f x) x :=
   hf.hasStrictFDerivAt' (hf.differentiableAt hn).hasFDerivAt hn
 
 /-- If a function is `C^n` with `1 ≤ n` around a point, then the derivative of `f` at this point
 is also a strict derivative. -/
-theorem ContDiffAt.hasStrictDerivAt {f : 𝕂 → F'} {x : 𝕂} (hf : ContDiffAt 𝕂 n f x) (hn : n ≠ 0) :
+theorem ContDiffAt.hasStrictDerivAt_deriv
+    {f : 𝕂 → F'} {x : 𝕂} (hf : ContDiffAt 𝕂 n f x) (hn : n ≠ 0) :
     HasStrictDerivAt f (deriv f x) x :=
-  (hf.hasStrictFDerivAt hn).hasStrictDerivAt
+  (hf.hasStrictFDerivAt_fderiv hn).hasStrictDerivAt
+
+@[deprecated (since := "2026-10-13")] alias
+ContDiffAt.hasStrictFDerivAt := ContDiffAt.hasStrictFDerivAt_fderiv
+@[deprecated (since := "2026-10-13")] alias
+ContDiffAt.hasStrictDerivAt := ContDiffAt.hasStrictDerivAt_deriv
 
 /-- If a function is `C^n` with `1 ≤ n`, then the derivative of `f` is also a strict derivative. -/
 theorem ContDiff.hasStrictFDerivAt {f : E' → F'} {x : E'} (hf : ContDiff 𝕂 n f) (hn : n ≠ 0) :
     HasStrictFDerivAt f (fderiv 𝕂 f x) x :=
-  hf.contDiffAt.hasStrictFDerivAt hn
+  hf.contDiffAt.hasStrictFDerivAt_fderiv hn
 
 /-- If a function is `C^n` with `1 ≤ n`, then the derivative of `f` is also a strict derivative. -/
 theorem ContDiff.hasStrictDerivAt {f : 𝕂 → F'} {x : 𝕂} (hf : ContDiff 𝕂 n f) (hn : n ≠ 0) :
     HasStrictDerivAt f (deriv f x) x :=
-  hf.contDiffAt.hasStrictDerivAt hn
+  hf.contDiffAt.hasStrictDerivAt_deriv hn
 
 variable {E F : Type*}
     [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F] {f : E → F}
@@ -124,12 +131,12 @@ theorem ContDiffWithinAt.exists_lipschitzOnWith
 theorem ContDiffAt.exists_lipschitzOnWith_of_nnnorm_lt {f : E' → F'} {x : E'}
     (hf : ContDiffAt 𝕂 1 f x) (K : ℝ≥0) (hK : ‖fderiv 𝕂 f x‖₊ < K) :
     ∃ t ∈ 𝓝 x, LipschitzOnWith K f t :=
-  (hf.hasStrictFDerivAt one_ne_zero).exists_lipschitzOnWith_of_nnnorm_lt K hK
+  (hf.hasStrictFDerivAt_fderiv one_ne_zero).exists_lipschitzOnWith_of_nnnorm_lt K hK
 
 /-- If `f` is `C^1` at `x`, then `f` is Lipschitz in a neighborhood of `x`. -/
 theorem ContDiffAt.exists_lipschitzOnWith {f : E' → F'} {x : E'} (hf : ContDiffAt 𝕂 1 f x) :
     ∃ K, ∃ t ∈ 𝓝 x, LipschitzOnWith K f t :=
-  (hf.hasStrictFDerivAt one_ne_zero).exists_lipschitzOnWith
+  (hf.hasStrictFDerivAt_fderiv one_ne_zero).exists_lipschitzOnWith
 
 /-- If `f` is `C¹` on a convex set `s`, it is locally Lipschitz on `s`. -/
 lemma ContDiffOn.locallyLipschitzOn {f : E → F} {s : Set E} (hs : Convex ℝ s)
