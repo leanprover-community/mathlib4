@@ -6,6 +6,7 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Data.Set.Basic
+public import Mathlib.Tactic.GrindAttrs
 public import Mathlib.Tactic.Monotonicity.Attr
 public import Mathlib.Tactic.SetLike
 
@@ -231,6 +232,8 @@ export IsMemLE (le_iff_mem_imp_mem)
 
 @[gcongr low] -- lower priority than `Set.mem_of_subset_of_mem`
 alias ⟨mem_of_le_of_mem, _⟩ := le_iff_mem_imp_mem
+
+grind_pattern [membership] mem_of_le_of_mem => S ≤ T, x ∈ T
 
 instance (α : Type*) : IsMemLE (Set α) α where
   le_iff_mem_imp_mem := .rfl
