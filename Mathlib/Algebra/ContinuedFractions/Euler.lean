@@ -212,7 +212,7 @@ private theorem nums_euler_aux : (euler h ρ).nums (n + 1) - (euler h ρ).nums n
   have det := determinant (g := euler h ρ) (n := n)
   simp only [isEuler_euler, IsEuler.dens_eq_one, mul_one, one_mul] at det
   rw [← neg_sub, det, Finset.prod_range_succ', Finset.prod_range_succ']
-  simp only [partNum_euler_succ, partNum_euler_zero, mul_neg, neg_neg]
+  simp only [partNumsStream', partNum_euler_succ, partNum_euler_zero, mul_neg, neg_neg]
   congr; ext n'
   rcases ρ.get? (n' + 1) with _ | _ <;> simp
 
