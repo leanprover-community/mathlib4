@@ -177,7 +177,7 @@ set_option backward.defeqAttrib.useBackward true in
   counitIso := NatIso.ofComponents fromSkeletonToSkeletonIso
   functor_unitIso_comp _ := Iso.inv_hom_id _
 
-noncomputable instance toSkeletonFunctor.isEquivalence : (toSkeletonFunctor C).IsEquivalence :=
+instance toSkeletonFunctor.isEquivalence : (toSkeletonFunctor C).IsEquivalence :=
   inferInstanceAs (skeletonEquivalence C).inverse.IsEquivalence
 
 set_option backward.isDefEq.respectTransparency.types false in
