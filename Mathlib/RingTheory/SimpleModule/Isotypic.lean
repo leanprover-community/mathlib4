@@ -6,7 +6,7 @@ Authors: Junyan Xu
 module
 
 public import Mathlib.Algebra.Algebra.Pi
-public import Mathlib.Order.CompleteSublattice
+public import Mathlib.Order.CompleteSublattice.Basic
 public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
