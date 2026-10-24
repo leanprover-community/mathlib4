@@ -6,9 +6,8 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
+public import Mathlib.LinearAlgebra.FreeModule.PID
 public import Mathlib.LinearAlgebra.Trace
-
-import Mathlib.LinearAlgebra.FreeModule.PID
 
 /-!
 # Linear maps between direct sums
@@ -21,6 +20,26 @@ domain and codomain.
 public section
 
 open DirectSum Module Set
+
+namespace DirectSum
+
+variable {ι R M P : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+variable [AddCommMonoid P] [Module R P] [DecidableEq ι] {N : ι → Submodule R M}
+
+private lemma IsInternal.sum_comp_subtype_component (h : IsInternal N) (s : Finset ι)
+    (hs : ∀ i, i ∉ s → N i = ⊥) (f : M →ₗ[R] P) :
+    ∑ i ∈ s, (f ∘ₗ (N i).subtype) ∘ₗ (component R ι (fun i ↦ N i) i ∘ₗ
+      (LinearEquiv.ofBijective (coeLinearMap N) h).symm.toLinearMap) = f := by
+  apply (LinearMap.cancel_right (g := coeLinearMap N) h.surjective).mp
+  ext i x
+  simp only [LinearMap.comp_apply, LinearMap.sum_apply, LinearEquiv.coe_coe,
+    LinearEquiv.ofBijective_symm_apply_apply (coeLinearMap N) (h := h)]
+  by_cases hi : i ∈ s
+  · simp [component, DFinsupp.lapply, lof_eq_of, of_apply, apply_dite, hi]
+  · have hx : x = 0 := Subtype.ext (by simpa [hs i hi] using x.property)
+    simp [hx]
+
+end DirectSum
 
 namespace LinearMap
 
@@ -62,18 +81,23 @@ lemma diag_toMatrix_directSum_collectedBasis_eq_zero_of_mapsTo_ne
   · suffices f (b i k) = 0 by simp [this]
     simpa [hN _ hi] using hf i <| Subtype.mem (b i k)
 
-variable [∀ i, Module.Finite R (N i)] [∀ i, Module.Free R (N i)]
+section FiniteProjective
+
+variable [Module.Finite R M] [Module.Projective R M]
+variable [∀ i, Module.Finite R (N i)] [∀ i, Module.Projective R (N i)]
 
 /-- The trace of an endomorphism of a direct sum is the sum of the traces on each component.
 
-See also `LinearMap.trace_restrict_eq_sum_trace_restrict`. -/
+See also `LinearMap.trace_eq_sum_trace_restrict_of_eq_biSup`. -/
 lemma trace_eq_sum_trace_restrict (h : IsInternal N) [Fintype ι]
     {f : M →ₗ[R] M} (hf : ∀ i, MapsTo f (N i) (N i)) :
     trace R M f = ∑ i, trace R (N i) (f.restrict (hf i)) := by
-  let b : (i : ι) → Basis _ R (N i) := fun i ↦ Module.Free.chooseBasis R (N i)
-  simp_rw [trace_eq_matrix_trace R (h.collectedBasis b),
-    toMatrix_directSum_collectedBasis_eq_blockDiagonal' h h b b hf, Matrix.trace_blockDiagonal',
-    ← trace_eq_matrix_trace]
+  rw [← congrArg (trace R M) (h.sum_comp_subtype_component Finset.univ (by simp) f), map_sum]
+  apply Finset.sum_congr rfl
+  intro i _
+  rw [trace_comp_comm']
+  exact congrArg (trace R (N i))
+    (LinearMap.ext fun x ↦ h.ofBijective_coeLinearMap_of_mem (hf i x.property))
 
 lemma trace_eq_sum_trace_restrict' (h : IsInternal N) (hN : {i | N i ≠ ⊥}.Finite)
     {f : M →ₗ[R] M} (hf : ∀ i, MapsTo f (N i) (N i)) :
@@ -87,16 +111,17 @@ lemma trace_eq_zero_of_mapsTo_ne (h : IsInternal N) [IsNoetherian R M]
     (σ : ι → ι) (hσ : ∀ i, σ i ≠ i) {f : Module.End R M}
     (hf : ∀ i, MapsTo f (N i) (N <| σ i)) :
     trace R M f = 0 := by
-  have hN : {i | N i ≠ ⊥}.Finite := WellFoundedGT.finite_ne_bot_of_iSupIndep
-    h.submodule_iSupIndep
-  let s := hN.toFinset
-  let κ := fun i ↦ Module.Free.ChooseBasisIndex R (N i)
-  let b : (i : s) → Basis (κ i) R (N i) := fun i ↦ Module.Free.chooseBasis R (N i)
-  replace h : IsInternal fun i : s ↦ N i := by
-    convert! DirectSum.isInternal_ne_bot_iff.mpr h <;> simp [s]
-  simp_rw [trace_eq_matrix_trace R (h.collectedBasis b), Matrix.trace,
-    diag_toMatrix_directSum_collectedBasis_eq_zero_of_mapsTo_ne h b σ hσ hf (by simp [s]),
-    Pi.zero_apply, Finset.sum_const_zero]
+  classical
+  have hN : {i | N i ≠ ⊥}.Finite :=
+    WellFoundedGT.finite_ne_bot_of_iSupIndep h.submodule_iSupIndep
+  rw [← congrArg (trace R M) (h.sum_comp_subtype_component hN.toFinset (by simp) f), map_sum]
+  apply Finset.sum_eq_zero
+  intro i _
+  rw [trace_comp_comm', ← map_zero (trace R (N i))]
+  congr 1
+  exact LinearMap.ext fun x ↦ h.ofBijective_coeLinearMap_of_mem_ne (hσ i) (hf i x.property)
+
+end FiniteProjective
 
 /-- If `f` and `g` are commuting endomorphisms of a finite, free `R`-module `M`, such that `f`
 is triangularizable, then to prove that the trace of `g ∘ f` vanishes, it is sufficient to prove
@@ -143,10 +168,11 @@ end IsInternal
 Note that it is important the statement gives the user definitional control over `p` since the
 _type_ of the term `trace R p (f.restrict hp')` depends on `p`. -/
 lemma trace_eq_sum_trace_restrict_of_eq_biSup
-    [∀ i, Module.Finite R (N i)] [∀ i, Module.Free R (N i)]
+    [∀ i, Module.Finite R (N i)] [∀ i, Module.Projective R (N i)]
     (s : Finset ι) (h : iSupIndep <| fun i : s ↦ N i)
     {f : Module.End R M} (hf : ∀ i, MapsTo f (N i) (N i))
-    (p : Submodule R M) (hp : p = ⨆ i ∈ s, N i)
+    (p : Submodule R M) [Module.Finite R p] [Module.Projective R p]
+    (hp : p = ⨆ i ∈ s, N i)
     (hp' : MapsTo f p p := hp ▸ mapsTo_biSup_of_mapsTo (s : Set ι) hf) :
     trace R p (f.restrict hp') = ∑ i ∈ s, trace R (N i) (f.restrict (hf i)) := by
   classical
@@ -155,7 +181,7 @@ lemma trace_eq_sum_trace_restrict_of_eq_biSup
   have hf' : ∀ i, MapsTo (restrict f hp') (N' i) (N' i) := fun i x hx' ↦ by simpa using! hf i hx'
   let e : (i : s) → N' i ≃ₗ[R] N i := fun ⟨i, hi⟩ ↦ (N i).comapSubtypeEquivOfLe (hp ▸ le_biSup N hi)
   have _i1 : ∀ i, Module.Finite R (N' i) := fun i ↦ Module.Finite.equiv (e i).symm
-  have _i2 : ∀ i, Module.Free R (N' i) := fun i ↦ Module.Free.of_equiv (e i).symm
+  have _i2 : ∀ i, Module.Projective R (N' i) := fun i ↦ Module.Projective.of_equiv' (e i).symm
   rw [trace_eq_sum_trace_restrict h hf', ← s.sum_coe_sort]
   have : ∀ i : s, f.restrict (hf i) = (e i).conj ((f.restrict hp').restrict (hf' i)) := fun _ ↦ rfl
   simp [this]

@@ -12,9 +12,9 @@ import Mathlib.RingTheory.Norm.Transitivity
 /-!
 # Discriminant of a family of vectors
 
-Given an `A`-algebra `B` and `b`, an `ι`-indexed family of elements of `B`, we define the
-*discriminant* of `b` as the determinant of the matrix whose `(i j)`-th element is the trace of
-`b i * b j`.
+Given a finite projective `A`-algebra `B` and `b`, an `ι`-indexed family of elements of `B`,
+we define the *discriminant* of `b` as the determinant of the matrix whose `(i j)`-th element is
+the trace of `b i * b j`.
 
 ## Main definition
 
@@ -43,8 +43,8 @@ Given an `A`-algebra `B` and `b`, an `ι`-indexed family of elements of `B`, we 
 
 ## Implementation details
 
-Our definition works for any `A`-algebra `B`, but note that if `B` is not free as an `A`-module,
-then `trace A B = 0` by definition, so `discr A b = 0` for any `b`.
+The definition uses the canonical trace on finite projective `A`-algebras `B`; no choice of
+basis or freeness assumption is required.
 -/
 
 @[expose] public section
@@ -58,31 +58,34 @@ open Matrix Module Fintype Polynomial Finset
 
 namespace Algebra
 
-variable (A : Type u) {B : Type v} (C : Type z) {ι : Type w} [DecidableEq ι]
-variable [CommRing A] [CommRing B] [Algebra A B] [CommRing C] [Algebra A C]
+variable (A : Type u) {B : Type v} {ι : Type w} [Fintype ι] [DecidableEq ι]
+variable [CommRing A] [CommRing B] [Algebra A B]
+variable [Module.Finite A B] [Module.Projective A B]
 
 section Discr
 
-/-- Given an `A`-algebra `B` and `b`, an `ι`-indexed family of elements of `B`, we define
-`discr A ι b` as the determinant of `traceMatrix A ι b`. -/
-noncomputable def discr (A : Type u) {B : Type v} [CommRing A] [CommRing B] [Algebra A B]
-    [Fintype ι] (b : ι → B) := (traceMatrix A b).det
+/-- Given a finite projective `A`-algebra `B` and an `ι`-indexed family `b` of elements of `B`,
+`discr A b` is the determinant of `traceMatrix A b`. -/
+noncomputable def discr (b : ι → B) : A :=
+  (traceMatrix A b).det
 
-theorem discr_def [Fintype ι] (b : ι → B) : discr A b = (traceMatrix A b).det := rfl
+theorem discr_def (b : ι → B) : discr A b = (traceMatrix A b).det := rfl
 
-variable {A C} in
+variable {A} in
 /-- Mapping a family of vectors along an `AlgEquiv` preserves the discriminant. -/
-theorem discr_eq_discr_of_algEquiv [Fintype ι] (b : ι → B) (f : B ≃ₐ[A] C) :
+theorem discr_eq_discr_of_algEquiv {C : Type z} [CommRing C] [Algebra A C]
+    [Module.Finite A C] [Module.Projective A C] (b : ι → B) (f : B ≃ₐ[A] C) :
     Algebra.discr A b = Algebra.discr A (f ∘ b) := by
-  rw [discr_def]; congr; ext
-  simp_rw [traceMatrix_apply, traceForm_apply, Function.comp, ← map_mul f, trace_eq_of_algEquiv]
-
-variable {ι' : Type*} [Fintype ι'] [Fintype ι] [DecidableEq ι']
+  apply congrArg Matrix.det
+  ext
+  simp only [traceMatrix_apply, traceForm_apply, Function.comp_apply]
+  rw [← map_mul f, trace_eq_of_algEquiv]
 
 section Basic
 
 @[simp]
-theorem discr_reindex (b : Basis ι A B) (f : ι ≃ ι') : discr A (b ∘ ⇑f.symm) = discr A b := by
+theorem discr_reindex {ι' : Type*} [Fintype ι'] [DecidableEq ι']
+    (b : Basis ι A B) (f : ι ≃ ι') : discr A (b ∘ ⇑f.symm) = discr A b := by
   rw [← Basis.coe_reindex, discr_def, traceMatrix_reindex, det_reindex_self, ← discr_def]
 
 /-- If `b` is not linear independent, then `Algebra.discr A b = 0`. -/
@@ -293,7 +296,8 @@ end Field
 section Int
 
 /-- Two (finite) ℤ-bases have the same discriminant. -/
-theorem discr_eq_discr (b : Basis ι ℤ A) (b' : Basis ι ℤ A) :
+theorem discr_eq_discr [Module.Finite ℤ A] [Module.Projective ℤ A]
+    (b : Basis ι ℤ A) (b' : Basis ι ℤ A) :
     Algebra.discr ℤ b = Algebra.discr ℤ b' := by
   convert Algebra.discr_of_matrix_vecMul b' (b'.toMatrix b)
   · rw [Basis.toMatrix_map_vecMul]
