@@ -71,7 +71,7 @@ noncomputable def inverse : (C ⥤ₗ Type v) ⥤ (C ⥤ₗ AddCommGrpCat.{v}) :
   ObjectProperty.lift _ inverseAux (by simp only [leftExactFunctor_iff]; infer_instance)
 
 open scoped MonObj
-
+#count_heartbeats in
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 attribute [-instance] Functor.LaxMonoidal.comp Functor.Monoidal.instComp in
@@ -97,9 +97,7 @@ noncomputable def unitIsoAux (F : C ⥤ AddCommGrpCat.{v}) [PreservesFiniteLimit
     Functor.Monoidal.μ_snd]
   ext
   -- `simp [types_tensorObj_def]` says
-  simp only [types_tensorObj_def, TypeCat.Fun.toFun_apply, CategoryTheory.comp_apply,
-    Equiv.toIso_hom_hom_apply, Functor.comp_obj, hom_add, tensor_apply, TypeCat.hom_ofHom,
-    TypeCat.Fun.coe_mk, AddMonoidHom.add_apply]
+  simp only [types_tensorObj_def, TypeCat.Fun.toFun_apply, CategoryTheory.comp_apply]
   rw [dsimp% [types_tensorObj_def, types_tensorUnit_def] μ_forget_apply]
   rfl
 

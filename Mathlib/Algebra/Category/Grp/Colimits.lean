@@ -316,8 +316,7 @@ noncomputable def cokernelIsoQuotient {G H : AddCommGrpCat.{u}} (f : G ⟶ H) :
     rfl
   inv_hom_id := by
     ext x
-    dsimp only [hom_comp, hom_ofHom, hom_zero, AddMonoidHom.coe_comp, coe_mk', lift_mk,
-      Function.comp_apply, AddMonoidHom.zero_apply, id_eq, hom_id, AddMonoidHom.coe_id]
+    dsimp only [AddMonoidHom.coe_comp, coe_mk', Function.comp_apply]
     exact QuotientAddGroup.induction_on (α := H) x <| cokernel.π_desc_apply f _ _
 
 end AddCommGrpCat
