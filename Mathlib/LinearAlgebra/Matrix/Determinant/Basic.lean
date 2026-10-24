@@ -349,7 +349,6 @@ theorem _root_.Rat.cast_det {F : Type*} [Field F] [CharZero F] (M : Matrix n n â
 
 end HomMap
 
-
 @[simp]
 theorem det_conjTranspose [StarRing R] (M : Matrix m m R) : det Má´´ = star (det M) :=
   ((starRingEnd R).map_det _).symm.trans <| congr_arg star M.det_transpose
