@@ -447,8 +447,7 @@ theorem rootNumber_mul_rootNumber_inv (hχ : χ.IsPrimitive) :
     convert hχ.completedLFunction_one_sub (-1) <;> norm_num
   have : completedLFunction χ⁻¹ (-1)
       = (N : ℂ) ^ (3 / 2 : ℂ) * rootNumber χ⁻¹ * completedLFunction χ 2 := by
-    have := hχ.inv
-    convert this.completedLFunction_one_sub 2 <;> norm_num
+    convert hχ.inv.completedLFunction_one_sub 2 <;> norm_num
   grind [cpow_neg]
 
 theorem rootNumber_ne_zero (hχ : χ.IsPrimitive) : rootNumber χ ≠ 0 := by
