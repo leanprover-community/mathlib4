@@ -30,17 +30,18 @@ For an intermediate ring `R` of `B`, we introduce two characteristic predicates:
 
 ## Main results
 
-Writing `e`, `f` for the ramification index and inertia degree of `P` over `p` and `g` for the
-number of primes of `B` above `p`, the degrees in the tower `A ⊆ R ⊆ R' ⊆ B` are:
+Writing `e`, `f` for the ramification index and inertia degree of `P` over `p`, `g` for the number
+of primes of `B` above `p`, and `𝓟`, `𝓟'` for the primes of the decomposition ring `R` and the
+inertia ring `R'` below `P`:
 ```
-degree
-        B
-  e     |
-        R'
-  f     |
-        R
-  g     |
-        A
+degree            ramif. index   inertia deg.
+        B      P
+  e     |      |      e               1
+        R'     𝓟'
+  f     |      |      1               f
+        R      𝓟
+  g     |      |      1               1
+        A      p
 ```
 
 ## Relation to the classical field setting
@@ -179,6 +180,81 @@ theorem IsInertiaRing.finrank_decompositionRing (R' : Type*) [CommRing R'] [Alge
     IsDecompositionRing.finrank_top G P R p, mul_comm]
 
 end rank
+
+section splitting
+
+/-! ## Splitting of a prime in a decomposition ring -/
+
+variable {A : Type*} [CommRing A] [Algebra A B] [Algebra A R] [IsScalarTower A R B]
+  (p : Ideal A) [P.LiesOver p] (𝓟 : Ideal R) [P.LiesOver 𝓟] [P.IsDecompositionRing G R]
+
+namespace IsDecompositionRing
+
+/-- Let `R` be a decomposition ring of `P` and `𝓟` the prime of `R` below `P`. Then `P` is the
+only prime of `B` above `𝓟`. -/
+theorem primesOver_eq_singleton [P.IsPrime] [Finite (stabilizer G P)] :
+    primesOver 𝓟 B = {P} := by
+  refine Set.eq_singleton_iff_unique_mem.mpr ⟨⟨inferInstance, inferInstance⟩, fun Q ⟨_, _⟩ ↦ ?_⟩
+  obtain ⟨σ, rfl⟩ := exists_smul_eq_of_isGaloisGroup 𝓟 P Q (stabilizer G P)
+  exact σ.prop
+
+variable [Finite G] [IsGaloisGroup G A B] [IsDomain A] [IsDomain B] [FaithfulSMul R B]
+  [Module.Finite A B] [Module.Flat A B] [Module.Flat R B] [p.IsPrime]
+  [Algebra.HasSeparableResidueFieldsAt A B p] [P.IsPrime]
+
+include G P in
+private lemma ramificationIdxIn_eq_and_inertiaDegIn_eq :
+    ramificationIdxIn 𝓟 B = p.ramificationIdxIn B ∧ inertiaDegIn 𝓟 B = p.inertiaDegIn B := by
+  have : 𝓟.IsPrime := isPrime_of_liesOver P 𝓟
+  have : IsDomain R := (FaithfulSMul.algebraMap_injective R B).isDomain
+  have : Module.Finite R B := Module.Finite.right A R B
+  refine eq_and_eq_of_pos_of_le_of_mul_le_mul ?_ ?_ ?_ ?_ ?_
+  · exact Nat.pos_of_ne_zero <| ramificationIdxIn_ne_zero (stabilizer G P)
+  · exact Nat.pos_of_ne_zero <| inertiaDegIn_ne_zero (stabilizer G P)
+  · rw [ramificationIdxIn_eq_ramificationIdx p P G,
+      ramificationIdxIn_eq_ramificationIdx _ P (stabilizer G P)]
+    exact 𝓟.ramificationIdx_above_le P
+  · rw [inertiaDegIn_eq_inertiaDeg p P G, inertiaDegIn_eq_inertiaDeg _ P (stabilizer G P)]
+    exact 𝓟.inertiaDeg_above_le P
+  · have := ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn 𝓟 B (stabilizer G P)
+    rw [primesOver_eq_singleton G P, Set.ncard_singleton, one_mul] at this
+    rw [this, IsGaloisGroup.card_eq_finrank' (stabilizer G P) R B,
+      IsDecompositionRing.finrank_top G P R p]
+
+include G P in
+/-- The ramification index of `𝓟` in `B` equals the ramification index of `p` in `B`. -/
+theorem ramificationIdxIn_eq :
+    ramificationIdxIn 𝓟 B = p.ramificationIdxIn B :=
+  (ramificationIdxIn_eq_and_inertiaDegIn_eq G P R p 𝓟).1
+
+include G P in
+/-- The inertia degree of `𝓟` in `B` equals the inertia degree of `p` in `B`. -/
+theorem inertiaDegIn_eq :
+    inertiaDegIn 𝓟 B = p.inertiaDegIn B :=
+  (ramificationIdxIn_eq_and_inertiaDegIn_eq G P R p 𝓟).2
+
+include G P p in
+/-- The ramification index of `𝓟` over `A` equals `1`. -/
+theorem ramificationIdx_eq_one :
+    𝓟.ramificationIdx A = 1 := by
+  have := ramificationIdx_tower (R := A) 𝓟 P
+  rwa [← ramificationIdxIn_eq_ramificationIdx 𝓟 P (stabilizer G P), ramificationIdxIn_eq G P R p 𝓟,
+    ramificationIdxIn_eq_ramificationIdx p P G, right_eq_mul₀ (ramificationIdx_pos A P).ne'] at this
+
+include G P p in
+/-- The inertia degree of `𝓟` over `A` equals `1`. -/
+theorem inertiaDeg_eq_one :
+    𝓟.inertiaDeg A = 1 := by
+  have : 𝓟.IsPrime := isPrime_of_liesOver P 𝓟
+  have : Module.Finite R B := Module.Finite.right A R B
+  have := inertiaDeg_tower (R := A) 𝓟 P
+  rwa [← inertiaDegIn_eq_inertiaDeg p P G, ← inertiaDegIn_eq G P R p 𝓟,
+    ← inertiaDegIn_eq_inertiaDeg 𝓟 P (stabilizer G P),
+    right_eq_mul₀ <| inertiaDegIn_ne_zero (stabilizer G P)] at this
+
+end IsDecompositionRing
+
+end splitting
 
 end Ideal
 
