@@ -39,6 +39,9 @@ namespace Nat
 protected def card (α : Type*) : ℕ :=
   toNat (mk α)
 
+theorem _root_.Cardinal.toNat_mk (α : Type*) : (mk α).toNat = Nat.card α :=
+  rfl
+
 @[simp]
 theorem card_eq_fintype_card [Fintype α] : Nat.card α = Fintype.card α :=
   mk_toNat_eq_card
@@ -277,6 +280,12 @@ namespace ENat
   If `α` is infinite, `ENat.card α = ⊤`. -/
 def card (α : Type*) : ℕ∞ :=
   toENat (mk α)
+
+theorem toNat_card (α : Type*) : (card α).toNat = Nat.card α :=
+  rfl
+
+theorem _root_.Cardinal.toENat_mk (α : Type*) : (mk α).toENat = ENat.card α :=
+  rfl
 
 @[simp]
 theorem card_eq_coe_fintype_card [Fintype α] : card α = Fintype.card α := by
