@@ -192,7 +192,7 @@ lemma iSup_iInf_maxGenEigenspace_eq_top_of_forall_mapsTo [FiniteDimensional K M]
 
 /-- A commuting family of triangularizable endomorphisms is simultaneously triangularizable. -/
 theorem iSup_iInf_maxGenEigenspace_eq_top_of_iSup_maxGenEigenspace_eq_top_of_commute
-    [FiniteDimensional K M] (f : ι → Module.End K M) (h : Pairwise fun i j ↦ Commute (f i) (f j))
+    [FiniteDimensional K M] (f : ι → Module.End K M) (h : Pairwise' fun i j ↦ Commute (f i) (f j))
     (h' : ∀ i, ⨆ μ, (f i).maxGenEigenspace μ = ⊤) :
     ⨆ χ : ι → K, ⨅ i, (f i).maxGenEigenspace (χ i) = ⊤ := by
   refine Module.End.iSup_iInf_maxGenEigenspace_eq_top_of_forall_mapsTo _

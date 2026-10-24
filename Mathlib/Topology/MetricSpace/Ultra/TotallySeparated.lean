@@ -23,7 +23,7 @@ public section
 open Metric IsUltrametricDist
 
 instance {X : Type*} [MetricSpace X] [IsUltrametricDist X] : TotallySeparatedSpace X :=
-  totallySeparatedSpace_iff_exists_isClopen.mpr fun x y h ↦ by
+  totallySeparatedSpace_iff_exists_isClopen.mpr fun x _ y _ h ↦ by
     obtain ⟨r, hr, hr'⟩ := exists_between (dist_pos.mpr h)
     refine ⟨_, IsUltrametricDist.isClopen_ball x r, ?_, ?_⟩
     · simp only [mem_ball, dist_self, hr]

@@ -372,14 +372,14 @@ lemma iInter₂_union_iInter₂ {ι₁ κ₁ : Sort*} {ι₂ : ι₁ → Sort*} 
   simp_rw [iInter_union, union_iInter]
 
 theorem biUnion_inter_of_pairwise_disjoint {ι : Type*} {f : ι → Set α}
-    (h : Pairwise (Disjoint on f)) (s t : Set ι) :
+    (h : Pairwise' (Disjoint on f)) (s t : Set ι) :
     (⋃ i ∈ (s ∩ t), f i) = (⋃ i ∈ s, f i) ∩ (⋃ i ∈ t, f i) :=
-  biSup_inter_of_pairwise_disjoint h s t
+  biSup_inter_of_pairwise'_disjoint h s t
 
 theorem biUnion_iInter_of_pairwise_disjoint {ι κ : Type*}
-    [hκ : Nonempty κ] {f : ι → Set α} (h : Pairwise (Disjoint on f)) (s : κ → Set ι) :
+    [hκ : Nonempty κ] {f : ι → Set α} (h : Pairwise' (Disjoint on f)) (s : κ → Set ι) :
     (⋃ i ∈ (⋂ j, s j), f i) = ⋂ j, (⋃ i ∈ s j, f i) :=
-  biSup_iInter_of_pairwise_disjoint h s
+  biSup_iInter_of_pairwise'_disjoint h s
 
 end Image
 

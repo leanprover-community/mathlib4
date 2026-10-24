@@ -106,8 +106,8 @@ theorem frontier_thickening_subset (E : Set α) {δ : ℝ} :
 
 open scoped Function in -- required for scoped `on` notation
 theorem frontier_thickening_disjoint (A : Set α) :
-    Pairwise (Disjoint on fun r : ℝ => frontier (thickening r A)) := by
-  refine (pairwise_disjoint_on _).2 fun r₁ r₂ hr => ?_
+    Pairwise' (Disjoint on fun r : ℝ => frontier (thickening r A)) := by
+  refine (pairwise'_disjoint_on _).2 fun r₁ r₂ hr => ?_
   rcases le_total r₁ 0 with h₁ | h₁
   · simp [thickening_of_nonpos h₁]
   refine ((disjoint_singleton.2 fun h => hr.ne ?_).preimage _).mono (frontier_thickening_subset _)
@@ -643,7 +643,7 @@ theorem cthickening_cthickening_subset (hε : 0 ≤ ε) (hδ : 0 ≤ δ) (s : Se
 
 open scoped Function in -- required for scoped `on` notation
 theorem frontier_cthickening_disjoint (A : Set α) :
-    Pairwise (Disjoint on fun r : ℝ≥0 => frontier (cthickening r A)) := fun r₁ r₂ hr =>
+    Pairwise' (Disjoint on fun r : ℝ≥0 => frontier (cthickening r A)) := fun r₁ _ r₂ _ hr =>
   ((disjoint_singleton.2 <| by simpa).preimage _).mono (frontier_cthickening_subset _)
     (frontier_cthickening_subset _)
 
