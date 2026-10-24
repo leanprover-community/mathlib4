@@ -153,9 +153,8 @@ def test_Container_parse : IO Unit := do
 empty or whitespace-only value means unset. `MATHLIB_CACHE_BASE_URL`,
 `MATHLIB_CACHE_GET_URL`, and `MATHLIB_CACHE_FROM` follow that rule. CI wires
 them from a GitHub Actions `vars` lookup, which yields `""` for an undefined
-variable, and such a value behaves as an absent one. The upload endpoint
-`MATHLIB_CACHE_PUT_URL` keeps the opposite rule: an empty value there fails the
-upload rather than divert it to the fallback container. -/
+variable, and such a value behaves as an absent one. The upload root
+`MATHLIB_CACHE_PUT_URL` follows the same rule. -/
 def test_envValueNormalization : IO Unit := do
   IO.println "nonEmptyEnvValue / normalizeBaseURL:"
   -- `<unset>` stands in for `none`, so a failure shows both sides as strings.
@@ -236,7 +235,7 @@ def fileURLOf (container? : Option Container) (repo url fileName : String)
 /-- URL construction for a cache file. The path shape follows the container
 (`Container.flatPath`), not the repo, so the same repo lands flat in `master`
 and prefixed in `forks`. A `none` container is the user-supplied-URL case
-(`MATHLIB_CACHE_GET_URL` / `_PUT_URL`), where the shape follows the repo alone.
+(`MATHLIB_CACHE_GET_URL`), where the shape follows the repo alone.
 
 A per-SHA scope (`MATHLIB_CACHE_REPO_SCOPE`) inserts `{sha}` between repo and
 hash on prefixed paths only — `/f/{repo}/{sha}/{hash}` — keeping each commit's
@@ -497,19 +496,19 @@ probes with a HEAD request (`Location.markerURL?`). The marker lives at
 all artifacts for the commit were uploaded. -/
 def test_markerURL : IO Unit := do
   IO.println "Location.markerURL?:"
-  let dest (container? : Option Container) (putBase? : Option String) : String :=
-    ((uploadLocationFrom .s3 none putBase? container? "alice/mathlib4"
+  let dest (container? : Option Container) (putURL? : Option String) : String :=
+    ((uploadLocationFrom .s3 putURL? container? "alice/mathlib4"
       (some "abc123")).toOption.bind (·.markerURL?)).getD "(unresolved)"
   -- The marker lives under `/m/`, its own namespace, and is keyed by repo.
   assertEq "marker is under /m/, keyed by repo"
     "m/leanprover-community/mathlib4/deadbeef"
     (((Container.forks.location "U" MATHLIBREPO (some "deadbeef")).marker?.map
       (·.path)).getD "(no marker)")
-  -- A put base rebases the marker with the artifacts it marks: both use one
-  -- location, rooted at `{base}/{container}` (`uploadLocationFrom`).
-  assertEq "marker URL follows a rebased upload destination"
+  -- `MATHLIB_CACHE_PUT_URL` moves the marker with the artifacts it marks: both
+  -- use one location, rooted at the container root (`uploadLocationFrom`).
+  assertEq "marker URL follows the container root the put URL names"
     "https://bucket.example.org/mirror/mathlib4-forks/m/alice/mathlib4/abc123"
-    (dest (some .forks) (some "https://bucket.example.org/mirror"))
+    (dest (some .forks) (some "https://bucket.example.org/mirror/mathlib4-forks"))
   -- The repo segment is lowercased, so an upload and a probe for the same fork
   -- meet at one path regardless of how the owner name was capitalized.
   assertEq "marker repo is lowercased in the path"
@@ -1367,93 +1366,74 @@ def test_locationNormalization : IO Unit := do
     "https://cache.example/bucket/mathlib4-forks/f/alice/mathlib4/abc1/x.ltar"
     (container.fileURL "x.ltar")
 
-/-- `uploadLocationFrom` resolves the upload location per backend. Each case
-pins the URL of a file, the URL of the marker, and the label. -/
+/-- `uploadLocationFrom` resolves the location of the `--container` write:
+the container's layout under its root, the URL MATHLIB_CACHE_PUT_URL names.
+Each case pins the URL of a file, the URL of the marker, and the label. -/
 def test_uploadLocationFrom : IO Unit := do
   IO.println "uploadLocationFrom:"
   let urls (r : Except String Location) : Option (String × Option String × String) :=
     r.toOption.map fun l => (l.fileURL "x.ltar", l.markerURL?, l.label)
-  let putBase := "https://s3.example.org/bucket-prefix"
-  let forksScoped := some (s!"{putBase}/mathlib4-forks/f/alice/mathlib4/sha1/x.ltar",
-    some s!"{putBase}/mathlib4-forks/m/alice/mathlib4/sha1", "forks")
-  assertTrue "s3: put base + forks + scope"
-    (urls (uploadLocationFrom .s3 none (some putBase) (some .forks)
+  let forksRoot := "https://s3.example.org/devbucket/mathlib4-forks"
+  let masterRoot := "https://s3.example.org/bucket/mathlib4"
+  let forksScoped := some (s!"{forksRoot}/f/alice/mathlib4/sha1/x.ltar",
+    some s!"{forksRoot}/m/alice/mathlib4/sha1", "forks")
+  assertTrue "s3: put URL + forks + scope"
+    (urls (uploadLocationFrom .s3 (some forksRoot) (some .forks)
         "Alice/Mathlib4" (some "sha1")) == forksScoped)
-  assertTrue "s3: put base + master is flat"
-    (urls (uploadLocationFrom .s3 none (some putBase) (some .master) MATHLIBREPO none) ==
-      some (s!"{putBase}/mathlib4-master/f/x.ltar",
-        none, "master"))
-  assertTrue "PUT_URL is flat with the container policy off"
-    (urls (uploadLocationFrom .azure (some "https://my.example.org") none none
-        MATHLIBREPO none) ==
-      some ("https://my.example.org/f/x.ltar",
-        none, "MATHLIB_CACHE_PUT_URL"))
-  assertTrue "PUT_URL applies on the s3 backend too"
-    (urls (uploadLocationFrom .s3 (some "https://my.example.org/bucket") none none
-        MATHLIBREPO none) ==
-      some ("https://my.example.org/bucket/f/x.ltar",
-        none, "MATHLIB_CACHE_PUT_URL"))
-  assertTrue "s3: a PUT_URL loses whitespace and trailing slashes before validation"
-    (urls (uploadLocationFrom .s3 (some " https://my.example.org/bucket/// ")
-      none none MATHLIBREPO none) ==
-      some ("https://my.example.org/bucket/f/x.ltar", none, "MATHLIB_CACHE_PUT_URL"))
-  -- A base without a bucket path fails at resolution.
-  assertTrue "s3: a put base without a bucket path errors"
-    (uploadLocationFrom .s3 none (some "https://s3.example.org") (some .forks)
+  assertTrue "s3: put URL + master is flat"
+    (urls (uploadLocationFrom .s3 (some masterRoot) (some .master) MATHLIBREPO none) ==
+      some (s!"{masterRoot}/f/x.ltar", none, "master"))
+  assertTrue "master is flat whatever --repo says"
+    (urls (uploadLocationFrom .s3 (some masterRoot) (some .master) "alice/mathlib4" none) ==
+      some (s!"{masterRoot}/f/x.ltar", none, "master"))
+  assertTrue "azure: the put URL is the container root too"
+    (urls (uploadLocationFrom .azure (some forksRoot) (some .forks)
+        "Alice/Mathlib4" (some "sha1")) == forksScoped)
+  assertTrue "forks without a scope is repo-namespaced and has no marker"
+    (urls (uploadLocationFrom .s3 (some forksRoot) (some .forks) "alice/mathlib4" none) ==
+      some (s!"{forksRoot}/f/alice/mathlib4/x.ltar", none, "forks"))
+  -- Every upload names its container, and the container decides what the
+  -- upload may carry.
+  assertTrue "no container errors"
+    (uploadLocationFrom .s3 (some masterRoot) none MATHLIBREPO none matches .error _)
+  assertTrue "azure: no container errors"
+    (uploadLocationFrom .azure (some masterRoot) none MATHLIBREPO none matches .error _)
+  assertTrue "a scope on master errors"
+    (uploadLocationFrom .s3 (some masterRoot) (some .master) MATHLIBREPO (some "sha1")
+      matches .error _)
+  -- No backend has a default root.
+  assertTrue "s3: no put URL errors"
+    (uploadLocationFrom .s3 none (some .forks) "alice/mathlib4" none matches .error _)
+  assertTrue "azure: no put URL errors"
+    (uploadLocationFrom .azure none (some .forks) "alice/mathlib4" none matches .error _)
+  assertTrue "an empty put URL means unset, so it errors"
+    (uploadLocationFrom .s3 (some "") (some .forks) "alice/mathlib4" none matches .error _)
+  assertTrue "azure: an empty put URL means unset, so it errors"
+    (uploadLocationFrom .azure (some " ") (some .forks) "alice/mathlib4" none
+      matches .error _)
+  -- A root without a bucket path fails at resolution.
+  assertTrue "s3: a put URL without a bucket path errors"
+    (uploadLocationFrom .s3 (some "https://s3.example.org") (some .forks)
       "alice/mathlib4" none matches .error _)
-  assertTrue "s3: a PUT_URL without a bucket path errors"
-    (uploadLocationFrom .s3 (some "https://my.example.org") none none MATHLIBREPO none
-      matches .error _)
-  assertTrue "azure: no PUT_URL errors"
-    (uploadLocationFrom .azure none none none "alice/mathlib4" none
-      matches .error _)
-  assertTrue "azure: a container with PUT_URL errors"
-    (uploadLocationFrom .azure (some "https://upload.example/bucket") none
-      (some .forks) MATHLIBREPO none matches .error _)
-  assertTrue "s3: a put base without a container errors"
-    (uploadLocationFrom .s3 none (some "https://s3.example.org/x") none MATHLIBREPO none
-      matches .error _)
-  assertTrue "s3: no put base errors"
-    (uploadLocationFrom .s3 none none (some .forks) "alice/mathlib4" none
-      matches .error _)
-  assertTrue "azure: a put base without a PUT_URL still errors"
-    (uploadLocationFrom .azure none (some putBase) none
-      "alice/mathlib4" (some "sha1") matches .error _)
-  -- PUT_URL keeps the opposite empty rule from every read variable: any set
-  -- value counts, an empty one included, so a misconfigured endpoint fails
-  -- the upload rather than divert it to the backend's location.
-  assertTrue "an empty PUT_URL still counts"
-    ((uploadLocationFrom .azure (some "") none none MATHLIBREPO none).toOption.map (·.root) ==
-      some "")
-  assertTrue "s3: an empty PUT_URL errors despite a valid fallback container"
-    (uploadLocationFrom .s3 (some "") (some putBase) (some .forks)
-      "alice/mathlib4" none matches .error _)
-  assertTrue "s3: an empty put base means unset, so it errors"
-    (uploadLocationFrom .s3 none (some "") (some .forks) "alice/mathlib4" none
-      matches .error _)
-  assertTrue "s3: a put base loses its trailing slashes"
-    ((uploadLocationFrom .s3 none (some "https://s3.example.org/bucket-prefix//") (some .forks)
-      "alice/mathlib4" none).toOption.map (·.root) ==
-      some "https://s3.example.org/bucket-prefix/mathlib4-forks")
+  assertTrue "s3: a put URL loses whitespace and trailing slashes before validation"
+    ((uploadLocationFrom .s3 (some s!" {forksRoot}/// ") (some .forks)
+      "alice/mathlib4" none).toOption.map (·.root) == some forksRoot)
 
-/-- Flat locations have no commit scope. Repo-namespaced locations take the
-supplied SHA. -/
+/-- A scope addresses a per-commit namespace of `forks`. The flat `master`
+container has none, so a scope on it is an error. -/
 def test_uploadLocationScope : IO Unit := do
   IO.println "uploadLocationScope:"
-  for scope? in [none, some "abc1"] do
-    for (backend, putURL?, container?) in
-        [(UploadBackend.azure, some "https://upload.example/bucket", none),
-         (.s3, some "https://upload.example/bucket", none),
-         (.s3, none, some Container.master), (.s3, none, some Container.forks)] do
-      let result := uploadLocationFrom backend putURL? (some "https://upload.example/bucket")
-        container? MATHLIBREPO scope?
-      match result with
-      | .ok location =>
-        assertTrue s!"{repr backend}: endpoint {putURL?}, \
-          container {repr container?}, scope {scope?}"
-          (location.sha? == if putURL?.isSome || container? == some Container.master
-            then none else scope?)
-      | .error error => assertTrue s!"scope test resolves: {error}" false
+  for backend in [UploadBackend.azure, .s3] do
+    for scope? in [none, some "abc1"] do
+      assertTrue s!"{backend.name}: forks takes scope {scope?}"
+        ((uploadLocationFrom backend (some "https://upload.example/bucket") (some .forks)
+          MATHLIBREPO scope?).toOption.map (·.sha?) == some scope?)
+    assertTrue s!"{backend.name}: master without a scope resolves"
+      ((uploadLocationFrom backend (some "https://upload.example/bucket") (some .master)
+        MATHLIBREPO none).toOption.map (·.sha?) == some none)
+    assertTrue s!"{backend.name}: master with a scope errors"
+      (uploadLocationFrom backend (some "https://upload.example/bucket") (some .master)
+        MATHLIBREPO (some "abc1") matches .error _)
 
 /-- The curl arguments an s3 upload signs each request with (`s3CurlArgs`),
 and the `If-None-Match: *` guard the curl tool adds to a non-overwrite put on
@@ -1515,7 +1495,7 @@ put; and both remotes are the same `{prefix}/{name}` shape every other tool
 addresses. -/
 def test_rcloneArgs : IO Unit := do
   IO.println "rcloneArgs:"
-  if let .ok dest := uploadLocationFrom .s3 none (some "https://acct.example/devbucket")
+  if let .ok dest := uploadLocationFrom .s3 (some "https://acct.example/devbucket/mathlib4-forks")
       (some .forks) "alice/mathlib4" (some "abc1") then
     -- The bucket path the s3 backend derives from the location's root.
     let bucketPath := ((s3EndpointSplit dest.root).toOption.map (·.2)).getD ""
@@ -1618,7 +1598,7 @@ def test_putStagedViaRclone : IO Unit := do
       s!"if [ \"$1\" = copyto ]; then cp \"$2\" \"{dir}/marker-content\"; exit 3; fi\n" ++
       "exit 0\n"
     discard <| IO.runCmd "chmod" #["+x", fake.toString]
-    let .ok dest := uploadLocationFrom .s3 none (some "https://acct.example/devbucket")
+    let .ok dest := uploadLocationFrom .s3 (some "https://acct.example/devbucket/mathlib4-forks")
         (some .forks) "alice/mathlib4" (some "abc1")
       | assertTrue "rclone destination resolves" false
     withSuppressedOutput <| putStagedViaRclone dest
@@ -1655,13 +1635,13 @@ def test_putStagedViaRclone : IO Unit := do
       "copy\ncopyto\n" (← IO.FS.readFile (dir / "calls"))
     assertEq "the marker content is the upload scope"
       "abc1\n" (← IO.FS.readFile (dir / "marker-content"))
-    -- Exercise scoped and repo-only endpoint resolution through the transfer.
+    -- Exercise a scoped and an unscoped `forks` root through the transfer.
     for scope? in [some "abc2", none] do
       IO.FS.writeFile (dir / "calls") ""
       for name in ["args-copyto", "marker-content"] do
         if ← (dir / name).pathExists then IO.FS.removeFile (dir / name)
       let .ok endpoint := uploadLocationFrom .s3 (some "https://acct.example/devbucket/prefix")
-          none none "alice/mathlib4" scope?
+          (some .forks) "alice/mathlib4" scope?
         | assertTrue "endpoint destination resolves" false
       withSuppressedOutput <| putStagedViaRclone endpoint #[] staging
         #["aa.ltar"] (overwrite := false) (rclone := fake.toString)
