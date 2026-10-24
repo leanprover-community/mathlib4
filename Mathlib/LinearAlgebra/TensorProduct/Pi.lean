@@ -117,7 +117,6 @@ TODO: generalize to `S`-linear. -/
 
 end
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Internal implementation detail: we should make this `private`. -/
 def piScalarRightHomBil : N →ₗ[S] (ι → R) →ₗ[R] (ι → N) where
   toFun n := LinearMap.compLeft (toSpanSingleton R N n) ι
@@ -126,10 +125,7 @@ def piScalarRightHomBil : N →ₗ[S] (ι → R) →ₗ[R] (ι → N) where
     simp
   map_smul' s x := by
     ext i j
-    dsimp only [coe_comp, coe_single, Function.comp_apply, compLeft_apply, toSpanSingleton_apply,
-      RingHom.id_apply, smul_apply, Pi.smul_apply]
-    rw [← IsScalarTower.smul_assoc, _root_.Algebra.smul_def, mul_comm, mul_smul]
-    simp
+    simp [← IsScalarTower.smul_assoc, _root_.Algebra.smul_def, mul_comm, mul_smul]
 
 /-- For any `R`-module `N` and index type `ι`, there is a natural
 linear map `N ⊗[R] (ι → R) →ₗ (ι → N)`. This map is an isomorphism if `ι` is finite. -/
