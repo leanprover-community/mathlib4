@@ -320,6 +320,11 @@ theorem mem_subgroupOf {H K : Subgroup G} {h : K} : h ∈ H.subgroupOf K ↔ (h 
 theorem subgroupOf_map_subtype (H K : Subgroup G) : (H.subgroupOf K).map K.subtype = H ⊓ K :=
   SetLike.ext' <| by refine Subtype.image_preimage_coe _ _ |>.trans ?_; apply Set.inter_comm
 
+@[to_additive (attr := simp)]
+theorem subgroupOf_map_subtype' (H : Subgroup G) (K : Subgroup H) :
+    (map H.subtype K).subgroupOf H = K :=
+  Subgroup.ext fun x => ⟨fun ⟨_, hy, h⟩ => Subtype.ext h ▸ hy, fun hx => ⟨x, hx, rfl⟩⟩
+
 @[to_additive]
 theorem map_subgroupOf_eq_of_le {H K : Subgroup G} (h : H ≤ K) :
     (H.subgroupOf K).map K.subtype = H := by
@@ -596,6 +601,31 @@ lemma surjOn_iff_le_map {f : G →* N} {H : Subgroup G} {K : Subgroup N} :
 theorem equivMapOfInjective_coe_mulEquiv (H : Subgroup G) (e : G ≃* G') :
     H.equivMapOfInjective (e : G →* G') (EquivLike.injective e) = e.subgroupMap H := by
   ext
+  rfl
+
+/-- The image of the relative subgroup `K.subgroupOf H` under the restricted map `f.subgroupMap H`
+is the restriction of the image `K.map f` to `H.map f`. -/
+@[to_additive /-- The image of the relative additive subgroup `K.addSubgroupOf H` under the
+restricted map `f.addSubgroupMap H` is the restriction of `K.map f` to `H.map f`. -/]
+theorem subgroupOf_map_subgroupMap (f : G →* N) {K H : Subgroup G} (hK : K ≤ H) :
+    (K.subgroupOf H).map (f.subgroupMap H) = (K.map f).subgroupOf (H.map f) := by
+  ext ⟨y, hy⟩
+  rw [mem_subgroupOf]
+  simp only [mem_map, mem_subgroupOf]
+  constructor
+  · rintro ⟨⟨x, hxH⟩, hxK, hxy⟩
+    exact ⟨x, hxK, by simpa using congrArg Subtype.val hxy⟩
+  · rintro ⟨x, hxK, rfl⟩
+    exact ⟨⟨x, hK hxK⟩, hxK, by ext; rfl⟩
+
+/-- The preimage of the relative subgroup `K.subgroupOf H'` under the restricted map
+`f.subgroupComap H'` is the restriction of the preimage `K.comap f` to `H'.comap f`. -/
+@[to_additive /-- The preimage of the relative additive subgroup `K.addSubgroupOf H'` under the
+restricted map `f.addSubgroupComap H'` is the restriction of `K.comap f` to `H'.comap f`. -/]
+theorem subgroupOf_comap_subgroupComap (f : G →* N) (K H' : Subgroup N) :
+    (K.subgroupOf H').comap (f.subgroupComap H') = (K.comap f).subgroupOf (H'.comap f) := by
+  ext ⟨x, hx⟩
+  rw [mem_subgroupOf, mem_comap, mem_comap, mem_subgroupOf]
   rfl
 
 end Subgroup
