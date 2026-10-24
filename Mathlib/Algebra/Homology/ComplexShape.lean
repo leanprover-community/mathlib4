@@ -68,8 +68,10 @@ structure ComplexShape (ι : Type*) where
   /-- There is at most one nonzero differential to `X j`. -/
   prev_eq : ∀ {i i' j}, Rel i j → Rel i' j → i = i'
 
-attribute [to_dual self (reorder := 3 4)] ComplexShape.Rel
+attribute [to_dual self (reorder := 3 4) (relevant_arg := _)] ComplexShape.Rel
 attribute [to_dual existing] ComplexShape.next_eq
+attribute [to_dual self (reorder := Rel (1 2), next_eq prev_eq,
+  next_eq (i j' j), prev_eq (i i' j))] ComplexShape.mk
 
 namespace ComplexShape
 
@@ -160,19 +162,14 @@ lemma next_eq_self (c : ComplexShape ι) (j : ι) (hj : ¬c.Rel j (c.next j)) :
 /-- The `ComplexShape` allowing differentials from `X i` to `X (i+a)`.
 (For example when `a = 1`, a cohomology theory indexed by `ℕ` or `ℤ`)
 -/
+@[to_dual (attr := simps) down'
+/-- The `ComplexShape` allowing differentials from `X (j+a)` to `X j`.
+(For example when `a = 1`, a homology theory indexed by `ℕ` or `ℤ`)
+-/]
 def up' {α : Type*} [Add α] [IsRightCancelAdd α] (a : α) : ComplexShape α where
   Rel i j := i + a = j
   next_eq hi hj := hi.symm.trans hj
   prev_eq hi hj := add_right_cancel (hi.trans hj.symm)
-
-/-- The `ComplexShape` allowing differentials from `X (j+a)` to `X j`.
-(For example when `a = 1`, a homology theory indexed by `ℕ` or `ℤ`)
--/
-@[to_dual existing (attr := simps) up']
-def down' {α : Type*} [Add α] [IsRightCancelAdd α] (a : α) : ComplexShape α where
-  Rel i j := j + a = i
-  next_eq hi hj := add_right_cancel (hi.trans hj.symm)
-  prev_eq hi hj := hi.symm.trans hj
 
 @[to_dual (reorder := i j) down'_mk]
 theorem up'_mk {α : Type*} [Add α] [IsRightCancelAdd α] (a : α) (i j : α) (h : i + a = j) :
