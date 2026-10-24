@@ -44,9 +44,9 @@ theorem WithTop.coe_iInf [Nonempty ι] [InfSet α] {f : ι → α} (hf : BddBelo
   rw [iInf, iInf, WithTop.coe_sInf' (range_nonempty f) hf, ← range_comp, Function.comp_def]
 
 @[to_dual (attr := norm_cast)]
-theorem WithTop.coe_iSup [SupSet α] (f : ι → α) (h : BddAbove (Set.range f)) :
+theorem WithTop.coe_iSup [Nonempty ι] [SupSet α] (f : ι → α) (h : BddAbove (Set.range f)) :
     ↑(⨆ i, f i) = (⨆ i, f i : WithTop α) := by
-  rw [iSup, iSup, WithTop.coe_sSup' h, ← range_comp, Function.comp_def]
+  rw [iSup, iSup, WithTop.coe_sSup' h (range_nonempty _), ← range_comp, Function.comp_def]
 
 @[deprecated (since := "2026-05-04")] alias WithBot.ciSup_empty := WithBot.iSup_empty
 
@@ -66,7 +66,11 @@ theorem WithBot.coe_biSup {ι : Type*} {s : Set ι} (hs : s.Nonempty)
 @[to_dual]
 theorem WithBot.coe_biInf {ι : Type*} {s : Set ι} {α : Type*} [CompleteLattice α] (f : ι → α) :
     ⨅ i ∈ s, f i = ⨅ i ∈ s, (f i : WithBot α) := by
-  simp [coe_iInf]
+  cases isEmpty_or_nonempty ι
+  · simp
+  · rw [WithBot.coe_iInf _ (OrderBot.bddBelow _)]
+    congr! with i
+    by_cases hi : i ∈ s <;> simp [hi]
 
 end
 

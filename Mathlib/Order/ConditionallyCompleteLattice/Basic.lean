@@ -52,17 +52,29 @@ open scoped Classical in
 noncomputable instance [SupSet α] : SupSet (WithTop α) :=
   ⟨fun S =>
     if ⊤ ∈ S then ⊤ else if BddAbove ((fun (a : α) ↦ ↑a) ⁻¹' S : Set α) then
-      ↑(sSup ((fun (a : α) ↦ (a : WithTop α)) ⁻¹' S : Set α)) else ⊤⟩
+      -- The supremum of the empty set is the bottom element, if there is one
+      if h : S = ∅ ∧ ∃ a : α, IsBot a then ↑h.2.choose
+      else ↑(sSup ((fun (a : α) ↦ (a : WithTop α)) ⁻¹' S : Set α))
+    else ⊤⟩
 
 open scoped Classical in
 @[to_dual]
 noncomputable instance instInfSet [InfSet α] : InfSet (WithTop α) :=
   ⟨fun S => if S ⊆ {⊤} ∨ ¬BddBelow S then ⊤ else ↑(sInf ((fun (a : α) ↦ ↑a) ⁻¹' S : Set α))⟩
 
+open scoped Classical in
+@[to_dual]
+lemma sSup_def [SupSet α] (s : Set (WithTop α)) :
+    sSup s = if ⊤ ∈ s then ⊤ else if BddAbove ((fun (a : α) ↦ ↑a) ⁻¹' s : Set α) then
+      (if h : s = ∅ ∧ ∃ a : α, IsBot a then ↑h.2.choose
+      else ↑(sSup ((fun (a : α) ↦ (a : WithTop α)) ⁻¹' s : Set α)))
+    else ⊤ := rfl
+
 @[to_dual]
 theorem sSup_eq [SupSet α] {s : Set (WithTop α)} (hs : ⊤ ∉ s)
-    (hs' : BddAbove ((↑) ⁻¹' s : Set α)) : sSup s = ↑(sSup ((↑) ⁻¹' s) : α) :=
-  (ite_eq_right hs).trans <| ite_eq_left hs'
+    (hs' : BddAbove ((↑) ⁻¹' s : Set α)) (hne : s.Nonempty) :
+    sSup s = ↑(sSup ((↑) ⁻¹' s) : α) := by
+  rw [sSup_def, ite_eq_right hs, ite_eq_left hs', dite_eq_right fun h ↦ hne.ne_empty h.1]
 
 @[to_dual]
 theorem sInf_eq [InfSet α] {s : Set (WithTop α)} (hs : ¬s ⊆ {⊤}) (h's : BddBelow s) :
@@ -98,21 +110,35 @@ theorem sInf_of_not_bddBelow [InfSet α] {s : Set (WithTop α)} (h : ¬BddBelow 
   ite_eq_left <| .inr h
 
 @[to_dual (attr := norm_cast)]
-theorem coe_sSup' [SupSet α] {s : Set α} (hs : BddAbove s) :
+theorem coe_sSup' [SupSet α] {s : Set α} (hs : BddAbove s) (hs₀ : s.Nonempty) :
     ↑(sSup s) = (sSup ((fun (a : α) ↦ ↑a) '' s) : WithTop α) := by
   classical
-  change _ = ite _ _ _
-  rw [ite_eq_right, preimage_image_eq, ite_eq_left hs]
-  · exact Option.some_injective _
-  · rintro ⟨x, _, ⟨⟩⟩
+  have : ⊤ ∉ ((fun (a : α) ↦ (a : WithTop α)) '' s) := by rintro ⟨x, _, ⟨⟩⟩
+  rw [sSup_def, ite_eq_right this, preimage_image_eq _ WithTop.coe_injective, ite_eq_left hs,
+    dite_eq_right (fun h ↦ hs₀.ne_empty (Set.image_eq_empty.1 h.1))]
 
+open scoped Classical in
 @[to_dual]
-theorem sSup_empty (α : Type*) [CompleteLattice α] : (sSup ∅ : WithTop α) = ⊥ := by
-  rw [sSup_eq (by simp) (OrderTop.bddAbove _), Set.preimage_empty, _root_.sSup_empty, coe_bot]
+theorem sSup_eq_ite_of_nonempty [SupSet α] {s : Set (WithTop α)} (hs : s.Nonempty) :
+    sSup s = if ⊤ ∈ s then ⊤ else if BddAbove ((fun (a : α) ↦ ↑a) ⁻¹' s : Set α) then
+      ↑(sSup ((fun (a : α) ↦ (a : WithTop α)) ⁻¹' s : Set α)) else ⊤ := by
+  rw [sSup_def, dite_eq_right (fun h ↦ hs.ne_empty h.1)]
 
 end WithTop
 
 end LE
+
+namespace WithTop
+variable [PartialOrder α] [SupSet α] [OrderBot α]
+
+@[to_dual (attr := simp)]
+protected lemma sSup_empty : (sSup ∅ : WithTop α) = ⊥ := by
+  have hb : ∃ a : α, IsBot a := ⟨⊥, isBot_bot⟩
+  rw [sSup_def, ite_eq_right (by simp), ite_eq_left (by simp), dite_eq_left ⟨rfl, hb⟩]
+  exact congrArg _ (Classical.choose_spec hb).eq_bot
+
+end WithTop
+
 
 section Preorder
 
@@ -578,9 +604,9 @@ complete lattice with a top. -/
 theorem isLUB_sSup' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (WithTop β)}
     (hs : s.Nonempty) : IsLUB s (sSup s) := by
   classical
+  rw [sSup_eq_ite_of_nonempty hs]
   constructor
-  · change ite _ _ _ ∈ _
-    split_ifs with h₁ h₂
+  · split_ifs with h₁ h₂
     · intro _ _
       exact le_top
     · rintro (⟨⟩ | a) ha
@@ -589,8 +615,7 @@ theorem isLUB_sSup' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (Wit
       exact le_csSup h₂ ha
     · intro _ _
       exact le_top
-  · change ite _ _ _ ∈ _
-    split_ifs with h₁ h₂
+  · split_ifs with h₁ h₂
     · rintro (⟨⟩ | a) ha
       · exact le_rfl
       · exact False.elim (not_top_le_coe a (ha h₁))
@@ -611,9 +636,7 @@ theorem isLUB_sSup' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (Wit
         exact coe_le_coe.1 (hb ha)
 
 theorem isLUB_sSup (s : Set (WithTop α)) : IsLUB s (sSup s) := by
-  rcases s.eq_empty_or_nonempty with rfl | hs
-  · simp [sSup]
-  · exact isLUB_sSup' hs
+  rcases s.eq_empty_or_nonempty with rfl | hs <;> simp [isLUB_sSup', *]
 
 /-- The `sInf` of a bounded-below set is its greatest lower bound for a conditionally
 complete lattice with a top. -/
@@ -673,7 +696,7 @@ noncomputable instance : CompleteLinearOrder (WithTop α) where
 /-- A version of `WithTop.coe_sSup'` with a more convenient but less general statement. -/
 @[norm_cast]
 theorem coe_sSup {s : Set α} (hb : BddAbove s) : ↑(sSup s) = (⨆ a ∈ s, ↑a : WithTop α) := by
-  rw [coe_sSup' hb, sSup_image]
+  obtain rfl | hs := s.eq_empty_or_nonempty <;> simp [coe_sSup', sSup_image, *]
 
 /-- A version of `WithTop.coe_sInf'` with a more convenient but less general statement. -/
 @[norm_cast]
@@ -816,15 +839,16 @@ end
 section WithTopBot
 
 /-!
-### Complete lattice structure on `WithTop (WithBot α)`
+### Complete lattice structure on `WithTop α`, `WithBot α`
 
 If `α` is a `ConditionallyCompleteLattice`, then we show that `WithTop α` and `WithBot α`
-also inherit the structure of conditionally complete lattices. Furthermore, we show
-that `WithTop (WithBot α)` and `WithBot (WithTop α)` naturally inherit the structure of a
-complete lattice. Note that for `α` a conditionally complete lattice, `sSup` and `sInf` both return
-junk values for sets which are empty or unbounded. The extension of `sSup` to `WithTop α` fixes
-the unboundedness problem and the extension to `WithBot α` fixes the problem with
-the empty set.
+also inherit the structure of conditionally complete lattices. We show that they are in fact if
+furthermore `α` has a bottom and top element respectively. In particular, `WithBot (WithTop α)` and
+`WithTop (WithBot α)` are (isomorphic) complete lattices for any conditionally complete `α`.
+
+Note that for `α` a conditionally complete lattice, `sSup` and `sInf` both return junk values
+for sets which are empty or unbounded. The extension of `sSup` to `WithTop α` fixes
+the unboundedness problem and the extension to `WithBot α` fixes the problem with the empty set.
 
 This result can be used to show that the extended reals `[-∞, ∞]` are a complete linear order.
 -/
@@ -835,22 +859,30 @@ gives a conditionally complete lattice -/
 @[to_dual
 /-- Adding a bottom element to a conditionally complete lattice
 gives a conditionally complete lattice -/]
-noncomputable instance WithTop.conditionallyCompleteLattice {α : Type*}
-    [ConditionallyCompleteLattice α] : ConditionallyCompleteLattice (WithTop α) where
+noncomputable instance WithTop.conditionallyCompleteLattice [ConditionallyCompleteLattice α] :
+    ConditionallyCompleteLattice (WithTop α) where
   isLUB_csSup _ hS _ := WithTop.isLUB_sSup' hS
   isGLB_csInf _ _ hS := WithTop.isGLB_sInf' hS
 
-@[to_dual]
-noncomputable instance [CompleteLattice α] : CompleteLattice (WithTop α) where
-  isLUB_sSup s := ⟨fun _ ↦ le_csSup (OrderTop.bddAbove _), fun _ has ↦
-    s.eq_empty_or_nonempty.elim (by simp [·, WithTop.sSup_empty]) (csSup_le · has)⟩
-  isGLB_sInf s := ⟨fun _ ↦ csInf_le (OrderBot.bddBelow _), fun _ hsa ↦
-    s.eq_empty_or_nonempty.elim (by simp [·]) (le_csInf · hsa)⟩
-
-noncomputable instance [CompleteLinearOrder α] : CompleteLinearOrder (WithBot α) where
-  __ := WithBot.linearOrder
-  __ := WithBot.linearOrder.toBiheytingAlgebra
-  __ := show CompleteLattice (WithBot α) from inferInstance
+/-- Adding a bottom element to a conditionally complete lattice with a top element gives a complete
+lattice. -/
+@[to_dual
+/-- Adding a top element to a conditionally complete lattice with a bottom element gives a complete
+lattice. -/]
+noncomputable instance WithBot.completeLattice [ConditionallyCompleteLattice α] [OrderTop α] :
+    CompleteLattice (WithBot α) where
+  __ := conditionallyCompleteLattice
+  __ : BoundedOrder (WithBot α) := inferInstance
+  isLUB_sSup S := by
+    obtain rfl | hS := S.eq_empty_or_nonempty
+    · rw [WithBot.sSup_empty]
+      exact isLUB_empty
+    · exact isLUB_csSup hS (OrderTop.bddAbove S)
+  isGLB_sInf S := by
+    obtain rfl | hS := S.eq_empty_or_nonempty
+    · rw [WithBot.sInf_empty]
+      exact isGLB_empty
+    · exact isGLB_csInf hS (OrderBot.bddBelow S)
 
 noncomputable instance [ConditionallyCompleteLinearOrder α] :
     ConditionallyCompleteLinearOrder (WithTop α) where
@@ -871,35 +903,16 @@ noncomputable instance [ConditionallyCompleteLinearOrder α] :
   csInf_of_not_bddBelow s := absurd <| OrderBot.bddBelow s
   csSup_empty := WithBot.sSup_empty
 
-open scoped Classical in
-@[to_dual WithBot.WithTop.completeLattice]
-noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
-    [ConditionallyCompleteLattice α] : CompleteLattice (WithTop (WithBot α)) where
-  isLUB_sSup S := ⟨fun a haS ↦ (WithTop.isLUB_sSup' ⟨a, haS⟩).1 haS, fun a ha ↦ by
-    rcases S.eq_empty_or_nonempty with h | h
-    · change ite _ _ _ ≤ a
-      simp [h]
-    · exact (WithTop.isLUB_sSup' h).2 ha⟩
-  isGLB_sInf S := ⟨fun a haS ↦
-    show ite _ _ _ ≤ a by
-      simp only [OrderBot.bddBelow, not_true_eq_false, or_false]
-      split_ifs with h₁
-      · cases a
-        · exact le_rfl
-        cases h₁ haS
-      · cases a
-        · exact le_top
-        · apply WithTop.coe_le_coe.2
-          refine csInf_le ?_ haS
-          use ⊥
-          intro b _
-          exact bot_le,
-    fun a haS ↦ (WithTop.isGLB_sInf' ⟨a, haS⟩).2 haS⟩
+noncomputable instance [ConditionallyCompleteLinearOrder α] [OrderBot α] :
+    CompleteLinearOrder (WithTop α) where
+  __ := WithTop.linearOrder
+  __ := WithTop.linearOrder.toBiheytingAlgebra
+  __ := show CompleteLattice (WithTop α) from inferInstance
 
-noncomputable instance WithBot.WithTop.completeLinearOrder {α : Type*}
-    [ConditionallyCompleteLinearOrder α] : CompleteLinearOrder (WithBot (WithTop α)) where
-  __ := completeLattice
-  __ := linearOrder
-  __ := linearOrder.toBiheytingAlgebra
+noncomputable instance [ConditionallyCompleteLinearOrder α] [OrderTop α] :
+    CompleteLinearOrder (WithBot α) where
+  __ := WithBot.linearOrder
+  __ := WithBot.linearOrder.toBiheytingAlgebra
+  __ := show CompleteLattice (WithBot α) from inferInstance
 
 end WithTopBot
