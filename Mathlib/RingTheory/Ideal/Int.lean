@@ -109,26 +109,6 @@ section CommRing
 
 variable [CommRing R] [IsDomain R] [Algebra.IsIntegral ℤ R]
 
-variable (R)
-
-/-- If `ℤ` is integrally closed in `R` (e.g. `R` is a ring of integers), the ideal below
-`span {(n : R)}` is `span {n}`. -/
-theorem Int.under_span_natCast [CharZero R] (n : ℤ) :
-    (span {(n : R)}).under ℤ = span {n} := by
-  ext d
-  rw [under_def, mem_comap, mem_span_singleton, mem_span_singleton,
-    show (n : R) = algebraMap ℤ R n by rw [eq_intCast],
-    IsIntegrallyClosed.algebraMap_dvd_algebraMap_iff]
-
-/-- If `ℤ` is integrally closed in `R` (e.g. `R` is a ring of integers), the norm of the ideal
-below `span {(n : R)}` is `n`. -/
-theorem Int.absNorm_under_span_natCast [CharZero R] (n : ℕ) :
-    absNorm ((span {(n : R)}).under ℤ) = n := by
-  rw [← Int.cast_natCast, Int.under_span_natCast R n]
-  simp
-
-variable {R}
-
 theorem Nat.absNorm_under_prime (P : Ideal R) [P.IsPrime] [NeZero P] :
     (absNorm (under ℤ P)).Prime := by
   rw [Nat.prime_iff_prime_int, ← span_singleton_prime, Int.ideal_span_absNorm_eq_self]
