@@ -131,7 +131,6 @@ theorem intervalGapsWithin_le_fst {a b : α} (hFab : ∀ ⦃z⦄, z ∈ F → a 
   · simp [hj]
   · have := hFab (F.intervalGapsWithin_mapsTo h a b (x := j - 1) (by grind))
     have hj₀ : j - 1 + 1 = j := by lia
-    simp only [Nat.succ_eq_add_one, hj₀] at this
     grind
 
 theorem intervalGapsWithin_snd_le {a b : α} (hFab : ∀ ⦃z⦄, z ∈ F → a ≤ z.1 ∧ z.1 ≤ z.2 ∧ z.2 ≤ b) :

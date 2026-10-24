@@ -122,7 +122,6 @@ private lemma comm_succ (n : ℕ) :
     rw [Finset.disjoint_iff_ne]
     simp only [Finset.mem_insert, forall_eq_or_imp, Prod.forall]
     rintro ⟨a, _⟩ ⟨b, _⟩
-    simp
     grind
   have h₄ : Disjoint (Finset.disjUnion _ _ h₁) (Finset.disjUnion _ _ h₃) := by
     rw [Finset.disjoint_iff_ne]

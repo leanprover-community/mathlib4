@@ -457,7 +457,6 @@ theorem IsLittleO.of_tendsto_div_atTop (h : Tendsto (fun x ↦ g x / f x) l atTo
   apply Asymptotics.isLittleO_of_tendsto'
   · apply (Filter.Tendsto.eventually_ge_atTop h 1).mono
     intro x h h0
-    simp only [h0, zero_div] at h
     grind
   · convert! Tendsto.comp tendsto_inv_atTop_zero h
     simp
