@@ -49,7 +49,7 @@ instance instDomMulActModule
     {S M M₂ : Type*} [Semiring S] [AddCommMonoid M] [AddCommMonoid M₂] [Module S M] :
     Module Sᵈᵐᵃ (M →+ M₂) where
   add_smul s s' f := AddMonoidHom.ext fun m ↦ by
-    simp_rw [AddMonoidHom.add_apply, DomMulAct.smul_addMonoidHom_apply, ← map_add, ← add_smul]; rfl
+    simp_rw [add_apply, DomMulAct.smul_addMonoidHom_apply, ← map_add, ← add_smul]; rfl
   zero_smul _ := AddMonoidHom.ext fun _ ↦ by
     rw [DomMulAct.smul_addMonoidHom_apply]
     -- TODO there should be a simp lemma for `DomMulAct.mk.symm 0`

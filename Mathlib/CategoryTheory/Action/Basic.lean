@@ -321,8 +321,8 @@ def actionPUnitEquivalence : Action V PUnit ≌ V where
       map := fun f => ⟨f, fun ⟨⟩ => by simp⟩ }
   unitIso :=
     NatIso.ofComponents fun X => mkIso (Iso.refl _) fun ⟨⟩ => by
-      simp only [Functor.id_obj, MonoidHom.one_apply, End.one_asHom, Functor.comp_obj,
-        forget_obj, Iso.refl_hom, Category.comp_id]
+      simp only [Functor.id_obj, one_apply, End.one_asHom, Functor.comp_obj, forget_obj,
+        Iso.refl_hom, Category.comp_id]
       exact congr($(ρ_one X).asHom)
   counitIso := NatIso.ofComponents fun _ => Iso.refl _
 
