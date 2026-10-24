@@ -123,19 +123,19 @@ variable {S₁ S₂}
 instance : HasZeroMorphisms (ShortComplex C) where
 
 /-- The first projection functor `ShortComplex C ⥤ C`. -/
-@[simps]
+@[implicit_reducible, simps]
 def π₁ : ShortComplex C ⥤ C where
   obj S := S.X₁
   map f := f.τ₁
 
 /-- The second projection functor `ShortComplex C ⥤ C`. -/
-@[simps]
+@[implicit_reducible, simps]
 def π₂ : ShortComplex C ⥤ C where
   obj S := S.X₂
   map f := f.τ₂
 
 /-- The third projection functor `ShortComplex C ⥤ C`. -/
-@[simps]
+@[implicit_reducible, simps]
 def π₃ : ShortComplex C ⥤ C where
   obj S := S.X₃
   map f := f.τ₃
@@ -241,13 +241,12 @@ lemma isIso_iff (f : S₁ ⟶ S₂) :
   map {S T} f := Arrow.homMk f.τ₂ f.τ₃ f.comm₂₃
 
 /-- The opposite `ShortComplex` in `Cᵒᵖ` associated to a short complex in `C`. -/
-@[simps]
+@[implicit_reducible, simps]
 def op : ShortComplex Cᵒᵖ :=
   mk S.g.op S.f.op (by simp only [← op_comp, S.zero]; rfl)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The opposite morphism in `ShortComplex Cᵒᵖ` associated to a morphism in `ShortComplex C` -/
-@[simps]
+@[implicit_reducible, simps]
 def opMap (φ : S₁ ⟶ S₂) : S₂.op ⟶ S₁.op where
   τ₁ := φ.τ₃.op
   τ₂ := φ.τ₂.op
@@ -263,13 +262,12 @@ def opMap (φ : S₁ ⟶ S₂) : S₂.op ⟶ S₁.op where
 lemma opMap_id : opMap (𝟙 S) = 𝟙 S.op := rfl
 
 /-- The `ShortComplex` in `C` associated to a short complex in `Cᵒᵖ`. -/
-@[simps]
+@[implicit_reducible, simps]
 def unop (S : ShortComplex Cᵒᵖ) : ShortComplex C :=
   mk S.g.unop S.f.unop (by simp only [← unop_comp, S.zero]; rfl)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The morphism in `ShortComplex C` associated to a morphism in `ShortComplex Cᵒᵖ` -/
-@[simps]
+@[implicit_reducible, simps]
 def unopMap {S₁ S₂ : ShortComplex Cᵒᵖ} (φ : S₁ ⟶ S₂) : S₂.unop ⟶ S₁.unop where
   τ₁ := φ.τ₃.unop
   τ₂ := φ.τ₂.unop
@@ -287,21 +285,19 @@ lemma unopMap_id (S : ShortComplex Cᵒᵖ) : unopMap (𝟙 S) = 𝟙 S.unop := 
 variable (C)
 
 /-- The obvious functor `(ShortComplex C)ᵒᵖ ⥤ ShortComplex Cᵒᵖ`. -/
-@[simps]
+@[implicit_reducible, simps]
 def opFunctor : (ShortComplex C)ᵒᵖ ⥤ ShortComplex Cᵒᵖ where
   obj S := (Opposite.unop S).op
   map φ := opMap φ.unop
 
 /-- The obvious functor `ShortComplex Cᵒᵖ ⥤ (ShortComplex C)ᵒᵖ`. -/
-@[simps]
+@[implicit_reducible, simps]
 def unopFunctor : ShortComplex Cᵒᵖ ⥤ (ShortComplex C)ᵒᵖ where
   obj S := Opposite.op (S.unop)
   map φ := (unopMap φ).op
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- The obvious equivalence of categories `(ShortComplex C)ᵒᵖ ≌ ShortComplex Cᵒᵖ`. -/
-@[simps]
+@[implicit_reducible, simps]
 def opEquiv : (ShortComplex C)ᵒᵖ ≌ ShortComplex Cᵒᵖ where
   functor := opFunctor C
   inverse := unopFunctor C
