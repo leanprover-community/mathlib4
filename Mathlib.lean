@@ -269,6 +269,7 @@ public import Mathlib.Algebra.CharP.Pi
 public import Mathlib.Algebra.CharP.Quotient
 public import Mathlib.Algebra.CharP.Reduced
 public import Mathlib.Algebra.CharP.Subring
+public import Mathlib.Algebra.CharP.Synonym
 public import Mathlib.Algebra.CharP.Two
 public import Mathlib.Algebra.CharZero.AddMonoidHom
 public import Mathlib.Algebra.CharZero.Defs
