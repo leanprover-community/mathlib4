@@ -65,6 +65,7 @@ def weylGroup.ofIdx (i : ι) : P.weylGroup := ⟨_, P.reflection_mem_weylGroup i
     weylGroup.ofIdx P i • m = Equiv.reflection P i • m :=
   rfl
 
+open scoped Pointwise in
 /-- Usually `RootPairing.weylGroup.induction` will be more useful than this lemma. -/
 lemma weylGroup_toSubmonoid :
     P.weylGroup.toSubmonoid = Submonoid.closure (range (Equiv.reflection P)) := by
