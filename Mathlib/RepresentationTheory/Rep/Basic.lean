@@ -46,7 +46,9 @@ variable {k : Type u} {G : Type v} [Semiring k] [Monoid G] {X Y : Type w} [AddCo
   [AddCommGroup Y] [Module k X] [Module k Y] {ρ : Representation k G X} {σ : Representation k G Y}
   (A B C : Rep.{w} k G)
 
-attribute [instance] hV1 hV2
+attribute [instance] hV1
+
+attribute [instance 1100] hV2
 
 initialize_simps_projections Rep (-hV1, -hV2)
 
@@ -219,12 +221,12 @@ lemma hom_comp_toLinearMap (f : A ⟶ B) (g : B ⟶ C) :
 lemma add_comp (f₁ f₂ : A ⟶ B) (g : B ⟶ C) :
     (f₁ + f₂) ≫ g = f₁ ≫ g + f₂ ≫ g := by
   ext1
-  simp [add_hom, Representation.IntertwiningMap.add_comp]
+  simp [add_hom, Representation.IntertwiningMap.comp_add]
 
 lemma comp_add (f : A ⟶ B) (g₁ g₂ : B ⟶ C) :
     f ≫ (g₁ + g₂) = f ≫ g₁ + f ≫ g₂ := by
   ext1
-  simp [add_hom, Representation.IntertwiningMap.comp_add]
+  simp [add_hom, Representation.IntertwiningMap.add_comp]
 
 instance : Zero (A ⟶ B) where
   zero := ofHom (0 : A.ρ.IntertwiningMap B.ρ)
@@ -264,8 +266,8 @@ instance : AddCommGroup (A ⟶ B) := fast_instance% hom_injective.addCommGroup
     Rep.Hom.hom zero_hom add_hom neg_hom sub_hom nsmul_hom zsmul_hom
 
 instance : Preadditive (Rep.{w} k G) where
-  add_comp _ _ _ := add_comp
-  comp_add _ _ _ := comp_add
+  add_comp := by simp [add_comp]
+  comp_add := by simp [comp_add]
 
 lemma sum_hom {ι : Type u'} (f : ι → (A ⟶ B)) (s : Finset ι) :
     (∑ i ∈ s, f i).hom = ∑ i ∈ s, (f i).hom := by
@@ -475,7 +477,6 @@ section Action
 
 variable (k G)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Every object in `Rep k G` naturally correspond to an object in `Action`. -/
 @[simps]
 def RepToAction : Rep.{w} k G ⥤ Action (ModuleCat.{w} k) G where
@@ -533,12 +534,30 @@ instance preservesColimits_forget :
     Limits.PreservesColimitsOfSize.{w, w} (forget₂ (Rep.{w} k G) (ModuleCat k)) :=
   Limits.preservesColimits_of_natIso (forgetNatIsoActionForget k G).symm
 
+variable {k G}
+
+/-- The concrete bicone of `A.ρ.prod B.ρ`. -/
+@[implicit_reducible]
+def binaryBicone (A B : Rep.{w} k G) :
+    Limits.BinaryBicone A B :=
+  ⟨Rep.of (X := A.V × B.V) (A.ρ.prod B.ρ), Rep.ofHom (.fst k A.ρ B.ρ), Rep.ofHom (.snd k A.ρ B.ρ),
+    Rep.ofHom (.inl k A.ρ B.ρ), Rep.ofHom (.inr k A.ρ B.ρ), by ext1; simp, by ext1; simp [zero_hom],
+    by ext1; simp [zero_hom], by ext1; simp⟩
+
+/-- The concrete binary bicone in `Rep` is a bilimit. -/
+def binaryBiconeIsBilimit (A B : Rep.{w} k G) :
+    (binaryBicone A B).IsBilimit :=
+  Limits.isBinaryBilimitOfTotal _ <| by
+    ext1; unfold binaryBicone; simp [add_hom]
+
 instance : Limits.HasBinaryBiproducts (Rep.{w} k G) where
-  has_binary_biproduct A B := Limits.hasBinaryBiproduct_of_total
-    ⟨Rep.of (X := A.V × B.V) (A.ρ.prod B.ρ), Rep.ofHom (.fst k A.ρ B.ρ), Rep.ofHom (.snd k A.ρ B.ρ),
-      Rep.ofHom (.inl k A.ρ B.ρ), Rep.ofHom (.inr k A.ρ B.ρ), by ext1; simp,
-      by ext1; simp [zero_hom], by ext1; simp [zero_hom], by ext1; simp⟩ <| by
-    ext1; simp [Rep.add_hom]
+  has_binary_biproduct A B := Limits.HasBinaryBiproduct.mk
+    ⟨binaryBicone A B, binaryBiconeIsBilimit A B⟩
+
+/-- The canonical isomorphism from the concrete biproduct to the abstract product. -/
+def prodIsoProduct (A B : Rep.{w} k G) :
+    Rep.of (A.ρ.prod B.ρ) ≅ A ⨯ B :=
+  (binaryBiconeIsBilimit A B).isLimit.conePointUniqueUpToIso (Limits.limit.isLimit _)
 
 instance : Limits.HasZeroObject (Rep.{w} k G) where
   zero := ⟨Rep.trivial k G PUnit, {
@@ -566,13 +585,11 @@ instance : Limits.ReflectsColimitsOfSize.{w, w} (forget₂ (Rep.{w} k G) (Module
 
 instance : Abelian (Rep.{w} k G) := abelianOfEquivalence (RepToAction k G)
 
-variable {k G} in
 theorem epi_iff_surjective (f : A ⟶ B) : Epi f ↔ Function.Surjective f.hom :=
   ⟨fun _ => (ModuleCat.epi_iff_surjective ((forget₂ _ _).map f)).1 inferInstance,
   fun h => (forget₂ _ _).epi_of_epi_map ((ModuleCat.epi_iff_surjective <|
     (forget₂ _ _).map f).2 h)⟩
 
-variable {k G} in
 theorem mono_iff_injective (f : A ⟶ B) : Mono f ↔ Function.Injective f.hom :=
   ⟨fun _ => (ModuleCat.mono_iff_injective ((forget₂ _ _).map f)).1 inferInstance,
   fun h => (forget₂ _ _).mono_of_mono_map ((ModuleCat.mono_iff_injective <|
@@ -615,8 +632,8 @@ instance {M N : Rep k G} : Module k (M ⟶ N) := fast_instance% hom_injective.mo
   _ ⟨⟨_, zero_hom⟩, add_hom⟩ <| by simp [smul_hom]
 
 instance : Linear k (Rep k G) where
-  smul_comp _ _ _ := smul_comp
-  comp_smul _ _ _ := comp_smul
+  smul_comp := by simp [smul_comp]
+  comp_smul := by simp [comp_smul]
 
 end CommSemiring
 
@@ -863,22 +880,22 @@ variable {k : Type u} [Semiring k] {G : Type v} [Group G] [Fintype G] (A : Rep.{
 
 /-- Given a representation `A` of a finite group `G`, `norm A` is the representation morphism
 `A ⟶ A` defined by `x ↦ ∑ A.ρ g x` for `g` in `G`. -/
-def norm : End A := Rep.ofHom (σ := A.ρ) (ρ := A.ρ) ⟨Representation.norm A.ρ,
-    fun g ↦ by ext; simp⟩
+def norm : End A :=
+  .of (Rep.ofHom (σ := A.ρ) (ρ := A.ρ) ⟨Representation.norm A.ρ,
+    fun g ↦ by ext; simp⟩)
 
 @[simp]
-lemma norm_apply {x : A} : (norm A).hom x = A.ρ.norm x := rfl
+lemma norm_apply {x : A} : (norm A).asHom.hom x = A.ρ.norm x := rfl
 
 @[reassoc, elementwise]
-lemma norm_comm {A B : Rep k G} (f : A ⟶ B) : f ≫ norm B = norm A ≫ f := by
+lemma norm_comm {A B : Rep k G} (f : A ⟶ B) : f ≫ (norm B).asHom = (norm A).asHom ≫ f := by
   ext; simp [Representation.norm, hom_comm_apply]
 
 /-- Given a representation `A` of a finite group `G`, the norm map `A ⟶ A` defined by
 `x ↦ ∑ A.ρ g x` for `g` in `G` defines a natural endomorphism of the identity functor. -/
 @[simps]
-def normNatTrans : End (𝟭 (Rep k G)) where
-  app := norm
-  naturality _ _ := norm_comm
+def normNatTrans : End (𝟭 (Rep k G)) :=
+  .of { app A := (norm A).asHom, naturality _ _ := norm_comm }
 
 end
 

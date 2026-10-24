@@ -8,7 +8,6 @@ module
 public import Mathlib.Order.Disjoint
 public import Mathlib.Order.RelIso.Basic
 public import Mathlib.Tactic.Monotonicity.Attr
-public import Mathlib.Tactic.PPWithUniv
 
 /-!
 # Order homomorphisms
@@ -113,7 +112,9 @@ to_dual_insert_cast_fun OrderIso :=
 infixl:25 " ≃o " => OrderIso
 
 -- These instances are here just to make `to_dual` work correctly
+@[macro_inline]
 instance (α β : Type*) [LE α] [LE β] : FunLike (α ↪o β) α β := RelEmbedding.instFunLike
+@[macro_inline]
 instance (α β : Type*) [LE α] [LE β] : FunLike (α ≃o β) α β := RelIso.instFunLike
 
 section
@@ -191,7 +192,7 @@ variable [LE α] [LE β] [EquivLike F α β] [OrderIsoClass F α β]
 
 @[to_dual (attr := simp) le_map_inv_iff]
 theorem map_inv_le_iff (f : F) {a : α} {b : β} : EquivLike.inv f b ≤ a ↔ b ≤ f a := by
-  convert! (map_le_map_iff f).symm
+  convert (map_le_map_iff f).symm
   exact (EquivLike.right_inv f _).symm
 
 @[to_dual self]
@@ -223,6 +224,7 @@ namespace OrderHom
 
 variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ]
 
+@[macro_inline]
 instance : FunLike (α →o β) α β where
   coe := toFun
   coe_injective f g h := by cases f; cases g; congr
@@ -660,8 +662,8 @@ protected def dual : αᵒᵈ ↪o βᵒᵈ :=
 /-- A preorder which embeds into a well-founded preorder is itself well-founded. -/
 @[to_dual /-- A preorder which embeds into a preorder in which `(· > ·)` is well-founded
 also has `(· > ·)` well-founded. -/]
-protected theorem wellFoundedLT [WellFoundedLT β] (f : α ↪o β) : WellFoundedLT α where
-  wf := f.wellFounded IsWellFounded.wf
+protected theorem wellFoundedLT [i : WellFoundedLT β] (f : α ↪o β) : WellFoundedLT α :=
+  f.wellFounded i
 
 /-- To define an order embedding from a partial order to a preorder it suffices to give a function
 together with a proof that it satisfies `f a ≤ f b ↔ a ≤ b`.
@@ -777,6 +779,7 @@ section LE
 
 variable [LE α] [LE β] [LE γ] [LE δ]
 
+@[macro_inline]
 instance : EquivLike (α ≃o β) α β :=
   inferInstance
 
@@ -852,7 +855,7 @@ theorem symm_apply_eq (e : α ≃o β) {x : α} {y : β} : e.symm y = x ↔ y = 
 theorem eq_symm_apply (e : α ≃o β) {x : α} {y : β} : x = e.symm y ↔ e x = y :=
   e.toEquiv.eq_symm_apply
 
-@[deprecated eq_symm_apply (since := "2026-07-26")]
+@[deprecated eq_symm_apply +typeChanged (since := "2026-07-26")]
 theorem apply_eq_iff_eq_symm_apply (e : α ≃o β) (x : α) (y : β) : e x = y ↔ x = e.symm y :=
   e.eq_symm_apply.symm
 
@@ -1010,6 +1013,9 @@ theorem coe_prodComm : ⇑(prodComm : α × β ≃o β × α) = Prod.swap :=
 theorem prodComm_symm : (prodComm : α × β ≃o β × α).symm = prodComm :=
   rfl
 
+@[simp]
+theorem prodComm_trans_prodComm : (prodComm : α × β ≃o β × α).trans prodComm = .refl _ := rfl
+
 variable (α)
 
 /-- The order isomorphism between a type and its double dual. -/
@@ -1127,7 +1133,7 @@ def ofCmpEqCmp {α β} [LinearOrder α] [LinearOrder β] (f : α → β) (g : β
     map_rel_iff' := by
       intro a b
       apply le_iff_le_of_cmp_eq_cmp
-      convert! (h a (f b)).symm
+      convert (h a (f b)).symm
       apply gf }
 
 /-- To show that `f : α →o β` and `g : β →o α` make up an order isomorphism it is enough to show

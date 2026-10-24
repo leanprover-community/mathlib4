@@ -5,16 +5,11 @@ Authors: Kim Morrison, Jakob von Raumer
 -/
 module
 
-public import Mathlib.CategoryTheory.Category.Cat.AsSmall
-public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
-public import Mathlib.CategoryTheory.IsConnected
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
-public import Mathlib.CategoryTheory.Limits.Types.Products
-public import Mathlib.CategoryTheory.Limits.Shapes.Grothendieck
 public import Mathlib.CategoryTheory.Filtered.Basic
+public import Mathlib.CategoryTheory.IsConnected
+public import Mathlib.CategoryTheory.Limits.Shapes.Grothendieck
+public import Mathlib.CategoryTheory.Limits.Types.Products
 public import Mathlib.CategoryTheory.Limits.Yoneda
-public import Mathlib.CategoryTheory.PUnit
-public import Mathlib.CategoryTheory.Grothendieck
 
 /-!
 # Final and initial functors
@@ -65,7 +60,7 @@ Dualise condition 3 above and the implications 2 ⇒ 3 and 3 ⇒ 1 to initial fu
 ## References
 * https://stacks.math.columbia.edu/tag/09WN
 * https://ncatlab.org/nlab/show/final+functor
-* Borceux, Handbook of Categorical Algebra I, Section 2.11.
+* [F. Borceux, *Handbook of Categorical Algebra 1*][borceux-vol1], Section 2.11.
   (Note he reverses the roles of definition and main result relative to here!)
 -/
 
@@ -567,13 +562,9 @@ def induction {d : D} (Z : ∀ (X : C) (_ : F.obj X ⟶ d), Sort*)
     @isPreconnected_induction _ _ _ (fun Y : CostructuredArrow F d => Z Y.left Y.hom) _ _
       (CostructuredArrow.mk k₀) z
   · intro j₁ j₂ f a
-    fapply h₁ _ _ _ _ f.left _ a
-    convert! f.w
-    simp
+    exact h₁ _ _ _ _ f.left f.w a
   · intro j₁ j₂ f a
-    fapply h₂ _ _ _ _ f.left _ a
-    convert! f.w
-    simp
+    exact h₂ _ _ _ _ f.left f.w a
 
 variable {F G}
 
@@ -1158,7 +1149,7 @@ private lemma Grothendieck.final_map_small {C : Type u₁} [SmallCategory C] {F 
   intro H
   let i := (colimitFiberwiseColimitIso _).symm ≪≫
     HasColimit.isoOfNatIso (fiberwiseColimitMapCompEquivalence α H) ≪≫ colimitFiberwiseColimitIso _
-  convert! Iso.isIso_hom i
+  convert Iso.isIso_hom i
   apply colimit.hom_ext
   intro X
   simp [i, fiberwiseColimitMapCompEquivalence]

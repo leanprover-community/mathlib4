@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Algebra.Category.Grp.FiniteGrp
 public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
-public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 public import Mathlib.Topology.Category.Profinite.Basic
 public import Mathlib.Topology.Separation.Connected
+
 /-!
 
 # Category of Profinite Groups
@@ -264,7 +264,8 @@ def ContinuousMulEquiv.toProfiniteGrpIso {X Y : ProfiniteGrp} (e : X ≃ₜ* Y) 
   inv := ofHom e.symm
 
 /-- The functor mapping a profinite group to its underlying profinite space. -/
-@[to_additive]
+@[to_additive /-- The functor mapping a profinite additive group to its underlying profinite
+space. -/]
 instance : HasForget₂ ProfiniteGrp Profinite where
   forget₂ := {
     obj G := G.toProfinite
