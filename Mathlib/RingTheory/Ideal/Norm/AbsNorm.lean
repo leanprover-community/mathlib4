@@ -43,8 +43,8 @@ the quotient `R ⧸ I`, with the junk value `0` at `I = ⊥`.
   of the basis change matrix
 * `Ideal.absNorm_span_singleton`: the ideal norm of a principal ideal is the
   norm of its generator
-* `Ring.HasFiniteQuotients.finite_absNorm_le`: a ring with finite quotients has only finitely
-  many ideals of bounded norm
+* `Ring.HasFiniteQuotients.finite_cardQuot_le`: a ring with finite quotients has only finitely
+  many ideals whose quotient has bounded cardinality
 -/
 
 @[expose] public section
@@ -394,34 +394,42 @@ section HasFiniteQuotients
 
 variable [Ring.HasFiniteQuotients S]
 
-/-- A version of `absNorm_eq_zero_iff` for a ring with finite quotients. -/
 @[simp]
-theorem absNorm_eq_zero_iff' {I : Ideal S} : Ideal.absNorm I = 0 ↔ I = ⊥ := by
+theorem absNorm_eq_zero_iff {I : Ideal S} : Ideal.absNorm I = 0 ↔ I = ⊥ := by
   obtain rfl | hI := eq_or_ne I ⊥
   · simp
   · have := Ring.HasFiniteQuotients.finiteQuotient hI
     simpa [hI, absNorm_of_ne_bot hI, Submodule.cardQuot_apply] using Nat.card_pos.ne'
 
-/-- A version of `absNorm_ne_zero_iff_mem_nonZeroDivisors` for a ring with finite quotients. -/
-theorem absNorm_ne_zero_iff_mem_nonZeroDivisors' {I : Ideal S} :
+@[deprecated (since := "2026-10-23")] alias absNorm_eq_zero_iff' := absNorm_eq_zero_iff
+
+theorem absNorm_ne_zero_iff_mem_nonZeroDivisors {I : Ideal S} :
     absNorm I ≠ 0 ↔ I ∈ (Ideal S)⁰ := by
-  simp_rw [ne_eq, absNorm_eq_zero_iff', mem_nonZeroDivisors_iff_ne_zero, Submodule.zero_eq_bot]
+  simp_rw [ne_eq, absNorm_eq_zero_iff, mem_nonZeroDivisors_iff_ne_zero, Submodule.zero_eq_bot]
 
-/-- A version of `absNorm_pos_iff_mem_nonZeroDivisors` for a ring with finite quotients. -/
-theorem absNorm_pos_iff_mem_nonZeroDivisors' {I : Ideal S} :
+@[deprecated (since := "2026-10-23")]
+alias absNorm_ne_zero_iff_mem_nonZeroDivisors' := absNorm_ne_zero_iff_mem_nonZeroDivisors
+
+theorem absNorm_pos_iff_mem_nonZeroDivisors {I : Ideal S} :
     0 < absNorm I ↔ I ∈ (Ideal S)⁰ := by
-  rw [← absNorm_ne_zero_iff_mem_nonZeroDivisors', Nat.pos_iff_ne_zero]
+  rw [← absNorm_ne_zero_iff_mem_nonZeroDivisors, Nat.pos_iff_ne_zero]
 
-/-- A version of `absNorm_ne_zero_of_nonZeroDivisors` for a ring with finite quotients. -/
-theorem absNorm_ne_zero_of_nonZeroDivisors' (I : (Ideal S)⁰) : absNorm (I : Ideal S) ≠ 0 :=
-  absNorm_ne_zero_iff_mem_nonZeroDivisors'.mpr (SetLike.coe_mem I)
+@[deprecated (since := "2026-10-23")]
+alias absNorm_pos_iff_mem_nonZeroDivisors' := absNorm_pos_iff_mem_nonZeroDivisors
 
-/-- A version of `absNorm_pos_of_nonZeroDivisors` for a ring with finite quotients. -/
-theorem absNorm_pos_of_nonZeroDivisors' (I : (Ideal S)⁰) : 0 < absNorm (I : Ideal S) :=
-  absNorm_pos_iff_mem_nonZeroDivisors'.mpr (SetLike.coe_mem I)
+theorem absNorm_ne_zero_of_nonZeroDivisors (I : (Ideal S)⁰) : absNorm (I : Ideal S) ≠ 0 :=
+  absNorm_ne_zero_iff_mem_nonZeroDivisors.mpr (SetLike.coe_mem I)
 
-/-- A version of `card_norm_le_eq_card_norm_le_add_one` for a ring with finite quotients. -/
-theorem card_norm_le_eq_card_norm_le_add_one' (n : ℕ) :
+@[deprecated (since := "2026-10-23")]
+alias absNorm_ne_zero_of_nonZeroDivisors' := absNorm_ne_zero_of_nonZeroDivisors
+
+theorem absNorm_pos_of_nonZeroDivisors (I : (Ideal S)⁰) : 0 < absNorm (I : Ideal S) :=
+  absNorm_pos_iff_mem_nonZeroDivisors.mpr (SetLike.coe_mem I)
+
+@[deprecated (since := "2026-10-23")]
+alias absNorm_pos_of_nonZeroDivisors' := absNorm_pos_of_nonZeroDivisors
+
+theorem card_norm_le_eq_card_norm_le_add_one (n : ℕ) :
     Nat.card {I : Ideal S // absNorm I ≤ n} =
       Nat.card {I : (Ideal S)⁰ // absNorm (I : Ideal S) ≤ n} + 1 := by
   rw [← Set.coe_ofPred, ← Set.coe_ofPred, Nat.card_coe_set_eq, Nat.card_coe_set_eq,
@@ -432,39 +440,18 @@ theorem card_norm_le_eq_card_norm_le_add_one' (n : ℕ) :
   ext
   simp
 
+@[deprecated (since := "2026-10-23")]
+alias card_norm_le_eq_card_norm_le_add_one' := card_norm_le_eq_card_norm_le_add_one
+
 end HasFiniteQuotients
 
 section Finite
 
 variable [Module.Finite ℤ S]
 
--- A module-finite ℤ-algebra has finite quotients; local to this section, where it lets the
--- unprimed results below be deduced from the primed ones.
+-- A module-finite `ℤ`-algebra has finite quotients; local to this section to supply
+-- `Ring.HasFiniteQuotients S`.
 local instance : Ring.HasFiniteQuotients S := .of_module_finite ℤ S
-
-theorem absNorm_eq_zero_iff {I : Ideal S} : Ideal.absNorm I = 0 ↔ I = ⊥ :=
-  absNorm_eq_zero_iff'
-
-theorem absNorm_ne_zero_iff_mem_nonZeroDivisors {I : Ideal S} :
-    absNorm I ≠ 0 ↔ I ∈ (Ideal S)⁰ :=
-  absNorm_ne_zero_iff_mem_nonZeroDivisors'
-
-theorem absNorm_pos_iff_mem_nonZeroDivisors {I : Ideal S} :
-    0 < absNorm I ↔ I ∈ (Ideal S)⁰ :=
-  absNorm_pos_iff_mem_nonZeroDivisors'
-
-theorem absNorm_ne_zero_of_nonZeroDivisors (I : (Ideal S)⁰) : absNorm (I : Ideal S) ≠ 0 :=
-  absNorm_ne_zero_of_nonZeroDivisors' I
-
-theorem absNorm_pos_of_nonZeroDivisors (I : (Ideal S)⁰) : 0 < absNorm (I : Ideal S) :=
-  absNorm_pos_of_nonZeroDivisors' I
-
-lemma finiteIndex {I : Ideal S} (hI : I ≠ ⊥) : I.toAddSubgroup.FiniteIndex :=
-  finiteIndex' hI
-
-lemma isFiniteRelIndex {I : Ideal S} (hI : I ≠ ⊥) (J : Ideal S) :
-    I.toAddSubgroup.IsFiniteRelIndex J.toAddSubgroup :=
-  isFiniteRelIndex' hI J
 
 theorem finite_setOfPred_absNorm_le (n : ℕ) :
     {I : Ideal S | Ideal.absNorm I ≤ n}.Finite :=
@@ -484,11 +471,6 @@ theorem finite_setOfPred_absNorm_le₀ (n : ℕ) :
 
 @[deprecated (since := "2026-07-09")]
 alias finite_setOf_absNorm_le₀ := finite_setOfPred_absNorm_le₀
-
-theorem card_norm_le_eq_card_norm_le_add_one (n : ℕ) :
-    Nat.card {I : Ideal S // absNorm I ≤ n} =
-      Nat.card {I : (Ideal S)⁰ // absNorm (I : Ideal S) ≤ n} + 1 :=
-  card_norm_le_eq_card_norm_le_add_one' n
 
 section Free
 
