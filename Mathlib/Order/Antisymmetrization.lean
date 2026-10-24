@@ -370,11 +370,21 @@ noncomputable def OrderEmbedding.ofAntisymmetrization : Antisymmetrization α (�
 /-- `Antisymmetrization` and `orderDual` commute. -/
 def OrderIso.dualAntisymmetrization :
     (Antisymmetrization α (· ≤ ·))ᵒᵈ ≃o Antisymmetrization αᵒᵈ (· ≤ ·) where
-  toFun := sorry
-  invFun := sorry
-  left_inv a := sorry
-  right_inv a := sorry
-  map_rel_iff' {a b} := sorry
+  toFun a := (ofDual a).map' (s₁ := AntisymmRel.setoid ..) toDual fun _ _ h ↦ h.symm
+  invFun a := toDual (a.map' (s₁ := AntisymmRel.setoid ..) ofDual fun _ _ h ↦ h.symm)
+  left_inv a := by
+    obtain ⟨a⟩ := a
+    induction a using Antisymmetrization.ind
+    rfl
+  right_inv a := by
+    induction a using Antisymmetrization.ind
+    rfl
+  map_rel_iff' {a b} := by
+    obtain ⟨a⟩ := a
+    obtain ⟨b⟩ := b
+    induction a using Antisymmetrization.ind
+    induction b using Antisymmetrization.ind
+    rfl
 
 @[simp]
 theorem OrderIso.dualAntisymmetrization_apply (a : α) :

@@ -603,8 +603,22 @@ def mapSetOfPredMaximal (f : s ≃o t) : {x | Maximal (· ∈ s) x} ≃o {x | Ma
 /-- If two sets are antitonically order isomorphic, their minimals/maximals are too. -/
 @[to_dual /-- If two sets are antitonically order isomorphic, their maximals/minimals are too. -/]
 def setOfPredMinimalIsoSetOfPredMaximal (f : s ≃o tᵒᵈ) :
-    {x | Minimal (· ∈ s) x} ≃o {x | Maximal (· ∈ t) (ofDual x)} :=
-  sorry
+    {x | Minimal (· ∈ s) x} ≃o {x | Maximal (· ∈ t) (ofDual x)} where
+  toFun x := ⟨toDual (ofDual (f ⟨x, x.2.1⟩)).1, by
+    refine ⟨by simp, fun y hy hxy ↦ ?_⟩
+    have hz : f.symm (toDual ⟨y, hy⟩) ≤ _ := (f.symm_apply_le).2 hxy
+    have hx := x.2.le_of_le (f.symm (toDual ⟨y, hy⟩)).2 hz
+    have hle := f.monotone (hx : ⟨x.1, x.2.1⟩ ≤ _)
+    rwa [f.apply_symm_apply] at hle⟩
+  invFun y := ⟨f.symm (toDual ⟨ofDual y.1, y.2.1⟩), by
+    refine ⟨by simp, fun x hx hxy ↦ ?_⟩
+    have hle := f.monotone (hxy : ⟨x, hx⟩ ≤ _)
+    rw [f.apply_symm_apply] at hle
+    have hy := y.2.2 (ofDual (f ⟨x, hx⟩)).2 hle
+    exact (f.symm_apply_le).2 (hy : _ ≤ f ⟨x, hx⟩)⟩
+  left_inv _ := by simp
+  right_inv _ := by simp
+  map_rel_iff' := f.map_rel_iff
 
 @[deprecated (since := "2026-07-09")]
 alias setOfMinimalIsoSetOfMaximal := setOfPredMinimalIsoSetOfPredMaximal

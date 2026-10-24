@@ -220,44 +220,48 @@ end OrderedZero
 section OrderedAddCommGroup
 
 variable [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α]
-  [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β] [i : FunLike F α β]
-variable (f : F)
+  [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β] [FunLike F α β]
+variable (f : F) [AddMonoidHomClass F α β]
 
-theorem monotone_iff_map_nonneg [iamhc : AddMonoidHomClass F α β] :
-    Monotone (f : α → β) ↔ ∀ a, 0 ≤ a → 0 ≤ f a :=
-  ⟨fun h a => by
-    rw [← map_zero f]
-    apply h, fun h a b hl => by
-    rw [← sub_add_cancel b a, map_add f]
-    exact le_add_of_nonneg_left (h _ <| sub_nonneg.2 hl)⟩
-
-variable [iamhc : AddMonoidHomClass F α β]
+theorem monotone_iff_map_nonneg : Monotone (f : α → β) ↔ ∀ a, 0 ≤ a → 0 ≤ f a := by
+  refine ⟨fun h a ha ↦ by simpa only [map_zero] using h ha, fun h a b hab ↦ ?_⟩
+  have := h (b - a) (sub_nonneg.2 hab)
+  rwa [map_sub, sub_nonneg] at this
 
 theorem antitone_iff_map_nonpos : Antitone (f : α → β) ↔ ∀ a, 0 ≤ a → f a ≤ 0 := by
-  sorry
+  refine ⟨fun h a ha ↦ by simpa only [map_zero] using h ha, fun h a b hab ↦ ?_⟩
+  have := h (b - a) (sub_nonneg.2 hab)
+  rwa [map_sub, sub_nonpos] at this
 
 theorem monotone_iff_map_nonpos : Monotone (f : α → β) ↔ ∀ a ≤ 0, f a ≤ 0 := by
-  sorry
+  refine ⟨fun h a ha ↦ by simpa only [map_zero] using h ha, fun h a b hab ↦ ?_⟩
+  have := h (a - b) (sub_nonpos.2 hab)
+  rwa [map_sub, sub_nonpos] at this
 
 theorem antitone_iff_map_nonneg : Antitone (f : α → β) ↔ ∀ a ≤ 0, 0 ≤ f a := by
-  sorry
+  refine ⟨fun h a ha ↦ by simpa only [map_zero] using h ha, fun h a b hab ↦ ?_⟩
+  have := h (a - b) (sub_nonpos.2 hab)
+  rwa [map_sub, sub_nonneg] at this
 
-theorem strictMono_iff_map_pos :
-    StrictMono (f : α → β) ↔ ∀ a, 0 < a → 0 < f a := by
-  refine ⟨fun h a => ?_, fun h a b hl => ?_⟩
-  · rw [← map_zero f]
-    apply h
-  · rw [← sub_add_cancel b a, map_add f]
-    exact lt_add_of_pos_left _ (h _ <| sub_pos.2 hl)
+theorem strictMono_iff_map_pos : StrictMono (f : α → β) ↔ ∀ a, 0 < a → 0 < f a := by
+  refine ⟨fun h a ha ↦ by simpa only [map_zero] using h ha, fun h a b hab ↦ ?_⟩
+  have := h (b - a) (sub_pos.2 hab)
+  rwa [map_sub, sub_pos] at this
 
 theorem strictAnti_iff_map_neg : StrictAnti (f : α → β) ↔ ∀ a, 0 < a → f a < 0 := by
-  sorry
+  refine ⟨fun h a ha ↦ by simpa only [map_zero] using h ha, fun h a b hab ↦ ?_⟩
+  have := h (b - a) (sub_pos.2 hab)
+  rwa [map_sub, sub_neg] at this
 
 theorem strictMono_iff_map_neg : StrictMono (f : α → β) ↔ ∀ a < 0, f a < 0 := by
-  sorry
+  refine ⟨fun h a ha ↦ by simpa only [map_zero] using h ha, fun h a b hab ↦ ?_⟩
+  have := h (a - b) (sub_neg.2 hab)
+  rwa [map_sub, sub_neg] at this
 
 theorem strictAnti_iff_map_pos : StrictAnti (f : α → β) ↔ ∀ a < 0, 0 < f a := by
-  sorry
+  refine ⟨fun h a ha ↦ by simpa only [map_zero] using h ha, fun h a b hab ↦ ?_⟩
+  have := h (a - b) (sub_neg.2 hab)
+  rwa [map_sub, sub_pos] at this
 
 end OrderedAddCommGroup
 

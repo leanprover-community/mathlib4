@@ -700,7 +700,11 @@ def sumLexDualAntidistrib (α β : Type*) [LE α] [LE β] : (α ⊕ₗ β)ᵒᵈ
   left_inv s := by unfold _root_.Lex at s; simp [_root_.Lex]
   right_inv s := by unfold _root_.Lex at s; simp [_root_.Lex]
   map_rel_iff' {a b} := by
-    sorry
+    obtain ⟨a⟩ := a; obtain ⟨b⟩ := b
+    change Sum.Lex (· ≤ ·) (· ≤ ·) (a.swap.map toDual toDual)
+      (b.swap.map toDual toDual) ↔ Sum.Lex (· ≤ ·) (· ≤ ·) b a
+    unfold _root_.Lex at a b
+    cases a <;> cases b <;> simp
 
 @[simp]
 theorem sumLexDualAntidistrib_inl :
