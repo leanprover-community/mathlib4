@@ -59,7 +59,10 @@ lemma natCast_sInf (hs : s.Nonempty) : ↑(sInf s) = ⨅ a ∈ s, (a : ℕ∞) :
 
 @[deprecated (since := "2026-07-17")] alias coe_sInf := natCast_sInf
 
-lemma natCast_iSup : BddAbove (range f) → ↑(⨆ i, f i) = ⨆ i, (f i : ℕ∞) := WithTop.coe_iSup _
+lemma natCast_iSup (hf : BddAbove (range f)) : ↑(⨆ i, f i) = ⨆ i, (f i : ℕ∞) := by
+  cases isEmpty_or_nonempty ι
+  · simp
+  · exact WithTop.coe_iSup _ hf
 
 @[deprecated (since := "2026-07-17")] alias coe_iSup := natCast_iSup
 
