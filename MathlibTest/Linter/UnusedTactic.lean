@@ -38,7 +38,7 @@ warning: Unused tactic linter: `congr` does not change the goal.
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
 ---
-warning: Unused tactic linter: `done` does not change the goal.
+warning: Unused tactic linter: there are no goals left for `done`.
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
 -/
@@ -177,6 +177,86 @@ example : True ∧ True := by
 example : 1 = 1 ∧ 1 = 1 := by
   conv => congr <;> simp
   exact ⟨trivial, trivial⟩
+
+/--
+@ +2:2...11
+warning: Unused tactic linter: `all_goals` can be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+-/
+#guard_msgs (positions := true) in
+example : True := by
+  all_goals simp
+
+/--
+@ +2:2...5
+warning: Unused tactic linter: `try` can be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+-/
+#guard_msgs (positions := true) in
+example : True := by
+  try simp
+
+/--
+@ +2:2...11
+warning: Unused tactic linter: `any_goals` can be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+-/
+#guard_msgs (positions := true) in
+example : True := by
+  any_goals simp
+
+example : True ∧ True := by
+  constructor
+  all_goals simp
+
+/--
+@ +3:2...11
+warning: Unused tactic linter: `any_goals` can be replaced with `all_goals`.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+-/
+#guard_msgs (positions := true) in
+example : True ∧ True := by
+  constructor
+  any_goals simp
+
+/--
+warning: Unused tactic linter: there are no goals left for `all_goals simp`.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+-/
+#guard_msgs in
+example : True ∧ True ∧ True := by
+  constructor
+  all_goals
+    try exact trivial
+    all_goals simp
+
+example : True ∧ True ∧ True := by
+  constructor <;> ((try apply And.intro); all_goals simp)
+
+/--
+warning: Unused tactic linter: `try` can be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+---
+warning: Unused tactic linter: `any_goals` can be replaced with `all_goals`.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+---
+warning: Unused tactic linter: `any_goals` can be replaced with `on_goal 1 =>`.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+-/
+#guard_msgs in
+example : True ∧ (1 : Rat) + 1 = 2 := by
+  try constructor
+  any_goals have := trivial
+  any_goals trivial
+  grind
 
 section allowing_more_unused_tactics
 
