@@ -102,6 +102,7 @@ theorem HasAffineProperty.diagonal_of_openCover_diagonal
   diagonal_of_openCover P f 𝒰 (fun _ ↦ Scheme.affineCover _)
     (fun _ _ _ ↦ h𝒰 _ _ _)
 
+set_option linter.convertExclamation false in -- If the option is enabled we get an error.
 theorem HasAffineProperty.diagonal_of_diagonal_of_isPullback
     (P) {Q} [HasAffineProperty P Q]
     {X Y U V : Scheme.{u}} {f : X ⟶ Y} {g : U ⟶ Y}

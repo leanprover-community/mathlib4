@@ -305,6 +305,7 @@ theorem multipliable_of_ne_finset_one (hf : ∀ b ∉ s, f b = 1) [L.HasSupport]
   classical
   exact (hasProd_prod_support_of_ne_finset_one (fun b _ hb ↦ hf b hb)).multipliable
 
+set_option linter.convertExclamation false in -- If the option is enabled we get an error.
 @[to_additive]
 theorem Multipliable.hasProd (ha : Multipliable f L) : HasProd f (∏'[L] b, f b) L := by
   -- This is quite delicate because of the fiddly special-casing for finite products.

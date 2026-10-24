@@ -94,6 +94,7 @@ theorem PairwiseDisjoint.biUnion {s : Set ι'} {g : ι' → Set ι} {f : ι → 
       (le_iSup₂ (f := fun i _ => f i) a ha)
       (le_iSup₂ (f := fun i _ => f i) b hb)
 
+set_option linter.convertExclamation false in -- If the option is enabled we get an error.
 /-- If the suprema of columns are pairwise disjoint and suprema of rows as well, then everything is
 pairwise disjoint. Not to be confused with `Set.PairwiseDisjoint.prod`. -/
 theorem PairwiseDisjoint.prod_left {f : ι × ι' → α}

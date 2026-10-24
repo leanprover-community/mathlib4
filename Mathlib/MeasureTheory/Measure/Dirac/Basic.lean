@@ -92,6 +92,7 @@ lemma sum_smul_dirac_singleton [MeasurableSingletonClass α] {f : α → ℝ≥0
     sum (fun b : α ↦ f b • dirac b) {a} = f a := by
   simp +contextual [tsum_eq_single a]
 
+set_option linter.convertExclamation false in -- If the option is enabled we get an error.
 /-- A measure on a countable type is a sum of Dirac measures.
 If `α` has measurable singletons, `sum_smul_dirac` gives a simpler sum. -/
 lemma exists_sum_smul_dirac [Countable α] (μ : Measure α) :

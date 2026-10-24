@@ -487,6 +487,7 @@ theorem exists_mono_homothetic_copy {M κ : Type*} [AddCommMonoid M] (S : Finset
 
 namespace Subspace
 
+set_option linter.convertExclamation false in -- If the option is enabled we get an error.
 /-- The **multidimensional Hales-Jewett theorem**, aka **extended Hales-Jewett theorem**: For any
 finite types `η`, `α` and `κ`, there exists a finite type `ι` such that whenever the hypercube
 `ι → α` is `κ`-colored, there is a monochromatic combinatorial subspace of dimension `η`. -/
