@@ -31,7 +31,7 @@ public section
 
 universe u v
 
-open Cardinal Order Ordinal Set
+open Cardinal Order Set
 
 variable {α : Type v} {s t : Set α} {x : α} [LinearOrder α]
 
@@ -76,6 +76,37 @@ theorem csSup_mem {α} [ConditionallyCompleteLinearOrder α] {s t : Set α}
 theorem ciSup_mem {α} [ConditionallyCompleteLinearOrder α] {ι} {f : ι → α} [Nonempty ι]
     {s : Set α} (hs : IsClub s) (ht : .range f ⊆ s) (ht' : BddAbove (.range f)) : ⨆ i, f i ∈ s :=
   hs.csSup_mem ht (Set.range_nonempty _) ht'
+
+theorem inter_Ici (hs : IsClub s) (x : α) : IsClub (s ∩ Ici x) where
+  dirSupClosed := hs.dirSupClosed.inter (.Ici x)
+  isCofinal := hs.isCofinal.inter_of_isUpperSet_right (.Ici x) nonempty_Ici
+
+theorem Ici_inter (hs : IsClub s) (x : α) : IsClub (Ici x ∩ s) := by
+  rw [inter_comm]; exact hs.inter_Ici x
+
+theorem inter_Ioi [NoMaxOrder α] (hs : IsClub s) (x : α) : IsClub (s ∩ Ioi x) where
+  dirSupClosed := hs.dirSupClosed.inter (.Ioi x)
+  isCofinal := hs.isCofinal.inter_of_isUpperSet_right (.Ioi x) nonempty_Ioi
+
+theorem Ioi_inter [NoMaxOrder α] (hs : IsClub s) (x : α) : IsClub (Ioi x ∩ s) := by
+  rw [inter_comm]; exact hs.inter_Ioi x
+
+@[simp]
+theorem _root_.isClub_Ici (x : α) : IsClub (Ici x) := by
+  simpa using IsClub.univ.inter_Ici x
+
+@[simp]
+theorem _root_.isClub_Ioi [NoMaxOrder α] (x : α) : IsClub (Ioi x) := by
+  simpa using IsClub.univ.inter_Ioi x
+
+@[simp]
+theorem singleton_top [OrderTop α] : IsClub ({⊤} : Set α) :=
+  ⟨dirSupClosed_singleton _, by simp⟩
+
+theorem _root_.IsMax.isClub_singleton (hx : IsMax x) : IsClub {x} := by
+  let : Top α := ⟨x⟩
+  let : OrderTop α := ⟨hx.isTop⟩
+  exact singleton_top
 
 theorem sInter_of_orderTop {s : Set (Set α)} [OrderTop α] (hs : ∀ x ∈ s, IsClub x) :
     IsClub (⋂₀ s) := by
@@ -127,11 +158,11 @@ protected theorem sInter {s : Set (Set α)} (hα : cof α ≠ ℵ₀) (hsα : #s
   · grind
 
 protected theorem iInter {ι : Type u} {f : ι → Set α} (hα : cof α ≠ ℵ₀)
-    (hι : Cardinal.lift.{v} #ι < Cardinal.lift.{u} (cof α)) (hf : ∀ i, IsClub (f i)) :
+    (hι : lift.{v} #ι < lift.{u} (cof α)) (hf : ∀ i, IsClub (f i)) :
     IsClub (⋂ i, f i) := by
   rw [← sInter_range]
   refine IsClub.sInter hα ?_ (by simpa)
-  rw [← Cardinal.lift_lt]
+  rw [← lift_lt]
   exact mk_range_le_lift.trans_lt hι
 
 theorem sInter_of_countable {s : Set (Set α)} (hα : cof α ≠ ℵ₀) (hsα : s.Countable)
@@ -279,6 +310,10 @@ theorem isStationary_univ_iff : IsStationary (.univ (α := α)) ↔ Nonempty α 
 protected theorem IsStationary.univ [Nonempty α] : IsStationary (.univ (α := α)) :=
   isStationary_univ_iff.2 ‹_›
 
+theorem IsStationary.isCofinal (hs : IsStationary s) : IsCofinal s := by
+  intro x
+  simpa [Set.Nonempty] using hs (isClub_Ici x)
+
 @[simp]
 theorem not_isStationary_empty : ¬ IsStationary (∅ : Set α) := by
   intro h
@@ -322,6 +357,21 @@ theorem isStationary_iUnion_iff_of_orderTop [OrderTop α] {ι : Sort*} {f : ι �
     IsStationary (⋃ i, f i) ↔ ∃ i, IsStationary (f i) :=
   isStationary_iUnion_iff_of_cof_le_one (by simp)
 
+theorem isStationary_iff_top_mem [OrderTop α] : IsStationary s ↔ ⊤ ∈ s where
+  mp h := by simpa using h .singleton_top
+  mpr hs t ht := ⟨⊤, hs, ht.isCofinal.top_mem⟩
+
+@[simp]
+theorem isStationary_singleton_iff : IsStationary {x} ↔ IsMax x where
+  mp h := by simpa [isTop_iff_isMax] using h.isCofinal
+  mpr h s hs := by
+    use x
+    simpa using hs.isCofinal.mem_of_isMax h
+
+theorem not_isStationary_singleton [NoMaxOrder α] (x : α) : ¬ IsStationary {x} := by simp
+
+theorem IsStationary.singleton_top [OrderTop α] : IsStationary {(⊤ : α)} := by simp
+
 section WellFoundedLT
 variable [WellFoundedLT α]
 
@@ -344,7 +394,7 @@ theorem isStationary_iUnion_iff {ι : Type u} {f : ι → Set α} (hα : cof α 
     (hι : lift.{v} #ι < lift.{u} (cof α)) : IsStationary (⋃ i, f i) ↔ ∃ i, IsStationary (f i) := by
   rw [← sUnion_range, isStationary_sUnion_iff hα]
   · simp
-  · rw [← Cardinal.lift_lt]
+  · rw [← lift_lt]
     exact mk_range_le_lift.trans_lt hι
 
 theorem isStationary_sUnion_iff_of_countable {s : Set (Set α)} (hα : cof α ≠ ℵ₀)
