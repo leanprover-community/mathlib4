@@ -7,7 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.EffectiveEpi.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+
 import Mathlib.Tactic.ApplyFun
+
 /-!
 
 # Effective epimorphic families and coproducts

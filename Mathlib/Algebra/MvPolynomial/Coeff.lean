@@ -19,8 +19,6 @@ public import Mathlib.Data.Nat.Choose.Multinomial
 
 public section
 
-noncomputable section
-
 namespace MvPolynomial
 
 open Finsupp
@@ -33,7 +31,7 @@ private lemma coeff_linearCombination_X_pow_of_eq (a : σ →₀ R) {n : ℕ}
       s.multinomial * s.prod (fun r m ↦ a r ^ m) := by
   classical
   simp only [sum, linearCombination_apply, Finset.sum_pow_eq_sum_piAntidiag, coeff_sum,
-    ← C_eq_coe_nat, coeff_C_mul, smul_eq_C_mul, mul_pow, Finset.prod_mul_distrib, ← map_pow,
+    ← C_eq_natCast, coeff_C_mul, smul_eq_C_mul, mul_pow, Finset.prod_mul_distrib, ← map_pow,
     ← map_prod, coeff_prod_X_pow, mul_ite, mul_one, mul_zero]
   rw [Finset.sum_eq_single (s : σ → ℕ)]
   · simp_rw [eq_indicator_self_iff]
@@ -62,7 +60,7 @@ private lemma coeff_linearCombination_X_pow_of_ne (a : σ →₀ R) {n : ℕ}
     (((a.linearCombination R X : MvPolynomial σ R)) ^ n).coeff s = 0 := by
   classical
   simp only [sum, linearCombination_apply, Finset.sum_pow_eq_sum_piAntidiag, coeff_sum, ← map_pow,
-    ← C_eq_coe_nat, coeff_C_mul, smul_eq_C_mul, mul_pow, Finset.prod_mul_distrib, ← map_prod,
+    ← C_eq_natCast, coeff_C_mul, smul_eq_C_mul, mul_pow, Finset.prod_mul_distrib, ← map_prod,
     coeff_prod_X_pow, mul_ite, mul_one, mul_zero]
   apply Finset.sum_eq_zero (fun x hx ↦ ?_)
   rw [ite_eq_right]

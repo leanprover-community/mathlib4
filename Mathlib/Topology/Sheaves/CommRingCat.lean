@@ -6,10 +6,11 @@ Authors: Kim Morrison, Andrew Yang
 module
 
 public import Mathlib.Algebra.Category.Ring.Constructions
-import Mathlib.Algebra.Category.Ring.FilteredColimits
 public import Mathlib.Topology.Category.TopCommRingCat
 public import Mathlib.Topology.ContinuousMap.Algebra
 public import Mathlib.Topology.Sheaves.Stalks
+
+import Mathlib.Algebra.Category.Ring.FilteredColimits
 
 /-!
 # Sheaves of (commutative) rings.

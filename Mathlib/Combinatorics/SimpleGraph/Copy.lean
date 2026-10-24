@@ -289,7 +289,7 @@ instance :
   trans := .trans
 
 /-- A simple graph having no vertices is contained in any simple graph. -/
-lemma IsContained.of_isEmpty [IsEmpty W] : H ⊑ G :=
+@[simp] lemma IsContained.of_isEmpty [IsEmpty W] : H ⊑ G :=
   ⟨⟨isEmptyElim, fun {a} ↦ isEmptyElim a⟩, isEmptyElim⟩
 
 /-- `⊥` is contained in any simple graph having sufficiently many vertices. -/

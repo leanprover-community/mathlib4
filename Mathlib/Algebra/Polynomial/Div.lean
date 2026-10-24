@@ -5,11 +5,12 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 module
 
-import Mathlib.Algebra.Field.IsField
 public import Mathlib.Algebra.Polynomial.Inductions
 public import Mathlib.Algebra.Polynomial.Monic
-import Mathlib.Order.Lattice.Nat
 public import Mathlib.RingTheory.Multiplicity
+
+import Mathlib.Algebra.Field.IsField
+import Mathlib.Order.Lattice.Nat
 
 /-!
 # Division of univariate polynomials
@@ -795,9 +796,10 @@ lemma _root_.Irreducible.not_isRoot_of_natDegree_ne_one
     (hi : Irreducible p) (hdeg : p.natDegree ≠ 1) {x : R} : ¬p.IsRoot x :=
   fun hr ↦ hdeg <| natDegree_eq_of_degree_eq_some <| degree_eq_one_of_irreducible_of_root hi hr
 
+@[deprecated Irreducible.not_isRoot_of_natDegree_ne_one +typeChanged (since := "2026-09-27")]
 lemma _root_.Irreducible.isRoot_eq_bot_of_natDegree_ne_one
-    (hi : Irreducible p) (hdeg : p.natDegree ≠ 1) : p.IsRoot = ⊥ :=
-  le_bot_iff.mp fun _ ↦ hi.not_isRoot_of_natDegree_ne_one hdeg
+    (hi : Irreducible p) (hdeg : p.natDegree ≠ 1) : p.IsRoot = ⊥ := by
+  simpa [funext_iff] using fun _ ↦ Irreducible.not_isRoot_of_natDegree_ne_one hi hdeg
 
 lemma _root_.Irreducible.subsingleton_isRoot
     (hi : Irreducible p) : { x | p.IsRoot x }.Subsingleton :=
