@@ -546,6 +546,14 @@ instance instMonoid [Monoid β] : Monoid (α →ₛ β) := fast_instance% FunLik
 @[to_additive existing]
 instance instCommMonoid [CommMonoid β] : CommMonoid (α →ₛ β) := fast_instance% FunLike.commMonoid
 
+@[to_additive (attr := simp, norm_cast)]
+lemma coe_finsetProd [CommMonoid β] (f : γ → α →ₛ β) (s : Finset γ) :
+    ⇑(∏ t ∈ s, f t) = ∏ t ∈ s, ⇑(f t) := by
+  classical
+  induction s using Finset.induction with
+  | empty => simp
+  | insert a s ha ih => rw [Finset.prod_insert ha, Finset.prod_insert ha, SimpleFunc.coe_mul, ih]
+
 @[to_additive existing]
 instance instGroup [Group β] : Group (α →ₛ β) := fast_instance% FunLike.group
 
