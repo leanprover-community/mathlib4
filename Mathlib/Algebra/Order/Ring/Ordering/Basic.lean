@@ -34,7 +34,7 @@ variable {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S)
 
 namespace IsPreordering
 
-theorem of_le (hP : P.IsPreordering) {Q : Subsemiring R} (hPQ : P ≤ Q) (hQ : -1 ∉ Q) :
+theorem mono (hP : P.IsPreordering) {Q : Subsemiring R} (hPQ : P ≤ Q) (hQ : -1 ∉ Q) :
     Q.IsPreordering where
   mem_of_isSquare := by grind [IsConcreteLE.le_iff, IsPreordering.mem_of_isSquare]
 
