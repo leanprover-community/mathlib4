@@ -443,7 +443,7 @@ theorem wellFounded_of_trans_of_irrefl (r : α → α → Prop) [IsTrans α r] [
       exact
         ⟨fun z hzx => _root_.trans hzx hxy,
           not_forall_of_exists_not ⟨x, Classical.not_imp.2 ⟨hxy, irrefl x⟩⟩⟩
-  exact Subrelation.wf (this _ _) (measure _).wf
+  exact (measure _).wf.anti this
 
 -- See note [lower instance priority]
 @[to_dual]
