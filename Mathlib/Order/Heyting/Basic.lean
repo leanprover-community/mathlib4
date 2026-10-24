@@ -225,14 +225,15 @@ theorem himp_inf_le : (a ⇨ b) ⊓ a ≤ b :=
 theorem inf_himp_le : a ⊓ (a ⇨ b) ≤ b := by rw [inf_comm, ← le_himp_iff]
 
 /-- `p ∧ (p → q) ↔ p ∧ q` -/
-@[to_dual (attr := simp) sup_sdiff_self]
--- TODO: Should this be renamed to `inf_himp_self`?
-theorem inf_himp (a b : α) : a ⊓ (a ⇨ b) = a ⊓ b :=
+@[to_dual (attr := simp)]
+theorem inf_himp_self (a b : α) : a ⊓ (a ⇨ b) = a ⊓ b :=
   le_antisymm (le_inf inf_le_left <| by rw [inf_comm, ← le_himp_iff]) <| inf_le_inf_left _ le_himp
+
+@[deprecated (since := "2026-10-12")] alias inf_himp := inf_himp_self
 
 /-- `(p → q) ∧ p ↔ q ∧ p` -/
 @[to_dual (attr := simp)]
-theorem himp_inf_self (a b : α) : (a ⇨ b) ⊓ a = b ⊓ a := by rw [inf_comm, inf_himp, inf_comm]
+theorem himp_inf_self (a b : α) : (a ⇨ b) ⊓ a = b ⊓ a := by rw [inf_comm, inf_himp_self, inf_comm]
 
 /-- The **deduction theorem** in the Heyting algebra model of intuitionistic logic:
 an implication holds iff the conclusion follows from the hypothesis. -/
