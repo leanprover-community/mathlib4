@@ -44,4 +44,12 @@ lemma analyticAt_comp_iff_of_deriv_ne_zero (hf : AnalyticAt 𝕜 f x) (hf' : der
   rw [← this] at hg
   exact (hg.comp hra).congr <| .fun_comp (HasStrictDerivAt.eventually_right_inverse ..) g
 
+lemma analyticAt_comp_iff_right_of_deriv_ne_zero {f : E → 𝕜} {g : 𝕜 → 𝕜} {x : E}
+    (hg : AnalyticAt 𝕜 g (f x)) (hg' : deriv g (f x) ≠ 0) (hf : ContinuousAt f x) :
+    AnalyticAt 𝕜 (g ∘ f) x ↔ AnalyticAt 𝕜 f x := by
+  refine ⟨fun h ↦ ?_, (hg.comp ·)⟩
+  let r := hg.hasStrictDerivAt.localInverse _ _ _ hg'
+  have hra : AnalyticAt 𝕜 r ((g ∘ f) x) := hg.analyticAt_localInverse hg'
+  exact hra.comp h |>.congr (hf.eventually <| hg.hasStrictDerivAt.eventually_left_inverse hg')
+
 end
