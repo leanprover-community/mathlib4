@@ -10,9 +10,12 @@ on:
 
 # Limit permissions for GH_TOKEN for the entire workflow
 permissions:
-  pull-requests: write  # Only allow PR comments/labels
-  issues: write
+  pull-requests: write
   # All other permissions are implicitly 'none'
+
+concurrency:
+  group: wip-${PR_NUMBER}
+  cancel-in-progress: false
 
 env:
   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
