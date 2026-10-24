@@ -412,7 +412,7 @@ def δ (z : Cochain F G n) : Cochain F G m :=
 we usually need to carefully select intermediate indices with
 good definitional properties in order to obtain a suitable expansion of the
 morphisms which constitute `δ n m z : Cochain F G m` (when `n + 1 = m`, otherwise
-it shall be zero). The basic equational lemma is `δ_v` below. -/
+it shall be zero). The basic equation lemma is `δ_v` below. -/
 
 lemma δ_v (hnm : n + 1 = m) (z : Cochain F G n) (p q : ℤ) (hpq : p + m = q) (q₁ q₂ : ℤ)
     (hq₁ : q₁ = q - 1) (hq₂ : p + 1 = q₂) : (δ n m z).v p q hpq =
