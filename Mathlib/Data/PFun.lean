@@ -440,6 +440,15 @@ theorem preimage_union (s t : Set β) : f.preimage (s ∪ t) = f.preimage s ∪ 
 @[simp]
 theorem preimage_univ : f.preimage Set.univ = f.Dom := by ext; simp [mem_preimage, mem_dom]
 
+@[simp]
+theorem preimage_empty : f.preimage ∅ = ∅ := by ext; simp [mem_preimage]
+
+theorem disjoint_preimage_of_disjoint {s t : Set β} (h : Disjoint s t) :
+    Disjoint (f.preimage s) (f.preimage t) := by
+  rw [Set.disjoint_iff_inter_eq_empty] at h ⊢
+  rw [← preimage_inter, h]
+  simp [preimage]
+
 theorem coe_preimage (f : α → β) (s : Set β) : (f : α →. β).preimage s = f ⁻¹' s := by ext; simp
 
 @[simp]
