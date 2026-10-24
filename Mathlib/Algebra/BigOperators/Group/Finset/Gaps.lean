@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Order.Interval.Finset.Gaps
+
 /-!
 # Sum of gaps
 
@@ -27,12 +28,14 @@ Technically, we don't require pairwise disjointness or endpoints to be within `[
 require that `a ≤ b`, but it makes the most sense if they are actually satisfied.
 -/
 
+open scoped Finset
+
 public section
 
 open Fin Fin.NatCast
 
 variable {α β : Type*} [LinearOrder α] [CommGroup β]
-  (F : Finset (α × α)) {k : ℕ} (h : F.card = k) {a b : α}
+  (F : Finset (α × α)) {k : ℕ} (h : #F = k) {a b : α}
   (g : α → β)
 
 @[to_additive]

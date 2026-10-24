@@ -231,7 +231,6 @@ def strongEpiMonoFactorisationSigmaDesc (F : J ⥤ MonoOver Y) :
     StrongEpiMonoFactorisation (Sigma.desc fun i ↦ (F.obj i).arrow) :=
   Classical.choice <| HasStrongEpiMonoFactorisations.has_fac (Sigma.desc fun i ↦ (F.obj i).arrow)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If a category `C` has strong epi-mono factorization, for any `Y : C` and functor
 `F : J ⥤ MonoOver Y`, there is a cocone under F. -/
 def coconeOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) :
@@ -240,7 +239,6 @@ def coconeOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) :
   ι.app j := homMk (Sigma.ι (fun i ↦ (F.obj i : C)) j ≫
     (strongEpiMonoFactorisationSigmaDesc F).e)
 
-set_option backward.defeqAttrib.useBackward true in
 lemma commSqOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) (c : Cocone F) :
     CommSq (Sigma.desc fun i ↦ (c.ι.app i).hom.left) (strongEpiMonoFactorisationSigmaDesc F).e
       c.pt.arrow (strongEpiMonoFactorisationSigmaDesc F).m where

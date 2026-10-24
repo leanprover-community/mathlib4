@@ -221,7 +221,8 @@ theorem mem_range_of_dvd_im {z : QuadraticAlgebra ℚ a b} {x : QuadraticAlgebra
   replace hv : v = z.im := by
     have : x.im = d * z.im := by simpa using congr_arg im hx
     rwa [hv, Int.cast_mul, mul_right_inj' (Int.cast_ne_zero.mpr hd)] at this
-  obtain ⟨u, hu⟩ : z.re ∈ Set.range (algebraMap ℤ ℚ) := re_mem_range_of_im_mem_range hz ⟨v, hv⟩
+  obtain ⟨u, hu⟩ : z.re ∈ Set.range (algebraMap ℤ ℚ) :=
+    re_mem_range_of_im_mem_range ⟨a, rfl⟩ ⟨b, rfl⟩ hz ⟨v, hv⟩
   refine ⟨u • 1 + v • ω, ?_⟩
   simpa [QuadraticAlgebra.ext_iff] using ⟨hu, hv⟩
 
@@ -251,7 +252,7 @@ theorem saturated_iff (p : ℕ) (hp : p.Prime) :
   · obtain ⟨z, hz₁, hz₂, hz₃⟩ := exists_unsaturated_of_sq_mul (d := p) hp.one_lt he he'
     exact hz₃ (h z hz₁ hz₂)
   refine mem_range_of_dvd_im hz hq.ne_zero hx <| hq.dvd_of_dvd_pow (n := 2) ?_
-  contrapose! h
+  contrapose h
   obtain ⟨t, n, htn⟩ := exists_discr_mul_im_sq_eq hz hx
   obtain ⟨e, he⟩ := ((Prime.coprime_iff_not_dvd hq).mpr h).pow_left.dvd_of_dvd_mul_right
     ⟨t ^ 2 - 4 * n, htn⟩
