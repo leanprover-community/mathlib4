@@ -17,8 +17,8 @@ This file contains results about Legendre symbols for `p`-adic integers.
 ## Main definitions
 
 We define the Legendre symbol $\Bigl(\frac{a}{p}\Bigr)$ is `PadicInt.legendreSym p a`, which defines
-the Legendre symbol for a `p`-adic integer `a` as the composition of reduction map modulo `p` and the
-usual Legendre symbol for the integers.
+the Legendre symbol for a `p`-adic integer `a` as the composition of reduction map modulo `p` and
+the usual Legendre symbol for the integers.
 
 ## Main results
 
@@ -82,7 +82,7 @@ theorem eq_zero_iff : legendreSym a = 0 ↔ ¬ IsUnit a :=
   legendreSym h]⟩
 
 /-- The Legendre symbol is a homomorphism of monoids with zero. -/
-@[simps!]
+@[simp]
 noncomputable abbrev hom : ℤ_[p] →*₀ ℤ := legendreSym.toMonoidWithZeroHom
 
 /-- The square of the symbol is 1 if `a` is a unit. -/
