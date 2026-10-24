@@ -335,36 +335,6 @@ noncomputable instance : Lattice (Associates α) :=
     inf_le_left := fun a _ => le_trans (prod_mono inf_le_left) (le_of_eq (factors_prod a))
     inf_le_right := fun _ b => le_trans (prod_mono inf_le_right) (le_of_eq (factors_prod b)) }
 
-lemma finite_Iic_of_ne_zero {x : Associates α} (hx : x ≠ 0) : (Set.Iic x).Finite := by
-  obtain ⟨s, hs⟩ := factors_eq_some_iff_ne_zero.mpr hx
-  classical
-  refine (s.powerset.toFinset.finite_toSet.image fun t : Multiset _ ↦ (t : FactorSet α).prod).subset
-    fun a ha ↦ ?_
-  obtain ⟨t, ht⟩ := factors_eq_some_iff_ne_zero.mpr (ne_zero_of_dvd_ne_zero hx ha)
-  exact ⟨t, by simpa [hs, ht] using factors_mono ha, by simp [← ht, factors_prod]⟩
-
-open scoped Classical in
-/-- The infimum of a set of associates is the greatest common divisor of its elements. -/
-noncomputable instance : InfSet (Associates α) where
-  sInf S := if h : ∃ x ∈ S, x ≠ 0 then
-      ((finite_Iic_of_ne_zero h.choose_spec.2).subset
-        fun _ hl => hl h.choose_spec.1 : (lowerBounds S).Finite).toFinset.sup id
-    else 0
-
-/-- Associates in a unique factorization monoid form a complete lattice, with `sInf` the gcd and
-`sSup` the lcm (which is `0` when the set is not bounded above by a nonzero element). -/
-noncomputable instance : CompleteLattice (Associates α) where
-  __ : Lattice (Associates α) := inferInstance
-  __ : BoundedOrder (Associates α) := inferInstance
-  __ := completeLatticeOfInf (Associates α) fun S ↦ by
-    dsimp only [sInf, instInfSet]
-    split_ifs with h
-    · simp +contextual only [IsGLB, IsGreatest, lowerBounds, Set.mem_ofPred_eq, Finset.sup_le_iff,
-      Set.Finite.mem_toFinset, id_eq, implies_true, upperBounds, true_and]
-      exact fun l hl ↦ Finset.le_sup (f := id) ((Set.Finite.mem_toFinset _).mpr hl)
-    · push Not at h
-      exact ⟨fun s hs ↦ by simp [h s hs], fun l _ ↦ le_top⟩
-
 open scoped Classical in
 theorem sup_mul_inf (a b : Associates α) : (a ⊔ b) * (a ⊓ b) = a * b :=
   show (a.factors ⊔ b.factors).prod * (a.factors ⊓ b.factors).prod = a * b by

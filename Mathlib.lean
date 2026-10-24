@@ -6272,8 +6272,10 @@ public import Mathlib.Order.Concept
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 public import Mathlib.Order.ConditionallyCompleteLattice.Defs
 public import Mathlib.Order.ConditionallyCompleteLattice.Finset
+public import Mathlib.Order.ConditionallyCompleteLattice.Finsupp
 public import Mathlib.Order.ConditionallyCompleteLattice.Group
 public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+public import Mathlib.Order.ConditionallyCompleteLattice.Multiset
 public import Mathlib.Order.ConditionallyCompletePartialOrder.Basic
 public import Mathlib.Order.ConditionallyCompletePartialOrder.Defs
 public import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.GCDMonoid.Nat
 public import Mathlib.RingTheory.Ideal.NatInt
-public import Mathlib.RingTheory.UniqueFactorizationDomain.FactorSet
+public import Mathlib.RingTheory.UniqueFactorizationDomain.CompleteLattice
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
 
 /-!
