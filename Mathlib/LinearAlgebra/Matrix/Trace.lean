@@ -164,6 +164,37 @@ theorem trace_mul_cycle' [NonUnitalCommSemiring R] (A : Matrix m n R) (B : Matri
     (C : Matrix p m R) : trace (A * (B * C)) = trace (C * (A * B)) := by
   rw [← Matrix.mul_assoc, trace_mul_comm]
 
+/-- The trace of a positive power of A * B is unchanged when the factors are reversed.
+
+The matrices A and B may be rectangular. The exponent is positive because the identity
+does not hold at exponent zero when the index types have different cardinalities. -/
+theorem trace_mul_pow_comm' [CommSemiring R]
+    (A : Matrix m n R) (B : Matrix n m R) {k : ℕ} (hk : k ≠ 0) :
+    (letI : DecidableEq m := Classical.decEq m
+     letI : DecidableEq n := Classical.decEq n
+     trace ((A * B) ^ k) = trace ((B * A) ^ k)) := by
+  classical
+  change trace ((A * B) ^ k) = trace ((B * A) ^ k)
+  have hpow (j : ℕ) : (B * A) ^ (j + 1) = B * (A * B) ^ j * A := by
+    induction j <;> simp [*, pow_succ, Matrix.mul_assoc]
+  cases k with
+  | zero => exact (hk rfl).elim
+  | succ k => rw [pow_succ, ← Matrix.mul_assoc, trace_mul_cycle, hpow]
+
+/-- For square matrices, the trace of any power of A * B is unchanged when the factors
+are reversed. Unlike the rectangular version, this also holds at exponent zero.
+
+See trace_mul_pow_comm' for the rectangular version. -/
+theorem trace_mul_pow_comm [CommSemiring R] (A B : Matrix n n R) (k : ℕ) :
+    (letI : DecidableEq n := Classical.decEq n
+     trace ((A * B) ^ k) = trace ((B * A) ^ k)) := by
+  classical
+  change trace ((A * B) ^ k) = trace ((B * A) ^ k)
+  cases k with
+  | zero => rfl
+  | succ k => exact trace_mul_pow_comm' A B k.succ_ne_zero
+
+
 @[simp]
 theorem trace_replicateCol_mul_replicateRow {ι : Type*} [Unique ι] [NonUnitalNonAssocSemiring R]
     (a b : n → R) : trace (replicateCol ι a * replicateRow ι b) = a ⬝ᵥ b := by
