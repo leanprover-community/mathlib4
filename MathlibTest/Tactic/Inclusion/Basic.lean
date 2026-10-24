@@ -160,6 +160,20 @@ example {x y : ℝ} (hx : x ∈ Set.Icc (-0.5) 1.5) (hy₀ : -2 ≤ y) (hy₁ : 
 
 end Arithmetic
 
+section Sqrt
+
+example : √2 ∈ Set.Icc 1 2 := by dyadic_interval
+
+example : √16 = 4 := by dyadic_interval
+
+example : √(-1) = 0 := by dyadic_interval
+
+example {x y : ℝ} (hx : x ∈ Set.Icc (-0.5) 1.5) (hy₀ : -2 ≤ y) (hy₁ : y ≤ -1) :
+    √(x ^ 2 + y ^ 2) + ((1 / 2 : ℚ) : ℝ) * x * y ∈ Set.Icc (-0.5) 3 := by
+  dyadic_interval [prec := 1]
+
+end Sqrt
+
 section Splitting
 
 example {x : ℝ} (hx : x ∈ Set.Icc (-4) 4) :
@@ -183,6 +197,12 @@ example {x y : ℝ} (hx : x ∈ Set.Icc (-2) 3) (hy : y ∈ Set.Icc 1 2) :
 
 example : (0.12345678901234567890123456789 : ℝ) < 0.1234567890123456789012345679 := by
   dyadic_interval +kernel [prec := 100]
+
+example :
+    √2 ∈ Set.Ioo
+      1.4142135623730950488016887242096980785696718753769
+      1.4142135623730950488016887242096980785696718753770 := by
+  dyadic_interval +kernel [prec := 165]
 
 end Kernel
 
@@ -221,6 +241,14 @@ The proposition was not proven true or false. -/
 set_option linter.unusedTactic false in
 example (x : ℝ) (h : False) : x ≤ 1 := by
   dyadic_interval?
+  exact h.elim
+
+/-- error: The inclusion check failed:
+The proposition is provably false -/
+#guard_msgs in
+set_option linter.unusedTactic false in
+example (h : False) : √2 < 1.414 := by
+  dyadic_interval? [prec := 7]
   exact h.elim
 
 end Check

@@ -10,6 +10,7 @@ public meta import Mathlib.Tactic.Inclusion.Extension.Core.Core
 public meta import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Hypotheses
 
 import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Rational
+import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Sqrt
 
 /-!
 # The `dyadic_interval` tactic
