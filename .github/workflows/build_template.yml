@@ -181,11 +181,21 @@ jobs:
       - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
         id: mk_all
         continue-on-error: true # Allow workflow to continue, outcome checked later
-        # This runs `mk_all --check` from the `pr-branch` inside landrun
+        # This runs `mk_all --check` from the `pr-branch` inside landrun. The prebuilt tool runs
+        # when its toolchain and sources match the branch's; otherwise Lake builds the branch's own.
         run: |
           cd pr-branch
-          echo "Running mk_all --check (from pr-branch)..."
-          lake exe mk_all --check
+          tools=../tools-branch
+          if [ -x "${tools}/.lake/build/bin/mk_all" ] \
+            && cmp -s "${tools}/lean-toolchain" lean-toolchain \
+            && cmp -s "${tools}/scripts/mk_all.lean" scripts/mk_all.lean \
+            && cmp -s "${tools}/Mathlib/Util/GetAllModules.lean" Mathlib/Util/GetAllModules.lean; then
+            echo "Running the prebuilt mk_all --check (from pr-branch)..."
+            lake env "${tools}/.lake/build/bin/mk_all" --check
+          else
+            echo "Running mk_all --check (from pr-branch)..."
+            lake exe mk_all --check
+          fi
 
       - name: begin gh-problem-match-wrap for build step
         uses: leanprover-community/gh-problem-matcher-wrap@65a654fcdf7b64ff7633bc7a558f7b46d59a27bf # 2026-06-25
@@ -628,11 +638,24 @@ jobs:
         run: |
           cd pr-branch
           set -o pipefail
+          # `lake lint` builds `runLinter` from the branch's Batteries. When the branch has the
+          # toolchain, lakefile and Batteries revision of the CI tools, the prebuilt driver from
+          # the tools runs instead, after the builtin lints that `lake lint` runs before its driver.
+          lint=(lake lint -- --trace)
+          runlinter=../tools-branch/.lake/packages/batteries/.lake/build/bin/runLinter
+          batteries_rev() { jq -r '.packages[] | select(.name == "batteries") | .rev' "$1"; }
+          if [[ -x "${runlinter}" ]] && cmp -s ../tools-branch/lean-toolchain lean-toolchain \
+              && cmp -s ../tools-branch/lakefile.lean lakefile.lean \
+              && [[ "$(batteries_rev ../tools-branch/lake-manifest.json)" == "$(batteries_rev lake-manifest.json)" ]]; then
+            echo "Linting with the prebuilt runLinter of the CI tools."
+            lake lint --builtin-only
+            lint=(lake env "${runlinter}" Mathlib --trace)
+          fi
           # If lint fails because the PR predates lake-lint configuration or the
           # old --trace argument-parsing behavior, ask the author to merge master.
           # We use .lake/ for the output file because landrun restricts /tmp access
           for attempt in 1 2; do
-            if timeout 10m env LEAN_ABORT_ON_PANIC=1 stdbuf -oL lake lint -- --trace 2>&1 | tee ".lake/lint_output_attempt_${attempt}.txt"; then
+            if timeout 10m env LEAN_ABORT_ON_PANIC=1 stdbuf -oL "${lint[@]}" 2>&1 | tee ".lake/lint_output_attempt_${attempt}.txt"; then
               break
             fi
             status=${PIPESTATUS[0]}
@@ -1110,6 +1133,8 @@ jobs:
           # which doubles as a smoke test of the `export_crossrefs.yml` workflow.
           lake env lean scripts/export_crossrefs.lean
           lake exe check_title_labels --labels "t-algebra" "feat: dummy PR for testing"
+          # The Build job runs a prebuilt `mk_all` when its sources match; this builds the branch's own.
+          lake build mk_all
 
       - name: build everything
         # make sure everything is available for test/import_all.lean

@@ -1,5 +1,5 @@
-# Builds the trusted CI tooling (`cache` binary + the `lake-build-*` helper scripts)
-# from `master` and publishes them as a small artifact (`tools-bin`).
+# Builds the trusted CI tooling (the `cache` and `mk_all` binaries + the `lake-build-*`
+# helper scripts) from `master` and publishes it as a small artifact (`tools-bin`).
 #
 # CI runs (build_template.yml, via the `get-tools` composite action) download this
 # artifact and use the tools directly, saving a full `master` checkout plus a ~30s
@@ -39,10 +39,13 @@ jobs:
     steps:
       # Build under `tools-branch/`, the same directory `build_template.yml` unpacks
       # the tools into, in case the build bakes its own location into the binary.
-      - name: Checkout master
+      # Build the pushed commit, so the run's head SHA names the source of the
+      # artifact. get-tools compares the tool sources at that SHA with the
+      # tool sources of the workflow that downloads the artifact.
+      - name: Checkout the pushed commit
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: master
+          ref: ${{ github.sha }}
           path: tools-branch
 
       - name: install elan
@@ -59,9 +62,27 @@ jobs:
         run: |
           cd tools-branch
           # `check-yaml` and `graph` are built as a smoke test that master's tools
-          # still compile; only `cache` is bundled (the only one consumed by path).
+          # still compile; `cache` and `mk_all` are consumed by path.
           lake build cache check-yaml graph
           ls .lake/build/bin/cache
+          # `mk_all` is built from this commit's sources, not from the cache: this job runs
+          # outside a sandbox and produces the tools that CI trusts. Without `mk_all`, the
+          # artifact ships `cache` alone and the build job runs `lake exe mk_all`.
+          if lake build mk_all; then
+            ls .lake/build/bin/mk_all
+          else
+            echo "::warning::mk_all did not build; the tools artifact ships without it."
+            rm -f .lake/build/bin/mk_all
+          fi
+          # `runLinter`, the lint driver from Batteries, is built from source for the same reason
+          # as `mk_all`. Without it, the artifact ships without the driver and the lint step runs
+          # `lake lint`.
+          if lake build batteries/runLinter; then
+            ls .lake/packages/batteries/.lake/build/bin/runLinter
+          else
+            echo "::warning::runLinter did not build; the tools artifact ships without it."
+            rm -f .lake/packages/batteries/.lake/build/bin/runLinter
+          fi
 
       - name: bundle tools
         shell: bash
@@ -72,23 +93,38 @@ jobs:
           # on `include-hidden-files` or post-download `chmod`.
           #
           # We bundle exactly what `build_template.yml` invokes from `tools-branch/`:
-          #   - .lake/build:                    holds the `cache` binary that the build
-          #                                     job runs by path (.lake/build/bin/cache).
-          #                                     We ship the whole build dir, not just the
-          #                                     binary, in case it needs other files there
-          #                                     to run.
+          #   - .lake/build:                    holds the `cache` and `mk_all` binaries
+          #                                     that the build job runs by path
+          #                                     (.lake/build/bin/). We ship the whole build
+          #                                     dir, not just the binaries, in case they
+          #                                     need other files there to run. The Mathlib
+          #                                     oleans that `mk_all` was built against are
+          #                                     left out.
           #   - scripts/lake-build-with-retry.sh: builds Mathlib/Archive/Counterexamples/
           #                                     Wanted with retries.
           #   - scripts/lake-build-wrapper.py:  wraps the `lake test` step.
+          #   - scripts/mk_all.lean, Mathlib/Util/GetAllModules.lean: the sources of
+          #                                     `mk_all`; the build job runs the prebuilt
+          #                                     binary only when the branch has the same.
+          #   - .lake/packages/batteries/.lake/build/bin/runLinter: the lint driver.
+          #   - lakefile.lean, lake-manifest.json: the lint configuration and the Batteries
+          #                                     revision of `runLinter`; the lint step runs
+          #                                     the prebuilt driver only when the branch has
+          #                                     the same.
           #   - lean-toolchain:                 the toolchain this binary was built with;
           #                                     the consumer installs it (via elan) so the
           #                                     binary has a matching Lean to run against,
           #                                     even when the PR uses a newer toolchain.
+          files=(.lake/build scripts/lake-build-with-retry.sh scripts/lake-build-wrapper.py
+            scripts/mk_all.lean Mathlib/Util/GetAllModules.lean lakefile.lean lake-manifest.json
+            lean-toolchain)
+          if [[ -x .lake/packages/batteries/.lake/build/bin/runLinter ]]; then
+            files+=(.lake/packages/batteries/.lake/build/bin/runLinter)
+          fi
           tar -czf "${GITHUB_WORKSPACE}/tools-bin.tar.gz" \
-            .lake/build \
-            scripts/lake-build-with-retry.sh \
-            scripts/lake-build-wrapper.py \
-            lean-toolchain
+            --exclude=.lake/build/lib/lean/Mathlib \
+            --exclude=.lake/build/ir/Mathlib \
+            "${files[@]}"
           ls -l "${GITHUB_WORKSPACE}/tools-bin.tar.gz"
 
       - name: upload tools artifact
