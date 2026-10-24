@@ -32,7 +32,7 @@ distinct, and the count is bounded by the number of strings of each length.
 
 ## References
 
-* McMillan, B. (1956), "Two inequalities implied by unique decipherability"
+* [B. McMillan, *Two inequalities implied by unique decipherability*][mcmillan1956]
 -/
 
 namespace InformationTheory

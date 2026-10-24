@@ -30,7 +30,7 @@ codewords follows by bounding every finite partial sum.
 
 ## References
 
-* Cover and Thomas, *Elements of Information Theory*, Chapter 5.
+* [T. M. Cover, J. A. Thomas, *Elements of information theory*][coverthomas2006], Chapter 5.
 -/
 
 public section

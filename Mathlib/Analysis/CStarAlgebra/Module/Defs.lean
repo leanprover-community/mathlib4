@@ -59,8 +59,8 @@ then an `InnerProductSpace` over `ℂ`.
 
 ## References
 
-+ Erin Wittlich. *Formalizing Hilbert Modules in C⋆-algebras with the Lean Proof Assistant*,
-  December 2022. Master's thesis, Southern Illinois University Edwardsville.
++ [E. Wittlich, *Formalizing Hilbert Modules in C⋆-algebras with the Lean Proof
+  Assistant*][wittlich2022]
 -/
 
 @[expose] public section
