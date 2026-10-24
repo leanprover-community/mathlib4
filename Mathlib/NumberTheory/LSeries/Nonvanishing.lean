@@ -461,14 +461,10 @@ theorem norm_gaussSum_inv : ‖gaussSum χ⁻¹ ZMod.stdAddChar‖ = ‖gaussSum
 
 /-- **The root number of a primitive Dirichlet character has absolute value one.** -/
 theorem norm_rootNumber (hχ : χ.IsPrimitive) : ‖rootNumber χ‖ = 1 := by
-  have : ‖gaussSum χ ZMod.stdAddChar‖ = ‖gaussSum χ⁻¹ ZMod.stdAddChar‖ := by
-    rw [← norm_star, star_gaussSum_eq, AddChar.inv_mulShift,
-      (by simp : (-1 : ZMod N) = ((-1 : (ZMod N)ˣ) : ZMod N)), gaussSum_mulShift_eq]
-    simp_all
-  have : ‖rootNumber χ‖ = ‖rootNumber χ⁻¹‖ := by simp [rootNumber, -pow_ite, this]
+  have : ‖rootNumber χ‖ = ‖rootNumber χ⁻¹‖ := by simp [rootNumber, -pow_ite, χ.norm_gaussSum_inv]
   have : ‖rootNumber χ‖ * ‖rootNumber χ⁻¹‖ = 1 := by
     simp [← norm_mul, rootNumber_mul_rootNumber_inv hχ]
-  nlinarith [norm_nonneg (rootNumber χ), χ.norm_gaussSum_inv]
+  nlinarith [norm_nonneg (rootNumber χ)]
 
 /-- **The Gauss sum of a primitive Dirichlet character has absolute value `√N`.** -/
 theorem norm_gaussSum_stdAddChar (hχ : χ.IsPrimitive) :
