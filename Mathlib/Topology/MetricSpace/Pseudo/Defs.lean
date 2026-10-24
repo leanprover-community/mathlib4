@@ -680,18 +680,18 @@ protected theorem mk_uniformity_basis {β : Type*} {p : β → Prop} {f : β →
 theorem uniformity_basis_dist_rat :
     (𝓤 α).HasBasis (fun r : ℚ => 0 < r) fun r => { p : α × α | dist p.1 p.2 < r } :=
   Metric.mk_uniformity_basis (fun _ => Rat.cast_pos.2) fun _ε hε =>
-    let ⟨r, hr0, hrε⟩ := exists_rat_btwn hε
+    let ⟨r, hr0, hrε⟩ := exists_ratCast_btwn hε
     ⟨r, Rat.cast_pos.1 hr0, hrε.le⟩
 
 theorem uniformity_basis_dist_inv_nat_succ :
     (𝓤 α).HasBasis (fun _ => True) fun n : ℕ => { p : α × α | dist p.1 p.2 < 1 / (↑n + 1) } :=
   Metric.mk_uniformity_basis (fun n _ => div_pos zero_lt_one <| Nat.cast_add_one_pos n) fun _ε ε0 =>
-    (exists_nat_one_div_lt ε0).imp fun _n hn => ⟨trivial, le_of_lt hn⟩
+    (exists_natCast_one_div_lt ε0).imp fun _n hn => ⟨trivial, le_of_lt hn⟩
 
 theorem uniformity_basis_dist_inv_nat_pos :
     (𝓤 α).HasBasis (fun n : ℕ => 0 < n) fun n : ℕ => { p : α × α | dist p.1 p.2 < 1 / ↑n } :=
   Metric.mk_uniformity_basis (fun _ hn => div_pos zero_lt_one <| Nat.cast_pos.2 hn) fun _ ε0 =>
-    let ⟨n, hn⟩ := exists_nat_one_div_lt ε0
+    let ⟨n, hn⟩ := exists_natCast_one_div_lt ε0
     ⟨n + 1, Nat.succ_pos n, mod_cast hn.le⟩
 
 theorem uniformity_basis_dist_pow {r : ℝ} (h0 : 0 < r) (h1 : r < 1) :
@@ -732,12 +732,12 @@ theorem uniformity_basis_dist_le :
 theorem uniformity_basis_dist_le_inv_nat_succ :
     (𝓤 α).HasBasis (fun _ => True) fun n : ℕ => { p : α × α | dist p.1 p.2 ≤ 1 / (↑n + 1) } :=
   Metric.mk_uniformity_basis_le (fun n _ => div_pos zero_lt_one <| Nat.cast_add_one_pos n)
-    fun _ε ε0 => (exists_nat_one_div_lt ε0).imp fun _n hn => ⟨trivial, hn.le⟩
+    fun _ε ε0 => (exists_natCast_one_div_lt ε0).imp fun _n hn => ⟨trivial, hn.le⟩
 
 theorem uniformity_basis_dist_le_inv_nat_pos :
     (𝓤 α).HasBasis (fun n : ℕ => 0 < n) fun n : ℕ => { p : α × α | dist p.1 p.2 ≤ 1 / ↑n } :=
   Metric.mk_uniformity_basis_le (fun n hn => div_pos zero_lt_one <| Nat.cast_pos.2 hn) fun _ε ε0 =>
-    let ⟨n, hn⟩ := exists_nat_one_div_lt ε0
+    let ⟨n, hn⟩ := exists_natCast_one_div_lt ε0
     ⟨n + 1, n.succ_pos, by simpa using hn.le⟩
 
 theorem uniformity_basis_dist_le_pow {r : ℝ} (h0 : 0 < r) (h1 : r < 1) :

@@ -495,11 +495,11 @@ instance addLeftMono : AddLeftMono ℝ≥0 := inferInstance
 instance addLeftReflectLT : AddLeftReflectLT ℝ≥0 := inferInstance
 instance mulLeftMono : MulLeftMono ℝ≥0 := inferInstance
 
-theorem lt_iff_exists_rat_btwn (a b : ℝ≥0) :
+theorem lt_iff_exists_ratCast_btwn (a b : ℝ≥0) :
     a < b ↔ ∃ q : ℚ, 0 ≤ q ∧ a < Real.toNNReal q ∧ Real.toNNReal q < b :=
   Iff.intro
     (fun h : (↑a : ℝ) < (↑b : ℝ) =>
-      let ⟨q, haq, hqb⟩ := exists_rat_btwn h
+      let ⟨q, haq, hqb⟩ := exists_ratCast_btwn h
       have : 0 ≤ (q : ℝ) := le_trans a.2 <| le_of_lt haq
       ⟨q, Rat.cast_nonneg.1 this, by
         simp [Real.coe_toNNReal _ this, NNReal.coe_lt_coe.symm, haq, hqb]⟩)

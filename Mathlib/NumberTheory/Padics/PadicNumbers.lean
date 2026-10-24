@@ -816,7 +816,7 @@ instance isAbsoluteValue : IsAbsoluteValue fun a : ℚ_[p] ↦ ‖a‖ where
   abv_mul' := by simp [Norm.norm, map_mul]
 
 theorem rat_dense (q : ℚ_[p]) {ε : ℝ} (hε : 0 < ε) : ∃ r : ℚ, ‖q - r‖ < ε :=
-  let ⟨ε', hε'l, hε'r⟩ := exists_rat_btwn hε
+  let ⟨ε', hε'l, hε'r⟩ := exists_ratCast_btwn hε
   let ⟨r, hr⟩ := rat_dense' q (ε := ε') (by simpa using hε'l)
   ⟨r, lt_trans (by simpa [Norm.norm] using hr) hε'r⟩
 
@@ -1005,7 +1005,7 @@ instance complete : CauSeq.IsComplete ℚ_[p] norm where
     obtain ⟨q, hq⟩ := Padic.complete'' ⟨f, cau_seq_norm_e⟩
     exists q
     intro ε hε
-    obtain ⟨ε', hε'⟩ := exists_rat_btwn hε
+    obtain ⟨ε', hε'⟩ := exists_ratCast_btwn hε
     norm_cast at hε'
     obtain ⟨N, hN⟩ := hq ε' hε'.1
     exists N

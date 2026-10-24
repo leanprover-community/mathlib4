@@ -842,27 +842,27 @@ lemma natCast_lt_ennrealToEReal {r : ℝ≥0∞} {n : ℕ} : n < (r : EReal) ↔
 
 /-! ### Miscellaneous lemmas -/
 
-theorem exists_rat_btwn_of_lt :
+theorem exists_ratCast_btwn_of_lt :
     ∀ {a b : EReal}, a < b → ∃ x : ℚ, a < (x : ℝ) ∧ ((x : ℝ) : EReal) < b
   | ⊤, _, h => (not_top_lt h).elim
   | (a : ℝ), ⊥, h => (lt_irrefl _ ((bot_lt_coe a).trans h)).elim
-  | (a : ℝ), (b : ℝ), h => by simp [exists_rat_btwn (EReal.coe_lt_coe_iff.1 h)]
+  | (a : ℝ), (b : ℝ), h => by simp [exists_ratCast_btwn (EReal.coe_lt_coe_iff.1 h)]
   | (a : ℝ), ⊤, _ =>
-    let ⟨b, hab⟩ := exists_rat_gt a
+    let ⟨b, hab⟩ := exists_ratCast_gt a
     ⟨b, by simpa using hab, coe_lt_top _⟩
   | ⊥, ⊥, h => (lt_irrefl _ h).elim
   | ⊥, (a : ℝ), _ =>
-    let ⟨b, hab⟩ := exists_rat_lt a
+    let ⟨b, hab⟩ := exists_ratCast_lt a
     ⟨b, bot_lt_coe _, by simpa using hab⟩
   | ⊥, ⊤, _ => ⟨0, bot_lt_coe _, coe_lt_top _⟩
 
-theorem lt_iff_exists_rat_btwn {a b : EReal} :
+theorem lt_iff_exists_ratCast_btwn {a b : EReal} :
     a < b ↔ ∃ x : ℚ, a < (x : ℝ) ∧ ((x : ℝ) : EReal) < b :=
-  ⟨fun hab => exists_rat_btwn_of_lt hab, fun ⟨_x, ax, xb⟩ => ax.trans xb⟩
+  ⟨fun hab => exists_ratCast_btwn_of_lt hab, fun ⟨_x, ax, xb⟩ => ax.trans xb⟩
 
 theorem lt_iff_exists_real_btwn {a b : EReal} : a < b ↔ ∃ x : ℝ, a < x ∧ (x : EReal) < b :=
   ⟨fun hab =>
-    let ⟨x, ax, xb⟩ := exists_rat_btwn_of_lt hab
+    let ⟨x, ax, xb⟩ := exists_ratCast_btwn_of_lt hab
     ⟨(x : ℝ), ax, xb⟩,
     fun ⟨_x, ax, xb⟩ => ax.trans xb⟩
 

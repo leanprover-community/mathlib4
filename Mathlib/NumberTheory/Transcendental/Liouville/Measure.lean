@@ -40,7 +40,7 @@ theorem setOfPred_liouvilleWith_subset_aux :
         { x : ℝ | ∃ᶠ b : ℕ in atTop, ∃ a ∈ Finset.Icc (0 : ℤ) b,
           |x - (a : ℤ) / b| < 1 / (b : ℝ) ^ (2 + 1 / n : ℝ) } := by
   rintro x ⟨p, hp, hxp⟩
-  rcases exists_nat_one_div_lt (sub_pos.2 hp) with ⟨n, hn⟩
+  rcases exists_natCast_one_div_lt (sub_pos.2 hp) with ⟨n, hn⟩
   rw [lt_sub_iff_add_lt'] at hn
   suffices ∀ y : ℝ, LiouvilleWith p y → y ∈ Ico (0 : ℝ) 1 → ∃ᶠ b : ℕ in atTop,
       ∃ a ∈ Finset.Icc (0 : ℤ) b, |y - a / b| < 1 / (b : ℝ) ^ (2 + 1 / (n + 1 : ℕ) : ℝ) by

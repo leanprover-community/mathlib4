@@ -583,20 +583,20 @@ theorem max_zero_left : max 0 a = a :=
 theorem max_zero_right : max a 0 = a :=
   max_eq_left zero_le
 
-theorem lt_iff_exists_rat_btwn :
+theorem lt_iff_exists_ratCast_btwn :
     a < b ↔ ∃ q : ℚ, 0 ≤ q ∧ a < Real.toNNReal q ∧ (Real.toNNReal q : ℝ≥0∞) < b :=
   ⟨fun h => by
     rcases lt_iff_exists_coe.1 h with ⟨p, rfl, _⟩
     rcases exists_between h with ⟨c, pc, cb⟩
     rcases lt_iff_exists_coe.1 cb with ⟨r, rfl, _⟩
-    rcases (NNReal.lt_iff_exists_rat_btwn _ _).1 (coe_lt_coe.1 pc) with ⟨q, hq0, pq, qr⟩
+    rcases (NNReal.lt_iff_exists_ratCast_btwn _ _).1 (coe_lt_coe.1 pc) with ⟨q, hq0, pq, qr⟩
     exact ⟨q, hq0, coe_lt_coe.2 pq, lt_trans (coe_lt_coe.2 qr) cb⟩,
       fun ⟨_, _, qa, qb⟩ => lt_trans qa qb⟩
 
 theorem lt_iff_exists_real_btwn :
     a < b ↔ ∃ r : ℝ, 0 ≤ r ∧ a < ENNReal.ofReal r ∧ (ENNReal.ofReal r : ℝ≥0∞) < b :=
   ⟨fun h =>
-    let ⟨q, q0, aq, qb⟩ := ENNReal.lt_iff_exists_rat_btwn.1 h
+    let ⟨q, q0, aq, qb⟩ := ENNReal.lt_iff_exists_ratCast_btwn.1 h
     ⟨q, Rat.cast_nonneg.2 q0, aq, qb⟩,
     fun ⟨_, _, qa, qb⟩ => lt_trans qa qb⟩
 
