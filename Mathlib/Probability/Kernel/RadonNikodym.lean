@@ -220,7 +220,7 @@ lemma measure_mutuallySingularSetSlice (κ η : Kernel α γ) [IsFiniteKernel κ
   · fun_prop
   · fun_prop
   refine ae_of_all _ (fun x hx ↦ ?_)
-  simp only [mem_ofPred_eq] at hx
+  simp only [mem_ofPred] at hx
   simp [hx]
 
 /-- Radon-Nikodym derivative of the kernel `κ` with respect to the kernel `η`. -/
@@ -247,7 +247,7 @@ lemma rnDeriv_eq_top_iff (κ η : Kernel α γ) (a : α) (x : γ) :
     rnDeriv κ η a x = ∞ ↔ (a, x) ∈ mutuallySingularSet κ η := by
   simp only [rnDeriv, ENNReal.div_eq_top, ne_eq, ENNReal.ofReal_eq_zero, not_le,
     tsub_le_iff_right, zero_add, ENNReal.ofReal_ne_top, not_false_eq_true, and_true, or_false,
-    mutuallySingularSet, mem_ofPred_eq, and_iff_right_iff_imp]
+    mutuallySingularSet, mem_ofPred, and_iff_right_iff_imp]
   exact fun h ↦ zero_lt_one.trans_le h
 
 lemma rnDeriv_eq_top_iff' (κ η : Kernel α γ) (a : α) (x : γ) :

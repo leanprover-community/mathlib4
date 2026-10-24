@@ -464,7 +464,7 @@ theorem essSup_measure_restrict (hs : IsFundamentalDomain G s μ) {f : α → �
   intro γ
   ext x
   rw [mem_smul_set_iff_inv_smul_mem]
-  simp only [mem_ofPred_eq, hf γ⁻¹ x]
+  simp only [mem_ofPred, hf γ⁻¹ x]
 
 end IsFundamentalDomain
 
@@ -836,7 +836,7 @@ lemma QuotientMeasureEqMeasurePreimage.sigmaFiniteQuotient
     SigmaFinite μ := by
   rw [sigmaFinite_iff]
   obtain ⟨A, hA_meas, hA, hA'⟩ := Measure.toFiniteSpanningSetsIn (h := i)
-  simp only [mem_ofPred_eq] at hA_meas
+  simp only [mem_ofPred] at hA_meas
   refine ⟨⟨fun n ↦ π '' (A n), by simp, fun n ↦ ?_, ?_⟩⟩
   · obtain ⟨s, fund_dom_s⟩ := i'
     have : π ⁻¹' π '' (A n) = _ := MulAction.quotient_preimage_image_eq_union_mul (A n) (G := G)

@@ -80,7 +80,7 @@ theorem polar_nonempty (s : Set E) : Set.Nonempty (B.polar s) := by
 
 theorem polar_eq_iInter {s : Set E} : B.polar s = ⋂ x ∈ s, { y : F | ‖B x y‖ ≤ 1 } := by
   ext
-  simp only [polar_mem_iff, Set.mem_iInter, Set.mem_ofPred_eq]
+  simp only [polar_mem_iff, Set.mem_iInter, Set.mem_ofPred]
 
 /-- The map `B.polar : Set E → Set F` forms an order-reversing Galois connection with
 `B.flip.polar : Set F → Set E`. We use `OrderDual.toDual` and `OrderDual.ofDual` to express
@@ -110,7 +110,7 @@ theorem polar_singleton {a : E} : B.polar {a} = { y | ‖B a y‖ ≤ 1 } := le_
   (fun y hy => (polar_mem_iff _ _ _).mp (fun _ hb => by rw [Set.mem_singleton_iff.mp hb]; exact hy))
 
 theorem mem_polar_singleton {x : E} (y : F) : y ∈ B.polar {x} ↔ ‖B x y‖ ≤ 1 := by
-  simp only [polar_singleton, Set.mem_ofPred_eq]
+  simp only [polar_singleton, Set.mem_ofPred]
 
 theorem polar_zero : B.polar ({0} : Set E) = Set.univ := by
   simp only [polar_singleton, map_zero, zero_apply, norm_zero, zero_le_one, Set.ofPred_true]
@@ -126,7 +126,7 @@ theorem tripolar_eq_polar (s : Set E) : B.polar (B.flip.polar (B.polar s)) = B.p
 theorem sInter_polar_finite_subset_eq_polar (s : Set E) :
     ⋂₀ (B.polar '' { F | F.Finite ∧ F ⊆ s }) = B.polar s := by
   ext x
-  simp only [Set.sInter_image, Set.mem_ofPred_eq, Set.mem_iInter, and_imp]
+  simp only [Set.sInter_image, Set.mem_ofPred, Set.mem_iInter, and_imp]
   refine ⟨fun hx a ha ↦ ?_, fun hx F _ hF₂ => polar_antitone _ hF₂ hx⟩
   simpa [mem_polar_singleton] using hx _ (Set.finite_singleton a) (Set.singleton_subset_iff.mpr ha)
 
@@ -238,7 +238,7 @@ theorem polar_singleton {a : E} : polar 𝕜 {a} = { x | ‖x a‖ ≤ 1 } := by
   simp only [polar, LinearMap.polar_singleton, LinearMap.flip_apply, topDualPairing_apply]
 
 theorem mem_polar_singleton {a : E} (y : StrongDual 𝕜 E) : y ∈ polar 𝕜 {a} ↔ ‖y a‖ ≤ 1 := by
-  simp only [polar_singleton, mem_ofPred_eq]
+  simp only [polar_singleton, mem_ofPred]
 
 theorem polar_zero : polar 𝕜 ({0} : Set E) = Set.univ :=
   LinearMap.polar_zero _
