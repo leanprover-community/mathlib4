@@ -107,6 +107,29 @@ theorem isUnit_neg_one [Monoid α] [HasDistribNeg α] : IsUnit (-1 : α) := isUn
 theorem IsUnit.sub_iff [Ring α] {x y : α} : IsUnit (x - y) ↔ IsUnit (y - x) :=
   (IsUnit.neg_iff _).symm.trans <| neg_sub x y ▸ Iff.rfl
 
+/-- Swapping the factors in `1 + a * b` preserves invertibility. -/
+theorem isUnit_one_add_mul_comm [Ring R] (a b : R) :
+    IsUnit (1 + a * b) ↔ IsUnit (1 + b * a) := by
+  suffices h : ∀ a b : R, IsUnit (1 + a * b) → IsUnit (1 + b * a) from
+    ⟨h a b, h b a⟩
+  intro a b h
+  obtain ⟨u, hu⟩ := h
+  have hl : (↑u⁻¹ : R) * (1 + a * b) = 1 := by rw [← hu]; exact u.inv_val
+  have hr : (1 + a * b) * (↑u⁻¹ : R) = 1 := by rw [← hu]; exact u.val_inv
+  refine ⟨⟨1 + b * a, 1 - b * ↑u⁻¹ * a, ?_, ?_⟩, rfl⟩
+  · calc
+      (1 + b * a) * (1 - b * ↑u⁻¹ * a) =
+          1 + b * a - b * ((1 + a * b) * ↑u⁻¹) * a := by
+        rw [mul_sub, mul_one]
+        simp only [mul_add, add_mul, one_mul, mul_assoc]
+      _ = 1 := by rw [hr, mul_one, add_sub_cancel_right]
+  · calc
+      (1 - b * ↑u⁻¹ * a) * (1 + b * a) =
+          1 + b * a - b * (↑u⁻¹ * (1 + a * b)) * a := by
+        rw [sub_mul, one_mul]
+        simp only [mul_add, add_mul, mul_one, mul_assoc]
+      _ = 1 := by rw [hl, mul_one, add_sub_cancel_right]
+
 namespace Units
 
 theorem divp_add_divp [CommSemiring α] (a b : α) (u₁ u₂ : αˣ) :

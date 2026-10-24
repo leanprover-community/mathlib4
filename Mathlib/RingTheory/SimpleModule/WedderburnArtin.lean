@@ -1,13 +1,14 @@
 /-
 Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Junyan Xu
+Authors: Junyan Xu, Jaehyeon Shin
 -/
 module
 
 public import Mathlib.RingTheory.FiniteLength
 public import Mathlib.RingTheory.SimpleModule.Isotypic
 
+import Mathlib.RingTheory.Jacobson.Opposite
 import Mathlib.RingTheory.SimpleRing.Congr
 import Mathlib.RingTheory.SimpleRing.Matrix
 
@@ -15,6 +16,8 @@ import Mathlib.RingTheory.SimpleRing.Matrix
 # Wedderburn–Artin Theorem
 
 ## Main results
+
+* `isSemiprimaryRing_mulOpposite_iff`: a ring is semiprimary iff its opposite ring is.
 
 * `IsSimpleRing.tfae`: a simple ring is semisimple iff it is Artinian,
   iff it has a minimal left ideal.
@@ -240,6 +243,16 @@ end IsSemisimpleRing
 
 theorem isSemisimpleRing_mulOpposite_iff : IsSemisimpleRing Rᵐᵒᵖ ↔ IsSemisimpleRing R :=
   ⟨fun _ ↦ (RingEquiv.opOp R).symm.isSemisimpleRing, fun _ ↦ inferInstance⟩
+
+/-- A ring is semiprimary if and only if its opposite ring is semiprimary. -/
+theorem isSemiprimaryRing_mulOpposite_iff : IsSemiprimaryRing Rᵐᵒᵖ ↔ IsSemiprimaryRing R := by
+  rw [isSemiprimaryRing_iff, isSemiprimaryRing_iff,
+    Ring.jacobsonQuotientOpEquiv.isSemisimpleRing_iff,
+    isSemisimpleRing_mulOpposite_iff, Ring.isNilpotent_jacobson_op_iff]
+
+/-- The opposite ring of a semiprimary ring is semiprimary. -/
+theorem IsSemiprimaryRing.mulOpposite [IsSemiprimaryRing R] : IsSemiprimaryRing Rᵐᵒᵖ :=
+  isSemiprimaryRing_mulOpposite_iff.mpr inferInstance
 
 /-- The existence part of the Artin–Wedderburn theorem. -/
 theorem isSemisimpleRing_iff_pi_matrix_divisionRing : IsSemisimpleRing R ↔
