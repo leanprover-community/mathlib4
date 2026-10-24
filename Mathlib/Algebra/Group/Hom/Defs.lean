@@ -7,6 +7,7 @@ Authors: Patrick Massot, Kevin Buzzard, Kim Morrison, Johan Commelin, Chris Hugh
 module
 
 public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Algebra.Group.IsApply
 public import Mathlib.Algebra.Notation.Pi.Defs
 public import Mathlib.Basic.FunLike.Basic
 public import Mathlib.Logic.Function.Iterate
@@ -989,8 +990,15 @@ instance instMonoidHomClass : MonoidHomClass (Monoid.End M) M M :=
 
 @[to_additive instOne]
 instance instOne : One (Monoid.End M) where one := .id _
+
+@[to_additive instIsOneApplyEqSelf]
+instance instIsOneApplyEqSelf : IsOneApplyEqSelf (Monoid.End M) where
+
 @[to_additive instMul]
 instance instMul : Mul (Monoid.End M) where mul := .comp
+
+@[to_additive IsMulApplyEqComp]
+instance instIsMulApplyEqComp : IsMulApplyEqComp (Monoid.End M) where
 
 @[to_additive instMonoid]
 instance instMonoid : Monoid (Monoid.End M) where
@@ -1008,10 +1016,20 @@ instance : Inhabited (Monoid.End M) := ⟨1⟩
 @[to_additive (attr := simp, norm_cast) coe_pow]
 lemma coe_pow (f : Monoid.End M) (n : ℕ) : (↑(f ^ n) : M → M) = f^[n] := rfl
 
-@[to_additive (attr := simp) coe_one]
+@[deprecated FunLike.coe_one_eq_id +typeChanged (since := "2026-10-24")]
+theorem _root_.AddMonoid.End.coe_one {M : Type*} [AddZero M] :
+    ((1 : AddMonoid.End M) : M → M) = id := rfl
+
+@[to_additive existing coe_one,
+  deprecated FunLike.coe_one_eq_id +typeChanged (since := "2026-10-24")]
 theorem coe_one : ((1 : Monoid.End M) : M → M) = id := rfl
 
-@[to_additive (attr := simp) coe_mul]
+@[deprecated FunLike.coe_mul_eq_comp +typeChanged (since := "2026-10-24")]
+theorem _root_.AddMonoid.End.coe_mul {M : Type*} [AddZero M] (f g) :
+    ((f * g : AddMonoid.End M) : M → M) = f ∘ g := rfl
+
+@[to_additive existing coe_mul,
+  deprecated FunLike.coe_mul_eq_comp +typeChanged (since := "2026-10-24")]
 theorem coe_mul (f g) : ((f * g : Monoid.End M) : M → M) = f ∘ g := rfl
 
 end End
@@ -1024,21 +1042,32 @@ end End
 @[to_additive /-- `0` is the homomorphism sending all elements to `0`. -/]
 instance [One M] [One N] : One (OneHom M N) := ⟨⟨fun _ => 1, rfl⟩⟩
 
+@[to_additive]
+instance [One M] [One N] : IsOneApply (OneHom M N) where
+
 /-- `1` is the multiplicative homomorphism sending all elements to `1`. -/
 @[to_additive /-- `0` is the additive homomorphism sending all elements to `0` -/]
 instance [Mul M] [MulOneClass N] : One (M →ₙ* N) :=
   ⟨⟨fun _ => 1, fun _ _ => (one_mul 1).symm⟩⟩
+
+@[to_additive]
+instance [Mul M] [MulOneClass N] : IsOneApply (M →ₙ* N) where
 
 /-- `1` is the monoid homomorphism sending all elements to `1`. -/
 @[to_additive /-- `0` is the additive monoid homomorphism sending all elements to `0`. -/]
 instance [MulOne M] [MulOneClass N] : One (M →* N) :=
   ⟨⟨⟨fun _ => 1, rfl⟩, fun _ _ => (one_mul 1).symm⟩⟩
 
-@[to_additive (attr := simp)]
-theorem OneHom.one_apply [One M] [One N] (x : M) : (1 : OneHom M N) x = 1 := rfl
+@[to_additive]
+instance [MulOne M] [MulOneClass N] : IsOneApply (M →* N) where
 
-@[to_additive (attr := simp)]
-theorem MonoidHom.one_apply [MulOne M] [MulOneClass N] (x : M) : (1 : M →* N) x = 1 := rfl
+@[deprecated (since := "2026-10-24")] protected alias ZeroHom.zero_apply := zero_apply
+@[to_additive existing, deprecated (since := "2026-10-24")] protected alias OneHom.one_apply :=
+  one_apply
+
+@[deprecated (since := "2026-10-24")] protected alias AddMonoidHom.zero_apply := zero_apply
+@[to_additive existing, deprecated (since := "2026-10-24")] protected alias MonoidHom.one_apply :=
+  one_apply
 
 @[to_additive (attr := simp)]
 theorem OneHom.one_comp [One M] [One N] [One P] (f : OneHom M N) :
@@ -1047,7 +1076,7 @@ theorem OneHom.one_comp [One M] [One N] [One P] (f : OneHom M N) :
 @[to_additive (attr := simp)]
 theorem OneHom.comp_one [One M] [One N] [One P] (f : OneHom N P) : f.comp (1 : OneHom M N) = 1 := by
   ext
-  simp only [map_one, OneHom.coe_comp, Function.comp_apply, OneHom.one_apply]
+  simp
 
 @[to_additive]
 instance [One M] [One N] : Inhabited (OneHom M N) := ⟨1⟩
