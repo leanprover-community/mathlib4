@@ -437,7 +437,7 @@ def nilRankAux (φ : L →ₗ[R] Module.End R M) (b : Basis ι R L) : ℕ :=
 
 lemma polyCharpoly_coeff_nilRankAux_ne_zero [Nontrivial R] :
     (polyCharpoly φ b).coeff (nilRankAux φ b) ≠ 0 := by
-  apply Polynomial.trailingCoeff_nonzero_iff_nonzero.mpr
+  apply Polynomial.trailingCoeff_ne_zero.mpr
   apply polyCharpoly_ne_zero
 
 lemma nilRankAux_le [Nontrivial R] (b : Basis ι R L) (b' : Basis ι' R L) :
@@ -494,7 +494,7 @@ lemma nilRank_le_natTrailingDegree_charpoly (x : L) :
   intro h
   apply_fun (MvPolynomial.eval ((chooseBasis R L).repr x)) at h
   rw [polyCharpoly_coeff_eval, map_zero] at h
-  apply Polynomial.trailingCoeff_nonzero_iff_nonzero.mpr _ h
+  apply Polynomial.trailingCoeff_ne_zero.mpr _ h
   apply (LinearMap.charpoly_monic _).ne_zero
 
 end
@@ -529,7 +529,7 @@ lemma isNilRegular_iff_natTrailingDegree_charpoly_eq_nilRank [Nontrivial R] :
       (nilRank_le_natTrailingDegree_charpoly φ x)
   · intro h
     rw [← h]
-    apply Polynomial.trailingCoeff_nonzero_iff_nonzero.mpr
+    apply Polynomial.trailingCoeff_ne_zero.mpr
     apply (LinearMap.charpoly_monic _).ne_zero
 
 section IsDomain
