@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+public import Mathlib.SetTheory.Cardinal.Free
 
 /-!
 # Linear algebra properties of `FreeAlgebra R X`
@@ -43,8 +44,7 @@ end
 theorem rank_eq [CommRing R] [Nontrivial R] :
     Module.rank R (FreeAlgebra R X) = Cardinal.lift.{u} (Cardinal.mk (List X)) := by
   rw [← (Basis.mk_eq_rank'.{_, _, _, u} (basisFreeMonoid R X)).trans (Cardinal.lift_id _),
-    Cardinal.lift_umax.{v, u}, Cardinal.lift_inj]
-  exact Equiv.cardinal_eq ⟨_, _, FreeMonoid.ofList_toList, FreeMonoid.toList_ofList⟩
+    Cardinal.lift_umax.{v, u}, Cardinal.mk_freeMonoid_eq_mk_list]
 
 end FreeAlgebra
 

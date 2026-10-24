@@ -57,8 +57,7 @@ lemma toFreeMonoid_mk_eq_cons (x : α) (xs : List α) :
 @[to_additive (attr := grind .)]
 lemma toFreeMonoid_injective : Function.Injective (@toFreeMonoid α) := by
   rintro ⟨x, xs⟩ ⟨y, ys⟩ h
-  simp only [toFreeMonoid_mk_eq_cons, FreeMonoid.ext_iff] at h
-  simpa using h
+  simpa [toFreeMonoid_mk_eq_cons, FreeMonoid.ext_iff] using h
 
 @[to_additive (attr := simp, grind .)]
 lemma toFreeMonoid_ne_one (x : FreeSemigroup α) : toFreeMonoid x ≠ 1 := by

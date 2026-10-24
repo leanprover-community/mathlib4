@@ -159,6 +159,12 @@ lemma «forall» {p : FreeMonoid α → Prop} : (∀ x, p x) ↔ ∀ l, p (ofLis
 lemma «exists» {p : FreeMonoid α → Prop} : (∃ x, p x) ↔ ∃ l, p (ofList l) :=
   ⟨fun h ↦ h.imp' _ fun _ ↦ id, fun h ↦ h.imp' _ fun _ ↦ id⟩
 
+/-- The natural equivalence between `FreeMonoid α` and `List α`. -/
+@[to_additive /-- The natural equivalence between `FreeAddMonoid α` and `List α`. -/]
+def toListEquiv : FreeMonoid α ≃ List α where
+  toFun := toList
+  invFun := ofList
+
 /-! ### Length -/
 
 section Length
