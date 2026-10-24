@@ -346,6 +346,9 @@ theorem support_mapRange {f : M → N} {hf : f 0 = 0} {g : α →₀ M} :
 theorem support_mapRange_of_injective {e : M → N} (he0 : e 0 = 0) (f : ι →₀ M)
     (he : Function.Injective e) : (Finsupp.mapRange e he0 f).support = f.support := by grind
 
+theorem support_mapRange' {f : M → N} {hf : f 0 = 0} {g : α →₀ M}
+    (h : ∀ x, f x = 0 → x = 0) : (g.mapRange f hf).support = g.support := by grind
+
 lemma range_mapRange (e : M → N) (he₀ : e 0 = 0) :
     Set.range (Finsupp.mapRange (α := α) e he₀) = {g | ∀ i, g i ∈ Set.range e} := by
   ext g

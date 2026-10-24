@@ -5,6 +5,7 @@ Authors: Junyan Xu
 -/
 module
 
+public import Mathlib.Combinatorics.Colex
 public import Mathlib.Data.DFinsupp.Lex
 public import Mathlib.Order.GameAdd
 public import Mathlib.SetTheory.Cardinal.Order
@@ -179,6 +180,11 @@ instance Colex.wellFoundedLT [LT ι] [@Std.Trichotomous ι (· < ·)] [WellFound
     [∀ i, WellFoundedLT (α i)] :
     WellFoundedLT (Colex (Π₀ i, α i)) :=
   Lex.wellFoundedLT (ι := ιᵒᵈ)
+
+instance _root_.Finset.Colex.wellFoundedLT {α : Type*} [LinearOrder α] [WellFoundedLT α] :
+    WellFoundedLT (Colex (Finset α)) :=
+  StrictMono.wellFoundedLT (β := Colex (Π₀ _ : α, Nat)) (f := fun l ↦ toColex <| .mk (ofColex l) 1)
+    fun l₁ l₂ hl₁l₂ ↦ Finset.Colex.strictMono_toColex_piecewise_ofColex (by simp) hl₁l₂
 
 end DFinsupp
 
