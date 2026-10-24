@@ -684,7 +684,7 @@ private lemma antilipschitzWith_toMatrixAux :
       exact norm_apply_le_norm v j
     _ ≤ ∑ _ : n, ∑ _ : m, ‖ofMatrixₗ.symm (R := ℂ) M‖ := by
       gcongr with j _ i _
-      exact ofMatrixₗ.symm (R := ℂ) M |>.norm_entry_le_entrywise_sup_norm
+      exact ofMatrixₗ.symm (R := ℂ) M |>.norm_apply_le_norm
     _ = _ := by simp [mul_assoc]
 
 private lemma uniformInducing_toMatrixAux :
