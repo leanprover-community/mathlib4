@@ -30,12 +30,10 @@ section Group
 variable [Group α] [MulAction α β]
 
 /-- Given an action of a group `α` on `β`, each `g : α` defines a permutation of `β`. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps)
+/-- Given an action of an additive group `α` on `β`, each `g : α` defines a permutation of `β`. -/]
 def MulAction.toPerm (a : α) : Equiv.Perm β :=
   ⟨fun x => a • x, fun x => a⁻¹ • x, inv_smul_smul a, smul_inv_smul a⟩
-
-/-- Given an action of an additive group `α` on `β`, each `g : α` defines a permutation of `β`. -/
-add_decl_doc AddAction.toPerm
 
 /-- `MulAction.toPerm` is injective on faithful actions. -/
 @[to_additive /-- `AddAction.toPerm` is injective on faithful actions. -/]
