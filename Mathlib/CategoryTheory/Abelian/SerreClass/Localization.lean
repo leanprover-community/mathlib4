@@ -33,10 +33,10 @@ open Limits
 
 namespace ObjectProperty
 
-variable {C : Type u} [Category.{v} C] [Abelian C]
+variable {C : Type u} [Category.{v} C] [Preadditive C] [Abelian C]
   {D : Type u'} [Category.{v'} D]
   (L : C ⥤ D) (P : ObjectProperty C) [P.IsSerreClass]
-  {E : Type u''} [Category.{v''} E] [Abelian E]
+  {E : Type u''} [Category.{v''} E] [Preadditive E] [Abelian E]
 
 lemma exists_epiModSerre_comp_eq_zero_iff {X Y : C} (f : X ⟶ Y) :
     (∃ (X' : C) (s : X' ⟶ X) (_ : P.epiModSerre s), s ≫ f = 0) ↔
@@ -412,8 +412,8 @@ Note that we assume that `D` has already been equipped with a preadditive struct
 and that `L` is additive. Otherwise, see the results in the file
 `Mathlib/CategoryTheory/Localization/CalculusOfFractions/Preadditive.lean`
 which applies because `P.isoModSerre` has a calculus of left and right fractions. -/
-@[stacks 02MS, instance_reducible]
-def abelian : Abelian D := by
+@[stacks 02MS]
+theorem abelian : Abelian D := by
   have := hasFiniteProducts L P
   have := hasKernels L P
   have := hasCokernels L P
@@ -426,20 +426,20 @@ lemma hasZeroObject : HasZeroObject D :=
   Abelian.hasZeroObject
 
 lemma preservesFiniteLimits : PreservesFiniteLimits L := by
-  let := abelian L P
+  have := abelian L P
   rw [((Functor.preservesFiniteLimits_tfae L).out 4 3 :)]
   intro _ _ f
   exact preservesKernel L P f
 
 lemma preservesFiniteColimits : PreservesFiniteColimits L := by
-  let := abelian L P
+  have := abelian L P
   rw [((Functor.preservesFiniteColimits_tfae L).out 4 3 :)]
   intro _ _ f
   exact preservesCokernel L P f
 
 lemma isIso_map_iff {X Y : C} (f : X ⟶ Y) :
     IsIso (L.map f) ↔ P.isoModSerre f := by
-  let := abelian L P
+  have := abelian L P
   rw [isIso_iff_mono_and_epi, mono_map_iff L P, epi_map_iff L P, isoModSerre_iff]
 
 lemma inverseImage_isomorphisms :
@@ -451,7 +451,7 @@ variable (G : D ⥤ E)
 
 lemma preservesFiniteLimits_comp_iff :
     PreservesFiniteLimits (L ⋙ G) ↔ PreservesFiniteLimits G := by
-  let := abelian L P
+  have := abelian L P
   have := preservesFiniteLimits L P
   refine ⟨fun _ ↦ ?_, fun _ ↦ comp_preservesFiniteLimits _ _⟩
   have := (Localization.functor_additive_iff L P.isoModSerre G).mpr
@@ -472,7 +472,7 @@ lemma preservesFiniteLimits_comp_iff :
 
 lemma preservesFiniteColimits_comp_iff :
     PreservesFiniteColimits (L ⋙ G) ↔ PreservesFiniteColimits G := by
-  let := abelian L P
+  have := abelian L P
   have := preservesFiniteColimits L P
   refine ⟨fun _ ↦ ?_, fun _ ↦ comp_preservesFiniteColimits _ _⟩
   have := (Localization.functor_additive_iff L P.isoModSerre G).mpr (by

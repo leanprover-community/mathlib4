@@ -111,7 +111,7 @@ instance pseudoEqual_refl {P : C} : Std.Refl (PseudoEqual P) where
 instance pseudoEqual_symm {P : C} : Std.Symm (PseudoEqual P) where
   symm _ _ := fun ⟨R, p, q, ep, Eq, comm⟩ ↦ ⟨R, q, p, Eq, ep, comm.symm⟩
 
-variable [Abelian.{v} C]
+variable [Preadditive C] [Abelian.{v} C]
 
 section
 

@@ -237,7 +237,7 @@ def triangleMap {Y : SpectralObject C ι} (φ : X ⟶ Y)
 
 section
 
-variable {A : Type*} [Category* A] [Abelian A]
+variable {A : Type*} [Category* A] [Preadditive A] [Abelian A]
 
 /-- If `X` is a spectral object indexed by `ι` in a triangulated category `C`, and
 `F : C ⥤ A` is a homological functor, this is the spectral object in the

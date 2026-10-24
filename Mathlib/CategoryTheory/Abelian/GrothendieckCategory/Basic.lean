@@ -67,7 +67,7 @@ which shows that every instance for `C` implies an instance for `ShrinkHoms C` w
 `Type w`.
 -/
 @[stacks 079B, pp_with_univ]
-class IsGrothendieckAbelian [Abelian C] : Prop where
+class IsGrothendieckAbelian [Preadditive C] [Abelian C] : Prop where
   locallySmall : LocallySmall.{w} C := by infer_instance
   hasFilteredColimitsOfSize : HasFilteredColimitsOfSize.{w, w} C := by infer_instance
   ab5OfSize : AB5OfSize.{w, w} C := by infer_instance
@@ -78,7 +78,7 @@ attribute [instance] IsGrothendieckAbelian.locallySmall
   IsGrothendieckAbelian.hasSeparator
 
 variable {C} {D} in
-theorem IsGrothendieckAbelian.of_equivalence [Abelian C] [Abelian D]
+theorem IsGrothendieckAbelian.of_equivalence [Preadditive C] [Abelian C] [Preadditive D] [Abelian D]
     [IsGrothendieckAbelian.{w} C] (α : C ≌ D) : IsGrothendieckAbelian.{w} D := by
   have hasFilteredColimits : HasFilteredColimitsOfSize.{w, w, v₂, u₂} D :=
     ⟨fun _ _ _ => Adjunction.hasColimitsOfShape_of_equivalence α.inverse⟩
@@ -88,13 +88,13 @@ theorem IsGrothendieckAbelian.of_equivalence [Abelian C] [Abelian D]
     exact HasExactColimitsOfShape.of_codomain_equivalence _ α
   · exact HasSeparator.of_equivalence α
 
-instance ShrinkHoms.isGrothendieckAbelian [Abelian C] [IsGrothendieckAbelian.{w} C] :
-    IsGrothendieckAbelian.{w, w} (ShrinkHoms C) :=
+instance ShrinkHoms.isGrothendieckAbelian [Preadditive C] [Abelian C]
+    [IsGrothendieckAbelian.{w} C] : IsGrothendieckAbelian.{w, w} (ShrinkHoms C) :=
   IsGrothendieckAbelian.of_equivalence <| ShrinkHoms.equivalence C
 
 section Instances
 
-variable [Abelian C] [IsGrothendieckAbelian.{w} C]
+variable [Preadditive C] [Abelian C] [IsGrothendieckAbelian.{w} C]
 
 instance IsGrothendieckAbelian.hasColimits : HasColimitsOfSize.{w, w} C :=
   has_colimits_of_finite_and_filtered

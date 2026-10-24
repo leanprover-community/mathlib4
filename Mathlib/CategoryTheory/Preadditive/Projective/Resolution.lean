@@ -61,7 +61,7 @@ class HasProjectiveResolution (Z : C) : Prop where
 variable (C)
 
 /-- You will rarely use this typeclass directly: it is implied by the combination
-`[EnoughProjectives C]` and `[Abelian C]`.
+`[EnoughProjectives C]` and `[Preadditive C] [Abelian C]`.
 By itself it's enough to set up the basic theory of derived functors.
 -/
 class HasProjectiveResolutions : Prop where

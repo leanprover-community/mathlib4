@@ -39,7 +39,7 @@ noncomputable def ShortComplex.push
   f := pushout.inr _ _
   g := pushout.desc S.g 0 (by simp)
 
-instance [Abelian C] (S : ShortComplex C) {Y : C} (f : S.X₁ ⟶ Y) [Mono S.f] :
+instance [Preadditive C] [Abelian C] (S : ShortComplex C) {Y : C} (f : S.X₁ ⟶ Y) [Mono S.f] :
     Mono (S.push f).f := by
   dsimp
   infer_instance
@@ -53,7 +53,7 @@ instance [HasZeroMorphisms C] (S : ShortComplex C) {Y : C} (f : S.X₁ ⟶ Y)
 /-- The pushout of a short exact short complex along any morphism `f : S.X₁ ⟶ Y` is
 short exact. -/
 lemma ShortComplex.ShortExact.push
-    [Abelian C] {S : ShortComplex C} (hS : S.ShortExact) {Y : C} (f : S.X₁ ⟶ Y) :
+    [Preadditive C] [Abelian C] {S : ShortComplex C} (hS : S.ShortExact) {Y : C} (f : S.X₁ ⟶ Y) :
     (S.push f).ShortExact := by
   have := hS.mono_f
   have := hS.epi_g

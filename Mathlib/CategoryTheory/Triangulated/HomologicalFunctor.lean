@@ -73,7 +73,7 @@ lemma mem_homologicalKernel_iff [F.ShiftSequence ℤ] (X : C) :
 section Pretriangulated
 
 variable [HasZeroObject C] [Preadditive C] [∀ (n : ℤ), (CategoryTheory.shiftFunctor C n).Additive]
-  [Pretriangulated C] [Abelian A]
+  [Pretriangulated C] [Preadditive A] [Abelian A]
 
 /-- A functor from a pretriangulated category to an abelian category is a homological functor
 if it sends distinguished triangles to exact sequences. -/
@@ -81,6 +81,7 @@ class IsHomological : Prop extends F.PreservesZeroMorphisms where
   exact (T : Triangle C) (hT : T ∈ distTriang C) :
     ((shortComplexOfDistTriangle T hT).map F).Exact
 
+omit [Abelian A] in
 lemma map_distinguished_exact [F.IsHomological] (T : Triangle C) (hT : T ∈ distTriang C) :
     ((shortComplexOfDistTriangle T hT).map F).Exact :=
   IsHomological.exact _ hT
@@ -89,6 +90,7 @@ instance (L : C ⥤ D) (F : D ⥤ A) [L.CommShift ℤ] [L.IsTriangulated] [F.IsH
     (L ⋙ F).IsHomological where
   exact T hT := F.map_distinguished_exact _ (L.map_distinguished T hT)
 
+omit [Abelian A] in
 lemma IsHomological.mk' [F.PreservesZeroMorphisms]
     (hF : ∀ (T : Pretriangulated.Triangle C) (hT : T ∈ distTriang C),
       ∃ (T' : Pretriangulated.Triangle C) (e : T ≅ T'),
@@ -99,6 +101,7 @@ lemma IsHomological.mk' [F.PreservesZeroMorphisms]
     exact (ShortComplex.exact_iff_of_iso
       (F.mapShortComplex.mapIso ((shortComplexOfDistTriangleIsoOfIso e hT)))).2 h'
 
+omit [Abelian A] in
 lemma IsHomological.of_iso {F₁ F₂ : C ⥤ A} [F₁.IsHomological] (e : F₁ ≅ F₂) :
     F₂.IsHomological :=
   have := preservesZeroMorphisms_of_iso e
@@ -182,24 +185,27 @@ lemma homologySequenceδ_naturality
   rw [← shiftMap_comp', ← φ.comm₃, shiftMap_comp]
 
 variable [HasZeroObject C] [Preadditive C] [∀ (n : ℤ), (CategoryTheory.shiftFunctor C n).Additive]
-  [Pretriangulated C] [Abelian A] [F.IsHomological]
+  [Pretriangulated C] [Preadditive A] [Abelian A] [F.IsHomological]
 variable [F.ShiftSequence ℤ] (T : Triangle C) (hT : T ∈ distTriang C)
   (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
 
 section
 include hT
+omit [Abelian A] in
 @[reassoc]
 lemma comp_homologySequenceδ :
     (F.shift n₀).map T.mor₂ ≫ F.homologySequenceδ T n₀ n₁ h = 0 := by
   dsimp only [homologySequenceδ]
   rw [← F.shiftMap_comp', comp_distTriang_mor_zero₂₃ _ hT, shiftMap_zero]
 
+omit [Abelian A] in
 @[reassoc]
 lemma homologySequenceδ_comp :
     F.homologySequenceδ T n₀ n₁ h ≫ (F.shift n₁).map T.mor₁ = 0 := by
   dsimp only [homologySequenceδ]
   rw [← F.shiftMap_comp, comp_distTriang_mor_zero₃₁ _ hT, shiftMap_zero]
 
+omit [Abelian A] in
 @[reassoc]
 lemma homologySequence_comp :
     (F.shift n₀).map T.mor₁ ≫ (F.shift n₀).map T.mor₂ = 0 := by

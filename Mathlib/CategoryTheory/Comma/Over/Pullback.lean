@@ -94,7 +94,7 @@ instance {X Y : C} (f : X ⟶ Y) [HasPullbacksAlong f] : (Over.pullback f).IsRig
 
 This "preserved under pullbacks" condition is automatically satisfied in abelian categories:
 ```
-example [Abelian C] [Epi f] : (pullback f).Faithful := inferInstance
+example [Preadditive C] [Abelian C] [Epi f] : (pullback f).Faithful := inferInstance
 ```
 -/
 instance faithful_pullback {X Y : C} (f : X ⟶ Y) [HasPullbacksAlong f]
@@ -234,7 +234,7 @@ set_option backward.isDefEq.respectTransparency false in
 
 This "preserved under pushouts" condition is automatically satisfied in abelian categories:
 ```
-example [Abelian C] [Mono f] : (pushout f).Faithful := inferInstance
+example [Preadditive C] [Abelian C] [Mono f] : (pushout f).Faithful := inferInstance
 ```
 -/
 instance faithful_pushout {X Y : C} (f : X ⟶ Y) [HasPushoutsAlong f]

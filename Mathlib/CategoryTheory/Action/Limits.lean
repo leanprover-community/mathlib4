@@ -391,7 +391,7 @@ section Abelian
 def abelianAux : Action V G ≌ (SingleObj G) ⥤ V :=
   functorCategoryEquivalence V G
 
-noncomputable instance [Abelian V] : Abelian (Action V G) :=
+instance [Preadditive V] [Abelian V] : Abelian (Action V G) :=
   abelianOfEquivalence abelianAux.functor
 
 end Abelian

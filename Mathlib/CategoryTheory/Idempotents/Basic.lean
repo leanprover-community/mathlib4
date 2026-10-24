@@ -112,8 +112,8 @@ theorem isIdempotentComplete_iff_idempotents_have_kernels [Preadditive C] :
     apply Preadditive.hasEqualizer_of_hasKernel
 
 /-- An abelian category is idempotent complete. -/
-instance (priority := 100) isIdempotentComplete_of_abelian (D : Type*) [Category* D] [Abelian D] :
-    IsIdempotentComplete D := by
+instance (priority := 100) isIdempotentComplete_of_abelian (D : Type*) [Category* D] [Preadditive D]
+    [Abelian D] : IsIdempotentComplete D := by
   rw [isIdempotentComplete_iff_idempotents_have_kernels]
   intros
   infer_instance

@@ -42,7 +42,7 @@ such a derived functor is an isomorphism on objects coming from
 
 open HomotopicalAlgebra CategoryTheory Limits
 
-variable {C H : Type*} [Category* C] [Abelian C] [Category* H]
+variable {C H : Type*} [Category* C] [Preadditive C] [Abelian C] [Category* H]
 
 namespace CochainComplex.Plus
 

@@ -73,8 +73,8 @@ end
 
 section
 
-variable [Abelian C] [∀ i, Abelian (D i)] [CategoryWithHomology C]
-  [∀ i, PreservesFiniteLimits (F i)] [∀ i, PreservesFiniteColimits (F i)]
+variable [Preadditive C] [Abelian C] [∀ i, Preadditive (D i)] [∀ i, Abelian (D i)]
+  [CategoryWithHomology C] [∀ i, PreservesFiniteLimits (F i)] [∀ i, PreservesFiniteColimits (F i)]
 
 lemma shortExact_iff (S : ShortComplex C) :
     S.ShortExact ↔ ∀ (i : I), (S.map (F i)).ShortExact := by

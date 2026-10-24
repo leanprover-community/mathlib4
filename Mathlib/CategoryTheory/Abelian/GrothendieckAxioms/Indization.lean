@@ -40,7 +40,7 @@ end
 
 section
 
-variable {C : Type u} [SmallCategory C] [Abelian C]
+variable {C : Type u} [SmallCategory C] [Preadditive C] [Abelian C]
 
 instance isGrothendieckAbelian_ind : IsGrothendieckAbelian.{u} (Ind C) where
   hasSeparator := ⟨⟨_, Ind.isSeparator_range_yoneda⟩⟩

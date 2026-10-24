@@ -30,7 +30,7 @@ section
 universe z w v u
 
 variable {C : Type u} [Category.{v} C]
-variable {D : Type w} [Category.{z} D] [Abelian D]
+variable {D : Type w} [Category.{z} D] [Preadditive D] [Abelian D]
 
 namespace FunctorCategory
 
@@ -91,7 +91,7 @@ instance functor_category_isIso_coimageImageComparison :
 
 end FunctorCategory
 
-noncomputable instance functorCategoryAbelian : Abelian (C ⥤ D) :=
+instance functorCategoryAbelian : Abelian (C ⥤ D) :=
   let _ : HasKernels (C ⥤ D) := inferInstance
   let _ : HasCokernels (C ⥤ D) := inferInstance
   Abelian.ofCoimageImageComparisonIsIso

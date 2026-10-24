@@ -97,7 +97,7 @@ end CochainComplex
 
 section
 
-variable {C} {D : Type u'} [Category.{v'} D] [Abelian D]
+variable {C} {D : Type u'} [Category.{v'} D] [Preadditive D] [Abelian D]
 variable (F : C ⥤ D) [F.Additive] [PreservesFiniteLimits F] [PreservesFiniteColimits F]
 
 /-- `CochainComplex.singleFunctor` commutes with `F` and `F.mapHomologicalComplex`. -/

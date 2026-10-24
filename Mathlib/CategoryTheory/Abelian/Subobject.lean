@@ -33,7 +33,8 @@ order-isomorphic via taking kernels and cokernels.
 Implemented here using subobjects in the opposite category,
 since mathlib does not have a notion of quotient objects at the time of writing. -/
 @[simps!]
-def subobjectIsoSubobjectOp [Abelian C] (X : C) : Subobject X ≃o (Subobject (op X))ᵒᵈ := by
+def subobjectIsoSubobjectOp [Preadditive C] [Abelian C] (X : C) :
+    Subobject X ≃o (Subobject (op X))ᵒᵈ := by
   refine OrderIso.ofHomInv (cokernelOrderHom X) (kernelOrderHom X) ?_ ?_
   · change (cokernelOrderHom X).comp (kernelOrderHom X) = _
     refine OrderHom.ext _ _ (funext (Subobject.ind _ ?_))
@@ -64,14 +65,14 @@ def subobjectIsoSubobjectOp [Abelian C] (X : C) : Subobject X ≃o (Subobject (o
     · simp only [monoLift_comp]
 
 /-- A well-powered abelian category is also well-copowered. -/
-instance wellPowered_opposite [Abelian C] [LocallySmall.{w} C] [WellPowered.{w} C] :
+instance wellPowered_opposite [Preadditive C] [Abelian C] [LocallySmall.{w} C] [WellPowered.{w} C] :
     WellPowered.{w} Cᵒᵖ where
   subobject_small X :=
     (small_congr (subobjectIsoSubobjectOp (unop X)).toEquiv).1 inferInstance
 
 /-- In an abelian category, the projection `Subobject.pullbackπ f B` from the pullback of a
 subobject `B` along an epimorphism `f` is an epimorphism. -/
-instance [Abelian C] {X Y : C} (f : X ⟶ Y) [Epi f] (B : Subobject Y) :
+instance [Preadditive C] [Abelian C] {X Y : C} (f : X ⟶ Y) [Epi f] (B : Subobject Y) :
     Epi (Subobject.pullbackπ f B) :=
   epi_fst_of_isLimit _ _ (Subobject.isPullback f B).isLimit
 

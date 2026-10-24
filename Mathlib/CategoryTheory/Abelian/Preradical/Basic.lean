@@ -38,7 +38,7 @@ universe v u
 
 namespace CategoryTheory.Abelian
 
-variable {C : Type u} [Category.{v} C] [Abelian C]
+variable {C : Type u} [Category.{v} C] [Preadditive C] [Abelian C]
 
 variable (C) in
 /-- A preradical on an abelian category `C` is a monomorphism in `C ⥤ C` with codomain `𝟭 C`. -/

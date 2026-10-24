@@ -82,7 +82,7 @@ end HomologicalComplex
 
 namespace CategoryTheory.ShortComplex
 
-variable [Abelian V] {S₁ S₂ : ShortComplex (T ⥤ V)} (f : S₁ ⟶ S₂)
+variable [Preadditive V] [Abelian V] {S₁ S₂ : ShortComplex (T ⥤ V)} (f : S₁ ⟶ S₂)
 
 lemma quasiIso_iff_evaluation :
     QuasiIso f ↔ ∀ (j : T),
@@ -98,8 +98,8 @@ end CategoryTheory.ShortComplex
 
 namespace HomologicalComplex
 
-variable [Abelian V] {ι : Type*} {c : ComplexShape ι} {K₁ K₂ : HomologicalComplex (T ⥤ V) c}
-  (f : K₁ ⟶ K₂)
+variable [Preadditive V] [Abelian V] {ι : Type*} {c : ComplexShape ι}
+  {K₁ K₂ : HomologicalComplex (T ⥤ V) c} (f : K₁ ⟶ K₂)
 
 lemma quasiIsoAt_iff_evaluation (i : ι) :
     QuasiIsoAt f i ↔ ∀ (t : T),

@@ -39,7 +39,7 @@ attribute [local instance] IsFiltered.isConnected
 
 namespace IsGrothendieckAbelian
 
-variable {C : Type u} [Category.{v} C] [Abelian C] [IsGrothendieckAbelian.{w} C]
+variable {C : Type u} [Category.{v} C] [Preadditive C] [Abelian C] [IsGrothendieckAbelian.{w} C]
   {X : C} {J : Type w} [SmallCategory J]
 
 namespace IsPresentable

@@ -98,7 +98,8 @@ end
 
 section
 
-variable [Abelian C] (K : HomologicalComplex C c') (e : c.Embedding c') [e.IsTruncLE]
+variable [Preadditive C] [Abelian C] (K : HomologicalComplex C c') (e : c.Embedding c')
+  [e.IsTruncLE]
 
 /-- The cokernel sequence of the monomorphism `K.ιTruncLE e`. -/
 @[simps X₁ X₂ f]

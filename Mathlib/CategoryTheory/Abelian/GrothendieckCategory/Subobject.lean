@@ -33,7 +33,7 @@ namespace IsGrothendieckAbelian
 
 attribute [local instance] IsFiltered.isConnected
 
-variable {C : Type u} [Category.{v} C] [Abelian C] [IsGrothendieckAbelian.{w} C]
+variable {C : Type u} [Category.{v} C] [Preadditive C] [Abelian C] [IsGrothendieckAbelian.{w} C]
   {X : C} {J : Type w} [SmallCategory J] (F : J ⥤ MonoOver X)
 
 section

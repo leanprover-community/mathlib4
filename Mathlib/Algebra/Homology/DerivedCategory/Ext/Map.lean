@@ -49,9 +49,9 @@ namespace CategoryTheory
 
 open Limits Abelian
 
-variable {C : Type*} [Category* C] [Abelian C]
-variable {D : Type*} [Category* D] [Abelian D]
-variable {E : Type*} [Category* E] [Abelian E]
+variable {C : Type*} [Category* C] [Preadditive C] [Abelian C]
+variable {D : Type*} [Category* D] [Preadditive D] [Abelian D]
+variable {E : Type*} [Category* E] [Preadditive E] [Abelian E]
 
 variable (F : C ⥤ D) [F.Additive] [PreservesFiniteLimits F] [PreservesFiniteColimits F]
 

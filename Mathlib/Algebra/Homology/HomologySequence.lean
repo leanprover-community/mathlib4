@@ -170,7 +170,7 @@ end Preadditive
 
 section Abelian
 
-variable {C ι : Type*} [Category* C] [Abelian C] {c : ComplexShape ι}
+variable {C ι : Type*} [Category* C] [Preadditive C] [Abelian C] {c : ComplexShape ι}
 
 set_option backward.defeqAttrib.useBackward true in
 /-- If `X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` is an exact sequence of homological complexes, then
@@ -274,7 +274,7 @@ namespace CategoryTheory
 
 open HomologicalComplex HomologySequence
 
-variable {C ι : Type*} [Category* C] [Abelian C] {c : ComplexShape ι}
+variable {C ι : Type*} [Category* C] [Preadditive C] [Abelian C] {c : ComplexShape ι}
   {S : ShortComplex (HomologicalComplex C c)}
   (hS : S.ShortExact) (i j : ι) (hij : c.Rel i j)
 

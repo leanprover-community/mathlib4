@@ -25,7 +25,7 @@ of `HomotopyCategory C (.up ℤ)` consisting of bounded below cochain complexes.
 open CategoryTheory Limits ZeroObject Pretriangulated HomotopicalAlgebra
 
 variable (C D : Type*) [Category* C] [Category* D] [Preadditive C] [Preadditive D]
-  (A : Type*) [Category* A] [Abelian A]
+  (A : Type*) [Category* A] [Preadditive A] [Abelian A]
 
 namespace CochainComplex
 

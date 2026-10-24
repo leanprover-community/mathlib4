@@ -288,6 +288,7 @@ lemma exists_distinguished_triangle_of_epi {X₂ X₃ : A} (π : X₂ ⟶ X₃) 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable (ι) in
+include hι hA in
 /-- Let `ι : A ⥤ C` be a fully faithful additive functor where `A` is
 an additive category and `C` is a triangulated category. The category `A`
 is abelian if the following conditions are satisfied:
@@ -297,8 +298,7 @@ is abelian if the following conditions are satisfied:
   we complete `ι.obj f₁` in a distinguished triangle
   `ι.obj X₁ ⟶ ι.obj X₂ ⟶ X₃ ⟶ (ι.obj X₁)⟦1⟧`, there exists objects `K`
   and `Q`, and a distinguished triangle `(ι.obj K)⟦1⟧ ⟶ X₃ ⟶ (ι.obj Q) ⟶ ...`. -/
-@[instance_reducible]
-noncomputable def abelian [IsTriangulated C] : Abelian A :=
+theorem abelian [IsTriangulated C] : Abelian A :=
   Abelian.mk' (fun X₁ X₂ f₁ ↦ by
     obtain ⟨X₃, f₂, f₃, hT⟩ := distinguished_cocone_triangle (ι.map f₁)
     have : admissibleMorphism ι f₁ := by simp [hA]

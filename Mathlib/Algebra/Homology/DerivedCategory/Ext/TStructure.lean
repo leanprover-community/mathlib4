@@ -32,7 +32,7 @@ universe w v u
 
 namespace CategoryTheory
 
-variable (C : Type u) [Category.{v} C] [Abelian C]
+variable (C : Type u) [Category.{v} C] [Preadditive C] [Abelian C]
 
 open Localization Limits ZeroObject DerivedCategory Pretriangulated
 

@@ -34,7 +34,7 @@ namespace CochainComplex
 
 open CategoryTheory Limits HomComplex
 
-variable {C : Type*} [Category* C] [Abelian C]
+variable {C : Type*} [Category* C] [Preadditive C] [Abelian C]
 
 namespace Lifting
 
@@ -58,6 +58,7 @@ def cocycle₁' : Cocycle B X 1 :=
   Cocycle.mk (δ 0 1 (cochain₀ sq hsq)) 2 (by simp) (by simp [δ_δ])
 
 set_option backward.defeqAttrib.useBackward true in
+omit [Abelian C] in
 @[reassoc (attr := simp)]
 lemma coe_cocycle₁'_v_comp_eq_zero (n m : ℤ) (hnm : n + 1 = m := by lia) :
     (cocycle₁' sq hsq).1.v n m hnm ≫ p.f m = 0 := by
@@ -67,6 +68,7 @@ lemma coe_cocycle₁'_v_comp_eq_zero (n m : ℤ) (hnm : n + 1 = m := by lia) :
     ← p.comm, fac_right, reassoc_of% fac_right, b.comm]
 
 set_option backward.defeqAttrib.useBackward true in
+omit [Abelian C] in
 @[reassoc (attr := simp)]
 lemma comp_coe_cocycle₁'_v_eq_zero (n m : ℤ) (hnm : n + 1 = m := by lia) :
     i.f n ≫ (cocycle₁' sq hsq).1.v n m hnm = 0 := by

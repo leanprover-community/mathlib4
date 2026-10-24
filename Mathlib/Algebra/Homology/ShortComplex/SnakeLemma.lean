@@ -53,7 +53,7 @@ namespace CategoryTheory
 
 open Category Limits Preadditive
 
-variable (C : Type*) [Category* C] [Abelian C]
+variable (C : Type*) [Category* C] [Preadditive C] [Abelian C]
 
 namespace ShortComplex
 
@@ -120,6 +120,10 @@ noncomputable def op : SnakeInput Cᵒᵖ where
   L₁_exact := S.L₂_exact.op
   L₂_exact := S.L₁_exact.op
 
+section
+
+omit [Abelian C]
+
 @[reassoc (attr := simp)] lemma w₀₂_τ₁ : S.v₀₁.τ₁ ≫ S.v₁₂.τ₁ = 0 := by
   rw [← comp_τ₁, S.w₀₂, zero_τ₁]
 @[reassoc (attr := simp)] lemma w₀₂_τ₂ : S.v₀₁.τ₂ ≫ S.v₁₂.τ₂ = 0 := by
@@ -132,6 +136,8 @@ noncomputable def op : SnakeInput Cᵒᵖ where
   rw [← comp_τ₂, S.w₁₃, zero_τ₂]
 @[reassoc (attr := simp)] lemma w₁₃_τ₃ : S.v₁₂.τ₃ ≫ S.v₂₃.τ₃ = 0 := by
   rw [← comp_τ₃, S.w₁₃, zero_τ₃]
+
+end
 
 /-- `L₀.X₁` is the kernel of `v₁₂.τ₁ : L₁.X₁ ⟶ L₂.X₁`. -/
 noncomputable def h₀τ₁ : IsLimit (KernelFork.ofι S.v₀₁.τ₁ S.w₀₂_τ₁) :=
@@ -464,12 +470,14 @@ instance : Category (SnakeInput C) where
 
 variable {S₁ S₂ S₃}
 
+section
+
+omit [Abelian C]
+
 @[simp] lemma id_f₀ : Hom.f₀ (𝟙 S) = 𝟙 _ := rfl
 @[simp] lemma id_f₁ : Hom.f₁ (𝟙 S) = 𝟙 _ := rfl
 @[simp] lemma id_f₂ : Hom.f₂ (𝟙 S) = 𝟙 _ := rfl
 @[simp] lemma id_f₃ : Hom.f₃ (𝟙 S) = 𝟙 _ := rfl
-
-section
 
 variable (f : S₁ ⟶ S₂) (g : S₂ ⟶ S₃)
 

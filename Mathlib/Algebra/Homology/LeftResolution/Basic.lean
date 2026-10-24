@@ -50,7 +50,7 @@ variable {ι} (Λ : LeftResolution ι) (X Y Z : A) (f : X ⟶ Y) (g : Y ⟶ Z)
 lemma π_naturality : ι.map (Λ.F.map f) ≫ Λ.π.app Y = Λ.π.app X ≫ f :=
   Λ.π.naturality f
 
-variable [ι.Full] [ι.Faithful] [HasZeroMorphisms C] [Abelian A]
+variable [ι.Full] [ι.Faithful] [HasZeroMorphisms C] [Preadditive A] [Abelian A]
 
 /-- Given `ι : C ⥤ A`, `Λ : LeftResolution ι`, `X : A`, this is a chain complex
 which is a (functorial) resolution of `A` that is obtained inductively by using

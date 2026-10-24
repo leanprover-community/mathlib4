@@ -85,7 +85,7 @@ lemma ι'_f_zero :
 
 end
 
-variable [Abelian C] {X : C} (R : InjectiveResolution X)
+variable [Preadditive C] [Abelian C] {X : C} (R : InjectiveResolution X)
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

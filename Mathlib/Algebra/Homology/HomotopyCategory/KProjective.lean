@@ -30,7 +30,7 @@ namespace CochainComplex
 
 open HomComplex
 
-variable {C : Type*} [Category* C] [Abelian C]
+variable {C : Type*} [Category* C] [Preadditive C] [Abelian C]
 
 -- TODO (@joelriou): show that this definition is equivalent to the
 -- original definition by Spaltenstein saying that whenever `L`
@@ -51,6 +51,7 @@ noncomputable irreducible_def IsKProjective.homotopyZero
     Homotopy f 0 :=
   (IsKProjective.nonempty_homotopy_zero f hL).some
 
+omit [Abelian C] in
 lemma _root_.HomotopyEquiv.isKProjective {K₁ K₂ : CochainComplex C ℤ}
     (e : HomotopyEquiv K₁ K₂)
     [K₁.IsKProjective] : K₂.IsKProjective where
@@ -59,11 +60,13 @@ lemma _root_.HomotopyEquiv.isKProjective {K₁ K₂ : CochainComplex C ℤ}
       ((e.homotopyInvHomId.symm.compRight f).trans (.ofEq (by simp))))
         (((IsKProjective.homotopyZero (e.hom ≫ f) hL).compLeft e.inv).trans (.ofEq (by simp)))⟩
 
+omit [Abelian C] in
 lemma isKProjective_of_iso {K₁ K₂ : CochainComplex C ℤ} (e : K₁ ≅ K₂)
     [K₁.IsKProjective] :
     K₂.IsKProjective :=
   (HomotopyEquiv.ofIso e).isKProjective
 
+omit [Abelian C] in
 lemma isKProjective_iff_of_iso {K₁ K₂ : CochainComplex C ℤ} (e : K₁ ≅ K₂) :
     K₁.IsKProjective ↔ K₂.IsKProjective :=
   ⟨fun _ ↦ isKProjective_of_iso e, fun _ ↦ isKProjective_of_iso e.symm⟩

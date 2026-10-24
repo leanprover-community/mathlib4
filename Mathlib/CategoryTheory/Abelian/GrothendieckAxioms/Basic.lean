@@ -550,7 +550,7 @@ lemma CountableAB4Star.of_hasExactLimitsOfShape_nat [HasFiniteColimits C]
 
 end
 
-variable [Abelian C] (J : Type u') [Category.{v'} J]
+variable [Preadditive C] [Abelian C] (J : Type u') [Category.{v'} J]
 
 attribute [local instance] preservesBinaryBiproducts_of_preservesBinaryCoproducts
   preservesBinaryBiproducts_of_preservesBinaryProducts

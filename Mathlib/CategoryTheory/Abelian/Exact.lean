@@ -36,7 +36,7 @@ noncomputable section
 
 open CategoryTheory Limits Preadditive
 
-variable {C : Type u₁} [Category.{v₁} C] [Abelian C]
+variable {C : Type u₁} [Category.{v₁} C] [Preadditive C] [Abelian C]
 
 namespace CategoryTheory
 
@@ -202,7 +202,7 @@ namespace Functor
 
 section
 
-variable {D : Type u₂} [Category.{v₂} D] [Abelian D]
+variable {D : Type u₂} [Category.{v₂} D] [Preadditive D] [Abelian D]
 variable (F : C ⥤ D) [PreservesZeroMorphisms F]
 
 set_option backward.defeqAttrib.useBackward true in
@@ -228,7 +228,7 @@ namespace Functor
 open Limits Abelian
 
 variable {A : Type u₁} {B : Type u₂} [Category.{v₁} A] [Category.{v₂} B]
-variable [Abelian A] [Abelian B]
+variable [Preadditive A] [Abelian A] [Preadditive B] [Abelian B]
 variable (L : A ⥤ B)
 
 section

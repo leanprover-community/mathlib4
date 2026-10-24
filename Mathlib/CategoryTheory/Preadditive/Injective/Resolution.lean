@@ -66,7 +66,7 @@ section
 variable (C)
 
 /-- You will rarely use this typeclass directly: it is implied by the combination
-`[EnoughInjectives C]` and `[Abelian C]`. -/
+`[EnoughInjectives C]` and `[Preadditive C] [Abelian C]`. -/
 class HasInjectiveResolutions : Prop where
   out : ∀ Z : C, HasInjectiveResolution Z
 

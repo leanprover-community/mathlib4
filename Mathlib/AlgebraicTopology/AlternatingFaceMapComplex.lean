@@ -258,7 +258,7 @@ end AlternatingFaceMapComplex
 ## Construction of the natural inclusion of the normalized Moore complex
 -/
 
-variable {A : Type*} [Category* A] [Abelian A]
+variable {A : Type*} [Category* A] [Preadditive A] [Abelian A]
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The inclusion map of the Moore complex in the alternating face map complex -/

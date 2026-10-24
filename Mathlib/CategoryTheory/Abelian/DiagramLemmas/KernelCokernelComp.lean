@@ -42,7 +42,7 @@ namespace CategoryTheory
 
 open Limits Category Preadditive
 
-variable {C : Type u} [Category.{v} C] [Abelian C]
+variable {C : Type u} [Category.{v} C] [Preadditive C] [Abelian C]
   {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
 
 namespace kernelCokernelCompSequence

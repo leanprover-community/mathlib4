@@ -19,8 +19,8 @@ open CategoryTheory
 
 universe t w v u
 
-variable (R : Type t) [Ring R] (C : Type u) [Category.{v} C] [Abelian C] [Linear R C]
-  [HasDerivedCategory.{w} C]
+variable (R : Type t) [Ring R] (C : Type u) [Category.{v} C] [Preadditive C] [Abelian C]
+  [Linear R C] [HasDerivedCategory.{w} C]
 
 namespace DerivedCategory
 

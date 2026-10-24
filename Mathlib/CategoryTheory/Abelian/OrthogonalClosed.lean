@@ -69,7 +69,7 @@ orthogonal of its right orthogonal. -/
 
 section Abelian
 
-variable [Abelian C]
+variable [Preadditive C] [Abelian C]
 
 open Abelian
 

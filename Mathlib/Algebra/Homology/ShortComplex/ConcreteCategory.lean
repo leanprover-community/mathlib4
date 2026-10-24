@@ -135,7 +135,7 @@ section abelian
 
 variable {C : Type u} [Category.{v} C] {FC : C → C → Type*} {CC : C → Type v}
   [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory.{v} C FC] [HasForget₂ C Ab]
-  [Abelian C] [(forget₂ C Ab).Additive] [(forget₂ C Ab).PreservesHomology]
+  [Preadditive C] [Abelian C] [(forget₂ C Ab).Additive] [(forget₂ C Ab).PreservesHomology]
 
 namespace ShortComplex
 

@@ -33,8 +33,8 @@ namespace CategoryTheory
 
 open Limits Abelian
 
-variable {C : Type u} [Category.{v} C] [Abelian C]
-variable {D : Type u'} [Category.{v'} D] [Abelian D]
+variable {C : Type u} [Category.{v} C] [Preadditive C] [Abelian C]
+variable {D : Type u'} [Category.{v'} D] [Preadditive D] [Abelian D]
 
 variable (F : C ⥤ D) [F.Additive] [PreservesFiniteLimits F] [PreservesFiniteColimits F]
 

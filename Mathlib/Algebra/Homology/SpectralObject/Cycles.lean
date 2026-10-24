@@ -44,7 +44,7 @@ open Limits ComposableArrows
 
 namespace Abelian
 
-variable {C ι : Type*} [Category* C] [Category* ι] [Abelian C]
+variable {C ι : Type*} [Category* C] [Category* ι] [Preadditive C] [Abelian C]
 
 namespace SpectralObject
 

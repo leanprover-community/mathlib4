@@ -23,7 +23,7 @@ public section
 
 open CategoryTheory
 
-variable {C ι : Type*} [Category* C] [Abelian C] {c : ComplexShape ι}
+variable {C ι : Type*} [Category* C] [Preadditive C] [Abelian C] {c : ComplexShape ι}
   (K L : HomologicalComplex C c) (φ : K ⟶ L)
 
 namespace HomologicalComplex

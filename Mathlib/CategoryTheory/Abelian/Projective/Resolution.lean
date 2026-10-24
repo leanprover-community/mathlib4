@@ -60,7 +60,7 @@ end
 
 section Abelian
 
-variable [Abelian C]
+variable [Preadditive C] [Abelian C]
 
 lemma exact₀ {Z : C} (P : ProjectiveResolution Z) :
     (ShortComplex.mk _ _ P.complex_d_comp_π_f_zero).Exact :=
@@ -205,7 +205,7 @@ abbrev projectiveResolution (Z : C) [HasZeroObject C]
   (HasProjectiveResolution.out (Z := Z)).some
 
 variable (C)
-variable [Abelian C]
+variable [Preadditive C] [Abelian C]
 
 section
 variable [HasProjectiveResolutions C]

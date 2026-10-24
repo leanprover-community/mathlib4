@@ -28,7 +28,7 @@ universe v u
 
 namespace CategoryTheory
 
-variable {C : Type u} [Category.{v} C] [Abelian C]
+variable {C : Type u} [Category.{v} C] [Preadditive C] [Abelian C]
 
 /-- The preadditive Yoneda functor on `J` preserves homology if `J` is injective. -/
 instance preservesHomology_preadditiveYonedaObj_of_injective (J : C) [hJ : Injective J] :

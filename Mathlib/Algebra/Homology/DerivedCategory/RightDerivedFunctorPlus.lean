@@ -33,8 +33,8 @@ TODO(@joelriou): refactor the definition of `Functor.rightDerived`
 
 namespace CategoryTheory
 
-variable {C D : Type*} [Category* C] [Category* D] [Abelian C] [Abelian D]
-  [HasDerivedCategory C] [HasDerivedCategory D]
+variable {C D : Type*} [Category* C] [Category* D] [Preadditive C] [Abelian C]
+  [Preadditive D] [Abelian D] [HasDerivedCategory C] [HasDerivedCategory D]
 
 namespace Functor
 

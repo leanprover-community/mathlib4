@@ -31,7 +31,7 @@ universe w v u
 
 open CategoryTheory
 
-variable {C : Type u} [Category.{v} C] [Abelian C]
+variable {C : Type u} [Category.{v} C] [Preadditive C] [Abelian C]
 
 open CategoryTheory Localization DerivedCategory
 

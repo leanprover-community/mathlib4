@@ -36,7 +36,7 @@ namespace CategoryTheory
 
 open Abelian Limits ZeroObject
 
-variable {C : Type u} [Category.{v} C] [Abelian C]
+variable {C : Type u} [Category.{v} C] [Preadditive C] [Abelian C]
 
 /-- An object `X` in an abelian category has Injective dimension `< n` if
 all `Ext X Y i` vanish when `n ≤ i`. See also `HasInjectiveDimensionLE`.
@@ -258,7 +258,7 @@ section InjectiveDimension
 
 namespace CategoryTheory
 
-variable {C : Type u} [Category.{v, u} C] [Abelian C]
+variable {C : Type u} [Category.{v, u} C] [Preadditive C] [Abelian C]
 
 /-- The injective dimension of an object in an abelian category. -/
 noncomputable def injectiveDimension (X : C) : WithBot ℕ∞ :=

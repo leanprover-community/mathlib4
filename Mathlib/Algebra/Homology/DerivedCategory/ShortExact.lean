@@ -29,7 +29,7 @@ open CategoryTheory Category Pretriangulated
 
 namespace DerivedCategory
 
-variable {C : Type u} [Category.{v} C] [Abelian C] [HasDerivedCategory.{w} C]
+variable {C : Type u} [Category.{v} C] [Preadditive C] [Abelian C] [HasDerivedCategory.{w} C]
   {S : ShortComplex (CochainComplex C ℤ)} (hS : S.ShortExact)
 
 /-- The connecting homomorphism `Q.obj (S.X₃) ⟶ (Q.obj S.X₁)⟦(1 : ℤ)⟧`

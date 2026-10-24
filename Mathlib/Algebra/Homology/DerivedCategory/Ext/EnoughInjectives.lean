@@ -31,7 +31,7 @@ universe w v u
 
 open CategoryTheory Category
 
-variable {C : Type u} [Category.{v} C] [Abelian C]
+variable {C : Type u} [Category.{v} C] [Preadditive C] [Abelian C]
 
 namespace CochainComplex
 
@@ -89,7 +89,7 @@ namespace CategoryTheory
 
 open Limits
 
-variable {C : Type u} [Category.{v} C] [Abelian C]
+variable {C : Type u} [Category.{v} C] [Preadditive C] [Abelian C]
 
 namespace Abelian.Ext
 

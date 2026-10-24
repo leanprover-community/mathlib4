@@ -25,7 +25,7 @@ universe w v u
 
 namespace DerivedCategory
 
-variable {C : Type u} [Category.{v} C] [Abelian C] [HasDerivedCategory.{w} C]
+variable {C : Type u} [Category.{v} C] [Preadditive C] [Abelian C] [HasDerivedCategory.{w} C]
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

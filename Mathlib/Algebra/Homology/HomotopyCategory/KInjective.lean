@@ -30,7 +30,7 @@ namespace CochainComplex
 
 open CategoryTheory Limits HomComplex Preadditive
 
-variable {C : Type*} [Category* C] [Abelian C]
+variable {C : Type*} [Category* C] [Preadditive C] [Abelian C]
 
 -- TODO (@joelriou): show that this definition is equivalent to the
 -- original definition by Spaltenstein saying that whenever `K`
@@ -50,6 +50,7 @@ noncomputable irreducible_def IsKInjective.homotopyZero {K L : CochainComplex C 
     Homotopy f 0 :=
   (IsKInjective.nonempty_homotopy_zero f hK).some
 
+omit [Abelian C] in
 lemma _root_.HomotopyEquiv.isKInjective {L₁ L₂ : CochainComplex C ℤ}
     (e : HomotopyEquiv L₁ L₂)
     [L₁.IsKInjective] : L₂.IsKInjective where
@@ -58,11 +59,13 @@ lemma _root_.HomotopyEquiv.isKInjective {L₁ L₂ : CochainComplex C ℤ}
       ((e.homotopyInvHomId.symm.compLeft f).trans (.ofEq (by simp))))
         (((IsKInjective.homotopyZero (f ≫ e.inv) hK).compRight e.hom).trans (.ofEq (by simp)))⟩
 
+omit [Abelian C] in
 lemma isKInjective_of_iso {L₁ L₂ : CochainComplex C ℤ} (e : L₁ ≅ L₂)
     [L₁.IsKInjective] :
     L₂.IsKInjective :=
   (HomotopyEquiv.ofIso e).isKInjective
 
+omit [Abelian C] in
 lemma isKInjective_iff_of_iso {L₁ L₂ : CochainComplex C ℤ} (e : L₁ ≅ L₂) :
     L₁.IsKInjective ↔ L₂.IsKInjective :=
   ⟨fun _ ↦ isKInjective_of_iso e, fun _ ↦ isKInjective_of_iso e.symm⟩
