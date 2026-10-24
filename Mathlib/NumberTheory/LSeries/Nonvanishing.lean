@@ -467,9 +467,9 @@ theorem norm_gaussSum_stdAddChar (hχ : χ.IsPrimitive) :
   suffices ‖gaussSum χ ZMod.stdAddChar‖ / .sqrt N = ‖rootNumber χ‖ by grind [norm_rootNumber]
   simp [rootNumber, -pow_ite, norm_natCast_cpow_of_pos, NeZero.pos, Real.sqrt_eq_rpow]
 
-/-- **The zeros of a primitive Dirichlet `L`-function in the closed left half-plane are exactly
-those of its archimedean Gamma factor**, with the sole exception of `s = 0` for the trivial
-character. -/
+/-- **The zeros of a primitive Dirichlet `L`-function in the closed left half-plane `re s ≤ 0`
+are exactly those of its archimedean Gamma factor**, with the sole exception
+of `s = 0` for the trivial character. -/
 theorem LFunction_eq_zero_iff_of_re_nonpos (hχ : χ.IsPrimitive) {s : ℂ} (hs : s.re ≤ 0) :
     LFunction χ s = 0 ↔ χ.gammaFactor s = 0 ∧ (N ≠ 1 ∨ s ≠ 0):= by
   have := NeZero.ne N
