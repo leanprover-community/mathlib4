@@ -1853,6 +1853,7 @@ public import Mathlib.Analysis.Calculus.FDeriv.Congr
 public import Mathlib.Analysis.Calculus.FDeriv.Const
 public import Mathlib.Analysis.Calculus.FDeriv.ContinuousAlternatingMap
 public import Mathlib.Analysis.Calculus.FDeriv.ContinuousMultilinearMap
+public import Mathlib.Analysis.Calculus.FDeriv.ContinuousSymmetricMap
 public import Mathlib.Analysis.Calculus.FDeriv.Defs
 public import Mathlib.Analysis.Calculus.FDeriv.Equiv
 public import Mathlib.Analysis.Calculus.FDeriv.Extend
@@ -2302,6 +2303,7 @@ public import Mathlib.Analysis.Normed.Module.Seminorm.Basic
 public import Mathlib.Analysis.Normed.Module.Seminorm.Norm
 public import Mathlib.Analysis.Normed.Module.Shrink
 public import Mathlib.Analysis.Normed.Module.Span
+public import Mathlib.Analysis.Normed.Module.Symmetric.Basic
 public import Mathlib.Analysis.Normed.Module.TransferInstance
 public import Mathlib.Analysis.Normed.Module.WeakDual
 public import Mathlib.Analysis.Normed.MulAction
@@ -4905,6 +4907,7 @@ public import Mathlib.Geometry.Manifold.Submersion
 public import Mathlib.Geometry.Manifold.VectorBundle.Basic
 public import Mathlib.Geometry.Manifold.VectorBundle.ContMDiffSection
 public import Mathlib.Geometry.Manifold.VectorBundle.ContinuousAlternatingMap
+public import Mathlib.Geometry.Manifold.VectorBundle.ContinuousSymmetricMap
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Basic
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.LeviCivita
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Metric
@@ -5115,36 +5118,36 @@ public import Mathlib.InformationTheory.KullbackLeibler.DataProcessing
 public import Mathlib.InformationTheory.KullbackLeibler.KLFun
 public import Mathlib.Init
 public import Mathlib.Lean.ContextInfo
-public meta import Mathlib.Lean.CoreM
-public meta import Mathlib.Lean.Elab.InfoTree
+public import Mathlib.Lean.CoreM
+public import Mathlib.Lean.Elab.InfoTree
 public import Mathlib.Lean.Elab.Tactic.Basic
 public import Mathlib.Lean.Elab.Tactic.Meta
 public import Mathlib.Lean.Elab.Term
-public meta import Mathlib.Lean.EnvExtension
-public meta import Mathlib.Lean.Environment
-public meta import Mathlib.Lean.Exception
-public meta import Mathlib.Lean.Expr.Basic
-public meta import Mathlib.Lean.Expr.ExtraRecognizers
-public meta import Mathlib.Lean.Expr.Rat
+public import Mathlib.Lean.EnvExtension
+public import Mathlib.Lean.Environment
+public import Mathlib.Lean.Exception
+public import Mathlib.Lean.Expr.Basic
+public import Mathlib.Lean.Expr.ExtraRecognizers
+public import Mathlib.Lean.Expr.Rat
 public import Mathlib.Lean.FoldEnvironment
-public meta import Mathlib.Lean.GoalsLocation
+public import Mathlib.Lean.GoalsLocation
 public import Mathlib.Lean.Json
 public import Mathlib.Lean.Linter
-public meta import Mathlib.Lean.LocalContext
-public meta import Mathlib.Lean.MessageData.ForExprs
-public meta import Mathlib.Lean.MessageData.Trace
+public import Mathlib.Lean.LocalContext
+public import Mathlib.Lean.MessageData.ForExprs
+public import Mathlib.Lean.MessageData.Trace
 public import Mathlib.Lean.Meta
 public import Mathlib.Lean.Meta.Basic
 public import Mathlib.Lean.Meta.CongrTheorems
-public meta import Mathlib.Lean.Meta.DiscrTree
-public meta import Mathlib.Lean.Meta.KAbstractPositions
-public meta import Mathlib.Lean.Meta.RefinedDiscrTree
-public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
-public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Encode
-public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Initialize
-public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
-public meta import Mathlib.Lean.Meta.Simp
-public meta import Mathlib.Lean.Meta.Tactic.Rewrite
+public import Mathlib.Lean.Meta.DiscrTree
+public import Mathlib.Lean.Meta.KAbstractPositions
+public import Mathlib.Lean.Meta.RefinedDiscrTree
+public import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
+public import Mathlib.Lean.Meta.RefinedDiscrTree.Encode
+public import Mathlib.Lean.Meta.RefinedDiscrTree.Initialize
+public import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
+public import Mathlib.Lean.Meta.Simp
+public import Mathlib.Lean.Meta.Tactic.Rewrite
 public import Mathlib.Lean.Name
 public import Mathlib.Lean.PrettyPrinter.Delaborator
 public import Mathlib.Lean.Thunk
@@ -5498,6 +5501,8 @@ public import Mathlib.LinearAlgebra.Span.Defs
 public import Mathlib.LinearAlgebra.Span.TensorProduct
 public import Mathlib.LinearAlgebra.SpecialLinearGroup
 public import Mathlib.LinearAlgebra.StdBasis
+public import Mathlib.LinearAlgebra.Symmetric.Basic
+public import Mathlib.LinearAlgebra.Symmetric.Curry
 public import Mathlib.LinearAlgebra.SymmetricAlgebra.Basic
 public import Mathlib.LinearAlgebra.SymmetricAlgebra.Basis
 public import Mathlib.LinearAlgebra.SymplecticGroup
@@ -8046,6 +8051,8 @@ public import Mathlib.Topology.Algebra.Module.Spaces.WeakBilin
 public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
 public import Mathlib.Topology.Algebra.Module.Star
 public import Mathlib.Topology.Algebra.Module.StrongTopology
+public import Mathlib.Topology.Algebra.Module.Symmetric.Basic
+public import Mathlib.Topology.Algebra.Module.Symmetric.Topology
 public import Mathlib.Topology.Algebra.Module.TopDualPairing
 public import Mathlib.Topology.Algebra.Module.TransferInstance
 public import Mathlib.Topology.Algebra.Module.UniformConvergence
@@ -8623,6 +8630,7 @@ public import Mathlib.Topology.UrysohnsLemma
 public import Mathlib.Topology.VectorBundle.Basic
 public import Mathlib.Topology.VectorBundle.Constructions
 public import Mathlib.Topology.VectorBundle.ContinuousAlternatingMap
+public import Mathlib.Topology.VectorBundle.ContinuousSymmetricMap
 public import Mathlib.Topology.VectorBundle.FiniteDimensional
 public import Mathlib.Topology.VectorBundle.Hom
 public import Mathlib.Topology.VectorBundle.Riemannian
@@ -8649,7 +8657,7 @@ public import Mathlib.Util.Notation3
 public import Mathlib.Util.PPOptions
 public import Mathlib.Util.ParseCommand
 public import Mathlib.Util.PrintSorries
-public meta import Mathlib.Util.Qq
+public import Mathlib.Util.Qq
 public import Mathlib.Util.Simp
 public import Mathlib.Util.SleepHeartbeats
 public import Mathlib.Util.Superscript
