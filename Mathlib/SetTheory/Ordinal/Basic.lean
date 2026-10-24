@@ -988,7 +988,7 @@ theorem ord_eq_iInf (α : Type u) : ord #α = ⨅ r : { r // IsWellOrder α r },
 
 /-- There exists a well-order on `α` whose order type is exactly `ord #α`. -/
 theorem exists_ord_eq (α) : ∃ (r : α → α → Prop) (_ : IsWellOrder α r), ord #α = type r :=
-  let ⟨r, wo⟩ := ciInf_mem fun r : { r // IsWellOrder α r } => @type α r.1 r.2
+  let ⟨r, wo⟩ := exists_eq_iInf fun r : { r // IsWellOrder α r } => @type α r.1 r.2
   ⟨r.1, r.2, wo.symm⟩
 
 /-- There exists a well-order on `α` whose order type is exactly `ord #α`. -/
