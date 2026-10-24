@@ -155,7 +155,7 @@ theorem Gamma1_mem (N : ℕ) (A : SL(2, ℤ)) : A ∈ Gamma1 N ↔
 theorem Gamma1_le_Gamma0 (N : ℕ) : Gamma1 N ≤ Gamma0 N :=
   fun A hA ↦ Gamma0_mem.mpr ((Gamma1_mem N A).mp hA).2.2
 
-@[deprecated (since := "2026-08-31")] alias Gamma1_in_Gamma0 := Gamma1_le_Gamma0
+@[deprecated (since := "2026-10-24")] alias Gamma1_in_Gamma0 := Gamma1_le_Gamma0
 
 theorem Gamma_le_Gamma1 (N : ℕ) : Gamma N ≤ Gamma1 N := by
   intro A hA
