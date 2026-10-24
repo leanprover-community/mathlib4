@@ -88,9 +88,10 @@ theorem matPolyEquiv_coeff_apply_aux_2 (i j : n) (p : R[X]) (k : ℕ) :
     simp [hp, hq, coeff_add, Matrix.add_apply, single_add]
   · intro k x
     simp only [matPolyEquiv_coeff_apply_aux_1, coeff_monomial]
-    split_ifs <;>
-      · funext
-        simp
+    split_ifs
+    all_goals
+      funext
+      simp
 
 @[simp]
 theorem matPolyEquiv_coeff_apply (m : Matrix n n R[X]) (k : ℕ) (i j : n) :

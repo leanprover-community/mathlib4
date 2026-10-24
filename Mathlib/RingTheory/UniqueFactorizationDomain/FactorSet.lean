@@ -179,10 +179,11 @@ theorem FactorSet.unique [Nontrivial α] {p q : FactorSet α} (h : p.prod = q.pr
   · rw [← FactorSet.prod_eq_zero_iff, h, Associates.prod_top]
   · congr 1
     rw [← Multiset.map_eq_map Subtype.coe_injective]
-    apply unique' _ _ h <;>
-      · intro a ha
-        obtain ⟨⟨a', irred⟩, -, rfl⟩ := Multiset.mem_map.mp ha
-        rwa [Subtype.coe_mk]
+    apply unique' _ _ h
+    all_goals
+      intro a ha
+      obtain ⟨⟨a', irred⟩, -, rfl⟩ := Multiset.mem_map.mp ha
+      rwa [Subtype.coe_mk]
 
 /-- This returns the multiset of irreducible factors as a `FactorSet`,
   a multiset of irreducible associates `WithTop`. -/

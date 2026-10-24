@@ -421,9 +421,10 @@ def symmAt (i : N) (f : Ω^ N X x) : Ω^ N X x :=
 theorem transAt_distrib {i j : N} (h : i ≠ j) (a b c d : Ω^ N X x) :
     transAt i (transAt j a b) (transAt j c d) = transAt j (transAt i a c) (transAt i b d) := by
   ext; simp_rw [transAt, coe_copy, Function.update_apply, ite_eq_right h, ite_eq_right h.symm]
-  split_ifs <;>
-    · congr 1; ext1; simp only [Function.update, eq_rec_constant, dite_eq_ite]
-      apply ite_ite_comm; rintro rfl; exact h.symm
+  split_ifs
+  all_goals
+    congr 1; ext1; simp only [Function.update, eq_rec_constant, dite_eq_ite]
+    apply ite_ite_comm; rintro rfl; exact h.symm
 
 theorem fromLoop_trans_toLoop {i : N} {p q : Ω^ N X x} :
     fromLoop i ((toLoop i p).trans <| toLoop i q) = transAt i p q :=

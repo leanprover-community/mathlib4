@@ -172,9 +172,10 @@ def thickenedIndicator {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) : α →ᵇ ℝ
     apply (abs_sub _ _).trans
     rw [NNReal.abs_eq, NNReal.abs_eq, ← one_add_one_eq_two]
     have key := @thickenedIndicatorAux_le_one _ _ δ E
-    apply add_le_add <;>
-      · norm_cast
-        exact (toNNReal_le_toNNReal (lt_of_le_of_lt (key _) one_lt_top).ne one_ne_top).mpr (key _)
+    apply add_le_add
+    all_goals
+      norm_cast
+      exact (toNNReal_le_toNNReal (lt_of_le_of_lt (key _) one_lt_top).ne one_ne_top).mpr (key _)
 
 theorem thickenedIndicator.coeFn_eq_comp {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) :
     ⇑(thickenedIndicator δ_pos E) = ENNReal.toNNReal ∘ thickenedIndicatorAux δ E :=

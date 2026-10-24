@@ -145,9 +145,10 @@ variable [SetLike S G] [SubgroupClass S G]
 @[to_additive]
 theorem exists_inv_mem_iff_exists_mem {P : G → Prop} :
     (∃ x : G, x ∈ H ∧ P x⁻¹) ↔ ∃ x ∈ H, P x := by
-  constructor <;>
-    · rintro ⟨x, x_in, hx⟩
-      exact ⟨x⁻¹, inv_mem x_in, by simp [hx]⟩
+  constructor
+  all_goals
+    rintro ⟨x, x_in, hx⟩
+    exact ⟨x⁻¹, inv_mem x_in, by simp [hx]⟩
 
 @[to_additive]
 theorem mul_mem_cancel_right {x y : G} (h : x ∈ H) : y * x ∈ H ↔ y ∈ H :=

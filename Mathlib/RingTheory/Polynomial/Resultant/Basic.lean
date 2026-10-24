@@ -1004,8 +1004,9 @@ private lemma sylvesterDeriv_of_natDegree_eq_three {f : R[X]} (hf : f.natDegree 
     Matrix.cons_val', Matrix.cons_val_fin_one]
   have hi' : i ∈ Finset.range 5 := Finset.mem_range.mpr hi
   have hj' : j ∈ Finset.range 5 := Finset.mem_range.mpr hj
-  fin_cases hi' <;>
-  · simp only [and_true, Fin.isValue, Fin.mk_one, Fin.reduceFinMk, Fin.zero_eta,
+  fin_cases hi'
+  all_goals
+    simp only [and_true, Fin.isValue, Fin.mk_one, Fin.reduceFinMk, Fin.zero_eta,
       le_add_iff_nonneg_left, Matrix.cons_val_one, Matrix.cons_val_zero, Matrix.cons_val,
       Nat.reduceAdd, Nat.reduceEqDiff, Nat.reduceLeDiff, nonpos_iff_eq_zero,
       OfNat.one_ne_ofNat, ↓reduceIte, zero_add, zero_le]

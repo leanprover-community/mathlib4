@@ -284,8 +284,9 @@ def inducedOrderRingIso : β ≃+*o γ :=
     map_le_map_iff' := by
       dsimp
       refine ⟨fun h => ?_, fun h => inducedMap_mono _ _ h⟩
-      convert inducedMap_mono γ β h <;>
-      · rw [inducedOrderRingHom, AddMonoidHom.coe_fn_mkRingHomOfMulSelfOfTwoNeZero, inducedAddHom]
+      convert inducedMap_mono γ β h
+      all_goals
+        rw [inducedOrderRingHom, AddMonoidHom.coe_fn_mkRingHomOfMulSelfOfTwoNeZero, inducedAddHom]
         dsimp
         rw [inducedMap_inv_self β γ _] }
 

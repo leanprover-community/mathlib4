@@ -91,9 +91,9 @@ lemma sub_scalar_sq_eq_discr [NeZero (2 : K)] :
   simp only [scalar_apply, trace_fin_two, discr_fin_two, trace_fin_two,
     det_fin_two, sq, (by norm_num : (4 : K) = 2 * 2)]
   ext i j
-  fin_cases i <;>
-  fin_cases j <;>
-  · simp [Matrix.mul_apply]
+  fin_cases i <;> fin_cases j
+  all_goals
+    simp [Matrix.mul_apply]
     field
 
 variable (m) in

@@ -431,7 +431,7 @@ theorem map_rightInverse {f : R →+* S₁} {g : S₁ →+* R} (hf : Function.Ri
 @[simp]
 theorem eval_map (f : R →+* S₁) (g : σ → S₁) (p : MvPolynomial σ R) :
     eval g (map f p) = eval₂ f g p := by
-  apply MvPolynomial.induction_on p <;> · simp +contextual
+  apply MvPolynomial.induction_on p <;> simp +contextual
 
 theorem eval₂_comp (f : R →+* S₁) (g : σ → R) (p : MvPolynomial σ R) :
     f (eval g p) = eval₂ f (f ∘ g) p := by

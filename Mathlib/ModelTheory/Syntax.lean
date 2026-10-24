@@ -216,7 +216,7 @@ def constantsVarsEquiv : L[[γ]].Term α ≃ L.Term (γ ⊕ α) :=
     intro t
     induction t with
     | var x => cases x <;> rfl
-    | @func n f _ ih => cases n <;> · simp [varsToConstants, constantsToVars, ih]⟩
+    | @func n f _ ih => cases n <;> simp [varsToConstants, constantsToVars, ih]⟩
 
 /-- A bijection between terms with constants and terms with extra variables. -/
 def constantsVarsEquivLeft : L[[γ]].Term (α ⊕ β) ≃ L.Term ((γ ⊕ α) ⊕ β) :=
@@ -542,7 +542,7 @@ theorem sumElim_comp_relabelAux {m : ℕ} {g : α → β ⊕ (Fin n)} {v : β �
 theorem relabelAux_sumInl (k : ℕ) :
     relabelAux (Sum.inl : α → α ⊕ (Fin n)) k = Sum.map id (natAdd n) := by
   ext x
-  cases x <;> · simp [relabelAux]
+  cases x <;> simp [relabelAux]
 
 /-- Relabels a bounded formula's variables along a particular function. -/
 def relabel (g : α → β ⊕ (Fin n)) {k} (φ : L.BoundedFormula α k) : L.BoundedFormula β (n + k) :=

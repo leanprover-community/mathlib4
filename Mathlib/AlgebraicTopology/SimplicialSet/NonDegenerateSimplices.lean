@@ -120,7 +120,7 @@ lemma subcomplex_injective {x y : X.N} (h : x.subcomplex = y.subcomplex) :
     x = y := by
   apply le_antisymm
   all_goals
-  · rw [le_iff, h]
+    rw [le_iff, h]
 
 lemma subcomplex_injective_iff {x y : X.N} :
     x.subcomplex = y.subcomplex ↔ x = y :=

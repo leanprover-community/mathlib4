@@ -172,8 +172,9 @@ theorem has_swap_mem_of_lt_stabilizer [DecidableEq α]
     exact hG.le hg'
   have hα : ENat.card α = 2 := by
     rw [← Set.encard_add_encard_compl s]
-    convert one_add_one_eq_two <;>
-    · apply le_antisymm
+    convert one_add_one_eq_two
+    all_goals
+      apply le_antisymm
       · assumption
       rw [one_le_encard_iff_nonempty, Set.nonempty_iff_ne_empty]
       aesop

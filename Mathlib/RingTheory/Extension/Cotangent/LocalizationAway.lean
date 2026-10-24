@@ -111,8 +111,9 @@ lemma sq_ker_comp_le_ker_compLocalizationAwayAlgHom :
     · rw [Ideal.mul_le]
       intro x hx y hy
       simp [hsple hy]
-  · apply sup_le <;>
-    · rw [Ideal.mul_le]
+  · apply sup_le
+    all_goals
+      rw [Ideal.mul_le]
       intro x hx y hy
       simp [hsple hx]
 
