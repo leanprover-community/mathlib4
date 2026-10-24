@@ -32,6 +32,8 @@ We give methods for computing coefficients of the characteristic polynomial.
   polynomial as signed sums of principal minors.
 - `Matrix.charpolyRev` the reverse of the characteristic polynomial.
 - `Matrix.reverse_charpoly` characterises the reverse of the characteristic polynomial.
+- `Matrix.mul_pow_mul_eq_of_lt_card_add` gives a finite bound for checking equality of two
+  sequences `C₁ * A₁ ^ k * B₁` and `C₂ * A₂ ^ k * B₂`.
 
 -/
 
@@ -256,6 +258,48 @@ theorem aeval_eq_aeval_mod_charpoly (M : Matrix n n R) (p : R[X]) :
 TODO: add the statement for negative powers phrased with `zpow`. -/
 theorem pow_eq_aeval_mod_charpoly (M : Matrix n n R) (k : ℕ) :
     M ^ k = aeval M (X ^ k %ₘ M.charpoly) := by rw [← aeval_eq_aeval_mod_charpoly, map_pow, aeval_X]
+
+section FiniteDetermination
+
+variable {ι κ m p : Type*} [Fintype ι] [Fintype κ] [DecidableEq ι] [DecidableEq κ]
+
+/-- If a common monic polynomial annihilates two square matrices, agreement of
+`C₁ * A₁ ^ k * B₁` and `C₂ * A₂ ^ k * B₂` below its degree implies agreement for all powers.
+The square matrix index types may be empty. -/
+theorem mul_pow_mul_eq_of_aeval_eq_zero
+    (A₁ : Matrix ι ι R) (B₁ : Matrix ι m R) (C₁ : Matrix p ι R)
+    (A₂ : Matrix κ κ R) (B₂ : Matrix κ m R) (C₂ : Matrix p κ R)
+    {q : R[X]} (hq : q.Monic) (h₁ : aeval A₁ q = 0) (h₂ : aeval A₂ q = 0)
+    (h : ∀ k < q.natDegree, C₁ * A₁ ^ k * B₁ = C₂ * A₂ ^ k * B₂) (k : ℕ) :
+    C₁ * A₁ ^ k * B₁ = C₂ * A₂ ^ k * B₂ := by
+  have hpow₁ : aeval A₁ (X ^ k %ₘ q) = A₁ ^ k := by
+    rw [aeval_modByMonic_eq_self_of_root h₁, map_pow, aeval_X]
+  have hpow₂ : aeval A₂ (X ^ k %ₘ q) = A₂ ^ k := by
+    rw [aeval_modByMonic_eq_self_of_root h₂, map_pow, aeval_X]
+  have hsum := sum_modByMonic_coeff (p := X ^ k) hq degree_le_natDegree
+  rw [← hpow₁, ← hpow₂, ← hsum]
+  simp only [map_sum, aeval_monomial, ← Algebra.smul_def,
+    Matrix.mul_sum, Matrix.sum_mul, Matrix.mul_smul, Matrix.smul_mul]
+  exact Finset.sum_congr rfl fun i _ ↦ congrArg (fun M ↦ (X ^ k %ₘ q).coeff i • M) (h i i.isLt)
+
+/-- Two sequences `C₁ * A₁ ^ k * B₁` and `C₂ * A₂ ^ k * B₂` agree for every power if they
+agree below the sum of the dimensions of the square matrices. The dimensions may be zero.
+
+The product of the characteristic polynomials annihilates both matrices. -/
+theorem mul_pow_mul_eq_of_lt_card_add
+    (A₁ : Matrix ι ι R) (B₁ : Matrix ι m R) (C₁ : Matrix p ι R)
+    (A₂ : Matrix κ κ R) (B₂ : Matrix κ m R) (C₂ : Matrix p κ R)
+    (h : ∀ k < Fintype.card ι + Fintype.card κ,
+      C₁ * A₁ ^ k * B₁ = C₂ * A₂ ^ k * B₂) (k : ℕ) :
+    C₁ * A₁ ^ k * B₁ = C₂ * A₂ ^ k * B₂ := by
+  nontriviality R
+  apply mul_pow_mul_eq_of_aeval_eq_zero A₁ B₁ C₁ A₂ B₂ C₂
+    (A₁.charpoly_monic.mul A₂.charpoly_monic)
+  · rw [map_mul, aeval_self_charpoly, zero_mul]
+  · rw [map_mul, aeval_self_charpoly, mul_zero]
+  · simpa [A₁.charpoly_monic.natDegree_mul A₂.charpoly_monic] using h
+
+end FiniteDetermination
 
 section Ideal
 
