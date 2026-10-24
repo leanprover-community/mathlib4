@@ -68,7 +68,4 @@ theorem AddMonoidAlgebra.mem_ideal_span_of'_image [AddMonoid A] [Semiring k] {s 
   convert (toMultiplicative _ _ x).mem_ideal_span_of_image (s := Multiplicative.ofAdd '' s)
   · simp_rw [Set.image_image, MonoidAlgebra.of_apply, ← toMultiplicative_single, ← of'_apply,
     ← Set.image_image, ← Ideal.map_span, Ideal.apply_mem_of_equiv_iff]
-  open Multiplicative in
-  simp_rw [ofAdd.surjective.forall, ofAdd.surjective.exists, ← ofAdd_add, ofAdd.apply_eq_iff_eq,
-    coeff_toMultiplicative_apply, Finsupp.mapDomain_support_of_injective ofAdd.injective,
-    ofAdd.injective.mem_finset_image, ofAdd.injective.mem_set_image]
+  simp [← ofAdd_add]
