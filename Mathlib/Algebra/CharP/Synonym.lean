@@ -5,9 +5,9 @@ Authors: Noah Walker
 -/
 module
 
-public import Mathlib.Algebra.Order.Ring.Synonym
-public import Mathlib.Algebra.CharZero.Defs
 public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Algebra.CharZero.Defs
+public import Mathlib.Algebra.Order.Ring.Synonym
 
 /-!
 # Characteristic of the order type synonyms
