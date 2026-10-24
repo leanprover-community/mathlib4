@@ -6,6 +6,7 @@ Authors: David Loeffler
 module
 
 public import Mathlib.Analysis.Fourier.AddCircle
+
 import Mathlib.MeasureTheory.Integral.Pi
 
 /-!
@@ -181,7 +182,7 @@ lemma measurePreserving_equivPiIoc :
   · convert!
     (map_comap_subtype_coe (MeasurableSet.univ_pi' (fun i => measurableSet_Ioc (a := a i))) volume)
     convert (Measure.restrict_pi_pi (fun i => volume) (fun i => Ioc (a i) (a i + 1))).symm
-    grind
+    simp
 
 theorem lintegral_preimage (f : UnitAddTorus d → ℝ≥0∞) (a : d → ℝ) :
     ∫⁻ x : UnitAddTorus d, f x =

@@ -5,9 +5,10 @@ Authors: Mario Carneiro
 -/
 module
 
+public import Mathlib.Logic.Embedding.Set
 public import Mathlib.Order.Directed
 public import Mathlib.Order.RelIso.Basic
-public import Mathlib.Logic.Embedding.Set
+
 import Mathlib.Logic.Equiv.Set
 
 /-!

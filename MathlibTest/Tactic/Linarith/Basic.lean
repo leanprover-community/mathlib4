@@ -803,6 +803,46 @@ example (x y : ℚ) (h₁ : x ≤ 0) (h₂ : y ≤ 0) (h₃ : x + y ≤ 0) (h₄
 
 /--
 info: Try this:
+  [apply] linarith only [h₁, h₂, h₄]
+-/
+#guard_msgs in
+example (x y : ℚ) (h₁ : x ≤ 0) (h₂ : y ≤ 0) (h₃ : x + y ≤ 0) (h₄ : x + y > 0) : False := by
+  linarith? +minimize only [h₁, h₂, h₃, h₄]
+
+/--
+info: Try this:
+  [apply] linarith only [h₁, h₂, h₄]
+-/
+#guard_msgs in
+example (x y : ℚ) (h₁ : x ≤ 0) (h₂ : y ≤ 0) (h₃ : x + y ≤ 0) (h₄ : x + y > 0) : False := by
+  linarith? (minimize := true) only [h₁, h₂, h₃, h₄]
+
+/--
+info: Try this:
+  [apply] linarith (oracle := .fourierMotzkin) only [h]
+-/
+#guard_msgs in
+example (a : ℚ) (h : a < 0) : a ≤ 0 := by
+  linarith? (oracle := .fourierMotzkin)
+
+/--
+info: Try this:
+  [apply] linarith (oracle := .fourierMotzkin) only [h]
+-/
+#guard_msgs in
+example (a : ℚ) (h : a < 0) : a ≤ 0 := by
+  linarith? -minimize (oracle := .fourierMotzkin) only [h]
+
+/--
+info: Try this:
+  [apply] linarith! only [h]
+-/
+#guard_msgs in
+example (a : ℚ) (h : a < 0) : a ≤ 0 := by
+  linarith?!
+
+/--
+info: Try this:
   [apply] linarith only [hu, hv]
 -/
 #guard_msgs in
@@ -865,7 +905,7 @@ example (a b : ℚ) (h₁ : a ≤ b) (h₂ : b ≤ a) (junk : a < a + 1) : a = b
 -- attributed back to it
 /--
 info: Try this:
-  [apply] linarith only [hne, hle]
+  [apply] linarith +splitNe only [hne, hle]
 -/
 #guard_msgs in
 example (a b : ℚ) (hne : a ≠ b) (hle : a ≥ b) (junk : (0:ℚ) < 1) : b < a := by
@@ -903,7 +943,7 @@ example (a b : ℚ) (ha : 0 < a) (hb : 0 < b) : 0 < a * b := by
 -- happens after minimization, which drops the unused `mul_pos ha ha`.
 /--
 info: Try this:
-  [apply] linarith only [hne, hle]
+  [apply] linarith +splitNe only [hne, hle]
 -/
 #guard_msgs in
 example (a b : ℚ) (ha : 0 < a) (hne : a ≠ b) (hle : a ≥ b) : b < a := by

@@ -6,8 +6,9 @@ Authors: PFR contributors
 module
 
 public import Mathlib.Algebra.Notation.Indicator
-import Mathlib.Topology.Piecewise
 public import Mathlib.Topology.Clopen
+
+import Mathlib.Topology.Piecewise
 
 /-!
 # Continuity of indicator functions
