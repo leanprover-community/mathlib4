@@ -568,6 +568,40 @@ such names violate the naming convention. -/
         use lowerCamelCase or UpperCamelCase instead."
     else return none
 
+/-- Checks for lemmas which very probably involve a coercion, but are misnamed.
+If the latter, return a message describing more details (such as, all relevant constants
+that *do* occur in the lemma). -/
+public def isBadlynamedCoercion (name : Name) : MetaM (Bool × MessageData) := do
+  -- Does the final name component contain a part `coe` (or `coe'`)?
+  let parts := name.components.getLast!.toString.split "_" |>.toList
+  unless parts.contains "coe" || parts.contains "coe'" do return (false, "")
+  -- Does the declaration reference a constant called `coe`? If so, we are fine.
+  let coercion_constants := ((← getEnv).find? name).get!.type.getUsedConstants.filter
+    fun c ↦ (c.components.getLast?.getD `foo == `coe) || c == `UniformSpace.Completion.coe'
+  if coercion_constants.isEmpty then
+    return (true, "")
+  else
+    return (false, m!"This declaration statement references the constant(s) {coercion_constants}")
+
+open Batteries.Tactic.Lint in
+/-- Linter that checks for lemmas whose name contains the string "coe",
+but which don't reference any declaration named like this: most likely,
+these are coercion lemmas violating mathlib's naming convention. -/
+@[env_linter] public def misnamedCoercionLemmas : Batteries.Tactic.Lint.Linter where
+  noErrorsFound := "no badly named coercion lemmas found."
+  errorsFound := "FOUND most-likely badly named coercion lemmas."
+  test declName := do
+    unless ((← getEnv).find? declName).get!.isTheorem &&
+        !(← isPrivateOrAutoDecl declName) do
+      return none
+    match ← isBadlynamedCoercion declName with
+    | (true, details) =>
+      return m!"The lemma `{.ofConstName declName true}` contains 'coe' in its name, \
+        but does not involve any constant named \"coe\": {details}.\n\
+        Most likely, this lemma is a misnamed coercion lemma: \
+        note that it should be named according to the coercion used."
+    | (false, _) => return none
+
 end Style.nameCheck
 
 /-! ### The "openClassical" linter -/
