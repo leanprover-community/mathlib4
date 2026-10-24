@@ -48,6 +48,37 @@ def step (prec : Int) : Dyadic := .ofOdd 1 prec (by decide)
 theorem ofIntWithPrec_one (prec : Int) : ofIntWithPrec 1 prec = step prec := by
   simp [step, ofIntWithPrec, Int.trailingZeros_eq_zero_of_mod_eq (show 1 % 2 = 1 by decide)]
 
+@[simp] theorem zero_shiftLeft (n : ℤ) : (0 : Dyadic) <<< n = 0 := rfl
+
+@[simp] theorem zero_shiftRight (n : ℤ) : (0 : Dyadic) >>> n = 0 := rfl
+
+@[simp] theorem ofOdd_shiftLeft {d k : ℤ} {hd : d % 2 = 1} {n : ℤ} :
+    ofOdd d k hd <<< n = ofOdd d (k - n) hd := rfl
+
+@[simp] theorem ofOdd_shiftRight {d k : ℤ} {hd : d % 2 = 1} {n : ℤ} :
+    ofOdd d k hd >>> n = ofOdd d (k + n) hd := rfl
+
+theorem toRat_shiftLeft (d : Dyadic) (n : ℤ) : (d <<< n).toRat = d.toRat * 2 ^ n := by
+  rcases d with _ | ⟨d, k, hd⟩
+  · simp
+  · norm_num [toRat_ofOdd_eq_mul_two_pow, sub_eq_add_neg, zpow_add₀]
+    ac_rfl
+
+theorem toRat_shiftRight (d : Dyadic) (n : ℤ) : (d >>> n).toRat = d.toRat * 2 ^ (-n) := by
+  rcases d with _ | ⟨d, k, hd⟩
+  · simp
+  · norm_num [toRat_ofOdd_eq_mul_two_pow, zpow_add₀]
+    ac_rfl
+
+theorem toRat_shiftRight' (d : Dyadic) (n : ℤ) : (d >>> n).toRat = d.toRat / 2 ^ n := by
+  rw [toRat_shiftRight, zpow_neg, div_eq_mul_inv]
+
+theorem toRat_shiftLeft_nat (d : Dyadic) (n : ℕ) : (d <<< n).toRat = d.toRat * 2 ^ n :=
+  toRat_shiftLeft d n
+
+theorem toRat_shiftRight_nat (d : Dyadic) (n : ℕ) : (d >>> n).toRat = d.toRat / 2 ^ n :=
+  toRat_shiftRight' d n
+
 section Real
 
 /-- Interpret a dyadic rational as a real number. -/
