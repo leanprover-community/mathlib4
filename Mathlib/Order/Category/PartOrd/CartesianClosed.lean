@@ -20,8 +20,8 @@ skeletal codomain are thin and skeletal. Hence `PartOrd` is cartesian closed.
 
 universe u
 
-open CategoryTheory
-open scoped CartesianClosed
+open CategoryTheory Limits
+open scoped CartesianClosed MonoidalCategory
 
 noncomputable section
 
@@ -38,8 +38,29 @@ instance : ExponentialIdeal (forget₂ PartOrd.{u} Preord.{u}) := by
 
 namespace PartOrd
 
+/-- The one-element partial order is terminal. -/
+def isTerminalPUnit : IsTerminal (of PUnit.{u + 1}) :=
+  .ofUniqueHom (fun X ↦ ofHom (OrderHom.const X PUnit.unit))
+    (fun _ _ ↦ by ext)
+
+/-- The product cone of partial orders, with the usual product partial order. -/
+def prodCone (X Y : PartOrd.{u}) : BinaryFan X Y :=
+  .mk (P := of (X × Y)) (ofHom OrderHom.fst) (ofHom OrderHom.snd)
+
+/-- The usual product partial order is a categorical product. -/
+def isLimitProdCone (X Y : PartOrd.{u}) : IsLimit (prodCone X Y) := by
+  refine BinaryFan.isLimitMk (fun s ↦ ofHom (s.fst.hom.prod s.snd.hom))
+    (fun _ ↦ rfl) (fun _ ↦ rfl) fun s m h₁ h₂ ↦ ?_
+  ext x
+  exacts [congr($h₁ _), congr($h₂ _)]
+
 instance : CartesianMonoidalCategory PartOrd.{u} :=
-  .ofReflective (forget₂ PartOrd Preord)
+  .ofChosenFiniteProducts ⟨_, isTerminalPUnit⟩ fun X Y ↦
+    ⟨prodCone X Y, isLimitProdCone X Y⟩
+
+lemma tensorObj (X Y : PartOrd.{u}) : X ⊗ Y = of (X × Y) := rfl
+
+lemma tensorUnit : 𝟙_ PartOrd.{u} = of PUnit.{u + 1} := rfl
 
 instance : BraidedCategory PartOrd.{u} := .ofCartesianMonoidalCategory
 

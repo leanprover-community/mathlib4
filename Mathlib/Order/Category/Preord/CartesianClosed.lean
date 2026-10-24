@@ -20,8 +20,8 @@ are thin. Hence `Preord` is cartesian closed.
 
 universe u
 
-open CategoryTheory
-open scoped CartesianClosed
+open CategoryTheory Limits
+open scoped CartesianClosed MonoidalCategory
 
 noncomputable section
 
@@ -32,8 +32,29 @@ instance : ExponentialIdeal preordToCat.{u} := by
 
 namespace Preord
 
+/-- The one-element preorder is terminal. -/
+def isTerminalPUnit : IsTerminal (of PUnit.{u + 1}) :=
+  .ofUniqueHom (fun X ↦ ofHom (OrderHom.const X PUnit.unit))
+    (fun _ _ ↦ by ext)
+
+/-- The product cone of preorders, with the usual product preorder. -/
+def prodCone (X Y : Preord.{u}) : BinaryFan X Y :=
+  .mk (P := of (X × Y)) (ofHom OrderHom.fst) (ofHom OrderHom.snd)
+
+/-- The usual product preorder is a categorical product. -/
+def isLimitProdCone (X Y : Preord.{u}) : IsLimit (prodCone X Y) := by
+  refine BinaryFan.isLimitMk (fun s ↦ ofHom (s.fst.hom.prod s.snd.hom))
+    (fun _ ↦ rfl) (fun _ ↦ rfl) fun s m h₁ h₂ ↦ ?_
+  ext x
+  exacts [congr($h₁ _), congr($h₂ _)]
+
 instance : CartesianMonoidalCategory Preord.{u} :=
-  .ofReflective preordToCat
+  .ofChosenFiniteProducts ⟨_, isTerminalPUnit⟩ fun X Y ↦
+    ⟨prodCone X Y, isLimitProdCone X Y⟩
+
+lemma tensorObj (X Y : Preord.{u}) : X ⊗ Y = of (X × Y) := rfl
+
+lemma tensorUnit : 𝟙_ Preord.{u} = of PUnit.{u + 1} := rfl
 
 instance : BraidedCategory Preord.{u} := .ofCartesianMonoidalCategory
 
