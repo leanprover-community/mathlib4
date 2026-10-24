@@ -450,6 +450,14 @@ instance {S : Type*} [SetLike S K] [MulMemClass S K] (s : S) [IsMulCommutative s
     IsMulCommutative (closure (s : Set K)) :=
   isMulCommutative_closure fun _ hi _ hj _ ↦ setLike_mul_comm hi hj
 
+/-- The bottom subfield is commutative, even when the ambient division ring is not. -/
+instance : Field (⊥ : Subfield K) where
+  mul_comm :=
+    have : IsMulCommutative (⊥ : Subfield K) :=
+      (@Subfield.closure_empty K _).symm ▸
+      Subfield.isMulCommutative_closure (Set.pairwise_empty Commute)
+    mul_comm'
+
 end Subfield
 
 variable (L) in
