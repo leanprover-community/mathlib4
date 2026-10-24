@@ -97,24 +97,32 @@ theorem Valid'.node {s l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : Va
     Valid' o₁ (@node α s l x r) o₂ :=
   ⟨⟨hl.1, hr.1⟩, ⟨hs, hl.2, hr.2⟩, ⟨H, hl.3, hr.3⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
-theorem Valid'.dual : ∀ {t : Ordnode α} {o₁ o₂}, Valid' o₁ t o₂ → @Valid' αᵒᵈ _ o₂ (dual t) o₁
+theorem Valid'.dual : ∀ {t : Ordnode α} {o₁ o₂},
+    Valid' o₁ t o₂ → Valid' o₂.toDual (t.map OrderDual.toDual).dual o₁.toDual
   | .nil, _, _, h => valid'_nil h.1.dual
   | .node _ l _ r, _, _, ⟨⟨ol, Or⟩, ⟨rfl, sl, sr⟩, ⟨b, bl, br⟩⟩ =>
     let ⟨ol', sl', bl'⟩ := Valid'.dual ⟨ol, sl, bl⟩
     let ⟨or', sr', br'⟩ := Valid'.dual ⟨Or, sr, br⟩
-    ⟨⟨or', ol'⟩, ⟨by simp [size_dual, add_comm], sr', sl'⟩,
-      ⟨by rw [size_dual, size_dual]; exact b.symm, br', bl'⟩⟩
+    ⟨⟨or', ol'⟩, ⟨by simp [size_dual, add_comm, size_map], sr', sl'⟩,
+      ⟨by rw [size_dual, size_dual, size_map, size_map]; exact b.symm, br', bl'⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
-theorem Valid'.dual_iff {t : Ordnode α} {o₁ o₂} : Valid' o₁ t o₂ ↔ @Valid' αᵒᵈ _ o₂ (.dual t) o₁ :=
-  ⟨Valid'.dual, fun h => by
-    have := Valid'.dual h; rwa [dual_dual, OrderDual.Preorder.dual_dual] at this⟩
+theorem Valid'.ofDual : ∀ {t : Ordnode α} {o₁ o₂},
+    Valid' o₂.toDual (t.map OrderDual.toDual).dual o₁.toDual → Valid' o₁ t o₂
+  | .nil, _, _, h => valid'_nil h.1.ofDual
+  | .node _ l _ r, _, _, ⟨⟨ol, Or⟩, ⟨rfl, sl, sr⟩, ⟨b, bl, br⟩⟩ =>
+    let ⟨ol', sl', bl'⟩ := Valid'.ofDual ⟨ol, sl, bl⟩
+    let ⟨or', sr', br'⟩ := Valid'.ofDual ⟨Or, sr, br⟩
+    ⟨⟨or', ol'⟩, ⟨by simp [size_dual, add_comm, size_map], sr', sl'⟩,
+      ⟨by rw [size_dual, size_dual, size_map, size_map] at b; exact b.symm, br', bl'⟩⟩
 
-theorem Valid.dual {t : Ordnode α} : Valid t → @Valid αᵒᵈ _ (.dual t) :=
+theorem Valid'.dual_iff {t : Ordnode α} {o₁ o₂} :
+    Valid' o₁ t o₂ ↔ @Valid' αᵒᵈ _ o₂.toDual (t.map OrderDual.toDual).dual o₁.toDual :=
+  ⟨Valid'.dual, Valid'.ofDual⟩
+
+theorem Valid.dual {t : Ordnode α} : Valid t → Valid (t.map OrderDual.toDual).dual :=
   Valid'.dual
 
-theorem Valid.dual_iff {t : Ordnode α} : Valid t ↔ @Valid αᵒᵈ _ (.dual t) :=
+theorem Valid.dual_iff {t : Ordnode α} : Valid t ↔ Valid (t.map OrderDual.toDual).dual :=
   Valid'.dual_iff
 
 theorem Valid'.left {s l x r o₁ o₂} (H : Valid' o₁ (@Ordnode.node α s l x r) o₂) : Valid' o₁ l x :=

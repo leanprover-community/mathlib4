@@ -295,22 +295,22 @@ lemma sSup_lowerBounds_eq_sInf (s : Set α) : sSup (lowerBounds s) = sInf s :=
 @[to_dual map_iInf_le]
 theorem Monotone.le_map_iSup [CompleteLattice β] {f : α → β} (hf : Monotone f) :
     ⨆ i, f (s i) ≤ f (iSup s) :=
-  iSup_le fun _ => hf <| le_iSup _ _
+  iSup_le fun _ ↦ hf (le_iSup ..)
 
 @[to_dual map_iSup_le]
 theorem Antitone.le_map_iInf [CompleteLattice β] {f : α → β} (hf : Antitone f) :
     ⨆ i, f (s i) ≤ f (iInf s) :=
-  hf.dual_left.le_map_iSup
+  iSup_le fun _ ↦ hf (iInf_le ..)
 
 @[to_dual map_iInf₂_le]
 theorem Monotone.le_map_iSup₂ [CompleteLattice β] {f : α → β} (hf : Monotone f) (s : ∀ i, κ i → α) :
     ⨆ (i) (j), f (s i j) ≤ f (⨆ (i) (j), s i j) :=
-  iSup₂_le fun _ _ => hf <| le_iSup₂ _ _
+  iSup₂_le fun _ _ ↦ hf (le_iSup₂ ..)
 
 @[to_dual map_iSup₂_le]
 theorem Antitone.le_map_iInf₂ [CompleteLattice β] {f : α → β} (hf : Antitone f) (s : ∀ i, κ i → α) :
     ⨆ (i) (j), f (s i j) ≤ f (⨅ (i) (j), s i j) :=
-  hf.dual_left.le_map_iSup₂ _
+  iSup₂_le fun _ _ ↦ hf (iInf₂_le ..)
 
 @[to_dual map_sInf_le]
 theorem Monotone.le_map_sSup [CompleteLattice β] {s : Set α} {f : α → β} (hf : Monotone f) :
@@ -318,8 +318,7 @@ theorem Monotone.le_map_sSup [CompleteLattice β] {s : Set α} {f : α → β} (
 
 @[to_dual map_sSup_le]
 theorem Antitone.le_map_sInf [CompleteLattice β] {s : Set α} {f : α → β} (hf : Antitone f) :
-    ⨆ a ∈ s, f a ≤ f (sInf s) :=
-  hf.dual_left.le_map_sSup
+    ⨆ a ∈ s, f a ≤ f (sInf s) := by rw [sInf_eq_iInf]; exact hf.le_map_iInf₂ _
 
 @[to_dual]
 theorem OrderIso.map_iSup [CompleteLattice β] (f : α ≃o β) (x : ι → α) :

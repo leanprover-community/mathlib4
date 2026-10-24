@@ -25,7 +25,7 @@ lemma iSup_mul_le (u v : ι → α) :
 @[to_additive]
 lemma le_iInf_mul (u v : ι → α) :
     (⨅ i, u i) * ⨅ i, v i ≤ ⨅ i, u i * v i :=
-  iSup_mul_le (α := αᵒᵈ) ..
+  le_iInf fun _ ↦ mul_le_mul' (iInf_le ..) (iInf_le ..)
 
 @[to_additive]
 lemma iSup₂_mul_le (u v : (i : ι) → κ i → α) :
@@ -36,5 +36,7 @@ lemma iSup₂_mul_le (u v : (i : ι) → κ i → α) :
 
 @[to_additive]
 lemma le_iInf₂_mul (u v : (i : ι) → κ i → α) :
-    (⨅ (i) (j), u i j) * ⨅ (i) (j), v i j ≤ ⨅ (i) (j), u i j * v i j :=
-  iSup₂_mul_le (α := αᵒᵈ) ..
+    (⨅ (i) (j), u i j) * ⨅ (i) (j), v i j ≤ ⨅ (i) (j), u i j * v i j := by
+  apply (le_iInf_mul ..).trans
+  gcongr
+  exact le_iInf_mul ..
