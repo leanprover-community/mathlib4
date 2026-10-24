@@ -84,7 +84,6 @@ theorem leOfHom {x y : X} (h : x ⟶ y) : x ≤ y :=
 
 alias _root_.Quiver.Hom.le := leOfHom
 
-@[simp]
 theorem homOfLE_leOfHom {x y : X} (h : x ⟶ y) : h.le.hom = h :=
   rfl
 

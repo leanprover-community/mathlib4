@@ -71,7 +71,7 @@ noncomputable def repr : ONote → Ordinal.{0}
   | 0 => 0
   | oadd e n a => ω ^ repr e * n + repr a
 @[simp] theorem repr_zero : repr 0 = 0 := rfl
-attribute [simp] repr.eq_1 repr.eq_2
+attribute [simp] repr.eq_2
 
 set_option backward.privateInPublic true in
 /-- Print `ω^s*n`, omitting `s` if `e = 0` or `e = 1`, and omitting `n` if `n = 1` -/

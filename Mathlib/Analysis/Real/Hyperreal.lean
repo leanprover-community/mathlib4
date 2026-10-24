@@ -146,11 +146,11 @@ theorem coe_abs (x : ℝ) : ((|x| : ℝ) : ℝ*) = |↑x| :=
 
 @[simp, norm_cast]
 theorem coe_max (x y : ℝ) : ((max x y : ℝ) : ℝ*) = max ↑x ↑y :=
-  Germ.const_max _ _
+  Germ.const_sup _ _
 
 @[simp, norm_cast]
 theorem coe_min (x y : ℝ) : ((min x y : ℝ) : ℝ*) = min ↑x ↑y :=
-  Germ.const_min _ _
+  Germ.const_inf _ _
 
 /-- The canonical map `ℝ → ℝ*` as an `OrderRingHom`. -/
 @[simps]

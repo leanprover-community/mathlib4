@@ -599,14 +599,10 @@ abbrev comp (f : α ↪o β) (g : β ↪o γ) : α ↪o γ :=
 theorem coe_comp (f : α ↪o β) (g : β ↪o γ) : f.comp g = g ∘ f :=
   rfl
 
-@[simp]
-theorem id_comp (f : α ↪o β) : (id α).comp f = f := by
-  ext
+theorem id_comp (f : α ↪o β) : (id α).comp f = f :=
   rfl
 
-@[simp]
-theorem comp_id (f : α ↪o β) : f.comp (id β) = f := by
-  ext
+theorem comp_id (f : α ↪o β) : f.comp (id β) = f :=
   rfl
 
 theorem comp_assoc (f : α ↪o β) (g : β ↪o γ) (h : γ ↪o δ) :

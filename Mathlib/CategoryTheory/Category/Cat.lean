@@ -243,11 +243,9 @@ instance category : LargeCategory.{max v u} Cat.{v, u} :=
 @[simp, push_cast]
 lemma Hom.id_toFunctor {C : Cat.{v, u}} : (𝟙 C : C ⟶ C).toFunctor = 𝟭 C := rfl
 
-@[simp]
 theorem Hom.id_obj {C : Cat.{v, u}} (X : C) : (𝟙 C : C ⟶ C).toFunctor.obj X = X := by
   simp
 
-@[simp]
 theorem Hom.id_map {C : Cat.{v, u}} {X Y : C} (f : X ⟶ Y) : (𝟙 C : C ⟶ C).toFunctor.map f = f := by
   simp
 
@@ -259,12 +257,10 @@ theorem Hom.comp_obj {C D E : Cat.{v, u}} (F : C ⟶ D) (G : D ⟶ E) (X : C) :
     (F ≫ G).toFunctor.obj X = G.toFunctor.obj (F.toFunctor.obj X) := by
   simp
 
-@[simp]
 theorem Hom.comp_map {C D E : Cat.{v, u}} (F : C ⟶ D) (G : D ⟶ E) {X Y : C} (f : X ⟶ Y) :
     (F ≫ G).toFunctor.map f = G.toFunctor.map (F.toFunctor.map f) := by
   simp
 
-@[simp]
 theorem Hom₂.id_app {C D : Cat.{v, u}} (F : C ⟶ D) (X : C) :
     (𝟙 F : F ⟶ F).toNatTrans.app X = 𝟙 (F.toFunctor.obj X) := by
   simp
