@@ -6,6 +6,7 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Ideal
+public import Mathlib.RingTheory.RootsOfUnity.Quotient
 
 /-!
 # Basic results on integral ideals of a number field
@@ -14,11 +15,8 @@ We study results about integral ideals of a number field `K`.
 
 ## Main definitions and results
 
-* `Ideal.rootsOfUnityMapQuot` : For `I` an integral ideal of `K`, the group morphism from the
-  group of roots of unity of `K` of order `n` to `(𝓞 K ⧸ I)ˣ`.
-
-* `Ideal.rootsOfUnityMapQuot_injective`: If the ideal `I` is nontrivial and its norm is coprime
-  with `n`, then the map `Ideal.rootsOfUnityMapQuot` is injective.
+* `Ideal.torsionMapQuot_injective`: If the ideal `I` is nontrivial and its norm is coprime
+  with `torsionOrder K`, then the map `Ideal.torsionMapQuot` is injective.
 
 * `NumberField.torsionOrder_dvd_absNorm_sub_one`: If the norm of the (nonzero) prime ideal `P` is
   coprime with the order of the torsion of `K`, then the norm of `P` is congruent to `1` modulo
@@ -38,6 +36,7 @@ variable {K : Type*} [Field K] {I : Ideal (𝓞 K)}
 
 section torsionMapQuot
 
+@[deprecated "use `IsPrimitiveRoot.not_coprime_absNorm_of_mk_eq_one`" (since := "2026-10-07")]
 theorem IsPrimitiveRoot.not_coprime_norm_of_mk_eq_one [NumberField K] (hI : absNorm I ≠ 1) {n : ℕ}
     {ζ : K} (hn : 2 ≤ n) (hζ : IsPrimitiveRoot ζ n)
     (h : letI _ : NeZero n := NeZero.of_gt hn; Ideal.Quotient.mk I hζ.toInteger = 1) :
@@ -50,58 +49,21 @@ theorem IsPrimitiveRoot.not_coprime_norm_of_mk_eq_one [NumberField K] (hI : absN
   exact hζ.prime_dvd_of_dvd_norm_sub_one hn <|
     Int.dvd_trans (Int.natCast_dvd_natCast.mpr h₂) (absNorm_dvd_norm_of_mem h)
 
-variable (I)
+variable [NumberField K]
 
-/--
-For `I` an integral ideal of `K`, the group morphism from the group of roots of unity of `K`
-of order `n` to `(𝓞 K ⧸ I)ˣ`.
--/
-def Ideal.rootsOfUnityMapQuot (n : ℕ) : (rootsOfUnity n (𝓞 K)) →* ((𝓞 K) ⧸ I)ˣ :=
-  (Units.map (Ideal.Quotient.mk I).toMonoidHom).domRestrict _
-
-@[simp]
-theorem Ideal.rootsOfUnityMapQuot_apply (n : ℕ) {x : (𝓞 K)ˣ} (hx : x ∈ rootsOfUnity n (𝓞 K)) :
-    rootsOfUnityMapQuot I n ⟨x, hx⟩ = Ideal.Quotient.mk I x := rfl
-
+variable (I) in
 /--
 For `I` an integral ideal of `K`, the group morphism from the torsion of `K` to `(𝓞 K ⧸ I)ˣ`.
 -/
-def Ideal.torsionMapQuot : (Units.torsion K) →* ((𝓞 K) ⧸ I)ˣ :=
-  (Units.map (Ideal.Quotient.mk I).toMonoidHom).domRestrict (torsion K)
+noncomputable def Ideal.torsionMapQuot : (Units.torsion K) →* ((𝓞 K) ⧸ I)ˣ :=
+  (rootsOfUnityMapQuot I (torsionOrder K)).comp
+    (MulEquiv.subgroupCongr (rootsOfUnity_eq_torsion K).symm).toMonoidHom
 
+variable (I) in
 @[simp]
 theorem Ideal.torsionMapQuot_apply {x : (𝓞 K)ˣ} (hx : x ∈ torsion K) :
-    torsionMapQuot I ⟨x, hx⟩ = Ideal.Quotient.mk I x := rfl
-
-variable {I} [NumberField K]
-
-theorem Ideal.rootsOfUnityMapQuot_injective (n : ℕ) [NeZero n] (hI₁ : absNorm I ≠ 1)
-    (hI₂ : (absNorm I).Coprime n) :
-    Function.Injective (rootsOfUnityMapQuot I n) := by
-  refine (injective_iff_map_eq_one _).mpr fun ⟨ζ, hζ⟩ h ↦ ?_
-  obtain ⟨t, ht₀, ht, hζ⟩ := isPrimitiveRoot_of_mem_rootsOfUnity hζ
-  suffices ¬ (2 ≤ t) by
-    simpa [show t = 1 by grind] using hζ
-  intro ht'
-  let μ : K := ζ.val
-  have hμ : IsPrimitiveRoot μ t :=
-    (IsPrimitiveRoot.coe_units_iff.mpr hζ).map_of_injective RingOfIntegers.coe_injective
-  rw [Units.ext_iff, rootsOfUnityMapQuot_apply, Units.val_one] at h
-  refine hμ.not_coprime_norm_of_mk_eq_one hI₁ ht' h ?_
-  exact Nat.dvd_one.mp (hI₂ ▸ Nat.gcd_dvd_gcd_of_dvd_right (absNorm I) ht)
-
-theorem Ideal.rootsOfUnityMapQuot_inj (n : ℕ) [NeZero n] (hI₁ : absNorm I ≠ 1)
-    (hI₂ : (absNorm I).Coprime n) {x y : rootsOfUnity n (𝓞 K)} :
-    rootsOfUnityMapQuot I n x = rootsOfUnityMapQuot I n y ↔ x = y :=
-  (rootsOfUnityMapQuot_injective n hI₁ hI₂).eq_iff
-
-theorem IsPrimitiveRoot.idealQuotient_mk {n : ℕ} [NeZero n] {ζ : (𝓞 K)} (hζ : IsPrimitiveRoot ζ n)
-    (hI₁ : absNorm I ≠ 1) (hI₂ : (absNorm I).Coprime n) :
-    IsPrimitiveRoot (Ideal.Quotient.mk I ζ) n := by
-  have h : IsPrimitiveRoot hζ.toRootsOfUnity n :=
-    IsPrimitiveRoot.coe_submonoidClass_iff.mp <| IsPrimitiveRoot.coe_units_iff.mp hζ
-  exact IsPrimitiveRoot.coe_units_iff.mpr <|
-    h.map_of_injective <| Ideal.rootsOfUnityMapQuot_injective n hI₁ hI₂
+    torsionMapQuot I ⟨x, hx⟩ = Ideal.Quotient.mk I x := by
+  simp [torsionMapQuot]
 
 /--
 If the ideal `I` is nontrivial and its norm is coprime with `torsionOrder K`, then the map
@@ -112,11 +74,8 @@ is replaced by `I` being unramified over `ℤ`.
 -/
 theorem Ideal.torsionMapQuot_injective (hI₁ : absNorm I ≠ 1)
     (hI₂ : (absNorm I).Coprime (torsionOrder K)) :
-    Function.Injective (torsionMapQuot I) := by
-  intro ⟨x, hx⟩ ⟨y, hy⟩ h
-  rw [← rootsOfUnity_eq_torsion] at hx hy
-  rw [Subtype.mk_eq_mk, ← Subtype.mk_eq_mk (h := hx) (h' := hy)]
-  exact rootsOfUnityMapQuot_injective (torsionOrder K) hI₁ hI₂ h
+    Function.Injective (torsionMapQuot I) :=
+  (rootsOfUnityMapQuot_injective _ hI₁ hI₂).comp (MulEquiv.injective _)
 
 theorem Ideal.torsionMapQuot_inj (hI₁ : absNorm I ≠ 1)
     (hI₂ : (absNorm I).Coprime (torsionOrder K)) {x y : torsion K} :
@@ -142,15 +101,21 @@ theorem Ideal.torsionMapQuot_injective' {P : Ideal (𝓞 K)} [hP : P.IsPrime]
     refine ⟨orderOf ζ, ?_, IsPrimitiveRoot.coe_coe_iff.mpr (IsPrimitiveRoot.orderOf ζ)⟩
     rw [Nat.two_le_iff, orderOf_ne_zero_iff]
     exact ⟨hζ₀, by simpa using hζ₂⟩
-  have h_cpr := hζ₃.not_coprime_norm_of_mk_eq_one
-    (absNorm_eq_one_iff.not.mpr <| IsPrime.ne_top hP) hn
-    (by rwa [Units.ext_iff, torsionMapQuot_apply, val_one] at hζ₁)
   let p := (Ideal.under ℤ P).absNorm
   have hp := Nat.absNorm_under_prime P
   have : Fact p.Prime := ⟨hp⟩
-  rw [← P.pow_inertiaDeg p, Nat.coprime_pow_left_iff (P.inertiaDeg_pos ℤ),
-    ← Nat.Prime.dvd_iff_not_coprime hp] at h_cpr
-  obtain ⟨c, hc⟩ := h_cpr
+  obtain ⟨c, hc⟩ : p ∣ n := by
+    have hnP : (n : 𝓞 K) ∈ P := by
+      obtain ⟨d, hd⟩ := sub_one_dvd_natCast_of_pow_eq_one (ζ := ((ζ : (𝓞 K)ˣ) : 𝓞 K)) (n := n)
+        (RingOfIntegers.coe_injective (by simpa using hζ₃.pow_eq_one))
+        (fun h ↦ hζ₂ (Subtype.ext (Units.ext h)))
+      rw [hd]
+      refine P.mul_mem_right d ?_
+      rw [← Ideal.Quotient.eq_zero_iff_mem, map_sub, map_one, sub_eq_zero]
+      simpa [Units.ext_iff] using hζ₁
+    have : (n : ℤ) ∈ under ℤ P := by simpa using hnP
+    rw [← Int.ideal_span_absNorm_eq_self (under ℤ P), Ideal.mem_span_singleton] at this
+    exact_mod_cast this
   have hζ_pow := IsPrimitiveRoot.pow (by positivity) hζ₃ (by rwa [mul_comm])
   let F := ℚ⟮(ζ : K) ^ c⟯
   have : IsCyclotomicExtension {p} ℚ F :=
