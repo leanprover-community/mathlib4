@@ -693,6 +693,10 @@ theorem insert_image_compl_eq_range (f : α → β) (x : α) : insert (f x) (f '
 theorem image_preimage_eq_range_inter {f : α → β} {t : Set β} : f '' f ⁻¹' t = range f ∩ t := by
   grind
 
+theorem ofPred_mem_range_and {p : α → Prop} {f : β → α} :
+    {a ∈ Set.range f | p a} = f '' {b | p (f b)} :=
+  image_preimage_eq_range_inter.symm
+
 theorem image_preimage_eq_inter_range {f : α → β} {t : Set β} : f '' f ⁻¹' t = t ∩ range f := by
   grind
 

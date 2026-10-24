@@ -520,9 +520,6 @@ theorem forall_mem_univ {p : α → Prop} : (∀ x ∈ (univ : Set α), p x) ↔
 theorem forall_mem_ofPred {p q : α → Prop} : (∀ x ∈ ({x | q x} : Set α), p x) ↔ ∀ x, q x → p x :=
   .rfl
 
-theorem ofPred_mem_range {p : α → Prop} {f : β → α} :
-    {a | a ∈ Set.range f ∧ p a} = f '' {b | p (f b)} := by grind
-
 theorem Nonempty.forall_const (h : s.Nonempty) {p : Prop} : (∀ x ∈ s, p) ↔ p :=
   let ⟨x, hx⟩ := h
   ⟨fun h ↦ h x hx, fun h _ _ ↦ h⟩
