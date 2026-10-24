@@ -12,6 +12,8 @@ import Mathlib.Tactic.Basic
 import Plausible.Gen
 
 /-!
+# `Plausible`: `Testable` and `PrintableProb` instances
+
 This module contains `Plausible.Testable` and `Plausible.PrintableProb` instances for mathlib types.
 -/
 

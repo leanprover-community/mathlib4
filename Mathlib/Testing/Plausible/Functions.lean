@@ -20,7 +20,7 @@ import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Tactic.Bound.Init
 
 /-!
-## `Plausible`: generators for functions
+# `Plausible`: generators for functions
 
 This file defines `Sampleable` instances for `ℤ → ℤ` injective functions.
 
