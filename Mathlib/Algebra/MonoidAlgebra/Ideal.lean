@@ -73,10 +73,8 @@ theorem AddMonoidAlgebra.mem_ideal_span_single_image' [AddMonoid G] [Semiring k]
       ∀ m, x.coeff m ∈ Ideal.span (fc '' {i ∈ s | ∃ d, m = d + (fm i)}) := by
   convert
     (toMultiplicative _ _ x).mem_ideal_span_single_image' (s := s) (fm := ofAdd ∘ fm) (fc := fc)
-  · simp_rw [Function.comp, ← AddMonoidAlgebra.toMultiplicative_single,
-      ← Set.image_image, ← Ideal.map_span, Ideal.apply_mem_of_equiv_iff]
-  · simp_rw [ofAdd.surjective.forall, ofAdd.surjective.exists, coeff_toMultiplicative_apply_ofAdd,
-      Function.comp, ← ofAdd_add, ofAdd.apply_eq_iff_eq]
+  · simp [← AddMonoidAlgebra.toMultiplicative_single, ← Set.image_image, ← Ideal.map_span]
+  · simp [← ofAdd_add]
 
 theorem AddMonoidAlgebra.mem_ideal_span_single_image [AddMonoid G] [Semiring k] {s : Set ι}
     {fm : ι → G} {fc : ι → k} {x : AddMonoidAlgebra k G} :
