@@ -6,6 +6,7 @@ Authors: Johan Commelin, Aaron Anderson
 module
 
 public import Mathlib.Data.Finsupp.Defs
+public import Mathlib.Order.Bounds.Defs
 
 /-!
 # Pointwise order on finitely supported functions
@@ -60,6 +61,10 @@ lemma lt_def : f < g ↔ f ≤ g ∧ ∃ i, f i < g i := Pi.lt_def
 lemma coe_mono : Monotone (Finsupp.toFun : (ι →₀ M) → ι → M) := fun _ _ ↦ id
 
 lemma coe_strictMono : StrictMono (Finsupp.toFun : (ι →₀ M) → ι → M) := fun _ _ ↦ id
+
+@[to_dual]
+lemma bddAbove_image_apply {s : Set (ι →₀ M)} (hs : BddAbove s) : BddAbove ((· i) '' s) :=
+  ⟨hs.some i, by rintro _ ⟨f, hf, rfl⟩; exact hs.some_mem hf i⟩
 
 end Preorder
 

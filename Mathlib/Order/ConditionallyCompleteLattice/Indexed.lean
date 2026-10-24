@@ -70,6 +70,10 @@ theorem WithBot.coe_biInf {ι : Type*} {s : Set ι} {α : Type*} [CompleteLattic
 
 end
 
+@[to_dual]
+lemma ciSup_range [SupSet β] (f : ι → α) (g : α → β) : ⨆ a : Set.range f, g a = ⨆ k, g (f k) := by
+  simp [iSup, iSup, range]
+
 section ConditionallyCompleteLattice
 
 variable [ConditionallyCompleteLattice α] {a b : α}
