@@ -26,8 +26,8 @@ instance mulLeftReflectLE [LE α] [Mul α] [MulLeftReflectLE α] : MulLeftReflec
     Contravariant.flip (μ := (· * ·)) (fun _ ↦ ‹MulLeftReflectLE α›.le_of_mul_le_mul_left') _
 
 @[to_additive]
-instance mulLeftMono [LE α] [Mul α] [c : MulLeftMono α] : MulLeftMono αᵒᵈ :=
-  ⟨c.1.flip⟩
+instance mulLeftMono [LE α] [Mul α] [c : MulLeftMono α] : MulLeftMono αᵒᵈ where
+  elim _ := c.1.flip _
 
 @[to_additive]
 instance mulRightReflectLE [LE α] [Mul α] [MulRightReflectLE α] : MulRightReflectLE αᵒᵈ where
@@ -35,23 +35,23 @@ instance mulRightReflectLE [LE α] [Mul α] [MulRightReflectLE α] : MulRightRef
     Contravariant.flip (μ := swap (· * ·)) (fun _ ↦ ‹MulRightReflectLE α›.le_of_mul_le_mul_right') _
 
 @[to_additive]
-instance mulRightMono [LE α] [Mul α] [c : MulRightMono α] : MulRightMono αᵒᵈ :=
-  ⟨c.1.flip⟩
+instance mulRightMono [LE α] [Mul α] [c : MulRightMono α] : MulRightMono αᵒᵈ where
+  elim _ := c.1.flip _
 
 @[to_additive]
-instance mulLeftReflectLT [LT α] [Mul α] [c : MulLeftReflectLT α] : MulLeftReflectLT αᵒᵈ :=
-  ⟨c.1.flip⟩
+instance mulLeftReflectLT [LT α] [Mul α] [c : MulLeftReflectLT α] : MulLeftReflectLT αᵒᵈ where
+  elim _ := c.1.flip _
 
 @[to_additive]
-instance mulLeftStrictMono [LT α] [Mul α] [c : MulLeftStrictMono α] : MulLeftStrictMono αᵒᵈ :=
-  ⟨c.1.flip⟩
+instance mulLeftStrictMono [LT α] [Mul α] [c : MulLeftStrictMono α] : MulLeftStrictMono αᵒᵈ where
+  elim _ := c.1.flip _
 
 @[to_additive]
-instance mulRightReflectLT [LT α] [Mul α] [c : MulRightReflectLT α] : MulRightReflectLT αᵒᵈ :=
-  ⟨c.1.flip⟩
+instance mulRightReflectLT [LT α] [Mul α] [c : MulRightReflectLT α] : MulRightReflectLT αᵒᵈ where
+  elim _ := c.1.flip _
 
 @[to_additive]
-instance mulRightStrictMono [LT α] [Mul α] [c : MulRightStrictMono α] : MulRightStrictMono αᵒᵈ :=
-  ⟨c.1.flip⟩
+instance mulRightStrictMono [LT α] [Mul α] [c : MulRightStrictMono α] : MulRightStrictMono αᵒᵈ where
+  elim _ := c.1.flip _
 
 end OrderDual

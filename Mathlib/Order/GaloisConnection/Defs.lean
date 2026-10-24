@@ -58,9 +58,13 @@ theorem monotone_intro (hu : Monotone u) (hl : Monotone l) (h_u_l : ∀ a, a ≤
 
 @[to_dual self]
 protected theorem dual {l : α → β} {u : β → α} (gc : GaloisConnection l u) :
-    GaloisConnection (OrderDual.toDual ∘ u ∘ OrderDual.ofDual)
-      (OrderDual.toDual ∘ l ∘ OrderDual.ofDual) :=
-  fun a b => (gc b a).symm
+    GaloisConnection (toDual ∘ u ∘ ofDual) (toDual ∘ l ∘ ofDual) :=
+  fun a b ↦ (gc (ofDual b) (ofDual a)).symm
+
+@[to_dual self]
+protected theorem odual {l : αᵒᵈ → βᵒᵈ} {u : βᵒᵈ → αᵒᵈ} (gc : GaloisConnection l u) :
+    GaloisConnection (ofDual ∘ u ∘ toDual) (ofDual ∘ l ∘ toDual) :=
+  fun a b ↦ (gc (toDual b) (toDual a)).symm
 
 variable (gc : GaloisConnection l u)
 include gc
@@ -296,7 +300,9 @@ end GaloisInsertion
 `α` and `β`. -/]
 def GaloisCoinsertion.dual [Preorder α] [Preorder β] {l : α → β} {u : β → α} :
     GaloisCoinsertion l u → GaloisInsertion (toDual ∘ u ∘ ofDual) (toDual ∘ l ∘ ofDual) :=
-  fun x => ⟨x.1, x.2.dual, x.3, x.4⟩
+  fun x ↦ ⟨fun b h ↦ ⟨x.1 (ofDual b) h⟩, x.2.dual, fun a ↦ x.3 (ofDual a), fun b h ↦ by
+    rw [← ofDual_inj]
+    exact x.4 (ofDual b) h⟩
 
 /-- Make a `GaloisInsertion` between `α` and `β` from a `GaloisCoinsertion` between `αᵒᵈ` and
 `βᵒᵈ`. -/
@@ -304,4 +310,6 @@ def GaloisCoinsertion.dual [Preorder α] [Preorder β] {l : α → β} {u : β �
 and `βᵒᵈ`. -/]
 def GaloisCoinsertion.ofDual [Preorder α] [Preorder β] {l : αᵒᵈ → βᵒᵈ} {u : βᵒᵈ → αᵒᵈ} :
     GaloisCoinsertion l u → GaloisInsertion (ofDual ∘ u ∘ toDual) (ofDual ∘ l ∘ toDual) :=
-  fun x => ⟨x.1, x.2.dual, x.3, x.4⟩
+  fun x ↦ ⟨fun b h ↦ (x.1 ⟨b⟩ h).ofDual, x.2.odual, fun a ↦ x.3 (toDual a), fun b h ↦ by
+    rw [ofDual_inj]
+    exact x.4 (toDual b) h⟩

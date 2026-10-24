@@ -233,18 +233,20 @@ namespace OrderDual
 variable (α)
 
 @[to_dual]
-instance [h : Bot α] : Top αᵒᵈ :=
-  ⟨h.bot⟩
+instance [h : Bot α] : Top αᵒᵈ where
+  top := ⟨h.bot⟩
 
 @[to_dual]
 instance [LE α] [h : OrderBot α] : OrderTop αᵒᵈ where
-  le_top := h.bot_le
+  le_top a := by rw [toDual_le_toDual]; exact h.bot_le _
 
 @[to_dual (attr := simp)] lemma ofDual_top [Bot α] : ofDual ⊤ = (⊥ : α) := rfl
 @[to_dual (attr := simp)] lemma toDual_top [Top α] : toDual (⊤ : α) = ⊥ := rfl
 
-@[to_dual (attr := simp)] lemma ofDual_eq_top [Top α] {a : αᵒᵈ} : ofDual a = ⊤ ↔ a = ⊥ := .rfl
-@[to_dual (attr := simp)] lemma toDual_eq_top [Bot α] {a : α} : toDual a = ⊤ ↔ a = ⊥ := .rfl
+@[to_dual (attr := simp)] lemma ofDual_eq_top [Top α] {a : αᵒᵈ} : ofDual a = ⊤ ↔ a = ⊥ := by
+  rw [toDual_inj]; exact Iff.rfl
+@[to_dual (attr := simp)] lemma toDual_eq_top [Bot α] {a : α} : toDual a = ⊤ ↔ a = ⊥ := by
+  rw [toDual_inj]; exact Iff.rfl
 
 end OrderDual
 
