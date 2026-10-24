@@ -125,4 +125,6 @@ jobs:
       pr_branch_ref: ${{ github.event.pull_request.head.sha }}
       cache_environment: cache-upload-forks
       runs_on: pr
+      # The label for builds with a large predicted cascade. Unset disables the routing.
+      large_runs_on: ${{ vars.MATHLIB_CI_LARGE_RUNS_ON }}
     secrets: inherit
