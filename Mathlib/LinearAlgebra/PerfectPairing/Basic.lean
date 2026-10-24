@@ -125,6 +125,8 @@ lemma IsPerfPair.separatingRight {p : M →ₗ[R] N →ₗ[R] R} (hp : p.IsPerfP
 lemma IsPerfPair.nondegenerate {p : M →ₗ[R] N →ₗ[R] R} (hp : p.IsPerfPair) :
     p.Nondegenerate := ⟨hp.separatingLeft, hp.separatingRight⟩
 
+instance : Fact p.Nondegenerate := ⟨‹p.IsPerfPair›.nondegenerate⟩
+
 end CommSemiring
 
 section Field
