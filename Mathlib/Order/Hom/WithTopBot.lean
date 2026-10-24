@@ -148,7 +148,7 @@ end OrderEmbedding
 
 namespace OrderIso
 
-variable [PartialOrder α] [PartialOrder β] [PartialOrder γ]
+variable [Preorder α] [Preorder β] [Preorder γ]
 
 /-- A version of `Equiv.optionCongr` for `WithTop`. -/
 @[to_dual /-- A version of `Equiv.optionCongr` for `WithBot`. -/]
