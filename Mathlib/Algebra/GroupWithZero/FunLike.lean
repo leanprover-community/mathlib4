@@ -18,7 +18,7 @@ Note that currently, these are not registered as instances, but only `abbrev`s t
 typeclass searches.
 -/
 
-@[expose] public section
+public section
 
 namespace FunLike
 

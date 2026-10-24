@@ -20,7 +20,7 @@ relating `ζ'/ζ (s)` and `ζ'/ζ (1 - s)`, involving the digamma function `ψ` 
   `ζ'/ζ (s) = -ζ'/ζ (1 - s) + log (2 π) - ψ s + (π / 2) * tan (π s / 2)`.
 -/
 
-@[expose] public section
+public section
 
 open scoped Real
 open Complex Filter Topology

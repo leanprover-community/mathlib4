@@ -22,7 +22,7 @@ division and modulo arithmetic are derived as well as some simple inequalities.
 rat, rationals, ℚ, floor
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Finset
 

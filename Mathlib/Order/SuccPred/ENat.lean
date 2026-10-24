@@ -12,7 +12,7 @@ public import Mathlib.Order.SuccPred.Nat
 # `SuccOrder` structure on `ENat`
 -/
 
-@[expose] public section
+public section
 
 deriving instance SuccOrder for ENat
 

@@ -19,7 +19,7 @@ any set of subobjects satisfying `P` again satisfies `P`. In particular, every o
 greatest subobject satisfying `P`, namely `Subobject.sSup {A | P A}`.
 -/
 
-@[expose] public section
+public section
 
 universe w v u
 

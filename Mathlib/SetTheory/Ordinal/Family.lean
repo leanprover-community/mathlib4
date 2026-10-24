@@ -15,7 +15,7 @@ This file proves basic results about the suprema of families of ordinals.
 Various other basic arithmetic results are given in `Principal.lean` instead.
 -/
 
-@[expose] public noncomputable section
+public noncomputable section
 
 assert_not_exists Field Module
 

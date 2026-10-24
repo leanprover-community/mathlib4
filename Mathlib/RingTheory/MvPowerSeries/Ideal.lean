@@ -23,7 +23,7 @@ import Mathlib.RingTheory.Ideal.BigOperators
 -/
 
 
-@[expose] public section
+public section
 
 namespace MvPowerSeries
 

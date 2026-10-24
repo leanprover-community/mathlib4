@@ -30,7 +30,7 @@ for a stochastic process to have a modification with Hölder continuous paths.
 
 -/
 
-@[expose] public section
+public section
 
 open scoped ENNReal NNReal
 

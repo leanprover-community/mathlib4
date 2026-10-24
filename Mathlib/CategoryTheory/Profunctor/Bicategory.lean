@@ -17,7 +17,7 @@ The bicategory instance is defined on `ProfCat.{u, u}`, with profunctors valued 
 Its operations simplify to the corresponding operations in the `Profunctor` namespace.
 -/
 
-@[expose] public section
+public section
 
 universe w v u
 

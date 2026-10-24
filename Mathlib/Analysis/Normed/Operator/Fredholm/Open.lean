@@ -26,7 +26,7 @@ neighborhood of `T₀`, such that `φ(T₀) = S₀` and `φ(T)` is a quasi-inver
 a neighborhood of `T₀`.
 -/
 
-@[expose] public noncomputable section
+public noncomputable section
 
 open Topology Submodule Module LinearMap
 

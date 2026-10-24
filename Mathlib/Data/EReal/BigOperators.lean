@@ -14,7 +14,7 @@ public import Mathlib.Data.EReal.Inv
 This file contains elementary lemmas about finite sums in `EReal`.
 -/
 
-@[expose] public section
+public section
 
 open scoped BigOperators
 
