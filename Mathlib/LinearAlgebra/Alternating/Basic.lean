@@ -16,6 +16,7 @@ We construct the bundled function `AlternatingMap`, which extends `MultilinearMa
 arguments of the same type.
 
 ## Main definitions
+
 * `AlternatingMap R M N ι` is the space of `R`-linear alternating maps from `ι → M` to `N`.
 * `f.map_eq_zero_of_eq` expresses that `f` is zero when two inputs are equal.
 * `f.map_swap` expresses that `f` is negated when two inputs are swapped.
@@ -24,21 +25,16 @@ arguments of the same type.
   matches the definitions over `MultilinearMap`s.
 * `AlternatingMap.domDomCongr`, for permuting the elements within a family.
 * `MultilinearMap.alternatization`, which makes an alternating map out of a non-alternating one.
-* `AlternatingMap.curryLeft`, for binding the leftmost argument of an alternating map indexed
-  by `Fin n.succ`.
 
 ## Implementation notes
+
 `AlternatingMap` is defined in terms of `map_eq_zero_of_eq`, as this is easier to work with than
 using `map_swap` as a definition, and does not require `Neg N`.
 
-`AlternatingMap`s are provided with a coercion to `MultilinearMap`, along with a set of
-`norm_cast` lemmas that act on the algebraic structure:
-
-* `AlternatingMap.coe_add`
-* `AlternatingMap.coe_zero`
-* `AlternatingMap.coe_sub`
-* `AlternatingMap.coe_neg`
-* `AlternatingMap.coe_smul`
+`AlternatingMap`s are provided with a coercion to `MultilinearMap`.
+There are also `norm_cast` lemmas that act on the algebraic structure, covering
+addition, zero, subtraction, negation and scalar multiplication.
+These are generated from the various `Is*Apply` classes.
 -/
 
 @[expose] public section
