@@ -120,11 +120,9 @@ theorem card (h : n ≠ 0) : Nat.card (GaloisField p n) = p ^ n := by
   rw [Nat.card_eq_fintype_card, Module.card_fintype b, ← Module.finrank_eq_card_basis b,
     ZMod.card, finrank p h]
 
+@[deprecated splits_X_pow_char_sub_X +typeChanged (since := "2026-10-09")]
 theorem splits_zmod_X_pow_sub_X : Splits (X ^ p - X : (ZMod p)[X]) := by
-  have h1 : roots (X ^ p - X : (ZMod p)[X]) = Finset.univ.val := by
-    simpa using FiniteField.roots_X_pow_card_sub_X (ZMod p)
-  rw [splits_iff_card_roots, h1, ← Finset.card_def, Finset.card_univ,
-    natDegree_X_pow_sub_X h_prime.out.one_lt, ZMod.card]
+  exact splits_X_pow_char_sub_X _ p
 
 /-- A Galois field with exponent 1 is equivalent to `ZMod` -/
 def equivZmodP : GaloisField p 1 ≃ₐ[ZMod p] ZMod p :=
