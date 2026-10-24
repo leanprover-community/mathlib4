@@ -6,8 +6,8 @@ on:
   issues:
     types: [closed, reopened]
 
-  # the action works on pull request events as well; `pull_request_target` because
-  # PRs come from forks, whose `pull_request` token is read-only (no PR code is checked out)
+  # `pull_request_target` because PRs come from forks, whose `pull_request` token is read-only
+  # (no PR code is checked out)
   pull_request_target:
     types: [closed, reopened]
 
@@ -21,4 +21,44 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cross off any linked issue and PR references
-        uses: jonabc/sync-task-issues@f1a0d76ebec6142f13e487525859ba25767adbc2 # v1.2.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            // In each issue or PR of this repository that cross-references the closed (reopened)
+            // item, check (uncheck) the task list items that mention the item by `#<number>` or
+            // by URL.
+            const item = context.payload.issue ?? context.payload.pull_request;
+            const { owner, repo } = context.repo;
+            const closed = context.payload.action === 'closed';
+            const oldBox = closed ? String.raw`\[ \]` : String.raw`\[[xX]\]`;
+            const newBox = closed ? '[x]' : '[ ]';
+            // `#12` must not match `#123` or `other/repo#12`, and `.../pull/12` must not match
+            // `.../pull/123`.
+            const url = RegExp.escape(item.html_url);
+            const mention = String.raw`(?:${url}|(?<![\w.-])#${item.number})(?!\d)`;
+            // Group 1 is the indentation and the bullet. The lookahead finds the mention later on
+            // the line.
+            const task = new RegExp(String.raw`^([ \t]*- )${oldBox}(?=[ \t].*${mention})`, 'gm');
+
+            const events = await github.paginate(github.rest.issues.listEventsForTimeline, {
+              owner, repo, issue_number: item.number, per_page: 100,
+            });
+            // The timeline also lists cross-references from other repositories, which the token
+            // cannot edit.
+            const sources = new Map(events
+              .filter(e => e.event === 'cross-referenced')
+              .filter(e => e.source?.issue?.repository?.full_name === `${owner}/${repo}`)
+              .map(e => [e.source.issue.number, e.source.issue.body]));
+            core.info(`found ${sources.size} references in ${owner}/${repo}`);
+
+            for (const [number, timelineBody] of sources) {
+              if (!timelineBody?.match(task)) continue;
+              // Read the body again just before the write, so an edit since the timeline read
+              // survives.
+              const { data: { body } } =
+                await github.rest.issues.get({ owner, repo, issue_number: number });
+              if (!body?.match(task)) continue;
+              core.info(`updating #${number}`);
+              const updated = body.replace(task, `$1${newBox}`);
+              await github.rest.issues.update({ owner, repo, issue_number: number, body: updated });
+            }
