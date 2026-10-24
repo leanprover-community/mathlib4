@@ -5,8 +5,9 @@ Authors: Riccardo Brasca
 -/
 module
 
-import Mathlib.Algebra.Polynomial.Laurent.Roots
 public import Mathlib.NumberTheory.ModularForms.QExpansion
+
+import Mathlib.Algebra.Polynomial.Laurent.Roots
 
 /-!
 # Injectivity of the `q`-expansion on the graded ring of modular forms
@@ -112,9 +113,7 @@ theorem gradedCoe_periodic (hΓ : h ∈ Γ.strictPeriods) (F : ⨁ k, ModularFor
   induction F using DirectSum.induction_on with
   | zero => simp [gradedCoe, Periodic]
   | of k f => simpa using SlashInvariantFormClass.periodic_comp_ofComplex f hΓ
-  | add F G hF hG =>
-      intro z
-      simpa using congrArg₂ (· + ·) (hF z) (hG z)
+  | add F G hF hG => simpa using hF.add hG
 
 theorem gradedCoe_holo (F : ⨁ k, ModularForm Γ k) : MDiff (gradedCoe Γ F) := by
   induction F using DirectSum.induction_on with
@@ -176,11 +175,8 @@ private theorem weightLaurent_eval (z : ℍ) {γ : GL (Fin 2) ℝ} (hγ : γ ∈
   induction F using DirectSum.induction_on with
   | zero => simp
   | of k f =>
-      have hw : weightLaurent Γ z (of _ k f) =
-          LaurentPolynomial.C (f z) * LaurentPolynomial.T k := by simp [weightLaurent]
-      rw [hw, LaurentPolynomial.eval₂_C_mul_T, gradedCoe_of, RingHom.id_apply,
-        Units.val_zpow_eq_zpow_val, val_denomUnit, mul_comm]
-      exact (SlashInvariantForm.slash_action_eqn'' f hγ z).symm
+      simpa [weightLaurent, mul_comm (f z)] using
+        (SlashInvariantForm.slash_action_eqn'' f hγ z).symm
   | add F G hF hG => simpa using congrArg₂ (· + ·) hF hG
 
 private theorem weightLaurent_coeff (z : ℍ) (F : ⨁ k, ModularForm Γ k) (k : ℤ) :
@@ -188,10 +184,8 @@ private theorem weightLaurent_coeff (z : ℍ) (F : ⨁ k, ModularForm Γ k) (k :
   induction F using DirectSum.induction_on with
   | zero => simp
   | of j f =>
-      rcases eq_or_ne j k with rfl | hjk
-      · simp [weightLaurent, ← LaurentPolynomial.single_eq_C_mul_T]
-      · rw [of_eq_of_ne j k f (fun hkj ↦ hjk hkj.symm)]
-        simp [weightLaurent, ← LaurentPolynomial.single_eq_C_mul_T, hjk]
+      rcases eq_or_ne j k with rfl | hjk <;>
+        simp_all [weightLaurent, ← LaurentPolynomial.single_eq_C_mul_T, of_apply]
   | add F G hF hG => simpa using congrArg₂ (· + ·) hF hG
 
 end WeightLaurent
@@ -222,12 +216,9 @@ theorem gradedCoe_injective (hh : h ≠ 0) (hΓ : h ∈ Γ.strictPeriods)
       Set.infinite_of_injective_forall_mem
         (f := fun n : ℕ ↦ denomUnit (γ₀ * upperRightHom (n * h)) z)
         (fun n m hnm ↦ ?_) fun n ↦ ?_
-    · have h0 : (γ₀ 1 0 : ℂ) ≠ 0 := by exact_mod_cast hγ₀inf
-      have hval := congrArg Units.val hnm
-      simp only [val_denomUnit, denom_mul_upperRightHom, add_right_inj, mul_eq_mul_left_iff,
-        h0, or_false] at hval
-      have : (n : ℝ) * h = m * h := by exact_mod_cast hval
-      exact_mod_cast mul_right_cancel₀ hh this
+    · simpa only [val_denomUnit, denom_mul_upperRightHom, add_right_inj,
+        mul_eq_mul_left_iff, Complex.ofReal_eq_zero, hγ₀inf, or_false, Complex.ofReal_inj,
+        mul_eq_mul_right_iff, hh, Nat.cast_inj] using congrArg Units.val hnm
     · simp only [Set.mem_ofPred_eq]
       rw [← LaurentPolynomial.eval₂_eq_smeval, Algebra.algebraMap_self,
         weightLaurent_eval z (hmem n) F, hF, Pi.zero_apply]

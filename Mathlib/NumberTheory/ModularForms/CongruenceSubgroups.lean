@@ -152,17 +152,15 @@ theorem Gamma1_mem (N : ℕ) (A : SL(2, ℤ)) : A ∈ Gamma1 N ↔
     refine ⟨(⟨(⟨A, hA⟩ : Gamma0 N), HA⟩ : (Gamma1' N : Subgroup (Gamma0 N))), ?_⟩
     simp
 
-theorem Gamma1_le_Gamma0 (N : ℕ) : Gamma1 N ≤ Gamma0 N := by
-  intro x HA
-  simp only [Gamma0_mem, Gamma1_mem] at HA ⊢
-  exact HA.2.2
+theorem Gamma1_le_Gamma0 (N : ℕ) : Gamma1 N ≤ Gamma0 N :=
+  fun A hA ↦ Gamma0_mem.mpr ((Gamma1_mem N A).mp hA).2.2
 
 @[deprecated (since := "2026-08-31")] alias Gamma1_in_Gamma0 := Gamma1_le_Gamma0
 
 theorem Gamma_le_Gamma1 (N : ℕ) : Gamma N ≤ Gamma1 N := by
-  intro x HA
-  simp only [Gamma_mem, Gamma1_mem] at HA ⊢
-  tauto
+  intro A hA
+  rcases Gamma_mem.mp hA with ⟨ha, _, hc, hd⟩
+  exact (Gamma1_mem N A).mpr ⟨ha, hd, hc⟩
 
 theorem Gamma_le_Gamma0 (N : ℕ) : Gamma N ≤ Gamma0 N :=
   (Gamma_le_Gamma1 N).trans (Gamma1_le_Gamma0 N)
@@ -182,12 +180,11 @@ theorem isCongruenceSubgroup_trans (H K : Subgroup SL(2, ℤ)) (h : H ≤ K)
 theorem Gamma_is_cong_sub (N : ℕ) [NeZero N] : IsCongruenceSubgroup (Gamma N) :=
   ⟨N, NeZero.ne _, le_rfl⟩
 
-theorem Gamma1_is_congruence (N : ℕ) [NeZero N] : IsCongruenceSubgroup (Gamma1 N) := by
-  refine ⟨N, NeZero.ne _, fun A hA ↦ ?_⟩
-  simp_all [Gamma1_mem, Gamma_mem]
+theorem Gamma1_is_congruence (N : ℕ) [NeZero N] : IsCongruenceSubgroup (Gamma1 N) :=
+  ⟨N, NeZero.ne _, Gamma_le_Gamma1 N⟩
 
 theorem Gamma0_is_congruence (N : ℕ) [NeZero N] : IsCongruenceSubgroup (Gamma0 N) :=
-  isCongruenceSubgroup_trans _ _ (Gamma1_le_Gamma0 N) (Gamma1_is_congruence N)
+  ⟨N, NeZero.ne _, Gamma_le_Gamma0 N⟩
 
 lemma IsCongruenceSubgroup.finiteIndex {Γ : Subgroup SL(2, ℤ)}
     (h : IsCongruenceSubgroup Γ) : Γ.FiniteIndex := by
