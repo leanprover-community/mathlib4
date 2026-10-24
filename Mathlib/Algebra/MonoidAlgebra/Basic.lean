@@ -659,7 +659,7 @@ variable (R M G) in
 /-- An action of `G` on `M` by additive automorphisms induces an action of `G` on `R[M]`
 by `R`-algebra automorphisms, through the exponents. -/
 def comapDomAlgAut : G →* R[M] ≃ₐ[R] R[M] :=
-  (AddMonoidHom.toMultiplicative (domCongrAut R R (M := M))).comp (DistribMulAction.toAddAut G M)
+  (domCongrAut R R (M := M)).comp (DistribMulAction.toAddAut G M)
 
 theorem comapDomAlgAut_apply (g : G) :
     comapDomAlgAut R M G g = domCongr R R (DistribMulAction.toAddEquiv M g) :=
