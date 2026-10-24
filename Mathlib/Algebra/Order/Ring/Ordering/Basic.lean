@@ -34,6 +34,7 @@ variable {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S)
 
 namespace IsPreordering
 
+@[gcongr]
 theorem mono (hP : P.IsPreordering) {Q : Subsemiring R} (hPQ : P ≤ Q) (hQ : -1 ∉ Q) :
     Q.IsPreordering where
 
