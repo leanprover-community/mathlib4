@@ -36,7 +36,7 @@ variable {α : Type u} {β : Type v} {γ : Type w} {ι : Sort x}
 /-- A Galois connection is a pair of functions `l` and `u` satisfying
 `l a ≤ b ↔ a ≤ u b`. They are special cases of adjoint functors in category theory,
 but do not depend on the category theory library in mathlib. -/
-@[to_dual self (reorder := α β, 3 4, l u)]
+@[to_dual self (reorder := α β, 3 4, l u), wikidata Q1491747]
 def GaloisConnection [Preorder α] [Preorder β] (l : α → β) (u : β → α) :=
   ∀ a b, l a ≤ b ↔ a ≤ u b
 
