@@ -288,15 +288,15 @@ theorem inter_ae_eq_empty_of_ae_eq_empty_right (h : t =ᵐ[μ] ∅) :
     s ∩ t =ᵐ[μ] ∅ :=
   (ae_eq_set_inter .rfl h).trans <| by rw [inter_empty]
 
-theorem ae_eq_set_biInter {s : Set β} (hs : s.Countable) {t t' : β → Set α}
-    (h : ∀ b ∈ s, t b =ᵐ[μ] t' b) :
-    ⋂ b ∈ s, t b =ᵐ[μ] ⋂ b ∈ s, t' b :=
-  .countable_bInter hs h
+theorem ae_eq_set_biInter {p : β → Prop} (hp : {b | p b}.Countable) {t t' : β → Set α}
+    (h : ∀ b, p b → t b =ᵐ[μ] t' b) :
+    ⋂ (b) (_ : p b), t b =ᵐ[μ] ⋂ (b) (_ : p b), t' b :=
+  .countable_bInter (S := {b | p b}) hp h
 
-theorem ae_eq_set_biUnion {s : Set β} (hs : s.Countable) {t t' : β → Set α}
-    (h : ∀ b ∈ s, t b =ᵐ[μ] t' b) :
-    ⋃ b ∈ s, t b =ᵐ[μ] ⋃ b ∈ s, t' b :=
-  .countable_bUnion hs h
+theorem ae_eq_set_biUnion {p : β → Prop} (hp : {b | p b}.Countable) {t t' : β → Set α}
+    (h : ∀ b, p b → t b =ᵐ[μ] t' b) :
+    ⋃ (b) (_ : p b), t b =ᵐ[μ] ⋃ (b) (_ : p b), t' b :=
+  .countable_bUnion (S := {b | p b}) hp h
 
 @[to_additive]
 theorem _root_.Set.mulIndicator_ae_eq_one {M : Type*} [One M] {f : α → M} {s : Set α} :

@@ -37,7 +37,7 @@ theorem limsup_lintegral_le {f : ℕ → α → ℝ≥0∞} (g : α → ℝ≥0�
     _ = ∫⁻ a, ⨅ n : ℕ, ⨆ i ≥ n, f i a ∂μ := by
       refine (lintegral_iInf ?_ ?_ ?_).symm
       · intro n
-        exact .biSup {i | i ≥ n} (Set.to_countable _) (fun i _ ↦ hf_meas i)
+        exact .biSup (· ≥ n) (Set.to_countable _) (fun i _ ↦ hf_meas i)
       · intro n m hnm a
         exact iSup_le_iSup_of_subset (s := {i | i ≥ m}) (t := {i | i ≥ n})
           fun i hi => le_trans hnm hi

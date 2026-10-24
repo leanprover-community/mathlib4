@@ -207,7 +207,7 @@ private theorem lintegral_liminf_nat_le' {f : ℕ → α → ℝ≥0∞} (h_meas
     ∫⁻ a, liminf (fun n => f n a) atTop ∂μ = ∫⁻ a, ⨆ n : ℕ, ⨅ i ≥ n, f i a ∂μ := by
       simp only [liminf_eq_iSup_iInf_of_nat]
     _ = ⨆ n : ℕ, ∫⁻ a, ⨅ i ≥ n, f i a ∂μ :=
-      (lintegral_iSup' (fun n => .biInf {i | i ≥ n} (to_countable _) (fun i _ ↦ h_meas i))
+      (lintegral_iSup' (fun n => .biInf (· ≥ n) (to_countable _) (fun i _ ↦ h_meas i))
         (ae_of_all μ fun _ n m hnm => iInf_le_iInf_of_subset (s := {i | i ≥ m})
           (t := {i | i ≥ n}) fun _ hi => le_trans hnm hi))
     _ ≤ ⨆ n : ℕ, ⨅ i ≥ n, ∫⁻ a, f i a ∂μ := iSup_mono fun _ => le_iInf₂_lintegral _

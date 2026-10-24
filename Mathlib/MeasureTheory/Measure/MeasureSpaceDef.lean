@@ -223,12 +223,11 @@ theorem exists_measurable_superset_iff_measure_eq_zero :
     (∃ t, s ⊆ t ∧ MeasurableSet t ∧ μ t = 0) ↔ μ s = 0 :=
   ⟨fun ⟨_t, hst, _, ht⟩ => measure_mono_null hst ht, exists_measurable_superset_of_null⟩
 
-theorem measure_biUnion_lt_top {s : Set β} {f : β → Set α} (hs : s.Finite)
-    (hfin : ∀ i ∈ s, μ (f i) < ∞) : μ (⋃ i ∈ s, f i) < ∞ := by
-  convert (measure_biUnion_finset_le (μ := μ) hs.toFinset f).trans_lt _ using 3
-  · ext
-    rw [Finite.mem_toFinset]
-  · simpa only [ENNReal.sum_lt_top, Finite.mem_toFinset]
+theorem measure_biUnion_lt_top {p : β → Prop} {f : β → Set α} (hp : {i | p i}.Finite)
+    (hfin : ∀ i, p i → μ (f i) < ∞) : μ (⋃ (i) (_ : p i), f i) < ∞ := by
+  convert (measure_biUnion_finset_le (μ := μ) hp.toFinset f).trans_lt _ using 3
+  · simp
+  · simpa only [ENNReal.sum_lt_top, Finite.mem_toFinset, mem_ofPred]
 
 @[aesop (rule_sets := [finiteness]) safe apply]
 theorem measure_biUnion_ne_top {s : Set β} {f : β → Set α} (hs : s.Finite)

@@ -367,13 +367,14 @@ protected theorem min_const [LinearOrder ι] {f : Filtration ι m} {τ : Ω → 
 
 protected lemma biInf [ConditionallyCompleteLinearOrderBot ι] [TopologicalSpace ι]
     [OrderTopology ι] [DenselyOrdered ι] [FirstCountableTopology ι] [NoMaxOrder ι]
-    {κ : Type*} {f : Filtration ι m} {τ : κ → Ω → WithTop ι} {s : Set κ} (hs : s.Countable)
-    [f.IsRightContinuous] (hτ : ∀ n ∈ s, IsStoppingTime f (τ n)) :
-    IsStoppingTime f (fun ω ↦ ⨅ n ∈ s, τ n ω) := by
+    {κ : Type*} {f : Filtration ι m} {τ : κ → Ω → WithTop ι} {p : κ → Prop}
+    (hp : {n | p n}.Countable) [f.IsRightContinuous]
+    (hτ : ∀ n, p n → IsStoppingTime f (τ n)) :
+    IsStoppingTime f (fun ω ↦ ⨅ (n) (_ : p n), τ n ω) := by
   refine isStoppingTime_of_measurableSet_lt_of_isRightContinuous <|
     fun i ↦ MeasurableSet.of_compl ?_
-  rw [(_ : {ω | ⨅ n ∈ s, τ n ω < i}ᶜ = ⋂ n ∈ s, {ω | i ≤ τ n ω})]
-  · exact MeasurableSet.biInter hs <| fun n hn ↦ (hτ n hn).measurableSet_ge i
+  rw [(_ : {ω | ⨅ (n) (_ : p n), τ n ω < i}ᶜ = ⋂ (n) (_ : p n), {ω | i ≤ τ n ω})]
+  · exact MeasurableSet.biInter hp <| fun n hn ↦ (hτ n hn).measurableSet_ge i
   · ext ω
     simp
 

@@ -958,40 +958,42 @@ protected theorem Measurable.sInf {ι} {f : ι → δ → α} {s : Set ι} (hs :
     Measurable fun x => sInf ((fun i => f i x) '' s) :=
   .sSup (α := αᵒᵈ) hs hf
 
-theorem Measurable.biSup {ι} (s : Set ι) {f : ι → δ → α} (hs : s.Countable)
-    (hf : ∀ i ∈ s, Measurable (f i)) : Measurable fun b => ⨆ i ∈ s, f i b := by
-  have : Encodable s := hs.toEncodable
-  by_cases H : ∀ i, i ∈ s
-  · have : ∀ b, ⨆ i ∈ s, f i b = ⨆ (i : s), f i b :=
+theorem Measurable.biSup {ι} (p : ι → Prop) {f : ι → δ → α} (hp : {i | p i}.Countable)
+    (hf : ∀ i, p i → Measurable (f i)) : Measurable fun b => ⨆ (i) (_ : p i), f i b := by
+  have : Encodable {i // p i} := hp.toEncodable
+  by_cases H : ∀ i, p i
+  · have : ∀ b, ⨆ (i) (_ : p i), f i b = ⨆ (i : {i // p i}), f i b :=
       fun b ↦ cbiSup_eq_of_forall (f := fun i ↦ f i b) H
     simp only [this]
-    exact .iSup (fun (i : s) ↦ hf i i.2)
-  · have : ∀ b, ⨆ i ∈ s, f i b = (⨆ (i : s), f i b) ⊔ sSup ∅ :=
+    exact .iSup (fun (i : {i // p i}) ↦ hf i i.2)
+  · have : ∀ b, ⨆ (i) (_ : p i), f i b = (⨆ (i : {i // p i}), f i b) ⊔ sSup ∅ :=
       fun b ↦ cbiSup_eq_of_not_forall (f := fun i ↦ f i b) H
     simp only [this]
     apply Measurable.sup _ measurable_const
-    exact .iSup (fun (i : s) ↦ hf i i.2)
+    exact .iSup (fun (i : {i // p i}) ↦ hf i i.2)
 
-theorem AEMeasurable.biSup {ι} {μ : Measure δ} (s : Set ι) {f : ι → δ → α} (hs : s.Countable)
-    (hf : ∀ i ∈ s, AEMeasurable (f i) μ) : AEMeasurable (fun b => ⨆ i ∈ s, f i b) μ := by
+theorem AEMeasurable.biSup {ι} {μ : Measure δ} (p : ι → Prop) {f : ι → δ → α}
+    (hp : {i | p i}.Countable) (hf : ∀ i, p i → AEMeasurable (f i) μ) :
+    AEMeasurable (fun b => ⨆ (i) (_ : p i), f i b) μ := by
   classical
-  let g : ι → δ → α := fun i ↦ if hi : i ∈ s then (hf i hi).mk (f i) else fun _b ↦ sSup ∅
-  have : ∀ i ∈ s, Measurable (g i) := by
+  let g : ι → δ → α := fun i ↦ if hi : p i then (hf i hi).mk (f i) else fun _b ↦ sSup ∅
+  have : ∀ i, p i → Measurable (g i) := by
     intro i hi
     simpa [g, hi] using! (hf i hi).measurable_mk
-  refine ⟨fun b ↦ ⨆ (i) (_ : i ∈ s), g i b, .biSup s hs this, ?_⟩
-  have : ∀ i ∈ s, ∀ᵐ b ∂μ, f i b = g i b :=
+  refine ⟨fun b ↦ ⨆ (i) (_ : p i), g i b, .biSup p hp this, ?_⟩
+  have : ∀ i, p i → ∀ᵐ b ∂μ, f i b = g i b :=
     fun i hi ↦ by simpa [g, hi] using! (hf i hi).ae_eq_mk
-  filter_upwards [(ae_ball_iff hs).2 this] with b hb
+  filter_upwards [(ae_ball_iff hp).2 this] with b hb
   exact iSup_congr fun i => iSup_congr (hb i)
 
-theorem Measurable.biInf {ι} (s : Set ι) {f : ι → δ → α} (hs : s.Countable)
-    (hf : ∀ i ∈ s, Measurable (f i)) : Measurable fun b => ⨅ i ∈ s, f i b :=
-  .biSup (α := αᵒᵈ) s hs hf
+theorem Measurable.biInf {ι} (p : ι → Prop) {f : ι → δ → α} (hp : {i | p i}.Countable)
+    (hf : ∀ i, p i → Measurable (f i)) : Measurable fun b => ⨅ (i) (_ : p i), f i b :=
+  .biSup (α := αᵒᵈ) p hp hf
 
-theorem AEMeasurable.biInf {ι} {μ : Measure δ} (s : Set ι) {f : ι → δ → α} (hs : s.Countable)
-    (hf : ∀ i ∈ s, AEMeasurable (f i) μ) : AEMeasurable (fun b => ⨅ i ∈ s, f i b) μ :=
-  .biSup (α := αᵒᵈ) s hs hf
+theorem AEMeasurable.biInf {ι} {μ : Measure δ} (p : ι → Prop) {f : ι → δ → α}
+    (hp : {i | p i}.Countable) (hf : ∀ i, p i → AEMeasurable (f i) μ) :
+    AEMeasurable (fun b => ⨅ (i) (_ : p i), f i b) μ :=
+  .biSup (α := αᵒᵈ) p hp hf
 
 /-- `liminf` over a general filter is measurable. See `Measurable.liminf` for the version over `ℕ`.
 -/
