@@ -328,6 +328,10 @@ theorem LiesOver.trans (v : AbsoluteValue K S) (u : AbsoluteValue M S) (w : Abso
     [w.LiesOver u] [u.LiesOver v] : w.LiesOver v := by
   rwa [← under_liesOver_iff M, ← over_def w u]
 
+instance (v : AbsoluteValue M S) (w : AbsoluteValue L S) [w.LiesOver v] :
+    w.LiesOver (v.under K) :=
+  LiesOver.trans (v.under K) v w
+
 end tower
 
 end AbsoluteValue
