@@ -5,9 +5,9 @@ Authors: Jeremy Chen
 -/
 module
 
+public import Mathlib.CategoryTheory.Skeletal
 public import Mathlib.Order.Category.PartOrd.Reflective
 public import Mathlib.Order.Category.Preord.CartesianClosed
-public import Mathlib.CategoryTheory.Skeletal
 
 /-!
 # Cartesian closed structure on `PartOrd`

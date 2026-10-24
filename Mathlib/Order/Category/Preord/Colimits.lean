@@ -5,8 +5,8 @@ Authors: Jeremy Chen
 -/
 module
 
-public import Mathlib.Order.Category.Preord.Reflective
 public import Mathlib.CategoryTheory.Category.Cat.Colimit
+public import Mathlib.Order.Category.Preord.Reflective
 
 /-!
 # Colimits in `Preord`

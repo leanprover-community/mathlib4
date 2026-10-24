@@ -5,8 +5,8 @@ Authors: Jeremy Chen
 -/
 module
 
-public import Mathlib.Order.Category.PartOrd
 public import Mathlib.CategoryTheory.Adjunction.Reflective
+public import Mathlib.Order.Category.PartOrd
 
 /-!
 # Partial orders as a reflective subcategory of preorders

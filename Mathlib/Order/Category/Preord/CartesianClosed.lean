@@ -5,9 +5,9 @@ Authors: Jeremy Chen
 -/
 module
 
-public import Mathlib.Order.Category.Preord.Reflective
 public import Mathlib.CategoryTheory.Category.Cat.CartesianClosed
 public import Mathlib.CategoryTheory.Monoidal.Closed.Ideal
+public import Mathlib.Order.Category.Preord.Reflective
 
 /-!
 # Cartesian closed structure on `Preord`
