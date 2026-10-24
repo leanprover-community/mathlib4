@@ -8,8 +8,7 @@ module
 public meta import Mathlib.Tactic.Inclusion.Core.Elab
 public meta import Mathlib.Tactic.Inclusion.Extension.Core.Core
 public meta import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Hypotheses
-
-import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Rational
+public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Exponential
 
 /-!
 # The `dyadic_interval` tactic
