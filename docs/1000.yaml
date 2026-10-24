@@ -2360,7 +2360,7 @@ Q3180727:
 
 Q3229335:
   title: Borel–Carathéodory theorem
-  decl: Complex.borelCaratheodory
+  decl: Complex.BorelCaratheodory.norm_le_of_re_le
   authors: Maksym Radziwill
   date: 2025
 
