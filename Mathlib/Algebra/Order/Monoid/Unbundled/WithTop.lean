@@ -156,7 +156,7 @@ instance addLeftMono [LE α] [AddLeftMono α] : AddLeftMono (WithTop α) where
 
 instance addRightMono [LE α] [AddRightMono α] : AddRightMono (WithTop α) where
   elim x y z := by
-    cases x <;> cases y <;> cases z <;> simp [← coe_add, swap]; simpa using fun _ ↦ by gcongr
+    cases x <;> cases y <;> cases z <;> simp [← coe_add, dflip]; simpa using fun _ ↦ by gcongr
 
 instance addLeftReflectLT [LT α] [AddLeftReflectLT α] : AddLeftReflectLT (WithTop α) where
   elim x y z := by
@@ -164,7 +164,7 @@ instance addLeftReflectLT [LT α] [AddLeftReflectLT α] : AddLeftReflectLT (With
 
 instance addRightReflectLT [LT α] [AddRightReflectLT α] : AddRightReflectLT (WithTop α) where
   elim x y z := by
-    cases x <;> cases y <;> cases z <;> simp [← coe_add, swap]; simpa using lt_of_add_lt_add_right
+    cases x <;> cases y <;> cases z <;> simp [← coe_add, dflip]; simpa using lt_of_add_lt_add_right
 
 protected lemma le_of_add_le_add_left [LE α] [AddLeftReflectLE α] (hx : x ≠ ⊤) :
     x + y ≤ x + z → y ≤ z := by
@@ -517,7 +517,7 @@ instance addLeftMono [LE α] [AddLeftMono α] : AddLeftMono (WithBot α) where
 
 instance addRightMono [LE α] [AddRightMono α] : AddRightMono (WithBot α) where
   elim x y z := by
-    cases x <;> cases y <;> cases z <;> simp [← coe_add, swap]; simpa using fun _ ↦ by gcongr
+    cases x <;> cases y <;> cases z <;> simp [← coe_add, dflip]; simpa using fun _ ↦ by gcongr
 
 instance addLeftReflectLT [LT α] [AddLeftReflectLT α] : AddLeftReflectLT (WithBot α) where
   elim x y z := by
@@ -525,7 +525,7 @@ instance addLeftReflectLT [LT α] [AddLeftReflectLT α] : AddLeftReflectLT (With
 
 instance addRightReflectLT [LT α] [AddRightReflectLT α] : AddRightReflectLT (WithBot α) where
   elim x y z := by
-    cases x <;> cases y <;> cases z <;> simp [← coe_add, swap]; simpa using lt_of_add_lt_add_right
+    cases x <;> cases y <;> cases z <;> simp [← coe_add, dflip]; simpa using lt_of_add_lt_add_right
 
 protected lemma le_of_add_le_add_left [LE α] [AddLeftReflectLE α] (hx : x ≠ ⊥) :
     x + y ≤ x + z → y ≤ z := by

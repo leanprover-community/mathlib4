@@ -541,7 +541,7 @@ variable (α) in
 @[to_dual existing]
 lemma exists_wellFoundedGT : ∃ (_ : LinearOrder α), WellFoundedGT α := by
   classical
-  exact ⟨linearOrderOfSTO (Function.swap WellOrderingRel), WellOrderingRel.isWellOrder.wf⟩
+  exact ⟨linearOrderOfSTO (Function.dflip WellOrderingRel), WellOrderingRel.isWellOrder.wf⟩
 
 namespace Cardinal
 

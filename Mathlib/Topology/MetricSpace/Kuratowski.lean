@@ -138,14 +138,14 @@ theorem LipschitzOnWith.extend_lp_infty [PseudoMetricSpace α] {s : Set α} {ι 
   rcases s.eq_empty_or_nonempty with rfl | ⟨a₀, ha₀_in_s⟩
   · exact ⟨0, LipschitzWith.const' 0, by simp⟩
   · -- Show that the extensions are uniformly bounded
-    have hf_extb : ∀ a : α, Memℓp (swap g a) ∞ := by
-      apply LipschitzWith.uniformly_bounded (swap g) hgl a₀
+    have hf_extb : ∀ a : α, Memℓp (dflip g a) ∞ := by
+      apply LipschitzWith.uniformly_bounded (dflip g) hgl a₀
       use ‖f a₀‖
       rintro - ⟨i, rfl⟩
       simp_rw [← hgeq i ha₀_in_s]
       exact lp.norm_apply_le_norm top_ne_zero (f a₀) i
     -- Construct witness by bundling the function with its certificate of membership in ℓ^∞
-    let f_ext' : α → ℓ^∞(ι, ℝ) := fun i ↦ ⟨swap g i, hf_extb i⟩
+    let f_ext' : α → ℓ^∞(ι, ℝ) := fun i ↦ ⟨dflip g i, hf_extb i⟩
     refine ⟨f_ext', ?_, ?_⟩
     · rw [LipschitzWith.coordinate]
       exact hgl
