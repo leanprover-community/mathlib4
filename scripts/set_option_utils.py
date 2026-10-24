@@ -34,18 +34,18 @@ def set_option_line(option: str, value: str = "false") -> str:
     return f"set_option {option} {value} in\n"
 
 
-def removable_pattern(option: str, value: str = "false") -> re.Pattern:
-    """Match bare `set_option X <value> in` lines (no trailing comment)."""
+def removable_pattern(option: str) -> re.Pattern:
+    """Match bare `set_option X <value> in` lines (no trailing comment).
+    |value| can be a boolean (true or false), number or string (not containing `"`)."""
     escaped = re.escape(option)
-    escaped_val = re.escape(value)
-    return re.compile(rf"^\s*set_option {escaped} {escaped_val} in\s*$")
+    return re.compile(rf'^\s*set_option {escaped} (true|false|\d+|"[^"]*") in\s*$')
 
 
-def commented_pattern(option: str, value: str = "false") -> re.Pattern:
-    """Match `set_option X <value> in -- ...` lines."""
+def commented_pattern(option: str) -> re.Pattern:
+    """Match `set_option X <value> in -- ...` lines.
+    |value| can be a boolean (true or false), number or string (not containing `"`)."""
     escaped = re.escape(option)
-    escaped_val = re.escape(value)
-    return re.compile(rf"^\s*set_option {escaped} {escaped_val} in\s+--")
+    return re.compile(rf'^\s*set_option {escaped} (true|false|\d+|"[^"]*") in\s+--')
 
 
 def is_annotated(lines: list[str], idx: int) -> bool:
@@ -62,12 +62,11 @@ def is_annotated(lines: list[str], idx: int) -> bool:
     return False
 
 
-def lakefile_pattern(option: str, value: str = "false") -> re.Pattern:
+def lakefile_pattern(option: str) -> re.Pattern:
     """Match lakefile entries for an option."""
     escaped = re.escape(option)
-    escaped_val = re.escape(value)
     return re.compile(
-        rf"^\s*⟨`{escaped},\s*{escaped_val}⟩,?\s*\n",
+        rf'^\s*⟨\s*`{escaped}\s*,\s*(true|false|\.ofNat\s+\d+|"[^"]*")\s*⟩\s*,?\s*\n',
         re.MULTILINE,
     )
 
