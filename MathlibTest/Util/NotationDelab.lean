@@ -1,6 +1,6 @@
 module
 
-public import Mathlib.Util.Notation3
+public import Mathlib.Util.NotationDelab
 public import Mathlib.Data.Nat.Basic
 
 set_option linter.style.setOption false
