@@ -70,11 +70,11 @@ namespace IsPreordering
 
 @[simp, membership =>]
 protected theorem mul_self_mem {S : Subsemiring R} (hS : IsPreordering S) (x : R) :
-    x * x ∈ S := by grind [mem_of_isSquare]
+    x * x ∈ S := by grind [mem_of_isSquare, IsSquare.mul_self]
 
 @[simp, membership =>]
 protected theorem pow_two_mem {S : Subsemiring R} (hS : IsPreordering S) (x : R) :
-    x ^ 2 ∈ S := by grind [mem_of_isSquare]
+    x ^ 2 ∈ S := by grind [mem_of_isSquare, Even.isSquare_pow]
 
 protected theorem mem_of_isSumSq {S : Subsemiring R} (hS : IsPreordering S)
     {x : R} (hx : IsSumSq x) : x ∈ S := by

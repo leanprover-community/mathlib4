@@ -76,7 +76,7 @@ namespace Nat
 
 variable [AddMonoidWithOne R]
 
-@[simp, norm_cast, grind =]
+@[simp, norm_cast]
 theorem cast_zero : ((0 : ℕ) : R) = 0 :=
   AddMonoidWithOne.natCast_zero
 
@@ -92,11 +92,11 @@ theorem cast_ite (P : Prop) [Decidable P] (m n : ℕ) :
     ((ite P m n : ℕ) : R) = ite P (m : R) (n : R) := by
   split_ifs <;> rfl
 
-@[simp, norm_cast, grind =]
+@[simp, norm_cast]
 theorem cast_one : ((1 : ℕ) : R) = 1 := by
   rw [cast_succ, Nat.cast_zero, zero_add]
 
-@[simp, norm_cast, grind =]
+@[simp, norm_cast]
 theorem cast_add (m n : ℕ) : ((m + n : ℕ) : R) = m + n := by
   induction n with
   | zero => simp

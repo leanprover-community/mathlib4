@@ -82,7 +82,7 @@ theorem IsPreordering.of_isSpanning_of_isPointed [Nontrivial R]
 
 theorem IsPreordering.of_isPointed_of_sumSq_le [Nontrivial R]
     (hP : P.IsPointed) (h : .sumSq R ≤ P) : P.IsPreordering where
-  mem_of_isSquare hx := by grind [membership, mem_sumSq]
+  mem_of_isSquare hx := by grind [membership, mem_sumSq, IsSquare.isSumSq]
   neg_one_notMem := by grind [membership, Subsemiring.isPointed_def, one_ne_zero]
 
 theorem IsOrdering.of_isSpanning_of_isPointed [IsDomain R]
