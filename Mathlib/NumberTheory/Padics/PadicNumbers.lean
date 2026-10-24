@@ -1189,7 +1189,7 @@ noncomputable def mulValuation : Valuation ℚ_[p] ℤᵐ⁰ where
   map_mul' _ _ := by split_ifs <;> simp_all [add_comm]
   map_add_le_max' _ _ := by
     split_ifs
-    any_goals simp_all
+    all_goals simp_all
     simpa using le_valuation_add ‹_›
 
 lemma comap_mulValuation_eq_padicValuation :

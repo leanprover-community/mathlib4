@@ -319,7 +319,7 @@ lemma even_card_of_isPerfectMatching [Fintype V] [DecidableEq V] [DecidableRel G
 
 lemma odd_matches_node_outside [Finite V] {u : Set V}
     (hM : M.IsPerfectMatching) (c : (Subgraph.deleteVerts ⊤ u).coe.oddComponents) :
-    ∃ᵉ (w ∈ u) (v : ((⊤ : G.Subgraph).deleteVerts u).verts), M.Adj v w ∧ v ∈ c.val.supp := by
+    ∃ w ∈ u, ∃ v : ((⊤ : G.Subgraph).deleteVerts u).verts, M.Adj v w ∧ v ∈ c.val.supp := by
   by_contra! h
   have hMmatch : (M.induce c.val.supp).IsMatching := by
     intro v hv

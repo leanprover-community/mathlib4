@@ -140,20 +140,27 @@ noncomputable
 def elem : S ⊗[R] S :=
   (iff_exists_tensorProduct.mp inferInstance).choose
 
-lemma one_tmul_sub_tmul_one_mul_elem
-    (s : S) : (1 ⊗ₜ s - s ⊗ₜ 1) * elem R S = 0 :=
+lemma one_tmul_sub_tmul_one_mul_elem (s : S) : (1 ⊗ₜ s - s ⊗ₜ 1) * elem R S = 0 :=
   (iff_exists_tensorProduct.mp inferInstance).choose_spec.1 s
 
-lemma one_tmul_mul_elem
-    (s : S) : (1 ⊗ₜ s) * elem R S = (s ⊗ₜ 1) * elem R S := by
+lemma one_tmul_mul_elem (s : S) : (1 ⊗ₜ s) * elem R S = (s ⊗ₜ 1) * elem R S := by
   rw [← sub_eq_zero, ← sub_mul, one_tmul_sub_tmul_one_mul_elem]
 
-lemma lmul_elem :
-    TensorProduct.lmul' R (elem R S) = 1 :=
+lemma lmul_elem : TensorProduct.lmul' R (elem R S) = 1 :=
   (iff_exists_tensorProduct.mp inferInstance).choose_spec.2
 
-
 variable (R S)
+
+lemma isIdempotentElem_elem : IsIdempotentElem (elem R S) := by
+  suffices h : ∀ t, t * elem R S = TensorProduct.lmul' R t ⊗ₜ[R] 1 * elem R S by
+    simpa [IsIdempotentElem, lmul_elem, ← Algebra.TensorProduct.one_def] using h (elem R S)
+  intro t
+  induction t using TensorProduct.inductionOn with
+  | tmul a b =>
+    calc a ⊗ₜ[R] b * elem R S = (a ⊗ₜ[R] 1) * (1 ⊗ₜ[R] b) * elem R S := by simp
+       _ = (a ⊗ₜ[R] 1) * (b ⊗ₜ[R] 1) * elem R S := by simp_rw [mul_assoc, one_tmul_mul_elem]
+       _ = TensorProduct.lmul' R (a ⊗ₜ[R] b) ⊗ₜ[R] 1 * elem R S := by simp
+  | add t₁ t₂ h₁ h₂ => rw [map_add, TensorProduct.add_tmul, add_mul, add_mul, h₁, h₂]
 
 /-- An unramified free algebra is finitely generated. Iversen I.2.8 -/
 lemma finite_of_free [Module.Free R S] : Module.Finite R S := by

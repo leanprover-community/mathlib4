@@ -376,12 +376,6 @@ theorem finprod_eq_finsetProd_of_mulSupport_subset (f : α → M) {s : Finset α
     simpa [← Finset.coe_subset, Set.coe_toFinset]
   finprod_eq_prod_of_mulSupport_toFinset_subset _ _ h'
 
-@[deprecated (since := "2026-04-08")]
-alias finsum_eq_finset_sum_of_support_subset := finsum_eq_finsetSum_of_support_subset
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias finprod_eq_finset_prod_of_mulSupport_subset := finprod_eq_finsetProd_of_mulSupport_subset
-
 @[to_additive]
 theorem finprod_def (f : α → M) [Decidable (HasFiniteMulSupport f)] :
     ∏ᶠ i : α, f i = if h : HasFiniteMulSupport f then ∏ i ∈ h.toFinset, f i else 1 := by
@@ -445,11 +439,6 @@ theorem finprod_apply_ne_zero {ι : Type*} {N₀ M₀ : Type*} [CommMonoidWithZe
 theorem map_finsetProd {α F : Type*} [Fintype α] [EquivLike F M N] [MulEquivClass F M N] (f : F)
     (g : α → M) : f (∏ i : α, g i) = ∏ i : α, f (g i) := by
   simp [← finprod_eq_prod_of_fintype, MulEquivClass.map_finprod]
-
-@[deprecated (since := "2026-04-08")] alias map_finset_sum := map_finsetSum
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias map_finset_prod := map_finsetProd
 
 @[to_additive]
 theorem finprod_cond_eq_prod_of_cond_iff (f : α → M) {p : α → Prop} {t : Finset α}

@@ -156,4 +156,11 @@ theorem eq_sum_support_coeff_smul_of (a : FreeAbelianGroup X) :
   conv_lhs => rw [← toFreeAbelianGroup_toFinsupp a, ← sum_single a.toFinsupp]
   simp [sum, support, coeff]
 
+@[simp] lemma coeff_of_self (x : X) : coeff x (of x) = 1 := by simp [coeff]
+
+@[simp] lemma coeff_of_of_ne {x y : X} (h : x ≠ y) : coeff x (of y) = 0 := by simp [coeff, h]
+
+lemma coeff_of (x y : X) [Decidable (x = y)] : coeff x (of y) = if x = y then 1 else 0 := by
+  aesop
+
 end FreeAbelianGroup

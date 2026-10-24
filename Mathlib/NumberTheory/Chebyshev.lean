@@ -207,6 +207,7 @@ Basic facts about the least common multiple of the first `n` natural numbers
 -/
 
 /-- Least common multiple of `Icc 1 n`. -/
+@[oeis A003418]
 def lcmUpto (n : ℕ) : ℕ := (Icc 1 n).lcm id
 
 theorem lcmUpto_ne_zero (n : ℕ) : lcmUpto n ≠ 0 := by simp [lcmUpto]

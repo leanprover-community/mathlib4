@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveSheaves
 
 import Mathlib.CategoryTheory.Preadditive.Biproducts
 import Mathlib.CategoryTheory.Sites.Limits
+
 /-!
 
 # Colimits in categories of extensive sheaves

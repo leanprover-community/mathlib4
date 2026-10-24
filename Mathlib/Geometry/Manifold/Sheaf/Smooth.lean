@@ -167,9 +167,6 @@ def ContMDiff.smoothSheafHom (f : M → P) (hf : ContMDiff IM IP ∞ f) :
     rw [← ContMDiff.subtypeVal_comp_iff]
     exact hf.comp contMDiff_subtype_val⟩
 
-@[deprecated (since := "2026-04-06")] alias ContMDiff.smoothSheafHom_hom_app_coe :=
-  ContMDiff.smoothSheafHom_hom_app_hom
-
 end TypeCat
 
 section LieGroup

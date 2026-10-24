@@ -62,14 +62,10 @@ theorem coe_finsetSum {α} [∀ i, AddCommMonoid (β i)] (s : Finset α) (g : α
     ⇑(∑ a ∈ s, g a) = ∑ a ∈ s, ⇑(g a) :=
   map_sum coeFnAddMonoidHom g s
 
-@[deprecated (since := "2026-04-08")] alias coe_finset_sum := coe_finsetSum
-
 @[simp]
 theorem finsetSum_apply {α} [∀ i, AddCommMonoid (β i)] (s : Finset α) (g : α → Π₀ i, β i) (i : ι) :
     (∑ a ∈ s, g a) i = ∑ a ∈ s, g a i :=
   map_sum (evalAddMonoidHom i) g s
-
-@[deprecated (since := "2026-04-08")] alias finset_sum_apply := finsetSum_apply
 
 end Algebra
 
@@ -439,11 +435,6 @@ theorem prod_finsetSum_index {γ : Type w} {α : Type x} [∀ i, AddCommMonoid (
   classical
   exact Finset.induction_on s (by simp [prod_zero_index])
         (by simp +contextual [prod_add_index, h_zero, h_add])
-
-@[deprecated (since := "2026-04-08")] alias sum_finset_sum_index := sum_finsetSum_index
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias prod_finset_sum_index := prod_finsetSum_index
 
 @[to_additive]
 theorem prod_sum_index {ι₁ : Type u₁} [DecidableEq ι₁] {β₁ : ι₁ → Type v₁} [∀ i₁, Zero (β₁ i₁)]

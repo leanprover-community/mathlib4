@@ -132,8 +132,6 @@ theorem eval₂_finsetSum (s : Finset ι) (g : ι → R[X]) (x : S) :
     (∑ i ∈ s, g i).eval₂ f x = ∑ i ∈ s, (g i).eval₂ f x :=
   map_sum (eval₂AddMonoidHom f x) _ _
 
-@[deprecated (since := "2026-04-08")] alias eval₂_finset_sum := eval₂_finsetSum
-
 theorem eval₂_ofFinsupp {f : R →+* S} {x : S} {p : R[ℕ]} :
     eval₂ f x (⟨p⟩ : R[X]) = liftNC (↑f) (powersHom S x) p := by
   simp only [eval₂_eq_sum, sum, support, coeff]
@@ -347,8 +345,6 @@ theorem eval_sum (p : R[X]) (f : ℕ → R → R[X]) (x : R) :
 theorem eval_finsetSum (s : Finset ι) (g : ι → R[X]) (x : R) :
     (∑ i ∈ s, g i).eval x = ∑ i ∈ s, (g i).eval x :=
   eval₂_finsetSum _ _ _ _
-
-@[deprecated (since := "2026-04-08")] alias eval_finset_sum := eval_finsetSum
 
 /-- `IsRoot p x` implies `x` is a root of `p`. The evaluation of `p` at `x` is zero -/
 def IsRoot (p : R[X]) (a : R) : Prop :=
@@ -656,8 +652,6 @@ theorem eval₂_multiset_prod (s : Multiset R[X]) (x : S) :
 theorem eval₂_finsetProd (s : Finset ι) (g : ι → R[X]) (x : S) :
     (∏ i ∈ s, g i).eval₂ f x = ∏ i ∈ s, (g i).eval₂ f x :=
   map_prod (eval₂RingHom f x) _ _
-
-@[deprecated (since := "2026-04-08")] alias eval₂_finset_prod := eval₂_finsetProd
 
 /-- Polynomial evaluation commutes with `List.prod`
 -/

@@ -5,8 +5,8 @@ Authors: Salvatore Mercuri, María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.NumberTheory.NumberField.InfiniteAdeleRing
 public import Mathlib.NumberTheory.NumberField.FiniteAdeleRing
+public import Mathlib.NumberTheory.NumberField.InfiniteAdeleRing
 
 /-!
 # The adele ring of a number field

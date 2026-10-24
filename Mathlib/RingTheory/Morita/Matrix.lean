@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.Module
 public import Mathlib.RingTheory.Morita.Basic
+
 /-!
 # Morita Equivalence between `R` and `Mₙ(R)`
 

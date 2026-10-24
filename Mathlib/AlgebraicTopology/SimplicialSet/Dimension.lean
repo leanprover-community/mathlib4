@@ -45,11 +45,6 @@ lemma degenerate_eq_univ_of_hasDimensionLT (hn : d ≤ n := by lia) : X.degenera
 lemma nonDegenerate_eq_empty_of_hasDimensionLT (hn : d ≤ n := by lia) : X.nonDegenerate n = ∅ := by
   simp [nonDegenerate, X.degenerate_eq_univ_of_hasDimensionLT d n hn]
 
-@[deprecated (since := "2026-04-06")]
-alias degenerate_eq_top_of_hasDimensionLT := degenerate_eq_univ_of_hasDimensionLT
-@[deprecated (since := "2026-04-06")]
-alias nonDegenerate_eq_bot_of_hasDimensionLT := nonDegenerate_eq_empty_of_hasDimensionLT
-
 lemma dim_lt_of_nonDegenerate {n : ℕ} (x : X.nonDegenerate n) (d : ℕ)
     [X.HasDimensionLT d] : n < d := by
   by_contra!

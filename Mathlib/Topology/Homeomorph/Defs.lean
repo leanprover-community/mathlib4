@@ -497,35 +497,43 @@ class HomeomorphClass (F : Type*) (A B : outParam Type*)
   map_continuous : ∀ (f : F), Continuous f
   inv_continuous : ∀ (f : F), Continuous (h.inv f)
 
-namespace HomeomorphClass
+namespace Homeomorph
 
 variable {F α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [EquivLike F α β]
 
 /-- Turn an element of a type `F` satisfying `HomeomorphClass F α β` into an actual
 `Homeomorph`. This is declared as the default coercion from `F` to `α ≃ₜ β`. -/
 @[coe]
-def toHomeomorph [h : HomeomorphClass F α β] (f : F) : α ≃ₜ β :=
+def ofClass [h : HomeomorphClass F α β] (f : F) : α ≃ₜ β :=
   { (f : α ≃ β) with
     continuous_toFun := h.map_continuous f
     continuous_invFun := h.inv_continuous f }
 
+@[deprecated (since := "2026-10-15")] alias _root_.HomeomorphClass.toHomeomorph := ofClass
+
 @[simp]
-theorem coe_coe [h : HomeomorphClass F α β] (f : F) : ⇑(h.toHomeomorph f) = ⇑f := rfl
+protected theorem coe_ofClass [h : HomeomorphClass F α β] (f : F) : ⇑(Homeomorph.ofClass f) = ⇑f :=
+  rfl
 
-instance [HomeomorphClass F α β] : CoeOut F (α ≃ₜ β) :=
-  ⟨HomeomorphClass.toHomeomorph⟩
+@[deprecated (since := "2026-10-15")]
+protected alias _root_.HomeomorphClass.coe_coe := Homeomorph.coe_ofClass
 
-theorem toHomeomorph_injective [HomeomorphClass F α β] : Function.Injective ((↑) : F → α ≃ₜ β) :=
+instance [HomeomorphClass F α β] : CoeOut F (α ≃ₜ β) := ⟨Homeomorph.ofClass⟩
+
+theorem ofClass_injective [HomeomorphClass F α β] : Function.Injective ((↑) : F → α ≃ₜ β) :=
   fun _ _ e ↦ DFunLike.ext _ _ fun a ↦ congr($e a)
 
+@[deprecated (since := "2026-10-16")]
+alias _root_.HomeomorphClass.toHomeomorph_injective := ofClass_injective
+
 instance [HomeomorphClass F α β] : ContinuousMapClass F α β where
-  map_continuous f := map_continuous f
+  map_continuous f := HomeomorphClass.map_continuous f
 
 instance : HomeomorphClass (α ≃ₜ β) α β where
   map_continuous e := e.continuous_toFun
   inv_continuous e := e.continuous_invFun
 
-end HomeomorphClass
+end Homeomorph
 
 section IsHomeomorph
 

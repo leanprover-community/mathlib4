@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPreregular
 public import Mathlib.Topology.Category.CompHaus.EffectiveEpi
 public import Mathlib.Topology.Category.Profinite.Limits
 public import Mathlib.Topology.Category.Stonean.Basic
+
 /-!
 
 # Effective epimorphisms in `Profinite`

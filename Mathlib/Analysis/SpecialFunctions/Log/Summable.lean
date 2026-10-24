@@ -116,9 +116,6 @@ lemma summable_finsetProd_of_summable_nonneg {f : ι → ℝ} (hf : ∀ i, 0 ≤
     _ ≤ Real.exp (∑' i, f i) :=
         Real.exp_le_exp.mpr (hfs.sum_le_tsum _ fun _ _ ↦ hf _)
 
-@[deprecated (since := "2026-04-08")]
-alias summable_finset_prod_of_summable_nonneg := summable_finsetProd_of_summable_nonneg
-
 section NormedRing
 
 lemma Multipliable.eventually_bounded_finsetProd {v : ι → ℝ} (hv : Multipliable v) :
@@ -128,9 +125,6 @@ lemma Multipliable.eventually_bounded_finsetProd {v : ι → ℝ} (hv : Multipli
   have := hv.hasProd.eventually_le_const hr₁.2
   rw [unconditional, eventually_atTop] at this
   exact ⟨r₁, hr₁.1, this⟩
-
-@[deprecated (since := "2026-04-08")]
-alias Multipliable.eventually_bounded_finset_prod := Multipliable.eventually_bounded_finsetProd
 
 variable {R : Type*} [NormedCommRing R] [NormOneClass R] {f : ι → R}
 
@@ -206,9 +200,6 @@ lemma summable_finsetProd_of_summable_norm [CompleteSpace R] (hf : Summable (fun
     Summable (fun s ↦ ∏ i ∈ s, f i) :=
   (summable_finsetProd_of_summable_nonneg (fun _ ↦ norm_nonneg _) hf).of_norm_bounded
     fun _ ↦ Finset.norm_prod_le _ _
-
-@[deprecated (since := "2026-04-08")]
-alias summable_finset_prod_of_summable_norm := summable_finsetProd_of_summable_norm
 
 lemma Summable.summable_log_norm_one_add (hu : Summable fun n ↦ ‖f n‖) :
     Summable fun i ↦ Real.log ‖1 + f i‖ := by

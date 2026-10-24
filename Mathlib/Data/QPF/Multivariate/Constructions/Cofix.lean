@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Simon Hudon
 -/
 module
 
-public import Lean.Elab.Tactic.RCases
+public meta import Lean.Elab.Tactic.RCases
 public import Mathlib.Data.PFunctor.Multivariate.M
 public import Mathlib.Data.QPF.Multivariate.Basic
 

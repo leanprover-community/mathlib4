@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Fintype.Perm
 public import Mathlib.LinearAlgebra.Matrix.RowCol
+
 /-!
 # Permanent of a matrix
 

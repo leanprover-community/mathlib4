@@ -8,7 +8,6 @@ module
 public meta import Batteries.Util.Cache
 public meta import Lean.Elab.Command
 public meta import Lean.HeadIndex
-public import Batteries.Util.Cache
 public import Mathlib.Init
 
 /-!

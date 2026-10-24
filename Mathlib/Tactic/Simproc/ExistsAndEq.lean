@@ -7,9 +7,8 @@ module
 
 public meta import Qq
 public import Mathlib.Init
-public import Qq
 
-import Qq.Typ
+meta import Qq.Typ
 
 /-!
 # Simproc for `∃ a', ... ∧ a' = a ∧ ...`

@@ -375,9 +375,6 @@ theorem tendsto_finsetProd_of_ne_top {ι : Type*} {f : ι → α → ℝ≥0∞}
         h' _ (Finset.mem_insert_of_mem hi)
     · exact Or.inr (h' _ (Finset.mem_insert_self _ _))
 
-@[deprecated (since := "2026-04-08")]
-alias tendsto_finset_prod_of_ne_top := tendsto_finsetProd_of_ne_top
-
 protected theorem continuousAt_const_mul {a b : ℝ≥0∞} (h : a ≠ ∞ ∨ b ≠ 0) :
     ContinuousAt (a * ·) b :=
   Tendsto.const_mul tendsto_id h.symm

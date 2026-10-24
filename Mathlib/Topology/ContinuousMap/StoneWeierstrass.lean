@@ -163,8 +163,8 @@ open scoped Topology
 
 -- Here's the fun part of Stone-Weierstrass!
 theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
-    (inf_mem : ∀ᵉ (f ∈ L) (g ∈ L), f ⊓ g ∈ L)
-    (sup_mem : ∀ᵉ (f ∈ L) (g ∈ L), f ⊔ g ∈ L) (sep : L.SeparatesPointsStrongly) :
+    (inf_mem : ∀ f ∈ L, ∀ g ∈ L, f ⊓ g ∈ L)
+    (sup_mem : ∀ f ∈ L, ∀ g ∈ L, f ⊔ g ∈ L) (sep : L.SeparatesPointsStrongly) :
     closure L = ⊤ := by
   -- We start by boiling down to a statement about close approximation.
   rw [eq_top_iff]
@@ -638,7 +638,7 @@ lemma ContinuousMapZero.adjoin_id_dense (s : Set 𝕜) [Fact (0 ∈ s)]
     ← ContinuousMap.ker_evalStarAlgHom_eq_closure_adjoin_id s h0']
   apply Set.eq_univ_of_forall fun f ↦ ?_
   simp only [Set.mem_preimage, SetLike.mem_coe, RingHom.mem_ker,
-    ContinuousMap.evalStarAlgHom_apply, ContinuousMap.coe_coe]
+    ContinuousMap.evalStarAlgHom_apply, ContinuousMap.coe_ofClass]
   exact map_zero f
 
 open NonUnitalStarAlgebra in

@@ -6,7 +6,6 @@ Authors: Tomáš Skřivan
 module
 
 public meta import Lean.Meta.CoeAttr
-public import Lean.Meta.CoeAttr
 public import Mathlib.Init
 
 /-!

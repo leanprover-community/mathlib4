@@ -55,6 +55,9 @@ for some root `r : α`. -/
 for some `r : α`. -/]
 def IsSquare (a : α) : Prop := ∃ r, a = r * r
 
+attribute [oeis A000290] IsSquare
+attribute [oeis A005843] Even
+
 @[to_additive]
 lemma isSquare_iff_exists_mul_self (a : α) : IsSquare a ↔ ∃ r, a = r * r := .rfl
 

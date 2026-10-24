@@ -5,7 +5,7 @@ Authors: Fabrizio Barroero
 -/
 module
 
-public import Mathlib.RingTheory.DedekindDomain.AdicValuation
+public import Mathlib.RingTheory.DedekindDomain.AdicValuation.Valuation
 public import Mathlib.RingTheory.Polynomial.ContentIdeal
 public import Mathlib.RingTheory.Polynomial.GaussNorm
 

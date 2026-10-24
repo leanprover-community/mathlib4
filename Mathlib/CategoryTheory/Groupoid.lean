@@ -100,7 +100,6 @@ def Groupoid.isoEquivHom : (X ≅ Y) ≃ (X ⟶ Y) where
 
 variable (C)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence from a groupoid `C` to its opposite sending every morphism to its inverse. -/
 @[simps]
 def Groupoid.invEquivalence : C ≌ Cᵒᵖ where

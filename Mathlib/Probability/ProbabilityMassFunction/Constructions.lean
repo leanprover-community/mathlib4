@@ -23,7 +23,7 @@ by allowing the "sum equals 1" constraint to be in terms of `Finset.sum` instead
 `normalize` constructs a `PMF α` by normalizing a function `f : α → ℝ≥0∞` by its sum,
 and `filter` uses this to filter the support of a `PMF` and re-normalize the new distribution.
 
-`bernoulli` represents the Bernoulli distribution on `Bool`.
+`bernoulliMeasure` represents the Bernoulli distribution on `Bool`.
 
 -/
 
@@ -295,19 +295,19 @@ end Filter
 section bernoulli
 
 /-- A `PMF` which assigns probability `p` to `true` and `1 - p` to `false`. -/
-@[deprecated ProbabilityTheory.bernoulliMeasure +typeChanged (since := "2026-04-07")]
+@[deprecated ProbabilityTheory.bernoulliMeasure +typeChanged (since := "2026-05-31")]
 def bernoulli (p : ℝ≥0) (h : p ≤ 1) : PMF Bool :=
   ofFintype (fun b => cond b p (1 - p)) (by simp [h])
 
 variable {p : ℝ≥0} (h : p ≤ 1) (b : Bool)
 
-@[deprecated ProbabilityTheory.bernoulliMeasure_apply +typeChanged (since := "2026-04-07")]
+@[deprecated ProbabilityTheory.bernoulliMeasure_apply +typeChanged (since := "2026-05-31")]
 theorem bernoulli_apply : bernoulli p h b = cond b p (1 - p) := by
   simp only [bernoulli, ofFintype_apply]
   exact Eq.symm (Bool.apply_cond ofNNReal)
 
 @[deprecated ProbabilityTheory.bernoulliMeasure_apply_of_notMem_of_notMem +typeChanged
-  (since := "2026-05-29")]
+  (since := "2026-05-31")]
 theorem support_bernoulli : (bernoulli p h).support = { b | cond b (p ≠ 0) (p ≠ 1) } := by
   refine Set.ext fun b => ?_
   induction b
@@ -324,7 +324,7 @@ theorem support_bernoulli : (bernoulli p h).support = { b | cond b (p ≠ 0) (p 
       ENNReal.coe_eq_zero]
 
 @[deprecated ProbabilityTheory.bernoulliMeasure_apply_of_notMem_of_notMem +typeChanged
-  (since := "2026-05-29")]
+  (since := "2026-05-31")]
 theorem mem_support_bernoulli_iff : b ∈ (bernoulli p h).support ↔ cond b (p ≠ 0) (p ≠ 1) := by
   simp [support_bernoulli]
 

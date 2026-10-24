@@ -543,25 +543,7 @@ lemma exists_wellFoundedGT : ∃ (_ : LinearOrder α), WellFoundedGT α := by
   classical
   exact ⟨linearOrderOfSTO (Function.swap WellOrderingRel), WellOrderingRel.isWellOrder.wf⟩
 
-@[deprecated (since := "2026-04-12")] alias exists_wellOrder := exists_wellFoundedLT
-
 namespace Cardinal
-
-@[deprecated exists_eq_ciSup_of_not_isSuccPrelimit +typeChanged (since := "2026-04-13")]
-lemma exists_eq_of_iSup_eq_of_not_isSuccPrelimit
-    {ι : Type u} (f : ι → Cardinal.{v}) (ω : Cardinal.{v})
-    (hω : ¬ IsSuccPrelimit ω)
-    (h : ⨆ i : ι, f i = ω) : ∃ i, f i = ω := by
-  subst h
-  exact exists_eq_ciSup_of_not_isSuccPrelimit hω
-
-@[deprecated exists_eq_ciSup_of_not_isSuccLimit +typeChanged (since := "2026-04-13")]
-lemma exists_eq_of_iSup_eq_of_not_isSuccLimit
-    {ι : Type u} [hι : Nonempty ι] (f : ι → Cardinal.{v}) (hf : BddAbove (range f))
-    {c : Cardinal.{v}} (hc : ¬ IsSuccLimit c)
-    (h : ⨆ i, f i = c) : ∃ i, f i = c := by
-  subst h
-  exact exists_eq_ciSup_of_not_isSuccLimit hf hc
 
 /-! ### Indexed cardinal `prod` -/
 

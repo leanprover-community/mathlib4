@@ -58,10 +58,6 @@ class Presentation.IsFinite {M : SheafOfModules.{u} R} (p : M.Presentation) : Pr
 attribute [instance] Presentation.IsFinite.isFiniteType_generators
   Presentation.IsFinite.isFiniteType_relations
 
-@[deprecated Presentation.IsFinite.isFiniteType_relations +typeChanged (since := "2026-04-14")]
-lemma Presentation.IsFinite.finite_relations {M : SheafOfModules.{u} R} (p : M.Presentation)
-    [p.IsFinite] : Finite p.relations.I := GeneratingSections.IsFiniteType.finite
-
 end
 
 noncomputable section
@@ -136,8 +132,6 @@ noncomputable def Presentation.ofIsIso {M N : SheafOfModules.{u} R} (f : M ⟶ N
     (σ : M.Presentation) : N.Presentation where
   generators := σ.generators.ofEpi f
   relations := σ.relations.ofEpi ((kernelCompMono _ f).symm.trans <| eqToIso (by simp)).hom
-
-@[deprecated (since := "2026-04-15")] alias Presentation.of_isIso := Presentation.ofIsIso
 
 set_option backward.isDefEq.respectTransparency.types false in
 instance {M N : SheafOfModules.{u} R} (f : M ⟶ N) [IsIso f]

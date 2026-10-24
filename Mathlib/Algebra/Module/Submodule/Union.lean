@@ -56,9 +56,9 @@ lemma Submodule.iUnion_ssubset_of_forall_ne_top_of_card_lt (s : Finset ι) (p : 
       rintro - ⟨⟨t, ht₀, rfl⟩, ht : x + t • y ∈ p j⟩
       rw [(p j).add_mem_iff_right hx, (p j).smul_mem_iff ht₀] at ht
       contradiction
-    obtain ⟨k, hk, t₁, t₂, ht, ht₁, ht₂⟩ : ∃ᵉ (k ∈ s) (t₁ : K) (t₂ : K),
+    obtain ⟨k, hk, t₁, t₂, ht, ht₁, ht₂⟩ : ∃ k ∈ s, ∃ t₁ : K, ∃ t₂ : K,
         t₁ ≠ t₂ ∧ x + t₁ • y ∈ p k ∧ x + t₂ • y ∈ p k := by
-      suffices ∃ᵉ (k ∈ s) (z₁ ∈ sxy) (z₂ ∈ sxy), z₁ ≠ z₂ ∧ z₁ ∈ p k ∧ z₂ ∈ p k by
+      suffices ∃ k ∈ s, ∃ z₁ ∈ sxy, ∃ z₂ ∈ sxy, z₁ ≠ z₂ ∧ z₁ ∈ p k ∧ z₂ ∈ p k by
         obtain ⟨k, hk, -, ⟨t₁, -, rfl⟩, -, ⟨t₂, -, rfl⟩, htne, ht₁, ht₂⟩ := this
         exact ⟨k, hk, t₁, t₂, by aesop, ht₁, ht₂⟩
       choose f hf using fun z : sxy ↦ mem_iUnion.mp (hsxy z.property)

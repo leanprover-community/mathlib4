@@ -113,23 +113,6 @@ theorem coeff_uniqueAlgEquiv_symm [Unique σ] (P : Polynomial R) (d : σ →₀ 
   rw [Finsupp.unique_single d, ← coeff_uniqueAlgEquiv R, AlgEquiv.apply_symm_apply,
     Finsupp.single_eq_same]
 
-/-- The algebra isomorphism between multivariable polynomials in a single variable and
-polynomials over the ground ring. -/
-@[deprecated uniqueAlgEquiv +typeChanged (since := "2026-04-15")]
-abbrev pUnitAlgEquiv := uniqueAlgEquiv (R := R) PUnit
-
-@[deprecated uniqueAlgEquiv_monomial +typeChanged (since := "2026-04-15")]
-theorem pUnitAlgEquiv_monomial {d : PUnit →₀ ℕ} {r : R} :
-    MvPolynomial.pUnitAlgEquiv R (MvPolynomial.monomial d r)
-      = Polynomial.monomial (d ()) r :=
-  uniqueAlgEquiv_monomial _
-
-@[deprecated uniqueAlgEquiv_symm_monomial +typeChanged (since := "2026-04-15")]
-theorem pUnitAlgEquiv_symm_monomial {d : PUnit →₀ ℕ} {r : R} :
-    (MvPolynomial.pUnitAlgEquiv R).symm (Polynomial.monomial (d ()) r)
-      = MvPolynomial.monomial d r :=
-  uniqueAlgEquiv_symm_monomial _
-
 section Map
 
 variable {R} (σ)
@@ -222,28 +205,6 @@ theorem eval₂_const_uniqueAlgEquiv [Unique σ] {f : MvPolynomial σ R}
     ((MvPolynomial.uniqueAlgEquiv R σ) f : Polynomial R).eval₂ φ a =
       f.eval₂ φ (fun _ ↦ a) := by
   rw [← eval₂_uniqueAlgEquiv]
-
-@[deprecated eval₂_uniqueAlgEquiv_symm +typeChanged (since := "2026-04-15")]
-theorem eval₂_pUnitAlgEquiv_symm {f : Polynomial R} {φ : R →+* S} {a : Unit → S} :
-    ((MvPolynomial.pUnitAlgEquiv R).symm f : MvPolynomial Unit R).eval₂ φ a =
-      f.eval₂ φ (a ()) :=
-  eval₂_uniqueAlgEquiv_symm
-
-@[deprecated eval₂_const_uniqueAlgEquiv_symm +typeChanged (since := "2026-04-15")]
-theorem eval₂_const_pUnitAlgEquiv_symm {f : Polynomial R} {φ : R →+* S} {a : S} :
-    ((MvPolynomial.pUnitAlgEquiv R).symm f : MvPolynomial Unit R).eval₂ φ (fun _ ↦ a) =
-      f.eval₂ φ a :=
-  eval₂_const_uniqueAlgEquiv_symm
-
-@[deprecated eval₂_uniqueAlgEquiv +typeChanged (since := "2026-04-15")]
-theorem eval₂_pUnitAlgEquiv {f : MvPolynomial PUnit R} {φ : R →+* S} {a : PUnit → S} :
-    ((MvPolynomial.pUnitAlgEquiv R) f : Polynomial R).eval₂ φ (a default) = f.eval₂ φ a :=
-  eval₂_uniqueAlgEquiv
-
-@[deprecated eval₂_const_uniqueAlgEquiv +typeChanged (since := "2026-04-15")]
-theorem eval₂_const_pUnitAlgEquiv {f : MvPolynomial PUnit R} {φ : R →+* S} {a : S} :
-    ((MvPolynomial.pUnitAlgEquiv R) f : Polynomial R).eval₂ φ a = f.eval₂ φ (fun _ ↦ a) :=
-  eval₂_const_uniqueAlgEquiv
 
 end Eval
 

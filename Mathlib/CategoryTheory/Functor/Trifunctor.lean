@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Functor.Category
+
 /-!
 # Trifunctors obtained by composition of bifunctors
 

@@ -91,9 +91,13 @@ theorem isInitial_one : IsInitial 1 := by
 theorem isInitial_omega0 : IsInitial ω := by
   rw [IsInitial, card_omega0, ord_aleph0]
 
-theorem isInitial_succ {o : Ordinal} : IsInitial (succ o) ↔ o < ω :=
+theorem isInitial_add_one {o : Ordinal} : IsInitial (o + 1) ↔ o < ω :=
   ⟨Function.mtr fun hwo ↦ ne_of_lt <| by simp_all [ord_card_le],
   fun how ↦ (Ordinal.lt_omega0.1 how).rec fun n h ↦ h ▸ isInitial_natCast (n + 1)⟩
+
+@[deprecated isInitial_add_one +typeChanged (since := "2026-10-14")]
+theorem isInitial_succ {o : Ordinal} : IsInitial (succ o) ↔ o < ω :=
+  isInitial_add_one
 
 theorem isCofinal_setOfPred_isInitial : IsCofinal {x | IsInitial x} :=
   fun _ ↦ ⟨_, isInitial_ord _, (lt_ord_succ_card _).le⟩
@@ -592,13 +596,15 @@ theorem isNormal_preBeth : Order.IsNormal preBeth := by
   refine ⟨preBeth_strictMono, fun o ho ↦ ?_⟩
   simp [preBeth_limit ho.isSuccPrelimit, ciSup_le_iff' bddAbove_of_small]
 
-theorem preBeth_nat : ∀ n : ℕ, preBeth n = (2 ^ ·)^[n] (0 : ℕ)
+theorem preBeth_natCast : ∀ n : ℕ, preBeth n = (2 ^ ·)^[n] (0 : ℕ)
   | 0 => by simp
-  | n + 1 => by simp [Function.iterate_succ_apply', preBeth_nat]
+  | n + 1 => by simp [Function.iterate_succ_apply', preBeth_natCast]
+
+@[deprecated (since := "2026-10-14")] alias preBeth_nat := preBeth_natCast
 
 @[simp]
 theorem preBeth_one : preBeth 1 = 1 := by
-  simpa using preBeth_nat 1
+  simpa using preBeth_natCast 1
 
 @[simp]
 theorem preBeth_omega : preBeth ω = ℵ₀ := by
@@ -606,7 +612,7 @@ theorem preBeth_omega : preBeth ω = ℵ₀ := by
   · rw [preBeth_limit isSuccLimit_omega0.isSuccPrelimit, ciSup_le_iff' bddAbove_of_small]
     rintro ⟨a, ha⟩
     obtain ⟨n, rfl⟩ := lt_omega0.1 ha
-    rw [preBeth_nat]
+    rw [preBeth_natCast]
     exact natCast_le_aleph0
   · simpa using preAleph_le_preBeth ω
 
@@ -699,7 +705,7 @@ theorem beth_zero : ℶ_ 0 = ℵ₀ := by
 theorem beth_add_one (o : Ordinal) : ℶ_ (o + 1) = 2 ^ ℶ_ o := by
   simp [beth, ← add_assoc]
 
--- TODO; deprecate
+@[deprecated beth_add_one +typeChanged (since := "2026-10-14")]
 theorem beth_succ (o : Ordinal) : ℶ_ (succ o) = 2 ^ ℶ_ o :=
   beth_add_one o
 

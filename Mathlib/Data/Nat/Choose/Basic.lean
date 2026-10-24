@@ -47,6 +47,7 @@ namespace Nat
 /-- `choose n k` is the number of `k`-element subsets in an `n`-element set. Also known as binomial
 coefficients. For the fact that this is the number of `k`-element-subsets of an `n`-element
 set, see `Finset.card_powersetCard`. -/
+@[oeis A007318]
 def choose : ℕ → ℕ → ℕ
   | _, 0 => 1
   | 0, _ + 1 => 0
@@ -376,6 +377,7 @@ in terms of multinomial coefficients. For details see https://mathworld.wolfram.
 
 /--
 `multichoose n k` is the number of multisets of cardinality `k` from a type of cardinality `n`. -/
+@[oeis A059481]
 def multichoose : ℕ → ℕ → ℕ
   | _, 0 => 1
   | 0, _ + 1 => 0

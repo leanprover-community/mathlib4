@@ -121,10 +121,4 @@ protected theorem _root_.AddCon.coe_dfinsuppSumAddHom {ι : Type*} {β : ι → 
   simp_rw [← AddCon.coe_mk', DFinsupp.sumAddHom_apply, map_dfinsuppSum]
   rfl
 
-@[deprecated (since := "2026-04-08")]
-protected alias _root_.AddCon.finset_sum := AddCon.finsetSum
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-protected alias finset_prod := Con.finsetProd
-
 end Con

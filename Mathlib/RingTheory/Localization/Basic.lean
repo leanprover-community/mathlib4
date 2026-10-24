@@ -291,9 +291,6 @@ lemma of_le_isUnit_of_bijective {M : Submonoid R}
 lemma of_le_isUnit {S : Submonoid R} (hS : S ≤ IsUnit.submonoid R) : IsLocalization S R :=
   of_le_isUnit_of_bijective (by simpa) Function.bijective_id
 
-@[deprecated (since := "2026-04-15")]
-alias at_units := of_le_isUnit
-
 instance : IsLocalization (IsUnit.submonoid R) R := of_le_isUnit le_rfl
 
 instance : IsLocalization (Algebra.algebraMapSubmonoid S (IsUnit.submonoid R)) S :=

@@ -10,8 +10,6 @@ public meta import Lean.Elab.ConfigEval
 public meta import Lean.Elab.Tactic.Simp
 public meta import Mathlib.Lean.Name
 public import Batteries.Util.LibraryNote
-public import Lean.Elab.ConfigEval
-public import Lean.Elab.Tactic.Simp
 public import Mathlib.Tactic.Simps.NotationClass
 public import Mathlib.Tactic.Translate.Attributes
 public import Mathlib.Util.AddRelatedDecl

@@ -478,7 +478,7 @@ protected theorem zpow_mem {x : G} (hx : x ∈ K) : ∀ n : ℤ, x ^ n ∈ K :=
 
 /-- Construct a subgroup from a nonempty set that is closed under division. -/
 @[to_additive /-- Construct a subgroup from a nonempty set that is closed under subtraction -/]
-def ofDiv (s : Set G) (hsn : s.Nonempty) (hs : ∀ᵉ (x ∈ s) (y ∈ s), x * y⁻¹ ∈ s) :
+def ofDiv (s : Set G) (hsn : s.Nonempty) (hs : ∀ x ∈ s, ∀ y ∈ s, x * y⁻¹ ∈ s) :
     Subgroup G :=
   have one_mem : (1 : G) ∈ s := by
     let ⟨x, hx⟩ := hsn
@@ -603,24 +603,20 @@ theorem subtype_comp_inclusion {H K : Subgroup G} (hH : H ≤ K) :
   rfl
 
 /-- A subgroup `H` is normal if whenever `n ∈ H`, then `g * n * g⁻¹ ∈ H` for every `g : G` -/
-structure Normal : Prop where
+class Normal : Prop where
   /-- `H` is closed under conjugation -/
   conj_mem : ∀ n, n ∈ H → ∀ g : G, g * n * g⁻¹ ∈ H
-
-attribute [class] Normal
 
 end Subgroup
 
 namespace AddSubgroup
 
 /-- An AddSubgroup `H` is normal if whenever `n ∈ H`, then `g + n - g ∈ H` for every `g : A` -/
-structure Normal (H : AddSubgroup A) : Prop where
+class Normal (H : AddSubgroup A) : Prop where
   /-- `H` is closed under additive conjugation -/
   conj_mem : ∀ n, n ∈ H → ∀ g : A, g + n + -g ∈ H
 
 attribute [to_additive (attr := wikidata Q743179)] Subgroup.Normal
-
-attribute [class] Normal
 
 end AddSubgroup
 
@@ -631,8 +627,6 @@ variable {H : Subgroup G}
 @[to_additive]
 instance (priority := 100) normal_of_isMulCommutative [IsMulCommutative G] (H : Subgroup G) :
     H.Normal := ⟨by simp [mul_comm']⟩
-
-@[deprecated (since := "2026-04-10")] alias normal_of_comm := normal_of_isMulCommutative
 
 namespace Normal
 
@@ -709,10 +703,6 @@ theorem le_normalizer : H ≤ normalizer H := fun x xH n => by
     H.mul_mem_cancel_left xH]
 
 end Normalizer
-
-@[to_additive (attr := deprecated inferInstance +typeChanged (since := "2026-04-09"))]
-theorem commGroup_isMulCommutative {G : Type*} [CommGroup G] (H : Subgroup G) :
-    IsMulCommutative H := inferInstance
 
 end Subgroup
 

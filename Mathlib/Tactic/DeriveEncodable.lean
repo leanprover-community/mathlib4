@@ -8,7 +8,7 @@ module
 public meta import Lean.Elab.Deriving.Util  -- shake: keep (???)
 public meta import Lean.Meta.Transform
 
-import Aesop.BuiltinRules
+meta import Aesop.BuiltinRules
 import Mathlib.Data.Nat.Pairing
 import Mathlib.Logic.Encodable.Basic
 

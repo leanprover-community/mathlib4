@@ -520,7 +520,7 @@ lemma toNNReal_iff (hp : 1 < p.toNNReal) :
     NNReal.HolderConjugate p.toNNReal q.toNNReal ↔ HolderConjugate p q := by
   simp_rw [← NNReal.holderTriple_coe_iff, coe_toNNReal_eq_toReal]
   apply toReal_iff ?_
-  all_goals simpa [← coe_toNNReal_eq_toReal]
+  simpa [← coe_toNNReal_eq_toReal]
 
 lemma toNNReal (hp : 1 < p.toNNReal) [HolderConjugate p q] :
     NNReal.HolderConjugate p.toNNReal q.toNNReal :=

@@ -5,10 +5,10 @@ Authors: Simon Hudon
 -/
 module
 
+public import Batteries.Data.Except
 public import Batteries.Tactic.Congr
 public import Mathlib.Control.Monad.Writer
 
-import Batteries.Lean.Except
 import Mathlib.Control.Lawful
 import Mathlib.Control.Monad.Basic
 

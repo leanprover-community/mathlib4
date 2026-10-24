@@ -5,6 +5,7 @@ Authors: Kim Morrison, Alex J. Best, Yaël Dillies
 -/
 module
 
+public import Lean.Meta.Tactic.Assumption
 public import Qq
 
 import Mathlib.Init

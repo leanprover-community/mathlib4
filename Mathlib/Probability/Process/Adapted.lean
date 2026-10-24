@@ -300,23 +300,11 @@ protected theorem finsetProd' {γ} [CommMonoid β] [ContinuousMul β] {U : γ �
   Finset.prod_induction U (IsStronglyProgressive f) (fun _ _ => .mul)
     (isStronglyProgressive_const _ 1) h
 
-@[deprecated (since := "2026-04-08")]
-protected alias finset_sum' := MeasureTheory.IsStronglyProgressive.finsetSum'
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-protected alias finset_prod' := MeasureTheory.IsStronglyProgressive.finsetProd'
-
 @[to_additive]
 protected theorem finsetProd {γ} [CommMonoid β] [ContinuousMul β] {U : γ → ι → Ω → β}
     {s : Finset γ} (h : ∀ c ∈ s, IsStronglyProgressive f (U c)) :
     IsStronglyProgressive f fun i a => ∏ c ∈ s, U c i a := by
   convert IsStronglyProgressive.finsetProd' h using 1; ext (i a); simp only [Finset.prod_apply]
-
-@[deprecated (since := "2026-04-08")]
-protected alias finset_sum := MeasureTheory.IsStronglyProgressive.finsetSum
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-protected alias finset_prod := MeasureTheory.IsStronglyProgressive.finsetProd
 
 @[to_additive]
 protected theorem inv [Group β] [ContinuousInv β] (hu : IsStronglyProgressive f u) :

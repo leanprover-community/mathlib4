@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Topology.Category.CompHaus.Limits
 public import Mathlib.Topology.Category.CompHausLike.EffectiveEpi
+
 /-!
 
 # Effective epimorphisms in `CompHaus`

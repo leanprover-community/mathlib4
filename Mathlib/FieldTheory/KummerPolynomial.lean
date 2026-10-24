@@ -105,7 +105,7 @@ theorem X_pow_sub_C_irreducible_of_prime {p : ℕ} (hp : p.Prime) {a : K} (ha : 
   have ⟨g, hg, hg'⟩ := WfDvdMonoid.exists_irreducible_factor this (X_pow_sub_C_ne_zero hp.pos a)
   -- It suffices to show that `deg g = p`.
   suffices natDegree g = p from (associated_of_dvd_of_natDegree_le hg'
-    (X_pow_sub_C_ne_zero hp.pos a) (this.trans natDegree_X_pow_sub_C.symm).ge).irreducible hg
+    (X_pow_sub_C_ne_zero hp.pos a) (this.trans (natDegree_X_pow_sub_C a).symm).ge).irreducible hg
   -- Suppose `deg g ≠ p`.
   by_contra h
   -- Let `r` be a root of `g`, then `N_K(r) ^ p = N_K(r ^ p) = N_K(a) = a ^ (deg g)`.
@@ -117,7 +117,7 @@ theorem X_pow_sub_C_irreducible_of_prime {p : ℕ} (hp : p.Prime) {a : K} (ha : 
   -- Since `a ^ (deg g)` is a `p`-power, and `p` is coprime to `deg g`, we conclude that `a` is
   -- also a `p`-power, contradicting the hypothesis
   have : p.Coprime (natDegree g) := hp.coprime_iff_not_dvd.mpr (fun e ↦ h (((natDegree_le_of_dvd hg'
-    (X_pow_sub_C_ne_zero hp.pos a)).trans_eq natDegree_X_pow_sub_C).antisymm (Nat.le_of_dvd
+    (X_pow_sub_C_ne_zero hp.pos a)).trans_eq (natDegree_X_pow_sub_C a)).antisymm (Nat.le_of_dvd
       (natDegree_pos_iff_degree_pos.mpr <| Polynomial.degree_pos_of_irreducible hg) e)))
   exact ha _ ((pow_mem_range_pow_of_coprime this.symm a).mp ⟨_, key⟩).choose_spec
 

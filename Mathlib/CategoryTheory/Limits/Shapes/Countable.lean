@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Countable
 public import Mathlib.CategoryTheory.Limits.Final
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+
 /-!
 # Countable limits and colimits
 

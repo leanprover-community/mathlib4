@@ -5,6 +5,9 @@ Authors: Kim Morrison
 -/
 module
 
+public import Lean.Meta.Basic
+public import Lean.Meta.DiscrTree.Main
+public import Lean.Meta.DiscrTree.Types
 public import Mathlib.Init
 
 /-!

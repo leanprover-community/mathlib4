@@ -398,53 +398,33 @@ theorem HasDerivAt.fun_finsetProd (hf : ∀ i ∈ u, HasDerivAt (f i) (f' i) x) 
     HasDerivAt (∏ i ∈ u, f i ·) (∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • f' i) x := by
   simpa using (HasFDerivAt.finsetProd (hf · · |> hasFDerivAt)).hasDerivAt
 
-@[deprecated (since := "2026-04-08")] alias HasDerivAt.fun_finset_prod := HasDerivAt.fun_finsetProd
-
 theorem HasDerivAt.finsetProd (hf : ∀ i ∈ u, HasDerivAt (f i) (f' i) x) :
     HasDerivAt (∏ i ∈ u, f i) (∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • f' i) x := by
   convert! HasDerivAt.fun_finsetProd hf; simp
-
-@[deprecated (since := "2026-04-08")] alias HasDerivAt.finset_prod := HasDerivAt.finsetProd
 
 theorem HasDerivWithinAt.fun_finsetProd (hf : ∀ i ∈ u, HasDerivWithinAt (f i) (f' i) s x) :
     HasDerivWithinAt (∏ i ∈ u, f i ·) (∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • f' i) s x := by
   simpa using (HasFDerivWithinAt.finsetProd (hf · · |> hasFDerivWithinAt)).hasDerivWithinAt
 
-@[deprecated (since := "2026-04-08")]
-alias HasDerivWithinAt.fun_finset_prod := HasDerivWithinAt.fun_finsetProd
-
 theorem HasDerivWithinAt.finsetProd (hf : ∀ i ∈ u, HasDerivWithinAt (f i) (f' i) s x) :
     HasDerivWithinAt (∏ i ∈ u, f i) (∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • f' i) s x := by
   convert! HasDerivWithinAt.fun_finsetProd hf; simp
-
-@[deprecated (since := "2026-04-08")]
-alias HasDerivWithinAt.finset_prod := HasDerivWithinAt.finsetProd
 
 theorem HasStrictDerivAt.fun_finsetProd (hf : ∀ i ∈ u, HasStrictDerivAt (f i) (f' i) x) :
     HasStrictDerivAt (∏ i ∈ u, f i ·) (∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • f' i) x := by
   simpa using (HasStrictFDerivAt.finsetProd (hf · · |> hasStrictFDerivAt)).hasStrictDerivAt
 
-@[deprecated (since := "2026-04-08")]
-alias HasStrictDerivAt.fun_finset_prod := HasStrictDerivAt.fun_finsetProd
-
 theorem HasStrictDerivAt.finsetProd (hf : ∀ i ∈ u, HasStrictDerivAt (f i) (f' i) x) :
     HasStrictDerivAt (∏ i ∈ u, f i) (∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • f' i) x := by
   convert! HasStrictDerivAt.fun_finsetProd hf; simp
-
-@[deprecated (since := "2026-04-08")]
-alias HasStrictDerivAt.finset_prod := HasStrictDerivAt.finsetProd
 
 theorem deriv_fun_finsetProd (hf : ∀ i ∈ u, DifferentiableAt 𝕜 (f i) x) :
     deriv (∏ i ∈ u, f i ·) x = ∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • deriv (f i) x :=
   (HasDerivAt.fun_finsetProd fun i hi ↦ (hf i hi).hasDerivAt).deriv
 
-@[deprecated (since := "2026-04-08")] alias deriv_fun_finset_prod := deriv_fun_finsetProd
-
 theorem deriv_finsetProd (hf : ∀ i ∈ u, DifferentiableAt 𝕜 (f i) x) :
     deriv (∏ i ∈ u, f i) x = ∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • deriv (f i) x :=
   (HasDerivAt.finsetProd fun i hi ↦ (hf i hi).hasDerivAt).deriv
-
-@[deprecated (since := "2026-04-08")] alias deriv_finset_prod := deriv_finsetProd
 
 theorem derivWithin_fun_finsetProd (hf : ∀ i ∈ u, DifferentiableWithinAt 𝕜 (f i) s x) :
     derivWithin (∏ i ∈ u, f i ·) s x =
@@ -453,15 +433,10 @@ theorem derivWithin_fun_finsetProd (hf : ∀ i ∈ u, DifferentiableWithinAt �
   · exact (HasDerivWithinAt.fun_finsetProd fun i hi ↦ (hf i hi).hasDerivWithinAt).derivWithin hsx
   · simp [derivWithin_zero_of_not_uniqueDiffWithinAt hsx]
 
-@[deprecated (since := "2026-04-08")]
-alias derivWithin_fun_finset_prod := derivWithin_fun_finsetProd
-
 theorem derivWithin_finsetProd (hf : ∀ i ∈ u, DifferentiableWithinAt 𝕜 (f i) s x) :
     derivWithin (∏ i ∈ u, f i) s x =
       ∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • derivWithin (f i) s x := by
   convert! derivWithin_fun_finsetProd hf; simp
-
-@[deprecated (since := "2026-04-08")] alias derivWithin_finset_prod := derivWithin_finsetProd
 
 end HasDeriv
 
@@ -475,16 +450,10 @@ theorem DifferentiableAt.fun_finsetProd (hd : ∀ i ∈ u, DifferentiableAt 𝕜
   exact
     (HasDerivAt.fun_finsetProd (fun i hi ↦ DifferentiableAt.hasDerivAt (hd i hi))).differentiableAt
 
-@[deprecated (since := "2026-04-08")]
-alias DifferentiableAt.fun_finset_prod := DifferentiableAt.fun_finsetProd
-
 @[fun_prop]
 theorem DifferentiableAt.finsetProd (hd : ∀ i ∈ u, DifferentiableAt 𝕜 (f i) x) :
     DifferentiableAt 𝕜 (∏ i ∈ u, f i) x := by
   convert! DifferentiableAt.fun_finsetProd hd; simp
-
-@[deprecated (since := "2026-04-08")]
-alias DifferentiableAt.finset_prod := DifferentiableAt.finsetProd
 
 @[fun_prop]
 theorem DifferentiableWithinAt.fun_finsetProd (hd : ∀ i ∈ u, DifferentiableWithinAt 𝕜 (f i) s x) :
@@ -493,47 +462,30 @@ theorem DifferentiableWithinAt.fun_finsetProd (hd : ∀ i ∈ u, DifferentiableW
   exact (HasDerivWithinAt.fun_finsetProd (fun i hi ↦
     DifferentiableWithinAt.hasDerivWithinAt (hd i hi))).differentiableWithinAt
 
-@[deprecated (since := "2026-04-08")]
-alias DifferentiableWithinAt.fun_finset_prod := DifferentiableWithinAt.fun_finsetProd
-
 @[fun_prop]
 theorem DifferentiableWithinAt.finsetProd (hd : ∀ i ∈ u, DifferentiableWithinAt 𝕜 (f i) s x) :
     DifferentiableWithinAt 𝕜 (∏ i ∈ u, f i) s x := by
   convert! DifferentiableWithinAt.fun_finsetProd hd; simp
-
-@[deprecated (since := "2026-04-08")]
-alias DifferentiableWithinAt.finset_prod := DifferentiableWithinAt.finsetProd
 
 @[fun_prop]
 theorem DifferentiableOn.fun_finsetProd (hd : ∀ i ∈ u, DifferentiableOn 𝕜 (f i) s) :
     DifferentiableOn 𝕜 (∏ i ∈ u, f i ·) s :=
   fun x hx ↦ .fun_finsetProd (fun i hi ↦ hd i hi x hx)
 
-@[deprecated (since := "2026-04-08")]
-alias DifferentiableOn.fun_finset_prod := DifferentiableOn.fun_finsetProd
-
 @[fun_prop]
 theorem DifferentiableOn.finsetProd (hd : ∀ i ∈ u, DifferentiableOn 𝕜 (f i) s) :
     DifferentiableOn 𝕜 (∏ i ∈ u, f i) s :=
   fun x hx ↦ .finsetProd (fun i hi ↦ hd i hi x hx)
-
-@[deprecated (since := "2026-04-08")]
-alias DifferentiableOn.finset_prod := DifferentiableOn.finsetProd
 
 @[fun_prop]
 theorem Differentiable.fun_finsetProd (hd : ∀ i ∈ u, Differentiable 𝕜 (f i)) :
     Differentiable 𝕜 (∏ i ∈ u, f i ·) :=
   fun x ↦ .fun_finsetProd (fun i hi ↦ hd i hi x)
 
-@[deprecated (since := "2026-04-08")]
-alias Differentiable.fun_finset_prod := Differentiable.fun_finsetProd
-
 @[fun_prop]
 theorem Differentiable.finsetProd (hd : ∀ i ∈ u, Differentiable 𝕜 (f i)) :
     Differentiable 𝕜 (∏ i ∈ u, f i) :=
   fun x ↦ .finsetProd (fun i hi ↦ hd i hi x)
-
-@[deprecated (since := "2026-04-08")] alias Differentiable.finset_prod := Differentiable.finsetProd
 
 end Prod
 

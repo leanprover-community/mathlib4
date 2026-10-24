@@ -126,8 +126,7 @@ as a quotient of `PowerAlgebra R A` -/
 noncomputable def asPowersEquiv : asPowers R A ≃ₐ[R] FreeProduct R A :=
   RingCon.congrₐ _
     (powerAlgebraEquivFreeTensorAlgebra R A |>.symm) (by
-      rw [ringCon', ringCon, rel']
-      erw [RingCon.comap_ringConGen_ringEquiv]
+      rw [ringCon', ringCon, rel', RingCon.comap_ringConGen_equiv]
       congr
       ext i x
       simp [Function.onFun])

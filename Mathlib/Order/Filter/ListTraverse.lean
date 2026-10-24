@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Control.Traversable.Instances
 public import Mathlib.Order.Filter.Map
+
 /-!
 # Properties of `Traversable.traverse` on `List`s and `Filter`s
 
