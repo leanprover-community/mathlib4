@@ -89,9 +89,11 @@ theorem HasFiniteIntegral.restrict_of_bounded_enorm {C : ℝ≥0∞} (hC : ‖C�
 
 /-- A function is `IntegrableOn` a set `s` if it is almost everywhere strongly measurable on `s`
 and if the integral of its pointwise norm over `s` is less than infinity. -/
+@[fun_prop]
 def IntegrableOn (f : α → ε) (s : Set α) (μ : Measure α := by volume_tac) : Prop :=
   Integrable f (μ.restrict s)
 
+@[fun_prop]
 theorem IntegrableOn.integrable (h : IntegrableOn f s μ) : Integrable f (μ.restrict s) :=
   h
 
