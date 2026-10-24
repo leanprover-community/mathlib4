@@ -29,7 +29,8 @@ variable [DenselyOrdered α] {a b : α}
 
 @[to_additive]
 theorem le_of_forall_lt_one_mul_le (h : ∀ ε < 1, a * ε ≤ b) : a ≤ b :=
-  le_of_forall_one_lt_le_mul (α := αᵒᵈ) h
+  le_of_forall_one_lt_le_mul (α := αᵒᵈ) fun ε hε ↦ by
+    simpa [← OrderDual.ofDual_le_ofDual] using h _ hε
 
 @[to_additive]
 theorem le_of_forall_one_lt_div_le (h : ∀ ε : α, 1 < ε → a / ε ≤ b) : a ≤ b :=
@@ -37,8 +38,9 @@ theorem le_of_forall_one_lt_div_le (h : ∀ ε : α, 1 < ε → a / ε ≤ b) : 
     simpa only [div_eq_mul_inv, inv_inv] using h ε⁻¹ (Left.one_lt_inv_iff.2 ε1)
 
 @[to_additive]
-theorem le_iff_forall_lt_one_mul_le : a ≤ b ↔ ∀ ε < 1, a * ε ≤ b :=
-  le_iff_forall_one_lt_le_mul (α := αᵒᵈ)
+theorem le_iff_forall_lt_one_mul_le : a ≤ b ↔ ∀ ε < 1, a * ε ≤ b := by
+  rw [← OrderDual.toDual_le_toDual, le_iff_forall_one_lt_le_mul, OrderDual.forall]
+  exact Iff.rfl
 
 end DenselyOrdered
 

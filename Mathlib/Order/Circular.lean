@@ -421,22 +421,22 @@ abbrev LinearOrder.toCircularOrder (α : Type*) [LinearOrder α] : CircularOrder
 
 namespace OrderDual
 
-instance btw (α : Type*) [h : Btw α] : Btw αᵒᵈ :=
-  ⟨fun a b c => h.btw c b a⟩
+instance btw (α : Type*) [h : Btw α] : Btw αᵒᵈ where
+  btw a b c := h.btw (ofDual c) (ofDual b) (ofDual a)
 
-instance sbtw (α : Type*) [h : SBtw α] : SBtw αᵒᵈ :=
-  ⟨fun a b c => h.sbtw c b a⟩
+instance sbtw (α : Type*) [h : SBtw α] : SBtw αᵒᵈ where
+  sbtw a b c := h.sbtw (ofDual c) (ofDual b) (ofDual a)
 
 instance circularPreorder (α : Type*) [CircularPreorder α] : CircularPreorder αᵒᵈ where
   btw_refl _ := btw_refl _
-  btw_cyclic_left {_ _ _} := @btw_cyclic_right α _ _ _ _
-  sbtw_trans_left {_ _ _ _} habc hbdc := hbdc.trans_right habc
-  sbtw_iff_btw_not_btw {a b c} := @sbtw_iff_btw_not_btw α _ c b a
+  btw_cyclic_left := btw_cyclic_right
+  sbtw_trans_left habc hbdc := hbdc.trans_right habc
+  sbtw_iff_btw_not_btw := sbtw_iff_btw_not_btw
 
 instance circularPartialOrder (α : Type*) [CircularPartialOrder α] : CircularPartialOrder αᵒᵈ where
-  btw_antisymm := fun {_ _ _} habc hcba => @btw_antisymm α _ _ _ _ hcba habc
+  btw_antisymm habc hcba := by simpa [ofDual_inj] using btw_antisymm hcba habc
 
 instance (α : Type*) [CircularOrder α] : CircularOrder αᵒᵈ where
-  btw_total := fun {a b c} => @btw_total α _ c b a
+  btw_total {_ _ _} := btw_total ..
 
 end OrderDual

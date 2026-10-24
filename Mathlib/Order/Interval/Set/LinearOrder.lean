@@ -75,7 +75,8 @@ theorem Ico_subset_Ico_iff (h₁ : a₁ < b₁) : Ico a₁ b₁ ⊆ Ico a₂ b�
     fun ⟨h₁, h₂⟩ => Ico_subset_Ico h₁ h₂⟩
 
 theorem Ioc_subset_Ioc_iff (h₁ : a₁ < b₁) : Ioc a₁ b₁ ⊆ Ioc a₂ b₂ ↔ b₁ ≤ b₂ ∧ a₂ ≤ a₁ := by
-  convert! @Ico_subset_Ico_iff αᵒᵈ _ b₁ b₂ a₁ a₂ h₁ using 2 <;> exact (@Ico_toDual α _ _ _).symm
+  convert @Ico_subset_Ico_iff αᵒᵈ _ _ _ _ _ h₁ using 2
+  simp [Ioc, Ico, OrderDual.toDual_le, and_comm]
 
 theorem Ico_eq_Ico_iff (h : a < b ∨ c < d) : Ico a b = Ico c d ↔ a = c ∧ b = d := by
   refine ⟨fun h ↦ ?_, by grind⟩

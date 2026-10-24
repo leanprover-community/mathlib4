@@ -62,7 +62,7 @@ protected theorem dual {l : α → β} {u : β → α} (gc : GaloisConnection l 
   fun a b ↦ (gc (ofDual b) (ofDual a)).symm
 
 @[to_dual self]
-protected theorem odual {l : αᵒᵈ → βᵒᵈ} {u : βᵒᵈ → αᵒᵈ} (gc : GaloisConnection l u) :
+protected theorem ofDual {l : αᵒᵈ → βᵒᵈ} {u : βᵒᵈ → αᵒᵈ} (gc : GaloisConnection l u) :
     GaloisConnection (ofDual ∘ u ∘ toDual) (ofDual ∘ l ∘ toDual) :=
   fun a b ↦ (gc (toDual b) (toDual a)).symm
 
@@ -310,6 +310,6 @@ def GaloisCoinsertion.dual [Preorder α] [Preorder β] {l : α → β} {u : β �
 and `βᵒᵈ`. -/]
 def GaloisCoinsertion.ofDual [Preorder α] [Preorder β] {l : αᵒᵈ → βᵒᵈ} {u : βᵒᵈ → αᵒᵈ} :
     GaloisCoinsertion l u → GaloisInsertion (ofDual ∘ u ∘ toDual) (ofDual ∘ l ∘ toDual) :=
-  fun x ↦ ⟨fun b h ↦ (x.1 ⟨b⟩ h).ofDual, x.2.odual, fun a ↦ x.3 (toDual a), fun b h ↦ by
+  fun x ↦ ⟨fun b h ↦ (x.1 ⟨b⟩ h).ofDual, x.2.ofDual, fun a ↦ x.3 (toDual a), fun b h ↦ by
     rw [ofDual_inj]
     exact x.4 (toDual b) h⟩

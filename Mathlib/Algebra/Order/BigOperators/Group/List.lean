@@ -110,8 +110,8 @@ alias prod_le_pow_card := prod_le_pow_length
 @[to_additive length_nsmul_le_sum]
 lemma pow_length_le_prod [Preorder M] [MulRightMono M]
     [MulLeftMono M] (l : List M) (n : M) (h : ∀ x ∈ l, n ≤ x) :
-    n ^ l.length ≤ l.prod :=
-  @prod_le_pow_length Mᵒᵈ _ _ _ _ l n h
+    n ^ l.length ≤ l.prod := by
+  simpa only [map_id', map_const', prod_replicate] using prod_le_prod h
 
 @[to_additive (attr := deprecated (since := "2026-08-26")) card_nsmul_le_sum]
 alias pow_card_le_prod := pow_length_le_prod
@@ -288,8 +288,10 @@ theorem apply_prod_le_sum_map (h_one : f 1 ≤ 0) (h_mul : ∀ (a b : α), f (a 
   | cons hd tl IH => grw [prod_cons, h_mul, IH]; simp
 
 theorem sum_map_le_apply_prod (h_one : 0 ≤ f 1) (h_mul : ∀ (a b : α), f a + f b ≤ f (a * b)) :
-    (l.map f).sum ≤ f l.prod :=
-  apply_prod_le_sum_map (β := βᵒᵈ) l f h_one h_mul
+    (l.map f).sum ≤ f l.prod := by
+  induction l with
+  | nil => simp [h_one]
+  | cons hd tl IH => grw [prod_cons, ← h_mul, ← IH]; simp
 
 end ProdSum
 
