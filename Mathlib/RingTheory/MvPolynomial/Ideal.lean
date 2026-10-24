@@ -250,9 +250,8 @@ lemma monomial_mem_span_range_leadingTerm_tfae {R ι} [CommSemiring R] {e : σ �
   tfae_have 1 ↔ 2 := by
     by_cases hc0 : c = 0
     · simp [hc0]
-    simp_rw [Set.range_comp, leadingTerm.eq_1, MvPolynomial.mem_ideal_span_monomial_image',
-      Set.ofPred_mem_range, ← Set.image_comp, support_monomial, ne_eq, hc0, ite_false,
-      not_false_iff, true_imp_iff, Finset.mem_singleton, forall_eq, coeff_monomial, ite_true]
+    simp [Set.range_comp, leadingTerm.eq_1, mem_ideal_span_monomial_image', Set.ofPred_and,
+      ← Set.image_preimage_eq_range_inter, -Set.mem_range]
   tfae_have 2 ↔ 3 := by
     simp_rw [← Set.image_comp, Finsupp.mem_span_image_iff_linearCombination, eq_comm]
     exact Iff.rfl
