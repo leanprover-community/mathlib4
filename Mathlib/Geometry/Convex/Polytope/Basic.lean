@@ -29,7 +29,12 @@ This file introduces convex polytopes as V-polytopes and proves basic facts abou
 ## TODO
 
 Future PRs will define polyhedra (using H-representations) and prove that, in vector spaces,
-polytopes are polyhedra.
+polytopes are polyhedra. The converse holds for bounded polyhedra. Both implications do not
+hold in more general modules.
+
+Future PRs will define extreme points for convex sets and prove that a polytope is the convex 
+hull of its extreme points. At this point one should prefer to use these theorems over
+`exists_finset_convexHull`.
 
 ## References
 
