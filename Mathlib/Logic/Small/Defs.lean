@@ -22,7 +22,7 @@ If `α ≃ β`, then `Small.{w} α ↔ Small.{w} β`.
 See `Mathlib/Logic/Small/Basic.lean` for further instances and theorems.
 -/
 
-@[expose] public section
+public section
 
 universe u w v v'
 
@@ -44,13 +44,12 @@ theorem Small.mk' {α : Type v} {S : Type w} (e : α ≃ S) : Small.{w} α :=
 
 /-- An arbitrarily chosen model in `Type w` for a `w`-small type.
 -/
-@[pp_with_univ, no_expose]
+@[pp_with_univ]
 def Shrink (α : Type v) [Small.{w} α] : Type w :=
   Classical.choose (@Small.equiv_small α _)
 
 /-- The noncomputable equivalence between a `w`-small type and a model.
 -/
-@[no_expose]
 noncomputable def equivShrink (α : Type v) [Small.{w} α] : α ≃ Shrink α :=
   Nonempty.some (Classical.choose_spec (@Small.equiv_small α _))
 
@@ -62,14 +61,16 @@ theorem Shrink.ext {α : Type v} [Small.{w} α] {x y : Shrink α}
 -- It would be nice to mark this as `aesop cases` if
 -- https://github.com/leanprover-community/aesop/issues/59
 -- is resolved.
-@[induction_eliminator]
-protected noncomputable def Shrink.rec {α : Type*} [Small.{w} α] {F : Shrink α → Sort v}
-    (h : ∀ X, F (equivShrink _ X)) : ∀ X, F X :=
-  fun X => ((equivShrink _).apply_symm_apply X) ▸ (h _)
+/-- A recursor for `Shrink`. Use as `induction x`. -/
+@[elab_as_elim, induction_eliminator, cases_eliminator]
+protected noncomputable def Shrink.rec {α : Type*} [Small.{w} α] {motive : Shrink α → Sort v}
+    (equivShrink : ∀ X, motive (equivShrink _ X)) : ∀ X, motive X :=
+  fun X => ((_root_.equivShrink _).apply_symm_apply X) ▸ (equivShrink _)
 
 @[simp]
-lemma Shrink.rec_equivShrink {α : Type*} [Small.{w} α] {F : Shrink α → Sort v}
-    {f : (a : α) → F (equivShrink α a)} (a : α) : Shrink.rec f (equivShrink _ a) = f a := by
+lemma Shrink.rec_equivShrink {α : Type*} [Small.{w} α] {motive : Shrink α → Sort v}
+    {equivShrink : (a : α) → motive (equivShrink α a)} (a : α) :
+    Shrink.rec equivShrink (_root_.equivShrink _ a) = equivShrink a := by
   simp only [Shrink.rec, eqRec_eq_cast, cast_eq_iff_heq]
   rw [Equiv.symm_apply_apply]
 
