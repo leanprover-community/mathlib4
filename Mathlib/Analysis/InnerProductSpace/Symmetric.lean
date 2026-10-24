@@ -103,7 +103,7 @@ theorem IsSymmetric.sub {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS : S.Is
 theorem IsSymmetric.smul {c : 𝕜} (hc : conj c = c) {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) :
     c • T |>.IsSymmetric := by
   intro x y
-  simp only [smul_apply, inner_smul_left, hc, hT x y, inner_smul_right]
+  simp [inner_smul_left, hc, hT x y, inner_smul_right]
 
 theorem IsSymmetric.natCast (n : ℕ) : IsSymmetric (n : E →ₗ[𝕜] E) := fun x y => by
   simp [← Nat.cast_smul_eq_nsmul 𝕜, inner_smul_left, inner_smul_right]
