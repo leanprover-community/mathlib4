@@ -179,8 +179,11 @@ protected abbrev Function.Surjective.mulDistribMulAction [Monoid B] [SMul M B] (
   smul_one c := by rw [← f.map_one, ← smul, smul_one]
 
 variable (A) in
+-- TODO: generalize to MulDistribSMul once the class is added
 /-- Scalar multiplication by `r` as a `MonoidHom`. -/
-@[simps] def MulDistribMulAction.toMonoidHom (r : M) : A →* A where
+@[to_additive (dont_translate := M) (attr := simps)
+/-- Scalar multiplication by `r` as an `AddMonoidHom`. -/]
+def MulDistribMulAction.toMonoidHom (r : M) : A →* A where
   toFun := (r • ·)
   map_one' := smul_one r
   map_mul' := smul_mul' r
@@ -189,8 +192,10 @@ variable (A) in
   (MulDistribMulAction.toMonoidHom _ _).map_pow _ _
 
 variable (M A) in
+-- TODO: generalize to MulDistribSMul once the class is added
 /-- Each element of the monoid defines a monoid homomorphism. -/
-@[simps]
+@[to_additive (dont_translate := M) (attr := simps)
+/-- Each element of the monoid defines a additive monoid homomorphism. -/]
 def MulDistribMulAction.toMonoidEnd : M →* Monoid.End A where
   toFun := MulDistribMulAction.toMonoidHom A
   map_one' := MonoidHom.ext <| one_smul M
@@ -201,12 +206,17 @@ end MulDistribMulAction
 section MulDistribMulAction
 variable [Monoid M] [Group A] [MulDistribMulAction M A]
 
-@[simp] lemma smul_inv' (r : M) (x : A) : r • x⁻¹ = (r • x)⁻¹ :=
+-- remove this when MulDistribSMul is added
+set_option linter.existingAttributeWarning false in
+@[simp, to_additive (dont_translate := M) smul_neg']
+lemma smul_inv' (r : M) (x : A) : r • x⁻¹ = (r • x)⁻¹ :=
   (MulDistribMulAction.toMonoidHom A r).map_inv x
 
+@[to_additive (dont_translate := M) smul_sub']
 lemma smul_div' (r : M) (x y : A) : r • (x / y) = r • x / r • y :=
   map_div (MulDistribMulAction.toMonoidHom A r) x y
 
+@[to_additive (dont_translate := M) smul_zsmul']
 lemma smul_zpow' (r : M) (x : A) (z : ℤ) : r • (x ^ z) = (r • x) ^ z :=
   map_zpow (MulDistribMulAction.toMonoidHom A r) x z
 

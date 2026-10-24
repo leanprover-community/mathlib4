@@ -28,7 +28,7 @@ This file defines orbits, stabilizers, and other objects defined in terms of act
 
 @[expose] public section
 
-assert_not_exists MonoidWithZero DistribMulAction
+assert_not_exists MonoidWithZero
 
 universe u v
 

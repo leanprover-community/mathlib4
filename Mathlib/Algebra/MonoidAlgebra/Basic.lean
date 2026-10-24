@@ -336,8 +336,9 @@ theorem trans_domCongr_domCongr (e : M ≃* N) (f : N ≃* O) :
   ext
   simp
 
+variable (R A) in
 /-- `MonoidAlgebra.domCongr` as a `MonoidHom` from `MulAut`. -/
-@[simps]
+@[to_additive (attr := simps) /-- `AddMonoidAlgebra.domCongr` as an `MonoidHom` from `AddAut`. -/]
 def domCongrAut : MulAut M →* A[M] ≃ₐ[R] A[M] where
   toFun := MonoidAlgebra.domCongr R A
   map_one' := by rw [MulAut.one_def, AlgEquiv.aut_one, domCongr_refl]
@@ -648,14 +649,6 @@ lemma lift_mapRingHom_algebraMap [CommSemiring S] [Algebra S A] [Algebra R S] [I
 @[deprecated (since := "2026-06-18")]
 alias lift_mapRangeRingHom_algebraMap := lift_mapRingHom_algebraMap
 
-variable (R A) in
-/-- `AddMonoidAlgebra.domCongr` as an `AddMonoidHom` from `AddAut`. -/
-@[simps]
-def domCongrAut : AddAut M →+ Additive (A[M] ≃ₐ[R] A[M]) where
-  toFun f := .ofMul (AddMonoidAlgebra.domCongr R A f)
-  map_zero' := by ext; simp [AddAut.zero_def]
-  map_add' _ _ := by ext; simp [AddAut.add_def]
-
 end lift
 
 section comapDomAlgAut
@@ -666,7 +659,7 @@ variable (R M G) in
 /-- An action of `G` on `M` by additive automorphisms induces an action of `G` on `R[M]`
 by `R`-algebra automorphisms, through the exponents. -/
 def comapDomAlgAut : G →* R[M] ≃ₐ[R] R[M] :=
-  (AddMonoidHom.toMultiplicative (domCongrAut R R (M := M))).comp (DistribMulAction.toAddAut G M)
+  (domCongrAut R R (M := M)).comp (DistribMulAction.toAddAut G M)
 
 theorem comapDomAlgAut_apply (g : G) :
     comapDomAlgAut R M G g = domCongr R R (DistribMulAction.toAddEquiv M g) :=
