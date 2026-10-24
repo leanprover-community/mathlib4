@@ -134,7 +134,7 @@ variable (I) in
 theorem of_preimage_eq_empty [IsEmpty I] {x : X} {U : Set X} (hUx : U ∈ 𝓝 x) (hfU : f ⁻¹' U = ∅) :
     IsEvenlyCovered f x I :=
   have ⟨V, hVU, hV, hxV⟩ := mem_nhds_iff.mp hUx
-  have hfV : f ⁻¹' V = ∅ := Set.eq_empty_of_subset_empty ((Set.preimage_mono hVU).trans hfU.le)
+  have hfV : f ⁻¹' V = ∅ := by grw [hVU, hfU]
   have := Set.isEmpty_coe_sort.mpr hfV
   ⟨inferInstance, _, hxV, hV, hfV ▸ isOpen_empty, .empty, isEmptyElim⟩
 

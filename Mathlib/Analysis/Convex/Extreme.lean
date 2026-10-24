@@ -156,8 +156,8 @@ theorem extremePoints_subset : A.extremePoints 𝕜 ⊆ A :=
   fun _ hx ↦ hx.1
 
 @[simp]
-theorem extremePoints_empty : (∅ : Set E).extremePoints 𝕜 = ∅ :=
-  subset_empty_iff.1 extremePoints_subset
+theorem extremePoints_empty : (∅ : Set E).extremePoints 𝕜 = ∅ := by
+  grw [extremePoints_subset]
 
 @[simp]
 theorem extremePoints_singleton : ({x} : Set E).extremePoints 𝕜 = {x} :=

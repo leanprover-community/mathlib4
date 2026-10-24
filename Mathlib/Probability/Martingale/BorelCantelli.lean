@@ -91,8 +91,8 @@ theorem stoppedAbove_le (hr : 0 ≤ r) (hf0 : f 0 = 0)
     exact (sub_lt_sub_left this _).le.trans ((le_abs_self _).trans (hbddω _))
   · suffices WithTop.some k < min (WithTop.some i) (leastGE f r ω) from
       this.trans_le (min_le_right _ _)
-    have h_top : min (WithTop.some i) (leastGE f r ω) ≠ ⊤ :=
-      ne_top_of_le_ne_top (by simp) (min_le_left _ _)
+    have h_top : min (WithTop.some i) (leastGE f r ω) ≠ ⊤ := by
+      grw [min_le_left]; simp
     lift min (WithTop.some i) (leastGE f r ω) to ℕ using h_top with p
     simp only [WithTop.untopD_coe, WithTop.coe_lt_coe, gt_iff_lt] at *
     lia

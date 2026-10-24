@@ -574,7 +574,7 @@ lemma exists_measure_iUnion_gt_of_isCompact_closure
     (U : ℕ → Set 𝓧) (O : ∀ i, IsOpen (U i)) (Cov : ⋃ i, U i = univ) (hcomp : IsCompact (closure S))
     (ε : ℝ≥0∞) (hε : 0 < ε) (hεbound : ε ≤ 1) :
     ∃ (k : ℕ), ∀ μ ∈ S, 1 - ε < μ (⋃ i ≤ k, U i) := by
-  have εfin : ε ≠ ∞ := ne_top_of_le_ne_top (by simp) hεbound
+  have εfin : ε ≠ ∞ := by grw [hεbound]; simp
   lift ε to ℝ≥0 using εfin
   obtain ⟨ε, hε', rfl⟩ : ∃ (ε' : ℝ) (hε' : 0 ≤ ε'), ε = .mk ε' hε' := ⟨↑ε, ε.2, rfl⟩
   simp only [ENNReal.coe_pos, ← NNReal.coe_lt_coe, NNReal.coe_zero, coe_mk, coe_le_one_iff,

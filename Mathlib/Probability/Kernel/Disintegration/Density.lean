@@ -303,8 +303,8 @@ lemma densityProcess_mono_set (hκν : fst κ ≤ ν) (n : ℕ) (a : α) (x : γ
   obtain h₀ | h₀ := eq_or_ne (ν a (countablePartitionSet n x)) 0
   · simp [h₀]
   · gcongr
-    simp only [ne_eq, ENNReal.div_eq_top, h₀, and_false, false_or, not_and, not_not]
-    exact eq_top_mono (meas_countablePartitionSet_le_of_fst_le hκν n a x s')
+    grw [meas_countablePartitionSet_le_of_fst_le hκν n a x s']
+    simp [ENNReal.div_eq_top, h₀]
 
 lemma densityProcess_mono_kernel_left {κ' : Kernel α (γ × β)} (hκκ' : κ ≤ κ')
     (hκ'ν : fst κ' ≤ ν) (n : ℕ) (a : α) (x : γ) (s : Set β) :
@@ -317,7 +317,7 @@ lemma densityProcess_mono_kernel_left {κ' : Kernel α (γ × β)} (hκκ' : κ 
     meas_countablePartitionSet_le_of_fst_le hκ'ν n a x s
   gcongr
   · simp only [ne_eq, div_eq_top, h0, and_false, false_or, not_and, not_not]
-    exact fun h_top ↦ eq_top_mono h_le h_top
+    gcongr
   · apply hκκ'
 
 lemma densityProcess_antitone_kernel_right {ν' : Kernel α γ}
@@ -330,7 +330,7 @@ lemma densityProcess_antitone_kernel_right {ν' : Kernel α γ}
   · simp [nonpos_iff_eq_zero.1 (h_le.trans h0.le), h0]
   gcongr
   · simp only [ne_eq, div_eq_top, h0, and_false, false_or, not_and, not_not]
-    exact fun h_top ↦ eq_top_mono h_le h_top
+    gcongr
   · apply hνν'
 
 @[simp]
@@ -692,9 +692,7 @@ lemma tendsto_densityProcess_fst_atTop_univ_of_monotone (κ : Kernel α (γ × �
     · refine fun h h0 ↦ h (measure_mono_null (fun x ↦ ?_) h0)
       simp only [mem_prod, mem_ofPred_eq, and_imp]
       exact fun h _ ↦ h
-    · refine fun h_top ↦ eq_top_mono (measure_mono (fun x ↦ ?_)) h_top
-      simp only [mem_prod, mem_ofPred_eq, and_imp]
-      exact fun h _ ↦ h
+    · gcongr; intro x; simp +contextual
   by_cases h0 : fst κ a (countablePartitionSet n x) = 0
   · rw [fst_apply' _ _ (measurableSet_countablePartitionSet _ _)] at h0 ⊢
     suffices ∀ m, κ a (countablePartitionSet n x ×ˢ seq m) = 0 by

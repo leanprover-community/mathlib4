@@ -345,8 +345,8 @@ theorem sUnion_eq_univ_iff {c : Set (Set α)} : ⋃₀ c = univ ↔ ∀ a, ∃ b
   simp only [eq_univ_iff_forall, mem_sUnion]
 
 theorem iInter_eq_empty_of_eq_empty {i : ι} {f : ι → Set α} (h : f i = ∅) :
-    ⋂ j, f j = ∅ :=
-  subset_eq_empty (iInter_subset _ i) h
+    ⋂ j, f j = ∅ := by
+  grw [iInter_subset _ i, h]
 
 -- classical
 theorem iInter_eq_empty_iff {f : ι → Set α} : ⋂ i, f i = ∅ ↔ ∀ x, ∃ i, x ∉ f i := by
@@ -393,9 +393,8 @@ theorem sInter_eq_compl_sUnion_compl (S : Set (Set α)) : ⋂₀ S = (⋃₀ (co
   rw [← compl_compl (⋂₀ S), compl_sInter]
 
 theorem inter_empty_of_inter_sUnion_empty {s t : Set α} {S : Set (Set α)} (hs : t ∈ S)
-    (h : s ∩ ⋃₀ S = ∅) : s ∩ t = ∅ :=
-  eq_empty_of_subset_empty <| by
-    rw [← h]; exact inter_subset_inter_right _ (subset_sUnion_of_mem hs)
+    (h : s ∩ ⋃₀ S = ∅) : s ∩ t = ∅ := by
+  grw [subset_sUnion_of_mem hs, h]
 
 theorem range_sigma_eq_iUnion_range {γ : α → Type*} (f : Sigma γ → β) :
     range f = ⋃ a, range fun b => f ⟨a, b⟩ :=
