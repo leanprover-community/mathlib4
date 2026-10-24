@@ -422,8 +422,9 @@ theorem bddAbove_iff_exists_ge [SemilatticeSup γ] {s : Set γ} (x₀ : γ) :
 
 @[to_dual existing bddAbove_iff_exists_ge]
 theorem bddBelow_iff_exists_le [SemilatticeInf γ] {s : Set γ} (x₀ : γ) :
-    BddBelow s ↔ ∃ x, x ≤ x₀ ∧ ∀ y ∈ s, x ≤ y :=
-  bddAbove_iff_exists_ge (toDual x₀)
+    BddBelow s ↔ ∃ x, x ≤ x₀ ∧ ∀ y ∈ s, x ≤ y := by
+  rw [bddBelow_def, exists_le_and_iff_exists]
+  exact Antitone.ball fun x _ => antitone_le
 
 @[to_dual exists_le]
 theorem BddAbove.exists_ge [SemilatticeSup γ] {s : Set γ} (hs : BddAbove s) (x₀ : γ) :
