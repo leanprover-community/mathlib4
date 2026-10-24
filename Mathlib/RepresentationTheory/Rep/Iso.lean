@@ -150,10 +150,14 @@ set_option backward.isDefEq.respectTransparency false in
 def unitIso (V : Rep.{w} k G) : V ≅ (toModuleMonoidAlgebra ⋙ ofModuleMonoidAlgebra).obj V :=
   mkIso <| .mk
   { unitIsoAddEquiv (k := k) (G := G) with
-    map_smul' r x := show (RestrictScalars.addEquiv _ _ _).symm
-      (V.ρ.asModuleEquiv.symm (r • x)) = _ by
-      simp only [Representation.asModuleEquiv_symm_map_smul]
-      rfl } fun g ↦ by ext; exact unit_iso_comm ..
+    map_smul' r x := by
+      change (RestrictScalars.addEquiv k k[G] V.ρ.asModule).symm
+          (V.ρ.asModuleEquiv.symm (r • x)) =
+        r • (RestrictScalars.addEquiv k k[G] V.ρ.asModule).symm
+          (V.ρ.asModuleEquiv.symm x)
+      rw [map_smul, ← algebraMap_smul k[G] r,
+        RestrictScalars.addEquiv_symm_map_algebraMap_smul] }
+    fun g ↦ by ext; exact unit_iso_comm ..
 
 /-- The categorical equivalence `Rep k G ≌ ModuleCat k[G]`. -/
 def equivalenceModuleMonoidAlgebra : Rep.{w} k G ≌ ModuleCat k[G] where
