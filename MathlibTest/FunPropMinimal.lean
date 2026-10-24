@@ -882,4 +882,14 @@ example : Con (fun x => (semireducibleFun x).1) := by fun_prop
 set_option fun_prop.projDefaultTransparency true in
 example : Con (fun x => (semireducibleFun x).1) := by fun_prop
 
+-- This example is extracted from https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/two.20fun_prop.20failures/near/627268699
+structure P where
+  val : Nat → Nat → Nat
+
+def myP (g : Nat → Nat → Nat) : P := ⟨fun x i => g x i⟩
+
+-- This used to fail because `h` was reduced to `Con (fun x i => g x i)`
+example (g : Nat → Nat → Nat) (h : Con (myP g).val) : Con (myP g).val := by
+  fun_prop
+
 end ProjTransparency
