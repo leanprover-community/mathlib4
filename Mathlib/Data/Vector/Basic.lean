@@ -417,8 +417,8 @@ def inductionOn {C : ∀ {n : ℕ}, Vector α n → Sort*} {n : ℕ} (v : Vector
     exact nil
   | succ n ih =>
     rcases v with ⟨_ | ⟨a, v⟩, v_property⟩
-    cases v_property
-    exact cons (ih ⟨v, (add_left_inj 1).mp v_property⟩)
+    · cases v_property
+    · exact cons (ih ⟨v, (add_left_inj 1).mp v_property⟩)
 
 @[simp]
 theorem inductionOn_nil {C : ∀ {n : ℕ}, Vector α n → Sort*}
@@ -447,9 +447,9 @@ def inductionOn₂ {C : ∀ {n}, Vector α n → Vector β n → Sort*}
     exact nil
   | succ n ih =>
     rcases v with ⟨_ | ⟨a, v⟩, v_property⟩
-    cases v_property
+    · cases v_property
     rcases w with ⟨_ | ⟨b, w⟩, w_property⟩
-    cases w_property
+    · cases w_property
     apply @cons n _ _ ⟨v, (add_left_inj 1).mp v_property⟩ ⟨w, (add_left_inj 1).mp w_property⟩
     apply ih
 
@@ -468,11 +468,11 @@ def inductionOn₃ {C : ∀ {n}, Vector α n → Vector β n → Vector γ n →
     exact nil
   | succ n ih =>
     rcases u with ⟨_ | ⟨a, u⟩, u_property⟩
-    cases u_property
+    · cases u_property
     rcases v with ⟨_ | ⟨b, v⟩, v_property⟩
-    cases v_property
+    · cases v_property
     rcases w with ⟨_ | ⟨c, w⟩, w_property⟩
-    cases w_property
+    · cases w_property
     apply
       @cons n _ _ _ ⟨u, (add_left_inj 1).mp u_property⟩ ⟨v, (add_left_inj 1).mp v_property⟩
         ⟨w, (add_left_inj 1).mp w_property⟩

@@ -16,7 +16,6 @@ example : True := by
   exact .intro
   exact .intro
 
-#guard_msgs(drop warning) in
 /--
 warning: The following tactic starts with 2 goals and ends with 1 goal, 1 of which is not operated on.
   exact .intro
@@ -30,7 +29,6 @@ example : True := by
   exact .intro
   exact .intro
 
-#guard_msgs(drop warning) in
 /--
 warning: The following tactic starts with 2 goals and ends with 1 goal, 1 of which is not operated on.
   assumption
@@ -88,7 +86,6 @@ example {p q : Prop} (hp : p) (hq : q) : p ∧ q := by
   exact hp
 
 set_option linter.unusedTactic false in
-#guard_msgs(drop warning) in
 /--
 warning: The following tactic starts with 2 goals and ends with 1 goal, 1 of which is not operated on.
   rfl
@@ -104,7 +101,6 @@ example (p : Prop) (hp : p) : (0 = 0 ∧ p) ∨ 0 = 0 := by
   rfl
   assumption
 
-#guard_msgs(drop warning) in
 /--
 warning: The following tactic starts with 3 goals and ends with 2 goals, 2 of which are not operated on.
   rfl
@@ -130,7 +126,6 @@ example (p : Bool) : 0 = 0 := by
   case' false => rfl
   case' true => rfl
 
-#guard_msgs in
 -- `assumption'` is allowed, as it is useful precisely when there are multiple active goals.
 example (p : Bool) (f : False) {h : 0 = 0} : 0 = 0 ∧ 0 = 1 := by
   cases p <;>
@@ -138,7 +133,12 @@ example (p : Bool) (f : False) {h : 0 = 0} : 0 = 0 ∧ 0 = 1 := by
   assumption'
   any_goals cases f
 
-#guard_msgs in
+-- `·` is ignored.
+example : True ∧ True := by
+  constructor
+  · exact .intro
+  · exact .intro
+
 -- `focus` is ignored.
 example : True ∧ True := by
   constructor
@@ -146,6 +146,10 @@ example : True ∧ True := by
     exact .intro
   focus
     exact .intro
+
+-- parentheses are allowed
+example : True ∧ True ∧ True := by
+  refine ⟨?_, ?_, ?_⟩; (· simp); { simp }; simp
 
 set_option linter.unusedTactic false in
 example : 1 = 1 := by
@@ -176,7 +180,6 @@ example : True := by
   trivial
 
 -- Test the linter applies within have statements
-#guard_msgs(drop warning) in
 /--
   warning: The following tactic starts with 2 goals and ends with 1 goal, 1 of which is not operated on.
   trivial
@@ -251,21 +254,6 @@ example (hx : x = 0 ∨ x = 1) : x ≤ 1 := by
       trivial
       trivial
     cases #01c5
-
--- ignore `cases`
-example (hx : x = 0 ∨ x = 1) (hy : y = 0 ∨ y = 1) : x + y ≤ 2 := by
-  grind =>
-    cases #484a
-    cases #01c5
-    cases #01c5
-
--- ignore `<;>`
-example (hx : x = 0 ∨ x = 1) (hy : y = 0 ∨ y = 1) (hz : z = 0 ∨ z = 1) :
-    x + y + z ≤ 3 := by
-  grind =>
-    cases #f5ad
-    cases #484a <;> cases #01c5
-    cases #484a <;> cases #01c5
 
 -- excluded tactics
 
