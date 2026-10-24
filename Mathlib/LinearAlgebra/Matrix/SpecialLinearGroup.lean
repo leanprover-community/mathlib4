@@ -146,6 +146,14 @@ variable (A B : SpecialLinearGroup n R)
 theorem coe_mk (A : Matrix n n R) (h : det A = 1) : ↑(⟨A, h⟩ : SpecialLinearGroup n R) = A :=
   rfl
 
+theorem coe_mk_mul_mk (A B : Matrix n n R) (hA : det A = 1) (hB : det B = 1) :
+    ↑(⟨A, hA⟩ * ⟨B, hB⟩ : SpecialLinearGroup n R) = A * B :=
+  rfl
+
+theorem coe_inv_mk (A : Matrix n n R) (h : det A = 1) :
+    ↑(⟨A, h⟩⁻¹ : SpecialLinearGroup n R) = adjugate A :=
+  rfl
+
 @[simp]
 theorem coe_inv : ↑ₘ(A⁻¹) = adjugate A :=
   rfl
@@ -229,6 +237,10 @@ def map (f : R →+* S) : SpecialLinearGroup n R →* SpecialLinearGroup n S whe
       simp [g.prop]⟩
   map_one' := Subtype.ext f.mapMatrix.map_one
   map_mul' x y := Subtype.ext <| f.mapMatrix.map_mul ↑ₘx ↑ₘy
+
+@[simp]
+theorem map_mk_apply (f : R →+* S) (A : Matrix n n R) (h : det A = 1) :
+    ↑(SpecialLinearGroup.map f (⟨A, h⟩ : SpecialLinearGroup n R)) = A.map f := rfl
 
 section center
 
