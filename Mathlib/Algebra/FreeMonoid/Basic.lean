@@ -85,8 +85,8 @@ theorem toList_ofList (l : List α) : toList (ofList l) = l := rfl
 @[to_additive (attr := simp)]
 theorem ofList_toList (xs : FreeMonoid α) : ofList (toList xs) = xs := rfl
 
-@[deprecated (since := "2026-10-23")] alias toList_symm := ofList_toList
-@[deprecated (since := "2026-10-23")] alias ofList_symm := toList_ofList
+@[to_additive, deprecated (since := "2026-10-23")] alias toList_symm := ofList_toList
+@[to_additive, deprecated (since := "2026-10-23")] alias ofList_symm := toList_ofList
 
 @[to_additive (attr := simp)]
 theorem toList_comp_ofList : @toList α ∘ ofList = id := rfl
@@ -272,8 +272,8 @@ theorem mulRecOn_of_mul {motive : FreeMonoid α → Sort*} (x : α) (xs : FreeMo
     (of_mul : ∀ x xs, motive xs → motive (of x * xs)) :
     @mulRecOn α motive (of x * xs) one of_mul = of_mul x xs (mulRecOn xs one of_mul) := rfl
 
-@[deprecated (since := "2026-10-23")] alias recOn_one := mulRecOn_one
-@[deprecated (since := "2026-10-23")] alias recOn_of_mul := mulRecOn_of_mul
+@[to_additive, deprecated (since := "2026-10-23")] alias recOn_one := mulRecOn_one
+@[to_additive, deprecated (since := "2026-10-23")] alias recOn_of_mul := mulRecOn_of_mul
 
 /-! ### Induction -/
 
@@ -317,8 +317,8 @@ theorem mulCasesOn_of_mul {motive : FreeMonoid α → Sort*} (x : α) (xs : Free
     (one : motive 1) (of_mul : ∀ x xs, motive (of x * xs)) :
     @mulCasesOn α motive (of x * xs) one of_mul = of_mul x xs := by simp [mulCasesOn]
 
-@[deprecated (since := "2026-10-23")] alias casesOn_one := mulCasesOn_one
-@[deprecated (since := "2026-10-23")] alias casesOn_of_mul := mulCasesOn_of_mul
+@[to_additive, deprecated (since := "2026-10-23")] alias casesOn_one := mulCasesOn_one
+@[to_additive, deprecated (since := "2026-10-23")] alias casesOn_of_mul := mulCasesOn_of_mul
 
 @[to_additive (attr := ext)]
 theorem hom_eq ⦃f g : FreeMonoid α →* M⦄ (h : ∀ x, f (of x) = g (of x)) : f = g :=
