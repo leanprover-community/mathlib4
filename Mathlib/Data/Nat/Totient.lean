@@ -344,6 +344,22 @@ theorem totient_gcd_mul_totient_mul (a b : ℕ) : φ (a.gcd b) * φ (a * b) = φ
   rw [eq_comm, mul_comm, ← mul_assoc, ← Nat.mul_div_assoc]
   exact mul_dvd_mul (prod_primeFactors_dvd a) (prod_primeFactors_dvd b)
 
+theorem totient_eq_self_iff {a : ℕ} : φ a = a ↔ a ≤ 1 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · by_contra! hle
+    exact h.not_lt (totient_lt a hle)
+  · match a with | 0 | 1 => simp
+
+/-- For nonzero natural numbers, Euler's totient function is multiplicative exactly when the
+arguments are coprime. -/
+theorem totient_mul_eq_totient_mul_iff {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
+    φ (a * b) = φ a * φ b ↔ a.Coprime b := by
+  refine ⟨fun h ↦ ?_, totient_mul⟩
+  refine le_antisymm (totient_eq_self_iff.mp ?_) (by grind)
+  apply mul_left_cancel₀ <| mul_ne_zero
+    (totient_eq_zero.not.mpr ha) (totient_eq_zero.not.mpr hb)
+  rw [← totient_gcd_mul_totient_mul, h, mul_comm]
+
 theorem totient_super_multiplicative (a b : ℕ) : φ a * φ b ≤ φ (a * b) := by
   let d := a.gcd b
   rcases eq_zero_or_pos a with (rfl | ha0)
