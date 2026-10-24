@@ -2089,6 +2089,7 @@ public import Mathlib.Analysis.Fourier.ZMod
 public import Mathlib.Analysis.FunctionalSpaces.BesselPotentialSpace
 public import Mathlib.Analysis.FunctionalSpaces.SobolevInequality
 public import Mathlib.Analysis.Hofer
+public import Mathlib.Analysis.InnerProductSpace.Abs
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
 public import Mathlib.Analysis.InnerProductSpace.Affine
 public import Mathlib.Analysis.InnerProductSpace.Basic
