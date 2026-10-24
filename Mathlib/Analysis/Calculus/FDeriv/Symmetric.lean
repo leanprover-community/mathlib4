@@ -497,9 +497,18 @@ noncomputable irreducible_def minSmoothness (n : ℕ∞ω) :=
     minSmoothness 𝕜 n = n := by
   simp [minSmoothness, h]
 
+lemma minSmoothness_of_not_isRCLikeNormedField (h : ¬(IsRCLikeNormedField 𝕜)) {n : ℕ∞ω} :
+    minSmoothness 𝕜 n = ω := by
+  simp [minSmoothness, h]
+
 lemma le_minSmoothness {n : ℕ∞ω} : n ≤ minSmoothness 𝕜 n := by
   simp only [minSmoothness]
   split_ifs <;> simp
+
+lemma eq_top_of_minSmoothness_le_of_not_isRCLikeNormedField {n m : ℕ∞ω}
+    (h : ¬(IsRCLikeNormedField 𝕜)) (hmn : minSmoothness 𝕜 n ≤ m) :
+    m = ω := by
+  rw [minSmoothness_of_not_isRCLikeNormedField h] at hmn; order
 
 lemma minSmoothness_add {n m : ℕ∞ω} : minSmoothness 𝕜 (n + m) = minSmoothness 𝕜 n + m := by
   simp only [minSmoothness]
