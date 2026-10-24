@@ -67,7 +67,7 @@ open Bundle Filter Set OpenPartialHomeomorph
 open Function (id_def)
 open scoped Manifold Topology ContDiff
 
-variable {n : ℕ∞ω} {𝕜 B F M : Type*} {E : B → Type*}
+variable {n : ℕ∞ω} {𝕜 B B' F M : Type*} {E : B → Type*}
 
 /-! ### Charted space structure on a fiber bundle -/
 
@@ -521,12 +521,22 @@ theorem contMDiffOn (e : Trivialization F (π F E)) [MemTrivializationAtlas e] :
   rw [e.contMDiffOn_iff (mapsTo_id _)] at this
   exact (this.1.prodMk this.2).congr fun x hx ↦ (e.mk_proj_snd hx).symm
 
+theorem contMDiffAt (e : Trivialization F (π F E)) [MemTrivializationAtlas e]
+    {x} (hx : x ∈ e.source) :
+    ContMDiffAt (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) n e x :=
+  e.contMDiffOn.contMDiffAt (e.open_source.mem_nhds hx)
+
 theorem contMDiffOn_symm (e : Trivialization F (π F E)) [MemTrivializationAtlas e] :
     ContMDiffOn (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) n e.toOpenPartialHomeomorph.symm e.target := by
   rw [e.contMDiffOn_iff e.toOpenPartialHomeomorph.mapsTo_symm]
   refine ⟨contMDiffOn_fst.congr fun x hx ↦ e.proj_symm_apply hx,
     contMDiffOn_snd.congr fun x hx ↦ ?_⟩
   rw [e.apply_symm_apply hx]
+
+theorem contMDiffAt_symm (e : Trivialization F (π F E)) [MemTrivializationAtlas e]
+    {x} (hx : x ∈ e.target) :
+    ContMDiffAt (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) n e.toOpenPartialHomeomorph.symm x :=
+  e.contMDiffOn_symm.contMDiffAt (e.open_target.mem_nhds hx)
 
 /-- Smoothness of a `C^n` section at `x₀` within a set `a` can be determined
 using any trivialisation whose `baseSet` contains `x₀`. -/
