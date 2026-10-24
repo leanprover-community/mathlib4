@@ -20,7 +20,8 @@ A monad "is just" a monoid in the category of endofunctors.
 1. `toMon` associates a monoid object in `C ⥤ C` to any monad on `C`.
 2. `monadToMon` is the functorial version of `toMon`.
 3. `ofMon` associates a monad on `C` to any monoid object in `C ⥤ C`.
-4. `monadMonEquiv` is the equivalence between `Monad C` and `Mon (C ⥤ C)`.
+4. `monadMonIso` is the isomorphism between `Monad C` and `Mon (C ⥤ C)`.
+5. `monadMonEquiv` is the isomorphism downgraded to an equivalence.
 
 -/
 
@@ -88,19 +89,17 @@ def monToMonad : Mon (C ⥤ C) ⥤ Monad C where
       app_μ Z := by
         simpa [-IsMonHom.mul_hom] using congrArg (fun t ↦ t.app Z) (IsMonHom.mul_hom f.hom) }
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
-/-- Oh, monads are just monoids in the category of endofunctors (equivalence of categories). -/
+/-- Oh, monads are just monoids in the category of endofunctors (isomorphism of categories). -/
 @[simps]
-def monadMonEquiv : Monad C ≌ Mon (C ⥤ C) where
-  functor := monadToMon _
-  inverse := monToMonad _
-  unitIso :=
-  { hom := { app := fun _ => { app := fun _ => 𝟙 _ } }
-    inv := { app := fun _ => { app := fun _ => 𝟙 _ } } }
-  counitIso :=
-  { hom := { app := fun _ => { hom := 𝟙 _ } }
-    inv := { app := fun _ => { hom := 𝟙 _ } } }
+def monadMonIso : Cat.of (Monad C) ≅ Cat.of (Mon (C ⥤ C)) where
+  hom := (monadToMon C).toCatHom
+  inv := (monToMonad C).toCatHom
+
+/-- Oh, monads are just monoids in the category of endofunctors (equivalence of categories). -/
+@[simps! functor inverse
+  unitIso_hom_app_toNatTrans_app unitIso_inv_app_toNatTrans_app
+  counitIso_hom_app_hom counitIso_inv_app_hom]
+def monadMonEquiv : Monad C ≌ Mon (C ⥤ C) := Cat.equivOfIso (monadMonIso C)
 
 -- Sanity check
 example (A : Monad C) {X : C} : ((monadMonEquiv C).unitIso.app A).hom.app X = 𝟙 _ :=
