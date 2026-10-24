@@ -206,3 +206,7 @@ theorem NumberField.torsionOrder_dvd_absNorm_sub_one' {P : Ideal (𝓞 K)} [hP :
   rwa [Nat.card_units, ← absNorm_eq_natCard] at h
 
 end torsionMapQuot
+
+open IsDedekindDomain in
+instance [NumberField K] : Infinite (HeightOneSpectrum (𝓞 K)) :=
+  HeightOneSpectrum.infinite_of_isIntegral (A := ℤ)
