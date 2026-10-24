@@ -105,11 +105,12 @@ lemma isUnit_pow_succ_iff : IsUnit (a ^ (n + 1)) ↔ IsUnit a := isUnit_pow_iff 
 @[to_additive /-- The additive unit `h.addUnit` is an `n`-th multiple in `AddUnits M` if and only
 if `a` is an `n`-th multiple in `M`. -/]
 lemma IsUnit.exists_pow_eq_unit_iff (h : IsUnit a) : (∃ x, x ^ n = h.unit) ↔ ∃ x, x ^ n = a := by
-  refine ⟨fun ⟨x, hx⟩ ↦ ⟨x, ?_⟩, fun ⟨x, hx⟩ ↦ ?_⟩
+  refine ⟨fun ⟨x, hx⟩ ↦ ⟨x, ?_⟩, ?_⟩
   · simpa using congrArg Units.val hx
-  · cases n with
-    | zero => exact ⟨1, Units.ext (by simpa using hx)⟩
-    | succ _ => exact ⟨(isUnit_pow_succ_iff.mp (hx ▸ h)).unit, Units.ext hx⟩
+  · rintro ⟨x, rfl⟩
+    cases n with
+    | zero => exact ⟨1, Units.ext (by simp)⟩
+    | succ _ => exact ⟨(isUnit_pow_succ_iff.mp h).unit, Units.ext rfl⟩
 
 lemma isUnit_pow_iff_of_not_isUnit (hx : ¬ IsUnit a) {n : ℕ} :
     IsUnit (a ^ n) ↔ n = 0 := by

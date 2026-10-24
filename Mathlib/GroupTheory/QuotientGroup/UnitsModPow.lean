@@ -26,15 +26,6 @@ of the Selmer groups `K⟮S, n⟯` of `Mathlib.RingTheory.DedekindDomain.SelmerG
 * `Units.ModPow.piEquiv`: the units modulo `n`-th powers of a product are the product of the
   units modulo `n`-th powers of the factors.
 
-## Main statements
-
-* `Units.ModPow.mk_eq_one_iff`, `Units.ModPow.mk_eq_one_iff_exists_pow_eq_val`,
-  `Units.ModPow.unit_eq_one_iff`: the class of a unit is trivial if and only if the unit is an
-  `n`-th power (in `αˣ`, or equivalently in `α`).
-* `Units.ModPow.mk_eq_mk_iff`: two units have the same class if and only if they differ by an
-  `n`-th power.
-* `Units.ModPow.pow_eq_one`: `Units.ModPow α n` has exponent dividing `n`.
-
 ## Implementation notes
 
 `Units.ModPow α n` is an abbreviation for `αˣ ⧸ (powMonoidHom n).range`, so that the
@@ -47,7 +38,7 @@ of the Selmer groups `K⟮S, n⟯` of `Mathlib.RingTheory.DedekindDomain.SelmerG
 quotient of `αˣ` by the range of `powMonoidHom n`. -/
 @[to_additive /-- The group of additive units of an additive commutative monoid `α` modulo
 `n`-th multiples, as the quotient of `AddUnits α` by the range of `nsmulAddMonoidHom n`. -/]
-abbrev Units.ModPow (α : Type*) [CommMonoid α] (n : ℕ) : Type _ :=
+abbrev Units.ModPow (α : Type*) [CommMonoid α] (n : ℕ) :=
   αˣ ⧸ (powMonoidHom n : αˣ →* αˣ).range
 
 namespace Units.ModPow
@@ -125,6 +116,12 @@ lemma map_id (n : ℕ) : map (MonoidHom.id α) n = MonoidHom.id (ModPow α n) :=
 lemma map_comp {γ : Type*} [CommMonoid γ] (ψ : β →* γ) (φ : α →* β) (n : ℕ) :
     (map ψ n).comp (map φ n) = map (ψ.comp φ) n := by
   ext
+  simp
+
+@[to_additive]
+lemma map_map {γ : Type*} [CommMonoid γ] (ψ : β →* γ) (φ : α →* β) {n : ℕ} (x : ModPow α n) :
+    map ψ n (map φ n x) = map (ψ.comp φ) n x := by
+  rw [← map_comp]
   simp
 
 @[to_additive]
