@@ -5,7 +5,6 @@ Authors: Jeremy Avigad, Leonardo de Moura
 -/
 module
 
-public meta import Aesop
 public import Mathlib.Data.Set.Disjoint
 public import Mathlib.Tactic.Simproc.ExistsAndEq
 
@@ -377,7 +376,7 @@ theorem pair_comm (a b : α) : ({a, b} : Set α) = {b, a} :=
 
 theorem pair_eq_pair_iff {x y z w : α} :
     ({x, y} : Set α) = {z, w} ↔ x = z ∧ y = w ∨ x = w ∧ y = z := by
-  simp [subset_antisymm_iff, insert_subset_iff]; aesop
+  simp [subset_antisymm_iff, insert_subset_iff]; grind
 
 theorem pair_subset_iff : {a, b} ⊆ s ↔ a ∈ s ∧ b ∈ s := by grind
 
