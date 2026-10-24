@@ -218,9 +218,7 @@ variable {f : k → E} {a b r : k}
 
 local notation "c" => lineMap a b r
 
-section
-omit [IsStrictOrderedRing k]
-
+omit [IsStrictOrderedRing k] in
 /-- Given `c = lineMap a b r`, `a < c`, the point `(c, f c)` is non-strictly below the
 segment `[(a, f a), (b, f b)]` if and only if `slope f a c ≤ slope f a b`. -/
 theorem map_le_lineMap_iff_slope_le_slope_left (h : 0 < r * (b - a)) :
@@ -232,12 +230,14 @@ theorem map_le_lineMap_iff_slope_le_slope_left (h : 0 < r * (b - a)) :
     mul_inv_cancel_right₀ (right_ne_zero_of_mul h.ne'), smul_add,
     smul_inv_smul₀ (left_ne_zero_of_mul h.ne')]
 
+omit [IsStrictOrderedRing k] in
 /-- Given `c = lineMap a b r`, `a < c`, the point `(c, f c)` is non-strictly above the
 segment `[(a, f a), (b, f b)]` if and only if `slope f a b ≤ slope f a c`. -/
 theorem lineMap_le_map_iff_slope_le_slope_left (h : 0 < r * (b - a)) :
     lineMap (f a) (f b) r ≤ f c ↔ slope f a b ≤ slope f a c :=
   map_le_lineMap_iff_slope_le_slope_left (E := Eᵒᵈ) (f := f) (a := a) (b := b) (r := r) h
 
+omit [IsStrictOrderedRing k] in
 /-- Given `c = lineMap a b r`, `a < c`, the point `(c, f c)` is strictly below the
 segment `[(a, f a), (b, f b)]` if and only if `slope f a c < slope f a b`. -/
 theorem map_lt_lineMap_iff_slope_lt_slope_left (h : 0 < r * (b - a)) :
@@ -245,12 +245,14 @@ theorem map_lt_lineMap_iff_slope_lt_slope_left (h : 0 < r * (b - a)) :
   lt_iff_lt_of_le_iff_le' (lineMap_le_map_iff_slope_le_slope_left h)
     (map_le_lineMap_iff_slope_le_slope_left h)
 
+omit [IsStrictOrderedRing k] in
 /-- Given `c = lineMap a b r`, `a < c`, the point `(c, f c)` is strictly above the
 segment `[(a, f a), (b, f b)]` if and only if `slope f a b < slope f a c`. -/
 theorem lineMap_lt_map_iff_slope_lt_slope_left (h : 0 < r * (b - a)) :
     lineMap (f a) (f b) r < f c ↔ slope f a b < slope f a c :=
   map_lt_lineMap_iff_slope_lt_slope_left (E := Eᵒᵈ) (f := f) (a := a) (b := b) (r := r) h
 
+omit [IsStrictOrderedRing k] in
 /-- Given `c = lineMap a b r`, `c < b`, the point `(c, f c)` is non-strictly below the
 segment `[(a, f a), (b, f b)]` if and only if `slope f a b ≤ slope f c b`. -/
 theorem map_le_lineMap_iff_slope_le_slope_right (h : 0 < (1 - r) * (b - a)) :
@@ -263,12 +265,14 @@ theorem map_le_lineMap_iff_slope_le_slope_right (h : 0 < (1 - r) * (b - a)) :
     smul_neg, neg_add_eq_sub]
   exact right_ne_zero_of_mul h.ne'
 
+omit [IsStrictOrderedRing k] in
 /-- Given `c = lineMap a b r`, `c < b`, the point `(c, f c)` is non-strictly above the
 segment `[(a, f a), (b, f b)]` if and only if `slope f c b ≤ slope f a b`. -/
 theorem lineMap_le_map_iff_slope_le_slope_right (h : 0 < (1 - r) * (b - a)) :
     lineMap (f a) (f b) r ≤ f c ↔ slope f c b ≤ slope f a b :=
   map_le_lineMap_iff_slope_le_slope_right (E := Eᵒᵈ) (f := f) (a := a) (b := b) (r := r) h
 
+omit [IsStrictOrderedRing k] in
 /-- Given `c = lineMap a b r`, `c < b`, the point `(c, f c)` is strictly below the
 segment `[(a, f a), (b, f b)]` if and only if `slope f a b < slope f c b`. -/
 theorem map_lt_lineMap_iff_slope_lt_slope_right (h : 0 < (1 - r) * (b - a)) :
@@ -276,13 +280,12 @@ theorem map_lt_lineMap_iff_slope_lt_slope_right (h : 0 < (1 - r) * (b - a)) :
   lt_iff_lt_of_le_iff_le' (lineMap_le_map_iff_slope_le_slope_right h)
     (map_le_lineMap_iff_slope_le_slope_right h)
 
+omit [IsStrictOrderedRing k] in
 /-- Given `c = lineMap a b r`, `c < b`, the point `(c, f c)` is strictly above the
 segment `[(a, f a), (b, f b)]` if and only if `slope f c b < slope f a b`. -/
 theorem lineMap_lt_map_iff_slope_lt_slope_right (h : 0 < (1 - r) * (b - a)) :
     lineMap (f a) (f b) r < f c ↔ slope f c b < slope f a b :=
   map_lt_lineMap_iff_slope_lt_slope_right (E := Eᵒᵈ) (f := f) (a := a) (b := b) (r := r) h
-
-end
 
 /-- Given `c = lineMap a b r`, `a < c < b`, the point `(c, f c)` is non-strictly below the
 segment `[(a, f a), (b, f b)]` if and only if `slope f a c ≤ slope f c b`. -/

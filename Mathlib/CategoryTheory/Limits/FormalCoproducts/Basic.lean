@@ -348,12 +348,13 @@ include hpb in
 lemma isPullback : IsPullback (pullbackCone f g pb).fst (pullbackCone f g pb).snd f g :=
   ⟨⟨pullbackCone_condition f g pb⟩, ⟨isLimitPullbackCone f g pb hpb⟩⟩
 
-omit pb
 variable [HasPullbacks C]
 
+omit pb in
 instance : HasPullback f g :=
   hasPullback_of_pullbackCone f g (fun _ ↦ pullback.cone _ _) (fun _ ↦ pullback.isLimit _ _)
 
+omit pb in
 instance : HasPullbacks (FormalCoproduct.{w} C) :=
   hasPullbacks_of_hasLimit_cospan _
 

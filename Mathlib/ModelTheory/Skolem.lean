@@ -110,8 +110,7 @@ instance Substructure.elementarySkolem₁Reduct.instSmall :
   rw [coeSort_elementarySkolem₁Reduct]
   infer_instance
 
-omit [Nonempty M]
-
+omit [Nonempty M] in
 theorem exists_small_elementarySubstructure : ∃ S : L.ElementarySubstructure M, Small.{max u v} S :=
   (isEmpty_or_nonempty M).elim
     (fun _ => ⟨⊤, Countable.toSmall _⟩)
@@ -119,6 +118,7 @@ theorem exists_small_elementarySubstructure : ∃ S : L.ElementarySubstructure M
 
 variable {M}
 
+omit [Nonempty M] in
 /-- The **Downward Löwenheim–Skolem theorem** :
   If `s` is a set in an `L`-structure `M` and `κ` an infinite cardinal such that
   `max (#s, L.card) ≤ κ` and `κ ≤ # M`, then `M` has an elementary substructure containing `s` of

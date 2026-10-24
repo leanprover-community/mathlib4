@@ -81,21 +81,23 @@ end AlgebraicIndependent
 namespace Algebra
 
 variable (R) [FaithfulSMul R S]
-omit hx
-
+omit hx in
 protected theorem IsIntegral.algebraicIndependent_iff [Algebra.IsIntegral R S] :
     AlgebraicIndependent R x ↔ AlgebraicIndependent S x :=
   ⟨(·.extendScalars_of_isIntegral _),
     (·.restrictScalars (FaithfulSMul.algebraMap_injective R S))⟩
 
+omit hx in
 protected theorem IsIntegral.isTranscendenceBasis_iff [Algebra.IsIntegral R S] :
     IsTranscendenceBasis R x ↔ IsTranscendenceBasis S x := by
   simp_rw [IsTranscendenceBasis, IsIntegral.algebraicIndependent_iff R S]
 
+omit hx in
 protected theorem IsAlgebraic.algebraicIndependent_iff [Algebra.IsAlgebraic R S] :
     AlgebraicIndependent R x ↔ AlgebraicIndependent S x :=
   ⟨(·.extendScalars _), (·.restrictScalars (FaithfulSMul.algebraMap_injective R S))⟩
 
+omit hx in
 protected theorem IsAlgebraic.isTranscendenceBasis_iff [Algebra.IsAlgebraic R S] :
     IsTranscendenceBasis R x ↔ IsTranscendenceBasis S x := by
   simp_rw [IsTranscendenceBasis, IsAlgebraic.algebraicIndependent_iff R S]

@@ -276,8 +276,6 @@ instance : SMul R (T₁ ⟶ T₂) where
       hom₂ := n • f.hom₂
       hom₃ := n • f.hom₃ }
 
-omit [∀ (n : ℤ), (shiftFunctor C n).Additive]
-
 end
 
 instance : AddCommGroup (T₁ ⟶ T₂) where
