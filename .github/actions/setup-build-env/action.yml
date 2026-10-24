@@ -41,14 +41,16 @@ runs:
 
     # Checkout the PR branch into a subdirectory. HEAD only (fetch-depth: 1) is
     # enough: the cache is fetched HEAD-scoped and warmed from the master snapshot,
-    # so no parent-commit history is needed. This is untrusted (potentially fork)
+    # so no parent-commit history is needed. A job with an ancestor window
+    # (`MATHLIB_CACHE_UNSAFE_WINDOW`) fetches 20 commits, so `cache get` can find
+    # the most recent cached commit in that history. This is untrusted (potentially fork)
     # code we build, so don't leave the GITHUB_TOKEN in pr-branch/.git/config where
     # that code could read it.
     - name: Checkout PR branch
       uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       with:
         ref: ${{ inputs.pr_branch_ref }}
-        fetch-depth: 1
+        fetch-depth: ${{ env.MATHLIB_CACHE_UNSAFE_WINDOW != '' && 20 || 1 }}
         path: pr-branch
         persist-credentials: false
         # The build runs this fork PR code sandboxed (landrun) with no persisted
