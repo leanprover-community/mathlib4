@@ -76,7 +76,7 @@ noncomputable def projectiveFamilyFun (P : ∀ J : Finset ι, Measure (Π j : J,
 lemma projectiveFamilyFun_congr (hP : IsProjectiveMeasureFamily P)
     (hs : s ∈ measurableCylinders α) (hs_eq : s = cylinder I S) (hS : MeasurableSet S) :
     projectiveFamilyFun P s = P I S := by
-  rw [projectiveFamilyFun, dif_pos hs]
+  rw [projectiveFamilyFun, dite_eq_left hs]
   exact hP.congr_cylinder (measurableCylinders.measurableSet hs) hS
     ((measurableCylinders.eq_cylinder hs).symm.trans hs_eq)
 

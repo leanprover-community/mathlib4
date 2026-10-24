@@ -5,17 +5,15 @@ Authors: Fabrizio Barroero
 -/
 module
 
-public import Mathlib.Algebra.Order.Archimedean.Submonoid
-public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
-public import Mathlib.RingTheory.DedekindDomain.AdicValuation
+public import Mathlib.RingTheory.DedekindDomain.AdicValuation.Ramification
 public import Mathlib.RingTheory.DedekindDomain.Factorization
-public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients
-public import Mathlib.RingTheory.Valuation.Archimedean
-public import Mathlib.RingTheory.Valuation.Discrete.RankOne
+public import Mathlib.RingTheory.RamificationInertia.Inertia
 public import Mathlib.Topology.Algebra.Valued.NormedValued
 
 import Mathlib.Algebra.FiniteSupport.Basic
+import Mathlib.Algebra.Order.Archimedean.Submonoid
+import Mathlib.RingTheory.Valuation.Archimedean
 
 /-!
 # Finite places of number fields
@@ -24,9 +22,8 @@ This file defines finite places of a number field `K` as absolute values coming 
 into a completion of `K` associated to a non-zero prime ideal of `𝓞 K`.
 
 Many of the results in this file are expressed in the generality of: `R` is a Dedekind domain
-with field of fractions `K` such that `Module.Finite ℤ R` and `Module.Free ℤ R`. If `K` is
-a number field, then this characterises `R` as being isomorphic to `𝓞 K` without explicitly
-requiring `𝓞 K`. This is so that `ℤ` and `𝓞 ℚ` can be used interchangeably.
+with field of fractions `K` such that `Ring.HasFiniteQuotients R`, as holds for `𝓞 K` when `K` is
+a number field. This is so that `ℤ` and `𝓞 ℚ` can be used interchangeably.
 
 ## Main Definitions and Results
 * `NumberField.adicAbv`: a `v`-adic absolute value on `K`.
@@ -82,15 +79,15 @@ instance : IsDiscreteValuationRing (v.adicCompletionIntegers K) where
       exists_prop]
     obtain ⟨π, hπ⟩ := v.valuation_exists_uniformizer K
     use (WithVal.equiv (v.valuation K)).symm π
-    simp [hπ, ← exp_zero, -exp_neg,
+    simp [hπ, ← exp_zero,
       ← (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).map_eq_zero_iff]
 
 end DVR
 
 namespace NumberField
 
-variable {K : Type*} [Field K] {R : Type*} [CommRing R] [Algebra R K] [IsDedekindDomain R]
-  [IsFractionRing R K] (v : HeightOneSpectrum R)
+variable {K L : Type*} [Field K] [Field L] [Algebra K L] {R : Type*} [CommRing R] [Algebra R K]
+  [IsDedekindDomain R] [IsFractionRing R K] (v : HeightOneSpectrum R)
 
 /-- The embedding of a field inside its `adicCompletion` with respect to `v`. -/
 noncomputable def FinitePlace.embedding : K →+* adicCompletion K v :=
@@ -107,18 +104,19 @@ noncomputable instance : ((Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰))
     exact ⟨h.generator, by rw [h.generator_zpowers_eq_valueGroup, adicCompletion_valueGroup_eq],
       h.generator_lt_one⟩
 
-section FiniteFree
+section HasFiniteQuotients
 
-/-! In this section we assume further that `Module.Finite ℤ R` and `Module.Free ℤ R`.
-This characterises `R` as being isomorphic to `𝓞 K` without explicitly requiring that type.
-As a result, if `F = ℚ`, then we can use `ℤ` and `𝓞 ℚ` interchangeably. -/
+/-! In this section we assume further that `R` has finite quotients,
+as holds for the ring of integers `𝓞 K` of a number field. -/
 
-variable [Module.Finite ℤ R] [Module.Free ℤ R]
+variable [Ring.HasFiniteQuotients R]
 
 namespace HeightOneSpectrum
 
 /-- The norm of a maximal ideal as an element of `ℝ≥0` is `> 1` -/
 lemma one_lt_absNorm_nnreal : 1 < (absNorm v.asIdeal : ℝ≥0) := mod_cast one_lt_absNorm v.ne_bot
+
+lemma two_le_absNorm_nnreal : 2 ≤ (absNorm v.asIdeal : ℝ≥0) := mod_cast one_lt_absNorm v.ne_bot
 
 /-- The norm of a maximal ideal as an element of `ℝ≥0` is `≠ 0` -/
 lemma absNorm_ne_zero_nnreal : (absNorm v.asIdeal : ℝ≥0) ≠ 0 :=
@@ -163,94 +161,24 @@ theorem adicAbv_add_le_max (x y : K) :
 
 /-- The `v`-adic absolute value of a natural number is `≤ 1`. -/
 theorem adicAbv_natCast_le_one (n : ℕ) : adicAbv K v n ≤ 1 :=
-  (isNonarchimedean_adicAbv K v).apply_natCast_le_one
+  (isNonarchimedean_adicAbv K v).apply_natCast_le_one (map_zero_le (adicAbv K v) 1)
+  (map_one (adicAbv K v))
 
 /-- The `v`-adic absolute value of an integer is `≤ 1`. -/
 theorem adicAbv_intCast_le_one (n : ℤ) : adicAbv K v n ≤ 1 :=
-  (isNonarchimedean_adicAbv K v).apply_intCast_le_one
-
-set_option linter.dupNamespace false in
-@[deprecated (since := "2026-03-11")]
-alias NumberField.RingOfIntegers.HeightOneSpectrum.one_lt_absNorm := one_lt_absNorm
-@[deprecated (since := "2026-03-11")]
-alias _root_.NumberField.RingOfIntegers.HeightOneSpectrum.one_lt_absNorm := one_lt_absNorm
-set_option linter.dupNamespace false in
-@[deprecated (since := "2026-03-11")]
-alias NumberField.RingOfIntegers.HeightOneSpectrum.one_lt_absNorm_nnreal := one_lt_absNorm_nnreal
-@[deprecated (since := "2026-03-11")]
-alias _root_.NumberField.RingOfIntegers.HeightOneSpectrum.one_lt_absNorm_nnreal :=
-  one_lt_absNorm_nnreal
-set_option linter.dupNamespace false in
-@[deprecated (since := "2026-03-11")]
-alias NumberField.RingOfIntegers.HeightOneSpectrum.absNorm_ne_zero := absNorm_ne_zero_nnreal
-@[deprecated (since := "2026-03-11")]
-alias _root_.NumberField.RingOfIntegers.HeightOneSpectrum.absNorm_ne_zero := absNorm_ne_zero_nnreal
-set_option linter.dupNamespace false in
-@[deprecated (since := "2026-03-11")]
-alias NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv := adicAbv
-@[deprecated (since := "2026-03-11")]
-alias _root_.NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv := adicAbv
-set_option linter.dupNamespace false in
-@[deprecated (since := "2026-03-11")]
-alias NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv_def := adicAbv_def
-@[deprecated (since := "2026-03-11")]
-alias _root_.NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv_def := adicAbv_def
-set_option linter.dupNamespace false in
-@[deprecated (since := "2026-03-11")]
-alias NumberField.RingOfIntegers.HeightOneSpectrum.isNonarchimedean_adicAbv :=
-  isNonarchimedean_adicAbv
-@[deprecated (since := "2026-03-11")]
-alias _root_.NumberField.RingOfIntegers.HeightOneSpectrum.isNonarchimedean_adicAbv :=
-  isNonarchimedean_adicAbv
-set_option linter.dupNamespace false in
-@[deprecated (since := "2026-03-11")]
-alias NumberField.instRankOneAdicCompletion := instRankOneAdicCompletion
-@[deprecated (since := "2026-03-11")]
-alias _root_.NumberField.instRankOneAdicCompletion := instRankOneAdicCompletion
-set_option linter.dupNamespace false in
-@[deprecated (since := "2026-03-11")]
-alias NumberField.instNormedFieldValuedAdicCompletion := instNormedFieldValuedAdicCompletion
-@[deprecated (since := "2026-03-11")]
-alias _root_.NumberField.instNormedFieldValuedAdicCompletion := instNormedFieldValuedAdicCompletion
-set_option linter.dupNamespace false in
-@[deprecated (since := "2026-03-11")]
-alias NumberField.rankOne_hom'_def := rankOne_hom'_def
-@[deprecated (since := "2026-03-11")]
-alias _root_.NumberField.rankOne_hom'_def := rankOne_hom'_def
-set_option linter.dupNamespace false in
-@[deprecated (since := "2026-03-11")]
-alias NumberField.toNNReal_valued_eq_adicAbv := toNNReal_valued_eq_adicAbv
-@[deprecated (since := "2026-03-11")]
-alias _root_.NumberField.toNNReal_valued_eq_adicAbv := toNNReal_valued_eq_adicAbv
-set_option linter.dupNamespace false in
-@[deprecated (since := "2026-03-11")]
-alias NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv_add_le_max := adicAbv_add_le_max
-@[deprecated (since := "2026-03-11")]
-alias _root_.NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv_add_le_max := adicAbv_add_le_max
-set_option linter.dupNamespace false in
-@[deprecated (since := "2026-03-11")]
-alias NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv_natCast_le_one := adicAbv_natCast_le_one
-@[deprecated (since := "2026-03-11")]
-alias _root_.NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv_natCast_le_one :=
-  adicAbv_natCast_le_one
-set_option linter.dupNamespace false in
-@[deprecated (since := "2026-03-11")]
-alias NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv_intCast_le_one := adicAbv_intCast_le_one
-@[deprecated (since := "2026-03-11")]
-alias _root_.NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv_intCast_le_one :=
-  adicAbv_intCast_le_one
+  (isNonarchimedean_adicAbv K v).apply_intCast_le_one (map_zero_le (adicAbv K v) 1)
+  (map_one (adicAbv K v)) (map_neg_eq_map (adicAbv K v))
 
 @[deprecated (since := "2026-08-08")]
 alias absNorm_ne_zero := absNorm_ne_zero_nnreal
 
-@[deprecated Ideal.one_lt_absNorm (since := "2026-08-08")]
+@[deprecated Ideal.one_lt_absNorm +typeChanged (since := "2026-08-08")]
 lemma one_lt_absNorm : 1 < absNorm v.asIdeal := Ideal.one_lt_absNorm v.ne_bot
 
 end HeightOneSpectrum
 
 open HeightOneSpectrum Valuation.IsRankOneDiscrete
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The norm of an element in the `v`-adic completion of `K`. See `FinitePlace.norm_embedding`
 for the equality involving `‖embedding v x‖` on the LHS. -/
 theorem FinitePlace.norm_def (x : v.adicCompletion K) :
@@ -278,10 +206,6 @@ theorem FinitePlace.norm_embedding_int (x : R) :
     ‖embedding v (algebraMap _ K x)‖ = toNNReal (absNorm_ne_zero_nnreal v) (v.intValuation x) := by
   simp [norm_embedding, adicAbv_def, valuation_of_algebraMap]
 
-@[deprecated (since := "2026-03-05")] alias FinitePlace.norm_def' := FinitePlace.norm_embedding'
-@[deprecated (since := "2026-03-05")] alias FinitePlace.norm_def_int :=
-  FinitePlace.norm_embedding_int
-
 open FinitePlace
 
 /-- The `v`-adic norm of an integer is at most 1. -/
@@ -301,7 +225,15 @@ theorem FinitePlace.norm_lt_one_iff_mem (x : R) :
   rw [norm_embedding]
   exact v.adicAbv_coe_lt_one_iff (one_lt_absNorm_nnreal v) x
 
-set_option backward.isDefEq.respectTransparency false in
+variable {v} in
+lemma FinitePlace.two_le_norm_of_one_lt_norm (x : v.adicCompletion K) (h : 1 < ‖x‖) : 2 ≤ ‖x‖ := by
+  rw [FinitePlace.norm_def, WithZeroMulInt.toNNReal_neg_apply (absNorm_ne_zero_nnreal v) (by aesop)]
+  apply (two_le_absNorm_nnreal v).trans
+  conv_lhs => rw [← zpow_one (v.asIdeal.absNorm : NNReal)]
+  apply zpow_le_zpow_right₀ (one_lt_absNorm_nnreal v).le
+  simpa [← Int.sub_one_lt_iff, ← log_one] using
+    lt_log_of_exp_lt (Valued.toNormedField.one_lt_norm_iff.1 h)
+
 lemma HeightOneSpectrum.embedding_mul_absNorm {x : R} (h_x_nezero : x ≠ 0) :
     ‖embedding v (algebraMap _ K x)‖ * absNorm (v.maxPowDividing (span {x})) = 1 := by
   rw [maxPowDividing, map_pow, Nat.cast_pow, norm_embedding, adicAbv_def,
@@ -313,7 +245,7 @@ lemma HeightOneSpectrum.embedding_mul_absNorm {x : R} (h_x_nezero : x ≠ 0) :
   rw [zpow_eq_one_iff_right₀ (Nat.cast_nonneg' _) (mod_cast (one_lt_absNorm_nnreal v).ne')]
   simp [valuation_of_algebraMap, intValuation_if_neg, h_x_nezero]
 
-end FiniteFree
+end HasFiniteQuotients
 
 end AbsoluteValue
 
@@ -341,8 +273,9 @@ lemma isFinitePlace_iff [NumberField K] (v : AbsoluteValue K ℝ) :
 
 namespace FinitePlace
 
-variable [NumberField K]
+variable [NumberField K] [NumberField L]
 
+@[macro_inline]
 instance : FunLike (FinitePlace K) K ℝ where
   coe w x := w.1 x
   coe_injective _ _ h := Subtype.ext (AbsoluteValue.ext <| congr_fun h)
@@ -426,8 +359,6 @@ theorem hasFiniteMulSupport_int {x : 𝓞 K} (h_x_nezero : x ≠ 0) :
   refine (h.subset ?_).of_finite_image h_inj
   simp only [dvd_span_singleton, Set.image_subset_iff, Set.preimage_ofPred_eq, subset_refl]
 
-@[deprecated (since := "2026-03-03")] alias mulSupport_finite_int := hasFiniteMulSupport_int
-
 @[fun_prop]
 theorem hasFiniteMulSupport {x : K} (h_x_nezero : x ≠ 0) :
     (fun w : FinitePlace K ↦ w x).HasFiniteMulSupport := by
@@ -436,8 +367,6 @@ theorem hasFiniteMulSupport {x : K} (h_x_nezero : x ≠ 0) :
   obtain ⟨ha, hb⟩ := h_x_nezero
   simp_rw [← RingOfIntegers.coe_eq_algebraMap]
   fun_prop
-
-@[deprecated (since := "2026-03-03")] alias mulSupport_finite := hasFiniteMulSupport
 
 lemma hasFiniteMulSupport_fun_pow_multiplicity {M : Type*} [CommMonoid M] {I : Ideal (𝓞 K)}
     (hI : I ≠ ⊥) (f : Ideal (𝓞 K) → M) :
@@ -461,11 +390,24 @@ instance : NonarchimedeanHomClass (FinitePlace K) K ℝ where
 lemma equivHeightOneSpectrum_symm_apply (v : HeightOneSpectrum (𝓞 K)) (x : K) :
     (equivHeightOneSpectrum.symm v) x = ‖embedding v x‖ := rfl
 
-@[deprecated (since := "2026-03-11")]
-alias IsDedekindDomain.HeightOneSpectrum.equivHeightOneSpectrum_symm_apply :=
-  equivHeightOneSpectrum_symm_apply
-@[deprecated (since := "2026-03-11")]
-alias IsDedekindDomain.HeightOneSpectrum.embedding_mul_absNorm := embedding_mul_absNorm
+-- TODO: restate in terms of finite places rather than non-trivial prime ideals of the Dedekind
+-- domains `𝓞 K` and `𝓞 L` once we have a ramification theory for finite places set up.
+-- Note that this will mean `FinitePlace.equivHeightOneSpectrum` no longer appears in the statement.
+lemma equivHeightOneSpectrum_symm_apply_algebraMap
+    (v : HeightOneSpectrum (𝓞 K)) (w : HeightOneSpectrum (𝓞 L)) [w.1.LiesOver v.1] (x : K) :
+    FinitePlace.equivHeightOneSpectrum.symm w (algebraMap K L x) =
+      FinitePlace.equivHeightOneSpectrum.symm v x ^
+        (w.1.ramificationIdx (𝓞 K) * w.1.inertiaDeg (𝓞 K)) := by
+  by_cases hx : x = 0
+  · rw [hx, map_zero, map_zero, map_zero, zero_pow]
+    exact (mul_pos (w.asIdeal.ramificationIdx_pos (𝓞 K)) (w.asIdeal.inertiaDeg_pos (𝓞 K))).ne'
+  simp_rw [NumberField.FinitePlace.equivHeightOneSpectrum_symm_apply,
+    FinitePlace.norm_embedding, HeightOneSpectrum.adicAbv_def]
+  rw [← IsDedekindDomain.HeightOneSpectrum.valuation_liesOver L v, map_pow,
+    WithZeroMulInt.toNNReal_neg_apply _ (by simpa), WithZeroMulInt.toNNReal_neg_apply _ (by simpa),
+    ← Ideal.absNorm_pow_inertiaDeg v.1 w.1]
+  simp only [Nat.cast_pow, NNReal.coe_zpow, ← zpow_natCast, ← zpow_mul]
+  grind
 
 lemma finprod_finitePlace_pow_multiplicity {I : Ideal (𝓞 K)} (hI : I ≠ ⊥) :
     ∏ᶠ v : FinitePlace K, v.maximalIdeal.asIdeal ^ multiplicity v.maximalIdeal.asIdeal I = I := by
@@ -484,7 +426,7 @@ section LiesOver
 
 namespace HeightOneSpectrum
 
-variable {L : Type*} [NumberField K] [Field L] [NumberField L] [Algebra K L]
+variable [NumberField K] [NumberField L]
 variable (v : HeightOneSpectrum (𝓞 K)) (w : HeightOneSpectrum (𝓞 L))
 variable [Algebra (v.adicCompletion K) (w.adicCompletion L)]
     [ContinuousSMul (v.adicCompletion K) (w.adicCompletion L)]

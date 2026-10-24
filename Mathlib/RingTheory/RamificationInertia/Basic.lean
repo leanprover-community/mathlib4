@@ -9,7 +9,8 @@ public import Mathlib.FieldTheory.Galois.IsGaloisGroup
 public import Mathlib.RingTheory.Flat.TorsionFree
 public import Mathlib.RingTheory.RamificationInertia.Inertia
 public import Mathlib.RingTheory.RamificationInertia.Ramification
-public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
+
+import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 
 /-!
 # Ramification index and inertia degree
@@ -32,7 +33,7 @@ flat extension of an integral domain.
 
 -/
 
-@[expose] public section
+public section
 
 section
 
@@ -59,7 +60,7 @@ theorem sum_ramification_inertia_eq_finrank_fiber
   let κp := p.ResidueField
   let κr := r.ResidueField
   let A := Sr ⧸ p.map (algebraMap R Sr)
-  suffices length Sr A * finrank κp κr = finrank κp Sq by simpa using congr_arg ENat.toNat this
+  suffices length Sr A * finrank κp κr = finrank κp Sq by simpa using congr($(this).toNat)
   calc length Sr A * finrank κp κr = length Sr A * length κp κr := by rw [length_eq_finrank]
     _ = length Rp A := (length_restrictScalars Rp Sr A).symm
     _ = length Rp Sq := (Fiber.localizationAlgEquivQuotient p q.1).toLinearEquiv.length_eq.symm
@@ -81,7 +82,8 @@ theorem ncard_primesOver_le [IsDomain R] [Module.Finite R S] [Module.Flat R S]
   rw [← Nat.card_coe_set_eq, Nat.card_eq_fintype_card, ← Finset.card_univ, Finset.card_eq_sum_ones,
     ← sum_ramification_inertia_eq_finrank p S]
   exact Finset.sum_le_sum fun q _ ↦
-    one_le_mul_of_one_le_of_one_le (ramificationIdx_pos q.1 R) (inertiaDeg_pos q.1 R)
+    one_le_mul_of_one_le_of_one_le (ramificationIdx_pos (R := R) (q := q.1))
+      (inertiaDeg_pos (R := R) (q := q.1))
 
 /-- Let `S/R` be a finite flat extension of integral domains, and let `p` be prime ideal of `R`.
 Assume that `R` is the invariant subring of a finite group `G` acting on `S`. Then the sum over

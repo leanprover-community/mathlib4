@@ -56,7 +56,7 @@ entropy, semiconjugacy
 
 public section
 
-open Function Prod Set Uniformity UniformSpace
+open Function Prod Set UniformSpace
 open scoped SetRel
 
 namespace Dynamics
@@ -111,7 +111,7 @@ lemma coverMincard_image_le (h : Semiconj φ S T) (F : Set X) (V : SetRel Y Y) (
   rw [← s.coe_image] at this
   exact this.coverMincard_le_card.trans (WithTop.coe_le_coe.2 s.card_image_le)
 
-open ENNReal EReal ExpGrowth Filter
+open EReal ExpGrowth Filter
 
 lemma le_coverEntropyEntourage_image (h : Semiconj φ S T) (F : Set X) [V.IsSymm] :
     coverEntropyEntourage S F ((map φ φ) ⁻¹' (V ○ V)) ≤ coverEntropyEntourage T (φ '' F) V :=

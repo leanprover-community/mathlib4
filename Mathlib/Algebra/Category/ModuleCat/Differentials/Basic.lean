@@ -96,7 +96,7 @@ variable (f) in
 /-- The module of differentials of a morphism `f : A ⟶ B` in the category `CommRingCat`. -/
 noncomputable def KaehlerDifferential : ModuleCat.{u} B :=
   letI := f.hom.toAlgebra
-  ModuleCat.of B (_root_.KaehlerDifferential A B)
+  ↧(_root_.KaehlerDifferential A B)
 
 namespace KaehlerDifferential
 
@@ -164,7 +164,6 @@ namespace ModuleCat.Derivation
 variable {A B : CommRingCat.{u}} {f : A ⟶ B}
   {M : ModuleCat.{u} B} (D : M.Derivation f)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given `f : A ⟶ B` a morphism in the category `CommRingCat`, `M : ModuleCat B`,
 and `D : M.Derivation f`, this is the induced
 morphism `CommRingCat.KaehlerDifferential f ⟶ M`. -/
@@ -173,7 +172,6 @@ noncomputable def desc : CommRingCat.KaehlerDifferential f ⟶ M :=
   letI := Module.compHom M f.hom
   ofHom D.liftKaehlerDifferential
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma desc_d (b : B) : D.desc (CommRingCat.KaehlerDifferential.d b) = D.d b := by
   let := f.hom.toAlgebra

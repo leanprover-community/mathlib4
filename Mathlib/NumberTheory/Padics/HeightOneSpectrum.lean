@@ -6,7 +6,7 @@ Authors: Salvatore Mercuri
 module
 
 public import Mathlib.NumberTheory.Padics.WithVal
-public import Mathlib.RingTheory.DedekindDomain.AdicValuation
+public import Mathlib.RingTheory.DedekindDomain.AdicValuation.Completion
 public import Mathlib.RingTheory.Ideal.Int
 public import Mathlib.RingTheory.Int.Basic
 public import Mathlib.Topology.Algebra.Algebra.Equiv
@@ -52,14 +52,13 @@ equivalent. It is best to do this after `Valued` has been refactored, or at leas
 
 @[expose] public section
 
-open IsDedekindDomain IsDedekindDomain.HeightOneSpectrum UniformSpace.Completion NumberField
-open PadicInt
+open IsDedekindDomain UniformSpace.Completion NumberField PadicInt HeightOneSpectrum
 
 local instance (p : Nat.Primes) : Fact p.1.Prime := ⟨p.2⟩
 
 variable (R : Type*) [CommRing R] [Algebra R ℚ]
 
-@[deprecated RingHom.injective_int (since := "2026-07-20")]
+@[deprecated RingHom.injective_int +typeChanged (since := "2026-07-20")]
 theorem Rat.int_algebraMap_injective : Function.Injective (algebraMap ℤ R) :=
   .of_comp (IsScalarTower.algebraMap_eq ℤ R ℚ ▸ RingHom.injective_int (algebraMap ℤ ℚ))
 
@@ -75,7 +74,7 @@ theorem Rat.int_algebraMap_surjective [IsFractionRing R ℚ] :
 
 /-- If `R` has field of fractions `ℚ` and is the integral closure of `ℤ` in `ℚ` then it is
 isomorphic to `ℤ`. -/
-@[deprecated IsIntegralClosure.equiv (since := "2026-07-20")]
+@[deprecated IsIntegralClosure.equiv +typeChanged (since := "2026-07-20")]
 noncomputable def Rat.IsIntegralClosure.intEquiv : R ≃+* ℤ :=
   (NumberField.RingOfIntegers.equiv R).symm.trans ringOfIntegersEquiv
 
@@ -137,10 +136,10 @@ noncomputable def withValEquiv (v : HeightOneSpectrum R) :
 /-- The continuous `ℚ`-algebra isomorphism between `v.adicCompletion ℚ` and `ℚ_[primesEquiv v]`. -/
 noncomputable def adicCompletion.padicEquiv (v : HeightOneSpectrum R) :
     v.adicCompletion ℚ ≃A[ℚ] ℚ_[primesEquiv v] where
-  __ := (IsDedekindDomain.HeightOneSpectrum.adicCompletion.equiv ℚ v).trans <|
+  __ := (adicCompletion.equiv ℚ v).trans <|
     (mapRingEquiv _ (withValEquiv v).continuous
       (withValEquiv v).symm.continuous).trans Padic.withValRingEquiv
-  __ := ((IsDedekindDomain.HeightOneSpectrum.adicCompletion.uniformEquiv ℚ v).trans <|
+  __ := ((adicCompletion.uniformEquiv ℚ v).trans <|
     (mapEquiv (withValEquiv v)).trans Padic.withValUniformEquiv).toHomeomorph
   commutes' := by simp
 
@@ -148,16 +147,18 @@ noncomputable def adicCompletion.padicEquiv (v : HeightOneSpectrum R) :
 `ℤ_[primesEquiv v]`. -/
 noncomputable def adicCompletionIntegers.padicIntEquiv (v : HeightOneSpectrum R) :
     v.adicCompletionIntegers ℚ ≃A[ℤ] ℤ_[primesEquiv v] where
-  __ := let e0 := (IsDedekindDomain.HeightOneSpectrum.adicCompletion.equiv ℚ v).restrict
+  __ := let e0 := (adicCompletion.equiv ℚ v).restrict
           (v.adicCompletionIntegers ℚ)
           (Valued.v (R := (v.valuation ℚ).Completion)).valuationSubring
-          fun _ ↦ by rw [HeightOneSpectrum.mem_adicCompletionIntegers]; rfl
+          fun _ ↦ by
+            rw [mem_adicCompletionIntegers, ← adicCompletion.valued_toCompletion_apply]; rfl
         let e := (mapRingEquiv _ (withValEquiv v).continuous
           (withValEquiv v).symm.continuous).restrict _ _ fun _ ↦ by
             simpa using! (valuation_equiv_padicValuation v).valuedCompletion_le_one_iff
         (e0.trans e).trans withValIntegersRingEquiv
-  __ := let e0 := (IsDedekindDomain.HeightOneSpectrum.adicCompletion.uniformEquiv ℚ v).subtype
-          fun _ ↦ by rw [HeightOneSpectrum.mem_adicCompletionIntegers]; rfl
+  __ := let e0 := (adicCompletion.uniformEquiv ℚ v).subtype
+          fun _ ↦ by
+            rw [mem_adicCompletionIntegers, ← adicCompletion.valued_toCompletion_apply]; rfl
         let e := (mapEquiv (withValEquiv v)).subtype fun _ ↦ by
           simpa using! (valuation_equiv_padicValuation v).valuedCompletion_le_one_iff
         ((e0.trans e).trans withValIntegersUniformEquiv).toHomeomorph
