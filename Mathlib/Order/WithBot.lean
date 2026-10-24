@@ -721,6 +721,11 @@ theorem coe_sup [SemilatticeSup α] (a b : α) :
 theorem coe_inf [SemilatticeInf α] (a b : α) :
     ((a ⊓ b : α) : WithBot α) = (a : WithBot α) ⊓ b := rfl
 
+@[to_dual (attr := simp)]
+lemma inf_eq_bot_iff [SemilatticeInf α] {a b : WithBot α} : a ⊓ b = ⊥ ↔ a = ⊥ ∨ b = ⊥ := by
+  induction a using WithBot.recBotCoe <;> induction b using WithBot.recBotCoe <;>
+    simp [← WithBot.coe_inf]
+
 instance lattice [Lattice α] : Lattice (WithBot α) where
 
 @[to_dual existing]
