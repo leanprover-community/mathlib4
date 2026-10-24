@@ -121,40 +121,7 @@ theorem isDomain_iff :
 instance [Fact (¬ IsSquare (discr a b))] : IsDomain (QuadraticAlgebra ℤ a b) :=
   isDomain_iff.mpr Fact.out
 
-/-!
-### Maximality of the order
-
-In this section, we determine for which `a b : ℤ` the order `QuadraticAlgebra ℤ a b` is the
-integral closure of `ℤ` in `QuadraticAlgebra ℚ a b`, the answer being that `discr a b` must be a
-fundamental discriminant (see `isIntegralClosure_iff`).
-
-Everything rests on the pivot `isIntegral_iff`: an element of `QuadraticAlgebra ℚ a b` is integral
-over `ℤ` iff its trace and its norm are integers.
-
-Being the integral closure is a local condition: it suffices that the order be saturated at every
-prime `p`, meaning that `p • z` lying in the order forces `z` to lie in it, for `z` integral (see
-`isIntegralClosure_iff_forall_prime`). This is proved by strong induction on some `n` such that
-`n • z` lies in the order, removing one prime factor of `n` at a time.
-
-Saturation at `p` is then made explicit: it fails exactly when `discr a b = p ^ 2 * e` for some
-`e ≡ 0, 1 mod 4` (see `saturated_iff`). In one direction, the element witnessing the failure is
-`((s - b) / 2 + ω) / p` with `s = p * e`, whose trace and norm are integers while its `im` part is
-not (see `exists_unsaturated_of_sq_mul`). In the other, the
-identity `discr a b * x.im ^ 2 = d ^ 2 * (t ^ 2 - 4 * n)` of `exists_discr_mul_im_sq_eq` forces
-`p ^ 2 ∣ discr a b` as soon as `p` does not divide `x.im`, and the condition on `e` mod `4` is
-then automatic for `p` odd and requires `x.im` to be odd for `p = 2`.
--/
-
-/-- The trace of `t • 1 + ω` is `2 * t + b`. -/
-theorem trace_smul_one_add_omega (t : ℤ) :
-    trace (t • 1 + ω : QuadraticAlgebra ℚ a b) = 2 * t + b := by
-  simp
-
-/-- Four times the norm of `t • 1 + ω` is `(2 * t + b) ^ 2 - discr a b`. -/
-theorem four_mul_norm_smul_one_add_omega (t : ℤ) :
-    4 * norm (t • 1 + ω : QuadraticAlgebra ℚ a b) = (2 * t + b) ^ 2 - discr a b := by
-  rw [four_mul_norm_eq, trace_smul_one_add_omega]
-  simp [discr_intCast]
+/-! ### Maximality of the order -/
 
 /-- If `d ∣ s` and `4 * d ^ 2 ∣ s ^ 2 - discr a b`, then `((s - b) / 2 + ω) / d` is integral over
 `ℤ`. Its trace is `s / d` and four times its norm is `(s ^ 2 - discr a b) / d ^ 2`. -/
@@ -172,11 +139,13 @@ theorem isIntegral_inv_smul_of_dvd {d s : ℤ} (hs : d ∣ s)
   obtain ⟨v, hv⟩ := hs'
   refine isIntegral_iff.mpr ⟨⟨u, ?_⟩, ⟨v, ?_⟩⟩ <;> rw [algebraMap_int_eq, eq_intCast]
   · rw [map_smul, add_sub_cancel_right, Int.mul_ediv_cancel_left _ two_ne_zero,
-      trace_smul_one_add_omega, smul_eq_mul, eq_inv_mul_iff_mul_eq₀ hd, eq_comm]
+      ← Int.cast_smul_eq_zsmul ℚ, trace_smul_one_add_omega, smul_eq_mul, eq_inv_mul_iff_mul_eq₀ hd,
+      eq_comm]
     exact_mod_cast hu
   · rw [norm_smul, add_sub_cancel_right, Int.mul_ediv_cancel_left _ two_ne_zero, inv_pow,
       eq_inv_mul_iff_mul_eq₀ (pow_ne_zero 2 hd), ← mul_right_inj' four_ne_zero,
-      four_mul_norm_smul_one_add_omega, eq_comm, ← mul_assoc]
+      ← Int.cast_smul_eq_zsmul ℚ, four_mul_norm_smul_one_add_omega, discr_intCast, eq_comm,
+      ← mul_assoc]
     exact_mod_cast hv
 
 variable (a b) in

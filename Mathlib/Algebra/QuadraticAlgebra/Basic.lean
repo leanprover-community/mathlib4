@@ -421,6 +421,11 @@ theorem trace_omega : trace (ω : QuadraticAlgebra R a b) = b := by
 theorem trace_one : trace (1 : QuadraticAlgebra R a b) = 2 := by
   simp [trace_def]
 
+/-- The trace of `t • 1 + ω` is `2 * t + b`. -/
+theorem trace_smul_one_add_omega (t : R) :
+    trace (t • 1 + ω : QuadraticAlgebra R a b) = 2 * t + b := by
+  simp [trace_def]
+
 @[simp]
 theorem trace_star : trace (star z) = trace z := by
   grind [trace_def]
