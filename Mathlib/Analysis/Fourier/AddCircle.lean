@@ -638,7 +638,7 @@ theorem fourierCoeff_eq_of_hasSum_of_summable_norm [CompleteSpace E] {f : AddCir
       simp_rw [tsum_const_smul'']
     _ = ∑' i, ∫ t : AddCircle T, fourier (-n) t • fourier i t • c i ∂haarAddCircle := by
       refine integral_tsum_of_summable_integral_norm ?_ ?_ |>.symm
-      · exact fun i ↦ Continuous.integrable_of_hasCompactSupport (by fun_prop) (.of_compactSpace _)
+      · exact fun _ ↦ Continuous.integrable_of_hasCompactSupport (by fun_prop) (.of_compactSpace _)
       · simpa [norm_smul] using hnorm
     _ = ∑' i, fourierCoeff (fun _ ↦ 1 : AddCircle T → ℂ) (n - i) • c i := by
       simp_rw [fourierCoeff, ← integral_smul_const, neg_sub, sub_eq_add_neg, fourier_add, smul_smul,
@@ -651,5 +651,10 @@ theorem fourierCoeff_eq_of_hasSum [FiniteDimensional ℝ E] {f : AddCircle T →
     (h : ∀ x, HasSum (fun i ↦ fourier i x • c i) (f x)) :
     fourierCoeff f = c :=
   fourierCoeff_eq_of_hasSum_of_summable_norm h (by simpa using (h 0).summable.norm)
+
+theorem fourierCoeff_tsum_fourier_smul [CompleteSpace E] {c : ℤ → E} (h : Summable (‖c ·‖)) :
+    fourierCoeff (fun x : AddCircle T ↦ ∑' i, fourier i x • c i) = c := by
+  refine fourierCoeff_eq_of_hasSum_of_summable_norm ?_ h
+  exact fun _ ↦ (Summable.of_norm (by simpa [norm_smul] using h)).hasSum
 
 end extract
