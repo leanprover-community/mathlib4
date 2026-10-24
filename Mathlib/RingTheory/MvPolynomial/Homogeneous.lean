@@ -586,6 +586,58 @@ lemma rename_homogeneousComponent {τ : Type*} {φ : σ → τ} (n : ℕ) (p : M
     split_ifs <;> simp [rename_monomial]
   | add p q hp hq => simp [map_add, hp, hq]
 
+@[aesop simp]
+lemma homogeneousComponent_monomial {R σ : Type*} [CommSemiring R] (m : σ →₀ ℕ) (c : R) (n : ℕ) :
+    (monomial m c).homogeneousComponent n = if m.degree = n then monomial m c else 0 := by
+  classical
+  split_ifs with h
+  · simp [h, homogeneousComponent_eq_self, isHomogeneous_monomial]
+  · simp [h, homogeneousComponent_eq_zero']
+
+lemma homogeneousComponent_mul_eq_of_totalDegree_le {R σ : Type*} [CommSemiring R]
+    {f g : MvPolynomial σ R} {n m : ℕ} (hn : f.totalDegree ≤ n) (hm : g.totalDegree ≤ m) :
+    (f * g).homogeneousComponent (n + m) = f.homogeneousComponent n * g.homogeneousComponent m := by
+  rw [f.as_sum, g.as_sum]
+  simp only [map_sum, Finset.sum_mul_sum, homogeneousComponent_monomial, monomial_mul_monomial]
+  refine Finset.sum_congr rfl fun i hi ↦ ?_
+  refine Finset.sum_congr rfl fun j hj ↦ ?_
+  rw [ite_zero_mul_ite_zero, monomial_mul_monomial]
+  have : i.degree ≤ n := le_trans (le_totalDegree hi) hn
+  have : j.degree ≤ m := le_trans (le_totalDegree hj) hm
+  grind
+
+lemma homogeneousComponent_pow_eq_of_totalDegree_le {R σ : Type*} [CommSemiring R]
+    {f : MvPolynomial σ R} {n : ℕ} (hn : f.totalDegree ≤ n) (k : ℕ) :
+    (f ^ k).homogeneousComponent (k * n) = f.homogeneousComponent n ^ k := by
+  induction k with
+  | zero => simp
+  | succ k hk =>
+    rw [add_mul, one_mul, pow_succ, pow_succ, ← hk]
+    refine homogeneousComponent_mul_eq_of_totalDegree_le ?_ hn
+    apply le_trans (totalDegree_pow _ _)
+    exact mul_le_mul_right hn _
+
+lemma homogeneousComponent_ne_zero {R σ : Type*} [CommSemiring R]
+    {f : MvPolynomial σ R} {d : σ →₀ ℕ} (hd : d ∈ f.support) {n : ℕ} (hn : n = d.degree) :
+    f.homogeneousComponent n ≠ 0 := by
+  rw [ne_zero_iff]
+  use d
+  simpa [coeff_homogeneousComponent, hn] using hd
+
+lemma homogeneousComponent_totalDegree_ne_zero {R σ : Type*} [CommSemiring R]
+    {f : MvPolynomial σ R} (h : f ≠ 0) : f.homogeneousComponent f.totalDegree ≠ 0 := by
+  obtain ⟨d, hd1, hd2⟩ := f.support.exists_mem_eq_sup (support_nonempty.mpr h)
+    fun d ↦ d.sum fun x e ↦ e
+  exact homogeneousComponent_ne_zero hd1 hd2
+
+@[simp]
+lemma totalDegree_homogeneousComponent_totalDegree {R σ : Type*} [CommSemiring R]
+    (f : MvPolynomial σ R) :
+    (f.homogeneousComponent f.totalDegree).totalDegree = f.totalDegree := by
+  obtain rfl | h := eq_or_ne f 0
+  · simp
+  · exact homogeneousComponent_isHomogeneous f.totalDegree f |>.totalDegree
+      (homogeneousComponent_totalDegree_ne_zero h)
 
 end HomogeneousComponent
 
