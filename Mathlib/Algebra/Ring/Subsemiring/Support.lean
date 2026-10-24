@@ -48,7 +48,7 @@ because the support of a subsemiring does not form an ideal in general.
 def supportIdeal (hS : S.IsSpanning) : Ideal R where
   __ : AddSubgroup R := S.toAddSubmonoid.support
   smul_mem' x a ha := by
-    have : ∀ {x y}, -x ∈ S → -y ∈ S → x * y ∈ S := fun hx hy ↦ by simpa using mul_mem hx hy
+    have {x y} (hx : -x ∈ S) (hy : -y ∈ S) : x * y ∈ S := by simpa using mul_mem hx hy
     simp_all [isSpanning_def]
     grind [mul_mem, neg_mul_mem, mul_neg_mem]
 

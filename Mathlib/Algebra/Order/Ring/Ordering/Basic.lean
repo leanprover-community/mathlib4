@@ -59,17 +59,13 @@ theorem isOrdering_iff (hP : P.IsPreordering) :
     grind [Subsemiring.mem_support]
   mpr h := by
     refine ⟨?_, hP.support_ne_top, fun {x y} ↦ ?_⟩
-    · simp [AddSubmonoid.IsSpanning]
+    · rw [Subsemiring.isSpanning_def]
       grind [hP.mul_self_mem, neg_mul, mul_neg, neg_neg]
     · simp_rw [Subsemiring.mem_support]
-      by_contra
       have := h (-x) y
-      have := h (-x) (-y)
-      have := h x y
-      have := h x (-y)
-      cases (by simp_all : x ∈ P ∨ -x ∈ P) <;> simp_all
+      grind [neg_mul, neg_neg, mul_neg, hP.mul_self_mem]
 
-theorem smul_mem_support_of_isUnit_two (hP : P.IsPreordering) (h : IsUnit (2 : R))
+theorem mul_mem_support_of_right (hP : P.IsPreordering) (h : IsUnit (2 : R))
     (x : R) {a : R} (ha : a ∈ P.support) : x * a ∈ P.support := by
   rcases h.exists_right_inv with ⟨half, h2⟩
   rw [Subsemiring.mem_support] at *
@@ -77,13 +73,17 @@ theorem smul_mem_support_of_isUnit_two (hP : P.IsPreordering) (h : IsUnit (2 : R
            ((1 + x) * half) ^ 2 * (- a) + ((1 - x) * half) ^ 2 * a ∈ P by grind
   grind [add_mem, mul_mem, mul_neg_mem, IsPreordering.pow_two_mem]
 
+theorem mul_mem_support_of_left (hP : P.IsPreordering) (h : IsUnit (2 : R))
+    (x : R) {a : R} (ha : a ∈ P.support) : a * x ∈ P.support :=
+  (mul_comm _ x) ▸ hP.mul_mem_support_of_right h _ ha
+
 end IsPreordering
 
 theorem IsPreordering.of_isSpanning_of_isPointed [Nontrivial R]
     (hP₁ : P.IsSpanning) (hP₂ : P.IsPointed) : P.IsPreordering :=
-  .of_ne_top hP₁ fun _ ↦ by simp_all [AddSubmonoid.not_top_isPointed]
+  .of_ne_top hP₁ fun _ ↦ by simp_all [AddSubmonoid.not_isPointed_top]
 
-theorem IsPreordering.of_isPointed [Nontrivial R]
+theorem IsPreordering.of_isPointed_of_sumSq_le [Nontrivial R]
     (hP : P.IsPointed) (h : .sumSq R ≤ P) : P.IsPreordering where
   mem_of_isSquare hx := h (by simpa using hx.isSumSq)
   neg_one_notMem := by
@@ -231,7 +231,7 @@ theorem neg_smul_mem (P : RingPreordering R) [P.HasIdealSupport]
 end HasIdealSupport
 
 @[deprecated
-Subsemiring.IsPreordering.smul_mem_support_of_isUnit_two +typeChanged (since := "2026-10-14")]
+Subsemiring.IsPreordering.mul_mem_support_of_right +typeChanged (since := "2026-10-14")]
 theorem hasIdealSupport_of_isUnit_two {P : RingPreordering R} (h : IsUnit (2 : R)) :
     P.HasIdealSupport := by
   rw [hasIdealSupport_iff]
@@ -245,7 +245,7 @@ theorem hasIdealSupport_of_isUnit_two {P : RingPreordering R} (h : IsUnit (2 : R
   aesop (add simp sub_eq_add_neg)
 
 @[deprecated
-Subsemiring.IsPreordering.smul_mem_support_of_isUnit_two +typeChanged (since := "2026-10-14")]
+Subsemiring.IsPreordering.mul_mem_support_of_right +typeChanged (since := "2026-10-14")]
 instance (P : RingPreordering R) [h : Fact (IsUnit (2 : R))] : P.HasIdealSupport :=
     hasIdealSupport_of_isUnit_two h.out
 
