@@ -18,59 +18,62 @@ public import Mathlib.Order.Filter.Tendsto
 This file defines six predicates of the form `isAB`, where `A` is `Min`, `Max`, or `Extr`,
 and `B` is `Filter` or `On`.
 
-* `isMinFilter f l a` means that `f a ≤ f x` in some `l`-neighborhood of `a`;
-* `isMaxFilter f l a` means that `f x ≤ f a` in some `l`-neighborhood of `a`;
-* `isExtrFilter f l a` means `isMinFilter f l a` or `isMaxFilter f l a`.
+* `IsMinFilter f l a` means that `f a ≤ f x` in some `l`-neighborhood of `a`;
+* `IsMaxFilter f l a` means that `f x ≤ f a` in some `l`-neighborhood of `a`;
+* `IsExtrFilter f l a` means `IsMinFilter f l a` or `IsMaxFilter f l a`.
 
-Similar predicates with `on` suffix are particular cases for `l = 𝓟 s`.
+Similar predicates with `On` suffix are particular cases for `l = 𝓟 s`.
 
 ## Main statements
 
+We list here the statements for `Extr`; equivalent statements exist for the min and max predicates.
+For statements without an `Extr` variant we list the min variant.
+
 ### Change of the filter (set) argument
 
-* `is*Filter.filter_mono` : replace the filter with a smaller one;
-* `is*Filter.filter_inf` : replace a filter `l` with `l ⊓ l'`;
-* `is*On.on_subset` : restrict to a smaller set;
-* `is*Pn.inter` : replace a set `s` with `s ∩ t`.
+* `IsExtrFilter.filter_mono`: replace the filter with a smaller one;
+* `IsExtrFilter.filter_inf`: replace a filter `l` with `l ⊓ l'`;
+* `IsExtrOn.of_subset`: restrict to a smaller set;
+* `IsExtrOn.inter`: replace a set `s` with `s ∩ t`.
 
 ### Composition
 
-* `is**.comp_mono` : if `x` is an extremum for `f` and `g` is a monotone function,
-  then `x` is an extremum for `g ∘ f`;
-* `is**.comp_antitone` : similarly for the case of antitone `g`;
-* `is**.bicomp_mono` : if `x` is an extremum of the same type for `f` and `g`
-  and a binary operation `op` is monotone in both arguments, then `x` is an extremum
-  of the same type for `fun x => op (f x) (g x)`.
-* `is*Filter.comp_tendsto` : if `g x` is an extremum for `f` w.r.t. `l'` and `Tendsto g l l'`,
+* `IsExtrFilter.comp_mono`, `IsExtrOn.comp_mono`: if `x` is an extremum for `f` and `g` is a
+  monotone function, then `x` is an extremum for `g ∘ f`.
+* `IsExtrFilter.comp_antitone`, `IsExtrOn.comp_antitone`: similarly for the case of antitone `g`.
+* `IsMinFilter.bicomp_mono`, `IsMinOn.bicomp_mono`: if `x` is an extremum of the same type
+  for `f` and `g` and a binary operation `op` is monotone in both arguments,
+  then `x` is an extremum of the same type for `fun x ↦ op (f x) (g x)`.
+* `IsExtrFilter.comp_of_tendsto`: if `g x` is an extremum for `f` w.r.t. `l'` and `Tendsto g l l'`,
   then `x` is an extremum for `f ∘ g` w.r.t. `l`.
-* `is*On.on_preimage` : if `g x` is an extremum for `f` on `s`, then `x` is an extremum
-  for `f ∘ g` on `g ⁻¹' s`.
+* `IsExtrOn.preimage`: if `g x` is an extremum for `f` on `s`,
+  then `x` is an extremum for `f ∘ g` on `g ⁻¹' s`.
 
 ### Algebraic operations
 
-* `is**.add` : if `x` is an extremum of the same type for two functions,
-  then it is an extremum of the same type for their sum;
-* `is**.neg` : if `x` is an extremum for `f`, then it is an extremum
-  of the opposite type for `-f`;
-* `is**.sub` : if `x` is a minimum for `f` and a maximum for `g`,
-  then it is a minimum for `f - g` and a maximum for `g - f`;
-* `is**.max`, `is**.min`, `is**.sup`, `is**.inf` : similarly for `is**.add`
-  for pointwise `max`, `min`, `sup`, `inf`, respectively.
-
+* `IsMinFilter.add`, `IsMinOn.add`: if `x` is an extremum of the same type for two functions,
+  then it is an extremum of the same type for their sum.
+* `IsExtrFilter.neg`, `IsExtrOn.neg`: if `x` is an extremum for `f`, then it is an extremum
+  of the opposite type for `-f`.
+* `IsMinFilter.sub`, `IsMinOn.sub`: if `x` is a minimum for `f` and a maximum for `g`,
+  then it is a minimum for `f - g` and a maximum for `g - f`.
+* `IsMinOn.max`, `IsMinOn.min`, `IsMinOn.sup`, `IsMinOn.inf`: similarly for `IsMinOn.add`
+  for pointwise `max`, `min`, `sup`, `inf`, respectively. These also have `Filter` variants.
 
 ### Miscellaneous definitions
 
-* `is**_const` : any point is both a minimum and maximum for a constant function;
-* `isMin/Max*.isExt` : any minimum/maximum point is an extremum;
-* `is**.dual`, `is**.undual`: conversion between codomains `α` and `dual α`;
+* `isExtrFilter_const`, `isExtrOn_const`: any point is an extremum for a constant function.
+* `IsMinFilter.isExtrFilter`, `IsMinOn.isExtrOn`: any minimum/maximum point is an extremum.
+* `IsExtrFilter.undual`, `IsExtrFilter.dual`, `IsExtrOn.undual`, `IsExtrOn.dual`:
+  convert between codomains `α` and `αᵒᵈ`.
 
 ## Missing features (TODO)
 
 * Multiplication and division;
-* `is**.bicompl` : if `x` is a minimum for `f`, `y` is a minimum for `g`, and `op` is a monotone
+* `Is**.bicompl`: if `x` is a minimum for `f`, `y` is a minimum for `g`, and `op` is a monotone
   binary operation, then `(x, y)` is a minimum for `uncurry (bicompl op f g)`. From this point
-  of view, `is**.bicomp` is a composition
-* It would be nice to have a tactic that specializes `comp_(anti)mono` or `bicomp_mono`
+  of view, `Is**.bicomp` is a composition
+* It would be nice to have a tactic that specializes `comp_mono`/`comp_antitone`/`bicomp_mono`
   based on a proof of monotonicity of a given (binary) function. The tactic should maintain a `meta`
   list of known (anti)monotone (binary) functions with their names, as well as a list of special
   types of filters, and define the missing lemmas once one of these two lists grows.
@@ -97,7 +100,7 @@ variable (f : α → β) (s : Set α) (l : Filter α) (a : α)
 def IsMinFilter : Prop :=
   ∀ᶠ x in l, f a ≤ f x
 
-/-- `is_maxFilter f l a` means that `f x ≤ f a` for all `x` in some `l`-neighborhood of `a` -/
+/-- `IsMaxFilter f l a` means that `f x ≤ f a` for all `x` in some `l`-neighborhood of `a` -/
 def IsMaxFilter : Prop :=
   ∀ᶠ x in l, f x ≤ f a
 
