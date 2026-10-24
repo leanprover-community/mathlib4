@@ -19,7 +19,7 @@
 
   "ci": {
     "_comment": "Case-insensitive substring match against check-run name, workflow name, or status context. The first three select the gating jobs of 'continuous integration' / 'continuous integration (mathlib forks)' -- their check runs are named 'ci / Build', 'ci (fork) / Build', etc. -- while leaving auxiliary jobs (Upload to cache, Post-CI job) out of the emoji. 'Check workflows' is the actionlint workflow: it runs only on PRs touching .github/**, so it contributes nothing on ordinary PRs and becomes the CI signal on workflows-only PRs where the main CI never triggers.",
-    "check_names": ["Build", "Lint style", "Post-Build Step", "Check workflows"]
+    "check_names": ["Build", "Lint style", "Test and lint", "Check workflows"]
   },
 
   "states": [
