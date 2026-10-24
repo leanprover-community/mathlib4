@@ -6,6 +6,7 @@ Authors: Riccardo Brasca
 module
 
 public import Mathlib.Algebra.Polynomial.Laurent
+
 import Mathlib.Algebra.Polynomial.Roots
 
 /-!
