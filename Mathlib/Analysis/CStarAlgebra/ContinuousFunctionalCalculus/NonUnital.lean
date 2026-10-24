@@ -840,7 +840,7 @@ lemma isClosedEmbedding_cfcₙHom_of_cfcHom [ClosedEmbeddingContinuousFunctional
   have := uniformSpace_eq_inf_precomp_of_cover (β := R) f (0 : C(Unit, σₙ R a))
     (map_continuous f).isProperMap (map_continuous 0).isProperMap <| by
       simp only [← Subtype.val_injective.image_injective.eq_iff, f, ContinuousMap.coe_mk,
-        ContinuousMap.coe_zero, range_zero, image_union, image_singleton,
+        FunLike.coe_zero, range_zero, image_union, image_singleton,
         quasispectrum.coe_zero, ← range_comp, val_comp_inclusion, image_univ, Subtype.range_coe,
         quasispectrum_eq_spectrum_union_zero]
   simp_rw +instances [← isUniformEmbedding_toContinuousMap.comap_uniformity, this,

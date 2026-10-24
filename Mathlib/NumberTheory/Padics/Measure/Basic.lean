@@ -218,10 +218,10 @@ lemma prodMk_prod_apply (f : C(X, R)) (g : C(Y, R)) :
     prodMk μ ν ((f.comp .fst) * (g.comp .snd)) = μ f * ν g := by
   simp only [← smul_eq_mul, prodMk_apply, ← map_smul]
   congr 1 with y
-  simp_rw [contractFst_apply, ContinuousMap.smul_apply, smul_eq_mul, mul_comm (μ f) (g y),
-    ← smul_eq_mul, ← map_smul]
+  simp_rw [contractFst_apply, smul_apply, smul_eq_mul, mul_comm (μ f) (g y), ← smul_eq_mul,
+    ← map_smul]
   congr 1 with x
-  simp_rw [ContinuousMap.smul_apply, smul_eq_mul, mul_comm (g y) (f x)]
+  simp_rw [smul_apply, smul_eq_mul, mul_comm (g y) (f x)]
   rfl
 
 /-- "Right-handed" version of the natural product map on measures (acting on functions
@@ -239,8 +239,8 @@ lemma prodMk'_prod_apply (f : C(X, R)) (g : C(Y, R)) :
     prodMk' μ ν ((f.comp .fst) * (g.comp .snd)) = μ f * ν g := by
   simp only [prodMk'_apply, mul_comm (μ f) (ν g), ← smul_eq_mul, ← map_smul]
   congr 1 with x
-  simp_rw [ContinuousMap.smul_apply, smul_eq_mul, mul_comm (ν g) (f x), contractSnd_apply,
-    ← smul_eq_mul, ← map_smul]
+  simp_rw [smul_apply, smul_eq_mul, mul_comm (ν g) (f x), contractSnd_apply,  ← smul_eq_mul,
+    ← map_smul]
   rfl
 
 end LocallyCompact
