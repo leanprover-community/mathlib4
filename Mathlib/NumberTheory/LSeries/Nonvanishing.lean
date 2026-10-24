@@ -483,7 +483,7 @@ theorem LFunction_eq_zero_iff_of_re_nonpos (hχ : χ.IsPrimitive) {s : ℂ} (hs 
     completedLFunction_ne_zero_of_one_le_re]
   <;> grind [cpow_eq_zero_iff, Nat.cast_eq_zero, sub_re, one_re, inv_eq_one, sub_ne_zero]
 
-/-- **The zeros of `ζ` in the closed left half-plane are exactly the trivial ones**. -/
+/-- **The zeros of `ζ` in the closed left half-plane `re s ≤ 0` are exactly the trivial ones**. -/
 theorem _root_.riemannZeta_eq_zero_iff_of_re_nonpos {s : ℂ} (hs : s.re ≤ 0) :
     riemannZeta s = 0 ↔ ∃ n : ℕ, s = -2 * (n + 1) := by
   rw [← LFunction_modOne_eq (χ := 1), LFunction_eq_zero_iff_of_re_nonpos
