@@ -280,6 +280,12 @@ theorem hasBasis_uniformity : (𝓤 R).HasBasis (fun _ ↦ True)
   rw [uniformity_eq_comap_nhds_zero]
   exact v.hasBasis_nhds_zero.comap _
 
+theorem _root_.IsValuativeTopology.hasBasis_uniformity :
+    (𝓤 R).HasBasis (fun _ ↦ True)
+      fun γ : (ValueGroupWithZero R)ˣ ↦ { p : R × R | valuation R (p.2 - p.1) < γ } := by
+  rw [uniformity_eq_comap_nhds_zero]
+  exact (IsValuativeTopology.hasBasis_nhds_zero R).comap _
+
 theorem toUniformSpace_eq : _u =
     @IsTopologicalAddGroup.rightUniformSpace R _ v.subgroups_basis.topology _ := by
   refine UniformSpace.ext (v.hasBasis_uniformity.eq_of_same_basis ?_)
