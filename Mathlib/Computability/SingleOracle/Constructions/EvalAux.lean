@@ -1,0 +1,137 @@
+/-
+Copyright (c) 2026 Edwin Park. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Edwin Park
+-/
+module
+
+public import Mathlib.Computability.SingleOracle.Constructions.Option
+
+import Mathlib.Data.Nat.PSub
+
+/-!
+# EvalAux.lean
+
+Auxiliary constructs for use in `Oracle.Single.Constructions.Eval`.
+
+In docstrings, `[c]` denotes the function computed by the code `c`, and `[c](x)` its value at `x`.
+
+-/
+
+@[expose] public section
+
+open Nat Denumerable Encodable List
+
+section rfindOpt
+open Oracle.Single
+namespace Oracle.Single.Code
+
+theorem rfind'_eqv_rfind {O : ℕ → ℕ} {c : Code} {x : ℕ} :
+    (Nat.unpaired fun a m =>
+      (Nat.rfind fun n => (fun m => m = 0) <$>
+        eval O c (Nat.pair a (n + m))).map (· + m)) (Nat.pair x 0) =
+    (Nat.rfind fun n => (fun m => m = 0) <$> eval O c ⟪x, n⟫) := by
+  simpa using by rfl
+
+section rfind
+/-- `[cRfind c](x)=smallest n s.t. [c](x,n)=0.` -/
+def cRfind : Oracle.Single.Code→Oracle.Single.Code := fun c ↦ (rfind' c).comp (pair cId zero)
+/-- Given a code `c` -/
+abbrev rfind (O : ℕ → ℕ) : Code → ℕ →. ℕ :=
+  fun c ↦ fun a ↦ Nat.rfind fun n ↦ (fun m ↦ m = 0) <$> eval O c (Nat.pair a n)
+theorem cRfind_ev {O c a} : eval O (cRfind c) a = rfind O c a := by
+  unfold cRfind
+  unfold rfind
+  rw [←rfind'_eqv_rfind]
+  simp [eval,Seq.seq]
+theorem cRfind_ev' {O c a} :
+    eval O (cRfind c) a = (Nat.rfind (fun x => n2b' <$> eval O c (Nat.pair a x))) := by
+  simp only [cRfind_ev, ev_simps]
+  simp only [rfind, Part.map_eq_map]
+  unfold n2b'
+  simp
+theorem cRfind_ev'' {O c} :
+    eval O (cRfind c) = fun a => (Nat.rfind (fun x => n2b' <$> eval O c (Nat.pair a x))) := by
+  funext a
+  exact cRfind_ev'
+theorem rfind_real {O f} (h : RecursiveIn O f) :
+    RecursiveIn O (fun a =>
+        Nat.rfind fun n => (fun m => m = 0) <$> f (Nat.pair a n)) := by
+  rcases exists_code.mp h with ⟨c, hc⟩
+  rw [← hc]
+  apply exists_code.mpr
+  use cRfind c
+  simp only [cRfind_ev'', Part.map_eq_map]
+  funext a
+  congr
+  funext x
+  congr
+  funext m
+  simp [n2b']
+end rfind
+
+/-- This code defines the function `Nat.ppred`. -/
+def cPpred := cRfind (cIfEq'.comp₂ left (succ.comp right))
+set_option backward.isDefEq.respectTransparency false in
+@[simp, ev_simps] theorem cPpred_ev {O y} : eval O cPpred y = Nat.ppred y := by
+  unfold cPpred
+  simp only [cRfind_ev', ev_simps]
+  simp? [Seq.seq] says
+    simp only [Seq.seq, unpair_pair, Part.coe_some, Part.map_eq_map, Part.map_some,
+      Part.bind_eq_bind, Part.bind_some, pair_l, pair_r]
+  cases y with
+  | zero =>
+    have : ¬ ((Nat.rfind fun x ↦ Part.some (n2b' 1))).Dom := by
+      simp [n2b']
+    simpa using Part.eq_none_iff'.mpr this
+  | succ n =>
+    unfold n2b'
+    aesop
+
+/-- Given a code `c`, this code defines the function `fun x ↦ ↑(n2o [c](x))` (for total `c`). -/
+def cOfOption (c : Code) := cPpred.comp c
+set_option backward.isDefEq.respectTransparency false in
+theorem cOfOption_ev {O : ℕ → ℕ} {c : Code} {x : ℕ} (hc1 : IsTotal O c) :
+    eval O (cOfOption c) x = ↑(n2o ((eval O c x).get (hc1 x))) := by
+  unfold cOfOption
+  simp only [ev_simps]
+  simp only [Part.Dom.bind (hc1 x), Part.bind_eq_bind, cPpred_ev]
+  cases (eval O c x).get (hc1 x) with
+  | zero => simp;
+  | succ n => simp;
+
+/-- Given a code `c`, this code defines the function
+`fun x ↦ Nat.rfindOpt (fun y ↦ n2o [c](⟪x, y⟫))` (for total `c`). -/
+def cRfindOpt (c : Code) := (cOfOption c).comp₂ cId (cRfind (cIsSome.comp (c)))
+set_option backward.isDefEq.respectTransparency false in
+@[simp, ev_simps] theorem cRfindOpt_ev {O : ℕ → ℕ} {c : Code} {x : ℕ} (hc1 : IsTotal O c) :
+    eval O (cRfindOpt c) x =
+    Nat.rfindOpt (fun y => n2o <| (eval O c (Nat.pair x y)).get (hc1 (Nat.pair x y))) := by
+  unfold cRfindOpt
+  simp only [cRfind_ev', ev_simps]
+  unfold rfindOpt
+  simp? [n2b', b'2n] says
+    simp only [Part.coe_some, Part.map_eq_map, Part.map_some, b'2n, Part.bind_eq_bind,
+      Part.map_bind, PFun.coe_val, n2b', ite_eq_left_iff, Bool.not_eq_true,
+      Option.isSome_eq_false_iff, Option.isNone_iff_eq_none, one_ne_zero, imp_false, ite_not,
+      Bool.ite_true_right, Bool.or_false]
+  have :
+      (fun x_1 ↦ (eval O c (Nat.pair x x_1)).bind
+        fun y ↦ Part.some !decide (n2o y = Option.none)) =
+      (fun n ↦ Part.some (n2o ((eval O c ⟪x, n⟫).get (hc1 ⟪x, n⟫))).isSome) := by
+    funext n
+    simp only [Part.Dom.bind (hc1 ⟪x,n⟫), Part.some_inj, Bool.not_eq_eq_eq_not, Option.not_isSome]
+    cases n2o ((eval O c ⟪x, n⟫).get (hc1 ⟪x, n⟫)) with
+    | none => simp
+    | some val => simp
+  rw [this]
+  if hh: (Nat.rfind fun n ↦ Part.some (n2o ((eval O c ⟪x, n⟫).get (hc1 ⟪x, n⟫))).isSome).Dom then
+    simp [Part.Dom.bind hh]
+    simp [Seq.seq]
+    simp [cOfOption_ev hc1]
+    simp [Part.Dom.bind hh]
+  else
+    simp [Part.eq_none_iff'.mpr hh]
+    simp [Seq.seq]
+end Oracle.Single.Code
+end rfindOpt
