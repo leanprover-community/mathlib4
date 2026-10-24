@@ -115,9 +115,9 @@ Natural numbers `n` correspond to `n`-fold continuous differentiability, `∞` t
 to analyticity. -/
 scoped[ContDiff] notation "ℕ∞ω" => WithTop ℕ∞
 /-- Smoothness exponent for analytic functions. -/
-scoped[ContDiff] notation3 "ω" => (⊤ : WithTop ℕ∞)
+scoped[ContDiff] notation +delab "ω" => (⊤ : WithTop ℕ∞)
 /-- Smoothness exponent for infinitely differentiable functions. -/
-scoped[ContDiff] notation3 "∞" => ((⊤ : ℕ∞) : WithTop ℕ∞)
+scoped[ContDiff] notation +delab "∞" => ((⊤ : ℕ∞) : WithTop ℕ∞)
 
 open scoped ContDiff Pointwise
 

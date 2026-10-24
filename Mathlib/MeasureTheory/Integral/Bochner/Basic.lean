@@ -165,16 +165,17 @@ irreducible_def integral {_ : MeasurableSpace α} (μ : Measure α) (f : α → 
   `∫ x, f x = 0` will be parsed incorrectly. -/
 
 @[inherit_doc MeasureTheory.integral]
-notation3 "∫ "(...)", "r:60:(scoped f => f)" ∂"μ:70 => integral μ r
+notation +delab "∫ "(...)", "r:60:(scoped f => f)" ∂"μ:70 => integral μ r
 
 @[inherit_doc MeasureTheory.integral]
-notation3 "∫ "(...)", "r:60:(scoped f => integral volume f) => r
+notation +delab "∫ "(...)", "r:60:(scoped f => integral volume f) => r
 
 @[inherit_doc MeasureTheory.integral]
-notation3 "∫ "(...)" in "s", "r:60:(scoped f => f)" ∂"μ:70 => integral (Measure.restrict μ s) r
+notation +delab "∫ "(...)" in "s", "r:60:(scoped f => f)" ∂"μ:70 =>
+  integral (Measure.restrict μ s) r
 
 @[inherit_doc MeasureTheory.integral]
-notation3 "∫ "(...)" in "s", "r:60:(scoped f => integral (Measure.restrict volume s) f) => r
+notation +delab "∫ "(...)" in "s", "r:60:(scoped f => integral (Measure.restrict volume s) f) => r
 
 section Properties
 

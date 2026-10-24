@@ -108,7 +108,7 @@ variable {R}
 
 /-- This enables the notation `⨂[R] i : ι, s i` for the pi tensor product `PiTensorProduct`,
 given an indexed family of types `s : ι → Type*`. -/
-scoped[TensorProduct] notation3:100"⨂["R"] "(...)", "r:(scoped f => PiTensorProduct R f) => r
+scoped[TensorProduct] notation:100 +delab "⨂["R"] "(...)", "r:(scoped f => PiTensorProduct R f) => r
 
 open TensorProduct
 
@@ -283,7 +283,7 @@ def tprod : MultilinearMap R s (⨂[R] i, s i) where
     rw [smul_tprodCoeff', ← smul_tprodCoeff (1 : R) _ i, update_idem, update_self]
 
 @[inherit_doc tprod]
-notation3:100 "⨂ₜ["R"] "(...)", "r:(scoped f => tprod R f) => r
+notation:100 +delab "⨂ₜ["R"] "(...)", "r:(scoped f => tprod R f) => r
 
 theorem tprod_eq_tprodCoeff_one :
     ⇑(tprod R : MultilinearMap R s (⨂[R] i, s i)) = tprodCoeff R 1 := rfl

@@ -647,7 +647,7 @@ lemma t_id (i : J) : t F i i = 𝟙 _ := by
 
 variable [Small.{u} J]
 
-local notation3:max "↓"j:arg => Equiv.symm (equivShrink _) j
+local notation:max +delab "↓"j:arg => Equiv.symm (equivShrink _) j
 
 set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation detail)

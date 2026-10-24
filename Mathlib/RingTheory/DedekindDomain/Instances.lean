@@ -39,9 +39,9 @@ attribute [local instance] FractionRing.liftAlgebra
 variable {R : Type*} (S : Type*) (T : Type*) [CommRing R] [CommRing S] [CommRing T] [IsDomain R]
   [IsDomain S] [IsDomain T] [Algebra R S]
 
-local notation3 "K" => FractionRing R
-local notation3 "L" => FractionRing S
-local notation3 "F" => FractionRing T
+local notation +delab "K" => FractionRing R
+local notation +delab "L" => FractionRing S
+local notation +delab "F" => FractionRing T
 
 section
 
@@ -87,9 +87,9 @@ end
 
 variable {P : Ideal R} [P.IsPrime]
 
-local notation3 "P'" => algebraMapSubmonoid S P.primeCompl
-local notation3 "Rₚ" => Localization.AtPrime P
-local notation3 "Sₚ" => Localization P'
+local notation +delab "P'" => algebraMapSubmonoid S P.primeCompl
+local notation +delab "Rₚ" => Localization.AtPrime P
+local notation +delab "Sₚ" => Localization P'
 
 variable [FaithfulSMul R S]
 
@@ -163,8 +163,8 @@ instance [Algebra.IsSeparable K L] :
   let _ : Algebra Rₚ (FractionRing Sₚ) := OreLocalization.instAlgebra
   FractionRing.isSeparable_of_isLocalization S _ _ P.primeCompl_le_nonZeroDivisors
 
-local notation3 "P''" => algebraMapSubmonoid T P.primeCompl
-local notation3 "Tₚ" => Localization P''
+local notation +delab "P''" => algebraMapSubmonoid T P.primeCompl
+local notation +delab "Tₚ" => Localization P''
 
 variable [Algebra S T] [Algebra R T] [IsScalarTower R S T]
 

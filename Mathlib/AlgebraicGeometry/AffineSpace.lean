@@ -36,7 +36,7 @@ universe u
 
 variable (n : Type u) (S : Scheme.{u})
 
-local notation3 "ℤ[" n "]" => CommRingCat.of (MvPolynomial n (ULift ℤ))
+local notation +delab "ℤ[" n "]" => CommRingCat.of (MvPolynomial n (ULift ℤ))
 
 /-- `𝔸(n; S)` is the affine `n`-space over `S`.
 Note that `n : Type u` is an arbitrary index type (e.g. `ULift.{u} (Fin m)`). -/

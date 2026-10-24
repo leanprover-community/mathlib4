@@ -24,9 +24,9 @@ public section
 namespace Polynomial
 variable {ι R S : Type*} [CommRing R] [Ring S] [Algebra R S]
 
-local notation3 "deg("p")" => natDegree p
-local notation3 "coeffs("p")" => Set.range (coeff p)
-local notation3 "spanCoeffs("p")" => 1 ⊔ Submodule.span R coeffs(p)
+local notation +delab "deg("p")" => natDegree p
+local notation +delab "coeffs("p")" => Set.range (coeff p)
+local notation +delab "spanCoeffs("p")" => 1 ⊔ Submodule.span R coeffs(p)
 
 open Submodule Set in
 lemma coeff_divModByMonicAux_mem_span_pow_mul_span : ∀ (p q : S[X]) (hq : q.Monic) (i),

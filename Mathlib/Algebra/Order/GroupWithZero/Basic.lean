@@ -109,7 +109,7 @@ end Preorder
 section PartialOrder
 
 /-- Local notation for the positive elements of a type `α`. -/
-local notation3 "α>0" => { x : α // 0 < x }
+local notation +delab "α>0" => { x : α // 0 < x }
 
 variable [PartialOrder α]
 

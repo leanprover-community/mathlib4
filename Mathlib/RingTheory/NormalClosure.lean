@@ -44,9 +44,9 @@ it is too general.
 -/
 local instance : Algebra (FractionRing R) (FractionRing S) := FractionRing.liftAlgebra _ _
 
-local notation3 "K" => FractionRing R
-local notation3 "L" => FractionRing S
-local notation3 "E" => IntermediateField.normalClosure (FractionRing R) (FractionRing S)
+local notation +delab "K" => FractionRing R
+local notation +delab "L" => FractionRing S
+local notation +delab "E" => IntermediateField.normalClosure (FractionRing R) (FractionRing S)
     (AlgebraicClosure (FractionRing S))
 
 
@@ -62,7 +62,7 @@ The normal closure of an extension of domains `R ⊆ S`. It is defined as a doma
 `R ⊆ S ⊆ T` and `Frac T / Frac R` is Galois. -/
 def NormalClosure : Type _ := integralClosure S E
 
-local notation3 "T" => NormalClosure R S
+local notation +delab "T" => NormalClosure R S
 
 instance : CommRing T := inferInstanceAs (CommRing (integralClosure S E))
 

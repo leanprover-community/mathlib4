@@ -53,13 +53,13 @@ deriving CountableInterFilter
 /-- `∀ᵐ a ∂μ, p a` means that `p a` for a.e. `a`, i.e. `p` holds true away from a null set.
 
 This is notation for `Filter.Eventually p (MeasureTheory.ae μ)`. -/
-notation3 "∀ᵐ "(...)" ∂"μ", "r:(scoped p => Filter.Eventually p <| MeasureTheory.ae μ) => r
+notation +delab "∀ᵐ "(...)" ∂"μ", "r:(scoped p => Filter.Eventually p <| MeasureTheory.ae μ) => r
 
 /-- `∃ᵐ a ∂μ, p a` means that `p` holds `∂μ`-frequently,
 i.e. `p` holds on a set of positive measure.
 
 This is notation for `Filter.Frequently p (MeasureTheory.ae μ)`. -/
-notation3 "∃ᵐ "(...)" ∂"μ", "r:(scoped P => Filter.Frequently P <| MeasureTheory.ae μ) => r
+notation +delab "∃ᵐ "(...)" ∂"μ", "r:(scoped P => Filter.Frequently P <| MeasureTheory.ae μ) => r
 
 /-- `x =ᵐ[μ] y` means that `x` and `y` are eventually equal along the a.e. filter,
 i.e. `x = y` away from a null set.

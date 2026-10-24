@@ -77,7 +77,7 @@ open ComplexEmbedding
 
 variable (K : Type*) [Field K] [CharZero K] [IsCMField K]
 
-local notation3 "K⁺" => maximalRealSubfield K
+local notation +delab "K⁺" => maximalRealSubfield K
 
 instance isQuadraticExtension : IsQuadraticExtension K⁺ K :=
   IsCMField.is_quadratic

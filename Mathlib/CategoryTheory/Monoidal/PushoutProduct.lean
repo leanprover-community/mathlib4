@@ -89,10 +89,10 @@ abbrev pullbackHom [HasPullbacks C] [MonoidalCategory C] [MonoidalClosed C] :
 end Arrow
 
 /-- Notation for the pushout-product of morphisms. -/
-scoped notation3 f " □ " g:10 => (Arrow.pushoutProduct.obj f).obj g
+scoped notation +delab f " □ " g:10 => (Arrow.pushoutProduct.obj f).obj g
 
 /-- Notation for the pullback-hom of morphisms. -/
-scoped notation3 f " ⋔ " g:10 => (Arrow.pullbackHom.obj f).obj g
+scoped notation +delab f " ⋔ " g:10 => (Arrow.pullbackHom.obj f).obj g
 
 namespace Arrow
 

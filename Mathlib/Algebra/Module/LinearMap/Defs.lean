@@ -487,7 +487,7 @@ variable (f : M₂ →ₛₗ[σ₂₃] M₃) (g : M₁ →ₛₗ[σ₁₂] M₂)
 
 /-- `∘ₗ` is notation for composition of two linear (not semilinear!) maps into a linear map.
 This is useful when Lean is struggling to infer the `RingHomCompTriple` instance. -/
-notation3:80 (name := compNotation) f:81 " ∘ₗ " g:80 =>
+notation:80 +delab (name := compNotation) f:81 " ∘ₗ " g:80 =>
   LinearMap.comp (σ₁₂ := RingHom.id _) (σ₂₃ := RingHom.id _) (σ₁₃ := RingHom.id _) f g
 
 @[inherit_doc] infixr:90 " ∘ₛₗ " => comp

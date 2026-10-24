@@ -7,7 +7,7 @@ module
 
 public meta import Mathlib.Lean.Expr.ExtraRecognizers
 public import Mathlib.Data.Set.Operations
-public import Mathlib.Util.Notation3
+public import Mathlib.Util.NotationDelab
 
 /-!
 # Set Notation
@@ -35,7 +35,7 @@ The notation is short for `((↑) ⁻¹' B : Set A)`, while giving hints to the 
 that both `A` and `B` are terms of `Set α` for the same `α`.
 This set is the same as `{x : ↑A | ↑x ∈ B}`.
 -/
-scoped notation3 A:67 " ↓∩ " B:67 => (Subtype.val ⁻¹' (B : type_of% A) : Set (A : Set _))
+scoped notation +delab A:67 " ↓∩ " B:67 => (Subtype.val ⁻¹' (B : type_of% A) : Set (A : Set _))
 
 /-- Coercion using `(Subtype.val '' ·)` -/
 instance {α : Type*} {s : Set α} : CoeHead (Set s) (Set α) := ⟨fun t => (Subtype.val '' t)⟩
