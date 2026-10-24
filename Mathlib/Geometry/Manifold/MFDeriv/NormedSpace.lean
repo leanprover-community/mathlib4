@@ -285,11 +285,10 @@ theorem ContinuousAlternatingMap.mdifferentiableOn (L : E [⋀^ι]→L[𝕜] F) 
   L.mdifferentiable.mdifferentiableOn
 
 theorem MDifferentiableWithinAt.compContinuousLinearMapCLM [CharZero 𝕜]
-    {f : M → F₁ →L[𝕜] F₂} {s : Set M} {x : M}
-    (hf : MDifferentiableWithinAt I 𝓘(𝕜, F₁ →L[𝕜] F₂) f s x) :
-    MDifferentiableWithinAt I 𝓘(𝕜, (F₂ [⋀^ι]→L[𝕜] F₃) →L[𝕜] (F₁ [⋀^ι]→L[𝕜] F₃))
+    {f : M → F₁ →L[𝕜] F₂} {s : Set M} {x : M} (hf : MDiffAt[s] f x) :
+    MDiffAt[s]
       (fun y ↦ ContinuousAlternatingMap.compContinuousLinearMapCLM (f y) :
-        M → (F₂ [⋀^ι]→L[𝕜] F₃) →L[𝕜] (F₁ [⋀^ι]→L[𝕜] F₃)) s x := by
+        M → (F₂ [⋀^ι]→L[𝕜] F₃) →L[𝕜] (F₁ [⋀^ι]→L[𝕜] F₃)) x := by
   apply Differentiable.comp_mdifferentiableWithinAt
       (g := ContinuousAlternatingMap.compContinuousLinearMapCLM)
   · rw [← differentiableOn_univ]
@@ -298,60 +297,53 @@ theorem MDifferentiableWithinAt.compContinuousLinearMapCLM [CharZero 𝕜]
   · exact hf
 
 nonrec theorem MDifferentiableAt.compContinuousLinearMapCLM [CharZero 𝕜]
-    {f : M → F₁ →L[𝕜] F₂} {x : M}
-    (hf : MDifferentiableAt I 𝓘(𝕜, F₁ →L[𝕜] F₂) f x) :
-    MDifferentiableAt I 𝓘(𝕜, (F₂ [⋀^ι]→L[𝕜] F₃) →L[𝕜] (F₁ [⋀^ι]→L[𝕜] F₃))
+    {f : M → F₁ →L[𝕜] F₂} {x : M} (hf : MDiffAt f x) :
+    MDiffAt
       (fun y ↦ ContinuousAlternatingMap.compContinuousLinearMapCLM (f y) :
         M → (F₂ [⋀^ι]→L[𝕜] F₃) →L[𝕜] (F₁ [⋀^ι]→L[𝕜] F₃)) x :=
   MDifferentiableWithinAt.compContinuousLinearMapCLM hf
 
-theorem MDifferentiableOn.compContinuousLinearMapCLM [CharZero 𝕜] {f : M → F₁ →L[𝕜] F₂} {s : Set M}
-    (hf : MDifferentiableOn I 𝓘(𝕜, F₁ →L[𝕜] F₂) f s) :
-    MDifferentiableOn I 𝓘(𝕜, (F₂ [⋀^ι]→L[𝕜] F₃) →L[𝕜] (F₁ [⋀^ι]→L[𝕜] F₃))
+theorem MDifferentiableOn.compContinuousLinearMapCLM [CharZero 𝕜]
+    {f : M → F₁ →L[𝕜] F₂} {s : Set M} (hf : MDiff[s] f) :
+    MDiff[s]
       (fun y ↦ ContinuousAlternatingMap.compContinuousLinearMapCLM (f y) :
-        M → (F₂ [⋀^ι]→L[𝕜] F₃) →L[𝕜] (F₁ [⋀^ι]→L[𝕜] F₃)) s :=
+        M → (F₂ [⋀^ι]→L[𝕜] F₃) →L[𝕜] (F₁ [⋀^ι]→L[𝕜] F₃)) :=
   fun x hx ↦ (hf x hx).compContinuousLinearMapCLM
 
-theorem MDifferentiable.compContinuousLinearMapCLM [CharZero 𝕜] {f : M → F₁ →L[𝕜] F₂}
-    (hf : MDifferentiable I 𝓘(𝕜, F₁ →L[𝕜] F₂) f) :
-    MDifferentiable I 𝓘(𝕜, (F₂ [⋀^ι]→L[𝕜] F₃) →L[𝕜] (F₁ [⋀^ι]→L[𝕜] F₃))
+theorem MDifferentiable.compContinuousLinearMapCLM [CharZero 𝕜]
+    {f : M → F₁ →L[𝕜] F₂} (hf : MDiff f) :
+    MDiff
       (fun y ↦ ContinuousAlternatingMap.compContinuousLinearMapCLM (f y) :
         M → (F₂ [⋀^ι]→L[𝕜] F₃) →L[𝕜] (F₁ [⋀^ι]→L[𝕜] F₃)) :=
   fun x ↦ (hf x).compContinuousLinearMapCLM
 
 theorem MDifferentiableWithinAt.compContinuousAlternatingMapCLM
-    {f : M → F₂ →L[𝕜] F₃} {s : Set M} {x : M}
-    (hf : MDifferentiableWithinAt I 𝓘(𝕜, F₂ →L[𝕜] F₃) f s x) :
-    MDifferentiableWithinAt I 𝓘(𝕜, (F₁ [⋀^ι]→L[𝕜] F₂) →L[𝕜] (F₁ [⋀^ι]→L[𝕜] F₃))
-      (fun y ↦ ContinuousLinearMap.compContinuousAlternatingMapCLM 𝕜 F₁ F₂ F₃ ι (f y)) s x :=
+    {f : M → F₂ →L[𝕜] F₃} {s : Set M} {x : M} (hf : MDiffAt[s] f x) :
+    MDiffAt[s] (fun y ↦ ContinuousLinearMap.compContinuousAlternatingMapCLM 𝕜 F₁ F₂ F₃ ι (f y)) x :=
   Differentiable.comp_mdifferentiableWithinAt
     (ContinuousLinearMap.compContinuousAlternatingMapCLM 𝕜 F₁ F₂ F₃ ι).differentiable hf
 
-theorem MDifferentiableAt.compContinuousAlternatingMapCLM {f : M → F₂ →L[𝕜] F₃} {x : M}
-    (hf : MDifferentiableAt I 𝓘(𝕜, F₂ →L[𝕜] F₃) f x) :
-    MDifferentiableAt I 𝓘(𝕜, (F₁ [⋀^ι]→L[𝕜] F₂) →L[𝕜] (F₁ [⋀^ι]→L[𝕜] F₃))
-      (fun y ↦ ContinuousLinearMap.compContinuousAlternatingMapCLM 𝕜 F₁ F₂ F₃ ι (f y)) x :=
+theorem MDifferentiableAt.compContinuousAlternatingMapCLM
+    {f : M → F₂ →L[𝕜] F₃} {x : M} (hf : MDiffAt f x) :
+    MDiffAt (fun y ↦ ContinuousLinearMap.compContinuousAlternatingMapCLM 𝕜 F₁ F₂ F₃ ι (f y)) x :=
   MDifferentiableWithinAt.compContinuousAlternatingMapCLM hf
 
-theorem MDifferentiableOn.compContinuousAlternatingMapCLM {f : M → F₂ →L[𝕜] F₃} {s : Set M}
-    (hf : MDifferentiableOn I 𝓘(𝕜, F₂ →L[𝕜] F₃) f s) :
-    MDifferentiableOn I 𝓘(𝕜, (F₁ [⋀^ι]→L[𝕜] F₂) →L[𝕜] (F₁ [⋀^ι]→L[𝕜] F₃))
-      (fun y ↦ ContinuousLinearMap.compContinuousAlternatingMapCLM 𝕜 F₁ F₂ F₃ ι (f y)) s :=
+theorem MDifferentiableOn.compContinuousAlternatingMapCLM
+    {f : M → F₂ →L[𝕜] F₃} {s : Set M} (hf : MDiff[s] f) :
+    MDiff[s] (fun y ↦ ContinuousLinearMap.compContinuousAlternatingMapCLM 𝕜 F₁ F₂ F₃ ι (f y)) :=
   fun x hx ↦ (hf x hx).compContinuousAlternatingMapCLM
 
-theorem MDifferentiable.compContinuousAlternatingMapCLM {f : M → F₂ →L[𝕜] F₃}
-    (hf : MDifferentiable I 𝓘(𝕜, F₂ →L[𝕜] F₃) f) :
-    MDifferentiable I 𝓘(𝕜, (F₁ [⋀^ι]→L[𝕜] F₂) →L[𝕜] (F₁ [⋀^ι]→L[𝕜] F₃))
-      (fun y ↦ ContinuousLinearMap.compContinuousAlternatingMapCLM 𝕜 F₁ F₂ F₃ ι (f y)) :=
+theorem MDifferentiable.compContinuousAlternatingMapCLM {f : M → F₂ →L[𝕜] F₃} (hf : MDiff f) :
+    MDiff (fun y ↦ ContinuousLinearMap.compContinuousAlternatingMapCLM 𝕜 F₁ F₂ F₃ ι (f y)) :=
   fun x ↦ (hf x).compContinuousAlternatingMapCLM
 
 theorem MDifferentiableWithinAt.continuousAlternatingMapCongr [CharZero 𝕜]
     {f : M → F₁ ≃L[𝕜] F₂} {g : M → F₃ ≃L[𝕜] F₄}
-    (hf : MDifferentiableWithinAt I 𝓘(𝕜, F₂ →L[𝕜] F₁) (fun x ↦ ((f x).symm : F₂ →L[𝕜] F₁)) s x)
-    (hg : MDifferentiableWithinAt I 𝓘(𝕜, F₃ →L[𝕜] F₄) (fun x ↦ (g x : F₃ →L[𝕜] F₄)) s x) :
-    MDifferentiableWithinAt I 𝓘(𝕜, (F₁ [⋀^ι]→L[𝕜] F₃) →L[𝕜] (F₂ [⋀^ι]→L[𝕜] F₄))
+    (hf : MDiffAt[s] (fun x ↦ ((f x).symm : F₂ →L[𝕜] F₁)) x)
+    (hg : MDiffAt[s] (fun x ↦ (g x : F₃ →L[𝕜] F₄)) x) :
+    MDiffAt[s]
       (fun (y : M) ↦ (ContinuousLinearEquiv.continuousAlternatingMapCongr (f y) (g y) (ι := ι) :
-          (F₁ [⋀^ι]→L[𝕜] F₃) →L[𝕜] (F₂ [⋀^ι]→L[𝕜] F₄))) s x := by
+          (F₁ [⋀^ι]→L[𝕜] F₃) →L[𝕜] (F₂ [⋀^ι]→L[𝕜] F₄))) x := by
   simp_rw [ContinuousLinearEquiv.coe_continuousAlternatingMapCongr]
   apply MDifferentiableWithinAt.clm_comp
   · exact MDifferentiableWithinAt.compContinuousAlternatingMapCLM hg
@@ -359,27 +351,27 @@ theorem MDifferentiableWithinAt.continuousAlternatingMapCongr [CharZero 𝕜]
 
 nonrec theorem MDifferentiableAt.continuousAlternatingMapCongr [CharZero 𝕜]
     {f : M → F₁ ≃L[𝕜] F₂} {g : M → F₃ ≃L[𝕜] F₄} {x : M}
-    (hf : MDifferentiableAt I 𝓘(𝕜, F₂ →L[𝕜] F₁) (fun x ↦ ((f x).symm : F₂ →L[𝕜] F₁)) x)
-    (hg : MDifferentiableAt I 𝓘(𝕜, F₃ →L[𝕜] F₄) (fun x ↦ (g x : F₃ →L[𝕜] F₄)) x) :
-    MDifferentiableAt I 𝓘(𝕜, (F₁ [⋀^ι]→L[𝕜] F₃) →L[𝕜] (F₂ [⋀^ι]→L[𝕜] F₄))
+    (hf : MDiffAt (fun x ↦ ((f x).symm : F₂ →L[𝕜] F₁)) x)
+    (hg : MDiffAt (fun x ↦ (g x : F₃ →L[𝕜] F₄)) x) :
+    MDiffAt
       (fun (y : M) ↦ (ContinuousLinearEquiv.continuousAlternatingMapCongr (f y) (g y) (ι := ι) :
           (F₁ [⋀^ι]→L[𝕜] F₃) →L[𝕜] (F₂ [⋀^ι]→L[𝕜] F₄))) x :=
   MDifferentiableWithinAt.continuousAlternatingMapCongr hf hg
 
 theorem MDifferentiableOn.continuousAlternatingMapCongr [CharZero 𝕜]
     {f : M → F₁ ≃L[𝕜] F₂} {g : M → F₃ ≃L[𝕜] F₄} {s : Set M}
-    (hf : MDifferentiableOn I 𝓘(𝕜, F₂ →L[𝕜] F₁) (fun x ↦ ((f x).symm : F₂ →L[𝕜] F₁)) s)
-    (hg : MDifferentiableOn I 𝓘(𝕜, F₃ →L[𝕜] F₄) (fun x ↦ (g x : F₃ →L[𝕜] F₄)) s) :
-    MDifferentiableOn I 𝓘(𝕜, (F₁ [⋀^ι]→L[𝕜] F₃) →L[𝕜] (F₂ [⋀^ι]→L[𝕜] F₄))
+    (hf : MDiff[s] (fun x ↦ ((f x).symm : F₂ →L[𝕜] F₁)))
+    (hg : MDiff[s] (fun x ↦ (g x : F₃ →L[𝕜] F₄))) :
+    MDiff[s]
       (fun (y : M) ↦ (ContinuousLinearEquiv.continuousAlternatingMapCongr (f y) (g y) (ι := ι) :
-          (F₁ [⋀^ι]→L[𝕜] F₃) →L[𝕜] (F₂ [⋀^ι]→L[𝕜] F₄))) s :=
+          (F₁ [⋀^ι]→L[𝕜] F₃) →L[𝕜] (F₂ [⋀^ι]→L[𝕜] F₄))) :=
   fun x hx ↦ (hf x hx).continuousAlternatingMapCongr (hg x hx)
 
 theorem MDifferentiable.continuousAlternatingMapCongr [CharZero 𝕜]
     {f : M → F₁ ≃L[𝕜] F₂} {g : M → F₃ ≃L[𝕜] F₄}
-    (hf : MDifferentiable I 𝓘(𝕜, F₂ →L[𝕜] F₁) (fun x ↦ ((f x).symm : F₂ →L[𝕜] F₁)))
-    (hg : MDifferentiable I 𝓘(𝕜, F₃ →L[𝕜] F₄) (fun x ↦ (g x : F₃ →L[𝕜] F₄))) :
-    MDifferentiable I 𝓘(𝕜, (F₁ [⋀^ι]→L[𝕜] F₃) →L[𝕜] (F₂ [⋀^ι]→L[𝕜] F₄))
+    (hf : MDiff (fun x ↦ ((f x).symm : F₂ →L[𝕜] F₁)))
+    (hg : MDiff (fun x ↦ (g x : F₃ →L[𝕜] F₄))) :
+    MDiff
       (fun (y : M) ↦ (ContinuousLinearEquiv.continuousAlternatingMapCongr (f y) (g y) (ι := ι) :
           (F₁ [⋀^ι]→L[𝕜] F₃) →L[𝕜] (F₂ [⋀^ι]→L[𝕜] F₄))) :=
   fun x ↦ (hf x).continuousAlternatingMapCongr (hg x)
@@ -390,9 +382,8 @@ Version in vector spaces. For versions in nontrivial vector bundles, see
 `MDifferentiableWithinAt.continuousAlternatingMap_bundle_apply`. -/
 theorem MDifferentiableWithinAt.continuousAlternatingMap_apply
     {g : M → F₁ [⋀^ι]→L[𝕜] F₂} {f : ι → M → F₁}
-    (hg : MDifferentiableWithinAt I 𝓘(𝕜, F₁ [⋀^ι]→L[𝕜] F₂) g s x)
-    (hf : ∀ i, MDifferentiableWithinAt I 𝓘(𝕜, F₁) (f i) s x) :
-    MDifferentiableWithinAt I 𝓘(𝕜, F₂) (fun x ↦ g x (fun i ↦ f i x)) s x :=
+    (hg : MDiffAt[s] g x) (hf : ∀ i, MDiffAt[s] (f i) x) :
+    MDiffAt[s] (fun x ↦ g x (fun i ↦ f i x)) x :=
   DifferentiableWithinAt.comp_mdifferentiableWithinAt (t := univ)
     (g := fun x : (F₁ [⋀^ι]→L[𝕜] F₂) × (ι → F₁) => x.1 x.2)
     (f := fun x : M ↦ (g x, fun i ↦ f i x))
@@ -404,25 +395,19 @@ For versions in nontrivial vector bundles, see
 `MDifferentiableAt.continuousAlternatingMap_apply_of_inCoordinates` and
 `MDifferentiableAt.continuousAlternatingMap_bundle_apply`. -/
 nonrec theorem MDifferentiableAt.continuousAlternatingMap_apply
-    {g : M → F₁ [⋀^ι]→L[𝕜] F₂} {f : ι → M → F₁}
-    (hg : MDifferentiableAt I 𝓘(𝕜, F₁ [⋀^ι]→L[𝕜] F₂) g x)
-    (hf : ∀ i, MDifferentiableAt I 𝓘(𝕜, F₁) (f i) x) :
-    MDifferentiableAt I 𝓘(𝕜, F₂) (fun x ↦ g x (fun i ↦ f i x)) x :=
+    {g : M → F₁ [⋀^ι]→L[𝕜] F₂} {f : ι → M → F₁} (hg : MDiffAt g x) (hf : ∀ i, MDiffAt (f i) x) :
+    MDiffAt (fun x ↦ g x (f · x)) x :=
   MDifferentiableWithinAt.continuousAlternatingMap_apply hg hf
 
 theorem MDifferentiableOn.continuousAlternatingMap_apply
-    {g : M → F₁ [⋀^ι]→L[𝕜] F₂} {f : ι → M → F₁}
-    (hg : MDifferentiableOn I 𝓘(𝕜, F₁ [⋀^ι]→L[𝕜] F₂) g s)
-    (hf : ∀ i, MDifferentiableOn I 𝓘(𝕜, F₁) (f i) s) :
-    MDifferentiableOn I 𝓘(𝕜, F₂) (fun x ↦ g x (fun i ↦ f i x)) s :=
+    {g : M → F₁ [⋀^ι]→L[𝕜] F₂} {f : ι → M → F₁} (hg : MDiff[s] g) (hf : ∀ i, MDiff[s] (f i)) :
+    MDiff[s] (fun x ↦ g x (f · x)) :=
   fun x hx ↦ (hg x hx).continuousAlternatingMap_apply (fun i ↦ (hf i x hx))
 
 theorem MDifferentiable.continuousAlternatingMap_apply
-    {g : M → F₁ [⋀^ι]→L[𝕜] F₂} {f : ι → M → F₁}
-    (hg : MDifferentiable I 𝓘(𝕜, F₁ [⋀^ι]→L[𝕜] F₂) g)
-    (hf : ∀ i, MDifferentiable I 𝓘(𝕜, F₁) (f i)) :
-    MDifferentiable I 𝓘(𝕜, F₂) (fun x ↦ g x (fun i ↦ f i x)) :=
-  fun x ↦ (hg x).continuousAlternatingMap_apply (fun i ↦ (hf i x))
+    {g : M → F₁ [⋀^ι]→L[𝕜] F₂} {f : ι → M → F₁} (hg : MDiff g) (hf : ∀ i, MDiff (f i)) :
+    MDiff (fun x ↦ g x (f · x)) :=
+  fun x ↦ (hg x).continuousAlternatingMap_apply (hf · x)
 
 /-! ### Differentiability of scalar multiplication -/
 
