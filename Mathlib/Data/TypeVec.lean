@@ -6,8 +6,6 @@ Authors: Jeremy Avigad, Mario Carneiro, Simon Hudon
 module
 
 public import Mathlib.Data.Fin.Fin2
-public import Mathlib.Logic.Function.Basic
-public import Mathlib.Tactic.Common
 
 /-!
 

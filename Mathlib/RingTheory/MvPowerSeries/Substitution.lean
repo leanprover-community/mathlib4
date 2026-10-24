@@ -5,11 +5,10 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos Fernández
 -/
 module
 
+public import Mathlib.Data.ENat.Lattice
 public import Mathlib.RingTheory.MvPowerSeries.Evaluation
 public import Mathlib.RingTheory.MvPowerSeries.LinearTopology
 public import Mathlib.RingTheory.Nilpotent.Basic
-public import Mathlib.Topology.UniformSpace.DiscreteUniformity
-public import Mathlib.Data.ENat.Lattice
 
 /-! # Substitutions in multivariate power series
 
@@ -222,7 +221,7 @@ theorem substAlgHom_eq_aeval
     (ha : HasSubst a) :
     (substAlgHom ha : MvPowerSeries σ R → MvPowerSeries τ S) = MvPowerSeries.aeval ha.hasEval := by
   simp only [substAlgHom, coe_aeval ha.hasEval]
-  convert! coe_aeval (R := R) (hasSubst_iff_hasEval_of_discreteTopology.mp ha) <;>
+  convert coe_aeval (R := R) (hasSubst_iff_hasEval_of_discreteTopology.mp ha) <;>
   exact DiscreteUniformity.eq_bot.symm
 
 @[simp]
@@ -492,7 +491,7 @@ theorem le_weightedOrder_subst (ha : HasSubst a) (f : MvPowerSeries σ R) :
   by_cases hfx : f.coeff x = 0
   · simp [hfx]
   rw [coeff_eq_zero_of_lt_weightedOrder w, smul_zero]
-  refine hd.trans_le (((biInf_le _ hfx).trans ?_).trans (le_weightedOrder_prod ..))
+  refine hd.trans_le (((iInf₂_le x hfx).trans ?_).trans (le_weightedOrder_prod ..))
   simp only [Finsupp.weight_apply, Finsupp.sum, Function.comp_apply]
   exact Finset.sum_le_sum fun i hi ↦ .trans (by simp) (le_weightedOrder_pow ..)
 
@@ -686,7 +685,7 @@ theorem rescale_zero :
   split_ifs with h
   · simp [h, coeff_apply, ← @coeff_zero_eq_constantCoeff_apply, coeff_apply]
   · simp only [coeff_apply]
-    convert! zero_mul _
+    convert zero_mul _
     simp only [DFunLike.ext_iff, not_forall, Finsupp.coe_zero, Pi.zero_apply] at h
     obtain ⟨s, h⟩ := h
     simp only [Finsupp.prod]

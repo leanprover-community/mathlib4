@@ -5,13 +5,12 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Order.Lattice
-public import Mathlib.Order.ModularLattice
-public import Mathlib.Data.List.Sort
-public import Mathlib.Logic.Equiv.Fin.Basic
 public import Mathlib.Logic.Equiv.Functor
-public import Mathlib.Data.Fintype.Pigeonhole
+public import Mathlib.Order.ModularLattice
 public import Mathlib.Order.RelSeries
+
+import Mathlib.Data.Fintype.Pigeonhole
+import Mathlib.Logic.Equiv.Fin.Basic
 
 /-!
 # Jordan-Hölder Theorem
@@ -244,7 +243,7 @@ theorem isMaximal_eraseLast_last {s : CompositionSeries X} (h : 0 < s.length) :
   rw [last_eraseLast, last]
   have := s.step ⟨s.length - 1, by lia⟩
   simp only [Fin.castSucc_mk, Fin.succ_mk, mem_ofPred_eq] at this
-  convert! this using 3
+  convert this using 3
   exact (tsub_add_cancel_of_le h).symm
 
 theorem eq_snoc_eraseLast {s : CompositionSeries X} (h : 0 < s.length) :

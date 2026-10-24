@@ -7,7 +7,8 @@ Authors: Chris Birkbeck
 module
 
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Summable
-public import Mathlib.LinearAlgebra.Matrix.FixedDetMatrices
+
+import Mathlib.LinearAlgebra.Matrix.FixedDetMatrices
 
 /-!
 # Slash action on E2
@@ -214,17 +215,12 @@ lemma G2_slash_action (γ : SL(2, ℤ)) : G2 ∣[(2 : ℤ)] γ = G2 - D2 γ := b
         aesop
       · simpa only [h2, D2_T, sub_zero] using G2_T_transform
   | mul g h _ _ ig ih =>
-      rw [D2_mul, SlashAction.slash_mul, ig, sub_eq_add_neg, SlashAction.add_slash, ih]
-      grind [SlashAction.neg_slash, SL_slash]
+      grind [D2_mul, SlashAction.slash_mul, SlashAction.sub_slash]
   | inv g _ ig =>
       have H1 : (G2 ∣[(2 : ℤ)] g) ∣[(2 : ℤ)] g⁻¹ = (G2 - D2 g) ∣[(2 : ℤ)] g⁻¹ := by
         rw [ig]
-      simp_rw [← SlashAction.slash_mul, sub_eq_add_neg, SlashAction.add_slash, mul_inv_cancel,
-        SlashAction.slash_one, SL_slash, SlashAction.neg_slash] at H1
-      nth_rw 2 [H1]
-      have := D2_inv g
-      simp only [SL_slash] at this
-      rw [← sub_eq_add_neg, this, SL_slash, sub_neg_eq_add, add_sub_cancel_right]
+      rwa [← SlashAction.slash_mul, mul_inv_cancel, SlashAction.slash_one, SlashAction.sub_slash,
+        D2_inv, sub_neg_eq_add, eq_comm, ← eq_sub_iff_add_eq] at H1
 
 lemma E2_slash_action (γ : SL(2, ℤ)) : E2 ∣[(2 : ℤ)] γ = E2 - (1 / (2 * riemannZeta 2)) • D2 γ := by
   ext z

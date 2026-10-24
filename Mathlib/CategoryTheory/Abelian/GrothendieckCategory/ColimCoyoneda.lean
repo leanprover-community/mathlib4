@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Subobject
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
-public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
 # Morphisms to a colimit in a Grothendieck abelian category
@@ -66,7 +65,6 @@ the inclusion `(kernel.ι (g y)).app j` is an isomorphism,
 which implies that `y ≫ Y.map φ = 0` (see the lemma `injectivity₀`).
 -/
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation `X ⟶ Y.obj t.right` for `t : Under j₀`
 that is induced by `y : X ⟶ Y.obj j₀`. -/
 @[simps]
@@ -81,13 +79,10 @@ if `J` is filtered, see `epi_f`). -/
 noncomputable def f : colimit (kernel (g y)) ⟶ X :=
   IsColimit.map (colimit.isColimit _) (constCocone _ X) (kernel.ι _)
 
-set_option backward.defeqAttrib.useBackward true in
 lemma hf (j : Under j₀) :
     colimit.ι (kernel (g y)) j ≫ f y = (kernel.ι (g y)).app j :=
   (IsColimit.ι_map _ _ _ _).trans (by simp)
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 variable {y} in
 include hc hy in
 lemma epi_f [IsFiltered J] : Epi (f y) := by
@@ -99,7 +94,6 @@ lemma epi_f [IsFiltered J] : Epi (f y) := by
     (fun j ↦ by simpa using! hf y j)
     (fun _ ↦ by simpa using! hy.symm)).epi_f rfl
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The kernel of `g y` gives a family of subobjects of `X` indexed by `Under j₀`, and
 we consider it as a functor `Under j₀ ⥤ MonoOver X`. -/
 @[simps]
@@ -157,7 +151,6 @@ we deduce that `z` factors as `X ⟶ Y.obj j ⟶ c.pt` for some `j`
 (see the lemma `surjectivity`).
 -/
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The functor `J ⥤ MonoOver X` which sends `j : J` to the inverse image by `z : X ⟶ c.pt`
 of the subobject `Y.obj j` of `c.pt`; it is defined here as the object in `MonoOver X`
 corresponding to the monomorphism
@@ -180,8 +173,6 @@ lemma hf (j : J) :
 
 include hc
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma isIso_f [IsFiltered J] : IsIso (f z) := by
   refine ((MorphismProperty.isomorphisms C).arrow_mk_iso_iff ?_).1
     (MorphismProperty.of_isPullback

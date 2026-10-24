@@ -5,12 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
 public import Mathlib.AlgebraicGeometry.Pullbacks
-public import Mathlib.AlgebraicGeometry.AffineScheme
-public import Mathlib.CategoryTheory.Limits.MonoCoprod
-public import Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
-public import Mathlib.Tactic.SuppressCompilation
 public import Mathlib.CategoryTheory.Limits.Constructions.ZeroObjects -- shake: keep
 -- This import adds an instance which, despite failing to trigger,
 -- is necessary for some typeclass syntheses in this file to succeed.
@@ -263,7 +258,7 @@ private lemma isOpenImmersion_sigmaDesc_aux
   rw [IsOpenImmersion.iff_isIso_stalkMap]
   constructor
   · suffices Topology.IsOpenEmbedding (Sigma.desc α ∘ sigmaMk f) by
-      convert! this.comp (sigmaMk f).symm.isOpenEmbedding; ext; simp
+      convert this.comp (sigmaMk f).symm.isOpenEmbedding; ext; simp
     refine .of_continuous_injective_isOpenMap ?_ ?_ ?_
     · fun_prop
     · rintro ⟨ix, x⟩ ⟨iy, y⟩ e
@@ -291,7 +286,7 @@ lemma isOpenImmersion_sigmaDesc [Small.{u} σ]
     (hα : Pairwise (Disjoint on (Set.range <| α ·))) :
     IsOpenImmersion (Sigma.desc α) := by
   obtain ⟨ι, ⟨e⟩⟩ := Small.equiv_small (α := σ)
-  convert! IsOpenImmersion.comp ((Sigma.reindex e.symm g).inv) (Sigma.desc fun i ↦ α _)
+  convert IsOpenImmersion.comp ((Sigma.reindex e.symm g).inv) (Sigma.desc fun i ↦ α _)
   · refine Sigma.hom_ext _ _ fun i ↦ ?_
     obtain ⟨i, rfl⟩ := e.symm.surjective i
     simp
@@ -346,7 +341,7 @@ lemma isCompl_range_inl_inr :
 
 lemma isCompl_opensRange_inl_inr :
     IsCompl (coprod.inl : X ⟶ X ⨿ Y).opensRange (coprod.inr : Y ⟶ X ⨿ Y).opensRange := by
-  convert! isCompl_range_inl_inr X Y
+  convert isCompl_range_inl_inr X Y
   simp only [isCompl_iff, disjoint_iff, codisjoint_iff, ← TopologicalSpace.Opens.coe_inj]
   rfl
 
@@ -372,7 +367,7 @@ lemma coprodMk_inl (x : X) :
       Scheme.forgetToTop.map coprod.inl x
   congr 2
   refine (colimit.isoColimitCocone_ι_inv_assoc ⟨_, TopCat.binaryCofanIsColimit _ _⟩ _ _).trans ?_
-  exact coprodComparison_inl Scheme.forgetToTop
+  exact inl_coprodComparison Scheme.forgetToTop _ _
 
 @[simp]
 lemma coprodMk_inr (x : Y) :
@@ -382,7 +377,7 @@ lemma coprodMk_inr (x : Y) :
       Scheme.forgetToTop.map coprod.inr x
   congr 2
   refine (colimit.isoColimitCocone_ι_inv_assoc ⟨_, TopCat.binaryCofanIsColimit _ _⟩ _ _).trans ?_
-  exact coprodComparison_inr Scheme.forgetToTop
+  exact inr_coprodComparison Scheme.forgetToTop _ _
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The open cover of the coproduct of two schemes. -/
@@ -413,7 +408,7 @@ lemma nonempty_isColimit_binaryCofanMk_of_isCompl {X Y S : Scheme.{u}}
   let i : BinaryCofan.mk f g ≅ c' := Cofan.ext (Iso.refl _) (by rintro (b | b) <;> rfl)
   refine ⟨IsColimit.ofIsoColimit (Nonempty.some ?_) i.symm⟩
   let fi (j : WalkingPair) : WalkingPair.casesOn j X Y ⟶ S := WalkingPair.casesOn j f g
-  convert! nonempty_isColimit_cofanMk_of fi _ _
+  convert nonempty_isColimit_cofanMk_of fi _ _
   · intro i
     cases i <;> (simp only [fi]; infer_instance)
   · simpa [← WalkingPair.equivBool.symm.iSup_comp, iSup_bool_eq, ← codisjoint_iff] using hf.2
@@ -457,7 +452,7 @@ instance : FinitaryExtensive Scheme where
     · dsimp
       refine fun {Z} f ↦ (nonempty_isColimit_binaryCofanMk_of_isCompl _ _ ?_).some
       rw [Scheme.Hom.opensRange_pullbackFst, Scheme.Hom.opensRange_pullbackFst]
-      convert! (isCompl_range_inl_inr X Y).map (CompleteLatticeHom.setPreimage f)
+      convert (isCompl_range_inl_inr X Y).map (CompleteLatticeHom.setPreimage f)
       simp [isCompl_iff, disjoint_iff, codisjoint_iff, ← TopologicalSpace.Opens.coe_inj]
 
 variable {X Y}
@@ -562,11 +557,11 @@ instance (R S : CommRingCat.{u}ᵒᵖ) : IsIso (coprodComparison Scheme.Spec R S
     ((limit.isoLimitCone ⟨_, CommRingCat.prodFanIsLimit R S⟩).inv ≫
       (opProdIsoCoprod R S).unop.inv)) = coprodSpec R S := by
     ext1
-    · rw [coprodComparison_inl_assoc, coprodSpec, coprod.inl_desc, Scheme.Spec_map,
+    · rw [inl_coprodComparison_assoc, coprodSpec, coprod.inl_desc, Scheme.Spec_map,
         ← Spec.map_comp, Category.assoc, Iso.unop_inv, opProdIsoCoprod_inv_inl,
         limit.isoLimitCone_inv_π]
       rfl
-    · rw [coprodComparison_inr_assoc, coprodSpec, coprod.inr_desc, Scheme.Spec_map,
+    · rw [inr_coprodComparison_assoc, coprodSpec, coprod.inr_desc, Scheme.Spec_map,
         ← Spec.map_comp, Category.assoc, Iso.unop_inv, opProdIsoCoprod_inv_inr,
         limit.isoLimitCone_inv_π]
       rfl
@@ -652,7 +647,7 @@ private lemma IsAffineOpen.iSup_of_disjoint_aux [Finite ι] {U : ι → X.Opens}
     IsAffineOpen (iSup U) := by
   have := isOpenImmersion_sigmaDesc _ (fun i ↦ (U i).ι)
     (fun i j e ↦ by convert hU' e; simp [← Opens.coe_disjoint])
-  convert! isAffineOpen_opensRange (Sigma.desc fun i ↦ (U i).ι)
+  convert isAffineOpen_opensRange (Sigma.desc fun i ↦ (U i).ι)
   · ext
     simp [(sigmaMk _).symm.exists_congr_left, ← Scheme.Hom.comp_apply, Scheme.Opens.exists_toScheme]
   · have (i : _) : IsAffine _ := hU i
@@ -678,7 +673,7 @@ lemma IsAffineOpen.biSup_of_disjoint {s : Set σ} (hs : s.Finite)
 lemma IsAffineOpen.sup_of_disjoint {U V : X.Opens} (hU : IsAffineOpen U) (hV : IsAffineOpen V)
     (H : Disjoint U V) :
     IsAffineOpen (U ⊔ V) := by
-  convert!
+  convert
     iSup_of_disjoint (U := fun i : Unit ⊕ Unit ↦ i.elim (fun _ ↦ U) (fun _ ↦ V)) (by simp_all)
       (by simp_all [_root_.Pairwise, Unique.forall_iff, ← Opens.coe_disjoint, disjoint_comm])
   aesop
@@ -687,7 +682,7 @@ instance (priority := low) [Finite X] [DiscreteTopology X] : IsAffine X :=
   have : IsAffineOpen (⨆ (x : X), (⟨{x}, isOpen_discrete _⟩ : X.Opens)) :=
     .iSup_of_disjoint (fun i ↦ .of_subsingleton Set.subsingleton_singleton)
       fun i j e ↦ by simpa [← TopologicalSpace.Opens.coe_disjoint]
-  have : IsAffine (⊤ : X.Opens).toScheme := show IsAffineOpen _ by convert! this; ext; simp
+  have : IsAffine (⊤ : X.Opens).toScheme := show IsAffineOpen _ by convert this; ext; simp
   .of_isIso X.topIso.inv
 
 end Coproduct

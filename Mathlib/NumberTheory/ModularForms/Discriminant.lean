@@ -6,12 +6,10 @@ Authors: Chris Birkbeck
 module
 
 public import Mathlib.Analysis.Complex.SqrtDeriv
-public import Mathlib.Analysis.Normed.Ring.InfiniteProd
 public import Mathlib.NumberTheory.ModularForms.DedekindEta
-public import Mathlib.NumberTheory.ModularForms.Basic
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Transform
-public import Mathlib.NumberTheory.ModularForms.LevelOne.Basic
-public import Mathlib.NumberTheory.ModularForms.QExpansion
+
+import Mathlib.Analysis.Normed.Ring.InfiniteProd
 
 /-!
 # The modular discriminant Δ

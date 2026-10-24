@@ -5,10 +5,11 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 public import Mathlib.Algebra.Category.AlgCat.Basic
+public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 public import Mathlib.CategoryTheory.Monoidal.Mon
-public import Mathlib.Tactic.SuppressCompilation
+
+import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # `Mon (ModuleCat R) ≌ AlgCat R`
@@ -57,11 +58,11 @@ def MonObj.toRing (A : ModuleCat.{u} R) [MonObj A] : Ring A :=
     mul_assoc := fun x y z => by
       convert! congr($(ModuleCat.hom_ext_iff.mp (mul_assoc A)) (x ⊗ₜ y ⊗ₜ z))
     left_distrib := fun x y z => by
-      convert! μ[A].hom.map_add (x ⊗ₜ y) (x ⊗ₜ z)
+      convert μ[A].hom.map_add (x ⊗ₜ y) (x ⊗ₜ z)
       rw [← TensorProduct.tmul_add]
       rfl
     right_distrib := fun x y z => by
-      convert! μ[A].hom.map_add (x ⊗ₜ z) (y ⊗ₜ z)
+      convert μ[A].hom.map_add (x ⊗ₜ z) (y ⊗ₜ z)
       rw [← TensorProduct.add_tmul]
       rfl
     zero_mul := fun x => show μ[A] _ = 0 by

@@ -5,10 +5,12 @@ Authors: Jeremy Avigad
 -/
 module
 
-public import Mathlib.Algebra.Ring.Int.Defs
-public import Mathlib.Data.Nat.Bitwise
-public import Mathlib.Data.Nat.Size
 public import Batteries.Data.Int
+public import Mathlib.Data.Nat.Bitwise
+
+import Mathlib.Algebra.Ring.Int.Defs
+import Mathlib.Data.Nat.Size
+
 import all Init.Data.Nat.Bitwise.Basic  -- for unfolding `Nat.bitwise`
 
 /-!
@@ -184,9 +186,11 @@ theorem bit_zero : bit false 0 = 0 :=
   rfl
 
 @[simp]
-theorem bit_coe_nat (b) (n : ℕ) : bit b n = Nat.bit b n := by
+theorem bit_natCast (b) (n : ℕ) : bit b n = Nat.bit b n := by
   rw [bit_val, Nat.bit_val]
   cases b <;> rfl
+
+@[deprecated (since := "2026-10-13")] alias bit_coe_nat := bit_natCast
 
 @[simp]
 theorem bit_negSucc (b) (n : ℕ) : bit b -[n+1] = -[Nat.bit (not b) n+1] := by
@@ -200,13 +204,13 @@ theorem bodd_bit (b n) : bodd (bit b n) = b := by
 
 @[simp]
 theorem testBit_bit_zero (b) : ∀ n, testBit (bit b n) 0 = b
-  | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.testBit_bit_zero
+  | (n : ℕ) => by rw [bit_natCast]; apply Nat.testBit_bit_zero
   | -[n+1] => by
     rw [bit_negSucc]; dsimp [testBit]; rw [Nat.testBit_bit_zero, Bool.not_not]
 
 @[simp]
 theorem testBit_bit_succ (m b) : ∀ n, testBit (bit b n) (Nat.succ m) = testBit n m
-  | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.testBit_bit_succ
+  | (n : ℕ) => by rw [bit_natCast]; apply Nat.testBit_bit_succ
   | -[n+1] => by
     dsimp only [testBit]
     simp only [bit_negSucc]
@@ -273,7 +277,7 @@ theorem bitwise_xor : bitwise xor = Int.xor := by
 theorem bitwise_bit (f : Bool → Bool → Bool) (a m b n) :
     bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
   rcases m with m | m <;> rcases n with n | n <;>
-  simp [bitwise, ofNat_eq_natCast, bit_coe_nat, natBitwise, Bool.not_false,
+  simp [bitwise, ofNat_eq_natCast, bit_natCast, natBitwise, Bool.not_false,
     bit_negSucc]
   · by_cases h : f false false <;> simp +decide [h]
   · by_cases h : f false true <;> simp +decide [h]

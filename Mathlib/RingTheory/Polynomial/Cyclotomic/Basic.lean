@@ -5,7 +5,6 @@ Authors: Riccardo Brasca
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Splits
 public import Mathlib.FieldTheory.RatFunc.AsPolynomial
 public import Mathlib.NumberTheory.ArithmeticFunction.Moebius
 public import Mathlib.RingTheory.RootsOfUnity.Complex
@@ -125,7 +124,7 @@ theorem X_pow_sub_one_eq_prod {ζ : R} {n : ℕ} (hpos : 0 < n) (h : IsPrimitive
   have hmonic : (X ^ n - C (1 : R)).Monic := monic_X_pow_sub_C (1 : R) (ne_of_lt hpos).symm
   symm
   apply prod_multiset_X_sub_C_of_monic_of_roots_card_eq hmonic
-  rw [@natDegree_X_pow_sub_C R _ _ n 1, ← nthRoots]
+  rw [natDegree_X_pow_sub_C, ← nthRoots]
   exact IsPrimitiveRoot.card_nthRoots_one h
 
 end IsDomain
@@ -215,10 +214,8 @@ then `cyclotomic n K` comes from a unique polynomial with integer coefficients. 
 theorem unique_int_coeff_of_cycl {K : Type*} [CommRing K] [IsDomain K] [CharZero K] {ζ : K}
     {n : ℕ+} (h : IsPrimitiveRoot ζ n) :
     ∃! P : ℤ[X], map (Int.castRingHom K) P = cyclotomic' n K := by
-  obtain ⟨P, hP⟩ := int_coeff_of_cyclotomic' h
-  refine ⟨P, hP.1, fun Q hQ => ?_⟩
-  apply map_injective (Int.castRingHom K) Int.cast_injective
-  rw [hP.1, hQ]
+  rw [(map_injective (Int.castRingHom K) Int.cast_injective).existsUnique_iff_exists]
+  exact (int_coeff_of_cyclotomic' h).imp fun _ hP ↦ hP.1
 
 end Field
 
@@ -616,7 +613,7 @@ private theorem _root_.IsPrimitiveRoot.pow_sub_pow_eq_prod_sub_mul_field {K : Ty
   · simp only [hy, zero_pow (Nat.ne_zero_of_lt hpos), sub_zero, mul_zero, prod_const]
     congr
     rw [h.card_nthRootsFinset]
-  convert!
+  convert
     congr_arg (eval (x / y) · * y ^ card (nthRootsFinset n (1 : K))) <|
       X_pow_sub_one_eq_prod hpos h using 1
   · simp [sub_mul, div_pow, hy, h.card_nthRootsFinset]

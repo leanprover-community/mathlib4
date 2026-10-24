@@ -5,10 +5,11 @@ Authors: David Wärn
 -/
 module
 
-public import Mathlib.Data.Stream.Init
-public import Mathlib.Topology.Algebra.Semigroup
-public import Mathlib.Topology.Compactification.StoneCech
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Data.Stream.Init
+public import Mathlib.Topology.Compactification.StoneCech
+
+import Mathlib.Topology.Algebra.Semigroup
 
 /-!
 # Hindman's theorem on finite sums
@@ -252,11 +253,6 @@ theorem FP.finsetProd {M} [CommMonoid M] (a : Stream' M) (s : Finset ℕ) (hs : 
     have := ih _ (s.min'_mem hs) h
     rw [hd, ← Stream'.drop_drop, add_comm] at this
     exact FP_drop_subset_FP _ _ this
-
-@[deprecated (since := "2026-04-08")] alias FS.finset_sum := FS.finsetSum
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias FP.finset_prod := FP.finsetProd
 
 @[deprecated (since := "2026-08-14")] alias FS.head' := FS.head
 

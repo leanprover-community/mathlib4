@@ -5,13 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Notation.Support
+public import Mathlib.Topology.Bases
+public import Mathlib.Topology.Compactness.LocallyCompact
 public import Mathlib.Topology.Inseparable
 public import Mathlib.Topology.Piecewise
-public import Mathlib.Topology.Separation.SeparatedNhds
-public import Mathlib.Topology.Compactness.LocallyCompact
-public import Mathlib.Topology.Bases
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Separation properties of topological spaces
@@ -140,14 +137,9 @@ theorem t0Space_iff_exists_isOpen_xor_mem (X : Type u) [TopologicalSpace X] :
   simp only [t0Space_iff_not_inseparable, xor_iff_not_iff, not_forall, exists_prop,
     inseparable_iff_forall_isOpen, Pairwise]
 
-@[deprecated (since := "2026-04-04")]
-alias t0Space_iff_exists_isOpen_xor'_mem := t0Space_iff_exists_isOpen_xor_mem
-
 theorem exists_isOpen_xor_mem [T0Space X] {x y : X} (h : x ≠ y) :
     ∃ U : Set X, IsOpen U ∧ Xor (x ∈ U) (y ∈ U) :=
   (t0Space_iff_exists_isOpen_xor_mem X).1 ‹_› h
-
-@[deprecated (since := "2026-04-04")] alias exists_isOpen_xor'_mem := exists_isOpen_xor_mem
 
 /-- Specialization forms a partial order on a t0 topological space. -/
 @[instance_reducible]
@@ -553,7 +545,7 @@ theorem continuousOn_update_iff [T1Space X] [DecidableEq X] [TopologicalSpace Y]
     rw [continuousWithinAt_update_of_ne hz.2] at H
     exact H.mono sdiff_subset
   · rw [continuousWithinAt_update_of_ne hzx]
-    refine (H z ⟨hzs, hzx⟩).mono_of_mem_nhdsWithin (inter_mem_nhdsWithin _ ?_)
+    refine (H z ⟨hzs, hzx⟩).mono_of_mem_nhdsWithin (sdiff_mem_nhdsWithin s ?_)
     exact isOpen_ne.mem_nhds hzx
   · exact continuousWithinAt_update_same
 
@@ -715,7 +707,7 @@ theorem Dense.sdiff_finset [T1Space X] [∀ x : X, NeBot (𝓝[≠] x)] {s : Set
 obtains a dense set. -/
 theorem Dense.sdiff_finite [T1Space X] [∀ x : X, NeBot (𝓝[≠] x)] {s : Set X} (hs : Dense s)
     {t : Set X} (ht : t.Finite) : Dense (s \ t) := by
-  convert! hs.sdiff_finset ht.toFinset
+  convert hs.sdiff_finset ht.toFinset
   exact (Finite.coe_toFinset _).symm
 
 @[deprecated (since := "2026-06-03")] alias Dense.diff_finite := Dense.sdiff_finite

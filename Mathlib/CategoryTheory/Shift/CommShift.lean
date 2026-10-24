@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Shift.Basic
-public import Mathlib.CategoryTheory.NatIso
 
 /-!
 # Functors which commute with shifts
@@ -27,8 +26,6 @@ shift functors.)
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 
 -/
-
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

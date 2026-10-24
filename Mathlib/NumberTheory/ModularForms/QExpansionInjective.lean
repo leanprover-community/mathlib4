@@ -218,7 +218,7 @@ theorem gradedCoe_injective (hh : h ≠ 0) (hΓ : h ∈ Γ.strictPeriods)
   have hmem (n : ℕ) : γ₀ * upperRightHom (n * h) ∈ Γ :=
     Γ.mul_mem hγ₀ (Γ.mem_strictPeriods_iff.mp (by simpa [nsmul_eq_mul] using nsmul_mem hΓ n))
   have hlaurent : weightLaurent Γ z F = 0 := by
-    refine LaurentPolynomial.eq_zero_of_infinite_eval₂_eq_zero _ <|
+    refine LaurentPolynomial.eq_zero_of_infinite_smeval_eq_zero _ <|
       Set.infinite_of_injective_forall_mem
         (f := fun n : ℕ ↦ denomUnit (γ₀ * upperRightHom (n * h)) z)
         (fun n m hnm ↦ ?_) fun n ↦ ?_
@@ -229,7 +229,8 @@ theorem gradedCoe_injective (hh : h ≠ 0) (hΓ : h ∈ Γ.strictPeriods)
       have : (n : ℝ) * h = m * h := by exact_mod_cast hval
       exact_mod_cast mul_right_cancel₀ hh this
     · simp only [Set.mem_ofPred_eq]
-      rw [weightLaurent_eval z (hmem n) F, hF, Pi.zero_apply]
+      rw [← LaurentPolynomial.eval₂_eq_smeval, Algebra.algebraMap_self,
+        weightLaurent_eval z (hmem n) F, hF, Pi.zero_apply]
   simpa [hlaurent] using (weightLaurent_coeff z F k).symm
 
 /-- **The `q`-expansion homomorphism on the graded ring of modular forms is injective**, provided

@@ -1,7 +1,11 @@
-import Mathlib.Tactic.TacticAnalysis.Declarations
-import Mathlib.Tactic.AdaptationNote
-import Lean.LibrarySuggestions
-import Mathlib.Algebra.BigOperators.Associated
+module
+
+public import Lean.LibrarySuggestions
+public import Mathlib.Algebra.BigOperators.Associated
+public import Mathlib.Tactic.AdaptationNote
+public import Mathlib.Tactic.TacticAnalysis.Declarations
+
+@[expose] public section
 
 section terminalReplacement
 
@@ -21,7 +25,7 @@ example : 1 + 1 = 2 := by
 end omega
 
 @[tacticAnalysis linter.tacticAnalysis.dummy]
-def foo : Mathlib.TacticAnalysis.Config :=
+meta def foo : Mathlib.TacticAnalysis.Config :=
   Mathlib.TacticAnalysis.terminalReplacement "simp" "simp only" ``Lean.Parser.Tactic.simp
     (fun _ _ _ => `(tactic| simp only))
     (reportSuccess := true) (reportFailure := true)
@@ -195,7 +199,7 @@ elab "loggingTrivial" : tactic => do
 macro "probe" : tactic => `(tactic| trivial)
 
 @[tacticAnalysis linter.tacticAnalysis.dummy]
-def leaky := terminalReplacement "probe" "loggingTrivial" ``tacticProbe
+meta def leaky := terminalReplacement "probe" "loggingTrivial" ``tacticProbe
   (fun _ _ _ => `(tactic| loggingTrivial)) (reportSuccess := true)
 
 -- What a re-run tactic logs is not a finding of the pass and is not attributed to it.
@@ -587,6 +591,10 @@ example : 1 + 1 = 2 := by
   rfl
 
 /--
+warning: Unused tactic linter: `skip` does not change the goal.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+---
 info: `skip` (+1 later steps) can be replaced with `grind`
 
 Note: This linter can be disabled with `set_option linter.tacticAnalysis.tryAtEachStepGrind false`
@@ -594,10 +602,6 @@ Note: This linter can be disabled with `set_option linter.tacticAnalysis.tryAtEa
 info: `rfl` can be replaced with `grind`
 
 Note: This linter can be disabled with `set_option linter.tacticAnalysis.tryAtEachStepGrind false`
----
-warning: Unused tactic linter: `skip` does nothing
-
-Note: This linter can be disabled with `set_option linter.unusedTactic false`
 -/
 #guard_msgs in
 example : 1 + 1 = 2 := by
@@ -766,7 +770,7 @@ register_option linter.tacticAnalysis.unknownTacticTest : Bool := {
 }
 
 @[tacticAnalysis linter.tacticAnalysis.unknownTacticTest]
-def unknownTacticTest :=
+meta def unknownTacticTest :=
   Mathlib.TacticAnalysis.tryAtEachStepFromStrings "nonexistent" "nonexistent_tactic_xyz"
 
 -- This should not crash - the unknown tactic should be silently skipped
@@ -804,7 +808,7 @@ elab "fakeRfl?" : tactic => do
   evalTactic (← `(tactic| trivial))
 
 @[tacticAnalysis linter.tacticAnalysis.dummy]
-def verifyFakeRfl := verifyTryThisSuggestions
+meta def verifyFakeRfl := verifyTryThisSuggestions
   (fun _ _ => `(tactic| fakeRfl?))
   "fakeRfl?"
 

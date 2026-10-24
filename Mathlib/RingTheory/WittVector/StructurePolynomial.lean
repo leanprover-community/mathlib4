@@ -6,8 +6,9 @@ Authors: Johan Commelin, Robert Y. Lewis
 module
 
 public import Mathlib.FieldTheory.Finite.Polynomial
-public import Mathlib.NumberTheory.Basic
 public import Mathlib.RingTheory.WittVector.WittPolynomial
+
+import Mathlib.NumberTheory.Basic
 
 /-!
 # Witt structure polynomials
@@ -246,8 +247,8 @@ theorem C_p_pow_dvd_bind₁_rename_wittPolynomial_sub_sum (Φ : MvPolynomial idx
   rw [bind₁, aeval_wittPolynomial, map_sum, map_sum, Finset.sum_congr rfl]
   intro k hk
   rw [Finset.mem_range, Nat.lt_succ_iff] at hk
-  rw [← sub_eq_zero, ← map_sub, ← C_dvd_iff_zmod, C_eq_coe_nat, ← Nat.cast_pow,
-    ← Nat.cast_pow, C_eq_coe_nat, ← mul_sub]
+  rw [← sub_eq_zero, ← map_sub, ← C_dvd_iff_zmod, C_eq_natCast, ← Nat.cast_pow,
+    ← Nat.cast_pow, C_eq_natCast, ← mul_sub]
   have : p ^ (n + 1) = p ^ k * p ^ (n - k + 1) := by
     rw [← pow_add, ← add_assoc]; congr 2; rw [add_comm, ← tsub_eq_iff_eq_add_of_le hk]
   rw [this]
@@ -257,7 +258,7 @@ theorem C_p_pow_dvd_bind₁_rename_wittPolynomial_sub_sum (Φ : MvPolynomial idx
   rw [pow_mul]
   -- the machine!
   apply dvd_sub_pow_of_dvd_sub
-  rw [← C_eq_coe_nat, C_dvd_iff_zmod, map_sub, sub_eq_zero, map_expand, map_pow,
+  rw [← C_eq_natCast, C_dvd_iff_zmod, map_sub, sub_eq_zero, map_expand, map_pow,
     MvPolynomial.expand_zmod]
 
 variable (p)
@@ -323,7 +324,7 @@ theorem wittStructureInt_existsUnique (Φ : MvPolynomial idx ℤ) :
 theorem witt_structure_prop (Φ : MvPolynomial idx ℤ) (n) :
     aeval (fun i => map (Int.castRingHom R) (wittStructureInt p Φ i)) (wittPolynomial p ℤ n) =
       aeval (fun i => rename (Prod.mk i) (W n)) Φ := by
-  convert! congr(map (Int.castRingHom R) $(wittStructureInt_prop p Φ n)) using 1 <;>
+  convert congr(map (Int.castRingHom R) $(wittStructureInt_prop p Φ n)) using 1 <;>
       rw [hom_bind₁] <;>
     apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
   · rfl
