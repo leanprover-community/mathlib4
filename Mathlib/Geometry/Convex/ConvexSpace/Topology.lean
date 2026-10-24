@@ -49,7 +49,6 @@ lemma continuous_weights_apply {ι : Type*} (i : ι) :
   (continuous_apply i).comp (by rw [continuous_iff_le_induced])
 
 open Classical in
-@[fun_prop]
 lemma continuous_map_weights_apply
     [IsStrictOrderedRing R] [IsTopologicalRing R] {ι₁ ι₂ : Type*}
     [Finite ι₁] (f : ι₁ → ι₂) (i₂ : ι₂) :
@@ -70,8 +69,8 @@ lemma continuous_map_weights_apply
 lemma continuous_map [IsStrictOrderedRing R] [IsTopologicalRing R]
     {ι₁ ι₂ : Type*} [Finite ι₁] (f : ι₁ → ι₂) :
     Continuous (map (R := R) f) := by
-  rw [continuous_iff]
-  fun_prop
+  simp_rw [continuous_iff]
+  exact fun _ => continuous_map_weights_apply ..
 
 end topologicalSpaceInduced
 

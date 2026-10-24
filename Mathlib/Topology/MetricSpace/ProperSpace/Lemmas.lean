@@ -8,6 +8,8 @@ module
 public import Mathlib.Topology.Maps.Proper.CompactlyGenerated
 public import Mathlib.Topology.MetricSpace.Bounded
 
+import Mathlib.Topology.UniformSpace.Real
+
 /-!
 # Proper spaces
 

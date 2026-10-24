@@ -191,7 +191,7 @@ theorem circleIntegrable_id (c : ℂ) (R : ℝ) : CircleIntegrable (fun z => z) 
 
 namespace CircleIntegrable
 
-variable {f g : ℂ → E} {c : ℂ} {R : ℝ} {A : Type*} [NormedRing A] {a : A}
+variable {f g : ℂ → E} {c : ℂ} {R : ℝ}
 
 /--
 Analogue of `IntervalIntegrable.abs`: If a real-valued function `f` is circle integrable, then so is
@@ -234,13 +234,14 @@ protected theorem finsum {ι : Type*} {f : ι → ℂ → E} (h : ∀ i, CircleI
 nonrec theorem neg (hf : CircleIntegrable f c R) : CircleIntegrable (-f) c R :=
   hf.neg
 
+variable
+  {𝕜 F : Type*} [NormedRing 𝕜] [NormedAddCommGroup F] [Module 𝕜 F] [IsBoundedSMul 𝕜 F]
+
 /-- If `f` is circle integrable, then so are its scalar multiples. -/
 @[to_fun (attr := fun_prop) const_fun_smul]
-theorem const_smul {f : ℂ → A} (h : CircleIntegrable f c R) : CircleIntegrable (a • f) c R :=
-  IntervalIntegrable.const_mul h _
-
-variable
-  {𝕜 F : Type*} [NormedRing 𝕜] [NormedAddCommGroup F] [Module 𝕜 F] [NormSMulClass 𝕜 F]
+theorem const_smul {a : 𝕜} {f : ℂ → F} (h : CircleIntegrable f c R) :
+    CircleIntegrable (a • f) c R :=
+  IntervalIntegrable.smul h a
 
 /--
 If `g` is continuous on the circle `sphere c |R|` and `f` is circle integrable, then `g • f` is
