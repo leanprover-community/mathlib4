@@ -29,7 +29,7 @@ Commands:
   pack!          Compress build files into the local cache (no skipping)
   unpack         Decompress linked already downloaded files
   unpack!        Decompress linked already downloaded files (no skipping)
-  clean          Delete non-linked files
+  clean [ARGS]   Delete non-linked files
   clean!         Delete everything on the local cache
   lookup [ARGS]  Show information about cache files for the given Lean files
   query [REF]    Without REF: find the most recent cached Mathlib commit.
@@ -73,11 +73,13 @@ Options:
 * Commands that end with '!' do not skip files: use them manually when a
   hot-fix must force a re-download, a re-pack, or an overwrite
 
-# The arguments for 'get', 'get!', 'get-' and 'lookup'
+# The arguments for 'get', 'get!', 'get-', 'clean' and 'lookup'
 
-'get', 'get!', 'get-' and 'lookup' can process a list of module names or file names.
+'get', 'get!', 'get-', 'clean' and 'lookup' can process a list of module names or file names.
 
 'get [ARGS]' will only get the cache for the specified Lean files and all files imported by one.
+
+'clean [ARGS]' keeps the files linked from `Mathlib.lean` and from the specified Lean files.
 
 Valid arguments are:
 
@@ -303,7 +305,7 @@ def main (args : List String) : IO Unit := do
   | "put!" :: _ => put (overwrite := true)
   | ["unstage"] => unstage
   | ["unstage!"] => unstage (overwrite := true)
-  | ["clean"] =>
+  | "clean" :: _ =>
     cleanCache <| hashMap.fold (fun acc _ hash => acc.insert <| CACHEDIR / hash.asLTar) .empty
   | ["clean!"] => cleanCache
   | "stage" :: _ => if (stagingDir?.isNone) then IO.println "stage requires --staging-dir=" return else
