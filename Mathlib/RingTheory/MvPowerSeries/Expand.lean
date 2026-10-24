@@ -9,13 +9,13 @@ public import Mathlib.RingTheory.MvPolynomial.Expand
 public import Mathlib.RingTheory.MvPowerSeries.Substitution
 
 /-!
-## Expand multivariate power series
+# Expand multivariate power series
 
 Given a multivariate power series `φ`, one may replace every occurrence of `X i` by `X i ^ n`,
 for some nonzero natural number `n`.
 This operation is called `MvPowerSeries.expand` and it is an algebra homomorphism.
 
-### Main declaration
+## Main declaration
 
 * `MvPowerSeries.expand`: expand a multi variate power series by a nonzero factor of p,
   so `∑ aₙ xⁿ` becomes `∑ aₙ xⁿᵖ`.
