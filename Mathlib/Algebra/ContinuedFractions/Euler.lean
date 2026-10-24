@@ -193,7 +193,7 @@ theorem IsEuler.dens_eq_one (h : g.IsEuler) : g.dens n = 1 := by
   obtain ⟨ρ, hρ⟩ := h.exists_euler
   rw [← hρ]
   set g := euler g.h ρ
-  induction n using Nat.strong_induction_on with | h n ih =>
+  induction n using Nat.strong_induction_on with | ind n ih
   match n with
   | 0 => exact zeroth_den_eq_one
   | n + 1 =>
@@ -268,7 +268,7 @@ theorem convs_toEuler_of_forall_le (hB : ∀ m ≤ n, g.dens m ≠ 0) :
     ∀ m ≤ n, g.toEuler.convs m = g.convs m := by
   intro m hm
   conv_lhs => simp [convs]
-  induction m using Nat.strong_induction_on with | h m ih =>
+  induction m using Nat.strong_induction_on with | ind m ih
   match m with
   | 0 => simp [toEuler, euler_h]
   | m + 1 =>

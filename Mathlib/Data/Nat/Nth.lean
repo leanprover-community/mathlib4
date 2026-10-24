@@ -297,7 +297,7 @@ lemma nth_le_of_strictMonoOn_of_mapsTo {p : ℕ → Prop} (f : ℕ → ℕ)
       {n : ℕ} :
     nth p n ≤ f n := by
   by_cases! hn : (∀ hf : Set.Finite (Set.ofPred p), n < hf.toFinset.card)
-  · induction n using Nat.strong_induction_on with | _ n ih =>
+  · induction n using Nat.strong_induction_on with | ind n ih
     rw [nth_eq_sInf]
     refine csInf_le (by simp) ⟨hmaps hn, fun k hk => ?_⟩
     have : f k < f n := by apply hmono <;> grind
