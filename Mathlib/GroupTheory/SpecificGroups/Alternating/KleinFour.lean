@@ -83,7 +83,7 @@ theorem mem_kleinFour_of_order_two_pow (hα4 : Nat.card α = 4) {g : Perm α}
       exact Nat.prime_eq_prime_of_dvd_pow Nat.prime_three Nat.prime_two (hg 3 hk)
     · contrapose! hg0
       obtain ⟨t, ht⟩ := Multiset.exists_cons_of_mem hk
-      rw [ht, Multiset.sum_cons, add_le_iff_nonpos_right, le_zero_iff,
+      rw [ht, Multiset.sum_cons, add_le_iff_nonpos_right, nonpos_iff_eq_zero,
         Multiset.sum_eq_zero_iff, ← Multiset.eq_replicate_card] at h1
       have h : 0 ∉ g.cycleType := Nat.not_succ_lt_self ∘ one_lt_of_mem_cycleType
       replace h : t = 0 := by simpa [h1 ▸ ht, Multiset.mem_replicate] using h

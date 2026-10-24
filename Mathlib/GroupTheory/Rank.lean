@@ -44,7 +44,7 @@ lemma rank_le [h : FG G] {S : Finset G} (hS : .closure S = (⊤ : Subgroup G)) :
 variable (G) in
 @[to_additive (attr := nontriviality)]
 theorem rank_eq_zero [Subsingleton G] : rank G = 0 := by
-  rw [← le_zero_iff, ← Finset.card_empty]
+  rw [← nonpos_iff_eq_zero, ← Finset.card_empty]
   exact rank_le (Subsingleton.elim _ _)
 
 @[to_additive]
