@@ -82,7 +82,7 @@ compact.
 It also exists as a grind attribute, and can be combined with other grind attributes using
 `grind only [compactness, ...]`.
 
-* `compactness?`: shows the suggestions from grind?`
+* `compactness?` shows the suggestions from `grind?`.
 -/
 macro (name := compactnessTac) "compactness" config:optConfig : tactic =>
   -- note: directly giving `compactness` as argument in the syntax quotation below is treated
@@ -105,7 +105,7 @@ It is implemented using `grind`, and has the same configuration options as `grin
 It also exists as a grind attribute, and can be combined with other grind attributes using
 `grind only [closedness, ...]`.
 
-* `closedness?`: shows the suggestions from grind?`
+* `closedness?` shows the suggestions from `grind?`.
 -/
 macro (name := closednessTac) "closedness" config:optConfig : tactic =>
   -- note: directly giving `closedness` as argument in the syntax quotation below is treated
@@ -129,7 +129,7 @@ It is implemented using `grind`, and has the same configuration options as `grin
 It also exists as a grind attribute, and can be combined with other grind attributes using
 `grind only [membership, ...]`.
 
-* `membership?`: shows the suggestions from grind?`
+* `membership?` shows the suggestions from `grind?`.
 -/
 macro (name := membershipTac) "membership" config:optConfig : tactic =>
   -- note: directly giving `membership` as argument in the syntax quotation below is treated
