@@ -218,7 +218,7 @@ private theorem continuous_equivFun_basis_aux [T2Space E] {ι : Type v} [Finite 
     (ξ : Basis ι 𝕜 E) : Continuous ξ.equivFun := by
   have := Fintype.ofFinite ι
   let : UniformSpace E := IsTopologicalAddGroup.rightUniformSpace E
-  let : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
+  let : IsUniformAddGroup E := IsUniformAddGroup.rightUniformSpace_of_addCommGroup E
   suffices ∀ n, Fintype.card ι = n → Continuous ξ.equivFun by exact this _ rfl
   intro n hn
   induction n generalizing ι E with
@@ -532,7 +532,7 @@ theorem Submodule.closed_of_finiteDimensional
     [T2Space E] (s : Submodule 𝕜 E) [FiniteDimensional 𝕜 s] :
     IsClosed (s : Set E) :=
   letI := IsTopologicalAddGroup.rightUniformSpace E
-  haveI : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
+  haveI : IsUniformAddGroup E := IsUniformAddGroup.rightUniformSpace_of_addCommGroup E
   s.complete_of_finiteDimensional.isClosed
 
 /-- If `s` is a closed subspace with finite codimension, any subspace containing `s` is closed. -/
@@ -709,7 +709,7 @@ theorem FiniteDimensional.of_exists_totallyBounded_nhds
 theorem FiniteDimensional.of_locallyCompactSpace [WeaklyLocallyCompactSpace E] :
     FiniteDimensional 𝕜 E :=
   let : UniformSpace E := IsTopologicalAddGroup.rightUniformSpace E
-  have : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
+  have : IsUniformAddGroup E := IsUniformAddGroup.rightUniformSpace_of_addCommGroup E
   let ⟨_, hU_compact, hU_nhds⟩ := exists_compact_mem_nhds (0 : E)
   .of_totallyBounded_nhds_zero 𝕜 hU_nhds hU_compact.totallyBounded
 
