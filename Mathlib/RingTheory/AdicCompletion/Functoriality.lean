@@ -120,7 +120,8 @@ def map : (M →ₗ[R] N) →ₗ[R] (AdicCompletion I M →ₗ[AdicCompletion I 
       add_apply]
     rw [← LinearMap.add_apply, ← lift_add]
   map_smul' c f := LinearMap.ext fun _ ↦ by
-    simp only [map_smul, restrictScalars_smul, coe_mk, coe_toAddHom, RingHom.id_apply, smul_apply]
+    simp only [map_smul, restrictScalars_smul, coe_mk, coe_toAddHom, RingHom.id_apply,
+      LinearMap.smul_apply]
     simp_rw [← LinearMap.smul_apply, ← lift_smul, Pi.smul_def, LinearMap.smul_comp]
 
 @[simp]

@@ -115,9 +115,7 @@ nonrec def lift (f : M →ₗ[A] N →ₗ[R] P) : M ⊗[R] N →ₗ[A] P :=
             (lsmul R R _ c).comp (lift (f.restrictScalars R)) x
         from
         LinearMap.ext_iff.1 <|
-          TensorProduct.ext' fun x y => by
-            simp only [comp_apply, Algebra.lsmul_coe, smul_tmul', lift.tmul,
-              coe_restrictScalars, f.map_smul, smul_apply] }
+          TensorProduct.ext' fun x y => by simp [smul_tmul'] }
 
 @[simp]
 theorem lift_apply (f : M →ₗ[A] N →ₗ[R] P) (a : M ⊗[R] N) :
@@ -141,8 +139,8 @@ the given bilinear map `M →[A] N →[R] P`. -/
 @[simps]
 def uncurry : (M →ₗ[A] N →ₗ[R] P) →ₗ[B] M ⊗[R] N →ₗ[A] P where
   toFun := lift
-  map_add' _ _ := ext fun x y => by simp only [lift_tmul, add_apply]
-  map_smul' _ _ := ext fun x y => by simp only [lift_tmul, smul_apply, RingHom.id_apply]
+  map_add' _ _ := ext fun x y => by simp
+  map_smul' _ _ := ext fun x y => by simp
 
 /-- Heterobasic version of `TensorProduct.lcurry`:
 
@@ -217,13 +215,13 @@ theorem map_add_right (f : M →ₗ[A] P) (g₁ g₂ : N →ₗ[R] Q) :
 
 theorem map_smul_right (r : R) (f : M →ₗ[A] P) (g : N →ₗ[R] Q) : map f (r • g) = r • map f g := by
   ext
-  simp_rw [curry_apply, TensorProduct.curry_apply, restrictScalars_apply, smul_apply, map_tmul,
-    smul_apply, tmul_smul]
+  simp_rw [curry_apply, TensorProduct.curry_apply, restrictScalars_apply, LinearMap.smul_apply,
+    map_tmul, LinearMap.smul_apply, tmul_smul]
 
 theorem map_smul_left (b : B) (f : M →ₗ[A] P) (g : N →ₗ[R] Q) : map (b • f) g = b • map f g := by
   ext
-  simp_rw [curry_apply, TensorProduct.curry_apply, restrictScalars_apply, smul_apply, map_tmul,
-    smul_apply, smul_tmul']
+  simp_rw [curry_apply, TensorProduct.curry_apply, restrictScalars_apply,LinearMap.smul_apply,
+    map_tmul, LinearMap.smul_apply, smul_tmul']
 
 /-- The heterobasic version of `map` coincides with the regular version. -/
 theorem map_eq (f : M →ₗ[R] P) (g : N →ₗ[R] Q) : map f g = TensorProduct.map f g := rfl
