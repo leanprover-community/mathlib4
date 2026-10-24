@@ -10,6 +10,7 @@ public import Mathlib.Algebra.BigOperators.Balance
 public import Mathlib.Algebra.Order.BigOperators.Expect
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Analysis.CStarAlgebra.Basic
+public import Mathlib.Analysis.Normed.Group.RadialFunction
 public import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 public import Mathlib.Analysis.Normed.Ring.Finite
 public import Mathlib.Analysis.Real.Sqrt
@@ -315,7 +316,9 @@ theorem conj_ofReal (r : ℝ) : conj (r : K) = (r : K) := by
   rw [ext_iff]
   simp only [ofReal_im, conj_im, conj_re, and_self_iff, neg_zero]
 
-theorem conj_nat_cast (n : ℕ) : conj (n : K) = n := map_natCast _ _
+theorem conj_natCast (n : ℕ) : conj (n : K) = n := map_natCast _ _
+
+@[deprecated (since := "2026-10-13")] alias conj_nat_cast := conj_natCast
 
 theorem conj_ofNat (n : ℕ) [n.AtLeastTwo] : conj (ofNat(n) : K) = ofNat(n) :=
   map_ofNat _ _
@@ -1267,7 +1270,7 @@ lemma norm_le_im_iff_eq_I_mul_norm {z : K} :
   · simp [h, im_eq_zero]
   · have : (I : K) ≠ 0 := fun _ ↦ by simp_all
     rw [← mul_right_inj' (neg_ne_zero.mpr this)]
-    convert! norm_le_re_iff_eq_norm (z := -I * z) using 2
+    convert norm_le_re_iff_eq_norm (z := -I * z) using 2
     all_goals simp [neg_mul, ← mul_assoc, I_mul_I_of_nonzero this, norm_I_of_ne_zero this]
 
 lemma im_le_neg_norm_iff_eq_neg_I_mul_norm {z : K} :
@@ -1291,7 +1294,7 @@ section
 
 /-- A mixin over a normed field, saying that the norm field structure is the same as `ℝ` or `ℂ`.
 To endow such a field with a compatible `RCLike` structure in a proof, use
-`letI := IsRCLikeNormedField.rclike 𝕜`. -/
+`let := IsRCLikeNormedField.rclike 𝕜`. -/
 class IsRCLikeNormedField (𝕜 : Type*) [hk : NormedField 𝕜] : Prop where
   out : ∃ h : RCLike 𝕜, hk = h.toNormedField
 
@@ -1383,3 +1386,11 @@ theorem trans_smul (α : unitary 𝕜) (e : V ≃ₗᵢ[𝕜] G) (f : G ≃ₗ�
     e.trans (α • f) = α • (e.trans f) := by ext; simp
 
 end LinearIsometryEquiv
+
+namespace Function
+
+@[fun_prop]
+lemma isRadial_normSq {𝕜 : Type*} [RCLike 𝕜] : IsRadial (RCLike.normSq (K := 𝕜)) := by
+  simp [isRadial_def, RCLike.normSq_eq_def']
+
+end Function

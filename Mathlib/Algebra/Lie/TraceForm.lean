@@ -5,12 +5,13 @@ Authors: Oliver Nash
 -/
 module
 
-import Mathlib.Algebra.DirectSum.LinearMap
 public import Mathlib.Algebra.Lie.InvariantForm
 public import Mathlib.Algebra.Lie.Weights.Cartan
 public import Mathlib.Algebra.Lie.Weights.Linear
 public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 public import Mathlib.LinearAlgebra.BilinearForm.TensorProduct
+
+import Mathlib.Algebra.DirectSum.LinearMap
 import Mathlib.LinearAlgebra.PID
 
 /-!
