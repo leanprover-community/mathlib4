@@ -456,9 +456,9 @@ theorem norm_exp_sub_one_sub_id_le {x : ℂ} (hx : ‖x‖ ≤ 1) : ‖exp x - 1
 
 theorem _root_.Real.norm_exp_sub_one_sub_id_le {x : ℝ} (hx : ‖x‖ ≤ 1) :
     ‖Real.exp x - 1 - x‖ ≤ ‖x‖ ^ 2 := calc
-  _ = ‖((Real.exp x - 1 - x) : ℂ)‖ := by exact_mod_cast Complex.norm_real _
+  _ = ‖((Real.exp x - 1 - x) : ℂ)‖ := mod_cast Complex.norm_real _
   _ = ‖Complex.exp x - 1 - (x : ℂ)‖ := by simp
-  _ ≤ ‖(x : ℂ)‖ ^ 2 := Complex.norm_exp_sub_one_sub_id_le (by exact_mod_cast hx)
+  _ ≤ ‖(x : ℂ)‖ ^ 2 := Complex.norm_exp_sub_one_sub_id_le (mod_cast hx)
   _ = ‖x‖ ^ 2 := by simp
 
 lemma norm_exp_sub_sum_le_exp_norm_sub_sum (x : ℂ) (n : ℕ) :
@@ -533,12 +533,12 @@ theorem exp_bound' {x : ℝ} (h1 : 0 ≤ x) (h2 : x ≤ 1) {n : ℕ} (hn : 0 < n
 
 theorem abs_exp_sub_one_le {x : ℝ} (hx : |x| ≤ 1) : |exp x - 1| ≤ 2 * |x| := by
   have : ‖(x : ℂ)‖ ≤ 1 := mod_cast hx
-  exact_mod_cast Complex.norm_exp_sub_one_le (x := x) this
+  exact mod_cast Complex.norm_exp_sub_one_le (x := x) this
 
 theorem abs_exp_sub_one_sub_id_le {x : ℝ} (hx : |x| ≤ 1) : |exp x - 1 - x| ≤ x ^ 2 := by
   rw [← sq_abs]
   have : ‖(x : ℂ)‖ ≤ 1 := mod_cast hx
-  exact_mod_cast Complex.norm_exp_sub_one_sub_id_le this
+  exact mod_cast Complex.norm_exp_sub_one_sub_id_le this
 
 /-- A finite initial segment of the exponential series, followed by an arbitrary tail.
 For fixed `n` this is just a linear map w.r.t. `r`, and each map is a simple linear function

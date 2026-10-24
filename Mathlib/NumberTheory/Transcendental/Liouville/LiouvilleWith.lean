@@ -91,7 +91,7 @@ theorem mono (h : LiouvilleWith p x) (hle : q ≤ p) : LiouvilleWith q x := by
   refine ⟨C, hC.mono ?_⟩; rintro n ⟨hn, m, hne, hlt⟩
   refine ⟨m, hne, hlt.trans_le <| ?_⟩
   gcongr
-  exact_mod_cast hn
+  exact mod_cast hn
 
 /-- If `x` satisfies Liouville condition with exponent `p` and `q < p`, then `x`
 satisfies Liouville condition with exponent `q` and constant `1`. -/
@@ -318,7 +318,7 @@ theorem frequently_exists_num (hx : Liouville x) (n : ℕ) :
   rcases le_or_gt N b with h | h
   · refine (hN b h a hne).not_gt (hlt.trans_le ?_)
     gcongr
-    exact_mod_cast hb.le
+    exact mod_cast hb.le
   · exact (hm b h hb _).not_gt hlt
 
 /-- A Liouville number is a Liouville number with any real exponent. -/
