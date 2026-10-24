@@ -114,6 +114,14 @@ section Field
 
 variable {K L} [Field K] [Ring A] [Algebra K A]
 
+theorem Transcendental.of_not_isUnit [IsDomain A] {a : A} (h0 : a ≠ 0)
+    (hu : ¬ IsUnit a) : Transcendental K a :=
+  fun h ↦ hu ((isAlgebraic_iff_isIntegral.mp h).isUnit h0)
+
+theorem Transcendental.of_mem [IsDomain A] {I : Ideal A} (hI : I ≠ ⊤) {a : A}
+    (h0 : a ≠ 0) (ha : a ∈ I) : Transcendental K a :=
+  .of_not_isUnit h0 fun hu ↦ hI (I.eq_top_of_isUnit_mem ha hu)
+
 /-- If `K` is a field, `r : A` and `f : K[X]`, then `Polynomial.aeval r f` is
 transcendental over `K` if and only if `r` and `f` are both transcendental over `K`.
 See also `Transcendental.aeval_of_transcendental` and `Transcendental.of_aeval`. -/
