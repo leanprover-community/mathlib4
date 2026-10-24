@@ -5,9 +5,9 @@ Authors: Jeremy Chen
 -/
 module
 
-public import Mathlib.Order.Category.Preord
 public import Mathlib.CategoryTheory.Adjunction.Reflective
 public import Mathlib.CategoryTheory.Thin
+public import Mathlib.Order.Category.Preord
 
 /-!
 # Preorders as a reflective subcategory of categories
