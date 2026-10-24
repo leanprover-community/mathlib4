@@ -393,7 +393,6 @@ example : (63:ℚ) ≥ 5 := by norm_num1
 example (x : ℤ) (h : 1000 + 2000 < x) : 100 * 30 < x := by
   norm_num at *; exact h
 
-set_option linter.unusedVariables false in
 example {P : ℝ → Prop} (h1 : P (3 * 9 + 2)) (h2 : P (12 - 6 ^ 2)) : P (7 + 7) := by
   norm_num at *
   guard_hyp h1 : P 29
@@ -413,7 +412,6 @@ example : (2 * 12868 + 25705) * 11621 ^ 2 ≤ 23235 ^ 2 * 12868 := by norm_num1
 --   let n : ℕ := by apply_normed (2^32 - 71)
 --   exact n
 
-set_option linter.unusedVariables false in
 example (a : ℚ) (h : 3⁻¹ * a = a) : True := by
   norm_num1 at h
   guard_hyp h : 1 / 3 * a = a
@@ -599,15 +597,12 @@ section norm_num_erase
 
 example : 3 ^ 3 + 4 = 31 := by norm_num1
 
-set_option linter.unusedTactic false in
 attribute [-norm_num] Mathlib.Meta.NormNum.evalPow in
 example : 3 ^ 3 + 4 = 31 := by
   norm_num1
   guard_target =ₛ 3 ^ 3 + 4 = 31
   rfl
 
-set_option linter.unusedTactic false in
-set_option linter.unusedVariables false in
 example {a b : ℚ} (h : a = b) : True := by
   norm_num [*] at h
   guard_hyp h : a = b
@@ -721,7 +716,6 @@ example : (- ((- (((66 - 86) - 36) / 94) - 3) / - - (77 / (56 - - - 79))) + 87) 
 
 example : 2 ^ 13 - 1 = Int.ofNat 8191 := by norm_num1
 
-set_option linter.unusedTactic false in
 -- Since https://github.com/leanprover/lean4/pull/4177
 -- `simp` will continue even if given invalid theorem names (but generates an error)
 -- and this felicitously applies to `norm_num` too.

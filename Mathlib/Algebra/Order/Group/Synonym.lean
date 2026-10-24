@@ -27,23 +27,17 @@ variable {α β : Type*}
 
 namespace OrderDual
 
-set_option backward.inferInstanceAs.wrap.instances false in
 @[to_additive] instance [One α] : One αᵒᵈ := inferInstanceAs <| One α
 
-set_option backward.inferInstanceAs.wrap.instances false in
 @[to_additive] instance [Mul α] : Mul αᵒᵈ := inferInstanceAs <| Mul α
 
-set_option backward.inferInstanceAs.wrap.instances false in
 @[to_additive] instance [Inv α] : Inv αᵒᵈ := inferInstanceAs <| Inv α
 
-set_option backward.inferInstanceAs.wrap.instances false in
 @[to_additive] instance [Div α] : Div αᵒᵈ := inferInstanceAs <| Div α
 
-set_option backward.inferInstanceAs.wrap.instances false in
 @[to_additive (attr := to_additive) (reorder := 1 2) OrderDual.instSMul]
 instance [Pow α β] : Pow αᵒᵈ β := inferInstanceAs <| Pow α β
 
-set_option backward.inferInstanceAs.wrap.instances false in
 @[to_additive (attr := to_additive) (reorder := 1 2) OrderDual.instSMul']
 instance [Pow α β] : Pow α βᵒᵈ := inferInstanceAs <| Pow α β
 
@@ -177,23 +171,17 @@ end Monoid
 
 namespace Lex
 
-set_option backward.inferInstanceAs.wrap.instances false in
 @[to_additive] instance [One α] : One (Lex α) := inferInstanceAs <| One α
 
-set_option backward.inferInstanceAs.wrap.instances false in
 @[to_additive] instance [Mul α] : Mul (Lex α) := inferInstanceAs <| Mul α
 
-set_option backward.inferInstanceAs.wrap.instances false in
 @[to_additive] instance [Inv α] : Inv (Lex α) := inferInstanceAs <| Inv α
 
-set_option backward.inferInstanceAs.wrap.instances false in
 @[to_additive] instance [Div α] : Div (Lex α) := inferInstanceAs <| Div α
 
-set_option backward.inferInstanceAs.wrap.instances false in
 @[to_additive (attr := to_additive) (reorder := 1 2) instSMul]
 instance [Pow α β] : Pow (Lex α) β := inferInstanceAs <| Pow α β
 
-set_option backward.inferInstanceAs.wrap.instances false in
 @[to_additive (attr := to_additive) (reorder := 1 2) instSMul']
 instance [Pow α β] : Pow α (Lex β) := inferInstanceAs <| Pow α β
 

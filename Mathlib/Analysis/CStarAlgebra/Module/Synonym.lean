@@ -53,7 +53,6 @@ separate synonym for each type, and allows all the structure-copying code to be 
 
 @[expose] public section
 
-set_option linter.unusedVariables false in
 /-- A type synonym for endowing a given type with a `CStarModule` structure. This has the scoped
 notation `C⋆ᵐᵒᵈ`. -/
 @[nolint unusedArguments]

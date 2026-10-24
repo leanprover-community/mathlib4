@@ -47,7 +47,6 @@ section PreGNS
 
 variable [NonUnitalRing A] [PartialOrder A] [Module ℂ A] (f : A →ₚ[ℂ] ℂ)
 
-set_option linter.unusedVariables false in
 /-- The Gelfand─Naimark─Segal (GNS) space constructed from a positive linear functional on a
 non-unital C⋆-algebra. This is a type synonym of `A`.
 

@@ -35,7 +35,6 @@ namespace MeasureTheory
 
 variable {α : Type*} [mα : MeasurableSpace α] {μ : Measure α}
 
-set_option linter.unusedVariables false in
 /-- The subtype of all measurable sets. We denote it as `MeasuredSets μ`, with an explicit but
 unused parameter `μ`, to be able to define a distance on it given by `edist s t = μ (s ∆ t)` -/
 @[nolint unusedArguments]

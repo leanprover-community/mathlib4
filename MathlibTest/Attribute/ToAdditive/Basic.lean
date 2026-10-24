@@ -103,7 +103,6 @@ class my_has_scalar (M : Type u) (α : Type v) where
 
 instance : my_has_scalar Nat Nat := ⟨fun a b => a * b⟩
 
-set_option linter.translate.warnInvalid false in
 attribute [to_additive (reorder := α β) my_has_scalar] my_has_pow
 /--
 error: `to_additive` validation failed: expected
@@ -139,14 +138,12 @@ def foo2 {α} [my_has_pow α ℕ] (x : α) (n : ℕ) (m : PLift ℤ) : α := x ^
 theorem foo2_works : foo2 2 3 (PLift.up 2) = Nat.pow 2 5 := by decide
 theorem bar2_works : bar2 2 3 (PLift.up 2) = 2 * 5 := by decide
 
-set_option linter.translate.warnInvalid false in
 @[to_additive bar3]
 def foo3 {α} [my_has_pow α ℕ] (x : α) : ℕ → α := @my_has_pow.pow α ℕ _ x
 
 theorem foo3_works : foo3 2 3 = Nat.pow 2 3 := by decide
 theorem bar3_works : bar3 2 3 = 2 * 3 := by decide
 
-set_option linter.translate.warnInvalid false in
 @[to_additive bar4]
 def foo4 {α : Type u} : Type v → Type (max u v) := @my_has_pow α
 
@@ -157,7 +154,6 @@ set_option linter.defProp false in
 @[to_additive bar5]
 def foo5 {α} [my_has_pow α ℕ] [my_has_pow ℕ ℤ] : True := True.intro
 
-set_option linter.translate.warnInvalid false in
 @[to_additive bar6]
 def foo6 {α} [my_has_pow α ℕ] : α → ℕ → α := @my_has_pow.pow α ℕ _
 
@@ -319,7 +315,6 @@ attribute [to_additive add_some_def] some_def
 run_cmd do liftCoreM <| successIfFail (getConstInfo `Test.add_some_def.in_namespace)
 
 set_option linter.defProp false in
-set_option linter.unusedVariables false in
 def foo_mul {I J K : Type} (n : ℕ) {f : I → Type} (L : Type) [∀ i, One (f i)]
   [Add I] [Mul L] : true := by trivial
 
@@ -406,11 +401,9 @@ set_option linter.translate.warnInvalid false in
 @[to_additive (reorder := 3 4 5)]
 alias reorderMulThree_alias := reorderMulThree
 
-set_option linter.translate.warnInvalid false in
 @[to_additive (reorder := 3 4 2)]
 alias reorderMulThree_alias' := reorderMulThree
 
-set_option linter.translate.warnInvalid false in
 @[to_additive (reorder := 3 4 5)]
 def reorderMulThree_alias'' {α : Type _} [Mul α] (x y : α) : α → α := reorderMulThree x y
 
@@ -547,7 +540,6 @@ end Test
 insert_to_additive_translation localize add_localize
 
 @[to_additive] def localize.r := Nat
-set_option linter.translate.overwrite false in
 @[to_additive add_localize] def localize := Nat
 @[to_additive] def localize.s := Nat
 
@@ -616,7 +608,6 @@ elab "unfold%" e:term : term => do
   let e ← Elab.Term.elabTerm e none
   Meta.unfoldDefinition e
 
-set_option linter.translate.warnInvalid false in
 @[to_additive]
 def myPow {α β : Type} [i : Pow α β] (a : α) := unfold% i.1 a
 

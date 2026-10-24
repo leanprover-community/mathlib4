@@ -207,7 +207,6 @@ def lt_sum_eq_of_le [DecidableLE α] {a b : α} (hab : a ≤ b) :
     a < b ⊕' a = b :=
   if hba : b ≤ a then PSum.inr (le_antisymm hab hba) else PSum.inl (lt_of_le_not_ge hab hba)
 
-set_option linter.translate.warnInvalid false in
 @[to_dual DecidableLE1_dual]
 abbrev DecidableLE1 (h : ∀ a b : α, Decidable (a ≤ b)) : DecidableLE α := fun a b ↦ h a b
 
@@ -382,7 +381,6 @@ private theorem WithBotPrivate.coe_le_top : WithTop.coe a ≤ .top := .le_top (W
 run_meta guard <| (← getEnv).contains ``WithTopPrivate.coe_le_bot
 
 set_option linter.defProp false in
-set_option linter.unusedVariables false in
 @[to_dual (rename := x → y, Pbot ↔ Ptop) renameTest']
 def renameTest [Top α] [Bot α] (x : α) {P : α → Prop} (Ptop : P ⊤) (Pbot : P ⊥) : True := trivial
 

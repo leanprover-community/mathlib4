@@ -89,7 +89,6 @@ example (p q : α → Prop) (f : Subtype p → α) (g : Subtype q → α) :
   · guard_target = f ≍ g
     exact test_sorry
 
-set_option linter.unusedTactic false in
 /- `ι = κ` is not plausible -/
 -- This test does not work unless we specify that `ι` and `κ` lie in the same universe.
 -- Prior to https://github.com/leanprover/lean4/pull/4493 it did,
@@ -125,7 +124,6 @@ example (p q r : Prop) : p ∧ q ↔ p ∧ r := by
   guard_target = q ↔ r
   exact test_sorry
 
-set_option linter.unusedTactic false in
 /- Congruence here is not OK by default since `α = β` is not generally plausible. -/
 example (α β) [inst1 : Add α] [inst2 : Add β] (x : α) (y : β) : x + x ≍ y + y := by
   congr!
@@ -234,7 +232,6 @@ example {α β} {F : _ → β} {f g : {f : α → β // f = f}}
   ext x
   apply h
 
-set_option linter.unusedVariables false in
 example {ls : List ℕ} :
     ls.map (fun x => (ls.map (fun y => 1 + y)).sum + 1) =
       ls.map (fun x => (ls.map (fun y => Nat.succ y)).sum + 1) := by
@@ -265,7 +262,6 @@ example (x y z : Nat) (h : x = z) (hy : y = 2) : 1 + x + y = g z + 2 := by
   funext
   simp [g, Nat.add_comm]
 
-set_option linter.unusedTactic false in
 example (Fintype : Type → Type)
     (α β : Type) (inst : Fintype α) (inst' : Fintype β) : inst ≍ inst' := by
   congr!
@@ -299,7 +295,6 @@ example (x y x' : Nat) (hx : id x = id x') : x + y = x' + y := by
   congr! -closePost
   exact hx
 
-set_option linter.unusedTactic false in
 example : { f : Nat → Nat // f = id } :=
   ⟨?_, by
     -- prevents `rfl` from solving for `?m` in `?m = id`:

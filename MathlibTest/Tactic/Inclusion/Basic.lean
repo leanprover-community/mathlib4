@@ -210,7 +210,6 @@ example : (1 : ℝ) ≤ 2 := by
 /-- error: The inclusion check failed:
 The proposition is provably false -/
 #guard_msgs in
-set_option linter.unusedTactic false in
 example (h : False) : (2 : ℝ) ≤ 1 := by
   dyadic_interval?
   exact h.elim
@@ -218,7 +217,6 @@ example (h : False) : (2 : ℝ) ≤ 1 := by
 /-- error: The inclusion check failed:
 The proposition was not proven true or false. -/
 #guard_msgs in
-set_option linter.unusedTactic false in
 example (x : ℝ) (h : False) : x ≤ 1 := by
   dyadic_interval?
   exact h.elim

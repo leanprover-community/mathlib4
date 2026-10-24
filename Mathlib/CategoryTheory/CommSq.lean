@@ -32,7 +32,6 @@ namespace CategoryTheory
 
 variable {C : Type*} [Category* C]
 
-set_option linter.translate.warnInvalid false in
 /-- The proposition that a square
 ```
   W ---f---> X
@@ -163,7 +162,6 @@ namespace CommSq
 
 variable {A B X Y : C} {f : A ⟶ X} {i : A ⟶ B} {p : X ⟶ Y} {g : B ⟶ Y}
 
-set_option linter.translate.warnInvalid false in
 /-- Now we consider a square:
 ```
   A ---f---> X

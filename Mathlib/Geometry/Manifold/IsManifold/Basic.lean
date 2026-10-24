@@ -1022,7 +1022,6 @@ but the interesting part is to define a manifold structure on the whole tangent 
 requires that `M` is a `C^n` manifold. The definition is put here to avoid importing
 all the smooth bundle structure when defining manifold derivatives. -/
 
-set_option linter.unusedVariables false in
 /-- The tangent space at a point of the manifold `M`. It is just `E`. We could use instead
 `(tangentBundleCore I M).toFiberBundleCore.fiber x`, but we use `E` to help the kernel.
 

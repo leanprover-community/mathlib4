@@ -65,7 +65,6 @@ def MultiseriesExpansion (basis : Basis) : Type :=
 
 namespace MultiseriesExpansion
 
-set_option linter.unusedVariables false in
 /-- Multiseries in a basis `basis_hd :: basis_tl`. It is a generalisation of asymptotic expansions.
 A multiseries in a basis `[b₁, ..., bₙ]` is a formal series made from monomials
 `b₁ ^ e₁ * ... * bₙ ^ eₙ` where `e₁, ..., eₙ` are real numbers. We treat multivariate series in

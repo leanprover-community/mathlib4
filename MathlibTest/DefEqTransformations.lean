@@ -33,7 +33,6 @@ example : 1 + 2 * 3 = 7 := by
   guard_target =ₛ nat_lit 7 = nat_lit 7
   rfl
 
-set_option linter.unusedVariables false in
 example : let x := 1; let y := 2 + x; 2 + 1 = 3 := by
   intro x y
   refold_let x

@@ -72,7 +72,6 @@ instance [Inhabited C] (T : Monad C) : Inhabited (Kleisli T) := ⟨.mk T default
 
 variable (T)
 
-set_option linter.translate.warnInvalid false in
 /-- The Kleisli category on a monad `T`.
 cf Definition 5.2.9 in [Riehl][riehl2017]. -/
 @[to_dual (attr := simps!) /-- The co-Kleisli category on a comonad `T`. -/]
