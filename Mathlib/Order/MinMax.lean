@@ -125,7 +125,7 @@ theorem MonotoneOn.map_max (hf : MonotoneOn f s) (ha : a ∈ s) (hb : b ∈ s) :
 
 @[to_dual]
 theorem AntitoneOn.map_max (hf : AntitoneOn f s) (ha : a ∈ s) (hb : b ∈ s) : f (max a b) =
-    min (f a) (f b) := hf.dual_right.map_max ha hb
+    min (f a) (f b) := by simpa [← OrderDual.ofDual_inj] using hf.dual_right.map_max ha hb
 
 @[to_dual]
 theorem Monotone.map_max (hf : Monotone f) : f (max a b) = max (f a) (f b) := by

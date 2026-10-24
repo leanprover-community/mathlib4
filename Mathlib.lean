@@ -6218,7 +6218,6 @@ public import Mathlib.Order.BooleanAlgebra.Set
 public import Mathlib.Order.BooleanGenerators
 public import Mathlib.Order.BooleanSubalgebra
 public import Mathlib.Order.Booleanisation
-public import Mathlib.Order.Bounded
 public import Mathlib.Order.BoundedOrder.Basic
 public import Mathlib.Order.BoundedOrder.Lattice
 public import Mathlib.Order.BoundedOrder.Monotone

@@ -37,7 +37,7 @@ protected def toDualBotEquiv [LE α] : WithTop αᵒᵈ ≃o (WithBot α)ᵒᵈ 
   toFun a := toDual (a.recTopCoe ⊥ fun a ↦ ↑(ofDual a))
   invFun a := (ofDual a).recBotCoe ⊤ fun a ↦ ↑(toDual a)
   left_inv a := by cases a <;> simp
-  right_inv a := by apply_fun ofDual; dsimp; generalize ofDual a = a; cases a <;> simp
+  right_inv a := by rw [toDual_inj]; dsimp; generalize ofDual a = a; cases a <;> simp
   map_rel_iff' {a b} := by
     simp only [Equiv.coe_fn_mk, toDual_le_toDual]
     cases a <;> cases b <;> simp

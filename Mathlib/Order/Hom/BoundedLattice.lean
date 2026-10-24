@@ -508,8 +508,8 @@ lattices. -/
 Reinterpret a finitary infimum homomorphism as a finitary supremum homomorphism between the dual
 lattices. -/]
 def dual : SupBotHom α β ≃ InfTopHom αᵒᵈ βᵒᵈ where
-  toFun f := ⟨SupHom.dual f.toSupHom, f.map_bot'⟩
-  invFun f := ⟨SupHom.dual.symm f.toInfHom, f.map_top'⟩
+  toFun f := ⟨SupHom.dual f.toSupHom, by simp⟩
+  invFun f := ⟨SupHom.dual.symm f.toInfHom, by simp⟩
 
 @[to_dual (attr := simp)] theorem dual_id : SupBotHom.dual (SupBotHom.id α) = InfTopHom.id _ := rfl
 
@@ -538,8 +538,8 @@ variable [Lattice α] [BoundedOrder α] [Lattice β] [BoundedOrder β] [Lattice 
 bounded lattices. -/
 @[simps!]
 protected def dual : BoundedLatticeHom α β ≃ BoundedLatticeHom αᵒᵈ βᵒᵈ where
-  toFun f := ⟨LatticeHom.dual f.toLatticeHom, f.map_bot', f.map_top'⟩
-  invFun f := ⟨LatticeHom.dual.symm f.toLatticeHom, f.map_bot', f.map_top'⟩
+  toFun f := ⟨LatticeHom.dual f.toLatticeHom, by simp [LatticeHom.dual], by simp [LatticeHom.dual]⟩
+  invFun f := ⟨LatticeHom.dual.symm f.toLatticeHom, by simp, by simp⟩
 
 @[simp]
 theorem dual_id : BoundedLatticeHom.dual (BoundedLatticeHom.id α) = BoundedLatticeHom.id _ :=

@@ -23,58 +23,71 @@ variable {R : Type*}
 
 namespace OrderDual
 
-instance [Distrib R] : Distrib Rᵒᵈ := inferInstanceAs <| Distrib R
+instance [Distrib R] : Distrib Rᵒᵈ where
+  left_distrib _ _ _ := by rw [toDual_inj]; exact left_distrib ..
+  right_distrib _ _ _ := by rw [toDual_inj]; exact right_distrib ..
 
-instance [Mul R] [Add R] [LeftDistribClass R] : LeftDistribClass Rᵒᵈ :=
-  inferInstanceAs <| LeftDistribClass R
+instance [Mul R] [Add R] [LeftDistribClass R] : LeftDistribClass Rᵒᵈ where
+  left_distrib _ _ _ := by rw [toDual_inj]; exact left_distrib ..
 
-instance [Mul R] [Add R] [RightDistribClass R] : RightDistribClass Rᵒᵈ :=
-  inferInstanceAs <| RightDistribClass R
+instance [Mul R] [Add R] [RightDistribClass R] : RightDistribClass Rᵒᵈ where
+  right_distrib _ _ _ := by rw [toDual_inj]; exact right_distrib ..
 
-instance [NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring Rᵒᵈ :=
-  inferInstanceAs <| NonUnitalNonAssocSemiring R
+instance [NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring Rᵒᵈ where
+  zero_mul _ := by rw [toDual_inj]; exact zero_mul _
+  mul_zero _ := by rw [toDual_inj]; exact mul_zero _
 
-instance [NatCast R] : NatCast Rᵒᵈ := inferInstanceAs <| NatCast R
+instance [NatCast R] : NatCast Rᵒᵈ where
+  natCast n := ⟨n⟩
 
-instance [IntCast R] : IntCast Rᵒᵈ := inferInstanceAs <| IntCast R
+instance [IntCast R] : IntCast Rᵒᵈ where
+  intCast n := ⟨n⟩
 
-instance [AddMonoidWithOne R] : AddMonoidWithOne Rᵒᵈ := inferInstanceAs <| AddMonoidWithOne R
+instance [AddMonoidWithOne R] : AddMonoidWithOne Rᵒᵈ where
+  natCast_zero := by rw [toDual_inj]; exact AddMonoidWithOne.natCast_zero
+  natCast_succ _ := by rw [toDual_inj]; exact AddMonoidWithOne.natCast_succ _
 
-instance [AddCommMonoidWithOne R] : AddCommMonoidWithOne Rᵒᵈ :=
-  inferInstanceAs <| AddCommMonoidWithOne R
+instance [AddCommMonoidWithOne R] : AddCommMonoidWithOne Rᵒᵈ where
 
-instance [AddGroupWithOne R] : AddGroupWithOne Rᵒᵈ := inferInstanceAs <| AddGroupWithOne R
+instance [AddGroupWithOne R] : AddGroupWithOne Rᵒᵈ where
+  intCast_ofNat _ := by rw [toDual_inj]; exact AddGroupWithOne.intCast_ofNat _
+  intCast_negSucc _ := by rw [toDual_inj]; exact AddGroupWithOne.intCast_negSucc _
 
-instance [AddCommGroupWithOne R] : AddCommGroupWithOne Rᵒᵈ :=
-  inferInstanceAs <| AddCommGroupWithOne R
+instance [AddCommGroupWithOne R] : AddCommGroupWithOne Rᵒᵈ where
 
-instance [NonUnitalSemiring R] : NonUnitalSemiring Rᵒᵈ := inferInstanceAs <| NonUnitalSemiring R
+instance [NonUnitalSemiring R] : NonUnitalSemiring Rᵒᵈ where
 
-instance [NonAssocSemiring R] : NonAssocSemiring Rᵒᵈ := inferInstanceAs <| NonAssocSemiring R
+instance [NonAssocSemiring R] : NonAssocSemiring Rᵒᵈ where
 
-instance [Semiring R] : Semiring Rᵒᵈ := inferInstanceAs <| Semiring R
+instance [Semiring R] : Semiring Rᵒᵈ where
 
-instance [NonUnitalCommSemiring R] : NonUnitalCommSemiring Rᵒᵈ :=
-  inferInstanceAs <| NonUnitalCommSemiring R
+instance [NonUnitalCommSemiring R] : NonUnitalCommSemiring Rᵒᵈ where
 
-instance [CommSemiring R] : CommSemiring Rᵒᵈ := inferInstanceAs <| CommSemiring R
+instance [CommSemiring R] : CommSemiring Rᵒᵈ where
 
-instance [Mul R] [HasDistribNeg R] : HasDistribNeg Rᵒᵈ := inferInstanceAs <| HasDistribNeg R
+instance [Mul R] [HasDistribNeg R] : HasDistribNeg Rᵒᵈ where
+  neg_mul _ _ := by rw [toDual_inj]; exact neg_mul ..
+  mul_neg _ _ := by rw [toDual_inj]; exact mul_neg ..
 
-instance [NonUnitalNonAssocRing R] : NonUnitalNonAssocRing Rᵒᵈ :=
-  inferInstanceAs <| NonUnitalNonAssocRing R
+instance [NonUnitalNonAssocRing R] : NonUnitalNonAssocRing Rᵒᵈ where
 
-instance [NonUnitalRing R] : NonUnitalRing Rᵒᵈ := inferInstanceAs <| NonUnitalRing R
+instance [NonUnitalRing R] : NonUnitalRing Rᵒᵈ where
 
-instance [NonAssocRing R] : NonAssocRing Rᵒᵈ := inferInstanceAs <| NonAssocRing R
+instance [NonAssocRing R] : NonAssocRing Rᵒᵈ where
 
-instance [Ring R] : Ring Rᵒᵈ := inferInstanceAs <| Ring R
+instance [Ring R] : Ring Rᵒᵈ where
 
-instance [NonUnitalCommRing R] : NonUnitalCommRing Rᵒᵈ := inferInstanceAs <| NonUnitalCommRing R
+instance [NonUnitalCommRing R] : NonUnitalCommRing Rᵒᵈ where
 
-instance [CommRing R] : CommRing Rᵒᵈ := inferInstanceAs <| CommRing R
+instance [CommRing R] : CommRing Rᵒᵈ where
 
-instance [Ring R] [IsDomain R] : IsDomain Rᵒᵈ := inferInstanceAs <| IsDomain R
+instance [Ring R] [IsDomain R] : IsDomain Rᵒᵈ where
+  mul_left_cancel_of_ne_zero ha := by
+    rw [isLeftRegular_toDual]
+    exact IsLeftCancelMulZero.mul_left_cancel_of_ne_zero fun hc ↦ ha (ofDual_inj.mp hc)
+  mul_right_cancel_of_ne_zero ha := by
+    rw [isRightRegular_toDual]
+    exact IsRightCancelMulZero.mul_right_cancel_of_ne_zero fun hc ↦ ha (ofDual_inj.mp hc)
 
 end OrderDual
 

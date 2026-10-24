@@ -265,7 +265,8 @@ section DistribLatticeTop
 variable [DistribLattice α] [OrderTop α] {a b c : α}
 
 theorem Codisjoint.left_le_of_le_inf_right (h : a ⊓ b ≤ c) (hd : Codisjoint b c) : a ≤ c :=
-  @Disjoint.left_le_of_le_sup_right αᵒᵈ _ _ _ _ _ h hd.symm
+  @Disjoint.left_le_of_le_sup_right αᵒᵈ _ _ (.toDual c) (.toDual a) (.toDual b)
+    (by rwa [OrderDual.toDual_le, ← toDual_inf]) (by simp_all [Disjoint, Codisjoint])
 
 theorem Codisjoint.left_le_of_le_inf_left (h : b ⊓ a ≤ c) (hd : Codisjoint b c) : a ≤ c :=
   hd.left_le_of_le_inf_right <| by rwa [inf_comm]
@@ -278,18 +279,21 @@ open OrderDual
 
 @[to_dual]
 theorem Disjoint.dual [PartialOrder α] [OrderBot α] {a b : α} :
-    Disjoint a b → Codisjoint (toDual a) (toDual b) :=
-  id
+    Disjoint a b → Codisjoint (toDual a) (toDual b) := by
+  rw [Codisjoint, OrderDual.forall]
+  exact id
 
 @[to_dual (attr := simp, grind =)]
 theorem disjoint_toDual_iff [PartialOrder α] [OrderTop α] {a b : α} :
-    Disjoint (toDual a) (toDual b) ↔ Codisjoint a b :=
-  Iff.rfl
+    Disjoint (toDual a) (toDual b) ↔ Codisjoint a b := by
+  rw [Disjoint, OrderDual.forall]
+  exact Iff.rfl
 
 @[to_dual (attr := simp, grind =)]
 theorem disjoint_ofDual_iff [PartialOrder α] [OrderBot α] {a b : αᵒᵈ} :
-    Disjoint (ofDual a) (ofDual b) ↔ Codisjoint a b :=
-  Iff.rfl
+    Disjoint (ofDual a) (ofDual b) ↔ Codisjoint a b := by
+  rw [Codisjoint, OrderDual.forall]
+  exact Iff.rfl
 
 section DistribLattice
 
@@ -334,10 +338,10 @@ protected theorem symm (h : IsCompl x y) : IsCompl y x :=
 lemma _root_.isCompl_comm : IsCompl x y ↔ IsCompl y x := ⟨IsCompl.symm, IsCompl.symm⟩
 
 theorem dual (h : IsCompl x y) : IsCompl (toDual x) (toDual y) :=
-  ⟨h.2, h.1⟩
+  ⟨disjoint_toDual_iff.mpr h.2, codisjoint_toDual_iff.mpr h.1⟩
 
 theorem ofDual {a b : αᵒᵈ} (h : IsCompl a b) : IsCompl (ofDual a) (ofDual b) :=
-  ⟨h.2, h.1⟩
+  ⟨codisjoint_toDual_iff.mp h.2, disjoint_toDual_iff.mp h.1⟩
 
 end BoundedPartialOrder
 
@@ -390,8 +394,8 @@ theorem le_left_iff (h : IsCompl x y) : z ≤ x ↔ Disjoint z y :=
 theorem le_right_iff (h : IsCompl x y) : z ≤ y ↔ Disjoint z x :=
   h.symm.le_left_iff
 
-theorem left_le_iff (h : IsCompl x y) : x ≤ z ↔ Codisjoint z y :=
-  h.dual.le_left_iff
+theorem left_le_iff (h : IsCompl x y) : x ≤ z ↔ Codisjoint z y := by
+  simpa using h.dual.le_left_iff (z := toDual z)
 
 theorem right_le_iff (h : IsCompl x y) : y ≤ z ↔ Codisjoint z x :=
   h.symm.left_le_iff
@@ -512,8 +516,8 @@ variable [Lattice α] [BoundedOrder α] [ComplementedLattice α]
 
 instance : ComplementedLattice αᵒᵈ :=
   ⟨fun a ↦
-    let ⟨b, hb⟩ := exists_isCompl (show α from a)
-    ⟨b, hb.dual⟩⟩
+    let ⟨_, hb⟩ := exists_isCompl (ofDual a)
+    ⟨_, hb.dual⟩⟩
 
 end ComplementedLattice
 
