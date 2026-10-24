@@ -9,6 +9,7 @@ public meta import Lean.Server.FileWorker.RequestHandling
 public meta import Lean.Widget.InteractiveGoal
 public meta import Mathlib.Lean.GoalsLocation
 public meta import Mathlib.Lean.Meta.KAbstractPositions
+public import Mathlib.Tactic.ClickSuggestions.Calc
 public import Mathlib.Tactic.ClickSuggestions.TryPremises
 public import Mathlib.Tactic.ClickSuggestions.Unfold
 public import ProofWidgets.Component.OfRpcMethod
@@ -125,14 +126,17 @@ public def rpc (props : PanelWidgetProps) : RequestM (RequestTask ProofWidgets.H
     return .text "#click_suggestions: please reload the tactic state"
   let goal := props.goals[onGoal]
   let onGoal := if onGoal.val != 0 then some onGoal.val else none
-  let some goalsAt := (FileWorker.findGoalsAt? doc (doc.meta.text.lspPosToUtf8Pos props.pos)).get |
+  let some (goalsAt, cmd) :=
+    (findGoalsAndSyntaxAt? doc (doc.meta.text.lspPosToUtf8Pos props.pos)).get |
     return .text "Internal #click_suggestions error: could not find any goal at the cursor position"
   let some { ctxInfo := { parentDecl?, .. }, useAfter, tacticInfo := { stx, .. }, .. } :=
     goalsAt.find? fun { useAfter, tacticInfo, .. } ↦
       let goals := if useAfter then tacticInfo.goalsAfter else tacticInfo.goalsBefore
       goals.contains loc.mvarId
     | return .text "#click_suggestions: Please reload the tactic state"
-  goal.ctx.val.runMetaM {} do withConfig Elab.Term.setElabConfig do loc.mvarId.withContext do
+  let calcWidget? ← getCalcWidget? stx cmd props
+  let suggestionWidget ←
+    goal.ctx.val.runMetaM {} do withConfig Elab.Term.setElabConfig do loc.mvarId.withContext do
     let (statusHtml, statusToken) ← mkRefreshComponent
     let (solvedHtml, solvedToken) ← mkRefreshComponent
     let targetHtml ←
@@ -158,6 +162,7 @@ public def rpc (props : PanelWidgetProps) : RequestM (RequestTask ProofWidgets.H
       {solvedHtml}
       {html}
     </details>}
+  return jsx%{<div>{calcWidget?.getD (.text "")}{suggestionWidget}</div>}
 
 /-- The component called by the `#click_suggestions` command. -/
 @[widget_module]

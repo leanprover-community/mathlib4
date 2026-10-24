@@ -7580,6 +7580,7 @@ public import Mathlib.Tactic.Clear_
 public import Mathlib.Tactic.ClickSuggestions
 public import Mathlib.Tactic.ClickSuggestions.Apply
 public import Mathlib.Tactic.ClickSuggestions.ApplyAt
+public import Mathlib.Tactic.ClickSuggestions.Calc
 public import Mathlib.Tactic.ClickSuggestions.FindPremises
 public import Mathlib.Tactic.ClickSuggestions.GRewrite
 public import Mathlib.Tactic.ClickSuggestions.Rewrite

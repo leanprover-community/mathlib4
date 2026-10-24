@@ -5,6 +5,7 @@ Authors: Jovan Gerbscheid
 -/
 module
 
+public meta import Lean.Language.Lean.Util
 public meta import Lean.PrettyPrinter.Delaborator.Builtins
 public meta import Lean.Server.Utils
 public meta import Mathlib.Data.String.Defs
@@ -437,5 +438,52 @@ def hasUnhelpfulMVars (newMVars : Array MVarId) (oldMVars newExpressions : Array
   let used := used.result
   let unhelpful := newMVars.filter (!used.contains ·)
   return newExpressions.any (·.findMVar? unhelpful.contains |>.isSome)
+
+open FileWorker Language in
+/-- A copy of `Lean.Server.FileWorker.findGoalsAt?` that also returns the command syntax. -/
+def findGoalsAndSyntaxAt? (doc : EditableDocument) (hoverPos : String.Pos.Raw) :
+    ServerTask (Option (List Elab.GoalsAtResult × Syntax)) :=
+  let text := doc.meta.text
+  Lean.Language.Lean.findCmdParsedSnap doc.initSnap doc.meta.text hoverPos
+    |>.asServerTask.bindCostly fun
+    | some cmdParsed =>
+      let t := toSnapshotTree cmdParsed.elabSnap |>.foldSnaps [] fun snap oldGoals => Id.run do
+        let some stx := snap.stx?
+          | return .pure (oldGoals, .proceed (foldChildren := false))
+        let some (pos, tailPos, trailingPos) := getPositions stx
+          | return .pure (oldGoals, .proceed (foldChildren := true))
+        let snapRange : Lean.Syntax.Range := ⟨pos, trailingPos⟩
+        -- When there is no trailing whitespace, we also consider snapshots directly before the
+        -- cursor.
+        let hasNoTrailingWhitespace := tailPos == trailingPos
+        if ! text.rangeContainsHoverPos snapRange hoverPos
+            (includeStop := hasNoTrailingWhitespace) then
+          return .pure (oldGoals, .proceed (foldChildren := false))
+
+        return snap.task.map (sync := true) fun tree => Id.run do
+          let some infoTree := tree.element.infoTree?
+            | return (oldGoals, .proceed (foldChildren := true))
+
+          let goals := infoTree.goalsAt? text hoverPos
+          let optimalSnapRange : Lean.Syntax.Range := ⟨pos, tailPos⟩
+          let isOptimalGoalSet :=
+            text.rangeContainsHoverPos optimalSnapRange hoverPos
+                (includeStop := hasNoTrailingWhitespace)
+              || goals.any fun goal => ! goal.indented
+          if isOptimalGoalSet then
+            return (goals, .done)
+
+          return (goals, .proceed (foldChildren := true))
+      t.asServerTask.mapCheap fun
+        | []    => none
+        | goals => (goals, cmdParsed.stx)
+    | none =>
+      .pure none
+where
+  getPositions (stx : Syntax) : Option (String.Pos.Raw × String.Pos.Raw × String.Pos.Raw) := do
+    let pos ← stx.getPos? (canonicalOnly := true)
+    let tailPos ← stx.getTailPos? (canonicalOnly := true)
+    let trailingPos? ← stx.getTrailingTailPos? (canonicalOnly := true)
+    return (pos, tailPos, trailingPos?)
 
 end Mathlib.Tactic.ClickSuggestions
