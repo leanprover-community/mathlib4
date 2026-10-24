@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Presentable.Basic
 
 import Mathlib.CategoryTheory.Comma.Final
+import Mathlib.CategoryTheory.Limits.ConeCategory
 
 /-!
 # Morphisms between (co)filtered (co)limits
