@@ -73,22 +73,31 @@ theorem not_bddAbove_iff {α : Type*} [LinearOrder α] {s : Set α} :
   simp only [not_bddAbove_iff', not_le]
 
 @[to_dual (attr := simp)]
-lemma bddAbove_preimage_ofDual {s : Set α} : BddAbove (ofDual ⁻¹' s) ↔ BddBelow s := Iff.rfl
+lemma bddAbove_preimage_ofDual {s : Set α} : BddAbove (ofDual ⁻¹' s) ↔ BddBelow s := by
+  unfold BddAbove upperBounds BddBelow lowerBounds
+  refine ⟨fun ⟨a, h⟩ ↦ ?_, fun ⟨a, h⟩ ↦ ?_⟩
+  · exact ⟨OrderDual.ofDual a, by simpa [OrderDual.toDual_le] using h⟩
+  · exact ⟨OrderDual.toDual a, by simpa using h⟩
 
 @[to_dual (attr := simp)]
-lemma bddAbove_preimage_toDual {s : Set αᵒᵈ} : BddAbove (toDual ⁻¹' s) ↔ BddBelow s := Iff.rfl
+lemma bddAbove_preimage_toDual {s : Set αᵒᵈ} : BddAbove (toDual ⁻¹' s) ↔ BddBelow s := by
+  unfold BddAbove upperBounds BddBelow lowerBounds
+  refine ⟨fun ⟨a, h⟩ ↦ ?_, fun ⟨a, h⟩ ↦ ?_⟩
+  · exact ⟨OrderDual.toDual a, by simpa using h⟩
+  · exact ⟨OrderDual.ofDual a, by simpa [OrderDual.le_toDual] using h⟩
 
 @[to_dual]
 theorem BddAbove.dual (h : BddAbove s) : BddBelow (ofDual ⁻¹' s) :=
-  h
+  let ⟨a, h⟩ := h
+  ⟨OrderDual.toDual a, by simpa [upperBounds, lowerBounds] using h⟩
 
 @[to_dual]
-theorem IsLeast.dual (h : IsLeast s a) : IsGreatest (ofDual ⁻¹' s) (toDual a) :=
-  h
+theorem IsLeast.dual (h : IsLeast s a) : IsGreatest (ofDual ⁻¹' s) (toDual a) := by
+  simp_all [IsGreatest, IsLeast, lowerBounds, upperBounds]
 
 @[to_dual]
-theorem IsLUB.dual (h : IsLUB s a) : IsGLB (ofDual ⁻¹' s) (toDual a) :=
-  h
+theorem IsLUB.dual (h : IsLUB s a) : IsGLB (ofDual ⁻¹' s) (toDual a) := by
+  simp_all [IsLUB, IsGLB, IsLeast, IsGreatest, lowerBounds, upperBounds]
 
 /-- If `a` is the least element of a set `s`, then subtype `s` is an order with bottom element. -/
 @[to_dual

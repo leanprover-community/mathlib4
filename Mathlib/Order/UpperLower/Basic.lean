@@ -86,12 +86,12 @@ theorem isUpperSet_iInter₂ {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsUpper
   isUpperSet_iInter fun i => isUpperSet_iInter <| hf i
 
 @[to_dual (attr := simp)]
-theorem isUpperSet_preimage_ofDual_iff : IsUpperSet (ofDual ⁻¹' s) ↔ IsLowerSet s :=
-  Iff.rfl
+theorem isUpperSet_preimage_ofDual_iff : IsUpperSet (ofDual ⁻¹' s) ↔ IsLowerSet s := by
+  simp [IsUpperSet, IsLowerSet]
 
 @[to_dual (attr := simp)]
-theorem isUpperSet_preimage_toDual_iff {s : Set αᵒᵈ} : IsUpperSet (toDual ⁻¹' s) ↔ IsLowerSet s :=
-  Iff.rfl
+theorem isUpperSet_preimage_toDual_iff {s : Set αᵒᵈ} :
+    IsUpperSet (toDual ⁻¹' s) ↔ IsLowerSet s := by simp [IsUpperSet, IsLowerSet]
 
 @[to_dual] alias ⟨_, IsUpperSet.toDual⟩ := isLowerSet_preimage_ofDual_iff
 @[to_dual] alias ⟨_, IsUpperSet.ofDual⟩ := isLowerSet_preimage_toDual_iff
