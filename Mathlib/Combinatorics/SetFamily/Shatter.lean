@@ -172,7 +172,9 @@ lemma Shatters.of_compression (hs : (𝓓 a 𝒜).Shatters s) : 𝒜.Shatters s 
     rw [insert_eq_self.2 <| inter_subset_right (s₁ := s) ?_] at hv
     · cases hv.1 hv.2
     rw [hsv]
-    exact mem_insert_self _ _
+    · cases hv.1 hv.2
+    · rw [hsv]
+      exact mem_insert_self _ _
   · refine ⟨insert a u, hu.2, ?_⟩
     rw [inter_insert_of_notMem ha]
 
