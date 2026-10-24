@@ -222,7 +222,7 @@ lemma normalization_def {a f : A} (hf : IsTraceRepresentative V Φ f) :
 
 variable [Module.Finite k V]
 
-lemma ne_zero_of_isSimpleModule [IsSimpleModule A V] [IsAlgClosed k] {f : A}
+lemma ne_zero_of_isAlgClosed [IsSimpleModule A V] [IsAlgClosed k] {f : A}
     (hf : IsTraceRepresentative V Φ f) :
     f ≠ 0 := by
   let : Nontrivial V := IsSimpleModule.nontrivial A V
@@ -263,16 +263,14 @@ lemma normalization_isIdempotentElem {f : A} (hf : IsTraceRepresentative V Φ f)
 lemma normalization_smul {f a : A} (hf : IsTraceRepresentative V Φ f)
     (ha : Φ (f * (f * a)) ≠ 0) (v : V) :
     (hf.normalization a) • v = v := by
-  obtain ⟨r, hr⟩ :=
-    IsSimpleModule.smul_eq_smul_of_mul_comm V k hf.mul_comm'
+  obtain ⟨r, hr⟩ := IsSimpleModule.smul_eq_smul_of_mul_comm V k hf.mul_comm'
   obtain ⟨heq, hr_ne_zero⟩ := normalization_eq_smul_and_ne_zero hf ha hr
   rw [heq, smul_assoc, hr v, ← smul_assoc, smul_eq_mul, inv_mul_cancel₀ hr_ne_zero, one_smul]
 
 lemma normalization_eq_normalization_of_ne_zero {a b f : A} (hf : IsTraceRepresentative V Φ f)
     (ha : (Φ (f * (f * a))) ≠ 0) (hb : (Φ (f * (f * b))) ≠ 0) :
     hf.normalization a = hf.normalization b := by
-  obtain ⟨r, hr⟩ :=
-    IsSimpleModule.smul_eq_smul_of_mul_comm V k hf.mul_comm'
+  obtain ⟨r, hr⟩ := IsSimpleModule.smul_eq_smul_of_mul_comm V k hf.mul_comm'
   exact (normalization_eq_smul_and_ne_zero hf ha hr).left.trans
     (normalization_eq_smul_and_ne_zero hf hb hr).left.symm
 
@@ -280,8 +278,7 @@ lemma normalization_smul_of_charZero [CharZero k] {f : A} (hf : IsTraceRepresent
     (hff : f * f ≠ 0) (v : V) :
     hf.normalization 1 • v = v := by
   refine normalization_smul hf ?_ v
-  obtain ⟨c, hc⟩ :=
-    IsSimpleModule.smul_eq_smul_of_mul_comm V k hf.mul_comm'
+  obtain ⟨c, hc⟩ := IsSimpleModule.smul_eq_smul_of_mul_comm V k hf.mul_comm'
   have hc : Algebra.lsmul k k V f = c • 1 := by ext x; simp [hc]
   have : c ≠ 0 := by
     by_contra
