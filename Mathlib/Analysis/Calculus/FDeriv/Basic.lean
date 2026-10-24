@@ -231,7 +231,7 @@ theorem differentiableWithinAt_univ :
   simp only [DifferentiableWithinAt, hasFDerivWithinAt_univ, DifferentiableAt]
 
 theorem fderiv_zero_of_not_differentiableAt (h : ¬DifferentiableAt 𝕜 f x) : fderiv 𝕜 f x = 0 := by
-  rw [fderiv, fderivWithin_zero_of_not_differentiableWithinAt]
+  rw [← fderivWithin_univ, fderivWithin_zero_of_not_differentiableWithinAt]
   rwa [differentiableWithinAt_univ]
 
 theorem hasFDerivWithinAt_of_mem_nhds (h : s ∈ 𝓝 x) :
@@ -377,7 +377,7 @@ theorem HasFDerivWithinAt.of_notMem_closure (h : x ∉ closure s) : HasFDerivWit
 
 theorem fderivWithin_zero_of_not_accPt (h : ¬AccPt x (𝓟 s)) :
     fderivWithin 𝕜 f s x = 0 := by
-  rw [fderivWithin, ite_eq_left (.of_not_accPt h)]
+  rw [fderivWithin_def, ite_eq_left (.of_not_accPt h)]
 
 theorem fderivWithin_zero_of_notMem_closure (h : x ∉ closure s) :
     fderivWithin 𝕜 f s x = 0 :=
@@ -389,13 +389,13 @@ theorem fderivWithin_zero_of_not_uniqueDiffWithinAt {f : 𝕜 → F} {x : 𝕜} 
 
 theorem DifferentiableWithinAt.hasFDerivWithinAt (h : DifferentiableWithinAt 𝕜 f s x) :
     HasFDerivWithinAt f (fderivWithin 𝕜 f s x) s x := by
-  simp only [fderivWithin, dite_eq_left h]
+  simp only [fderivWithin_def, dite_eq_left h]
   split_ifs with h₀
   exacts [h₀, Classical.choose_spec h]
 
 theorem DifferentiableAt.hasFDerivAt (h : DifferentiableAt 𝕜 f x) :
     HasFDerivAt f (fderiv 𝕜 f x) x := by
-  rw [fderiv, ← hasFDerivWithinAt_univ]
+  rw [← fderivWithin_univ, ← hasFDerivWithinAt_univ]
   rw [← differentiableWithinAt_univ] at h
   exact h.hasFDerivWithinAt
 
@@ -516,7 +516,7 @@ theorem fderivWithin_subset (st : s ⊆ t) (ht : UniqueDiffWithinAt 𝕜 s x)
 set_option backward.isDefEq.respectTransparency false in
 theorem fderivWithin_inter (ht : t ∈ 𝓝 x) : fderivWithin 𝕜 f (s ∩ t) x = fderivWithin 𝕜 f s x := by
   classical
-  simp [fderivWithin, hasFDerivWithinAt_inter ht, DifferentiableWithinAt]
+  simp [fderivWithin_def, hasFDerivWithinAt_inter ht, DifferentiableWithinAt]
 
 theorem fderivWithin_of_mem_nhds (h : s ∈ 𝓝 x) : fderivWithin 𝕜 f s x = fderiv 𝕜 f x := by
   rw [← fderivWithin_univ, ← univ_inter s, fderivWithin_inter h]
@@ -878,7 +878,7 @@ section Lipschitz
 theorem HasStrictFDerivAt.exists_lipschitzOnWith_of_nnnorm_lt (hf : HasStrictFDerivAt f f' x)
     (K : ℝ≥0) (hK : ‖f'‖₊ < K) : ∃ s ∈ 𝓝 x, LipschitzOnWith K f s := by
   have := hf.isLittleO.add_isBigOWith (f'.isBigOWith_comp _ _) hK
-  simp only [sub_add_cancel, IsBigOWith] at this
+  simp only [sub_add_cancel, isBigOWith_iff] at this
   rcases exists_nhds_square this with ⟨U, Uo, xU, hU⟩
   exact
     ⟨U, Uo.mem_nhds xU, lipschitzOnWith_iff_norm_sub_le.2 fun x hx y hy => hU (mk_mem_prod hx hy)⟩

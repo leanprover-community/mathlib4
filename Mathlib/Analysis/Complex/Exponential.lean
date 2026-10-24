@@ -59,9 +59,11 @@ def exp' (z : ℂ) : CauSeq ℂ (‖·‖) :=
   ⟨fun n => ∑ m ∈ range n, z ^ m / m.factorial, isCauSeq_exp z⟩
 
 /-- The complex exponential function, defined via its Taylor series -/
-@[pp_nodot]
-irreducible_def exp (z : ℂ) : ℂ :=
+@[no_expose, pp_nodot]
+def exp (z : ℂ) : ℂ :=
   CauSeq.lim (exp' z)
+
+alias exp_def := exp.eq_def
 
 /-- scoped notation for the complex exponential function -/
 scoped notation "cexp" => Complex.exp

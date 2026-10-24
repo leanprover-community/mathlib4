@@ -72,7 +72,7 @@ conditional expectation, conditional expected value
 
 -/
 
-@[expose] public section
+public section
 
 open TopologicalSpace MeasureTheory.Lp Filter
 open scoped ENNReal Topology MeasureTheory
@@ -98,7 +98,7 @@ It is defined as 0 if any one of the following conditions is true:
 - `μ` is not σ-finite with respect to `m`,
 - `f` is not integrable. -/
 @[wikidata Q772232]
-noncomputable irreducible_def condExp (μ : Measure[m₀] α) (f : α → E) : α → E :=
+noncomputable def condExp (μ : Measure[m₀] α) (f : α → E) : α → E :=
   if hm : m ≤ m₀ then
     if h : SigmaFinite (μ.trim hm) ∧ Integrable f μ then
       if StronglyMeasurable[m] f then f

@@ -439,8 +439,8 @@ then the integral $\oint_{|z-c|=R}f(z)\,dz$ equals zero. -/
 theorem circleIntegral_eq_zero_of_differentiable_on_off_countable {R : ℝ} (h0 : 0 ≤ R) {f : ℂ → E}
     {c : ℂ} {s : Set ℂ} (hs : s.Countable) (hc : ContinuousOn f (closedBall c R))
     (hd : ∀ z ∈ ball c R \ s, DifferentiableAt ℂ f z) : (∮ z in C(c, R), f z) = 0 := by
-  wlog hE : CompleteSpace E generalizing
-  · simp [circleIntegral, intervalIntegral, integral, hE]
+  wlog hE : CompleteSpace E
+  · simp [circleIntegral, intervalIntegral, integral_of_not_completeSpace hE]
   rcases h0.eq_or_lt with (rfl | h0); · apply circleIntegral.integral_radius_zero
   calc
     (∮ z in C(c, R), f z) = ∮ z in C(c, R), (z - c)⁻¹ • (z - c) • f z :=
