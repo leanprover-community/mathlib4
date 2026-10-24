@@ -63,8 +63,7 @@ theorem eta : ∀ x : Σ a, β a, Sigma.mk x.1 x.2 = x
   | ⟨_, _⟩ => rfl
 
 protected theorem eq {α : Type*} {β : α → Type*} : ∀ {p₁ p₂ : Σ a, β a} (h₁ : p₁.1 = p₂.1),
-    (Eq.recOn h₁ p₁.2 : β p₂.1) = p₂.2 → p₁ = p₂
-  | ⟨_, _⟩, _, rfl, rfl => rfl
+    (Eq.recOn h₁ p₁.2 : β p₂.1) = p₂.2 → p₁ = p₂ := by grind
 
 /-- A version of `Iff.mp Sigma.ext_iff` for functions from a nonempty type to a sigma type. -/
 theorem _root_.Function.eq_of_sigmaMk_comp {γ : Type*} [Nonempty γ]

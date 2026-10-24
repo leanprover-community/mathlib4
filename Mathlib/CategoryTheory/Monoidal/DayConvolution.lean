@@ -443,7 +443,7 @@ open ExternalProduct CategoryTheory.Functor
 /-- A shorthand for the natural transformation of functors out of PUnit defined by
 the canonical morphism `𝟙_ V ⟶ U.obj (𝟙_ C)` when `U` is a unit for Day convolution. -/
 abbrev φ : Functor.fromPUnit.{0} (𝟙_ V) ⟶ Functor.fromPUnit.{0} (𝟙_ C) ⋙ U where
-  app _ := can
+  app _ := can (F := U)
 
 /-- Since a convolution unit is a pointwise left Kan extension, maps out of it at
 any object are uniquely characterized. -/
