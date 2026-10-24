@@ -540,6 +540,11 @@ theorem hasDerivAt_fourier (n : ℤ) (x : ℝ) :
   convert hasDerivAt_mul_const (2 * ↑π * I * ↑n / T) using 1
   ext1 y; ring
 
+@[fun_prop]
+theorem differentiableAt_fourier (n : ℤ) (x : ℝ) :
+    DifferentiableAt ℝ (fun x : ℝ ↦ fourier n (x : AddCircle T)) x :=
+  (hasDerivAt_fourier T n x).differentiableAt
+
 theorem hasDerivAt_fourier_neg (n : ℤ) (x : ℝ) :
     HasDerivAt (fun y : ℝ => fourier (-n) (y : AddCircle T))
       (-2 * π * I * n / T * fourier (-n) (x : AddCircle T)) x := by
@@ -603,3 +608,50 @@ theorem fourierCoeffOn_of_hasDerivAt {a b : ℝ} (hab : a < b) {f f' : ℝ → �
     hf'
 
 end deriv
+
+section extract
+
+variable [Fact (0 < T)] {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+
+theorem fourierCoeff_const [CompleteSpace E] (c : E) :
+    fourierCoeff (fun _ : AddCircle T ↦ c) = Pi.single 0 c := by
+  ext n
+  rw [fourierCoeff_eq_intervalIntegral _ _ 0]
+  by_cases hn : n = 0
+  · simp [hn, ‹Fact (0 < T)›.out.ne']
+  have : deriv (fun x : ℝ => (T / (-2 * π * Complex.I * n) * fourier (-n) (x : AddCircle T)) • c) =
+      (fun x : ℝ ↦ fourier (-n) (x : AddCircle T) • c) := by
+    ext x
+    rw [deriv_smul_const (by fun_prop), (has_antideriv_at_fourier_neg ‹_› hn _).deriv]
+  rw [intervalIntegral.integral_deriv_eq_sub' _ this (by fun_prop) (by fun_prop), zero_add,
+    AddCircle.coe_period]
+  simp [hn]
+
+theorem fourierCoeff_eq_of_hasSum_of_summable_norm [CompleteSpace E] {f : AddCircle T → E}
+    {c : ℤ → E} (h : ∀ x, HasSum (fun i ↦ fourier i x • c i) (f x)) (hnorm : Summable (‖c ·‖)) :
+    fourierCoeff f = c := by
+  ext n
+  calc
+    _ = ∫ t : AddCircle T, fourier (-n) t • (∑' i, fourier i t • c i) ∂haarAddCircle := by
+      simp_rw [fourierCoeff, fun x ↦ (h x).tsum_eq]
+    _ = ∫ t : AddCircle T, ∑' i, fourier (-n) t • fourier i t • c i ∂haarAddCircle := by
+      simp_rw [tsum_const_smul'']
+    _ = ∑' i, ∫ t : AddCircle T, fourier (-n) t • fourier i t • c i ∂haarAddCircle := by
+      refine integral_tsum_of_summable_integral_norm (fun i ↦ ?_) ?_ |>.symm
+      · exact Continuous.integrable_of_hasCompactSupport (by fun_prop) (.of_compactSpace _)
+      · simp_rw [norm_smul]
+        simpa using hnorm
+    _ = ∑' i, fourierCoeff ((fun _ ↦ 1) : AddCircle T → ℂ) (n - i) • c i := by
+      simp_rw [fourierCoeff, ← integral_smul_const]
+      congrm ∑' i, ∫ t, ?_ ∂haarAddCircle
+      rw [neg_sub, sub_eq_add_neg, fourier_add, smul_smul, mul_comm, smul_eq_mul, mul_one]
+    _ = c n := by
+      simp_rw [fourierCoeff_const, Pi.single_apply, ite_smul, zero_smul, sub_eq_zero, tsum_ite_eq',
+        one_smul]
+
+theorem fourierCoeff_eq_of_hasSum [FiniteDimensional ℝ E] {f : AddCircle T → E} {c : ℤ → E}
+    (h : ∀ x, HasSum (fun i ↦ fourier i x • c i) (f x)) :
+    fourierCoeff f = c :=
+  fourierCoeff_eq_of_hasSum_of_summable_norm h (by simpa using (h 0).summable.norm)
+
+end extract
