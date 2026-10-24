@@ -7,7 +7,8 @@ module
 
 public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-public import Mathlib.SetTheory.Cardinal.Free
+
+import Mathlib.SetTheory.Cardinal.Free
 
 /-!
 # Linear algebra properties of `FreeAlgebra R X`
