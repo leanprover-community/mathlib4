@@ -591,7 +591,7 @@ elab_rules : tactic
             `(tactic| linarith! $filteredCfg:optConfig only [$(idsList.toArray),*])
           else
             `(tactic| linarith $filteredCfg:optConfig only [$(idsList.toArray),*])
-          Lean.Meta.Tactic.TryThis.addSuggestion tk sugg
+          Lean.Meta.Tactic.TryThis.addSuggestion tk sugg (origSpan? := ← getRef)
         catch e =>
           discard st.restore
           throw e
