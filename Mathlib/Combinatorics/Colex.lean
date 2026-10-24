@@ -35,6 +35,8 @@ fixed size. For example, for size 3, the colex order on ℕ starts
 * `Finset.Colex.forall_lt_mono`: if `s < t` in colex, and everything in `t` is `< a`, then
   everything in `s` is `< a`. This confirms the idea that an enumeration under colex will exhaust
   all sets using elements `< a` before allowing `a` to be included.
+* `Finset.Colex.strictMono_toColex_piecewise_ofColex`: The colex ordering on finsets matches
+  the colex ordering of their indicator functions.
 * `Finset.toColex_image_le_toColex_image`: Strictly monotone functions preserve colex.
 * `Finset.geomSum_le_geomSum_iff_toColex_le_toColex`: Colex for α = ℕ is the same as binary.
   This also proves binary expansions are unique.
@@ -307,22 +309,41 @@ lemma lt_iff_exists {s t : Colex (Finset α)} :
     s < t ↔ ∃ a, (∀ b > a, b ∈ ofColex s ↔ b ∈ ofColex t) ∧ a ∈ ofColex t ∧ a ∉ ofColex s :=
   toColex_lt_toColex_iff_exists
 
-lemma toColex_lt_toColex_iff_pi_lex_lt_pi_lex {π : α → Type*}
-    [∀ a, PartialOrder (π a)] {f g : ∀ a, π a} (h : ∀ a, f a > g a) :
-    toColex s < toColex t ↔ Pi.Lex (· > ·) (· < ·) (s.piecewise f g) (t.piecewise f g) := by
-  unfold Pi.Lex
+lemma toColex_lt_toColex_iff_toColex_piecewise_lt_toColex_piecewise {π : α → Type*}
+    [∀ a, PartialOrder (π a)] {f g : ∀ a, π a} (h : ∀ a ∈ s ∆ t, g a < f a) :
+    toColex s < toColex t ↔ toColex (s.piecewise f g) < toColex (t.piecewise f g) := by
+  -- TODO: a lemma for to rewrite (unfold) `<` on `Colex (∀ a, π a)` to its definition?
+  change _ ↔ (fun x y ↦ ∃ i, (∀ j > i, x j = y j) ∧ x i < y i) (s.piecewise f g) (t.piecewise f g)
   convert toColex_lt_toColex_iff_exists
-  all_goals grind [Finset.piecewise]
+  all_goals grind [Finset.piecewise, Finset.mem_symmDiff]
 
-lemma lt_iff_pi_lex_lt_pi_lex {s t : Colex (Finset α)} {π : α → Type*}
-    [∀ a, PartialOrder (π a)] {f g : ∀ a, π a} (h : ∀ a, f a > g a) :
-    s < t ↔ Pi.Lex (· > ·) (· < ·) ((ofColex s).piecewise f g) ((ofColex t).piecewise f g) :=
-  toColex_lt_toColex_iff_pi_lex_lt_pi_lex h
+lemma lt_iff_toColex_piecewise_lt_toColex_piecewise {s t : Colex (Finset α)} {π : α → Type*}
+    [∀ a, PartialOrder (π a)] {f g : ∀ a, π a} (h : ∀ a ∈ ofColex s ∆ ofColex t, g a < f a) :
+    s < t ↔ toColex ((ofColex s).piecewise f g) < toColex ((ofColex t).piecewise f g) :=
+  toColex_lt_toColex_iff_toColex_piecewise_lt_toColex_piecewise h
 
+lemma toColex_le_toColex_iff_toColex_piecewise_le_toColex_piecewise {π : α → Type*}
+    [∀ a, PartialOrder (π a)] {f g : ∀ a, π a} (h : ∀ a ∈ s ∆ t, g a < f a) :
+    toColex s ≤ toColex t ↔ toColex (s.piecewise f g) ≤ toColex (t.piecewise f g) := by
+  simp_rw [le_iff_lt_or_eq, toColex_lt_toColex_iff_toColex_piecewise_lt_toColex_piecewise h,
+    toColex.apply_eq_iff_eq, Finset.ext_iff, funext_iff]
+  exact or_congr_right <| forall_congr' <| by grind [Finset.piecewise, Finset.mem_symmDiff]
+
+lemma le_iff_toColex_piecewise_le_toColex_piecewise {s t : Colex (Finset α)} {π : α → Type*}
+    [∀ a, PartialOrder (π a)] {f g : ∀ a, π a} (h : ∀ a ∈ ofColex s ∆ ofColex t, g a < f a) :
+    s ≤ t ↔ toColex ((ofColex s).piecewise f g) ≤ toColex ((ofColex t).piecewise f g) :=
+  toColex_le_toColex_iff_toColex_piecewise_le_toColex_piecewise h
+
+/-- Specifically (if `f := 1` and `g := 0`) the colex ordering on finsets matches the colex ordering
+  of their indicator functions.
+
+For more general version with finsets-specific, weaker requirment on the function, see
+`lt_iff_toColex_piecewise_lt_toColex_piecewise` and `le_iff_toColex_piecewise_le_toColex_piecewise`.
+-/
 lemma strictMono_toColex_piecewise_ofColex {π : α → Type*}
-    [∀ a, PartialOrder (π a)] {f g : ∀ a, π a} (h : ∀ a, f a > g a) :
+    [∀ a, PartialOrder (π a)] {f g : ∀ a, π a} (h : ∀ a, g a < f a) :
     StrictMono (fun l ↦ toColex <| Finset.piecewise (ofColex l) f g) :=
-  fun _ _ ↦ lt_iff_pi_lex_lt_pi_lex h |>.mp
+  fun _ _ ↦ lt_iff_toColex_piecewise_lt_toColex_piecewise (fun a _ ↦ h a) |>.mp
 
 lemma toColex_le_toColex_iff_max'_mem :
     toColex s ≤ toColex t ↔ ∀ hst : s ≠ t, (s ∆ t).max' (symmDiff_nonempty.2 hst) ∈ t := by
