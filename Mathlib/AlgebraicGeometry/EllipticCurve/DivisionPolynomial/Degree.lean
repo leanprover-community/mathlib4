@@ -289,8 +289,7 @@ lemma coeff_preΨ (n : ℤ) : (W.preΨ n).coeff ((n.natAbs ^ 2 - if Even n then 
 lemma coeff_preΨ_ne_zero {n : ℤ} (h : (n : R) ≠ 0) :
     (W.preΨ n).coeff ((n.natAbs ^ 2 - if Even n then 4 else 1) / 2) ≠ 0 := by
   induction n using Int.negInduction with
-  | nat n => simpa only [preΨ_ofNat, Int.even_coe_nat]
-      using! W.coeff_preΨ'_ne_zero <| mod_cast h
+  | nat n => simpa only [preΨ_ofNat, Int.even_natCast] using! W.coeff_preΨ'_ne_zero <| mod_cast h
   | neg ih n => simpa only [preΨ_neg, coeff_neg, neg_ne_zero, Int.natAbs_neg, even_neg]
         using! ih n <| neg_ne_zero.mp <| mod_cast h
 
