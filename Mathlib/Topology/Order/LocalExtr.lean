@@ -25,11 +25,13 @@ return propositions of expected types, not just `Is*Filter`.
 
 Here is the list of statements specific to these two types of filters:
 
-* `IsLocal*.on`, `IsLocal*On.on_subset`: restrict to a subset;
-* `IsLocal*On.inter` : intersect the set with another one;
-* `Is*On.localize` : a global extremum is a local extremum too.
-* `Is[Local]*On.isLocal*` : if we have `IsLocal*On f s a` and `s ∈ 𝓝 a`, then we have
-  `IsLocal* f a`.
+* `IsLocalExtr.isLocalExtrOn`, `IsLocalExtrOn.mono`: restrict to a subset.
+* `IsLocalExtrOn.inter`: intersect the set with another one.
+* `IsExtrOn.isLocalExtrOn`: a global extremum is a local extremum too.
+* `IsLocalExtrOn.isLocalExtr`, `IsExtrOn.isLocalExtr`: an extremum restricted to some neighborhoood
+  of itself is an unrestricted extremum.
+
+and equivalent statements for the min and max predicates.
 -/
 
 @[expose] public section
@@ -63,11 +65,11 @@ def IsLocalExtrOn :=
 def IsLocalMin :=
   IsMinFilter f (𝓝 a) a
 
-/-- `IsLocalMax f a` means that `f x ≤ f a` for all `x ∈ s` in some neighborhood of `a`. -/
+/-- `IsLocalMax f a` means that `f x ≤ f a` for all `x` in some neighborhood of `a`. -/
 def IsLocalMax :=
   IsMaxFilter f (𝓝 a) a
 
-/-- `IsLocalExtr f s a` means `IsLocalMin f s a ∨ IsLocalMax f s a`. -/
+/-- `IsLocalExtr f a` means `IsLocalMin f a ∨ IsLocalMax f a`. -/
 def IsLocalExtr :=
   IsExtrFilter f (𝓝 a) a
 
