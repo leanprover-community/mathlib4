@@ -266,7 +266,6 @@ lemma monomial_mem_span_range_leadingTerm_tfae {R ι} [CommSemiring R] {e : σ �
     · intro i
       by_cases! h0 : cs i = 0 ∨ b i = 0
       · rcases h0 with h0 | h0 <;> simp [h0]
-      -- how can it happen?
       simp [m.withBotDegree_monomial, h0, m.withBotDegree_eq_coe_degree_iff .. |>.mpr,
         ← WithBot.coe_add, add_tsub_cancel_of_le <| h.1 _ <| cs.mem_support_iff.mpr h0.1]
     · simp only [Finsupp.linearCombination_apply, Function.comp_apply, smul_eq_mul, zero_mul,
