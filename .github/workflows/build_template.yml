@@ -177,6 +177,7 @@ jobs:
         with:
           working_directory: pr-branch
           cache_bin: ../tools-branch/.lake/build/bin/cache
+          warm_from_staging: ${{ inputs.publish_cache }}
 
       - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
         id: mk_all
@@ -507,6 +508,7 @@ jobs:
         with:
           working_directory: pr-branch
           cache_bin: ../tools-branch/.lake/build/bin/cache
+          warm_from_staging: ${{ inputs.publish_cache }}
 
       - name: verify the Mathlib cache is complete
         # Enforced only when the build succeeded (then the cache must be complete):
