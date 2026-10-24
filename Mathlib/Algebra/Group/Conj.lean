@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.End
 public import Mathlib.Algebra.Group.Semiconj.Units
+public import Mathlib.Data.Set.Function
 
 /-!
 # Conjugacy of group elements
@@ -80,10 +81,26 @@ section Group
 
 variable [Group α]
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem isConj_iff {a b : α} : IsConj a b ↔ ∃ c : α, c * a * c⁻¹ = b :=
   ⟨fun ⟨c, hc⟩ => ⟨c, mul_inv_eq_iff_eq_mul.2 hc⟩, fun ⟨c, hc⟩ =>
     ⟨⟨c, c⁻¹, mul_inv_cancel c, inv_mul_cancel c⟩, mul_inv_eq_iff_eq_mul.1 hc⟩⟩
+
+@[to_additive (attr := simp)]
+theorem isConj_mul_mul_inv_left {a b : α} : IsConj (a * b * a⁻¹) b :=
+  isConj_iff.2 ⟨a⁻¹, by simp [mul_assoc]⟩
+
+@[to_additive (attr := simp)]
+theorem isConj_inv_mul_mul_left {a b : α} : IsConj (a⁻¹ * b * a) b :=
+  isConj_iff.2 ⟨a, by simp [mul_assoc]⟩
+
+@[to_additive (attr := simp)]
+theorem isConj_mul_mul_inv_right {a b : α} : IsConj b (a * b * a⁻¹) :=
+  isConj_mul_mul_inv_left.symm
+
+@[to_additive (attr := simp)]
+theorem isConj_inv_mul_mul_right {a b : α} : IsConj b (a⁻¹ * b * a) :=
+  isConj_inv_mul_mul_left.symm
 
 @[to_additive]
 theorem conj_inv {a b : α} : (b * a * b⁻¹)⁻¹ = b * a⁻¹ * b⁻¹ := by
@@ -291,8 +308,38 @@ theorem mem_carrier_iff_mk_eq {a : α} {b : ConjClasses α} :
   rw [carrier, eq_comm, mk_eq_mk_iff_isConj, ← quotient_mk_eq_mk, Quotient.lift_mk]
   rfl
 
+@[to_additive (attr := simp)]
+lemma mk_conj {α : Type*} [Group α] (m x : α) :
+    ConjClasses.mk (m * x * m⁻¹) = ConjClasses.mk x := by
+  simp [mk_eq_mk_iff_isConj]
+
+@[to_additive (attr := simp)]
+lemma mk_inv_conj {α : Type*} [Group α] (m x : α) :
+    ConjClasses.mk (m⁻¹ * x * m) = ConjClasses.mk x := by
+  simp [mk_eq_mk_iff_isConj]
+
+@[to_additive (attr := simp)]
+lemma mk_conj_assoc {α : Type*} [Group α] (m x : α) :
+    ConjClasses.mk (m * (x * m⁻¹)) = ConjClasses.mk x := by
+  simp [← mul_assoc]
+
+@[to_additive (attr := simp)]
+lemma mk_inv_conj_assoc {α : Type*} [Group α] (m x : α) :
+    ConjClasses.mk (m⁻¹ * (x * m)) = ConjClasses.mk x := by
+  simp [← mul_assoc]
+
 @[to_additive]
 theorem carrier_eq_preimage_mk {a : ConjClasses α} : a.carrier = ConjClasses.mk ⁻¹' {a} :=
   Set.ext fun _ => mem_carrier_iff_mk_eq
+
+@[to_additive]
+theorem mapsTo_conj {α : Type*} [Group α] (k : α) (c : ConjClasses α) :
+    Set.MapsTo (MulAut.conj k) c.carrier c.carrier := by
+  simp [Set.MapsTo, mem_carrier_iff_mk_eq]
+
+@[to_additive]
+theorem invOn_conj {α : Type*} [Group α] (k : α) (c : ConjClasses α) :
+    Set.InvOn (MulAut.conj k⁻¹) (MulAut.conj k) c.carrier c.carrier := by
+  simpa using (MulAut.conj k⁻¹).invOn
 
 end ConjClasses
