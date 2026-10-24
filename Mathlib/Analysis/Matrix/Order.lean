@@ -183,12 +183,11 @@ attribute [aesop safe forward (rule_sets := [CStarAlgebra])] PosDef.isStrictlyPo
 
 section kronecker
 
-omit [Fintype n]
-
 variable [Finite n] {m : Type*} [Finite m]
 
 open scoped Kronecker
 
+omit [Fintype n] in
 /-- The kronecker product of two positive semi-definite matrices is positive semi-definite. -/
 theorem PosSemidef.kronecker {x : Matrix n n 𝕜} {y : Matrix m m 𝕜}
     (hx : x.PosSemidef) (hy : y.PosSemidef) : (x ⊗ₖ y).PosSemidef := by
@@ -199,6 +198,7 @@ theorem PosSemidef.kronecker {x : Matrix n n 𝕜} {y : Matrix m m 𝕜}
   simpa [mul_kronecker_mul, ← conjTranspose_kronecker, star_eq_conjTranspose] using
     posSemidef_conjTranspose_mul_self _
 
+omit [Fintype n] in
 open Matrix in
 /-- The kronecker of two positive definite matrices is positive definite. -/
 theorem PosDef.kronecker {x : Matrix n n 𝕜} {y : Matrix m m 𝕜}

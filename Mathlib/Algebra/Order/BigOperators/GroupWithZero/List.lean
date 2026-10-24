@@ -59,9 +59,9 @@ theorem prod_map_le_pow_length₀ {F L : Type*} [FunLike F L R] {f : F} {r : R} 
   convert prod_map_le_prod_map₀ f (Function.const L r) hf0 hf
   simp [map_const, prod_replicate]
 
-omit [PosMulMono R]
 variable [PosMulStrictMono R] [NeZero (1 : R)]
 
+omit [PosMulMono R] in
 lemma prod_pos {s : List R} (h : ∀ a ∈ s, 0 < a) : 0 < s.prod := by
   induction s with
   | nil => simp
@@ -70,6 +70,7 @@ lemma prod_pos {s : List R} (h : ∀ a ∈ s, 0 < a) : 0 < s.prod := by
     simp only [mem_cons, forall_eq_or_imp] at h
     exact mul_pos h.1 (hind h.2)
 
+omit [PosMulMono R] in
 theorem prod_map_lt_prod_map {ι : Type*} {s : List ι} (hs : s ≠ [])
     (f : ι → R) (g : ι → R) (h0 : ∀ i ∈ s, 0 < f i) (h : ∀ i ∈ s, f i < g i) :
     (map f s).prod < (map g s).prod := by

@@ -191,8 +191,7 @@ lemma coord_toDualEquiv_symm_apply [Finite ι] (i : ι) (f : Module.Dual R M) :
     b.coord i (b.toDualEquiv.symm f) = b.dualBasis.coord i f := by
   simp [Basis.dualBasis]
 
-omit [DecidableEq ι]
-
+omit [DecidableEq ι] in
 /-- `simp` normal form version of `linearCombination_dualBasis` -/
 @[simp]
 theorem linearCombination_coord [Finite ι] (b : Basis ι R M) (f : ι →₀ R) (i : ι) :
