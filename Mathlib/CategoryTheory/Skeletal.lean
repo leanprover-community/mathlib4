@@ -132,14 +132,14 @@ noncomputable def fromSkeleton : Skeleton C ⥤ C :=
 -- that are in terms of `Skeleton`, but rather `InducedCategory`, which can't be applied.
 -- With `deriving @Functor.Full (Skeleton C)`, the instance can't be derived, for a similar reason.
 
-noncomputable instance : (fromSkeleton C).Full := by
+instance : (fromSkeleton C).Full := by
   apply InducedCategory.full
-noncomputable instance : (fromSkeleton C).Faithful := by
+instance : (fromSkeleton C).Faithful := by
   apply InducedCategory.faithful
 
 instance : (fromSkeleton C).EssSurj where mem_essImage X := ⟨Quotient.mk' X, Quotient.mk_out X⟩
 
-noncomputable instance fromSkeleton.isEquivalence : (fromSkeleton C).IsEquivalence where
+instance fromSkeleton.isEquivalence : (fromSkeleton C).IsEquivalence where
 
 variable {C}
 
@@ -407,7 +407,7 @@ noncomputable def equivalence : ThinSkeleton C ≌ C where
   unitIso := NatIso.ofComponents fun x => Quotient.recOnSubsingleton x fun X =>
     eqToIso (Quotient.sound ⟨(Nonempty.some (Quotient.mk_out X)).symm⟩)
 
-noncomputable instance fromThinSkeleton_isEquivalence : (fromThinSkeleton C).IsEquivalence :=
+instance fromThinSkeleton_isEquivalence : (fromThinSkeleton C).IsEquivalence :=
   (equivalence C).isEquivalence_functor
 
 variable {C}
