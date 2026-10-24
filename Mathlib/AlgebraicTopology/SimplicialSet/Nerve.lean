@@ -33,7 +33,7 @@ universe v u
 namespace CategoryTheory
 
 /-- The nerve of a category -/
-@[simps -isSimp]
+@[simps -isSimp, implicit_reducible]
 def nerve (C : Type u) [Category.{v} C] : SSet.{max u v} where
   obj Δ := ComposableArrows C (Δ.unop.len)
   map f := ↾fun x ↦ x.whiskerLeft (SimplexCategory.toCat.map f.unop).toFunctor
@@ -70,7 +70,7 @@ lemma nerveMap_app_mk₁ {x y : C} (f : x ⟶ y) :
 end
 
 /-- The nerve of a category, as a functor `Cat ⥤ SSet` -/
-@[simps]
+@[simps, implicit_reducible]
 def nerveFunctor : Cat.{v, u} ⥤ SSet where
   obj C := nerve C
   map F := nerveMap F.toFunctor
@@ -264,12 +264,28 @@ lemma homEquiv_edgeMk_map_nerveMap {D : Type u} [Category.{v} D] {x y : C}
 
 end
 
+lemma mem_range_nerveMap_app_iff_of_orderEmbedding
+    {X Y : Type u} [PartialOrder X] [PartialOrder Y]
+    (f : X ↪o Y) {n : ℕ} (y : (nerve Y) _⦋n⦌) :
+    y ∈ Set.range ((nerveMap f.monotone.functor).app _) ↔
+      ∀ i, y.obj i ∈ Set.range f := by
+  refine ⟨?_, fun hy ↦ ?_⟩
+  · rintro ⟨y, rfl⟩
+    exact fun i ↦ ⟨y.obj i, rfl⟩
+  · simp only [Set.mem_range] at hy
+    choose x hx using hy
+    let f : Fin (n + 1) →o X :=
+      { toFun := x
+        monotone' a b h := by
+          simpa only [← OrderEmbedding.le_iff_le f, hx] using y.monotone h }
+    exact ⟨f.monotone.functor, by ext; apply hx⟩
+
 end nerve
 
 end CategoryTheory
 
 /-- The functor `PartOrd ⥤ SSet` which sends a partially ordered type to its nerve. -/
-@[simps]
+@[simps, implicit_reducible]
 def PartOrd.nerveFunctor : PartOrd.{u} ⥤ SSet.{u} where
   obj X := nerve X
   map f := nerveMap f.hom.monotone.functor

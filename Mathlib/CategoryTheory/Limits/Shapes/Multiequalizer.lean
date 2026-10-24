@@ -74,7 +74,7 @@ structure MultispanShape where
 /-- Given a type `ι`, this is the shape of multicoequalizer diagrams corresponding
 to situations where we want to coequalize two families of maps `V ⟨i, j⟩ ⟶ U i`
 and `V ⟨i, j⟩ ⟶ U j` with `i : ι` and `j : ι`. -/
-@[simps]
+@[simps, implicit_reducible]
 def MultispanShape.prod (ι : Type w) : MultispanShape where
   L := ι × ι
   R := ι
@@ -84,7 +84,7 @@ def MultispanShape.prod (ι : Type w) : MultispanShape where
 /-- Given a linearly ordered type `ι`, this is the shape of multicoequalizer diagrams
 corresponding to situations where we want to coequalize two families of maps
 `V ⟨i, j⟩ ⟶ U i` and `V ⟨i, j⟩ ⟶ U j` with `i < j`. -/
-@[simps]
+@[simps, implicit_reducible]
 def MultispanShape.ofLinearOrder (ι : Type w) [LinearOrder ι] : MultispanShape where
   L := {x : ι × ι | x.1 < x.2}
   R := ι
@@ -839,9 +839,8 @@ theorem snd_app_right (a) : K.ι.app (WalkingMultispan.left a) = I.snd a ≫ K.�
 lemma π_comp_hom (K₁ K₂ : Multicofork I) (f : K₁ ⟶ K₂) (b : J.R) : K₁.π b ≫ f.hom = K₂.π b :=
   f.w _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Construct a multicofork using a collection `π` of morphisms. -/
-@[simps]
+@[simps, implicit_reducible]
 def ofπ {J : MultispanShape.{w, w'}} (I : MultispanIndex J C)
     (P : C) (π : ∀ b, I.right b ⟶ P)
     (w : ∀ a, I.fst a ≫ π (J.fst a) = I.snd a ≫ π (J.snd a)) : Multicofork I where
