@@ -527,13 +527,13 @@ theorem isLittleO_const_logb_atTop {c : ℝ} (hb : b ≠ -1 ∧ b ≠ 0 ∧ b �
 theorem isBigO_logb_log : logb b =O[⊤] log := by
   by_cases! h : b = -1 ∨ b = 0 ∨ b = 1
   · obtain rfl | rfl | rfl := h
-    all_goals simpa [-Asymptotics.isBigO_top] using! Asymptotics.isBigO_zero log ⊤
+    all_goals simp
   · simpa [logb, div_eq_mul_inv, mul_comm]
       using! (Asymptotics.isBigO_refl log ⊤).const_mul_left (log b)⁻¹
 
 theorem isBigO_log_const_mul_log_atTop (c : ℝ) : (fun x ↦ log (c * x)) =O[atTop] log := by
   obtain rfl | hc := eq_or_ne c 0
-  · simpa using isLittleO_const_log_atTop.isBigO
+  · simp
   · calc (fun x ↦ log (c * x))
       =ᶠ[atTop] (fun x => log c + log x) := by
           filter_upwards [eventually_gt_atTop 0] with a ha using log_mul hc ha.ne'

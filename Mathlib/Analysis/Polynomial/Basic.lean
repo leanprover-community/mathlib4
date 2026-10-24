@@ -300,7 +300,7 @@ theorem isLittleO_atBot_of_degree_lt (h : P.degree < Q.degree) : P.eval =o[atBot
 
 theorem isBigO_atTop_of_degree_le (h : P.degree ≤ Q.degree) : P.eval =O[atTop] Q.eval := by
   by_cases hp : P = 0
-  · simpa [hp] using isBigO_zero Q.eval atTop
+  · simp [hp]
   · have hq : Q ≠ 0 := ne_zero_of_degree_ge_degree h hp
     have hPQ : ∀ᶠ x in atTop, Q.eval x = 0 → P.eval x = 0 :=
       mem_of_superset (eventually_atTop_not_isRoot Q hq) fun x h h' ↦ absurd h' h

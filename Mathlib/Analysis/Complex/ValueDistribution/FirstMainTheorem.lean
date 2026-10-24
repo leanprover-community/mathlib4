@@ -227,7 +227,7 @@ theorem isBigO_characteristic_sub_characteristic_moebius {a b c d : ℂ} {f : �
     apply transitivity₁ f
     · convert isBigO_characteristic_sub_characteristic_const_mul (s := a) (f := f)
         (by fun_prop) (by aesop)
-    simp [IsBigO.of_norm_le]
+    simp
   · -- Case `c ≠ 0`.
     by_cases hord : ∀ z, meromorphicOrderAt (c * f · + d) z ≠ ⊤
     · have hne : ∀ᶠ z in codiscrete ℂ, c * f z + d ≠ 0 :=
