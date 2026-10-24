@@ -171,10 +171,9 @@ end Lemmas
 open Field IntermediateField minpoly Polynomial
 
 variable {F : Type u} {K : Type u} {p : ℕ} [Field F] [ExpChar F p] [Field K] [Algebra F K]
-  [hp : Fact p.Prime] (hrank : Module.finrank F K = p)
-include hrank
+  [hp : Fact p.Prime]
 
-theorem isCyclic_charP_tfae :
+theorem isCyclic_charP_tfae (hrank : Module.finrank F K = p) :
     [IsGalois F K,
     ∃ a : F, Irreducible (artinSchreierPoly a) ∧ IsSplittingField F K (artinSchreierPoly a),
     ∃ α : K, α ^ p - α ∈ Set.range ⇑(algebraMap F K) ∧ F⟮α⟯ = ⊤,
@@ -230,40 +229,39 @@ theorem isCyclic_charP_tfae :
 
 /- This is the first step towards the Artin-Schreier-Witt construction.
 -/
-
-lemma irreducible_artinSchreierPoly_tower {a : F} {x : K} (hx : minpoly F x = artinSchreierPoly a) :
-    Irreducible (artinSchreierPoly (algebraMap F K a * x ^ (p-1))) := by
+lemma irreducible_artinSchreierPoly_tower {a : F} {x : K} (hx : minpoly F x = artinSchreierPoly a)
+    : Irreducible (artinSchreierPoly (algebraMap F F⟮x⟯ a *
+      ⟨x, mem_adjoin_simple_self F x⟩ ^ (p - 1))) := by
   have hp := hp.elim
-  have : ExpChar K p :=
+  have : ExpChar F⟮x⟯ p :=
     have : CharP F p := (expChar_prime_iff F hp).mp ‹ExpChar F p›
-    have := (Algebra.charP_iff F K p).mp ‹CharP F p›
-    expChar_prime K p
+    have := (Algebra.charP_iff F F⟮x⟯ p).mp ‹CharP F p›
+    expChar_prime F⟮x⟯ p
   by_contra h
   have splits := (artinSchreierPoly_irreducible_or_splits _).resolve_left h
   have h_a := artinSchreierPoly_isMonicOfDegree p a
   have hs :=
-    have h_a1 := artinSchreierPoly_isMonicOfDegree p (algebraMap F K a * x ^ (p - 1))
+    have h_a1 := artinSchreierPoly_isMonicOfDegree p (algebraMap F F⟮x⟯ a *
+      ⟨x, mem_adjoin_simple_self F x⟩ ^ (p - 1))
     (degree_eq_iff_natDegree_eq h_a1.ne_zero).mp.mt (h_a1.1.trans_ne hp.ne_zero)
-  obtain ⟨y, hy⟩ : ∃ y : F⟮x⟯, y = rootOfSplits splits hs :=
-    have := FiniteDimensional.of_finrank_pos (hp.pos.trans_eq hrank.symm)
-    have ht : F⟮x⟯ = ⊤ := by rw [primitive_element_iff_minpoly_natDegree_eq F x, hx, h_a.1, hrank]
-    CanLift.prf _ (by rw [ht]; exact mem_top)
+  set y := rootOfSplits splits hs with hy
   have hp1 : 1 < (minpoly F x).natDegree := by simpa [h_a.1, hx] using hp.one_lt
   have h_int : IsIntegral F x := ne_zero_iff.mp (ne_zero_of_natDegree_gt hp1)
-  obtain ⟨f, h_pb, rfl⟩ := (adjoin.powerBasis h_int).exists_eq_aeval y
+  obtain ⟨f, h_pb, hf⟩ := (adjoin.powerBasis h_int).exists_eq_aeval y
   absurd (irreducible h_int).not_isRoot_of_natDegree_ne_one hp1.ne' (x := f.coeff (p - 1))
   simp only [adjoin.powerBasis_dim, hx, h_a.1] at h_pb
   rw [artinSchreierPoly_def p] at hx
   let m := f.map (frobenius F p)
-  have hd : m.natDegree = f.natDegree := natDegree_map (frobenius F p)
+  have hd : m.natDegree = f.natDegree := natDegree_map _
   have h : m.taylor a = f + monomial (p - 1) a := by
     refine sub_eq_zero.mp (eq_zero_of_dvd_of_natDegree_lt (dvd _ x ?_) ?_)
     · have he : x ^ p = x + algebraMap F K a := by
         simpa [hx, sub_sub, sub_eq_zero] using minpoly.aeval F x
-      rw [adjoin.powerBasis_gen, AdjoinSimple.coe_aeval_gen_apply] at hy
       rw [taylor_apply, aeval_sub, aeval_comp, _root_.map_add, _root_.map_add, aeval_X, aeval_C,
-          aeval_monomial, ← he, ← expand_aeval, ← map_expand, map_frobenius_expand, map_pow, hy]
-      simpa [artinSchreierPoly_def p, sub_sub] using eval_rootOfSplits splits hs
+          aeval_monomial, ← he, ← expand_aeval, ← map_expand, map_frobenius_expand]
+      have h := congr(algebraMap F⟮x⟯ K $(eval_rootOfSplits splits hs))
+      rw [← hy] at h
+      simpa [hf, artinSchreierPoly_def p, ← sub_add_eq_sub_sub] using h
     · compute_degree!
       simp [hx, hd, FiniteField.X_pow_card_sub_X_natDegree_eq F hp.one_lt, hp.pos, h_pb]
   have h1 : (m.taylor a).coeff (p - 1) = f.coeff (p - 1) ^ p := by
