@@ -414,11 +414,11 @@ theorem Ideal.mem_iInf_smul_pow_eq_bot_iff [IsNoetherianRing R] [Module.Finite R
       exact Submodule.smul_mem_smul r.prop hi
 
 theorem Ideal.iInf_pow_smul_eq_bot_of_le_jacobson [IsNoetherianRing R]
-    [Module.Finite R M] (h : I ≤ Ideal.jacobson ⊥) : (⨅ i : ℕ, I ^ i • ⊤ : Submodule R M) = ⊥ := by
+    [Module.Finite R M] (h : I ≤ Ring.jacobson R) : (⨅ i : ℕ, I ^ i • ⊤ : Submodule R M) = ⊥ := by
   rw [eq_bot_iff]
   intro x hx
   obtain ⟨r, hr⟩ := (I.mem_iInf_smul_pow_eq_bot_iff x).mp hx
-  have := isUnit_of_sub_one_mem_jacobson_bot (1 - r.1) (by simpa using h r.2)
+  have := isUnit_of_sub_one_mem_jacobson (1 - r.1) (by simpa using h r.2)
   apply this.smul_left_cancel.mp
   simp [sub_smul, hr]
 
@@ -426,7 +426,7 @@ open IsLocalRing in
 theorem Ideal.iInf_pow_smul_eq_bot_of_isLocalRing [IsNoetherianRing R] [IsLocalRing R]
     [Module.Finite R M] (h : I ≠ ⊤) : (⨅ i : ℕ, I ^ i • ⊤ : Submodule R M) = ⊥ :=
   Ideal.iInf_pow_smul_eq_bot_of_le_jacobson _
-    ((le_maximalIdeal h).trans (maximalIdeal_le_jacobson _))
+    ((le_maximalIdeal h).trans (jacobson_bot (R := R) ▸ maximalIdeal_le_jacobson _))
 
 /-- **Krull's intersection theorem** for Noetherian local rings. -/
 theorem Ideal.iInf_pow_eq_bot_of_isLocalRing [IsNoetherianRing R] [IsLocalRing R] (h : I ≠ ⊤) :
