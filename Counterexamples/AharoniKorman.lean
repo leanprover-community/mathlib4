@@ -259,7 +259,7 @@ lemma ordConnected_level {n : ℕ} : (level n).OrdConnected := by
 
 @[simp] lemma line_toHollom (x : ℕ × ℕ × ℕ) : line (toHollom x) = x.1 + x.2.1 := rfl
 
-lemma line_injOn {C : Set Hollom} (n : ℕ) (hC : IsChain (· ≤ ·) C) (hCn : C ⊆ level n) :
+lemma line_injOn {C : Set Hollom} (n : ℕ) (hC : IsLEChain C) (hCn : C ⊆ level n) :
     C.InjOn line := by
   rw [Set.InjOn]
   intro x hx y hy h
@@ -384,7 +384,7 @@ Show that every chain in the Hollom partial order has a finite intersection with
 levels.
 This corresponds to Lemma 5.10 from [hollom2025].
 -/
-theorem exists_finite_intersection (hC : IsChain (· ≤ ·) C) :
+theorem exists_finite_intersection (hC : IsLEChain C) :
     ∃ᶠ n in atTop, (C ∩ level n).Finite := by
   -- Begin by assuming `C ∩ level n` is infinite for all `n ≥ n₀`
   rw [frequently_atTop]
@@ -493,26 +493,26 @@ lemma incomp_apply (hx : f x ≠ x) : ¬ (f x ≤ x ∨ x ≤ f x) :=
 lemma not_apply_lt : ¬ f x < x := f.not_lt_of_eq (by simp)
 lemma not_lt_apply : ¬ x < f x := f.not_lt_of_eq (by simp)
 
-lemma le_apply_of_le (hC : IsChain (· ≤ ·) C) (hy : y ∈ C) (hx : y ≤ x) : y ≤ f x :=
+lemma le_apply_of_le (hC : IsLEChain C) (hy : y ∈ C) (hx : y ≤ x) : y ≤ f x :=
   hC.le_of_not_gt (f.mem x) hy fun hxy ↦ f.not_apply_lt (hxy.trans_le hx)
 
-lemma apply_le_of_le (hC : IsChain (· ≤ ·) C) (hy : y ∈ C) (hx : x ≤ y) : f x ≤ y :=
+lemma apply_le_of_le (hC : IsLEChain C) (hy : y ∈ C) (hx : x ≤ y) : f x ≤ y :=
   hC.le_of_not_gt hy (f.mem x) fun hxy ↦ f.not_lt_apply (hx.trans_lt hxy)
 
-lemma lt_apply_of_lt (hC : IsChain (· ≤ ·) C) (hy : y ∈ C) (hx : y < x) : y < f x :=
+lemma lt_apply_of_lt (hC : IsLEChain C) (hy : y ∈ C) (hx : y < x) : y < f x :=
   hC.lt_of_not_ge (f.mem x) hy fun hxy ↦ f.not_apply_lt (hxy.trans_lt hx)
 
-lemma apply_lt_of_lt (hC : IsChain (· ≤ ·) C) (hy : y ∈ C) (hx : x < y) : f x < y :=
+lemma apply_lt_of_lt (hC : IsLEChain C) (hy : y ∈ C) (hx : x < y) : f x < y :=
   hC.lt_of_not_ge hy (f.mem x) fun hxy ↦ f.not_lt_apply (hx.trans_le hxy)
 
-lemma apply_mem_Icc_of_mem_Icc (hC : IsChain (· ≤ ·) C) (hy : y ∈ C) (hz : z ∈ C)
+lemma apply_mem_Icc_of_mem_Icc (hC : IsLEChain C) (hy : y ∈ C) (hz : z ∈ C)
     (hx : x ∈ Set.Icc y z) : f x ∈ Set.Icc y z :=
   ⟨f.le_apply_of_le hC hy hx.1, f.apply_le_of_le hC hz hx.2⟩
 
-lemma mapsTo_Icc_self (hC : IsChain (· ≤ ·) C) (hy : y ∈ C) (hz : z ∈ C) :
+lemma mapsTo_Icc_self (hC : IsLEChain C) (hy : y ∈ C) (hz : z ∈ C) :
     Set.MapsTo f (Set.Icc y z) (Set.Icc y z) := fun _ ↦ apply_mem_Icc_of_mem_Icc _ hC hy hz
 
-lemma injOn_of_isChain {D : Set α} (hD : IsChain (· ≤ ·) D) : D.InjOn f := by
+lemma injOn_of_isChain {D : Set α} (hD : IsLEChain D) : D.InjOn f := by
   intro x hx y hy h
   by_contra! h'
   exact f.incomp_of_eq h h' (hD.total hx hy)
@@ -530,7 +530,7 @@ In fact, these two are in bijection, but we only need the weaker version that th
 is equivalent.
 -/
 theorem exists_partition_iff_nonempty_spinalMap
-    {α : Type*} [PartialOrder α] {C : Set α} (hC : IsChain (· ≤ ·) C) :
+    {α : Type*} [PartialOrder α] {C : Set α} (hC : IsLEChain C) :
     (∃ S, Setoid.IsPartition S ∧ ∀ A ∈ S, IsAntichain (· ≤ ·) A ∧ (A ∩ C).Nonempty) ↔
       Nonempty (SpinalMap C) := by
   constructor
@@ -573,7 +573,7 @@ def chainBetween (a b c d : ℕ) : Finset (ℕ × ℕ) :=
     else ∅
 
 lemma chainBetween_isChain {a b c d : ℕ} :
-    IsChain (· ≤ ·) (chainBetween a b c d : Set (ℕ × ℕ)) := by
+    IsLEChain (chainBetween a b c d : Set (ℕ × ℕ)) := by
   rw [chainBetween]
   split_ifs
   · rintro ⟨v, w⟩ hvw ⟨x, y⟩ hxy
@@ -582,7 +582,7 @@ lemma chainBetween_isChain {a b c d : ℕ} :
   · simp
 
 lemma image_chainBetween_isChain {a b c d n : ℕ} :
-    IsChain (· ≤ ·) ((chainBetween a b c d).image (embed n) : Set Hollom) := by
+    IsLEChain ((chainBetween a b c d).image (embed n) : Set Hollom) := by
   rw [coe_image]
   apply chainBetween_isChain.image
 
@@ -606,7 +606,7 @@ lemma chainBetween_subset {a b c d : ℕ} :
 end make_chains
 
 open Finset in
-lemma mapsTo_Icc_image (hC : IsChain (· ≤ ·) C) {a b c d n : ℕ}
+lemma mapsTo_Icc_image (hC : IsLEChain C) {a b c d n : ℕ}
     (hab : h(a, b, n) ∈ C) (hcd : h(c, d, n) ∈ C) :
     Set.MapsTo f
       ((Icc (a, b) (c, d)).image (embed n))
@@ -622,7 +622,7 @@ In other words, this collection must be a maximal chain relative to the interval
 Note `card_C_inter_Icc_eq` strengthens this to an equality.
 -/
 lemma C_inter_Icc_large (f : SpinalMap C) {n : ℕ} {xl yl xh yh : ℕ}
-    (hC : IsChain (· ≤ ·) C)
+    (hC : IsLEChain C)
     (hx : xl ≤ xh) (hy : yl ≤ yh)
     (hlo : h(xl, yl, n) ∈ C) (hhi : h(xh, yh, n) ∈ C) :
     xh + yh + 1 - (xl + yl) ≤ #{x ∈ (Icc (xl, yl) (xh, yh)).image (embed n) | x ∈ C} := by
@@ -647,7 +647,7 @@ In other words, this collection must be a maximal chain relative to the interval
 Alternatively speaking, it has the same size as any maximal chain in that interval.
 -/
 theorem card_C_inter_Icc_eq (f : SpinalMap C) {n : ℕ} {xl yl xh yh : ℕ}
-    (hC : IsChain (· ≤ ·) C)
+    (hC : IsLEChain C)
     (hx : xl ≤ xh) (hy : yl ≤ yh)
     (hlo : h(xl, yl, n) ∈ C) (hhi : h(xh, yh, n) ∈ C) :
     #{x ∈ (Icc (xl, yl) (xh, yh)).image (embed n) | x ∈ C} = xh + yh + 1 - (xl + yl) := by
@@ -655,7 +655,7 @@ theorem card_C_inter_Icc_eq (f : SpinalMap C) {n : ℕ} {xl yl xh yh : ℕ}
   set I : Finset Hollom := {x ∈ int | x ∈ C}
   have int_eq : int = Set.Icc h(xl, yl, n) h(xh, yh, n) := by
     simp only [coe_image, coe_Icc, int, embed_image_Icc]
-  have hI : IsChain (· ≤ ·) I := hC.mono (by simp [Set.subset_def, I])
+  have hI : IsLEChain I := hC.mono (by simp [Set.subset_def, I])
   have hIn : ↑I ⊆ level n := by simp +contextual [Set.subset_def, I, int, embed_apply]
   have : Set.MapsTo line int (Icc (xl + yl) (xh + yh)) := by
     rw [int_eq, coe_Icc]
@@ -674,7 +674,7 @@ Here we show the special case where the two points are `(x + 1, y, n)` and `(x, 
 they are beside each other.
 -/
 lemma apply_eq_of_line_eq_step (f : SpinalMap C) {n xl yl xh yh : ℕ}
-    (hC : IsChain (· ≤ ·) C)
+    (hC : IsLEChain C)
     (hlo : h(xl, yl, n) ∈ C) (hhi : h(xh, yh, n) ∈ C) (hx : xl ≤ xh) (hy : yl ≤ yh)
     {x y : ℕ}
     (h₁l : h(xl, yl, n) ≤ h(x + 1, y, n)) (h₂l : h(xl, yl, n) ≤ h(x, y + 1, n))
@@ -763,7 +763,7 @@ Here we show the special case where the two points are `(x + k, y, n)` and `(x, 
 induction on `k` with `apply_eq_of_line_eq_step`.
 -/
 lemma apply_eq_of_line_eq_aux (f : SpinalMap C) {n xl yl xh yh : ℕ}
-    (hC : IsChain (· ≤ ·) C)
+    (hC : IsLEChain C)
     (hlo : h(xl, yl, n) ∈ C) (hhi : h(xh, yh, n) ∈ C) (hx : xl ≤ xh) (hy : yl ≤ yh)
     {x y k : ℕ}
     (h₁l : h(xl, yl, n) ≤ h(x + k, y, n)) (h₂l : h(xl, yl, n) ≤ h(x, y + k, n))
@@ -787,7 +787,7 @@ lemma apply_eq_of_line_eq_aux (f : SpinalMap C) {n xl yl xh yh : ℕ}
 For two points of `C` in the same level, and two points `(a, b, n)` and `(c, d, n)` between them,
 if `a + b = c + d` then `f (a, b, n) = f (c, d, n)`.
 -/
-theorem apply_eq_of_line_eq (f : SpinalMap C) {n : ℕ} (hC : IsChain (· ≤ ·) C)
+theorem apply_eq_of_line_eq (f : SpinalMap C) {n : ℕ} (hC : IsLEChain C)
     {lo hi : Hollom} (hlo : lo ∈ C ∩ level n) (hhi : hi ∈ C ∩ level n) (hlohi : lo ≤ hi)
     {x y : Hollom} (h : line x = line y)
     (h₁l : lo ≤ x) (h₂l : lo ≤ y) (h₁h : x ≤ hi) (h₂h : y ≤ hi) :
@@ -897,7 +897,7 @@ lemma x0y0_mem (h : (C ∩ level (n + 1)).Nonempty) :
   rw [x0y0, dite_eq_left h]
   exact WellFounded.min_mem _ {x | embed (n + 1) x ∈ C} _
 
-lemma x0y0_min (z : ℕ × ℕ) (hC : IsChain (· ≤ ·) C) (h : embed (n + 1) z ∈ C) :
+lemma x0y0_min (z : ℕ × ℕ) (hC : IsLEChain C) (h : embed (n + 1) z ∈ C) :
     embed (n + 1) (x0y0 n C) ≤ embed (n + 1) z := by
   have : (C ∩ level (n + 1)).Nonempty := ⟨_, h, by simp [level_eq_range]⟩
   refine hC.le_of_not_gt h (x0y0_mem this) ?_
@@ -917,7 +917,7 @@ noncomputable def y0 (n : ℕ) (C : Set Hollom) : ℕ := (x0y0 n C).2
 
 lemma x0_y0_mem (h : (C ∩ level (n + 1)).Nonempty) : h(x0 n C, y0 n C, n + 1) ∈ C := x0y0_mem h
 
-lemma x0_y0_min (hC : IsChain (· ≤ ·) C) {a b : ℕ} (h : h(a, b, n + 1) ∈ C) :
+lemma x0_y0_min (hC : IsLEChain C) {a b : ℕ} (h : h(a, b, n + 1) ∈ C) :
     h(x0 n C, y0 n C, n + 1) ≤ h(a, b, n + 1) := x0y0_min (a, b) hC h
 
 open scoped Classical in
@@ -1030,7 +1030,7 @@ lemma left_or_right_bias {n : ℕ} (a b : ℕ)
 Given a point `x` in `S` which is not in `C ∩ level n`, its image under `f` cannot be in
 `C ∩ level (n + 1)`.
 -/
-theorem not_S_hits_next (f : SpinalMap C) (hC : IsChain (· ≤ ·) C)
+theorem not_S_hits_next (f : SpinalMap C) (hC : IsLEChain C)
     {x : Hollom} (hx : x ∈ S n C) (hx' : x ∉ C ∩ level n) :
     f x ∉ C ∩ level (n + 1) := by
   cases (C ∩ level (n + 1)).finite_or_infinite
@@ -1097,7 +1097,7 @@ theorem not_S_hits_next (f : SpinalMap C) (hC : IsChain (· ≤ ·) C)
       exact f.not_le_of_eq this.symm (by simp) (.next_min (hx.2.trans' (by simp)))
 
 /-- Every element of `S \ (C ∩ level n)` must be mapped into `C ∩ level (n - 1)`. -/
-lemma S_mapsTo_previous (f : SpinalMap C) (hC : IsChain (· ≤ ·) C) (hn : n ≠ 0) :
+lemma S_mapsTo_previous (f : SpinalMap C) (hC : IsLEChain C) (hn : n ≠ 0) :
     ∀ x ∈ S n C \ (C ∩ level n), f x ∈ C ∩ level (n - 1) := by
   -- Clearly it must be mapped into `C`
   intro x hx
@@ -1143,7 +1143,7 @@ open Finset in
 /--
 Supposing that all of `S \ (C ∩ level n)` is sent to `C ∩ level (n - 1)`, we deduce a contradiction.
 -/
-theorem not_S_mapsTo_previous (hC : IsChain (· ≤ ·) C)
+theorem not_S_mapsTo_previous (hC : IsLEChain C)
     (hCn : (C ∩ level n).Finite) (hn : n ≠ 0)
     (h : ∀ x ∈ S n C \ (C ∩ level n), f x ∈ C ∩ level (n - 1)) :
     False := by
@@ -1206,7 +1206,7 @@ theorem not_S_mapsTo_previous (hC : IsChain (· ≤ ·) C)
   lia
 
 /-- The Hollom partial order has no spinal maps. -/
-theorem no_spinalMap (hC : IsChain (· ≤ ·) C) (f : SpinalMap C) : False := by
+theorem no_spinalMap (hC : IsLEChain C) (f : SpinalMap C) : False := by
   obtain ⟨n, hn, hn'⟩ : ∃ n, n ≠ 0 ∧ (C ∩ Hollom.level n).Finite := by
     obtain ⟨n, hn, hn'⟩ := Filter.frequently_atTop.1 (Hollom.exists_finite_intersection hC) 1
     exact ⟨n, by lia, hn'⟩
@@ -1239,7 +1239,7 @@ above conditions.
 theorem aharoni_korman_false :
     ¬ ∀ (α : Type) (_ : PartialOrder α),
         (∃ A : Set α, IsAntichain (· ≤ ·) A ∧ A.Infinite) ∨
-        (∃ C : Set α, IsChain (· ≤ ·) C ∧
+        (∃ C : Set α, IsLEChain C ∧
          ∃ S : Set (Set α), Setoid.IsPartition S ∧
           ∀ A ∈ S, IsAntichain (· ≤ ·) A ∧ (A ∩ C).Nonempty) := by
   simp only [not_forall, not_or, not_exists]

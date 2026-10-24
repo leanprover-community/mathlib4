@@ -105,7 +105,7 @@ def IsExtendible (σ : Lifts F E K) : Prop :=
   ∀ S : Finset E, ∃ τ ≥ σ, (S : Set E) ⊆ τ.carrier
 
 section Chain
-variable (c : Set (Lifts F E K)) (hc : IsChain (· ≤ ·) c)
+variable (c : Set (Lifts F E K)) (hc : IsLEChain c)
 
 /-- The union of a chain of lifts. -/
 noncomputable def union : Lifts F E K :=
@@ -134,7 +134,7 @@ theorem carrier_union : (union c hc).carrier = ⨆ i : c, i.1.carrier :=
     iSup_le fun i ↦ le_iSup_of_le ⟨i, .inr i.2⟩ le_rfl
 
 /-- A chain of lifts has an upper bound. -/
-theorem exists_upper_bound (c : Set (Lifts F E K)) (hc : IsChain (· ≤ ·) c) :
+theorem exists_upper_bound (c : Set (Lifts F E K)) (hc : IsLEChain c) :
     ∃ ub, ∀ a ∈ c, a ≤ ub := ⟨_, le_union c hc⟩
 
 theorem union_isExtendible [alg : Algebra.IsAlgebraic F E]
@@ -152,7 +152,7 @@ theorem union_isExtendible [alg : Algebra.IsAlgebraic F E]
     exact hπ θ₀ ⟨_, θ.emb.comp <| inclusion <| sup_le this.1 hθ⟩
       ⟨le_sup_left, this.2⟩ ⟨le_sup_right, fun _ ↦ rfl⟩ rfl
   choose θ ge hθ eq using hω
-  have : IsChain (· ≤ ·) (Set.range θ) := by
+  have : IsLEChain (Set.range θ) := by
     simp_rw [← restrictScalars_adjoin_eq_sup, restrictScalars_adjoin] at eq
     rintro _ ⟨π₁, rfl⟩ _ ⟨π₂, rfl⟩ -
     wlog h : π₁ ≤ π₂ generalizing π₁ π₂
