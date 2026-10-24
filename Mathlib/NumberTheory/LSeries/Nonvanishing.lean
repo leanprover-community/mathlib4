@@ -457,8 +457,8 @@ theorem norm_rootNumber (hχ : χ.IsPrimitive) : ‖rootNumber χ‖ = 1 := by
       (by simp : (-1 : ZMod N) = ((-1 : (ZMod N)ˣ) : ZMod N)), gaussSum_mulShift_eq]
     simp_all
   have : ‖rootNumber χ‖ = ‖rootNumber χ⁻¹‖ := by simp [rootNumber, -pow_ite, this]
-  have : ‖rootNumber χ‖ * ‖rootNumber χ⁻¹‖ = 1 := by simp [← norm_mul,
-    rootNumber_mul_rootNumber_inv hχ]
+  have : ‖rootNumber χ‖ * ‖rootNumber χ⁻¹‖ = 1 := by
+    simp [← norm_mul, rootNumber_mul_rootNumber_inv hχ]
   nlinarith [norm_nonneg (rootNumber χ)]
 
 /-- **The Gauss sum of a primitive Dirichlet character has absolute value `√N`.** -/
