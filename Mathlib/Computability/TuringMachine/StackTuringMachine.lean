@@ -152,6 +152,13 @@ instance Cfg.inhabited [Inhabited σ] : Inhabited (Cfg Γ Λ σ) :=
 
 variable {Γ Λ σ}
 
+/-- The number of `push` instructions in a statement. -/
+def Stmt.pushes : Stmt Γ Λ σ → ℕ
+  | push _ _ q => q.pushes + 1
+  | peek _ _ q | pop _ _ q | load _ q => q.pushes
+  | branch _ q₁ q₂ => q₁.pushes + q₂.pushes
+  | goto _ | halt => 0
+
 section
 variable [DecidableEq K]
 
@@ -176,6 +183,58 @@ attribute [simp] stepAux.eq_1 stepAux.eq_2 stepAux.eq_3
 /-- The (reflexive) reachability relation for the TM2 model. -/
 def Reaches (M : Λ → Stmt Γ Λ σ) : Cfg Γ Λ σ → Cfg Γ Λ σ → Prop :=
   ReflTransGen fun a b ↦ b ∈ step M a
+
+/-- Running a statement adds to each stack at most as many letters as the statement has `push`
+instructions. -/
+theorem length_stk_stepAux_le (q : Stmt Γ Λ σ) (v : σ) (S : ∀ k, List (Γ k)) (k : K) :
+    ((stepAux q v S).stk k).length ≤ (S k).length + q.pushes := by
+  induction q generalizing v S with
+  | push k' f q ih | pop k' f q ih =>
+    refine (ih _ _).trans ?_
+    obtain rfl | h := eq_or_ne k k' <;> simp [Stmt.pushes, *] <;> omega
+  | branch f q₁ q₂ ih₁ ih₂ =>
+    rw [stepAux, Stmt.pushes]
+    cases f v
+    · exact (ih₂ v S).trans (by omega)
+    · exact (ih₁ v S).trans (by omega)
+  | peek _ _ _ ih | load _ _ ih => exact ih _ S
+  | goto _ | halt => exact Nat.le_add_right _ _
+
+/-- Along a run `h` of a program whose statements have at most `c` pushes each, each stack gains
+at most `c * h.steps` letters. -/
+theorem length_stk_le_of_evalsTo {M : Λ → Stmt Γ Λ σ} {c : ℕ} (hM : ∀ l, (M l).pushes ≤ c)
+    {a b : Cfg Γ Λ σ} (h : StateTransition.EvalsTo (step M) a (some b)) (k : K) :
+    (b.stk k).length ≤ (a.stk k).length + c * h.steps := by
+  refine h.induction_on (fun n x ↦ (x.stk k).length ≤ (a.stk k).length + c * n)
+    (Nat.le_add_right _ _) fun n x y hx hxy ↦ ?_
+  obtain ⟨_ | l, v, S⟩ := x <;> cases hxy
+  grw [length_stk_stepAux_le, hx, hM, Nat.mul_add_one, Nat.add_assoc]
+
+/-- A transfer loop between distinct stacks `k₁` and `k₂`: the label `L` pops `k₁` into the state,
+from which `rd` reads the popped letter translated by `get`; if there was none, it jumps to `L'`,
+otherwise to `P x`, which pushes `x` onto `k₂` and jumps back to `L`. Started at `L`, the machine
+reaches `L'` in `2 * (S k₁).length + 1` steps, with `k₁` empty and `S k₁`, translated by `get`,
+pushed onto `k₂` in reverse order. -/
+theorem iterate_transfer (M : Λ → Stmt Γ Λ σ) {k₁ k₂ : K} (hk : k₁ ≠ k₂) {get : Γ k₁ → Γ k₂}
+    {rd : σ → Option (Γ k₂)} {w : σ → Option (Γ k₁) → σ} {L L' : Λ} {P : Γ k₂ → Λ}
+    (hL : M L = pop k₁ w (goto fun s ↦ (rd s).elim L' P))
+    (hP : ∀ x, M (P x) = push k₂ (fun _ ↦ x) (goto fun _ ↦ L))
+    (hrd : ∀ s o, rd (w s o) = o.map get) (hw : ∀ s o o', w (w s o) o' = w s o')
+    (S : ∀ k, List (Γ k)) (s : σ) :
+    (flip bind (step M))^[2 * (S k₁).length + 1] (some ⟨some L, s, S⟩) =
+      some ⟨some L', w s none, update (update S k₁ []) k₂ (((S k₁).map get).reverse ++ S k₂)⟩ := by
+  generalize hl : S k₁ = l
+  induction l generalizing S s with
+  | nil =>
+    have hS : update S k₁ [] = S := Function.update_eq_self_iff.2 hl.symm
+    simp [flip, hL, hl, hrd, hS]
+  | cons x l ih =>
+    have h₂ : (flip bind (step M))^[2] (some ⟨some L, s, S⟩) =
+        some ⟨some L, w s (some x), update (update S k₁ l) k₂ (get x :: S k₂)⟩ := by
+      simp [flip, hL, hP, hl, hrd, Function.update_of_ne hk.symm]
+    rw [show 2 * (x :: l).length + 1 = 2 * l.length + 1 + 2 by rw [List.length_cons]; omega,
+      Function.iterate_add_apply, h₂, ih _ _ (by simp [Function.update_of_ne hk])]
+    simp [hw, Function.update_comm hk.symm]
 
 end
 
