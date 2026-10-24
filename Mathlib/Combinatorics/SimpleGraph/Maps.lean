@@ -572,6 +572,14 @@ def complEquiv : G ↪g H ≃ Gᶜ ↪g Hᶜ where
     · simp
     · simpa [hvw, not_iff_not] using f.map_adj_iff (v := v) (w := w)⟩
 
+/-- A graph embedding maps an induced subgraph of the domain to an isomorphic induced subgraph of
+the codomain. -/
+noncomputable def induceImage (f : G ↪g G') {s : Set V} : G.induce s ≃g G'.induce (f '' s) where
+  __ := Equiv.Set.image f s f.injective
+  map_rel_iff' {u v} := by
+    simp_rw [comap_adj, Embedding.subtype_apply, ← f.map_adj_iff]
+    simp
+
 end Embedding
 
 section induceHom
