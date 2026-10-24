@@ -133,7 +133,7 @@ over `ℤ` iff its trace and its norm are integers.
 
 Being the integral closure is a local condition: it suffices that the order be saturated at every
 prime `p`, meaning that `p • z` lying in the order forces `z` to lie in it, for `z` integral (see
-`isIntegralClosure_iff_forall_prime`). This is proved by descent on the smallest `n` such that
+`isIntegralClosure_iff_forall_prime`). This is proved by strong induction on some `n` such that
 `n • z` lies in the order, removing one prime factor of `n` at a time.
 
 Saturation at `p` is then made explicit: it fails exactly when `discr a b = p ^ 2 * e` for some
@@ -175,7 +175,7 @@ theorem isIntegral_inv_smul_of_dvd {d s : ℤ} (hs : d ∣ s)
       trace_smul_one_add_omega, smul_eq_mul, eq_inv_mul_iff_mul_eq₀ hd, eq_comm]
     exact_mod_cast hu
   · rw [norm_smul, add_sub_cancel_right, Int.mul_ediv_cancel_left _ two_ne_zero, inv_pow,
-      eq_inv_mul_iff_mul_eq₀ (by aesop), ← mul_right_inj' four_ne_zero,
+      eq_inv_mul_iff_mul_eq₀ (pow_ne_zero 2 hd), ← mul_right_inj' four_ne_zero,
       four_mul_norm_smul_one_add_omega, eq_comm, ← mul_assoc]
     exact_mod_cast hv
 
@@ -254,22 +254,17 @@ theorem saturated_iff (p : ℕ) (hp : p.Prime) :
   refine mem_range_of_dvd_im hz hq.ne_zero hx <| hq.dvd_of_dvd_pow (n := 2) ?_
   contrapose h
   obtain ⟨t, n, htn⟩ := exists_discr_mul_im_sq_eq hz hx
-  obtain ⟨e, he⟩ := ((Prime.coprime_iff_not_dvd hq).mpr h).pow_left.dvd_of_dvd_mul_right
+  obtain ⟨e, he⟩ := (hq.coprime_iff_not_dvd.mpr h).pow_left.dvd_of_dvd_mul_right
     ⟨t ^ 2 - 4 * n, htn⟩
   refine ⟨e, he, ?_⟩
   obtain rfl | hp₂ := hp.eq_two_or_odd'
   · push_cast at h htn he
-    have h₁ : Odd x.im := by rwa [← Int.odd_pow' two_ne_zero, ← Int.not_two_dvd_iff_odd]
-    have h₂ : x.im ^ 2 * e = t ^ 2 - 4 * n :=
-      mul_left_cancel₀ (by norm_num : (4 : ℤ) ≠ 0) (by grind)
-    -- TODO: Golf
-    have := Int.emod_two_eq t
-    rwa [← Int.sq_emod_four, ← Int.sub_mul_emod_self_left, ← h₂, Int.mul_emod, Int.sq_emod_four,
-      Int.odd_iff.mp h₁, one_mul, Int.emod_emod] at this
-  · -- TODO: Golf
-    have := he ▸ discr_emod_four a b
-    rwa [Int.mul_emod, Int.sq_emod_four, Int.odd_iff.mp hp₂.natCast, one_mul,
-      Int.emod_emod] at this
+    obtain ⟨k, hk⟩ : Odd x.im := by
+      rwa [← Int.odd_pow' two_ne_zero, ← Int.not_even_iff_odd, even_iff_two_dvd]
+    rw [hk, he] at htn
+    grind [Int.sq_emod_four]
+  · have := he ▸ discr_emod_four_eq_zero_or_one a b
+    rwa [Int.mul_emod, Int.sq_emod_four_eq_one_of_odd hp₂.natCast, one_mul, Int.emod_emod] at this
 
 /-- The order is the integral closure of `ℤ` in `QuadraticAlgebra ℚ a b` iff it is saturated at
 every prime. -/
@@ -294,27 +289,26 @@ theorem isIntegralClosure_iff_forall_prime :
 
 /-- The order `QuadraticAlgebra ℤ a b` is the integral closure of `ℤ` in `QuadraticAlgebra ℚ a b`
 iff `discr a b` is a fundamental discriminant. -/
-theorem isIntegralClosure_iff :
+protected theorem isIntegralClosure_iff :
     IsIntegralClosure (QuadraticAlgebra ℤ a b) ℤ (QuadraticAlgebra ℚ a b) ↔
       Int.IsFundamentalDiscr (discr a b) := by
   simp_rw +contextual [isIntegralClosure_iff_forall_prime, Int.isFundamentalDiscr_iff_forall_prime,
     saturated_iff]
-  exact (and_iff_right (discr_emod_four a b)).symm
+  exact (and_iff_right (discr_emod_four_eq_zero_or_one a b)).symm
 
 /-- The order `QuadraticAlgebra ℤ a b` is integrally closed iff `discr a b` is a fundamental
 discriminant. -/
-theorem isIntegrallyClosed_iff :
+protected theorem isIntegrallyClosed_iff :
     IsIntegrallyClosed (QuadraticAlgebra ℤ a b) ↔ Int.IsFundamentalDiscr (discr a b) := by
-  rw [← isIntegralClosure_iff, isIntegrallyClosed_iff_isIntegrallyClosedIn
+  rw [← Int.isIntegralClosure_iff, isIntegrallyClosed_iff_isIntegrallyClosedIn
     (K := QuadraticAlgebra ℚ a b)]
-  exact ⟨fun _ ↦ IsIntegralClosure.of_isIntegrallyClosedIn,
-    fun _ ↦ IsIntegrallyClosedIn.of_isIntegralClosure ℤ⟩
+  exact ⟨fun _ ↦ .of_isIntegrallyClosedIn, fun _ ↦ .of_isIntegralClosure ℤ⟩
 
 /-- When `discr a b` is a fundamental discriminant, `QuadraticAlgebra ℤ a b` is isomorphic, as a
 `ℤ`-algebra, to the integral closure of `ℤ` in `QuadraticAlgebra ℚ a b`. -/
 noncomputable def algEquivIntegralClosure (h : Int.IsFundamentalDiscr (discr a b)) :
     QuadraticAlgebra ℤ a b ≃ₐ[ℤ] integralClosure ℤ (QuadraticAlgebra ℚ a b) :=
-  have := isIntegralClosure_iff.mpr h
+  have := Int.isIntegralClosure_iff.mpr h
   IsIntegralClosure.equiv ℤ (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b)
     (integralClosure ℤ (QuadraticAlgebra ℚ a b))
 
@@ -323,7 +317,7 @@ theorem coe_algEquivIntegralClosure_apply (h : Int.IsFundamentalDiscr (discr a b
     (x : QuadraticAlgebra ℤ a b) :
     (algEquivIntegralClosure h x : QuadraticAlgebra ℚ a b) =
       algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b) x :=
-  have := isIntegralClosure_iff.mpr h
+  have := Int.isIntegralClosure_iff.mpr h
   IsIntegralClosure.algebraMap_equiv ℤ _ (QuadraticAlgebra ℚ a b)
     (integralClosure ℤ (QuadraticAlgebra ℚ a b)) x
 
