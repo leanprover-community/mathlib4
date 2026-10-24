@@ -119,7 +119,7 @@ jobs:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
     - name: Configure Lean
-      uses: leanprover/lean-action@f061402b660e0c34644504b324e830f2991d4865 # v1.6.1
+      uses: leanprover/lean-action@24581d74d674803a25a81b10b059c5c0cdd344c6 # v1.6.2
       with:
         auto-config: false
         use-github-cache: false
