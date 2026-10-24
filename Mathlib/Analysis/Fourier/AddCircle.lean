@@ -639,8 +639,7 @@ theorem fourierCoeff_eq_of_hasSum_of_summable_norm [CompleteSpace E] {f : AddCir
     _ = ∑' i, ∫ t : AddCircle T, fourier (-n) t • fourier i t • c i ∂haarAddCircle := by
       refine integral_tsum_of_summable_integral_norm ?_ ?_ |>.symm
       · exact fun i ↦ Continuous.integrable_of_hasCompactSupport (by fun_prop) (.of_compactSpace _)
-      · simp_rw [norm_smul]
-        simpa using hnorm
+      · simpa [norm_smul] using hnorm
     _ = ∑' i, fourierCoeff (fun _ ↦ 1 : AddCircle T → ℂ) (n - i) • c i := by
       simp_rw [fourierCoeff, ← integral_smul_const, neg_sub, sub_eq_add_neg, fourier_add, smul_smul,
         smul_eq_mul, mul_one, mul_comm (fourier (-n) _)]
