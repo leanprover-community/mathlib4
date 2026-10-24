@@ -273,10 +273,10 @@ theorem LieHom.lie_apply (f : M →ₗ[R] N) (x : L) (m : M) : ⁅x, f⁆ m = �
 instance LinearMap.instLieModule : LieModule R L (M →ₗ[R] N) where
   smul_lie t x f := by
     ext n
-    simp only [smul_sub, smul_lie, smul_apply, LieHom.lie_apply, map_smul]
+    simp [smul_sub]
   lie_smul t x f := by
     ext n
-    simp only [smul_sub, smul_apply, LieHom.lie_apply, lie_smul]
+    simp [smul_sub]
 
 /-- We could avoid defining this by instead defining a `LieRingModule L R` instance with a zero
 bracket and relying on `LinearMap.instLieRingModule`. We do not do this because in the case that
