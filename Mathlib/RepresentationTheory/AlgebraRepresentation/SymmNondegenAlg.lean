@@ -89,8 +89,6 @@ class IsSymmNondegenAlg {k : Type*} (A : Type*) [CommSemiring k] [NonUnitalNonAs
   separatingRight : ∀ a : A, (∀ b : A, Φ (b * a) = 0) → a = 0 :=
     fun a ha => separatingLeft a (fun b => by rw [isSymm a b, ha])
 
-namespace IsSymmNondegenAlg
-
 section CommRing
 
 variable {k A V W : Type*} [CommRing k] [Ring A] [Algebra k A] {Φ : A →ₗ[k] k}
@@ -117,22 +115,23 @@ lemma IsTraceRepresentative.ne_zero_of_charZero [CharZero k] [Nontrivial V] [Mod
 variable [IsSymmNondegenAlg A Φ]
 
 variable (Φ) in
-lemma eq_iff {a b : A} :
+lemma IsSymmNondegenAlg.eq_iff {a b : A} :
     a = b ↔ (∀ c, Φ (a * c) = Φ (b * c)) := by
   apply Iff.intro
   · exact fun h _ => by rw [h]
   rw [← sub_eq_zero]
   exact fun h => separatingLeft (a - b) (Φ := Φ) fun c => by simp [sub_mul, h]
 
-lemma unique_of_isTraceRepresentative {f g : A} (hf : IsTraceRepresentative V Φ f)
+lemma IsTraceRepresentative.unique {f g : A} (hf : IsTraceRepresentative V Φ f)
     (hg : IsTraceRepresentative V Φ g) :
     f = g :=
-  (eq_iff Φ).mpr <| fun c => by rw [hf c, hg c]
+  (IsSymmNondegenAlg.eq_iff Φ).mpr <| fun c => by rw [hf c, hg c]
 
-lemma mul_comm_of_isTraceRepresentative {f : A} (hf : IsTraceRepresentative V Φ f) :
+lemma IsTraceRepresentative.mul_comm' {f : A} (hf : IsTraceRepresentative V Φ f) :
     ∀ a, f * a = a * f :=
-  fun a => (eq_iff Φ).mpr <| fun c => by
-    simp_rw [mul_assoc a f c, isSymm a, mul_assoc f, hf _, map_mul, LinearMap.trace_mul_comm]
+  fun a => (IsSymmNondegenAlg.eq_iff Φ).mpr <| fun c => by
+    simp_rw [mul_assoc a f c, IsSymmNondegenAlg.isSymm a, mul_assoc f, hf _, map_mul,
+      LinearMap.trace_mul_comm]
 
 theorem IsTraceRepresentative.smul_eq_zero_of_isEmpty [IsSimpleModule A V] [IsSimpleModule A W]
     [IsEmpty (V ≃ₗ[A] W)] [Module.Finite (Module.End A V) V] {f : A}
@@ -142,7 +141,7 @@ theorem IsTraceRepresentative.smul_eq_zero_of_isEmpty [IsSimpleModule A V] [IsSi
   let toEndAV := (Module.toModuleEnd EndAV (S := A) V)
   let I := RingHom.ker toEndAV
   have hmul_ker {a : A} (ha : a ∈ I) : f * a = 0 := by
-    refine (eq_iff Φ).mpr fun c => ?_
+    refine (IsSymmNondegenAlg.eq_iff Φ).mpr fun c => ?_
     simp only [RingHom.mem_ker, Module.toModuleEnd_apply, I, toEndAV] at ha
     have : DistribSMul.toLinearMap EndAV V a = Algebra.lsmul k k V a := rfl
     rw [mul_assoc, hf (a * c), map_mul, ← this, ha]
@@ -206,19 +205,22 @@ end CommRing
 section Field
 
 variable {k A V W : Type*} [Field k] [Ring A] [Algebra k A] {Φ : A →ₗ[k] k}
-  [AddCommGroup V] [Module k V] [Module A V] [IsScalarTower k A V] [Module.Finite k V]
+  [AddCommGroup V] [Module k V] [Module A V] [IsScalarTower k A V]
   [AddCommGroup W] [Module k W] [Module A W] [IsScalarTower k A W]
 
-variable (Φ) in
+namespace IsTraceRepresentative
+
+set_option linter.unusedVariables false
 /-- A scalar multiple of `f` which becomes idempotent if `f` is the trace representative of some
 simple `A`-module over an algebraically closed field `k`. -/
-def normalization (f a : A) : A := (Φ (f * (f * a)))⁻¹ • Φ (f * a) • f
+def normalization {f : A} (hf : IsTraceRepresentative V Φ f) (a : A) :
+    A := (Φ (f * (f * a)))⁻¹ • Φ (f * a) • f
 
-lemma normalization_def {a f : A} :
-    normalization Φ f a = (Φ (f * (f * a)))⁻¹ • Φ (f * a) • f := by
+lemma normalization_def {a f : A} (hf : IsTraceRepresentative V Φ f) :
+    hf.normalization a = (Φ (f * (f * a)))⁻¹ • Φ (f * a) • f := by
   rw [normalization]
 
-namespace IsTraceRepresentative
+variable [Module.Finite k V]
 
 lemma ne_zero_of_isSimpleModule [IsSimpleModule A V] [IsAlgClosed k] {f : A}
     (hf : IsTraceRepresentative V Φ f) :
@@ -233,7 +235,7 @@ lemma ne_zero_of_isSimpleModule [IsSimpleModule A V] [IsAlgClosed k] {f : A}
 omit [Module.Finite k V] in
 private lemma normalization_eq_smul_and_ne_zero {f a : A} (hf : IsTraceRepresentative V Φ f)
     {r : k} (ha : Φ (f * (f * a)) ≠ 0) (hr : ∀ v : V, f • v = r • v) :
-    normalization Φ f a = r⁻¹ • f ∧ r ≠ 0 := by
+    hf.normalization a = r⁻¹ • f ∧ r ≠ 0 := by
   let r' : k := (Φ (f * (f * a)))⁻¹ • Φ (f * a)
   have hr : Algebra.lsmul k k V f = r • 1 := by ext x; simp [hr]
   have hr_ne_zero : r ≠ 0 := by
@@ -248,42 +250,42 @@ private lemma normalization_eq_smul_and_ne_zero {f a : A} (hf : IsTraceRepresent
 variable [IsSymmNondegenAlg A Φ] [IsSimpleModule A V] [IsAlgClosed k]
 
 lemma normalization_isIdempotentElem {f : A} (hf : IsTraceRepresentative V Φ f) (a : A) :
-    normalization Φ f a ^ 2 = normalization Φ f a := by
+    hf.normalization a ^ 2 = hf.normalization a := by
   by_cases ha : Φ (f * (f * a)) = 0
   · simp [normalization, ha]
   obtain ⟨r, hr⟩ :=
-    IsSimpleModule.lsmul_eq_smul_one_of_mul_comm V k (mul_comm_of_isTraceRepresentative hf)
-  refine (eq_iff Φ).mpr fun c => ?_
+    IsSimpleModule.smul_eq_smul_of_mul_comm V k hf.mul_comm'
+  refine (IsSymmNondegenAlg.eq_iff Φ).mpr fun c => ?_
   obtain ⟨heq, hr_ne_zero⟩ := normalization_eq_smul_and_ne_zero hf ha hr
   have hr : Algebra.lsmul k k V f = r • 1 := by ext x; simp [hr]
   simp [heq, pow_two, mul_assoc, isTraceRepresentative_iff.mp hf, hr, hr_ne_zero]
 
 lemma normalization_smul {f a : A} (hf : IsTraceRepresentative V Φ f)
     (ha : Φ (f * (f * a)) ≠ 0) (v : V) :
-    (normalization Φ f a) • v = v := by
+    (hf.normalization a) • v = v := by
   obtain ⟨r, hr⟩ :=
-    IsSimpleModule.lsmul_eq_smul_one_of_mul_comm V k (mul_comm_of_isTraceRepresentative hf)
+    IsSimpleModule.smul_eq_smul_of_mul_comm V k hf.mul_comm'
   obtain ⟨heq, hr_ne_zero⟩ := normalization_eq_smul_and_ne_zero hf ha hr
   rw [heq, smul_assoc, hr v, ← smul_assoc, smul_eq_mul, inv_mul_cancel₀ hr_ne_zero, one_smul]
 
 lemma normalization_eq_normalization_of_ne_zero {a b f : A} (hf : IsTraceRepresentative V Φ f)
     (ha : (Φ (f * (f * a))) ≠ 0) (hb : (Φ (f * (f * b))) ≠ 0) :
-    normalization Φ f a = normalization Φ f b := by
+    hf.normalization a = hf.normalization b := by
   obtain ⟨r, hr⟩ :=
-    IsSimpleModule.lsmul_eq_smul_one_of_mul_comm V k (mul_comm_of_isTraceRepresentative hf)
+    IsSimpleModule.smul_eq_smul_of_mul_comm V k hf.mul_comm'
   exact (normalization_eq_smul_and_ne_zero hf ha hr).left.trans
     (normalization_eq_smul_and_ne_zero hf hb hr).left.symm
 
 lemma normalization_smul_of_charZero [CharZero k] {f : A} (hf : IsTraceRepresentative V Φ f)
     (hff : f * f ≠ 0) (v : V) :
-    (normalization Φ f 1) • v = v := by
+    hf.normalization 1 • v = v := by
   refine normalization_smul hf ?_ v
   obtain ⟨c, hc⟩ :=
-    IsSimpleModule.lsmul_eq_smul_one_of_mul_comm V k (mul_comm_of_isTraceRepresentative hf)
+    IsSimpleModule.smul_eq_smul_of_mul_comm V k hf.mul_comm'
   have hc : Algebra.lsmul k k V f = c • 1 := by ext x; simp [hc]
   have : c ≠ 0 := by
     by_contra
-    refine hff <| (eq_iff Φ).mpr fun x => ?_
+    refine hff <| (IsSymmNondegenAlg.eq_iff Φ).mpr fun x => ?_
     simp [mul_assoc, isTraceRepresentative_iff.mp hf, hc, this]
   simp [isTraceRepresentative_iff.mp hf, hc, this, Module.finrank_eq_zero_iff_of_free,
     ← not_nontrivial_iff_subsingleton, IsSimpleModule.nontrivial A V]
@@ -291,21 +293,21 @@ lemma normalization_smul_of_charZero [CharZero k] {f : A} (hf : IsTraceRepresent
 omit [IsAlgClosed k] [Module.Finite k V] in
 theorem normalization_smul_eq_zero_of_isEmpty [IsSimpleModule A W] [IsEmpty (V ≃ₗ[A] W)]
     [Module.Finite (Module.End A V) V] {f : A} (hf : IsTraceRepresentative V Φ f) (a : A) (w : W) :
-    (normalization Φ f a) • w = 0 := by
+    hf.normalization a • w = 0 := by
   simp [normalization_def, smul_eq_zero_of_isEmpty hf]
 
 omit [Module k W] [IsScalarTower k A W]
 
 theorem normalization_smul_of_nonempty [Nonempty (V ≃ₗ[A] W)] {f a : A}
     (hf : IsTraceRepresentative V Φ f) (ha : Φ (f * (f * a)) ≠ 0) (w : W) :
-    (normalization Φ f a) • w = w := by
+    hf.normalization a • w = w := by
   obtain ⟨e⟩ := ‹Nonempty (V ≃ₗ[A] W)›
   obtain ⟨v, rfl⟩ := e.surjective w
   rw [← e.map_smul, normalization_smul hf ha v]
 
 lemma normalization_smul_of_nonempty_charZero [CharZero k] [Nonempty (V ≃ₗ[A] W)] {f : A}
     (hf : IsTraceRepresentative V Φ f) (hff : f * f ≠ 0) (w : W) :
-    (normalization Φ f 1) • w = w := by
+    hf.normalization 1 • w = w := by
   obtain ⟨e⟩ := ‹Nonempty (V ≃ₗ[A] W)›
   obtain ⟨v, rfl⟩ := e.surjective w
   rw [← e.map_smul, normalization_smul_of_charZero hf hff v]
@@ -313,5 +315,3 @@ lemma normalization_smul_of_nonempty_charZero [CharZero k] [Nonempty (V ≃ₗ[A
 end IsTraceRepresentative
 
 end Field
-
-end IsSymmNondegenAlg
