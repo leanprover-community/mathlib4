@@ -159,12 +159,12 @@ theorem map_add_right (f : M →ₛₗ[σ₁₂] M₂) (g₁ g₂ : N →ₛₗ[
 theorem map_smul_left (r : R₂) (f : M →ₛₗ[σ₁₂] M₂) (g : N →ₛₗ[σ₁₂] N₂) :
     map (r • f) g = r • map f g := by
   ext
-  simp only [smul_tmul, compr₂ₛₗ_apply, mk_apply, map_tmul, smul_apply, tmul_smul]
+  simp  [smul_tmul]
 
 theorem map_smul_right (r : R₂) (f : M →ₛₗ[σ₁₂] M₂) (g : N →ₛₗ[σ₁₂] N₂) :
     map f (r • g) = r • map f g := by
   ext
-  simp only [compr₂ₛₗ_apply, mk_apply, map_tmul, smul_apply, tmul_smul]
+  simp
 
 variable (M N P M₂ N₂ σ₁₂)
 
@@ -414,7 +414,7 @@ def lTensorHom : (N →ₗ[R] P) →ₗ[R] M ⊗[R] N →ₗ[R] M ⊗[R] P where
   map_smul' r f := by
     dsimp
     ext x y
-    simp only [compr₂ₛₗ_apply, mk_apply, tmul_smul, smul_apply, lTensor_tmul]
+    simp
 
 /-- `rTensorHom M` is the natural linear map that sends a linear map `f : N →ₗ P` to `f ⊗ M`.
 
@@ -427,7 +427,7 @@ def rTensorHom : (N →ₗ[R] P) →ₗ[R] N ⊗[R] M →ₗ[R] P ⊗[R] M where
   map_smul' r f := by
     dsimp
     ext x y
-    simp only [compr₂ₛₗ_apply, mk_apply, smul_tmul, tmul_smul, smul_apply, rTensor_tmul]
+    simp [smul_tmul]
 
 @[simp]
 theorem coe_lTensorHom : (lTensorHom M : (N →ₗ[R] P) → M ⊗[R] N →ₗ[R] M ⊗[R] P) = lTensor M :=

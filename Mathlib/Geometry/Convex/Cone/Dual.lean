@@ -106,7 +106,8 @@ lemma dual_hull (s : Set M) : dual p (hull R s) = dual p s := by
   | mem _y h => exact hx h
   | zero => simp
   | add y z _hy _hz hy hz => rw [map_add, add_apply]; exact add_nonneg hy hz
-  | smul t y _hy hy => rw [map_smul_of_tower, Nonneg.mk_smul, smul_apply]; exact mul_nonneg t.2 hy
+  | smul t y _hy hy =>
+    rw [map_smul_of_tower, Nonneg.mk_smul, LinearMap.smul_apply]; exact mul_nonneg t.2 hy
 
 @[simp] lemma dual_sup (C D : PointedCone R M) : dual p (C ⊔ D : PointedCone R M) = dual p (C ∪ D)
   := by simp [← dual_hull]
