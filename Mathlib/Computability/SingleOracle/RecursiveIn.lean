@@ -151,6 +151,7 @@ theorem eval_K_computable {O : ℕ → ℕ} :
 
 end Oracle.Single.RecursiveIn.Rin
 namespace Oracle.Single.Code
+/-- Given `x : ℕ`, this code defines the function `fun y ↦ ⟪x, y⟫`. -/
 def cPairProj (x : ℕ) : Code := pair (cConst x) cId
 theorem cPairProj_evp {O x} : evalp O (cPairProj x) = Nat.pair x := by simp [cPairProj]
 lemma PrimrecIn.pair_proj {O x} : PrimrecIn O (Nat.pair x) := by

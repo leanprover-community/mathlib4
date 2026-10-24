@@ -44,9 +44,8 @@ open Nat Part
 
 namespace Oracle.Single.Code
 
-/-
-We implement
--/
+/-- Given a code `c`, `dovetailn c` is a code which on input `x` searches for the least `y` such
+that `evaln O y.right c ⟪x, y.left⟫ = some 0`. See `dovetail`, which returns only `y.left`. -/
 def dovetailn (c : Code) : Code :=
   cRfind <|
   cIfEq'.comp₂
@@ -149,6 +148,8 @@ theorem dovetailn_ev_2 {O : ℕ → ℕ} {c : Code} {x : ℕ} :
   have := (@dovetailn_ev_1 O c x).not
   simpa using Iff.trans (Iff.symm Part.not_none_iff_dom) this
 
+/-- Given a code `c`, `dovetail c` is a code which on input `x` searches for a `y` with
+`[c](⟪x, y⟫) = 0`, by dovetailing the computations of `c` on all inputs `⟪x, y⟫`. -/
 def dovetail (c : Code) : Code := left.comp (dovetailn c)
 
 theorem dovetail_dom_iff_dovetailn_dom {O : ℕ → ℕ} {c : Code} {x : ℕ} :

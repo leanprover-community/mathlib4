@@ -765,6 +765,7 @@ end evaln
 
 section eval
 namespace Oracle.Single.Code
+/-- This code defines the universal function `fun ⟪c, x⟫ ↦ [n2c c](x)`. -/
 def cEval := (cRfindOpt (cEvaln.comp₃ (right.comp left) (left.comp left) right))
 set_option backward.isDefEq.respectTransparency false in
 @[simp, ev_simps] theorem cEval_ev {O : ℕ → ℕ} {c x : ℕ} :

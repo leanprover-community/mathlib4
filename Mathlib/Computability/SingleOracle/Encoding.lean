@@ -32,6 +32,9 @@ open Nat Encodable Denumerable
 
 namespace Oracle.Single
 
+/-- Codes for partial functions `ℕ →. ℕ` that are partial recursive relative to an oracle. These are
+the codes of `Nat.Partrec.Code`, with an extra constructor `oracle` for querying the oracle. See
+`Oracle.Single.eval` for their interpretation. -/
 inductive Code : Type
 | zero  : Code
 | succ  : Code
@@ -116,7 +119,10 @@ instance {m} : OfNat (Code) m where ofNat := n2c m
 instance : Coe ℕ Code := ⟨n2c⟩
 instance : Coe Code ℕ := ⟨c2n⟩
 -- /-- Converts an `Code` into a `ℕ`. -/ @[coe] def ofCode : Code → ℕ := encodeCode
+/-- An alias for `n2c`, which decodes a natural number as a `Code`. -/
 abbrev ofNatCode := n2c
+/-- `Nat.n2c` is `Oracle.Single.Code.n2c`, so that it can be used with dot notation on natural
+numbers. -/
 @[simp] abbrev _root_.Nat.n2c : ℕ → Code := Oracle.Single.Code.n2c
 
 @[simp] theorem n2c_c2n : ∀ c, n2c (c2n c) = c := fun c => by
@@ -284,7 +290,7 @@ theorem exists_code {O : ℕ → ℕ} {f : ℕ →. ℕ} : RecursiveIn O f ↔ �
     | rfind' cf pf =>
       simpa [eval] using RecursiveIn.rfind pf
 
-/- A modified evaluation for the code which returns an `Option ℕ` instead of a `Part ℕ`. To avoid
+/-- A modified evaluation for the code which returns an `Option ℕ` instead of a `Part ℕ`. To avoid
 undecidability, `evaln` takes a parameter `k` and fails if it encounters a number ≥ k in the course
 of its execution. Other than this, the semantics are the same as in `Oracle.Single.Code.eval`.
 -/

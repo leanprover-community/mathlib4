@@ -18,12 +18,19 @@ This file defines Turing reducibility between total functions as oracles.
 namespace Oracle.Single
 open Oracle.Single
 
+/-- `TuringReducible f g` (notation `f ≤ᵀᶠ g`) holds if `f` is computable relative to the oracle
+`g`. -/
 @[simp] abbrev TuringReducible (f g : ℕ → ℕ) : Prop := RecursiveIn g f
+/-- `TuringReducibleStrict f g` (notation `f <ᵀᶠ g`) holds if `f ≤ᵀᶠ g` but not `g ≤ᵀᶠ f`. -/
 @[simp] abbrev TuringReducibleStrict (f g : ℕ → ℕ) : Prop := RecursiveIn g f ∧ ¬ RecursiveIn f g
+/-- `TuringEquivalent f g` (notation `f ≡ᵀᶠ g`) holds if `f ≤ᵀᶠ g` and `g ≤ᵀᶠ f`. -/
 @[simp] abbrev TuringEquivalent (f g : ℕ → ℕ) : Prop := AntisymmRel TuringReducible f g
 
+/-- `f ≤ᵀᶠ g` is notation for `TuringReducible f g`. -/
 @[reducible,simp] scoped[Computability] infix : 50 " ≤ᵀᶠ " => TuringReducible
+/-- `f ≡ᵀᶠ g` is notation for `TuringEquivalent f g`. -/
 @[reducible,simp] scoped[Computability] infix : 50 " ≡ᵀᶠ " => TuringEquivalent
+/-- `f <ᵀᶠ g` is notation for `TuringReducibleStrict f g`. -/
 @[reducible,simp] scoped[Computability] infix : 50 " <ᵀᶠ " => TuringReducibleStrict
 
 open scoped Computability
@@ -77,6 +84,7 @@ instance : IsPreorder (ℕ → ℕ) TuringReducible where
   refl := TuringReducible.refl
   trans := @TuringReducible.trans
 
+/-- The Turing degrees of total functions `ℕ → ℕ`: functions up to `≡ᵀᶠ`, ordered by `≤ᵀᶠ`. -/
 abbrev FuncTuringDegree := Antisymmetrization _ TuringReducible
 private instance : Preorder (ℕ → ℕ) where
   le := TuringReducible

@@ -168,6 +168,7 @@ end Oracle.Single.Code
 end cov_rec
 
 section div
+/-- Auxiliary function for `cDivFlip`. -/
 def divFlipAux : ℕ → ℕ → ℕ :=
   fun d n => if d = 0 then 0 else (if n<d then 0 else (divFlipAux d (n-d)) + 1)
 open Nat in
@@ -242,7 +243,9 @@ def cDivFlipAux :=
   cIfLtTe.comp₄ dividend divisor (cConst 0) <|
   -- else return (dividend-divisor)/divisor+1
   (succ.comp (cListGetI.comp₂ list_of_prev_values (cSub.comp₂ dividend divisor)))
+/-- This code defines the function `fun ⟪d, n⟫ ↦ n / d`. -/
 def cDivFlip := cListGetLastI.comp cDivFlipAux
+/-- This code defines the function `fun ⟪a, b⟫ ↦ a / b`. -/
 def cDiv := cDivFlip.comp (cFlip)
 
 theorem cDivFlip_evp_aux_aux {O d n} :
@@ -311,6 +314,7 @@ end div
 
 section mod
 namespace Oracle.Single.Code
+/-- This code defines the function `fun ⟪a, b⟫ ↦ a % b`. -/
 def cMod := cSub.comp₂ left (cMul.comp₂ right cDiv)
 @[cp] theorem cMod_prim : IsPrim cMod := by unfold cMod; apply_cp
 @[simp, evp_simps] theorem cMod_evp {O : ℕ → ℕ} :
@@ -332,6 +336,7 @@ end mod
 
 section div2
 namespace Oracle.Single.Code
+/-- This code defines the function `div2`. -/
 def cDiv2 := cDiv.comp₂ cId (cConst 2)
 @[cp] theorem cDiv2_prim : IsPrim cDiv2 := by unfold cDiv2; apply_cp
 @[simp, evp_simps] theorem cDiv2_evp {O : ℕ → ℕ} : evalp O cDiv2 = div2 := by
@@ -343,6 +348,7 @@ end div2
 
 section mod2
 namespace Oracle.Single.Code
+/-- This code defines the function `fun x ↦ x % 2`. -/
 def cMod2 := cMod.comp₂ cId (cConst 2)
 @[cp] theorem cMod2_prim : IsPrim cMod2 := by unfold cMod2; apply_cp
 @[simp, evp_simps] theorem cMod2_evp {O : ℕ → ℕ} : evalp O cMod2 = fun x ↦ x%2 := by simp [cMod2]
@@ -430,6 +436,7 @@ def cReplaceOracleAux :=
   cIfEqTe.comp₄ nMod4           (cConst 2) prec_code   <|
                                                rfind'_code
 
+/-- This code defines the function `fun ⟪o, c⟫ ↦ c2n (replaceOracle (n2c o) (n2c c))`. -/
 def cReplaceOracle := cListGetLastI.comp cReplaceOracleAux
 /-
 The most efficient way to show `IsPrim (cReplaceOracle)` is by showing the primitiveness of

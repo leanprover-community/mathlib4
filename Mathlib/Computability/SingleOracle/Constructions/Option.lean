@@ -12,6 +12,8 @@ public import Mathlib.Computability.SingleOracle.Constructions.Primitive
 
 This file defines basic primitive recursive codes for basic functions on option types.
 
+In docstrings, `[c]` denotes the function computed by the code `c`, and `[c](x)` its value at `x`.
+
 -/
 
 @[expose] public section
@@ -19,6 +21,7 @@ This file defines basic primitive recursive codes for basic functions on option 
 open Nat Denumerable Encodable List
 section isSome
 namespace Oracle.Single.Code
+/-- This code defines the function `fun o ↦ b'2n (n2o o).isSome`. -/
 def cIsSome := cSg'
 @[cp] theorem cIsSome_prim : IsPrim cIsSome := by unfold cIsSome; apply_cp
 @[simp, evp_simps] theorem cIsSome_evp {O : ℕ → ℕ} :
@@ -32,6 +35,7 @@ end isSome
 
 section opt_iget
 namespace Oracle.Single.Code
+/-- This code defines the function `fun o ↦ (n2o o).getD 0`. -/
 def cOptIget := cPred
 @[cp] theorem cOptIget_prim : IsPrim cOptIget := by unfold cOptIget; apply_cp
 @[simp, evp_simps] theorem cOptIget_evp {O : ℕ → ℕ} {o} :
@@ -51,6 +55,7 @@ end Oracle.Single.Code
 end opt_iget
 section opt_getD
 namespace Oracle.Single.Code
+/-- This code defines the function `fun ⟪o, d⟫ ↦ (n2o o).getD d`. -/
 def cOptGetD := cIfz.comp₃ left right (cOptIget.comp left)
 @[cp] theorem cOptGetD_prim : IsPrim cOptGetD := by unfold cOptGetD; apply_cp
 @[simp, evp_simps] theorem cOptGetD_evp {O : ℕ → ℕ} {o d} :
@@ -68,6 +73,7 @@ end opt_getD
 
 section opt_none
 namespace Oracle.Single.Code
+/-- This code defines the function `fun _ ↦ o2n none`. -/
 def cOptNone := cConst 0
 @[cp] theorem cOptNone_prim : IsPrim cOptNone := by
   unfold cOptNone; apply_cp
@@ -84,6 +90,8 @@ private lemma isSome_of_n2o {i} (h : i ≠ 0) : (n2o i).isSome := by
   rewrite [(succ_pred_eq_of_ne_zero h).symm]; rfl
 section opt_bind
 namespace Oracle.Single.Code
+/-- Given codes `cf`, `cg`, this code defines the function
+`fun x ↦ o2n ((n2o [cf](x)).bind fun t ↦ n2o [cg](⟪x, t⟫))`. -/
 def cOptBind (cf cg : Code) :=  cIfz.comp₃ cf zero (cg.comp₂ cId (cOptIget.comp cf))
 @[cp] theorem cOptBind_prim {cf cg : Code} (hcf : IsPrim cf) (hcg : IsPrim cg) :
   IsPrim (cOptBind cf cg) := by unfold cOptBind; apply_cp
@@ -112,6 +120,8 @@ end opt_bind
 
 section opt_bind'
 namespace Oracle.Single.Code
+/-- Given codes `cf`, `cg`, this code defines the function
+`fun x ↦ o2n ((n2o [cf](x)).bind fun _ ↦ n2o [cg](x))`. -/
 def cOptBind' (cf cg : Code) :=  cIfz.comp₃ cf zero cg
 @[cp] theorem cOptBind'_prim {cf cg : Code} (hcf : IsPrim cf) (hcg : IsPrim cg) :
   IsPrim (cOptBind' cf cg) := by unfold cOptBind'; apply_cp
@@ -132,6 +142,8 @@ end opt_bind'
 
 section part_bind
 namespace Oracle.Single.Code
+/-- Given codes `cf`, `cg`, this code defines the (partial) function
+`fun x ↦ [cf](x) >>= fun t ↦ [cg](⟪x, t⟫)`. -/
 def cPartBind (cf cg : Code) := cg.comp₂ cId cf
 set_option backward.isDefEq.respectTransparency false in
 @[simp, ev_simps] theorem cPartBind_ev {O : ℕ → ℕ} {cf cg : Code} {x} :

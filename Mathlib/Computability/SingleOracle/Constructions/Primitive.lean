@@ -40,6 +40,8 @@ Suppose we want to construct a primitive recursive function `f : ℕ → ℕ`.
   · theorem asserting that the function `f` is primitive recursive. This again follows
     immediately from `c_f_evp`.
 
+In docstrings, `[c]` denotes the function computed by the code `c`, and `[c](x)` its value at `x`.
+
 -/
 
 @[expose] public section
@@ -50,6 +52,8 @@ open Nat
 
 section comp₂
 namespace Oracle.Single.Code
+/-- `comp₂ c1 c2 c3` composes `c1` with the pair of `c2` and `c3`: it is the code for
+`fun x ↦ [c1](⟪[c2](x), [c3](x)⟫)`. -/
 def comp₂ := fun c1 c2 c3 : Code => c1.comp (pair c2 c3)
 @[cp] theorem comp₂_prim {c1 c2 c3} (hc1 : IsPrim c1) (hc2 : IsPrim c2) (hc3 : IsPrim c3) :
   IsPrim (comp₂ c1 c2 c3) := by unfold comp₂; apply_cp
@@ -65,6 +69,7 @@ end comp₂
 
 section comp₄
 namespace Oracle.Single.Code
+/-- `comp₄ c1 c2 c3 c4 c5` is the code for `fun x ↦ [c1](⟪[c2](x), [c3](x), [c4](x), [c5](x)⟫)`. -/
 def comp₄ := fun c1 c2 c3 c4 c5 : Code => c1.comp₂ (pair c2 c3) (pair c4 c5)
 @[cp] theorem comp₄_prim {c1 c2 c3 c4 c5}
   (hc1 : IsPrim c1) (hc2 : IsPrim c2)
@@ -83,6 +88,7 @@ end comp₄
 
 section comp₃
 namespace Oracle.Single.Code
+/-- `comp₃ c1 c2 c3 c4` is the code for `fun x ↦ [c1](⟪[c2](x), [c3](x), [c4](x)⟫)`. -/
 def comp₃ := fun c1 c2 c3 c4 : Code => c1.comp₂ c2 (pair c3 c4)
 @[cp] theorem comp₃_prim {c1 c2 c3 c4}
   (hc1 : IsPrim c1) (hc2 : IsPrim c2) (hc3 : IsPrim c3) (hc4 : IsPrim c4) :
@@ -100,6 +106,7 @@ end comp₃
 
 section id
 namespace Oracle.Single.Code
+/-- This code defines the function `fun n ↦ n`. -/
 def cId := left.pair right
 @[cp] theorem cId_prim : IsPrim cId := by unfold cId; apply_cp
 @[simp, evp_simps] theorem cId_evp {O : ℕ → ℕ} {n} : evalp O cId n = n := by simp [cId, evalp]
@@ -112,6 +119,7 @@ end id
 
 section const
 namespace Oracle.Single.Code
+/-- Given `n : ℕ`, this code defines the function `fun _ ↦ n`. -/
 def cConst : ℕ → Code
 | 0 => zero
 | n+1 => comp succ (cConst n)
@@ -133,6 +141,7 @@ end const
 
 section curry
 namespace Oracle.Single.Code
+/-- Given a code `c` and `n : ℕ`, this code defines the function `fun x ↦ [c](⟪n, x⟫)`. -/
 def cCurry (c : Code) (n : ℕ) : Code := comp c (pair (cConst n) cId)
 theorem _id_eq_c_id : cId = Code.id := by simp [cId,Code.id]
 theorem _const_eq_c_const : cConst = Code.const := by
@@ -167,6 +176,7 @@ section sgsg'
 boolean-like computations. -/
 @[simp] def Nat.sg' := fun x => if x=0 then 1 else 0
 namespace Oracle.Single.Code
+/-- This code defines the function `Nat.sg`. -/
 def cSg := comp (prec zero (((cConst 1).comp left).comp left)) (pair zero cId)
 @[cp] theorem cSg_prim : IsPrim cSg := by unfold cSg; apply_cp
 @[simp, evp_simps] theorem cSg_evp {O : ℕ → ℕ} : evalp O cSg = Nat.sg := by
@@ -176,6 +186,7 @@ def cSg := comp (prec zero (((cConst 1).comp left).comp left)) (pair zero cId)
   | succ n _ => simp
 @[simp, ev_simps] theorem cSg_ev {O : ℕ → ℕ} : eval O cSg = Nat.sg := by
   rw [← evalp_eq_eval cSg_prim]; simp only [cSg_evp]
+/-- This code defines the function `Nat.sg'`. -/
 def cSg' := comp (prec (cConst 1) (((zero).comp left).comp left)) (pair zero cId)
 @[cp] theorem cSg'_prim : IsPrim cSg' := by unfold cSg'; apply_cp
 @[simp, evp_simps] theorem cSg'_evp {O : ℕ → ℕ} : evalp O cSg' = Nat.sg' := by
@@ -190,11 +201,13 @@ theorem PrimrecIn.sg {O : ℕ → ℕ} : PrimrecIn O Nat.sg := by
   rw [← cSg_evp]; exact isPrim_prop
 theorem PrimrecIn.sg' {O : ℕ → ℕ} : PrimrecIn O Nat.sg' := by
   rw [← cSg'_evp]; exact isPrim_prop
+/-- This code defines the function `Nat.sg'`, i.e. negation on booleans encoded as `0`/`1`. -/
 @[simp] abbrev cNot := cSg'
 end sgsg'
 
 section n2b
 namespace Oracle.Single.Code
+/-- This code defines the function `fun x ↦ if n2b x then 1 else 0`. -/
 def cN2b := cSg
 @[cp] theorem cN2b_prim : IsPrim cN2b := by unfold cN2b; apply_cp 10
 @[simp, evp_simps] theorem cN2b_evp {O : ℕ → ℕ} :
@@ -210,6 +223,7 @@ end n2b
 
 section add
 namespace Oracle.Single.Code
+/-- This code defines the function `fun ⟪a, b⟫ ↦ a + b`. -/
 def cAdd := (prec cId ((succ.comp right).comp right))
 @[cp] theorem cAdd_prim : IsPrim cAdd := by unfold cAdd; apply_cp
 @[simp, evp_simps] theorem cAdd_evp {O : ℕ → ℕ} : evalp O cAdd = unpaired2 Nat.add := by
@@ -225,6 +239,7 @@ end Oracle.Single.Code
 end add
 section mul
 namespace Oracle.Single.Code
+/-- This code defines the function `fun ⟪a, b⟫ ↦ a * b`. -/
 def cMul := prec zero (cAdd.comp (pair left (right.comp right)))
 @[cp] theorem cMul_prim : IsPrim cMul := by unfold cMul; apply_cp
 @[simp, evp_simps] theorem cMul_evp {O : ℕ → ℕ} : evalp O cMul = unpaired2 Nat.mul := by
@@ -242,6 +257,7 @@ end Oracle.Single.Code
 end mul
 section pow
 namespace Oracle.Single.Code
+/-- This code defines the function `fun ⟪a, b⟫ ↦ a ^ b`. -/
 def cPow := prec (cConst 1) (cMul.comp (pair (right.comp right) left))
 @[cp] theorem cPow_prim : IsPrim cPow := by unfold cPow; apply_cp
 @[simp, evp_simps] theorem cPow_evp {O : ℕ → ℕ} : evalp O cPow = unpaired2 Nat.pow := by
@@ -258,6 +274,8 @@ end pow
 
 section prec1
 namespace Oracle.Single.Code
+/-- Given `m : ℕ` and a code `cf`, this code defines the function
+`fun n ↦ Nat.rec m (fun y IH ↦ [cf](⟪y, IH⟫)) n`. -/
 def cPrec1 (m) (cf : Code) := ((prec (cConst m) (cf.comp right)).comp (zero.pair cId))
 @[cp] theorem cPrec1_prim {cf m} (hcf : IsPrim cf) : IsPrim (@cPrec1 m cf) := by
   unfold cPrec1; apply_cp
@@ -271,6 +289,7 @@ theorem PrimrecIn.prec1 {cf m} {O : ℕ → ℕ} :
 end prec1
 section casesOn1
 namespace Oracle.Single.Code
+/-- Given `m : ℕ` and a code `cf`, this code defines the function `fun n ↦ Nat.casesOn n m [cf]`. -/
 def cCasesOn1 (m) (cf : Code) := @cPrec1 m (cf.comp left)
 @[cp] theorem cCasesOn1_prim {cf m} (hcf : IsPrim cf) :
   IsPrim (cCasesOn1 m cf) := by unfold cCasesOn1; apply_cp
@@ -281,6 +300,7 @@ end casesOn1
 
 section pred
 namespace Oracle.Single.Code
+/-- This code defines the function `Nat.pred`. -/
 def cPred := (cCasesOn1 0 cId)
 @[cp] theorem cPred_prim : IsPrim cPred := by unfold cPred; apply_cp
 @[simp, evp_simps] theorem cPred_evp {O : ℕ → ℕ} : evalp O cPred = Nat.pred := by
@@ -293,6 +313,7 @@ end Oracle.Single.Code
 end pred
 section sub
 namespace Oracle.Single.Code
+/-- This code defines the function `fun ⟪a, b⟫ ↦ a - b`. -/
 def cSub := prec cId ((cPred.comp right).comp right)
 @[cp] theorem cSub_prim : IsPrim cSub := by unfold cSub; apply_cp
 @[simp, evp_simps] theorem cSub_evp {O : ℕ → ℕ} : evalp O cSub = unpaired2 Nat.sub := by
@@ -310,6 +331,7 @@ end Oracle.Single.Code
 end sub
 section dist
 namespace Oracle.Single.Code
+/-- This code defines the function `fun ⟪a, b⟫ ↦ Nat.dist a b`. -/
 def cDist := cAdd.comp (pair cSub (cSub.comp (pair right left)))
 @[cp] theorem cDist_prim : IsPrim cDist := by unfold cDist; apply_cp
 @[simp, evp_simps] theorem cDist_evp {O : ℕ → ℕ} : evalp O cDist = unpaired2 Nat.dist := by
@@ -466,6 +488,7 @@ end if_ge_te
 
 section ifz
 namespace Oracle.Single.Code
+/-- This code defines the function `fun ⟪c, a, b⟫ ↦ if c = 0 then a else b`. -/
 def cIfz := cAdd.comp <| pair
   (cMul.comp <| pair (cSg'.comp left) (left.comp right))
   (cMul.comp <| pair (cSg.comp left)  (right.comp right))
@@ -489,6 +512,7 @@ end ifz
 
 section ift
 namespace Oracle.Single.Code
+/-- This code defines the function `fun ⟪c, a, b⟫ ↦ if n2b c then a else b`. -/
 def cIft := cIfz.comp₂ (cSg'.comp <| left) right
 @[cp] theorem cIft_prim : IsPrim cIft := by unfold cIft; apply_cp
 @[simp, evp_simps] theorem cIft_evp {O : ℕ → ℕ} :
@@ -513,6 +537,7 @@ end ift
 
 section nat_iterate
 namespace Oracle.Single.Code
+/-- Given a code `cf`, this code defines the function `fun ⟪x, i⟫ ↦ [cf]^[i] x`. -/
 def cNatIterate (cf : Code) :=
   prec
     cId
@@ -534,6 +559,7 @@ end nat_iterate
 
 section mul2
 namespace Oracle.Single.Code
+/-- This code defines the function `fun x ↦ x * 2`. -/
 def cMul2 := cMul.comp₂ cId (cConst 2)
 @[cp] theorem cMul2_prim : IsPrim cMul2 := by unfold cMul2; apply_cp
 @[simp, evp_simps] theorem cMul2_evp {O : ℕ → ℕ} : evalp O cMul2 = fun x => x*2 := by
@@ -545,6 +571,7 @@ end mul2
 
 section max
 namespace Oracle.Single.Code
+/-- This code defines the function `fun ⟪a, b⟫ ↦ max a b`. -/
 def cMax := cIfLeTe.comp₄ left right right left
 @[cp] theorem cMax_prim : IsPrim cMax := by unfold cMax; apply_cp
 @[simp, evp_simps] theorem cMax_evp {O : ℕ → ℕ} : evalp O cMax = unpaired2 Nat.max := by

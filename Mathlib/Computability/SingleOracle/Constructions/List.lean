@@ -20,6 +20,8 @@ The major constructions in this file are `cListFoldl` and `cListZipWith`.
 `cListFoldl` allows easy definitions of subsequent constructs, although `cListZipWith` still
 requires a nontrivial proof.
 
+In docstrings, `[c]` denotes the function computed by the code `c`, and `[c](x)` its value at `x`.
+
 -/
 
 @[expose] public section
@@ -28,6 +30,7 @@ open Nat Denumerable Encodable List
 
 section list_nil
 namespace Oracle.Single.Code
+/-- This code defines the function `fun _ ↦ l2n []`. -/
 def cListNil := zero
 @[cp] theorem cListNil_prim : IsPrim cListNil := by unfold cListNil; apply_cp
 @[simp, evp_simps] theorem cListNil_evp {O : ℕ → ℕ} {x} : evalp O cListNil x = l2n ([]) := by
@@ -39,6 +42,7 @@ end list_nil
 
 section list_cons
 namespace Oracle.Single.Code
+/-- This code defines the function `fun ⟪a, l⟫ ↦ l2n (a :: n2l l)`. -/
 def cListCons := succ
 @[cp] theorem cListCons_prim : IsPrim cListCons := by unfold cListCons; apply_cp
 @[simp, evp_simps] theorem cListCons_evp {O : ℕ → ℕ} {a lN} :
@@ -52,6 +56,7 @@ end list_cons
 
 section list_tail
 namespace Oracle.Single.Code
+/-- This code defines the function `fun l ↦ l2n (n2l l).tail`. -/
 def cListTail := right.comp cPred
 @[cp] theorem cListTail_prim : IsPrim cListTail := by unfold cListTail; apply_cp
 @[simp, evp_simps] theorem cListTail_evp {O : ℕ → ℕ} {lN : ℕ} :
@@ -68,6 +73,7 @@ end list_tail
 
 section list_head?
 namespace Oracle.Single.Code
+/-- This code defines the function `fun l ↦ o2n (n2l l).head?`. -/
 def cListHead? := cIfz.comp₃ cId zero <| succ.comp (left.comp cPred)
 @[cp] theorem cListHead?_prim : IsPrim cListHead? := by unfold cListHead?; apply_cp
 @[simp, evp_simps] theorem cListHead?_evp {O : ℕ → ℕ} {lN : ℕ} :
@@ -83,6 +89,7 @@ end list_head?
 
 section list_headI
 namespace Oracle.Single.Code
+/-- This code defines the function `fun l ↦ (n2l l).headI`. -/
 def cListHeadI := cIfz.comp₃ cId zero (left.comp cPred)
 @[cp] theorem cListHeadI_prim : IsPrim cListHeadI := by unfold cListHeadI; apply_cp
 @[simp, evp_simps] theorem cListHeadI_evp {O : ℕ → ℕ} {lN : ℕ} :
@@ -99,6 +106,8 @@ end list_headI
 
 section list_casesOn
 namespace Oracle.Single.Code
+/-- Given codes `cl`, `c`, `cg`, this code defines the function
+`fun x ↦ List.casesOn (n2l [cl](x)) [c](x) (fun y ys ↦ [cg](⟪y, l2n ys⟫))`. -/
 def cListCasesOn (cl c cg : Code) :=
   let x := left.comp (cPred.comp cl)
   let xs := right.comp (cPred.comp cl)
@@ -122,6 +131,8 @@ end Oracle.Single.Code
 end list_casesOn
 section list_casesOn'
 namespace Oracle.Single.Code
+/-- Given codes `cl`, `c`, `cg`, this code defines the function
+`fun x ↦ List.casesOn (n2l [cl](x)) [c](x) (fun _ ↦ [cg](x))`. -/
 def cListCasesOn' (cl c cg : Code) :=
   cIfEqTe.comp₄ cl (cConst 0) c cg
 @[cp] theorem cListCasesOn'_prim {cl cg} {c : Code}
@@ -143,6 +154,7 @@ end list_casesOn'
 
 section list_drop
 namespace Oracle.Single.Code
+/-- This code defines the function `fun ⟪i, l⟫ ↦ l2n ((n2l l).drop i)`. -/
 def cListDrop :=
   (
     prec
@@ -172,6 +184,7 @@ end list_drop
 
 section list_getElem?
 namespace Oracle.Single.Code
+/-- This code defines the function `fun ⟪l, i⟫ ↦ o2n (n2l l)[i]?`. -/
 def cListGetElem? := cListHead?.comp (cListDrop.comp cFlip)
 @[cp] theorem cListGetElem?_prim : IsPrim cListGetElem? := by
   unfold cListGetElem?; apply_cp
@@ -185,6 +198,7 @@ end list_getElem?
 
 section list_getD
 namespace Oracle.Single.Code
+/-- This code defines the function `fun ⟪l, i, d⟫ ↦ (n2l l).getD i d`. -/
 def cListGetD :=
   cOptGetD.comp₂ (cListGetElem?.comp₂ left (left.comp right)) (right.comp right)
 @[cp] theorem cListGetD_prim : IsPrim cListGetD := by unfold cListGetD; apply_cp
@@ -197,6 +211,7 @@ end list_getD
 
 section list_getI
 namespace Oracle.Single.Code
+/-- This code defines the function `fun ⟪l, i⟫ ↦ (n2l l).getI i`. -/
 def cListGetI := cPred.comp cListGetElem?
 @[cp] theorem cListGetI_prim : IsPrim cListGetI := by unfold cListGetI; apply_cp
 @[simp, evp_simps] theorem cListGetI_evp {O : ℕ → ℕ} {lN i : ℕ} :
@@ -210,6 +225,7 @@ end list_getI
 
 section list_get
 namespace Oracle.Single.Code
+/-- This code defines the function `fun ⟪l, i⟫ ↦ (n2l l)[i]` (for `i < (n2l l).length`). -/
 def cListGet := cListGetI
 @[cp] theorem cListGet_prim : IsPrim cListGet := by unfold cListGet; apply_cp
 @[simp, evp_simps] theorem cListGet_evp {O : ℕ → ℕ} {lN i : ℕ} (h : i < (n2l lN).length) :
@@ -233,14 +249,16 @@ end list_get
 -/
 section list_foldl
 namespace Oracle.Single.Code
+/-- Auxiliary code for `cListFoldl`: one step of the fold. -/
 def cListFoldlAux (c : Code) :=
   let x := left.comp (cPred.comp right)
   let xs := right.comp (cPred.comp right)
   cListCasesOn' right cId (pair (c.comp₂ left x) (xs))
-def cListFoldlAux2 (c : Code) := (cNatIterate (cListFoldlAux c)).comp₂ cId right
-def cListFoldl (c : Code) := left.comp (cListFoldlAux2 c)
+/-- Given a code `c`, this code defines the function
+`fun ⟪init, l⟫ ↦ (n2l l).foldl (fun a b ↦ [c](⟪a, b⟫)) init`. -/
+def cListFoldl (c : Code) := left.comp ((cNatIterate (cListFoldlAux c)).comp₂ cId right)
 @[cp] theorem cListFoldl_prim {c : Code} (hc : IsPrim c) : IsPrim (cListFoldl c) := by
-  rewrite [cListFoldl, cListFoldlAux2, cListFoldlAux]; apply_cp
+  rewrite [cListFoldl, cListFoldlAux]; apply_cp
 @[simp, evp_simps] theorem cListFoldlAux_evp {O : ℕ → ℕ} {c : Code} {init lN : ℕ} :
     evalp O (cListFoldlAux c) ⟪init, lN⟫ =
     if (n2l lN) = []
@@ -256,7 +274,7 @@ def cListFoldl (c : Code) := left.comp (cListFoldlAux2 c)
     (fun a b => evalp O c ⟪a,b⟫)
     init
     (n2l lN) := by
-  simp only [cListFoldl,cListFoldlAux2, evp_simps]
+  simp only [cListFoldl, evp_simps]
   suffices ∀ n,
       (evalp O c.cListFoldlAux)^[n] ⟪init, lN⟫ =
       ⟪((n2l lN).take n).foldl (fun a b => evalp O c ⟪a,b⟫) init, l2n ((n2l lN).drop n)⟫ by
@@ -301,6 +319,7 @@ end list_foldl
 section list_reverse
 namespace Oracle.Single.Code
 -- Note that reverse = foldl (flip ( : )) [].
+/-- This code defines the function `fun l ↦ l2n (n2l l).reverse`. -/
 def cListReverse := (cListFoldl (cListCons.comp cFlip)).comp₂ cListNil cId
 @[cp] theorem cListReverse_prim : IsPrim cListReverse := by unfold cListReverse; apply_cp
 @[simp, evp_simps] theorem cListReverse_evp {O : ℕ → ℕ} {lN} :
@@ -326,6 +345,8 @@ end list_reverse
 -/
 section list_foldr
 namespace Oracle.Single.Code
+/-- Given a code `c`, this code defines the function
+`fun ⟪init, l⟫ ↦ (n2l l).foldr (fun a b ↦ [c](⟪a, b⟫)) init`. -/
 def cListFoldr (c : Code) := (cListFoldl (c.comp cFlip)).comp₂ left (cListReverse.comp right)
 @[cp] theorem cListFoldr_prim {c : Code} (hc : IsPrim c) : IsPrim (cListFoldr c) := by
   unfold cListFoldr; apply_cp
@@ -341,6 +362,7 @@ end list_foldr
 -- https : //hackage.haskell.org/package/ghc-internal-9.1201.0/docs/src/GHC.Internal.Data.Foldable.html#length
 section list_length
 namespace Oracle.Single.Code
+/-- This code defines the function `fun l ↦ (n2l l).length`. -/
 def cListLength := (cListFoldl (succ.comp left)).comp₂ zero cId
 @[cp] theorem cListLength_prim : IsPrim cListLength := by unfold cListLength; apply_cp
 @[simp, evp_simps] theorem cListLength_evp {O : ℕ → ℕ} {lN : ℕ} :
@@ -352,6 +374,7 @@ end list_length
 
 section list_getLast?
 namespace Oracle.Single.Code
+/-- This code defines the function `fun l ↦ o2n (n2l l).getLast?`. -/
 def cListGetLast? := cListGetElem?.comp₂ cId (cPred.comp <| cListLength.comp cId)
 @[cp] theorem cListGetLast?_prim : IsPrim cListGetLast? := by
   unfold cListGetLast?; apply_cp
@@ -366,6 +389,7 @@ end list_getLast?
 
 section list_getLastI
 namespace Oracle.Single.Code
+/-- This code defines the function `fun l ↦ (n2l l).getLastI`. -/
 def cListGetLastI := cOptIget.comp cListGetLast?
 @[cp] theorem cListGetLastI_prim : IsPrim cListGetLastI := by
   unfold cListGetLastI; apply_cp
@@ -383,6 +407,7 @@ end list_getLastI
 -/
 section list_append
 namespace Oracle.Single.Code
+/-- This code defines the function `fun ⟪l₁, l₂⟫ ↦ l2n (n2l l₁ ++ n2l l₂)`. -/
 def cListAppend := (cListFoldr (cListCons)).comp cFlip
 @[cp] theorem cListAppend_prim : IsPrim cListAppend := by unfold cListAppend; apply_cp
 @[simp, evp_simps] theorem cListAppend_evp {O : ℕ → ℕ} {l1N l2N} :
@@ -399,6 +424,7 @@ end list_append
 
 section list_singleton
 namespace Oracle.Single.Code
+/-- Given a code `c`, this code defines the function `fun x ↦ l2n [[c](x)]`. -/
 def cListSingleton (c : Code) := cListCons.comp₂ c cListNil
 @[cp] theorem cListSingleton_prim {c : Code} (hc : IsPrim c) :
   IsPrim (cListSingleton c) := by unfold cListSingleton; apply_cp
@@ -410,6 +436,7 @@ end list_singleton
 
 section list_concat
 namespace Oracle.Single.Code
+/-- This code defines the function `fun ⟪l, i⟫ ↦ l2n (n2l l ++ [i])`. -/
 def cListConcat := cListAppend.comp₂ left (cListSingleton right)
 @[cp] theorem cListConcat_prim : IsPrim cListConcat := by unfold cListConcat; apply_cp
 @[simp, evp_simps] theorem cListConcat_evp {O : ℕ → ℕ} {lN i : ℕ} :
@@ -423,6 +450,7 @@ end list_concat
 -- https : //hackage.haskell.org/package/ghc-internal-9.1201.0/docs/src/GHC.Internal.Base.html#map
 section list_map
 namespace Oracle.Single.Code
+/-- Given a code `c`, this code defines the function `fun l ↦ l2n ((n2l l).map [c])`. -/
 def cListMap (c : Code) :=
   (cListFoldr (cListCons.comp₂ (c.comp left) right)).comp₂ (cListNil) (cId)
 @[cp] theorem cListMap_prim {c : Code} (hc : IsPrim c) : IsPrim (cListMap c) := by
@@ -445,6 +473,7 @@ zipL xs ys = reverse <| fst <| foldl step ([], ys) xs
     step (acc, y : ys') x = ((x,y) : acc, ys')
     step (acc, [])    _ = (acc, [])
 -/
+/-- Auxiliary code for `cListZipWith`. -/
 def cListZipWithAux (c : Code) :=
   let yys' := right.comp left
   let ys' := cListTail.comp  yys'
@@ -457,6 +486,8 @@ def cListZipWithAux (c : Code) :=
     left
     (pair (cListCons.comp₂ (c.comp₂ x y) acc) ys')
   (cListFoldl step).comp₂ (pair cListNil right) left
+/-- Given a code `c`, this code defines the function
+`fun ⟪l₁, l₂⟫ ↦ zipWith (fun x y ↦ [c](⟪x, y⟫)) l₁ l₂`. -/
 def cListZipWith (c : Code) := cListReverse.comp <| left.comp (cListZipWithAux c)
 
 @[cp] theorem cListZipWithAux_prim {c : Code} (hc : IsPrim c) :
@@ -569,6 +600,7 @@ end list_zipWith
 
 section list_range
 namespace Oracle.Single.Code
+/-- This code defines the function `fun n ↦ l2n (List.range n)`. -/
 def cListRange :=
   let prev_list := right.comp right
   let i := (left.comp right)
@@ -591,6 +623,7 @@ end list_range
 
 section list_replicate
 namespace Oracle.Single.Code
+/-- This code defines the function `fun ⟪n, x⟫ ↦ l2n (List.replicate n x)`. -/
 def cListReplicate :=
   let prev_list := right.comp right
   let x := left
@@ -652,6 +685,7 @@ This is used in the construction of a simple set.
 -/
 section list_foldr_param
 namespace Oracle.Single.Code
+/-- Auxiliary code for `cListFoldrParam`. -/
 def cListFoldrParamAux (c : Code) :=
   let param := left
   let init := left.comp right
@@ -660,6 +694,8 @@ def cListFoldrParamAux (c : Code) :=
   (pair (left.comp left) <| c.comp₃ (left.comp left) (right.comp left) (right.comp right))).comp₂
   (pair param init)
   ((cListZipWith cId).comp₂ (cListReplicate.comp₂ (cListLength.comp lN) (param)) lN)
+/-- Given a code `c`, this code defines the function
+`fun ⟪p, init, l⟫ ↦ (n2l l).foldr (fun a b ↦ [c](⟪p, a, b⟫)) init`. -/
 def cListFoldrParam (c : Code) := right.comp (cListFoldrParamAux c)
 @[cp] theorem cListFoldrParamAux_prim {c : Code} (hc : IsPrim c) :
   IsPrim (cListFoldrParamAux c) := by unfold cListFoldrParamAux; apply_cp 60

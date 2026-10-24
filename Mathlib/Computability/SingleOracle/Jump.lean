@@ -46,8 +46,10 @@ computation values on top of whether or not they converge.
 @[simp] noncomputable def K (O : ℕ → ℕ) : ℕ → ℕ := fun n =>
   let part := eval O n n
   if h : part.Dom then (part.get h) + 1 else 0
+/-- The jump of the oracle `O`, defined as `K0 O`. -/
 noncomputable abbrev jump (O : ℕ → ℕ) : ℕ → ℕ := K0 O
 
+/-- `O⌜` is notation for `jump O`, the jump of `O`. -/
 notation : 10000 f"⌜" => jump f
 
 namespace Oracle.Single.Code

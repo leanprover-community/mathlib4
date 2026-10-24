@@ -19,6 +19,8 @@ This file defines codes for basic functions which are not primitive recursive.
 - `cIte`: A code which implements if-then-else, where the entire computation
   does not necessarily diverge even if one the branches does.
 
+In docstrings, `[c]` denotes the function computed by the code `c`, and `[c](x)` its value at `x`.
+
 -/
 
 @[expose] public section
@@ -61,6 +63,8 @@ theorem cIfz1_total {O c a b} (hc : IsTotal O c) : IsTotal O (cIfz1 c a b) := by
 end ifz1
 
 section ite
+/-- Given codes `c`, `a`, `b`, this code defines the function
+`fun x ↦ if [c](x) = 0 then [a](x) else [b](x)` (for total `c`). -/
 def cIte (c a b : Oracle.Single.Code) := cEval.comp₂ (cIfz1 c a.c2n b.c2n) (cId)
 open Classical in
 @[simp, ev_simps] theorem cIte_ev {O c a b x} (hc : IsTotal O c) :
@@ -77,6 +81,8 @@ end ite
 
 section if_le_te'
 -- like cIfLeTe, but allows either branch to diverge
+/-- Given codes `c1`, `c2`, `c3`, `c4`, this code defines the function
+`fun x ↦ if [c1](x) ≤ [c2](x) then [c3](x) else [c4](x)` (for total `c1`, `c2`). -/
 def cIfLeTe' (c1 c2 c3 c4 : Code) := cIte (cSub.comp₂ c1 c2) c3 c4
 set_option backward.isDefEq.respectTransparency false in
 @[simp, ev_simps] theorem cIfLeTe'_ev {O c1 c2 c3 c4 x}
@@ -98,6 +104,8 @@ end if_le_te'
 
 section if_eq_te'
 -- like cIfEqTe, but allows either branch to diverge
+/-- Given codes `c1`, `c2`, `c3`, `c4`, this code defines the function
+`fun x ↦ if [c1](x) = [c2](x) then [c3](x) else [c4](x)` (for total `c1`, `c2`). -/
 def cIfEqTe' (c1 c2 c3 c4 : Code) := cIte (cDist.comp₂ c1 c2) c3 c4
 set_option backward.isDefEq.respectTransparency false in
 open Classical in
@@ -133,6 +141,7 @@ section evaln₁
 /-- `evaln₁` is a wrapper for `evaln`, which packs the steps, code and input into one argument. -/
 def evaln₁ (O : ℕ → ℕ) : ℕ → ℕ :=
   fun abc => Encodable.encode (evaln O abc.right.right abc.left.n2c abc.right.left)
+/-- This code defines the function `evaln₁ O`. -/
 def cEvaln₁ := cEvaln.comp₃ (left.comp right) left (right.comp right)
 theorem cEvaln₁_evp {O : ℕ → ℕ} : evalp O cEvaln₁ = evaln₁ O := by
   unfold evaln₁
@@ -144,6 +153,7 @@ end evaln₁
 section eval₁
 /-- `eval₁` is a wrapper for `eval`, which packs the code and input into one argument. -/
 def eval₁ (O : ℕ → ℕ) : ℕ →. ℕ := fun ex => eval O ex.left.n2c ex.right
+/-- This code defines the function `eval₁ O`. -/
 def cEval₁ := cEval
 set_option backward.isDefEq.respectTransparency false in
 @[simp, ev_simps] theorem cEval₁_ev {O : ℕ → ℕ} : eval O cEval₁ = eval₁ O := by

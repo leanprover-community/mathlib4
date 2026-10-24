@@ -23,26 +23,39 @@ open Nat Oracle.Single.Code
 
 -- general helper functions
 section pair
+/-- `⟪x, y⟫` is notation for `Nat.pair x y`. -/
 notation "⟪"x","y"⟫"         => Nat.pair x y
+/-- Shorthand for pairs of monadic values (e.g. in `Part`). -/
 notation "⟪"x","y"⟫"         => Nat.pair <$> x <*> y
+/-- `⟪x, y, z⟫` is notation for 3-tuples encoded as `Nat.pair x (Nat.pair y z)`. -/
 notation "⟪"x","y","z"⟫"     => Nat.pair x (Nat.pair y z)
+/-- Shorthand for triples of monadic values (e.g. in `Part`). -/
 notation "⟪"x","y","z"⟫"     => Nat.pair <$> x <*> (Nat.pair <$> y <*> z)
+/-- `⟪x, y, z, w⟫` is notation for 4-tuples encoded as `Nat.pair (Nat.pair x y) (Nat.pair z w)`. -/
 notation "⟪"x","y","z","w"⟫" => Nat.pair (Nat.pair x y) (Nat.pair z w)
-notation "⟪"x","y","z","w"⟫" =>
-  Nat.pair <$> (Nat.pair <$> x <*> y) <*> (Nat.pair <$> z <*> w)
+/-- Shorthand for 4-tuples of monadic values (e.g. in `Part`). -/
+notation "⟪"x","y","z","w"⟫" => Nat.pair <$> (Nat.pair <$> x <*> y) <*> (Nat.pair <$> z <*> w)
 /-
 as the left and right projection functions are commonly used,
 we define shorter aliases for them:
 -/
+/-- The left component of `n`, viewed as a pair: `n.unpair.1`. -/
 def Nat.left (n : ℕ) := n.unpair.1
+/-- The right component of `n`, viewed as a pair: `n.unpair.2`. -/
 def Nat.right (n : ℕ) := n.unpair.2
 -- pair_l and pair_r are useful for evp_simps particularly in cov_rec proofs in
 -- `Computability.Constructions.CovRec.lean`
 @[simp, evp_simps] theorem pair_l {x y} : (Nat.pair x y).left = x := by simp [Nat.left]
 @[simp, evp_simps] theorem pair_r {x y} : (Nat.pair x y).right = y := by simp [Nat.right]
-@[simp] theorem pair_lr {x} : (Nat.pair x.left x.right) = x := by simp [Nat.right, Nat.left]
-@[simp] theorem unpair1_to_l {n : ℕ} : (n.unpair.1) = n.left := by simp [Nat.left]
-@[simp] theorem unpair2_to_r {n : ℕ} : (n.unpair.2) = n.right := by simp [Nat.right]
+theorem pair_lr {x} : (Nat.pair x.left x.right) = x := by simp [Nat.right, Nat.left]
+theorem unpair1_to_l {n : ℕ} : (n.unpair.1) = n.left := by simp [Nat.left]
+theorem unpair2_to_r {n : ℕ} : (n.unpair.2) = n.right := by simp [Nat.right]
+-- scoped, so that they don't change the simp normal form of `Nat.unpair` outside this library
+namespace Oracle.Single
+attribute [scoped simp] pair_lr unpair1_to_l unpair2_to_r
+end Oracle.Single
+/-- `unpaired2 f n` applies the binary function `f` to the two components of `n`:
+`f n.left n.right`. -/
 @[simp, reducible] def Nat.unpaired2 {α} (f : ℕ → ℕ → α) (n : ℕ) : α := f n.left n.right
 @[simp] theorem pair_pos_of_right {x s : ℕ} : ⟪x, s+1⟫ > 0 := by
   apply zero_lt_of_ne_zero
@@ -60,29 +73,49 @@ end pair
 
 -- we define several conveniences to encode/decode from naturals to various types.
 section conversions
+/-- Decodes a natural number as a list of naturals, via `Denumerable.ofNat`. -/
 abbrev Nat.n2l : ℕ → List ℕ := @Denumerable.ofNat (List ℕ) _
+/-- Encodes a list of naturals as a natural number, via `Encodable.encode`. This is the inverse of
+`n2l`. -/
 abbrev Nat.l2n : List ℕ → ℕ := @Encodable.encode (List ℕ) _
-instance instOfNatListNat {lN} : OfNat (List ℕ) lN where ofNat := n2l lN
-instance instCoeNatList : Coe ℕ (List ℕ) := ⟨n2l⟩
-instance instCoeListNat : Coe (List ℕ) ℕ := ⟨l2n⟩
+namespace Oracle.Single
+/-- Numerals of type `List ℕ` denote the list they encode: `(n : List ℕ)` is `n2l n`. -/
+scoped instance instOfNatListNat {lN} : OfNat (List ℕ) lN where ofNat := n2l lN
+/-- Coerces a natural number to the list it encodes, via `n2l`. -/
+scoped instance instCoeNatList : Coe ℕ (List ℕ) := ⟨n2l⟩
+/-- Coerces a list of naturals to its encoding, via `l2n`. -/
+scoped instance instCoeListNat : Coe (List ℕ) ℕ := ⟨l2n⟩
+end Oracle.Single
 
+/-- Converts a natural number to a boolean: `0` is `false`, and everything else is `true`. -/
 def n2b (n : ℕ) : Bool := if n = 0 then false else true
+/-- Converts a boolean to a natural number: `true` is `1` and `false` is `0`. -/
 def b2n (b : Bool) : ℕ := if b then 1 else 0
+/-- Converts a natural number to a boolean, with the opposite convention to `n2b`: `0` is `true`,
+and everything else is `false`. -/
 def n2b' (n : ℕ) : Bool := if n=0 then true else false
+/-- Converts a boolean to a natural number, with the opposite convention to `b2n`: `true` is `0` and
+`false` is `1`. -/
 def b'2n (b : Bool) : ℕ := if b then 0 else 1
 theorem b2n_a0 {x} : b2n x = 0 ↔ x = false := by simp [b2n]
 
 open Denumerable Encodable
+/-- Decodes a natural number as an `Option ℕ`: `0` is `none`, and `n + 1` is `some n`. -/
 abbrev n2o := @ofNat (Option ℕ) _
+/-- Encodes an `Option ℕ` as a natural number. This is the inverse of `n2o`. -/
 abbrev o2n := @encode (Option ℕ) _
 @[simp] theorem encode_zero_opt : (Denumerable.ofNat (Option ℕ) 0) = Option.none := rfl
 @[simp] theorem encode_succ_opt {x} : (Denumerable.ofNat (Option ℕ) (x+1)) = Option.some (x) := rfl
 
 namespace Oracle.Single.Code.NcToNn
+/-- Turns a function `ℕ → Code` into a function `ℕ → ℕ`, by encoding its outputs with `c2n`. This is
+registered as a coercion. -/
 @[coe] protected def lift (f : ℕ → Code) : ℕ → ℕ := fun x => c2n (f x)
 instance : Coe (ℕ → Code) (ℕ → ℕ) := ⟨Oracle.Single.Code.NcToNn.lift⟩
 end Oracle.Single.Code.NcToNn
 namespace Oracle.Single.Code.CcToNn
+/-- Turns a function `Code → Code` into a function `ℕ → ℕ`, by decoding its inputs with `n2c` and
+encoding its outputs with `c2n`. This is registered as a coercion. -/
 @[coe] protected def lift (f : Code → Code) : ℕ → ℕ := c2n ∘ f ∘ n2c
 instance : Coe (Code → Code) (ℕ → ℕ) := ⟨Oracle.Single.Code.CcToNn.lift⟩
 end Oracle.Single.Code.CcToNn
@@ -91,6 +124,9 @@ end conversions
 section primrec
 -- templates for primrec constructions as codes
 namespace Oracle.Single.Code
+/-- `IsPrim c` holds if the code `c` is built only from the primitive recursive constructors, i.e.
+without `rfind'`. Such codes are total (`prim_total`), and their evaluation agrees with `evalp`
+(`evalp_eq_eval`). -/
 @[aesop safe, cp] inductive IsPrim : Code → Prop
 | zero : IsPrim zero
 | succ : IsPrim succ
@@ -111,6 +147,7 @@ namespace Oracle.Single.Code
   IsPrim.comp ha hb
 @[cp] theorem prec_prim {a b} (ha : IsPrim a) (hb : IsPrim b) : IsPrim (prec a b) :=
   IsPrim.prec ha hb
+/-- `IsTotal O c` holds if the code `c` halts on every input, relative to the oracle `O`. -/
 def IsTotal (O) (c : Code) := ∀x, (eval O c x).Dom
 @[simp] theorem zero_total {O : ℕ → ℕ} : IsTotal O zero := fun _ ↦ trivial
 @[simp] theorem left_total {O : ℕ → ℕ} : IsTotal O left := fun _ ↦ trivial
@@ -138,6 +175,8 @@ theorem prim_total {O : ℕ → ℕ} {c} (h : IsPrim c) : IsTotal O c := by
     induction x.right with
     | zero => exact ha_ih x.left
     | succ y' IH' => use IH'; apply hb_ih
+/-- Evaluates a code as a total function `ℕ → ℕ`, relative to the oracle `O`. It agrees with `eval`
+on codes satisfying `IsPrim` (`evalp_eq_eval`). `rfind'` is sent to the constant function `0`. -/
 @[simp, evp_simps] def evalp (O : ℕ → ℕ) : Code → ℕ → ℕ
 | zero       => fun _ ↦ 0
 | succ       => Nat.succ
