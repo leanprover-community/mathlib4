@@ -276,7 +276,7 @@ noncomputable def iterateFrobenius {n : ℕ} (hn : exponent K L ≤ n) : L →+*
       algebraMap_iterateFrobeniusAux K p hn a,
       algebraMap_iterateFrobeniusAux K p hn b,
       algebraMap_iterateFrobeniusAux K p hn (a + b),
-      add_pow_expChar_pow a b]
+      add_pow_expChar_pow p n a b]
   map_one' := by
     apply (algebraMap K L).injective
     rw [(algebraMap K L).map_one,

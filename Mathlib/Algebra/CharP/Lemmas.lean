@@ -24,10 +24,10 @@ variable {R : Type*}
 
 namespace Commute
 
-variable [Semiring R] {p : ℕ} (hp : p.Prime) {x y : R}
+variable [Semiring R] {p : ℕ} (hp : p.Prime) (n : ℕ) {x y : R}
 include hp
 
-protected lemma add_pow_prime_pow_eq' (h : Commute x y) (n : ℕ) :
+protected lemma add_pow_prime_pow_eq' (h : Commute x y) :
     (x + y) ^ p ^ n =
       x ^ p ^ n + y ^ p ^ n +
         p * ∑ k ∈ Ioo 0 (p ^ n), x ^ k * y ^ (p ^ n - k) * ↑((p ^ n).choose k / p) := calc
@@ -45,7 +45,7 @@ protected lemma add_pow_prime_pow_eq' (h : Commute x y) (n : ℕ) :
     norm_cast
     rw [Nat.div_mul_cancel (hp.dvd_choose_pow _ _)] <;> lia
 
-protected lemma add_pow_prime_pow_eq (h : Commute x y) (n : ℕ) :
+protected lemma add_pow_prime_pow_eq (h : Commute x y) :
     (x + y) ^ p ^ n =
       x ^ p ^ n + y ^ p ^ n +
         p * x * y *
@@ -66,7 +66,7 @@ protected lemma add_pow_prime_eq (h : Commute x y) :
         ∑ k ∈ Ioo 0 p, x ^ (k - 1) * y ^ (p - k - 1) * ↑(p.choose k / p) := by
   simpa using h.add_pow_prime_pow_eq hp 1
 
-protected theorem exists_add_pow_prime_pow_eq (h : Commute x y) (n : ℕ) :
+protected theorem exists_add_pow_prime_pow_eq (h : Commute x y) :
     ∃ r, (x + y) ^ p ^ n = x ^ p ^ n + y ^ p ^ n + p * x * y * r :=
   ⟨_, h.add_pow_prime_pow_eq hp n⟩
 
@@ -78,7 +78,7 @@ end Commute
 
 section CommSemiring
 
-variable [CommSemiring R] {p : ℕ} (hp : p.Prime) (x y : R) (n : ℕ)
+variable [CommSemiring R] {p : ℕ} (hp : p.Prime) (n : ℕ) (x y : R)
 include hp
 
 lemma add_pow_prime_pow_eq' :
@@ -114,7 +114,7 @@ theorem exists_add_pow_prime_eq : ∃ r, (x + y) ^ p = x ^ p + y ^ p + p * x * y
 end CommSemiring
 
 section Semiring
-variable [Semiring R] {x y : R} (p n : ℕ)
+variable [Semiring R] (p n : ℕ) {x y : R}
 
 section ExpChar
 variable [hR : ExpChar R p]
@@ -136,6 +136,12 @@ lemma add_pow_eq_mul_pow_add_pow_div_expChar_of_commute (h : Commute x y) :
     (x + y) ^ n = (x + y) ^ (n % p) * (x ^ p + y ^ p) ^ (n / p) := by
   rw [← add_pow_expChar_of_commute _ h, ← pow_mul, ← pow_add, Nat.mod_add_div]
 
+lemma natCast_pow_expChar : (n : R) ^ p = n := by
+  induction n with
+  | zero => simp [expChar_ne_zero R p]
+  | succ n ih =>
+    rw [Nat.cast_add_one, add_pow_expChar_of_commute p (.one_right _), one_pow, ih]
+
 end ExpChar
 
 section CharP
@@ -151,11 +157,14 @@ lemma add_pow_eq_mul_pow_add_pow_div_char_of_commute (h : Commute x y) :
     (x + y) ^ n = (x + y) ^ (n % p) * (x ^ p + y ^ p) ^ (n / p) :=
   add_pow_eq_mul_pow_add_pow_div_expChar_of_commute _ _ h
 
+lemma natCast_pow_char : (n : R) ^ p = n :=
+  natCast_pow_expChar p n
+
 end CharP
 end Semiring
 
 section CommSemiring
-variable [CommSemiring R] (x y : R) (p n : ℕ)
+variable [CommSemiring R] (p n : ℕ) (x y : R)
 
 section ExpChar
 variable [hR : ExpChar R p]
@@ -185,7 +194,7 @@ end CharP
 end CommSemiring
 
 section Ring
-variable [Ring R] {x y : R} (p n : ℕ)
+variable [Ring R] (p n : ℕ) {x y : R}
 
 section ExpChar
 variable [hR : ExpChar R p]
@@ -216,6 +225,19 @@ lemma neg_one_pow_expChar_pow : (-1 : R) ^ p ^ n = -1 := by
   rw [← add_pow_expChar_pow_of_commute _ _ (Commute.one_right _), neg_add_cancel,
     zero_pow (pow_ne_zero _ <| expChar_ne_zero R p)]
 
+variable {R} (x)
+
+lemma neg_pow_expChar : (-x) ^ p = -(x ^ p) := by
+  rw [← neg_one_mul, (Commute.neg_one_left _).mul_pow, neg_one_pow_expChar, neg_one_mul]
+
+lemma neg_pow_expChar_pow : (-x) ^ p ^ n = -(x ^ p ^ n) := by
+  rw [← neg_one_mul, (Commute.neg_one_left _).mul_pow, neg_one_pow_expChar_pow, neg_one_mul]
+
+lemma intCast_pow_expChar (n : ℤ) : (n : R) ^ p = n := by
+  induction n using Int.negInduction with
+  | nat n => simpa using natCast_pow_expChar p n
+  | neg ih n => rw [Int.cast_neg, neg_pow_expChar, ih]
+
 end ExpChar
 
 section CharP
@@ -227,21 +249,29 @@ lemma sub_pow_char_of_commute (h : Commute x y) : (x - y) ^ p = x ^ p - y ^ p :=
 lemma sub_pow_char_pow_of_commute (h : Commute x y) : (x - y) ^ p ^ n = x ^ p ^ n - y ^ p ^ n :=
   sub_pow_expChar_pow_of_commute _ _ h
 
+lemma sub_pow_eq_mul_pow_sub_pow_div_char_of_commute (h : Commute x y) :
+    (x - y) ^ n = (x - y) ^ (n % p) * (x ^ p - y ^ p) ^ (n / p) :=
+  sub_pow_eq_mul_pow_sub_pow_div_expChar_of_commute _ _ h
+
 variable (R)
 
 lemma neg_one_pow_char : (-1 : R) ^ p = -1 := neg_one_pow_expChar ..
 
 lemma neg_one_pow_char_pow : (-1 : R) ^ p ^ n = -1 := neg_one_pow_expChar_pow ..
 
-lemma sub_pow_eq_mul_pow_sub_pow_div_char_of_commute (h : Commute x y) :
-    (x - y) ^ n = (x - y) ^ (n % p) * (x ^ p - y ^ p) ^ (n / p) :=
-  sub_pow_eq_mul_pow_sub_pow_div_expChar_of_commute _ _ h
+variable {R} (x)
+
+lemma neg_pow_char : (-x) ^ p = -(x ^ p) := neg_pow_expChar p x
+
+lemma neg_pow_char_pow : (-x) ^ p ^ n = -(x ^ p ^ n) := neg_pow_expChar_pow p n x
+
+lemma intCast_pow_char (n : ℤ) : (n : R) ^ p = n := intCast_pow_expChar p n
 
 end CharP
 end Ring
 
 section CommRing
-variable [CommRing R] (x y : R) (n : ℕ) {p : ℕ}
+variable [CommRing R] {p : ℕ} (n : ℕ) (x y : R)
 
 section ExpChar
 variable [hR : ExpChar R p]
