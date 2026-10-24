@@ -77,7 +77,7 @@ lemma integral_id_stdGaussian : ∫ x, x ∂(stdGaussian E) = 0 := by
   rw [stdGaussian, integral_map _ (by fun_prop), integral_finsetSum]
   · simp [integral_smul_const, integral_eval]
   · exact fun i _ ↦ Integrable.smul_const (integrable_eval IsGaussian.integrable_id) _
-  · exact (Finset.measurable_sum _ (by fun_prop)).aemeasurable
+  · exact (Finset.measurable_fun_sum _ (by fun_prop)).aemeasurable
 
 lemma variance_dual_stdGaussian (L : StrongDual ℝ E) :
     Var[L; stdGaussian E] = ‖L‖ ^ 2 := by

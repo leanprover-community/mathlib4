@@ -228,7 +228,7 @@ protected theorem mul [Mul β] [MeasurableMul₂ β] (hu : IsProgressive f u)
 protected theorem finsetProd {γ} [CommMonoid β] [MeasurableMul₂ β] {U : γ → ι → Ω → β}
     {s : Finset γ} (h : ∀ c ∈ s, IsProgressive f (U c)) :
     IsProgressive f fun i ω ↦ ∏ c ∈ s, U c i ω :=
-  fun i ↦ s.measurable_prod fun c hc ↦ h c hc i
+  fun i ↦ s.measurable_fun_prod fun c hc ↦ h c hc i
 
 @[to_additive]
 protected theorem inv [Group β] [MeasurableInv β] (hu : IsProgressive f u) :
