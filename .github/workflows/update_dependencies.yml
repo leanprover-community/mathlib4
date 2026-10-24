@@ -50,6 +50,7 @@ jobs:
     # Holds the app token. Nothing from the dependencies runs in this job: it only takes
     # `lake-manifest.json` and `lean-toolchain` from the `lake-update` job's artifact.
     permissions:
+      contents: read # the mathlib-ci checkout for the related-PR steps
       pull-requests: read
       id-token: write
     env:
@@ -252,6 +253,7 @@ jobs:
           echo "pr_title=chore: update Mathlib dependencies $(date -u +"%Y-%m-%d")" >> "$GITHUB_ENV"
 
       - name: Create Pull Request
+        id: cpr
         if: ${{ steps.pr-title.outcome == 'success' }}
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
@@ -276,6 +278,86 @@ jobs:
             ---
 
             [workflow run for this PR](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+      # Look for open PRs that may already adapt Mathlib to these dependency changes, list them in a
+      # comment on the update PR, and post each new likely adaptation on Zulip once. The rules are
+      # in mathlib-ci's `scripts/zulip/related_dependency_prs.py`. The PR heads it fetches are only
+      # read as data (their `lake-manifest.json`), so nothing from them runs in this job.
+      - name: Find the open update PR
+        id: update-pr
+        if: ${{ steps.determine_state.outcome == 'success' }}
+        env:
+          STATE: ${{ steps.determine_state.outputs.state }}
+          CPR_OPERATION: ${{ steps.cpr.outputs.pull-request-operation }}
+          CPR_NUMBER: ${{ steps.cpr.outputs.pull-request-number }}
+          OPEN_NUMBER: ${{ steps.PR.outputs.number }}
+        run: |
+          # PENDING: the open PR was left alone. Otherwise create-pull-request created, updated or
+          # closed it.
+          if [ "$STATE" == "PENDING" ]; then
+            echo "number=$OPEN_NUMBER" >> "$GITHUB_OUTPUT"
+          elif [ "$CPR_OPERATION" == "created" ] || [ "$CPR_OPERATION" == "updated" ]; then
+            echo "number=$CPR_NUMBER" >> "$GITHUB_OUTPUT"
+          else
+            echo "number=" >> "$GITHUB_OUTPUT"
+          fi
+
+      # The mathlib-ci ref pinned on master, not the one just bumped in the working tree.
+      - name: Checkout local actions
+        if: ${{ steps.update-pr.outputs.number != '' }}
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 1
+          sparse-checkout: .github/actions
+          path: workflow-actions
+          persist-credentials: false
+
+      - name: Get mathlib-ci
+        if: ${{ steps.update-pr.outputs.number != '' }}
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
+
+      - name: Find related open PRs
+        id: related
+        if: ${{ steps.update-pr.outputs.number != '' }}
+        # A GitHub API hiccup here should not fail the update or send a failure message.
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ steps.update-pr.outputs.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          python3 "${CI_SCRIPTS_DIR}/zulip/related_dependency_prs.py" \
+            --repo "$REPO" --pr "$PR_NUMBER" --out-dir "${RUNNER_TEMP}/related-prs"
+
+      # Zulip first, then the comment that records what was posted, so a failed post is retried on
+      # the next run.
+      - name: Post likely adaptations on Zulip
+        if: ${{ steps.related.outcome == 'success' && steps.related.outputs.zulip != '' }}
+        uses: zulip/github-actions-zulip/send-message@f675f2b4eb2a95fae974215476dcb7ad8dfeff6b # v2.0.2
+        with:
+          api-key: ${{ secrets.ZULIP_API_KEY }}
+          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+          organization-url: 'https://leanprover.zulipchat.com'
+          to: 'nightly-testing-mathlib'
+          type: 'stream'
+          topic: 'Mathlib `lake update` failure'
+          content: ${{ steps.related.outputs.zulip }}
+
+      - name: Update the related-PR comment
+        if: ${{ steps.related.outcome == 'success' && steps.related.outputs.comment == 'true' }}
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          PR_NUMBER: ${{ steps.update-pr.outputs.number }}
+          COMMENT_ID: ${{ steps.related.outputs.comment_id }}
+          BODY_FILE: ${{ runner.temp }}/related-prs/comment.md
+          REPO: ${{ github.repository }}
+        run: |
+          if [ -n "$COMMENT_ID" ]; then
+            gh api --method PATCH "repos/$REPO/issues/comments/$COMMENT_ID" -F "body=@$BODY_FILE" > /dev/null
+          else
+            gh api --method POST "repos/$REPO/issues/$PR_NUMBER/comments" -F "body=@$BODY_FILE" > /dev/null
+          fi
 
   notify-failure:
     name: Report a failure on Zulip
