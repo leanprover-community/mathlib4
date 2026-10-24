@@ -267,7 +267,7 @@ theorem nat_sub_iff : LiouvilleWith p (n - x) ↔ LiouvilleWith p x := by simp [
 theorem nat_sub (h : LiouvilleWith p x) (n : ℕ) : LiouvilleWith p (n - x) :=
   nat_sub_iff.2 h
 
-theorem ne_cast_int (h : LiouvilleWith p x) (hp : 1 < p) (m : ℤ) : x ≠ m := by
+theorem ne_intCast (h : LiouvilleWith p x) (hp : 1 < p) (m : ℤ) : x ≠ m := by
   rintro rfl; rename' m => M
   rcases ((eventually_gt_atTop 0).and_frequently (h.frequently_lt_rpow_neg hp)).exists with
     ⟨n : ℕ, hn : 0 < n, m : ℤ, hne : (M : ℝ) ≠ m / n, hlt : |(M - m / n : ℝ)| < n ^ (-1 : ℝ)⟩
@@ -280,12 +280,14 @@ theorem ne_cast_int (h : LiouvilleWith p x) (hp : 1 < p) (m : ℤ) : x ≠ m := 
   rw [Ne, eq_div_iff hn'.ne'] at hne
   exact mod_cast hne
 
+@[deprecated (since := "2026-10-13")] alias ne_cast_int := ne_intCast
+
 /-- A number satisfying the Liouville condition with exponent `p > 1` is an irrational number. -/
 protected theorem irrational (h : LiouvilleWith p x) (hp : 1 < p) : Irrational x := by
   rintro ⟨r, rfl⟩
   rcases eq_or_ne r 0 with (rfl | h0)
-  · refine h.ne_cast_int hp 0 ?_; rw [Rat.cast_zero, Int.cast_zero]
-  · refine (h.mul_rat (inv_ne_zero h0)).ne_cast_int hp 1 ?_
+  · refine h.ne_intCast hp 0 ?_; rw [Rat.cast_zero, Int.cast_zero]
+  · refine (h.mul_rat (inv_ne_zero h0)).ne_intCast hp 1 ?_
     rw [Rat.cast_inv, mul_inv_cancel₀]
     exacts [Int.cast_one.symm, Rat.cast_ne_zero.mpr h0]
 
