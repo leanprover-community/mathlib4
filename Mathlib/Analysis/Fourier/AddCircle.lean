@@ -619,7 +619,7 @@ theorem fourierCoeff_const [CompleteSpace E] (c : E) :
   rw [fourierCoeff_eq_intervalIntegral _ _ 0]
   by_cases hn : n = 0
   · simp [hn, ‹Fact (0 < T)›.out.ne']
-  have : deriv (fun x : ℝ => (T / (-2 * π * Complex.I * n) * fourier (-n) (x : AddCircle T)) • c) =
+  have : deriv (fun x : ℝ ↦ (T / (-2 * π * Complex.I * n) * fourier (-n) (x : AddCircle T)) • c) =
       (fun x : ℝ ↦ fourier (-n) (x : AddCircle T) • c) := by
     ext x
     rw [deriv_smul_const (by fun_prop), (has_antideriv_at_fourier_neg ‹_› hn _).deriv]
