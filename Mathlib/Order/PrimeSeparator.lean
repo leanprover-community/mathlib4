@@ -15,7 +15,7 @@ import Mathlib.Order.Zorn
 
 In a distributive lattice, if $F$ is a filter, $I$ is an ideal, and $F$ and $I$ are
 disjoint, then there exists a prime ideal $J$ containing $I$ with $J$ still disjoint from $F$.
-This theorem is a crucial ingredient to [Stone's][Sto1938] duality for bounded distributive
+This theorem is a crucial ingredient to [Stone's][Stone1938] duality for bounded distributive
 lattices. The construction of the separator relies on Zorn's lemma.
 
 ## Tags
@@ -25,7 +25,7 @@ ideal, filter, prime, distributive lattice
 ## References
 
 * [M. H. Stone, Topological representations of distributive lattices and Brouwerian logics
-  (1938)][Sto1938]
+  (1938)][Stone1938]
 -/
 
 public section
