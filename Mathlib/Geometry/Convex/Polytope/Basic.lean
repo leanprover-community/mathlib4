@@ -32,8 +32,8 @@ Future PRs will define polyhedra (using H-representations) and prove that, in ve
 polytopes are polyhedra. The converse holds for bounded polyhedra. Both implications do not
 hold in more general modules.
 
-Future PRs will define extreme points for convex sets and prove that, in vector spaces, a 
-polytope is the convex hull of its extreme points. At this point one should prefer to use 
+Future PRs will define extreme points for convex sets and prove that, in vector spaces, a
+polytope is the convex hull of its extreme points. At this point one should prefer to use
 these theorems over `exists_finset_convexHull`.
 
 ## References
