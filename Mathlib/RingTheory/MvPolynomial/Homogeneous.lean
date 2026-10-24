@@ -19,6 +19,8 @@ if all monomials occurring in `φ` have degree `n`.
 
 * `IsHomogeneous φ n`: a predicate that asserts that `φ` is homogeneous of degree `n`.
 * `homogeneousSubmodule σ R n`: the submodule of homogeneous polynomials of degree `n`.
+* `homogeneousSubmodule_eq_span_pow`: if `n !` is invertible, the homogeneous polynomials of
+  degree `n` are spanned by the `n`-th powers of linear forms.
 * `homogeneousComponent n`: the additive morphism that projects polynomials onto
   their summand that is homogeneous of degree `n`.
 * `sum_homogeneousComponent`: every polynomial is the sum of its homogeneous components.
@@ -203,6 +205,31 @@ lemma homogeneousSubmodule_one_pow (n : ℕ) :
       rw [Finsupp.degree_eq_weight_one, ← Pi.one_def, ← hr]
 
 end
+
+section CommRing
+
+variable {R σ : Type*} [CommRing R]
+
+open scoped Finset Nat in
+theorem homogeneousSubmodule_eq_span_pow {n : ℕ} (h : IsUnit (n ! : R)) :
+    homogeneousSubmodule σ R n =
+      .span R ((· ^ n) '' (homogeneousSubmodule σ R 1 : Set (MvPolynomial σ R))) := by
+  refine le_antisymm ?_ (Submodule.span_le.2 ?_)
+  · rw [← homogeneousSubmodule_one_pow, Submodule.pow_eq_span_pow_set, Submodule.span_le]
+    intro _ hx
+    obtain ⟨f, rfl⟩ := Set.mem_pow.1 hx
+    have key := Finset.sum_powerset_neg_one_pow_card_mul_sum_sdiff_pow_card (x := .univ) (f · |>.1)
+    rw [Finset.card_fin] at key
+    rw [List.prod_ofFn, SetLike.mem_coe, ← Submodule.smul_mem_iff_of_isUnit _ h,
+      Nat.cast_smul_eq_nsmul, nsmul_eq_mul, ← key]
+    refine Submodule.sum_mem _ fun t _ ↦ ?_
+    obtain ht | ht := neg_one_pow_eq_or (MvPolynomial σ R) #t <;>
+      simp only [ht, one_mul, neg_one_mul, neg_mem_iff] <;>
+      exact Submodule.subset_span ⟨_, Submodule.sum_mem _ fun i _ ↦ (f i).2, rfl⟩
+  · rintro _ ⟨ℓ, hℓ, rfl⟩
+    simpa using Submodule.pow_mem_pow _ hℓ n
+
+end CommRing
 
 namespace IsHomogeneous
 

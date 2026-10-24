@@ -5,6 +5,7 @@ Authors: Chris Hughes, Patrick Stevens
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
 public import Mathlib.Algebra.BigOperators.Intervals
 public import Mathlib.Algebra.BigOperators.NatAntidiagonal
 public import Mathlib.Algebra.BigOperators.Ring.Finset
@@ -217,6 +218,42 @@ theorem sum_powerset_neg_one_pow_card_of_nonempty {α : Type*} {x : Finset α} (
   classical
   rw [sum_powerset_neg_one_pow_card]
   exact ite_eq_right (nonempty_iff_ne_empty.mp h0)
+
+private theorem sum_powerset_insert_neg_one_pow_card_mul_sum_sdiff_pow [CommRing R] {α : Type*}
+    [DecidableEq α] (f : α → R) {x : Finset α} {a : α} (ha : a ∉ x) (n : ℕ) :
+    ∑ t ∈ (insert a x).powerset, (-1) ^ #t * (∑ i ∈ insert a x \ t, f i) ^ n =
+      ∑ k ∈ range n, f a ^ (n - k) * n.choose k *
+        ∑ t ∈ x.powerset, (-1) ^ #t * (∑ i ∈ x \ t, f i) ^ k := by
+  simp_rw [sum_powerset_insert ha, ← sum_add_distrib, mul_sum]
+  rw [sum_comm]
+  refine sum_congr rfl fun t ht ↦ ?_
+  have hat : a ∉ t := notMem_mono (mem_powerset.1 ht) ha
+  rw [insert_sdiff_of_notMem _ hat, sum_insert (notMem_sdiff_of_notMem_left ha),
+    insert_sdiff_insert, sdiff_insert_of_notMem ha, card_insert_of_notMem hat, add_comm (f a),
+    add_pow, sum_range_succ]
+  simp only [Nat.sub_self, choose_self, pow_succ, mul_add, mul_sum]
+  grind
+
+theorem sum_powerset_neg_one_pow_card_mul_sum_sdiff_pow_of_lt [CommRing R] {α : Type*}
+    [DecidableEq α] (f : α → R) {x : Finset α} {n : ℕ} (hn : n < #x) :
+    ∑ t ∈ x.powerset, (-1) ^ #t * (∑ i ∈ x \ t, f i) ^ n = 0 := by
+  induction x using Finset.induction_on generalizing n with
+  | empty => simp at hn
+  | insert a x ha ih =>
+    rw [sum_powerset_insert_neg_one_pow_card_mul_sum_sdiff_pow f ha]
+    exact sum_eq_zero fun k hk ↦ mul_eq_zero_of_right _ (ih (by grind))
+
+theorem sum_powerset_neg_one_pow_card_mul_sum_sdiff_pow_card [CommRing R] {α : Type*}
+    [DecidableEq α] (f : α → R) {x : Finset α} :
+    ∑ t ∈ x.powerset, (-1) ^ #t * (∑ i ∈ x \ t, f i) ^ #x = (#x)! * ∏ i ∈ x, f i := by
+  induction x using Finset.induction_on with
+  | empty => simp
+  | insert a x ha ih =>
+    rw [sum_powerset_insert_neg_one_pow_card_mul_sum_sdiff_pow f ha, card_insert_of_notMem ha,
+      sum_range_succ, sum_eq_zero fun k hk ↦ mul_eq_zero_of_right _
+        (sum_powerset_neg_one_pow_card_mul_sum_sdiff_pow_of_lt f (mem_range.1 hk)), ih,
+      prod_insert ha, factorial_succ, cast_mul, choose_succ_self_right, add_tsub_cancel_left]
+    ring
 
 variable [NonAssocSemiring R]
 
