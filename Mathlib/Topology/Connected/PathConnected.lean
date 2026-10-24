@@ -533,6 +533,12 @@ theorem IsPathConnected.preimage_coe {U W : Set X} (hW : IsPathConnected W) (hWU
     IsPathConnected (((↑) : U → X) ⁻¹' W) := by
   rwa [IsInducing.subtypeVal.isPathConnected_iff, Subtype.image_preimage_val, inter_eq_right.2 hWU]
 
+/-- Two points of a path-connected set are joined by a path with range in that set. -/
+theorem IsPathConnected.exists_path {a b : X} {U : Set X} (hU : IsPathConnected U)
+    (ha : a ∈ U) (hb : b ∈ U) : ∃ p : Path a b, range p ⊆ U :=
+  let hab : JoinedIn U a b := hU.joinedIn _ ha _ hb
+  ⟨hab.somePath, range_subset_iff.mpr hab.somePath_mem⟩
+
 set_option backward.isDefEq.respectTransparency false in
 theorem IsPathConnected.exists_path_through_family {n : ℕ}
     {s : Set X} (h : IsPathConnected s) (p : Fin (n + 1) → X) (hp : ∀ i, p i ∈ s) :
