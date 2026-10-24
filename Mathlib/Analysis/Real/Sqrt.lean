@@ -327,11 +327,12 @@ meta def evalNNRealSqrt : PositivityExt where eval {u α} _zα pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(NNReal), ~q(NNReal.sqrt $a) =>
-    assertInstancesCommute
     let ra ← core q(inferInstance) (some q(inferInstance)) a
-    match ra with
-    | .positive pa => pure (.positive q(NNReal.sqrt_pos_of_pos $pa))
-    | _ => failure -- this case is dealt with by generic nonnegativity of nnreals
+    return ← catchNone do
+      assertInstancesCommute
+      match ra with
+      | .positive pa => pure (.positive q(NNReal.sqrt_pos_of_pos $pa))
+      | _ => pure .none -- this case is dealt with by generic nonnegativity of nnreals
   | _, _, _ => throwError "not NNReal.sqrt"
 
 /-- Extension for the `positivity` tactic: a square root is nonnegative, and is strictly positive if
@@ -341,11 +342,12 @@ meta def evalSqrt : PositivityExt where eval {u α} _zα pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(√$a) =>
-    assertInstancesCommute
-    let ra ← catchNone <| core q(inferInstance) (some q(inferInstance)) a
-    match ra with
-    | .positive pa => pure (.positive q(Real.sqrt_pos_of_pos $pa))
-    | _ => pure (.nonnegative q(Real.sqrt_nonneg $a))
+    let ra ← core q(inferInstance) (some q(inferInstance)) a
+    return ← catchNone do
+      assertInstancesCommute
+      match ra with
+      | .positive pa => pure (.positive q(Real.sqrt_pos_of_pos $pa))
+      | _ => pure (.nonnegative q(Real.sqrt_nonneg $a))
   | _, _, _ => throwError "not Real.sqrt"
 
 end Mathlib.Meta.Positivity
