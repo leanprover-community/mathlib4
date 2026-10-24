@@ -210,13 +210,11 @@ theorem exists_lift_of_splits' (x : Lifts F E K) {s : E} (h1 : IsIntegral x.carr
   have I2 := (minpoly.degree_pos h1).ne'
   letI : Algebra x.carrier K := x.emb.toRingHom.toAlgebra
   let carrier := x.carrier⟮s⟯.restrictScalars F
-  letI : Algebra x.carrier carrier := x.carrier⟮s⟯.toSubalgebra.algebra
   let φ : carrier →ₐ[x.carrier] K := ((algHomAdjoinIntegralEquiv x.carrier h1).symm
     ⟨rootOfSplits h2 (by rwa [degree_map]), by
       rw [mem_aroots, and_iff_right (minpoly.ne_zero h1)]
       exact (eval_map _ _).symm.trans (eval_rootOfSplits _ _)⟩)
-  ⟨⟨carrier, (@algHomEquivSigma F x.carrier carrier K _ _ _ _ _ _ _ _
-      (IsScalarTower.of_algebraMap_eq fun _ ↦ rfl)).symm ⟨x.emb, φ⟩⟩,
+  ⟨⟨carrier, algHomEquivSigma.symm ⟨x.emb, φ⟩⟩,
     ⟨fun z hz ↦ algebraMap_mem x.carrier⟮s⟯ ⟨z, hz⟩, φ.commutes⟩,
     mem_adjoin_simple_self x.carrier s⟩
 
