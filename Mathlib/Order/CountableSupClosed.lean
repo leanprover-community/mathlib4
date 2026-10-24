@@ -286,6 +286,35 @@ lemma mem_countableSupClosure_iff_iSup [CompleteLattice α] :
   · rintro _ ⟨u, hus, rfl⟩
     exact countableSupClosed_countableSupClosure.iSup_mem fun n ↦ subset_countableSupClosure (hus n)
 
+/-- If `s` is closed under binary suprema, the elements of its countable supremum closure are the
+suprema of monotone sequences of elements of `s`. -/
+lemma SupClosed.mem_countableSupClosure_iff_monotone [CompleteLattice α] (hs : SupClosed s) :
+    a ∈ countableSupClosure s ↔ ∃ t : ℕ → α, (∀ n, t n ∈ s) ∧ Monotone t ∧ ⨆ n, t n = a := by
+  rw [mem_countableSupClosure_iff_iSup]
+  refine ⟨fun ⟨t, ht, h⟩ ↦ ?_, fun ⟨t, ht, _, h⟩ ↦ ⟨t, ht, h⟩⟩
+  -- replace `t n` by the supremum of the `t i` for `i ≤ n`
+  refine ⟨fun n ↦ (Finset.range (n + 1)).sup' Finset.nonempty_range_add_one t,
+    fun n ↦ hs.finsetSup'_mem _ fun i _ ↦ ht i,
+    fun m n hmn ↦ Finset.sup'_mono _ (Finset.range_mono (by omega)) _, ?_⟩
+  rw [← h]
+  exact le_antisymm (iSup_le fun n ↦ Finset.sup'_le _ _ fun i _ ↦ le_iSup _ i)
+    (iSup_le fun n ↦ le_iSup_of_le n (Finset.le_sup' t (Finset.self_mem_range_succ n)))
+
+/-- If `s` is closed under binary infima, the elements of its countable infimum closure are the
+infima of antitone sequences of elements of `s`. -/
+lemma InfClosed.mem_countableInfClosure_iff_antitone [CompleteLattice α] (hs : InfClosed s) :
+    a ∈ countableInfClosure s ↔ ∃ t : ℕ → α, (∀ n, t n ∈ s) ∧ Antitone t ∧ ⨅ n, t n = a := by
+  rw [mem_countableInfClosure_iff_iInf]
+  refine ⟨fun ⟨t, ht, h⟩ ↦ ?_, fun ⟨t, ht, _, h⟩ ↦ ⟨t, ht, h⟩⟩
+  -- replace `t n` by the infimum of the `t i` for `i ≤ n`
+  refine ⟨fun n ↦ (Finset.range (n + 1)).inf' Finset.nonempty_range_add_one t,
+    fun n ↦ hs.finsetInf'_mem _ fun i _ ↦ ht i,
+    fun m n hmn ↦ Finset.inf'_mono _ (Finset.range_mono (by omega)) _, ?_⟩
+  rw [← h]
+  exact le_antisymm
+    (le_iInf fun n ↦ iInf_le_of_le n (Finset.inf'_le t (Finset.self_mem_range_succ n)))
+    (le_iInf fun n ↦ Finset.le_inf' _ _ fun i _ ↦ iInf_le _ i)
+
 @[to_dual (attr := simp)] lemma supClosed_countableSupClosure [SemilatticeSup α] :
     SupClosed (countableSupClosure s) :=
   countableSupClosed_countableSupClosure.supClosed
