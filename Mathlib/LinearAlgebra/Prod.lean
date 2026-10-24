@@ -266,7 +266,7 @@ def coprodEquiv [Module S M₃] [SMulCommClass R S M₃] :
   map_smul' r a := by
     dsimp
     ext
-    simp only [smul_add, smul_apply, coprod_apply]
+    simp
 
 theorem prod_ext_iff {f g : M × M₂ →ₗ[R] M₃} :
     f = g ↔ f.comp (inl _ _ _) = g.comp (inl _ _ _) ∧ f.comp (inr _ _ _) = g.comp (inr _ _ _) :=

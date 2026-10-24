@@ -506,7 +506,7 @@ lemma compProd_add_right (μ : Kernel α β) (κ η : Kernel (α × β) γ)
   by_cases hμ : IsSFiniteKernel μ
   swap; · simp [hμ]
   ext a s hs
-  simp only [compProd_apply hs, FunLike.coe_add, Pi.add_apply, Measure.coe_add]
+  simp only [compProd_apply hs, add_apply]
   rw [lintegral_add_left]
   exact measurable_kernel_prodMk_left' hs a
 
@@ -515,8 +515,8 @@ lemma compProd_sum_left {ι : Type*} [Countable ι]
     Kernel.sum κ ⊗ₖ η = Kernel.sum (fun i ↦ (κ i) ⊗ₖ η) := by
   by_cases hη : IsSFiniteKernel η
   · ext a s hs
-    simp_rw [sum_apply, compProd_apply hs, sum_apply, lintegral_sum_measure, Measure.sum_apply _ hs,
-    compProd_apply hs]
+    simp_rw [Kernel.sum_apply, compProd_apply hs, Kernel.sum_apply, lintegral_sum_measure,
+    Measure.sum_apply _ hs, compProd_apply hs]
   · simp [hη]
 
 lemma compProd_sum_right {ι : Type*} [Countable ι]
@@ -525,7 +525,8 @@ lemma compProd_sum_right {ι : Type*} [Countable ι]
   by_cases hκ : IsSFiniteKernel κ
   swap; · simp [hκ]
   ext a s hs
-  simp_rw [sum_apply, compProd_apply hs, Measure.sum_apply _ hs, sum_apply, compProd_apply hs]
+  simp_rw [Kernel.sum_apply, compProd_apply hs, Measure.sum_apply _ hs, Kernel.sum_apply,
+    compProd_apply hs]
   rw [← lintegral_tsum]
   · congr with i
     rw [Measure.sum_apply]
