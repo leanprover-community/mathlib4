@@ -94,7 +94,6 @@ def projSup {ι : Type v} (Us : ι → Opens X) :
   obj f := .op <| .mk (principalOpen f.right) <| exists_le_of_le_sup Us f.hom.unop.le
   map e := (ObjectProperty.homMk (homOfLE (principalOpen_le e.right.le))).op
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {F} in
 /-- This is an auxiliary definition which is only meant to be used in `isLimit` below. -/
@@ -111,9 +110,7 @@ def lowerCone
         ⟨.mk .unit, f.right, 𝟙 _⟩
     naturality := by
       rintro x y e
-      simp only [Functor.const_obj_obj, Functor.comp_obj, Functor.const_obj_map,
-        Functor.op_obj, Functor.pointwiseRightKanExtension_obj,
-        Category.id_comp, Functor.comp_map, Category.assoc]
+      simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.id_comp, Category.assoc]
       rw [← S.w ((projSup Us).map e), Category.assoc]
       congr 1
       let xx : StructuredArrow (Opposite.op (principalOpen x.right)) (principals X) :=

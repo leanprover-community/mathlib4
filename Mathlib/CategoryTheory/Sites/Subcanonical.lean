@@ -248,7 +248,6 @@ instance preservesLimitsOfSize_yoneda : PreservesLimitsOfSize J.yoneda := by
     inferInstanceAs <| PreservesLimitsOfShape I CategoryTheory.yoneda
   exact preservesLimitsOfShape_of_reflects_of_preserves _ (sheafToPresheaf J _)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 Let `{ Xᵢ ⟶ Y }` be a family of pairwise disjoint maps that form a cover in `J`. Then its
@@ -275,8 +274,7 @@ noncomputable def isColimitCofanMkYoneda {ι : Type*} (X : ι → C) {c : Cofan 
       (Sieve.ofArrows.h g.2), ?_⟩
     intro ⟨Y⟩ ⟨Z⟩ ⟨(g : Z ⟶ Y)⟩
     ext u
-    simp only [Sieve.functor_obj, Sieve.generate_apply, Sieve.functor_map, Quiver.Hom.unop_op',
-      TypeCat.Fun.toFun_apply, comp_apply, ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk,
+    simp only [TypeCat.Fun.toFun_apply, comp_apply, ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk,
       ← heq s (g ≫ Sieve.ofArrows.h u.2)
       (Sieve.ofArrows.h <| Sieve.downward_closed _ u.2 g) (by simp)]
     congrm $((s.inj _).hom.naturality g.op) _

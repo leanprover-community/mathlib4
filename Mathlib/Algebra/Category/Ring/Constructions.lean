@@ -283,15 +283,13 @@ variable (A B : CommRingCat.{u})
 def prodFan : BinaryFan A B :=
   BinaryFan.mk (CommRingCat.ofHom <| RingHom.fst A B) (CommRingCat.ofHom <| RingHom.snd A B)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The product in `CommRingCat` is the Cartesian product. -/
 def prodFanIsLimit : IsLimit (prodFan A B) where
   lift c := ofHom <| RingHom.prod (c.π.app ⟨WalkingPair.left⟩).hom (c.π.app ⟨WalkingPair.right⟩).hom
   fac c j := by
     ext
-    rcases j with ⟨⟨⟩⟩ <;>
-    simp only [pair_obj_left, prodFan_pt, BinaryFan.π_app_left, BinaryFan.π_app_right] <;> rfl
+    rcases j with ⟨⟨⟩⟩ <;> rfl
   uniq s m h := by
     ext x
     change m x = (BinaryFan.fst s x, BinaryFan.snd s x)

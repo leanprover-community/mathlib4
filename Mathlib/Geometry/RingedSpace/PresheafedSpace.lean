@@ -222,7 +222,6 @@ def isoOfComponents (H : X.1 ≅ Y.1) (α : H.hom _* X.2 ≅ Y.2) : X ≅ Y wher
     simp only [eqToHom_map, eqToHom_app, eqToHom_trans_assoc, eqToHom_refl, id_comp]
     apply Iso.inv_hom_id_app
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Isomorphic `PresheafedSpace`s have naturally isomorphic presheaves. -/
 @[simps]
@@ -237,8 +236,7 @@ def sheafIsoOfIso (H : X ≅ Y) : Y.2 ≅ H.hom.base _* X.2 where
     ext U
     dsimp
     rw [NatTrans.id_app]
-    simp only [Presheaf.pushforwardToOfIso_app, Iso.symm_inv, mapIso_hom, forget_map,
-      Iso.symm_hom, mapIso_inv, eqToHom_map, assoc]
+    simp only [Presheaf.pushforwardToOfIso_app, eqToHom_map, assoc]
     have eq₁ := congr_app H.hom_inv_id (op ((Opens.map H.hom.base).obj U))
     have eq₂ := H.hom.c.naturality (eqToHom (congr_obj (congr_arg Opens.map
       ((forget C).congr_map H.inv_hom_id.symm)) U)).op
