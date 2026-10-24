@@ -140,7 +140,7 @@ lemma netMaxcard_finite_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ)
       refine ⟨0, ?_⟩
       simp only [mem_image, mem_ofPred_eq, Finset.card_eq_zero, exists_eq_right, Finset.coe_empty]
       exact isDynNetIn_empty
-    rw [← WithTop.coe_sSup' h_bdda] at k_max
+    rw [← WithTop.coe_sSup' h_bdda h_nemp] at k_max
     have key := Nat.sSup_mem h_nemp h_bdda
     rw [← Nat.cast_inj.mp k_max, mem_image] at key
     simp only [mem_ofPred_eq] at key

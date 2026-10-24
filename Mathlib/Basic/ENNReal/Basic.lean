@@ -705,8 +705,10 @@ theorem coe_sInf {s : Set ℝ≥0} (hs : s.Nonempty) : (↑(sInf s) : ℝ≥0∞
   WithTop.coe_sInf hs (OrderBot.bddBelow s)
 
 theorem coe_iSup {ι : Sort*} {f : ι → ℝ≥0} (hf : BddAbove (range f)) :
-    (↑(iSup f) : ℝ≥0∞) = ⨆ a, ↑(f a) :=
-  WithTop.coe_iSup _ hf
+    (↑(iSup f) : ℝ≥0∞) = ⨆ a, ↑(f a) := by
+  cases isEmpty_or_nonempty ι
+  · simp
+  · exact WithTop.coe_iSup _ hf
 
 @[norm_cast]
 theorem coe_iInf {ι : Sort*} [Nonempty ι] (f : ι → ℝ≥0) : (↑(iInf f) : ℝ≥0∞) = ⨅ a, ↑(f a) :=
