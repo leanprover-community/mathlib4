@@ -40,6 +40,13 @@ file used by the library's own linters.
 
   **Requirements:** `gh` (GitHub CLI) installed and authenticated (`gh auth login`).
 
+- `dup_decls_report.lean`
+  Runs the `Mathlib.Tactic.DuplicateDecls` linter
+  (`lintDuplicateDeclarations`) for theorems, instances, and defs, logging any duplicate
+  declarations found. Run in CI by the `duplicate_decls_report.yml` workflow
+  (see [docs/workflows.md](../docs/workflows.md)). Run locally with
+  `lake env lean scripts/dup_decls_report.lean`.
+
 **Tools for manual maintenance**
 - `fix_unused.py`
   Bulk processing of unused variable warnings, replacing them with `_`.
