@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Kim Morrison
 module
 
 public meta import Mathlib.Util.Qq
-
 public import Mathlib.Algebra.FiniteSupport.Defs
 public import Mathlib.Data.Multiset.Find
 
