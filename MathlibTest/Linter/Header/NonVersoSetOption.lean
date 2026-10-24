@@ -1,4 +1,6 @@
-import Mathlib.Tactic.Linter.Header
+module
+
+public import Mathlib.Tactic.Linter.Header
 
 set_option linter.style.header true
 

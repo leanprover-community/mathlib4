@@ -1,7 +1,9 @@
-import Mathlib.AlgebraicTopology.SimplicialSet.FundamentalGroupoid.Basic
-import Mathlib.CategoryTheory.NatIso
-import Mathlib.CategoryTheory.Functor.CurryingFour
-import Mathlib.CategoryTheory.Products.Associator
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.FundamentalGroupoid.Basic
+public import Mathlib.CategoryTheory.Functor.CurryingFour
+public import Mathlib.CategoryTheory.NatIso
+public import Mathlib.CategoryTheory.Products.Associator
 
 /-!
 # Testing the `@[defeq]` attribute on some important equalities in category theory
@@ -34,7 +36,10 @@ elab_rules : command
     let name := ident.getId
     let env ← getEnv
     match env.find? name with
-    | ConstantInfo.thmInfo _ =>
+    | none => throwError "Unknown identifier `{.ofConstName name}`"
+    | some _ =>
+      unless wasOriginallyTheorem env name do
+        throwError "#ensure_defeq can only be run on equality theorems."
       if defeqAttr.hasTag env name then
         logInfo m!"`{.ofConstName name}` is tagged with @[defeq]"
         return ()
@@ -42,8 +47,6 @@ elab_rules : command
         throwError "`{.ofConstName name}` is tagged with @[backward_defeq] instead of @[defeq]!"
       else
         throwError "`{.ofConstName name}` is not tagged @[defeq] nor @[backward_defeq]!"
-    | none => throwError "Unknown identifier `{.ofConstName name}`"
-    | _ => throwError "#ensure_defeq can only be run on equality theorems."
 
 -- intentional error to test the command
 /-- error: `CategoryTheory.Category.assoc` is not tagged @[defeq] nor @[backward_defeq]! -/

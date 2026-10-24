@@ -1,7 +1,9 @@
 /-
 This test must import everything to make the noncomputable instances which we don't want available.
 -/
-import Mathlib
+module
+
+public meta import Mathlib
 
 /-!
 # Tests that basic algebraic typeclasses are computable
