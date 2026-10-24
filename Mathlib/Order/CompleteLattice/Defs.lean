@@ -48,12 +48,20 @@ open OrderDual Set
 variable {α β : Type*} {ι : Sort*}
 
 @[to_dual]
-instance OrderDual.supSet (α) [h : InfSet α] : SupSet αᵒᵈ :=
-  ⟨fun s ↦ h.sInf s⟩
+instance OrderDual.supSet (α) [h : InfSet α] : SupSet αᵒᵈ where
+  sSup s := toDual (h.sInf (ofDual '' s))
 
 @[to_dual]
 instance OrderDual.orderSupSet (α) [Preorder α] [OrderInfSet α] : OrderSupSet αᵒᵈ where
-  isLUB_sSup_of_isLUB _ _ := IsGLB.isGLB_sInf (α := α)
+  isLUB_sSup_of_isLUB s a lub := by
+    have glb : IsGLB (ofDual '' s) a.ofDual := by
+      simp only [IsLUB, IsGLB, lowerBounds, upperBounds, IsLeast] at *
+      simp only [OrderDual.forall, mem_image, OrderDual.exists, exists_eq_right] at *
+      exact lub
+    replace glb := glb.isGLB_sInf
+    simp only [IsLUB, IsGLB, lowerBounds, upperBounds, IsLeast] at *
+    simp only [OrderDual.forall, mem_image, OrderDual.exists, exists_eq_right] at *
+    exact glb
 
 /-- Note that we rarely use `CompleteSemilatticeSup`
 (in fact, any such object is always a `CompleteLattice`, so it's usually best to start there).
@@ -136,7 +144,11 @@ end
 
 @[to_dual]
 instance {α : Type*} [CompleteSemilatticeInf α] : CompleteSemilatticeSup αᵒᵈ where
-  isLUB_sSup := isGLB_sInf (α := α)
+  isLUB_sSup s := by
+    have glb := isGLB_sInf (ofDual '' s)
+    simp only [IsLUB, IsGLB, lowerBounds, upperBounds, IsLeast] at *
+    simp only [OrderDual.forall, mem_image, OrderDual.exists, exists_eq_right] at *
+    exact glb
 
 /-- A complete lattice is a bounded lattice which has suprema and infima for every subset. -/
 class CompleteLattice (α : Type*) extends Lattice α, CompleteSemilatticeSup α,
@@ -290,20 +302,26 @@ section
 section OrderDual
 
 @[to_dual (attr := simp)]
-theorem toDual_sSup [SupSet α] (s : Set α) : toDual (sSup s) = sInf (ofDual ⁻¹' s) :=
-  rfl
+theorem toDual_sSup [SupSet α] (s : Set α) : toDual (sSup s) = sInf (ofDual ⁻¹' s) := by
+  rw [toDual_inj]
+  change _ = sSup (ofDual '' ofDual ⁻¹' s)
+  rw [Function.Surjective.image_preimage fun a ↦ ⟨toDual a, rfl⟩]
 
 @[to_dual (attr := simp)]
-theorem ofDual_sSup [InfSet α] (s : Set αᵒᵈ) : ofDual (sSup s) = sInf (toDual ⁻¹' s) :=
-  rfl
+theorem ofDual_sSup [InfSet α] (s : Set αᵒᵈ) : ofDual (sSup s) = sInf (toDual ⁻¹' s) := by
+  change sInf (ofDual '' s) = _
+  congr; ext; simp
 
 @[to_dual (attr := simp)]
-theorem toDual_iSup [SupSet α] (f : ι → α) : toDual (⨆ i, f i) = ⨅ i, toDual (f i) :=
-  rfl
+theorem toDual_iSup [SupSet α] (f : ι → α) : toDual (⨆ i, f i) = ⨅ i, toDual (f i) := by
+  rw [← ofDual_inj]
+  change sSup (range f) = sSup (ofDual '' range (toDual ∘ f))
+  congr; ext; simp
 
 @[to_dual (attr := simp)]
-theorem ofDual_iSup [InfSet α] (f : ι → αᵒᵈ) : ofDual (⨆ i, f i) = ⨅ i, ofDual (f i) :=
-  rfl
+theorem ofDual_iSup [InfSet α] (f : ι → αᵒᵈ) : ofDual (⨆ i, f i) = ⨅ i, ofDual (f i) := by
+  change sInf (ofDual '' range f) = sInf (range (ofDual ∘ f))
+  congr; ext; simp
 
 end OrderDual
 

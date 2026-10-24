@@ -539,16 +539,43 @@ theorem merge_node {ls ll lx lr rs rl rx rr} :
 
 /-! ### `insert` -/
 
+section DualInsertLemmas
 
-set_option backward.isDefEq.respectTransparency false in
+variable {β : Type*} (f : α → β) (l : Ordnode α) (x : α) (r : Ordnode α)
+
+lemma size_map : ∀ l : Ordnode α, (l.map f).size = l.size
+  | nil | node _ _ _ _ => rfl
+
+lemma map_balanceL : (balanceL l x r).map f = balanceL (l.map f) (f x) (r.map f) := by
+  cases l with
+  | nil => cases r <;> rfl
+  | node _ ll _ lr =>
+    cases r <;> cases ll <;> cases lr <;>
+    simp only [balanceL, map, id_eq, Ordnode.singleton] <;> split_ifs <;> simp only [map, size_map]
+
+lemma map_balanceR : (balanceR l x r).map f = balanceR (l.map f) (f x) (r.map f) := by
+  cases r with
+  | nil => cases l <;> rfl
+  | node _ rl _ rr =>
+    cases l <;> cases rl <;> cases rr <;>
+    simp only [balanceR, map, id_eq, Ordnode.singleton] <;> split_ifs <;> simp only [map, size_map]
+
+end DualInsertLemmas
+
 theorem dual_insert [LE α] [@Std.Total α (· ≤ ·)] [DecidableLE α] (x : α) :
-    ∀ t : Ordnode α, dual (Ordnode.insert x t) = @Ordnode.insert αᵒᵈ _ _ x (dual t)
+    ∀ t : Ordnode α,
+      (t.insert x).dual = ((t.map OrderDual.toDual).dual.insert ⟨x⟩).map OrderDual.ofDual
   | nil => rfl
   | node _ l y r => by
-    have : @cmpLE αᵒᵈ _ _ x y = cmpLE y x := rfl
-    rw [Ordnode.insert, dual, Ordnode.insert, this, ← cmpLE_swap x y]
-    cases cmpLE x y <;>
-      simp [Ordering.swap, dual_balanceL, dual_balanceR, dual_insert]
+    have rt (t : Ordnode α) :
+        (t.map OrderDual.toDual).dual.map OrderDual.ofDual = t.dual := by
+      induction t <;> simp [map, dual, *]
+    simp only [Ordnode.insert, map, dual, cmpLE_toDual]
+    rw [← cmpLE_swap x y]
+    cases cmpLE x y <;> simp only [Ordering.swap, dual_balanceL, dual_balanceR]
+    · rw [map_balanceR, ← dual_insert x l, rt]
+    · simp [map, rt]
+    · rw [map_balanceL, rt, ← dual_insert x r]
 
 /-! ### `balance` properties -/
 
@@ -764,15 +791,20 @@ def Bounded : Ordnode α → WithBot α → WithTop α → Prop
   | node _ l x r, o₁, o₂ => Bounded l o₁ x ∧ Bounded r (↑x) o₂
 
 theorem Bounded.dual :
-    ∀ {t : Ordnode α} {o₁ o₂}, Bounded t o₁ o₂ → @Bounded αᵒᵈ _ (dual t) o₂ o₁
+    ∀ {t : Ordnode α} {o₁ o₂},
+      Bounded t o₁ o₂ → Bounded (t.map OrderDual.toDual).dual o₂.toDual o₁.toDual
   | nil, o₁, o₂, h => by cases o₁ <;> cases o₂ <;> trivial
   | node _ _ _ _, _, _, ⟨ol, Or⟩ => ⟨Or.dual, ol.dual⟩
 
-set_option backward.isDefEq.respectTransparency false in
+theorem Bounded.ofDual :
+    ∀ {t : Ordnode α} {o₁ o₂},
+      Bounded (t.map OrderDual.toDual).dual o₂.toDual o₁.toDual → Bounded t o₁ o₂
+  | nil, o₁, o₂, h => by cases o₁ <;> cases o₂ <;> trivial
+  | node _ _ _ _, _, _, ⟨ol, Or⟩ => ⟨Or.ofDual, ol.ofDual⟩
+
 theorem Bounded.dual_iff {t : Ordnode α} {o₁ o₂} :
-    Bounded t o₁ o₂ ↔ @Bounded αᵒᵈ _ (.dual t) o₂ o₁ :=
-  ⟨Bounded.dual, fun h => by
-    have := Bounded.dual h; rwa [dual_dual, OrderDual.Preorder.dual_dual] at this⟩
+    Bounded t o₁ o₂ ↔ Bounded (t.map OrderDual.toDual).dual o₂.toDual o₁.toDual :=
+  ⟨Bounded.dual, Bounded.ofDual⟩
 
 theorem Bounded.weak_left : ∀ {t : Ordnode α} {o₁ o₂}, Bounded t o₁ o₂ → Bounded t ⊥ o₂
   | nil, o₁, o₂, h => by cases o₂ <;> trivial

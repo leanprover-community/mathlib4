@@ -140,14 +140,14 @@ instance [LinearOrder ι] [∀ a, PartialOrder (β a)] : PartialOrder (Colex (�
 /-- `Lex (∀ i, α i)` is a linear order if the original order has well-founded `<`. -/
 noncomputable instance Lex.linearOrder [LinearOrder ι] [WellFoundedLT ι]
     [∀ a, LinearOrder (β a)] : LinearOrder (Lex (∀ i, β i)) :=
-  @linearOrderOfSTO (Πₗ i, β i) (· < ·)
+  @linearOrderOfSTO _ (· < ·)
     { trichotomous := (trichotomous_lex _ _).1 } (Classical.decRel _)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- `Colex (∀ i, α i)` is a linear order if the original order has well-founded `>`. -/
 noncomputable instance Colex.linearOrder [LinearOrder ι] [WellFoundedGT ι]
     [∀ a, LinearOrder (β a)] : LinearOrder (Colex (∀ i, β i)) :=
-  Lex.linearOrder (ι := ιᵒᵈ)
+  @linearOrderOfSTO _ (· < ·)
+    { trichotomous := (trichotomous_lex (· > ·) (· < ·)).1 } (Classical.decRel _)
 
 set_option backward.isDefEq.respectTransparency false in
 theorem lex_le_iff_of_unique [Unique ι] [LinearOrder ι] [∀ i, PartialOrder (β i)]
@@ -206,15 +206,15 @@ theorem toLex_update_lt_self_iff : toLex (update x i a) < toLex x ↔ a < x i :=
     exact h.false
   rwa [update_self] at h
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem le_toLex_update_self_iff : toLex x ≤ toLex (update x i a) ↔ x i ≤ a := by
-  simp_rw [le_iff_lt_or_eq, lt_toLex_update_self_iff, toLex_inj, eq_update_self_iff]
+  change x = update x i a ∨ toLex x < toLex (update x i a) ↔ x i ≤ a
+  rw [eq_update_self_iff, lt_toLex_update_self_iff, le_iff_eq_or_lt]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toLex_update_le_self_iff : toLex (update x i a) ≤ toLex x ↔ a ≤ x i := by
-  simp_rw [le_iff_lt_or_eq, toLex_update_lt_self_iff, toLex_inj, update_eq_self_iff]
+  change update x i a = x ∨ toLex (update x i a) < toLex x ↔ a ≤ x i
+  rw [update_eq_self_iff, toLex_update_lt_self_iff, le_iff_eq_or_lt]
 
 end Lex
 
@@ -258,15 +258,15 @@ theorem toColex_update_lt_self_iff : toColex (update x i a) < toColex x ↔ a < 
     exact h.false
   rwa [update_self] at h
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
-theorem le_toColex_update_self_iff : toColex x ≤ toColex (update x i a) ↔ x i ≤ a :=
-  le_toLex_update_self_iff (ι := ιᵒᵈ)
+theorem le_toColex_update_self_iff : toColex x ≤ toColex (update x i a) ↔ x i ≤ a := by
+  change x = update x i a ∨ toColex x < toColex (update x i a) ↔ x i ≤ a
+  rw [eq_update_self_iff, lt_toColex_update_self_iff, le_iff_eq_or_lt]
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
-theorem toColex_update_le_self_iff : toColex (update x i a) ≤ toColex x ↔ a ≤ x i :=
-  toLex_update_le_self_iff (ι := ιᵒᵈ)
+theorem toColex_update_le_self_iff : toColex (update x i a) ≤ toColex x ↔ a ≤ x i := by
+  change update x i a = x ∨ toColex (update x i a) < toColex x ↔ a ≤ x i
+  rw [update_eq_self_iff, toColex_update_lt_self_iff, le_iff_eq_or_lt]
 
 end Colex
 
