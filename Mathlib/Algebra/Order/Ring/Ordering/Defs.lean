@@ -60,30 +60,30 @@ theorem IsOrdering.of_isPrime_supportIdeal {S : Subsemiring R} (hS : S.IsSpannin
 
 /-- A preordering on a ring `R` is a subsemiring of `R` that contains all squares, but not `-1`. -/
 structure IsPreordering (S : Subsemiring R) : Prop where
-  mem_of_isSquare (S) {x} (hx : IsSquare x) : x ∈ S := by grind
-  neg_one_notMem (S) : -1 ∉ S := by grind
+  mem_of_isSquare (S) {x} (hx : IsSquare x) : x ∈ S := by membership
+  neg_one_notMem (S) : -1 ∉ S := by membership
 
-export IsPreordering (mem_of_isSquare)
-export IsPreordering (neg_one_notMem)
+grind_pattern [membership] IsPreordering.mem_of_isSquare => S.IsPreordering, x ∈ S
+attribute [membership →] IsPreordering.neg_one_notMem
 
 namespace IsPreordering
 
+@[simp, membership =>]
+protected theorem mul_self_mem {S : Subsemiring R} (hS : IsPreordering S) (x : R) :
+    x * x ∈ S := by grind [mem_of_isSquare]
+
+@[simp, membership =>]
+protected theorem pow_two_mem {S : Subsemiring R} (hS : IsPreordering S) (x : R) :
+    x ^ 2 ∈ S := by grind [mem_of_isSquare]
+
 protected theorem mem_of_isSumSq {S : Subsemiring R} (hS : IsPreordering S)
     {x : R} (hx : IsSumSq x) : x ∈ S := by
-  induction hx with
-  | zero => simp
-  | sq_add => grind [mem_of_isSquare, IsSquare, add_mem]
+  induction hx <;> membership
+
+grind_pattern [membership] IsPreordering.mem_of_isSumSq => S.IsPreordering, x ∈ S
 
 theorem sumSq_le {R : Type*} [CommRing R] {S : Subsemiring R} (hS : IsPreordering S) :
-    Subsemiring.sumSq R ≤ S := fun _ ↦ by simp_all [Subsemiring.IsPreordering.mem_of_isSumSq]
-
-@[simp]
-protected theorem mul_self_mem {S : Subsemiring R} (hS : IsPreordering S) (x : R) :
-    x * x ∈ S := by simp_all [Subsemiring.IsPreordering.mem_of_isSumSq]
-
-@[simp]
-protected theorem pow_two_mem {S : Subsemiring R} (hS : IsPreordering S) (x : R) :
-    x ^ 2 ∈ S := by simpa [pow_two] using Subsemiring.IsPreordering.mul_self_mem hS x
+    Subsemiring.sumSq R ≤ S := fun _ ↦ by grind [membership, mem_sumSq]
 
 end IsPreordering
 
@@ -91,8 +91,8 @@ variable {S} in
 theorem IsPreordering.of_ne_top {S : Subsemiring R} (hS : S.IsSpanning) (h : S ≠ ⊤) :
     S.IsPreordering := by
   rw [Subsemiring.isSpanning_def] at hS
-  refine ⟨fun x ↦ ?_, fun hc ↦ h ?_⟩
-  · rcases x with ⟨y, rfl⟩
+  refine ⟨fun {_} ↦ ?_, fun hc ↦ h ?_⟩
+  · rintro ⟨y, rfl⟩
     rcases hS y with hy | hy
     · exact mul_mem hy hy
     · simpa using mul_mem hy hy
@@ -147,7 +147,7 @@ instance : SubsemiringClass (RingPreordering R) R where
 variable {R}
 
 set_option linter.deprecated false in
-@[deprecated Subsemiring.mem_of_isSquare +typeChanged (since := "2026-10-14"),
+@[deprecated Subsemiring.IsPreordering.mem_of_isSquare +typeChanged (since := "2026-10-14"),
   aesop unsafe 80% (rule_sets := [SetLike])]
 protected theorem mem_of_isSquare (P : RingPreordering R) {x : R} (hx : IsSquare x) : x ∈ P :=
   RingPreordering.mem_of_isSquare' _ hx
@@ -159,7 +159,7 @@ protected theorem mul_self_mem (P : RingPreordering R) (x : R) : x * x ∈ P := 
 protected theorem pow_two_mem (P : RingPreordering R) (x : R) : x ^ 2 ∈ P := by aesop
 
 set_option linter.deprecated false in
-@[deprecated Subsemiring.neg_one_notMem +typeChanged (since := "2026-10-14"),
+@[deprecated Subsemiring.IsPreordering.neg_one_notMem +typeChanged (since := "2026-10-14"),
   aesop unsafe 20% forward (rule_sets := [SetLike])]
 protected theorem neg_one_notMem (P : RingPreordering R) : -1 ∉ P :=
   RingPreordering.neg_one_notMem' _

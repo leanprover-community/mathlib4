@@ -36,13 +36,13 @@ namespace IsPreordering
 
 theorem mono (hP : P.IsPreordering) {Q : Subsemiring R} (hPQ : P ≤ Q) (hQ : -1 ∉ Q) :
     Q.IsPreordering where
-  mem_of_isSquare := by grind [IsConcreteLE.le_iff, IsPreordering.mem_of_isSquare]
 
 theorem unitsInv_mem (hP : P.IsPreordering) {a : Rˣ} (ha : ↑a ∈ P) : ↑a⁻¹ ∈ P := by
-  simpa using show (a * (a⁻¹ * a⁻¹) : R) ∈ P by grind [mul_mem, IsPreordering.mul_self_mem]
+  simpa using show (a * (a⁻¹ * a⁻¹) : R) ∈ P by membership
 
-theorem one_notMem_support (hP : P.IsPreordering) : 1 ∉ P.support := fun h ↦
-  P.neg_one_notMem hP h.2
+grind_pattern [membership] unitsInv_mem => P.IsPreordering, ↑a⁻¹ ∈ P
+
+theorem one_notMem_support (hP : P.IsPreordering) : 1 ∉ P.support := fun h ↦ hP.neg_one_notMem h.2
 
 theorem support_ne_top (hP : P.IsPreordering) : P.support ≠ ⊤ := fun h ↦
   one_notMem_support hP (by simp [h])
@@ -52,18 +52,15 @@ theorem isOrdering_iff (hP : P.IsPreordering) :
   mp hP a b _ := by
     by_contra
     have : a * b ∈ P := by
-      have := Subsemiring.isSpanning_def.mp hP.isSpanning
-      grind [mul_mem, mul_neg, neg_mul, neg_neg]
+      grind [membership, mul_neg, neg_mul, neg_neg, Subsemiring.isSpanning_def.mp hP.isSpanning]
     have : a ∈ P.support ∨ b ∈ P.support :=
       Ideal.IsPrime.mem_or_mem hP.isPrime_supportIdeal (by simp; grind)
     grind [Subsemiring.mem_support]
   mpr h := by
     refine ⟨?_, hP.support_ne_top, fun {x y} ↦ ?_⟩
-    · rw [Subsemiring.isSpanning_def]
-      grind [hP.mul_self_mem, neg_mul, mul_neg, neg_neg]
-    · simp_rw [Subsemiring.mem_support]
-      have := h (-x) y
-      grind [neg_mul, neg_neg, mul_neg, hP.mul_self_mem]
+    · grind [membership, mul_neg, neg_mul, neg_neg, Subsemiring.isSpanning_def]
+    · have := h (-x) y
+      grind [membership, mul_neg, neg_mul, neg_neg, Subsemiring.mem_support]
 
 theorem mul_mem_support_of_right (hP : P.IsPreordering) (h : IsUnit (2 : R))
     (x : R) {a : R} (ha : a ∈ P.support) : x * a ∈ P.support := by
@@ -71,7 +68,7 @@ theorem mul_mem_support_of_right (hP : P.IsPreordering) (h : IsUnit (2 : R))
   rw [Subsemiring.mem_support] at *
   suffices ((1 + x) * half) ^ 2 * a + ((1 - x) * half) ^ 2 * (- a) ∈ P ∧
            ((1 + x) * half) ^ 2 * (- a) + ((1 - x) * half) ^ 2 * a ∈ P by grind
-  grind [add_mem, mul_mem, mul_neg_mem, IsPreordering.pow_two_mem]
+  membership
 
 theorem mul_mem_support_of_left (hP : P.IsPreordering) (h : IsUnit (2 : R))
     (x : R) {a : R} (ha : a ∈ P.support) : a * x ∈ P.support :=
@@ -85,10 +82,8 @@ theorem IsPreordering.of_isSpanning_of_isPointed [Nontrivial R]
 
 theorem IsPreordering.of_isPointed_of_sumSq_le [Nontrivial R]
     (hP : P.IsPointed) (h : .sumSq R ≤ P) : P.IsPreordering where
-  mem_of_isSquare hx := h (by simpa using hx.isSumSq)
-  neg_one_notMem := by
-    rw [Subsemiring.isPointed_def] at hP
-    grind [one_mem, one_ne_zero]
+  mem_of_isSquare hx := by grind [membership, mem_sumSq]
+  neg_one_notMem := by grind [membership, Subsemiring.isPointed_def, one_ne_zero]
 
 theorem IsOrdering.of_isSpanning_of_isPointed [IsDomain R]
     (hP₁ : P.IsSpanning) (hP₂ : P.IsPointed) : P.IsOrdering where
@@ -106,11 +101,12 @@ namespace IsPreordering
 
 theorem inv_mem (hP : IsPreordering P) {a : F} (ha : a ∈ P) : a⁻¹ ∈ P := by
   suffices a * (a⁻¹ * a⁻¹) ∈ P by grind
-  grind [mul_mem, IsPreordering.mul_self_mem]
+  membership
+
+grind_pattern [membership] inv_mem => P.IsPreordering, a⁻¹ ∈ P
 
 theorem isPointed (hP : IsPreordering P) : P.IsPointed := by
-  rw [Subsemiring.isPointed_def]
-  grind [P.neg_one_notMem hP, neg_mul_mem, inv_mem]
+  grind [membership, Subsemiring.isPointed_def]
 
 end IsPreordering
 
