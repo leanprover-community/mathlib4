@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.DirectSum.Algebra
 public import Mathlib.Algebra.MonoidAlgebra.Basic
 
+import all Mathlib.Algebra.MonoidAlgebra.Defs
+
 /-!
 # Conversion between `AddMonoidAlgebra` and homogeneous `DirectSum`
 
