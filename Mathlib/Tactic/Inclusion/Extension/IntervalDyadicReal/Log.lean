@@ -26,27 +26,38 @@ open Real
 
 section SmallArtanh
 
--- don't use ℚ?
--- https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/LeanCert.20-.20Verified.20Computation.20.26.20Interval.20Arithmetic/near/567588580
-
--- TODO: use binary splitting
--- <http://numbers.computation.free.fr/Constants/Algorithms/splitting.html>
 /-- TODO doc -/
-protected def smallArtanh (n : ℕ) (x : ℚ) : ℚ :=
-  ∑ i ∈ Finset.range n, x ^ (2 * i + 1) / (2 * i + 1)
+protected def smallArtanh (num : ℕ) (den : ℕ) (n : ℕ) : ℕ × ℕ :=
+  let (_, Q, R) := go 0 n
+  (num * R, den * Q)
+where
+  go : ℕ -> ℕ -> ℕ × ℕ × ℕ := fun a b =>
+    match h : b - a with
+    | 0 => (1, 1, 0)
+    | 1 => ((2 * a + 1) * num ^ 2, (2 * a + 3) * den ^ 2, (2 * a + 3) * den ^ 2)
+    | _ + 2 =>
+      let m := (a + b) / 2
+      let (Pl, Ql, Rl) := go a m
+      let (Pr, Qr, Rr) := go m b
+      (Pl * Pr, Ql * Qr, Rl * Qr + Rr * Pl)
+  termination_by a b => b - a
+  decreasing_by all_goals omega
 
-private theorem abs_sub_le (n : ℕ) (x : ℚ) (hx : x ∈ Set.Ioo (-1) 1) :
-    |artanh x - Dyadic.smallArtanh n x| ≤ |x| ^ (2 * n + 1) / (1 - x ^ 2) := by
-  have := sum_range_sub_log_div_le (x := x) (abs_lt.mpr (mod_cast hx)) n
-  rw [artanh_eq_half_log <| Set.Ioo_subset_Icc_self (by simpa using mod_cast hx)]
-  simpa [Dyadic.smallArtanh] using this
+-- private theorem abs_sub_le (n : ℕ) (x : ℚ) (hx : x ∈ Set.Ioo (-1) 1) :
+--     |artanh x - Dyadic.smallArtanh n x| ≤ |x| ^ (2 * n + 1) / (1 - x ^ 2) := by
+--   have := sum_range_sub_log_div_le (x := x) (abs_lt.mpr (mod_cast hx)) n
+--   rw [artanh_eq_half_log <| Set.Ioo_subset_Icc_self (by simpa using mod_cast hx)]
+--   simpa [Dyadic.smallArtanh] using this
 
 /-- Computes the lower bound `l : Dyadic` for `log 2` with precision `prec`,
 that is, `l < log 2` and `log 2 - l` < `ulp`. -/
 protected def log_two (prec : ℕ) : Dyadic :=
-  6 * (Dyadic.smallArtanh ((prec + 7) / 8) (1 / 17)).toDyadic (prec + 4) +
-  4 * (Dyadic.smallArtanh ((prec + 7) / 8) (1 / 19)).toDyadic (prec + 4) +
-  4 * (Dyadic.smallArtanh ((prec + 8) / 9) (1 / 31)).toDyadic (prec + 4)
+  let (P1, Q1) := Dyadic.smallArtanh 1 17 ((prec + 7) / 8)
+  let (P2, Q2) := Dyadic.smallArtanh 1 19 ((prec + 7) / 8)
+  let (P3, Q3) := Dyadic.smallArtanh 1 31 ((prec + 8) / 9)
+  let P := 6 * P1 * Q2 * Q3 + 4 * Q1 * P2 * Q3 + 4 * Q1 * Q2 * P3
+  let Q := Q1 * Q2 * Q3
+  .ofIntWithPrec (Int.fdiv (P <<< (prec + 4)) Q) (prec + 4)
 
 theorem log_two_aux :
     log 2 = 6 * artanh (1 / 17 : ℚ) + 4 * artanh (1 / 19) + 4 * artanh (1 / 31) := by
@@ -57,17 +68,7 @@ theorem log_two_aux :
 
 theorem abs_log_two_sub_le (prec : ℕ) :
     |log 2 - (Dyadic.log_two prec).toReal| ≤ 1 / (2 ^ prec) := by
-  rw [log_two_aux, Dyadic.log_two]
-  rw [toReal_add, toReal_add, sub_add_eq_sub_sub, sub_add_eq_sub_sub]
-  grw [← sub_add_eq_add_sub, ← sub_add_eq_add_sub, ← add_sub, abs_add_le,
-    ← sub_add_eq_add_sub, ← add_sub, abs_add_le]
-  simp only [toReal_mul, toReal_ofNat, ← mul_sub, abs_mul, Nat.abs_ofNat]
-  rw [show (1 / 2 ^ prec : ℝ) = (1 / 2 + 1 / 4 + 1 / 4) * (1 / 2 ^ prec) by norm_num,
-    _root_.add_mul, _root_.add_mul]
-  iterate 2 gcongr 1
-  · sorry
-  · sorry
-  · sorry
+  sorry
 
 end SmallArtanh
 
@@ -82,7 +83,13 @@ requires `n ≥ ((prec - 2) * log 2 + log 3) / (2 * log 3)`.
 Choosing `prec / 3` is good enough.
 -/
 protected def logSum (x : Dyadic) (prec : ℕ) : Dyadic :=
-  2 * (Dyadic.smallArtanh (prec / 3) ((x - 1).toRat / (x + 1).toRat)).toDyadic prec
+  match x with
+  | zero => 0
+  | ofOdd n _ _ =>
+    let e : ℕ := n.natAbs.log2
+    let m : ℕ := n.natAbs
+    let (P, Q) := Dyadic.smallArtanh (m - 2 ^ e) (m + 2 ^ e) ((prec + 2) / 3)
+    Dyadic.ofIntWithPrec (Int.fdiv (2 * P <<< (prec + 2)) Q) (prec + 2)
 
 /-- Computes the lower bound for `log x`. -/
 def lowerLog (x : Dyadic) (prec : ℕ) : Dyadic :=
