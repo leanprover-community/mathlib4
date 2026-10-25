@@ -66,9 +66,8 @@ def binaryProductLimitCone (X Y : PartOrd.{u}) : LimitCone (pair X Y) :=
 instance : CartesianMonoidalCategory PartOrd.{u} :=
   .ofChosenFiniteProducts terminalLimitCone binaryProductLimitCone
 
-lemma tensorObj (X Y : PartOrd.{u}) : X ⊗ Y = of (X × Y) := rfl
-
-lemma tensorUnit : 𝟙_ PartOrd.{u} = of PUnit.{u + 1} := rfl
+lemma tensorObj_def (X Y : PartOrd.{u}) : X ⊗ Y = of (X × Y) := rfl
+lemma tensorUnit_def : 𝟙_ PartOrd.{u} = of PUnit.{u + 1} := rfl
 
 instance : BraidedCategory PartOrd.{u} := .ofCartesianMonoidalCategory
 
