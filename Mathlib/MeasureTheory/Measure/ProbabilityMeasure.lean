@@ -5,8 +5,8 @@ Authors: Kalle Kytölä
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.FiniteMeasure
 public import Mathlib.MeasureTheory.Integral.Average
+public import Mathlib.MeasureTheory.Measure.FiniteMeasure
 
 /-!
 # Probability measures

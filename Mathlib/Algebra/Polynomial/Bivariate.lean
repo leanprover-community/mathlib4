@@ -5,8 +5,8 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.RingTheory.AdjoinRoot
 public import Mathlib.Algebra.MvPolynomial.PDeriv
+public import Mathlib.RingTheory.AdjoinRoot
 public import Mathlib.RingTheory.Derivation.MapCoeffs
 
 /-!
@@ -84,8 +84,6 @@ lemma evalEval_sum (x y : R) (p : R[X]) (f : ℕ → R → R[X][Y]) :
 lemma evalEval_finsetSum {ι : Type*} (s : Finset ι) (x y : R) (f : ι → R[X][Y]) :
     (∑ i ∈ s, f i).evalEval x y = ∑ i ∈ s, (f i).evalEval x y := by
   simp only [evalEval, eval_finsetSum]
-
-@[deprecated (since := "2026-04-08")] alias evalEval_finset_sum := evalEval_finsetSum
 
 @[simp]
 lemma evalEval_smul [DistribSMul S R] [IsScalarTower S R R] (x y : R) (s : S)

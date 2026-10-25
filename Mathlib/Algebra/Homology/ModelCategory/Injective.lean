@@ -7,11 +7,12 @@ module
 
 public import Mathlib.Algebra.Homology.CochainComplexPlus
 public import Mathlib.Algebra.Homology.Factorizations.CM5a
+public import Mathlib.AlgebraicTopology.ModelCategory.Basic
+public import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
+
 import Mathlib.Algebra.Homology.HomologySequenceLemmas
 import Mathlib.Algebra.Homology.HomotopyCategory.KInjective
 import Mathlib.Algebra.Homology.ModelCategory.Lifting
-public import Mathlib.AlgebraicTopology.ModelCategory.Basic
-public import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
 import Mathlib.CategoryTheory.Abelian.Exact
 
 /-!

@@ -32,7 +32,7 @@ variable (K L M : HomologicalComplex C c') (φ : K ⟶ L) (φ' : L ⟶ M)
 
 /-- The stupid truncation of a complex `K : HomologicalComplex C c'` relatively to
 an embedding `e : c.Embedding c'` of complex shapes. -/
-@[implicit_reducible]
+@[implicit_reducible, stacks 0118 "(1) and (2)"]
 noncomputable def stupidTrunc : HomologicalComplex C c' := (K.restriction e).extend e
 
 instance : IsStrictlySupported (K.stupidTrunc e) e := by
@@ -64,8 +64,18 @@ instance {ι'' : Type*} {c'' : ComplexShape ι''} (e' : c''.Embedding c')
     by_cases hi'' : ∃ i, e.f i = i'
     · obtain ⟨i, hi⟩ := hi''
       exact (K.isZero_X_of_isStrictlySupported e' i' hi').of_iso (K.stupidTruncXIso e hi)
-    · apply isZero_stupidTrunc_X
-      simpa using hi''
+    · exact isZero_stupidTrunc_X _ _ _ (by tauto)
+
+variable {K} in
+lemma IsStrictlySupportedOutside.stupidTrunc
+    {ι'' : Type*} {c'' : ComplexShape ι''} {e' : c''.Embedding c'}
+    (hK : K.IsStrictlySupportedOutside e') (e : c.Embedding c') [e.IsRelIff] :
+    (K.stupidTrunc e).IsStrictlySupportedOutside e' where
+  isZero i'' := by
+    by_cases hi'' : ∃ i, e.f i = e'.f i''
+    · obtain ⟨i, hi⟩ := hi''
+      exact (hK.isZero i'').of_iso (K.stupidTruncXIso e hi)
+    · exact isZero_stupidTrunc_X _ _ _ (by tauto)
 
 lemma isZero_stupidTrunc_iff :
     IsZero (K.stupidTrunc e) ↔ K.IsStrictlySupportedOutside e := by
@@ -128,7 +138,7 @@ variable [e.IsTruncGE]
 
 /-- The monomorphism `K.stupidTrunc e ⟶ K` when the embedding `e` of complex shapes
 satisfies `e.IsTruncGE`. -/
-@[simps -isSimp]
+@[simps -isSimp, stacks 0118 "(1)"]
 noncomputable def ιStupidTrunc : K.stupidTrunc e ⟶ K where
   f := K.ιStupidTruncf e
   comm' i' j' hij' := by
@@ -185,7 +195,7 @@ lemma ιStupidTrunc_naturality :
 @[reassoc (attr := simp)]
 lemma ιStupidTrunc_f_naturality (i' : ι') :
     (stupidTruncMap φ e).f i' ≫ (L.ιStupidTrunc e).f i' = (K.ιStupidTrunc e).f i' ≫ φ.f i' := by
-  simp only [← comp_f, ιStupidTrunc_naturality]
+  simp [← comp_f]
 
 end
 
@@ -216,7 +226,7 @@ variable [e.IsTruncLE]
 
 /-- The epimorphism `K ⟶ K.stupidTrunc e` when the embedding `e` of complex shapes
 satisfies `e.IsTruncLE`. -/
-@[simps -isSimp]
+@[simps -isSimp, stacks 0118 "(2)"]
 noncomputable def πStupidTrunc : K ⟶ K.stupidTrunc e where
   f := K.πStupidTruncf e
   comm' i' j' hij' := by
@@ -273,7 +283,7 @@ lemma πStupidTrunc_naturality :
 @[reassoc (attr := simp)]
 lemma πStupidTrunc_f_naturality (i' : ι') :
     (K.πStupidTrunc e).f i' ≫ (stupidTruncMap φ e).f i' = φ.f i' ≫ (L.πStupidTrunc e).f i' := by
-  simp only [← comp_f, πStupidTrunc_naturality]
+  simp [← comp_f]
 
 end
 

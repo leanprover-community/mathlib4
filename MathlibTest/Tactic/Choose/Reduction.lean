@@ -1,5 +1,6 @@
 module
 import Mathlib.Data.Finset.Basic
+
 /-!
 Tests that `List.choose` and friends all reduce appropriately.
 
