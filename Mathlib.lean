@@ -5891,6 +5891,7 @@ public import Mathlib.MeasureTheory.OuterMeasure.Induced
 public import Mathlib.MeasureTheory.OuterMeasure.OfAddContent
 public import Mathlib.MeasureTheory.OuterMeasure.OfFunction
 public import Mathlib.MeasureTheory.OuterMeasure.Operations
+public import Mathlib.MeasureTheory.PavingAnalytic
 public import Mathlib.MeasureTheory.PiSystem
 public import Mathlib.MeasureTheory.SetAlgebra
 public import Mathlib.MeasureTheory.SetSemiring
