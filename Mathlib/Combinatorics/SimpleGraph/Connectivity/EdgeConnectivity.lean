@@ -237,7 +237,7 @@ theorem edgeReachability_le_degree_left [Fintype <| G.neighborSet u] (huv : u �
 
 theorem edgeReachability_le_degree_right [Fintype <| G.neighborSet v] (huv : u ≠ v) :
     G.edgeReachability u v ≤ G.degree v :=
-  iSup₂_le fun _ hk ↦ mod_cast (hk.symm).le_degree_left huv.symm
+  iSup₂_le fun _ hk ↦ hk.le_degree_right huv
 
 theorem isEdgeReachable_top_iff_forall_finite :
     G.IsEdgeReachable ⊤ u v ↔ ∀ ⦃s⦄, s.Finite → (G.deleteEdges s).Reachable u v := by
