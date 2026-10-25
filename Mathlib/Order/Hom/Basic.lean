@@ -1012,6 +1012,18 @@ def prodCongr {α' β' : Type*} [LE α'] [LE β'] (e : α ≃o α') (f : β ≃o
   toEquiv := e.toEquiv.prodCongr f.toEquiv
   map_rel_iff' := by simp [Prod.le_def]
 
+/-- `Equiv.prodUnique` promoted to an order isomorphism. -/
+@[simps! (attr := grind =)]
+def prodUnique (α β : Type*) [LE α] [Preorder β] [Unique β] : α × β ≃o α where
+  toEquiv := .prodUnique α β
+  map_rel_iff' := by simp [Prod.le_def, le_of_subsingleton]
+
+/-- `Equiv.uniqueProd` promoted to an order isomorphism. -/
+@[simps! (attr := grind =)]
+def uniqueProd (α β : Type*) [Preorder α] [LE β] [Unique α] : α × β ≃o β where
+  toEquiv := .uniqueProd β α
+  map_rel_iff' := by simp [Prod.le_def, le_of_subsingleton]
+
 @[simp]
 theorem coe_prodComm : ⇑(prodComm : α × β ≃o β × α) = Prod.swap :=
   rfl
