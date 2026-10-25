@@ -541,10 +541,10 @@ def moduleAux : A ⊗[R] B →ₗ[R] M →ₗ[R] M :=
     { toFun := fun a => a • (Algebra.lsmul R R M : B →ₐ[R] Module.End R M).toLinearMap
       map_add' := fun r t => by
         ext
-        simp only [add_smul, LinearMap.add_apply]
+        simp [add_smul]
       map_smul' := fun n r => by
         ext
-        simp only [RingHom.id_apply, LinearMap.smul_apply, smul_assoc] }
+        simp }
 
 theorem moduleAux_apply (a : A) (b : B) (m : M) : moduleAux (a ⊗ₜ[R] b) m = a • b • m :=
   rfl
@@ -568,10 +568,10 @@ https://leanprover.zulipchat.com/#narrow/stream/144837-PR-reviews/topic/.234773.
 @[instance_reducible]
 protected def module : Module (A ⊗[R] B) M where
   smul x m := moduleAux x m
-  zero_smul m := by simp only [(· • ·), map_zero, LinearMap.zero_apply]
-  smul_zero x := by simp only [(· • ·), map_zero]
-  smul_add x m₁ m₂ := by simp only [(· • ·), map_add]
-  add_smul x y m := by simp only [(· • ·), map_add, LinearMap.add_apply]
+  zero_smul m := by simp [(· • ·)]
+  smul_zero x := by simp [(· • ·)]
+  smul_add x m₁ m₂ := by simp [(· • ·)]
+  add_smul x y m := by simp [(· • ·)]
   one_smul m := by
     -- Porting note: was one `simp only`, not two
     simp only [(· • ·), Algebra.TensorProduct.one_def]
@@ -585,14 +585,13 @@ protected def module : Module (A ⊗[R] B) M where
     · intro z w hz hw a b
       -- Porting note: was one `simp only`, but random stuff doesn't work
       simp only [(· • ·)] at hz hw ⊢
-      simp only [moduleAux_apply, mul_add, map_add,
-        LinearMap.add_apply, moduleAux_apply, hz, hw]
+      simp [moduleAux_apply, mul_add, hz, hw]
     · intro a b z w hz hw
       simp only [(· • ·)] at hz hw ⊢
-      simp only [map_add, add_mul, LinearMap.add_apply, hz, hw]
+      simp [add_mul, hz, hw]
     · intro u v _ _ z w hz hw
       simp only [(· • ·)] at hz hw ⊢
-      simp only [add_mul, map_add, LinearMap.add_apply, hz, hw, add_add_add_comm]
+      simp [add_mul, hz, hw]
 
 attribute [local instance] TensorProduct.Algebra.module
 

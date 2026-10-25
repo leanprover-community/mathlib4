@@ -619,7 +619,8 @@ instance : SMul Sˣ (V ≃ₗ[R] W) where smul α e :=
     left_inv _ := by simp [LinearMapClass.map_smul_of_tower e.symm, smul_smul]
     right_inv _ := by simp [smul_smul] }
 
-@[simp] theorem smul_apply (α : Sˣ) (e : V ≃ₗ[R] W) (x : V) : (α • e) x = (α : S) • e x := rfl
+@[simp] protected theorem smul_apply (α : Sˣ) (e : V ≃ₗ[R] W) (x : V) :
+    (α • e) x = (α : S) • e x := rfl
 
 theorem symm_smul_apply (e : V ≃ₗ[R] W) (α : Sˣ) (x : W) :
     (α • e).symm x = (↑α⁻¹ : S) • e.symm x := rfl

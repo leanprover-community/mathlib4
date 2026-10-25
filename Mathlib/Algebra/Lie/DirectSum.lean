@@ -46,13 +46,13 @@ instance : LieRingModule L (⨁ i, M i) where
   bracket x m := m.mapRange (fun _ m' => ⁅x, m'⁆) fun _ => lie_zero x
   add_lie x y m := by
     ext
-    simp only [mapRange_apply, add_apply, add_lie]
+    simp
   lie_add x m n := by
     ext
-    simp only [mapRange_apply, add_apply, lie_add]
+    simp
   leibniz_lie x y m := by
     ext
-    simp only [mapRange_apply, lie_lie, add_apply, sub_add_cancel]
+    simp
 
 @[simp]
 theorem lie_module_bracket_apply (x : L) (m : ⨁ i, M i) (i : ι) : ⁅x, m⁆ i = ⁅x, m i⁆ :=
@@ -103,17 +103,16 @@ instance lieRing : LieRing (⨁ i, L i) :=
     bracket := zipWith (fun _ => fun x y => ⁅x, y⁆) fun _ => lie_zero 0
     add_lie := fun x y z => by
       ext
-      simp only [zipWith_apply, add_apply, add_lie]
+      simp
     lie_add := fun x y z => by
       ext
-      simp only [zipWith_apply, add_apply, lie_add]
+      simp
     lie_self := fun x => by
       ext
-      simp only [zipWith_apply, lie_self, zero_apply]
+      simp
     leibniz_lie := fun x y z => by
       ext
-      simp only [zipWith_apply, add_apply]
-      apply leibniz_lie }
+      simp }
 
 @[simp]
 theorem bracket_apply (x y : ⨁ i, L i) (i : ι) : ⁅x, y⁆ i = ⁅x i, y i⁆ :=
@@ -128,8 +127,8 @@ theorem lie_of_of_ne [DecidableEq ι] {i j : ι} (hij : i ≠ j) (x : L i) (y : 
   ext k
   rw [bracket_apply]
   obtain rfl | hik := Decidable.eq_or_ne k i
-  · rw [of_eq_of_ne _ _ _ hij, lie_zero, zero_apply]
-  · rw [of_eq_of_ne _ _ _ hik, zero_lie, zero_apply]
+  · rw [of_eq_of_ne _ _ _ hij, lie_zero, DFinsupp.zero_apply]
+  · rw [of_eq_of_ne _ _ _ hik, zero_lie, DFinsupp.zero_apply]
 
 @[simp]
 theorem lie_of [DecidableEq ι] {i j : ι} (x : L i) (y : L j) :

@@ -100,7 +100,7 @@ instance : Inhabited (Π₀ i, β i) :=
 
 @[simp, norm_cast] lemma coe_zero : ⇑(0 : Π₀ i, β i) = 0 := rfl
 
-theorem zero_apply (i : ι) : (0 : Π₀ i, β i) i = 0 :=
+protected theorem zero_apply (i : ι) : (0 : Π₀ i, β i) i = 0 :=
   rfl
 
 /-- The composition of `f : β₁ → β₂` and `g : Π₀ i, β₁ i` is
@@ -1056,7 +1056,7 @@ theorem comapDomain_apply [∀ i, Zero (β i)] (h : κ → ι) (hh : Function.In
 theorem comapDomain_zero [∀ i, Zero (β i)] (h : κ → ι) (hh : Function.Injective h) :
     comapDomain h hh (0 : Π₀ i, β i) = 0 := by
   ext
-  rw [zero_apply, comapDomain_apply, zero_apply]
+  rw [DFinsupp.zero_apply, comapDomain_apply, DFinsupp.zero_apply]
 
 @[simp]
 theorem comapDomain_add [∀ i, AddZeroClass (β i)] (h : κ → ι) (hh : Function.Injective h)
@@ -1092,7 +1092,7 @@ theorem comapDomain'_apply [∀ i, Zero (β i)] (h : κ → ι) {h' : ι → κ}
 theorem comapDomain'_zero [∀ i, Zero (β i)] (h : κ → ι) {h' : ι → κ}
     (hh' : Function.LeftInverse h' h) : comapDomain' h hh' (0 : Π₀ i, β i) = 0 := by
   ext
-  rw [zero_apply, comapDomain'_apply, zero_apply]
+  rw [DFinsupp.zero_apply, comapDomain'_apply, DFinsupp.zero_apply]
 
 @[simp]
 theorem comapDomain'_add [∀ i, AddZeroClass (β i)] (h : κ → ι) {h' : ι → κ}
@@ -1166,7 +1166,7 @@ theorem extendWith_zero [DecidableEq ι] [∀ i, Zero (α i)] (x : α none) :
     (0 : Π₀ i, α (some i)).extendWith x = single none x := by
   ext (_ | j)
   · rw [extendWith_none, single_eq_same]
-  · rw [extendWith_some, single_eq_of_ne (Option.some_ne_none _), zero_apply]
+  · rw [extendWith_some, single_eq_of_ne (Option.some_ne_none _), DFinsupp.zero_apply]
 
 /-- Bijection obtained by separating the term of index `none` of a dfinsupp over `Option ι`.
 
