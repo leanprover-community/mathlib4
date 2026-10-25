@@ -66,7 +66,6 @@ lemma center_units_eq : center G₀ˣ = ((↑) : G₀ˣ → G₀) ⁻¹' center 
 
 
 instance : CommGroupWithZero (Center G₀) where
-  inv g := Center.mk g.val⁻¹ (inv_mem_center g.prop)
   exists_pair_ne := ⟨0, 1, by rw [ne_eq, Center.eq_iff]; exact zero_ne_one⟩
   inv_zero := by simp
   mul_inv_cancel := by simp_all
