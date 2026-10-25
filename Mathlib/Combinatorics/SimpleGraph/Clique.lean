@@ -1093,15 +1093,25 @@ lemma exists_isNIndepSet_indepNum : ∃ s, G.IsNIndepSet G.indepNum s := by
   simp_rw [indepNum, ← isNClique_compl]
   exact exists_isNClique_cliqueNum
 
-theorem indepNum_eq_zero [Finite α] : G.indepNum = 0 ↔ IsEmpty α := by
-  rw [isEmpty_iff]
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · intro a
-    have one_indep : G.IsNIndepSet 1 {a} := by simp
-    have : 1 ≤ G.indepNum := IsIndepSet.card_le_indepNum one_indep.isIndepSet
-    grind
-  · have : ∀ (s : Finset α), s = ∅ := fun s ↦ eq_empty_of_forall_notMem fun x a ↦ h x
-    simp [indepNum, this, exists_const]
+variable (G) in
+@[simp]
+theorem indepNum_of_isEmpty [IsEmpty α] : G.indepNum = 0 := by
+  simp [indepNum, Finset.eq_empty_of_isEmpty]
+
+-- TODO: generalize from `Finite α` to `Finite G.edgeSet`
+variable (G) in
+theorem indepNum_ne_zero_of_finite [Nonempty α] [Finite α] : G.indepNum ≠ 0 := by
+  refine (Nat.not_succ_le_zero 0 <| le_of_le_of_eq ?_ ·)
+  exact IsIndepSet.card_le_indepNum (t := {Classical.arbitrary α}) <| by simp
+
+theorem indepNum_eq_zero_iff [Finite α] : G.indepNum = 0 ↔ IsEmpty α := by
+  refine ⟨fun h ↦ ?_, fun h ↦ G.indepNum_of_isEmpty⟩
+  contrapose! h
+  exact G.indepNum_ne_zero_of_finite
+
+theorem indepNum_ne_zero_iff [Finite α] : G.indepNum ≠ 0 ↔ Nonempty α := by
+  contrapose!
+  exact indepNum_eq_zero_iff
 
 /-- An independent set in a graph `G` such that there is no independent set with more vertices. -/
 -- TODO: replace with `MaximalFor (G.IsIndepSet ∘ (↑)) card s`
