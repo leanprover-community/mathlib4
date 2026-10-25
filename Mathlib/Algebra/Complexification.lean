@@ -301,7 +301,7 @@ instance instStarAddMonoid : StarAddMonoid (Complexification A) where
   star_add := by simp [star_def, add_comm]
 instance : StarRing (Complexification A) where __ := instStarAddMonoid; __ := instStarMul
 
-instance instStarModule [Module ℝ A] [StarModule ℝ A] : StarModule ℂ (Complexification A) where
+instance [Module ℝ A] [StarModule ℝ A] : StarModule ℂ (Complexification A) where
   star_smul _ _ := by ext <;> simp [add_comm]
 
 lemma star_I_smul [Module ℝ A] (x : Complexification A) :
