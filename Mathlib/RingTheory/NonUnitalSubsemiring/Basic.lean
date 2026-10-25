@@ -288,9 +288,9 @@ lemma _root_.Center.coe_nsmul (n : ℕ) (z : Center R) : (n • z).val = n • z
 /-- An isomorphism morphism between (not necessarily associative) semirings induces a semiring
 isomorphism between their centers. -/
 @[simps!]
-def _root_.RingEquiv.center {S : Type*} [NonUnitalNonAssocSemiring S] (e : R ≃+* S) :
+def _root_.RingEquiv.toCenter {S : Type*} [NonUnitalNonAssocSemiring S] (e : R ≃+* S) :
     Center R ≃+* Center S where
-  toMulEquiv := e.toMulEquiv.center
+  toMulEquiv := e.toMulEquiv.toCenter
   map_add' _ _ := by simp
 
 end NonUnitalNonAssocSemiring
