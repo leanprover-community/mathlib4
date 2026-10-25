@@ -110,6 +110,8 @@ end IsPreordering
 
 end Field
 
+end Subsemiring
+
 /- Deprecated -/
 
 variable {R : Type*} [CommRing R]
@@ -293,5 +295,3 @@ theorem isOrdering_iff {P : RingPreordering R} :
     cases (by aesop : x ∈ P ∨ -x ∈ P) <;> simp_all [mem_support]
 
 end RingPreordering
-
-end Subsemiring

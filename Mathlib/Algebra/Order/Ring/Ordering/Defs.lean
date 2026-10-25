@@ -103,6 +103,8 @@ theorem IsOrdering.isPreordering (hS : S.IsOrdering) :
     S.IsPreordering := .of_isSpanning hS.isSpanning <| fun hc ↦ by
   simpa [hc, supportIdeal] using hS.isPrime_supportIdeal.ne_top
 
+end Subsemiring
+
 /- Deprecated -/
 
 variable (R : Type*) [CommRing R]
@@ -285,5 +287,3 @@ An ordering `O` on a ring `R` is a preordering such that
 class IsOrdering (P : RingPreordering R) extends HasMemOrNegMem P, P.support.IsPrime
 
 end RingPreordering
-
-end Subsemiring
