@@ -621,16 +621,11 @@ variable [Fact (0 < T)] {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 theorem fourierCoeff_const [CompleteSpace E] (c : E) :
     fourierCoeff (fun _ : AddCircle T ↦ c) = Pi.single 0 c := by
   ext n
-  rw [fourierCoeff_eq_intervalIntegral _ _ 0]
-  by_cases hn : n = 0
-  · simp [hn, ‹Fact (0 < T)›.out.ne']
-  have : deriv (fun x : ℝ ↦ (T / (-2 * π * Complex.I * n) * fourier (-n) (x : AddCircle T)) • c) =
-      (fun x : ℝ ↦ fourier (-n) (x : AddCircle T) • c) := by
-    ext x
-    rw [deriv_smul_const (by fun_prop), (has_antideriv_at_fourier_neg ‹_› hn _).deriv]
-  rw [intervalIntegral.integral_deriv_eq_sub' _ this (by fun_prop) (by fun_prop), zero_add,
-    AddCircle.coe_period]
-  simp [hn]
+  calc
+    _ = fourierCoeff (fourier 0 : AddCircle T → ℂ) n • c := by
+      simp [fourierCoeff, integral_smul_const]
+    _ = _ := by
+      simpa [fourierCoeff_fourier] using Pi.single_apply_smul c 0 n
 
 theorem fourierCoeff_eq_of_hasSum_of_summable_norm [CompleteSpace E] {f : AddCircle T → E}
     {c : ℤ → E} (h : ∀ x, HasSum (fun i ↦ fourier i x • c i) (f x)) (hnorm : Summable (‖c ·‖)) :
@@ -649,8 +644,7 @@ theorem fourierCoeff_eq_of_hasSum_of_summable_norm [CompleteSpace E] {f : AddCir
       simp_rw [fourierCoeff, ← integral_smul_const, neg_sub, sub_eq_add_neg, fourier_add, smul_smul,
         smul_eq_mul, mul_one, mul_comm (fourier (-n) _)]
     _ = c n := by
-      simp_rw [fourierCoeff_const, Pi.single_apply, ite_smul, zero_smul, sub_eq_zero, tsum_ite_eq',
-        one_smul]
+      simp [fourierCoeff_const, Pi.single_apply, sub_eq_zero, tsum_ite_eq']
 
 theorem fourierCoeff_eq_of_hasSum [FiniteDimensional ℝ E] {f : AddCircle T → E} {c : ℤ → E}
     (h : ∀ x, HasSum (fun i ↦ fourier i x • c i) (f x)) :
