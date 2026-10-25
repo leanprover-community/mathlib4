@@ -37,6 +37,10 @@ def isTerminalPUnit : IsTerminal (of PUnit.{u + 1}) :=
   .ofUniqueHom (fun X ↦ ofHom (OrderHom.const X PUnit.unit))
     (fun _ _ ↦ by ext)
 
+/-- The category of preorders has `PUnit` as a terminal object. -/
+def terminalLimitCone : LimitCone (Functor.empty.{0} Preord.{u}) :=
+  ⟨_, isTerminalPUnit⟩
+
 /-- The product cone of preorders, with the usual product preorder. -/
 def prodCone (X Y : Preord.{u}) : BinaryFan X Y :=
   .mk (P := of (X × Y)) (ofHom OrderHom.fst) (ofHom OrderHom.snd)
@@ -48,9 +52,14 @@ def isLimitProdCone (X Y : Preord.{u}) : IsLimit (prodCone X Y) := by
   ext x
   exacts [congr($h₁ _), congr($h₂ _)]
 
+/-- The category of preorders has `X × Y`, the usual Cartesian product,
+as the binary product of `X` and `Y`.
+-/
+def binaryProductLimitCone (X Y : Preord.{u}) : LimitCone (pair X Y) :=
+  ⟨prodCone X Y, isLimitProdCone X Y⟩
+
 instance : CartesianMonoidalCategory Preord.{u} :=
-  .ofChosenFiniteProducts ⟨_, isTerminalPUnit⟩ fun X Y ↦
-    ⟨prodCone X Y, isLimitProdCone X Y⟩
+  .ofChosenFiniteProducts terminalLimitCone binaryProductLimitCone
 
 lemma tensorObj (X Y : Preord.{u}) : X ⊗ Y = of (X × Y) := rfl
 

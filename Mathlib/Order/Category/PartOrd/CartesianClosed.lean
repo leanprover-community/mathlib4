@@ -43,6 +43,10 @@ def isTerminalPUnit : IsTerminal (of PUnit.{u + 1}) :=
   .ofUniqueHom (fun X ↦ ofHom (OrderHom.const X PUnit.unit))
     (fun _ _ ↦ by ext)
 
+/-- The category of partial orders has `PUnit` as a terminal object. -/
+def terminalLimitCone : LimitCone (Functor.empty.{0} PartOrd.{u}) :=
+  ⟨_, isTerminalPUnit⟩
+
 /-- The product cone of partial orders, with the usual product partial order. -/
 def prodCone (X Y : PartOrd.{u}) : BinaryFan X Y :=
   .mk (P := of (X × Y)) (ofHom OrderHom.fst) (ofHom OrderHom.snd)
@@ -54,9 +58,14 @@ def isLimitProdCone (X Y : PartOrd.{u}) : IsLimit (prodCone X Y) := by
   ext x
   exacts [congr($h₁ _), congr($h₂ _)]
 
+/-- The category of partial orders has `X × Y`, the usual Cartesian product,
+as the binary product of `X` and `Y`.
+-/
+def binaryProductLimitCone (X Y : PartOrd.{u}) : LimitCone (pair X Y) :=
+  ⟨prodCone X Y, isLimitProdCone X Y⟩
+
 instance : CartesianMonoidalCategory PartOrd.{u} :=
-  .ofChosenFiniteProducts ⟨_, isTerminalPUnit⟩ fun X Y ↦
-    ⟨prodCone X Y, isLimitProdCone X Y⟩
+  .ofChosenFiniteProducts terminalLimitCone binaryProductLimitCone
 
 lemma tensorObj (X Y : PartOrd.{u}) : X ⊗ Y = of (X × Y) := rfl
 
