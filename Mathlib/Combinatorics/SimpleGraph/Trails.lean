@@ -187,7 +187,7 @@ Since Eulerian graphs are nonempty, it suffices to require preconnected. -/
 theorem IsEulerian.exists_isEulerian_of_preconnected (h : G.IsEulerian) (h' : G.Preconnected) :
     ∃ p : G.Walk v v, p.IsEulerian := by
   cases subsingleton_or_nontrivial V
-  · exact ⟨.nil, Sym2.ind fun a b hadj ↦ absurd (Subsingleton.elim a b) hadj.ne⟩
+  · exact ⟨.nil, Subsingleton.elim G ⊥ ▸ .of_bot .nil⟩
   exact h.exists_isEulerian_of_not_isIsolated <| h'.not_isIsolated v
 
 theorem IsEulerian.connected_of_forall_not_isIsolated (h : G.IsEulerian)
