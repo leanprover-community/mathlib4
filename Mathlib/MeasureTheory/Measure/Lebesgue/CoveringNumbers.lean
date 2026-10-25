@@ -22,8 +22,9 @@ gives bounds of order `(r / ε) ^ d` on the covering numbers of a ball of radius
   covering number of `A` at scale `ε` times the measure of a ball of radius `ε`.
 * `Metric.packingNumber_mul_le_measure`: the packing number of `A` at scale `ε` times the measure of
   a ball of radius `ε / 2` is at most the measure of `A + closedEBall 0 (ε / 2)`.
-* `Metric.measure_div_le_coveringNumber`, `Metric.coveringNumber_le_measure_div`: the resulting
-  lower and upper bounds on the covering number of `A`.
+* `Metric.measure_div_le_externalCoveringNumber`, `Metric.measure_div_le_coveringNumber`,
+  `Metric.coveringNumber_le_measure_div`: the resulting lower bounds on the external and internal
+  covering numbers of `A`, and upper bound on its covering number.
 * `Metric.coveringNumber_closedEBall_ge`, `Metric.coveringNumber_closedEBall_le`: in a real normed
   space of dimension `d`, the covering number at scale `ε` of a ball of radius `r` is at least
   `(r / ε) ^ d` and at most `(2 * r / ε + 1) ^ d`.
@@ -121,14 +122,17 @@ lemma packingNumber_mul_le_measure (A : Set E) (ε : ℝ≥0) :
   exact iSup_le fun C ↦ iSup₂_le fun hC₁ hC₂ ↦ le_measure_of_isSeparated μ hC₂ hC₁
 
 /-- The measure of `A` divided by the measure of a ball of radius `ε` is a lower bound for the
+external covering number of `A` at scale `ε`. -/
+lemma measure_div_le_externalCoveringNumber (A : Set E) (hε : ε ≠ 0) :
+    μ A / μ (closedEBall (0 : E) ε) ≤ externalCoveringNumber ε A :=
+  ENNReal.div_le_of_le_mul (measure_le_externalCoveringNumber_mul μ A hε)
+
+/-- The measure of `A` divided by the measure of a ball of radius `ε` is a lower bound for the
 covering number of `A` at scale `ε`. -/
-lemma measure_div_le_coveringNumber [ProperSpace E] (A : Set E) (hε : ε ≠ 0) :
-    μ A / μ (closedEBall (0 : E) ε) ≤ coveringNumber ε A := by
-  grw [measure_le_externalCoveringNumber_mul μ A hε, ENNReal.mul_div_cancel_right,
-    externalCoveringNumber_le_coveringNumber ε A]
-  · exact (measure_closedEBall_pos μ _ (mod_cast hε)).ne'
-  · rw [closedEBall_coe]
-    exact (isCompact_closedBall _ _).measure_ne_top
+lemma measure_div_le_coveringNumber (A : Set E) (hε : ε ≠ 0) :
+    μ A / μ (closedEBall (0 : E) ε) ≤ coveringNumber ε A :=
+  (measure_div_le_externalCoveringNumber μ A hε).trans
+    (ENat.toENNReal_le.mpr (externalCoveringNumber_le_coveringNumber ε A))
 
 /-- The measure of the `ε / 2`-thickening of `A` divided by the measure of a ball of radius
 `ε / 2` is an upper bound for the covering number of `A` at scale `ε`. -/
