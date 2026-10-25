@@ -28,13 +28,13 @@ noncomputable section
 instance : ExponentialIdeal preordToCat.{u} := by
   apply ExponentialIdeal.mk'
   intro P C
-  exact ⟨Preord.ofCat (C ⥤ P), ⟨Preord.ofCatIso (C ⥤ P)⟩⟩
+  exact ⟨.ofCat (C ⥤ P), ⟨Preord.ofCatIso (C ⥤ P)⟩⟩
 
 namespace Preord
 
 /-- The one-element preorder is terminal. -/
 def isTerminalPUnit : IsTerminal (of PUnit.{u + 1}) :=
-  .ofUniqueHom (fun X ↦ ofHom (OrderHom.const X PUnit.unit))
+  .ofUniqueHom (fun X ↦ ofHom (.const X .unit))
     (fun _ _ ↦ by ext)
 
 /-- The category of preorders has `PUnit` as a terminal object. -/
@@ -43,7 +43,7 @@ def terminalLimitCone : LimitCone (Functor.empty.{0} Preord.{u}) :=
 
 /-- The product cone of preorders, with the usual product preorder. -/
 def prodCone (X Y : Preord.{u}) : BinaryFan X Y :=
-  .mk (P := of (X × Y)) (ofHom OrderHom.fst) (ofHom OrderHom.snd)
+  .mk (P := of (X × Y)) (ofHom .fst) (ofHom .snd)
 
 /-- The usual product preorder is a categorical product. -/
 def isLimitProdCone (X Y : Preord.{u}) : IsLimit (prodCone X Y) := by

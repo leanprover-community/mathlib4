@@ -34,7 +34,7 @@ def Preord.ofCat (C : Type u) [Category.{v} C] : Preord.{u} where
 
 /-- The functor sending a small category to its preorder of objects. -/
 def catToPreord : Cat.{u, u} ⥤ Preord.{u} where
-  obj C := Preord.ofCat C
+  obj C := .ofCat C
   map {C D} F := Preord.ofHom (X := Preord.ofCat C) (Y := Preord.ofCat D)
     ⟨F.toFunctor.obj, fun _ _ h ↦ h.map F.toFunctor.map⟩
   map_id _ := rfl
@@ -62,7 +62,7 @@ instance : Reflective preordToCat.{u} where
 
 /-- A thin category is isomorphic to the category associated to its preorder of objects. -/
 noncomputable def Preord.ofCatIso (C : Type u) [SmallCategory C] [Quiver.IsThin C] :
-    preordToCat.obj (ofCat C) ≅ Cat.of C where
+    preordToCat.obj (ofCat C) ≅ .of C where
   hom :=
     ({ obj := id
        map f := (leOfHom f).some

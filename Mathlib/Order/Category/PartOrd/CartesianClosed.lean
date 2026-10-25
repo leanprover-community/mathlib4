@@ -34,13 +34,13 @@ instance : ExponentialIdeal (forget₂ PartOrd.{u} Preord.{u}) := by
       le_antisymm F G hFG hGF :=
         CategoryTheory.Functor.eq_of_iso (C := P) (D := A) (fun _ _ h ↦ h.some.to_eq)
           (iso_of_both_ways (C := A ⥤ P) hFG.some hGF.some) }
-  exact ⟨PartOrd.of B, ⟨Iso.refl _⟩⟩
+  exact ⟨.of B, ⟨.refl _⟩⟩
 
 namespace PartOrd
 
 /-- The one-element partial order is terminal. -/
 def isTerminalPUnit : IsTerminal (of PUnit.{u + 1}) :=
-  .ofUniqueHom (fun X ↦ ofHom (OrderHom.const X PUnit.unit))
+  .ofUniqueHom (fun X ↦ ofHom (.const X .unit))
     (fun _ _ ↦ by ext)
 
 /-- The category of partial orders has `PUnit` as a terminal object. -/
@@ -49,7 +49,7 @@ def terminalLimitCone : LimitCone (Functor.empty.{0} PartOrd.{u}) :=
 
 /-- The product cone of partial orders, with the usual product partial order. -/
 def prodCone (X Y : PartOrd.{u}) : BinaryFan X Y :=
-  .mk (P := of (X × Y)) (ofHom OrderHom.fst) (ofHom OrderHom.snd)
+  .mk (P := of (X × Y)) (ofHom .fst) (ofHom .snd)
 
 /-- The usual product partial order is a categorical product. -/
 def isLimitProdCone (X Y : PartOrd.{u}) : IsLimit (prodCone X Y) := by
