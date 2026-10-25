@@ -46,6 +46,10 @@ section
 
 variable [CompleteLattice α] {f : ι → α} {a b : α}
 
+@[simp]
+lemma iSup_id {α : Type*} [CompleteLattice α] : ⨆ a : α, a = ⊤ := by
+  simp [← sSup_range]
+
 /-!
 ### `iSup` and `iInf` under `Bool`
 -/
