@@ -61,10 +61,10 @@ def supportIdeal (hS : S.IsSpanning) : Ideal R where
 variable {R' : Type*} [Ring R'] {f : R →+* R'} {S' : Subsemiring R'}
 
 variable (f) in
-theorem isSpanning_comap (hS' : S'.IsSpanning) : (S'.comap f).IsSpanning :=
+protected theorem IsSpanning.comap (hS' : S'.IsSpanning) : (S'.comap f).IsSpanning :=
   hS'.comap f.toAddMonoidHom
 
-theorem isSpanning_map (hS : S.IsSpanning) (hf : Function.Surjective f) : (S.map f).IsSpanning :=
+protected theorem IsSpanning.map (hS : S.IsSpanning) (hf : Function.Surjective f) : (S.map f).IsSpanning :=
   hS.map (f := f.toAddMonoidHom) hf
 
 end Subsemiring
