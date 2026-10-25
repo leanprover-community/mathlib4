@@ -186,8 +186,7 @@ variable [NonUnitalSemiring B] [Module R B] [SMulCommClass R B B] [IsScalarTower
 
 unseal mul in
 protected theorem mul_assoc (x y z : A ⊗[R] B) : mul (mul x y) z = mul x (mul y z) := by
-  -- restate as an equality of morphisms so that we can use `ext`
-  apply mul.mul_assoc_aux
+  apply mul.mul_assoc_aux.mp
   ext xa xb ya yb za zb
   congrm $(mul_assoc xa ya za) ⊗ₜ $(mul_assoc xb yb zb)
 
