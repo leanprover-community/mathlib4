@@ -281,8 +281,7 @@ include h in
 lemma count_take_firstReturn_add_one :
     (p.toList.take (p.firstReturn + 1)).count U = (p.toList.take (p.firstReturn + 1)).count D := by
   have := findIdx_getElem
-    (w := (length_range (n := p.toList.length)).symm ▸ firstReturn_lt_length h)
-  generalize_proofs at this
+    (w := show findIdx .. < _ from length_range (n := p.toList.length) ▸ firstReturn_lt_length h)
   simpa using! this
 
 lemma count_D_lt_count_U_of_lt_firstReturn {i : ℕ} (hi : i < p.firstReturn) :
@@ -330,8 +329,9 @@ variable (p) in
 inside the `U, D` pair that `firstReturn` refers to. `insidePart 0 = 0`. -/
 def insidePart : DyckWord :=
   if h : p = 0 then 0 else
-  (p.take (p.firstReturn + 1) (count_take_firstReturn_add_one h)).denest
-    ⟨by rw [← toList_ne_nil, take]; simpa using toList_ne_nil.mpr h, fun i lb ub ↦ by
+  (p.take (p.firstReturn + 1) (count_take_firstReturn_add_one h)).denest <|
+  show IsNested _ from ⟨by rw [← toList_ne_nil, take]; simpa using toList_ne_nil.mpr h,
+    fun i lb ub ↦ by
       simp only [take, length_take, lt_min_iff] at ub ⊢
       replace ub := ub.1
       rw [take_take, min_eq_left ub.le]
@@ -378,10 +378,8 @@ lemma outsidePart_nest : p.nest.outsidePart = 0 := by
 include h in
 @[simp]
 theorem nest_insidePart_add_outsidePart : p.insidePart.nest + p.outsidePart = p := by
-  simp_rw [insidePart, outsidePart, dite_eq_right h]
-  generalize_proofs
-  simp_rw [nest_denest, DyckWord.ext_iff]
-  exact take_append_drop ..
+  simp_rw [insidePart, outsidePart, dite_eq_right h, nest_denest, DyckWord.ext_iff]
+  apply take_append_drop
 
 include h in
 lemma semilength_insidePart_add_semilength_outsidePart_add_one :
