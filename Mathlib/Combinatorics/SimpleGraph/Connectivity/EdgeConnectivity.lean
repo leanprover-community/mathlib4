@@ -112,6 +112,7 @@ lemma IsEdgeReachable.le_degree_right [Fintype (G.neighborSet v)] (h : G.IsEdgeR
   rw [isEdgeReachable_comm] at h
   exact le_degree_left h huv.symm
 
+variable (u) in
 lemma IsEdgeConnected.le_degree [Fintype (G.neighborSet u)] [Nontrivial V]
     (h : G.IsEdgeConnected k) : k ≤ G.degree u := by
   obtain ⟨v, hv⟩ := exists_ne u
