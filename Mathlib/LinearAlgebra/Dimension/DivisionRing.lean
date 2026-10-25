@@ -183,7 +183,7 @@ theorem linearIndepOn_of_finrank_le_finrank_span (hfg : M.FG)
       le_antisymm (span_le.mpr hMc) (span_mono hcM), finrank_span_set_eq_ncard hcK]
   · exact (hu.linearIndependent.codRestrict M (fun x ↦ huM x.2)).finite
 
-/-- The `K`-rank of the `K`-span of a finitely generated `M` is equals the `R`-rank of `M` if
+/-- The `K`-rank of the `K`-span of a finitely generated `M` is equal to the `R`-rank of `M` if
 and only if every `R`-linearly independent subset of `M` is `K`-linearly independent. See also
 `Submodule.finrank_span_eq_finrank` for an equality in a different setting. -/
 theorem finrank_span_eq_finrank_iff (hfg : M.FG) :
