@@ -37,7 +37,7 @@ linear equiv, linear equivalences, linear isomorphism, linear isomorphic
 
 @[expose] public section
 
-assert_not_exists Field Pi.module
+assert_not_exists Field
 
 open Function
 
