@@ -297,6 +297,8 @@ private noncomputable def restrictIci (d : F.WellOrderInductionData)
     rw [← ConcreteCategory.comp_apply, ← F.map_comp, ← op_comp]
     apply d.map_succ
   lift j hj s :=
+    /- The idea is to use that F and F restricted to `Ici t` have the same sections because
+    the inclusion Set.Iio j →o Set.Iio j.val is final -/
     haveI hj' : Order.IsSuccLimit j.val := Set.Ici.isSuccLimit_coe j hj
     letI φ : Set.Iio j → Set.Iio j.val := fun u ↦ ⟨u, u.property⟩
     haveI hφ : Monotone φ := by tauto
