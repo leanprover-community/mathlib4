@@ -34,7 +34,7 @@ namespace ContinuousLinearMap
 
 section Abs
 
-open scoped ENNReal
+open scoped ENNReal NNReal
 
 variable {E F : Type*}
   [NormedAddCommGroup E] [InnerProductSpace ℂ E] [CompleteSpace E]
@@ -84,6 +84,48 @@ theorem ker_abs_eq (T : E →L[ℂ] F) : |T|.ker = T.ker := by
   rw [LinearMap.mem_ker, LinearMap.mem_ker, ← norm_eq_zero (a := T.toLinearMap x),
     ← norm_eq_zero (a := |T|.toLinearMap x)]
   simp [norm_abs_apply]
+
+@[simp]
+theorem norm_abs (T : E →L[ℂ] F) : ‖|T|‖ = ‖T‖ := by
+  refine le_antisymm ?_ ?_ <;>
+  refine ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg _) fun x ↦ ?_
+  · rw [norm_abs_apply]
+    exact le_opNorm _ x
+  · rw [← norm_abs_apply]
+    exact le_opNorm _ x
+
+theorem abs_nnrpow_two (T : E →L[ℂ] F) : |T| ^ (2 : ℝ≥0) = T.adjoint ∘L T := by
+  rw [CFC.nnrpow_two _ T.abs_nonneg, ContinuousLinearMap.mul_def]
+  exact abs_comp_abs T
+
+theorem abs_nnrpow_two_mul (T : E →L[ℂ] F) (x : ℝ≥0) :
+    |T| ^ (2 * x) = (T.adjoint ∘L T) ^ x := by
+  rw [← CFC.nnrpow_nnrpow, abs_nnrpow_two]
+
+theorem abs_nnrpow (T : E →L[ℂ] F) (x : ℝ≥0) :
+    |T| ^ x = (T.adjoint ∘L T) ^ (x / 2) := by
+  simp only [← abs_nnrpow_two_mul, mul_div_left_comm, ne_eq, OfNat.ofNat_ne_zero,
+    not_false_eq_true, div_self, mul_one]
+
+theorem abs_of_nonneg (S : E →L[ℂ] E) (hS : 0 ≤ S) : |S| = S := by
+  rw [abs_eq_cfcAbs]
+  exact CFC.abs_of_nonneg _ hS
+
+theorem abs_of_nonpos (S : E →L[ℂ] E) (hS : S ≤ 0) : |S| = -S := by
+  rw [abs_eq_cfcAbs]
+  exact CFC.abs_of_nonpos _ hS
+
+theorem abs_adjoint_comp_self (T : E →L[ℂ] F) :
+    |T.adjoint ∘L T| = T.adjoint ∘L T :=
+  abs_of_nonneg _ (nonneg_iff_isPositive.mpr (isPositive_adjoint_comp_self T))
+
+theorem abs_smul (c : ℂ) (T : E →L[ℂ] F) : |c • T| = ‖c‖ • |T| := by
+  have h : 0 ≤ adjoint (c • T) ∘SL (c • T) :=
+    (nonneg_iff_isPositive.mpr (isPositive_adjoint_comp_self _))
+  have h' : 0 ≤ ‖c‖ • |T| := smul_nonneg (norm_nonneg c) T.abs_nonneg
+  rw [abs, CFC.sqrt_eq_iff _ _ h h', smul_mul_smul_comm, mul_def, abs_comp_abs]
+  simp [LinearIsometryEquiv.map_smulₛₗ, ← smul_assoc, Complex.mul_conj', ← sq]
+  norm_cast
 
 end Abs
 
