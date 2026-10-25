@@ -536,7 +536,7 @@ theorem addHaar_closedEBall_div (x y : E) (r s : ℝ≥0∞) :
     μ (closedEBall x r) / μ (closedEBall y s) = (r / s) ^ finrank ℝ E := by
   rw [addHaar_closedEBall, addHaar_closedEBall,
     ENNReal.mul_div_mul_right _ _ (measure_ball_pos μ _ one_pos).ne' measure_ball_lt_top.ne,
-    div_eq_mul_inv, div_eq_mul_inv, mul_pow, ENNReal.inv_pow]
+    ENNReal.div_pow]
 
 theorem addHaar_closedBall_eq_addHaar_ball [Nontrivial E] (x : E) (r : ℝ) :
     μ (closedBall x r) = μ (ball x r) := by
