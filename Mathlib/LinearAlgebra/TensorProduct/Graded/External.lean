@@ -238,7 +238,7 @@ theorem gradedMul_one (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
 set_option backward.defeqAttrib.useBackward true in
 theorem gradedMul_assoc (x y z : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
     gradedMul R 𝒜 ℬ (gradedMul R 𝒜 ℬ x y) z = gradedMul R 𝒜 ℬ x (gradedMul R 𝒜 ℬ y z) := by
-  apply (gradedMul R 𝒜 ℬ).mul_assoc_aux.mp
+  apply (gradedMul R 𝒜 ℬ).mul_assoc_iff.mpr
   ext ixa xa ixb xb iya ya iyb yb iza za izb zb
   dsimp only [LinearMap.coe_comp, Function.comp_apply, AlgebraTensorModule.curry_apply,
     LinearMap.restrictScalars_self, curry_apply, LinearMap.llcomp_apply, LinearMap.flip_apply,
