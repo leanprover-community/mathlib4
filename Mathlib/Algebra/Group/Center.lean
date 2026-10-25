@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Eric Wieser, Jireh Loreaux, Jiaxi Mo
+Authors: Eric Wieser, Jireh Loreaux
 -/
 module
 
@@ -437,7 +437,7 @@ lemma range_subtype_eq_top [CommSemigroup M] : Set.range (subtype (M := M)) = �
 
 variable (M) in
 /-- The inclusion of `Center M` into `M` as a `MonoidHom`. -/
-@[simps, to_additive]
+@[simps, to_additive /-- The inclusion of `AddCenter M` into `M` as a `AddMonoidHom`. -/]
 def monoidHom [MulOneClass M] : Center M →* M where
   toFun z := z.val
   map_mul' _ _ := rfl
@@ -461,7 +461,8 @@ instance [Group M] : CommGroup (Center M) where
   inv_mul_cancel z := by simp
 
 /-- A surjective morphism between monoids induces a monoid homomorhpism between their centers. -/
-@[to_additive, simps]
+@[simps, to_additive /-- A surjective morphism between additive monoids induces a additive monoid
+homomorhpism between their centers. -/]
 def _root_.MonoidHom.toCenter [MulOneClass M] [MulOneClass N] {f : M →* N}
     (hf : Function.Surjective f) :
     Center M →* Center N where
@@ -470,7 +471,8 @@ def _root_.MonoidHom.toCenter [MulOneClass M] [MulOneClass N] {f : M →* N}
   map_mul' := by simp
 
 /-- An ismorphism between monoids induces an isomorphism between their centers. -/
-@[to_additive, simps!]
+@[simps!, to_additive /-- An ismorphism between additive monoids induces an isomorphism between
+their centers. -/]
 def _root_.MulEquiv.toCenter [Mul M] [Mul N] (f : M ≃* N) :
     Center M ≃* Center N where
   toFun m := Center.mk (f m.val) (IsMulCentral.map m.prop f.surjective)
