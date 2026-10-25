@@ -8,8 +8,12 @@ module
 public import Mathlib.Algebra.Homology.Embedding.CochainComplex
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplex
 
-/-! # ...
+/-! # Conditions under which that complex of morphisms is bounded below
 
+If `K` and `L` are cochain complexes indexed by `ℤ` in a `R`-linear category,
+we show that the cochain complex `linearHomComplex R K L` of morphisms
+from `K` to `L` is `≥ n` if `K ≤ p`, `L ≥ q`, and `p + n ≤ q`.
+In particular, if `K ≤ 0` and `L ≥ 0`, then `linearHomComplex R K L` if `≥ 0`.
 
 -/
 
@@ -17,9 +21,7 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplex
 
 open CategoryTheory Category Limits Preadditive
 
-universe v u
-
-variable {C : Type u} [Category.{v} C] [Preadditive C] {R : Type*} [Ring R] [Linear R C]
+variable {C : Type*} [Category* C] [Preadditive C] {R : Type*} [Ring R] [Linear R C]
 
 namespace CochainComplex.HomComplex
 

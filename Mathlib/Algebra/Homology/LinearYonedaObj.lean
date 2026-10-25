@@ -17,13 +17,13 @@ public import Mathlib.CategoryTheory.Linear.Yoneda
 
 -/
 
-universe v u
+universe v
 
 @[expose] public section
 
 open CategoryTheory Limits
 
-variable {C : Type u} [Category.{v} C] [Abelian C]
+variable {C : Type*} [Category.{v} C] [Abelian C]
 
 namespace ChainComplex
 
@@ -69,8 +69,8 @@ noncomputable def linearYonedaObjIso :
     (fun n m h ↦ by
       ext (f : K.X n ⟶ Y) : 2
       dsimp
-      simp only [dsimp% K.linearYonedaObjXIso_hom_apply R Y (-n) n n _ (by lia) (by lia),
-        dsimp% K.linearYonedaObjXIso_hom_apply R Y (-m) m m _ (by lia) (by lia),
+      simp only [K.linearYonedaObjXIso_hom_apply R Y (-n) n n _ (by lia) (by lia),
+        K.linearYonedaObjXIso_hom_apply R Y (-m) m m _ (by lia) (by lia),
         Cochain.δ_toSingleMk (p := -n) (q := 0) (n := n) _ (by lia) m (-m) (by lia),
         K.extend_d_eq ComplexShape.embeddingDownNat (i' := -m) (j' := -n) (i := m) (j := n)
           (by simp) (by simp), smul_smul, δ_units_smul, Category.assoc, Iso.inv_hom_id_assoc]
