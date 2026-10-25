@@ -284,7 +284,7 @@ lemma iUnion_finset_rightRel_eq_univ_of_rightRel {H K : Subgroup G} {t : Finset 
 
 section relPositoin
 
-varaible {H₁ H₂ : Subgroup G}
+variable {H₁ H₂ : Subgroup G}
 
 /-- The map sending `(gH₁, g'H₂)` to `H₁g⁻¹g'H₂`. -/
 def relPosition : G ⧸ H₁ → G ⧸ H₂ → DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G) :=
@@ -296,13 +296,6 @@ def relPosition : G ⧸ H₁ → G ⧸ H₂ → DoubleCoset.Quotient (H₁ : Set
 @[simp]
 lemma relPosition_mk_mk (g g' : G) :
     relPosition (g : G ⧸ H₁) (g' : G ⧸ H₂) = mk H₁ H₂ (g⁻¹ * g') := rfl
-
-@[simp]
-lemma relPosition_smul (g : G) (c : G ⧸ H₁) (d : G ⧸ H₂) :
-    relPosition (g • c) d = relPosition c (g⁻¹ • d) := by
-  rw [← QuotientGroup.out_eq' c, ← QuotientGroup.out_eq' d, MulAction.Quotient.smul_mk,
-    MulAction.Quotient.smul_mk, relPosition_mk_mk, relPosition_mk_mk]
-  simp [mul_assoc]
 
 end relPosition
 
