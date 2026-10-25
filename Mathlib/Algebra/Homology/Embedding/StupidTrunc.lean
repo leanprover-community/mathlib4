@@ -185,7 +185,7 @@ lemma ιStupidTrunc_naturality :
 @[reassoc (attr := simp)]
 lemma ιStupidTrunc_f_naturality (i' : ι') :
     (stupidTruncMap φ e).f i' ≫ (L.ιStupidTrunc e).f i' = (K.ιStupidTrunc e).f i' ≫ φ.f i' := by
-  simp only [← comp_f, ιStupidTrunc_naturality]
+  simp [← comp_f, ιStupidTrunc_naturality]
 
 end
 
@@ -273,7 +273,7 @@ lemma πStupidTrunc_naturality :
 @[reassoc (attr := simp)]
 lemma πStupidTrunc_f_naturality (i' : ι') :
     (K.πStupidTrunc e).f i' ≫ (stupidTruncMap φ e).f i' = φ.f i' ≫ (L.πStupidTrunc e).f i' := by
-  simp only [← comp_f, πStupidTrunc_naturality]
+  simp [← comp_f, πStupidTrunc_naturality]
 
 end
 
