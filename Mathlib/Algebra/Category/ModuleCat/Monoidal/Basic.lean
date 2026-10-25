@@ -470,11 +470,15 @@ instance : MonoidalLinear R (ModuleCat.{u} R) := by
   · intros
     ext : 1
     refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => ?_)
-    simp [ModuleCat.hom_whiskerLeft]
+    simp only [hom_whiskerLeft, hom_smul, LinearMap.lTensor_smul, LinearMap.compr₂ₛₗ_apply,
+      TensorProduct.mk_apply, smul_apply]
+    rw [smul_apply] -- Not applied in `simp`
   · intros
     ext : 1
     refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => ?_)
-    simp [ModuleCat.hom_whiskerRight]
+    simp only [hom_whiskerRight, hom_smul, LinearMap.rTensor_smul, LinearMap.compr₂ₛₗ_apply,
+      TensorProduct.mk_apply, smul_apply]
+    rw [smul_apply] -- Not applied in `simp`
 
 @[simp] lemma ofHom₂_compr₂ {M N P Q : ModuleCat.{u} R} (f : M →ₗ[R] N →ₗ[R] P) (g : P →ₗ[R] Q) :
     ofHom₂ (f.compr₂ g) = ofHom₂ f ≫ ofHom (Linear.rightComp R _ (ofHom g)) := rfl

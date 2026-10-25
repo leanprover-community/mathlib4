@@ -549,9 +549,9 @@ lemma LinearIndependent.update [DecidableEq ι] [CommRing R] [AddCommGroup M] [M
   intros l' hl'
   apply_fun (r • ·) at hl'
   simp_rw [Pi.update_eq_sub_add_single, ← bilinearCombination_apply _ (S := R), map_add, map_sub,
-    bilinearCombination_apply, LinearMap.add_apply, LinearMap.sub_apply,
-    linearCombination_single_index, smul_add, smul_sub, smul_zero, smul_comm r (l' i) m,
-    hg, ← LinearMap.map_smul, smul_smul, ← linearCombination_single, ← map_sub, ← map_add] at hl'
+    bilinearCombination_apply, add_apply, sub_apply, linearCombination_single_index, smul_add,
+    smul_sub, smul_zero, smul_comm r (l' i) m, hg, ← LinearMap.map_smul, smul_smul,
+    ← linearCombination_single, ← map_sub, ← map_add] at hl'
   replace hl' : ∀ j, (r * l' j - (single i (r * l' i)) j) + l' i * l j = 0 :=
     fun j ↦ congr($(hf _ hl') j)
   grind [mem_nonZeroDivisors_iff]
@@ -924,7 +924,7 @@ lemma LinearMap.BilinForm.exists_pos_and_pos_apply_sum_smul {R M ι : Type*} [Fi
   have hx : x = X + ∑ k, min (c k) 0 • v k := by
     simp only [x, X, ← Finset.sum_add_distrib, ← add_smul, max_add_min, add_zero]
   have : 0 < B x X := by
-    rw [hx, map_add, LinearMap.add_apply]
+    rw [hx, map_add, add_apply]
     refine add_pos_of_pos_of_nonneg (hB X hX) ?_
     simp only [X, map_sum, map_smul, LinearMap.sum_apply, smul_eq_mul, Finset.mul_sum]
     refine Finset.sum_nonneg fun k _ ↦ Finset.sum_nonneg fun l _ ↦ ?_
