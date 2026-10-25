@@ -267,7 +267,7 @@ theorem isEdgeConnected_top_iff_forall_nat :
 
 theorem edgeConnectivity_le_degree [Fintype (G.neighborSet u)] [Nontrivial V] :
     G.edgeConnectivity ≤ G.degree u :=
-  iSup₂_le fun _ h ↦ IsEdgeConnected.le_degree h
+  iSup₂_le fun _ h ↦ IsEdgeConnected.le_degree _ h
 
 theorem edgeConnectivity_le_minDegree [Fintype V] [Nontrivial V] [DecidableRel G.Adj] :
     G.edgeConnectivity ≤ G.minDegree := iSup₂_le fun _ h ↦ mod_cast h.le_minDegree
