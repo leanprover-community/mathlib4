@@ -226,21 +226,10 @@ theorem tendstoInDistribution_inv_sqrt_smul_sum
   have hYVar : Var[Y 0; P] = ‖t‖ ^ 2 := by
     rw [variance_eq_integral (hL2.inner_const t).aemeasurable, hY0]
     simpa only [sub_zero] using hY2
-  convert (tendstoInDistribution_inv_sqrt_mul_sum_sub (P := P) (X := Y)
-      (by simpa only [hYVar] using hY') (hL2.inner_const t)
+  convert (tendstoInDistribution_inv_sqrt_mul_sum_sub (X := Y) (Y := Y')
+      (by simpa [hYVar] using hY') (hL2.inner_const t)
       (hindep.comp (fun _ x ↦ ⟪x, t⟫) (by fun_prop))
-      (fun i ↦ (hident i).comp (u := fun x ↦ ⟪x, t⟫) (by fun_prop))) using 1
-  · ext n ω
-    change ⟪((√n)⁻¹ • ∑ k ∈ Finset.range n, X k ω), t⟫ =
-      (√n)⁻¹ * (∑ k ∈ Finset.range n, Y k ω - n * P[Y 0])
-    calc
-      ⟪((√n)⁻¹ • ∑ k ∈ Finset.range n, X k ω), t⟫
-          = (√n)⁻¹ * ⟪∑ k ∈ Finset.range n, X k ω, t⟫ := by
-              rw [inner_smul_left]
-              simp
-      _ = (√n)⁻¹ * ∑ k ∈ Finset.range n, ⟪X k ω, t⟫ := by
-              rw [sum_inner]
-      _ = (√n)⁻¹ * (∑ k ∈ Finset.range n, Y k ω - n * P[Y 0]) := by
-              simp [Y, hY0]
+      (fun i ↦ (hident i).comp (u := fun x ↦ ⟪x, t⟫) (by fun_prop))) with n ω
+  simp [real_inner_smul_left, sum_inner, hY0, Y]
 
 end Multivariate
