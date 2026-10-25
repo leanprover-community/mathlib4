@@ -6,7 +6,6 @@ Authors: Florent Schaffhauser, Artie Khovanov
 module
 
 public import Mathlib.Algebra.Ring.Subsemiring.Support
-public import Mathlib.Algebra.Ring.SumsOfSquares
 public import Mathlib.RingTheory.Ideal.Prime
 
 /-!

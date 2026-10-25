@@ -6,8 +6,6 @@ Authors: Artie Khovanov
 module
 
 public import Mathlib.Algebra.Group.Submonoid.Support
-public import Mathlib.Algebra.Module.Submodule.Lattice
-public import Mathlib.Algebra.Ring.Subsemiring.Basic
 public import Mathlib.Algebra.Ring.SumsOfSquares
 public import Mathlib.RingTheory.Ideal.Defs
 
