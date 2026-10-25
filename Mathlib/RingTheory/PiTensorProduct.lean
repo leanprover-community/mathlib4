@@ -125,10 +125,7 @@ variable [∀ i, Module R (A i)] [∀ i, SMulCommClass R (A i) (A i)] [∀ i, Is
 
 protected lemma mul_assoc (x y z : ⨂[R] i, A i) : mul (mul x y) z = mul x (mul y z) := by
   -- restate as an equality of morphisms so that we can use `ext`
-  suffices LinearMap.llcomp R _ _ _ mul ∘ₗ mul =
-      (LinearMap.llcomp R _ _ _ LinearMap.lflip.toLinearMap <|
-        LinearMap.llcomp R _ _ _ mul.flip ∘ₗ mul).flip by
-    congrm $this x y z
+  apply mul.mul_assoc_aux
   ext x y z
   dsimp [← mul_def]
   simpa only [tprod_mul_tprod] using congr(tprod R $(mul_assoc x y z))
