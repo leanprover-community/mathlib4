@@ -47,6 +47,8 @@ def abs (T : E →L[ℂ] F) : E →L[ℂ] E := CFC.sqrt (T.adjoint ∘L T)
 @[inherit_doc]
 local notation "|" T "|" => abs T
 
+theorem abs_apply (T : E →L[ℂ] F) : |T| = CFC.sqrt (T.adjoint ∘L T) := rfl
+
 @[simp] theorem abs_zero : |(0 : E →L[ℂ] F)| = 0 := by simp [abs]
 @[simp] theorem abs_neg (T : E →L[ℂ] F) : |-T| = |T| := by simp [abs]
 @[simp] theorem abs_nonneg (T : E →L[ℂ] F) : 0 ≤ |T| := by simp [abs]
