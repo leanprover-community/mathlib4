@@ -341,24 +341,11 @@ theorem exists_pow_eq_self_of_coprime (h : n.Coprime (orderOf x)) : ∃ m : ℕ,
 then `x` has order `n` in `G`. -/
 @[to_additive addOrderOf_eq_of_nsmul_and_div_prime_nsmul /-- If `n * x = 0`, but `n/p * x ≠ 0` for
 all prime factors `p` of `n`, then `x` has order `n` in `G`. -/]
-theorem orderOf_eq_of_pow_and_pow_div_prime (hn : 0 < n) (hx : x ^ n = 1)
+theorem orderOf_eq_of_pow_and_pow_div_prime (hx : x ^ n = 1)
     (hd : ∀ p : ℕ, p.Prime → p ∣ n → x ^ (n / p) ≠ 1) : orderOf x = n := by
-  -- Let `a` be `n/(orderOf x)`, and show `a = 1`
-  obtain ⟨a, ha⟩ := exists_eq_mul_right_of_dvd (orderOf_dvd_of_pow_eq_one hx)
-  suffices a = 1 by simp [this, ha]
-  -- Assume `a` is not one...
   by_contra h
-  have a_min_fac_dvd_p_sub_one : a.minFac ∣ n := by
-    obtain ⟨b, hb⟩ : ∃ b : ℕ, a = b * a.minFac := exists_eq_mul_left_of_dvd a.minFac_dvd
-    rw [hb, ← mul_assoc] at ha
-    exact Dvd.intro_left (orderOf x * b) ha.symm
-  -- Use the minimum prime factor of `a` as `p`.
-  refine hd a.minFac (Nat.minFac_prime h) a_min_fac_dvd_p_sub_one ?_
-  rw [← orderOf_dvd_iff_pow_eq_one, Nat.dvd_div_iff_mul_dvd a_min_fac_dvd_p_sub_one, ha, mul_comm,
-    Nat.mul_dvd_mul_iff_left (IsOfFinOrder.orderOf_pos _)]
-  · exact Nat.minFac_dvd a
-  · rw [isOfFinOrder_iff_pow_eq_one]
-    exact Exists.intro n (id ⟨hn, hx⟩)
+  obtain ⟨p, hp, hpn, hdvd⟩ := Nat.exists_prime_dvd_and_dvd_div (orderOf_dvd_of_pow_eq_one hx) h
+  exact hd p hp hpn (orderOf_dvd_iff_pow_eq_one.1 hdvd)
 
 @[to_additive]
 theorem orderOf_eq_orderOf_iff {H : Type*} [Monoid H] {y : H} :
@@ -504,7 +491,7 @@ theorem orderOf_mul_eq_right_of_forall_prime_mul_dvd (h : Commute x y) (hy : IsO
     orderOf (x * y) = orderOf y := by
   have hoy := hy.orderOf_pos
   have hxy := dvd_of_forall_prime_mul_dvd hdvd
-  apply orderOf_eq_of_pow_and_pow_div_prime hoy <;> simp only [Ne, ← orderOf_dvd_iff_pow_eq_one]
+  apply orderOf_eq_of_pow_and_pow_div_prime <;> simp only [Ne, ← orderOf_dvd_iff_pow_eq_one]
   · exact h.orderOf_mul_dvd_lcm.trans (Nat.lcm_dvd hxy dvd_rfl)
   refine fun p hp hpy hd => hp.ne_one ?_
   rw [← Nat.dvd_one, ← mul_dvd_mul_iff_right hoy.ne', one_mul, ← dvd_div_iff_mul_dvd hpy]
