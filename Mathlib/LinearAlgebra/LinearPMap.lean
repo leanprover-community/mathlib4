@@ -830,7 +830,7 @@ theorem smul_graph (f : E →ₗ.[R] F) (z : M) :
     rw [LinearPMap.smul_apply] at h
     rw [Submodule.mem_map]
     simp only [mem_graph_iff, LinearMap.prodMap_apply, LinearMap.id_coe, id,
-      LinearMap.smul_apply, Prod.mk_inj, Prod.exists, exists_exists_and_eq_and]
+      smul_apply, Prod.mk_inj, Prod.exists, exists_exists_and_eq_and]
     use x_fst, y, hy
   rw [Submodule.mem_map] at h
   rcases h with ⟨x', hx', h⟩
