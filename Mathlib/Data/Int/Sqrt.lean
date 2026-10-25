@@ -8,9 +8,6 @@ module
 public import Mathlib.Data.Nat.Sqrt
 public import Mathlib.Tactic.Common
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Square root of integers
 

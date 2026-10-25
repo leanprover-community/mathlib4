@@ -7,9 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # The comma category is preadditive
 
