@@ -1,6 +1,6 @@
 module
 
-public import Mathlib.Algebra.Ring.SumsOfSquares
+import Mathlib.Algebra.Ring.SumsOfSquares
 
 example {G : Type*} [CommGroup G] {a b c d e : G} (ha : IsSquare a) {n : ℕ} {k : ℤ} (hk : Even k) :
     IsSquare <| a * (b * b) / (c ^ 2) * (d ^ k) * (e ^ (2 * n)) := by grind
