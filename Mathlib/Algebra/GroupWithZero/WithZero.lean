@@ -42,7 +42,7 @@ In scope `WithZero`:
 
 open Function
 
-assert_not_exists DenselyOrdered Ring
+assert_not_exists Ring
 
 namespace WithZero
 variable {M α β γ : Type*}
