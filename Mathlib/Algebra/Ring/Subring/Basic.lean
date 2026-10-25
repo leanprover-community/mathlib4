@@ -453,14 +453,6 @@ theorem center.coe_inv (a : center K) : ((a⁻¹ : center K) : K) = (a : K)⁻¹
 theorem center.coe_div (a b : center K) : ((a / b : center K) : K) = (a : K) / (b : K) :=
   rfl
 
-instance : Field (Center K) where
-  mul_inv_cancel _ ha := Subtype.ext <| mul_inv_cancel₀ <| Subtype.coe_injective.ne ha
-  inv_zero := by simp
-  nnqsmul := _
-  nnqsmul_def := fun _ _ => rfl
-  qsmul := _
-  qsmul_def := fun _ _ => rfl
-
 end DivisionRing
 
 section Centralizer
