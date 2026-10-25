@@ -279,6 +279,7 @@ public import Mathlib.Algebra.Colimit.Finiteness
 public import Mathlib.Algebra.Colimit.Module
 public import Mathlib.Algebra.Colimit.Ring
 public import Mathlib.Algebra.Colimit.TensorProduct
+public import Mathlib.Algebra.Complexification
 public import Mathlib.Algebra.ContinuedFractions.Basic
 public import Mathlib.Algebra.ContinuedFractions.Computation.ApproximationCorollaries
 public import Mathlib.Algebra.ContinuedFractions.Computation.Approximations
