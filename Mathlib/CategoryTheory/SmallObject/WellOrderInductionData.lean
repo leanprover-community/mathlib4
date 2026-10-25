@@ -56,10 +56,10 @@ structure WellOrderInductionData where
   /-- When `j` is a limit element, and `x` is a compatible family of elements
   in `F.obj (op i)` for all `i < j`, this is a lifting to `F.obj (op j)`. -/
   lift (j : J) (hj : Order.IsSuccLimit j)
-    (x : ((OrderHom.Subtype.val (· ∈ Set.Iio j)).monotone.functor.op ⋙ F).sections) :
+    (x : ((Set.Iio j).mono_coe.functor.op ⋙ F).sections) :
       F.obj (op j)
   map_lift (j : J) (hj : Order.IsSuccLimit j)
-    (x : ((OrderHom.Subtype.val (· ∈ Set.Iio j)).monotone.functor.op ⋙ F).sections)
+    (x : ((Set.Iio j).mono_coe.functor.op ⋙ F).sections)
     (i : J) (hi : i < j) :
         F.map (homOfLE hi.le).op (lift j hj x) = x.val (op ⟨i, hi⟩)
 
@@ -83,8 +83,6 @@ noncomputable def ofExists
 
 variable {F} (d : F.WellOrderInductionData) [OrderBot J]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given `d : F.WellOrderInductionData`, `val₀ : F.obj (op ⊥)` and `j : J`,
 this is the data of an element `val : F.obj (op j)` such that the induced
 compatible family of elements in all `F.obj (op i)` for `i ≤ j`
@@ -298,48 +296,33 @@ private noncomputable def restrictIci (d : F.WellOrderInductionData)
     dsimp
     rw [← ConcreteCategory.comp_apply, ← F.map_comp, ← op_comp]
     apply d.map_succ
-  lift j hj p :=
-    /- The idea is to use that F and F restricted to `Ici t` have the same sections because
-    the inclusion Set.Iio j →o Set.Iio j.val is final -/
+  lift j hj s :=
     haveI hj' : Order.IsSuccLimit j.val := Set.Ici.isSuccLimit_coe j hj
-    haveI htj : t < j.val := by grind
-    let φ : Set.Iio j → Set.Iio j.val := fun u ↦ ⟨u, u.property⟩
+    letI φ : Set.Iio j → Set.Iio j.val := fun u ↦ ⟨u, u.property⟩
     haveI hφ : Monotone φ := by tauto
     haveI hφ' : hφ.functor.Final := by
       simp only [Monotone.final_functor_iff, Subtype.exists, Set.mem_Iio, Set.mem_Ici,
         Subtype.forall, Subtype.mk_le_mk, exists_prop, exists_and_right, φ]
       refine fun j₁ a ↦ ⟨max t (Order.succ j₁), ⟨?_, ?_⟩, ?_⟩
       all_goals grind [Order.IsSuccLimit.succ_lt, Subtype.mk_lt_mk, Order.le_succ]
-    haveI ijm := (OrderHom.Subtype.val (· ∈ Set.Iio j)).monotone
-    haveI ijm' := (OrderHom.Subtype.val (· ∈ Set.Iio j.val)).monotone
-    haveI ccm := (Set.Ici t).mono_coe
-    let i₀ : ijm.functor.op ⋙ ccm.functor.op ≅ hφ.functor.op ⋙ ijm'.functor.op :=
-      /- We intentionally wrap this `rfl` in `id` to prevent matching eqToHom_refl in simp calls,
-      which would leave automation stuck with some badly-typed-at-implicit-reducible F.map (𝟙 _) -/
-      eqToIso (id rfl)
-    let e₁ :
-        (ijm.functor.op ⋙ ccm.functor.op ⋙ F).sections ≃
-        (hφ.functor.op ⋙ ijm'.functor.op ⋙ F).sections :=
-      ((Functor.sectionsFunctor (Set.Iio j)ᵒᵖ).mapIso <|
-        (Functor.associator ..).symm ≪≫ Functor.isoWhiskerRight i₀ F ≪≫
-          Functor.associator ..).toEquiv
-    let e₂ :
-        (hφ.functor.op ⋙ ijm'.functor.op ⋙ F).sections ≃ (ijm'.functor.op ⋙ F).sections :=
-      Equiv.symm <| Equiv.ofBijective _ <| hφ.functor.op.bijective_sectionsPrecomp <|
-        (OrderHom.Subtype.val (· ∈ Set.Iio j.val)).monotone.functor.op ⋙ F
-    d.lift j.val hj' (e₂ (e₁ p))
+    d.lift j (Set.Ici.isSuccLimit_coe _ hj)
+      ((sectionsEquivOfInitial hφ.functor.op _).symm s)
   map_lift j hj s i hi := by
-    extract_lets φ i₀ e₁ e₂
     have hj' : Order.IsSuccLimit j.val := Set.Ici.isSuccLimit_coe j hj
-    obtain ⟨s₁, hs₁⟩ := e₁.symm.surjective s
-    obtain ⟨s₂, hs₂⟩ := e₂.symm.surjective s₁
-    simp only [comp_obj, op_obj, Monotone.functor_obj, homOfLE_leOfHom, comp_map, op_map,
-      Quiver.Hom.unop_op, ← hs₁, ← hs₂, Equiv.apply_symm_apply]
-    have := d.map_lift _ hj' s₂ _ hi
-    suffices _ : s₂.val (op ⟨i.val, hi⟩) = F.map (i₀.inv.app (op ⟨i, hi⟩)) (s₁.val (op ⟨i, hi⟩)) by
-      simpa [Monotone.functor, d.map_lift _ hj' s₂ _ hi, sectionsFunctor, hs₂, e₁, hs₁]
-    simp only [comp_obj, op_obj, Monotone.functor_obj, eqToIso.inv, eqToHom_app, eqToHom_map, i₀]
-    exact congr($(hs₂).val (op ⟨i, hi⟩))
+    let φ : Set.Iio j → Set.Iio j.val := fun u ↦ ⟨u, u.property⟩
+    have hφ : Monotone φ := by tauto
+    have hφ' : hφ.functor.Final := by
+      simp only [Monotone.final_functor_iff, Subtype.exists, Set.mem_Iio, Set.mem_Ici,
+        Subtype.forall, Subtype.mk_le_mk, exists_prop, exists_and_right, φ]
+      refine fun j₁ a ↦ ⟨max t (Order.succ j₁), ⟨?_, ?_⟩, ?_⟩
+      all_goals grind [Order.IsSuccLimit.succ_lt, Subtype.mk_lt_mk, Order.le_succ]
+    dsimp
+    rw [dsimp% d.map_lift j (Set.Ici.isSuccLimit_coe _ hj)
+      ((sectionsEquivOfInitial hφ.functor.op _).symm s) i hi]
+    obtain ⟨t, rfl⟩ := (sectionsEquivOfInitial hφ.functor.op
+      ((Set.mono_coe _).functor.op ⋙ F)).surjective s
+    simp [dsimp% (sectionsEquivOfInitial hφ.functor.op
+      ((Set.mono_coe _).functor.op ⋙ F)).symm_apply_apply t, φ]
 
 omit [OrderBot J] in
 include d in
