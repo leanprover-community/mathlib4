@@ -348,6 +348,7 @@ lemma div_mem_centralizer (ha : a ∈ centralizer S) (hb : b ∈ centralizer S) 
   simpa only [div_eq_mul_inv] using mul_mem_centralizer ha (inv_mem_centralizer hb)
 
 end Group
+
 end Set
 
 section Center
@@ -367,7 +368,7 @@ instance [Mul M] : CoeOut (Center M) M := ⟨Subtype.val⟩
 lemma coe_mem [Mul M] (z : Center M) : z.val ∈ Set.center M := z.prop
 
 /-- Construct an element of `Center M` from an central element of `M`. -/
-@[to_additive]
+@[to_additive /-- Construct an element of `AddCenter M` from an central element of `M`. -/]
 abbrev mk [Mul M] (z : M) (hz : z ∈ Set.center M) : Center M := ⟨z, hz⟩
 
 @[to_additive (attr := simp)]
@@ -391,8 +392,8 @@ instance [Mul M] : CommMagma (Center M) where
   mul_comm _ _ := by rw [eq_iff, coe_mul, coe_mul, comm]
 
 @[to_additive]
-lemma mul_assoc' [Mul M] (x y z : Center M) : x * y * z = x * (y * z) := by
-  simp_rw [eq_iff, coe_mul, IsMulCentral.mid_assoc y.prop x.val z.val]
+lemma mul_assoc' [Mul M] (x y z : Center M) : x * y * z = x * (y * z) :=
+  by simp_rw [eq_iff, coe_mul, IsMulCentral.mid_assoc y.prop x.val z.val]
 
 @[to_additive]
 instance [MulOneClass M] : MulOneClass (Center M) where
@@ -416,7 +417,7 @@ lemma coe_pow [Monoid M] (a : Center M) (n : ℕ) :
 lemma coe_one [MulOneClass M] : (1 : Center M).val = (1 : M) := rfl
 
 /-- The embedding of `Center M` into `M` -/
-@[to_additive]
+@[to_additive /-- The embedding of `AddCenter M` into `M`-/]
 abbrev subtype [Mul M] : Center M → M := Subtype.val
 
 @[to_additive (attr := simp)]
@@ -424,18 +425,15 @@ lemma mem_range_subtype_iff [Mul M] :
     Set.range subtype = Set.center M :=
   Set.ext fun x => ⟨fun ⟨x, hx⟩ => by rw [← hx]; exact x.prop , fun hx => ⟨⟨x, hx⟩, rfl⟩⟩
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma subtype_injective [Mul M] : Function.Injective (subtype (M := M)) := Subtype.coe_injective
 
-@[to_additive (attr := simp)]
-lemma subtype_surjective [CommSemigroup M] :
-    Function.Surjective (subtype (M := M)) :=
+@[to_additive]
+lemma subtype_surjective [CommSemigroup M] : Function.Surjective (subtype (M := M)) :=
   fun m => ⟨Center.mk m (by simp), by simp⟩
 
-@[to_additive (attr := simp)]
-lemma range_subtype_eq_top [CommSemigroup M] :
-    Set.range (subtype (M := M)) = ⊤ := by
-  ext; simp
+@[to_additive]
+lemma range_subtype_eq_top [CommSemigroup M] : Set.range (subtype (M := M)) = ⊤ := by simp
 
 variable (M) in
 /-- The inclusion of `Center M` into `M` as a `MonoidHom`. -/
