@@ -120,17 +120,9 @@ lemma IsEdgeConnected.le_degree [Fintype (G.neighborSet u)] [Nontrivial V]
 
 theorem IsEdgeConnected.le_minDegree [Fintype V] [Nontrivial V] [DecidableRel G.Adj]
     (h : G.IsEdgeConnected k) : k ≤ G.minDegree := by
-  obtain ⟨x,y,h'⟩ := exists_pair_ne V
-  have := IsEdgeReachable.le_degree_left (h x y) h'
-  cases k
-  · contradiction
-  · simp only [Nat.cast_le, ge_iff_le]
-    apply le_minDegree_of_forall_le_degree
-    intro v
-    obtain ⟨v',h''⟩ := exists_ne v
-    have := IsEdgeReachable.le_degree_left (h v v') h''.symm
-    simp only [Nat.cast_le] at this
-    assumption
+  cases k with
+  | top => simpa using h.le_degree <| Classical.arbitrary V
+  | coe k => exact mod_cast G.le_minDegree_of_forall_le_degree k <| mod_cast h.le_degree
 
 lemma isEdgeReachable_add_one (hk : k ≠ 0) :
     G.IsEdgeReachable (k + 1) u v ↔ ∀ e, (G.deleteEdges {e}).IsEdgeReachable k u v := by
