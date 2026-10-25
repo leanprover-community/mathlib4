@@ -1,3 +1,5 @@
+import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.Tactic.Linarith
 import Mathlib.Topology.Order.IntermediateValue
 
 /-!
