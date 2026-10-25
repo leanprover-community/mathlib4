@@ -26,7 +26,7 @@ open IsLocalRing
 variable [IsLocalRing R]
 local notation "𝓀" => ResidueField R
 
-lemma LinearMap.baseChange_bijective_of_surjective_of_spanRank_eq [Module.Finite R M]
+lemma LinearMap.baseChange_bijective_of_surjective_of_spanFinrank_eq [Module.Finite R M]
     [Module.Finite R F₁] (f : F₁ →ₗ[R] M) (surj : Function.Surjective f)
     (hrk : (⊤ : Submodule R F₁).spanFinrank = (⊤ : Submodule R M).spanFinrank) :
     Function.Bijective (f.baseChange 𝓀) := by
@@ -42,13 +42,13 @@ lemma LinearMap.baseChange_bijective_of_surjective_of_spanRank_eq [Module.Finite
 
 variable [Module.Free R F₁] [Module.Free R F₂]
 
-lemma LinearMap.baseChange_bijective_of_surjective_of_rank_eq_spanRank [Module.Finite R M]
+lemma LinearMap.baseChange_bijective_of_surjective_of_rank_eq [Module.Finite R M]
     (f : F₁ →ₗ[R] M) (surj : Function.Surjective f)
     (hrk : Module.rank R F₁ = (⊤ : Submodule R M).spanFinrank) :
     Function.Bijective (f.baseChange 𝓀) := by
   have : Module.Finite R F₁ := by simp [← Module.rank_lt_aleph0_iff, hrk]
   simp only [← Module.finrank_eq_rank, Module.finrank_eq_spanFinrank_of_free, Nat.cast_inj] at hrk
-  exact f.baseChange_bijective_of_surjective_of_spanRank_eq surj hrk
+  exact f.baseChange_bijective_of_surjective_of_spanFinrank_eq surj hrk
 
 lemma LinearMap.bijective_of_surjective_of_rank_eq_of_of_comp_eq [Module.Finite R M]
     (f : F₁ →ₗ[R] M) (surjf : Function.Surjective f)
@@ -62,7 +62,7 @@ lemma LinearMap.bijective_of_surjective_of_rank_eq_of_of_comp_eq [Module.Finite 
   apply OrzechProperty.bijective_of_surjective_of_injective _ h e.injective
   have surjb : Function.Surjective (h.baseChange 𝓀) := by
     rw [← Function.Surjective.of_comp_iff'
-      (g.baseChange_bijective_of_surjective_of_rank_eq_spanRank surjg hrk2),
+      (g.baseChange_bijective_of_surjective_of_rank_eq surjg hrk2),
       ← LinearMap.coe_comp, ← LinearMap.baseChange_comp, eq]
     exact baseChange_surjective 𝓀 surjf
   rw [← LinearMap.range_eq_top, ← IsLocalRing.map_tensorProduct_mk_eq_top, ← LinearMap.range_comp,
