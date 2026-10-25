@@ -143,7 +143,7 @@ theorem mulSupport_top : (⊤ : Submonoid G).mulSupport = ⊤ :=
   Subgroup.gc_toSubmonoid_mulSupport.u_top
 
 variable (G) in
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem not_isMulPointed_top [Nontrivial G] : ¬ (⊤ : Submonoid G).IsMulPointed := by
   simp [isMulPointed_iff_mulSupport_eq_bot]
 
