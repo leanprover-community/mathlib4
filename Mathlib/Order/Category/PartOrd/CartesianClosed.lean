@@ -21,7 +21,7 @@ skeletal codomain are thin and skeletal. Hence `PartOrd` is cartesian closed.
 universe u
 
 open CategoryTheory Limits
-open scoped CartesianClosed MonoidalCategory
+open scoped MonoidalCategory
 
 noncomputable section
 

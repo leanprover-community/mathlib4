@@ -21,7 +21,7 @@ are thin. Hence `Preord` is cartesian closed.
 universe u
 
 open CategoryTheory Limits
-open scoped CartesianClosed MonoidalCategory
+open scoped MonoidalCategory
 
 noncomputable section
 
