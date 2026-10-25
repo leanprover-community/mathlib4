@@ -191,7 +191,7 @@ theorem volumeForm_zero_neg [_i : Fact (finrank ℝ E = 0)] :
   rw [ray_eq_iff, SameRay.sameRay_comm]
   intro h
   simpa using
-    congr_arg AlternatingMap.constLinearEquivOfIsEmpty.symm (eq_zero_of_sameRay_self_neg h)
+    congr(AlternatingMap.constLinearEquivOfIsEmpty.symm $(eq_zero_of_sameRay_self_neg h))
 
 /-- The volume form on an oriented real inner product space can be evaluated as the determinant with
 respect to any orthonormal basis of the space compatible with the orientation. -/
@@ -216,7 +216,7 @@ theorem volumeForm_robust_neg (b : OrthonormalBasis (Fin n) ℝ E) (hb : b.toBas
   let e : OrthonormalBasis (Fin n.succ) ℝ E := o.finOrthonormalBasis n.succ_pos Fact.out
   simp_rw [volumeForm]
   apply e.det_eq_neg_det_of_opposite_orientation b
-  convert! hb.symm
+  convert hb.symm
   exact o.finOrthonormalBasis_orientation _ _
 
 @[simp]
@@ -251,7 +251,7 @@ theorem abs_volumeForm_apply_le (v : Fin n → E) : |o.volumeForm v| ≤ ∏ i :
   have hb : b.toBasis.det v = ∏ i, ⟪b i, v i⟫ := gramSchmidtOrthonormalBasis_det this v
   rw [o.volumeForm_robust' b, hb, Finset.abs_prod]
   gcongr with i
-  convert! abs_real_inner_le_norm (b i) (v i)
+  convert abs_real_inner_le_norm (b i) (v i)
   simp [b.orthonormal.1 i]
 
 theorem volumeForm_apply_le (v : Fin n → E) : o.volumeForm v ≤ ∏ i : Fin n, ‖v i‖ :=
@@ -285,7 +285,7 @@ theorem abs_volumeForm_apply_of_pairwise_orthogonal {v : Fin n → E}
 orthonormal basis is ±1. -/
 theorem abs_volumeForm_apply_of_orthonormal (v : OrthonormalBasis (Fin n) ℝ E) :
     |o.volumeForm v| = 1 := by
-  simpa [o.volumeForm_robust' v v] using congr_arg abs v.toBasis.det_self
+  simpa [o.volumeForm_robust' v v] using congr(abs $v.toBasis.det_self)
 
 theorem volumeForm_map {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
     [Fact (finrank ℝ F = n)] (φ : E ≃ₗᵢ[ℝ] F) (x : Fin n → F) :
@@ -309,7 +309,7 @@ theorem volumeForm_comp_linearIsometryEquiv (φ : E ≃ₗᵢ[ℝ] E)
   rcases n with - | n
   · refine o.eq_or_eq_neg_of_isEmpty.elim ?_ ?_ <;> rintro rfl <;> simp
   have : FiniteDimensional ℝ E := .of_fact_finrank_eq_succ n
-  convert! o.volumeForm_map φ (φ ∘ x)
+  convert o.volumeForm_map φ (φ ∘ x)
   · symm
     rwa [← o.map_eq_iff_det_pos φ.toLinearEquiv] at hφ
     rw [_i.out, Fintype.card_fin]

@@ -140,7 +140,7 @@ theorem irreducible_minpolyX' (hf : ¬∃ c, f = C c) : Irreducible (f.minpolyX 
     rw [mul_comm]
     rfl
   rw [this, MulEquiv.irreducible_iff]
-  convert!
+  convert
     irreducible_C_mul_X_add_C (neg_ne_zero.mpr f.denom_ne_zero)
       ((IsCoprime.neg_right_iff _ _).mpr f.isCoprime_num_denom).symm.isRelPrime using 1
   rw [add_comm, X_mul_C, map_neg, neg_mul]
@@ -175,7 +175,7 @@ theorem finrank_eq_max_natDegree :
 
 theorem IntermediateField.isAlgebraic_X {E : IntermediateField K K⟮X⟯} (hE : E ≠ ⊥) :
     IsAlgebraic E (X : K⟮X⟯) := by
-  rw [ne_eq, ← le_bot_iff, SetLike.not_le_iff_exists] at hE
+  rw [ne_eq, ← le_bot_iff, IsConcreteLE.not_le_iff_exists] at hE
   obtain ⟨f, hf₁, hf₂⟩ := hE
   exact IsAlgebraic.tower_top_of_subalgebra_le (adjoin_simple_le_iff.mpr hf₁) <|
     f.isAlgebraic_adjoin_simple_X (by rintro ⟨c, rfl⟩; exact hf₂ ⟨c, rfl⟩)

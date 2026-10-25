@@ -176,8 +176,7 @@ to module `Foo.Bar` (no `srcDir` indirection).
 
 - `set_option_utils.py`
   Shared configuration for `add_set_option.py` and `rm_set_option.py`. Contains the list of
-  managed options (`backward.isDefEq.respectTransparency`, `backward.whnf.reducibleClassField`)
-  and helpers for generating `set_option` lines and regex patterns.
+  managed options and helpers for generating `set_option` lines and regex patterns.
 
 - `add_set_option.py`
   Adds `set_option ... false in` before declarations that fail to build. Traverses the DAG
@@ -187,7 +186,7 @@ to module `Foo.Bar` (no `srcDir` indirection).
   Usage: `python3 scripts/add_set_option.py [--option NAME] [--max-workers N] [--timeout N] [--files FILE ...]`
 
 - `rm_set_option.py`
-  Removes unnecessary `set_option ... false in` lines. Only targets lines without a trailing
+  Removes unnecessary `set_option ... in` lines. Only targets lines without a trailing
   comment; lines like `set_option ... false in -- reason` are left untouched. Traverses the DAG
   **backward** (leaves first) so removing an option from an upstream file doesn't invalidate
   cached builds of downstream files. Tries removing all occurrences at once; if that fails,
@@ -221,15 +220,13 @@ to module `Foo.Bar` (no `srcDir` indirection).
 
 **CI workflow**
 - `lake-build-with-retry.sh`
-  Runs `lake build` on a target until `lake build --no-build` succeeds. Used in the main build workflows.
+  Runs `lake build` on one or more targets until `lake build --no-build` succeeds. Used in the main build workflows.
 - `lake-build-wrapper.py`
   A wrapper script for `lake build` which collapses normal build into log groups and saves a build summary JSON file. See file for usage.
 - `mk_all.lean`
   run via `lake exe mk_all`, regenerates the import-only files
   `Mathlib.lean`, `Mathlib/Tactic.lean`, `Archive.lean` and `Counterexamples.lean`
-- `lint-style.lean`, `lint-style.py`, `print-style-errors.sh`
-  style linters, written in Python and Lean. Run via `lake exe lint-style`.
-  Medium-term, the latter two scripts should be rewritten and incorporated in `lint-style.lean`.
+- `lint-style.lean`: style linters written in Lean. Run via `lake exe lint-style`.
 - `check_title_labels.lean` verifies that a (non-WIP, non-draft) PR has a well-formed title.
   In the future, it may also check that a feature PR has a topic label.
 - `lint-bib.sh`
@@ -238,7 +235,7 @@ to module `Foo.Bar` (no `srcDir` indirection).
   Sanity checks for `undergrad.yaml`, `overview.yaml`, `100.yaml` and `1000.yaml`.
 - `export_crossrefs.lean`
   Exports a JSON dictionary of every declaration tagged with `@[wikidata]`, `@[stacks]`,
-  `@[kerodon]`, `@[lmfdb]`, or `@[dlmf]` (declaration name, source file, line number, and the cross-reference ids).
+  `@[kerodon]`, `@[lmfdb]`, `@[dlmf]`, or `@[oeis]` (declaration name, source file, line number, and the cross-reference ids).
   It runs as a Lean command over the fully-imported `Mathlib` environment (like `#stacks_tags`),
   so it is invoked with `lake env lean scripts/export_crossrefs.lean` rather than `lake exe`.
   The output path defaults to `crossrefs.json` (override with `CROSSREFS_OUT`); the embedded
@@ -306,6 +303,11 @@ to module `Foo.Bar` (no `srcDir` indirection).
 
 Both of these files should tend to zero over time;
 please do not add new entries to these files. PRs removing (the need for) entries are welcome.
+
+**Linter configuration files**
+- `forbiddenDirs.json` is read by the `directoryDependency` linter
+  (in `Mathlib/Tactic/Linter/DirectoryDependency.lean`): it records which directories are not
+  allowed to import from each other, to keep mathlib's import graph manageable.
 
 **Grind tactic analysis**
 - `grind_unused_lemmas.sh` `[N] [logfile]`

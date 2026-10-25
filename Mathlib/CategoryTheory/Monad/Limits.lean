@@ -5,9 +5,10 @@ Authors: Kim Morrison, Bhavik Mehta, Jack McKoen
 -/
 module
 
-public import Mathlib.CategoryTheory.Monad.Adjunction
 public import Mathlib.CategoryTheory.Adjunction.Limits
-public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
+public import Mathlib.CategoryTheory.Monad.Adjunction
+
+import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
 
 /-!
 # Limits and colimits in the category of (co)algebras
@@ -105,7 +106,7 @@ def liftedConeIsLimit : IsLimit (liftedCone D c t) where
     ext1
     apply t.hom_ext
     intro j
-    simpa [t.fac ((forget T).mapCone s) j] using congr_arg Algebra.Hom.f (J j)
+    simpa [t.fac ((forget T).mapCone s) j] using congr($(J j).f)
 
 end ForgetCreatesLimits
 
@@ -170,7 +171,6 @@ theorem commuting (j : J) : (T : C ⥤ C).map (c.ι.app j) ≫ lambda c t = (D.o
 
 variable [PreservesColimit ((D ⋙ forget T) ⋙ ↑T) (T : C ⥤ C)]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- (Impl)
 Construct the colimiting algebra from the map `λ : TL ⟶ L` given by `lambda`. We are required to
 show it satisfies the two algebra laws, which follow from the algebra laws for the image of `D` and
@@ -194,7 +194,6 @@ noncomputable def coconePoint : Algebra T where
       Functor.map_comp_assoc, commuting, Functor.map_comp, Category.assoc, commuting]
     apply (D.obj j).assoc_assoc _
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- (Impl) Construct the lifted cocone in `Algebra T` which will be colimiting. -/
 @[simps]
 noncomputable def liftedCocone : Cocone D where
@@ -224,7 +223,7 @@ noncomputable def liftedCoconeIsColimit : IsColimit (liftedCocone c t) where
     ext1
     apply t.hom_ext
     intro j
-    simpa using congr_arg Algebra.Hom.f (J j)
+    simpa using congr($(J j).f)
 
 end ForgetCreatesColimits
 
@@ -451,7 +450,7 @@ def liftedCoconeIsColimit : IsColimit (liftedCocone D c t) where
     ext1
     apply t.hom_ext
     intro j
-    simpa [t.fac ((forget T).mapCocone s) j] using congr_arg Coalgebra.Hom.f (J j)
+    simpa [t.fac ((forget T).mapCocone s) j] using congr($(J j).f)
 
 end ForgetCreatesColimits'
 
@@ -508,7 +507,6 @@ theorem commuting (j : J) : lambda c t ≫ (T : C ⥤ C).map (c.π.app j) = c.π
 variable [PreservesLimit ((D ⋙ forget T) ⋙ T.toFunctor) T.toFunctor]
 variable [PreservesColimit ((D ⋙ forget T) ⋙ ↑T) (T : C ⥤ C)]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- (Impl)
 Construct the limiting coalgebra from the map `λ : L ⟶ TL` given by `lambda`. We are required to
 show it satisfies the two coalgebra laws, which follow from the coalgebra laws for the image of `D`
@@ -529,7 +527,6 @@ noncomputable def conePoint : Coalgebra T where
     simp only [Functor.comp_obj, forget_obj, Functor.const_obj_obj, assoc]
     rw [(D.obj j).coassoc, ← assoc, ← assoc, commuting]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- (Impl) Construct the lifted cone in `Coalgebra T` which will be limiting. -/
 @[simps]
 noncomputable def liftedCone : Cone D where
@@ -560,7 +557,7 @@ noncomputable def liftedConeIsLimit : IsLimit (liftedCone c t) where
     ext1
     apply t.hom_ext
     intro j
-    simpa using congr_arg Coalgebra.Hom.f (J j)
+    simpa using congr($(J j).f)
 
 end ForgetCreatesLimits'
 

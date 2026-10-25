@@ -5,9 +5,10 @@ Authors: Seewoo Lee
 -/
 module
 
-public import Mathlib.Analysis.Complex.Liouville
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.MDifferentiable
-public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Transform
+
+import Mathlib.Analysis.Complex.Liouville
+import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Transform
 
 /-!
 # Derivatives of modular forms
@@ -224,18 +225,13 @@ $\partial_k (F ∣[k] γ) = (\partial_k F) ∣[k + 2] \gamma$ for all $\gamma \i
 -/
 theorem serreDerivative_slash_equivariant {k : ℤ} {F : ℍ → ℂ} (hF : MDiff F) {γ : SL(2, ℤ)} :
     serreDerivative k F ∣[k + 2] γ = serreDerivative k (F ∣[k] γ) := by
+  simp only [serreDerivative_eq, ← smul_eq_mul ((k : ℂ) * 12⁻¹), ← Pi.sub_def, ← Pi.mul_def,
+    ← Pi.smul_def]
+  rw [SlashAction.sub_slash, add_comm k 2, ModularForm.mul_slash_SL2, ModularForm.SL_smul_slash]
   ext z
-  have hLHS : (serreDerivative (k : ℂ) F ∣[k + 2] γ) z =
-      (D F ∣[k + 2] γ) z - ↑k * 12⁻¹ * ((EisensteinSeries.E2 ∣[(2 : ℤ)] γ) z * (F ∣[k] γ) z) := by
-    grind [ModularForm.SL_slash_apply, serreDerivative_apply, Pi.mul_apply,
-      congrFun (ModularForm.mul_slash_SL2 2 k γ EisensteinSeries.E2 F) z]
-  have hDz : (D (F ∣[k] γ)) z = (D F ∣[k + 2] γ) z -
-      (k * (2 * π * I)⁻¹ * (γ 1 0 / denom γ z) * (F ∣[k] γ) z) := by
-    simp [normalizedDerivOfComplex_SL_slash hF]
-  have hE2z : (EisensteinSeries.E2 ∣[(2 : ℤ)] γ) z =
-      EisensteinSeries.E2 z - 1 / (2 * riemannZeta 2) * EisensteinSeries.D2 γ z := by
-    simp [EisensteinSeries.E2_slash_action]
-  grind [serreDerivative_apply, EisensteinSeries.D2, riemannZeta_two, I_sq]
+  simp [normalizedDerivOfComplex_SL_slash hF, EisensteinSeries.E2_slash_action,
+    EisensteinSeries.D2, riemannZeta_two, add_comm k 2]
+  field
 
 /--
 As a corollary, if `F` is invariant under the slash action of weight `k`, then
@@ -268,7 +264,7 @@ private lemma norm_normalizedDerivOfComplex_le {F : ℍ → ℂ} (hF : MDiff F) 
       ((UpperHalfPlane.mdifferentiable_iff.mp hF).diffContOnCl_ball
         fun w hw ↦ h2.trans_le (him w hw)) hbd
   calc ‖D F z‖ = (2 * π)⁻¹ * ‖deriv (F ∘ ofComplex) (z : ℂ)‖ := by
-        simp [normalizedDerivOfComplex, Real.pi_pos.le]
+        simp [normalizedDerivOfComplex]
     _ ≤ (2 * π)⁻¹ * (M / (z.im / 2)) := by gcongr
     _ = M / (π * z.im) := by ring
 

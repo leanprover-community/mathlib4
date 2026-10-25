@@ -104,6 +104,7 @@ namespace Diffeomorph
 theorem toEquiv_injective : Injective (Diffeomorph.toEquiv : (M ≃ₘ^n⟮I, I'⟯ M') → M ≃ M')
   | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
 
+@[macro_inline]
 instance : EquivLike (M ≃ₘ^n⟮I, I'⟯ M') M M' where
   coe Φ := Φ.toEquiv
   inv Φ := Φ.toEquiv.symm
@@ -340,7 +341,7 @@ theorem toOpenPartialHomeomorph_mdifferentiable (h : M ≃ₘ^n⟮I, J⟯ N) (hn
 
 theorem uniqueMDiffOn_image_aux (h : M ≃ₘ^n⟮I, J⟯ N) (hn : n ≠ 0) {s : Set M}
     (hs : UniqueMDiff[s]) : UniqueMDiff[h '' s] := by
-  convert! hs.uniqueMDiffOn_preimage (h.toOpenPartialHomeomorph_mdifferentiable hn)
+  convert hs.uniqueMDiffOn_preimage (h.toOpenPartialHomeomorph_mdifferentiable hn)
   simp [h.image_eq_preimage_symm]
 
 @[simp]
