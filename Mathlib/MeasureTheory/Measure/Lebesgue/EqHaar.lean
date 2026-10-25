@@ -510,44 +510,33 @@ theorem addHaar_closedBall (x : E) {r : ℝ} (hr : 0 ≤ r) :
     μ (closedBall x r) = ENNReal.ofReal (r ^ finrank ℝ E) * μ (ball 0 1) := by
   rw [addHaar_closedBall' μ x hr, addHaar_unitClosedBall_eq_addHaar_unitBall]
 
-/-- For an additive Haar measure in dimension `d`, the ratio of the measures of two closed balls of
-radii `r` and `s` is `(r / s) ^ d`. -/
-theorem addHaar_closedEBall_div (x y : E) (r s : ℝ≥0∞) :
-    μ (closedEBall x r) / μ (closedEBall y s) = (r / s) ^ finrank ℝ E := by
-  rcases subsingleton_or_nontrivial E with hE | hE
-  · have h_univ (z : E) (t : ℝ≥0∞) : closedEBall z t = Set.univ :=
-      Set.eq_univ_of_forall fun w ↦ by simp [Subsingleton.elim w z]
-    simp only [h_univ, Module.finrank_zero_of_subsingleton, pow_zero]
-    exact ENNReal.div_self (measure_univ_ne_zero.mpr (NeZero.ne μ))
-      isCompact_univ.measure_ne_top
-  have h_ball (z : E) (t : ℝ≥0) :
-      μ (closedEBall z t) = (t : ℝ≥0∞) ^ finrank ℝ E * μ (ball (0 : E) 1) := by
-    rw [closedEBall_coe, addHaar_closedBall μ z t.coe_nonneg,
-      ENNReal.ofReal_pow t.coe_nonneg, ENNReal.ofReal_coe_nnreal]
-  have h_pos : μ (ball (0 : E) 1) ≠ 0 := (measure_ball_pos μ _ one_pos).ne'
-  have h_fin : μ (ball (0 : E) 1) ≠ ⊤ := measure_ball_lt_top.ne
-  have hd : finrank ℝ E ≠ 0 := Module.finrank_pos.ne'
-  obtain rfl | hr := eq_top_or_lt_top r <;> obtain rfl | hs := eq_top_or_lt_top s
-  · simp [closedEBall_top, zero_pow hd]
-  · lift s to ℝ≥0 using hs.ne
-    rw [closedEBall_top, measure_univ_of_isAddLeftInvariant, h_ball]
-    by_cases hs0 : s = 0
-    · simp only [hs0, ENNReal.coe_zero, zero_pow hd, zero_mul]
-      rw [ENNReal.div_zero ENNReal.top_ne_zero, ENNReal.top_pow hd]
-    · rw [ENNReal.top_div_of_ne_top (ENNReal.mul_ne_top (by simp) h_fin),
-        ENNReal.top_div_of_ne_top (by simp), ENNReal.top_pow hd]
-  · lift r to ℝ≥0 using hr.ne
-    rw [closedEBall_top, measure_univ_of_isAddLeftInvariant, h_ball,
-      ENNReal.div_top, ENNReal.div_top, zero_pow hd]
-  · lift r to ℝ≥0 using hr.ne
-    lift s to ℝ≥0 using hs.ne
-    rw [h_ball, h_ball, ENNReal.mul_div_mul_right _ _ h_pos h_fin, div_eq_mul_inv,
-      div_eq_mul_inv, mul_pow, ENNReal.inv_pow]
-
 theorem addHaar_real_closedBall (x : E) {r : ℝ} (hr : 0 ≤ r) :
     μ.real (closedBall x r) = r ^ finrank ℝ E * μ.real (ball 0 1) := by
   simp [addHaar_real_closedBall' μ x hr, measureReal_def,
     addHaar_unitClosedBall_eq_addHaar_unitBall]
+
+/-- The measure of a closed ball of radius `r` for an additive Haar measure in dimension `d` is
+`r ^ d` times the measure of the unit ball. -/
+theorem addHaar_closedEBall (x : E) (r : ℝ≥0∞) :
+    μ (closedEBall x r) = r ^ finrank ℝ E * μ (ball 0 1) := by
+  rcases subsingleton_or_nontrivial E with hE | hE
+  · rw [finrank_zero_of_subsingleton, pow_zero, one_mul,
+      Subsingleton.eq_univ_of_nonempty nonempty_closedEBall,
+      Subsingleton.eq_univ_of_nonempty (nonempty_ball.2 one_pos)]
+  rcases eq_top_or_lt_top r with rfl | hr
+  · rw [closedEBall_top, measure_univ_of_isAddLeftInvariant, ENNReal.top_pow finrank_pos.ne',
+      ENNReal.top_mul (measure_ball_pos μ _ one_pos).ne']
+  lift r to ℝ≥0 using hr.ne
+  rw [closedEBall_coe, addHaar_closedBall μ x r.coe_nonneg, ENNReal.ofReal_pow r.coe_nonneg,
+    ENNReal.ofReal_coe_nnreal]
+
+/-- For an additive Haar measure in dimension `d`, the ratio of the measures of two closed balls of
+radii `r` and `s` is `(r / s) ^ d`. -/
+theorem addHaar_closedEBall_div (x y : E) (r s : ℝ≥0∞) :
+    μ (closedEBall x r) / μ (closedEBall y s) = (r / s) ^ finrank ℝ E := by
+  rw [addHaar_closedEBall, addHaar_closedEBall,
+    ENNReal.mul_div_mul_right _ _ (measure_ball_pos μ _ one_pos).ne' measure_ball_lt_top.ne,
+    div_eq_mul_inv, div_eq_mul_inv, mul_pow, ENNReal.inv_pow]
 
 theorem addHaar_closedBall_eq_addHaar_ball [Nontrivial E] (x : E) (r : ℝ) :
     μ (closedBall x r) = μ (ball x r) := by
