@@ -50,7 +50,8 @@ noncomputable def coconeOfPreserves
     simpa using (c.ι.naturality f)
 
 @[reassoc (attr := simp)]
-lemma map_ι_coconeOfPreserves_pt_hom {K : J ⥤ Inserter F G} [Limits.PreservesColimit (K ⋙ proj F G) F]
+lemma map_ι_coconeOfPreserves_pt_hom {K : J ⥤ Inserter F G}
+    [Limits.PreservesColimit (K ⋙ proj F G) F]
     {c : Cocone (K ⋙ proj F G)} (hc : IsColimit c) (j : J) :
     F.map (c.ι.app j) ≫ (coconeOfPreserves hc).pt.hom = (K.obj j).hom ≫ G.map (c.ι.app j) :=
   ((coconeOfPreserves hc).ι.app j).comm
@@ -123,7 +124,8 @@ noncomputable def coneOfPreserves
     simpa using (c.π.naturality f)
 
 @[reassoc (attr := simp)]
-lemma coneOfPreserves_pt_hom_map_π_app {K : J ⥤ Inserter F G} [Limits.PreservesLimit (K ⋙ proj F G) G]
+lemma coneOfPreserves_pt_hom_map_π_app {K : J ⥤ Inserter F G}
+    [Limits.PreservesLimit (K ⋙ proj F G) G]
     {c : Cone (K ⋙ proj F G)} (hc : IsLimit c) (j : J) :
     (coneOfPreserves hc).pt.hom ≫ G.map (c.π.app j) = F.map (c.π.app j) ≫ (K.obj j).hom :=
   (coneOfPreserves hc).π.app j |>.comm.symm
