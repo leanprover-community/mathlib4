@@ -440,4 +440,12 @@ def barResolution : ProjectiveResolution (Rep.trivial k G k) where
   projective n := (inferInstance : Projective (free k G (Fin n → G)))
   π := (isoStandardComplex k G).hom ≫ standardComplex.εToSingle₀ k G
 
+/-- Given a `k`-linear `G`-representation `V`, `Extⁿ(k, V)` (where `k` is the trivial `k`-linear
+`G`-representation) is isomorphic to the `n`th cohomology group of `Hom(P, V)`, where `P` is the
+bar resolution of `k`. -/
+abbrev barResolution.extIso (V : Rep k G) (n : ℕ) :
+  ModuleCat.of k (Abelian.Ext (Rep.trivial k G k) V n) ≅
+    ((barComplex k G).linearYonedaObj k V).homology n :=
+  (barResolution k G).extIsoHomologyLinearYonedaObj _ _
+
 end Rep
