@@ -104,8 +104,8 @@ instance [LT ι] [∀ a, LT (β a)] : LT (Colex (∀ i, β i)) :=
 @[simp] theorem ofColex_apply (x : Colex (∀ i, β i)) (i : ι) : ofColex x i = x i := rfl
 
 theorem Lex.lt_def [LT ι] [∀ a, LT (β a)] {x y : Lex (∀ i, β i)} :
-    x < y ↔ Pi.Lex (· < ·) (· < ·) (ofLex x) (ofLex y) := by
-  rfl
+    x < y ↔ Pi.Lex (· < ·) (· < ·) (ofLex x) (ofLex y) :=
+  .rfl
 
 theorem toLex_lt_toLex_iff [LT ι] [∀ a, LT (β a)] {x y : ∀ i, β i} :
     toLex x < toLex y ↔ Pi.Lex (· < ·) (· < ·) x y := by
