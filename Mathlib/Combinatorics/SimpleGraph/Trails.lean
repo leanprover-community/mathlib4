@@ -134,10 +134,10 @@ theorem _root_.SimpleGraph.exists_isEulerian_of_mem_support (hv : ¬G.IsIsolated
   ⟨_, hp.rotate <| hp.mem_support_of_not_isIsolated hv⟩
 
 variable (v) in
-/-- In a preconnected Eulerian graph there exists an Eulerian circuit from any vertex. -/
+/-- In a connected Eulerian graph there exists an Eulerian circuit from any vertex.
+Since Eulerian graphs are nonempty, it suffices to require preconnected. -/
 theorem _root_.SimpleGraph.Preconnected.exists_isEulerian (h : G.Preconnected)
-    (hp : ∃ (v' : V) (p : G.Walk v' v'), p.IsEulerian) :
-    ∃ p : G.Walk v v, p.IsEulerian := by
+    (hp : ∃ (v' : V) (p : G.Walk v' v'), p.IsEulerian) : ∃ p : G.Walk v v, p.IsEulerian := by
   cases subsingleton_or_nontrivial V
   · exact ⟨nil, Sym2.ind fun a b hadj ↦ absurd (Subsingleton.elim a b) hadj.ne⟩
   exact exists_isEulerian_of_mem_support (h.not_isIsolated v) hp
