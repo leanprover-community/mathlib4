@@ -6,7 +6,6 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.Finset.Sort
-public import Mathlib.Data.Fintype.Basic
 
 /-!
 # Sorting a finite type

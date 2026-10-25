@@ -5,14 +5,9 @@ Authors: Johannes Hölzl, Yury Kudryashov, Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Equiv
 public import Mathlib.Algebra.Algebra.NonUnitalHom
 public import Mathlib.Algebra.Algebra.Tower
-public import Mathlib.Algebra.Module.BigOperators
-public import Mathlib.Algebra.MonoidAlgebra.MapDomain
 public import Mathlib.Algebra.MonoidAlgebra.Module
-public import Mathlib.Data.Finsupp.SMul
-public import Mathlib.LinearAlgebra.Finsupp.LSum
 
 /-!
 # Algebra structure on monoid algebras
@@ -254,7 +249,7 @@ theorem lift_symm_apply (F : R[M] →ₐ[R] A) (m : M) : (lift R A M).symm F m =
 
 @[simp]
 theorem lift_single (F : M →* A) (a b) : lift R A M F (single a b) = b • F a := by
-  rw [lift_def, liftNC_single, Algebra.smul_def, AddMonoidHom.coe_coe]
+  rw [lift_def, liftNC_single, Algebra.smul_def, AddMonoidHom.coe_ofClass]
 
 theorem lift_of (F : M →* A) (m : M) : lift R A M F (of R M m) = F m := by simp
 
@@ -450,8 +445,6 @@ lemma symm_mapAlgEquiv (e : A ≃ₐ[R] B) : (mapAlgEquiv R M e).symm = mapAlgEq
 @[to_additive (attr := simp)]
 lemma mapAlgEquiv_trans (e₁ : A ≃ₐ[R] B) (e₂ : B ≃ₐ[R] C) :
     mapAlgEquiv R M (e₁.trans e₂) = (mapAlgEquiv R M e₁).trans (mapAlgEquiv R M e₂) := by ext; simp
-
-@[deprecated (since := "2026-03-27")] alias mapRangeAlgEquiv_trans := mapAlgEquiv_trans
 
 variable (R M) in
 /-- `MonoidAlgebra.mapRangeAlgEquiv` as a `MonoidHom` from `A ≃ₐ[R] A`. -/
@@ -664,6 +657,45 @@ def domCongrAut : AddAut M →+ Additive (A[M] ≃ₐ[R] A[M]) where
   map_add' _ _ := by ext; simp [AddAut.add_def]
 
 end lift
+
+section comapDomAlgAut
+
+variable {G : Type*} [Group G] [AddMonoid M] [DistribMulAction G M] [CommSemiring R]
+
+variable (R M G) in
+/-- An action of `G` on `M` by additive automorphisms induces an action of `G` on `R[M]`
+by `R`-algebra automorphisms, through the exponents. -/
+def comapDomAlgAut : G →* R[M] ≃ₐ[R] R[M] :=
+  (AddMonoidHom.toMultiplicative (domCongrAut R R (M := M))).comp (DistribMulAction.toAddAut G M)
+
+theorem comapDomAlgAut_apply (g : G) :
+    comapDomAlgAut R M G g = domCongr R R (DistribMulAction.toAddEquiv M g) :=
+  rfl
+
+/-- The action of `G` on `R[M]` through the exponents, `(g • x).coeff m = x.coeff (g⁻¹ • m)`.
+
+This is not an instance: for `M = R` it would conflict with actions on the coefficients. -/
+@[instance_reducible]
+def comapMulSemiringAction : MulSemiringAction G R[M] :=
+  .compHom _ (comapDomAlgAut R M G)
+
+attribute [local instance] comapMulSemiringAction
+
+theorem comapSMul_def (g : G) (x : R[M]) : g • x = comapDomAlgAut R M G g x :=
+  rfl
+
+@[simp]
+theorem coeff_comapSMul (g : G) (x : R[M]) (m : M) : (g • x).coeff m = x.coeff (g⁻¹ • m) := by
+  simp [comapSMul_def, comapDomAlgAut_apply]
+
+@[simp]
+theorem comapSMul_single (g : G) (m : M) (r : R) : g • single m r = single (g • m) r := by
+  simp [comapSMul_def, comapDomAlgAut_apply]
+
+theorem comapSMulCommClass : SMulCommClass G R R[M] where
+  smul_comm g r x := by simp [comapSMul_def]
+
+end comapDomAlgAut
 
 variable [CommSemiring R] [AddMonoid M] [Semiring A] [Algebra R A]
 

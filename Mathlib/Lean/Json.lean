@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 module
 
+public import Lean.Data.Json.FromToJson.Basic
 public import Mathlib.Init
 
 /-!

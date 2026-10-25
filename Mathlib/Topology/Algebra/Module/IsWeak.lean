@@ -5,9 +5,8 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
-public import Mathlib.Topology.Algebra.Module.Equiv
 public import Mathlib.LinearAlgebra.BilinearMap
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
 /-! # Weak topologies on modules
 
@@ -131,11 +130,12 @@ protected theorem congr [AddCommMonoid E'] [Module 𝕜 E']
     B'.IsWeak where
   eq_induced := by
     rw [e.symm.toHomeomorph.induced_eq.symm]
-    apply congr(TopologicalSpace.induced e.symm $(hB.eq_induced)).trans
+    apply congr(TopologicalSpace.induced e.symm $hB.eq_induced).trans
     simp_rw [induced_compose, ← hBB', induced_to_pi]
     rw [f.toEquiv.iInf_congr]
     simp
 
+set_option fun_prop.projDefaultTransparency true in
 /-- Map `F` into the topological dual of `E` with the weak topology induced by `F` -/
 def eval [ContinuousAdd 𝕜] [ContinuousConstSMul 𝕜 𝕜] : F →ₗ[𝕜] StrongDual 𝕜 E where
   toFun f := ⟨B.flip f, by fun_prop⟩

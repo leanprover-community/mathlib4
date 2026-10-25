@@ -62,15 +62,15 @@ instance instDecidableMapAdj [DecidableEq W] {f : V → W} {a b}
     [Decidable (Relation.Map G.Adj f f a b)] : Decidable ((G.map f).Adj a b) :=
   inferInstanceAs <| Decidable (_ ∧ _)
 
-@[simp]
-theorem map_adj (f : V ↪ W) (G : SimpleGraph V) (u v : W) :
-    (G.map f).Adj u v ↔ ∃ u' v' : V, G.Adj u' v' ∧ f u' = u ∧ f v' = v := by
-  dsimp [SimpleGraph.map, Relation.Map]
-  grind [SimpleGraph.Adj.ne]
-
+@[grind =]
 theorem map_adj' (f : V → W) (G : SimpleGraph V) (u v : W) :
     (G.map f).Adj u v ↔ u ≠ v ∧ ∃ u' v' : V, G.Adj u' v' ∧ f u' = u ∧ f v' = v :=
   Iff.rfl
+
+@[simp]
+theorem map_adj (f : V ↪ W) (G : SimpleGraph V) (u v : W) :
+    (G.map f).Adj u v ↔ ∃ u' v' : V, G.Adj u' v' ∧ f u' = u ∧ f v' = v := by
+  grind
 
 theorem edgeSet_map (f : V ↪ W) (G : SimpleGraph V) :
     (G.map f).edgeSet = f.sym2Map '' G.edgeSet := by
@@ -108,13 +108,11 @@ theorem map_monotone (f : V → W) : Monotone (SimpleGraph.map f) := by
 
 @[simp] lemma map_id : G.map id = G := by
   ext
-  dsimp [SimpleGraph.map, Relation.Map]
-  grind [SimpleGraph.Adj.ne]
+  grind
 
 @[simp] lemma map_map (f : V → W) (g : W → X) : (G.map f).map g = G.map (g ∘ f) := by
   ext
-  dsimp [SimpleGraph.map, Relation.Map]
-  grind [SimpleGraph.Adj.ne]
+  grind
 
 theorem support_map (f : V ↪ W) (G : SimpleGraph V) :
     (G.map f).support = f '' G.support := by
@@ -676,12 +674,12 @@ def mapEdgeSet : G.edgeSet ≃ G'.edgeSet where
   left_inv := by
     rintro ⟨e, h⟩
     simp only [Hom.mapEdgeSet, RelEmbedding.toRelHom, Sym2.map_map, comp_apply, Subtype.mk.injEq]
-    convert! congr_fun Sym2.map_id e
+    convert! congr($Sym2.map_id e)
     exact RelIso.symm_apply_apply _ _
   right_inv := by
     rintro ⟨e, h⟩
     simp only [Hom.mapEdgeSet, RelEmbedding.toRelHom, Sym2.map_map, comp_apply, Subtype.mk.injEq]
-    convert! congr_fun Sym2.map_id e
+    convert! congr($Sym2.map_id e)
     exact RelIso.apply_symm_apply _ _
 
 /-- A graph isomorphism induces an equivalence of neighbor sets. -/
@@ -697,7 +695,7 @@ def mapNeighborSet (v : V) : G.neighborSet v ≃ G'.neighborSet (f v) where
 include f in
 theorem card_eq [Fintype V] [Fintype W] : Fintype.card V = Fintype.card W := by
   rw [← Fintype.ofEquiv_card f.toEquiv]
-  convert! rfl
+  convert rfl
 
 /-- Given a bijection, there is an embedding from the comapped graph into the original
 graph. -/
