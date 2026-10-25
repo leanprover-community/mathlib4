@@ -5,11 +5,11 @@ Authors: Monica Omar
 -/
 module
 
-public import Mathlib.Basic.Real.Basic
+public import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
 public import Mathlib.Basic.Complex.Basic
+public import Mathlib.Basic.Real.Basic
 public import Mathlib.LinearAlgebra.Complex.Module
 public import Mathlib.Tactic.Module
-public import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
 
 /-! # Complexification of spaces.
 
@@ -104,7 +104,7 @@ variable {V : Type*} [AddCommGroup V]
 
 variable [Module ℝ V]
 
-instance instSMul : SMul ℂ (Complexification V) where
+instance : SMul ℂ (Complexification V) where
   smul z v := .mk (z.re • v.re - z.im • v.im) (z.im • v.re + z.re • v.im)
 
 lemma smul_def (z : ℂ) (v : Complexification V) :
