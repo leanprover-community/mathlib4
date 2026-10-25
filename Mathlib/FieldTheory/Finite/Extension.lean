@@ -201,7 +201,7 @@ namespace Polynomial
 
 variable {k}
 
-theorem irreducible_iff_dvd_X_pow_sub_X {f : k[X]} (hd : 0 < f.natDegree) :
+theorem irreducible_iff_dvd_X_pow_card_pow_sub_X_and_isCoprime {f : k[X]} (hd : 0 < f.natDegree) :
     Irreducible f ↔ f ∣ X ^ Nat.card k ^ f.natDegree - X ∧
       ∀ m, m ∣ f.natDegree → m ≠ f.natDegree → IsCoprime f (X ^ Nat.card k ^ m - X) := by
   constructor
