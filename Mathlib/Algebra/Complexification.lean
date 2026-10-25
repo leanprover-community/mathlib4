@@ -312,8 +312,6 @@ lemma star_I_smul [Module ℝ A] (x : Complexification A) :
 
 end star
 
-end Complexification
-
 namespace LinearMap
 variable {E F G : Type*} [AddCommGroup E] [AddCommGroup F] [AddCommGroup G]
   [Module ℝ E] [Module ℝ F] [Module ℝ G]
@@ -469,3 +467,4 @@ lemma exists_toComplexification_eq_iff {T : Complexification E →ₗ[ℂ] Compl
   simp [quasispectrum_eq_spectrum_union_zero]
 
 end LinearMap
+end Complexification
