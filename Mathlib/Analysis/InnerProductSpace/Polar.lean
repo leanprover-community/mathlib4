@@ -5,23 +5,20 @@ Authors: Tjeerd Jan Heeringa
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.StarOrder
-public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
-public import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
+public import Mathlib.Analysis.InnerProductSpace.Abs
 public import Mathlib.Analysis.Normed.Operator.Extend
 
 /-!
-# Schatten operators
+# Polar decomposition
 
-This file defines the Schatten operators, and the required trace, modulus and polar maps in order
-to define them.
+This file defines the polar decomposition for a continuous linear map `T : E →L[ℂ] F`
+between (potentially distinct) Hilbert spaces `E` and `F`.
 
 ## Main definitions
- - `ContinuousLinearMap.modulus` the modulus `|T|` for continuous linear maps `T` between Hilbert
-   spaces.
- - `ContinuousLinearMap.polarₚₗᵢ` the partial linear isometry `U` such that `T = U† ∘ |T|`.
- - `ContinuousLinearMap.polar` the extention of the partial linear isometry `U` for a continuous
-   linear map `T : E →L[ℂ] F` by `0` to a continuous linear map from `E →L[ℂ] F`.
+ - `ContinuousLinearMap.polarₚₗᵢ` the linear isometry `U : |T|.range → T.kerᗮ` such that
+   `T = U ∘ |T|`.
+ - `ContinuousLinearMap.polar` the partial linear isometry `U : E →L[ℂ] F` for a continuous
+   linear map `T : E →L[ℂ] F` gotten by extending the map `ContinuousLinearMap.polarₚₗᵢ` by zero.
 
 -/
 
@@ -32,68 +29,21 @@ namespace ContinuousLinearMap
 
 open scoped ENNReal InnerProductSpace
 
-variable (p : ℝ≥0∞) (q : ℝ) {E F : Type*}
+variable {E F : Type*}
   [NormedAddCommGroup E] [InnerProductSpace ℂ E] [CompleteSpace E]
   [NormedAddCommGroup F] [InnerProductSpace ℂ F] [CompleteSpace F]
 
-section Modulus
-
-/-- The modulus `|T| = √(T†∘T) of a continuous linear map `T : E →L[ℂ] F`. -/
-def modulus (T : E →L[ℂ] F) : E →L[ℂ] E := CFC.sqrt (T.adjoint ∘L T)
-
-@[inherit_doc]
-scoped notation "|" T "|" => modulus T
-
-@[simp]
-theorem modulus_zero : |(0 : E →L[ℂ] F)| = 0 := by simp [modulus]
-@[simp]
-theorem modulus_neg (T : E →L[ℂ] F) : |-T| = |T| := by simp [modulus]
-@[simp]
-theorem modulus_nonneg (T : E →L[ℂ] F) : 0 ≤ |T| := by simp [modulus]
-@[simp]
-theorem modulus_modulus (T : E →L[ℂ] F) : |(|T|)| = |T| := by
-  rw [modulus, T.modulus_nonneg.isSelfAdjoint.adjoint_eq]
-  exact CFC.sqrt_mul_self |T|
-
-theorem modulus_apply (T : E →L[ℂ] F) : |T| = CFC.sqrt (T.adjoint ∘L T) := by rfl
-
-theorem modulus_eq_zero (T : E →L[ℂ] F) : |T| = 0 ↔ T = 0 := by
-  refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
-  simp only [modulus] at h
-  rw [CFC.sqrt_eq_zero_iff (adjoint T ∘SL T)
-    (nonneg_iff_isPositive.mpr (ContinuousLinearMap.isPositive_adjoint_comp_self T))] at h
-  exact adjoint_comp_self_eq_zero_iff.mp h
-
-theorem modulus_comp_modulus (T : E →L[ℂ] F) :
-    |T| ∘L |T| = T.adjoint ∘L T := by
-  simpa [modulus, ← ContinuousLinearMap.mul_def] using
-    CFC.sqrt_mul_sqrt_self (adjoint T ∘L T)
-      (nonneg_iff_isPositive.mpr (ContinuousLinearMap.isPositive_adjoint_comp_self T))
-
-theorem norm_modulus_apply (T : E →L[ℂ] F) (x : E) : ‖|T| x‖ = ‖T x‖ := by
-  apply (sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _)).mp
-  simp_rw [apply_norm_sq_eq_inner_adjoint_left, ContinuousLinearMap.comp_apply]
-  rw [T.modulus_nonneg.isSelfAdjoint.adjoint_eq]
-  simp [modulus, ← mul_apply_eq_comp, CFC.sqrt_mul_sqrt_self (adjoint T ∘SL T)
-      (nonneg_iff_isPositive.mpr (ContinuousLinearMap.isPositive_adjoint_comp_self T)),
-    ContinuousLinearMap.comp_apply]
-
-theorem ker_modulus_eq (T : E →L[ℂ] F) : |T|.ker = T.ker := by
-  ext x
-  rw [LinearMap.mem_ker, LinearMap.mem_ker, ← norm_eq_zero (a := T.toLinearMap x),
-    ← norm_eq_zero (a := |T|.toLinearMap x)]
-  simp [norm_modulus_apply]
-
-end Modulus
-
 section Polar
 
-/-- The polar `U` is a partial linear isometry from the range `|T|.range` of `|T|` to the
+@[inherit_doc]
+local notation "|" T "|" => abs T
+
+/-- The polar `U` is a linear isometry from the range `|T|.range` of `|T|` to the
 orthogonal of the kernel `T.kerᗮ` of the continuous linear map `T : E →L[ℂ] F` such that
-`T = U† ∘ |T|`. -/
+`T = U ∘ |T|`. -/
 def polarₚₗᵢ (T : E →L[ℂ] F) : |T|.range.topologicalClosure →ₗᵢ[ℂ] F :=
   LinearMap.extendOfIsometry
-    ((Submodule.liftQ _ T (le_of_eq_of_le T.ker_modulus_eq fun ⦃x⦄ a ↦ a))
+    ((Submodule.liftQ _ T (le_of_eq_of_le T.ker_abs_eq fun ⦃x⦄ a ↦ a))
       ∘ₗ (|T|.quotKerEquivRange).symm.toLinearMap)
     (e := Submodule.inclusion |T|.range.le_topologicalClosure)
     (by
@@ -104,7 +54,7 @@ def polarₚₗᵢ (T : E →L[ℂ] F) : |T|.range.topologicalClosure →ₗᵢ[
       rintro ⟨_, x, rfl⟩
       simp only [LinearMap.comp_apply, LinearEquiv.coe_coe]
       erw [|T|.quotKerEquivRange_symm_apply_image x]
-      simp [norm_modulus_apply])
+      simp [norm_abs_apply])
 
 theorem polarₚₗᵢ_apply (T : E →L[ℂ] F) (x : E) :
     T.polarₚₗᵢ ⟨|T| x, |T|.range.le_topologicalClosure ⟨x, rfl⟩⟩ = T x := by
@@ -165,13 +115,16 @@ theorem polarₚₗᵢ_comp_adjoint (T : E →L[ℂ] F) :
     LinearIsometry.map_eq_iff, ← comp_apply, T.polarₚₗᵢ_adjoint_comp]
   simp
 
+/-- The polar `U : E →L[ℂ] F` is a partial linear isometry of the continuous linear map
+`T : E →L[ℂ] F` such  that `T = U ∘ |T|`, linearly isometric from the range `|T|.range` of `|T|`
+to the orthogonal of the kernel `T.kerᗮ` of `T` and extended by zero from `|T|.range` to `E`. -/
 def polar (T : E →L[ℂ] F) : E →L[ℂ] F :=
   T.polarₚₗᵢ.toContinuousLinearMap ∘L |T|.range.topologicalClosure.orthogonalProjectionOnto
 
 theorem apply_eq_zero_tfae (T : E →L[ℂ] F) (x : E) :
     List.TFAE [T x = 0, T.polar x = 0, |T| x = 0] := by
   tfae_have 1 ↔ 3 := by
-    rw [← norm_eq_zero (a := T x), ← norm_eq_zero (a := |T| x), norm_modulus_apply]
+    rw [← norm_eq_zero (a := T x), ← norm_eq_zero (a := |T| x), norm_abs_apply]
   have hT : T.polar x = 0 ↔ (∀ u ∈ |T|.range, ⟪u, x⟫_ℂ = 0) := by
     rw [polar, ContinuousLinearMap.comp_apply, LinearIsometry.coe_toContinuousLinearMap,
     map_eq_zero_iff _ T.polarₚₗᵢ.injective,
@@ -181,22 +134,22 @@ theorem apply_eq_zero_tfae (T : E →L[ℂ] F) (x : E) :
     rw [hT]
     intro h
     apply (inner_self_eq_zero (𝕜 := ℂ)).mp
-    rw [← ContinuousLinearMap.adjoint_inner_left, T.modulus_nonneg.isSelfAdjoint.adjoint_eq]
+    rw [← ContinuousLinearMap.adjoint_inner_left, T.abs_nonneg.isSelfAdjoint.adjoint_eq]
     exact h (|T| (|T| x)) ⟨|T| x, rfl⟩
   tfae_have 3 → 2 := by
     rw [hT]
     rintro h _ ⟨y, rfl⟩
-    rw [← T.modulus_nonneg.isSelfAdjoint.adjoint_eq]
+    rw [← T.abs_nonneg.isSelfAdjoint.adjoint_eq]
     simp [← ContinuousLinearMap.adjoint_inner_right, h]
   tfae_finish
 
 theorem polar_eq_zero_iff (T : E →L[ℂ] F) (x : E) : T.polar x = 0 ↔ T x = 0 := by
   exact ((T.apply_eq_zero_tfae x).out 2 1)
 
-theorem modulus_eq_zero_iff (T : E →L[ℂ] F) (x : E) : |T| x = 0 ↔ T x = 0 := by
+theorem abs_eq_zero_iff (T : E →L[ℂ] F) (x : E) : |T| x = 0 ↔ T x = 0 := by
   exact ((T.apply_eq_zero_tfae x).out 3 1)
 
-theorem polar_eq_zero_iff_modulus_eq_zero (T : E →L[ℂ] F) (x : E) :
+theorem polar_eq_zero_iff_abs_eq_zero (T : E →L[ℂ] F) (x : E) :
     T.polar x = 0 ↔ |T| x = 0 := by
   exact ((T.apply_eq_zero_tfae x).out 2 3)
 
@@ -222,7 +175,7 @@ theorem polar_adjoint_comp_polar_eq_starProjection (T : E →L[ℂ] F) :
   simp [Submodule.adjoint_orthogonalProjectionOnto, one_def, id_comp]
   rfl
 
-theorem polar_comp_modulus (T : E →L[ℂ] F) : T.polar ∘L |T| = T := by
+theorem polar_comp_abs (T : E →L[ℂ] F) : T.polar ∘L |T| = T := by
   ext x
   simp only [polar, ContinuousLinearMap.comp_apply]
   nth_rw 4 [← polarₚₗᵢ_apply]
@@ -230,8 +183,8 @@ theorem polar_comp_modulus (T : E →L[ℂ] F) : T.polar ∘L |T| = T := by
   exact Submodule.orthogonalProjectionOnto_mem_subspace_eq_self
     ⟨|T| x, |T|.range.le_topologicalClosure (by simp)⟩
 
-theorem polar_adjoint_comp_self_eq_modulus (T : E →L[ℂ] F) : T.polar.adjoint ∘L T = |T| := by
-  nth_rw 2 [← T.polar_comp_modulus]
+theorem polar_adjoint_comp_self_eq_abs (T : E →L[ℂ] F) : T.polar.adjoint ∘L T = |T| := by
+  nth_rw 2 [← T.polar_comp_abs]
   erw [← comp_assoc, T.polar_adjoint_comp_polar_eq_starProjection]
   ext x
   simp only [ContinuousLinearMap.comp_apply]
@@ -251,20 +204,20 @@ theorem polar_unique {T : E →L[ℂ] F} {W : E →L[ℂ] F} (h : W ∘L |T| = T
     refine Set.EqOn.closure (s := (|T|.range : Set E))
       (by
         rintro _ ⟨y, rfl⟩
-        exact (DFunLike.congr_fun h y).trans (DFunLike.congr_fun T.polar_comp_modulus y).symm
+        exact (DFunLike.congr_fun h y).trans (DFunLike.congr_fun T.polar_comp_abs y).symm
       )
       W.continuous
       T.polar.continuous
       ?_
     rw [← Submodule.topologicalClosure_coe, ← Submodule.orthogonal_orthogonal_eq_closure]
     refine Submodule.orthogonal_le (fun w hw => ?_) hz
-    erw [LinearMap.mem_ker, ← norm_eq_zero, ← norm_modulus_apply]
+    erw [LinearMap.mem_ker, ← norm_eq_zero, ← norm_abs_apply]
     refine norm_eq_zero.mpr ((inner_self_eq_zero (𝕜 := ℂ) (x := |T| w)).mp ?_)
-    rw [← ContinuousLinearMap.adjoint_inner_left, T.modulus_nonneg.isSelfAdjoint.adjoint_eq]
+    rw [← ContinuousLinearMap.adjoint_inner_left, T.abs_nonneg.isSelfAdjoint.adjoint_eq]
     exact (Submodule.mem_orthogonal _ _).mp hw _ ⟨|T| w, rfl⟩
 
-theorem adjoint_modulus (T : E →L[ℂ] F) :
-    T.adjoint.modulus = T.polar ∘L |T| ∘L T.polar.adjoint := by
+theorem adjoint_abs (T : E →L[ℂ] F) :
+    T.adjoint.abs = T.polar ∘L |T| ∘L T.polar.adjoint := by
   have h : (T.polar ∘L |T| ∘L T.polar.adjoint) ∘L
       (T.polar ∘L |T| ∘L T.polar.adjoint) = T ∘L T.adjoint := by
     calc
@@ -273,34 +226,34 @@ theorem adjoint_modulus (T : E →L[ℂ] F) :
             ((T.polar.adjoint ∘L T.polar ∘L |T|) ∘L T.polar.adjoint) := by
           simp only [ContinuousLinearMap.comp_assoc]
       _ = T.polar ∘L |T| ∘L (|T| ∘L T.polar.adjoint) := by
-          erw [T.polar_comp_modulus, T.polar_adjoint_comp_self_eq_modulus]
+          erw [T.polar_comp_abs, T.polar_adjoint_comp_self_eq_abs]
       _ = (T.polar ∘L |T|) ∘L (T.polar ∘L |T|).adjoint := by
-          simp only [ContinuousLinearMap.adjoint_comp, T.modulus_nonneg.isSelfAdjoint.adjoint_eq,
+          simp only [ContinuousLinearMap.adjoint_comp, T.abs_nonneg.isSelfAdjoint.adjoint_eq,
             ContinuousLinearMap.comp_assoc]
-      _ = T ∘L T.adjoint := by rw [T.polar_comp_modulus]
-  rw [T.adjoint.modulus_apply, ContinuousLinearMap.adjoint_adjoint, ← h]
+      _ = T ∘L T.adjoint := by rw [T.polar_comp_abs]
+  rw [T.adjoint.abs_apply, ContinuousLinearMap.adjoint_adjoint, ← h]
   exact CFC.sqrt_mul_self _
-    (nonneg_iff_isPositive.mpr ((nonneg_iff_isPositive.mp T.modulus_nonneg).conj_adjoint T.polar))
+    (nonneg_iff_isPositive.mpr ((nonneg_iff_isPositive.mp T.abs_nonneg).conj_adjoint T.polar))
 
 theorem adjoint_polar (T : E →L[ℂ] F) : T.adjoint.polar = T.polar.adjoint := by
   apply Eq.symm
   apply polar_unique (T := T.adjoint)
-  · erw [T.adjoint_modulus]
+  · erw [T.adjoint_abs]
     calc
       T.polar.adjoint ∘L T.polar ∘L |T| ∘L T.polar.adjoint =
           (T.polar.adjoint ∘L (T.polar ∘L |T|)) ∘L T.polar.adjoint := by
         simp only [comp_assoc]
       _ = |T| ∘L T.polar.adjoint := by
-        rw [T.polar_comp_modulus, T.polar_adjoint_comp_self_eq_modulus]
+        rw [T.polar_comp_abs, T.polar_adjoint_comp_self_eq_abs]
       _ = T.adjoint := by
-        nth_rw 3 [← T.polar_comp_modulus]
-        simp [adjoint_comp, T.modulus_nonneg.isSelfAdjoint.adjoint_eq]
+        nth_rw 3 [← T.polar_comp_abs]
+        simp [adjoint_comp, T.abs_nonneg.isSelfAdjoint.adjoint_eq]
   · ext x
     simp_rw [LinearMap.mem_ker]
     constructor
     · rintro hx
       refine ext_inner_right ℂ (fun y => ?_)
-      rw [← T.polar_comp_modulus]
+      rw [← T.polar_comp_abs]
       simp only [adjoint_comp, toLinearMap_comp, LinearMap.coe_comp, coe_coe, Function.comp_apply,
         inner_zero_left, ContinuousLinearMap.adjoint_inner_left]
       erw [← ContinuousLinearMap.adjoint_inner_left, hx, inner_zero_left]
