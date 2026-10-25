@@ -128,9 +128,10 @@ instance [SMul Rᵐᵒᵖ ℝ≥0∞] [IsCentralScalar R ℝ≥0∞] :
 end SMul
 
 instance [Monoid R] [MulAction R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] : MulAction R (Measure α) :=
-  FunLike.mulAction
+  fast_instance% FunLike.mulAction
 
-noncomputable instance : AddCommMonoid (Measure α) := FunLike.addCommMonoid
+noncomputable instance : AddCommMonoid (Measure α) :=
+  fast_instance% FunLike.addCommMonoid
 
 @[deprecated (since := "2026-10-23")] protected alias coeAddHom := FunLike.coeAddHom
 
@@ -141,10 +142,10 @@ noncomputable instance : AddCommMonoid (Measure α) := FunLike.addCommMonoid
 @[deprecated (since := "2026-10-23")] alias finsetSum_apply := sum_apply
 
 noncomputable instance [Monoid R] [DistribMulAction R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] :
-    DistribMulAction R (Measure α) := FunLike.distribMulAction
+    DistribMulAction R (Measure α) := fast_instance% FunLike.distribMulAction
 
 noncomputable instance [Semiring R] [Module R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] :
-    Module R (Measure α) := FunLike.module
+    Module R (Measure α) := fast_instance% FunLike.module
 
 instance [Semiring R] [Module R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
     [Module.IsTorsionFree R ℝ≥0∞] : Module.IsTorsionFree R (Measure α) :=
