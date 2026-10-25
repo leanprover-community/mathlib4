@@ -146,8 +146,9 @@ over the field of fractions of `A`.
 theorem isAlgebraic_iff [Algebra A C] [Algebra K C] [IsScalarTower A K C] {x : C} :
     IsAlgebraic A x ↔ IsAlgebraic K x := by
   constructor <;> rintro ⟨p, hp, px⟩
-  · refine ⟨p.map (algebraMap A K), fun h => hp (Polynomial.ext fun i => ?_), ?_⟩
-    · have : algebraMap A K (p.coeff i) = 0 :=
+  · refine ⟨p.map (algebraMap A K), fun h => hp ?_, ?_⟩
+    · ext i
+      have : algebraMap A K (p.coeff i) = 0 :=
         _root_.trans (Polynomial.coeff_map _ _).symm (by simp [h])
       exact to_map_eq_zero_iff.mp this
     · exact (Polynomial.aeval_map_algebraMap K _ _).trans px

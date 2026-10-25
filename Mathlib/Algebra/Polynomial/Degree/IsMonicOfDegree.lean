@@ -180,7 +180,7 @@ lemma isMonicOfDegree_X_add_one (r : R) : IsMonicOfDegree (X + C r) 1 :=
 lemma isMonicOfDegree_one_iff {f : R[X]} : IsMonicOfDegree f 1 ↔ ∃ r : R, f = X + C r := by
   refine ⟨fun H ↦ ?_, fun ⟨r, H⟩ ↦ H ▸ isMonicOfDegree_X_add_one r⟩
   refine ⟨f.coeff 0, ?_⟩
-  ext1 n
+  ext n
   rcases n.eq_zero_or_pos with rfl | hn
   · simp
   · exact H.coeff_eq (isMonicOfDegree_X_add_one _) (by lia)
@@ -196,7 +196,8 @@ lemma isMonicOfDegree_add_add_two (a b : R) : IsMonicOfDegree (X ^ 2 + C a * X +
 lemma isMonicOfDegree_two_iff {f : R[X]} :
     IsMonicOfDegree f 2 ↔ ∃ a b : R, f = X ^ 2 + C a * X + C b := by
   refine ⟨fun H ↦ ?_, fun ⟨a, b, h⟩ ↦ h ▸ isMonicOfDegree_add_add_two a b⟩
-  refine ⟨f.coeff 1, f.coeff 0, ext fun n ↦ ?_⟩
+  refine ⟨f.coeff 1, f.coeff 0, ?_⟩
+  ext n
   rcases lt_trichotomy n 1 with hn | rfl | hn
   · obtain rfl : n = 0 := Nat.lt_one_iff.mp hn
     simp

@@ -177,15 +177,16 @@ open scoped AddMonoidAlgebra
 example [Semiring R] [Nontrivial R] :
     Polynomial.hasSMulPi _ _ ≠ (Pi.instSMul : SMul R[X] (R → R[X])) := by
   intro h
-  simp_rw [SMul.ext_iff, @SMul.smul_eq_hSMul _ _ (_), funext_iff, Polynomial.ext_iff] at h
+  simp_rw [SMul.ext_iff, @SMul.smul_eq_hSMul _ _ (_), funext_iff, AddMonoidAlgebra.ext_iff,
+    Finsupp.ext_iff] at h
   simpa using h X 1 1 0
 
 /-- `Polynomial.hasSMulPi'` forms a diamond with `Pi.instSMul`. -/
 example [CommSemiring R] [Nontrivial R] :
     Polynomial.hasSMulPi' _ _ _ ≠ (Pi.instSMul : SMul R[X] (R → R[X])) := by
   intro h
-  simp_rw [SMul.ext_iff, @SMul.smul_eq_hSMul _ _ (_), funext_iff, Polynomial.ext_iff] at h
-  simpa using h X 1 1 0
+  simp_rw [SMul.ext_iff, @SMul.smul_eq_hSMul _ _ (_)] at h
+  simpa using congr(($h X 1 1).coeff 0)
 
 -- fails `with_reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
 /-- `Polynomial.hasSMulPi'` is consistent with `Polynomial.hasSMulPi`. -/

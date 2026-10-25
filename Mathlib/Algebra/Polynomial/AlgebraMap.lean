@@ -112,7 +112,7 @@ instance subalgebraNontrivial [Nontrivial A] : Nontrivial (Subalgebra R A[X]) :=
       simp only [Algebra.mem_bot, not_exists, Set.mem_range, iff_true, Algebra.mem_top,
         algebraMap_apply]
       intro x
-      rw [ext_iff, not_forall]
+      rw [AddMonoidAlgebra.ext_iff, Finsupp.ext_iff, not_forall]
       refine ⟨1, ?_⟩
       simp⟩⟩
 
@@ -670,11 +670,11 @@ lemma dvd_comp_C_mul_X_add_C_iff (p q : R[X]) (a b : R) [Invertible a] :
 lemma dvd_comp_X_sub_C_iff (p q : R[X]) (a : R) :
     p ∣ q.comp (X - C a) ↔ p.comp (X + C a) ∣ q := by
   let _ := invertibleOne (α := R)
-  simpa [sub_eq_add_neg] using! dvd_comp_C_mul_X_add_C_iff p q 1 (-a)
+  simpa [sub_eq_add_neg] using dvd_comp_C_mul_X_add_C_iff p q 1 (-a)
 
 lemma dvd_comp_X_add_C_iff (p q : R[X]) (a : R) :
     p ∣ q.comp (X + C a) ↔ p.comp (X - C a) ∣ q := by
-  simpa [sub_eq_add_neg] using! dvd_comp_X_sub_C_iff p q (-a)
+  simpa [sub_eq_add_neg] using dvd_comp_X_sub_C_iff p q (-a)
 
 lemma dvd_comp_neg_X_iff (p q : R[X]) : p ∣ q.comp (-X) ↔ p.comp (-X) ∣ q := by
   let _ := invertibleOne (α := R)
@@ -722,7 +722,8 @@ theorem eq_zero_of_mul_eq_zero_of_smul (P : R[X]) (h : ∀ r : R, r • P = 0 �
   suffices ∀ i, P.coeff i • Q = 0 by
     rw [← leadingCoeff_eq_zero]
     apply h
-    simpa [ext_iff, mul_comm Q.leadingCoeff] using fun i ↦ congr($(this i).coeff Q.natDegree)
+    simpa [AddMonoidAlgebra.ext_iff, Finsupp.ext_iff, mul_comm Q.leadingCoeff]
+      using fun i ↦ congr($(this i).coeff Q.natDegree)
   apply Nat.strong_decreasing_induction
   · use P.natDegree
     intro i hi

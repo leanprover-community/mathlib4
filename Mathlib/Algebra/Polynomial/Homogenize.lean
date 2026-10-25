@@ -115,7 +115,7 @@ lemma coeff_homogenize (p : R[X]) (n : ℕ) (m : Fin 2 →₀ ℕ) :
     simp [*, ite_add_ite]
   | monomial k c =>
     rcases le_or_gt k n with hkn | hnk
-    · rw [homogenize_monomial hkn, coeff_monomial, MvPolynomial.coeff_monomial]
+    · rw [homogenize_monomial hkn, coeff_monomial_apply, MvPolynomial.coeff_monomial]
       have : (fun₀ | 0 => m 0 | 1 => m 1) = m := by ext i; fin_cases i <;> simp
       aesop
     · aesop (add simp homogenize_monomial_of_lt) (add simp Finsupp.single_apply)

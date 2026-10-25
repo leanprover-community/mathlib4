@@ -131,8 +131,7 @@ theorem coeff_X_mul_zero (p : R[X]) : coeff (X * p) 0 = 0 := by simp
 
 theorem coeff_C_mul_X_pow (x : R) (k n : ℕ) :
     coeff (C x * X ^ k : R[X]) n = if n = k then x else 0 := by
-  rw [C_mul_X_pow_eq_monomial, coeff_monomial]
-  simp [eq_comm]
+  simp [C_mul_X_pow_eq_monomial, Finsupp.single_apply, eq_comm]
 
 theorem coeff_C_mul_X (x : R) (n : ℕ) : coeff (C x * X : R[X]) n = if n = 1 then x else 0 := by
   rw [← pow_one X, coeff_C_mul_X_pow]
@@ -259,8 +258,9 @@ theorem coeff_monomial_zero_mul (p : R[X]) (d : ℕ) (r : R) :
     coeff (monomial 0 r * p) d = r * coeff p d :=
   coeff_monomial_mul p 0 d r
 
-theorem mul_X_pow_eq_zero {p : R[X]} {n : ℕ} (H : p * X ^ n = 0) : p = 0 :=
-  ext fun k => (coeff_mul_X_pow p n k).symm.trans <| ext_iff.1 H (k + n)
+theorem mul_X_pow_eq_zero {p : R[X]} {n : ℕ} (H : p * X ^ n = 0) : p = 0 := by
+  simp_all only [← coeff_eq_zero, Finsupp.ext_iff, Finsupp.coe_zero, Pi.zero_apply]
+  exact fun k ↦ by simpa using H (k + n)
 
 theorem isRegular_X_pow (n : ℕ) : IsRegular (X ^ n : R[X]) := by
   suffices IsLeftRegular (X ^ n : R[X]) from
@@ -307,13 +307,13 @@ theorem C_dvd_iff_dvd_coeff (r : R) (φ : R[X]) : C r ∣ φ ↔ ∀ i, r ∣ φ
       use ψ
       ext i
       simp only [c', ψ, coeff_C_mul, mem_support_iff, coeff_monomial, finsetSum_coeff,
-        Finset.sum_ite_eq']
+        Finsupp.single_apply, Finset.sum_ite_eq']
       split_ifs with hi
       · rw [hc]
       · rw [Classical.not_not] at hi
         rwa [mul_zero]
 
-theorem smul_eq_C_mul (a : R) : a • p = C a * p := by simp [ext_iff]
+theorem smul_eq_C_mul (a : R) : a • p = C a * p := by simp [← coeff_inj, Finsupp.ext_iff]
 
 theorem update_eq_add_sub_coeff {R : Type*} [Ring R] (p : R[X]) (n : ℕ) (a : R) :
     p.update n a = p + Polynomial.C (a - p.coeff n) * Polynomial.X ^ n := by

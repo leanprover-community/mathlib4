@@ -246,8 +246,7 @@ def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] where
     ext i
     simp only [coeffAddEquiv_apply, AddMonoidAlgebra.coeffAddEquiv_symm_apply,
       AddMonoidAlgebra.coeff_ofCoeff, smul_single_apply, smul_eq_mul, coeff_single,
-      AddMonoidAlgebra.ofCoeff_single]
-    rw [show (AddMonoidAlgebra.single n a : R[X]) = monomial n a from rfl]
+      AddMonoidAlgebra.ofCoeff_single, single_eq_monomial]
     split_ifs with hn
     · rw [show i = (i - n) + n by lia, Polynomial.coeff_mul_monomial]
       simp

@@ -40,14 +40,15 @@ def IsStronglyTranscendental (x : S) : Prop :=
 
 lemma IsStronglyTranscendental.transcendental {x : S} (h : IsStronglyTranscendental R x)
     [FaithfulSMul R S] : Transcendental R x :=
-  transcendental_iff.mpr fun p hp ↦ Polynomial.ext <|
-    by simpa [Algebra.smul_def, hp, Polynomial.ext_iff] using h 1 p
+  transcendental_iff.mpr fun p hp ↦ by
+    simpa [Algebra.smul_def, hp, AddMonoidAlgebra.ext_iff, Finsupp.ext_iff] using h 1 p
 
 lemma isStronglyTranscendental_iff_of_field {K : Type*} [Field K] [Algebra R K] [FaithfulSMul R K]
     {x : K} : IsStronglyTranscendental R x ↔ Transcendental R x := by
   refine ⟨fun h ↦ h.transcendental, fun h ↦ ?_⟩
   simpa [IsStronglyTranscendental, or_imp, forall_and, @forall_comm K, ← subsingleton_iff_forall_eq,
-    not_subsingleton, ext_iff, forall_or_left, ← imp_iff_or_not, transcendental_iff] using h
+    not_subsingleton, AddMonoidAlgebra.ext_iff, Finsupp.ext_iff, forall_or_left,
+    ← imp_iff_or_not, transcendental_iff] using h
 
 lemma IsStronglyTranscendental.of_map {x : S} {f : S →ₐ[R] T} (hf : Function.Injective f)
     (h : IsStronglyTranscendental R (f x)) :

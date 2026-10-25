@@ -442,8 +442,7 @@ theorem coeff_det_one_add_X_smul_eq_sum_minors
         simp only [Polynomial.finsetSum_coeff]
       _ = _ := by
         simp_rw [h_det, smul_eq_mul, mul_comm (X ^ _) (C _)]
-        simp_rw [C_mul_X_pow_eq_monomial, coeff_monomial]
-        rw [← Finset.sum_filter]
+        simp_rw [C_mul_X_pow_eq_monomial, coeff_monomial, Finsupp.single_apply, ← Finset.sum_filter]
         have h_set : Finset.univ.filter (fun s : Finset n => s.card = k) =
             Finset.univ.powersetCard k := by
           ext s; simp [Finset.mem_powersetCard]

@@ -87,7 +87,7 @@ theorem matPolyEquiv_coeff_apply_aux_2 (i j : n) (p : R[X]) (k : ℕ) :
     ext
     simp [hp, hq, Matrix.add_apply, single_add]
   · intro k x
-    simp only [matPolyEquiv_coeff_apply_aux_1, coeff_monomial]
+    simp only [matPolyEquiv_coeff_apply_aux_1, coeff_monomial, Finsupp.single_apply]
     split_ifs <;>
       · funext
         simp

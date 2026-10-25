@@ -413,11 +413,7 @@ theorem degree_pow_le_of_le {a : WithBot ℕ} (b : ℕ) (hp : degree p ≤ a) :
 
 @[simp]
 theorem leadingCoeff_monomial (a : R) (n : ℕ) : leadingCoeff (monomial n a) = a := by
-  classical
-  by_cases ha : a = 0
-  · simp only [ha, (monomial n).map_zero, leadingCoeff_zero]
-  · rw [leadingCoeff, natDegree_monomial, ite_eq_right ha, coeff_monomial]
-    simp
+  classical by_cases ha : a = 0 <;> simp [leadingCoeff, ha]
 
 theorem leadingCoeff_C_mul_X_pow (a : R) (n : ℕ) : leadingCoeff (C a * X ^ n) = a := by
   rw [C_mul_X_pow_eq_monomial, leadingCoeff_monomial]
@@ -525,14 +521,14 @@ section Ring
 variable [Ring R] {p q : R[X]}
 
 theorem degree_sub_le (p q : R[X]) : degree (p - q) ≤ max (degree p) (degree q) := by
-  simpa [sub_eq_add_neg] using! degree_add_le p (-q)
+  simpa [sub_eq_add_neg] using degree_add_le p (-q)
 
 theorem degree_sub_le_of_le {a b : WithBot ℕ} (hp : degree p ≤ a) (hq : degree q ≤ b) :
     degree (p - q) ≤ max a b :=
   (p.degree_sub_le q).trans <| max_le_max ‹_› ‹_›
 
 theorem natDegree_sub_le (p q : R[X]) : natDegree (p - q) ≤ max (natDegree p) (natDegree q) := by
-  simpa [sub_eq_add_neg] using! natDegree_add_le p (-q)
+  simpa [sub_eq_add_neg] using natDegree_add_le p (-q)
 
 theorem natDegree_sub_le_of_le (hp : natDegree p ≤ m) (hq : natDegree q ≤ n) :
     natDegree (p - q) ≤ max m n :=

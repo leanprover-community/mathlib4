@@ -46,8 +46,8 @@ variable (hp : (↑p.coeffs : Set R) ⊆ T)
 @[simp]
 theorem coeff_toSubring {n : ℕ} : ↑(coeff (toSubring p T hp) n) = coeff p n := by
   classical
-  simp only [toSubring, coeff_monomial, finsetSum_coeff, mem_support_iff, Finset.sum_ite_eq',
-    Ne, ite_not]
+  simp only [toSubring, coeff_monomial, Finsupp.single_apply, finsetSum_coeff,
+    mem_support_iff, Finset.sum_ite_eq', Ne, ite_not]
   split_ifs with h
   · rw [h]
     rfl
@@ -83,10 +83,10 @@ theorem toSubring_zero : toSubring (0 : R[X]) T (by simp [coeffs]) = 0 := by
 theorem toSubring_one :
     toSubring (1 : R[X]) T
         (Set.Subset.trans coeffs_one <| Finset.singleton_subset_set_iff.2 T.one_mem) =
-      1 :=
-  ext fun i => Subtype.ext <| by
-    rw [coeff_toSubring', coeff_one, coeff_one, apply_ite Subtype.val, ZeroMemClass.coe_zero,
-      OneMemClass.coe_one]
+      1 := by
+  ext i
+  rw [coeff_toSubring', coeff_one, coeff_one, apply_ite Subtype.val, ZeroMemClass.coe_zero,
+    OneMemClass.coe_one]
 
 @[simp]
 theorem map_toSubring : (p.toSubring T hp).map (Subring.subtype T) = p := by
@@ -101,8 +101,8 @@ noncomputable def ofSubring (p : T[X]) : R[X] :=
   ∑ i ∈ p.support, monomial i (p.coeff i : R)
 
 theorem coeff_ofSubring (p : T[X]) (n : ℕ) : coeff (ofSubring T p) n = (coeff p n : T) := by
-  simp only [ofSubring, coeff_monomial, finsetSum_coeff, mem_support_iff, Finset.sum_ite_eq',
-    Ne, Classical.not_not, ite_eq_left_iff]
+  simp only [ofSubring, coeff_monomial, Finsupp.single_apply, finsetSum_coeff,
+    mem_support_iff, Finset.sum_ite_eq', Ne, Classical.not_not, ite_eq_left_iff]
   intro h
   rw [h, ZeroMemClass.coe_zero]
 

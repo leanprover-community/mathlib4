@@ -296,15 +296,15 @@ lemma eraseLead_mul_eq_mul_eraseLead_of_nextCoeff_zero {R : Type*} [Ring R] [NoZ
   · --n < P.natDegree
     have hd₁ : n < ((X - C x) * P).eraseLead.natDegree := by
       linarith [natDegree_eraseLead_add_one h₂]
-    rw [← self_sub_monomial_natDegree_leadingCoeff, coeff_sub, coeff_monomial, ite_eq_right hd₁.ne']
-    rw [← self_sub_monomial_natDegree_leadingCoeff, coeff_sub, coeff_monomial,
-      ite_eq_right (by lia)]
+    rw [← self_sub_monomial_natDegree_leadingCoeff, coeff_sub, coeff_monomial_apply,
+      ite_eq_right hd₁.ne', ← self_sub_monomial_natDegree_leadingCoeff, coeff_sub,
+      coeff_monomial_apply, ite_eq_right (by lia)]
     rw [← self_sub_monomial_natDegree_leadingCoeff, mul_sub, coeff_sub,
       sub_zero, sub_zero, eq_sub_iff_add_eq, add_eq_left]
     rcases hn₂ : n
     · simp [hdP]
-    · rw [coeff_X_sub_C_mul, coeff_monomial, coeff_monomial, ite_eq_right (by lia),
-        ite_eq_right (by lia), mul_zero, sub_zero]
+    · rw [coeff_X_sub_C_mul, coeff_monomial_apply, coeff_monomial_apply,
+        ite_eq_right (by lia), ite_eq_right (by lia), mul_zero, sub_zero]
   · --n ≥ P.natDegree, so all the coefficients are zero.
     trans 0 <;> rw [coeff_eq_zero_of_natDegree_lt]
     · grw [eraseLead_natDegree_le, eraseLead_natDegree_le]

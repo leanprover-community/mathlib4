@@ -470,8 +470,8 @@ theorem optionEquivLeft_coeff_some_coeff_none
   | monomial j r =>
     rw [optionEquivLeft_monomial]
     classical
-    simp only [Polynomial.coeff_monomial, MvPolynomial.coeff_monomial, apply_ite, ite_apply,
-      AddMonoidAlgebra.coeff_zero, Finsupp.coe_zero, Pi.zero_apply]
+    simp only [Polynomial.coeff_monomial, Finsupp.single_apply, MvPolynomial.coeff_monomial,
+      apply_ite, ite_apply, AddMonoidAlgebra.coeff_zero, Finsupp.coe_zero, Pi.zero_apply]
     by_cases hj : j = n
     · simp [hj]
     · rw [ite_eq_right hj]

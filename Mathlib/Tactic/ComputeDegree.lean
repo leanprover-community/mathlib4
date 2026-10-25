@@ -365,7 +365,7 @@ def dispatchLemma
         | .inr ``IntCast.intCast =>
           π ``natDegree_intCast_le ``degree_intCast_le ``coeff_intCast_ite
         | .inr ``Polynomial.monomial =>
-          π ``natDegree_monomial_le ``degree_monomial_le ``coeff_monomial
+          π ``natDegree_monomial_le ``degree_monomial_le ``coeff_monomial_apply
         | .inr ``Polynomial.C =>
           π ``natDegree_C_le ``degree_C_le ``coeff_C
         | .inr ``HSMul.hSMul =>

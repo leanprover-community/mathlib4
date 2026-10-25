@@ -282,8 +282,8 @@ def restriction (p : R[X]) : Polynomial (Subring.closure (↑p.coeffs : Set R)) 
 @[simp]
 theorem coeff_restriction {p : R[X]} {n : ℕ} : ↑((restriction p).coeff n) = p.coeff n := by
   classical
-  simp only [restriction, coeff_monomial, finsetSum_coeff, mem_support_iff, Finset.sum_ite_eq',
-    Ne, ite_not]
+  simp only [restriction, coeff_monomial, Finsupp.single_apply, finsetSum_coeff, mem_support_iff,
+    Finset.sum_ite_eq', Ne, ite_not]
   split_ifs with h
   · rw [h]
     rfl
@@ -301,8 +301,8 @@ theorem support_restriction (p : R[X]) : support (restriction p) = support p := 
 
 @[simp]
 theorem map_restriction {R : Type u} [CommRing R] (p : R[X]) :
-    p.restriction.map (algebraMap _ _) = p :=
-  ext fun n => by rw [coeff_map, Algebra.algebraMap_ofSubsemiring_apply, coeff_restriction]
+    p.restriction.map (algebraMap _ _) = p := by
+  ext n; rw [coeff_map, Algebra.algebraMap_ofSubsemiring_apply, coeff_restriction]
 
 @[simp]
 theorem degree_restriction {p : R[X]} : (restriction p).degree = p.degree := by simp [degree]
@@ -322,8 +322,8 @@ theorem restriction_zero : restriction (0 : R[X]) = 0 := by
   simp only [restriction, Finset.sum_empty, support_zero]
 
 @[simp]
-theorem restriction_one : restriction (1 : R[X]) = 1 :=
-  ext fun i => Subtype.ext <| by rw [coeff_restriction', coeff_one, coeff_one]; split_ifs <;> rfl
+theorem restriction_one : restriction (1 : R[X]) = 1 := by
+  ext i; rw [coeff_restriction', coeff_one, coeff_one]; split_ifs <;> rfl
 
 variable [Semiring S] {f : R →+* S} {x : S}
 
@@ -414,10 +414,7 @@ theorem mem_map_C_iff {I : Ideal R} {f : R[X]} :
 
 theorem _root_.Polynomial.ker_mapRingHom (f : R →+* S) :
     RingHom.ker (Polynomial.mapRingHom f) = (RingHom.ker f).map (C : R →+* R[X]) := by
-  ext
-  simp only [RingHom.mem_ker, coe_mapRingHom]
-  rw [mem_map_C_iff, Polynomial.ext_iff]
-  simp [RingHom.mem_ker]
+  ext; simp [mem_map_C_iff, AddMonoidAlgebra.ext_iff, Finsupp.ext_iff]
 
 variable (I : Ideal R[X])
 

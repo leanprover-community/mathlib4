@@ -277,12 +277,10 @@ def monomial (n : ℕ) : R →ₗ[R] R[X] where
   map_add' x y := by simp
   map_smul' r x := by simp
 
-/-- Version of `Polynomial.coeff_monomial` stated in terms of `AddMonoidAlgebra.coeff`. Will become
-the main version once `Polynomial.coeff` is replaced by `AddMonoidAlgebra.coeff`. -/
-@[simp] lemma coeff_monomial' (n : ℕ) (r : R) : (monomial n r).coeff = Finsupp.single n r := by
+@[simp] lemma coeff_monomial (n : ℕ) (r : R) : (monomial n r).coeff = Finsupp.single n r := by
   simp [monomial]
 
-@[deprecated coeff_monomial' +typeChanged (since := "2026-07-18")]
+@[deprecated coeff_monomial +typeChanged (since := "2026-07-18")]
 theorem toFinsupp_monomial (n : ℕ) (r : R) : (monomial n r).toFinsupp = single n r := rfl
 
 lemma single_eq_monomial (n : ℕ) (r : R) : .single n r = monomial n r := rfl
@@ -463,8 +461,8 @@ theorem coeff_ofFinsupp (p) : coeff (ofFinsupp p : R[X]) = p.coeff := rfl
 @[deprecated "Now a tautology" (since := "2026-07-18")]
 theorem toFinsupp_apply (f : R[X]) (i) : f.toFinsupp.coeff i = f.coeff i := rfl
 
-theorem coeff_monomial : coeff (monomial n a) m = if n = m then a else 0 := by
-  simp [monomial, Finsupp.single_apply]
+theorem coeff_monomial_apply : coeff (monomial n a) m = if n = m then a else 0 := by
+  simp [Finsupp.single_apply]
 
 theorem coeff_monomial_same (n : ℕ) (c : R) : (monomial n c).coeff n = c :=
   Finsupp.single_eq_same
@@ -478,22 +476,22 @@ theorem coeff_zero (n : ℕ) : coeff (0 : R[X]) n = 0 :=
 
 @[aesop simp]
 theorem coeff_one {n : ℕ} : coeff (1 : R[X]) n = if n = 0 then 1 else 0 := by
-  simp_rw [eq_comm (a := n) (b := 0)]
-  exact coeff_monomial
+  simp [eq_comm, one_def, Finsupp.single_apply]
+
+@[deprecated coeff_one_zero +typeChanged (since := "2026-10-25")]
+protected theorem coeff_one_zero : coeff (1 : R[X]) 0 = 1 := by simp
+
+-- `simp [X]` parses as `Polynomial simp`!
+@[simp]
+theorem coeff_X_one : coeff (X : R[X]) 1 = 1 := by simp [X,]
 
 @[simp]
-theorem coeff_X_one : coeff (X : R[X]) 1 = 1 :=
-  coeff_monomial
-
-@[simp]
-theorem coeff_X_zero : coeff (X : R[X]) 0 = 0 :=
-  coeff_monomial
+theorem coeff_X_zero : coeff (X : R[X]) 0 = 0 := by simp [X,]
 
 theorem coeff_monomial_succ : coeff (monomial (n + 1) a) 0 = 0 := by simp
 
 @[aesop simp]
-theorem coeff_X : coeff (X : R[X]) n = if 1 = n then 1 else 0 :=
-  coeff_monomial
+theorem coeff_X : coeff (X : R[X]) n = if 1 = n then 1 else 0 := by simp [X, Finsupp.single_apply]
 
 theorem coeff_X_of_ne_one {n : ℕ} (hn : n ≠ 1) : coeff (X : R[X]) n = 0 := by
   rw [coeff_X, ite_eq_right hn.symm]
@@ -507,12 +505,10 @@ theorem notMem_support_iff : n ∉ p.support ↔ p.coeff n = 0 := by simp
 
 @[aesop simp]
 theorem coeff_C : coeff (C a) n = ite (n = 0) a 0 := by
-  convert! coeff_monomial (a := a) (m := n) (n := 0) using 2
-  simp [eq_comm]
+  simp [C, monomial, Finsupp.single_apply, eq_comm]
 
 @[simp]
-theorem coeff_C_zero : coeff (C a) 0 = a :=
-  coeff_monomial
+theorem coeff_C_zero : coeff (C a) 0 = a := by simp [C, monomial]
 
 theorem coeff_C_of_ne_zero (h : n ≠ 0) : (C a).coeff n = 0 := by rw [coeff_C, ite_eq_right h]
 
@@ -524,14 +520,8 @@ lemma coeff_C_succ {r : R} {n : ℕ} : coeff (C r) (n + 1) = 0 := by simp [coeff
 theorem coeff_natCast_ite : (Nat.cast m : R[X]).coeff n = ite (n = 0) m 0 := by
   simp only [← C_eq_natCast, coeff_C, Nat.cast_ite, Nat.cast_zero]
 
-theorem coeff_ofNat_zero (a : ℕ) [a.AtLeastTwo] :
-    coeff (ofNat(a) : R[X]) 0 = ofNat(a) :=
-  coeff_monomial
-
-theorem coeff_ofNat_succ (a n : ℕ) [h : a.AtLeastTwo] :
-    coeff (ofNat(a) : R[X]) (n + 1) = 0 := by
-  rw [← Nat.cast_ofNat]
-  simp [-Nat.cast_ofNat]
+theorem coeff_ofNat_zero (a : ℕ) [a.AtLeastTwo] : coeff (ofNat(a) : R[X]) 0 = ofNat(a) := by simp
+theorem coeff_ofNat_succ (a n : ℕ) [a.AtLeastTwo] : coeff (ofNat(a) : R[X]) (n + 1) = 0 := by simp
 
 theorem C_mul_X_pow_eq_monomial : ∀ {n : ℕ}, C a * X ^ n = monomial n a
   | 0 => mul_one _
@@ -574,15 +564,13 @@ theorem Nontrivial.of_polynomial_ne (h : p ≠ q) : Nontrivial R :=
 theorem forall_eq_iff_forall_eq : (∀ f g : R[X], f = g) ↔ ∀ a b : R, a = b := by
   simpa only [← subsingleton_iff] using subsingleton_iff_subsingleton
 
-theorem ext_iff {p q : R[X]} : p = q ↔ ∀ n, coeff p n = coeff q n := by
+@[deprecated AddMonoidAlgebra.ext_iff +typeChanged (since := "2026-10-25")]
+protected theorem ext_iff {p q : R[X]} : p = q ↔ ∀ n, coeff p n = coeff q n := by
   simp [AddMonoidAlgebra.ext_iff, DFunLike.ext_iff]
 
--- Since `R[X]` is reducibly `AddMonoidAlgebra R ℕ`,  `AddMonoidAlgebra.ext` also  applies to
--- equalities in `R[X]`. We make this ext lemma have higher priority to avoid exposing
--- `AddMonoidAlgebra.coeff`. Once it is unified with `Polynomial.coeff`, this won't be necessary.`
-@[ext high]
-theorem ext {p q : R[X]} : (∀ n, coeff p n = coeff q n) → p = q :=
-  ext_iff.2
+@[deprecated AddMonoidAlgebra.ext +typeChanged (since := "2026-10-25")]
+protected theorem ext {p q : R[X]} : (∀ n, coeff p n = coeff q n) → p = q :=
+  Polynomial.ext_iff.2
 
 /-- Monomials generate the additive monoid of polynomials. -/
 theorem addSubmonoid_closure_setOfPred_eq_monomial :
@@ -626,10 +614,10 @@ section Fewnomials
 
 @[simp]
 theorem support_monomial (n) {a : R} (h : a ≠ 0) : (monomial n a).support = singleton n := by
-  rw [support, coeff_monomial']; exact Finsupp.support_single _ h
+  simp [support, coeff_monomial, h]
 
 theorem support_monomial_subset (n) (a : R) : (monomial n a).support ⊆ singleton n := by
-  rw [support, coeff_monomial']
+  rw [support, coeff_monomial]
   exact Finsupp.support_single_subset
 
 @[deprecated (since := "2026-06-09")] alias support_monomial' := support_monomial_subset
@@ -739,9 +727,9 @@ theorem sum_eq_of_subset {S : Type*} [AddCommMonoid S] {p : R[X]} (f : ℕ → R
 
 /-- Expressing the product of two polynomials as a double sum. -/
 theorem mul_eq_sum_sum :
-    p * q = ∑ i ∈ p.support, q.sum fun j a ↦ (monomial (i + j)) (p.coeff i * a) := by
-  rw [AddMonoidAlgebra.mul_def]
-  rfl
+    p * q = ∑ i ∈ p.support, q.sum fun j a ↦ (monomial (i + j)) (p.coeff i * a) :=
+  AddMonoidAlgebra.mul_def ..
+
 @[simp]
 theorem sum_zero_index {S : Type*} [AddCommMonoid S] (f : ℕ → R → S) : (0 : R[X]).sum f = 0 := by
   simp [sum]
@@ -921,7 +909,7 @@ theorem coeff_mem_coeffs {p : R[X]} {n : ℕ} (h : p.coeff n ≠ 0) : p.coeff n 
 
 @[simp]
 theorem coeffs_empty_iff {p : R[X]} : coeffs p = ∅ ↔ p = 0 := by
-  simp [← Finset.subset_empty, coeffs_subset_iff, Polynomial.ext_iff]
+  simp [Finset.ext_iff, coeffs, ← coeff_eq_zero, Finsupp.ext_iff]
 
 @[simp]
 theorem coeffs_nonempty_iff {p : R[X]} : p.coeffs.Nonempty ↔ p ≠ 0 := by

@@ -67,13 +67,14 @@ theorem hasseDeriv_apply :
 
 theorem hasseDeriv_coeff (n : ℕ) :
     (hasseDeriv k f).coeff n = (n + k).choose k * f.coeff (n + k) := by
-  rw [hasseDeriv_apply, coeff_sum, sum_def, Finset.sum_eq_single (n + k), coeff_monomial]
+  rw [hasseDeriv_apply, coeff_sum, sum_def, Finset.sum_eq_single (n + k), coeff_monomial,
+    Finsupp.single_apply]
   · simp
   · #adaptation_note
     /-- Prior to nightly-2025-08-14, this was working as
     `grind [coeff_monomial, Nat.choose_eq_zero_of_lt, Nat.cast_zero, zero_mul]` -/
     intro i _hi hink
-    rw [coeff_monomial]
+    rw [coeff_monomial, Finsupp.single_apply]
     by_cases hik : i < k
     · simp only [Nat.choose_eq_zero_of_lt hik, ite_self, Nat.cast_zero, zero_mul]
     · grind
@@ -105,7 +106,7 @@ theorem hasseDeriv_one : @hasseDeriv R _ 1 = derivative :=
 theorem hasseDeriv_monomial (n : ℕ) (r : R) :
     hasseDeriv k (monomial n r) = monomial (n - k) (↑(n.choose k) * r) := by
   ext i
-  simp only [hasseDeriv_coeff, coeff_monomial]
+  simp only [hasseDeriv_coeff, coeff_monomial, Finsupp.single_apply]
   by_cases hnik : n = i + k
   · grind
   · rw [ite_eq_right hnik, mul_zero]
@@ -135,7 +136,7 @@ theorem factorial_smul_hasseDeriv : ⇑(k ! • @hasseDeriv R _ k) = (@derivativ
   induction k with
   | zero => rw [hasseDeriv_zero, factorial_zero, iterate_zero, one_smul, LinearMap.id_coe]
   | succ k ih => ?_
-  ext f n : 2
+  ext f n : 3
   rw [iterate_succ_apply', ← ih]
   simp only [LinearMap.smul_apply, AddMonoidAlgebra.coeff_smul_apply, LinearMap.map_smul_of_tower,
     coeff_derivative, hasseDeriv_coeff, ← @choose_symm_add _ k]
