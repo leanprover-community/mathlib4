@@ -208,20 +208,13 @@ theorem tendstoInDistribution_inv_sqrt_smul_sum
         simp [mul_left_comm, mul_assoc]
       _ = ∑ i, ∑ j, (t i * t j) * ∫ ω, X 0 ω i * X 0 ω j ∂P := by
         rw [integral_finsetSum]
-        · apply Finset.sum_congr rfl
-          intro i hi
+        · congr with i
           rw [integral_finsetSum]
-          · apply Finset.sum_congr rfl
-            intro j hj
+          · congr with j
             rw [integral_const_mul]
-          · intro j hj
-            exact ((@MemLp.mul Ω _ ℝ _ P 2 2 1 _ _
-              (hL2.eval_piLp i) (hL2.eval_piLp j) _).integrable <| by norm_num).const_mul _
-        · intro i hi
-          apply integrable_finsetSum
-          intro j hj
-          exact ((@MemLp.mul Ω _ ℝ _ P 2 2 1 _ _
-            (hL2.eval_piLp i) (hL2.eval_piLp j) _).integrable <| by norm_num).const_mul _
+          exact fun j _ ↦ (hL2.eval_piLp i).integrable_mul (hL2.eval_piLp j) |>.const_mul _
+        exact fun i _ ↦ integrable_finsetSum _ fun j _ ↦
+          (hL2.eval_piLp i).integrable_mul (hL2.eval_piLp j) |>.const_mul _
       _ = ‖t‖ ^ 2 := by simp [h1, EuclideanSpace.norm_sq_eq, ← pow_two]
   have hYVar : Var[Y 0; P] = ‖t‖ ^ 2 := by
     rw [variance_eq_integral (hL2.inner_const t).aemeasurable, hY0]
