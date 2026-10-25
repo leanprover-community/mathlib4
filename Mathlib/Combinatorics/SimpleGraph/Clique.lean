@@ -1104,6 +1104,7 @@ theorem indepNum_ne_zero_of_finite [Nonempty α] [Finite α] : G.indepNum ≠ 0 
   refine (Nat.not_succ_le_zero 0 <| le_of_le_of_eq ?_ ·)
   exact IsIndepSet.card_le_indepNum (t := {Classical.arbitrary α}) <| by simp
 
+-- TODO: generalize from `Finite α` to `Finite G.edgeSet`
 theorem indepNum_eq_zero_iff [Finite α] : G.indepNum = 0 ↔ IsEmpty α := by
   refine ⟨fun h ↦ ?_, fun h ↦ G.indepNum_of_isEmpty⟩
   contrapose! h
