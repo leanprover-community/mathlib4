@@ -73,7 +73,7 @@ theorem trunc_one (n) : trunc (n + 1) (1 : R⟦X⟧) = 1 := by
 theorem trunc_C (n) (a : R) : trunc (n + 1) (C a) = Polynomial.C a := by
   ext m
   rw [coeff_trunc, coeff_C, Polynomial.coeff_C]
-  split_ifs with H <;> first | rfl | try simp_all
+  split_ifs with H <;> first | rfl | simp_all
 
 theorem trunc_succ (f : R⟦X⟧) (n : ℕ) :
     trunc n.succ f = trunc n f + Polynomial.monomial n (coeff n f) := by

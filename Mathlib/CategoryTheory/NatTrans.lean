@@ -59,6 +59,7 @@ structure NatTrans (F G : C ⥤ D) : Type max u₁ v₂ where
 
 to_dual_for NatTrans.naturality := (self.naturality f).symm
 to_dual_for NatTrans.mk := { app }
+to_dual_for NatTrans.casesOn := t.casesOn fun app naturality ↦ mk app (by simp [naturality])
 
 -- Rather arbitrarily, we say that the 'simpler' form is
 -- components of natural transformations moving earlier.

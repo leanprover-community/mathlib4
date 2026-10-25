@@ -247,7 +247,7 @@ def equiv : Cubic R ≃ { p : R[X] // p.degree ≤ 3 } where
   right_inv f := by
     ext n
     obtain hn | hn := le_or_gt n 3
-    · interval_cases n <;> simp only <;> ring_nf <;> try simp only [coeffs]
+    · interval_cases n <;> simp only <;> ring_nf <;> simp only [coeffs]
     · rw [coeff_eq_zero hn, (degree_le_iff_coeff_zero (f : R[X]) 3).mp f.2]
       simpa using hn
 

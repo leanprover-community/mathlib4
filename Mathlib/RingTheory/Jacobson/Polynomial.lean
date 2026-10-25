@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.Jacobson.Ideal
 public import Mathlib.RingTheory.Polynomial.Quotient
+
 /-!
 # Jacobson radical of polynomial ring
 

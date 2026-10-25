@@ -220,7 +220,7 @@ lemma natDegree_eraseLead (h : f.nextCoeff ≠ 0) : f.eraseLead.natDegree = f.na
   have := natDegree_pos_of_nextCoeff_ne_zero h
   refine f.eraseLead_natDegree_le.antisymm <| le_natDegree_of_ne_zero ?_
   rwa [eraseLead_coeff_of_ne _ (tsub_lt_self _ _).ne, ← nextCoeff_of_natDegree_pos]
-  all_goals positivity
+  positivity
 
 lemma natDegree_eraseLead_add_one (h : f.nextCoeff ≠ 0) :
     f.eraseLead.natDegree + 1 = f.natDegree := by
