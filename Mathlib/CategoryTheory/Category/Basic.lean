@@ -7,9 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Category.Init
 public import Mathlib.Combinatorics.Quiver.Basic
-public import Mathlib.Tactic.PPWithUniv
+public import Mathlib.Tactic.Attr.Core
 public import Mathlib.Tactic.Common
-public import Mathlib.Tactic.StacksAttribute
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.TryThis
 
 /-!
@@ -127,6 +127,7 @@ class CategoryStruct (obj : Type u) : Type max u (v + 1) extends Quiver.{v} obj 
   comp : ∀ {X Y Z : obj}, (X ⟶ Y) → (Y ⟶ Z) → (X ⟶ Z)
 
 attribute [trans, to_dual self (reorder := X Z, 6 7)] CategoryStruct.comp
+attribute [to_dual self (reorder := comp (X Z, 4 5))] CategoryStruct.mk
 
 initialize_simps_projections CategoryStruct (-toQuiver_Hom, -Hom)
 
@@ -229,7 +230,7 @@ specified explicitly, as `Category.{v} C`. (See also `LargeCategory` and `SmallC
 -- https://github.com/leanprover/lean4/pull/12423, the morphism universe `v` would default to
 -- being a universe output parameter.
 -- See Note [universe output parameters and typeclass caching].
-@[univ_out_params, pp_with_univ, stacks 0014]
+@[univ_out_params, pp_with_univ, stacks 0014, wikidata Q719395]
 class Category (obj : Type u) : Type max u (v + 1) extends CategoryStruct.{v} obj where
   /-- Identity morphisms are left identities for composition. -/
   id_comp : ∀ {X Y : obj} (f : X ⟶ Y), 𝟙 X ≫ f = f := by cat_disch
@@ -242,7 +243,11 @@ class Category (obj : Type u) : Type max u (v + 1) extends CategoryStruct.{v} ob
 attribute [to_dual existing (attr := simp, grind =) id_comp] Category.comp_id
 attribute [simp, grind _=_] Category.assoc
 
+to_dual_for Category.assoc := (self.assoc h g f).symm
+
 initialize_simps_projections Category (-Hom)
+
+to_dual_for Category.mk := {}
 
 example {C} [Category C] {X Y : C} (f : X ⟶ Y) : 𝟙 X ≫ f = f := by simp
 example {C} [Category C] {X Y : C} (f : X ⟶ Y) : f ≫ 𝟙 Y = f := by simp
@@ -261,7 +266,7 @@ section
 
 variable {C : Type u} [Category.{v} C] {X Y Z : C}
 
-@[to_dual existing assoc]
+@[deprecated assoc +typeChanged (since := "2026-09-15")]
 lemma Category.assoc' {W X Y Z : C} (f : X ⟶ W) (g : Y ⟶ X) (h : Z ⟶ Y) :
     h ≫ g ≫ f = (h ≫ g) ≫ f := (Category.assoc h g f).symm
 

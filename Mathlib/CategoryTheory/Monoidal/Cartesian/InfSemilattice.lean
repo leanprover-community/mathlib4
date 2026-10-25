@@ -17,7 +17,7 @@ A symmetric monoidal structure on the preorder category is automatically provide
 instance and `CartesianMonoidalCategory.toSymmetricCategory`.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

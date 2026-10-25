@@ -5,8 +5,8 @@ Authors: Jireh Loreaux
 -/
 module
 
+public import Mathlib.Algebra.Order.Star.Real
 public import Mathlib.Analysis.Complex.Basic
-public import Mathlib.Data.Real.StarOrdered
 public import Mathlib.Topology.ContinuousMap.StarOrdered
 
 /-! # Instances of `ContinuousSqrt`
@@ -15,7 +15,7 @@ This provides the instances of `ContinuousSqrt` for `ℝ`, `ℝ≥0`, and `ℂ`,
 of `StarOrderedRing C(α, R)` and `StarOrderedRing C(α, R)₀` for any topological space `α` and `R`
 among `ℝ≥0`, `ℝ`, and `ℂ`. -/
 
-@[expose] public section
+public section
 
 open scoped NNReal
 

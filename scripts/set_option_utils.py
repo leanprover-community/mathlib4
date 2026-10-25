@@ -8,8 +8,24 @@ from pathlib import Path
 PROJECT_DIR = Path(__file__).resolve().parent.parent
 
 DEFAULT_OPTIONS = [
+    "backward.defeqAttrib.useBackward",
     "backward.isDefEq.respectTransparency",
+    "backward.isDefEq.respectTransparency.types",
+    "backward.isDefEq.respectTransparency.instanceSearchTypes",
+    "backward.privateInPublic",
     "backward.whnf.reducibleClassField",
+    "backward.inferInstanceAs.wrap",
+    "backward.inferInstanceAs.wrap.data",
+    "backward.inferInstanceAs.wrap.instances",
+    "linter.auxLemma",
+    "linter.checkUnivs",
+    "linter.flexible",
+    "linter.style.longFile",
+    "linter.translate.overwrite",
+    "linter.translate.warnInvalid",
+    "linter.unusedDecidableInType",
+    "linter.unusedVariables",
+    "linter.unusedTactic",
 ]
 
 
@@ -18,26 +34,39 @@ def set_option_line(option: str, value: str = "false") -> str:
     return f"set_option {option} {value} in\n"
 
 
-def removable_pattern(option: str, value: str = "false") -> re.Pattern:
-    """Match bare `set_option X <value> in` lines (no trailing comment)."""
+def removable_pattern(option: str) -> re.Pattern:
+    """Match bare `set_option X <value> in` lines (no trailing comment).
+    |value| can be a boolean (true or false), number or string (not containing `"`)."""
     escaped = re.escape(option)
-    escaped_val = re.escape(value)
-    return re.compile(rf"^\s*set_option {escaped} {escaped_val} in\s*$")
+    return re.compile(rf'^\s*set_option {escaped} (true|false|\d+|"[^"]*") in\s*$')
 
 
-def commented_pattern(option: str, value: str = "false") -> re.Pattern:
-    """Match `set_option X <value> in -- ...` lines."""
+def commented_pattern(option: str) -> re.Pattern:
+    """Match `set_option X <value> in -- ...` lines.
+    |value| can be a boolean (true or false), number or string (not containing `"`)."""
     escaped = re.escape(option)
-    escaped_val = re.escape(value)
-    return re.compile(rf"^\s*set_option {escaped} {escaped_val} in\s+--")
+    return re.compile(rf'^\s*set_option {escaped} (true|false|\d+|"[^"]*") in\s+--')
 
 
-def lakefile_pattern(option: str, value: str = "false") -> re.Pattern:
+def is_annotated(lines: list[str], idx: int) -> bool:
+    """Check whether line `idx` is immediately preceded by a `--` comment
+    or by a (possibly multi-line) `/-- ... -/` doc comment or `/- ... -/` block comment.
+    """
+    if idx == 0:
+        return False
+    prev = lines[idx - 1]
+    if re.search(r"^\s*--", prev):
+        return True
+    if re.search(r"-/\s*$", prev):
+        return True
+    return False
+
+
+def lakefile_pattern(option: str) -> re.Pattern:
     """Match lakefile entries for an option."""
     escaped = re.escape(option)
-    escaped_val = re.escape(value)
     return re.compile(
-        rf"^\s*⟨`{escaped},\s*{escaped_val}⟩,?\s*\n",
+        rf'^\s*⟨\s*`{escaped}\s*,\s*(true|false|\.ofNat\s+\d+|"[^"]*")\s*⟩\s*,?\s*\n',
         re.MULTILINE,
     )
 
@@ -51,7 +80,7 @@ def lake_build_with_progress(project_dir: Path) -> tuple[int, str]:
     Returns (returncode, captured_output).
     """
     proc = subprocess.Popen(
-        ["lake", "build"],
+        ["lake", "build", "--iofail"],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True,

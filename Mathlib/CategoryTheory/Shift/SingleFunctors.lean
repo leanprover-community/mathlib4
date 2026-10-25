@@ -168,7 +168,7 @@ def isoMk (iso : ∀ a, (F.functor a ≅ G.functor a))
 variable (C D)
 
 /-- The evaluation `SingleFunctors C D A ⥤ C ⥤ D` for some `a : A`. -/
-@[simps]
+@[implicit_reducible, simps]
 def evaluation (a : A) : SingleFunctors C D A ⥤ C ⥤ D where
   obj F := F.functor a
   map {_ _} φ := φ.hom a
@@ -194,14 +194,13 @@ lemma inv_hom_id_hom_app (e : F ≅ G) (n : A) (X : C) :
   rw [← NatTrans.comp_app, inv_hom_id_hom, NatTrans.id_app]
 
 instance (f : F ⟶ G) [IsIso f] (n : A) : IsIso (f.hom n) :=
-  (inferInstance : IsIso ((evaluation C D n).map f))
+  inferInstanceAs <| IsIso ((evaluation C D n).map f)
 
 variable (F)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given `F : SingleFunctors C D A`, and a functor `G : D ⥤ E` which commutes
 with the shift by `A`, this is the "composition" of `F` and `G` in `SingleFunctors C E A`. -/
-@[simps! functor shiftIso_hom_app shiftIso_inv_app]
+@[implicit_reducible, simps! functor shiftIso_hom_app shiftIso_inv_app]
 def postcomp (G : D ⥤ E) [G.CommShift A] :
     SingleFunctors C E A where
   functor a := F.functor a ⋙ G
@@ -224,10 +223,9 @@ def postcomp (G : D ⥤ E) [G.CommShift A] :
 
 variable (C A)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor `SingleFunctors C D A ⥤ SingleFunctors C E A` given by the postcomposition
 by a functor `G : D ⥤ E` which commutes with the shift. -/
-@[simps]
+@[implicit_reducible, simps]
 def postcompFunctor (G : D ⥤ E) [G.CommShift A] :
     SingleFunctors C D A ⥤ SingleFunctors C E A where
   obj F := F.postcomp G
@@ -247,7 +245,6 @@ def postcompPostcompIso (G : D ⥤ E) (G' : E ⥤ E') [G.CommShift A] [G'.CommSh
     ext X
     simp [Functor.commShiftIso_comp_inv_app])
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism `F.postcomp G ≅ F.postcomp G'` induced by an isomorphism `e : G ≅ G'`
 which commutes with the shift. -/
 @[simps!]

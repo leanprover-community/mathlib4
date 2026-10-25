@@ -9,7 +9,7 @@ public import Mathlib.Data.Set.Basic
 
 /-! # Lemmas about `inclusion`, the injection of subtypes induced by `⊆` -/
 
-@[expose] public section
+public section
 
 open Function
 

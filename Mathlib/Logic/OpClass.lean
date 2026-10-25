@@ -21,7 +21,7 @@ They express the property that permuting arguments of type `α` does not change 
 * `RightCommutative`: for `op : β → α → β`, `op (op b a₁) a₂ = op (op b a₂) a₁`.
 -/
 
-@[expose] public section
+public section
 
 universe u v
 

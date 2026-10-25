@@ -8,7 +8,8 @@ module
 public import Mathlib.CategoryTheory.Adjunction.Restrict
 public import Mathlib.CategoryTheory.Functor.Flat
 public import Mathlib.CategoryTheory.Sites.Continuous
-public import Mathlib.CategoryTheory.Sites.LeftExact
+
+import Mathlib.CategoryTheory.Sites.LeftExact
 
 /-!
 # Pullback of sheaves
@@ -72,7 +73,7 @@ def sheafPullback [HasWeakSheafify K A] : Sheaf J A ⥤ Sheaf K A :=
 
 /-- The constructed `sheafPullback G A J K` is left adjoint
 to `G.sheafPushforwardContinuous A J K`. -/
-def sheafAdjunctionContinuous [Functor.IsContinuous G J K] [HasWeakSheafify K A] :
+def sheafAdjunctionContinuous [HasWeakSheafify K A] :
     sheafPullback G A J K ⊣ G.sheafPushforwardContinuous A J K :=
   ((G.op.lanAdjunction A).comp (sheafificationAdjunction K A)).restrictFullyFaithful
     (fullyFaithfulSheafToPresheaf J A) (Functor.FullyFaithful.id _) (Iso.refl _) (Iso.refl _)

@@ -25,15 +25,21 @@ jobs:
     steps:
       - name: Consume bridge artifact
         id: bridge
-        uses: leanprover-community/privilege-escalation-bridge/consume@d3bd99c50a4cf8c5350a211e8e3ba07ac19067d8 # v1.1.0
+        uses: leanprover-community/privilege-escalation-bridge/consume@120e98bbb1e9438be8973be645ef67e9cddc39ba # v2.1.0
         with:
           token: ${{ github.token }}
           artifact: workflow-data
           source_workflow: Commit Verification
           require_event: pull_request
+          # GitHub runs `pull_request` workflows from the PR, so for a fork PR every value in this
+          # artifact (including the comment body) may be forged by the PR author. We only post it
+          # back to the PR it came from, whose number `verify` fetches from the API and checks
+          # against the producer run's head commit.
+          untrusted_producer_events: pull_request
+          verify: true
           fail_on_missing: false
           extract: |
-            pr_number=meta.pr_number
+            pr_number=verified.pr.number
             has_special=outputs.has_special
             success=outputs.success
 

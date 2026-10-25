@@ -5,9 +5,9 @@ Authors: Gabriel Ebner
 -/
 module
 
-public import Mathlib.Init
-public meta import Lean.Elab.Tactic.Conv.Basic
 public meta import Lean.Elab.Command
+public meta import Lean.Elab.Tactic.Conv.Basic
+public import Mathlib.Init
 
 /-!
 Additional `conv` tactics.
@@ -105,7 +105,7 @@ There are also shorthand commands for several common conv tactics:
 * `#whnf e` is short for `#conv whnf => e`
 * `#simp e` is short for `#conv simp => e`
 * `#norm_num e` is short for `#conv norm_num => e`
-* `#push_neg e` is short for `#conv push_neg => e`
+* `#push c => e` is short for `#conv push c => e`
 -/
 elab tk:"#conv " conv:conv " => " e:term : command =>
   Command.runTermElabM fun _ ↦ do

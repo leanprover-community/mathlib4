@@ -6,7 +6,6 @@ Authors: Jon Eugster, Dagur Asgeirsson, Emily Riehl
 module
 
 public import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
-public import Mathlib.CategoryTheory.Limits.Final
 
 /-!
 # Existence of conical limits
@@ -35,7 +34,7 @@ However, it is not fully clear yet whether this could lead to potential issues, 
 if there are multiple `MonoidalCategory _` instances in scope.
 -/
 
-@[expose] public section
+public section
 
 universe v₁ u₁ v₂ u₂ w v' v u u'
 

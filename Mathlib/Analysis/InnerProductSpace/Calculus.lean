@@ -6,10 +6,11 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.InnerProductSpace.PiL2
-public import Mathlib.Analysis.SpecialFunctions.Sqrt
 public import Mathlib.Analysis.Normed.Module.Ball.Homeomorph
-public import Mathlib.Analysis.Calculus.ContDiff.WithLp
-public import Mathlib.Analysis.Calculus.FDeriv.WithLp
+public import Mathlib.Analysis.SpecialFunctions.Sqrt
+
+import Mathlib.Analysis.Calculus.ContDiff.WithLp
+import Mathlib.Analysis.Calculus.FDeriv.WithLp
 
 /-!
 # Calculus in inner product spaces
@@ -32,7 +33,7 @@ The last part of the file should be generalized to `PiLp`.
 
 noncomputable section
 
-open RCLike Real Filter
+open RCLike Real
 
 section DerivInner
 
@@ -138,7 +139,7 @@ section
 include 𝕜
 
 theorem contDiff_norm_sq : ContDiff ℝ n fun x : E => ‖x‖ ^ 2 := by
-  convert (reCLM : 𝕜 →L[ℝ] ℝ).contDiff.comp ((contDiff_id (E := E)).inner 𝕜 (contDiff_id (E := E)))
+  convert! (reCLM : 𝕜 →L[ℝ] ℝ).contDiff.comp ((contDiff_id (E := E)).inner 𝕜 (contDiff_id (E := E)))
   exact (inner_self_eq_norm_sq _).symm
 
 theorem ContDiff.norm_sq (hf : ContDiff ℝ n f) : ContDiff ℝ n fun x => ‖f x‖ ^ 2 :=
@@ -197,7 +198,7 @@ open scoped RealInnerProductSpace
 theorem hasStrictFDerivAt_norm_sq (x : F) :
     HasStrictFDerivAt (fun x => ‖x‖ ^ 2) (2 • (innerSL ℝ x)) x := by
   simp only [sq, ← @inner_self_eq_norm_mul_norm ℝ]
-  convert (hasStrictFDerivAt_id x).inner ℝ (hasStrictFDerivAt_id x)
+  convert! (hasStrictFDerivAt_id x).inner ℝ (hasStrictFDerivAt_id x)
   ext y
   simp [two_smul, real_inner_comm]
 
@@ -389,7 +390,7 @@ theorem contDiffOn_univBall_symm :
   unfold univBall; split_ifs with h
   · refine contDiffOn_univUnitBall_symm.comp (contDiff_unitBallBall_symm h).contDiffOn ?_
     rw [← unitBallBall_source c r h, ← unitBallBall_target c r h]
-    apply OpenPartialHomeomorph.symm_mapsTo
+    apply OpenPartialHomeomorph.mapsTo_symm
   · exact contDiffOn_id.sub contDiffOn_const
 
 end OpenPartialHomeomorph

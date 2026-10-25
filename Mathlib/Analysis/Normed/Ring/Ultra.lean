@@ -5,8 +5,8 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.Analysis.Normed.Ring.Basic
 public import Mathlib.Analysis.Normed.Group.Ultra
+public import Mathlib.Analysis.Normed.Ring.Basic
 
 /-!
 # Ultrametric norms on rings where the norm of one is one
@@ -39,7 +39,7 @@ ultrametric, nonarchimedean
 -/
 
 public section
-open Metric NNReal
+open NNReal
 
 namespace IsUltrametricDist
 
@@ -57,7 +57,6 @@ lemma nnnorm_add_one_le_max_nnnorm_one (x : R) :
 
 variable (R)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma nnnorm_natCast_le_one (n : ℕ) :
     ‖(n : R)‖₊ ≤ 1 := by
   induction n with

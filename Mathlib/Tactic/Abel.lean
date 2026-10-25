@@ -5,10 +5,10 @@ Authors: Mario Carneiro, Kim Morrison
 -/
 module
 
-public import Mathlib.Util.AtomM.Recurse
+public meta import Mathlib.Util.AtomM.Recurse
 public import Mathlib.Tactic.NormNum.Basic
 public import Mathlib.Tactic.TryThis
-public meta import Mathlib.Util.AtomM.Recurse
+public import Mathlib.Util.AtomM.Recurse
 
 /-!
 # The `abel` tactic
@@ -49,6 +49,20 @@ open Lean Elab Meta Tactic Qq
 initialize registerTraceClass `abel
 initialize registerTraceClass `abel.detail
 
+/-- Set this to `false` to disable warnings about the planned deprecation of the transparency
+controls for `abel`. -/
+register_option warn.abelTransparency : Bool := {
+  defValue := true
+  descr := "warn when transparency controls for 'abel' are used"
+}
+
+private def warnTransparency : TacticM Unit := do
+  if warn.abelTransparency.get (← getOptions) then
+    logWarning "The `!` variants of `abel` and the `red` configuration option for `abel_nf` will \
+be deprecated soon. If you have a genuine use case for either feature, please write in the Zulip \
+discussion: https://leanprover.zulipchat.com/#narrow/with/629213120.\n\
+To disable this warning, use `set_option warn.abelTransparency false`."
+
 /--
 `abel` solves equations in the language of *additive*, commutative monoids and groups.
 
@@ -61,8 +75,14 @@ initialize registerTraceClass `abel.detail
   * `abel_nf (config := cfg)` allows for additional configuration:
     * `red`: the reducibility setting (overridden by `!`).
     * `zetaDelta`: if true, local `let` variables can be unfolded (overridden by `!`).
-    * `recursive`: if true, `abel_nf` also recurses into atoms.
+    * `contextual`: if true, implication hypotheses are added to the local context of the
+      discharger.
 * `abel!`, `abel1!`, `abel_nf!` use a more aggressive reducibility setting to identify atoms.
+
+The `!` variants and the `red` configuration option will be deprecated soon. If you have a genuine
+use case for either feature, please write in the
+[Zulip discussion](https://leanprover.zulipchat.com/#narrow/with/629213120). The warning can be
+disabled with `set_option warn.abelTransparency false`.
 
 Examples:
 ```
@@ -377,11 +397,11 @@ partial def eval (e : Expr) : M (NormalExpr × Expr) := do
     let (e₁, p₁) ← eval e
     let (e₂, p₂) ← evalNeg e₁
     return (e₂, ← iapp `Mathlib.Tactic.Abel.subst_into_neg #[e, e₁, e₂, p₁, p₂])
-  | (``AddMonoid.nsmul, #[_, _, e₁, e₂]) => do
+  | (``NSMul.nsmul, #[_, _, e₁, e₂]) => do
     let n ← if (← read).isGroup then mkAppM ``Int.ofNat #[e₁] else pure e₁
     let (e', p) ← eval <| ← iapp ``smul #[n, e₂]
     return (e', ← iapp ``unfold_smul #[e₁, e₂, e', p])
-  | (``SubNegMonoid.zsmul, #[_, _, e₁, e₂]) => do
+  | (``ZSMul.zsmul, #[_, _, e₁, e₂]) => do
       if ¬ (← read).isGroup then failure
       let (e', p) ← eval <| ← iapp ``smul #[e₁, e₂]
       return (e', (← read).app ``unfold_zsmul (← read).inst #[e₁, e₂, e', p])
@@ -411,8 +431,8 @@ def isAtom (e : Expr) : Bool :=
   | (``HAdd.hAdd, #[_, _, _, _, _, _])
   | (``HSub.hSub, #[_, _, _, _, _, _])
   | (``Neg.neg, #[_, _, _])
-  | (``AddMonoid.nsmul, #[_, _, _, _])
-  | (``SubNegMonoid.zsmul, #[_, _, _, _])
+  | (``NSMul.nsmul, #[_, _, _, _])
+  | (``ZSMul.zsmul, #[_, _, _, _])
   | (``SMul.smul, #[.const ``Int _, _, _, _, _])
   | (``SMul.smul, #[.const ``Nat _, _, _, _, _])
   | (``HSMul.hSMul, #[.const ``Int _, _, _, _, _, _])
@@ -428,12 +448,13 @@ def isAtom (e : Expr) : Bool :=
 
 @[tactic_alt abel]
 elab (name := abel1) "abel1" tk:"!"? : tactic => withMainContext do
+  if tk.isSome then warnTransparency
   let tm := if tk.isSome then .default else .reducible
   let some (_, e₁, e₂) := (← whnfR <| ← getMainTarget).eq?
     | throwError "`abel1` requires an equality goal"
   trace[abel] "running on an equality `{e₁} = {e₂}`."
   let c ← mkContext e₁
-  closeMainGoal `abel1 <| ← AtomM.run tm <| ReaderT.run (r := c) do
+  let proof ← AtomM.run tm <| ReaderT.run (r := c) do
     let (e₁', p₁) ← eval e₁
     trace[abel] "found `{p₁}`, a proof that `{e₁} = {e₁'.e}`"
     let (e₂', p₂) ← eval e₂
@@ -442,6 +463,9 @@ elab (name := abel1) "abel1" tk:"!"? : tactic => withMainContext do
       throwError "`abel1` found that the two sides were not equal"
     trace[abel] "verified that the simplified forms are identical"
     mkEqTrans p₁ (← mkEqSymm p₂)
+  let type ← getMainTarget
+  let proof ← Lean.Meta.mkAuxTheorem type proof (zetaDelta := true) (kind? := `_abel)
+  closeMainGoal `abel1 proof
 
 @[tactic_alt abel]
 macro (name := abel1!) "abel1!" : tactic => `(tactic| abel1 !)
@@ -499,14 +523,21 @@ def evalExpr (e : Expr) : AtomM Simp.Result := do
 
 open Parser.Tactic
 
+private def configSetsRed (cfg : Syntax) : Bool :=
+  (getConfigItems cfg).any fun item ↦
+    match item with
+    | `(configItem| ($option:ident := $_)) => option.getId.eraseMacroScopes == `red
+    | _ => false
+
 @[tactic_alt abel]
-elab (name := abelNF) "abel_nf" tk:"!"? cfg:optConfig loc:(location)? : tactic => do
-  let mut cfg ← elabAbelNFConfig cfg
+elab (name := abelNF) "abel_nf" tk:"!"? cfgStx:optConfig loc:(location)? : tactic => do
+  let mut cfg ← elabAbelNFConfig cfgStx
+  if tk.isSome || configSetsRed cfgStx || cfg.red != .reducible then warnTransparency
   if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   let s ← IO.mkRef {}
   let m := AtomM.recurse s cfg.toConfig (wellBehavedDischarge := true) evalExpr (cleanup cfg)
-  transformAtLocation (m ·) "`abel_nf`" loc (failIfUnchanged := true) false
+  transformAtLocation (m ·) "abel_nf" loc (ifUnchanged := .error) false
 
 @[tactic_alt abel]
 macro "abel_nf!" cfg:optConfig loc:(location)? : tactic =>
@@ -518,8 +549,9 @@ syntax (name := abelNFConv) "abel_nf" "!"? optConfig : conv
 /-- Elaborator for the `abel_nf` tactic. -/
 @[tactic abelNFConv]
 def elabAbelNFConv : Tactic := fun stx ↦ match stx with
-  | `(conv| abel_nf $[!%$tk]? $cfg:optConfig) => withMainContext do
-    let mut cfg ← elabAbelNFConfig cfg
+  | `(conv| abel_nf $[!%$tk]? $cfgStx:optConfig) => withMainContext do
+    let mut cfg ← elabAbelNFConfig cfgStx
+    if tk.isSome || configSetsRed cfgStx || cfg.red != .reducible then warnTransparency
     if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
     let s ← IO.mkRef {}
     Conv.applySimpResult

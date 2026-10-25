@@ -6,9 +6,10 @@ Authors: Monica Omar
 module
 
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital
+
 import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 
-/-! # Continuous functional caculus and projections
+/-! # Continuous functional calculus and projections
 
 This file collects some results related to projections, idempotents,
 and the continuous functional calculus. -/

@@ -5,16 +5,14 @@ Authors: Anne Baanen, Yongle Hu
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Actions
 public import Mathlib.RingTheory.FiniteType
-public import Mathlib.RingTheory.Ideal.Pointwise
 public import Mathlib.RingTheory.Ideal.Over
 
 /-!
 # Finiteness of quotient modules
 -/
 
-@[expose] public section
+public section
 
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
 variable (P : Ideal B) (p : Ideal A) [P.LiesOver p]

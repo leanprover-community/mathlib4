@@ -1,0 +1,37 @@
+/-
+Copyright (c) 2026 Weiyi Wang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Weiyi Wang
+-/
+module
+
+public import Mathlib.Basic.Real.ENatENNReal
+public import Mathlib.Topology.Instances.ENat
+public import Mathlib.Topology.Order.Real
+
+import Mathlib.Algebra.Order.Floor.Extended
+import Mathlib.Algebra.Order.Module.Field
+import Mathlib.Data.EReal.Operations
+import Mathlib.Topology.Algebra.InfiniteSum.Order
+import Mathlib.Topology.MetricSpace.Bounded
+
+/-!
+# Topology lemma for `ENat.toENNReal`
+
+This file shows `ENat.toENNReal` is a closed embedding.
+-/
+
+public section
+
+namespace ENat
+
+@[continuity]
+theorem continuous_toENNReal : Continuous toENNReal := by
+  refine OrderTopology.continuous_iff.mpr fun a ↦ ⟨?_, ?_⟩
+  · simpa using isOpen_Ioi
+  · simpa using isOpen_Iio
+
+theorem isClosedEmbedding_toENNReal : Topology.IsClosedEmbedding toENNReal :=
+  continuous_toENNReal.isClosedEmbedding toENNReal_strictMono.injective
+
+end ENat

@@ -3,7 +3,9 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.NNReal.Basic
+module
+
+public import Mathlib.Basic.NNReal.Basic
 
 /-!
 # IMO 1986 Q5
@@ -25,6 +27,8 @@ Formalization is based on
 [Art of Problem Solving](https://artofproblemsolving.com/wiki/index.php/1986_IMO_Problems/Problem_5)
 with minor modifications.
 -/
+
+@[expose] public section
 
 open NNReal
 
@@ -50,7 +54,6 @@ theorem map_eq_zero : f x = 0 ↔ 2 ≤ x := by
 
 theorem map_ne_zero_iff : f x ≠ 0 ↔ x < 2 := by simp [hf.map_eq_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem map_of_lt_two (hx : x < 2) : f x = 2 / (2 - x) := by
   have hx' : 0 < 2 - x := tsub_pos_of_lt hx
   have hfx : f x ≠ 0 := hf.map_ne_zero_iff.2 hx
@@ -68,7 +71,6 @@ theorem map_eq (x : ℝ≥0) : f x = 2 / (2 - x) :=
 
 end IsGood
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isGood_iff {f : ℝ≥0 → ℝ≥0} : IsGood f ↔ f = fun x ↦ 2 / (2 - x) := by
   refine ⟨fun hf ↦ funext hf.map_eq, ?_⟩
   rintro rfl

@@ -15,7 +15,7 @@ We show that if `F : C ⥤ Cat` is such that `C` is filtered and `F.obj c` is fi
 `c : C`, then `Grothendieck F` is filtered.
 -/
 
-@[expose] public section
+public section
 
 universe v u
 
@@ -38,7 +38,8 @@ instance [IsFilteredOrEmpty C] [∀ c, IsFilteredOrEmpty (F.obj c)] :
           ⟨coeqHom u v, coeqHom _ _⟩, ?_⟩
     · conv_rhs => rw [← Cat.Hom.comp_obj, ← F.map_comp, coeq_condition, F.map_comp,
         Cat.Hom.comp_obj]
-    · apply Grothendieck.ext _ _ (coeq_condition u v)
+    · set_option backward.isDefEq.respectTransparency.types false in
+      apply Grothendieck.ext _ _ (coeq_condition u v)
       refine Eq.trans ?_ (eqToHom _ ≫= coeq_condition _ _)
       simp
 

@@ -5,8 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Logic.Small.Basic
 public import Mathlib.Data.Vector.Basic
+public import Mathlib.Logic.Small.Basic
 
 /-!
 # Instances for `Small (List α)` and `Small (Vector α)`.
@@ -15,7 +15,7 @@ These must not be in `Logic.Small.Basic` as this is very low in the import hiera
 and is used by category theory files which do not need everything imported by `Data.Vector.Basic`.
 -/
 
-@[expose] public section
+public section
 
 
 universe u v

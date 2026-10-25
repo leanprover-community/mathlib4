@@ -5,13 +5,12 @@ Authors: Markus Himmel, Jakob von Raumer
 -/
 module
 
-public import Mathlib.Algebra.Group.TransferInstance
-public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Algebra.Group.Action.Units
+public import Mathlib.Algebra.Group.TransferInstance
+public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.CategoryTheory.Endomorphism
 public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
-public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
-public import Mathlib.Algebra.Module.NatInt
 
 /-!
 # Preadditive categories
@@ -49,7 +48,7 @@ additive, preadditive, Hom group, Ab-category, Ab-enriched
 @[expose] public section
 
 
-universe v u
+universe w v u
 
 open CategoryTheory.Limits
 
@@ -77,6 +76,26 @@ attribute [reassoc, simp] Preadditive.add_comp
 attribute [reassoc] Preadditive.comp_add
 
 attribute [simp] Preadditive.comp_add
+
+namespace End
+
+@[simps!]
+instance [Preadditive C] (X : C) : AddCommGroup (End X) := (End.homEquiv (X := X)).addCommGroup
+
+variable {C} in
+/-- The additive bijection `End X ≃+ (X ⟶ X)`
+when `X` is an object in a preadditive category. -/
+@[implicit_reducible, simps!]
+def addEquiv [Preadditive C] {X : C} : End X ≃+ (X ⟶ X) where
+  toEquiv := homEquiv
+  map_add' := by cat_disch
+
+@[simp]
+lemma sum_asHom [Preadditive C] {X : C} {ι : Type*} (s : Finset ι) (f : ι → End X) :
+    (∑ i ∈ s, f i).asHom = ∑ i ∈ s, (f i).asHom :=
+  map_sum addEquiv _ _
+
+end End
 
 end CategoryTheory
 
@@ -122,10 +141,6 @@ instance fullSubcategory (Z : ObjectProperty C) : Preadditive Z.FullSubcategory 
       __ := InducedCategory.homEquiv.addCommGroup }
   add_comp _ _ _ _ _ _ := by ext; apply add_comp
   comp_add _ _ _ _ _ _ := by ext; apply comp_add
-
-instance (X : C) : AddCommGroup (End X) := by
-  dsimp [End]
-  infer_instance
 
 /-- Composition by a fixed left argument as a group homomorphism -/
 def leftComp {P Q : C} (R : C) (f : P ⟶ Q) : (Q ⟶ R) →+ (P ⟶ R) :=
@@ -204,13 +219,21 @@ instance (priority := 100) preadditiveHasZeroMorphisms : HasZeroMorphisms C wher
   comp_zero f R := show leftComp R f 0 = 0 from map_zero _
   zero_comp P _ _ f := show rightComp P f 0 = 0 from map_zero _
 
+variable (C) in
+lemma hasZeroObject_of_hasCoproduct [HasCoproduct (PEmpty.elim : PEmpty.{w + 1} → C)] :
+    HasZeroObject C :=
+  ⟨∐ (PEmpty.elim : PEmpty.{w + 1} → C), by
+    rw [IsZero.iff_id_eq_zero]
+    cat_disch⟩
+
+attribute [local simp] End.mul_asHom in
 /-- This instance is split off from the `Ring (End X)` instance to speed up instance search. -/
 instance {X : C} : Semiring (End X) :=
   { End.monoid with
-    zero_mul := fun f => by dsimp [mul]; exact HasZeroMorphisms.comp_zero f _
-    mul_zero := fun f => by dsimp [mul]; exact HasZeroMorphisms.zero_comp _ f
-    left_distrib := fun f g h => Preadditive.add_comp X X X g h f
-    right_distrib := fun f g h => Preadditive.comp_add X X X h f g }
+    zero_mul := by cat_disch
+    mul_zero := by cat_disch
+    left_distrib := by cat_disch
+    right_distrib := by cat_disch }
 
 instance {X : C} : Ring (End X) :=
   { (inferInstance : Semiring (End X)),
@@ -236,7 +259,6 @@ theorem mono_of_kernel_zero {X Y : C} {f : X ⟶ Y} [HasLimit (parallelPair f 0)
     (w : kernel.ι f = 0) : Mono f :=
   mono_of_cancel_zero f fun g h => by rw [← kernel.lift_ι f g h, w, Limits.comp_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mono_of_isZero_kernel' {X Y : C} {f : X ⟶ Y} (c : KernelFork f) (hc : IsLimit c)
     (h : IsZero c.pt) : Mono f := mono_of_cancel_zero _ (fun g hg => by
   obtain ⟨a, ha⟩ := KernelFork.IsLimit.lift' hc _ hg
@@ -267,7 +289,6 @@ theorem epi_of_cokernel_zero {X Y : C} {f : X ⟶ Y} [HasColimit (parallelPair f
     (w : cokernel.π f = 0) : Epi f :=
   epi_of_cancel_zero f fun g h => by rw [← cokernel.π_desc f g h, w, Limits.zero_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma epi_of_isZero_cokernel' {X Y : C} {f : X ⟶ Y} (c : CokernelCofork f) (hc : IsColimit c)
     (h : IsZero c.pt) : Epi f := epi_of_cancel_zero _ (fun g hg => by
   obtain ⟨a, ha⟩ := CokernelCofork.IsColimit.desc' hc _ hg
@@ -319,7 +340,6 @@ section
 
 variable {X Y : C} {f : X ⟶ Y} {g : X ⟶ Y}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Map a kernel cone on the difference of two morphisms to the equalizer fork. -/
 @[simps! pt]
 def forkOfKernelFork (c : KernelFork (f - g)) : Fork f g :=
@@ -329,7 +349,6 @@ def forkOfKernelFork (c : KernelFork (f - g)) : Fork f g :=
 theorem forkOfKernelFork_ι (c : KernelFork (f - g)) : (forkOfKernelFork c).ι = c.ι :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Map any equalizer fork to a cone on the difference of the two morphisms. -/
 def kernelForkOfFork (c : Fork f g) : KernelFork (f - g) :=
   Fork.ofι c.ι <| by rw [comp_sub, comp_zero, sub_eq_zero, c.condition]

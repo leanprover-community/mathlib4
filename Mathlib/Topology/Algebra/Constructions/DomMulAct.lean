@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.Homeomorph.Lemmas
 public import Mathlib.GroupTheory.GroupAction.DomAct.Basic
+public import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # Topological space structure on `Mᵈᵐᵃ` and `Mᵈᵃᵃ`
@@ -44,8 +44,6 @@ theorem continuous_mk_symm : Continuous (@mk M).symm := continuous_induced_dom
 @[to_additive (attr := simps toEquiv) /-- `DomAddAct.mk` as a homeomorphism. -/]
 def mkHomeomorph : M ≃ₜ Mᵈᵐᵃ where
   toEquiv := mk
-  continuous_toFun := by dsimp; fun_prop
-  continuous_invFun := by dsimp; fun_prop
 
 @[to_additive (attr := simp)] theorem coe_mkHomeomorph : ⇑(mkHomeomorph : M ≃ₜ Mᵈᵐᵃ) = mk := rfl
 

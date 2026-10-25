@@ -5,10 +5,11 @@ Authors: Antoine Chambert-Loir & María-Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-public import Mathlib.RingTheory.Congruence.Hom
-public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.TensorProduct.DirectLimitFG
+
+import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+import Mathlib.RingTheory.Congruence.Hom
+import Mathlib.RingTheory.FiniteType
 
 /-! # Polynomial laws on modules
 
@@ -55,9 +56,11 @@ only assumes `R` is a commutative semiring.
 ## References
 
 * [Roby, Norbert. 1963. «Lois polynomes et lois formelles en théorie des modules».
-  Annales scientifiques de l’École Normale Supérieure 80 (3): 213‑348](Roby-1963)
+  Annales scientifiques de l’École Normale Supérieure 80 (3): 213‑348][Roby-1963]
 
 -/
+
+open scoped Finset
 
 @[expose] public section
 
@@ -93,7 +96,7 @@ theorem PolynomialLaw.isCompat_apply'
     {S : Type u} [CommSemiring S] [Algebra R S] {S' : Type u} [CommSemiring S'] [Algebra R S']
     (φ : S →ₐ[R] S') (x : S ⊗[R] M) :
     (φ.toLinearMap.rTensor N) ((f.toFun' S) x) = (f.toFun' S') (φ.toLinearMap.rTensor M x) := by
-  simpa only using congr_fun (f.isCompat' φ) x
+  simpa only using! congr($(f.isCompat' φ) x)
 
 attribute [local simp] PolynomialLaw.isCompat_apply'
 
@@ -165,8 +168,10 @@ instance : AddCommMonoid (M →ₚₗ[R] N) where
   zero_add f := by ext; simp only [add_def, zero_add, zero_def]
   add_zero f := by ext; simp only [add_def, add_zero, zero_def]
   nsmul n f := (n : R) • f
-  nsmul_zero f := by simp only [Nat.cast_zero, zero_smul f]
-  nsmul_succ n f := by simp only [Nat.cast_add, Nat.cast_one, add_smul, one_smul]
+  nsmul_zero f := by simp_rw [HSMul.hSMul, SMul.smul]; simp only [Nat.cast_zero, zero_smul f]
+  nsmul_succ n f := by
+    simp_rw [HSMul.hSMul, SMul.smul]
+    simp only [Nat.cast_add, Nat.cast_one, add_smul, one_smul]
   add_comm f g := by ext; simp only [add_def, add_comm]
 
 instance : Module R (M →ₚₗ[R] N) where
@@ -195,15 +200,17 @@ theorem neg_def (S : Type u) [CommSemiring S] [Algebra R S] :
 
 instance : AddCommGroup (M →ₚₗ[R] N) where
   zsmul n f := (n : R) • f
-  zsmul_zero' f := by simp only [Int.cast_zero, zero_smul]
-  zsmul_succ' n f := by simp only [Nat.cast_succ, Int.cast_add, Int.cast_natCast,
-    Int.cast_one, add_smul, _root_.one_smul]
+  zsmul_zero' f := by simp_rw [HSMul.hSMul, SMul.smul]; simp only [Int.cast_zero, zero_smul]
+  zsmul_succ' n f := by
+    simp_rw [HSMul.hSMul, SMul.smul]
+    simp only [Nat.cast_succ, Int.cast_add, Int.cast_natCast, Int.cast_one, add_smul, one_smul]
   zsmul_neg' n f := by
+    simp_rw [HSMul.hSMul, SMul.smul]
     ext S _ _ m
     rw [neg_def]
-    simp only [Int.cast_negSucc, Nat.cast_add, Nat.cast_one, neg_add_rev, _root_.add_smul,
+    simp only [Int.cast_negSucc, Nat.cast_add, Nat.cast_one, neg_add_rev, add_smul,
       add_def_apply, smul_def_apply, Nat.succ_eq_add_one, Int.cast_add, Int.cast_natCast,
-      Int.cast_one, _root_.one_smul, add_def, smul_def, Pi.smul_apply, Pi.add_apply, smul_add,
+      Int.cast_one, one_smul, add_def, smul_def, Pi.smul_apply, Pi.add_apply, smul_add,
       smul_smul, neg_mul, one_mul]
     rw [add_comm]
   neg_add_cancel f := by
@@ -297,13 +304,13 @@ open LinearMap
 
 -- The universe of `PolynomialLaw.lifts` is computed by the compiler
 /-- The type of lifts of  `S ⊗[R] M` to a polynomial ring. -/
-def lifts : Type _ := Σ (s : Finset S), (MvPolynomial (Fin s.card) R) ⊗[R] M
+def lifts : Type _ := Σ (s : Finset S), (MvPolynomial (Fin #s) R) ⊗[R] M
 
 
 variable {S}
 
 /-- The lift of `f.toFun` to the type `lifts` -/
-def φ (s : Finset S) : MvPolynomial (Fin s.card) R →ₐ[R] S :=
+def φ (s : Finset S) : MvPolynomial (Fin #s) R →ₐ[R] S :=
   aeval (R := R) (fun n ↦ (s.equivFin.symm n : S))
 
 theorem range_φ (s : Finset S) : (φ R s).range = Algebra.adjoin R s := by
@@ -311,7 +318,7 @@ theorem range_φ (s : Finset S) : (φ R s).range = Algebra.adjoin R s := by
   rw [← Algebra.adjoin_range_eq_range_aeval]
   congr
   rw [← Function.comp_def, Set.range_comp]
-  simp only [Equiv.range_eq_univ, Set.image_univ, Subtype.range_coe_subtype, Finset.setOf_mem]
+  simp only [Equiv.range_eq_univ, Set.image_univ, Subtype.range_coe_subtype, Finset.setOfPred_mem]
 
 variable (S)
 
@@ -322,7 +329,7 @@ variable {R M N}
 
 /-- The auxiliary lift of `PolynomialLaw.toFun'` on `PolynomialLaw.lifts` -/
 def toFunLifted : lifts R M S → S ⊗[R] N :=
-  fun ⟨s, p⟩ ↦ rTensor N (φ R s).toLinearMap (f.toFun' (MvPolynomial (Fin s.card) R) p)
+  fun ⟨s, p⟩ ↦ rTensor N (φ R s).toLinearMap (f.toFun' (MvPolynomial (Fin #s) R) p)
 
 /-- The extension of `PolynomialLaw.toFun'` to all universes. -/
 def toFun : S ⊗[R] M → S ⊗[R] N := Function.extend (π R M S) (f.toFunLifted S) (fun _ ↦ 0)
@@ -402,7 +409,7 @@ theorem factorsThrough_toFunLifted_π :
   rw [← range_φ R t, eq_comm] at hB
   have hAB' : (φ R s).range ≤ (φ R t).range := le_trans hAB (le_of_eq hB)
   have hA'B' : (φ R s').range ≤ (φ R t).range := le_trans hA'B (le_of_eq hB)
-  have : ∃ q : MvPolynomial (Fin t.card) R ⊗[R] M, rTensor M (toLinearMap (φ R t).rangeRestrict) q =
+  have : ∃ q : MvPolynomial (Fin #t) R ⊗[R] M, rTensor M (toLinearMap (φ R t).rangeRestrict) q =
       rTensor M ((Subalgebra.inclusion (le_of_eq hB)).comp
         (Subalgebra.inclusion hAB)).toLinearMap u :=
     rTensor_surjective _ (rangeRestrict_surjective _) _
@@ -415,8 +422,9 @@ theorem factorsThrough_toFunLifted_π :
   · simp only [hq, hu, ← LinearMap.comp_apply, comp_toLinearMap, rTensor_comp]
     congr; ext; rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem toFun_eq_rTensor_φ_toFun' {t : S ⊗[R] M} {s : Finset S}
-    {p : MvPolynomial (Fin s.card) R ⊗[R] M} (ha : π R M S (⟨s, p⟩ : lifts R M S) = t) :
+    {p : MvPolynomial (Fin #s) R ⊗[R] M} (ha : π R M S (⟨s, p⟩ : lifts R M S) = t) :
     f.toFun S t = (φ R s).toLinearMap.rTensor N (f.toFun' _ p) := by
   rw [PolynomialLaw.toFun, ← ha, (factorsThrough_toFunLifted_π f).extend_apply, toFunLifted]
 
@@ -437,7 +445,6 @@ theorem exists_lift_of_mem_range_rTensor
 /-- Tensor products in `S ⊗[R] M` can be lifted to some
 `MvPolynomial R n ⊗[R] M`, for a finite `n`. -/
 theorem π_surjective : Function.Surjective (π R M S) := by
-  classical
   intro t
   obtain ⟨B : Subalgebra R S, hB : B.FG, ht : t ∈ range _⟩ := TensorProduct.Algebra.exists_of_fg t
   obtain ⟨s : Finset S, hs : (PolynomialLaw.φ R s).range = B⟩ := exists_range_φ_eq_of_fg hB
@@ -448,13 +455,12 @@ theorem π_surjective : Function.Surjective (π R M S) := by
 theorem exists_lift (t : S ⊗[R] M) : ∃ (n : ℕ) (ψ : MvPolynomial (Fin n) R →ₐ[R] S)
     (p : MvPolynomial (Fin n) R ⊗[R] M), ψ.toLinearMap.rTensor M p = t := by
   obtain ⟨⟨s, p⟩, ha⟩ := π_surjective t
-  use s.card, φ R s, p, ha
+  use #s, φ R s, p, ha
 
 /-- Lift an element of a tensor product and a scalar -/
 theorem exists_lift' (t : S ⊗[R] M) (s : S) : ∃ (n : ℕ) (ψ : MvPolynomial (Fin n) R →ₐ[R] S)
     (p : MvPolynomial (Fin n) R ⊗[R] M) (q : MvPolynomial (Fin n) R),
       ψ.toLinearMap.rTensor M p = t ∧ ψ q = s := by
-  classical
   obtain ⟨A, hA, ht⟩ := TensorProduct.Algebra.exists_of_fg t
   have hB : Subalgebra.FG (A ⊔ Algebra.adjoin R ({s} : Finset S)) :=
     Subalgebra.FG.sup hA (Subalgebra.fg_adjoin_finset _)
@@ -467,7 +473,7 @@ theorem exists_lift' (t : S ⊗[R] M) (s : S) : ∃ (n : ℕ) (ψ : MvPolynomial
     apply Algebra.subset_adjoin
     simp only [Finset.coe_singleton, Set.sup_eq_union, Set.mem_union, SetLike.mem_coe]
     exact Or.inr (Algebra.subset_adjoin rfl)
-  use gen.card, φ R gen, p, hs.choose, hp, hs.choose_spec
+  use #gen, φ R gen, p, hs.choose, hp, hs.choose_spec
 
 /-- For semirings in the universe `u`, `PolynomialLaw.toFun` coincides
 with `PolynomialLaw.toFun'`. -/
@@ -492,7 +498,7 @@ theorem isCompat_apply {T : Type w} [CommSemiring T] [Algebra R T] (h : S →ₐ
     simp only [AlgHom.coe_comp, Subalgebra.coe_val, Function.comp_apply, Finset.coe_image,
       Algebra.adjoin_image, s']
     exact ⟨x, hx, rfl⟩)
-  let j : Fin s.card → Fin s'.card :=
+  let j : Fin #s → Fin #s' :=
     (s'.equivFin) ∘ (fun ⟨x, hx⟩ ↦ ⟨h x, Finset.mem_image_of_mem h hx⟩) ∘ (s.equivFin).symm
   have eq_h_comp : (φ R s').comp (rename j) = h.comp (φ R s) := by
     ext p
@@ -531,7 +537,6 @@ variable
   (r a b : R) (f g : M →ₚₗ[R] N)
   {S : Type*} [CommSemiring S] [Algebra R S]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Extension of `PolynomialLaw.zero_def` -/
 @[simp]
 theorem toFun_zero : (0 : M →ₚₗ[R] N).toFun S = 0 := by

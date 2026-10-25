@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Normed.Operator.CompleteCodomain
 public import Mathlib.MeasureTheory.Integral.Bochner.Set
+public import Mathlib.Topology.Algebra.Module.Equiv.Prod
 public import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 
 /-!
@@ -100,7 +101,7 @@ theorem integral_comp_comm' (L : E →L[𝕜] Fₗ) {K} (hL : AntilipschitzWith 
   · exact integral_comp_comm L h
   have : ¬Integrable (fun x => L (φ x)) μ := by
     rwa [← Function.comp_def,
-      LipschitzWith.integrable_comp_iff_of_antilipschitz L.lipschitz hL L.map_zero]
+      LipschitzWith.integrable_comp_iff_of_antilipschitz L.lipschitzWith hL L.map_zero]
   simp [integral_undef, h, this]
 
 theorem integral_comp_L1_comm (L : E →L[𝕜] Fₗ) (φ : X →₁[μ] E) :
@@ -114,7 +115,7 @@ namespace LinearIsometry
 variable [CompleteSpace F] [NormedSpace 𝕜 F] [NormedSpace ℝ F] [CompleteSpace E] [NormedSpace ℝ E]
 
 theorem integral_comp_comm (L : E →ₗᵢ[𝕜] F) (φ : X → E) : ∫ x, L (φ x) ∂μ = L (∫ x, φ x ∂μ) :=
-  L.toContinuousLinearMap.integral_comp_comm' L.antilipschitz _
+  L.toContinuousLinearMap.integral_comp_comm' L.antilipschitzWith _
 
 end LinearIsometry
 
@@ -126,7 +127,7 @@ theorem integral_comp_comm (L : E ≃L[𝕜] F) (φ : X → E) : ∫ x, L (φ x)
   have : CompleteSpace E ↔ CompleteSpace F :=
     completeSpace_congr (e := L.toEquiv) L.isUniformEmbedding
   obtain ⟨_, _⟩ | ⟨_, _⟩ := iff_iff_and_or_not_and_not.mp this
-  · exact L.toContinuousLinearMap.integral_comp_comm' L.antilipschitz _
+  · exact L.toContinuousLinearMap.integral_comp_comm' L.antilipschitzWith _
   · simp [integral, *]
 
 end ContinuousLinearEquiv
@@ -142,7 +143,6 @@ lemma ContinuousMap.integral_apply [NormedSpace ℝ E] [CompleteSpace E] {f : X 
           (ContinuousLinearMap.integral_comp_comm _ hf).symm
     _ = _ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped ContinuousMapZero in
 theorem ContinuousMapZero.integral_apply {R : Type*} [NormedCommRing R] [Zero Y]
     [NormedAlgebra ℝ R] [CompleteSpace R] {f : X → C(Y, R)₀}
@@ -248,7 +248,6 @@ lemma integral_mul_const_of_integrable {A : Type*} [NonUnitalNormedRing A] [Norm
     rw [ContinuousLinearMap.integral_comp_comm _ hf]
   · simp [integral, hA]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem integral_withDensity_eq_integral_smul {f : X → ℝ≥0} (f_meas : Measurable f) (g : X → E) :
     ∫ x, g x ∂μ.withDensity (fun x => f x) = ∫ x, f x • g x ∂μ := by
   by_cases hE : CompleteSpace E; swap; · simp [integral, hE]
@@ -281,7 +280,7 @@ theorem integral_withDensity_eq_integral_smul {f : X → ℝ≥0} (f_meas : Meas
     have C2 : Continuous fun u : Lp E 1 (μ.withDensity fun x => f x) => ∫ x, f x • u x ∂μ := by
       have : Continuous ((fun u : Lp E 1 μ => ∫ x, u x ∂μ) ∘ withDensitySMulLI (E := E) μ f_meas) :=
         continuous_integral.comp (withDensitySMulLI (E := E) μ f_meas).continuous
-      convert this with u
+      convert! this with u
       simp only [Function.comp_apply, withDensitySMulLI_apply]
       exact integral_congr_ae (memL1_smul_of_L1_withDensity f_meas u).coeFn_toLp.symm
     exact isClosed_eq C1 C2

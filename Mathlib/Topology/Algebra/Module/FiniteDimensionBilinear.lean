@@ -5,16 +5,15 @@ Authors: Patrick Massot, Michael Rothgang
 -/
 module
 
+public import Mathlib.Analysis.Normed.Operator.Bilinear
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
-public import Mathlib.Topology.Algebra.Module.StrongTopology
+public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 
 /-!
 # Building continuous bilinear maps in finite dimensions over complete fields
 
 Given a complete nontrivially normed field `𝕜` and finite dimensional T₂ topological vector spaces
 over `𝕜`, this file builds a continuous bilinear map from any bilinear function.
-
-This applies in particular to evaluation of linear maps between such spaces.
 
 Working with topological vector spaces instead of normed spaces is important for applications in the
 differential geometry part of Mathlib where we don’t want to fix a norm on tangent spaces for
@@ -37,7 +36,7 @@ variable
   vector spaces over a complete field. -/
 def LinearMap.toContinuousBilinearMap (f : E →ₗ[𝕜] F →ₗ[𝕜] G) : E →L[𝕜] F →L[𝕜] G :=
   IsLinearMap.mk' (fun x : E ↦ f x |>.toContinuousLinearMap)
-      (by constructor <;> (intros;simp)) |>.toContinuousLinearMap
+      (by constructor <;> (intros; simp)) |>.toContinuousLinearMap
 
 @[simp]
 lemma LinearMap.toContinuousBilinearMap_apply (f : E →ₗ[𝕜] F →ₗ[𝕜] G) (x : E) (y : F) :
@@ -54,16 +53,7 @@ lemma IsBilinearMap.toContinuousBilinearMap_apply {f : E → F → G} (h : IsBil
     (x : E) (y : F) :
   h.toContinuousBilinearMap x y = f x y := rfl
 
-variable (𝕜 E F) in
-/-- Evaluation of continuous linear maps as a continuous linear map in the
-case of finite dimensional topological vector spaces over a complete field.
-See also `ContinuousLinearMap.apply` for the case of normed spaces.
+@[deprecated (since := "2026-08-21")] alias ContinuousLinearMap.evalL := ContinuousLinearMap.apply
 
-TODO: generalize the two constructions in the setting of maps from a bornological space to a locally
-convex one, or define a `NormableSpace` class to deduce this case from the normed case.
--/
-def ContinuousLinearMap.evalL : E →L[𝕜] (E →L[𝕜] F) →L[𝕜] F :=
-  LinearMap.toContinuousLinearMap.symm.toLinearMap |>.flip |>.toContinuousBilinearMap
-
-@[simp]
-lemma ContinuousLinearMap.evalL_apply (x : E) (φ : E →L[𝕜] F) : φ.evalL 𝕜 E F x = φ x := rfl
+@[deprecated (since := "2026-08-21")] alias ContinuousLinearMap.evalL_apply :=
+  ContinuousLinearMap.apply_apply

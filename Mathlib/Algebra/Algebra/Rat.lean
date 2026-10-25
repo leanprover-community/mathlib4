@@ -15,7 +15,7 @@ public import Mathlib.Data.Rat.Cast.CharZero
 This file could usefully be split further.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Subgroup
 

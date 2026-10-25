@@ -5,8 +5,9 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.PolarCoord
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
+
+import Mathlib.Analysis.SpecialFunctions.PolarCoord
 
 /-!
 # Integrals involving the Gamma function
@@ -53,7 +54,7 @@ theorem integral_rpow_mul_exp_neg_mul_rpow {p q b : ℝ} (hp : 0 < p) (hq : -1 <
     _ = (b ^ p⁻¹)⁻¹ * ∫ x in Ioi (0 : ℝ), b ^ (-p⁻¹ * q) * (x ^ q * rexp (-x ^ p)) := by
       rw [integral_comp_mul_left_Ioi (fun x => b ^ (-p⁻¹ * q) * (x ^ q * exp (-x ^ p))) 0,
         mul_zero, smul_eq_mul]
-      all_goals positivity
+      positivity
     _ = b ^ (-(q + 1) / p) * (1 / p) * Gamma ((q + 1) / p) := by
       rw [integral_const_mul, integral_rpow_mul_exp_neg_rpow _ hq, mul_assoc, ← mul_assoc,
         ← rpow_neg_one, ← rpow_mul, ← rpow_add]
@@ -76,7 +77,6 @@ end real
 
 section complex
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Complex.integral_rpow_mul_exp_neg_rpow {p q : ℝ} (hp : 1 ≤ p) (hq : -2 < q) :
     ∫ x : ℂ, ‖x‖ ^ q * rexp (-‖x‖ ^ p) = (2 * π / p) * Real.Gamma ((q + 2) / p) := by
   calc
@@ -102,7 +102,6 @@ theorem Complex.integral_rpow_mul_exp_neg_rpow {p q : ℝ} (hp : 1 ≤ p) (hq : 
         one_add_one_eq_two]
       ring
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Complex.integral_rpow_mul_exp_neg_mul_rpow {p q b : ℝ} (hp : 1 ≤ p) (hq : -2 < q)
     (hb : 0 < b) :
     ∫ x : ℂ, ‖x‖ ^ q * rexp (-b * ‖x‖ ^ p) = (2 * π / p) *
@@ -130,7 +129,6 @@ theorem Complex.integral_rpow_mul_exp_neg_mul_rpow {p q b : ℝ} (hp : 1 ≤ p) 
         one_add_one_eq_two]
       ring
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Complex.integral_exp_neg_rpow {p : ℝ} (hp : 1 ≤ p) :
     ∫ x : ℂ, rexp (-‖x‖ ^ p) = π * Real.Gamma (2 / p + 1) := by
   convert (integral_rpow_mul_exp_neg_rpow hp (by linarith : (-2 : ℝ) < 0)) using 1
@@ -138,7 +136,6 @@ theorem Complex.integral_exp_neg_rpow {p : ℝ} (hp : 1 ≤ p) :
   · rw [zero_add, Real.Gamma_add_one (div_ne_zero two_ne_zero (by linarith))]
     ring
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Complex.integral_exp_neg_mul_rpow {p b : ℝ} (hp : 1 ≤ p) (hb : 0 < b) :
     ∫ x : ℂ, rexp (-b * ‖x‖ ^ p) = π * b ^ (-2 / p) * Real.Gamma (2 / p + 1) := by
   convert (integral_rpow_mul_exp_neg_mul_rpow hp (by linarith : (-2 : ℝ) < 0)) hb using 1

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Category.Grp.EpiMono
 public import Mathlib.Algebra.Category.Grp.Preadditive
-public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
 /-!
 # The concrete (co)kernels in the category of abelian groups are categorical (co)kernels.
@@ -32,23 +31,22 @@ def kernelCone : KernelFork f :=
 def kernelIsLimit : IsLimit <| kernelCone f :=
   Fork.IsLimit.mk _
     (fun s => ofHom <| s.ι.hom.codRestrict _ fun c => mem_ker.mpr <|
-      ConcreteCategory.congr_hom s.condition c)
+      congr($s.condition c))
     (fun _ => by rfl)
-    (fun _ _ h => ext fun x => Subtype.ext_iff.mpr <| ConcreteCategory.congr_hom h x)
+    (fun _ _ h => ext fun x => Subtype.ext_iff.mpr congr($h x))
 
 /-- The cokernel cocone induced by the projection onto the quotient. -/
 def cokernelCocone : CokernelCofork f :=
   CokernelCofork.ofπ (Z := of <| H ⧸ f.hom.range) (ofHom (mk' f.hom.range)) <| ext fun x =>
     (eq_zero_iff _).mpr ⟨x, rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The projection onto the quotient is a cokernel in the categorical sense. -/
 def cokernelIsColimit : IsColimit <| cokernelCocone f :=
   Cofork.IsColimit.mk _
     (fun s => ofHom <| lift _ _ <| (range_le_ker_iff _ _).mpr <|
-      congr_arg Hom.hom (CokernelCofork.condition s))
+      congr($(CokernelCofork.condition s).hom))
     (fun _ => rfl)
     (fun _ _ h => have : Epi (cokernelCocone f).π := (epi_iff_surjective _).mpr <| mk'_surjective _
-      (cancel_epi (cokernelCocone f).π).mp <| by simpa only [parallelPair_obj_one] using h)
+      (cancel_epi (cokernelCocone f).π).mp <| by simpa only [parallelPair_obj_one] using! h)
 
 end AddCommGrpCat

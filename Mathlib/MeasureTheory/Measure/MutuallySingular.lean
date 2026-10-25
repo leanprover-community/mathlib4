@@ -53,7 +53,9 @@ theorem mk {s t : Set α} (hs : μ s = 0) (ht : ν t = 0) (hst : univ ⊆ s ∪ 
   exact subset_toMeasurable _ _ hxs
 
 /-- A set such that `μ h.nullSet = 0` and `ν h.nullSetᶜ = 0`. -/
-def nullSet (h : μ ⟂ₘ ν) : Set α := h.choose
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def nullSet (h : μ ⟂ₘ ν) : Set α := h.choose
 
 lemma measurableSet_nullSet (h : μ ⟂ₘ ν) : MeasurableSet h.nullSet := h.choose_spec.1
 
@@ -72,6 +74,16 @@ lemma restrict_nullSet (h : μ ⟂ₘ ν) : μ.restrict h.nullSet = 0 := by simp
 -- attribute. Also, the linter does not complain about that attribute.
 @[simp]
 lemma restrict_compl_nullSet (h : μ ⟂ₘ ν) : ν.restrict h.nullSetᶜ = 0 := by simp
+
+@[simp]
+lemma restrict_nullSet' (h : μ ⟂ₘ ν) : ν.restrict h.nullSet = ν := by
+  conv_rhs => rw [← restrict_add_restrict_compl (μ := ν) h.measurableSet_nullSet]
+  simp
+
+@[simp]
+lemma restrict_compl_nullSet' (h : μ ⟂ₘ ν) : μ.restrict h.nullSetᶜ = μ := by
+  conv_rhs => rw [← restrict_add_restrict_compl (μ := μ) h.measurableSet_nullSet]
+  simp
 
 @[simp]
 theorem zero_right : μ ⟂ₘ 0 :=
@@ -203,12 +215,12 @@ lemma exists_null_set_measure_lt_of_disjoint (h : Disjoint μ ν) {ε : ℝ≥0}
 
 lemma mutuallySingular_of_disjoint (h : Disjoint μ ν) : μ ⟂ₘ ν := by
   have h' (n : ℕ) : ∃ s, μ s = 0 ∧ ν sᶜ ≤ (1 / 2) ^ n := by
-    convert exists_null_set_measure_lt_of_disjoint h (ε := (1 / 2) ^ (n + 1))
-      <| pow_pos (by simp) (n + 1)
+    convert!
+      exists_null_set_measure_lt_of_disjoint h (ε := (1 / 2) ^ (n + 1)) <| pow_pos (by simp) (n + 1)
     conv =>
       -- this tweak is needed due to the known issue of `norm_cast` with numeric fractions
       enter [1, 1]
-      equals ((1:ℝ≥0) / (2:ℝ≥0)) => rfl
+      equals ((1 : ℝ≥0) / (2 : ℝ≥0)) => rfl
     norm_cast
     ring
   choose s hs₂ hs₃ using h'
@@ -270,10 +282,10 @@ lemma mutuallySingular_tfae : List.TFAE
   tfae_finish
 
 lemma mutuallySingular_iff_disjoint : μ ⟂ₘ ν ↔ Disjoint μ ν :=
-  mutuallySingular_tfae.out 0 1
+  mutuallySingular_tfae.out 1 2
 
 lemma mutuallySingular_iff_disjoint_ae : μ ⟂ₘ ν ↔ Disjoint (ae μ) (ae ν) :=
-  mutuallySingular_tfae.out 0 2
+  mutuallySingular_tfae.out 1 3
 
 end Measure
 

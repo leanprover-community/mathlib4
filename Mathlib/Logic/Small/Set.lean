@@ -5,14 +5,16 @@ Authors: Markus Himmel, Timothy Carlin-Burns
 -/
 module
 
-public import Mathlib.Data.Set.Lattice
+public import Mathlib.Data.Set.Lattice.Disjoint
 public import Mathlib.Logic.Small.Basic
+
+import Mathlib.Data.Set.Lattice.Bounded
 
 /-!
 # Results about `Small` on coerced sets
 -/
 
-@[expose] public section
+public section
 
 universe u u1 u2 u3 u4
 
@@ -73,7 +75,7 @@ instance small_insert (x : α) (s : Set α) [Small.{u} s] :
   Set.insert_eq x s ▸ small_union.{u} {x} s
 
 instance small_diff (s t : Set α) [Small.{u} s] : Small.{u} (s \ t : Set α) :=
-  small_subset (Set.diff_subset)
+  small_subset (Set.sdiff_subset)
 
 instance small_sep (s : Set α) (P : α → Prop) [Small.{u} s] :
     Small.{u} { x | x ∈ s ∧ P x} :=

@@ -6,7 +6,6 @@ Authors: Robin Carlier
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Category
-public import Mathlib.CategoryTheory.Functor.Trifunctor
 
 /-!
 
@@ -333,14 +332,14 @@ def curriedAction : C ⥤ D ⥤ D where
 
 variable {C} in
 /-- Bundle `d ↦ c ⊙ₗ d` as a functor. -/
-@[simps!]
 abbrev actionLeft (c : C) : D ⥤ D := curriedAction C D |>.obj c
 
 variable {D} in
 /-- Bundle `c ↦ c ⊙ₗ d` as a functor. -/
-@[simps!]
 abbrev actionRight (d : D) : C ⥤ D := curriedAction C D |>.flip.obj d
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Bundle `αₗ _ _ _` as an isomorphism of trifunctors. -/
 @[simps!]
 def actionAssocNatIso :
@@ -350,6 +349,7 @@ def actionAssocNatIso :
     NatIso.ofComponents fun _ ↦
      NatIso.ofComponents fun _ ↦ αₗ _ _ _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Bundle `λₗ _` as an isomorphism of functors. -/
 @[simps!]
 def actionUnitNatIso : actionLeft D (𝟙_ C) ≅ 𝟭 D := NatIso.ofComponents (λₗ ·)
@@ -482,7 +482,7 @@ attribute [simp, reassoc] MonoidalRightAction.actionHom_rightUnitor
 
 /-- A monoidal category acts on itself through the tensor product. -/
 @[simps!]
-instance selRightfAction [MonoidalCategory C] : MonoidalRightAction C C where
+instance selfRightAction [MonoidalCategory C] : MonoidalRightAction C C where
   actionObj x y := x ⊗ y
   actionHom f g := f ⊗ₘ g
   actionUnitIso x := ρ_ x
@@ -490,6 +490,30 @@ instance selRightfAction [MonoidalCategory C] : MonoidalRightAction C C where
   actionHomLeft f x := f ▷ x
   actionHomRight x _ _ f := x ◁ f
   actionHom_def := by simp [tensorHom_def]
+
+@[deprecated (since := "2026-09-17")]
+alias selRightfAction := selfRightAction
+
+@[deprecated (since := "2026-09-17")]
+alias selRightfAction_actionObj := selfRightAction_actionObj
+
+@[deprecated (since := "2026-09-17")]
+alias selRightfAction_actionHom := selfRightAction_actionHom
+
+@[deprecated (since := "2026-09-17")]
+alias selRightfAction_actionHomLeft := selfRightAction_actionHomLeft
+
+@[deprecated (since := "2026-09-17")]
+alias selRightfAction_actionHomRight := selfRightAction_actionHomRight
+
+@[deprecated (since := "2026-09-17")]
+alias selRightfAction_actionUnitIso := selfRightAction_actionUnitIso
+
+@[deprecated (since := "2026-09-17")]
+alias selRightfAction_actionAssocIso_hom := selfRightAction_actionAssocIso_hom
+
+@[deprecated (since := "2026-09-17")]
+alias selRightfAction_actionAssocIso_inv := selfRightAction_actionAssocIso_inv
 
 namespace MonoidalRightAction
 
@@ -644,14 +668,14 @@ def curriedAction : C ⥤ D ⥤ D where
 
 variable {C} in
 /-- Bundle `d ↦ d ⊙ᵣ c` as a functor. -/
-@[simps!]
 abbrev actionRight (c : C) : D ⥤ D := curriedAction C D |>.obj c
 
 variable {D} in
 /-- Bundle `c ↦ d ⊙ᵣ c` as a functor. -/
-@[simps!]
 abbrev actionLeft (d : D) : C ⥤ D := curriedAction C D |>.flip.obj d
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Bundle `αᵣ _ _ _` as an isomorphism of trifunctors. -/
 @[simps!]
 def actionAssocNatIso :
@@ -661,6 +685,7 @@ def actionAssocNatIso :
     NatIso.ofComponents fun _ ↦
      NatIso.ofComponents fun _ ↦ αᵣ _ _ _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Bundle `ρᵣ _` as an isomorphism of functors. -/
 @[simps!]
 def actionUnitNatIso : actionRight D (𝟙_ C) ≅ 𝟭 D := NatIso.ofComponents (ρᵣ ·)

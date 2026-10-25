@@ -7,13 +7,14 @@ module
 
 public import Mathlib.Algebra.Group.PUnit
 public import Mathlib.Algebra.Order.AddGroupWithTop
+
 /-!
 # Instances on PUnit
 
 This file collects facts about ordered algebraic structures on the one-element type.
 -/
 
-@[expose] public section
+public section
 
 namespace PUnit
 

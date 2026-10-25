@@ -5,11 +5,12 @@ Authors: Yury Kudryashov
 -/
 module
 
+public import Mathlib.Data.Nat.Notation
+
 import Mathlib.Data.List.Count
 import Mathlib.Data.List.Enum
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.Perm.Basic
-public import Mathlib.Data.Nat.Notation
 
 /-!
 # Definition and basic properties of `List.offDiag`
@@ -84,14 +85,14 @@ protected theorem Perm.offDiag {l₁ l₂ : List α} (h : l₁ ~ l₂) : l₁.of
   classical simp_all [perm_iff_count, count_offDiag_eq_mul_sub_ite]
 
 protected theorem Nodup.offDiag (h : l.Nodup) : l.offDiag.Nodup := by
-  letI := Classical.decEq α
+  let := Classical.decEq α
   rw [nodup_iff_count_le_one]
   rintro ⟨x, y⟩
   rw [count_offDiag_eq_mul_sub_ite l x y]
   grind
 
 protected theorem Nodup.of_offDiag (h : l.offDiag.Nodup) : l.Nodup := by
-  letI := Classical.decEq α
+  let := Classical.decEq α
   simp only [nodup_iff_count_le_one, Prod.forall, count_offDiag_eq_mul_sub_ite] at *
   intro a
   specialize h a a

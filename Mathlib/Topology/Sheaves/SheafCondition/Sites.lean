@@ -5,9 +5,8 @@ Authors: Justus Springer
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Spaces
-public import Mathlib.Topology.Sheaves.Sheaf
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
+public import Mathlib.Topology.Sheaves.Sheaf
 
 /-!
 
@@ -121,7 +120,7 @@ end TopCat.Presheaf
 
 namespace TopCat.Opens
 
-variable {X : TopCat} {ι : Type*}
+variable {X : TopCat.{w}} {ι : Type*}
 
 theorem coverDense_iff_isBasis [Category* ι] (B : ι ⥤ Opens X) :
     B.IsCoverDense (Opens.grothendieckTopology X) ↔ Opens.IsBasis (Set.range B.obj) := by
@@ -147,7 +146,7 @@ variable {X Y : TopCat.{w}} {f : X ⟶ Y} {F : Y.Presheaf C}
 
 theorem Topology.IsOpenEmbedding.compatiblePreserving (hf : IsOpenEmbedding f) :
     CompatiblePreserving (Opens.grothendieckTopology Y) hf.functor := by
-  haveI : Mono f := (TopCat.mono_iff_injective f).mpr hf.injective
+  have : Mono f := (TopCat.mono_iff_injective f).mpr hf.injective
   apply compatiblePreservingOfDownwardsClosed
   intro U V i
   refine ⟨(Opens.map f).obj V, eqToIso <| Opens.ext <| Set.image_preimage_eq_of_subset fun x h ↦ ?_⟩
@@ -174,9 +173,17 @@ theorem TopCat.Presheaf.isSheaf_of_isOpenEmbedding (h : IsOpenEmbedding f) (hF :
   have := h.functor_isContinuous
   exact Functor.op_comp_isSheaf _ _ _ ⟨_, hF⟩
 
+/-- The restriction functor of a sheaf to an open subspace. -/
+@[simps!]
+def TopologicalSpace.Opens.sheafRestrict (U : Opens X) :
+    Sheaf (Opens.grothendieckTopology X) C ⥤ Sheaf (Opens.grothendieckTopology U) C :=
+  haveI H : IsOpenEmbedding (TopCat.Hom.hom (TopCat.ofHom ⟨_, continuous_subtype_val⟩)) :=
+    U.isOpenEmbedding
+  haveI := H.functor_isContinuous
+  H.isOpenMap.functor.sheafPushforwardContinuous C _ _
+
 variable (f)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : RepresentablyFlat (Opens.map f) := by
   constructor
   intro U
@@ -246,6 +253,15 @@ theorem hom_ext (h : Opens.IsBasis (Set.range B))
   apply (restrictHomEquivHom F F' h).symm.injective
   ext i
   exact he i.unop
+
+theorem isIso_iff_isIso_basis {F G : Sheaf C X} (h : Opens.IsBasis (Set.range B))
+    {φ : F ⟶ G} (hi : ∀ i, IsIso (φ.hom.app (op (B i)))) :
+    IsIso φ := by
+  have : (inducedFunctor B).IsCoverDense (Opens.grothendieckTopology X) :=
+    Opens.coverDense_inducedFunctor h
+  refine Functor.IsCoverDense.iso_of_restrict_iso (G := inducedFunctor B) _ ?_
+  rw [NatTrans.isIso_iff_isIso_app]
+  exact fun _ ↦ hi _
 
 end TopCat.Sheaf
 

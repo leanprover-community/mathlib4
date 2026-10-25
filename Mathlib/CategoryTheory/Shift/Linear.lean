@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Shift.CommShift
 public import Mathlib.CategoryTheory.Localization.Linear
+public import Mathlib.CategoryTheory.Shift.CommShift
 
 /-!
 # Localization of the linearity of the shift functors
@@ -18,7 +18,7 @@ then the shift functors on `D` are `R`-linear.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

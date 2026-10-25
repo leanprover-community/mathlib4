@@ -5,11 +5,8 @@ Authors: Michael Stoll, David Loeffler
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
 public import Mathlib.NumberTheory.Harmonic.ZetaAsymp
-public import Mathlib.NumberTheory.LSeries.Dirichlet
 public import Mathlib.NumberTheory.LSeries.DirichletContinuation
-public import Mathlib.NumberTheory.LSeries.Positivity
 
 /-!
 # The L-function of a Dirichlet character does not vanish on Re(s) ≥ 1
@@ -47,8 +44,10 @@ hypothetical objects which we eventually deduce cannot exist. We have only made 
 whose hypotheses do not turn out to be contradictory.
 -/
 
-open Complex Asymptotics Topology Filter
+open Complex Asymptotics Filter
 open ArithmeticFunction hiding log
+
+open scoped Topology
 
 -- We use the ordering on `ℂ` given by comparing real parts for fixed imaginary part
 open scoped ComplexOrder
@@ -86,6 +85,7 @@ lemma LSeriesSummable_zetaMul (χ : DirichletCharacter ℂ N) {s : ℂ} (hs : 1 
   simpa only [toArithmeticFunction, coe_mk, hn, ↓reduceIte]
   using norm_le_one χ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma zetaMul_prime_pow_nonneg {χ : DirichletCharacter ℂ N} (hχ : χ ^ 2 = 1) {p : ℕ}
     (hp : p.Prime) (k : ℕ) :
     0 ≤ zetaMul χ (p ^ k) := by
@@ -106,7 +106,7 @@ lemma zetaMul_nonneg {χ : DirichletCharacter ℂ N} (hχ : χ ^ 2 = 1) (n : ℕ
     0 ≤ zetaMul χ n := by
   rcases eq_or_ne n 0 with rfl | hn
   · simp only [ArithmeticFunction.map_zero, le_refl]
-  · simpa only [χ.isMultiplicative_zetaMul.multiplicative_factorization _ hn] using
+  · simpa only [χ.isMultiplicative_zetaMul.multiplicative_factorization _ hn] using!
       Finset.prod_nonneg
         fun p hp ↦ zetaMul_prime_pow_nonneg hχ (Nat.prime_of_mem_primeFactors hp) _
 
@@ -243,8 +243,7 @@ private lemma re_log_comb_nonneg {n : ℕ} (hn : 2 ≤ n) {x : ℝ} (hx : 1 < x)
           4 * (-log (1 - χ n * n ^ (-(x + I * y)))).re +
           (-log (1 - (χ n ^ 2) * n ^ (-(x + 2 * I * y)))).re := by
   by_cases hn' : IsUnit (n : ZMod N)
-  · have ha₀ : 0 ≤ (n : ℝ) ^ (-x) := Real.rpow_nonneg n.cast_nonneg _
-    have ha₁ : (n : ℝ) ^ (-x) < 1 := by
+  · have hn : (n : ℝ) ^ (-x) < 1 := by
       rw [Real.rpow_neg (Nat.cast_nonneg n), inv_lt_one_iff₀]
       exact .inr <| Real.one_lt_rpow (mod_cast one_lt_two.trans_le hn) <| zero_lt_one.trans hx
     have hz : ‖χ n * (n : ℂ) ^ (-(I * y))‖ = 1 := by
@@ -253,7 +252,7 @@ private lemma re_log_comb_nonneg {n : ℕ} (hn : 2 ≤ n) {x : ℝ} (hx : 1 < x)
       simp only [neg_re, mul_re, I_re, ofReal_re, zero_mul, I_im, ofReal_im, mul_zero, sub_self,
         neg_zero, Real.rpow_zero, one_mul]
     rw [MulChar.one_apply hn', one_mul]
-    convert re_log_comb_nonneg' ha₀ ha₁ hz using 6
+    convert re_log_comb_nonneg' (by positivity) hn hz using 6
     · simp only [ofReal_cpow n.cast_nonneg (-x), ofReal_natCast, ofReal_neg]
     · congr 2
       rw [neg_add, cpow_add _ _ <| mod_cast by lia, ← ofReal_neg, ofReal_cpow n.cast_nonneg (-x),

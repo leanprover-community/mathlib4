@@ -7,13 +7,13 @@ module
 
 public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Algebra.Group.Units.Defs
-public import Mathlib.Logic.Unique
+public import Mathlib.Basic.Unique
 
 /-!
 # The unit of the natural numbers
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero DenselyOrdered
 
@@ -24,7 +24,7 @@ namespace Nat
 lemma units_eq_one (u : ℕˣ) : u = 1 := Units.ext <| Nat.eq_one_of_dvd_one ⟨u.inv, u.val_inv.symm⟩
 
 lemma addUnits_eq_zero (u : AddUnits ℕ) : u = 0 :=
-  AddUnits.ext <| (Nat.eq_zero_of_add_eq_zero u.val_neg).1
+  AddUnits.ext (Nat.eq_zero_of_add_eq_zero u.val_neg).1
 
 instance unique_units : Unique ℕˣ where
   default := 1
