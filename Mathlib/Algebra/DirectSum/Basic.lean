@@ -89,7 +89,7 @@ instance : AddCommGroup (DirectSum ι β) :=
   inferInstanceAs (AddCommGroup (Π₀ i, β i))
 
 @[simp]
-theorem sub_apply (g₁ g₂ : ⨁ i, β i) (i : ι) : (g₁ - g₂) i = g₁ i - g₂ i :=
+protected theorem sub_apply (g₁ g₂ : ⨁ i, β i) (i : ι) : (g₁ - g₂) i = g₁ i - g₂ i :=
   rfl
 
 end AddCommGroup
@@ -100,15 +100,15 @@ variable [∀ i, AddCommMonoid (β i)]
   DFunLike.ext _ _ w
 
 @[simp]
-theorem zero_apply (i : ι) : (0 : ⨁ i, β i) i = 0 :=
+protected theorem zero_apply (i : ι) : (0 : ⨁ i, β i) i = 0 :=
   rfl
 
 @[simp]
-theorem add_apply (g₁ g₂ : ⨁ i, β i) (i : ι) : (g₁ + g₂) i = g₁ i + g₂ i :=
+protected theorem add_apply (g₁ g₂ : ⨁ i, β i) (i : ι) : (g₁ + g₂) i = g₁ i + g₂ i :=
   rfl
 
 @[simp]
-theorem sum_apply {α} (s : Finset α) (g : α → ⨁ i, β i) (i : ι) :
+protected theorem sum_apply {α} (s : Finset α) (g : α → ⨁ i, β i) (i : ι) :
     (∑ a ∈ s, g a) i = ∑ a ∈ s, g a i :=
   DFinsupp.finsetSum_apply s g i
 

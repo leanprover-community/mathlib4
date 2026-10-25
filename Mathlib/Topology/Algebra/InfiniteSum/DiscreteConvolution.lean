@@ -141,7 +141,7 @@ lemma single_convolution [DecidableEq M] (L : E →ₗ[S] F →ₗ[S] F) (e : E)
     (hL : ∀ y, L e y = y) :
     Pi.single 1 e ⋆[L] f = f := by
   ext x; simp only [convolution, Pi.single_apply]
-  rw [tsum_eq_single (⟨(1, x), by grind⟩ : mulFiber x) (by grind [LinearMap.zero_apply])]
+  rw [tsum_eq_single (⟨(1, x), by grind⟩ : mulFiber x) (by grind)]
   simp [hL]
 
 @[to_additive (dont_translate := S E F) (attr := simp) addConvolution_single]
@@ -149,7 +149,7 @@ lemma convolution_single [DecidableEq M] (L : F →ₗ[S] E →ₗ[S] F) (e : E)
     (hL : ∀ y, L y e = y) :
     f ⋆[L] Pi.single 1 e = f := by
   ext x; simp only [convolution, Pi.single_apply]
-  rw [tsum_eq_single (⟨(x, 1), by grind⟩ : mulFiber x) (by grind [LinearMap.zero_apply])]
+  rw [tsum_eq_single (⟨(x, 1), by grind⟩ : mulFiber x) (by grind)]
   simp [hL]
 
 end BasicProperties

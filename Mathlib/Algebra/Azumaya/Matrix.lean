@@ -53,11 +53,12 @@ lemma AlgHom.mulLeftRightMatrix.comp_inv :
   ext f : 1
   apply (Matrix.stdBasis _ _ _).ext
   intro ⟨i, j⟩
-  simp only [LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply, map_sum,
-    map_smul, stdBasis_eq_single, LinearMap.coe_sum, Finset.sum_apply,
-    LinearMap.smul_apply, LinearMap.id_coe, id_eq]
+  simp only [LinearMap.coe_comp, coe_toLinearMap, LinearMap.coe_mk, AddHom.coe_mk,
+    Function.comp_apply, map_sum, map_smul, stdBasis_eq_single, sum_apply, smul_apply,
+    mulLeftRight_apply, unop_op, single_mul_mul_single, one_mul, mul_one, smul_single, smul_eq_mul,
+    LinearMap.id_coe, id_eq]
   ext k l
-  simp [sum_apply, Matrix.mul_apply, single, Fintype.sum_prod_type, ite_and]
+  simp [Matrix.sum_apply, single, Fintype.sum_prod_type, ite_and]
 
 namespace IsAzumaya
 

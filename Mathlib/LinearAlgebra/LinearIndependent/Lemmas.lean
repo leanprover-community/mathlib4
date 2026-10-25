@@ -926,7 +926,7 @@ lemma LinearMap.BilinForm.exists_pos_and_pos_apply_sum_smul {R M ι : Type*} [Fi
   have : 0 < B x X := by
     rw [hx, map_add, add_apply]
     refine add_pos_of_pos_of_nonneg (hB X hX) ?_
-    simp only [X, map_sum, map_smul, LinearMap.sum_apply, smul_eq_mul, Finset.mul_sum]
+    simp only [map_sum, map_smul, sum_apply, smul_apply, smul_eq_mul, Finset.mul_sum, X]
     refine Finset.sum_nonneg fun k _ ↦ Finset.sum_nonneg fun l _ ↦ ?_
     rcases eq_or_ne l k with rfl | hkl
     · simp [← mul_assoc]

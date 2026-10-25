@@ -75,11 +75,11 @@ theorem IsLocalExtrOn.exists_linear_map_of_hasStrictFDerivAt
     -- squeezed `simp [mul_comm]` to speed up elaboration
 
   -- squeezed `simp [mul_comm]` to speed up elaboration
-  simp only [e, smul_eq_mul, LinearEquiv.trans_apply, LinearEquiv.prodCongr_apply,
+  simp only [smul_eq_mul, LinearEquiv.trans_apply, LinearEquiv.prodCongr_apply,
     LinearEquiv.refl_apply, LinearMap.ringLmapEquivSelf_symm_apply, LinearMap.coprodEquiv_apply,
-    ContinuousLinearMap.coe_prod, LinearMap.coprod_comp_prod, LinearMap.add_apply,
-    LinearMap.coe_comp, ContinuousLinearMap.coe_coe, Function.comp_apply, LinearMap.coe_smulRight,
-    Module.End.one_apply, mul_comm]
+    ContinuousLinearMap.coe_prod, LinearMap.coprod_comp_prod, add_apply, LinearMap.coe_comp,
+    ContinuousLinearMap.coe_coe, Function.comp_apply, LinearMap.coe_smulRight, Module.End.one_apply,
+    mul_comm, e]
 
 /-- Lagrange multipliers theorem: if `φ : E → ℝ` has a local extremum on the set `{x | f x = f x₀}`
 at `x₀`, and both `f : E → ℝ` and `φ` are strictly differentiable at `x₀`, then there exist
