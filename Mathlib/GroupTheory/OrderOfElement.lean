@@ -39,8 +39,6 @@ order of an element
 
 @[expose] public section
 
-set_option linter.style.longFile 1600
-
 assert_not_exists Field
 
 open Function Fintype Nat Pointwise Subgroup Submonoid
