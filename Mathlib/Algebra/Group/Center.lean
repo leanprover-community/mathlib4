@@ -392,8 +392,8 @@ instance [Mul M] : CommMagma (Center M) where
   mul_comm _ _ := by rw [eq_iff, coe_mul, coe_mul, comm]
 
 @[to_additive]
-lemma mul_assoc' [Mul M] (x y z : Center M) : x * y * z = x * (y * z) :=
-  by simp_rw [eq_iff, coe_mul, IsMulCentral.mid_assoc y.prop x.val z.val]
+lemma mul_assoc' [Mul M] (x y z : Center M) : x * y * z = x * (y * z) := by
+  simp_rw [eq_iff, coe_mul, IsMulCentral.mid_assoc y.prop x.val z.val]
 
 @[to_additive]
 instance [MulOneClass M] : MulOneClass (Center M) where
