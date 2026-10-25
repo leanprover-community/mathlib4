@@ -313,8 +313,8 @@ theorem zeta_sub_one_prime [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
 /-- `ζ - 1` is prime if `ζ` is a primitive `p`-th root of unity. -/
 theorem zeta_sub_one_prime' [h : IsCyclotomicExtension {p} ℚ K] (hζ : IsPrimitiveRoot ζ p) :
     Prime ((hζ.toInteger - 1)) := by
-  convert zeta_sub_one_prime (k := 0) (by simpa only [zero_add, pow_one])
-  simpa only [zero_add, pow_one]
+  convert zeta_sub_one_prime (k := 0) (by simpa)
+  simpa
 
 theorem subOneIntegralPowerBasisOfPrimePow_gen_prime [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
     (hζ : IsPrimitiveRoot ζ (p ^ (k + 1))) :
@@ -548,14 +548,14 @@ lemma toInteger_sub_one_not_dvd_two [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
   · rw [hζ.norm_toInteger_sub_one_of_prime_ne_two hodd]
     exact Nat.prime_iff_prime_int.1 hp.1
 
-open IntermediateField in
-theorem mylemma.{u_1} {n : ℕ} {K : Type u_1}
-    [inst : Field K] [inst_1 : NumberField K] {ζ : K} (hζ : IsPrimitiveRoot ζ n) [NeZero n] :
+open IntermediateField
+
+theorem gen_mem_integralClosure {n : ℕ} {K : Type*} [Field K] [NumberField K] {ζ : K}
+    (hζ : IsPrimitiveRoot ζ n) [NeZero n] :
     AdjoinSimple.gen ℚ ζ ∈ integralClosure ℤ ℚ⟮ζ⟯ := by
-  rw [mem_integralClosure_iff, ← IntermediateField.coe_isIntegral_iff]
+  rw [mem_integralClosure_iff, ← coe_isIntegral_iff]
   simpa using hζ.isIntegral (NeZero.pos _)
 
-open IntermediateField in
 /--
 Let `ζ` be a primitive root of unity of order `n` with `2 ≤ n`. Any prime number that divides the
 norm, relative to `ℤ`, of `ζ - 1` divides also `n`.
@@ -576,7 +576,7 @@ theorem prime_dvd_of_dvd_norm_sub_one {n : ℕ} (hn : 2 ≤ n) {K : Type*}
       (IntermediateField.AdjoinSimple.gen ℚ ζ - 1) by rfl,
       ← norm_norm (S := ℚ⟮ζ⟯), Algebra.norm_algebraMap, map_pow, map_pow, ← norm_localization ℤ
       (nonZeroDivisors ℤ) (Sₘ := ℚ⟮ζ⟯), map_sub (algebraMap _ _),
-      RingOfIntegers.map_mk _ (mylemma hζ), map_one]
+      RingOfIntegers.map_mk _ (gen_mem_integralClosure hζ), map_one]
   rw [h] at hp
   rsuffices ⟨q, hq, t, s, ht₁, ht₂, hs⟩ :
       ∃ q, q.Prime ∧ ∃ t s, t ≠ 0 ∧ n = q ^ t ∧ (p : ℤ) ∣ (q : ℤ) ^ s := by
