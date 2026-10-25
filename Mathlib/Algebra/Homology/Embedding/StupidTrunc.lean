@@ -64,8 +64,18 @@ instance {ι'' : Type*} {c'' : ComplexShape ι''} (e' : c''.Embedding c')
     by_cases hi'' : ∃ i, e.f i = i'
     · obtain ⟨i, hi⟩ := hi''
       exact (K.isZero_X_of_isStrictlySupported e' i' hi').of_iso (K.stupidTruncXIso e hi)
-    · apply isZero_stupidTrunc_X
-      simpa using hi''
+    · exact isZero_stupidTrunc_X _ _ _ (by tauto)
+
+variable {K} in
+lemma IsStrictlySupportedOutside.stupidTrunc
+    {ι'' : Type*} {c'' : ComplexShape ι''} {e' : c''.Embedding c'}
+    (hK : K.IsStrictlySupportedOutside e') (e : c.Embedding c') [e.IsRelIff] :
+    (K.stupidTrunc e).IsStrictlySupportedOutside e' where
+  isZero i'' := by
+    by_cases hi'' : ∃ i, e.f i = e'.f i''
+    · obtain ⟨i, hi⟩ := hi''
+      exact (hK.isZero i'').of_iso (K.stupidTruncXIso e hi)
+    · exact isZero_stupidTrunc_X _ _ _ (by tauto)
 
 lemma isZero_stupidTrunc_iff :
     IsZero (K.stupidTrunc e) ↔ K.IsStrictlySupportedOutside e := by
