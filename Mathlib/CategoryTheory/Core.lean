@@ -5,10 +5,7 @@ Authors: Kim Morrison, Robin Carlier
 -/
 module
 
-public import Mathlib.CategoryTheory.Groupoid
 public import Mathlib.CategoryTheory.Types.Basic
-public import Mathlib.CategoryTheory.Whiskering
-public import Mathlib.Control.EquivFunctor
 
 /-!
 # The core of a category
@@ -271,7 +268,7 @@ def ofEquivFunctor (m : Type u₁ → Type u₂) [EquivFunctor m] :
     Core (Type u₁) ⥤ Core (Type u₂) where
   obj x := .mk <| m x.of
   map f := .mk (EquivFunctor.mapEquiv m f.iso.toEquiv).toIso
-  map_id α := by ext x; exact congr_fun (EquivFunctor.map_refl' _) x
+  map_id α := by ext x; congrm $(EquivFunctor.map_refl' _) x
   map_comp f g := by
     ext
     simp [Equiv.toIso, EquivFunctor.map_trans']

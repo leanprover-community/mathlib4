@@ -7,17 +7,15 @@ module
 
 public import Mathlib.Data.Fin.Tuple.Reflection
 public import Mathlib.LinearAlgebra.Dual.Defs
-public import Mathlib.LinearAlgebra.Finsupp.SumProd
 public import Mathlib.LinearAlgebra.LinearIndependent.Basic
 public import Mathlib.LinearAlgebra.Pi
-public import Mathlib.Logic.Equiv.Fin.Rotate
-public import Mathlib.Tactic.FinCases
-public import Mathlib.Tactic.Module
-public import Mathlib.Tactic.ModuleNF
 public import Mathlib.Tactic.Abel
+public import Mathlib.Tactic.ModuleNF
 public import Mathlib.Tactic.NormNum.Ineq
 
 import Mathlib.Algebra.Module.Torsion.Field
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.LinearAlgebra.Finsupp.SumProd
 
 /-!
 # Linear independence
@@ -331,15 +329,15 @@ private lemma LinearIndependent.pair_add_smul_add_smul_iff_aux (h : a * d ≠ b 
         = d • a • s := by rw [mul_comm, mul_smul]
       _ = -(d • c • t) := by rw [eq_neg_iff_add_eq_zero, ← smul_add, h₁, smul_zero]
       _ = (b * c) • s := ?_
-    · rw [mul_comm, mul_smul, neg_eq_iff_add_eq_zero, add_comm, smul_comm d c, ← smul_add, h₂,
-        smul_zero]
+    rw [mul_comm, mul_smul, neg_eq_iff_add_eq_zero, add_comm, smul_comm d c, ← smul_add, h₂,
+      smul_zero]
   · suffices (a * d) • t = (b * c) • t by
       by_contra ht; exact h (_root_.smul_left_injective S ht ‹_›)
     calc (a * d) • t
         = a • d • t := by rw [mul_smul]
       _ = -(a • b • s) := by rw [eq_neg_iff_add_eq_zero, ← smul_add, add_comm, h₂, smul_zero]
       _ = (b * c) • t := ?_
-    · rw [mul_smul, neg_eq_iff_add_eq_zero, smul_comm a b, ← smul_add, h₁, smul_zero]
+    rw [mul_smul, neg_eq_iff_add_eq_zero, smul_comm a b, ← smul_add, h₁, smul_zero]
 
 @[simp] lemma LinearIndependent.pair_add_smul_add_smul_iff [Nontrivial R] :
     LinearIndependent R ![a • x + b • y, c • x + d • y] ↔
@@ -360,7 +358,7 @@ private lemma LinearIndependent.pair_add_smul_add_smul_iff_aux (h : a * d ≠ b 
   refine ⟨fun h' ↦ ⟨?_, h⟩, fun ⟨h₁, h₂⟩ ↦ pair_add_smul_add_smul_iff_aux _ _ _ _ h₂ h₁⟩
   suffices LinearIndependent R ![(a * d - b * c) • x, (a * d - b * c) • y] by
     rwa [pair_smul_iff (sub_ne_zero_of_ne h)] at this
-  convert! pair_add_smul_add_smul_iff_aux d (-b) (-c) a (by simpa [mul_comm d a]) h' using 1
+  convert pair_add_smul_add_smul_iff_aux d (-b) (-c) a (by simpa [mul_comm d a]) h' using 1
   module_nf
 
 @[simp] lemma LinearIndependent.pair_add_smul_right_iff :
@@ -458,9 +456,9 @@ theorem exists_maximal_linearIndepOn (v : ι → M) :
     have hiJ : i ∈ J := by simp [J]
     have h := by
       refine mt hImaximal ?_
-      · intro h2
-        rw [h2] at hi
-        exact absurd hiJ hi
+      intro h2
+      rw [h2] at hi
+      exact absurd hiJ hi
     obtain ⟨f, supp_f, sum_f, f_ne⟩ := linearDepOn_iff.mp h
     have hfi : f i ≠ 0 := by
       contrapose hIlinind
@@ -533,7 +531,7 @@ theorem LinearIndependent.of_pairwise_dual_eq_zero_one (v : ι → M) (f : ι �
     LinearIndependent R v := by
   refine linearIndependent_iff'.mpr fun s g hrel i hi ↦ ?_
   have aux (j : ι) (hjs : j ∈ s) (hji : j ≠ i) : g j * (f i) (v j) = 0 := by simp [h1 hji.symm]
-  simpa [s.sum_eq_single i aux (by lia), h2 i] using congr_arg (f i) hrel
+  simpa [s.sum_eq_single i aux (by lia), h2 i] using congr(f i $hrel)
 
 end Module
 
@@ -555,7 +553,7 @@ lemma LinearIndependent.update [DecidableEq ι] [CommRing R] [AddCommGroup M] [M
     linearCombination_single_index, smul_add, smul_sub, smul_zero, smul_comm r (l' i) m,
     hg, ← LinearMap.map_smul, smul_smul, ← linearCombination_single, ← map_sub, ← map_add] at hl'
   replace hl' : ∀ j, (r * l' j - (single i (r * l' i)) j) + l' i * l j = 0 :=
-    fun j ↦ DFunLike.congr_fun (hf _ hl') j
+    fun j ↦ congr($(hf _ hl') j)
   grind [mem_nonZeroDivisors_iff]
 
 /-!
@@ -667,7 +665,7 @@ theorem linearIndepOn_id_pair {x y : V} (hx : x ≠ 0) (hy : ∀ a : K, a • x 
 theorem linearIndepOn_pair_iff {i j : ι} (v : ι → V) (hij : i ≠ j) (hi : v i ≠ 0) :
     LinearIndepOn K v {i, j} ↔ ∀ (c : K), c • v i ≠ v j := by
   rw [pair_comm]
-  convert! linearIndepOn_insert (s := { i }) (a := j) hij.symm
+  convert linearIndepOn_insert (s := { i }) (a := j) hij.symm
   simp [hi, mem_span_singleton]
 
 /-- Also see `LinearIndependent.pair_iff` for the version over arbitrary rings. -/
@@ -683,17 +681,11 @@ theorem linearIndependent_finCons {n} {v : Fin n → V} :
   rw [← linearIndependent_equiv (finSuccEquiv n).symm, linearIndependent_option]
   rfl
 
-@[deprecated (since := "2026-04-07")]
-alias linearIndependent_fin_cons := linearIndependent_finCons
-
 theorem linearIndependent_finSnoc {n} {v : Fin n → V} :
     LinearIndependent K (Fin.snoc v x : Fin (n + 1) → V) ↔
       LinearIndependent K v ∧ x ∉ Submodule.span K (range v) := by
   rw [Fin.snoc_eq_cons_rotate, ← Function.comp_def, linearIndependent_equiv,
     linearIndependent_finCons]
-
-@[deprecated (since := "2026-04-07")]
-alias linearIndependent_fin_snoc := linearIndependent_finSnoc
 
 /-- See `LinearIndependent.finCons'` for an uglier version that works if you
 only have a module over a semiring. -/
@@ -701,11 +693,8 @@ theorem LinearIndependent.finCons {n} {v : Fin n → V} (hv : LinearIndependent 
     (hx : x ∉ Submodule.span K (range v)) : LinearIndependent K (Fin.cons x v : Fin (n + 1) → V) :=
   linearIndependent_finCons.2 ⟨hv, hx⟩
 
-@[deprecated (since := "2026-04-07")]
-alias LinearIndependent.fin_cons := LinearIndependent.finCons
-
 /-- See `LinearIndependent.finSnoc'` for an uglier version that works if you
-only have a module over a semiring, and `LinearIndependent.finSnoc_of_not_mem_span_over` for a
+only have a module over a semiring, and `LinearIndependent.finSnoc_of_notMem_span_over` for a
 version over a subring of a division ring. -/
 lemma LinearIndependent.finSnoc {n} {v : Fin n → V} (hv : LinearIndependent K v)
     (hx : x ∉ Submodule.span K (range v)) : LinearIndependent K (Fin.snoc v x : Fin (n + 1) → V) :=
@@ -717,7 +706,7 @@ independent.
 
 This is useful when proving `ℤ`-linear independence using the fact that an element is outside the
 `ℝ`-span, which arises naturally in lattice theory and geometry of numbers. -/
-theorem LinearIndependent.finSnoc_of_not_mem_span_over
+theorem LinearIndependent.finSnoc_of_notMem_span_over
     {R : Type*} {K : Type*} {M : Type*}
     [CommRing R] [DivisionRing K] [AddCommGroup M]
     [Algebra R K] [Module K M] [Module R M] [IsScalarTower R K M] [FaithfulSMul R K]
@@ -734,20 +723,18 @@ theorem LinearIndependent.finSnoc_of_not_mem_span_over
   rw [(eq_inv_smul_iff₀ hc').mpr (eq_neg_of_add_eq_zero_left heq), smul_neg]
   exact Submodule.neg_mem _ (Submodule.smul_mem _ _ (Submodule.span_subset_span R K _ hcy))
 
+@[deprecated (since := "2026-09-28")]
+alias LinearIndependent.finSnoc_of_not_mem_span_over :=
+  LinearIndependent.finSnoc_of_notMem_span_over
+
 theorem linearIndependent_finSucc {n} {v : Fin (n + 1) → V} :
     LinearIndependent K v ↔
       LinearIndependent K (Fin.tail v) ∧ v 0 ∉ Submodule.span K (range <| Fin.tail v) := by
   rw [← linearIndependent_finCons, Fin.cons_self_tail]
 
-@[deprecated (since := "2026-04-07")]
-alias linearIndependent_fin_succ := linearIndependent_finSucc
-
 theorem linearIndependent_finSucc' {n} {v : Fin (n + 1) → V} : LinearIndependent K v ↔
     LinearIndependent K (Fin.init v) ∧ v (Fin.last _) ∉ Submodule.span K (range <| Fin.init v) := by
   rw [← linearIndependent_finSnoc, Fin.snoc_init_self]
-
-@[deprecated (since := "2026-04-07")]
-alias linearIndependent_fin_succ' := linearIndependent_finSucc'
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Equivalence between `k + 1` vectors of length `n` and `k` vectors of length `n` along with a
@@ -774,10 +761,10 @@ theorem exists_linearIndepOn_extension {s t : Set ι} (hs : LinearIndepOn K v s)
     ∃ b ⊆ t, s ⊆ b ∧ v '' t ⊆ span K (v '' b) ∧ LinearIndepOn K v b := by
   obtain ⟨b, sb, h⟩ := by
     refine zorn_subset_nonempty { b | b ⊆ t ∧ LinearIndepOn K v b} ?_ _ ⟨hst, hs⟩
-    · refine fun c hc cc _c0 => ⟨⋃₀ c, ⟨?_, ?_⟩, fun x => ?_⟩
-      · exact sUnion_subset fun x xc => (hc xc).1
-      · exact linearIndepOn_sUnion_of_directed cc.directedOn fun x xc => (hc xc).2
-      · exact subset_sUnion_of_mem
+    refine fun c hc cc _c0 => ⟨⋃₀ c, ⟨?_, ?_⟩, fun x => ?_⟩
+    · exact sUnion_subset fun x xc => (hc xc).1
+    · exact linearIndepOn_sUnion_of_directed cc.directedOn fun x xc => (hc xc).2
+    · exact subset_sUnion_of_mem
   refine ⟨b, h.prop.1, sb, fun _ ⟨x, hx, hvx⟩ => by_contra fun hn ↦ hn ?_, h.prop.2⟩
   subst hvx
   exact subset_span <| mem_image_of_mem v <| h.mem_of_prop_insert
@@ -806,11 +793,11 @@ lemma exists_linearIndependent' (v : ι → V) :
   have hs {i : ι} (hi : i ∈ s) : v i ∈ t := by obtain ⟨a, rfl⟩ := hi; simp [hf]
   let f' (a : s) : t := ⟨v a.val, hs a.property⟩
   refine ⟨s, Subtype.val, Subtype.val_injective, hsp.symm ▸ by congr; aesop, ?_⟩
-  · rw [← show Subtype.val ∘ f' = v ∘ Subtype.val by ext; simp [f']]
-    apply hli.comp
-    rintro ⟨i, x, rfl⟩ ⟨j, y, rfl⟩ hij
-    simp only [Subtype.ext_iff, hf, f'] at hij
-    simp [hij]
+  rw [← show Subtype.val ∘ f' = v ∘ Subtype.val by ext; simp [f']]
+  apply hli.comp
+  rintro ⟨i, x, rfl⟩ ⟨j, y, rfl⟩ hij
+  simp only [Subtype.ext_iff, hf, f'] at hij
+  simp [hij]
 
 variable {K} {s t : Set ι}
 
@@ -834,7 +821,7 @@ theorem LinearIndepOn.image_subset_span_image_extend (hs : LinearIndepOn K v s) 
 
 theorem LinearIndepOn.subset_span_extend {s t : Set V} (hs : LinearIndepOn K id s) (hst : s ⊆ t) :
     t ⊆ span K (hs.extend hst) := by
-  convert! hs.image_subset_span_image_extend hst <;> simp
+  convert hs.image_subset_span_image_extend hst <;> simp
 
 theorem LinearIndepOn.span_image_extend_eq_span_image (hs : LinearIndepOn K v s) (hst : s ⊆ t) :
     span K (v '' hs.extend hst) = span K (v '' t) :=
@@ -922,3 +909,29 @@ theorem exists_finite_card_le_of_finite_of_linearIndependent_of_span {s t : Set 
   ⟨this, by rw [← Eq]; exact Finset.card_le_card <| Finset.coe_subset.mp <| by simp [hsu]⟩
 
 end Module
+
+lemma LinearMap.BilinForm.exists_pos_and_pos_apply_sum_smul {R M ι : Type*} [Fintype ι]
+    [CommRing R] [LinearOrder R] [IsOrderedRing R]
+    [AddCommGroup M] [Module R M]
+    {B : LinearMap.BilinForm R M} (hB : ∀ x ≠ 0, 0 < B x x)
+    {v : ι → M} (hv : LinearIndependent R v) (hv' : Pairwise fun k l ↦ B (v k) (v l) ≤ 0)
+    {c : ι → R} (hc : ¬ c ≤ 0) :
+    ∃ k, 0 < c k ∧ 0 < B (∑ l, c l • v l) (v k) := by
+  set x := ∑ k, c k • v k
+  let X := ∑ k, max (c k) 0 • v k
+  have hX : X ≠ 0 := fun hX ↦
+    hc fun k ↦ max_eq_right_iff.mp <| Fintype.linearIndependent_iff.mp hv _ hX k
+  have hx : x = X + ∑ k, min (c k) 0 • v k := by
+    simp only [x, X, ← Finset.sum_add_distrib, ← add_smul, max_add_min, add_zero]
+  have : 0 < B x X := by
+    rw [hx, map_add, LinearMap.add_apply]
+    refine add_pos_of_pos_of_nonneg (hB X hX) ?_
+    simp only [X, map_sum, map_smul, LinearMap.sum_apply, smul_eq_mul, Finset.mul_sum]
+    refine Finset.sum_nonneg fun k _ ↦ Finset.sum_nonneg fun l _ ↦ ?_
+    rcases eq_or_ne l k with rfl | hkl
+    · simp [← mul_assoc]
+    · specialize hv' hkl
+      exact mul_nonneg (le_max_right _ _) <| mul_nonneg_of_nonpos_of_nonpos (min_le_right _ _) hv'
+  simp only [X, map_sum, map_smul] at this
+  obtain ⟨k, -, hk⟩ := Finset.exists_lt_of_sum_lt <| Finset.sum_const_zero.trans_lt this
+  exact ⟨k, by simpa using pos_and_pos_or_neg_and_neg_of_mul_pos hk⟩

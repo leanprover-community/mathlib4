@@ -6,9 +6,9 @@ Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 module
 
 public import Mathlib.Algebra.GCDMonoid.Basic
+public import Mathlib.Algebra.GroupWithZero.Nat
 public import Mathlib.Algebra.Order.Group.Unbundled.Int
 public import Mathlib.Algebra.Ring.Int.Units
-public import Mathlib.Algebra.GroupWithZero.Nat
 
 /-!
 # ℕ and ℤ are normalized GCD monoids.
@@ -80,8 +80,10 @@ theorem normalize_of_nonpos {z : ℤ} (h : z ≤ 0) : normalize z = -z := by
   · rw [normalize_apply, normUnit_eq, ite_eq_right (not_le_of_gt h), Units.val_neg, Units.val_one,
       mul_neg_one]
 
-theorem normalize_coe_nat (n : ℕ) : normalize (n : ℤ) = n :=
+theorem normalize_natCast (n : ℕ) : normalize (n : ℤ) = n :=
   normalize_of_nonneg (ofNat_le_ofNat_of_le <| Nat.zero_le n)
+
+@[deprecated (since := "2026-10-13")] alias normalize_coe_nat := normalize_natCast
 
 theorem abs_eq_normalize (z : ℤ) : |z| = normalize z := by
   cases le_total 0 z <;>
@@ -119,8 +121,8 @@ instance : GCDMonoid ℤ where
 instance : StrongNormalizedGCDMonoid ℤ :=
   { Int.strongNormalizationMonoid,
     (inferInstance : GCDMonoid ℤ) with
-    normalize_gcd := fun _ _ => normalize_coe_nat _
-    normalize_lcm := fun _ _ => normalize_coe_nat _ }
+    normalize_gcd := fun _ _ => normalize_natCast _
+    normalize_lcm := fun _ _ => normalize_natCast _ }
 
 theorem coe_gcd (i j : ℤ) : ↑(Int.gcd i j) = GCDMonoid.gcd i j :=
   rfl

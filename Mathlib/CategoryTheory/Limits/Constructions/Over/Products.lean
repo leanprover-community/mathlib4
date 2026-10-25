@@ -107,7 +107,7 @@ def IsLimit.pullbackConeEquivBinaryFanInverse {c : BinaryFan (Over.mk f) (.mk g)
       have := hc.uniq (pullbackConeEquivBinaryFan.functor.obj s) (Over.homMk m <| by
         simp [← hm₁, dsimp% c.fst.w])
         (by rintro (_ | _) <;> ext <;> simpa)
-      exact congr(($this).left)
+      congrm ($this).left
 
 end Over
 
@@ -168,7 +168,7 @@ def IsColimit.pushoutCoconeEquivBinaryCofanInverse {c : BinaryCofan (Under.mk f)
       have := hc.uniq (pushoutCoconeEquivBinaryCofan.functor.obj s) (Under.homMk m <| by
         simp [← hm₁, dsimp% c.inl.w_assoc])
         (by rintro (_ | _) <;> ext <;> simpa)
-      exact congr(($this).right)
+      congrm ($this).right
 
 end Under
 end Limits
