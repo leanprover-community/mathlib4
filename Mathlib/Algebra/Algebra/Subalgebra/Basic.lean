@@ -934,6 +934,20 @@ theorem comap_center_le_center {f : A →ₐ[R] B} (hf : Function.Injective f) :
 theorem map_center_eq (f : A ≃ₐ[R] B) : map f (center R A) = center R B :=
   SetLike.coe_injective (Set.image_center_eq f)
 
+@[simps! apply_coe]
+def centerCongr (e : A ≃ₐ[R] B) :
+    Subalgebra.center R A ≃ₐ[R] Subalgebra.center R B where
+  toRingEquiv := Subsemiring.centerCongr e.toRingEquiv
+  commutes' r := by
+    rw [Subtype.ext_iff]
+    change e ((algebraMap R A) r) = (algebraMap R B) r
+    rw [AlgEquiv.commutes]
+
+@[simp]
+lemma centerCongr_symm_apply_coe (e : A ≃ₐ[R] B) (a : Subalgebra.center R B) :
+    Subalgebra.centerCongr e.symm a = e.symm a :=
+  rfl
+
 end Center
 
 section Centralizer
