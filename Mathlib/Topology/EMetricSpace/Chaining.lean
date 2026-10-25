@@ -184,27 +184,25 @@ lemma edist_chainingSeq_le_sum (hC : ∀ i, IsCover (ε i) A (C i)) (hCA : ∀ i
 /-- Distance between the approximations at level `m` of `x ∈ C k` and `y ∈ C n`. -/
 lemma edist_chainingSeq_le (hC : ∀ i, IsCover (ε i) A (C i)) (hCA : ∀ i, (C i : Set E) ⊆ A)
     (hxA : x ∈ C k) (hyA : y ∈ C n) (m : ℕ) (hm : m ≤ k) (hn : m ≤ n) :
-    edist (chainingSeq C x k m) (chainingSeq C y n m)
-      ≤ edist x y + ∑ i ∈ Finset.range (k - m), (ε (m + i) : ℝ≥0∞)
-        + ∑ j ∈ Finset.range (n - m), (ε (m + j) : ℝ≥0∞) := by
-  calc
-      edist (chainingSeq C x k m) (chainingSeq C y n m)
-    ≤ edist (chainingSeq C x k m) x + edist x (chainingSeq C y n m) :=
-        edist_triangle _ _ _
+    edist (chainingSeq C x k m) (chainingSeq C y n m) ≤
+      edist x y + ∑ i ∈ Finset.range (k - m), (ε (m + i) : ℝ≥0∞) +
+        ∑ j ∈ Finset.range (n - m), (ε (m + j) : ℝ≥0∞) :=
+  calc edist (chainingSeq C x k m) (chainingSeq C y n m)
+  _ ≤ edist (chainingSeq C x k m) x + edist x (chainingSeq C y n m) :=
+    edist_triangle _ _ _
   _ ≤ edist (chainingSeq C x k m) x + (edist x y + edist y (chainingSeq C y n m)) :=
-        add_le_add_right (edist_triangle _ _ _) _
-  _ = edist x y + edist (chainingSeq C x k m) x + edist y (chainingSeq C y n m) := by
-        abel
+    add_le_add_right (edist_triangle _ _ _) _
+  _ = edist x y + edist (chainingSeq C x k m) x + edist y (chainingSeq C y n m) := by abel
   _ ≤ edist x y + ∑ i ∈ Finset.range (k - m), (ε (m + i) : ℝ≥0∞)
-          + ∑ j ∈ Finset.range (n - m), (ε (m + j) : ℝ≥0∞) := by
-        gcongr <;> (try rw [edist_comm y]) <;> apply edist_chainingSeq_le_sum <;> assumption
+      + ∑ j ∈ Finset.range (n - m), (ε (m + j) : ℝ≥0∞) := by
+    gcongr <;> (try rw [edist_comm y]) <;> apply edist_chainingSeq_le_sum <;> assumption
 
 /-- For the scales `ε₀ * 2⁻¹ ^ i`, the approximations at level `m` of `x ∈ C k` and `y ∈ C n` are at
 distance at most `edist x y + ε₀ * 4 * 2⁻¹ ^ m`. -/
 lemma edist_chainingSeq_pow_two_le {ε₀ : ℝ≥0} (hC : ∀ i, IsCover (ε₀ * 2⁻¹ ^ i) A (C i))
     (hCA : ∀ i, (C i : Set E) ⊆ A) (hxA : x ∈ C k) (hyA : y ∈ C n) (m : ℕ) (hm : m ≤ k)
-    (hn : m ≤ n) : edist (chainingSeq C x k m) (chainingSeq C y n m)
-      ≤ edist x y + ε₀ * 4 * 2⁻¹ ^ m := by
+    (hn : m ≤ n) :
+    edist (chainingSeq C x k m) (chainingSeq C y n m) ≤ edist x y + ε₀ * 4 * 2⁻¹ ^ m := by
   refine le_trans (edist_chainingSeq_le hC hCA hxA hyA m hm hn) ?_
   simp only [pow_add, ← mul_assoc, ENNReal.coe_mul]
   rw [add_assoc, ← Finset.mul_sum, ← Finset.mul_sum, ← mul_add, mul_assoc _ 4, mul_comm 4,
@@ -221,11 +219,10 @@ is at most the same supremum for their approximations at level `m`, plus twice t
 `edist (X s) (X (chainingSeq C s k m))`. -/
 lemma iSup_edist_le_iSup_edist_chainingSeq {F : Type*} [PseudoEMetricSpace F] (m : ℕ)
     (X : E → F) (δ : ℝ≥0∞) :
-    ⨆ (s : C k) (t : { t : C k // edist s t ≤ δ }), edist (X s) (X t)
-    ≤ (⨆ (s : C k) (t : { t : C k // edist s t ≤ δ }),
-        edist (X (chainingSeq C s k m)) (X (chainingSeq C t k m)))
-      + 2 * ⨆ (s : C k), edist (X s) (X (chainingSeq C s k m))
-      := by
+    ⨆ (s : C k) (t : { t : C k // edist s t ≤ δ }), edist (X s) (X t) ≤
+      (⨆ (s : C k) (t : { t : C k // edist s t ≤ δ }),
+        edist (X (chainingSeq C s k m)) (X (chainingSeq C t k m))) +
+      2 * ⨆ (s : C k), edist (X s) (X (chainingSeq C s k m)) := by
   -- Introduce some notation to make the goals easier to read
   let Ck' (s : C k) := { t : C k // edist s t ≤ δ }
   have (s : C k) : Nonempty (Ck' s) := ⟨⟨s, by simp⟩⟩
@@ -267,10 +264,10 @@ lemma iSup_edist_le_iSup_edist_chainingSeq {F : Type*} [PseudoEMetricSpace F] (m
 /-- `rpow` version of `iSup_edist_le_iSup_edist_chainingSeq`. -/
 lemma iSup_edist_rpow_le_iSup_edist_chainingSeq {F : Type*} [PseudoEMetricSpace F] (m : ℕ)
     (X : E → F) (δ : ℝ≥0∞) (p : ℝ) (hp : 0 ≤ p) :
-    ⨆ (s : C k) (t : { t : C k // edist s t ≤ δ }), edist (X s) (X t) ^ p
-    ≤ 2 ^ p * (⨆ (s : C k) (t : { t : C k // edist s t ≤ δ }),
-        edist (X (chainingSeq C s k m)) (X (chainingSeq C t k m)) ^ p)
-      + 4 ^ p * (⨆ (s : C k), edist (X s) (X (chainingSeq C s k m)) ^ p) := by
+    ⨆ (s : C k) (t : { t : C k // edist s t ≤ δ }), edist (X s) (X t) ^ p ≤
+      2 ^ p * (⨆ (s : C k) (t : { t : C k // edist s t ≤ δ }),
+        edist (X (chainingSeq C s k m)) (X (chainingSeq C t k m)) ^ p) +
+      4 ^ p * (⨆ (s : C k), edist (X s) (X (chainingSeq C s k m)) ^ p) := by
   refine hp.lt_or_eq'.elim (fun hp' => ?_) (by rintro rfl; simp)
   simp only [← (ENNReal.monotone_rpow_of_nonneg hp).map_iSup_of_continuousAt
     ENNReal.continuous_rpow_const.continuousAt (by simp [hp'])]
