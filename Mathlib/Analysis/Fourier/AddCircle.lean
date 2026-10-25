@@ -545,6 +545,11 @@ theorem differentiableAt_fourier (n : ℤ) (x : ℝ) :
     DifferentiableAt ℝ (fun x : ℝ ↦ fourier n (x : AddCircle T)) x :=
   (hasDerivAt_fourier T n x).differentiableAt
 
+@[fun_prop]
+theorem differentiable_fourier (n : ℤ) :
+    Differentiable ℝ (fun x : ℝ ↦ fourier n (x : AddCircle T)) :=
+  differentiableAt_fourier T n
+
 theorem hasDerivAt_fourier_neg (n : ℤ) (x : ℝ) :
     HasDerivAt (fun y : ℝ => fourier (-n) (y : AddCircle T))
       (-2 * π * I * n / T * fourier (-n) (x : AddCircle T)) x := by
