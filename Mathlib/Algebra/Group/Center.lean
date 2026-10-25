@@ -349,3 +349,143 @@ lemma div_mem_centralizer (ha : a ∈ centralizer S) (hb : b ∈ centralizer S) 
 
 end Group
 end Set
+
+section Center
+
+variable {M : Type*}
+
+variable (M) in
+/-- The center of a magma. -/
+@[to_additive AddCenter /-- The center of an additive magma. -/]
+def Center [Mul M] := { z : M // z ∈ Set.center M }
+
+namespace Center
+
+@[to_additive]
+instance [Mul M] : CoeOut (Center M) M := ⟨Subtype.val⟩
+
+lemma coe_mem [Mul M] (z : Center M) : z.val ∈ Set.center M := z.prop
+
+/-- Construct an element of `Center M` from an central element of `M`. -/
+@[to_additive]
+abbrev mk [Mul M] (z : M) (hz : z ∈ Set.center M) : Center M := ⟨z, hz⟩
+
+@[to_additive (attr := simp)]
+lemma eq_iff [Mul M] (x y : Center M) : x = y ↔ x.val = y.val := Subtype.ext_iff
+
+@[to_additive]
+instance [Mul M] : CoeOut (Center M) M := ⟨Subtype.val⟩
+
+@[to_additive]
+instance [Mul M] : Mul (Center M) where
+  mul x y := mk (x.val * y.val) (Set.mul_mem_center x.prop y.prop)
+
+@[to_additive]
+lemma comm [Mul M] (x : M) (z : Center M) : z.val * x = x * z := z.prop.comm x
+
+@[to_additive (attr := simp)]
+lemma coe_mul [Mul M] (x y : Center M) :
+    (x * y).val = x.val * y.val := rfl
+
+@[to_additive]
+instance [Mul M] : CommMagma (Center M) where
+  mul_comm _ _ := by rw [eq_iff, coe_mul, coe_mul, comm]
+
+@[to_additive]
+lemma mul_assoc' [Mul M] (x y z : Center M) : x * y * z = x * (y * z) :=
+  by simp_rw [eq_iff, coe_mul, IsMulCentral.mid_assoc y.prop x.val z.val]
+
+@[to_additive]
+instance [MulOneClass M] : MulOneClass (Center M) where
+  one := mk (1 : M) Set.one_mem_center
+  one_mul a := by rw [eq_iff, coe_mul]; exact one_mul a.val
+  mul_one a := by rw [eq_iff, coe_mul]; exact mul_one a.val
+
+@[to_additive]
+instance [Monoid M] : CommMonoid (Center M) where
+  npow n a := Center.mk (a.val ^ n) (Semigroup.mem_center_iff.mpr fun b => by
+    simp_rw [((a.prop.comm b).pow_left n).eq])
+  mul_assoc := mul_assoc'
+  npow_zero a := Subtype.ext (pow_zero a.val)
+  npow_succ n a := Subtype.ext (pow_succ a.val n)
+
+@[to_additive (attr := simp)]
+lemma coe_pow [Monoid M] (a : Center M) (n : ℕ) :
+    (a ^ n).val = a.val ^ n := rfl
+
+@[to_additive (attr := simp)]
+lemma coe_one [MulOneClass M] : (1 : Center M).val = (1 : M) := rfl
+
+/-- The embedding of `Center M` into `M` -/
+@[to_additive]
+abbrev subtype [Mul M] : Center M → M := Subtype.val
+
+@[to_additive (attr := simp)]
+lemma mem_range_subtype_iff [Mul M] :
+    Set.range subtype = Set.center M :=
+  Set.ext fun x => ⟨fun ⟨x, hx⟩ => by rw [← hx]; exact x.prop , fun hx => ⟨⟨x, hx⟩, rfl⟩⟩
+
+@[to_additive (attr := simp)]
+lemma subtype_injective [Mul M] : Function.Injective (subtype (M := M)) := Subtype.coe_injective
+
+@[to_additive (attr := simp)]
+lemma subtype_surjective [CommSemigroup M] :
+    Function.Surjective (subtype (M := M)) :=
+  fun m => ⟨Center.mk m (by simp), by simp⟩
+
+@[to_additive (attr := simp)]
+lemma range_subtype_eq_top [CommSemigroup M] :
+    Set.range (subtype (M := M)) = ⊤ := by
+  ext; simp
+
+variable (M) in
+/-- The inclusion of `Center M` into `M` as a `MulHom`. -/
+@[simps, to_additive]
+def mulHom [Mul M] : Center M →ₙ* M where
+  toFun z := z.val
+  map_mul' _ _ := rfl
+
+variable (M) in
+/-- The inclusion of `Center M` into `M` as a `MonoidHom`. -/
+@[simps, to_additive]
+def monoidHom [MulOneClass M] : Center M →* M where
+  toMulHom := Center.mulHom M
+  map_one' := rfl
+
+@[to_additive]
+instance [DivisionMonoid M] : DivisionCommMonoid (Center M) where
+  inv z := mk z.val⁻¹ <| Semigroup.mem_center_iff.mpr fun m => by
+    rw [← inv_inj, mul_inv_rev, inv_inv, Center.comm, mul_inv_rev, inv_inv]
+  inv_inv _ := by simp
+  mul_inv_rev := by simp
+  inv_eq_of_mul a b h := by
+    rw [Center.eq_iff, Center.coe_mul, Center.coe_one] at h
+    simp_rw [Center.eq_iff, inv_eq_of_mul_eq_one_right h]
+
+@[to_additive (attr := simp)]
+lemma coe_inv [DivisionMonoid M] (z : Center M) : z⁻¹.val = z.val⁻¹ := rfl
+
+@[to_additive]
+instance [Group M] : CommGroup (Center M) where
+  inv_mul_cancel z := by simp
+
+/-- A surjective morphism between monoids induces a monoid homomorhpism between their centers. -/
+@[to_additive, simps]
+def _root_.MonoidHom.center [MulOneClass M] [MulOneClass N] {f : M →* N}
+    (hf : Function.Surjective f) :
+    Center M →* Center N where
+  toFun m := Center.mk (f m.val) (IsMulCentral.map m.prop hf)
+  map_one' := by simp
+  map_mul' := by simp
+
+/-- An ismorphism between monoids induces an isomorphism between their centers. -/
+@[to_additive, simps!]
+def _root_.MulEquiv.center [Mul M] [Mul N] (f : M ≃* N) :
+    Center M ≃* Center N where
+  toFun m := Center.mk (f m.val) (IsMulCentral.map m.prop f.surjective)
+  invFun n := Center.mk (f.symm n.val) (IsMulCentral.map n.prop f.symm.surjective)
+  map_mul' := by simp
+  left_inv _ := by simp
+  right_inv _ := by simp
+
+end Center
