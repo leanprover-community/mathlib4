@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Group.Equiv.TypeTags
 public import Mathlib.Algebra.Order.Hom.Monoid
 public import Mathlib.Algebra.Order.Monoid.Unbundled.TypeTags
+public import Mathlib.Order.Hom.Basic
 
 /-!
 
@@ -18,6 +19,16 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.TypeTags
 @[expose] public section
 
 section TypeTags
+
+/-- `Multiplicative.ofAdd` as an order isomorphism. -/
+def OrderIso.multiplicative (M : Type*) [LE M] : M ≃o Multiplicative M where
+  toEquiv := Multiplicative.ofAdd
+  map_rel_iff' := Iff.rfl
+
+/-- `Additive.ofMul` as an order isomorphism. -/
+def OrderIso.additive (M : Type*) [LE M] : M ≃o Additive M where
+  toEquiv := Additive.ofMul
+  map_rel_iff' := Iff.rfl
 
 /-- Reinterpret `G ≃*o H` as `Additive G ≃+o Additive H`. -/
 def OrderMonoidIso.toAdditive {G H : Type*}
