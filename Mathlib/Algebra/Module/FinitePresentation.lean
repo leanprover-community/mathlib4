@@ -379,9 +379,8 @@ lemma Module.FinitePresentation.exists_lift_of_isLocalizedModule
   let s₀ := ∏ j ∈ σ, (s (g j)).2
   have hi : f ∘ₗ Finsupp.linearCombination R i = (s₀ • g) ∘ₗ π := by
     ext j
-    simp only [LinearMap.coe_comp, Function.comp_apply, Finsupp.lsingle_apply,
-      linearCombination_single, one_smul, LinearMap.map_smul_of_tower, ← hs, LinearMap.smul_apply,
-      i, s₀, π]
+    simp only [LinearMap.coe_comp, Function.comp_apply, lsingle_apply, linearCombination_single,
+      one_smul, LinearMap.map_smul_of_tower, ← hs, FunLike.coe_smul, Pi.smul_apply, i, s₀, π]
     rw [← mul_smul, Finset.prod_erase_mul]
     exact j.prop
   have : ∀ x : τ, ∃ s : S, s • (Finsupp.linearCombination R i x) = 0 := by
@@ -399,7 +398,7 @@ lemma Module.FinitePresentation.exists_lift_of_isLocalizedModule
     rw [← hτ, Submodule.span_le]
     intro x hxσ
     simp only [s₁]
-    rw [SetLike.mem_coe, LinearMap.mem_ker, LinearMap.smul_apply,
+    rw [SetLike.mem_coe, LinearMap.mem_ker, smul_apply,
       ← Finset.prod_erase_mul _ _ (Finset.mem_univ ⟨x, hxσ⟩), mul_smul]
     convert smul_zero _
     exact hs' ⟨x, hxσ⟩
