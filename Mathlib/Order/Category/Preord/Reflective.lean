@@ -33,6 +33,7 @@ def Preord.ofCat (C : Type u) [Category.{v} C] : Preord.{u} where
       le_trans _ _ _ := Nonempty.map2 (· ≫ ·) }
 
 /-- The functor sending a small category to its preorder of objects. -/
+@[implicit_reducible]
 def catToPreord : Cat.{u, u} ⥤ Preord.{u} where
   obj C := .ofCat C
   map {C D} F := Preord.ofHom (X := Preord.ofCat C) (Y := Preord.ofCat D)
