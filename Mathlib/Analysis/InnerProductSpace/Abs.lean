@@ -60,8 +60,7 @@ theorem abs_eq_cfcAbs (T : E →L[ℂ] E) : |T| = CFC.abs T := rfl
 
 theorem abs_eq_zero (T : E →L[ℂ] F) : |T| = 0 ↔ T = 0 := by
   refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
-  simp only [abs] at h
-  rw [CFC.sqrt_eq_zero_iff (adjoint T ∘SL T)
+  rw [abs, CFC.sqrt_eq_zero_iff (adjoint T ∘SL T)
     (nonneg_iff_isPositive.mpr (ContinuousLinearMap.isPositive_adjoint_comp_self T))] at h
   exact adjoint_comp_self_eq_zero_iff.mp h
 
@@ -87,12 +86,7 @@ theorem ker_abs_eq (T : E →L[ℂ] F) : |T|.ker = T.ker := by
 
 @[simp]
 theorem norm_abs (T : E →L[ℂ] F) : ‖|T|‖ = ‖T‖ := by
-  refine le_antisymm ?_ ?_ <;>
-  refine ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg _) fun x ↦ ?_
-  · rw [norm_abs_apply]
-    exact le_opNorm _ x
-  · rw [← norm_abs_apply]
-    exact le_opNorm _ x
+  simp_rw [norm_def |T|, norm_abs_apply, norm_def]
 
 theorem abs_nnrpow_two (T : E →L[ℂ] F) : |T| ^ (2 : ℝ≥0) = T.adjoint ∘L T := by
   rw [CFC.nnrpow_two _ T.abs_nonneg, ContinuousLinearMap.mul_def]
@@ -104,8 +98,7 @@ theorem abs_nnrpow_two_mul (T : E →L[ℂ] F) (x : ℝ≥0) :
 
 theorem abs_nnrpow (T : E →L[ℂ] F) (x : ℝ≥0) :
     |T| ^ x = (T.adjoint ∘L T) ^ (x / 2) := by
-  simp only [← abs_nnrpow_two_mul, mul_div_left_comm, ne_eq, OfNat.ofNat_ne_zero,
-    not_false_eq_true, div_self, mul_one]
+  simp [← abs_nnrpow_two_mul, mul_div_left_comm]
 
 theorem abs_of_nonneg (S : E →L[ℂ] E) (hS : 0 ≤ S) : |S| = S := by
   rw [abs_eq_cfcAbs]
@@ -120,10 +113,8 @@ theorem abs_adjoint_comp_self (T : E →L[ℂ] F) :
   abs_of_nonneg _ (nonneg_iff_isPositive.mpr (isPositive_adjoint_comp_self T))
 
 theorem abs_smul (c : ℂ) (T : E →L[ℂ] F) : |c • T| = ‖c‖ • |T| := by
-  have h : 0 ≤ adjoint (c • T) ∘SL (c • T) :=
-    (nonneg_iff_isPositive.mpr (isPositive_adjoint_comp_self _))
-  have h' : 0 ≤ ‖c‖ • |T| := smul_nonneg (norm_nonneg c) T.abs_nonneg
-  rw [abs, CFC.sqrt_eq_iff _ _ h h', smul_mul_smul_comm, mul_def, abs_comp_abs]
+  rw [abs, CFC.sqrt_eq_iff _ _ (nonneg_iff_isPositive.mpr (isPositive_adjoint_comp_self (c • T)))
+    (smul_nonneg (norm_nonneg c) T.abs_nonneg), smul_mul_smul_comm, mul_def, abs_comp_abs]
   simp [LinearIsometryEquiv.map_smulₛₗ, ← smul_assoc, Complex.mul_conj', ← sq]
   norm_cast
 
