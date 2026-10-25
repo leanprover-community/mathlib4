@@ -409,6 +409,11 @@ theorem conductor_inv (χ : DirichletCharacter R n) :
   nth_rewrite 1 [← inv_inv χ, ← zpow_neg_one, ← zpow_neg_one]
   exact conductor_zpow_dvd ..
 
+variable {χ} in
+/-- The inverse of a primitive Dirichlet character is primitive. -/
+theorem IsPrimitive.inv (hχ : χ.IsPrimitive) : χ⁻¹.IsPrimitive := by
+  grind [isPrimitive_def, conductor_inv]
+
 /-- Dirichlet character associated to multiplication of Dirichlet characters,
 after changing both levels to the same -/
 noncomputable def mul {m : ℕ} (χ₁ : DirichletCharacter R n) (χ₂ : DirichletCharacter R m) :

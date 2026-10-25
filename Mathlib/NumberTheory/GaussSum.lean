@@ -93,6 +93,14 @@ lemma star_gaussSum_eq (χ : MulChar R ℂ) (ψ : AddChar R ℂ) :
     _ = ∑ x, ψ⁻¹ x * χ⁻¹ x := by simp [← starRingEnd_apply, map_neg_eq_conj]
     _ = _ := by simp [mul_comm, gaussSum]
 
+/-- The Gauss sum of `χ⁻¹` is `χ (-1)` times the complex conjugate of the Gauss sum of `χ`. -/
+lemma gaussSum_inv_eq_conj (χ : MulChar R ℂ) (ψ : AddChar R ℂ) :
+    gaussSum χ⁻¹ ψ = χ (-1) * starRingEnd ℂ (gaussSum χ ψ) := by
+  rw [starRingEnd_apply, star_gaussSum_eq, AddChar.inv_mulShift,
+    show (-1 : R) = ((-1 : Rˣ) : R) by simp, gaussSum_mulShift_eq, inv_inv, ← mul_assoc,
+    ← map_mul]
+  simp
+
 end GaussSumDef
 
 /-!
