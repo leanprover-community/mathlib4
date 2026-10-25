@@ -59,8 +59,7 @@ def isLimitProdCone (X Y : PartOrd.{u}) : IsLimit (prodCone X Y) := by
   exacts [congr($h₁ _), congr($h₂ _)]
 
 /-- The category of partial orders has `X × Y`, the usual Cartesian product,
-as the binary product of `X` and `Y`.
--/
+as the binary product of `X` and `Y`. -/
 def binaryProductLimitCone (X Y : PartOrd.{u}) : LimitCone (pair X Y) :=
   ⟨prodCone X Y, isLimitProdCone X Y⟩
 
