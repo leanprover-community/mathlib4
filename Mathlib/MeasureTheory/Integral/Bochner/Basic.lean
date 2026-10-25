@@ -250,6 +250,14 @@ theorem integral_finsetSum {ι} (s : Finset ι) {f : ι → α → G} (hf : ∀ 
   simp only [integral_eq_setToFun]
   exact setToFun_finsetSum (dominatedFinMeasAdditive_weightedSMul _) s hf
 
+theorem integral_finsetSum₂ {ι κ} (s : Finset ι) (t : Finset κ) {f : ι → κ → α → G}
+    (hf : ∀ i ∈ s, ∀ j ∈ t, Integrable (f i j) μ) :
+    ∫ a, ∑ i ∈ s, ∑ j ∈ t, f i j a ∂μ = ∑ i ∈ s, ∑ j ∈ t, ∫ a, f i j a ∂μ := by
+  rw [integral_finsetSum s (fun i hi ↦ integrable_finsetSum t (hf i hi))]
+  apply Finset.sum_congr rfl
+  intro i hi
+  exact integral_finsetSum t (hf i hi)
+
 @[integral_simps]
 theorem integral_neg (f : α → G) : ∫ a, -f a ∂μ = -∫ a, f a ∂μ := by
   simp only [integral_eq_setToFun]
