@@ -284,7 +284,7 @@ lemma iUnion_finset_rightRel_eq_univ_of_rightRel {H K : Subgroup G} {t : Finset 
 
 section inverse
 
-variable {H₁ H₂ : Subgroup G} 
+variable {H₁ H₂ : Subgroup G}
 
 /-- The map sending `H₁gH₂` to `H₂g⁻¹H₁`. -/
 def Quotient.inv (x : DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G)) :
