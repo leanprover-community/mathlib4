@@ -171,6 +171,7 @@ theorem isEulerian_and_ne_bot_iff :
   grind [isEulerian_iff, Walk.IsEulerian.isCircuit_iff]
 
 variable (V) in
+@[simp]
 protected theorem IsEulerian.bot [Nonempty V] : (⊥ : SimpleGraph V).IsEulerian :=
   ⟨Classical.arbitrary V, .nil, .of_bot .nil⟩
 
