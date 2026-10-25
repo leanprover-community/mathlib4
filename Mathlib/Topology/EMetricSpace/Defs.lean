@@ -551,6 +551,9 @@ theorem mem_eball_self (h : 0 < ε) : x ∈ eball x ε := by
 theorem mem_closedEBall_self : x ∈ closedEBall x ε := by
   rw [mem_closedEBall, edist_self]; apply zero_le
 
+@[simp]
+theorem nonempty_closedEBall : (closedEBall x ε).Nonempty := ⟨x, mem_closedEBall_self⟩
+
 theorem mem_eball_comm : x ∈ eball y ε ↔ y ∈ eball x ε := by rw [mem_eball', mem_eball]
 
 theorem mem_closedEBall_comm : x ∈ closedEBall y ε ↔ y ∈ closedEBall x ε := by

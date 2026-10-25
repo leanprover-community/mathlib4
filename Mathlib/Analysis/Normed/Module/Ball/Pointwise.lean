@@ -349,6 +349,18 @@ theorem closedBall_add_closedBall [ProperSpace E] (hε : 0 ≤ ε) (hδ : 0 ≤ 
   rw [(isCompact_closedBall _ _).add_closedBall hδ b, cthickening_closedBall hδ hε a,
     Metric.vadd_closedBall, vadd_eq_add, add_comm, add_comm δ]
 
+theorem closedEBall_add_closedEBall [ProperSpace E] (a b : E) (r s : ℝ≥0∞) :
+    closedEBall a r + closedEBall b s = closedEBall (a + b) (r + s) := by
+  by_cases h : r = ⊤ ∨ s = ⊤
+  · obtain rfl | rfl := h <;> simp [nonempty_closedEBall]
+  simp only [not_or] at h
+  lift r to NNReal using h.1
+  lift s to NNReal using h.2
+  norm_cast
+  simp_rw [closedEBall_coe]
+  rw [closedBall_add_closedBall, NNReal.coe_add]
+  all_goals simp
+
 theorem closedBall_sub_closedBall [ProperSpace E] (hε : 0 ≤ ε) (hδ : 0 ≤ δ) (a b : E) :
     closedBall a ε - closedBall b δ = closedBall (a - b) (ε + δ) := by
   rw [sub_eq_add_neg, neg_closedBall, closedBall_add_closedBall hε hδ, sub_eq_add_neg]
