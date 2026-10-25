@@ -471,7 +471,7 @@ instance [Group M] : CommGroup (Center M) where
 
 /-- A surjective morphism between monoids induces a monoid homomorhpism between their centers. -/
 @[to_additive, simps]
-def _root_.MonoidHom.center' [MulOneClass M] [MulOneClass N] {f : M →* N}
+def _root_.MonoidHom.toCenter [MulOneClass M] [MulOneClass N] {f : M →* N}
     (hf : Function.Surjective f) :
     Center M →* Center N where
   toFun m := Center.mk (f m.val) (IsMulCentral.map m.prop hf)
@@ -480,7 +480,7 @@ def _root_.MonoidHom.center' [MulOneClass M] [MulOneClass N] {f : M →* N}
 
 /-- An ismorphism between monoids induces an isomorphism between their centers. -/
 @[to_additive, simps!]
-def _root_.MulEquiv.center [Mul M] [Mul N] (f : M ≃* N) :
+def _root_.MulEquiv.toCenter [Mul M] [Mul N] (f : M ≃* N) :
     Center M ≃* Center N where
   toFun m := Center.mk (f m.val) (IsMulCentral.map m.prop f.surjective)
   invFun n := Center.mk (f.symm n.val) (IsMulCentral.map n.prop f.symm.surjective)
