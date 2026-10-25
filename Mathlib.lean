@@ -5727,7 +5727,6 @@ public import Mathlib.MeasureTheory.Integral.CurveIntegral.Basic
 public import Mathlib.MeasureTheory.Integral.CurveIntegral.Poincare
 public import Mathlib.MeasureTheory.Integral.DivergenceTheorem
 public import Mathlib.MeasureTheory.Integral.DominatedConvergence
-public import Mathlib.MeasureTheory.Integral.EReal.AuxLemmas
 public import Mathlib.MeasureTheory.Integral.EReal.Bochner
 public import Mathlib.MeasureTheory.Integral.EReal.EIntegrable
 public import Mathlib.MeasureTheory.Integral.EReal.EIntegral

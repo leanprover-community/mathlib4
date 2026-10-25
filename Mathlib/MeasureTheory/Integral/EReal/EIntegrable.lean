@@ -7,7 +7,6 @@ module
 
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Map
 
-
 /-!
 # Integrable functions with values in `EReal`
 
@@ -19,9 +18,10 @@ of the positive and negative parts is finite.
 
 ## Main definitions
 
-* `EIntegrable f μ`: A condition ensuring the integral of `f : α → EReal` with respect to `μ` is
-  well-defined (avoiding `⊤ - ⊤`), which is that at least one of the integrals of the positive and
-  negative parts of the function is finite.
+* `EIntegrable f μ`: at least one of the Lebesgue integrals of the positive and negative parts of
+  `f : α → EReal` with respect to `μ` is finite. This is the condition under which the integral of
+  `f` is meaningful (it avoids `⊤ - ⊤`). In the literature, such functions are sometimes called
+  quasi-integrable.
 
 -/
 
@@ -33,8 +33,9 @@ namespace MeasureTheory
 
 variable {α : Type*} {mα : MeasurableSpace α} {μ : Measure α} {f g : α → EReal}
 
-/-- Condition for a function to have a well-defined extended integral,
-avoiding the `⊤ - ⊤` bad case in the definition. -/
+/-- A function `f : α → EReal` is `EIntegrable` with respect to `μ` if at least one of the Lebesgue
+integrals of its positive and negative parts is finite. This is the condition under which the
+integral of `f` is meaningful (it avoids `⊤ - ⊤`). -/
 def EIntegrable (f : α → EReal) (μ : Measure α := by volume_tac) : Prop :=
   ∫⁻ x, (f x).toENNReal ∂μ ≠ ⊤ ∨ ∫⁻ x, (-f x).toENNReal ∂μ ≠ ⊤
 
@@ -55,23 +56,35 @@ lemma eintegrable_congr (h_ae : f =ᵐ[μ] g) :
     refine lintegral_congr_ae ?_
     filter_upwards [h_ae] with x hx using by simp [hx]
 
-lemma eintegrable_of_nonneg (hf : ∀ x, 0 ≤ f x) : EIntegrable f μ := by right; simp [hf]
+lemma eintegrable_of_nonneg_ae (hf : ∀ᵐ x ∂μ, 0 ≤ f x) : EIntegrable f μ := by
+  right
+  rw [lintegral_congr_ae (g := 0) (by filter_upwards [hf] with x hx using by simp [hx])]
+  simp
 
-lemma eintegrable_of_nonpos (hf : ∀ x, f x ≤ 0) : EIntegrable f μ := by left; simp [hf]
+lemma eintegrable_of_nonneg (hf : ∀ x, 0 ≤ f x) : EIntegrable f μ :=
+  eintegrable_of_nonneg_ae (ae_of_all _ hf)
+
+lemma eintegrable_of_nonpos_ae (hf : ∀ᵐ x ∂μ, f x ≤ 0) : EIntegrable f μ := by
+  left
+  rw [lintegral_congr_ae (g := 0) (by filter_upwards [hf] with x hx using by simp [hx])]
+  simp
+
+lemma eintegrable_of_nonpos (hf : ∀ x, f x ≤ 0) : EIntegrable f μ :=
+  eintegrable_of_nonpos_ae (ae_of_all _ hf)
 
 @[simp]
-lemma eintegrable_const {μ : Measure α} {c : EReal} : EIntegrable (fun _ ↦ c) μ := by
+lemma eintegrable_const (c : EReal) : EIntegrable (fun _ ↦ c) μ := by
   rcases le_total c 0 with hc | hc <;> simp [EIntegrable, hc]
 
 @[simp]
-lemma eintegrable_zero {μ : Measure α} : EIntegrable 0 μ := by simp [EIntegrable]
+lemma eintegrable_zero : EIntegrable 0 μ := by simp [EIntegrable]
 
 lemma EIntegrable.neg (hf : EIntegrable f μ) : EIntegrable (fun x ↦ - f x) μ := by
   cases hf with
   | inl h => right; simpa
   | inr h => left; simpa
 
-lemma EIntegrable.real_const_mul {c : ℝ} (hf : EIntegrable f μ) :
+lemma EIntegrable.real_const_mul (hf : EIntegrable f μ) (c : ℝ) :
     EIntegrable (fun x ↦ c * f x) μ := by
   rcases le_total 0 c with hc | hc
   · have hc' : 0 ≤ (c : EReal) := by simp [hc]
@@ -105,9 +118,9 @@ lemma EIntegrable.real_const_mul {c : ℝ} (hf : EIntegrable f μ) :
 lemma EIntegrable.const_mul {c : EReal} (hf : EIntegrable f μ) (hc_bot : c ≠ ⊥) (hc_top : c ≠ ⊤) :
     EIntegrable (fun x ↦ c * f x) μ := by
   lift c to ℝ using ⟨hc_top, hc_bot⟩
-  exact hf.real_const_mul
+  exact hf.real_const_mul c
 
-lemma EIntegrable.add_real_const [IsFiniteMeasure μ] {c : ℝ} (hf : EIntegrable f μ) :
+lemma EIntegrable.add_real_const [IsFiniteMeasure μ] (hf : EIntegrable f μ) (c : ℝ) :
     EIntegrable (fun x ↦ f x + c) μ := by
   cases hf with
   | inl h =>
@@ -135,23 +148,23 @@ lemma EIntegrable.add_const [IsFiniteMeasure μ] {c : EReal}
     (hf : EIntegrable f μ) (hc_bot : c ≠ ⊥) (hc_top : c ≠ ⊤) :
     EIntegrable (fun x ↦ f x + c) μ := by
   lift c to ℝ using ⟨hc_top, hc_bot⟩
-  exact hf.add_real_const
+  exact hf.add_real_const c
 
-lemma EIntegrable.real_const_add [IsFiniteMeasure μ] {c : ℝ} (hf : EIntegrable f μ) :
+lemma EIntegrable.real_const_add [IsFiniteMeasure μ] (hf : EIntegrable f μ) (c : ℝ) :
     EIntegrable (fun x ↦ c + f x) μ := by
   simp_rw [add_comm]
-  exact hf.add_real_const
+  exact hf.add_real_const c
 
 lemma EIntegrable.const_add [IsFiniteMeasure μ] {c : EReal}
     (hf : EIntegrable f μ) (hc_bot : c ≠ ⊥) (hc_top : c ≠ ⊤) :
     EIntegrable (fun x ↦ c + f x) μ := by
   lift c to ℝ using ⟨hc_top, hc_bot⟩
-  exact hf.real_const_add
+  exact hf.real_const_add c
 
-lemma EIntegrable.sub_real_const [IsFiniteMeasure μ] {c : ℝ} (hf : EIntegrable f μ) :
+lemma EIntegrable.sub_real_const [IsFiniteMeasure μ] (hf : EIntegrable f μ) (c : ℝ) :
     EIntegrable (fun x ↦ f x - c) μ := by
   simp_rw [sub_eq_add_neg]
-  exact hf.add_real_const
+  exact hf.add_real_const (-c)
 
 lemma EIntegrable.sub_const [IsFiniteMeasure μ] {c : EReal}
     (hf : EIntegrable f μ) (hc_bot : c ≠ ⊥) (hc_top : c ≠ ⊤) :
@@ -159,10 +172,10 @@ lemma EIntegrable.sub_const [IsFiniteMeasure μ] {c : EReal}
   simp_rw [sub_eq_add_neg]
   exact hf.add_const (by simp [hc_top]) (by simp [hc_bot])
 
-lemma EIntegrable.real_const_sub [IsFiniteMeasure μ] {c : ℝ} (hf : EIntegrable f μ) :
+lemma EIntegrable.real_const_sub [IsFiniteMeasure μ] (hf : EIntegrable f μ) (c : ℝ) :
     EIntegrable (fun x ↦ c - f x) μ := by
   simp_rw [sub_eq_add_neg]
-  exact hf.neg.real_const_add
+  exact hf.neg.real_const_add c
 
 lemma EIntegrable.const_sub [IsFiniteMeasure μ] {c : EReal}
     (hf : EIntegrable f μ) (hc_bot : c ≠ ⊥) (hc_top : c ≠ ⊤) :
@@ -185,13 +198,13 @@ lemma eintegrable_map {β : Type*} {mβ : MeasurableSpace β} {f : α → β} {g
   unfold EIntegrable
   congr! <;> rw [lintegral_map' (by fun_prop) hf] <;> rfl
 
-lemma eintegrable_of_le {b : EReal} (hf : ∀ x, f x ≤ b) (hb : b ≠ ⊤)
-    (P : Measure α) [IsFiniteMeasure P] :
-    EIntegrable f P := by
+lemma eintegrable_of_le {b : EReal} (hf : ∀ᵐ x ∂μ, f x ≤ b) (hb : b ≠ ⊤) [IsFiniteMeasure μ] :
+    EIntegrable f μ := by
   refine .inl (ne_of_lt ?_)
-  calc ∫⁻ x, (f x).toENNReal ∂P
-  _ ≤ ∫⁻ x, b.toENNReal ∂P := by gcongr; exact hf _
-  _ = b.toENNReal * P .univ := by simp [lintegral_const]
+  calc ∫⁻ x, (f x).toENNReal ∂μ
+  _ ≤ ∫⁻ x, b.toENNReal ∂μ := lintegral_mono_ae <| by
+    filter_upwards [hf] with x hx using EReal.toENNReal_le_toENNReal hx
+  _ = b.toENNReal * μ .univ := by simp [lintegral_const]
   _ < ⊤ := by simp [hb, lt_top_iff_ne_top, ENNReal.mul_eq_top]
 
 end MeasureTheory

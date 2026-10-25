@@ -9,88 +9,60 @@ public import Mathlib.MeasureTheory.Integral.EReal.EIntegral
 public import Mathlib.MeasureTheory.Integral.Prod
 
 /-!
-# TODO
+# Extended integral with respect to a product measure
 
 ## Main statements
 
-* `eintegral_prod`: Fubini's theorem for extended real-valued functions on product measures,
-  allowing interchange of integration order.
+* `eintegral_prod`: **Fubini's theorem** for `EIntegrable` extended real-valued functions:
+  `∫ᵉ z, f z ∂(μ.prod ν) = ∫ᵉ x, ∫ᵉ y, f (x, y) ∂ν ∂μ`.
+* `eintegral_prod_symm`: the same with the order of integration swapped.
 
 -/
 
 @[expose] public section
 
-open ProbabilityTheory
-
 open scoped ENNReal
-
-
 
 namespace MeasureTheory
 
 variable {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
   {μ : Measure α} {ν : Measure β} [SFinite ν]
 
-lemma eintegral_prod_of_nonneg
-    (f : α × β → EReal) (hf : AEMeasurable f (μ.prod ν)) (hf_nonneg : ∀ x, 0 ≤ f x) :
-    ∫ᵉ z, f z ∂(μ.prod ν) = ∫ᵉ x, ∫ᵉ y, f (x, y) ∂ν ∂μ := by
-  have hf_nonneg' x : ∀ y, 0 ≤ f (x, y) := fun y ↦ hf_nonneg (x, y)
-  rw [eintegral_of_nonneg hf_nonneg, eintegral_of_nonneg (fun x ↦ eintegral_nonneg (hf_nonneg' x))]
-  simp_rw [eintegral_of_nonneg (hf_nonneg' _)]
-  congr
-  rw [lintegral_prod _ (by fun_prop)]
-  congr with x
-  rw [EReal.toENNReal_coe]
-
-/-- Fubini's theorem for extended reals: the integral over the product equals the iterated
-integral. -/
+/-- **Fubini's theorem** for `EIntegrable` extended real-valued functions: the integral with respect
+to the product measure equals the iterated integral. -/
 lemma eintegral_prod
     (f : α × β → EReal) (hf : AEMeasurable f (μ.prod ν)) (hf_int : EIntegrable f (μ.prod ν)) :
     ∫ᵉ z, f z ∂(μ.prod ν) = ∫ᵉ x, ∫ᵉ y, f (x, y) ∂ν ∂μ := by
-  set u : α × β → ℝ≥0∞ := fun z => (f z).toENNReal
-  set v : α × β → ℝ≥0∞ := fun z => (-f z).toENNReal
-  have hf_eq : f = fun z => (u z : EReal) - (v z : EReal) := by
-    simp only [u, v]
-    ext z
-    rcases le_total (f z) 0 with h | h <;> simp [h]
-  rw [hf_eq]
-  have hu_aemeasurable : AEMeasurable u (μ.prod ν) := by fun_prop
-  have hv_aemeasurable : AEMeasurable v (μ.prod ν) := by fun_prop
-  have h_u_v : (∫⁻ x, u x ∂(μ.prod ν) : EReal) - ∫⁻ x, v x ∂(μ.prod ν) =
-      ∫⁻ x, ∫⁻ y, u (x, y) ∂ν ∂μ - ∫⁻ x, ∫⁻ y, v (x, y) ∂ν ∂μ := by
-    rw [lintegral_prod _ (by fun_prop), lintegral_prod _ (by fun_prop)]
-  convert h_u_v using 1
-  · exact congrArg (eintegral (μ.prod ν)) hf_eq.symm
-  · convert eintegral_coe_ennreal_sub _ _ _ using 1
-    · congr! 2
-      rw [eintegral]
-      grind
-    · exact hu_aemeasurable.lintegral_prod_right'
-    · refine AEMeasurable.lintegral_prod_right ?_
-      convert hv_aemeasurable using 1
-      grind
-    · cases hf_int with
-      | inl h => left; convert h; rw [lintegral_prod _ (by fun_prop)]
-      | inr h => right; convert h; rw [lintegral_prod _ (by fun_prop)]
+  have h_eq x : ∫ᵉ y, f (x, y) ∂ν
+      = ∫⁻ y, (f (x, y)).toENNReal ∂ν - ∫⁻ y, (-f (x, y)).toENNReal ∂ν := rfl
+  have h_pos := lintegral_prod (μ := μ) (ν := ν) (fun z ↦ (f z).toENNReal) (by fun_prop)
+  have h_neg := lintegral_prod (μ := μ) (ν := ν) (fun z ↦ (-f z).toENNReal) (by fun_prop)
+  simp_rw [h_eq]
+  rw [eintegral_coe_ennreal_sub
+      (AEMeasurable.lintegral_prod_right' (f := fun z ↦ (f z).toENNReal) (by fun_prop))
+      (AEMeasurable.lintegral_prod_right' (f := fun z ↦ (-f z).toENNReal) (by fun_prop)),
+    ← h_pos, ← h_neg]
+  · rfl
+  · rwa [← h_pos, ← h_neg]
 
-lemma eintegral_prod_symm [SFinite μ]
+variable [SFinite μ]
+
+lemma eintegral_prod_swap (f : α × β → EReal) :
+    ∫ᵉ z, f z.swap ∂(ν.prod μ) = ∫ᵉ z, f z ∂(μ.prod ν) := by
+  simp only [eintegral]
+  rw [lintegral_prod_swap (fun z ↦ (f z).toENNReal), lintegral_prod_swap (fun z ↦ (-f z).toENNReal)]
+
+lemma EIntegrable.swap {f : α × β → EReal} (hf : EIntegrable f (μ.prod ν)) :
+    EIntegrable (fun z ↦ f z.swap) (ν.prod μ) := by
+  simpa [EIntegrable, lintegral_prod_swap (fun z ↦ (f z).toENNReal),
+    lintegral_prod_swap (fun z ↦ (-f z).toENNReal)] using hf
+
+/-- **Fubini's theorem** for `EIntegrable` extended real-valued functions, with the order of
+integration swapped. -/
+lemma eintegral_prod_symm
     (f : α × β → EReal) (hf : AEMeasurable f (μ.prod ν)) (hf_int : EIntegrable f (μ.prod ν)) :
     ∫ᵉ z, f z ∂(μ.prod ν) = ∫ᵉ y, ∫ᵉ x, f (x, y) ∂μ ∂ν := by
-  calc ∫ᵉ z, f z ∂(μ.prod ν)
-  _ = ∫ᵉ z, (f ∘ Prod.swap) z ∂(ν.prod μ) := by
-    simp only [Function.comp_apply]
-    rw [← eintegral_map' _ measurable_swap.aemeasurable, Measure.prod_swap]
-    rwa [Measure.prod_swap]
-  _ = ∫ᵉ y, ∫ᵉ x, (f ∘ Prod.swap) (y, x) ∂μ ∂ν := by
-    rw [eintegral_prod]
-    · refine AEMeasurable.comp_aemeasurable ?_ (by fun_prop)
-      rwa [Measure.prod_swap]
-    · convert hf_int using 1
-      -- TODO: extract lemma EIntegrable.swap
-      unfold MeasureTheory.EIntegrable
-      simp only [Function.comp_apply, ne_eq]
-      rw [lintegral_prod_swap (ν := ν) (fun p ↦ (f p).toENNReal),
-        lintegral_prod_swap (ν := ν) (fun p ↦ (-f p).toENNReal)]
-  _ = ∫ᵉ y, ∫ᵉ x, f (x, y) ∂μ ∂ν := by simp
+  rw [← eintegral_prod_swap f]
+  exact eintegral_prod _ hf.prod_swap hf_int.swap
 
 end MeasureTheory
