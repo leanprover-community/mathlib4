@@ -384,8 +384,7 @@ instance [Mul M] : Mul (Center M) where
 lemma comm [Mul M] (x : M) (z : Center M) : z.val * x = x * z := z.prop.comm x
 
 @[to_additive (attr := simp)]
-lemma coe_mul [Mul M] (x y : Center M) :
-    (x * y).val = x.val * y.val := rfl
+lemma coe_mul [Mul M] (x y : Center M) : (x * y).val = x.val * y.val := rfl
 
 @[to_additive]
 instance [Mul M] : CommMagma (Center M) where
