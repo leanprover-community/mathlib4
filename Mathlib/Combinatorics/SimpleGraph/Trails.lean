@@ -113,7 +113,7 @@ theorem isEulerian_rotate {p : G.Walk u u} (hv : v ∈ p.support) :
     (p.rotate v hv).IsEulerian ↔ p.IsEulerian := by
   simp_rw [IsEulerian, p.rotate_edges v hv |>.perm.count_eq]
 
-alias ⟨_, IsEulerian.rotate⟩ := isEulerian_rotate
+protected alias ⟨_, IsEulerian.rotate⟩ := isEulerian_rotate
 
 /-- The support of a non-nil Eulerian trail equals the support of the graph. -/
 theorem IsEulerian.mem_support_iff (hp : p.IsEulerian) (hnil : ¬p.Nil) :
