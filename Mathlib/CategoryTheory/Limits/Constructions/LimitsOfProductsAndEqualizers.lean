@@ -5,13 +5,14 @@ Authors: Bhavik Mehta, Kim Morrison
 -/
 module
 
-import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Constructions.Equalizers
 public import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 public import Mathlib.CategoryTheory.Limits.Preserves.Creates.Finite
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
 public import Mathlib.Data.Fintype.Prod
 public import Mathlib.Data.Fintype.Sigma
+
+import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
 
 /-!
 # Constructing limits from products and equalizers.

@@ -5,8 +5,8 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
 
 /-!
 # derivatives of the inverse trigonometric functions
@@ -15,8 +15,6 @@ Derivatives of `arcsin` and `arccos`.
 -/
 
 public section
-
-noncomputable section
 
 open scoped Topology Filter Real ContDiff
 open Set
@@ -61,14 +59,14 @@ theorem contDiffAt_arcsin {x : ℝ} (h₁ : x ≠ -1) (h₂ : x ≠ 1) {n : ℕ�
 theorem hasDerivWithinAt_arcsin_Ici {x : ℝ} (h : x ≠ -1) :
     HasDerivWithinAt arcsin (1 / √(1 - x ^ 2)) (Ici x) x := by
   rcases eq_or_ne x 1 with (rfl | h')
-  · convert! (hasDerivWithinAt_const (1 : ℝ) _ (π / 2)).congr _ _ <;>
+  · convert (hasDerivWithinAt_const (1 : ℝ) _ (π / 2)).congr _ _ <;>
       simp +contextual [arcsin_of_one_le]
   · exact (hasDerivAt_arcsin h h').hasDerivWithinAt
 
 theorem hasDerivWithinAt_arcsin_Iic {x : ℝ} (h : x ≠ 1) :
     HasDerivWithinAt arcsin (1 / √(1 - x ^ 2)) (Iic x) x := by
   rcases em (x = -1) with (rfl | h')
-  · convert! (hasDerivWithinAt_const (-1 : ℝ) _ (-(π / 2))).congr _ _ <;>
+  · convert (hasDerivWithinAt_const (-1 : ℝ) _ (-(π / 2))).congr _ _ <;>
       simp +contextual [arcsin_of_le_neg_one]
   · exact (hasDerivAt_arcsin h' h).hasDerivWithinAt
 

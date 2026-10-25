@@ -176,8 +176,7 @@ to module `Foo.Bar` (no `srcDir` indirection).
 
 - `set_option_utils.py`
   Shared configuration for `add_set_option.py` and `rm_set_option.py`. Contains the list of
-  managed options (`backward.isDefEq.respectTransparency`, `backward.whnf.reducibleClassField`)
-  and helpers for generating `set_option` lines and regex patterns.
+  managed options and helpers for generating `set_option` lines and regex patterns.
 
 - `add_set_option.py`
   Adds `set_option ... false in` before declarations that fail to build. Traverses the DAG
@@ -187,7 +186,7 @@ to module `Foo.Bar` (no `srcDir` indirection).
   Usage: `python3 scripts/add_set_option.py [--option NAME] [--max-workers N] [--timeout N] [--files FILE ...]`
 
 - `rm_set_option.py`
-  Removes unnecessary `set_option ... false in` lines. Only targets lines without a trailing
+  Removes unnecessary `set_option ... in` lines. Only targets lines without a trailing
   comment; lines like `set_option ... false in -- reason` are left untouched. Traverses the DAG
   **backward** (leaves first) so removing an option from an upstream file doesn't invalidate
   cached builds of downstream files. Tries removing all occurrences at once; if that fails,
@@ -221,7 +220,7 @@ to module `Foo.Bar` (no `srcDir` indirection).
 
 **CI workflow**
 - `lake-build-with-retry.sh`
-  Runs `lake build` on a target until `lake build --no-build` succeeds. Used in the main build workflows.
+  Runs `lake build` on one or more targets until `lake build --no-build` succeeds. Used in the main build workflows.
 - `lake-build-wrapper.py`
   A wrapper script for `lake build` which collapses normal build into log groups and saves a build summary JSON file. See file for usage.
 - `mk_all.lean`
@@ -236,7 +235,7 @@ to module `Foo.Bar` (no `srcDir` indirection).
   Sanity checks for `undergrad.yaml`, `overview.yaml`, `100.yaml` and `1000.yaml`.
 - `export_crossrefs.lean`
   Exports a JSON dictionary of every declaration tagged with `@[wikidata]`, `@[stacks]`,
-  `@[kerodon]`, `@[lmfdb]`, or `@[dlmf]` (declaration name, source file, line number, and the cross-reference ids).
+  `@[kerodon]`, `@[lmfdb]`, `@[dlmf]`, or `@[oeis]` (declaration name, source file, line number, and the cross-reference ids).
   It runs as a Lean command over the fully-imported `Mathlib` environment (like `#stacks_tags`),
   so it is invoked with `lake env lean scripts/export_crossrefs.lean` rather than `lake exe`.
   The output path defaults to `crossrefs.json` (override with `CROSSREFS_OUT`); the embedded

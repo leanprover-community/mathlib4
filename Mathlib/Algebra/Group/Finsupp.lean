@@ -351,6 +351,9 @@ instance instAddMonoid : AddMonoid (ι →₀ M) :=
 instance instIsAddTorsionFree [IsAddTorsionFree M] : IsAddTorsionFree (ι →₀ M) :=
   DFunLike.coe_injective.isAddTorsionFree coeFnAddHom
 
+instance [HasUniqueDiv M] : HasUniqueDiv (ι →₀ M) :=
+  DFunLike.coe_injective.hasUniqueDiv coeFnAddHom
+
 end AddMonoid
 
 section AddCommMonoid

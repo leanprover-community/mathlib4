@@ -5,15 +5,16 @@ Authors: Yaël Dillies
 -/
 module
 
+public import Mathlib.Data.Finset.Sups
+public import Mathlib.Tactic.Ring
+
 import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Pi
-public import Mathlib.Data.Finset.Sups
 import Mathlib.Order.Birkhoff
 import Mathlib.Order.Booleanisation
 import Mathlib.Order.Sublattice
 import Mathlib.Tactic.Positivity.Basic
-public import Mathlib.Tactic.Ring
 
 /-!
 # The four functions theorem and corollaries

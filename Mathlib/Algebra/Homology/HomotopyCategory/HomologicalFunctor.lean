@@ -5,10 +5,11 @@ Authors: Joël Riou
 -/
 module
 
-import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 public import Mathlib.Algebra.Homology.HomotopyCategory.DegreewiseSplit
-import Mathlib.Algebra.Homology.HomologySequence
 public import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
+
+import Mathlib.Algebra.Homology.HomologicalComplexAbelian
+import Mathlib.Algebra.Homology.HomologySequence
 
 /-! # The homological functor
 
