@@ -70,7 +70,7 @@ theorem mapBicone_whisker {K : Type w₂} {g : K ≃ J} {f : J → C} (c : Bicon
 end Bicone
 
 /-- The image of a binary bicone under a functor. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def mapBinaryBicone {X Y : C} (b : BinaryBicone X Y) : BinaryBicone (F.obj X) (F.obj Y) :=
   (BinaryBicones.functoriality _ _ F).obj b
 

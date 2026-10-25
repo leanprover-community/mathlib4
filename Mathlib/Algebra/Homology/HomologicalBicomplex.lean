@@ -146,7 +146,7 @@ lemma comm_f {K L : HomologicalComplex₂ C c₁ c₂} (f : K ⟶ L) (i₁ i₁'
 /-- Flip a complex of complexes over the diagonal,
 exchanging the horizontal and vertical directions.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def flip (K : HomologicalComplex₂ C c₁ c₂) : HomologicalComplex₂ C c₂ c₁ where
   X i :=
     { X := fun j => (K.X j).X i
@@ -162,9 +162,8 @@ lemma flip_flip (K : HomologicalComplex₂ C c₁ c₂) : K.flip.flip = K := rfl
 
 variable (C c₁ c₂)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Flipping a complex of complexes over the diagonal, as a functor. -/
-@[simps]
+@[simps, implicit_reducible]
 def flipFunctor :
     HomologicalComplex₂ C c₁ c₂ ⥤ HomologicalComplex₂ C c₂ c₁ where
   obj K := K.flip
@@ -174,8 +173,6 @@ def flipFunctor :
           comm' := by intros; simp }
       comm' := by intros; ext; simp }
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `HomologicalComplex₂.flipEquivalence`. -/
 @[simps!]
 def flipEquivalenceUnitIso :
@@ -184,8 +181,6 @@ def flipEquivalenceUnitIso :
     HomologicalComplex.Hom.isoOfComponents (fun _ => Iso.refl _)
     (by simp)) (by cat_disch)) (by cat_disch)
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `HomologicalComplex₂.flipEquivalence`. -/
 @[simps!]
 def flipEquivalenceCounitIso :
@@ -194,10 +189,8 @@ def flipEquivalenceCounitIso :
     HomologicalComplex.Hom.isoOfComponents (fun _ => Iso.refl _)
     (by simp)) (by cat_disch)) (by cat_disch)
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- Flipping a complex of complexes over the diagonal, as an equivalence of categories. -/
-@[simps]
+@[simps, implicit_reducible]
 def flipEquivalence :
     HomologicalComplex₂ C c₁ c₂ ≌ HomologicalComplex₂ C c₂ c₁ where
   functor := flipFunctor C c₁ c₂
