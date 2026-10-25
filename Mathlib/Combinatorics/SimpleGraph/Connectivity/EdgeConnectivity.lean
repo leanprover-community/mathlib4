@@ -229,7 +229,7 @@ theorem edgeConnectivity_eq_top_of_subsingleton [Subsingleton V] : G.edgeConnect
   simp [edgeConnectivity, IsEdgeConnected]
 
 theorem edgeConnectivity_le_edgeReachability : G.edgeConnectivity ≤ G.edgeReachability u v :=
-  iSup₂_le (fun _ h ↦ IsEdgeReachable.le_edgeReachability (h u v))
+  iSup₂_le fun _ h ↦ (h u v).le_edgeReachability
 
 theorem edgeReachability_le_degree_left [Fintype <| G.neighborSet u] (huv : u ≠ v) :
     G.edgeReachability u v ≤ G.degree u :=
