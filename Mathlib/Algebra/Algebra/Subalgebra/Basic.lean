@@ -959,17 +959,17 @@ lemma _root_.Center.coe_algebraMpa (r : R) :
 /-- A surjective morphism between `R`-algebras induces an `R`-algebra homomorhpism between their
 centers. -/
 @[simps!]
-def _root_.AlgHom.center {f : A →ₐ[R] B} (hf : Function.Surjective f) :
+def _root_.AlgHom.toCenter {f : A →ₐ[R] B} (hf : Function.Surjective f) :
     Center A →ₐ[R] Center B where
-  toRingHom := f.toRingHom.center hf
+  toRingHom := f.toRingHom.toCenter hf
   commutes' x := by simp
 
 /-- An isomorphism morphism between `R`-algebras induces an `R`-algebra isomorphism between their
 centers. -/
 @[simps!]
-def _root_.AlgEquiv.center (e : A ≃ₐ[R] B) :
+def _root_.AlgEquiv.toCenter (e : A ≃ₐ[R] B) :
     Center A ≃ₐ[R] Center B where
-  toRingEquiv := e.toRingEquiv.center
+  toRingEquiv := e.toRingEquiv.toCenter
   commutes' := by simp
 
 variable (R A) in
