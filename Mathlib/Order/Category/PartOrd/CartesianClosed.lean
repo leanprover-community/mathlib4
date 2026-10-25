@@ -32,7 +32,7 @@ instance : ExponentialIdeal (forget₂ PartOrd.{u} Preord.{u}) := by
   let : PartialOrder B :=
     { B.str with
       le_antisymm F G hFG hGF :=
-        CategoryTheory.Functor.eq_of_iso (C := P) (D := A) (fun _ _ h ↦ h.some.to_eq)
+        Functor.eq_of_iso (C := P) (D := A) (fun _ _ h ↦ h.some.to_eq)
           (iso_of_both_ways (C := A ⥤ P) hFG.some hGF.some) }
   exact ⟨.of B, ⟨.refl _⟩⟩
 
