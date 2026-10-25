@@ -295,9 +295,7 @@ def Quotient.inv (x : DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G)) :
     exact ⟨h₂⁻¹, H₂.inv_mem hh₂, h₁⁻¹, H₁.inv_mem hh₁, by simp [heq, mul_assoc]⟩
 
 @[simp]
-lemma inv_mk (g : G) :
-    (mk H₁ H₂ g).inv = mk H₂ H₁ g⁻¹ := by
-  rfl
+lemma inv_mk (g : G) : (mk H₁ H₂ g).inv = mk H₂ H₁ g⁻¹ := rfl
 
 @[simp]
 lemma mk_inv_out (x : DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G)) :
