@@ -456,16 +456,10 @@ theorem center.coe_div (a b : center K) : ((a / b : center K) : K) = (a : K) / (
 instance : Field (Center K) where
   mul_inv_cancel _ ha := Subtype.ext <| mul_inv_cancel₀ <| Subtype.coe_injective.ne ha
   inv_zero := by simp
-  div a b := ⟨a / b, Set.div_mem_center a.prop b.prop⟩
-  div_eq_mul_inv _ _ := Subtype.ext <| div_eq_mul_inv _ _
   nnqsmul := _
   nnqsmul_def := fun _ _ => rfl
   qsmul := _
   qsmul_def := fun _ _ => rfl
-
-@[simp]
-lemma _root_.Center.coe_div (a b : Center K) : ((a / b : Center K) : K) = (a : K) / (b : K) :=
-  rfl
 
 end DivisionRing
 
