@@ -203,18 +203,9 @@ theorem tendstoInDistribution_inv_sqrt_smul_sum
     calc
       P[fun ω => ⟪X 0 ω, t⟫ ^ 2] =
           ∫ ω, ∑ i, ∑ j, (t i * t j) * (X 0 ω i * X 0 ω j) ∂P := by
-        congr 1
-        funext ω
-        change ⟪X 0 ω, t⟫ ^ 2 = _
-        rw [PiLp.inner_apply]
-        conv_lhs =>
-          arg 1
-          arg 2
-          intro
-          rw [RCLike.inner_apply]
-          simp
-        simp_rw [pow_two, Finset.sum_mul_sum]
-        simp only [mul_left_comm, mul_assoc]
+        congr with ω
+        simp_rw [PiLp.inner_apply, pow_two, Finset.sum_mul_sum]
+        simp [mul_left_comm, mul_assoc]
       _ = ∑ i, ∑ j, (t i * t j) * ∫ ω, X 0 ω i * X 0 ω j ∂P := by
         rw [integral_finsetSum]
         · apply Finset.sum_congr rfl
