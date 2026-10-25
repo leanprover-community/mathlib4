@@ -69,7 +69,7 @@ instance : Category (Inserter F G) where
   comp {_ _ _} f g := { hom := f.hom ≫ g.hom }
   id x := { hom := 𝟙 x.obj }
 
-@[reassoc (attr := simp, grind _=_)]
+@[simp, grind _=_, reassoc]
 lemma comp_hom {x y z : Inserter F G} (f : x ⟶ y) (g : y ⟶ z) :
     (f ≫ g).hom = f.hom ≫ g.hom :=
   rfl
