@@ -32,7 +32,7 @@ variable (K L M : HomologicalComplex C c') (φ : K ⟶ L) (φ' : L ⟶ M)
 
 /-- The stupid truncation of a complex `K : HomologicalComplex C c'` relatively to
 an embedding `e : c.Embedding c'` of complex shapes. -/
-@[implicit_reducible]
+@[implicit_reducible, stacks 0118 "(1) and (2)"]
 noncomputable def stupidTrunc : HomologicalComplex C c' := (K.restriction e).extend e
 
 instance : IsStrictlySupported (K.stupidTrunc e) e := by
@@ -128,7 +128,7 @@ variable [e.IsTruncGE]
 
 /-- The monomorphism `K.stupidTrunc e ⟶ K` when the embedding `e` of complex shapes
 satisfies `e.IsTruncGE`. -/
-@[simps -isSimp]
+@[simps -isSimp, stacks 0118 "(1)"]
 noncomputable def ιStupidTrunc : K.stupidTrunc e ⟶ K where
   f := K.ιStupidTruncf e
   comm' i' j' hij' := by
@@ -216,7 +216,7 @@ variable [e.IsTruncLE]
 
 /-- The epimorphism `K ⟶ K.stupidTrunc e` when the embedding `e` of complex shapes
 satisfies `e.IsTruncLE`. -/
-@[simps -isSimp]
+@[simps -isSimp, stacks 0118 "(2)"]
 noncomputable def πStupidTrunc : K ⟶ K.stupidTrunc e where
   f := K.πStupidTruncf e
   comm' i' j' hij' := by
