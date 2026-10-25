@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Homology.Embedding.CochainComplex
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplex
 
-/-! # Conditions under which that complex of morphisms is bounded below
+/-! # Conditions under which the complex of morphisms is bounded below
 
 If `K` and `L` are cochain complexes indexed by `ℤ` in a `R`-linear category,
 we show that the cochain complex `linearHomComplex R K L` of morphisms
