@@ -125,6 +125,7 @@ lemma Algebra.isSeparable_iff_isTranscendentalSeparable_and_isAlgebraic :
 instance (priority := low) [Algebra.IsSeparable k K] : Algebra.IsTranscendentalSeparable k K :=
   ((Algebra.isSeparable_iff_isTranscendentalSeparable_and_isAlgebraic k K).mp ‹_›).1
 
+@[stacks 030Y "Equivalence to the alternative definition."]
 instance [PerfectField k] : Algebra.IsTranscendentalSeparable k K :=
   ⟨fun _ _ ↦ inferInstance⟩
 
@@ -501,16 +502,3 @@ lemma Algebra.isTranscendentalSeparable_iff_isSeparablyGenerated_of_essFiniteTyp
   refine ⟨fun h ↦ ?_, fun _ ↦ Algebra.isTranscendentalSeparable_of_isSeparablyGenerated k K⟩
   have := h.1 ⊤ (IntermediateField.essFiniteType_iff.mpr (IntermediateField.fg_top_iff.mpr ‹_›))
   exact IntermediateField.topEquiv.isSeparablyGenerated
-
-@[stacks 030Y "Equivalence to the alternative definition."]
-lemma Algebra.isTranscendentalSeparable_of_perfectField [PerfectField k] :
-    Algebra.IsTranscendentalSeparable k K := by
-  rcases CharP.exists' k with char0|⟨p, prime, charp⟩
-  · exact Algebra.isTranscendentalSeparable_of_charZero k K
-  · apply ((Algebra.isTranscendentalSeparable_tfae k K p prime.out).out 1 3).mpr
-    have bij : Function.Bijective (Algebra.ofId k (AdjoinPthRoots k)) :=
-      ⟨RingHom.injective _,
-        IsPurelyInseparable.surjective_algebraMap_of_isSeparable k (AdjoinPthRoots k)⟩
-    let e := (Algebra.TensorProduct.congr (AlgEquiv.ofBijective _ bij).symm AlgEquiv.refl).trans
-      (Algebra.TensorProduct.lid k K)
-    exact isReduced_of_injective _ e.injective
