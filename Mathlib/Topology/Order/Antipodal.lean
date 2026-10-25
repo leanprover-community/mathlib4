@@ -1,21 +1,16 @@
-import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.Topology.Order.IntermediateValue
 
 /-!
-# Equivariant Maps and Antipodal Zero-Node Theorems
+# Zero-Crossing of Odd Fields on Antipodal Paths
 
-This module formalizes zero-node existence for continuous odd fields under domain involutions
-along connected paths, and proves quadratic energy density invariance for equivariant vector
-fields.
+This module formalizes zero-crossing existence for continuous odd fields under domain involutions
+along connected paths.
 
 ## Main definitions
 * `IsInvolution τ`: Predicate that `τ : α → α` satisfies `τ ∘ τ = id`.
-* `IsEquivariant τ σ u`: Equivariance condition `u (τ x) = σ (u x)`.
-* `IsNormPreserving σ`: An involution on a normed space that preserves the norm.
 * `IsOddField τ f`: Anti-invariance condition `f (τ x) = -f x`.
 
 ## Main statements
-* `equivariant_energy_invariant`: Quadratic energy `(1/2) * ‖u x‖^2` is invariant under `τ`.
 * `odd_field_not_everywhere_pos`: An odd field cannot be strictly positive everywhere.
 * `odd_field_not_everywhere_neg`: An odd field cannot be strictly negative everywhere.
 * `antipodal_path_has_zero`: Any continuous odd field along a path connecting antipodal points
@@ -29,24 +24,6 @@ open Set
 /-- An abstract involution on a type `α` is a map `τ` satisfying `τ ∘ τ = id`. -/
 def IsInvolution {α : Type*} (τ : α → α) : Prop :=
   Function.Involutive τ
-
-/-- An abstract vector field `u : α → V` is equivariant with respect to
-a domain involution `τ` and a codomain reflection `σ` if `u (τ x) = σ (u x)`. -/
-def IsEquivariant {α V : Type*} (τ : α → α) (σ : V → V) (u : α → V) : Prop :=
-  ∀ x, u (τ x) = σ (u x)
-
-/-- An involution `σ` on a normed space `V` is an isometry if it preserves the norm. -/
-def IsNormPreserving {V : Type*} [NormedAddCommGroup V] (σ : V → V) : Prop :=
-  ∀ v, ‖σ v‖ = ‖v‖
-
-/-- For ANY base space `α`, ANY normed space `V`, ANY domain involution `τ`, and ANY
-norm-preserving reflection `σ`, the quadratic energy density `(1/2) * ‖u x‖^2`
-of any equivariant field is strictly invariant under `τ`! -/
-theorem equivariant_energy_invariant {α V : Type*} [NormedAddCommGroup V]
-    (τ : α → α) (σ : V → V) (h_iso : IsNormPreserving σ)
-    (u : α → V) (h_equiv : IsEquivariant τ σ u) (x : α) :
-    (1 / 2 : ℝ) * ‖u (τ x)‖ ^ 2 = (1 / 2 : ℝ) * ‖u x‖ ^ 2 := by
-  rw [h_equiv x, h_iso (u x)]
 
 /-- A scalar field `f : α → ℝ` is odd (anti-invariant) with respect to `τ`
 if `f (τ x) = -f x`. -/
