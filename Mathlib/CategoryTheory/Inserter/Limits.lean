@@ -78,17 +78,17 @@ instance hasColimit (K : J ⥤ Inserter F G) [HasColimit (K ⋙ proj F G)]
     [PreservesColimit (K ⋙ proj F G) F] : HasColimit K :=
   HasColimit.mk ⟨_, isColimitCoconeOfPreserves (colimit.isColimit _)⟩
 
-instance hasColimitsOfShape [HasColimitsOfShape J C] [HasColimitsOfShape J D]
+instance hasColimitsOfShape [HasColimitsOfShape J C]
     [PreservesColimitsOfShape J F] : HasColimitsOfShape J (Inserter F G) where
 
-instance preservesColimitsOfShape_proj [HasColimitsOfShape J C] [HasColimitsOfShape J D]
+instance preservesColimitsOfShape_proj [HasColimitsOfShape J C]
     [PreservesColimitsOfShape J F] : PreservesColimitsOfShape J (proj F G) where
   preservesColimit :=
     preservesColimit_of_preserves_colimit_cocone
       (isColimitCoconeOfPreserves (colimit.isColimit _))
       (colimit.isColimit _)
 
-instance reflectsColimitsOfShape_proj [HasColimitsOfShape J C] [HasColimitsOfShape J D]
+instance reflectsColimitsOfShape_proj [HasColimitsOfShape J C]
     [PreservesColimitsOfShape J F] : ReflectsColimitsOfShape J (proj F G) :=
   reflectsColimitsOfShape_of_reflectsIsomorphisms
 
@@ -153,16 +153,16 @@ instance hasLimit (K : J ⥤ Inserter F G) [HasLimit (K ⋙ proj F G)]
     [PreservesLimit (K ⋙ proj F G) G] : HasLimit K :=
   HasLimit.mk ⟨_, isLimitConeOfPreserves (limit.isLimit _)⟩
 
-instance hasLimitsOfShape [HasLimitsOfShape J C] [HasLimitsOfShape J D]
+instance hasLimitsOfShape [HasLimitsOfShape J C]
     [PreservesLimitsOfShape J G] : HasLimitsOfShape J (Inserter F G) where
 
-instance preservesLimitsOfShape_proj [HasLimitsOfShape J C] [HasLimitsOfShape J D]
+instance preservesLimitsOfShape_proj [HasLimitsOfShape J C]
     [PreservesLimitsOfShape J G] : PreservesLimitsOfShape J (proj F G) where
   preservesLimit :=
     preservesLimit_of_preserves_limit_cone
       (isLimitConeOfPreserves (limit.isLimit _)) (limit.isLimit _)
 
-instance reflectsLimitsOfShape_proj [HasLimitsOfShape J C] [HasLimitsOfShape J D]
+instance reflectsLimitsOfShape_proj [HasLimitsOfShape J C]
     [PreservesLimitsOfShape J G] : ReflectsLimitsOfShape J (proj F G) :=
   reflectsLimitsOfShape_of_reflectsIsomorphisms
 
