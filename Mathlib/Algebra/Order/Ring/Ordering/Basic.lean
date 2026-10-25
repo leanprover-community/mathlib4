@@ -52,19 +52,19 @@ theorem isOrdering_iff (hP : P.IsPreordering) :
   mp hP a b _ := by
     by_contra
     have : a ∈ P.support ∨ b ∈ P.support := hP.isPrime_supportIdeal.mem_or_mem <| by
-      grind [membership, mul_neg, neg_mul, neg_neg, Subsemiring.isSpanning_def.mp hP.isSpanning,
-        mem_supportIdeal, Subsemiring.mem_support]
-    grind [Subsemiring.mem_support]
+      grind [membership, mul_neg, neg_mul, neg_neg, isSpanning_def.mp hP.isSpanning,
+        mem_supportIdeal, mem_support]
+    grind [mem_support]
   mpr h := by
     refine ⟨?_, hP.support_ne_top, fun {x y} ↦ ?_⟩
-    · grind [membership, mul_neg, neg_mul, neg_neg, Subsemiring.isSpanning_def]
+    · grind [membership, mul_neg, neg_mul, neg_neg, isSpanning_def]
     · have := h (-x) y
-      grind [membership, mul_neg, neg_mul, neg_neg, Subsemiring.mem_support]
+      grind [membership, mul_neg, neg_mul, neg_neg, mem_support]
 
 theorem mul_mem_support_of_right (hP : P.IsPreordering) (h : IsUnit (2 : R))
     (x : R) {a : R} (ha : a ∈ P.support) : x * a ∈ P.support := by
   rcases h.exists_right_inv with ⟨half, h2⟩
-  rw [Subsemiring.mem_support] at *
+  rw [mem_support] at *
   suffices ((1 + x) * half) ^ 2 * a + ((1 - x) * half) ^ 2 * (- a) ∈ P ∧
            ((1 + x) * half) ^ 2 * (- a) + ((1 - x) * half) ^ 2 * a ∈ P by grind
   membership
@@ -75,14 +75,13 @@ theorem mul_mem_support_of_left (hP : P.IsPreordering) (h : IsUnit (2 : R))
 
 end IsPreordering
 
+theorem IsPreordering.of_sumSq_le_of_isPointed [Nontrivial R]
+    (h : .sumSq R ≤ P) (hP : P.IsPointed) : P.IsPreordering :=
+  .of_sumSq_le h <| by grind [membership, isPointed_def, one_ne_zero]
+
 theorem IsPreordering.of_isSpanning_of_isPointed [Nontrivial R]
     (hP₁ : P.IsSpanning) (hP₂ : P.IsPointed) : P.IsPreordering :=
-  .of_isSpanning hP₁ fun _ ↦ by simp_all
-
-theorem IsPreordering.of_isPointed_of_sumSq_le [Nontrivial R]
-    (hP : P.IsPointed) (h : .sumSq R ≤ P) : P.IsPreordering where
-  mem_of_isSquare hx := by grind [membership, mem_sumSq, IsSquare.isSumSq]
-  neg_one_notMem := by grind [membership, Subsemiring.isPointed_def, one_ne_zero]
+  .of_sumSq_le_of_isPointed hP₁.sumSq_le hP₂
 
 theorem IsOrdering.of_isSpanning_of_isPointed [IsDomain R]
     (hP₁ : P.IsSpanning) (hP₂ : P.IsPointed) : P.IsOrdering where
@@ -105,7 +104,7 @@ theorem inv_mem (hP : IsPreordering P) {a : F} (ha : a ∈ P) : a⁻¹ ∈ P := 
 grind_pattern [membership] inv_mem => P.IsPreordering, a⁻¹ ∈ P
 
 theorem isPointed (hP : IsPreordering P) : P.IsPointed := by
-  grind [membership, Subsemiring.isPointed_def]
+  grind [membership, isPointed_def]
 
 end IsPreordering
 

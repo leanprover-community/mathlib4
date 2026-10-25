@@ -32,7 +32,7 @@ All orderings are preorderings.
 
 namespace Subsemiring
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [CommRing R] {S : Subsemiring R}
 
 /--
 An ordering `O` on a ring `R` is a subsemiring of `R` such that `O ∪ -O = R` and
@@ -45,14 +45,14 @@ structure IsOrdering (S : Subsemiring R) : Prop where
     ∀ {x y : R}, x * y ∈ S.support →
       x ∈ S.support ∨ y ∈ S.support
 
-theorem IsOrdering.isPrime_supportIdeal {S : Subsemiring R} (hS : S.IsOrdering) :
+theorem IsOrdering.isPrime_supportIdeal (hS : S.IsOrdering) :
     (S.supportIdeal hS.isSpanning).IsPrime where
   ne_top' := by
     apply_fun Submodule.toAddSubgroup
     simpa using hS.support_ne_top
   mem_or_mem' := hS.mem_support_or_mem_support
 
-theorem IsOrdering.of_isPrime_supportIdeal {S : Subsemiring R} (hS : S.IsSpanning)
+theorem IsOrdering.of_isPrime_supportIdeal (hS : S.IsSpanning)
     (hS₂ : (S.supportIdeal hS).IsPrime) : S.IsOrdering where
   isSpanning := hS
   support_ne_top := by simpa [← Submodule.toAddSubgroup_inj] using hS₂.ne_top
@@ -69,46 +69,40 @@ attribute [membership →] IsPreordering.neg_one_notMem
 namespace IsPreordering
 
 @[simp, membership =>]
-protected theorem mul_self_mem {S : Subsemiring R} (hS : IsPreordering S) (x : R) :
-    x * x ∈ S := by grind [mem_of_isSquare, IsSquare.mul_self]
+protected theorem mul_self_mem (hS : IsPreordering S) (x : R) : x * x ∈ S := by
+  grind [mem_of_isSquare, IsSquare.mul_self]
 
 @[simp, membership =>]
-protected theorem pow_two_mem {S : Subsemiring R} (hS : IsPreordering S) (x : R) :
-    x ^ 2 ∈ S := by grind [mem_of_isSquare, Even.isSquare_pow]
+protected theorem pow_two_mem (hS : IsPreordering S) (x : R) : x ^ 2 ∈ S := by
+  grind [mem_of_isSquare, Even.isSquare_pow]
 
-protected theorem mem_of_isSumSq {S : Subsemiring R} (hS : IsPreordering S)
-    {x : R} (hx : IsSumSq x) : x ∈ S := by
-  induction hx <;> membership
+theorem sumSq_le (hS : IsPreordering S) : .sumSq R ≤ S := by
+  rw [← closure_isSquare, closure_le]
+  exact fun _ ↦ hS.mem_of_isSquare
+
+protected theorem mem_of_isSumSq (hS : IsPreordering S) {x : R} (hx : IsSumSq x) : x ∈ S := by
+   grind [membership, hS.sumSq_le, mem_sumSq]
 
 grind_pattern [membership] IsPreordering.mem_of_isSumSq => S.IsPreordering, x ∈ S
 
-theorem sumSq_le {R : Type*} [CommRing R] {S : Subsemiring R} (hS : IsPreordering S) :
-    Subsemiring.sumSq R ≤ S := fun _ ↦ by grind [membership, mem_sumSq]
+theorem of_sumSq_le (hS : .sumSq R ≤ S) (h : -1 ∉ S) : IsPreordering S where
+  mem_of_isSquare := by grind [membership, mem_sumSq, IsSquare.isSumSq]
+
+theorem of_isSpanning (hS : S.IsSpanning) (h : S ≠ ⊤) : S.IsPreordering :=
+  .of_sumSq_le hS.sumSq_le <| by
+    contrapose h
+    rw [eq_top_iff]
+    intro x _
+    rcases (isSpanning_def.mp hS) x with hx | hx
+    · simpa using hx
+    · simpa using mul_mem h hx
 
 end IsPreordering
 
-variable {S} in
-theorem IsPreordering.of_isSpanning {S : Subsemiring R} (hS : S.IsSpanning) (h : S ≠ ⊤) :
-    S.IsPreordering := by
-  rw [Subsemiring.isSpanning_def] at hS
-  refine ⟨fun {_} ↦ ?_, fun hc ↦ h ?_⟩
-  · rintro ⟨y, rfl⟩
-    rcases hS y with hy | hy
-    · exact mul_mem hy hy
-    · simpa using mul_mem hy hy
-  · rw [eq_top_iff]
-    intro x
-    rcases hS x with hx | hx
-    · simpa using hx
-    · simpa using mul_mem hc hx
-
 /-- An ordering is a preordering. -/
-theorem IsOrdering.isPreordering {S : Subsemiring R} (hS : S.IsOrdering) :
+theorem IsOrdering.isPreordering (hS : S.IsOrdering) :
     S.IsPreordering := .of_isSpanning hS.isSpanning <| fun hc ↦ by
-  have := hS.isPrime_supportIdeal.ne_top
-  apply_fun Submodule.toAddSubgroup at this
-    using Submodule.toAddSubgroup_injective (R := R) (M := R)
-  simp [hc] at this
+  simpa [hc, supportIdeal] using hS.isPrime_supportIdeal.ne_top
 
 /- Deprecated -/
 
