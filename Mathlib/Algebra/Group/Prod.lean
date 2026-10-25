@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Group.Units.Hom
 public import Mathlib.Algebra.Notation.Prod
 public import Mathlib.Logic.Equiv.Prod
 public import Mathlib.Tactic.TermCongr
+public import Mathlib.Algebra.Group.SelfInv
 
 /-!
 # Monoid, group etc. structures on `M × N`

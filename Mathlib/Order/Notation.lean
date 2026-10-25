@@ -10,6 +10,7 @@ public meta import Mathlib.Lean.PrettyPrinter.Delaborator
 public meta import Qq
 public import Mathlib.Tactic.Simps
 public import Mathlib.Tactic.ToDual
+public import Qq
 
 /-!
 # Notation classes for lattice operations

@@ -1,4 +1,5 @@
 module -- shake: keep-all
+public import Mathlib.Init
 
 /-! # NoAtoms
 This file is deprecated. Please use `Mathlib.MeasureTheory.Measure.Typeclasses.NullSingletonClass`

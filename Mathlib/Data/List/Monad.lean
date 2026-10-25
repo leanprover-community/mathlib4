@@ -8,6 +8,7 @@ module
 public import Batteries.Control.AlternativeMonad
 
 import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # Monad instances for `List`

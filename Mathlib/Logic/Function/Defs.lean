@@ -8,6 +8,8 @@ module
 public import Mathlib.Init
 
 import Mathlib.Tactic.Attr.Register
+public import Mathlib.Tactic.Lemma
+public import Mathlib.Tactic.TypeStar
 
 /-!
 # General operations on functions

@@ -6,6 +6,7 @@ Authors: Stefan Kebekus
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Integrability.Log
+public import Mathlib.Analysis.SpecialFunctions.Log.PosLog
 
 /-!
 # Integrability of Functions Prominently Involving `log⁺`

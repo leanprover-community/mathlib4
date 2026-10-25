@@ -5,8 +5,8 @@ Authors: Jannis Limperg
 -/
 module
 
-public meta import Aesop
 public import Mathlib.Init
+public import Aesop
 
 /-!
 # Continuity Rule Set

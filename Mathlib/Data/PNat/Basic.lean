@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Order.Ring.Nat
 public import Mathlib.Algebra.Order.Sub.Basic
 public import Mathlib.Data.PNat.Equiv
 
-import Mathlib.Tactic.Basify.Attr
 
 /-!
 # The positive natural numbers

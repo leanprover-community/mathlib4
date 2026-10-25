@@ -6,6 +6,7 @@ Authors: Rao Xiaojia
 module
 
 public import Mathlib.Init
+public import Mathlib.Tactic.TypeStar
 
 /-!
 # List-based matrix representation and computation

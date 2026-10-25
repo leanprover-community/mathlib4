@@ -7,6 +7,7 @@ module
 
 public meta import Lean.Elab.Command
 public import Mathlib.Init
+public import Batteries.Tactic.Lint
 
 /-!
 # Cross-reference attributes

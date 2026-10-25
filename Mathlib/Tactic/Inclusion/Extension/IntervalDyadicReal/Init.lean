@@ -5,9 +5,9 @@ Authors: David Ledvinka
 -/
 module
 
-public meta import Mathlib.Tactic.Inclusion.Core.Extensions
 public import Mathlib.Data.Dyadic
 public import Mathlib.Tactic.Inclusion.Extension.Interval
+public import Mathlib.Tactic.Inclusion.Core.Extensions
 
 /-!
 # Initialization for the dyadic real interval extension family

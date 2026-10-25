@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 module
 
-public meta import Aesop
 public import Mathlib.Data.Set.Basic
 public import Mathlib.Order.SetNotation
 public import Mathlib.Tactic.ToAdditive

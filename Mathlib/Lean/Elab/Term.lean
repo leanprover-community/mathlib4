@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Init
 
-meta import Lean.Elab.Term
 
 /-!
 # Additions to `Lean.Elab.Term`

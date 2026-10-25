@@ -11,7 +11,9 @@ public import Mathlib.LinearAlgebra.Eigenspace.Basic
 import Mathlib.Algebra.Order.Ring.Star
 import Mathlib.Analysis.Normed.Module.RieszLemma
 import Mathlib.Analysis.Normed.Operator.Banach
-import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
+import Mathlib.Algebra.Order.Field.Power
+import Mathlib.Analysis.Normed.Order.Lattice
+import Mathlib.Logic.Equiv.PartialEquiv
 
 /-!
 # Spectral theory of compact operators

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Set.Piecewise
 public import Mathlib.Tactic.Attr.Core
+public meta import Aesop
 
 /-!
 # Partial equivalences

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Combinatorics.Additive.PluenneckeRuzsa
 
-import Mathlib.Data.Finset.Density
 
 /-!
 # Doubling and difference constants

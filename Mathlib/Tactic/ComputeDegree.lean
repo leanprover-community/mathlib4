@@ -6,6 +6,7 @@ Authors: Damiano Testa
 module
 
 public import Mathlib.Algebra.Polynomial.Degree.Lemmas
+public import Mathlib.Lean.Expr.Basic
 
 /-!
 

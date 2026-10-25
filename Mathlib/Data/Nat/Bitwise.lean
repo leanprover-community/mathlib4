@@ -12,7 +12,6 @@ public import Mathlib.Data.Nat.Bits
 import Batteries.Data.Nat.Bitwise
 import Mathlib.Data.List.GetD
 import Mathlib.Order.Basic
-import Mathlib.Tactic.AdaptationNote
 
 import all Init.Data.Nat.Bitwise.Basic  -- for unfolding `bitwise`
 

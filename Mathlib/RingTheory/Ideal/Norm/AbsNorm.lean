@@ -15,7 +15,6 @@ public import Mathlib.RingTheory.Ideal.Basis
 public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients.Basic
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicative
 
-import Mathlib.RingTheory.Norm.Basic
 
 /-!
 

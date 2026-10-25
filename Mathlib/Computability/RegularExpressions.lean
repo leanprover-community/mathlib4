@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Computability.Language
 
-import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Regular Expressions

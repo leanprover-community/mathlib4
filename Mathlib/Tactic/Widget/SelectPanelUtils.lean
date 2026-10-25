@@ -7,9 +7,10 @@ module
 
 public meta import Lean.Meta.ExprLens
 public meta import Mathlib.Tactic.Widget.SelectInsertParamsClass
-public meta import ProofWidgets.Component.MakeEditLink
-public meta import ProofWidgets.Data.Html
 public import Mathlib.Tactic.Widget.SelectInsertParamsClass
+public import Lean.Data.Html.Syntax
+public import ProofWidgets.Component.MakeEditLink
+public import ProofWidgets.Data.Html
 
 /-! # Selection panel utilities
 

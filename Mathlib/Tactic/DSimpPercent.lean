@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Init
 
-meta import Lean.Elab.Tactic.Simp
+public import Lean.Elab.Tactic.Simp
 
 /-!
 `dsimp% […] t` runs `dsimp […]` on term `t`.

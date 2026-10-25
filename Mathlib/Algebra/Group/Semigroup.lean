@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Regular.Defs
 public import Mathlib.Tactic.MkIffOfInductiveProp
 public import Mathlib.Tactic.Simps
+public import Mathlib.Tactic.Lemma
 
 /-!
 # Semigroups and algebraic structures without identities

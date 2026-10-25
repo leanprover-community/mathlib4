@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Algebra.Polynomial.Bivariate
 public import Mathlib.FieldTheory.RatFunc.AsPolynomial
+public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
+public import Mathlib.RingTheory.Polynomial.GaussLemma
 
 /-!
 # Intermediate Fields of Rational Function Fields

@@ -8,6 +8,7 @@ module
 public meta import Batteries.Control.Nondet.Basic
 public import Batteries.Linter.UnreachableTactic
 public import Mathlib.Tactic.Basic
+public import Lean.Elab.Term
 
 /-!
 # The `hint` tactic.

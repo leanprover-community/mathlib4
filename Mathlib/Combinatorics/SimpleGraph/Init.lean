@@ -5,9 +5,10 @@ Authors: Jannis Limperg
 -/
 module
 
-public meta import Aesop
 
 import Mathlib.Init
+public import Aesop
+public import Mathlib.Init
 
 /-!
 # SimpleGraph Rule Set

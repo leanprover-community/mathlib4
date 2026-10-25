@@ -6,6 +6,7 @@ Authors: Floris van Doorn
 module
 
 public import Mathlib.Init
+public import Mathlib.Tactic.Lemma
 
 /-!
 # Types that are empty

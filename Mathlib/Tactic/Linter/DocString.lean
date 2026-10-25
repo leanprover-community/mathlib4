@@ -13,6 +13,7 @@ public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 public meta import Std.Data.Iterators.Combinators.Zip
 
 meta import Std.Data.Iterators.Producers.Range
+public import Lean.Parser.Command
 
 /-!
 # The "DocString" style linter

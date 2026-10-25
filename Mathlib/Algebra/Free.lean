@@ -11,7 +11,6 @@ public import Mathlib.Control.Traversable.Basic
 public import Mathlib.Util.CompileInductive
 
 import Mathlib.Control.Applicative
-import Mathlib.Tactic.AdaptationNote
 
 
 /-!

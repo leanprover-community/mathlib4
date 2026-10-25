@@ -11,6 +11,8 @@ module
 public meta import Batteries.Tactic.Lint -- shake: keep
 public meta import Lean.Linter.Deprecated
 public import Mathlib.Tactic.DeclarationNames
+public import Batteries.Tactic.Lint
+public import Lean.Linter.Deprecated
 
 /-!
 # Linters for Mathlib

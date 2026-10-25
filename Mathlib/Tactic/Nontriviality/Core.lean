@@ -12,6 +12,8 @@ public meta import Qq.MetaM
 public meta import Qq.Typ
 public import Mathlib.Basic.Nontrivial.Basic -- shake: keep (tactic dependency)
 public import Mathlib.Tactic.Attr.Register -- shake: keep (tactic dependency)
+public import Qq.Macro
+public import Qq.Typ
 
 /-! # The `nontriviality` tactic. -/
 

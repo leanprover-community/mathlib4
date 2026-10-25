@@ -9,7 +9,6 @@ module
 public import Mathlib.RingTheory.OrderOfVanishing.Basic
 public import Mathlib.RingTheory.Valuation.Discrete.IsDiscreteValuationRing
 
-import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 
 /-!
 # Order of vanishing in Noetherian rings.

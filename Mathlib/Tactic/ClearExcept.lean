@@ -7,6 +7,7 @@ module
 
 public meta import Lean.Elab.Tactic.ElabTerm
 public import Mathlib.Init
+public import Mathlib.Tactic.Linter.TacticDocumentation
 
 /-!
 # The `clear*` tactic

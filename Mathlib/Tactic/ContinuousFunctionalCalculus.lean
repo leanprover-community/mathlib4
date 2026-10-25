@@ -5,9 +5,10 @@ Authors: Jireh Loreaux
 -/
 module
 
-public meta import Aesop
 
 import Mathlib.Tactic.FunProp
+public import Aesop
+public import Mathlib.Init
 
 /-!
 
