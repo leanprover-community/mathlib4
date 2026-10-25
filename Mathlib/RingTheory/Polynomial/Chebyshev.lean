@@ -101,39 +101,49 @@ protected theorem induct' (motive : ℤ → Prop)
     apply neg (n + 2) (add_two n (neg' _ h₀) (neg' n ?_))
     convert h₁ using 1; omega
 
-@[simp]
+/-- The three-term recurrence `T (n + 2) = 2 * X * T (n + 1) - T n`, valid for all `n : ℤ`. -/
+@[simp, dlmf 18.9.T1 "T_n row: T_{n+1} = 2xT_n - T_{n-1}, shifted to n + 2 and extended to n ∈ ℤ"]
 theorem T_add_two : ∀ n, T R (n + 2) = 2 * X * T R (n + 1) - T R n
   | (k : ℕ) => T.eq_3 R k
   | -(k + 1 : ℕ) => by linear_combination (norm := (simp [Int.negSucc_eq]; ring_nf)) T.eq_4 R k
 
+/-- The three-term recurrence in the form `T (n + 1) = 2 * X * T n - T (n - 1)`. -/
 theorem T_add_one (n : ℤ) : T R (n + 1) = 2 * X * T R n - T R (n - 1) := by
   linear_combination (norm := ring_nf) T_add_two R (n - 1)
 
+/-- The three-term recurrence solved for `T (n - 2)`. -/
 theorem T_sub_two (n : ℤ) : T R (n - 2) = 2 * X * T R (n - 1) - T R n := by
   linear_combination (norm := ring_nf) T_add_two R (n - 2)
 
+/-- The three-term recurrence solved for `T (n - 1)`, used for downward induction. -/
 theorem T_sub_one (n : ℤ) : T R (n - 1) = 2 * X * T R n - T R (n + 1) := by
   linear_combination (norm := ring_nf) T_add_two R (n - 1)
 
+/-- The three-term recurrence in the form `T n = 2 * X * T (n - 1) - T (n - 2)`. -/
 theorem T_eq (n : ℤ) : T R n = 2 * X * T R (n - 1) - T R (n - 2) := by
   linear_combination (norm := ring_nf) T_add_two R (n - 2)
 
-@[simp]
+/-- The Chebyshev polynomial `T 0` is the constant `1`. -/
+@[simp, dlmf 18.5.E14 "partial: T_0(x) = 1"]
 theorem T_zero : T R 0 = 1 := by simp [T]
 
-@[simp]
+/-- The Chebyshev polynomial `T 1` is `X`. -/
+@[simp, dlmf 18.5.E14 "partial: T_1(x) = x"]
 theorem T_one : T R 1 = X := by simp [T]
 
+/-- The Chebyshev polynomial `T (-1)` is `X`. -/
 theorem T_neg_one : T R (-1) = X := by
   change T R (Int.negSucc 0) = X
   rw [T]
   suffices 2 * X - X = X by simpa
   ring
 
-
+/-- The Chebyshev polynomial `T 2` is `2 * X ^ 2 - 1`. -/
+@[dlmf 18.5.E14 "partial: T_2(x) = 2x² - 1"]
 theorem T_two : T R 2 = 2 * X ^ 2 - 1 := by
   unfold T; simp [pow_two, mul_assoc]
 
+/-- The Chebyshev polynomials of the first kind are even in the index: `T (-n) = T n`. -/
 @[simp]
 theorem T_neg (n : ℤ) : T R (-n) = T R n := by
   induction n using Polynomial.Chebyshev.induct with
@@ -148,12 +158,15 @@ theorem T_neg (n : ℤ) : T R (-n) = T R n := by
     have h₂ := T_sub_one R (-n)
     linear_combination (norm := ring_nf) (2 * (X : R[X])) * ih1 - ih2 + h₁ - h₂
 
+/-- `T n` depends only on the absolute value of `n`. -/
 theorem T_natAbs (n : ℤ) : T R n.natAbs = T R n := by
   obtain h | h := Int.natAbs_eq n <;> nth_rw 2 [h]; simp
 
+/-- The Chebyshev polynomial `T (-2)` is `2 * X ^ 2 - 1`. -/
 theorem T_neg_two : T R (-2) = 2 * X ^ 2 - 1 := by simp [T_two]
 
-@[simp]
+/-- Every Chebyshev polynomial of the first kind takes the value `1` at `1`. -/
+@[simp, dlmf 18.6.T1 "partial: T_n(1) = 1, extended to n ∈ ℤ"]
 theorem T_eval_one (n : ℤ) : (T R n).eval 1 = 1 := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
@@ -161,6 +174,8 @@ theorem T_eval_one (n : ℤ) : (T R n).eval 1 = 1 := by
   | add_two n ih1 ih2 => simp [T_add_two, ih1, ih2]; norm_num
   | neg_add_one n ih1 ih2 => simp [T_sub_one, -T_neg, ih1, ih2]; norm_num
 
+/-- The value of `T n` at `-1` is `(-1) ^ n`. -/
+@[dlmf 18.6.T1 "partial: T_n(-1) = (-1)^n, from the p_n(-x) and p_n(1) entries"]
 theorem T_eval_neg_one (n : ℤ) : (T R n).eval (-1) = n.negOnePow := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
@@ -178,6 +193,7 @@ theorem T_eval_neg_one (n : ℤ) : (T R n).eval (-1) = n.negOnePow := by
       Int.negOnePow_sub]
     ring
 
+/-- The value of `T n` at `0` is `(-1) ^ (n / 2)` for even `n` and `0` for odd `n`. -/
 theorem T_eval_zero (n : ℤ) :
     (T R n).eval 0 = (if Even n then (n / 2).negOnePow else 0 : ℤ) := by
   induction n using Polynomial.Chebyshev.induct with
@@ -190,16 +206,20 @@ theorem T_eval_zero (n : ℤ) :
     have : (-(n : ℤ) + 1) / 2 = (-(n : ℤ) - 1) / 2 + 1 := by lia
     by_cases Even n <;> simp_all [T_sub_one, ← Int.not_even_iff_odd, Int.negOnePow_add]
 
+/-- For even `n`, the value of `T n` at `0` is `(-1) ^ (n / 2)`. -/
 @[simp]
 theorem T_eval_zero_of_even {n : ℤ} (hn : Even n) : (T R n).eval 0 = (n / 2).negOnePow := by
   simp [T_eval_zero, hn]
 
+/-- The value of `T (2 * n)` at `0` is `(-1) ^ n`. -/
 theorem T_eval_two_mul_zero (n : ℤ) : (T R (2 * n)).eval 0 = n.negOnePow := by simp
 
+/-- For odd `n`, the value of `T n` at `0` is `0`. -/
 @[simp]
 theorem T_eval_zero_of_odd {n : ℤ} (hn : Odd n) : (T R n).eval 0 = 0 := by
   simp [T_eval_zero, ← Int.not_odd_iff_even, hn]
 
+/-- Over a domain in which `2 ≠ 0`, the degree of `T n` is `|n|`. -/
 @[simp]
 theorem degree_T [IsDomain R] [NeZero (2 : R)] (n : ℤ) : (T R n).degree = n.natAbs := by
   induction n using Chebyshev.induct' with
@@ -214,11 +234,15 @@ theorem degree_T [IsDomain R] [NeZero (2 : R)] (n : ℤ) : (T R n).degree = n.na
     · rw [ih2, this]; tauto
   | neg n ih => simp [ih]
 
+/-- Over a domain in which `2 ≠ 0`, the natural degree of `T n` is `|n|`. -/
 @[simp]
 theorem natDegree_T [IsDomain R] [NeZero (2 : R)] (n : ℤ) : (T R n).natDegree = n.natAbs :=
   natDegree_eq_of_degree_eq_some (degree_T R n)
 
-@[simp]
+/-- Over a domain in which `2 ≠ 0`, the leading coefficient of `T n` is `2 ^ (|n| - 1)`
+(with natural subtraction, so it is `1` for `n = 0`). -/
+@[simp,
+  dlmf 18.3.T1 "partial: k_n of T_n (2^{n-1} for n > 0, 1 for n = 0), over a domain with 2 ≠ 0"]
 theorem leadingCoeff_T [IsDomain R] [NeZero (2 : R)] (n : ℤ) :
     (T R n).leadingCoeff = 2 ^ (n.natAbs - 1) := by
   induction n using Chebyshev.induct' with
@@ -236,7 +260,8 @@ theorem leadingCoeff_T [IsDomain R] [NeZero (2 : R)] (n : ℤ) :
       tauto
   | neg n ih => simp [ih]
 
-@[simp]
+/-- The parity relation `T n (-x) = (-1) ^ n * T n x`. -/
+@[simp, dlmf 18.6.T1 "partial: T_n(-x) = (-1)^n T_n(x), extended to n ∈ ℤ"]
 theorem T_eval_neg (n : ℤ) (x : R) : (T R n).eval (-x) = n.negOnePow * (T R n).eval x := by
   induction n using Chebyshev.induct' with
   | zero => simp
@@ -249,6 +274,7 @@ theorem T_eval_neg (n : ℤ) (x : R) : (T R n).eval (-x) = n.negOnePow * (T R n)
     · simp
   | neg n ih => simp [ih]
 
+/-- Over a domain in which `2 ≠ 0`, no Chebyshev polynomial of the first kind is zero. -/
 theorem T_ne_zero (n : ℤ) [IsDomain R] [NeZero (2 : R)] : T R n ≠ 0 :=
   (T R n).degree_ne_bot.mp (by simp [degree_T R n])
 
@@ -267,41 +293,53 @@ noncomputable def U : ℤ → R[X]
   | -((n : ℕ) + 1) => 2 * X * U (-n) - U (-n + 1)
   termination_by n => Int.natAbs n + Int.natAbs (n - 1)
 
-@[simp]
+/-- The three-term recurrence `U (n + 2) = 2 * X * U (n + 1) - U n`, valid for all `n : ℤ`. -/
+@[simp, dlmf 18.9.T1 "U_n row: U_{n+1} = 2xU_n - U_{n-1}, shifted to n + 2 and extended to n ∈ ℤ"]
 theorem U_add_two : ∀ n, U R (n + 2) = 2 * X * U R (n + 1) - U R n
   | (k : ℕ) => U.eq_3 R k
   | -(k + 1 : ℕ) => by linear_combination (norm := (simp [Int.negSucc_eq]; ring_nf)) U.eq_4 R k
 
+/-- The three-term recurrence in the form `U (n + 1) = 2 * X * U n - U (n - 1)`. -/
 theorem U_add_one (n : ℤ) : U R (n + 1) = 2 * X * U R n - U R (n - 1) := by
   linear_combination (norm := ring_nf) U_add_two R (n - 1)
 
+/-- The three-term recurrence solved for `U (n - 2)`. -/
 theorem U_sub_two (n : ℤ) : U R (n - 2) = 2 * X * U R (n - 1) - U R n := by
   linear_combination (norm := ring_nf) U_add_two R (n - 2)
 
+/-- The three-term recurrence solved for `U (n - 1)`, used for downward induction. -/
 theorem U_sub_one (n : ℤ) : U R (n - 1) = 2 * X * U R n - U R (n + 1) := by
   linear_combination (norm := ring_nf) U_add_two R (n - 1)
 
+/-- The three-term recurrence in the form `U n = 2 * X * U (n - 1) - U (n - 2)`. -/
 theorem U_eq (n : ℤ) : U R n = 2 * X * U R (n - 1) - U R (n - 2) := by
   linear_combination (norm := ring_nf) U_add_two R (n - 2)
 
-@[simp]
+/-- The Chebyshev polynomial `U 0` is the constant `1`. -/
+@[simp, dlmf 18.5.E15 "partial: U_0(x) = 1"]
 theorem U_zero : U R 0 = 1 := by simp [U]
 
-@[simp]
+/-- The Chebyshev polynomial `U 1` is `2 * X`. -/
+@[simp, dlmf 18.5.E15 "partial: U_1(x) = 2x"]
 theorem U_one : U R 1 = 2 * X := by simp [U]
 
+/-- The Chebyshev polynomial `U (-1)` is `0`. -/
 @[simp]
 theorem U_neg_one : U R (-1) = 0 := by simpa using U_sub_one R 0
 
+/-- The Chebyshev polynomial `U 2` is `4 * X ^ 2 - 1`. -/
+@[dlmf 18.5.E15 "partial: U_2(x) = 4x² - 1"]
 theorem U_two : U R 2 = 4 * X ^ 2 - 1 := by
   have := U_add_two R 0
   simp only [zero_add, U_one, U_zero] at this
   linear_combination this
 
+/-- The Chebyshev polynomial `U (-2)` is `-1`. -/
 @[simp]
 theorem U_neg_two : U R (-2) = -1 := by
   simpa [zero_sub, Int.reduceNeg, U_neg_one, mul_zero, U_zero] using U_sub_two R 0
 
+/-- Reflection of the index about `-1`: `U (-n - 1) = -U (n - 1)`. -/
 theorem U_neg_sub_one (n : ℤ) : U R (-n - 1) = -U R (n - 1) := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
@@ -315,13 +353,16 @@ theorem U_neg_sub_one (n : ℤ) : U R (-n - 1) = -U R (n - 1) := by
     have h₂ := U_sub_two R (-n)
     linear_combination (norm := ring_nf) 2 * (X : R[X]) * ih1 - ih2 + h₁ + h₂
 
+/-- The reflection formula `U (-n) = -U (n - 2)`. -/
 theorem U_neg (n : ℤ) : U R (-n) = -U R (n - 2) := by simpa [sub_sub] using U_neg_sub_one R (n - 1)
 
+/-- The reflection formula `U (-n - 2) = -U n`. -/
 @[simp]
 theorem U_neg_sub_two (n : ℤ) : U R (-n - 2) = -U R n := by
   simpa [sub_eq_add_neg, add_comm] using U_neg R (n + 2)
 
-@[simp]
+/-- The value of `U n` at `1` is `n + 1`. -/
+@[simp, dlmf 18.6.T1 "partial: U_n(1) = n + 1, extended to n ∈ ℤ"]
 theorem U_eval_one (n : ℤ) : (U R n).eval 1 = n + 1 := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
@@ -336,6 +377,8 @@ theorem U_eval_one (n : ℤ) : (U R n).eval 1 = n + 1 := by
       sub_add_cancel]
     ring
 
+/-- The value of `U n` at `-1` is `(-1) ^ n * (n + 1)`. -/
+@[dlmf 18.6.T1 "partial: U_n(-1) = (-1)^n (n+1), from the p_n(-x) and p_n(1) entries"]
 theorem U_eval_neg_one (n : ℤ) : (U R n).eval (-1) = n.negOnePow * (n + 1) := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
@@ -355,6 +398,7 @@ theorem U_eval_neg_one (n : ℤ) : (U R n).eval (-1) = n.negOnePow * (n + 1) := 
     simp
     ring
 
+/-- The value of `U n` at `0` is `(-1) ^ (n / 2)` for even `n` and `0` for odd `n`. -/
 theorem U_eval_zero (n : ℤ) :
     (U R n).eval 0 = (if Even n then (n / 2).negOnePow else 0 : ℤ) := by
   induction n using Polynomial.Chebyshev.induct with
@@ -367,16 +411,20 @@ theorem U_eval_zero (n : ℤ) :
     have : (-(n : ℤ) + 1) / 2 = (-(n : ℤ) - 1) / 2 + 1 := by lia
     by_cases Even n <;> simp_all [U_sub_one, ← Int.not_even_iff_odd, Int.negOnePow_add]
 
+/-- For even `n`, the value of `U n` at `0` is `(-1) ^ (n / 2)`. -/
 @[simp]
 theorem U_eval_zero_of_even {n : ℤ} (hn : Even n) : (U R n).eval 0 = (n / 2).negOnePow := by
   simp [U_eval_zero, hn]
 
+/-- The value of `U (2 * n)` at `0` is `(-1) ^ n`. -/
 theorem U_eval_two_mul_zero (n : ℤ) : (U R (2 * n)).eval 0 = n.negOnePow := by simp
 
+/-- For odd `n`, the value of `U n` at `0` is `0`. -/
 @[simp]
 theorem U_eval_zero_of_odd {n : ℤ} (hn : Odd n) : (U R n).eval 0 = 0 := by
   simp [U_eval_zero, ← Int.not_odd_iff_even, hn]
 
+/-- Over a domain in which `2 ≠ 0`, the degree of `U n` is `n` for `n : ℕ`. -/
 @[simp]
 theorem degree_U_natCast [IsDomain R] [NeZero (2 : R)] (n : ℕ) : (U R n).degree = n := by
   induction n using Nat.twoStepInduction with
@@ -393,14 +441,18 @@ theorem degree_U_natCast [IsDomain R] [NeZero (2 : R)] (n : ℕ) : (U R n).degre
     · rw [this]; norm_cast
     · rw [ih1, this]; norm_cast; omega
 
+/-- Over a domain in which `2 ≠ 0`, the natural degree of `U n` is `n` for `n : ℕ`. -/
 @[simp]
 theorem natDegree_U_natCast [IsDomain R] [NeZero (2 : R)] (n : ℕ) : (U R n).natDegree = n :=
   natDegree_eq_of_degree_eq_some (degree_U_natCast R n)
 
+/-- The degree of `U (-1) = 0` is `⊥`. -/
 theorem degree_U_neg_one : (U R (-1)).degree = ⊥ := by simp
 
+/-- The natural degree of `U (-1) = 0` is `0`. -/
 theorem natDegree_U_neg_one : (U R (-1)).natDegree = 0 := by simp
 
+/-- Over a domain in which `2 ≠ 0`, the degree of `U n` is `|n + 1| - 1` for `n ≠ -1`. -/
 theorem degree_U_of_ne_neg_one [IsDomain R] [NeZero (2 : R)] (n : ℤ) (hn : n ≠ -1) :
     (U R n).degree = ↑((n + 1).natAbs - 1) := by
   obtain ⟨m, rfl | rfl⟩ := n.eq_nat_or_neg
@@ -417,13 +469,15 @@ theorem degree_U_of_ne_neg_one [IsDomain R] [NeZero (2 : R)] (n : ℤ) (hn : n �
         · congr; omega
         · rw [degree_U_natCast R m]; norm_cast
 
+/-- Over a domain in which `2 ≠ 0`, the natural degree of `U n` is `|n + 1| - 1`. -/
 theorem natDegree_U [IsDomain R] [NeZero (2 : R)] (n : ℤ) :
     (U R n).natDegree = (n + 1).natAbs - 1 := by
   by_cases n = -1
   case pos hn => subst hn; simp
   case neg hn => exact natDegree_eq_of_degree_eq_some (degree_U_of_ne_neg_one R n hn)
 
-@[simp]
+/-- Over a domain in which `2 ≠ 0`, the leading coefficient of `U n` is `2 ^ n` for `n : ℕ`. -/
+@[simp, dlmf 18.3.T1 "partial: k_n = 2^n of U_n, over a domain with 2 ≠ 0"]
 theorem leadingCoeff_U_natCast [IsDomain R] [NeZero (2 : R)] (n : ℕ) :
     (U R n).leadingCoeff = 2 ^ n := by
   have : leadingCoeff (2 : R[X]) = 2 := by
@@ -441,7 +495,8 @@ theorem leadingCoeff_U_natCast [IsDomain R] [NeZero (2 : R)] (n : ℕ) :
         degree_U_natCast R n, degree_U_natCast R (n + 1)]
       norm_cast; omega
 
-@[simp]
+/-- The parity relation `U n (-x) = (-1) ^ n * U n x` for `n : ℕ`. -/
+@[simp, dlmf 18.6.T1 "partial: U_n(-x) = (-1)^n U_n(x)"]
 theorem U_eval_neg (n : ℕ) (x : R) : (U R n).eval (-x) = (n : ℤ).negOnePow * (U R n).eval x := by
   induction n using Nat.twoStepInduction with
   | zero => simp
@@ -454,13 +509,16 @@ theorem U_eval_neg (n : ℕ) (x : R) : (U R n).eval (-x) = (n : ℤ).negOnePow *
       simp; ring
     · simp
 
+/-- Over a domain in which `2 ≠ 0`, `U n` is nonzero for `n ≠ -1`. -/
 theorem U_ne_zero (n : ℤ) [IsDomain R] [NeZero (2 : R)] (hn : n ≠ -1) : U R n ≠ 0 :=
   (U R n).degree_ne_bot.mp (by simp [degree_U_of_ne_neg_one R n hn])
 
+/-- Over a domain in which `2 ≠ 0`, `U n = 0` if and only if `n = -1`. -/
 theorem U_eq_zero_iff (n : ℤ) [IsDomain R] [NeZero (2 : R)] :
     U R n = 0 ↔ n = -1 :=
   ⟨fun h => by contrapose! h; exact U_ne_zero R n h, fun h => by simp [h]⟩
 
+/-- The relation `U (n + 1) = X * U n + T (n + 1)` between the two kinds. -/
 theorem U_eq_X_mul_U_add_T (n : ℤ) : U R (n + 1) = X * U R n + T R (n + 1) := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp [two_mul]
@@ -476,32 +534,43 @@ theorem U_eq_X_mul_U_add_T (n : ℤ) : U R (n + 1) = X * U R n + T R (n + 1) := 
     have h₃ := T_add_two R (-n)
     linear_combination (norm := ring_nf) -h₃ + h₂ - (X : R[X]) * h₁ - ih2 + 2 * (X : R[X]) * ih1
 
+/-- The relation `T n = U n - X * U (n - 1)` between the two kinds. -/
 theorem T_eq_U_sub_X_mul_U (n : ℤ) : T R n = U R n - X * U R (n - 1) := by
   linear_combination (norm := ring_nf) - U_eq_X_mul_U_add_T R (n - 1)
 
+/-- The relation `T (n + 2) = X * T (n + 1) - (1 - X ^ 2) * U n` between the two kinds.
+See `one_sub_X_sq_mul_U_eq_pol_in_T` for the same identity solved for `(1 - X ^ 2) * U n`. -/
 theorem T_eq_X_mul_T_sub_pol_U (n : ℤ) : T R (n + 2) = X * T R (n + 1) - (1 - X ^ 2) * U R n := by
   have h₁ := U_eq_X_mul_U_add_T R n
   have h₂ := U_eq_X_mul_U_add_T R (n + 1)
   have h₃ := U_add_two R n
   linear_combination (norm := ring_nf) h₃ - h₂ + (X : R[X]) * h₁
 
+/-- The identity `(1 - X ^ 2) * U n = X * T (n + 1) - T (n + 2)`. Combined with `T_add_two`, the
+right side equals `(T n - T (n + 2)) / 2`. -/
+@[dlmf 18.9.E10 "(1-x²)U_n = xT_{n+1} - T_{n+2}, equal to (T_n - T_{n+2})/2 by T_add_two"]
 theorem one_sub_X_sq_mul_U_eq_pol_in_T (n : ℤ) :
     (1 - X ^ 2) * U R n = X * T R (n + 1) - T R (n + 2) := by
   linear_combination T_eq_X_mul_T_sub_pol_U R n
 
+/-- The relation `T (n + 2) = X * U (n + 1) - U n` between the two kinds. -/
 theorem T_eq_X_mul_U_sub_U (n : ℤ) : T R (n + 2) = X * U R (n + 1) - U R n := by
   have h := T_eq_U_sub_X_mul_U (R := R) (-(n + 2))
   rw [T_neg, U_neg, Int.add_sub_cancel, ← neg_add' _ 1, U_neg,
     show n + 2 + 1 - 2 = n + 1 by ring] at h
   linear_combination (norm := ring_nf) h
 
+/-- The relation `2 * T (n + 2) = U (n + 2) - U n` between the two kinds. -/
 @[dlmf 18.9.E9]
 theorem two_mul_T_eq_U_sub_U (n : ℤ) : 2 * T R (n + 2) = U R (n + 2) - U R n := by
   linear_combination (norm := ring_nf) (T_eq_U_sub_X_mul_U R (n + 2)) + (T_eq_X_mul_U_sub_U R n)
 
+/-- The relation `U (n + 2) = 2 * T (n + 2) + U n` between the two kinds. -/
+@[dlmf 18.9.E9 "equivalent form U_{n+2} = 2T_{n+2} + U_n"]
 theorem U_eq_two_mul_T_add_U (n : ℤ) : U R (n + 2) = 2 * T R (n + 2) + U R n := by
   linear_combination (norm := ring_nf) - (two_mul_T_eq_U_sub_U R n)
 
+/-- For `n : ℕ`, `U n` is a natural-number combination of `T 0, …, T n`. -/
 theorem U_mem_span_T (n : ℕ) : U R n ∈ Submodule.span ℕ ((fun m : ℕ => T R m) '' Set.Icc 0 n) := by
   induction n using Nat.twoStepInduction with
   | zero => simp
@@ -522,38 +591,48 @@ noncomputable def C : ℤ → R[X]
   | -((n : ℕ) + 1) => X * C (-n) - C (-n + 1)
   termination_by n => Int.natAbs n + Int.natAbs (n - 1)
 
+/-- The three-term recurrence `C (n + 2) = X * C (n + 1) - C n`, valid for all `n : ℤ`. -/
 @[simp]
 theorem C_add_two : ∀ n, C R (n + 2) = X * C R (n + 1) - C R n
   | (k : ℕ) => C.eq_3 R k
   | -(k + 1 : ℕ) => by linear_combination (norm := (simp [Int.negSucc_eq]; ring_nf)) C.eq_4 R k
 
+/-- The three-term recurrence in the form `C (n + 1) = X * C n - C (n - 1)`. -/
 theorem C_add_one (n : ℤ) : C R (n + 1) = X * C R n - C R (n - 1) := by
   linear_combination (norm := ring_nf) C_add_two R (n - 1)
 
+/-- The three-term recurrence solved for `C (n - 2)`. -/
 theorem C_sub_two (n : ℤ) : C R (n - 2) = X * C R (n - 1) - C R n := by
   linear_combination (norm := ring_nf) C_add_two R (n - 2)
 
+/-- The three-term recurrence solved for `C (n - 1)`, used for downward induction. -/
 theorem C_sub_one (n : ℤ) : C R (n - 1) = X * C R n - C R (n + 1) := by
   linear_combination (norm := ring_nf) C_add_two R (n - 1)
 
+/-- The three-term recurrence in the form `C n = X * C (n - 1) - C (n - 2)`. -/
 theorem C_eq (n : ℤ) : C R n = X * C R (n - 1) - C R (n - 2) := by
   linear_combination (norm := ring_nf) C_add_two R (n - 2)
 
+/-- The rescaled Chebyshev polynomial `C 0` is the constant `2`. -/
 @[simp]
 theorem C_zero : C R 0 = 2 := by simp [C]
 
+/-- The rescaled Chebyshev polynomial `C 1` is `X`. -/
 @[simp]
 theorem C_one : C R 1 = X := by simp [C]
 
+/-- The rescaled Chebyshev polynomial `C (-1)` is `X`. -/
 theorem C_neg_one : C R (-1) = X := by
   change C R (Int.negSucc 0) = X
   rw [C]
   suffices X * 2 - X = X by simpa
   ring
 
+/-- The rescaled Chebyshev polynomial `C 2` is `X ^ 2 - 2`. -/
 theorem C_two : C R 2 = X ^ 2 - 2 := by
   simpa [pow_two, mul_assoc] using C_add_two R 0
 
+/-- The rescaled Chebyshev polynomials of the first kind are even in the index: `C (-n) = C n`. -/
 @[simp]
 theorem C_neg (n : ℤ) : C R (-n) = C R n := by
   induction n using Polynomial.Chebyshev.induct with
@@ -568,11 +647,15 @@ theorem C_neg (n : ℤ) : C R (-n) = C R n := by
     have h₂ := C_sub_one R (-n)
     linear_combination (norm := ring_nf) (X : R[X]) * ih1 - ih2 + h₁ - h₂
 
+/-- `C n` depends only on the absolute value of `n`. -/
 theorem C_natAbs (n : ℤ) : C R n.natAbs = C R n := by
   obtain h | h := Int.natAbs_eq n <;> nth_rw 2 [h]; simp
 
+/-- The rescaled Chebyshev polynomial `C (-2)` is `X ^ 2 - 2`. -/
 theorem C_neg_two : C R (-2) = X ^ 2 - 2 := by simp [C_two]
 
+/-- The defining relation `C n (2 * X) = 2 * T n` between `C` and `T`, over any commutative ring. -/
+@[dlmf 18.1.E3 "first equality in the form C_n(2x) = 2T_n(x), over any ring"]
 theorem C_comp_two_mul_X (n : ℤ) : (C R n).comp (2 * X) = 2 * T R n := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
@@ -584,6 +667,7 @@ theorem C_comp_two_mul_X (n : ℤ) : (C R n).comp (2 * X) = 2 * T R n := by
     simp_rw [C_sub_one, T_sub_one, sub_comp, mul_comp, X_comp, ih1, ih2]
     ring
 
+/-- Every rescaled Chebyshev polynomial `C n` takes the value `2` at `2`. -/
 @[simp]
 theorem C_eval_two (n : ℤ) : (C R n).eval 2 = 2 := by
   induction n using Polynomial.Chebyshev.induct with
@@ -592,6 +676,7 @@ theorem C_eval_two (n : ℤ) : (C R n).eval 2 = 2 := by
   | add_two n ih1 ih2 => simp [C_add_two, ih1, ih2]; norm_num
   | neg_add_one n ih1 ih2 => simp [C_sub_one, -C_neg, ih1, ih2]; norm_num
 
+/-- The value of `C n` at `-2` is `2 * (-1) ^ n`. -/
 @[simp]
 theorem C_eval_neg_two (n : ℤ) : (C R n).eval (-2) = 2 * n.negOnePow := by
   induction n using Polynomial.Chebyshev.induct with
@@ -610,6 +695,8 @@ theorem C_eval_neg_two (n : ℤ) : (C R n).eval (-2) = 2 * n.negOnePow := by
       Int.negOnePow_sub]
     ring
 
+/-- When `2` is invertible, `C n = 2 * T n (X / 2)`. -/
+@[dlmf 18.1.E3 "first equality: C_n(x) = 2T_n(x/2), over a ring in which 2 is invertible"]
 theorem C_eq_two_mul_T_comp_half_mul_X [Invertible (2 : R)] (n : ℤ) :
     C R n = 2 * (T R n).comp (Polynomial.C ⅟2 * X) := by
   have := congr_arg (·.comp (Polynomial.C ⅟2 * X)) (C_comp_two_mul_X R n)
@@ -617,6 +704,7 @@ theorem C_eq_two_mul_T_comp_half_mul_X [Invertible (2 : R)] (n : ℤ) :
     Nat.cast_ofNat, mul_invOf_self', map_one, one_mul, comp_X, map_ofNat] at this
   assumption
 
+/-- When `2` is invertible, `T n = C n (2 * X) / 2`. -/
 theorem T_eq_half_mul_C_comp_two_mul_X [Invertible (2 : R)] (n : ℤ) :
     T R n = Polynomial.C ⅟2 * (C R n).comp (2 * X) := by
   rw [C_comp_two_mul_X, ← mul_assoc, ← map_ofNat Polynomial.C 2, ← map_mul, invOf_mul_self',
@@ -632,41 +720,52 @@ noncomputable def S : ℤ → R[X]
   | -((n : ℕ) + 1) => X * S (-n) - S (-n + 1)
   termination_by n => Int.natAbs n + Int.natAbs (n - 1)
 
+/-- The three-term recurrence `S (n + 2) = X * S (n + 1) - S n`, valid for all `n : ℤ`. -/
 @[simp]
 theorem S_add_two : ∀ n, S R (n + 2) = X * S R (n + 1) - S R n
   | (k : ℕ) => S.eq_3 R k
   | -(k + 1 : ℕ) => by linear_combination (norm := (simp [Int.negSucc_eq]; ring_nf)) S.eq_4 R k
 
+/-- The three-term recurrence in the form `S (n + 1) = X * S n - S (n - 1)`. -/
 theorem S_add_one (n : ℤ) : S R (n + 1) = X * S R n - S R (n - 1) := by
   linear_combination (norm := ring_nf) S_add_two R (n - 1)
 
+/-- The three-term recurrence solved for `S (n - 2)`. -/
 theorem S_sub_two (n : ℤ) : S R (n - 2) = X * S R (n - 1) - S R n := by
   linear_combination (norm := ring_nf) S_add_two R (n - 2)
 
+/-- The three-term recurrence solved for `S (n - 1)`, used for downward induction. -/
 theorem S_sub_one (n : ℤ) : S R (n - 1) = X * S R n - S R (n + 1) := by
   linear_combination (norm := ring_nf) S_add_two R (n - 1)
 
+/-- The three-term recurrence in the form `S n = X * S (n - 1) - S (n - 2)`. -/
 theorem S_eq (n : ℤ) : S R n = X * S R (n - 1) - S R (n - 2) := by
   linear_combination (norm := ring_nf) S_add_two R (n - 2)
 
+/-- The rescaled Chebyshev polynomial `S 0` is the constant `1`. -/
 @[simp]
 theorem S_zero : S R 0 = 1 := by simp [S]
 
+/-- The rescaled Chebyshev polynomial `S 1` is `X`. -/
 @[simp]
 theorem S_one : S R 1 = X := by simp [S]
 
+/-- The rescaled Chebyshev polynomial `S (-1)` is `0`. -/
 @[simp]
 theorem S_neg_one : S R (-1) = 0 := by simpa using S_sub_one R 0
 
+/-- The rescaled Chebyshev polynomial `S 2` is `X ^ 2 - 1`. -/
 theorem S_two : S R 2 = X ^ 2 - 1 := by
   have := S_add_two R 0
   simp only [zero_add, S_one, S_zero] at this
   linear_combination this
 
+/-- The rescaled Chebyshev polynomial `S (-2)` is `-1`. -/
 @[simp]
 theorem S_neg_two : S R (-2) = -1 := by
   simpa [zero_sub, Int.reduceNeg, S_neg_one, mul_zero, S_zero] using S_sub_two R 0
 
+/-- Reflection of the index about `-1`: `S (-n - 1) = -S (n - 1)`. -/
 theorem S_neg_sub_one (n : ℤ) : S R (-n - 1) = -S R (n - 1) := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
@@ -680,12 +779,15 @@ theorem S_neg_sub_one (n : ℤ) : S R (-n - 1) = -S R (n - 1) := by
     have h₂ := S_sub_two R (-n)
     linear_combination (norm := ring_nf) (X : R[X]) * ih1 - ih2 + h₁ + h₂
 
+/-- The reflection formula `S (-n) = -S (n - 2)`. -/
 theorem S_neg (n : ℤ) : S R (-n) = -S R (n - 2) := by simpa [sub_sub] using S_neg_sub_one R (n - 1)
 
+/-- The reflection formula `S (-n - 2) = -S n`. -/
 @[simp]
 theorem S_neg_sub_two (n : ℤ) : S R (-n - 2) = -S R n := by
   simpa [sub_eq_add_neg, add_comm] using S_neg R (n + 2)
 
+/-- The value of `S n` at `2` is `n + 1`. -/
 @[simp]
 theorem S_eval_two (n : ℤ) : (S R n).eval 2 = n + 1 := by
   induction n using Polynomial.Chebyshev.induct with
@@ -701,6 +803,7 @@ theorem S_eval_two (n : ℤ) : (S R n).eval 2 = n + 1 := by
       sub_add_cancel]
     ring
 
+/-- The value of `S n` at `-2` is `(-1) ^ n * (n + 1)`. -/
 @[simp]
 theorem S_eval_neg_two (n : ℤ) : (S R n).eval (-2) = n.negOnePow * (n + 1) := by
   induction n using Polynomial.Chebyshev.induct with
@@ -721,6 +824,8 @@ theorem S_eval_neg_two (n : ℤ) : (S R n).eval (-2) = n.negOnePow * (n + 1) := 
     simp
     ring
 
+/-- The defining relation `S n (2 * X) = U n` between `S` and `U`, over any commutative ring. -/
+@[dlmf 18.1.E3 "second equality in the form S_n(2x) = U_n(x), over any ring"]
 theorem S_comp_two_mul_X (n : ℤ) : (S R n).comp (2 * X) = U R n := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
@@ -728,6 +833,7 @@ theorem S_comp_two_mul_X (n : ℤ) : (S R n).comp (2 * X) = U R n := by
   | add_two n ih1 ih2 => simp_rw [U_add_two, S_add_two, sub_comp, mul_comp, X_comp, ih1, ih2]
   | neg_add_one n ih1 ih2 => simp_rw [U_sub_one, S_sub_one, sub_comp, mul_comp, X_comp, ih1, ih2]
 
+/-- The identity `S n ^ 2 + S (n + 1) ^ 2 - X * S n * S (n + 1) = 1`. -/
 theorem S_sq_add_S_sq (n : ℤ) : S R n ^ 2 + S R (n + 1) ^ 2 - X * S R n * S R (n + 1) = 1 := by
   induction n with
   | zero => simp; ring
@@ -738,6 +844,8 @@ theorem S_sq_add_S_sq (n : ℤ) : S R n ^ 2 + S R (n + 1) ^ 2 - X * S R n * S R 
     have h₁ := S_sub_one R (-n)
     linear_combination (norm := ring_nf) (S R (-1 - n) - S R (1 - n)) * h₁ + ih
 
+/-- When `2` is invertible, `S n = U n (X / 2)`. -/
+@[dlmf 18.1.E3 "second equality: S_n(x) = U_n(x/2), over a ring in which 2 is invertible"]
 theorem S_eq_U_comp_half_mul_X [Invertible (2 : R)] (n : ℤ) :
     S R n = (U R n).comp (Polynomial.C ⅟2 * X) := by
   have := congr_arg (·.comp (Polynomial.C ⅟2 * X)) (S_comp_two_mul_X R n)
@@ -745,6 +853,7 @@ theorem S_eq_U_comp_half_mul_X [Invertible (2 : R)] (n : ℤ) :
     Nat.cast_ofNat, mul_invOf_self', map_one, one_mul, comp_X] at this
   assumption
 
+/-- The relation `2 * S (n + 1) = X * S n + C (n + 1)` between `S` and `C`. -/
 theorem S_eq_X_mul_S_add_C (n : ℤ) : 2 * S R (n + 1) = X * S R n + C R (n + 1) := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp [two_mul]
@@ -760,11 +869,13 @@ theorem S_eq_X_mul_S_add_C (n : ℤ) : 2 * S R (n + 1) = X * S R n + C R (n + 1)
     have h₃ := C_add_two R (-n)
     linear_combination (norm := ring_nf) -h₃ + 2 * h₂ - (X : R[X]) * h₁ - ih2 + (X : R[X]) * ih1
 
+/-- The relation `C n = 2 * S n - X * S (n - 1)` between `C` and `S`. -/
 theorem C_eq_S_sub_X_mul_S (n : ℤ) : C R n = 2 * S R n - X * S R (n - 1) := by
   linear_combination (norm := ring_nf) - S_eq_X_mul_S_add_C R (n - 1)
 
 variable {R R'}
 
+/-- Mapping the coefficients of `T R n` along a ring homomorphism `R →+* R'` gives `T R' n`. -/
 @[simp]
 theorem map_T (f : R →+* R') (n : ℤ) : map f (T R n) = T R' n := by
   induction n using Polynomial.Chebyshev.induct with
@@ -777,6 +888,7 @@ theorem map_T (f : R →+* R') (n : ℤ) : map f (T R n) = T R' n := by
     simp_rw [T_sub_one, Polynomial.map_sub, Polynomial.map_mul, Polynomial.map_ofNat, map_X, ih1,
       ih2]
 
+/-- Mapping the coefficients of `U R n` along a ring homomorphism `R →+* R'` gives `U R' n`. -/
 @[simp]
 theorem map_U (f : R →+* R') (n : ℤ) : map f (U R n) = U R' n := by
   induction n using Polynomial.Chebyshev.induct with
@@ -789,6 +901,7 @@ theorem map_U (f : R →+* R') (n : ℤ) : map f (U R n) = U R' n := by
     simp_rw [U_sub_one, Polynomial.map_sub, Polynomial.map_mul, Polynomial.map_ofNat, map_X, ih1,
       ih2]
 
+/-- Mapping the coefficients of `C R n` along a ring homomorphism `R →+* R'` gives `C R' n`. -/
 @[simp]
 theorem map_C (f : R →+* R') (n : ℤ) : map f (C R n) = C R' n := by
   induction n using Polynomial.Chebyshev.induct with
@@ -799,6 +912,7 @@ theorem map_C (f : R →+* R') (n : ℤ) : map f (C R n) = C R' n := by
   | neg_add_one n ih1 ih2 =>
     simp_rw [C_sub_one, Polynomial.map_sub, Polynomial.map_mul, map_X, ih1, ih2]
 
+/-- Mapping the coefficients of `S R n` along a ring homomorphism `R →+* R'` gives `S R' n`. -/
 @[simp]
 theorem map_S (f : R →+* R') (n : ℤ) : map f (S R n) = S R' n := by
   induction n using Polynomial.Chebyshev.induct with
@@ -809,42 +923,51 @@ theorem map_S (f : R →+* R') (n : ℤ) : map f (S R n) = S R' n := by
   | neg_add_one n ih1 ih2 =>
     simp_rw [S_sub_one, Polynomial.map_sub, Polynomial.map_mul, map_X, ih1, ih2]
 
+/-- Evaluating `T R n` at an element of an `R`-algebra `R'` is evaluating `T R' n` there. -/
 @[simp]
 theorem aeval_T [Algebra R R'] (x : R') (n : ℤ) : aeval x (T R n) = (T R' n).eval x := by
   rw [aeval_def, eval₂_eq_eval_map, map_T]
 
+/-- Evaluating `U R n` at an element of an `R`-algebra `R'` is evaluating `U R' n` there. -/
 @[simp]
 theorem aeval_U [Algebra R R'] (x : R') (n : ℤ) : aeval x (U R n) = (U R' n).eval x := by
   rw [aeval_def, eval₂_eq_eval_map, map_U]
 
+/-- Evaluating `C R n` at an element of an `R`-algebra `R'` is evaluating `C R' n` there. -/
 @[simp]
 theorem aeval_C [Algebra R R'] (x : R') (n : ℤ) : aeval x (C R n) = (C R' n).eval x := by
   rw [aeval_def, eval₂_eq_eval_map, map_C]
 
+/-- Evaluating `S R n` at an element of an `R`-algebra `R'` is evaluating `S R' n` there. -/
 @[simp]
 theorem aeval_S [Algebra R R'] (x : R') (n : ℤ) : aeval x (S R n) = (S R' n).eval x := by
   rw [aeval_def, eval₂_eq_eval_map, map_S]
 
+/-- The algebra map `R → R'` commutes with evaluation of `T n`. -/
 @[simp]
 theorem algebraMap_eval_T [Algebra R R'] (x : R) (n : ℤ) :
     algebraMap R R' ((T R n).eval x) = (T R' n).eval (algebraMap R R' x) := by
   rw [← aeval_algebraMap_apply_eq_algebraMap_eval, aeval_T]
 
+/-- The algebra map `R → R'` commutes with evaluation of `U n`. -/
 @[simp]
 theorem algebraMap_eval_U [Algebra R R'] (x : R) (n : ℤ) :
     algebraMap R R' ((U R n).eval x) = (U R' n).eval (algebraMap R R' x) := by
   rw [← aeval_algebraMap_apply_eq_algebraMap_eval, aeval_U]
 
+/-- The algebra map `R → R'` commutes with evaluation of `C n`. -/
 @[simp]
 theorem algebraMap_eval_C [Algebra R R'] (x : R) (n : ℤ) :
     algebraMap R R' ((C R n).eval x) = (C R' n).eval (algebraMap R R' x) := by
   rw [← aeval_algebraMap_apply_eq_algebraMap_eval, aeval_C]
 
+/-- The algebra map `R → R'` commutes with evaluation of `S n`. -/
 @[simp]
 theorem algebraMap_eval_S [Algebra R R'] (x : R) (n : ℤ) :
     algebraMap R R' ((S R n).eval x) = (S R' n).eval (algebraMap R R' x) := by
   rw [← aeval_algebraMap_apply_eq_algebraMap_eval, aeval_S]
 
+/-- The derivative of `T n` is `n * U (n - 1)`. -/
 @[dlmf 18.9.E21]
 theorem T_derivative_eq_U (n : ℤ) : derivative (T R n) = n * U R (n - 1) := by
   induction n using Polynomial.Chebyshev.induct with
@@ -866,6 +989,7 @@ theorem T_derivative_eq_U (n : ℤ) : derivative (T R n) = n * U R (n - 1) := by
     linear_combination (norm := (push_cast; ring_nf))
       -ih2 + 2 * (X : R[X]) * ih1 + h₁ + 2 * h₃ + (n + 1) * h₂
 
+/-- For `n : ℕ`, the derivative of `T n` is a natural-number combination of `T 0, …, T (n - 1)`. -/
 theorem T_derivative_mem_span_T (n : ℕ) :
     derivative (T R n) ∈ Submodule.span ℕ ((fun m : ℕ => T R m) '' Set.Ico 0 n) := by
   by_cases! hn : n = 0
@@ -874,6 +998,8 @@ theorem T_derivative_mem_span_T (n : ℕ) :
   refine Submodule.smul_of_tower_mem _ n ?_
   convert U_mem_span_T R (n - 1) using 2 <;> grind
 
+/-- For `n k : ℕ`, the `k`-th derivative of `T n` is a natural-number combination of
+`T 0, …, T (n - k)`. -/
 theorem T_iterate_derivative_mem_span_T (n k : ℕ) :
     derivative^[k] (T R n) ∈ Submodule.span ℕ ((fun m : ℕ => T R m) '' Set.Icc 0 (n - k)) := by
   induction k
@@ -891,6 +1017,7 @@ theorem T_iterate_derivative_mem_span_T (n k : ℕ) :
     obtain ⟨m, hm, rfl⟩ := hx
     refine (Submodule.span_mono (by grind)) (T_derivative_mem_span_T (R := R) m)
 
+/-- The identity `(1 - X ^ 2) * (T (n + 1))' = (n + 1) * (T n - X * T (n + 1))`. -/
 theorem one_sub_X_sq_mul_derivative_T_eq_poly_in_T (n : ℤ) :
     (1 - X ^ 2) * derivative (T R (n + 1)) = (n + 1 : R[X]) * (T R n - X * T R (n + 1)) := by
   have H₁ := one_sub_X_sq_mul_U_eq_pol_in_T R n
@@ -899,6 +1026,10 @@ theorem one_sub_X_sq_mul_derivative_T_eq_poly_in_T (n : ℤ) :
   linear_combination (norm := (push_cast; ring_nf))
     (-n - 1) * h₁ + (-(X : R[X]) ^ 2 + 1) * H₂ + (n + 1) * H₁
 
+/-- The identity `(n + 1) * T (n + 1) = X * U n - (1 - X ^ 2) * (U n)'`. On `(-1, 1)` this is
+`(1 - x ^ 2) ^ (1 / 2)` times the weighted derivative formula
+`d/dx ((1 - x ^ 2) ^ (1 / 2) * U n) = -(n + 1) * (1 - x ^ 2) ^ (-1 / 2) * T (n + 1)`. -/
+@[dlmf 18.9.E22 "equivalent polynomial form, obtained by multiplying by (1-x²)^{1/2}"]
 theorem add_one_mul_T_eq_poly_in_U (n : ℤ) :
     ((n : R[X]) + 1) * T R (n + 1) = X * U R n - (1 - X ^ 2) * derivative (U R n) := by
   have h₁ := congr(derivative $(T_eq_X_mul_T_sub_pol_U R n))
@@ -908,6 +1039,7 @@ theorem add_one_mul_T_eq_poly_in_U (n : ℤ) :
   linear_combination (norm := (push_cast; ring_nf))
     h₁ + (n + 2) * h₂
 
+/-- The identity `(n + 1) * n * T (n + 1) = n * X * (T (n + 1))' - (n + 1) * (T n)'`. -/
 theorem add_one_mul_self_mul_T_eq_poly_in_T (n : ℤ) :
     ((n + 1) * n : R[X]) * (T R (n + 1)) =
     (n : R[X]) * X * derivative (T R (n + 1)) - (n + 1 : R[X]) * derivative (T R n) := by
@@ -916,6 +1048,8 @@ theorem add_one_mul_self_mul_T_eq_poly_in_T (n : ℤ) :
   linear_combination (norm := (push_cast; ring_nf))
     (n + 1) * n * h
 
+/-- The Chebyshev differential equation `(1 - X ^ 2) * (T n)'' = X * (T n)' - n ^ 2 * T n`. -/
+@[dlmf 18.8.T1 "T_n row: (1-x²)T_n'' - xT_n' + n²T_n = 0 as a polynomial identity, n ∈ ℤ"]
 theorem one_sub_X_sq_mul_derivative_derivative_T_eq_poly_in_T (n : ℤ) :
     (1 - X ^ 2) * derivative^[2] (T R n) = X * derivative (T R n) - (n ^ 2 : R[X]) * T R n := by
   have h₁ := congr(derivative $(one_sub_X_sq_mul_derivative_T_eq_poly_in_T (R := R) (n - 1)))
@@ -926,6 +1060,9 @@ theorem one_sub_X_sq_mul_derivative_derivative_T_eq_poly_in_T (n : ℤ) :
   linear_combination (norm := (push_cast; ring_nf))
     h₁ + h₂
 
+/-- The differential equation `(1 - X ^ 2) * (U n)'' = 3 * X * (U n)' - (n + 2) * n * U n` for the
+Chebyshev polynomials of the second kind. -/
+@[dlmf 18.8.T1 "U_n row: (1-x²)U_n'' - 3xU_n' + n(n+2)U_n = 0 as a polynomial identity, n ∈ ℤ"]
 theorem one_sub_X_sq_mul_derivative_derivative_U_eq_poly_in_U (n : ℤ) :
     (1 - X ^ 2) * derivative^[2] (U R n) =
       3 * X * derivative (U R n) - ((n + 2) * n : R[X]) * U R n := by
@@ -935,6 +1072,8 @@ theorem one_sub_X_sq_mul_derivative_derivative_U_eq_poly_in_U (n : ℤ) :
   rw [Function.iterate_succ, Function.iterate_one, Function.comp_apply]
   linear_combination (norm := (push_cast; ring_nf)) h
 
+/-- The `k`-th derivative of the Chebyshev differential equation for `T n`:
+`(1 - X ^ 2) * T⁽ᵏ⁺²⁾ = (2k + 1) * X * T⁽ᵏ⁺¹⁾ - (n ^ 2 - k ^ 2) * T⁽ᵏ⁾`. -/
 theorem one_sub_X_sq_mul_iterate_derivative_T_eq_poly_in_T (n : ℤ) (k : ℕ) :
     (1 - X ^ 2) * derivative^[k + 2] (T R n) =
       (2 * k + 1 : R[X]) * X * derivative^[k + 1] (T R n) -
@@ -948,6 +1087,8 @@ theorem one_sub_X_sq_mul_iterate_derivative_T_eq_poly_in_T (n : ℤ) (k : ℕ) :
   linear_combination (norm := (push_cast; ring_nf)) h
   cases k <;> grind
 
+/-- The `k`-th derivative of the differential equation for `U n`:
+`(1 - X ^ 2) * U⁽ᵏ⁺²⁾ = (2k + 3) * X * U⁽ᵏ⁺¹⁾ - ((n + 1) ^ 2 - (k + 1) ^ 2) * U⁽ᵏ⁾`. -/
 theorem one_sub_X_sq_mul_iterate_derivative_U_eq_poly_in_U (n : ℤ) (k : ℕ) :
     (1 - X ^ 2) * derivative^[k + 2] (U R n) =
       (2 * k + 3 : R[X]) * X * derivative^[k + 1] (U R n) -
@@ -962,6 +1103,7 @@ theorem one_sub_X_sq_mul_iterate_derivative_U_eq_poly_in_U (n : ℤ) (k : ℕ) :
   linear_combination (norm := (push_cast; ring_nf)) h
   cases k <;> grind
 
+/-- The evaluated form of `one_sub_X_sq_mul_iterate_derivative_T_eq_poly_in_T` at a point `x`. -/
 theorem one_sub_X_sq_mul_iterate_derivative_T_eval (n : ℤ) (k : ℕ) (x : R) :
     (1 - x ^ 2) * (derivative^[k + 2] (T R n)).eval x =
       (2 * k + 1) * x * (derivative^[k + 1] (T R n)).eval x -
@@ -972,6 +1114,7 @@ theorem one_sub_X_sq_mul_iterate_derivative_T_eval (n : ℤ) (k : ℕ) (x : R) :
     eval_X, eval_add, eval_ofNat, eval_natCast, eval_intCast] at h
   linear_combination (norm := (push_cast; ring_nf)) h
 
+/-- The evaluated form of `one_sub_X_sq_mul_iterate_derivative_U_eq_poly_in_U` at a point `x`. -/
 theorem one_sub_X_sq_mul_iterate_derivative_U_eval (n : ℤ) (k : ℕ) (x : R) :
     (1 - x ^ 2) * (derivative^[k + 2] (U R n)).eval x =
       (2 * k + 3) * x * (derivative^[k + 1] (U R n)).eval x -
@@ -982,6 +1125,8 @@ theorem one_sub_X_sq_mul_iterate_derivative_U_eval (n : ℤ) (k : ℕ) (x : R) :
     eval_X, eval_add, eval_ofNat, eval_natCast, eval_intCast] at h
   linear_combination (norm := (push_cast; ring_nf)) h
 
+/-- Recurrence in `k` for the `k`-th derivative of `T n` at `1`:
+`(2k + 1) * T⁽ᵏ⁺¹⁾(1) = (n ^ 2 - k ^ 2) * T⁽ᵏ⁾(1)`. -/
 theorem iterate_derivative_T_eval_one_recurrence (n : ℤ) (k : ℕ) :
     (2 * k + 1) * (derivative^[k + 1] (T R n)).eval 1 =
       (n ^ 2 - k ^ 2) * (derivative^[k] (T R n)).eval 1 := by
@@ -989,6 +1134,8 @@ theorem iterate_derivative_T_eval_one_recurrence (n : ℤ) (k : ℕ) :
   rw [one_pow, sub_self, zero_mul, mul_one] at h
   exact sub_eq_zero.mp h.symm
 
+/-- Recurrence in `k` for the `k`-th derivative of `U n` at `1`:
+`(2k + 3) * U⁽ᵏ⁺¹⁾(1) = ((n + 1) ^ 2 - (k + 1) ^ 2) * U⁽ᵏ⁾(1)`. -/
 theorem iterate_derivative_U_eval_one_recurrence (n : ℤ) (k : ℕ) :
     (2 * k + 3) * (derivative^[k + 1] (U R n)).eval 1 =
       ((n + 1) ^ 2 - (k + 1) ^ 2) * (derivative^[k] (U R n)).eval 1 := by
@@ -996,6 +1143,8 @@ theorem iterate_derivative_U_eval_one_recurrence (n : ℤ) (k : ℕ) :
   rw [one_pow, sub_self, zero_mul, mul_one] at h
   exact sub_eq_zero.mp h.symm
 
+/-- Recurrence in `k` for the `k`-th derivative of `T n` at `0`:
+`T⁽ᵏ⁺²⁾(0) = -(n ^ 2 - k ^ 2) * T⁽ᵏ⁾(0)`. -/
 theorem iterate_derivative_T_eval_zero_recurrence (n : ℤ) (k : ℕ) :
     (derivative^[k + 2] (T R n)).eval 0 =
       -(n ^ 2 - k ^ 2) * (derivative^[k] (T R n)).eval 0 := by
@@ -1003,6 +1152,8 @@ theorem iterate_derivative_T_eval_zero_recurrence (n : ℤ) (k : ℕ) :
   rw [zero_pow two_ne_zero, sub_zero, one_mul, mul_zero, zero_mul, zero_sub] at h
   linear_combination (norm := (push_cast; ring_nf)) h
 
+/-- Recurrence in `k` for the `k`-th derivative of `U n` at `0`:
+`U⁽ᵏ⁺²⁾(0) = -((n + 1) ^ 2 - (k + 1) ^ 2) * U⁽ᵏ⁾(0)`. -/
 theorem iterate_derivative_U_eval_zero_recurrence (n : ℤ) (k : ℕ) :
     (derivative^[k + 2] (U R n)).eval 0 =
       -((n + 1) ^ 2 - (k + 1) ^ 2) * (derivative^[k] (U R n)).eval 0 := by
@@ -1010,6 +1161,8 @@ theorem iterate_derivative_U_eval_zero_recurrence (n : ℤ) (k : ℕ) :
   rw [zero_pow two_ne_zero, sub_zero, one_mul, mul_zero, zero_mul, zero_sub] at h
   linear_combination (norm := (push_cast; ring_nf)) h
 
+/-- The `k`-th derivative of `T n` at `1`, in product form:
+`(∏ l < k, (2l + 1)) * T⁽ᵏ⁾(1) = ∏ l < k, (n ^ 2 - l ^ 2)`. -/
 theorem iterate_derivative_T_eval_one (n : ℤ) (k : ℕ) :
     (∏ l ∈ Finset.range k, (2 * l + 1)) * (derivative^[k] (T R n)).eval 1 =
       ∏ l ∈ Finset.range k, (n ^ 2 - l ^ 2) := by
@@ -1021,6 +1174,8 @@ theorem iterate_derivative_T_eval_one (n : ℤ) (k : ℕ) :
       mul_assoc, iterate_derivative_T_eval_one_recurrence, ← mul_assoc, mul_comm _ (_ ^ 2 - _ ^ 2),
       mul_assoc, ih, Finset.prod_insert Finset.notMem_range_self]
 
+/-- The `k`-th derivative of `U n` at `1`, in product form:
+`(∏ l < k, (2l + 3)) * U⁽ᵏ⁾(1) = (∏ l < k, ((n + 1) ^ 2 - (l + 1) ^ 2)) * (n + 1)`. -/
 theorem iterate_derivative_U_eval_one (n : ℤ) (k : ℕ) :
     (∏ l ∈ Finset.range k, (2 * l + 3)) * (derivative^[k] (U R n)).eval 1 =
       (∏ l ∈ Finset.range k, ((n + 1) ^ 2 - (l + 1) ^ 2 : ℤ)) * (n + 1) := by
@@ -1032,10 +1187,12 @@ theorem iterate_derivative_U_eval_one (n : ℤ) (k : ℕ) :
       mul_assoc, iterate_derivative_U_eval_one_recurrence, ← mul_assoc, mul_comm _ (_ ^ 2 - _ ^ 2),
       mul_assoc, ih, Finset.prod_insert Finset.notMem_range_self, mul_assoc]
 
+/-- The derivative of `T n` at `1` is `n ^ 2`. -/
 theorem derivative_T_eval_one (n : ℤ) :
     (derivative (T R n)).eval 1 = n ^ 2 := by
   simp [T_derivative_eq_U, sq]
 
+/-- The derivative of `U n` at `1` satisfies `3 * U'(1) = (n + 2) * (n + 1) * n`. -/
 theorem derivative_U_eval_one (n : ℤ) :
     3 * (derivative (U R n)).eval 1 = (n + 2) * (n + 1) * n := by
   have h := iterate_derivative_U_eval_one (R := R) n 1
@@ -1044,12 +1201,16 @@ theorem derivative_U_eval_one (n : ℤ) :
 
 variable {𝔽 : Type*} [Field 𝔽]
 
+/-- Over a field of characteristic zero, the `k`-th derivative of `T n` at `1` is
+`(∏ l < k, (n ^ 2 - l ^ 2)) / (∏ l < k, (2l + 1))`. -/
 theorem iterate_derivative_T_eval_one_eq_div [CharZero 𝔽] (n : ℤ) (k : ℕ) :
     (derivative^[k] (T 𝔽 n)).eval 1 =
       (∏ l ∈ Finset.range k, (n ^ 2 - l ^ 2)) / (∏ l ∈ Finset.range k, (2 * l + 1)) := by
   rw [eq_div_iff (Nat.cast_ne_zero.mpr (Finset.prod_ne_zero_iff.mpr (fun _ _ => by positivity))),
     mul_comm, iterate_derivative_T_eval_one]
 
+/-- Over a field of characteristic zero, the `k`-th derivative of `U n` at `1` is
+`(∏ l < k, ((n + 1) ^ 2 - (l + 1) ^ 2)) * (n + 1) / (∏ l < k, (2l + 3))`. -/
 theorem iterate_derivative_U_eval_one_eq_div [CharZero 𝔽] (n : ℤ) (k : ℕ) :
     (derivative^[k] (U 𝔽 n)).eval 1 =
       ((∏ l ∈ Finset.range k, ((n + 1) ^ 2 - (l + 1) ^ 2) : ℤ) * (n + 1)) /
@@ -1057,19 +1218,23 @@ theorem iterate_derivative_U_eval_one_eq_div [CharZero 𝔽] (n : ℤ) (k : ℕ)
   rw [eq_div_iff (Nat.cast_ne_zero.mpr (Finset.prod_ne_zero_iff.mpr (fun _ _ => by positivity))),
     mul_comm, iterate_derivative_U_eval_one]
 
+/-- In any field, `∏ l < k, (2l + 1)` divides `∏ l < k, (n ^ 2 - l ^ 2)`. -/
 theorem iterate_derivative_T_eval_one_dvd (n : ℤ) (k : ℕ) :
     ((∏ l ∈ Finset.range k, (2 * l + 1) : ℕ) : 𝔽) ∣ (∏ l ∈ Finset.range k, (n ^ 2 - l ^ 2) : ℤ) :=
   dvd_of_mul_right_eq _ <| iterate_derivative_T_eval_one n k
 
+/-- In any field, `∏ l < k, (2l + 3)` divides `(∏ l < k, ((n + 1) ^ 2 - (l + 1) ^ 2)) * (n + 1)`. -/
 theorem iterate_derivative_U_eval_one_dvd (n : ℤ) (k : ℕ) :
     ((∏ l ∈ Finset.range k, (2 * l + 3) : ℕ) : 𝔽) ∣
       ((∏ l ∈ Finset.range k, ((n + 1) ^ 2 - (l + 1) ^ 2) : ℤ) * (n + 1)) :=
   dvd_of_mul_right_eq _ <| iterate_derivative_U_eval_one n k
 
+/-- In a field in which `3 ≠ 0`, the derivative of `U n` at `1` is `(n + 2) * (n + 1) * n / 3`. -/
 theorem derivative_U_eval_one_eq_div [neZero3 : NeZero (3 : 𝔽)] (n : ℤ) :
     (derivative (U 𝔽 n)).eval 1 = ((n + 2) * (n + 1) * n) / 3 :=
   eq_div_of_mul_eq neZero3.ne ((mul_comm ..).trans (derivative_U_eval_one n))
 
+/-- In any field, `3` divides `(n + 2) * (n + 1) * n`. -/
 theorem derivative_U_eval_one_dvd (n : ℤ) :
     (3 : 𝔽) ∣ (n + 2) * (n + 1) * n :=
   dvd_of_mul_right_eq _ (derivative_U_eval_one n)
