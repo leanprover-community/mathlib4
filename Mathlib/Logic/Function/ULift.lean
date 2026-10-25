@@ -6,6 +6,8 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 import Mathlib.Init
+public import Mathlib.Init
+import Mathlib.Tactic.TypeStar
 
 /-!
 # `ULift` and `PLift`

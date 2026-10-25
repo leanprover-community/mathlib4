@@ -7,6 +7,8 @@ module
 
 import Batteries.Logic
 import Mathlib.Init
+public import Mathlib.Init
+import Mathlib.Tactic.TypeStar
 
 /-!
 # Extra facts about `PProd`

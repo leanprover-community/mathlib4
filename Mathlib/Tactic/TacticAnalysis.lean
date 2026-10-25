@@ -9,8 +9,8 @@ public meta import Lean.Compiler.IR.CompilerM
 public meta import Lean.Elab.Command
 public meta import Lean.Elab.InfoTree.Util
 public meta import Lean.Util.Heartbeats
-public meta import Mathlib.Lean.Elab.Tactic.Meta
 public import Mathlib.Lean.ContextInfo
+public import Lean.Elab.Command
 
 /-! # Tactic analysis framework
 

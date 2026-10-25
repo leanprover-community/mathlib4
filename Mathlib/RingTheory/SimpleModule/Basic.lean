@@ -6,7 +6,6 @@ Authors: Aaron Anderson
 module
 
 public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
-public import Mathlib.LinearAlgebra.DFinsupp
 public import Mathlib.LinearAlgebra.Projection
 public import Mathlib.Order.Atoms.Finite
 public import Mathlib.Order.CompactlyGenerated.Intervals

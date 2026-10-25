@@ -12,6 +12,7 @@ public meta import Lean.Meta.Tactic.Assumption
 public meta import Lean.Meta.Tactic.Intro
 public meta import Lean.Meta.Tactic.Simp
 public import Mathlib.Init
+public import Lean.Meta.Tactic.Simp
 
 
 /-!

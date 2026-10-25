@@ -8,6 +8,7 @@ module
 public import Mathlib.FieldTheory.RatFunc.AsPolynomial
 public import Mathlib.NumberTheory.ArithmeticFunction.Moebius
 public import Mathlib.RingTheory.RootsOfUnity.Complex
+public import Mathlib.FieldTheory.Separable
 
 /-!
 # Cyclotomic polynomials.

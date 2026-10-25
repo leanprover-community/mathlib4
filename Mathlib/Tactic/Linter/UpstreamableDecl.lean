@@ -7,6 +7,7 @@ module
 
 public import ImportGraph.Widget.GoToModule
 public import Mathlib.Init
+public import Mathlib.Tactic.MinImports
 
 /-! # The `upstreamableDecl` linter
 

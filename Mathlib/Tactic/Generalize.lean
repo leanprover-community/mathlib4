@@ -10,6 +10,8 @@ public meta import Lean.Elab.Tactic.ElabTerm
 public meta import Lean.Meta.Tactic.Generalize
 
 import Mathlib.Init
+public import Lean.Meta.Tactic.FVarSubst
+public import Mathlib.Init
 
 /-!
 # Backwards compatibility shim for `generalize`.

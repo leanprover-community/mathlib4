@@ -6,6 +6,9 @@ Authors: Mario Carneiro
 module
 
 import Mathlib.Init
+public import Mathlib.Init
+import Mathlib.Tactic.Lemma
+import Mathlib.Tactic.TypeStar
 
 /-!
 # Extra definitions on `Option`

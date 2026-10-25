@@ -41,6 +41,8 @@ public meta import Mathlib.Util.CodeActions
 public import Batteries.Tactic.Alias
 -- This import makes the `proof_wanted` command available globally.
 public import Batteries.Util.ProofWanted
+public import Lean.Linter.Sets
+public import Mathlib.Tactic.Linter.UnusedTactic
 
 /-!
 This is the root file in Mathlib: it is imported by virtually *all* Mathlib files.

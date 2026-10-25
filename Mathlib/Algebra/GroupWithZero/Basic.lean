@@ -5,7 +5,6 @@ Authors: Johan Commelin
 -/
 module
 
-public import Batteries.Tactic.SeqFocus
 public import Mathlib.Algebra.Group.SelfInv
 public import Mathlib.Algebra.GroupWithZero.NeZero
 public import Mathlib.Basic.Unique

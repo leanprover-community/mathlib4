@@ -10,6 +10,7 @@ public import Mathlib.Data.ENat.Defs
 public import Mathlib.Data.Option.NAry
 public import Mathlib.Data.Seq.Computation
 public import Mathlib.Data.Subtype
+public import Batteries.Tactic.SeqFocus
 
 /-!
 # Possibly infinite lists

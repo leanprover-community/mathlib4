@@ -5,9 +5,9 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Group.Torsion
 public import Mathlib.Algebra.Notation.Pi.Basic
 public import Mathlib.Logic.Equiv.Defs
+public import Mathlib.Algebra.Group.Defs
 
 /-!
 # Type tags that turn additive structures into multiplicative, and vice versa

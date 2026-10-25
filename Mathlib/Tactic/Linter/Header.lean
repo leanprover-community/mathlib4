@@ -10,6 +10,7 @@ public meta import Lean.Linter.Basic
 public meta import Std.Sync.Mutex
 public import Mathlib.Tactic.Linter.DirectoryDependency
 public import Std.Sync.Mutex
+public import Lean.Parser.Module
 
 /-!
 # The "header" linter

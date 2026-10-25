@@ -8,6 +8,7 @@ module
 public meta import Lean.Elab.Tactic.Basic
 
 import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 

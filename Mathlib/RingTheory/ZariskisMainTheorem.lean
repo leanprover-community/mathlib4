@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.QuasiFinite.Polynomial
 
 import Mathlib.Algebra.Algebra.Shrink
 import Mathlib.RingTheory.IntegralClosure.GoingDown
+public import Mathlib.FieldTheory.PurelyInseparable.Basic
 
 /-!
 # Algebraic Zariski's Main Theorem

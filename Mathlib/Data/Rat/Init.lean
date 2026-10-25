@@ -7,6 +7,8 @@ module
 
 public import Batteries.Classes.RatCast
 public import Mathlib.Data.Nat.Notation
+public import Mathlib.Tactic.Lemma
+public import Mathlib.Tactic.TypeStar
 
 /-!
 # Basic definitions around the rational numbers

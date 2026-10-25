@@ -12,7 +12,6 @@ public import Mathlib.Tactic.Group
 public import Mathlib.Topology.MetricSpace.Defs
 public import Mathlib.Topology.Order.Real
 
-import Mathlib.Tactic.Basify.Attr
 
 /-!
 # (Semi)normed groups: definitions

@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Int.Notation
 
 import Mathlib.Tactic.Push.Attr
+import Mathlib.Tactic.TypeStar
 
 /-!
 # Cast of integers to function types

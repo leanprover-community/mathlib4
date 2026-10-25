@@ -7,7 +7,9 @@ module
 
 public meta import Batteries.Lean.Position
 public meta import Lean.Elab.Command
-public import Mathlib.Tactic.Linter.UnusedInstancesInType
+public import Lean.Data.LOption
+public import Lean.Message
+public meta import Mathlib.Lean.Elab.InfoTree
 
 /-!
 # A linter for declarations with local instances that overlap

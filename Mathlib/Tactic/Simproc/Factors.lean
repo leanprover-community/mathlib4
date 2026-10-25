@@ -8,6 +8,7 @@ module
 public meta import Batteries.Lean.Expr
 public import Mathlib.Data.Nat.Factors
 public import Mathlib.Tactic.NormNum.Prime
+public import Batteries.Lean.Expr
 
 /-!
 # `simproc` for `Nat.primeFactorsList`

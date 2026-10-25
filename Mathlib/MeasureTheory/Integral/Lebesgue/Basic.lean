@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Johannes Hölzl
 -/
 module
 
-public import Mathlib.Algebra.Order.Pi
 public import Mathlib.MeasureTheory.Function.SimpleFunc
 
 /-!

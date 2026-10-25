@@ -6,6 +6,9 @@ Authors: Leonardo de Moura
 module
 
 import Mathlib.Init
+public import Mathlib.Init
+import Mathlib.Tactic.Lemma
+import Mathlib.Tactic.TypeStar
 
 /-!
 # Helper definitions and instances for `Ordering`

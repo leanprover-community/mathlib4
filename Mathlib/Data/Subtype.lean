@@ -8,7 +8,6 @@ module
 public import Mathlib.Logic.Function.Basic
 public import Mathlib.Tactic.Simps
 
-import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Subtypes

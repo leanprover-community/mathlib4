@@ -7,6 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
+public import Mathlib.Algebra.Order.Pi
 
 /-!
 # Monotone convergence theorem and addition of Lebesgue integrals

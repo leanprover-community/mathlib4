@@ -10,6 +10,9 @@ public meta import Mathlib.Lean.Name
 public meta import Mathlib.Lean.PrettyPrinter.Delaborator
 public import Mathlib.Tactic.Translate.GuessName
 public import Mathlib.Util.AddRelatedDecl
+public import Batteries.Tactic.Lint
+public import Lean.PrettyPrinter
+public import Mathlib.Tactic.TypeStar
 
 /-!
 # Set notation for order operations

@@ -9,7 +9,6 @@ public import Mathlib.Probability.Martingale.Basic
 public import Mathlib.Probability.Notation
 public import Mathlib.Probability.Process.HittingTime
 
-import Mathlib.Tactic.AdaptationNote
 
 /-!
 

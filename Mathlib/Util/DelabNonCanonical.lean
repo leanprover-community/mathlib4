@@ -8,6 +8,7 @@ module
 public meta import Lean.PrettyPrinter.Delaborator.Builtins
 
 import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # Delaborating non-canonical instances

@@ -7,6 +7,7 @@ module
 
 public meta import Mathlib.Tactic.ToDual
 public import Mathlib.Data.Set.SymmDiff  -- shake: keep (Qq dependency)
+public meta import Aesop
 
 /-!
 # The `tauto_set` tactic

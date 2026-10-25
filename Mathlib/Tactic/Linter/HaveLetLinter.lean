@@ -8,6 +8,7 @@ module
 public meta import Lean.Elab.Command
 public meta import Lean.Elab.InfoTree.Util
 public import Mathlib.Init
+public import Mathlib.Tactic.DeclarationNames
 
 /-!
 # The `have` vs `let` linter
