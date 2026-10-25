@@ -8,9 +8,6 @@ module
 public import Mathlib.Data.Set.Restrict
 public import Mathlib.Util.Delaborators
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Functions depending only on some variables
 

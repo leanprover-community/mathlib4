@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Data.List.Chain
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Ranges of naturals as lists
 
