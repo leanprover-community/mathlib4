@@ -5,7 +5,6 @@ Authors: Jz Pan
 -/
 module
 
-public import Mathlib.Algebra.Module.TransferInstance
 public import Mathlib.RingTheory.Finiteness.Cardinality
 
 /-!

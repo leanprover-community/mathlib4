@@ -5,12 +5,8 @@ Authors: Heather Macbeth, Floris van Doorn, Michael Rothgang
 -/
 module
 
-public import Mathlib.Geometry.Manifold.Algebra.SMul
 public import Mathlib.Geometry.Manifold.Algebra.LieGroup
-public import Mathlib.Geometry.Manifold.MFDeriv.Basic
-public import Mathlib.Topology.ContinuousMap.Basic
-public import Mathlib.Geometry.Manifold.VectorBundle.Basic
-public import Mathlib.Geometry.Manifold.Notation
+public import Mathlib.Geometry.Manifold.Algebra.SMul
 
 /-!
 # `C^n` sections
@@ -372,7 +368,7 @@ theorem coe_zsmul (s : Cₛ^n⟮I; F, V⟯) (z : ℤ) : ⇑(z • s : Cₛ^n⟮I
   rcases z with n | n
   · refine (coe_nsmul s n).trans ?_
     simp only [Int.ofNat_eq_natCast, natCast_zsmul]
-  · refine (congr_arg Neg.neg (coe_nsmul s (n + 1))).trans ?_
+  · refine congr(-$(coe_nsmul s (n + 1))).trans ?_
     simp only [negSucc_zsmul]
 
 instance instAddCommGroup : AddCommGroup Cₛ^n⟮I; F, V⟯ :=

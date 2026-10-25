@@ -123,6 +123,20 @@ theorem mk_eq_mk_iff' (v w : V) (hv : v ≠ 0) (hw : w ≠ 0) :
     refine ⟨Units.mk0 a fun c => hv.symm ?_, ha⟩
     rwa [c, zero_smul] at ha
 
+/-- Two nonzero vectors have the same image under `mk'` iff one is a unit multiple of the other,
+for the action of `Kˣ` on `{ v : V // v ≠ 0 }`. -/
+theorem mk'_eq_mk'_iff (v w : { v : V // v ≠ 0 }) :
+    mk' K v = mk' K w ↔ ∃ a : Kˣ, a • w = v :=
+  Quotient.eq''.trans (Units.orbitRel_nonZero_iff K V v w).symm
+
+/-- The saturation of a set of nonzero vectors under `mk'` is the union of its translates by the
+units of `K`. -/
+theorem preimage_image_mk' (U : Set { v : V // v ≠ 0 }) :
+    mk' K ⁻¹' (mk' K '' U) = ⋃ a : Kˣ, (a • ·) '' U := by
+  ext v
+  simp only [Set.mem_image, Set.mem_iUnion]
+  grind [mk'_eq_mk'_iff]
+
 theorem exists_smul_eq_mk_rep (v : V) (hv : v ≠ 0) : ∃ a : Kˣ, a • v = (mk K v hv).rep :=
   (mk_eq_mk_iff K _ _ (rep_nonzero _) hv).1 (mk_rep _)
 
@@ -169,7 +183,7 @@ noncomputable def equivSubmodule : ℙ K V ≃ { H : Submodule K V // finrank K 
     rw [submodule_mk, SetLike.ext'_iff, Submodule.span_singleton_eq_range]
     refine (Set.range_subset_iff.2 fun _ ↦ H.smul_mem _ v.2).antisymm fun x hx ↦ ?_
     rcases hv ⟨x, hx⟩ with ⟨c, hc⟩
-    exact ⟨c, congr_arg Subtype.val hc⟩
+    exact ⟨c, congr($(hc).val)⟩
 
 variable {K V}
 
@@ -179,7 +193,7 @@ noncomputable def mk'' (H : Submodule K V) (h : finrank K H = 1) : ℙ K V :=
 
 @[simp]
 theorem submodule_mk'' (H : Submodule K V) (h : finrank K H = 1) : (mk'' H h).submodule = H :=
-  congr_arg Subtype.val <| (equivSubmodule K V).apply_symm_apply ⟨H, h⟩
+  congr($((equivSubmodule K V).apply_symm_apply ⟨H, h⟩).val)
 
 @[simp]
 theorem mk''_submodule (v : ℙ K V) : mk'' v.submodule v.finrank_submodule = v :=
