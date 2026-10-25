@@ -38,15 +38,13 @@ Eulerian trails
 
 namespace SimpleGraph
 
-variable {V : Type*} {G : SimpleGraph V} {u v w : V} {p : G.Walk u v}
+variable {V : Type*} [DecidableEq V] {G : SimpleGraph V} {u v w : V} {p : G.Walk u v}
 
 namespace Walk
 
 /-- The edges of a trail as a finset, since each edge in a trail appears exactly once. -/
 abbrev IsTrail.edgesFinset (h : p.IsTrail) : Finset (Sym2 V) :=
   ⟨p.edges, Multiset.coe_nodup.mpr h.edges_nodup⟩
-
-variable [DecidableEq V]
 
 theorem IsTrail.even_countP_edges_iff (ht : p.IsTrail) (x : V) :
     Even (p.edges.countP fun e ↦ x ∈ e) ↔ u ≠ v → x ≠ u ∧ x ≠ v := by
@@ -55,7 +53,7 @@ theorem IsTrail.even_countP_edges_iff (ht : p.IsTrail) (x : V) :
   | cons huv p ih => grind [isTrail_cons, edges_cons, G.irrefl]
 
 /-- An *Eulerian trail* (also known as an "Eulerian path") is a walk
-`p` that visits every edge exactly once.  The lemma `SimpleGraph.Walk.IsEulerian.IsTrail` shows
+`p` that visits every edge exactly once.  The lemma `IsEulerian.isTrail` shows
 that these are trails.
 
 Combine with `p.IsCircuit` to get an Eulerian circuit (also known as an "Eulerian cycle"). -/
@@ -108,9 +106,14 @@ theorem IsEulerian.mem_support_of_preconnected (hp : p.IsEulerian) (h : G.Precon
 theorem IsEulerian.nil_iff (hp : p.IsEulerian) : p.Nil ↔ G = ⊥ := by
   simp [← edgeSet_eq_empty, hp.edgeSet_eq]
 
-theorem isEulerian_of_bot (p : Walk ⊥ u v) : p.IsEulerian := by
+theorem IsEulerian.of_bot (p : Walk ⊥ u v) : p.IsEulerian := by
   intro e h
   simp at h
+
+@[deprecated (since := "2026-10-25")] alias isEulerian_of_bot := IsEulerian.of_bot
+
+theorem IsEulerian.isCircuit_iff {p : G.Walk v v} (h : p.IsEulerian) : p.IsCircuit ↔ G ≠ ⊥ := by
+  simp [isCircuit_def, h.isTrail, h.nil_iff]
 
 @[simp]
 theorem isEulerian_rotate {p : G.Walk u u} (hv : v ∈ p.support) :
@@ -126,29 +129,13 @@ theorem IsEulerian.mem_support_iff (hp : p.IsEulerian) (hnil : ¬p.Nil) :
 
 theorem IsEulerian.connected_of_forall_not_isIsolated (hp : p.IsEulerian)
     (hG : ∀ v, ¬G.IsIsolated v) : G.Connected where
-  preconnected a b :=
-    have ha : a ∈ p.support := hp.mem_support_of_not_isIsolated <| hG a
-    have hb : b ∈ p.support := hp.mem_support_of_not_isIsolated <| hG b
-    ⟨p.takeUntil a ha |>.reverse.append <| p.takeUntil b hb⟩
+  preconnected a b := by
+    apply reachable_of_mem_support <;> apply hp.mem_support_of_not_isIsolated <;> apply hG
   nonempty := ⟨u⟩
 
-/-- In an Eulerian graph there exists an Eulerian circuit from any non-isolated vertex. -/
-theorem _root_.SimpleGraph.exists_isEulerian_of_mem_support (hv : ¬G.IsIsolated v)
-    (hp : ∃ (v' : V) (p : G.Walk v' v'), p.IsEulerian) : ∃ p : G.Walk v v, p.IsEulerian :=
-  have ⟨_, _, hp⟩ := hp
-  ⟨_, hp.rotate <| hp.mem_support_of_not_isIsolated hv⟩
-
-variable (v) in
-/-- In a connected Eulerian graph there exists an Eulerian circuit from any vertex.
-Since Eulerian graphs are nonempty, it suffices to require preconnected. -/
-theorem _root_.SimpleGraph.Preconnected.exists_isEulerian (h : G.Preconnected)
-    (hp : ∃ (v' : V) (p : G.Walk v' v'), p.IsEulerian) : ∃ p : G.Walk v v, p.IsEulerian := by
-  cases subsingleton_or_nontrivial V
-  · exact ⟨nil, Sym2.ind fun a b hadj ↦ absurd (Subsingleton.elim a b) hadj.ne⟩
-  exact exists_isEulerian_of_mem_support (h.not_isIsolated v) hp
-
-theorem IsEulerian.even_degree_iff (ht : p.IsEulerian) [Fintype V] [DecidableRel G.Adj] :
+theorem IsEulerian.even_degree_iff (ht : p.IsEulerian) [Fintype (G.neighborSet w)] :
     Even (G.degree w) ↔ u ≠ v → w ≠ u ∧ w ≠ v := by
+  have := ht.fintypeEdgeSet
   rw [← ht.isTrail.even_countP_edges_iff, ← Multiset.coe_countP, Multiset.countP_eq_card_filter,
     ← card_incidenceFinset_eq_degree, incidenceFinset_eq_filter, ← ht.edgesFinset_eq]
   simp [Finset.card_def]
@@ -168,5 +155,49 @@ theorem IsEulerian.card_odd_degree [Fintype V] [DecidableRel G.Adj] (ht : p.IsEu
   simp
 
 end Walk
+
+variable (G) in
+/-- A graph is Eulerian if it contains a closed Eulerian trail. -/
+@[mk_iff]
+structure IsEulerian where
+  exists_isEulerian : ∃ (v : V) (p : G.Walk v v), p.IsEulerian
+
+protected theorem IsEulerian.nonempty (h : G.IsEulerian) : Nonempty V :=
+  h.exists_isEulerian.nonempty
+
+/-- A graph is Eulerian and nontrivial iff it contains an Eulerian circuit. -/
+theorem isEulerian_and_ne_bot_iff :
+    G.IsEulerian ∧ G ≠ ⊥ ↔ ∃ (v : V) (p : G.Walk v v), p.IsEulerian ∧ p.IsCircuit := by
+  grind [isEulerian_iff, Walk.IsEulerian.isCircuit_iff]
+
+variable (V) in
+protected theorem IsEulerian.bot [Nonempty V] : (⊥ : SimpleGraph V).IsEulerian :=
+  ⟨Classical.arbitrary V, .nil, .of_bot .nil⟩
+
+/-- In an Eulerian graph there exists an Eulerian circuit from any non-isolated vertex. -/
+theorem IsEulerian.exists_isEulerian_of_not_isIsolated (hG : G.IsEulerian) (hv : ¬G.IsIsolated v) :
+    ∃ p : G.Walk v v, p.IsEulerian :=
+  have ⟨_, _, hp⟩ := hG.exists_isEulerian
+  ⟨_, hp.rotate <| hp.mem_support_of_not_isIsolated hv⟩
+
+variable (v) in
+/-- In a connected Eulerian graph there exists a closed Eulerian trail from any vertex.
+Since Eulerian graphs are nonempty, it suffices to require preconnected. -/
+theorem IsEulerian.exists_isEulerian_of_preconnected (h : G.IsEulerian) (h' : G.Preconnected) :
+    ∃ p : G.Walk v v, p.IsEulerian := by
+  cases subsingleton_or_nontrivial V
+  · exact ⟨.nil, Sym2.ind fun a b hadj ↦ absurd (Subsingleton.elim a b) hadj.ne⟩
+  exact h.exists_isEulerian_of_not_isIsolated <| h'.not_isIsolated v
+
+theorem IsEulerian.connected_of_forall_not_isIsolated (h : G.IsEulerian)
+    (h' : ∀ v, ¬G.IsIsolated v) : G.Connected :=
+  have ⟨_, _, hp⟩ := h.exists_isEulerian
+  hp.connected_of_forall_not_isIsolated h'
+
+variable (v) in
+theorem IsEulerian.even_degree (h : G.IsEulerian) [Fintype (G.neighborSet v)] :
+    Even (G.degree v) := by
+  have ⟨u, p, hp⟩ := h.exists_isEulerian
+  simp [hp.even_degree_iff]
 
 end SimpleGraph
