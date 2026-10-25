@@ -500,7 +500,7 @@ theorem bijective_compr₂ₛₗ_of_equiv [RingHomInvPair σ₃₄ σ₄₃] [Ri
 /-- An auxiliary lemma for proving `mul_assoc`, turning an equality in terms of bilinear maps into
 an equality of linear maps so that we can use `ext`. -/
 lemma mul_assoc_iff (mul : M →ₗ[R] M →ₗ[R] M) :
-    ∀ x y z, mul (mul x y) z = mul x (mul y z) ↔
+    (∀ x y z, mul (mul x y) z = mul x (mul y z)) ↔
       LinearMap.llcomp R M M (M →ₗ[R] M) mul ∘ₗ mul =
         (LinearMap.llcomp R M (M →ₗ[R] M →ₗ[R] M) (M →ₗ[R] M →ₗ[R] M) LinearMap.lflip.toLinearMap <|
           LinearMap.llcomp R M M (M →ₗ[R] M) mul.flip ∘ₗ mul).flip :=
