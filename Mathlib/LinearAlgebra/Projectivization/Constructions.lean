@@ -6,8 +6,9 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.LinearAlgebra.CrossProduct
-public import Mathlib.LinearAlgebra.Matrix.DotProduct
 public import Mathlib.LinearAlgebra.Projectivization.Basic
+
+import Mathlib.LinearAlgebra.Matrix.DotProduct
 
 /-!
 
