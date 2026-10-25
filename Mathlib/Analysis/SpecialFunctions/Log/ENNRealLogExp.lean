@@ -5,8 +5,8 @@ Authors: Damien Thomine, Pietro Monticone, Rémy Degenne, Lorenzo Luccioli
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Log.ERealExp
 public import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLog
+public import Mathlib.Analysis.SpecialFunctions.Log.ERealExp
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 public import Mathlib.Topology.MetricSpace.Polish
 

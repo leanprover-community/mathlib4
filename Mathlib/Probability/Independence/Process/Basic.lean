@@ -5,8 +5,9 @@ Authors: Etienne Marion
 -/
 module
 
-import Mathlib.MeasureTheory.Constructions.Cylinders
 public import Mathlib.Probability.Independence.Basic
+
+import Mathlib.MeasureTheory.Constructions.Cylinders
 
 /-!
 # Independence of stochastic processes

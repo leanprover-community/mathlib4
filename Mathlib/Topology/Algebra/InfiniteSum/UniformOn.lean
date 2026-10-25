@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Topology.Algebra.InfiniteSum.Defs
 public import Mathlib.Topology.Algebra.UniformConvergence
+
 import Mathlib.Order.Filter.AtTopBot.Finset
 
 /-!

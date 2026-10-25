@@ -5,10 +5,11 @@ Authors: Roberto Alvarez
 -/
 module
 
-import Mathlib.Algebra.Group.Ext
 public import Mathlib.Algebra.Group.TransferInstance
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.FundamentalGroup
 public import Mathlib.GroupTheory.EckmannHilton
+
+import Mathlib.Algebra.Group.Ext
 
 /-!
 # `n`th homotopy group
@@ -329,7 +330,7 @@ theorem fromLoop_apply (i : N) {p : Ω (Ω^ { j // j ≠ i } X x) const} {t : I^
 /-- Composition with `Cube.insertAt` as a continuous map. -/
 abbrev cCompInsert (i : N) : C(C(I^N, X), C(I × I^{ j // j ≠ i }, X)) :=
   ⟨fun f ↦ f.comp (Cube.insertAt i),
-    (toContinuousMap <| Cube.insertAt i).continuous_precomp⟩
+    (ContinuousMap.ofClass <| Cube.insertAt i).continuous_precomp⟩
 
 /-- A homotopy between `n+1`-dimensional loops `p` and `q` constant on the boundary
   seen as a homotopy between two paths in the space of `n`-dimensional paths. -/
@@ -352,12 +353,11 @@ theorem homotopicTo (i : N) {p q : Ω^ N X x} :
     rw [homotopyTo_apply, H.eq_fst, p.2]
     all_goals apply Cube.insertAt_boundary; right; exact ⟨i, iH⟩
   · fun_prop
-  iterate 2
+  on_goal 1 2 =>
     intro
     ext
     dsimp
     rw [homotopyTo_apply, toLoop_apply]
-    swap
   · apply H.apply_zero
   · apply H.apply_one
   intro t y yH
@@ -407,7 +407,7 @@ def transAt (i : N) (f g : Ω^ N X x) : Ω^ N X x :=
     (by
       ext1; symm
       dsimp only [Path.trans, fromLoop, Path.coe_mk_mk, Function.comp_apply, mk_apply,
-        ContinuousMap.comp_apply, ContinuousMap.coe_coe, funSplitAt_apply,
+        ContinuousMap.comp_apply, ContinuousMap.coe_ofClass, funSplitAt_apply,
         ContinuousMap.uncurry_apply, ContinuousMap.coe_mk, Function.uncurry_apply_pair]
       split_ifs
       · change f _ = _; congr 1

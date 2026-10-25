@@ -5,8 +5,8 @@ Authors: Kim Morrison, Reid Barton
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Types.Limits
 public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
+public import Mathlib.CategoryTheory.Limits.Types.Limits
 
 /-!
 # Cones and limits
@@ -124,13 +124,5 @@ variable (J) (C) in
 noncomputable def opHomCompWhiskeringLimYonedaIsoCocones : opHom _ _ ⋙ whiskeringLeft _ _ _ ⋙
       (whiskeringRight _ _ _).obj lim ⋙ (whiskeringLeft _ _ _).obj yoneda ≅ cocones J C :=
   NatIso.ofComponents fun F => NatIso.ofComponents (limitCompYonedaIsoCocone F.unop)
-
-/-- A cocone on `F` with cocone point `X` is the same as an element of `lim Hom(F·, X)`,
-naturally in `X`. -/
-@[deprecated "Use `(opHomCompWhiskeringLimYonedaIsoCocones _ _).app _` instead"
-  (since := "2026-04-08")]
-noncomputable def yonedaCompLimIsoCocones (F : J ⥤ C) :
-    yoneda ⋙ (whiskeringLeft _ _ _).obj F.op ⋙ lim ≅ F.cocones :=
-  (opHomCompWhiskeringLimYonedaIsoCocones _ _).app (op F)
 
 end CategoryTheory.Limits

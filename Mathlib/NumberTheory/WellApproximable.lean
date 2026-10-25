@@ -6,6 +6,7 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Dynamics.Ergodic.AddCircle
+
 import Mathlib.MeasureTheory.Covering.LiminfLimsup
 
 /-!

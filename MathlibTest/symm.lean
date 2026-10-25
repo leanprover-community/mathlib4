@@ -1,5 +1,9 @@
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Logic.Equiv.Basic
+module
+
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Logic.Equiv.Basic
+
+@[expose] public section
 
 set_option autoImplicit true
 -- testing that the attribute is recognized

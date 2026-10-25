@@ -179,8 +179,10 @@ theorem toNNRat_coe (q : ℚ≥0) : toNNRat q = q :=
   ext <| max_eq_left q.2
 
 @[simp]
-theorem toNNRat_coe_nat (n : ℕ) : toNNRat n = n :=
+theorem toNNRat_natCast (n : ℕ) : toNNRat n = n :=
   ext <| by simp only [Nat.cast_nonneg', Rat.coe_toNNRat]; rfl
+
+@[deprecated (since := "2026-10-13")] alias toNNRat_coe_nat := toNNRat_natCast
 
 /-- `toNNRat` and `(↑) : ℚ≥0 → ℚ` form a Galois insertion. -/
 protected def gi : GaloisInsertion toNNRat (↑) :=

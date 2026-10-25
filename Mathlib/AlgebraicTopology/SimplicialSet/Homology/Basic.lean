@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 public import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.Nonempty
+
 import Mathlib.CategoryTheory.Linear.Basic
 
 /-!
@@ -48,10 +49,6 @@ instance : (chainComplexFunctor C).Additive := by
   dsimp [chainComplexFunctor, SimplicialObject.whiskering]
   infer_instance
 
-@[deprecated (since := "2026-04-05")]
-alias _root_.AlgebraicTopology.SSet.singularChainComplexFunctor :=
-  chainComplexFunctor
-
 set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] SSet.chainComplexFunctor in
 attribute [local simp←] _root_.SSet.yonedaEquiv_symm_comp in
@@ -62,10 +59,6 @@ noncomputable def chainComplexFunctorAdjunction (n : ℕ) :
   unit.app R := Sigma.ι (fun _ : Δ[n] _⦋n⦌ ↦ R) (SSet.stdSimplex.objEquiv (n := ⦋n⦌).symm (𝟙 ⦋n⦌))
   counit.app F := { app S := Sigma.desc fun α ↦ F.map (SSet.yonedaEquiv.symm α) }
   right_triangle_components F := by dsimp; simp
-
-@[deprecated (since := "2026-04-05")]
-alias _root_.SSet.singularChainComplexFunctorAdjunction :=
-  SSet.chainComplexFunctorAdjunction
 
 variable {C} (X Y Z : SSet.{w}) (f : X ⟶ Y) (g : Y ⟶ Z) (R : C)
 
