@@ -934,6 +934,52 @@ theorem comap_center_le_center {f : A →ₐ[R] B} (hf : Function.Injective f) :
 theorem map_center_eq (f : A ≃ₐ[R] B) : map f (center R A) = center R B :=
   SetLike.coe_injective (Set.image_center_eq f)
 
+instance : Algebra R (Center A) where
+  smul r a := Center.mk (r • a.val) (by
+    rw [Algebra.smul_def]
+    exact Set.mul_mem_center (Set.algebraMap_mem_center r) a.prop)
+  algebraMap :=
+    {toFun r := Center.mk (algebraMap R A r) (Set.algebraMap_mem_center r)
+     map_one' := by simp
+     map_mul' _ _ := by simp
+     map_zero' := by simp
+     map_add' x y := by simp}
+  commutes' r x := by simp [Algebra.commutes]
+  smul_def' r x := by simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, Center.eq_iff,
+    Center.coe_mul, ← Algebra.smul_def]; rfl
+
+@[simp]
+lemma _root_.Center.coe_smul (r : R) (z : Center A) :
+    (r • z).val = r • z.val := rfl
+
+@[simp]
+lemma _root_.Center.coe_algebraMpa (r : R) :
+    (algebraMap R (Center A) r).val = algebraMap R A r := rfl
+
+/-- A surjective morphism between `R`-algebras induces an `R`-algebra homomorhpism between their
+centers. -/
+@[simps!]
+def _root_.AlgHom.center {f : A →ₐ[R] B} (hf : Function.Surjective f) :
+    Center A →ₐ[R] Center B where
+  toRingHom := f.toRingHom.center hf
+  commutes' x := by simp
+
+/-- An isomorphism morphism between `R`-algebras induces an `R`-algebra isomorphism between their
+centers. -/
+@[simps!]
+def _root_.AlgEquiv.center (e : A ≃ₐ[R] B) :
+    Center A ≃ₐ[R] Center B where
+  toRingEquiv := e.toRingEquiv.center
+  commutes' := by simp
+
+variable (R A) in
+/-- The inclusion of `Center R` into `R` as a `R`-algebra homomorphism. -/
+@[simps!]
+def _root_.Center.algHom :
+    Center A →ₐ[R] A where
+  toRingHom := Center.ringHom A
+  commutes' := by simp
+
 end Center
 
 section Centralizer
