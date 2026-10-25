@@ -19,7 +19,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Bipartite
 * `SimpleGraph.IsSymmetric`: a graph is symmetric if every two darts are related by an automorphism.
 -/
 
-@[expose] public section
+public section
 
 namespace SimpleGraph
 
@@ -126,7 +126,9 @@ lemma isBipartiteWith_of_edge_not_vertex_transitive (et : G.IsEdgeTransitive)
   · exact ⟨((fa.symm.trans fw).trans fv.symm).trans fb, by simp_all [← RelIso.eq_symm_apply]⟩
   · exact ⟨fa.symm.trans fb, by simp_all [← RelIso.eq_symm_apply]⟩
 
-lemma isBipartite_of_edge_not_vertex_transitive
+/-- A semi-symmetric (edge- but not vertex-transitive) graph with no isolated vertices
+is bipartite. -/
+theorem isBipartite_of_edge_not_vertex_transitive
     (et : G.IsEdgeTransitive) (nvt : ¬G.IsVertexTransitive) (ni : ∀ v, ¬G.IsIsolated v) :
     G.IsBipartite := by
   obtain _ | ⟨⟨e, me⟩⟩ := G.edgeSet.eq_empty_or_nonempty
@@ -134,9 +136,64 @@ lemma isBipartite_of_edge_not_vertex_transitive
   · cases e using Sym2.inductionOn
     exact (isBipartiteWith_of_edge_not_vertex_transitive et nvt ni me).isBipartite
 
-lemma isSymmetric_of_transitive_of_odd_degree [Fintype V] [DecidableRel G.Adj]
+open Finset in
+/-- A half-transitive (vertex- and edge-transitive but not symmetric) graph with an odd-degree
+vertex is symmetric. The finiteness condition is necessary; see [thomassenwatkins1989]. -/
+theorem isSymmetric_of_transitive_of_odd_degree [Fintype V] [DecidableRel G.Adj]
     (vt : G.IsVertexTransitive) (et : G.IsEdgeTransitive) {v : V} (dv : Odd (G.degree v)) :
     G.IsSymmetric := by
-  sorry
+  obtain ⟨w, hvw⟩ := (G.degree_pos_iff_exists_adj v).mp dv.pos
+  contrapose dv
+  let R (a b) := ∃ f : G ≃g G, f v = a ∧ f w = b
+  have invariant (f : G ≃g G) (a b) : R (f a) (f b) ↔ R a b := by
+    refine ⟨fun ⟨g, hg⟩ ↦ ?_, fun ⟨g, hg⟩ ↦ ?_⟩
+    · exact ⟨g.trans f.symm, by simpa using congr(f.symm $(hg.1)),
+        by simpa using congr(f.symm $(hg.2))⟩
+    · exact ⟨g.trans f, by simp [hg.1], by simp [hg.2]⟩
+  have oriented {a b} (hab : G.Adj a b) : R a b ∨ R b a := by
+    obtain ⟨f, hf⟩ := et (G.mem_edgeSet.mpr hvw) (G.mem_edgeSet.mpr hab)
+    rw [Sym2.map_mk, Sym2.eq_iff] at hf
+    grind
+  have exclusive {a b} : ¬(R a b ∧ R b a) := by
+    rintro ⟨⟨f, hf⟩, ⟨g, hg⟩⟩
+    let k := f.trans g.symm
+    have kv : k v = w := by simp [k, hf.1, ← hg.2]
+    have kw : k w = v := by simp [k, hf.2, ← hg.1]
+    refine dv fun d₁ d₂ ↦ ?_
+    obtain ⟨f₁, f₁v, f₁w⟩ | ⟨f₁, f₁v, f₁w⟩ := oriented d₁.adj <;>
+    obtain ⟨f₂, f₂v, f₂w⟩ | ⟨f₂, f₂v, f₂w⟩ := oriented d₂.adj
+    · exact ⟨f₁.symm.trans f₂, by simp [← f₁v, ← f₁w, f₂v, f₂w]⟩
+    · exact ⟨(f₁.symm.trans k).trans f₂, by simp [← f₁v, ← f₁w, f₂v, f₂w, kv, kw]⟩
+    · exact ⟨(f₁.symm.trans k).trans f₂, by simp [← f₁v, ← f₁w, f₂v, f₂w, kv, kw]⟩
+    · exact ⟨f₁.symm.trans f₂, by simp [← f₁v, ← f₁w, f₂v, f₂w]⟩
+  classical
+  let out (a) : Finset V := {x | R a x}
+  let inn (a) : Finset V := {x | R x a}
+  have out_eq (a) : #(out a) = #(out v) := by
+    obtain ⟨f, hf⟩ := vt a v
+    exact card_bijective f f.bijective (by simp [out, ← hf, invariant])
+  have in_eq (a) : #(inn a) = #(inn v) := by
+    obtain ⟨f, hf⟩ := vt a v
+    exact card_bijective f f.bijective (by simp [inn, ← hf, invariant])
+  have total : ∑ a, #(out a) = ∑ a, #(inn a) := by
+    simp only [out, inn, card_eq_sum_ones, sum_filter]
+    exact sum_comm
+  have balance : #(out v) = #(inn v) := by
+    have hp : 0 < Fintype.card V := Fintype.card_pos_iff.mpr ⟨v⟩
+    apply Nat.eq_of_mul_eq_mul_left hp
+    simpa [out_eq, in_eq] using total
+  have adjacent {a b} (h : R a b) : G.Adj a b := by
+    obtain ⟨f, rfl, rfl⟩ := h
+    rwa [← f.map_rel_iff] at hvw
+  have partition : out v ∪ inn v = G.neighborFinset v := by
+    ext x
+    simp only [out, inn, mem_union, mem_filter_univ, mem_neighborFinset]
+    exact ⟨fun h ↦ h.elim adjacent fun h ↦ (adjacent h).symm, oriented⟩
+  have disjoint : Disjoint (out v) (inn v) :=
+    Finset.disjoint_left.mpr fun b hb hb' ↦ exclusive ⟨(mem_filter.mp hb).2, (mem_filter.mp hb').2⟩
+  have even_degree : Even (G.degree v) := by
+    refine ⟨#(out v), ?_⟩
+    rw [← card_neighborFinset_eq_degree, ← partition, card_union_of_disjoint disjoint, balance]
+  rwa [Nat.not_odd_iff_even]
 
 end SimpleGraph
