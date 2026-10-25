@@ -16,6 +16,8 @@ In this file, we consider the full subcategory `CochainComplex.Plus C`
 of `CochainComplex C ℤ` consisting of bounded below cochain complexes
 in a category `C`.
 
+This file should be kept in sync with `Mathlib/Algebra/Homology/CochainComplexMinus.lean`.
+
 -/
 
 @[expose] public section
