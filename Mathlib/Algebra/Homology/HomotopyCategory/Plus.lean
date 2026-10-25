@@ -195,7 +195,7 @@ variable {C} in
 lemma quotient_obj_surjective : Function.Surjective (quotient C).obj :=
   fun K ↦ by
     obtain ⟨L, hL⟩ := HomotopyCategory.quotient_obj_surjective K.obj
-    refine ⟨⟨L, ?_⟩, by ext; exact hL⟩
+    refine ⟨⟨L, ?_⟩, by ext : 1; exact hL⟩
     rw [← HomotopyCategory.plus_quotient_obj_iff, hL]
     exact K.property
 
@@ -364,7 +364,6 @@ lemma whiskerRight_quotientCompMapHomotopyCategoryPlusIso_hom_ι :
     (F.mapHomotopyCategory (.up ℤ)).map_id ((HomotopyCategory.quotient C (.up ℤ)).obj K.obj),
     Functor.mapHomotopyCategoryFactors_hom_app]
   simp [mapHomotopyCategoryPlus, HomotopyCategory.Plus.quotient]
-  rfl
 
 instance : NatTrans.CommShift F.quotientCompMapHomotopyCategoryPlusIso.hom ℤ :=
   NatTrans.CommShift.of_comp_faithful (HomotopyCategory.Plus.ι _) (by

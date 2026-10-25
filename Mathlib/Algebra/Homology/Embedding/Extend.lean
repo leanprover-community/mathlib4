@@ -36,6 +36,7 @@ variable [HasZeroMorphisms C] (K L M : HomologicalComplex C c)
 namespace extend
 
 /-- Auxiliary definition for the `X` field of `HomologicalComplex.extend`. -/
+@[implicit_reducible]
 noncomputable def X : Option ι → C
   | some x => K.X x
   | none => 0
@@ -67,14 +68,11 @@ lemma d_none_eq_zero (i j : Option ι) (hi : i = none) :
 lemma d_none_eq_zero' (i j : Option ι) (hj : j = none) :
     d K i j = 0 := by subst hj; cases i <;> rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma d_eq {i j : Option ι} {a b : ι} (hi : i = some a) (hj : j = some b) :
     d K i j = (XIso K hi).hom ≫ K.d a b ≫ (XIso K hj).inv := by
   subst hi hj
   simp [XIso, X, d]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma XOpIso_hom_d_op (i j : Option ι) :
     (XOpIso K i).hom ≫ (d K j i).op =
@@ -96,8 +94,6 @@ noncomputable def mapX : ∀ (i : Option ι), X K i ⟶ X L i
   | some i => φ.f i
   | none => 0
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 lemma mapX_some {i : Option ι} {a : ι} (hi : i = some a) :
     mapX φ i = (XIso K hi).hom ≫ φ.f a ≫ (XIso L hi).inv := by
   subst hi
@@ -135,6 +131,8 @@ noncomputable def extend : HomologicalComplex C c' where
         · rw [extend.d_none_eq_zero' K _ _ hk', comp_zero]
         · rw [extend.d_eq K hi hj, extend.d_eq K hj hk, assoc, assoc,
             Iso.inv_hom_id_assoc, K.d_comp_d_assoc, zero_comp, comp_zero]
+
+attribute [local implicit_reducible] extend
 
 /-- The isomorphism `(K.extend e).X i' ≅ K.X i` when `e.f i = i'`. -/
 noncomputable def extendXIso {i' : ι'} {i : ι} (h : e.f i = i') :
@@ -177,7 +175,6 @@ lemma extend_d_to_eq_zero (i' j' : ι') (j : ι) (hj : e.f j = j') (hj' : ¬ c.R
 
 variable {K L M}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given an embedding `e : c.Embedding c'` of complexes shapes, this is the
 morphism `K.extend e ⟶ L.extend e` induced by a morphism `K ⟶ L` in
 `HomologicalComplex C c`. -/
@@ -208,7 +205,6 @@ lemma extendMap_f {i : ι} {i' : ι'} (h : e.f i = i') :
   rw [extend.mapX_some φ (e.r_eq_some h)]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma extendMap_f_eq_zero (i' : ι') (hi' : ∀ i, e.f i ≠ i') :
     (extendMap φ e).f i' = 0 := by
   dsimp [extendMap]
@@ -249,7 +245,6 @@ noncomputable def extendOpIso : K.op.extend e.op ≅ (K.extend e).op :=
   Hom.isoOfComponents (fun _ ↦ extend.XOpIso _ _) (fun _ _ _ ↦
     extend.XOpIso_hom_d_op _ _ _)
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma extend_op_d (i' j' : ι') :
     (K.op.extend e.op).d i' j' =
@@ -348,13 +343,12 @@ variable (e : Embedding c c') (C : Type*) [Category* C] [HasZeroObject C]
 the functor `HomologicalComplex C c ⥤ HomologicalComplex C c'` which
 extend complexes along `e`: the extended complexes are zero
 in the degrees that are not in the image of `e.f`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def extendFunctor [HasZeroMorphisms C] :
     HomologicalComplex C c ⥤ HomologicalComplex C c' where
   obj K := K.extend e
   map φ := HomologicalComplex.extendMap φ e
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given an embedding `e : c.Embedding c'` of complex shapes, this is the isomorphism
 `e.extendFunctor C ⋙ HomologicalComplex.eval _ _ i' ≅ HomologicalComplex.eval _ _ i`
 when `e.f i = i'. -/
@@ -362,13 +356,12 @@ noncomputable def extendFunctorCompEvalIso
     [HasZeroMorphisms C] {i : ι} {i' : ι'} (h : e.f i = i') :
     e.extendFunctor C ⋙ HomologicalComplex.eval _ _ i' ≅ HomologicalComplex.eval _ _ i :=
   NatIso.ofComponents (fun K ↦ K.extendXIso e h)
-    (by simp [HomologicalComplex.extendMap_f _ _ h])
+    (fun _ ↦ by simp [HomologicalComplex.extendMap_f _ _ h])
 
 instance [HasZeroMorphisms C] : (e.extendFunctor C).PreservesZeroMorphisms where
 
 instance [Preadditive C] : (e.extendFunctor C).Additive where
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The extension functor attached to an embedding of complex shapes is fully faithful. -/
 noncomputable def fullyFaithfulExtendFunctor [HasZeroMorphisms C] :
     (e.extendFunctor C).FullyFaithful where

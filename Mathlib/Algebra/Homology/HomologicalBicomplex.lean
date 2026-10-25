@@ -45,6 +45,7 @@ open HomologicalComplex
 variable {C c₁ c₂}
 
 /-- The graded object indexed by `I₁ × I₂` induced by a bicomplex. -/
+@[implicit_reducible]
 def toGradedObject (K : HomologicalComplex₂ C c₁ c₂) :
     GradedObject (I₁ × I₂) C :=
   fun ⟨i₁, i₂⟩ => (K.X i₁).X i₂
@@ -83,7 +84,7 @@ variable (X : GradedObject (I₁ × I₂) C)
 
 /-- Constructor for bicomplexes taking as inputs a graded object, horizontal differentials
 and vertical differentials satisfying suitable relations. -/
-@[simps]
+@[simps, implicit_reducible]
 def ofGradedObject :
     HomologicalComplex₂ C c₁ c₂ where
   X i₁ :=
@@ -109,7 +110,7 @@ end OfGradedObject
 /-- Constructor for a morphism `K ⟶ L` in the category `HomologicalComplex₂ C c₁ c₂` which
 takes as inputs a morphism `f : K.toGradedObject ⟶ L.toGradedObject` and
 the compatibilities with both horizontal and vertical differentials. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def homMk {K L : HomologicalComplex₂ C c₁ c₂}
     (f : K.toGradedObject ⟶ L.toGradedObject)
     (comm₁ : ∀ i₁ i₁' i₂, c₁.Rel i₁ i₁' →

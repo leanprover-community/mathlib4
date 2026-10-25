@@ -278,7 +278,6 @@ end Boundary
 
 end AreComplementary
 
-set_option backward.defeqAttrib.useBackward true in
 lemma embeddingUpInt_areComplementary (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
     AreComplementary (embeddingUpIntLE n₀) (embeddingUpIntGE n₁) where
   disjoint i₁ i₂ := by dsimp; lia
@@ -314,7 +313,7 @@ lemma g_shortComplexTruncLEX₃ToTruncGE :
     (K.shortComplexTruncLE e₁).g ≫ K.shortComplexTruncLEX₃ToTruncGE ac = K.πTruncGE e₂ :=
   cokernel.π_desc _ _ _
 
-set_option backward.defeqAttrib.useBackward true in
+--set_option backward.defeqAttrib.useBackward true in
 instance : QuasiIso (K.shortComplexTruncLEX₃ToTruncGE ac) where
   quasiIsoAt i := by
     obtain ⟨i₁, rfl⟩ | ⟨i₂, rfl⟩ := ac.union i

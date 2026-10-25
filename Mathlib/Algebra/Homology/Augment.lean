@@ -27,7 +27,7 @@ namespace ChainComplex
 /-- The truncation of an `ℕ`-indexed chain complex,
 deleting the object at `0` and shifting everything else down.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def truncate [HasZeroMorphisms V] : ChainComplex V ℕ ⥤ ChainComplex V ℕ where
   obj C :=
     { X := fun i => C.X (i + 1)
@@ -35,7 +35,6 @@ def truncate [HasZeroMorphisms V] : ChainComplex V ℕ ⥤ ChainComplex V ℕ wh
       shape := fun i j w => C.shape _ _ <| by simpa }
   map f := { f := fun i => f.f (i + 1) }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- There is a canonical chain map from the truncation of a chain map `C` to
 the "single object" chain complex consisting of the truncated object `C.X 0` in degree 0.
 The components of this chain map are `C.d 1 0` in degree 0, and zero otherwise.
@@ -88,7 +87,6 @@ theorem augment_d_succ_succ (C : ChainComplex V ℕ) {X : V} (f : C.X 0 ⟶ X) (
     (i j : ℕ) : (augment C f w).d (i + 1) (j + 1) = C.d i j := by
   cases i <;> rfl
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Truncating an augmented chain complex is isomorphic (with components the identity)
 to the original complex.
 -/
@@ -119,8 +117,6 @@ theorem chainComplex_d_succ_succ_zero (C : ChainComplex V ℕ) (i : ℕ) : C.d (
   rw [C.shape]
   exact i.succ_succ_ne_one.symm
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- Augmenting a truncated complex with the original object and morphism is isomorphic
 (with components the identity) to the original complex.
 -/
@@ -184,7 +180,7 @@ namespace CochainComplex
 /-- The truncation of an `ℕ`-indexed cochain complex,
 deleting the object at `0` and shifting everything else down.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def truncate [HasZeroMorphisms V] : CochainComplex V ℕ ⥤ CochainComplex V ℕ where
   obj C :=
     { X := fun i => C.X (i + 1)
@@ -194,7 +190,6 @@ def truncate [HasZeroMorphisms V] : CochainComplex V ℕ ⥤ CochainComplex V �
         simpa }
   map f := { f := fun i => f.f (i + 1) }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- There is a canonical chain map from the truncation of a cochain complex `C` to
 the "single object" cochain complex consisting of the truncated object `C.X 0` in degree 0.
 The components of this chain map are `C.d 0 1` in degree 0, and zero otherwise.
@@ -246,7 +241,6 @@ theorem augment_d_succ_succ (C : CochainComplex V ℕ) {X : V} (f : X ⟶ C.X 0)
     (i j : ℕ) : (augment C f w).d (i + 1) (j + 1) = C.d i j :=
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Truncating an augmented cochain complex is isomorphic (with components the identity)
 to the original complex.
 -/
@@ -281,8 +275,6 @@ theorem cochainComplex_d_succ_succ_zero (C : CochainComplex V ℕ) (i : ℕ) : C
   simp only [ComplexShape.up_Rel, zero_add]
   exact (Nat.one_lt_succ_succ _).ne
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- Augmenting a truncated complex with the original object and morphism is isomorphic
 (with components the identity) to the original complex.
 -/
