@@ -75,15 +75,14 @@ lemma iSup_apply {κ : Type*} [Nonempty κ] {f : κ → Π₀ i, M i} (hf : BddA
     (⨆ j, f j) i = ⨆ j, f j i := by
   rw [iSup, sSup_apply hf (Set.range_nonempty _), ciSup_range f (· i)]
 
-noncomputable instance : ConditionallyCompleteLattice (Π₀ i, M i) :=
-  conditionallyCompleteLatticeOfLatticeOfsSup _ fun S hS hS₀ ↦
-    ⟨fun f hf i ↦ by
-      rw [sSup_apply hS hS₀]
-      refine le_ciSup (f := fun f : S ↦ f.1 i) ?_ ⟨f, hf⟩
-      simpa [Set.range_comp' (· i) (Subtype.val : S → _)] using bddAbove_image_apply hS,
-    fun g hg i ↦ by
-      rw [sSup_apply hS hS₀]
-      have := hS₀.to_subtype
-      exact ciSup_le fun f ↦ hg f.2 i⟩
+noncomputable instance : ConditionallyCompleteLattice (Π₀ i, M i) := by
+  refine conditionallyCompleteLatticeOfLatticeOfsSup _ fun S hS hS₀ ↦
+    ⟨fun f hf i ↦ ?_, fun g hg i ↦ ?_⟩
+  · rw [sSup_apply hS hS₀]
+    refine le_ciSup (f := fun f : S ↦ f.1 i) ?_ ⟨f, hf⟩
+    simpa [Set.range_comp' (· i) (Subtype.val : S → _)] using bddAbove_image_apply hS
+  · rw [sSup_apply hS hS₀]
+    have := hS₀.to_subtype
+    exact ciSup_le fun f ↦ hg f.2 i
 
 end DFinsupp
