@@ -100,6 +100,11 @@ theorem IsEulerian.mem_support_of_not_isIsolated (hp : p.IsEulerian) (hw : ¬G.I
   have ⟨_, hadj⟩ := exists_adj_iff_not_isIsolated.mpr hw
   p.fst_mem_support_of_mem_edges <| hp.mem_edges_iff.mpr hadj
 
+theorem IsEulerian.mem_support_of_preconnected (hp : p.IsEulerian) (h : G.Preconnected) :
+    w ∈ p.support := by
+  nontriviality V using Subsingleton.elim w u
+  exact hp.mem_support_of_not_isIsolated <| h.not_isIsolated w
+
 theorem IsEulerian.nil_iff (hp : p.IsEulerian) : p.Nil ↔ G = ⊥ := by
   simp [← edgeSet_eq_empty, hp.edgeSet_eq]
 
