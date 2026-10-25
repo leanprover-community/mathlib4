@@ -497,13 +497,14 @@ theorem bijective_compr₂ₛₗ_of_equiv [RingHomInvPair σ₃₄ σ₄₃] [Ri
   ⟨injective_compr₂ₛₗ_of_injective f g.toLinearMap hf.1 g.bijective.1,
   surjective_compr₂ₛₗ_of_equiv f g hf.2⟩
 
-/-- An auxiliary lemma for proving `mul_assoc` of various tensor algebras. -/
-lemma mul_assoc_aux (f : M →ₗ[R] M →ₗ[R] M) (x y z : M) :
-    LinearMap.llcomp R M M (M →ₗ[R] M) f ∘ₗ f =
+/-- An auxiliary lemma for proving `mul_assoc`, turning an equality in terms of bilinear maps into
+an equality of linear maps so that we can use `ext`. -/
+lemma mul_assoc_aux (mul : M →ₗ[R] M →ₗ[R] M) :
+    LinearMap.llcomp R M M (M →ₗ[R] M) mul ∘ₗ mul =
       (LinearMap.llcomp R M (M →ₗ[R] M →ₗ[R] M) (M →ₗ[R] M →ₗ[R] M) LinearMap.lflip.toLinearMap <|
-        LinearMap.llcomp R M M (M →ₗ[R] M) f.flip ∘ₗ f).flip
-      → f (f x y) z = f x (f y z) :=
-  fun h => congr($h x y z)
+        LinearMap.llcomp R M M (M →ₗ[R] M) mul.flip ∘ₗ mul).flip
+      ↔ ∀ x y z, mul (mul x y) z = mul x (mul y z) :=
+  ⟨fun h x y z => congr($h x y z), fun h => by ext x y z; exact h x y z⟩
 
 end CommSemiringSemilinear
 
