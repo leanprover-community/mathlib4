@@ -127,4 +127,3 @@ lemma isIso_iff {E E' : Inserter F G} (f : E ⟶ E') :
 end Inserter
 
 end CategoryTheory
-
