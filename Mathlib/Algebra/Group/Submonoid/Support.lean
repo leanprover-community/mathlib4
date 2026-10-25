@@ -129,14 +129,13 @@ variable {H : Type*} [Group H] (f : G →* H) (M N : Submonoid G) (M' : Submonoi
 theorem _root_.Subgroup.mulSupport_eq (H : Subgroup G) : H.mulSupport = H :=
   Subgroup.gciToSubmonoidMulSupport.u_l_eq H
 
-@[to_additive (attr := simp)]
-theorem mulSupport_bot : (⊥ : Submonoid G).mulSupport = ⊥ := by
-  simpa using (⊥ : Subgroup G).mulSupport_eq
-
 variable (G) in
 @[to_additive (attr := simp)]
 protected theorem IsMulPointed.bot : (⊥ : Submonoid G).IsMulPointed := by
-  simp [isMulPointed_iff_mulSupport_eq_bot]
+  simpa [isMulPointed_iff_mulSupport_eq_bot] using (⊥ : Subgroup G).mulSupport_eq
+
+@[to_additive]
+theorem mulSupport_bot : (⊥ : Submonoid G).mulSupport = ⊥ := by simp
 
 @[to_additive (attr := simp)]
 theorem mulSupport_top : (⊤ : Submonoid G).mulSupport = ⊤ :=
