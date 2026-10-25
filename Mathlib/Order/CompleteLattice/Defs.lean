@@ -236,6 +236,23 @@ class CompleteLinearOrder (α : Type*) extends CompleteLattice α, BiheytingAlge
   compare_eq_compareOfLessAndEq : ∀ a b, compare a b = compareOfLessAndEq a b := by
     compareOfLessAndEq_rfl
 
+to_dual_for CompleteLinearOrder.mk := {
+  toCompleteLattice
+  toHImp := toSDiff
+  toSDiff := toHImp
+  toCompl := toHNot
+  toHNot := toCompl
+  le_himp_iff a b c := by rw [sdiff_le_iff, inf_comm]
+  himp_bot := top_sdiff
+  sdiff_le_iff a b c := by rw [le_himp_iff, sup_comm]
+  top_sdiff := himp_bot
+  le_total a b := le_total b a
+  toDecidableLE
+  toDecidableEq
+  toDecidableLT
+  compare_eq_compareOfLessAndEq
+}
+
 instance CompleteLinearOrder.toLinearOrder [i : CompleteLinearOrder α] : LinearOrder α where
   __ := i
   min_def a b := by

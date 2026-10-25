@@ -125,6 +125,15 @@ class BiheytingAlgebra (α : Type*) extends HeytingAlgebra α, CoheytingAlgebra 
 
 attribute [to_dual existing] BiheytingAlgebra.toHeytingAlgebra
 
+to_dual_for GeneralizedHeytingAlgebra.le_himp_iff := by
+  rw [GeneralizedCoheytingAlgebra.sdiff_le_iff, sup_comm]
+
+to_dual_for BiheytingAlgebra.toSDiff := self.toHImp
+to_dual_for BiheytingAlgebra.toHNot := self.toCompl
+to_dual_for BiheytingAlgebra.sdiff_le_iff := by
+  rw [GeneralizedHeytingAlgebra.le_himp_iff, inf_comm]
+to_dual_for BiheytingAlgebra.top_sdiff := HeytingAlgebra.himp_bot a
+
 -- See note [lower instance priority]
 attribute [instance 100] GeneralizedHeytingAlgebra.toOrderTop
 attribute [instance 100] GeneralizedCoheytingAlgebra.toOrderBot

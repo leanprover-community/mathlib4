@@ -83,6 +83,16 @@ class ConditionallyCompleteLinearOrder (α : Type*)
 
 attribute [to_dual existing] ConditionallyCompleteLinearOrder.csSup_of_not_bddAbove
 
+to_dual_for ConditionallyCompleteLinearOrder.mk := {
+  le_total a b := le_total b a
+  toDecidableLE
+  toDecidableEq
+  toDecidableLT
+  csSup_of_not_bddAbove := csInf_of_not_bddBelow
+  csInf_of_not_bddBelow := csSup_of_not_bddAbove
+  compare_eq_compareOfLessAndEq
+}
+
 /-- A conditionally complete linear order with `Bot` is a linear order with least element, in which
 every nonempty subset which is bounded above has a supremum, and every nonempty subset (necessarily
 bounded below) has an infimum.  A typical example is the natural numbers.
