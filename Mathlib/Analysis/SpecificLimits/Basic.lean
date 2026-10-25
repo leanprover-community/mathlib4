@@ -423,8 +423,8 @@ open Encodable
 
 protected lemma ENNReal.tsum_geometric_two : ∑' n, (2⁻¹ : ℝ≥0∞) ^ n = 2 := by simp
 
-protected lemma ENNReal.sum_geometric_two_le (n : ℕ) : ∑ i ∈ range n, (1 / 2 : ℝ≥0∞) ^ i ≤ 2 :=
-  (ENNReal.sum_le_tsum _).trans_eq (by simp [one_div])
+protected lemma ENNReal.sum_geometric_two_le (n : ℕ) : ∑ i ∈ range n, (2⁻¹ : ℝ≥0∞) ^ i ≤ 2 :=
+  (ENNReal.sum_le_tsum _).trans_eq ENNReal.tsum_geometric_two
 
 lemma ENNReal.tsum_geometric_two_encode_le_two {ι : Type*} [Encodable ι] :
     ∑' i : ι, (2⁻¹ : ℝ≥0∞) ^ encode i ≤ 2 :=

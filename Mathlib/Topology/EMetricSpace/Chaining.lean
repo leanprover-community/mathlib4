@@ -214,7 +214,7 @@ lemma edist_chainingSeq_pow_two_le {ε₀ : ℝ≥0} (hC : ∀ i, IsCover (ε₀
   all_goals
   · simp only [inv_pow, ne_eq, pow_eq_zero_iff', OfNat.ofNat_ne_zero, false_and, not_false_eq_true,
       ENNReal.coe_inv, ENNReal.coe_pow, ENNReal.coe_ofNat, ENNReal.inv_pow]
-    simpa only [inv_eq_one_div] using ENNReal.sum_geometric_two_le _
+    exact ENNReal.sum_geometric_two_le _
 
 /-- The supremum of `edist (X s) (X t)` over the pairs of points of `C k` at distance at most `δ`
 is at most the same supremum for their approximations at level `m`, plus twice the supremum of
