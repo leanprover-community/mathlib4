@@ -5,8 +5,8 @@ Authors: Salvatore Mercuri, María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.NumberTheory.NumberField.InfiniteAdeleRing
 public import Mathlib.NumberTheory.NumberField.FiniteAdeleRing
+public import Mathlib.NumberTheory.NumberField.InfiniteAdeleRing
 
 /-!
 # The adele ring of a number field
@@ -154,7 +154,7 @@ theorem isUnit_iff {x : 𝔸[R, K]} : IsUnit x ↔ (∀ v, x.1 v ≠ 0) ∧ (∀
   rw [Prod.isUnit_iff, Pi.isUnit_iff, FiniteAdeleRing.isUnit_iff]
   simp_rw [isUnit_iff_ne_zero]
 
-variable [NumberField K] [Ring.HasFiniteQuotients R] [Infinite R]
+variable [NumberField K] [Ring.HasFiniteQuotients R]
 
 /-- The norm on the adele ring is the product of all the local norms. If an adele is
 a unit, then this is a finite product in disguise. Otherwise, it is zero (and not the junk
