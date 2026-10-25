@@ -108,16 +108,16 @@ theorem Lex.lt_def [LT ι] [∀ a, LT (β a)] {x y : Lex (∀ i, β i)} :
   .rfl
 
 theorem toLex_lt_toLex_iff [LT ι] [∀ a, LT (β a)] {x y : ∀ i, β i} :
-    toLex x < toLex y ↔ Pi.Lex (· < ·) (· < ·) x y := by
-  rfl
+    toLex x < toLex y ↔ Pi.Lex (· < ·) (· < ·) x y :=
+  .rfl
 
 theorem Colex.lt_def [LT ι] [∀ a, LT (β a)] {x y : Colex (∀ i, β i)} :
-    x < y ↔ Pi.Lex (· > ·) (· < ·) (ofColex x) (ofColex y) := by
-  rfl
+    x < y ↔ Pi.Lex (· > ·) (· < ·) (ofColex x) (ofColex y) :=
+  .rfl
 
 theorem toColex_lt_toColex_iff [LT ι] [∀ a, LT (β a)] {x y : ∀ i, β i} :
-    toColex x < toColex y ↔ Pi.Lex (· > ·) (· < ·) x y := by
-  rfl
+    toColex x < toColex y ↔ Pi.Lex (· > ·) (· < ·) x y :=
+  .rfl
 
 theorem Lex.lt_iff_of_unique [Unique ι] [∀ i, LT (β i)] [Preorder ι] {x y : Lex (∀ i, β i)} :
     x < y ↔ x default < y default :=
