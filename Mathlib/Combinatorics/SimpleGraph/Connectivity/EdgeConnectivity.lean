@@ -208,14 +208,14 @@ theorem IsEdgeConnected.le_edgeConnectivity (h : G.IsEdgeConnected k) : k ≤ G.
   le_iSup₂_of_le k h le_rfl
 
 theorem Reachable.edgeReachability_ne_zero (h : G.Reachable u v) : G.edgeReachability u v ≠ 0 := by
-  simpa [← Order.one_le_iff_ne_zero] using isEdgeReachable_one.mpr h |>.le_edgeReachability
+  simp [← Order.one_le_iff_ne_zero, isEdgeReachable_one.mpr h |>.le_edgeReachability]
 
 theorem Preconnected.edgeConnectivity_ne_zero (h : G.Preconnected) : G.edgeConnectivity ≠ 0 := by
-  simpa [← Order.one_le_iff_ne_zero] using isEdgeConnected_one.mpr h |>.le_edgeConnectivity
+  simp [← Order.one_le_iff_ne_zero, isEdgeConnected_one.mpr h |>.le_edgeConnectivity]
 
 @[simp]
 theorem edgeReachability_self : G.edgeReachability v v = ⊤ := by
-  simpa [edgeReachability] using ENat.iSup_id
+  simp [edgeReachability]
 
 theorem edgeReachability_comm : G.edgeReachability u v = G.edgeReachability v u := by
   simp [isEdgeReachable_comm, edgeReachability]
@@ -226,7 +226,7 @@ theorem edgeReachability_eq_top_of_subsingleton [Subsingleton V] : G.edgeReachab
 
 @[simp]
 theorem edgeConnectivity_eq_top_of_subsingleton [Subsingleton V] : G.edgeConnectivity = ⊤ := by
-  simpa [edgeConnectivity, IsEdgeConnected] using ENat.iSup_id
+  simp [edgeConnectivity, IsEdgeConnected]
 
 theorem edgeConnectivity_le_edgeReachability : G.edgeConnectivity ≤ G.edgeReachability u v :=
   iSup₂_le (fun _ h ↦ IsEdgeReachable.le_edgeReachability (h u v))
