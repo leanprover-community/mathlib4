@@ -294,7 +294,7 @@ homomorhpism between their centers. -/
 def _root_.RingHom.center {R S : Type*} [NonAssocSemiring R] [NonAssocSemiring S] {f : R →+* S}
     (hf : Function.Surjective f) :
     Center R →+* Center S where
-  toMonoidHom := f.toMonoidHom.center hf
+  toMonoidHom := f.toMonoidHom.center' hf
   map_zero' := by simp
   map_add' _ _ := by simp
 
