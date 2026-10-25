@@ -11,9 +11,6 @@ public meta import Lean.Elab.Command
 public meta import Lean.Util.FoldConsts
 public import Mathlib.Init
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Define the `compile_inductive%` command.
 

@@ -10,9 +10,6 @@ public import Mathlib.Algebra.Group.Submonoid.Units
 public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 public import Mathlib.Topology.Algebra.Monoid
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Topological properties of units
 
@@ -79,6 +76,7 @@ open Set Filter TopologicalSpace Function Topology MulOpposite Pointwise
 
 variable {G H α β : Type*}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `G` is a group with topological `⁻¹`, then it is homeomorphic to its units. -/
 @[to_additive /-- If `G` is an additive group with topological negation, then it is homeomorphic to
 its additive units. -/]

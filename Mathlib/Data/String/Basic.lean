@@ -13,9 +13,6 @@ public import Mathlib.Data.List.Lex
 import all Init.Data.Ord.String  -- for unfolding `String.compare`
 import all Init.Data.String.Iterator  -- for unfolding `Iterator.curr`
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Strings
 

@@ -23,13 +23,13 @@ open Lean Widget ProofWidgets
 /-- `Result` stores the information from a lemma that was successfully applied. -/
 structure Result (α : Type) where
   /-- `filtered` will be shown in the filtered view. -/
-  filtered : Option Html
+  filtered : Option ProofWidgets.Html
   /-- `unfiltered` will be shown in the unfiltered view. -/
-  unfiltered : Html
+  unfiltered : ProofWidgets.Html
   /-- `key` is used for sorting and comparing theorems. -/
   key : α
   /-- The `pattern` of the first lemma in a section is shown as the header of that section. -/
-  pattern : Html
+  pattern : ProofWidgets.Html
 deriving Inhabited
 
 variable {α : Type} [Ord α] [Inhabited α]
@@ -46,7 +46,7 @@ structure SectionState (α : Type) where
   results : Array (Result α) := #[]
   /-- The results of the theorems that threw an error when trying to apply them.
   Usually, errors will be caught, except for when using `click_suggestions.debug`. -/
-  errors : Array Html := #[]
+  errors : Array ProofWidgets.Html := #[]
   deriving Nonempty
 
 /-- Insert the new result `res` into the array `arr` of already existing results.
@@ -94,7 +94,7 @@ inductive SectionKind where
 
 -- TODO?: add a `⏳️` with hover info that shows which lemmas are still being computed?
 /-- Create the HTML corresponding to `s`. -/
-def renderSection (kind : SectionKind) (s : SectionState α) : Html := Id.run do
+def renderSection (kind : SectionKind) (s : SectionState α) : ProofWidgets.Html := Id.run do
   let { results, errors } := s
   if results.isEmpty && errors.isEmpty then
     return .text ""
@@ -116,7 +116,7 @@ def renderSection (kind : SectionKind) (s : SectionState α) : Html := Id.run do
     -- We don't filter local results, because there aren't that many of them.
     return jsx%{<details open={true}><summary>{header}</summary>{all}</details>}
 where
-  renderErrors (errors : Array Html) : Html :=
+  renderErrors (errors : Array ProofWidgets.Html) : ProofWidgets.Html :=
     jsx%{<details open={true}>
       <summary className="mv2 pointer">
         <span class="error"> Failures: </span>
@@ -127,7 +127,7 @@ where
 /-- Spawn a task that computes a piece of `Html` to be displayed when finished. -/
 @[specialize]
 def spawnTask {α} (premise : Premise) (k : ClickSuggestionsM α) :
-    ClickSuggestionsM <| Task (Except Html (Option α)) := do
+    ClickSuggestionsM <| Task (Except ProofWidgets.Html (Option α)) := do
   let premiseHtml ← premise.toHtml
   let act ← saveCtxM do
     /- Since this task may have been on the queue for a while,

@@ -7,9 +7,6 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.PosDef
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Sesquilinear forms over a star ring
 

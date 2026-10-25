@@ -9,9 +9,6 @@ public import Mathlib.NumberTheory.LegendreSymbol.Basic
 
 import Mathlib.Data.Nat.Prime.Factorial
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Lemmas of Gauss and Eisenstein
 
