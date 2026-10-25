@@ -78,5 +78,5 @@ instance : MonoidalClosed PartOrd.{u} :=
 
 end PartOrd
 
-instance : Limits.PreservesFiniteProducts preordToPartOrd.{u} :=
+instance : PreservesFiniteProducts preordToPartOrd.{u} :=
   .of_exponentialIdeal (forget₂ PartOrd Preord)

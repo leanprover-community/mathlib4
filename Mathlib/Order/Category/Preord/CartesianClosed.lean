@@ -72,5 +72,5 @@ instance : MonoidalClosed Preord.{u} :=
 
 end Preord
 
-instance : Limits.PreservesFiniteProducts catToPreord.{u} :=
+instance : PreservesFiniteProducts catToPreord.{u} :=
   .of_exponentialIdeal preordToCat
