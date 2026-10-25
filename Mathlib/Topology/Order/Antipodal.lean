@@ -1,6 +1,14 @@
-import Mathlib.Analysis.InnerProductSpace.Basic
+/-
+Copyright (c) 2026 Mathlib Community. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Huaiji
+-/
+module
+
+public import Mathlib.Topology.Order.IntermediateValue
+public import Mathlib.Topology.UniformSpace.Real
+
 import Mathlib.Tactic.Linarith
-import Mathlib.Topology.Order.IntermediateValue
 
 /-!
 # Zero-Crossing of Odd Fields on Antipodal Paths
@@ -19,7 +27,7 @@ along connected paths.
   `γ(b) = τ (γ(a))` has a zero node `f (γ t*) = 0`.
 -/
 
-noncomputable section
+public section
 
 open Set
 
