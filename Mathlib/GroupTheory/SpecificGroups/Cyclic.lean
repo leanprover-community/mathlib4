@@ -179,7 +179,7 @@ variable [Group G] [Group G']
 /-- A group is commutative if the quotient by the center is cyclic.
 Also see `addCommGroupOfCyclicCenterQuotient` for the `AddCommGroup` instance. -/]
 theorem MonoidHom.isMulCommutative_of_isCyclic_of_ker_le_center [IsCyclic G'] (f : G →* G')
-    (hf : f.ker ≤ Subgroup.center G) : IsMulCommutative G := by
+    (hf : f.ker ≤ center G) : IsMulCommutative G := by
   refine ⟨⟨fun a b ↦ ?_⟩⟩
   let ⟨⟨x, y, (hxy : f y = x)⟩, (hx : ∀ a : f.range, a ∈ zpowers _)⟩ :=
     IsCyclic.exists_generator (α := f.range)
@@ -187,9 +187,9 @@ theorem MonoidHom.isMulCommutative_of_isCyclic_of_ker_le_center [IsCyclic G'] (f
   let ⟨n, hn⟩ := hx ⟨f b, b, rfl⟩
   have hm : x ^ m = f a := by simpa [Subtype.ext_iff] using hm
   have hn : x ^ n = f b := by simpa [Subtype.ext_iff] using hn
-  have ha : y ^ (-m) * a ∈ Subgroup.center G :=
+  have ha : y ^ (-m) * a ∈ center G :=
     hf (by rw [f.mem_ker, f.map_mul, f.map_zpow, hxy, zpow_neg x m, hm, inv_mul_cancel])
-  have hb : y ^ (-n) * b ∈ Subgroup.center G :=
+  have hb : y ^ (-n) * b ∈ center G :=
     hf (by rw [f.mem_ker, f.map_mul, f.map_zpow, hxy, zpow_neg x n, hn, inv_mul_cancel])
   calc
     a * b = y ^ m * (y ^ (-m) * a * y ^ n) * (y ^ (-n) * b) := by simp [mul_assoc]
