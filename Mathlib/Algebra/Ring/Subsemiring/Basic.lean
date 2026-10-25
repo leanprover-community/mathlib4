@@ -280,6 +280,32 @@ is isomorphic to the center of its opposite. -/
 @[simps!] def centerToMulOpposite : center R ≃+* center Rᵐᵒᵖ :=
   NonUnitalSubsemiring.centerToMulOpposite
 
+instance : NonAssocCommSemiring (Center R) where
+  natCast n := Center.mk (n : R) (Set.natCast_mem_center R n)
+  natCast_zero := Subtype.ext Nat.cast_zero
+  natCast_succ n := Subtype.ext (Nat.cast_succ n)
+
+@[simp]
+lemma _root_.Center._coe_natCast (n : ℕ) : (n : Center R).val = (n : R) := rfl
+
+/-- A surjective morphism between (not necessarily associative) semirings induces a semiring
+homomorhpism between their centers. -/
+@[simps!]
+def _root_.RingHom.center {R S : Type*} [NonAssocSemiring R] [NonAssocSemiring S] {f : R →+* S}
+    (hf : Function.Surjective f) :
+    Center R →+* Center S where
+  toMonoidHom := f.toMonoidHom.center hf
+  map_zero' := by simp
+  map_add' _ _ := by simp
+
+/-- The inclusion of `Center R` into `R` as a `RingHom`. -/
+@[simps!]
+def _root_.Center.ringHom (R : Type*) [NonAssocSemiring R] :
+    Center R →+* R where
+  toMonoidHom := Center.monoidHom R
+  map_add' _ _ := by simp
+  map_zero' := by simp
+
 end NonAssocSemiring
 
 section Semiring
@@ -288,6 +314,8 @@ section Semiring
 instance center.commSemiring {R} [Semiring R] : CommSemiring (center R) where
   __ := (center R).toSemiring
   __ : CommMonoid (center R) := inferInstanceAs <| CommMonoid (Submonoid.center R)
+
+instance {R} [Semiring R] : CommSemiring (Center R) where
 
 -- no instance diamond, unlike the primed version
 example {R} [Semiring R] :
