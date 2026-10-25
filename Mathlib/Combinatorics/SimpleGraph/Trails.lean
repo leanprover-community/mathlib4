@@ -108,6 +108,7 @@ theorem isEulerian_of_bot (p : Walk ⊥ u v) : p.IsEulerian := by
   intro e h
   simp at h
 
+@[simp]
 theorem isEulerian_rotate {p : G.Walk u u} (hv : v ∈ p.support) :
     (p.rotate v hv).IsEulerian ↔ p.IsEulerian := by
   simp_rw [IsEulerian, p.rotate_edges v hv |>.perm.count_eq]
