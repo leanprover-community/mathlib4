@@ -6,8 +6,8 @@ Authors: Emily Witt, Kim Morrison, Jake Levinson, Sam van Gool
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Colimits
-public import Mathlib.Algebra.Category.ModuleCat.Projective
 public import Mathlib.Algebra.Category.ModuleCat.Ext.HasExt
+public import Mathlib.Algebra.Category.ModuleCat.Projective
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
 public import Mathlib.CategoryTheory.Limits.Final
 public import Mathlib.RingTheory.Finiteness.Ideal

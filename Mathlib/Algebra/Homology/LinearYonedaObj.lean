@@ -5,10 +5,10 @@ Authors: Kim Morrison, Adam Topaz, Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.Opposite
 public import Mathlib.Algebra.Homology.Embedding.StupidTrunc
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexCohomology
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexIsStrictlyGE
+public import Mathlib.Algebra.Homology.Opposite
 public import Mathlib.CategoryTheory.Abelian.Projective.Ext
 public import Mathlib.CategoryTheory.Linear.Yoneda
 
