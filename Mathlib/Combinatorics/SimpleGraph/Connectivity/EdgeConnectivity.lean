@@ -218,7 +218,7 @@ theorem edgeReachability_self : G.edgeReachability v v = ⊤ := by
   simpa [edgeReachability] using ENat.iSup_id
 
 theorem edgeReachability_comm : G.edgeReachability u v = G.edgeReachability v u := by
-  simp only [isEdgeReachable_comm, edgeReachability]
+  simp [isEdgeReachable_comm, edgeReachability]
 
 @[simp]
 theorem edgeReachability_eq_top_of_subsingleton [Subsingleton V] : G.edgeReachability u v = ⊤ := by
