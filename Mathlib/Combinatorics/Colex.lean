@@ -312,8 +312,7 @@ lemma lt_iff_exists {s t : Colex (Finset α)} :
 lemma toColex_lt_toColex_iff_toColex_piecewise_lt_toColex_piecewise {π : α → Type*}
     [∀ a, PartialOrder (π a)] {f g : ∀ a, π a} (h : ∀ a ∈ s ∆ t, g a < f a) :
     toColex s < toColex t ↔ toColex (s.piecewise f g) < toColex (t.piecewise f g) := by
-  -- TODO: a lemma for to rewrite (unfold) `<` on `Colex (∀ a, π a)` to its definition?
-  change _ ↔ (fun x y ↦ ∃ i, (∀ j > i, x j = y j) ∧ x i < y i) (s.piecewise f g) (t.piecewise f g)
+  rw [Pi.toColex_lt_toColex_iff, Pi.Lex]
   convert toColex_lt_toColex_iff_exists
   all_goals grind [Finset.piecewise, Finset.mem_symmDiff]
 

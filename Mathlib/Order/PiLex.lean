@@ -103,6 +103,22 @@ instance [LT ι] [∀ a, LT (β a)] : LT (Colex (∀ i, β i)) :=
 @[simp] theorem toColex_apply (x : ∀ i, β i) (i : ι) : toColex x i = x i := rfl
 @[simp] theorem ofColex_apply (x : Colex (∀ i, β i)) (i : ι) : ofColex x i = x i := rfl
 
+theorem Lex.lt_def [LT ι] [∀ a, LT (β a)] {x y : Lex (∀ i, β i)} :
+    x < y ↔ Pi.Lex (· < ·) (· < ·) (ofLex x) (ofLex y) := by
+  rfl
+
+theorem toLex_lt_toLex_iff [LT ι] [∀ a, LT (β a)] {x y : ∀ i, β i} :
+    toLex x < toLex y ↔ Pi.Lex (· < ·) (· < ·) x y := by
+  rfl
+
+theorem Colex.lt_def [LT ι] [∀ a, LT (β a)] {x y : Colex (∀ i, β i)} :
+    x < y ↔ Pi.Lex (· > ·) (· < ·) (ofColex x) (ofColex y) := by
+  rfl
+
+theorem toColex_lt_toColex_iff [LT ι] [∀ a, LT (β a)] {x y : ∀ i, β i} :
+    toColex x < toColex y ↔ Pi.Lex (· > ·) (· < ·) x y := by
+  rfl
+
 theorem Lex.lt_iff_of_unique [Unique ι] [∀ i, LT (β i)] [Preorder ι] {x y : Lex (∀ i, β i)} :
     x < y ↔ x default < y default :=
   lex_iff_of_unique
