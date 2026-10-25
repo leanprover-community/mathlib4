@@ -116,7 +116,7 @@ variable (u) in
 lemma IsEdgeConnected.le_degree [Fintype (G.neighborSet u)] [Nontrivial V]
     (h : G.IsEdgeConnected k) : k ≤ G.degree u := by
   obtain ⟨v, hv⟩ := exists_ne u
-  exact (h u v).le_degree_left hv.symm
+  exact (h v u).le_degree_right hv
 
 theorem IsEdgeConnected.le_minDegree [Fintype V] [Nontrivial V] [DecidableRel G.Adj]
     (h : G.IsEdgeConnected k) : k ≤ G.minDegree := by
