@@ -102,7 +102,7 @@ theorem IsPreordering.of_ne_top {S : Subsemiring R} (hS : S.IsSpanning) (h : S �
     · simpa using hx
     · simpa using mul_mem hc hx
 
-/- An ordering is a preordering. -/
+/-- An ordering is a preordering. -/
 theorem IsOrdering.isPreordering {S : Subsemiring R} (hS : S.IsOrdering) : S.IsPreordering :=
     .of_ne_top hS.isSpanning <| fun hc ↦ by
   have := hS.isPrime_supportIdeal.ne_top
