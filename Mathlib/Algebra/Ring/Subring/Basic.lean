@@ -407,6 +407,26 @@ is isomorphic to the center of its opposite. -/
 @[simps!] def centerToMulOpposite : center R ≃+* center Rᵐᵒᵖ :=
   NonUnitalSubsemiring.centerToMulOpposite
 
+instance {R : Type*} [Ring R] : CommRing (Center R) where
+  neg a := Center.mk (-a.val) (Set.neg_mem_center a.prop)
+  intCast n := Center.mk n (by simp)
+  intCast_ofNat n := by simp
+  intCast_negSucc n := by simp
+  zsmul n a := Center.mk (n • a.val) <| by
+    simpa only [zsmul_eq_mul] using
+      Set.mul_mem_center (Set.intCast_mem_center R n) a.prop
+  neg_add_cancel a := Subtype.ext (neg_add_cancel a.val)
+  zsmul_zero' a := Subtype.ext (SubNegMonoid.zsmul_zero' a.val)
+  zsmul_succ' n a := Subtype.ext (SubNegMonoid.zsmul_succ' n a.val)
+  zsmul_neg' n a := Subtype.ext (SubNegMonoid.zsmul_neg' n a.val)
+
+@[simp]
+lemma _root_.Center.coe_zsmul {R : Type*} [Ring R] (n : ℤ) (z : Center R) :
+    (n • z).val = n • z.val := rfl
+
+lemma Center.coe_intCast {R : Type*} [Ring R] (n : ℤ) :
+    (n : Center R).val = n := rfl
+
 end
 
 section DivisionRing
