@@ -282,4 +282,38 @@ lemma iUnion_finset_rightRel_eq_univ_of_rightRel {H K : Subgroup G} {t : Finset 
     exact ⟨⟨a⁻¹, by simp⟩, eq_inv_mul_of_mul_eq ha⟩
   exact ⟨a.1, a.2, ⟨1, Subgroup.one_mem K, by simpa using ha⟩⟩
 
+section inverse
+
+variable {H₁ H₂ : Subgroup G} 
+
+/-- The map sending `H₁gH₂` to `H₂g⁻¹H₁`. -/
+def Quotient.inv (x : DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G)) :
+    DoubleCoset.Quotient (H₂ : Set G) (H₁ : Set G) :=
+  Quotient.liftOn x (fun x => DoubleCoset.mk H₂ H₁ x⁻¹) fun a b hab => by
+    obtain ⟨h₁, hh₁, h₂, hh₂, heq⟩ := DoubleCoset.rel_iff.mp hab
+    rw [DoubleCoset.eq]
+    exact ⟨h₂⁻¹, H₂.inv_mem hh₂, h₁⁻¹, H₁.inv_mem hh₁, by simp [heq, mul_assoc]⟩
+
+@[simp]
+lemma inv_mk (g : G) :
+    (mk H₁ H₂ g).inv = mk H₂ H₁ g⁻¹ := by
+  rfl
+
+@[simp]
+lemma mk_inv_out (x : DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G)) :
+    mk H₂ H₁ x.out⁻¹ = x.inv := by
+  rw [← inv_mk, DoubleCoset.out_eq']
+
+@[simp]
+lemma inv_inv (x : DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G)) :
+    x.inv.inv = x :=
+  Quotient.inductionOn x fun x => by simp
+
+lemma inv_eq_iff {x : DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G)}
+    {y : DoubleCoset.Quotient (H₂ : Set G) (H₁ : Set G)} :
+    x.inv = y ↔ x = y.inv :=
+  ⟨by intro rfl; simp, by intro rfl; simp⟩
+
+end inverse
+
 end DoubleCoset
