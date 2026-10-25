@@ -439,17 +439,11 @@ lemma range_subtype_eq_top [CommSemigroup M] :
   ext; simp
 
 variable (M) in
-/-- The inclusion of `Center M` into `M` as a `MulHom`. -/
-@[simps, to_additive]
-def mulHom [Mul M] : Center M →ₙ* M where
-  toFun z := z.val
-  map_mul' _ _ := rfl
-
-variable (M) in
 /-- The inclusion of `Center M` into `M` as a `MonoidHom`. -/
 @[simps, to_additive]
 def monoidHom [MulOneClass M] : Center M →* M where
-  toMulHom := Center.mulHom M
+  toFun z := z.val
+  map_mul' _ _ := rfl
   map_one' := rfl
 
 @[to_additive]
