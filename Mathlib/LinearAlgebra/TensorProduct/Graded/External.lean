@@ -238,14 +238,11 @@ theorem gradedMul_one (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
 set_option backward.defeqAttrib.useBackward true in
 theorem gradedMul_assoc (x y z : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
     gradedMul R 𝒜 ℬ (gradedMul R 𝒜 ℬ x y) z = gradedMul R 𝒜 ℬ x (gradedMul R 𝒜 ℬ y z) := by
-  let mA := gradedMul R 𝒜 ℬ
-    -- restate as an equality of morphisms so that we can use `ext`
-  suffices LinearMap.llcomp R _ _ _ mA ∘ₗ mA =
-      (LinearMap.llcomp R _ _ _ LinearMap.lflip.toLinearMap <|
-        LinearMap.llcomp R _ _ _ mA.flip ∘ₗ mA).flip by
-    congrm $this x y z
+  apply (gradedMul R 𝒜 ℬ).mul_assoc_aux
   ext ixa xa ixb xb iya ya iyb yb iza za izb zb
-  dsimp [mA]
+  dsimp only [LinearMap.coe_comp, Function.comp_apply, AlgebraTensorModule.curry_apply,
+    LinearMap.restrictScalars_self, curry_apply, LinearMap.llcomp_apply, LinearMap.flip_apply,
+    LinearEquiv.coe_coe, LinearMap.lflip_apply]
   simp_rw [tmul_of_gradedMul_of_tmul, Units.smul_def, ← Int.cast_smul_eq_zsmul R,
     LinearMap.map_smul₂, map_smul, DirectSum.lof_eq_of, DirectSum.of_mul_of,
     ← DirectSum.lof_eq_of R, tmul_of_gradedMul_of_tmul, DirectSum.lof_eq_of, ← DirectSum.of_mul_of,
