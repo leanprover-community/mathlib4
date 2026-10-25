@@ -134,7 +134,7 @@ theorem mulSupport_bot : (⊥ : Submonoid G).mulSupport = ⊥ := by
   simpa using (⊥ : Subgroup G).mulSupport_eq
 
 variable (G) in
-@[to_additive]
+@[to_additive (attr := simp)]
 protected theorem IsMulPointed.bot : (⊥ : Submonoid G).IsMulPointed := by
   simp [isMulPointed_iff_mulSupport_eq_bot]
 

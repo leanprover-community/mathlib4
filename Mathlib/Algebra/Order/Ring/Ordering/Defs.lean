@@ -88,7 +88,7 @@ theorem sumSq_le {R : Type*} [CommRing R] {S : Subsemiring R} (hS : IsPreorderin
 end IsPreordering
 
 variable {S} in
-theorem IsPreordering.of_ne_top {S : Subsemiring R} (hS : S.IsSpanning) (h : S ≠ ⊤) :
+theorem IsPreordering.of_isSpanning {S : Subsemiring R} (hS : S.IsSpanning) (h : S ≠ ⊤) :
     S.IsPreordering := by
   rw [Subsemiring.isSpanning_def] at hS
   refine ⟨fun {_} ↦ ?_, fun hc ↦ h ?_⟩
@@ -103,8 +103,8 @@ theorem IsPreordering.of_ne_top {S : Subsemiring R} (hS : S.IsSpanning) (h : S �
     · simpa using mul_mem hc hx
 
 /-- An ordering is a preordering. -/
-theorem IsOrdering.isPreordering {S : Subsemiring R} (hS : S.IsOrdering) : S.IsPreordering :=
-    .of_ne_top hS.isSpanning <| fun hc ↦ by
+theorem IsOrdering.isPreordering {S : Subsemiring R} (hS : S.IsOrdering) :
+    S.IsPreordering := .of_isSpanning hS.isSpanning <| fun hc ↦ by
   have := hS.isPrime_supportIdeal.ne_top
   apply_fun Submodule.toAddSubgroup at this
     using Submodule.toAddSubgroup_injective (R := R) (M := R)

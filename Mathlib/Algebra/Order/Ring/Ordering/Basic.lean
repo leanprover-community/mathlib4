@@ -6,7 +6,6 @@ Authors: Florent Schaffhauser, Artie Khovanov
 module
 
 public import Mathlib.Algebra.Order.Ring.Ordering.Defs
-public import Mathlib.Algebra.Ring.SumsOfSquares
 
 import Mathlib.Algebra.Field.IsField
 import Mathlib.Tactic.FieldSimp
@@ -52,10 +51,9 @@ theorem isOrdering_iff (hP : P.IsPreordering) :
     P.IsOrdering ↔ ∀ a b : R, -(a * b) ∈ P → a ∈ P ∨ b ∈ P where
   mp hP a b _ := by
     by_contra
-    have : a * b ∈ P := by
-      grind [membership, mul_neg, neg_mul, neg_neg, Subsemiring.isSpanning_def.mp hP.isSpanning]
-    have : a ∈ P.support ∨ b ∈ P.support :=
-      Ideal.IsPrime.mem_or_mem hP.isPrime_supportIdeal (by simp; grind)
+    have : a ∈ P.support ∨ b ∈ P.support := hP.isPrime_supportIdeal.mem_or_mem <| by
+      grind [membership, mul_neg, neg_mul, neg_neg, Subsemiring.isSpanning_def.mp hP.isSpanning,
+        mem_supportIdeal, Subsemiring.mem_support]
     grind [Subsemiring.mem_support]
   mpr h := by
     refine ⟨?_, hP.support_ne_top, fun {x y} ↦ ?_⟩
@@ -79,7 +77,7 @@ end IsPreordering
 
 theorem IsPreordering.of_isSpanning_of_isPointed [Nontrivial R]
     (hP₁ : P.IsSpanning) (hP₂ : P.IsPointed) : P.IsPreordering :=
-  .of_ne_top hP₁ fun _ ↦ by simp_all [AddSubmonoid.not_isPointed_top]
+  .of_isSpanning hP₁ fun _ ↦ by simp_all
 
 theorem IsPreordering.of_isPointed_of_sumSq_le [Nontrivial R]
     (hP : P.IsPointed) (h : .sumSq R ≤ P) : P.IsPreordering where
