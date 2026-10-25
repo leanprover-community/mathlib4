@@ -238,6 +238,10 @@ attribute [deprecated "Now a tautology" (since := "2026-07-18")]
 
 end AddMonoidAlgebra
 
+@[deprecated "Now a tautology" (since := "2026-10-25")]
+theorem toFinsuppIsoLinear_symm_apply_toFinsupp (f : R[ℕ]) :
+    ((toFinsuppIsoLinear R).symm f).toFinsupp = f := rfl
+
 @[deprecated "Now a tautology" (since := "2026-07-18")]
 theorem ofFinsupp_sum {ι : Type*} (s : Finset ι) (f : ι → R[ℕ]) :
     (ofFinsupp (∑ i ∈ s, f i) : R[X]) = ∑ i ∈ s, ofFinsupp (f i) := rfl
@@ -458,8 +462,20 @@ theorem X_pow_mul_monomial (k n : ℕ) (r : R) : X ^ k * monomial n r = monomial
 @[deprecated "Now a tautology" (since := "2026-07-18")]
 theorem coeff_ofFinsupp (p) : coeff (ofFinsupp p : R[X]) = p.coeff := rfl
 
+@[deprecated AddMonoidAlgebra.coeff_injective +typeChanged (since := "2026-10-25")]
+protected theorem coeff_injective : Function.Injective (coeff : R[X] → ℕ →₀ R) :=
+  AddMonoidAlgebra.coeff_injective
+
+@[deprecated AddMonoidAlgebra.coeff_inj +typeChanged (since := "2026-10-25")]
+protected theorem coeff_inj : p.coeff = q.coeff ↔ p = q :=
+  AddMonoidAlgebra.coeff_inj
+
 @[deprecated "Now a tautology" (since := "2026-07-18")]
 theorem toFinsupp_apply (f : R[X]) (i) : f.toFinsupp.coeff i = f.coeff i := rfl
+
+@[deprecated Finsupp.finite_range +typeChanged (since := "2026-10-25")]
+theorem finite_range_coeff (f : R[X]) : (Set.range f.coeff).Finite :=
+  Finsupp.finite_range _
 
 theorem coeff_monomial_apply : coeff (monomial n a) m = if n = m then a else 0 := by
   simp [Finsupp.single_apply]
@@ -835,6 +851,10 @@ theorem monomial_add_erase (p : R[X]) (n : ℕ) : monomial n (coeff p n) + p.era
 theorem coeff_erase (p : R[X]) (n i : ℕ) :
     (p.erase n).coeff i = if i = n then 0 else p.coeff i := by
   simp [Finsupp.erase_apply]
+
+@[deprecated AddMonoidAlgebra.erase_zero +typeChanged (since := "2026-10-25")]
+protected theorem erase_zero (n : ℕ) : (0 : R[X]).erase n = 0 :=
+  AddMonoidAlgebra.erase_zero n
 
 @[simp]
 theorem erase_monomial {n : ℕ} {a : R} : (monomial n a).erase n = 0 :=

@@ -137,6 +137,11 @@ theorem eval₂_eq_liftNC {f : R →+* S} {x : S} {p : R[X]} :
   simp only [eval₂_eq_sum, sum, support]
   rfl
 
+@[deprecated eval₂_eq_liftNC +typeChanged (since := "2026-10-25")]
+theorem eval₂_ofFinsupp {f : R →+* S} {x : S} {p : R[ℕ]} :
+    eval₂ f x (ofFinsupp p : R[X]) = liftNC (↑f) (powersHom S x) p :=
+  eval₂_eq_liftNC
+
 theorem eval₂_mul_noncomm (hf : ∀ k, Commute (f <| q.coeff k) x) :
     eval₂ f x (p * q) = eval₂ f x p * eval₂ f x q := by
   simp only [eval₂_eq_liftNC]

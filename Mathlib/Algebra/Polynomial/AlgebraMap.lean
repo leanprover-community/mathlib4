@@ -105,6 +105,10 @@ def toFinsuppIsoAlg : R[X] ≃ₐ[R] R[ℕ] :=
 attribute [deprecated "Now a tautology" (since := "2026-07-18")]
   toFinsuppIsoAlg_apply toFinsuppIsoAlg_symm_apply
 
+@[deprecated "Now a tautology" (since := "2026-10-25")]
+theorem toFinsuppIsoAlg_symm_apply_toFinsupp (f : R[ℕ]) :
+    ((toFinsuppIsoAlg R).symm f).toFinsupp = f := rfl
+
 instance subalgebraNontrivial [Nontrivial A] : Nontrivial (Subalgebra R A[X]) :=
   ⟨⟨⊥, ⊤, by
       rw [Ne, SetLike.ext_iff, not_forall]
