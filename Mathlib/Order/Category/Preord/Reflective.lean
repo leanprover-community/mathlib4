@@ -58,9 +58,7 @@ noncomputable def Preord.ofCatIso (C : Type u) [SmallCategory C] [Quiver.IsThin 
     preordToCat.obj (ofCat C) ≅ .of C where
   hom :=
     { obj := id
-      map f := (leOfHom f).some
-      map_id _ := Subsingleton.elim _ _
-      map_comp _ _ := Subsingleton.elim _ _ : ofCat C ⥤ C }.toCatHom
+      map f := (leOfHom f).some : ofCat C ⥤ C }.toCatHom
   inv :=
     { obj := id
       map f := homOfLE ⟨f⟩ : C ⥤ ofCat C }.toCatHom
