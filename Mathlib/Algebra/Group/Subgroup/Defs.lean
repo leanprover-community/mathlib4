@@ -116,7 +116,7 @@ class AddSubgroupClass (S : Type*) (G : outParam Type*) [SubNegMonoid G] [SetLik
 
 attribute [to_additive] InvMemClass SubgroupClass
 
-attribute [aesop 90% (rule_sets := [SetLike])] inv_mem neg_mem
+attribute [aesop 90% (rule_sets := [SetLike]), membership .] inv_mem neg_mem
 
 @[to_additive (attr := simp)]
 theorem inv_mem_iff {S G} [InvolutiveInv G] {_ : SetLike S G} [InvMemClass S G] {H : S}
@@ -126,12 +126,12 @@ theorem inv_mem_iff {S G} [InvolutiveInv G] {_ : SetLike S G} [InvMemClass S G] 
 variable {M S : Type*} [DivInvMonoid M] [SetLike S M] [hSM : SubgroupClass S M] {H K : S}
 
 /-- A subgroup is closed under division. -/
-@[to_additive (attr := aesop 90% (rule_sets := [SetLike]))
+@[to_additive (attr := aesop 90% (rule_sets := [SetLike]), membership .)
   /-- An additive subgroup is closed under subtraction. -/]
 theorem div_mem {x y : M} (hx : x ∈ H) (hy : y ∈ H) : x / y ∈ H := by
   rw [div_eq_mul_inv]; exact mul_mem hx (inv_mem hy)
 
-@[to_additive (attr := aesop 90% (rule_sets := [SetLike]))]
+@[to_additive (attr := aesop 90% (rule_sets := [SetLike]), membership .)]
 theorem zpow_mem {x : M} (hx : x ∈ K) : ∀ n : ℤ, x ^ n ∈ K
   | (n : ℕ) => by
     rw [zpow_natCast]
@@ -478,7 +478,7 @@ protected theorem zpow_mem {x : G} (hx : x ∈ K) : ∀ n : ℤ, x ^ n ∈ K :=
 
 /-- Construct a subgroup from a nonempty set that is closed under division. -/
 @[to_additive /-- Construct a subgroup from a nonempty set that is closed under subtraction -/]
-def ofDiv (s : Set G) (hsn : s.Nonempty) (hs : ∀ᵉ (x ∈ s) (y ∈ s), x * y⁻¹ ∈ s) :
+def ofDiv (s : Set G) (hsn : s.Nonempty) (hs : ∀ x ∈ s, ∀ y ∈ s, x * y⁻¹ ∈ s) :
     Subgroup G :=
   have one_mem : (1 : G) ∈ s := by
     let ⟨x, hx⟩ := hsn
@@ -603,24 +603,20 @@ theorem subtype_comp_inclusion {H K : Subgroup G} (hH : H ≤ K) :
   rfl
 
 /-- A subgroup `H` is normal if whenever `n ∈ H`, then `g * n * g⁻¹ ∈ H` for every `g : G` -/
-structure Normal : Prop where
+class Normal : Prop where
   /-- `H` is closed under conjugation -/
   conj_mem : ∀ n, n ∈ H → ∀ g : G, g * n * g⁻¹ ∈ H
-
-attribute [class] Normal
 
 end Subgroup
 
 namespace AddSubgroup
 
 /-- An AddSubgroup `H` is normal if whenever `n ∈ H`, then `g + n - g ∈ H` for every `g : A` -/
-structure Normal (H : AddSubgroup A) : Prop where
+class Normal (H : AddSubgroup A) : Prop where
   /-- `H` is closed under additive conjugation -/
   conj_mem : ∀ n, n ∈ H → ∀ g : A, g + n + -g ∈ H
 
 attribute [to_additive (attr := wikidata Q743179)] Subgroup.Normal
-
-attribute [class] Normal
 
 end AddSubgroup
 
@@ -631,8 +627,6 @@ variable {H : Subgroup G}
 @[to_additive]
 instance (priority := 100) normal_of_isMulCommutative [IsMulCommutative G] (H : Subgroup G) :
     H.Normal := ⟨by simp [mul_comm']⟩
-
-@[deprecated (since := "2026-04-10")] alias normal_of_comm := normal_of_isMulCommutative
 
 namespace Normal
 
@@ -676,11 +670,6 @@ def normalizer (S : Set G) : Subgroup G where
     rw [ha (a⁻¹ * n * a⁻¹⁻¹)]
     simp only [inv_inv, mul_assoc, mul_inv_cancel_left, mul_inv_cancel, mul_one]
 
-@[deprecated (since := "2026-03-19")]
-alias setNormalizer := normalizer
-@[deprecated (since := "2026-03-19")]
-alias _root_.AddSubgroup.setNormalizer := AddSubgroup.normalizer
-
 variable {H} {S : Set G} {g : G}
 
 @[to_additive]
@@ -714,15 +703,6 @@ theorem le_normalizer : H ≤ normalizer H := fun x xH n => by
     H.mul_mem_cancel_left xH]
 
 end Normalizer
-
-@[to_additive (attr := deprecated inferInstance +typeChanged (since := "2026-04-09"))]
-theorem commGroup_isMulCommutative {G : Type*} [CommGroup G] (H : Subgroup G) :
-    IsMulCommutative H := inferInstance
-
-@[to_additive (attr := deprecated setLike_mul_comm +typeChanged (since := "2026-03-09"))]
-lemma mul_comm_of_mem_isMulCommutative [IsMulCommutative H] {a b : G} (ha : a ∈ H) (hb : b ∈ H) :
-    a * b = b * a :=
-  setLike_mul_comm ha hb
 
 end Subgroup
 

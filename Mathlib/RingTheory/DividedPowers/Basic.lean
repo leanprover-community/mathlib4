@@ -350,11 +350,11 @@ theorem dpow_linearCombination {S : Type*} [CommSemiring S] [Algebra A S] {J : I
   rw [Algebra.smul_def, hJ.dpow_mul (hx i hi), ← map_pow, ← Algebra.smul_def]
 
 /-- Given a nonempty `s : Finset ι` and a family `r : ι → R` such that `r i ∈ I` for all `i ∈ S`,
-  one has `hI.dpow n (∏ i ∈ s, r i) = n.factorial ^ (s.card - 1) • (∏ i ∈ s, hI.dpow n (r i))`
+  one has `hI.dpow n (∏ i ∈ s, r i) = n.factorial ^ (#s - 1) • (∏ i ∈ s, hI.dpow n (r i))`
   for all `n : ℕ`. -/
 theorem dpow_prod {ι : Type*} {r : ι → A} {s : Finset ι} (hs : s.Nonempty)
     (hs' : ∀ i ∈ s, r i ∈ I) {n : ℕ} :
-    hI.dpow n (∏ i ∈ s, r i) = n.factorial ^ (s.card - 1) • (∏ i ∈ s, hI.dpow n (r i)) := by
+    hI.dpow n (∏ i ∈ s, r i) = n.factorial ^ (#s - 1) • (∏ i ∈ s, hI.dpow n (r i)) := by
   classical
   induction s using Finset.induction with
   | empty => simp_all

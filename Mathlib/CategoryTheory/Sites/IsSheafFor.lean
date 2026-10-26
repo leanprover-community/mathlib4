@@ -505,9 +505,6 @@ noncomputable def shrinkFunctorHomEquiv [LocallySmall.{w} C] {F : Cᵒᵖ ⥤ Ty
     rw! [Equiv.apply_symm_apply]
     simp
 
-@[deprecated "In terms of `Sieve.shrinkFunctor`" (since := "2026-03-13")]
-alias natTransEquivCompatibleFamily := shrinkFunctorHomEquiv
-
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma shrinkFunctor_ι_comp_eq_iff_isAmalgamation [LocallySmall.{w} C] (F : Cᵒᵖ ⥤ Type w)
@@ -524,9 +521,6 @@ lemma shrinkFunctor_ι_comp_eq_iff_isAmalgamation [LocallySmall.{w} C] (F : Cᵒ
       simp
     · rw! [Equiv.symm_apply_apply]
       rfl
-
-@[deprecated "In terms of `Sieve.shrinkFunctor`" (since := "2026-03-13")]
-alias extension_iff_amalgamation := shrinkFunctor_ι_comp_eq_iff_isAmalgamation
 
 lemma isSheafFor_iff_bijective_shrinkFunctor_ι_comp [LocallySmall.{w} C] {X : C}
     (S : Sieve X) (F : Cᵒᵖ ⥤ Type w) :
@@ -900,7 +894,6 @@ lemma isSheafFor_pullback_iff (P : Cᵒᵖ ⥤ Type w) {X : C} (R : Sieve X)
   ext
   simp [e]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isSheafFor_over_map_op_comp_ofArrows_iff
     {B B' : C} (p : B ⟶ B') (P : (Over B')ᵒᵖ ⥤ Type w)
     {X : Over B} {Y : I → Over B} (f : ∀ i, Y i ⟶ X) :
