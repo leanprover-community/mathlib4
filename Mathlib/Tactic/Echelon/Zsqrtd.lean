@@ -61,6 +61,11 @@ def zsqrtdModel {u : Level} (α : Q(Type u)) (dQ : Q(ℤ)) (d : ℤ) : Model α 
   -- The entries are rebuilt in the numeral form instead of returned as the carrier's shape
   -- since the raw literals display as `Int.ofNat 3`, and `simp` does not normalise them.
   mkEntry v := do
+    -- An integer value is emitted as an integer numeral.
+    if v.im = 0 then
+      let n : Q(Zsqrtd $dQ) ← mkNumeral q(Zsqrtd $dQ) v.re.natAbs
+      let entry : Q(Zsqrtd $dQ) := if v.re < 0 then q(-$n) else n
+      return entry
     let entry : Q(Zsqrtd $dQ) := q(⟨$(mkIntLitQ v.re), $(mkIntLitQ v.im)⟩)
     return entry
 }
