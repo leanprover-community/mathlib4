@@ -846,4 +846,18 @@ instance HasFactorization.over
       hp := hf.hp
     }⟩
 
+instance HasFactorization.under
+    {C : Type*} [Category* C] (W₁ W₂ : MorphismProperty C)
+    [W₁.HasFactorization W₂] (S : C) :
+    (W₁.under (X := S)).HasFactorization W₂.under where
+  nonempty_mapFactorizationData {X Y} f := by
+    let hf := W₁.factorizationData W₂ f.right
+    exact ⟨{
+      Z := .mk (X.hom ≫ hf.i)
+      i := CategoryTheory.Under.homMk hf.i
+      p := CategoryTheory.Under.homMk hf.p
+      hi := hf.hi
+      hp := hf.hp
+    }⟩
+
 end CategoryTheory.MorphismProperty
