@@ -105,9 +105,9 @@ theorem abs_of_nonpos (S : E →L[ℂ] E) (hS : S ≤ 0 := by cfc_tac) : |S| = -
   rw [abs_eq_cfcAbs]
   exact CFC.abs_of_nonpos _ hS
 
-theorem abs_adjoint_comp_self (T : E →L[ℂ] F) :
-    |T.adjoint ∘L T| = T.adjoint ∘L T :=
-  abs_of_nonneg _
+theorem abs_adjoint_comp_self (T : E →L[ℂ] F) : |T.adjoint ∘L T| = |T| ∘L |T| := by
+  rw [abs_comp_abs]
+  exact abs_of_nonneg _
 
 theorem abs_smul (c : ℂ) (T : E →L[ℂ] F) : |c • T| = ‖c‖ • |T| := by
   rw [abs, CFC.sqrt_eq_iff _ _ (nonneg_iff_isPositive.mpr (isPositive_adjoint_comp_self (c • T)))
