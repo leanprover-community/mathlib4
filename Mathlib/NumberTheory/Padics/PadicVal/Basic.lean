@@ -487,16 +487,15 @@ theorem dvd_of_one_le_multiplicity {n : ℕ} (hp : 1 ≤ multiplicity p n) : p �
 @[deprecated (since := "2026-09-11")] alias dvd_of_one_le_padicValNat :=
   dvd_of_one_le_multiplicity
 
-theorem multiplicity_dvd_iff_le_of_ne_one {p : ℕ} (hp : p ≠ 1) {a n : ℕ} (ha : a ≠ 0) :
-    p ^ n ∣ a ↔ n ≤ multiplicity p a := by
-  rw [pow_dvd_iff_le_emultiplicity, ← multiplicity_eq_emultiplicity_of_ne_one hp ha, Nat.cast_le]
+@[deprecated (since := "2026-10-26")] alias multiplicity_dvd_iff_le_of_ne_one :=
+  Nat.pow_dvd_iff_le_multiplicity
 
 @[deprecated (since := "2026-09-11")] alias padicValNat_dvd_iff_le_of_ne_one :=
-  multiplicity_dvd_iff_le_of_ne_one
+  Nat.pow_dvd_iff_le_multiplicity
 
 theorem multiplicity_dvd_iff_le [hp : Fact p.Prime] {a n : ℕ} (ha : a ≠ 0) :
     p ^ n ∣ a ↔ n ≤ multiplicity p a :=
-  multiplicity_dvd_iff_le_of_ne_one hp.out.ne_one ha
+  Nat.pow_dvd_iff_le_multiplicity hp.out.ne_one ha
 
 @[deprecated (since := "2026-09-11")] alias padicValNat_dvd_iff_le :=
   multiplicity_dvd_iff_le
@@ -505,7 +504,7 @@ theorem multiplicity_dvd_iff_of_ne_one {p : ℕ} (hp : p ≠ 1) (n a : ℕ) :
     p ^ n ∣ a ↔ a = 0 ∨ n ≤ multiplicity p a := by
   rcases eq_or_ne a 0 with (rfl | ha)
   · exact iff_of_true (dvd_zero _) (Or.inl rfl)
-  · rw [multiplicity_dvd_iff_le_of_ne_one hp ha, or_iff_right ha]
+  · rw [Nat.pow_dvd_iff_le_multiplicity hp ha, or_iff_right ha]
 
 @[deprecated (since := "2026-09-11")] alias padicValNat_dvd_iff_of_ne_one :=
   multiplicity_dvd_iff_of_ne_one
