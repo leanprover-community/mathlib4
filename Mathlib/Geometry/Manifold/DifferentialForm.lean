@@ -234,6 +234,40 @@ def mextDerivWithinAux
       (fun y ↦ TotalSpace.mk' (EM [⋀^Fin m]→L[𝕜] 𝕜) y (α y))) x' |>.2)
     ((extChartAt IM x).symm ⁻¹' s ∩ range IM)) (extChartAt IM x x)
 
+-- TODO: what's the right abstract lemma here?
+omit [CharZero 𝕜] in
+theorem foo
+    {α : (x : M) → TangentSpace IM x [⋀^Fin m]→L[𝕜] Trivial M 𝕜 x} {s : Set M} {x : M}
+    (hα : DifferentiableWithinAt 𝕜
+      ((fun x' ↦ ContinuousAlternatingMap.inCoordinates EM 𝕜 x x' x x' (α x')) ∘
+        (extChartAt IM x).symm)
+      ((extChartAt IM x).symm ⁻¹' s ∩ range IM) (IM ((chartAt HM x) x))) :
+    DifferentiableWithinAt 𝕜
+      (fun x' ↦
+        ContinuousAlternatingMap.inCoordinates EM 𝕜 x ((extChartAt IM x).symm x') x
+          ((extChartAt IM x).symm x') (α ((chartAt HM x).symm (IM.symm x'))))
+      ((extChartAt IM x).symm ⁻¹' s ∩ range IM) (extChartAt IM x x) := by
+  rw [extChartAt, OpenPartialHomeomorph.extend] at hα ⊢
+  convert! hα
+
+omit [CharZero 𝕜] in
+theorem foo'
+    {α : (x : M) → TangentSpace IM x [⋀^Fin m]→L[𝕜] Trivial M 𝕜 x} {s : Set M} {x : M}
+    (hα : MDifferentiableWithinAt IM (IM.prod 𝓘(𝕜, EM [⋀^Fin m]→L[𝕜] 𝕜))
+      (fun y ↦ TotalSpace.mk' (EM [⋀^Fin m]→L[𝕜] 𝕜) y (α y)) s x) :
+    DifferentiableWithinAt 𝕜
+      (fun x' ↦
+        ContinuousAlternatingMap.inCoordinates EM 𝕜 x ((extChartAt IM x).symm x') x
+          ((extChartAt IM x).symm x') (α ((chartAt HM x).symm (IM.symm x'))))
+      ((extChartAt IM x).symm ⁻¹' s ∩ range IM) (extChartAt IM x x) := by
+  apply foo
+  rw [mdifferentiableWithinAt_continuousAlternatingMap_bundle] at hα
+  replace hα := hα.2
+  rw [mdifferentiableWithinAt_iff] at hα
+  simpa using hα.2
+
+set_option linter.flexible false in -- TODO: fix once the proof is cleaned up
+omit [CharZero 𝕜] in
 lemma mextDerivWithinAux_add {α α' : ∀ x, TangentSpace IM x [⋀^(Fin m)]→L[𝕜] Bundle.Trivial M 𝕜 x}
     {s : Set M} {x : M} (hsx : UniqueMDiffWithinAt IM s x)
     (hα : MDifferentiableWithinAt IM (IM.prod 𝓘(𝕜, EM [⋀^Fin m]→L[𝕜] 𝕜))
@@ -242,29 +276,20 @@ lemma mextDerivWithinAux_add {α α' : ∀ x, TangentSpace IM x [⋀^(Fin m)]→
         (fun y ↦ TotalSpace.mk' (EM [⋀^Fin m]→L[𝕜] 𝕜) y (α' y)) s x) :
     mextDerivWithinAux (α + α') s x = mextDerivWithinAux α s x + mextDerivWithinAux α' s x := by
   unfold mextDerivWithinAux
-  --simp? says
-  simp only [writtenInExtChartAt, extChartAt, OpenPartialHomeomorph.extend, Pi.add_apply,
-    modelWithCorners_prod_toPartialEquiv, modelWithCornersSelf_partialEquiv, PartialEquiv.coe_trans,
-    PartialEquiv.prod_coe, ModelWithCorners.toPartialEquiv_coe, PartialEquiv.refl_coe, id_eq,
-    PartialHomeomorph.toFun_eq_coe, OpenPartialHomeomorph.coe_toPartialHomeomorph,
-    PartialEquiv.coe_trans_symm, PartialHomeomorph.coe_toPartialEquiv_symm,
-    OpenPartialHomeomorph.coe_toPartialHomeomorph_symm, ModelWithCorners.toPartialEquiv_coe_symm,
-    comp_apply, chartAt_continuousAlternatingMap, ContinuousAlternatingMap.inCoordinates_add]
-  rw [extDerivWithin_fun_add]
-  · rfl
-  · exact hsx
-  · replace hα := hα.2
-    sorry -- morally done
-     -- differentiability requirement
-  · replace hα' := hα'.2
-    sorry -- differentiability requirement
+  simp
+  -- erw because `extChartAt` is written in foo'... without it, would be fine
+  erw [extDerivWithin_fun_add hsx (foo' hα) (foo' hα')]
+  rfl
 
+set_option linter.flexible false in -- TODO: fix once the proof is cleaned up
+omit [CharZero 𝕜] in
 lemma mextDerivWithinAux_neg (α : ∀ x, TangentSpace IM x [⋀^(Fin m)]→L[𝕜] Bundle.Trivial M 𝕜 x)
     {s : Set M} {x : M} (hsx : UniqueMDiffWithinAt IM s x) :
     mextDerivWithinAux (-α) s x = -mextDerivWithinAux α s x := by
   unfold mextDerivWithinAux
   simp
-  -- TODO: find out why the side condition cannot be passed. make ω explicit?
+  -- TODO: target goal is not type correct; will fixing this allow using simp with the next lemma?
+  -- TODO: cannot pass hsx into the rewrite yet
   rw [extDerivWithin_fun_neg]
   rfl
   exact hsx
@@ -293,9 +318,8 @@ lemma mextDerivWithinAux_zero (s : Set M) (x : M) :
       (0 : ∀ x, TangentSpace IM x [⋀^(Fin m)]→L[𝕜] Bundle.Trivial M 𝕜 x) s x = 0 := by
   unfold mextDerivWithinAux
   ext
-  -- TODO: why does extDeriv_zero not trigger?
-  simp [extDerivWithin]
-  rfl -- different zeroes.. small defeq abuse
+  simp [extDerivWithin_fun_zero]-- TODO: why must this lemma be passed explicitly?
+  rfl
 
 variable (α : DifferentialForm IM M n k)
 
@@ -418,7 +442,7 @@ variable [CharZero 𝕜] [IsManifold IM (k + 1) M]
 def IsClosed (σ : DifferentialForm IM M n k) : Prop := mextDeriv σ = 0
 def IsExact (σ : DifferentialForm IM M (n + 1) k) : Prop := ∃ τ, mextDeriv τ = σ
 
-lemma foo (σ : DifferentialForm IM M (n + 1) k) (hσ : IsExact σ) : IsClosed σ := by
+lemma bar (σ : DifferentialForm IM M (n + 1) k) (hσ : IsExact σ) : IsClosed σ := by
   obtain ⟨τ, rfl⟩ := hσ
   apply mextDeriv_mextDeriv
 
