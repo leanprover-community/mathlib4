@@ -143,6 +143,8 @@ theorem isSymmetric_of_transitive_of_odd_degree [Fintype V] [DecidableRel G.Adj]
     G.IsSymmetric := by
   obtain ⟨w, hvw⟩ := (G.degree_pos_iff_exists_adj v).mp dv.pos
   contrapose dv with nsym
+  -- If `G` is not symmetric, the orbit of the dart `v → w` under `G`'s automorphism group
+  -- is an orientation of `G`.
   let R (a b) := ∃ f : G ≃g G, f v = a ∧ f w = b
   have R_adj {a b} (h : R a b) : G.Adj a b := by
     obtain ⟨f, rfl, rfl⟩ := h
@@ -163,6 +165,8 @@ theorem isSymmetric_of_transitive_of_odd_degree [Fintype V] [DecidableRel G.Adj]
     all_goals exact ⟨(f₁.symm.trans f).trans (g.symm.trans f₂), by
       simp [fv, fw, ← gv, ← gw, ← f₁v, ← f₁w, f₂v, f₂w]⟩
   classical
+  -- By vertex-transitivity and the handshaking lemma, `v`'s indegree and outdegree are equal
+  -- in the orientation, so it has even degree in `G`. Contradiction.
   let O (a) : Finset V := {x | R a x}
   let I (a) : Finset V := {x | R x a}
   have O_const (a) : #(O a) = #(O v) := by
