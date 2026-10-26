@@ -6,8 +6,8 @@ Authors: Mario Carneiro
 module
 
 public meta import Lean.Meta.Tactic.Simp.Types
-public import Mathlib.Init
 public meta import Qq
+public import Mathlib.Init
 
 meta import Qq.Typ
 
