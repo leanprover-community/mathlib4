@@ -172,9 +172,8 @@ theorem trace_mul_pow_comm' [CommSemiring R] [DecidableEq m] [DecidableEq n] (A 
     (B : Matrix n m R) {k : ℕ} (hk : k ≠ 0) : trace ((A * B) ^ k) = trace ((B * A) ^ k) := by
   have hpow (j : ℕ) : (B * A) ^ (j + 1) = B * (A * B) ^ j * A := by
     induction j <;> simp [*, pow_succ, Matrix.mul_assoc]
-  cases k with
-  | zero => exact (hk rfl).elim
-  | succ k => rw [pow_succ, ← Matrix.mul_assoc, trace_mul_cycle, hpow]
+  match k with
+  | k + 1 => rw [pow_succ, ← Matrix.mul_assoc, trace_mul_cycle, hpow]
 
 /-- For square matrices, the trace of any power of `A * B` is unchanged when the factors
 are reversed. Unlike the rectangular version, this also holds at exponent zero.
