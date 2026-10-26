@@ -6,6 +6,7 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.Algebra.Group.FunLike
+public import Mathlib.Algebra.GroupWithZero.Action.Pi
 public import Mathlib.Algebra.GroupWithZero.InjSurj
 public import Mathlib.Algebra.GroupWithZero.Pi
 
@@ -22,7 +23,7 @@ typeclass searches.
 
 namespace FunLike
 
-variable {F α β : Type*}
+variable {F α β R : Type*}
 
 section Comp
 
@@ -39,6 +40,24 @@ protected abbrev compMonoidWithZero : MonoidWithZero F where
   mul_assoc _ _ _ := by apply DFunLike.ext; simp
 
 end Comp
+
+section SMulWithZero
+
+variable [FunLike F α β] [Zero β] [Zero F] [IsZeroApply F]
+
+/-- A `FunLike` type with `(r • f) x = r • f x` is a `SMulWithZero` if `β` is a `SMulWithZero`. -/
+protected abbrev smulWithZero [Zero R] [SMulWithZero R β] [SMul R F] [IsSMulApply R F] :
+    SMulWithZero R F :=
+  Function.Injective.smulWithZero ⟨_, FunLike.coe_zero⟩ DFunLike.coe_injective FunLike.coe_smul
+
+/-- A `FunLike` type with `(r • f) x = r • f x` is a `MulActionWithZero` if `β` is a
+`MulActionWithZero`. -/
+protected abbrev mulActionWithZero [MonoidWithZero R] [MulActionWithZero R β] [SMul R F]
+    [IsSMulApply R F] :
+    MulActionWithZero R F :=
+  Function.Injective.mulActionWithZero ⟨_, FunLike.coe_zero⟩ DFunLike.coe_injective FunLike.coe_smul
+
+end SMulWithZero
 
 section PointwiseMul
 
