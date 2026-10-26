@@ -8,12 +8,18 @@ module
 public import Mathlib.Algebra.DirectSum.Decomposition
 public import Mathlib.LinearAlgebra.DirectSum.TensorProduct
 
+import Mathlib.Algebra.Module.Submodule.EqLocus
+
 /-! # Decomposition of tensor product
 
 In this file, we describe the properties of decomposition under tensor product. Suppose `ℳ` is a
 decomposition of an `R`-module `M` indexed by a type `ι`. Given an `R`-module `N`, the `R`-module
 `M ⊗[R] N` has a decomposition into pieces `fun i ↦ (ℳ i) ⊗[R] N`. Given a commutative `R`-algebra
 `S`, the `S`-module `S ⊗[R] M` has a decomposition `fun i ↦ (ℳ i).baseChange S`.
+Given decompositions `ℳ`, `𝒩` of `M` and `N` and a degree function `f : ι → κ → μ`, the
+`R`-module `M ⊗[R] N` has a decomposition `TensorProduct.gradeBy f ℳ 𝒩`, placing the image of
+`(ℳ p) ⊗[R] (𝒩 q)` in degree `f p q`; `TensorProduct.grade` is the total-degree case
+`f = (· + ·)`.
 
 -/
 
@@ -149,3 +155,129 @@ theorem toBaseChange_injective (hm : IsInternal ℳ) (i : ι) :
 end IsInternal
 
 end DirectSum
+
+namespace TensorProduct
+
+open DirectSum
+
+variable {ι κ μ R M N : Type*} [CommSemiring R]
+  [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+
+/-- The submodule of `M ⊗[R] N` corresponding to each grade given by the degree function `f`
+on the degrees of the two factors. -/
+def gradeBy (f : ι → κ → μ) (ℳ : ι → Submodule R M) (𝒩 : κ → Submodule R N) (m : μ) :
+    Submodule R (M ⊗[R] N) :=
+  ⨆ (p) (q) (_ : f p q = m), Submodule.map₂ (mk R M N) (ℳ p) (𝒩 q)
+
+section IsInternal
+
+variable {ℳ : ι → Submodule R M} {𝒩 : κ → Submodule R N} [DecidableEq ι] [DecidableEq κ]
+
+/-- The pieces `ℳ p ⊗ 𝒩 q` form an internal direct sum of `M ⊗[R] N`. -/
+theorem _root_.DirectSum.IsInternal.map₂_mk (hm : IsInternal ℳ) (hn : IsInternal 𝒩) :
+    IsInternal fun pq : ι × κ ↦ Submodule.map₂ (mk R M N) (ℳ pq.1) (𝒩 pq.2) := by
+  have := hm.chooseDecomposition
+  have := hn.chooseDecomposition
+  convert (isInternal_range_lof R (P := fun pq : ι × κ ↦ ℳ pq.1 ⊗[R] 𝒩 pq.2)).submodule_map
+    (congr (decomposeLinearEquiv ℳ) (decomposeLinearEquiv 𝒩) ≪≫ₗ
+      TensorProduct.directSum R R (ℳ ·) (𝒩 ·)).symm using 1
+  funext ⟨p, q⟩
+  rw [← range_mapIncl, ← LinearMap.range_comp]
+  congr 1
+  ext x y
+  simp
+
+/-- `M ⊗[R] N` is the internal direct sum of the graded pieces. -/
+theorem _root_.DirectSum.IsInternal.gradeBy [DecidableEq μ] (hm : IsInternal ℳ)
+    (hn : IsInternal 𝒩) (f : ι → κ → μ) : IsInternal (gradeBy f ℳ 𝒩) := by
+  convert (hm.map₂_mk hn).submodule_iSup_fiberwise fun pq ↦ f pq.1 pq.2 using 1
+  funext m
+  simp only [TensorProduct.gradeBy, iSup_prod]
+
+end IsInternal
+
+section GradeBy
+
+variable (f : ι → κ → μ) {ℳ : ι → Submodule R M} {𝒩 : κ → Submodule R N}
+  {p : ι} {q : κ} {x : M} {y : N} {m : μ}
+
+variable (p q) in
+theorem map₂_le_gradeBy (h : f p q = m) :
+    Submodule.map₂ (mk R M N) (ℳ p) (𝒩 q) ≤ gradeBy f ℳ 𝒩 m :=
+  le_iSup_of_le p <| le_iSup₂_of_le q h le_rfl
+
+theorem tmul_mem_gradeBy (hx : x ∈ ℳ p) (hy : y ∈ 𝒩 q) (h : f p q = m) :
+    x ⊗ₜ[R] y ∈ gradeBy f ℳ 𝒩 m :=
+  map₂_le_gradeBy f p q h (Submodule.apply_mem_map₂ _ hx hy)
+
+theorem gradeBy_le {S : Submodule R (M ⊗[R] N)} :
+    gradeBy f ℳ 𝒩 m ≤ S ↔ ∀ p q, f p q = m → ∀ x ∈ ℳ p, ∀ y ∈ 𝒩 q, x ⊗ₜ[R] y ∈ S := by
+  simp [gradeBy, Submodule.map₂_le]
+
+variable {P : Type*} [AddCommMonoid P] [Module R P] {g g' : M ⊗[R] N →ₗ[R] P}
+
+/-- A linear map sends the degree-`m` component `gradeBy f ℳ 𝒩 m` into a submodule `S` iff it
+sends every pure tensor of degree `m` into `S`. -/
+theorem mapsTo_gradeBy_iff {S : Submodule R P} :
+    Set.MapsTo g (gradeBy f ℳ 𝒩 m) S ↔
+      ∀ p q, f p q = m → ∀ x ∈ ℳ p, ∀ y ∈ 𝒩 q, g (x ⊗ₜ[R] y) ∈ S :=
+  ⟨fun H _ _ hpq _ hx _ hy ↦ H (tmul_mem_gradeBy f hx hy hpq),
+    fun h _ hz ↦ Submodule.mem_comap.1 <| (gradeBy_le f).2 h hz⟩
+
+/-- Two linear maps agree on the degree-`m` component `gradeBy f ℳ 𝒩 m` iff they agree on
+every pure tensor of degree `m`. -/
+theorem eqOn_gradeBy_iff :
+    Set.EqOn g g' (gradeBy f ℳ 𝒩 m) ↔
+      ∀ p q, f p q = m → ∀ x ∈ ℳ p, ∀ y ∈ 𝒩 q, g (x ⊗ₜ[R] y) = g' (x ⊗ₜ[R] y) :=
+  LinearMap.le_eqLocus.symm.trans (gradeBy_le f)
+
+variable [DecidableEq ι] [DecidableEq κ] [DecidableEq μ] [Decomposition ℳ] [Decomposition 𝒩]
+
+variable (ℳ 𝒩) in
+theorem gradeBy.isInternal : IsInternal (gradeBy f ℳ 𝒩) :=
+  (Decomposition.isInternal ℳ).gradeBy (Decomposition.isInternal 𝒩) f
+
+/-- The decomposition of a tensor product induced by decompositions of the two factors. -/
+noncomputable instance gradeBy.decomposition : Decomposition (gradeBy f ℳ 𝒩) :=
+  (gradeBy.isInternal f ℳ 𝒩).chooseDecomposition
+
+theorem gradeBy.decompose_tmul (hx : x ∈ ℳ p) (hy : y ∈ 𝒩 q) :
+    decompose (gradeBy f ℳ 𝒩) (x ⊗ₜ[R] y) =
+      .of _ (f p q) ⟨x ⊗ₜ[R] y, tmul_mem_gradeBy f hx hy rfl⟩ :=
+  decompose_of_mem _ (tmul_mem_gradeBy f hx hy rfl)
+
+end GradeBy
+
+/-- The submodule of `M ⊗[R] N` corresponding to each total degree. -/
+abbrev grade [Add ι] (ℳ : ι → Submodule R M) (𝒩 : ι → Submodule R N) (n : ι) :
+    Submodule R (M ⊗[R] N) :=
+  gradeBy (· + ·) ℳ 𝒩 n
+
+section Grade
+
+variable [Add ι] (ℳ : ι → Submodule R M) (𝒩 : ι → Submodule R N)
+
+theorem grade_eq_gradeBy : grade ℳ 𝒩 = gradeBy (· + ·) ℳ 𝒩 := rfl
+
+variable {ℳ 𝒩} {p q n : ι} {x : M} {y : N}
+
+theorem tmul_mem_grade (hx : x ∈ ℳ p) (hy : y ∈ 𝒩 q) (h : p + q = n) :
+    x ⊗ₜ[R] y ∈ grade ℳ 𝒩 n :=
+  tmul_mem_gradeBy _ hx hy h
+
+theorem grade_le {S : Submodule R (M ⊗[R] N)} :
+    grade ℳ 𝒩 n ≤ S ↔ ∀ p q, p + q = n → ∀ x ∈ ℳ p, ∀ y ∈ 𝒩 q, x ⊗ₜ[R] y ∈ S :=
+  gradeBy_le _
+
+variable [DecidableEq ι] [Decomposition ℳ] [Decomposition 𝒩]
+
+theorem grade.decompose_tmul (hx : x ∈ ℳ p) (hy : y ∈ 𝒩 q) :
+    decompose (grade ℳ 𝒩) (x ⊗ₜ[R] y) = .of _ (p + q) ⟨x ⊗ₜ[R] y, tmul_mem_grade hx hy rfl⟩ :=
+  decompose_of_mem _ (tmul_mem_grade hx hy rfl)
+
+variable (ℳ 𝒩) in
+theorem grade.isInternal : IsInternal (grade ℳ 𝒩) := Decomposition.isInternal _
+
+end Grade
+
+end TensorProduct
