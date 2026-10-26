@@ -102,8 +102,12 @@ theorem circleAverage_log_norm_sub_const₁ (h : ‖a‖ = 1) :
     integral_congr (g := fun x ↦ log (4 * sin (x / 2) ^ 2) / 2),
     circleAverage_log_norm_sub_const₁_integral, smul_zero]
   intro x _
-  have := norm_circleMap_zero_sub_sq' 1 (x + a.arg) a
-  norm_num [h] at this
+  have : ‖circleMap 0 1 (x + a.arg) - a‖ ^ 2 = 4 * sin (x / 2) ^ 2 := by
+    have h1 := norm_circleMap_sub_circleMap_sq 0 1 ‖a‖ (x + a.arg) a.arg
+    have h2 := Real.sin_sq_eq_half_sub (x / 2)
+    rw [circleMap_zero_norm_arg, h, add_sub_cancel_right] at h1
+    rw [show 2 * (x / 2) = x by ring] at h2
+    linear_combination h1 - 4 * h2
   simp only [← this, log_pow]
   ring
 

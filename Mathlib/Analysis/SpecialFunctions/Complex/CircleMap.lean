@@ -145,33 +145,17 @@ lemma norm_circleMap_sub_circleMap_sq (c : ℂ) (r s θ φ : ℝ) :
   simpa [circleMap] using norm_circleMap_zero_sub_circleMap_zero_sq ..
 
 /--
-Law of cosines for the chord from a point of the circle `circleMap 0 r` to an arbitrary point `a`.
-See `norm_circleMap_zero_sub_sq'` for the half-angle form.
--/
-theorem norm_circleMap_zero_sub_sq (r θ : ℝ) (a : ℂ) :
-    ‖b - a‖ ^ 2 = ‖b‖ ^ 2 + ‖a‖ ^ 2 - 2 * ‖b‖ * ‖a‖ * Real.cos (b.arg - a.arg)
-  simp [← norm_circleMap_sub_circleMap_sq 0]
-
-/--
-Law of cosines for the chord from a point of the circle `circleMap 0 r` to an arbitrary point `a`,
-half-angle form. For `r = 1` and `a = 1`, see also `Complex.norm_exp_I_mul_ofReal_sub_one`.
--/
-theorem norm_circleMap_zero_sub_sq' (r θ : ℝ) (a : ℂ) :
-    ‖circleMap 0 r θ - a‖ ^ 2 =
-      (r - ‖a‖) ^ 2 + 4 * r * ‖a‖ * Real.sin ((θ - a.arg) / 2) ^ 2 := by
-  have h := Real.sin_sq_eq_half_sub ((θ - a.arg) / 2)
-  rw [show 2 * ((θ - a.arg) / 2) = θ - a.arg by ring] at h
-  rw [norm_circleMap_zero_sub_sq]
-  linear_combination (-(4 * r * ‖a‖)) * h
-
-/--
 Points of the circle `circleMap 0 r` keep distance at least `r * |sin ((θ - arg a) / 2)|` from any
 point `a`. The bound is sharp: equality holds for `a = 0` and `θ = π`.
 -/
 theorem mul_abs_sin_le_norm_circleMap_zero_sub {r : ℝ} (hr : 0 ≤ r) (θ : ℝ) (a : ℂ) :
     r * |Real.sin ((θ - a.arg) / 2)| ≤ ‖circleMap 0 r θ - a‖ := by
   refine le_of_pow_le_pow_left₀ two_ne_zero (norm_nonneg _) ?_
-  rw [mul_pow, sq_abs, norm_circleMap_zero_sub_sq']
+  have h := Real.sin_sq_eq_half_sub ((θ - a.arg) / 2)
+  rw [show 2 * ((θ - a.arg) / 2) = θ - a.arg by ring] at h
+  conv_rhs => rw [← circleMap_zero_norm_arg a, norm_circleMap_sub_circleMap_sq]
+  rw [mul_pow, sq_abs, show Real.cos (θ - a.arg) = 1 - 2 * Real.sin ((θ - a.arg) / 2) ^ 2 by
+    linarith]
   linarith [mul_nonneg (sub_nonneg.2 (Real.sin_sq_le_one ((θ - a.arg) / 2)))
       (sq_nonneg (r - ‖a‖)),
     mul_nonneg (mul_nonneg (sq_nonneg (Real.sin ((θ - a.arg) / 2))) (norm_nonneg a))

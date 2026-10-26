@@ -67,9 +67,10 @@ private lemma const_mul_norm_sub_circleMap_le_norm_sub_circleMap {r₀ r R : ℝ
     (hr₀ : 0 < r₀) (hR : 0 < R) (hr₀r : r₀ ≤ r) (θ : ℝ) :
     sqrt (r₀ / R) * ‖circleMap 0 R θ - ρ‖ ≤ ‖circleMap 0 r θ - ρ‖ := by
   have : (r₀ / R) * ‖circleMap 0 R θ - ρ‖ ^ 2 ≤ ‖circleMap 0 r θ - ρ‖ ^ 2 := by
-    rw [norm_circleMap_zero_sub_sq', norm_circleMap_zero_sub_sq', hρ, div_mul_eq_mul_div,
+    rw [show ρ = circleMap 0 R ρ.arg by rw [← hρ, circleMap_zero_norm_arg],
+      norm_circleMap_sub_circleMap_sq, norm_circleMap_sub_circleMap_sq, div_mul_eq_mul_div,
       div_le_iff₀ hR]
-    nlinarith [mul_nonneg (mul_nonneg (sq_nonneg R) (sq_nonneg (sin ((θ - ρ.arg) / 2))))
+    nlinarith [mul_nonneg (mul_nonneg (sq_nonneg R) (sub_nonneg.2 (Real.cos_le_one (θ - ρ.arg))))
       (sub_nonneg.2 hr₀r), mul_nonneg hR.le (sq_nonneg (r - R))]
   grw [← sqrt_sq (norm_nonneg _), ← sqrt_mul (by positivity), this, sqrt_sq (norm_nonneg _)]
 
