@@ -169,7 +169,6 @@ theorem Presentation.mapRelations_mapGenerators :
     ← Functor.map_comp, kernel.condition, Functor.map_zero, comp_zero]
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
 colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we will get a
 `Presentation (F.obj M)`. -/

@@ -243,7 +243,6 @@ instance : ((whiskeringLeft C (Karoubi C) D).obj (toKaroubi C)).IsEquivalence :=
 
 variable {C D}
 
-set_option backward.defeqAttrib.useBackward true in
 theorem whiskeringLeft_obj_preimage_app {F G : Karoubi C ⥤ D}
     (τ : toKaroubi _ ⋙ F ⟶ toKaroubi _ ⋙ G) (P : Karoubi C) :
     (((whiskeringLeft _ _ _).obj (toKaroubi _)).preimage τ).app P =
@@ -256,7 +255,6 @@ theorem whiskeringLeft_obj_preimage_app {F G : Karoubi C ⥤ D}
 
 end IsIdempotentComplete
 
-set_option backward.defeqAttrib.useBackward true in
 variable {C D} in
 /-- The precomposition of functors with `toKaroubi C` is fully faithful. -/
 def whiskeringLeftObjToKaroubiFullyFaithful :

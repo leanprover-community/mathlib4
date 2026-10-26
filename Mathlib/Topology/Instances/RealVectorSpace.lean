@@ -44,7 +44,6 @@ theorem coe_toRealLinearMap (f : E →+ F) (hf : Continuous f) : ⇑(f.toRealLin
 
 end AddMonoidHom
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Reinterpret a continuous additive equivalence between two real vector spaces
 as a continuous real-linear map. -/
 def AddEquiv.toRealLinearEquiv (e : E ≃+ F) (h₁ : Continuous e) (h₂ : Continuous e.symm) :

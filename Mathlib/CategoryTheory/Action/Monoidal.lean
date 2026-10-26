@@ -62,7 +62,6 @@ def tensorUnitIso {X : V} (f : 𝟙_ V ≅ X) : 𝟙_ (Action V G) ≅ Action.mk
 
 variable (V G)
 
-set_option backward.defeqAttrib.useBackward true in
 instance : (Action.forget V G).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := Iso.refl _
@@ -84,7 +83,6 @@ section
 
 variable [BraidedCategory V]
 
-set_option backward.defeqAttrib.useBackward true in
 instance : BraidedCategory (Action V G) :=
   .ofFaithful (Action.forget V G) fun X Y ↦ mkIso (β_ _ _) fun g ↦ by simp
 
@@ -94,7 +92,6 @@ theorem β_hom_hom {X Y : Action V G} : (β_ X Y).hom.hom = (β_ X.V Y.V).hom :=
 @[simp]
 theorem β_inv_hom {X Y : Action V G} : (β_ X Y).inv.hom = (β_ X.V Y.V).inv := rfl
 
-set_option backward.defeqAttrib.useBackward true in
 /-- When `V` is braided the forgetful functor `Action V G` to `V` is braided. -/
 instance : (Action.forget V G).Braided where
 
