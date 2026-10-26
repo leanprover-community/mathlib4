@@ -5,10 +5,10 @@ Authors: Sidharth Hariharan
 -/
 module
 
+public import Mathlib.Analysis.Convex.StdSimplex
 public import Mathlib.LinearAlgebra.AffineSpace.Basis
 public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
 public import Mathlib.LinearAlgebra.StdBasis
-public import Mathlib.Analysis.Convex.StdSimplex
 
 /-!
 # Standard simplices
