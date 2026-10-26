@@ -550,6 +550,8 @@ lemma restrict_le_one_iff {x : R} : v.restrict x ≤ 1 ↔ v x ≤ 1 := by
 lemma restrict_eq_zero_iff {x : R} : v.restrict x = 0 ↔ v x = 0 := by
   simp [restrict_def, restrict₀_eq_zero_iff]
 
+lemma restrict_ne_zero_iff {x : R} : v.restrict x ≠ 0 ↔ v x ≠ 0 := by simp
+
 @[simp]
 lemma restrict_eq_one_iff {x : R} : v.restrict x = 1 ↔ v x = 1 := by
   simp [restrict_def, restrict₀_eq_one_iff]
@@ -568,6 +570,14 @@ lemma exists_div_eq_of_unit (γ : (ValueGroup₀ (v : R →*₀ Γ₀))ˣ) :
   congr
   rw [← WithZero.coe_unzero (Units.ne_zero γ)]
   exact Eq.refl ..
+
+theorem restrict_surjective {k : Type*} [DivisionRing k] (v : Valuation k Γ₀) :
+    Function.Surjective v.restrict := by
+  intro x
+  by_cases hx : x = 0
+  · exact ⟨0, by simp [hx]⟩
+  obtain ⟨r, s, hr, hs, hrs⟩ := v.exists_div_eq_of_unit (Units.mk0 x hx)
+  exact ⟨r / s, by simp [hrs]⟩
 
 lemma IsEquiv.restrict {Γ₀' : Type*} [LinearOrderedCommGroupWithZero Γ₀']
     {w : Valuation R Γ₀'} (h : v.IsEquiv w) : v.restrict.IsEquiv w.restrict := by
