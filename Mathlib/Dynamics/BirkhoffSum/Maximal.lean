@@ -49,7 +49,21 @@ inequality. In other words, its comulative distribution function
 
 ## Implementation
 
+Write $`M_n` for `birkhoffMax f g n`, which is non-negative and monotone in `n`. We have a
+recurrence relation $`M_{n+1} = g + M_n ∘ f` in the set where $`M_{n+1}>0` (`birkhoffMax_succ'`),
+so by monotonicity of $`M_n`, $`M_n ≤ 1_{\{M_n> 0\}} g + M_n ∘ f` pointwise
+(`birkhoffMax_le_indicator_add_comp`). Integrating this inequality and using
+that $`f` preserves $`μ`, we conclude that $`\int_{\{M_n > 0\}}g` is nonnegative
+(`setIntegral_support_birkhoffMax_nonneg`). The sets $`\{M_n > 0\}` increase to the set where
+`birkhoffSumSup f g` is positive (`setOf_birkhoffSumSup_pos_eq_iUnion_birkhoffMax_support`), so
+`setIntegral_birkhoffSumSup_nonneg` follows by passing to the limit
+(`tendsto_setIntegral_support_birkhoffMax`).
 
+For $`a ≥ 0`, the set where $`a < ` `birkhoffAverageSup f g` equals the set where
+`birkhoffSumSup f (g - a)` is positive (`lt_birkhoffAverageSup_iff_lt_birkhoffSumSup`). Applying
+the previous result to $`g - a` on this set gives
+`mul_measureReal_lt_birkhoffAverageSup_le_integral`. Applying that to `‖g ·‖` gives the
+weak-type inequality.
 -/
 
 @[expose] public section
@@ -97,11 +111,14 @@ lemma birkhoffMax_succ' (hpos : 0 < birkhoffMax f g (n + 1) x) :
 
 lemma birkhoffMax_le_self_add_comp (hpos : 0 < birkhoffMax f g n x) :
     birkhoffMax f g n x ≤ g x + birkhoffMax f g n (f x) := by
-  rcases n with _ | n
-  · simp [birkhoffMax] at *
-  · rw [birkhoffMax_succ' hpos]
-    gcongr
-    simp
+  have hle : birkhoffMax f g n x ≤ birkhoffMax f g (n + 1) x := birkhoffMax_apply_mono n.le_succ
+  rwa [birkhoffMax_succ' (hpos.trans_le hle)] at hle
+
+lemma birkhoffMax_le_indicator_add_comp :
+    birkhoffMax f g n x ≤ (birkhoffMax f g n).support.indicator g x + birkhoffMax f g n (f x) := by
+  by_cases hx : x ∈ (birkhoffMax f g n).support
+  · simpa [hx] using birkhoffMax_le_self_add_comp (birkhoffMax_nonneg.lt_of_ne' hx)
+  · simp [hx, Function.notMem_support.mp hx, birkhoffMax_nonneg]
 
 end BirkhoffMax
 
@@ -134,31 +151,20 @@ lemma integrable_birkhoffMax (hf : MeasurePreserving f μ μ) (hg : Integrable g
   | zero => simp
   | succ n hn => simpa using hn.sup (by fun_prop)
 
-lemma birkhoffMax_integral_le (hf : MeasurePreserving f μ μ) (hg : Integrable g μ) :
-    ∫ x, birkhoffMax f g n x ∂μ ≤
-    ∫ x in (birkhoffMax f g n).support, g x ∂μ +
-    ∫ x in (birkhoffMax f g n).support, birkhoffMax f g n (f x) ∂μ := by
-  rw [← integral_add hg.restrict (.restrict (by fun_prop)), ← setIntegral_support]
-  apply setIntegral_mono_on₀
-  · exact Integrable.integrableOn (by fun_prop)
-  · exact Integrable.integrableOn (by fun_prop)
-  · exact AEStronglyMeasurable.nullMeasurableSet_support (by fun_prop)
-  · grind [birkhoffMax_le_self_add_comp, birkhoffMax_nonneg]
-
 lemma setIntegral_support_birkhoffMax_nonneg (hf : MeasurePreserving f μ μ) (hg : Integrable g μ) :
     0 ≤ ∫ x in (birkhoffMax f g n).support, g x ∂μ := by
   have hg₁ : AEStronglyMeasurable (birkhoffMax f g n) μ := by fun_prop
+  have hs := hg₁.nullMeasurableSet_support
   calc
-    0 ≤ ∫ x in (birkhoffMax f g n).supportᶜ, birkhoffMax f g n (f x) ∂μ :=
-      integral_nonneg (fun x ↦ birkhoffMax_nonneg)
-    _ = ∫ x, birkhoffMax f g n (f x) ∂μ -
-        ∫ x in (birkhoffMax f g n).support, birkhoffMax f g n (f x) ∂μ :=
-      setIntegral_compl₀ hg₁.nullMeasurableSet_support (by fun_prop)
-    _ = ∫ x, birkhoffMax f g n x ∂μ -
-        ∫ x in (birkhoffMax f g n).support, birkhoffMax f g n (f x) ∂μ := by
-      rw [← integral_map hf.aemeasurable (hf.map_eq.symm ▸ hg₁), hf.map_eq]
-    _ ≤ ∫ x in (birkhoffMax f g n).support, g x ∂μ := by
-      linarith [birkhoffMax_integral_le μ hf hg (n := n)]
+    0 = ∫ x, birkhoffMax f g n x ∂μ - ∫ x, birkhoffMax f g n (f x) ∂μ := by
+      rw [← integral_map hf.aemeasurable (hf.map_eq.symm ▸ hg₁), hf.map_eq, sub_self]
+    _ ≤ ∫ x, (birkhoffMax f g n).support.indicator g x + birkhoffMax f g n (f x) ∂μ -
+        ∫ x, birkhoffMax f g n (f x) ∂μ := by
+      gcongr
+      exacts [by fun_prop, by fun_prop, fun x ↦ birkhoffMax_le_indicator_add_comp]
+    _ = ∫ x in (birkhoffMax f g n).support, g x ∂μ := by
+      rw [integral_add (hg.indicator₀ hs) (by fun_prop), integral_indicator₀ hs,
+        add_sub_cancel_right]
 
 end MeasurePreserving
 
