@@ -80,9 +80,9 @@ theorem to_Module_monoidAlgebra_map_aux {k G : Type*} [CommRing k] [Monoid G] (V
   · intro g
     simp only [one_smul, MonoidAlgebra.lift_single, MonoidAlgebra.of_apply]
     congrm $(w g) x
-  · intro g h gw hw; simp only [map_add, LinearMap.add_apply, hw, gw]
+  · intro g h gw hw; simp [hw, gw]
   · intro r g w
-    simp only [map_smul, w, LinearMap.smul_apply]
+    simp [w]
 
 /-- Auxiliary definition for `toModuleMonoidAlgebra`. -/
 def toModuleMonoidAlgebraMap {V W : Rep.{w} k G} (f : V ⟶ W) :

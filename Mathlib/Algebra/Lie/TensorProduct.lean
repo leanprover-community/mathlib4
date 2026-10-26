@@ -50,8 +50,7 @@ def hasBracketAux (x : L) : Module.End R (M ⊗[R] N) :=
 instance lieRingModule : LieRingModule L (M ⊗[R] N) where
   bracket x := hasBracketAux x
   add_lie x y t := by
-    simp only [hasBracketAux, LinearMap.lTensor_add, LinearMap.rTensor_add, map_add,
-      LinearMap.add_apply]
+    simp only [hasBracketAux, LinearMap.lTensor_add, LinearMap.rTensor_add, map_add, add_apply]
     abel
   lie_add _ := map_add _
   leibniz_lie x y t := by
@@ -61,7 +60,7 @@ instance lieRingModule : LieRingModule L (M ⊗[R] N) where
     ext m n
     simp only [hasBracketAux, AlgebraTensorModule.curry_apply, curry_apply, sub_tmul, tmul_sub,
       LinearMap.coe_restrictScalars, Function.comp_apply, LinearMap.coe_comp,
-      LinearMap.rTensor_tmul, LieHom.map_lie, toEnd_apply_apply, LinearMap.add_apply,
+      LinearMap.rTensor_tmul, LieHom.map_lie, toEnd_apply_apply, add_apply,
       map_add, LieHom.lie_apply, Module.End.lie_apply, LinearMap.lTensor_tmul]
     abel
 
@@ -69,15 +68,13 @@ instance lieRingModule : LieRingModule L (M ⊗[R] N) where
 instance lieModule : LieModule R L (M ⊗[R] N) where
   smul_lie c x t := by
     change hasBracketAux (c • x) _ = c • hasBracketAux _ _
-    simp only [hasBracketAux, smul_add, LinearMap.rTensor_smul, LinearMap.smul_apply,
-      LinearMap.lTensor_smul, map_smul, LinearMap.add_apply]
+    simp [hasBracketAux]
   lie_smul c _ := map_smul _ c
 
 @[simp]
 theorem lie_tmul_right (x : L) (m : M) (n : N) : ⁅x, m ⊗ₜ[R] n⁆ = ⁅x, m⁆ ⊗ₜ n + m ⊗ₜ ⁅x, n⁆ :=
   show hasBracketAux x (m ⊗ₜ[R] n) = _ by
-    simp only [hasBracketAux, LinearMap.rTensor_tmul, toEnd_apply_apply,
-      LinearMap.add_apply, LinearMap.lTensor_tmul]
+    simp [hasBracketAux]
 
 variable (R L M N P Q)
 
@@ -87,9 +84,7 @@ def lift : (M →ₗ[R] N →ₗ[R] P) ≃ₗ⁅R,L⁆ M ⊗[R] N →ₗ[R] P :=
   { TensorProduct.lift.equiv (.id R) M N P with
     map_lie' := fun {x f} => by
       ext m n
-      simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearEquiv.coe_coe,
-        AlgebraTensorModule.curry_apply, curry_apply, LinearMap.coe_restrictScalars,
-        lift.equiv_apply, LieHom.lie_apply, LinearMap.sub_apply, lie_tmul_right, map_add]
+      simp
       abel }
 
 @[simp]

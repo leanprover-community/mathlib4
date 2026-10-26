@@ -438,8 +438,7 @@ lemma Module.Finite.exists_smul_of_comp_eq_of_isLocalizedModule
   use σ.prod s
   rw [← sub_eq_zero, ← LinearMap.ker_eq_top, ← top_le_iff, ← hσ, Submodule.span_le]
   intro x hx
-  simp only [SetLike.mem_coe, LinearMap.mem_ker, LinearMap.sub_apply, LinearMap.smul_apply,
-    sub_eq_zero, ← Finset.prod_erase_mul σ s hx, mul_smul, hs]
+  simp [← Finset.prod_erase_mul σ s hx, mul_smul, hs]
 
 variable {M' : Type*} [AddCommGroup M'] [Module R M'] (f : M →ₗ[R] M') [IsLocalizedModule S f]
 variable {N' : Type*} [AddCommGroup N'] [Module R N'] (g : N →ₗ[R] N') [IsLocalizedModule S g]
@@ -558,9 +557,9 @@ lemma Module.FinitePresentation.exists_lift_equiv_of_isLocalizedModule
   ext x
   apply ((Module.End.isUnit_iff _).mp (IsLocalizedModule.map_units g s)).1
   have : ∀ x, g (l' x) = s.1 • (l (f x)) := LinearMap.congr_fun H
-  simp only [rs, LinearMap.coe_comp, LinearMap.coe_restrictScalars, LinearEquiv.coe_coe,
+  simp only [LinearMap.coe_comp, LinearMap.coe_restrictScalars, LinearEquiv.coe_coe,
     Function.comp_apply, LocalizedModule.mkLinearMap_apply, LinearEquiv.ofBijective_apply,
-    LinearMap.smul_apply, LocalizedModule.map_mk, algebraMap_end_apply]
+    smul_apply, LocalizedModule.map_mk, algebraMap_end_apply, LocalizedModule.lift_mk_one, rs]
   rw [← map_smul, ← smul_assoc, Algebra.smul_def s.1, hsu.mul_val_inv, one_smul]
   simp only [LocalizedModule.lift_mk, OneMemClass.coe_one, map_one, IsUnit.unit_one,
     inv_one, Units.val_one, Module.End.one_apply, this]
@@ -636,14 +635,15 @@ noncomputable def Module.FinitePresentation.linearEquivMap [Module.FinitePresent
   (IsLocalizedModule.map S (LocalizedModule.mkLinearMap S M) (LocalizedModule.mkLinearMap S N))
 
 lemma Module.FinitePresentation.linearEquivMap_apply [Module.FinitePresentation R M]
-    (f : M →ₗ[R] N) : Module.FinitePresentation.linearEquivMap S
+    (f : M →ₗ[R] N) : (Module.FinitePresentation.linearEquivMap S (M := M) (N := N))
     ((LocalizedModule.mkLinearMap S (M →ₗ[R] N)) f) = (IsLocalizedModule.map S
     (LocalizedModule.mkLinearMap S M) (LocalizedModule.mkLinearMap S N)) f :=
   IsLocalizedModule.linearEquiv_apply S _ _ f
 
 @[simp]
 lemma Module.FinitePresentation.linearEquivMap_symm_apply [Module.FinitePresentation R M]
-    (f : M →ₗ[R] N) : (Module.FinitePresentation.linearEquivMap S).symm ((IsLocalizedModule.map S
+    (f : M →ₗ[R] N) : (Module.FinitePresentation.linearEquivMap S (M := M) (N := N)).symm
+    ((IsLocalizedModule.map S
     (LocalizedModule.mkLinearMap S M) (LocalizedModule.mkLinearMap S N)) f) =
     (LocalizedModule.mkLinearMap S (M →ₗ[R] N)) f :=
   IsLocalizedModule.linearEquiv_symm_apply S _ _ f
@@ -660,7 +660,7 @@ noncomputable def Module.FinitePresentation.linearEquivMapExtendScalars
     (LocalizedModule.mkLinearMap S N) (Localization S))
 
 lemma Module.FinitePresentation.linearEquivMapExtendScalars_apply [Module.FinitePresentation R M]
-    (f : M →ₗ[R] N) : Module.FinitePresentation.linearEquivMapExtendScalars S
+    (f : M →ₗ[R] N) : Module.FinitePresentation.linearEquivMapExtendScalars S (M := M) (N := N)
     ((LocalizedModule.mkLinearMap S (M →ₗ[R] N)) f) = (IsLocalizedModule.mapExtendScalars S
     (LocalizedModule.mkLinearMap S M) (LocalizedModule.mkLinearMap S N) (Localization S)) f :=
   IsLocalizedModule.linearEquiv_apply S _ _ f
@@ -668,7 +668,7 @@ lemma Module.FinitePresentation.linearEquivMapExtendScalars_apply [Module.Finite
 @[simp]
 lemma Module.FinitePresentation.linearEquivMapExtendScalars_symm_apply
     [Module.FinitePresentation R M] (f : M →ₗ[R] N) :
-    (Module.FinitePresentation.linearEquivMapExtendScalars S).symm
+    (Module.FinitePresentation.linearEquivMapExtendScalars S (M := M) (N := N)).symm
     ((IsLocalizedModule.mapExtendScalars S (LocalizedModule.mkLinearMap S M)
     (LocalizedModule.mkLinearMap S N) (Localization S)) f) =
     (LocalizedModule.mkLinearMap S (M →ₗ[R] N)) f :=

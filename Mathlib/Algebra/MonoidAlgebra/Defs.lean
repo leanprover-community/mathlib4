@@ -323,7 +323,7 @@ lemma ofCoeff_smul (a : A) (x : M →₀ R) : ofCoeff (a • x) = a • ofCoeff 
 @[to_additive (dont_translate := A) coeff_smul_apply]
 lemma coeff_smul_apply (a : A) (x : R[M]) (m : M) : coeff (a • x) m = a • coeff x m := rfl
 
-@[deprecated (since := "2026-06-18")] alias smul_apply := coeff_smul_apply
+@[deprecated (since := "2026-06-18")] protected alias smul_apply := coeff_smul_apply
 
 @[to_additive (attr := simp) (dont_translate := A) smul_single]
 lemma smul_single (a : A) (m : M) (r : R) : a • single m r = single m (a • r) := by ext; simp

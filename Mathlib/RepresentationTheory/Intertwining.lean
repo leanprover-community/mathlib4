@@ -10,7 +10,7 @@ public import Mathlib.RepresentationTheory.Subrepresentation
 /-!
 # Intertwining maps
 
-This file gives defines intertwining maps of representations (aka equivariant linear maps).
+This file defines intertwining maps of representations (aka equivariant linear maps).
 
 -/
 
@@ -151,7 +151,7 @@ lemma toLinearMap_sum {ι : Type*} (s : Finset ι) (f : ι → IntertwiningMap �
 
 lemma sum_apply {ι : Type*} (s : Finset ι) (f : ι → IntertwiningMap ρ σ) (v : V) :
     (∑ i ∈ s, f i) v = ∑ i ∈ s, f i v := by
-  simp [← toLinearMap_apply _ _ (∑ _ ∈ s, _), toLinearMap_sum, LinearMap.sum_apply]
+  simp [← toLinearMap_apply _ _ (∑ _ ∈ s, _), toLinearMap_sum]
 
 section group
 

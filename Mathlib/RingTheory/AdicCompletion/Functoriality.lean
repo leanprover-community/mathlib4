@@ -118,10 +118,10 @@ def map : (M →ₗ[R] N) →ₗ[R] (AdicCompletion I M →ₗ[AdicCompletion I 
   map_add' f g := LinearMap.ext fun _ ↦ by
     simp only [map_add, restrictScalars_add, add_comp, ← Pi.add_def, coe_mk, coe_toAddHom,
       add_apply]
-    rw [← LinearMap.add_apply, ← lift_add]
+    rw [← add_apply, ← lift_add]
   map_smul' c f := LinearMap.ext fun _ ↦ by
     simp only [map_smul, restrictScalars_smul, coe_mk, coe_toAddHom, RingHom.id_apply, smul_apply]
-    simp_rw [← LinearMap.smul_apply, ← lift_smul, Pi.smul_def, LinearMap.smul_comp]
+    simp_rw [← smul_apply, ← lift_smul, Pi.smul_def, LinearMap.smul_comp]
 
 @[simp]
 theorem map_val_apply (f : M →ₗ[R] N) {n : ℕ} (x : AdicCompletion I M) :

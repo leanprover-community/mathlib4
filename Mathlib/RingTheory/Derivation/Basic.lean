@@ -222,7 +222,7 @@ theorem coe_smul (r : S) (D : Derivation R A M) : ⇑(r • D) = r • ⇑D :=
 theorem coe_smul_linearMap (r : S) (D : Derivation R A M) : ↑(r • D) = r • (D : A →ₗ[R] M) :=
   rfl
 
-theorem smul_apply (r : S) (D : Derivation R A M) : (r • D) a = r • D a :=
+protected theorem smul_apply (r : S) (D : Derivation R A M) : (r • D) a = r • D a :=
   rfl
 
 instance : AddCommMonoid (Derivation R A M) :=
@@ -553,7 +553,7 @@ theorem coe_sub (D1 D2 : Derivation R A M) : ⇑(D1 - D2) = D1 - D2 :=
 theorem coe_sub_linearMap (D1 D2 : Derivation R A M) : ↑(D1 - D2) = (D1 - D2 : A →ₗ[R] M) :=
   rfl
 
-theorem sub_apply : (D1 - D2) a = D1 a - D2 a :=
+protected theorem sub_apply : (D1 - D2) a = D1 a - D2 a :=
   rfl
 
 instance : AddCommGroup (Derivation R A M) :=
