@@ -261,7 +261,7 @@ theorem isRoot_root (f : R[X]) : IsRoot (f.map (of f)) (root f) := by
 theorem isAlgebraic_root (hf : f ≠ 0) : IsAlgebraic R (root f) :=
   ⟨f, hf, eval₂_root f⟩
 
-theorem of.injective_of_degree_ne_zero [IsDomain R] (hf : f.degree ≠ 0) :
+theorem of.injective_of_degree_ne_zero [NoZeroDivisors R] (hf : f.degree ≠ 0) :
     Function.Injective (AdjoinRoot.of f) := by
   rw [injective_iff_map_eq_zero]
   intro p hp
