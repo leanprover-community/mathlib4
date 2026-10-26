@@ -33,6 +33,7 @@ register_option linter.tacticAnalysis.aesopToSimpAll : Bool := {
 def aesopToSimpAll :=
   terminalReplacement "aesop" "simp_all" ``Aesop.Frontend.Parser.aesopTactic
     (fun _ _ _ => `(tactic| simp_all)) (reportSuccess := true) (reportFailure := false)
+    (suggestSuccess := true)
 
 /-- Report places where `simp_all` can be replaced by `simp`. -/
 register_option linter.tacticAnalysis.simpAllToSimp : Bool := {
@@ -48,7 +49,7 @@ def simpAllToSimp :=
           $[[$args,*]]?) =>
         `(tactic| simp%$tk $cfg:optConfig $[$discharger]? $[only%$o]? $[[$args,*]]?)
       | _ => `(tactic| simp))
-    (reportSuccess := true) (reportFailure := false)
+    (reportSuccess := true) (reportFailure := false) (suggestSuccess := true)
 
 /-- Report places where `grind` can be replaced by `lia`. -/
 register_option linter.tacticAnalysis.grindToLia : Bool := {
@@ -59,7 +60,7 @@ register_option linter.tacticAnalysis.grindToLia : Bool := {
   inherit_doc linter.tacticAnalysis.grindToLia]
 def grindToLia :=
   terminalReplacement "grind" "lia" ``Lean.Parser.Tactic.grind (fun _ _ _ => `(tactic| lia))
-    (reportSuccess := true) (reportFailure := false)
+    (reportSuccess := true) (reportFailure := false) (suggestSuccess := true)
 
 /-- Construct the corresponding `rw` call for a `simp_rw`, `rw!`, or `grw` call. -/
 private def rewriteToRw (stx : Syntax) : CommandElabM (TSyntax `tactic) :=
@@ -107,7 +108,10 @@ private def tacticReplacement (newTacticName : String)
                 pure m!"`{newTacticName}` can replace `{i.tacI.stx}`"
               else
                 pure m!"`{newTacticName}` can replace `{i.tacI.stx}` using `{tac}`"
-              logWarningAt i.tacI.stx msg
+              let msg ← addMessageContext msg
+              let header := (← msg.toString) ++ "\n\nTry this:"
+              liftCoreM <| Lean.Meta.Tactic.TryThis.addSuggestion
+                (header := header) i.tacI.stx tac
 
 /-- Report places where `simp_rw` can be replaced by `rw`. -/
 register_option linter.tacticAnalysis.simpRwToRw : Bool := {

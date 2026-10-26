@@ -5,7 +5,10 @@ public import Mathlib.Tactic.TacticAnalysis.Replacements
 /-! Tests for the always-on tactic replacement analysis passes. -/
 
 /--
-warning: `simp_all` can replace `aesop`
+info: `simp_all` can replace `aesop`
+
+Try this:
+  [apply] simp_all
 
 Note: This linter can be disabled with `set_option linter.tacticAnalysis.aesopToSimpAll false`
 -/
@@ -14,7 +17,10 @@ example : True := by
   aesop
 
 /--
-warning: `simp` can replace `simp_all`
+info: `simp` can replace `simp_all`
+
+Try this:
+  [apply] simp
 
 Note: This linter can be disabled with `set_option linter.tacticAnalysis.simpAllToSimp false`
 -/
@@ -23,7 +29,10 @@ example : 1 + 1 = 2 := by
   simp_all
 
 /--
-warning: `lia` can replace `grind`
+info: `lia` can replace `grind`
+
+Try this:
+  [apply] lia
 
 Note: This linter can be disabled with `set_option linter.tacticAnalysis.grindToLia false`
 -/
@@ -36,7 +45,10 @@ section
 variable {α : Type*} {a b : α} (h : a = b)
 
 /--
-warning: `rw` can replace `simp_rw [h]` using `rw [h]`
+info: `rw` can replace `simp_rw [h]` using `rw [h]`
+
+Try this:
+  [apply] rw [h]
 
 Note: This linter can be disabled with `set_option linter.tacticAnalysis.simpRwToRw false`
 -/
@@ -45,7 +57,10 @@ example : a = b := by
   simp_rw [h]
 
 /--
-warning: `rw` can replace `rw! [h] at ha` using `rw [h] at ha`
+info: `rw` can replace `rw! [h] at ha` using `rw [h] at ha`
+
+Try this:
+  [apply] rw [h] at ha
 
 Note: This linter can be disabled with `set_option linter.tacticAnalysis.depRwToRw false`
 -/
@@ -55,7 +70,10 @@ example (P : α → Prop) (ha : P a) : P b := by
   exact ha
 
 /--
-warning: `rw` can replace `grw [h]` using `rw [h]`
+info: `rw` can replace `grw [h]` using `rw [h]`
+
+Try this:
+  [apply] rw [h]
 
 Note: This linter can be disabled with `set_option linter.tacticAnalysis.grwToRw false`
 -/

@@ -45,11 +45,14 @@ for example `Mathlib.Tactic.linarith`.
 
 `newTactic stx goal` selects the new tactic to try, which may depend on the old tactic invocation
 in `stx` and the current `goal`.
+
+If `suggestSuccess` is true, successful reports are emitted as applicable TryThis suggestions.
 -/
 def terminalReplacement (oldTacticName newTacticName : String) (oldTacticKind : SyntaxNodeKind)
     (newTactic : ContextInfo → TacticInfo → Syntax → CommandElabM (TSyntax `tactic))
     (reportFailure : Bool := true) (reportSuccess : Bool := false)
-    (reportSlowdown : Bool := false) (maxSlowdown : Float := 1) :
+    (reportSlowdown : Bool := false) (maxSlowdown : Float := 1)
+    (suggestSuccess : Bool := false) :
     TacticAnalysis.Config := .ofComplex {
   out := TerminalReplacementOutcome
   ctx := Syntax
@@ -96,13 +99,17 @@ def terminalReplacement (oldTacticName newTacticName : String) (oldTacticKind : 
       else
         return none
     | .success newStx => do
-      -- TODO: we should add a "Try this:" suggestion with code action.
       let msg := if (← liftCoreM <| PrettyPrinter.ppTactic newStx).pretty = newTacticName then
         m!"`{newTacticName}` can replace `{stx}`"
       else
         m!"`{newTacticName}` can replace `{stx}` using `{newStx}`"
       if reportSlowdown ∧ maxSlowdown * oldHeartbeats.toFloat < newHeartbeats.toFloat then
         return some m!"{msg}, but is slower: {newHeartbeats / 1000} versus {oldHeartbeats / 1000} heartbeats"
+      else if reportSuccess && suggestSuccess then
+        let msg ← addMessageContext msg
+        let header := (← msg.toString) ++ "\n\nTry this:"
+        liftCoreM <| Tactic.TryThis.addSuggestion (header := header) stx newStx
+        return none
       else if reportSuccess then
         return some msg
       else
