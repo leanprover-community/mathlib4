@@ -66,7 +66,6 @@ class IsDivisibleBy [AddMonoid A] : Prop where
 
 /--
 An `AddMonoid A` is `α`-divisible iff `n • x = a` has a solution for all `n ≠ 0 ∈ α` and `a ∈ A`.
-This typeclass
 Here we adopt a constructive approach where we ask an explicit `div : A → α → A` function such that
 * `div a 0 = 0` for all `a ∈ A`
 * `n • div a n = a` for all `n ≠ 0 ∈ α` and `a ∈ A`.
