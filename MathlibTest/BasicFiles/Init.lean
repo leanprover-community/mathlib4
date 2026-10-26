@@ -24,6 +24,11 @@ import Mathlib.Init
 #min_imports in
 #min_imports
 
+-- `#min_imports` reports at the end of the file, outside `#guard_msgs`:
+-- report its request here and clear it
+#guard_msgs (substring := true) in
+run_cmd ImportGraph.Shake.logAllMinImports #[]; ImportGraph.Shake.resetMinImports
+
 #guard_msgs (substring := true) in
 #find_home Nat
 
