@@ -33,7 +33,6 @@ open HomologicalComplex
 
 variable {C} [HasBinaryBiproducts C]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma plus_cylinder (K : CochainComplex C ℤ) (hK : CochainComplex.plus C K) :
     CochainComplex.plus C (cylinder K) := by
   obtain ⟨n, hn⟩ := hK

@@ -10,9 +10,6 @@ public import Mathlib.Algebra.Polynomial.Module.Basic
 public import Mathlib.FieldTheory.Separable
 public import Mathlib.RingTheory.Derivation.DifferentialRing
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Coefficient-wise derivation on polynomials
 
@@ -33,7 +30,6 @@ namespace Derivation
 variable {R A M : Type*} [CommRing R] [CommRing A] [Algebra R A] [AddCommGroup M]
   [Module A M] [Module R M] (d : Derivation R A M)
 
-set_option backward.defeqAttrib.useBackward true in
 /--
 The `R`-derivation from `A[X]` to `M[X]` which applies the derivative to each
 of the coefficients.

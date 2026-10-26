@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Restriction of scalars for continuous linear maps
 

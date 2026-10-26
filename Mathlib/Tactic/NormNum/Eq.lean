@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Tactic.NormNum.Inv
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # `norm_num` extension for equalities
 -/

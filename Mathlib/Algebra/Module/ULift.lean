@@ -11,9 +11,6 @@ public import Mathlib.Algebra.Ring.ULift
 
 import Mathlib.Data.ULift
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # `ULift` instances for module and multiplicative actions
 

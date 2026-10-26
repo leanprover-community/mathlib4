@@ -8,9 +8,6 @@ module
 public import Mathlib.NumberTheory.DirichletCharacter.Basic
 public import Mathlib.NumberTheory.MulChar.Duality
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Orthogonality relations for Dirichlet characters
 

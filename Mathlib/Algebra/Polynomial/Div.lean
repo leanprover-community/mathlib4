@@ -12,9 +12,6 @@ public import Mathlib.RingTheory.Multiplicity
 import Mathlib.Algebra.Field.IsField
 import Mathlib.Order.Lattice.Nat
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Division of univariate polynomials
 
@@ -589,7 +586,7 @@ lemma rootMultiplicity_eq_natTrailingDegree' : p.rootMultiplicity 0 = p.natTrail
   refine le_antisymm ?_ ?_
   · rw [rootMultiplicity_le_iff h, map_zero, sub_zero, X_pow_dvd_iff, not_forall]
     exact ⟨p.natTrailingDegree,
-      fun h' ↦ trailingCoeff_nonzero_iff_nonzero.2 h <| h' <| Nat.lt_add_one _⟩
+      fun h' ↦ trailingCoeff_ne_zero.2 h <| h' <| Nat.lt_add_one _⟩
   · rw [le_rootMultiplicity_iff h, map_zero, sub_zero, X_pow_dvd_iff]
     exact fun _ ↦ coeff_eq_zero_of_lt_natTrailingDegree
 
@@ -799,9 +796,10 @@ lemma _root_.Irreducible.not_isRoot_of_natDegree_ne_one
     (hi : Irreducible p) (hdeg : p.natDegree ≠ 1) {x : R} : ¬p.IsRoot x :=
   fun hr ↦ hdeg <| natDegree_eq_of_degree_eq_some <| degree_eq_one_of_irreducible_of_root hi hr
 
+@[deprecated Irreducible.not_isRoot_of_natDegree_ne_one +typeChanged (since := "2026-09-27")]
 lemma _root_.Irreducible.isRoot_eq_bot_of_natDegree_ne_one
-    (hi : Irreducible p) (hdeg : p.natDegree ≠ 1) : p.IsRoot = ⊥ :=
-  le_bot_iff.mp fun _ ↦ hi.not_isRoot_of_natDegree_ne_one hdeg
+    (hi : Irreducible p) (hdeg : p.natDegree ≠ 1) : p.IsRoot = ⊥ := by
+  simpa [funext_iff] using fun _ ↦ Irreducible.not_isRoot_of_natDegree_ne_one hi hdeg
 
 lemma _root_.Irreducible.subsingleton_isRoot
     (hi : Irreducible p) : { x | p.IsRoot x }.Subsingleton :=

@@ -10,9 +10,6 @@ public import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
 public import Mathlib.CategoryTheory.Quotient.Linear
 public import Mathlib.CategoryTheory.Quotient.Preadditive
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # The homotopy category
 
@@ -301,7 +298,6 @@ def Functor.mapHomotopyCategoryCompIso {W' : Type*} [Category W'] [Preadditive W
     (HomotopyCategory.quotient W' c))
 
 variable {c} in
-set_option backward.defeqAttrib.useBackward true in
 /-- The preimage by a fully faithful functor of a homotopy between morphisms
 of homological complexes. -/
 def Functor.preimageHomotopy

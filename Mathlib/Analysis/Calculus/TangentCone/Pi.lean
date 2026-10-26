@@ -9,9 +9,6 @@ public import Mathlib.Analysis.Calculus.TangentCone.Basic
 
 import Mathlib.Topology.Algebra.Module.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Indexed product of sets with unique differentiability property
 

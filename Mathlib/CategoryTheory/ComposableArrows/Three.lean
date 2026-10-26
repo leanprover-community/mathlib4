@@ -35,7 +35,6 @@ variable {C : Type u} [Category.{v} C]
   {i j k l : C} (f₁ : i ⟶ j) (f₂ : j ⟶ k) (f₃ : k ⟶ l)
   (f₁₂ : i ⟶ k) (f₂₃ : j ⟶ l)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The morphism `mk₂ f₁ f₂ ⟶ mk₂ f₁ f₂₃` when `f₂ ≫ f₃ = f₂₃`. -/
 def threeδ₃Toδ₂ (h₂₃ : f₂ ≫ f₃ = f₂₃ := by cat_disch) :
     mk₂ f₁ f₂ ⟶ mk₂ f₁ f₂₃ :=
