@@ -294,6 +294,7 @@ should be written as
 Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
+set_option linter.style.omit false in
 omit  [h : Add Nat]  [Add Nat]
 
 -- Include statements are not linted.

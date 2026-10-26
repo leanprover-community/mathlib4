@@ -106,6 +106,7 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.multiGoal
   linter.style.native
   linter.style.openClassical
+  linter.style.omit
   linter.style.maxHeartbeats
   linter.style.missingEnd
   linter.style.setOption

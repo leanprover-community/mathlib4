@@ -644,8 +644,6 @@ end Field
 
 end IsCyclotomicExtension
 
-section CyclotomicField
-
 /-- Given a nonzero `n : ℕ` and a field `K`, we define `CyclotomicField n K` as the
 splitting field of `cyclotomic n K`. If `n` is nonzero in `K`, it has
 the instance `IsCyclotomicExtension {n} K (CyclotomicField n K)`. -/
@@ -695,17 +693,15 @@ instance : IsCyclotomicExtension {0} K (CyclotomicField 0 K) where
       simp [← LinearEquiv.finrank_eq e, finrank_self]
     simp [Subalgebra.bot_eq_top_iff_finrank_eq_one.mpr finrank]
 
-omit [NeZero n]
-
+omit [NeZero n] in
 instance [CharZero K] : IsCyclotomicExtension {n} K (CyclotomicField n K) :=
   match n with
   | 0 => inferInstance
   | _ + 1 => inferInstance
 
+omit [NeZero n] in
 instance [NumberField K] : NumberField (CyclotomicField n K) :=
   IsCyclotomicExtension.numberField {n} K _
-
-end CyclotomicField
 
 end CyclotomicField
 

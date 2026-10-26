@@ -456,15 +456,12 @@ lemma small_or_big_of_N'_le {j : ℕ} (h : N' a N ≤ j) : Small a (a j) ∨ Big
   rw [N'] at h
   split_ifs at h <;> lia
 
-omit hc
-
+omit hc in
 lemma nth_sup_k_N_add_one_le_N'aux_of_small {j : ℕ} (h : Small a j) :
     Nat.nth (a · = j) (k a ⊔ (N + 1)) ≤ N'aux a N := by
   by_contra! hn
   exact notMem_of_csSup_lt (le_sup_right.trans_lt hn) ((Set.finite_Iic _).image _).bddAbove
     ⟨j, h, rfl⟩
-
-include hc
 
 lemma nth_sup_k_le_N'aux_of_small {j : ℕ} (h : Small a j) :
     Nat.nth (a · = j) (k a) ≤ N'aux a N :=

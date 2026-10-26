@@ -28,6 +28,7 @@ This file defines the following linters:
   It also checks for `maxHeartbeats` options being present which are not scoped to single commands.
 - the `missingEnd` linter checks for sections or namespaces which are not closed by the end
   of the file: enforcing this invariant makes minimising files or moving code between files easier
+- the `omit` linter checks for `omit` commands which are not scoped to a single command with `in`
 - the `cdotLinter` linter checks for focusing dots `·` which are typed using a `.` instead:
   this is allowed Lean syntax, but it is nicer to be uniform
 - the `dollarSyntax` linter checks for use of the dollar sign `$` instead of the `<|` pipe operator:
@@ -127,6 +128,31 @@ def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
 initialize addLinter setOptionLinter
 
 end Style.setOption
+
+/-- The `omit` linter warns on persistent `omit` commands. Use `omit ... in` to make the
+omitted assumptions explicit at each declaration, without affecting subsequent declarations. -/
+public register_option linter.style.omit : Bool := {
+  defValue := false
+  descr := "enable the linter against persistent `omit` commands"
+}
+
+private partial def lintOmit : Syntax → CommandElabM Unit := withSetOptionIn fun stx => do
+  if stx.isOfKind ``Parser.Command.in then
+    -- The first command is scoped by `in`, so only inspect the command it applies to.
+    lintOmit stx[2]
+  else if stx.isOfKind ``Parser.Command.omit &&
+      getLinterValue linter.style.omit (← getLinterOptions) then
+    Linter.logLint linter.style.omit stx
+      "Please use `omit ... in` to scope omitted variables to a single command."
+
+/-- Warn on persistent `omit` commands, allowing `omit ... in`.
+Only command wrappers need inspecting; declaration bodies and syntax quotations are skipped. -/
+def omitLinter : Linter where run stx := do
+  if (← MonadState.get).messages.hasErrors then
+    return
+  lintOmit stx
+
+initialize addLinter omitLinter
 
 /-!
 # The "missing end" linter

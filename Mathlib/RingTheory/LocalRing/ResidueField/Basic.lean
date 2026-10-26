@@ -216,10 +216,9 @@ lemma finite_of_finite [Module.Finite R S] (hfin : Finite (ResidueField R)) :
 
 end FiniteDimensional
 
-omit [IsLocalRing R]
-
 variable [Algebra R S] [Algebra R T]
 
+omit [IsLocalRing R] in
 /-- A local algebra homomorphism induces an algebra homomorphism on the residue fields.
 
 See `mapAlgHom'` for a variant where the base ring `R` is also quotiented. -/
@@ -230,11 +229,13 @@ noncomputable def mapAlgHom (e : S →ₐ[R] T) [IsLocalHom e] :
     simp [IsScalarTower.algebraMap_apply R S (ResidueField S),
       IsScalarTower.algebraMap_apply R T (ResidueField T)]
 
+omit [IsLocalRing R] in
 @[simp]
 theorem mapAlgHom_residue (e : S →ₐ[R] T) [IsLocalHom e] (x : S) :
     mapAlgHom e (residue S x) = residue T (e x) :=
   rfl
 
+omit [IsLocalRing R] in
 /-- A local algebra isomorphism induces an algebra isomorphism on the residue fields.
 
 See `mapAlgEquiv'` for a variant where the base ring `R` is also quotiented. -/
@@ -242,6 +243,7 @@ noncomputable def mapAlgEquiv (e : S ≃ₐ[R] T) : ResidueField S ≃ₐ[R] Res
   __ := mapAlgHom e.toAlgHom
   __ := mapEquiv e.toRingEquiv
 
+omit [IsLocalRing R] in
 @[simp]
 theorem mapAlgEquiv_residue (e : S ≃ₐ[R] T) (x : S) :
     mapAlgEquiv e (residue S x) = residue T (e x) :=
@@ -249,6 +251,7 @@ theorem mapAlgEquiv_residue (e : S ≃ₐ[R] T) (x : S) :
 
 variable [IsLocalHom (algebraMap R S)] [IsLocalHom (algebraMap R T)]
 
+omit [IsLocalRing R] in
 /-- A local algebra homomorphism induces an algebra homomorphism on the residue fields.
 
 See `mapAlgHom` for a variant where the base ring `R` is not quotiented. -/
@@ -256,11 +259,13 @@ noncomputable def mapAlgHom' (e : S →ₐ[R] T) [IsLocalHom e] :
     ResidueField S →ₐ[ResidueField R] ResidueField T :=
   (mapAlgHom e).extendScalarsOfSurjective residue_surjective
 
+omit [IsLocalRing R] in
 @[simp]
 theorem mapAlgHom'_residue [IsLocalRing R] (e : S →ₐ[R] T) [IsLocalHom e] (x : S) :
     mapAlgHom' e (residue S x) = residue T (e x) :=
   rfl
 
+omit [IsLocalRing R] in
 /-- A local algebra isomorphism induces an algebra isomorphism on the residue fields.
 
 See `mapAlgEquiv` for a variant where the base ring `R` is not quotiented. -/
@@ -268,6 +273,7 @@ noncomputable def mapAlgEquiv' (e : S ≃ₐ[R] T) :
     ResidueField S ≃ₐ[ResidueField R] ResidueField T :=
   (mapAlgEquiv e).extendScalarsOfSurjective residue_surjective
 
+omit [IsLocalRing R] in
 @[simp]
 theorem mapAlgEquiv'_residue [IsLocalRing R] (e : S ≃ₐ[R] T) (x : S) :
     mapAlgEquiv' e (residue S x) = residue T (e x) :=
