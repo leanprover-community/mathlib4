@@ -21,9 +21,11 @@ variable {R F α β : Type*}
 
 section Def
 
+/-- `IsAlgebraApply R F` states for all `r : R` and `x : α`, the algebra map `algebraMap R F r x`
+coincides with `algebraMap R β r`. -/
 class IsAlgebraApply (R F : Type*) {α β : Type*} [FunLike F α β] [CommSemiring R] [Semiring F]
     [Semiring β] [Algebra R F] [Algebra R β] where
-  algebraMap_apply (r : R) (x : α) : algebraMap R F r x = algebraMap R (α → β) r x := by intros; rfl
+  algebraMap_apply (r : R) (x : α) : algebraMap R F r x = algebraMap R β r := by intros; rfl
 
 @[simp, grind =]
 alias algebraMap_apply := IsAlgebraApply.algebraMap_apply
