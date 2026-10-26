@@ -5,7 +5,7 @@ Authors: Geoffrey Irving
 -/
 module
 
-public import Aesop.Frontend.Command
+public meta import Aesop.Frontend.Command
 public import Mathlib.Init
 
 /-!

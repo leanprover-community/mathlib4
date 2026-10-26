@@ -13,6 +13,7 @@ public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 public import Mathlib.CategoryTheory.Limits.Preserves.Opposites
 
 import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
+
 /-!
 # Representably flat functors
 
@@ -86,7 +87,6 @@ theorem RepresentablyFlat.id : RepresentablyFlat (𝟭 C) := inferInstance
 
 theorem RepresentablyCoflat.id : RepresentablyCoflat (𝟭 C) := inferInstance
 
-set_option backward.defeqAttrib.useBackward true in
 instance RepresentablyFlat.comp (G : D ⥤ E) [RepresentablyFlat F]
     [RepresentablyFlat G] : RepresentablyFlat (F ⋙ G) := by
   refine ⟨fun X => IsCofiltered.of_cone_nonempty.{0} _ (fun {J} _ _ H => ?_)⟩
@@ -176,7 +176,6 @@ open StructuredArrow
 variable {J : Type v₁} [SmallCategory J] [FinCategory J] {K : J ⥤ C}
 variable (F : C ⥤ D) [RepresentablyFlat F] {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
 
-set_option backward.defeqAttrib.useBackward true in
 /-- (Implementation).
 Given a limit cone `c : cone K` and a cone `s : cone (K ⋙ F)` with `F` representably flat,
 `s` can factor through `F.mapCone c`.
@@ -191,11 +190,9 @@ noncomputable def lift : s.pt ⟶ F.obj c.pt :=
                 (s.toStructuredArrow ⋙ pre s.pt K F) ⋙ proj s.pt F ⟶ K)).obj <|
           (StructuredArrow.proj s.pt F).mapCone s')
 
-set_option backward.defeqAttrib.useBackward true in
 theorem fac (x : J) : lift F hc s ≫ (F.mapCone c).π.app x = s.π.app x := by
   simp [lift, ← Functor.map_comp]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
     (f₁ f₂ : s.pt ⟶ F.obj c.pt) (h₁ : ∀ j : J, f₁ ≫ (F.mapCone c).π.app j = s.π.app j)
@@ -288,7 +285,6 @@ section SmallCategory
 variable {C D : Type u₁} [SmallCategory C] [SmallCategory D] (E : Type u₂) [Category.{u₁} E]
 
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation)
 The evaluation of `F.lan` at `X` is the colimit over the costructured arrows over `X`.

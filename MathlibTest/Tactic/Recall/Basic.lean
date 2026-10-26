@@ -108,7 +108,6 @@ universe u v
 class RecallUnivTest (R : Type u) : Prop where
   test : True
 
-set_option linter.unusedVariables false in
 recall RecallUnivTest (R : Type v) : Prop
 
 -- Test that `recall` works with `Type*`.
