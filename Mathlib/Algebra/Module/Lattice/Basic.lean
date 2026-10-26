@@ -5,11 +5,11 @@ Authors: Anouk Brose, Judith Ludwig, Christian Merten, Justus Springer
 -/
 module
 
+public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.LinearAlgebra.Dimension.DivisionRing
 public import Mathlib.LinearAlgebra.Dimension.Localization
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.LinearAlgebra.FreeModule.PID
-public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.LinearAlgebra.LinearIndependent.Basic
 
 /-!
