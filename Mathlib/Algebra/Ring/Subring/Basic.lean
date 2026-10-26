@@ -425,7 +425,7 @@ lemma _root_.Center.coe_zsmul {R : Type*} [Ring R] (n : ℤ) (z : Center R) :
     (n • z).val = n • z.val := rfl
 
 @[simp]
-lemma Center.coe_intCast {R : Type*} [Ring R] (n : ℤ) :
+lemma _root_.Center.coe_intCast {R : Type*} [Ring R] (n : ℤ) :
     (n : Center R).val = n := rfl
 
 end
