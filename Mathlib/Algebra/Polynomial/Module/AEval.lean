@@ -147,7 +147,7 @@ noncomputable def mapSubmodule :
   left_inv p := by ext; simp
   right_inv q := by ext; aesop
   map_rel_iff' {p p'} :=
-    ⟨fun h x hx ↦ by aesop (add unsafe SetLike.mem_of_subset), -- membership failure
+    ⟨fun h x hx ↦ by aesop (add unsafe SetLike.mem_of_subset), -- membership failure: existential
       fun h x hx ↦ by aesop⟩
 
 @[simp] lemma mem_mapSubmodule_apply {p : (Algebra.lsmul R R M a).invtSubmodule} {m : AEval R M a} :

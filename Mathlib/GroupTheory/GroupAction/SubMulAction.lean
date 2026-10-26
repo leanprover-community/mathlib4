@@ -254,19 +254,19 @@ instance : Top (SubMulAction R M) :=
 
 @[to_additive]
 instance : Max (SubMulAction R M) :=
-  ⟨fun s t => ⟨s ∪ t, by grind [membership, SetLike.mem_coe]⟩⟩
+  ⟨fun s t => ⟨s ∪ t, by grind [membership]⟩⟩
 
 @[to_additive]
 instance : Min (SubMulAction R M) :=
-  ⟨fun s t => ⟨s ∩ t, by grind [membership, SetLike.mem_coe]⟩⟩
+  ⟨fun s t => ⟨s ∩ t, by grind [membership]⟩⟩
 
 @[to_additive]
 instance : SupSet (SubMulAction R M) :=
-  ⟨fun S => ⟨⋃ s ∈ S, s, by grind [membership, SetLike.mem_coe, Set.mem_iUnion]⟩⟩
+  ⟨fun S => ⟨⋃ s ∈ S, s, by grind [membership]⟩⟩
 
 @[to_additive]
 instance : InfSet (SubMulAction R M) :=
-  ⟨fun S => ⟨⋂ s ∈ S, ↑s, by grind [membership, SetLike.mem_coe, Set.mem_iInter]⟩⟩
+  ⟨fun S => ⟨⋂ s ∈ S, ↑s, by grind [membership]⟩⟩
 
 @[to_additive]
 instance : CompleteLattice (SubMulAction R M) :=

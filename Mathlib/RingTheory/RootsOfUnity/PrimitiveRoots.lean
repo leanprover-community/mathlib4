@@ -633,7 +633,7 @@ theorem adjoin_pair_eq (S : Type*) [CommSemiring S] [Algebra S R] {ζ₁ ζ₂ :
       exact Subalgebra.pow_mem _ (Algebra.self_mem_adjoin_singleton S _) _
   · have hζ' := IsPrimitiveRoot.pow_mul_pow_lcm hζ₁ hζ₂ hk₁ hk₂
     obtain ⟨_, _, rfl⟩ := hζ'.eq_pow_of_pow_eq_one hζ.pow_eq_one
-    grind [membership, SetLike.mem_coe]
+    grind [membership]
 
 open scoped Classical in
 theorem card_nthRoots {n : ℕ} {ζ : R} (hζ : IsPrimitiveRoot ζ n) (a : R) :

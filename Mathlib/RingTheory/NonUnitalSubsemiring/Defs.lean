@@ -26,21 +26,17 @@ section neg_mul
 
 variable {R S : Type*} [Mul R] [HasDistribNeg R] [SetLike S R] [MulMemClass S R] {s : S}
 
-/-- This lemma exists for `aesop`, as `aesop` simplifies `-x * y` to `-(x * y)` before applying
-unsafe rules like `mul_mem`, leading to a dead end in cases where `neg_mem` does not hold. -/
+/-- This lemma exists for `membership`, to avoid having to rewrite `-(x * y)` to `-x * y`
+against simp normal form in cases where `neg_mem` does not hold. -/
 @[membership .]
 theorem neg_mul_mem {x y : R} (hx : -x ∈ s) (hy : y ∈ s) : -(x * y) ∈ s := by
   simpa using mul_mem hx hy
 
-/-- This lemma exists for `aesop`, as `aesop` simplifies `x * -y` to `-(x * y)` before applying
-unsafe rules like `mul_mem`, leading to a dead end in cases where `neg_mem` does not hold. -/
+/-- This lemma exists for `membership`, to avoid having to rewrite `-(x * y)` to `-x * y`
+against simp normal form in cases where `neg_mem` does not hold. -/
 @[membership .]
 theorem mul_neg_mem {x y : R} (hx : x ∈ s) (hy : -y ∈ s) : -(x * y) ∈ s := by
   simpa using mul_mem hx hy
-
--- doesn't work without the above `aesop` lemmas
-example {x y z : R} (hx : x ∈ s) (hy : -y ∈ s) (hz : z ∈ s) :
-    x * (-y) * z ∈ s := by membership
 
 end neg_mul
 

@@ -61,8 +61,7 @@ lemma card_mul_eq_card_subgroup_mul_card_quotient (s : Subgroup α) (t : Set α)
   apply Equiv.trans _ (QuotientGroup.preimageMkEquivSubgroupProdSet _ _)
   rw [QuotientGroup.preimage_image_mk]
   convert Equiv.refl ↑(t * s)
-  grind [membership, Set.mem_iUnion, Subtype.exists, Set.mem_mul, _=_ SetLike.mem_coe, → s.inv_mem,
-    mul_inv_cancel_right]
+  aesop (add safe inv_mem, simp [Set.mem_mul]) -- membership failure: existential
 
 /-- **Lagrange's Theorem**: The order of a subgroup divides the order of its ambient group. -/
 @[to_additive (attr := wikidata Q505798) /-- **Lagrange's Theorem**: The order of an additive

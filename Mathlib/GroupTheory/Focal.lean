@@ -94,6 +94,7 @@ instance : Normal (focalSubgroupOf H) := by
   induction hn using closure_induction with
   | mem z hz =>
     obtain ⟨hzH, x, hxP, u, rfl⟩ := hz
+    -- membership failure due to inconsistent unfolding of reducible instances https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/grind.20failures/near/635180859
     exact subset_closure ⟨by grind [membership, commutatorElement_def], g * x * g⁻¹,
       by membership, g * u * g⁻¹, by group⟩
   | one => simp

@@ -180,7 +180,7 @@ theorem mk_zpow (a : G) (n : ℤ) : ((a ^ n : G) : Q) = (a : Q) ^ n :=
   rfl
 
 @[to_additive (attr := simp)] lemma map_mk'_self : N.map (mk' N) = ⊥ := by
-  grind [membership, Subgroup.map_eq_bot_iff, QuotientGroup.ker_mk']
+  rw [Subgroup.map_eq_bot_iff, ker_mk']
 
 /--
 The subgroup defined by the class of `1` for a congruence relation on a group.
