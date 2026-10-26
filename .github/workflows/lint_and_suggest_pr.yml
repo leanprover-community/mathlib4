@@ -68,14 +68,11 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: 3.x
-      # The steps of pre-commit/action v3.0.1, inlined because that action uses
-      # `actions/cache` unpinned, which the organization's SHA-pinning policy rejects.
+      # The steps of pre-commit/action v3.0.1, without its `actions/cache` step: see the
+      # `no-actions-cache` job in `actionlint.yml`. So pre-commit sets up its hook
+      # environments afresh on every run.
       - run: python -m pip install pre-commit==4.6.2
       - run: python -m pip freeze --local
-      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.cache/pre-commit
-          key: pre-commit-3|${{ env.pythonLocation }}|${{ hashFiles('.pre-commit-config.yaml') }}
       - run: pre-commit run --show-diff-on-failure --color=always --all-files
 
       # Names the commands that made the fixes, so that the commit says how to make them locally.

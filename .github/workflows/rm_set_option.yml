@@ -30,6 +30,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
+      actions: read # download the progress artifact of an earlier run
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
@@ -40,16 +41,38 @@ jobs:
           use-github-cache: false
           use-mathlib-cache: true
 
-      - name: Restore progress cache
+      # The progress is kept in an artifact rather than the Actions cache: see the
+      # `no-actions-cache` job in `actionlint.yml`.
+      - name: Restore progress
         if: toJson(inputs.dry_run) != 'true'
-        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: scripts/.rm_set_option_progress.jsonl
-          # Use run_id in restore-keys so we always pick up the most recent cache
-          # for this toolchain, regardless of which run saved it.
-          key: rm-set-option-progress-${{ hashFiles('lean-toolchain') }}-${{ github.run_id }}
-          restore-keys: |
-            rm-set-option-progress-${{ hashFiles('lean-toolchain') }}-
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+          ARTIFACT: rm-set-option-progress-${{ hashFiles('lean-toolchain') }}
+        run: |
+          # Resume from the most recent earlier run that saved progress for this toolchain.
+          # Only runs on master started by the schedule or by hand count: pull requests can
+          # start runs of this workflow file too, and upload artifacts from them.
+          if ! runs=$(gh api "repos/${REPO}/actions/workflows/rm_set_option.yml/runs?branch=master&per_page=10" |
+            jq -r --arg repo "${REPO}" --arg me "${RUN_ID}" '
+              .workflow_runs[]
+              | select((.event == "schedule" or .event == "workflow_dispatch")
+                       and .head_branch == "master"
+                       and .head_repository.full_name == $repo
+                       and (.id | tostring) != $me)
+              | .id'); then
+            echo "::warning::Could not list earlier runs; starting from the beginning."
+            exit 0
+          fi
+          for id in ${runs}; do
+            if gh run download "${id}" -R "${REPO}" -n "${ARTIFACT}" -D scripts; then
+              echo "Resuming from the progress saved by run ${id}."
+              exit 0
+            fi
+          done
+          echo "No saved progress for this toolchain; starting from the beginning."
 
       - name: Remove unnecessary set_option lines
         id: rm_set_option
@@ -70,15 +93,18 @@ jobs:
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Save progress cache
+      - name: Save progress
         # Always save (even on failure/timeout) so the next run can resume.
         # Skip on dry-run (no files are modified) and if the progress file was
         # cleaned up (meaning the run completed fully).
         if: always() && toJson(inputs.dry_run) != 'true' && hashFiles('scripts/.rm_set_option_progress.jsonl') != ''
-        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
+          name: rm-set-option-progress-${{ hashFiles('lean-toolchain') }}
           path: scripts/.rm_set_option_progress.jsonl
-          key: rm-set-option-progress-${{ hashFiles('lean-toolchain') }}-${{ github.run_id }}
+          # The file name starts with a dot, and upload-artifact skips hidden files by default.
+          include-hidden-files: true
+          retention-days: 14
 
       - name: Build PR body
         id: pr_body

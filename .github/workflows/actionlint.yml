@@ -27,3 +27,38 @@ jobs:
       # violation (not just the first) and checks the steps inside `parallel` groups.
       - name: Ensure all actions are pinned to SHA
         uses: leanprover-community/github-actions-ensure-sha-pinned-actions@538f919501d732b8cd7f5215aec5896df7d1df22 # improve-error-reporting
+
+  # Nothing in this repository may use the Actions cache. Its entries are not a trusted
+  # source: any job in a run on the default branch can save them, including jobs that handle
+  # pull request code, and runs on every other ref fall back to them. Rather than vet each
+  # use, we don't use the cache at all, and this job checks that nothing does.
+  no-actions-cache:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Check that nothing uses the Actions cache
+        run: |
+          status=0
+          # `actions/cache`, and its `restore` and `save` actions.
+          if grep -rnE '^\s*(-\s+)?uses:\s*["'\'']?actions/cache(/|@)' .github; then
+            echo "::error::Don't use actions/cache: see the comment on the no-actions-cache job."
+            status=1
+          fi
+          # The `cache` input of actions/setup-python, actions/setup-node and the like.
+          if grep -rnE '^\s*cache:' .github |
+              grep -vE '^[^:]+:[0-9]+:\s*cache:\s*["'\'']?false["'\'']?\s*(#.*)?$'; then
+            echo "::error::Don't turn on an action's caching: see the comment on the no-actions-cache job."
+            status=1
+          fi
+          # leanprover/lean-action uses the Actions cache unless `use-github-cache` is false.
+          while IFS= read -r f; do
+            uses=$(grep -cE 'uses:\s*["'\'']?leanprover/lean-action@' "${f}")
+            off=$(grep -cE '^\s*use-github-cache:\s*["'\'']?false["'\'']?\s*(#.*)?$' "${f}")
+            if [ "${uses}" != "${off}" ]; then
+              echo "::error file=${f}::Every leanprover/lean-action step needs \`use-github-cache: false\`: see the comment on the no-actions-cache job."
+              status=1
+            fi
+          done < <(grep -rlE 'uses:\s*["'\'']?leanprover/lean-action@' .github)
+          exit "${status}"
