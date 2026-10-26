@@ -396,8 +396,8 @@ lemma mul_assoc' [Mul M] (x y z : Center M) : x * y * z = x * (y * z) :=
 @[to_additive]
 instance [MulOneClass M] : MulOneClass (Center M) where
   one := mk (1 : M) Set.one_mem_center
-  one_mul a := by rw [eq_iff, coe_mul]; exact one_mul a.val
-  mul_one a := by rw [eq_iff, coe_mul]; exact mul_one a.val
+  one_mul a := Subtype.ext (one_mul a.val)
+  mul_one a := Subtype.ext (mul_one a.val)
 
 @[to_additive]
 instance [Monoid M] : CommMonoid (Center M) where
