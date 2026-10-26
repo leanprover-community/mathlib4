@@ -180,7 +180,7 @@ are reversed.
 
 Unlike the rectangular version `trace_mul_pow_comm'`, this also holds at exponent zero. -/
 theorem trace_mul_pow_comm [CommSemiring R] [DecidableEq n] (A B : Matrix n n R) (k : ℕ) :
-       trace ((A * B) ^ k) = trace ((B * A) ^ k) :=
+    trace ((A * B) ^ k) = trace ((B * A) ^ k) :=
   match k with
   | 0 => rfl
   | k + 1 => trace_mul_pow_comm' A B k.succ_ne_zero
