@@ -259,8 +259,10 @@ set_option backward.isDefEq.respectTransparency.types false in
   ext s hs
   simp
 
-theorem toFiniteMeasure_nonzero (μ : ProbabilityMeasure Ω) : μ.toFiniteMeasure ≠ 0 := by
-  simp [← FiniteMeasure.mass_nonzero_iff]
+theorem toFiniteMeasure_ne_zero (μ : ProbabilityMeasure Ω) : μ.toFiniteMeasure ≠ 0 := by
+  simp [← FiniteMeasure.mass_ne_zero_iff]
+
+@[deprecated (since := "2026-10-13")] alias toFiniteMeasure_nonzero := toFiniteMeasure_ne_zero
 
 /-- The type of probability measures is a measurable space when equipped with the Giry monad. -/
 instance : MeasurableSpace (ProbabilityMeasure Ω) :=
@@ -481,7 +483,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 theorem self_eq_mass_mul_normalize (s : Set Ω) : μ s = μ.mass * μ.normalize s := by
   obtain rfl | h := eq_or_ne μ 0
   · simp
-  have mass_nonzero : μ.mass ≠ 0 := by rwa [μ.mass_nonzero_iff]
+  have mass_nonzero : μ.mass ≠ 0 := by rwa [μ.mass_ne_zero_iff]
   simp only [normalize, dite_eq_right mass_nonzero]
   simp [mul_inv_cancel_left₀ mass_nonzero, coeFn_def]
 
@@ -491,30 +493,38 @@ theorem self_eq_mass_smul_normalize : μ = μ.mass • μ.normalize.toFiniteMeas
   rw [μ.self_eq_mass_mul_normalize s, smul_apply, smul_eq_mul,
     ProbabilityMeasure.coeFn_comp_toFiniteMeasure_eq_coeFn]
 
-theorem normalize_eq_of_nonzero (nonzero : μ ≠ 0) (s : Set Ω) : μ.normalize s = μ.mass⁻¹ * μ s := by
-  simp only [μ.self_eq_mass_mul_normalize, μ.mass_nonzero_iff.mpr nonzero, inv_mul_cancel_left₀,
+theorem normalize_eq_of_ne_zero (nonzero : μ ≠ 0) (s : Set Ω) : μ.normalize s = μ.mass⁻¹ * μ s := by
+  simp only [μ.self_eq_mass_mul_normalize, μ.mass_ne_zero_iff.mpr nonzero, inv_mul_cancel_left₀,
     Ne, not_false_iff]
 
-theorem normalize_eq_inv_mass_smul_of_nonzero (nonzero : μ ≠ 0) :
+@[deprecated (since := "2026-10-13")] alias normalize_eq_of_nonzero := normalize_eq_of_ne_zero
+
+theorem normalize_eq_inv_mass_smul_of_ne_zero (nonzero : μ ≠ 0) :
     μ.normalize.toFiniteMeasure = μ.mass⁻¹ • μ := by
   nth_rw 3 [μ.self_eq_mass_smul_normalize]
   rw [← smul_assoc]
-  simp only [μ.mass_nonzero_iff.mpr nonzero, smul_eq_mul, inv_mul_cancel₀, Ne,
+  simp only [μ.mass_ne_zero_iff.mpr nonzero, smul_eq_mul, inv_mul_cancel₀, Ne,
     not_false_iff, one_smul]
 
-theorem toMeasure_normalize_eq_of_nonzero (nonzero : μ ≠ 0) :
+@[deprecated (since := "2026-10-13")]
+alias normalize_eq_inv_mass_smul_of_nonzero := normalize_eq_inv_mass_smul_of_ne_zero
+
+theorem toMeasure_normalize_eq_of_ne_zero (nonzero : μ ≠ 0) :
     (μ.normalize : Measure Ω) = μ.mass⁻¹ • μ := by
   ext1 s _s_mble
-  rw [← μ.normalize.ennreal_coeFn_eq_coeFn_toMeasure s, μ.normalize_eq_of_nonzero nonzero s,
+  rw [← μ.normalize.ennreal_coeFn_eq_coeFn_toMeasure s, μ.normalize_eq_of_ne_zero nonzero s,
     ENNReal.coe_mul, ennreal_coeFn_eq_coeFn_toMeasure]
   exact Measure.coe_nnreal_smul_apply _ _ _
+
+@[deprecated (since := "2026-10-13")]
+alias toMeasure_normalize_eq_of_nonzero := toMeasure_normalize_eq_of_ne_zero
 
 @[simp]
 theorem _root_.ProbabilityMeasure.toFiniteMeasure_normalize_eq_self {m0 : MeasurableSpace Ω}
     (μ : ProbabilityMeasure Ω) : μ.toFiniteMeasure.normalize = μ := by
   apply ProbabilityMeasure.eq_of_forall_apply_eq
   intro s _s_mble
-  rw [μ.toFiniteMeasure.normalize_eq_of_nonzero μ.toFiniteMeasure_nonzero s]
+  rw [μ.toFiniteMeasure.normalize_eq_of_ne_zero μ.toFiniteMeasure_ne_zero s]
   simp only [ProbabilityMeasure.mass_toFiniteMeasure, inv_one, one_mul, μ.coeFn_toFiniteMeasure]
 
 /-- Averaging with respect to a finite measure is the same as integrating against
@@ -522,9 +532,9 @@ theorem _root_.ProbabilityMeasure.toFiniteMeasure_normalize_eq_self {m0 : Measur
 theorem average_eq_integral_normalize {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     (nonzero : μ ≠ 0) (f : Ω → E) :
     average (μ : Measure Ω) f = ∫ ω, f ω ∂(μ.normalize : Measure Ω) := by
-  rw [μ.toMeasure_normalize_eq_of_nonzero nonzero, average]
+  rw [μ.toMeasure_normalize_eq_of_ne_zero nonzero, average]
   congr
-  simp [ENNReal.coe_inv (μ.mass_nonzero_iff.mpr nonzero), ennreal_mass]
+  simp [ENNReal.coe_inv (μ.mass_ne_zero_iff.mpr nonzero), ennreal_mass]
 
 variable [TopologicalSpace Ω]
 
@@ -535,7 +545,7 @@ theorem testAgainstNN_eq_mass_mul (f : Ω →ᵇ ℝ≥0) :
 
 theorem normalize_testAgainstNN (nonzero : μ ≠ 0) (f : Ω →ᵇ ℝ≥0) :
     μ.normalize.toFiniteMeasure.testAgainstNN f = μ.mass⁻¹ * μ.testAgainstNN f := by
-  simp [μ.testAgainstNN_eq_mass_mul, inv_mul_cancel_left₀ <| μ.mass_nonzero_iff.mpr nonzero]
+  simp [μ.testAgainstNN_eq_mass_mul, inv_mul_cancel_left₀ <| μ.mass_ne_zero_iff.mpr nonzero]
 
 variable [OpensMeasurableSpace Ω]
 variable {μ}
@@ -563,9 +573,9 @@ theorem tendsto_normalize_testAgainstNN_of_tendsto {γ : Type*} {F : Filter γ}
       (𝓝 (μ.normalize.toFiniteMeasure.testAgainstNN f)) := by
   have lim_mass := μs_lim.mass
   have aux : {(0 : ℝ≥0)}ᶜ ∈ 𝓝 μ.mass :=
-    isOpen_compl_singleton.mem_nhds (μ.mass_nonzero_iff.mpr nonzero)
+    isOpen_compl_singleton.mem_nhds (μ.mass_ne_zero_iff.mpr nonzero)
   have eventually_nonzero : ∀ᶠ i in F, μs i ≠ 0 := by
-    simp_rw [← mass_nonzero_iff]
+    simp_rw [← mass_ne_zero_iff]
     exact lim_mass aux
   have eve : ∀ᶠ i in F,
       (μs i).normalize.toFiniteMeasure.testAgainstNN f =

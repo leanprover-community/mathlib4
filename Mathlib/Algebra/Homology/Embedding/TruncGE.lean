@@ -234,8 +234,6 @@ noncomputable def f (i : ι) : (K.restriction e).X i ⟶ (K.truncGE' e).X i :=
   else
     (K.truncGE'XIso e rfl hi).inv
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 lemma f_eq_iso_hom_pOpcycles_iso_inv {i : ι} {i' : ι'} (hi' : e.f i = i') (hi : e.BoundaryGE i) :
     f K e i = (K.restrictionXIso e hi').hom ≫ K.pOpcycles i' ≫
       (K.truncGE'XIsoOpcycles e hi' hi).inv := by
@@ -244,8 +242,6 @@ lemma f_eq_iso_hom_pOpcycles_iso_inv {i : ι} {i' : ι'} (hi' : e.f i = i') (hi 
   subst hi'
   simp [restrictionXIso]
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 lemma f_eq_iso_hom_iso_inv {i : ι} {i' : ι'} (hi' : e.f i = i') (hi : ¬ e.BoundaryGE i) :
     f K e i = (K.restrictionXIso e hi').hom ≫ (K.truncGE'XIso e hi' hi).inv := by
   dsimp [f]
@@ -253,7 +249,6 @@ lemma f_eq_iso_hom_iso_inv {i : ι} {i' : ι'} (hi' : e.f i = i') (hi : ¬ e.Bou
   subst hi'
   simp [restrictionXIso]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma comm (i j : ι) :
     f K e i ≫ (K.truncGE' e).d i j = (K.restriction e).d i j ≫ f K e j := by
@@ -275,8 +270,6 @@ end restrictionToTruncGE'
 noncomputable def restrictionToTruncGE' : K.restriction e ⟶ K.truncGE' e where
   f := restrictionToTruncGE'.f K e
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 lemma restrictionToTruncGE'_hasLift : e.HasLift (K.restrictionToTruncGE' e) := by
   intro j hj i' _
   dsimp [restrictionToTruncGE']
@@ -301,8 +294,6 @@ lemma isIso_restrictionToTruncGE' (i : ι) (hi : ¬ e.BoundaryGE i) :
   rw [K.restrictionToTruncGE'_f_eq_iso_hom_iso_inv e rfl hi]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 variable {K L} in
 @[reassoc (attr := simp)]
 lemma restrictionToTruncGE'_naturality :

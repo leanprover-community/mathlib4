@@ -97,7 +97,6 @@ theorem single_map_f_self (j : ι) {A B : V} (f : A ⟶ B) :
 
 variable (V)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism `single V c j ⋙ eval V c j ≅ 𝟭 V`. -/
 @[simps!]
 noncomputable def singleCompEvalIsoSelf (j : ι) : single V c j ⋙ eval V c j ≅ 𝟭 V :=
@@ -154,7 +153,6 @@ noncomputable def mkHomToSingle {K : HomologicalComplex V c} {j : ι} {A : V} (�
       simp only [XIsoOfEq_rfl, Iso.refl_hom, id_comp, reassoc_of% hφ i hik, zero_comp]
     · apply (isZero_single_obj_X c j A k hk).eq_of_tgt
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma mkHomToSingle_f {K : HomologicalComplex V c} {j : ι} {A : V} (φ : K.X j ⟶ A)
     (hφ : ∀ (i : ι), c.Rel i j → K.d i j ≫ φ = 0) :
@@ -179,7 +177,6 @@ noncomputable def mkHomFromSingle {K : HomologicalComplex V c} {j : ι} {A : V} 
       simp only [XIsoOfEq_rfl, Iso.refl_inv, comp_id, assoc, hφ k hik, comp_zero]
     · apply (isZero_single_obj_X c j A i hi).eq_of_src
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma mkHomFromSingle_f {K : HomologicalComplex V c} {j : ι} {A : V} (φ : A ⟶ K.X j)
     (hφ : ∀ (k : ι), c.Rel j k → φ ≫ K.d j k = 0) :
@@ -205,7 +202,6 @@ lemma single₀_obj_zero (A : V) :
     ((single₀ V).obj A).X 0 = A := rfl
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma single₀_map_f_zero {A B : V} (f : A ⟶ B) :
     ((single₀ V).map f).f 0 = f := by
@@ -278,7 +274,6 @@ lemma single₀_obj_zero (A : V) :
     ((single₀ V).obj A).X 0 = A := rfl
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma single₀_map_f_zero {A B : V} (f : A ⟶ B) :
     ((single₀ V).map f).f 0 = f := by

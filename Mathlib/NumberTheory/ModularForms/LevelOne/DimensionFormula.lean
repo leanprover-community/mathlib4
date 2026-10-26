@@ -114,6 +114,18 @@ lemma discriminant_mul_discriminantEquiv (f : CuspForm 𝒮ℒ k) :
     Δ * (CuspForm.discriminantEquiv f : ℍ → ℂ) = f := by
   grind [Pi.mul_apply, discriminant_mul_discriminantEquiv_apply]
 
+/-- In the graded ring `⨁ k, ModularForm 𝒮ℒ k`, a cusp form of weight `k` is `Δ` times the
+form of weight `k - 12` that `CuspForm.discriminantEquiv` attaches to it. -/
+lemma cuspForm_eq_discriminant_mul (g : CuspForm 𝒮ℒ k) :
+    DirectSum.of (ModularForm 𝒮ℒ) k g = DirectSum.of (ModularForm 𝒮ℒ) 12 CuspForm.discriminant *
+      DirectSum.of (ModularForm 𝒮ℒ) (k - 12) (CuspForm.discriminantEquiv g) := by
+  rw [DirectSum.of_mul_of]
+  symm
+  -- The degrees agree as `12 + (k - 12) = k`, and `mcast` along this identity does not change
+  -- the underlying function, so the coercion goal is definitionally `Δ * (g / Δ) = g`.
+  refine DirectSum.of_eq_of_gradedMonoid_eq (gradedMonoid_eq_of_cast (add_sub_cancel _ _) ?_)
+  exact DFunLike.coe_injective (discriminant_mul_discriminantEquiv _)
+
 /-- The order of the q-expansion of the modular discriminant is 1: the zeroth coefficient
 vanishes (Δ is a cusp form) and the first coefficient equals 1. -/
 lemma discriminant_qExpansion_order : (qExpansion 1 Δ).order = 1 := by
@@ -163,7 +175,7 @@ lemma CuspForm.rank_eq_one_of_weight_eq_twelve : Module.rank ℂ (CuspForm 𝒮�
 /-- Every weight 12 cusp form for `𝒮ℒ` is a scalar multiple of the discriminant. -/
 lemma CuspForm.exists_smul_discriminant_of_weight_eq_twelve (f : CuspForm 𝒮ℒ 12) :
     ∃ c : ℂ, c • CuspForm.discriminant = f :=
-  (finrank_eq_one_iff_of_nonzero' _ (DFunLike.ne_iff.mpr ⟨I, discriminant_ne_zero _⟩)).mp
+  (finrank_eq_one_iff_of_ne_zero' _ (DFunLike.ne_iff.mpr ⟨I, discriminant_ne_zero _⟩)).mp
     (Module.rank_eq_one_iff_finrank_eq_one.mp CuspForm.rank_eq_one_of_weight_eq_twelve) f
 
 /-- For even `k ≥ 3`, the rank of `𝒮ℒ` modular forms is one more than the rank of
@@ -224,10 +236,10 @@ private lemma eq_zero_of_pow_eq_smul {p p4 p6 : PowerSeries ℂ} {c4 c6 : ℂ}
 
 private lemma weight_two_qExpansion_eq_zero (f : ModularForm 𝒮ℒ 2) : qExpansion 1 f = 0 := by
   obtain ⟨c4, hc4⟩ : ∃ c4, c4 • E₄ = f.mul f :=
-    (finrank_eq_one_iff_of_nonzero' E₄ (E_ne_zero _ ⟨2, rfl⟩)).mp
+    (finrank_eq_one_iff_of_ne_zero' E₄ (E_ne_zero _ ⟨2, rfl⟩)).mp
       (Module.rank_eq_one_iff_finrank_eq_one.mp levelOne_weight_four_rank_one) _
   obtain ⟨c6, hc6⟩ : ∃ c6, c6 • E₆ = (f.mul f).mul f :=
-    (finrank_eq_one_iff_of_nonzero' E₆ (E_ne_zero _ ⟨3, rfl⟩)).mp
+    (finrank_eq_one_iff_of_ne_zero' E₆ (E_ne_zero _ ⟨3, rfl⟩)).mp
       (Module.rank_eq_one_iff_finrank_eq_one.mp levelOne_weight_six_rank_one) _
   have hqc4 : c4 • qExpansion 1 (E₄ : ℍ → ℂ) = qExpansion 1 (f : ℍ → ℂ) ^ 2 := by
     rw [pow_two, ← ModularForm.qExpansion_mul one_pos one_mem_strictPeriods_SL f f,

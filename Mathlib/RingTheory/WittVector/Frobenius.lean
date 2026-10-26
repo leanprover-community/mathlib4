@@ -167,7 +167,7 @@ theorem map_frobeniusPoly (n : ℕ) :
   simp only [mul_assoc]
   apply congr_arg
   apply congr_arg
-  rw [← C_eq_coe_nat]
+  rw [← C_eq_natCast]
   simp only [← map_pow, ← C_mul]
   rw [C_inj]
   simp only [invOf_eq_inv, eq_intCast, inv_pow, Int.cast_natCast, Nat.cast_mul, Int.cast_mul]
