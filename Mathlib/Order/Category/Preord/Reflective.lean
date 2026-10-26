@@ -27,10 +27,9 @@ open CategoryTheory
 @[implicit_reducible]
 def Preord.ofCat (C : Type u) [Category.{v} C] : Preord.{u} where
   carrier := C
-  str :=
-    { le X Y := Nonempty (X ⟶ Y)
-      le_refl X := ⟨𝟙 X⟩
-      le_trans _ _ _ := Nonempty.map2 (· ≫ ·) }
+  str.le X Y := Nonempty (X ⟶ Y)
+  str.le_refl X := ⟨𝟙 X⟩
+  str.le_trans _ _ _ := Nonempty.map2 (· ≫ ·)
 
 /-- The functor sending a small category to its preorder of objects. -/
 @[implicit_reducible]
