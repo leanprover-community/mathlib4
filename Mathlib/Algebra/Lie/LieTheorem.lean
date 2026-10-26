@@ -9,9 +9,6 @@ public import Mathlib.Algebra.Lie.Weights.Basic
 
 import Mathlib.RingTheory.Finiteness.Nilpotent
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Lie's theorem for Solvable Lie algebras.
 

@@ -1,5 +1,9 @@
-import Mathlib.Tactic.CrossRefAttribute
-import Mathlib.Util.ParseCommand
+module
+
+public import Mathlib.Tactic.CrossRefAttribute
+public import Mathlib.Util.ParseCommand
+
+@[expose] public section
 
 /-- info: No tags found. -/
 #guard_msgs in
@@ -259,7 +263,7 @@ section errors
 
 open Lean Parser Mathlib.CrossRef
 
-def captureException (env : Environment) (s : ParserFn) (input : String) : Except String Syntax :=
+meta def captureException (env : Environment) (s : ParserFn) (input : String) : Except String Syntax :=
   let ictx := mkInputContext input "<input>"
   let s := s.run ictx { env, options := {} } (getTokenTable env) (mkParserState input)
   if !s.allErrors.isEmpty then
