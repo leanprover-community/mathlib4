@@ -21,14 +21,16 @@ public import Mathlib.Order.Hom.Basic
 section TypeTags
 
 /-- `Multiplicative.ofAdd` as an order isomorphism. -/
-def OrderIso.multiplicative (M : Type*) [LE M] : M ≃o Multiplicative M where
-  toEquiv := Multiplicative.ofAdd
-  map_rel_iff' := Iff.rfl
+@[simps! toEquiv apply symm_apply]
+def Multiplicative.ofAddOrderIso (M : Type*) [LE M] : M ≃o Multiplicative M where
+  toEquiv := ofAdd
+  map_rel_iff' := .rfl
 
 /-- `Additive.ofMul` as an order isomorphism. -/
-def OrderIso.additive (M : Type*) [LE M] : M ≃o Additive M where
-  toEquiv := Additive.ofMul
-  map_rel_iff' := Iff.rfl
+@[simps! toEquiv apply symm_apply]
+def Additive.ofMulOrderIso (M : Type*) [LE M] : M ≃o Additive M where
+  toEquiv := ofMul
+  map_rel_iff' := .rfl
 
 /-- Reinterpret `G ≃*o H` as `Additive G ≃+o Additive H`. -/
 def OrderMonoidIso.toAdditive {G H : Type*}
