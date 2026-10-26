@@ -44,7 +44,7 @@ variable {f : E →ₗ.[R] E} {z : R}
 /-- The resolvent set of a `LinearPMap`.
 
 This definition only agrees with the conventional one only if `f` is closed, but if that is not
-the case, then the conventional definition yields that `f.resolventSet = univ`
+the case, then the conventional definition yields that `f.resolventSet = ∅`
 We use this definition for convenience and since it makes fewer assumptions. -/
 protected def resolventSet (f : E →ₗ.[R] E) : Set R :=
   { z | Function.Bijective (z • LinearMap.id (R := R) (M := E) +ᵥ -f) }
