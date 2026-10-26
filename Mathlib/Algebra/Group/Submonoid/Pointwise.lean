@@ -46,7 +46,8 @@ variable [Monoid M]
 
 @[to_additive (attr := simp, norm_cast)]
 lemma coe_mul_coe [SetLike S M] [SubmonoidClass S M] (H : S) : H * H = (H : Set M) := by
-  aesop (add simp mem_mul)
+  grind [membership, Set.mem_mul, SetLike.mem_coe,
+    Set.subset_mul_right (H : Set M) (one_mem H)]
 
 @[to_additive]
 lemma Set.subtype_smul_set {S α β : Type*} [SMul α β] [SetLike S α] {s : S} (x : s) (t : Set β) :

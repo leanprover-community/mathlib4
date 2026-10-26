@@ -73,10 +73,12 @@ protected theorem mem_of_isSquare (P : RingPreordering R) {x : R} (hx : IsSquare
   RingPreordering.mem_of_isSquare' _ hx
 
 @[simp]
-protected theorem mul_self_mem (P : RingPreordering R) (x : R) : x * x ∈ P := by aesop
+protected theorem mul_self_mem (P : RingPreordering R) (x : R) : x * x ∈ P := by
+  grind [membership, IsSquare.mul_self]
 
 @[simp]
-protected theorem pow_two_mem (P : RingPreordering R) (x : R) : x ^ 2 ∈ P := by aesop
+protected theorem pow_two_mem (P : RingPreordering R) (x : R) : x ^ 2 ∈ P := by
+  grind [membership, IsSquare.sq]
 
 protected theorem neg_one_notMem (P : RingPreordering R) : -1 ∉ P :=
   RingPreordering.neg_one_notMem' _
@@ -112,9 +114,11 @@ equalities. -/
 protected def copy : RingPreordering R where
   carrier := S
   zero_mem' := by aesop
-  add_mem' ha hb := by aesop
+  add_mem' ha hb := by grind [membership, SetLike.mem_coe]
   one_mem' := by aesop
-  mul_mem' ha hb := by aesop
+  mul_mem' ha hb := by grind [membership, SetLike.mem_coe]
+  neg_one_notMem' := by
+    grind [membership, SetLike.mem_coe, RingPreordering.neg_one_notMem]
 
 attribute [norm_cast] coe_copy
 @[simp] theorem mem_copy {x} : x ∈ P.copy S hS ↔ x ∈ S := .rfl
@@ -138,7 +142,7 @@ the set of elements `x` in `R` such that both `x` and `-x` lie in `P`.
 def supportAddSubgroup : AddSubgroup R where
   carrier := P ∩ -P
   zero_mem' := by aesop
-  add_mem' := by aesop
+  add_mem' := by grind [membership, SetLike.mem_coe, Set.mem_neg, neg_add_rev]
   neg_mem' := by aesop
 
 theorem mem_supportAddSubgroup {x} : x ∈ P.supportAddSubgroup ↔ x ∈ P ∧ -x ∈ P := .rfl

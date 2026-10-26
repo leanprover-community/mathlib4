@@ -40,7 +40,7 @@ theorem mul_neg_mem {x y : R} (hx : x ∈ s) (hy : -y ∈ s) : -(x * y) ∈ s :=
 
 -- doesn't work without the above `aesop` lemmas
 example {x y z : R} (hx : x ∈ s) (hy : -y ∈ s) (hz : z ∈ s) :
-    x * (-y) * z ∈ s := by aesop
+    x * (-y) * z ∈ s := by membership
 
 end neg_mul
 

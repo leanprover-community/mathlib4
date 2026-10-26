@@ -75,7 +75,9 @@ theorem iInf_colon_iUnion (ι₁ : Sort*) (f : ι₁ → Submodule R M) (ι₂ :
 
 /-- If `S ⊆ N₂`, then intersecting with `N₂` does not change the colon ideal. -/
 lemma colon_inf_eq_left_of_subset (h : S ⊆ (N₂ : Set M)) : (N₁ ⊓ N₂).colon S = N₁.colon S := by
-  aesop (add simp mem_colon)
+  grind [membership,
+    (SetLike.ext_iff (p := (N₁ ⊓ N₂).colon S) (q := N₁.colon S)), mem_colon,
+    Submodule.mem_inf, SetLike.mem_coe]
 
 @[simp]
 lemma colon_eq_top_iff_subset : N.colon S = ⊤ ↔ S ⊆ N := by
@@ -139,7 +141,7 @@ theorem colon_span : N.colon (span R S) = N.colon S := by
   induction hs using Submodule.span_induction with
   | mem => aesop (add simp mem_colon)
   | zero => simp
-  | add => aesop
+  | add => grind [membership, smul_add]
   | smul => simp_all [smul_mem, smul_comm r]
 
 theorem _root_.Ideal.colon_span {I : Ideal R} {S : Set R} : I.colon (Ideal.span S) = I.colon S := by

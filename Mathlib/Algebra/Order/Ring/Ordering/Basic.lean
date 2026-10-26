@@ -52,19 +52,21 @@ theorem toSubsemiring_strictMono : StrictMono (toSubsemiring : RingPreordering R
 
 @[membership .]
 theorem unitsInv_mem {a : Rˣ} (ha : ↑a ∈ P) : ↑a⁻¹ ∈ P := by
-  have : (a * (a⁻¹ * a⁻¹) : R) ∈ P := by aesop (config := { enableSimp := false })
+  have : (a * (a⁻¹ * a⁻¹) : R) ∈ P := by
+    grind [membership, IsSquare.mul_self]
   simp_all
 
 @[membership .]
 theorem inv_mem {F : Type*} [Field F] {P : RingPreordering F} {a : F} (ha : a ∈ P) :
     a⁻¹ ∈ P := by
-  have mem : a * (a⁻¹ * a⁻¹) ∈ P := by aesop
+  have mem : a * (a⁻¹ * a⁻¹) ∈ P := by
+    grind [membership, IsSquare.mul_self]
   field_simp at mem
   simp_all
 
 @[membership .]
 theorem mem_of_isSumSq {x : R} (hx : IsSumSq x) : x ∈ P := by
-  induction hx using IsSumSq.rec' <;> aesop
+  induction hx using IsSumSq.rec' <;> membership
 
 section mk'
 
@@ -140,7 +142,7 @@ theorem hasIdealSupport_of_isUnit_two (h : IsUnit (2 : R)) : P.HasIdealSupport :
   rw [show x = y ^ 2 - z ^ 2 by
     linear_combination (-x - x * half * 2) * h2]
   ring_nf
-  aesop (add simp sub_eq_add_neg)
+  grind [membership, IsSquare.sq, sub_eq_add_neg]
 
 instance [h : Fact (IsUnit (2 : R))] : P.HasIdealSupport := hasIdealSupport_of_isUnit_two h.out
 
@@ -152,7 +154,7 @@ variable {P} in
 @[aesop unsafe 70% apply]
 protected theorem eq_zero_of_mem_of_neg_mem {x} (h : x ∈ P) (h2 : -x ∈ P) : x = 0 := by
   by_contra
-  have mem : -x * x⁻¹ ∈ P := by aesop (erase simp neg_mul)
+  have mem : -x * x⁻¹ ∈ P := by membership
   field_simp at mem
   exact RingPreordering.neg_one_notMem P mem
 

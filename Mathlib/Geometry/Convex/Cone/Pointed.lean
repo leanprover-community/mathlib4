@@ -403,7 +403,7 @@ abbrev toSubmodule (hC : IsSelfNeg C) : Submodule R E where
     have : -(b - a) • x ∈ C := by
       rw [hC.eq_neg]
       simpa [← neg_smul] using smul_mem _ (sub_nonneg.mpr hab) hx
-    aesop
+    grind [membership, Submodule.mem_carrier, _=_ SetLike.mem_coe]
 
 @[simp] lemma ofSubmodule_toSubmodule (hC : IsSelfNeg C) : C.toSubmodule hC = C := rfl
 

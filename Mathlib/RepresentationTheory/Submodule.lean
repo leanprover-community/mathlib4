@@ -62,7 +62,9 @@ end invtSubmodule
 lemma asAlgebraHom_mem_of_forall_mem (p : Submodule k V) (hp : ∀ g, ∀ v ∈ p, ρ g v ∈ p)
     (v : V) (hv : v ∈ p) (x : k[G]) :
     ρ.asAlgebraHom x v ∈ p := by
-  apply x.induction_on <;> aesop
+  apply x.induction_on <;>
+    grind [membership, MonoidAlgebra.of_apply, asAlgebraHom_single, one_smul,
+      LinearMap.add_apply, map_smul, LinearMap.smul_apply]
 
 /-- The natural order isomorphism between the two ways to represent invariant submodules. -/
 noncomputable def mapSubmodule : ρ.invtSubmodule ≃o Submodule k[G] ρ.asModule where

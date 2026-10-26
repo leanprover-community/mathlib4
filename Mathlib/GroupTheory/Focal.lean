@@ -94,7 +94,8 @@ instance : Normal (focalSubgroupOf H) := by
   induction hn using closure_induction with
   | mem z hz =>
     obtain ⟨hzH, x, hxP, u, rfl⟩ := hz
-    exact subset_closure ⟨by aesop, g * x * g⁻¹, by aesop, g * u * g⁻¹, by group⟩
+    exact subset_closure ⟨by grind [membership, commutatorElement_def], g * x * g⁻¹,
+      by membership, g * u * g⁻¹, by group⟩
   | one => simp
   | mul _ _ _ _ IHa IHb => simpa using mul_mem IHa IHb
   | inv _ _ IH => simpa [mul_assoc] using inv_mem IH

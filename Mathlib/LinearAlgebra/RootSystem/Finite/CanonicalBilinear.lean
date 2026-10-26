@@ -330,7 +330,7 @@ lemma prod_rootForm_smul_coroot_mem_range_domRestrict (i : ι) :
     (Finset.mem_univ i)
   rw [hc, mul_comm, mul_smul, rootForm_self_smul_coroot]
   refine LinearMap.mem_range.mpr ?_
-  use ⟨c • 2 • P.root i, by aesop⟩
+  use ⟨c • 2 • P.root i, by grind [membership]⟩
   simp
 
 end MoreFintype

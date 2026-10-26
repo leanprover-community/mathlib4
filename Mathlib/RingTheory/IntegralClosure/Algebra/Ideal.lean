@@ -37,7 +37,7 @@ lemma coeff_mem_pow_of_mem_adjoin_C_mul_X {R : Type*} [CommRing R]
     obtain ⟨r, hrI, rfl⟩ := hx
     simp +contextual [coeff_X, apply_ite, hrI, @eq_comm _ 1]
   | algebraMap r => simp +contextual [coeff_C, apply_ite]
-  | add x y hx hy _ _ => aesop
+  | add x y hx hy _ _ => grind [membership, coeff_add]
   | mul x y _ _ hx hy =>
     rw [coeff_mul]
     refine sum_mem fun ⟨j₁, j₂⟩ hj ↦ ?_
