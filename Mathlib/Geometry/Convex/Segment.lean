@@ -19,7 +19,7 @@ In an R-convex space, we define the following objects:
 
 ## Implementation notes
 
-We don't provide the left-open equivalent to `Set.Ioc` since `Ico x y = Ioc y x`. This is in contrast to `Set.Ico` and `Set.Ioc`. 
+We don't provide the left-open equivalent to `Set.Ioc` since `Ico x y = Ioc y x`. This is in contrast to `Set.Ico` and `Set.Ioc`.
 See also `Ioo_insert_left` and `Ioo_insert_right`.
 
 -/
@@ -44,7 +44,7 @@ def Ioo (x y : X) : Set X :=
   { z : X | ∃ (a b : R) (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1),
     convexCombPair a b ha.le hb.le hab x y = z }
 
-/-- Left-open segment in a convex space. Note that `Ico R x x = {x}` instead of `∅` . 
+/-- Left-open segment in a convex space. Note that `Ico R x x = {x}` instead of `∅` .
 We do not implement a right-open segment `Ioc R a b`. Instead use `Ico R b a`.
 -/
 def Ico (x y : X) : Set X :=
