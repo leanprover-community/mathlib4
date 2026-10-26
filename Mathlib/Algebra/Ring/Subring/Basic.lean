@@ -424,6 +424,7 @@ instance {R : Type*} [Ring R] : CommRing (Center R) where
 lemma _root_.Center.coe_zsmul {R : Type*} [Ring R] (n : ℤ) (z : Center R) :
     (n • z).val = n • z.val := rfl
 
+@[simp]
 lemma Center.coe_intCast {R : Type*} [Ring R] (n : ℤ) :
     (n : Center R).val = n := rfl
 
