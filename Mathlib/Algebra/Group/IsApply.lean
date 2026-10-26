@@ -225,7 +225,7 @@ section Coercion
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_one [One F] [One β] [IsOneApply F] : ↑(1 : F) = (1 : α → β) := by ext; simp
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_one_iff [One F] [One β] [IsOneApply F] (f : F) : (f : α → β) = 1 ↔ f = 1 := by
   constructor
   · intro h

@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Kim Morrison
 module
 
 public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.Group.FunLike
 public import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.Algebra.Group.Pi.Torsion
 public import Mathlib.Data.Finset.Max
@@ -52,8 +53,12 @@ variable [AddZeroClass M] [AddZeroClass N] {f : M → N} {g₁ g₂ : ι →₀ 
 
 instance instAdd : Add (ι →₀ M) where add := zipWith (· + ·) (add_zero 0)
 
-@[simp, norm_cast] lemma coe_add (f g : ι →₀ M) : ⇑(f + g) = f + g := rfl
+instance : IsAddApply (ι →₀ M) where
 
+@[deprecated FunLike.coe_add +typeChanged (since := "2026-10-26")]
+lemma coe_add (f g : ι →₀ M) : ⇑(f + g) = f + g := rfl
+
+@[deprecated add_apply +typeChanged (since := "2026-10-26")]
 protected lemma add_apply (g₁ g₂ : ι →₀ M) (a : ι) : (g₁ + g₂) a = g₁ a + g₂ a := rfl
 
 lemma support_add [DecidableEq ι] : (g₁ + g₂).support ⊆ g₁.support ∪ g₂.support := support_zipWith
@@ -68,10 +73,10 @@ lemma support_add_eq [DecidableEq ι] (h : Disjoint g₁.support g₂.support) :
     cases (Finset.mem_union_of_disjoint h).mp ha <;> simp_all
 
 instance instAddZeroClass : AddZeroClass (ι →₀ M) :=
-  fast_instance% DFunLike.coe_injective.addZeroClass _ coe_zero coe_add
+  fast_instance% FunLike.addZeroClass
 
-instance instIsLeftCancelAdd [IsLeftCancelAdd M] : IsLeftCancelAdd (ι →₀ M) where
-  add_left_cancel _ _ _ h := ext fun x => add_left_cancel congr($h x)
+instance instIsLeftCancelAdd [IsLeftCancelAdd M] : IsLeftCancelAdd (ι →₀ M) :=
+  FunLike.isLeftCancelAdd
 
 /-- When ι is finite and M is an AddMonoid,
   then Finsupp.equivFunOnFinite gives an AddEquiv -/
@@ -98,8 +103,8 @@ noncomputable def _root_.AddEquiv.finsuppUnique {ι : Type*} [Unique ι] : (ι �
   toEquiv := .finsuppUnique
   map_add' _ _ := rfl
 
-instance instIsRightCancelAdd [IsRightCancelAdd M] : IsRightCancelAdd (ι →₀ M) where
-  add_right_cancel _ _ _ h := ext fun x => add_right_cancel congr($h x)
+instance instIsRightCancelAdd [IsRightCancelAdd M] : IsRightCancelAdd (ι →₀ M) :=
+  FunLike.isRightCancelAdd
 
 instance instIsCancelAdd [IsCancelAdd M] : IsCancelAdd (ι →₀ M) where
 
@@ -122,7 +127,7 @@ noncomputable def coeFnAddHom : (ι →₀ M) →+ ι → M where
 
 lemma mapRange_add {hf : f 0 = 0} (hf' : ∀ x y, f (x + y) = f x + f y) (v₁ v₂ : ι →₀ M) :
     mapRange f hf (v₁ + v₂) = mapRange f hf v₁ + mapRange f hf v₂ :=
-  ext fun _ => by simp only [hf', Finsupp.add_apply, mapRange_apply]
+  ext fun _ => by simp only [hf', add_apply, mapRange_apply]
 
 lemma mapRange_add' [FunLike F M N] [AddMonoidHomClass F M N] {f : F} (g₁ g₂ : ι →₀ M) :
     mapRange f (map_zero f) (g₁ + g₂) = mapRange f (map_zero f) g₁ + mapRange f (map_zero f) g₂ :=
