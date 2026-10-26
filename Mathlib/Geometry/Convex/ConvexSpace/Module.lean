@@ -72,9 +72,6 @@ class IsModuleConvexSpace : Prop where
 export IsModuleConvexSpace (sConvexComb_eq_sum)
 attribute [simp] sConvexComb_eq_sum
 
-@[deprecated (since := "2026-04-03")]
-alias _root_.convexCombination_eq_sum := sConvexComb_eq_sum
-
 attribute [local instance] ConvexSpace.ofModule in
 instance IsModuleConvexSpace.of_module : IsModuleConvexSpace R M where
   sConvexComb_eq_sum _ := rfl
