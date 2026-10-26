@@ -110,7 +110,7 @@ lemma toMvPolynomial_constantCoeff (M : Matrix m n R) (i : m) :
 
 @[simp]
 lemma toMvPolynomial_zero : (0 : Matrix m n R).toMvPolynomial = 0 := by
-  ext; simp only [toMvPolynomial, zero_apply, map_zero, Finset.sum_const_zero, Pi.zero_apply]
+  ext; simp only [toMvPolynomial, Matrix.zero_apply, map_zero, Finset.sum_const_zero, Pi.zero_apply]
 
 @[simp]
 lemma toMvPolynomial_one [DecidableEq n] : (1 : Matrix n n R).toMvPolynomial = X := by
@@ -124,12 +124,12 @@ lemma toMvPolynomial_one [DecidableEq n] : (1 : Matrix n n R).toMvPolynomial = X
 lemma toMvPolynomial_add (M N : Matrix m n R) :
     (M + N).toMvPolynomial = M.toMvPolynomial + N.toMvPolynomial := by
   ext i : 1
-  simp only [toMvPolynomial, add_apply, map_add, Finset.sum_add_distrib, Pi.add_apply]
+  simp only [toMvPolynomial, Matrix.add_apply, map_add, Finset.sum_add_distrib, Pi.add_apply]
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma toMvPolynomial_mul (M : Matrix m n R) (N : Matrix n o R) (i : m) :
     (M * N).toMvPolynomial i = bind₁ N.toMvPolynomial (M.toMvPolynomial i) := by
-  simp only [toMvPolynomial, mul_apply, map_sum, Finset.sum_comm (γ := o), bind₁, aeval,
+  simp only [toMvPolynomial, Matrix.mul_apply, map_sum, Finset.sum_comm (γ := o), bind₁, aeval,
     AlgHom.coe_mk, coe_eval₂Hom, eval₂_monomial, algebraMap_apply, Algebra.algebraMap_self,
     RingHom.id_apply, C_apply, pow_zero, Finsupp.prod_single_index, pow_one, Finset.mul_sum,
     monomial_mul_monomial, zero_add]
