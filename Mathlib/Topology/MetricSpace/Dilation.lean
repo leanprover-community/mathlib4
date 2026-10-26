@@ -338,6 +338,8 @@ instance : Monoid (α →ᵈ α) where
 
 instance : IsOneApplyEqSelf (α →ᵈ α) where
 
+instance : IsMulApplyEqComp (α →ᵈ α) where
+
 theorem one_def : (1 : α →ᵈ α) = Dilation.id α :=
   rfl
 
