@@ -477,8 +477,7 @@ instance [Group M] : CommGroup (Center M) where
 /-- Lift a morphism through the inclusion `Center N →* N`. -/
 @[simps, to_additive /-- Lift a morphism through the inclusion `AddCenter N →+ N`. -/]
 def _root_.MonoidHom.liftCenter {N} [MulOneClass M] [MulOneClass N] {f : M →* N}
-    (hf : ∀ m, f m ∈ Set.center N) :
-    M →* Center N where
+    (hf : ∀ m, f m ∈ Set.center N) : M →* Center N where
   toFun m := Center.mk (f m) (hf m)
   map_one' := by simp
   map_mul' := by simp
@@ -492,8 +491,7 @@ lemma _root_.MonoidHom.comp_liftCenter {N} [MulOneClass M] [MulOneClass N] {f : 
 @[simps, to_additive /-- A surjective morphism between additive monoids induces a additive monoid
 homomorhpism between their centers. -/]
 def _root_.MonoidHom.toCenter [MulOneClass M] [MulOneClass N] {f : M →* N}
-    (hf : Function.Surjective f) :
-    Center M →* Center N where
+    (hf : Function.Surjective f) : Center M →* Center N where
   toFun m := Center.mk (f m.val) (IsMulCentral.map m.prop hf)
   map_one' := by simp
   map_mul' := by simp
@@ -501,8 +499,7 @@ def _root_.MonoidHom.toCenter [MulOneClass M] [MulOneClass N] {f : M →* N}
 /-- An ismorphism between monoids induces an isomorphism between their centers. -/
 @[simps!, to_additive /-- An ismorphism between additive monoids induces an isomorphism between
 their centers. -/]
-def _root_.MulEquiv.toCenter [Mul M] [Mul N] (f : M ≃* N) :
-    Center M ≃* Center N where
+def _root_.MulEquiv.toCenter [Mul M] [Mul N] (f : M ≃* N) : Center M ≃* Center N where
   toFun m := Center.mk (f m.val) (IsMulCentral.map m.prop f.surjective)
   invFun n := Center.mk (f.symm n.val) (IsMulCentral.map n.prop f.symm.surjective)
   map_mul' := by simp
