@@ -126,9 +126,7 @@ instance (K : FibrantObject (Plus C)) (n : ℤ) :
   rw [fibrantObjects, modelCategoryQuillen.isFibrant_iff] at hK
   infer_instance
 
-set_option backward.isDefEq.respectTransparency.types false in
 variable (C) in
-set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence between `CochainComplex.Plus (InjectiveObject C)`
 and the category of fibrant object in `CochainComplex.Plus C` for the
 Quillen model category structure. -/
@@ -162,14 +160,12 @@ abbrev fibrantObjectLocalizerMorphism :
 instance : (fibrantObjectLocalizerMorphism C).IsInduced where
   inverseImage_eq := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance : (localizerMorphism C).IsRightDerivabilityStructure := by
   rw [LocalizerMorphism.isRightDerivabilityStructure_iff_of_equivalences
     (T := localizerMorphism C) (B := FibrantObject.localizerMorphism (Plus C))
     (R := .id _) (L := fibrantObjectLocalizerMorphism C) (Iso.refl _)]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance : (localizerMorphism C).arrow.HasRightResolutions := by
   rw [LocalizerMorphism.hasRightResolutions_arrow_iff_of_equivalences
     (T := localizerMorphism C) (B := FibrantObject.localizerMorphism (Plus C))
@@ -196,7 +192,6 @@ abbrev localizerMorphism : LocalizerMorphism
     intro n
     infer_instance
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isIso_quotient_map_iff
     {K L : CochainComplex.Plus (InjectiveObject C)} (f : K ⟶ L) :
     IsIso ((quotient _).map f) ↔
@@ -208,7 +203,6 @@ lemma isIso_quotient_map_iff
     ← CochainComplex.IsKInjective.quasiIso_iff]
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 open HomologicalComplex in
 lemma inverseImage_quasiIso_mapCochainComplexPlus_injectiveObjectι :
     (CochainComplex.Plus.quasiIso C).inverseImage (InjectiveObject.ι C).mapCochainComplexPlus =
@@ -292,8 +286,6 @@ private def iso :
     (CochainComplex.Plus.localizerMorphism C).functor ⋙ (R C).functor ≅
     (L C).functor ⋙ (localizerMorphism C).functor := Iso.refl _
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 open HomologicalComplex CochainComplex in
 private instance : TwoSquare.GuitartExact (iso C).hom :=
   TwoSquare.GuitartExact.quotient_of_nonempty_rightHomotopy (iso C).symm (by

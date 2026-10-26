@@ -37,8 +37,6 @@ namespace truncGE'
 
 variable (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k)
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 include hi hk in
 lemma hasHomology_sc'_of_not_mem_boundary (hj : ¬ e.BoundaryGE j) :
     ((K.truncGE' e).sc' i j k).HasHomology := by
@@ -56,8 +54,6 @@ lemma hasHomology_of_not_mem_boundary (hj : ¬ e.BoundaryGE j) :
     (K.truncGE' e).HasHomology j :=
   hasHomology_sc'_of_not_mem_boundary K e _ j _ rfl rfl hj
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- `K.restrictionToTruncGE' e` is a quasi-isomorphism in degrees that are not at the boundary. -/
 lemma quasiIsoAt_restrictionToTruncGE' (hj : ¬ e.BoundaryGE j)
     [(K.restriction e).HasHomology j] [(K.truncGE' e).HasHomology j] :
@@ -80,7 +76,6 @@ lemma homologyι_truncGE'XIsoOpcycles_inv_d :
     homologyι_comp_fromOpcycles_assoc, zero_comp]
   · rw [shape _ _ _ hjk, comp_zero]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `truncGE'.homologyData`. -/
 noncomputable def isLimitKernelFork :
     IsLimit (KernelFork.ofι _ (homologyι_truncGE'XIsoOpcycles_inv_d K e j k hj' hj)) := by
@@ -102,6 +97,7 @@ noncomputable def isLimitKernelFork :
 /-- When `j` is at the boundary of the embedding `e` of complex shapes,
 this is a homology data for `K.truncGE' e` in degree `j`: the homology is
 given by `K.homology j'` where `e.f j = j'`. -/
+@[implicit_reducible]
 noncomputable def homologyData :
     ((K.truncGE' e).sc' i j k).HomologyData :=
   ShortComplex.HomologyData.ofIsLimitKernelFork _
@@ -130,11 +126,9 @@ instance (i' : ι') : (K.truncGE e).HasHomology i' := by
   dsimp [truncGE]
   infer_instance
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The right homology data which allows to show that `K.πTruncGE e`
 induces an isomorphism in homology in degrees `j'` such that `e.f j = j'` for some `j`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def rightHomologyMapData {i j k : ι} {j' : ι'} (hj' : e.f j = j')
     (hi : c.prev j = i) (hk : c.next j = k) (hj : e.BoundaryGE j) :
     ShortComplex.RightHomologyMapData ((shortComplexFunctor C c' j').map (K.πTruncGE e))
@@ -167,8 +161,6 @@ noncomputable def rightHomologyMapData {i j k : ι} {j' : ι'} (hj' : e.f j = j'
 
 end truncGE
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma quasiIsoAt_πTruncGE {j : ι} {j' : ι'} (hj' : e.f j = j') :
     QuasiIsoAt (K.πTruncGE e) j' := by
   rw [quasiIsoAt_iff]

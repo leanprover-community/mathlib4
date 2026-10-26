@@ -42,7 +42,6 @@ noncomputable def triangleOfSESδ :
     Q.map (CochainComplex.mappingCone.triangle S.f).mor₃ ≫
     (Q.commShiftIso (1 : ℤ)).hom.app S.X₁
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma descShortComplex_triangleOfSESδ :
     dsimp% Q.map (CochainComplex.mappingCone.descShortComplex S) ≫ triangleOfSESδ hS =
@@ -67,12 +66,10 @@ lemma triangleOfSESδ_naturality {S₁ S₂ : ShortComplex (CochainComplex C ℤ
 
 /-- The distinguished triangle in the derived category associated to a short
 exact sequence of cochain complexes. -/
-@[simps!]
+@[simps!, implicit_reducible]
 noncomputable def triangleOfSES : Triangle (DerivedCategory C) :=
   Triangle.mk (Q.map S.f) (Q.map S.g) (triangleOfSESδ hS)
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The triangle `triangleOfSES` attached to a short exact sequence `S` of cochain
 complexes is isomorphic to the standard distinguished triangle associated to
 the morphism `S.f`. -/
@@ -98,7 +95,6 @@ section map
 variable {S₁ S₂ : ShortComplex (CochainComplex C ℤ)} (h₁ : S₁.ShortExact) (h₂ : S₂.ShortExact)
   (f : S₁ ⟶ S₂)
 
-set_option backward.defeqAttrib.useBackward true in
 /--
 The morphism `triangleOfSES h₁ ⟶ triangleOfSES h₂` that is induced by a morphism of short
 exact sequences of cochain complexes.

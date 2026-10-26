@@ -122,6 +122,7 @@ end SmallHom
 /-- The type of morphisms from `X` to `Y⟦m⟧` in the localized category
 with respect to `W : MorphismProperty C` that is shrunk to `Type w`
 when `HasSmallLocalizedShiftedHom.{w} W X Y` holds. -/
+@[implicit_reducible]
 def SmallShiftedHom (X Y : C) [HasSmallLocalizedShiftedHom.{w} W M X Y] (m : M) : Type w :=
   SmallHom W X (Y⟦m⟧)
 

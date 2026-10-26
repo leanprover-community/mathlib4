@@ -62,7 +62,6 @@ noncomputable def singleTriangle : Triangle (DerivedCategory C) :=
   Triangle.mk ((singleFunctor C 0).map S.f)
     ((singleFunctor C 0).map S.g) hS.singleδ
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a short exact complex `S` in `C` that is short exact (`hS`), this is the
 canonical isomorphism between the triangle `hS.singleTriangle` in the derived category
 and the triangle attached to the corresponding short exact sequence of cochain complexes

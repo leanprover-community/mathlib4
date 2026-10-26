@@ -122,21 +122,21 @@ noncomputable def restrictionHomologyIso :
     ShortComplex.homologyMapIso (restriction.sc'Iso K e i j k hi' hj' hk' hi'' hk'') ≪≫
     (K.homologyIsoSc' i' j' k' hi'' hk'').symm
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
-@[reassoc (attr := simp, nolint unusedHavesSuffices)]
+@[reassoc (attr := simp)]
 lemma homologyπ_restrictionHomologyIso_hom :
     (K.restriction e).homologyπ j ≫
       (K.restrictionHomologyIso e i j k hi hk hi' hj' hk' hi'' hk'').hom =
     (K.restrictionCyclesIso e j k hk hj' hk' hk'').hom ≫ K.homologyπ j' := by
   have : ((K.restriction e).sc' i j k).HasHomology := by subst hi hk; assumption
   have : (K.sc' i' j' k').HasHomology := by subst hi'' hk''; assumption
-  dsimp [restrictionHomologyIso, homologyIsoSc']
-  rw [← ShortComplex.homologyMap_comp, ← ShortComplex.homologyMap_comp,
-    ← cancel_mono (K.sc j').homologyι, assoc, assoc]
+  simp only [restrictionHomologyIso, homologyIsoSc', Iso.trans_hom, Iso.symm_hom,
+    Iso.app_inv,Iso.app_hom, assoc, ShortComplex.homologyMapIso_hom,
+    ShortComplex.homologyMapIso_inv, ← ShortComplex.homologyMap_comp,
+    ← cancel_mono (K.sc j').homologyι]
   apply (ShortComplex.π_homologyMap_ι _).trans
   dsimp
-  rw [comp_id, id_comp]
+  simp only [natIsoSc'_hom_app_τ₂, restriction_X, restriction.sc'Iso_hom_τ₂, natIsoSc'_inv_app_τ₂,
+    comp_id, id_comp]
   apply (K.restrictionCyclesIso_hom_iCycles_assoc e j k hk hj' hk' hk'' _).symm.trans
   congr 1
   symm
@@ -150,8 +150,6 @@ lemma homologyπ_restrictionHomologyIso_inv :
     assoc, assoc, Iso.inv_hom_id, homologyπ_restrictionHomologyIso_hom, comp_id,
     Iso.inv_hom_id_assoc]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp, nolint unusedHavesSuffices)]
 lemma restrictionHomologyIso_inv_homologyι :
     (K.restrictionHomologyIso e i j k hi hk hi' hj' hk' hi'' hk'').inv ≫
@@ -159,12 +157,13 @@ lemma restrictionHomologyIso_inv_homologyι :
     K.homologyι j' ≫ (K.restrictionOpcyclesIso e i j hi hi' hj' hi'').inv := by
   have : ((K.restriction e).sc' i j k).HasHomology := by subst hi hk; assumption
   have : (K.sc' i' j' k').HasHomology := by subst hi'' hk''; assumption
-  dsimp [restrictionHomologyIso, homologyIsoSc']
-  rw [← ShortComplex.homologyMap_comp, ← ShortComplex.homologyMap_comp, assoc,
-    ← cancel_epi (K.sc j').homologyπ]
+  simp only [restrictionHomologyIso, homologyIsoSc', Iso.trans_inv, Iso.symm_inv, Iso.app_inv,
+    ShortComplex.homologyMapIso_hom, Iso.app_hom, ShortComplex.homologyMapIso_inv,
+    ← ShortComplex.homologyMap_comp, ← cancel_epi (K.sc j').homologyπ, assoc]
   apply (ShortComplex.π_homologyMap_ι _).trans
   dsimp
-  rw [comp_id, id_comp]
+  simp only [natIsoSc'_hom_app_τ₂, restriction.sc'Iso_inv_τ₂, natIsoSc'_inv_app_τ₂,
+    restriction_X, comp_id, id_comp]
   refine ((ShortComplex.homology_π_ι_assoc _ _).trans ?_).symm
   congr 1
   apply pOpcycles_restrictionOpcyclesIso_inv

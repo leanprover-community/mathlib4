@@ -56,10 +56,12 @@ variable {i j k : ι} (f : i ⟶ j) (g : j ⟶ k) (n : ℤ)
 
 /-- The kernel of `δ : H^n(g) ⟶ H^{n+1}(f)`. In the documentation,
 this may be shortened as `Z^n(f, g)` -/
+@[implicit_reducible]
 noncomputable def cycles : C := kernel (X.δ f g n (n + 1))
 
 /-- The cokernel of `δ : H^{n-1}(g) ⟶ H^n(g)`. In the documentation,
 this may be shortened as `opZ^n₁(f, g)`. -/
+@[implicit_reducible]
 noncomputable def opcycles : C := cokernel (X.δ f g (n - 1) n)
 
 /-- The inclusion `Z^n(f, g) ⟶ H^n(g)` of the kernel of `δ`. -/
@@ -72,12 +74,10 @@ noncomputable def pOpcycles :
     (X.H n).obj (mk₁ f) ⟶ X.opcycles f g n :=
   cokernel.π _
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Mono (X.iCycles f g n) := by
   dsimp [iCycles]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Epi (X.pOpcycles f g n) := by
   dsimp [pOpcycles]
   infer_instance
@@ -98,14 +98,12 @@ section
 
 variable {i j k : ι} (f : i ⟶ j) (g : j ⟶ k) (n₀ n₁ : ℤ)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma iCycles_δ (hn₁ : n₀ + 1 = n₁ := by lia) :
     X.iCycles f g n₀ ≫ X.δ f g n₀ n₁ hn₁ = 0 := by
   subst hn₁
   simp [iCycles]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma δ_pOpcycles (hn₁ : n₀ + 1 = n₁ := by lia) :
     X.δ f g n₀ n₁ hn₁ ≫ X.pOpcycles f g n₁ = 0 := by
@@ -113,24 +111,22 @@ lemma δ_pOpcycles (hn₁ : n₀ + 1 = n₁ := by lia) :
   simp [pOpcycles]
 
 /-- The short complex which expresses `X.cycles` as the kernel of `X.δ`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def kernelSequenceCycles (hn₁ : n₀ + 1 = n₁ := by lia) :
     ShortComplex C :=
   ShortComplex.mk _ _ (X.iCycles_δ f g n₀ n₁ hn₁)
 
 /-- The short complex which expresses `X.opcycles` as the cokernel of `X.δ`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def cokernelSequenceOpcycles (hn₁ : n₀ + 1 = n₁ := by lia) :
     ShortComplex C :=
   ShortComplex.mk _ _ (X.δ_pOpcycles f g n₀ n₁ hn₁)
 
-set_option backward.defeqAttrib.useBackward true in
 instance (hn₁ : n₀ + 1 = n₁) :
     Mono (X.kernelSequenceCycles f g n₀ n₁ hn₁).f := by
   dsimp
   infer_instance
 
-set_option backward.defeqAttrib.useBackward true in
 instance (hn₁ : n₀ + 1 = n₁) :
     Epi (X.cokernelSequenceOpcycles f g n₀ n₁ hn₁).g := by
   dsimp
@@ -303,7 +299,6 @@ lemma toCycles_i (n : ℤ) :
     X.toCycles f g fg h n ≫ X.iCycles f g n = (X.H n).map (twoδ₁Toδ₀ f g fg h) :=
   kernel.lift_ι ..
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma toCycles_cyclesMap (α : mk₂ f g ⟶ mk₂ f' g') (β : mk₁ fg ⟶ mk₁ fg') (n : ℤ)
     (hβ₀ : β.app 0 = α.app 0 := by cat_disch) (hβ₁ : β.app 1 = α.app 2 := by cat_disch) :
@@ -334,7 +329,6 @@ lemma p_fromOpcycles (n : ℤ) :
       (X.H n).map (twoδ₂Toδ₁ f g fg h) :=
   cokernel.π_desc ..
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma opcyclesMap_fromOpcycles (α : mk₂ f g ⟶ mk₂ f' g') (β : mk₁ fg ⟶ mk₁ fg') (n : ℤ)
     (hβ₀ : β.app 0 = α.app 0 := by cat_disch) (hβ₁ : β.app 1 = α.app 2 := by cat_disch) :
@@ -363,28 +357,24 @@ lemma fromOpcycles_H_map_twoδ₁Toδ₀ (n : ℤ) :
 
 /-- The short complex expressing `Z^n(f, g)` as a cokernel of
 the map `H^n(f) ⟶ H^n(f ≫ g)`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def cokernelSequenceCycles (n : ℤ) : ShortComplex C :=
   ShortComplex.mk _ _ (X.H_map_twoδ₂Toδ₁_toCycles f g fg h n)
 
 /-- The short complex expressing `opZ^n(f, g)` as a kernel of
 the map `H^n(f ≫ g) ⟶ H^n(g)`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def kernelSequenceOpcycles (n : ℤ) : ShortComplex C :=
   ShortComplex.mk _ _ (X.fromOpcycles_H_map_twoδ₁Toδ₀ f g fg h n)
 
-set_option backward.defeqAttrib.useBackward true in
 instance (n : ℤ) : Epi (X.cokernelSequenceCycles f g fg h n).g := by
   dsimp
   infer_instance
 
-set_option backward.defeqAttrib.useBackward true in
 instance (n : ℤ) : Mono (X.kernelSequenceOpcycles f g fg h n).f := by
   dsimp
   infer_instance
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- `Z^n(f, g)` identifies to a cokernel of the `H^n(f) ⟶ H^n(f ≫ g)`. -/
 lemma cokernelSequenceCycles_exact (n : ℤ) :
     (X.cokernelSequenceCycles f g fg h n).Exact := by
@@ -393,8 +383,6 @@ lemma cokernelSequenceCycles_exact (n : ℤ) :
     (Cofork.ext (X.cokernelIsoCycles f g fg h n) (by
       simp [← cancel_mono (X.iCycles f g n)]))
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- `opZ^n(f, g)` identifies to the kernel of `H^n(f ≫ g) ⟶ H^n(g)`. -/
 lemma kernelSequenceOpcycles_exact (n : ℤ) :
     (X.kernelSequenceOpcycles f g fg h n).Exact := by

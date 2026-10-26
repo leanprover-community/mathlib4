@@ -135,7 +135,6 @@ lemma descAddMonoidHom_cohomologyClass (x : Cocycle K L n) :
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The additive map which sends a cohomology class to the corresponding morphism
 in the homotopy category. -/
 def toHom :

@@ -50,12 +50,10 @@ local notation "qis" => CochainComplex.mappingCone.descShortComplex S'
 local notation "hqis" => CochainComplex.mappingCone.quasiIso_descShortComplex hS'
 local notation "δ" => Triangle.mor₃ (CochainComplex.mappingCone.triangle (ShortComplex.f S'))
 
-set_option backward.defeqAttrib.useBackward true in
 instance : HasSmallLocalizedShiftedHom.{w} W ℤ (S').X₃ (S').X₁ := by
   dsimp
   infer_instance
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.privateInPublic true in
 include hS in
 private lemma hasSmallLocalizedHom_S'_X₃_K :
@@ -81,13 +79,12 @@ noncomputable def extClass : Ext.{w} S.X₃ S.X₁ 1 := by
   change SmallHom W (S').X₃ ((S').X₁⟦(1 : ℤ)⟧)
   exact (SmallHom.mkInv qis hqis).comp (SmallHom.mk W δ)
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma extClass_hom [HasDerivedCategory.{w'} C] : hS.extClass.hom = hS.singleδ := by
   change SmallShiftedHom.equiv W Q hS.extClass = _
   dsimp [extClass, SmallShiftedHom.equiv]
-  erw [SmallHom.equiv_comp]
-  rw [SmallHom.equiv_mkInv, SmallHom.equiv_mk, Category.assoc]
+  rw [SmallHom.equiv_comp, SmallHom.equiv_mkInv, SmallHom.equiv_mk, Category.assoc]
   rfl
 
 end

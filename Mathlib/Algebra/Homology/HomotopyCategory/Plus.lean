@@ -33,7 +33,6 @@ open HomologicalComplex
 
 variable {C} [HasBinaryBiproducts C]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma plus_cylinder (K : CochainComplex C ℤ) (hK : CochainComplex.plus C K) :
     CochainComplex.plus C (cylinder K) := by
   obtain ⟨n, hn⟩ := hK
@@ -112,8 +111,6 @@ instance : (plus C).IsStableUnderShift ℤ where
           plus_quotient_obj_iff]
         exact ⟨q - n, K.isStrictlyGE_shift q n (q - n) (by lia)⟩ }
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance [HasZeroObject C] [HasBinaryBiproducts C] :
     (plus C).IsTriangulatedClosed₃ where
   ext₃' T hT h₁ h₂ := by
@@ -223,9 +220,7 @@ section
 
 variable [HasZeroObject C] [HasBinaryBiproducts C]
 
-set_option backward.isDefEq.respectTransparency.types false in
 open HomologicalComplex in
-set_option backward.defeqAttrib.useBackward true in
 instance :
     (quotient C).IsLocalization
       ((homotopyEquivalences C (.up ℤ)).inverseImage (CochainComplex.Plus.ι C)) :=
@@ -290,7 +285,6 @@ namespace Functor
 variable {C D}
 variable (F : C ⥤ D) [F.Additive]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The functor between bounded below homotopy categories that is induced
 by an additive functor. -/
 @[implicit_reducible]

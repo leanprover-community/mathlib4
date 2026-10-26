@@ -115,6 +115,7 @@ variable [HasExt.{w} C]
 namespace Abelian
 
 /-- An Ext-group in an abelian category `C`, defined as a `Type w` when `[HasExt.{w} C]`. -/
+@[implicit_reducible]
 def Ext (X Y : C) (n : ℕ) : Type w :=
   SmallShiftedHom.{w} (HomologicalComplex.quasiIso C (ComplexShape.up ℤ))
     ((CochainComplex.singleFunctor C 0).obj X)
@@ -415,22 +416,18 @@ noncomputable abbrev precomp (α : Ext X Y n) (Z : C) {a b : ℕ} (h : n + a = b
 
 end Ext
 
-set_option backward.defeqAttrib.useBackward true in
-/-- Auxiliary definition for `extFunctor`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def extFunctorObj (X : C) (n : ℕ) : C ⥤ AddCommGrpCat.{w} where
   obj Y := ↧(Ext X Y n)
   map f := AddCommGrpCat.ofHom ((Ext.mk₀ f).postcomp _ (add_zero n))
   map_comp f f' := by
     ext α
-    dsimp [AddCommGrpCat.ofHom]
-    rw [← Ext.mk₀_comp_mk₀]
+    dsimp
+    simp only [Ext.bilinearComp_apply_apply, ← Ext.mk₀_comp_mk₀]
     symm
     apply Ext.comp_assoc
     lia
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor `Cᵒᵖ ⥤ C ⥤ AddCommGrpCat` which sends `X : C` and `Y : C`
 to `Ext X Y n`. -/
 @[simps]
@@ -442,6 +439,7 @@ noncomputable def extFunctor (n : ℕ) : Cᵒᵖ ⥤ C ⥤ AddCommGrpCat.{w} whe
       naturality := fun {Y₁ Y₂} g ↦ by
         ext α
         dsimp
+        simp only [AddMonoidHom.mk'_apply, Ext.bilinearComp_apply_apply]
         symm
         apply Ext.comp_assoc
         lia }

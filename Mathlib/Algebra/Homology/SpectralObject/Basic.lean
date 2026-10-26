@@ -64,7 +64,6 @@ def δ {i j k : ι} (f : i ⟶ j) (g : j ⟶ k) (n₀ n₁ : ℤ) (hn₁ : n₀ 
     (X.H n₀).obj (mk₁ g) ⟶ (X.H n₁).obj (mk₁ f) :=
   (X.δ' n₀ n₁ hn₁).app (mk₂ f g)
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma δ_naturality {i j k : ι} (f : i ⟶ j) (g : j ⟶ k)
     {i' j' k' : ι} (f' : i' ⟶ j') (g' : j' ⟶ k')
@@ -104,19 +103,19 @@ lemma zero₃ (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁ := by lia) :
 
 /-- The (exact) short complex `H^n₀(g) ⟶ H^n₁(f) ⟶ H^n₁(fg)` of a
 spectral object, when `f ≫ g = fg` and `n₀ + 1 = n₁`. -/
-@[simps]
+@[simps, implicit_reducible]
 def sc₁ (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁ := by lia) : ShortComplex C :=
   ShortComplex.mk _ _ (X.zero₁ f g fg h n₀ n₁ hn₁)
 
 /-- The (exact) short complex `H^n₀(f) ⟶ H^n₀(fg) ⟶ H^n₀(g)` of a
 spectral object, when `f ≫ g = fg`. -/
-@[simps]
+@[simps, implicit_reducible]
 def sc₂ (n₀ : ℤ) : ShortComplex C :=
   ShortComplex.mk _ _ (X.zero₂ f g fg h n₀)
 
 /-- The (exact) short complex `H^n₀(fg) ⟶ H^n₀(g) ⟶ H^n₁(f)`
 of a spectral object, when `f ≫ g = fg` and `n₀ + 1 = n₁`. -/
-@[simps]
+@[simps, implicit_reducible]
 def sc₃ (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁ := by lia) : ShortComplex C :=
   ShortComplex.mk _ _ (X.zero₃ f g fg h n₀ n₁ hn₁)
 
@@ -181,7 +180,6 @@ instance : Category (SpectralObject C ι) where
 attribute [simp] id_hom
 attribute [reassoc, simp] comp_hom
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isZero_H_map_mk₁_of_isIso (n : ℤ) {i₀ i₁ : ι} (f : i₀ ⟶ i₁) [IsIso f] :
     IsZero ((X.H n).obj (mk₁ f)) := by
   let φ := twoδ₂Toδ₁ f (inv f) (𝟙 i₀) (by simp) ≫ twoδ₁Toδ₀ f (inv f) (𝟙 i₀)

@@ -33,7 +33,6 @@ variable {C : Type*} [Category* C] [Abelian C]
 
 namespace CochainComplex
 
-set_option backward.isDefEq.respectTransparency false in -- Needed in homologySequenceδ_triangleh
 @[reassoc]
 lemma homologySequenceδ_quotient_mapTriangle_obj
     (T : Triangle (CochainComplex C ℤ)) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
@@ -80,8 +79,6 @@ end
 
 variable {S}
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma homologySequenceδ_triangleh (n₀ : ℤ) (n₁ : ℤ) (h : n₀ + 1 = n₁) :
     (homologyFunctor C (up ℤ) 0).homologySequenceδ (triangleh S.f) n₀ n₁ h =
       (homologyFunctorFactors C (up ℤ) n₀).hom.app _ ≫
@@ -178,7 +175,6 @@ lemma descShortComplex_naturality {S₁ S₂ : ShortComplex (CochainComplex C �
 
 variable {D : Type*} [Category* D] [Abelian D]
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma mapHomologicalComplexIso_hom_descShortComplex (F : C ⥤ D) [F.Additive]
     (S : ShortComplex (CochainComplex C ℤ)) :

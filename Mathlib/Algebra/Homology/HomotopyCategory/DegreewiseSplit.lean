@@ -37,7 +37,6 @@ open HomologicalComplex HomComplex
 variable (S : ShortComplex (CochainComplex C ℤ))
   (σ : ∀ n, (S.map (eval C _ n)).Splitting)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The `1`-cocycle attached to a degreewise split short exact sequence of cochain complexes. -/
 def cocycleOfDegreewiseSplit : Cocycle S.X₃ S.X₁ 1 :=
   Cocycle.mk
@@ -62,7 +61,6 @@ short exact sequence of cochain complexes. -/
 def homOfDegreewiseSplit : S.X₃ ⟶ S.X₁⟦(1 : ℤ)⟧ :=
   ((Cocycle.equivHom _ _).symm ((cocycleOfDegreewiseSplit S σ).rightShift 1 0 (zero_add 1)))
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma homOfDegreewiseSplit_f (n : ℤ) :
     (homOfDegreewiseSplit S σ).f n =
@@ -71,7 +69,7 @@ lemma homOfDegreewiseSplit_f (n : ℤ) :
 
 /-- The triangle in `CochainComplex C ℤ` attached to a degreewise split short exact sequence
 of cochain complexes. -/
-@[simps! obj₁ obj₂ obj₃ mor₁ mor₂ mor₃]
+@[simps! obj₁ obj₂ obj₃ mor₁ mor₂ mor₃, implicit_reducible]
 def triangleOfDegreewiseSplit : Triangle (CochainComplex C ℤ) :=
   Triangle.mk S.f S.g (homOfDegreewiseSplit S σ)
 
@@ -83,7 +81,6 @@ noncomputable abbrev trianglehOfDegreewiseSplit :
 
 variable [HasBinaryBiproducts C]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The canonical isomorphism `(mappingCone (homOfDegreewiseSplit S σ)).X p ≅ S.X₂.X q`
 when `p + 1 = q`. -/
 noncomputable def mappingConeHomOfDegreewiseSplitXIso (p q : ℤ) (hpq : p + 1 = q) :
@@ -119,7 +116,6 @@ noncomputable def mappingConeHomOfDegreewiseSplitXIso (p q : ℤ) (hpq : p + 1 =
       mappingCone.inl_v_snd_v_assoc, mappingCone.inr_f_snd_v_assoc, zero_sub, sub_neg_eq_add, ← h]
     abel
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The canonical isomorphism `mappingCone (homOfDegreewiseSplit S σ) ≅ S.X₂⟦(1 : ℤ)⟧`. -/
 @[simps!]
 noncomputable def mappingConeHomOfDegreewiseSplitIso :
@@ -142,29 +138,20 @@ noncomputable def mappingConeHomOfDegreewiseSplitIso :
     simp only [← S.g.comm_assoc, reassoc_of% s_g, comp_id]
     abel)
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma shift_f_comp_mappingConeHomOfDegreewiseSplitIso_inv :
     S.f⟦(1 : ℤ)⟧' ≫ (mappingConeHomOfDegreewiseSplitIso S σ).inv = -mappingCone.inr _ := by
   ext n
-  have h := (σ (n + 1)).f_r
-  dsimp at h
-  dsimp [mappingConeHomOfDegreewiseSplitXIso]
-  rw [id_comp, comp_sub, ← comp_f_assoc, S.zero, zero_f, zero_comp, zero_sub, reassoc_of% h]
+  simp [mappingConeHomOfDegreewiseSplitXIso, ← comp_f_assoc,
+    reassoc_of% dsimp% (σ (n + 1)).f_r]
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma mappingConeHomOfDegreewiseSplitIso_inv_comp_triangle_mor₃ :
     (mappingConeHomOfDegreewiseSplitIso S σ).inv ≫
       (mappingCone.triangle (homOfDegreewiseSplit S σ)).mor₃ = -S.g⟦(1 : ℤ)⟧' := by
   ext n
-  dsimp [mappingConeHomOfDegreewiseSplitXIso]
-  simp only [Int.reduceNeg, id_comp, sub_comp, assoc, mappingCone.inl_v_triangle_mor₃_f,
-    shiftFunctorObjXIso, XIsoOfEq_rfl, Iso.refl_inv, comp_neg, comp_id,
-    mappingCone.inr_f_triangle_mor₃_f, comp_zero, sub_zero]
+  simp [mappingConeHomOfDegreewiseSplitXIso]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The canonical isomorphism of triangles
 `(triangleOfDegreewiseSplit S σ).rotate.rotate ≅ mappingCone.triangle (homOfDegreewiseSplit S σ)`
 when `S` is a degreewise split short exact sequence of cochain complexes. -/
@@ -172,11 +159,6 @@ noncomputable def triangleOfDegreewiseSplitRotateRotateIso :
     (triangleOfDegreewiseSplit S σ).rotate.rotate ≅
       mappingCone.triangle (homOfDegreewiseSplit S σ) :=
   Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (mappingConeHomOfDegreewiseSplitIso S σ).symm
-    (by dsimp; simp only [comp_id, id_comp])
-    (by dsimp; simp only [neg_comp, shift_f_comp_mappingConeHomOfDegreewiseSplitIso_inv,
-      neg_neg, id_comp])
-    (by dsimp; simp only [CategoryTheory.Functor.map_id, comp_id,
-      mappingConeHomOfDegreewiseSplitIso_inv_comp_triangle_mor₃])
 
 /-- The canonical isomorphism between `(trianglehOfDegreewiseSplit S σ).rotate.rotate` and
 `mappingCone.triangleh (homOfDegreewiseSplit S σ)` when `S` is a degreewise split
@@ -193,15 +175,12 @@ namespace mappingCone
 
 variable {K L : CochainComplex C ℤ} (φ : K ⟶ L)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a morphism of cochain complexes `φ`, this is the short complex
 given by `(triangle φ).rotate`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def triangleRotateShortComplex : ShortComplex (CochainComplex C ℤ) :=
   ShortComplex.mk (triangle φ).rotate.mor₁ (triangle φ).rotate.mor₂ (by simp)
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- `triangleRotateShortComplex φ` is a degreewise split short exact sequence of
 cochain complexes. -/
 @[simps]
@@ -211,14 +190,12 @@ noncomputable def triangleRotateShortComplexSplitting (n : ℤ) :
   r := (snd φ).v n n (add_zero n)
   id := by simp [ext_from_iff φ _ _ rfl]
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma cocycleOfDegreewiseSplit_triangleRotateShortComplexSplitting_v (p : ℤ) :
     (cocycleOfDegreewiseSplit _ (triangleRotateShortComplexSplitting φ)).1.v p _ rfl =
       -φ.f _ := by
   simp [cocycleOfDegreewiseSplit, d_snd_v φ p (p + 1) rfl]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The triangle `(triangle φ).rotate` is isomorphic to a triangle attached to a
 degreewise split short exact sequence of cochain complexes. -/
 noncomputable def triangleRotateIsoTriangleOfDegreewiseSplit :

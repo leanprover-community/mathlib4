@@ -40,7 +40,6 @@ abbrev subcategoryAcyclic :
     ObjectProperty (HomotopyCategory.Plus C) :=
   (HomotopyCategory.subcategoryAcyclic C).inverseImage (HomotopyCategory.Plus.ι C)
 
-set_option backward.defeqAttrib.useBackward true in
 lemma quasiIso_eq_subcategoryAcyclic_trW :
     HomotopyCategory.Plus.quasiIso C = (subcategoryAcyclic C).trW := by
   ext K L f
@@ -76,7 +75,6 @@ instance : (Qh : _ ⥤ Plus C).IsTriangulated := by
   dsimp only [Qh]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Qh_map_bijective_of_isKInjective (K L : HomotopyCategory.Plus C)
     (_ : CochainComplex.IsKInjective L.1.as) : Function.Bijective (Qh.map : (K ⟶ L) → _) := by
   have := CochainComplex.IsKInjective.Qh_map_bijective K.1 L.1.as

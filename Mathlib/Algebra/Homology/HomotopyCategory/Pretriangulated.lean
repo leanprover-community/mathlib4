@@ -54,7 +54,6 @@ the morphism induced by the `1`-cocycle `-mappingCone.fst φ`. -/
 noncomputable def triangle : Triangle (CochainComplex C ℤ) :=
   Triangle.mk φ (inr φ) (Cocycle.homOf ((-fst φ).rightShift 1 0 (zero_add 1)))
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma inl_v_triangle_mor₃_f (p q : ℤ) (hpq : p + (-1) = q) :
     (inl φ).v p q hpq ≫ (triangle φ).mor₃.f q =
@@ -66,12 +65,9 @@ lemma inl_v_triangle_mor₃_f (p q : ℤ) (hpq : p + (-1) = q) :
     Cochain.rightShift_v _ 1 0 (zero_add 1) q q (add_zero q) p (by lia),
     shiftFunctorObjXIso, Preadditive.comp_neg, inl_v_fst_v_assoc]
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma inr_f_triangle_mor₃_f (p : ℤ) : (inr φ).f p ≫ (triangle φ).mor₃.f p = 0 := by
   dsimp [triangle]
-  -- the following list of lemmas was obtained by doing
-  -- simp? [Cochain.rightShift_v _ 1 0 _ p p (add_zero p) (p+1) rfl]
   simp only [Cochain.rightShift_neg, Cochain.neg_v, shiftFunctor_obj_X',
     Cochain.rightShift_v _ 1 0 _ p p (add_zero p) (p + 1) rfl,
     shiftFunctorObjXIso, HomologicalComplex.XIsoOfEq_rfl, Iso.refl_inv, comp_id,
@@ -108,8 +104,6 @@ lemma triangleMapOfHomotopy_comm₂ :
     inr φ₁ ≫ mapOfHomotopy H = b ≫ inr φ₂ := by
   simp [mapOfHomotopy]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[map (attr := reassoc)]
 lemma triangleMapOfHomotopy_comm₃ :
     mapOfHomotopy H ≫ (triangle φ₂).mor₃ = (triangle φ₁).mor₃ ≫ a⟦1⟧' := by
@@ -125,10 +119,9 @@ lemma triangleMapOfHomotopy_comm₃ :
     assoc, inl_v_fst_v, inr_f_fst_v, comp_zero, add_zero, inl_v_fst_v_assoc, inr_f_desc_f_assoc,
     HomologicalComplex.comp_f, neg_zero, inr_f_fst_v_assoc, zero_comp, and_self]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The morphism `triangleh φ₁ ⟶ triangleh φ₂` that is induced by a square that
 is commutative up to homotopy. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def trianglehMapOfHomotopy :
     triangleh φ₁ ⟶ triangleh φ₂ where
   hom₁ := (HomotopyCategory.quotient _ _).map a
@@ -149,6 +142,7 @@ variable {K₁ L₁ K₂ L₂ K₃ L₃ : CochainComplex C ℤ} (φ₁ : K₁ �
   (a : K₁ ⟶ K₂) (b : L₁ ⟶ L₂)
 
 /-- The morphism `mappingCone φ₁ ⟶ mappingCone φ₂` that is induced by a commutative square. -/
+@[implicit_reducible]
 noncomputable def map (comm : φ₁ ≫ b = a ≫ φ₂) : mappingCone φ₁ ⟶ mappingCone φ₂ :=
   desc φ₁ ((Cochain.ofHom a).comp (inl φ₂) (zero_add _)) (b ≫ inr φ₂)
     (by simp [reassoc_of% comm])
@@ -171,7 +165,6 @@ lemma map_comp (comm' : φ₂ ≫ b' = a' ≫ φ₃) :
   ext n
   simp [ext_from_iff _ (n + 1) n rfl, map]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The morphism `triangle φ₁ ⟶ triangle φ₂` that is induced by a commutative square. -/
 @[simps]
 noncomputable def triangleMap :
@@ -191,7 +184,6 @@ end map
 
 section Rotate
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given `φ : K ⟶ L`, `K⟦(1 : ℤ)⟧` is homotopy equivalent to
 the mapping cone of `inr φ : L ⟶ mappingCone φ`. -/
 noncomputable def rotateHomotopyEquiv :
@@ -220,7 +212,6 @@ noncomputable def rotateHomotopyEquiv :
         (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) n (n + 1) rfl (n + 1) (by lia),
         Cochain.comp_v _ _ (add_neg_cancel 1) n (n + 1) n rfl (by lia)]⟩
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `rotateTrianglehIso`. -/
 noncomputable def rotateHomotopyEquivComm₂Homotopy :
     Homotopy ((triangle φ).mor₃ ≫ (rotateHomotopyEquiv φ).hom)
@@ -248,7 +239,6 @@ lemma rotateHomotopyEquiv_comm₃ :
   simp [rotateHomotopyEquiv, lift_f _ _ _ _ _ (p + 1) rfl,
     (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) p (p + 1) rfl (p + 1) (by lia)]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The canonical isomorphism of triangles `(triangleh φ).rotate ≅ (triangleh (inr φ))`. -/
 noncomputable def rotateTrianglehIso :
     (triangleh φ).rotate ≅ (triangleh (inr φ)) :=
@@ -266,7 +256,6 @@ end Rotate
 
 section Shift
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The canonical isomorphism `(mappingCone φ)⟦n⟧ ≅ mappingCone (φ⟦n⟧')`. -/
 noncomputable def shiftIso (n : ℤ) : (mappingCone φ)⟦n⟧ ≅ mappingCone (φ⟦n⟧') where
   hom := lift _ (n.negOnePow • (fst φ).shift n) ((snd φ).shift n) (by
@@ -298,8 +287,6 @@ noncomputable def shiftIso (n : ℤ) : (mappingCone φ)⟦n⟧ ≅ mappingCone (
       Int.units_mul_self, one_smul, lift_f_snd_v, inl_v_snd_v, smul_zero, and_self,
       inr_f_desc_f_assoc, shiftFunctor_map_f', inr_f_fst_v, inr_f_snd_v]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The canonical isomorphism `(triangle φ)⟦n⟧ ≅ triangle (φ⟦n⟧')`. -/
 noncomputable def shiftTriangleIso (n : ℤ) :
     (Triangle.shiftFunctor _ n).obj (triangle φ) ≅ triangle (φ⟦n⟧') := by
@@ -338,7 +325,6 @@ open Preadditive
 
 variable (G : C ⥤ D) [G.Additive]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma map_δ :
     (G.mapHomologicalComplex (ComplexShape.up ℤ)).map (triangle φ).mor₃ ≫
       NatTrans.app ((Functor.mapHomologicalComplex G (ComplexShape.up ℤ)).commShiftIso 1).hom K =
@@ -355,7 +341,6 @@ lemma map_δ :
   simp [Cochain.neg_v, shiftFunctorObjXIso,
     HomologicalComplex.XIsoOfEq_rfl, Iso.refl_inv, comp_id, Functor.map_neg]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `φ : K ⟶ L` is a morphism of cochain complexes in `C` and `G : C ⥤ D` is an
 additive functor, then the image by `G` of the triangle `triangle φ` identifies to
 the triangle associated to the image of `φ` by `G`. -/
@@ -408,8 +393,6 @@ lemma isomorphic_distinguished (T₁ : Triangle (HomotopyCategory C (ComplexShap
   obtain ⟨X, Y, f, ⟨e'⟩⟩ := hT₁
   exact ⟨X, Y, f, ⟨e ≪≫ e'⟩⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 variable [HasZeroObject C] in
 lemma contractible_distinguished (X : HomotopyCategory C (ComplexShape.up ℤ)) :
     Pretriangulated.contractibleTriangle X ∈ distinguishedTriangles C := by
@@ -451,7 +434,6 @@ lemma rotate_distinguished_triangle (T : Triangle (HomotopyCategory C (ComplexSh
     exact isomorphic_distinguished _ (invRotate_distinguished_triangle' T.rotate hT) _
       ((triangleRotation _).unitIso.app T)
 
-set_option backward.defeqAttrib.useBackward true in
 open CochainComplex.mappingCone in
 lemma complete_distinguished_triangle_morphism
     (T₁ T₂ : Triangle (HomotopyCategory C (ComplexShape.up ℤ)))

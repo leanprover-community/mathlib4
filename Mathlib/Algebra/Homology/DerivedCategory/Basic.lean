@@ -84,6 +84,7 @@ def HasDerivedCategory.standard : HasDerivedCategory.{max u v} C :=
 variable [HasDerivedCategory.{w} C]
 
 /-- The derived category of an abelian category. -/
+@[local implicit_reducible]
 def DerivedCategory : Type (max u v) := HomologicalComplexUpToQuasiIso C (ComplexShape.up ℤ)
 deriving Category
 
@@ -94,7 +95,6 @@ variable {C}
 /-- The localization functor `CochainComplex C ℤ ⥤ DerivedCategory C`. -/
 def Q : CochainComplex C ℤ ⥤ DerivedCategory C := HomologicalComplexUpToQuasiIso.Q
 
-set_option backward.isDefEq.respectTransparency false in
 instance : (Q (C := C)).IsLocalization
     (HomologicalComplex.quasiIso C (ComplexShape.up ℤ)) := by
   dsimp only [Q, DerivedCategory]
@@ -128,7 +128,6 @@ lemma quotientCompQhIso_inv_naturality {K L : CochainComplex C ℤ} (f : K ⟶ L
       (quotientCompQhIso C).inv.app K ≫ Qh.map ((HomotopyCategory.quotient _ _).map f) :=
   (quotientCompQhIso C).inv.naturality f
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Qh.IsLocalization (HomotopyCategory.quasiIso C (ComplexShape.up ℤ)) := by
   dsimp [Qh, DerivedCategory]
   infer_instance
@@ -242,7 +241,6 @@ def singleFunctors : SingleFunctors C (DerivedCategory C) ℤ :=
 single cochain complex with `X` sitting in degree `n : ℤ`. -/
 abbrev singleFunctor (n : ℤ) := (singleFunctors C).functor n
 
-set_option backward.defeqAttrib.useBackward true in
 instance (n : ℤ) : (singleFunctor C n).Additive := by
   dsimp [singleFunctor, singleFunctors]
   infer_instance

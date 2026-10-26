@@ -136,7 +136,7 @@ theorem quotient_map_out_comp_out {C D E : HomotopyCategory V c} (f : C ⟶ D) (
     (quotient V c).map (Quot.out f ≫ Quot.out g) = f ≫ g := by simp
 
 /-- Homotopy equivalent complexes become isomorphic in the homotopy category. -/
-@[simps]
+@[simps, implicit_reducible]
 def isoOfHomotopyEquiv {C D : HomologicalComplex V c} (f : HomotopyEquiv C D) :
     (quotient V c).obj C ≅ (quotient V c).obj D where
   hom := (quotient V c).map f.hom

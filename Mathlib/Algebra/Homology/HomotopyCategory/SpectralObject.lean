@@ -31,7 +31,7 @@ variable (C : Type*) [Category* C] [Preadditive C]
 
 /-- The functor `ComposableArrows (CochainComplex C ℤ) 1 ⥤ CochainComplex C ℤ` which
 sends a morphism of cochain complexes to its mapping cone. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def composableArrowsFunctor :
     ComposableArrows (CochainComplex C ℤ) 1 ⥤ CochainComplex C ℤ where
   obj f := CochainComplex.mappingCone (f.map' 0 1)
@@ -39,7 +39,6 @@ noncomputable def composableArrowsFunctor :
   map_id _ := map_id _
   map_comp _ _ := map_comp _ _ _ _ _ _ _ _ _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The spectral object with values in `(HomotopyCategory C (.up ℤ)` that
 is indexed by `CochainComplex C ℤ`. -/
 @[simps]

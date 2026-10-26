@@ -68,7 +68,7 @@ attribute [reassoc (attr := simp)] ι_p₀ ι_p₁
 variable {A : C} (P : PrepathObject A)
 
 /-- The pre-path object obtained by switching the two projections. -/
-@[simps]
+@[simps, implicit_reducible]
 def symm : PrepathObject A where
   P := P.P
   p₀ := P.p₁
@@ -76,7 +76,7 @@ def symm : PrepathObject A where
   ι := P.ι
 
 /-- The gluing of two pre-path objects. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def trans (P' : PrepathObject A) [HasPullback P.p₁ P'.p₀] :
     PrepathObject A where
   P := pullback P.p₁ P'.p₀
@@ -107,7 +107,7 @@ lemma symm_p [HasBinaryProducts C] :
 
 /-- The pre-path object in a full subcategory of `C` induced by a pre-path object
 in the category `C`. -/
-@[simps]
+@[simps, implicit_reducible]
 def toFullSubcategory {P : ObjectProperty C} {X : P.FullSubcategory} (Q : PrepathObject X.obj)
     (hQ : P Q.P) :
     PrepathObject X where
@@ -117,7 +117,7 @@ def toFullSubcategory {P : ObjectProperty C} {X : P.FullSubcategory} (Q : Prepat
   ι := P.homMk Q.ι
 
 /-- The image of a pre-path object by a functor. -/
-@[simps]
+@[simps, implicit_reducible]
 def map {X : C} (P : PrepathObject X) {D : Type*} [Category* D] (F : C ⥤ D) :
     PrepathObject (F.obj X) where
   P := F.obj P.P
@@ -142,9 +142,8 @@ section
 
 variable {A : C} [CategoryWithWeakEquivalences C] (P : PathObject A)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The path object obtained by switching the two projections. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def symm : PathObject A where
   __ := P.toPrepathObject.symm
   weakEquivalence_ι := by dsimp; infer_instance
@@ -199,7 +198,6 @@ instance : IsFibrant P.P :=
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 instance [HasBinaryProducts C] [CategoryWithFibrations C] [P.IsGood]
     [(fibrations C).RespectsIso] : P.symm.IsGood where
   fibration_p := by
@@ -234,7 +232,7 @@ variable (h : MorphismProperty.MapFactorizationData
 
 /-- A path object for `A` can be obtained from a factorization of the obvious
 map `A ⟶ A ⨯ A` as a trivial cofibration followed by a fibration. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def ofFactorizationData : PathObject A where
   P := h.Z
   p₀ := h.p ≫ prod.fst
@@ -244,7 +242,6 @@ noncomputable def ofFactorizationData : PathObject A where
 @[simp]
 lemma ofFactorizationData_p : (ofFactorizationData h).p = h.p := by aesop_cat
 
-set_option backward.defeqAttrib.useBackward true in
 instance : (ofFactorizationData h).IsVeryGood where
   fibration_p := by simpa using inferInstanceAs (Fibration h.p)
   cofibration_ι := by dsimp; infer_instance
@@ -263,9 +260,8 @@ lemma exists_very_good :
 
 instance : Nonempty (PathObject A) := ⟨(exists_very_good A).choose⟩
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The gluing of two good path objects. -/
-@[simps!]
+@[simps!, implicit_reducible]
 noncomputable def trans [IsFibrant A] (P P' : PathObject A) [P'.IsGood] :
     PathObject A where
   __ := P.toPrepathObject.trans P'.toPrepathObject
@@ -277,7 +273,6 @@ noncomputable def trans [IsFibrant A] (P P' : PathObject A) [P'.IsGood] :
     dsimp
     apply weakEquivalence_of_postcomp _ (pullback.fst P.p₁ P'.p₀ ≫ P.p₀)
 
-set_option backward.isDefEq.respectTransparency false in
 instance [IsFibrant A] (P P' : PathObject A) [P.IsGood] [P'.IsGood] :
     (P.trans P').IsGood where
   fibration_p := by
@@ -299,7 +294,7 @@ instance [IsFibrant A] (P P' : PathObject A) [P.IsGood] [P'.IsGood] :
 end PathObject
 
 /-- The opposite of a pre-path object is a precylinder object. -/
-@[simps]
+@[simps, implicit_reducible]
 protected def PrepathObject.op {A : C} (P : PrepathObject A) :
     Precylinder (op A) where
   I := op P.P
@@ -310,7 +305,7 @@ protected def PrepathObject.op {A : C} (P : PrepathObject A) :
   i₁_π := Quiver.Hom.unop_inj (by simp)
 
 /-- The precylinder object obtained from a pre-path object in the opposite category. -/
-@[simps]
+@[simps, implicit_reducible]
 protected def PrepathObject.unop {A : Cᵒᵖ} (P : PrepathObject A) :
     Precylinder A.unop where
   I := P.P.unop
@@ -321,7 +316,7 @@ protected def PrepathObject.unop {A : Cᵒᵖ} (P : PrepathObject A) :
   i₁_π := Quiver.Hom.op_inj (by simp)
 
 /-- The opposite of a precylinder object is a pre-path object. -/
-@[simps]
+@[simps, implicit_reducible]
 protected def Precylinder.op {A : C} (P : Precylinder A) :
     PrepathObject (op A) where
   P := op P.I
@@ -332,7 +327,7 @@ protected def Precylinder.op {A : C} (P : Precylinder A) :
   ι_p₁ := Quiver.Hom.unop_inj (by simp)
 
 /-- The pre-path object object obtained from a cylinder in the opposite category. -/
-@[simps]
+@[simps, implicit_reducible]
 protected def Precylinder.unop {A : Cᵒᵖ} (P : Precylinder A) :
     PrepathObject A.unop where
   P := P.I.unop

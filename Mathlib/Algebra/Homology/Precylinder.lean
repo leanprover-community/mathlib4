@@ -30,7 +30,7 @@ variable {C : Type*} [Category* C] [Preadditive C]
 
 /-- The precylinder object of a homological complex that is given by
 `HomologicalComplex.cylinder`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def precylinder [K.HasCylinder] : Precylinder K where
   I := K.cylinder
   i₀ := cylinder.ι₀ _
@@ -39,7 +39,7 @@ noncomputable def precylinder [K.HasCylinder] : Precylinder K where
 
 /-- The pre-path object of a homological complex that is given by
 `HomologicalComplex.pathObject`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def prepathObject [K.HasPathObject] : PrepathObject K where
   P := K.pathObject
   p₀ := pathObject.π₀ _

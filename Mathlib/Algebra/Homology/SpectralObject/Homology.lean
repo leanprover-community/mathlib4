@@ -47,7 +47,7 @@ variable {i₀ i₁ i₂ i₃ i₄ i₅ : ι} (f₁ : i₀ ⟶ i₁) (f₂ : i�
 
 /-- The exact sequence expressing `E^n(f₁, f₂, f₃ ≫ f₄)` as the cokernel
 of the differential `E^{n-1}(f₃, f₄, f₅) ⟶ E^n(f₁, f₂, f₃)` -/
-@[simps!]
+@[simps!, implicit_reducible]
 noncomputable def dCokernelSequence
     (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) (hn₃ : n₂ + 1 = n₃ := by lia) :
     ShortComplex C :=
@@ -57,8 +57,6 @@ instance (_ : n₀ + 1 = n₁) (_ : n₁ + 1 = n₂) (_ : n₂ + 1 = n₃) :
     Epi (X.dCokernelSequence f₁ f₂ f₃ f₄ f₅ f₃₄ h₃₄ n₀ n₁ n₂ n₃ ‹_› ‹_› ‹_›).g :=
   inferInstanceAs (Epi (X.map f₁ f₂ f₃ f₁ f₂ f₃₄ (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄) ..))
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma dCokernelSequence_exact
     (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) (hn₃ : n₂ + 1 = n₃ := by lia) :
     (X.dCokernelSequence f₁ f₂ f₃ f₄ f₅ f₃₄ h₃₄ n₀ n₁ n₂ n₃).Exact := by
@@ -77,7 +75,7 @@ lemma dCokernelSequence_exact
 
 /-- The exact sequence expressing `E^n(f₂ ≫ f₃, f₄, f₅)` as the kernel
 of the differential `E^n(f₃, f₄, f₅) ⟶ E^{n+1}(f₁, f₂, f₃)` -/
-@[simps!]
+@[simps!, implicit_reducible]
 noncomputable def dKernelSequence
     (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) (hn₃ : n₂ + 1 = n₃ := by lia) :
     ShortComplex C :=
@@ -87,8 +85,6 @@ instance (_ : n₀ + 1 = n₁) (_ : n₁ + 1 = n₂) (_ : n₂ + 1 = n₃) :
     Mono (X.dKernelSequence f₁ f₂ f₃ f₄ f₅ f₂₃ h₂₃ n₀ n₁ n₂ n₃ ‹_› ‹_› ‹_›).f :=
   inferInstanceAs (Mono (X.map f₂₃ f₄ f₅ f₃ f₄ f₅ (fourδ₁Toδ₀ f₂ f₃ f₄ f₅ f₂₃) ..))
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma dKernelSequence_exact
     (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) (hn₃ : n₂ + 1 = n₃ := by lia) :
     (X.dKernelSequence f₁ f₂ f₃ f₄ f₅ f₂₃ h₂₃ n₀ n₁ n₂ n₃).Exact := by
@@ -115,7 +111,7 @@ variable {i₀ i₁ i₂ i₃ i₄ i₅ i₆ i₇ : ι} (f₁ : i₀ ⟶ i₁) (
 
 /-- The short complex `E^{n-1}(f₅, f₆, f₇) ⟶ E^{n}(f₃, f₄, f₅) ⟶ E^{n+1}(f₁, f₂, f₃)`
 given by the differentials of a spectral object. -/
-@[simps!]
+@[simps!, implicit_reducible]
 noncomputable def dShortComplex
     (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia)
     (hn₃ : n₂ + 1 = n₃ := by lia) (hn₄ : n₃ + 1 = n₄ := by lia) :
@@ -132,7 +128,6 @@ lemma map_fourδ₁Toδ₀_EMap_fourδ₄Toδ₃
   simp only [← map_comp]
   cat_disch
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The homology data of the short complex
 `E^{n-1}(f₅, f₆, f₇) ⟶ E^{n}(f₃, f₄, f₅) ⟶ E^{n+1}(f₁, f₂, f₃)` for which
 * the cycles are `E^n(f₂ ≫ f₃, f₄, f₅)`;

@@ -76,7 +76,7 @@ variable {c c'}
 variable (e : Embedding c c')
 
 /-- The opposite embedding in `Embedding c.symm c'.symm` of `e : Embedding c c'`. -/
-@[simps]
+@[simps, implicit_reducible]
 def op : Embedding c.symm c'.symm where
   f := e.f
   injective_f := e.injective_f
