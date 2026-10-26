@@ -920,7 +920,7 @@ theorem norm_rat_le_one : ∀ {q : ℚ} (_ : ¬p ∣ q.den), ‖(q : ℚ_[p])‖
       rw [eq_padicNorm]
       norm_cast
       -- Porting note: `Nat.cast_zero` instead of another `norm_cast` call
-      rw [padicNorm.eq_zpow_of_nonzero hnz', padicValRat, neg_sub,
+      rw [padicNorm.eq_zpow_of_ne_zero hnz', padicValRat, neg_sub,
         Nat.multiplicity_eq_zero_of_not_dvd hq, Nat.cast_zero, zero_sub, zpow_neg, zpow_natCast]
       apply inv_le_one_of_one_le₀
       norm_cast
