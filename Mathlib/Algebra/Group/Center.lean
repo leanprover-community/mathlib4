@@ -380,18 +380,15 @@ lemma eq_iff [Mul M] (x y : Center M) : x = y ↔ x.val = y.val := Subtype.ext_i
 instance [Mul M] : CoeOut (Center M) M := ⟨Subtype.val⟩
 
 @[to_additive]
-instance [Mul M] : Mul (Center M) where
+instance [Mul M] : CommMagma (Center M) where
   mul x y := mk (x.val * y.val) (Set.mul_mem_center x.prop y.prop)
+  mul_comm x y := Subtype.ext (x.prop.comm y.val)
 
 @[to_additive]
 lemma comm [Mul M] (x : M) (z : Center M) : z.val * x = x * z := z.prop.comm x
 
 @[to_additive (attr := simp)]
 lemma coe_mul [Mul M] (x y : Center M) : (x * y).val = x.val * y.val := rfl
-
-@[to_additive]
-instance [Mul M] : CommMagma (Center M) where
-  mul_comm _ _ := by rw [eq_iff, coe_mul, coe_mul, comm]
 
 @[to_additive]
 lemma mul_assoc' [Mul M] (x y z : Center M) : x * y * z = x * (y * z) :=
