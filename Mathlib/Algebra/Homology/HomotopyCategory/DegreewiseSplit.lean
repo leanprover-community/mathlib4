@@ -37,7 +37,6 @@ open HomologicalComplex HomComplex
 variable (S : ShortComplex (CochainComplex C ℤ))
   (σ : ∀ n, (S.map (eval C _ n)).Splitting)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The `1`-cocycle attached to a degreewise split short exact sequence of cochain complexes. -/
 def cocycleOfDegreewiseSplit : Cocycle S.X₃ S.X₁ 1 :=
   Cocycle.mk
@@ -62,7 +61,6 @@ short exact sequence of cochain complexes. -/
 def homOfDegreewiseSplit : S.X₃ ⟶ S.X₁⟦(1 : ℤ)⟧ :=
   ((Cocycle.equivHom _ _).symm ((cocycleOfDegreewiseSplit S σ).rightShift 1 0 (zero_add 1)))
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma homOfDegreewiseSplit_f (n : ℤ) :
     (homOfDegreewiseSplit S σ).f n =
@@ -83,7 +81,6 @@ noncomputable abbrev trianglehOfDegreewiseSplit :
 
 variable [HasBinaryBiproducts C]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The canonical isomorphism `(mappingCone (homOfDegreewiseSplit S σ)).X p ≅ S.X₂.X q`
 when `p + 1 = q`. -/
 noncomputable def mappingConeHomOfDegreewiseSplitXIso (p q : ℤ) (hpq : p + 1 = q) :
@@ -119,7 +116,6 @@ noncomputable def mappingConeHomOfDegreewiseSplitXIso (p q : ℤ) (hpq : p + 1 =
       mappingCone.inl_v_snd_v_assoc, mappingCone.inr_f_snd_v_assoc, zero_sub, sub_neg_eq_add, ← h]
     abel
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The canonical isomorphism `mappingCone (homOfDegreewiseSplit S σ) ≅ S.X₂⟦(1 : ℤ)⟧`. -/
 @[simps!]
 noncomputable def mappingConeHomOfDegreewiseSplitIso :

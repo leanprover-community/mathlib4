@@ -878,7 +878,6 @@ lemma cyclesIsoSc'_hom_iCycles :
     natIsoSc'_hom_app_τ₂, comp_id]
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma cyclesIsoSc'_inv_iCycles :

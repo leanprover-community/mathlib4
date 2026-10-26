@@ -19,7 +19,6 @@ namespace CategoryTheory.GrothendieckTopology
 
 variable {C : Type*} [Category* C]
 
-set_option backward.defeqAttrib.useBackward true in
 instance subcanonical_over (J : GrothendieckTopology C) [J.Subcanonical] (X : C) :
     (J.over X).Subcanonical := by
   refine .of_isSheaf_yoneda_obj _ fun E Z R hR t ht ↦ ?_
