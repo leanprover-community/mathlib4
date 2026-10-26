@@ -350,7 +350,7 @@ theorem linfty_opNNNorm_sum_le_card_mul_of_forall_le [IsUltrametricDist α]
     (M : β → Matrix m n α) (s : Finset β) (B : ℝ≥0) (hM : ∀ i ∈ s, ‖M i‖₊ ≤ B) :
     ‖∑ k ∈ s, M k‖₊ ≤ Fintype.card n * B := by
   have h i j : ‖(∑ k ∈ s, M k) i j‖₊ ≤ B := by
-    grw [sum_apply, s.nnnorm_sum_le_sup_nnnorm, nnnorm_apply_le_linfty_opNNNorm,
+    grw [Matrix.sum_apply, s.nnnorm_sum_le_sup_nnnorm, nnnorm_apply_le_linfty_opNNNorm,
       hM _ (by simpa), s.sup_const_le]
   grw [linfty_opNNNorm_def, h]
   simp
