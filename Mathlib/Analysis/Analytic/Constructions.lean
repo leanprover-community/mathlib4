@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Analysis.Analytic.Composition
 public import Mathlib.Analysis.Analytic.Linear
-import Mathlib.Analysis.Normed.Operator.Mul
-public import Mathlib.Analysis.Normed.Ring.Units
 public import Mathlib.Analysis.Analytic.OfScalars
+public import Mathlib.Analysis.Normed.Ring.Units
+
+import Mathlib.Analysis.Normed.Operator.Mul
 
 /-!
 # Various ways to combine analytic functions

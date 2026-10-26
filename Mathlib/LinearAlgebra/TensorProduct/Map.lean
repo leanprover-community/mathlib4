@@ -5,8 +5,8 @@ Authors: Kenny Lau, Mario Carneiro
 -/
 module
 
-public import Mathlib.LinearAlgebra.TensorProduct.Basic
 public import Mathlib.Algebra.Module.Shrink
+public import Mathlib.LinearAlgebra.TensorProduct.Basic
 
 /-!
 # Tensor products and linear maps

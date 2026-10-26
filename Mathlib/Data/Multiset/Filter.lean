@@ -329,9 +329,9 @@ theorem count_map_eq_count [DecidableEq β] (f : α → β) (s : Multiset α)
   suffices (filter (fun a : α => f x = f a) s).count x = card (filter (fun a : α => f x = f a) s) by
     rw [count, countP_map, ← this]
     exact count_filter_of_pos rfl
-  · rw [eq_replicate_card.2 fun b hb => (hf H (mem_filter.1 hb).left _).symm]
-    · simp
-    · simp only [mem_filter, and_imp, @eq_comm _ (f x), imp_self, implies_true]
+  rw [eq_replicate_card.2 fun b hb => (hf H (mem_filter.1 hb).left _).symm]
+  · simp
+  · simp only [mem_filter, and_imp, @eq_comm _ (f x), imp_self, implies_true]
 
 /-- `Multiset.map f` preserves `count` if `f` is injective -/
 theorem count_map_eq_count' [DecidableEq β] (f : α → β) (s : Multiset α) (hf : Function.Injective f)

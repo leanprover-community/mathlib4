@@ -5,10 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Set.Notation
-public import Mathlib.Order.SetNotation
-public import Mathlib.Logic.Embedding.Basic
 public import Mathlib.Data.Set.Image
+public import Mathlib.Data.Set.Notation
+public import Mathlib.Logic.Embedding.Basic
+public import Mathlib.Order.SetNotation
 
 /-!
 # Interactions between embeddings and sets.

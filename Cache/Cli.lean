@@ -30,7 +30,7 @@ def knownFlagOpts : List String := ["help", "unsafe"]
 
 /-- Parses an optional `--foo=bar` option. Returns the value for the
 last-mentioned occurrence (so a later `--foo=` overrides an earlier one). -/
-def parseNamedOpt (opt : String) (args : List String) : IO (Option String) := do
+def parseNamedOpt (opt : String) (args : List String) : BaseIO (Option String) := do
   let pref := s!"--{opt}="
   if let some a := args.findRev? (fun a => a.startsWith pref) then
     let val := a.drop pref.length
