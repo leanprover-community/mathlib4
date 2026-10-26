@@ -169,7 +169,7 @@ private lemma motzkin_ne_sos_aux₂ {ι : Type*} {s : Finset ι}
     replace h1 := congr($h1 |>.natDegree)
     rw [Polynomial.natDegree_one] at h1
     have h2 : ∀ i ∈ s, (yZero (g i)).natDegree = 0 := by
-      rw [Polynomial.natDegree_sum_pow_eq_of_even _ even_two, eq_comm] at h1
+      rw [Polynomial.natDegree_sum_pow_eq_of_even _ _ even_two, eq_comm] at h1
       simpa using h1
     -- This contradicts the assumption on gₖ.
     specialize h2 k hk
@@ -184,7 +184,7 @@ private lemma motzkin_ne_sos_aux₂ {ι : Type*} {s : Finset ι}
     replace h1 := congr($h1 |>.natDegree)
     rw [Polynomial.natDegree_one] at h1
     have h2 : ∀ i ∈ s, (xZero (g i)).natDegree = 0 := by
-      rw [Polynomial.natDegree_sum_pow_eq_of_even _ even_two, eq_comm] at h1
+      rw [Polynomial.natDegree_sum_pow_eq_of_even _ _ even_two, eq_comm] at h1
       simpa using h1
     specialize h2 k hk
     order [Polynomial.le_natDegree_of_mem_supp _ (mem_support_xZero hm hm0),
