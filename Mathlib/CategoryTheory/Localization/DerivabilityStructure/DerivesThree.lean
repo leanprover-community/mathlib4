@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.DerivesTwo
 public import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedThree
+public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.DerivesTwo
 
 /-!
 # Deriving trifunctors using a derivability structure

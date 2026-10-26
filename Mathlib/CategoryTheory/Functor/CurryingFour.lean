@@ -28,7 +28,7 @@ variable {C₁ C₂ C₃ C₄ D₁ D₂ D₃ D₄ E : Type*}
 
 /-- The equivalence of categories `(C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E) ≌ C₁ × C₂ × C₃ × C₄ ⥤ E`
 given by the curryfication of functors in four variables. -/
-@[implicit_reducible]
+@[implicit_reducible, simps!]
 def currying₄ : (C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E) ≌ C₁ × C₂ × C₃ × C₄ ⥤ E :=
   currying.trans (currying.trans (currying.trans
     (((prod.associativity (C₁ × C₂) C₃ C₄).trans
@@ -39,8 +39,8 @@ abbrev uncurry₄ : (C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E) ⥤ C₁ × C₂ × 
   currying₄.functor
 
 /-- Currying a functor in four variables. -/
-@[simps! obj_map_app_app_app obj_obj_map_app_app obj_obj_obj_map_app obj_obj_obj_obj_map
-  map_app_app_app_app]
+--@[simps! obj_map_app_app_app obj_obj_map_app_app obj_obj_obj_map_app obj_obj_obj_obj_map
+--  map_app_app_app_app]
 abbrev curry₄ : (C₁ × C₂ × C₃ × C₄ ⥤ E) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E :=
   currying₄.inverse
 
@@ -71,20 +71,6 @@ instance : (curry₄ : (C₁ × C₂ × C₃ × C₄ ⥤ E) ⥤
 instance : (curry₄ : (C₁ × C₂ × C₃ × C₄ ⥤ E) ⥤
     C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E).Faithful :=
   fullyFaithfulCurry₄.faithful
-
-@[simp]
-lemma currying₄_unitIso_hom_app_app_app_app_app (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E)
-    (X₁ : C₁) (X₂ : C₂) (X₃ : C₃) (X₄ : C₄) :
-    ((((currying₄.unitIso.hom.app F).app X₁).app X₂).app X₃).app X₄ = 𝟙 _ := by
-  dsimp [currying₄]
-  simp [Equivalence.unit]
-
-@[simp]
-lemma currying₄_unitIso_inv_app_app_app_app_app (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E)
-    (X₁ : C₁) (X₂ : C₂) (X₃ : C₃) (X₄ : C₄) :
-    ((((currying₄.unitIso.inv.app F).app X₁).app X₂).app X₃).app X₄ = 𝟙 _ := by
-  dsimp [currying₄]
-  simp [Equivalence.unitInv]
 
 /-- Given functors `F₁ : C₁ ⥤ D₁`, `F₂ : C₂ ⥤ D₂`, `F₃ : C₃ ⥤ D₃`,
 `F₄ : C₄ ⥤ D₄` and `G : D₁ × D₂ × D₃ × D₄ ⥤ E`, this is the isomorphism between

@@ -5,8 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.DerivesThree
+public import Mathlib.CategoryTheory.Functor.CurryingFour
 public import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedFour
+public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.DerivesThree
 
 /-!
 # Deriving quadrifunctors using a derivability structure
@@ -35,7 +36,7 @@ variable (Φ₁ : LocalizerMorphism W₁₀ W₁) (Φ₂ : LocalizerMorphism W�
   (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ H)
 
 abbrev Derives₄ : Prop :=
-  (Φ₁.prod (Φ₂.prod (Φ₃.prod Φ₄))).Derives (uncurry₄.obj F)
+  (Φ₁.prod (Φ₂.prod (Φ₃.prod Φ₄))).Derives (Functor.uncurry₄.obj F)
 
 variable [W₁₀.ContainsIdentities] [W₂₀.ContainsIdentities] [W₃₀.ContainsIdentities]
   [W₄₀.ContainsIdentities]
@@ -57,7 +58,7 @@ lemma isIso_of_isLeftDerivabilityStructure
     {L₁ : C₁ ⥤ D₁} {L₂ : C₂ ⥤ D₂} {L₃ : C₃ ⥤ D₃} {L₄ : C₄ ⥤ D₄} [L₁.IsLocalization W₁]
     [L₂.IsLocalization W₂] [L₃.IsLocalization W₃] [L₄.IsLocalization W₄]
     {LF : D₁ ⥤ D₂ ⥤ D₃ ⥤ D₄ ⥤ H}
-    (α : (((((whiskeringLeft₄ H).obj L₁).obj L₂).obj L₃).obj L₄).obj LF ⟶ F)
+    (α : (((((Functor.whiskeringLeft₄ H).obj L₁).obj L₂).obj L₃).obj L₄).obj LF ⟶ F)
     (X₁ : C₁₀) (X₂ : C₂₀) (X₃ : C₃₀) (X₄ : C₄₀) [LF.IsLeftDerivedFunctor₄ α W₁ W₂ W₃ W₄] :
     IsIso ((((α.app (Φ₁.functor.obj X₁)).app (Φ₂.functor.obj X₂)).app
       (Φ₃.functor.obj X₃)).app (Φ₄.functor.obj X₄)) :=
@@ -73,7 +74,7 @@ lemma isLeftDerivedFunctor₄_of_isLeftDerivabilityStructure
     {L₁ : C₁ ⥤ D₁} {L₂ : C₂ ⥤ D₂} {L₃ : C₃ ⥤ D₃} {L₄ : C₄ ⥤ D₄} [L₁.IsLocalization W₁]
     [L₂.IsLocalization W₂] [L₃.IsLocalization W₃] [L₄.IsLocalization W₄]
     {LF : D₁ ⥤ D₂ ⥤ D₃ ⥤ D₄ ⥤ H}
-    (α : (((((whiskeringLeft₄ H).obj L₁).obj L₂).obj L₃).obj L₄).obj LF ⟶ F)
+    (α : (((((Functor.whiskeringLeft₄ H).obj L₁).obj L₂).obj L₃).obj L₄).obj LF ⟶ F)
     (hα : ∀ (X₁₀ : C₁₀) (X₂₀ : C₂₀) (X₃₀ : C₃₀) (X₄₀ : C₄₀),
       IsIso ((((α.app (Φ₁.functor.obj X₁₀)).app (Φ₂.functor.obj X₂₀)).app
         (Φ₃.functor.obj X₃₀)).app (Φ₄.functor.obj X₄₀))) :

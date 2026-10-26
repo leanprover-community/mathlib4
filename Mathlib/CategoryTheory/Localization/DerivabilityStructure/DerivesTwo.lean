@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedTwo
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Derives
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Product
-public import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedTwo
 
 /-!
 # Deriving bifunctors using a derivability structure
