@@ -146,6 +146,32 @@ theorem reflection_mem_subspace_orthogonal_precomplement_eq_neg {v : E}
     (hv : v ∈ K) : Kᗮ.reflection v = -v :=
   reflection_mem_subspace_orthogonalComplement_eq_neg (K.le_orthogonal_orthogonal hv)
 
+variable (K) in
+/-- The reflection in `K` preserves `K`. -/
+theorem reflection_mem_compatibleMaps : K.reflection.toLinearMap ∈ K.compatibleMaps K :=
+  (mem_compatibleMaps _ _).mp fun _ hx ↦ by simpa [reflection_mem_subspace_eq_self hx] using hx
+
+variable (K) in
+/-- The reflection in `K` preserves `Kᗮ`. -/
+theorem reflection_mem_compatibleMaps_orthogonalComplement :
+    K.reflection.toLinearMap ∈ Kᗮ.compatibleMaps Kᗮ :=
+  (mem_compatibleMaps _ _).mp fun _ hx ↦ by
+    simpa [reflection_mem_subspace_orthogonalComplement_eq_neg hx] using hx
+
+variable (K) in
+/-- The restriction of the reflection in `K` to `K` is the identity. -/
+theorem restrict_reflection_eq_one :
+    K.reflection.toLinearMap.restrict (reflection_mem_compatibleMaps K) = 1 :=
+  LinearMap.ext fun x ↦ Subtype.ext (reflection_mem_subspace_eq_self x.2)
+
+variable (K) in
+/-- The restriction of the reflection in `K` to `Kᗮ` is minus the identity. -/
+theorem restrict_reflection_orthogonalComplement_eq_neg_one :
+    K.reflection.toLinearMap.restrict (p := Kᗮ) (q := Kᗮ)
+      (reflection_mem_compatibleMaps_orthogonalComplement K) = -1 :=
+  LinearMap.ext fun x ↦
+    Subtype.ext (reflection_mem_subspace_orthogonalComplement_eq_neg x.2)
+
 /-- The reflection in `(𝕜 ∙ v)ᗮ` of `v` is `-v`. -/
 theorem reflection_orthogonalComplement_singleton_eq_neg (v : E) : reflection (𝕜 ∙ v)ᗮ v = -v :=
   reflection_mem_subspace_orthogonal_precomplement_eq_neg (Submodule.mem_span_singleton_self v)
