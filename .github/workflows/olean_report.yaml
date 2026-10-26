@@ -2,11 +2,12 @@
 # On-demand olean diff for a PR, triggered by commenting `!olean_report`.
 # Compares oleans of the PR head against the merge base.
 #
-# This workflow runs with minimal permissions (contents: read only) so it is
-# safe to run code from fork PRs. The actual PR comment is posted by the
+# This workflow runs with minimal permissions (contents: read only), and runs no
+# PR code: the `report` job reads the PR's files and oleans as data, but runs
+# neither Lake nor Lean in the PR checkout. The actual PR comment is posted by the
 # companion workflow olean_report_wf_run.yaml via the privilege-escalation
-# bridge. PR code runs only in the `report` job; the bridge artifact is emitted
-# from the separate `emit` job, which never runs PR code.
+# bridge. The bridge artifact is emitted from the separate `emit` job, which
+# never touches the PR checkout.
 name: olean report
 
 on:
@@ -175,17 +176,69 @@ jobs:
           cd tools-branch
           lake build cache
           echo "CACHE_BIN=$(pwd)/.lake/build/bin/cache" >> "$GITHUB_ENV"
+          # The `cache` steps below put this toolchain's `bin/` first on PATH, so the `lean`
+          # and `leantar` that `cache` runs are master's, not what a checkout's
+          # `lean-toolchain` names.
+          echo "TRUSTED_LEAN_PREFIX=$(lean --print-prefix)" >> "$GITHUB_ENV"
+
+      # `lake env` would elaborate the checkout's `lakefile.lean` and its dependencies'
+      # lakefiles, which for the PR head is PR code. So this job runs no Lake in either
+      # checkout. It fetches the dependency sources that `cache` hashes from the manifest
+      # with plain git, and points `cache` at them with `LEAN_SRC_PATH`, as the
+      # self-hosted build does.
+      - name: Fetch dependency sources
+        if: steps.toolchain_check.outputs.match == 'true'
+        continue-on-error: true
+        run: |
+          # Fetches the dependencies of the checkout in `$1`, and sets `$2` in GITHUB_ENV to
+          # its LEAN_SRC_PATH.
+          fetch_deps() {
+            local dir="$1" var="$2" entries name type url rev subdir pkg
+            local src_path=".:${TRUSTED_LEAN_PREFIX}/src/lean/lake"
+            # `cache` writes under `.lake/`, so it must be a directory this job creates.
+            if [ -n "$(git -C "${dir}" ls-files -- .lake)" ]; then
+              echo "::error::${dir} has files under .lake/, which must not be committed."
+              return 1
+            fi
+            entries=$(jq -r '.packages[] | [.name, .type, .url, .rev, (.subDir // "")] | @tsv' \
+              "${dir}/lake-manifest.json")
+            if [ -z "${entries}" ]; then
+              echo "::error::${dir}/lake-manifest.json lists no packages."
+              return 1
+            fi
+            while IFS=$'\t' read -r name type url rev subdir; do
+              if ! [[ "${name}" =~ ^[A-Za-z0-9_-]+$ && "${type}" == git &&
+                      "${url}" =~ ^https://github\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ &&
+                      "${rev}" =~ ^[0-9a-f]{40}$ && -z "${subdir}" ]]; then
+                echo "::error::${dir}/lake-manifest.json has a package entry this job doesn't support: ${name} ${type} ${url} ${rev} ${subdir}"
+                return 1
+              fi
+              pkg="${dir}/.lake/packages/${name}"
+              git init -q "${pkg}"
+              # Check out any symlinks in a dependency as plain files, so that none of the
+              # paths `cache` writes to can lead out of `.lake/`.
+              git -C "${pkg}" config core.symlinks false
+              git -C "${pkg}" fetch -q --depth=1 --no-tags "${url}" "${rev}"
+              git -C "${pkg}" checkout -q FETCH_HEAD
+              src_path+=":.lake/packages/${name}"
+            done <<< "${entries}"
+            echo "${var}=${src_path}" >> "${GITHUB_ENV}"
+          }
+          fetch_deps pr-branch PR_LEAN_SRC_PATH
+          fetch_deps base BASE_LEAN_SRC_PATH
 
       - name: Fetch PR head oleans
         id: pr_oleans
         if: steps.toolchain_check.outputs.match == 'true'
         continue-on-error: true
         run: |
+          export PATH="${TRUSTED_LEAN_PREFIX}/bin:${PATH}"
+          export LEAN_SRC_PATH="${PR_LEAN_SRC_PATH:?the dependency sources were not fetched}"
           cd pr-branch
-          lake env "$CACHE_BIN" get
+          "$CACHE_BIN" get
           # Run again with --repo in case this is a fork PR: fork PRs upload
           # their oleans to the `forks` container, not the upstream one.
-          lake env "$CACHE_BIN" --repo="${{ steps.pr_info.outputs.head_repo }}" get
+          "$CACHE_BIN" --repo="${{ steps.pr_info.outputs.head_repo }}" get
 
       - name: Check PR head oleans
         id: pr_oleans_check
@@ -205,8 +258,10 @@ jobs:
         if: steps.pr_oleans_check.outputs.available == 'true'
         continue-on-error: true
         run: |
+          export PATH="${TRUSTED_LEAN_PREFIX}/bin:${PATH}"
+          export LEAN_SRC_PATH="${BASE_LEAN_SRC_PATH:?the dependency sources were not fetched}"
           cd base
-          lake env "$CACHE_BIN" get
+          "$CACHE_BIN" get
 
       - name: Generate olean report
         env:
@@ -288,13 +343,13 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
-  # The `report` job runs PR code (`lake env`), which can tamper with the rest of
-  # that job, so the bridge artifact is emitted here, on a runner that never runs
-  # PR code. Its metadata (PR number, comment ID) therefore comes from the real
-  # event; only the comment body comes from `report`.
+  # The `report` job handles untrusted PR content, so the bridge artifact is
+  # emitted here, on a runner that never touches it. Its metadata (PR number,
+  # comment ID) therefore comes from the real event; only the comment body comes
+  # from `report`.
   # `report` shares this run's artifacts, so as the bridge README requires
   # (https://github.com/leanprover-community/privilege-escalation-bridge#which-artifact-is-used):
-  # - this job must need every job that runs PR code, and no PR code may run after it;
+  # - this job must need every job that handles PR content, and none may run after it;
   # - its condition must not depend on outputs of `report`.
   # Then if `report` uploads its own `workflow-data`, our upload fails and so does the run.
   emit:
