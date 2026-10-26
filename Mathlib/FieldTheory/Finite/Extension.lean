@@ -211,13 +211,10 @@ theorem irreducible_iff_dvd_X_pow_card_pow_sub_X_and_isCoprime {f : k[X]} (hd : 
     exact fun h ↦ hmne (dvd_antisymm hm (hi.natDegree_dvd_iff_dvd_X_pow_card_pow_sub_X.2 h))
   · rintro ⟨hfdvd, h⟩
     obtain ⟨a, hai, advd⟩ := exists_irreducible_of_natDegree_pos hd
-    have hadvd : a.natDegree ∣ f.natDegree :=
-      hai.natDegree_dvd_iff_dvd_X_pow_card_pow_sub_X.2 (advd.trans hfdvd)
-    have heqd : a.natDegree = f.natDegree := by
-      by_contra hne
-      exact hai.not_isUnit ((h a.natDegree hadvd hne).isUnit_of_dvd' advd
-        (hai.natDegree_dvd_iff_dvd_X_pow_card_pow_sub_X.1 dvd_rfl))
-    exact (associated_of_dvd_of_natDegree_le advd (ne_zero_of_natDegree_gt hd)
-      heqd.ge).irreducible hai
+    refine (associated_of_dvd_of_natDegree_le advd (ne_zero_of_natDegree_gt hd) ?_).irreducible hai
+    by_contra! hlt
+    refine hai.not_isUnit ((h _ ?_ hlt.ne).isUnit_of_dvd' advd ?_)
+    · exact hai.natDegree_dvd_iff_dvd_X_pow_card_pow_sub_X.mpr (advd.trans hfdvd)
+    · exact hai.natDegree_dvd_iff_dvd_X_pow_card_pow_sub_X.mp dvd_rfl
 
 end Polynomial
