@@ -286,7 +286,7 @@ instance : NonAssocCommSemiring (Center R) where
   natCast_succ n := Subtype.ext (Nat.cast_succ n)
 
 @[simp]
-lemma _root_.Center._coe_natCast (n : ℕ) : (n : Center R).val = (n : R) := rfl
+lemma _root_.Center.coe_natCast (n : ℕ) : (n : Center R).val = (n : R) := rfl
 
 /-- A surjective morphism between (not necessarily associative) semirings induces a semiring
 homomorhpism between their centers. -/
