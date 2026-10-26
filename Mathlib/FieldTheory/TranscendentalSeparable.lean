@@ -235,7 +235,6 @@ lemma isReduced_tensorProduct_of_isTranscendentalBasis_of_isDomain
     [sep : Algebra.IsSeparable (IntermediateField.adjoin k (Set.range f)) K]
     [Algebra.EssFiniteType (IntermediateField.adjoin k (Set.range f)) K] [IsDomain S] :
     IsReduced (TensorProduct k K S) := by
-  classical
   set K' := IntermediateField.adjoin k (Set.range f)
   have : Algebra.IsAlgebraic K' K := isT.isAlgebraic_field
   have : FiniteDimensional K' K := Algebra.finite_of_essFiniteType_of_isAlgebraic
@@ -287,14 +286,12 @@ lemma isReduced_tensorProduct_of_isTranscendentalBasis_of_isReduced
     [sep : Algebra.IsSeparable (IntermediateField.adjoin k (Set.range f)) K]
     [Algebra.EssFiniteType (IntermediateField.adjoin k (Set.range f)) K] [IsReduced S] :
     IsReduced (TensorProduct k K S) := by
-  classical
   have : IsNoetherianRing S := Algebra.FiniteType.isNoetherianRing k S
   have h (x : k) (y : S) : (MinimalPrimes.piLocalizationMap S) (x • y) =
     x • (MinimalPrimes.piLocalizationMap S) y := by
-    rw [Algebra.smul_def, map_mul]
     ext p
-    rw [Pi.mul_apply, Pi.smul_apply, Algebra.smul_def, IsScalarTower.algebraMap_apply k S]
-    rfl
+    simp [Algebra.smul_def, map_mul, MinimalPrimes.piLocalizationMap,
+      ← IsScalarTower.algebraMap_apply k S]
   let g := AlgHom.mk' (MinimalPrimes.piLocalizationMap S) h
   have inj : Function.Injective (Algebra.TensorProduct.lTensor K g) :=
     Module.Flat.lTensor_preserves_injective_linearMap _
@@ -314,7 +311,6 @@ lemma isReduced_tensorProduct_of_isTranscendentalBasis_of_isReduced
 lemma isReduced_tensorProduct_of_isSeparablyGenerated_of_essFiniteType_of_isReduced
     [Algebra.IsSeparablyGenerated k K] [Algebra.EssFiniteType k K]
     [Algebra.FiniteType k S] [IsReduced S] : IsReduced (TensorProduct k K S) := by
-  classical
   obtain ⟨s, isT, sep⟩ : Algebra.IsSeparablyGenerated k K := ‹_›
   have : Algebra.IsSeparable ((IntermediateField.adjoin k (Set.range ((↑) : s → K)))) K := by
     convert sep
@@ -365,7 +361,7 @@ lemma isReduced_tensorProduct_of_isSeparablyGenerated_of_isReduced
           (IntermediateField.equivOfEq eq)
         apply Algebra.IsSeparable.of_equiv_equiv e.toRingEquiv.symm (RingEquiv.refl M')
         ext m
-        have : (e.symm m).1.1 = (e (e.symm m)).1 := by simp [- AlgEquiv.apply_symm_apply, e]
+        have : (e.symm m).1.1 = (e (e.symm m)).1 := by simp [-AlgEquiv.apply_symm_apply, e]
         simpa only [e.apply_symm_apply] using! this
       have : Algebra.EssFiniteType (IntermediateField.adjoin k (Set.range f')) M' := by
         rw [← IntermediateField.fg_top_iff]
@@ -414,10 +410,9 @@ lemma linearIndepOn_pow_of_isReduced_tensorProduct (hp : Nat.Prime p)
     simp only [Finsupp.sum, map_sum, frobenius_def, Algebra.TensorProduct.tmul_pow, rooty_app]
     simp only [Finsupp.linearCombination, Finsupp.coe_lsum, Finsupp.sum, LinearMap.coe_smulRight,
       LinearMap.id_coe, id_eq, ← rooty_supp] at hy
-    apply Eq.trans _ ((Algebra.TensorProduct.includeRight.congr_arg hy).trans (map_zero _))
+    rw [← (Algebra.TensorProduct.includeRight.congr_arg hy).trans (map_zero _)]
     simp only [map_sum, map_smul, Algebra.TensorProduct.includeRight_apply]
     congr
-    ext x
     simp [Algebra.algebraMap_eq_smul_one, ← TensorProduct.smul_tmul']
   have : (Finsupp.linearCombination (AdjoinPthRoots k)
     fun (x : s) ↦ (1 : AdjoinPthRoots k) ⊗ₜ[k] x.1) rooty = 0 := by
@@ -483,16 +478,12 @@ lemma Algebra.isSeparablyGenerated_of_charZero [CharZero k] : Algebra.IsSeparabl
     <;> simp
   exact Algebra.IsSeparable.of_integral _ K
 
-lemma Algebra.isTranscendentalSeparable_of_charZero [CharZero k] :
-    Algebra.IsTranscendentalSeparable k K :=
-  ⟨fun L _ ↦ isSeparablyGenerated_of_charZero k L⟩
-
 /-- Separably generated field extension is transcendental separable. -/
 @[stacks 030X]
 lemma Algebra.isTranscendentalSeparable_of_isSeparablyGenerated [Algebra.IsSeparablyGenerated k K] :
     Algebra.IsTranscendentalSeparable k K := by
   rcases CharP.exists' k with char0|⟨p, prime, charp⟩
-  · exact Algebra.isTranscendentalSeparable_of_charZero k K
+  · infer_instance
   · apply ((Algebra.isTranscendentalSeparable_tfae k K p prime.out).out 1 3).mpr
     have := isReduced_tensorProduct_of_isSeparablyGenerated_of_isReduced k K (AdjoinPthRoots k)
     exact isReduced_of_injective _ (Algebra.TensorProduct.comm k _ _).injective
