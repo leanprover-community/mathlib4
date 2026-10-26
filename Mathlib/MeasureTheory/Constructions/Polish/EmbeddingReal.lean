@@ -9,9 +9,6 @@ public import Mathlib.MeasureTheory.Constructions.Polish.Basic
 
 import Mathlib.Analysis.Real.Cardinality
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # A Polish Borel space is measurably equivalent to a set of reals
 -/
@@ -29,13 +26,18 @@ theorem exists_nat_measurableEquiv_range_coe_fin_of_finite [Finite α] :
   refine ⟨n, ⟨PolishSpace.Equiv.measurableEquiv (n_equiv.trans ?_)⟩⟩
   exact Equiv.ofInjective _ (Nat.cast_injective.comp Fin.val_injective)
 
-theorem measurableEquiv_range_coe_nat_of_infinite_of_countable [Infinite α] [Countable α] :
+theorem measurableEquiv_range_natCast_of_infinite_of_countable [Infinite α] [Countable α] :
     Nonempty (α ≃ᵐ range ((↑) : ℕ → ℝ)) := by
   have : PolishSpace (range ((↑) : ℕ → ℝ)) :=
     Nat.isClosedEmbedding_coe_real.isClosedMap.isClosed_range.polishSpace
   refine ⟨PolishSpace.Equiv.measurableEquiv ?_⟩
   refine (nonempty_equiv_of_countable.some : α ≃ ℕ).trans ?_
   exact Equiv.ofInjective ((↑) : ℕ → ℝ) Nat.cast_injective
+
+@[deprecated (since :=
+  "2026-10-13")]
+alias measurableEquiv_range_coe_nat_of_infinite_of_countable :=
+  measurableEquiv_range_natCast_of_infinite_of_countable
 
 /-- Any standard Borel space is measurably equivalent to a subset of the reals. -/
 theorem exists_subset_real_measurableEquiv : ∃ s : Set ℝ, MeasurableSet s ∧ Nonempty (α ≃ᵐ s) := by
@@ -44,7 +46,7 @@ theorem exists_subset_real_measurableEquiv : ∃ s : Set ℝ, MeasurableSet s �
     · obtain ⟨n, h_nonempty_equiv⟩ := exists_nat_measurableEquiv_range_coe_fin_of_finite α
       refine ⟨_, ?_, h_nonempty_equiv⟩
       exact (Set.finite_range ((↑) : Fin n → ℝ)).measurableSet
-    · refine ⟨_, ?_, measurableEquiv_range_coe_nat_of_infinite_of_countable α⟩
+    · refine ⟨_, ?_, measurableEquiv_range_natCast_of_infinite_of_countable α⟩
       exact Nat.isClosedEmbedding_coe_real.isClosed_range.measurableSet
   · refine
       ⟨univ, MeasurableSet.univ,

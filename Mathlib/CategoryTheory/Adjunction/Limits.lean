@@ -58,7 +58,6 @@ def functorialityRightAdjoint : Cocone (K ⋙ F) ⥤ Cocone K :=
 
 attribute [local simp] functorialityRightAdjoint
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The unit for the adjunction for `Cocone.functoriality K F : Cocone K ⥤ Cocone (K ⋙ F)`.
 
 Auxiliary definition for `functorialityAdjunction`.

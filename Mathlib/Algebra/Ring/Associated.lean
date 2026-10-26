@@ -8,9 +8,6 @@ module
 public import Mathlib.Algebra.GroupWithZero.Associated
 public import Mathlib.Algebra.Ring.Units
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Associated elements in rings
 -/

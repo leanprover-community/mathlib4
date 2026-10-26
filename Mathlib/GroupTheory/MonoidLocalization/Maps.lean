@@ -7,9 +7,6 @@ module
 
 public import Mathlib.GroupTheory.MonoidLocalization.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Mapping properties of monoid localizations
 

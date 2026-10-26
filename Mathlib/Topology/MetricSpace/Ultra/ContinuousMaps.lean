@@ -8,9 +8,6 @@ module
 public import Mathlib.Topology.ContinuousMap.Compact
 public import Mathlib.Topology.MetricSpace.Ultra.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Ultrametric structure on continuous maps
 -/

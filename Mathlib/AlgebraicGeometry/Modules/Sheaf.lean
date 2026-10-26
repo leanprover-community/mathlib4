@@ -306,7 +306,6 @@ lemma pseudofunctor_right_unitality :
     congr($(SheafOfModules.pullback_comp_id.{u} f.toRingCatSheafHom).hom)
   simp [← this]
 
-set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] pseudofunctor_associativity pseudofunctor_left_unitality
   pseudofunctor_right_unitality Bicategory.toNatTrans_conjugateEquiv
   conjugateEquiv_pullbackId_hom Adjunction.ofCat_comp conjugateEquiv_pullbackComp_inv in
@@ -333,7 +332,6 @@ noncomputable section Restriction
 
 variable (f : X ⟶ Y) (g : Y ⟶ Z) [IsOpenImmersion f] [IsOpenImmersion g]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Restriction of an `𝒪ₓ`-module along an open immersion.
 This is isomorphic to the pullback functor (see `restrictFunctorIsoPullback`)
 but has better defeqs. -/
@@ -515,7 +513,6 @@ lemma germ_restrictStalkNatIso_hom_app (x : X) (M : Y.Modules) (hxU : x ∈ U) :
     (f.isOpenEmbedding.functorNhds x).op
     ((OpenNhds.inclusion ((ConcreteCategory.hom f.base) x)).op ⋙ M.presheaf) _
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma germ_restrictStalkNatIso_inv_app (x : X) (M : Y.Modules) (hxU : x ∈ U) :

@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Probability.Process.Filtration
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Factorization of a map from measurability
 

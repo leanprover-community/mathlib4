@@ -8,9 +8,6 @@ module
 public import Mathlib.Algebra.CharP.Invertible
 public import Mathlib.LinearAlgebra.AffineSpace.Midpoint
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Midpoint of a segment for characteristic zero
 

@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Topology.Category.TopCat.Limits.Products
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Pullbacks and pushouts in the category of topological spaces
 -/
@@ -52,7 +49,6 @@ def pullbackCone (f : X ⟶ Z) (g : Y ⟶ Z) : PullbackCone f g :=
       ext ⟨x, h⟩
       simpa)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The constructed cone is a limit. -/
 def pullbackConeIsLimit (f : X ⟶ Z) (g : Y ⟶ Z) : IsLimit (pullbackCone f g) :=
   PullbackCone.isLimitAux' _
