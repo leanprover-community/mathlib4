@@ -68,6 +68,8 @@ lemma bijective_sectionsPrecomp (F : C ⥤ D) (P : D ⥤ Type w) [F.Initial] :
     · ext X : 2
       simpa using (hval (F.obj X) (CostructuredArrow.mk (𝟙 _))).symm
 
+/-- When `F : C ⥤ D` is an initial functor, sections of `P : D ⥤ Type w` are equivalent
+to sections of `F ⋙ P` via `Functor.sectionsPrecomp`. -/
 @[implicit_reducible, simps! apply]
 noncomputable def sectionsEquivOfInitial (F : C ⥤ D) (P : D ⥤ Type w) [F.Initial] :
     P.sections ≃ (F ⋙ P).sections :=
