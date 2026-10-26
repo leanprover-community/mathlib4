@@ -126,8 +126,7 @@ lemma isBipartiteWith_of_edge_not_vertex_transitive (et : G.IsEdgeTransitive)
   · exact ⟨((fa.symm.trans fw).trans fv.symm).trans fb, by simp_all [← RelIso.eq_symm_apply]⟩
   · exact ⟨fa.symm.trans fb, by simp_all [← RelIso.eq_symm_apply]⟩
 
-/-- A semi-symmetric (edge- but not vertex-transitive) graph with no isolated vertices
-is bipartite. -/
+/-- An edge- but not vertex-transitive graph with no isolated vertices is bipartite. -/
 theorem isBipartite_of_edge_not_vertex_transitive
     (et : G.IsEdgeTransitive) (nvt : ¬G.IsVertexTransitive) (ni : ∀ v, ¬G.IsIsolated v) :
     G.IsBipartite := by
@@ -137,63 +136,51 @@ theorem isBipartite_of_edge_not_vertex_transitive
     exact (isBipartiteWith_of_edge_not_vertex_transitive et nvt ni me).isBipartite
 
 open Finset in
-/-- A half-transitive (vertex- and edge-transitive but not symmetric) graph with an odd-degree
-vertex is symmetric. The finiteness condition is necessary; see [thomassenwatkins1989]. -/
+/-- A finite vertex- and edge-transitive graph with an odd-degree vertex is symmetric.
+The finiteness condition is necessary [thomassenwatkins1989]. -/
 theorem isSymmetric_of_transitive_of_odd_degree [Fintype V] [DecidableRel G.Adj]
     (vt : G.IsVertexTransitive) (et : G.IsEdgeTransitive) {v : V} (dv : Odd (G.degree v)) :
     G.IsSymmetric := by
   obtain ⟨w, hvw⟩ := (G.degree_pos_iff_exists_adj v).mp dv.pos
-  contrapose dv
+  contrapose dv with nsym
   let R (a b) := ∃ f : G ≃g G, f v = a ∧ f w = b
-  have invariant (f : G ≃g G) (a b) : R (f a) (f b) ↔ R a b := by
-    refine ⟨fun ⟨g, hg⟩ ↦ ?_, fun ⟨g, hg⟩ ↦ ?_⟩
-    · exact ⟨g.trans f.symm, by simpa using congr(f.symm $(hg.1)),
-        by simpa using congr(f.symm $(hg.2))⟩
-    · exact ⟨g.trans f, by simp [hg.1], by simp [hg.2]⟩
-  have oriented {a b} (hab : G.Adj a b) : R a b ∨ R b a := by
+  have R_adj {a b} (h : R a b) : G.Adj a b := by
+    obtain ⟨f, rfl, rfl⟩ := h
+    rwa [f.map_rel_iff]
+  have R_trans {a b} (f : G ≃g G) : R (f a) (f b) ↔ R a b :=
+    ⟨ fun ⟨g, hg⟩ ↦ ⟨g.trans f.symm, by simp [hg.1], by simp [hg.2]⟩,
+      fun ⟨g, hg⟩ ↦ ⟨g.trans f, by simp [hg.1], by simp [hg.2]⟩⟩
+  have R_or {a b} (hab : G.Adj a b) : R a b ∨ R b a := by
     obtain ⟨f, hf⟩ := et (G.mem_edgeSet.mpr hvw) (G.mem_edgeSet.mpr hab)
     rw [Sym2.map_mk, Sym2.eq_iff] at hf
     grind
-  have exclusive {a b} : ¬(R a b ∧ R b a) := by
-    rintro ⟨⟨f, hf⟩, ⟨g, hg⟩⟩
-    let k := f.trans g.symm
-    have kv : k v = w := by simp [k, hf.1, ← hg.2]
-    have kw : k w = v := by simp [k, hf.2, ← hg.1]
-    refine dv fun d₁ d₂ ↦ ?_
-    obtain ⟨f₁, f₁v, f₁w⟩ | ⟨f₁, f₁v, f₁w⟩ := oriented d₁.adj <;>
-    obtain ⟨f₂, f₂v, f₂w⟩ | ⟨f₂, f₂v, f₂w⟩ := oriented d₂.adj
-    · exact ⟨f₁.symm.trans f₂, by simp [← f₁v, ← f₁w, f₂v, f₂w]⟩
-    · exact ⟨(f₁.symm.trans k).trans f₂, by simp [← f₁v, ← f₁w, f₂v, f₂w, kv, kw]⟩
-    · exact ⟨(f₁.symm.trans k).trans f₂, by simp [← f₁v, ← f₁w, f₂v, f₂w, kv, kw]⟩
-    · exact ⟨f₁.symm.trans f₂, by simp [← f₁v, ← f₁w, f₂v, f₂w]⟩
+  have R_nand {a b} : ¬(R a b ∧ R b a) := by
+    rintro ⟨⟨f, fv, fw⟩, ⟨g, gv, gw⟩⟩
+    refine nsym fun d₁ d₂ ↦ ?_
+    obtain ⟨f₁, f₁v, f₁w⟩ | ⟨f₁, f₁v, f₁w⟩ := R_or d₁.adj <;>
+    obtain ⟨f₂, f₂v, f₂w⟩ | ⟨f₂, f₂v, f₂w⟩ := R_or d₂.adj
+    case inl.inl | inr.inr => exact ⟨f₁.symm.trans f₂, by simp [← f₁v, ← f₁w, f₂v, f₂w]⟩
+    all_goals exact ⟨(f₁.symm.trans f).trans (g.symm.trans f₂), by
+      simp [fv, fw, ← gv, ← gw, ← f₁v, ← f₁w, f₂v, f₂w]⟩
   classical
-  let out (a) : Finset V := {x | R a x}
-  let inn (a) : Finset V := {x | R x a}
-  have out_eq (a) : #(out a) = #(out v) := by
+  let O (a) : Finset V := {x | R a x}
+  let I (a) : Finset V := {x | R x a}
+  have O_const (a) : #(O a) = #(O v) := by
     obtain ⟨f, hf⟩ := vt a v
-    exact card_bijective f f.bijective (by simp [out, ← hf, invariant])
-  have in_eq (a) : #(inn a) = #(inn v) := by
+    exact card_bijective _ f.bijective (by simp [O, ← hf, R_trans])
+  have I_const (a) : #(I a) = #(I v) := by
     obtain ⟨f, hf⟩ := vt a v
-    exact card_bijective f f.bijective (by simp [inn, ← hf, invariant])
-  have total : ∑ a, #(out a) = ∑ a, #(inn a) := by
-    simp only [out, inn, card_eq_sum_ones, sum_filter]
+    exact card_bijective _ f.bijective (by simp [I, ← hf, R_trans])
+  have dv : G.degree v = #(O v) + #(I v) := by
+    rw [← card_union_of_disjoint <| Finset.disjoint_left.mpr fun a Oa Ia ↦
+      R_nand ⟨(mem_filter.mp Oa).2, (mem_filter.mp Ia).2⟩, ← card_neighborFinset_eq_degree]
+    congr; ext
+    simp only [mem_union, mem_filter_univ, mem_neighborFinset]
+    exact ⟨R_or, fun h ↦ h.elim R_adj (.symm ∘ R_adj)⟩
+  have key : ∑ a, #(I a) = ∑ a, #(O a) := by
+    simp only [O, I, card_eq_sum_ones, sum_filter]
     exact sum_comm
-  have balance : #(out v) = #(inn v) := by
-    have hp : 0 < Fintype.card V := Fintype.card_pos_iff.mpr ⟨v⟩
-    apply Nat.eq_of_mul_eq_mul_left hp
-    simpa [out_eq, in_eq] using total
-  have adjacent {a b} (h : R a b) : G.Adj a b := by
-    obtain ⟨f, rfl, rfl⟩ := h
-    rwa [← f.map_rel_iff] at hvw
-  have partition : out v ∪ inn v = G.neighborFinset v := by
-    ext x
-    simp only [out, inn, mem_union, mem_filter_univ, mem_neighborFinset]
-    exact ⟨fun h ↦ h.elim adjacent fun h ↦ (adjacent h).symm, oriented⟩
-  have disjoint : Disjoint (out v) (inn v) :=
-    Finset.disjoint_left.mpr fun b hb hb' ↦ exclusive ⟨(mem_filter.mp hb).2, (mem_filter.mp hb').2⟩
-  have even_degree : Even (G.degree v) := by
-    refine ⟨#(out v), ?_⟩
-    rw [← card_neighborFinset_eq_degree, ← partition, card_union_of_disjoint disjoint, balance]
-  rwa [Nat.not_odd_iff_even]
+  rw [Nat.not_odd_iff_even]
+  exact ⟨#(O v), by simp_all [@Fintype.card_ne_zero _ _ ⟨v⟩]⟩
 
 end SimpleGraph
