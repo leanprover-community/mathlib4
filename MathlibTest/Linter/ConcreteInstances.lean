@@ -36,3 +36,6 @@ theorem test₃ [∀ α, Add α] : 1 + 2 = 1 + 2 := rfl
 theorem test₄ [DecidableEq Prop] : True := trivial
 theorem test₅ [∀ P, Decidable P] : True := trivial
 theorem test₆ [∀ α, DecidableEq α] : True := trivial
+
+-- The linter currently doesn't work on `example`
+example [Add Nat] : 0 = 0 := rfl
