@@ -677,29 +677,3 @@ variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P] [Norme
 example {n : ℕ} [NeZero n] (s : Affine.Simplex ℝ P n) (i : Fin (n + 1)) : 0 < s.height i := by
   positivity
 example {n : ℕ} (s : Affine.Simplex ℝ P n) : 0 < s.volume := by positivity
-
-namespace Cache
-
-def N := 1
-
-open Mathlib Meta Positivity Qq
-
-@[positivity N]
-meta def evalN : PositivityExt where eval {u α} _ p e :=
-  match p with | none => pure .none | some _ => do
-  match u, α, e with
-  | 0, ~q(ℕ), ~q(N) =>
-    assumeInstancesCommute
-    IO.sleep 500
-    return .positive q(Nat.zero_lt_one)
-  | _, _, _ => throwError "XoX"
-
-set_option trace.profiler true
-
-example : 0 ≤ (((N + N) + (N + N)) + ((N + N) + (N + N))) + ((((N + N) + (N + N)) + ((N + N) + (N + N))))
-  := by positivity
-
-example : 0 ≤ N + N + N + N + N + N + N + N + N + N + N + N + N + N + N + N + N + N + N + N + N + N
-  := by positivity
-
-end Cache
