@@ -239,7 +239,7 @@ def map (f : R →+* S) : SpecialLinearGroup n R →* SpecialLinearGroup n S whe
   map_mul' x y := Subtype.ext <| f.mapMatrix.map_mul ↑ₘx ↑ₘy
 
 @[simp]
-theorem map_mk_apply (f : R →+* S) (A : Matrix n n R) (h : det A = 1) :
+theorem coe_map_mk (f : R →+* S) (A : Matrix n n R) (h : det A = 1) :
     ↑(SpecialLinearGroup.map f (⟨A, h⟩ : SpecialLinearGroup n R)) = A.map f := rfl
 
 section center
