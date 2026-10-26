@@ -5,8 +5,8 @@ Authors: Kalle Kytölä
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.FiniteMeasure
 public import Mathlib.MeasureTheory.Integral.Average
+public import Mathlib.MeasureTheory.Measure.FiniteMeasure
 
 /-!
 # Probability measures
@@ -103,9 +103,18 @@ probability measures (i.e., their total mass is one). -/
 def ProbabilityMeasure (Ω : Type*) [MeasurableSpace Ω] : Type _ :=
   { μ : Measure Ω // IsProbabilityMeasure μ }
 
-namespace ProbabilityMeasure
-
 variable {Ω : Type*} [MeasurableSpace Ω]
+
+/-- Type conversion from `Measure` to `ProbabilityMeasure`. -/
+def Measure.toProbabilityMeasure (μ : Measure Ω) [IsProbabilityMeasure μ] :
+    ProbabilityMeasure Ω := ⟨μ, inferInstance⟩
+
+theorem Measure.toProbabilityMeasure_inj (μ ν : Measure Ω)
+    [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] :
+    μ.toProbabilityMeasure = ν.toProbabilityMeasure ↔ μ = ν :=
+  ⟨fun h ↦ congrArg Subtype.val h, fun h ↦ Subtype.ext h⟩
+
+namespace ProbabilityMeasure
 
 instance [Inhabited Ω] : Inhabited (ProbabilityMeasure Ω) :=
   ⟨⟨Measure.dirac default, Measure.dirac.isProbabilityMeasure⟩⟩
@@ -125,13 +134,23 @@ instance (μ : ProbabilityMeasure Ω) : IsProbabilityMeasure (μ : Measure Ω) :
 @[simp]
 theorem val_eq_to_measure (ν : ProbabilityMeasure Ω) : ν.val = (ν : Measure Ω) := rfl
 
+@[simp]
+theorem _root_.MeasureTheory.Measure.coe_toProbabilityMeasure (μ : Measure Ω)
+    [IsProbabilityMeasure μ] :
+  μ.toProbabilityMeasure = μ := rfl
+
+@[simp]
+theorem toProbabilityMeasure_coe (ν : ProbabilityMeasure Ω) :
+    (↑ν : Measure Ω).toProbabilityMeasure = ν := rfl
+
 theorem toMeasure_injective : Function.Injective ((↑) : ProbabilityMeasure Ω → Measure Ω) :=
   Subtype.coe_injective
 
+@[macro_inline]
 instance instFunLike : FunLike (ProbabilityMeasure Ω) (Set Ω) ℝ≥0 where
   coe μ s := ((μ : Measure Ω) s).toNNReal
   coe_injective μ ν h := toMeasure_injective <| Measure.ext fun s _ ↦ by
-    simpa [ENNReal.toNNReal_eq_toNNReal_iff, measure_ne_top] using congr_fun h s
+    simpa [ENNReal.toNNReal_eq_toNNReal_iff, measure_ne_top] using congr($h s)
 
 lemma coeFn_def (μ : ProbabilityMeasure Ω) : μ = fun s ↦ ((μ : Measure Ω) s).toNNReal := rfl
 
@@ -144,7 +163,7 @@ lemma mk_apply (μ : Measure Ω) (hμ) (s : Set Ω) :
 
 @[simp, norm_cast]
 theorem coeFn_univ (ν : ProbabilityMeasure Ω) : ν univ = 1 :=
-  congr_arg ENNReal.toNNReal ν.prop.measure_univ
+  congr($(ν.prop.measure_univ).toNNReal)
 
 @[simp]
 theorem coeFn_empty (ν : ProbabilityMeasure Ω) : ν ∅ = 0 := by simp [coeFn_def]
@@ -224,7 +243,7 @@ theorem eq_of_forall_toMeasure_apply_eq (μ ν : ProbabilityMeasure Ω)
 theorem eq_of_forall_apply_eq (μ ν : ProbabilityMeasure Ω)
     (h : ∀ s : Set Ω, MeasurableSet s → μ s = ν s) : μ = ν := by
   ext1 s s_mble
-  simpa [ennreal_coeFn_eq_coeFn_toMeasure] using congr_arg ((↑) : ℝ≥0 → ℝ≥0∞) (h s s_mble)
+  simpa [ennreal_coeFn_eq_coeFn_toMeasure] using congr(($(h s s_mble) : ℝ≥0∞))
 
 @[simp]
 theorem mass_toFiniteMeasure (μ : ProbabilityMeasure Ω) : μ.toFiniteMeasure.mass = 1 :=
@@ -240,8 +259,10 @@ set_option backward.isDefEq.respectTransparency.types false in
   ext s hs
   simp
 
-theorem toFiniteMeasure_nonzero (μ : ProbabilityMeasure Ω) : μ.toFiniteMeasure ≠ 0 := by
-  simp [← FiniteMeasure.mass_nonzero_iff]
+theorem toFiniteMeasure_ne_zero (μ : ProbabilityMeasure Ω) : μ.toFiniteMeasure ≠ 0 := by
+  simp [← FiniteMeasure.mass_ne_zero_iff]
+
+@[deprecated (since := "2026-10-13")] alias toFiniteMeasure_nonzero := toFiniteMeasure_ne_zero
 
 /-- The type of probability measures is a measurable space when equipped with the Giry monad. -/
 instance : MeasurableSpace (ProbabilityMeasure Ω) :=
@@ -320,7 +341,7 @@ theorem toFiniteMeasure_isEmbedding (Ω : Type*) [MeasurableSpace Ω] [Topologic
     [OpensMeasurableSpace Ω] :
     IsEmbedding (toFiniteMeasure : ProbabilityMeasure Ω → FiniteMeasure Ω) where
   eq_induced := rfl
-  injective _μ _ν h := Subtype.ext <| congr_arg FiniteMeasure.toMeasure h
+  injective _μ _ν h := Subtype.ext congr(FiniteMeasure.toMeasure $h)
 
 instance R1Space : R1Space (ProbabilityMeasure Ω) := (toFiniteMeasure_isEmbedding Ω).r1Space
 
@@ -462,7 +483,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 theorem self_eq_mass_mul_normalize (s : Set Ω) : μ s = μ.mass * μ.normalize s := by
   obtain rfl | h := eq_or_ne μ 0
   · simp
-  have mass_nonzero : μ.mass ≠ 0 := by rwa [μ.mass_nonzero_iff]
+  have mass_nonzero : μ.mass ≠ 0 := by rwa [μ.mass_ne_zero_iff]
   simp only [normalize, dite_eq_right mass_nonzero]
   simp [mul_inv_cancel_left₀ mass_nonzero, coeFn_def]
 
@@ -472,30 +493,38 @@ theorem self_eq_mass_smul_normalize : μ = μ.mass • μ.normalize.toFiniteMeas
   rw [μ.self_eq_mass_mul_normalize s, smul_apply, smul_eq_mul,
     ProbabilityMeasure.coeFn_comp_toFiniteMeasure_eq_coeFn]
 
-theorem normalize_eq_of_nonzero (nonzero : μ ≠ 0) (s : Set Ω) : μ.normalize s = μ.mass⁻¹ * μ s := by
-  simp only [μ.self_eq_mass_mul_normalize, μ.mass_nonzero_iff.mpr nonzero, inv_mul_cancel_left₀,
+theorem normalize_eq_of_ne_zero (nonzero : μ ≠ 0) (s : Set Ω) : μ.normalize s = μ.mass⁻¹ * μ s := by
+  simp only [μ.self_eq_mass_mul_normalize, μ.mass_ne_zero_iff.mpr nonzero, inv_mul_cancel_left₀,
     Ne, not_false_iff]
 
-theorem normalize_eq_inv_mass_smul_of_nonzero (nonzero : μ ≠ 0) :
+@[deprecated (since := "2026-10-13")] alias normalize_eq_of_nonzero := normalize_eq_of_ne_zero
+
+theorem normalize_eq_inv_mass_smul_of_ne_zero (nonzero : μ ≠ 0) :
     μ.normalize.toFiniteMeasure = μ.mass⁻¹ • μ := by
   nth_rw 3 [μ.self_eq_mass_smul_normalize]
   rw [← smul_assoc]
-  simp only [μ.mass_nonzero_iff.mpr nonzero, smul_eq_mul, inv_mul_cancel₀, Ne,
+  simp only [μ.mass_ne_zero_iff.mpr nonzero, smul_eq_mul, inv_mul_cancel₀, Ne,
     not_false_iff, one_smul]
 
-theorem toMeasure_normalize_eq_of_nonzero (nonzero : μ ≠ 0) :
+@[deprecated (since := "2026-10-13")]
+alias normalize_eq_inv_mass_smul_of_nonzero := normalize_eq_inv_mass_smul_of_ne_zero
+
+theorem toMeasure_normalize_eq_of_ne_zero (nonzero : μ ≠ 0) :
     (μ.normalize : Measure Ω) = μ.mass⁻¹ • μ := by
   ext1 s _s_mble
-  rw [← μ.normalize.ennreal_coeFn_eq_coeFn_toMeasure s, μ.normalize_eq_of_nonzero nonzero s,
+  rw [← μ.normalize.ennreal_coeFn_eq_coeFn_toMeasure s, μ.normalize_eq_of_ne_zero nonzero s,
     ENNReal.coe_mul, ennreal_coeFn_eq_coeFn_toMeasure]
   exact Measure.coe_nnreal_smul_apply _ _ _
+
+@[deprecated (since := "2026-10-13")]
+alias toMeasure_normalize_eq_of_nonzero := toMeasure_normalize_eq_of_ne_zero
 
 @[simp]
 theorem _root_.ProbabilityMeasure.toFiniteMeasure_normalize_eq_self {m0 : MeasurableSpace Ω}
     (μ : ProbabilityMeasure Ω) : μ.toFiniteMeasure.normalize = μ := by
   apply ProbabilityMeasure.eq_of_forall_apply_eq
   intro s _s_mble
-  rw [μ.toFiniteMeasure.normalize_eq_of_nonzero μ.toFiniteMeasure_nonzero s]
+  rw [μ.toFiniteMeasure.normalize_eq_of_ne_zero μ.toFiniteMeasure_ne_zero s]
   simp only [ProbabilityMeasure.mass_toFiniteMeasure, inv_one, one_mul, μ.coeFn_toFiniteMeasure]
 
 /-- Averaging with respect to a finite measure is the same as integrating against
@@ -503,9 +532,9 @@ theorem _root_.ProbabilityMeasure.toFiniteMeasure_normalize_eq_self {m0 : Measur
 theorem average_eq_integral_normalize {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     (nonzero : μ ≠ 0) (f : Ω → E) :
     average (μ : Measure Ω) f = ∫ ω, f ω ∂(μ.normalize : Measure Ω) := by
-  rw [μ.toMeasure_normalize_eq_of_nonzero nonzero, average]
+  rw [μ.toMeasure_normalize_eq_of_ne_zero nonzero, average]
   congr
-  simp [ENNReal.coe_inv (μ.mass_nonzero_iff.mpr nonzero), ennreal_mass]
+  simp [ENNReal.coe_inv (μ.mass_ne_zero_iff.mpr nonzero), ennreal_mass]
 
 variable [TopologicalSpace Ω]
 
@@ -516,7 +545,7 @@ theorem testAgainstNN_eq_mass_mul (f : Ω →ᵇ ℝ≥0) :
 
 theorem normalize_testAgainstNN (nonzero : μ ≠ 0) (f : Ω →ᵇ ℝ≥0) :
     μ.normalize.toFiniteMeasure.testAgainstNN f = μ.mass⁻¹ * μ.testAgainstNN f := by
-  simp [μ.testAgainstNN_eq_mass_mul, inv_mul_cancel_left₀ <| μ.mass_nonzero_iff.mpr nonzero]
+  simp [μ.testAgainstNN_eq_mass_mul, inv_mul_cancel_left₀ <| μ.mass_ne_zero_iff.mpr nonzero]
 
 variable [OpensMeasurableSpace Ω]
 variable {μ}
@@ -544,9 +573,9 @@ theorem tendsto_normalize_testAgainstNN_of_tendsto {γ : Type*} {F : Filter γ}
       (𝓝 (μ.normalize.toFiniteMeasure.testAgainstNN f)) := by
   have lim_mass := μs_lim.mass
   have aux : {(0 : ℝ≥0)}ᶜ ∈ 𝓝 μ.mass :=
-    isOpen_compl_singleton.mem_nhds (μ.mass_nonzero_iff.mpr nonzero)
+    isOpen_compl_singleton.mem_nhds (μ.mass_ne_zero_iff.mpr nonzero)
   have eventually_nonzero : ∀ᶠ i in F, μs i ≠ 0 := by
-    simp_rw [← mass_nonzero_iff]
+    simp_rw [← mass_ne_zero_iff]
     exact lim_mass aux
   have eve : ∀ᶠ i in F,
       (μs i).normalize.toFiniteMeasure.testAgainstNN f =
@@ -605,29 +634,29 @@ variable {Ω Ω' : Type*} [MeasurableSpace Ω] [MeasurableSpace Ω']
 namespace ProbabilityMeasure
 
 /-- The push-forward of a probability measure by a measurable function. -/
-noncomputable def map (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} (f_aemble : AEMeasurable f ν) :
+noncomputable def map (ν : ProbabilityMeasure Ω) (f : Ω → Ω') :
     ProbabilityMeasure Ω' :=
-  ⟨(ν : Measure Ω).map f, (ν : Measure Ω).isProbabilityMeasure_map f_aemble⟩
+  ⟨(ν : Measure Ω).map f, inferInstance⟩
 
-@[simp] lemma toMeasure_map (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} (hf : AEMeasurable f ν) :
-    (ν.map hf).toMeasure = ν.toMeasure.map f := rfl
+@[simp] lemma toMeasure_map (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} :
+    (ν.map f).toMeasure = ν.toMeasure.map f := rfl
 
 /-- Note that this is an equality of elements of `ℝ≥0∞`. See also
 `MeasureTheory.ProbabilityMeasure.map_apply` for the corresponding equality as elements of `ℝ≥0`. -/
 lemma map_apply' (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} (f_aemble : AEMeasurable f ν)
     {A : Set Ω'} (A_mble : MeasurableSet A) :
-    (ν.map f_aemble : Measure Ω') A = (ν : Measure Ω) (f ⁻¹' A) :=
+    (ν.map f : Measure Ω') A = (ν : Measure Ω) (f ⁻¹' A) :=
   Measure.map_apply_of_aemeasurable f_aemble A_mble
 
 lemma map_apply_of_aemeasurable (ν : ProbabilityMeasure Ω) {f : Ω → Ω'}
     (f_aemble : AEMeasurable f ν) {A : Set Ω'} (A_mble : MeasurableSet A) :
-    (ν.map f_aemble) A = ν (f ⁻¹' A) := by
+    (ν.map f) A = ν (f ⁻¹' A) := by
   exact (ENNReal.toNNReal_eq_toNNReal_iff' (measure_ne_top _ _) (measure_ne_top _ _)).mpr <|
     ν.map_apply' f_aemble A_mble
 
 lemma map_apply (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} (f_aemble : AEMeasurable f ν)
     {A : Set Ω'} (A_mble : MeasurableSet A) :
-    (ν.map f_aemble) A = ν (f ⁻¹' A) :=
+    (ν.map f) A = ν (f ⁻¹' A) :=
   map_apply_of_aemeasurable ν f_aemble A_mble
 
 variable [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
@@ -639,8 +668,7 @@ distribution) of the push-forwards of these measures by `f`. -/
 lemma tendsto_map_of_tendsto_of_continuous {ι : Type*} {L : Filter ι}
     (νs : ι → ProbabilityMeasure Ω) (ν : ProbabilityMeasure Ω) (lim : Tendsto νs L (𝓝 ν))
     {f : Ω → Ω'} (f_cont : Continuous f) :
-    Tendsto (fun i ↦ (νs i).map f_cont.measurable.aemeasurable) L
-      (𝓝 (ν.map f_cont.measurable.aemeasurable)) := by
+    Tendsto (fun i ↦ (νs i).map f) L (𝓝 (ν.map f)) := by
   rw [ProbabilityMeasure.tendsto_iff_forall_lintegral_tendsto] at lim ⊢
   intro g
   convert! lim (g.compContinuous ⟨f, f_cont⟩) <;>
@@ -652,7 +680,7 @@ lemma tendsto_map_of_tendsto_of_continuous {ι : Type*} {L : Filter ι}
 the push-forward of probability measures `f* : ProbabilityMeasure X → ProbabilityMeasure Y`
 is continuous (in the topologies of convergence in distribution). -/
 lemma continuous_map {f : Ω → Ω'} (f_cont : Continuous f) :
-    Continuous (fun ν ↦ ProbabilityMeasure.map ν f_cont.measurable.aemeasurable) := by
+    Continuous (fun ν ↦ ProbabilityMeasure.map ν f) := by
   rw [continuous_iff_continuousAt]
   exact fun _ ↦ tendsto_map_of_tendsto_of_continuous _ _ continuous_id.continuousAt f_cont
 

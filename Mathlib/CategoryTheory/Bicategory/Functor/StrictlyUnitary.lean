@@ -303,7 +303,6 @@ def mk' (S : StrictlyUnitaryPseudofunctorCore B C) :
   map₂_whisker_right η f := by
     simpa using S.map₂_whisker_right η f
 
-set_option backward.defeqAttrib.useBackward true in
 /-- By forgetting the inverse to `mapComp`, a `StrictlyUnitaryPseudofunctor`
 is a `StrictlyUnitaryLaxFunctor`. -/
 def toStrictlyUnitaryLaxFunctor (F : StrictlyUnitaryPseudofunctor B C) :

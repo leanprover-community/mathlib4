@@ -5,10 +5,8 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
 module
 
-public import Mathlib.Data.Matrix.Basis
 public import Mathlib.Data.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.Notation
-public import Mathlib.LinearAlgebra.Matrix.RowCol
 
 /-!
 # Trace of a matrix
@@ -170,7 +168,7 @@ theorem trace_mul_cycle' [NonUnitalCommSemiring R] (A : Matrix m n R) (B : Matri
 theorem trace_replicateCol_mul_replicateRow {ι : Type*} [Unique ι] [NonUnitalNonAssocSemiring R]
     (a b : n → R) : trace (replicateCol ι a * replicateRow ι b) = a ⬝ᵥ b := by
   apply Finset.sum_congr rfl
-  simp [mul_apply]
+  simp [Matrix.mul_apply]
 
 @[simp]
 theorem trace_vecMulVec [NonUnitalNonAssocSemiring R] (a b : n → R) :
@@ -218,7 +216,7 @@ theorem trace_fin_one (A : Matrix (Fin 1) (Fin 1) R) : trace A = A 0 0 :=
   add_zero _
 
 theorem trace_fin_two (A : Matrix (Fin 2) (Fin 2) R) : trace A = A 0 0 + A 1 1 :=
-  congr_arg (_ + ·) (add_zero (A 1 1))
+  congr(_ + $(add_zero (A 1 1)))
 
 theorem trace_fin_three (A : Matrix (Fin 3) (Fin 3) R) : trace A = A 0 0 + A 1 1 + A 2 2 := by
   rw [← add_zero (A 2 2), add_assoc]
@@ -255,12 +253,12 @@ theorem trace_single_eq_same : trace (single i i c) = c := by
 theorem trace_single_mul [NonUnitalNonAssocSemiring R] [Fintype m]
     (i : n) (j : m) (a : R) (x : Matrix m n R) :
     (single i j a * x).trace = a • x j i := by
-  simp [trace, mul_apply, single, ite_and]
+  simp [trace, Matrix.mul_apply, single, ite_and]
 
 theorem trace_mul_single [NonUnitalNonAssocSemiring R] [Fintype m]
     (x : Matrix m n R) (i : n) (j : m) (a : R) :
     (x * single i j a).trace = MulOpposite.op a • x j i := by
-  simp [trace, mul_apply, single, ite_and]
+  simp [trace, Matrix.mul_apply, single, ite_and]
 
 end single
 

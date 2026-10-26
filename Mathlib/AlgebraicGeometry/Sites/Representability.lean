@@ -5,13 +5,10 @@ Authors: Calle Sönne, Joël Riou, Ravi Vakil
 -/
 module
 
-public import Mathlib.CategoryTheory.MorphismProperty.Representable
-public import Mathlib.AlgebraicGeometry.Sites.BigZariski
-public import Mathlib.AlgebraicGeometry.OpenImmersion
 public import Mathlib.AlgebraicGeometry.GluingOneHypercover
-public import Mathlib.CategoryTheory.Sites.LocallyBijective
-public import Mathlib.CategoryTheory.Limits.Shapes.Products
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Iso
+public import Mathlib.CategoryTheory.MorphismProperty.Representable
+
+import Mathlib.CategoryTheory.Sites.LocallyBijective
 
 /-!
 # Representability of schemes is a local property
@@ -116,19 +113,17 @@ lemma yoneda_toGlued_yonedaGluedToSheaf (i : ι) :
     NatTrans.comp_app_apply, yoneda_map_app]
   simpa using! GlueData.sheafValGluedMk_val _ _ _ _
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma yonedaGluedToSheaf_app_toGlued {i : ι} :
     dsimp% (yonedaGluedToSheaf hf).hom.app _ (toGlued hf i) = yonedaEquiv (f i) := by
   rw [← yoneda_toGlued_yonedaGluedToSheaf hf i, yonedaEquiv_comp,
     yonedaEquiv_yoneda_map]
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma yonedaGluedToSheaf_app_comp {V U : Scheme.{u}} (γ : V ⟶ U) (α : U ⟶ (glueData hf).glued) :
     dsimp% (yonedaGluedToSheaf hf).hom.app (op V) (γ ≫ α) =
       F.obj.map γ.op ((yonedaGluedToSheaf hf).hom.app (op U) α) :=
-  ConcreteCategory.congr_hom ((yonedaGluedToSheaf hf).hom.naturality γ.op) α
+  congr($((yonedaGluedToSheaf hf).hom.naturality γ.op) α)
 
 instance [Presheaf.IsLocallySurjective Scheme.zariskiTopology (Sigma.desc f)] :
     Sheaf.IsLocallySurjective (yonedaGluedToSheaf hf) :=

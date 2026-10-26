@@ -1,10 +1,11 @@
 /-
 Tests for norm_cast
 -/
+module
 
-import Mathlib.Tactic.Ring
-import Mathlib.Data.Complex.Basic
-import Mathlib.Data.ENNReal.Inv
+public import Mathlib.Basic.Complex.Basic
+public import Mathlib.Basic.ENNReal.Inv
+public import Mathlib.Tactic.Ring
 
 -- set_option trace.Tactic.norm_cast true
 -- set_option trace.Meta.Tactic.simp true

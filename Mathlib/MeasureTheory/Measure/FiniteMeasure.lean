@@ -5,11 +5,12 @@ Authors: Kalle Kytölä
 -/
 module
 
-public import Mathlib.Analysis.RCLike.Lemmas
-public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 public import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
 public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
-public import Mathlib.Topology.TietzeExtension
+
+import Mathlib.Analysis.RCLike.Lemmas
+import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
+import Mathlib.Topology.TietzeExtension
 
 /-!
 # Finite measures
@@ -132,10 +133,11 @@ theorem val_eq_toMeasure (ν : FiniteMeasure Ω) : ν.val = (ν : Measure Ω) :=
 theorem toMeasure_injective : Function.Injective ((↑) : FiniteMeasure Ω → Measure Ω) :=
   Subtype.coe_injective
 
+@[macro_inline]
 instance instFunLike : FunLike (FiniteMeasure Ω) (Set Ω) ℝ≥0 where
   coe μ s := ((μ : Measure Ω) s).toNNReal
   coe_injective μ ν h := toMeasure_injective <| Measure.ext fun s _ ↦ by
-    simpa [ENNReal.toNNReal_eq_toNNReal_iff, measure_ne_top] using congr_fun h s
+    simpa [ENNReal.toNNReal_eq_toNNReal_iff, measure_ne_top] using congr($h s)
 
 lemma coeFn_def (μ : FiniteMeasure Ω) : μ = fun s ↦ ((μ : Measure Ω) s).toNNReal := rfl
 
@@ -199,7 +201,9 @@ theorem ennreal_mass {μ : FiniteMeasure Ω} : (μ.mass : ℝ≥0∞) = (μ : Me
 
 instance instZero : Zero (FiniteMeasure Ω) where zero := ⟨0, MeasureTheory.isFiniteMeasureZero⟩
 
-@[simp, norm_cast] lemma coeFn_zero : ⇑(0 : FiniteMeasure Ω) = 0 := rfl
+instance : IsZeroApply (FiniteMeasure Ω) where
+
+@[deprecated (since := "2026-10-21")] alias coeFn_zero := FunLike.coe_zero
 
 @[simp]
 theorem zero_mass : (0 : FiniteMeasure Ω).mass = 0 := rfl
@@ -211,8 +215,10 @@ theorem mass_zero_iff (μ : FiniteMeasure Ω) : μ.mass = 0 ↔ μ = 0 := by
   apply Measure.measure_univ_eq_zero.mp
   rwa [← ennreal_mass, ENNReal.coe_eq_zero]
 
-theorem mass_nonzero_iff (μ : FiniteMeasure Ω) : μ.mass ≠ 0 ↔ μ ≠ 0 :=
+theorem mass_ne_zero_iff (μ : FiniteMeasure Ω) : μ.mass ≠ 0 ↔ μ ≠ 0 :=
   not_iff_not.mpr <| FiniteMeasure.mass_zero_iff μ
+
+@[deprecated (since := "2026-10-13")] alias mass_nonzero_iff := mass_ne_zero_iff
 
 @[ext]
 theorem eq_of_forall_toMeasure_apply_eq (μ ν : FiniteMeasure Ω)
@@ -224,7 +230,7 @@ theorem eq_of_forall_toMeasure_apply_eq (μ ν : FiniteMeasure Ω)
 theorem eq_of_forall_apply_eq (μ ν : FiniteMeasure Ω)
     (h : ∀ s : Set Ω, MeasurableSet s → μ s = ν s) : μ = ν := by
   ext1 s s_mble
-  simpa [ennreal_coeFn_eq_coeFn_toMeasure] using congr_arg ((↑) : ℝ≥0 → ℝ≥0∞) (h s s_mble)
+  simpa [ennreal_coeFn_eq_coeFn_toMeasure] using congr(($(h s s_mble) : ℝ≥0∞))
 
 instance instInhabited : Inhabited (FiniteMeasure Ω) := ⟨0⟩
 
@@ -246,20 +252,17 @@ theorem toMeasure_add (μ ν : FiniteMeasure Ω) : ↑(μ + ν) = (↑μ + ↑ν
 theorem toMeasure_smul (c : R) (μ : FiniteMeasure Ω) : ↑(c • μ) = c • (μ : Measure Ω) :=
   rfl
 
-@[simp, norm_cast]
-theorem coeFn_add (μ ν : FiniteMeasure Ω) : (⇑(μ + ν) : Set Ω → ℝ≥0) = (⇑μ + ⇑ν : Set Ω → ℝ≥0) := by
-  funext
-  simp only [Pi.add_apply, ← ENNReal.coe_inj, ennreal_coeFn_eq_coeFn_toMeasure,
-    ENNReal.coe_add]
-  norm_cast
+instance : IsAddApply (FiniteMeasure Ω) where
+  add_apply μ ν s := by simp [← ENNReal.coe_inj]
 
-@[simp, norm_cast]
-theorem coeFn_smul [IsScalarTower R ℝ≥0 ℝ≥0] (c : R) (μ : FiniteMeasure Ω) :
-    (⇑(c • μ) : Set Ω → ℝ≥0) = c • (⇑μ : Set Ω → ℝ≥0) := by
-  funext; simp [← ENNReal.coe_inj, ENNReal.coe_smul]
+@[deprecated (since := "2026-10-21")] alias coeFn_add := FunLike.coe_add
 
-instance instAddCommMonoid : AddCommMonoid (FiniteMeasure Ω) := fast_instance%
-  toMeasure_injective.addCommMonoid _ toMeasure_zero toMeasure_add fun _ _ ↦ toMeasure_smul _ _
+instance [IsScalarTower R ℝ≥0 ℝ≥0] : IsSMulApply R (FiniteMeasure Ω) where
+  smul_apply μ ν s := by simp [← ENNReal.coe_inj, ENNReal.coe_smul]
+
+@[deprecated (since := "2026-10-21")] alias coeFn_smul := FunLike.coe_smul
+
+instance instAddCommMonoid : AddCommMonoid (FiniteMeasure Ω) := fast_instance% FunLike.addCommMonoid
 
 /-- Coercion is an `AddMonoidHom`. -/
 @[simps]
@@ -273,13 +276,9 @@ theorem toMeasure_sum {ι : Type*} {s : Finset ι} {ν : ι → FiniteMeasure Ω
     ↑(∑ i ∈ s, ν i) = ∑ i ∈ s, (ν i : Measure Ω) :=
   map_sum toMeasureAddMonoidHom _ _
 
-instance {Ω : Type*} [MeasurableSpace Ω] : Module ℝ≥0 (FiniteMeasure Ω) :=
-  Function.Injective.module _ toMeasureAddMonoidHom toMeasure_injective toMeasure_smul
+instance {Ω : Type*} [MeasurableSpace Ω] : Module ℝ≥0 (FiniteMeasure Ω) := FunLike.module
 
-@[simp]
-theorem smul_apply [IsScalarTower R ℝ≥0 ℝ≥0] (c : R) (μ : FiniteMeasure Ω) (s : Set Ω) :
-    (c • μ) s = c • μ s := by
-  rw [coeFn_smul, Pi.smul_apply]
+@[deprecated (since := "2026-10-21")] protected alias smul_apply := smul_apply
 
 /-- Restrict a finite measure μ to a set A. -/
 def restrict (μ : FiniteMeasure Ω) (A : Set Ω) : FiniteMeasure Ω where
@@ -325,8 +324,10 @@ lemma restrict_biUnion_finset {ι : Type*} {μ : FiniteMeasure Ω} {T : Finset �
 theorem restrict_eq_zero_iff (μ : FiniteMeasure Ω) (A : Set Ω) : μ.restrict A = 0 ↔ μ A = 0 := by
   rw [← mass_zero_iff, restrict_mass]
 
-theorem restrict_nonzero_iff (μ : FiniteMeasure Ω) (A : Set Ω) : μ.restrict A ≠ 0 ↔ μ A ≠ 0 := by
+theorem restrict_ne_zero_iff (μ : FiniteMeasure Ω) (A : Set Ω) : μ.restrict A ≠ 0 ↔ μ A ≠ 0 := by
   simp
+
+@[deprecated (since := "2026-10-13")] alias restrict_nonzero_iff := restrict_ne_zero_iff
 
 /-- The type of finite measures is a measurable space when equipped with the Giry monad. -/
 instance : MeasurableSpace (FiniteMeasure Ω) :=
@@ -414,7 +415,7 @@ theorem testAgainstNN_zero (μ : FiniteMeasure Ω) : μ.testAgainstNN 0 = 0 := b
 
 @[simp]
 theorem testAgainstNN_one (μ : FiniteMeasure Ω) : μ.testAgainstNN 1 = μ.mass := by
-  simp only [testAgainstNN, coe_one, Pi.one_apply, ENNReal.coe_one, lintegral_one]
+  simp only [testAgainstNN, FunLike.coe_one, Pi.one_apply, ENNReal.coe_one, lintegral_one]
   rfl
 
 @[simp]
@@ -437,15 +438,14 @@ variable [OpensMeasurableSpace Ω]
 
 theorem testAgainstNN_add (μ : FiniteMeasure Ω) (f₁ f₂ : Ω →ᵇ ℝ≥0) :
     μ.testAgainstNN (f₁ + f₂) = μ.testAgainstNN f₁ + μ.testAgainstNN f₂ := by
-  simp only [← ENNReal.coe_inj, BoundedContinuousFunction.coe_add, ENNReal.coe_add, Pi.add_apply,
+  simp only [← ENNReal.coe_inj, FunLike.coe_add, ENNReal.coe_add, Pi.add_apply,
     testAgainstNN_coe_eq]
   exact lintegral_add_left (BoundedContinuousFunction.measurable_coe_ennreal_comp _) _
 
 theorem testAgainstNN_smul [IsScalarTower R ℝ≥0 ℝ≥0] [PseudoMetricSpace R] [Zero R]
     [IsBoundedSMul R ℝ≥0] (μ : FiniteMeasure Ω) (c : R) (f : Ω →ᵇ ℝ≥0) :
     μ.testAgainstNN (c • f) = c • μ.testAgainstNN f := by
-  simp only [← ENNReal.coe_inj, BoundedContinuousFunction.coe_smul, testAgainstNN_coe_eq,
-    ENNReal.coe_smul]
+  simp only [← ENNReal.coe_inj, testAgainstNN_coe_eq, smul_apply, ENNReal.coe_smul]
   simp_rw [← smul_one_smul ℝ≥0∞ c (f _ : ℝ≥0∞), ← smul_one_smul ℝ≥0∞ c (lintegral _ _ : ℝ≥0∞),
     smul_eq_mul]
   exact lintegral_const_mul (c • (1 : ℝ≥0∞)) f.measurable_coe_ennreal_comp
@@ -453,7 +453,7 @@ theorem testAgainstNN_smul [IsScalarTower R ℝ≥0 ℝ≥0] [PseudoMetricSpace 
 theorem testAgainstNN_lipschitz_estimate (μ : FiniteMeasure Ω) (f g : Ω →ᵇ ℝ≥0) :
     μ.testAgainstNN f ≤ μ.testAgainstNN g + nndist f g * μ.mass := by
   simp only [← μ.testAgainstNN_const (nndist f g), ← testAgainstNN_add, ← ENNReal.coe_le_coe,
-    BoundedContinuousFunction.coe_add, const_apply, ENNReal.coe_add, Pi.add_apply,
+    FunLike.coe_add, const_apply, ENNReal.coe_add, Pi.add_apply,
     coe_nnreal_ennreal_nndist, testAgainstNN_coe_eq]
   apply lintegral_mono
   have le_dist : ∀ ω, dist (f ω) (g ω) ≤ nndist f g := BoundedContinuousFunction.dist_coe_le_dist
@@ -564,7 +564,7 @@ theorem tendsto_zero_of_tendsto_zero_mass {γ : Type*} {F : Filter γ} {μs : γ
     (mass_lim : Tendsto (fun i ↦ (μs i).mass) F (𝓝 0)) : Tendsto μs F (𝓝 0) := by
   rw [tendsto_iff_forall_testAgainstNN_tendsto]
   intro f
-  convert! tendsto_zero_testAgainstNN_of_tendsto_zero_mass mass_lim f
+  convert tendsto_zero_testAgainstNN_of_tendsto_zero_mass mass_lim f
   rw [zero_testAgainstNN_apply]
 
 /-- A characterization of weak convergence in terms of integrals of bounded continuous
@@ -596,7 +596,7 @@ lemma injective_toWeakDualBCNN :
   intro μ ν hμν
   apply ext_of_forall_lintegral_eq
   intro f
-  have key := congr_fun (congrArg DFunLike.coe hμν) f
+  have key := congr($hμν f)
   apply (ENNReal.toNNReal_eq_toNNReal_iff' ?_ ?_).mp key
   · exact (lintegral_lt_top_of_nnreal μ f).ne
   · exact (lintegral_lt_top_of_nnreal ν f).ne
@@ -928,25 +928,24 @@ lemma map_apply (ν : FiniteMeasure Ω) {f : Ω → Ω'} (f_mble : Measurable f)
 @[simp] lemma map_add {f : Ω → Ω'} (f_mble : Measurable f) (ν₁ ν₂ : FiniteMeasure Ω) :
     (ν₁ + ν₂).map f = ν₁.map f + ν₂.map f := by ext; simp [*]
 
-@[simp] lemma map_smul {f : Ω → Ω'} (c : ℝ≥0) (ν : FiniteMeasure Ω) :
+@[simp] lemma map_smul {f : Ω → Ω'} (c : ℝ≥0) {ν : FiniteMeasure Ω} (hf : AEMeasurable f ν) :
     (c • ν).map f = c • (ν.map f) := by
   ext s _
-  simp [toMeasure_smul]
+  simp [toMeasure_smul, hf]
 
 /-- The push-forward of a finite measure by a function between measurable spaces as a linear map. -/
 noncomputable def mapHom {f : Ω → Ω'} (f_mble : Measurable f) :
     FiniteMeasure Ω →ₗ[ℝ≥0] FiniteMeasure Ω' where
   toFun := fun ν ↦ ν.map f
   map_add' := map_add f_mble
-  map_smul' := map_smul
+  map_smul' m _ := map_smul m f_mble.aemeasurable
 
-lemma mass_map_le (f : Ω → Ω') (μ : FiniteMeasure Ω) : (μ.map f).mass ≤ μ.mass := by
+lemma mass_map_le {f : Ω → Ω'} {μ : FiniteMeasure Ω} (hf : AEMeasurable f μ) :
+    (μ.map f).mass ≤ μ.mass := by
   simp only [mass, coeFn_def, toMeasure_map, ne_eq, measure_ne_top, not_false_eq_true,
     ENNReal.toNNReal_le_toNNReal]
-  by_cases hf : AEMeasurable f μ
-  · rw [Measure.map_apply_of_aemeasurable hf MeasurableSet.univ]
-    exact measure_mono (subset_univ _)
-  · simp [Measure.map_of_not_aemeasurable hf]
+  rw [Measure.map_apply_of_aemeasurable hf MeasurableSet.univ]
+  exact measure_mono (subset_univ _)
 
 variable [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
 variable [TopologicalSpace Ω'] [BorelSpace Ω']
@@ -980,7 +979,7 @@ noncomputable def mapCLM {f : Ω → Ω'} (f_cont : Continuous f) :
     FiniteMeasure Ω →L[ℝ≥0] FiniteMeasure Ω' where
   toFun := fun ν ↦ ν.map f
   map_add' := map_add f_cont.measurable
-  map_smul' := map_smul
+  map_smul' m _ := map_smul m f_cont.aemeasurable
 
 lemma Topology.IsClosedEmbedding.isEmbedding_map_finiteMeasure {Ω : Type*}
     [MeasurableSpace Ω] [TopologicalSpace Ω] [BorelSpace Ω] [NormalSpace Ω']

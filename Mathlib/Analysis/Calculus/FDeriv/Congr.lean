@@ -24,8 +24,6 @@ open Filter Asymptotics ContinuousLinearMap Set
 
 open scoped Topology
 
-noncomputable section
-
 section
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
@@ -48,7 +46,7 @@ theorem hasFDerivWithinAt_congr_set_nhdsNE (h : s =ᶠ[𝓝[≠] x] t) :
       hasFDerivWithinAt_sdiff_singleton_self.symm
     _ ↔ HasFDerivWithinAt f f' (t \ {x}) x := by
       suffices 𝓝[s \ {x}] x = 𝓝[t \ {x}] x by simp only [HasFDerivWithinAt, this]
-      simpa only [set_eventuallyEq_iff_inf_principal, ← nhdsWithin_inter', sdiff_eq, inter_comm]
+      simpa only [eventuallyEqSet_iff_inf_principal, ← nhdsWithin_inter', sdiff_eq, inter_comm]
         using h
     _ ↔ HasFDerivWithinAt f f' t x := hasFDerivWithinAt_sdiff_singleton_self
 

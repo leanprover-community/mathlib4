@@ -8,7 +8,8 @@ module
 public import Mathlib.Algebra.Polynomial.Degree.CardPowDegree
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
-public import Mathlib.RingTheory.LocalRing.Basic
+
+import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Admissible absolute values on polynomials
@@ -92,7 +93,7 @@ theorem exists_approx_polynomial_aux [Ring Fq] {d : ℕ} {m : ℕ} (hm : Fintype
       rwa [tsub_lt_iff_tsub_lt hd hbj] at this
   have : j = b.natDegree - (natDegree b - j.succ).succ := by
     rw [← Nat.succ_sub hbj, Nat.succ_sub_succ, tsub_tsub_cancel_of_le hbj.le]
-  convert! congr_fun i_eq.symm ⟨natDegree b - j.succ, hj⟩
+  convert! congr($i_eq.symm ⟨natDegree b - j.succ, hj⟩)
 
 variable [Field Fq]
 
@@ -127,7 +128,7 @@ theorem exists_approx_polynomial {b : Fq[X]} (hb : b ≠ 0) {ε : ℝ} (hε : 0 
   -- In particular, we'll show the degree is less than the following:
   suffices (natDegree (A i₁ % b - A i₀ % b) : ℝ) < b.natDegree + log ε / log (Fintype.card Fq) by
     rwa [← Real.log_lt_log_iff (Int.cast_pos.mpr (cardPowDegree.pos h')) hbε,
-      cardPowDegree_nonzero _ h', cardPowDegree_nonzero _ hb, Algebra.smul_def, eq_intCast,
+      cardPowDegree_of_ne_zero _ h', cardPowDegree_of_ne_zero _ hb, Algebra.smul_def, eq_intCast,
       Int.cast_pow, Int.cast_natCast, Int.cast_pow, Int.cast_natCast,
       log_mul (pow_ne_zero _ q_pos'.ne') hε.ne', ← rpow_natCast, ← rpow_natCast, log_rpow q_pos',
       log_rpow q_pos', ← lt_div_iff₀ (log_pos one_lt_q'), add_div,
@@ -136,9 +137,9 @@ theorem exists_approx_polynomial {b : Fq[X]} (hb : b ≠ 0) {ε : ℝ} (hε : 0 
   -- to turn the `-⌈-stuff⌉₊` into `+ stuff`.
   apply lt_of_lt_of_le (Nat.cast_lt.mpr (WithBot.coe_lt_coe.mp _)) _
   swap
-  · convert! deg_lt
+  · convert deg_lt
     rw [degree_eq_natDegree h']; rfl
-  rw [← sub_neg_eq_add, ← neg_div, Nat.cast_sub le_b.le]
+  rw [← sub_neg_eq_add, ← neg_div, Nat.cast_id, Nat.cast_sub le_b.le]
   grw [← Nat.le_ceil]
 
 /-- If `x` is close to `y` and `y` is close to `z`, then `x` and `z` are at least as close. -/
@@ -153,14 +154,14 @@ theorem cardPowDegree_anti_archimedean {x y z : Fq[X]} {a : ℤ} (hxy : cardPowD
   · rwa [hxz', sub_self, map_zero]
   rw [← Ne, ← sub_ne_zero] at hxy' hyz' hxz'
   refine lt_of_le_of_lt ?_ (max_lt hxy hyz)
-  rw [cardPowDegree_nonzero _ hxz', cardPowDegree_nonzero _ hxy',
-    cardPowDegree_nonzero _ hyz']
+  rw [cardPowDegree_of_ne_zero _ hxz', cardPowDegree_of_ne_zero _ hxy',
+    cardPowDegree_of_ne_zero _ hyz']
   have : (1 : ℤ) ≤ Fintype.card Fq := mod_cast (@Fintype.one_lt_card Fq _ _).le
   simp only [le_max_iff]
   refine Or.imp (pow_le_pow_right₀ this) (pow_le_pow_right₀ this) ?_
   rw [natDegree_le_iff_degree_le, natDegree_le_iff_degree_le, ← le_max_iff, ←
     degree_eq_natDegree hxy', ← degree_eq_natDegree hyz']
-  convert! degree_add_le (x - y) (y - z) using 2
+  convert degree_add_le (x - y) (y - z) using 2
   exact (sub_add_sub_cancel _ _ _).symm
 
 /-- A slightly stronger version of `exists_partition` on which we perform induction on `n`:
