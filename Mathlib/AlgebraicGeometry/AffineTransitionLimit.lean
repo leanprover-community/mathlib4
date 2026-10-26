@@ -680,7 +680,7 @@ In other words, for each pair of `a : Homₛ(Dᵢ, X)` and `b : Homₛ(Dⱼ, X)`
 same map `Homₛ(lim Dᵢ, X)`, there exists a `k` with `fᵢ : k ⟶ i` and `fⱼ : k ⟶ j` such that
 `D(fᵢ) ≫ a = D(fⱼ) ≫ b`.
 -/
-@[stacks 01ZC "Injective part of (1) => (3), for morphisms locally of finite type."]
+@[stacks 01ZC "Injective part of (1) => (3), only assuming the morphism is locally of finite type."]
 lemma Scheme.exists_hom_hom_comp_eq_comp_of_locallyOfFiniteType
     {i : I} (a : D.obj i ⟶ X) (ha : t.app i = a ≫ f)
     {j : I} (b : D.obj j ⟶ X) (hb : t.app j = b ≫ f)
