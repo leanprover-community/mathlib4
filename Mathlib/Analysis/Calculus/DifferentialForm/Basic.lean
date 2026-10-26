@@ -130,6 +130,14 @@ theorem extDeriv_fun_smul (c : 𝕜) (ω : E → E [⋀^Fin n]→L[𝕜] F) :
     extDeriv (c • ω) x = c • extDeriv ω x :=
   extDeriv_smul c ω
 
+@[simp]
+lemma extDerivWithin_zero : extDerivWithin (0 : E → E [⋀^Fin n]→L[𝕜] F) s x = 0 := by
+  simp [extDerivWithin]
+
+@[simp]
+lemma extDeriv_zero : extDeriv (0 : E → E [⋀^Fin n]→L[𝕜] F) x = 0 := by
+  simp [extDeriv]
+
 /-- The exterior derivative of a `0`-form given by a function `f` within a set
 is the 1-form given by the derivative of `f` within the set. -/
 theorem extDerivWithin_constOfIsEmpty (f : E → F) (hs : UniqueDiffWithinAt 𝕜 s x) :
