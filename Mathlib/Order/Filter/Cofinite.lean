@@ -147,7 +147,7 @@ theorem Tendsto.countable_compl_preimage_ker {f : α → β}
 /-- If `ι` is countable, then there are countably many sets in the cofinite filter. -/
 theorem countable_sets_cofinite [Countable ι] : (cofinite : Filter ι).sets.Countable :=
   Set.Countable.mono (fun _ h ↦ h) <|
-  Set.Countable.preimage_of_injOn Set.Countable.ofPred_finite compl_bijective.1.injOn
+    Set.Countable.preimage_of_injOn Set.Countable.ofPred_finite compl_bijective.1.injOn
 
 /-- Given a collection of filters `l i : Filter (α i)` and sets `s i ∈ l i`,
 if all but finitely many of `s i` are the whole space,
