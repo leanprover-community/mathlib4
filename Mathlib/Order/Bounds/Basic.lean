@@ -176,6 +176,10 @@ theorem IsLUB.mono (ha : IsLUB s a) (hb : IsLUB t b) (hst : s ⊆ t) : a ≤ b :
   IsLeast.mono hb ha <| upperBounds_mono_set hst
 
 @[to_dual]
+theorem subset_lowerBounds_upperBounds (s : Set α) : s ⊆ lowerBounds (upperBounds s) :=
+  fun _ hx _ hy => hy hx
+
+@[to_dual]
 theorem Set.Nonempty.bddAbove_lowerBounds (hs : s.Nonempty) : BddAbove (lowerBounds s) :=
   hs.mono (subset_upperBounds_lowerBounds s)
 
@@ -183,6 +187,10 @@ theorem Set.Nonempty.bddAbove_lowerBounds (hs : s.Nonempty) : BddAbove (lowerBou
 ### Conversions
 -/
 
+
+@[to_dual]
+theorem IsLeast.isGLB (h : IsLeast s a) : IsGLB s a :=
+  ⟨h.2, fun _ hb => hb h.1⟩
 
 @[to_dual]
 theorem IsLUB.upperBounds_eq (h : IsLUB s a) : upperBounds s = Ici a :=
@@ -607,6 +615,15 @@ theorem isLUB_pair [SemilatticeSup γ] {a b : γ} : IsLUB {a, b} (a ⊔ b) :=
 @[to_dual]
 theorem isGreatest_pair [LinearOrder γ] {a b : γ} : IsGreatest {a, b} (max a b) :=
   isGreatest_singleton.insert _
+
+/-!
+#### Lower/upper bounds
+-/
+
+
+@[to_dual (attr := simp)]
+theorem isLUB_lowerBounds : IsLUB (lowerBounds s) a ↔ IsGLB s a :=
+  ⟨fun H => ⟨fun _ hx => H.2 <| subset_upperBounds_lowerBounds s hx, H.1⟩, IsGreatest.isLUB⟩
 
 end
 
