@@ -149,7 +149,7 @@ Law of cosines for the chord from a point of the circle `circleMap 0 r` to an ar
 See `norm_circleMap_zero_sub_sq'` for the half-angle form.
 -/
 theorem norm_circleMap_zero_sub_sq (r θ : ℝ) (a : ℂ) :
-    ‖circleMap 0 r θ - a‖ ^ 2 = r ^ 2 + ‖a‖ ^ 2 - 2 * r * ‖a‖ * Real.cos (θ - a.arg) := by
+    ‖b - a‖ ^ 2 = ‖b‖ ^ 2 + ‖a‖ ^ 2 - 2 * ‖b‖ * ‖a‖ * Real.cos (b.arg - a.arg)
   simp [← norm_circleMap_sub_circleMap_sq 0]
 
 /--
