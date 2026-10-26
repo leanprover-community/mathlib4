@@ -867,8 +867,7 @@ variable (R) [CommSemiring R] [DecidableEq n]
 @[simps!] def prodAlgEquiv [Semiring α] [Algebra R α] [Semiring β] [Algebra R β] :
     Matrix n n (α × β) ≃ₐ[R] Matrix n n α × Matrix n n β where
   __ := prodRingEquiv
-  commutes' := (AlgHom.mk' (prodRingEquiv (n := n) (α := α) (β := β)).toRingHom
-    fun _ _ ↦ rfl).commutes
+  __ := AlgHom.mk' (prodRingEquiv (n := n) (α := α) (β := β)).toRingHom fun _ _ ↦ rfl
 
 @[simp] theorem toRingEquiv_prodAlgEquiv [Semiring α] [Algebra R α] [Semiring β] [Algebra R β] :
     (prodAlgEquiv (n := n) (α := α) (β := β) R :
