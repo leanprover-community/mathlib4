@@ -230,6 +230,27 @@ theorem degree_add_eq_of_leadingCoeff_add_ne_zero (h : leadingCoeff p + leadingC
     | Or.inr (Or.inr hlt) => by
       rw [degree_add_eq_left_of_degree_lt hlt, max_eq_left_of_lt hlt]
 
+theorem natDegree_add_eq_of_leadingCoeff_add_ne_zero (h : leadingCoeff p + leadingCoeff q ≠ 0) :
+    natDegree (p + q) = max p.natDegree q.natDegree := by
+  rw [natDegree, degree_add_eq_of_leadingCoeff_add_ne_zero h]
+  exact Monotone.map_max <| WithBot.unbotD_bot_monotone ℕ
+
+lemma degree_add_of_leadingCoeff_nonneg [PartialOrder R] [AddLeftMono R]
+    {f g : R[X]} (hf : 0 ≤ f.leadingCoeff) (hg : 0 ≤ g.leadingCoeff) :
+    (f + g).degree = max f.degree g.degree := by
+  by_cases h : f = 0 ∧ g = 0
+  · simp [h]
+  apply degree_add_eq_of_leadingCoeff_add_ne_zero
+  simpa [add_eq_zero_iff_of_nonneg hf hg] using h
+
+lemma natDegree_add_of_leadingCoeff_nonneg [PartialOrder R] [AddLeftMono R]
+    {f g : R[X]} (hf : 0 ≤ f.leadingCoeff) (hg : 0 ≤ g.leadingCoeff) :
+    (f + g).natDegree = max f.natDegree g.natDegree := by
+  by_cases h : f = 0 ∧ g = 0
+  · simp [h]
+  apply natDegree_add_eq_of_leadingCoeff_add_ne_zero
+  simpa [add_eq_zero_iff_of_nonneg hf hg] using h
+
 lemma natDegree_eq_of_natDegree_add_lt_left (p q : R[X])
     (H : natDegree (p + q) < natDegree p) : natDegree p = natDegree q := by
   by_contra h
@@ -278,6 +299,41 @@ theorem leadingCoeff_add_of_degree_eq (h : degree p = degree q)
     apply natDegree_eq_of_degree_eq
     rw [degree_add_eq_of_leadingCoeff_add_ne_zero hlc, h, max_self]
   simp only [leadingCoeff, this, natDegree_eq_of_degree_eq h, coeff_add]
+
+lemma leadingCoeff_add_eq_left {f g : R[X]} (h : g.natDegree < f.natDegree) :
+    (f + g).leadingCoeff = f.leadingCoeff := by
+  rw [leadingCoeff, natDegree_add_eq_left_of_natDegree_lt h, coeff_add,
+    ← leadingCoeff, coeff_eq_zero_of_natDegree_lt h, add_zero]
+
+lemma leadingCoeff_add_eq_right {f g : R[X]} (h : f.natDegree < g.natDegree) :
+    (f + g).leadingCoeff = g.leadingCoeff := by
+  rw [leadingCoeff, natDegree_add_eq_right_of_natDegree_lt h, coeff_add,
+    ← leadingCoeff, coeff_eq_zero_of_natDegree_lt h, zero_add]
+
+lemma leadingCoeff_add_nonneg [PartialOrder R] [AddLeftMono R]
+    {f g : R[X]} (hf : 0 ≤ f.leadingCoeff) (hg : 0 ≤ g.leadingCoeff) :
+    0 ≤ (f + g).leadingCoeff := by
+  rcases lt_trichotomy f.natDegree g.natDegree with h | h | h
+  rotate_right
+  · exact leadingCoeff_add_eq_left h ▸ hf
+  · exact leadingCoeff_add_eq_right h ▸ hg
+  have := natDegree_add_of_leadingCoeff_nonneg hf hg
+  rw [← h, max_self] at this
+  rw [leadingCoeff, coeff_add, this, ← leadingCoeff, h, ← leadingCoeff]
+  exact add_nonneg hf hg
+
+lemma le_leadingCoeff_add_of_nonneg [SemilatticeInf R] [AddLeftMono R]
+    {f g : R[X]} (hf : 0 ≤ f.leadingCoeff) (hg : 0 ≤ g.leadingCoeff) :
+    f.leadingCoeff ⊓ g.leadingCoeff ≤ (f + g).leadingCoeff := by
+  rcases lt_trichotomy f.natDegree g.natDegree with h | h | h
+  rotate_right
+  · exact inf_le_of_left_le (le_of_eq (leadingCoeff_add_eq_left h).symm)
+  · exact inf_le_of_right_le (le_of_eq (leadingCoeff_add_eq_right h).symm)
+  refine inf_le_of_left_le ?_
+  have := natDegree_add_of_leadingCoeff_nonneg hf hg
+  rw [← h, max_self] at this
+  rw [leadingCoeff, leadingCoeff, this, coeff_add, ← leadingCoeff, h, ← leadingCoeff]
+  exact le_add_of_nonneg_right hg
 
 @[simp]
 theorem coeff_mul_degree_add_degree (p q : R[X]) :
