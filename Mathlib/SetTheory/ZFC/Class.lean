@@ -335,6 +335,7 @@ scoped under the `Class` namespace. -/
 def sUnion (x : Class) : Class :=
   sSup (classToCong x)
 
+set_option linter.deprecated false in
 @[inherit_doc]
 scoped prefix:110 "⋃₀ " => Class.sUnion
 
@@ -344,6 +345,7 @@ Uses `⋂₀` notation, scoped under the `Class` namespace. -/
 def sInter (x : Class) : Class :=
   sInf (classToCong x)
 
+set_option linter.deprecated false in
 @[inherit_doc]
 scoped prefix:110 "⋂₀ " => Class.sInter
 
