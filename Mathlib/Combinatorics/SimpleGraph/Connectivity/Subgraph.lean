@@ -358,20 +358,20 @@ theorem edgeSet_mapToSubgraph {u v} {p : G.Walk u v} :
     p.mapToSubgraph.edgeSet = Sym2.map (↑) ⁻¹' p.edgeSet := by
   simp [← p.image_edgeSet_mapToSubgraph, Sym2.map.injective]
 
-theorem isTrail_mapToSubgraph {u v} {p : G.Walk u v} :
-    p.mapToSubgraph.IsTrail ↔ p.IsTrail := by
+@[simp]
+theorem isTrail_mapToSubgraph {u v} {p : G.Walk u v} : p.mapToSubgraph.IsTrail ↔ p.IsTrail := by
   simp [p.map_mapToSubgraph_hom, ← isTrail_map_iff_of_injective Subgraph.hom_injective]
 
-theorem isPath_mapToSubgraph {u v} {p : G.Walk u v} :
-    p.mapToSubgraph.IsPath ↔ p.IsPath := by
+@[simp]
+theorem isPath_mapToSubgraph {u v} {p : G.Walk u v} : p.mapToSubgraph.IsPath ↔ p.IsPath := by
   simp [p.map_mapToSubgraph_hom, ← isPath_map_iff_of_injective Subgraph.hom_injective]
 
-theorem isCircuit_mapToSubgraph {v} {p : G.Walk v v} :
-    p.mapToSubgraph.IsCircuit ↔ p.IsCircuit := by
+@[simp]
+theorem isCircuit_mapToSubgraph {v} {p : G.Walk v v} : p.mapToSubgraph.IsCircuit ↔ p.IsCircuit := by
   simp [p.map_mapToSubgraph_hom, ← isCircuit_map_iff_of_injective Subgraph.hom_injective]
 
-theorem isCycle_mapToSubgraph {v} {p : G.Walk v v} :
-    p.mapToSubgraph.IsCycle ↔ p.IsCycle := by
+@[simp]
+theorem isCycle_mapToSubgraph {v} {p : G.Walk v v} : p.mapToSubgraph.IsCycle ↔ p.IsCycle := by
   simp [p.map_mapToSubgraph_hom, ← isCycle_map_iff_of_injective Subgraph.hom_injective]
 
 /-- Mapping a walk to its own subgraph and then to `G[w.support]` is the same as inducing the walk
