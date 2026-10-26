@@ -49,9 +49,9 @@ lemma isEdgeTransitive_iff :
 
 lemma isSymmetric_iff : G.IsSymmetric ↔ ∀ d₁ d₂, ∃ f : G ≃g G, f.toHom.mapDart d₁ = d₂ := .rfl
 
-alias ⟨IsVertexTransitive.forall_exists_iso, _⟩ := isVertexTransitive_iff
-alias ⟨IsEdgeTransitive.forall_exists_iso, _⟩ := isEdgeTransitive_iff
-alias ⟨IsSymmetric.forall_exists_iso, _⟩ := isSymmetric_iff
+alias ⟨IsVertexTransitive.exists_iso, _⟩ := isVertexTransitive_iff
+alias ⟨IsEdgeTransitive.exists_iso, _⟩ := isEdgeTransitive_iff
+alias ⟨IsSymmetric.exists_iso, _⟩ := isSymmetric_iff
 
 protected lemma IsVertexTransitive.congr (vt : G.IsVertexTransitive) (f : G ≃g H) :
     H.IsVertexTransitive := fun v w ↦ by
