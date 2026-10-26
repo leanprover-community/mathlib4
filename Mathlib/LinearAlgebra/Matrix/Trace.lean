@@ -181,7 +181,7 @@ theorem trace_mul_pow_comm' [CommSemiring R]
   | zero => exact (hk rfl).elim
   | succ k => rw [pow_succ, ← Matrix.mul_assoc, trace_mul_cycle, hpow]
 
-/-- For square matrices, the trace of any power of A * B is unchanged when the factors
+/-- For square matrices, the trace of any power of `A * B` is unchanged when the factors
 are reversed. Unlike the rectangular version, this also holds at exponent zero.
 
 See trace_mul_pow_comm' for the rectangular version. -/
