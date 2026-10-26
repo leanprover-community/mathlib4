@@ -120,7 +120,7 @@ variable (P Q : C) (F : C ⥤ D) [Functor.PreservesZeroMorphisms F]
 
 /-- A functor `F : C ⥤ D` sends binary bicones for `P` and `Q`
 to binary bicones for `G.obj P` and `G.obj Q` functorially. -/
-@[simps]
+@[simps, implicit_reducible]
 def functoriality : BinaryBicone P Q ⥤ BinaryBicone (F.obj P) (F.obj Q) where
   obj A :=
     { pt := F.obj A.pt

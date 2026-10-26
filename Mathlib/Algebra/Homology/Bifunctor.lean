@@ -38,48 +38,28 @@ variable [HasZeroMorphisms C₁] [HasZeroMorphisms C₂] [HasZeroMorphisms D]
   (F : C₁ ⥤ C₂ ⥤ D) {I₁ I₂ : Type*} (c₁ : ComplexShape I₁) (c₂ : ComplexShape I₂)
   [F.PreservesZeroMorphisms] [∀ X₁, (F.obj X₁).PreservesZeroMorphisms]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 variable {c₁} in
 /-- Auxiliary definition for `mapBifunctorHomologicalComplex`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def mapBifunctorHomologicalComplexObj (K₁ : HomologicalComplex C₁ c₁) :
     HomologicalComplex C₂ c₂ ⥤ HomologicalComplex₂ D c₁ c₂ where
   obj K₂ := HomologicalComplex₂.ofGradedObject c₁ c₂
       (((GradedObject.mapBifunctor F I₁ I₂).obj K₁.X).obj K₂.X)
       (fun i₁ i₁' i₂ => (F.map (K₁.d i₁ i₁')).app (K₂.X i₂))
       (fun i₁ i₂ i₂' => (F.obj (K₁.X i₁)).map (K₂.d i₂ i₂'))
-      (fun i₁ i₁' h₁ i₂ => by
-        dsimp
-        rw [K₁.shape _ _ h₁, Functor.map_zero, zero_app])
-      (fun i₁ i₂ i₂' h₂ => by
-        dsimp
-        rw [K₂.shape _ _ h₂, Functor.map_zero])
-      (fun i₁ i₁' i₁'' i₂ => by
-        dsimp
-        rw [← NatTrans.comp_app, ← Functor.map_comp, HomologicalComplex.d_comp_d,
-          Functor.map_zero, zero_app])
-      (fun i₁ i₂ i₂' i₂'' => by
-        dsimp
-        rw [← Functor.map_comp, HomologicalComplex.d_comp_d, Functor.map_zero])
-      (fun i₁ i₁' i₂ i₂' => by
-        dsimp
-        rw [NatTrans.naturality])
+      (fun i₁ i₁' h₁ i₂ => by simp [K₁.shape _ _ h₁])
+      (fun i₁ i₂ i₂' h₂ => by simp [K₂.shape _ _ h₂])
+      (fun i₁ i₁' i₁'' i₂ => by simp [← NatTrans.comp_app, ← Functor.map_comp])
+      (fun i₁ i₂ i₂' i₂'' => by simp [← Functor.map_comp])
+      (fun i₁ i₁' i₂ i₂' => by simp)
   map {K₂ K₂' φ} := HomologicalComplex₂.homMk
-      (((GradedObject.mapBifunctor F I₁ I₂).obj K₁.X).map φ.f)
-        (by dsimp; intros; rw [NatTrans.naturality]) (by
-          dsimp
-          intros
-          simp only [← Functor.map_comp, φ.comm])
-  map_id K₂ := by dsimp; ext; dsimp; rw [Functor.map_id]
-  map_comp f g := by dsimp; ext; dsimp; rw [Functor.map_comp]
+      (((GradedObject.mapBifunctor F I₁ I₂).obj K₁.X).map φ.f) (by simp)
+        (by simp [← Functor.map_comp])
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a functor `F : C₁ ⥤ C₂ ⥤ D`, this is the bifunctor which sends
 `K₁ : HomologicalComplex C₁ c₁` and `K₂ : HomologicalComplex C₂ c₂` to the bicomplex
 which is degree `(i₁, i₂)` consists of `(F.obj (K₁.X i₁)).obj (K₂.X i₂)`. -/
-@[simps! obj_obj_X_X obj_obj_X_d obj_obj_d_f obj_map_f_f map_app_f_f]
+@[simps! obj_obj_X_X obj_obj_X_d obj_obj_d_f obj_map_f_f map_app_f_f, implicit_reducible]
 def mapBifunctorHomologicalComplex :
     HomologicalComplex C₁ c₁ ⥤ HomologicalComplex C₂ c₂ ⥤ HomologicalComplex₂ D c₁ c₂ where
   obj := mapBifunctorHomologicalComplexObj F c₂
@@ -274,7 +254,6 @@ noncomputable def mapBifunctorMap : mapBifunctor K₁ K₂ F c ⟶ mapBifunctor 
   HomologicalComplex₂.total.map (((F.mapBifunctorHomologicalComplex c₁ c₂).map f₁).app K₂ ≫
     ((F.mapBifunctorHomologicalComplex c₁ c₂).obj L₁).map f₂) c
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ι_mapBifunctorMap (i₁ : I₁) (i₂ : I₂) (j : J)
     (h : ComplexShape.π c₁ c₂ c (i₁, i₂) = j) :
@@ -297,7 +276,7 @@ variable [HasZeroMorphisms C₁] [HasZeroMorphisms C₂] [Preadditive D]
 open HomologicalComplex
 
 /-- The bifunctor on homological complexes that is induced by a bifunctor. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def map₂HomologicalComplex
     [∀ (K₁ : HomologicalComplex C₁ c₁) (K₂ : HomologicalComplex C₂ c₂),
       HasMapBifunctor K₁ K₂ F c] :

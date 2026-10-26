@@ -49,13 +49,12 @@ noncomputable abbrev CommSq.cokernelCofork (sq : CommSq f g inl inr) :
   CokernelCofork.ofπ (biprod.desc inl inr) (by simp [sq.w])
 
 /-- The short complex attached to the cokernel cofork of a commutative square. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def CommSq.shortComplex (sq : CommSq f g inl inr) : ShortComplex C where
   f := biprod.lift f (-g)
   g := biprod.desc inl inr
   zero := by simp [sq.w]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- A commutative square in a preadditive category is a pushout square iff
 the corresponding diagram `X₁ ⟶ X₂ ⊞ X₃ ⟶ X₄ ⟶ 0` makes `X₄` a cokernel. -/
 noncomputable def CommSq.isColimitEquivIsColimitCokernelCofork (sq : CommSq f g inl inr) :
@@ -110,7 +109,6 @@ noncomputable def IsPushout.isColimitCokernelCofork (h : IsPushout f g inl inr) 
     IsColimit h.cokernelCofork :=
   h.isColimitEquivIsColimitCokernelCofork h.isColimit
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsPushout.epi_shortComplex_g (h : IsPushout f g inl inr) :
     Epi h.shortComplex.g := by
   rw [Preadditive.epi_iff_cancel_zero]
@@ -130,13 +128,12 @@ noncomputable abbrev CommSq.kernelFork (sq : CommSq fst snd f g) :
 
 /-- The short complex attached to the kernel fork of a commutative square.
 (This is similar to `CommSq.shortComplex`, but with different signs.) -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def CommSq.shortComplex' (sq : CommSq fst snd f g) : ShortComplex C where
   f := biprod.lift fst snd
   g := biprod.desc f (-g)
   zero := by simp [sq.w]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- A commutative square in a preadditive category is a pullback square iff
 the corresponding diagram `0 ⟶ X₁ ⟶ X₂ ⊞ X₃ ⟶ X₄ ⟶ 0` makes `X₁` a kernel. -/
 noncomputable def CommSq.isLimitEquivIsLimitKernelFork (sq : CommSq fst snd f g) :
@@ -189,7 +186,6 @@ noncomputable def IsPullback.isLimitKernelFork (h : IsPullback fst snd f g) :
     IsLimit h.kernelFork :=
   h.isLimitEquivIsLimitKernelFork h.isLimit
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsPullback.mono_shortComplex'_f (h : IsPullback fst snd f g) :
     Mono h.shortComplex'.f := by
   rw [Preadditive.mono_iff_cancel_zero]

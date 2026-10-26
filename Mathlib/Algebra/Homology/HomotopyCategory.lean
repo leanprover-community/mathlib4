@@ -42,6 +42,7 @@ instance homotopy_congruence : Congruence (homotopic V c) where
 
 /-- `HomotopyCategory V c` is the category of chain complexes of shape `c` in `V`,
 with chain maps identified when they are homotopic. -/
+@[reducible]
 def HomotopyCategory :=
   CategoryTheory.Quotient (homotopic V c)
 
@@ -131,7 +132,6 @@ def homotopyOutMap {C D : HomologicalComplex V c} (f : C ⟶ D) :
   apply homotopyOfEq
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem quotient_map_out_comp_out {C D E : HomotopyCategory V c} (f : C ⟶ D) (g : D ⟶ E) :
     (quotient V c).map (Quot.out f ≫ Quot.out g) = f ≫ g := by simp
 
@@ -298,7 +298,6 @@ def Functor.mapHomotopyCategoryCompIso {W' : Type*} [Category W'] [Preadditive W
     (HomotopyCategory.quotient W' c))
 
 variable {c} in
-set_option backward.defeqAttrib.useBackward true in
 /-- The preimage by a fully faithful functor of a homotopy between morphisms
 of homological complexes. -/
 def Functor.preimageHomotopy

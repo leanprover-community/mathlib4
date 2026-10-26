@@ -36,7 +36,7 @@ open Limits
 variable {C : Type*} [Category* C] [HasZeroMorphisms C]
 
 /-- The composable arrows associated to a short complex. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def ShortComplex.toComposableArrows (S : ShortComplex C) : ComposableArrows C 2 :=
   ComposableArrows.mk₂ S.f S.g
 
@@ -222,11 +222,9 @@ lemma isComplex₂_mk (S : ComposableArrows C 2) (w : S.map' 0 1 ≫ S.map' 1 2 
     S.IsComplex :=
   S.isComplex₂_iff.2 w
 
-set_option backward.isDefEq.respectTransparency false in
 lemma _root_.CategoryTheory.ShortComplex.isComplex_toComposableArrows (S : ShortComplex C) :
     S.toComposableArrows.IsComplex :=
-  -- Disable `Fin.reduceFinMk` because otherwise `Precompose.map_one_succ` does not apply. (https://github.com/leanprover-community/mathlib4/issues/27382)
-  isComplex₂_mk _ (by simp [-Fin.reduceFinMk])
+  isComplex₂_mk _ (by simp)
 
 lemma exact₂_iff (S : ComposableArrows C 2) (hS : S.IsComplex) :
     S.Exact ↔ (S.sc' hS 0 1 2).Exact := by

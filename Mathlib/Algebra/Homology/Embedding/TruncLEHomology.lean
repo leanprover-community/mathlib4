@@ -101,7 +101,7 @@ section
 variable [Abelian C] (K : HomologicalComplex C c') (e : c.Embedding c') [e.IsTruncLE]
 
 /-- The cokernel sequence of the monomorphism `K.ιTruncLE e`. -/
-@[simps X₁ X₂ f]
+@[simps X₁ X₂ f, implicit_reducible]
 noncomputable def shortComplexTruncLE : ShortComplex (HomologicalComplex C c') :=
   ShortComplex.mk (K.ιTruncLE e) _ (cokernel.condition _)
 
