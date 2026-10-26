@@ -337,10 +337,6 @@ theorem div_mem_center (ha : a ∈ Set.center M) (hb : b ∈ Set.center M) : a /
   rw [div_eq_mul_inv]
   exact mul_mem_center ha (inv_mem_center hb)
 
-@[to_additive (attr := simp) zsmul_mem_addCenter]
-theorem zpow_mem_center (n : ℤ) (ha : a ∈ Set.center M) : a ^ n ∈ Set.center M := by
-  cases n <;> simp [ha]
-
 end DivisionMonoid
 
 section Group
