@@ -374,6 +374,11 @@ theorem isNClique_induce_iff (s : Set α) (t : Finset s) (n : ℕ) :
     (G.induce s).IsNClique n t ↔ G.IsNClique n (t.map (.subtype _)) := by
   simp [isNClique_iff, isClique_induce_iff]
 
+--theorem Hom.isNClique_image {G' : SimpleGraph β} {f : G →g G'} {s : Finset α} (hfs : Set.InjOn f s)
+--    {n : ℕ}  (hG : G.IsNClique n s) :
+--    G'.IsNClique n (s.image f) := by
+--  simp [isNClique_iff, f.isClique_image]
+
 theorem Embedding.isNClique_map {G' : SimpleGraph β} {f : G ↪g G'} {n : ℕ} {s : Finset α} :
     G'.IsNClique n (s.map f.toEmbedding) ↔ G.IsNClique n s := by
   simp [isNClique_iff, f.isClique_image]
@@ -665,6 +670,23 @@ theorem Embedding.cliqueFreeOn_image {G' : SimpleGraph β} {f : G ↪g G'} {s : 
   have hf : s.BijOn f (f '' s) := f.injective.bijOn_image
   simp_rw [← cliqueFree_induce_iff, (f.induceIso hf).cliqueFree_iff]
 
+theorem Hom.cliqueFreeOn_image {G' : SimpleGraph β} {f : G →g G'} {s : Set α}
+    (hfs : s.InjOn f) {n : ℕ} (hG' : G'.CliqueFreeOn (f '' s) n) :
+     G.CliqueFreeOn s n := by
+  classical
+  unfold CliqueFreeOn at hG' ⊢
+  intro t hts ht
+  let t' : Finset β := t.image f
+  have ht' : (t' : Set β) ⊆ f '' s := by
+    rw [coe_image]
+    exact Set.image_mono hts
+  have ht'G' : G'.IsNClique n t' := by
+    constructor
+    · rw [coe_image]
+      exact ht.isClique.image f
+    · rw [card_image_of_injOn (hfs.mono hts), ht.card_eq]
+  exact hG' ht' ht'G'
+
 end CliqueFreeOn
 
 /-! ### Set of cliques -/
@@ -871,7 +893,7 @@ lemma maximumClique_exists [Finite α] : ∃ (s : Finset α), G.IsMaximumClique 
 
 theorem Iso.cliqueNum_eq {G' : SimpleGraph β} (f : G ≃g G') :
     G.cliqueNum = G'.cliqueNum := by
-  refine congrArg sSup <| Set.ext fun _ ↦ ⟨?_, ?_⟩
+  refine congr(sSup $(Set.ext fun _ ↦ ⟨?_, ?_⟩))
   · exact fun ⟨_, h⟩ ↦ ⟨_, f.toEmbedding.isNClique_map.mpr h⟩
   · exact fun ⟨_, h⟩ ↦ ⟨_, f.symm.toEmbedding.isNClique_map.mpr h⟩
 
@@ -930,7 +952,8 @@ theorem cliqueFinset_map_of_equiv (e : α ≃ β) (n : ℕ) : (G.map e).cliqueFi
 
 variable {G} in
 theorem Iso.map_cliqueFinset_finsetCongr {G' : SimpleGraph β} [DecidableRel G'.Adj] (f : G ≃g G')
-    (n : ℕ) : (G.cliqueFinset n).map (f : α ≃ β).finsetCongr.toEmbedding = G'.cliqueFinset n := by
+    (n : ℕ) : (G.cliqueFinset n).map f.finsetCongr.toEmbedding = G'.cliqueFinset n := by
+  rw [show f.finsetCongr = (f : α ≃ β).finsetCongr by rfl]
   unfold cliqueFinset
   ext s'
   simp [← f.toEmbedding.isNClique_map, Equiv.finsetCongr_symm, Finset.map_map]
