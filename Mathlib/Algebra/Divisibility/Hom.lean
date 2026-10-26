@@ -34,6 +34,10 @@ lemma map_dvd_iff (e : E) : e a ∣ e b ↔ a ∣ b :=
 lemma map_rightDvd_iff (e : E) : e a ∣ᵣ e b ↔ a ∣ᵣ b :=
   ⟨fun h ↦ by simpa using map_rightDvd (MulEquivClass.toMulEquiv e).symm h, map_rightDvd e⟩
 
+@[deprecated map_dvd_iff +typeChanged (since := "2026-10-26")]
+lemma map_dvd_iff_dvd_symm (e : E) {b : N} : e a ∣ b ↔ a ∣ (MulEquivClass.toMulEquiv e).symm b := by
+  simp [← map_dvd_iff e]
+
 protected lemma MulHom.map_dvd (f : M →ₙ* N) : a ∣ b → f a ∣ f b := map_dvd f
 
 protected lemma MonoidHom.map_dvd {M N : Type*} [Monoid M] [Monoid N] (f : M →* N) {a b : M} :
