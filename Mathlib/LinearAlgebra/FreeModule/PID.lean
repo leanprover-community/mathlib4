@@ -331,8 +331,8 @@ noncomputable def Module.basisOfFiniteTypeTorsionFree [Fintype ι] {s : ι → M
   -- such that `A • M ⊆ N` for some `A ≠ 0`
   have := exists_linearIndepOn_smul_mem_span hs
   let I : Set ι := this.choose
-  obtain ⟨indepI : LinearIndependent R (s ∘ (fun x => x) : I → M), hA⟩ := this.choose_spec
-  let N := span R (range (s ∘ (fun x => x) : I → M))
+  obtain ⟨indepI : LinearIndependent R (s ∘ Subtype.val : I → M), hA⟩ := this.choose_spec
+  let N := span R (range (s ∘ Subtype.val : I → M))
   -- `s` restricted to `I` is a basis of `N`
   let sI_basis : Basis I R N := Basis.span indepI
   -- `M ≃ A • M` because `M` is torsion free and `A ≠ 0`
