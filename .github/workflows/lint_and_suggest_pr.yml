@@ -71,9 +71,6 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: 3.x
-      # The steps of pre-commit/action v3.0.1, without its `actions/cache` step: see the
-      # `no-actions-cache` job in `actionlint.yml`. So pre-commit sets up its hook
-      # environments afresh on every run.
       - run: python -m pip install pre-commit==4.6.2
       - run: python -m pip freeze --local
       - run: pre-commit run --show-diff-on-failure --color=always --all-files
