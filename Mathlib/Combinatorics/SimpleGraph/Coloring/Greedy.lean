@@ -205,14 +205,13 @@ theorem not_lt_enum_ord_greedyColorsBefore (v : V) (h : G.greedyColorsBefore r v
   rw [greedyColoring_eq_min]
   exact not_lt_enum_ord_mk_min_compl r h _
 
--- `typein_enum` unfolds `_ ∈ Set.Iio` in its type, but `Set.Iio` is not implicit reducible
-set_option backward.isDefEq.respectTransparency.types false in
 theorem not_lt_enum_degree_greedyColoring (v : V) [Fintype <| G.neighborSet v] :
     ¬r (enum r ⟨G.degree v, by
       rw [Set.mem_Iio, ← card_neighborFinset_eq_degree, ← ord_natCast, ← Cardinal.mk_coe_finset]
       exact ord_mk_lt_type r (Finset.finite_toSet _) ⟨v, G.notMem_neighborFinset_self v⟩
     ⟩) (G.greedyColoring r v) := by
-  grw [← typein_le_typein, typein_enum, typein_greedyColoring_le_coe_degree]
+  generalize_proofs h
+  grw [← typein_le_typein, typein_enum r h, typein_greedyColoring_le_coe_degree]
 
 variable {G} in
 /-- A graph is `α`-colorable iff there exists a well-ordering of its vertices such that
