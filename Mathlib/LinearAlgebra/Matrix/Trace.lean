@@ -171,10 +171,10 @@ This requires a positive exponent because the identity does not hold at exponent
 types have different cardinalities. -/
 theorem trace_mul_pow_comm' [CommSemiring R] [DecidableEq m] [DecidableEq n] (A : Matrix m n R)
     (B : Matrix n m R) {k : ℕ} (hk : k ≠ 0) : trace ((A * B) ^ k) = trace ((B * A) ^ k) := by
-  match k with | k + 1 =>
-  rw [pow_succ, ← Matrix.mul_assoc, trace_mul_cycle, ← Matrix.mul_pow_mul, Matrix.mul_assoc,
-    ← pow_succ]
-
+  match k with
+  | k + 1 =>
+    rw [pow_succ, ← Matrix.mul_assoc, trace_mul_cycle, ← Matrix.mul_pow_mul, Matrix.mul_assoc,
+      ← pow_succ]
 /-- For square matrices, the trace of any power of `A * B` is unchanged when the factors
 are reversed.
 
