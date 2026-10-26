@@ -43,14 +43,15 @@ def IsSymmetric (G : SimpleGraph V) : Prop :=
 
 lemma isVertexTransitive_iff : G.IsVertexTransitive ↔ ∀ v w, ∃ f : G ≃g G, f v = w := .rfl
 
-lemma isEdgeTransitive_iff : G.IsEdgeTransitive ↔
-    ∀ ⦃e₁ e₂⦄, e₁ ∈ G.edgeSet → e₂ ∈ G.edgeSet → ∃ f : G ≃g G, e₁.map f = e₂ := .rfl
+lemma isEdgeTransitive_iff :
+    G.IsEdgeTransitive ↔ ∀ ⦃e₁ e₂⦄, e₁ ∈ G.edgeSet → e₂ ∈ G.edgeSet → ∃ f : G ≃g G, e₁.map f = e₂ :=
+  .rfl
 
 lemma isSymmetric_iff : G.IsSymmetric ↔ ∀ d₁ d₂, ∃ f : G ≃g G, f.toHom.mapDart d₁ = d₂ := .rfl
 
-alias ⟨IsVertexTransitive.def, _⟩ := isVertexTransitive_iff
-alias ⟨IsEdgeTransitive.def, _⟩ := isEdgeTransitive_iff
-alias ⟨IsSymmetric.def, _⟩ := isSymmetric_iff
+alias ⟨IsVertexTransitive.forall_exists_iso, _⟩ := isVertexTransitive_iff
+alias ⟨IsEdgeTransitive.forall_exists_iso, _⟩ := isEdgeTransitive_iff
+alias ⟨IsSymmetric.forall_exists_iso, _⟩ := isSymmetric_iff
 
 protected lemma IsVertexTransitive.congr (vt : G.IsVertexTransitive) (f : G ≃g H) :
     H.IsVertexTransitive := fun v w ↦ by
