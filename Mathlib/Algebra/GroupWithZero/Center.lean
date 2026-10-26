@@ -35,7 +35,7 @@ instance : MulZeroClass (Center M₀) where
   mul_zero m := by rw [Center.eq_iff, Center.coe_mul]; exact mul_zero m.val
 
 @[simp]
-lemma Center.coe_zero :  (0 : Center M₀).val = 0 := rfl
+lemma _root_.Center.coe_zero :  (0 : Center M₀).val = 0 := rfl
 
 end MulZeroClass
 
