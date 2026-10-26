@@ -101,6 +101,13 @@ theorem inCoordinates_eq_of_mem_baseSet₂ {x₀ x : B₁} {y₀ y : B₂} {ϕ :
   ext
   simp [inCoordinates, *, Function.comp_def]
 
+@[simp]
+lemma inCoordinates_zero {x₀ x : B₁} {y₀ y : B₂}
+    (hx : x ∈ (trivializationAt F₁ E₁ x₀).baseSet)
+    (hy : y ∈ (trivializationAt F₂ E₂ y₀).baseSet) :
+    inCoordinates F₁ F₂ x₀ x y₀ y (0 : E₁ x [⋀^ι]→L[𝕜] E₂ y) = 0 := by
+  simp [inCoordinates_eq F₁ F₂ hx hy]
+
 end ContinuousAlternatingMap
 
 open ContinuousAlternatingMap (inCoordinates)
