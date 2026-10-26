@@ -100,7 +100,7 @@ instance : Inhabited (Π₀ i, β i) :=
 
 @[simp, norm_cast] lemma coe_zero : ⇑(0 : Π₀ i, β i) = 0 := rfl
 
-theorem zero_apply (i : ι) : (0 : Π₀ i, β i) i = 0 :=
+protected theorem zero_apply (i : ι) : (0 : Π₀ i, β i) i = 0 :=
   rfl
 
 /-- The composition of `f : β₁ → β₂` and `g : Π₀ i, β₁ i` is
@@ -186,7 +186,7 @@ section Algebra
 instance [∀ i, AddZeroClass (β i)] : Add (Π₀ i, β i) :=
   ⟨zipWith (fun _ => (· + ·)) fun _ => add_zero 0⟩
 
-theorem add_apply [∀ i, AddZeroClass (β i)] (g₁ g₂ : Π₀ i, β i) (i : ι) :
+protected theorem add_apply [∀ i, AddZeroClass (β i)] (g₁ g₂ : Π₀ i, β i) (i : ι) :
     (g₁ + g₂) i = g₁ i + g₂ i :=
   rfl
 
@@ -239,7 +239,7 @@ instance addCommMonoid [∀ i, AddCommMonoid (β i)] : AddCommMonoid (Π₀ i, �
 instance [∀ i, AddGroup (β i)] : Neg (Π₀ i, β i) :=
   ⟨fun f => f.mapRange (fun _ => Neg.neg) fun _ => neg_zero⟩
 
-theorem neg_apply [∀ i, AddGroup (β i)] (g : Π₀ i, β i) (i : ι) : (-g) i = -g i :=
+protected theorem neg_apply [∀ i, AddGroup (β i)] (g : Π₀ i, β i) (i : ι) : (-g) i = -g i :=
   rfl
 
 @[simp, norm_cast] lemma coe_neg [∀ i, AddGroup (β i)] (g : Π₀ i, β i) : ⇑(-g) = -g := rfl
@@ -247,8 +247,8 @@ theorem neg_apply [∀ i, AddGroup (β i)] (g : Π₀ i, β i) (i : ι) : (-g) i
 instance [∀ i, AddGroup (β i)] : Sub (Π₀ i, β i) :=
   ⟨zipWith (fun _ => Sub.sub) fun _ => sub_zero 0⟩
 
-theorem sub_apply [∀ i, AddGroup (β i)] (g₁ g₂ : Π₀ i, β i) (i : ι) : (g₁ - g₂) i = g₁ i - g₂ i :=
-  rfl
+protected theorem sub_apply [∀ i, AddGroup (β i)] (g₁ g₂ : Π₀ i, β i) (i : ι) :
+    (g₁ - g₂) i = g₁ i - g₂ i := rfl
 
 @[simp, norm_cast]
 theorem coe_sub [∀ i, AddGroup (β i)] (g₁ g₂ : Π₀ i, β i) : ⇑(g₁ - g₂) = g₁ - g₂ :=
@@ -298,7 +298,7 @@ theorem filter_apply_neg [∀ i, Zero (β i)] {p : ι → Prop} [DecidablePred p
 @[simp] theorem filter_add_filter_not [∀ i, AddZeroClass (β i)] (f : Π₀ i, β i) (p : ι → Prop)
     [DecidablePred p] : (f.filter p + f.filter fun i => ¬p i) = f :=
   ext fun i => by
-    simp only [add_apply, filter_apply]; split_ifs <;> simp only [add_zero, zero_add]
+    simp [DFinsupp.add_apply, filter_apply]; split_ifs <;> simp only [add_zero, zero_add]
 
 @[deprecated (since := "2026-05-04")] alias filter_pos_add_filter_neg := filter_add_filter_not
 
@@ -719,18 +719,16 @@ theorem erase_sub {β : ι → Type v} [∀ i, AddGroup (β i)] (i : ι) (f g : 
 theorem single_add_erase (i : ι) (f : Π₀ i, β i) : single i (f i) + f.erase i = f :=
   ext fun i' =>
     if h : i = i' then by
-      subst h; simp only [add_apply, single_apply, erase_apply, add_zero, dite_eq_ite, ite_true]
+      subst h; simp
     else by
-      simp only [add_apply, single_apply, erase_apply, dite_eq_right h, ite_eq_right (Ne.symm h),
-        zero_add]
+      simp [dite_eq_right h, ite_eq_right (Ne.symm h)]
 
 theorem erase_add_single (i : ι) (f : Π₀ i, β i) : f.erase i + single i (f i) = f :=
   ext fun i' =>
     if h : i = i' then by
-      subst h; simp only [add_apply, single_apply, erase_apply, zero_add, dite_eq_ite, ite_true]
+      subst h; simp
     else by
-      simp only [add_apply, single_apply, erase_apply, dite_eq_right h, ite_eq_right (Ne.symm h),
-        add_zero]
+      simp [dite_eq_right h, ite_eq_right (Ne.symm h)]
 
 protected theorem induction {p : (Π₀ i, β i) → Prop} (f : Π₀ i, β i) (h0 : p 0)
     (ha : ∀ (i b) (f : Π₀ i, β i), f i = 0 → b ≠ 0 → p f → p (single i b + f)) : p f := by
@@ -775,7 +773,7 @@ end AddMonoid
 @[simp]
 theorem mk_add [∀ i, AddZeroClass (β i)] {s : Finset ι} {x y : ∀ i : (↑s : Set ι), β i} :
     mk s (x + y) = mk s x + mk s y :=
-  ext fun i => by simp only [add_apply, mk_apply]; split_ifs <;> [rfl; rw [zero_add]]
+  ext fun i => by simp only [DFinsupp.add_apply, mk_apply]; split_ifs <;> [rfl; rw [zero_add]]
 
 @[simp]
 theorem mk_zero [∀ i, Zero (β i)] {s : Finset ι} : mk s (0 : ∀ i : (↑s : Set ι), β i.1) = 0 :=
@@ -784,12 +782,12 @@ theorem mk_zero [∀ i, Zero (β i)] {s : Finset ι} : mk s (0 : ∀ i : (↑s :
 @[simp]
 theorem mk_neg [∀ i, AddGroup (β i)] {s : Finset ι} {x : ∀ i : (↑s : Set ι), β i.1} :
     mk s (-x) = -mk s x :=
-  ext fun i => by simp only [neg_apply, mk_apply]; split_ifs <;> [rfl; rw [neg_zero]]
+  ext fun i => by simp only [DFinsupp.neg_apply, mk_apply]; split_ifs <;> [rfl; rw [neg_zero]]
 
 @[simp]
 theorem mk_sub [∀ i, AddGroup (β i)] {s : Finset ι} {x y : ∀ i : (↑s : Set ι), β i.1} :
     mk s (x - y) = mk s x - mk s y :=
-  ext fun i => by simp only [sub_apply, mk_apply]; split_ifs <;> [rfl; rw [sub_zero]]
+  ext fun i => by simp only [DFinsupp.sub_apply, mk_apply]; split_ifs <;> [rfl; rw [sub_zero]]
 
 /-- If `s` is a subset of `ι` then `mk_addGroupHom s` is the canonical additive
 group homomorphism from $\prod_{i\in s}\beta_i$ to $\prod_{\mathtt{i : \iota}}\beta_i$. -/
@@ -1056,13 +1054,14 @@ theorem comapDomain_apply [∀ i, Zero (β i)] (h : κ → ι) (hh : Function.In
 theorem comapDomain_zero [∀ i, Zero (β i)] (h : κ → ι) (hh : Function.Injective h) :
     comapDomain h hh (0 : Π₀ i, β i) = 0 := by
   ext
-  rw [zero_apply, comapDomain_apply, zero_apply]
+  rw [DFinsupp.zero_apply, comapDomain_apply, DFinsupp.zero_apply]
 
 @[simp]
 theorem comapDomain_add [∀ i, AddZeroClass (β i)] (h : κ → ι) (hh : Function.Injective h)
     (f g : Π₀ i, β i) : comapDomain h hh (f + g) = comapDomain h hh f + comapDomain h hh g := by
   ext
-  rw [add_apply, comapDomain_apply, comapDomain_apply, comapDomain_apply, add_apply]
+  rw [DFinsupp.add_apply, comapDomain_apply, comapDomain_apply, comapDomain_apply,
+    DFinsupp.add_apply]
 
 @[simp]
 theorem comapDomain_single [DecidableEq ι] [DecidableEq κ] [∀ i, Zero (β i)] (h : κ → ι)
@@ -1092,14 +1091,15 @@ theorem comapDomain'_apply [∀ i, Zero (β i)] (h : κ → ι) {h' : ι → κ}
 theorem comapDomain'_zero [∀ i, Zero (β i)] (h : κ → ι) {h' : ι → κ}
     (hh' : Function.LeftInverse h' h) : comapDomain' h hh' (0 : Π₀ i, β i) = 0 := by
   ext
-  rw [zero_apply, comapDomain'_apply, zero_apply]
+  rw [DFinsupp.zero_apply, comapDomain'_apply, DFinsupp.zero_apply]
 
 @[simp]
 theorem comapDomain'_add [∀ i, AddZeroClass (β i)] (h : κ → ι) {h' : ι → κ}
     (hh' : Function.LeftInverse h' h) (f g : Π₀ i, β i) :
     comapDomain' h hh' (f + g) = comapDomain' h hh' f + comapDomain' h hh' g := by
   ext
-  rw [add_apply, comapDomain'_apply, comapDomain'_apply, comapDomain'_apply, add_apply]
+  rw [DFinsupp.add_apply, comapDomain'_apply, comapDomain'_apply, comapDomain'_apply,
+    DFinsupp.add_apply]
 
 @[simp]
 theorem comapDomain'_single [DecidableEq ι] [DecidableEq κ] [∀ i, Zero (β i)] (h : κ → ι)
@@ -1166,7 +1166,7 @@ theorem extendWith_zero [DecidableEq ι] [∀ i, Zero (α i)] (x : α none) :
     (0 : Π₀ i, α (some i)).extendWith x = single none x := by
   ext (_ | j)
   · rw [extendWith_none, single_eq_same]
-  · rw [extendWith_some, single_eq_of_ne (Option.some_ne_none _), zero_apply]
+  · rw [extendWith_some, single_eq_of_ne (Option.some_ne_none _), DFinsupp.zero_apply]
 
 /-- Bijection obtained by separating the term of index `none` of a dfinsupp over `Option ι`.
 
@@ -1188,7 +1188,7 @@ noncomputable def equivProdDFinsupp [∀ i, Zero (α i)] :
 
 theorem equivProdDFinsupp_add [∀ i, AddZeroClass (α i)] (f g : Π₀ i, α i) :
     equivProdDFinsupp (f + g) = equivProdDFinsupp f + equivProdDFinsupp g :=
-  Prod.ext (add_apply _ _ _) (comapDomain_add _ (Option.some_injective _) _ _)
+  Prod.ext (DFinsupp.add_apply _ _ _) (comapDomain_add _ (Option.some_injective _) _ _)
 
 end Equiv
 

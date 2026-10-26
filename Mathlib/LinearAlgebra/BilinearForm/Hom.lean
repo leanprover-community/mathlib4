@@ -72,9 +72,9 @@ variable (w : M)
 theorem sum_right {α} (t : Finset α) (w : M) (g : α → M) :
     B w (∑ i ∈ t, g i) = ∑ i ∈ t, B w (g i) := map_sum _ _ _
 
-theorem sum_apply {α} (t : Finset α) (B : α → BilinForm R M) (v w : M) :
+protected theorem sum_apply {α} (t : Finset α) (B : α → BilinForm R M) (v w : M) :
     (∑ i ∈ t, B i) v w = ∑ i ∈ t, B i v w := by
-  simp only [coe_sum, Finset.sum_apply]
+  simp
 
 variable {B}
 

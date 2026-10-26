@@ -282,7 +282,7 @@ noncomputable def linearLeftHomologyData' [Linear R C] (hm : n + 1 = m) (hp : m 
     dsimp
     ext x
     dsimp
-    rw [CohomologyClass.mkLinearMap_apply, CohomologyClass.mk_eq_zero_iff]
+    rw [zero_apply, CohomologyClass.mkLinearMap_apply, CohomologyClass.mk_eq_zero_iff]
     refine ⟨n, hm, x, ?_⟩
     rw [HomComplex.Cocycle.isKernel'_lift_apply_coe_eq_δ R K L n m p hp]
   hπ :=

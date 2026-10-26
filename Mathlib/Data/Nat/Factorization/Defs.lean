@@ -152,8 +152,7 @@ theorem factorization_eq_zero_of_remainder {p r : ℕ} (i : ℕ) (hr : ¬p ∣ r
 theorem factorization_mul {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
     (a * b).factorization = a.factorization + b.factorization := by
   ext p
-  simp only [add_apply, ← primeFactorsList_count_eq,
-    perm_iff_count.mp (perm_primeFactorsList_mul ha hb) p, count_append]
+  simp [← primeFactorsList_count_eq, perm_iff_count.mp (perm_primeFactorsList_mul ha hb) p]
 
 theorem factorization_le_iff_dvd {d n : ℕ} (hd : d ≠ 0) (hn : n ≠ 0) :
     d.factorization ≤ n.factorization ↔ d ∣ n := by

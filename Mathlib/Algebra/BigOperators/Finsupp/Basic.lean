@@ -539,7 +539,7 @@ theorem prod_add_index_of_disjoint [AddCommMonoid M] {f1 f2 : α →₀ M}
     Finset.prod_congr rfl fun x hx => by
       simp only [notMem_support_iff.mp (disjoint_left.mp hd hx), add_zero]
   classical simp_rw [← this hd, ← this hd.symm, add_comm (f2 _), Finsupp.prod, support_add_eq hd,
-      prod_union hd, add_apply]
+      prod_union hd, Finsupp.add_apply]
 
 theorem prod_dvd_prod_of_subset_of_dvd [Zero M] [CommMonoid N] {f1 f2 : α →₀ M}
     {g1 g2 : α → M → N} (h1 : f1.support ⊆ f2.support)

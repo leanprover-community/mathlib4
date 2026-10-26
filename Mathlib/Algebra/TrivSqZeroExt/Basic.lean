@@ -951,9 +951,11 @@ def lift (f : R →ₐ[S] A) (g : M →ₗ[S] A)
     (show f 1 + g (0 : M) = 1 by rw [map_zero, map_one, add_zero])
     (TrivSqZeroExt.ind fun r₁ m₁ =>
       TrivSqZeroExt.ind fun r₂ m₂ => by
-        dsimp
-        simp only [add_zero, zero_add, add_mul, mul_add, hg]
-        rw [← map_mul, map_add, add_comm (g _), add_assoc, hfg, hgf])
+        simp only [AlgHom.comp_toLinearMap, mul_add, add_mul, inr_mul_inr, add_zero, map_add,
+          add_apply, LinearMap.coe_comp, AlgHom.coe_toLinearMap, Function.comp_apply, map_mul,
+          fstHom_apply, fst_inl, LinearMap.coe_restrictScalars, sndHom_apply, snd_mul, snd_inl,
+          smul_zero, map_zero, fst_inr, zero_mul, snd_inr, zero_add, mul_zero, op_zero, hg]
+        rw [hfg, hgf, ← map_mul, add_assoc])
 
 theorem lift_def (f : R →ₐ[S] A) (g : M →ₗ[S] A)
     (hg : ∀ x y, g x * g y = 0)

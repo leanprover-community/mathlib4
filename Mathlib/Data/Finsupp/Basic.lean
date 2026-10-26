@@ -912,7 +912,7 @@ theorem mem_support_multiset_sum [AddCommMonoid M] {s : Multiset (α →₀ M)} 
       intro f s ih ha
       by_cases h : a ∈ f.support
       · exact ⟨f, Multiset.mem_cons_self _ _, h⟩
-      · simp_rw [Multiset.sum_cons, mem_support_iff, add_apply, notMem_support_iff.1 h,
+      · simp_rw [Multiset.sum_cons, mem_support_iff, Finsupp.add_apply, notMem_support_iff.1 h,
           zero_add] at ha
         rcases ih (mem_support_iff.2 ha) with ⟨f', h₀, h₁⟩
         exact ⟨f', Multiset.mem_cons_of_mem h₀, h₁⟩)
@@ -1155,7 +1155,7 @@ def sumFinsuppAddEquivProdFinsupp {α β : Type*} : (α ⊕ β →₀ M) ≃+ (�
     map_add' := by
       intros
       ext <;>
-        simp only [Equiv.toFun_as_coe, Prod.fst_add, Prod.snd_add, add_apply,
+        simp only [Equiv.toFun_as_coe, Prod.fst_add, Prod.snd_add, Finsupp.add_apply,
           snd_sumFinsuppEquivProdFinsupp, fst_sumFinsuppEquivProdFinsupp] }
 
 theorem fst_sumFinsuppAddEquivProdFinsupp {α β : Type*} (f : α ⊕ β →₀ M) (x : α) :

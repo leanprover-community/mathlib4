@@ -230,7 +230,7 @@ theorem coeff_opow_mul_add {b e x y : Ordinal}
     (hb : 1 < b) (hx : x ≠ 0) (hxb : x < b) (hy : y < b ^ e) :
     coeff b (b ^ e * x + y) = single e x + coeff b y := by
   ext e'
-  rw [add_apply]
+  rw [Finsupp.add_apply]
   obtain rfl | he := eq_or_ne e e'
   · rw [single_eq_same, coeff_eq_zero_of_lt hy, add_zero]
     apply coeff_of_mem_CNF
@@ -268,7 +268,8 @@ theorem eval_single_add' (b : Ordinal) {e x : Ordinal} {f : Ordinal →₀ Ordin
     rw [← notMem_support_iff]
     exact fun he ↦ (h e he).false
   rw [eval, support_single_add (by simpa) hx, Finset.sort_cons]
-  · simp only [add_apply, foldr_cons, single_eq_same, hf, add_zero, add_right_inj]
+  · simp only [coe_add, Pi.add_apply, ge_iff_le, foldr_cons, single_eq_same, hf, add_zero,
+      add_right_inj]
     apply foldr_ext
     intro e' he' _
     congr
@@ -320,12 +321,12 @@ theorem eval_lt {b e : Ordinal} {f : Ordinal →₀ Ordinal}
     · apply he e' _
       simp [hx]
     · apply (hb e').trans_eq'
-      rw [add_apply, single_eq_same, notMem_support_iff.1, add_zero]
+      rw [Finsupp.add_apply, single_eq_same, notMem_support_iff.1, add_zero]
       exact fun h ↦ (hf _ h).false
     · intro a
       by_cases ha : a ∈ f.support
       · apply (hb a).trans_eq'
-        rw [add_apply, single_eq_of_ne, zero_add]
+        rw [Finsupp.add_apply, single_eq_of_ne, zero_add]
         rintro rfl
         contradiction
       · rw [notMem_support_iff.1 ha]
@@ -349,13 +350,13 @@ theorem coeff_eval {b : Ordinal} (hb : 1 < b) {f : Ordinal →₀ Ordinal} (hf :
     have IH' (e') : f e' < b := by
       by_cases he' : e' ∈ f.support
       · apply (hf e').trans_eq'
-        rw [add_apply, single_eq_of_ne, zero_add]
+        rw [Finsupp.add_apply, single_eq_of_ne, zero_add]
         exact (hf' _ he').ne
       · rw [notMem_support_iff.1 he']
         exact hb.pos
     rw [eval_single_add' _ hf', coeff_opow_mul_add hb hx, IH IH']
     · apply (hf e).trans_eq'
-      rw [add_apply, single_eq_same, notMem_support_iff.1, add_zero]
+      rw [Finsupp.add_apply, single_eq_same, notMem_support_iff.1, add_zero]
       exact fun h ↦ (hf' _ h).false
     · exact eval_lt IH' hf'
 

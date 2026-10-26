@@ -429,7 +429,7 @@ instance instSMul : SMul M (E →ₛₗ.[σ] F) :=
 theorem smul_domain (a : M) (f : E →ₛₗ.[σ] F) : (a • f).domain = f.domain :=
   rfl
 
-theorem smul_apply (a : M) (f : E →ₛₗ.[σ] F) (x : (a • f).domain) : (a • f) x = a • f x :=
+protected theorem smul_apply (a : M) (f : E →ₛₗ.[σ] F) (x : (a • f).domain) : (a • f) x = a • f x :=
   rfl
 
 @[simp]
@@ -455,7 +455,7 @@ instance instNeg : Neg (E →ₛₗ.[σ] F) :=
 theorem neg_domain (f : E →ₛₗ.[σ] F) : (-f).domain = f.domain := rfl
 
 @[simp]
-theorem neg_apply (f : E →ₛₗ.[σ] F) (x) : (-f) x = -f x :=
+protected theorem neg_apply (f : E →ₛₗ.[σ] F) (x) : (-f) x = -f x :=
   rfl
 
 @[simp]
@@ -467,7 +467,7 @@ instance instInvolutiveNeg : InvolutiveNeg (E →ₛₗ.[σ] F) :=
   ⟨fun f => by
     ext x y hxy
     · rfl
-    · simp only [neg_apply, neg_neg]⟩
+    · simp⟩
 
 section Add
 
@@ -479,24 +479,24 @@ instance instAdd : Add (E →ₛₗ.[σ] F) :=
 
 theorem add_domain (f g : E →ₛₗ.[σ] F) : (f + g).domain = f.domain ⊓ g.domain := rfl
 
-theorem add_apply (f g : E →ₛₗ.[σ] F) (x : (f.domain ⊓ g.domain : Submodule R E)) :
+protected theorem add_apply (f g : E →ₛₗ.[σ] F) (x : (f.domain ⊓ g.domain : Submodule R E)) :
     (f + g) x = f ⟨x, x.prop.1⟩ + g ⟨x, x.prop.2⟩ := rfl
 
 instance instAddSemigroup : AddSemigroup (E →ₛₗ.[σ] F) :=
   ⟨fun f g h => by
     ext x y hxy
     · simp only [add_domain, inf_assoc]
-    · simp only [add_apply, add_assoc]⟩
+    · simp only [LinearPMap.add_apply, add_assoc]⟩
 
 instance instAddZeroClass : AddZeroClass (E →ₛₗ.[σ] F) where
   zero_add := fun f => by
     ext x y hxy
     · simp [add_domain]
-    · simp [add_apply]
+    · simp [LinearPMap.add_apply]
   add_zero := fun f => by
     ext x y hxy
     · simp [add_domain]
-    · simp [add_apply]
+    · simp [LinearPMap.add_apply]
 
 instance instAddMonoid : AddMonoid (E →ₛₗ.[σ] F) where
   zero_add f := by
@@ -509,7 +509,7 @@ instance instAddCommMonoid : AddCommMonoid (E →ₛₗ.[σ] F) :=
   ⟨fun f g => by
     ext x y hxy
     · simp only [add_domain, inf_comm]
-    · simp only [add_apply, add_comm]⟩
+    · simp only [LinearPMap.add_apply, add_comm]⟩
 
 end Add
 
@@ -557,18 +557,18 @@ instance instSubtractionCommMonoid : SubtractionCommMonoid (E →ₛₗ.[σ] F) 
   sub_eq_add_neg f g := by
     ext x _ h
     · rfl
-    simp [sub_apply, add_apply, neg_apply, ← sub_eq_add_neg]
+    simp [sub_apply, LinearPMap.add_apply, ← sub_eq_add_neg]
   neg_neg := neg_neg
   neg_add_rev f g := by
     ext x _ h
     · simp [add_domain, neg_domain, And.comm]
-    simp [add_apply, neg_apply, ← sub_eq_add_neg]
+    simp [LinearPMap.add_apply, LinearPMap.neg_apply, ← sub_eq_add_neg]
   neg_eq_of_add f g h' := by
     ext x hf hg
     · have : (0 : E →ₛₗ.[σ] F).domain = ⊤ := zero_domain
       simp only [← h', add_domain, inf_eq_top_iff] at this
       rw [neg_domain, this.1, this.2]
-    simp only [neg_domain, neg_apply, neg_eq_iff_add_eq_zero]
+    simp only [neg_domain, LinearPMap.neg_apply, neg_eq_iff_add_eq_zero]
     rw [ext_iff] at h'
     rcases h' with ⟨hdom, h'⟩
     rw [zero_domain] at hdom
@@ -830,13 +830,12 @@ theorem smul_graph (f : E →ₗ.[R] F) (z : M) :
     rw [LinearPMap.smul_apply] at h
     rw [Submodule.mem_map]
     simp only [mem_graph_iff, LinearMap.prodMap_apply, LinearMap.id_coe, id,
-      LinearMap.smul_apply, Prod.mk_inj, Prod.exists, exists_exists_and_eq_and]
+      smul_apply, Prod.mk_inj, Prod.exists, exists_exists_and_eq_and]
     use x_fst, y, hy
   rw [Submodule.mem_map] at h
   rcases h with ⟨x', hx', h⟩
   cases x'
-  simp only [LinearMap.prodMap_apply, LinearMap.id_coe, id, LinearMap.smul_apply,
-    Prod.mk_inj] at h
+  simp only [LinearMap.prodMap_apply, LinearMap.id_coe, id, smul_apply, Prod.mk.injEq] at h
   rw [mem_graph_iff] at hx' ⊢
   rcases hx' with ⟨y, hy, hx'⟩
   use y
@@ -854,13 +853,12 @@ theorem neg_graph (f : E →ₗ.[R] F) :
     rw [LinearPMap.neg_apply] at h
     rw [Submodule.mem_map]
     simp only [mem_graph_iff, LinearMap.prodMap_apply, LinearMap.id_coe, id,
-      LinearMap.neg_apply, Prod.mk_inj, Prod.exists, exists_exists_and_eq_and]
+      neg_apply, Prod.mk_inj, Prod.exists, exists_exists_and_eq_and]
     use x_fst, y, hy
   rw [Submodule.mem_map] at h
   rcases h with ⟨x', hx', h⟩
   cases x'
-  simp only [LinearMap.prodMap_apply, LinearMap.id_coe, id, LinearMap.neg_apply,
-    Prod.mk_inj] at h
+  simp only [LinearMap.prodMap_apply, LinearMap.id_coe, id, neg_apply, Prod.mk.injEq] at h
   rw [mem_graph_iff] at hx' ⊢
   rcases hx' with ⟨y, hy, hx'⟩
   use y

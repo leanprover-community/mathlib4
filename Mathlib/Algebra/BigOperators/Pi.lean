@@ -42,7 +42,7 @@ theorem multiset_prod_apply {α : Type*} {M : α → Type*} [∀ a, CommMonoid (
 end Pi
 
 @[to_additive (attr := simp)]
-theorem Finset.prod_apply {α : Type*} {M : α → Type*} [∀ a, CommMonoid (M a)] (a : α)
+protected theorem Finset.prod_apply {α : Type*} {M : α → Type*} [∀ a, CommMonoid (M a)] (a : α)
     (s : Finset ι) (g : ι → ∀ a, M a) : (∏ c ∈ s, g c) a = ∏ c ∈ s, g c a :=
   map_prod (Pi.evalMonoidHom M a) _ _
 

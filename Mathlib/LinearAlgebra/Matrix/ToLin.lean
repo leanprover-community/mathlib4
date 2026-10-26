@@ -211,10 +211,10 @@ def LinearMap.toMatrixRight' [DecidableEq m] : ((m → R) →ₗ[R] n → R) ≃
     simp
   map_add' f g := by
     ext i j
-    simp only [Pi.add_apply, LinearMap.add_apply, Matrix.add_apply]
+    simp
   map_smul' c f := by
     ext i j
-    simp only [Pi.smul_apply, LinearMap.smul_apply, RingHom.id_apply, Matrix.smul_apply]
+    simp
 
 /-- A `Matrix m n R` is linearly equivalent over `Rᵐᵒᵖ` to a linear map `(m → R) →ₗ[R] (n → R)`,
 by having matrices act by right multiplication. -/
@@ -375,10 +375,10 @@ def LinearMap.toMatrix' : ((n → R) →ₗ[R] m → R) ≃ₗ[R] Matrix m n R w
       Matrix.mulVecLin_apply, of_apply]
   map_add' f g := by
     ext i j
-    simp only [Pi.add_apply, LinearMap.add_apply, of_apply, Matrix.add_apply]
+    simp
   map_smul' c f := by
     ext i j
-    simp only [Pi.smul_apply, LinearMap.smul_apply, RingHom.id_apply, of_apply, Matrix.smul_apply]
+    simp
 
 /-- A `Matrix m n R` is linearly equivalent to a linear map `(n → R) →ₗ[R] (m → R)`.
 
@@ -1113,8 +1113,8 @@ lemma lie_end_of_apply_eq_smul {R M : Type*} [CommRing R] [AddCommGroup M] [Modu
     (hs : ∀ k, s (b k) = a k • b k) (i j : ι) :
     ⁅s, b.end (i, j)⁆ = (a i - a j) • b.end (i, j) := by
   refine b.ext fun k ↦ ?_
-  simp only [Ring.lie_def, LinearMap.sub_apply, End.mul_apply, LinearMap.smul_apply,
-    Basis.end_apply_apply, smul_ite, smul_zero, sub_smul]
+  simp only [Ring.lie_def, sub_apply, End.mul_apply, end_apply_apply, sub_smul, _root_.smul_apply,
+    smul_ite, smul_zero]
   rcases eq_or_ne j k with rfl | hjk
   · simp [hs, Basis.end_apply_apply]
   · simp [hs, Basis.end_apply_apply, hjk]
@@ -1156,8 +1156,7 @@ def endVecRingEquivMatrixEnd :
   right_inv m := by ext; simp [Pi.single_apply, apply_ite]
   map_mul' f g := by
     ext
-    simp only [Module.End.mul_apply, LinearMap.coe_mk, AddHom.coe_mk, Matrix.mul_apply,
-      LinearMap.coe_sum, Finset.sum_apply]
+    simp only [End.mul_apply, LinearMap.coe_mk, AddHom.coe_mk, Matrix.mul_apply, sum_apply]
     rw [← Fintype.sum_apply, ← map_sum]
     exact congr_arg₂ _ (by aesop) rfl
   map_add' f g := by ext; simp
@@ -1177,10 +1176,10 @@ def endVecAlgEquivMatrixEnd :
   __ := endVecRingEquivMatrixEnd ι A M
   commutes' r := by
     ext
-    simp only [endVecRingEquivMatrixEnd, RingEquiv.toEquiv_eq_coe, Module.algebraMap_end_eq_smul_id,
-      Equiv.toFun_as_coe, EquivLike.coe_coe, RingEquiv.coe_mk, Equiv.coe_fn_mk,
-      LinearMap.smul_apply, id_coe, id_eq, Pi.smul_apply, Pi.single_apply, smul_ite, smul_zero,
-      LinearMap.coe_mk, AddHom.coe_mk, algebraMap_matrix_apply]
+    simp only [endVecRingEquivMatrixEnd, RingEquiv.toEquiv_eq_coe, algebraMap_end_eq_smul_id,
+      Equiv.toFun_as_coe, EquivLike.coe_coe, RingEquiv.coe_mk, Equiv.coe_fn_mk, smul_apply, id_coe,
+      id_eq, Pi.smul_apply, Pi.single_apply, smul_ite, smul_zero, LinearMap.coe_mk, AddHom.coe_mk,
+      algebraMap_matrix_apply]
     split_ifs <;> rfl
 
 variable {A ι}

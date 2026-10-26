@@ -89,8 +89,8 @@ end DecidableEq
 /-- Interpret `fun (f : Π₀ i, M i) ↦ f i` as a linear map. -/
 def lapply (i : ι) : (Π₀ i, M i) →ₗ[R] M i where
   toFun f := f i
-  map_add' f g := add_apply f g i
-  map_smul' c f := smul_apply c f i
+  map_add' f g := DFinsupp.add_apply f g i
+  map_smul' c f := DFinsupp.smul_apply c f i
 
 @[simp]
 theorem lapply_apply (i : ι) (f : Π₀ i, M i) : (lapply i : (Π₀ i, M i) →ₗ[R] _) f = f i :=

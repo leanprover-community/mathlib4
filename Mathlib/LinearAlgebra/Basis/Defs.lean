@@ -678,9 +678,7 @@ theorem coe_sumCoords : (b.sumCoords : M → R) = fun m => (b.repr m).sum fun _ 
 @[simp high]
 theorem coe_sumCoords_of_fintype [Fintype ι] : (b.sumCoords : M → R) = ∑ i, b.coord i := by
   ext m
-  simp only [sumCoords, Finsupp.sum_fintype, LinearMap.id_coe, LinearEquiv.coe_coe, coord_apply,
-    id, Fintype.sum_apply, imp_true_iff, Finsupp.coe_lsum, LinearMap.coe_comp, comp_apply,
-    LinearMap.coe_sum]
+  simp [sumCoords, Finsupp.sum_fintype]
 
 @[simp]
 theorem sumCoords_self_apply : b.sumCoords (b i) = 1 := by

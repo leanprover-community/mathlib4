@@ -124,7 +124,7 @@ instance instContinuousAdd [ContinuousAdd 𝕜] : ContinuousAdd (WeakBilin B) :=
     cast (congr_arg _ ?_)
       (((coeFn_continuous B).comp continuous_fst).add ((coeFn_continuous B).comp continuous_snd))
   ext
-  simp only [Function.comp_apply, Pi.add_apply, map_add, LinearMap.add_apply]
+  simp
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Scalar multiplication by `𝕜` on `WeakBilin B` is continuous. -/
@@ -132,7 +132,7 @@ instance instContinuousSMul [ContinuousSMul 𝕜 𝕜] : ContinuousSMul 𝕜 (We
   refine ⟨continuous_induced_rng.2 ?_⟩
   refine cast (congr_arg _ ?_) (continuous_fst.fun_smul ((coeFn_continuous B).comp continuous_snd))
   ext
-  simp only [Function.comp_apply, Pi.smul_apply, map_smulₛₗ, RingHom.id_apply, LinearMap.smul_apply]
+  simp
 
 set_option backward.isDefEq.respectTransparency false in
 set_option fun_prop.projDefaultTransparency true in
@@ -165,7 +165,7 @@ instance instIsTopologicalAddGroup [ContinuousAdd 𝕜] : IsTopologicalAddGroup 
     refine continuous_induced_rng.2 (continuous_pi_iff.mpr fun y => ?_)
     refine cast (congr_arg _ ?_) (eval_continuous B (-y))
     ext x
-    simp only [map_neg, Function.comp_apply, LinearMap.neg_apply]
+    simp
 
 end Ring
 

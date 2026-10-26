@@ -85,9 +85,9 @@ lemma preReflection_preReflection (g : Dual R M) (h : f x = 2) :
     preReflection (preReflection x f y) (preReflection f (Dual.eval R M x) g) =
     (preReflection x f) ∘ₗ (preReflection y g) ∘ₗ (preReflection x f) := by
   ext m
-  simp only [h, preReflection_apply, mul_comm (g x) (f m), mul_two, mul_assoc, Dual.eval_apply,
-    LinearMap.sub_apply, LinearMap.coe_comp, LinearMap.smul_apply, smul_eq_mul, smul_sub, sub_smul,
-    smul_smul, sub_mul, comp_apply, map_sub, map_smul, add_smul]
+  simp only [preReflection_apply, Dual.eval_apply, sub_apply, smul_apply, smul_eq_mul,
+    mul_comm (g x) (f m), smul_sub, sub_smul, smul_smul, sub_mul, mul_assoc, LinearMap.coe_comp,
+    comp_apply, map_sub, map_smul, h, mul_two, add_smul, sub_add_cancel_right]
   abel
 
 /-- Given an element `x` in a module `M` and a linear form `f` on `M` for which `f x = 2`, we define
@@ -347,8 +347,8 @@ lemma Dual.eq_of_preReflection_mapsTo [CharZero R] [IsDomain R] [IsTorsionFree R
   have hu : u = LinearMap.id (R := R) (M := M) + (f - g).smulRight x := by
     ext y
     simp only [u, reflection_apply, hg₁, two_smul, LinearEquiv.coe_toLinearMap_mul,
-      LinearMap.id_coe, LinearEquiv.coe_coe, Module.End.mul_apply, LinearMap.add_apply, id_eq,
-      LinearMap.coe_smulRight, LinearMap.sub_apply, map_sub, map_smul, sub_add_cancel_left,
+      LinearMap.id_coe, LinearEquiv.coe_coe, Module.End.mul_apply, add_apply, id_eq,
+      LinearMap.coe_smulRight, sub_apply, map_sub, map_smul, sub_add_cancel_left,
       smul_neg, sub_neg_eq_add, sub_smul]
     abel
   replace hu : ∀ (n : ℕ),
