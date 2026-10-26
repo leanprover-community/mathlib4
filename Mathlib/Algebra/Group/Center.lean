@@ -446,6 +446,11 @@ instance [DivisionMonoid M] : DivisionCommMonoid (Center M) where
   inv_eq_of_mul a b h := by
     rw [Center.eq_iff, Center.coe_mul, Center.coe_one] at h
     simp_rw [Center.eq_iff, inv_eq_of_mul_eq_one_right h]
+  div a b := ⟨a / b, Set.div_mem_center a.prop b.prop⟩
+  div_eq_mul_inv _ _ := Subtype.ext <| div_eq_mul_inv _ _
+
+@[to_additive (attr := simp)]
+lemma coe_div [DivisionMonoid M] (a b : Center M) : (a / b).val = a.val / b.val := rfl
 
 @[to_additive (attr := simp)]
 lemma coe_inv [DivisionMonoid M] (z : Center M) : z⁻¹.val = z.val⁻¹ := rfl
