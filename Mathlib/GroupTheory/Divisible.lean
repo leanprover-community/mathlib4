@@ -212,7 +212,7 @@ end ULift
 section ULift
 
 set_option linter.deprecated false in
-@[to_additive]
+@[to_additive (attr := deprecated ULift.isRootableBy +typeChanged (since := "2026-10-26"))]
 instance ULift.instRootableBy [RootableBy A α] : RootableBy (ULift A) α where
   root x a := ULift.up <| RootableBy.root x.down a
   root_zero x := ULift.ext <| RootableBy.root_zero x.down
