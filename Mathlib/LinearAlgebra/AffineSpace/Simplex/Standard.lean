@@ -13,25 +13,17 @@ public import Mathlib.LinearAlgebra.StdBasis
 /-!
 # Standard simplices
 
-This file constructs simplices from bases and relates them to the standard simplex.
+This file constructs simplices from bases and defines the standard affine simplex as the simplex
+constructed from the standard basis, namely `Pi.basisFun`.
 
 ## Main definitions
 
 * `AffineBasis.toSimplex`: the simplex whose vertices are the points of an affine basis.
 * `Module.Basis.toSimplex`: the simplex in a module whose vertices are `0` together with the
   vectors of a basis.
-* `Affine.stdAffineSimplex`: the simplex in `Fin n → k` whose vertices are `0` and the
+* `Affine.StdSimplex`: the simplex in `Fin n → k` whose vertices are `0` and the
   standard basis vectors, i.e. the simplex obtained by applying `Module.Basis.toSimplex` to
   `Pi.basisFun`.
-
-## Main results
-
-* `Affine.Simplex.mem_closedInterior_toSimplex_iff`: membership in the closed interior of
-  `b.toSimplex` is characterised by the barycentric coordinates of `b`.
-* `Affine.Simplex.stdAffineSimplex.closedInterior_eq`: the closed interior of
-  `Affine.stdAffineSimplex` is the "corner" region `{x | (∀ i, 0 ≤ x i) ∧ ∑ i, x i ≤ 1}`.
-* `Affine.stdAffineSimplex.faceOpposite_zero_eq_stdSimplex` establishes the relationship between
-  the standard affine simplex `Affine.stdAffineSimplex` and the standard simplex `stdSimplex`.
 -/
 
 @[expose] public noncomputable section
@@ -62,21 +54,15 @@ lemma affineSpan_range_toSimplex (b : AffineBasis (Fin (n + 1)) k P) :
   rw [b.toSimplex_points]
   exact b.tot
 
-/-- A point lies in `(AffineBass.toSimplex b).setInterior I` iff all of its barycentric coordinates
-with respect to `b` lie in `I`. -/
 lemma mem_setInterior_toSimplex {I : Set k} (b : AffineBasis (Fin (n + 1)) k P)
     {x : P} : x ∈ b.toSimplex.setInterior I ↔ ∀ i, b.coord i x ∈ I := by
   conv_lhs => rw [← b.affineCombination_coord_eq_self x]
   exact affineCombination_mem_setInterior_iff (b.sum_coord_apply_eq_one x)
 
-/-- A point lies in the interior of `AffineBass.toSimplex b` iff all of its barycentric coordinates
-with respect to `b` lie in `Set.Ioo 0 1`. -/
 lemma mem_interior_toSimplex_iff [PartialOrder k] (b : AffineBasis (Fin (n + 1)) k P)
     {x : P} : x ∈ b.toSimplex.interior ↔ ∀ i, b.coord i x ∈ Set.Ioo 0 1 :=
   mem_setInterior_toSimplex b
 
-/-- A point lies in the closed interior of `AffineBass.toSimplex b` iff all of its barycentric
-coordinates with respect to `b` lie in `Set.Icc 0 1`. -/
 lemma mem_closedInterior_toSimplex_iff [PartialOrder k] (b : AffineBasis (Fin (n + 1)) k P)
     {x : P} : x ∈ b.toSimplex.closedInterior ↔ ∀ i, b.coord i x ∈ Set.Icc 0 1 :=
   mem_setInterior_toSimplex b
@@ -90,26 +76,26 @@ open Affine Affine.Simplex Set Pi
 variable (n) (k)
 
 /-- The simplex in `Fin n → k` whose vertices are `0` and the standard basis vectors. -/
-def stdAffineSimplex : Simplex k (Fin n → k) n := (basisFun k (Fin n)).toSimplex
+def StdSimplex : Simplex k (Fin n → k) n := (basisFun k (Fin n)).toSimplex
 
-namespace stdAffineSimplex
+namespace StdSimplex
 
 /-- The points of `stdSimplex` at successor indices are the standard basis vectors. -/
 lemma points_succ (i : Fin n) :
-    (Affine.stdAffineSimplex n k).points i.succ = Pi.single i (1 : k) := by
-  simp [Affine.stdAffineSimplex]
+    (Affine.StdSimplex n k).points i.succ = Pi.single i (1 : k) := by
+  simp [Affine.StdSimplex]
 
 /-- The closed interior of `Affine.stdSimplex n k` is the filled-in standard `n`-simplex: the
 "corner" region `{x | (∀ i, 0 ≤ x i) ∧ ∑ i, x i ≤ 1}` (vertices `0` and the standard basis). -/
 lemma closedInterior_eq [PartialOrder k] [IsOrderedRing k] :
-    (Affine.stdAffineSimplex n k).closedInterior
+    (Affine.StdSimplex n k).closedInterior
       = {x : Fin n → k | (∀ i, 0 ≤ x i) ∧ ∑ i, x i ≤ 1} := by
   ext x
   have hw : ∑ i, Fin.cons (1 - ∑ i, x i) x i = 1 := by simp
-  have hx : Finset.univ.affineCombination k (Affine.stdAffineSimplex n k).points
+  have hx : Finset.univ.affineCombination k (Affine.StdSimplex n k).points
       (Fin.cons (1 - ∑ i, x i) x) = x := by
     rw [Finset.affineCombination_eq_linear_combination _ _ _ hw]
-    simp [Fin.sum_univ_succ, Affine.stdAffineSimplex, ← Pi.single_smul', Finset.univ_sum_single]
+    simp [Fin.sum_univ_succ, Affine.StdSimplex, ← Pi.single_smul', Finset.univ_sum_single]
   conv_lhs => rw [← hx]
   rw [affineCombination_mem_closedInterior_iff hw]
   refine ⟨fun h => ⟨fun i => (h i.succ).1, sub_nonneg.mp (h 0).1⟩, ?_⟩
@@ -123,7 +109,7 @@ lemma closedInterior_eq [PartialOrder k] [IsOrderedRing k] :
 /-- The vertices of the face of `Affine.stdSimplex` opposite the vertex `0` are the standard
 basis vectors. -/
 lemma range_faceOpposite_zero_points [NeZero n] :
-    range ((stdAffineSimplex n k).faceOpposite 0).points = range (fun i : Fin n => single i 1) := by
+    range ((StdSimplex n k).faceOpposite 0).points = range (fun i : Fin n => single i 1) := by
   rw [range_faceOpposite_points]
   ext x
   simp only [mem_image, mem_compl_iff, mem_singleton_iff, Set.mem_range]
@@ -136,6 +122,6 @@ lemma range_faceOpposite_zero_points [NeZero n] :
     refine ⟨j.succ, Fin.succ_ne_zero j, ?_⟩
     rw [points_succ]
 
-end stdAffineSimplex
+end StdSimplex
 
 end Affine
