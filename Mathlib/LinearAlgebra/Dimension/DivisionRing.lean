@@ -160,38 +160,36 @@ theorem finrank_span_eq_finrank_of_linearIndepOn
     finrank K (span K (M : Set V)) = finrank R M :=
   congrArg Cardinal.toNat (rank_span_eq_rank_of_linearIndepOn M H)
 
-/-- If the `K`-rank of the `K`-span of a finitely generated `M` is as large as the `R`-rank of
-`M`, then every `R`-linearly independent subset of `M` is `K`-linearly independent. -/
-theorem linearIndepOn_of_finrank_span_le_finrank (hfg : M.FG)
+/-- If the `R`-rank of a finitely generated `R`-module `M` is at most the `K`-rank of the `K`-span
+of `M`, then every `R`-linearly independent subset of `M` is `K`-linearly independent. -/
+theorem linearIndepOn_of_finrank_le_finrank_span (hfg : M.FG)
     (h : finrank R M ≤ finrank K (span K (M : Set V)))
     {s : Set V} (hsM : s ⊆ M) (hs : LinearIndepOn R id s) :
     LinearIndepOn K id s := by
   obtain ⟨b, hbs, hb, hbK⟩ := exists_linearIndependent K s
   obtain ⟨c, hcM, hbc, hMc, hcK⟩ := exists_linearIndepOn_id_extension hbK (hbs.trans hsM)
+  suffices c = s ∪ (c \ b) from hcK.mono (by grind)
+  have hdisj : Disjoint (span R s) (span R (c \ b)) := by
+    apply Disjoint.mono (span_le_restrictScalars R K s) (span_le_restrictScalars R K (c \ b))
+    rw [disjoint_restrictScalars_iff, ← hb]
+    apply disjoint_span_of_linearIndepOn_id_union disjoint_sdiff_right
+    simpa [union_eq_self_of_subset_left hbc]
+  have : Module.Finite R M := .of_fg hfg
   have hcR : LinearIndepOn R id c := hcK.linearIndependent.restrict_scalars' R
-  have hdisj : Disjoint (span R s) (span R (c \ b)) :=
-    disjoint_restrictScalars_iff R |>.mpr
-      (hb ▸ ((linearIndepOn_id_union_iff Set.disjoint_sdiff_right).mp
-        (by simpa [Set.union_sdiff_cancel hbc])).2.2) |>.mono
-          (span_le_restrictScalars R K s) (span_le_restrictScalars R K (c \ b))
-  have : Module.Finite R M := Module.Finite.of_fg hfg
-  have hsfin : s.Finite := (hs.linearIndependent.codRestrict M (fun x ↦ hsM x.2)).finite
-  have hcfin : c.Finite := (hcR.linearIndependent.codRestrict M (fun x ↦ hcM x.2)).finite
-  refine (Set.subset_iff_eq_of_ncard_le ?_ hsfin).mp hbs ▸ hbK
-  apply Nat.le_of_add_le_add_right (b := (c \ b).ncard)
-  grw [← Set.ncard_union_eq (hdisj.of_span₀ fun h0 ↦ hs.ne_zero h0 rfl) hsfin hcfin.sdiff,
-    ← finrank_span_set_eq_ncard (hs.id_union (hcR.mono Set.sdiff_subset) hdisj),
-    finrank_mono (span_le.mpr (Set.union_subset hsM (Set.sdiff_subset.trans hcM))), h,
-    le_antisymm (span_le.mpr hMc) (span_mono hcM), finrank_span_set_eq_ncard hcK, add_comm,
-    (Set.ncard_sdiff_add_ncard_of_subset hbc hcfin).ge]
+  have hu : LinearIndepOn R id (s ∪ (c \ b)) := hs.id_union (hcR.mono sdiff_subset) hdisj
+  have huM : s ∪ (c \ b) ⊆ M := union_subset hsM (by grind)
+  refine eq_of_subset_of_ncard_le (by grind) ?_ ?_
+  · grw [← finrank_span_set_eq_ncard hu, finrank_mono (span_le.mpr huM), h,
+      le_antisymm (span_le.mpr hMc) (span_mono hcM), finrank_span_set_eq_ncard hcK]
+  · exact (hu.linearIndependent.codRestrict M (fun x ↦ huM x.2)).finite
 
-/-- The `K`-rank of the `K`-span of a finitely generated `M` is equals the `R`-rank of `M` if
+/-- The `K`-rank of the `K`-span of a finitely generated `M` is equal to the `R`-rank of `M` if
 and only if every `R`-linearly independent subset of `M` is `K`-linearly independent. See also
 `Submodule.finrank_span_eq_finrank` for an equality in a different setting. -/
 theorem finrank_span_eq_finrank_iff (hfg : M.FG) :
     finrank K (span K (M : Set V)) = finrank R M ↔
       ∀ s ⊆ (M : Set V), LinearIndepOn R id s → LinearIndepOn K id s :=
-  ⟨fun h _ ↦ linearIndepOn_of_finrank_span_le_finrank M hfg h.ge,
+  ⟨fun h _ ↦ linearIndepOn_of_finrank_le_finrank_span M hfg h.ge,
     finrank_span_eq_finrank_of_linearIndepOn M⟩
 
 end Submodule

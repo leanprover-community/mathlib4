@@ -196,7 +196,7 @@ private lemma iSup_cartan_borelLower_borelUpper_eq_top_aux
     rw [lie_lie]
     apply sub_mem
     · obtain ⟨yc, hyc, yl, hyl, yu, hyu, aux⟩ :
-        ∃ᵉ (yc ∈ H) (yl ∈ lieSpan R L (range b.f)) (yu ∈ lieSpan R L (range b.e)),
+        ∃ yc ∈ H, ∃ yl ∈ lieSpan R L (range b.f), ∃ yu ∈ lieSpan R L (range b.e),
         yc + yl + yu = ⁅v, z⁆ := by simpa [LieSubmodule.mem_sup] using! hv' hz
       simp only [← aux, lie_add]
       repeat apply add_mem
@@ -206,7 +206,7 @@ private lemma iSup_cartan_borelLower_borelUpper_eq_top_aux
       · rw [← lie_skew, neg_mem_iff]
         exact LieSubmodule.mem_sup_right <| LieSubalgebra.lie_mem _ hyu hu
     · obtain ⟨yc, hyc, yl, hyl, yu, hyu, aux⟩ :
-        ∃ᵉ (yc ∈ H) (yl ∈ lieSpan R L (range b.f)) (yu ∈ lieSpan R L (range b.e)),
+        ∃ yc ∈ H, ∃ yl ∈ lieSpan R L (range b.f), ∃ yu ∈ lieSpan R L (range b.e),
         yc + yl + yu = ⁅u, z⁆ := by simpa [LieSubmodule.mem_sup] using! hu' hz
       simp only [← aux, lie_add]
       repeat apply add_mem
@@ -232,10 +232,10 @@ lemma iSup_cartan_borelLower_borelUpper_eq_top :
   | smul t u _ hu => exact SMulMemClass.smul_mem t hu
   | lie u v _ _ hu hv =>
     obtain ⟨yc, hyc, yl, hyl, yu, hyu, rfl⟩ :
-        ∃ᵉ (yc ∈ H) (yl ∈ lieSpan R L (range b.f)) (yu ∈ lieSpan R L (range b.e)),
+        ∃ yc ∈ H, ∃ yl ∈ lieSpan R L (range b.f), ∃ yu ∈ lieSpan R L (range b.e),
           yc + yl + yu = u := by simpa [LieSubmodule.mem_sup] using! hu
     obtain ⟨zc, hzc, zl, hzl, zu, hzu, rfl⟩ :
-        ∃ᵉ (zc ∈ H) (zl ∈ lieSpan R L (range b.f)) (zu ∈ lieSpan R L (range b.e)),
+        ∃ zc ∈ H, ∃ zl ∈ lieSpan R L (range b.f), ∃ zu ∈ lieSpan R L (range b.e),
           zc + zl + zu = v := by simpa [LieSubmodule.mem_sup] using! hv
     simp only [lie_add, add_lie, ← add_assoc]
     repeat apply add_mem
