@@ -267,12 +267,7 @@ instance : NonUnitalNonAssocCommSemiring (Center R) where
   add_assoc a b c := Subtype.ext <| add_assoc a.val b c
   zero_add a := Subtype.ext <|  zero_add a.val
   add_zero a := Subtype.ext <|  add_zero a.val
-  nsmul n a := Center.mk (n • a.val) (by
-    induction n with
-    | zero =>
-      simpa only [zero_nsmul] using (Set.zero_mem_center (M₀ := R))
-    | succ n ih =>
-      simpa only [succ_nsmul] using Set.add_mem_center ih a.prop)
+  nsmul n a := Center.mk (n • a.val) (by induction n <;> simp_all [succ_nsmul, a.prop])
   add_comm a b := Subtype.ext <| add_comm a.val b.val
   left_distrib a b c := Subtype.ext <| left_distrib a.val b c
   right_distrib a b c := Subtype.ext <|  right_distrib a.val b c
