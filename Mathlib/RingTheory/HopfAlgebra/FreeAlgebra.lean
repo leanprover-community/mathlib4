@@ -6,7 +6,7 @@ Authors: Robert Hawkins
 module
 
 public import Mathlib.RingTheory.Bialgebra.FreeAlgebra
-public import Mathlib.RingTheory.HopfAlgebra.Generators
+public import Mathlib.RingTheory.HopfAlgebra.Primitive
 
 /-!
 # Hopf algebra structure on `FreeAlgebra R X`
@@ -33,7 +33,7 @@ noncomputable instance instHopfAlgebra : HopfAlgebra R (FreeAlgebra R X) :=
     (Set.forall_mem_range.2 (isPrimitiveElem_ι R)) (Set.forall_mem_range.2 fun x ↦ by simp)
 
 @[simp]
-lemma antipode_ι (x : X) : HopfAlgebra.antipode R (ι R x) = -ι R x := by
-  exact (isPrimitiveElem_ι R x).antipode_eq_neg
+lemma antipode_ι (x : X) : HopfAlgebra.antipode R (ι R x) = -ι R x :=
+  (isPrimitiveElem_ι R x).antipode_eq_neg
 
 end FreeAlgebra

@@ -6,7 +6,7 @@ Authors: Nikolas Tapia, Robert Hawkins
 module
 
 public import Mathlib.RingTheory.Bialgebra.TensorAlgebra
-public import Mathlib.RingTheory.HopfAlgebra.Generators
+public import Mathlib.RingTheory.HopfAlgebra.Primitive
 
 /-!
 # Hopf algebra structure on `TensorAlgebra R M`
@@ -33,7 +33,7 @@ noncomputable instance instHopfAlgebra : HopfAlgebra R (TensorAlgebra R M) :=
     (Set.forall_mem_range.2 (isPrimitiveElem_ι R)) (Set.forall_mem_range.2 fun m ↦ by simp)
 
 @[simp]
-lemma antipode_ι (m : M) : HopfAlgebra.antipode R (ι R m) = -ι R m := by
-  exact (isPrimitiveElem_ι R m).antipode_eq_neg
+lemma antipode_ι (m : M) : HopfAlgebra.antipode R (ι R m) = -ι R m :=
+  (isPrimitiveElem_ι R m).antipode_eq_neg
 
 end TensorAlgebra
