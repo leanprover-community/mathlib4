@@ -344,7 +344,7 @@ theorem lintegral_compProd' (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kerne
   refine SimpleFunc.induction ?_ ?_ (F n)
   · intro c s hs
     simp +unfoldPartialApp only [SimpleFunc.const_zero,
-      SimpleFunc.coe_piecewise, SimpleFunc.coe_const, SimpleFunc.coe_zero,
+      SimpleFunc.coe_piecewise, SimpleFunc.coe_const, FunLike.coe_zero,
       Set.piecewise_eq_indicator, Function.const, lintegral_indicator_const hs]
     rw [compProd_apply hs, ← lintegral_const_mul c _]
     swap
@@ -354,7 +354,7 @@ theorem lintegral_compProd' (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kerne
     ext1 b
     rw [lintegral_indicator_const_comp measurable_prodMk_left hs]
   · intro f f' _ hf_eq hf'_eq
-    simp_rw [SimpleFunc.coe_add, Pi.add_apply]
+    simp_rw [FunLike.coe_add, Pi.add_apply]
     change
       ∫⁻ x, (f : β × γ → ℝ≥0∞) x + f' x ∂(κ ⊗ₖ η) a =
         ∫⁻ b, ∫⁻ c : γ, f (b, c) + f' (b, c) ∂η (a, b) ∂κ a
