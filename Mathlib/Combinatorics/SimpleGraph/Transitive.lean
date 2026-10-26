@@ -26,20 +26,31 @@ namespace SimpleGraph
 variable {V W : Type*} {G : SimpleGraph V} {H : SimpleGraph W}
 
 /-- A graph is vertex-transitive if every two vertices are related by an automorphism. -/
-@[expose, wikidata Q220997]
+@[wikidata Q220997]
 def IsVertexTransitive (G : SimpleGraph V) : Prop :=
   ∀ v w, ∃ f : G ≃g G, f v = w
 
 /-- A graph is edge-transitive if every two edges are related by an automorphism. -/
-@[expose, wikidata Q4391289]
+@[wikidata Q4391289]
 def IsEdgeTransitive (G : SimpleGraph V) : Prop :=
   ∀ ⦃e₁ e₂⦄, e₁ ∈ G.edgeSet → e₂ ∈ G.edgeSet → ∃ f : G ≃g G, e₁.map f = e₂
 
 /-- A graph is symmetric (aka arc-transitive or flag-transitive) if every two darts are related
 by an automorphism. -/
-@[expose, wikidata Q1205074]
+@[wikidata Q1205074]
 def IsSymmetric (G : SimpleGraph V) : Prop :=
   ∀ d₁ d₂, ∃ f : G ≃g G, f.toHom.mapDart d₁ = d₂
+
+lemma isVertexTransitive_iff : G.IsVertexTransitive ↔ ∀ v w, ∃ f : G ≃g G, f v = w := .rfl
+
+lemma isEdgeTransitive_iff : G.IsEdgeTransitive ↔
+    ∀ ⦃e₁ e₂⦄, e₁ ∈ G.edgeSet → e₂ ∈ G.edgeSet → ∃ f : G ≃g G, e₁.map f = e₂ := .rfl
+
+lemma isSymmetric_iff : G.IsSymmetric ↔ ∀ d₁ d₂, ∃ f : G ≃g G, f.toHom.mapDart d₁ = d₂ := .rfl
+
+alias ⟨IsVertexTransitive.def, _⟩ := isVertexTransitive_iff
+alias ⟨IsEdgeTransitive.def, _⟩ := isEdgeTransitive_iff
+alias ⟨IsSymmetric.def, _⟩ := isSymmetric_iff
 
 protected lemma IsVertexTransitive.congr (vt : G.IsVertexTransitive) (f : G ≃g H) :
     H.IsVertexTransitive := fun v w ↦ by
