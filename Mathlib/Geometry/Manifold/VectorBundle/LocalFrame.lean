@@ -5,10 +5,9 @@ Authors: Patrick Massot, Michael Rothgang
 -/
 module
 
-public import Mathlib.Geometry.Manifold.Algebra.Monoid
-public import Mathlib.Geometry.Manifold.Notation
 public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
-public import Mathlib.Geometry.Manifold.VectorBundle.ContMDiffSection
+
+import Mathlib.Geometry.Manifold.VectorBundle.ContMDiffSection
 
 /-!
 # Local frames in a vector bundle
@@ -96,7 +95,9 @@ vector bundle, local frame, smoothness
 -/
 
 @[expose] public section
-open Bundle Filter Function Topology Module
+open Bundle Filter Function Module
+
+open scoped Topology
 
 open scoped Bundle Manifold ContDiff
 

@@ -140,8 +140,11 @@ lemma comapDomain_add (f : M → N) (hf) (x y : R[N]) :
   ext; simp [comapDomain_add_of_injective hf]
 
 @[simp]
-lemma comapDomain_single_of_not_mem_range {r : R} {n : N} (hn : n ∉ Set.range f) (hf) :
+lemma comapDomain_single_of_notMem_range {r : R} {n : N} (hn : n ∉ Set.range f) (hf) :
     comapDomain f hf (single n r) = 0 := by ext; simp [*]
+
+@[deprecated (since := "2026-09-28")]
+alias comapDomain_single_of_not_mem_range := comapDomain_single_of_notMem_range
 
 /-- `comapDomain` as an `AddMonoidHom`. -/
 @[to_additive (attr := simps) comapDomainAddMonoidHom /-- `comapDomain` as an `AddMonoidHom`. -/]
@@ -236,34 +239,24 @@ def mapAddEquiv (e : R ≃+ S) : R[M] ≃+ S[M] where
   right_inv x := by ext; simp
   map_add' := MonoidAlgebra.map_add _
 
-@[deprecated (since := "2026-03-20")] alias mapRangeAddEquiv := mapAddEquiv
-
 @[to_additive (attr := simp)]
 lemma coeff_mapAddEquiv (e : R ≃+ S) (x : R[M]) (m : M) :
     (mapAddEquiv M e x).coeff m = e (x.coeff m) := by simp [mapAddEquiv]
 
 @[deprecated (since := "2026-06-18")] alias mapAddEquiv_apply := coeff_mapAddEquiv
 
-@[deprecated (since := "2026-03-20")] alias mapRangeAddEquiv_apply := coeff_mapAddEquiv
-
 @[to_additive (attr := simp)]
 lemma mapAddEquiv_single (e : R ≃+ S) (r : R) (m : M) :
     mapAddEquiv M e (single m r) = single m (e r) := by simp [mapAddEquiv]
-
-@[deprecated (since := "2026-03-20")] alias mapRangeAddEquiv_single := mapAddEquiv_single
 
 @[to_additive (attr := simp)]
 lemma symm_mapAddEquiv (e : R ≃+ S) :
     (mapAddEquiv M e).symm = mapAddEquiv M e.symm := rfl
 
-@[deprecated (since := "2026-03-20")] alias symm_mapRangeAddEquiv := symm_mapAddEquiv
-
 @[to_additive (attr := simp)]
 lemma mapAddEquiv_trans (e₁ : R ≃+ S) (e₂ : S ≃+ T) :
     mapAddEquiv M (e₁.trans e₂) = (mapAddEquiv M e₁).trans (mapAddEquiv M e₂) := by
   ext; simp
-
-@[deprecated (since := "2026-03-20")] alias mapRangeAddEquiv_trans := mapAddEquiv_trans
 
 @[to_additive (attr := simp) (dont_translate := R S) map_mul]
 protected lemma map_mul (f : R →+* S) (x y : R[M]) :
@@ -314,12 +307,8 @@ noncomputable def mapRingHom (f : R →+* S) : R[M] →+* S[M] where
   map_one' := MonoidAlgebra.map_one _
   map_mul' := MonoidAlgebra.map_mul _
 
-@[deprecated (since := "2026-03-20")] alias mapRangeRingHom := mapRingHom
-
 @[to_additive]
 lemma coe_mapRingHom (f : R →+* S) : ⇑(mapRingHom M f) = map f := rfl
-
-@[deprecated (since := "2026-03-20")] alias coe_mapRangeRingHom := coe_mapRingHom
 
 @[to_additive (attr := simp)]
 lemma coeff_mapRingHom (f : R →+* S) (x : R[M]) (m : M) :
@@ -327,33 +316,22 @@ lemma coeff_mapRingHom (f : R →+* S) (x : R[M]) (m : M) :
 
 @[deprecated (since := "2026-06-18")] alias mapRingHom_apply := coeff_mapRingHom
 
-@[deprecated (since := "2026-03-20")] alias mapRangeRingHom_apply := coeff_mapRingHom
-
 @[to_additive (attr := simp)]
 lemma mapRingHom_single (f : R →+* S) (a : M) (b : R) :
     mapRingHom M f (single a b) = single a (f b) := by simp [mapRingHom]
 
-@[deprecated (since := "2026-03-20")] alias mapRangeRingHom_single := mapRingHom_single
-
 @[to_additive (dont_translate := R) (attr := simp)]
 lemma mapRingHom_id : mapRingHom M (.id R) = .id R[M] := by ext <;> simp
-
-@[deprecated (since := "2026-03-20")] alias mapRangeRingHom_id := mapRingHom_id
 
 @[to_additive (dont_translate := R S T) (attr := simp)]
 lemma mapRingHom_comp (f : S →+* T) (g : R →+* S) :
     mapRingHom M (f.comp g) = (mapRingHom M f).comp (mapRingHom M g) := by
   ext <;> simp
 
-@[deprecated (since := "2026-03-20")] alias mapRangeRingHom_comp := mapRingHom_comp
-
 @[to_additive (dont_translate := R S)]
 lemma mapRingHom_comp_mapDomainRingHom (f : R →+* S) (g : M →* N) :
     (mapRingHom N f).comp (mapDomainRingHom R g) =
       (mapDomainRingHom S g).comp (mapRingHom M f) := by aesop
-
-@[deprecated (since := "2026-03-20")]
-alias mapRangeRingHom_comp_mapDomainRingHom := mapRingHom_comp_mapDomainRingHom
 
 variable (R) in
 /-- Isomorphic monoids have isomorphic monoid algebras. -/
@@ -394,41 +372,28 @@ def mapRingEquiv (e : R ≃+* S) : R[M] ≃+* S[M] :=
   .ofRingHom (MonoidAlgebra.mapRingHom M e) (MonoidAlgebra.mapRingHom M e.symm)
     (by apply MonoidAlgebra.ringHom_ext <;> simp) (by apply MonoidAlgebra.ringHom_ext <;> simp)
 
-@[deprecated (since := "2026-03-20")] alias mapRangeRingEquiv := mapRingEquiv
-
 @[to_additive (attr := simp)]
 lemma coeff_mapRingEquiv (e : R ≃+* S) (x : R[M]) (m : M) :
     (mapRingEquiv M e x).coeff m = e (x.coeff m) := by simp [mapRingEquiv]
 
 @[deprecated (since := "2026-06-18")] alias mapRingEquiv_apply := coeff_mapRingEquiv
 
-@[deprecated (since := "2026-03-20")] alias mapRangeRingEquiv_apply := coeff_mapRingEquiv
-
 @[to_additive (attr := simp)]
 lemma mapRingEquiv_single (e : R ≃+* S) (r : R) (m : M) :
     mapRingEquiv M e (single m r) = single m (e r) := by simp [mapRingEquiv]
-
-@[deprecated (since := "2026-03-20")] alias mapRangeRingEquiv_single := mapRingEquiv_single
 
 @[to_additive]
 lemma toRingHom_mapRingEquiv (e : R ≃+* S) :
     (mapRingEquiv M e).toRingHom = mapRingHom M e := rfl
 
-@[deprecated (since := "2026-03-20")]
-alias toRingHom_mapRangeRingEquiv := toRingHom_mapRingEquiv
-
 @[to_additive (attr := simp)]
 lemma symm_mapRingEquiv (e : R ≃+* S) :
     (mapRingEquiv M e).symm = mapRingEquiv M e.symm := rfl
-
-@[deprecated (since := "2026-03-20")] alias symm_mapRangeRingEquiv := symm_mapRingEquiv
 
 @[to_additive (attr := simp)]
 lemma mapRingEquiv_trans (e₁ : R ≃+* S) (e₂ : S ≃+* T) :
     mapRingEquiv M (e₁.trans e₂) =
       (mapRingEquiv M e₁).trans (mapRingEquiv M e₂) := by ext; simp
-
-@[deprecated (since := "2026-03-20")] alias mapRangeRingEquiv_trans := mapRingEquiv_trans
 
 /-- Nested monoid algebras can be taken in an arbitrary order. -/
 @[to_additive (dont_translate := R)

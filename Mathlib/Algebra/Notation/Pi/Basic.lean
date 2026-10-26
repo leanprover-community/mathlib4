@@ -20,7 +20,7 @@ assert_not_exists Monoid Preorder
 
 open Function
 
-variable {ι ι' α β : Type*} {G M N O : ι → Type*}
+variable {ι ι' α : Type*} {M N O : ι → Type*}
 
 namespace Pi
 variable [∀ i, One (M i)] [∀ i, One (N i)] [∀ i, One (O i)] [DecidableEq ι] {i : ι} {x : M i}
@@ -127,5 +127,20 @@ theorem curry_mulSingle (i : ι × ι') (b : M) :
 theorem uncurry_mulSingle_mulSingle (i : ι) (i' : ι') (b : M) :
     uncurry (Pi.mulSingle i (Pi.mulSingle i' b)) = Pi.mulSingle (i, i') b :=
   uncurry_update_update _ _ _ _
+
+@[to_additive]
+lemma mulSingle_eq_mulSingle_iff {j : ι} {m n : M} :
+    mulSingle (M := fun _ ↦ M) i m = mulSingle j n ↔ i = j ∧ m = n ∨ m = 1 ∧ n = 1 :=
+  Function.update_eq_update_iff
+
+@[to_additive]
+lemma mulSingle_left_injective {m : M} (hm : m ≠ 1) :
+    Function.Injective fun (i : ι) ↦ mulSingle (M := fun _ ↦ M) i m :=
+  Function.update_left_injective (fun _ ↦ by rwa [one_apply, ne_comm])
+
+@[to_additive]
+lemma mulSingle_left_inj {j : ι} {m : M} (hm : m ≠ 1) :
+    mulSingle (M := fun _ ↦ M) i m = mulSingle j m ↔ i = j :=
+  (mulSingle_left_injective hm).eq_iff
 
 end Pi

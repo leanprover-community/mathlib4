@@ -5,12 +5,12 @@ Authors: Vincent Beffara, Stefan Kebekus
 -/
 module
 
-public import Mathlib.Analysis.Analytic.Constructions
-public import Mathlib.Analysis.Calculus.DSlope
-public import Mathlib.Analysis.Calculus.FDeriv.Analytic
 public import Mathlib.Analysis.Analytic.Uniqueness
+public import Mathlib.Analysis.Calculus.DSlope
 public import Mathlib.Order.Filter.EventuallyConst
-public import Mathlib.Topology.Perfect
+
+import Mathlib.Analysis.Analytic.Constructions
+import Mathlib.Analysis.Calculus.FDeriv.Analytic
 
 /-!
 # Principle of isolated zeros
@@ -45,14 +45,14 @@ open Filter Function Module Nat FormalMultilinearSeries Set
 open scoped Topology
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {s : E} {p q : FormalMultilinearSeries 𝕜 𝕜 E} {f g : 𝕜 → E} {n : ℕ} {z z₀ : 𝕜}
+  [NormedSpace 𝕜 E] {s : E} {p : FormalMultilinearSeries 𝕜 𝕜 E} {f g : 𝕜 → E} {n : ℕ} {z z₀ : 𝕜}
 
 namespace HasSum
 
 variable {a : ℕ → E}
 
 theorem hasSum_at_zero (a : ℕ → E) : HasSum (fun n => (0 : 𝕜) ^ n • a n) (a 0) := by
-  convert! hasSum_single (α := E) 0 fun b h ↦ _ <;> simp [*]
+  convert hasSum_single (α := E) 0 fun b h ↦ _ <;> simp [*]
 
 theorem exists_hasSum_smul_of_apply_eq_zero (hs : HasSum (fun m => z ^ m • a m) s)
     (ha : ∀ k < n, a k = 0) : ∃ t : E, z ^ n • t = s ∧ HasSum (fun m => z ^ m • a (m + n)) t := by
@@ -75,24 +75,11 @@ end HasSum
 
 namespace HasFPowerSeriesAt
 
-theorem has_fpower_series_dslope_fslope (hp : HasFPowerSeriesAt f p z₀) :
-    HasFPowerSeriesAt (dslope f z₀) p.fslope z₀ := by
-  have hpd : deriv f z₀ = p.coeff 1 := hp.deriv
-  have hp0 : p.coeff 0 = f z₀ := hp.coeff_zero 1
-  simp only [hasFPowerSeriesAt_iff, coeff_fslope] at hp ⊢
-  refine hp.mono fun x hx => ?_
-  by_cases h : x = 0
-  · convert! hasSum_single (α := E) 0 _ <;> intros <;> simp [*]
-  · have hxx : ∀ n : ℕ, x⁻¹ * x ^ (n + 1) = x ^ n := fun n => by simp [field, _root_.pow_succ]
-    suffices HasSum (fun n => x⁻¹ • x ^ (n + 1) • p.coeff (n + 1)) (x⁻¹ • (f (z₀ + x) - f z₀)) by
-      simpa [dslope, slope, h, smul_smul, hxx] using this
-    simpa [hp0] using ((hasSum_nat_add_iff' 1).mpr hx).const_smul x⁻¹
-
 theorem has_fpower_series_iterate_dslope_fslope (n : ℕ) (hp : HasFPowerSeriesAt f p z₀) :
     HasFPowerSeriesAt ((swap dslope z₀)^[n] f) (fslope^[n] p) z₀ := by
   induction n generalizing f p with
   | zero => exact hp
-  | succ n ih => simpa using ih (has_fpower_series_dslope_fslope hp)
+  | succ n ih => simpa using ih (dslope_fslope hp)
 
 theorem iterate_dslope_fslope_ne_zero (hp : HasFPowerSeriesAt f p z₀) (h : p ≠ 0) :
     (swap dslope z₀)^[p.order] f z₀ ≠ 0 := by

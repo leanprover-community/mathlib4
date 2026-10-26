@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Bicategory.Functor.Cat
 public import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 public import Mathlib.CategoryTheory.Bicategory.Strict.Pseudofunctor
-public import Mathlib.CategoryTheory.Sites.Sheaf
 public import Mathlib.CategoryTheory.Sites.Over
 
 /-!
@@ -68,7 +67,6 @@ def pullHom ⦃X₁ X₂ : C⦄ ⦃M₁ : F.obj (.mk (op X₁))⦄ ⦃M₂ : F.o
     (F.map g.op.toLoc).toFunctor.map φ ≫
       (F.mapComp' f₂.op.toLoc g.op.toLoc gf₂.op.toLoc (by aesop)).inv.toNatTrans.app _
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma map_eq_pullHom
     ⦃X₁ X₂ : C⦄ ⦃M₁ : F.obj (.mk (op X₁))⦄ ⦃M₂ : F.obj (.mk (op X₂))⦄
@@ -89,7 +87,6 @@ lemma pullHom_id ⦃X₁ X₂ : C⦄ ⦃M₁ : F.obj (.mk (op X₁))⦄ ⦃M₂ 
   simp [pullHom, mapComp'_comp_id_hom_app, mapComp'_comp_id_inv_app,
     ← reassoc_of% Cat.Hom₂.comp_app, Iso.inv_hom_id]
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma pullHom_pullHom
     ⦃X₁ X₂ : C⦄ ⦃M₁ : F.obj (.mk (op X₁))⦄ ⦃M₂ : F.obj (.mk (op X₂))⦄

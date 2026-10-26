@@ -9,7 +9,6 @@ public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 public import Mathlib.Algebra.Module.Equiv.Basic
 public import Mathlib.Algebra.Module.Submodule.LinearMap
 public import Mathlib.LinearAlgebra.Finsupp.Defs
-public import Mathlib.Tactic.ApplyFun
 
 /-!
 # Sums as a linear map
@@ -58,11 +57,10 @@ theorem sum_smul_index_linearMap' [Semiring R] [AddCommMonoid M] [Module R M] [A
 
 end SMul
 
-variable {α : Type*} {M N P : Type*} {R R₂ R₃ : Type*} {S : Type*}
-variable [Semiring R] [Semiring R₂] [Semiring R₃] [Semiring S]
+variable {α : Type*} {M N : Type*} {R R₂ : Type*} {S : Type*}
+variable [Semiring R] [Semiring R₂] [Semiring S]
 variable [AddCommMonoid M] [Module R M]
 variable [AddCommMonoid N] [Module R₂ N]
-variable [AddCommMonoid P] [Module R₃ P]
 
 variable {σ : R →+* R₂} {σ_inv : R₂ →+* R}
 
@@ -153,7 +151,6 @@ theorem lift_symm_apply (f) (x) : ((lift M R X).symm f) x = f (single x 1) :=
 theorem lift_apply (f) (g) : ((lift M R X) f) g = g.sum fun x r => r • f x :=
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given compatible `S` and `R`-module structures on `M` and a type `X`, the set of functions
 `X → M` is `S`-linearly equivalent to the `R`-linear maps from the free `R`-module
 on `X` to `M`. -/
@@ -278,7 +275,7 @@ theorem splittingOfFinsuppSurjective_splits (f : M →ₗ[R] α →₀ R) (s : S
 
 theorem leftInverse_splittingOfFinsuppSurjective (f : M →ₗ[R] α →₀ R) (s : Surjective f) :
     LeftInverse f (splittingOfFinsuppSurjective f s) := fun g =>
-  LinearMap.congr_fun (splittingOfFinsuppSurjective_splits f s) g
+  congr($(splittingOfFinsuppSurjective_splits f s) g)
 
 theorem splittingOfFinsuppSurjective_injective (f : M →ₗ[R] α →₀ R) (s : Surjective f) :
     Injective (splittingOfFinsuppSurjective f s) :=

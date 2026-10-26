@@ -5,11 +5,10 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
-public import Mathlib.CategoryTheory.Sites.Canonical
-public import Mathlib.CategoryTheory.Sites.Whiskering
 public import Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
+public import Mathlib.CategoryTheory.Sites.Canonical
 public import Mathlib.CategoryTheory.Sites.Continuous
+
 /-!
 
 # Subcanonical Grothendieck topologies
@@ -44,7 +43,6 @@ theorem yonedaEquiv_symm_app_apply {X : C} {F : Sheaf J (Type v)} (x : F.obj.obj
     (Y : Cᵒᵖ) (f : Y.unop ⟶ X) : dsimp% (J.yonedaEquiv.symm x).hom.app Y f = F.obj.map f.op x :=
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 /-- See also `yonedaEquiv_naturality'` for a more general version. -/
 lemma yonedaEquiv_naturality {X Y : C} {F : Sheaf J (Type v)} (f : J.yoneda.obj X ⟶ F)
     (g : Y ⟶ X) : F.obj.map g.op (J.yonedaEquiv f) = J.yonedaEquiv (J.yoneda.map g ≫ f) := by
@@ -68,7 +66,6 @@ lemma yonedaEquiv_yoneda_map {X Y : C} (f : X ⟶ Y) : J.yonedaEquiv (J.yoneda.m
   rw [yonedaEquiv_apply]
   simp
 
-set_option backward.defeqAttrib.useBackward true in
 lemma yonedaEquiv_symm_naturality_left {X X' : C} (f : X' ⟶ X) (F : Sheaf J (Type v))
     (x : F.obj.obj ⟨X⟩) : J.yoneda.map f ≫ J.yonedaEquiv.symm x = J.yonedaEquiv.symm
       ((F.obj.map f.op) x) := by
@@ -110,7 +107,7 @@ lemma hom_ext_yoneda {P Q : Sheaf J (Type v)} {f g : P ⟶ Q}
     f = g := by
   ext X x
   simpa only [yonedaEquiv_comp, Equiv.apply_symm_apply]
-    using! congr_arg (J.yonedaEquiv) (h _ (J.yonedaEquiv.symm x))
+    using! congr(J.yonedaEquiv $(h _ (J.yonedaEquiv.symm x)))
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
@@ -211,7 +208,7 @@ lemma hom_ext_uliftYoneda {P Q : Sheaf J (Type (max v v'))} {f g : P ⟶ Q}
     f = g := by
   ext X x
   simpa only [uliftYonedaEquiv_comp, Equiv.apply_symm_apply]
-    using! congr_arg (J.uliftYonedaEquiv) (h _ (J.uliftYonedaEquiv.symm x))
+    using! congr(J.uliftYonedaEquiv $(h _ (J.uliftYonedaEquiv.symm x)))
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
@@ -280,7 +277,7 @@ noncomputable def isColimitCofanMkYoneda {ι : Type*} (X : ι → C) {c : Cofan 
       TypeCat.Fun.toFun_apply, comp_apply, ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk,
       ← heq s (g ≫ Sieve.ofArrows.h u.2)
       (Sieve.ofArrows.h <| Sieve.downward_closed _ u.2 g) (by simp)]
-    exact ConcreteCategory.congr_hom ((s.inj _).hom.naturality g.op) _
+    congrm $((s.inj _).hom.naturality g.op) _
   · ext : 1
     let u (j : ι) : CategoryTheory.yoneda.obj (X j) ⟶ (Sieve.ofArrows _ c.inj).functor :=
       (Sieve.ofArrows _ c.inj).toFunctor (c.inj j) (Sieve.ofArrows_mk _ _ j)

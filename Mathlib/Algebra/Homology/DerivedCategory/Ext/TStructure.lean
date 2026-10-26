@@ -6,7 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
-public import Mathlib.Algebra.Homology.DerivedCategory.TStructure
+
+import Mathlib.Algebra.Homology.DerivedCategory.TStructure
 
 /-!
 # Morphisms between bounded complexes are small

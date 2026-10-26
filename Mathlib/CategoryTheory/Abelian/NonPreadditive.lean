@@ -5,10 +5,8 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
-public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
-public import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Equalizers
 public import Mathlib.CategoryTheory.Abelian.Images
+public import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Equalizers
 public import Mathlib.CategoryTheory.Preadditive.Basic
 
 /-!
@@ -234,7 +232,6 @@ instance mono_r {A : C} : Mono (r A) := by
   apply (cancel_mono (prod.lift (𝟙 A) (0 : A ⟶ A))).1
   rw [← hy, hyy, zero_comp, zero_comp]
 
-set_option backward.defeqAttrib.useBackward true in
 instance epi_r {A : C} : Epi (r A) := by
   have hlp : prod.lift (𝟙 A) (0 : A ⟶ A) ≫ Limits.prod.snd = 0 := prod.lift_snd _ _
   let hp1 : IsLimit (KernelFork.ofι (prod.lift (𝟙 A) (0 : A ⟶ A)) hlp) := by

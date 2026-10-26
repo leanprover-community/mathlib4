@@ -119,7 +119,6 @@ structure Adjunction (F : C ⥤ D) (G : D ⥤ C) where
 
 to_dual_name_hint Left Right
 
-attribute [to_dual existing] Adjunction.unit Adjunction.left_triangle_components
 attribute [to_dual self (reorder := C D, 2 4, F G,
   unit counit, left_triangle_components right_triangle_components)] Adjunction.mk
 attribute [to_dual self (reorder := C D, 2 4, F G,
@@ -211,7 +210,6 @@ instance (R : D ⥤ C) [R.IsRightAdjoint] : R.leftAdjoint.IsLeftAdjoint :=
 
 variable {X' X : C} {Y Y' : D}
 
-set_option backward.defeqAttrib.useBackward true in
 @[to_dual none]
 theorem homEquiv_id (X : C) : adj.homEquiv X _ (𝟙 _) = adj.unit.app X := by simp
 
@@ -233,7 +231,6 @@ theorem homEquiv_naturality_left (f : X' ⟶ X) (g : F.obj X ⟶ Y) :
   rw [← Equiv.eq_symm_apply]
   simp only [Equiv.symm_apply_apply, homEquiv_naturality_left_symm]
 
-set_option backward.defeqAttrib.useBackward true in
 @[to_dual none]
 theorem homEquiv_naturality_right (f : F.obj X ⟶ Y) (g : Y ⟶ Y') :
     (adj.homEquiv X Y') (f ≫ g) = (adj.homEquiv X Y) f ≫ G.map g := by
@@ -490,7 +487,6 @@ def equivHomsetLeftOfNatIso {F F' : C ⥤ D} (iso : F ≅ F') {X : C} {Y : D} :
   left_inv f := by simp
   right_inv g := by simp
 
-set_option linter.translate.warnInvalid false in
 /-- Transport an adjunction along a natural isomorphism on the left. -/
 @[to_dual (attr := simps)
 /-- Transport an adjunction along a natural isomorphism on the right. -/]
@@ -502,8 +498,6 @@ def ofNatIsoLeft {F G : C ⥤ D} {H : D ⥤ C} (adj : F ⊣ H) (iso : F ≅ G) :
       Functor.map_comp, Functor.whiskerLeft_app, Category.assoc, NatTrans.naturality_assoc]
     simp [← Functor.comp_map]
   right_triangle_components := by simp [← Functor.map_comp]
-
-attribute [to_dual existing] ofNatIsoLeft_unit ofNatIsoLeft_counit
 
 @[to_dual none]
 lemma homEquiv_ofNatIsoLeft_apply {F G : C ⥤ D} {H : D ⥤ C} (adj : F ⊣ H) (iso : F ≅ G)

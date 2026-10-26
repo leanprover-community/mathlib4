@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.ShortComplex.Homology
 public import Mathlib.Algebra.Homology.ShortComplex.Limits
 public import Mathlib.Algebra.Homology.ShortComplex.Preadditive
 public import Mathlib.CategoryTheory.Abelian.Basic
@@ -42,7 +41,6 @@ namespace CategoryTheory
 open Category Limits
 
 variable {C : Type u} [Category.{v} C] [Abelian C] (S : ShortComplex C)
-  {D : Type u'} [Category.{v'} D] [HasZeroMorphisms D]
 
 namespace ShortComplex
 

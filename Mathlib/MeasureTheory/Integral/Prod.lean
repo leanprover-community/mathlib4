@@ -35,8 +35,6 @@ product measure, Fubini's theorem, Fubini-Tonelli theorem
 
 public section
 
-noncomputable section
-
 open scoped Topology ENNReal MeasureTheory
 
 open Set Function Real ENNReal
@@ -105,7 +103,7 @@ theorem integrable_measure_prodMk_left {s : Set (α × β)} (hs : MeasurableSet 
     (h2s : (μ.prod ν) s ≠ ∞) : Integrable (fun x => ν.real (Prod.mk x ⁻¹' s)) μ := by
   refine ⟨(measurable_measure_prodMk_left hs).ennreal_toReal.aemeasurable.aestronglyMeasurable, ?_⟩
   simp_rw [hasFiniteIntegral_iff_enorm, measureReal_def, enorm_eq_ofReal toReal_nonneg]
-  convert! h2s.lt_top using 1
+  convert h2s.lt_top using 1
   rw [prod_apply hs]
   apply lintegral_congr_ae
   filter_upwards [ae_measure_lt_top hs h2s] with x hx
@@ -122,11 +120,13 @@ section
 
 variable {X : Type*} [TopologicalSpace X]
 
-protected theorem MeasureTheory.AEStronglyMeasurable.prod_swap [SFinite μ] [SFinite ν]
+protected theorem MeasureTheory.AEStronglyMeasurable.prod_swap [SFinite μ]
     {f : β × α → X} (hf : AEStronglyMeasurable f (ν.prod μ)) :
     AEStronglyMeasurable (fun z : α × β => f z.swap) (μ.prod ν) := by
-  rw [← prod_swap] at hf
-  exact hf.comp_measurable measurable_swap
+  by_cases hν : SFinite ν
+  · rw [← prod_swap] at hf
+    exact hf.comp_measurable measurable_swap
+  · simp [Measure.prod, hν]
 
 theorem MeasureTheory.AEStronglyMeasurable.comp_fst {γ} [TopologicalSpace γ] {f : α → γ}
     (hf : AEStronglyMeasurable f μ) : AEStronglyMeasurable (fun z : α × β => f z.1) (μ.prod ν) :=
@@ -455,7 +455,7 @@ theorem integral_prod (f : α × β → E) (hf : Integrable f (μ.prod ν)) :
   · rintro f g - i_f i_g hf hg
     simp_rw [integral_add' i_f i_g, integral_integral_add' i_f i_g, hf, hg]
   · exact isClosed_eq continuous_integral continuous_integral_integral
-  · rintro f g hfg - hf; convert! hf using 1
+  · rintro f g hfg - hf; convert hf using 1
     · exact integral_congr_ae hfg.symm
     · apply integral_congr_ae
       filter_upwards [ae_ae_of_ae_prod hfg] with x hfgx using integral_congr_ae (ae_eq_symm hfgx)
@@ -556,7 +556,7 @@ section ContinuousLinearMap
 
 variable {E F G : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {mE : MeasurableSpace E}
   [NormedAddCommGroup F] [NormedSpace ℝ F] {mF : MeasurableSpace F}
-  [NormedAddCommGroup G] [NormedSpace ℝ G] {mG : MeasurableSpace G}
+  [NormedAddCommGroup G] [NormedSpace ℝ G]
   {μ : Measure E} [IsProbabilityMeasure μ] {ν : Measure F} [IsProbabilityMeasure ν]
   {L : E × F →L[ℝ] G}
 

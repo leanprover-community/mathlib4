@@ -5,11 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Set.Notation
-public import Mathlib.Order.SetNotation
-public import Mathlib.Logic.Embedding.Basic
-public import Mathlib.Logic.Pairwise
 public import Mathlib.Data.Set.Image
+public import Mathlib.Data.Set.Notation
+public import Mathlib.Logic.Embedding.Basic
+public import Mathlib.Order.SetNotation
 
 /-!
 # Interactions between embeddings and sets.
@@ -26,7 +25,7 @@ open Set Set.Notation
 
 section Equiv
 
-variable {α : Sort u} {β : Sort v} (f : α ≃ β)
+variable {α : Sort u} {β : Sort v}
 
 @[simp]
 theorem Equiv.asEmbedding_range {α β : Sort _} {p : β → Prop} (e : α ≃ Subtype p) :

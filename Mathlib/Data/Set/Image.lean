@@ -6,11 +6,10 @@ Authors: Jeremy Avigad, Leonardo de Moura
 module
 
 public import Batteries.Tactic.Congr
-public import Mathlib.Data.Option.Basic
 public import Mathlib.Data.Prod.Basic
+public import Mathlib.Data.Set.Inclusion
 public import Mathlib.Data.Set.Subsingleton
 public import Mathlib.Data.Set.SymmDiff
-public import Mathlib.Data.Set.Inclusion
 
 /-!
 # Images and preimages of sets
@@ -104,6 +103,9 @@ theorem preimage_ofPred_eq {p : α → Prop} {f : β → α} : f ⁻¹' { a | p 
   rfl
 
 @[deprecated (since := "2026-07-09")] alias preimage_setOf_eq := preimage_ofPred_eq
+
+theorem preimage_singleton (f : α → β) (y : β) : f ⁻¹' {y} = {x | f x = y} :=
+  rfl
 
 @[simp]
 theorem preimage_id_eq : preimage (id : α → α) = id :=
@@ -319,6 +321,7 @@ theorem compl_compl_image [BooleanAlgebra α] (s : Set α) :
     Compl.compl '' Compl.compl '' s = s := by
   rw [← image_comp, compl_comp_compl, image_id]
 
+@[simp]
 theorem image_insert_eq {f : α → β} {a : α} {s : Set α} :
     f '' insert a s = insert (f a) (f '' s) := by grind
 
@@ -1129,7 +1132,7 @@ theorem Surjective.range_comp {ι' : Sort*} {f : ι → ι'} (hf : Surjective f)
 
 theorem Injective.mem_range_iff_existsUnique (hf : Injective f) {b : β} :
     b ∈ range f ↔ ∃! a, f a = b :=
-  ⟨fun ⟨a, h⟩ => ⟨a, h, fun _ ha => hf (ha.trans h.symm)⟩, ExistsUnique.exists⟩
+  hf.existsUnique_iff_exists.symm
 
 alias ⟨Injective.existsUnique_of_mem_range, _⟩ := Injective.mem_range_iff_existsUnique
 
