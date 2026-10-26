@@ -868,9 +868,14 @@ lemma baseChange_sup : (p ⊔ q).baseChange A = p.baseChange A ⊔ q.baseChange 
   (baseChange_gc R M A).l_sup
 
 @[simp]
-lemma baseChange_iSup {ι : Type*} (p : ι → Submodule R M) :
+lemma baseChange_iSup {ι : Sort*} (p : ι → Submodule R M) :
     (⨆ i, p i).baseChange A = ⨆ i, (p i).baseChange A :=
   (baseChange_gc R M A).l_iSup
+
+@[simp]
+lemma baseChange_sSup (S : Set (Submodule R M)) :
+    (sSup S).baseChange A = ⨆ p ∈ S, p.baseChange A :=
+  (baseChange_gc R M A).l_sSup
 
 variable {p q} in
 theorem baseChange_mono (h : p ≤ q) : p.baseChange A ≤ q.baseChange A :=
