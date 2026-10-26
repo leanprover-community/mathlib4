@@ -28,10 +28,10 @@ Here is the list of statements specific to these two types of filters:
 * `IsLocalExtr.isLocalExtrOn`, `IsLocalExtrOn.mono`: restrict to a subset.
 * `IsLocalExtrOn.inter`: intersect the set with another one.
 * `IsExtrOn.isLocalExtrOn`: a global extremum is a local extremum too.
-* `IsLocalExtrOn.isLocalExtr`, `IsExtrOn.isLocalExtr`: an extremum restricted to some neighborhoood
+* `IsLocalExtrOn.isLocalExtr`, `IsExtrOn.isLocalExtr`: an extremum restricted to some neighborhood
   of itself is an unrestricted extremum.
 
-and equivalent statements for the min and max predicates.
+and analogous statements for the min and max predicates.
 -/
 
 @[expose] public section

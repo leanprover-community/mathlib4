@@ -26,7 +26,7 @@ Similar predicates with `On` suffix are particular cases for `l = 𝓟 s`.
 
 ## Main statements
 
-We list here the statements for `Extr`; equivalent statements exist for the min and max predicates.
+We list here the statements for `Extr`; analogous statements exist for the min and max predicates.
 For statements without an `Extr` variant we list the min variant.
 
 ### Change of the filter (set) argument
@@ -100,7 +100,7 @@ variable (f : α → β) (s : Set α) (l : Filter α) (a : α)
 def IsMinFilter : Prop :=
   ∀ᶠ x in l, f a ≤ f x
 
-/-- `IsMaxFilter f l a` means that `f x ≤ f a` for all `x` in some `l`-neighborhood of `a` -/
+/-- `IsMaxFilter f l a` means that `f x ≤ f a` for all `x` in some `l`-neighborhood of `a`. -/
 def IsMaxFilter : Prop :=
   ∀ᶠ x in l, f x ≤ f a
 
