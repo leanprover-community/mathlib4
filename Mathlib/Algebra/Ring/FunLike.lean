@@ -47,10 +47,6 @@ theorem coeRingHom_apply (f : F) : coeRingHom F f = f := rfl
 @[norm_cast]
 theorem coe_coeRingHom : (coeRingHom F : F → α → β) = DFunLike.coe := rfl
 
-theorem coeRing_injective : Function.Injective (coeRingHom F) := by
-  rw [coe_coeRingHom]
-  exact DFunLike.coe_injective
-
 variable (F) in
 /-- Evaluation as a ring homomorphism. -/
 @[expose]
