@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Remove unnecessary `set_option ... false in` from a Lean project.
+Remove unnecessary `set_option ... in` from a Lean project.
 
 Tries removing each occurrence (that isn't followed by a comment), testing
 whether the file still builds. Processes files in reverse import-DAG order
@@ -163,15 +163,15 @@ class _RemoveDisplay(Display):
             self._redraw()
 
 
-def handle_lakefile(options: list[str], value: str = "false") -> bool:
-    """Check and remove options from lakefile.lean. Returns True if changed."""
+def handle_lakefile(options: list[str]) -> bool:
+    """Check and remove options from lakefile.lean. Return True if changed."""
     lakefile = PROJECT_DIR / "lakefile.lean"
     content = lakefile.read_text()
     changed = False
     for opt in options:
         if opt not in content:
             continue
-        pat = lakefile_pattern(opt, value)
+        pat = lakefile_pattern(opt)
         new_content = pat.sub("", content)
         if new_content != content:
             content = new_content
@@ -182,13 +182,15 @@ def handle_lakefile(options: list[str], value: str = "false") -> bool:
     return changed
 
 
-def scan_files(dag: DAG, options: list[str], value: str = "false") -> dict[str, list[int]]:
-    """Find files with removable set_option lines.
+def scan_files(dag: DAG, options: list[str]) -> dict[str, list[int]]:
+    """Find files with removable set_option lines:
+    we support options with Boolean, numeric or string values
+    (provided the string does not contain `"`).
 
     Returns dict of module_name -> list of 0-indexed line numbers.
     """
-    removable_pats = [removable_pattern(opt, value) for opt in options]
-    commented_pats = [commented_pattern(opt, value) for opt in options]
+    removable_pats = [removable_pattern(opt) for opt in options]
+    commented_pats = [commented_pattern(opt) for opt in options]
     results: dict[str, list[int]] = {}
     for name, info in dag.modules.items():
         filepath = dag.project_root / info.filepath
@@ -208,10 +210,10 @@ def scan_files(dag: DAG, options: list[str], value: str = "false") -> dict[str, 
     return results
 
 
-def count_skipped(filepath: Path, options: list[str], value: str = "false") -> int:
+def count_skipped(filepath: Path, options: list[str]) -> int:
     """Count set_option lines with trailing/preceding comments."""
-    commented_pats = [commented_pattern(opt, value) for opt in options]
-    removable_pats = [removable_pattern(opt, value) for opt in options]
+    commented_pats = [commented_pattern(opt) for opt in options]
+    removable_pats = [removable_pattern(opt) for opt in options]
     lines = filepath.read_text().splitlines()
     count = 0
     for i, line in enumerate(lines):
@@ -239,14 +241,13 @@ def make_process_file(
     options: list[str],
     timeout: int,
     traverser: DAGTraverser,
-    value: str = "false",
 ) -> Callable:
     """Create the per-file action callback."""
 
     def process_file(module_name: str, filepath: Path) -> FileResult:
         abs_path = filepath
         removable_lines = removable_map.get(module_name, [])
-        skipped = count_skipped(abs_path, options, value)
+        skipped = count_skipped(abs_path, options)
 
         if not removable_lines:
             save_progress(module_name, file_sha256(abs_path))
@@ -338,7 +339,7 @@ def write_github_outputs(summary: Summary):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Remove unnecessary `set_option ... false in` lines in a Lean project.\n\n"
+        description="Remove unnecessary `set_option ... in` lines in a Lean project.\n\n"
                     "To use outside mathlib, copy `rm_set_option.py`, `dag_traversal.py` and "
                     "`set_option_utils.py` to a subdirectory of your project named `scripts/` "
                     "and then run from the project root with `scripts/rm_set_option.py`.",
@@ -347,11 +348,6 @@ def main():
     parser.add_argument(
         "--option",
         help="Only scan/remove this specific option (default: all known options)",
-    )
-    parser.add_argument(
-        "--value",
-        default="false",
-        help="Value of the option to scan/remove (default: false)",
     )
     parser.add_argument(
         "--dry-run",
@@ -407,7 +403,7 @@ def main():
 
     # Step 1: lakefile.lean
     if not args.dry_run and (PROJECT_DIR / "lakefile.lean").exists():
-        handle_lakefile(options, args.value)
+        handle_lakefile(options)
     elif (PROJECT_DIR / "lakefile.toml").exists():
         opts_str = ", ".join(options)
         print(
@@ -423,7 +419,7 @@ def main():
 
     # Step 3: scan for removable lines
     print("Scanning for removable set_option lines...", flush=True)
-    removable_map = scan_files(full_dag, options, args.value)
+    removable_map = scan_files(full_dag, options)
 
     if args.files:
         # Filter to requested files
@@ -514,7 +510,7 @@ def main():
         _timer.start()
 
     display = _RemoveDisplay()
-    action = make_process_file(removable_map, options, args.timeout, traverser, args.value)
+    action = make_process_file(removable_map, options, args.timeout, traverser)
 
     display.start(len(full_dag.modules))
     try:
