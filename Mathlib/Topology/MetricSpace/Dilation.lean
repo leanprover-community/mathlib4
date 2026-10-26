@@ -5,6 +5,7 @@ Authors: Hanting Zhang
 -/
 module
 
+public import Mathlib.Algebra.Group.IsApply
 public import Mathlib.Topology.MetricSpace.Isometry
 
 import Mathlib.Topology.MetricSpace.Lipschitz
@@ -335,17 +336,19 @@ instance : Monoid (α →ᵈ α) where
   one_mul := id_comp
   mul_assoc _ _ _ := comp_assoc _ _ _
 
+instance : IsOneApplyEqSelf (α →ᵈ α) where
+
 theorem one_def : (1 : α →ᵈ α) = Dilation.id α :=
   rfl
 
 theorem mul_def (f g : α →ᵈ α) : f * g = f.comp g :=
   rfl
 
-@[simp]
+@[deprecated FunLike.coe_one_eq_id +typeChanged (since := "2026-10-26")]
 theorem coe_one : ⇑(1 : α →ᵈ α) = id :=
   rfl
 
-@[simp]
+@[deprecated FunLike.coe_mul_eq_comp +typeChanged (since := "2026-10-26")]
 theorem coe_mul (f g : α →ᵈ α) : ⇑(f * g) = f ∘ g :=
   rfl
 
