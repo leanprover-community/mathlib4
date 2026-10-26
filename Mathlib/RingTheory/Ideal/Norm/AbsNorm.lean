@@ -338,6 +338,15 @@ theorem absNorm_eq_one_iff {I : Ideal S} : absNorm I = 1 ↔ I = ⊤ := by
 theorem absNorm_dvd_absNorm_of_le {I J : Ideal S} (h : J ≤ I) : Ideal.absNorm I ∣ Ideal.absNorm J :=
   map_dvd absNorm (dvd_iff_le.mpr h)
 
+/-- The absolute norm of the ideal of `A` lying under `I` divides the absolute norm of `I`. -/
+theorem absNorm_under_dvd_absNorm {A : Type*} [CommRing A] [Algebra A S] [IsDedekindDomain A]
+    [Infinite A] (I : Ideal S) : absNorm (I.under A) ∣ absNorm I := by
+  obtain rfl | hI := eq_or_ne I ⊥
+  · simp
+  rw [absNorm_of_ne_bot hI, absNorm_apply, Submodule.cardQuot_apply, Submodule.cardQuot_apply]
+  exact AddSubgroup.card_dvd_of_injective (quotientMap I (algebraMap A S) le_rfl)
+    quotientMap_injective
+
 theorem irreducible_of_irreducible_absNorm {I : Ideal S} (hI : Irreducible (Ideal.absNorm I)) :
     Irreducible I :=
   irreducible_iff.mpr
@@ -419,6 +428,10 @@ theorem absNorm_ne_zero_of_nonZeroDivisors' (I : (Ideal S)⁰) : absNorm (I : Id
 /-- A version of `absNorm_pos_of_nonZeroDivisors` for a ring with finite quotients. -/
 theorem absNorm_pos_of_nonZeroDivisors' (I : (Ideal S)⁰) : 0 < absNorm (I : Ideal S) :=
   absNorm_pos_iff_mem_nonZeroDivisors'.mpr (SetLike.coe_mem I)
+
+/-- The norm of a nonzero proper ideal is `> 1`. -/
+theorem one_lt_absNorm {I : Ideal S} (h₀ : I ≠ ⊥) (h₁ : I ≠ ⊤) : 1 < absNorm I := by
+  simp [Nat.one_lt_iff_ne_zero_and_ne_one, h₀, h₁]
 
 /-- A version of `card_norm_le_eq_card_norm_le_add_one` for a ring with finite quotients. -/
 theorem card_norm_le_eq_card_norm_le_add_one' (n : ℕ) :

@@ -502,6 +502,8 @@ instance isMaximal : v.asIdeal.IsMaximal := v.isPrime.isMaximal v.ne_bot
 
 theorem prime : Prime v.asIdeal := Ideal.prime_of_isPrime v.ne_bot v.isPrime
 
+instance : NeZero v.asIdeal := ⟨v.ne_bot⟩
+
 instance : Coe (HeightOneSpectrum R) (Ideal R) where
   coe P := P.asIdeal
 
@@ -586,18 +588,25 @@ def comap (f : R →+* S) (hf : Function.Surjective f) (v : HeightOneSpectrum S)
   isPrime := v.asIdeal.comap_isPrime f
   ne_bot := (Ideal.eq_bot_of_comap_eq_bot' hf).mt v.ne_bot
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The isomorphism between `HeightOneSpectrum`s of isomorphic rings. -/
 @[simps]
 def equivOfRingEquiv (e : R ≃+* S) : (HeightOneSpectrum R) ≃ (HeightOneSpectrum S) where
-  toFun := HeightOneSpectrum.comap e.symm e.symm.surjective
-  invFun := HeightOneSpectrum.comap e e.surjective
+  toFun := HeightOneSpectrum.comap (e.symm : S →+* R) (by simpa using e.symm.surjective)
+  invFun := HeightOneSpectrum.comap (e : R →+* S) (by simpa using e.surjective)
   left_inv x := by ext; simp
   right_inv x := by
     ext
     rw [← Ideal.map_comap_eq_self_of_equiv e x.asIdeal]
     simp only [comap_asIdeal, Ideal.mem_comap, RingHom.coe_coe, Ideal.symm_apply_mem_of_equiv_iff]
     exact Iff.rfl
+
+omit [IsDedekindDomain R] in
+theorem equivOfRingEquiv_apply_asIdeal (e : R ≃+* S) (v : HeightOneSpectrum R) :
+    (equivOfRingEquiv e v).asIdeal = v.asIdeal.comap (e.symm : S →+* R) := rfl
+
+omit [IsDedekindDomain R] in
+theorem equivOfRingEquiv_symm_apply_asIdeal (e : R ≃+* S) (v : HeightOneSpectrum S) :
+    ((equivOfRingEquiv e).symm v).asIdeal = v.asIdeal.comap (e : R →+* S) := rfl
 
 theorem RingEquiv.nontrivial_heightOneSpectrum {R S : Type*} [CommRing R] [CommRing S]
     [Nontrivial (HeightOneSpectrum S)] (e : R ≃+* S) : Nontrivial (HeightOneSpectrum R) :=
