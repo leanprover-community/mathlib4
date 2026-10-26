@@ -658,14 +658,12 @@ theorem cliqueFree_induce_iff (s : Set α) (n : ℕ) :
   have := h <| t.subtype _
   rwa [← filter_eq_self.mpr ht, ← subtype_map]
 
-theorem cliqueFreeOn_induce {s : Set α} {n : ℕ} :
-    (G.induce s).CliqueFree n ↔ G.CliqueFreeOn s n := by
-  simp [CliqueFreeOn, cliqueFree_induce_iff]
-
 variable {G} in
+@[simp]
 theorem Embedding.cliqueFreeOn_image {G' : SimpleGraph β} {f : G ↪g G'} {s : Set α} {n : ℕ} :
     G'.CliqueFreeOn (f '' s) n ↔ G.CliqueFreeOn s n := by
-  simp_rw [← cliqueFreeOn_induce, f.induceImage.cliqueFree_iff]
+  have hf : s.BijOn f (f '' s) := f.injective.bijOn_image
+  simp_rw [← cliqueFree_induce_iff, (f.induceIso hf).cliqueFree_iff]
 
 end CliqueFreeOn
 
