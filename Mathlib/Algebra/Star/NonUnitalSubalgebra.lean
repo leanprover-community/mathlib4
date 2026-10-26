@@ -1232,8 +1232,7 @@ commute pairwise, and distinct elements of `s` commute with the `star` of the ot
 lemma Set.Pairwise.commute_union_star_self_iff {R : Type*} [Mul R] [StarMul R] {s : Set R} :
     (s ∪ star s).Pairwise Commute ↔
       s.Pairwise Commute ∧ s.Pairwise (Commute · <| star ·) ∧ ∀ x ∈ s, IsStarNormal x := by
-  simp only [Set.pairwise_union_of_symm_of_refl, Set.Pairwise.commute_star_iff, Set.mem_star,
-    and_self_left, and_congr_right_iff]
+  simp_rw [Set.pairwise_union_of_symm_of_refl, Set.Pairwise.commute_star_iff, Set.mem_star]
   grind [isStarNormal_iff, Set.Pairwise, star_star]
 
 namespace NonUnitalStarAlgebra
