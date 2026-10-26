@@ -1,8 +1,10 @@
-import Mathlib.Algebra.Ring.Nat
-import Mathlib.Data.Nat.Prime.Defs
-import Mathlib.CategoryTheory.Category.Basic
-import Mathlib.Data.List.InsertIdx
-import Mathlib.Algebra.Group.Basic
+module
+
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Ring.Nat
+public import Mathlib.CategoryTheory.Category.Basic
+public import Mathlib.Data.List.InsertIdx
+public import Mathlib.Data.Nat.Prime.Defs
 
 -- This is partially duplicative with the tests for `rw?` in Lean.
 -- It's useful to re-test here with a larger environment.
@@ -81,7 +83,7 @@ example : foo x = 1 ↔ ∃ k : ℤ, x = k := by
   rw? -- Used to panic, see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/panic.20and.20error.20with.20rw.3F/near/370598036
   exact test_sorry
 
-lemma six_eq_seven : 6 = 7 := test_sorry
+public lemma six_eq_seven : 6 = 7 := test_sorry
 
 -- This test also verifies that we are removing duplicate results;
 -- it previously also reported `Nat.cast_ofNat`
@@ -102,10 +104,10 @@ example : ∀ (x : ℕ) (_w : x ≤ 6), x ≤ 8 := by
 example (n : ℕ) : let y := 3; n + y = 3 + n := by
   rw?
 
-axiom α : Type
-axiom f : α → α
-axiom z : α
-axiom f_eq (n) : f n = z
+public axiom α : Type
+public axiom f : α → α
+public axiom z : α
+public axiom f_eq (n) : f n = z
 
 -- Check that the same lemma isn't used multiple times.
 -- This used to report two redundant copies of `f_eq`.
