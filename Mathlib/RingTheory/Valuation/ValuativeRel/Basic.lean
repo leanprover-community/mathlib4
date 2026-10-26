@@ -1264,9 +1264,13 @@ section Semiring
 variable [CommSemiring A] [Semiring B] [ValuativeRel A] [ValuativeRel B]
   [Algebra A B] [ValuativeExtension A B]
 
+attribute [simp] vle_iff_vle
+
+@[simp]
 lemma vlt_iff_vlt {a b : A} : algebraMap A B a <ᵥ algebraMap A B b ↔ a <ᵥ b :=
   vle_iff_vle.not
 
+@[simp]
 lemma veq_iff_veq {a b : A} : algebraMap A B a =ᵥ algebraMap A B b ↔ a =ᵥ b :=
   vle_iff_vle.and vle_iff_vle
 
