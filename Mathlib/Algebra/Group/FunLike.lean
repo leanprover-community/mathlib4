@@ -53,6 +53,17 @@ theorem coeMulHom_injective : Function.Injective (coeMulHom F α β) := by
   rw [coe_coeMulHom]
   exact DFunLike.coe_injective
 
+variable (F) in
+/-- Evaluation as a multiplicative homomorphism. -/
+@[to_additive
+/-- Evaluation as an additive homomorphism. -/]
+def evalMulHom (x : α) : F →ₙ* β where
+  toFun f := f x
+  map_mul' := by simp
+
+@[to_additive (attr := simp)]
+theorem evalMulHom_apply (x : α) (f : F) : evalMulHom F x f = f x := rfl
+
 end MulHom
 
 section MonoidHom
@@ -81,6 +92,18 @@ theorem coe_coeMonoidHom' : (coeMonoidHom F α β : F →ₙ* α → β) = coeMu
 theorem coeMonoidHom_injective : Function.Injective (coeMonoidHom F α β) := by
   rw [coe_coeMonoidHom]
   exact DFunLike.coe_injective
+
+variable (F) in
+/-- Evaluation as a multiplicative homomorphism. -/
+@[to_additive
+/-- Evaluation as an additive homomorphism. -/]
+def evalMonoidHom (x : α) : F →* β where
+  toFun f := f x
+  map_mul' := by simp
+  map_one' := by simp
+
+@[to_additive (attr := simp)]
+theorem evalMonoidHom_apply (x : α) (f : F) : evalMonoidHom F x f = f x := rfl
 
 end MonoidHom
 

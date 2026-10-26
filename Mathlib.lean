@@ -16,6 +16,7 @@ public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Algebra.Epi
 public import Mathlib.Algebra.Algebra.Equiv
 public import Mathlib.Algebra.Algebra.Field
+public import Mathlib.Algebra.Algebra.FunLike
 public import Mathlib.Algebra.Algebra.Hom
 public import Mathlib.Algebra.Algebra.Hom.Rat
 public import Mathlib.Algebra.Algebra.IsSimpleRing

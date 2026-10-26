@@ -26,6 +26,46 @@ variable {F α β : Type*}
 
 namespace FunLike
 
+section RingHom
+
+variable [FunLike F α β] [NonAssocSemiring F] [NonAssocSemiring β]
+  [IsZeroApply F] [IsOneApply F] [IsAddApply F] [IsMulApply F]
+
+variable (F) in
+/-- Coercion as a ring homomorphism. -/
+@[expose]
+def coeRingHom : F →+* α → β where
+  toFun f := f
+  map_zero' := by simp
+  map_one' := by simp
+  map_add' := by simp
+  map_mul' := by simp
+
+@[simp]
+theorem coeRingHom_apply (f : F) : coeRingHom F f = f := rfl
+
+@[norm_cast]
+theorem coe_coeRingHom : (coeRingHom F : F → α → β) = DFunLike.coe := rfl
+
+theorem coeRing_injective : Function.Injective (coeRingHom F) := by
+  rw [coe_coeRingHom]
+  exact DFunLike.coe_injective
+
+variable (F) in
+/-- Evaluation as a ring homomorphism. -/
+@[expose]
+def evalRingHom (x : α) : F →+* β where
+  toFun f := f x
+  map_zero' := by simp
+  map_one' := by simp
+  map_add' := by simp
+  map_mul' := by simp
+
+@[simp]
+theorem evalRingHom_apply (x : α) (f : F) : evalRingHom F x f = f x := rfl
+
+end RingHom
+
 section Comp
 
 section Semiring

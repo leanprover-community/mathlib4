@@ -5,7 +5,8 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.Algebra.Algebra.FunLike
+public import Mathlib.Algebra.Module.FunLike
 public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.Topology.LocallyConstant.Basic
 
@@ -28,47 +29,54 @@ variable {X Y : Type*} [TopologicalSpace X]
 @[to_additive]
 instance [One Y] : One (LocallyConstant X Y) where one := const X 1
 
-@[to_additive (attr := simp)]
+@[to_additive]
+instance [One Y] : IsOneApply (LocallyConstant X Y) where
+
+@[to_additive (attr := deprecated FunLike.coe_one +typeChanged (since := "2026-10-26"))]
 theorem coe_one [One Y] : ⇑(1 : LocallyConstant X Y) = (1 : X → Y) :=
   rfl
 
-@[to_additive]
-theorem one_apply [One Y] (x : X) : (1 : LocallyConstant X Y) x = 1 :=
+@[to_additive (attr := deprecated one_apply +typeChanged (since := "2026-10-26"))]
+protected theorem one_apply [One Y] (x : X) : (1 : LocallyConstant X Y) x = 1 :=
   rfl
 
 @[to_additive]
 instance [Inv Y] : Inv (LocallyConstant X Y) where inv f := ⟨f⁻¹, f.isLocallyConstant.inv⟩
 
-@[to_additive (attr := simp)]
+@[to_additive]
+instance [Inv Y] : IsInvApply (LocallyConstant X Y) where
+
+@[to_additive (attr := deprecated FunLike.coe_inv +typeChanged (since := "2026-10-26"))]
 theorem coe_inv [Inv Y] (f : LocallyConstant X Y) : ⇑(f⁻¹ : LocallyConstant X Y) = (f : X → Y)⁻¹ :=
   rfl
 
-@[to_additive]
-theorem inv_apply [Inv Y] (f : LocallyConstant X Y) (x : X) : f⁻¹ x = (f x)⁻¹ :=
+@[to_additive (attr := deprecated inv_apply +typeChanged (since := "2026-10-26"))]
+protected theorem inv_apply [Inv Y] (f : LocallyConstant X Y) (x : X) : f⁻¹ x = (f x)⁻¹ :=
   rfl
 
 @[to_additive]
 instance [Mul Y] : Mul (LocallyConstant X Y) where
   mul f g := ⟨f * g, f.isLocallyConstant.mul g.isLocallyConstant⟩
 
-@[to_additive (attr := simp)]
+@[to_additive]
+instance [Mul Y] : IsMulApply (LocallyConstant X Y) where
+
+@[to_additive (attr := deprecated FunLike.coe_mul +typeChanged (since := "2026-10-26"))]
 theorem coe_mul [Mul Y] (f g : LocallyConstant X Y) : ⇑(f * g) = f * g :=
   rfl
 
-@[to_additive]
-theorem mul_apply [Mul Y] (f g : LocallyConstant X Y) (x : X) : (f * g) x = f x * g x :=
+@[to_additive (attr := deprecated mul_apply +typeChanged (since := "2026-10-26"))]
+protected theorem mul_apply [Mul Y] (f g : LocallyConstant X Y) (x : X) : (f * g) x = f x * g x :=
   rfl
 
 @[to_additive]
-instance [MulOneClass Y] : MulOneClass (LocallyConstant X Y) :=
-  Function.Injective.mulOneClass DFunLike.coe DFunLike.coe_injective rfl fun _ _ => rfl
+instance [MulOneClass Y] : MulOneClass (LocallyConstant X Y) := fast_instance% FunLike.mulOneClass
 
-/-- `DFunLike.coe` as a `MonoidHom`. -/
-@[to_additive (attr := simps) /-- `DFunLike.coe` as an `AddMonoidHom`. -/]
-def coeFnMonoidHom [MulOneClass Y] : LocallyConstant X Y →* X → Y where
-  toFun := DFunLike.coe
-  map_one' := rfl
-  map_mul' _ _ := rfl
+@[to_additive (attr := deprecated (since := "2026-10-26"))]
+alias coeFnMonoidHom := FunLike.coeMonoidHom
+
+@[to_additive (attr := deprecated (since := "2026-10-26"))]
+alias coeFnMonoidHom_apply := FunLike.coeMonoidHom_apply
 
 /-- The constant-function embedding, as a multiplicative monoid hom. -/
 @[to_additive (attr := simps) /-- The constant-function embedding, as an additive monoid hom. -/]
@@ -78,10 +86,10 @@ def constMonoidHom [MulOneClass Y] : Y →* LocallyConstant X Y where
   map_mul' _ _ := rfl
 
 instance [MulZeroClass Y] : MulZeroClass (LocallyConstant X Y) :=
-  Function.Injective.mulZeroClass DFunLike.coe DFunLike.coe_injective rfl fun _ _ => rfl
+  fast_instance% FunLike.mulZeroClass
 
 instance [MulZeroOneClass Y] : MulZeroOneClass (LocallyConstant X Y) :=
-  Function.Injective.mulZeroOneClass DFunLike.coe DFunLike.coe_injective rfl rfl fun _ _ => rfl
+  fast_instance% FunLike.mulZeroOneClass
 
 section CharFn
 
@@ -112,23 +120,25 @@ instance [Div Y] : Div (LocallyConstant X Y) where
   div f g := ⟨f / g, f.isLocallyConstant.div g.isLocallyConstant⟩
 
 @[to_additive]
+instance [Div Y] : IsDivApply (LocallyConstant X Y) where
+
+@[to_additive (attr := deprecated FunLike.coe_mul +typeChanged (since := "2026-10-26"))]
 theorem coe_div [Div Y] (f g : LocallyConstant X Y) : ⇑(f / g) = f / g :=
   rfl
 
-@[to_additive]
-theorem div_apply [Div Y] (f g : LocallyConstant X Y) (x : X) : (f / g) x = f x / g x :=
+@[to_additive (attr := deprecated inv_apply +typeChanged (since := "2026-10-26"))]
+protected theorem div_apply [Div Y] (f g : LocallyConstant X Y) (x : X) : (f / g) x = f x / g x :=
   rfl
 
 @[to_additive]
-instance [Semigroup Y] : Semigroup (LocallyConstant X Y) :=
-  Function.Injective.semigroup DFunLike.coe DFunLike.coe_injective fun _ _ => rfl
+instance [Semigroup Y] : Semigroup (LocallyConstant X Y) := fast_instance% FunLike.semigroup
 
 instance [SemigroupWithZero Y] : SemigroupWithZero (LocallyConstant X Y) :=
-  Function.Injective.semigroupWithZero DFunLike.coe DFunLike.coe_injective rfl fun _ _ => rfl
+  fast_instance% FunLike.semigroupWithZero
 
 @[to_additive]
 instance [CommSemigroup Y] : CommSemigroup (LocallyConstant X Y) :=
-  Function.Injective.commSemigroup DFunLike.coe DFunLike.coe_injective fun _ _ => rfl
+  fast_instance% FunLike.commSemigroup
 
 variable {α R : Type*}
 
@@ -136,113 +146,91 @@ variable {α R : Type*}
 instance [Pow Y α] : Pow (LocallyConstant X Y) α where
   pow f n := f.map (· ^ n)
 
-@[to_additive (attr := simp, to_additive) coe_smul]
-theorem coe_pow [Pow Y R] (r : R) (f : LocallyConstant X Y) : ⇑(f ^ r) = (f : X → Y) ^ r :=
-  rfl
+@[to_additive]
+instance [Pow Y α] : IsPowApply α (LocallyConstant X Y) where
 
-@[to_additive (attr := to_additive) smul_apply]
-theorem pow_apply [Pow Y R] (r : R) (f : LocallyConstant X Y) (x : X) : (f ^ r) x = f x ^ r :=
-  rfl
+@[to_additive (attr := deprecated FunLike.coe_mul +typeChanged (since := "2026-10-26"))]
+theorem coe_pow [Pow Y R] (r : R) (f : LocallyConstant X Y) : ⇑(f ^ r) = (f : X → Y) ^ r := rfl
+
+@[to_additive (attr := deprecated inv_apply +typeChanged (since := "2026-10-26"))]
+protected theorem pow_apply [Pow Y R] (r : R) (f : LocallyConstant X Y) (x : X) :
+    (f ^ r) x = f x ^ r := rfl
 
 @[to_additive]
-instance [Monoid Y] : Monoid (LocallyConstant X Y) :=
-  Function.Injective.monoid DFunLike.coe DFunLike.coe_injective rfl (fun _ _ => rfl) fun _ _ => rfl
+instance [Monoid Y] : Monoid (LocallyConstant X Y) := fast_instance% FunLike.monoid
 
 instance [NatCast Y] : NatCast (LocallyConstant X Y) where
   natCast n := const X n
 
+instance [NatCast Y] : IsNatCastApply (LocallyConstant X Y) where
+
 instance [IntCast Y] : IntCast (LocallyConstant X Y) where
   intCast n := const X n
 
+instance [IntCast Y] : IsIntCastApply (LocallyConstant X Y) where
+
 instance [AddMonoidWithOne Y] : AddMonoidWithOne (LocallyConstant X Y) :=
-  Function.Injective.addMonoidWithOne DFunLike.coe DFunLike.coe_injective rfl rfl (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ => rfl
+  fast_instance% FunLike.addMonoidWithOne
 
 @[to_additive]
-instance [CommMonoid Y] : CommMonoid (LocallyConstant X Y) :=
-  Function.Injective.commMonoid DFunLike.coe DFunLike.coe_injective rfl (fun _ _ => rfl)
-    fun _ _ => rfl
+instance [CommMonoid Y] : CommMonoid (LocallyConstant X Y) := fast_instance% FunLike.commMonoid
 
 @[to_additive]
-instance [Group Y] : Group (LocallyConstant X Y) :=
-  Function.Injective.group DFunLike.coe DFunLike.coe_injective rfl (fun _ _ => rfl)
-    (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+instance [Group Y] : Group (LocallyConstant X Y) := fast_instance% FunLike.group
 
 @[to_additive]
-instance [CommGroup Y] : CommGroup (LocallyConstant X Y) :=
-  Function.Injective.commGroup DFunLike.coe DFunLike.coe_injective rfl (fun _ _ => rfl)
-    (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+instance [CommGroup Y] : CommGroup (LocallyConstant X Y) := fast_instance% FunLike.commGroup
 
-instance [Distrib Y] : Distrib (LocallyConstant X Y) :=
-  Function.Injective.distrib DFunLike.coe DFunLike.coe_injective (fun _ _ => rfl) fun _ _ => rfl
+instance [Distrib Y] : Distrib (LocallyConstant X Y) := fast_instance% FunLike.distrib
 
 instance [NonUnitalNonAssocSemiring Y] : NonUnitalNonAssocSemiring (LocallyConstant X Y) :=
-  Function.Injective.nonUnitalNonAssocSemiring DFunLike.coe DFunLike.coe_injective rfl
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+  fast_instance% FunLike.nonUnitalNonAssocSemiring
 
 instance [NonUnitalSemiring Y] : NonUnitalSemiring (LocallyConstant X Y) :=
-  Function.Injective.nonUnitalSemiring DFunLike.coe DFunLike.coe_injective rfl
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+  fast_instance% FunLike.nonUnitalSemiring
 
 instance [NonAssocSemiring Y] : NonAssocSemiring (LocallyConstant X Y) :=
-  Function.Injective.nonAssocSemiring DFunLike.coe DFunLike.coe_injective rfl rfl
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
+  fast_instance% FunLike.nonAssocSemiring
 
 /-- The constant-function embedding, as a ring hom. -/
 @[simps]
 def constRingHom [NonAssocSemiring Y] : Y →+* LocallyConstant X Y :=
   { constMonoidHom, constAddMonoidHom with toFun := const X }
 
-instance [Semiring Y] : Semiring (LocallyConstant X Y) :=
-  Function.Injective.semiring DFunLike.coe DFunLike.coe_injective rfl rfl
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
+instance [Semiring Y] : Semiring (LocallyConstant X Y) := fast_instance% FunLike.semiring
 
 instance [NonUnitalCommSemiring Y] : NonUnitalCommSemiring (LocallyConstant X Y) :=
-  Function.Injective.nonUnitalCommSemiring DFunLike.coe DFunLike.coe_injective rfl
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+  fast_instance% FunLike.nonUnitalCommSemiring
 
 instance [CommSemiring Y] : CommSemiring (LocallyConstant X Y) :=
-  Function.Injective.commSemiring DFunLike.coe DFunLike.coe_injective rfl rfl
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
+  fast_instance% FunLike.commSemiring
 
 instance [NonUnitalNonAssocRing Y] : NonUnitalNonAssocRing (LocallyConstant X Y) :=
-  Function.Injective.nonUnitalNonAssocRing DFunLike.coe DFunLike.coe_injective rfl (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+  fast_instance% FunLike.nonUnitalNonAssocRing
 
 instance [NonUnitalRing Y] : NonUnitalRing (LocallyConstant X Y) :=
-  Function.Injective.nonUnitalRing DFunLike.coe DFunLike.coe_injective rfl (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+  fast_instance% FunLike.nonUnitalRing
 
 instance [NonAssocRing Y] : NonAssocRing (LocallyConstant X Y) :=
-  Function.Injective.nonAssocRing DFunLike.coe DFunLike.coe_injective rfl rfl (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ => rfl) (fun _ => rfl)
+  fast_instance% FunLike.nonAssocRing
 
-instance [Ring Y] : Ring (LocallyConstant X Y) :=
-  Function.Injective.ring DFunLike.coe DFunLike.coe_injective rfl rfl (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
+instance [Ring Y] : Ring (LocallyConstant X Y) := fast_instance% FunLike.ring
 
 instance [NonUnitalCommRing Y] : NonUnitalCommRing (LocallyConstant X Y) :=
-  Function.Injective.nonUnitalCommRing DFunLike.coe DFunLike.coe_injective rfl (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+  fast_instance% FunLike.nonUnitalCommRing
 
-instance [CommRing Y] : CommRing (LocallyConstant X Y) :=
-  Function.Injective.commRing DFunLike.coe DFunLike.coe_injective rfl rfl (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
+instance [CommRing Y] : CommRing (LocallyConstant X Y) := fast_instance% FunLike.commRing
 
 variable {R : Type*}
 
 instance [Monoid R] [MulAction R Y] : MulAction R (LocallyConstant X Y) :=
-  Function.Injective.mulAction _ coe_injective fun _ _ => rfl
+  fast_instance% FunLike.mulAction
 
 instance [Monoid R] [AddMonoid Y] [DistribMulAction R Y] :
-    DistribMulAction R (LocallyConstant X Y) :=
-  Function.Injective.distribMulAction coeFnAddMonoidHom coe_injective fun _ _ => rfl
+    DistribMulAction R (LocallyConstant X Y) := fast_instance% FunLike.distribMulAction
 
 instance [Semiring R] [AddCommMonoid Y] [Module R Y] : Module R (LocallyConstant X Y) :=
-  Function.Injective.module R coeFnAddMonoidHom coe_injective fun _ _ => rfl
+  fast_instance% FunLike.module
 
 section Algebra
 
@@ -267,46 +255,30 @@ end Algebra
 
 section coeFn
 
-/-- `DFunLike.coe` as a `RingHom`. -/
-@[simps!] def coeFnRingHom [Semiring Y] : LocallyConstant X Y →+* X → Y where
-  toMonoidHom := coeFnMonoidHom
-  __ := coeFnAddMonoidHom
+@[deprecated (since := "2026-10-26")] alias coeFnRingHom := FunLike.coeRingHom
+@[deprecated (since := "2026-10-26")] alias coeFnRingHom_apply := FunLike.coeRingHom_apply
 
-/-- `DFunLike.coe` as a linear map. -/
-@[simps!] def coeFnₗ (R : Type*) [Semiring R] [AddCommMonoid Y]
-    [Module R Y] : LocallyConstant X Y →ₗ[R] X → Y where
-  toAddHom := coeFnAddMonoidHom.toAddHom
-  map_smul' _ _ := rfl
+@[deprecated (since := "2026-10-26")] alias coeFnₗ := FunLike.coeₗ
+@[deprecated (since := "2026-10-26")] alias coeFnₗ_apply := FunLike.coeₗ_apply
 
-/-- `DFunLike.coe` as an `AlgHom`. -/
-@[simps!] def coeFnAlgHom (R : Type*) [CommSemiring R] [Semiring Y] [Algebra R Y] :
-    LocallyConstant X Y →ₐ[R] X → Y where
-  toRingHom := coeFnRingHom
-  commutes' _ := rfl
+@[deprecated (since := "2026-10-26")] alias coeFnAlgHom := FunLike.coeAlgHom
+@[deprecated (since := "2026-10-26")] alias coeFnAlgHom_apply := FunLike.coeAlgHom_apply
 
 end coeFn
 
 section Eval
 
-/-- Evaluation as a `MonoidHom` -/
-@[to_additive (attr := simps!) /-- Evaluation as an `AddMonoidHom` -/]
-def evalMonoidHom [MulOneClass Y] (x : X) : LocallyConstant X Y →* Y :=
-  (Pi.evalMonoidHom _ x).comp coeFnMonoidHom
+@[deprecated (since := "2026-10-26")] alias evalMonoidHom := FunLike.evalMonoidHom
+@[deprecated (since := "2026-10-26")] alias evalMonoidHom_apply := FunLike.evalMonoidHom_apply
 
-/-- Evaluation as a linear map -/
-@[simps!] def evalₗ (R : Type*) [Semiring R] [AddCommMonoid Y]
-    [Module R Y] (x : X) : LocallyConstant X Y →ₗ[R] Y :=
-  (LinearMap.proj x).comp (coeFnₗ R)
+@[deprecated (since := "2026-10-26")] alias evalₗ := FunLike.evalₗ
+@[deprecated (since := "2026-10-26")] alias evalₗ_apply := FunLike.evalₗ_apply
 
-/-- Evaluation as a `RingHom` -/
-@[simps!] def evalRingHom [Semiring Y] (x : X) : LocallyConstant X Y →+* Y :=
-  (Pi.evalRingHom _ x).comp coeFnRingHom
+@[deprecated (since := "2026-10-26")] alias evalRingHom := FunLike.evalRingHom
+@[deprecated (since := "2026-10-26")] alias evalRingHom_apply := FunLike.evalRingHom_apply
 
-/-- Evaluation as an `AlgHom` -/
-@[simps!]
-def evalₐ (R : Type*) [CommSemiring R] [Semiring Y] [Algebra R Y] (x : X) :
-    LocallyConstant X Y →ₐ[R] Y :=
-  (Pi.evalAlgHom _ _ x).comp (coeFnAlgHom R)
+@[deprecated (since := "2026-10-26")] alias evalAlgHom := FunLike.evalRingHom
+@[deprecated (since := "2026-10-26")] alias evalAlgHom_apply := FunLike.evalRingHom_apply
 
 end Eval
 
