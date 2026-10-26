@@ -8,9 +8,13 @@ module
 public import Mathlib.LinearAlgebra.Finsupp.SumProd
 public import Mathlib.LinearAlgebra.FreeModule.Basic
 public import Mathlib.LinearAlgebra.Prod
+public import Mathlib.LinearAlgebra.Projection
 
 /-!
 # Bases for the product of modules
+
+* `Module.Basis.prod`: the basis of `M × M'` built from bases of `M` and `M'`.
+* `Module.Basis.ofIsCompl`: the basis of `E` built from bases of two complementary submodules.
 -/
 
 @[expose] public section
@@ -90,6 +94,40 @@ theorem prod_apply (i) :
       Sum.elim_inr, LinearMap.inr_apply, prod_apply_inl_snd, prod_apply_inr_snd, Function.comp]
 
 end Prod
+
+section IsCompl
+
+variable {S E : Type*} [Ring S] [AddCommGroup E] [Module S E] {p q : Submodule S E}
+
+/-- The basis of `E` glued from bases of two complementary submodules, indexed by `ι ⊕ ι'`. -/
+def ofIsCompl (h : IsCompl p q) (bp : Basis ι S p) (bq : Basis ι' S q) : Basis (ι ⊕ ι') S E :=
+  (bp.prod bq).map (Submodule.prodEquivOfIsCompl p q h)
+
+variable (h : IsCompl p q) (bp : Basis ι S p) (bq : Basis ι' S q)
+
+@[simp]
+theorem ofIsCompl_inl (i : ι) : ofIsCompl h bp bq (Sum.inl i) = bp i := by
+  simp [ofIsCompl]
+
+@[simp]
+theorem ofIsCompl_inr (i : ι') : ofIsCompl h bp bq (Sum.inr i) = bq i := by
+  simp [ofIsCompl]
+
+theorem coe_ofIsCompl :
+    ⇑(ofIsCompl h bp bq) = Sum.elim (fun i ↦ (bp i : E)) (fun i ↦ (bq i : E)) := by
+  ext (i | i) <;> simp
+
+@[simp]
+theorem ofIsCompl_repr_inl (x : E) (i : ι) :
+    (ofIsCompl h bp bq).repr x (Sum.inl i) = bp.repr (p.projectionOnto q h x) i := by
+  simp [ofIsCompl]
+
+@[simp]
+theorem ofIsCompl_repr_inr (x : E) (i : ι') :
+    (ofIsCompl h bp bq).repr x (Sum.inr i) = bq.repr (q.projectionOnto p h.symm x) i := by
+  simp [ofIsCompl]
+
+end IsCompl
 
 end Basis
 
