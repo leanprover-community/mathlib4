@@ -169,7 +169,8 @@ The matrices `A` and `B` may be rectangular.
 
 This requires a positive exponent because the identity does not hold at exponent zero when the index
 types have different cardinalities. -/
-theorem trace_mul_pow_comm_of_ne_zero [CommSemiring R] [DecidableEq m] [DecidableEq n] (A : Matrix m n R)
+theorem trace_mul_pow_comm_of_ne_zero
+[CommSemiring R] [DecidableEq m] [DecidableEq n] (A : Matrix m n R)
     (B : Matrix n m R) {k : ℕ} (hk : k ≠ 0) : trace ((A * B) ^ k) = trace ((B * A) ^ k) := by
   match k with
   | k + 1 =>
