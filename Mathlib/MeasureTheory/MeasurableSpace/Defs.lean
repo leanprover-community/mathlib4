@@ -56,7 +56,14 @@ variable {α β γ δ : Type*} {ι : Sort*} {s t u : Set α}
   `MeasurableSet.iUnion` instead. -/
   measurableSet_iUnion : ∀ f : ℕ → Set α, (∀ i, MeasurableSet' (f i)) → MeasurableSet' (⋃ i, f i)
 
-instance [h : MeasurableSpace α] : MeasurableSpace αᵒᵈ := h
+instance [h : MeasurableSpace α] : MeasurableSpace αᵒᵈ where
+  MeasurableSet' s := h.MeasurableSet' (OrderDual.ofDual '' s)
+  measurableSet_empty := by simp [h.measurableSet_empty]
+  measurableSet_compl s ms := by
+    have bij : Bijective OrderDual.ofDual := OrderDual.equiv (α := α).symm.bijective
+    simpa [image_compl_eq bij] using h.measurableSet_compl _ ms
+  measurableSet_iUnion f ms := by
+    simpa [image_iUnion] using h.measurableSet_iUnion ((OrderDual.ofDual '' ·) ∘ f) ms
 
 /-- `MeasurableSet s` means that `s` is measurable (in the ambient measure space on `α`) -/
 @[wikidata Q3054889]

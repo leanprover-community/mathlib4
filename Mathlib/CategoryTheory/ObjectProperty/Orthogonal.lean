@@ -65,23 +65,23 @@ lemma le_leftOrthogonal_rightOrthogonal : P ≤ P.rightOrthogonal.leftOrthogonal
   gc_rightOrthogonal_leftOrthogonal.le_u_l P
 
 lemma le_rightOrthogonal_leftOrthogonal : P ≤ P.leftOrthogonal.rightOrthogonal :=
-  gc_rightOrthogonal_leftOrthogonal.dual.le_u_l P
+  gc_rightOrthogonal_leftOrthogonal.dual.le_u_l ⟨⟨P⟩⟩
 
 lemma antitone_rightOrthogonal : Antitone (rightOrthogonal (C := C)) :=
   gc_rightOrthogonal_leftOrthogonal.monotone_l
 
-lemma antitone_leftOrthogonal : Antitone (leftOrthogonal (C := C)) :=
-  gc_rightOrthogonal_leftOrthogonal.dual.monotone_l
+lemma antitone_leftOrthogonal : Antitone (leftOrthogonal (C := C)) := by
+  simpa using gc_rightOrthogonal_leftOrthogonal.dual.monotone_l
 
 @[simp]
 lemma leftOrthogonal_rightOrthogonal_leftOrthogonal :
-    P.leftOrthogonal.rightOrthogonal.leftOrthogonal = P.leftOrthogonal :=
-  gc_rightOrthogonal_leftOrthogonal.dual.l_u_l_eq_l P
+    P.leftOrthogonal.rightOrthogonal.leftOrthogonal = P.leftOrthogonal := by
+  simpa using gc_rightOrthogonal_leftOrthogonal.dual.l_u_l_eq_l ⟨⟨P⟩⟩
 
 @[simp]
 lemma rightOrthogonal_leftOrthogonal_rightOrthogonal :
-    P.rightOrthogonal.leftOrthogonal.rightOrthogonal = P.rightOrthogonal :=
-  gc_rightOrthogonal_leftOrthogonal.l_u_l_eq_l P
+    P.rightOrthogonal.leftOrthogonal.rightOrthogonal = P.rightOrthogonal := by
+  simpa using gc_rightOrthogonal_leftOrthogonal.l_u_l_eq_l P
 
 lemma rightOrthogonal_op : P.op.rightOrthogonal = P.leftOrthogonal.op := by
   ext X
