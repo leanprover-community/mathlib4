@@ -65,11 +65,11 @@ def birkhoffMax [AddCommMonoid M] [SemilatticeSup M]
     (f : α → α) (g : α → M) : ℕ →o (α → M) :=
   partialSups (birkhoffSum f g)
 
-lemma birkhoffMax_mono [AddCommMonoid M] [SemilatticeSup M] : Monotone (birkhoffMax f g) :=
+lemma birkhoffMax_monotone [AddCommMonoid M] [SemilatticeSup M] : Monotone (birkhoffMax f g) :=
   (birkhoffMax ..).mono
 
 @[gcongr]
-lemma birkhoffMax_apply_monotone [AddCommMonoid M] [SemilatticeSup M] (h : m ≤ n) :
+lemma birkhoffMax_apply_mono [AddCommMonoid M] [SemilatticeSup M] (h : m ≤ n) :
     birkhoffMax f g m x ≤ birkhoffMax f g n x :=
   (birkhoffMax ..).mono h _
 
