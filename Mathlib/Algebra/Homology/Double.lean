@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Algebra.Homology.Additive
 public import Mathlib.Algebra.Homology.HasNoLoop
 public import Mathlib.Algebra.Homology.Single
-public import Mathlib.Algebra.Homology.Additive
 public import Mathlib.CategoryTheory.Yoneda
 
 /-!

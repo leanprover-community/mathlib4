@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.MvPolynomial.Monad
 public import Mathlib.LinearAlgebra.Charpoly.ToMatrix
-public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Univ
 public import Mathlib.RingTheory.TensorProduct.Finite
 public import Mathlib.RingTheory.TensorProduct.Free
@@ -111,7 +110,7 @@ lemma toMvPolynomial_constantCoeff (M : Matrix m n R) (i : m) :
 
 @[simp]
 lemma toMvPolynomial_zero : (0 : Matrix m n R).toMvPolynomial = 0 := by
-  ext; simp only [toMvPolynomial, zero_apply, map_zero, Finset.sum_const_zero, Pi.zero_apply]
+  ext; simp only [toMvPolynomial, Matrix.zero_apply, map_zero, Finset.sum_const_zero, Pi.zero_apply]
 
 @[simp]
 lemma toMvPolynomial_one [DecidableEq n] : (1 : Matrix n n R).toMvPolynomial = X := by
@@ -125,12 +124,12 @@ lemma toMvPolynomial_one [DecidableEq n] : (1 : Matrix n n R).toMvPolynomial = X
 lemma toMvPolynomial_add (M N : Matrix m n R) :
     (M + N).toMvPolynomial = M.toMvPolynomial + N.toMvPolynomial := by
   ext i : 1
-  simp only [toMvPolynomial, add_apply, map_add, Finset.sum_add_distrib, Pi.add_apply]
+  simp only [toMvPolynomial, Matrix.add_apply, map_add, Finset.sum_add_distrib, Pi.add_apply]
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma toMvPolynomial_mul (M : Matrix m n R) (N : Matrix n o R) (i : m) :
     (M * N).toMvPolynomial i = bind₁ N.toMvPolynomial (M.toMvPolynomial i) := by
-  simp only [toMvPolynomial, mul_apply, map_sum, Finset.sum_comm (γ := o), bind₁, aeval,
+  simp only [toMvPolynomial, Matrix.mul_apply, map_sum, Finset.sum_comm (γ := o), bind₁, aeval,
     AlgHom.coe_mk, coe_eval₂Hom, eval₂_monomial, algebraMap_apply, Algebra.algebraMap_self,
     RingHom.id_apply, C_apply, pow_zero, Finsupp.prod_single_index, pow_one, Finset.mul_sum,
     monomial_mul_monomial, zero_add]
@@ -438,7 +437,7 @@ def nilRankAux (φ : L →ₗ[R] Module.End R M) (b : Basis ι R L) : ℕ :=
 
 lemma polyCharpoly_coeff_nilRankAux_ne_zero [Nontrivial R] :
     (polyCharpoly φ b).coeff (nilRankAux φ b) ≠ 0 := by
-  apply Polynomial.trailingCoeff_nonzero_iff_nonzero.mpr
+  apply Polynomial.trailingCoeff_ne_zero.mpr
   apply polyCharpoly_ne_zero
 
 lemma nilRankAux_le [Nontrivial R] (b : Basis ι R L) (b' : Basis ι' R L) :
@@ -495,7 +494,7 @@ lemma nilRank_le_natTrailingDegree_charpoly (x : L) :
   intro h
   apply_fun (MvPolynomial.eval ((chooseBasis R L).repr x)) at h
   rw [polyCharpoly_coeff_eval, map_zero] at h
-  apply Polynomial.trailingCoeff_nonzero_iff_nonzero.mpr _ h
+  apply Polynomial.trailingCoeff_ne_zero.mpr _ h
   apply (LinearMap.charpoly_monic _).ne_zero
 
 end
@@ -530,7 +529,7 @@ lemma isNilRegular_iff_natTrailingDegree_charpoly_eq_nilRank [Nontrivial R] :
       (nilRank_le_natTrailingDegree_charpoly φ x)
   · intro h
     rw [← h]
-    apply Polynomial.trailingCoeff_nonzero_iff_nonzero.mpr
+    apply Polynomial.trailingCoeff_ne_zero.mpr
     apply (LinearMap.charpoly_monic _).ne_zero
 
 section IsDomain

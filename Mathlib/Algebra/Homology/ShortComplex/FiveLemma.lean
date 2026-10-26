@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.ShortComplex.ShortComplexFive
 public import Mathlib.Algebra.Homology.ShortComplex.FourLemma
+public import Mathlib.Algebra.Homology.ShortComplex.ShortComplexFive
 
 /-!
 # Five lemma

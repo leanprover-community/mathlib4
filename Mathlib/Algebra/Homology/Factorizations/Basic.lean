@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.HomologicalComplex
 public import Mathlib.Algebra.Homology.CochainComplexOpposite
+public import Mathlib.Algebra.Homology.HomologicalComplex
 public import Mathlib.CategoryTheory.Abelian.EpiWithInjectiveKernel
 
 /-!

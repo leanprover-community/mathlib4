@@ -5,8 +5,8 @@ Authors: Markus Himmel, Kim Morrison, Jakob von Raumer, Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Preadditive.Projective.Resolution
 public import Mathlib.Algebra.Homology.HomotopyCategory
+public import Mathlib.CategoryTheory.Preadditive.Projective.Resolution
 public import Mathlib.Tactic.SuppressCompilation
 
 /-!
@@ -106,12 +106,12 @@ theorem lift_commutes {Y Z : C} (f : Y ⟶ Z) (P : ProjectiveResolution Y)
 lemma lift_commutes_zero {Y Z : C} (f : Y ⟶ Z)
     (P : ProjectiveResolution Y) (Q : ProjectiveResolution Z) :
     (lift f P Q).f 0 ≫ Q.π.f 0 = P.π.f 0 ≫ f :=
-  (HomologicalComplex.congr_hom (lift_commutes f P Q) 0).trans (by simp)
+  congr($(lift_commutes f P Q).f 0).trans (by simp)
 
 /-- An auxiliary definition for `liftHomotopyZero`. -/
 def liftHomotopyZeroZero {Y Z : C} {P : ProjectiveResolution Y} {Q : ProjectiveResolution Z}
     (f : P.complex ⟶ Q.complex) (comm : f ≫ Q.π = 0) : P.complex.X 0 ⟶ Q.complex.X 1 :=
-  Q.exact₀.liftFromProjective (f.f 0) (congr_fun (congr_arg HomologicalComplex.Hom.f comm) 0)
+  Q.exact₀.liftFromProjective (f.f 0) congr($(comm).f 0)
 
 @[reassoc (attr := simp)]
 lemma liftHomotopyZeroZero_comp {Y Z : C} {P : ProjectiveResolution Y} {Q : ProjectiveResolution Z}
@@ -327,7 +327,6 @@ lemma ofComplex_exactAt_succ (n : ℕ) :
 instance (n : ℕ) : Projective ((ofComplex Z).X n) := by
   obtain (_ | _ | _ | n) := n <;> apply Projective.projective_over
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- In any abelian category with enough projectives,
 `ProjectiveResolution.of Z` constructs a projective resolution of the object `Z`.

@@ -591,7 +591,6 @@ open Preadditive Category
 variable (H : C ⥤ D) [H.Additive]
   [HasHomotopyCofiber ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `H : C ⥤ D` is an additive functor and `φ` is a morphism of cochain complexes
 in `C`, this is the comparison isomorphism (in each degree `n`) between the image
 by `H` of `mappingCone φ` and the mapping cone of the image by `H` of `φ`.
@@ -637,7 +636,6 @@ lemma mapHomologicalComplexXIso_eq (n m : ℤ) (hnm : n + 1 = m) :
   subst hnm
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `H : C ⥤ D` is an additive functor and `φ` is a morphism of cochain complexes
 in `C`, this is the comparison isomorphism between the image by `H`
 of `mappingCone φ` and the mapping cone of the image by `H` of `φ`. -/
@@ -662,7 +660,6 @@ noncomputable def mapHomologicalComplexIso :
         inr_f_snd_v_assoc, zero_add, inl_v_snd_v, inr_f_snd_v, comp_id, ← H.map_comp,
         d_snd_v φ n (n + 1) rfl, Functor.map_add])
 
-set_option backward.defeqAttrib.useBackward true in
 lemma map_inr :
     (H.mapHomologicalComplex (ComplexShape.up ℤ)).map (inr φ) ≫
       (mapHomologicalComplexIso φ H).hom =

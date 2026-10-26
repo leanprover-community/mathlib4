@@ -5,9 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Iso
-public import Mathlib.CategoryTheory.ObjectProperty.Basic
 public import Mathlib.CategoryTheory.Functor.FullyFaithful
+public import Mathlib.CategoryTheory.ObjectProperty.Basic
 public import Mathlib.Order.Basic
 public import Mathlib.Order.CompleteLattice.Defs
 

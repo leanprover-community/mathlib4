@@ -121,7 +121,6 @@ end Comparison
 
 variable [HasKernels C] [HasCokernels C]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The coimage-image comparison morphism is functorial. -/
 @[simps! obj map]
 def coimageImageComparisonFunctor : Arrow C ⥤ Arrow C where

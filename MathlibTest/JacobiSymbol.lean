@@ -1,5 +1,7 @@
-import Mathlib.NumberTheory.LegendreSymbol.JacobiSymbol
-import Mathlib.Tactic.NormNum.Prime
+module
+
+public meta import Mathlib.NumberTheory.LegendreSymbol.JacobiSymbol
+public import Mathlib.Tactic.NormNum.Prime
 
 -- TODO(kmill): remove once the mathlib ToExpr Int instance is removed
 set_option eval.pp false

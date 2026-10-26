@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.BifunctorShift
 public import Mathlib.Algebra.Homology.BifunctorHomotopy
+public import Mathlib.Algebra.Homology.BifunctorShift
 public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 
 /-!

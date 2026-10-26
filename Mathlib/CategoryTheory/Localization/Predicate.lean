@@ -171,7 +171,7 @@ lemma Construction.wIso_eq_isoOfHom {X Y : C} (f : X ⟶ Y) (hf : W f) :
 
 lemma Construction.wInv_eq_isoOfHom_inv {X Y : C} (f : X ⟶ Y) (hf : W f) :
     Construction.wInv f hf = (isoOfHom W.Q W f hf).inv :=
-  congr_arg Iso.inv (wIso_eq_isoOfHom f hf)
+  congr($(wIso_eq_isoOfHom f hf).inv)
 
 instance : (Localization.Construction.lift L (inverts L W)).IsEquivalence :=
   (inferInstance : L.IsLocalization W).isEquivalence
@@ -473,7 +473,6 @@ def isoUniqFunctor (F : D₁ ⥤ D₂) (e : L₁ ⋙ F ≅ L₂) :
   letI : Lifting L₁ W' L₂ F := ⟨e⟩
   exact liftNatIso L₁ W' L₂ L₂ F (uniq L₁ L₂ W').functor (Iso.refl L₂)
 
-set_option backward.defeqAttrib.useBackward true in
 lemma morphismProperty_eq_top [L.IsLocalization W] (P : MorphismProperty D) [P.RespectsIso]
     [P.IsMultiplicative] (h₁ : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), P (L.map f))
     (h₂ : ∀ ⦃X Y : C⦄ (f : X ⟶ Y) (hf : W f), P (isoOfHom L W f hf).inv) :

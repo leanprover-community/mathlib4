@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.TotalComplex
 public import Mathlib.Algebra.Homology.Linear
+public import Mathlib.Algebra.Homology.TotalComplex
 
 /-!
 # Action of an additive functor on a total complex

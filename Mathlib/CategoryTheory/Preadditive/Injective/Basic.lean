@@ -193,7 +193,6 @@ open CategoryTheory.Functor
 variable {D : Type u₂} [Category.{v₂} D]
 variable {L : C ⥤ D} {R : D ⥤ C} [PreservesMonomorphisms L]
 
-set_option backward.defeqAttrib.useBackward true in
 theorem injective_of_adjoint (adj : L ⊣ R) (J : D) [Injective J] : Injective <| R.obj J :=
   ⟨fun {A} {_} g f im =>
     ⟨adj.homEquiv _ _ (factorThru ((adj.homEquiv A J).symm g) (L.map f)),
@@ -403,6 +402,7 @@ lemma Retract.injective {X Y : C} (h : Retract X Y) [i : Injective Y] : Injectiv
   refine Injective.mk (fun {A B} f e _ ↦ ?_)
   rcases i.factors (f ≫ h.i) e with ⟨g, hg⟩
   use g ≫ h.r
-  simp [Category.assoc', hg]
+  rw [← Category.assoc, hg]
+  simp
 
 end CategoryTheory

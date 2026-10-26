@@ -5,8 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.SpectralSequence.LowDegreesExactSequence
 public import Mathlib.Algebra.Homology.SpectralObject.SpectralSequence
+public import Mathlib.Algebra.Homology.SpectralSequence.LowDegreesExactSequence
+
 import all Mathlib.Algebra.Homology.SpectralObject.SpectralSequence
 
 /-!
@@ -474,7 +475,7 @@ section
 
 variable (pq : κ)
 
-def stationarySet (pq : κ) : Set ℕ := fun k =>
+def stationarySet (pq : κ) : Set ℕ := .ofPred fun k =>
   (∀ (i j : ι) (hij : i ≤ j) (_ : j ≤ data.i₀ (r₀ + k) pq),
     IsZero ((X.H (data.deg pq + 1)).obj (mk₁ (homOfLE hij)))) ∧
   (∀ (i j : ι) (hij : i ≤ j) (_ : data.i₃ (r₀ + k) pq ≤ i),

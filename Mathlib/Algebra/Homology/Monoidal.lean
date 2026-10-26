@@ -8,8 +8,8 @@ module
 public import Mathlib.Algebra.Homology.BifunctorAssociator
 public import Mathlib.Algebra.Homology.Single
 public import Mathlib.CategoryTheory.GradedObject.Monoidal
-public import Mathlib.CategoryTheory.Monoidal.Transport
 public import Mathlib.CategoryTheory.Monoidal.Preadditive
+public import Mathlib.CategoryTheory.Monoidal.Transport
 
 /-!
 # The monoidal category structure on homological complexes
@@ -198,7 +198,6 @@ lemma leftUnitor'_inv (i : I) :
   rw [dite_eq_left rfl]
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma leftUnitor'_inv_comm (i j : I) :
     (leftUnitor' K).inv i ≫ (tensorObj (tensorUnit C c) K).d i j =
@@ -247,7 +246,6 @@ lemma rightUnitor'_inv (i : I) :
   rw [dite_eq_left rfl]
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 lemma rightUnitor'_inv_comm (i j : I) :
     (rightUnitor' K).inv i ≫ (tensorObj K (tensorUnit C c)).d i j =
       K.d i j ≫ (rightUnitor' K).inv j := by
@@ -289,7 +287,6 @@ noncomputable instance monoidalCategoryStruct :
   leftUnitor K := leftUnitor K
   rightUnitor K := rightUnitor K
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The structure which allows to construct the monoidal category structure
 on `HomologicalComplex C c` from the monoidal category structure on

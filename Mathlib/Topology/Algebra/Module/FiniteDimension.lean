@@ -5,20 +5,20 @@ Authors: Sébastien Gouëzel, Anatole Dedecker
 -/
 module
 
-public import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
+public meta import Lean.Meta.Tactic.Rfl
 public import Mathlib.Analysis.LocallyConvex.Bounded
+public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.RingTheory.Finiteness.Cofinite
 public import Mathlib.RingTheory.LocalRing.Basic
+public import Mathlib.Topology.Algebra.Module.Complement
 public import Mathlib.Topology.Algebra.Module.Determinant
 public import Mathlib.Topology.Algebra.Module.ModuleTopology
 public import Mathlib.Topology.Algebra.Module.Simple
-public import Mathlib.Topology.Algebra.Module.Complement
 public import Mathlib.Topology.Algebra.SeparationQuotient.FiniteDimensional
 public import Mathlib.Topology.Maps.Strict.Basic
-public import Lean.Meta.Tactic.Rfl
 
 /-!
 # Finite-dimensional topological vector spaces over complete fields
@@ -201,7 +201,7 @@ theorem LinearMap.continuous_iff_isClosed_ker (l : E →ₗ[𝕜] 𝕜) :
 
 /-- Over a nontrivially normed field, any linear form which is nonzero on a nonempty open set is
 automatically continuous. -/
-theorem LinearMap.continuous_of_nonzero_on_open (l : E →ₗ[𝕜] 𝕜) (s : Set E) (hs₁ : IsOpen s)
+theorem LinearMap.continuous_of_ne_zero_on_open (l : E →ₗ[𝕜] 𝕜) (s : Set E) (hs₁ : IsOpen s)
     (hs₂ : s.Nonempty) (hs₃ : ∀ x ∈ s, l x ≠ 0) : Continuous l := by
   refine l.continuous_of_isClosed_ker (l.isClosed_or_dense_ker.resolve_right fun hl => ?_)
   rcases hs₂ with ⟨x, hx⟩
@@ -209,6 +209,9 @@ theorem LinearMap.continuous_of_nonzero_on_open (l : E →ₗ[𝕜] 𝕜) (s : S
     rw [mem_interior_iff_mem_nhds]
     exact mem_of_superset (hs₁.mem_nhds hx) hs₃
   rwa [hl.interior_compl] at this
+
+@[deprecated (since := "2026-10-13")]
+alias LinearMap.continuous_of_nonzero_on_open := LinearMap.continuous_of_ne_zero_on_open
 
 variable [CompleteSpace 𝕜]
 
@@ -600,6 +603,23 @@ theorem ContinuousLinearMap.isStrictMap_of_finiteDimensional [T2Space F] [Finite
     IsStrictMap f := by
   rw [isStrictMap_iff_isQuotientMap_rangeFactorization]
   exact f.rangeRestrict.isQuotientMap_of_finiteDimensional (by simp)
+
+variable (E) in
+private lemma isNormableSpace_of_t2Space_finiteDimensional
+    [T2Space E] [FiniteDimensional 𝕜 E] : IsNormableSpace 𝕜 E := by
+  have e : E ≃L[𝕜] (Basis.ofVectorSpaceIndex 𝕜 E) → 𝕜 :=
+    (Basis.ofVectorSpace 𝕜 E).equivFun.toContinuousLinearEquiv
+  exact e.isNormableSpace
+
+/-- A finite dimensional topological vector space over a complete normed field is normable.
+
+Not registered as a global instance only for performance reasons. -/
+theorem isNormableSpace_of_finiteDimensional [FiniteDimensional 𝕜 E] : IsNormableSpace 𝕜 E := by
+  let F := SeparationQuotient E
+  have : IsNormableSpace 𝕜 F := isNormableSpace_of_t2Space_finiteDimensional _
+  let f : E →ₗ[𝕜] F := SeparationQuotient.mkCLM 𝕜 E
+  have : IsInducing f := SeparationQuotient.isInducing_mk
+  exact this.isNormableSpace
 
 /-- If `K` is a complete field and `V` is a finite-dimensional vector space over `K` (equipped with
 any topology so that `V` is a topological `K`-module, meaning `[IsTopologicalAddGroup V]`

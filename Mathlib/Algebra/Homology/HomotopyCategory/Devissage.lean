@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Algebra.Homology.Embedding.ComplementaryTrunc
 public import Mathlib.Algebra.Homology.HomotopyCategory.DegreewiseSplit
 public import Mathlib.Algebra.Homology.HomotopyCategory.Plus
-public import Mathlib.Algebra.Homology.Embedding.ComplementaryTrunc
 
 /-!
 # Dévissage

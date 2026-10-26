@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.Embedding.TruncLEHomology
 public import Mathlib.Algebra.Homology.Embedding.AreComplementary
 public import Mathlib.Algebra.Homology.Embedding.StupidTrunc
+public import Mathlib.Algebra.Homology.Embedding.TruncLEHomology
 
 /-!
 # Complementary truncations

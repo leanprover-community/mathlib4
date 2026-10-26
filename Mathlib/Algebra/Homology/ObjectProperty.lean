@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.HomologicalComplex
 public import Mathlib.Algebra.Homology.CochainComplexMinus
+public import Mathlib.Algebra.Homology.HomologicalComplex
 
 /-!
 # Properties of homological complexes

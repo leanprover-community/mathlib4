@@ -5,9 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Localization.Resolution
-public import Mathlib.CategoryTheory.Localization.Opposite
 public import Mathlib.CategoryTheory.GuitartExact.Opposite
+public import Mathlib.CategoryTheory.Localization.Resolution
 
 /-!
 # Derivability structures
@@ -85,8 +84,6 @@ attribute [instance] IsRightDerivabilityStructure.hasRightResolutions
 variable {D₁ D₂ : Type*} [Category* D₁] [Category* D₂] (L₁ : C₁ ⥤ D₁) (L₂ : C₂ ⥤ D₂)
   [L₁.IsLocalization W₁] [L₂.IsLocalization W₂] (F : D₁ ⥤ D₂)
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 lemma isRightDerivabilityStructure_iff [Φ.HasRightResolutions] (e : Φ.functor ⋙ L₂ ≅ L₁ ⋙ F) :
     Φ.IsRightDerivabilityStructure ↔ TwoSquare.GuitartExact e.hom := by
   have : Φ.IsRightDerivabilityStructure ↔
@@ -127,7 +124,6 @@ instance guitartExact_of_isRightDerivabilityStructure [Φ.IsRightDerivabilityStr
 instance [W₁.ContainsIdentities] : (LocalizerMorphism.id W₁).HasRightResolutions :=
   fun X₂ => ⟨RightResolution.mk (𝟙 X₂) (W₁.id_mem X₂)⟩
 
-set_option backward.defeqAttrib.useBackward true in
 instance [W₁.ContainsIdentities] : (LocalizerMorphism.id W₁).IsRightDerivabilityStructure := by
   rw [(LocalizerMorphism.id W₁).isRightDerivabilityStructure_iff W₁.Q W₁.Q (𝟭 W₁.Localization)
     (Iso.refl _)]
@@ -185,7 +181,6 @@ instance guitartExact_of_isLeftDerivabilityStructure [Φ.IsLeftDerivabilityStruc
 instance [W₁.ContainsIdentities] : (LocalizerMorphism.id W₁).HasLeftResolutions :=
   fun X₂ => ⟨LeftResolution.mk (𝟙 X₂) (W₁.id_mem X₂)⟩
 
-set_option backward.defeqAttrib.useBackward true in
 instance [W₁.ContainsIdentities] : (LocalizerMorphism.id W₁).IsLeftDerivabilityStructure := by
   rw [(LocalizerMorphism.id W₁).isLeftDerivabilityStructure_iff W₁.Q W₁.Q (𝟭 W₁.Localization)
     (Iso.refl _)]

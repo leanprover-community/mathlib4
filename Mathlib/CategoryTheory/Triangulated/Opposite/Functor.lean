@@ -5,8 +5,8 @@ Authors: Sophie Morel
 -/
 module
 
-public import Mathlib.CategoryTheory.Triangulated.Opposite.Pretriangulated
 public import Mathlib.CategoryTheory.Adjunction.Opposites
+public import Mathlib.CategoryTheory.Triangulated.Opposite.Pretriangulated
 
 /-!
 # Opposites of functors between pretriangulated categories
@@ -51,7 +51,6 @@ noncomputable scoped instance commShift_natTrans_op_int {G : C ⥤ D} [G.CommShi
     (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; lia))
       (OppositeShift.natTrans ℤ τ)) ℤ)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 noncomputable scoped instance commShift_adjunction_op_int {G : D ⥤ C} [G.CommShift ℤ] (adj : F ⊣ G)
     [Adjunction.CommShift adj ℤ] : Adjunction.CommShift adj.op ℤ := by
@@ -84,7 +83,6 @@ lemma op_commShiftIso_hom_app (X : Cᵒᵖ) (n m : ℤ) (h : n + m = 0) :
   obtain rfl : m = -n := by lia
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma op_commShiftIso_inv_app (X : Cᵒᵖ) (n m : ℤ) (h : n + m = 0) :
     (F.op.commShiftIso n).inv.app X =
@@ -118,6 +116,7 @@ lemma map_opShiftFunctorEquivalence_unitIso_hom_app_unop (X : Cᵒᵖ) (n : ℤ)
         (((F.op).commShiftIso n).inv.app X).unop⟦n⟧' ≫
         ((opShiftFunctorEquivalence D n).unitIso.hom.app (op _)).unop := by
   dsimp [opShiftFunctorEquivalence]
+  simp only [comp_id]
   simp only [map_comp, unop_comp, Quiver.Hom.unop_op, assoc,
     map_shiftFunctorCompIsoId_hom_app, commShiftIso_hom_naturality_assoc,
     op_commShiftIso_inv_app _ _ _ _ (add_neg_cancel n)]
@@ -127,7 +126,6 @@ lemma map_opShiftFunctorEquivalence_unitIso_hom_app_unop (X : Cᵒᵖ) (n : ℤ)
   dsimp
   rw [map_id, id_comp]
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma map_opShiftFunctorEquivalence_unitIso_inv_app_unop (X : Cᵒᵖ) (n : ℤ) :
     F.map ((opShiftFunctorEquivalence C n).unitIso.inv.app X).unop =
@@ -149,6 +147,7 @@ lemma map_opShiftFunctorEquivalence_counitIso_hom_app_unop (X : Cᵒᵖ) (n : �
           ((F.op.commShiftIso n).hom.app (op (X.unop⟦n⟧))).unop := by
   apply Quiver.Hom.op_inj
   dsimp [opShiftFunctorEquivalence]
+  simp only [id_comp, comp_id]
   rw [assoc, F.op_commShiftIso_hom_app_assoc _ _ _ (add_neg_cancel n), map_comp,
     map_shiftFunctorCompIsoId_inv_app_assoc, op_comp, op_comp_assoc, op_comp_assoc,
     NatTrans.naturality_assoc, op_map, Iso.inv_hom_id_app_assoc, Quiver.Hom.unop_op]

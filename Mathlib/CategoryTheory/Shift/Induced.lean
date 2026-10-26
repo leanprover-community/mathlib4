@@ -63,7 +63,7 @@ lemma zero_hom_app_obj (X : C) :
       (i 0).hom.app X ≫ F.map ((shiftFunctorZero C A).hom.app X) := by
   have h : whiskerLeft F (zero F s i).hom = _ :=
     ((whiskeringLeft C D D).obj F).map_preimage _
-  exact (NatTrans.congr_app h X).trans (by simp)
+  exact congr($(h).app X).trans (by simp)
 
 @[simp]
 lemma zero_inv_app_obj (X : C) :
@@ -71,7 +71,7 @@ lemma zero_inv_app_obj (X : C) :
       F.map ((shiftFunctorZero C A).inv.app X) ≫ (i 0).inv.app X := by
   have h : whiskerLeft F (zero F s i).inv = _ :=
     ((whiskeringLeft C D D).obj F).map_preimage _
-  exact (NatTrans.congr_app h X).trans (by simp)
+  exact congr($(h).app X).trans (by simp)
 
 @[simp]
 lemma add_hom_app_obj (a b : A) (X : C) :
@@ -80,7 +80,7 @@ lemma add_hom_app_obj (a b : A) (X : C) :
         (i b).inv.app ((shiftFunctor C a).obj X) ≫ (s b).map ((i a).inv.app X) := by
   have h : whiskerLeft F (add F s i a b).hom = _ :=
     ((whiskeringLeft C D D).obj F).map_preimage _
-  exact (NatTrans.congr_app h X).trans (by simp)
+  exact congr($(h).app X).trans (by simp)
 
 @[simp]
 lemma add_inv_app_obj (a b : A) (X : C) :
@@ -89,7 +89,7 @@ lemma add_inv_app_obj (a b : A) (X : C) :
         F.map ((shiftFunctorAdd C a b).inv.app X) ≫ (i (a + b)).inv.app X := by
   have h : whiskerLeft F (add F s i a b).inv = _ :=
     ((whiskeringLeft C D D).obj F).map_preimage _
-  exact (NatTrans.congr_app h X).trans (by simp)
+  exact congr($(h).app X).trans (by simp)
 
 end Induced
 
@@ -107,7 +107,7 @@ noncomputable def induced : HasShift D A :=
         suffices (Induced.add F s i 0 n).hom =
           eqToHom (by rw [zero_add]; rfl) ≫ whiskerRight (Induced.zero F s i).inv (s n) by
           intro X
-          simpa using NatTrans.congr_app this X
+          simpa using congr($(this).app X)
         apply ((whiskeringLeft C D D).obj F).map_injective
         ext X
         have eq := dcongr_arg (fun a => (i a).hom.app X) (zero_add n)
@@ -121,7 +121,7 @@ noncomputable def induced : HasShift D A :=
         suffices (Induced.add F s i n 0).hom =
             eqToHom (by rw [add_zero]; rfl) ≫ whiskerLeft (s n) (Induced.zero F s i).inv by
           intro X
-          simpa using NatTrans.congr_app this X
+          simpa using congr($(this).app X)
         apply ((whiskeringLeft C D D).obj F).map_injective
         ext X
         dsimp
@@ -138,7 +138,7 @@ noncomputable def induced : HasShift D A :=
             eqToHom (by rw [add_assoc]) ≫ (Induced.add F s i m₁ (m₂ + m₃)).hom ≫
               whiskerLeft (s m₁) (Induced.add F s i m₂ m₃).hom by
           intro X
-          simpa using NatTrans.congr_app this X
+          simpa using congr($(this).app X)
         apply ((whiskeringLeft C D D).obj F).map_injective
         ext X
         dsimp

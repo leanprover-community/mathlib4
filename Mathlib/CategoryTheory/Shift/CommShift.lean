@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Shift.Basic
-public import Mathlib.CategoryTheory.NatIso
 
 /-!
 # Functors which commute with shifts
@@ -27,8 +26,6 @@ shift functors.)
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 
 -/
-
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -262,7 +259,7 @@ lemma map_shiftFunctorComm_hom_app [F.CommShift B] (X : C) (a b : B) :
     F.map ((shiftFunctorComm C a b).hom.app X) = (F.commShiftIso b).hom.app (X⟦a⟧) ≫
       ((F.commShiftIso a).hom.app X)⟦b⟧' ≫ (shiftFunctorComm D a b).hom.app (F.obj X) ≫
       ((F.commShiftIso b).inv.app X)⟦a⟧' ≫ (F.commShiftIso a).inv.app (X⟦b⟧) := by
-  have eq := NatTrans.congr_app (congr_arg Iso.hom (F.commShiftIso_add a b)) X
+  have eq := congr($(F.commShiftIso_add a b).hom.app X)
   simp only [comp_obj, CommShift.isoAdd_hom_app,
     ← cancel_epi (F.map ((shiftFunctorAdd C a b).inv.app X)),
     ← F.map_comp_assoc, Iso.inv_hom_id_app, F.map_id, Category.id_comp] at eq
@@ -272,7 +269,7 @@ lemma map_shiftFunctorComm_hom_app [F.CommShift B] (X : C) (a b : B) :
     ← reassoc_of% eq, shiftFunctorComm_eq C a b _ rfl]
   dsimp
   rw [Functor.map_comp]
-  simp only [NatTrans.congr_app (congr_arg Iso.hom (F.commShiftIso_add' (add_comm b a))) X,
+  simp only [congr($(F.commShiftIso_add' (add_comm b a)).hom.app X),
     CommShift.isoAdd'_hom_app, Category.assoc, Iso.inv_hom_id_app_assoc,
     ← Functor.map_comp_assoc, Iso.hom_inv_id_app,
     Functor.map_id, Category.id_comp, comp_obj, Category.comp_id]
@@ -283,7 +280,7 @@ lemma map_shiftFunctorCompIsoId_hom_app [F.CommShift A] (X : C) (a b : A) (h : a
       (F.commShiftIso b).hom.app (X⟦a⟧) ≫ ((F.commShiftIso a).hom.app X)⟦b⟧' ≫
         (shiftFunctorCompIsoId D a b h).hom.app (F.obj X) := by
   dsimp [shiftFunctorCompIsoId]
-  have eq := NatTrans.congr_app (congr_arg Iso.hom (F.commShiftIso_add' h)) X
+  have eq := congr($(F.commShiftIso_add' h).hom.app X)
   simp only [commShiftIso_zero, comp_obj, CommShift.isoZero_hom_app,
     CommShift.isoAdd'_hom_app] at eq
   rw [← cancel_epi (F.map ((shiftFunctorAdd' C a b 0 h).hom.app X)), ← reassoc_of% eq, F.map_comp]

@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.SpectralSequence.Convergence
 public import Mathlib.Algebra.Homology.ConnectShortExact
+public import Mathlib.Algebra.Homology.SpectralSequence.Convergence
 public import Mathlib.Tactic.FinCases
 
 /-!

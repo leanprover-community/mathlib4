@@ -5,8 +5,8 @@ Authors: Scott Morrison
 -/
 module
 
-public import Mathlib.Algebra.Homology.ImageToKernel
 public import Mathlib.Algebra.Homology.HomologicalComplex
+public import Mathlib.Algebra.Homology.ImageToKernel
 public import Mathlib.CategoryTheory.GradedObject
 
 

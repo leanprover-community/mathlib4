@@ -5,12 +5,13 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Comma
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Basic
 public import Mathlib.CategoryTheory.Limits.Constructions.Over.Basic
-public import Mathlib.Order.SuccPred.Limit
+public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Basic
 public import Mathlib.Order.Interval.Set.InitialSeg
+public import Mathlib.Order.SuccPred.Limit
+
+import Mathlib.CategoryTheory.Limits.Comma
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 
 /-!
 # An assumption for constructions by transfinite induction

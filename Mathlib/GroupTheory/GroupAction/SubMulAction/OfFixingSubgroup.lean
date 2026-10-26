@@ -5,12 +5,13 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Algebra.Group.Pointwise.Set.Card
 public import Mathlib.GroupTheory.GroupAction.FixingSubgroup
+public import Mathlib.GroupTheory.GroupAction.Primitive
 public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfStabilizer
 public import Mathlib.GroupTheory.GroupAction.Transitive
-public import Mathlib.GroupTheory.GroupAction.Primitive
-public import Mathlib.Tactic.Group
+
+import Mathlib.Algebra.Group.Pointwise.Set.Card
+import Mathlib.Tactic.Group
 
 /-!
 # SubMulActions on complements of invariant subsets
@@ -99,8 +100,11 @@ theorem mem_ofFixingSubgroup_iff {x : α} :
 variable {M}
 
 @[to_additive]
-theorem not_mem_of_mem_ofFixingSubgroup (x : ofFixingSubgroup M s) :
+theorem notMem_of_mem_ofFixingSubgroup (x : ofFixingSubgroup M s) :
     ↑x ∉ s := x.prop
+
+@[to_additive (attr := deprecated (since := "2026-09-28"))]
+alias not_mem_of_mem_ofFixingSubgroup := notMem_of_mem_ofFixingSubgroup
 
 @[to_additive]
 theorem disjoint_val_image {t : Set (ofFixingSubgroup M s)} :

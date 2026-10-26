@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Shift.CommShift
 public import Mathlib.Algebra.Group.Prod
+public import Mathlib.CategoryTheory.Shift.CommShift
 
 /-!
 

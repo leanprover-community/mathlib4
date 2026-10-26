@@ -4,22 +4,16 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 module
---public import Mathlib.Algebra.Homology.Factorizations.CM5a
---public import Mathlib.Algebra.Homology.ModelCategory.Lifting
---public import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
---public import Mathlib.Algebra.Homology.HomologySequence
---public import Mathlib.Algebra.Homology.HomotopyCategory.Plus
---public import Mathlib.Algebra.Homology.HomotopyCategory.KInjective
---public import Mathlib.AlgebraicTopology.ModelCategory.Basic
 
 public import Mathlib.Algebra.Homology.CochainComplexPlus
 public import Mathlib.Algebra.Homology.Factorizations.CM5a
-public import Mathlib.Algebra.Homology.HomologySequenceLemmas
-public import Mathlib.Algebra.Homology.HomotopyCategory.KInjective
-public import Mathlib.Algebra.Homology.ModelCategory.Lifting
 public import Mathlib.AlgebraicTopology.ModelCategory.Basic
 public import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
-public import Mathlib.CategoryTheory.Abelian.Exact
+
+import Mathlib.Algebra.Homology.HomologySequenceLemmas
+import Mathlib.Algebra.Homology.HomotopyCategory.KInjective
+import Mathlib.Algebra.Homology.ModelCategory.Lifting
+import Mathlib.CategoryTheory.Abelian.Exact
 
 /-!
 # The model category structure on bounded below complexes
@@ -96,7 +90,6 @@ instance {A B : CochainComplex.Plus C} (i : A ⟶ B) [Cofibration i] :
     Mono i := by
   rwa [← cofibration_iff]
 
-set_option backward.defeqAttrib.useBackward true in
 open HomComplex in
 /-- Let `sq` be a commutative square in the category of bounded below cochain complexes
 in an abelian category. We assume that the left morphism `i` is a monomorphism,

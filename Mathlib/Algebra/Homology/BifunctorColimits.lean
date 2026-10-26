@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.GradedObject.Colimits
 public import Mathlib.Algebra.Homology.Bifunctor
 public import Mathlib.Algebra.Homology.HomologicalComplexLimits
+public import Mathlib.CategoryTheory.GradedObject.Colimits
 
 /-!
 # Commutation with colimits of bifunctors on homological complexes

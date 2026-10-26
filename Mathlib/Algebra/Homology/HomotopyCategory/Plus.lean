@@ -5,17 +5,19 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
-public import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
-public import Mathlib.Algebra.Homology.DerivedCategory.Basic
 public import Mathlib.Algebra.Homology.CochainComplexPlus
-public import Mathlib.Algebra.Homology.HomotopyFiber
+public import Mathlib.Algebra.Homology.DerivedCategory.Basic
 public import Mathlib.Algebra.Homology.Embedding.CochainComplex
-public import Mathlib.CategoryTheory.Triangulated.Subcategory
-public import Mathlib.CategoryTheory.Shift.SingleFunctorsLift
-public import Mathlib.CategoryTheory.Localization.OfQuotient
 public import Mathlib.Algebra.Homology.HomotopyCategory.Acyclic
+public import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
+public import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
+public import Mathlib.Algebra.Homology.HomotopyFiber
 public import Mathlib.Algebra.Homology.Precylinder
+public import Mathlib.CategoryTheory.Localization.OfQuotient
+public import Mathlib.CategoryTheory.Shift.SingleFunctorsLift
+public import Mathlib.CategoryTheory.Triangulated.Subcategory
+
+import Mathlib.CategoryTheory.Localization.OfQuotient
 
 /-!
 # The triangulated subcategory of bounded below cochain complexes up to homotopy
@@ -38,7 +40,6 @@ open HomologicalComplex
 
 variable {C} [HasBinaryBiproducts C]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma plus_cylinder (K : CochainComplex C ℤ) (hK : CochainComplex.plus C K) :
     CochainComplex.plus C (cylinder K) := by
   obtain ⟨n, hn⟩ := hK
@@ -98,7 +99,7 @@ lemma plus_quotient_obj_iff (K : CochainComplex C ℤ) :
   refine ⟨?_, fun h ↦ ⟨_, h⟩⟩
   simp only [plus, ObjectProperty.strictMap_iff]
   rintro ⟨L, h, hL⟩
-  obtain rfl : L = K := congr_arg Quotient.as hL
+  obtain rfl : L = K := congr(Quotient.as $hL)
   exact h
 
 instance [HasZeroObject C] : (plus C).ContainsZero where
@@ -315,7 +316,6 @@ noncomputable instance :
   inferInstanceAs (((HomotopyCategory.plus D).lift (HomotopyCategory.Plus.ι C ⋙
     F.mapHomotopyCategory (.up ℤ)) _).CommShift ℤ)
 
-set_option backward.isDefEq.respectTransparency false in
 instance [HasZeroObject C] [HasBinaryBiproducts C] [HasZeroObject D] [HasBinaryBiproducts D] :
     (F.mapHomotopyCategoryPlus).IsTriangulated := by
   dsimp only [mapHomotopyCategoryPlus]
@@ -367,6 +367,7 @@ lemma whiskerRight_quotientCompMapHomotopyCategoryPlusIso_hom_ι :
     mapHomotopyCategoryPlusCompι_hom_app, HomotopyCategory.Plus.quotientCompιIso_hom_app,
     mapCochainComplexPlusCompι_inv_app, HomotopyCategory.Plus.quotientCompιIso_inv_app,
     Category.comp_id, Category.id_comp, comp_obj,
+    (F.mapHomotopyCategory (.up ℤ)).map_id ((HomotopyCategory.quotient C (.up ℤ)).obj K.obj),
     Functor.mapHomotopyCategoryFactors_hom_app]
   simp [mapHomotopyCategoryPlus, HomotopyCategory.Plus.quotient]
   rfl

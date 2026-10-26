@@ -217,10 +217,10 @@ end
 
 
 def hasEdgeMonoSet (pq : ι) : Set ℤ  :=
-  fun r => r₀ ≤ r ∧ ∀ (r' : ℤ) (_ : r ≤ r'), E.HasEdgeMonoAt pq r'
+  .ofPred fun r => r₀ ≤ r ∧ ∀ (r' : ℤ) (_ : r ≤ r'), E.HasEdgeMonoAt pq r'
 
 def hasEdgeEpiSet (pq : ι) : Set ℤ :=
-  fun r => r₀ ≤ r ∧ ∀ (r' : ℤ) (_ : r ≤ r'), E.HasEdgeEpiAt pq r'
+  .ofPred fun r => r₀ ≤ r ∧ ∀ (r' : ℤ) (_ : r ≤ r'), E.HasEdgeEpiAt pq r'
 
 section
 

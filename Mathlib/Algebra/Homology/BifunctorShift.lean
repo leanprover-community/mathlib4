@@ -113,7 +113,6 @@ lemma ι_mapBifunctorShift₁Iso_hom_f (n₁ n₂ n : ℤ) (h : n₁ + n₂ = n)
   simp [HomologicalComplex₂.ιTotal, HomologicalComplex₂.shiftFunctor₁XXIso,
     HomologicalComplex.XIsoOfEq, eqToHom_map]
 
-set_option backward.defeqAttrib.useBackward true in
 variable {K₁ L₁} in
 @[reassoc (attr := simp)]
 lemma mapBifunctorShift₁Iso_hom_naturality₁ :

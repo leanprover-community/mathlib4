@@ -5,12 +5,12 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.Embedding.StupidFiltration
 public import Mathlib.Algebra.Homology.Embedding.CochainComplex
+public import Mathlib.Algebra.Homology.Embedding.StupidFiltration
 public import Mathlib.Algebra.Homology.HomologySequenceLemmas
 public import Mathlib.Algebra.Homology.TotalComplex
-public import Mathlib.Algebra.Homology.TotalComplexShift
 public import Mathlib.Algebra.Homology.TotalComplexMap
+public import Mathlib.Algebra.Homology.TotalComplexShift
 public import Mathlib.CategoryTheory.Idempotents.Basic
 
 /-!

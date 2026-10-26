@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.SpectralSequence.Examples.OfTStructure
 public import Mathlib.Algebra.Homology.DerivedCategory.RightDerivedFunctorPlusComp
+public import Mathlib.Algebra.Homology.SpectralSequence.Examples.OfTStructure
 public import Mathlib.CategoryTheory.Abelian.Injective.RightDerived
 
 /-!

@@ -5,13 +5,13 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.LeftResolution.CochainComplexMinus
 public import Mathlib.Algebra.Homology.Embedding.CochainComplexTrunc
-public import Mathlib.Algebra.Homology.PreservesQuasiIso
+public import Mathlib.Algebra.Homology.LeftResolution.CochainComplexMinus
 public import Mathlib.Algebra.Homology.ObjectProperty
+public import Mathlib.Algebra.Homology.PreservesQuasiIso
+public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Colim
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
-public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Colim
 
 /-!
 # Resolutions of unbounded complexes

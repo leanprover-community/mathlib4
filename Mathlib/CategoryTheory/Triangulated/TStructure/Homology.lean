@@ -5,16 +5,16 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Triangulated.TStructure.TExact
-public import Mathlib.CategoryTheory.Triangulated.TStructure.Heart
-public import Mathlib.CategoryTheory.Triangulated.TStructure.Shift
-public import Mathlib.CategoryTheory.Triangulated.TStructure.AbelianSubcategory
-public import Mathlib.CategoryTheory.Triangulated.TStructure.SpectralObject
-public import Mathlib.CategoryTheory.Triangulated.Yoneda
+public import Mathlib.Algebra.Homology.ShortComplex.ShortComplexFour
+public import Mathlib.Algebra.Homology.ShortComplex.ULift
 public import Mathlib.CategoryTheory.Limits.FullSubcategory
 public import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
-public import Mathlib.Algebra.Homology.ShortComplex.ULift
-public import Mathlib.Algebra.Homology.ShortComplex.ShortComplexFour
+public import Mathlib.CategoryTheory.Triangulated.TStructure.AbelianSubcategory
+public import Mathlib.CategoryTheory.Triangulated.TStructure.Heart
+public import Mathlib.CategoryTheory.Triangulated.TStructure.Shift
+public import Mathlib.CategoryTheory.Triangulated.TStructure.SpectralObject
+public import Mathlib.CategoryTheory.Triangulated.TStructure.TExact
+public import Mathlib.CategoryTheory.Triangulated.Yoneda
 
 /-!
 # Homology for a t-structure

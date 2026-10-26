@@ -5,12 +5,10 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.EssentiallySmall
-public import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
+public import Mathlib.CategoryTheory.Idempotents.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
 public import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
 public import Mathlib.CategoryTheory.ObjectProperty.Small
-public import Mathlib.CategoryTheory.Idempotents.Basic
 public import Mathlib.CategoryTheory.Retract
 
 /-! # Properties of objects which are stable under retracts
@@ -55,10 +53,6 @@ instance : P.IsClosedUnderIsomorphisms where
 -- see Note [lower instance priority]
 instance (priority := 100) [HasZeroObject C] [P.Nonempty] : P.ContainsZero where
   exists_zero := ⟨0, isZero_zero _, of_retract ((isZero_zero _).retract _) P.prop_arbitrary⟩
-
-@[deprecated instContainsZeroOfHasZeroObjectOfNonempty +typeChanged (since := "2026-04-03")]
-lemma containsZero [HasZeroObject C] {X : C} (h : P X) : P.ContainsZero where
-  exists_zero := ⟨0, isZero_zero _, of_retract ((isZero_zero _).retract X) h⟩
 
 lemma of_binaryBicone_left [HasZeroMorphisms C] {X Y : C} (c : BinaryBicone X Y) (h : P c.pt) :
     P X :=
@@ -156,7 +150,7 @@ instance [ObjectProperty.EssentiallySmall.{w} P] [LocallySmall.{w} C] :
     obtain ⟨a, h₁, h₂⟩ : ∃ (a : Subtype R) (h₁ : Q (X a)), g (h a) h₁ = g r hx := by
       obtain ⟨_, hr⟩ := hX ⟨⟨⟨_, hx⟩, r.r ≫ r.i, by simp⟩, ⟨_, _, r, hx, rfl⟩⟩
       exact ⟨_, _, hr⟩
-    obtain rfl : x = X a := Subtype.ext_iff.1 (congr_arg Sigma.fst h₂.symm)
+    obtain rfl : x = X a := Subtype.ext_iff.1 congr($(h₂.symm).fst)
     have hri : (h a).r ≫ (h a).i = r.r ≫ r.i := by
       rw [Sigma.ext_iff, heq_eq_eq] at h₂
       exact Subtype.ext_iff.1 h₂.2

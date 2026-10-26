@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Shift.Adjunction
 public import Mathlib.CategoryTheory.Preadditive.Opposite
+public import Mathlib.CategoryTheory.Shift.Adjunction
 
 /-!
 # The (naive) shift on the opposite category
@@ -61,7 +61,6 @@ variable (C D : Type*) [Category C] [Category D] (F : C ⥤ D)
 
 namespace HasShift
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Construction of the naive shift on the opposite category of a category `C`:
 the shiftfunctor by `n` is `(shiftFunctor C n).op`. -/
 def mkShiftCoreOp : ShiftMkCore Cᵒᵖ A where
@@ -169,7 +168,6 @@ def OppositeShift.natTrans {G : C ⥤ D} (τ : F ⟶ G) :
 namespace Functor
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /--
 Given a `CommShift` structure on `F`, this is the corresponding `CommShift` structure on
 `OppositeShift.functor F` (for the naive shifts on the opposite categories).
@@ -268,7 +266,6 @@ composition of `OppositeShift.functor F` and `OppositeShift.functor G`.
 def OppositeShift.natIsoComp : OppositeShift.functor A (F ⋙ G) ≅
     OppositeShift.functor A F ⋙ OppositeShift.functor A G := Iso.refl _
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance [F.CommShift A] [G.CommShift A] :
     NatTrans.CommShift (OppositeShift.natIsoComp A F G).hom A where
@@ -280,7 +277,6 @@ instance [F.CommShift A] [G.CommShift A] :
 
 end NatTrans
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 The adjunction `adj`, seen as an adjunction between `OppositeShift.functor G`

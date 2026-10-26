@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Triangulated.TStructure.Homology
 public import Mathlib.Algebra.Homology.SpectralObject.Convergence
 public import Mathlib.Algebra.Homology.SpectralObject.FirstPage
+public import Mathlib.CategoryTheory.Triangulated.TStructure.Homology
 
 /-!
 # The spectral sequence of a t-structure

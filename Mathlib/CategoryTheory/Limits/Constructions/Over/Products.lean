@@ -74,7 +74,6 @@ def pullbackConeEquivBinaryFan : PullbackCone f g ≌ BinaryFan (Over.mk f) (.mk
     (by intros; ext; simp [BinaryFan.ext])
   functor_unitIso_comp c := by ext; simp [BinaryFan.ext]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A binary fan in `Over X` is a limit if its corresponding pullback cone to `X` is a limit. -/
 -- `IsLimit.ofConeEquiv` isn't used here because the lift it defines is `𝟙 _ ≫ pullback.lift`.
 -- TODO: Define `IsLimit.copy`?
@@ -108,14 +107,13 @@ def IsLimit.pullbackConeEquivBinaryFanInverse {c : BinaryFan (Over.mk f) (.mk g)
       have := hc.uniq (pullbackConeEquivBinaryFan.functor.obj s) (Over.homMk m <| by
         simp [← hm₁, dsimp% c.fst.w])
         (by rintro (_ | _) <;> ext <;> simpa)
-      exact congr(($this).left)
+      congrm ($this).left
 
 end Over
 
 section Under
 variable {f : X ⟶ Y} {g : X ⟶ Z}
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Pushout cocones from `X` are the same thing as binary cofans in `Under X`. -/
 @[simps]
@@ -134,7 +132,6 @@ def pushoutCoconeEquivBinaryCofan : PushoutCocone f g ≌ BinaryCofan (Under.mk 
     (by intros; ext; simp)
   functor_unitIso_comp c := by ext; simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A binary cofan in `Under X` is a colimit if its corresponding pushout cocone from `X` is a
 colimit. -/
 -- `IsColimit.ofCoconeEquiv` isn't used here because the lift it defines is `pushout.desc ≫ 𝟙 _`.
@@ -170,7 +167,7 @@ def IsColimit.pushoutCoconeEquivBinaryCofanInverse {c : BinaryCofan (Under.mk f)
       have := hc.uniq (pushoutCoconeEquivBinaryCofan.functor.obj s) (Under.homMk m <| by
         simp [← hm₁, dsimp% c.inl.w_assoc])
         (by rintro (_ | _) <;> ext <;> simpa)
-      exact congr(($this).right)
+      congrm ($this).right
 
 end Under
 end Limits
@@ -230,7 +227,6 @@ abbrev widePullbackDiagramOfDiagramOver (B : C) {J : Type w} (F : Discrete J ⥤
     WidePullbackShape J ⥤ C :=
   WidePullbackShape.wideCospan B (fun j => (F.obj ⟨j⟩).left) fun j => (F.obj ⟨j⟩).hom
 
-set_option backward.defeqAttrib.useBackward true in
 /-- (Impl) A preliminary definition to avoid timeouts. -/
 @[simps]
 def conesEquivInverseObj (B : C) {J : Type w} (F : Discrete J ⥤ Over B) (c : Cone F) :
@@ -346,7 +342,6 @@ theorem over_finiteProducts_of_finiteWidePullbacks [HasFiniteWidePullbacks C] {B
 
 end ConstructProducts
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Construct terminal object in the over category. This isn't an instance as it's not typically the
 way we want to define terminal objects.
 (For instance, this gives a terminal object which is different from the generic one given by

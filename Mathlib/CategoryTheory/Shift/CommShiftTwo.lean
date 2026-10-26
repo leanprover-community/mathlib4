@@ -5,13 +5,14 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.Currying
 public import Mathlib.CategoryTheory.Center.NegOnePow
-public import Mathlib.CategoryTheory.Linear.LinearFunctor
-public import Mathlib.CategoryTheory.Shift.Twist
-public import Mathlib.CategoryTheory.Shift.Pullback
+public import Mathlib.CategoryTheory.Functor.Currying
 public import Mathlib.CategoryTheory.Shift.CommShiftProd
 public import Mathlib.CategoryTheory.Shift.Prod
+public import Mathlib.CategoryTheory.Shift.Pullback
+public import Mathlib.CategoryTheory.Shift.Twist
+
+import Mathlib.CategoryTheory.Linear.LinearFunctor
 
 /-!
 # Commutation with shifts of functors in two variables
@@ -321,8 +322,7 @@ lemma iso₁_add (m m' : M) :
     h.shiftFunctor_map_assoc _ _ _ (add_zero m'), Category.assoc, Iso.inv_hom_id_app_assoc,
     h.shiftFunctorAdd'_inv_app _ _ _ rfl _ _ _ (add_zero 0) _ _ (m + m')
     (add_zero m) (add_zero m') (by simp), Iso.inv_hom_id_app_assoc, h.z_zero₂,
-    inv_one, Units.val_one, End.one_def,
-    Functor.commShiftIso_add' _ rfl, Functor.CommShift.isoAdd'_hom_app]
+    inv_one, Units.val_one, Functor.commShiftIso_add' _ rfl, Functor.CommShift.isoAdd'_hom_app]
   simp only [Functor.flip_obj_obj, Functor.flip_obj_map,
     Category.assoc, NatTrans.naturality_assoc, Functor.map_comp_assoc,
     shiftFunctorAdd'_add_zero_hom_app]
@@ -381,7 +381,7 @@ lemma iso₂_add (m m' : M) :
     NatTrans.naturality_assoc, ← Functor.map_comp_assoc,
     h.shiftFunctorAdd'_inv_app _ _ _ (add_zero 0) _ _ _ rfl _ _ _
     (zero_add m) (zero_add m') (zero_add (m + m')), h.z_zero₁,
-    inv_one, Units.val_one, End.one_def,
+    inv_one, Units.val_one,
     Functor.commShiftIso_add' _ rfl, Functor.CommShift.isoAdd'_hom_app,
     shiftFunctorAdd'_add_zero_hom_app, ← NatTrans.comp_app_assoc, ← Functor.map_comp,
     Iso.inv_hom_id_app, NatTrans.naturality_assoc, NatTrans.naturality_assoc]
@@ -486,10 +486,10 @@ noncomputable instance (X₁ : C₁) :
       shiftFunctorAdd'_inv_app _ _ _ _ (add_zero 0) _ _ _ rfl _ _ _ (zero_add m)
       (zero_add n) (zero_add (m + n)), Functor.id_obj, Functor.comp_obj, shiftFunctor_prod,
       Functor.CommShift.isoAdd'_hom_app, Functor.prod_obj, shiftFunctorAdd'_prod, NatIso.prod_hom,
-      h.z_zero₁, inv_one, Units.val_one, End.one_def, NatTrans.id_app, Category.comp_id,
-      NatTrans.naturality_assoc, Category.assoc, Iso.inv_hom_id_app, curry_obj_obj_obj, ←
+      h.z_zero₁, inv_one, Units.val_one, CatCenter.app_one,
+      NatTrans.naturality_assoc, Category.assoc, curry_obj_obj_obj, ←
       shiftFunctorAdd'_eq_shiftFunctorAdd, curry_obj_obj_map, Iso.app_hom,
-      Functor.map_comp]
+      Functor.map_comp, Iso.inv_hom_id_app, Category.comp_id]
     rw [← NatTrans.naturality_1_assoc (G.commShiftIso ((0 : M), n)).hom
       (Iso.prod ((shiftFunctorZero C₁ M).symm.app X₁) (Iso.refl (X₂⟦m⟧)))]
     dsimp
@@ -567,7 +567,7 @@ noncomputable instance (X₂ : C₂) : ((h.curry G).flip.obj X₂).CommShift M w
       CommShift.isoAdd'_hom_app, shiftFunctorAdd'_prod, NatIso.prod_hom,
       shiftFunctorAdd'_inv_app _ _ _ _ rfl _ _ _ (zero_add 0) _ _ _ (add_zero m) (add_zero n)
           (add_zero (m + n)),
-      h.z_zero₂, inv_one, Units.val_one, End.one_def, NatTrans.id_app, Category.comp_id,
+      h.z_zero₂, inv_one, Units.val_one, CatCenter.app_one, Category.comp_id,
       NatTrans.naturality_assoc, Category.assoc, Iso.inv_hom_id_app, CommShift.isoAdd_hom_app,
       ← shiftFunctorAdd'_eq_shiftFunctorAdd, flip_obj_map, curry_obj_map_app, map_comp]
     rw [← NatTrans.naturality_1_assoc (G.commShiftIso (n, (0 : M))).hom

@@ -6,7 +6,6 @@ Authors: Adam Topaz, Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Limits.ExactFunctor
-public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 public import Mathlib.CategoryTheory.Preadditive.Biproducts
 public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 
@@ -142,7 +141,7 @@ lemma Additive.of_isZero {F : C ⥤ D} (hF : IsZero F) :
   map_add {_ _ _ _} :=
     IsZero.eq_of_tgt (by
       rw [IsZero.iff_id_eq_zero]
-      exact NatTrans.congr_app ((IsZero.iff_id_eq_zero _).1 hF) _) _ _
+      congrm $((IsZero.iff_id_eq_zero _).1 hF).app _) _ _
 
 instance [HasZeroObject D] : Functor.Additive (0 : C ⥤ D) :=
   .of_isZero (isZero_zero _)
@@ -156,14 +155,12 @@ instance : (Functor.whiskeringRight C D E).Additive where
 omit [Preadditive C] [Preadditive D] in
 instance (F : C ⥤ D) : ((Functor.whiskeringLeft C D E).obj F).Additive where
 
-set_option backward.defeqAttrib.useBackward true in
 omit [Preadditive D] in
 instance {E' : Type*} [Category* E'] [Preadditive E'] (G : C ⥤ D ⥤ E) (F : E ⥤ E')
     [F.Additive] [G.Additive] : ((Functor.postcompose₂.obj F).obj G).Additive := by
   dsimp [Functor.postcompose₂]
   infer_instance
 
-set_option backward.defeqAttrib.useBackward true in
 universe w in
 instance [HasCoproducts.{w} C] : (sigmaConst.{w} (C := C)).Additive where
 
@@ -311,7 +308,6 @@ namespace Equivalence
 
 variable {C D : Type*} [Category* C] [Category* D] [Preadditive C] [Preadditive D]
 
-set_option backward.defeqAttrib.useBackward true in
 instance inverse_additive (e : C ≌ D) [e.functor.Additive] : e.inverse.Additive where
   map_add {f g} := e.functor.map_injective (by simp)
 

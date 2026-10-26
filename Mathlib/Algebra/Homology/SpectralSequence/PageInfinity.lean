@@ -17,7 +17,7 @@ public import Mathlib.Algebra.Homology.SpectralSequence.EdgeStep
 lemma Set.has_min_of_ℤ (S : Set ℤ) (hS : S.Nonempty) (m₀ : ℤ)
     (hm₀ : ∀ (x : ℤ) (_ : x ∈ S), m₀ ≤ x) :
     ∃ (m : ℤ) (_ : m ∈ S), ∀ (x : ℤ) (_ : x ∈ S), m ≤ x := by
-  let T : Set ℕ := fun i => m₀ + i ∈ S
+  let T : Set ℕ := .ofPred fun i => m₀ + i ∈ S
   obtain ⟨x, hx⟩ := hS
   obtain ⟨t₀, rfl⟩ := Int.le.dest (hm₀ x hx)
   have hT : T.Nonempty := ⟨t₀, hx⟩

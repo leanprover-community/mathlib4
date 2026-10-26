@@ -5,9 +5,9 @@ Authors: Peter Pfaffelhuber
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.LinearAlgebra.Matrix.PosDef
+
 import Mathlib.Analysis.Matrix.Order
 
 /-! # Gram Matrices
@@ -132,7 +132,7 @@ theorem gram_eq_conjTranspose_mul {ι : Type*} [Fintype ι] (b : OrthonormalBasi
     letI m := of fun i j ↦ b.repr (v j) i
     gram 𝕜 v = mᴴ * m := by
   ext i j
-  simp [mul_apply, b.repr_apply_apply, b.sum_inner_mul_inner]
+  simp [Matrix.mul_apply, b.repr_apply_apply, b.sum_inner_mul_inner]
 
 omit [Finite n] in
 @[simp]

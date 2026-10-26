@@ -5,8 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Comma.CatCommSq
 public import Mathlib.CategoryTheory.Localization.LocalizerMorphism
+
+import Mathlib.CategoryTheory.Comma.CatCommSq
 
 /-!
 # Resolutions for a morphism of localizers
@@ -138,7 +139,7 @@ def isoMk {R R' : Φ.RightResolution X₂} (e : R.X₁ ≅ R'.X₁)
     { f := e.inv
       --hf := W₁.of_isIso _
       comm := by
-        rw [← comm, Category.assoc, Iso.map_hom_inv_id, Category.comp_id] }
+        rw [← comm, Category.assoc, Iso.hom_inv_id_map, Category.comp_id] }
 
 end RightResolution
 
@@ -195,7 +196,7 @@ def isoMk {L L' : Φ.LeftResolution X₂} (e : L.X₁ ≅ L'.X₁)
     { f := e.inv
       --hf := W₁.of_isIso _
       comm := by
-        rw [← comm, Iso.map_inv_hom_id_assoc] }
+        rw [← comm, Iso.inv_hom_id_map_assoc] }
 
 variable (Φ)
 
@@ -366,7 +367,6 @@ section
 variable {T : LocalizerMorphism W₁ W₂} {L : LocalizerMorphism W₁ W₁'}
   {R : LocalizerMorphism W₂ W₂'} {B : LocalizerMorphism W₁' W₂'}
 
-set_option backward.defeqAttrib.useBackward true in
 lemma hasRightResolutions_of_iso_of_essSurj
     [R.functor.EssSurj] [W₂'.RespectsIso]
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor) [T.HasRightResolutions] :
@@ -406,7 +406,6 @@ lemma hasRightResolutions_of_iso_of_essSurj_of_full
       refine (W₂'.arrow_mk_iso_iff ?_).2 ρ.hw
       exact Arrow.isoMk (Iso.refl _) (iso.app _ ≪≫ B.functor.mapIso e)}⟩
 
-set_option backward.defeqAttrib.useBackward true in
 lemma hasLeftResolutions_of_iso_of_essSurj_of_full
     [L.functor.EssSurj] [R.functor.Full] [R.IsInduced] [W₂'.RespectsIso]
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor) [B.HasLeftResolutions] :

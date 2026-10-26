@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.SpectralSequence.PageInfinity
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+public import Mathlib.Algebra.Homology.SpectralSequence.PageInfinity
 public import Mathlib.Order.Preorder.Finite
 
 /-!
@@ -36,7 +36,7 @@ structure ConvergenceStripes where
   position (n : σ) (i : α n) : ι
   stripe_position (n : σ) (i : α n) : stripe (position n i) = n := by aesop
   discrete (n : σ) (i j : α n) (h₁ : pred n i < WithBot.some j) : i ≤ j
-  finite_segment (n : σ) (i j : α n) : Set.Finite (fun (k : α n) => i ≤ k ∧ k ≤ j)
+  finite_segment (n : σ) (i j : α n) : Set.Finite (.ofPred (fun (k : α n) => i ≤ k ∧ k ≤ j))
 
 variable {α}
 
@@ -95,7 +95,7 @@ lemma stripe_eq (n : σ) (i : α n) (pq : ι) (hpq : s.position n i = pq) :
 
 @[nolint unusedArguments]
 def segment (_ : ConvergenceStripes ι α) (n : σ) (i j : α n) : Set (α n) :=
-  fun k => i ≤ k ∧ k ≤ j
+  .ofPred fun k => i ≤ k ∧ k ≤ j
 
 set_option backward.isDefEq.respectTransparency false in
 noncomputable instance (n : σ) (i j : α n) : Fintype (s.segment n i j) := by
@@ -107,7 +107,7 @@ noncomputable instance (n : σ) (i j : α n) : Fintype (s.segment n i j) := by
 @[nolint unusedArguments]
 def segment' (_ : ConvergenceStripes ι α) (n : σ) (i : α n)
     (j : WithBot (α n)) : Set (WithBot (α n)) :=
-  fun k => WithBot.some i ≤ k ∧ k ≤ j
+  .ofPred fun k => WithBot.some i ≤ k ∧ k ≤ j
 
 instance (n : σ) (i : α n) : Subsingleton (s.segment' n i ⊥) where
   allEq := by
@@ -314,7 +314,7 @@ lemma sub_injective (n : σ) (i : WithBot (α n)) (k₁ k₂ : ℕ)
 set_option backward.isDefEq.respectTransparency false in
 lemma exists_sub_eq (n : σ) (i j : α n) (hij : i ≤ j) :
     ∃ (k : ℕ), s.sub n j k = i := by
-  let S : Set ℕ := fun k => (WithBot.some i) ≤ s.sub n (WithBot.some j) k
+  let S : Set ℕ := .ofPred fun k => (WithBot.some i) ≤ s.sub n (WithBot.some j) k
   have hS : S.Finite := by
     let φ : S → s.segment' n i j := fun x => ⟨s.sub n j x.1, x.2, s.sub_le_self _ _ _⟩
     refine Finite.of_injective φ ?_
