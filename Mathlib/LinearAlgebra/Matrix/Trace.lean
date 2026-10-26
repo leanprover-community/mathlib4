@@ -180,11 +180,8 @@ theorem trace_mul_pow_comm' [CommSemiring R] [DecidableEq m] [DecidableEq n] (A 
 are reversed. Unlike the rectangular version, this also holds at exponent zero.
 
 See `trace_mul_pow_comm'` for the rectangular version. -/
-theorem trace_mul_pow_comm [CommSemiring R] (A B : Matrix n n R) (k : ℕ) :
-    (letI : DecidableEq n := Classical.decEq n
-     trace ((A * B) ^ k) = trace ((B * A) ^ k)) := by
-  classical
-  change trace ((A * B) ^ k) = trace ((B * A) ^ k)
+theorem trace_mul_pow_comm [CommSemiring R] [DecidableEq n] (A B : Matrix n n R) (k : ℕ) :
+    trace ((A * B) ^ k) = trace ((B * A) ^ k) := by
   cases k with
   | zero => rfl
   | succ k => exact trace_mul_pow_comm' A B k.succ_ne_zero
