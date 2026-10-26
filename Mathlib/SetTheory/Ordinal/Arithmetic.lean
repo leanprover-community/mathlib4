@@ -183,10 +183,7 @@ theorem enum_succ_eq_top {o : Ordinal} :
     enum (α := (succ o).ToType) ⟨o, type_toType _ ▸ lt_succ o⟩ = ⊤ :=
   rfl
 
-<<<<<<< HEAD
 -- TODO: replace this with a `NoMaxOrder` instance
-=======
->>>>>>> master
 set_option backward.isDefEq.respectTransparency false in
 theorem bounded_singleton {r : α → α → Prop} [IsWellOrder α r] (hr : IsSuccLimit (type r)) (x) :
     Bounded r {x} := by
@@ -397,10 +394,7 @@ theorem type_prod_lex {α β : Type u} (r : α → α → Prop) (s : β → β �
     [IsWellOrder β s] : type (Prod.Lex s r) = type r * type s :=
   rfl
 
-<<<<<<< HEAD
-=======
 -- TODO: fix precedence of `typeLT` so that `typeLT β * typeLT α` parses correctly
->>>>>>> master
 @[simp]
 theorem type_lt_prod_lex {α β : Type u} [LinearOrder α] [LinearOrder β]
     [WellFoundedLT α] [WellFoundedLT β] : typeLT (α ×ₗ β) = (typeLT β) * (typeLT α) :=
@@ -892,12 +886,6 @@ theorem lt_omega0 {o : Ordinal} : o < ω ↔ ∃ n : ℕ, o = n := by
 theorem natCast_lt_omega0 (n : ℕ) : ↑n < ω :=
   lt_omega0.2 ⟨_, rfl⟩
 
-<<<<<<< HEAD
-@[deprecated (since := "2026-03-08")] alias nat_lt_omega0 := natCast_lt_omega0
-
-=======
-set_option backward.isDefEq.respectTransparency false in
->>>>>>> master
 @[simp]
 theorem typein_lt_nat (x : ℕ) : typein x = x := by
   have : Fintype <| Iio x := Nat.fintypeIio x
