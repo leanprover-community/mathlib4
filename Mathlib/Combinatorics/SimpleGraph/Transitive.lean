@@ -73,10 +73,9 @@ lemma IsSymmetric.isVertexTransitive (sym : G.IsSymmetric) (ni : ∀ v, ¬G.IsIs
   exact ⟨f, hf.1⟩
 
 lemma IsSymmetric.isEdgeTransitive (sym : G.IsSymmetric) : G.IsEdgeTransitive := by
-  intro e₁ e₂ me₁ me₂
-  cases e₁, e₂ using Sym2.inductionOn₂
+  rintro ⟨_, _⟩ ⟨_, _⟩ me₁ me₂
   obtain ⟨f, _, _⟩ := sym ⟨_, me₁⟩ ⟨_, me₂⟩
-  exact ⟨f, by simp_all⟩
+  exact ⟨f, by simp⟩
 
 variable (V) in
 protected lemma IsSymmetric.bot : (⊥ : SimpleGraph V).IsSymmetric := fun d₁ d₂ ↦ by
@@ -134,7 +133,7 @@ lemma IsEdgeTransitive.isBipartiteWith_of_not_isVertexTransitive (et : G.IsEdgeT
   · exact ⟨fa.symm.trans fb, by simp_all [← RelIso.eq_symm_apply]⟩
 
 /-- An edge- but not vertex-transitive graph with no isolated vertices is bipartite. -/
-theorem IsEdgeTransitive.isBipartite_of_not_IsVertexTransitive
+theorem IsEdgeTransitive.isBipartite_of_not_isVertexTransitive
     (et : G.IsEdgeTransitive) (nvt : ¬G.IsVertexTransitive) (ni : ∀ v, ¬G.IsIsolated v) :
     G.IsBipartite := by
   obtain _ | ⟨⟨e, me⟩⟩ := G.edgeSet.eq_empty_or_nonempty
