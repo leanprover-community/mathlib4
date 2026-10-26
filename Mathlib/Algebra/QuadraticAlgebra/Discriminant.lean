@@ -69,8 +69,7 @@ theorem four_mul_norm_eq [CommRing R] {a b : R} (z : QuadraticAlgebra R a b) :
 /-- Four times the norm of `t • 1 + ω` is `(2 * t + b) ^ 2 - discr a b`. -/
 theorem four_mul_norm_smul_one_add_omega [CommRing R] {a b : R} (t : R) :
     4 * norm (t • 1 + ω : QuadraticAlgebra R a b) = (2 * t + b) ^ 2 - discr a b := by
-  rw [four_mul_norm_eq, trace_smul_one_add_omega]
-  simp
+  simp [four_mul_norm_eq, trace_def]
 
 /-- The discriminant commutes with a base change `R → S`. -/
 @[simp]
