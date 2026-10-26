@@ -229,7 +229,6 @@ private lemma resultant_add_mul_monomial_right (hk : k + m ≤ n) (hf : f.natDeg
   ext i j
   induction j using Fin.addCases <;> simp [M, sylvester, M₁, M₂]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- `Res(f, g + fp) = Res(f, g)` if `deg f + deg p ≤ deg g`. -/
 lemma resultant_add_mul_right (hp : p.natDegree + m ≤ n) (hf : f.natDegree ≤ m) :
     resultant f (g + f * p) m n = resultant f g m n := by

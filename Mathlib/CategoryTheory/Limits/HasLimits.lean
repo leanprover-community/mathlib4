@@ -803,7 +803,6 @@ end Colimit
 
 section Opposite
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `t : Cone F` is a limit cone, then `t.op : Cocone F.op` is a colimit cocone. -/
 @[to_dual
 /-- If `t : Cocone F` is a colimit cocone, then `t.op : Cone F.op` is a limit cone. -/]
@@ -819,7 +818,6 @@ def IsLimit.op {t : Cone F} (P : IsLimit t) : IsColimit t.op where
       rw [← w]
       rfl
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `t : Cone F.op` is a limit cone, then `t.unop : Cocone F` is a colimit cocone. -/
 @[to_dual
 /-- If `t : Cocone F.op` is a colimit cocone, then `t.unop : Cone F` is a limit cone. -/]

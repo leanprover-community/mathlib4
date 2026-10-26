@@ -361,7 +361,6 @@ lemma exists_ae_subset_biUnion_countable [SFinite μ]
   apply ae_sum_iff.2 (fun n ↦ (hD n s hs).trans ?_)
   exact LE.le.eventuallySubset (fun x hx ↦ by simp at hx ⊢; grind)
 
-set_option backward.defeqAttrib.useBackward false in
 /-- If a measure `μ` is the sum of a countable family `mₙ`, and a set `t` has finite measure for
 each `mₙ`, then its measurable superset `toMeasurable μ t` (which has the same measure as `t`)
 satisfies, for any measurable set `s`, the equality `μ (toMeasurable μ t ∩ s) = μ (t ∩ s)`. -/

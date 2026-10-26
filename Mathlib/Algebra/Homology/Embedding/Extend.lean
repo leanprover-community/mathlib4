@@ -73,7 +73,6 @@ lemma d_eq {i j : Option ι} {a b : ι} (hi : i = some a) (hj : j = some b) :
   subst hi hj
   simp [XIso, X, d]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma XOpIso_hom_d_op (i j : Option ι) :
@@ -97,7 +96,6 @@ noncomputable def mapX : ∀ (i : Option ι), X K i ⟶ X L i
   | none => 0
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 lemma mapX_some {i : Option ι} {a : ι} (hi : i = some a) :
     mapX φ i = (XIso K hi).hom ≫ φ.f a ≫ (XIso L hi).inv := by
   subst hi
@@ -249,7 +247,6 @@ noncomputable def extendOpIso : K.op.extend e.op ≅ (K.extend e).op :=
   Hom.isoOfComponents (fun _ ↦ extend.XOpIso _ _) (fun _ _ _ ↦
     extend.XOpIso_hom_d_op _ _ _)
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma extend_op_d (i' j' : ι') :
     (K.op.extend e.op).d i' j' =

@@ -29,7 +29,6 @@ section
 
 variable {J C : Type*} [Category* J] [Category* C]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Sections of `F ⋙ coyoneda.obj (op X)` identify to natural
 transformations `(const J).obj X ⟶ F`. -/
 @[simps]
@@ -43,7 +42,6 @@ def compCoyonedaSectionsEquiv (F : J ⥤ C) (X : C) :
         exact (s.property f).symm }
   invFun τ := ⟨τ.app, fun {j j'} f => by simpa using! (τ.naturality f).symm⟩
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Sections of `F.op ⋙ yoneda.obj X` identify to natural
 transformations `F ⟶ (const J).obj X`. -/
 @[simps]
@@ -57,7 +55,6 @@ def opCompYonedaSectionsEquiv (F : J ⥤ C) (X : C) :
         exact (s.property f.op) }
   invFun τ := ⟨fun j => τ.app j.unop, fun {j j'} f => by simp [τ.naturality f.unop]⟩
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Sections of `F ⋙ yoneda.obj X` identify to natural
 transformations `(const J).obj X ⟶ F`. -/
 @[simps]
@@ -76,7 +73,6 @@ end
 
 variable {J : Type v} [SmallCategory J] {C : Type u} [Category.{v} C]
 
-set_option backward.defeqAttrib.useBackward true in
 attribute [local simp←] comp_apply in
 set_option backward.isDefEq.respectTransparency false in
 /-- A cone on `F` with cone point `X` is the same as an element of `lim Hom(X, F·)`. -/
@@ -101,7 +97,6 @@ noncomputable def whiskeringLimYonedaIsoCones : whiskeringLeft _ _ _ ⋙
   NatIso.ofComponents fun F ↦ NatIso.ofComponents
     (fun X => limitCompCoyonedaIsoCone F X.unop)
 
-set_option backward.defeqAttrib.useBackward true in
 attribute [local simp←] comp_apply in
 set_option backward.isDefEq.respectTransparency false in
 /-- A cocone on `F` with cocone point `X` is the same as an element of `lim Hom(F·, X)`. -/
@@ -114,7 +109,6 @@ noncomputable def limitCompYonedaIsoCocone (F : J ⥤ C) (X : C) :
   inv := ↾fun t ↦ limit.lift _ (Types.coneOfSection (s := fun j ↦ t.app j.unop) <| by
     simp [Functor.sections]) ⟨⟩
 
-set_option backward.defeqAttrib.useBackward true in
 attribute [local simp←] comp_apply in
 set_option backward.isDefEq.respectTransparency false in
 variable (J) (C) in
