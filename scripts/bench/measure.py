@@ -51,7 +51,7 @@ PERF_UNITS = {
 }
 
 RUSAGE_METRICS = {
-    "maxrss": RusageMetric("ru_maxrss", factor=1000, unit="B"),  # KiB on linux
+    "maxrss": RusageMetric("ru_maxrss", factor=1024, unit="B"),  # KiB on linux
 }
 
 ALL_METRICS = {**PERF_METRICS, **RUSAGE_METRICS}
