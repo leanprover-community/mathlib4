@@ -190,7 +190,11 @@ to module `Foo.Bar` (no `srcDir` indirection).
   comment; lines like `set_option ... false in -- reason` are left untouched. Traverses the DAG
   **backward** (leaves first) so removing an option from an upstream file doesn't invalidate
   cached builds of downstream files. Tries removing all occurrences at once; if that fails,
-  falls back to one-at-a-time removal.
+  falls back to one-at-a-time removal. Only the edited files are rebuilt, so options that
+  change what a declaration exports (`EXPORT_AFFECTING_OPTIONS` in `set_option_utils.py`,
+  e.g. `backward.privateInPublic`) are skipped unless passed via `--option`. It also removes
+  project-wide `backward.*` entries for these options from `lakefile.lean`, but leaves other
+  entries (such as linter settings) alone.
   Usage: `python3 scripts/rm_set_option.py [--option NAME] [--dry-run] [--max-workers N] [--files FILE ...] [--resume]`
 
 - `add_module_set_option.py`, `rm_module_set_option.py`

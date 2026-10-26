@@ -28,6 +28,17 @@ DEFAULT_OPTIONS = [
     "linter.unusedTactic",
 ]
 
+# Options that change what a declaration exports (its body, or the visibility of its
+# auxiliary declarations), so downstream modules can depend on them.
+# `rm_set_option.py` only rebuilds the modules it edits, so it cannot check that removing
+# these is safe: it skips them unless one is requested explicitly with `--option`.
+EXPORT_AFFECTING_OPTIONS = [
+    "backward.privateInPublic",
+    "backward.inferInstanceAs.wrap",
+    "backward.inferInstanceAs.wrap.data",
+    "backward.inferInstanceAs.wrap.instances",
+]
+
 
 def set_option_line(option: str, value: str = "false") -> str:
     """Return the set_option line text for an option."""
