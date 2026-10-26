@@ -247,7 +247,9 @@ instance : Algebra R (LocallyConstant X Y) where
     ext
     exact Algebra.smul_def' _ _
 
-@[simp]
+instance : IsAlgebraApply R (LocallyConstant X Y) where
+
+@[deprecated FunLike.coe_algebraMap +typeChanged (since := "2026-10-26")]
 theorem coe_algebraMap (r : R) : ⇑(algebraMap R (LocallyConstant X Y) r) = algebraMap R (X → Y) r :=
   rfl
 
