@@ -173,8 +173,8 @@ theorem eval_one_cyclotomic_of_not_isPrimePow {R : Type*} [Ring R] {n : ℕ} (hn
     apply Nat.succ_injective
     exact Nat.pow_right_injective hp.two_le hxy
 
-/-- A version of `eval_one_cyclotomic_of_not_isPrimePow` with the hypothesis stated without
-`IsPrimePow`. -/
+/-- The `n`-th cyclotomic polynomial takes the value `1` at `1` when `n` is not of the form `p ^ k`
+with `p` prime. See `eval_one_cyclotomic_of_not_isPrimePow` for a version using `IsPrimePow`. -/
 theorem eval_one_cyclotomic_not_prime_pow {R : Type*} [Ring R] {n : ℕ}
     (h : ∀ {p : ℕ}, p.Prime → ∀ k : ℕ, p ^ k ≠ n) : eval 1 (cyclotomic n R) = 1 :=
   eval_one_cyclotomic_of_not_isPrimePow (h Nat.prime_two 0).symm
