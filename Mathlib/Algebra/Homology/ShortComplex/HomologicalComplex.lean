@@ -119,9 +119,11 @@ section
 variable [K.HasHomology i]
 
 /-- The homology in degree `i` of a homological complex. -/
+@[implicit_reducible]
 noncomputable def homology := (K.sc i).homology
 
 /-- The cycles in degree `i` of a homological complex. -/
+@[implicit_reducible]
 noncomputable def cycles := (K.sc i).cycles
 
 /-- The inclusion of the cycles of a homological complex. -/
@@ -240,6 +242,7 @@ section
 variable [K.HasHomology i]
 
 /-- The opcycles in degree `i` of a homological complex. -/
+@[implicit_reducible]
 noncomputable def opcycles := (K.sc i).opcycles
 
 /-- The projection to the opcycles of a homological complex. -/
@@ -663,25 +666,21 @@ section
 
 variable {K L}
 
-attribute [local implicit_reducible] homology opcycles
-  ShortComplex.homology ShortComplex.opcycles in
 lemma epi_homologyMap_of_epi_of_not_rel (φ : K ⟶ L) (i : ι)
     [K.HasHomology i] [L.HasHomology i] [Epi (φ.f i)] (hi : ∀ j, ¬ c.Rel i j) :
-    Epi (homologyMap φ i) :=
-  ((MorphismProperty.epimorphisms C).arrow_mk_iso_iff
-    (Arrow.isoMk (K.isoHomologyι i _ rfl (shape _ _ _ (by tauto)))
-      (L.isoHomologyι i _ rfl (shape _ _ _ (by tauto))))).2
-      (MorphismProperty.epimorphisms.infer_property (opcyclesMap φ i))
+    Epi (homologyMap φ i) := by
+  refine ((MorphismProperty.epimorphisms C).arrow_mk_iso_iff ?_).2
+    (.infer_property (opcyclesMap φ i))
+  exact Arrow.isoMk (K.isoHomologyι i _ rfl (shape _ _ _ (by tauto)))
+    (L.isoHomologyι i _ rfl (shape _ _ _ (by tauto))) (by simp)
 
-attribute [local implicit_reducible] homology cycles
-  ShortComplex.homology ShortComplex.cycles in
 lemma mono_homologyMap_of_mono_of_not_rel (φ : K ⟶ L) (j : ι)
     [K.HasHomology j] [L.HasHomology j] [Mono (φ.f j)] (hj : ∀ i, ¬ c.Rel i j) :
-    Mono (homologyMap φ j) :=
-  ((MorphismProperty.monomorphisms C).arrow_mk_iso_iff
-    (Arrow.isoMk (K.isoHomologyπ _ j rfl (shape _ _ _ (by tauto)))
-      (L.isoHomologyπ _ j rfl (shape _ _ _ (by tauto))))).1
-      (MorphismProperty.monomorphisms.infer_property (cyclesMap φ j))
+    Mono (homologyMap φ j) := by
+  refine ((MorphismProperty.monomorphisms C).arrow_mk_iso_iff ?_).1
+    (.infer_property (cyclesMap φ j))
+  exact Arrow.isoMk (K.isoHomologyπ _ j rfl (shape _ _ _ (by tauto)))
+    (L.isoHomologyπ _ j rfl (shape _ _ _ (by tauto))) (by simp)
 
 end
 
@@ -805,21 +804,18 @@ variable {C ι : Type*} [Category* C] [Preadditive C] {c : ComplexShape ι}
 
 variable (φ ψ : K ⟶ L) (i : ι) [K.HasHomology i] [L.HasHomology i]
 
-attribute [local implicit_reducible] homology in
 @[simp]
 lemma homologyMap_neg : homologyMap (-φ) i = -homologyMap φ i := by
   dsimp [homologyMap]
   rw [← ShortComplex.homologyMap_neg]
   rfl
 
-attribute [local implicit_reducible] homology in
 @[simp]
 lemma homologyMap_add : homologyMap (φ + ψ) i = homologyMap φ i + homologyMap ψ i := by
   dsimp [homologyMap]
   rw [← ShortComplex.homologyMap_add]
   rfl
 
-attribute [local implicit_reducible] homology in
 @[simp]
 lemma homologyMap_sub : homologyMap (φ - ψ) i = homologyMap φ i - homologyMap ψ i := by
   dsimp [homologyMap]
