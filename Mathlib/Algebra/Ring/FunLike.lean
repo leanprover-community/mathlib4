@@ -54,12 +54,7 @@ theorem coeRing_injective : Function.Injective (coeRingHom F) := by
 variable (F) in
 /-- Evaluation as a ring homomorphism. -/
 @[expose]
-def evalRingHom (x : α) : F →+* β where
-  toFun f := f x
-  map_zero' := by simp
-  map_one' := by simp
-  map_add' := by simp
-  map_mul' := by simp
+def evalRingHom (x : α) : F →+* β := (Pi.evalRingHom _ x).comp (coeRingHom F)
 
 @[simp]
 theorem evalRingHom_apply (x : α) (f : F) : evalRingHom F x f = f x := rfl

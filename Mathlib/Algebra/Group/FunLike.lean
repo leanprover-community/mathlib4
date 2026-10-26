@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Group.InjSurj
 public import Mathlib.Algebra.Group.IsApply
+public import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.Algebra.Group.Pi.Torsion
 
 /-! # Group instances for `FunLike` types
@@ -57,9 +58,7 @@ variable (F) in
 /-- Evaluation as a multiplicative homomorphism. -/
 @[to_additive
 /-- Evaluation as an additive homomorphism. -/]
-def evalMulHom (x : α) : F →ₙ* β where
-  toFun f := f x
-  map_mul' := by simp
+def evalMulHom (x : α) : F →ₙ* β := (Pi.evalMulHom _ x).comp (coeMulHom F α β)
 
 @[to_additive (attr := simp)]
 theorem evalMulHom_apply (x : α) (f : F) : evalMulHom F x f = f x := rfl
@@ -97,10 +96,7 @@ variable (F) in
 /-- Evaluation as a multiplicative homomorphism. -/
 @[to_additive
 /-- Evaluation as an additive homomorphism. -/]
-def evalMonoidHom (x : α) : F →* β where
-  toFun f := f x
-  map_mul' := by simp
-  map_one' := by simp
+def evalMonoidHom (x : α) : F →* β := (Pi.evalMonoidHom _ x).comp (coeMonoidHom F α β)
 
 @[to_additive (attr := simp)]
 theorem evalMonoidHom_apply (x : α) (f : F) : evalMonoidHom F x f = f x := rfl
