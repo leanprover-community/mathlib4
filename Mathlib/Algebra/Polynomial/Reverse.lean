@@ -245,7 +245,7 @@ theorem natDegree_eq_reverse_natDegree_add_natTrailingDegree (f : R[X]) :
   · refine tsub_le_iff_right.mp ?_
     apply le_natDegree_of_ne_zero
     rw [reverse, coeff_reflect, ← revAt_le f.natTrailingDegree_le_natDegree, revAt_invol]
-    exact trailingCoeff_nonzero_iff_nonzero.mpr hf
+    exact trailingCoeff_ne_zero.mpr hf
   · rw [← le_tsub_iff_left f.reverse_natDegree_le]
     apply natTrailingDegree_le_of_ne_zero
     have key := mt leadingCoeff_eq_zero.mp (mt reverse_eq_zero.mp hf)
