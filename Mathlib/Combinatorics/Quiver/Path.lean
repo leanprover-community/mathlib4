@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 David Wärn,. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: David Wärn, Kim Morrison, Matteo Cipollina, Runtian Zhou
+Authors: David Wärn, Kim Morrison, Matteo Cipollina, Runtian Zhou, Mingkai Su
 -/
 module
 
@@ -9,6 +9,7 @@ public import Batteries.Data.List.Basic
 public import Mathlib.Basic.Logic.Lemmas
 public import Mathlib.Combinatorics.Quiver.Prefunctor
 public import Mathlib.Data.Nat.Notation
+public import Mathlib.Order.Defs.PartialOrder
 public import Mathlib.Util.CompileInductive
 
 /-!
@@ -17,7 +18,8 @@ public import Mathlib.Util.CompileInductive
 Given a quiver `V`, we define the type of paths from `a : V` to `b : V` as an inductive
 family. We define composition of paths and the action of prefunctors on paths.
 
-We also define `Quiver.Reachable a b`, the existence of a directed path from `a` to `b`.
+We also define `Quiver.Reachable a b`, the existence of a directed path from `a` to `b`,
+and establish monotonicity of valuations along paths and the resulting cycle obstruction.
 -/
 
 @[expose] public section
@@ -313,6 +315,42 @@ end BoundedPath
 
 end Path
 
+namespace Path
+
+variable {V : Type u} [Quiver V] {α : Type*}
+
+/-- If a valuation `f : V → α` into a preorder is weakly monotonic along arrows,
+then it is weakly monotonic along any path. -/
+theorem le_of_hom_le [Preorder α] {f : V → α} (hf : ∀ {u v}, (u ⟶ v) → f u ≤ f v)
+    {a b : V} (p : Path a b) : f a ≤ f b := by
+  induction p with
+  | nil => rfl
+  | cons _ e ih => exact le_trans ih (hf e)
+
+/-- If a valuation `f : V → α` into a preorder is strictly monotonic along arrows,
+then along any path of positive length, the valuation strictly increases. -/
+theorem lt_of_hom_lt [Preorder α] {f : V → α} (hf : ∀ {u v}, (u ⟶ v) → f u < f v)
+    {a b : V} (p : Path a b) (hp : 0 < p.length) : f a < f b := by
+  cases p with
+  | nil => cases hp
+  | cons q e => exact lt_of_le_of_lt (le_of_hom_le (fun e => le_of_lt (hf e)) q) (hf e)
+
+/-- In a quiver admitting a strictly monotonic valuation into a preorder,
+any closed path (cycle) must have length zero. -/
+theorem length_eq_zero_of_hom_lt [Preorder α] {f : V → α} (hf : ∀ {u v}, (u ⟶ v) → f u < f v)
+    {a : V} (p : Path a a) : p.length = 0 := by
+  by_contra h
+  have hp : 0 < p.length := Nat.pos_of_ne_zero h
+  exact lt_irrefl _ (lt_of_hom_lt hf p hp)
+
+/-- In a quiver admitting a strictly monotonic valuation into a preorder,
+the only closed path on a vertex is `nil`. -/
+theorem eq_nil_of_hom_lt [Preorder α] {f : V → α} (hf : ∀ {u v}, (u ⟶ v) → f u < f v)
+    {a : V} (p : Path a a) : p = Path.nil :=
+  p.eq_nil_of_length_zero (length_eq_zero_of_hom_lt hf p)
+
+end Path
+
 section Reachable
 
 variable {V : Type u} [Quiver V]
@@ -347,6 +385,31 @@ protected theorem Path.reachable (p : Path a b) : Reachable a b := ⟨p⟩
 
 /-- An arrow witnesses that its target is reachable from its source. -/
 protected theorem Hom.reachable (e : a ⟶ b) : Reachable a b := ⟨e.toPath⟩
+
+variable {α : Type*}
+
+/-- If a valuation `f : V → α` into a preorder is weakly monotonic along arrows,
+then `Reachable a b` implies `f a ≤ f b`. -/
+theorem Reachable.le_of_hom_le [Preorder α] {f : V → α} (hf : ∀ {u v}, (u ⟶ v) → f u ≤ f v)
+    {a b : V} (hab : Reachable a b) : f a ≤ f b :=
+  hab.elim fun p => p.le_of_hom_le hf
+
+/-- If a quiver admits a strictly increasing valuation into a preorder,
+then `Reachable` is antisymmetric. -/
+theorem Reachable.antisymm_of_hom_lt [Preorder α] {f : V → α}
+    (hf : ∀ {u v}, (u ⟶ v) → f u < f v) {a b : V}
+    (hab : Reachable a b) (hba : Reachable b a) : a = b := by
+  obtain ⟨p⟩ := hab
+  obtain ⟨q⟩ := hba
+  have hlen : (p.comp q).length = 0 := Path.length_eq_zero_of_hom_lt hf (p.comp q)
+  rw [Path.length_comp] at hlen
+  exact p.eq_of_length_zero (Nat.eq_zero_of_add_eq_zero_right hlen)
+
+/-- If a quiver admits a strictly increasing valuation into a preorder,
+then its reachability relation is a partial order. -/
+theorem Reachable.isPartialOrder_of_hom_lt [Preorder α] {f : V → α}
+    (hf : ∀ {u v}, (u ⟶ v) → f u < f v) : IsPartialOrder V Reachable where
+  antisymm _ _ := Reachable.antisymm_of_hom_lt hf
 
 end Reachable
 
