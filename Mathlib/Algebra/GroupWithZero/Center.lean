@@ -69,12 +69,6 @@ instance : CommGroupWithZero (Center G₀) where
   exists_pair_ne := ⟨0, 1, by rw [ne_eq, Center.eq_iff]; exact zero_ne_one⟩
   inv_zero := by simp
   mul_inv_cancel := by simp_all
-  div a b := ⟨a / b, Set.div_mem_center a.prop b.prop⟩
-  div_eq_mul_inv _ _ := Subtype.ext <| div_eq_mul_inv _ _
-
-@[simp]
-lemma _root_.Center.coe_div (a b : Center G₀) :
-    (a / b).val = a.val / b.val := rfl
 
 end GroupWithZero
 end Set
