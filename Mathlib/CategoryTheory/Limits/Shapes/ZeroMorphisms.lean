@@ -134,8 +134,10 @@ lemma comp_eq_zero_iff_of_epi {X Y Z : C} (f : X ⟶ Y) {g : Y ⟶ Z} [Epi f] :
 theorem eq_zero_of_image_eq_zero {X Y : C} {f : X ⟶ Y} [HasImage f] (w : image.ι f = 0) :
     f = 0 := by rw [← image.fac f, w, comp_zero]
 
-theorem nonzero_image_of_nonzero {X Y : C} {f : X ⟶ Y} [HasImage f] (w : f ≠ 0) : image.ι f ≠ 0 :=
+theorem image_ne_zero_of_ne_zero {X Y : C} {f : X ⟶ Y} [HasImage f] (w : f ≠ 0) : image.ι f ≠ 0 :=
   fun h => w (eq_zero_of_image_eq_zero h)
+
+@[deprecated (since := "2026-10-13")] alias nonzero_image_of_nonzero := image_ne_zero_of_ne_zero
 
 end
 

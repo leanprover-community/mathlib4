@@ -133,7 +133,6 @@ lemma toPresheafFiber_naturality {P Q : Cᵒᵖ ⥤ A} (g : P ⟶ Q) (X : C) (x 
       g.app (op X) ≫ Φ.toPresheafFiber X x Q :=
   ((Φ.toPresheafFiberNatTrans X x).naturality g).symm
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The (colimit) cocone which defines the fiber of a presheaf. -/
 @[simps]
 noncomputable def presheafFiberCocone (P : Cᵒᵖ ⥤ A) :
@@ -177,7 +176,6 @@ variable {P : Cᵒᵖ ⥤ A} {T : A}
   (hφ : ∀ ⦃X Y : C⦄ (f : X ⟶ Y) (x : Φ.fiber.obj X),
     P.map f.op ≫ φ X x = φ Y (Φ.fiber.map f x) := by cat_disch)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.privateInPublic true in
 /-- Constructor for morphisms from the fiber of a presheaf. -/
 noncomputable def presheafFiberDesc :

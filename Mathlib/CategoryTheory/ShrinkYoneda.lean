@@ -340,7 +340,6 @@ end Yoneda
 
 section Coyoneda
 
-set_option backward.defeqAttrib.useBackward true in
 instance (X : Cᵒᵖ) : FunctorToTypes.Small.{w} (coyoneda.obj X) :=
   fun _ ↦ by dsimp; infer_instance
 

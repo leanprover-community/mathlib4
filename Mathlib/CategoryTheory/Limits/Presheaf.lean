@@ -402,7 +402,6 @@ end compULiftYonedaIsoULiftYonedaCompLan
 
 end
 
-set_option backward.defeqAttrib.useBackward true in
 /-- For a presheaf `P`, consider the forgetful functor from the category of representable
     presheaves over `P` to the category of presheaves. There is a tautological cocone over this
     functor whose leg for a natural transformation `V ⟶ P` with `V` representable is just that
@@ -424,7 +423,6 @@ noncomputable def isColimitTautologicalCocone' (P : Cᵒᵖ ⥤ Type max w v₁)
     IsColimit (tautologicalCocone'.{w} P) :=
   denseAtUliftYoneda P
 
-set_option backward.defeqAttrib.useBackward true in
 /-- For a presheaf `P`, consider the forgetful functor from the category of representable
     presheaves over `P` to the category of presheaves. There is a tautological cocone over this
     functor whose leg for a natural transformation `V ⟶ P` with `V` representable is just that
@@ -450,7 +448,6 @@ namespace Functor.Elements
 
 variable [LocallySmall.{w} C] (F : C ⥤ Type w)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `F : C ⥤ Type w` and `C` is locally `w`-small, then for any `X : C`,
 this is the colimit cocone which identifies `F.obj X` to the colimit of
 `(CategoryOfElements.π F).op ⋙ shrinkYoneda.obj X`. -/
@@ -486,7 +483,6 @@ lemma shrinkYoneda_map_app_coconeπOpCompShrinkYonedaObj_ι_app
   obtain ⟨g, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective g
   simp [shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm.{w}]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `C` is a locally `w`-small category, this is a (colimit) cocone
 expressing `F : C ⥤ Type w` as a colimit of corepresentable functors. -/
 @[deprecated (since := "2026-09-20")] alias coconeπOpCompShrinkYonedaFlip := shrinkCoyonedaCocone
