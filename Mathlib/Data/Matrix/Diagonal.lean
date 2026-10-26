@@ -68,7 +68,7 @@ theorem diagonal_apply_ne' [Zero α] (d : n → α) {i j : n} (h : j ≠ i) : (d
 @[simp]
 theorem diagonal_eq_diagonal_iff [Zero α] {d₁ d₂ : n → α} :
     diagonal d₁ = diagonal d₂ ↔ ∀ i, d₁ i = d₂ i :=
-  ⟨fun h i => by simpa using congr_arg (fun m : Matrix n n α => m i i) h, fun h => by
+  ⟨fun h i => by simpa using congr($h i i), fun h => by
     rw [show d₁ = d₂ from funext h]⟩
 
 theorem diagonal_injective [Zero α] : Function.Injective (diagonal : (n → α) → Matrix n n α) :=
@@ -180,20 +180,20 @@ protected theorem map_ofNat [AddMonoidWithOne α] [Zero β]
     (ofNat(d) : Matrix n n α).map f = diagonal (fun _ => f (OfNat.ofNat d)) :=
   diagonal_map h
 
-theorem natCast_apply [AddMonoidWithOne α] {i j} {d : ℕ} :
+protected theorem natCast_apply [AddMonoidWithOne α] {i j} {d : ℕ} :
     (d : Matrix n n α) i j = if i = j then d else 0 := by
   rw [Nat.cast_ite, Nat.cast_zero, ← diagonal_natCast, diagonal_apply]
 
 theorem ofNat_apply [AddMonoidWithOne α] {i j} {d : ℕ} [d.AtLeastTwo] :
     (ofNat(d) : Matrix n n α) i j = if i = j then d else 0 :=
-  natCast_apply
+  Matrix.natCast_apply
 
 protected theorem map_intCast [AddGroupWithOne α] [Zero β]
     {f : α → β} (h : f 0 = 0) (d : ℤ) :
     (d : Matrix n n α).map f = diagonal (fun _ => f d) :=
   diagonal_map h
 
-theorem intCast_apply [AddGroupWithOne α] {i j} {d : ℤ} :
+protected theorem intCast_apply [AddGroupWithOne α] {i j} {d : ℤ} :
     (d : Matrix n n α) i j = if i = j then d else 0 := by
   rw [Int.cast_ite, Int.cast_zero, ← diagonal_intCast, diagonal_apply]
 
@@ -231,7 +231,7 @@ theorem diagonal_one' : (diagonal 1 : Matrix n n α) = 1 :=
 theorem diagonal_eq_one {d : n → α} : diagonal d = 1 ↔ d = 1 :=
   diagonal_injective.eq_iff' diagonal_one
 
-theorem one_apply {i j} : (1 : Matrix n n α) i j = if i = j then 1 else 0 :=
+protected theorem one_apply {i j} : (1 : Matrix n n α) i j = if i = j then 1 else 0 :=
   rfl
 
 @[simp]
@@ -249,11 +249,11 @@ theorem one_apply_ne' {i j} : j ≠ i → (1 : Matrix n n α) i j = 0 :=
 protected theorem map_one [Zero β] [One β] (f : α → β) (h₀ : f 0 = 0) (h₁ : f 1 = 1) :
     (1 : Matrix n n α).map f = (1 : Matrix n n β) := by
   ext
-  simp only [one_apply, map_apply]
+  simp only [Matrix.one_apply, map_apply]
   split_ifs <;> simp [h₀, h₁]
 
 theorem one_eq_pi_single {i j} : (1 : Matrix n n α) i j = Pi.single (M := fun _ => α) i 1 j := by
-  simp only [one_apply, Pi.single_apply, eq_comm]
+  simp only [Matrix.one_apply, Pi.single_apply, eq_comm]
 
 end One
 
@@ -405,6 +405,11 @@ theorem submatrix_one [Zero α] [One α] [DecidableEq m] [DecidableEq l] (e : l 
     (he : Function.Injective e) : (1 : Matrix m m α).submatrix e e = 1 :=
   submatrix_diagonal _ e he
 
+theorem submatrix_ofNat [Zero α] [NatCast α] [DecidableEq m] [DecidableEq l] (e : l → m)
+    (he : Function.Injective e) (k : ℕ) [k.AtLeastTwo] :
+    (ofNat(k) : Matrix m m α).submatrix e e = ofNat(k) :=
+  submatrix_diagonal _ e he
+
 theorem diag_submatrix (A : Matrix m m α) (e : l → m) : diag (A.submatrix e e) = A.diag ∘ e :=
   rfl
 
@@ -423,6 +428,15 @@ theorem submatrix_diagonal_equiv [Zero α] [DecidableEq m] [DecidableEq l] (d : 
   submatrix_diagonal d e e.injective
 
 @[simp]
+theorem submatrix_equiv_eq_diagonal_iff [Zero α] [DecidableEq m] [DecidableEq l]
+    {A : Matrix m m α} {e : l ≃ m} {d : l → α} :
+    A.submatrix e e = diagonal d ↔ A = diagonal (d ∘ e.symm) := by
+  trans A.reindex e.symm e.symm = diagonal d
+  · simp
+  · simp_rw [← Equiv.eq_symm_apply]
+    simp
+
+@[simp]
 theorem submatrix_one_embedding [Zero α] [One α] [DecidableEq m] [DecidableEq l] (e : l ↪ m) :
     (1 : Matrix m m α).submatrix e e = 1 :=
   submatrix_one e e.injective
@@ -431,5 +445,29 @@ theorem submatrix_one_embedding [Zero α] [One α] [DecidableEq m] [DecidableEq 
 theorem submatrix_one_equiv [Zero α] [One α] [DecidableEq m] [DecidableEq l] (e : l ≃ m) :
     (1 : Matrix m m α).submatrix e e = 1 :=
   submatrix_one e e.injective
+
+@[simp]
+theorem submatrix_equiv_eq_one_iff [Zero α] [One α] [DecidableEq m] [DecidableEq l]
+    {A : Matrix m m α} {e : l ≃ m} :
+    A.submatrix e e = 1 ↔ A = 1 :=
+  submatrix_equiv_eq_diagonal_iff
+
+@[simp]
+theorem submatrix_ofNat_embedding [Zero α] [NatCast α] [DecidableEq m] [DecidableEq l]
+    (e : l ↪ m) (k : ℕ) [k.AtLeastTwo] :
+    (ofNat(k) : Matrix m m α).submatrix e e = ofNat(k) :=
+  submatrix_ofNat e e.injective k
+
+@[simp]
+theorem submatrix_ofNat_equiv [Zero α] [NatCast α] [DecidableEq m] [DecidableEq l] (e : l ≃ m)
+    (k : ℕ) [k.AtLeastTwo] :
+    (ofNat(k) : Matrix m m α).submatrix e e = ofNat(k) :=
+  submatrix_ofNat e e.injective k
+
+@[simp]
+theorem submatrix_equiv_eq_ofNat_iff [Zero α] [NatCast α] [DecidableEq m] [DecidableEq l]
+    {A : Matrix m m α} {e : l ≃ m} (k : ℕ) [k.AtLeastTwo] :
+    A.submatrix e e = ofNat(k) ↔ A = ofNat(k) :=
+  submatrix_equiv_eq_diagonal_iff
 
 end Matrix

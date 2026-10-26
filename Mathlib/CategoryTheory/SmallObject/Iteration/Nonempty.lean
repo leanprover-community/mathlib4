@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
 public import Mathlib.CategoryTheory.SmallObject.Iteration.ExtendToSucc
 public import Mathlib.CategoryTheory.SmallObject.Iteration.FunctorOfCocone
 
@@ -46,7 +45,6 @@ def mkOfBot : Φ.Iteration (⊥ : J) where
 
 variable {Φ}
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- When `j : J` is not maximal, this is the extension in `Φ.Iteration (Order.succ j)`
 of any `iter : Φ.Iteration j`. -/

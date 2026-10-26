@@ -6,9 +6,8 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Abelian.Basic
-public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Finite
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
+public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 
 /-!
 # If `D` is abelian, then the functor category `C ⥤ D` is also abelian.
@@ -37,7 +36,6 @@ namespace FunctorCategory
 
 variable {F G : C ⥤ D} (α : F ⟶ G) (X : C)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The abelian coimage in a functor category can be calculated componentwise. -/
 @[simps!]
 def coimageObjIso : (Abelian.coimage α).obj X ≅ Abelian.coimage (α.app X) :=
@@ -48,7 +46,6 @@ def coimageObjIso : (Abelian.coimage α).obj X ≅ Abelian.coimage (α.app X) :=
         simp only [Category.comp_id, PreservesKernel.iso_hom]
         exact (kernelComparison_comp_ι _ ((evaluation C D).obj X)).symm)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The abelian image in a functor category can be calculated componentwise. -/
 @[simps!]
 def imageObjIso : (Abelian.image α).obj X ≅ Abelian.image (α.app X) :=

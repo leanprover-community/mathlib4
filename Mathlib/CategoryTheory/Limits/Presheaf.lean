@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Comma.Presheaf.Basic
 public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 public import Mathlib.CategoryTheory.Limits.Final
 public import Mathlib.CategoryTheory.Limits.Over
-public import Mathlib.CategoryTheory.ShrinkYoneda
 
 /-!
 # Colimit of representables
@@ -78,7 +77,6 @@ Defined as in [MM92], Chapter I, Section 5, Theorem 2.
 def restrictedULiftYoneda : ℰ ⥤ Cᵒᵖ ⥤ Type max w v₂ :=
     uliftYoneda.{w} ⋙ (Functor.whiskeringLeft _ _ _).obj A.op
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma map_comp_uliftYonedaEquiv_down (E : ℰ) {X Y : C} (f : X ⟶ Y)
@@ -165,7 +163,6 @@ noncomputable def restrictedULiftYonedaHomEquiv (P : Cᵒᵖ ⥤ Type max w v₁
   (Functor.isPointwiseLeftKanExtensionOfIsLeftKanExtension _ α P).homEquiv.trans
     (restrictedULiftYonedaHomEquiv' A P E)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `L : (Cᵒᵖ ⥤ Type max w v₁ v₂) ⥤ ℰ` is a pointwise left Kan extension
 of a functor `A : C ⥤ ℰ` along the Yoneda embedding,
 then `L` is a left adjoint of `restrictedULiftYoneda A : ℰ ⥤ Cᵒᵖ ⥤ Type max w v₁ v₂` -/
@@ -195,7 +192,6 @@ noncomputable def uliftYonedaAdjunction : L ⊣ restrictedULiftYoneda.{max w v�
           restrictedULiftYonedaHomEquiv'_symm_naturality_right, this] }
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma uliftYonedaAdjunction_homEquiv_app {P : Cᵒᵖ ⥤ Type max w v₁ v₂}
     {Y : ℰ} (f : L.obj P ⟶ Y) {Z : Cᵒᵖ} (z : P.obj Z) :
@@ -205,7 +201,6 @@ lemma uliftYonedaAdjunction_homEquiv_app {P : Cᵒᵖ ⥤ Type max w v₁ v₂}
     restrictedULiftYonedaHomEquiv', IsColimit.homEquiv]
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma uliftYonedaAdjunction_unit_app_app (P : Cᵒᵖ ⥤ Type max w v₁ v₂)
     {Z : Cᵒᵖ} (z : P.obj Z) :
@@ -399,7 +394,6 @@ section
 
 variable {D : Type u₂} [Category.{v₁} D] (F : C ⥤ D)
 
-set_option backward.defeqAttrib.useBackward true in
 instance (X : C) (Y : F.op.LeftExtension (yoneda.obj X)) :
     Unique (Functor.LeftExtension.mk _ (yonedaMap F X) ⟶ Y) where
   default := StructuredArrow.homMk
@@ -455,16 +449,13 @@ noncomputable def compULiftYonedaIsoULiftYonedaCompLan :
     (uliftYonedaMap.{w} F X) (F.op.lan.obj _) (F.op.lanUnit.app (uliftYoneda.obj X)))
     (fun {X Y} f => by
       apply uliftYonedaEquiv.injective
-      have eq₁ := ConcreteCategory.congr_hom
-        ((uliftYoneda.{max w v₁}.obj (F.obj Y)).descOfIsLeftKanExtension_fac_app
+      have eq₁ := congr($((uliftYoneda.{max w v₁}.obj (F.obj Y)).descOfIsLeftKanExtension_fac_app
         (uliftYonedaMap F Y) (F.op.lan.obj (uliftYoneda.obj Y))
-          (F.op.lanUnit.app (uliftYoneda.obj Y)) _) ⟨f⟩
-      have eq₂ := ConcreteCategory.congr_hom
-        (((uliftYoneda.{max w v₁}.obj (F.obj X)).descOfIsLeftKanExtension_fac_app
+          (F.op.lanUnit.app (uliftYoneda.obj Y)) _) ⟨f⟩)
+      have eq₂ := congr($((uliftYoneda.{max w v₁}.obj (F.obj X)).descOfIsLeftKanExtension_fac_app
         (uliftYonedaMap F X) (F.op.lan.obj (uliftYoneda.obj X))
-          (F.op.lanUnit.app (uliftYoneda.obj X))) _) ⟨𝟙 _⟩
-      have eq₃ := ConcreteCategory.congr_hom (congr_app (F.op.lanUnit.naturality
-        (uliftYoneda.{max w v₂}.map f)) _) ⟨𝟙 _⟩
+          (F.op.lanUnit.app (uliftYoneda.obj X)) _) ⟨𝟙 _⟩)
+      have eq₃ := congr($(F.op.lanUnit.naturality (uliftYoneda.{max w v₂}.map f)).app _ ⟨𝟙 _⟩)
       dsimp [uliftYoneda, uliftYonedaMap, uliftYonedaEquiv,
         Functor.leftKanExtensionUnique] at eq₁ eq₂ eq₃ ⊢
       simp only [Functor.map_id] at eq₂
@@ -507,8 +498,8 @@ lemma coconeApp_naturality {P : Cᵒᵖ ⥤ Type max w v₁ v₂} {x y : P.Eleme
       uliftYonedaEquiv.{max w v₂}.symm y.2 :=
     uliftYonedaEquiv.injective
       (by simpa only [Equiv.apply_symm_apply, ← uliftYonedaEquiv_naturality] using f.2)
-  have eq₂ := ConcreteCategory.congr_hom ((G.map (uliftYonedaEquiv.{max w v₂}.symm x.2)).naturality
-    (F.map f.1.unop).op) ((φ.app x.1.unop).app _ (ULift.up (𝟙 _)))
+  have eq₂ := congr($((G.map (uliftYonedaEquiv.{max w v₂}.symm x.2)).naturality
+    (F.map f.1.unop).op) ((φ.app x.1.unop).app _ (.up (𝟙 _))))
   have eq₃ := ConcreteCategory.congr_hom (CC := fun X ↦ X)
     (congr_app (φ.naturality f.1.unop) _) (ULift.up (𝟙 _))
   have eq₄ := ConcreteCategory.congr_hom ((φ.app x.1.unop).naturality (F.map f.1.unop).op)
@@ -545,7 +536,6 @@ lemma uliftYonedaEquiv_presheafHom_uliftYoneda_obj (X : C) :
       ((φ.app X).app (F.op.obj (Opposite.op X)) (ULift.up (𝟙 _))) := by
   simpa using! uliftYonedaEquiv_ι_presheafHom.{w} φ (uliftYoneda.obj X) (𝟙 _)
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma presheafHom_naturality {P Q : Cᵒᵖ ⥤ Type max w v₁ v₂} (f : P ⟶ Q) :
     presheafHom.{w} φ P ≫ Functor.whiskerLeft F.op (G.map f) = f ≫ presheafHom φ Q :=
@@ -557,7 +547,6 @@ lemma presheafHom_naturality {P Q : Cᵒᵖ ⥤ Type max w v₁ v₂} (f : P ⟶
 
 variable [∀ (P : Cᵒᵖ ⥤ Type max w v₁ v₂), F.op.HasLeftKanExtension P]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given functors `F : C ⥤ D` and `G : (Cᵒᵖ ⥤ Type max w v₁ v₂) ⥤ (Dᵒᵖ ⥤ Type max w v₁ v₂)`,
 and a natural transformation `φ : F ⋙ uliftYoneda ⟶ uliftYoneda ⋙ G`, this is
 the canonical natural transformation `F.op.lan ⟶ G`, which is part of the
@@ -587,7 +576,6 @@ end
 
 variable [∀ (P : Cᵒᵖ ⥤ Type max w v₁ v₂), F.op.HasLeftKanExtension P]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a functor `F : C ⥤ D`, this definition is part of the verification that
 `Functor.LeftExtension.mk F.op.lan (compULiftYonedaIsoULiftYonedaCompLan F).hom`
 is universal, i.e. that  `F.op.lan : (Cᵒᵖ ⥤ Type max w v₁ v₂) ⥤ Dᵒᵖ ⥤ Type max w v₁ v₂`
@@ -643,7 +631,6 @@ instance : F.op.lan.IsLeftKanExtension (compULiftYonedaIsoULiftYonedaCompLan.{w}
 
 end
 
-set_option backward.defeqAttrib.useBackward true in
 /-- For a presheaf `P`, consider the forgetful functor from the category of representable
     presheaves over `P` to the category of presheaves. There is a tautological cocone over this
     functor whose leg for a natural transformation `V ⟶ P` with `V` representable is just that
@@ -667,7 +654,6 @@ def isColimitTautologicalCocone' (P : Cᵒᵖ ⥤ Type max w v₁) :
       (colimitOfRepresentable.{w} P)
 
 
-set_option backward.defeqAttrib.useBackward true in
 /-- For a presheaf `P`, consider the forgetful functor from the category of representable
     presheaves over `P` to the category of presheaves. There is a tautological cocone over this
     functor whose leg for a natural transformation `V ⟶ P` with `V` representable is just that
@@ -725,7 +711,6 @@ namespace Functor.Elements
 
 variable [LocallySmall.{w} C] (F : C ⥤ Type w)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `F : C ⥤ Type w` and `C` is locally `w`-small, then for any `X : C`,
 this is the colimit cocone which identifies `F.obj X` to the colimit of
 `(CategoryOfElements.π F).op ⋙ shrinkYoneda.obj X`. -/
@@ -777,7 +762,6 @@ lemma shrinkYoneda_map_app_coconeπOpCompShrinkYonedaObj_ι_app
   obtain ⟨g, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective g
   simp [shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm.{w}]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `C` is a locally `w`-small category, this is a (colimit) cocone
 expressing `F : C ⥤ Type w` as a colimit of corepresentable functors. -/
 noncomputable def coconeπOpCompShrinkYonedaFlip :
@@ -800,7 +784,6 @@ noncomputable def isColimitCoconeπOpCompShrinkYonedaFlip :
     IsColimit (coconeπOpCompShrinkYonedaFlip F) :=
   evaluationJointlyReflectsColimits _ (isColimitCoconeπOpCompShrinkYonedaObj F)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `F : C ⥤ Type w` and `C` is locally `w`-small, then `F` identifies to the composition
 `shrinkYoneda ⋙ (Functor.whiskeringLeft _ _ _).obj (CategoryOfElements.π F).op ⋙ colim`. -/
@@ -824,9 +807,8 @@ lemma shrinkYonedaCompWhiskeringLeftObjπCompColimIso_inv_app_apply
         (shrinkYonedaCompWhiskeringLeftObjπCompColimIso F).inv.app u.obj =
       colimit.ι ((Functor.Elements.π F).op ⋙ shrinkYoneda.{w}.obj u.obj) (op u) :=
     IsColimit.comp_coconePointUniqueUpToIso_inv (colimit.isColimit _) _ (op u)
-  simpa using ConcreteCategory.congr_hom this (shrinkYonedaObjObjEquiv.symm (𝟙 _))
+  simpa using congr($this (shrinkYonedaObjObjEquiv.symm (𝟙 _)))
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The object of the category of elements `shrinkYoneda.{w}.flip.obj (op X)`
 corresponding to the identity of `X` is initial. -/
 noncomputable def isInitialElementsMkShrinkYonedaObjObjEquivId (X : C) :

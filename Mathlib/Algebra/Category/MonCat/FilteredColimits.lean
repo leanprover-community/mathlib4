@@ -5,10 +5,9 @@ Authors: Justus Springer
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
-public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
-public import Mathlib.CategoryTheory.Limits.Types.Filtered
 public import Mathlib.Algebra.Category.MonCat.Basic
+public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
+public import Mathlib.CategoryTheory.Limits.Types.Filtered
 
 /-!
 # The forgetful functor from (commutative) (additive) monoids preserves filtered colimits.
@@ -123,7 +122,6 @@ theorem colimitMulAux_eq_of_rel_left {x x' y : Σ j, F.obj j}
   simp_rw [map_mul, ← ConcreteCategory.comp_apply, ← F.map_comp, h₁, h₂, h₃, F.map_comp,
     ConcreteCategory.comp_apply, hfg]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Multiplication in the colimit is well-defined in the right argument. -/
 @[to_additive /-- Addition in the colimit is well-defined in the right argument. -/]
 theorem colimitMulAux_eq_of_rel_right {x y y' : Σ j, F.obj j}
@@ -225,9 +223,8 @@ noncomputable def coconeMorphism (j : J) : F.obj j ⟶ colimit F :=
 theorem cocone_naturality {j j' : J} (f : j ⟶ j') :
     F.map f ≫ coconeMorphism.{v, u} F j' = coconeMorphism F j :=
   MonCat.ext fun x =>
-    ConcreteCategory.congr_hom ((Types.TypeMax.colimitCocone (F ⋙ forget MonCat)).ι.naturality f) x
+    congr($((Types.TypeMax.colimitCocone (F ⋙ forget MonCat)).ι.naturality f) x)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The cocone over the proposed colimit monoid. -/
 @[to_additive /-- The cocone over the proposed colimit additive monoid. -/]
 noncomputable def colimitCocone : Cocone F where
@@ -256,7 +253,6 @@ noncomputable def colimitDesc (t : Cocone F) : colimit.{v, u} F ⟶ t.pt :=
       rw [colimit_mul_mk_eq F ⟨i, x⟩ ⟨j, y⟩ (max' i j) (IsFiltered.leftToMax i j)
         (IsFiltered.rightToMax i j)]
       dsimp
-      set_option backward.isDefEq.respectTransparency true in
       rw [map_mul, t.w_apply, t.w_apply] }
 
 /-- The proposed colimit cocone is a colimit in `MonCat`. -/
@@ -266,7 +262,7 @@ noncomputable def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) wh
   fac t j := rfl
   uniq t m h := MonCat.ext fun y ↦ by
     obtain ⟨j, y, rfl⟩ := Functor.ιColimitType_jointly_surjective _ y
-    exact ConcreteCategory.congr_hom (h j) y
+    congrm $(h j) y
 
 @[to_additive]
 instance forget_preservesFilteredColimits :
@@ -297,7 +293,6 @@ In the following, we will show that this has the structure of a _commutative_ mo
 noncomputable abbrev M : MonCat.{max v u} :=
   MonCat.FilteredColimits.colimit.{v, u} (F ⋙ forget₂ CommMonCat MonCat.{max v u})
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 noncomputable instance colimitCommMonoid : CommMonoid.{max v u} (M.{v, u} F) :=

@@ -5,9 +5,8 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.HomCongr
 public import Mathlib.CategoryTheory.Comma.Over.Basic
-public import Mathlib.Tactic.CategoryTheory.Elementwise
+public import Mathlib.CategoryTheory.HomCongr
 
 /-!
 # Computation of `Over A` for a presheaf `A`
@@ -631,7 +630,6 @@ def CostructuredArrow.toOverCompYoneda (A : Cᵒᵖ ⥤ Type v) (T : Over A) :
         (Iso.refl _)).toIso)
     (by cat_disch)
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem CostructuredArrow.overEquivPresheafCostructuredArrow_inverse_map_toOverCompYoneda
     {A : Cᵒᵖ ⥤ Type v} {T : Over A} {X : CostructuredArrow yoneda A}
@@ -642,7 +640,6 @@ theorem CostructuredArrow.overEquivPresheafCostructuredArrow_inverse_map_toOverC
         f ≫ (overEquivPresheafCostructuredArrow A).unit.app T := by
   simp [CostructuredArrow.toOverCompYoneda]
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem CostructuredArrow.overEquivPresheafCostructuredArrow_functor_map_toOverCompYoneda
     {A : Cᵒᵖ ⥤ Type v} {T : Over A} {X : CostructuredArrow yoneda A}
@@ -667,7 +664,6 @@ def CostructuredArrow.toOverCompCoyoneda (A : Cᵒᵖ ⥤ Type v) :
         ((CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow A).app X.unop)
         (Iso.refl _)).toIso)) (by cat_disch)
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem CostructuredArrow.overEquivPresheafCostructuredArrow_inverse_map_toOverCompCoyoneda
     {A : Cᵒᵖ ⥤ Type v} {T : Over A} {X : CostructuredArrow yoneda A}
@@ -678,7 +674,6 @@ theorem CostructuredArrow.overEquivPresheafCostructuredArrow_inverse_map_toOverC
         f ≫ (overEquivPresheafCostructuredArrow A).unit.app T := by
   simp [CostructuredArrow.toOverCompCoyoneda]
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem CostructuredArrow.overEquivPresheafCostructuredArrow_functor_map_toOverCompCoyoneda
     {A : Cᵒᵖ ⥤ Type v} {T : Over A} {X : CostructuredArrow yoneda A}

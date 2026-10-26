@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.DerivedCategory.KInjective
 public import Mathlib.Algebra.Homology.DerivedCategory.FullyFaithful
+public import Mathlib.Algebra.Homology.DerivedCategory.KInjective
 public import Mathlib.Algebra.Homology.DerivedCategory.TStructure
 public import Mathlib.Algebra.Homology.HomotopyCategory.Plus
 public import Mathlib.CategoryTheory.Triangulated.LocalizingSubcategory
@@ -41,7 +41,6 @@ abbrev subcategoryAcyclic :
     ObjectProperty (HomotopyCategory.Plus C) :=
   (HomotopyCategory.subcategoryAcyclic C).inverseImage (HomotopyCategory.Plus.ι C)
 
-set_option backward.defeqAttrib.useBackward true in
 lemma quasiIso_eq_subcategoryAcyclic_trW :
     HomotopyCategory.Plus.quasiIso C = (subcategoryAcyclic C).trW := by
   ext K L f

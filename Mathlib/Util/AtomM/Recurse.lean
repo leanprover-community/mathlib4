@@ -83,7 +83,7 @@ def onSubexpressions (eval : Expr → AtomM Simp.Result) (parent : Expr)
         let r ← nctx.simp r'
         if ← withReducible <| isDefEq r.expr e then return .done { expr := r.expr }
         pure (.done r)
-      catch _ => pure <| .continue
+      catch _ => pure .continue
     let post := Simp.postDefault #[]
     (·.1) <$> Simp.main parent nctx.ctx (methods := { pre, post, wellBehavedDischarge })
 

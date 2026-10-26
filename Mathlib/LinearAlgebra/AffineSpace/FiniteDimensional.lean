@@ -5,15 +5,15 @@ Authors: Joseph Myers
 -/
 module
 
-public import Mathlib.FieldTheory.Finiteness
 public import Mathlib.LinearAlgebra.AffineSpace.Basis
-public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
+public import Mathlib.LinearAlgebra.AffineSpace.Dimension
 public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Centroid
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 
-import Mathlib.RingTheory.Finiteness.Prod
+import Mathlib.FieldTheory.Finiteness
+import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+import Mathlib.RingTheory.Finiteness.Prod
 
 /-!
 # Finite-dimensional subspaces of affine spaces.
@@ -206,6 +206,22 @@ theorem AffineIndepOn.finrank_vectorSpan {s : Set P} (hs₁ : s.Finite) (hs₂ :
     (hi : AffineIndepOn k id s) : finrank k (vectorSpan k s) = s.ncard - 1 := by
   rw [← hi.finrank_vectorSpan_image hs₁ hs₂, Set.image_id]
 
+theorem AffineIndepOn.ncard_eq_succ_finDim_affineSpan {s : Set P} (hai : AffineIndepOn k id s)
+    [hf : FiniteDimensional k (vectorSpan k s)] : s.ncard = (affineSpan k s).finDim.succ := by
+  rcases Set.eq_empty_or_nonempty s with rfl | hs
+  · simp
+  rw [← Subtype.range_coe (s := s)] at hf
+  have := finiteDimensional_iff_setFinite k hai |>.mp hf
+  have := hai.finrank_vectorSpan this hs
+  rw [finDim_eq_finrank (by simp [Set.nonempty_iff_ne_empty.mp hs]), direction_affineSpan,
+    WithBot.succ_natCast, this]
+  grind only [Set.ncard_eq_zero, Set.not_nonempty_empty]
+
+theorem AffineIndependent.ncard_eq_succ_finDim_affineSpan {s : Set P}
+    (hai : AffineIndependent k ((↑) : s → P)) [hf : FiniteDimensional k (vectorSpan k s)] :
+    s.ncard = (affineSpan k s).finDim.succ :=
+  AffineIndepOn.ncard_eq_succ_finDim_affineSpan ((affineIndependent_subtype_iff _).mp hai)
+
 namespace Affine.Simplex
 
 /-- A convenience instance for use when restricting to the affine subspace spanned by the vertices
@@ -309,6 +325,23 @@ theorem finrank_vectorSpan_le_iff_not_affineIndependent [Fintype ι] (p : ι →
     (hc : Fintype.card ι = n + 2) :
     finrank k (vectorSpan k (Set.range p)) ≤ n ↔ ¬AffineIndependent k p :=
   (not_iff_comm.1 (affineIndependent_iff_not_finrank_vectorSpan_le k p hc).symm).symm
+
+variable (V) in
+theorem exists_affineIndependent_of_finiteDimensional (s : Set P)
+    [F : FiniteDimensional k (vectorSpan k s)] :
+    ∃ t ⊆ s, affineSpan k t = affineSpan k s ∧ AffineIndependent k ((↑) : t → P) ∧
+      t.ncard = (affineSpan k s).finDim.succ := by
+  obtain ⟨t, ht₁, ht₂, ht₃⟩ := exists_affineIndependent k V s
+  refine ⟨t, ht₁, ht₂, ht₃, ?_⟩
+  rw [← direction_affineSpan, ← ht₂, direction_affineSpan] at F
+  exact ht₂ ▸ ht₃.ncard_eq_succ_finDim_affineSpan
+
+variable (V) in
+theorem exists_affineIndepOn_of_finiteDimensional (s : Set P)
+    [F : FiniteDimensional k (vectorSpan k s)] :
+    ∃ t ⊆ s, affineSpan k t = affineSpan k s ∧ AffineIndepOn k id t ∧
+      t.ncard = (affineSpan k s).finDim.succ :=
+  exists_affineIndependent_of_finiteDimensional k V s
 
 variable {k}
 
@@ -739,7 +772,7 @@ theorem affineIndependent_iff_affineIndependent_collinear_ne {p₁ p₂ p₃ p :
     AffineIndependent k ![p₁, p₂, p] ↔ AffineIndependent k ![p₁, p₂, p₃] := by
   refine ⟨fun h ↦ affineIndependent_of_affineIndependent_collinear_ne h hcol hne2,
     fun h ↦ affineIndependent_of_affineIndependent_collinear_ne h ?_ hne1⟩
-  convert! hcol using 1
+  convert hcol using 1
   aesop
 
 variable (k) in
@@ -826,7 +859,7 @@ theorem finrank_vectorSpan_insert_le (s : AffineSubspace k P) (p : P) :
   · rw [coe_eq_bot_iff] at hs
     rw [hs, bot_coe, span_empty, bot_coe, direction_affineSpan, direction_bot, finrank_bot,
       zero_add]
-    convert! zero_le_one' ℕ
+    convert zero_le_one' ℕ
     rw [← finrank_bot k V]
     convert! rfl <;> simp
   · rw [affineSpan_coe, direction_affineSpan_insert hp₀, add_comm]

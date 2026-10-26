@@ -5,10 +5,10 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
-public import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 public import Mathlib.AlgebraicGeometry.IdealSheaf.Basic
-public import Mathlib.CategoryTheory.Adjunction.Opposites
+public import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
+
+import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 
 /-!
 # Subscheme associated to an ideal sheaf
@@ -451,15 +451,14 @@ def gluedHomeo : I.glueData.glued ≃ₜ I.support :=
 
 /-- The subscheme associated to an ideal sheaf. -/
 noncomputable def subscheme : Scheme :=
-  I.glueData.glued.restrict
-    (f := TopCat.ofHom (toContinuousMap I.gluedHomeo.symm))
+  I.glueData.glued.restrict (f := TopCat.ofHom (.ofClass I.gluedHomeo.symm))
     I.gluedHomeo.symm.isOpenEmbedding
 
 set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation) The isomorphism between the subscheme and the glued scheme. -/
 noncomputable
 def subschemeIso : I.subscheme ≅ I.glueData.glued :=
-  letI F := I.glueData.glued.ofRestrict (f := TopCat.ofHom (toContinuousMap I.gluedHomeo.symm))
+  letI F := I.glueData.glued.ofRestrict (f := TopCat.ofHom (.ofClass I.gluedHomeo.symm))
     I.gluedHomeo.symm.isOpenEmbedding
   have : Epi F.base := ConcreteCategory.epi_of_surjective _ I.gluedHomeo.symm.surjective
   letI := IsOpenImmersion.isIso F
@@ -551,7 +550,7 @@ lemma subschemeι_app (U : X.affineOpens) : I.subschemeι.app U =
       Functor.op_map, unop_comp, unop_inv, Quiver.Hom.unop_op,
     Hom.app_appIso_inv_assoc, TopologicalSpace.Opens.carrier_eq_coe, TopologicalSpace.Opens.map_coe,
     homOfLE_leOfHom]
-  convert! (Category.comp_id _).symm
+  convert (Category.comp_id _).symm
   exact CategoryTheory.Functor.map_id _ _
 
 lemma subschemeι_app_surjective (U : X.affineOpens) :
@@ -640,7 +639,6 @@ lemma inclusion_comp {I J K : IdealSheafData X} (h₁ : I ≤ J) (h₂ : J ≤ K
     inclusion h₂ ≫ inclusion h₁ = inclusion (h₁.trans h₂) :=
   K.subschemeCover.openCover.hom_ext _ _ fun _ ↦ by simp
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The functor taking an ideal sheaf to its associated subscheme. -/
 @[simps]
 noncomputable
@@ -773,8 +771,6 @@ def kerAdjunction (Y : Scheme.{u}) : (subschemeFunctor Y).rightOp ⊣ Y.kerFunct
   counit.naturality _ _ _ := Quiver.Hom.unop_inj (by ext1; simp [← cancel_mono (subschemeι _)])
   left_triangle_components I := Quiver.Hom.unop_inj (by ext1; simp [← cancel_mono (subschemeι _)])
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 instance : (IdealSheafData.subschemeFunctor Y).Full :=
   have : IsIso Y.kerAdjunction.rightOp.counit := by
     simp [NatTrans.isIso_iff_isIso_app, CategoryTheory.instIsIsoEqToHom]

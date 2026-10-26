@@ -6,9 +6,9 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.CategoryTheory.Functor.Flat
-public import Mathlib.CategoryTheory.Sites.Continuous
-public import Mathlib.Tactic.ApplyFun
 public import Mathlib.CategoryTheory.Sites.Closed
+public import Mathlib.CategoryTheory.Sites.Continuous
+
 /-!
 # Cover-preserving functors between sites.
 
@@ -40,8 +40,6 @@ public section
 
 
 universe w v₁ v₂ v₃ u₁ u₂ u₃
-
-noncomputable section
 
 open CategoryTheory Opposite CategoryTheory.Presieve.FamilyOfElements CategoryTheory.Presieve
   CategoryTheory.Limits
@@ -112,7 +110,6 @@ end
 
 open Limits.WalkingCospan
 
-set_option backward.defeqAttrib.useBackward true in
 theorem compatiblePreservingOfFlat {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
     (K : GrothendieckTopology D) (G : C ⥤ D) [RepresentablyFlat G] : CompatiblePreserving K G := by
   constructor
@@ -141,7 +138,6 @@ theorem compatiblePreservingOfFlat {C : Type u₁} [Category.{v₁} C] {D : Type
   injection c'.π.naturality WalkingCospan.Hom.inr with _ e₂
   exact hx (c'.π.app left).right (c'.π.app right).right hg₁ hg₂ (e₁.symm.trans e₂)
 
-set_option backward.defeqAttrib.useBackward true in
 theorem compatiblePreservingOfDownwardsClosed (F : C ⥤ D) [F.Full] [F.Faithful]
     (hF : ∀ {c : C} {d : D} (_ : d ⟶ F.obj c), Σ c', F.obj c' ≅ d) : CompatiblePreserving K F := by
   constructor

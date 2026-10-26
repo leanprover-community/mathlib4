@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.Module
 public import Mathlib.RingTheory.Morita.Basic
+
 /-!
 # Morita Equivalence between `R` and `Mₙ(R)`
 
@@ -41,7 +42,7 @@ open CategoryTheory Matrix.Module
 def ModuleCat.toMatrixModCat : ModuleCat R ⥤ ModuleCat (Matrix ι ι R) where
   obj M := ↧(ι → M)
   map f := ModuleCat.ofHom <| f.hom.mapMatrixModule ι
-  map_id _ := ModuleCat.hom_ext <| LinearMap.mapMatrixModule_id
+  map_id _ := ModuleCat.hom_ext LinearMap.mapMatrixModule_id
   map_comp f g := ModuleCat.hom_ext (LinearMap.mapMatrixModule_comp f.hom g.hom)
 
 variable {ι}
@@ -53,11 +54,10 @@ open Matrix
 variable {M : Type*} [AddCommGroup M] [Module (Matrix ι ι R) M] [Module R M]
   [IsScalarTower R (Matrix ι ι R) M]
 
-set_option backward.defeqAttrib.useBackward true in
 variable (M) in
 /-- The image of `Eᵢᵢ` (the elementary matrix) acting on all elements in `M`. -/
 def toModuleCatObj (i : ι) : Submodule R M :=
-  LinearMap.range (τ₁₂ := .id _) <|
+  LinearMap.range (τ₁₂ := .id _)
     { __ := DistribSMul.toAddMonoidHom M (single i i 1 : Matrix ι ι R)
       map_smul' r x := by
         dsimp
@@ -155,7 +155,7 @@ def toModuleCatFromModuleCatLinearEquiv (M : ModuleCat (Matrix ι ι R)) (j : ι
       AddSubmonoidClass.coe_finsetSum, SetLike.val_smul, ← smul_assoc, ← Finset.sum_smul]
     congr
     ext i1 j1
-    simp only [mul_apply, smul_single, smul_eq_mul, mul_one, sum_apply]
+    simp only [Matrix.mul_apply, smul_single, smul_eq_mul, mul_one, Matrix.sum_apply]
     rw [Finset.sum_eq_single_of_mem (a := i) (by simp) (fun b _ hb ↦ by simp [single, Ne.symm hb])]
     simp only [single_apply, and_true, ite_mul, one_mul, zero_mul]
     split_ifs with h <;> simp [h]

@@ -5,15 +5,9 @@ Authors: Giulio Caflisch, David Loeffler, Yu Shao, Weijie Jiang, BeiBei Xiong
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Pi
-public import Mathlib.Algebra.Group.AddChar
-public import Mathlib.Algebra.Module.Submodule.LinearMap
-public import Mathlib.Data.Nat.Choose.Sum
-public import Mathlib.Tactic.Abel
-public import Mathlib.Algebra.GroupWithZero.Action.Pi
-public import Mathlib.Algebra.Polynomial.Basic
-public import Mathlib.Algebra.Polynomial.Degree.Defs
 public import Mathlib.Algebra.Polynomial.Eval.Degree
+
+import Mathlib.Tactic.Abel
 
 /-!
 # Forward difference operators and Newton series
@@ -120,8 +114,6 @@ open fwdDiff_aux
     Δ_[h] (∑ k ∈ s, f k) = ∑ k ∈ s, Δ_[h] (f k) :=
   map_sum (fwdDiffₗ M G h) f s
 
-@[deprecated (since := "2026-04-08")] alias fwdDiff_finset_sum := fwdDiff_finsetSum
-
 @[simp] lemma fwdDiff_iter_add (f g : M → G) (n : ℕ) :
     Δ_[h]^[n] (f + g) = Δ_[h]^[n] f + Δ_[h]^[n] g := by
   simpa only [coe_fwdDiffₗ_pow] using map_add (fwdDiffₗ M G h ^ n) f g
@@ -136,8 +128,6 @@ open fwdDiff_aux
     Δ_[h]^[n] (∑ k ∈ s, f k) = ∑ k ∈ s, Δ_[h]^[n] (f k) := by
   simpa only [coe_fwdDiffₗ_pow] using map_sum (fwdDiffₗ M G h ^ n) f s
 
-@[deprecated (since := "2026-04-08")] alias fwdDiff_iter_finset_sum := fwdDiff_iter_finsetSum
-
 section newton_formulae
 
 /--
@@ -151,7 +141,7 @@ theorem fwdDiff_iter_eq_sum_shift (f : M → G) (n : ℕ) (y : M) :
   rw [← coe_fwdDiffₗ, this, ← Module.End.pow_apply]
   -- use binomial theorem `Commute.add_pow` to expand this
   have : Commute (shiftₗ M G h) (-1) := (Commute.one_right _).neg_right
-  convert congr_fun (LinearMap.congr_fun (this.add_pow n) f) y
+  convert congr($(this.add_pow n) f y)
   · simp only [sub_eq_add_neg]
   · rw [LinearMap.sum_apply, sum_apply]
     congr 1 with k
@@ -175,7 +165,7 @@ of `f` at `y`.
 theorem shift_eq_sum_fwdDiff_iter (f : M → G) (n : ℕ) (y : M) :
     f (y + n • h) = ∑ k ∈ range (n + 1), n.choose k • Δ_[h]^[k] f y := by
   convert!
-    congr_fun (LinearMap.congr_fun ((Commute.one_right (fwdDiffₗ M G h)).add_pow n) f) y using 1
+    congr($((Commute.one_right (fwdDiffₗ M G h)).add_pow n) f y) using 1
   · rw [← shiftₗ_pow_apply h f, shiftₗ]
   · simp [Module.End.pow_apply, coe_fwdDiffₗ]
 
