@@ -458,6 +458,20 @@ lemma coe_inv [DivisionMonoid M] (z : Center M) : z⁻¹.val = z.val⁻¹ := rfl
 instance [Group M] : CommGroup (Center M) where
   inv_mul_cancel z := by simp
 
+/-- Lift a morphism through the inclusion `Center N →* N`. -/
+@[simps, to_additive /-- Lift a morphism through the inclusion `AddCenter N →+ N`. -/]
+def _root_.MonoidHom.liftCenter {N} [MulOneClass M] [MulOneClass N] {f : M →* N}
+    (hf : ∀ m, f m ∈ Set.center N) :
+    M →* Center N where
+  toFun m := Center.mk (f m) (hf m)
+  map_one' := by simp
+  map_mul' := by simp
+
+@[to_additive]
+lemma _root_.MonoidHom.comp_liftCenter {N} [MulOneClass M] [MulOneClass N] {f : M →* N}
+    (hf : ∀ m, f m ∈ Set.center N) :
+    (Center.monoidHom N).comp (f.liftCenter hf) = f := rfl
+
 /-- A surjective morphism between monoids induces a monoid homomorhpism between their centers. -/
 @[simps, to_additive /-- A surjective morphism between additive monoids induces a additive monoid
 homomorhpism between their centers. -/]
