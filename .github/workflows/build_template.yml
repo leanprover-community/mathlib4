@@ -1147,26 +1147,26 @@ jobs:
     needs: [style_lint, build, test_lint, post_steps]
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout local actions
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 1
+          sparse-checkout: .github/actions
+          path: workflow-actions
+          persist-credentials: false # no later step needs git credentials
+
       - id: PR
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-        run: |
-          # The open PR whose head is the commit this run built: the event's PR on
-          # pull_request_target, otherwise the PR from the pushed branch. A run for an older commit
-          # finds no PR, so it never acts for a head that has not passed CI. An API error fails the
-          # step. Outputs: pr_found, number, pr_url, pr_labels (comma-separated label names).
-          filter='map(select(.state == "open" and .head.sha == env.HEAD_SHA)) | first // empty
-            | "pr_found=true", "number=\(.number)", "pr_url=\(.html_url)",
-              "pr_labels=\([.labels[].name] | join(","))"'
-          if [ -n "$PR_NUMBER" ]; then
-            out=$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq "[.] | $filter")
-          else
-            out=$(gh api -X GET "repos/${GITHUB_REPOSITORY}/pulls" -f state=open \
-              -f head="${GITHUB_REPOSITORY_OWNER}:${GITHUB_REF_NAME}" --jq "$filter")
-          fi
-          echo "${out:-pr_found=false}" | tee -a "$GITHUB_OUTPUT"
+        name: Find the PR
+        # The event's PR on pull_request_target, otherwise the PR from the pushed branch, and only
+        # when its head is the commit this run built, so the job never acts for a head that has not
+        # passed CI.
+        uses: ./workflow-actions/.github/actions/find-open-pr
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          number: ${{ github.event.pull_request.number }}
+          branch: ${{ github.ref_name }}
+          head-sha: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - id: remove_labels
         name: Remove "awaiting-CI"

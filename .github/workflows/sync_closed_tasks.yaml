@@ -25,40 +25,44 @@ jobs:
         with:
           script: |
             // In each issue or PR of this repository that cross-references the closed (reopened)
-            // item, check (uncheck) the task list items that mention the item by `#<number>` or
-            // by URL.
+            // item, check (uncheck) the `- [ ]` task items that mention the item by `#<number>`
+            // or by URL.
             const item = context.payload.issue ?? context.payload.pull_request;
             const { owner, repo } = context.repo;
             const closed = context.payload.action === 'closed';
-            const oldBox = closed ? String.raw`\[ \]` : String.raw`\[[xX]\]`;
-            const newBox = closed ? '[x]' : '[ ]';
-            // `#12` must not match `#123` or `other/repo#12`, and `.../pull/12` must not match
-            // `.../pull/123`.
-            const url = RegExp.escape(item.html_url);
-            const mention = String.raw`(?:${url}|(?<![\w.-])#${item.number})(?!\d)`;
-            // Group 1 is the indentation and the bullet. The lookahead finds the mention later on
-            // the line.
-            const task = new RegExp(String.raw`^([ \t]*- )${oldBox}(?=[ \t].*${mention})`, 'gm');
+
+            // The checkbox of a task item, with whitespace after it. GitHub renders `[x]` and
+            // `[X]` as checked.
+            const box = closed ? /^(\s*- )\[ \](?=\s)/ : /^(\s*- )\[[xX]\](?=\s)/;
+            const newBox = closed ? '$1[x]' : '$1[ ]';
+            // `#12` but not `#123` or `other/repo#12`; the item's URL but not the URL of `#123`.
+            // `RegExp.escape` needs Node 24, which github-script v9 runs on.
+            const mention =
+              new RegExp(`(${RegExp.escape(item.html_url)}|(?<!\\w)#${item.number})(?!\\d)`);
+            const flipBoxes = body => body.split('\n')
+              .map(line => mention.test(line) ? line.replace(box, newBox) : line)
+              .join('\n');
 
             const events = await github.paginate(github.rest.issues.listEventsForTimeline, {
               owner, repo, issue_number: item.number, per_page: 100,
             });
             // The timeline also lists cross-references from other repositories, which the token
             // cannot edit.
-            const sources = new Map(events
+            const bodies = new Map(events
               .filter(e => e.event === 'cross-referenced')
               .filter(e => e.source?.issue?.repository?.full_name === `${owner}/${repo}`)
-              .map(e => [e.source.issue.number, e.source.issue.body]));
-            core.info(`found ${sources.size} references in ${owner}/${repo}`);
+              .map(e => [e.source.issue.number, e.source.issue.body ?? '']));
+            core.info(`found ${bodies.size} references in ${owner}/${repo}`);
 
-            for (const [number, timelineBody] of sources) {
-              if (!timelineBody?.match(task)) continue;
-              // Read the body again just before the write, so an edit since the timeline read
-              // survives.
+            for (const [number, timelineBody] of bodies) {
+              if (flipBoxes(timelineBody) === timelineBody) continue;
+              // The PRs of a bors batch close together, so several runs can edit the same body.
+              // Read it again just before the write, to narrow the window in which another edit
+              // is lost.
               const { data: { body } } =
                 await github.rest.issues.get({ owner, repo, issue_number: number });
-              if (!body?.match(task)) continue;
+              const updated = flipBoxes(body ?? '');
+              if (updated === body) continue;
               core.info(`updating #${number}`);
-              const updated = body.replace(task, `$1${newBox}`);
               await github.rest.issues.update({ owner, repo, issue_number: number, body: updated });
             }

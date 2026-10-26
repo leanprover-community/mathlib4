@@ -174,17 +174,10 @@ jobs:
 
     - name: Get PR
       id: find-pr
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        # The open PR from $BRANCH_NAME. An API error fails the step, so a failed lookup never
-        # reads as "no PR". Outputs: pr_found, number, pr_url, pr_labels (comma-separated label
-        # names).
-        out=$(gh api -X GET "repos/${GITHUB_REPOSITORY}/pulls" -f state=open \
-          -f head="${GITHUB_REPOSITORY_OWNER}:${BRANCH_NAME}" --jq 'first // empty
-            | "pr_found=true", "number=\(.number)", "pr_url=\(.html_url)",
-              "pr_labels=\([.labels[].name] | join(","))"')
-        echo "${out:-pr_found=false}" | tee -a "$GITHUB_OUTPUT"
+      uses: ./.github/actions/find-open-pr
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ env.BRANCH_NAME }}
 
     - name: Send Zulip message (blocked by open PR)
       if: steps.find-pr.outputs.pr_found == 'true'
