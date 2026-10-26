@@ -164,7 +164,7 @@ theorem trace_mul_cycle' [NonUnitalCommSemiring R] (A : Matrix m n R) (B : Matri
     (C : Matrix p m R) : trace (A * (B * C)) = trace (C * (A * B)) := by
   rw [← Matrix.mul_assoc, trace_mul_comm]
 
-/-- The trace of a positive power of A * B is unchanged when the factors are reversed.
+/-- The trace of a positive power of `A * B` is unchanged when the factors are reversed.
 
 The matrices A and B may be rectangular. The exponent is positive because the identity
 does not hold at exponent zero when the index types have different cardinalities. -/
