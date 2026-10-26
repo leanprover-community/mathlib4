@@ -425,10 +425,6 @@ lemma pow_one (a : M) : a ^ 1 = a := by rw [pow_succ, pow_zero, one_mul]
   | succ n ih => simp [pow_succ', ← ih, mul_assoc]
 
 @[to_additive]
-lemma mul_pow_succ (a b : M) (n : ℕ) : (a * b) ^ (n + 1) = a * (b * a) ^ n * b := by
-  rw [pow_succ, ← mul_assoc, mul_pow_mul]
-
-@[to_additive]
 lemma pow_mul_comm' (a : M) (n : ℕ) : a ^ n * a = a * a ^ n := by rw [← pow_succ, pow_succ']
 
 /-- Note that most of the lemmas about powers of two refer to it as `sq`. -/
