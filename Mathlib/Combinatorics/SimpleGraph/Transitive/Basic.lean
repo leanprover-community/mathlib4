@@ -144,7 +144,7 @@ theorem IsEdgeTransitive.isBipartite_of_not_IsVertexTransitive
 
 open Finset in
 /-- A finite vertex- and edge-transitive graph with an odd-degree vertex is symmetric.
-The finiteness condition is necessary ([thomassenwatkins1989], p. 260). -/
+See [thomassenwatkins1989], p. 260 for an _infinite_ counterexample. -/
 theorem IsEdgeTransitive.isSymmetric_of_exists_odd_degree [Finite V] (vt : G.IsVertexTransitive)
     (et : G.IsEdgeTransitive) (dv : ∃ (v : V) (_ : Fintype (G.neighborSet v)), Odd (G.degree v)) :
     G.IsSymmetric := by
@@ -174,7 +174,7 @@ theorem IsEdgeTransitive.isSymmetric_of_exists_odd_degree [Finite V] (vt : G.IsV
     all_goals exact ⟨(f₁.symm.trans f).trans (g.symm.trans f₂), by
       rw [Hom.mapDart_eq_iff]; simp [fv, fw, ← gv, ← gw, ← f₁v, ← f₁w, f₂v, f₂w]⟩
   classical
-  have _ : Fintype V := Fintype.ofFinite _
+  have _ := Fintype.ofFinite V
   -- By vertex-transitivity and the handshaking lemma, `v`'s indegree and outdegree are equal
   -- in the orientation, so it has even degree in `G`. Contradiction.
   let O (a) : Finset V := {x | R a x}
