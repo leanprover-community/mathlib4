@@ -750,13 +750,33 @@ abbrev OrderInfSet.ofOrderSupSet [OrderSupSet α] :
 open Classical in
 /-- Noncomputably constructs an `OrderSupSet` using the axiom of choice,
 where `sSup s` returns `d` if a least upper bound does not exist. -/
-@[to_dual
+@[to_dual (attr := simps)
 /-- Noncomputably constructs an `OrderInfSet` using the axiom of choice,
 where `sInf s` returns `d` if a greatest lower bound does not exist. -/]
 noncomputable abbrev OrderSupSet.choose (d : α) :
     OrderSupSet α where
   sSup s := if h : ∃ x, IsLUB s x then h.choose else d
   isLUB_sSup_of_isLUB _ _ h := dite_eq_left (Exists.intro _ h) ▸ choose_spec _
+
+/-- Noncomputably constructs an `OrderSupSet` using the axiom of choice,
+where `sSup s` returns the bottom element if a least upper bound does not exist,
+or `d` if there is no bottom element either. -/
+@[to_dual
+/-- Noncomputably constructs an `OrderInfSet` using the axiom of choice,
+where `sInf s` returns the top element if a greatest lower bound does not exist,
+or `d` if there is no top element either. -/]
+noncomputable abbrev OrderSupSet.chooseBot (d : α) : OrderSupSet α :=
+  .choose ((OrderSupSet.choose d).sSup ∅)
+
+@[to_dual]
+theorem OrderSupSet.chooseBot_sSup_of_not_exists {d : α} {s : Set α} (h : ¬∃ x, IsLUB s x) :
+    (chooseBot d).sSup s = (chooseBot d).sSup ∅ := by
+  simp only [choose_sSup]; split_ifs <;> rfl
+
+@[to_dual]
+theorem OrderSupSet.chooseBot_sSup_empty_of_noBotOrder [NoBotOrder α] {d : α} :
+    (chooseBot d).sSup ∅ = d := by
+  simp
 
 end OrderSupSet
 
