@@ -11,7 +11,7 @@ public import Mathlib.Algebra.GroupWithZero.Subgroup
 public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.GroupTheory.QuotientGroup.Defs
 
-import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Data.Rat.Cast.CharZero
 
 /-!
 # Divisible and rootable groups
@@ -30,15 +30,15 @@ properties.
 
 For additive monoids and groups:
 
-* `AddGroup.isDivisibleBy_int_iff_isDivisibleBy_nat` : for additive groups, `ℤ`-divisibility is
+* `AddGroup.isDivisibleBy_int_iff_isDivisibleBy_nat`: for additive groups, `ℤ`-divisibility is
   equivalent to `ℕ`-divisibility.
-* `QuotientAddGroup.isDivisibleBy` : quotient group of divisible group is divisible.
+* `QuotientAddGroup.isDivisibleBy`: quotient group of divisible group is divisible.
 
 and their multiplicative counterparts:
 
-* `Group.isRootableBy_int_iff_isRootableBy_nat` : for additive groups, `ℤ`-rootability is
-  equivalent to `ℕ`-rootability.
-* `QuotientGroup.isRootableBy` : quotient group of rootable group is rootable.
+* `Group.isRootableBy_int_iff_isRootableBy_nat`: for additive groups, `ℤ`-rootability is equivalent
+  to `ℕ`-rootability.
+* `QuotientGroup.isRootableBy`: quotient group of rootable group is rootable.
 
 TODO: Show that divisibility implies injectivity in the category of `AddCommGroup`.
 
