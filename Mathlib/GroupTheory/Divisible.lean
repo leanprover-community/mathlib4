@@ -40,8 +40,6 @@ and their multiplicative counterparts:
   to `ℕ`-rootability.
 * `QuotientGroup.isRootableBy`: quotient group of rootable group is rootable.
 
-TODO: Show that divisibility implies injectivity in the category of `AddCommGroup`.
-
 ## Implementation notes
 
 We previously employed a constructive approach, where we required an explicit divisor or root for
