@@ -419,8 +419,7 @@ lemma coe_one [MulOneClass M] : (1 : Center M).val = (1 : M) := rfl
 abbrev subtype [Mul M] : Center M → M := Subtype.val
 
 @[to_additive (attr := simp)]
-lemma mem_range_subtype_iff [Mul M] :
-    Set.range subtype = Set.center M :=
+lemma mem_range_subtype_iff [Mul M] : Set.range subtype = Set.center M :=
   Set.ext fun x => ⟨fun ⟨x, hx⟩ => by rw [← hx]; exact x.prop , fun hx => ⟨⟨x, hx⟩, rfl⟩⟩
 
 @[to_additive]
