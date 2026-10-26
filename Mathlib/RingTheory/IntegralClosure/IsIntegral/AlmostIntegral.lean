@@ -5,9 +5,10 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.FieldTheory.Minpoly.Basic
 public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 public import Mathlib.RingTheory.Localization.FractionRing
+
+import Mathlib.FieldTheory.Minpoly.Basic
 
 /-! # Almost integral elements -/
 
@@ -83,7 +84,6 @@ lemma integralClosure_le_completeIntegralClosure [IsFractionRing R S] :
     integralClosure R S ≤ completeIntegralClosure R S :=
   fun _ h ↦ h.isAlmostIntegral
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsAlmostIntegral.isIntegral_of_nonZeroDivisors_le_comap
     {s : S} (H : IsAlmostIntegral R s) [IsNoetherianRing R]
     (H' : R⁰ ≤ S⁰.comap (algebraMap R S)) : IsIntegral R s := by

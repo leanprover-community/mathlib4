@@ -15,12 +15,12 @@ This file collects facts about algebraic structures on the one-element type, e.g
 GCD.
 -/
 
-@[expose] public section
+public section
 
 namespace PUnit
 
 -- This is too high-powered and should be split off also
-instance normalizedGCDMonoid : NormalizedGCDMonoid PUnit where
+instance : StrongNormalizedGCDMonoid PUnit where
   gcd _ _ := unit
   lcm _ _ := unit
   normUnit _ := 1
@@ -35,6 +35,8 @@ instance normalizedGCDMonoid : NormalizedGCDMonoid PUnit where
   lcm_zero_right := by subsingleton
   normalize_gcd := by subsingleton
   normalize_lcm := by subsingleton
+
+instance normalizedGCDMonoid : NormalizedGCDMonoid PUnit := inferInstance
 
 @[simp]
 theorem gcd_eq {x y : PUnit} : gcd x y = unit :=

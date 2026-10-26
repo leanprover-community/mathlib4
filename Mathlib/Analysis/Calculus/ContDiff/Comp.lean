@@ -26,14 +26,14 @@ Similar results are given for `C^n` functions on domains.
 We use the notation `E [×n]→L[𝕜] F` for the space of continuous multilinear maps on `E^n` with
 values in `F`. This is the space in which the `n`-th derivative of a function from `E` to `F` lives.
 
-In this file, we denote `(⊤ : ℕ∞) : WithTop ℕ∞` with `∞` and `⊤ : WithTop ℕ∞` with `ω`.
+In this file, we denote `WithTop ℕ∞` with `ℕ∞ω`, `(⊤ : ℕ∞) : ℕ∞ω` with `∞` and `⊤ : ℕ∞ω` with `ω`.
 
 ## Tags
 
 derivative, differentiability, higher derivative, `C^n`, multilinear, Taylor series, formal series
 -/
 
-public noncomputable section
+public section
 
 open Set Filter Function
 
@@ -44,7 +44,7 @@ attribute [local instance 1001] NormedAddCommGroup.toAddCommGroup AddCommGroup.t
 variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
   {X : Type*} [NormedAddCommGroup X] [NormedSpace 𝕜 X] {s t : Set E} {f : E → F}
-  {g : F → G} {x x₀ : E} {m n : WithTop ℕ∞}
+  {g : F → G} {x x₀ : E} {m n : ℕ∞ω}
 
 section comp
 
@@ -333,6 +333,12 @@ theorem contDiffWithinAt_fst {s : Set (E × F)} {p : E × F} :
     ContDiffWithinAt 𝕜 n (Prod.fst : E × F → E) s p :=
   contDiff_fst.contDiffWithinAt
 
+/-- Postcomposing `f` with `Prod.fst` is `C^n` at `x` -/
+@[fun_prop]
+theorem ContDiffWithinAt.fst {f : E → F × G} {x : E} (hf : ContDiffWithinAt 𝕜 n f s x) :
+    ContDiffWithinAt 𝕜 n (fun x ↦ (f x).1) s x :=
+  contDiffWithinAt_fst.comp x hf (mapsTo_image f s)
+
 /-- The second projection in a product is `C^∞`. -/
 @[fun_prop]
 theorem contDiff_snd : ContDiff 𝕜 n (Prod.snd : E × F → F) :=
@@ -357,10 +363,22 @@ theorem ContDiffOn.snd {f : E → F × G} {s : Set E} (hf : ContDiffOn 𝕜 n f 
     ContDiffOn 𝕜 n (fun x => (f x).2) s :=
   contDiff_snd.comp_contDiffOn hf
 
+/-- The second projection within a domain at a point in a product is `C^∞`. -/
+@[fun_prop]
+theorem contDiffWithinAt_snd {s : Set (E × F)} {p : E × F} :
+    ContDiffWithinAt 𝕜 n (Prod.snd : E × F → F) s p :=
+  contDiff_snd.contDiffWithinAt
+
 /-- The second projection at a point in a product is `C^∞`. -/
 @[fun_prop]
 theorem contDiffAt_snd {p : E × F} : ContDiffAt 𝕜 n (Prod.snd : E × F → F) p :=
   contDiff_snd.contDiffAt
+
+/-- Postcomposing `f` with `Prod.snd` is `C^n` at `x` -/
+@[fun_prop]
+theorem ContDiffWithinAt.snd {f : E → F × G} {x : E} (hf : ContDiffWithinAt 𝕜 n f s x) :
+    ContDiffWithinAt 𝕜 n (fun x ↦ (f x).2) s x :=
+  contDiffWithinAt_snd.comp x hf (mapsTo_image f s)
 
 /-- Postcomposing `f` with `Prod.snd` is `C^n` at `x` -/
 @[fun_prop]
@@ -378,11 +396,25 @@ theorem ContDiffAt.snd'' {f : F → G} {x : E × F} (hf : ContDiffAt 𝕜 n f x.
     ContDiffAt 𝕜 n (fun x : E × F => f x.2) x :=
   hf.comp x contDiffAt_snd
 
-/-- The second projection within a domain at a point in a product is `C^∞`. -/
-@[fun_prop]
-theorem contDiffWithinAt_snd {s : Set (E × F)} {p : E × F} :
-    ContDiffWithinAt 𝕜 n (Prod.snd : E × F → F) s p :=
-  contDiff_snd.contDiffWithinAt
+theorem contDiffWithinAt_prod_iff (f : E → F × G) :
+    ContDiffWithinAt 𝕜 n f s x ↔
+      ContDiffWithinAt 𝕜 n (Prod.fst ∘ f) s x ∧ ContDiffWithinAt 𝕜 n (Prod.snd ∘ f) s x :=
+  ⟨fun h ↦ ⟨h.fst, h.snd⟩, fun h ↦ h.1.prodMk h.2⟩
+
+theorem contDiffAt_prod_iff (f : E → F × G) :
+    ContDiffAt 𝕜 n f x ↔
+      ContDiffAt 𝕜 n (Prod.fst ∘ f) x ∧ ContDiffAt 𝕜 n (Prod.snd ∘ f) x :=
+  ⟨fun h ↦ ⟨h.fst, h.snd⟩, fun h ↦ h.1.prodMk h.2⟩
+
+theorem contDiffOn_prod_iff (f : E → F × G) :
+    ContDiffOn 𝕜 n f s ↔
+      ContDiffOn 𝕜 n (Prod.fst ∘ f) s ∧ ContDiffOn 𝕜 n (Prod.snd ∘ f) s :=
+  ⟨fun h ↦ ⟨h.fst, h.snd⟩, fun h ↦ h.1.prodMk h.2⟩
+
+theorem contDiff_prod_iff (f : E → F × G) :
+    ContDiff 𝕜 n f ↔
+      ContDiff 𝕜 n (Prod.fst ∘ f) ∧ ContDiff 𝕜 n (Prod.snd ∘ f) :=
+  ⟨fun h ↦ ⟨h.fst, h.snd⟩, fun h ↦ h.1.prodMk h.2⟩
 
 section NAry
 
@@ -505,7 +537,6 @@ end SpecificBilinearMaps
 
 section ClmApplyConst
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Application of a `ContinuousLinearMap` to a constant commutes with `iteratedFDerivWithin`. -/
 theorem iteratedFDerivWithin_clm_apply_const_apply
     {s : Set E} (hs : UniqueDiffOn 𝕜 s) {c : E → F →L[𝕜] G}
@@ -514,7 +545,7 @@ theorem iteratedFDerivWithin_clm_apply_const_apply
   induction i generalizing x with
   | zero => simp
   | succ i ih =>
-    replace hi : (i : WithTop ℕ∞) < n := lt_of_lt_of_le (by norm_cast; simp) hi
+    replace hi : (i : ℕ∞ω) < n := lt_of_lt_of_le (by norm_cast; simp) hi
     have h_deriv_apply : DifferentiableOn 𝕜 (iteratedFDerivWithin 𝕜 i (fun y ↦ (c y) u) s) s :=
       (hc.clm_apply contDiffOn_const).differentiableOn_iteratedFDerivWithin hi hs
     have h_deriv : DifferentiableOn 𝕜 (iteratedFDerivWithin 𝕜 i c s) s :=
@@ -581,7 +612,6 @@ theorem ContDiffWithinAt.hasFDerivWithinAt_nhds {f : E → F → G} {g : E → F
       (ContinuousLinearMap.inr 𝕜 E F)).comp_of_mem_nhdsWithin_image x₀
       (contDiffWithinAt_id.prodMk hg) hst
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The most general lemma stating that `x ↦ fderivWithin 𝕜 (f x) t (g x)` is `C^n`
 at a point within a set.
 To show that `x ↦ D_yf(x,y)g(x)` (taken within `t`) is `C^m` at `x₀` within `s`, we require that
@@ -634,7 +664,7 @@ protected theorem ContDiffWithinAt.fderivWithin {f : E → F → G} {g : E → F
   exact eventually_of_mem self_mem_nhdsWithin fun x hx => ht _ (hst hx)
 
 /-- `x ↦ fderivWithin 𝕜 (f x) t (g x) (k x)` is smooth at a point within a set. -/
-theorem ContDiffWithinAt.fderivWithin_apply {f : E → F → G} {g k : E → F} {t : Set F}
+protected theorem ContDiffWithinAt.fderivWithin_apply {f : E → F → G} {g k : E → F} {t : Set F}
     (hf : ContDiffWithinAt 𝕜 n (Function.uncurry f) (s ×ˢ t) (x₀, g x₀))
     (hg : ContDiffWithinAt 𝕜 m g s x₀) (hk : ContDiffWithinAt 𝕜 m k s x₀) (ht : UniqueDiffOn 𝕜 t)
     (hmn : m + 1 ≤ n) (hx₀ : x₀ ∈ s) (hst : s ⊆ g ⁻¹' t) :
@@ -731,13 +761,13 @@ theorem ContDiff.iteratedFDeriv_right' {i : ℕ} (hf : ContDiff 𝕜 (m + i) f) 
   contDiff_iff_contDiffAt.mpr fun _x => hf.contDiffAt.iteratedFDeriv_right (le_refl _)
 
 /-- `x ↦ fderiv 𝕜 (f x) (g x)` is continuous. -/
-theorem Continuous.fderiv {f : E → F → G} {g : E → F}
+protected theorem Continuous.fderiv {f : E → F → G} {g : E → F}
     (hf : ContDiff 𝕜 n <| Function.uncurry f) (hg : Continuous g) (hn : 1 ≤ n) :
     Continuous fun x => fderiv 𝕜 (f x) (g x) :=
   (hf.fderiv (contDiff_zero.mpr hg) hn).continuous
 
 @[fun_prop]
-theorem Continuous.fderiv_one {f : E → F → G} {g : E → F}
+protected theorem Continuous.fderiv_one {f : E → F → G} {g : E → F}
     (hf : ContDiff 𝕜 1 <| Function.uncurry f) (hg : Continuous g) :
     Continuous fun x => _root_.fderiv 𝕜 (f x) (g x) :=
   (hf.fderiv (contDiff_zero.mpr hg) (le_refl 1)).continuous
@@ -751,7 +781,7 @@ protected theorem Differentiable.fderiv_two {f : E → F → G} {g : E → F}
     one_ne_zero
 
 /-- `x ↦ fderiv 𝕜 (f x) (g x) (k x)` is smooth. -/
-theorem ContDiff.fderiv_apply {f : E → F → G} {g k : E → F}
+protected theorem ContDiff.fderiv_apply {f : E → F → G} {g k : E → F}
     (hf : ContDiff 𝕜 m <| Function.uncurry f) (hg : ContDiff 𝕜 n g) (hk : ContDiff 𝕜 n k)
     (hnm : n + 1 ≤ m) : ContDiff 𝕜 n fun x => fderiv 𝕜 (f x) (g x) (k x) :=
   (hf.fderiv hg hnm).clm_apply hk

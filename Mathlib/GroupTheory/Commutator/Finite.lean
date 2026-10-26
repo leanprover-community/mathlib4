@@ -5,16 +5,18 @@ Authors: Jordan Brown, Thomas Browning, Patrick Lutz
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Finite
-public import Mathlib.GroupTheory.Commutator.Basic
-public import Mathlib.GroupTheory.Rank
 public import Mathlib.GroupTheory.Index
+public import Mathlib.GroupTheory.Rank
+
+import Mathlib.Algebra.Group.Subgroup.Finite
 
 /-!
+# Commutators of finite direct products
+
 The commutator of a finite direct product is contained in the direct product of the commutators.
 -/
 
-@[expose] public section
+public section
 
 variable {G : Type*} [Group G]
 
@@ -22,6 +24,8 @@ namespace Subgroup
 
 /-- The commutator of a finite direct product is contained in the direct product of the commutators.
 -/
+@[to_additive /-- The commutator of a finite direct product is contained in the direct product of
+the commutators. -/]
 theorem commutator_pi_pi_of_finite {η : Type*} [Finite η] {Gs : η → Type*} [∀ i, Group (Gs i)]
     (H K : ∀ i, Subgroup (Gs i)) : ⁅Subgroup.pi Set.univ H, Subgroup.pi Set.univ K⁆ =
     Subgroup.pi Set.univ fun i => ⁅H i, K i⁆ := by
@@ -85,7 +89,6 @@ instance : Finite (commutatorRepresentatives G) := Set.finite_coe_iff.mpr (Set.f
 instance closureCommutatorRepresentatives_fg : Group.FG (closureCommutatorRepresentatives G) :=
   Group.closure_finite_fg _
 
-set_option backward.isDefEq.respectTransparency false in
 variable (G) in
 lemma rank_closureCommutatorRepresentatives_le :
     Group.rank (closureCommutatorRepresentatives G) ≤ 2 * Nat.card (commutatorSet G) := by

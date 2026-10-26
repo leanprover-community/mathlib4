@@ -5,12 +5,13 @@ Authors: Gaëtan Serré, Rémy Degenne
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.Inv
 public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
-public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 public import Mathlib.MeasureTheory.Constructions.Polish.EmbeddingReal
 public import Mathlib.Topology.Algebra.Module.ModuleTopology
+
+import Mathlib.Analysis.Calculus.Deriv.Inv
+import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 /-!
 # Sigmoid function
@@ -64,7 +65,6 @@ noncomputable def sigmoid (x : ℝ) := (1 + exp (-x))⁻¹
 
 lemma sigmoid_def (x : ℝ) : sigmoid x = (1 + exp (-x))⁻¹ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma sigmoid_zero : sigmoid 0 = 2⁻¹ := by norm_num [sigmoid]
 
@@ -83,7 +83,7 @@ lemma sigmoid_lt_one (x : ℝ) : sigmoid x < 1 :=
 @[bound]
 lemma sigmoid_le_one (x : ℝ) : sigmoid x ≤ 1 := (sigmoid_lt_one x).le
 
-@[mono]
+@[gcongr, mono]
 lemma sigmoid_strictMono : StrictMono sigmoid := fun a b hab ↦ by
   simp only [sigmoid]
   gcongr
@@ -115,7 +115,6 @@ lemma sigmoid_mul_rexp_neg (x : ℝ) : sigmoid x * exp (-x) = sigmoid (-x) := by
   rw [sigmoid_neg, sigmoid_def]
   field
 
-set_option backward.isDefEq.respectTransparency false in
 open Set in
 lemma range_sigmoid : range Real.sigmoid = Ioo 0 1 := by
   refine subset_antisymm ?_ fun x hx ↦ ?_
@@ -125,12 +124,13 @@ lemma range_sigmoid : range Real.sigmoid = Ioo 0 1 := by
   · replace hx : 0 < x⁻¹ - 1 := by rwa [sub_pos, one_lt_inv_iff₀]
     exact ⟨-(log (x⁻¹ - 1)), by simp [sigmoid_def, exp_log hx]⟩
 
-open Topology Filter
+open Filter
 
-set_option backward.isDefEq.respectTransparency false in
+open scoped Topology
+
 lemma tendsto_sigmoid_atTop : Tendsto sigmoid atTop (𝓝 1) := by
-  simpa using Real.tendsto_exp_comp_nhds_zero.mpr tendsto_neg_atTop_atBot |>.const_add 1 |>.inv₀ <|
-    by norm_num
+  simpa using! Real.tendsto_exp_comp_nhds_zero.mpr tendsto_neg_atTop_atBot |>.const_add 1 |>.inv₀ <|
+    by simp
 
 lemma tendsto_sigmoid_atBot : Tendsto sigmoid atBot (𝓝 0) :=
   tendsto_const_nhds.add_atTop (tendsto_exp_comp_atTop.mpr tendsto_neg_atBot_atTop)
@@ -138,7 +138,7 @@ lemma tendsto_sigmoid_atBot : Tendsto sigmoid atBot (𝓝 0) :=
 
 lemma hasDerivAt_sigmoid (x : ℝ) :
     HasDerivAt sigmoid (sigmoid x * (1 - sigmoid x)) x := by
-  convert (hasDerivAt_neg' x |>.exp.const_add 1 |>.inv <| by positivity) using 1
+  convert! (hasDerivAt_neg' x |>.exp.const_add 1 |>.inv <| by positivity) using 1
   rw [← sigmoid_neg, ← sigmoid_mul_rexp_neg x, sigmoid_def]
   field [sq]
 
@@ -190,10 +190,9 @@ open ContDiff in
 lemma ContDiff.sigmoid (hf : ContDiff ℝ ω f) : ContDiff ℝ ω (sigmoid ∘ f) :=
   contDiff_sigmoid.comp hf
 
-set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
 lemma differentiable_sigmoid : Differentiable ℝ sigmoid :=
-   contDiff_sigmoid.of_le le_top |>.differentiable_one
+  contDiff_sigmoid.of_le le_top |>.differentiable_one
 
 @[fun_prop]
 lemma Differentiable.sigmoid (hf : Differentiable ℝ f) : Differentiable ℝ (sigmoid ∘ f) :=
@@ -228,7 +227,7 @@ lemma sigmoid_pos (x : ℝ) : 0 < sigmoid x := Real.sigmoid_pos x
 @[bound]
 lemma sigmoid_lt_one (x : ℝ) : sigmoid x < 1 := Real.sigmoid_lt_one x
 
-@[mono]
+@[gcongr, mono]
 lemma sigmoid_strictMono : StrictMono sigmoid := Real.sigmoid_strictMono
 
 lemma sigmoid_le_iff {a b : ℝ} : sigmoid a ≤ sigmoid b ↔ a ≤ b := Real.sigmoid_le_iff
@@ -256,13 +255,16 @@ lemma sigmoid_neg (x : ℝ) : sigmoid (-x) = σ (sigmoid x) := by
   ext
   exact Real.sigmoid_neg x
 
+set_option backward.isDefEq.respectTransparency false in
 open Set in
 lemma range_sigmoid : range unitInterval.sigmoid = Ioo 0 1 := by
   rw [sigmoid, Subtype.range_coind, Real.range_sigmoid]
   ext
   simp
 
-open Topology Filter
+open Filter
+
+open scoped Topology
 
 lemma tendsto_sigmoid_atTop : Tendsto sigmoid atTop (𝓝 1) :=
   tendsto_subtype_rng.mpr Real.tendsto_sigmoid_atTop

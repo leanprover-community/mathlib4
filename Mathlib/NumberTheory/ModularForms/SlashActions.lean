@@ -6,9 +6,8 @@ Authors: Chris Birkbeck
 module
 
 public import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
-public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
-public import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
-public import Mathlib.Tactic.AdaptationNote
+
+import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Slash actions
@@ -27,7 +26,7 @@ Scoped in the `ModularForm` namespace, this file defines
 @[expose] public section
 
 
-open Complex UpperHalfPlane ModularGroup
+open Complex UpperHalfPlane
 
 open scoped MatrixGroups
 
@@ -50,6 +49,11 @@ theorem SlashAction.neg_slash {β G α : Type*} [Monoid G] [AddGroup α]
   eq_neg_of_add_eq_zero_left <| by
     rw [← add_slash, neg_add_cancel, zero_slash]
 
+@[simp]
+theorem SlashAction.sub_slash {β G α : Type*} [Monoid G] [AddGroup α]
+    [SlashAction β G α] (k : β) (g : G) (a b : α) : (a - b) ∣[k] g = a ∣[k] g - b ∣[k] g := by
+  rw [sub_eq_add_neg, add_slash, neg_slash, sub_eq_add_neg]
+
 attribute [simp] SlashAction.zero_slash SlashAction.slash_one SlashAction.add_slash
 
 @[simp] lemma SlashAction.sum_slash {β G α ι : Type*} [Monoid G] [AddCommGroup α]
@@ -60,7 +64,8 @@ attribute [simp] SlashAction.zero_slash SlashAction.slash_one SlashAction.add_sl
   | empty => simp
   | insert i t hi IH => simp [hi, IH]
 
-/-- Slash_action induced by a monoid homomorphism. -/
+/-- `SlashAction` induced by a monoid homomorphism. -/
+@[instance_reducible]
 def monoidHomSlashAction {β G H α : Type*} [Monoid G] [AddMonoid α] [Monoid H]
     [SlashAction β G α] (h : H →* G) : SlashAction β H α where
   map k g := SlashAction.map k (h g)
@@ -91,10 +96,6 @@ private def privateSlash (k : ℤ) (γ : GL (Fin 2) ℝ) (f : ℍ → ℂ) (x : 
   σ γ (f (γ • x)) * |γ.det.val| ^ (k - 1) * UpperHalfPlane.denom γ x ^ (-k)
 
 -- Why is `noncomputable` flag needed here, when we're in a noncomputable section already?
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-@[deprecated (since := "2025-09-19")] noncomputable alias slash := privateSlash
-
 -- temporary notation until the instance is built
 local notation:100 f " ∣[" k "] " γ:100 => ModularForm.privateSlash k γ f
 
@@ -119,7 +120,6 @@ private theorem add_slash (k : ℤ) (A : GL (Fin 2) ℝ) (f g : ℍ → ℂ) :
   ext1 τ
   simp [privateSlash, add_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 private theorem slash_one (k : ℤ) (f : ℍ → ℂ) : f ∣[k] 1 = f :=
   funext <| by simp [privateSlash, σ, denom]
@@ -159,12 +159,10 @@ instance SLAction : SlashAction ℤ SL(2, ℤ) (ℍ → ℂ) :=
 theorem SL_slash (γ : SL(2, ℤ)) : f ∣[k] γ = f ∣[k] (γ : GL (Fin 2) ℝ) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem SL_slash_def (γ : SL(2, ℤ)) :
     f ∣[k] γ = fun τ ↦ f (γ • τ) * denom γ τ ^ (-k) := by
   simp [SL_slash, slash_def, σ]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem SL_slash_apply (γ : SL(2, ℤ)) (τ : ℍ) :
     (f ∣[k] γ) τ = f (γ • τ) * denom γ τ ^ (-k) := by
   simp [SL_slash, slash_def, σ]
@@ -188,7 +186,7 @@ theorem is_invariant_one (A : SL(2, ℤ)) : (1 : ℍ → ℂ) ∣[(0 : ℤ)] A =
 /-- Variant of `is_invariant_one` with the left-hand side in simp normal form. -/
 @[simp]
 theorem is_invariant_one' (A : SL(2, ℤ)) : (1 : ℍ → ℂ) ∣[(0 : ℤ)] (A : GL (Fin 2) ℝ) = 1 := by
-  simpa using is_invariant_one A
+  simpa using! is_invariant_one A
 
 /-- A function `f : ℍ → ℂ` is slash-invariant, of weight `k ∈ ℤ` and level `Γ`,
   if for every matrix `γ ∈ Γ` we have `f(γ • z)= (c*z+d)^k f(z)` where `γ= ![![a, b], ![c, d]]`,
@@ -214,24 +212,51 @@ theorem mul_slash (k1 k2 : ℤ) (A : GL (Fin 2) ℝ) (f g : ℍ → ℂ) :
   rw [h1]
   ring
 
-set_option backward.isDefEq.respectTransparency false in
+theorem zpow_slash (n k : ℤ) (A : GL (Fin 2) ℝ) (f : ℍ → ℂ) :
+    (f ^ n) ∣[n * k] A = |(A.det : ℝ)| ^ (n - 1) • (f ∣[k] A) ^ n := by
+  ext1 τ
+  have hd : ((|A.det| : ℝ) : ℂ) ≠ 0 := ofReal_ne_zero.mpr <| abs_ne_zero.mpr <| NeZero.ne _
+  simp only [slash_apply, Pi.pow_apply, Pi.smul_apply, real_smul, ofReal_zpow, map_zpow₀, mul_zpow,
+    ← zpow_mul, mul_comm]
+  rw [show n * k - 1 = n - 1 + (k - 1) * n by ring, zpow_add₀ hd]
+  ring_nf
+
+theorem pow_slash (n : ℕ) (k : ℤ) (A : GL (Fin 2) ℝ) (f : ℍ → ℂ) :
+    (f ^ n) ∣[n * k] A = |(A.det : ℝ)| ^ (n - 1 : ℤ) • (f ∣[k] A) ^ n := by
+  simpa using zpow_slash n k A f
+
+theorem inv_slash (k : ℤ) (A : GL (Fin 2) ℝ) (f : ℍ → ℂ) :
+    (f⁻¹) ∣[k] A = |(A.det : ℝ)| ^ (-2 : ℤ) • (f ∣[-k] A)⁻¹ := by
+  simpa using zpow_slash (-1) (-k) A f
+
 theorem mul_slash_SL2 (k1 k2 : ℤ) (A : SL(2, ℤ)) (f g : ℍ → ℂ) :
     (f * g) ∣[k1 + k2] A = f ∣[k1] A * g ∣[k2] A := by
   simp [SL_slash, mul_slash]
 
+theorem zpow_slash_SL2 (n k : ℤ) (A : SL(2, ℤ)) (f : ℍ → ℂ) :
+    (f ^ n) ∣[n * k] A = (f ∣[k] A) ^ n := by
+  simp [SL_slash, zpow_slash]
+
+theorem pow_slash_SL2 (n : ℕ) (k : ℤ) (A : SL(2, ℤ)) (f : ℍ → ℂ) :
+    (f ^ n) ∣[n * k] A = (f ∣[k] A) ^ n := by
+  simp [SL_slash, pow_slash]
+
+theorem inv_slash_SL2 (k : ℤ) (A : SL(2, ℤ)) (f : ℍ → ℂ) :
+    (f⁻¹) ∣[k] A = (f ∣[-k] A)⁻¹ := by
+  simp [SL_slash, inv_slash]
+
+theorem div_slash_SL2 (k1 k2 : ℤ) (A : SL(2, ℤ)) (f g : ℍ → ℂ) :
+    (f / g) ∣[k1 - k2] A = f ∣[k1] A / g ∣[k2] A := by
+  simp [div_eq_mul_inv, sub_eq_add_neg, mul_slash_SL2, inv_slash_SL2]
+
 open Finset
 
-set_option backward.isDefEq.respectTransparency false in
 lemma prod_slash_sum_weights {ι : Type*} {k : ι → ℤ} {g : GL (Fin 2) ℝ} {f : ι → ℍ → ℂ}
     {s : Finset ι} :
     (∏ i ∈ s, f i) ∣[∑ i ∈ s, k i] g = |g.det.val| ^ (#s - 1 : ℤ) • (∏ i ∈ s, f i ∣[k i] g) := by
   classical
   induction s using Finset.induction_on with
-  | empty =>
-    simp only [sum_empty, prod_empty, Matrix.GeneralLinearGroup.val_det_apply, card_empty,
-      CharP.cast_eq_zero, zero_sub, Int.reduceNeg, zpow_neg, zpow_one]
-    ext _
-    simp [slash_apply]
+  | empty => simpa using pow_slash 0 0 g 1
   | insert i t hi IH =>
     rcases t.eq_empty_or_nonempty with rfl | ht
     · simp
@@ -251,13 +276,6 @@ lemma prod_slash {ι : Type*} {k : ℤ} {g : GL (Fin 2) ℝ} {f : ι → ℍ →
     rw [Finset.sum_const, nsmul_eq_mul']
   rw [this]
   exact prod_slash_sum_weights
-
-@[deprecated prod_slash (since := "2026-01-22")]
-lemma prod_fintype_slash {ι : Type*} [Fintype ι] [Nonempty ι] {k : ℤ} {g : GL (Fin 2) ℝ}
-    {f : ι → ℍ → ℂ} : (∏ i, f i) ∣[k * Fintype.card ι] g =
-      |g.det.val| ^ (Fintype.card ι - 1) • (∏ i, f i ∣[k] g) := by
-  have : 0 < Fintype.card ι := Fintype.card_pos
-  simpa [← zpow_natCast, this] using ModularForm.prod_slash (s := (.univ : Finset ι))
 
 end
 

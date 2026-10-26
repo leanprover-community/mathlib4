@@ -6,7 +6,8 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-public import Mathlib.Topology.Order.ProjIcc
+
+import Mathlib.Topology.Order.ProjIcc
 
 /-!
 # Inverse trigonometric functions.
@@ -22,7 +23,9 @@ Basic inequalities on trigonometric functions.
 
 noncomputable section
 
-open Topology Filter Set Filter Real
+open Filter Set Filter Real
+
+open scoped Topology
 
 namespace Real
 variable {x y : ℝ}
@@ -36,11 +39,11 @@ noncomputable def arcsin : ℝ → ℝ :=
 theorem arcsin_mem_Icc (x : ℝ) : arcsin x ∈ Icc (-(π / 2)) (π / 2) :=
   Subtype.coe_prop _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem range_arcsin : range arcsin = Icc (-(π / 2)) (π / 2) := by
   rw [arcsin, range_comp Subtype.val]
-  simp [Icc]
+  ext
+  simp
 
 theorem arcsin_le_pi_div_two (x : ℝ) : arcsin x ≤ π / 2 :=
   (arcsin_mem_Icc x).2
@@ -285,15 +288,12 @@ theorem arccos_le_pi (x : ℝ) : arccos x ≤ π := by
 theorem arccos_nonneg (x : ℝ) : 0 ≤ arccos x := by
   unfold arccos; linarith [arcsin_le_pi_div_two x]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem arccos_pos {x : ℝ} : 0 < arccos x ↔ x < 1 := by simp [arccos]
 
 theorem cos_arccos {x : ℝ} (hx₁ : -1 ≤ x) (hx₂ : x ≤ 1) : cos (arccos x) = x := by
   rw [arccos, cos_pi_div_two_sub, sin_arcsin hx₁ hx₂]
 
--- TODO: fix non-terminal simp (acting on three goals, with different simp sets)
-set_option linter.flexible false in
 theorem arccos_cos {x : ℝ} (hx₁ : 0 ≤ x) (hx₂ : x ≤ π) : arccos (cos x) = x := by
   rw [arccos, ← sin_pi_div_two_sub, arcsin_sin] <;> simp [sub_eq_add_neg] <;> linarith
 
@@ -306,7 +306,7 @@ theorem strictAntiOn_arccos : StrictAntiOn arccos (Icc (-1) 1) := fun _ hx _ hy 
 @[gcongr]
 lemma arccos_lt_arccos {x y : ℝ} (hx : -1 ≤ x) (hlt : x < y) (hy : y ≤ 1) :
     arccos y < arccos x := by
-  unfold arccos; gcongr <;> assumption
+  unfold arccos; gcongr
 
 @[gcongr]
 lemma arccos_le_arccos {x y : ℝ} (hlt : x ≤ y) : arccos y ≤ arccos x := by unfold arccos; gcongr
@@ -335,7 +335,6 @@ theorem arccos_eq_zero {x} : arccos x = 0 ↔ 1 ≤ x := by simp [arccos, sub_eq
 @[simp]
 theorem arccos_eq_pi_div_two {x} : arccos x = π / 2 ↔ x = 0 := by simp [arccos]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem arccos_eq_pi {x} : arccos x = π ↔ x ≤ -1 := by
   rw [arccos, sub_eq_iff_eq_add, ← sub_eq_iff_eq_add', div_two_sub_self, neg_pi_div_two_eq_arcsin]
@@ -367,7 +366,14 @@ theorem sin_arccos (x : ℝ) : sin (arccos x) = √(1 - x ^ 2) := by
 theorem arccos_le_pi_div_two {x} : arccos x ≤ π / 2 ↔ 0 ≤ x := by simp [arccos]
 
 @[simp]
+theorem pi_div_two_le_arccos {x : ℝ} : π / 2 ≤ arccos x ↔ x ≤ 0 := by simp [arccos]
+
+@[simp]
 theorem arccos_lt_pi_div_two {x : ℝ} : arccos x < π / 2 ↔ 0 < x := by simp [arccos]
+
+@[simp]
+theorem pi_div_two_lt_arccos {x : ℝ} : π / 2 < arccos x ↔ x < 0 :=
+  lt_iff_lt_of_le_iff_le arccos_le_pi_div_two
 
 @[simp]
 theorem arccos_le_pi_div_four {x} : arccos x ≤ π / 4 ↔ √2 / 2 ≤ x := by
@@ -450,7 +456,7 @@ def cosPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
   continuousOn_invFun := continuous_arccos.continuousOn
 
 /-- `Real.cos` and `Real.arccos` as a (partial) equivalence from `[0, π]` to `[-1, 1]` -/
-@[simps, expose]
+@[simps]
 noncomputable def cosPartialEquiv : PartialEquiv ℝ ℝ where
   toFun θ := cos θ
   invFun x := arccos x

@@ -3,10 +3,11 @@ Copyright (c) 2024 Alex Brodbelt. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Brodbelt, Violeta Hernández
 -/
+module
 
-import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.Linarith
-import Mathlib.Data.PNat.Basic
+public import Mathlib.Tactic.NormNum
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Data.PNat.Basic
 
 /-!
 # IMO 1982 Q1
@@ -41,6 +42,8 @@ In the latter case we derive a contradiction, because if `f 1982 = 661` then
 `3334 = 5 * f 1982 + 29 * f(3) + f(2) ≤ f (5 * 1982 + 29 * 3 + 2) = f 9999 = 3333`.
 -/
 
+public section
+
 namespace Imo1982Q1
 
 structure IsGood (f : ℕ+ → ℕ) : Prop where
@@ -55,7 +58,6 @@ namespace IsGood
 variable {f : ℕ+ → ℕ} (hf : IsGood f)
 include hf
 
-set_option backward.isDefEq.respectTransparency false in
 lemma f₁ : f 1 = 0 := by
   have h : f 2 = 2 * f 1 ∨ f 2 = 2 * f 1 + 1 := by rw [two_mul]; exact hf.rel 1 1
   obtain h₁ | h₂ := hf.f₂ ▸ h
@@ -94,7 +96,7 @@ lemma part_1 : 660 ≤ f (1980) := by
 lemma part_2 : f 1980 ≤ 660 := by
   have h : 5 * f 1980 + 33 * f 3 ≤ 5 * 660 + 33 := by
     calc (5 : ℕ+) * f 1980 + (33 : ℕ+) * f 3 ≤ f (5 * 1980 + 33 * 3) := by apply hf.superlinear
-    _ = f 9999 := by rfl
+    _ = f 9999 := rfl
     _ = 5 * 660 + 33 := by rw [hf.f_9999]
   rw [hf.f₃, mul_one] at h
   -- from 5 * f 1980 + 33 ≤ 5 * 660 + 33 we show f 1980 ≤ 660

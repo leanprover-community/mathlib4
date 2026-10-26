@@ -39,20 +39,26 @@ namespace Submonoid
 
 @[to_additive]
 noncomputable instance [Monoid M] : Group (IsUnit.submonoid M) :=
-  { inferInstanceAs (Monoid (IsUnit.submonoid M)) with
+  { (inferInstance : Monoid (IsUnit.submonoid M)) with
     inv := fun x ↦ ⟨x.prop.unit⁻¹.val, x.prop.unit⁻¹.isUnit⟩
     inv_mul_cancel := fun x ↦
       Subtype.ext ((Units.val_mul x.prop.unit⁻¹ _).trans x.prop.unit.inv_val) }
 
 @[to_additive]
 noncomputable instance [CommMonoid M] : CommGroup (IsUnit.submonoid M) :=
-  { inferInstanceAs (Group (IsUnit.submonoid M)) with
+  { (inferInstance : Group (IsUnit.submonoid M)) with
     mul_comm := fun a b ↦ by convert mul_comm a b }
 
 @[to_additive]
-theorem IsUnit.Submonoid.coe_inv [Monoid M] (x : IsUnit.submonoid M) :
+theorem _root_.IsUnit.submonoid.coe_inv [Monoid M] (x : IsUnit.submonoid M) :
     ↑x⁻¹ = (↑x.prop.unit⁻¹ : M) :=
   rfl
+
+@[deprecated (since := "2026-05-24")]
+alias _root_.AddSubmonoid.IsUnit.Submonoid.coe_neg := IsAddUnit.addSubmonoid.coe_neg
+set_option linter.dupNamespace false in
+@[to_additive existing, deprecated (since := "2026-05-24")]
+alias IsUnit.Submonoid.coe_inv := IsUnit.submonoid.coe_inv
 
 section Monoid
 
@@ -134,6 +140,7 @@ noncomputable def fromCommLeftInv : S.leftInv →* S where
 
 variable (hS : S ≤ IsUnit.submonoid M)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The submonoid of pointwise inverse of `S` is `MulEquiv` to `S`. -/
 @[to_additive (attr := simps apply) /-- The additive submonoid of pointwise additive inverse of `S`
 is `AddEquiv` to `S`. -/]
@@ -182,7 +189,7 @@ section Group
 
 variable [Group M] (S : Submonoid M)
 
-open Pointwise
+open scoped Pointwise
 
 @[to_additive]
 theorem leftInv_eq_inv : S.leftInv = S⁻¹ :=

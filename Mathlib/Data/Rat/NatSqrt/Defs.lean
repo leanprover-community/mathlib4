@@ -6,12 +6,14 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Tactic.Positivity
-public import Mathlib.Algebra.Order.Field.Basic
 
 /-!
-Rational approximation of the square root of a natural number.
+# Rational approximations to square roots of naturals
 
-See also `Mathlib.Data.Rat.NatSqrt.Real` for comparisons with the real square root.
+This file defines `Nat.ratSqrt x prec`, a rational approximation of the square root of a
+natural number `x` to within `1 / prec`, and proves the basic bounds it satisfies.
+
+See also `Mathlib.Analysis.Rat.NatSqrt.Real` for comparisons with the real square root.
 -/
 
 @[expose] public section
@@ -33,7 +35,6 @@ theorem ratSqrt_sq_le (x : ℕ) {prec : ℕ} (h : 0 < prec) : (ratSqrt x prec) ^
   norm_cast
   exact sqrt_le' (x * prec ^ 2)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem lt_ratSqrt_add_inv_prec_sq (x : ℕ) {prec : ℕ} (h : 0 < prec) :
     x < (ratSqrt x prec + 1 / prec) ^ 2 := by
   unfold ratSqrt

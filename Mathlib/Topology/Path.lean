@@ -5,8 +5,8 @@ Authors: Patrick Massot
 -/
 module
 
-public import Mathlib.Topology.Order.ProjIcc
 public import Mathlib.Topology.CompactOpen
+public import Mathlib.Topology.Order.ProjIcc
 public import Mathlib.Topology.UnitInterval
 
 /-!
@@ -48,7 +48,9 @@ on `(-∞, 0]` and to `y` on `[1, +∞)`.
 
 noncomputable section
 
-open Topology Filter unitInterval Set Function
+open Filter unitInterval Set Function
+
+open scoped Topology
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {x y z : X} {ι : Type*}
 
@@ -61,9 +63,10 @@ structure Path (x y : X) extends C(I, X) where
   /-- The end point of a `Path`. -/
   target' : toFun 1 = y
 
+@[macro_inline]
 instance Path.instFunLike : FunLike (Path x y) I X where
   coe γ := ⇑γ.toContinuousMap
-  coe_injective' γ₁ γ₂ h := by
+  coe_injective γ₁ γ₂ h := by
     simp only [DFunLike.coe_fn_eq] at h
     cases γ₁; cases γ₂; congr
 
@@ -215,10 +218,6 @@ theorem extend_apply {a b : X} (γ : Path a b) {t : ℝ}
     (ht : t ∈ (Icc 0 1 : Set ℝ)) : γ.extend t = γ ⟨t, ht⟩ :=
   IccExtend_of_mem _ γ ht
 
-@[deprecated (since := "2025-11-05")]
-alias extend_extends := extend_apply
-
-set_option backward.isDefEq.respectTransparency false in
 theorem extend_zero : γ.extend 0 = x := by simp
 
 theorem extend_one : γ.extend 1 = y := by simp
@@ -272,7 +271,6 @@ theorem ofLine_extend (γ : Path x y) : ofLine (by fun_prop) (extend_zero γ) (e
 
 attribute [local simp] Iic_def
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Concatenation of two paths from `x` to `y` and from `y` to `z`, putting the first
 path on `[0, 1/2]` and the second one on `[1/2, 1]`. -/
 @[trans]
@@ -293,7 +291,6 @@ theorem trans_apply (γ : Path x y) (γ' : Path y z) (t : I) :
       else γ' ⟨2 * t - 1, two_mul_sub_one_mem_iff.2 ⟨(not_le.1 h).le, t.2.2⟩⟩ :=
   show ite _ _ _ = _ by split_ifs <;> rw [extend_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem trans_symm (γ : Path x y) (γ' : Path y z) : (γ.trans γ').symm = γ'.symm.trans γ.symm := by
   ext t
@@ -313,7 +310,7 @@ theorem extend_trans_of_le_half (γ₁ : Path x y) (γ₂ : Path y z) {t : ℝ} 
     (γ₁.trans γ₂).extend t = γ₁.extend (2 * t) := by
   obtain _ | ht₀ := le_total t 0
   · repeat rw [extend_of_le_zero _ (by linarith)]
-  · rwa [extend_apply _ ⟨ht₀, by linarith⟩, trans_apply, dif_pos, extend_apply]
+  · rwa [extend_apply _ ⟨ht₀, by linarith⟩, trans_apply, dite_eq_left, extend_apply]
 
 theorem extend_trans_of_half_le (γ₁ : Path x y) (γ₂ : Path y z) {t : ℝ} (ht : 1 / 2 ≤ t) :
     (γ₁.trans γ₂).extend t = γ₂.extend (2 * t - 1) := by
@@ -328,14 +325,13 @@ theorem refl_trans_refl {a : X} :
   ext
   simp [Path.trans]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem trans_range {a b c : X} (γ₁ : Path a b) (γ₂ : Path b c) :
     range (γ₁.trans γ₂) = range γ₁ ∪ range γ₂ := by
   rw [← extend_range, ← image_univ, ← Iic_union_Ici (a := 1 / 2), image_union,
     EqOn.image_eq fun t ht ↦ extend_trans_of_le_half _ _ (mem_Iic.1 ht),
     EqOn.image_eq fun t ht ↦ extend_trans_of_half_le _ _ (mem_Ici.1 ht),
     ← image_image γ₁.extend, ← image_image (γ₂.extend <| · - 1), ← image_image γ₂.extend]
-  norm_num [image_mul_left_Ici, image_mul_left_Iic,
+  simp [image_mul_left_Ici, image_mul_left_Iic,
     image_extend_of_subset, Icc_subset_Iic_self, Icc_subset_Ici_self]
 
 /-- Image of a path from `x` to `y` by a map which is continuous on the path. -/
@@ -393,21 +389,10 @@ theorem cast_symm {a₁ a₂ b₁ b₂ : X} (γ : Path a₂ b₂) (ha : a₁ = a
     (γ.symm).cast hb ha = (γ.cast ha hb).symm :=
   rfl
 
-@[deprecated cast_symm (since := "2025-11-13")]
-theorem symm_cast {a₁ a₂ b₁ b₂ : X} (γ : Path a₂ b₂) (ha : a₁ = a₂) (hb : b₁ = b₂) :
-    (γ.cast ha hb).symm = γ.symm.cast hb ha :=
-  rfl
-
 @[simp]
 theorem cast_trans {a₁ a₂ b₁ b₂ c₁ c₂ : X} (γ : Path a₂ b₂)
     (γ' : Path b₂ c₂) (ha : a₁ = a₂) (hb : b₁ = b₂) (hc : c₁ = c₂) :
     (γ.trans γ').cast ha hc = (γ.cast ha hb).trans (γ'.cast hb hc) :=
-  rfl
-
-@[deprecated cast_trans (since := "2025-11-13")]
-theorem trans_cast {a₁ a₂ b₁ b₂ c₁ c₂ : X} (γ : Path a₂ b₂)
-    (γ' : Path b₂ c₂) (ha : a₁ = a₂) (hb : b₁ = b₂) (hc : c₁ = c₂) :
-    (γ.cast ha hb).trans (γ'.cast hb hc) = (γ.trans γ').cast ha hc :=
   rfl
 
 @[simp]
@@ -609,7 +594,6 @@ theorem truncate_one_one {a b : X} (γ : Path a b) :
     γ.truncate 1 1 = (Path.refl b).cast (by rw [min_self, γ.extend_one]) γ.extend_one := by
   convert γ.truncate_self 1
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem truncate_zero_one {a b : X} (γ : Path a b) :
     γ.truncate 0 1 = γ.cast (by simp) (by simp) := by
@@ -641,7 +625,6 @@ theorem reparam_id (γ : Path x y) : γ.reparam id continuous_id rfl rfl = γ :=
   ext
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem range_reparam (γ : Path x y) {f : I → I} (hfcont : Continuous f) (hf₀ : f 0 = 0)
     (hf₁ : f 1 = 1) : range (γ.reparam f hfcont hf₀ hf₁) = range γ := by
   change range (γ ∘ f) = range γ
@@ -650,10 +633,10 @@ theorem range_reparam (γ : Path x y) {f : I → I} (hfcont : Continuous f) (hf�
     intro t
     have h₁ : Continuous (Set.IccExtend (zero_le_one' ℝ) f) := by fun_prop
     have := intermediate_value_Icc (zero_le_one' ℝ) h₁.continuousOn
-    · rw [IccExtend_left, IccExtend_right, Icc.mk_zero, Icc.mk_one, hf₀, hf₁] at this
-      rcases this t.2 with ⟨w, hw₁, hw₂⟩
-      rw [IccExtend_of_mem _ _ hw₁] at hw₂
-      exact ⟨_, hw₂⟩
+    rw [IccExtend_left, IccExtend_right, Icc.mk_zero, Icc.mk_one, hf₀, hf₁] at this
+    rcases this t.2 with ⟨w, hw₁, hw₂⟩
+    rw [IccExtend_of_mem _ _ hw₁] at hw₂
+    exact ⟨_, hw₂⟩
   rw [range_comp, this, image_univ]
 
 theorem refl_reparam {f : I → I} (hfcont : Continuous f) (hf₀ : f 0 = 0) (hf₁ : f 1 = 1) :

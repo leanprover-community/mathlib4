@@ -28,11 +28,11 @@ finite sets, finset
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
 assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice IsOrderedMonoid
 
-open Multiset Subtype Function
+open Multiset Subtype
 
 universe u
 
-variable {α : Type*} {β : Type*} {γ : Type*}
+variable {α : Type*}
 
 namespace Finset
 
@@ -54,7 +54,6 @@ theorem attach_val (s : Finset α) : s.attach.1 = s.1.attach :=
 theorem mem_attach (s : Finset α) : ∀ x, x ∈ s.attach :=
   Multiset.mem_attach _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 theorem coe_attach (s : Finset α) : (s.attach : Set s) = Set.univ := by ext; simp
 

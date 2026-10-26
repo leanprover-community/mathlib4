@@ -89,6 +89,7 @@ def Cover.pullbackCoverOver : W.Cover (precoverage P) where
 instance (j : 𝒰.I₀) : ((𝒰.pullbackCoverOver S f).X j).Over S where
   hom := (pullback (f.asOver S) ((𝒰.f j).asOver S)).hom
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : (𝒰.pullbackCoverOver S f).Over S where
   isOver_map j := { comp_over := by exact Over.w (pullback.fst (f.asOver S) ((𝒰.f j).asOver S)) }
 
@@ -115,6 +116,7 @@ def Cover.pullbackCoverOver' : W.Cover (precoverage P) where
 instance (j : 𝒰.I₀) : ((𝒰.pullbackCoverOver' S f).X j).Over S where
   hom := (pullback ((𝒰.f j).asOver S) (f.asOver S)).hom
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : (𝒰.pullbackCoverOver' S f).Over S where
   isOver_map j := { comp_over := by exact Over.w (pullback.snd ((𝒰.f j).asOver S) (f.asOver S)) }
 
@@ -143,8 +145,8 @@ def Cover.pullbackCoverOverProp : W.Cover (precoverage P) where
         ((PreservesPullback.iso (MorphismProperty.Over.forget Q _ _ ⋙ Over.forget S)
           (f.asOverProp S) ((𝒰.f _).asOverProp S)).inv)
         (PreservesPullback.iso_inv_fst _ _ _) x).mp hy
-    · dsimp only
-      rw [← Over.forget_map, MorphismProperty.Comma.toCommaMorphism_eq_hom,
+    · simp only [← CategoryTheory.Over.forget_map]
+      rw [MorphismProperty.Comma.toCommaMorphism_eq_hom,
         ← MorphismProperty.Comma.forget_map, ← Functor.comp_map]
       rw [← PreservesPullback.iso_hom_fst, P.cancel_left_of_respectsIso]
       exact P.pullback_fst _ _ (𝒰.map_prop j)
@@ -153,6 +155,7 @@ instance (j : 𝒰.I₀) : ((𝒰.pullbackCoverOverProp S f hX hW hQ).X j).Over 
   hom := (pullback (f.asOverProp (hX := hW) (hY := hX) S)
     ((𝒰.f j).asOverProp (hX := hQ j) (hY := hX) S)).hom
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : (𝒰.pullbackCoverOverProp S f hX hW hQ).Over S where
   isOver_map j :=
     { comp_over := by exact (pullback.fst (f.asOverProp S) ((𝒰.f j).asOverProp S)).w }
@@ -175,8 +178,8 @@ def Cover.pullbackCoverOverProp' : W.Cover (precoverage P) where
         ((PreservesPullback.iso (MorphismProperty.Over.forget Q _ _ ⋙ Over.forget S)
           ((𝒰.f _).asOverProp S) (f.asOverProp S)).inv)
         (PreservesPullback.iso_inv_snd _ _ _) x).mp hy
-    · dsimp only
-      rw [← Over.forget_map, MorphismProperty.Comma.toCommaMorphism_eq_hom,
+    · simp only [← CategoryTheory.Over.forget_map]
+      rw [MorphismProperty.Comma.toCommaMorphism_eq_hom,
         ← MorphismProperty.Comma.forget_map, ← Functor.comp_map]
       rw [← PreservesPullback.iso_hom_snd, P.cancel_left_of_respectsIso]
       exact P.pullback_snd _ _ (𝒰.map_prop j)
@@ -185,6 +188,7 @@ instance (j : 𝒰.I₀) : ((𝒰.pullbackCoverOverProp' S f hX hW hQ).X j).Over
   hom := (pullback ((𝒰.f j).asOverProp (hX := hQ j) (hY := hX) S)
     (f.asOverProp (hX := hW) (hY := hX) S)).hom
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : (𝒰.pullbackCoverOverProp' S f hX hW hQ).Over S where
   isOver_map j :=
     { comp_over := by exact (pullback.snd ((𝒰.f j).asOverProp S) (f.asOverProp S)).w }
@@ -198,9 +202,11 @@ variable {X : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (𝒱 : ∀ x, (𝒰.
 instance (j : (𝒰.bind 𝒱).I₀) : ((𝒰.bind 𝒱).X j).Over S :=
   inferInstanceAs <| ((𝒱 j.1).X j.2).Over S
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 instance {X : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (𝒱 : ∀ x, (𝒰.X x).Cover (precoverage P))
     [X.Over S] [𝒰.Over S] [∀ x, (𝒱 x).Over S] : Cover.Over S (𝒰.bind 𝒱) where
   over := fun ⟨i, j⟩ ↦ inferInstanceAs <| ((𝒱 i).X j).Over S
-  isOver_map := fun ⟨i, j⟩ ↦ { comp_over := by simp }
+  isOver_map := fun ⟨i, j⟩ ↦ { comp_over := by simp; rfl }
 
 end AlgebraicGeometry.Scheme

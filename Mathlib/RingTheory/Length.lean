@@ -5,11 +5,10 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Exact
-public import Mathlib.LinearAlgebra.Basis.VectorSpace
-public import Mathlib.Order.KrullDimension
-public import Mathlib.RingTheory.FiniteLength
 public import Mathlib.LinearAlgebra.Dimension.Free
+public import Mathlib.RingTheory.FiniteLength
+
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
 
@@ -94,7 +93,7 @@ lemma Module.length_ne_top_iff_finiteDimensionalOrder :
 lemma Module.length_ne_top_iff : Module.length R M ≠ ⊤ ↔ IsFiniteLength R M := by
   refine ⟨fun h ↦ ?_, fun H ↦ ?_⟩
   · rw [length_ne_top_iff_finiteDimensionalOrder] at h
-    rw [isFiniteLength_iff_isNoetherian_isArtinian, isNoetherian_iff, isArtinian_iff]
+    rw [isFiniteLength_iff_isNoetherian_isArtinian, isNoetherian_iff]
     let R : SetRel (Submodule R M) (Submodule R M) :=
       {(N₁, N₂) : Submodule R M × Submodule R M | N₁ < N₂}
     change R.inv.IsWellFounded ∧ R.IsWellFounded
@@ -107,7 +106,15 @@ lemma Module.length_ne_top [IsArtinian R M] [IsNoetherian R M] : Module.length R
   rw [length_ne_top_iff, isFiniteLength_iff_isNoetherian_isArtinian]
   exact ⟨‹_›, ‹_›⟩
 
-set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma Module.finiteDimensionalOrder_submodule_iff :
+    FiniteDimensionalOrder (Submodule R M) ↔ IsFiniteLength R M := by
+  rw [← Module.length_ne_top_iff_finiteDimensionalOrder, Module.length_ne_top_iff]
+
+instance [IsArtinian R M] [IsNoetherian R M] : FiniteDimensionalOrder (Submodule R M) := by
+  rw [Module.finiteDimensionalOrder_submodule_iff, isFiniteLength_iff_isNoetherian_isArtinian]
+  tauto
+
 lemma Module.length_submodule {N : Submodule R M} :
     Module.length R N = Order.height N := by
   apply WithBot.coe_injective
@@ -125,17 +132,22 @@ lemma LinearEquiv.length_eq {N : Type*} [AddCommGroup N] [Module R N] (e : M ≃
   rw [Module.coe_length, Module.coe_length,
     Order.krullDim_eq_of_orderIso (Submodule.orderIsoMapComap e)]
 
-set_option backward.isDefEq.respectTransparency false in
+theorem Module.length_eq_of_surjective {S : Type*} [CommRing S] [Algebra S R] [Module S M]
+    [IsScalarTower S R M] (h : Function.Surjective (algebraMap S R)) :
+    Module.length S M = Module.length R M := by
+  have : RingHomSurjective (algebraMap S R) := ⟨h⟩
+  let f : M →ₛₗ[algebraMap S R] M := ⟨AddHom.id M, by simp⟩
+  rw [Module.length, Module.length, WithBot.unbot_inj,
+    Order.krullDim_eq_of_orderIso (Submodule.orderIsoMapComapOfBijective f Function.bijective_id)]
+
 lemma Module.length_bot :
     Module.length R (⊥ : Submodule R M) = 0 :=
   Module.length_eq_zero
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma Module.length_top :
     Module.length R (⊤ : Submodule R M) = Module.length R M := by
   rw [Module.length_submodule, Module.length_eq_height]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Submodule.height_lt_top [IsArtinian R M] [IsNoetherian R M] (N : Submodule R M) :
     Order.height N < ⊤ := by
   simpa only [← Module.length_submodule] using Module.length_ne_top.lt_top
@@ -144,7 +156,6 @@ lemma Submodule.height_strictMono [IsArtinian R M] [IsNoetherian R M] :
     StrictMono (Order.height : Submodule R M → ℕ∞) :=
   fun N _ h ↦ Order.height_strictMono h N.height_lt_top
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Submodule.length_lt [IsArtinian R M] [IsNoetherian R M] {N : Submodule R M} (h : N ≠ ⊤) :
     Module.length R N < Module.length R M := by
   simpa [← Module.length_top (M := M), Module.length_submodule] using height_strictMono h.lt_top
@@ -153,7 +164,6 @@ variable {N P : Type*} [AddCommGroup N] [AddCommGroup P] [Module R N] [Module R 
 variable (f : N →ₗ[R] M) (g : M →ₗ[R] P) (hf : Function.Injective f) (hg : Function.Surjective g)
 variable (H : Function.Exact f g)
 
-set_option backward.isDefEq.respectTransparency false in
 include hf hg H in
 /-- Length is additive in exact sequences. -/
 lemma Module.length_eq_add_of_exact :
@@ -188,7 +198,6 @@ lemma Module.length_le_of_injective : Module.length R N ≤ Module.length R M :=
     (Submodule.mkQ_surjective _) (LinearMap.exact_map_mkQ_range f)]
   exact le_self_add
 
-set_option backward.isDefEq.respectTransparency false in
 include hg in
 lemma Module.length_le_of_surjective : Module.length R P ≤ Module.length R M := by
   rw [Module.length_eq_add_of_exact (LinearMap.ker g).subtype g (Submodule.subtype_injective _) hg
@@ -216,7 +225,6 @@ lemma Module.length_pi_of_fintype : ∀ {ι : Type*} [Fintype ι]
     rw [(LinearEquiv.piOptionEquivProd _).length_eq, Module.length_prod, IH, add_comm,
       Fintype.sum_option, add_comm]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma Module.length_finsupp {ι : Type*} :
     Module.length R (ι →₀ M) = ENat.card ι * Module.length R M := by
@@ -254,9 +262,7 @@ lemma Module.length_of_free [Module.Free R M] :
   nontriviality R
   nontriviality M
   by_cases H : Module.length R R = ⊤
-  · rw [b.repr.length_eq, Module.length_finsupp, H, ENat.mul_top', ENat.mul_top']
-    congr 1
-    simp [ENat.card_eq_zero_iff_empty, rank_pos_of_free.ne']
+  · simp [b.repr.length_eq, H, rank_pos_of_free.ne']
   rw [← ne_eq, Module.length_ne_top_iff, isFiniteLength_iff_isNoetherian_isArtinian] at H
   cases H
   let b := Module.Free.chooseBasis R M
@@ -266,7 +272,7 @@ variable (R M) in
 lemma Module.length_of_free_of_finite
     [StrongRankCondition R] [Module.Free R M] [Module.Finite R M] :
     Module.length R M = Module.finrank R M * Module.length R R := by
-  rw [length_of_free, Cardinal.toENat_eq_nat.mpr (finrank_eq_rank _ _).symm]
+  rw [length_of_free, Cardinal.toENat_eq_natCast.mpr (finrank_eq_rank _ _).symm]
 
 lemma Module.length_eq_one_iff :
     Module.length R M = 1 ↔ IsSimpleModule R M := by
@@ -288,3 +294,15 @@ lemma Module.length_eq_finrank
     (K M : Type*) [DivisionRing K] [AddCommGroup M] [Module K M] [Module.Finite K M] :
     Module.length K M = Module.finrank K M := by
   simp [Module.length_of_free]
+
+theorem Submodule.length_le_length_restrictScalars (A : Type*) [Ring A] [SMul A R] [Module A M]
+    [IsScalarTower A R M] (p : Submodule R M) :
+    Module.length R p ≤ Module.length A (p.restrictScalars A) := by
+  rw [← WithBot.coe_le_coe, Module.coe_length, Module.coe_length]
+  exact Order.krullDim_le_of_orderEmbedding (restrictScalarsEmbedding A R p)
+
+theorem Submodule.length_quotient_lt [IsArtinian R M] [IsNoetherian R M] (p : Submodule R M)
+    (h : p ≠ ⊥) : Module.length R (M ⧸ p) < Module.length R M := by
+  rw [Module.length_quotient, Module.length, WithBot.lt_unbot_iff, ← Order.coheight_bot_eq_krullDim,
+    WithBot.coe_lt_coe]
+  exact Order.coheight_strictAnti (bot_lt_iff_ne_bot.mpr h) (Order.coheight_lt_top p)

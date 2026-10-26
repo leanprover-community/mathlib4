@@ -24,7 +24,7 @@ of non-real roots.
 We also show that an irreducible real polynomial has degree at most two.
 -/
 
-@[expose] public section
+public section
 
 open Polynomial Bornology Complex
 
@@ -47,6 +47,8 @@ theorem exists_root {f : ℂ[X]} (hf : 0 < degree f) : ∃ z : ℂ, IsRoot f z :
   obtain rfl : f = C 0 := Polynomial.funext fun z ↦ inv_injective <| by simp [this]
   simp at hf
 
+/-- **Fundamental theorem of algebra**: the field `ℂ` of complex numbers is algebraically closed. -/
+@[wikidata Q192760]
 instance isAlgClosed : IsAlgClosed ℂ :=
   IsAlgClosed.of_exists_root _ fun _p _ hp => Complex.exists_root <| degree_pos_of_irreducible hp
 
@@ -67,7 +69,6 @@ theorem splits_ℚ_ℂ {p : ℚ[X]} : Fact ((p.map (algebraMap ℚ ℂ)).Splits)
 attribute [local instance] splits_ℚ_ℂ
 attribute [local ext] Complex.ext
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The number of complex roots equals the number of real roots plus
 the number of roots not fixed by complex conjugation (i.e. with some imaginary component). -/
 theorem card_complex_roots_eq_card_real_add_card_not_gal_inv (p : ℚ[X]) :
@@ -76,7 +77,7 @@ theorem card_complex_roots_eq_card_real_add_card_not_gal_inv (p : ℚ[X]) :
         (galActionHom p ℂ (restrict p ℂ
         (AlgEquiv.restrictScalars ℚ Complex.conjAe))).support.card := by
   by_cases hp : p = 0
-  · haveI : IsEmpty (p.rootSet ℂ) := by rw [hp, rootSet_zero]; infer_instance
+  · have : IsEmpty (p.rootSet ℂ) := by rw [hp, rootSet_zero]; infer_instance
     simp_rw [(galActionHom p ℂ _).support.eq_empty_of_isEmpty, hp, rootSet_zero,
       Set.toFinset_empty, Finset.card_empty]
   have inj : Function.Injective (IsScalarTower.toAlgHom ℚ ℝ ℂ) := (algebraMap ℝ ℂ).injective
@@ -123,13 +124,11 @@ theorem card_complex_roots_eq_card_real_add_card_not_gal_inv (p : ℚ[X]) :
     rw [hb, hc]
     tauto
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An irreducible polynomial of prime degree with two non-real roots has full Galois group. -/
 theorem galActionHom_bijective_of_prime_degree {p : ℚ[X]} (p_irr : Irreducible p)
     (p_deg : p.natDegree.Prime)
     (p_roots : Fintype.card (p.rootSet ℂ) = Fintype.card (p.rootSet ℝ) + 2) :
     Function.Bijective (galActionHom p ℂ) := by
-  classical
   have h1 : Fintype.card (p.rootSet ℂ) = p.natDegree := by
     simp_rw [rootSet_def, Finset.coe_sort_coe, Fintype.card_coe]
     rw [Multiset.toFinset_card_of_nodup, ← Splits.natDegree_eq_card_roots, natDegree_map]
@@ -138,8 +137,7 @@ theorem galActionHom_bijective_of_prime_degree {p : ℚ[X]} (p_irr : Irreducible
   let conj' := restrict p ℂ (Complex.conjAe.restrictScalars ℚ)
   refine
     ⟨galActionHom_injective p ℂ, fun x =>
-      (congr_arg (x ∈ ·) (show (galActionHom p ℂ).range = ⊤ from ?_)).mpr
-        (Subgroup.mem_top x)⟩
+      congr(x ∈ $(show (galActionHom p ℂ).range = ⊤ from ?_)).mpr (Subgroup.mem_top x)⟩
   apply Equiv.Perm.subgroup_eq_top_of_swap_mem
   · rwa [h1]
   · rw [h1]
@@ -152,7 +150,6 @@ theorem galActionHom_bijective_of_prime_degree {p : ℚ[X]} (p_irr : Irreducible
     rw [← p_roots, ← Set.toFinset_card (rootSet p ℝ), ← Set.toFinset_card (rootSet p ℂ)]
     exact (card_complex_roots_eq_card_real_add_card_not_gal_inv p).symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An irreducible polynomial of prime degree with 1-3 non-real roots has full Galois group. -/
 theorem galActionHom_bijective_of_prime_degree' {p : ℚ[X]} (p_irr : Irreducible p)
     (p_deg : p.natDegree.Prime)
@@ -201,10 +198,9 @@ lemma Irreducible.natDegree_le_two {p : ℝ[X]} (hp : Irreducible p) : natDegree
   obtain ⟨z, hz⟩ : ∃ z : ℂ, aeval z p = 0 :=
     IsAlgClosed.exists_aeval_eq_zero _ p (degree_pos_of_irreducible hp).ne'
   rw [← finrank_real_complex]
-  convert minpoly.natDegree_le z using 1
-  · rw [← minpoly.eq_of_irreducible hp hz, natDegree_mul hp.ne_zero (by simpa using hp.ne_zero),
-      natDegree_C, add_zero]
-  infer_instance
+  suffices p.natDegree = (minpoly ℝ z).natDegree from this ▸ minpoly.natDegree_le (A := ℝ) z
+  rw [← minpoly.eq_of_irreducible hp hz, natDegree_mul hp.ne_zero (by simpa using hp.ne_zero),
+    natDegree_C, add_zero]
 
 /-- An irreducible real polynomial has degree at most two. -/
 lemma Irreducible.degree_le_two {p : ℝ[X]} (hp : Irreducible p) : degree p ≤ 2 :=

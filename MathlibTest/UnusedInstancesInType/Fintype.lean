@@ -1,13 +1,16 @@
 module
 
+import ImportGraph.Lean.Environment
 import MathlibTest.UnusedInstancesInType.Basic
 import Mathlib.Data.Fintype.EquivFin
 
 set_option linter.unusedFintypeInType true
+set_option linter.concreteInstances false
 
 section unused
 
 /--
+@ +1:8...48
 warning: `foo` does not use the following hypothesis in its type:
   • [Fintype α] (#2)
 
@@ -15,7 +18,7 @@ Consider replacing this hypothesis with the corresponding instance of `Finite` a
 
 Note: This linter can be disabled with `set_option linter.unusedFintypeInType false`
 -/
-#guard_msgs in
+#guard_msgs (positions := true) in
 theorem foo {α} [Fintype α] : True := True.intro
 
 def Foo (α) [Fintype α] := Unit

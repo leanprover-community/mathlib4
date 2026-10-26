@@ -6,8 +6,9 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.LinearAlgebra.CrossProduct
-public import Mathlib.LinearAlgebra.Matrix.DotProduct
 public import Mathlib.LinearAlgebra.Projectivization.Basic
+
+import Mathlib.LinearAlgebra.Matrix.DotProduct
 
 /-!
 
@@ -33,7 +34,6 @@ open scoped LinearAlgebra.Projectivization
 
 section DotProduct
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Orthogonality on the projective plane. -/
 def orthogonal : ℙ F (m → F) → ℙ F (m → F) → Prop :=
   Quotient.lift₂ (fun v w ↦ v.1 ⬝ᵥ w.1 = 0) (fun _ _ _ _ ⟨_, h1⟩ ⟨_, h2⟩ ↦ by
@@ -69,7 +69,6 @@ lemma mk_eq_mk_iff_crossProduct_eq_zero {v w : Fin 3 → F} (hv : v ≠ 0) (hw :
 
 variable [DecidableEq F]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Cross product on the projective plane. -/
 def cross : ℙ F (Fin 3 → F) → ℙ F (Fin 3 → F) → ℙ F (Fin 3 → F) :=
   Quotient.map₂ (fun v w ↦ if h : crossProduct v.1 w.1 = 0 then v else ⟨crossProduct v.1 w.1, h⟩)
@@ -89,12 +88,12 @@ lemma cross_mk {v w : Fin 3 → F} (hv : v ≠ 0) (hw : w ≠ 0) :
 lemma cross_mk_of_cross_eq_zero {v w : Fin 3 → F} (hv : v ≠ 0) (hw : w ≠ 0)
     (h : crossProduct v w = 0) :
     cross (mk F v hv) (mk F w hw) = mk F v hv := by
-  rw [cross_mk, dif_pos h]
+  rw [cross_mk, dite_eq_left h]
 
 lemma cross_mk_of_cross_ne_zero {v w : Fin 3 → F} (hv : v ≠ 0) (hw : w ≠ 0)
     (h : crossProduct v w ≠ 0) :
     cross (mk F v hv) (mk F w hw) = mk F (crossProduct v w) h := by
-  rw [cross_mk, dif_neg h]
+  rw [cross_mk, dite_eq_right h]
 
 lemma cross_self (v : ℙ F (Fin 3 → F)) : cross v v = v := by
   induction v with | h v hv =>

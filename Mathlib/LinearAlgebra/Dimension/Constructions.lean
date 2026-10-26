@@ -39,16 +39,15 @@ noncomputable section
 universe u u' v v' u₁' w w'
 
 variable {R : Type u} {S : Type u'} {M : Type v} {M' : Type v'} {M₁ : Type v}
-variable {ι : Type w} {ι' : Type w'} {η : Type u₁'} {φ : η → Type*}
+variable {ι : Type w} {η : Type u₁'} {φ : η → Type*}
 
-open Basis Cardinal DirectSum Function Module Set Submodule
+open Cardinal DirectSum Function Module Set Submodule
 
 section Quotient
 
 variable [Ring R] [CommRing S] [AddCommGroup M] [AddCommGroup M'] [AddCommGroup M₁]
 variable [Module R M]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem LinearIndependent.sumElim_of_quotient
     {M' : Submodule R M} {ι₁ ι₂} {f : ι₁ → M'} (hf : LinearIndependent R f) (g : ι₂ → M)
     (hg : LinearIndependent R (Submodule.Quotient.mk (p := M') ∘ g)) :
@@ -90,11 +89,11 @@ theorem LinearIndepOn.quotient_iff_union {s t : Set ι} {f : ι → M} (hs : Lin
 theorem rank_quotient_add_rank_le [Nontrivial R] (M' : Submodule R M) :
     Module.rank R (M ⧸ M') + Module.rank R M' ≤ Module.rank R M := by
   conv_lhs => simp only [Module.rank_def]
-  rw [Cardinal.ciSup_add_ciSup _ (bddAbove_range _) _ (bddAbove_range _)]
+  rw [Cardinal.ciSup_add_ciSup _ bddAbove_of_small _ bddAbove_of_small]
   refine ciSup_le fun ⟨s, hs⟩ ↦ ciSup_le fun ⟨t, ht⟩ ↦ ?_
   choose f hf using Submodule.Quotient.mk_surjective M'
-  simpa [add_comm] using (LinearIndependent.sumElim_of_quotient ht (fun (i : s) ↦ f i)
-    (by simpa [Function.comp_def, hf] using hs)).cardinal_le_rank
+  simpa [add_comm] using! (LinearIndependent.sumElim_of_quotient ht (fun (i : s) ↦ f i)
+    (by simpa [Function.comp_def, hf] using! hs)).cardinal_le_rank
 
 theorem rank_quotient_le (p : Submodule R M) : Module.rank R (M ⧸ p) ≤ Module.rank R M :=
   (mkQ p).rank_le_of_surjective Quot.mk_surjective
@@ -130,7 +129,7 @@ variable [Module R M₁] [Module R M']
 theorem rank_add_rank_le_rank_prod [Nontrivial R] :
     Module.rank R M + Module.rank R M₁ ≤ Module.rank R (M × M₁) := by
   conv_lhs => simp only [Module.rank_def]
-  rw [Cardinal.ciSup_add_ciSup _ (bddAbove_range _) _ (bddAbove_range _)]
+  rw [Cardinal.ciSup_add_ciSup _ bddAbove_of_small _ bddAbove_of_small]
   exact ciSup_le fun ⟨s, hs⟩ ↦ ciSup_le fun ⟨t, ht⟩ ↦
     (linearIndependent_inl_union_inr' hs ht).cardinal_le_rank
 
@@ -274,8 +273,6 @@ variable [∀ i, AddCommMonoid (φ i)] [∀ i, Module R (φ i)] [∀ i, Module.F
 
 open Module.Free
 
-open LinearMap
-
 /-- The rank of a finite product of free modules is the sum of the ranks. -/
 -- this result is not true without the freeness assumption
 @[simp]
@@ -333,7 +330,6 @@ variable {R}
 -- TODO: merge with the `Finrank` content
 /-- An `n`-dimensional `R`-vector space is equivalent to `Fin n → R`. -/
 def finDimVectorspaceEquiv (n : ℕ) (hn : Module.rank R M = n) : M ≃ₗ[R] Fin n → R := by
-  haveI := nontrivial_of_invariantBasisNumber R
   have : Cardinal.lift.{u} (n : Cardinal.{v}) = Cardinal.lift.{v} (n : Cardinal.{u}) := by simp
   have hn := Cardinal.lift_inj.{v, u}.2 hn
   rw [this] at hn
@@ -446,6 +442,11 @@ protected noncomputable def Set.finrank (s : Set M) : ℕ :=
 theorem finrank_span_le_card (s : Set M) [Fintype s] : finrank R (span R s) ≤ s.toFinset.card :=
   finrank_le_of_rank_le (by simpa using rank_span_le (R := R) s)
 
+theorem finrank_span_le_ncard (s : Set M) (hs : s.Finite) :
+    finrank R (Submodule.span R s) ≤ s.ncard :=
+  have := hs.fintype
+  Set.ncard_eq_toFinset_card' s ▸ finrank_span_le_card s
+
 theorem finrank_span_finset_le_card (s : Finset M) : (s : Set M).finrank R ≤ s.card :=
   calc
     (s : Set M).finrank R ≤ (s : Set M).toFinset.card := finrank_span_le_card (M := M) s
@@ -458,7 +459,7 @@ theorem finrank_range_le_card {ι : Type*} [Fintype ι] (b : ι → M) :
   rw [Set.toFinset_range]
   exact Finset.card_image_le
 
-theorem finrank_span_eq_card [Nontrivial R] {ι : Type*} [Fintype ι] {b : ι → M}
+theorem finrank_span_eq_card {ι : Type*} [Fintype ι] {b : ι → M}
     (hb : LinearIndependent R b) :
     finrank R (span R (Set.range b)) = Fintype.card ι :=
   finrank_eq_of_rank_eq
@@ -467,12 +468,14 @@ theorem finrank_span_eq_card [Nontrivial R] {ι : Type*} [Fintype ι] {b : ι �
       rwa [← lift_inj, mk_range_eq_of_injective hb.injective, Cardinal.mk_fintype, lift_natCast,
         lift_eq_nat_iff] at this)
 
+theorem finrank_span_set_eq_ncard {s : Set M} (hs : LinearIndepOn R id s) :
+    finrank R (span R s) = s.ncard := by
+  rw [finrank, rank_span_set hs]
+  rfl
+
 theorem finrank_span_set_eq_card {s : Set M} [Fintype s] (hs : LinearIndepOn R id s) :
-    finrank R (span R s) = s.toFinset.card :=
-  finrank_eq_of_rank_eq
-    (by
-      have : Module.rank R (span R s) = #s := rank_span_set hs
-      rwa [Cardinal.mk_fintype, ← Set.toFinset_card] at this)
+    finrank R (span R s) = s.toFinset.card := by
+  rw [finrank_span_set_eq_ncard hs, Set.ncard_eq_toFinset_card']
 
 theorem finrank_span_finset_eq_card {s : Finset M} (hs : LinearIndepOn R id (s : Set M)) :
     finrank R (span R (s : Set M)) = s.card := by
@@ -485,15 +488,34 @@ theorem span_lt_of_subset_of_card_lt_finrank {s : Set M} [Fintype s] {t : Submod
   lt_of_le_of_finrank_lt_finrank (span_le.mpr subset)
     (lt_of_le_of_lt (finrank_span_le_card _) card_lt)
 
+theorem span_lt_of_subset_of_ncard_lt_finrank {s : Set M} (hs : s.Finite) {t : Submodule R M}
+    (subset : s ⊆ t) (card_lt : s.ncard < finrank R t) : Submodule.span R s < t :=
+  have := hs.fintype
+  span_lt_of_subset_of_card_lt_finrank subset (Set.ncard_eq_toFinset_card' s ▸ card_lt)
+
 theorem span_lt_top_of_card_lt_finrank {s : Set M} [Fintype s]
     (card_lt : s.toFinset.card < finrank R M) : span R s < ⊤ :=
   lt_top_of_finrank_lt_finrank (lt_of_le_of_lt (finrank_span_le_card _) card_lt)
+
+theorem span_lt_top_of_ncard_lt_finrank {s : Set M} (hs : s.Finite)
+    (card_lt : s.ncard < finrank R M) : Submodule.span R s < ⊤ :=
+  have := hs.fintype
+  span_lt_top_of_card_lt_finrank (Set.ncard_eq_toFinset_card' s ▸ card_lt)
 
 lemma finrank_le_of_span_eq_top {ι : Type*} [Fintype ι] {v : ι → M}
     (hv : Submodule.span R (Set.range v) = ⊤) : finrank R M ≤ Fintype.card ι := by
   classical
   rw [← finrank_top, ← hv]
   exact (finrank_span_le_card _).trans (by convert Fintype.card_range_le v; rw [Set.toFinset_card])
+
+@[simp]
+lemma Pi.dim_spanSubset [Finite ι] {s : Set ι} :
+    Module.finrank R (Pi.spanSubset R s) = s.ncard := by
+  classical
+  have := Fintype.ofFinite ι
+  rw [Pi.spanSubset, finrank_span_set_eq_card <| (Pi.basisFun R ι).linearIndepOn _ |>.id_image,
+    Set.toFinset_card, Fintype.card_eq_nat_card, Nat.card_coe_set_eq]
+  exact Set.ncard_image_of_injective s (Pi.basisFun R ι).injective
 
 end Span
 
@@ -536,7 +558,6 @@ section Ring
 variable {F E : Type*} [CommRing F] [IsDomain F] [Ring E] [Algebra F E]
 variable [StrongRankCondition F] [IsTorsionFree F E] [Nontrivial E]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Subalgebra.rank_bot : Module.rank F (⊥ : Subalgebra F E) = 1 :=
   (Subalgebra.toSubmoduleEquiv (⊥ : Subalgebra F E)).symm.rank_eq.trans <| by
@@ -544,7 +565,6 @@ theorem Subalgebra.rank_bot : Module.rank F (⊥ : Subalgebra F E) = 1 :=
     have := Module.nontrivial F E
     exact .singleton one_ne_zero
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Subalgebra.finrank_bot : finrank F (⊥ : Subalgebra F E) = 1 :=
   finrank_eq_of_rank_eq (by simp)
@@ -573,7 +593,7 @@ noncomputable def sumQuot :
   apply Basis.mk (v := b)
   · apply LinearIndependent.sumElim_of_quotient
     · exact bW.linearIndependent
-    · convert bQ.linearIndependent
+    · convert! bQ.linearIndependent
   · unfold b
     rw [Set.Sum.elim_range, Submodule.span_union,
       show Set.range (fun i ↦ (bW i : V)) = W.subtype '' (Set.range (fun i ↦ bW i)) by aesop,
@@ -600,7 +620,7 @@ theorem sumQuot_repr_left (i : m) :
 theorem sumQuot_repr_inl (w : W) (i : m) :
     (sumQuot bW bQ).repr w (Sum.inl i) = bW.repr w i := by
   classical
-  refine Eq.symm <| (bW.repr_apply_eq
+  refine Eq.symm (bW.repr_apply_eq
       (fun w i => (sumQuot bW bQ).repr (W.subtype w) (Sum.inl i)) ?_ ?_ ?_ w i) <;>
   aesop (add simp Finsupp.single_apply)
 

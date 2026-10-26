@@ -6,11 +6,12 @@ Authors: Nailin Guan
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Ext.HasExt
-public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.Data.Nat.Totient
 public import Mathlib.Data.Rat.Floor
 public import Mathlib.Tactic.Continuity
+
+import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
 
 /-!
 
@@ -18,17 +19,16 @@ public import Mathlib.Tactic.Continuity
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 
-variable {R : Type u} [CommRing R]
+variable {R : Type u} [Ring R]
 
 variable {M : Type v} [AddCommGroup M] [Module R M] {N : Type v} [AddCommGroup N] [Module R N]
 
 open CategoryTheory Abelian
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The standard short complex `0 → N → P → M → 0` with `P= R^{⊕M}` free. -/
 noncomputable abbrev ModuleCat.projectiveShortComplex [Small.{v} R] (M : ModuleCat.{v} R) :
     ShortComplex (ModuleCat.{v} R) :=
@@ -36,7 +36,6 @@ noncomputable abbrev ModuleCat.projectiveShortComplex [Small.{v} R] (M : ModuleC
     ⟨Finsupp.mapRange.linearEquiv (Shrink.linearEquiv.{v} R R)⟩
   (e.constr ℕ id).shortComplexKer
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ModuleCat.shortExact_projectiveShortComplex [Small.{v} R] (M : ModuleCat.{v} R) :
     M.projectiveShortComplex.ShortExact := by
   apply LinearMap.shortExact_shortComplexKer

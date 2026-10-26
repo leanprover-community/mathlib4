@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Ext.DimensionShifting
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
-public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
@@ -16,7 +15,7 @@ public import Mathlib.RingTheory.Noetherian.Basic
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 
@@ -24,7 +23,6 @@ variable (R : Type u) [CommRing R]
 
 open CategoryTheory Abelian
 
-set_option backward.isDefEq.respectTransparency false in
 instance ModuleCat.finite_ext [Small.{v} R] [IsNoetherianRing R] (N M : ModuleCat.{v} R)
     [Module.Finite R N] [Module.Finite R M] (i : ℕ) : Module.Finite R (Ext N M i) := by
   induction i generalizing N with

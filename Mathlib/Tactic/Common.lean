@@ -7,23 +7,17 @@ Authors: Kim Morrison
 -- First import Aesop, Qq, and Plausible
 module  -- shake: keep-all, shake: keep-downstream
 
-public import Aesop
-public import Qq
-public import Plausible
-
--- Tools for analysing imports, like `#find_home`, `#minimize_imports`, ...
-public import ImportGraph.Tools
-public import ImportGraph.Lean.Environment
+public meta import Aesop
+public meta import Qq
+public meta import Plausible
 
 -- Import common Batteries tactics and commands
 public import Batteries.Tactic.Basic
 public import Batteries.Tactic.Case
-public import Batteries.Tactic.HelpCmd
-public import Batteries.Tactic.Alias
 public import Batteries.Tactic.GeneralizeProofs
 
 -- Import Batteries code actions
-public import Batteries.CodeAction
+public meta import Batteries.CodeAction
 
 -- Import syntax for leansearch
 public import LeanSearchClient
@@ -46,6 +40,7 @@ public import Mathlib.Tactic.Choose
 public import Mathlib.Tactic.ClearExclamation
 public import Mathlib.Tactic.ClearExcept
 public import Mathlib.Tactic.Clear_
+public import Mathlib.Tactic.ClickSuggestions
 public import Mathlib.Tactic.Coe
 public import Mathlib.Tactic.CongrExclamation
 public import Mathlib.Tactic.CongrM
@@ -53,9 +48,11 @@ public import Mathlib.Tactic.Constructor
 public import Mathlib.Tactic.Contrapose
 public import Mathlib.Tactic.Conv
 public import Mathlib.Tactic.Convert
+public import Mathlib.Tactic.DefEqAbuse
 public import Mathlib.Tactic.DefEqTransformations
 public import Mathlib.Tactic.DeprecateTo
 public import Mathlib.Tactic.DepRewrite
+public import Mathlib.Tactic.DSimpPercent
 public import Mathlib.Tactic.ErwQuestion
 public import Mathlib.Tactic.Eqns
 public import Mathlib.Tactic.ExistsI
@@ -65,6 +62,7 @@ public import Mathlib.Tactic.Find
 public import Mathlib.Tactic.FunProp
 public import Mathlib.Tactic.GCongr
 public import Mathlib.Tactic.GRewrite
+public import Mathlib.Tactic.GrindAttrs
 public import Mathlib.Tactic.GuardGoalNums
 public import Mathlib.Tactic.GuardHypNums
 public import Mathlib.Tactic.HigherOrder
@@ -91,10 +89,11 @@ public import Mathlib.Tactic.RenameBVar
 public import Mathlib.Tactic.Says
 public import Mathlib.Tactic.ScopedNS
 public import Mathlib.Tactic.Set
+public import Mathlib.Tactic.Setm
 public import Mathlib.Tactic.SimpIntro
 public import Mathlib.Tactic.SimpRw
 public import Mathlib.Tactic.Simproc.ExistsAndEq
-public import Mathlib.Tactic.Simps.Basic
+public import Mathlib.Tactic.Simps
 public import Mathlib.Tactic.SplitIfs
 public import Mathlib.Tactic.Spread
 public import Mathlib.Tactic.Subsingleton
@@ -110,7 +109,6 @@ public import Mathlib.Tactic.TermCongr
 public import Mathlib.Tactic.ToExpr
 public import Mathlib.Tactic.ToLevel
 public import Mathlib.Tactic.Trace
-public import Mathlib.Tactic.TypeCheck
 public import Mathlib.Tactic.UnsetOption
 public import Mathlib.Tactic.Use
 public import Mathlib.Tactic.Variable
@@ -123,8 +121,15 @@ public import Mathlib.Util.CountHeartbeats
 public import Mathlib.Util.PrintSorries
 public import Mathlib.Util.TransImports
 public import Mathlib.Util.WhatsNew
+public meta import Lean.Elab.Tactic.Try
+public meta import Lean.Meta.Tactic.Try.Collect
+
+-- Preserve custom import ordering:
+set_option linter.style.header.imports false
 
 /-!
+# Common tactics, linters, and utilities
+
 This file imports all tactics which do not have significant theory imports,
 and hence can be imported very low in the theory import hierarchy,
 thereby making tactics widely available without needing specific imports.
@@ -139,27 +144,27 @@ import hierarchy.
 public meta section
 
 /-!
-# Register tactics with `hint`. Tactics with larger priority run first.
+### Register tactics with `hint`. Tactics with larger priority run first.
 -/
 
 section Hint
 
-register_hint 200 grind
 register_hint 1000 trivial
-register_hint 500 tauto
 register_hint 1000 split
 register_hint 1000 intro
-register_hint 80 aesop
+register_hint 1000 decide
 register_hint 800 simp_all?
 register_hint 600 exact?
-register_hint 1000 decide
+register_hint 500 tauto
+register_hint 200 grind
 register_hint 200 omega
 register_hint 200 fun_prop
+register_hint 80 aesop
 
 end Hint
 
 /-!
-# Register tactics with `try?`. Tactics with larger priority run first.
+### Register tactics with `try?`. Tactics with larger priority run first.
 -/
 
 section Try

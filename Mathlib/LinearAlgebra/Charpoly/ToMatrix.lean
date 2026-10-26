@@ -6,7 +6,6 @@ Authors: Riccardo Brasca
 module
 
 public import Mathlib.LinearAlgebra.Charpoly.Basic
-public import Mathlib.LinearAlgebra.Matrix.Basis
 public import Mathlib.RingTheory.Finiteness.Prod
 
 /-!
@@ -22,8 +21,6 @@ public import Mathlib.RingTheory.Finiteness.Prod
 
 public section
 
-noncomputable section
-
 open Module Free Polynomial Matrix
 
 universe u v w
@@ -38,7 +35,6 @@ namespace LinearMap
 
 section Basic
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `charpoly f` is the characteristic polynomial of the matrix of `f` in any basis. -/
 @[simp]
 theorem charpoly_toMatrix {ι : Type w} [DecidableEq ι] [Fintype ι] (b : Basis ι R M) :

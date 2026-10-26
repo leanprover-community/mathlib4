@@ -50,7 +50,7 @@ open Function Set Set.powersetCard
 
 /-! The canonical alternating map from `Fin n → M` to `⋀[R]^n M`. -/
 
-/-- `exteriorAlgebra.ιMulti` is the alternating map from `Fin n → M` to `⋀[r]^n M`
+/-- `exteriorPower.ιMulti` is the alternating map from `Fin n → M` to `⋀[r]^n M`
 induced by `exteriorAlgebra.ιMulti`, i.e. sending a family of vectors `m : Fin n → M` to the
 product of its entries. -/
 def ιMulti : M [⋀^Fin n]→ₗ[R] (⋀[R]^n M) :=
@@ -81,7 +81,6 @@ lemma ιMulti_span_fixedDegree :
     Submodule.span R (Set.range (ExteriorAlgebra.ιMulti R n)) = ⋀[R]^n M :=
   ExteriorAlgebra.ιMulti_span_fixedDegree R n
 
-set_option backward.isDefEq.respectTransparency false in
 open Set Submodule in
 /-- If a set `s` spans the module `M`, then the set of all elements of the form `x₁ ∧ ⋯ ∧ xₙ`
 where `xᵢ ∈ s` spans `⋀ⁿ M`. -/
@@ -96,7 +95,7 @@ lemma ιMulti_span_fixedDegree_of_span_eq_top {s : Set M} (hs : span R s = ⊤) 
     rintro x hx
     obtain ⟨f, rfl⟩ := Set.mem_pow.mp hx
     refine mem_span_of_mem ⟨ExteriorAlgebra.ιInv ∘ Subtype.val ∘ f, ?_, ?_⟩
-    · rw [Set.mem_setOf_eq, Set.range_comp, Set.image_subset_iff]
+    · rw [Set.mem_ofPred_eq, Set.range_comp, Set.image_subset_iff]
       apply Subset.trans ?_ (s.image_subset_preimage_of_inverse ExteriorAlgebra.ι_leftInverse)
       grind
     · rw [ExteriorAlgebra.ιMulti_apply]
@@ -105,7 +104,6 @@ lemma ιMulti_span_fixedDegree_of_span_eq_top {s : Set M} (hs : span R s = ⊤) 
       obtain ⟨m, -, hm⟩ := (Set.mem_image _ _ _).mp (f i).2
       rw [Function.comp_apply, Function.comp_apply, ← hm, ExteriorAlgebra.ι_leftInverse]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The image of `exteriorPower.ιMulti` spans `⋀[R]^n M`. -/
 lemma ιMulti_span :
     Submodule.span R (Set.range (ιMulti R n)) = (⊤ : Submodule R (⋀[R]^n M)) := by
@@ -115,9 +113,8 @@ lemma ιMulti_span :
     Submodule.range_subtype]
   exact ExteriorAlgebra.ιMulti_span_fixedDegree R n
 
-set_option backward.isDefEq.respectTransparency false in
 open Set Submodule in
-/-- A version of `ιMulti_span_fixedDegree_of_span` that works in the exterior power. -/
+/-- A version of `ιMulti_span_fixedDegree_of_span_eq_top` that works in the exterior power. -/
 lemma ιMulti_span_of_span {s : Set M} (hs : span R s = ⊤) :
     span R (ιMulti R n '' {a | range a ⊆ s}) = ⊤ := by
   apply LinearMap.map_injective (ker_subtype (⋀[R]^n M))
@@ -147,6 +144,7 @@ noncomputable def relations (ι : Type*) [DecidableEq ι] (M : Type*)
         r • Finsupp.single (update m i x) 1
     | .alt m _ _ _ _ => Finsupp.single m 1
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {R} in
 /-- The solutions in a module `N` to the linear equations
@@ -181,7 +179,7 @@ noncomputable def relationsSolutionEquiv {ι : Type*} [DecidableEq ι] {M : Type
         · simp
         · simpa using f.map_eq_zero_of_eq v hm hij }
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The universal property of the exterior power. -/
 noncomputable def isPresentationCore :
     (relationsSolutionEquiv.symm (ιMulti R n (M := M))).IsPresentationCore where
@@ -195,7 +193,6 @@ noncomputable def isPresentationCore :
 
 end presentation
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The standard presentation of the `R`-module `⋀[R]^n M`. -/
 @[simps! G R relation var]
 noncomputable def presentation : Module.Presentation R (⋀[R]^n M) :=
@@ -203,7 +200,6 @@ noncomputable def presentation : Module.Presentation R (⋀[R]^n M) :=
 
 variable {R M n}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Two linear maps on `⋀[R]^n M` that agree on the image of `exteriorPower.ιMulti`
 are equal. -/
 @[ext]
@@ -211,7 +207,6 @@ lemma linearMap_ext {f : ⋀[R]^n M →ₗ[R] N} {g : ⋀[R]^n M →ₗ[R] N}
     (heq : f.compAlternatingMap (ιMulti R n) = g.compAlternatingMap (ιMulti R n)) : f = g :=
   (presentation R n M).postcomp_injective (by ext f; apply DFunLike.congr_fun heq)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The linear equivalence between `n`-fold alternating maps from `M` to `N` and linear maps from
 `⋀[R]^n M` to `N`: this is the universal property of the `n`th exterior power of `M`. -/
 noncomputable def alternatingMapLinearEquiv : (M [⋀^Fin n]→ₗ[R] N) ≃ₗ[R] ⋀[R]^n M →ₗ[R] N :=
@@ -232,7 +227,7 @@ lemma alternatingMapLinearEquiv_comp_ιMulti (f : M [⋀^Fin n]→ₗ[R] N) :
 @[simp]
 lemma alternatingMapLinearEquiv_apply_ιMulti (f : M [⋀^Fin n]→ₗ[R] N) (a : Fin n → M) :
     alternatingMapLinearEquiv f (ιMulti R n a) = f a :=
-  DFunLike.congr_fun (alternatingMapLinearEquiv_comp_ιMulti f) a
+  congr($(alternatingMapLinearEquiv_comp_ιMulti f) a)
 
 @[simp]
 lemma alternatingMapLinearEquiv_symm_apply (F : ⋀[R]^n M →ₗ[R] N) (m : Fin n → M) :
@@ -240,7 +235,6 @@ lemma alternatingMapLinearEquiv_symm_apply (F : ⋀[R]^n M →ₗ[R] N) (m : Fin
   obtain ⟨f, rfl⟩ := alternatingMapLinearEquiv.surjective F
   simp only [LinearEquiv.symm_apply_apply, alternatingMapLinearEquiv_comp_ιMulti]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma alternatingMapLinearEquiv_ιMulti :
     alternatingMapLinearEquiv (ιMulti R n (M := M)) = LinearMap.id := by
@@ -261,24 +255,20 @@ lemma alternatingMapLinearEquiv_comp (g : N →ₗ[R] N') (f : M [⋀^Fin n]→�
 
 /-! Functoriality of the exterior powers. -/
 
-set_option backward.isDefEq.respectTransparency false in
 variable (n) in
 /-- The linear map between `n`th exterior powers induced by a linear map between the modules. -/
 noncomputable def map (f : M →ₗ[R] N) : ⋀[R]^n M →ₗ[R] ⋀[R]^n N :=
   alternatingMapLinearEquiv ((ιMulti R n).compLinearMap f)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma alternatingMapLinearEquiv_symm_map (f : M →ₗ[R] N) :
     alternatingMapLinearEquiv.symm (map n f) = (ιMulti R n).compLinearMap f := by
   simp only [map, LinearEquiv.symm_apply_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_comp_ιMulti (f : M →ₗ[R] N) :
     (map n f).compAlternatingMap (ιMulti R n) = (ιMulti R n).compLinearMap f := by
   simp only [map, alternatingMapLinearEquiv_comp_ιMulti]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_apply_ιMulti (f : M →ₗ[R] N) (m : Fin n → M) :
     map n f (ιMulti R n m) = ιMulti R n (f ∘ m) := by
@@ -292,7 +282,6 @@ lemma map_comp_ιMulti_family {I : Type*} [LinearOrder I] (v : I → M) (f : M �
   simp only [ιMulti_family, Function.comp_apply, map_apply_ιMulti]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma map_apply_ιMulti_family {I : Type*} [LinearOrder I] (v : I → M) (f : M →ₗ[R] N)
     (s : powersetCard I n) :
@@ -300,17 +289,24 @@ lemma map_apply_ιMulti_family {I : Type*} [LinearOrder I] (v : I → M) (f : M 
   simp only [ιMulti_family, map, alternatingMapLinearEquiv_apply_ιMulti]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_id :
     map n (LinearMap.id (R := R) (M := M)) = LinearMap.id := by
   aesop
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_comp (f : M →ₗ[R] N) (g : N →ₗ[R] N') :
     map n (g ∘ₗ f) = map n g ∘ₗ map n f := by
   aesop
+
+theorem subtype_comp_map_eq (f : M →ₗ[R] N) :
+    (Submodule.subtype _) ∘ₗ (map n f) =
+      (ExteriorAlgebra.map f).toLinearMap ∘ₗ (Submodule.subtype _) :=
+  linearMap_ext <| AlternatingMap.ext fun m ↦ (by simp)
+
+@[simp]
+theorem coe_map (f : M →ₗ[R] N) (x : ⋀[R]^n M) : map n f x = ExteriorAlgebra.map f x.1 :=
+  congr($(subtype_comp_map_eq f) x)
 
 /-! Exactness properties of the exterior power functor. -/
 
@@ -364,7 +360,7 @@ private lemma ιMulti_family_span_fixedDegree_aux
   have α_card : (Finset.image α Finset.univ).card = n :=
     (Finset.card_image_of_injective Finset.univ α_inj).trans (Finset.card_fin n)
   use (Finset.orderIsoOfFin (Finset.image α Finset.univ) α_card).toEquiv.trans
-    ((Equiv.setCongr Fintype.coe_image_univ).trans (Equiv.ofInjective α α_inj).symm)
+    ((Set.equivOfEq Fintype.coe_image_univ).trans (Equiv.ofInjective α α_inj).symm)
   apply Submodule.mem_span_of_mem
   use ⟨(Finset.image α Finset.univ), α_card⟩
   rw [ExteriorAlgebra.ιMulti_family, Function.comp_assoc]
@@ -386,11 +382,10 @@ lemma ιMulti_family_span_fixedDegree_of_span {I : Type*} [LinearOrder I] {v : I
     exact Submodule.coe_mem _
   · rw [← ιMulti_span_fixedDegree_of_span_eq_top R n M hv, Submodule.span_le]
     rintro - ⟨f, ⟨f_range, rfl⟩⟩
-    rw [Set.mem_setOf] at f_range
+    rw [Set.mem_ofPred] at f_range
     obtain ⟨α, rfl⟩ := Set.range_subset_range_iff_exists_comp.mp f_range
     exact ιMulti_family_span_fixedDegree_aux R v α
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a family of vectors spans `M`, then the family of its `n`-fold exterior products spans
 `⋀[R]^n M`. This is a variant of `ιMulti_family_span_fixedDegree_of_span` where we
 work in the exterior power and not the exterior algebra. -/
@@ -401,7 +396,6 @@ lemma ιMulti_family_span_of_span {I : Type*} [LinearOrder I]
   rw [LinearMap.map_span, ← Set.image_univ, Set.image_image]
   simpa using ιMulti_family_span_fixedDegree_of_span R hv
 
-set_option backward.isDefEq.respectTransparency false in
 open Set Submodule in
 /-- If `v` is a family of vectors of `M` indexed by a linearly ordered type, then the span of the
 range of `exteriorPower.ιMulti_family R n v`, i.e., of the family of `n`-fold exterior products
@@ -421,15 +415,24 @@ lemma ιMulti_family_span {I : Type*} [LinearOrder I] (v : I → M) :
 
 end ιMulti_family
 
+lemma subsingleton_of_span_eq_top_of_card_lt {ι : Type*} [Finite ι] (g : ι → M)
+    (hg : Submodule.span R (range g) = ⊤) (i : ℕ) (hi : Nat.card ι < i) :
+    Subsingleton (⋀[R]^i M) := by
+  obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin ι
+  let : LinearOrder ι := LinearOrder.lift' e e.injective
+  replace hi : range (ιMulti_family R i g) = ∅ := by
+    rw [range_eq_empty_iff, powersetCard.eq_empty_iff.mpr hi, isEmpty_coe_sort]
+  suffices (⊥ : Submodule R (⋀[R]^i M)) = ⊤ by
+    rwa [subsingleton_iff_bot_eq_top, Submodule.subsingleton_iff] at this
+  rw [← ιMulti_family_span_of_span R hg, hi, Submodule.span_empty]
+
 /-! Linear equivalences in degrees 0 and 1. -/
 
-set_option backward.isDefEq.respectTransparency false in
 variable (R M) in
 /-- The linear equivalence ` ⋀[R]^0 M ≃ₗ[R] R`. -/
 @[simps! -isSimp symm_apply]
 noncomputable def zeroEquiv : ⋀[R]^0 M ≃ₗ[R] R :=
-  LinearEquiv.ofLinear
-    (alternatingMapLinearEquiv (AlternatingMap.constOfIsEmpty R _ _ 1))
+  .ofLinearMap (alternatingMapLinearEquiv (AlternatingMap.constOfIsEmpty R _ _ 1))
     { toFun := fun r ↦ r • (ιMulti _ _ (by rintro ⟨i, hi⟩; simp at hi))
       map_add' := by intros; simp only [add_smul]
       map_smul' := by intros; simp only [smul_eq_mul, mul_smul, RingHom.id_apply] }
@@ -443,27 +446,25 @@ lemma zeroEquiv_ιMulti (f : Fin 0 → M) :
 lemma zeroEquiv_naturality (f : M →ₗ[R] N) :
     (zeroEquiv R N).comp (map 0 f) = zeroEquiv R M := by aesop
 
-set_option backward.isDefEq.respectTransparency false in
 variable (R M) in
 /-- The linear equivalence `M ≃ₗ[R] ⋀[R]^1 M`. -/
 @[simps! -isSimp symm_apply]
 noncomputable def oneEquiv : ⋀[R]^1 M ≃ₗ[R] M :=
-  LinearEquiv.ofLinear
-    (alternatingMapLinearEquiv (AlternatingMap.ofSubsingleton R M M (0 : Fin 1) .id)) (by
-      have h (m : M) : (fun (_ : Fin 1) ↦ m) = update (fun _ ↦ 0) 0 m := by
-        ext i
-        fin_cases i
-        rfl
-      exact
-        { toFun := fun m ↦ ιMulti _ _ (fun _ ↦ m)
-          map_add' := fun m₁ m₂ ↦ by
-            rw [h]; nth_rw 2 [h]; nth_rw 3 [h]
-            simp only [Fin.isValue, AlternatingMap.map_update_add]
-          map_smul' := fun r m ↦ by
-            dsimp
-            rw [h]; nth_rw 2 [h]
-            simp only [Fin.isValue, AlternatingMap.map_update_smul] })
-    (by aesop) (by aesop)
+  .ofLinearMap (alternatingMapLinearEquiv (AlternatingMap.ofSubsingleton R M M (0 : Fin 1) .id)) (by
+    have h (m : M) : (fun (_ : Fin 1) ↦ m) = update (fun _ ↦ 0) 0 m := by
+      ext i
+      fin_cases i
+      rfl
+    exact
+      { toFun := fun m ↦ ιMulti _ _ (fun _ ↦ m)
+        map_add' := fun m₁ m₂ ↦ by
+          rw [h]; nth_rw 2 [h]; nth_rw 3 [h]
+          simp only [Fin.isValue, AlternatingMap.map_update_add]
+        map_smul' := fun r m ↦ by
+          dsimp
+          rw [h]; nth_rw 2 [h]
+          simp only [Fin.isValue, AlternatingMap.map_update_smul] })
+  (by aesop) (by aesop)
 
 @[simp]
 lemma oneEquiv_ιMulti (f : Fin 1 → M) :

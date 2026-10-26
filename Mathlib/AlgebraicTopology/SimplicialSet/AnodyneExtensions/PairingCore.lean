@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Pairing
+public import Mathlib.AlgebraicTopology.SimplicialSet.Nonsingular
 
 /-!
 # Helper structure in order to construct pairings
@@ -23,7 +24,9 @@ their dimensions are respectively `dim s` or `dim s + 1` for `s : ι`.
 
 universe v u
 
-open CategoryTheory Simplicial
+open CategoryTheory
+
+open scoped Simplicial
 
 namespace SSet.Subcomplex
 
@@ -59,6 +62,7 @@ variable {A}
 
 /-- The `PairingCore` structure induced by a pairing. The opposite construction
 is `PairingCore.pairing`. -/
+@[implicit_reducible]
 noncomputable def Pairing.pairingCore (P : A.Pairing) [P.IsProper] :
     A.PairingCore where
   ι := P.II
@@ -99,12 +103,12 @@ namespace PairingCore
 variable (h : A.PairingCore)
 
 /-- The type (I) simplices of `h : A.PairingCore`, as a family indexed by `h.ι`. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def type₁ (s : h.ι) : A.N :=
   Subcomplex.N.mk (h.simplex s) (h.nonDegenerate₁ s) (h.notMem₁ s)
 
 /-- The type (II) simplices of `h : A.PairingCore`, as a family indexed by `h.ι`. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def type₂ (s : h.ι) : A.N :=
   Subcomplex.N.mk (X.δ (h.index s) (h.simplex s)) (h.nonDegenerate₂ s)
     (h.notMem₂ s)
@@ -116,7 +120,7 @@ lemma injective_type₂ : Function.Injective h.type₂ :=
   fun s t hst ↦ h.injective_type₂' (by rwa [Subcomplex.N.ext_iff, SSet.N.ext_iff] at hst)
 
 lemma type₁_ne_type₂ (s t : h.ι) : h.type₁ s ≠ h.type₂ t := by
-  simpa only [ne_eq, N.ext_iff, SSet.N.ext_iff] using h.type₁_ne_type₂' s t
+  simpa only [ne_eq, N.ext_iff, SSet.N.ext_iff] using! h.type₁_ne_type₂' s t
 
 lemma surjective (x : A.N) :
     ∃ (s : h.ι), x = h.type₁ s ∨ x = h.type₂ s := by
@@ -125,21 +129,21 @@ lemma surjective (x : A.N) :
   · exact ⟨s, Or.inr (by rwa [N.ext_iff, SSet.N.ext_iff])⟩
 
 /-- The type (I) simplices of `h : A.PairingCore`, as a subset of `A.N`. -/
-def I : Set A.N := Set.range h.type₁
+abbrev I : Set A.N := Set.range h.type₁
 
 /-- The type (II) simplices of `h : A.PairingCore`, as a subset of `A.N`. -/
-def II : Set A.N := Set.range h.type₂
+abbrev II : Set A.N := Set.range h.type₂
 
 /-- The bijection `h.ι ≃ h.I` when `h : A.PairingCore`. -/
-@[simps! apply_coe]
+@[implicit_reducible, simps! apply_coe]
 noncomputable def equivI : h.ι ≃ h.I := Equiv.ofInjective _ h.injective_type₁
 
 /-- The bijection `h.ι ≃ h.II` when `h : A.PairingCore`. -/
-@[simps! apply_coe]
+@[implicit_reducible, simps! apply_coe]
 noncomputable def equivII : h.ι ≃ h.II := Equiv.ofInjective _ h.injective_type₂
 
 /-- The pairing induced by `h : A.PairingCore`. -/
-@[simps I II]
+@[implicit_reducible, simps I II]
 noncomputable def pairing : A.Pairing where
   I := h.I
   II := h.II
@@ -166,6 +170,10 @@ lemma pairing_p_symm_equivI (x : h.ι) :
     DFunLike.coe (F := h.I ≃ h.II) h.pairing.p.symm (h.equivI x) = h.equivII x := by
   simp [pairing]
 
+lemma type₁_pairing (x : h.ι) :
+    h.type₁ x = h.pairing.p (h.equivII x) := by
+  simp
+
 /-- The condition that `h : A.PairingCore` is proper, i.e. for each `s : h.ι`,
 the type (II) simplex `h.type₂ s` is uniquely a `1`-codimensional
 face of the type (I) simplex `h.type₁ s`. -/
@@ -177,20 +185,29 @@ lemma isUniquelyCodimOneFace [h.IsProper] (s : h.ι) :
     S.IsUniquelyCodimOneFace (h.type₂ s).toS (h.type₁ s).toS :=
   IsProper.isUniquelyCodimOneFace _
 
-set_option backward.isDefEq.respectTransparency false in
+instance [X.Nonsingular] : h.IsProper where
+  isUniquelyCodimOneFace s :=
+    (S.IsUniquelyCodimOneFace.iff _ _).2
+      (existsUnique_of_exists_of_unique ⟨_, rfl⟩
+        (fun _ _ hi hj ↦ Nonsingular.δ_injective _
+          (h.nonDegenerate₁ s) _ _ (hi.trans hj.symm)))
+
 instance [h.IsProper] : h.pairing.IsProper where
   isUniquelyCodimOneFace x := by
     obtain ⟨s, rfl⟩ := h.equivII.surjective x
     simpa using h.isUniquelyCodimOneFace s
 
-set_option backward.isDefEq.respectTransparency false in
+lemma isProper_pairing_iff :
+    h.pairing.IsProper ↔ h.IsProper := by
+  refine ⟨fun _ ↦ ⟨fun s ↦ ?_⟩, fun _ ↦ inferInstance⟩
+  simpa using h.pairing.isUniquelyCodimOneFace (h.equivII s)
+
 @[simp]
 lemma isUniquelyCodimOneFace_index [h.IsProper] (s : h.ι) :
     (h.isUniquelyCodimOneFace s).index rfl = h.index s := by
   symm
   simp [← (h.isUniquelyCodimOneFace s).δ_eq_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isUniquelyCodimOneFace_index_coe
     [h.IsProper] (s : h.ι) {d : ℕ} (hd : h.dim s = d) :
     ((h.isUniquelyCodimOneFace s).index hd).val = (h.index s).val := by
@@ -202,6 +219,7 @@ class IsInner where
   ne_zero (s : h.ι) : h.index s ≠ 0
   ne_last (s : h.ι) : h.index s ≠ Fin.last _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance [h.IsInner] [h.IsProper] : h.pairing.IsInner where
   ne_zero x := by
@@ -217,7 +235,6 @@ instance [h.IsInner] [h.IsProper] : h.pairing.IsInner where
 def AncestralRel (s t : h.ι) : Prop :=
   s ≠ t ∧ h.type₂ s < h.type₁ t
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ancestralRel_iff (s t : h.ι) :
     h.AncestralRel s t ↔ h.pairing.AncestralRel (h.equivII s) (h.equivII t) := by
   simp [AncestralRel, Pairing.AncestralRel]
@@ -233,6 +250,18 @@ instance [h.IsRegular] : h.pairing.IsRegular where
     rw [wellFounded_iff_isEmpty_descending_chain] at this ⊢
     exact ⟨fun ⟨f, hf⟩ ↦ this.false
       ⟨fun n ↦ h.equivII.symm (f n), fun n ↦ by simpa [ancestralRel_iff] using hf n⟩⟩
+
+lemma isRegular_pairing_iff (h : A.PairingCore) :
+    h.pairing.IsRegular ↔ h.IsRegular := by
+  refine ⟨fun _ ↦ ?_, fun _ ↦ inferInstance⟩
+  have : h.IsProper := by
+    rw [← isProper_pairing_iff]
+    infer_instance
+  constructor
+  have := h.pairing.wf
+  rw [wellFounded_iff_isEmpty_descending_chain] at this ⊢
+  exact ⟨fun ⟨f, hf⟩ ↦ this.false
+    ⟨fun n ↦ h.equivII (f n), fun n ↦ by simpa [ancestralRel_iff] using hf n⟩⟩
 
 end PairingCore
 

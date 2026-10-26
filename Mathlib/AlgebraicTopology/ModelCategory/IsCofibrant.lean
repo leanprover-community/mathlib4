@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.ModelCategory.Instances
-public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
 # Fibrant and cofibrant objects in a model category
@@ -18,7 +17,7 @@ any `X : C` as an abbreviation for `Cofibration (initial.to X : ⊥_ C ⟶ X)`.
 
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory Limits
 
@@ -36,6 +35,7 @@ abbrev IsCofibrant (X : C) : Prop := Cofibration (initial.to X)
 lemma isCofibrant_iff (X : C) :
     IsCofibrant X ↔ Cofibration (initial.to X) := Iff.rfl
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isCofibrant_iff_of_isInitial [(cofibrations C).RespectsIso]
     {A X : C} (i : A ⟶ X) (hA : IsInitial A) :
     IsCofibrant X ↔ Cofibration i := by
@@ -52,8 +52,7 @@ lemma isCofibrant_of_cofibration [(cofibrations C).IsStableUnderComposition]
 
 section
 
-variable (X Y : C) [(cofibrations C).IsStableUnderCobaseChange] [HasInitial C]
-  [HasBinaryCoproduct X Y]
+variable (X Y : C) [(cofibrations C).IsStableUnderCobaseChange] [HasBinaryCoproduct X Y]
 
 instance [hY : IsCofibrant Y] :
     Cofibration (coprod.inl : X ⟶ X ⨿ Y) := by
@@ -63,8 +62,7 @@ instance [hY : IsCofibrant Y] :
     ((IsPushout.of_isColimit_binaryCofan_of_isInitial
     (colimit.isColimit (pair X Y)) initialIsInitial).flip) hY
 
-instance [HasInitial C] [HasBinaryCoproduct X Y] [hX : IsCofibrant X] :
-    Cofibration (coprod.inr : Y ⟶ X ⨿ Y) := by
+instance [hX : IsCofibrant X] : Cofibration (coprod.inr : Y ⟶ X ⨿ Y) := by
   rw [isCofibrant_iff] at hX
   rw [cofibration_iff] at hX ⊢
   exact MorphismProperty.of_isPushout
@@ -85,6 +83,7 @@ abbrev IsFibrant (X : C) : Prop := Fibration (terminal.from X)
 lemma isFibrant_iff (X : C) :
     IsFibrant X ↔ Fibration (terminal.from X) := Iff.rfl
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isFibrant_iff_of_isTerminal [(fibrations C).RespectsIso]
     {X Y : C} (p : X ⟶ Y) (hY : IsTerminal Y) :
     IsFibrant X ↔ Fibration p := by
@@ -102,7 +101,7 @@ lemma isFibrant_of_fibration [(fibrations C).IsStableUnderComposition]
 
 section
 
-variable (X Y : C) [(fibrations C).IsStableUnderBaseChange] [HasTerminal C]
+variable (X Y : C) [(fibrations C).IsStableUnderBaseChange]
   [HasBinaryProduct X Y]
 
 instance [hY : IsFibrant Y] :
@@ -113,8 +112,7 @@ instance [hY : IsFibrant Y] :
     (IsPullback.of_isLimit_binaryFan_of_isTerminal
       (limit.isLimit (pair X Y)) terminalIsTerminal).flip hY
 
-instance [HasTerminal C] [HasBinaryProduct X Y] [hX : IsFibrant X] :
-    Fibration (prod.snd : X ⨯ Y ⟶ Y) := by
+instance [hX : IsFibrant X] : Fibration (prod.snd : X ⨯ Y ⟶ Y) := by
   rw [isFibrant_iff] at hX
   rw [fibration_iff] at hX ⊢
   exact MorphismProperty.of_isPullback

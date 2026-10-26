@@ -442,6 +442,9 @@ def comp? (e : Expr) : BicategoryM (Option (Mor₁ × Mor₁)) := do
 
 /-- Construct a `Mor₁` expression from a Lean expression. -/
 partial def mor₁OfExpr (e : Expr) : BicategoryM Mor₁ := do
+  let e ← instantiateMVars e
+  if e.hasExprMVar then
+    throwError m!"expression contains metavariables:\n{e}"
   if let some f := (← get).cache.find? e then
     return f
   let f ←
@@ -510,7 +513,10 @@ partial def Mor₂OfExpr (e : Expr) : BicategoryM Mor₂ := do
 instance : BicategoryLike.MkMor₂ BicategoryM where
   ofExpr := Mor₂OfExpr
 
-instance : MonadCoherehnceHom BicategoryM where
+instance : MonadCoherenceHom BicategoryM where
   unfoldM α := Mor₂IsoOfExpr α.unfold
+
+@[deprecated (since := "2026-09-17")]
+alias instMonadCoherehnceHomBicategoryM := instMonadCoherenceHomBicategoryM
 
 end Mathlib.Tactic.Bicategory

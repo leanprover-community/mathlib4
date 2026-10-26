@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.Embedding.Basic
 public import Mathlib.Algebra.Homology.Additive
+public import Mathlib.Algebra.Homology.Embedding.Basic
 
 /-!
 # The restriction functor of an embedding of complex shapes
@@ -31,7 +31,7 @@ variable {C : Type*} [Category* C] [HasZeroMorphisms C]
 
 /-- Given `K : HomologicalComplex C c'` and `e : c.Embedding c'` (satisfying `[e.IsRelIff]`),
 this is the homological complex in `HomologicalComplex C c` obtained by restriction. -/
-@[simps]
+@[simps, implicit_reducible]
 def restriction : HomologicalComplex C c where
   X i := K.X (e.f i)
   d _ _ := K.d _ _

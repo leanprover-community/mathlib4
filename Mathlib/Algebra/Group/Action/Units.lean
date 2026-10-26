@@ -22,7 +22,7 @@ These instances use a primed name.
 The results are repeated for `AddUnits` and `VAdd` where relevant.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero
 
@@ -79,13 +79,21 @@ instance mulAction' [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M]
   one_smul _ := Units.ext <| one_smul _ _
   mul_smul _ _ _ := Units.ext <| mul_smul _ _ _
 
+/-- `Units.mulAction' : MulAction G Mˣ` creates a diamond when `G = Mˣ` and `M` is commutative.
+
+Discussed [on Zulip](https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/units.2Emul_action'.20diamond/near/246400399). -/
+example {M} [CommMonoid M] :
+    (mulAction'.toSMul : SMul Mˣ Mˣ) = instSMulOfMul := by
+  fail_if_success rfl -- there is an instance diamond here
+  ext
+  rfl
+
 /-- This is not the usual `smul_eq_mul` because `mulAction'` creates a diamond.
 
 Discussed [on Zulip](https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/units.2Emul_action'.20diamond/near/246400399). -/
 @[simp]
 lemma smul_eq_mul {M} [CommMonoid M] (u₁ u₂ : Mˣ) :
     u₁ • u₂ = u₁ * u₂ := by
-  fail_if_success rfl -- there is an instance diamond here
   ext
   rfl
 
@@ -128,7 +136,7 @@ variable {M N : Type*} [Monoid M] [Monoid N] [MulDistribMulAction M N]
 /-- Note this has different defeqs than `Units.mulAction'`, but doesn't create a diamond
 with it in non-degenerate situations. Indeed, to get a diamond on `MulDistribMulAction G Mˣ`,
 we would need both instances to fire. But `Units.mulAction'` assumes `SMulCommClass G M M`,
-i.e. `∀ (g : G) (m₁ m₂ : M), g • (m₁ * m₂) = m₁ * g • m₂`), while
+i.e. `∀ (g : G) (m₁ m₂ : M), g • (m₁ * m₂) = m₁ * g • m₂`, while
 `Units.instMulDistribMulActionRight` assumes `MulDistribMulAction G M`,
 i.e. `∀ (g : G) (m₁ m₂ : M), g • (m₁ * m₂) = g • m₁ * g • m₂`.
 In particular, if `M` is cancellative, then we obtain `∀ (g : G) (m : M), g • m = m`,

@@ -5,8 +5,8 @@ Authors: Bjørn Kjos-Hanssen, Oliver Nash
 -/
 module
 
-public import Mathlib.Topology.Compactification.OnePoint.Basic
 public import Mathlib.Geometry.Manifold.Instances.Sphere
+public import Mathlib.Topology.Compactification.OnePoint.Basic
 
 /-!
 
@@ -29,7 +29,6 @@ def onePointHyperplaneHomeoUnitSphere
   OnePoint.equivOfIsEmbeddingOfRangeEq _ _
     (isOpenEmbedding_stereographic_symm hv).toIsEmbedding (range_stereographic_symm hv)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A homeomorphism from the one-point compactification of a finite-dimensional real vector space to
 the sphere. -/
 def onePointEquivSphereOfFinrankEq {ι V : Type*} [Fintype ι]

@@ -5,8 +5,8 @@ Authors: Yaël Dillies, Violeta Hernández Palacios, Grayson Burton, Vladimir Iv
 -/
 module
 
-public import Mathlib.Data.Int.SuccPred
 public import Mathlib.Order.Fin.Basic
+public import Mathlib.Order.SuccPred.Int
 
 /-!
 # Graded orders
@@ -312,7 +312,7 @@ abbrev GradeMinOrder.finToNat (n : ℕ) [GradeMinOrder (Fin n) α] : GradeMinOrd
   (GradeMinOrder.liftLeft (_ : Fin n → ℕ) Fin.val_strictMono fun _ _ => CovBy.coe_fin) fun a h => by
     cases n
     · exact a.elim0
-    rw [h.eq_bot, Fin.bot_eq_zero]
+    rw [h.eq_bot, bot_eq_zero]
     exact isMin_bot
 
 instance GradeOrder.natToInt [GradeOrder ℕ α] : GradeOrder ℤ α :=

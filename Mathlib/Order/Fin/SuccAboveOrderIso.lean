@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Order.Fin.Basic
 public import Mathlib.Data.Fintype.Basic
 
 /-!
@@ -20,7 +19,6 @@ an order isomorphism `Fin (n + 1) ≃o ({i}ᶜ : Finset (Fin (n + 2)))`.
 
 open Finset
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given `i : Fin (n + 2)`, this is the order isomorphism
 between `Fin (n + 1)` and the finite set `{i}ᶜ`. -/
 noncomputable def Fin.succAboveOrderIso {n : ℕ} (i : Fin (n + 2)) :

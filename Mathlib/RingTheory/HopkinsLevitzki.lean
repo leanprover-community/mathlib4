@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.RingTheory.FiniteLength
-public import Mathlib.RingTheory.Noetherian.Nilpotent
-public import Mathlib.RingTheory.Spectrum.Prime.Noetherian
 public import Mathlib.RingTheory.KrullDimension.Zero
+public import Mathlib.RingTheory.Spectrum.Prime.Noetherian
+
+import Mathlib.RingTheory.Noetherian.Nilpotent
 
 /-!
 ## The Hopkins–Levitzki theorem
@@ -32,7 +33,7 @@ public import Mathlib.RingTheory.KrullDimension.Zero
 * [F. Lorenz, *Algebra: Volume II: Fields with Structure, Algebras and Advanced Topics*][Lorenz2008]
 -/
 
-@[expose] public section
+public section
 
 universe u
 
@@ -43,7 +44,6 @@ namespace IsSemiprimaryRing
 
 variable [IsSemiprimaryRing R]
 
-set_option backward.isDefEq.respectTransparency false in
 @[elab_as_elim] protected theorem induction
     {P : ∀ (M : Type u) [AddCommGroup M] [Module R₀ M] [Module R M], Prop}
     (h0 : ∀ (M) [AddCommGroup M] [Module R₀ M] [Module R M] [IsScalarTower R₀ R M]
@@ -78,14 +78,13 @@ section
 
 variable [IsScalarTower R₀ R R] [Module.Finite R₀ (R ⧸ Ring.jacobson R)]
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem finite_of_isNoetherian_or_isArtinian :
     IsNoetherian R M ∨ IsArtinian R M → Module.Finite R₀ M := by
   refine IsSemiprimaryRing.induction R₀ R M (P := fun M ↦ IsNoetherian R M ∨ IsArtinian R M →
     Module.Finite R₀ M) (fun M _ _ _ _ _ hJ h ↦ ?_) (fun M _ _ _ _ hs hq h ↦ ?_)
   · let _ := hJ.module
     have := IsSemisimpleModule.finite_tfae (R := R) (M := M)
-    simp_rw [this.out 1 0, this.out 2 0, or_self,
+    simp_rw [this.out 2 1, this.out 3 1, or_self,
       hJ.semilinearMap.finite_iff_of_bijective Function.bijective_id] at h
     exact .trans (R ⧸ Ring.jacobson R) M
   · let N := (Ring.jacobson R • ⊤ : Submodule R M).restrictScalars R₀
@@ -103,10 +102,9 @@ end
 
 variable {R M}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isNoetherian_iff_isArtinian : IsNoetherian R M ↔ IsArtinian R M :=
   IsSemiprimaryRing.induction R R M (P := fun M ↦ IsNoetherian R M ↔ IsArtinian R M)
-    (fun M _ _ _ _ _ _ ↦ IsSemisimpleModule.finite_tfae.out 1 2)
+    (fun M _ _ _ _ _ _ ↦ IsSemisimpleModule.finite_tfae.out 2 3)
     fun M _ _ _ _ h h' ↦ let N : Submodule R M := Ring.jacobson R • ⊤; by
       simp_rw [isNoetherian_iff_submodule_quotient N, isArtinian_iff_submodule_quotient N, N, h, h']
 
@@ -114,7 +112,7 @@ theorem isNoetherian_iff_finite_of_jacobson_fg (fg : (Ring.jacobson R).FG) :
     IsNoetherian R M ↔ Module.Finite R M :=
   ⟨fun _ ↦ inferInstance, IsSemiprimaryRing.induction R R M
     (P := fun M ↦ Module.Finite R M → IsNoetherian R M)
-    (fun M _ _ _ _ _ _ ↦ (IsSemisimpleModule.finite_tfae.out 0 1).mp)
+    (fun M _ _ _ _ _ _ ↦ (IsSemisimpleModule.finite_tfae.out 1 2).mp)
     fun M _ _ _ _ hs hq fin ↦ (isNoetherian_iff_submodule_quotient (Ring.jacobson R • ⊤)).mpr
       ⟨hs (.of_fg (.smul fg fin.1)), hq inferInstance⟩⟩
 
@@ -136,12 +134,12 @@ theorem IsArtinianRing.tfae [IsArtinianRing R] :
 
 @[stacks 00JB "A ring is Artinian if and only if it has finite length as a module over itself."]
 theorem isArtinianRing_iff_isFiniteLength : IsArtinianRing R ↔ IsFiniteLength R R :=
-  ⟨fun h ↦ ((IsArtinianRing.tfae R R).out 2 3).mp h,
+  ⟨fun h ↦ ((IsArtinianRing.tfae R R).out 3 4).mp h,
     fun h ↦ (isFiniteLength_iff_isNoetherian_isArtinian.mp h).2⟩
 
 @[stacks 00JB "A ring is Artinian if and only if it has finite length as a module over itself.
 **Any such ring is both Artinian and Noetherian.**"]
-instance [IsArtinianRing R] : IsNoetherianRing R := ((IsArtinianRing.tfae R R).out 2 1).mp ‹_›
+instance [IsArtinianRing R] : IsNoetherianRing R := ((IsArtinianRing.tfae R R).out 3 2).mp ‹_›
 
 /-- A finitely generated Artinian module over a commutative ring is Noetherian. This is not
 necessarily the case over a noncommutative ring, see https://mathoverflow.net/a/61700. -/
@@ -189,6 +187,6 @@ lemma isArtinianRing_iff_isNilpotent_maximalIdeal (R : Type*) [CommRing R] [IsNo
   rw [isArtinianRing_iff_krullDimLE_zero,
     Ideal.FG.isNilpotent_iff_le_nilradical (IsNoetherian.noetherian _),
     ← and_iff_left (a := Ring.KrullDimLE 0 R) ‹IsLocalRing R›,
-    (Ring.krullDimLE_zero_and_isLocalRing_tfae R).out 0 3 rfl rfl,
+    (Ring.krullDimLE_zero_and_isLocalRing_tfae R).out 1 4 rfl rfl,
     IsLocalRing.isMaximal_iff, le_antisymm_iff, and_iff_right]
   exact IsLocalRing.le_maximalIdeal (by simp [nilradical, Ideal.radical_eq_top])

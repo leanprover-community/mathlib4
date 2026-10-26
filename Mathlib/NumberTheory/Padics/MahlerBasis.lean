@@ -51,7 +51,6 @@ variable {p : ℕ} [hp : Fact p.Prime]
 
 namespace PadicInt
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Bound for norms of ascending Pochhammer symbols. -/
 lemma norm_ascPochhammer_le (k : ℕ) (x : ℤ_[p]) :
     ‖(ascPochhammer ℤ_[p] k).eval x‖ ≤ ‖(k.factorial : ℤ_[p])‖ := by
@@ -71,24 +70,19 @@ lemma norm_ascPochhammer_le (k : ℕ) (x : ℤ_[p]) :
     ← Ring.factorial_nsmul_multichoose_eq_ascPochhammer, smul_eq_mul, Nat.cast_mul, norm_mul]
   exact mul_le_of_le_one_right (norm_nonneg _) (norm_le_one _)
 
-instance : IsAddTorsionFree ℤ_[p] where
-  nsmul_right_injective _ := smul_right_injective ℤ_[p]
-
-set_option backward.isDefEq.respectTransparency false in
 /-- The p-adic integers are a binomial ring, i.e. a ring where binomial coefficients make sense. -/
 noncomputable instance instBinomialRing : BinomialRing ℤ_[p] where
   -- We define `multichoose` as a fraction in `ℚ_[p]` together with a proof that its norm is `≤ 1`.
-  multichoose x k := ⟨(ascPochhammer ℤ_[p] k).eval x / (k.factorial : ℚ_[p]), by
+  multichoose x k := (ascPochhammer ℤ_[p] k).eval x / (k.factorial : ℚ_[p]) |>.lift <| by
     rw [norm_div, div_le_one (by simpa using k.factorial_ne_zero)]
-    exact x.norm_ascPochhammer_le k⟩
-  factorial_nsmul_multichoose x k := by rw [← Subtype.coe_inj, nsmul_eq_mul, PadicInt.coe_mul,
-    PadicInt.coe_natCast, mul_div_cancel₀ _ (mod_cast k.factorial_ne_zero), Subtype.coe_inj,
-    Polynomial.eval_eq_smeval, Polynomial.ascPochhammer_smeval_cast]
+    exact x.norm_ascPochhammer_le k
+  factorial_nsmul_multichoose x k := by
+    simp [mul_div_cancel₀ _ (mod_cast k.factorial_ne_zero : (k.factorial : ℚ_[p]) ≠ 0),
+      ← PadicInt.coe_inj, Polynomial.eval_eq_smeval]
 
-set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
 lemma continuous_multichoose (k : ℕ) : Continuous (fun x : ℤ_[p] ↦ Ring.multichoose x k) := by
-  simp only [Ring.multichoose, BinomialRing.multichoose, continuous_induced_rng]
+  simp only [Ring.multichoose, BinomialRing.multichoose, Padic.lift]
   fun_prop
 
 @[fun_prop]
@@ -128,7 +122,6 @@ lemma IsUltrametricDist.norm_fwdDiff_iter_apply_le [TopologicalSpace M] [Compact
   refine norm_sum_le_of_forall_le_of_nonneg (norm_nonneg f) fun i _ ↦ ?_
   exact (norm_zsmul_le _ _).trans (f.norm_coe_le_norm _)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- First step in Bojanić's proof of Mahler's theorem (equation (10) of [bojanic74]): rewrite
 `Δ^[n + R] f 0` in a shape that makes it easy to bound `p`-adically. -/
 private lemma bojanic_mahler_step1 [AddCommMonoidWithOne M] [AddCommGroup G] (f : M → G)
@@ -179,12 +172,12 @@ private lemma bojanic_mahler_step2 {f : C(ℤ_[p], E)} {s t : ℕ}
     refine (nnnorm_smul_le _ _).trans <| mul_le_mul_of_nonneg_right ?_ (by simp only [zero_le])
     -- remains to show norm of binomial coeff is `≤ p⁻¹`
     rw [mem_range] at hi
-    have : 0 < (p ^ t).choose (i + 1) := Nat.choose_pos (by lia)
+    have : 0 < (p ^ t).choose (i + 1) := Nat.choose_pos (by omega)
     rw [← zpow_neg_one, ← coe_le_coe, coe_nnnorm, PadicInt.norm_eq_zpow_neg_valuation
       (mod_cast this.ne'), coe_zpow, NNReal.coe_natCast,
       zpow_le_zpow_iff_right₀ (mod_cast hp.out.one_lt), neg_le_neg_iff,
       ← PadicInt.valuation_coe, PadicInt.coe_natCast, Padic.valuation_natCast, Nat.one_le_cast]
-    exact one_le_padicValNat_of_dvd this.ne' <| hp.out.dvd_choose_pow (by lia) (by lia)
+    exact one_le_padicValNat_of_dvd this.ne' <| hp.out.dvd_choose_pow (by lia) (by omega)
   · -- Bounding the sum over `range (n + 1)`: every term is small by the choice of `t`
     refine norm_sum_le_of_forall_le_of_nonempty nonempty_range_add_one (fun i _ ↦ ?_)
     calc ‖((-1 : ℤ) ^ (n - i) * n.choose i) • (f (i + ↑(p ^ t)) - f i)‖
@@ -198,7 +191,6 @@ private lemma bojanic_mahler_step2 {f : C(ℤ_[p], E)} {s t : ℕ}
       apply hst
       rw [Nat.cast_pow, add_sub_cancel_left, norm_pow, norm_p, inv_pow, zpow_neg, zpow_natCast]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Explicit bound for the decay rate of the Mahler coefficients of a continuous function on `ℤ_[p]`.
 This will be used to prove Mahler's theorem.
@@ -222,13 +214,12 @@ lemma fwdDiff_iter_le_of_forall_le {f : C(ℤ_[p], E)} {s t : ℕ}
     · exact div_le_div_of_nonneg_left (norm_nonneg _)
         (mod_cast pow_pos hp.out.pos _) (mod_cast pow_le_pow_right₀ hp.out.one_le hk)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Key lemma for Mahler's theorem: for `f` a continuous function on `ℤ_[p]`, the sequence
 `n ↦ Δ^[n] f 0` tends to 0. See `PadicInt.fwdDiff_iter_le_of_forall_le` for an explicit
 estimate of the decay rate. -/
 lemma fwdDiff_tendsto_zero (f : C(ℤ_[p], E)) : Tendsto (Δ_[1]^[·] f 0) atTop (𝓝 0) := by
   -- first extract an `s`
-  refine NormedAddCommGroup.tendsto_nhds_zero.mpr (fun ε hε ↦ ?_)
+  refine NormedAddGroup.tendsto_nhds_zero.mpr (fun ε hε ↦ ?_)
   have : Tendsto (fun s ↦ ‖f‖ / p ^ s) _ _ := tendsto_const_nhds.div_atTop
     (tendsto_pow_atTop_atTop_of_one_lt (mod_cast hp.out.one_lt))
   obtain ⟨s, hs⟩ := (this.eventually_lt_const hε).exists
@@ -286,7 +277,6 @@ noncomputable def mahlerSeries (a : ℕ → E) : C(ℤ_[p], E) := ∑' n, mahler
 
 variable [IsUltrametricDist E] [CompleteSpace E] {a : ℕ → E}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A Mahler series whose coefficients tend to 0 is convergent. -/
 lemma hasSum_mahlerSeries (ha : Tendsto a atTop (𝓝 0)) :
     HasSum (fun n ↦ mahlerTerm (a n) n) (mahlerSeries a : C(ℤ_[p], E)) := by
@@ -312,7 +302,6 @@ lemma mahlerSeries_apply_nat (ha : Tendsto a atTop (𝓝 0)) {m n : ℕ} (hmn : 
   simp only [mahlerSeries_apply ha, mahler_natCast_eq, Nat.cast_smul_eq_nsmul, add_zero,
     ← aux.sum_add_tsum_nat_add' (f := fun i ↦ m.choose i • a i), h_van, zero_smul, tsum_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The coefficients of a Mahler series can be recovered from the sum by taking forward differences at
 `0`.
@@ -355,6 +344,7 @@ lemma hasSum_mahler (f : C(ℤ_[p], E)) : HasSum (fun n ↦ mahlerTerm (Δ_[1]^[
   simpa [mahlerSeries_apply_nat (fwdDiff_tendsto_zero f) le_rfl]
     using shift_eq_sum_fwdDiff_iter 1 f n 0
 
+set_option backward.isDefEq.respectTransparency false in
 variable (E) in
 /--
 The isometric equivalence from `C(ℤ_[p], E)` to the space of sequences in `E` tending to `0` given
@@ -366,12 +356,10 @@ noncomputable def mahlerEquiv : C(ℤ_[p], E) ≃ₗᵢ[ℤ_[p]] C₀(ℕ, E) wh
   invFun a := mahlerSeries a
   map_add' f g := by
     ext x
-    simp only [ContinuousMap.coe_add, fwdDiff_iter_add, Pi.add_apply,
-      ZeroAtInftyContinuousMap.coe_mk, ZeroAtInftyContinuousMap.coe_add]
+    simp
   map_smul' r f := by
     ext n
-    simp only [ContinuousMap.coe_smul, RingHom.id_apply, ZeroAtInftyContinuousMap.coe_mk,
-      ZeroAtInftyContinuousMap.coe_smul, Pi.smul_apply, fwdDiff_iter_const_smul]
+    simp
   left_inv f := (hasSum_mahler f).tsum_eq
   right_inv a := ZeroAtInftyContinuousMap.ext <|
     fwdDiff_mahlerSeries (cocompact_eq_atTop (α := ℕ) ▸ zero_at_infty a)
@@ -391,5 +379,34 @@ lemma mahlerEquiv_symm_apply (a : C₀(ℕ, E)) : (mahlerEquiv E).symm a = (mahl
   rfl
 
 end mahler_coeff
+
+section DenseSpan
+
+open Submodule
+/-!
+### Continuous linear functionals are determined by their values on the Mahler basis
+-/
+variable {R : Type*} [NormedCommRing R] [Algebra ℤ_[p] R] [IsUltrametricDist R] [CompleteSpace R]
+  [IsBoundedSMul ℤ_[p] R]
+
+theorem dense_span_mahler : Dense (span R
+      (.range fun n ↦ (mahler n : C(ℤ_[p], ℤ_[p])) • (1 : C(ℤ_[p], R))) : Set C(ℤ_[p], R)) := by
+  refine fun f ↦ mem_closure_of_tendsto (PadicInt.hasSum_mahler _) ?_
+  refine .of_forall fun s ↦ Submodule.sum_mem _ fun c _ ↦ ?_
+  simp only [span_range_eq_iSup]
+  apply mem_iSup_of_mem (i := c)
+  rw [mem_span_singleton]
+  use (fwdDiff 1)^[c] f 0
+  ext x
+  simp [PadicInt.mahlerTerm]
+
+lemma ext_mahler {μ : C(ℤ_[p], R) →L[R] R}
+    (hμ : ∀ n, μ ((mahler n : C(ℤ_[p], ℤ_[p])) • 1) = 0) : μ = 0 := by
+  apply ContinuousLinearMap.ext_on dense_span_mahler
+  rintro _ ⟨n, rfl⟩
+  simpa using hμ n
+
+end DenseSpan
+
 
 end PadicInt

@@ -17,7 +17,7 @@ targets for homomorphisms from groups of exponent (dividing) `n`; for example,
 the homomorphisms can then be used to separate elements of the source group.
 -/
 
-@[expose] public section
+public section
 
 /-- This is a type class recording that a commutative monoid `M` contains primitive `n`th
 roots of unity and such that the group of `n`th roots of unity is cyclic.
@@ -30,9 +30,11 @@ class HasEnoughRootsOfUnity (M : Type*) [CommMonoid M] (n : ℕ) where
 
 namespace HasEnoughRootsOfUnity
 
-lemma exists_primitiveRoot (M : Type*) [CommMonoid M] (n : ℕ) [HasEnoughRootsOfUnity M n] :
+lemma exists_isPrimitiveRoot (M : Type*) [CommMonoid M] (n : ℕ) [HasEnoughRootsOfUnity M n] :
     ∃ ζ : M, IsPrimitiveRoot ζ n :=
   HasEnoughRootsOfUnity.prim
+
+@[deprecated (since := "2026-09-28")] alias exists_primitiveRoot := exists_isPrimitiveRoot
 
 instance rootsOfUnity_isCyclic (M : Type*) [CommMonoid M] (n : ℕ) [HasEnoughRootsOfUnity M n] :
     IsCyclic (rootsOfUnity n M) :=
@@ -43,7 +45,7 @@ lemma of_dvd (M : Type*) [CommMonoid M] {m n : ℕ} [NeZero n] (hmn : m ∣ n)
     [HasEnoughRootsOfUnity M n] :
     HasEnoughRootsOfUnity M m where
   prim :=
-    have ⟨ζ, hζ⟩ := exists_primitiveRoot M n
+    have ⟨ζ, hζ⟩ := exists_isPrimitiveRoot M n
     have ⟨k, hk⟩ := hmn
     ⟨ζ ^ k, IsPrimitiveRoot.pow (NeZero.pos n) hζ (mul_comm m k ▸ hk)⟩
   cyc := Subgroup.isCyclic_of_le <| rootsOfUnity_le_of_dvd hmn
@@ -67,7 +69,7 @@ in `M` (is cyclic and) has order `n`. -/
 lemma natCard_rootsOfUnity (M : Type*) [CommMonoid M] (n : ℕ) [NeZero n]
     [HasEnoughRootsOfUnity M n] :
     Nat.card (rootsOfUnity n M) = n := by
-  obtain ⟨ζ, h⟩ := exists_primitiveRoot M n
+  obtain ⟨ζ, h⟩ := exists_isPrimitiveRoot M n
   rw [← IsCyclic.exponent_eq_card]
   refine dvd_antisymm ?_ ?_
   · exact Monoid.exponent_dvd_of_forall_pow_eq_one fun g ↦ OneMemClass.coe_eq_one.mp g.prop
@@ -80,7 +82,7 @@ lemma natCard_rootsOfUnity (M : Type*) [CommMonoid M] (n : ℕ) [NeZero n]
     rw [← Units.val_inj, Units.val_pow_eq_pow_val, IsUnit.unit_spec, h.pow_eq_one, Units.val_one]
 
 lemma of_card_le {R : Type*} [CommRing R] [IsDomain R] {n : ℕ} [NeZero n]
-    (h : n ≤ Fintype.card (rootsOfUnity n R)) : HasEnoughRootsOfUnity R n where
+    (h : n ≤ Nat.card (rootsOfUnity n R)) : HasEnoughRootsOfUnity R n where
   prim := card_rootsOfUnity_eq_iff_exists_isPrimitiveRoot.mp (le_antisymm (card_rootsOfUnity R n) h)
   cyc := rootsOfUnity.isCyclic R n
 
@@ -104,7 +106,6 @@ group of units of a ring `M` with all roots of unity is isomorphic to `G` -/
 lemma IsCyclic.monoidHom_equiv_self (G M : Type*) [CommGroup G] [Finite G]
     [IsCyclic G] [CommMonoid M] [HasEnoughRootsOfUnity M (Nat.card G)] :
     Nonempty ((G →* Mˣ) ≃* G) := by
-  have : NeZero (Nat.card G) := ⟨Nat.card_pos.ne'⟩
   have hord := HasEnoughRootsOfUnity.natCard_rootsOfUnity M (Nat.card G)
   let e := (IsCyclic.monoidHom_mulEquiv_rootsOfUnity G Mˣ).some
   exact ⟨e.trans (rootsOfUnityUnitsMulEquiv M (Nat.card G)) |>.trans (mulEquivOfCyclicCardEq hord)⟩
@@ -114,3 +115,13 @@ end cyclic
 instance {M : Type*} [CommMonoid M] : HasEnoughRootsOfUnity M 1 where
   prim := ⟨1, by simp⟩
   cyc := isCyclic_of_subsingleton
+
+instance {G M : Type*} [Group G] [Finite G] [CommMonoid M]
+    [HasEnoughRootsOfUnity M (Monoid.exponent G)] :
+    Finite (G →* Mˣ) := by
+  let S := rootsOfUnity (Monoid.exponent G) M
+  have : Finite (G →* S) := .of_injective _ DFunLike.coe_injective
+  refine .of_surjective S.subtype.comp fun f ↦ ?_
+  have H a : f a ∈ S := by
+    rw [mem_rootsOfUnity, ← map_pow, Monoid.pow_exponent_eq_one, map_one]
+  exact ⟨.codRestrict f S H, MonoidHom.ext fun _ ↦ by simp⟩

@@ -6,7 +6,6 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Order.Floor.Div
-public import Mathlib.Algebra.Order.Ring.Nat
 public import Mathlib.Data.Nat.Factorization.Defs
 
 /-!
@@ -66,7 +65,6 @@ lemma floorRoot_def :
   simp [floorRoot]; split_ifs <;> simp [*]
 @[simp] lemma floorRoot_one_right (hn : n ≠ 0) : floorRoot n 1 = 1 := by simp [floorRoot, hn]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma floorRoot_pow_self (hn : n ≠ 0) (a : ℕ) : floorRoot n (a ^ n) = a := by
   simp [floorRoot_def, pos_iff_ne_zero.2, hn]; split_ifs <;> simp [*]
 
@@ -81,11 +79,9 @@ lemma floorRoot_ne_zero : floorRoot n a ≠ 0 ↔ n ≠ 0 ∧ a ≠ 0 := by
   rw [floorRoot_def]
   split_ifs with h
   · obtain rfl | rfl := h <;> simp
-  refine prod_pow_factorization_eq_self fun p hp ↦ ?_
-  have : p.Prime ∧ p ∣ a ∧ ¬a = 0 := by simpa using support_floorDiv_subset hp
-  exact this.1
+  apply a.factorization_prod_pow_eq_self_of_le_factorization
+  exact le_self_nsmul (by simp) (by lia) |>.trans <| smul_floorDiv_le (by lia)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Galois connection between `a ↦ a ^ n : ℕ → ℕ` and `floorRoot n : ℕ → ℕ` where `ℕ` is ordered
 by divisibility. -/
 lemma pow_dvd_iff_dvd_floorRoot : a ^ n ∣ b ↔ a ∣ floorRoot n b := by
@@ -130,7 +126,6 @@ lemma ceilRoot_def :
   simp [ceilRoot]; split_ifs <;> simp [*]
 @[simp] lemma ceilRoot_one_right (hn : n ≠ 0) : ceilRoot n 1 = 1 := by simp [ceilRoot, hn]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma ceilRoot_pow_self (hn : n ≠ 0) (a : ℕ) : ceilRoot n (a ^ n) = a := by
   simp [ceilRoot_def, pos_iff_ne_zero.2, hn]; split_ifs <;> simp [*]
 
@@ -145,11 +140,10 @@ lemma ceilRoot_ne_zero : ceilRoot n a ≠ 0 ↔ n ≠ 0 ∧ a ≠ 0 := by
   rw [ceilRoot_def]
   split_ifs with h
   · obtain rfl | rfl := h <;> simp
-  refine prod_pow_factorization_eq_self fun p hp ↦ ?_
+  refine factorization_prod_pow_eq_self fun p hp ↦ ?_
   have : p.Prime ∧ p ∣ a ∧ ¬a = 0 := by simpa using support_ceilDiv_subset hp
   exact this.1
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Galois connection between `ceilRoot n : ℕ → ℕ` and `a ↦ a ^ n : ℕ → ℕ` where `ℕ` is ordered
 by divisibility.
 

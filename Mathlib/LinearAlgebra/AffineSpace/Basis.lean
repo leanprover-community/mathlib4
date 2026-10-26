@@ -45,10 +45,13 @@ barycentric coordinate of `q : P` is `1 - fᵢ (q -ᵥ p i)`.
 
 -/
 
+open scoped Finset
+
 @[expose] public section
 
-open Affine Module Set
-open scoped Pointwise
+open Module Set
+
+open scoped Affine Pointwise
 
 section Coordinates
 
@@ -71,7 +74,7 @@ lemma AffineIndependent.injOn_affineCombination_fintypeAffineCoords [Fintype ι]
 
 variable (ι k) in
 /-- The space of coordinates for affine combinations indexed by a general type. -/
-def finsuppAffineCoords : AffineSubspace k (ι →₀ k) :=
+noncomputable def finsuppAffineCoords : AffineSubspace k (ι →₀ k) :=
   (affineSpan k {(1 : k)}).comap (Finsupp.linearCombination k (1 : ι → k)).toAffineMap
 
 lemma mem_finsuppAffineCoords_iff_linearCombination {w : ι →₀ k} :
@@ -104,9 +107,10 @@ variable [Ring k] [Module k V] (b : AffineBasis ι k P) {s : Finset ι} {i j : �
 instance : Inhabited (AffineBasis PUnit k PUnit) :=
   ⟨⟨id, affineIndependent_of_subsingleton k id, by simp⟩⟩
 
+@[macro_inline]
 instance instFunLike : FunLike (AffineBasis ι k P) ι P where
   coe := AffineBasis.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 @[ext]
 theorem ext {b₁ b₂ : AffineBasis ι k P} (h : (b₁ : ι → P) = b₂) : b₁ = b₂ :=
@@ -118,7 +122,6 @@ theorem ind : AffineIndependent k b :=
 theorem tot : affineSpan k (range b) = ⊤ :=
   b.tot'
 
-set_option backward.isDefEq.respectTransparency false in
 include b in
 protected theorem nonempty : Nonempty ι :=
   not_isEmpty_iff.mp fun hι => by
@@ -185,7 +188,7 @@ theorem linear_eq_sumCoords (i : ι) : (b.coord i).linear = -(b.basisOf i).sumCo
 @[simp]
 theorem coord_reindex (i : ι') : (b.reindex e).coord i = b.coord (e.symm i) := by
   ext
-  classical simp [AffineBasis.coord]
+  simp [AffineBasis.coord]
 
 @[simp]
 theorem coord_apply_eq (i : ι) : b.coord i (b i) = 1 := by
@@ -203,14 +206,14 @@ theorem coord_apply [DecidableEq ι] (i j : ι) : b.coord i (b j) = if i = j the
 @[simp]
 theorem coord_apply_combination_of_mem (hi : i ∈ s) {w : ι → k} (hw : s.sum w = 1) :
     b.coord i (s.affineCombination k b w) = w i := by
-  classical simp only [coord_apply, hi, Finset.affineCombination_eq_linear_combination, if_true,
+  classical simp only [coord_apply, hi, Finset.affineCombination_eq_linear_combination, ite_true,
       mul_boole, hw, Function.comp_apply, smul_eq_mul, s.sum_ite_eq,
       s.map_affineCombination b w hw]
 
 @[simp]
 theorem coord_apply_combination_of_notMem (hi : i ∉ s) {w : ι → k} (hw : s.sum w = 1) :
     b.coord i (s.affineCombination k b w) = 0 := by
-  classical simp only [coord_apply, hi, Finset.affineCombination_eq_linear_combination, if_false,
+  classical simp only [coord_apply, hi, Finset.affineCombination_eq_linear_combination, ite_false,
       mul_boole, hw, Function.comp_apply, smul_eq_mul, s.sum_ite_eq,
       s.map_affineCombination b w hw]
 
@@ -220,7 +223,7 @@ theorem sum_coord_apply_eq_one [Fintype ι] (q : P) : ∑ i, b.coord i q = 1 := 
     rw [b.tot]
     exact AffineSubspace.mem_top k V q
   obtain ⟨w, hw, rfl⟩ := eq_affineCombination_of_mem_affineSpan_of_fintype hq
-  convert hw
+  convert! hw
   exact b.coord_apply_combination_of_mem (Finset.mem_univ _) hw
 
 @[simp]
@@ -254,7 +257,7 @@ theorem coe_coord_of_subsingleton_eq_one [Subsingleton ι] (i : ι) : (b.coord i
     rw [← image_univ]
     apply Subsingleton.image
     apply subsingleton_of_subsingleton
-  haveI := AffineSubspace.subsingleton_of_subsingleton_span_eq_top hp b.tot
+  have := AffineSubspace.subsingleton_of_subsingleton_span_eq_top hp b.tot
   let s : Finset ι := {i}
   have hi : i ∈ s := by simp [s]
   have hw : s.sum (Function.const ι (1 : k)) = 1 := by simp [s]
@@ -366,7 +369,7 @@ variable [DivisionRing k] [Module k V]
 
 @[simp]
 theorem coord_apply_centroid [CharZero k] (b : AffineBasis ι k P) {s : Finset ι} {i : ι}
-    (hi : i ∈ s) : b.coord i (s.centroid k b) = (s.card : k)⁻¹ := by
+    (hi : i ∈ s) : b.coord i (s.centroid k b) = (#s : k)⁻¹ := by
   rw [Finset.centroid,
     b.coord_apply_combination_of_mem hi (s.sum_centroidWeights_eq_one_of_nonempty _ ⟨i, hi⟩),
     Finset.centroidWeights, Function.const_apply]

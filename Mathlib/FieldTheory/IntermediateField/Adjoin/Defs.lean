@@ -12,7 +12,7 @@ public import Mathlib.FieldTheory.IntermediateField.Basic
 
 In this file we introduce the notion of adjoining elements to fields.
 This isn't quite the same as adjoining elements to rings.
-For example, `Algebra.adjoin K {x}` might not include `x⁻¹`.
+For example, `K[x]` might not include `x⁻¹`.
 
 ## Notation
 
@@ -66,7 +66,7 @@ def gi : GaloisInsertion (adjoin F : Set E → IntermediateField F E)
     (fun (x : IntermediateField F E) => (x : Set E)) where
   choice s hs := (adjoin F s).copy s <| le_antisymm (gc.le_u_l s) hs
   gc := IntermediateField.gc
-  le_l_u S := (IntermediateField.gc (S : Set E) (adjoin F S)).1 <| le_rfl
+  le_l_u S := (IntermediateField.gc (S : Set E) (adjoin F S)).1 le_rfl
   choice_eq _ _ := copy_eq _ _ _
 
 instance : CompleteLattice (IntermediateField F E) where
@@ -77,10 +77,10 @@ instance : CompleteLattice (IntermediateField F E) where
   bot_le x := (bot_le : ⊥ ≤ x.toSubalgebra)
 
 instance (K₁ K₂ : IntermediateField F E) : Algebra ↥(K₁ ⊓ K₂) K₁ :=
-  inferInstanceAs (Algebra ↑(K₁.toSubalgebra ⊓ K₂.toSubalgebra) K₁.toSubalgebra)
+  inferInstanceAs <| Algebra ↑(K₁.toSubalgebra ⊓ K₂.toSubalgebra) K₁.toSubalgebra
 
 instance (K₁ K₂ : IntermediateField F E) : Algebra ↥(K₁ ⊓ K₂) K₂ :=
-  inferInstanceAs (Algebra ↑(K₁.toSubalgebra ⊓ K₂.toSubalgebra) K₂.toSubalgebra)
+  inferInstanceAs <| Algebra ↑(K₁.toSubalgebra ⊓ K₂.toSubalgebra) K₂.toSubalgebra
 
 theorem sup_def (S T : IntermediateField F E) : S ⊔ T = adjoin F (S ∪ T : Set E) := rfl
 
@@ -91,7 +91,7 @@ instance : Inhabited (IntermediateField F E) :=
   ⟨⊤⟩
 
 instance : Unique (IntermediateField F F) :=
-  { inferInstanceAs (Inhabited (IntermediateField F F)) with
+  { (inferInstance : Inhabited (IntermediateField F F)) with
     uniq := fun _ ↦ toSubalgebra_injective <| Subsingleton.elim _ _ }
 
 theorem coe_bot : ↑(⊥ : IntermediateField F E) = Set.range (algebraMap F E) := rfl
@@ -150,9 +150,12 @@ theorem sup_toSubfield (S T : IntermediateField F E) :
   exact Set.mem_union_left _ (algebraMap_mem S x)
 
 @[simp, norm_cast]
-theorem coe_sInf (S : Set (IntermediateField F E)) : (↑(sInf S) : Set E) =
-    sInf ((fun (x : IntermediateField F E) => (x : Set E)) '' S) :=
-  rfl
+theorem coe_sInf (S : Set (IntermediateField F E)) : (↑(sInf S) : Set E) = ⋂ s ∈ S, ↑s :=
+  show sInf ((fun (x : IntermediateField F E) => (x : Set E)) '' S) = ⋂ s ∈ S, ↑s by simp
+
+@[simp, grind =]
+theorem mem_sInf {S : Set (IntermediateField F E)} {x : E} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p := by
+  simpa only [Set.mem_iInter] using! Set.ext_iff.1 (coe_sInf S) x
 
 @[simp]
 theorem sInf_toSubalgebra (S : Set (IntermediateField F E)) :
@@ -167,7 +170,7 @@ theorem sInf_toSubfield (S : Set (IntermediateField F E)) :
 @[simp]
 theorem sSup_toSubfield (S : Set (IntermediateField F E)) (hS : S.Nonempty) :
     (sSup S).toSubfield = sSup (toSubfield '' S) := by
-  have h : toSubfield '' S = Subfield.closure '' (SetLike.coe '' S) := by
+  have h : toSubfield '' S = Subfield.closure '' SetLike.coe '' S := by
     rw [Set.image_image]
     congr! with x
     exact x.toSubfield.closure_eq.symm
@@ -200,7 +203,7 @@ theorem iSup_toSubfield {ι : Sort*} [Nonempty ι] (S : ι → IntermediateField
 
 variable (F E)
 
-/-- The bottom intermediate_field is isomorphic to the field. -/
+/-- The bottom `IntermediateField` is isomorphic to the field. -/
 noncomputable def botEquiv : (⊥ : IntermediateField F E) ≃ₐ[F] F :=
   (Subalgebra.equivOfEq _ _ bot_toSubalgebra).trans (Algebra.botEquiv F E)
 
@@ -221,7 +224,6 @@ theorem coe_algebraMap_over_bot :
       IntermediateField.botEquiv F E :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance isScalarTower_over_bot : IsScalarTower (⊥ : IntermediateField F E) F E :=
   IsScalarTower.of_algebraMap_eq
     (by
@@ -239,7 +241,6 @@ def topEquiv : (⊤ : IntermediateField F E) ≃ₐ[F] E :=
 
 section RestrictScalars
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem restrictScalars_bot_eq_self (K : IntermediateField F E) :
     (⊥ : IntermediateField K E).restrictScalars _ = K :=
@@ -329,7 +330,7 @@ instance adjoin.fieldCoe : CoeTC F (adjoin F S) where
 @[simp, aesop safe 20 (rule_sets := [SetLike])]
 theorem subset_adjoin : S ⊆ adjoin F S := fun _ hx => Subfield.subset_closure (Or.inr hx)
 
-@[aesop 80% (rule_sets := [SetLike])]
+@[aesop 80% (rule_sets := [SetLike]), membership .]
 theorem mem_adjoin_of_mem {S : Set E} {s : E} (hs : s ∈ S) : s ∈ adjoin F S := subset_adjoin F S hs
 
 theorem notMem_of_notMem_adjoin {S : Set E} {s : E} (hs : s ∉ adjoin F S) : s ∉ S := fun h =>
@@ -359,6 +360,9 @@ theorem adjoin_univ (F E : Type*) [Field F] [Field E] [Algebra F E] :
     adjoin F (Set.univ : Set E) = ⊤ :=
   eq_top_iff.mpr <| subset_adjoin _ _
 
+theorem adjoin_union {S T : Set E} : adjoin F (S ∪ T) = adjoin F S ⊔ adjoin F T :=
+  gc.l_sup
+
 /-- If `K` is a field with `F ⊆ K` and `S ⊆ K` then `adjoin F S ≤ K`. -/
 theorem adjoin_le_subfield {K : Subfield E} (HF : Set.range (algebraMap F E) ⊆ K) (HS : S ⊆ K) :
     (adjoin F S).toSubfield ≤ K := by
@@ -371,7 +375,6 @@ theorem adjoin_subset_adjoin_iff {F' : Type*} [Field F'] [Algebra F' E] {S S' : 
     (subset_adjoin _ _).trans h⟩, fun ⟨hF, hS⟩ =>
       (Subfield.closure_le (t := (adjoin F' S').toSubfield)).mpr (Set.union_subset hF hS)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Adjoining S and then T is the same as adjoining `S ∪ T`. -/
 theorem adjoin_adjoin_left (T : Set E) :
     (adjoin (adjoin F S) T).restrictScalars _ = adjoin F (S ∪ T) := by
@@ -385,17 +388,19 @@ theorem adjoin_adjoin_left (T : Set E) :
       (fun x hx ↦ Subfield.subset_closure <| .inl ⟨⟨x, Subfield.subset_closure (.inr hx)⟩, rfl⟩)
       (fun x hx ↦ Subfield.subset_closure <| .inr hx)
 
+/-- Adjoining is idempotent: adjoining an adjoin is the same as a single adjoin. -/
+@[simp]
+lemma adjoin_adjoin_right {K : Type*} [Field K] [Algebra K F] [Algebra K E] [IsScalarTower K F E] :
+    adjoin F (adjoin K S) = adjoin F S := by
+  refine le_antisymm ?_ (adjoin.mono F S (adjoin K S) (subset_adjoin K S))
+  rw [adjoin_le_iff, ← (adjoin F S).coe_restrictScalars K, SetLike.coe_subset_coe]
+  simp
+
 @[simp]
 theorem adjoin_insert_adjoin (x : E) :
-    adjoin F (insert x (adjoin F S : Set E)) = adjoin F (insert x S) :=
-  le_antisymm
-    (adjoin_le_iff.mpr
-      (Set.insert_subset_iff.mpr
-        ⟨subset_adjoin _ _ (Set.mem_insert _ _),
-          adjoin_le_iff.mpr (subset_adjoin_of_subset_right _ _ (Set.subset_insert _ _))⟩))
-    (by grw [← subset_adjoin])
+    adjoin F (insert x (adjoin F S : Set E)) = adjoin F (insert x S) := by
+  simp_rw [← Set.singleton_union, adjoin_union, adjoin_adjoin_right]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `F[S][T] = F[T][S]` -/
 theorem adjoin_adjoin_comm (T : Set E) :
     (adjoin (adjoin F S) T).restrictScalars F = (adjoin (adjoin F T) S).restrictScalars F := by
@@ -436,12 +441,10 @@ theorem lift_inf (K : IntermediateField F E) (L L' : IntermediateField F K) :
 theorem adjoin_self (K : IntermediateField F E) :
     adjoin F K = K := le_antisymm (adjoin_le_iff.2 fun _ ↦ id) (subset_adjoin F _)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem restrictScalars_adjoin (K : IntermediateField F E) (S : Set E) :
     restrictScalars F (adjoin K S) = adjoin F (K ∪ S) := by
   rw [← adjoin_self _ K, adjoin_adjoin_left, adjoin_self _ K]
 
-set_option backward.isDefEq.respectTransparency false in
 variable {F} in
 theorem extendScalars_adjoin {K : IntermediateField F E} {S : Set E} (h : K ≤ adjoin F S) :
     extendScalars h = adjoin K S := restrictScalars_injective F <| by
@@ -449,10 +452,6 @@ theorem extendScalars_adjoin {K : IntermediateField F E} {S : Set E} (h : K ≤ 
   exact le_antisymm (adjoin.mono F S _ Set.subset_union_right) <| adjoin_le_iff.2 <|
     Set.union_subset h (subset_adjoin F S)
 
-theorem adjoin_union {S T : Set E} : adjoin F (S ∪ T) = adjoin F S ⊔ adjoin F T :=
-  gc.l_sup
-
-set_option backward.isDefEq.respectTransparency false in
 theorem restrictScalars_adjoin_eq_sup (K : IntermediateField F E) (S : Set E) :
     restrictScalars F (adjoin K S) = K ⊔ adjoin F S := by
   rw [restrictScalars_adjoin, adjoin_union, adjoin_self]
@@ -479,16 +478,16 @@ theorem restrictScalars_adjoin_of_algEquiv
   simp [hi]
 
 @[elab_as_elim]
-theorem adjoin_induction {s : Set E} {p : ∀ x ∈ adjoin F s, Prop}
-    (mem : ∀ x hx, p x (subset_adjoin _ _ hx))
-    (algebraMap : ∀ x, p (algebraMap F E x) (algebraMap_mem _ _))
-    (add : ∀ x y hx hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
-    (inv : ∀ x hx, p x hx → p x⁻¹ (inv_mem hx))
-    (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
-    {x} (h : x ∈ adjoin F s) : p x h :=
+theorem adjoin_induction {s : Set E} {motive : ∀ x ∈ adjoin F s, Prop}
+    (mem : ∀ x hx, motive x (subset_adjoin _ _ hx))
+    (algebraMap : ∀ x, motive (algebraMap F E x) (algebraMap_mem _ _))
+    (add : ∀ x y hx hy, motive x hx → motive y hy → motive (x + y) (add_mem hx hy))
+    (inv : ∀ x hx, motive x hx → motive x⁻¹ (inv_mem hx))
+    (mul : ∀ x y hx hy, motive x hx → motive y hy → motive (x * y) (mul_mem hx hy))
+    {x} (h : x ∈ adjoin F s) : motive x h :=
   Subfield.closure_induction
     (fun x hx ↦ Or.casesOn hx (fun ⟨x, hx⟩ ↦ hx ▸ algebraMap x) (mem x))
-    (by simp_rw [← (_root_.algebraMap F E).map_one]; exact algebraMap 1) add
+    (by simp_rw [← (Algebra.algebraMap F E).map_one]; exact algebraMap 1) add
     (fun x _ h ↦ by
       simp_rw [← neg_one_smul F x, Algebra.smul_def]; exact mul _ _ _ _ (algebraMap _) h) inv mul h
 
@@ -569,11 +568,16 @@ theorem AdjoinSimple.coe_gen : (AdjoinSimple.gen F α : E) = α :=
 theorem AdjoinSimple.algebraMap_gen : algebraMap F⟮α⟯ E (AdjoinSimple.gen F α) = α :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
+-- Note: After unfolding `AdjoinSimple.gen`, the simp lemma `coe_aeval_mk_apply`
+-- does not fire, so we have to add this.
+@[simp]
+theorem AdjoinSimple.coe_aeval_gen_apply (f : F[X]) :
+    aeval (AdjoinSimple.gen F α) f = aeval α f :=
+  Polynomial.coe_aeval_mk_apply ..
+
 theorem adjoin_simple_adjoin_simple (β : E) : F⟮α⟯⟮β⟯.restrictScalars F = F⟮α, β⟯ :=
   adjoin_adjoin_left _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem adjoin_simple_comm (β : E) : F⟮α⟯⟮β⟯.restrictScalars F = F⟮β⟯⟮α⟯.restrictScalars F :=
   adjoin_adjoin_comm _ _ _
 
@@ -590,18 +594,17 @@ variable {A B C : Type*} [Field A] [Field B] [Field C] [Algebra A B] [Algebra B 
 /-- Ring homomorphism between `A⟮b⟯` and `A⟮↑b⟯`. -/
 def RingHom.adjoinAlgebraMap : A⟮b⟯ →+* A⟮((algebraMap B C) b)⟯ :=
   RingHom.codRestrict (((Algebra.ofId B C).restrictScalars A).comp (IntermediateField.val A⟮b⟯)) _
-   (fun x ↦ by
-    rw [show (algebraMap B C) b = (Algebra.ofId B C).restrictScalars A b by rfl,
-      ← Set.image_singleton, ← IntermediateField.adjoin_map A {b}]
-    use x
-    simp)
+    (fun x ↦ by
+      rw [show (algebraMap B C) b = (Algebra.ofId B C).restrictScalars A b by rfl,
+        ← Set.image_singleton, ← IntermediateField.adjoin_map A {b}]
+      use x
+      simp)
 
 instance : Algebra A⟮b⟯ A⟮(algebraMap B C) b⟯ :=
   RingHom.toAlgebra (RingHom.adjoinAlgebraMap _)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : IsScalarTower A⟮b⟯ A⟮(algebraMap B C) b⟯ C :=
-  IsScalarTower.of_algebraMap_eq' (by rfl)
+  IsScalarTower.of_algebraMap_eq' rfl
 
 end AdjoinSimple
 
@@ -673,22 +676,30 @@ theorem fg_iSup {ι : Sort*} [Finite ι] {S : ι → IntermediateField F E} (h :
   simp_rw [← hs, ← adjoin_iUnion]
   exact fg_adjoin_of_finite (Set.finite_iUnion fun _ ↦ Finset.finite_toSet _)
 
-set_option backward.isDefEq.respectTransparency false in
-theorem induction_on_adjoin_finset (S : Finset E) (P : IntermediateField F E → Prop) (base : P ⊥)
-    (ih : ∀ (K : IntermediateField F E), ∀ x ∈ S, P K → P (K⟮x⟯.restrictScalars F)) :
-    P (adjoin F S) := by
+/-- A field is finitely generated if and only if it is finitely generated over its prime
+subfield. -/
+theorem _root_.Field.fg_iff_fg_top_bot :
+    Field.FG F ↔ (⊤ : IntermediateField (⊥ : Subfield F) F).FG := by
+  simp [Field.fg_iff, fg_def, Set.exists_finite_iff_finset,
+    ← toSubfield_inj, Subfield.algebraMap_ofSubfield, Subfield.closure_union]
+
+theorem induction_on_adjoin_finset (S : Finset E)
+    {motive : IntermediateField F E → Prop} (bot : motive ⊥)
+    (adjoin_simple : ∀ (K : IntermediateField F E),
+      ∀ x ∈ S, motive K → motive (K⟮x⟯.restrictScalars F)) :
+    motive (adjoin F S) := by
   classical
   refine Finset.induction_on' S ?_ (fun _ _ ha _ _ h => ?_)
-  · simp [base]
+  · simp [bot]
   · rw [Finset.coe_insert, Set.insert_eq, Set.union_comm, ← adjoin_adjoin_left]
-    exact ih (adjoin F _) _ ha h
+    exact adjoin_simple (adjoin F _) _ ha h
 
-set_option backward.isDefEq.respectTransparency false in
-theorem induction_on_adjoin_fg (P : IntermediateField F E → Prop) (base : P ⊥)
-    (ih : ∀ (K : IntermediateField F E) (x : E), P K → P (K⟮x⟯.restrictScalars F))
-    (K : IntermediateField F E) (hK : K.FG) : P K := by
+theorem induction_on_adjoin_fg {motive : IntermediateField F E → Prop} (bot : motive ⊥)
+    (adjoin_simple : ∀ (K : IntermediateField F E)
+      (x : E), motive K → motive (K⟮x⟯.restrictScalars F))
+    (K : IntermediateField F E) (hK : K.FG) : motive K := by
   obtain ⟨S, rfl⟩ := hK
-  exact induction_on_adjoin_finset S P base fun K x _ hK => ih K x hK
+  exact induction_on_adjoin_finset S bot fun K x _ hK => adjoin_simple K x hK
 
 end Induction
 
@@ -731,7 +742,6 @@ theorem extendScalars_self : extendScalars (le_refl F) = ⊥ := by
   rintro ⟨y, rfl⟩
   exact y.2
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem extendScalars_top : extendScalars (le_top : F ≤ ⊤) = ⊤ :=
   IntermediateField.toSubfield_injective (by simp)
@@ -739,12 +749,10 @@ theorem extendScalars_top : extendScalars (le_top : F ≤ ⊤) = ⊤ :=
 variable {F}
 variable {E E' : Subfield L} (h : F ≤ E) (h' : F ≤ E')
 
-set_option backward.isDefEq.respectTransparency false in
 theorem extendScalars_sup :
     extendScalars h ⊔ extendScalars h' = extendScalars (le_sup_of_le_left h : F ≤ E ⊔ E') :=
   ((extendScalars.orderIso F).map_sup ⟨_, h⟩ ⟨_, h'⟩).symm
 
-set_option backward.isDefEq.respectTransparency false in
 theorem extendScalars_inf : extendScalars h ⊓ extendScalars h' = extendScalars (le_inf h h') :=
   ((extendScalars.orderIso F).map_inf ⟨_, h⟩ ⟨_, h'⟩).symm
 
@@ -754,12 +762,10 @@ namespace IntermediateField
 
 variable (F : IntermediateField K L)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem extendScalars_self : extendScalars (le_refl F) = ⊥ :=
   restrictScalars_injective K (by simp)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem extendScalars_top : extendScalars (le_top : F ≤ ⊤) = ⊤ :=
   restrictScalars_injective K (by simp)

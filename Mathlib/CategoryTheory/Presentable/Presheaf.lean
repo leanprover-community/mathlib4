@@ -6,8 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Generator.Presheaf
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 public import Mathlib.CategoryTheory.Presentable.StrongGenerator
+
+import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 
 /-!
 # Categories of presheaves are locally presentable
@@ -19,7 +20,7 @@ be automatically satisfied (TODO)).
 
 -/
 
-@[expose] public section
+public section
 
 universe w v v' u u'
 
@@ -29,6 +30,7 @@ open Opposite Limits
 
 namespace Presheaf
 
+set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] freeYonedaHomEquiv_comp in
 instance {C : Type u} [Category.{v} C] {A : Type u'} [Category.{v'} A]
     [HasColimitsOfSize.{w, w} A] [HasCoproducts.{v} A]

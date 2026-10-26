@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
 
 /-!
 # Initial and terminal objects in the category of functors
@@ -30,7 +30,7 @@ def isTerminal {F : C ⥤ D} (hF : ∀ (X : C), IsTerminal (F.obj X)) :
     IsTerminal F := by
   refine evaluationJointlyReflectsLimits _
     fun X ↦ IsLimit.equivOfNatIsoOfIso (Functor.emptyExt _ _) _ _ ?_ (hF X)
-  exact Cones.ext (Iso.refl _)
+  exact Cone.ext (Iso.refl _)
 
 /-- If `F : C ⥤ D` is such that `F.obj X` is initial for any `X : C`,
 then `F` is an initial object. -/
@@ -38,6 +38,6 @@ def isInitial {F : C ⥤ D} (hF : ∀ (X : C), IsInitial (F.obj X)) :
     IsInitial F := by
   refine evaluationJointlyReflectsColimits _
     fun X ↦ IsColimit.equivOfNatIsoOfIso (Functor.emptyExt _ _) _ _ ?_ (hF X)
-  exact Cocones.ext (Iso.refl _)
+  exact Cocone.ext (Iso.refl _)
 
 end CategoryTheory.Functor

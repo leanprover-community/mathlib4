@@ -5,8 +5,8 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.Galois.EssSurj
 public import Mathlib.CategoryTheory.Action.Continuous
+public import Mathlib.CategoryTheory.Galois.EssSurj
 public import Mathlib.Topology.Category.FinTopCat
 
 /-!
@@ -40,21 +40,23 @@ variable (F) in
 def functorToContAction : C ⥤ ContAction FintypeCat (Aut F) :=
   ObjectProperty.lift _ (functorToAction F) (fun X ↦ continuousSMul_aut_fiber F X)
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : (functorToContAction F).Faithful :=
   inferInstanceAs <| (ObjectProperty.lift _ _ _).Faithful
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : (functorToContAction F).Full :=
   inferInstanceAs <| (ObjectProperty.lift _ _ _).Full
 
 instance {F : C ⥤ FintypeCat.{u₁}} [FiberFunctor F] : (functorToContAction F).EssSurj where
   mem_essImage X := by
-    have : ContinuousSMul (Aut F) X.obj.V.carrier := X.2
+    have : ContinuousSMul (Aut F) X.obj.V := X.2
     obtain ⟨A, ⟨i⟩⟩ := exists_lift_of_continuous (F := F) X
     exact ⟨A, ⟨ObjectProperty.isoMk _ i⟩⟩
 
 instance : (functorToContAction F).EssSurj := by
   let F' : C ⥤ FintypeCat.{u₁} := F ⋙ FintypeCat.uSwitch.{w, u₁}
-  letI : FiberFunctor F' := FiberFunctor.comp_right _
+  let : FiberFunctor F' := FiberFunctor.comp_right _
   have : (functorToContAction F').EssSurj := inferInstance
   let f : Aut F ≃ₜ* Aut F' :=
     (autEquivAutWhiskerRight F (FintypeCat.uSwitchEquivalence.{w, u₁}).fullyFaithfulFunctor)
@@ -63,20 +65,20 @@ instance : (functorToContAction F).EssSurj := by
        (fun X ↦ by
           rw [Action.isContinuous_def]
           change Continuous ((fun p ↦ (FintypeCat.uSwitchEquiv X.obj.V).symm p) ∘
-              (fun p : Aut F' × _ ↦ (X.obj.ρ p.1).hom p.2) ∘
+              (fun p : Aut F' × _ ↦ (X.obj.ρ p.1).asHom.hom p.2) ∘
               (fun p : Aut F' × _ ↦ (p.1, FintypeCat.uSwitchEquiv _ p.2)))
           exact Continuous.comp (by fun_prop) (Continuous.comp X.2.1 (by fun_prop)))
        (fun X ↦ by
           rw [Action.isContinuous_def]
           change Continuous ((fun p ↦ (FintypeCat.uSwitchEquiv X.obj.V).symm p) ∘
-              (fun p : Aut F' × _ ↦ (X.obj.ρ p.1).hom p.2) ∘
+              (fun p : Aut F' × _ ↦ (X.obj.ρ p.1).asHom.hom p.2) ∘
               (fun p : Aut F' × _ ↦ (p.1, FintypeCat.uSwitchEquiv _ p.2)))
           exact Continuous.comp (by fun_prop) (Continuous.comp X.2.1 (by fun_prop)))).trans <|
       ContAction.resEquiv _ f
   have : functorToContAction F ≅ functorToContAction F' ⋙ equiv.functor :=
     NatIso.ofComponents
       (fun X ↦ ObjectProperty.isoMk _ (Action.mkIso (FintypeCat.uSwitchEquivalence.unitIso.app _)
-      (fun g ↦ FintypeCat.uSwitchEquivalence.unitIso.hom.naturality (g.hom.app X))))
+      (fun g ↦ FintypeCat.uSwitchEquivalence.unitIso.hom.naturality (g.asIso.hom.app X))))
       (fun f ↦ by
         ext : 2
         exact FintypeCat.uSwitchEquivalence.unitIso.hom.naturality (F.map f))

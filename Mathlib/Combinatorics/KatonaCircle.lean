@@ -6,9 +6,10 @@ Authors: Ching-Tsun Chou, Chris Wong, Yaël Dillies
 module
 
 public import Mathlib.Data.Finset.Density
-public import Mathlib.Data.Fintype.Prod
 public import Mathlib.Data.Fintype.Perm
 public import Mathlib.Data.Nat.Choose.Cast
+
+import Mathlib.Data.Fintype.Prod
 
 /-!
 # The Katona circle method
@@ -42,14 +43,13 @@ lemma IsPrefix.subset_of_card_le_card (hs : IsPrefix f s) (ht : IsPrefix f t) (h
 
 variable [DecidableEq X]
 
-instance : Decidable (IsPrefix f s) := by unfold IsPrefix; infer_instance
+instance : Decidable (IsPrefix f s) := inferInstanceAs <| Decidable (∀ _, _)
 
 /-- The set of numberings of which `s` is a prefix. -/
 def prefixed (s : Finset X) : Finset (Numbering X) := {f | IsPrefix f s}
 
 @[simp] lemma mem_prefixed : f ∈ prefixed s ↔ IsPrefix f s := by simp [prefixed]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Decompose a numbering of which `s` is a prefix into a numbering of `s` and a numbering on `sᶜ`.
 -/
 def prefixedEquiv (s : Finset X) : prefixed s ≃ Numbering s × Numbering ↑(sᶜ) where
@@ -105,7 +105,6 @@ def prefixedEquiv (s : Finset X) : prefixed s ≃ Numbering s × Numbering ↑(s
       simp [hx]
   right_inv g := by simp +contextual [Prod.ext_iff, DFunLike.ext_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma card_prefixed (s : Finset X) : #(prefixed s) = (#s)! * (card X - #s)! := by
   simpa [-mem_prefixed] using Fintype.card_congr (prefixedEquiv s)
 

@@ -8,7 +8,7 @@ module
 public import Mathlib.Data.List.Defs
 
 /-!
-# Lemmas about List.*Idx functions.
+# Lemmas about `List.*Idx` functions.
 
 Some specification lemmas for `List.mapIdx`, `List.mapIdxM`, `List.foldlIdx` and `List.foldrIdx`.
 
@@ -44,6 +44,12 @@ theorem mapIdx_eq_ofFn (l : List α) (f : ℕ → α → β) :
   induction l generalizing f with
   | nil => simp
   | cons _ _ IH => simp [IH]
+
+theorem mapIdx_replicate (f : ℕ → α → β) (n : ℕ) (a : α) :
+    mapIdx f (replicate n a) = map (fun n ↦ f n a) (range n) := by
+  induction n with
+  | zero => simp
+  | succ n hn => simp [replicate_succ', mapIdx_append, range_succ, hn]
 
 end MapIdx
 

@@ -6,6 +6,7 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 module
 
 public import Mathlib.Analysis.Normed.Operator.Bilinear
+public import Mathlib.Topology.Algebra.Module.Equiv.Prod
 
 /-!
 # Operator norm: Cartesian products
@@ -17,7 +18,7 @@ Interaction of operator norm with Cartesian products.
 
 variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜]
 
-open Set Real Metric ContinuousLinearMap
+open Set Real ContinuousLinearMap
 
 section SemiNormed
 
@@ -33,18 +34,17 @@ variable (𝕜 E F)
 /-- The operator norm of the first projection `E × F → E` is at most 1. (It is 0 if `E` is zero, so
 the inequality cannot be improved without further assumptions.) -/
 lemma norm_fst_le : ‖fst 𝕜 E F‖ ≤ 1 :=
-  opNorm_le_bound _ zero_le_one (fun ⟨e, f⟩ ↦ by simpa only [one_mul] using le_max_left ‖e‖ ‖f‖)
+  opNorm_le_bound _ zero_le_one (fun ⟨e, f⟩ ↦ by simpa only [one_mul] using! le_max_left ‖e‖ ‖f‖)
 
 /-- The operator norm of the second projection `E × F → F` is at most 1. (It is 0 if `F` is zero, so
 the inequality cannot be improved without further assumptions.) -/
 lemma norm_snd_le : ‖snd 𝕜 E F‖ ≤ 1 :=
-  opNorm_le_bound _ zero_le_one (fun ⟨e, f⟩ ↦ by simpa only [one_mul] using le_max_right ‖e‖ ‖f‖)
+  opNorm_le_bound _ zero_le_one (fun ⟨e, f⟩ ↦ by simpa only [one_mul] using! le_max_right ‖e‖ ‖f‖)
 
 end FirstSecond
 
 section OpNorm
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem opNorm_prod (f : E →L[𝕜] F) (g : E →L[𝕜] G) : ‖f.prod g‖ = ‖(f, g)‖ :=
   le_antisymm
@@ -147,7 +147,6 @@ section FirstSecond
 
 variable (𝕜 E F)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The operator norm of the first projection `E × F → E` is exactly 1 if `E` is nontrivial. -/
 @[simp] lemma norm_fst [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] [Nontrivial E] :
@@ -158,7 +157,6 @@ set_option backward.isDefEq.respectTransparency false in
   rw [norm_zero, max_eq_left (norm_nonneg e)] at this
   rwa [← mul_le_mul_iff_of_pos_right (norm_pos_iff.mpr he), one_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The operator norm of the second projection `E × F → F` is exactly 1 if `F` is nontrivial. -/
 @[simp] lemma norm_snd [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
     [NormedAddCommGroup F] [NormedSpace 𝕜 F] [Nontrivial F] :

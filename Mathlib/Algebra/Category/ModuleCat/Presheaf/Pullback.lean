@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Generator
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Pushforward
-public import Mathlib.CategoryTheory.Adjunction.PartialAdjoint
 public import Mathlib.CategoryTheory.Adjunction.CompositionIso
+public import Mathlib.CategoryTheory.Adjunction.PartialAdjoint
 
 /-!
 # Pullback of presheaves of modules
@@ -70,7 +70,7 @@ this object shall be mapped to `(free R).obj (yoneda.obj (F.obj X))`. -/
 noncomputable def pushforwardCompCoyonedaFreeYonedaCorepresentableBy (X : C) :
     (pushforward φ ⋙ coyoneda.obj (op ((free S).obj (yoneda.obj X)))).CorepresentableBy
       ((free R).obj (yoneda.obj (F.obj X))) where
-  homEquiv {M} := (freeYonedaEquiv).trans
+  homEquiv {M} := freeYonedaEquiv.trans
     (freeYonedaEquiv (M := (pushforward φ).obj M)).symm
   homEquiv_comp {M N} g f := freeYonedaEquiv.injective (by
     dsimp

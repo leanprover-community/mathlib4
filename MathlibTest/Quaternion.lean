@@ -1,6 +1,8 @@
-import Mathlib.Algebra.Quaternion
-import Mathlib.Data.Real.Basic
-import Mathlib.NumberTheory.Zsqrtd.GaussianInt
+module
+
+public meta import Mathlib.Algebra.Quaternion
+public meta import Mathlib.Basic.Real.Basic
+public meta import Mathlib.NumberTheory.Zsqrtd.GaussianInt
 
 open Quaternion
 /--
@@ -33,7 +35,6 @@ info: { re := Real.ofCauchy (sorry /- 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ... -/), imI
 #guard_msgs in
 #eval (⟨1, 2, 3, 4⟩ : ℍ[ℝ])
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 info: { re := ⟨0, 0⟩, imI := ⟨0, 0⟩, imJ := ⟨0, 0⟩, imK := ⟨0, 0⟩ }
 -/

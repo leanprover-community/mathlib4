@@ -5,10 +5,9 @@ Authors: Simon Hudon, Harun Khan, Alex Keizer
 -/
 module
 
-public import Mathlib.Algebra.Ring.InjSurj
 public import Mathlib.Algebra.Ring.Equiv
-public import Mathlib.Data.ZMod.Defs
 public import Mathlib.Data.Int.Cast.Lemmas
+public import Mathlib.Data.ZMod.Defs
 
 /-!
 # Basic Theorems About Bitvectors
@@ -66,7 +65,6 @@ lemma toFin_nsmul (n : ℕ) (x : BitVec w) : toFin (n • x) = n • x.toFin :=
     open scoped Fin.CommRing in
     simp only [natCast_eq_ofNat, toFin_ofNat, Fin.ofNat_eq_cast, nsmul_eq_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma toFin_zsmul (z : ℤ) (x : BitVec w) : toFin (z • x) = z • x.toFin :=
   toFin_mul _ _ |>.trans <| by
     open scoped Fin.CommRing in
@@ -75,14 +73,15 @@ lemma toFin_zsmul (z : ℤ) (x : BitVec w) : toFin (z • x) = z • x.toFin :=
 lemma toFin_pow (x : BitVec w) (n : ℕ) : toFin (x ^ n) = x.toFin ^ n := by
   induction n with
   | zero => simp
-  | succ n ih => simp [ih, BitVec.pow_succ]
+  | succ n ih => simp [ih, BitVec.pow_succ, pow_succ]
 
 /-!
 ## Ring
 -/
 
 -- Verify that the `HPow` instance from Lean agrees definitionally with the instance via `Monoid`.
-example : @instHPow (Fin (2 ^ w)) ℕ Monoid.toNatPow = Lean.Grind.Fin.instHPowFinNatOfNeZero := rfl
+example : @instHPow (Fin (2 ^ w)) ℕ NPow.toPow =
+    @instHPow (Fin (2 ^ w)) ℕ (@_root_.instPowNat _ Fin.instNatPow) := rfl
 
 instance : CommSemiring (BitVec w) :=
   open Fin.CommRing in

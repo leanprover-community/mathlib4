@@ -18,6 +18,7 @@ oplax functors):
 * oplax natural transformations;
 * lax natural transformations;
 * strong natural transformations.
+
 These differ in the direction (and invertibility) of the 2-morphisms involved in the naturality
 condition.
 
@@ -171,6 +172,7 @@ def vComp (η : LaxTrans F G) (θ : LaxTrans G H) : LaxTrans F H where
   naturality_id := vComp_naturality_id η θ
   naturality_comp := vComp_naturality_comp η θ
 
+attribute [local simp] vCompApp vCompNaturality in
 /-- `CategoryStruct` on `OplaxFunctor B C` where the (1-)morphisms are given by lax
 transformations. -/
 @[simps! id_app id_naturality comp_app comp_naturality]
@@ -387,6 +389,9 @@ instance : Inhabited (StrongTrans F F) :=
 
 variable {F} {G H : B ⥤ᵒᵖᴸ C} (η : StrongTrans F G) (θ : StrongTrans G H)
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Vertical composition of strong natural transformations. -/
 @[simps!]
 def vcomp : StrongTrans F H :=
@@ -440,12 +445,18 @@ theorem whiskerRight_naturality_comp (f : a ⟶ b) (g : b ⟶ c) (h : G.obj c �
                  (η.naturality f).hom ▷ G.map g ▷ h ≫ (α_ _ _ _).hom ▷ h ≫ (α_ _ _ _).hom :=
   η.toOplax.whiskerRight_naturality_comp _ _ _
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp), to_app]
 theorem whiskerLeft_naturality_id (f : a' ⟶ G.obj a) :
     f ◁ (θ.naturality (𝟙 a)).hom ≫ f ◁ θ.app a ◁ H.mapId a =
       f ◁ G.mapId a ▷ θ.app a ≫ f ◁ (λ_ (θ.app a)).hom ≫ f ◁ (ρ_ (θ.app a)).inv :=
   θ.toOplax.whiskerLeft_naturality_id _
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp), to_app]
 theorem whiskerRight_naturality_id (f : G.obj a ⟶ a') :
     (η.naturality (𝟙 a)).hom ▷ f ≫ (α_ _ _ _).hom ≫ η.app a ◁ G.mapId a ▷ f =

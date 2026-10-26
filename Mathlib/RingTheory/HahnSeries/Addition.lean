@@ -5,17 +5,13 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-public import Mathlib.Algebra.Group.Pi.Lemmas
-public import Mathlib.Algebra.Group.Support
-public import Mathlib.Algebra.Module.Basic
 public import Mathlib.Algebra.Module.LinearMap.Defs
 public import Mathlib.Data.Finsupp.SMul
 public import Mathlib.RingTheory.HahnSeries.Basic
-public import Mathlib.Tactic.FastInstance
 
 /-!
 # Additive properties of Hahn series
+
 If `Γ` is ordered and `R` has zero, then `R⟦Γ⟧` consists of formal series over `Γ` with coefficients
 in `R`, whose supports are partially well-ordered. With further structure on `R` and `Γ`, we can add
 further structure on `R⟦Γ⟧`.  When `R` has an addition operation, `R⟦Γ⟧` also has addition by adding
@@ -64,7 +60,6 @@ instance : SMulZeroClass R V⟦Γ⟧ where
     ext
     simp only [coeff_smul, coeff_zero, smul_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem orderTop_smul_not_lt (r : R) (x : V⟦Γ⟧) : ¬ (r • x).orderTop < x.orderTop := by
   by_cases hrx : r • x = 0
   · rw [hrx, orderTop_zero]
@@ -176,7 +171,6 @@ lemma addOppositeEquiv_symm_orderTop (x : R⟦Γ⟧ᵃᵒᵖ) :
 @[simp]
 lemma addOppositeEquiv_leadingCoeff (x : Rᵃᵒᵖ⟦Γ⟧) :
     (addOppositeEquiv x).unop.leadingCoeff = x.leadingCoeff.unop := by
-  classical
   obtain rfl | hx := eq_or_ne x 0
   · simp
   simp only [ne_eq, AddOpposite.unop_eq_zero_iff, EmbeddingLike.map_eq_zero_iff, hx,
@@ -197,7 +191,6 @@ protected theorem min_le_min_add {Γ} [LinearOrder Γ] {x y : R⟦Γ⟧} (hx : x
   rw [← Set.IsWF.min_union]
   exact Set.IsWF.min_le_min_of_subset (support_add_subset (x := x) (y := y))
 
-set_option backward.isDefEq.respectTransparency false in
 theorem min_orderTop_le_orderTop_add {Γ} [LinearOrder Γ] {x y : R⟦Γ⟧} :
     min x.orderTop y.orderTop ≤ (x + y).orderTop := by
   by_cases hx : x = 0; · simp [hx]
@@ -214,7 +207,6 @@ theorem min_order_le_order_add {Γ} [Zero Γ] [LinearOrder Γ] {x y : R⟦Γ⟧}
   rw [order_of_ne hx, order_of_ne hy, order_of_ne hxy]
   exact HahnSeries.min_le_min_add hx hy hxy
 
-set_option backward.isDefEq.respectTransparency false in
 theorem orderTop_add_eq_left {Γ} [LinearOrder Γ] {x y : R⟦Γ⟧}
     (hxy : x.orderTop < y.orderTop) : (x + y).orderTop = x.orderTop := by
   have hx : x ≠ 0 := orderTop_ne_top.1 hxy.ne_top
@@ -234,7 +226,6 @@ theorem orderTop_add_eq_right {Γ} [LinearOrder Γ] {x y : R⟦Γ⟧}
     (x := addOppositeEquiv.symm (.op y))
     (y := addOppositeEquiv.symm (.op x))
 
-set_option backward.isDefEq.respectTransparency false in
 theorem leadingCoeff_add_eq_left {Γ} [LinearOrder Γ] {x y : R⟦Γ⟧}
     (hxy : x.orderTop < y.orderTop) : (x + y).leadingCoeff = x.leadingCoeff := by
   have hx : x ≠ 0 := orderTop_ne_top.1 hxy.ne_top
@@ -301,7 +292,7 @@ theorem embDomain_add (f : Γ ↪o Γ') (x y : R⟦Γ⟧) :
   by_cases hg : g ∈ Set.range f
   · obtain ⟨a, rfl⟩ := hg
     simp
-  · simp [embDomain_notin_range hg]
+  · simp [embDomain_of_notMem_range hg]
 
 end Domain
 
@@ -541,7 +532,7 @@ theorem embDomain_smul (f : Γ ↪o Γ') (r : R) (x : R⟦Γ⟧) :
   by_cases hg : g ∈ Set.range f
   · obtain ⟨a, rfl⟩ := hg
     simp
-  · simp [embDomain_notin_range hg]
+  · simp [embDomain_of_notMem_range hg]
 
 /-- Extending the domain of Hahn series is a linear map. -/
 @[simps]

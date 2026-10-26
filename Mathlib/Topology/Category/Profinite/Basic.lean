@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.FintypeCat
 public import Mathlib.Topology.Category.CompHaus.Basic
 public import Mathlib.Topology.LocallyConstant.Basic
-public import Mathlib.Topology.Separation.Profinite
 
 /-!
 # The category of Profinite Types
@@ -43,10 +42,11 @@ profinite
 
 universe v u
 
-open CategoryTheory Topology CompHausLike
+open CategoryTheory CompHausLike
+
+open scoped Topology
 
 /-- The type of profinite topological spaces. -/
-@[to_additive_do_translate] -- This is required
 abbrev Profinite := CompHausLike (fun X ↦ TotallyDisconnectedSpace X)
 
 namespace Profinite
@@ -60,10 +60,15 @@ compact, Hausdorff and totally disconnected topological space.
 -/
 abbrev of (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
     [TotallyDisconnectedSpace X] : Profinite :=
-  CompHausLike.of _ X
+  ↧X
+
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `Profinite.of X` as `↧X`. -/
+@[app_delab Profinite.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
 
 instance : Inhabited Profinite :=
-  ⟨Profinite.of PEmpty⟩
+  ⟨↧PEmpty⟩
 
 instance {X : Profinite} : TotallyDisconnectedSpace X :=
   X.prop
@@ -91,11 +96,11 @@ section Profinite
 -- Without explicit universe annotations here, Lean introduces two universe variables and
 -- unhelpfully defines a function `CompHaus.{max u₁ u₂} → Profinite.{max u₁ u₂}`.
 /--
-(Implementation) The object part of the connected_components functor from compact Hausdorff spaces
+(Implementation) The object part of the `connectedComponents` functor from compact Hausdorff spaces
 to Profinite spaces, given by quotienting a space by its connected components. -/
 @[stacks 0900]
 def CompHaus.toProfiniteObj (X : CompHaus.{u}) : Profinite.{u} where
-  toTop := TopCat.of (ConnectedComponents X)
+  toTop := ↧(ConnectedComponents X)
   is_compact := Quotient.compactSpace
   is_hausdorff := ConnectedComponents.t2
   prop := ConnectedComponents.totallyDisconnectedSpace
@@ -115,7 +120,7 @@ def Profinite.toCompHausEquivalence (X : CompHaus.{u}) (Y : Profinite.{u}) :
       obtain ⟨y, rfl⟩ := ConnectedComponents.surjective_coe y
       rfl))
 
-/-- The connected_components functor from compact Hausdorff spaces to profinite spaces,
+/-- The `connectedComponents` functor from compact Hausdorff spaces to profinite spaces,
 left adjoint to the inclusion functor.
 -/
 def CompHaus.toProfinite : CompHaus ⥤ Profinite :=
@@ -140,14 +145,14 @@ attribute [local instance] FintypeCat.discreteTopology
 
 /-- The natural functor from `Fintype` to `Profinite`, endowing a finite type with the
 discrete topology. -/
-@[simps! -isSimp map_hom_hom_apply]
+@[simps! -isSimp map_hom_hom_apply obj]
 def FintypeCat.toProfinite : FintypeCat ⥤ Profinite where
-  obj A := Profinite.of A
+  obj A := ↧A
   map f := ofHom _ ⟨f, by fun_prop⟩
 
 /-- `FintypeCat.toLightProfinite` is fully faithful. -/
 def FintypeCat.toProfiniteFullyFaithful : toProfinite.FullyFaithful where
-  preimage f := InducedCategory.homMk (f : _ → _)
+  preimage f := InducedCategory.homMk <| ↾(f : _ → _)
   map_preimage _ := rfl
   preimage_map _ := rfl
 
@@ -155,9 +160,9 @@ instance : FintypeCat.toProfinite.Faithful := FintypeCat.toProfiniteFullyFaithfu
 
 instance : FintypeCat.toProfinite.Full := FintypeCat.toProfiniteFullyFaithful.full
 
-instance (X : FintypeCat) : Fintype (FintypeCat.toProfinite.obj X) := inferInstanceAs (Fintype X)
+instance (X : FintypeCat) : Finite (FintypeCat.toProfinite.obj X) := inferInstanceAs (Finite X)
 
-instance (X : FintypeCat) : Fintype (Profinite.of X) := inferInstanceAs (Fintype X)
+instance (X : FintypeCat) : Finite (Profinite.of X) := inferInstanceAs (Finite X)
 
 end DiscreteTopology
 
@@ -248,17 +253,17 @@ theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Funct
         ext x
         dsimp [g, LocallyConstant.ofIsClopen]
         rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, ConcreteCategory.hom_ofHom,
-          ContinuousMap.coe_mk, Function.comp_apply, if_neg]
+          ContinuousMap.coe_mk, Function.comp_apply, ite_eq_right]
         refine mt (fun α => hVU α) ?_
         simp [U, C]
       apply_fun fun e => (e y).down at H
       dsimp [g, LocallyConstant.ofIsClopen] at H
-      rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Function.comp_apply, if_pos hyV] at H
+      rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Function.comp_apply, ite_eq_left hyV] at H
       exact top_ne_bot H
-  · rw [← CategoryTheory.epi_iff_surjective]
+  · rw [← CategoryTheory.ofHom_epi_iff_surjective]
     apply (forget Profinite).epi_of_epi_map
 
 /-- The pi-type of profinite spaces is profinite. -/
-def pi {α : Type u} (β : α → Profinite) : Profinite := .of (Π (a : α), β a)
+def pi {α : Type u} (β : α → Profinite) : Profinite := ↧(Π (a : α), β a)
 
 end Profinite

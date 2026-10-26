@@ -26,11 +26,13 @@ reducing the statement to the `ℝ`-version of the theorem.
 
 -/
 
-@[expose] public section
+public section
 
 open scoped NNReal
 
-open CompactlySupported CompactlySupportedContinuousMap MeasureTheory
+open CompactlySupportedContinuousMap MeasureTheory
+
+open scoped CompactlySupported
 
 variable {X : Type*} [TopologicalSpace X] [T2Space X] [LocallyCompactSpace X] [MeasurableSpace X]
   [BorelSpace X]
@@ -69,7 +71,6 @@ section integralLinearMap
 /-! We show that `NNRealRMK.rieszMeasure` is a bijection between linear functionals on `C_c(X, ℝ≥0)`
 and regular measures with inverse `NNRealRMK.integralLinearMap`. -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If two regular measures give the same integral for every function in `C_c(X, ℝ≥0)`, then they
 are equal. -/
 theorem _root_.MeasureTheory.Measure.ext_of_integral_eq_on_compactlySupported_nnreal

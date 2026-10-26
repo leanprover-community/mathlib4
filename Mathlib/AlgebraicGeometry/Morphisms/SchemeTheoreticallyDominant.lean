@@ -5,7 +5,6 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Category.Ring.Adjunctions
 public import Mathlib.AlgebraicGeometry.IdealSheaf.Functorial
 public import Mathlib.AlgebraicGeometry.Morphisms.Flat
 
@@ -13,6 +12,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Flat
 # Scheme-theoretically dominant morphisms
 
 In this file, we define scheme-theoretically dominant morphisms as morphisms with trivial kernel.
+
 ## Main results
 - `AlgebraicGeometry.IsSchemeTheoreticallyDominant`:
   The class of scheme-theoretically dominant morphisms.
@@ -24,7 +24,7 @@ In this file, we define scheme-theoretically dominant morphisms as morphisms wit
 
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory MorphismProperty Limits
 
@@ -42,7 +42,6 @@ alias Scheme.Hom.ker_eq_bot := IsSchemeTheoreticallyDominant.ker_eq_bot
 instance (priority := low) [IsIso f] : IsSchemeTheoreticallyDominant f :=
   ⟨by simp⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance (priority := low) [IsSchemeTheoreticallyDominant f] [QuasiCompact f] :
     IsDominant f := by
   rw [isDominant_iff, DenseRange, dense_iff_closure_eq, ← Scheme.Hom.support_ker,
@@ -58,7 +57,6 @@ instance : IsMultiplicative @IsSchemeTheoreticallyDominant where
   id_mem _ := inferInstance
   comp_mem _ _ _ _ := inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsSchemeTheoreticallyDominant.of_isDominant (f : X ⟶ Y) [IsDominant f] [IsReduced Y] :
     IsSchemeTheoreticallyDominant f := by
   rw [isSchemeTheoreticallyDominant_iff, ← Scheme.IdealSheafData.support_eq_top_iff,
@@ -91,7 +89,6 @@ lemma IsSchemeTheoreticallyDominant.isReduced (f : X ⟶ Y) [IsSchemeTheoretical
     [QuasiCompact f] [IsReduced X] : IsReduced Y :=
   ⟨fun _ ↦ isReduced_of_injective _ (f.app_injective _)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance IsSchemeTheoreticallyDominant.pullbackSnd (f : X ⟶ S) (g : Y ⟶ S)
     [IsSchemeTheoreticallyDominant f] [QuasiCompact f] [Flat g] :
     IsSchemeTheoreticallyDominant (pullback.snd f g) := by

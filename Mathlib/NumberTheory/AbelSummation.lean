@@ -5,10 +5,11 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.MeasureTheory.Function.Floor
 public import Mathlib.MeasureTheory.Integral.Asymptotics
 public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 public import Mathlib.Topology.Order.IsLocallyClosed
+
+import Mathlib.MeasureTheory.Function.Floor
 
 /-!
 # Abel's summation formula
@@ -44,8 +45,6 @@ Primed versions of the three results above are also stated for when the endpoint
 -/
 
 public section
-
-noncomputable section
 
 open Finset MeasureTheory
 
@@ -89,7 +88,6 @@ private theorem ineqofmemIco' {k : ℕ} (hk : k ∈ Ico (⌊a⌋₊ + 1) ⌊b⌋
     a ≤ k ∧ k + 1 ≤ b :=
   ineqofmemIco (by rwa [← Finset.coe_Ico])
 
-set_option backward.isDefEq.respectTransparency false in
 theorem _root_.integrableOn_mul_sum_Icc {m : ℕ} (ha : 0 ≤ a) {g : ℝ → 𝕜}
     (hg_int : IntegrableOn g (Set.Icc a b)) :
     IntegrableOn (fun t ↦ g t * ∑ k ∈ Icc m ⌊t⌋₊, c k) (Set.Icc a b) := by
@@ -126,7 +124,6 @@ theorem _root_.integrableOn_mul_sum_Icc {m : ℕ} (ha : 0 ≤ a) {g : ℝ → �
   · rw [Set.Icc_eq_empty_of_lt hab]
     exact integrableOn_empty
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Abel's summation formula. -/
 theorem _root_.sum_mul_eq_sub_sub_integral_mul (ha : 0 ≤ a) (hab : a ≤ b)
     (hf_diff : ∀ t ∈ Set.Icc a b, DifferentiableAt ℝ f t)
@@ -265,7 +262,9 @@ end specialversions
 
 section limit
 
-open Filter Topology abelSummationProof intervalIntegral
+open Filter intervalIntegral
+
+open scoped Topology
 
 theorem locallyIntegrableOn_mul_sum_Icc {m : ℕ} (ha : 0 ≤ a) {g : ℝ → 𝕜}
     (hg : LocallyIntegrableOn g (Set.Ici a)) :
@@ -280,7 +279,6 @@ theorem locallyIntegrableOn_mul_sum_Icc {m : ℕ} (ha : 0 ≤ a) {g : ℝ → �
   · rw [Set.not_nonempty_iff_eq_empty.mp hK₃]
     exact integrableOn_empty
 
-set_option backward.isDefEq.respectTransparency false in
 theorem tendsto_sum_mul_atTop_nhds_one_sub_integral
     (hf_diff : ∀ t ∈ Set.Ici 0, DifferentiableAt ℝ f t)
     (hf_int : LocallyIntegrableOn (deriv f) (Set.Ici 0)) {l : 𝕜}
@@ -300,7 +298,6 @@ theorem tendsto_sum_mul_atTop_nhds_one_sub_integral
   rw [sum_mul_eq_sub_integral_mul' _ _ (fun t ht ↦ hf_diff _ ht.1)]
   exact hf_int.integrableOn_compact_subset Set.Icc_subset_Ici_self isCompact_Icc
 
-set_option backward.isDefEq.respectTransparency false in
 theorem tendsto_sum_mul_atTop_nhds_one_sub_integral₀ (hc : c 0 = 0)
     (hf_diff : ∀ t ∈ Set.Ici 1, DifferentiableAt ℝ f t)
     (hf_int : LocallyIntegrableOn (deriv f) (Set.Ici 1)) {l : 𝕜}
@@ -327,7 +324,7 @@ end limit
 
 section summable
 
-open Filter abelSummationProof
+open Filter
 
 private theorem summable_mul_of_bigO_atTop_aux (m : ℕ)
     (h_bdd : (fun n : ℕ ↦ ‖f n‖ * ∑ k ∈ Icc 0 n, ‖c k‖) =O[atTop] fun _ ↦ (1 : ℝ))
@@ -361,7 +358,7 @@ private theorem summable_mul_of_bigO_atTop_aux (m : ℕ)
         simp
       · unfold C₂
         grw [setIntegral_mono_set ?_ (.of_forall fun _ ↦ norm_nonneg _)
-          Set.Ioc_subset_Ioi_self.eventuallyLE]
+          Set.Ioc_subset_Ioi_self.eventuallySubset]
         rw [← integrableOn_Ici_iff_integrableOn_Ioi, IntegrableOn,
           integrable_norm_iff (by fun_prop)]
         exact (locallyIntegrableOn_mul_sum_Icc _ m.cast_nonneg hf_int).integrableOn_of_isBigO_atTop
@@ -389,8 +386,9 @@ theorem summable_mul_of_bigO_atTop'
   have h : ∀ n, ∑ k ∈ Icc 1 n, ‖c k‖ = ∑ k ∈ Icc 0 n, ‖(fun n ↦ if n = 0 then 0 else c n) k‖ := by
     intro n
     rw [Icc_eq_cons_Ioc n.zero_le, sum_cons, ← Icc_add_one_left_eq_Ioc, zero_add]
-    simp_rw [if_pos, norm_zero, zero_add]
-    exact Finset.sum_congr rfl fun _ h ↦ by rw [if_neg (zero_lt_one.trans_le (mem_Icc.mp h).1).ne']
+    simp_rw [ite_eq_left, norm_zero, zero_add]
+    exact Finset.sum_congr rfl fun _ h ↦ by
+      rw [ite_eq_right (zero_lt_one.trans_le (mem_Icc.mp h).1).ne']
   simp_rw [h] at h_bdd hg₁
   refine Summable.congr_atTop (summable_mul_of_bigO_atTop_aux (fun n ↦ if n = 0 then 0 else c n) 1
     h_bdd (by rwa [Nat.cast_one]) (fun n ↦ ?_) hg₁ hg₂) ?_
@@ -398,6 +396,6 @@ theorem summable_mul_of_bigO_atTop'
       (fun _ ht ↦ hf_diff _ ht.1)
       (hf_int.integrableOn_compact_subset Set.Icc_subset_Ici_self isCompact_Icc)
   · filter_upwards [eventually_ne_atTop 0] with k hk
-    simp_rw [if_neg hk]
+    simp_rw [ite_eq_right hk]
 
 end summable

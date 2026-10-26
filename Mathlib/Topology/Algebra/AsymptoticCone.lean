@@ -5,9 +5,9 @@ Authors: Attila Gáspár
 -/
 module
 
-public import Mathlib.Analysis.Convex.Between
 public import Mathlib.Analysis.Convex.Topology
-public import Mathlib.Topology.Algebra.Group.AddTorsor
+
+import Mathlib.Analysis.Convex.Between
 
 /-!
 # Asymptotic cone of a set
@@ -29,10 +29,10 @@ that `∃ᶠ p in Filter.atTop • 𝓝 v, p ∈ s` holds.
 ## Main statements
 
 * `Convex.smul_vadd_mem_of_isClosed_of_mem_asymptoticCone`: if `v` is in the asymptotic cone of a
-closed convex set `s`, then every ray of direction `v` starting from `s` is contained in `s`.
+  closed convex set `s`, then every ray of direction `v` starting from `s` is contained in `s`.
 * `Convex.smul_vadd_mem_of_mem_nhds_of_mem_asymptoticCone`: if `v` is in the asymptotic cone of a
-convex set `s`, then every ray of direction `v` starting from the interior of `s` is contained in
-`s`.
+  convex set `s`, then every ray of direction `v` starting from the interior of `s` is contained in
+  `s`.
 -/
 
 @[expose] public section

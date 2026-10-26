@@ -34,7 +34,7 @@ open scoped Real ENNReal NNReal
 
 open MeasureTheory Measure
 
-namespace Probability
+namespace ProbabilityTheory
 
 section CauchyPDF
 
@@ -93,8 +93,7 @@ lemma cauchyPDF_pos (x₀ : ℝ) {γ : ℝ≥0} (hγ : γ ≠ 0) (x : ℝ) : 0 <
   rw [cauchyPDFReal_def]
   positivity
 
-set_option backward.isDefEq.respectTransparency false in
-lemma integral_cauchyPDFReal (x₀ : ℝ) {γ : ℝ≥0} (hγ : γ ≠ 0) :
+lemma integral_cauchyPDFReal_eq_one (x₀ : ℝ) {γ : ℝ≥0} (hγ : γ ≠ 0) :
     ∫ x, cauchyPDFReal x₀ γ x = 1 := by
   simp [cauchyPDFReal_def', NNReal.coe_inv, integral_const_mul,
     integral_sub_right_eq_self (f := fun x : ℝ ↦ (1 + (x / ↑γ) ^ 2)⁻¹),
@@ -108,7 +107,7 @@ lemma integrable_cauchyPDFReal (x₀ : ℝ) {γ : ℝ≥0} :
   · simp only [h, cauchyPDFReal_scale_zero]
     exact integrable_zero _ _ _
   apply Integrable.of_integral_ne_zero
-  simp [h, integral_cauchyPDFReal]
+  simp [h, integral_cauchyPDFReal_eq_one]
 
 /-- The pdf of the cauchy distribution integrates to 1. -/
 @[simp]
@@ -116,7 +115,8 @@ lemma lintegral_cauchyPDF_eq_one (x₀ : ℝ) {γ : ℝ≥0} (hγ : γ ≠ 0) :
     ∫⁻ x, cauchyPDF x₀ γ x = 1 := by
   unfold cauchyPDF
   rw [← ENNReal.toReal_eq_one_iff, ← integral_eq_lintegral_of_nonneg_ae
-    (ae_of_all _ fun x ↦ (cauchyPDF_pos x₀ hγ x).le) (by fun_prop), integral_cauchyPDFReal x₀ hγ]
+    (ae_of_all _ fun x ↦ (cauchyPDF_pos x₀ hγ x).le) (by fun_prop),
+    integral_cauchyPDFReal_eq_one x₀ hγ]
 
 end CauchyPDF
 
@@ -127,10 +127,10 @@ noncomputable def cauchyMeasure (x₀ : ℝ) (γ : ℝ≥0) : Measure ℝ :=
   if γ = 0 then dirac x₀ else volume.withDensity (cauchyPDF x₀ γ)
 
 lemma cauchyMeasure_of_scale_ne_zero (x₀ : ℝ) {γ : ℝ≥0} (hγ : γ ≠ 0) :
-    cauchyMeasure x₀ γ = volume.withDensity (cauchyPDF x₀ γ) := if_neg hγ
+    cauchyMeasure x₀ γ = volume.withDensity (cauchyPDF x₀ γ) := ite_eq_right hγ
 
 @[simp]
-lemma cauchyMeasure_zero_scale (x₀ : ℝ) : cauchyMeasure x₀ 0 = dirac x₀ := if_pos rfl
+lemma cauchyMeasure_zero_scale (x₀ : ℝ) : cauchyMeasure x₀ 0 = dirac x₀ := ite_eq_left rfl
 
 instance instIsProbabilityMeasure_cauchyMeasure (x₀ : ℝ) (γ : ℝ≥0) :
     IsProbabilityMeasure (cauchyMeasure x₀ γ) where
@@ -138,4 +138,4 @@ instance instIsProbabilityMeasure_cauchyMeasure (x₀ : ℝ) (γ : ℝ≥0) :
 
 end CauchyMeasure
 
-end Probability
+end ProbabilityTheory

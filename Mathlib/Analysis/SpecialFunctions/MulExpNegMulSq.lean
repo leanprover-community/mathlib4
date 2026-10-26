@@ -6,8 +6,9 @@ Authors: Jakob Stiefel
 module
 
 public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
-public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 public import Mathlib.Topology.ContinuousMap.Bounded.Normed
+
+import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 /-!
 # Definition of `mulExpNegMulSq` and properties
@@ -131,7 +132,6 @@ theorem abs_mulExpNegMulSq_le (hε : 0 < ε) {x : ℝ} : |mulExpNegMulSq ε x| �
   · positivity
   · exact abs_mulExpNegMulSq_one_le_one (√ε * x)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem dist_mulExpNegMulSq_le_two_mul_sqrt (hε : 0 < ε) (x y : ℝ) :
     dist (mulExpNegMulSq ε x) (mulExpNegMulSq ε y) ≤ 2 * (√ε)⁻¹ := by
   apply le_trans (dist_triangle (mulExpNegMulSq ε x) 0 (mulExpNegMulSq ε y))

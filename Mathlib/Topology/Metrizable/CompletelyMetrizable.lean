@@ -6,7 +6,8 @@ Authors: Etienne Marion
 module
 
 public import Mathlib.Topology.MetricSpace.Gluing
-public import Mathlib.Topology.Metrizable.Uniformity
+
+import Mathlib.Topology.Metrizable.Uniformity
 
 /-!
 # Completely (pseudo)metrizable spaces
@@ -41,7 +42,7 @@ is a convenience class and no instance should be registered for it.
 
 @[expose] public section
 
-open Filter Function Set Topology
+open Filter Set Topology
 
 variable {X Y : Type*}
 
@@ -55,9 +56,13 @@ class IsCompletelyPseudoMetrizableSpace (X : Type*) [t : TopologicalSpace X] : P
   complete : ∃ m : PseudoMetricSpace X, m.toUniformSpace.toTopologicalSpace = t ∧
     @CompleteSpace X m.toUniformSpace
 
-instance (priority := 100) _root_.PseudoMetricSpace.toIsCompletelPseudoMetrizableSpace
+instance (priority := 100) _root_.PseudoMetricSpace.toIsCompletelyPseudoMetrizableSpace
     [PseudoMetricSpace X] [CompleteSpace X] : IsCompletelyPseudoMetrizableSpace X :=
   ⟨⟨‹_›, rfl, ‹_›⟩⟩
+
+@[deprecated (since := "2026-09-17")]
+alias _root_.PseudoMetricSpace.toIsCompletelPseudoMetrizableSpace :=
+  _root_.PseudoMetricSpace.toIsCompletelyPseudoMetrizableSpace
 
 /-- A convenience class, for a completely pseudometrizable space endowed with a complete
 pseudometric. No instance of this class should be registered: It should be used as
@@ -74,6 +79,7 @@ instance (priority := 100) IsCompletelyPseudoMetrizableSpace.of_completeSpace_ps
 
 /-- Construct on a completely pseudometrizable space a pseudometric (compatible with the topology)
 which is complete. -/
+@[instance_reducible]
 noncomputable def completelyPseudoMetrizableMetric (X : Type*) [TopologicalSpace X]
     [h : IsCompletelyPseudoMetrizableSpace X] : PseudoMetricSpace X :=
   h.complete.choose.replaceTopology h.complete.choose_spec.1.symm
@@ -86,6 +92,7 @@ theorem complete_completelyPseudoMetrizableMetric (X : Type*) [ht : TopologicalS
 
 /-- This definition endows a completely pseudometrizable space with a complete pseudometric.
 Use it as: `letI := upgradeIsCompletelyPseudoMetrizable X`. -/
+@[instance_reducible]
 noncomputable
 def upgradeIsCompletelyPseudoMetrizable (X : Type*) [TopologicalSpace X]
     [IsCompletelyPseudoMetrizableSpace X] :
@@ -95,24 +102,21 @@ def upgradeIsCompletelyPseudoMetrizable (X : Type*) [TopologicalSpace X]
 
 namespace IsCompletelyPseudoMetrizableSpace
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Note: the priority is set to 90 to ensure that this instance is only applied after
 `PseudoEMetricSpace.pseudoMetrizableSpace`. This prevents unnecessary attempts to infer
 completeness. -/
-instance (priority := 90) PseudoMetrizableSpace [TopologicalSpace X]
+instance (priority := 90) [TopologicalSpace X]
     [IsCompletelyPseudoMetrizableSpace X] : PseudoMetrizableSpace X := by
-  letI := upgradeIsCompletelyPseudoMetrizable X
+  let := upgradeIsCompletelyPseudoMetrizable X
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A countable product of completely pseudometrizable spaces is completely pseudometrizable. -/
 instance pi_countable {ι : Type*} [Countable ι] {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
     [∀ i, IsCompletelyPseudoMetrizableSpace (X i)] :
     IsCompletelyPseudoMetrizableSpace (Π i, X i) := by
-  letI := fun i ↦ upgradeIsCompletelyPseudoMetrizable (X i)
+  let := fun i ↦ upgradeIsCompletelyPseudoMetrizable (X i)
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The product of two completely pseudometrizable spaces is completely pseudometrizable. -/
 instance prod [TopologicalSpace X] [IsCompletelyPseudoMetrizableSpace X] [TopologicalSpace Y]
     [IsCompletelyPseudoMetrizableSpace Y] : IsCompletelyPseudoMetrizableSpace (X × Y) :=
@@ -120,7 +124,6 @@ instance prod [TopologicalSpace X] [IsCompletelyPseudoMetrizableSpace X] [Topolo
   letI := upgradeIsCompletelyPseudoMetrizable Y
   inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The disjoint union of two completely pseudometrizable spaces is completely pseudometrizable. -/
 instance sum [TopologicalSpace X] [IsCompletelyPseudoMetrizableSpace X] [TopologicalSpace Y]
     [IsCompletelyPseudoMetrizableSpace Y] : IsCompletelyPseudoMetrizableSpace (X ⊕ Y) :=
@@ -128,15 +131,14 @@ instance sum [TopologicalSpace X] [IsCompletelyPseudoMetrizableSpace X] [Topolog
   letI := upgradeIsCompletelyPseudoMetrizable Y
   inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a closed embedding into a completely pseudometrizable space,
 the source space is also completely pseudometrizable. -/
 theorem _root_.Topology.IsClosedEmbedding.IsCompletelyPseudoMetrizableSpace [TopologicalSpace X]
     [TopologicalSpace Y] [IsCompletelyPseudoMetrizableSpace Y] {f : X → Y}
     (hf : IsClosedEmbedding f) :
     IsCompletelyPseudoMetrizableSpace X := by
-  letI := upgradeIsCompletelyPseudoMetrizable Y
-  letI : PseudoMetricSpace X := hf.isEmbedding.comapPseudoMetricSpace
+  let := upgradeIsCompletelyPseudoMetrizable Y
+  let : PseudoMetricSpace X := hf.isEmbedding.comapPseudoMetricSpace
   have : CompleteSpace X := by
     rw [completeSpace_iff_isComplete_range hf.isEmbedding.to_isometry.isUniformInducing]
     exact hf.isClosed_range.isComplete
@@ -164,12 +166,11 @@ instance IsCompletelyMetrizableSpace.toIsCompletelyPseudoMetrizableSpace [Topolo
   obtain ⟨m, _⟩ := ‹_›
   use m.toPseudoMetricSpace
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A completely pseudometrizable T0 space is completely metrizable. -/
 lemma IsCompletelyMetrizableSpace_of_isCompletelyPseudoMetrizableSpace [TopologicalSpace X]
     [IsCompletelyPseudoMetrizableSpace X] [T0Space X] :
     IsCompletelyMetrizableSpace X := by
-  letI := upgradeIsCompletelyPseudoMetrizable X
+  let := upgradeIsCompletelyPseudoMetrizable X
   use MetricSpace.ofT0PseudoMetricSpace X
   exact ⟨rfl, by infer_instance⟩
 
@@ -191,6 +192,7 @@ instance (priority := 100) IsCompletelyMetrizableSpace.of_completeSpace_metrizab
 
 /-- Construct on a completely metrizable space a metric (compatible with the topology)
 which is complete. -/
+@[instance_reducible]
 noncomputable def completelyMetrizableMetric (X : Type*) [TopologicalSpace X]
     [h : IsCompletelyMetrizableSpace X] : MetricSpace X :=
   h.complete.choose.replaceTopology h.complete.choose_spec.1.symm
@@ -203,6 +205,7 @@ theorem complete_completelyMetrizableMetric (X : Type*) [ht : TopologicalSpace X
 
 /-- This definition endows a completely metrizable space with a complete metric. Use it as:
 `letI := upgradeIsCompletelyMetrizable X`. -/
+@[instance_reducible]
 noncomputable
 def upgradeIsCompletelyMetrizable (X : Type*) [TopologicalSpace X] [IsCompletelyMetrizableSpace X] :
     UpgradedIsCompletelyMetrizableSpace X :=
@@ -211,22 +214,19 @@ def upgradeIsCompletelyMetrizable (X : Type*) [TopologicalSpace X] [IsCompletely
 
 namespace IsCompletelyMetrizableSpace
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Note: the priority is set to 90 to ensure that this instance is only applied after
 `EMetricSpace.metrizableSpace`. This prevents unnecessary attempts to infer completeness. -/
-instance (priority := 90) MetrizableSpace [TopologicalSpace X] [IsCompletelyMetrizableSpace X] :
+instance (priority := 90) [TopologicalSpace X] [IsCompletelyMetrizableSpace X] :
     MetrizableSpace X := by
-  letI := upgradeIsCompletelyMetrizable X
+  let := upgradeIsCompletelyMetrizable X
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A countable product of completely metrizable spaces is completely metrizable. -/
 instance pi_countable {ι : Type*} [Countable ι] {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
     [∀ i, IsCompletelyMetrizableSpace (X i)] : IsCompletelyMetrizableSpace (Π i, X i) := by
-  letI := fun i ↦ upgradeIsCompletelyMetrizable (X i)
+  let := fun i ↦ upgradeIsCompletelyMetrizable (X i)
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A disjoint union of completely metrizable spaces is completely metrizable. -/
 instance sigma {ι : Type*} {X : ι → Type*} [∀ n, TopologicalSpace (X n)]
     [∀ n, IsCompletelyMetrizableSpace (X n)] : IsCompletelyMetrizableSpace (Σ n, X n) :=
@@ -235,7 +235,6 @@ instance sigma {ι : Type*} {X : ι → Type*} [∀ n, TopologicalSpace (X n)]
   haveI : CompleteSpace (Σ n, X n) := Metric.Sigma.completeSpace
   inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The product of two completely metrizable spaces is completely metrizable. -/
 instance prod [TopologicalSpace X] [IsCompletelyMetrizableSpace X] [TopologicalSpace Y]
     [IsCompletelyMetrizableSpace Y] : IsCompletelyMetrizableSpace (X × Y) :=
@@ -243,7 +242,6 @@ instance prod [TopologicalSpace X] [IsCompletelyMetrizableSpace X] [TopologicalS
   letI := upgradeIsCompletelyMetrizable Y
   inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The disjoint union of two completely metrizable spaces is completely metrizable. -/
 instance sum [TopologicalSpace X] [IsCompletelyMetrizableSpace X] [TopologicalSpace Y]
     [IsCompletelyMetrizableSpace Y] : IsCompletelyMetrizableSpace (X ⊕ Y) :=
@@ -251,14 +249,13 @@ instance sum [TopologicalSpace X] [IsCompletelyMetrizableSpace X] [TopologicalSp
   letI := upgradeIsCompletelyMetrizable Y
   inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a closed embedding into a completely metrizable space,
 the source space is also completely metrizable. -/
 theorem _root_.Topology.IsClosedEmbedding.IsCompletelyMetrizableSpace [TopologicalSpace X]
     [TopologicalSpace Y] [IsCompletelyMetrizableSpace Y] {f : X → Y} (hf : IsClosedEmbedding f) :
     IsCompletelyMetrizableSpace X := by
-  letI := upgradeIsCompletelyMetrizable Y
-  letI : MetricSpace X := hf.isEmbedding.comapMetricSpace f
+  let := upgradeIsCompletelyMetrizable Y
+  let : MetricSpace X := hf.isEmbedding.comapMetricSpace f
   have : CompleteSpace X := by
     rw [completeSpace_iff_isComplete_range hf.isEmbedding.to_isometry.isUniformInducing]
     exact hf.isClosed_range.isComplete

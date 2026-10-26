@@ -5,8 +5,9 @@ Authors: Bolton Bailey
 -/
 module
 
-public import Mathlib.Algebra.Field.ZMod
 public import Mathlib.RingTheory.IntegralDomain
+
+import Mathlib.Algebra.Field.ZMod
 
 /-!
 # The Lucas test for primes
@@ -19,7 +20,7 @@ certificate.
 
 ## TODO
 - Write a tactic that uses this theorem to generate Pratt primality certificates
-- Integrate Pratt primality certificates into the norm_num primality verifier
+- Integrate Pratt primality certificates into the `norm_num` primality verifier
 
 ## Implementation notes
 

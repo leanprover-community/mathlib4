@@ -6,9 +6,10 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Calculus.TangentCone.Defs
+public import Mathlib.Analysis.Normed.Field.Basic
+
 import Mathlib.Analysis.Calculus.TangentCone.Basic
 import Mathlib.Analysis.Normed.Group.Uniform
-public import Mathlib.Analysis.Normed.Field.Basic
 
 /-!
 # Unique differentiability property of a set in the base field
@@ -19,7 +20,7 @@ iff `x` is an accumulation point of the set, see `uniqueDiffWithinAt_iff_accPt`.
 
 public section
 
-open Filter Metric Set
+open Filter Set
 open scoped Topology
 
 variable {𝕜 : Type*} [NormedDivisionRing 𝕜]

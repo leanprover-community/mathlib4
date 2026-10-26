@@ -5,9 +5,10 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Order.Pi
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Algebra.Star.Conjneg
+
+import Mathlib.Algebra.Order.Pi
 
 /-!
 # Order properties of conjugation-negation
@@ -33,11 +34,9 @@ end OrderedCommSemiring
 section OrderedCommRing
 variable [CommRing R] [PartialOrder R] [StarRing R] [StarOrderedRing R] {f : G → R}
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma conjneg_nonpos : conjneg f ≤ 0 ↔ f ≤ 0 := by
   simp_rw [← neg_nonneg, ← conjneg_neg, conjneg_nonneg]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma conjneg_neg' : conjneg f < 0 ↔ f < 0 := by
   simp_rw [← neg_pos, ← conjneg_neg, conjneg_pos]
 

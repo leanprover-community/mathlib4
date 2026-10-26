@@ -5,9 +5,8 @@ Authors: Alexander Bentkamp
 -/
 module
 
-public import Mathlib.LinearAlgebra.Eigenspace.Basic
 public import Mathlib.FieldTheory.IsAlgClosed.Spectrum
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+public import Mathlib.LinearAlgebra.Eigenspace.Basic
 
 /-!
 # Triangularizable linear endomorphisms
@@ -53,7 +52,7 @@ theorem exists_hasEigenvalue_of_genEigenspace_eq_top [Nontrivial M] {f : End R M
     (hf : ⨆ μ, f.genEigenspace μ k = ⊤) :
     ∃ μ, f.HasEigenvalue μ := by
   suffices ∃ μ, f.HasUnifEigenvalue μ k by
-    peel this with μ hμ
+    gconvert this with μ hμ
     exact HasUnifEigenvalue.lt zero_lt_one hμ
   simp [HasUnifEigenvalue, ← not_forall, ← iSup_eq_bot, hf]
 
@@ -69,7 +68,6 @@ noncomputable instance [IsAlgClosed K] [FiniteDimensional K V] [Nontrivial V] (f
     Inhabited f.Eigenvalues :=
   ⟨⟨f.exists_eigenvalue.choose, f.exists_eigenvalue.choose_spec⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 -- Lemma 8.22(c) of [axler2024]
 /-- In finite dimensions, over an algebraically closed field, the generalized eigenspaces of any
 linear endomorphism span the whole space. -/
@@ -84,7 +82,7 @@ theorem iSup_maxGenEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V] (f 
   · rw [← top_le_iff]
     simp only [Submodule.finrank_eq_zero.1 (Eq.trans (finrank_top _ _) h_dim), bot_le]
   -- Otherwise the vector space is nontrivial.
-  · haveI : Nontrivial V := finrank_pos_iff.1 (by rw [h_dim]; apply Nat.zero_lt_succ)
+  · have : Nontrivial V := finrank_pos_iff.1 (by rw [h_dim]; apply Nat.zero_lt_succ)
     -- Hence, `f` has an eigenvalue `μ₀`.
     obtain ⟨μ₀, hμ₀⟩ : ∃ μ₀, f.HasEigenvalue μ₀ := exists_eigenvalue f
     -- We define `ES` to be the generalized eigenspace
@@ -143,6 +141,7 @@ namespace Submodule
 
 variable {p : Submodule K V} {f : Module.End K V}
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem inf_iSup_genEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x ∈ p) (k : ℕ∞) :
     p ⊓ ⨆ μ, f.genEigenspace μ k = ⨆ μ, p ⊓ f.genEigenspace μ k := by
   refine le_antisymm (fun m hm ↦ ?_)
@@ -170,7 +169,7 @@ theorem inf_iSup_genEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x ∈
   have hg₀ : g (m.sum fun _μ mμ ↦ mμ) = g (m μ) := by
     suffices ∀ μ' ∈ m.support, g (m μ') = if μ' = μ then g (m μ) else 0 by
       rw [map_finsuppSum, Finsupp.sum_congr (g2 := fun μ' _ ↦ if μ' = μ then g (m μ) else 0) this,
-        Finsupp.sum_ite_eq', if_pos hμ]
+        Finsupp.sum_ite_eq', ite_eq_left hμ]
     rintro μ' hμ'
     split_ifs with hμμ'
     · rw [hμμ']
@@ -193,7 +192,7 @@ theorem inf_iSup_genEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x ∈
     f.mapsTo_genEigenspace_of_comm hfg μ k
   have hg₃ : InjOn g ↑(f.genEigenspace μ k) := by
     apply LinearMap.injOn_of_disjoint_ker subset_rfl
-    have this := f.independent_genEigenspace k
+    have := f.independent_genEigenspace k
     have aux (μ') (_hμ' : μ' ∈ m.support.erase μ) :
         (f.genEigenspace μ') ↑l₀ ≤ (f.genEigenspace μ') k := by
       apply (f.genEigenspace μ').mono
@@ -231,14 +230,13 @@ theorem eq_iSup_inf_genEigenspace [FiniteDimensional K V] (k : ℕ∞)
 
 end Submodule
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In finite dimensions, if the generalized eigenspaces of a linear endomorphism span the whole
 space then the same is true of its restriction to any invariant submodule. -/
 theorem Module.End.genEigenspace_restrict_eq_top
     {p : Submodule K V} {f : Module.End K V} [FiniteDimensional K V] {k : ℕ∞}
     (h : ∀ x ∈ p, f x ∈ p) (h' : ⨆ μ, f.genEigenspace μ k = ⊤) :
     ⨆ μ, Module.End.genEigenspace (LinearMap.restrict f h) μ k = ⊤ := by
-  have := congr_arg (Submodule.comap p.subtype) (Submodule.eq_iSup_inf_genEigenspace k h h')
+  have := congr(Submodule.comap p.subtype $(Submodule.eq_iSup_inf_genEigenspace k h h'))
   have h_inj : Function.Injective p.subtype := Subtype.coe_injective
   simp_rw [Submodule.inf_genEigenspace f p h, Submodule.comap_subtype_self,
     ← Submodule.map_iSup, Submodule.comap_map_eq_of_injective h_inj] at this

@@ -112,12 +112,11 @@ theorem stabilizer_ncard [Finite α] [Fintype ι] :
     Set.ncard {g : Perm α | f ∘ g = f} = ∏ i, (Set.ncard {a | f a = i})! := by
   classical
   cases nonempty_fintype α
-  simp only [← Nat.card_coe_set_eq, Set.coe_setOf, card_eq_fintype_card]
+  simp only [← Nat.card_coe_set_eq, Set.coe_ofPred, card_eq_fintype_card]
   exact stabilizer_card f
 
 variable [DecidableEq α] [DecidableEq ι]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The cardinality of the type of permutations preserving a function
   (without the finiteness assumption on target) -/
 theorem stabilizer_card' :
@@ -138,11 +137,11 @@ theorem stabilizer_card' :
       intro a
       rw [refl_apply, ← Subtype.coe_inj]
       simp only [φ, Set.val_codRestrict_apply]
-  · intro g
-    simp only [funext_iff]
-    apply forall_congr'
-    intro a
-    simp only [Function.comp_apply, φ, ← Subtype.coe_inj, Set.val_codRestrict_apply]
+  intro g
+  simp only [funext_iff]
+  apply forall_congr'
+  intro a
+  simp only [Function.comp_apply, φ, ← Subtype.coe_inj, Set.val_codRestrict_apply]
 
 end Fintype
 

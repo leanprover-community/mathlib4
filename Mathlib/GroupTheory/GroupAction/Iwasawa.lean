@@ -5,7 +5,6 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Algebra.Group.Action.End
 public import Mathlib.GroupTheory.GroupAction.Primitive
 public import Mathlib.GroupTheory.Subgroup.Simple
 
@@ -35,7 +34,7 @@ Additivize. The issue is that it requires to additivize `commutator`
 (which, moreover, lives in the root namespace)
 -/
 
-@[expose] public section
+public section
 
 namespace MulAction
 
@@ -54,11 +53,12 @@ structure IwasawaStructure where
   /-- The subgroups generate the group -/
   is_generator : iSup T = ⊤
 
+attribute [instance] IwasawaStructure.is_comm
+
 variable {M α}
 
 namespace IwasawaStructure
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Iwasawa criterion : If a quasiprimitive action of a group G on X
   has an Iwasawa structure, then any normal subgroup that acts nontrivially
   contains the group of commutators. -/
@@ -68,7 +68,7 @@ theorem commutator_le (IwaS : IwasawaStructure M α) [IsQuasiPreprimitive M α]
   have is_transN := IsQuasiPreprimitive.isPretransitive_of_normal hNX
   have ntα : Nontrivial α := nontrivial_of_fixedPoints_ne_univ hNX
   obtain a : α := Nontrivial.to_nonempty.some
-  apply nN.commutator_le_of_self_sup_commutative_eq_top ?_ (IwaS.is_comm a)
+  apply nN.commutator_le_of_self_sup_commutative_eq_top (H := IwaS.T a)
   -- We have to prove that N ⊔ IwaS.T x = ⊤
   rw [eq_top_iff, ← IwaS.is_generator, iSup_le_iff]
   intro x
@@ -79,7 +79,6 @@ theorem commutator_le (IwaS : IwasawaStructure M α) [IsQuasiPreprimitive M α]
   have hk' : k ∈ N ⊔ IwaS.T a := Subgroup.mem_sup_right hk
   exact (N ⊔ IwaS.T a).mul_mem ((N ⊔ IwaS.T a).mul_mem hg' hk') ((N ⊔ IwaS.T a).inv_mem hg')
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Iwasawa criterion for simplicity -/
 theorem isSimpleGroup [Nontrivial M] (is_perfect : commutator M = ⊤)
     [IsQuasiPreprimitive M α] (IwaS : IwasawaStructure M α) (is_faithful : FaithfulSMul M α) :

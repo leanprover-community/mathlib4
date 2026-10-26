@@ -5,9 +5,7 @@ Authors: Yaël Dillies, Stefano Rocca
 -/
 module
 
-public import Mathlib.MeasureTheory.Group.Defs
 public import Mathlib.MeasureTheory.Group.Action
-public import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
 
 /-!
 # Følner sequences and filters - definitions and properties
@@ -63,7 +61,7 @@ Foelner, Følner filter, amenability, amenable group
 
 @[expose] public section
 
-open MeasureTheory Filter Set Tendsto
+open MeasureTheory Filter Set
 open scoped ENNReal Pointwise symmDiff Topology Filter
 
 variable {G X : Type*} [MeasurableSpace X] {μ : Measure X} [Group G] [MulAction G X]
@@ -101,7 +99,6 @@ attribute [to_additive existing isAddFoelner_iff] isFoelner_iff
 
 namespace IsFoelner
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The constant sequence `X` is Følner if `X` has finite measure. -/
 @[to_additive /--The constant sequence `X` is Følner if `X` has finite measure. -/]
 theorem univ_of_isFiniteMeasure [NeZero μ] [IsFiniteMeasure μ] :

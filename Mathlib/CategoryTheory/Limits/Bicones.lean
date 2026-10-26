@@ -5,9 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Cones
 public import Mathlib.CategoryTheory.FinCategory.Basic
-public import Mathlib.Data.Finset.Lattice.Lemmas
+public import Mathlib.CategoryTheory.Limits.Cones
 
 /-!
 # Bicones
@@ -120,7 +119,6 @@ def biconeMk {C : Type u₁} [Category.{v₁} C] {F : J ⥤ C} (c₁ c₂ : Cone
     · cases g
       apply F.map_comp
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 instance finBiconeHom [FinCategory J] (j k : Bicone J) : Fintype (j ⟶ k) := by
   cases j <;> cases k

@@ -53,7 +53,9 @@ theorem mk {s t : Set α} (hs : μ s = 0) (ht : ν t = 0) (hst : univ ⊆ s ∪ 
   exact subset_toMeasurable _ _ hxs
 
 /-- A set such that `μ h.nullSet = 0` and `ν h.nullSetᶜ = 0`. -/
-def nullSet (h : μ ⟂ₘ ν) : Set α := h.choose
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def nullSet (h : μ ⟂ₘ ν) : Set α := h.choose
 
 lemma measurableSet_nullSet (h : μ ⟂ₘ ν) : MeasurableSet h.nullSet := h.choose_spec.1
 
@@ -72,6 +74,16 @@ lemma restrict_nullSet (h : μ ⟂ₘ ν) : μ.restrict h.nullSet = 0 := by simp
 -- attribute. Also, the linter does not complain about that attribute.
 @[simp]
 lemma restrict_compl_nullSet (h : μ ⟂ₘ ν) : ν.restrict h.nullSetᶜ = 0 := by simp
+
+@[simp]
+lemma restrict_nullSet' (h : μ ⟂ₘ ν) : ν.restrict h.nullSet = ν := by
+  conv_rhs => rw [← restrict_add_restrict_compl (μ := ν) h.measurableSet_nullSet]
+  simp
+
+@[simp]
+lemma restrict_compl_nullSet' (h : μ ⟂ₘ ν) : μ.restrict h.nullSetᶜ = μ := by
+  conv_rhs => rw [← restrict_add_restrict_compl (μ := μ) h.measurableSet_nullSet]
+  simp
 
 @[simp]
 theorem zero_right : μ ⟂ₘ 0 :=
@@ -178,7 +190,6 @@ lemma _root_.MeasurableEmbedding.mutuallySingular_map {β : Type*} {_ : Measurab
   · rw [hf.map_apply, hf.injective.preimage_image, hμν.measure_nullSet]
   · rw [hf.map_apply, Set.preimage_compl, hf.injective.preimage_image, hμν.measure_compl_nullSet]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exists_null_set_measure_lt_of_disjoint (h : Disjoint μ ν) {ε : ℝ≥0} (hε : 0 < ε) :
     ∃ s, μ s = 0 ∧ ν sᶜ ≤ 2 * ε := by
   have h₁ : (μ ⊓ ν) univ = 0 := le_bot_iff.1 (h (inf_le_left (b := ν)) inf_le_right) ▸ rfl
@@ -202,18 +213,16 @@ lemma exists_null_set_measure_lt_of_disjoint (h : Disjoint μ ν) {ε : ℝ≥0}
     exact ENNReal.summable.tsum_le_tsum (fun n ↦ (le_add_left le_rfl).trans (ht₂ n).le)
       ENNReal.summable
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mutuallySingular_of_disjoint (h : Disjoint μ ν) : μ ⟂ₘ ν := by
   have h' (n : ℕ) : ∃ s, μ s = 0 ∧ ν sᶜ ≤ (1 / 2) ^ n := by
-    convert exists_null_set_measure_lt_of_disjoint h (ε := (1 / 2) ^ (n + 1))
-      <| pow_pos (by simp) (n + 1)
-    push_cast
-    rw [pow_succ, ← mul_assoc, mul_comm, ← mul_assoc]
+    convert!
+      exists_null_set_measure_lt_of_disjoint h (ε := (1 / 2) ^ (n + 1)) <| pow_pos (by simp) (n + 1)
+    conv =>
+      -- this tweak is needed due to the known issue of `norm_cast` with numeric fractions
+      enter [1, 1]
+      equals ((1 : ℝ≥0) / (2 : ℝ≥0)) => rfl
     norm_cast
-    rw [div_mul_cancel₀, one_mul]
-    · push_cast
-      simp
-    · simp
+    ring
   choose s hs₂ hs₃ using h'
   refine Measure.MutuallySingular.mk (t := (⋃ n, s n)ᶜ) (measure_iUnion_null hs₂) ?_ ?_
   · rw [compl_iUnion]
@@ -222,7 +231,6 @@ lemma mutuallySingular_of_disjoint (h : Disjoint μ ν) : μ ⟂ₘ ν := by
     exact (measure_mono <| iInter_subset_of_subset n fun _ ht ↦ ht).trans (hs₃ n)
   · rw [union_compl_self]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma MutuallySingular.disjoint (h : μ ⟂ₘ ν) : Disjoint μ ν := by
   have h_bot_iff (ξ : Measure α) : ξ ≤ ⊥ ↔ ξ = 0 := by
     rw [le_bot_iff]
@@ -248,7 +256,6 @@ lemma MutuallySingular.disjoint_ae (h : μ ⟂ₘ ν) : Disjoint (ae μ) (ae ν)
   · rw [union_eq_compl_compl_inter_compl, union_eq_compl_compl_inter_compl,
       ← compl_union, compl_compl, inter_union_compl, compl_compl]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma disjoint_of_disjoint_ae (h : Disjoint (ae μ) (ae ν)) : Disjoint μ ν := by
   simp_rw [Filter.disjoint_iff, mem_ae_iff] at h
   obtain ⟨s, hs, t, ht, hst⟩ := h
@@ -260,7 +267,6 @@ lemma disjoint_of_disjoint_ae (h : Disjoint (ae μ) (ae ν)) : Disjoint μ ν :=
   simp [measure_mono_null (inter_subset_left.trans hst.subset_compl_left) hs,
     measure_mono_null inter_subset_left ht]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mutuallySingular_tfae : List.TFAE
     [ μ ⟂ₘ ν,
       Disjoint μ ν,
@@ -275,12 +281,11 @@ lemma mutuallySingular_tfae : List.TFAE
   | h => disjoint_of_disjoint_ae h
   tfae_finish
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mutuallySingular_iff_disjoint : μ ⟂ₘ ν ↔ Disjoint μ ν :=
-  mutuallySingular_tfae.out 0 1
+  mutuallySingular_tfae.out 1 2
 
 lemma mutuallySingular_iff_disjoint_ae : μ ⟂ₘ ν ↔ Disjoint (ae μ) (ae ν) :=
-  mutuallySingular_tfae.out 0 2
+  mutuallySingular_tfae.out 1 3
 
 end Measure
 

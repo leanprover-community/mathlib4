@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Congr
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Invertible
 
 /-!
 # Fréchet derivative of constant functions
@@ -22,10 +23,8 @@ derivative, differentiable, Fréchet, calculus
 
 public section
 
-open Asymptotics Function Filter Set Metric
+open Asymptotics Function Filter Set
 open scoped Topology NNReal ENNReal
-
-noncomputable section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
@@ -183,7 +182,7 @@ theorem differentiableWithinAt_ofNat (n : ℕ) [OfNat F n] :
     DifferentiableWithinAt 𝕜 (ofNat(n) : E → F) s x := differentiableWithinAt_const _
 
 theorem fderivWithin_const_apply (c : F) : fderivWithin 𝕜 (fun _ => c) s x = 0 := by
-  rw [fderivWithin, if_pos]
+  rw [fderivWithin, ite_eq_left]
   apply hasFDerivWithinAt_const
 
 @[simp]
@@ -294,21 +293,27 @@ theorem hasFDerivWithinAt_singleton (f : E → F) (x : E) :
   rw [accPt_iff_clusterPt, inf_principal]
   simp [ClusterPt]
 
-@[fun_prop]
+@[fun_prop, nontriviality]
 theorem hasFDerivWithinAt_of_subsingleton [h : Subsingleton E] (f : E → F) (s : Set E) (x : E) :
     HasFDerivWithinAt f (0 : E →L[𝕜] F) s x := by
   obtain rfl | ⟨a, rfl⟩ := s.eq_empty_or_singleton_of_subsingleton
   · simp
   · exact HasFDerivWithinAt.singleton
 
-@[fun_prop]
+@[fun_prop, nontriviality]
 theorem hasFDerivAt_of_subsingleton [h : Subsingleton E] (f : E → F) (x : E) :
     HasFDerivAt f (0 : E →L[𝕜] F) x := by
   rw [← hasFDerivWithinAt_univ, subsingleton_univ.eq_singleton_of_mem (mem_univ x)]
   exact hasFDerivWithinAt_singleton f x
 
+@[nontriviality]
 theorem differentiable_of_subsingleton [Subsingleton E] {f : E → F} : Differentiable 𝕜 f :=
   fun x ↦ (hasFDerivAt_of_subsingleton f x (𝕜 := 𝕜)).differentiableAt
+
+@[nontriviality]
+theorem differentiableWithinAt_of_subsingleton [Subsingleton E] :
+    DifferentiableWithinAt 𝕜 f s x :=
+  (differentiable_of_subsingleton x).differentiableWithinAt
 
 @[fun_prop]
 theorem differentiableOn_singleton : DifferentiableOn 𝕜 f {x} :=
@@ -324,18 +329,28 @@ theorem hasFDerivAt_zero_of_eventually_const (c : F) (hf : f =ᶠ[𝓝 x] fun _ 
 
 end Const
 
-theorem differentiableWithinAt_of_isInvertible_fderivWithin
-    (hf : (fderivWithin 𝕜 f s x).IsInvertible) : DifferentiableWithinAt 𝕜 f s x := by
+/-- If `f : E → F` has injective differential within `s` at `x`,
+it is differentiable within `s` at `x`. -/
+lemma differentiableWithinAt_of_fderivWithin_injective (hf : Injective (fderivWithin 𝕜 f s x)) :
+    DifferentiableWithinAt 𝕜 f s x := by
+  nontriviality E
   contrapose hf
   rw [fderivWithin_zero_of_not_differentiableWithinAt hf]
-  contrapose! hf
-  rcases ContinuousLinearMap.isInvertible_zero_iff.1 hf with ⟨hE, hF⟩
-  exact (hasFDerivAt_of_subsingleton _ _).differentiableAt.differentiableWithinAt
+  exact not_injective_const
+
+/-- If `f : E → F` has injective differential at `x`, it is differentiable at `x`. -/
+lemma differentiableAt_of_fderiv_injective (hf : Injective (fderiv 𝕜 f x)) :
+    DifferentiableAt 𝕜 f x := by
+  simp only [← differentiableWithinAt_univ, ← fderivWithin_univ] at hf ⊢
+  exact differentiableWithinAt_of_fderivWithin_injective hf
+
+theorem differentiableWithinAt_of_isInvertible_fderivWithin
+    (hf : (fderivWithin 𝕜 f s x).IsInvertible) : DifferentiableWithinAt 𝕜 f s x :=
+  differentiableWithinAt_of_fderivWithin_injective hf.injective
 
 theorem differentiableAt_of_isInvertible_fderiv
-    (hf : (fderiv 𝕜 f x).IsInvertible) : DifferentiableAt 𝕜 f x := by
-  simp only [← differentiableWithinAt_univ, ← fderivWithin_univ] at hf ⊢
-  exact differentiableWithinAt_of_isInvertible_fderivWithin hf
+    (hf : (fderiv 𝕜 f x).IsInvertible) : DifferentiableAt 𝕜 f x :=
+  differentiableAt_of_fderiv_injective hf.injective
 
 /-! ### Support of derivatives -/
 
@@ -378,6 +393,3 @@ protected theorem HasCompactSupport.fderiv_apply (hf : HasCompactSupport f) (v :
   hf.of_isClosed_subset (isClosed_tsupport _) (tsupport_fderiv_apply_subset 𝕜 v)
 
 end Support
-
-
-end

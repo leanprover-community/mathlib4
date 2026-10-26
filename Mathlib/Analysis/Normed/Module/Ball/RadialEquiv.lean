@@ -6,7 +6,8 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Normed.Module.Basic
-public import Mathlib.Algebra.Ring.Action.Pointwise.Set
+
+import Mathlib.Algebra.Ring.Action.Pointwise.Set
 
 /-!
 # Homeomorphism between a normed space and sphere times `(0, +∞)`
@@ -25,7 +26,6 @@ variable (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
 open Filter Set Metric
 open scoped Pointwise Set.Notation Topology
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural homeomorphism between nonzero elements of a normed space `E`
 and `Metric.sphere (0 : E) r × Set.Ioi (0 : ℝ)`, `0 < r`.
 
@@ -71,7 +71,6 @@ noncomputable def homeomorphUnitSphereProd :
 
 variable {E}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `U ∌ 0` is an open set on the real line and `V` is an open set on a sphere of nonzero radius,
 then their pointwise scalar product is an open set. -/
 theorem IsOpen.smul_sphere {r : ℝ} (hr : r ≠ 0) {U : Set ℝ} {V : Set (Metric.sphere (0 : E) r)}

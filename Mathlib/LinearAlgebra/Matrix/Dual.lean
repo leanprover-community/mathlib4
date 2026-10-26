@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
 module
 
-public import Mathlib.LinearAlgebra.DFinsupp
 public import Mathlib.LinearAlgebra.Dual.Basis
 public import Mathlib.LinearAlgebra.Matrix.ToLin
 
@@ -16,7 +15,7 @@ This file contains some results about matrices and dual spaces.
 
 ## Tags
 
-matrix, linear_map, transpose, dual
+matrix, linear map, transpose, dual
 -/
 
 @[expose] public section

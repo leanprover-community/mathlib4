@@ -5,9 +5,9 @@ Authors: Dexin Zhang
 -/
 module
 
-public import Mathlib.Algebra.Group.Basic
-public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.ModelTheory.Semantics
+
+import Mathlib.Algebra.Module.NatInt
 
 /-!
 # Presburger arithmetic
@@ -113,7 +113,6 @@ end
     Term.realize v (n : presburger.Term α) = n := by
   induction n with simp [*]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem realize_nsmul [AddMonoidWithOne M] {n : ℕ} :
     Term.realize v (n • t) = n • Term.realize v t := by
   induction n with simp [*, add_nsmul]

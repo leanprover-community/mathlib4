@@ -18,10 +18,17 @@ on:
         required: false
         type: boolean
         default: false # We shouldn't need this job in typical experiments
+      mathlib_ci_ref:
+        description: ref for mathlib-ci checkout (defaults to 'master')
+        required: false
+        type: string
+        default: 'master'
 
 # Limit permissions for GITHUB_TOKEN for the entire workflow
 permissions:
   contents: read
+  id-token: write
+  actions: read  # read-only: download master artifacts (tools-bin, cache-snapshot)
   # By default let's remove this permission (which is present in the other build pipelines)
   # from the CI experimentation runs to avoid unwitting side effects
   # pull-requests: write
@@ -38,5 +45,9 @@ jobs:
       tools_branch_ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || github.sha }}
       pr_branch_ref: ${{ inputs.pr_branch_ref != '' && inputs.pr_branch_ref || github.sha }}
       run_post_ci: ${{ inputs.run_post_ci }}
+      mathlib_ci_ref: ${{ inputs.mathlib_ci_ref }}
+      # The ref inputs choose the code that holds the upload credential, so
+      # the environment requires a CI admin to approve each run.
+      cache_environment: cache-upload-ci-dev
       runs_on: pr
     secrets: inherit

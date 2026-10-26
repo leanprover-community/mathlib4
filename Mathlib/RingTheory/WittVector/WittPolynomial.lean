@@ -6,12 +6,10 @@ Authors: Johan Commelin, Robert Y. Lewis
 module
 
 public import Mathlib.Algebra.CharP.Invertible
-public import Mathlib.Algebra.MvPolynomial.Variables
 public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.Algebra.MvPolynomial.Expand
-public import Mathlib.Algebra.Order.Ring.Rat
-public import Mathlib.Data.Fintype.BigOperators
-public import Mathlib.Data.ZMod.Basic
+
+import Mathlib.Data.ZMod.Basic
 
 /-!
 # Witt polynomials
@@ -101,7 +99,7 @@ set_option quotPrecheck false in
 @[inherit_doc]
 scoped[Witt] notation "W" => wittPolynomial p _
 
-open Witt
+open scoped Witt
 
 /-! The first observation is that the Witt polynomial doesn't really depend on the coefficient ring.
 If we map the coefficients through a ring homomorphism, we obtain the corresponding Witt polynomial
@@ -124,7 +122,7 @@ theorem constantCoeff_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
   simp only [wittPolynomial, map_sum, constantCoeff_monomial]
   rw [sum_eq_zero]
   rintro i _
-  rw [if_neg]
+  rw [ite_eq_right]
   rw [Finsupp.single_eq_zero]
   exact ne_of_gt (pow_pos hp.1.pos _)
 
@@ -132,7 +130,6 @@ theorem constantCoeff_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
 theorem wittPolynomial_zero : wittPolynomial p R 0 = X 0 := by
   simp only [wittPolynomial, X, sum_singleton, range_one, pow_zero, zero_add, tsub_self]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem wittPolynomial_one : wittPolynomial p R 1 = C (p : R) * X 1 + X 0 ^ p := by
   simp only [wittPolynomial_eq_sum_C_mul_X_pow, sum_range_succ_comm, range_one, sum_singleton,
@@ -160,13 +157,11 @@ section PPrime
 
 variable [hp : NeZero p]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem wittPolynomial_vars [CharZero R] (n : ℕ) : (wittPolynomial p R n).vars = range (n + 1) := by
   have : ∀ i, (monomial (Finsupp.single i (p ^ (n - i))) ((p : R) ^ i)).vars = {i} := by
     intro i
     refine vars_monomial_single i (pow_ne_zero _ hp.1) ?_
-    rw [← Nat.cast_pow, Nat.cast_ne_zero]
-    exact pow_ne_zero i hp.1
+    exact_mod_cast pow_ne_zero i hp.1
   rw [wittPolynomial, vars_sum_of_disjoint]
   · simp only [this, biUnion_singleton_eq_self]
   · simp only [this]
@@ -223,7 +218,6 @@ section PPrime
 
 variable [hp : Fact p.Prime]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem xInTermsOfW_vars_aux (n : ℕ) :
     n ∈ (xInTermsOfW p ℚ n).vars ∧ (xInTermsOfW p ℚ n).vars ⊆ range (n + 1) := by
   induction n using Nat.strongRecOn with | ind n ih => ?_
@@ -251,7 +245,6 @@ theorem xInTermsOfW_vars_aux (n : ℕ) :
     lia
   · lia
 
-set_option backward.isDefEq.respectTransparency false in
 theorem xInTermsOfW_vars_subset (n : ℕ) : (xInTermsOfW p ℚ n).vars ⊆ range (n + 1) :=
   (xInTermsOfW_vars_aux p n).2
 

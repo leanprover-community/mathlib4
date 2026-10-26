@@ -157,8 +157,8 @@ theorem support_eq : Function.support f = Metric.ball c f.rOut := by
 theorem tsupport_eq : tsupport f = closedBall c f.rOut := by
   simp_rw [tsupport, f.support_eq, closure_ball _ f.rOut_pos.ne']
 
-theorem pos_of_mem_ball (hx : x ∈ ball c f.rOut) : 0 < f x :=
-  f.nonneg.lt_of_ne' <| by rwa [← support_eq, mem_support] at hx
+theorem pos_of_mem_ball (hx : x ∈ ball c f.rOut) : 0 < f x := by
+  grind [f.nonneg.lt_of_ne', support_eq]
 
 theorem zero_of_le_dist (hx : f.rOut ≤ dist x c) : f x = 0 := by
   rwa [← notMem_support, support_eq, mem_ball, not_lt]
@@ -172,7 +172,6 @@ theorem eventuallyEq_one_of_mem_ball (h : x ∈ ball c f.rIn) : f =ᶠ[𝓝 x] 1
 theorem eventuallyEq_one : f =ᶠ[𝓝 c] 1 :=
   f.eventuallyEq_one_of_mem_ball (mem_ball_self f.rIn_pos)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `ContDiffBump` is `𝒞ⁿ` in all its arguments. -/
 protected theorem _root_.ContDiffWithinAt.contDiffBump {c g : X → E} {s : Set X}
     {f : ∀ x, ContDiffBump (c x)} {x : X} (hc : ContDiffWithinAt ℝ n c s x)

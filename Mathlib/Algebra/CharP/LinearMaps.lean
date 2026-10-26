@@ -5,8 +5,9 @@ Authors: Wanyi He, Huanyu Zheng
 -/
 module
 
-public import Mathlib.Algebra.CharP.Algebra
 public import Mathlib.Algebra.Module.Torsion.Basic
+
+import Mathlib.Algebra.CharP.Algebra
 
 /-!
 # Characteristic of the ring of linear Maps
@@ -33,7 +34,7 @@ One can also deduce similar result via `charP_of_injective_ringHom` and
 
 -/
 
-@[expose] public section
+public section
 
 namespace Module
 
@@ -53,14 +54,12 @@ theorem charP_end {p : ℕ} [hchar : CharP R p]
 
 end Module
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For a division ring `D` with center `k`, the ring of `k`-linear endomorphisms
   of `D` has the same characteristic as `D` -/
 instance {D : Type*} [DivisionRing D] {p : ℕ} [CharP D p] :
     CharP (D →ₗ[(Subring.center D)] D) p :=
   charP_of_injective_ringHom (Algebra.lmul (Subring.center D) D).toRingHom.injective p
 
-set_option backward.isDefEq.respectTransparency false in
 instance {D : Type*} [DivisionRing D] {p : ℕ} [ExpChar D p] :
     ExpChar (D →ₗ[Subring.center D] D) p :=
   expChar_of_injective_ringHom (Algebra.lmul (Subring.center D) D).toRingHom.injective p

@@ -114,13 +114,16 @@ theorem empty_ssubset_singleton : (∅ : Finset α) ⊂ {a} :=
 theorem coe_singleton (a : α) : (({a} : Finset α) : Set α) = {a} := by grind
 
 @[simp, norm_cast]
-theorem coe_eq_singleton {s : Finset α} {a : α} : (s : Set α) = {a} ↔ s = {a} := by grind
+theorem coe_eq_singleton {s : Finset α} {a : α} : (s : Set α) = {a} ↔ s = {a} := by
+  rw [← coe_singleton, coe_inj]
 
 @[norm_cast]
-lemma coe_subset_singleton : (s : Set α) ⊆ {a} ↔ s ⊆ {a} := by grind
+lemma coe_subset_singleton : (s : Set α) ⊆ {a} ↔ s ⊆ {a} := by
+  rw [← coe_singleton, coe_subset]
 
 @[norm_cast]
-lemma singleton_subset_coe : {a} ⊆ (s : Set α) ↔ {a} ⊆ s := by grind
+lemma singleton_subset_coe : {a} ⊆ (s : Set α) ↔ {a} ⊆ s := by
+  rw [← coe_singleton, coe_subset]
 
 theorem eq_singleton_iff_unique_mem {s : Finset α} {a : α} : s = {a} ↔ a ∈ s ∧ ∀ x ∈ s, x = a := by
   grind
@@ -213,7 +216,6 @@ instance (i : α) : Unique ({i} : Finset α) where
 @[simp]
 lemma default_singleton (i : α) : ((default : ({i} : Finset α)) : α) = i := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance Nontrivial.instDecidablePred : DecidablePred (Finset.Nontrivial (α := α)) := fun s =>
   /-
   We don't use `Finset.one_lt_card_iff_nontrivial`
@@ -267,6 +269,10 @@ theorem forall_mem_cons (h : a ∉ s) (p : α → Prop) :
     (∀ x, x ∈ cons a s h → p x) ↔ p a ∧ ∀ x, x ∈ s → p x := by
   grind
 
+theorem exists_mem_cons (h : a ∉ s) (p : α → Prop) :
+    (∃ x, x ∈ cons a s h ∧ p x) ↔ p a ∨ ∃ x, x ∈ s ∧ p x := by
+  grind
+
 /-- Useful in proofs by induction. -/
 theorem forall_of_forall_cons {p : α → Prop} {h : a ∉ s} (H : ∀ x, x ∈ cons a s h → p x) (x)
     (h : x ∈ s) : p x :=
@@ -290,7 +296,6 @@ theorem cons_nonempty (h : a ∉ s) : (cons a s h).Nonempty :=
 theorem nonempty_mk {m : Multiset α} {hm} : (⟨m, hm⟩ : Finset α).Nonempty ↔ m ≠ 0 := by
   induction m using Multiset.induction_on <;> simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coe_cons {a s h} : (@cons α a s h : Set α) = insert a (s : Set α) := by
   ext
@@ -389,7 +394,6 @@ theorem cons_eq_insert (a s h) : @cons α a s h = insert a s :=
 @[simp, norm_cast]
 theorem coe_insert (a : α) (s : Finset α) : ↑(insert a s) = (insert a s : Set α) := by grind
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mem_insert_coe {s : Finset α} {x y : α} : x ∈ insert y s ↔ x ∈ insert y (s : Set α) := by
   simp
 
@@ -436,7 +440,7 @@ instance (i : α) (s : Finset α) : Nonempty ((insert i s : Finset α) : Set α)
   (Finset.coe_nonempty.mpr (s.insert_nonempty i)).to_subtype
 
 theorem ne_insert_of_notMem (s t : Finset α) {a : α} (h : a ∉ s) : s ≠ insert a t := by
-  contrapose! h
+  contrapose h
   simp [h]
 
 theorem insert_subset_iff : insert a s ⊆ t ↔ a ∈ t ∧ s ⊆ t := by grind
@@ -450,7 +454,6 @@ theorem insert_subset (ha : a ∈ t) (hs : s ⊆ t) : insert a s ⊆ t :=
 theorem insert_subset_insert (a : α) {s t : Finset α} (h : s ⊆ t) : insert a s ⊆ insert a t := by
   grind
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma insert_subset_insert_iff (ha : a ∉ s) : insert a s ⊆ insert a t ↔ s ⊆ t := by
   simp_rw [← coe_subset]; simp [ha]
 

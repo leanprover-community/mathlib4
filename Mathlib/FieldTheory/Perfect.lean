@@ -5,8 +5,6 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.CharP.Basic
-public import Mathlib.Algebra.CharP.Reduced
 public import Mathlib.FieldTheory.KummerPolynomial
 public import Mathlib.FieldTheory.Separable
 
@@ -43,12 +41,55 @@ open Function Polynomial
 
 NB: This is not related to the concept with the same name introduced by Bass (related to projective
 covers of modules). -/
-class PerfectRing (R : Type*) (p : ℕ) [CommSemiring R] [ExpChar R p] : Prop where
+class PerfectRing (R : Type*) (p : ℕ) [Pow R ℕ] : Prop where
   /-- A ring is perfect if the Frobenius map is bijective. -/
-  bijective_frobenius : Bijective <| frobenius R p
+  bijective_frobenius : Bijective fun x : R ↦ x ^ p
 
 section PerfectRing
 
+section Monoid
+variable (M : Type*) (p q : ℕ) [CommMonoid M] [PerfectRing M p] [PerfectRing M q]
+
+namespace PerfectRing
+
+instance one : PerfectRing M 1 :=
+  ⟨by simpa using! bijective_id⟩
+
+instance mul : PerfectRing M (p * q) :=
+  ⟨by simp_rw [pow_mul]; exact PerfectRing.bijective_frobenius.comp PerfectRing.bijective_frobenius⟩
+
+instance pow (n : ℕ) : PerfectRing M (p ^ n) :=
+  n.recOn (inferInstanceAs (PerfectRing M 1)) fun n _ ↦ inferInstanceAs (PerfectRing M (p ^ n * p))
+
+end PerfectRing
+
+/-- The `p`-th power automorphism for a perfect monoid. -/
+@[simps! apply]
+noncomputable def powMulEquiv : M ≃* M :=
+  .ofBijective (powMonoidHom p) PerfectRing.bijective_frobenius
+
+@[simp]
+theorem powMulEquiv_symm_pow_p (x : M) : ((powMulEquiv M p).symm x) ^ p = x :=
+  (powMulEquiv M p).apply_symm_apply x
+
+@[simp] theorem powMulEquiv_one : powMulEquiv M 1 = .refl M :=
+  MulEquiv.ext pow_one
+
+theorem powMulEquiv_mul : powMulEquiv M (p * q) = (powMulEquiv M p).trans (powMulEquiv M q) :=
+  MulEquiv.ext fun x ↦ pow_mul x p q
+
+theorem powMulEquiv_mul' : powMulEquiv M (p * q) = (powMulEquiv M q).trans (powMulEquiv M p) :=
+  MulEquiv.ext fun x ↦ pow_mul' x p q
+
+theorem powMulEquiv_pow (n : ℕ) : powMulEquiv M (p ^ n) = powMulEquiv M p ^ n :=
+  n.recOn (powMulEquiv_one M) fun n ih ↦ by
+    rw [pow_succ (powMulEquiv M p), ← ih, MulAut.mul_def, ← powMulEquiv_mul]
+    congr
+    rw [pow_succ']
+
+end Monoid
+
+section CommSemiring
 variable (R : Type*) (p m n : ℕ) [CommSemiring R] [ExpChar R p]
 
 /-- For a reduced ring, surjectivity of the Frobenius map is a sufficient condition for perfection.
@@ -67,7 +108,7 @@ variable [PerfectRing R p]
 theorem bijective_frobenius : Bijective (frobenius R p) := PerfectRing.bijective_frobenius
 
 theorem bijective_iterateFrobenius : Bijective (iterateFrobenius R p n) :=
-  coe_iterateFrobenius R p n ▸ (bijective_frobenius R p).iterate n
+  PerfectRing.bijective_frobenius
 
 @[simp]
 theorem injective_frobenius : Injective (frobenius R p) := (bijective_frobenius R p).1
@@ -79,6 +120,9 @@ theorem surjective_frobenius : Surjective (frobenius R p) := (bijective_frobeniu
 @[simps! apply]
 noncomputable def frobeniusEquiv : R ≃+* R :=
   RingEquiv.ofBijective (frobenius R p) PerfectRing.bijective_frobenius
+
+@[simp] theorem powMulEquiv_eq_toMulEquiv_frobeniusEquiv :
+    powMulEquiv R p = (frobeniusEquiv R p).toMulEquiv := rfl
 
 @[simp]
 theorem coe_frobeniusEquiv : ⇑(frobeniusEquiv R p) = frobenius R p := rfl
@@ -137,12 +181,12 @@ theorem iterateFrobeniusEquiv_symm :
 @[simp]
 theorem frobeniusEquiv_symm_apply_frobenius (x : R) :
     (frobeniusEquiv R p).symm (frobenius R p x) = x :=
-  leftInverse_surjInv PerfectRing.bijective_frobenius x
+  (frobeniusEquiv R p).symm_apply_apply x
 
 @[simp]
 theorem frobenius_apply_frobeniusEquiv_symm (x : R) :
     frobenius R p ((frobeniusEquiv R p).symm x) = x :=
-  surjInv_eq _ _
+  (frobeniusEquiv R p).apply_symm_apply x
 
 @[simp]
 theorem frobenius_comp_frobeniusEquiv_symm :
@@ -204,11 +248,11 @@ theorem MonoidHom.map_iterate_frobeniusEquiv_symm (f : R →* S) (n : ℕ) (x : 
     f (((frobeniusEquiv R p).symm^[n]) x) = ((frobeniusEquiv S p).symm^[n]) (f x) := by
   apply_fun (frobeniusEquiv S p)^[n]
   · simp only [coe_frobeniusEquiv, ← map_iterate_frobenius]
-    · rw [← Function.comp_apply (f := (⇑(frobenius R p))^[n]),
-          ← Function.comp_apply (f := (⇑(frobenius S p))^[n]),
-          ← Function.Commute.comp_iterate, ← Function.Commute.comp_iterate]
-      · simp
-      all_goals rw [← coe_frobeniusEquiv]; simp [Function.Commute, Function.Semiconj]
+    rw [← Function.comp_apply (f := (⇑(frobenius R p))^[n]),
+        ← Function.comp_apply (f := (⇑(frobenius S p))^[n]),
+        ← Function.Commute.comp_iterate, ← Function.Commute.comp_iterate]
+    · simp
+    all_goals rw [← coe_frobeniusEquiv]; simp [Function.Commute, Function.Semiconj]
   apply Function.Injective.iterate
   simp
 
@@ -235,6 +279,8 @@ instance instPerfectRingProd (S : Type*) [CommSemiring S] [ExpChar S p] [Perfect
     PerfectRing (R × S) p where
   bijective_frobenius := (bijective_frobenius R p).prodMap (bijective_frobenius S p)
 
+end CommSemiring
+
 end PerfectRing
 
 /-- A perfect field.
@@ -251,7 +297,7 @@ lemma PerfectRing.toPerfectField (K : Type*) (p : ℕ)
   refine PerfectField.mk fun hf ↦ ?_
   rcases separable_or p hf with h | ⟨-, g, -, rfl⟩
   · assumption
-  · exfalso; revert hf; haveI := Fact.mk hp; simp
+  · exfalso; revert hf; have := Fact.mk hp; simp
 
 namespace PerfectField
 
@@ -266,6 +312,7 @@ instance ofFinite [Finite K] : PerfectField K := by
 
 variable [PerfectField K]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A perfect field of characteristic `p` (prime) is a perfect ring. -/
 instance toPerfectRing (p : ℕ) [hp : ExpChar K p] : PerfectRing K p := by
   refine PerfectRing.ofSurjective _ _ fun y ↦ ?_
@@ -294,10 +341,15 @@ instance Algebra.IsAlgebraic.isSeparable_of_perfectField {K L : Type*} [Field K]
     minpoly.irreducible (Algebra.IsIntegral.isIntegral x)⟩
 
 /-- If `L / K` is an algebraic extension, `K` is a perfect field, then so is `L`. -/
-theorem Algebra.IsAlgebraic.perfectField {K L : Type*} [Field K] [Field L] [Algebra K L]
+theorem Algebra.IsAlgebraic.perfectField (K : Type*) {L : Type*} [Field K] [Field L] [Algebra K L]
     [Algebra.IsAlgebraic K L] [PerfectField K] : PerfectField L := ⟨fun {f} hf ↦ by
   obtain ⟨_, _, hi, h⟩ := hf.exists_dvd_monic_irreducible_of_isIntegral (K := K)
   exact (PerfectField.separable_of_irreducible hi).map |>.of_dvd h⟩
+
+theorem PerfectField.of_ringEquiv {K L : Type*} [Field K] [Field L] (h : K ≃+* L) [PerfectField K] :
+    PerfectField L :=
+  let := h.toRingHom.toAlgebra
+  Algebra.IsAlgebraic.perfectField K
 
 namespace Polynomial
 
@@ -402,7 +454,6 @@ noncomputable def rootsExpandToRoots : (expand R p f).roots.toFinset ↪ f.roots
 @[simp]
 theorem rootsExpandToRoots_apply (x) : (rootsExpandToRoots p f x : R) = x ^ p := rfl
 
-open scoped Classical in
 /-- If `f` is a polynomial over an integral domain `R` of characteristic `p`, then there is
 a map from the set of roots of `Polynomial.expand R (p ^ n) f` to the set of roots of `f`.
 It's given by `x ↦ x ^ (p ^ n)`, see `rootsExpandPowToRoots_apply`. -/
@@ -421,10 +472,9 @@ variable [PerfectRing R p]
 a bijection from the set of roots of `Polynomial.expand R p f` to the set of roots of `f`.
 It's given by `x ↦ x ^ p`, see `rootsExpandEquivRoots_apply`. -/
 noncomputable def rootsExpandEquivRoots : (expand R p f).roots.toFinset ≃ f.roots.toFinset :=
-  ((frobeniusEquiv R p).image _).trans <| .setCongr <| show _ '' setOf (· ∈ _) = setOf (· ∈ _) by
-    classical simp_rw [← roots_expand_image_frobenius (p := p) (f := f),
-      Finset.setOf_mem, Finset.coe_image, RingEquiv.toEquiv_eq_coe, EquivLike.coe_coe,
-      frobeniusEquiv_apply]
+  ((frobeniusEquiv R p).image _).trans <| Set.equivOfEq <| by
+    rw [← roots_expand_image_frobenius (p := p) (f := f)]
+    simp
 
 @[simp]
 theorem rootsExpandEquivRoots_apply (x) : (rootsExpandEquivRoots p f x : R) = x ^ p := rfl
@@ -434,11 +484,9 @@ a bijection from the set of roots of `Polynomial.expand R (p ^ n) f` to the set 
 It's given by `x ↦ x ^ (p ^ n)`, see `rootsExpandPowEquivRoots_apply`. -/
 noncomputable def rootsExpandPowEquivRoots (n : ℕ) :
     (expand R (p ^ n) f).roots.toFinset ≃ f.roots.toFinset :=
-  ((iterateFrobeniusEquiv R p n).image _).trans <|
-    .setCongr <| show _ '' (setOf (· ∈ _)) = setOf (· ∈ _) by
-    classical simp_rw [← roots_expand_image_iterateFrobenius (p := p) (f := f) (n := n),
-      Finset.setOf_mem, Finset.coe_image, RingEquiv.toEquiv_eq_coe,
-      EquivLike.coe_coe, iterateFrobeniusEquiv_apply]
+  ((iterateFrobeniusEquiv R p n).image _).trans <| Set.equivOfEq <| by
+    rw [← roots_expand_image_iterateFrobenius (p := p) (f := f) (n := n)]
+    simp
 
 @[simp]
 theorem rootsExpandPowEquivRoots_apply (n : ℕ) (x) :

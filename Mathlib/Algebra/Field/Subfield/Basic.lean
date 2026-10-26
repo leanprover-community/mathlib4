@@ -5,11 +5,11 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Field.Subfield.Defs
 public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-public import Mathlib.Algebra.Ring.Subring.Basic
 public import Mathlib.RingTheory.SimpleRing.Basic
+
+import Mathlib.Order.CompleteLattice.Finset
 
 /-!
 # Subfields
@@ -160,6 +160,13 @@ theorem mem_map {f : K →+* L} {s : Subfield K} {y : L} : y ∈ s.map f ↔ ∃
   unfold map
   simp only [mem_mk, Subring.mem_map, mem_toSubring]
 
+-- Higher priority to apply before `mem_map`.
+@[simp 1100]
+theorem map_mem_map (f : K →+* L) {s : Subfield K} {x : K} : f x ∈ s.map f ↔ x ∈ s :=
+  calc
+    _ ↔ f x ∈ (s.map f : Set L) := Iff.rfl
+    _ ↔ _ := by simp [Function.Injective.mem_set_image (f := f) f.injective]
+
 theorem map_map (g : L →+* M) (f : K →+* L) : (s.map f).map g = s.map (g.comp f) :=
   SetLike.ext' <| Set.image_image _ _ _
 
@@ -245,13 +252,11 @@ instance : InfSet (Subfield K) :=
 
 @[simp, norm_cast]
 theorem coe_sInf (S : Set (Subfield K)) : ((sInf S : Subfield K) : Set K) = ⋂ s ∈ S, ↑s :=
-  show ((sInf (Subfield.toSubring '' S) : Subring K) : Set K) = ⋂ s ∈ S, ↑s by
-    simp
+  show ((sInf (Subfield.toSubring '' S) : Subring K) : Set K) = ⋂ s ∈ S, ↑s by simp
 
 @[simp]
-theorem mem_sInf {S : Set (Subfield K)} {x : K} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p :=
-  Subring.mem_sInf.trans
-    ⟨fun h p hp => h p.toSubring ⟨p, hp, rfl⟩, fun h _ ⟨p', hp', p_eq⟩ => p_eq ▸ h p' hp'⟩
+theorem mem_sInf {S : Set (Subfield K)} {x : K} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p := by
+  simpa only [Set.mem_iInter] using! Set.ext_iff.1 (coe_sInf S) x
 
 @[simp, norm_cast]
 theorem coe_iInf {ι : Sort*} {S : ι → Subfield K} : (↑(⨅ i, S i) : Set K) = ⋂ i, S i := by
@@ -295,7 +300,7 @@ theorem mem_closure {x : K} {s : Set K} : x ∈ closure s ↔ ∀ S : Subfield K
 @[simp, aesop safe 20 (rule_sets := [SetLike])]
 theorem subset_closure {s : Set K} : s ⊆ closure s := fun _ hx => mem_closure.2 fun _ hS => hS hx
 
-@[aesop 80% (rule_sets := [SetLike])]
+@[aesop 80% (rule_sets := [SetLike]), membership .]
 theorem mem_closure_of_mem {s : Set K} {x : K} (hx : x ∈ s) : x ∈ closure s := subset_closure hx
 
 theorem subring_closure_le (s : Set K) : Subring.closure s ≤ (closure s).toSubring :=
@@ -323,14 +328,15 @@ theorem closure_eq_of_le {s : Set K} {t : Subfield K} (h₁ : s ⊆ t) (h₂ : t
 of `s`, and is preserved under addition, negation, and multiplication, then `p` holds for all
 elements of the closure of `s`. -/
 @[elab_as_elim]
-theorem closure_induction {s : Set K} {p : ∀ x ∈ closure s, Prop}
-    (mem : ∀ x hx, p x (subset_closure hx))
-    (one : p 1 (one_mem _)) (add : ∀ x y hx hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
-    (neg : ∀ x hx, p x hx → p (-x) (neg_mem hx)) (inv : ∀ x hx, p x hx → p x⁻¹ (inv_mem hx))
-    (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
-    {x} (h : x ∈ closure s) : p x h :=
+theorem closure_induction {s : Set K} {motive : ∀ x ∈ closure s, Prop}
+    (mem : ∀ x hx, motive x (subset_closure hx)) (one : motive 1 (one_mem _))
+    (add : ∀ x y hx hy, motive x hx → motive y hy → motive (x + y) (add_mem hx hy))
+    (neg : ∀ x hx, motive x hx → motive (-x) (neg_mem hx))
+    (inv : ∀ x hx, motive x hx → motive x⁻¹ (inv_mem hx))
+    (mul : ∀ x y hx hy, motive x hx → motive y hy → motive (x * y) (mul_mem hx hy))
+    {x} (h : x ∈ closure s) : motive x h :=
   letI : Subfield K :=
-    { carrier := {x | ∃ hx, p x hx}
+    { carrier := {x | ∃ hx, motive x hx}
       mul_mem' := by rintro _ _ ⟨_, hx⟩ ⟨_, hy⟩; exact ⟨_, mul _ _ _ _ hx hy⟩
       one_mem' := ⟨_, one⟩
       add_mem' := by rintro _ _ ⟨_, hx⟩ ⟨_, hy⟩; exact ⟨_, add _ _ _ _ hx hy⟩
@@ -353,7 +359,6 @@ protected def gi : GaloisInsertion (@closure K _) (↑) where
 theorem closure_eq (s : Subfield K) : closure (s : Set K) = s :=
   (Subfield.gi K).l_u_eq s
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem closure_empty : closure (∅ : Set K) = ⊥ :=
   (Subfield.gi K).gc.l_bot
@@ -393,12 +398,10 @@ theorem comap_iInf {ι : Sort*} (f : K →+* L) (s : ι → Subfield L) :
     (iInf s).comap f = ⨅ i, (s i).comap f :=
   (gc_map_comap f).u_iInf
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_bot (f : K →+* L) : (⊥ : Subfield K).map f = ⊥ :=
   (gc_map_comap f).l_bot
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem comap_top (f : K →+* L) : (⊤ : Subfield L).comap f = ⊤ :=
   (gc_map_comap f).u_top
@@ -422,14 +425,38 @@ theorem coe_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subfield K} (h
 
 theorem mem_sSup_of_directedOn {S : Set (Subfield K)} (Sne : S.Nonempty) (hS : DirectedOn (· ≤ ·) S)
     {x : K} : x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
-  haveI : Nonempty S := Sne.to_subtype
+  have : Nonempty S := Sne.to_subtype
   simp only [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val, Subtype.exists, exists_prop]
 
 theorem coe_sSup_of_directedOn {S : Set (Subfield K)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) : (↑(sSup S) : Set K) = ⋃ s ∈ S, ↑s :=
   Set.ext fun x => by simp [mem_sSup_of_directedOn Sne hS]
 
+theorem coe_iSup_eq_iUnion_finset_coe_biSup {ι : Type*} (S : ι → Subfield K) :
+    ((⨆ i, S i : Subfield K) : Set K) = ⋃ s : Finset ι, (⨆ i ∈ s, S i : Subfield K) := by
+  rw [iSup_eq_iSup_finset, coe_iSup_of_directed <| Monotone.directed_le fun _ _ ↦ biSup_mono]
+
+theorem isMulCommutative_closure {s : Set K} (hs : s.Pairwise Commute) :
+    IsMulCommutative (closure s) :=
+  have : (closure s : Set K) ≤ s.centralizer.centralizer := fun _ hx ↦
+    closure_induction (fun _ h ↦ Set.subset_centralizer_centralizer h)
+      Set.one_mem_centralizer (fun _ _ _ _ ↦ Set.add_mem_centralizer)
+      (fun _ _ ↦ Set.neg_mem_centralizer) (fun _ _ ↦ Set.inv_mem_centralizer₀)
+      (fun _ _ _ _ ↦ Set.mul_mem_centralizer) hx
+  .of_setLike_mul_comm fun _ h₁ _ h₂ ↦
+    Set.centralizer_centralizer_comm_of_comm hs _ (this h₁) _ (this h₂)
+
+instance {S : Type*} [SetLike S K] [MulMemClass S K] (s : S) [IsMulCommutative s] :
+    IsMulCommutative (closure (s : Set K)) :=
+  isMulCommutative_closure fun _ hi _ hj _ ↦ setLike_mul_comm hi hj
+
 end Subfield
+
+variable (L) in
+/-- A field is finitely generated if it is the closure of a finite subset. -/
+@[mk_iff fg_iff]
+protected class Field.FG : Prop where
+  finitely_generated : ∃ S : Finset L, Subfield.closure (S : Set L) = ⊤
 
 namespace RingHom
 
@@ -521,7 +548,7 @@ variable {s t : Subfield K}
 /-- Makes the identity isomorphism from a proof two subfields of a multiplicative
     monoid are equal. -/
 def subfieldCongr (h : s = t) : s ≃+* t :=
-  { Equiv.setCongr <| SetLike.ext'_iff.1 h with
+  { Set.equivOfEq <| SetLike.ext'_iff.1 h with
     map_mul' := fun _ _ => rfl
     map_add' := fun _ _ => rfl }
 
@@ -548,7 +575,7 @@ protected theorem prod_mem {ι : Type*} {t : Finset ι} {f : ι → K} (h : ∀ 
   prod_mem h
 
 instance toAlgebra : Algebra s K :=
-  RingHom.toAlgebra s.subtype
+  inferInstance
 
 theorem algebraMap_ofSubfield : algebraMap s K = s.subtype :=
   rfl

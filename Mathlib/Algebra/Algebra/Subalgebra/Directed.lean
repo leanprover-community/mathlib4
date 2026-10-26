@@ -6,7 +6,6 @@ Authors: Chris Hughes
 module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-public import Mathlib.Data.Set.UnionLift
 
 /-!
 # Subalgebras and directed Unions of sets
@@ -38,9 +37,23 @@ theorem coe_iSup_of_directed (dir : Directed (· ≤ ·) K) : ↑(iSup K) = ⋃ 
     (iSup_le fun i ↦ le_iSup (fun i ↦ (K i : Set A)) i) (Set.iUnion_subset fun _ ↦ le_iSup K _)
   simp [this, s]
 
+theorem coe_iSup_eq_iUnion_finset_coe_biSup {ι : Type*} (S : ι → Subalgebra R A) :
+    ((⨆ i, S i : Subalgebra R A) : Set A) = ⋃ s : Finset ι, (⨆ i ∈ s, S i : Subalgebra R A) := by
+  rw [iSup_eq_iSup_finset, coe_iSup_of_directed <| Monotone.directed_le fun _ _ ↦ biSup_mono]
+
+theorem isMulCommutative_iSup {S : ι → Subalgebra R A}
+    [hS : ∀ i, IsMulCommutative (S i)] (dir : Directed (· ≤ ·) S) :
+    IsMulCommutative (⨆ i, S i : Subalgebra R A) := by
+  simpa [isMulCommutative_iff, ← SetLike.mem_coe, coe_iSup_of_directed dir,
+    Subsemiring.coe_iSup_of_directed dir] using Subsemiring.isMulCommutative_iSup dir
+
+instance instIsMulCommutative_iSup [Preorder ι] [IsDirectedOrder ι]
+    {S : ι →o Subalgebra R A} [hS : ∀ i, IsMulCommutative (S i)] :
+    IsMulCommutative (⨆ i, S i : Subalgebra R A) :=
+  isMulCommutative_iSup S.monotone.directed_le
+
 variable (K)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Define an algebra homomorphism on a directed supremum of subalgebras by defining
 it on each subalgebra, and proving that it agrees on the intersection of subalgebras. -/
 noncomputable def iSupLift (dir : Directed (· ≤ ·) K) (f : ∀ i, K i →ₐ[R] B)
@@ -101,7 +114,6 @@ theorem iSupLift_mk {dir : Directed (· ≤ ·) K} {f : ∀ i, K i →ₐ[R] B}
   dsimp [iSupLift, inclusion]
   rw [Set.iUnionLift_mk]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem iSupLift_of_mem {dir : Directed (· ≤ ·) K} {f : ∀ i, K i →ₐ[R] B}
     {hf : ∀ (i j : ι) (h : K i ≤ K j), f i = (f j).comp (inclusion h)}
     {T : Subalgebra R A} {hT : T ≤ iSup K} {i : ι} (x : T) (hx : (x : A) ∈ K i) :

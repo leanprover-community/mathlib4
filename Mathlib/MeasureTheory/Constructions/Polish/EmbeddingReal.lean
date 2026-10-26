@@ -5,8 +5,9 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.Analysis.Real.Cardinality
 public import Mathlib.MeasureTheory.Constructions.Polish.Basic
+
+import Mathlib.Analysis.Real.Cardinality
 
 /-!
 # A Polish Borel space is measurably equivalent to a set of reals
@@ -14,7 +15,7 @@ public import Mathlib.MeasureTheory.Constructions.Polish.Basic
 
 @[expose] public section
 
-open Set Function PolishSpace PiNat TopologicalSpace Bornology Metric Filter Topology MeasureTheory
+open Set Function PolishSpace TopologicalSpace Topology MeasureTheory
 
 namespace MeasureTheory
 variable (α : Type*) [MeasurableSpace α] [StandardBorelSpace α]
@@ -25,7 +26,7 @@ theorem exists_nat_measurableEquiv_range_coe_fin_of_finite [Finite α] :
   refine ⟨n, ⟨PolishSpace.Equiv.measurableEquiv (n_equiv.trans ?_)⟩⟩
   exact Equiv.ofInjective _ (Nat.cast_injective.comp Fin.val_injective)
 
-theorem measurableEquiv_range_coe_nat_of_infinite_of_countable [Infinite α] [Countable α] :
+theorem measurableEquiv_range_natCast_of_infinite_of_countable [Infinite α] [Countable α] :
     Nonempty (α ≃ᵐ range ((↑) : ℕ → ℝ)) := by
   have : PolishSpace (range ((↑) : ℕ → ℝ)) :=
     Nat.isClosedEmbedding_coe_real.isClosedMap.isClosed_range.polishSpace
@@ -33,20 +34,20 @@ theorem measurableEquiv_range_coe_nat_of_infinite_of_countable [Infinite α] [Co
   refine (nonempty_equiv_of_countable.some : α ≃ ℕ).trans ?_
   exact Equiv.ofInjective ((↑) : ℕ → ℝ) Nat.cast_injective
 
+@[deprecated (since :=
+  "2026-10-13")]
+alias measurableEquiv_range_coe_nat_of_infinite_of_countable :=
+  measurableEquiv_range_natCast_of_infinite_of_countable
+
 /-- Any standard Borel space is measurably equivalent to a subset of the reals. -/
 theorem exists_subset_real_measurableEquiv : ∃ s : Set ℝ, MeasurableSet s ∧ Nonempty (α ≃ᵐ s) := by
   by_cases hα : Countable α
   · cases finite_or_infinite α
     · obtain ⟨n, h_nonempty_equiv⟩ := exists_nat_measurableEquiv_range_coe_fin_of_finite α
       refine ⟨_, ?_, h_nonempty_equiv⟩
-      letI : MeasurableSpace (Fin n) := borel (Fin n)
-      haveI : BorelSpace (Fin n) := ⟨rfl⟩
-      apply MeasurableEmbedding.measurableSet_range (mα := by infer_instance)
-      exact continuous_of_discreteTopology.measurableEmbedding
-        (Nat.cast_injective.comp Fin.val_injective)
-    · refine ⟨_, ?_, measurableEquiv_range_coe_nat_of_infinite_of_countable α⟩
-      apply MeasurableEmbedding.measurableSet_range (mα := by infer_instance)
-      exact continuous_of_discreteTopology.measurableEmbedding Nat.cast_injective
+      exact (Set.finite_range ((↑) : Fin n → ℝ)).measurableSet
+    · refine ⟨_, ?_, measurableEquiv_range_natCast_of_infinite_of_countable α⟩
+      exact Nat.isClosedEmbedding_coe_real.isClosed_range.measurableSet
   · refine
       ⟨univ, MeasurableSet.univ,
         ⟨(PolishSpace.measurableEquivOfNotCountable hα ?_ : α ≃ᵐ (univ : Set ℝ))⟩⟩

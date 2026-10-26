@@ -5,8 +5,6 @@ Authors: Jiedong Jiang
 -/
 module
 
-public import Mathlib.RingTheory.AdicCompletion.Algebra
-public import Mathlib.RingTheory.Localization.Away.Basic
 public import Mathlib.RingTheory.Perfectoid.FontaineTheta
 
 /-!
@@ -36,7 +34,7 @@ take a perfectoid field as the input.
 ## Reference
 
 * [Fontaine, *Sur Certains Types de Représentations p-Adiques du Groupe de Galois d'un Corps Local;
-Construction d'un Anneau de Barsotti-Tate*][fontaine1982certains]
+  Construction d'un Anneau de Barsotti-Tate*][fontaine1982certains]
 * [Fontaine, *Le corps des périodes p-adiques*][fontaine1994corps]
 * [Scholze, *p-adic Hodge theory for rigid-analytic varieties*][scholze2013adic]
 
@@ -76,8 +74,7 @@ definition is the zero ring.
 -/
 def BDeRhamPlus : Type u :=
   AdicCompletion (RingHom.ker (fontaineThetaInvertP R p)) (Localization.Away (p : 𝕎 R♭))
-
-instance : CommRing (BDeRhamPlus R p) := AdicCompletion.instCommRing _
+deriving CommRing
 
 /--
 The de Rham period ring $\mathbb{B}_{dR}$ for general perfectoid ring.

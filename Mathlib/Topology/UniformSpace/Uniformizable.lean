@@ -6,6 +6,7 @@ Authors: Aaron Liu
 module
 
 public import Mathlib.Topology.Separation.CompletelyRegular
+public import Mathlib.Topology.UrysohnsLemma
 
 import Mathlib.Topology.UniformSpace.OfCompactT2
 
@@ -34,7 +35,10 @@ Urysohn's lemma is reused in the proof of `UniformSpace.completelyRegularSpace`.
 
 variable {X : Type*}
 
-open Filter Set Uniformity UniformSpace SetRel
+open Filter Set UniformSpace
+open SetRel hiding ball ball_mono ball_inter ball_iInter
+
+open scoped Uniformity
 
 section UniformSpace
 variable [UniformSpace X]
@@ -90,7 +94,7 @@ public instance UniformSpace.toCompletelyRegularSpace : CompletelyRegularSpace X
       P_C_U := ⟨x, interior u3, u3,
         isOpen_interior, interior_mem_uniformity hu3u, rfl, ball_mono hu3O x, hu3u⟩ }
     ⟨fun x ↦ ⟨c.lim x, c.lim_mem_Icc x⟩, c.continuous_lim.subtype_mk c.lim_mem_Icc,
-      Subtype.ext (c.lim_of_mem_C x <| subset_closure (refl_mem_uniformity <|
+      Subtype.ext (c.lim_of_mem_C x <| subset_closure (mem_ball_self _ <|
         interior_mem_uniformity hu3u)), fun y hy ↦ Subtype.ext (c.lim_of_notMem_U y (hbO · hy))⟩
 
 end UniformSpace
@@ -104,7 +108,6 @@ public theorem CompletelyRegularSpace.of_exists_uniformSpace
   obtain ⟨u, rfl⟩ := h
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 public theorem CompletelyRegularSpace.exists_uniformSpace [CompletelyRegularSpace X] :
     ∃ u : UniformSpace X, u.toTopologicalSpace = t :=
   ⟨uniformSpaceOfCompactR1.comap stoneCechUnit, isInducing_stoneCechUnit.eq_induced.symm⟩

@@ -5,12 +5,10 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.Probability.Kernel.Composition.MeasureCompProd
+public import Mathlib.MeasureTheory.Constructions.Polish.EmbeddingReal
 public import Mathlib.Probability.Kernel.Disintegration.Basic
 public import Mathlib.Probability.Kernel.Disintegration.CondCDF
 public import Mathlib.Probability.Kernel.Disintegration.Density
-public import Mathlib.Probability.Kernel.Disintegration.CDFToKernel
-public import Mathlib.MeasureTheory.Constructions.Polish.EmbeddingReal
 
 /-!
 # Existence of disintegration of measures and kernels for standard Borel spaces
@@ -159,10 +157,11 @@ instance instIsMarkovKernelCondKernelUnitReal (κ : Kernel Unit (α × ℝ)) [Is
   rw [condKernelUnitReal]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance condKernelUnitReal.instIsCondKernel (κ : Kernel Unit (α × ℝ)) [IsFiniteKernel κ] :
     κ.IsCondKernel κ.condKernelUnitReal where
-  disintegrate := by rw [condKernelUnitReal, compProd_toKernel]; ext; simp
+  disintegrate := by
+    rw [condKernelUnitReal]
+    exact compProd_toKernel (isCondKernelCDF_condCDF (κ ()))
 
 end Real
 
@@ -173,7 +172,7 @@ section BorelSnd
 Since every standard Borel space embeds measurably into `ℝ`, we can generalize a disintegration
 property on `ℝ` to all these spaces. -/
 
-open Classical in
+open scoped Classical in
 /-- Auxiliary definition for `ProbabilityTheory.Kernel.condKernel`.
 A Borel space `Ω` embeds measurably into `ℝ` (with embedding `e`), hence we can get a `Kernel α Ω`
 from a `Kernel α ℝ` by taking the comap by `e`.
@@ -281,7 +280,7 @@ lemma compProd_fst_borelMarkovFromReal_eq_comapRight_compProd
   · exact measurable_prodMk_left ht
   · exact measurable_prodMk_left ht
   classical
-  rw [piecewise_apply, if_pos]
+  rw [piecewise_apply, ite_eq_left]
   exact ha
 
 /-- For `κ' := map κ (Prod.map (id : β → β) e)`, the hypothesis `hη` is `fst κ' ⊗ₖ η = κ'`.
@@ -396,7 +395,7 @@ end Measure
 section CountableOrCountablyGenerated
 variable [h : CountableOrCountablyGenerated α β] (κ : Kernel α (β × Ω)) [IsFiniteKernel κ]
 
-open Classical in
+open scoped Classical in
 /-- Conditional kernel of a kernel `κ : Kernel α (β × Ω)`: a Markov kernel such that
 `fst κ ⊗ₖ condKernel κ = κ` (see `MeasureTheory.Measure.compProd_fst_condKernel`).
 It exists whenever `Ω` is standard Borel and either `α` is countable

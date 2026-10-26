@@ -5,14 +5,14 @@ Authors: Fabrizio Barroero
 -/
 module
 
-public import Mathlib.Algebra.Order.BigOperators.Ring.Multiset
-public import Mathlib.Algebra.Polynomial.OfFn
-public import Mathlib.Analysis.CStarAlgebra.Classes
 public import Mathlib.Analysis.Polynomial.MahlerMeasure
-public import Mathlib.Data.Pi.Interval
-public import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
 public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 public import Mathlib.RingTheory.SimpleRing.Principal
+
+import Mathlib.Algebra.Polynomial.OfFn
+import Mathlib.Analysis.CStarAlgebra.Classes
+import Mathlib.Data.Pi.Interval
+import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
 
 /-!
 # Mahler measure of integer polynomials
@@ -41,7 +41,7 @@ open Int
 
 lemma one_le_mahlerMeasure_of_ne_zero {p : ℤ[X]} (hp : p ≠ 0) :
     1 ≤ (p.map (castRingHom ℂ)).mahlerMeasure := by
-  apply le_trans _ (p.map (castRingHom ℂ)).leading_coeff_le_mahlerMeasure
+  apply le_trans _ (p.map (castRingHom ℂ)).leadingCoeff_le_mahlerMeasure
   rw [leadingCoeff_map_of_injective (castRingHom ℂ).injective_int, eq_intCast]
   norm_cast
   exact one_le_abs <| leadingCoeff_ne_zero.mpr hp
@@ -54,7 +54,6 @@ variable (n : ℕ) (B₁ B₂ : Fin (n + 1) → ℝ)
 construction is used as part of our proof of Northcott's theorem. -/
 def boxPoly : Set ℤ[X] := {p : ℤ[X] | p.natDegree ≤ n ∧ ∀ i, B₁ i ≤ p.coeff i ∧ p.coeff i ≤ B₂ i}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ncard_boxPoly : (boxPoly n B₁ B₂).ncard = ∏ i, (⌊B₂ i⌋ - ⌈B₁ i⌉ + 1).toNat := by
   trans Set.ncard (α := Fin (n + 1) → ℤ) (Finset.Icc (⌈B₁ ·⌉) (⌊B₂ ·⌋))
   · refine Set.ncard_congr' ⟨fun p ↦ ⟨toFn (n + 1) p, ?_⟩, fun p ↦ ⟨ofFn (n + 1) p, ?_⟩, ?_, ?_⟩
@@ -68,9 +67,6 @@ theorem ncard_boxPoly : (boxPoly n B₁ B₂).ncard = ∏ i, (⌊B₂ i⌋ - ⌈
     · grind [toFn_comp_ofFn_eq_id]
   · norm_cast
     grind [Pi.card_Icc, card_Icc]
-
-@[deprecated (since := "2026-02-02")]
-alias card_eq_of_natDegree_le_of_coeff_le := ncard_boxPoly
 
 open NNReal
 
@@ -142,7 +138,7 @@ lemma norm_leadingCoeff_eq_one_of_mahlerMeasure_eq_one :
     ‖(p.map (castRingHom ℂ)).leadingCoeff‖ = 1 := by
   rcases eq_or_ne p 0 with _ | hp
   · simp_all
-  have h_ineq := h ▸ (leading_coeff_le_mahlerMeasure <| p.map (castRingHom ℂ))
+  have h_ineq := h ▸ (leadingCoeff_le_mahlerMeasure <| p.map (castRingHom ℂ))
   rw [leadingCoeff_map_of_injective (castRingHom ℂ).injective_int, eq_intCast] at ⊢ h_ineq
   norm_cast at ⊢ h_ineq
   grind [leadingCoeff_eq_zero]
@@ -177,7 +173,6 @@ lemma norm_root_le_one_of_mahlerMeasure_eq_one : ‖z‖ ≤ 1 := by
   _   ≤ 1 := by grind [prod_max_one_norm_roots_le_mahlerMeasure_of_one_le_leadingCoeff,
         norm_leadingCoeff_eq_one_of_mahlerMeasure_eq_one]
 
-set_option backward.isDefEq.respectTransparency false in
 open IntermediateField in
 include hz₀ hz h in
 /-- If an integer polynomial has Mahler measure equal to 1, then all its complex nonzero roots are
@@ -226,7 +221,7 @@ theorem cyclotomic_dvd_of_mahlerMeasure_eq_one (hX : ¬ X ∣ p) (hpdeg : p.degr
   obtain ⟨z, _⟩ := Splits.exists_eval_eq_zero (IsAlgClosed.splits <| p.map (castRingHom ℂ))
     hpdegC
   have hz₀ : z ≠ 0 := by
-    contrapose! hX
+    contrapose hX
     simp_all [X_dvd_iff, coeff_zero_eq_aeval_zero]
   have h_z_root : z ∈ p.aroots ℂ := by aesop
   obtain ⟨m, h_m_pos, h_prim⟩ := isPrimitiveRoot_of_mahlerMeasure_eq_one h hz₀ h_z_root

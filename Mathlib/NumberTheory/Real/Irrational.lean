@@ -5,12 +5,10 @@ Authors: Mario Carneiro, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Yury K
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Rat
+public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.Data.Nat.Prime.Int
 public import Mathlib.Data.Rat.Sqrt
-public import Mathlib.Data.Real.Sqrt
 public import Mathlib.RingTheory.Algebraic.Basic
-public import Mathlib.Tactic.IntervalCases
 
 /-!
 # Irrational real numbers
@@ -32,6 +30,7 @@ but this only works if you `unseal Nat.sqrt.iter in` before the theorem where yo
 open Rat Real
 
 /-- A real number is irrational if it is not equal to any rational number. -/
+@[wikidata Q607728]
 def Irrational (x : ℝ) :=
   x ∉ Set.range ((↑) : ℚ → ℝ)
 
@@ -73,7 +72,6 @@ theorem irrational_nrt_of_notint_nrt {x : ℝ} (n : ℕ) (m : ℤ) (hxr : x ^ n 
   refine hv ⟨N, ?_⟩
   rw [mk_eq_divInt, Int.ofNat_one, divInt_one, cast_intCast]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `x^n = m` is an integer and `n` does not divide the `multiplicity p m`, then `x`
 is irrational. -/
 theorem irrational_nrt_of_n_not_dvd_multiplicity {x : ℝ} (n : ℕ) {m : ℤ} (hm : m ≠ 0) (p : ℕ)
@@ -82,8 +80,7 @@ theorem irrational_nrt_of_n_not_dvd_multiplicity {x : ℝ} (n : ℕ) {m : ℤ} (
     Irrational x := by
   rcases Nat.eq_zero_or_pos n with (rfl | hnpos)
   · rw [eq_comm, pow_zero, ← Int.cast_one, Int.cast_inj] at hxr
-    simp [hxr, multiplicity_of_one_right (mt isUnit_iff_dvd_one.1
-      (mt Int.natCast_dvd_natCast.1 hp.1.not_dvd_one))] at hv
+    simp [hxr, multiplicity_one_right] at hv
   refine irrational_nrt_of_notint_nrt _ _ hxr ?_ hnpos
   rintro ⟨y, rfl⟩
   rw [← Int.cast_pow, Int.cast_inj] at hxr
@@ -124,7 +121,6 @@ theorem irrational_sqrt_intCast_iff_of_nonneg {z : ℤ} (hz : 0 ≤ z) :
   rw [← Rat.isSquare_intCast_iff, ← irrational_sqrt_ratCast_iff_of_nonneg (mod_cast hz),
     Rat.cast_intCast]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem irrational_sqrt_intCast_iff {z : ℤ} :
     Irrational (√z) ↔ ¬IsSquare z ∧ 0 ≤ z := by
   rw [← Rat.cast_intCast, irrational_sqrt_ratCast_iff, Rat.isSquare_intCast_iff,

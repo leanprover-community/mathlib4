@@ -36,7 +36,6 @@ instance AffineSubspace.nonempty_map {E : AffineSubspace k P₁} [Ene : Nonempty
   obtain ⟨x, hx⟩ := id Ene
   exact ⟨⟨φ x, AffineSubspace.mem_map.mpr ⟨x, hx, rfl⟩⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Restrict domain and codomain of an affine map to the given subspaces. -/
 def AffineMap.restrict (φ : P₁ →ᵃ[k] P₂) {E : AffineSubspace k P₁} {F : AffineSubspace k P₂}
     [Nonempty E] [Nonempty F] (hEF : E.map φ ≤ F) : E →ᵃ[k] F := by
@@ -59,7 +58,6 @@ theorem AffineMap.restrict.linear_aux {φ : P₁ →ᵃ[k] P₂} {E : AffineSubs
   rw [← Submodule.map_le_iff_le_comap, ← AffineSubspace.map_direction]
   exact AffineSubspace.direction_le hEF
 
-set_option backward.isDefEq.respectTransparency false in
 theorem AffineMap.restrict.linear (φ : P₁ →ᵃ[k] P₂) {E : AffineSubspace k P₁}
     {F : AffineSubspace k P₂} [Nonempty E] [Nonempty F] (hEF : E.map φ ≤ F) :
     (φ.restrict hEF).linear = φ.linear.restrict (AffineMap.restrict.linear_aux hEF) :=
@@ -83,3 +81,23 @@ theorem AffineMap.restrict.surjective (φ : P₁ →ᵃ[k] P₂) {E : AffineSubs
 theorem AffineMap.restrict.bijective {E : AffineSubspace k P₁} [Nonempty E] {φ : P₁ →ᵃ[k] P₂}
     (hφ : Function.Injective φ) : Function.Bijective (φ.restrict (le_refl (E.map φ))) :=
   ⟨AffineMap.restrict.injective hφ _, AffineMap.restrict.surjective _ rfl⟩
+
+namespace AffineEquiv
+
+/-- An affine equivalence restricts to an affine equivalence between an affine subspace and its
+image. -/
+noncomputable def affineSubspaceMap (e : P₁ ≃ᵃ[k] P₂) (s : AffineSubspace k P₁)
+    [Nonempty s] : s ≃ᵃ[k] s.map e.toAffineMap :=
+  .ofBijective (AffineMap.restrict.bijective e.injective)
+
+@[simp]
+theorem affineSubspaceMap_apply (e : P₁ ≃ᵃ[k] P₂) (s : AffineSubspace k P₁)
+    [Nonempty s] (x : s) : e.affineSubspaceMap s x = e x :=
+  rfl
+
+@[simp]
+theorem affineSubspaceMap_apply_symm_apply (e : P₁ ≃ᵃ[k] P₂) (s : AffineSubspace k P₁)
+    [Nonempty s] (x : s.map e.toAffineMap) : e ((e.affineSubspaceMap s).symm x) = x :=
+  congrArg Subtype.val <| (e.affineSubspaceMap s).apply_symm_apply x
+
+end AffineEquiv

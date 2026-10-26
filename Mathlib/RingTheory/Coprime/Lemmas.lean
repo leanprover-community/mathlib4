@@ -6,12 +6,12 @@ Authors: Kenny Lau, Ken Lee, Chris Hughes
 module
 
 public import Mathlib.Algebra.BigOperators.Ring.Finset
-public import Mathlib.Data.Fintype.Basic
 public import Mathlib.Data.Int.GCD
 public import Mathlib.RingTheory.Coprime.Basic
 
 /-!
 # Additional lemmas about elements of a ring satisfying `IsCoprime`
+
 and elements of a monoid satisfying `IsRelPrime`
 
 These lemmas are in a separate file to the definition of `IsCoprime` or `IsRelPrime`
@@ -22,7 +22,7 @@ lemmas about `Pow` since these are easiest to prove via `Finset.prod`.
 
 -/
 
-@[expose] public section
+public section
 
 universe u v
 
@@ -51,9 +51,6 @@ theorem Nat.isCoprime_iff_coprime {m n : ℕ} : IsCoprime (m : ℤ) n ↔ Nat.Co
   rw [Int.isCoprime_iff_gcd_eq_one, Int.gcd_natCast_natCast]
 
 alias ⟨IsCoprime.natCoprime, Nat.Coprime.isCoprime⟩ := Nat.isCoprime_iff_coprime
-
-@[deprecated (since := "2025-08-25")]
-alias IsCoprime.nat_coprime := IsCoprime.natCoprime
 
 theorem Nat.Coprime.cast {R : Type*} [CommRing R] {a b : ℕ} (h : Nat.Coprime a b) :
     IsCoprime (a : R) (b : R) :=
@@ -102,7 +99,6 @@ theorem IsCoprime.of_prod_right (H1 : IsCoprime x (∏ i ∈ t, s i)) (i : I) (h
     IsCoprime x (s i) :=
   IsCoprime.prod_right_iff.1 H1 i hit
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Finset.prod_dvd_of_coprime
     (Hs : (t : Set I).Pairwise (IsCoprime on s)) (Hs1 : (∀ i ∈ t, s i ∣ z)) :
     (∏ x ∈ t, s x) ∣ z := by
@@ -126,7 +122,6 @@ end
 
 open Finset
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) :
     (∃ μ : I → R, (∑ i ∈ t, μ i * ∏ j ∈ t \ {i}, s j) = 1) ↔
       Pairwise (IsCoprime on fun i : t ↦ s i) := by
@@ -142,8 +137,8 @@ theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) 
     · rintro ⟨μ, hμ⟩
       rw [sum_cons, cons_eq_insert, sdiff_singleton_eq_erase, erase_insert hat] at hμ
       refine ⟨ih.mp ⟨Pi.single h.choose (μ a * s h.choose) + μ * fun _ ↦ s a, ?_⟩, fun b hb ↦ ?_⟩
-      · rw [prod_eq_mul_prod_diff_singleton h.choose_spec, ← mul_assoc, ←
-          @if_pos _ _ h.choose_spec R (_ * _) 0, ← sum_pi_single', ← sum_add_distrib] at hμ
+      · rw [prod_eq_mul_prod_sdiff_singleton_of_mem h.choose_spec, ← mul_assoc, ←
+          @ite_eq_left _ _ h.choose_spec R (_ * _) 0, ← sum_pi_single', ← sum_add_distrib] at hμ
         rw [← hμ, sum_congr rfl]
         intro x hx
         convert add_mul (R := R) _ _ _ using 2
@@ -151,16 +146,16 @@ theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) 
           · rw [hx, Pi.single_eq_same, Pi.single_eq_same]
           · rw [Pi.single_eq_of_ne hx, Pi.single_eq_of_ne hx, zero_mul]
         · convert (mul_assoc _ _ _).symm
-          rw [prod_eq_prod_diff_singleton_mul (mem x hx), mul_comm, sdiff_sdiff_comm,
+          rw [prod_eq_prod_sdiff_singleton_mul (mem x hx), mul_comm, sdiff_sdiff_comm,
             sdiff_singleton_eq_erase a, erase_insert hat]
       · have : IsCoprime (s b) (s a) :=
           ⟨μ a * ∏ i ∈ t \ {b}, s i, ∑ i ∈ t, μ i * ∏ j ∈ t \ {i}, s j, ?_⟩
         · exact ⟨this.symm, this⟩
-        rw [mul_assoc, ← prod_eq_prod_diff_singleton_mul hb, sum_mul, ← hμ, sum_congr rfl]
+        rw [mul_assoc, ← prod_eq_prod_sdiff_singleton_mul hb, sum_mul, ← hμ, sum_congr rfl]
         intro x hx
         rw [mul_assoc]
         congr
-        rw [prod_eq_prod_diff_singleton_mul (mem x hx) _]
+        rw [prod_eq_prod_sdiff_singleton_mul (mem x hx) _]
         congr 2
         rw [sdiff_sdiff_comm, sdiff_singleton_eq_erase a, erase_insert hat]
     · rintro ⟨hs, Hb⟩
@@ -173,10 +168,10 @@ theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) 
       simp only [↓reduceIte, ite_mul]
       rw [← huv, ← hμ', sum_congr rfl]
       intro x hx
-      rw [mul_assoc, if_neg fun ha : x = a ↦ hat (ha.casesOn hx)]
+      rw [mul_assoc, ite_eq_right fun ha : x = a ↦ hat (ha.casesOn hx)]
       rw [mul_assoc]
       congr
-      rw [prod_eq_prod_diff_singleton_mul (mem x hx) _]
+      rw [prod_eq_prod_sdiff_singleton_mul (mem x hx) _]
       congr 2
       rw [sdiff_sdiff_comm, sdiff_singleton_eq_erase a, erase_insert hat]
 
@@ -214,7 +209,7 @@ theorem IsCoprime.pow_left_iff (hm : 0 < m) : IsCoprime (x ^ m) y ↔ IsCoprime 
   exact h.of_prod_left 0 (Finset.mem_range.mpr hm)
 
 theorem IsCoprime.pow_right_iff (hm : 0 < m) : IsCoprime x (y ^ m) ↔ IsCoprime x y :=
-  isCoprime_comm.trans <| (IsCoprime.pow_left_iff hm).trans <| isCoprime_comm
+  isCoprime_comm.trans <| (IsCoprime.pow_left_iff hm).trans isCoprime_comm
 
 theorem IsCoprime.pow_iff (hm : 0 < m) (hn : 0 < n) : IsCoprime (x ^ m) (y ^ n) ↔ IsCoprime x y :=
   (IsCoprime.pow_left_iff hm).trans <| IsCoprime.pow_right_iff hn
@@ -302,7 +297,7 @@ theorem pow_left_iff (hm : 0 < m) : IsRelPrime (x ^ m) y ↔ IsRelPrime x y := b
   exact h.of_prod_left 0 (Finset.mem_range.mpr hm)
 
 theorem pow_right_iff (hm : 0 < m) : IsRelPrime x (y ^ m) ↔ IsRelPrime x y :=
-  isRelPrime_comm.trans <| (IsRelPrime.pow_left_iff hm).trans <| isRelPrime_comm
+  isRelPrime_comm.trans <| (IsRelPrime.pow_left_iff hm).trans isRelPrime_comm
 
 theorem pow_iff (hm : 0 < m) (hn : 0 < n) :
     IsRelPrime (x ^ m) (y ^ n) ↔ IsRelPrime x y :=

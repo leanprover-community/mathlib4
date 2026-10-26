@@ -54,9 +54,9 @@ variable {ι : Sort*} {S T : Sublocale X} {s : Set X} {f : ι → X} {a b : X}
 
 instance instSetLike : SetLike (Sublocale X) X where
   coe x := x.carrier
-  coe_injective' s1 s2 h := by cases s1; congr
+  coe_injective s1 s2 h := by cases s1; congr
 
-instance : PartialOrder (Sublocale X) := .ofSetLike (Sublocale X) X
+instance : PartialOrder (Sublocale X) := .ofSetLike (Sublocale X)
 
 @[simp] lemma mem_carrier : a ∈ S.carrier ↔ a ∈ S := .rfl
 
@@ -121,7 +121,6 @@ private def restrictAux (S : Sublocale X) (a : X) : S := sInf {s : S | a ≤ s}
 
 private lemma le_restrictAux : a ≤ S.restrictAux a := by simp +contextual [restrictAux]
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 /-- See `Sublocale.giRestrict` for the public-facing version. -/
 private def giAux (S : Sublocale X) : GaloisInsertion S.restrictAux Subtype.val where
@@ -231,10 +230,8 @@ lemma nucleusIsoSublocale.symm_eq_toNucleus :
 instance Sublocale.instCompleteLattice : CompleteLattice (Sublocale X) :=
   nucleusIsoSublocale.toGaloisInsertion.liftCompleteLattice
 
-instance Sublocale.instCoframeMinimalAxioms : Order.Coframe.MinimalAxioms (Sublocale X) where
+set_option backward.isDefEq.respectTransparency false in
+instance Sublocale.instCoframe : Order.Coframe (Sublocale X) := .ofMinimalAxioms {
   iInf_sup_le_sup_sInf a s := by simp [← toNucleus_le_toNucleus,
     nucleusIsoSublocale.symm_eq_toNucleus, nucleusIsoSublocale.symm.map_sup,
-    nucleusIsoSublocale.symm.map_sInf, sup_iInf_eq, nucleusIsoSublocale.symm.map_iInf]
-
-instance Sublocale.instCoframe : Order.Coframe (Sublocale X) :=
-  .ofMinimalAxioms instCoframeMinimalAxioms
+    nucleusIsoSublocale.symm.map_sInf, sup_iInf_eq, nucleusIsoSublocale.symm.map_iInf] }

@@ -6,9 +6,11 @@ Authors: Chris Hughes, Yaël Dillies
 module
 
 public import Mathlib.Algebra.Field.GeomSum
-public import Mathlib.Algebra.Order.Archimedean.Basic
-public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.Archimedean.Defs
 public import Mathlib.Algebra.Order.CauSeq.Basic
+
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Data.Rat.Floor
 
 /-!
 # Cauchy sequences and big operators
@@ -56,7 +58,6 @@ lemma of_abv (hf : IsCauSeq abs fun m ↦ ∑ n ∈ range m, abv (f n)) :
     IsCauSeq abv fun m ↦ ∑ n ∈ range m, f n :=
   hf.of_abv_le 0 fun _ _ ↦ le_rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem _root_.cauchy_product (ha : IsCauSeq abs fun m ↦ ∑ n ∈ range m, abv (f n))
     (hb : IsCauSeq abv fun m ↦ ∑ n ∈ range m, g n) (ε : α) (ε0 : 0 < ε) :
     ∃ i : ℕ, ∀ j ≥ i,

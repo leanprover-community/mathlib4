@@ -5,9 +5,10 @@ Authors: Kexing Ying
 -/
 module
 
-public import Mathlib.Probability.Martingale.BorelCantelli
-public import Mathlib.Probability.ConditionalExpectation
 public import Mathlib.Probability.Independence.Basic
+public import Mathlib.Probability.Martingale.BorelCantelli
+
+import Mathlib.Probability.ConditionalExpectation
 
 /-!
 
@@ -40,7 +41,6 @@ section BorelCantelli
 variable {ι β : Type*} [LinearOrder ι] [mβ : MeasurableSpace β] [NormedAddCommGroup β]
   [BorelSpace β] {f : ι → Ω → β} {i j : ι} {s : ι → Set Ω}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem iIndepFun.indep_comap_natural_of_lt (hf : ∀ i, StronglyMeasurable (f i))
     (hfi : iIndepFun f μ) (hij : i < j) :
     Indep (MeasurableSpace.comap (f j) mβ) (Filtration.natural f hf i) μ := by
@@ -70,8 +70,8 @@ open Filter
 theorem measure_limsup_eq_one {s : ℕ → Set Ω} (hsm : ∀ n, MeasurableSet (s n)) (hs : iIndepSet s μ)
     (hs' : (∑' n, μ (s n)) = ∞) : μ (limsup s atTop) = 1 := by
   have : IsProbabilityMeasure μ := hs.isProbabilityMeasure
-  rw [measure_congr (eventuallyEq_set.2 (ae_mem_limsup_atTop_iff μ <|
-    measurableSet_filtrationOfSet' hsm) : (limsup s atTop : Set Ω) =ᵐ[μ]
+  rw [measure_congr (eventuallyEqSet_iff.2 (ae_mem_limsup_atTop_iff μ <|
+    measurableSet_filtrationOfSet' hsm) : limsup s atTop =ᵐ[μ]
       {ω | Tendsto (fun n => ∑ k ∈ Finset.range n,
         (μ[(s (k + 1)).indicator (1 : Ω → ℝ)|filtrationOfSet hsm k]) ω) atTop atTop})]
   suffices {ω | Tendsto (fun n => ∑ k ∈ Finset.range n,

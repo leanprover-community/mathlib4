@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Complex.Asymptotics
 public import Mathlib.Analysis.Complex.Trigonometric
 public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
+
 import Mathlib.Topology.Order.AtTopBotIxx
 
 /-!
@@ -74,13 +75,12 @@ theorem continuous_exp : Continuous exp :=
 theorem continuousOn_exp {s : Set ℂ} : ContinuousOn exp s :=
   continuous_exp.continuousOn
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exp_sub_sum_range_isBigO_pow (n : ℕ) :
     (fun x ↦ exp x - ∑ i ∈ Finset.range n, x ^ i / i !) =O[𝓝 0] (· ^ n) := by
-  rcases (zero_le n).eq_or_lt with rfl | hn
+  rcases eq_zero_or_pos n with rfl | hn
   · simpa using continuous_exp.continuousAt.norm.isBoundedUnder_le
   · refine .of_bound (n.succ / (n ! * n)) ?_
-    rw [NormedAddCommGroup.nhds_zero_basis_norm_lt.eventually_iff]
+    rw [NormedAddGroup.nhds_zero_basis_norm_lt.eventually_iff]
     refine ⟨1, one_pos, fun x hx ↦ ?_⟩
     convert exp_bound hx.out.le hn using 1
     simp [field]
@@ -121,7 +121,6 @@ theorem ContinuousOn.cexp (h : ContinuousOn f s) : ContinuousOn (fun y => exp (f
 theorem Continuous.cexp (h : Continuous f) : Continuous fun y => exp (f y) :=
   continuous_iff_continuousAt.2 fun _ => h.continuousAt.cexp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The complex exponential function is uniformly continuous on left half planes. -/
 lemma UniformContinuousOn.cexp (a : ℝ) : UniformContinuousOn exp {x : ℂ | x.re ≤ a} := by
   have : Continuous (cexp - 1) := Continuous.sub (by fun_prop) continuous_one
@@ -135,14 +134,14 @@ lemma UniformContinuousOn.cexp (a : ℝ) : UniformContinuousOn exp {x : ℂ | x.
   obtain ⟨δ, hδ⟩ := H
   refine ⟨δ, hδ.1, ?_⟩
   intro x _ y hy hxy
-  have h3 := hδ.2 (y := x - y) (by simpa only [dist_zero_right] using hxy)
+  have h3 := hδ.2 (y := x - y) (by simpa only [dist_eq_norm, sub_zero] using hxy)
   rw [dist_eq_norm, exp_zero] at *
   have : cexp x - cexp y = cexp y * (cexp (x - y) - 1) := by
     rw [mul_sub_one, ← exp_add]
     ring_nf
   rw [this, mul_comm]
   have hya : ‖cexp y‖ ≤ Real.exp a := by simpa only [norm_exp, Real.exp_le_exp]
-  simp only [gt_iff_lt, dist_zero_right, Set.mem_setOf_eq, norm_mul, Complex.norm_exp] at *
+  simp only [gt_iff_lt, dist_zero_right, Set.mem_ofPred_eq, norm_mul, Complex.norm_exp] at *
   apply lt_of_le_of_lt (mul_le_mul h3.le hya (Real.exp_nonneg y.re) ha.le)
   simp [field]
 
@@ -201,7 +200,7 @@ end RealContinuousExpComp
 
 namespace Real
 
-variable {α : Type*} {x y z : ℝ} {l : Filter α}
+variable {α : Type*} {x y : ℝ} {l : Filter α}
 
 theorem exp_half (x : ℝ) : exp (x / 2) = √(exp x) := by
   rw [eq_comm, sqrt_eq_iff_eq_sq, sq, ← exp_add, add_halves] <;> exact (exp_pos _).le
@@ -231,7 +230,7 @@ theorem tendsto_exp_nhds_zero_nhds_one : Tendsto exp (𝓝 0) (𝓝 1) := by
 
 theorem tendsto_exp_atBot : Tendsto exp atBot (𝓝 0) :=
   (tendsto_exp_neg_atTop_nhds_zero.comp tendsto_neg_atBot_atTop).congr fun x =>
-    congr_arg exp <| neg_neg x
+    congr(exp $(neg_neg x))
 
 theorem tendsto_exp_atBot_nhdsGT : Tendsto exp atBot (𝓝[>] 0) :=
   tendsto_inf.2 ⟨tendsto_exp_atBot, tendsto_principal.2 <| Eventually.of_forall exp_pos⟩
@@ -320,6 +319,46 @@ theorem coe_comp_expOrderIso : (↑) ∘ expOrderIso = exp :=
 @[simp]
 theorem range_exp : range exp = Set.Ioi 0 := by
   rw [← coe_comp_expOrderIso, range_comp, expOrderIso.range_eq, image_univ, Subtype.range_coe]
+
+@[simp]
+theorem image_exp_Ioi (a : ℝ) : exp '' Ioi a = Ioi (exp a) :=
+  continuous_exp.continuousOn.image_Ioi_of_strictMonoOn (exp_strictMono.strictMonoOn _)
+    tendsto_exp_atTop
+
+@[simp]
+theorem image_exp_Ici (a : ℝ) : exp '' Ici a = Ici (exp a) :=
+  continuous_exp.continuousOn.image_Ici_of_monotoneOn (exp_strictMono.monotone.monotoneOn _)
+    tendsto_exp_atTop
+
+@[simp]
+theorem image_exp_Icc (a b : ℝ) : exp '' Icc a b = Icc (exp a) (exp b) :=
+  continuous_exp.image_Icc_of_strictMono exp_strictMono
+
+@[simp]
+theorem image_exp_Ico (a b : ℝ) : exp '' Ico a b = Ico (exp a) (exp b) :=
+  continuous_exp.image_Ico_of_strictMono exp_strictMono
+
+@[simp]
+theorem image_exp_Ioc (a b : ℝ) : exp '' Ioc a b = Ioc (exp a) (exp b) :=
+  continuous_exp.image_Ioc_of_strictMono exp_strictMono
+
+@[simp]
+theorem image_exp_Ioo (a b : ℝ) : exp '' Ioo a b = Ioo (exp a) (exp b) :=
+  continuous_exp.image_Ioo_of_strictMono exp_strictMono
+
+@[simp]
+theorem image_exp_uIcc (a b : ℝ) : exp '' uIcc a b = uIcc (exp a) (exp b) :=
+  continuous_exp.continuousOn.image_uIcc_of_monotoneOn (exp_strictMono.monotone.monotoneOn _)
+
+@[simp]
+theorem image_exp_Iio (a : ℝ) : exp '' Iio a = Ioo 0 (exp a) := by
+  rw [← coe_comp_expOrderIso, image_comp, expOrderIso.image_Iio, image_subtype_val_Ioi_Iio,
+    Function.comp_apply]
+
+@[simp]
+theorem image_exp_Iic (a : ℝ) : exp '' Iic a = Ioc 0 (exp a) := by
+  rw [← coe_comp_expOrderIso, image_comp, expOrderIso.image_Iic, image_subtype_val_Ioi_Iic,
+    Function.comp_apply]
 
 @[simp]
 theorem map_exp_atTop : map exp atTop = atTop := by
@@ -449,15 +488,13 @@ lemma HasSum.rexp {ι} {f : ι → ℝ} {a : ℝ} (h : HasSum f a) : HasProd (re
 
 namespace Complex
 
-#adaptation_note /-- After https://github.com/leanprover/lean4/pull/12179
-the simpNF linter complains about this being `@[simp]`. -/
+@[simp]
 theorem comap_exp_cobounded : comap exp (cobounded ℂ) = comap re atTop :=
   calc
     comap exp (cobounded ℂ) = comap re (comap Real.exp atTop) := by
       simp only [← comap_norm_atTop, comap_comap, comp_def, norm_exp]
     _ = comap re atTop := by rw [Real.comap_exp_atTop]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem comap_exp_nhds_zero : comap exp (𝓝 0) = comap re atBot :=
   calc

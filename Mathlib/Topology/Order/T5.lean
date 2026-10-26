@@ -16,10 +16,12 @@ In this file we prove that a linear order with order topology is a completely no
 topological space.
 -/
 
-@[expose] public section
+public section
 
 
-open Filter Set Function OrderDual Topology Interval
+open Filter Set OrderDual
+
+open scoped Topology
 
 variable {X : Type*} [LinearOrder X] [TopologicalSpace X] [OrderTopology X] {a : X} {s t : Set X}
 
@@ -31,7 +33,6 @@ theorem ordConnectedComponent_mem_nhds : ordConnectedComponent s a ∈ 𝓝 a �
   rcases exists_Icc_mem_subset_of_mem_nhds h with ⟨b, c, ha, ha', hs⟩
   exact mem_of_superset ha' (subset_ordConnectedComponent ha hs)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem compl_ordConnectedSection_ordSeparatingSet_mem_nhdsGE (hd : Disjoint s (closure t))
     (ha : a ∈ s) : (ordConnectedSection (ordSeparatingSet s t))ᶜ ∈ 𝓝[≥] a := by
   have hmem : tᶜ ∈ 𝓝[≥] a := by
@@ -68,7 +69,7 @@ theorem compl_ordConnectedSection_ordSeparatingSet_mem_nhdsLE (hd : Disjoint s (
     (ha : a ∈ s) : (ordConnectedSection <| ordSeparatingSet s t)ᶜ ∈ 𝓝[≤] a := by
   have hd' : Disjoint (ofDual ⁻¹' s) (closure <| ofDual ⁻¹' t) := hd
   have ha' : toDual a ∈ ofDual ⁻¹' s := ha
-  simpa only [dual_ordSeparatingSet, dual_ordConnectedSection] using
+  simpa only [dual_ordSeparatingSet, dual_ordConnectedSection] using!
     compl_ordConnectedSection_ordSeparatingSet_mem_nhdsGE hd' ha'
 
 theorem compl_ordConnectedSection_ordSeparatingSet_mem_nhds (hd : Disjoint s (closure t))

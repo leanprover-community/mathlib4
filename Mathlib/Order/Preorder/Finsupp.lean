@@ -59,7 +59,7 @@ lemma lt_def : f < g ↔ f ≤ g ∧ ∃ i, f i < g i := Pi.lt_def
 
 lemma coe_mono : Monotone (Finsupp.toFun : (ι →₀ M) → ι → M) := fun _ _ ↦ id
 
-lemma coe_strictMono : Monotone (Finsupp.toFun : (ι →₀ M) → ι → M) := fun _ _ ↦ id
+lemma coe_strictMono : StrictMono (Finsupp.toFun : (ι →₀ M) → ι → M) := fun _ _ ↦ id
 
 end Preorder
 
@@ -102,7 +102,6 @@ instance lattice : Lattice (ι →₀ M) where
 
 variable [DecidableEq ι]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma support_inf_union_support_sup : (f ⊓ g).support ∪ (f ⊔ g).support = f.support ∪ g.support :=
   coe_injective <| compl_injective <| by ext; simp [inf_eq_and_sup_eq_iff]
 

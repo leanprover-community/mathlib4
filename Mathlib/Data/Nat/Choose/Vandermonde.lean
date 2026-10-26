@@ -6,7 +6,6 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.Polynomial.Coeff
-public import Mathlib.Data.Nat.Choose.Basic
 
 /-!
 
@@ -37,7 +36,6 @@ theorem add_choose_eq (m n k : ℕ) :
       rw [coeff_mul, Finset.sum_congr rfl]
       simp only [coeff_X_add_one_pow, cast_id, imp_true_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The sum of entries squared in a row of Pascal's triangle -/
 theorem sum_range_choose_sq (n : ℕ) :
     ∑ i ∈ Finset.range (n + 1), (n.choose i) ^ 2 = (2 * n).choose n := by

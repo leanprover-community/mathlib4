@@ -6,9 +6,6 @@ Authors: Jiedong Jiang
 module
 
 public import Mathlib.FieldTheory.Extension
-public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
-public import Mathlib.FieldTheory.Minpoly.Basic
-public import Mathlib.FieldTheory.Normal.Defs
 
 /-!
 # Conjugate roots
@@ -82,6 +79,7 @@ variable (R A) in
 /--
 The setoid structure on `A` defined by the equivalence relation of `IsConjRoot R · ·`.
 -/
+@[instance_reducible]
 def setoid : Setoid A where
   r := IsConjRoot R
   iseqv := ⟨fun _ => refl, symm, trans⟩
@@ -228,7 +226,6 @@ theorem isConjRoot_iff_mem_minpoly_aroots {x y : S} (h : IsIntegral K x) :
   simp only [iff_and_self]
   exact fun _ => minpoly.ne_zero h
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 `y` is a conjugate root of `x` over `K` if and only if `y` is a root of the minimal polynomial of
 `x`. This is variant of `isConjRoot_iff_aeval_eq_zero`.

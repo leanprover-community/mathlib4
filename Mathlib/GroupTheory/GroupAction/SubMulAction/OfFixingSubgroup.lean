@@ -5,14 +5,13 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Algebra.Group.Pointwise.Set.Card
 public import Mathlib.GroupTheory.GroupAction.FixingSubgroup
+public import Mathlib.GroupTheory.GroupAction.Primitive
 public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfStabilizer
 public import Mathlib.GroupTheory.GroupAction.Transitive
-public import Mathlib.GroupTheory.GroupAction.Primitive
-public import Mathlib.Tactic.Group
 
-import all Mathlib.Algebra.Group.End -- TODO: needed for `to_additive`
+import Mathlib.Algebra.Group.Pointwise.Set.Card
+import Mathlib.Tactic.Group
 
 /-!
 # SubMulActions on complements of invariant subsets
@@ -101,10 +100,12 @@ theorem mem_ofFixingSubgroup_iff {x : α} :
 variable {M}
 
 @[to_additive]
-theorem not_mem_of_mem_ofFixingSubgroup (x : ofFixingSubgroup M s) :
+theorem notMem_of_mem_ofFixingSubgroup (x : ofFixingSubgroup M s) :
     ↑x ∉ s := x.prop
 
-set_option backward.isDefEq.respectTransparency false in
+@[to_additive (attr := deprecated (since := "2026-09-28"))]
+alias not_mem_of_mem_ofFixingSubgroup := notMem_of_mem_ofFixingSubgroup
+
 @[to_additive]
 theorem disjoint_val_image {t : Set (ofFixingSubgroup M s)} :
     Disjoint s (Subtype.val '' t) := by
@@ -126,7 +127,7 @@ def ofFixingSubgroup_equivariantMap :
 theorem ofFixingSubgroup_equivariantMap_injective :
     Injective (ofFixingSubgroup_equivariantMap M s) := by
   rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
-  simpa [Subtype.mk.injEq] using hxy
+  simpa [Subtype.mk.injEq] using! hxy
 
 section Comparisons
 
@@ -214,13 +215,6 @@ section FixingSubgroupConj
 
 variable {s t : Set α} {g : M}
 
-/-
-FIXME: The use of `to_additive` in this section is a horrible mess.
-It requires translating `MulAut.instGroup` to `AddAut.instAddGroup` instead of `AddAut.instGroup`,
-and `MulAut.conj` shouldn't be able to translate to `AddAut.conj`, but somehow it works out.
--/
-attribute [to_additive] MulAut.instGroup
-
 @[to_additive]
 theorem _root_.Set.conj_mem_fixingSubgroup (hg : g • t = s) {k : M} (hk : k ∈ fixingSubgroup M t) :
     MulAut.conj g k ∈ fixingSubgroup M s := by
@@ -235,7 +229,7 @@ theorem _root_.Set.conj_mem_fixingSubgroup (hg : g • t = s) {k : M} (hk : k �
 theorem fixingSubgroup_map_conj_eq (hg : g • t = s) :
     (fixingSubgroup M t).map (MulAut.conj g).toMonoidHom = fixingSubgroup M s := by
   ext k
-  simp only [MulEquiv.toMonoidHom_eq_coe, Subgroup.mem_map, MonoidHom.coe_coe]
+  simp only [MulEquiv.toMonoidHom_eq_coe, Subgroup.mem_map, MonoidHom.coe_ofClass]
   constructor
   · rintro ⟨n, hn, rfl⟩
     exact Set.conj_mem_fixingSubgroup hg hn
@@ -366,7 +360,7 @@ theorem map_ofFixingSubgroupUnion_bijective :
     Bijective (map_ofFixingSubgroupUnion M s t) := by
   constructor
   · intro a b h
-    simpa only [← SetLike.coe_eq_coe] using h
+    simpa only [← SetLike.coe_eq_coe] using! h
   · rintro ⟨⟨a, ha⟩, ha'⟩
     suffices a ∈ ofFixingSubgroup M (s ∪ t) by
       exact ⟨⟨a, this⟩,  rfl⟩
@@ -394,6 +388,7 @@ lemma ofFixingSubgroup_of_inclusion_injective {hst : t ⊆ s} :
   rw [← SetLike.coe_eq_coe] at hxy ⊢
   exact hxy
 
+set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 /-- The equivariant map between `SubMulAction.ofStabilizer M a`
 and `ofFixingSubgroup M {a}`. -/
@@ -440,7 +435,6 @@ section Construction
 
 open Function.Embedding Fin.Embedding
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Append `Fin m ↪ ofFixingSubgroup M s` at the end of an enumeration of `s`. -/
 @[to_additive
 /-- Append `Fin m ↪ ofFixingSubgroup M s` at the end of an enumeration of `s`. -/]
@@ -477,7 +471,6 @@ section TwoCriteria
 
 open MulAction
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A pretransitivity criterion. -/
 theorem IsPretransitive.isPretransitive_ofFixingSubgroup_inter
     (hs : IsPretransitive (fixingSubgroup M s) (ofFixingSubgroup M s))
@@ -495,7 +488,8 @@ theorem IsPretransitive.isPretransitive_ofFixingSubgroup_inter
   rcases hx with hx | hx
   · obtain ⟨⟨k, hk⟩, hkax⟩ := hs.exists_smul_eq ⟨a, ha.1⟩ ⟨x, hx⟩
     use ⟨k, fun ⟨y, hy⟩ ↦ hk ⟨y, hy.1⟩⟩
-    rwa [Subtype.ext_iff] at hkax ⊢
+    rw [Subtype.ext_iff] at hkax ⊢
+    exact hkax
   · have hg'x : g⁻¹ • x ∈ ofFixingSubgroup M s := mt Set.mem_smul_set_iff_inv_smul_mem.mpr hx
     have hg'a : g⁻¹ • a ∈ ofFixingSubgroup M s := mt Set.mem_smul_set_iff_inv_smul_mem.mpr ha.2
     obtain ⟨⟨k, hk⟩, hkax⟩ := hs.exists_smul_eq ⟨g⁻¹ • a, hg'a⟩ ⟨g⁻¹ • x, hg'x⟩
@@ -507,7 +501,6 @@ theorem IsPretransitive.isPretransitive_ofFixingSubgroup_inter
       rw [mul_smul, mul_smul, smul_eq_iff_eq_inv_smul g]
       exact hk _ (Set.mem_smul_set_iff_inv_smul_mem.mp hy.2)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A primitivity criterion -/
 theorem IsPreprimitive.isPreprimitive_ofFixingSubgroup_inter
     [Finite α]

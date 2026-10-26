@@ -41,6 +41,26 @@ lemma rank_spec [h : FG G] : ∃ S : Finset G, S.card = rank G ∧ .closure S = 
 lemma rank_le [h : FG G] {S : Finset G} (hS : .closure S = (⊤ : Subgroup G)) : rank G ≤ S.card :=
   @Nat.find_le _ _ (Classical.decPred _) (fg_iff'.mp h) ⟨S, rfl, hS⟩
 
+variable (G) in
+@[to_additive (attr := nontriviality)]
+theorem rank_eq_zero [Subsingleton G] : rank G = 0 := by
+  rw [← le_zero_iff, ← Finset.card_empty]
+  exact rank_le (Subsingleton.elim _ _)
+
+@[to_additive]
+theorem rank_eq_zero_iff [FG G] : rank G = 0 ↔ Subsingleton G := by
+  refine ⟨fun h ↦ ?_, fun _ ↦ rank_eq_zero G⟩
+  obtain ⟨s, hs, hs'⟩ := rank_spec G
+  rw [h, Finset.card_eq_zero] at hs
+  simpa [hs, subsingleton_iff_bot_eq_top] using hs'
+
+variable (G) in
+@[to_additive]
+theorem rank_pos [Nontrivial G] [FG G] : 0 < rank G := by
+  rwa [pos_iff_ne_zero, ne_eq, rank_eq_zero_iff, not_subsingleton_iff_nontrivial]
+
+-- TODO: Prove monotonicity of `rank` along injective homomorphisms of abelian groups. This could
+-- potentially be deduced from a (yet unproved) analogous statement for `Submodule.spanRank`.
 @[to_additive]
 lemma rank_le_of_surjective [FG G] [FG H] (f : G →* H) (hf : Surjective f) : rank H ≤ rank G := by
   classical
@@ -82,7 +102,7 @@ lemma rank_closure_finset_le_card (s : Finset G) : rank (closure (s : Set G)) �
 
 @[to_additive]
 lemma rank_closure_finite_le_nat_card (s : Set G) [Finite s] : rank (closure s) ≤ Nat.card s := by
-  haveI := Fintype.ofFinite s
+  have := Fintype.ofFinite s
   rw [Nat.card_eq_fintype_card, ← s.toFinset_card, ← rank_congr (congr_arg _ s.coe_toFinset)]
   exact rank_closure_finset_le_card s.toFinset
 

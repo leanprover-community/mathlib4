@@ -5,10 +5,11 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.Algebra.Divisibility.Prod
-public import Mathlib.Algebra.Polynomial.FieldDivision
 public import Mathlib.LinearAlgebra.InvariantBasisNumber
 public import Mathlib.RingTheory.Artinian.Module
+
+import Mathlib.Algebra.Divisibility.Prod
+import Mathlib.Algebra.Polynomial.FieldDivision
 
 /-!
 # Instances related to Artinian rings
@@ -17,7 +18,7 @@ We show that every reduced Artinian ring and the polynomial ring over it
 are decomposition monoids, and every reduced Artinian ring is semisimple.
 -/
 
-@[expose] public section
+public section
 
 /-- If each `Rⁿ` is a Artinian `R`-module, then `R` satisfies the strong rank condition.
 Not an instance for performance reasons. -/
@@ -38,6 +39,6 @@ instance : DecompositionMonoid R := MulEquiv.decompositionMonoid (equivPi R)
 
 instance : DecompositionMonoid (Polynomial R) :=
   MulEquiv.decompositionMonoid <|
-    (Polynomial.mapEquiv <| (equivPi R).toRingEquiv).trans (Polynomial.piEquiv _)
+    (Polynomial.mapEquiv (equivPi R).toRingEquiv).trans (Polynomial.piEquiv _)
 
 end IsArtinianRing

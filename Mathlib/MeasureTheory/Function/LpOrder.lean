@@ -5,16 +5,14 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.Analysis.Normed.Order.Lattice
 public import Mathlib.MeasureTheory.Function.ConvergenceInMeasure
-public import Mathlib.MeasureTheory.Function.LpSpace.Basic
 
 /-!
 # Order related properties of Lp spaces
 
 ## Results
 
-- `Lp E p μ` is an `OrderedAddCommGroup` when `E` is a `NormedLatticeAddCommGroup`.
+- `Lp E p μ` is an ordered group when `E` is a `NormedLatticeAddCommGroup`.
 
 ## TODO
 
@@ -23,7 +21,7 @@ public import Mathlib.MeasureTheory.Function.LpSpace.Basic
 
 -/
 
-@[expose] public section
+public section
 
 
 
@@ -49,10 +47,7 @@ theorem coeFn_le (f g : Lp E p μ) : f ≤ᵐ[μ] g ↔ f ≤ g := by
 
 theorem coeFn_nonneg (f : Lp E p μ) : 0 ≤ᵐ[μ] f ↔ 0 ≤ f := by
   rw [← coeFn_le]
-  have h0 := Lp.coeFn_zero E p μ
-  constructor <;> intro h <;> filter_upwards [h, h0] with _ _ h2
-  · rwa [h2]
-  · rwa [← h2]
+  exact ⟨(Lp.coeFn_zero E p μ).trans_le, (Lp.coeFn_zero E p μ).symm.trans_le⟩
 
 variable [IsOrderedAddMonoid E]
 
@@ -82,12 +77,12 @@ variable [Lattice E] [HasSolidNorm E] [IsOrderedAddMonoid E]
 
 theorem _root_.MeasureTheory.MemLp.sup {f g : α → E} (hf : MemLp f p μ) (hg : MemLp g p μ) :
     MemLp (f ⊔ g) p μ :=
-  MemLp.mono' (hf.norm.add hg.norm) (hf.1.sup hg.1)
+  MemLp.mono' (hf.norm.add hg.norm) (hf.aestronglyMeasurable.sup hg.aestronglyMeasurable)
     (Filter.Eventually.of_forall fun x => norm_sup_le_add (f x) (g x))
 
 theorem _root_.MeasureTheory.MemLp.inf {f g : α → E} (hf : MemLp f p μ) (hg : MemLp g p μ) :
     MemLp (f ⊓ g) p μ :=
-  MemLp.mono' (hf.norm.add hg.norm) (hf.1.inf hg.1)
+  MemLp.mono' (hf.norm.add hg.norm) (hf.aestronglyMeasurable.inf hg.aestronglyMeasurable)
     (Filter.Eventually.of_forall fun x => norm_inf_le_add (f x) (g x))
 
 theorem _root_.MeasureTheory.MemLp.abs {f : α → E} (hf : MemLp f p μ) : MemLp |f| p μ :=
@@ -116,7 +111,7 @@ instance instHasSolidNorm [Fact (1 ≤ p)] :
   { solid := fun f g hfg => by
       rw [← coeFn_le] at hfg
       simp_rw [Lp.norm_def, ENNReal.toReal_le_toReal (Lp.eLpNorm_ne_top f) (Lp.eLpNorm_ne_top g)]
-      refine eLpNorm_mono_ae ?_
+      refine eLpNorm_mono_ae (Lp.aestronglyMeasurable f) ?_
       filter_upwards [hfg, Lp.coeFn_abs f, Lp.coeFn_abs g] with x hx hxf hxg
       rw [hxf, hxg] at hx
       exact HasSolidNorm.solid hx }

@@ -5,14 +5,12 @@ Authors: Yaël Dillies
 -/
 module
 
+public import Mathlib.Basic.Real.Basic
 public import Mathlib.Combinatorics.Additive.PluenneckeRuzsa
-public import Mathlib.Data.Fin.VecNotation
-public import Mathlib.Data.Real.Basic
-public import Mathlib.Tactic.FinCases
 public import Mathlib.Tactic.Linarith
-public import Mathlib.Tactic.NormNum
-public import Mathlib.Tactic.Positivity.Finset
-public import Mathlib.Tactic.Ring
+
+import Mathlib.Data.Fin.VecNotation
+import Mathlib.Tactic.FinCases
 
 /-!
 # Small tripling implies small powers
@@ -27,14 +25,13 @@ implies small powers. See `Mathlib/Combinatorics/Additive/PluenneckeRuzsa.lean`.
 
 public section
 
-open Fin MulOpposite
+open Fin
 open List hiding tail
 open scoped Pointwise
 
 namespace Finset
 variable {G : Type*} [DecidableEq G] [Group G] {A : Finset G} {k K : ℝ} {m : ℕ}
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 private lemma inductive_claim_mul (hm : 3 ≤ m)
     (h : ∀ ε : Fin 3 → ℤ, (∀ i, |ε i| = 1) → #((finRange 3).map fun i ↦ A ^ ε i).prod ≤ k * #A)
@@ -68,7 +65,6 @@ private lemma inductive_claim_mul (hm : 3 ≤ m)
         · exact ih (Fin.cons 1 <| tail <| tail ε) <| Fin.cons (by simp) (by simp [hε, Fin.tail])
       _ = #A * (k ^ m * #A) := by rw [← pow_sub_one_mul hm₀]; ring
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 private lemma small_neg_pos_pos_mul (hA : #(A ^ 3) ≤ K * #A) : #(A⁻¹ * A * A) ≤ K ^ 2 * #A := by
   obtain rfl | hA₀ := A.eq_empty_or_nonempty
@@ -101,7 +97,6 @@ private lemma small_pos_pos_neg_mul (hA : #(A ^ 3) ≤ K * #A) : #(A * A * A⁻�
   rw [← card_inv]
   simpa [mul_assoc] using small_pos_neg_neg_mul (A := A) (K := K) (by simpa)
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 private lemma small_pos_neg_pos_mul (hA : #(A ^ 3) ≤ K * #A) : #(A * A⁻¹ * A) ≤ K ^ 3 * #A := by
   obtain rfl | hA₀ := A.eq_empty_or_nonempty
@@ -124,9 +119,6 @@ private lemma small_neg_pos_neg_mul (hA : #(A ^ 3) ≤ K * #A) : #(A⁻¹ * A * 
   rw [← card_inv]
   simpa [mul_assoc] using small_pos_neg_pos_mul (A := A) (K := K) (by simpa)
 
--- TODO: find a good way to fix this non-terminal simp;
--- simp is called on 8 goals, with different simp sets
-set_option linter.flexible false in
 /-- If `A` has small tripling, say with constant `K`, then `A` has small alternating powers, in the
 sense that `|A^±1 * ... * A^±1|` is at most `|A|` times a constant exponential in the number of
 terms in the product.
@@ -156,11 +148,7 @@ lemma small_alternating_pow_of_small_tripling (hm : 3 ≤ m) (hA : #(A ^ 3) ≤ 
     succ_zero_eq_one, succ_one_eq_two, List.prod_cons, prod_nil, mul_one, ← mul_assoc]
   simp only [zero_le_one, abs_eq, Int.reduceNeg, forall_iff_succ, isValue, succ_zero_eq_one,
     succ_one_eq_two, IsEmpty.forall_iff, and_true] at hδ
-  have : K ≤ K ^ 3 := le_self_pow₀ hK₁ (by lia)
-  have : K ^ 2 ≤ K ^ 3 := by
-    gcongr
-    · exact hK₁
-    · simp
+  have : K ^ 2 ≤ K ^ 3 := by gcongr; simp
   obtain ⟨hδ₀ | hδ₀, hδ₁ | hδ₁, hδ₂ | hδ₂⟩ := hδ <;> simp [hδ₀, hδ₁, hδ₂]
   · simp [pow_succ] at hA
     nlinarith

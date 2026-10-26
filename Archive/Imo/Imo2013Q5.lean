@@ -3,12 +3,14 @@ Copyright (c) 2021 David Renshaw. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Renshaw
 -/
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Ring.GeomSum
-import Mathlib.Algebra.Ring.Regular
-import Mathlib.Data.Real.Archimedean
-import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.LinearCombination
+module
+
+public import Mathlib.Algebra.Order.Archimedean.Real.Basic
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Ring.GeomSum
+public import Mathlib.Algebra.Ring.Regular
+public import Mathlib.Tactic.Positivity
+public import Mathlib.Tactic.LinearCombination
 
 /-!
 # IMO 2013 Q5
@@ -28,10 +30,10 @@ We provide a direct translation of the solution found in
 https://www.imo-official.org/problems/IMO2013SL.pdf
 -/
 
+public section
 
 namespace Imo2013Q5
 
-set_option backward.isDefEq.respectTransparency false in
 theorem le_of_all_pow_lt_succ {x y : ℝ} (hx : 1 < x) (hy : 1 < y)
     (h : ∀ n : ℕ, 0 < n → x ^ n - 1 < y ^ n) : x ≤ y := by
   by_contra! hxy
@@ -86,7 +88,7 @@ theorem f_pos_of_pos {f : ℚ → ℝ} {q : ℚ} (hq : 0 < q)
   have hmul_pos :=
     calc
       (0 : ℝ) < q.num := Int.cast_pos.mpr num_pos
-      _ = ((q.num.natAbs : ℤ) : ℝ) := congr_arg Int.cast (Int.natAbs_of_nonneg num_pos.le).symm
+      _ = ((q.num.natAbs : ℤ) : ℝ) := congr($((Int.natAbs_of_nonneg num_pos.le).symm))
       _ ≤ f q.num.natAbs := (H4 q.num.natAbs ((@Int.natAbs_pos q.num).mpr num_pos.ne.symm))
       _ = f q.num := by rw [Nat.cast_natAbs, abs_of_nonneg num_pos.le]
       _ = f (q * q.den) := by rw [← Rat.mul_den_eq_num]
@@ -165,7 +167,6 @@ end Imo2013Q5
 
 open Imo2013Q5
 
-set_option backward.isDefEq.respectTransparency false in
 theorem imo2013_q5 (f : ℚ → ℝ) (H1 : ∀ x y, 0 < x → 0 < y → f (x * y) ≤ f x * f y)
     (H2 : ∀ x y, 0 < x → 0 < y → f x + f y ≤ f (x + y)) (H_fixed_point : ∃ a, 1 < a ∧ f a = a) :
     ∀ x, 0 < x → f x = x := by

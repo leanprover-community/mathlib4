@@ -3,9 +3,11 @@ Copyright (c) 2025 Jan Förster, Leon Müller, Luis Sand, and Junyan Xu. All rig
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan Förster, Leon Müller, Luis Sand, Junyan Xu
 -/
-import Mathlib.Topology.Instances.Irrational
-import Mathlib.Topology.Instances.Real.Lemmas
-import Archive.Kuratowski
+module
+
+public import Mathlib.Topology.Instances.Irrational
+public import Mathlib.Topology.Instances.Real.Lemmas
+public import Archive.Kuratowski
 
 /-!
 # Kuratowski's closure-complement theorem is sharp
@@ -42,6 +44,8 @@ There are characterizations and criteria for a set to be a 14-set in the paper
   for the defined `fourteenSet` in ℝ, there are exactly 14 distinct sets that can be obtained from
   `fourteenSet` using the closure and complement operations.
 -/
+
+@[expose] public section
 
 namespace Topology.ClosureCompl
 
@@ -121,9 +125,8 @@ theorem nodup_theClosedSix_theFourteen_iff : (theClosedSix s).Nodup ↔ TheSixIn
         try repeat rw [kckckck_eq_kck, eq_comm]
         assumption
     -- One last goal (`k (k (k sᶜ)ᶜ)ᶜ ≠ k s`) needs some other simplifying steps:
-    · apply mt (congr_arg fun s ↦ k (k sᶜ)ᶜ)
-      rw [kckckck_eq_kck]
-      assumption
+    apply mt (congr_arg fun s ↦ k (k sᶜ)ᶜ)
+    rwa [kckckck_eq_kck]
 
 open Multiset in
 /-- `theFourteen s` contains no duplicates if and only if `theClosedSix s` has none,
@@ -173,7 +176,6 @@ theorem k_Icc_4_5_inter_rat : k (Icc (4 : ℝ) 5 ∩ range Rat.cast) = Icc 4 5 :
   (closure_ordConnected_inter_rat ordConnected_Icc ⟨4, by norm_num, 5, by norm_num⟩).trans
     isClosed_Icc.closure_eq
 
-set_option backward.isDefEq.respectTransparency false in
 theorem i_fourteenSet : i fourteenSet = Ioo 0 1 ∪ Ioo 1 2 := by
   have := interior_eq_empty_iff_dense_compl.mpr dense_irrational
   rw [fourteenSet, interior_union_of_disjoint_closure, interior_union_of_disjoint_closure]
@@ -190,7 +192,6 @@ theorem k_fourteenSet : k fourteenSet = Icc 0 2 ∪ {3} ∪ Icc 4 5 := by
 theorem kc_fourteenSet : k fourteenSetᶜ = (Ioo 0 1 ∪ Ioo 1 2)ᶜ := by
   rw [closure_compl, compl_inj_iff, i_fourteenSet]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem kck_fourteenSet : k (k fourteenSet)ᶜ = (Ioo 0 2 ∪ Ioo 4 5)ᶜ := by
   rw [closure_compl, k_fourteenSet,
     interior_union_of_disjoint_closure, interior_union_of_disjoint_closure]
@@ -235,7 +236,7 @@ theorem not_eq_univ_of_mem_theClosedSix_fourteenSet {s}
   rw [theClosedSix, kckckc_fourteenSet, kckck_fourteenSet,
     kckc_fourteenSet, kck_fourteenSet, kc_fourteenSet, k_fourteenSet] at h
   rw [Ne, eq_univ_iff_forall]
-  push_neg
+  push Not
   repeat obtain _ | ⟨_, h⟩ := h; rotate_left
   · use 1 / 2; norm_num
   · use 1 / 2; norm_num
@@ -255,7 +256,7 @@ theorem nodup_theFourteen_fourteenSet : (theFourteen fourteenSet).Nodup :=
 
 /-- The number of distinct sets obtainable from `fourteenSet` is exactly 14. -/
 theorem ncard_isObtainable_fourteenSet : {t | IsObtainable fourteenSet t}.ncard = 14 := by
-  classical rw [← card_theFourteen fourteenSet, ← Multiset.toFinset_card_of_nodup
+  rw [← card_theFourteen fourteenSet, ← Multiset.toFinset_card_of_nodup
     nodup_theFourteen_fourteenSet, ← Set.ncard_coe_finset]
   congr; ext; simp [mem_theFourteen_iff_isObtainable]
 
