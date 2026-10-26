@@ -194,7 +194,6 @@ theorem trace_mul_pow_comm [CommSemiring R] (A B : Matrix n n R) (k : ℕ) :
   | zero => rfl
   | succ k => exact trace_mul_pow_comm' A B k.succ_ne_zero
 
-
 @[simp]
 theorem trace_replicateCol_mul_replicateRow {ι : Type*} [Unique ι] [NonUnitalNonAssocSemiring R]
     (a b : n → R) : trace (replicateCol ι a * replicateRow ι b) = a ⬝ᵥ b := by
