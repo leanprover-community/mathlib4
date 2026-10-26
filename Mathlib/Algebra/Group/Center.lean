@@ -373,9 +373,6 @@ abbrev mk [Mul M] (z : M) (hz : z ∈ Set.center M) : Center M := ⟨z, hz⟩
 lemma eq_iff [Mul M] (x y : Center M) : x = y ↔ x.val = y.val := Subtype.ext_iff
 
 @[to_additive]
-instance [Mul M] : CoeOut (Center M) M := ⟨Subtype.val⟩
-
-@[to_additive]
 instance [Mul M] : Mul (Center M) where
   mul x y := mk (x.val * y.val) (Set.mul_mem_center x.prop y.prop)
 
