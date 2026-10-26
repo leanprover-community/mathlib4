@@ -179,7 +179,6 @@ theorem erase_injOn' (a : α) : { s : Finset α | a ∈ s }.InjOn fun s => s.era
 theorem insert_inj_right (hs : a ∉ s) (ht : a ∉ t) : insert a s = insert a t ↔ s = t :=
   ⟨fun h ↦ by rw [← erase_insert hs, h, erase_insert ht], congrArg _⟩
 
-/-- See also `Finset.erase_injOn'`. -/
 theorem insert_injOn_notMem (a : α) : { s : Finset α | a ∉ s }.InjOn (insert a) :=
   fun _s hs _t ht ↦ (insert_inj_right hs ht).1
 
