@@ -95,40 +95,43 @@ theorem extDerivWithin_univ (ω : E → E [⋀^Fin n]→L[𝕜] F) :
   ext1 x
   rw [extDerivWithin, extDeriv, fderivWithin_univ]
 
+@[to_fun extDerivWithin_fun_add]
 theorem extDerivWithin_add (hsx : UniqueDiffWithinAt 𝕜 s x)
     (hω₁ : DifferentiableWithinAt 𝕜 ω₁ s x) (hω₂ : DifferentiableWithinAt 𝕜 ω₂ s x) :
     extDerivWithin (ω₁ + ω₂) s x = extDerivWithin ω₁ s x + extDerivWithin ω₂ s x := by
   simp [extDerivWithin, fderivWithin_add hsx hω₁ hω₂, alternatizeUncurryFin_add]
 
-theorem extDerivWithin_fun_add (hsx : UniqueDiffWithinAt 𝕜 s x)
-    (hω₁ : DifferentiableWithinAt 𝕜 ω₁ s x) (hω₂ : DifferentiableWithinAt 𝕜 ω₂ s x) :
-    extDerivWithin (fun x ↦ ω₁ x + ω₂ x) s x = extDerivWithin ω₁ s x + extDerivWithin ω₂ s x :=
-  extDerivWithin_add hsx hω₁ hω₂
-
+@[to_fun extDeriv_fun_add]
 theorem extDeriv_add (hω₁ : DifferentiableAt 𝕜 ω₁ x) (hω₂ : DifferentiableAt 𝕜 ω₂ x) :
     extDeriv (ω₁ + ω₂) x = extDeriv ω₁ x + extDeriv ω₂ x := by
   simp [← extDerivWithin_univ, extDerivWithin_add, *, DifferentiableAt.differentiableWithinAt]
 
-theorem extDeriv_fun_add (hω₁ : DifferentiableAt 𝕜 ω₁ x) (hω₂ : DifferentiableAt 𝕜 ω₂ x) :
-    extDeriv (fun x ↦ ω₁ x + ω₂ x) x = extDeriv ω₁ x + extDeriv ω₂ x :=
-  extDeriv_add hω₁ hω₂
+@[simp, to_fun extDerivWithin_fun_neg]
+theorem extDerivWithin_neg (hsx : UniqueDiffWithinAt 𝕜 s x) :
+    extDerivWithin (-ω) s x = -extDerivWithin ω s x := by
+  simp [extDerivWithin, fderivWithin_neg hsx, alternatizeUncurryFin_neg]
 
+@[simp, to_fun extDeriv_fun_neg]
+theorem extDeriv_neg : extDeriv (-ω) x = - extDeriv ω x := by
+  simp [← extDerivWithin_univ, extDerivWithin_neg]
+
+@[to_fun extDerivWithin_fun_smul]
 theorem extDerivWithin_smul (c : 𝕜) (ω : E → E [⋀^Fin n]→L[𝕜] F) (hsx : UniqueDiffWithinAt 𝕜 s x) :
     extDerivWithin (c • ω) s x = c • extDerivWithin ω s x := by
   simp [extDerivWithin, fderivWithin_const_smul_field, hsx, alternatizeUncurryFin_smul]
 
-theorem extDerivWithin_fun_smul (c : 𝕜) (ω : E → E [⋀^Fin n]→L[𝕜] F)
-    (hsx : UniqueDiffWithinAt 𝕜 s x) :
-    extDerivWithin (fun x ↦ c • ω x) s x = c • extDerivWithin ω s x :=
-  extDerivWithin_smul c ω hsx
-
+@[to_fun extDeriv_fun_smul]
 theorem extDeriv_smul (c : 𝕜) (ω : E → E [⋀^Fin n]→L[𝕜] F) :
     extDeriv (c • ω) x = c • extDeriv ω x := by
   simp [← extDerivWithin_univ, extDerivWithin_smul]
 
-theorem extDeriv_fun_smul (c : 𝕜) (ω : E → E [⋀^Fin n]→L[𝕜] F) :
-    extDeriv (c • ω) x = c • extDeriv ω x :=
-  extDeriv_smul c ω
+@[simp, to_fun extDerivWithin_fun_zero]
+lemma extDerivWithin_zero : extDerivWithin (0 : E → E [⋀^Fin n]→L[𝕜] F) s x = 0 := by
+  simp [extDerivWithin]
+
+@[simp, to_fun extDeriv_fun_zero]
+lemma extDeriv_zero : extDeriv (0 : E → E [⋀^Fin n]→L[𝕜] F) x = 0 := by
+  simp [extDeriv]
 
 /-- The exterior derivative of a `0`-form given by a function `f` within a set
 is the 1-form given by the derivative of `f` within the set. -/
