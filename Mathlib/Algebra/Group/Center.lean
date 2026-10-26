@@ -317,6 +317,10 @@ theorem invOf_mem_center {a : M} [Invertible a] (ha : a ∈ Set.center M) : ⅟a
   rw [Semigroup.mem_center_iff] at *
   exact (Commute.invOf_right <| ha ·)
 
+@[to_additive (attr := simp) nsmul_mem_addCenter]
+theorem npow_mem_center {a : M} (n : ℕ) (ha : a ∈ Set.center M) : a ^ n ∈ Set.center M :=
+  Semigroup.mem_center_iff.mpr fun m => ((ha.comm m).pow_left n).eq.symm
+
 end Monoid
 
 section DivisionMonoid
@@ -332,6 +336,10 @@ theorem inv_mem_center (ha : a ∈ Set.center M) : a⁻¹ ∈ Set.center M := by
 theorem div_mem_center (ha : a ∈ Set.center M) (hb : b ∈ Set.center M) : a / b ∈ Set.center M := by
   rw [div_eq_mul_inv]
   exact mul_mem_center ha (inv_mem_center hb)
+
+@[to_additive (attr := simp) zsmul_mem_addCenter]
+theorem zpow_mem_center (n : ℤ) (ha : a ∈ Set.center M) : a ^ n ∈ Set.center M := by
+  cases n <;> simp [ha]
 
 end DivisionMonoid
 
@@ -365,12 +373,15 @@ namespace Center
 @[to_additive]
 instance [Mul M] : CoeOut (Center M) M := ⟨Subtype.val⟩
 
-/-- Construct an element of `Center M` from a central element of `M`. -/
-@[to_additive /-- Construct an element of `AddCenter M` from a central element of `M`. -/]
+/-- Construct an element of `Center M` from an central element of `M`. -/
+@[to_additive /-- Construct an element of `AddCenter M` from an central element of `M`. -/]
 abbrev mk [Mul M] (z : M) (hz : z ∈ Set.center M) : Center M := ⟨z, hz⟩
 
 @[to_additive (attr := simp)]
 lemma eq_iff [Mul M] (x y : Center M) : x = y ↔ x.val = y.val := Subtype.ext_iff
+
+@[to_additive]
+instance [Mul M] : CoeOut (Center M) M := ⟨Subtype.val⟩
 
 @[to_additive]
 instance [Mul M] : Mul (Center M) where
@@ -398,14 +409,13 @@ instance [MulOneClass M] : MulOneClass (Center M) where
 
 @[to_additive]
 instance [Monoid M] : CommMonoid (Center M) where
-  npow n a := Center.mk (a.val ^ n) (Semigroup.mem_center_iff.mpr fun b => by
-    simp_rw [((a.prop.comm b).pow_left n).eq])
+  npow n a := Center.mk (a.val ^ n) (Set.npow_mem_center n a.prop)
   mul_assoc := mul_assoc'
   npow_zero a := Subtype.ext (pow_zero a.val)
   npow_succ n a := Subtype.ext (pow_succ a.val n)
 
 @[to_additive (attr := simp)]
-lemma coe_pow [Monoid M] (a : Center M) (n : ℕ) :
+lemma coe_npow [Monoid M] (a : Center M) (n : ℕ) :
     (a ^ n).val = a.val ^ n := rfl
 
 @[to_additive (attr := simp)]
@@ -416,7 +426,8 @@ lemma coe_one [MulOneClass M] : (1 : Center M).val = (1 : M) := rfl
 abbrev subtype [Mul M] : Center M → M := Subtype.val
 
 @[to_additive (attr := simp)]
-lemma mem_range_subtype_iff [Mul M] : Set.range subtype = Set.center M :=
+lemma mem_range_subtype_iff [Mul M] :
+    Set.range subtype = Set.center M :=
   Set.ext fun x => ⟨fun ⟨x, hx⟩ => by rw [← hx]; exact x.prop , fun hx => ⟨⟨x, hx⟩, rfl⟩⟩
 
 @[to_additive]
@@ -446,14 +457,22 @@ instance [DivisionMonoid M] : DivisionCommMonoid (Center M) where
   inv_eq_of_mul a b h := by
     rw [Center.eq_iff, Center.coe_mul, Center.coe_one] at h
     simp_rw [Center.eq_iff, inv_eq_of_mul_eq_one_right h]
-  div a b := ⟨a / b, Set.div_mem_center a.prop b.prop⟩
+  zpow n z := Center.mk (z.val ^ n) (by cases n <;> simp [z.prop])
+  zpow_zero' _ := Subtype.ext (zpow_zero _)
+  zpow_succ' _ _ := Subtype.ext (DivInvMonoid.zpow_succ' _ _)
+  zpow_neg' _ _ := Subtype.ext (DivInvMonoid.zpow_neg' _ _)
+  div a b := mk (a.val / b.val) (Set.div_mem_center a.prop b.prop)
   div_eq_mul_inv _ _ := Subtype.ext <| div_eq_mul_inv _ _
 
 @[to_additive (attr := simp)]
-lemma coe_div [DivisionMonoid M] (a b : Center M) : (a / b).val = a.val / b.val := rfl
+lemma _root_.Center.coe_div [DivisionMonoid M] (a b : Center M) :
+    (a / b).val = a.val / b.val := rfl
 
 @[to_additive (attr := simp)]
 lemma coe_inv [DivisionMonoid M] (z : Center M) : z⁻¹.val = z.val⁻¹ := rfl
+
+@[to_additive]
+lemma coe_zpow [Group M] (m : Center M) (n : ℤ) : (m ^ n).val = m.val ^ n := rfl
 
 @[to_additive]
 instance [Group M] : CommGroup (Center M) where
