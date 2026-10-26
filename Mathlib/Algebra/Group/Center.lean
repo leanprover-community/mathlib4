@@ -471,8 +471,8 @@ lemma _root_.Center.coe_div [DivisionMonoid M] (a b : Center M) :
 @[to_additive (attr := simp)]
 lemma coe_inv [DivisionMonoid M] (z : Center M) : z⁻¹.val = z.val⁻¹ := rfl
 
-@[to_additive]
-lemma coe_zpow [Group M] (m : Center M) (n : ℤ) : (m ^ n).val = m.val ^ n := rfl
+@[to_additive (attr := simp)]
+lemma coe_zpow [DivisionMonoid M] (m : Center M) (n : ℤ) : (m ^ n).val = m.val ^ n := rfl
 
 @[to_additive]
 instance [Group M] : CommGroup (Center M) where
