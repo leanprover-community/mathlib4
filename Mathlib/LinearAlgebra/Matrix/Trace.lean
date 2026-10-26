@@ -184,7 +184,7 @@ theorem trace_mul_pow_comm' [CommSemiring R]
 /-- For square matrices, the trace of any power of `A * B` is unchanged when the factors
 are reversed. Unlike the rectangular version, this also holds at exponent zero.
 
-See trace_mul_pow_comm' for the rectangular version. -/
+See `trace_mul_pow_comm'` for the rectangular version. -/
 theorem trace_mul_pow_comm [CommSemiring R] (A B : Matrix n n R) (k : ℕ) :
     (letI : DecidableEq n := Classical.decEq n
      trace ((A * B) ^ k) = trace ((B * A) ^ k)) := by
