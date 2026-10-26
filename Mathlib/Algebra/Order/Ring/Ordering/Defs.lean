@@ -68,7 +68,7 @@ instance : SubsemiringClass (RingPreordering R) R where
 
 variable {R}
 
-@[aesop unsafe 80% (rule_sets := [SetLike])]
+@[aesop unsafe 80% (rule_sets := [SetLike]), membership .]
 protected theorem mem_of_isSquare (P : RingPreordering R) {x : R} (hx : IsSquare x) : x ∈ P :=
   RingPreordering.mem_of_isSquare' _ hx
 

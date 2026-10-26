@@ -142,7 +142,6 @@ lemma whiskerLeft {G₁ G₂ : Cᵒᵖ ⥤ A} {g : G₁ ⟶ G₂} (hg : J.W g) (
   dsimp
   rw [curry_natural_left]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma whiskerRight [BraidedCategory A]
     {F₁ F₂ : Cᵒᵖ ⥤ A} {f : F₁ ⟶ F₂} (hf : J.W f) (G : Cᵒᵖ ⥤ A) :
     J.W (f ▷ G) :=
