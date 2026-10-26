@@ -32,7 +32,7 @@ for `φ.τ₁` and `φ.τ₂` shall also be obtained (TODO).
 
 open CategoryTheory ComposableArrows Abelian
 
-variable {C ι : Type*} [Category* C] [Abelian C] {c : ComplexShape ι}
+variable {C ι : Type*} [Category* C] [Preadditive C] [Abelian C] {c : ComplexShape ι}
   {S S₁ S₂ : ShortComplex (HomologicalComplex C c)} (φ : S₁ ⟶ S₂)
   (hS₁ : S₁.ShortExact) (hS₂ : S₂.ShortExact)
 

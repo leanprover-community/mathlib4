@@ -40,7 +40,7 @@ namespace CategoryTheory
 
 open Category Limits
 
-variable {C : Type u} [Category.{v} C] [Abelian C] (S : ShortComplex C)
+variable {C : Type u} [Category.{v} C] [Preadditive C] [Abelian C] (S : ShortComplex C)
 
 namespace ShortComplex
 
@@ -202,7 +202,7 @@ noncomputable instance : IsNormalEpiCategory (ShortComplex C) := ⟨fun p _ => �
     (isColimitOfIsColimitπ _ ?_ ?_ ?_)
   all_goals apply Abelian.isColimitMapCoconeOfCokernelCoforkOfπ⟩⟩
 
-noncomputable instance : Abelian (ShortComplex C) where
+instance : Abelian (ShortComplex C) where
 
 attribute [local instance] strongEpi_of_epi
 

@@ -29,7 +29,7 @@ open CategoryTheory Localization
 
 namespace CochainComplex.HomComplex
 
-variable {C : Type u} [Category.{v} C] [Abelian C]
+variable {C : Type u} [Category.{v} C] [Preadditive C] [Abelian C]
   {K L : CochainComplex C ℤ} {n : ℤ}
 
 namespace CohomologyClass

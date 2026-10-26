@@ -47,7 +47,7 @@ open scoped Simplicial
 
 namespace AlgebraicTopology
 
-variable {C : Type*} [Category* C] [Abelian C]
+variable {C : Type*} [Category* C] [Preadditive C] [Abelian C]
 
 attribute [local instance] Abelian.hasPullbacks
 

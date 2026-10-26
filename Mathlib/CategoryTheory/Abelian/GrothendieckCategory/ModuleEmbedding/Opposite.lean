@@ -30,7 +30,7 @@ variable {C : Type u} [Category.{v} C] {D : Type v} [SmallCategory D] (F : D ⥤
 
 namespace OppositeModuleEmbedding
 
-variable [Abelian C] [IsGrothendieckAbelian.{v} C]
+variable [Preadditive C] [Abelian C] [IsGrothendieckAbelian.{v} C]
 
 variable (C) in
 private noncomputable def projectiveSeparator : Cᵒᵖ :=

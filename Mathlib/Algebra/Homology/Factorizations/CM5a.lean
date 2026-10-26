@@ -52,7 +52,7 @@ lemma `cm5a_cof`.
 
 open CategoryTheory Limits Opposite Abelian HomologicalComplex Pretriangulated
 
-variable {C : Type*} [Category* C] [Abelian C]
+variable {C : Type*} [Category* C] [Preadditive C] [Abelian C]
 
 namespace CochainComplex.Plus.modelCategoryQuillen
 

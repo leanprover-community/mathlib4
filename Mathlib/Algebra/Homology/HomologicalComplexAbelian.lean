@@ -29,7 +29,7 @@ variable {C ι : Type*} {c : ComplexShape ι} [Category* C]
 
 section
 
-variable [Abelian C]
+variable [Preadditive C] [Abelian C]
 
 noncomputable instance : IsNormalEpiCategory (HomologicalComplex C c) := ⟨fun p _ =>
   ⟨NormalEpi.mk _ (kernel.ι p) (kernel.condition _)
@@ -41,7 +41,7 @@ noncomputable instance : IsNormalMonoCategory (HomologicalComplex C c) := ⟨fun
     (isLimitOfEval _ _ (fun _ =>
       Abelian.isLimitMapConeOfKernelForkOfι _ _))⟩⟩
 
-noncomputable instance : Abelian (HomologicalComplex C c) where
+instance : Abelian (HomologicalComplex C c) where
 
 variable (S : ShortComplex (HomologicalComplex C c))
 

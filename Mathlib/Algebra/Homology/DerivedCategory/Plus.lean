@@ -28,7 +28,7 @@ below cochain complexes with respect to quasi-isomorphisms.
 
 open CategoryTheory Category Triangulated Limits
 
-variable {C : Type*} [Category* C] [Abelian C]
+variable {C : Type*} [Category* C] [Preadditive C] [Abelian C]
 
 namespace HomotopyCategory.Plus
 

@@ -440,7 +440,7 @@ end HasZeroMorphisms
 
 section Abelian
 
-variable [Abelian C] (K L : CochainComplex C ℤ)
+variable [Preadditive C] [Abelian C] (K L : CochainComplex C ℤ)
 
 /-- The cokernel sequence of the monomorphism `K.ιTruncLE n`. -/
 noncomputable abbrev shortComplexTruncLE (n : ℤ) : ShortComplex (CochainComplex C ℤ) :=

@@ -35,8 +35,8 @@ namespace CategoryTheory
 
 open Limits ZeroObject
 
-variable {C : Type u} [Category.{v} C] [Abelian C] (P : ObjectProperty C)
-  {D : Type u'} [Category.{v'} D] [Abelian D]
+variable {C : Type u} [Category.{v} C] [Preadditive C] [Abelian C] (P : ObjectProperty C)
+  {D : Type u'} [Category.{v'} D] [Preadditive D] [Abelian D]
 
 namespace ObjectProperty
 
@@ -54,6 +54,7 @@ instance : (⊤ : ObjectProperty C).IsSerreClass where
 
 instance : IsSerreClass (IsZero (C := C)) where
 
+omit [Abelian C] in
 lemma prop_iff_of_shortExact {S : ShortComplex C} (hS : S.ShortExact) :
     P S.X₂ ↔ P S.X₁ ∧ P S.X₃ :=
   ⟨fun h ↦ ⟨P.prop_X₁_of_shortExact hS h, P.prop_X₃_of_shortExact hS h⟩,

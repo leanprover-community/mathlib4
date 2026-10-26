@@ -27,7 +27,7 @@ open CategoryTheory.Abelian
 
 namespace CategoryTheory
 
-variable {C : Type v} [SmallCategory C] [Abelian C]
+variable {C : Type v} [SmallCategory C] [Preadditive C] [Abelian C]
 
 set_option backward.defeqAttrib.useBackward true in
 instance {X Y : Ind C} (f : X ⟶ Y) : IsIso (Abelian.coimageImageComparison f) := by
@@ -39,7 +39,7 @@ instance {X Y : Ind C} (f : X ⟶ Y) : IsIso (Abelian.coimageImageComparison f) 
     Arrow.isIso_iff_isIso_of_isIso (PreservesCoimageImageComparison.iso (Ind.lim I) ϕ).inv]
   infer_instance
 
-noncomputable instance : Abelian (Ind C) :=
+instance : Abelian (Ind C) :=
   .ofCoimageImageComparisonIsIso
 
 end CategoryTheory

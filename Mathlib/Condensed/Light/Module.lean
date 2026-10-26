@@ -42,7 +42,7 @@ The category of light condensed `R`-modules, defined as sheaves of `R`-modules o
 -/
 abbrev LightCondMod := LightCondensed.{u} (ModuleCat.{u} R)
 
-noncomputable instance : Abelian (LightCondMod.{u} R) := sheafIsAbelian
+instance : Abelian (LightCondMod.{u} R) := sheafIsAbelian
 
 /-- The forgetful functor from light condensed `R`-modules to light condensed sets. -/
 def LightCondensed.forget : LightCondMod R ⥤ LightCondSet :=

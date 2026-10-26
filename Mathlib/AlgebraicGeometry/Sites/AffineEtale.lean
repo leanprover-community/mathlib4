@@ -126,12 +126,6 @@ instance : S.smallEtaleTopology.WEqualsLocallyBijective A :=
     (Functor.IsDenseSubsite.coverPreserving (AffineEtale.topology S) _
       (AffineEtale.Spec S))
 
--- The `IsGrothendieckAbelian` instances defined below would fail
--- without the next two instances
-instance [Abelian A] : Abelian (Sheaf (AffineEtale.topology S) A) := inferInstance
-
-instance [Abelian A] : Abelian (Sheaf S.smallEtaleTopology A) := inferInstance
-
 variable (S A)
 
 /-- The category of sheaves on the small affine étale site is equivalent to the category of
@@ -142,18 +136,22 @@ def AffineEtale.sheafEquiv : Sheaf (AffineEtale.topology S) A ≌ Sheaf S.smallE
       (topology S) S.smallEtaleTopology).asEquivalence.symm
 
 instance isGrothendieckAbelian_sheaf_affineEtaleTopology
-    [Abelian A] [IsGrothendieckAbelian.{u} A] :
+    [Preadditive A] [Abelian A] [IsGrothendieckAbelian.{u} A] :
     IsGrothendieckAbelian.{u} (Sheaf (AffineEtale.topology S) A) :=
   Sheaf.isGrothendieckAbelian_of_essentiallySmall _ _
 
 instance isGrothendieckAbelian_sheaf_smallEtaleTopology
-    [Abelian A] [IsGrothendieckAbelian.{u} A] :
+    [Preadditive A] [Abelian A] [IsGrothendieckAbelian.{u} A] :
     IsGrothendieckAbelian.{u} (Sheaf S.smallEtaleTopology A) :=
+  have := isGrothendieckAbelian_sheaf_affineEtaleTopology (FA := FA) S A
   IsGrothendieckAbelian.of_equivalence (AffineEtale.sheafEquiv S A)
 
+-- Typeclass inference cannot find this instance on its own: the concrete category
+-- structure `FA` of `A` does not appear in the goal (`Abelian` is a `Prop`), so it
+-- cannot be determined by unification.
 example (R : Type u) [Ring R] :
     IsGrothendieckAbelian.{u} (Sheaf S.smallEtaleTopology (ModuleCat.{u} R)) :=
-  inferInstance
+  isGrothendieckAbelian_sheaf_smallEtaleTopology S _
 
 end
 

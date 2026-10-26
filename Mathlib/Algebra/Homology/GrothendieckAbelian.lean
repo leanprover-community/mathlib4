@@ -65,7 +65,7 @@ instance ab5OfSize [HasFilteredColimitsOfSize.{w', w} C] [HasFiniteLimits C]
 
 end HasZeroMorphisms
 
-instance isGrothendieckAbelian [Abelian C] [IsGrothendieckAbelian.{w} C]
+instance isGrothendieckAbelian [Preadditive C] [Abelian C] [IsGrothendieckAbelian.{w} C]
     [c.HasNoLoop] [Small.{w} ι] :
     IsGrothendieckAbelian.{w} (HomologicalComplex C c) where
   hasSeparator := by

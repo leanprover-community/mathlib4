@@ -145,7 +145,7 @@ end
 -- We next make the dual arguments, but for this we must be in an abelian category.
 section Abelian
 
-variable [Abelian C]
+variable [Preadditive C] [Abelian C]
 
 /-- In an abelian category, an object satisfying the dual of the definition of a simple object is
 simple. -/

@@ -23,8 +23,8 @@ universe v₁ v₂ u₁ u₂
 
 open CategoryTheory Limits Preadditive CategoryTheory.Functor
 
-variable {C : Type u₁} [Category.{v₁} C] [Abelian C]
-variable {D : Type u₂} [Category.{v₂} D] [Abelian D]
+variable {C : Type u₁} [Category.{v₁} C] [Preadditive C] [Abelian C]
+variable {D : Type u₂} [Category.{v₂} D] [Preadditive D] [Abelian D]
 variable (F : C ⥤ D) [PreservesZeroMorphisms F] [F.Faithful]
 variable {S : ShortComplex C}
 

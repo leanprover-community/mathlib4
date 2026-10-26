@@ -62,7 +62,7 @@ end
 
 section Abelian
 
-variable [Abelian C]
+variable [Preadditive C] [Abelian C]
 
 lemma exact₀ {Z : C} (I : InjectiveResolution Z) :
     (ShortComplex.mk _ _ I.ι_f_zero_comp_complex_d).Exact :=
@@ -208,7 +208,7 @@ end InjectiveResolution
 
 section
 
-variable [Abelian C]
+variable [Preadditive C] [Abelian C]
 
 /-- An arbitrarily chosen injective resolution of an object. -/
 abbrev injectiveResolution (Z : C) [HasInjectiveResolution Z] : InjectiveResolution Z :=
@@ -265,7 +265,7 @@ end
 
 section
 
-variable [Abelian C] [EnoughInjectives C]
+variable [Preadditive C] [Abelian C] [EnoughInjectives C]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem exact_f_d {X Y : C} (f : X ⟶ Y) :
@@ -292,7 +292,7 @@ and the map from the `n`-th object as `Injective.d`.
 -/
 
 
-variable [Abelian C] [EnoughInjectives C] (Z : C)
+variable [Preadditive C] [Abelian C] [EnoughInjectives C] (Z : C)
 
 -- The construction of the injective resolution `of` would be very, very slow
 -- if it were not broken into separate definitions and lemmas
@@ -348,7 +348,7 @@ instance (priority := 100) : HasInjectiveResolutions C where out _ := inferInsta
 
 end InjectiveResolution
 
-variable [Abelian C]
+variable [Preadditive C] [Abelian C]
 
 /-- Given an injective presentation `M → I`, the short complex `0 → M → I → N → 0`. -/
 noncomputable abbrev InjectivePresentation.shortComplex

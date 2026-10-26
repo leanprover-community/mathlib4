@@ -39,7 +39,7 @@ noncomputable def ShortComplex.pull
   f := pullback.lift 0 S.f
   g := pullback.fst _ _
 
-instance [Abelian C] (S : ShortComplex C) {Y : C} (f : Y ⟶ S.X₃) [Epi S.g] :
+instance [Preadditive C] [Abelian C] (S : ShortComplex C) {Y : C} (f : Y ⟶ S.X₃) [Epi S.g] :
     Epi (S.pull f).g := by
   dsimp
   infer_instance
@@ -53,7 +53,7 @@ instance [HasZeroMorphisms C] (S : ShortComplex C) {Y : C} (f : Y ⟶ S.X₃)
 /-- The pullback of a short exact short complex along any morphism `f : Y ⟶ S.X₃` is
 short exact. -/
 lemma ShortComplex.ShortExact.pull
-    [Abelian C] {S : ShortComplex C} (hS : S.ShortExact) {Y : C} (f : Y ⟶ S.X₃) :
+    [Preadditive C] [Abelian C] {S : ShortComplex C} (hS : S.ShortExact) {Y : C} (f : Y ⟶ S.X₃) :
     (S.pull f).ShortExact := by
   have := hS.mono_f
   have := hS.epi_g

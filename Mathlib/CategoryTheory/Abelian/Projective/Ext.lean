@@ -28,7 +28,7 @@ open CategoryTheory CochainComplex HomComplex Abelian Localization
 
 namespace CategoryTheory.ProjectiveResolution
 
-variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C]
+variable {C : Type u} [Category.{v} C] [Preadditive C] [Abelian C] [HasExt.{w} C]
   {X Y : C} (R : ProjectiveResolution X) {n : ℕ}
 
 instance : R.cochainComplex.IsKProjective := isKProjective_of_projective _ 0

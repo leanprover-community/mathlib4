@@ -56,7 +56,7 @@ open Limits
 
 variable {C : Type*} [Category* C]
 
-variable [Abelian C]
+variable [Preadditive C] [Abelian C]
 
 namespace Abelian
 
@@ -93,6 +93,8 @@ attribute [simp] IsTorsionClass.leftOrthogonal_rightOrthogonal_eq
   IsTorsionFreeClass.rightOrthogonal_leftOrthogonal_eq
 
 namespace TorsionTheory
+
+omit [Abelian C]
 
 variable {T F : ObjectProperty C}
 
@@ -157,6 +159,7 @@ namespace IsTorsionClass
 
 variable (P : ObjectProperty C) [IsTorsionClass P]
 
+omit [Abelian C] in
 /-- The torsion theory whose torsion class is `P`; its torsion-free class is necessarily
 `P.rightOrthogonal`. -/
 lemma torsionTheory : TorsionTheory P P.rightOrthogonal := by
@@ -190,6 +193,7 @@ namespace IsTorsionFreeClass
 
 variable (P : ObjectProperty C) [IsTorsionFreeClass P]
 
+omit [Abelian C] in
 /-- The torsion theory whose torsion-free class is `P`; its torsion class is necessarily
 `P.leftOrthogonal`. -/
 lemma torsionTheory : TorsionTheory P.leftOrthogonal P := by
@@ -231,12 +235,14 @@ theorem isTorsionClass_iff_of_wellPowered (P : ObjectProperty C)
   ⟨fun _ ↦ ⟨inferInstance, inferInstance, inferInstance⟩, fun ⟨_, _, _⟩ ↦ by
     rw [isTorsionClass_iff, P.leftOrthogonal_rightOrthogonal_eq_self]⟩
 
+omit [Abelian C] in
 /-- A property of objects is a torsion-free class if and only if its opposite is a torsion
 class in the opposite category. -/
 lemma isTorsionFreeClass_iff_isTorsionClass_op (P : ObjectProperty C) :
     IsTorsionFreeClass P ↔ IsTorsionClass P.op :=
   ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstanceAs (IsTorsionFreeClass P.op.unop)⟩
 
+omit [Abelian C] in
 /-- A property of objects is a torsion class if and only if its opposite is a torsion-free
 class in the opposite category. -/
 lemma isTorsionClass_iff_isTorsionFreeClass_op (P : ObjectProperty C) :

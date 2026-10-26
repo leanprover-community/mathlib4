@@ -29,7 +29,7 @@ universe w v u
 
 namespace CategoryTheory
 
-variable {C : Type u} [Category.{v} C] [Abelian C] [HasDerivedCategory.{w} C]
+variable {C : Type u} [Category.{v} C] [Preadditive C] [Abelian C] [HasDerivedCategory.{w} C]
 
 open Category DerivedCategory Pretriangulated
 

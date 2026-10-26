@@ -28,7 +28,7 @@ open Category Limits
 
 namespace Abelian
 
-variable (C ι : Type*) [Category C] [Category ι] [Abelian C]
+variable (C ι : Type*) [Category C] [Category ι] [Preadditive C] [Abelian C]
 
 open ComposableArrows
 
@@ -65,6 +65,7 @@ def δ {i j k : ι} (f : i ⟶ j) (g : j ⟶ k) (n₀ n₁ : ℤ) (hn₁ : n₀ 
   (X.δ' n₀ n₁ hn₁).app (mk₂ f g)
 
 set_option backward.defeqAttrib.useBackward true in
+omit [Abelian C] in
 @[reassoc]
 lemma δ_naturality {i j k : ι} (f : i ⟶ j) (g : j ⟶ k)
     {i' j' k' : ι} (f' : i' ⟶ j') (g' : j' ⟶ k')
@@ -84,18 +85,21 @@ section
 variable {i j k : ι} (f : i ⟶ j) (g : j ⟶ k)
   (fg : i ⟶ k) (h : f ≫ g = fg)
 
+omit [Abelian C] in
 @[reassoc (attr := simp)]
 lemma zero₁ (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁ := by lia) :
     X.δ f g n₀ n₁ hn₁ ≫ (X.H n₁).map (twoδ₂Toδ₁ f g fg h) = 0 := by
   subst h
   exact (X.exact₁' n₀ n₁ hn₁ (mk₂ f g)).zero 0
 
+omit [Abelian C] in
 @[reassoc (attr := simp)]
 lemma zero₂ (fg : i ⟶ k) (h : f ≫ g = fg) (n₀ : ℤ) :
     (X.H n₀).map (twoδ₂Toδ₁ f g fg h) ≫ (X.H n₀).map (twoδ₁Toδ₀ f g fg h) = 0 := by
   subst h
   exact (X.exact₂' n₀ (mk₂ f g)).zero 0
 
+omit [Abelian C] in
 @[reassoc (attr := simp)]
 lemma zero₃ (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁ := by lia) :
     (X.H n₀).map (twoδ₁Toδ₀ f g fg h) ≫ X.δ f g n₀ n₁ hn₁ = 0 := by
@@ -120,16 +124,19 @@ of a spectral object, when `f ≫ g = fg` and `n₀ + 1 = n₁`. -/
 def sc₃ (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁ := by lia) : ShortComplex C :=
   ShortComplex.mk _ _ (X.zero₃ f g fg h n₀ n₁ hn₁)
 
+omit [Abelian C] in
 lemma exact₁ (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁ := by lia) :
     (X.sc₁ f g fg h n₀ n₁ hn₁).Exact := by
   subst h
   exact (X.exact₁' n₀ n₁ hn₁ (mk₂ f g)).exact 0
 
+omit [Abelian C] in
 lemma exact₂ (n₀ : ℤ) :
     (X.sc₂ f g fg h n₀).Exact := by
   subst h
   exact (X.exact₂' n₀ (mk₂ f g)).exact 0
 
+omit [Abelian C] in
 lemma exact₃ (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁ := by lia) :
     (X.sc₃ f g fg h n₀ n₁ hn₁).Exact := by
   subst h
@@ -144,6 +151,7 @@ abbrev composableArrows₅ (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁ := by lia)
     (X.δ f g n₀ n₁ hn₁) ((X.H n₁).map (twoδ₂Toδ₁ f g fg h))
     ((X.H n₁).map (twoδ₁Toδ₀ f g fg h))
 
+omit [Abelian C] in
 lemma composableArrows₅_exact (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁ := by lia) :
     (X.composableArrows₅ f g fg h n₀ n₁ hn₁).Exact :=
   exact_of_δ₀ (X.exact₂ _ _ _ h n₀).exact_toComposableArrows
@@ -153,6 +161,7 @@ lemma composableArrows₅_exact (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁ := by
 
 end
 
+omit [Abelian C] in
 @[reassoc (attr := simp)]
 lemma δ_δ {i j k l : ι} (f : i ⟶ j) (g : j ⟶ k) (h : k ⟶ l)
     (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
@@ -182,6 +191,7 @@ attribute [simp] id_hom
 attribute [reassoc, simp] comp_hom
 
 set_option backward.defeqAttrib.useBackward true in
+omit [Abelian C] in
 lemma isZero_H_map_mk₁_of_isIso (n : ℤ) {i₀ i₁ : ι} (f : i₀ ⟶ i₁) [IsIso f] :
     IsZero ((X.H n).obj (mk₁ f)) := by
   let φ := twoδ₂Toδ₁ f (inv f) (𝟙 i₀) (by simp) ≫ twoδ₁Toδ₀ f (inv f) (𝟙 i₀)
@@ -199,10 +209,12 @@ variable (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) {i₀ i₁ i₂ : ι}
   (h₁ : IsZero ((X.H n₀).obj (mk₁ f))) (h₂ : IsZero ((X.H n₁).obj (mk₁ f)))
 
 include h₁ in
+omit [Abelian C] in
 lemma mono_H_map_twoδ₁Toδ₀ : Mono ((X.H n₀).map (twoδ₁Toδ₀ f g fg hfg)) :=
   (X.exact₂ f g fg hfg n₀).mono_g (h₁.eq_of_src _ _)
 
 include h₂ hn₁ in
+omit [Abelian C] in
 lemma epi_H_map_twoδ₁Toδ₀ : Epi ((X.H n₀).map (twoδ₁Toδ₀ f g fg hfg)) :=
   (X.exact₃ f g fg hfg n₀ n₁ hn₁).epi_f (h₂.eq_of_tgt _ _)
 
@@ -222,10 +234,12 @@ variable {ι' : Type*} [Preorder ι'] (X' : SpectralObject C ι')
   (h₂ : IsZero ((X'.H n₁).obj (mk₁ (homOfLE h₀₁))))
 
 include h₁ in
+omit [Abelian C] in
 lemma mono_H_map_twoδ₁Toδ₀' : Mono ((X'.H n₀).map (twoδ₁Toδ₀' i₀ i₁ i₂ h₀₁ h₁₂)) :=
   X'.mono_H_map_twoδ₁Toδ₀ _ _ _ _ _ h₁
 
 include h₂ hn₁ in
+omit [Abelian C] in
 lemma epi_H_map_twoδ₁Toδ₀' : Epi ((X'.H n₀).map (twoδ₁Toδ₀' i₀ i₁ i₂ h₀₁ h₁₂)) :=
   X'.epi_H_map_twoδ₁Toδ₀ _ _ hn₁ _ _ _ _ h₂
 

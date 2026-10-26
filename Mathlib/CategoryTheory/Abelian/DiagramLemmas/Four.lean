@@ -54,7 +54,7 @@ open Category Limits Preadditive
 
 namespace Abelian
 
-variable {C : Type*} [Category* C] [Abelian C]
+variable {C : Type*} [Category* C] [Preadditive C] [Abelian C]
 
 open ComposableArrows
 
@@ -334,7 +334,7 @@ end Abelian
 
 namespace ShortComplex
 
-variable {C : Type*} [Category* C] [Abelian C]
+variable {C : Type*} [Category* C] [Preadditive C] [Abelian C]
 variable {R₁ R₂ : ShortComplex C} (φ : R₁ ⟶ R₂)
 
 attribute [local simp] ComposableArrows.Precomp.map

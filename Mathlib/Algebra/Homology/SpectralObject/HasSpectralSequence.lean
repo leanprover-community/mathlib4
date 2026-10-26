@@ -51,7 +51,7 @@ namespace Abelian
 
 namespace SpectralObject
 
-variable {C ι κ : Type*} [Category* C] [Abelian C] [Preorder ι]
+variable {C ι κ : Type*} [Category* C] [Preadditive C] [Abelian C] [Preorder ι]
   {c : ℤ → ComplexShape κ} {r₀ : ℤ}
 
 variable (ι c r₀) in
@@ -312,12 +312,14 @@ class HasSpectralSequence : Prop where
 
 variable [X.HasSpectralSequence data]
 
+omit [Abelian C] in
 lemma isZero_H_obj_mk₁_i₀_le (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤ r)
     (pq : κ) (hpq : ∀ (pq' : κ), ¬ ((c r).Rel pq pq'))
     (n : ℤ) (hn : n = data.deg pq + 1) :
     IsZero ((X.H n).obj (mk₁ (homOfLE (data.i₀_le r r' pq)))) :=
   HasSpectralSequence.isZero_H_obj_mk₁_i₀_le r r' pq hpq n hn
 
+omit [Abelian C] in
 lemma isZero_H_obj_mk₁_i₀_le' (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤ r)
     (pq : κ) (hpq : ∀ (pq' : κ), ¬ ((c r).Rel pq pq'))
     (n : ℤ) (hn : n = data.deg pq + 1) (i₀' i₀ : ι)
@@ -328,12 +330,14 @@ lemma isZero_H_obj_mk₁_i₀_le' (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ �
   subst hi₀' hi₀
   exact HasSpectralSequence.isZero_H_obj_mk₁_i₀_le r r' pq hpq n hn
 
+omit [Abelian C] in
 lemma isZero_H_obj_mk₁_i₃_le (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤ r)
     (pq : κ) (hpq : ∀ (pq' : κ), ¬ ((c r).Rel pq' pq))
     (n : ℤ) (hn : n = data.deg pq - 1) :
     IsZero ((X.H n).obj (mk₁ (homOfLE (data.i₃_le r r' pq)))) :=
   HasSpectralSequence.isZero_H_obj_mk₁_i₃_le r r' pq hpq n hn
 
+omit [Abelian C] in
 lemma isZero_H_obj_mk₁_i₃_le' (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤ r)
     (pq : κ) (hpq : ∀ (pq' : κ), ¬ ((c r).Rel pq' pq))
     (n : ℤ) (hn : n = data.deg pq - 1) (i₃ i₃' : ι)
@@ -399,10 +403,12 @@ class IsFirstQuadrant : Prop where
 
 variable [Y.IsFirstQuadrant]
 
+omit [Abelian C] in
 lemma isZero₁_of_isFirstQuadrant (i j : EInt) (hij : i ≤ j) (hj : j ≤ (0 : ℤ)) (n : ℤ) :
     IsZero ((Y.H n).obj (mk₁ (homOfLE hij))) :=
   IsFirstQuadrant.isZero₁ i j hij hj n
 
+omit [Abelian C] in
 lemma isZero₂_of_isFirstQuadrant (i j : EInt) (hij : i ≤ j) (n : ℤ) (hi : n < i) :
     IsZero ((Y.H n).obj (mk₁ (homOfLE hij))) :=
   IsFirstQuadrant.isZero₂ i j hij n hi
@@ -442,10 +448,12 @@ class IsThirdQuadrant where
 
 variable [Y.IsThirdQuadrant]
 
+omit [Abelian C] in
 lemma isZero₁_of_isThirdQuadrant (i j : EInt) (hij : i ≤ j) (hi : (0 : ℤ) < i) (n : ℤ) :
     IsZero ((Y.H n).obj (mk₁ (homOfLE hij))) :=
   IsThirdQuadrant.isZero₁ i j hij hi n
 
+omit [Abelian C] in
 lemma isZero₂_of_isThirdQuadrant (i j : EInt) (hij : i ≤ j) (n : ℤ) (hj : j ≤ n) :
     IsZero ((Y.H n).obj (mk₁ (homOfLE hij))) :=
   IsThirdQuadrant.isZero₂ i j hij n hj

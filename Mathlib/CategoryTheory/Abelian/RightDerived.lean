@@ -56,7 +56,7 @@ namespace CategoryTheory
 open Category Limits
 
 variable {C : Type u} [Category.{v} C] {D : Type*} [Category* D]
-  [Abelian C] [HasInjectiveResolutions C] [Abelian D]
+  [Preadditive C] [Abelian C] [HasInjectiveResolutions C] [Preadditive D] [Abelian D]
 
 /-- When `F : C ⥤ D` is an additive functor, this is
 the functor `C ⥤ HomotopyCategory D (ComplexShape.up ℕ)` which
@@ -76,6 +76,7 @@ noncomputable def InjectiveResolution.isoRightDerivedToHomotopyCategoryObj {X : 
     (F.mapHomotopyCategoryFactors _).app I.cocomplex
 
 set_option backward.defeqAttrib.useBackward true in
+omit [Abelian D] in
 @[reassoc]
 lemma InjectiveResolution.isoRightDerivedToHomotopyCategoryObj_hom_naturality
     {X Y : C} (f : X ⟶ Y) (I : InjectiveResolution X) (J : InjectiveResolution Y)
@@ -91,6 +92,7 @@ lemma InjectiveResolution.isoRightDerivedToHomotopyCategoryObj_hom_naturality
   rfl
 
 set_option backward.defeqAttrib.useBackward true in
+omit [Abelian D] in
 @[reassoc]
 lemma InjectiveResolution.isoRightDerivedToHomotopyCategoryObj_inv_naturality
     {X Y : C} (f : X ⟶ Y) (I : InjectiveResolution X) (J : InjectiveResolution Y)
@@ -182,6 +184,7 @@ noncomputable def NatTrans.rightDerivedToHomotopyCategory
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
+omit [Abelian D] in
 lemma InjectiveResolution.rightDerivedToHomotopyCategory_app_eq
     {F G : C ⥤ D} [F.Additive] [G.Additive] (α : F ⟶ G) {X : C} (P : InjectiveResolution X) :
     (NatTrans.rightDerivedToHomotopyCategory α).app X =
@@ -201,10 +204,12 @@ lemma InjectiveResolution.rightDerivedToHomotopyCategory_app_eq
   simp only [← Functor.map_comp, NatTrans.mapHomologicalComplex_naturality]
   rfl
 
+omit [Abelian D] in
 @[simp]
 lemma NatTrans.rightDerivedToHomotopyCategory_id (F : C ⥤ D) [F.Additive] :
     NatTrans.rightDerivedToHomotopyCategory (𝟙 F) = 𝟙 _ := rfl
 
+omit [Abelian D] in
 @[simp, reassoc]
 lemma NatTrans.rightDerivedToHomotopyCategory_comp {F G H : C ⥤ D} (α : F ⟶ G) (β : G ⟶ H)
     [F.Additive] [G.Additive] [H.Additive] :
@@ -267,7 +272,7 @@ noncomputable def toRightDerivedZero' {X : C}
       zero_comp, F.map_zero])
 
 @[reassoc (attr := simp)]
-lemma toRightDerivedZero'_comp_iCycles {C} [Category* C] [Abelian C] {X : C}
+lemma toRightDerivedZero'_comp_iCycles {C} [Category* C] [Preadditive C] [Abelian C] {X : C}
     (P : InjectiveResolution X) (F : C ⥤ D) [F.Additive] :
     P.toRightDerivedZero' F ≫
       HomologicalComplex.iCycles _ _ = F.map (P.ι.f 0) := by
@@ -275,8 +280,8 @@ lemma toRightDerivedZero'_comp_iCycles {C} [Category* C] [Abelian C] {X : C}
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
-lemma toRightDerivedZero'_naturality {C} [Category* C] [Abelian C] {X Y : C} (f : X ⟶ Y)
-    (P : InjectiveResolution X) (Q : InjectiveResolution Y)
+lemma toRightDerivedZero'_naturality {C} [Category* C] [Preadditive C] [Abelian C] {X Y : C}
+    (f : X ⟶ Y) (P : InjectiveResolution X) (Q : InjectiveResolution Y)
     (φ : P.cocomplex ⟶ Q.cocomplex) (comm : P.ι.f 0 ≫ φ.f 0 = f ≫ Q.ι.f 0)
     (F : C ⥤ D) [F.Additive] :
     F.map f ≫ Q.toRightDerivedZero' F =

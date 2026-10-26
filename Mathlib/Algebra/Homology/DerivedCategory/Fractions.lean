@@ -29,7 +29,7 @@ open CategoryTheory Category Limits
 
 namespace DerivedCategory
 
-variable {C : Type u} [Category.{v} C] [Abelian C] [HasDerivedCategory.{w} C]
+variable {C : Type u} [Category.{v} C] [Preadditive C] [Abelian C] [HasDerivedCategory.{w} C]
 
 instance : (HomotopyCategory.quasiIso C (ComplexShape.up ℤ)).HasLeftCalculusOfFractions := by
   rw [HomotopyCategory.quasiIso_eq_trW_subcategoryAcyclic]

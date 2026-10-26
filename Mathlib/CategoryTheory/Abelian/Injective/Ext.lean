@@ -29,7 +29,7 @@ open CategoryTheory Limits CochainComplex HomComplex Abelian Localization
 
 namespace CategoryTheory.InjectiveResolution
 
-variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C]
+variable {C : Type u} [Category.{v} C] [Preadditive C] [Abelian C] [HasExt.{w} C]
   {X Y : C} (R : InjectiveResolution Y) {n : ℕ}
 
 instance : R.cochainComplex.IsKInjective := isKInjective_of_injective _ 0
