@@ -114,7 +114,11 @@ lemma closedInterior_eq [PartialOrder k] [IsOrderedRing k] :
   rw [affineCombination_mem_closedInterior_iff hw]
   refine ⟨fun h => ⟨fun i => (h i.succ).1, sub_nonneg.mp (h 0).1⟩, ?_⟩
   · rintro ⟨hpos, hsum⟩
-    exact mem_Icc_of_mem_stdSimplex ⟨Fin.cases (sub_nonneg.mpr hsum) hpos, hw⟩
+    intro i
+    induction i using Fin.cases with
+    | zero => simpa using ⟨hsum, Fintype.sum_nonneg hpos⟩
+    | succ i =>
+      simpa using ⟨hpos i, (single_le_sum (fun i a ↦ hpos i) <| Finset.mem_univ i).trans hsum⟩
 
 /-- The vertices of the face of `Affine.stdSimplex` opposite the vertex `0` are the standard
 basis vectors. -/
