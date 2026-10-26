@@ -28,24 +28,35 @@ DEFAULT_OPTIONS = [
     "linter.unusedTactic",
 ]
 
+# Options that change what a declaration exports (its body, or the visibility of its
+# auxiliary declarations), so downstream modules can depend on them.
+# `rm_set_option.py` only rebuilds the modules it edits, so it cannot check that removing
+# these is safe: it skips them unless one is requested explicitly with `--option`.
+EXPORT_AFFECTING_OPTIONS = [
+    "backward.privateInPublic",
+    "backward.inferInstanceAs.wrap",
+    "backward.inferInstanceAs.wrap.data",
+    "backward.inferInstanceAs.wrap.instances",
+]
+
 
 def set_option_line(option: str, value: str = "false") -> str:
     """Return the set_option line text for an option."""
     return f"set_option {option} {value} in\n"
 
 
-def removable_pattern(option: str, value: str = "false") -> re.Pattern:
-    """Match bare `set_option X <value> in` lines (no trailing comment)."""
+def removable_pattern(option: str) -> re.Pattern:
+    """Match bare `set_option X <value> in` lines (no trailing comment).
+    |value| can be a boolean (true or false), number or string (not containing `"`)."""
     escaped = re.escape(option)
-    escaped_val = re.escape(value)
-    return re.compile(rf"^\s*set_option {escaped} {escaped_val} in\s*$")
+    return re.compile(rf'^\s*set_option {escaped} (true|false|\d+|"[^"]*") in\s*$')
 
 
-def commented_pattern(option: str, value: str = "false") -> re.Pattern:
-    """Match `set_option X <value> in -- ...` lines."""
+def commented_pattern(option: str) -> re.Pattern:
+    """Match `set_option X <value> in -- ...` lines.
+    |value| can be a boolean (true or false), number or string (not containing `"`)."""
     escaped = re.escape(option)
-    escaped_val = re.escape(value)
-    return re.compile(rf"^\s*set_option {escaped} {escaped_val} in\s+--")
+    return re.compile(rf'^\s*set_option {escaped} (true|false|\d+|"[^"]*") in\s+--')
 
 
 def is_annotated(lines: list[str], idx: int) -> bool:
@@ -62,12 +73,11 @@ def is_annotated(lines: list[str], idx: int) -> bool:
     return False
 
 
-def lakefile_pattern(option: str, value: str = "false") -> re.Pattern:
+def lakefile_pattern(option: str) -> re.Pattern:
     """Match lakefile entries for an option."""
     escaped = re.escape(option)
-    escaped_val = re.escape(value)
     return re.compile(
-        rf"^\s*⟨`{escaped},\s*{escaped_val}⟩,?\s*\n",
+        rf'^\s*⟨\s*`{escaped}\s*,\s*(true|false|\.ofNat\s+\d+|"[^"]*")\s*⟩\s*,?\s*\n',
         re.MULTILINE,
     )
 
@@ -81,7 +91,7 @@ def lake_build_with_progress(project_dir: Path) -> tuple[int, str]:
     Returns (returncode, captured_output).
     """
     proc = subprocess.Popen(
-        ["lake", "build"],
+        ["lake", "build", "--iofail"],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True,
