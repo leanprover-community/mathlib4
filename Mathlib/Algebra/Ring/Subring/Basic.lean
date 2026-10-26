@@ -434,8 +434,7 @@ lemma _root_.Center.coe_sub {R : Type*} [Ring R] (a b : Center R) :
     (a - b).val = a.val - b.val := rfl
 
 @[simp]
-lemma _root_.Center.coe_neg {R : Type*} [Ring R] (z : Center R) :
-    (-z).val = -z.val := rfl
+lemma _root_.Center.coe_neg {R : Type*} [Ring R] (z : Center R) : (-z).val = -z.val := rfl
 
 end
 
