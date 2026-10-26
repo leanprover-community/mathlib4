@@ -20,8 +20,6 @@ import Mathlib.Data.Nat.Choose.Cast
 
 public section
 
-noncomputable section
-
 open scoped NNReal Nat ContDiff
 
 universe u uD uE uF uG

@@ -5,10 +5,10 @@ Authors: Emily Riehl
 -/
 module
 
-public import Mathlib.CategoryTheory.Bicategory.CatEnriched
 public import Mathlib.AlgebraicTopology.Quasicategory.Basic
 public import Mathlib.AlgebraicTopology.SimplicialCategory.SimplicialObject
 public import Mathlib.AlgebraicTopology.SimplicialSet.HoFunctorMonoidal
+public import Mathlib.CategoryTheory.Bicategory.CatEnriched
 
 /-!
 # The strict bicategory of quasicategories

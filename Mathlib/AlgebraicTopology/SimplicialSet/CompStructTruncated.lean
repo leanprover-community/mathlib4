@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 public import Mathlib.AlgebraicTopology.SimplexCategory.Truncated
+public import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 
 /-!
 # Edges and "triangles" in truncated simplicial sets

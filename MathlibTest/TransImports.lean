@@ -1,4 +1,6 @@
-import Mathlib.Util.TransImports
+module
+
+public import Mathlib.Util.TransImports
 
 /--
 info: 'MathlibTest.TransImports' has at most 2000 transitive imports
