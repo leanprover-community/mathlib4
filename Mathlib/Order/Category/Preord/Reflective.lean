@@ -38,24 +38,16 @@ def catToPreord : Cat.{u, u} ⥤ Preord.{u} where
   obj C := .ofCat C
   map {C D} F := Preord.ofHom (X := Preord.ofCat C) (Y := Preord.ofCat D)
     ⟨F.toFunctor.obj, fun _ _ h ↦ h.map F.toFunctor.map⟩
-  map_id _ := rfl
-  map_comp _ _ := rfl
 
 /-- `catToPreord` is left adjoint to `preordToCat`. -/
 def catToPreordAdjunction : catToPreord.{u} ⊣ preordToCat :=
   .mkOfHomEquiv
     { homEquiv C P :=
         { toFun f :=
-            ({ obj := f.hom
-               map g := homOfLE (f.hom.monotone ⟨g⟩)
-               map_id _ := rfl
-               map_comp _ _ := rfl } : C ⥤ P).toCatHom
+            { obj := f.hom
+              map g := homOfLE (f.hom.monotone ⟨g⟩) : C ⥤ P }.toCatHom
           invFun F := Preord.ofHom (X := catToPreord.obj C) (Y := P)
-            ⟨F.toFunctor.obj, fun _ _ h ↦ h.elim fun f ↦ leOfHom (F.toFunctor.map f)⟩
-          left_inv _ := rfl
-          right_inv _ := rfl }
-      homEquiv_naturality_left_symm _ _ := rfl
-      homEquiv_naturality_right _ _ := rfl }
+            ⟨F.toFunctor.obj, fun _ _ h ↦ h.elim fun f ↦ leOfHom (F.toFunctor.map f)⟩ } }
 
 instance : Reflective preordToCat.{u} where
   L := catToPreord
@@ -65,14 +57,12 @@ instance : Reflective preordToCat.{u} where
 noncomputable def Preord.ofCatIso (C : Type u) [SmallCategory C] [Quiver.IsThin C] :
     preordToCat.obj (ofCat C) ≅ .of C where
   hom :=
-    ({ obj := id
-       map f := (leOfHom f).some
-       map_id _ := Subsingleton.elim _ _
-       map_comp _ _ := Subsingleton.elim _ _ } :
-      ofCat C ⥤ C).toCatHom
-  inv := ({ obj := id
-            map f := homOfLE ⟨f⟩
-            map_id _ := rfl
-            map_comp _ _ := rfl } : C ⥤ ofCat C).toCatHom
+    { obj := id
+      map f := (leOfHom f).some
+      map_id _ := Subsingleton.elim _ _
+      map_comp _ _ := Subsingleton.elim _ _ : ofCat C ⥤ C }.toCatHom
+  inv :=
+    { obj := id
+      map f := homOfLE ⟨f⟩ : C ⥤ ofCat C }.toCatHom
   hom_inv_id := rfl
   inv_hom_id := Cat.ext <| Functor.ext (fun _ ↦ rfl) fun _ _ _ ↦ Subsingleton.elim _ _
