@@ -97,17 +97,17 @@ theorem abs_nnrpow (T : E →L[ℂ] F) (x : ℝ≥0) :
     |T| ^ x = (T.adjoint ∘L T) ^ (x / 2) := by
   simp [← abs_nnrpow_two_mul, mul_div_left_comm]
 
-theorem abs_of_nonneg (S : E →L[ℂ] E) (hS : 0 ≤ S) : |S| = S := by
+theorem abs_of_nonneg (S : E →L[ℂ] E) (hS : 0 ≤ S := by cfc_tac) : |S| = S := by
   rw [abs_eq_cfcAbs]
   exact CFC.abs_of_nonneg _ hS
 
-theorem abs_of_nonpos (S : E →L[ℂ] E) (hS : S ≤ 0) : |S| = -S := by
+theorem abs_of_nonpos (S : E →L[ℂ] E) (hS : S ≤ 0 := by cfc_tac) : |S| = -S := by
   rw [abs_eq_cfcAbs]
   exact CFC.abs_of_nonpos _ hS
 
 theorem abs_adjoint_comp_self (T : E →L[ℂ] F) :
     |T.adjoint ∘L T| = T.adjoint ∘L T :=
-  abs_of_nonneg _ T.adjoint_comp_self_nonneg
+  abs_of_nonneg _
 
 theorem abs_smul (c : ℂ) (T : E →L[ℂ] F) : |c • T| = ‖c‖ • |T| := by
   rw [abs, CFC.sqrt_eq_iff _ _ (nonneg_iff_isPositive.mpr (isPositive_adjoint_comp_self (c • T)))
