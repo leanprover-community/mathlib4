@@ -323,6 +323,19 @@ lemma degree_eq_sum_deg_support (hφ : φ.IsHomogeneous n) {s : σ →₀ ℕ} (
     n = ∑ i ∈ s.support, s i := by
   simp [← hφ <| mem_support_iff.mp hs, ← degree_apply, degree_eq_weight_one, Pi.one_def]
 
+/-- Scaling the input of a degree `d` homogeneous polynomial by a factor of `c`
+the output by a factor of `c^d`. -/
+lemma eval_smul {F : MvPolynomial σ R} {d : ℕ} (hF : F.IsHomogeneous d) (c : R) (p : σ → R) :
+    F.eval (c • p) = c^d • F.eval p := by
+  simp only [MvPolynomial.eval_eq, Pi.smul_apply, smul_eq_mul, Finset.mul_sum, mul_pow,
+    Finset.prod_mul_distrib, Finset.prod_pow_eq_pow_sum]
+  congr
+  ext x
+  by_cases h : x ∈ F.support
+  · rw [IsHomogeneous.degree_eq_sum_deg_support hF h]; ring
+  · rw [MvPolynomial.notMem_support_iff] at h; simp [h]
+
+
 theorem rename_isHomogeneous {f : σ → τ} (h : φ.IsHomogeneous n) :
     (rename f φ).IsHomogeneous n := by
   rw [← φ.support_sum_monomial_coeff, map_sum]; simp_rw [rename_monomial]
