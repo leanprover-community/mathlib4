@@ -6,8 +6,7 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.Algebra.Group.FunLike
-public import Mathlib.Algebra.Module.Torsion.Pi
-public import Mathlib.Algebra.Module.LinearMap.Defs
+public import Mathlib.LinearAlgebra.Pi
 
 /-! # Module instances for `FunLike` types
 In this file we define various instances related to modules for `FunLike` types.
@@ -49,7 +48,7 @@ theorem toAddMonoidHom_coeₗ [IsZeroApply F] : (coeₗ R F).toAddMonoidHom = co
 variable (R F) in
 /-- Evaluation as a linear map. -/
 @[expose]
-def evalₗ (x : α) : F →ₗ[R] β := (Pi.evalₗ R _ x).comp (coeₗ R F)
+def evalₗ (x : α) : F →ₗ[R] β := (LinearMap.proj x).comp (coeₗ R F)
 
 @[simp]
 theorem evalₗ_apply (x : α) (f : F) : evalₗ R F x f = f x := rfl
