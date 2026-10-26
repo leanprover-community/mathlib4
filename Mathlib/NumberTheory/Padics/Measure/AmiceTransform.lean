@@ -5,11 +5,12 @@ Authors: David Loeffler
 -/
 module
 
+public import Mathlib.NumberTheory.Padics.MahlerBasis
 public import Mathlib.NumberTheory.Padics.Measure.Basic
 public import Mathlib.RingTheory.PowerSeries.Basic
-public import Mathlib.Topology.Algebra.InfiniteSum.Module
-public import Mathlib.Algebra.Order.Field.Power
-public import Mathlib.NumberTheory.Padics.MahlerBasis
+
+import Mathlib.Algebra.Order.Field.Power
+import Mathlib.Topology.Algebra.InfiniteSum.Module
 
 /-!
 # The Amice transform
@@ -113,11 +114,10 @@ private lemma invTransformSummable (F : ℤ_[p]⟦X⟧) (f : C(ℤ_[p], ℤ_[p])
 private def invTransformₗ (F : ℤ_[p]⟦X⟧) : C(ℤ_[p], ℤ_[p]) →ₗ[ℤ_[p]] ℤ_[p] where
   toFun f := ∑' i, PadicInt.mahlerEquiv ℤ_[p] f i * F.coeff i
   map_add' f g := by
-    simp only [map_add, ZeroAtInftyContinuousMap.coe_add, Pi.add_apply, add_mul]
+    simp only [map_add, add_apply, add_mul]
     rw [Summable.tsum_add] <;> apply invTransformSummable
   map_smul' r f := by
-    simp only [map_smul, ZeroAtInftyContinuousMap.coe_smul, Pi.smul_apply, smul_eq_mul, mul_assoc,
-      RingHom.id_apply]
+    simp only [map_smul, smul_apply, smul_eq_mul, mul_assoc, RingHom.id_apply]
     simp_rw [← smul_eq_mul]
     rw [Summable.tsum_const_smul]
     exact invTransformSummable F f

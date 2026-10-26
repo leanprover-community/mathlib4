@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Order.Archimedean.Real.Basic
 public import Mathlib.Algebra.Order.Nonneg.Module
 public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+
 import Mathlib.Tactic.Basify.Attr
 
 /-!
@@ -636,8 +637,10 @@ lemma one_le_toNNReal {r : ℝ} : 1 ≤ r.toNNReal ↔ 1 ≤ r := by
 lemma toNNReal_lt_one {r : ℝ} : r.toNNReal < 1 ↔ r < 1 := by simp only [← not_le, one_le_toNNReal]
 
 @[simp]
-lemma natCastle_toNNReal' {n : ℕ} {r : ℝ} : ↑n ≤ r.toNNReal ↔ n ≤ r ∨ n = 0 := by
+lemma natCast_le_toNNReal' {n : ℕ} {r : ℝ} : ↑n ≤ r.toNNReal ↔ n ≤ r ∨ n = 0 := by
   simpa [n.cast_nonneg.ge_iff_eq'] using toNNReal_le_toNNReal_iff' (r := n)
+
+@[deprecated (since := "2026-10-13")] alias natCastle_toNNReal' := natCast_le_toNNReal'
 
 @[simp]
 lemma toNNReal_lt_natCast' {n : ℕ} {r : ℝ} : r.toNNReal < n ↔ r < n ∧ n ≠ 0 := by

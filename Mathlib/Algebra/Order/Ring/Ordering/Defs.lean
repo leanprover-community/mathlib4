@@ -5,9 +5,9 @@ Authors: Florent Schaffhauser, Artie Khovanov
 -/
 module
 
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Ring.Subsemiring.Defs
 public import Mathlib.RingTheory.Ideal.Prime
-public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Ring orderings
@@ -68,7 +68,7 @@ instance : SubsemiringClass (RingPreordering R) R where
 
 variable {R}
 
-@[aesop unsafe 80% (rule_sets := [SetLike])]
+@[aesop unsafe 80% (rule_sets := [SetLike]), membership .]
 protected theorem mem_of_isSquare (P : RingPreordering R) {x : R} (hx : IsSquare x) : x ∈ P :=
   RingPreordering.mem_of_isSquare' _ hx
 
