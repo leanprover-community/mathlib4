@@ -168,13 +168,8 @@ theorem trace_mul_cycle' [NonUnitalCommSemiring R] (A : Matrix m n R) (B : Matri
 
 The matrices `A` and `B` may be rectangular. This requires a positive exponent because the identity
 does not hold at exponent zero when the index types have different cardinalities. -/
-theorem trace_mul_pow_comm' [CommSemiring R]
-    (A : Matrix m n R) (B : Matrix n m R) {k : ℕ} (hk : k ≠ 0) :
-    (letI : DecidableEq m := Classical.decEq m
-     letI : DecidableEq n := Classical.decEq n
-     trace ((A * B) ^ k) = trace ((B * A) ^ k)) := by
-  classical
-  change trace ((A * B) ^ k) = trace ((B * A) ^ k)
+theorem trace_mul_pow_comm' [CommSemiring R] [DecidableEq m] [DecidableEq n] (A : Matrix m n R)
+    (B : Matrix n m R) {k : ℕ} (hk : k ≠ 0) : trace ((A * B) ^ k) = trace ((B * A) ^ k) := by
   have hpow (j : ℕ) : (B * A) ^ (j + 1) = B * (A * B) ^ j * A := by
     induction j <;> simp [*, pow_succ, Matrix.mul_assoc]
   cases k with
