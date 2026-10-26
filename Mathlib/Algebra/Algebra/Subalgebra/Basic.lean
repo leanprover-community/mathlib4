@@ -979,6 +979,17 @@ def _root_.Center.algHom :
   toRingHom := Center.ringHom A
   commutes' := by simp
 
+/-- Lift a morphism through the inclusion `Center B →ₐ[R] B`. -/
+@[simps!]
+def _root_.AlgHom.liftCenter {f : A →ₐ[R] B} (hf : ∀ r, f r ∈ Set.center B) :
+    A →ₐ[R] Center B where
+  toRingHom := f.toRingHom.liftCenter hf
+  commutes' := by simp
+
+@[simp]
+lemma _root_.AlgHom.comp_liftCenter {f : A →ₐ[R] B} (hf : ∀ r, f r ∈ Set.center B) :
+    (Center.algHom R B).comp (f.liftCenter hf) = f := rfl
+
 end Center
 
 section Centralizer
