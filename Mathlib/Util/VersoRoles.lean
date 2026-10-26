@@ -5,9 +5,10 @@ Authors: David Thrane Christiansen
 -/
 module
 
-public meta import Lean.Elab.DocString
 public meta import Batteries.Util.LibraryNote
+public meta import Lean.Elab.DocString
 public meta import Mathlib.Tactic.Linter.Style -- To silence `defsWithUnderscore` linter
+
 import Mathlib.Tactic.Linter.Header -- Since this file is imported by `Mathlib.Init`.
 
 set_option doc.verso true
