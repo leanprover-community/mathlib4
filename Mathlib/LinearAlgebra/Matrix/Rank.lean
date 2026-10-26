@@ -415,7 +415,7 @@ theorem rank_le_card_of_support_subset [Finite n] [CommSemiring R] [StrongRankCo
   set B : Matrix m {x // x ∈ s} R := Matrix.of fun i a => if (a : m) = i then 1 else 0 with hBdef
   have hB : B * A.submatrix Subtype.val id = A := by
     ext i j
-    simp only [hBdef, mul_apply, of_apply, submatrix_apply, id_eq]
+    simp only [hBdef, Matrix.mul_apply, of_apply, submatrix_apply, id_eq]
     by_cases hi : i ∈ s
     · rw [Fintype.sum_eq_single (⟨i, hi⟩ : {x // x ∈ s})
         fun a ha => by rw [ite_eq_right fun he => ha (Subtype.ext he), zero_mul],

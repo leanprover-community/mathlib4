@@ -3,9 +3,10 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+module
 
-import Mathlib.Tactic.IntervalCases
-import Mathlib.Tactic.Set
+public import Mathlib.Tactic.IntervalCases
+public import Mathlib.Tactic.Set
 
 set_option linter.unusedVariables false in
 example (n : ℕ) : True := by
