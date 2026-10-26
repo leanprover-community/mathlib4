@@ -368,7 +368,7 @@ variable {A : Type*} [CommGroup A] (B : Subgroup A)
 
 /-- Any quotient group of a rootable group is rootable. -/
 @[to_additive /-- Any quotient group of a divisible group is divisible -/]
-noncomputable instance QuotientGroup.isRootableBy [IsRootableBy A ℕ] : IsRootableBy (A ⧸ B) ℕ :=
+instance QuotientGroup.isRootableBy [IsRootableBy A ℕ] : IsRootableBy (A ⧸ B) ℕ :=
   QuotientGroup.mk_surjective.isRootableBy _ fun _ _ => rfl
 
 set_option linter.deprecated false in
