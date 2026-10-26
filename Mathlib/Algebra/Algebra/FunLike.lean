@@ -9,8 +9,8 @@ public import Mathlib.Algebra.Ring.FunLike
 public import Mathlib.Algebra.Algebra.Pi
 
 /-! # Algebra map `FunLike` class
-In this file we define the type class `IsAlgebraApply` that states that the `algebraMap` on a
-`FunLike` type class is inherited from the `algebraMap` of the function type.
+In this file we prove that for `FunLike F α β`, `r : R`, and `x : α`, the `algebraMap R F r x`
+is given by `algebraMap R β r`.
 
 We also define the coercion and evaluation as algebra homomorphisms.
 -/
@@ -21,28 +21,24 @@ variable {R F α β : Type*}
 
 section Def
 
-/-- `IsAlgebraApply R F` states for all `r : R` and `x : α`, the algebra map `algebraMap R F r x`
-coincides with `algebraMap R β r`. -/
-class IsAlgebraApply (R F : Type*) {α β : Type*} [FunLike F α β] [CommSemiring R] [Semiring F]
-    [Semiring β] [Algebra R F] [Algebra R β] where
-  algebraMap_apply (r : R) (x : α) : algebraMap R F r x = algebraMap R β r := by intros; rfl
-
-@[simp, grind =]
-alias algebraMap_apply := IsAlgebraApply.algebraMap_apply
-
 end Def
 
 namespace FunLike
 
 variable [FunLike F α β] [CommSemiring R] [Semiring F] [Semiring β] [Algebra R F] [Algebra R β]
+  [IsOneApply F] [IsSMulApply R F]
+
+@[simp]
+theorem algebraMap_apply (r : R) (x : α) : algebraMap R F r x = algebraMap R β r := by
+  grind [Algebra.algebraMap_eq_smul_one]
 
 @[simp, norm_cast]
-theorem coe_algebraMap [IsAlgebraApply R F] (r : R) :
+theorem coe_algebraMap (r : R) :
     algebraMap R F r = algebraMap R (α → β) r := by ext; simp
 
 section AlgHom
 
-variable [IsZeroApply F] [IsOneApply F] [IsAddApply F] [IsMulApply F] [IsAlgebraApply R F]
+variable [IsZeroApply F] [IsAddApply F] [IsMulApply F]
 
 variable (R F) in
 /-- Coercion as an algebra homomorphism. -/
