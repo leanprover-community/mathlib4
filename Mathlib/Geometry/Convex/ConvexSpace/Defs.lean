@@ -30,8 +30,8 @@ This file defines convex spaces as an algebraic structure supporting finite conv
 * `Convexity.IsConvexCombComm R S X`: A typeclass for the `R`-convex and `S`-convex space
   structures on `X` to commute.
 * `Convexity.IsCancelConvexSpace`: Typeclass for a convex space in which points can be
-  cancelled from convex combinations. Note that such convex spaces can all be embedded in
-  Euclidean space, but Mathlib doesn't know this yet.
+  cancelled from convex combinations. The Stone-Kneser representation theorem says that such convex
+  spaces are exactly those that can be embedded in Euclidean space, but Mathlib doesn't have it yet.
 
 ## Design
 
