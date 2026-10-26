@@ -355,15 +355,15 @@ section Prod
 variable {S : Type*} [CommRing S]
 
 @[simp]
-theorem fst_det (M : Matrix m m (R × S)) : M.det.1 = (prodRingEquiv M).1.det := by
+theorem fst_det (M : Matrix m m (R × S)) : M.det.1 = (prodRingEquiv m R S M).1.det := by
   simpa using RingHom.map_det (RingHom.fst R S) M
 
 @[simp]
-theorem snd_det (M : Matrix m m (R × S)) : M.det.2 = (prodRingEquiv M).2.det := by
+theorem snd_det (M : Matrix m m (R × S)) : M.det.2 = (prodRingEquiv m R S M).2.det := by
   simpa using RingHom.map_det (RingHom.snd R S) M
 
 theorem det_prodRingEquiv_symm (M : Matrix n n R × Matrix n n S) :
-    (prodRingEquiv.symm M).det = (M.1.det, M.2.det) :=
+    ((prodRingEquiv n R S).symm M).det = (M.1.det, M.2.det) :=
   Prod.ext (fst_det _) (snd_det _)
 
 end Prod

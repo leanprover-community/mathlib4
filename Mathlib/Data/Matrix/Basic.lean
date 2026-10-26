@@ -818,6 +818,8 @@ namespace Matrix
 
 section Prod
 
+variable (n m α β)
+
 /-- Matrices over a product are in canonical bijection with product of matrices.
 
 This is available in bundled forms as:
@@ -833,49 +835,49 @@ This is available in bundled forms as:
 /-- `prodEquiv` as an `AddEquiv`. -/
 @[simps!] def prodAddEquiv [Add α] [Add β] :
     Matrix m n (α × β) ≃+ Matrix m n α × Matrix m n β where
-  __ := prodEquiv
+  __ := prodEquiv m n α β
   map_add' _ _ := rfl
 
 @[simp] theorem toEquiv_prodAddEquiv [Add α] [Add β] :
-    (prodAddEquiv (m := m) (n := n) (α := α) (β := β) :
-      Matrix m n (α × β) ≃ Matrix m n α × Matrix m n β) = prodEquiv := rfl
+    (prodAddEquiv  m n α β :
+      Matrix m n (α × β) ≃ Matrix m n α × Matrix m n β) = prodEquiv m n α β := rfl
 
 /-- `prodEquiv` as a `LinearEquiv`. -/
 @[simps!] def prodLinearEquiv (R) [Semiring R] [AddCommMonoid α] [AddCommMonoid β]
     [Module R α] [Module R β] : Matrix m n (α × β) ≃ₗ[R] Matrix m n α × Matrix m n β where
-  __ := prodAddEquiv
+  __ := prodAddEquiv  m n α β
   map_smul' _ _ := rfl
 
 @[simp] theorem toAddEquiv_prodLinearEquiv (R) [Semiring R] [AddCommMonoid α] [AddCommMonoid β]
-    [Module R α] [Module R β] : (prodLinearEquiv (m := m) (n := n) (α := α) (β := β) R :
-      Matrix m n (α × β) ≃+ Matrix m n α × Matrix m n β) = prodAddEquiv := rfl
+    [Module R α] [Module R β] : (prodLinearEquiv m n α β R :
+      Matrix m n (α × β) ≃+ Matrix m n α × Matrix m n β) = prodAddEquiv m n α β := rfl
 
 variable [Fintype n]
 
 /-- `prodEquiv` as a `RingEquiv`. -/
 @[simps!] def prodRingEquiv [AddCommMonoid α] [AddCommMonoid β] [Mul α] [Mul β] :
     Matrix n n (α × β) ≃+* Matrix n n α × Matrix n n β where
-  __ := prodAddEquiv
+  __ := prodAddEquiv n n α β
   map_mul' _ _ := by ext <;> simp [Matrix.mul_apply, Prod.fst_sum, Prod.snd_sum]
 
 @[simp] theorem toAddEquiv_prodRingEquiv [AddCommMonoid α] [AddCommMonoid β] [Mul α] [Mul β]
-    {a : Matrix n n (α × β)} : prodRingEquiv a = prodAddEquiv a := rfl
+    {a : Matrix n n (α × β)} : prodRingEquiv n α β a = prodAddEquiv n n α β a := rfl
 
 variable (R) [CommSemiring R] [DecidableEq n]
 
 /-- `prodEquiv` as an `AlgEquiv`. -/
 @[simps!] def prodAlgEquiv [Semiring α] [Algebra R α] [Semiring β] [Algebra R β] :
     Matrix n n (α × β) ≃ₐ[R] Matrix n n α × Matrix n n β where
-  __ := prodRingEquiv
-  __ := AlgHom.mk' (prodRingEquiv (n := n) (α := α) (β := β)).toRingHom fun _ _ ↦ rfl
+  __ := prodRingEquiv n α β
+  __ := AlgHom.mk' (prodRingEquiv n α β).toRingHom fun _ _ ↦ rfl
 
 @[simp] theorem toRingEquiv_prodAlgEquiv [Semiring α] [Algebra R α] [Semiring β] [Algebra R β] :
-    (prodAlgEquiv (n := n) (α := α) (β := β) R :
-      Matrix n n (α × β) ≃+* Matrix n n α × Matrix n n β) = prodRingEquiv  := rfl
+    (prodAlgEquiv n R α β :
+      Matrix n n (α × β) ≃+* Matrix n n α × Matrix n n β) = prodRingEquiv n α β := rfl
 
 @[simp] theorem toLinearEquiv_prodAlgEquiv [Semiring α] [Algebra R α]
-    [Semiring β] [Algebra R β] : (prodAlgEquiv (n := n) (α := α) (β := β) R :
-      Matrix n n (α × β) ≃ₗ[R] Matrix n n α × Matrix n n β) = prodLinearEquiv R := rfl
+    [Semiring β] [Algebra R β] : (prodAlgEquiv n R α β :
+      Matrix n n (α × β) ≃ₗ[R] Matrix n n α × Matrix n n β) = prodLinearEquiv n n α β R := rfl
 
 end Prod
 

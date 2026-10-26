@@ -232,14 +232,14 @@ def map (f : R →+* S) : SpecialLinearGroup n R →* SpecialLinearGroup n S whe
 
 section Prod
 
-variable (n)
+variable (n R S)
 
 /-- The equivalence between `SL n (R × S)` and `SL n R × SL n S`. -/
 @[simps! apply symm_apply]
 def prodEquiv :
     SpecialLinearGroup n (R × S) ≃* SpecialLinearGroup n R × SpecialLinearGroup n S where
   __ := (map (RingHom.fst R S)).prod (map (RingHom.snd R S))
-  invFun A := ⟨(Matrix.prodRingEquiv).symm ⟨A.1, A.2⟩, by
+  invFun A := ⟨(Matrix.prodRingEquiv n R S).symm ⟨A.1, A.2⟩, by
     rw [det_prodRingEquiv_symm, A.1.2, A.2.2, Prod.mk_one_one]⟩
 
 end Prod
