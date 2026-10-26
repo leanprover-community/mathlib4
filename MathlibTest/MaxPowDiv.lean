@@ -1,4 +1,6 @@
-import Mathlib.NumberTheory.Padics.PadicVal.Basic
+module
+
+public meta import Mathlib.NumberTheory.Padics.PadicVal.Basic
 
 /--
 info: 100000

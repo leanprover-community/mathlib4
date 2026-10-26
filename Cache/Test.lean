@@ -3,15 +3,16 @@ Copyright (c) 2026 Marcelo Lynch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch
 -/
+module
 
-import Cache.Cli
-import Cache.Requests
-import Cache.Location
-import Cache.Marker
-import Cache.Upload
-import Cache.Query
-import Cache.Warning
-import Cache.Lean
+public import Cache.Cli
+public import Cache.Lean
+public import Cache.Location
+public import Cache.Marker
+public import Cache.Query
+public import Cache.Requests
+public import Cache.Upload
+public import Cache.Warning
 
 /-!
 # Unit tests for the cache CLI
@@ -1820,6 +1821,16 @@ def test_monitorCurl_carries_decomp_state : IO Unit := do
   assertTrue "the decompressed counter survives the round" (s.decomp.decompressed == 42)
   assertTrue "the decompFailed counter survives the round" (s.decomp.decompFailed == 1)
 
+/-- A curl run that exits 0 without a report for every transfer counts the missing
+reports as failures. -/
+def test_monitorCurl_counts_unreported_transfers : IO Unit := do
+  IO.println "monitorCurl counts unreported transfers as failed:"
+  let (s, _) ← withSuppressedOutput <|
+    monitorCurl #["--version"] 3 "Uploaded" "speed_upload"
+      (classifyUpload · · true)
+  assertTrue "no transfer reported" (s.done == 0 && s.success == 0)
+  assertTrue "the unreported transfers count as failed" (s.failed == 3)
+
 end DecompPipeline
 
 section TransferDiagnostics
@@ -1953,6 +1964,7 @@ def runAll : IO Unit := do
   test_readLocationsFrom
   test_finalizeDecomp
   test_monitorCurl_carries_decomp_state
+  test_monitorCurl_counts_unreported_transfers
   test_splitWriteOut
   test_curlGetWriteOut_real_curl
   test_transferDiagnostics
@@ -1960,7 +1972,7 @@ def runAll : IO Unit := do
 end Cache.Test
 
 open Cache Cache.Test Cache.Requests in
-def main : IO UInt32 := do
+public def main : IO UInt32 := do
   runAll
   let n ← failures.get
   if n == 0 then
