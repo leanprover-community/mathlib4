@@ -11,9 +11,6 @@ public import Mathlib.Data.Fintype.Sum
 
 import Mathlib.Tactic.ProxyType
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Finiteness instances on multi-spans
 -/

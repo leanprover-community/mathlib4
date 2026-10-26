@@ -10,9 +10,6 @@ public import Mathlib.Order.Monotone.Union
 
 import Mathlib.Algebra.Order.Group.Defs
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Monotonicity of odd functions
 

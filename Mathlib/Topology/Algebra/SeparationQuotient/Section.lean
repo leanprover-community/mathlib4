@@ -10,9 +10,6 @@ public import Mathlib.Topology.Algebra.SeparationQuotient.Basic
 
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Algebraic operations on `SeparationQuotient`
 

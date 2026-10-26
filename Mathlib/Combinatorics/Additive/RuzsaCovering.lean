@@ -11,9 +11,6 @@ public import Mathlib.SetTheory.Cardinal.Finite
 
 import Mathlib.Tactic.Positivity.Finset
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Ruzsa's covering lemma
 

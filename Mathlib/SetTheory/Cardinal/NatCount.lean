@@ -8,9 +8,6 @@ module
 public import Mathlib.Data.Nat.Count
 public import Mathlib.Data.Set.Card
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Counting on ℕ
 
