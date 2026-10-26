@@ -1,15 +1,8 @@
-/-
-Copyright (c) 2021 Yaël Dillies. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies
--/
-module
+module -- shake: keep-all
 
-public import Mathlib.Order.Heyting.Basic
-public import Mathlib.Order.Hom.Basic
-public import Mathlib.Order.Lex
-public import Mathlib.Order.WithBot
+public import Mathlib.Order.Sum.Order
 
+<<<<<<< HEAD
 /-!
 # Orders on a sum type
 
@@ -825,3 +818,6 @@ theorem orderIsoSumLexPUnit_symm_inl (a : α) : orderIsoSumLexPUnit.symm (toLex 
   rfl
 
 end WithTop
+=======
+deprecated_module (since := "2026-09-30")
+>>>>>>> master

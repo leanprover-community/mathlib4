@@ -6,8 +6,7 @@ Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 module
 
 public import Mathlib.Algebra.GroupWithZero.Divisibility
-public import Mathlib.Data.Nat.SuccPred
-public import Mathlib.Order.SuccPred.InitialSeg
+public import Mathlib.Order.SuccPred.Nat
 public import Mathlib.SetTheory.Ordinal.Basic
 
 /-!
@@ -184,7 +183,10 @@ theorem enum_succ_eq_top {o : Ordinal} :
     enum (α := (succ o).ToType) ⟨o, type_toType _ ▸ lt_succ o⟩ = ⊤ :=
   rfl
 
+<<<<<<< HEAD
 -- TODO: replace this with a `NoMaxOrder` instance
+=======
+>>>>>>> master
 set_option backward.isDefEq.respectTransparency false in
 theorem bounded_singleton {r : α → α → Prop} [IsWellOrder α r] (hr : IsSuccLimit (type r)) (x) :
     Bounded r {x} := by
@@ -238,14 +240,16 @@ theorem pred_le_self (o) : pred o ≤ o := by
   simp
 
 /-- `Ordinal.pred` and `Order.succ` form a Galois insertion. -/
-def pred_succ_gi : GaloisInsertion pred succ :=
+def predSuccGi : GaloisInsertion pred succ :=
   GaloisConnection.toGaloisInsertion @pred_le_iff_le_succ (by simp)
 
+@[deprecated (since := "2026-10-09")] alias pred_succ_gi := predSuccGi
+
 theorem pred_surjective : Function.Surjective pred :=
-  pred_succ_gi.l_surjective
+  predSuccGi.l_surjective
 
 theorem self_le_succ_pred (o) : o ≤ succ (pred o) :=
-  pred_succ_gi.gc.le_u_l o
+  predSuccGi.gc.le_u_l o
 
 theorem pred_eq_iff_isSuccPrelimit {o} : pred o = o ↔ IsSuccPrelimit o := by
   obtain ⟨a, rfl⟩ | ho := mem_range_succ_or_isSuccPrelimit o
@@ -393,6 +397,10 @@ theorem type_prod_lex {α β : Type u} (r : α → α → Prop) (s : β → β �
     [IsWellOrder β s] : type (Prod.Lex s r) = type r * type s :=
   rfl
 
+<<<<<<< HEAD
+=======
+-- TODO: fix precedence of `typeLT` so that `typeLT β * typeLT α` parses correctly
+>>>>>>> master
 @[simp]
 theorem type_lt_prod_lex {α β : Type u} [LinearOrder α] [LinearOrder β]
     [WellFoundedLT α] [WellFoundedLT β] : typeLT (α ×ₗ β) = (typeLT β) * (typeLT α) :=
@@ -447,11 +455,11 @@ instance mulRightMono : MulRightMono Ordinal.{u} :=
       · exact Prod.Lex.right _ (f.toRelEmbedding.map_rel_iff.2 h')⟩
 
 theorem le_mul_left (a : Ordinal) {b : Ordinal} (hb : 0 < b) : a ≤ a * b := by
-  convert! mul_le_mul_right (one_le_iff_pos.2 hb) a
+  convert mul_le_mul_right (one_le_iff_pos.2 hb) a
   rw [mul_one a]
 
 theorem le_mul_right (a : Ordinal) {b : Ordinal} (hb : 0 < b) : a ≤ b * a := by
-  convert! mul_le_mul_left (one_le_iff_pos.2 hb) a
+  convert mul_le_mul_left (one_le_iff_pos.2 hb) a
   rw [one_mul a]
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -541,8 +549,6 @@ theorem isSuccPrelimit_mul_left {a b : Ordinal} (ha : IsSuccLimit a) : IsSuccPre
 theorem nsmul_eq_mul : ∀ (n : ℕ) (a : Ordinal), n • a = a * n
   | 0, a => by rw [zero_nsmul, Nat.cast_zero, mul_zero]
   | n + 1, a => by rw [succ_nsmul, nsmul_eq_mul, Nat.cast_add_one, mul_add_one]
-
-@[deprecated (since := "2026-03-14")] alias smul_eq_mul := nsmul_eq_mul
 
 private theorem add_mul_limit_aux {a b c : Ordinal} (ba : b + a = a) (l : IsSuccLimit c)
     (IH : ∀ c' < c, (a + b) * succ c' = a * succ c' + b) : (a + b) * c = a * c :=
@@ -648,14 +654,14 @@ theorem mul_add_div_mul {a c : Ordinal} (hc : c < a) (b d : Ordinal) :
   · have H := mul_ne_zero hc.ne_zero hd
     apply le_antisymm
     · rw [← lt_succ_iff, ← lt_mul_iff_div_lt H, mul_assoc]
-      · grw [hc, ← mul_succ]
-        gcongr
-        rw [succ_le_iff]
-        exact lt_mul_succ_div b hd
+      grw [hc, ← mul_succ]
+      gcongr
+      rw [succ_le_iff]
+      exact lt_mul_succ_div b hd
     · grw [← mul_le_iff_le_div H, mul_assoc, mul_div_le b d, ← le_self_add]
 
 theorem mul_div_mul_cancel {a : Ordinal} (ha : a ≠ 0) (b c) : a * b / (a * c) = b / c := by
-  convert! mul_add_div_mul (pos_iff_ne_zero.2 ha) b c using 1
+  convert mul_add_div_mul (pos_iff_ne_zero.2 ha) b c using 1
   rw [add_zero]
 
 theorem div_eq {a b c : Ordinal} (hle : b * c ≤ a) (hlt : a < b * (c + 1)) : a / b = c := by
@@ -797,7 +803,7 @@ theorem mul_add_mod_mul {w x : Ordinal} (hw : w < x) (y z : Ordinal) :
 theorem mul_mod_mul (x y z : Ordinal) : (x * y) % (x * z) = x * (y % z) := by
   obtain rfl | hx := eq_zero_or_pos x
   · simp
-  · convert! mul_add_mod_mul hx y z using 1 <;>
+  · convert mul_add_mod_mul hx y z using 1 <;>
     rw [add_zero]
 
 theorem mod_mod_of_dvd (a : Ordinal) {b c : Ordinal} (h : c ∣ b) : a % b % c = a % c := by
@@ -886,8 +892,12 @@ theorem lt_omega0 {o : Ordinal} : o < ω ↔ ∃ n : ℕ, o = n := by
 theorem natCast_lt_omega0 (n : ℕ) : ↑n < ω :=
   lt_omega0.2 ⟨_, rfl⟩
 
+<<<<<<< HEAD
 @[deprecated (since := "2026-03-08")] alias nat_lt_omega0 := natCast_lt_omega0
 
+=======
+set_option backward.isDefEq.respectTransparency false in
+>>>>>>> master
 @[simp]
 theorem typein_lt_nat (x : ℕ) : typein x = x := by
   have : Fintype <| Iio x := Nat.fintypeIio x
@@ -915,8 +925,6 @@ theorem eq_natCast_or_omega0_le (o : Ordinal) : (∃ n : ℕ, o = n) ∨ ω ≤ 
   obtain ho | ho := lt_or_ge o ω
   · exact Or.inl <| lt_omega0.1 ho
   · exact Or.inr ho
-
-@[deprecated (since := "2026-03-12")] alias eq_nat_or_omega0_le := eq_natCast_or_omega0_le
 
 @[simp]
 theorem natCast_image_Iio (n : ℕ) : Nat.cast '' Set.Iio n = Set.Iio (n : Ordinal) := by

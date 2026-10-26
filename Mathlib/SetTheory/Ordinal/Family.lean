@@ -34,10 +34,6 @@ theorem bddAbove_of_small {s : Set Ordinal.{u}} [Small.{u} s] : BddAbove s := by
   refine ⟨a.ord, fun b hb ↦ le_of_lt ?_⟩
   simpa [lt_ord] using ha (mem_image_of_mem _ hb)
 
-@[deprecated bddAbove_of_small +typeChanged (since := "2026-04-04")]
-theorem bddAbove_range {ι : Type u} (f : ι → Ordinal.{max u v}) : BddAbove (Set.range f) :=
-  bddAbove_of_small
-
 theorem bddAbove_iff_small {s : Set Ordinal.{u}} : BddAbove s ↔ Small.{u} s :=
   ⟨fun ⟨a, h⟩ ↦ small_subset (s := Iic a) fun _ hx ↦ h hx, fun _ ↦ bddAbove_of_small⟩
 
@@ -102,11 +98,6 @@ theorem iSup_eq_zero_iff {ι} {f : ι → Ordinal.{u}} [Small.{u} ι] :
       le_antisymm (Ordinal.iSup_le fun i => nonpos_iff_eq_zero.2 (h i)) zero_le⟩
   rw [← nonpos_iff_eq_zero, ← h]
   exact Ordinal.le_iSup f i
-
-@[deprecated congrArg +typeChanged (since := "2026-03-27")]
-theorem iSup_eq_of_range_eq {ι ι'} {f : ι → Ordinal} {g : ι' → Ordinal}
-    (h : Set.range f = Set.range g) : iSup f = iSup g :=
-  congr_arg _ h
 
 -- TODO: generalize to conditionally complete lattices
 theorem iSup_sum {α β} (f : α ⊕ β → Ordinal.{u}) [Small.{u} α] [Small.{u} β] :

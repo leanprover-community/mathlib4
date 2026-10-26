@@ -6,9 +6,10 @@ Authors: Brian Nugent
 
 module
 
-public import Mathlib.CategoryTheory.Sites.EpiMono
 public import Mathlib.Topology.Sheaves.AddCommGrpCat
-public import Mathlib.Topology.Sheaves.LocallySurjective
+
+import Mathlib.CategoryTheory.Sites.EpiMono
+import Mathlib.Topology.Sheaves.LocallySurjective
 
 /-!
 # Flasque Sheaves
@@ -52,7 +53,6 @@ namespace IsFlasque
 
 attribute [instance low] IsFlasque.epi
 
-set_option backward.defeqAttrib.useBackward true in
 instance pushforward_isFlasque {Y : TopCat.{u}} [IsFlasque F] (f : X ⟶ Y) :
     IsFlasque (f _* F) where
   epi {U V} i := by

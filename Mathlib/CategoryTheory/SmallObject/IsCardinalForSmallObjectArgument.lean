@@ -5,13 +5,12 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.SmallObject.Construction
-public import Mathlib.CategoryTheory.SmallObject.TransfiniteIteration
-public import Mathlib.CategoryTheory.SmallObject.TransfiniteCompositionLifting
-public import Mathlib.CategoryTheory.MorphismProperty.IsSmall
 public import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
+public import Mathlib.CategoryTheory.MorphismProperty.IsSmall
+public import Mathlib.CategoryTheory.SmallObject.Construction
+public import Mathlib.CategoryTheory.SmallObject.TransfiniteCompositionLifting
+public import Mathlib.CategoryTheory.SmallObject.TransfiniteIteration
 public import Mathlib.SetTheory.Cardinal.Regular
-public import Mathlib.CategoryTheory.MorphismProperty.Factorization
 
 /-!
 # Cardinals that are suitable for the small object argument
@@ -262,7 +261,6 @@ noncomputable def iterationFunctorObjObjRightIso (f : Arrow C) (j : κ.ord.ToTyp
     (iterationObjRightIso I κ f).symm
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma iterationFunctorObjObjRightIso_ιIteration_app_right (f : Arrow C) (j : κ.ord.ToType) :
     (iterationFunctorObjObjRightIso I κ f j).hom ≫ ((ιIteration I κ).app f).right =
@@ -290,7 +288,7 @@ noncomputable def iterationFunctorMapSuccAppArrowIso (f : Arrow C) (j : κ.ord.T
   Arrow.isoMk (Iso.refl _)
     (((evaluation _ _).obj f).mapIso
       ((succStruct I κ).iterationFunctorObjSuccIso j (not_isMax j))) (by
-    have := NatTrans.congr_app ((succStruct I κ).iterationFunctor_map_succ j (not_isMax j)) f
+    have := congr($((succStruct I κ).iterationFunctor_map_succ j (not_isMax j)).app f)
     dsimp at this
     dsimp [iterationFunctor]
     rw [id_comp, this, assoc, Iso.inv_hom_id_app, comp_id]
@@ -373,7 +371,6 @@ noncomputable def relativeCellComplexιObjFObjSuccIso (j : κ.ord.ToType) :
   (Arrow.rightFunc ⋙ Arrow.leftFunc).mapIso
     (iterationFunctorMapSuccAppArrowIso I κ f j)
 
-set_option backward.defeqAttrib.useBackward true in
 lemma ιFunctorObj_eq (j : κ.ord.ToType) :
     letI := hasColimitsOfShape_discrete I κ
     letI := hasPushouts I κ
@@ -407,7 +404,6 @@ lemma πFunctorObj_eq (j : κ.ord.ToType) :
     NatTrans.comp_app, Arrow.comp_right,
     iterationFunctorMapSuccAppArrowIso_hom_right_right_comp_assoc]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma hasRightLiftingProperty_πObj {A B : C} (i : A ⟶ B) (hi : I i) (f : X ⟶ Y) :
     HasLiftingProperty i (πObj I κ f) := ⟨by
@@ -478,8 +474,6 @@ lemma πObj_naturality {f g : Arrow C} (φ : f ⟶ g) :
   rw [← assoc]
   apply comp_id
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- The functorial factorization `ιObj I κ f ≫ πObj I κ f.hom = f`
 with `ιObj I κ f` in `I.rlp.llp` and `πObj I κ f.hom` in `I.rlp`. -/
 @[simps]
@@ -498,7 +492,6 @@ lemma hasFunctorialFactorization :
   nonempty_functorialFactorizationData :=
     ⟨functorialFactorizationData I κ⟩
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `κ` is a suitable cardinal for the small object argument for `I : MorphismProperty C`,
 then the class `I.rlp.llp` is exactly the class of morphisms that are retracts
 of transfinite compositions (of shape `κ.ord.ToType`) of pushouts of coproducts

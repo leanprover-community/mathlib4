@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 module
 
 public import Mathlib.SetTheory.Cardinal.Arithmetic
-public import Mathlib.SetTheory.Cardinal.Cofinality.Basic
 public import Mathlib.SetTheory.Ordinal.FixedPoint
 
 /-!
@@ -122,10 +121,6 @@ theorem cof_lt_aleph0_iff {o : Ordinal} : cof o < ℵ₀ ↔ cof o ≤ 1 := by
 theorem aleph0_le_cof_iff {o : Ordinal} : ℵ₀ ≤ cof o ↔ 1 < cof o := by
   simp [← not_lt]
 
-@[deprecated one_lt_cof_iff +typeChanged (since := "2026-03-22")]
-theorem aleph0_le_cof {o} : ℵ₀ ≤ cof o ↔ IsSuccLimit o := by
-  rw [aleph0_le_cof_iff, one_lt_cof_iff]
-
 /-- A countable limit ordinal has cofinality `ℵ₀`. -/
 theorem cof_eq_aleph0_of_isSuccLimit {o : Ordinal} (ho : IsSuccLimit o) (ho' : o < ω₁) :
     cof o = ℵ₀ := by
@@ -176,8 +171,6 @@ theorem _root_.Order.cof_ord_cof (α : Type*) [LinearOrder α] [WellFoundedLT α
 theorem cof_ord_cof (o : Ordinal) : o.cof.ord.cof = o.cof := by
   simpa using Order.cof_ord_cof o.ToType
 
-@[deprecated (since := "2026-03-21")] alias cof_cof := cof_ord_cof
-
 /-! ### Cofinalities and suprema -/
 
 section LinearOrder
@@ -223,9 +216,6 @@ theorem cof_map_of_isNormal {f} (hf : IsNormal f) {a} (ha : IsSuccLimit a) : cof
   rw [hf.apply_of_isSuccLimit ha, cof_iSup_Iio _ ha.isSuccPrelimit]
   exact hf.strictMono.comp <| Subtype.strictMono_coe _
 
-@[deprecated (since := "2026-03-19")]
-alias cof_eq_of_isNormal := cof_map_of_isNormal
-
 theorem le_cof_map_of_isNormal {f} (hf : IsNormal f) (a) : cof a ≤ cof (f a) := by
   cases a using limitRecOn with
   | zero => simp
@@ -233,9 +223,6 @@ theorem le_cof_map_of_isNormal {f} (hf : IsNormal f) (a) : cof a ≤ cof (f a) :
     rw [cof_add_one, Cardinal.one_le_iff_ne_zero, cof_eq_zero.ne]
     exact (hf.strictMono (lt_succ a)).ne_zero
   | limit a ha => rw [cof_map_of_isNormal hf ha]
-
-@[deprecated (since := "2026-03-19")]
-alias cof_le_of_isNormal := le_cof_map_of_isNormal
 
 theorem sSup_add_one_lt_of_lt_cof {s : Set Ordinal.{u}} {a : Ordinal.{u}}
     (ha : #s < (lift.{u + 1} a).cof) (hs : ∀ i ∈ s, i < a) : sSup ((· + 1) '' s) < a := by
@@ -308,38 +295,6 @@ theorem _root_.Cardinal.iSup_lt_of_lt_cof_ord {f : α → Cardinal.{u}} {a : Car
   rw [← ord_lt_ord, iSup_ord]
   apply Ordinal.iSup_lt_of_lt_cof <;> simpa
 
-@[deprecated lift_iSup_lt_of_lt_cof +typeChanged (since := "2026-03-22")]
-theorem cof_iSup_le_lift {ι} {f : ι → Ordinal} (H : ∀ i, f i < iSup f) :
-    cof (iSup f) ≤ Cardinal.lift.{v, u} #ι := by
-  by_contra! hf
-  apply (lift_iSup_lt_of_lt_cof _ H).false
-  rwa [Cardinal.lift_umax, lift_id']
-
-@[deprecated iSup_lt_of_lt_cof +typeChanged (since := "2026-03-22")]
-theorem cof_iSup_le {ι} {f : ι → Ordinal} (H : ∀ i, f i < iSup f) :
-    cof (iSup f) ≤ #ι := by
-  by_contra! hf
-  exact (iSup_lt_of_lt_cof hf H).false
-
-@[deprecated lift_iSup_lt_of_lt_cof +typeChanged (since := "2026-03-22")]
-theorem iSup_lt_ord_lift {ι} {f : ι → Ordinal} {c : Ordinal} (hι : Cardinal.lift.{v, u} #ι < c.cof)
-    (hf : ∀ i, f i < c) : iSup f < c := by
-  apply lift_iSup_lt_of_lt_cof _ hf
-  rwa [Cardinal.lift_umax, lift_id']
-
-@[deprecated (since := "2026-03-22")]
-alias iSup_lt_ord := iSup_lt_of_lt_cof
-
-@[deprecated lift_iSup_lt_of_lt_cof +typeChanged (since := "2026-03-22")]
-theorem iSup_lt_lift {ι} {f : ι → Cardinal} {c : Cardinal}
-    (hι : Cardinal.lift.{v, u} #ι < c.ord.cof)
-    (hf : ∀ i, f i < c) : iSup f < c := by
-  apply lift_iSup_lt_of_lt_cof_ord _ hf
-  rwa [Cardinal.lift_umax, c.lift_id']
-
-@[deprecated (since := "2026-03-22")]
-alias iSup_lt := Cardinal.iSup_lt_of_lt_cof_ord
-
 theorem nfpFamily_lt_ord_lift {ι} {f : ι → Ordinal → Ordinal} {c} (hc : ℵ₀ < cof c)
     (hc' : Cardinal.lift.{v, u} #ι < cof c) (hf : ∀ (i), ∀ b < c, f i b < c) {a} (ha : a < c) :
     nfpFamily f a < c := by
@@ -384,16 +339,6 @@ theorem cof_preOmega {o : Ordinal} (ho : IsSuccPrelimit o) : (preOmega o).cof = 
 @[simp]
 theorem cof_omega {o : Ordinal} (ho : IsSuccLimit o) : (ω_ o).cof = o.cof :=
   cof_map_of_isNormal isNormal_omega ho
-
-@[deprecated Order.exists_cof_eq +typeChanged (since := "2026-03-20")]
-theorem cof_eq' (r : α → α → Prop) [H : IsWellOrder α r] (h : IsSuccLimit (type r)) :
-    ∃ S : Set α, (∀ a, ∃ b ∈ S, r a b) ∧ #S = cof (type r) := by
-  classical
-  let := linearOrderOfSTO r
-  have : NoMaxOrder α := isSuccPrelimit_type_lt_iff.1 h.isSuccPrelimit
-  obtain ⟨s, hs, hs'⟩ := exists_cof_eq α
-  refine ⟨s, ?_, hs'⟩
-  rwa [← not_bddAbove_iff_isCofinal, not_bddAbove_iff] at hs
 
 @[simp]
 theorem cof_univ : cof univ.{u, v} = Cardinal.univ.{u, v} := by
@@ -474,15 +419,9 @@ theorem lt_power_cof_ord {c : Cardinal} (hc : ℵ₀ ≤ c) : c < c ^ c.ord.cof 
   refine (mk_iUnion_le_sum_mk.trans' ?_).trans_lt (sum_lt_prod _ _ fun i ↦ mk_Iio_lt i.1 hα)
   rw [← mk_univ, ← isCofinal_iff_iUnion_Iio_eq_univ.1 hs, iUnion_coe_set]
 
-@[deprecated (since := "2026-03-30")]
-alias lt_power_cof := lt_power_cof_ord
-
 theorem lt_cof_ord_power {a b : Cardinal} (ha : ℵ₀ ≤ a) (hb : 1 < b) : a < (b ^ a).ord.cof := by
   apply lt_imp_lt_of_le_imp_le (power_le_power_left <| power_ne_zero a hb.ne_bot)
   rw [← power_mul, mul_eq_self ha]
-  exact lt_power_cof_ord (ha.trans <| (cantor' _ hb).le)
-
-@[deprecated (since := "2026-03-30")]
-alias lt_cof_power := lt_cof_ord_power
+  exact lt_power_cof_ord (ha.trans (cantor' _ hb).le)
 
 end Cardinal

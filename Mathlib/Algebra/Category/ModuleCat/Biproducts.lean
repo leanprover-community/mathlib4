@@ -5,9 +5,6 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Group.Pi.Lemmas
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
-public import Mathlib.Algebra.Category.ModuleCat.Abelian
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 
 /-!
@@ -84,7 +81,6 @@ namespace HasLimit
 
 variable {J : Type w} (f : J → ModuleCat.{max w v} R)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The map from an arbitrary cone over an indexed family of abelian groups
 to the Cartesian product of those groups.
 -/
@@ -109,9 +105,7 @@ def productLimitCone : Limits.LimitCone (Discrete.functor f) where
   isLimit :=
     { lift := lift.{_, v} f
       fac := fun _ _ => rfl
-      uniq := fun s m w => by
-        ext x j
-        exact congr_arg (fun g : s.pt ⟶ f j => (g : s.pt → f j) x) (w ⟨j⟩) }
+      uniq s m w := by ext x j; congrm $(w ⟨j⟩) x }
 
 end HasLimit
 

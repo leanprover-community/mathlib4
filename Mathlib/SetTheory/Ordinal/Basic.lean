@@ -6,11 +6,9 @@ Authors: Mario Carneiro, Floris van Doorn
 module
 
 public import Mathlib.Algebra.Order.SuccPred
-public import Mathlib.Data.Sum.Order
 public import Mathlib.Order.IsNormal
 public import Mathlib.Order.Shrink
 public import Mathlib.SetTheory.Cardinal.Basic
-public import Mathlib.Tactic.PPWithUniv
 
 /-!
 # Ordinals
@@ -674,7 +672,7 @@ Ordinal.ToType.toOrd : o.ToType → Iio o
 abbrev ToType (o : Ordinal.{u}) : Type u :=
   Shrink (Iio o)
 
-instance _root_.hasWellFounded_toType (o : Ordinal) : WellFoundedRelation o.ToType :=
+instance (o : Ordinal) : WellFoundedRelation o.ToType :=
   WellFoundedLT.toWellFoundedRelation
 
 noncomputable instance (o : Ordinal) : SuccOrder o.ToType :=
@@ -721,20 +719,6 @@ theorem enum_le_enum' (a : Ordinal) {o₁ o₂ : Iio (typeLT a.ToType)} :
 theorem enum_zero_le' {o : Ordinal} (h0 : 0 < o) (a : o.ToType) :
     enum ⟨0, show 0 ∈ Iio (typeLT o.ToType) by simpa⟩ ≤ a :=
   enum_zero_le ..
-
-/-- Given two ordinals `α ≤ β`, then `initialSegToType α β` is the initial segment embedding of
-`α.ToType` into `β.ToType`. -/
-@[deprecated type_le_iff +typeChanged (since := "2026-04-12")]
-noncomputable def initialSegToType {α β : Ordinal} (h : α ≤ β) : α.ToType ≤i β.ToType := by
-  apply Classical.choice (type_le_iff.mp _)
-  rwa [type_toType, type_toType]
-
-/-- Given two ordinals `α < β`, then `principalSegToType α β` is the principal segment embedding
-of `α.ToType` into `β.ToType`. -/
-@[deprecated type_lt_iff +typeChanged (since := "2026-04-12")]
-noncomputable def principalSegToType {α β : Ordinal} (h : α < β) : α.ToType <i β.ToType := by
-  apply Classical.choice (type_lt_iff.mp _)
-  rwa [type_toType, type_toType]
 
 @[simp]
 theorem _root_.Cardinal.mk_toType (o : Ordinal) : #o.ToType = o.card :=
@@ -789,8 +773,6 @@ theorem _root_.Cardinal.mk_Iio_ordinal (o : Ordinal.{u}) :
     #(Iio o) = Cardinal.lift.{u + 1} o.card := by
   rw [lift_card, ← typein_ordinal]
   rfl
-
-@[deprecated (since := "2026-03-13")] alias mk_Iio_ordinal := Cardinal.mk_Iio_ordinal
 
 /-! ### The first infinite ordinal ω -/
 
@@ -930,26 +912,6 @@ instance : SuccOrder Ordinal.{u} :=
 
 instance : SuccAddOrder Ordinal := ⟨fun _ => rfl⟩
 
-@[deprecated Order.one_le_iff_ne_zero +typeChanged (since := "2026-03-24")]
-protected theorem one_le_iff_ne_zero {o : Ordinal} : 1 ≤ o ↔ o ≠ 0 :=
-  Order.one_le_iff_ne_zero
-
-@[deprecated add_pos_of_right +typeChanged (since := "2026-04-04")]
-theorem succ_pos (o : Ordinal) : 0 < succ o :=
-  add_pos_of_right zero_lt_one o
-
-@[deprecated add_pos_of_right +typeChanged (since := "2026-04-04")]
-theorem add_one_ne_zero (o : Ordinal) : o + 1 ≠ 0 :=
-  (add_pos_of_right zero_lt_one o).ne'
-
-@[deprecated Order.lt_one_iff +typeChanged (since := "2026-03-24")]
-theorem lt_one_iff_zero {a : Ordinal} : a < 1 ↔ a = 0 :=
-  Order.lt_one_iff
-
-@[deprecated Order.le_one_iff +typeChanged (since := "2026-03-24")]
-protected theorem le_one_iff {a : Ordinal} : a ≤ 1 ↔ a = 0 ∨ a = 1 :=
-  Order.le_one_iff
-
 @[deprecated Nat.cast_add_one +typeChanged (since := "2026-05-21")]
 theorem natCast_succ (n : ℕ) : ↑n.succ = succ (n : Ordinal) :=
   n.cast_add_one
@@ -1041,14 +1003,10 @@ def ord (c : Cardinal) : Ordinal :=
 theorem ord_eq_iInf (α : Type u) : ord #α = ⨅ r : { r // IsWellOrder α r }, @type α r.1 r.2 :=
   (rfl)
 
-@[deprecated (since := "2026-03-15")] alias ord_eq_Inf := ord_eq_iInf
-
 /-- There exists a well-order on `α` whose order type is exactly `ord #α`. -/
 theorem exists_ord_eq (α) : ∃ (r : α → α → Prop) (_ : IsWellOrder α r), ord #α = type r :=
   let ⟨r, wo⟩ := ciInf_mem fun r : { r // IsWellOrder α r } => @type α r.1 r.2
   ⟨r.1, r.2, wo.symm⟩
-
-@[deprecated (since := "2026-03-29")] alias ord_eq := exists_ord_eq
 
 /-- There exists a well-order on `α` whose order type is exactly `ord #α`. -/
 theorem exists_ord_eq_type_lt (α) :
@@ -1099,17 +1057,23 @@ theorem ord_card_le (o : Ordinal) : o.card.ord ≤ o :=
 theorem lt_ord_succ_card (o : Ordinal) : o < (succ o.card).ord :=
   lt_ord.2 <| lt_succ _
 
-theorem card_le_iff {o : Ordinal} {c : Cardinal} : o.card ≤ c ↔ o < (succ c).ord := by
+theorem _root_.Ordinal.card_le_iff {o : Ordinal} {c : Cardinal} :
+    o.card ≤ c ↔ o < (succ c).ord := by
   rw [lt_ord, lt_succ_iff]
+
+@[deprecated (since := "2026-10-20")] protected alias card_le_iff := Ordinal.card_le_iff
 
 /--
 A variation on `Cardinal.lt_ord` using `≤`: If `o` is no greater than the
 initial ordinal of cardinality `c`, then its cardinal is no greater than `c`.
 
-The converse, however, is false (for instance, `o = ω+1` and `c = ℵ₀`).
+The converse, however, is false (for instance, `o = ω + 1` and `c = ℵ₀`).
 -/
-lemma card_le_of_le_ord {o : Ordinal} {c : Cardinal} (ho : o ≤ c.ord) : o.card ≤ c := by
+lemma _root_.Ordinal.card_le_of_le_ord {o : Ordinal} {c : Cardinal} (ho : o ≤ c.ord) :
+    o.card ≤ c := by
   rw [← card_ord c]; exact Ordinal.card_le_card ho
+
+@[deprecated (since := "2026-10-20")] protected alias card_le_of_le_ord := Ordinal.card_le_of_le_ord
 
 @[gcongr, mono]
 theorem ord_strictMono : StrictMono ord :=
@@ -1189,13 +1153,6 @@ theorem mk_Iio_lt [LinearOrder α] [WellFoundedLT α] (i : α) (h : ord #α = ty
 theorem mk_Ioi_lt {α : Type*} [LinearOrder α] [WellFoundedGT α] (i : α) (h : ord #α = typeLT αᵒᵈ) :
     #(Ioi i) < #α :=
   mk_Iio_lt (OrderDual.toDual i) h
-
-@[deprecated mk_Iio_lt +typeChanged (since := "2026-04-12")]
-theorem mk_Iio_toType_ord_lt {c : Cardinal} (i : c.ord.ToType) : #(Iio i) < c := by
-  simpa using mk_Iio_lt i
-
-set_option linter.deprecated.deprecatedTarget false in
-@[deprecated (since := "2026-03-20")] alias mk_Iio_ord_toType := mk_Iio_toType_ord_lt
 
 @[simp]
 theorem ord_eq_zero {a : Cardinal} : a.ord = 0 ↔ a = 0 :=

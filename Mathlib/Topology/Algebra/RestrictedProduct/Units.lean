@@ -5,9 +5,9 @@ Authors: Salvatore Mercuri
 -/
 module
 
-public import Mathlib.Topology.Algebra.RestrictedProduct.Basic
-public import Mathlib.Algebra.Group.Submonoid.Units
 public import Mathlib.Algebra.Group.Pi.Units
+public import Mathlib.Algebra.Group.Submonoid.Units
+public import Mathlib.Topology.Algebra.RestrictedProduct.Basic
 
 /-!
 # Units of restricted products
@@ -56,9 +56,6 @@ theorem eventually_isUnit_of_isUnit {x : Πʳ i, [R i, B i]_[𝓕]} (hx : IsUnit
   choose b hb using hx
   exact ⟨Classical.skolem.symm.1 ⟨b, hb⟩, by filter_upwards [x.2, b.2] using
     fun i hx hb ↦ ⟨hx, ⟨b i, hb⟩, by simp_all [← SetLike.coe_eq_coe]⟩⟩
-
-@[deprecated (since := "2026-04-06")]
-alias eventualy_isUnit_of_isUnit := eventually_isUnit_of_isUnit
 
 theorem isUnit_iff {x : Πʳ i, [R i, B i]_[𝓕]} :
     IsUnit x ↔ (∀ i, IsUnit (x i)) ∧ ∀ᶠ i in 𝓕, ∃ (h : x i ∈ B i), IsUnit (⟨x i, h⟩ : B i) :=
