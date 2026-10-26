@@ -45,10 +45,7 @@ theorem coe_coeₗ : (coeₗ R F : F → α → β) = DFunLike.coe := rfl
 variable (R F) in
 /-- Evaluation as a linear map. -/
 @[expose]
-def evalₗ (x : α) : F →ₗ[R] β where
-  toFun f := f x
-  map_add' := by simp
-  map_smul' := by simp
+def evalₗ (x : α) : F →ₗ[R] β := (Pi.evalₗ R _ x).comp (coeₗ R F)
 
 @[simp]
 theorem evalₗ_apply (x : α) (f : F) : evalₗ R F x f = f x := rfl
