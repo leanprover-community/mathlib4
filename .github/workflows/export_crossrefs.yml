@@ -21,14 +21,13 @@ on:
         default: true
 
 concurrency:
-  group: export-crossrefs
+  # Keyed on the repository of the triggering run, so that runs triggered from forks,
+  # which the `export` job skips, can't cancel ours.
+  group: export-crossrefs-${{ github.event.workflow_run.head_repository.full_name || github.repository }}
   cancel-in-progress: true
 
 permissions:
   contents: read
-  # Required for the token-minting action to request a GitHub OIDC token,
-  # which it exchanges (via Azure Key Vault) for a GitHub App installation token.
-  id-token: write
 
 env:
   CROSSREFS_REPO: leanprover-community/crossref-exports
@@ -38,14 +37,33 @@ jobs:
   export:
     name: Export cross-reference JSON
     runs-on: ubuntu-latest
-    environment:
-      name: crossref-exports
-      deployment: false
+    # `workflow_run` matches the triggering workflow by name and branch name only, which
+    # doesn't identify it. Only act on runs for pushes to this repository.
     if: >-
       github.repository == 'leanprover-community/mathlib4' &&
       (github.event_name == 'workflow_dispatch'
-      || github.event.workflow_run.conclusion == 'success')
+      || (github.event.workflow_run.conclusion == 'success'
+          && github.event.workflow_run.event == 'push'
+          && github.event.workflow_run.head_repository.full_name == github.repository))
+    # This job runs Mathlib code and loads the cached oleans, so it gets no credentials, no
+    # OIDC token and no Actions cache. The `publish` job reads its result as data.
+    permissions:
+      contents: read
+    cache-mode: none
     steps:
+      # For a tag push, `head_branch` is the tag name, so also check that the commit is on
+      # the master branch. (`branches/master` can't resolve to a tag.)
+      - name: Check that the built commit is on master
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          master_sha="$(gh api "repos/${GITHUB_REPOSITORY}/branches/master" --jq .commit.sha)"
+          status="$(gh api "repos/${GITHUB_REPOSITORY}/compare/${BUILT_SHA}...${master_sha}?per_page=1" --jq .status)"
+          if [[ "${status}" != "identical" && "${status}" != "ahead" ]]; then
+            echo "::error::${BUILT_SHA} is not on master (compare status: ${status})."
+            exit 1
+          fi
+
       - name: Checkout the built commit
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -71,6 +89,34 @@ jobs:
         run: |
           jq -e '.entries | length > 0' crossrefs.json > /dev/null
           echo "Exported $(jq '.entries | length' crossrefs.json) entries."
+
+      - name: Upload crossrefs.json
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: crossrefs
+          path: crossrefs.json
+          if-no-files-found: error
+          retention-days: 3
+
+  publish:
+    name: Publish cross-reference JSON
+    needs: export
+    runs-on: ubuntu-latest
+    environment:
+      name: crossref-exports
+      deployment: false
+    # Holds the app token. Nothing from the checkout runs in this job: it only takes
+    # `crossrefs.json` from the `export` job's artifact.
+    permissions:
+      contents: read
+      # Required for the token-minting action to request a GitHub OIDC token,
+      # which it exchanges (via Azure Key Vault) for a GitHub App installation token.
+      id-token: write
+    steps:
+      - name: Download crossrefs.json
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: crossrefs
 
       # Split `owner/repo` so the token can be scoped to the crossrefs repo. The
       # app is installed on the crossrefs repo's owner, not on this repository,
@@ -147,8 +193,13 @@ jobs:
             echo "No change in entries; nothing to commit."
           fi
 
+  report_failure:
+    name: Report failure
+    needs: [export, publish]
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
       - name: Post failure message on Zulip
-        if: failure()
         uses: zulip/github-actions-zulip/send-message@f675f2b4eb2a95fae974215476dcb7ad8dfeff6b # v2.0.2
         with:
           api-key: ${{ secrets.ZULIP_API_KEY }}
