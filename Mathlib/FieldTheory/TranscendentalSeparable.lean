@@ -202,7 +202,6 @@ noncomputable def Polynomial.tensorScalarEquiv : K[X] ⊗[k] S ≃ₐ[K] (K ⊗[
         (Algebra.TensorProduct.assoc k k K K S k[X]).symm).trans
           ((polyEquivTensor' k (K ⊗[k] S)).symm.restrictScalars K)
 
-@[simp]
 lemma Polynomial.tensorScalarEquiv_algebraMap_eq_map_algebraMap (f : K[X]) :
     (Polynomial.tensorScalarEquiv k K S) ((algebraMap K[X] (K[X] ⊗[k] S)) f) =
       f.map (algebraMap K (K ⊗[k] S)) := by
