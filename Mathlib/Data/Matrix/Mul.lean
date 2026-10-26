@@ -556,7 +556,7 @@ theorem mul_mul_left [Fintype n] (M : Matrix m n α) (N : Matrix n o α) (a : α
 lemma pow_apply_nonneg [Fintype n] [DecidableEq n] [PartialOrder α] [IsOrderedRing α]
     {A : Matrix n n α} (hA : ∀ i j, 0 ≤ A i j) (k : ℕ) : ∀ i j, 0 ≤ (A ^ k) i j := by
   induction k with
-  | zero => aesop (add simp one_apply)
+  | zero => aesop (add simp Matrix.one_apply)
   | succ m ih =>
     intro i j; rw [pow_succ, Matrix.mul_apply]
     exact Finset.sum_nonneg fun l _ => mul_nonneg (ih i l) (hA l j)
