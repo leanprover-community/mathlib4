@@ -944,9 +944,8 @@ instance : Algebra R (Center A) where
      map_mul' _ _ := by simp
      map_zero' := by simp
      map_add' x y := by simp}
-  commutes' r x := by simp [Algebra.commutes]
-  smul_def' r x := by simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, Center.eq_iff,
-    Center.coe_mul, ← Algebra.smul_def]; rfl
+  commutes' r x := Subtype.ext (Algebra.commutes r x.val)
+  smul_def' r x := Subtype.ext (Algebra.smul_def r x.val)
 
 @[simp]
 lemma _root_.Center.coe_smul (r : R) (z : Center A) :
