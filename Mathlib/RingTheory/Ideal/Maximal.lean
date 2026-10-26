@@ -30,7 +30,7 @@ public section
 
 universe u v w
 
-variable {α : Type u} {β : Type v} {F : Type w}
+variable {α : Type u} {F : Type w}
 
 open Set
 
@@ -40,7 +40,7 @@ section Semiring
 
 namespace Ideal
 
-variable [Semiring α] (I : Ideal α) {a b : α}
+variable [Semiring α] (I : Ideal α) {a : α}
 
 /-- An ideal is maximal if it is maximal in the collection of proper ideals. -/
 @[wikidata Q1203540]
@@ -160,7 +160,7 @@ theorem IsMaximal.isPrime {I : Ideal α} (H : I.IsMaximal) : I.IsPrime :=
       obtain ⟨_, oJ⟩ := isMaximal_iff.1 H
       specialize oJ J x IJ hx xJ
       rcases Submodule.mem_span_insert.mp oJ with ⟨a, b, h, oe⟩
-      obtain F : y * 1 = y * (a • x + b) := congr_arg (fun g : α => y * g) oe
+      obtain F : y * 1 = y * (a • x + b) := congr(y * $oe)
       rw [← mul_one y, F, mul_add, mul_comm, smul_eq_mul, mul_assoc]
       refine Submodule.add_mem I (I.mul_mem_left a hxy) (Submodule.smul_mem I y ?_)
       rwa [Submodule.span_eq] at h⟩

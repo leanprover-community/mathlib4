@@ -21,7 +21,7 @@ assert_not_exists RelIso Multiset Set.indicator Pi.single_smul₀ Field
 
 universe u v
 
-variable {R S M M₂ : Type*}
+variable {R S M : Type*}
 
 section AddCommMonoid
 

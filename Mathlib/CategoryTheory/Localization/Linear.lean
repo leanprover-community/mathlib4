@@ -5,10 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Localization.HasLocalization
-public import Mathlib.CategoryTheory.Center.Localization
 public import Mathlib.CategoryTheory.Center.Linear
+public import Mathlib.CategoryTheory.Center.Localization
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
+public import Mathlib.CategoryTheory.Localization.HasLocalization
 
 /-!
 # Localization of linear categories
@@ -74,7 +74,6 @@ variable {E : Type*} [Category* E]
   (R : Type*) [Ring R]
   [Linear R C] [Linear R D] [Linear R E] [L.Linear R]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma functor_linear_iff (F : C ⥤ E) (G : D ⥤ E) [Lifting L W F G] :
     F.Linear R ↔ G.Linear R := by
   constructor

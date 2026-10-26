@@ -5,11 +5,10 @@ Authors: Anne Baanen, Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Div
 public import Mathlib.Algebra.Polynomial.Taylor
 public import Mathlib.LinearAlgebra.Determinant
-public import Mathlib.LinearAlgebra.Matrix.Block
-public import Mathlib.RingTheory.Polynomial.Basic
+
+import Mathlib.LinearAlgebra.Matrix.Block
 
 /-!
 # Polynomials with degree strictly less than `n`
@@ -153,7 +152,7 @@ end degreeLT
 
 section taylor
 
-variable {R : Type*} [CommRing R] {r : R} {m n : ℕ} {s : R} {f g : R[X]}
+variable {R : Type*} [CommRing R] {r : R} {n : ℕ} {f : R[X]}
 
 @[simp]
 lemma taylor_mem_degreeLT : taylor r f ∈ R[X]_n ↔ f ∈ R[X]_n := by simp [mem_degreeLT]

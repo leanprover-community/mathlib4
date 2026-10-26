@@ -5,10 +5,9 @@ Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 -/
 module
 
-public import Mathlib.LinearAlgebra.Prod
-public import Mathlib.LinearAlgebra.Basis.Defs
 public import Mathlib.LinearAlgebra.Finsupp.SumProd
 public import Mathlib.LinearAlgebra.FreeModule.Basic
+public import Mathlib.LinearAlgebra.Prod
 
 /-!
 # Bases for the product of modules
@@ -24,7 +23,7 @@ universe u
 
 open Function Finsupp
 
-variable {ι : Type*} {ι' : Type*} {R : Type*} {R₂ : Type*} {M : Type*} {M' : Type*}
+variable {ι : Type*} {ι' : Type*} {R : Type*} {M : Type*} {M' : Type*}
 
 namespace Module.Basis
 

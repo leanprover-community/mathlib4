@@ -5,8 +5,9 @@ Authors: Kim Morrison, Floris van Doorn
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Opposites
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+
+import Mathlib.CategoryTheory.Limits.Opposites
 
 /-!
 # Products and coproducts in `C` and `Cᵒᵖ`
@@ -180,7 +181,6 @@ theorem desc_op_comp_opCoproductIsoProduct'_hom {c : Cofan Z} {f : Fan (op <| Z 
   erw [opCoproductIsoProduct'_inv_comp_inj, IsLimit.fac]
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 theorem desc_op_comp_opCoproductIsoProduct_hom [HasCoproduct Z] {X : C} (π : (a : α) → Z a ⟶ X) :
     (Sigma.desc π).op ≫ (opCoproductIsoProduct Z).hom = Pi.lift (fun a ↦ (π a).op) := by
   convert!
@@ -279,7 +279,6 @@ theorem opProductIsoCoproduct'_inv_comp_lift {f : Fan Z} {c : Cofan (op <| Z ·)
   rfl
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 theorem opProductIsoCoproduct_inv_comp_lift [HasProduct Z] {X : C} (π : (a : α) → X ⟶ Z a) :
     (opProductIsoCoproduct Z).inv ≫ (Pi.lift π).op = Sigma.desc (fun a ↦ (π a).op) := by
   convert!
@@ -300,7 +299,6 @@ instance : HasBinaryCoproduct (op A) (op B) := by
   convert! (inferInstance : HasCoproduct fun x ↦ op (WalkingPair.casesOn x A B : C)) with x
   cases x <;> rfl
 
-set_option backward.isDefEq.respectTransparency false in
 variable (A B) in
 /--
 The canonical isomorphism from the opposite of the binary product to the coproduct in the opposite
@@ -310,15 +308,8 @@ def opProdIsoCoprod : op (A ⨯ B) ≅ (op A ⨿ op B) where
   hom := (prod.lift coprod.inl.unop coprod.inr.unop).op
   inv := coprod.desc prod.fst.op prod.snd.op
   hom_inv_id := by
-    apply Quiver.Hom.unop_inj
     ext <;>
-    · simp only
-      apply Quiver.Hom.op_inj
-      simp
-  inv_hom_id := by
-    ext <;>
-    · simp only [colimit.ι_desc_assoc]
-      apply Quiver.Hom.unop_inj
+    · apply Quiver.Hom.op_inj
       simp
 
 @[reassoc (attr := simp)]

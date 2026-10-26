@@ -6,13 +6,10 @@ Authors: Raphael Douglas Giles
 
 module
 
-public import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
-public import Mathlib.RingTheory.Length
 public import Mathlib.RingTheory.OrderOfVanishing.Basic
-public import Mathlib.RingTheory.DiscreteValuationRing.TFAE
-public import Mathlib.RingTheory.DedekindDomain.AdicValuation
-public import Mathlib.RingTheory.Valuation.Discrete.Basic
 public import Mathlib.RingTheory.Valuation.Discrete.IsDiscreteValuationRing
+
+import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 
 /-!
 # Order of vanishing in Noetherian rings.
@@ -31,7 +28,6 @@ section NoetherianDimLEOne
 
 variable {R : Type*} [CommRing R]
 variable [IsNoetherianRing R] [Ring.KrullDimLE 1 R]
-variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
 
 open scoped nonZeroDivisors
 /--
@@ -39,7 +35,7 @@ Order of vanishing function as a monoid homomorphism
 -/
 noncomputable
 def ordMonoidHom : R⁰ →* Multiplicative ℕ where
-  toFun x := .ofAdd <| (Ring.ord R x).toNat
+  toFun x := .ofAdd (Ring.ord R x).toNat
   map_one' := by simp [OneMemClass.coe_one, isUnit_one, ord_of_isUnit]
   map_mul' x y := by simp [ord_mul, ENat.toNat_add (ord_ne_top x.2) (ord_ne_top y.2)]
 

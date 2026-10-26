@@ -22,25 +22,26 @@ universe u
 
 namespace LinOrd
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `LinOrd.of X` as `↧X`. -/
+@[app_delab LinOrd.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 /-- The type of morphisms in `LinOrd R`. -/
 @[ext]
 structure Hom (X Y : LinOrd.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying `OrderHom`. -/
   hom' : X →o Y
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Category LinOrd.{u} where
   Hom X Y := Hom X Y
   id _ := ⟨OrderHom.id⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory LinOrd (· →o ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `LinOrd` back into a `OrderHom`. -/
 abbrev Hom.hom {X Y : LinOrd.{u}} (f : Hom X Y) :=
@@ -125,7 +126,7 @@ instance : Inhabited LinOrd :=
   ⟨of PUnit⟩
 
 instance hasForgetToLat : HasForget₂ LinOrd Lat where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := Lat.ofHom (OrderHomClass.toLatticeHom _ _ f.hom)
 
 /-- Constructs an equivalence between linear orders from an order isomorphism between them. -/

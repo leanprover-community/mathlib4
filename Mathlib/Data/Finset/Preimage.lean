@@ -13,6 +13,8 @@ public import Mathlib.Data.Set.Finite.Basic
 # Preimage of a `Finset` under an injective map.
 -/
 
+open scoped Finset
+
 @[expose] public section
 
 assert_not_exists Finset.sum
@@ -21,7 +23,7 @@ open Set Function
 
 universe u v w x
 
-variable {α : Type u} {β : Type v} {ι : Sort w} {γ : Type x}
+variable {α : Type u} {β : Type v}
 
 namespace Finset
 
@@ -101,7 +103,7 @@ theorem map_subset_iff_subset_preimage {f : α ↪ β} {s : Finset α} {t : Fins
   classical rw [map_eq_image, image_subset_iff_subset_preimage]
 
 lemma card_preimage (s : Finset β) (f : α → β) (hf) [DecidablePred (· ∈ Set.range f)] :
-    (s.preimage f hf).card = {x ∈ s | x ∈ Set.range f}.card :=
+    #(s.preimage f hf) = #{x ∈ s | x ∈ Set.range f} :=
   card_nbij f (by simp [Set.MapsTo]) (by simpa) (fun b hb ↦ by aesop)
 
 theorem image_preimage [DecidableEq β] (f : α → β) (s : Finset β) [∀ x, Decidable (x ∈ Set.range f)]
@@ -195,7 +197,7 @@ namespace Equiv
 
 /-- Given an equivalence `e : α ≃ β` and `s : Finset β`, restrict `e` to an equivalence
 from `e ⁻¹' s` to `s`. -/
-@[simps]
+@[simps, implicit_reducible]
 def restrictPreimageFinset (e : α ≃ β) (s : Finset β) : (s.preimage e e.injective.injOn) ≃ s where
   toFun a := ⟨e a, Finset.mem_preimage.1 a.2⟩
   invFun b := ⟨e.symm b, by simp⟩
@@ -212,8 +214,6 @@ lemma image_eq_preimage_symm_of_finset [DecidableEq β] (e : α ≃ β) (s : Fin
 
 end Equiv
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Reindexing and then restricting to a `Finset` is the same as first restricting to the preimage
 of this `Finset` and then reindexing. -/
 lemma Finset.restrict_comp_piCongrLeft {π : β → Type*} (s : Finset β) (e : α ≃ β) :
