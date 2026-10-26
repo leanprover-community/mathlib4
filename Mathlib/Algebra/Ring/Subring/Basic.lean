@@ -412,6 +412,8 @@ instance {R : Type*} [Ring R] : CommRing (Center R) where
   intCast n := Center.mk n (by simp)
   intCast_ofNat n := by simp
   intCast_negSucc n := by simp
+  sub a b := Center.mk (a.val - b.val) (by simp [sub_eq_add_neg, a.prop, b.prop])
+  sub_eq_add_neg a b := Subtype.ext (sub_eq_add_neg a.val b.val)
   zsmul n a := Center.mk (n • a.val) <| by
     simpa only [zsmul_eq_mul] using
       Set.mul_mem_center (Set.intCast_mem_center R n) a.prop
@@ -425,8 +427,11 @@ lemma _root_.Center.coe_zsmul {R : Type*} [Ring R] (n : ℤ) (z : Center R) :
     (n • z).val = n • z.val := rfl
 
 @[simp]
-lemma _root_.Center.coe_intCast {R : Type*} [Ring R] (n : ℤ) :
-    (n : Center R).val = n := rfl
+lemma _root_.Center.coe_intCast {R : Type*} [Ring R] (n : ℤ) : (n : Center R).val = n := rfl
+
+@[simp]
+lemma _root_.Center.coe_sub {R : Type*} [Ring R] (a b : Center R) :
+    (a - b).val = a.val - b.val := rfl
 
 @[simp]
 lemma _root_.Center.coe_neg {R : Type*} [Ring R] (z : Center R) :
