@@ -185,6 +185,7 @@ theorem trace_mul_pow_comm [CommSemiring R] [DecidableEq n] (A B : Matrix n n R)
   match k with
   | 0 => rfl
   | k + 1 => trace_mul_pow_comm' A B k.succ_ne_zero
+
 @[simp]
 theorem trace_replicateCol_mul_replicateRow {ι : Type*} [Unique ι] [NonUnitalNonAssocSemiring R]
     (a b : n → R) : trace (replicateCol ι a * replicateRow ι b) = a ⬝ᵥ b := by
