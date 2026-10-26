@@ -449,28 +449,23 @@ section Finite
 
 variable [Module.Finite ℤ S]
 
--- A module-finite `ℤ`-algebra has finite quotients; local to this section to supply
--- `Ring.HasFiniteQuotients S`.
-local instance : Ring.HasFiniteQuotients S := .of_module_finite ℤ S
-
-theorem finite_setOfPred_absNorm_le (n : ℕ) :
-    {I : Ideal S | Ideal.absNorm I ≤ n}.Finite :=
-  Ring.HasFiniteQuotients.finite_absNorm_le n
-
-@[deprecated (since := "2026-07-09")] alias finite_setOf_absNorm_le := finite_setOfPred_absNorm_le
-
-theorem finite_setOfPred_absNorm_eq (n : ℕ) :
-    {I : Ideal S | Ideal.absNorm I = n}.Finite :=
-  Ring.HasFiniteQuotients.finite_absNorm_eq n
-
-@[deprecated (since := "2026-07-09")] alias finite_setOf_absNorm_eq := finite_setOfPred_absNorm_eq
-
-theorem finite_setOfPred_absNorm_le₀ (n : ℕ) :
-    {I : (Ideal S)⁰ | Ideal.absNorm (I : Ideal S) ≤ n}.Finite :=
-  Ring.HasFiniteQuotients.finite_absNorm_le₀ n
+@[deprecated (since := "2026-10-26")]
+alias finite_setOfPred_absNorm_le := Ring.HasFiniteQuotients.finite_absNorm_le
 
 @[deprecated (since := "2026-07-09")]
-alias finite_setOf_absNorm_le₀ := finite_setOfPred_absNorm_le₀
+alias finite_setOf_absNorm_le := Ring.HasFiniteQuotients.finite_absNorm_le
+
+@[deprecated (since := "2026-10-26")]
+alias finite_setOfPred_absNorm_eq := Ring.HasFiniteQuotients.finite_absNorm_eq
+
+@[deprecated (since := "2026-07-09")]
+alias finite_setOf_absNorm_eq := Ring.HasFiniteQuotients.finite_absNorm_eq
+
+@[deprecated (since := "2026-10-26")]
+alias finite_setOfPred_absNorm_le₀ := Ring.HasFiniteQuotients.finite_absNorm_le₀
+
+@[deprecated (since := "2026-07-09")]
+alias finite_setOf_absNorm_le₀ := Ring.HasFiniteQuotients.finite_absNorm_le₀
 
 section Free
 
