@@ -492,6 +492,8 @@ section IsTopologicalAddGroup
 
 variable [IsTopologicalAddGroup N]
 
+-- TODO: can this instance be generalised to `ContinuousNeg`?
+-- the Add instances assumes only ContinuousAdd, for example
 instance : Neg (M [⋀^ι]→L[R] N) :=
   ⟨fun f => { -f.toAlternatingMap with toContinuousMultilinearMap := -f.1 }⟩
 

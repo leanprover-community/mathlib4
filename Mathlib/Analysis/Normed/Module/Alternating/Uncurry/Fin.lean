@@ -157,6 +157,11 @@ theorem alternatizeUncurryFin_add (f g : E →L[𝕜] E [⋀^Fin n]→L[𝕜] F)
   map_add (alternatizeUncurryFinCLM 𝕜 E F) f g
 
 @[simp]
+theorem alternatizeUncurryFin_neg (f : E →L[𝕜] E [⋀^Fin n]→L[𝕜] F) :
+    alternatizeUncurryFin (-f) = -alternatizeUncurryFin f :=
+  map_neg (alternatizeUncurryFinCLM 𝕜 E F) f
+
+@[simp]
 lemma alternatizeUncurryFin_curryLeft (f : E [⋀^Fin (n + 1)]→L[𝕜] F) :
     alternatizeUncurryFin (curryLeft f) = (n + 1) • f := by
   ext v

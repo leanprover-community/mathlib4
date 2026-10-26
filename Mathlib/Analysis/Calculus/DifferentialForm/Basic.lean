@@ -113,6 +113,22 @@ theorem extDeriv_fun_add (hω₁ : DifferentiableAt 𝕜 ω₁ x) (hω₂ : Diff
     extDeriv (fun x ↦ ω₁ x + ω₂ x) x = extDeriv ω₁ x + extDeriv ω₂ x :=
   extDeriv_add hω₁ hω₂
 
+@[simp]
+theorem extDerivWithin_neg (hsx : UniqueDiffWithinAt 𝕜 s x) :
+    extDerivWithin (-ω₁) s x = -extDerivWithin ω₁ s x := by
+  simp [extDerivWithin, fderivWithin_neg hsx, alternatizeUncurryFin_neg]
+
+theorem extDerivWithin_fun_neg (hsx : UniqueDiffWithinAt 𝕜 s x) :
+    extDerivWithin (fun x ↦ -ω₁ x) s x = -extDerivWithin ω₁ s x :=
+  extDerivWithin_neg hsx
+
+@[simp]
+theorem extDeriv_neg : extDeriv (-ω₁) x = - extDeriv ω₁ x := by
+  simp [← extDerivWithin_univ, extDerivWithin_neg]
+
+theorem extDeriv_fun_neg : extDeriv (fun x ↦ -ω₁ x) x = -extDeriv ω₁ x :=
+  extDeriv_neg
+
 theorem extDerivWithin_smul (c : 𝕜) (ω : E → E [⋀^Fin n]→L[𝕜] F) (hsx : UniqueDiffWithinAt 𝕜 s x) :
     extDerivWithin (c • ω) s x = c • extDerivWithin ω s x := by
   simp [extDerivWithin, fderivWithin_const_smul_field, hsx, alternatizeUncurryFin_smul]
