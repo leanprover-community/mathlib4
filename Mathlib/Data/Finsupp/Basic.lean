@@ -269,7 +269,7 @@ lemma mapDomain_apply (f : α → β) (x : α →₀ M) (b : β) :
 
 @[simp] theorem mapDomain_apply_of_injective {f : α → β} (hf : f.Injective) (x : α →₀ M) (a : α) :
     mapDomain f x (f a) = x a := by
-  rw [mapDomain, sum_apply, sum_eq_single a, single_eq_same]
+  rw [mapDomain, Finsupp.sum_apply, sum_eq_single a, single_eq_same]
   · intro b _ hba
     exact single_eq_of_ne' (hf.ne hba)
   · intro _
@@ -277,7 +277,7 @@ lemma mapDomain_apply (f : α → β) (x : α →₀ M) (b : β) :
 
 lemma mapDomain_of_notMem_image_support {f : α → β} {x : α →₀ M} {b : β}
     (hb : b ∉ f '' x.support) : mapDomain f x b = 0 := by
-  rw [mapDomain, sum_apply, sum, Finset.sum_eq_zero]
+  rw [mapDomain, Finsupp.sum_apply, sum, Finset.sum_eq_zero]
   exact fun a ha ↦ single_eq_of_ne fun eq => hb <| eq ▸ Set.mem_image_of_mem _ ha
 
 @[deprecated (since := "2026-09-28")]
@@ -373,7 +373,7 @@ theorem mapDomain_support [DecidableEq β] {f : α → β} {s : α →₀ M} :
 theorem mapDomain_apply' (S : Set α) {f : α → β} (x : α →₀ M) (hS : (x.support : Set α) ⊆ S)
     (hf : Set.InjOn f S) {a : α} (ha : a ∈ S) : mapDomain f x (f a) = x a := by
   classical
-    rw [mapDomain, sum_apply, sum]
+    rw [mapDomain, Finsupp.sum_apply, sum]
     simp_rw [single_apply]
     by_cases hax : a ∈ x.support
     · rw [← Finset.add_sum_erase _ _ hax, ite_eq_left rfl]
@@ -912,7 +912,7 @@ theorem mem_support_multiset_sum [AddCommMonoid M] {s : Multiset (α →₀ M)} 
       intro f s ih ha
       by_cases h : a ∈ f.support
       · exact ⟨f, Multiset.mem_cons_self _ _, h⟩
-      · simp_rw [Multiset.sum_cons, mem_support_iff, add_apply, notMem_support_iff.1 h,
+      · simp_rw [Multiset.sum_cons, mem_support_iff, Finsupp.add_apply, notMem_support_iff.1 h,
           zero_add] at ha
         rcases ih (mem_support_iff.2 ha) with ⟨f', h₀, h₁⟩
         exact ⟨f', Multiset.mem_cons_of_mem h₀, h₁⟩)
@@ -1155,7 +1155,7 @@ def sumFinsuppAddEquivProdFinsupp {α β : Type*} : (α ⊕ β →₀ M) ≃+ (�
     map_add' := by
       intros
       ext <;>
-        simp only [Equiv.toFun_as_coe, Prod.fst_add, Prod.snd_add, add_apply,
+        simp only [Equiv.toFun_as_coe, Prod.fst_add, Prod.snd_add, Finsupp.add_apply,
           snd_sumFinsuppEquivProdFinsupp, fst_sumFinsuppEquivProdFinsupp] }
 
 theorem fst_sumFinsuppAddEquivProdFinsupp {α β : Type*} (f : α ⊕ β →₀ M) (x : α) :
