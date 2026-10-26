@@ -494,6 +494,44 @@ lemma map_eq_iff (x y : ⨁ i, α i) :
 
 end map
 
+section IsInternal
+
+variable {ι : Type*} [DecidableEq ι] {β : ι → Type*} [∀ i, AddCommMonoid (β i)]
+  {M : Type*} [AddCommMonoid M]
+
+theorem mrange_toAddMonoid (φ : ∀ i, β i →+ M) :
+    AddMonoidHom.mrange (toAddMonoid φ) = ⨆ i, AddMonoidHom.mrange (φ i) := by
+  refine le_antisymm ?_ (iSup_le fun i ↦ ?_)
+  · rintro _ ⟨x, rfl⟩
+    induction x using DirectSum.induction_on with
+    | zero => simp
+    | of i x => exact AddSubmonoid.mem_iSup_of_mem i ⟨x, (toAddMonoid_of φ i x).symm⟩
+    | add x y hx hy => rw [map_add]; exact add_mem hx hy
+  · rintro _ ⟨x, rfl⟩
+    exact ⟨of β i x, toAddMonoid_of φ i x⟩
+
+/-- The images of the summands under an additive equivalence out of a direct sum form an
+internal direct sum. -/
+theorem isInternal_mrange_comp_of (e : (⨁ i, β i) ≃+ M) :
+    IsInternal fun i ↦ AddMonoidHom.mrange (e.toAddMonoidHom.comp (of β i)) := by
+  have key : (DirectSum.coeAddMonoidHom fun i ↦
+        AddMonoidHom.mrange (e.toAddMonoidHom.comp (of β i))).comp
+      (map fun i ↦ AddMonoidHom.mrangeRestrict (e.toAddMonoidHom.comp (of β i))) =
+      e.toAddMonoidHom := by
+    ext i x
+    change DirectSum.coeAddMonoidHom _ (map _ (of β i x)) = e (of β i x)
+    rw [map_of, coeAddMonoidHom_of]
+    rfl
+  have hbij : Function.Bijective
+      (map fun i ↦ AddMonoidHom.mrangeRestrict (e.toAddMonoidHom.comp (of β i))) :=
+    ⟨(map_injective _).2 fun i a b h ↦ of_injective i (e.injective (congrArg Subtype.val h)),
+      (map_surjective _).2 fun i ↦ AddMonoidHom.mrangeRestrict_surjective _⟩
+  have h : Function.Bijective e.toAddMonoidHom := e.bijective
+  rw [← key, AddMonoidHom.coe_comp] at h
+  exact (Function.Bijective.of_comp_iff _ hbij).1 h
+
+end IsInternal
+
 end DirectSum
 
 /-- The canonical isomorphism of a finite direct sum of additive commutative monoids

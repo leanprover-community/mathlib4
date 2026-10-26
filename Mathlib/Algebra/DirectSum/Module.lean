@@ -424,6 +424,19 @@ variable {A}
 theorem range_coeLinearMap : LinearMap.range (coeLinearMap A) = ⨆ i, A i :=
   (Submodule.iSup_eq_range_dfinsupp_lsum _).symm
 
+theorem isInternal_toAddSubmonoid_iff :
+    IsInternal (fun i ↦ (A i).toAddSubmonoid) ↔ IsInternal A := Iff.rfl
+
+/-- The images of the summands under a linear equivalence out of a direct sum form an internal
+direct sum. -/
+theorem isInternal_range_comp_lof {N : ι → Type*} [∀ i, AddCommMonoid (N i)] [∀ i, Module R (N i)]
+    (e : (⨁ i, N i) ≃ₗ[R] M) :
+    IsInternal fun i ↦ LinearMap.range (e.toLinearMap ∘ₗ lof R ι N i) :=
+  isInternal_toAddSubmonoid_iff.1 <| by
+    convert isInternal_mrange_comp_of e.toAddEquiv using 1
+    funext i
+    exact AddSubmonoid.ext fun x ↦ by simp [AddMonoidHom.mem_mrange, lof_eq_of]
+
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem IsInternal.ofBijective_coeLinearMap_same (h : IsInternal A)
