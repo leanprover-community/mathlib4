@@ -202,9 +202,10 @@ noncomputable def Polynomial.tensorScalarEquiv : K[X] ⊗[k] S ≃ₐ[K] (K ⊗[
         (Algebra.TensorProduct.assoc k k K K S k[X]).symm).trans
           ((polyEquivTensor' k (K ⊗[k] S)).symm.restrictScalars K)
 
-lemma Polynomial.tensorScalarEquiv_map_algebraMap (f : K[X]) :
-    f.map (algebraMap K (K ⊗[k] S)) =
-    (Polynomial.tensorScalarEquiv k K S) ((algebraMap K[X] (K[X] ⊗[k] S)) f) := by
+@[simp]
+lemma Polynomial.tensorScalarEquiv_algebraMap_eq_map_algebraMap (f : K[X]) :
+    (Polynomial.tensorScalarEquiv k K S) ((algebraMap K[X] (K[X] ⊗[k] S)) f) =
+      f.map (algebraMap K (K ⊗[k] S)) := by
   obtain ⟨g, rfl⟩ := (polyEquivTensor' k K).symm.surjective f
   induction g with
   | add g1 g2 hg1 hg2 => simp only [map_add, Polynomial.map_add, hg1, hg2]
@@ -212,7 +213,7 @@ lemma Polynomial.tensorScalarEquiv_map_algebraMap (f : K[X]) :
     have : Polynomial.map (algebraMap K (K ⊗[k] S)) ((polyEquivTensor k K).symm (x ⊗ₜ[k] y)) =
       (polyEquivTensor k (K ⊗[k] S)).symm (x ⊗ₜ[k] 1 ⊗ₜ[k] y) := by
       simp [Polynomial.map_map, ← IsScalarTower.algebraMap_eq]
-    simpa [- polyEquivTensor_symm_apply_tmul_eq_smul, Polynomial.tensorScalarEquiv]
+    simp [-polyEquivTensor_symm_apply_tmul_eq_smul, Polynomial.tensorScalarEquiv, this]
 
 /-- The equivalence of adjoining on root inside tensor product and outside tensor product. -/
 noncomputable def Polynomial.quotientTensorEquiv (f : K[X]) :
@@ -226,7 +227,7 @@ noncomputable def Polynomial.quotientTensorEquiv (f : K[X]) :
       (Ideal.span {f})).symm.restrictScalars K)).trans
         (Ideal.quotientEquivAlg _ _ (Polynomial.tensorScalarEquiv k K S) (by
           simp only [Ideal.map_span, Set.image_singleton, RingHom.coe_coe,
-            Polynomial.tensorScalarEquiv_map_algebraMap]))
+            Polynomial.tensorScalarEquiv_algebraMap_eq_map_algebraMap]))
 
 open IntermediateField.algebraAdjoinAdjoin in
 lemma isReduced_tensorProduct_of_isTranscendentalBasis_of_isDomain
