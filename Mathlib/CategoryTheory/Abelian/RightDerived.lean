@@ -75,7 +75,6 @@ noncomputable def InjectiveResolution.isoRightDerivedToHomotopyCategoryObj {X : 
   (F.mapHomotopyCategory _).mapIso I.iso ≪≫
     (F.mapHomotopyCategoryFactors _).app I.cocomplex
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma InjectiveResolution.isoRightDerivedToHomotopyCategoryObj_hom_naturality
     {X Y : C} (f : X ⟶ Y) (I : InjectiveResolution X) (J : InjectiveResolution Y)
@@ -90,7 +89,6 @@ lemma InjectiveResolution.isoRightDerivedToHomotopyCategoryObj_hom_naturality
   erw [(F.mapHomotopyCategoryFactors (ComplexShape.up ℕ)).hom.naturality]
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma InjectiveResolution.isoRightDerivedToHomotopyCategoryObj_inv_naturality
     {X Y : C} (f : X ⟶ Y) (I : InjectiveResolution X) (J : InjectiveResolution Y)
@@ -180,7 +178,6 @@ noncomputable def NatTrans.rightDerivedToHomotopyCategory
     F.rightDerivedToHomotopyCategory ⟶ G.rightDerivedToHomotopyCategory :=
   Functor.whiskerLeft _ (NatTrans.mapHomotopyCategory α (ComplexShape.up ℕ))
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma InjectiveResolution.rightDerivedToHomotopyCategory_app_eq
     {F G : C ⥤ D} [F.Additive] [G.Additive] (α : F ⟶ G) {X : C} (P : InjectiveResolution X) :
@@ -235,7 +232,6 @@ theorem NatTrans.rightDerived_comp {F G H : C ⥤ D} [F.Additive] [G.Additive] [
 
 namespace InjectiveResolution
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A component of the natural transformation between right-derived functors can be computed
 using a chosen injective resolution. -/
@@ -253,7 +249,6 @@ lemma rightDerived_app_eq
     ((NatTrans.mapHomologicalComplex α (ComplexShape.up ℕ)).app P.cocomplex)]
   simp only [Functor.comp_map, Iso.hom_inv_id_app_assoc]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `P : InjectiveResolution X` and `F` is an additive functor, this is
 the canonical morphism from `F.obj X` to the cycles in degree `0` of

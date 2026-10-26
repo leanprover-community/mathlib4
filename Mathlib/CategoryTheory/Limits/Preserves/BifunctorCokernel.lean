@@ -64,7 +64,6 @@ lemma hom_ext {T : C} {f g : (F.obj c₁.pt).obj c₂.pt ⟶ T}
 variable [HasBinaryCoproduct ((F.obj X₁).obj Y₂) ((F.obj Y₁).obj X₂)]
   [PreservesColimit (parallelPair f₁ 0) (F.flip.obj X₂)]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma exists_desc (s : CokernelCofork (coprod.desc ((F.map f₁).app Y₂) ((F.obj Y₁).map f₂))) :
     ∃ (l : (F.obj c₁.pt).obj c₂.pt ⟶ s.pt),
       (F.map c₁.π).app Y₂ ≫ (F.obj c₁.pt).map c₂.π ≫ l = s.π := by
@@ -84,7 +83,6 @@ end isColimitMapBifunctor
 variable [HasBinaryCoproduct ((F.obj X₁).obj Y₂) ((F.obj Y₁).obj X₂)]
   [PreservesColimit (parallelPair f₁ 0) (F.flip.obj X₂)]
 
-set_option backward.defeqAttrib.useBackward true in
 open isColimitMapBifunctor in
 /-- Let `c₁` (resp. `c₂`) be a colimit cokernel cofork for a morphism `f₁ : X₁ ⟶ Y₁`
 in a category `C₁` (resp. `f₂ : X₂ ⟶ Y₂` in `C₂`). If `F : C₁ ⥤ C₂ ⥤ C` is a bifunctor,
