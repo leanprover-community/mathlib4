@@ -104,6 +104,16 @@ instance [HasLimitsOfShape WalkingCospan C] {X Y : Plus C} (f : X ⟶ Y) [Mono f
     Mono f.hom := by
   rwa [← mono_iff]
 
+variable {C} in
+lemma epi_iff [HasColimitsOfShape WalkingSpan C] {X Y : Plus C} (f : X ⟶ Y) :
+    Epi f ↔ Epi f.hom :=
+  ⟨fun _ ↦ inferInstanceAs (Epi ((ι C).map f)),
+    fun _ ↦ Functor.epi_of_epi_map (ι C) (by assumption)⟩
+
+instance [HasColimitsOfShape WalkingSpan C] {X Y : Plus C} (f : X ⟶ Y) [Epi f] :
+    Epi f.hom := by
+  rwa [← epi_iff]
+
 /-- The class of quasi-isomorphisms in the category of bounded
 below cochain complexes. -/
 def quasiIso [CategoryWithHomology C] : MorphismProperty (Plus C) :=
