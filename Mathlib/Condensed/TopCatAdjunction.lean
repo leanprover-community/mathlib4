@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Condensed.TopComparison
 public import Mathlib.Topology.Category.CompactlyGenerated
+
 /-!
 
 # The adjunction between condensed sets and topological spaces
@@ -177,6 +178,7 @@ noncomputable def compactlyGeneratedAdjunction :
     (Functor.FullyFaithful.id _) fullyFaithfulCompactlyGeneratedToTop
     (Iso.refl _) (Iso.refl _)
 
+set_option fun_prop.projDefaultTransparency true in
 /--
 The counit of the adjunction `condensedSetToCompactlyGenerated ⊣ compactlyGeneratedToCondensedSet`
 is a homeomorphism.
