@@ -57,20 +57,10 @@ theorem coeAlgHom_apply (f : F) : coeAlgHom R F f = f := rfl
 @[norm_cast]
 theorem coe_coeAlgHom : (coeAlgHom R F : F → α → β) = DFunLike.coe := rfl
 
-theorem coeAlgHom_injective : Function.Injective (coeAlgHom R F) := by
-  rw [coe_coeAlgHom]
-  exact DFunLike.coe_injective
-
 variable (R F) in
 /-- Evaluation as an algebra homomorphism. -/
 @[expose]
-def evalAlgHom (x : α) : F →ₐ[R] β where
-  toFun f := f x
-  map_zero' := by simp
-  map_one' := by simp
-  map_add' := by simp
-  map_mul' := by simp
-  commutes' := by simp
+def evalAlgHom (x : α) : F →ₐ[R] β := (Pi.evalAlgHom R _ x).comp (coeAlgHom R F)
 
 @[simp]
 theorem evalAlgHom_apply (x : α) (f : F) : evalAlgHom R F x f = f x := rfl
