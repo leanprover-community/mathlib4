@@ -75,7 +75,6 @@ variable {C}
 variable (X : PullbackShift C φ) (a₁ a₂ a₃ : A) (h : a₁ + a₂ = a₃) (b₁ b₂ b₃ : B)
   (h₁ : b₁ = φ a₁) (h₂ : b₂ = φ a₂) (h₃ : b₃ = φ a₃)
 
-set_option backward.defeqAttrib.useBackward true in
 lemma pullbackShiftFunctorZero_inv_app :
     (shiftFunctorZero _ A).inv.app X =
       (shiftFunctorZero C B).inv.app X ≫ (pullbackShiftIso C φ 0 0 (by simp)).inv.app X := by
@@ -163,7 +162,6 @@ def PullbackShift.natTrans {G : C ⥤ D} (τ : F ⟶ G) :
 
 namespace Functor
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `F : C ⥤ D` commutes with the shifts on `C` and `D`, then `PullbackShift.functor F φ`
 commutes with their pullbacks by an additive map `φ`.
@@ -231,7 +229,6 @@ pullback of the identity of `C`.
 -/
 def PullbackShift.natIsoId : 𝟭 (PullbackShift C φ) ≅ PullbackShift.functor φ (𝟭 C) := Iso.refl _
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 This expresses the compatibility between two `CommShift` structures by `A` on (synonyms of)
@@ -252,7 +249,6 @@ composition of the pullbacks of `F` and `G`.
 def PullbackShift.natIsoComp : PullbackShift.functor φ (F ⋙ G) ≅
     PullbackShift.functor φ F ⋙ PullbackShift.functor φ G := Iso.refl _
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-
 Suppose that `F` and `G` have `CommShift` structure by `B`. This expresses the

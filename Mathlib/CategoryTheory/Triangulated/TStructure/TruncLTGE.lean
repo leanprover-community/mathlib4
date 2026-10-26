@@ -708,11 +708,9 @@ noncomputable abbrev truncGELT (a b : ℤ) : C ⥤ C := t.truncLT b ⋙ t.truncG
 /-- The composition `t.truncGE b ⋙ t.truncLT a`. -/
 noncomputable abbrev truncLTGE (a b : ℤ) : C ⥤ C := t.truncGE a ⋙ t.truncLT b
 
-set_option backward.defeqAttrib.useBackward true in
 instance (X : C) (a b : ℤ) : t.IsGE ((t.truncGELT a b).obj X) a := by
   dsimp; infer_instance
 
-set_option backward.defeqAttrib.useBackward true in
 instance (X : C) (a b : ℤ) : t.IsLE ((t.truncLTGE a b).obj X) (b - 1) := by
   dsimp; infer_instance
 
@@ -720,7 +718,6 @@ section
 
 variable [IsTriangulated C]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isIso₁_truncLT_map_of_isGE (T : Triangle C) (hT : T ∈ distTriang C)
     (n : ℤ) (h₃ : t.IsGE T.obj₃ n) :
     IsIso ((t.truncLT n).map T.mor₁) := by
@@ -764,12 +761,10 @@ instance (X : C) (a b : ℤ) [t.IsLE X b] : t.IsLE ((t.truncGE a).obj X) b := by
   refine IsZero.of_iso ?_ (asIso ((t.truncGE (b + 1)).map ((t.truncGEπ a).app X))).symm
   rwa [← isLE_iff_isZero_truncGE_obj _ _ _ rfl]
 
-set_option backward.defeqAttrib.useBackward true in
 instance (X : C) (a b : ℤ) :
     t.IsLE ((t.truncGELT a b).obj X) (b - 1) := by
   dsimp; infer_instance
 
-set_option backward.defeqAttrib.useBackward true in
 instance (X : C) (a b : ℤ) :
     t.IsGE ((t.truncLTGE a b).obj X) a := by
   dsimp; infer_instance
@@ -854,7 +849,6 @@ lemma triangleLTLTGELT_distinguished (a b : ℤ) (h : a ≤ b) (X : C) :
   simp only [Category.comp_id, IsIso.eq_inv_comp]
   exact t.to_truncLT_obj_ext (by simp)
 
-set_option backward.defeqAttrib.useBackward true in
 instance (a b : ℤ) : IsIso (t.truncGELTToLTGE a b) := by
   rw [NatTrans.isIso_iff_isIso_app]
   intro X
