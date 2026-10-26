@@ -702,21 +702,17 @@ theorem multiplicity_factorial {n b : ℕ} [hp : Fact p.Prime] (hnb : log p n < 
 
 Taking (`p - 1`) times the `p`-adic valuation of `n!` equals `n` minus the sum of base `p` digits
 of `n`. -/
-theorem sub_one_mul_multiplicity_factorial [hp : Fact p.Prime] (n : ℕ) :
-    (p - 1) * multiplicity p (n !) = n - (p.digits n).sum := by
-  rw [multiplicity_factorial <| lt_succ_of_lt <| lt_add_one (log p n)]
-  nth_rw 2 [← zero_add 1]
-  rw [Nat.succ_eq_add_one, ← Finset.sum_Ico_add' _ 0 _ 1,
-    Ico_zero_eq_range, ← sub_one_mul_sum_log_div_pow_eq_sub_sum_digits, Nat.succ_eq_add_one]
+@[deprecated (since := "2026-10-26")] alias sub_one_mul_multiplicity_factorial :=
+  Nat.Prime.sub_one_mul_multiplicity_factorial
 
 @[deprecated (since := "2026-09-11")] alias sub_one_mul_padicValNat_factorial :=
-  sub_one_mul_multiplicity_factorial
+  Nat.Prime.sub_one_mul_multiplicity_factorial
 
 variable (p)
 
 theorem sub_one_mul_multiplicity_factorial_lt_of_ne_zero [hp : Fact p.Prime] {n : ℕ} (hn : n ≠ 0) :
     (p - 1) * multiplicity p n.factorial < n := by
-  rw [sub_one_mul_multiplicity_factorial n]
+  rw [hp.out.sub_one_mul_multiplicity_factorial]
   refine Nat.sub_lt_self ?_ (digit_sum_le p n)
   have hnil : p.digits n ≠ [] := Nat.digits_ne_nil_iff_ne_zero.mpr hn
   exact List.sum_pos_iff_exists_pos_nat.mpr
@@ -779,7 +775,7 @@ theorem sub_one_mul_multiplicity_choose_eq_sub_sum_digits' {k n : ℕ} [hp : Fac
   simp only [Nat.choose_eq_factorial_div_factorial h]
   rw [multiplicity_div_of_dvd <| factorial_mul_factorial_dvd_factorial h, Nat.mul_sub_left_distrib,
       Nat.multiplicity_mul (factorial_ne_zero _) (factorial_ne_zero _), Nat.mul_add]
-  simp only [sub_one_mul_multiplicity_factorial]
+  simp only [hp.out.sub_one_mul_multiplicity_factorial]
   rw [← Nat.sub_add_comm <| digit_sum_le p k, Nat.add_sub_cancel n k, ← Nat.add_sub_assoc <|
       digit_sum_le p n, Nat.sub_sub (k + n), ← Nat.sub_right_comm, Nat.sub_sub, sub_add_eq,
       add_comm, tsub_tsub_assoc (Nat.le_refl (k + n)) <| (add_comm k n) ▸ (Nat.add_le_add
