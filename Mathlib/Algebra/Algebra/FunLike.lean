@@ -57,6 +57,9 @@ theorem coeAlgHom_apply (f : F) : coeAlgHom R F f = f := rfl
 @[norm_cast]
 theorem coe_coeAlgHom : (coeAlgHom R F : F → α → β) = DFunLike.coe := rfl
 
+@[simp]
+theorem toRingHom_coeAlgHom : (coeAlgHom R F).toRingHom = coeRingHom F := rfl
+
 variable (R F) in
 /-- Evaluation as an algebra homomorphism. -/
 @[expose]
@@ -64,6 +67,9 @@ def evalAlgHom (x : α) : F →ₐ[R] β := (Pi.evalAlgHom R _ x).comp (coeAlgHo
 
 @[simp]
 theorem evalAlgHom_apply (x : α) (f : F) : evalAlgHom R F x f = f x := rfl
+
+@[simp]
+theorem toRingHom_evalAlgHom (x : α) : (evalAlgHom R F x).toRingHom = evalRingHom F x := rfl
 
 end AlgHom
 

@@ -42,6 +42,10 @@ theorem coeₗ_apply (f : F) : coeₗ R F f = f := rfl
 @[norm_cast]
 theorem coe_coeₗ : (coeₗ R F : F → α → β) = DFunLike.coe := rfl
 
+@[simp]
+theorem toAddMonoidHom_coeₗ [IsZeroApply F] : (coeₗ R F).toAddMonoidHom = coeAddMonoidHom F α β :=
+  rfl
+
 variable (R F) in
 /-- Evaluation as a linear map. -/
 @[expose]
@@ -49,6 +53,10 @@ def evalₗ (x : α) : F →ₗ[R] β := (Pi.evalₗ R _ x).comp (coeₗ R F)
 
 @[simp]
 theorem evalₗ_apply (x : α) (f : F) : evalₗ R F x f = f x := rfl
+
+@[simp]
+theorem toAddMonoidHom_evalₗ [IsZeroApply F] (x : α) :
+    (evalₗ R F x).toAddMonoidHom = evalAddMonoidHom F x := rfl
 
 end LinearMap
 
