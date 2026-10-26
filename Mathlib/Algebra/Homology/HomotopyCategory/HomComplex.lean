@@ -725,7 +725,6 @@ def toCochainLinearMap : Cocycle K L n →ₗ[R] Cochain K L n where
   map_add' := by simp
   map_smul' := by simp
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable (L n) in
 /-- `Cocycle K L n` is the kernel of the differential on `HomComplex K L`. -/
