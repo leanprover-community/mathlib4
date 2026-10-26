@@ -403,7 +403,7 @@ end MinFac
 theorem exists_prime_and_dvd {n : ℕ} (hn : n ≠ 1) : ∃ p, Prime p ∧ p ∣ n :=
   ⟨minFac n, minFac_prime hn, minFac_dvd _⟩
 
-theorem exists_prime_dvd_and_dvd_div {m n : ℕ} (hmn : m ∣ n) (hne : m ≠ n) :
+theorem exists_prime_and_dvd_and_dvd_div {m n : ℕ} (hmn : m ∣ n) (hne : m ≠ n) :
     ∃ p, Prime p ∧ p ∣ n ∧ m ∣ n / p := by
   obtain ⟨c, rfl⟩ := hmn
   refine ⟨c.minFac, minFac_prime (by grind), (minFac_dvd c).mul_left m, ?_⟩
