@@ -139,7 +139,7 @@ private lemma norm_circleMap_zero_sub_circleMap_zero_sq (r s θ φ : ℝ) :
 /--
 Law of cosines for the chord between two points `circleMap c r θ` and `circleMap c s φ`.
 -/
-lemma norm_circleMap_sub_circleMap_sq {c : ℂ} (r s θ φ : ℝ) :
+lemma norm_circleMap_sub_circleMap_sq (c : ℂ) (r s θ φ : ℝ) :
     ‖circleMap c r θ - circleMap c s φ‖ ^ 2 =
       r ^ 2 + s ^ 2 - 2 * r * s * Real.cos (θ - φ) := by
   simpa [circleMap] using norm_circleMap_zero_sub_circleMap_zero_sq ..
@@ -150,7 +150,7 @@ See `norm_circleMap_zero_sub_sq'` for the half-angle form.
 -/
 theorem norm_circleMap_zero_sub_sq (r θ : ℝ) (a : ℂ) :
     ‖circleMap 0 r θ - a‖ ^ 2 = r ^ 2 + ‖a‖ ^ 2 - 2 * r * ‖a‖ * Real.cos (θ - a.arg) := by
-  simp [← norm_circleMap_zero_sub_circleMap_zero_sq]
+  simp [← norm_circleMap_sub_circleMap_sq 0]
 
 /--
 Law of cosines for the chord from a point of the circle `circleMap 0 r` to an arbitrary point `a`,
