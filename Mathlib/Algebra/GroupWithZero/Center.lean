@@ -31,8 +31,8 @@ variable [MulZeroClass M₀] {s : Set M₀}
 
 instance : MulZeroClass (Center M₀) where
   zero := Center.mk (0 : M₀) zero_mem_center
-  zero_mul m := by rw [Center.eq_iff, Center.coe_mul]; exact zero_mul m.val
-  mul_zero m := by rw [Center.eq_iff, Center.coe_mul]; exact mul_zero m.val
+  zero_mul m := Subtype.ext (zero_mul m.val)
+  mul_zero m := Subtype.ext (mul_zero m.val)
 
 @[simp]
 lemma _root_.Center.coe_zero :  (0 : Center M₀).val = 0 := rfl
