@@ -206,7 +206,7 @@ theorem irreducible_iff_dvd_X_pow_card_pow_sub_X_and_isCoprime {f : k[X]} (hd : 
       ∀ m, m ∣ f.natDegree → m ≠ f.natDegree → IsCoprime f (X ^ Nat.card k ^ m - X) := by
   constructor
   · intro hi
-    refine ⟨hi.natDegree_dvd_iff_dvd_X_pow_card_pow_sub_X.1 dvd_rfl, fun m hm hmne ↦ ?_⟩
+    refine ⟨hi.natDegree_dvd_iff_dvd_X_pow_card_pow_sub_X.mp dvd_rfl, fun m hm hmne ↦ ?_⟩
     refine (EuclideanDomain.dvd_or_coprime _ _ hi).resolve_left ?_
     exact fun h ↦ hmne (dvd_antisymm hm (hi.natDegree_dvd_iff_dvd_X_pow_card_pow_sub_X.2 h))
   · rintro ⟨hfdvd, h⟩
