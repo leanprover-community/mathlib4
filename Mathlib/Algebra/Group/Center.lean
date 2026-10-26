@@ -365,8 +365,8 @@ namespace Center
 @[to_additive]
 instance [Mul M] : CoeOut (Center M) M := ⟨Subtype.val⟩
 
-/-- Construct an element of `Center M` from an central element of `M`. -/
-@[to_additive /-- Construct an element of `AddCenter M` from an central element of `M`. -/]
+/-- Construct an element of `Center M` from a central element of `M`. -/
+@[to_additive /-- Construct an element of `AddCenter M` from a central element of `M`. -/]
 abbrev mk [Mul M] (z : M) (hz : z ∈ Set.center M) : Center M := ⟨z, hz⟩
 
 @[to_additive (attr := simp)]
