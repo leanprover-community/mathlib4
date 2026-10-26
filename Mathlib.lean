@@ -7888,6 +7888,7 @@ public import Mathlib.Tactic.SwapVar
 public import Mathlib.Tactic.TFAE
 public import Mathlib.Tactic.TacticAnalysis
 public import Mathlib.Tactic.TacticAnalysis.Declarations
+public import Mathlib.Tactic.TacticAnalysis.Replacements
 public import Mathlib.Tactic.Tauto
 public import Mathlib.Tactic.TautoSet
 public import Mathlib.Tactic.TermCongr

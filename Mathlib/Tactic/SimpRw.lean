@@ -64,7 +64,7 @@ example {a : ℕ}
   simp_rw [h1, h2]
 ```
 -/
-elab s:"simp_rw " cfg:optConfig rws:rwRuleSeq g:(location)? : tactic => focus do
+elab (name := simpRw) s:"simp_rw " cfg:optConfig rws:rwRuleSeq g:(location)? : tactic => focus do
   evalTactic (← `(tactic| simp%$s $[$(getConfigItems cfg)]* (failIfUnchanged := false) only $(g)?))
   withSimpRWRulesSeq rws fun symm term => do
     evalTactic (← match term with
