@@ -414,9 +414,7 @@ instance {R : Type*} [Ring R] : CommRing (Center R) where
   intCast_negSucc n := by simp
   sub a b := Center.mk (a.val - b.val) (by simp [sub_eq_add_neg, a.prop, b.prop])
   sub_eq_add_neg a b := Subtype.ext (sub_eq_add_neg a.val b.val)
-  zsmul n a := Center.mk (n • a.val) <| by
-    simpa only [zsmul_eq_mul] using
-      Set.mul_mem_center (Set.intCast_mem_center R n) a.prop
+  zsmul n a := Center.mk (n • a.val) (by simp [a.prop])
   neg_add_cancel a := Subtype.ext (neg_add_cancel a.val)
   zsmul_zero' a := Subtype.ext (SubNegMonoid.zsmul_zero' a.val)
   zsmul_succ' n a := Subtype.ext (SubNegMonoid.zsmul_succ' n a.val)
