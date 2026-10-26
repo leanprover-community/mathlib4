@@ -1,5 +1,7 @@
-import Mathlib.Tactic.Says
-import Aesop
+module
+
+public import Aesop
+public import Mathlib.Tactic.Says
 
 -- removing changes to the `simp` set after this test was created
 attribute [-simp] Nat.add_left_cancel_iff Nat.add_right_cancel_iff
@@ -97,12 +99,11 @@ example : True := by
 -- Check that verification works even with multi-line suggestions, as produced by aesop
 def P : Prop := True
 def Q : Prop := True
-set_option linter.defProp false in
 @[simp]
-def very_long_lemma_name_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa : Q → P := fun _ => trivial
-set_option linter.defProp false in
+theorem very_long_lemma_name_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa : Q → P := fun _ => trivial
+
 @[simp]
-def very_long_lemma_name_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb : Q := trivial
+theorem very_long_lemma_name_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb : Q := trivial
 /--
 info: Try this:
   [apply] aesop? says

@@ -3,12 +3,13 @@ Copyright (c) 2024 Geoffrey Irving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Geoffrey Irving
 -/
+module
 
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Tactic.Bound
+public import Mathlib.Algebra.Order.Field.Basic
+public import Mathlib.Tactic.Bound
 
 /-!
-## Tests for the `@bound` attribute
+# Tests for the `@bound` attribute
 
 Verify that our heuristic for the priority of a declaration produces the expected values.
 -/

@@ -5,9 +5,8 @@ Authors: Jeremy Avigad
 -/
 module
 
-public import Mathlib.Algebra.Ring.Parity
 public import Mathlib.Algebra.Ring.Int.Defs
-public import Mathlib.Algebra.Group.Int.Even
+public import Mathlib.Algebra.Ring.Parity
 
 /-!
 # Basic parity lemmas for the ring `ℤ`
@@ -86,7 +85,9 @@ lemma even_mul_succ_self (n : ℤ) : Even (n * (n + 1)) := by grind
 
 lemma even_mul_pred_self (n : ℤ) : Even (n * (n - 1)) := by grind
 
-@[simp, norm_cast] lemma odd_coe_nat (n : ℕ) : Odd (n : ℤ) ↔ Odd n := by grind
+@[simp, norm_cast] lemma odd_natCast (n : ℕ) : Odd (n : ℤ) ↔ Odd n := by grind
+
+@[deprecated (since := "2026-10-13")] alias odd_coe_nat := odd_natCast
 
 @[simp] lemma natAbs_even : Even n.natAbs ↔ Even n := by grind
 
@@ -132,8 +133,21 @@ theorem natCast_pow_pred (b p : ℕ) (w : 0 < b) : ((b ^ p - 1 : ℕ) : ℤ) = (
   have : 1 ≤ b ^ p := Nat.one_le_pow p b w
   norm_cast
 
-theorem coe_nat_two_pow_pred (p : ℕ) : ((2 ^ p - 1 : ℕ) : ℤ) = (2 ^ p - 1 : ℤ) :=
+theorem natCast_two_pow_pred (p : ℕ) : ((2 ^ p - 1 : ℕ) : ℤ) = (2 ^ p - 1 : ℤ) :=
   natCast_pow_pred 2 p (by decide)
+
+@[deprecated (since := "2026-10-13")] alias coe_nat_two_pow_pred := natCast_two_pow_pred
+
+lemma sq_emod_four (b : ℤ) : b ^ 2 % 4 = b % 2 := by
+  rcases even_or_odd' b with ⟨k, rfl | rfl⟩ <;> grind
+
+theorem sq_emod_four_eq_one_of_odd {x : ℤ} (hx : Odd x) : x ^ 2 % 4 = 1 := by
+  grind [sq_emod_four]
+
+lemma eight_dvd_sq_sub_one_of_odd {k : ℤ} (hk : Odd k) : 8 ∣ k ^ 2 - 1 := by
+  obtain ⟨m, rfl⟩ := hk
+  obtain ⟨c, hc⟩ := two_dvd_mul_add_one m
+  exact ⟨c, by grind⟩
 
 end Int
 

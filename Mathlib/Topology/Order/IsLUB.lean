@@ -8,13 +8,17 @@ module
 public import Mathlib.Order.Filter.CountableInter
 public import Mathlib.Topology.Order.LeftRightNhds
 
+import Mathlib.Algebra.Order.Group.Nat
+
 /-!
 # Properties of LUB and GLB in an order topology
 -/
 
 public section
 
-open Set Filter TopologicalSpace Topology Function
+open Set Filter TopologicalSpace Function
+
+open scoped Topology
 
 open OrderDual (toDual ofDual)
 
@@ -89,7 +93,7 @@ theorem IsLUB.mem_upperBounds_of_tendsto [Preorder γ] [TopologicalSpace γ] [Or
     (hb : Tendsto f (𝓝[s] a) (𝓝 b)) : b ∈ upperBounds (f '' s) := by
   rintro _ ⟨x, hx, rfl⟩
   replace ha := ha.inter_Ici_of_mem hx
-  haveI := ha.nhdsWithin_neBot ⟨x, hx, le_rfl⟩
+  have := ha.nhdsWithin_neBot ⟨x, hx, le_rfl⟩
   refine ge_of_tendsto (hb.mono_left (nhdsWithin_mono a (inter_subset_left (t := Ici x)))) ?_
   exact mem_of_superset self_mem_nhdsWithin fun y hy => hf hx hy.1 hy.2
 

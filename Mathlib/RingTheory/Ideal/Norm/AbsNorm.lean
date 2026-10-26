@@ -6,37 +6,45 @@ Authors: Anne Baanen, Alex J. Best
 module
 
 public import Mathlib.Algebra.CharP.Quotient
+public import Mathlib.Data.SetLike.Fintype
 public import Mathlib.FieldTheory.Finite.Basic
 public import Mathlib.LinearAlgebra.FreeModule.Determinant
 public import Mathlib.LinearAlgebra.FreeModule.Finite.CardQuotient
-public import Mathlib.RingTheory.DedekindDomain.Dvr
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 public import Mathlib.RingTheory.Ideal.Basis
-public import Mathlib.RingTheory.Norm.Basic
+public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients.Basic
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicative
+
+import Mathlib.RingTheory.Norm.Basic
 
 /-!
 
 # Ideal norms
 
 This file defines the absolute ideal norm `Ideal.absNorm (I : Ideal R) : ℕ` as the cardinality of
-the quotient `R ⧸ I` (setting it to 0 if the cardinality is infinite).
+the quotient `R ⧸ I`, with the junk value `0` at `I = ⊥`.
 
 ## Main definitions
 
 * `Submodule.cardQuot (S : Submodule R M)`: the cardinality of the quotient `M ⧸ S`, in `ℕ`.
   This maps `⊥` to `0` and `⊤` to `1`.
-* `Ideal.absNorm (I : Ideal R)`: the absolute ideal norm, defined as
-  the cardinality of the quotient `R ⧸ I`, as a bundled monoid-with-zero homomorphism.
+* `Ideal.absNorm (I : Ideal R)`: the absolute ideal norm, defined as the cardinality of the
+  quotient `R ⧸ I` with the junk value `0` at `I = ⊥`, as a bundled monoid-with-zero
+  homomorphism.
 
 ## Main results
 
 * `map_mul Ideal.absNorm`: multiplicativity of the ideal norm is bundled in
   the definition of `Ideal.absNorm`
+* `Ideal.absNorm_of_ne_bot`: away from `⊥`, the absolute norm is the cardinality of the quotient
+* `Ideal.absNorm_apply`: over an infinite ring, the absolute norm is the cardinality of the
+  quotient for every ideal
 * `Ideal.natAbs_det_basis_change`: the ideal norm is given by the determinant
   of the basis change matrix
 * `Ideal.absNorm_span_singleton`: the ideal norm of a principal ideal is the
   norm of its generator
+* `Ring.HasFiniteQuotients.finite_absNorm_le`: a ring with finite quotients has only finitely
+  many ideals of bounded norm
 -/
 
 @[expose] public section
@@ -105,7 +113,7 @@ theorem Ideal.mul_add_mem_pow_succ_inj (P : Ideal S) {i : ℕ} (a d d' e e' : S)
   have : a * d - a * d' ∈ P ^ (i + 1) := by
     simp only [← mul_sub]
     exact Ideal.mul_mem_mul a_mem h
-  convert! Ideal.add_mem _ this (Ideal.sub_mem _ e_mem e'_mem) using 1
+  convert Ideal.add_mem _ this (Ideal.sub_mem _ e_mem e'_mem) using 1
   ring
 
 section PPrime
@@ -144,7 +152,7 @@ theorem Ideal.mul_add_mem_pow_succ_unique [IsDedekindDomain S] (hP : P ≠ ⊥)
     (a_notMem : a ∉ P ^ (i + 1)) (e_mem : e ∈ P ^ (i + 1)) (e'_mem : e' ∈ P ^ (i + 1))
     (h : a * d + e - (a * d' + e') ∈ P ^ (i + 1)) : d - d' ∈ P := by
   have h' : a * (d - d') ∈ P ^ (i + 1) := by
-    convert! Ideal.add_mem _ h (Ideal.sub_mem _ e'_mem e_mem) using 1
+    convert Ideal.add_mem _ h (Ideal.sub_mem _ e'_mem e_mem) using 1
     ring
   exact Ideal.mem_prime_of_mul_mem_pow hP a_notMem h'
 
@@ -159,7 +167,7 @@ theorem cardQuot_pow_of_prime [IsDedekindDomain S] (hP : P ≠ ⊥) {i : ℕ} :
     rw [pow_succ' (cardQuot P), ← ih, cardQuot_apply (P ^ i.succ), ←
       card_quotient_mul_card_quotient (P ^ i) (P ^ i.succ) this.le, cardQuot_apply (P ^ i),
       cardQuot_apply P, Nat.card_congr hquot]
-  choose a a_mem a_notMem using SetLike.exists_of_lt this
+  choose a a_mem a_notMem using IsConcreteLE.exists_of_lt this
   choose f g hg hf using fun c (hc : c ∈ P ^ i) =>
     Ideal.exists_mul_add_mem_pow_succ hP a c a_mem a_notMem hc
   choose k hk_mem hk_eq using fun c' (hc' : c' ∈ map (mkQ (P ^ i.succ)) (P ^ i)) =>
@@ -184,11 +192,9 @@ theorem cardQuot_pow_of_prime [IsDedekindDomain S] (hP : P ≠ ⊥) {i : ℕ} :
 end PPrime
 
 /-- Multiplicativity of the ideal norm in number rings. -/
-theorem cardQuot_mul [IsDedekindDomain S] [Module.Free ℤ S] (I J : Ideal S) :
-    cardQuot (I * J) = cardQuot I * cardQuot J := by
-  let b := Module.Free.chooseBasis ℤ S
-  haveI : Infinite S := Infinite.of_surjective _ b.repr.toEquiv.surjective
-  exact UniqueFactorizationMonoid.multiplicative_of_coprime cardQuot I J (cardQuot_bot _ _)
+theorem cardQuot_mul [IsDedekindDomain S] [Infinite S] (I J : Ideal S) :
+    cardQuot (I * J) = cardQuot I * cardQuot J :=
+  UniqueFactorizationMonoid.multiplicative_of_coprime cardQuot I J (cardQuot_bot _ _)
       (fun {I J} hI => by simp [Ideal.isUnit_iff.mp hI, Ideal.mul_top])
       (fun {I} i hI =>
         have : Ideal.IsPrime I := Ideal.isPrime_of_prime hI
@@ -197,37 +203,137 @@ theorem cardQuot_mul [IsDedekindDomain S] [Module.Free ℤ S] (I J : Ideal S) :
         (Ideal.isUnit_iff.mp
           (hIJ (Ideal.dvd_iff_le.mpr le_sup_left) (Ideal.dvd_iff_le.mpr le_sup_right)))
 
-/-- The absolute norm of the ideal `I : Ideal R` is the cardinality of the quotient `R ⧸ I`. -/
-noncomputable def Ideal.absNorm [IsDedekindDomain S] [Module.Free ℤ S] :
+namespace Ring.HasFiniteQuotients
+
+variable [Ring.HasFiniteQuotients S]
+
+theorem cardQuot_pos (I : Ideal S) (hI : I ≠ ⊥) : 0 < I.cardQuot := by
+  have := finiteQuotient hI
+  rw [Submodule.cardQuot_apply]
+  exact Nat.card_pos
+
+theorem finite_setOfPred_mem (x : S) (hx : x ≠ 0) : {I : Ideal S | x ∈ I}.Finite := by
+  have := finiteQuotient (mt Ideal.span_singleton_eq_bot.mp hx)
+  have : {I | Ideal.comap (Ideal.Quotient.mk (Ideal.span {x})) ⊥ ≤ I}.Finite :=
+    .of_equiv _ (Ideal.relIsoOfSurjective _ Ideal.Quotient.mk_surjective).toEquiv
+  simpa [← RingHom.ker_eq_comap_bot] using this
+
+@[deprecated (since := "2026-07-09")] alias finite_setOf_mem := finite_setOfPred_mem
+
+open scoped Pointwise in
+/-- For every bound `B`, a ring with finite quotients has only finitely many ideals of norm bounded
+by `B`. -/
+theorem finite_cardQuot_le (B : ℕ) : {I : Ideal S | I.cardQuot ≤ B}.Finite := by
+  classical
+  rcases finite_or_infinite S
+  · apply Set.toFinite
+  -- if `S` is infinite, then we can pick a finite set `s` of cardinality `B + 1`
+  obtain ⟨s, hs⟩ := Infinite.exists_subset_card_eq S (B + 1)
+  -- and consider the finite set `t` of nonzero differences
+  let t := (s - s) \ {0}
+  refine Set.Finite.of_sdiff ?_ (Set.finite_singleton ⊥)
+  -- in a ring with finite quotients, each nonzero element is contained in only finitely many ideals
+  -- so it is enough to show that each ideal `I` of norm at most `B` contains some element of `t`
+  suffices {I | Submodule.cardQuot I ≤ B} \ {⊥} ⊆ ⋃ x ∈ t, {I | x ∈ I} from
+    (t.finite_toSet.biUnion fun x hx ↦ finite_setOfPred_mem x (by grind)).subset this
+  intro I hI
+  rw [Set.mem_sdiff, Set.mem_ofPred, Submodule.cardQuot_apply] at hI
+  simp_rw [Set.mem_iUnion, exists_prop, Set.mem_ofPred_eq]
+  -- `s` has cardinality `B + 1`, but the quotient `S ⧸ I` has cardinality at most `B`
+  replace hs : (s.image (Ideal.Quotient.mk I)).card < s.card := by
+    have := finiteQuotient hI.2
+    have := Fintype.ofFinite (S ⧸ I)
+    grw [Finset.card_le_univ, Fintype.card_eq_nat_card, hI.1, hs, Nat.lt_add_one_iff]
+  -- so we can find distinct `x, y ∈ s` with the desired collision `x - y ∈ I`
+  obtain ⟨x, hx, y, hy, hxy, h⟩ := Finset.exists_ne_map_eq_of_card_image_lt hs
+  refine ⟨x - y, ?_, (Submodule.Quotient.eq I).mp h⟩
+  refine Finset.mem_sdiff.mpr ⟨Finset.mem_sub.mpr ⟨x, hx, y, hy, rfl⟩, ?_⟩
+  rwa [Finset.notMem_singleton, sub_ne_zero]
+
+/-- A ring with finite quotients has only finitely many nonzero prime ideals of bounded norm. -/
+theorem finite_cardQuot_heightOneSpectrum_le (B : ℕ) :
+    {p : IsDedekindDomain.HeightOneSpectrum S | p.asIdeal.cardQuot ≤ B}.Finite :=
+  (finite_cardQuot_le B).preimage IsDedekindDomain.HeightOneSpectrum.asIdeal_injective.injOn
+
+end Ring.HasFiniteQuotients
+
+/-- The absolute norm of the ideal `I : Ideal S` is the cardinality of the quotient `S ⧸ I`,
+with the junk value `0` at `I = ⊥`. -/
+noncomputable def Ideal.absNorm [IsDedekindDomain S] :
     Ideal S →*₀ ℕ where
-  toFun := Submodule.cardQuot
-  map_mul' I J := by rw [cardQuot_mul]
-  map_one' := by rw [Ideal.one_eq_top, cardQuot_top]
-  map_zero' := by
-    have : Infinite S := Module.Free.infinite ℤ S
-    rw [Ideal.zero_eq_bot, cardQuot_bot]
+  toFun I := if I = ⊥ then 0 else Submodule.cardQuot I
+  map_mul' I J := by
+    by_cases hI : I = ⊥
+    · simp [hI]
+    cases finite_or_infinite S
+    · let := (Finite.isField_of_domain S).toField
+      simp [I.eq_bot_or_top.resolve_left hI]
+    · simp [hI, cardQuot_mul]
+  map_one' := by simp
+  map_zero' := by simp
+
+@[simp]
+theorem Ideal.absNorm_bot [IsDedekindDomain S] : absNorm (⊥ : Ideal S) = 0 := by
+  rw [← Ideal.zero_eq_bot, map_zero]
+
+@[simp]
+theorem Ideal.absNorm_top [IsDedekindDomain S] : absNorm (⊤ : Ideal S) = 1 := by
+  rw [← Ideal.one_eq_top, map_one]
+
+/-- Away from `⊥`, the absolute norm is the cardinality of the quotient. -/
+theorem Ideal.absNorm_of_ne_bot [IsDedekindDomain S] {I : Ideal S} (hI : I ≠ ⊥) :
+    absNorm I = Submodule.cardQuot I :=
+  ite_eq_right hI
+
+/-- Over an infinite ring, the absolute norm is the cardinality of the quotient for every ideal. -/
+theorem Ideal.absNorm_apply [IsDedekindDomain S] [Infinite S] (I : Ideal S) :
+    absNorm I = Submodule.cardQuot I := by
+  obtain rfl | hI := eq_or_ne I ⊥
+  · rw [absNorm_bot, Submodule.cardQuot_bot]
+  · exact absNorm_of_ne_bot hI
+
+/-- Over an infinite ring, the absolute norm of `I` is the cardinality of the quotient `S ⧸ I`. -/
+theorem Ideal.absNorm_eq_natCard [IsDedekindDomain S] [Infinite S] (I : Ideal S) :
+    absNorm I = Nat.card (S ⧸ I) := by
+  rw [absNorm_apply, ← cardQuot_apply]
+
+namespace Ring.HasFiniteQuotients
+
+variable [Ring.HasFiniteQuotients S]
+
+/-- A ring with finite quotients has only finitely many ideals of bounded norm. -/
+theorem finite_absNorm_le [IsDedekindDomain S] (B : ℕ) :
+    {I : Ideal S | I.absNorm ≤ B}.Finite := by
+  obtain _ | _ := finite_or_infinite S
+  · exact Set.toFinite _
+  · simpa [Ideal.absNorm_apply] using finite_cardQuot_le B
+
+/-- A ring with finite quotients has only finitely many ideals of given norm. -/
+theorem finite_absNorm_eq [IsDedekindDomain S] (B : ℕ) :
+    {I : Ideal S | I.absNorm = B}.Finite :=
+  (finite_absNorm_le B).subset fun _ h ↦ h.le
+
+/-- A ring with finite quotients has only finitely many nonzero ideals of bounded norm. -/
+theorem finite_absNorm_le₀ [IsDedekindDomain S] (B : ℕ) :
+    {I : (Ideal S)⁰ | Ideal.absNorm (I : Ideal S) ≤ B}.Finite :=
+  (finite_absNorm_le B).preimage Subtype.val_injective.injOn
+
+/-- A ring with finite quotients has only finitely many nonzero prime ideals of bounded norm. -/
+theorem finite_absNorm_heightOneSpectrum_le [IsDedekindDomain S] (B : ℕ) :
+    {p : IsDedekindDomain.HeightOneSpectrum S | p.asIdeal.absNorm ≤ B}.Finite :=
+  (finite_absNorm_le B).preimage IsDedekindDomain.HeightOneSpectrum.asIdeal_injective.injOn
+
+end Ring.HasFiniteQuotients
 
 namespace Ideal
 
-variable [IsDedekindDomain S] [Module.Free ℤ S]
-
-theorem absNorm_apply (I : Ideal S) : absNorm I = cardQuot I := rfl
-
-lemma absNorm_eq_index (I : Ideal S) : absNorm I = I.toAddSubgroup.index := rfl
-
-@[simp]
-theorem absNorm_bot : absNorm (⊥ : Ideal S) = 0 := by rw [← Ideal.zero_eq_bot, map_zero]
-
-@[simp]
-theorem absNorm_top : absNorm (⊤ : Ideal S) = 1 := by rw [← Ideal.one_eq_top, map_one]
+variable [IsDedekindDomain S]
 
 @[simp]
 theorem absNorm_eq_one_iff {I : Ideal S} : absNorm I = 1 ↔ I = ⊤ := by
-  rw [absNorm_apply, cardQuot_eq_one_iff]
-
-theorem absNorm_ne_zero_iff (I : Ideal S) : Ideal.absNorm I ≠ 0 ↔ Finite (S ⧸ I) :=
-  ⟨fun h => Nat.finite_of_card_ne_zero h, fun h =>
-    (@AddSubgroup.finiteIndex_of_finite_quotient _ _ _ h).index_ne_zero⟩
+  obtain rfl | hI := eq_or_ne I ⊥
+  · simp
+  · rw [absNorm_of_ne_bot hI, cardQuot_eq_one_iff]
 
 theorem absNorm_dvd_absNorm_of_le {I J : Ideal S} (h : J ≤ I) : Ideal.absNorm I ∣ Ideal.absNorm J :=
   map_dvd absNorm (dvd_iff_le.mpr h)
@@ -252,8 +358,10 @@ theorem prime_of_irreducible_absNorm_span {a : S} (ha : a ≠ 0)
   (Ideal.span_singleton_prime ha).mp (isPrime_of_irreducible_absNorm hI)
 
 theorem absNorm_mem (I : Ideal S) : ↑(Ideal.absNorm I) ∈ I := by
-  rw [absNorm_apply, cardQuot, ← Ideal.Quotient.eq_zero_iff_mem, map_natCast,
-    Quotient.index_eq_zero]
+  obtain rfl | hI := eq_or_ne I ⊥
+  · simp
+  · rw [absNorm_of_ne_bot hI, cardQuot, ← Ideal.Quotient.eq_zero_iff_mem, map_natCast,
+      Quotient.index_eq_zero]
 
 theorem span_singleton_absNorm_le (I : Ideal S) : Ideal.span {(Ideal.absNorm I : S)} ≤ I := by
   simp only [Ideal.span_le, Set.singleton_subset_iff, SetLike.mem_coe, Ideal.absNorm_mem I]
@@ -270,7 +378,124 @@ theorem span_singleton_absNorm {I : Ideal S} (hI : (Ideal.absNorm I).Prime) :
   · rw [Ne, span_singleton_eq_bot]
     exact Int.ofNat_ne_zero.mpr hI.ne_zero
 
+section Infinite
+
+variable [Infinite S]
+
+lemma absNorm_eq_index (I : Ideal S) : absNorm I = I.toAddSubgroup.index := absNorm_apply I
+
+theorem absNorm_ne_zero_iff (I : Ideal S) : Ideal.absNorm I ≠ 0 ↔ Finite (S ⧸ I) := by
+  rw [absNorm_eq_natCard]
+  exact ⟨Nat.finite_of_card_ne_zero, fun h ↦ Nat.card_ne_zero.mpr ⟨⟨0⟩, h⟩⟩
+
+end Infinite
+
+section HasFiniteQuotients
+
+variable [Ring.HasFiniteQuotients S]
+
+/-- A version of `absNorm_eq_zero_iff` for a ring with finite quotients. -/
+@[simp]
+theorem absNorm_eq_zero_iff' {I : Ideal S} : Ideal.absNorm I = 0 ↔ I = ⊥ := by
+  obtain rfl | hI := eq_or_ne I ⊥
+  · simp
+  · have := Ring.HasFiniteQuotients.finiteQuotient hI
+    simpa [hI, absNorm_of_ne_bot hI, Submodule.cardQuot_apply] using Nat.card_pos.ne'
+
+/-- A version of `absNorm_ne_zero_iff_mem_nonZeroDivisors` for a ring with finite quotients. -/
+theorem absNorm_ne_zero_iff_mem_nonZeroDivisors' {I : Ideal S} :
+    absNorm I ≠ 0 ↔ I ∈ (Ideal S)⁰ := by
+  simp_rw [ne_eq, absNorm_eq_zero_iff', mem_nonZeroDivisors_iff_ne_zero, Submodule.zero_eq_bot]
+
+/-- A version of `absNorm_pos_iff_mem_nonZeroDivisors` for a ring with finite quotients. -/
+theorem absNorm_pos_iff_mem_nonZeroDivisors' {I : Ideal S} :
+    0 < absNorm I ↔ I ∈ (Ideal S)⁰ := by
+  rw [← absNorm_ne_zero_iff_mem_nonZeroDivisors', Nat.pos_iff_ne_zero]
+
+/-- A version of `absNorm_ne_zero_of_nonZeroDivisors` for a ring with finite quotients. -/
+theorem absNorm_ne_zero_of_nonZeroDivisors' (I : (Ideal S)⁰) : absNorm (I : Ideal S) ≠ 0 :=
+  absNorm_ne_zero_iff_mem_nonZeroDivisors'.mpr (SetLike.coe_mem I)
+
+/-- A version of `absNorm_pos_of_nonZeroDivisors` for a ring with finite quotients. -/
+theorem absNorm_pos_of_nonZeroDivisors' (I : (Ideal S)⁰) : 0 < absNorm (I : Ideal S) :=
+  absNorm_pos_iff_mem_nonZeroDivisors'.mpr (SetLike.coe_mem I)
+
+/-- A version of `card_norm_le_eq_card_norm_le_add_one` for a ring with finite quotients. -/
+theorem card_norm_le_eq_card_norm_le_add_one' (n : ℕ) :
+    Nat.card {I : Ideal S // absNorm I ≤ n} =
+      Nat.card {I : (Ideal S)⁰ // absNorm (I : Ideal S) ≤ n} + 1 := by
+  rw [← Set.coe_ofPred, ← Set.coe_ofPred, Nat.card_coe_set_eq, Nat.card_coe_set_eq,
+    ← Set.ncard_sdiff_singleton_add_one (a := ⊥) (by simp)
+    (Ring.HasFiniteQuotients.finite_absNorm_le n), Nat.add_left_inj,
+    ← Set.ncard_image_of_injective _ Subtype.val_injective]
+  congr
+  ext
+  simp
+
+end HasFiniteQuotients
+
+section Finite
+
 variable [Module.Finite ℤ S]
+
+-- A module-finite ℤ-algebra has finite quotients; local to this section, where it lets the
+-- unprimed results below be deduced from the primed ones.
+local instance : Ring.HasFiniteQuotients S := .of_module_finite ℤ S
+
+theorem absNorm_eq_zero_iff {I : Ideal S} : Ideal.absNorm I = 0 ↔ I = ⊥ :=
+  absNorm_eq_zero_iff'
+
+theorem absNorm_ne_zero_iff_mem_nonZeroDivisors {I : Ideal S} :
+    absNorm I ≠ 0 ↔ I ∈ (Ideal S)⁰ :=
+  absNorm_ne_zero_iff_mem_nonZeroDivisors'
+
+theorem absNorm_pos_iff_mem_nonZeroDivisors {I : Ideal S} :
+    0 < absNorm I ↔ I ∈ (Ideal S)⁰ :=
+  absNorm_pos_iff_mem_nonZeroDivisors'
+
+theorem absNorm_ne_zero_of_nonZeroDivisors (I : (Ideal S)⁰) : absNorm (I : Ideal S) ≠ 0 :=
+  absNorm_ne_zero_of_nonZeroDivisors' I
+
+theorem absNorm_pos_of_nonZeroDivisors (I : (Ideal S)⁰) : 0 < absNorm (I : Ideal S) :=
+  absNorm_pos_of_nonZeroDivisors' I
+
+lemma finiteIndex {I : Ideal S} (hI : I ≠ ⊥) : I.toAddSubgroup.FiniteIndex :=
+  finiteIndex' hI
+
+lemma isFiniteRelIndex {I : Ideal S} (hI : I ≠ ⊥) (J : Ideal S) :
+    I.toAddSubgroup.IsFiniteRelIndex J.toAddSubgroup :=
+  isFiniteRelIndex' hI J
+
+theorem finite_setOfPred_absNorm_le (n : ℕ) :
+    {I : Ideal S | Ideal.absNorm I ≤ n}.Finite :=
+  Ring.HasFiniteQuotients.finite_absNorm_le n
+
+@[deprecated (since := "2026-07-09")] alias finite_setOf_absNorm_le := finite_setOfPred_absNorm_le
+
+theorem finite_setOfPred_absNorm_eq (n : ℕ) :
+    {I : Ideal S | Ideal.absNorm I = n}.Finite :=
+  Ring.HasFiniteQuotients.finite_absNorm_eq n
+
+@[deprecated (since := "2026-07-09")] alias finite_setOf_absNorm_eq := finite_setOfPred_absNorm_eq
+
+theorem finite_setOfPred_absNorm_le₀ (n : ℕ) :
+    {I : (Ideal S)⁰ | Ideal.absNorm (I : Ideal S) ≤ n}.Finite :=
+  Ring.HasFiniteQuotients.finite_absNorm_le₀ n
+
+@[deprecated (since := "2026-07-09")]
+alias finite_setOf_absNorm_le₀ := finite_setOfPred_absNorm_le₀
+
+theorem card_norm_le_eq_card_norm_le_add_one (n : ℕ) :
+    Nat.card {I : Ideal S // absNorm I ≤ n} =
+      Nat.card {I : (Ideal S)⁰ // absNorm (I : Ideal S) ≤ n} + 1 :=
+  card_norm_le_eq_card_norm_le_add_one' n
+
+section Free
+
+variable [Module.Free ℤ S]
+
+-- A nontrivial free `ℤ`-module is infinite; local to this section to supply `Infinite S`.
+local instance : Infinite S := Module.Free.infinite ℤ S
 
 /-- Let `e : S ≃ I` be an additive isomorphism (therefore a `ℤ`-linear equiv).
 Then an alternative way to compute the norm of `I` is given by taking the determinant of `e`.
@@ -286,14 +511,16 @@ theorem natAbs_det_equiv (I : Ideal S) {E : Type*} [EquivLike E S I] [AddEquivCl
     have : (1 : S) ≠ 0 := one_ne_zero
     have : (1 : S) = 0 := EquivLike.injective e (Subsingleton.elim _ _)
     contradiction
+  rw [Ideal.absNorm_apply]
   exact Submodule.natAbs_det_equiv (I.restrictScalars ℤ) e
 
 /-- Let `b` be a basis for `S` over `ℤ` and `bI` a basis for `I` over `ℤ` of the same dimension.
 Then an alternative way to compute the norm of `I` is given by taking the determinant of `bI`
 over `b`. -/
 theorem natAbs_det_basis_change {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Basis ι ℤ S)
-    (I : Ideal S) (bI : Basis ι ℤ I) : (b.det ((↑) ∘ bI)).natAbs = Ideal.absNorm I :=
-  Submodule.natAbs_det_basis_change b (I.restrictScalars ℤ) bI
+    (I : Ideal S) (bI : Basis ι ℤ I) : (b.det ((↑) ∘ bI)).natAbs = Ideal.absNorm I := by
+  rw [Ideal.absNorm_apply]
+  exact Submodule.natAbs_det_basis_change b (I.restrictScalars ℤ) bI
 
 @[simp]
 theorem absNorm_span_singleton (r : S) :
@@ -325,56 +552,23 @@ theorem absNorm_span_insert (r : S) (s : Set S) :
         (absNorm_dvd_absNorm_of_le (span_mono (Set.singleton_subset_iff.mpr (Set.mem_insert _ _))))
         (by rw [absNorm_span_singleton])⟩
 
-theorem absNorm_eq_zero_iff {I : Ideal S} : Ideal.absNorm I = 0 ↔ I = ⊥ := by
-  constructor
-  · intro hI
-    rw [← le_bot_iff]
-    intro x hx
-    rw [mem_bot, ← Algebra.norm_eq_zero_iff (R := ℤ), ← Int.natAbs_eq_zero,
-      ← Ideal.absNorm_span_singleton, ← zero_dvd_iff, ← hI]
-    apply Ideal.absNorm_dvd_absNorm_of_le
-    rwa [Ideal.span_singleton_le_iff_mem]
-  · rintro rfl
-    exact absNorm_bot
-
-theorem absNorm_ne_zero_iff_mem_nonZeroDivisors {I : Ideal S} :
-    absNorm I ≠ 0 ↔ I ∈ (Ideal S)⁰ := by
-  simp_rw [ne_eq, Ideal.absNorm_eq_zero_iff, mem_nonZeroDivisors_iff_ne_zero, Submodule.zero_eq_bot]
-
-theorem absNorm_pos_iff_mem_nonZeroDivisors {I : Ideal S} :
-    0 < absNorm I ↔ I ∈ (Ideal S)⁰ := by
-  rw [← absNorm_ne_zero_iff_mem_nonZeroDivisors, Nat.pos_iff_ne_zero]
-
-theorem absNorm_ne_zero_of_nonZeroDivisors (I : (Ideal S)⁰) : absNorm (I : Ideal S) ≠ 0 :=
-  absNorm_ne_zero_iff_mem_nonZeroDivisors.mpr (SetLike.coe_mem I)
-
-theorem absNorm_pos_of_nonZeroDivisors (I : (Ideal S)⁰) : 0 < absNorm (I : Ideal S) :=
-  absNorm_pos_iff_mem_nonZeroDivisors.mpr (SetLike.coe_mem I)
-
-lemma finiteIndex {I : Ideal S} (hI : I ≠ ⊥) : I.toAddSubgroup.FiniteIndex := by
-  rwa [AddSubgroup.finiteIndex_iff, ← absNorm_eq_index, Ne, absNorm_eq_zero_iff]
-
-open AddSubgroup in
-lemma isFiniteRelIndex {I : Ideal S} (hI : I ≠ ⊥) (J : Ideal S) :
-    I.toAddSubgroup.IsFiniteRelIndex J.toAddSubgroup := by
-  have := finiteIndex hI
-  exact isFiniteRelIndex_of_finiteIndex
-
 /-- The norm of a maximal ideal is a prime power.
 The prime is `(P.under ℤ).absNorm` and the exponent is `(P.under ℤ).inertialDeg P`.
 See `Ideal.absNorm_pow_inertiaDeg`. -/
 lemma exists_prime_and_absNorm_eq_pow (P : Ideal S) [P.IsMaximal] :
     ∃ p n, 0 < n ∧ ↑p ∈ P ∧ p.Prime ∧ P.absNorm = p ^ n := by
-  have : IsAddTorsionFree S := .of_isTorsionFree ℤ _
-  have := CharZero.of_isAddTorsionFree S S
+  have : HasUniqueDiv S := .of_isTorsionFree ℤ _
+  have := CharZero.of_hasUniqueDiv S S
   have : Finite (S ⧸ P) := Submodule.finiteQuotientOfFreeOfRankEq (P.restrictScalars ℤ)
     (Ideal.finrank_eq_finrank (Module.Free.chooseBasis _ _) _
       (Ideal.IsMaximal.ne_bot_of_isIntegral_int P))
   cases nonempty_fintype (S ⧸ P)
-  letI := Ideal.Quotient.field P
+  let := Ideal.Quotient.field P
   obtain ⟨p, hpR⟩ := CharP.exists (S ⧸ P)
   obtain ⟨n, hp, e⟩ := FiniteField.card (S ⧸ P) p
-  have hP : P.absNorm = p ^ (n : ℕ) := (Nat.card_eq_fintype_card.trans e:)
+  have hP : P.absNorm = p ^ (n : ℕ) := by
+    rw [Ideal.absNorm_eq_natCard]
+    exact Nat.card_eq_fintype_card.trans e
   refine ⟨p, n, n.2, ?_, hp, hP⟩
   rw [← Ideal.IsPrime.pow_mem_iff_mem (I := P) inferInstance _ n.pos, ← Nat.cast_pow, ← hP]
   exact P.absNorm_mem
@@ -382,8 +576,8 @@ lemma exists_prime_and_absNorm_eq_pow (P : Ideal S) [P.IsMaximal] :
 lemma exists_isMaximal_dvd_of_dvd_absNorm
     {p : ℤ} (hp : Prime p) (I : Ideal S) (hI : p ∣ I.absNorm) :
     ∃ P : Ideal S, P.IsMaximal ∧ P.under ℤ = .span {p} ∧ P ∣ I := by
-  have : IsAddTorsionFree S := .of_isTorsionFree ℤ _
-  have := CharZero.of_isAddTorsionFree S S
+  have : HasUniqueDiv S := .of_isTorsionFree ℤ _
+  have := CharZero.of_hasUniqueDiv S S
   have hpMax : (Ideal.span {p}).IsMaximal :=
     ((Ideal.span_singleton_prime hp.ne_zero).mpr hp).isMaximal (by simpa using hp.ne_zero)
   induction I using UniqueFactorizationMonoid.induction_on_prime with
@@ -417,65 +611,16 @@ lemma exists_isMaximal_dvd_of_dvd_absNorm'
   exists_isMaximal_dvd_of_dvd_absNorm (Int.prime_iff_natAbs_prime.mpr (by simpa)) _
     (by exact_mod_cast hI)
 
-theorem finite_setOf_absNorm_eq [CharZero S] (n : ℕ) :
-    {I : Ideal S | Ideal.absNorm I = n}.Finite := by
-  obtain hn | hn := Nat.eq_zero_or_pos n
-  · simp only [hn, absNorm_eq_zero_iff, Set.setOf_eq_eq_singleton, Set.finite_singleton]
-  · let f := fun I : Ideal S => Ideal.map (Ideal.Quotient.mk (@Ideal.span S _ {↑n})) I
-    refine Set.Finite.of_finite_image (f := f) ?_ ?_
-    · suffices Finite (S ⧸ @Ideal.span S _ {↑n}) by
-        let g := ((↑) : Ideal (S ⧸ @Ideal.span S _ {↑n}) → Set (S ⧸ @Ideal.span S _ {↑n}))
-        refine Set.Finite.of_finite_image (f := g) ?_ SetLike.coe_injective.injOn
-        exact Set.Finite.subset Set.finite_univ (Set.subset_univ _)
-      rw [← absNorm_ne_zero_iff, absNorm_span_singleton]
-      simpa only [Ne, Int.natAbs_eq_zero, Algebra.norm_eq_zero_iff, Nat.cast_eq_zero] using
-        ne_of_gt hn
-    · intro I hI J hJ h
-      rw [← comap_map_mk (span_singleton_absNorm_le I), ← hI.symm, ←
-        comap_map_mk (span_singleton_absNorm_le J), ← hJ.symm]
-      congr
-
-theorem finite_setOf_absNorm_le [CharZero S] (n : ℕ) :
-    {I : Ideal S | Ideal.absNorm I ≤ n}.Finite := by
-  rw [show {I : Ideal S | Ideal.absNorm I ≤ n} =
-    (⋃ i ∈ Set.Icc 0 n, {I : Ideal S | Ideal.absNorm I = i}) by ext; simp]
-  refine Set.Finite.biUnion (Set.finite_Icc 0 n) (fun i _ => Ideal.finite_setOf_absNorm_eq i)
-
-theorem finite_setOf_absNorm_le₀ [CharZero S] (n : ℕ) :
-    {I : (Ideal S)⁰ | Ideal.absNorm (I : Ideal S) ≤ n}.Finite := by
-  have : Finite {I : Ideal S // I ∈ (Ideal S)⁰ ∧ absNorm I ≤ n} :=
-    (finite_setOf_absNorm_le n).subset fun _ ⟨_, h⟩ ↦ h
-  exact Finite.of_equiv _ (Equiv.subtypeSubtypeEquivSubtypeInter _ (fun I ↦ absNorm I ≤ n)).symm
-
-theorem card_norm_le_eq_card_norm_le_add_one (n : ℕ) [CharZero S] :
-    Nat.card {I : Ideal S // absNorm I ≤ n} =
-      Nat.card {I : (Ideal S)⁰ // absNorm (I : Ideal S) ≤ n} + 1 := by
-  classical
-  have : Finite {I : Ideal S // I ∈ (Ideal S)⁰ ∧ absNorm I ≤ n} :=
-    (finite_setOf_absNorm_le n).subset fun _ ⟨_, h⟩ ↦ h
-  have : Finite {I : Ideal S // I ∉ (Ideal S)⁰ ∧ absNorm I ≤ n} :=
-    (finite_setOf_absNorm_le n).subset fun _ ⟨_, h⟩ ↦ h
-  rw [Nat.card_congr (Equiv.subtypeSubtypeEquivSubtypeInter (fun I ↦ I ∈ (Ideal S)⁰)
-    (fun I ↦ absNorm I ≤ n))]
-  let e : {I : Ideal S // absNorm I ≤ n} ≃ {I : Ideal S // I ∈ (Ideal S)⁰ ∧ absNorm I ≤ n} ⊕
-      {I : Ideal S // I ∉ (Ideal S)⁰ ∧ absNorm I ≤ n} := by
-    refine (Equiv.subtypeEquivRight ?_).trans (subtypeOrEquiv _ _ ?_)
-    · intro _
-      simp_rw [← or_and_right, em, true_and]
-    · exact Pi.disjoint_iff.mpr fun I ↦ Prop.disjoint_iff.mpr (by tauto)
-  simp_rw [Nat.card_congr e, Nat.card_sum, add_right_inj]
-  conv_lhs =>
-    enter [1, 1, I]
-    rw [← absNorm_ne_zero_iff_mem_nonZeroDivisors, ne_eq, not_not, and_iff_left_iff_imp.mpr
-      (fun h ↦ by rw [h]; exact Nat.zero_le n), absNorm_eq_zero_iff]
-  rw [Nat.card_unique]
-
 theorem norm_dvd_iff {x : S} (hx : Prime (Algebra.norm ℤ x)) {y : ℤ} :
     Algebra.norm ℤ x ∣ y ↔ x ∣ y := by
   rw [← Ideal.mem_span_singleton (y := x), ← eq_intCast (algebraMap ℤ S), ← Ideal.mem_comap,
     ← Ideal.span_singleton_absNorm, Ideal.mem_span_singleton, Ideal.absNorm_span_singleton,
     Int.natAbs_dvd]
   rwa [Ideal.absNorm_span_singleton, ← Int.prime_iff_natAbs_prime]
+
+end Free
+
+end Finite
 
 end Ideal
 

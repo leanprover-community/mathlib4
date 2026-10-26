@@ -5,10 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.LinearAlgebra.Dimension.Constructions
 public import Mathlib.LinearAlgebra.Dimension.Finite
-public import Mathlib.LinearAlgebra.Isomorphisms
-public import Mathlib.Logic.Equiv.Fin.Rotate
 
 /-!
 
@@ -34,9 +31,9 @@ universe u v
 
 open Function Set Cardinal Module Submodule LinearMap
 
-variable {R} {M M₁ M₂ M₃ : Type u} {M' : Type v} [Ring R]
-variable [AddCommGroup M] [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup M₃] [AddCommGroup M']
-variable [Module R M] [Module R M₁] [Module R M₂] [Module R M₃] [Module R M']
+variable {R} {M M₁ : Type u} {M' : Type v} [Ring R]
+variable [AddCommGroup M] [AddCommGroup M₁] [AddCommGroup M']
+variable [Module R M] [Module R M₁] [Module R M']
 
 /--
 `HasRankNullity.{u}` is a class of rings satisfying
@@ -66,24 +63,25 @@ lemma exists_set_linearIndependent :
     ∃ s : Set M, #s = Module.rank R M ∧ LinearIndependent (ι := s) R Subtype.val :=
   HasRankNullity.exists_set_linearIndependent M
 
-variable (R) in
-theorem nontrivial_of_hasRankNullity : Nontrivial R := by
+instance (priority := 100) : Nontrivial R := by
   refine (subsingleton_or_nontrivial R).resolve_left fun H ↦ ?_
   have := rank_quotient_add_rank (R := R) (M := PUnit) ⊥
   simp [one_add_one_eq_two] at this
 
-attribute [local instance] nontrivial_of_hasRankNullity
+variable (R) in
+@[deprecated "use infer_instance instead" (since := "2026-10-08")]
+theorem nontrivial_of_hasRankNullity : Nontrivial R := inferInstance
 
 theorem LinearMap.lift_rank_range_add_rank_ker (f : M →ₗ[R] M') :
     lift.{u} (Module.rank R (LinearMap.range f)) + lift.{v} (Module.rank R (LinearMap.ker f)) =
       lift.{v} (Module.rank R M) := by
-  haveI := fun p : Submodule R M => Classical.decEq (M ⧸ p)
+  have := fun p : Submodule R M => Classical.decEq (M ⧸ p)
   rw [← f.quotKerEquivRange.lift_rank_eq, ← lift_add, rank_quotient_add_rank]
 
 /-- The **rank-nullity theorem** -/
 theorem LinearMap.rank_range_add_rank_ker (f : M →ₗ[R] M₁) :
     Module.rank R (LinearMap.range f) + Module.rank R (LinearMap.ker f) = Module.rank R M := by
-  haveI := fun p : Submodule R M => Classical.decEq (M ⧸ p)
+  have := fun p : Submodule R M => Classical.decEq (M ⧸ p)
   rw [← f.quotKerEquivRange.rank_eq, rank_quotient_add_rank]
 
 theorem LinearMap.lift_rank_eq_of_surjective {f : M →ₗ[R] M'} (h : Surjective f) :
@@ -198,7 +196,7 @@ theorem Submodule.exists_smul_notMem_of_rank_lt {N : Submodule R M}
   simp_rw [← N.mkQ_apply, ← map_smul, N.mkQ_apply, ne_eq, Submodule.Quotient.mk_eq_zero] at this
   exact this
 
-open Cardinal Basis Submodule Function Set LinearMap
+open Cardinal Submodule Function LinearMap
 
 theorem Submodule.rank_sup_add_rank_inf_eq (s t : Submodule R M) :
     Module.rank R (s ⊔ t : Submodule R M) + Module.rank R (s ⊓ t : Submodule R M) =

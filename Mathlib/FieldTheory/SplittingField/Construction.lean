@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.CharP.Algebra
 public import Mathlib.FieldTheory.SplittingField.IsSplittingField
-public import Mathlib.RingTheory.Algebraic.Basic
 
 /-!
 # Splitting fields
@@ -37,11 +36,11 @@ noncomputable section
 
 universe u v w
 
-variable {F : Type u} {K : Type v} {L : Type w}
+variable {K : Type v} {L : Type w}
 
 namespace Polynomial
 
-variable [Field K] [Field L] [Field F]
+variable [Field K] [Field L]
 
 open Polynomial
 
@@ -66,7 +65,7 @@ attribute [local instance] fact_irreducible_factor
 
 theorem factor_dvd_of_not_isUnit {f : K[X]} (hf1 : ¬IsUnit f) : factor f ∣ f := by
   by_cases hf2 : f = 0; · rw [hf2]; exact dvd_zero _
-  rw [factor, dif_pos (WfDvdMonoid.exists_irreducible_factor hf1 hf2)]
+  rw [factor, dite_eq_left (WfDvdMonoid.exists_irreducible_factor hf1 hf2)]
   exact (Classical.choose_spec <| WfDvdMonoid.exists_irreducible_factor hf1 hf2).2
 
 theorem factor_dvd_of_degree_ne_zero {f : K[X]} (hf : f.degree ≠ 0) : factor f ∣ f :=
@@ -252,10 +251,10 @@ instance instField : Field (SplittingField f) where
   nnratCast_def q := by change algebraMap K _ _ = _; simp_rw [NNRat.cast_def, map_div₀, map_natCast]
   ratCast_def q := by
     change algebraMap K _ _ = _; rw [Rat.cast_def, map_div₀, map_intCast, map_natCast]
-  nnqsmul_def q x := Quotient.inductionOn x fun p ↦ congr_arg Quotient.mk'' <| by
-    ext; simp [MvPolynomial.algebraMap_eq, NNRat.smul_def]
-  qsmul_def q x := Quotient.inductionOn x fun p ↦ congr_arg Quotient.mk'' <| by
-    ext; simp [MvPolynomial.algebraMap_eq, Rat.smul_def]
+  nnqsmul_def q x := Quotient.inductionOn x fun p ↦ congr(Quotient.mk'' $(by
+    ext; simp [MvPolynomial.algebraMap_eq, NNRat.smul_def]))
+  qsmul_def q x := Quotient.inductionOn x fun p ↦ congr(Quotient.mk'' $(by
+    ext; simp [MvPolynomial.algebraMap_eq, Rat.smul_def]))
 
 instance instCharZero [CharZero K] : CharZero (SplittingField f) :=
   charZero_of_injective_algebraMap (algebraMap K _).injective

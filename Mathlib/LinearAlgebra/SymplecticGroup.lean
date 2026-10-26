@@ -5,11 +5,12 @@ Authors: Matej Penciak, Moritz Doll, Fabien Clery, Seed Prover, Huanyu Zheng
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.Action
-public import Mathlib.LinearAlgebra.Matrix.SchurComplement
 public import Mathlib.LinearAlgebra.Matrix.Rank
 public import Mathlib.RingTheory.LocalProperties.Basic
-public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+
+import Mathlib.LinearAlgebra.Matrix.Action
+import Mathlib.LinearAlgebra.Matrix.SchurComplement
+import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
 /-!
 # The Symplectic Group
@@ -101,7 +102,7 @@ variable [Fintype l]
 def symplecticGroup : Submonoid (Matrix (l ⊕ l) (l ⊕ l) R) where
   carrier := { A | A * J l R * Aᵀ = J l R }
   mul_mem' {a b} ha hb := by
-    simp only [Set.mem_setOf_eq, transpose_mul] at *
+    simp only [Set.mem_ofPred_eq, transpose_mul] at *
     rw [← Matrix.mul_assoc, a.mul_assoc, a.mul_assoc, hb]
     exact ha
   one_mem' := by simp

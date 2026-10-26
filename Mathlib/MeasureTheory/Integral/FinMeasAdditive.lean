@@ -129,7 +129,7 @@ theorem add_measure {ν : Measure α} (hT : FinMeasAdditive μ T) (hT' : FinMeas
 theorem map_iUnion_fin_meas_set_eq_sum (T : Set α → β) (T_empty : T ∅ = 0)
     (h_add : FinMeasAdditive μ T) {ι} (S : ι → Set α) (sι : Finset ι)
     (hS_meas : ∀ i, MeasurableSet (S i)) (hSp : ∀ i ∈ sι, μ (S i) ≠ ∞)
-    (h_disj : ∀ᵉ (i ∈ sι) (j ∈ sι), i ≠ j → Disjoint (S i) (S j)) :
+    (h_disj : ∀ i ∈ sι, ∀ j ∈ sι, i ≠ j → Disjoint (S i) (S j)) :
     T (⋃ i ∈ sι, S i) = ∑ i ∈ sι, T (S i) := by
   classical
   revert hSp h_disj
@@ -394,7 +394,7 @@ theorem setToSimpleFunc_congr (T : Set α → E →L[ℝ] F)
   refine fun x y hxy => h_zero _ ((measurableSet_fiber f x).inter (measurableSet_fiber g y)) ?_
   rw [EventuallyEq, ae_iff] at h
   refine measure_mono_null (fun z => ?_) h
-  simp_rw [Set.mem_inter_iff, Set.mem_setOf_eq, Set.mem_preimage, Set.mem_singleton_iff]
+  simp_rw [Set.mem_inter_iff, Set.mem_ofPred_eq, Set.mem_preimage, Set.mem_singleton_iff]
   intro h
   rwa [h.1, h.2]
 
@@ -482,7 +482,7 @@ theorem setToSimpleFunc_sub (T : Set α → E →L[ℝ] F) (h_add : FinMeasAddit
     sub_eq_add_neg]
   rw [integrable_iff] at hg ⊢
   intro x hx_ne
-  rw [SimpleFunc.coe_neg, Pi.neg_def, ← Function.comp_def, preimage_comp, neg_preimage,
+  rw [FunLike.coe_neg, Pi.neg_def, ← Function.comp_def, preimage_comp, neg_preimage,
     Set.neg_singleton]
   refine hg (-x) ?_
   simp [hx_ne]
@@ -556,7 +556,7 @@ theorem setToSimpleFunc_mono [IsOrderedAddMonoid G']
   rw [← sub_nonneg, ← setToSimpleFunc_sub T h_add hgi hfi]
   refine setToSimpleFunc_nonneg' T hT_nonneg _ ?_ (hgi.sub hfi)
   intro x
-  simp only [coe_sub, sub_nonneg, coe_zero, Pi.zero_apply, Pi.sub_apply]
+  simp only [FunLike.coe_sub, sub_nonneg, FunLike.coe_zero, Pi.zero_apply, Pi.sub_apply]
   exact hfg x
 
 end Order
@@ -606,7 +606,7 @@ theorem setToSimpleFunc_indicator (T : Set α → F →L[ℝ] F') (hT_empty : T 
       setToSimpleFunc_zero_apply]
   simp_rw [setToSimpleFunc]
   obtain rfl | hs_univ := eq_or_ne s univ
-  · haveI hα := hs_empty.to_type
+  · have hα := hs_empty.to_type
     simp [← Function.const_def]
   rw [range_indicator hs hs_empty hs_univ]
   by_cases hx0 : x = 0

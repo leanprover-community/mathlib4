@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Fréd�
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Map
 public import Mathlib.Algebra.Module.Submodule.Basic
 public import Mathlib.Algebra.Module.Submodule.Lattice
 public import Mathlib.Algebra.Module.Submodule.LinearMap
@@ -28,10 +27,10 @@ submodule, subspace, linear map, pushforward, pullback
 
 @[expose] public section
 
-open Function Pointwise Set
+open Function Set
 
-variable {R : Type*} {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}
-variable {M : Type*} {M₁ : Type*} {M₂ : Type*} {M₃ : Type*}
+variable {R : Type*} {R₂ : Type*} {R₃ : Type*}
+variable {M : Type*} {M₂ : Type*} {M₃ : Type*}
 
 namespace Submodule
 
@@ -168,6 +167,7 @@ theorem map_equivMapOfInjective_symm_apply (f : M →ₛₗ[σ₁₂] M₂) (i :
     i.eq_iff, LinearEquiv.apply_symm_apply]
 
 /-- The pullback of a submodule `p ⊆ M₂` along `f : M → M₂` -/
+@[implicit_reducible]
 def comap (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R₂ M₂) : Submodule R M :=
   { p.toAddSubmonoid.comap f with
     carrier := f ⁻¹' p
@@ -517,11 +517,11 @@ protected theorem map_smul (f : V →ₗ[K] V₂) (p : Submodule K V) (a : K) (h
 
 theorem comap_smul' (f : V →ₗ[K] V₂) (p : Submodule K V₂) (a : K) :
     p.comap (a • f) = ⨅ _ : a ≠ 0, p.comap f := by
-  classical by_cases h : a = 0 <;> simp [h, comap_smul]
+  by_cases h : a = 0 <;> simp [h, comap_smul]
 
 theorem map_smul' (f : V →ₗ[K] V₂) (p : Submodule K V) (a : K) :
     p.map (a • f) = ⨆ _ : a ≠ 0, map f p := by
-  classical by_cases h : a = 0 <;> simp [h, Submodule.map_smul]
+  by_cases h : a = 0 <;> simp [h, Submodule.map_smul]
 
 end Submodule
 
@@ -537,8 +537,8 @@ of `t.subtype`. -/
 def comapSubtypeEquivOfLe {p q : Submodule R M} (hpq : p ≤ q) : comap q.subtype p ≃ₗ[R] p where
   toFun x := ⟨x, x.2⟩
   invFun x := ⟨⟨x, hpq x.2⟩, x.2⟩
-  left_inv x := by simp only [SetLike.eta]
-  right_inv x := by simp only [SetLike.eta]
+  left_inv x := by simp
+  right_inv x := by simp
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
@@ -588,7 +588,7 @@ theorem orderIsoMapComap_symm_apply' (e : M ≃ₛₗ[τ₁₂] M₂) (p : Submo
 
 theorem inf_comap_le_comap_add (f₁ f₂ : M →ₛₗ[τ₁₂] M₂) :
     comap f₁ q ⊓ comap f₂ q ≤ comap (f₁ + f₂) q := by
-  simp only [SetLike.le_def, mem_comap, mem_inf, LinearMap.add_apply]
+  simp only [IsConcreteLE.le_iff, mem_comap, mem_inf, LinearMap.add_apply]
   exact fun _ h ↦ add_mem h.1 h.2
 
 lemma surjOn_iff_le_map [RingHomSurjective τ₁₂] {f : M →ₛₗ[τ₁₂] M₂} {p : Submodule R M}
@@ -599,24 +599,25 @@ end Submodule
 
 namespace Submodule
 
-variable {S N N₂ : Type*}
+variable {S N N₂ N₃ : Type*}
 variable [CommSemiring S] [Semiring R] [CommSemiring R₂]
 variable [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R₂ M₂]
 variable [AddCommMonoid N] [AddCommMonoid N₂] [Module S N] [Module S N₂]
+variable [AddCommMonoid N₃] [Module S N₃]
 variable {τ₁₂ : R →+* R₂}
 variable (p : Submodule R M) (q : Submodule R₂ M₂)
 variable (pₗ : Submodule S N) (qₗ : Submodule S N₂)
 
 theorem comap_le_comap_smul (f : M →ₛₗ[τ₁₂] M₂) (c : R₂) : comap f q ≤ comap (c • f) q := by
-  simp only [SetLike.le_def, mem_comap, LinearMap.smul_apply]
+  simp only [IsConcreteLE.le_iff, mem_comap, LinearMap.smul_apply]
   exact fun _ h ↦ smul_mem _ _ h
 
 theorem map_smul_le_map [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) (c : R₂) :
     map (c • f) p ≤ map f p := by
   grw [map_le_iff_le_comap, ← comap_le_comap_smul (map f p) f c, ← map_le_iff_le_comap]
 
-/-- Given modules `M`, `M₂` over a commutative ring, together with submodules `p ⊆ M`, `q ⊆ M₂`,
-the set of maps $\{f ∈ Hom(M, M₂) | f(p) ⊆ q \}$ is a submodule of `Hom(M, M₂)`. -/
+/-- Given modules `N`, `N₂` over a commutative semiring, together with submodules `p ⊆ N`, `q ⊆ N₂`,
+the set of maps $\{f ∈ Hom(N, N₂) | f(p) ⊆ q \}$ is a submodule of `Hom(N, N₂)`. -/
 def compatibleMaps : Submodule S (N →ₗ[S] N₂) where
   carrier := { fₗ | pₗ ≤ comap fₗ qₗ }
   zero_mem' := by simp
@@ -627,6 +628,18 @@ def compatibleMaps : Submodule S (N →ₗ[S] N₂) where
   smul_mem' c fₗ h := by
     dsimp at h
     exact le_trans h (comap_le_comap_smul qₗ fₗ c)
+
+@[simp]
+theorem mem_compatibleMaps {f : N →ₗ[S] N₂} : f ∈ pₗ.compatibleMaps qₗ ↔ pₗ ≤ qₗ.comap f :=
+  Iff.rfl
+
+variable {pₗ qₗ} {rₗ : Submodule S N₃} in
+theorem comp_mem_compatibleMaps {f g} (hf : f ∈ pₗ.compatibleMaps qₗ)
+    (hg : g ∈ qₗ.compatibleMaps rₗ) : g ∘ₗ f ∈ pₗ.compatibleMaps rₗ :=
+  fun _ hx ↦ hg (hf hx)
+
+theorem one_mem_compatibleMaps : (1 : Module.End S N) ∈ pₗ.compatibleMaps pₗ :=
+  fun _ ↦ id
 
 end Submodule
 
@@ -674,6 +687,13 @@ theorem submoduleMap_injective [RingHomSurjective σ₁₂] {f : M →ₛₗ[σ�
     (p : Submodule R M) : Injective (f.submoduleMap p) :=
   f.toAddMonoidHom.addSubmonoidMap_injective hf _
 
+theorem submoduleMap_injective_of_injOn [RingHomSurjective σ₁₂]
+    {p : Submodule R M} {f : M →ₛₗ[σ₁₂] M₂} (hf : Set.InjOn f p) :
+    Injective (f.submoduleMap p) := by
+  intro ⟨x, hx⟩ ⟨y, hy⟩ hxy
+  replace hxy : f x = f y := by simpa [Subtype.ext_iff] using hxy
+  aesop
+
 open Submodule
 
 theorem map_codRestrict [RingHomSurjective σ₂₁] (p : Submodule R M) (f : M₂ →ₛₗ[σ₂₁] M) (h p') :
@@ -692,11 +712,13 @@ theorem comap_domRestrict (p : Submodule R₂ M₂) (f : M₂ →ₛₗ[σ₂₁
     comap (domRestrict f p) p' = comap p.subtype (comap f p') :=
   comap_comp p.subtype f p'
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem map_restrict [RingHomSurjective σ₂₁] {p : Submodule R₂ M₂} {q : Submodule R M}
     {f : M₂ →ₛₗ[σ₂₁] M} (h : ∀ x ∈ p, f x ∈ q) (p') :
     map (f.restrict h) p' = comap q.subtype (map f (map p.subtype p')) := by
   rw [restrict_eq_codRestrict_domRestrict, map_codRestrict, map_domRestrict]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem comap_restrict {p : Submodule R₂ M₂} {q : Submodule R M} {f : M₂ →ₛₗ[σ₂₁] M}
     (h : ∀ x ∈ p, f x ∈ q) (p') :
     comap (f.restrict h) p' = comap p.subtype (comap f (map q.subtype p')) := by
@@ -719,6 +741,7 @@ variable {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R}
 variable {re₁₂ : RingHomInvPair σ₁₂ σ₂₁} {re₂₁ : RingHomInvPair σ₂₁ σ₁₂}
 variable (e : M ≃ₛₗ[σ₁₂] M₂)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A linear equivalence of two modules restricts to a linear equivalence from any submodule
 `p` of the domain onto the image of that submodule.
 

@@ -6,9 +6,8 @@ Authors: Mario Carneiro, Kevin Kappelmann
 module
 
 public import Mathlib.Algebra.Order.Ring.Cast
-public import Mathlib.Data.Nat.Cast.Basic
 
-import Mathlib.Data.Int.LeastGreatest
+import Mathlib.Order.Int.LeastGreatest
 
 /-!
 # Floor and ceil
@@ -50,14 +49,12 @@ rounding, floor, ceil
 
 assert_not_exists Finset
 
-open Set
-
-variable {F α β : Type*}
+variable {α β : Type*}
 
 /-! ### Floor semiring -/
 
 /-- A `FloorSemiring` is an ordered semiring over `α` with a function
-`floor : α → ℕ` satisfying `∀ (n : ℕ) (x : α), n ≤ ⌊x⌋ ↔ (n : α) ≤ x)`.
+`floor : α → ℕ` satisfying `∀ (n : ℕ) (x : α), n ≤ ⌊x⌋ ↔ (n : α) ≤ x`.
 Note that many lemmas require a `LinearOrder`. Please see the above `TODO`. -/
 class FloorSemiring (α) [Semiring α] [PartialOrder α] where
   /-- `FloorSemiring.floor a` computes the greatest natural `n` such that `(n : α) ≤ a`. -/
@@ -102,6 +99,15 @@ theorem natCast_strictMono : StrictMono (Nat.cast : ℕ → α) := by
     induction k with | zero => rfl | succ k k_ih => grind
   have h : n + (floor (n : α) + 1) ≤ floor (n : α) := (gc_floor (natCast_nonneg n)).mpr (hn _).le
   grind
+
+theorem natCast_pos {n : ℕ} : 0 < (n : α) ↔ 0 < n := by
+  rw [← Nat.cast_zero, natCast_strictMono.lt_iff_lt]
+
+theorem natCast_lt_iff {m n : ℕ} : (m : α) < (n : α) ↔ m < n :=
+  natCast_strictMono.lt_iff_lt
+
+theorem natCast_le_iff {m n : ℕ} : (m : α) ≤ (n : α) ↔ m ≤ n :=
+  natCast_strictMono.le_iff_le
 
 instance : ZeroLEOneClass α := ⟨by simpa only [Nat.cast_one] using natCast_nonneg 1⟩
 
@@ -154,7 +160,7 @@ end OrderedSemiring
 
 section LinearOrderedSemiring
 
-variable [Semiring α] [LinearOrder α] [FloorSemiring α] {a b : α} {n : ℕ}
+variable [Semiring α] [LinearOrder α] [FloorSemiring α] {a : α} {n : ℕ}
 
 theorem lt_ceil : n < ⌈a⌉₊ ↔ (n : α) < a :=
   lt_iff_lt_of_le_iff_le ceil_le
@@ -169,7 +175,7 @@ end Nat
 /-! ### Floor rings -/
 
 /-- A `FloorRing` is a linear ordered ring over `α` with a function
-`floor : α → ℤ` satisfying `∀ (z : ℤ) (a : α), z ≤ floor a ↔ (z : α) ≤ a)`.
+`floor : α → ℤ` satisfying `∀ (z : ℤ) (a : α), z ≤ floor a ↔ (z : α) ≤ a`.
 -/
 class FloorRing (α) [Ring α] [LinearOrder α] where
   /-- `FloorRing.floor a` computes the greatest integer `z` such that `(z : α) ≤ a`. -/
@@ -190,8 +196,8 @@ instance : FloorRing ℤ where
     rw [Int.cast_id, id_def]
 
 /-- A `FloorRing` constructor from the `floor` function alone. -/
-@[implicit_reducible]
-def FloorRing.ofFloor (α) [Ring α] [LinearOrder α] [IsOrderedRing α] (floor : α → ℤ)
+@[instance_reducible]
+def FloorRing.ofFloor (α) [Ring α] [LinearOrder α] [IsOrderedAddMonoid α] (floor : α → ℤ)
     (gc_coe_floor : GaloisConnection (↑) floor) : FloorRing α :=
   { floor
     ceil := fun a => -floor (-a)
@@ -199,8 +205,8 @@ def FloorRing.ofFloor (α) [Ring α] [LinearOrder α] [IsOrderedRing α] (floor 
     gc_ceil_coe := fun a z => by rw [neg_le, ← gc_coe_floor, Int.cast_neg, neg_le_neg_iff] }
 
 /-- A `FloorRing` constructor from the `ceil` function alone. -/
-@[implicit_reducible]
-def FloorRing.ofCeil (α) [Ring α] [LinearOrder α] [IsOrderedRing α] (ceil : α → ℤ)
+@[instance_reducible]
+def FloorRing.ofCeil (α) [Ring α] [LinearOrder α] [IsOrderedAddMonoid α] (ceil : α → ℤ)
     (gc_ceil_coe : GaloisConnection ceil (↑)) : FloorRing α :=
   { floor := fun a => -ceil (-a)
     ceil
@@ -228,7 +234,7 @@ theorem exists_floor'
 
 /-- Construct a `FloorRing` instance noncomputably, from the hypothesis that every element is
 bounded above by a natural number. -/
-@[no_expose, implicit_reducible]
+@[no_expose, instance_reducible]
 noncomputable def FloorRing.ofBounded
     (α) [Ring α] [LinearOrder α] [IsOrderedRing α] [Nontrivial α]
     (bounded : ∀ x : α, ∃ n : ℕ, x ≤ n) : FloorRing α :=
@@ -244,7 +250,7 @@ noncomputable def FloorRing.ofBounded
 
 namespace Int
 
-variable [Ring α] [LinearOrder α] [FloorRing α] {z : ℤ} {a b : α}
+variable [Ring α] [LinearOrder α] [FloorRing α] {z : ℤ} {a : α}
 
 /-- `Int.floor a` is the greatest integer `z` such that `z ≤ a`. It is denoted with `⌊a⌋`. -/
 def floor : α → ℤ :=
@@ -382,11 +388,17 @@ theorem intCast_strictMono : StrictMono (Int.cast : ℤ → α) := by
   refine strictMono_int_of_lt_succ fun n => (intCast_mono (Int.le_add_one (le_refl _))).lt_of_ne ?_
   grind
 
+theorem intCast_lt_iff {m n : ℤ} : (m : α) < (n : α) ↔ m < n :=
+  intCast_strictMono.lt_iff_lt
+
+theorem intCast_le_iff {m n : ℤ} : (m : α) ≤ (n : α) ↔ m ≤ n :=
+  intCast_strictMono.le_iff_le
+
 end FloorRing
 
 namespace Int
 
-variable [Ring α] [LinearOrder α] [FloorRing α] {z : ℤ} {a b : α}
+variable [Ring α] [LinearOrder α] [FloorRing α] {a : α}
 
 @[bound]
 theorem ceil_nonneg (ha : 0 ≤ a) : 0 ≤ ⌈a⌉ := by

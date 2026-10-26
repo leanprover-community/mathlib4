@@ -6,15 +6,15 @@ Authors: Heather Macbeth, Yury Kudryashov, Frédéric Dupuis
 module
 
 public import Mathlib.Topology.Algebra.InfiniteSum.Constructions
-public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
 /-! # Infinite sums in topological vector spaces -/
 
 @[expose] public section
 
-variable {α β γ δ : Type*}
+variable {α β γ : Type*}
 
-open Filter Finset Function
+open Function
 
 section ConstSMul
 
@@ -92,7 +92,7 @@ variable {f : ι → R} {g : κ → M} {s : R} {t u : M}
 theorem HasSum.smul_eq (hf : HasSum f s) (hg : HasSum g t)
     (hfg : HasSum (fun x : ι × κ ↦ f x.1 • g x.2) u) : s • t = u :=
   have key₁ : HasSum (fun i ↦ f i • t) (s • t) := hf.smul_const t
-  have this : ∀ i : ι, HasSum (fun c : κ ↦ f i • g c) (f i • t) := fun i ↦ hg.const_smul (f i)
+  have : ∀ i : ι, HasSum (fun c : κ ↦ f i • g c) (f i • t) := fun i ↦ hg.const_smul (f i)
   have key₂ : HasSum (fun i ↦ f i • t) u := HasSum.prod_fiberwise hfg this
   key₁.unique key₂
 
@@ -165,7 +165,7 @@ theorem ContinuousLinearEquiv.tsum_eq_iff [T2Space M] [T2Space M₂]
     refine ⟨?_, fun H ↦ ?_⟩
     · rintro rfl
       simp
-    · simpa using congr_arg (fun z ↦ e z) H
+    · simpa using congr(e $H)
 
 protected theorem ContinuousLinearEquiv.map_tsum [T2Space M] [T2Space M₂]
     {f : ι → M} (e : M ≃SL[σ] M₂) : e (∑'[L] z, f z) = ∑'[L] z, e (f z) := by
@@ -191,7 +191,7 @@ noncomputable def MulAction.automorphize [Group α] [MulAction α β] (f : β �
   refine @Quotient.lift _ _ (_) (fun b ↦ ∑' (a : α), f (a • b)) ?_
   intro b₁ b₂ ⟨a, (ha : a • b₂ = b₁)⟩
   rw [← ha]
-  convert! (Equiv.mulRight a).tsum_eq (fun a' ↦ f (a' • b₂)) using 1
+  convert (Equiv.mulRight a).tsum_eq (fun a' ↦ f (a' • b₂)) using 1
   simp only [Equiv.coe_mulRight]
   congr
   ext

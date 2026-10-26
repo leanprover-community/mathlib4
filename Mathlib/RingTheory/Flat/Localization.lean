@@ -32,6 +32,7 @@ variable {R : Type*} (S : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S]
 variable (p : Submonoid R) [IsLocalization p S]
 variable (M : Type*) [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower R S M]
 
+set_option backward.isDefEq.respectTransparency.types false in
 include p in
 theorem IsLocalization.flat : Module.Flat R S := by
   refine Module.Flat.iff_lTensor_injectiveₛ.mpr fun P _ _ N ↦ ?_
@@ -105,9 +106,9 @@ end Module
 
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
 
-instance [Module.Flat A B] (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [P.LiesOver p]
+instance [Module.Flat A B] (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime]
     [Algebra (Localization.AtPrime p) (Localization.AtPrime P)]
-    [Localization.AtPrime.IsLiesOverAlgebra p P] :
+    [IsScalarTower A (Localization.AtPrime p) (Localization.AtPrime P)] :
     Module.Flat (Localization.AtPrime p) (Localization.AtPrime P) := by
   rw [Module.flat_iff_of_isLocalization (Localization.AtPrime p) p.primeCompl]
   exact Module.Flat.trans A B (Localization.AtPrime P)

@@ -32,7 +32,7 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The functor establishing the equivalence `StructuredArrow.commaMapEquivalence`. -/
-@[simps]
+@[simps, implicit_reducible]
 def commaMapEquivalenceFunctor [IsIso β] (X : Comma L' R') :
     StructuredArrow X (Comma.map α β) ⥤ Comma (map₂ (𝟙 _) α) (map₂ X.hom (inv β)) where
   obj Y := ⟨mk Y.hom.left, mk Y.hom.right,
@@ -41,7 +41,7 @@ def commaMapEquivalenceFunctor [IsIso β] (X : Comma L' R') :
         map₂_obj_hom, mk_hom_eq_self, Category.id_comp, Category.assoc, NatIso.isIso_inv_app,
         Functor.comp_obj, Comma.map_obj_right, Comma.map_obj_left, Comma.map_obj_hom,
         IsIso.hom_inv_id, Category.comp_id] using
-        congrFun (congrArg CategoryStruct.comp Y.hom.w) (inv (β.app Y.right.right) :))⟩
+        congr(CategoryStruct.comp $(Y.hom.w) ((inv (β.app Y.right.right) :))))⟩
   map {Y Z} f := ⟨homMk f.right.left (congrArg CommaMorphism.left (StructuredArrow.w f)),
     homMk f.right.right (congrArg CommaMorphism.right (StructuredArrow.w f)),
     by simp only [map₂_obj_right, mk_right, hom_eq_iff, comp_right,
@@ -75,6 +75,7 @@ def commaMapEquivalenceCounitIso [IsIso β] (X : Comma L' R') :
       𝟭 (Comma (map₂ (𝟙 (L'.obj X.left)) α) (map₂ X.hom (inv β))) :=
   NatIso.ofComponents (fun _ => Comma.isoMk (Iso.refl _) (Iso.refl _))
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The structured arrow category on the functor `Comma.map α β`, with `β` a natural isomorphism,
 is equivalent to a comma category on two instances of `StructuredArrow.map₂`. -/

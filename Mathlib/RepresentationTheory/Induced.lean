@@ -22,7 +22,7 @@ We also prove that the restriction functor `Rep k H ⥤ Rep k G` along `φ` is r
 induction functor and hence that the induction functor preserves colimits.
 
 Additionally, we show that the functor `Rep k H ⥤ ModuleCat k` sending `B : Rep k H` to
-`(Ind(φ)(A) ⊗ B))_H` is naturally isomorphic to the one sending `B` to `(A ⊗ Res(φ)(B))_G`. This
+`(Ind(φ)(A) ⊗ B)_H` is naturally isomorphic to the one sending `B` to `(A ⊗ Res(φ)(B))_G`. This
 is used to prove Shapiro's lemma in
 `Mathlib/RepresentationTheory/Homological/GroupHomology/Shapiro.lean`.
 
@@ -36,7 +36,7 @@ is used to prove Shapiro's lemma in
   along `φ`.
 * `Rep.coinvariantsTensorIndNatIso φ A` : given a group homomorphism `φ : G →* H` and
   `A : Rep k G`, this is a natural isomorphism between the functor sending `B : Rep k H` to
-  `(Ind(φ)(A) ⊗ B))_H` and the one sending `B` to `(A ⊗ Res(φ)(B))_G`. Used to prove Shapiro's
+  `(Ind(φ)(A) ⊗ B)_H` and the one sending `B` to `(A ⊗ Res(φ)(B))_G`. Used to prove Shapiro's
   lemma.
 
 -/
@@ -49,11 +49,9 @@ universe t w w' u u' v v'
 
 namespace Representation
 
-open Finsupp TensorProduct
-
 variable {k G H : Type*} [CommRing k] [Group G] [Group H] (φ : G →* H) {A B : Type*}
   [AddCommGroup A] [Module k A] (ρ : Representation k G A)
-  [AddCommGroup B] [Module k B] (τ : Representation k G B)
+  [AddCommGroup B] [Module k B]
 
 /-- Given a group homomorphism `φ : G →* H` and a `G`-representation `(A, ρ)`, this is the
 `k`-module `(k[H] ⊗[k] A)_G` with the `G`-representation on `k[H]` defined by `φ`.
@@ -162,8 +160,6 @@ noncomputable def indResAdjunction : indFunctor k φ ⊣ resFunctor.{max w v' u}
       ext; simp [indMap, indResHomEquiv]
     homEquiv_naturality_right := by intros; rfl }
 
-open Finsupp
-
 noncomputable instance : (indFunctor.{max u v' w} k φ).IsLeftAdjoint :=
   (indResAdjunction k φ).isLeftAdjoint
 
@@ -179,9 +175,8 @@ variable {G H : Type u} [Group G] [Group H] (φ : G →* H) (A : Rep k G) (B : R
 open Representation
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a group hom `φ : G →* H`, `A : Rep k G` and `B : Rep k H`, this is the `k`-linear map
-`(Ind(φ)(A) ⊗ B))_H ⟶ (A ⊗ Res(φ)(B))_G` sending `⟦h ⊗ₜ a⟧ ⊗ₜ b` to `⟦a ⊗ ρ(h)(b)⟧` for all
+`(Ind(φ)(A) ⊗ B)_H ⟶ (A ⊗ Res(φ)(B))_G` sending `⟦h ⊗ₜ a⟧ ⊗ₜ b` to `⟦a ⊗ ρ(h)(b)⟧` for all
 `h : H`, `a : A`, and `b : B`. -/
 noncomputable def coinvariantsTensorIndHom :
     ((coinvariantsTensor k H).obj (ind φ A)).obj B ⟶
@@ -198,7 +193,6 @@ noncomputable def coinvariantsTensorIndHom :
     ext; simp
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 variable {A B} in
 lemma coinvariantsTensorIndHom_mk_tmul_indVMk (h : H) (x : A) (y : B) :
     coinvariantsTensorIndHom φ A B (coinvariantsTensorMk _ _ (IndV.mk φ _ h x) y) =
@@ -206,9 +200,8 @@ lemma coinvariantsTensorIndHom_mk_tmul_indVMk (h : H) (x : A) (y : B) :
   simp [coinvariantsTensorIndHom, coinvariantsTensorMk]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a group hom `φ : G →* H`, `A : Rep k G` and `B : Rep k H`, this is the `k`-linear map
-`(A ⊗ Res(φ)(B))_G ⟶ (Ind(φ)(A) ⊗ B))_H` sending `⟦a ⊗ₜ b⟧` to `⟦1 ⊗ₜ a⟧ ⊗ₜ b` for all
+`(A ⊗ Res(φ)(B))_G ⟶ (Ind(φ)(A) ⊗ B)_H` sending `⟦a ⊗ₜ b⟧` to `⟦1 ⊗ₜ a⟧ ⊗ₜ b` for all
 `a : A`, and `b : B`. -/
 noncomputable def coinvariantsTensorIndInv :
     ((coinvariantsTensor k G).obj A).obj (res φ B) ⟶
@@ -223,7 +216,6 @@ noncomputable def coinvariantsTensorIndInv :
       simp [← Coinvariants.mk_inv_tmul]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 variable {A B} in
 lemma coinvariantsTensorIndInv_mk_tmul_indMk (x : A) (y : B) :
     coinvariantsTensorIndInv φ A B (Coinvariants.mk
@@ -232,9 +224,8 @@ lemma coinvariantsTensorIndInv_mk_tmul_indMk (x : A) (y : B) :
   simp [coinvariantsTensorIndInv, coinvariantsTensorMk]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a group hom `φ : G →* H`, `A : Rep k G` and `B : Rep k H`, this is the `k`-linear
-isomorphism `(Ind(φ)(A) ⊗ B))_H ⟶ (A ⊗ Res(φ)(B))_G` sending `⟦h ⊗ₜ a⟧ ⊗ₜ b` to `⟦a ⊗ ρ(h)(b)⟧`
+isomorphism `(Ind(φ)(A) ⊗ B)_H ⟶ (A ⊗ Res(φ)(B))_G` sending `⟦h ⊗ₜ a⟧ ⊗ₜ b` to `⟦a ⊗ ρ(h)(b)⟧`
 for all `h : H`, `a : A`, and `b : B`. -/
 @[simps]
 noncomputable def coinvariantsTensorIndIso :
@@ -252,9 +243,8 @@ noncomputable def coinvariantsTensorIndIso :
     simp [coinvariantsTensorIndInv, coinvariantsTensorMk, coinvariantsTensorIndHom]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a group hom `φ : G →* H` and `A : Rep k G`, the functor `Rep k H ⥤ ModuleCat k` sending
-`B ↦ (Ind(φ)(A) ⊗ B))_H` is naturally isomorphic to the one sending `B ↦ (A ⊗ Res(φ)(B))_G`. -/
+`B ↦ (Ind(φ)(A) ⊗ B)_H` is naturally isomorphic to the one sending `B ↦ (A ⊗ Res(φ)(B))_G`. -/
 @[simps! hom_app inv_app]
 noncomputable def coinvariantsTensorIndNatIso :
     (coinvariantsTensor k H).obj (ind φ A) ≅ resFunctor φ ⋙ (coinvariantsTensor k G).obj A :=

@@ -156,9 +156,8 @@ theorem _root_.ZFSet.isOrdinal_iff_forall_mem_isOrdinal :
 
 theorem subset_iff_eq_or_mem (hx : x.IsOrdinal) (hy : y.IsOrdinal) : x ⊆ y ↔ x = y ∨ x ∈ y := by
   constructor
-  · revert hx hy
-    refine Sym2.GameAdd.recursion mem_wf ?_ x y
-    intro x y IH hx hy hxy
+  · intro hxy
+    induction x, y using Sym2.GameAdd.recursion mem_wf with | ind x y IH
     by_cases hyx : y ⊆ x
     · exact Or.inl (subset_antisymm hxy hyx)
     · obtain ⟨m, hm, hm'⟩ := mem_wf.has_min (y \ x) (Set.sdiff_nonempty.2 hyx)
@@ -183,9 +182,8 @@ theorem mem_of_subset_of_mem (h : x.IsOrdinal) (hz : z.IsOrdinal) (hx : x ⊆ y)
   · exact hz.mem_trans hx hy
 
 theorem notMem_iff_subset (hx : x.IsOrdinal) (hy : y.IsOrdinal) : x ∉ y ↔ y ⊆ x := by
-  refine ⟨?_, fun hxy hyx ↦ mem_irrefl _ (hxy hyx)⟩
-  revert hx hy
-  refine Sym2.GameAdd.recursion mem_wf (fun x y IH hx hy hyx z hzy ↦ ?_) x y
+  refine ⟨fun hyx z hzy => ?_, fun hxy hyx ↦ mem_irrefl _ (hxy hyx)⟩
+  induction x, y using Sym2.GameAdd.recursion mem_wf generalizing z with | ind x y IH
   by_contra hzx
   exact hyx (mem_of_subset_of_mem hx hy (IH z x (Sym2.GameAdd.fst_snd hzy) (hy.mem hzy) hx hzx) hzy)
 
@@ -210,8 +208,6 @@ protected theorem trichotomous (h : x.IsOrdinal) : Std.Trichotomous (Subrel (· 
     intro ⟨a, ha⟩ ⟨b, hb⟩
     simpa using mem_trichotomous (h.mem ha) (h.mem hb)
 
-@[deprecated (since := "2026-01-24")] protected alias isTrichotomous := IsOrdinal.trichotomous
-
 /-- An ordinal is a transitive set, trichotomous under membership. -/
 theorem _root_.ZFSet.isOrdinal_iff_trichotomous :
     x.IsOrdinal ↔ x.IsTransitive ∧ Std.Trichotomous (Subrel (· ∈ ·) (· ∈ x)) where
@@ -224,9 +220,6 @@ theorem _root_.ZFSet.isOrdinal_iff_trichotomous :
     · exact hyw
     · cases asymm hyz hzw
     · cases mem_wf.asymmetric₃ _ _ _ hyz hzw hwy
-
-@[deprecated (since := "2026-01-24")]
-alias _root_.ZFSet.isOrdinal_iff_isTrichotomous := _root_.ZFSet.isOrdinal_iff_trichotomous
 
 protected theorem isWellOrder (h : x.IsOrdinal) : IsWellOrder _ (Subrel (· ∈ ·) (· ∈ x)) where
   wf := (Subrel.relEmbedding _ _).wellFounded mem_wf
@@ -286,7 +279,6 @@ decreasing_by exact a.toOrd.prop
 @[simp]
 theorem type_toPSet (o : Ordinal) : o.toPSet.Type = o.ToType := by
   rw [toPSet]
-  rfl
 
 theorem mem_toPSet_iff {o : Ordinal} {x : PSet} : x ∈ o.toPSet ↔ ∃ a < o, x.Equiv a.toPSet := by
   rw [toPSet, PSet.mem_def]
@@ -361,10 +353,6 @@ theorem toZFSet_zero : toZFSet 0 = ∅ := by
 @[simp]
 theorem toZFSet_add_one (o : Ordinal) : toZFSet (o + 1) = insert (toZFSet o) (toZFSet o) := by
   aesop (add simp [mem_toZFSet_iff, le_iff_eq_or_lt])
-
-@[deprecated toZFSet_add_one (since := "2026-02-24")]
-theorem toZFSet_succ (o : Ordinal) : toZFSet (Order.succ o) = insert (toZFSet o) (toZFSet o) :=
-  toZFSet_add_one o
 
 @[simp]
 theorem card_toZFSet (o : Ordinal) : (toZFSet o).card = o.card := by

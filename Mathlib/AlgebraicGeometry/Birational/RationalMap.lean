@@ -5,9 +5,10 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.SpreadingOut
 public import Mathlib.AlgebraicGeometry.FunctionField
 public import Mathlib.AlgebraicGeometry.Morphisms.Separated
+public import Mathlib.AlgebraicGeometry.SpreadingOut
+
 /-!
 
 # Rational maps between schemes
@@ -89,10 +90,12 @@ set_option backward.defeqAttrib.useBackward true in
 lemma restrict_id (f : X.PartialMap Y) : f.restrict f.domain f.dense_domain le_rfl = f := by
   ext1 <;> simp [restrict_domain]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma restrict_id_hom (f : X.PartialMap Y) :
     (f.restrict f.domain f.dense_domain le_rfl).hom = f.hom := by
   simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma restrict_restrict (f : X.PartialMap Y)
@@ -101,6 +104,7 @@ lemma restrict_restrict (f : X.PartialMap Y)
     (f.restrict U hU hU').restrict V hV hV' = f.restrict V hV (hV'.trans hU') := by
   ext1 <;> simp [restrict_domain]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma restrict_restrict_hom (f : X.PartialMap Y)
     (U : X.Opens) (hU : Dense (U : Set X)) (hU' : U ≤ f.domain)
@@ -147,6 +151,7 @@ variable (X) in
 /-- The identity partial map. -/
 protected abbrev id : X.PartialMap X := (𝟙 X : X ⟶ X).toPartialMap
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma id_compHom (f : X ⟶ Y) : (PartialMap.id X).compHom f = f.toPartialMap := by
   apply PartialMap.ext _ _ rfl
@@ -160,6 +165,7 @@ lemma isOver_iff [X.Over S] [Y.Over S] {f : X.PartialMap Y} :
     f.IsOver S ↔ (f.compHom (Y ↘ S)).hom = f.domain.ι ≫ X ↘ S := by
   simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma isOver_iff_eq_restrict [X.Over S] [Y.Over S] {f : X.PartialMap Y} :
     f.IsOver S ↔ f.compHom (Y ↘ S) = (X ↘ S).toPartialMap.restrict _ f.dense_domain (by simp) := by
@@ -237,6 +243,7 @@ lemma fromSpecStalkOfMem_compHom (f : X.PartialMap Y) (g : Y ⟶ Z) (x) (hx) :
     (f.compHom g).fromSpecStalkOfMem (x := x) hx = f.fromSpecStalkOfMem hx ≫ g := by
   simp [fromSpecStalkOfMem]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma fromSpecStalkOfMem_toPartialMap (f : X ⟶ Y) (x) :
@@ -244,6 +251,7 @@ lemma fromSpecStalkOfMem_toPartialMap (f : X ⟶ Y) (x) :
   simp [fromSpecStalkOfMem]
 
 /-- Two partial maps are equivalent if they are equal on a dense open subscheme. -/
+@[stacks 01RS "(1)"]
 protected noncomputable
 def equiv (f g : X.PartialMap Y) : Prop :=
   ∃ (W : X.Opens) (hW : Dense (W : Set X)) (hWl : W ≤ f.domain) (hWr : W ≤ g.domain),
@@ -256,6 +264,7 @@ lemma equiv_of_restrict_eq (f g : X.PartialMap Y) {W₁ W₂ : X.Opens} {hW₁ :
   subst e
   exact ⟨W₁, hW₁, hW₁', hW₂', congr($(H).hom)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[refl]
 lemma equiv.refl (f : X.PartialMap Y) : f.equiv f :=
   ⟨f.domain, f.dense_domain, by simp⟩
@@ -283,6 +292,7 @@ lemma equivalence_rel : Equivalence (@Scheme.PartialMap.equiv X Y) where
 
 instance : Setoid (X.PartialMap Y) := ⟨@PartialMap.equiv X Y, equivalence_rel⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma restrict_equiv (f : X.PartialMap Y) (U : X.Opens)
     (hU : Dense (U : Set X)) (hU' : U ≤ f.domain) : (f.restrict U hU hU').equiv f :=
@@ -307,7 +317,7 @@ lemma equiv_of_fromSpecStalkOfMem_eq [IrreducibleSpace X]
       ((Set.image_subset_range _ _).trans_eq (Subtype.range_val)).trans inf_le_right, ?_⟩
     rw [← cancel_epi (Scheme.Hom.isoImage _ _).hom]
     simp only [restrict_hom, ← Category.assoc] at e ⊢
-    convert! e using 2 <;> rw [← cancel_mono (Scheme.Opens.ι _)] <;> simp
+    convert e using 2 <;> rw [← cancel_mono (Scheme.Opens.ι _)] <;> simp
   · rw [← f.fromSpecStalkOfMem_restrict hdense inf_le_left ⟨hxf, hxg⟩,
       ← g.fromSpecStalkOfMem_restrict hdense inf_le_right ⟨hxf, hxg⟩] at H
     simpa only [fromSpecStalkOfMem, restrict_domain, Opens.fromSpecStalkOfMem, Spec.map_inv,
@@ -347,6 +357,7 @@ lemma equiv_iff_of_domain_eq_of_isSeparated [X.Over S] [Y.Over S] [IsReduced X]
   obtain rfl : Uf = Ug := hfg
   simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A partial map from a reduced scheme to a separated scheme is equivalent to a morphism
 if and only if it is equal to the restriction of the morphism. -/
@@ -362,6 +373,7 @@ end PartialMap
 
 /-- A rational map from `X` to `Y` (`X ⤏ Y`) is an equivalence class of partial maps,
 where two partial maps are equivalent if they are equal on a dense open subscheme. -/
+@[stacks 01RS "(2)"]
 def RationalMap (X Y : Scheme.{u}) : Type u :=
   @Quotient (X.PartialMap Y) inferInstance
 
@@ -380,6 +392,7 @@ abbrev RationalMap.id : X ⤏ X := (PartialMap.id X).toRationalMap
 
 variable (S) in
 /-- A rational map is an `S`-map if some partial map in the equivalence class is an `S`-map. -/
+@[stacks 01RS "(3)"]
 class RationalMap.IsOver [X.Over S] [Y.Over S] (f : X ⤏ Y) : Prop where
   exists_partialMap_over : ∃ g : X.PartialMap Y, g.IsOver S ∧ g.toRationalMap = f
 
@@ -421,6 +434,7 @@ lemma RationalMap.exists_partialMap_over [X.Over S] [Y.Over S] (f : X ⤏ Y) [f.
     ∃ g : X.PartialMap Y, g.IsOver S ∧ g.toRationalMap = f :=
   IsOver.exists_partialMap_over
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The composition of a rational map and a morphism on the right. -/
 def RationalMap.compHom (f : X ⤏ Y) (g : Y ⟶ Z) : X ⤏ Z := by
@@ -454,6 +468,7 @@ lemma PartialMap.exists_restrict_isOver [X.Over S] [Y.Over S] (f : X.PartialMap 
   obtain ⟨U, hU, hUl, hUr, e⟩ := PartialMap.toRationalMap_eq_iff.mp hf₂
   exact ⟨U, hU, hUr, by rw [IsOver, ← e]; infer_instance⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma RationalMap.isOver_iff [X.Over S] [Y.Over S] {f : X ⤏ Y} :
     f.IsOver S ↔ f.compHom (Y ↘ S) = (X ↘ S).toRationalMap := by
@@ -518,6 +533,7 @@ lemma RationalMap.eq_of_fromFunctionField_eq [IsIntegral X] (f g : X.RationalMap
   refine PartialMap.toRationalMap_eq_iff.mpr ?_
   exact PartialMap.equiv_of_fromSpecStalkOfMem_eq _ _ _ _ H
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /--
 Given `S`-schemes `X` and `Y` such that `Y` is locally of finite type and `X` is integral,
@@ -555,6 +571,7 @@ end functionField
 section domain
 
 /-- The domain of definition of a rational map. -/
+@[stacks 0A1X]
 def RationalMap.domain (f : X ⤏ Y) : X.Opens :=
   sSup { PartialMap.domain g | (g) (_ : g.toRationalMap = f) }
 
@@ -586,6 +603,7 @@ def RationalMap.openCoverDomain (f : X ⤏ Y) : f.domain.toScheme.OpenCover wher
 set_option backward.isDefEq.respectTransparency false in
 /-- If `f : X ⤏ Y` is a rational map from a reduced scheme to a separated scheme,
 then `f` can be represented as a partial map on its domain of definition. -/
+@[stacks 0A1Y "first part"]
 noncomputable
 def RationalMap.toPartialMap [IsReduced X] [Y.IsSeparated] (f : X ⤏ Y) : X.PartialMap Y := by
   refine ⟨f.domain, f.dense_domain, f.openCoverDomain.glueMorphisms
@@ -615,6 +633,7 @@ lemma PartialMap.toPartialMap_toRationalMap_restrict [IsReduced X] [Y.IsSeparate
     (toRationalMap_eq_iff.mp H.choose_spec.1)
   exact ((ext_iff _ _).mp this.symm).choose_spec.symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma RationalMap.toRationalMap_toPartialMap [IsReduced X] [Y.IsSeparated]
@@ -626,6 +645,7 @@ lemma RationalMap.toRationalMap_toPartialMap [IsReduced X] [Y.IsSeparated]
   · congr 1
     exact PartialMap.ext _ f rfl (by simpa using f.toPartialMap_toRationalMap_restrict)
 
+@[stacks 0A1Y "last part"]
 instance [IsReduced X] [Y.IsSeparated] [S.IsSeparated] [X.Over S] [Y.Over S]
     (f : X ⤏ Y) [f.IsOver S] : f.toPartialMap.IsOver S := by
   rw [← PartialMap.isOver_toRationalMap_iff_of_isSeparated, f.toRationalMap_toPartialMap]

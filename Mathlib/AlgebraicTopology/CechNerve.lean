@@ -6,10 +6,9 @@ Authors: Adam Topaz
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
-public import Mathlib.CategoryTheory.Comma.Arrow
-public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
-public import Mathlib.Tactic.ApplyFun
+
+import Mathlib.Tactic.ApplyFun
 
 /-!
 
@@ -50,16 +49,14 @@ namespace CategoryTheory.Arrow
 variable (f : Arrow C)
 variable [∀ n : ℕ, HasWidePullback.{0} f.right (fun _ : Fin (n + 1) => f.left) fun _ => f.hom]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Čech nerve associated to an arrow. -/
-@[simps]
+@[simps, implicit_reducible]
 def cechNerve : SimplicialObject C where
   obj n := widePullback.{0} f.right (fun _ : Fin (n.unop.len + 1) => f.left) fun _ => f.hom
   map g := WidePullback.lift (WidePullback.base _)
     (fun i => WidePullback.π _ (g.unop.toOrderHom i)) (by simp)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The morphism between Čech nerves associated to a morphism of arrows. -/
 @[simps]
 def mapCechNerve {f g : Arrow C}
@@ -70,8 +67,6 @@ def mapCechNerve {f g : Arrow C}
     WidePullback.lift (WidePullback.base _ ≫ F.right) (fun i => WidePullback.π _ i ≫ F.left)
       fun j => by simp
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The augmented Čech nerve associated to an arrow. -/
 @[simps]
 def augmentedCechNerve : SimplicialObject.Augmented C where
@@ -99,7 +94,6 @@ variable
   [∀ (n : ℕ) (f : Arrow C), HasWidePullback f.right (fun _ : Fin (n + 1) => f.left) fun _ => f.hom]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The Čech nerve construction, as a functor from `Arrow C`. -/
 @[simps]
 def cechNerve : Arrow C ⥤ SimplicialObject C where
@@ -107,13 +101,13 @@ def cechNerve : Arrow C ⥤ SimplicialObject C where
   map F := Arrow.mapCechNerve F
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The augmented Čech nerve construction, as a functor from `Arrow C`. -/
 @[simps!]
 def augmentedCechNerve : Arrow C ⥤ SimplicialObject.Augmented C where
   obj f := f.augmentedCechNerve
   map F := Arrow.mapAugmentedCechNerve F
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A helper function used in defining the Čech adjunction. -/
 @[simps]
@@ -187,7 +181,6 @@ namespace CategoryTheory.Arrow
 variable (f : Arrow C)
 variable [∀ n : ℕ, HasWidePushout f.left (fun _ : Fin (n + 1) => f.right) fun _ => f.hom]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Čech conerve associated to an arrow. -/
 @[simps]
 def cechConerve : CosimplicialObject C where
@@ -210,7 +203,6 @@ def mapCechConerve {f g : Arrow C}
     (fun i => (by rw [← Arrow.w_assoc F, ← WidePushout.arrow_ι]))
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The augmented Čech conerve associated to an arrow. -/
 @[simps]
 def augmentedCechConerve : CosimplicialObject.Augmented C where
@@ -239,7 +231,6 @@ variable
   [∀ (n : ℕ) (f : Arrow C), HasWidePushout f.left (fun _ : Fin (n + 1) => f.right) fun _ => f.hom]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The Čech conerve construction, as a functor from `Arrow C`. -/
 @[simps]
 def cechConerve : Arrow C ⥤ CosimplicialObject C where
@@ -247,13 +238,13 @@ def cechConerve : Arrow C ⥤ CosimplicialObject C where
   map F := Arrow.mapCechConerve F
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The augmented Čech conerve construction, as a functor from `Arrow C`. -/
 @[simps]
 def augmentedCechConerve : Arrow C ⥤ CosimplicialObject.Augmented C where
   obj f := f.augmentedCechConerve
   map F := Arrow.mapAugmentedCechConerve F
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A helper function used in defining the Čech conerve adjunction. -/
 @[simps!]
@@ -332,7 +323,6 @@ abbrev cechConerveAdjunction : augmentedCechConerve ⊣ (Augmented.toArrow : _ �
 
 end CosimplicialObject
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given an object `X : C`, the natural simplicial object sending `⦋n⦌` to `Xⁿ⁺¹`. -/
 def cechNerveTerminalFrom {C : Type u} [Category.{v} C] [HasFiniteProducts C] (X : C) :
     SimplicialObject C where
@@ -344,18 +334,16 @@ namespace CechNerveTerminalFrom
 variable [HasTerminal C] (ι : Type w)
 
 /-- The diagram `Option ι ⥤ C` sending `none` to the terminal object and `some j` to `X`. -/
+@[implicit_reducible]
 def wideCospan (X : C) : WidePullbackShape ι ⥤ C :=
   WidePullbackShape.wideCospan (terminal C) (fun _ : ι => X) fun _ => terminal.from X
 
-set_option backward.defeqAttrib.useBackward true in
 instance uniqueToWideCospanNone (X Y : C) : Unique (Y ⟶ (wideCospan ι X).obj none) := by
   dsimp [wideCospan]
   infer_instance
 
 variable [HasFiniteProducts C]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The product `Xᶥ` is the vertex of a limit cone on `wideCospan ι X`. -/
 def wideCospan.limitCone [Finite ι] (X : C) : LimitCone (wideCospan ι X) where
   cone :=
@@ -410,8 +398,6 @@ lemma wideCospan.limitIsoPi_hom_comp_pi [Finite ι] (X : C) (j : ι) :
     (wideCospan.limitIsoPi ι X).hom ≫ Pi.π _ j = WidePullback.π _ j := by
   rw [← wideCospan.limitIsoPi_inv_comp_pi, Iso.hom_inv_id_assoc]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given an object `X : C`, the Čech nerve of the hom to the terminal object `X ⟶ ⊤_ C` is
 naturally isomorphic to a simplicial object sending `⦋n⦌` to `Xⁿ⁺¹` (when `C` is `G-Set`, this is
 `EG`, the universal cover of the classifying space of `G`). -/

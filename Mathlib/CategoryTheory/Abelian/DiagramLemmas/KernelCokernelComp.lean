@@ -185,6 +185,7 @@ noncomputable def snakeInput : ShortComplex.SnakeInput C where
 is the connecting homomorphism `kernel g ⟶ cokernel f`. -/
 noncomputable def δ : kernel g ⟶ cokernel f := (snakeInput f g).δ
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma δ_fac : δ f g = - kernel.ι g ≫ cokernel.π f := by
   simpa using! (snakeInput f g).δ_eq (𝟙 _) (kernel.ι g ≫ biprod.inr) (-kernel.ι g)
@@ -209,7 +210,6 @@ instance : Mono ((kernelCokernelCompSequence f g).map' 0 1) := by
   dsimp; infer_instance
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance : Epi ((kernelCokernelCompSequence f g).map' 4 5) := by
   dsimp [ComposableArrows.Precomp.map]
   infer_instance

@@ -6,9 +6,7 @@ Authors: Aaron Anderson
 module
 
 public import Mathlib.FieldTheory.SplittingField.Construction
-public import Mathlib.RingTheory.Localization.Integral
 public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
-public import Mathlib.RingTheory.Polynomial.Content
 
 /-!
 # Gauss's Lemma
@@ -91,7 +89,7 @@ theorem IsIntegrallyClosed.eq_map_mul_C_of_dvd [IsIntegrallyClosed R] {f : R[X]}
     exact isUnit_C.mpr (inv_ne_zero <| leadingCoeff_ne_zero.mpr g_ne_0).isUnit
   let algeq :=
     (Subalgebra.equivOfEq _ _ <| integralClosure_eq_bot R _).trans
-      (Algebra.botEquivOfInjective <| IsFractionRing.injective R <| K)
+      (Algebra.botEquivOfInjective <| IsFractionRing.injective R K)
   have :
     (algebraMap R _).comp algeq.toAlgHom.toRingHom = (integralClosure R _).toSubring.subtype := by
     ext x; (conv_rhs => rw [← algeq.symm_apply_apply x]); rfl
@@ -284,7 +282,6 @@ theorem IsPrimitive.irreducible_iff_irreducible_map_fraction_map {p : R[X]} (hp 
     mul_assoc, ← mul_assoc, ← map_mul, ← hu, map_mul, mul_assoc, mul_assoc, ←
     mul_assoc (C (u : R))] at h1
   have h0 : a ≠ 0 ∧ b ≠ 0 := by
-    classical
     rw [Ne, Ne, ← not_or, ← mul_eq_zero, ← hab]
     intro con
     apply hp.ne_zero (map_injective (algebraMap R K) (IsFractionRing.injective _ _) _)

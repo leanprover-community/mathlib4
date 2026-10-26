@@ -5,8 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.CatCommSq
 public import Mathlib.CategoryTheory.GuitartExact.Basic
+
+import Mathlib.CategoryTheory.CatCommSq
 
 /-!
 # Vertical composition of Guitart exact squares
@@ -15,8 +16,6 @@ In this file, we show that the vertical composition of Guitart exact squares
 is Guitart exact.
 
 -/
-
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -36,14 +35,13 @@ variable {T : C₁ ⥤ D₁} {L : C₁ ⥤ C₂} {R : D₁ ⥤ D₂} {B : C₂ �
 
 /-- Given `w : TwoSquare T L R B`, one may obtain a 2-square `TwoSquare T L' R' B` if we
 provide natural transformations `α : L ⟶ L'` and `β : R' ⟶ R`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def whiskerVertical (α : L ⟶ L') (β : R' ⟶ R) :
     TwoSquare T L' R' B :=
   (w.whiskerLeft α).whiskerRight β
 
 namespace GuitartExact
 
-set_option backward.defeqAttrib.useBackward true in
 /-- A 2-square stays Guitart exact if we replace the left and right functors
 by isomorphic functors. See also `whiskerVertical_iff`. -/
 lemma whiskerVertical [w.GuitartExact] (α : L ≅ L') (β : R ≅ R') :
@@ -53,9 +51,7 @@ lemma whiskerVertical [w.GuitartExact] (α : L ≅ L') (β : R ≅ R') :
   let e : structuredArrowDownwards (w.whiskerVertical α.hom β.inv) X₂ ≅
       w.structuredArrowDownwards X₂ ⋙ (StructuredArrow.mapIso (β.app X₂)).functor :=
     NatIso.ofComponents (fun f => StructuredArrow.isoMk (α.symm.app f.right) (by
-      dsimp
-      simp only [NatTrans.naturality_assoc, assoc, ← B.map_comp,
-        Iso.hom_inv_id_app, B.map_id, comp_id]))
+      simp [← Functor.map_comp]))
   rw [Functor.initial_natIso_iff e]
   infer_instance
 
@@ -100,14 +96,13 @@ def structuredArrowDownwardsComp (Y₁ : D₁) :
 
 /-- The vertical composition of 2-squares. (Variant where we allow the replacement of
 the vertical compositions by isomorphic functors.) -/
-@[simps!]
+@[simps!, implicit_reducible]
 def vComp' {L₁₂ : C₁ ⥤ C₃} {R₁₂ : D₁ ⥤ D₃} (eL : L₁ ⋙ L₂ ≅ L₁₂)
     (eR : R₁ ⋙ R₂ ≅ R₁₂) : TwoSquare H₁ L₁₂ R₁₂ H₃ :=
   (w ≫ᵥ w').whiskerVertical eL.hom eR.inv
 
 namespace GuitartExact
 
-set_option backward.isDefEq.respectTransparency false in
 instance vComp [hw : w.GuitartExact] [hw' : w'.GuitartExact] :
     (w ≫ᵥ w').GuitartExact := by
   simp only [TwoSquare.guitartExact_iff_initial]
@@ -121,7 +116,6 @@ instance vComp' [GuitartExact w] [GuitartExact w'] {L₁₂ : C₁ ⥤ C₃}
   dsimp only [TwoSquare.vComp']
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 lemma of_vComp [R₁.EssSurj] [w.GuitartExact] [(w ≫ᵥ w').GuitartExact] :
     w'.GuitartExact := by
   rw [guitartExact_iff_initial]
@@ -153,9 +147,9 @@ lemma vComp_iff_of_equivalences (eL : C₂ ≌ C₃) (eR : D₂ ≌ D₃)
     (w ≫ᵥ w'.hom).GuitartExact ↔ w.GuitartExact := by
   constructor
   · intro hww'
-    letI : CatCommSq H₂ eL.functor eR.functor H₃ := ⟨w'⟩
+    let : CatCommSq H₂ eL.functor eR.functor H₃ := ⟨w'⟩
     have hw' : CatCommSq.iso H₂ eL.functor eR.functor H₃ = w' := rfl
-    letI : CatCommSq H₃ eL.inverse eR.inverse H₂ := CatCommSq.vInvEquiv _ _ _ _ inferInstance
+    let : CatCommSq H₃ eL.inverse eR.inverse H₂ := CatCommSq.vInvEquiv _ _ _ _ inferInstance
     let w'' := CatCommSq.iso H₃ eL.inverse eR.inverse H₂
     let α : (L₁ ⋙ eL.functor) ⋙ eL.inverse ≅ L₁ :=
       Functor.associator _ _ _ ≪≫ Functor.isoWhiskerLeft L₁ eL.unitIso.symm ≪≫ L₁.rightUnitor
