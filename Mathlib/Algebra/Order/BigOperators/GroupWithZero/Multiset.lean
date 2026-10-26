@@ -58,14 +58,15 @@ lemma one_le_prod_map {s : Multiset α} {f : α → R} (h : ∀ a ∈ s, 1 ≤ f
   obtain ⟨a, ha, rfl⟩ := mem_map.mp hr
   exact h a ha
 
-omit [PosMulMono R]
 variable [PosMulStrictMono R] [NeZero (1 : R)]
 
+omit [PosMulMono R] in
 lemma prod_pos {s : Multiset R} (h : ∀ a ∈ s, 0 < a) : 0 < s.prod := by
   cases s using Quotient.ind
   simp only [quot_mk_to_coe, mem_coe, prod_coe] at *
   apply List.prod_pos h
 
+omit [PosMulMono R] in
 theorem prod_map_lt_prod_map {ι : Type*} {s : Multiset ι} (hs : s ≠ 0)
     (f : ι → R) (g : ι → R) (h0 : ∀ i ∈ s, 0 < f i) (h : ∀ i ∈ s, f i < g i) :
     (map f s).prod < (map g s).prod := by

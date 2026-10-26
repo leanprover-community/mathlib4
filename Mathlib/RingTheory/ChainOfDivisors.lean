@@ -129,8 +129,7 @@ theorem eq_second_of_chain_of_prime_dvd {p q r : Associates M} {n : ℕ} (hn : n
   · refine Associates.dvdNotUnit_iff_lt.2 (h₁ ?_)
     simpa only [Fin.coe_eq_castSucc] using Fin.castSucc_lt_succ
 
-omit [IsCancelMulZero M]
-
+omit [IsCancelMulZero M] in
 theorem card_subset_divisors_le_length_of_chain {q : Associates M} {n : ℕ}
     {c : Fin (n + 1) → Associates M} (h₂ : ∀ {r}, r ≤ q ↔ ∃ i, r = c i) {m : Finset (Associates M)}
     (hm : ∀ r, r ∈ m → r ≤ q) : m.card ≤ n + 1 := by
@@ -144,6 +143,7 @@ theorem card_subset_divisors_le_length_of_chain {q : Associates M} {n : ℕ}
 
 variable [UniqueFactorizationMonoid M]
 
+omit [IsCancelMulZero M] in
 theorem element_of_chain_eq_pow_second_of_chain {q r : Associates M} {n : ℕ} (hn : n ≠ 0)
     {c : Fin (n + 1) → Associates M} (h₁ : StrictMono c) (h₂ : ∀ {r}, r ≤ q ↔ ∃ i, r = c i)
     (hr : r ∣ q) (hq : q ≠ 0) : ∃ i : Fin (n + 1), r = c 1 ^ (i : ℕ) := by
@@ -180,6 +180,7 @@ theorem element_of_chain_eq_pow_second_of_chain {q r : Associates M} {n : ℕ} (
     · exact H
     · exact Nat.succ_le_succ_iff.mp a.2
 
+omit [IsCancelMulZero M] in
 theorem eq_pow_second_of_chain_of_has_chain {q : Associates M} {n : ℕ} (hn : n ≠ 0)
     {c : Fin (n + 1) → Associates M} (h₁ : StrictMono c)
     (h₂ : ∀ {r : Associates M}, r ≤ q ↔ ∃ i, r = c i) (hq : q ≠ 0) : q = c 1 ^ n := by
@@ -205,6 +206,7 @@ theorem eq_pow_second_of_chain_of_has_chain {q : Associates M} {n : ℕ} (hn : n
     · rw [← irreducible_iff_prime]
       exact second_of_chain_is_irreducible hn h₁ (@h₂) hq
 
+omit [IsCancelMulZero M] in
 theorem isPrimePow_of_has_chain {q : Associates M} {n : ℕ} (hn : n ≠ 0)
     {c : Fin (n + 1) → Associates M} (h₁ : StrictMono c)
     (h₂ : ∀ {r : Associates M}, r ≤ q ↔ ∃ i, r = c i) (hq : q ≠ 0) : IsPrimePow q :=

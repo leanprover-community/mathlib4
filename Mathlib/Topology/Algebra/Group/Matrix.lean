@@ -175,20 +175,22 @@ section mapGL
 -/
 variable [Algebra R S] [IsTopologicalRing S]
 
-omit [IsTopologicalRing R]
-
+omit [IsTopologicalRing R] in
 lemma continuous_mapGL [ContinuousSMul R S] : Continuous (mapGL S : SL n R → _) :=
   continuous_toGL.comp
     (continuous_algebraMap_iff_smul R S |>.2 continuous_smul).specialLinearGroup_map
 
+omit [IsTopologicalRing R] in
 lemma isInducing_mapGL (h : IsInducing (algebraMap R S)) :
     IsInducing (mapGL S : SL n R → _) :=
   isInducing_toGL.comp h.specialLinearGroup_map
 
+omit [IsTopologicalRing R] in
 lemma isEmbedding_mapGL (h : IsEmbedding (algebraMap R S)) :
     IsEmbedding (mapGL S : SL n R → _) :=
   isEmbedding_toGL.comp h.specialLinearGroup_map
 
+omit [IsTopologicalRing R] in
 lemma isClosedEmbedding_mapGL [IsTopologicalRing R] [T1Space R] [T1Space S]
     (h : IsClosedEmbedding (algebraMap R S)) :
     IsClosedEmbedding (mapGL S : SL n R → _) :=

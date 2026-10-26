@@ -331,7 +331,7 @@ protected lemma add : IsAlgebraic R (a + b) := by
 protected lemma sub : IsAlgebraic R (a - b) :=
   sub_eq_add_neg a b ▸ ha.add hb.neg
 
-omit hb
+omit hb in
 protected lemma pow (n : ℕ) : IsAlgebraic R (a ^ n) :=
   have := ha.nontrivial
   n.rec (pow_zero a ▸ isAlgebraic_one) fun _ h ↦ pow_succ a _ ▸ h.mul ha

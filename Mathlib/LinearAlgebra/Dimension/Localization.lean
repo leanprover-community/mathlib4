@@ -213,7 +213,7 @@ theorem lift_rank_eq_of_le_nonZeroDivisors :
 theorem finrank_eq_of_le_nonZeroDivisors : finrank T P = finrank R M := by
   simpa using! congr(toNat $(lift_rank_eq_of_le_nonZeroDivisors S f hp hpT bc))
 
-omit bc
+omit bc in
 theorem rank_eq_of_le_nonZeroDivisors {P : Type uM} [AddCommGroup P] [Module R P] [Module T P]
     [IsScalarTower R T P] {g : M →ₗ[R] P} (bc : IsBaseChange T g) :
     Module.rank T P = Module.rank R M := by
@@ -253,7 +253,7 @@ theorem lift_rank_eq :
 
 theorem finrank_eq : finrank T P = finrank R M := by simpa using! congr(toNat $bc.lift_rank_eq)
 
-omit bc
+omit bc in
 theorem rank_eq {P : Type uM} [AddCommGroup P] [Module R P] [Module T P] [IsScalarTower R T P]
     {g : M →ₗ[R] P} (bc : IsBaseChange T g) : Module.rank T P = Module.rank R M := by
   simpa using bc.lift_rank_eq

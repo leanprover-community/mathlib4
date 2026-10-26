@@ -392,8 +392,7 @@ theorem Submodule.top_le_span_range_iff_forall_exists_fun :
   simp_rw [← mem_span_range_iff_exists_fun]
   exact ⟨fun h x => h trivial, fun h x _ => h x⟩
 
-omit [Fintype α]
-
+omit [Fintype α] in
 theorem Submodule.mem_span_image_iff_exists_fun {s : Set α} :
     x ∈ span R (v '' s) ↔ ∃ t : Finset α, ↑t ⊆ s ∧ ∃ c : t → R, ∑ i, c i • v i = x := by
   refine ⟨fun h ↦ ?_, fun ⟨t, ht, c, hx⟩ ↦ ?_⟩
@@ -404,11 +403,13 @@ theorem Submodule.mem_span_image_iff_exists_fun {s : Set α} :
   · rw [← hx]
     exact sum_smul_mem (span R (v '' s)) c fun a _ ↦ subset_span <| by aesop
 
+omit [Fintype α] in
 theorem Submodule.mem_span_image_finset_iff_exists_fun {s : Finset α} :
     x ∈ span R (v '' s) ↔ ∃ c : s → R, ∑ i, c i • v i = x := by
   rw [← mem_span_range_iff_exists_fun, image_eq_range]
   rfl
 
+omit [Fintype α] in
 theorem Submodule.mem_span_image_finset_iff_exists_fun' {s : Finset α} :
     x ∈ span R (v '' s) ↔ ∃ c : α → R, ∑ i ∈ s, c i • v i = x := by
   classical
@@ -420,6 +421,7 @@ theorem Submodule.mem_span_image_finset_iff_exists_fun' {s : Finset α} :
   · refine ⟨fun i ↦ c i, ?_⟩
     rw [← hc, ← Finset.sum_coe_sort (s := s)]
 
+omit [Fintype α] in
 theorem Fintype.mem_span_image_iff_exists_fun {s : Set α} [Fintype s] :
     x ∈ span R (v '' s) ↔ ∃ c : s → R, ∑ i, c i • v i = x := by
   rw [← mem_span_range_iff_exists_fun, image_eq_range]
