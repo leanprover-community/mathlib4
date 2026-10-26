@@ -159,20 +159,7 @@ lemma finrank_maxGenEigenspace_zero_eq (φ : Module.End K M) :
     rw [← Module.End.mul_apply, ← pow_succ, pow_succ', Module.End.mul_apply]
   let F := φ.restrict hφV
   let G := φ.restrict hφW
-  let ψ := F.prodMap G
-  let e := Submodule.prodEquivOfIsCompl V W hVW
-  let bV := chooseBasis K V
-  let bW := chooseBasis K W
-  let b := bV.prod bW
-  have hψ : ψ = e.symm.conj φ := by
-    apply b.ext
-    simp only [Basis.prod_apply, coe_inl, coe_inr, prodMap_apply, LinearEquiv.conj_apply,
-      LinearEquiv.symm_symm, Submodule.coe_prodEquivOfIsCompl, coe_comp, LinearEquiv.coe_coe,
-      Function.comp_apply, coprod_apply, Submodule.coe_subtype, map_add, Sum.forall, Sum.elim_inl,
-      map_zero, ZeroMemClass.coe_zero, add_zero, LinearEquiv.eq_symm_apply, and_self,
-      Submodule.coe_prodEquivOfIsCompl', coe_restrict_apply, implies_true, Sum.elim_inr, zero_add,
-      e, V, W, ψ, F, G, b]
-  rw [← e.symm.charpoly_conj φ, ← hψ, charpoly_prodMap,
+  rw [φ.charpoly_eq_of_isCompl hVW hφV hφW,
     natTrailingDegree_mul (charpoly_monic _).ne_zero (charpoly_monic _).ne_zero]
   have hG : natTrailingDegree (charpoly G) = 0 := by
     apply Polynomial.natTrailingDegree_eq_zero_of_constantCoeff_ne_zero
