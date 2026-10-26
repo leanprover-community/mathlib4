@@ -6,6 +6,7 @@ Authors: Jingting Wang
 module
 
 public import Mathlib.RingTheory.Ideal.Height
+
 import Mathlib.RingTheory.KrullDimension.Zero
 
 /-!

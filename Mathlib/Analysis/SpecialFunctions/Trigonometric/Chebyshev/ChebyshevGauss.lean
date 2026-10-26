@@ -6,8 +6,9 @@ Authors: Yuval Filmus
 
 module
 
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Orthogonality
+
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
 import Mathlib.Topology.Algebra.Polynomial
 
 /-!
@@ -53,7 +54,7 @@ private theorem sum_exp {n : ℕ} {k : ℤ} (hn : n ≠ 0) (hk : ¬ (2 * n : ℤ
     have hf {s a b t : ℂ} (h : s * a⁻¹ * b = t) (ha : a ≠ 0) (hb : b ≠ 0) : s = a / b * t := by
       linear_combination (norm := field) h * a / b
     apply hf this (Complex.exp_ne_zero _) (by grind [exp_sub_one_ne_zero])
-  convert! geom_sum_mul (exp (k / n * π * I)) n using 1
+  convert geom_sum_mul (exp (k / n * π * I)) n using 1
   · simp_rw [sum_mul]
     congr! 1 with i hi
     rw [← Complex.exp_nat_mul, ← Complex.exp_add]
@@ -108,7 +109,7 @@ theorem sumZeroes_T_of_not_dvd {n : ℕ} {k : ℤ} (hk : ¬ (2 * n : ℤ) ∣ k)
 theorem integral_eq_sumZeroes {n : ℕ} {P : ℝ[X]} (hn : n ≠ 0) (hP : P.degree < 2 * n) :
     ∫ x, P.eval x ∂measureT = sumZeroes n P := by
   have hmem : P ∈ degreeLT ℝ (2 * n) := by rwa [mem_degreeLT]
-  rw [← Sequence.span_degreeLT (chebyshevTsequence ℝ) (by simp),
+  rw [← Sequence.span_degreeLT (chebyshevTSequence ℝ) (by simp),
     show Set.Iio (2 * n) = Finset.range (2 * n) by simp,
     Submodule.mem_span_image_finset_iff_exists_fun'] at hmem
   obtain ⟨c, rfl⟩ := hmem
@@ -116,7 +117,7 @@ theorem integral_eq_sumZeroes {n : ℕ} {P : ℝ[X]} (hn : n ≠ 0) (hP : P.degr
   rw [MeasureTheory.integral_finsetSum, sumZeroes_sum]
   · simp_rw [sumZeroes_smul, smul_eq_mul, MeasureTheory.integral_const_mul]
     congr! with i hrange
-    simp_rw [chebyshevTsequence]
+    simp_rw [chebyshevTSequence]
     by_cases i = 0
     case pos hi => rw [hi, Nat.cast_zero, integral_eval_T_real_measureT_zero, sumZeroes_T_zero hn]
     case neg hi =>

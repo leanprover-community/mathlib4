@@ -6,9 +6,9 @@ Authors: Jujian Zhang
 module
 
 public import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Topology
-public import Mathlib.Topology.Sheaves.LocalPredicate
-public import Mathlib.RingTheory.GradedAlgebra.HomogeneousLocalization
 public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
+public import Mathlib.RingTheory.GradedAlgebra.HomogeneousLocalization
+public import Mathlib.Topology.Sheaves.LocalPredicate
 
 /-!
 # The structure sheaf on `ProjectiveSpectrum 𝒜`.

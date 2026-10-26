@@ -5,8 +5,9 @@ Authors: Mario Carneiro, Kenny Lau, Kim Morrison, Alex Keizer
 -/
 module
 
-import Mathlib.Data.List.Nodup
 public import Mathlib.Data.Fin.Tuple.Basic
+
+import Mathlib.Data.List.Nodup
 
 /-!
 # Lists of elements of `Fin n`

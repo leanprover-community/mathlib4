@@ -3,17 +3,21 @@ Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
-import Mathlib.Tactic.FunProp
-import Mathlib.Logic.Function.Basic
-import Mathlib.Data.FunLike.Basic
-import Mathlib.Tactic.SuccessIfFailWithMsg
-import Aesop
+module
+
+public import Aesop
+public import Mathlib.Basic.FunLike.Basic
+public import Mathlib.Logic.Function.Basic
+public import Mathlib.Tactic.FunProp
+public import Mathlib.Tactic.SuccessIfFailWithMsg
 
 /-! # Tests for the `fun_prop` tactic
 
 This file is designed for development of fun_prop and does not depend on most of mathlib. It defines
 two function properties `Con` and `Lin` which roughly correspond to `Continuity` and `IsLinearMap`.
 -/
+
+@[expose] public section
 
 set_option linter.style.longLine false
 
@@ -395,9 +399,9 @@ example (f : β → γ) (g : α → β) (h : B) : Con (fun x => f (g x)) := by f
 end MultipleLambdaTheorems
 
 
-/-- info: `?m` is not a `fun_prop` goal! -/
+/-- error: `?m` is not a `fun_prop` goal! -/
 #guard_msgs in
-#check_failure ((by fun_prop) : ?m)
+#check ((by fun_prop) : ?m)
 
 /-- error: `Injective Nat.succ` is not a `fun_prop` goal!
 Consider marking `Function.Injective` with `@[fun_prop]`. -/
@@ -853,3 +857,43 @@ theorem Con_imp {p q : α → Prop} : Con (fun x => p x → q x) := silentSorry
 example {p : α → Prop} : Con (fun x => True → p x) := by fun_prop
 
 end DependentCompositionalForm
+
+section ProjTransparency
+
+def semireducibleFun (_ : Nat) := (1, 2)
+
+/--
+error: `fun_prop` was unable to prove `Con semireducibleFun`
+
+Issues:
+  No theorems found for `semireducibleFun` in order to prove `Con fun x => semireducibleFun x`
+-/
+#guard_msgs in
+example : Con semireducibleFun := by fun_prop
+
+-- This used to work because `semireducibleFun` was incorrectly unfolded
+
+/--
+error: `fun_prop` was unable to prove `Con fun x => (semireducibleFun x).fst`
+
+Issues:
+  No theorems found for `semireducibleFun` in order to prove `Con fun x => semireducibleFun x`
+-/
+#guard_msgs in
+example : Con (fun x => (semireducibleFun x).1) := by fun_prop
+
+-- Test that the backward compatibility option restores the incorrect behavior
+set_option fun_prop.projDefaultTransparency true in
+example : Con (fun x => (semireducibleFun x).1) := by fun_prop
+
+-- This example is extracted from https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/two.20fun_prop.20failures/near/627268699
+structure P where
+  val : Nat → Nat → Nat
+
+def myP (g : Nat → Nat → Nat) : P := ⟨fun x i => g x i⟩
+
+-- This used to fail because `h` was reduced to `Con (fun x i => g x i)`
+example (g : Nat → Nat → Nat) (h : Con (myP g).val) : Con (myP g).val := by
+  fun_prop
+
+end ProjTransparency

@@ -5,8 +5,9 @@ Authors: Chris Hughes, Michael Stoll
 -/
 module
 
-import Mathlib.Data.Nat.Squarefree
 public import Mathlib.NumberTheory.Zsqrtd.QuadraticReciprocity
+
+import Mathlib.Data.Nat.Squarefree
 import Mathlib.NumberTheory.Padics.PadicVal.Basic
 
 /-!
