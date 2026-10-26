@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.FunLike
 public import Mathlib.Algebra.Module.Torsion.Pi
-public import Mathlib.Algebra.Module.LinearMap.Basic
+public import Mathlib.Algebra.Module.LinearMap.Defs
 
 /-! # Module instances for `FunLike` types
 In this file we define various instances related to modules for `FunLike` types.
