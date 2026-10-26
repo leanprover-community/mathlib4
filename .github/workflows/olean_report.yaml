@@ -58,6 +58,8 @@ jobs:
     needs: check
     if: needs.check.outputs.triggered == 'true'
     runs-on: ubuntu-latest
+    # This job handles PR content: see the `no-actions-cache` job in `actionlint.yml`.
+    cache-mode: none
     steps:
       - name: Checkout local actions
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
