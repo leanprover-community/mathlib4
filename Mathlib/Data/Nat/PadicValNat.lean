@@ -201,25 +201,4 @@ theorem fst_maxPowDvdDiv (p n : ℕ) : (p.maxPowDvdDiv n).1 = multiplicity p n :
 @[simp]
 theorem snd_maxPowDvdDiv (p n : ℕ) : (p.maxPowDvdDiv n).2 = n.divMaxPow p := rfl
 
-@[deprecated (since := "2026-03-15")]
-alias maxPowDiv := multiplicity
-
-@[deprecated (since := "2026-03-15")]
-alias maxPowDiv.base_mul_eq_succ := multiplicity_base_mul
-
-@[deprecated (since := "2026-03-15")]
-alias maxPowDiv.base_pow_mul := multiplicity_base_pow_mul
-
-@[deprecated pow_dvd_iff_le_multiplicity +typeChanged (since := "2026-03-15")]
-alias ⟨_, maxPowDiv.le_of_dvd⟩ := pow_dvd_iff_le_multiplicity
-
-@[deprecated (since := "2026-03-15")]
-alias maxPowDiv.pow_dvd := pow_multiplicity_dvd
-
-@[deprecated (since := "2026-03-15")]
-alias maxPowDiv.zero := multiplicity_zero_right
-
-@[deprecated (since := "2026-03-15")]
-alias maxPowDiv.zero_base := multiplicity_zero_left
-
 end Nat
