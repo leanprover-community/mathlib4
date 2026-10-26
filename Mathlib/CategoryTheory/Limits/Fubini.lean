@@ -5,10 +5,10 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.HasLimits
-public import Mathlib.CategoryTheory.Products.Basic
 public import Mathlib.CategoryTheory.Functor.Currying
-public import Mathlib.CategoryTheory.Products.Bifunctor
+public import Mathlib.CategoryTheory.Limits.HasLimits
+
+import Mathlib.CategoryTheory.Products.Bifunctor
 
 /-!
 # A Fubini theorem for categorical (co)limits
@@ -113,7 +113,6 @@ def coneOfConeUncurry {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.obj j))
           (fun k => by simpa using @NatTrans.naturality _ _ _ _ _ _ c.π (j, k) (j', k) (f, 𝟙 k)) }
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a diagram `D` of limit cones over the `curry.obj G j`, and a cone over `G`,
 we can construct a cone over the diagram consisting of the cone points from `D`.
 -/
@@ -128,7 +127,6 @@ def coneOfConeCurry {D : DiagramOfCones (curry.obj G)} (Q : ∀ j, IsLimit (D.ob
       naturality {_ j'} _ := (Q j').hom_ext (by simp) }
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 open scoped CategoryTheory.Prod in
 /-- Given a diagram `D` of colimit cocones over the `F.obj j`, and a cocone over `uncurry.obj F`,
 we can construct a cocone over the diagram consisting of the cocone points from `D`.
@@ -164,7 +162,6 @@ def coconeOfCoconeUncurry {D : DiagramOfCocones F} (Q : ∀ j, IsColimit (D.obj 
             exact this) }
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a diagram `D` of colimit cocones under the `curry.obj G j`, and a cocone under `G`,
 we can construct a cocone under the diagram consisting of the cocone points from `D`.
 -/
@@ -254,7 +251,6 @@ def IsLimit.ofConeOfConeUncurry {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.ob
     uniq s f hf := P.uniq (s := S s) _ <|
       fun j ↦ (Q j).hom_ext <| fun k ↦ by simpa [S, E] using hf (j, k) }
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `coconeOfCoconeUncurry Q c` is a colimit cocone when `c` is a colimit cocone.
 -/
@@ -335,7 +331,6 @@ section
 variable (F)
 variable [HasLimitsOfShape K C]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a functor `F : J ⥤ K ⥤ C`, with all needed limits,
 we can construct a diagram consisting of the limit cone over each functor `F.obj j`,
 and the universal cone morphisms between these.
@@ -359,7 +354,6 @@ section
 variable [HasLimit (curry.obj G ⋙ lim)]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a functor `G : J × K ⥤ C` such that `(curry.obj G ⋙ lim)` makes sense and has a limit,
 we can construct a cone over `G` with `limit (curry.obj G ⋙ lim)` as a cone point -/
 noncomputable def coneOfHasLimitCurryCompLim : Cone G :=
@@ -420,7 +414,6 @@ theorem limitUncurryIsoLimitCompLim_hom_π_π {j} {k} :
   dsimp [limitUncurryIsoLimitCompLim, IsLimit.conePointUniqueUpToIso, IsLimit.uniqueUpToIso]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
 theorem limitUncurryIsoLimitCompLim_inv_π {j} {k} :
     (limitUncurryIsoLimitCompLim F).inv ≫ limit.π _ (j, k) =
@@ -435,7 +428,6 @@ section
 variable (F)
 variable [HasColimitsOfShape K C]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a functor `F : J ⥤ K ⥤ C`, with all needed colimits,
 we can construct a diagram consisting of the colimit cocone over each functor `F.obj j`,
 and the universal cocone morphisms between these.
@@ -459,7 +451,6 @@ section
 variable [HasColimit (curry.obj G ⋙ colim)]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a functor `G : J × K ⥤ C` such that `(curry.obj G ⋙ colim)` makes sense and has a colimit,
 we can construct a cocone under `G` with `colimit (curry.obj G ⋙ colim)` as a cocone point -/
 noncomputable def coconeOfHasColimitCurryCompColim : Cocone G :=
@@ -526,8 +517,6 @@ theorem colimitUncurryIsoColimitCompColim_ι_ι_inv {j} {k} :
     IsColimit.uniqueUpToIso]
   simp
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 @[simp, reassoc]
 theorem colimitUncurryIsoColimitCompColim_ι_hom {j} {k} :
     colimit.ι _ (j, k) ≫ (colimitUncurryIsoColimitCompColim F).hom =
@@ -541,7 +530,6 @@ section
 
 variable (F) [HasLimitsOfShape J C] [HasLimitsOfShape K C]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The limit of `F.flip ⋙ lim` is isomorphic to the limit of `F ⋙ lim`. -/
 noncomputable def limitFlipCompLimIsoLimitCompLim : limit (F.flip ⋙ lim) ≅ limit (F ⋙ lim) :=
   (limitUncurryIsoLimitCompLim _).symm ≪≫
@@ -550,8 +538,6 @@ noncomputable def limitFlipCompLimIsoLimitCompLim : limit (F.flip ⋙ lim) ≅ l
           (NatIso.ofComponents fun _ => by rfl) ≪≫
         limitUncurryIsoLimitCompLim _
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
 theorem limitFlipCompLimIsoLimitCompLim_hom_π_π (j) (k) :
     (limitFlipCompLimIsoLimitCompLim F).hom ≫ limit.π _ j ≫ limit.π _ k =
@@ -559,8 +545,6 @@ theorem limitFlipCompLimIsoLimitCompLim_hom_π_π (j) (k) :
   dsimp [limitFlipCompLimIsoLimitCompLim]
   simp [Equivalence.counit]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
 theorem limitFlipCompLimIsoLimitCompLim_inv_π_π (k) (j) :
     (limitFlipCompLimIsoLimitCompLim F).inv ≫ limit.π _ k ≫ limit.π _ j =
@@ -573,7 +557,6 @@ section
 
 variable (F) [HasColimitsOfShape J C] [HasColimitsOfShape K C]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The colimit of `F.flip ⋙ colim` is isomorphic to the colimit of `F ⋙ colim`. -/
 noncomputable def colimitFlipCompColimIsoColimitCompColim :
     colimit (F.flip ⋙ colim) ≅ colimit (F ⋙ colim) :=
@@ -583,8 +566,6 @@ noncomputable def colimitFlipCompColimIsoColimitCompColim :
           (NatIso.ofComponents fun _ => by rfl) ≪≫
         colimitUncurryIsoColimitCompColim _
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
 theorem colimitFlipCompColimIsoColimitCompColim_ι_ι_hom (j) (k) :
     colimit.ι (F.flip.obj k) j ≫ colimit.ι (F.flip ⋙ colim) k ≫
@@ -592,10 +573,8 @@ theorem colimitFlipCompColimIsoColimitCompColim_ι_ι_hom (j) (k) :
         (colimit.ι _ k ≫ colimit.ι (F ⋙ colim) j : _ ⟶ colimit (F ⋙ colim)) := by
   dsimp [colimitFlipCompColimIsoColimitCompColim]
   conv_lhs => slice 1 3
-  simp [Equivalence.unit]
+  simp
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
 theorem colimitFlipCompColimIsoColimitCompColim_ι_ι_inv (k) (j) :
     colimit.ι (F.obj j) k ≫ colimit.ι (F ⋙ colim) j ≫
@@ -622,13 +601,11 @@ noncomputable def limitIsoLimitCurryCompLim : limit G ≅ limit (curry.obj G ⋙
   · apply HasLimit.isoOfNatIso i
   · exact limitUncurryIsoLimitCompLim ((@curry J _ K _ C _).obj G)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
 theorem limitIsoLimitCurryCompLim_hom_π_π {j} {k} :
     (limitIsoLimitCurryCompLim G).hom ≫ limit.π _ j ≫ limit.π _ k = limit.π _ (j, k) := by
   simp [limitIsoLimitCurryCompLim, Trans.simple]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
 theorem limitIsoLimitCurryCompLim_inv_π {j} {k} :
     (limitIsoLimitCurryCompLim G).inv ≫ limit.π _ (j, k) =
@@ -653,7 +630,6 @@ noncomputable def colimitIsoColimitCurryCompColim : colimit G ≅ colimit (curry
   · apply HasColimit.isoOfNatIso i
   · exact colimitUncurryIsoColimitCompColim ((@curry J _ K _ C _).obj G)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
 theorem colimitIsoColimitCurryCompColim_ι_ι_inv {j} {k} :
@@ -661,7 +637,6 @@ theorem colimitIsoColimitCurryCompColim_ι_ι_inv {j} {k} :
       (colimitIsoColimitCurryCompColim G).inv = colimit.ι _ (j, k) := by
   simp [colimitIsoColimitCurryCompColim, Trans.simple, colimitUncurryIsoColimitCompColim]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
 theorem colimitIsoColimitCurryCompColim_ι_hom {j} {k} :
     colimit.ι _ (j, k) ≫ (colimitIsoColimitCurryCompColim G).hom =
@@ -688,8 +663,6 @@ noncomputable def limitCurrySwapCompLimIsoLimitCurryCompLim :
     _ ≅ limit G := HasLimit.isoOfEquivalence (Prod.braiding K J) (Iso.refl _)
     _ ≅ limit (curry.obj G ⋙ lim) := limitIsoLimitCurryCompLim _
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem limitCurrySwapCompLimIsoLimitCurryCompLim_hom_π_π {j} {k} :
     (limitCurrySwapCompLimIsoLimitCurryCompLim G).hom ≫ limit.π _ j ≫ limit.π _ k =
@@ -701,8 +674,6 @@ theorem limitCurrySwapCompLimIsoLimitCurryCompLim_hom_π_π {j} {k} :
   rw [← prod_id, G.map_id]
   simp
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem limitCurrySwapCompLimIsoLimitCurryCompLim_inv_π_π {j} {k} :
     (limitCurrySwapCompLimIsoLimitCurryCompLim G).inv ≫ limit.π _ k ≫ limit.π _ j =
@@ -728,8 +699,6 @@ noncomputable def colimitCurrySwapCompColimIsoColimitCurryCompColim :
     _ ≅ colimit G := HasColimit.isoOfEquivalence (Prod.braiding K J) (Iso.refl _)
     _ ≅ colimit (curry.obj G ⋙ colim) := colimitIsoColimitCurryCompColim _
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem colimitCurrySwapCompColimIsoColimitCurryCompColim_ι_ι_hom {j} {k} :
     colimit.ι _ j ≫ colimit.ι (curry.obj (Prod.swap K J ⋙ G) ⋙ colim) k ≫
@@ -740,8 +709,6 @@ theorem colimitCurrySwapCompColimIsoColimitCurryCompColim_ι_ι_hom {j} {k} :
   conv_lhs => slice 1 3
   simp
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem colimitCurrySwapCompColimIsoColimitCurryCompColim_ι_ι_inv {j} {k} :
     colimit.ι _ k ≫ colimit.ι (curry.obj G ⋙ colim) j ≫

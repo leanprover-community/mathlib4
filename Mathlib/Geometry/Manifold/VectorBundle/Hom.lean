@@ -5,10 +5,8 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.Geometry.Manifold.VectorBundle.Basic
-public import Mathlib.Topology.VectorBundle.Hom
 public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
-public import Mathlib.Geometry.Manifold.Notation
+public import Mathlib.Topology.VectorBundle.Hom
 
 /-! # Homs of `C^n` vector bundles over the same base space
 
@@ -62,13 +60,14 @@ theorem contMDiffOn_continuousLinearMapCoordChange
 
 variable [∀ x, IsTopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜 (E₂ x)]
 
-set_option backward.isDefEq.respectTransparency false in
-theorem hom_chart (y₀ y : LE₁E₂) :
+@[simp]
+theorem chartAt_hom (y₀ y : LE₁E₂) :
     chartAt (ModelProd HB (F₁ →L[𝕜] F₂)) y₀ y =
       (chartAt HB y₀.1 y.1, inCoordinates F₁ E₁ F₂ E₂ y₀.1 y.1 y₀.1 y.1 y.2) := by
   rw [FiberBundle.chartedSpace_chartAt, trans_apply, OpenPartialHomeomorph.prod_apply,
     Trivialization.coe_coe, OpenPartialHomeomorph.refl_apply, Function.id_def,
     hom_trivializationAt_apply]
+@[deprecated (since := "2026-10-16")] alias hom_chart := chartAt_hom
 
 theorem contMDiffWithinAt_hom_bundle (f : M → LE₁E₂) {s : Set M} {x₀ : M} :
     CMDiffAt[s] n f x₀ ↔
@@ -93,9 +92,8 @@ theorem mdifferentiableOn_continuousLinearMapCoordChange
     [MemTrivializationAtlas e₂] [MemTrivializationAtlas e₂'] :
     MDiff[e₁.baseSet ∩ e₂.baseSet ∩ (e₁'.baseSet ∩ e₂'.baseSet)]
       (continuousLinearMapCoordChange (RingHom.id 𝕜) e₁ e₁' e₂ e₂') := by
-  have h₁ := contMDiffOn_coordChangeL (IB := IB) e₁' e₁ (n := 1) |>.mdifferentiableOn one_ne_zero
-  have h₂ := contMDiffOn_coordChangeL (IB := IB) e₂ e₂' (n := 1) |>.mdifferentiableOn one_ne_zero
-  refine (h₁.mono ?_).cle_arrowCongr (h₂.mono ?_) <;> mfld_set_tac
+  apply ContMDiffOn.mdifferentiableOn _ one_ne_zero
+  exact contMDiffOn_continuousLinearMapCoordChange
 
 variable [∀ x, IsTopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜 (E₂ x)]
 

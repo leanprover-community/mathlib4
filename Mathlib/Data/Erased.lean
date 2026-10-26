@@ -20,23 +20,7 @@ represented as `0`, just like types and proofs.
 
 universe u
 
-/-- `Erased α` is the same as `α`, except that the elements
-  of `Erased α` are erased in the VM in the same way as types
-  and proofs. This can be used to track data without storing it
-  literally. -/
-def Erased (α : Sort u) : Sort max 1 u :=
-  { s : α → Prop // ∃ a, (a = ·) = s }
-
 namespace Erased
-
-/-- Erase a value. -/
-@[macro_inline]
-def mk {α} (a : α) : Erased α :=
-  ⟨fun b => a = b, a, rfl⟩
-
-/-- Extracts the erased value, noncomputably. -/
-noncomputable def out {α} : Erased α → α
-  | ⟨_, h⟩ => Classical.choose h
 
 /-- Extracts the erased value, if it is a type.
 
@@ -48,19 +32,6 @@ abbrev OutType (a : Erased (Sort u)) : Sort u :=
 /-- Extracts the erased value, if it is a proof. -/
 theorem out_proof {p : Prop} (a : Erased p) : p :=
   out a
-
-@[simp]
-theorem out_mk {α} (a : α) : (mk a).out = a := by
-  let h := (mk a).2; change Classical.choose h = a
-  have := Classical.choose_spec h
-  exact cast (congr_fun this a).symm rfl
-
-@[simp]
-theorem mk_out {α} : ∀ a : Erased α, mk (out a) = a
-  | ⟨s, h⟩ => by simp only [mk]; congr; exact Classical.choose_spec h
-
-@[ext]
-theorem out_inj {α} (a b : Erased α) (h : a.out = b.out) : a = b := by simpa using congr_arg mk h
 
 /-- Equivalence between `Erased α` and `α`. -/
 noncomputable def equiv (α) : Erased α ≃ α :=

@@ -5,8 +5,8 @@ Authors: Joseph Myers, Chu Zheng
 -/
 module
 
-public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
 public import Mathlib.LinearAlgebra.AffineSpace.Centroid
+public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
 
 /-!
 # Centroid of a simplex in affine space
@@ -96,6 +96,10 @@ theorem centroid_vsub_eq {n : ℕ} [CharZero k] (s : Simplex k P n) (p : P) :
   rw [centroid_vsub_const _ _ (by simp), centroid_def, affineCombination_eq_linear_combination
     (hw := sum_centroidWeights_eq_one_of_nonempty _ _ (by simp))]
   simp [smul_sum]
+
+theorem vsub_centroid_eq {n : ℕ} [CharZero k] (s : Simplex k P n) (p : P) :
+    p -ᵥ s.centroid = (n + 1 : k)⁻¹ • ∑ x, (p -ᵥ s.points x) := by
+  simpa [← smul_neg, ← sum_neg_distrib] using congr(-$(s.centroid_vsub_eq p))
 
 theorem centroid_eq_smul_sum_vsub_vadd [CharZero k] (s : Simplex k P n) (i : Fin (n + 1)) :
     s.centroid = (n + 1 : k)⁻¹ • ∑ x, (s.points x -ᵥ s.points i) +ᵥ s.points i := by
@@ -435,13 +439,13 @@ theorem median_map [CharZero k] {V₂ P₂ : Type*} [AddCommGroup V₂] [Module 
     {n : ℕ} [NeZero n] (s : Simplex k P n) (i : Fin (n + 1))
     (f : P →ᵃ[k] P₂) (hf : Function.Injective f) :
     (s.map f hf).median i = (s.median i).map f := by
-  simp [median, map_span, Set.image_pair]
+  simp [median, map_span]
 
 theorem median_restrict [CharZero k] (s : Simplex k P n) (i : Fin (n + 1)) (S : AffineSubspace k P)
     (hS : affineSpan k (Set.range s.points) ≤ S) :
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     AffineSubspace.map (AffineSubspace.subtype S) ((s.restrict S hS).median i) = s.median i := by
-  simp [median, map_span, Set.image_pair]
+  simp [median, map_span]
 
 /-- The `faceOppositeCentroid` lines on the median through the corresponding vertex. -/
 theorem faceOppositeCentroid_mem_median (s : Simplex k P n) (i : Fin (n + 1)) :
@@ -515,7 +519,7 @@ theorem eq_centroid_of_forall_mem_median [CharZero k] (s : Simplex k P n) {hn : 
       fun x => ⟨x.val, h x⟩
     have f_inj : Function.Injective f := by intro x y hxy; grind
     have h2 := h1.comp f f_inj
-    convert! h2 using 1
+    convert h2 using 1
     grind only [mem_compl, Finset.notMem_singleton]
   have he : ∃ i j : s', i ≠ j := by
     simp only [ne_eq, Subtype.exists, Subtype.mk.injEq, exists_prop]

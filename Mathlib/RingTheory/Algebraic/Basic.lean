@@ -115,7 +115,7 @@ theorem transcendental_iff_ker_eq_bot {x : A} :
 theorem Algebra.isAlgebraic_of_not_injective (h : ¬ Function.Injective (algebraMap R A)) :
     Algebra.IsAlgebraic R A where
   isAlgebraic a := isAlgebraic_iff_not_injective.mpr
-    fun inj ↦ h <| by convert! inj.comp C_injective; ext; simp
+    fun inj ↦ h <| by convert inj.comp C_injective; ext; simp
 
 theorem Algebra.injective_of_transcendental [h : Algebra.Transcendental R A] :
     Function.Injective (algebraMap R A) := by
@@ -133,6 +133,10 @@ variable [IsScalarTower R S A]
 
 theorem isAlgebraic_zero [Nontrivial R] : IsAlgebraic R (0 : A) :=
   ⟨_, X_ne_zero, aeval_X 0⟩
+
+@[grind →]
+theorem Transcendental.ne_zero [Nontrivial R] {x : A} (ht : Transcendental R x) : x ≠ 0 :=
+  fun h ↦ ht (h ▸ isAlgebraic_zero)
 
 /-- An element of `R` is algebraic, when viewed as an element of the `R`-algebra `A`. -/
 theorem isAlgebraic_algebraMap [Nontrivial R] (x : R) : IsAlgebraic R (algebraMap R A x) :=
@@ -367,7 +371,7 @@ end Subalgebra
 
 theorem IsAlgebraic.of_pow {r : A} {n : ℕ} (hn : 0 < n) (ht : IsAlgebraic R (r ^ n)) :
     IsAlgebraic R r :=
-  have ⟨p, p_nonzero, hp⟩ := ht
+  have ⟨p, p_ne_zero, hp⟩ := ht
   ⟨_, by rwa [expand_ne_zero hn], by rwa [expand_aeval n p r]⟩
 
 theorem Transcendental.pow {r : A} (ht : Transcendental R r) {n : ℕ} (hn : 0 < n) :
@@ -540,7 +544,7 @@ open Algebra
 
 variable [Ring S] [Algebra R S]
 
-theorem IsAlgebraic.exists_nonzero_coeff_and_aeval_eq_zero
+theorem IsAlgebraic.exists_coeff_ne_zero_and_aeval_eq_zero
     {s : S} (hRs : IsAlgebraic R s) (hs : s ∈ S⁰) :
     ∃ q : R[X], q.coeff 0 ≠ 0 ∧ aeval s q = 0 := by
   obtain ⟨p, hp0, hp⟩ := hRs
@@ -549,27 +553,37 @@ theorem IsAlgebraic.exists_nonzero_coeff_and_aeval_eq_zero
   rw [hpq, map_mul, aeval_X_pow] at hp
   exact ⟨q, hq, (S⁰.pow_mem hs (rootMultiplicity 0 p)).2 (aeval s q) hp⟩
 
-theorem IsAlgebraic.exists_nonzero_eq_adjoin_mul {s : S} (hRs : IsAlgebraic R s) (hs : s ∈ S⁰) :
-    ∃ᵉ (t ∈ R[s]) (r ≠ (0 : R)), s * t = algebraMap R S r := by
-  have ⟨q, hq0, hq⟩ := hRs.exists_nonzero_coeff_and_aeval_eq_zero hs
+@[deprecated (since := "2026-10-13")]
+alias IsAlgebraic.exists_nonzero_coeff_and_aeval_eq_zero :=
+  IsAlgebraic.exists_coeff_ne_zero_and_aeval_eq_zero
+
+theorem IsAlgebraic.exists_ne_zero_eq_adjoin_mul {s : S} (hRs : IsAlgebraic R s) (hs : s ∈ S⁰) :
+    ∃ t ∈ R[s], ∃ r ≠ (0 : R), s * t = algebraMap R S r := by
+  have ⟨q, hq0, hq⟩ := hRs.exists_coeff_ne_zero_and_aeval_eq_zero hs
   have ⟨p, hp⟩ := X_dvd_sub_C (p := q)
   refine ⟨aeval s p, aeval_mem_adjoin_singleton _ _, _, neg_ne_zero.mpr hq0, ?_⟩
   apply_fun aeval s at hp
   rwa [map_sub, hq, zero_sub, map_mul, aeval_X, aeval_C, ← map_neg, eq_comm] at hp
 
-theorem IsAlgebraic.exists_nonzero_dvd {s : S} (hRs : IsAlgebraic R s) (hs : s ∈ S⁰) :
+@[deprecated (since := "2026-10-13")]
+alias IsAlgebraic.exists_nonzero_eq_adjoin_mul := IsAlgebraic.exists_ne_zero_eq_adjoin_mul
+
+theorem IsAlgebraic.exists_ne_zero_dvd {s : S} (hRs : IsAlgebraic R s) (hs : s ∈ S⁰) :
     ∃ r : R, r ≠ 0 ∧ s ∣ algebraMap R S r := by
-  obtain ⟨q, hq0, hq⟩ := hRs.exists_nonzero_coeff_and_aeval_eq_zero hs
+  obtain ⟨q, hq0, hq⟩ := hRs.exists_coeff_ne_zero_and_aeval_eq_zero hs
   have key := map_dvd (aeval s) (X_dvd_sub_C (p := q))
   rw [map_sub, hq, zero_sub, dvd_neg, aeval_X, aeval_C] at key
   exact ⟨q.coeff 0, hq0, key⟩
+
+@[deprecated (since := "2026-10-13")]
+alias IsAlgebraic.exists_nonzero_dvd := IsAlgebraic.exists_ne_zero_dvd
 
 /-- A fraction `(a : S) / (b : S)` can be reduced to `(c : S) / (d : R)`,
 if `b` is algebraic over `R`. -/
 theorem IsAlgebraic.exists_smul_eq_mul
     (a : S) {b : S} (hRb : IsAlgebraic R b) (hb : b ∈ S⁰) :
-    ∃ᵉ (c : S) (d ≠ (0 : R)), d • a = b * c :=
-  have ⟨r, hr, s, h⟩ := hRb.exists_nonzero_dvd hb
+    ∃ c : S, ∃ d ≠ (0 : R), d • a = b * c :=
+  have ⟨r, hr, s, h⟩ := hRb.exists_ne_zero_dvd hb
   ⟨s * a, r, hr, by rw [smul_def, h, mul_assoc]⟩
 
 variable (R)
@@ -578,53 +592,8 @@ variable (R)
 if `b` is algebraic over `R`. -/
 theorem Algebra.IsAlgebraic.exists_smul_eq_mul [NoZeroDivisors S] [Algebra.IsAlgebraic R S]
     (a : S) {b : S} (hb : b ≠ 0) :
-    ∃ᵉ (c : S) (d ≠ (0 : R)), d • a = b * c :=
+    ∃ c : S, ∃ d ≠ (0 : R), d • a = b * c :=
   (isAlgebraic b).exists_smul_eq_mul a (mem_nonZeroDivisors_of_ne_zero hb)
-
-namespace Polynomial
-
-/-- Given a transcendental element `s : S` over `R`, the `R`-algebra equivalence
-between `R[X]` and `R[s]` given by sending `X` to `s`. -/
-noncomputable def algEquivOfTranscendental (s : S) (h : Transcendental R s) :
-    R[X] ≃ₐ[R] R[s] :=
-  AlgEquiv.ofBijective (aeval ⟨s, self_mem_adjoin_singleton R s⟩) <| by
-    refine ⟨transcendental_iff_injective.mp ?_, ?_⟩
-    · rwa [Subalgebra.transcendental_iff_transcendental_val]
-    rw [← AlgHom.range_eq_top, _root_.eq_top_iff]
-    rintro ⟨t, ht⟩ _
-    obtain ⟨r, rfl⟩ := adjoin_mem_exists_aeval _ _ ht
-    exact ⟨r, by ext; simp⟩
-
-@[simp]
-theorem algEquivOfTranscendental_coe (s : S) (h : Transcendental R s) :
-    (algEquivOfTranscendental R s h : R[X] →+* R[s]) =
-    aeval (R := R) (A := R[s]) ⟨s, self_mem_adjoin_singleton R s⟩ := rfl
-
-@[simp]
-theorem algEquivOfTranscendental_apply (s : S) (h : Transcendental R s) (f : R[X]) :
-    algEquivOfTranscendental R s h f = aeval (⟨s, self_mem_adjoin_singleton R s⟩) f := rfl
-
-lemma algEquivOfTranscendental_apply_X (s : S) (h : Transcendental R s) :
-    algEquivOfTranscendental R s h X = ⟨s, self_mem_adjoin_singleton R s⟩ := by simp
-
-@[simp]
-theorem algEquivOfTranscendental_symm_aeval (s : S) (h : Transcendental R s) (f : R[X]) :
-    (algEquivOfTranscendental R s h).symm
-      (aeval (⟨s, self_mem_adjoin_singleton R s⟩) f) = f := by
-  apply (algEquivOfTranscendental R s h).toEquiv.injective
-  simp
-
-@[simp]
-theorem algEquivOfTranscendental_symm_gen (s : S) (h : Transcendental R s) :
-    (algEquivOfTranscendental R s h).symm ⟨s, self_mem_adjoin_singleton R s⟩ = X := by
-  apply (algEquivOfTranscendental R s h).toEquiv.injective
-  simp
-
-end Polynomial
-
-theorem Transcendental.uniqueFactorizationMonoid_adjoin [UniqueFactorizationMonoid R] {s : S}
-      (h : Transcendental R s) : UniqueFactorizationMonoid (R[s]) :=
-  (algEquivOfTranscendental R s h).toMulEquiv.uniqueFactorizationMonoid inferInstance
 
 end
 
@@ -636,7 +605,7 @@ variable (S) {A : Type*} [CommRing S] [NoZeroDivisors S] [Algebra R S]
 open Function (Injective) in
 theorem injective_tower_top (inj : Injective (algebraMap R A)) : Injective (algebraMap S A) := by
   refine (injective_iff_map_eq_zero _).mpr fun s eq ↦ of_not_not fun ne ↦ ?_
-  have ⟨r, ne, dvd⟩ := (alg.1 s).exists_nonzero_dvd (mem_nonZeroDivisors_of_ne_zero ne)
+  have ⟨r, ne, dvd⟩ := (alg.1 s).exists_ne_zero_dvd (mem_nonZeroDivisors_of_ne_zero ne)
   refine ne (inj <| map_zero (algebraMap R A) ▸ zero_dvd_iff.mp ?_)
   simp_rw [← eq, IsScalarTower.algebraMap_apply R S A, map_dvd (algebraMap S A) dvd]
 
@@ -657,18 +626,18 @@ variable {K L : Type*} [Field K] [Field L] [Algebra K L] (A : Subalgebra K L)
 theorem inv_eq_of_aeval_divX_ne_zero {x : L} {p : K[X]} (aeval_ne : aeval x (divX p) ≠ 0) :
     x⁻¹ = aeval x (divX p) / (aeval x p - algebraMap _ _ (p.coeff 0)) := by
   rw [inv_eq_iff_eq_inv, inv_div, eq_comm, div_eq_iff, sub_eq_iff_eq_add, mul_comm]
-  conv_lhs => rw [← divX_mul_X_add p]
-  · rw [map_add, map_mul, aeval_X, aeval_C]
+  · conv_lhs => rw [← divX_mul_X_add p]
+    rw [map_add, map_mul, aeval_X, aeval_C]
   · exact aeval_ne
 
 theorem inv_eq_of_root_of_coeff_zero_ne_zero {x : L} {p : K[X]} (aeval_eq : aeval x p = 0)
     (coeff_zero_ne : p.coeff 0 ≠ 0) : x⁻¹ = -(aeval x (divX p) / algebraMap _ _ (p.coeff 0)) := by
-  convert!
+  convert
     inv_eq_of_aeval_divX_ne_zero (p := p) (L := L)
       (mt (fun h => (algebraMap K L).injective ?_) coeff_zero_ne) using 1
   · rw [aeval_eq, zero_sub, div_neg]
   rw [RingHom.map_zero]
-  convert! aeval_eq
+  convert aeval_eq
   conv_rhs => rw [← divX_mul_X_add p]
   rw [map_add, map_mul, h, zero_mul, zero_add, aeval_C]
 
@@ -691,7 +660,7 @@ theorem Subalgebra.inv_mem_of_algebraic {x : A} (hx : IsAlgebraic K (x : L)) :
     contradiction
   · intro p a hp ha _ih _ne_zero aeval_eq
     refine A.inv_mem_of_root_of_coeff_zero_ne_zero aeval_eq ?_
-    rwa [coeff_add, hp, zero_add, coeff_C, if_pos rfl]
+    rwa [coeff_add, hp, zero_add, coeff_C, ite_eq_left rfl]
   · intro p hp ih _ne_zero aeval_eq
     rw [map_mul, aeval_X, mul_eq_zero] at aeval_eq
     rcases aeval_eq with aeval_eq | x_eq

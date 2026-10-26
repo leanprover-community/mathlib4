@@ -55,7 +55,7 @@ namespace Equivalence
 instance (priority := 900) [G.IsEquivalence] : IsCoverDense G J where
   is_cover U := by
     let e := (asEquivalence G).symm
-    convert! J.top_mem U
+    convert J.top_mem U
     ext Y f
     simp only [Sieve.top_apply, iff_true]
     let g : e.inverse.obj _ ⟶ U := (e.unitInv.app Y) ≫ f
@@ -77,7 +77,6 @@ lemma eq_inducedTopology_of_isDenseSubsite [e.inverse.IsDenseSubsite K J] :
   rw [mem_inducedTopology_iff_of_isCoverDense]
   exact (e.inverse.functorPushforward_mem_iff K J).symm
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isDenseSubsite_functor_of_isCocontinuous
     [e.functor.IsCocontinuous J K] [e.inverse.IsCocontinuous K J] :
     e.functor.IsDenseSubsite J K where
@@ -134,7 +133,6 @@ def sheafCongr.counitIso : inverse J K e A ⋙ functor J K e A ≅ 𝟭 (Sheaf _
   NatIso.ofComponents
     (fun F ↦ ObjectProperty.isoMk _ (isoWhiskerRight e.op.counitIso F.obj))
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence of sheaf categories. -/
 @[simps]
@@ -244,7 +242,6 @@ variable [Functor.IsContinuous G K J] [(G.sheafPushforwardContinuous A K J).EssS
 
 open Localization
 
-set_option backward.isDefEq.respectTransparency false in
 lemma W_inverseImage_whiskeringLeft :
     K.W.inverseImage ((whiskeringLeft Dᵒᵖ Cᵒᵖ A).obj G.op) = J.W := by
   ext P Q f

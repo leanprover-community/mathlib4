@@ -75,8 +75,6 @@ noncomputable def ProjectiveResolution.isoLeftDerivedToHomotopyCategoryObj {X : 
   (F.mapHomotopyCategory _).mapIso P.iso ≪≫
     (F.mapHomotopyCategoryFactors _).app P.complex
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma ProjectiveResolution.isoLeftDerivedToHomotopyCategoryObj_inv_naturality
     {X Y : C} (f : X ⟶ Y) (P : ProjectiveResolution X) (Q : ProjectiveResolution Y)
@@ -179,7 +177,6 @@ noncomputable def NatTrans.leftDerivedToHomotopyCategory
     F.leftDerivedToHomotopyCategory ⟶ G.leftDerivedToHomotopyCategory :=
   Functor.whiskerLeft _ (NatTrans.mapHomotopyCategory α (ComplexShape.down ℕ))
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma ProjectiveResolution.leftDerivedToHomotopyCategory_app_eq
     {F G : C ⥤ D} [F.Additive] [G.Additive] (α : F ⟶ G) {X : C} (P : ProjectiveResolution X) :
@@ -233,7 +230,6 @@ theorem NatTrans.leftDerived_comp {F G H : C ⥤ D} [F.Additive] [G.Additive] [H
 
 namespace ProjectiveResolution
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A component of the natural transformation between left-derived functors can be computed
 using a chosen projective resolution. -/
@@ -251,7 +247,6 @@ lemma leftDerived_app_eq
     ((NatTrans.mapHomologicalComplex α (ComplexShape.down ℕ)).app P.complex)]
   simp only [Functor.comp_map, Iso.hom_inv_id_app_assoc]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `P : ProjectiveResolution X` and `F` is an additive functor, this is
 the canonical morphism from the opcycles in degree `0` of
@@ -263,7 +258,6 @@ noncomputable def fromLeftDerivedZero' {X : C}
     dsimp
     rw [← F.map_comp, complex_d_comp_π_f_zero, F.map_zero])
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma pOpcycles_comp_fromLeftDerivedZero' {C} [Category* C] [Abelian C] {X : C}
     (P : ProjectiveResolution X) (F : C ⥤ D) [F.Additive] :
@@ -343,7 +337,6 @@ section
 
 variable (F : C ⥤ D) [F.Additive] [PreservesFiniteColimits F]
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance {X : C} (P : ProjectiveResolution X) :
     IsIso (P.fromLeftDerivedZero' F) := by
   dsimp [ProjectiveResolution.fromLeftDerivedZero']

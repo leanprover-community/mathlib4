@@ -6,10 +6,11 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Sébasti
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public meta import Mathlib.Data.Nat.NthRoot.Defs
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.Tactic.Rify
-public import Qq
+
+import Mathlib.Tactic.Basify.Attr
 
 /-!
 # Power function on `ℝ≥0` and `ℝ≥0∞`
@@ -43,7 +44,7 @@ noncomputable instance : Pow ℝ≥0 ℝ :=
 theorem rpow_eq_pow (x : ℝ≥0) (y : ℝ) : rpow x y = x ^ y :=
   rfl
 
-@[simp, norm_cast]
+@[simp, norm_cast, basify_op]
 theorem coe_rpow (x : ℝ≥0) (y : ℝ) : ((x ^ y : ℝ≥0) : ℝ) = (x : ℝ) ^ y :=
   rfl
 
@@ -223,8 +224,6 @@ lemma finsetProd_rpow {ι} (s : Finset ι) (f : ι → ℝ≥0) (r : ℝ) :
     (∏ i ∈ s, f i ^ r) = (∏ i ∈ s, f i) ^ r :=
   multiset_prod_map_rpow _ _ _
 
-@[deprecated (since := "2026-04-08")] alias finset_prod_rpow := finsetProd_rpow
-
 -- note: these don't really belong here, but they're much easier to prove in terms of the above
 
 section Real
@@ -233,7 +232,7 @@ section Real
 theorem _root_.Real.list_prod_map_rpow (l : List ℝ) (hl : ∀ x ∈ l, (0 : ℝ) ≤ x) (r : ℝ) :
     (l.map (· ^ r)).prod = l.prod ^ r := by
   lift l to List ℝ≥0 using hl
-  have := congr_arg ((↑) : ℝ≥0 → ℝ) (NNReal.list_prod_map_rpow l r)
+  have := congr(($(NNReal.list_prod_map_rpow l r) : ℝ))
   push_cast at this
   rw [List.map_map] at this ⊢
   exact mod_cast this
@@ -257,8 +256,6 @@ theorem _root_.Real.finsetProd_rpow
     {ι} (s : Finset ι) (f : ι → ℝ) (hs : ∀ i ∈ s, 0 ≤ f i) (r : ℝ) :
     (∏ i ∈ s, f i ^ r) = (∏ i ∈ s, f i) ^ r :=
   Real.multiset_prod_map_rpow s.val f hs r
-
-@[deprecated (since := "2026-04-08")] alias _root_.Real.finset_prod_rpow := Real.finsetProd_rpow
 
 end Real
 
@@ -388,7 +385,7 @@ theorem rpow_le_self_of_le_one {x : ℝ≥0} {z : ℝ} (hx : x ≤ 1) (h_one_le 
   exact NNReal.rpow_le_rpow_of_exponent_ge h hx h_one_le
 
 theorem rpow_left_injective {x : ℝ} (hx : x ≠ 0) : Function.Injective fun y : ℝ≥0 => y ^ x :=
-  fun y z hyz => by simpa only [rpow_inv_rpow_self hx] using congr_arg (fun y => y ^ (1 / x)) hyz
+  fun y z hyz => by simpa only [rpow_inv_rpow_self hx] using congr($hyz ^ (1 / x))
 
 theorem rpow_eq_rpow_iff {x y : ℝ≥0} {z : ℝ} (hz : z ≠ 0) : x ^ z = y ^ z ↔ x = y :=
   (rpow_left_injective hz).eq_iff
@@ -541,7 +538,7 @@ theorem coe_rpow_of_ne_zero {x : ℝ≥0} (h : x ≠ 0) (y : ℝ) : (↑(x ^ y) 
   dsimp only [(· ^ ·), Pow.pow, rpow]
   simp [h]
 
-@[norm_cast]
+@[norm_cast, basify_op ←]
 theorem coe_rpow_of_nonneg (x : ℝ≥0) {y : ℝ} (h : 0 ≤ y) : ↑(x ^ y) = (x : ℝ≥0∞) ^ y := by
   by_cases hx : x = 0
   · rcases le_iff_eq_or_lt.1 h with (H | H)
@@ -559,7 +556,7 @@ theorem rpow_ofNNReal {M : ℝ≥0} {P : ℝ} (hP : 0 ≤ P) : (M : ℝ≥0∞) 
 @[simp]
 theorem rpow_one (x : ℝ≥0∞) : x ^ (1 : ℝ) = x := by
   cases x
-  · exact dif_pos zero_lt_one
+  · exact dite_eq_left zero_lt_one
   · change ite _ _ _ = _
     simp only [NNReal.rpow_one, ite_eq_right_iff, top_ne_coe, and_imp]
     exact fun _ => zero_le_one.not_gt
@@ -813,22 +810,30 @@ lemma max_rpow {x y : ℝ≥0∞} {p : ℝ} (hp : 0 ≤ p) : max x y ^ p = max (
   · rw [max_eq_left hxy, max_eq_left (rpow_le_rpow hxy hp)]
 
 theorem le_rpow_inv_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x ≤ y ^ z⁻¹ ↔ x ^ z ≤ y := by
-  nth_rw 1 [← rpow_one x]
-  nth_rw 1 [← @mul_inv_cancel₀ _ _ z hz.ne']
-  rw [rpow_mul, @rpow_le_rpow_iff _ _ z⁻¹ (by simp [hz])]
+  nth_rw 1 [← rpow_one x, ← mul_inv_cancel₀ hz.ne', rpow_mul, rpow_le_rpow_iff (inv_pos_of_pos hz)]
+
+theorem rpow_inv_le_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x ^ z⁻¹ ≤ y ↔ x ≤ y ^ z := by
+  nth_rw 1 [← rpow_one y, ← mul_inv_cancel₀ hz.ne', rpow_mul, rpow_le_rpow_iff (inv_pos.2 hz)]
+
+theorem le_rpow_inv_iff_of_neg {x y : ℝ≥0∞} {z : ℝ} (hz : z < 0) : x ≤ y ^ z⁻¹ ↔ y ≤ x ^ z := by
+  nth_rw 1 [← neg_neg z, inv_neg, rpow_neg, le_inv_iff_le_inv, rpow_inv_le_iff (neg_pos.2 hz),
+    inv_rpow, ← rpow_neg, neg_neg]
+
+theorem rpow_inv_le_iff_of_neg {x y : ℝ≥0∞} {z : ℝ} (hz : z < 0) : x ^ z⁻¹ ≤ y ↔ y ^ z ≤ x := by
+  nth_rw 1 [← neg_neg z, inv_neg, rpow_neg, inv_le_iff_inv_le, le_rpow_inv_iff (neg_pos.2 hz),
+    inv_rpow, ← rpow_neg, neg_neg]
+
+theorem lt_rpow_inv_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x < y ^ z⁻¹ ↔ x ^ z < y := by
+  simp only [← not_le, rpow_inv_le_iff hz]
 
 theorem rpow_inv_lt_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x ^ z⁻¹ < y ↔ x < y ^ z := by
   simp only [← not_le, le_rpow_inv_iff hz]
 
-theorem lt_rpow_inv_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x < y ^ z⁻¹ ↔ x ^ z < y := by
-  nth_rw 1 [← rpow_one x]
-  nth_rw 1 [← @mul_inv_cancel₀ _ _ z (ne_of_lt hz).symm]
-  rw [rpow_mul, @rpow_lt_rpow_iff _ _ z⁻¹ (by simp [hz])]
+theorem lt_rpow_inv_iff_of_neg {x y : ℝ≥0∞} {z : ℝ} (hz : z < 0) : x < y ^ z⁻¹ ↔ y < x ^ z := by
+  simp only [← not_le, rpow_inv_le_iff_of_neg hz]
 
-theorem rpow_inv_le_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x ^ z⁻¹ ≤ y ↔ x ≤ y ^ z := by
-  nth_rw 1 [← ENNReal.rpow_one y]
-  nth_rw 1 [← @mul_inv_cancel₀ _ _ z hz.ne.symm]
-  rw [ENNReal.rpow_mul, ENNReal.rpow_le_rpow_iff (inv_pos.2 hz)]
+theorem rpow_inv_lt_iff_of_neg {x y : ℝ≥0∞} {z : ℝ} (hz : z < 0) : x ^ z⁻¹ < y ↔ y ^ z < x := by
+  simp only [← not_le, le_rpow_inv_iff_of_neg hz]
 
 @[gcongr]
 theorem rpow_lt_rpow_of_exponent_lt {x : ℝ≥0∞} {y z : ℝ} (hx : 1 < x) (hx' : x ≠ ⊤) (hyz : y < z) :
@@ -1021,6 +1026,26 @@ lemma add_rpow_le_two_rpow_mul_rpow_add_rpow {p : ℝ} (a b : ℝ≥0∞) (hp : 
   _ = 2 ^ p * (max a b) ^ p := mul_rpow_of_nonneg _ _ hp
   _ = 2 ^ p * max (a ^ p) (b ^ p) := by rw [max_rpow hp]
   _ ≤ 2 ^ p * (a ^ p + b ^ p) := by gcongr; apply max_le_add_of_nonneg <;> simp
+
+lemma iSup_rpow_of_pos {ι : Sort*} {r : ℝ} (hr : 0 < r) (f : ι → ℝ≥0∞) :
+    (⨆ i, f i) ^ r = ⨆ i, f i ^ r :=
+  (orderIsoRpow r hr).map_iSup f
+
+lemma iSup_rpow_of_nonneg {ι : Sort*} [Nonempty ι] {r : ℝ} (hr : 0 ≤ r) (f : ι → ℝ≥0∞) :
+    (⨆ i, f i) ^ r = ⨆ i, f i ^ r := by
+  rcases eq_or_lt_of_le hr with rfl | hr
+  · simp
+  · exact iSup_rpow_of_pos hr f
+
+lemma iInf_rpow_of_pos {ι : Sort*} {r : ℝ} (hr : 0 < r) (f : ι → ℝ≥0∞) :
+    (⨅ i, f i) ^ r = ⨅ i, f i ^ r :=
+  (orderIsoRpow r hr).map_iInf f
+
+lemma iInf_rpow_of_nonneg {ι : Sort*} [Nonempty ι] {r : ℝ} (hr : 0 ≤ r) (f : ι → ℝ≥0∞) :
+    (⨅ i, f i) ^ r = ⨅ i, f i ^ r := by
+  rcases eq_or_lt_of_le hr with rfl | hr
+  · simp
+  · exact iInf_rpow_of_pos hr f
 
 end ENNReal
 

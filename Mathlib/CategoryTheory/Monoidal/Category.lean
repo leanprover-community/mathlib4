@@ -5,7 +5,6 @@ Authors: Michael Jendrusch, Kim Morrison, Bhavik Mehta, Jakob von Raumer
 -/
 module
 
-public import Mathlib.CategoryTheory.EqToHom
 public import Mathlib.CategoryTheory.Functor.Trifunctor
 public import Mathlib.CategoryTheory.Products.Basic
 
@@ -453,7 +452,7 @@ lemma whiskerRightIso_symm {X Y : C} (f : X ≅ Y) (W : C) :
     (whiskerRightIso f W).symm = whiskerRightIso f.symm W := rfl
 
 /-- The tensor product of two isomorphisms is an isomorphism. -/
-@[simps]
+@[implicit_reducible, simps]
 def tensorIso {X Y X' Y' : C} (f : X ≅ Y)
     (g : X' ≅ Y') : X ⊗ X' ≅ Y ⊗ Y' where
   hom := f.hom ⊗ₘ g.hom
@@ -510,13 +509,13 @@ theorem dite_tensor {P : Prop} [Decidable P] {W X Y Z : C} (f : W ⟶ X) (g : P 
 
 @[simp]
 theorem whiskerLeft_eqToHom (X : C) {Y Z : C} (f : Y = Z) :
-    X ◁ eqToHom f = eqToHom (congr_arg₂ tensorObj rfl f) := by
+    X ◁ eqToHom f = eqToHom congr(tensorObj _ $f) := by
   cases f
   simp only [whiskerLeft_id, eqToHom_refl]
 
 @[simp]
 theorem eqToHom_whiskerRight {X Y : C} (f : X = Y) (Z : C) :
-    eqToHom f ▷ Z = eqToHom (congr_arg₂ tensorObj f rfl) := by
+    eqToHom f ▷ Z = eqToHom congr(tensorObj $f _) := by
   cases f
   simp only [id_whiskerRight, eqToHom_refl]
 
@@ -851,20 +850,16 @@ abbrev tensorUnitRight : C ⥤ C := tensorRight (𝟙_ C)
 def associatorNatIso : leftAssocTensor C ≅ rightAssocTensor C :=
   NatIso.ofComponents (fun _ => MonoidalCategory.associator _ _ _)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The left unitor as a natural isomorphism. -/
 @[simps!]
 def leftUnitorNatIso : tensorUnitLeft C ≅ 𝟭 C :=
   NatIso.ofComponents MonoidalCategory.leftUnitor
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The right unitor as a natural isomorphism. -/
 @[simps!]
 def rightUnitorNatIso : tensorUnitRight C ≅ 𝟭 C :=
   NatIso.ofComponents MonoidalCategory.rightUnitor
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- The associator as a natural isomorphism between trifunctors `C ⥤ C ⥤ C ⥤ C`. -/
 @[simps!]
 def curriedAssociatorNatIso :
@@ -877,7 +872,6 @@ section
 
 variable {C}
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Tensoring on the left with `X ⊗ Y` is naturally isomorphic to
 tensoring on the left with `Y`, and then again with `X`.
 -/
@@ -889,7 +883,6 @@ theorem tensorLeftTensor_hom_app (X Y Z : C) :
     (tensorLeftTensor X Y).hom.app Z = (associator X Y Z).hom :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem tensorLeftTensor_inv_app (X Y Z : C) :
     (tensorLeftTensor X Y).inv.app Z = (associator X Y Z).inv := by simp [tensorLeftTensor]
@@ -905,7 +898,7 @@ abbrev tensoringLeft : C ⥤ C ⥤ C := curriedTensor C
 instance : (tensoringLeft C).Faithful where
   map_injective {X} {Y} f g h := by
     injections h
-    replace h := congr_fun h (𝟙_ C)
+    replace h := congr($h (𝟙_ C))
     simpa using h
 
 /-- Tensoring on the right, as a functor from `C` into endofunctors of `C`.
@@ -914,16 +907,14 @@ We later show this is a monoidal functor.
 -/
 abbrev tensoringRight : C ⥤ C ⥤ C := (curriedTensor C).flip
 
-set_option backward.defeqAttrib.useBackward true in
 instance : (tensoringRight C).Faithful where
   map_injective {X} {Y} f g h := by
     injections h
-    replace h := congr_fun h (𝟙_ C)
+    replace h := congr($h (𝟙_ C))
     simpa using h
 
 variable {C}
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Tensoring on the right with `X ⊗ Y` is naturally isomorphic to
 tensoring on the right with `X`, and then again with `Y`.
 -/
@@ -935,7 +926,6 @@ theorem tensorRightTensor_hom_app (X Y Z : C) :
     (tensorRightTensor X Y).hom.app Z = (associator Z X Y).inv :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem tensorRightTensor_inv_app (X Y Z : C) :
     (tensorRightTensor X Y).inv.app Z = (associator Z X Y).hom := by simp [tensorRightTensor]
@@ -1000,7 +990,6 @@ section ObjectProperty
 
 open ObjectProperty
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The restriction of a monoidal category along an object property
 that's closed under the monoidal structure. -/
 -- See note [reducible non-instances]

@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.Homology.Embedding.ExtendHomology
 public import Mathlib.Algebra.Homology.Embedding.TruncGE
-public import Mathlib.Algebra.Homology.Embedding.RestrictionHomology
-public import Mathlib.Algebra.Homology.QuasiIso
+
+import Mathlib.Algebra.Homology.Embedding.RestrictionHomology
 
 /-! # The homology of a canonical truncation
 
@@ -37,8 +37,6 @@ namespace truncGE'
 
 variable (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k)
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 include hi hk in
 lemma hasHomology_sc'_of_not_mem_boundary (hj : ¬ e.BoundaryGE j) :
     ((K.truncGE' e).sc' i j k).HasHomology := by
@@ -57,7 +55,6 @@ lemma hasHomology_of_not_mem_boundary (hj : ¬ e.BoundaryGE j) :
   hasHomology_sc'_of_not_mem_boundary K e _ j _ rfl rfl hj
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- `K.restrictionToTruncGE' e` is a quasi-isomorphism in degrees that are not at the boundary. -/
 lemma quasiIsoAt_restrictionToTruncGE' (hj : ¬ e.BoundaryGE j)
     [(K.restriction e).HasHomology j] [(K.truncGE' e).HasHomology j] :
@@ -80,8 +77,6 @@ lemma homologyι_truncGE'XIsoOpcycles_inv_d :
     homologyι_comp_fromOpcycles_assoc, zero_comp]
   · rw [shape _ _ _ hjk, comp_zero]
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `truncGE'.homologyData`. -/
 noncomputable def isLimitKernelFork :
     IsLimit (KernelFork.ofι _ (homologyι_truncGE'XIsoOpcycles_inv_d K e j k hj' hj)) := by

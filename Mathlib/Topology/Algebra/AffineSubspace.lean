@@ -5,9 +5,7 @@ Authors: Joseph Myers
 -/
 module
 
-public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 public import Mathlib.LinearAlgebra.AffineSpace.Restrict
-public import Mathlib.Topology.Algebra.ContinuousAffineMap
 public import Mathlib.Topology.Algebra.ContinuousAffineEquiv
 
 /-!
@@ -94,13 +92,12 @@ variable [TopologicalSpace V] [IsTopologicalAddTorsor P]
 
 instance {s : AffineSubspace R P} [Nonempty s] : IsTopologicalAddTorsor s where
   continuous_vadd := by
-    rw [Topology.IsEmbedding.subtypeVal.continuous_iff]
+    simp_rw [Topology.IsEmbedding.subtypeVal.continuous_iff, Function.comp_def, coe_vadd]
     fun_prop
   continuous_vsub := by
-    rw [Topology.IsEmbedding.subtypeVal.continuous_iff]
+    simp_rw [Topology.IsEmbedding.subtypeVal.continuous_iff, Function.comp_def, coe_vsub]
     fun_prop
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isClosed_direction_iff [T1Space V] (s : AffineSubspace R P) :
     IsClosed (s.direction : Set V) ↔ IsClosed (s : Set P) := by
   rcases s.eq_bot_or_nonempty with (rfl | ⟨x, hx⟩); · simp

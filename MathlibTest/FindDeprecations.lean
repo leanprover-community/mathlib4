@@ -1,10 +1,14 @@
-import Mathlib.Tactic.Linter.FindDeprecations
-import Mathlib.Tactic.Linter.CommandRanges
+module
 
-/-- info: [134, 170, 171] -/
+public import Mathlib.Tactic.Linter.CommandRanges
+public import Mathlib.Tactic.Linter.FindDeprecations
+
+@[expose] public section
+
+/-- info: [182, 218, 219] -/
 #guard_msgs in
 set_option linter.commandRanges true
-/-- info: [215, 223, 224] -/
+/-- info: [263, 271, 272] -/
 #guard_msgs in
 open Nat
 set_option linter.commandRanges false

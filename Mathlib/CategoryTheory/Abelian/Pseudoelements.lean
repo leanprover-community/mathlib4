@@ -5,9 +5,8 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Abelian.Exact
-public import Mathlib.CategoryTheory.Comma.Over.Basic
 public import Mathlib.Algebra.Category.ModuleCat.EpiMono
+public import Mathlib.CategoryTheory.Abelian.Exact
 
 /-!
 # Pseudoelements in abelian categories
@@ -179,7 +178,6 @@ scoped[Pseudoelement] attribute [instance] CategoryTheory.Abelian.Pseudoelement.
 
 theorem pseudoApply_mk' {P Q : C} (f : P ⟶ Q) (a : Over P) : f ⟦a⟧ = ⟦↑(a.hom ≫ f)⟧ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Applying a pseudoelement to a composition of morphisms is the same as composing
 with each morphism. Sadly, this is not a definitional equality, but at least it is true. -/
 theorem comp_apply {P Q R : C} (f : P ⟶ Q) (g : Q ⟶ R) (a : P) : (f ≫ g) a = g (f a) :=
@@ -205,7 +203,6 @@ section
 
 attribute [local instance] HasBinaryBiproducts.of_hasBinaryProducts
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The arrows pseudo-equal to a zero morphism are precisely the zero morphisms. -/
 theorem pseudoZero_aux {P : C} (Q : C) (f : Over P) : f ≈ (0 : Q ⟶ P) ↔ f.hom = 0 :=
   ⟨fun ⟨R, p, q, _, _, comm⟩ => zero_of_epi_comp p (by simp [comm]), fun hf =>
@@ -242,7 +239,6 @@ theorem pseudoZero_iff {P : C} (a : Over P) : a = (0 : P) ↔ a.hom = 0 := by
 end Zero
 
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Morphisms map the zero pseudoelement to the zero pseudoelement. -/
 @[simp]
 theorem apply_zero {P Q : C} (f : P ⟶ Q) : f 0 = 0 := by
@@ -267,7 +263,6 @@ theorem zero_morphism_ext' {P Q : C} (f : P ⟶ Q) : (∀ a, f a = 0) → 0 = f 
 theorem eq_zero_iff {P Q : C} (f : P ⟶ Q) : f = 0 ↔ ∀ a, f a = 0 :=
   ⟨fun h a => by simp [h], zero_morphism_ext _⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- A monomorphism is injective on pseudoelements. -/
 theorem pseudo_injective_of_mono {P Q : C} (f : P ⟶ Q) [Mono f] : Function.Injective f := by
   intro abar abar'
@@ -300,13 +295,12 @@ theorem pseudo_surjective_of_epi {P Q : C} (f : P ⟶ Q) [Epi f] : Function.Surj
   fun qbar =>
   Quotient.inductionOn qbar fun q =>
     ⟨(pullback.fst f q.hom : Over P),
-      Quotient.sound <|
+      Quotient.sound
         ⟨pullback f q.hom, 𝟙 (pullback f q.hom), pullback.snd _ _, inferInstance, inferInstance, by
           rw [Category.id_comp, ← pullback.condition, app_hom, Over.coe_hom]⟩⟩
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A morphism that is surjective on pseudoelements is an epimorphism. -/
 theorem epi_of_pseudo_surjective {P Q : C} (f : P ⟶ Q) : Function.Surjective f → Epi f := by
   intro h
@@ -354,7 +348,6 @@ theorem pseudo_exact_of_exact {S : ShortComplex C} (hS : S.Exact) :
 
 end
 
-set_option backward.defeqAttrib.useBackward true in
 theorem apply_eq_zero_of_comp_eq_zero {P Q R : C} (f : Q ⟶ R) (a : P ⟶ Q) : a ≫ f = 0 → f a = 0 :=
   fun h => by simp [over_coe_def, pseudoApply_mk', h]
 

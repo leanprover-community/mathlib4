@@ -98,7 +98,6 @@ def toComon : Bimon C ⥤ Comon C := (Mon.forget C).mapComon
 @[simp]
 theorem toComon_forget : toComon C ⋙ Comon.forget C = forget C := rfl
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {C} in
 /-- The object level part of the forward direction of `Comon (Mon C) ≌ Mon (Comon C)` -/
@@ -150,19 +149,16 @@ def ofMonComon : Mon (Comon C) ⥤ Bimon C where
   obj := ofMonComonObj
   map f := .mk' ((Comon.forget C).mapMon.map f)
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem toMonComon_ofMonComon_obj_one (M : Bimon C) :
     η[((toMonComon C ⋙ ofMonComon C).obj M).X.X] = 𝟙 _ ≫ η[M.X.X] :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem toMonComon_ofMonComon_obj_mul (M : Bimon C) :
     μ[((toMonComon C ⋙ ofMonComon C).obj M).X.X] = 𝟙 _ ≫ μ[M.X.X] :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Auxiliary definition for `equivMonComonUnitIsoApp`. -/
 @[simps!]
 def equivMonComonUnitIsoAppXAux (M : Bimon C) :
@@ -227,7 +223,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simps!]
 def equivMonComonCounitIsoApp (M : Mon (Comon C)) :
     (ofMonComon C ⋙ toMonComon C).obj M ≅ M :=
-  Mon.mkIso <| (equivMonComonCounitIsoAppX M)
+  Mon.mkIso (equivMonComonCounitIsoAppX M)
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The equivalence `Comon (Mon C) ≌ Mon (Comon C)` -/

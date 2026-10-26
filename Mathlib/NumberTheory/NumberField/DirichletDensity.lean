@@ -5,6 +5,7 @@ Authors: Chris Birkbeck, Riccardo Brasca, Xavier Roblot
 -/
 module
 
+public import Mathlib.Algebra.CharZero.Infinite
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.NumberTheory.NumberField.Basic
 public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
@@ -39,7 +40,9 @@ public section
 
 noncomputable section
 
-open Filter IsDedekindDomain Topology Set
+open Filter IsDedekindDomain Set
+
+open scoped Topology
 
 namespace NumberField.Set
 
@@ -66,8 +69,7 @@ theorem primeIdealZetaSum_le_card_of_finite (hS : S.Finite) {s : ℝ} (hs : 0 �
     S.primeIdealZetaSum s ≤ S.ncard := by
   replace hS := hS.to_subtype
   grw [primeIdealZetaSum_def, Real.rpow_le_one_of_one_le_of_nonpos] <;>
-  simp [Summable.of_finite, Nat.one_le_iff_ne_zero,
-    Ideal.absNorm_eq_zero_iff, hs, HeightOneSpectrum.ne_bot]
+  simp [Summable.of_finite, Nat.one_le_iff_ne_zero, hs, HeightOneSpectrum.ne_bot]
 
 /-- `S` has Dirichlet density `δ` when the ratio of the partial sum over `S` to the sum over all
 nonzero prime ideals,
@@ -92,12 +94,12 @@ variable {S}
 /-- If `S` has no Dirichlet density, then `dirichletDensity S = 0`. -/
 theorem dirichletDensity_eq_zero_of_not_hasDirichletDensity
     (h : ∀ δ, ¬ S.HasDirichletDensity δ) : S.dirichletDensity = 0 := by
-  rw [dirichletDensity, dif_neg (not_exists.mpr h)]
+  rw [dirichletDensity, dite_eq_right (not_exists.mpr h)]
 
 /-- If `S` has Dirichlet density `δ`, then `dirichletDensity S = δ`. -/
 theorem HasDirichletDensity.dirichletDensity_eq {δ : ℝ} (h : S.HasDirichletDensity δ) :
     S.dirichletDensity = δ := by
-  rw [dirichletDensity, dif_pos ⟨δ, h⟩, tendsto_nhds_unique (Exists.choose_spec ⟨δ, h⟩) h]
+  rw [dirichletDensity, dite_eq_left ⟨δ, h⟩, tendsto_nhds_unique (Exists.choose_spec ⟨δ, h⟩) h]
 
 /-- The empty set has Dirichlet density `0`. -/
 theorem hasDirichletDensity_empty :

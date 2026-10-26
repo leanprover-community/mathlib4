@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Analysis.Convex.StrictConvexBetween
 public import Mathlib.Analysis.InnerProductSpace.Convex
-public import Mathlib.Analysis.Normed.Affine.Convex
 public import Mathlib.Geometry.Euclidean.Basic
 public import Mathlib.Geometry.Euclidean.Projection
+
+import Mathlib.Analysis.Normed.Affine.Convex
 
 /-!
 # Spheres
@@ -39,7 +40,7 @@ Euclidean affine spaces.
 
 noncomputable section
 
-open RealInnerProductSpace
+open scoped RealInnerProductSpace
 
 namespace EuclideanGeometry
 
@@ -455,7 +456,6 @@ theorem Sphere.inner_vsub_center_midpoint_vsub {p₁ p₂ : P} {s : Sphere P}
     (dist_left_midpoint_eq_dist_right_midpoint p₁ p₂)
     (dist_center_eq_dist_center_of_mem_sphere hp₁ hp₂)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The distance from the center of a sphere to any point strictly between
 two points on the sphere is strictly less than the radius. -/
 theorem Sphere.dist_center_lt_radius_of_sbtw {p₁ p₂ p : P} {s : Sphere P}

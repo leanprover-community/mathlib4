@@ -6,6 +6,7 @@ Authors: Robin Carlier
 module
 
 public import Mathlib.AlgebraicTopology.SimplexCategory.GeneratorsRelations.EpiMono
+
 /-! # Normal forms for morphisms in `SimplexCategoryGenRel`.
 
 In this file, we establish that `P_δ` and `P_σ` morphisms in `SimplexCategoryGenRel`
@@ -276,7 +277,7 @@ lemma standardσ_simplicialInsert (hL : IsAdmissible (m + 1) L) (j : ℕ) (hj : 
     · have : ∀ (j k : ℕ) (h : j < (k + 1)), Fin.ofNat (k + 1) j = j := by simp -- helps grind below
       have : a < m + 2 := by grind -- helps grind below
       have : σ (Fin.ofNat (m + 2) a) ≫ σ (.ofNat _ j) = σ (.ofNat _ (j + 1)) ≫ σ (.ofNat _ a) := by
-        convert! σ_comp_σ_nat (n := m) a j (by grind) (by grind) (by grind) <;> grind
+        convert σ_comp_σ_nat (n := m) a j (by grind) (by grind) (by grind) <;> grind
       grind [standardσ_cons]
 
 set_option backward.isDefEq.respectTransparency false in
