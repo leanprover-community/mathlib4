@@ -126,11 +126,10 @@ instance [AddMonoid ω] : Monad (WriterT ω M) := monad 0 (· + ·)
 instance [AddMonoid ω] : MonadLift M (WriterT ω M) := WriterT.liftTell 0
 
 instance [AddMonoid ω] [LawfulMonad M] : LawfulMonad (WriterT ω M) := LawfulMonad.mk'
-  (bind_pure_comp := by
-    simp [Bind.bind, Functor.map, Pure.pure, WriterT.mk, bind_pure_comp])
-  (id_map := by simp [Functor.map, WriterT.mk])
-  (pure_bind := by simp [Bind.bind, Pure.pure, WriterT.mk])
-  (bind_assoc := by simp [Bind.bind, add_assoc, WriterT.mk, ← bind_pure_comp])
+  (bind_pure_comp := fun _ _ => by ext; simp)
+  (id_map := fun _ => by ext; simp)
+  (pure_bind := fun _ _ => by ext; simp)
+  (bind_assoc := fun _ _ _ => by ext; simp [add_assoc])
 
 instance : MonadWriter ω (WriterT ω M) where
   tell := fun w ↦ WriterT.mk <| pure (⟨⟩, w)
