@@ -539,12 +539,22 @@ theorem merge_node {ls ll lx lr rs rl rx rr} :
 
 /-! ### `insert` -/
 
-section DualInsertLemmas
+section MapLemmas
 
 variable {β : Type*} (f : α → β) (l : Ordnode α) (x : α) (r : Ordnode α)
 
 lemma size_map : ∀ l : Ordnode α, (l.map f).size = l.size
   | nil | node _ _ _ _ => rfl
+
+lemma map_node' : (node' l x r).map f = node' (l.map f) (f x) (r.map f) := by
+  simp [node', map, size_map]
+
+lemma map_rotateR : (rotateR l x r).map f = rotateR (l.map f) (f x) (r.map f) := by
+  cases l with
+  | nil => simp [rotateR, map, map_node']
+  | node s ll lx lr =>
+    cases lr <;> simp only [rotateR, map, size_map, size_node, size_nil] <;> split_ifs <;>
+      simp [map, node4R, node3R, node', size_map, *]
 
 lemma map_balanceL : (balanceL l x r).map f = balanceL (l.map f) (f x) (r.map f) := by
   cases l with
@@ -560,7 +570,20 @@ lemma map_balanceR : (balanceR l x r).map f = balanceR (l.map f) (f x) (r.map f)
     cases l <;> cases rl <;> cases rr <;>
     simp only [balanceR, map, id_eq, Ordnode.singleton] <;> split_ifs <;> simp only [map, size_map]
 
-end DualInsertLemmas
+lemma map_eraseMin : (eraseMin l).map f = eraseMin (l.map f) := by
+  induction l with
+  | nil => rfl
+  | node s l x r ihl ihr => cases l <;> simp [eraseMin, map, map_balanceR, ihl]
+
+lemma map_eraseMax : (eraseMax l).map f = eraseMax (l.map f) := by
+  induction l with
+  | nil => rfl
+  | node s l x r ihl ihr => cases r <;> simp [eraseMax, map, map_balanceL, ihr]
+
+lemma map_findMin' : findMin' (l.map f) (f x) = f (findMin' l x) := by
+  induction l generalizing x <;> simp [map, findMin', *]
+
+end MapLemmas
 
 theorem dual_insert [LE α] [@Std.Total α (· ≤ ·)] [DecidableLE α] (x : α) :
     ∀ t : Ordnode α,

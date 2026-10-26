@@ -297,16 +297,14 @@ theorem Valid'.rotateL {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : V
     exact
       Or.inr ⟨l0, not_lt.1 h, H2, Valid'.rotateL_lemma₄ (H3p l0), (hr.3.1.resolve_left (hlp l0)).1⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Valid'.rotateR {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : Valid' x r o₂)
     (H1 : ¬size l + size r ≤ 1) (H2 : delta * size r < size l)
     (H3 : 2 * size l ≤ 9 * size r + 5 ∨ size l ≤ 3) : Valid' o₁ (@rotateR α l x r) o₂ := by
-  refine Valid'.dual_iff.2 ?_
-  rw [dual_rotateR]
+  rw [Valid'.dual_iff, map_rotateR, dual_rotateR]
   refine hr.dual.rotateL hl.dual ?_ ?_ ?_
-  · rwa [size_dual, size_dual, add_comm]
-  · rwa [size_dual, size_dual]
-  · rwa [size_dual, size_dual]
+  · simpa only [size_dual, size_map, add_comm] using H1
+  · simpa only [size_dual, size_map] using H2
+  · simpa only [size_dual, size_map] using H3
 
 theorem Valid'.balance'_aux {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : Valid' x r o₂)
     (H₁ : 2 * @size α r ≤ 9 * size l + 5 ∨ size r ≤ 3)
@@ -366,21 +364,20 @@ theorem Valid'.balanceL {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : 
   · exact ⟨_, _, H, Or.inl ⟨e.dist_le', rfl⟩⟩
   · exact ⟨_, _, H, Or.inr ⟨e.dist_le, rfl⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Valid'.balanceR_aux {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : Valid' x r o₂)
     (H₁ : size r = 0 → size l ≤ 1) (H₂ : 1 ≤ size r → 1 ≤ size l → size l ≤ delta * size r)
     (H₃ : 2 * @size α r ≤ 9 * size l + 5 ∨ size r ≤ 3) : Valid' o₁ (@balanceR α l x r) o₂ := by
-  rw [Valid'.dual_iff, dual_balanceR]
+  rw [Valid'.dual_iff, map_balanceR, dual_balanceR]
   have := hr.dual.balanceL_aux hl.dual
-  rw [size_dual, size_dual] at this
+  simp only [size_dual, size_map] at this
   exact this H₁ H₂ H₃
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Valid'.balanceR {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : Valid' x r o₂)
     (H : (∃ l', Raised (size l) l' ∧ BalancedSz l' (size r)) ∨
         ∃ r', Raised r' (size r) ∧ BalancedSz (size l) r') :
     Valid' o₁ (@balanceR α l x r) o₂ := by
-  rw [Valid'.dual_iff, dual_balanceR]; exact hr.dual.balanceL hl.dual (balance_sz_dual H)
+  rw [Valid'.dual_iff, map_balanceR, dual_balanceR]
+  exact hr.dual.balanceL hl.dual (by simpa only [size_dual, size_map] using balance_sz_dual H)
 
 theorem Valid'.eraseMax_aux {s l x r o₁ o₂} (H : Valid' o₁ (.node s l x r) o₂) :
     Valid' o₁ (@eraseMax α (.node' l x r)) ↑(findMax' x r) ∧
@@ -395,21 +392,21 @@ theorem Valid'.eraseMax_aux {s l x r o₁ o₂} (H : Valid' o₁ (.node s l x r)
     rw [eraseMax, size_balanceL H.3.2.1 h.3 H.2.2.1 h.2 (Or.inr ⟨_, Or.inr e, H.3.1⟩)]
     rw [size_node, e]; rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Valid'.eraseMin_aux {s l} {x : α} {r o₁ o₂} (H : Valid' o₁ (.node s l x r) o₂) :
     Valid' ↑(findMin' l x) (@eraseMin α (.node' l x r)) o₂ ∧
       size (.node' l x r) = size (eraseMin (.node' l x r)) + 1 := by
   have := H.dual.eraseMax_aux
-  rwa [← dual_node', size_dual, ← dual_eraseMin, size_dual, ← Valid'.dual_iff, findMax'_dual]
-    at this
+  rw [← dual_node', ← map_node', size_dual, ← dual_eraseMin, ← map_eraseMin, size_map, size_dual,
+    size_map, findMax'_dual, map_findMin'] at this
+  exact ⟨Valid'.dual_iff.2 this.1, this.2⟩
 
 theorem eraseMin.valid : ∀ {t}, @Valid α _ t → Valid (eraseMin t)
   | nil, _ => valid_nil
   | node _ l x r, h => by rw [h.2.eq_node']; exact h.eraseMin_aux.1.valid
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eraseMax.valid {t} (h : @Valid α _ t) : Valid (eraseMax t) := by
-  rw [Valid.dual_iff, dual_eraseMax]; exact eraseMin.valid h.dual
+  rw [Valid.dual_iff, map_eraseMax, dual_eraseMax]
+  exact eraseMin.valid h.dual
 
 theorem Valid'.glue_aux {l r o₁ o₂} (hl : Valid' o₁ l o₂) (hr : Valid' o₁ r o₂)
     (sep : l.All fun x => r.All fun y => x < y) (bal : BalancedSz (size l) (size r)) :
@@ -468,7 +465,6 @@ theorem Valid'.merge_aux₁ {o₁ o₂ ls ll lx lr rs rl rx rr t}
     rw [e, add_right_comm]; rintro ⟨⟩
   intro _ _; rw [e]; unfold delta at hr₂ ⊢; lia
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Valid'.merge_aux {l r o₁ o₂} (hl : Valid' o₁ l o₂) (hr : Valid' o₁ r o₂)
     (sep : l.All fun x => r.All fun y => x < y) :
     Valid' o₁ (@merge α l r) o₂ ∧ size (merge l r) = size l + size r := by
@@ -484,8 +480,8 @@ theorem Valid'.merge_aux {l r o₁ o₂} (hl : Valid' o₁ l o₂) (hr : Valid' 
     exact Valid'.merge_aux₁ hl hr h v e
   · obtain ⟨v, e⟩ := IHlr hl.right (hr.of_gt hl.1.2.to_nil sep.2.1) sep.2.2
     have := Valid'.merge_aux₁ hr.dual hl.dual h_1 v.dual
-    rw [size_dual, add_comm, size_dual, ← dual_balanceR, ← Valid'.dual_iff, size_dual,
-      add_comm rs] at this
+    rw [size_dual, add_comm, size_dual, ← dual_balanceR, ← map_balanceR, ← Valid'.dual_iff,
+      size_dual, size_map, size_map, size_map, add_comm rs] at this
     exact this e
   · refine Valid'.glue_aux hl hr sep (Or.inr ⟨not_lt.1 h_1, not_lt.1 h⟩)
 
