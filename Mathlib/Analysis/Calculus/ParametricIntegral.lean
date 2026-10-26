@@ -276,17 +276,12 @@ theorem hasFDerivAt_integral_of_continuousOn_fderiv [TopologicalSpace α]
     (hF₃ : ContinuousOn (fun x ↦ fderiv 𝕜 (fun y ↦ F y x.2) x.1) (u ×ˢ k)) :
     HasFDerivAt (fun x => ∫ a in s, F x a ∂μ)
       (∫ a in s, fderiv 𝕜 (fun x ↦ F x a) x₀ ∂μ) x₀ := by
-  -- wlog shrink u to an open neighbourhood
-  wlog hu' : IsOpen u with h
-  · have ⟨u', hu'⟩ := _root_.mem_nhds_iff.1 hu
-    exact h (hu'.2.1.mem_nhds hu'.2.2) hk hs hs' hsk (hF₁.mono <| prod_mono_left hu'.1)
-      (fun a ha ↦ (hF₂ a ha).mono hu'.1) (hF₃.mono <| prod_mono_left hu'.1) hu'.2.1
   have hxu := mem_of_mem_nhds hu
   let F' := fun x : H × α ↦ ‖fderiv 𝕜 (fun y ↦ F y x.2) x.1‖
   have hF' : ContinuousOn F' _ := continuous_norm.comp_continuousOn hF₃
   -- via a compactness argument, find an `ε > 0` such that `F'` is bounded on `ball x₀ ε × k`
-  let ⟨ε, hε, hε', B, hB⟩ :
-      ∃ ε > 0, ball x₀ ε ⊆ u ∧ ∃ B, ∀ x ∈ ball x₀ ε ×ˢ k, F' x < B := by
+  let ⟨v, hxv, hvu, hv, B, hB⟩ :
+      ∃ v : Set H, x₀ ∈ v ∧ v ⊆ u ∧ IsOpen v ∧ ∃ B, ∀ x ∈ v ×ˢ k, F' x < B := by
     let ⟨B, hB⟩ := (isCompact_singleton.prod hk).bddAbove_image <|
       hF'.mono <| prod_mono_left <| singleton_subset_iff.2 hxu
     have ⟨v, hv, hv'⟩ := generalized_tube_lemma_left (s := {x₀}) isCompact_singleton
@@ -295,14 +290,13 @@ theorem hasFDerivAt_integral_of_continuousOn_fderiv [TopologicalSpace α]
           (t := Iic B) (u := Iio (B + 1)) <| isOpen_Iio.mem_nhdsSet.2 (by simp)
         intro x hx
         exact ⟨prod_mono_left (by simp [hxu]) hx, mem_upperBounds.1 hB _ <| mem_image_of_mem _ hx⟩)
-    rw [nhdsSetWithin_singleton, hu'.nhdsWithin_eq hxu] at hv
-    have ⟨ε, hε, hε'⟩ := Metric.mem_nhds_iff.1 (Filter.inter_mem hv (hu))
-    exact ⟨ε, hε, hε'.trans inter_subset_right, B + 1,
-      fun x hx ↦ hv' <| prod_mono_left (hε'.trans inter_subset_left) hx⟩
-  -- now apply `hasFDerivAt_integral_of_dominated_of_fderiv_le` with the obtained `ε` and bound
+    rw [nhdsSetWithin_singleton, nhdsWithin_eq_nhds.mpr hu] at hv
+    obtain ⟨w, hwuv, hw, hxw⟩ := _root_.mem_nhds_iff.mp <| Filter.inter_mem hu hv
+    exact ⟨w, hxw, hwuv.trans inter_subset_left, hw, B + 1,
+      fun x hx ↦ hv' <| prod_mono_left (hwuv.trans inter_subset_right) hx⟩
   apply hasFDerivAt_integral_of_dominated_of_fderiv_le (bound := fun _ ↦ B)
-    (F' := fun x a ↦ fderiv 𝕜 (fun x ↦ F x a) x) (ball_mem_nhds x₀ hε)
-  · refine eventually_nhds_iff.2 ⟨u, fun x hx ↦ ?_, hu', hxu⟩
+    (F' := fun x a ↦ fderiv 𝕜 (fun x ↦ F x a) x) (hv.mem_nhds hxv)
+  · refine eventually_of_mem hu fun x hx ↦ ?_
     apply (hF₁.uncurry_left _ hx).aestronglyMeasurable_of_subset_isCompact hk hs hsk
   · apply (hF₁.uncurry_left _ hxu).integrableOn_of_subset_isCompact hk hs hsk hs'
   · apply (hF₃.uncurry_left _ hxu).aestronglyMeasurable_of_subset_isCompact hk hs hsk
@@ -310,7 +304,7 @@ theorem hasFDerivAt_integral_of_continuousOn_fderiv [TopologicalSpace α]
   · apply integrableOn_const hs'
   · filter_upwards [ae_restrict_mem hs] with a ha x hx
     apply DifferentiableAt.hasFDerivAt
-    exact (hF₂ a (hsk ha) x (hε' hx)).differentiableAt (hu'.mem_nhds (hε' hx))
+    exact (hF₂ a (hsk ha) x (hvu hx)).differentiableAt (mem_nhds_iff.mpr ⟨_, hvu, hv, hx⟩)
 
 /-- A version of `hasFDerivAt_integral_of_continuousOn_fderiv` where `α` is required to be Hausdorff
 but `s` is not required to be measurable. -/
@@ -375,7 +369,7 @@ theorem hasFDerivAt_integral_of_contDiffOn {μ : Measure H'} {f : H → H' → E
 /-- Iterated differentiation under integral of `x ↦ ∫ F x a` on an open set `s`, assuming that each
 function `x ↦ F x a` has a Taylor series of order `n`, with uniform integrability conditions on
 the successive derivatives. -/
-theorem hasFTaylorSeriesOn_integral_of_le_bound {n : WithTop ℕ∞} {bound : ℕ → α → ℝ}
+theorem hasFTaylorSeriesUpToOn_integral_of_le_bound {n : WithTop ℕ∞} {bound : ℕ → α → ℝ}
     {p : H → α → FormalMultilinearSeries 𝕜 H E} (hs : IsOpen s)
     (hF_meas : ∀ x ∈ s, ∀ (i : ℕ), i ≤ n → AEStronglyMeasurable (p x · i) μ)
     (h_bound : ∀ᵐ a ∂μ, ∀ x ∈ s, ∀ (i : ℕ), i ≤ n → ‖p x a i‖ ≤ bound i a)
@@ -397,8 +391,6 @@ theorem hasFTaylorSeriesOn_integral_of_le_bound {n : WithTop ℕ∞} {bound : �
     change HasFDerivAt (fun x ↦ ∫ a, p x a i ∂μ)
       ((continuousMultilinearCurryLeftEquiv 𝕜 (fun i ↦ H) E).toContinuousLinearEquiv
         (∫ a, p x a i.succ ∂μ)) x
-    -- next line should not be necessary...
-    let A : NormedSpace ℝ (H →L[𝕜] (H [×i]→L[𝕜] E)) := ContinuousLinearMap.toNormedSpace
     rw [← ContinuousLinearEquiv.integral_comp_comm]
     have s_mem : s ∈ 𝓝 x := hs.mem_nhds hx
     apply hasFDerivAt_integral_of_dominated_of_fderiv_le (s := s) (bound := bound (i + 1)) s_mem
@@ -423,7 +415,7 @@ theorem hasFTaylorSeriesOn_integral_of_le_bound {n : WithTop ℕ∞} {bound : �
     · filter_upwards [h_diff] with a ha using ha.cont i hi
 
 open ContinuousMultilinearMap in
-theorem hasFTaylorSeriesOn_setIntegral_of_le_const
+theorem hasFTaylorSeriesUpToOn_setIntegral_of_le_const
     {n : WithTop ℕ∞} {C : ℕ → ℝ} {μ : Measure H'}
     {p : H × H' → FormalMultilinearSeries 𝕜 (H × H') E} (hs : IsOpen s)
     {t : Set H'} {F : H → H' → E} (ht : IsSeparable t) (tmeas : MeasurableSet t) (hmut : μ t ≠ ⊤)
@@ -432,7 +424,7 @@ theorem hasFTaylorSeriesOn_setIntegral_of_le_const
     HasFTaylorSeriesUpToOn n (fun x ↦ ∫ a in t, F x a ∂μ)
       (fun x i ↦ ∫ a in t, (p (x, a) i).compContinuousLinearMap
         (fun _ ↦ ContinuousLinearMap.inl 𝕜 H H') ∂μ) s := by
-  apply hasFTaylorSeriesOn_integral_of_le_bound hs (bound := fun i a ↦ C i * ∏ (j : Fin i), 1)
+  apply hasFTaylorSeriesUpToOn_integral_of_le_bound hs (bound := fun i a ↦ C i * ∏ (j : Fin i), 1)
   · intro x hx i hi
     apply ContinuousOn.aestronglyMeasurable_of_isSeparable ?_ tmeas ht
     apply Continuous.comp_continuousOn (g := compContinuousLinearMapL _) (by fun_prop)
@@ -470,7 +462,7 @@ lemma ContDiffOn.parametric_integral
     ContDiffOn 𝕜 n (fun x ↦ ∫ a in s₀, f x a ∂μ) u := by
   /- Locally, this is already proved in `hasFTaylorSeriesOn_setIntegral_of_le_const` (which moreover
   gives a formula for the successive derivatives). To globalize, one covers the compact set `k`
-  with finitely many sets on which the local property golds. Technically, this is more conveniently
+  with finitely many sets on which the local property holds. Technically, this is more conveniently
   done using the induction principle `IsCompact.induction_on` in which one only needs to check
   the property locally, and invariance under binary union. -/
   intro x hx
@@ -486,9 +478,9 @@ lemma ContDiffOn.parametric_integral
       exact mus₀.lt_top
     convert this using 3
     exact (Measure.restrict_inter_toMeasurable mus₀ hk.measurableSet hs₀).symm
-  apply IsCompact.induction_on (s := k)
+  apply hk.induction_on
     (p := fun s₀ ↦ ∃ s, k ∩ s₀ ⊆ s ∧ s ⊆ k ∧ MeasurableSet s ∧ ∀ t ⊆ s, MeasurableSet t →
-      μ t ≠ ⊤ → ContDiffWithinAt 𝕜 m (fun x ↦ ∫ a in t, f x a ∂μ) u x) hk
+      μ t ≠ ⊤ → ContDiffWithinAt 𝕜 m (fun x ↦ ∫ a in t, f x a ∂μ) u x)
   · simp only [inter_empty, empty_subset, true_and]
     exact ⟨∅, by simpa using contDiffWithinAt_const⟩
   · grind
@@ -547,8 +539,9 @@ lemma ContDiffOn.parametric_integral
   have : HasFTaylorSeriesUpToOn m (fun x ↦ ∫ a in t, f x a ∂μ)
       (fun x i ↦ ∫ a in t, (p (x, a) i).compContinuousLinearMap
         (fun _ ↦ ContinuousLinearMap.inl 𝕜 H H') ∂μ) u' := by
-    apply hasFTaylorSeriesOn_setIntegral_of_le_const u'_open (hk.isSeparable.mono (tk'.trans k'k))
-      tmeas hmut (hp.mono (by grind)) (C := fun i ↦ 1 + ‖p (x, y) i‖)
+    apply hasFTaylorSeriesUpToOn_setIntegral_of_le_const u'_open
+      (hk.isSeparable.mono (tk'.trans k'k)) tmeas hmut (hp.mono (by grind))
+        (C := fun i ↦ 1 + ‖p (x, y) i‖)
     intro x' hx' a ha i hi
     exact (hk'_bound i (mod_cast hi) (x', a) ⟨hx', tk' ha⟩).le
   apply ContDiffWithinAt.mono_of_mem_nhdsWithin ?_ (nhdsWithin_le_nhds u'_mem)

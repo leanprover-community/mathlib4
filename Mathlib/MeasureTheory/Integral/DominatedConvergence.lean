@@ -676,7 +676,7 @@ lemma _root_.ContinuousOn.parametric_intervalIntegral {u : Set X}
   · simp_rw [intervalIntegral.integral_symm b₀ a₀]
     exact (h (Set.uIcc_comm a₀ b₀ ▸ hf) (le_of_not_ge hab)).neg
   rw [Set.uIcc_of_le hab] at hf
-  rw [continuousOn_iff_continuous_restrict] at hf ⊢
+  rw [continuousOn_iff_continuous_domRestrict] at hf ⊢
   replace hf : Continuous (fun (x : u) (t : ℝ) ↦ f x (Set.projIcc _ _ hab t)).uncurry :=
     hf.comp (f := (Homeomorph.Set.prod u _).symm ∘ Prod.map id (Set.projIcc _ _ hab)) (by fun_prop)
   refine (intervalIntegral.continuous_parametric_intervalIntegral_of_continuous' hf a₀ b₀).congr
