@@ -173,7 +173,7 @@ def main():
         lakefile = PROJECT_DIR / "lakefile.lean"
         if lakefile.exists():
             content = lakefile.read_text()
-            pat = lakefile_pattern(option, args.value)
+            pat = lakefile_pattern(option)
             new_content = pat.sub("", content)
             if new_content != content:
                 if not args.dry_run:

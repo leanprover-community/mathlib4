@@ -535,6 +535,27 @@ theorem LinearIndependent.of_pairwise_dual_eq_zero_one (v : ι → M) (f : ι �
 
 end Module
 
+/-- A finite generating family `v` of `M` has a linearly independent subfamily whose span contains
+`a • M` for some `a ≠ 0`. -/
+theorem exists_linearIndepOn_smul_mem_span [CommRing R] [IsDomain R] [AddCommGroup M]
+    [Module R M] [Finite ι] {v : ι → M} (hs : Submodule.span R (Set.range v) = ⊤) :
+    ∃ s : Set ι, LinearIndepOn R v s ∧ ∃ a : R, a ≠ 0 ∧ ∀ m, a • m ∈ span R (v '' s) := by
+  classical
+  have := Fintype.ofFinite ι
+  obtain ⟨I, hI, h⟩ := exists_maximal_linearIndepOn R v
+  have (i : ι) : ∃ a : R, a ≠ 0 ∧ a • v i ∈ span R (v '' I) :=
+    if hi : i ∈ I then ⟨1, one_ne_zero, smul_mem _ 1 (subset_span (mem_image_of_mem v hi))⟩
+    else h i hi
+  choose a ha ha' using this
+  refine ⟨I, hI, ∏ i, a i, Finset.prod_ne_zero_iff.mpr fun i _ ↦ ha i, fun m ↦ ?_⟩
+  suffices span R (Set.range v) ≤ (span R (v '' I)).comap (LinearMap.lsmul R M (∏ i, a i)) from
+    this (hs ▸ mem_top)
+  rw [span_le]
+  rintro _ ⟨i, rfl⟩
+  rw [comap_coe, mem_preimage, LinearMap.lsmul_apply, SetLike.mem_coe,
+    ← Finset.prod_erase_mul _ _ (Finset.mem_univ i), mul_smul]
+  exact smul_mem _ _ (ha' i)
+
 open Finsupp in
 /-- A linearly independent family of vectors `f` remains linearly independent when we substitute one
 of the terms with a vector `m` provided there exists a non-zero divisor `r`, such that `r • m`
@@ -681,26 +702,17 @@ theorem linearIndependent_finCons {n} {v : Fin n → V} :
   rw [← linearIndependent_equiv (finSuccEquiv n).symm, linearIndependent_option]
   rfl
 
-@[deprecated (since := "2026-04-07")]
-alias linearIndependent_fin_cons := linearIndependent_finCons
-
 theorem linearIndependent_finSnoc {n} {v : Fin n → V} :
     LinearIndependent K (Fin.snoc v x : Fin (n + 1) → V) ↔
       LinearIndependent K v ∧ x ∉ Submodule.span K (range v) := by
   rw [Fin.snoc_eq_cons_rotate, ← Function.comp_def, linearIndependent_equiv,
     linearIndependent_finCons]
 
-@[deprecated (since := "2026-04-07")]
-alias linearIndependent_fin_snoc := linearIndependent_finSnoc
-
 /-- See `LinearIndependent.finCons'` for an uglier version that works if you
 only have a module over a semiring. -/
 theorem LinearIndependent.finCons {n} {v : Fin n → V} (hv : LinearIndependent K v)
     (hx : x ∉ Submodule.span K (range v)) : LinearIndependent K (Fin.cons x v : Fin (n + 1) → V) :=
   linearIndependent_finCons.2 ⟨hv, hx⟩
-
-@[deprecated (since := "2026-04-07")]
-alias LinearIndependent.fin_cons := LinearIndependent.finCons
 
 /-- See `LinearIndependent.finSnoc'` for an uglier version that works if you
 only have a module over a semiring, and `LinearIndependent.finSnoc_of_notMem_span_over` for a
@@ -741,15 +753,9 @@ theorem linearIndependent_finSucc {n} {v : Fin (n + 1) → V} :
       LinearIndependent K (Fin.tail v) ∧ v 0 ∉ Submodule.span K (range <| Fin.tail v) := by
   rw [← linearIndependent_finCons, Fin.cons_self_tail]
 
-@[deprecated (since := "2026-04-07")]
-alias linearIndependent_fin_succ := linearIndependent_finSucc
-
 theorem linearIndependent_finSucc' {n} {v : Fin (n + 1) → V} : LinearIndependent K v ↔
     LinearIndependent K (Fin.init v) ∧ v (Fin.last _) ∉ Submodule.span K (range <| Fin.init v) := by
   rw [← linearIndependent_finSnoc, Fin.snoc_init_self]
-
-@[deprecated (since := "2026-04-07")]
-alias linearIndependent_fin_succ' := linearIndependent_finSucc'
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Equivalence between `k + 1` vectors of length `n` and `k` vectors of length `n` along with a
