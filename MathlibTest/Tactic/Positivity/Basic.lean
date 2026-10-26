@@ -152,6 +152,10 @@ example (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ ite p a b := by positivity
 example (ha : 0 < a) (hb : b ≠ 0) : ite p a b ≠ 0 := by positivity
 example (ha : a ≠ 0) (hb : 0 < b) : ite p a b ≠ 0 := by positivity
 example (ha : a ≠ 0) (hb : b ≠ 0) : ite p a b ≠ 0 := by positivity
+example (x y : ℝ) : 0 ≤ ite p |x| |y| := by positivity
+example (x y : ℝ) (hx : 0 < x) (hy : 0 < y) : 0 < ite p x y := by positivity
+example {ι : Type*} [DecidableEq ι] (i j : ι) (x y z : ℝ) :
+    0 ≤ if j = i then |x| else max |y| |z| := by positivity
 
 end ite
 
