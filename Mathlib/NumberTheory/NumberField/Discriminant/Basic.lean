@@ -386,7 +386,7 @@ theorem minkowskiBound_lt_boundOfDiscBdd : minkowskiBound K ↑1 < boundOfDiscBd
 include hK in
 theorem natDegree_le_rankOfDiscrBdd (a : 𝓞 K) (h : ℚ⟮(a : K)⟯ = ⊤) :
     natDegree (minpoly ℤ (a : K)) ≤ rankOfDiscrBdd N := by
-  rw [Field.primitive_element_iff_minpoly_natDegree_eq,
+  rw [Field.primitive_element_iff_minpoly_natDegree_eq, RingOfIntegers.coe_eq_algebraMap,
     minpoly.isIntegrallyClosed_eq_field_fractions' ℚ a.isIntegral_coe,
     (minpoly.monic a.isIntegral_coe).natDegree_map] at h
   exact h.symm ▸ rank_le_rankOfDiscrBdd hK
@@ -420,8 +420,8 @@ theorem finite_of_discr_bdd_of_isReal :
     · rw [Set.mem_Icc, ← abs_le, ← @Int.cast_le ℝ]
       refine (Eq.trans_le ?_ <| Embeddings.coeff_bdd_of_norm_le
           ((le_iff_le (x : K) _).mp (fun w ↦ le_of_lt (hx₂ w))) i).trans ?_
-      · rw [minpoly.isIntegrallyClosed_eq_field_fractions' ℚ hx, coeff_map, eq_intCast,
-          Int.norm_cast_rat, Int.norm_eq_abs, Int.cast_abs]
+      · rw [RingOfIntegers.coe_eq_algebraMap, minpoly.isIntegrallyClosed_eq_field_fractions' ℚ hx,
+          coeff_map, eq_intCast, Int.norm_cast_rat, Int.norm_eq_abs, Int.cast_abs]
       · refine le_trans ?_ (Nat.le_ceil _)
         rw [show max ↑(max (B : ℝ≥0) 1) (1 : ℝ) = max (B : ℝ) 1 by simp, val_eq_coe, NNReal.coe_mul,
           NNReal.coe_pow, NNReal.coe_max, NNReal.coe_one, NNReal.coe_natCast]
@@ -468,8 +468,8 @@ theorem finite_of_discr_bdd_of_isComplex :
     · rw [Set.mem_Icc, ← abs_le, ← @Int.cast_le ℝ]
       refine (Eq.trans_le ?_ <| Embeddings.coeff_bdd_of_norm_le
           ((le_iff_le (x : K) _).mp (fun w ↦ le_of_lt (hx₂ w))) i).trans ?_
-      · rw [minpoly.isIntegrallyClosed_eq_field_fractions' ℚ hx, coeff_map, eq_intCast,
-          Int.norm_cast_rat, Int.norm_eq_abs, Int.cast_abs]
+      · rw [RingOfIntegers.coe_eq_algebraMap, minpoly.isIntegrallyClosed_eq_field_fractions' ℚ hx,
+          coeff_map, eq_intCast, Int.norm_cast_rat, Int.norm_eq_abs, Int.cast_abs]
       · refine le_trans ?_ (Nat.le_ceil _)
         rw [val_eq_coe, NNReal.coe_mul, NNReal.coe_pow, NNReal.coe_max, NNReal.coe_one,
           Real.coe_sqrt, NNReal.coe_add 1, NNReal.coe_one, NNReal.coe_pow]

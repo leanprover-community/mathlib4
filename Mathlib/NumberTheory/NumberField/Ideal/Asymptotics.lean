@@ -70,7 +70,8 @@ private def tendsto_norm_le_and_mk_eq_div_atTop_aux₂ :
   · rintro ⟨_, ⟨⟨hx₁, hx₂⟩, _, ⟨x, hx₃, rfl⟩, h⟩, rfl⟩
     exact ⟨⟨hx₁, x, hx₃, h⟩, hx₂⟩
   · rintro ⟨⟨hx₁, ⟨x, hx₂, rfl⟩⟩, hx₃⟩
-    exact ⟨(toMixed K).symm (mixedEmbedding K x), ⟨⟨hx₁, hx₃⟩, ⟨(x : K), by simp [hx₂], rfl⟩⟩, rfl⟩
+    exact ⟨(toMixed K).symm (mixedEmbedding K x), ⟨⟨hx₁, hx₃⟩, ⟨(x : K), by
+      simp [RingOfIntegers.coe_eq_algebraMap,hx₂], rfl⟩⟩, rfl⟩
 
 variable (C) in
 /--

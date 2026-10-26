@@ -273,7 +273,7 @@ lemma exists_nat_ne_zero_exists_integer_mul_eq_and_absNorm_span_eq_pow (x : K) :
   have ha : n * x = a := by
     refine mul_left_cancel₀ (mod_cast hm : (m : K) ≠ 0) ?_
     rw [mul_left_comm, ← nsmul_eq_mul m, hmr]
-    exact_mod_cast ha'.symm
+    exact congr(Subtype.val $ha').symm
   refine ⟨n, hn, a, ha, mul_left_cancel₀ hn ?_⟩
   nth_rewrite 1 [hndef]
   rw [absNorm_eq_index, mul_pow_sub_one finrank_pos.ne', ← RingOfIntegers.rank,
@@ -289,7 +289,8 @@ private lemma one_le_pow_totalWeight_mul_finprod {n : ℕ} (hn : n ≠ 0) (a : �
   gcongr
   · exact finprod_nonneg fun _ ↦ Real.iSup_nonneg_of_nonnegHomClass ..
   · exact Nat.le_of_dvd Hw <| absNorm_dvd_absNorm_of_le <| span_mono <| by simp
-  · apply le_of_eq; congr; ext; congr; ext i; fin_cases i <;> simp
+  · apply le_of_eq; congr; ext; congr; ext i; fin_cases i <;>
+      simp [RingOfIntegers.coe_eq_algebraMap]
 
 end withIdeal
 
@@ -358,10 +359,10 @@ lemma finite_setOfPred_prod_infinitePlace_iSup_le {n : ℕ} (hn : n ≠ 0) (B : 
   suffices Set.BijOn ((↑) : 𝓞 K → K) {x | ∀ (v : InfinitePlace K), v x ≤ B'}
       {x | IsIntegral ℤ x ∧ ∀ (φ : K →+* ℂ), ‖φ x‖ ≤ B'} from
     this.finite_iff_finite.mpr (Embeddings.finite_of_norm_le K ℂ B') |>.subset
-      fun _ _ ↦ by grind [infinitePlace_apply_le_of_prod_le hn B]
+      fun _ h ↦ by grind [infinitePlace_apply_le_of_prod_le hn B h]
   refine .mk (fun x hx ↦ ?_) (fun _ _ _ _ ↦ RingOfIntegers.ext) fun a ha ↦ ?_ <;>
     simp only [Set.mem_image, Set.mem_ofPred_eq] at *
-  · exact ⟨x.isIntegral_coe, fun φ ↦ hx <| .mk φ⟩
+  · exact ⟨x.2, fun φ ↦ hx <| .mk φ⟩
   · rw [← mem_integralClosure_iff ℤ K] at ha
     exact ⟨⟨a, ha.1⟩, fun v ↦ v.norm_embedding_eq a ▸ ha.2 v.embedding, rfl⟩
 

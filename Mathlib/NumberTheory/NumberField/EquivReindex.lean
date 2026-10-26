@@ -76,7 +76,8 @@ theorem inverse_basisMatrix_mulVec_eq_repr [DecidableEq (K →+* ℂ)] (α : �
     ∀ i, ((basisMatrix K).transpose)⁻¹.mulVec (fun j =>
       canonicalEmbedding K (algebraMap (𝓞 K) K α) j) i =
       ((integralBasis K).reindex (equivReindex K).symm).repr α i := fun i => by
-  rw [inv_mulVec_eq_vec (canonicalEmbedding_eq_basisMatrix_mulVec ((algebraMap (𝓞 K) K) α))]
+  rw [inv_mulVec_eq_vec (canonicalEmbedding_eq_basisMatrix_mulVec ((algebraMap (𝓞 K) K) α)),
+    ← RingOfIntegers.coe_eq_algebraMap]
 
 end
 

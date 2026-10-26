@@ -304,7 +304,6 @@ theorem inertiaDeg_eq_of_not_dvd (hm : ¬ p ∣ m) :
   · refine dvd_trans (monicFactorsMod_dvd_map_minpoly _) ?_
     rw [← map_cyclotomic_int, cyclotomic_eq_minpoly (zeta_spec m ℚ K) (NeZero.pos _),
       ← (zeta_spec m ℚ K).coe_toInteger, ← RingOfIntegers.minpoly_coe ζ]
-    simp [ζ]
   · exact irreducible_monicFactorsMod _
 
 theorem ramificationIdx_eq_of_not_dvd (hm : ¬ p ∣ m) :

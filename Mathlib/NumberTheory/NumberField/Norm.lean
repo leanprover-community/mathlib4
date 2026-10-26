@@ -83,7 +83,7 @@ theorem dvd_norm [FiniteDimensional K L] [IsGalois K L] (x : 𝓞 L) :
   refine ⟨⟨_, hint⟩, ?_⟩
   ext
   rw [coe_algebraMap_norm K x, norm_eq_prod_automorphisms]
-  simp [← Finset.mul_prod_erase _ _ (mem_univ AlgEquiv.refl)]
+  simp [← Finset.mul_prod_erase _ _ (mem_univ AlgEquiv.refl), Subalgebra.coe_mul _]
 
 theorem isUnit_norm_of_isGalois [FiniteDimensional K L] [IsGalois K L] {x : 𝓞 L} :
     IsUnit (norm K x) ↔ IsUnit x :=

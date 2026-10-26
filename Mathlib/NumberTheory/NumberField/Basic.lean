@@ -98,7 +98,7 @@ much more effective use of the discrimination tree than instances of the form
 `SMul (Subtype _) (Subtype _)`.
 The drawback is we have to copy over instances manually.
 -/
-@[wikidata Q1358313]
+@[wikidata Q1358313, implicit_reducible]
 def RingOfIntegers : Type _ :=
   integralClosure ℤ K
 deriving CommRing, IsDomain, Nontrivial
@@ -118,7 +118,6 @@ instance : Algebra (𝓞 K) K := inferInstanceAs _
 instance : IsTorsionFree (𝓞 K) K :=
   inferInstanceAs (IsTorsionFree (integralClosure _ _) _)
 
-
 instance {L : Type*} [Ring L] [Algebra K L] : IsScalarTower (𝓞 K) K L :=
   inferInstanceAs (IsScalarTower (integralClosure _ _) K L)
 
@@ -134,12 +133,8 @@ example : instAlgebra (L := K) (K := K) = instAlgebra_1 (K := K) := by
 
 variable {K}
 
-/-- The canonical coercion from `𝓞 K` to `K`. -/
-@[coe]
-abbrev val (x : 𝓞 K) : K := algebraMap _ _ x
-
 /-- This instance has to be `CoeHead` because we only want to apply it from `𝓞 K` to `K`. -/
-instance : CoeHead (𝓞 K) K := ⟨val⟩
+instance : CoeHead (𝓞 K) K := ⟨Subtype.val⟩
 
 lemma coe_eq_algebraMap (x : 𝓞 K) : (x : K) = algebraMap _ _ x := rfl
 
@@ -156,12 +151,7 @@ lemma coe_mk {x : K} (hx) : ((⟨x, hx⟩ : 𝓞 K) : K) = x := rfl
 
 lemma mk_eq_mk (x y : K) (hx hy) : (⟨x, hx⟩ : 𝓞 K) = ⟨y, hy⟩ ↔ x = y := by simp
 
-@[simp] lemma mk_one : (⟨1, one_mem _⟩ : 𝓞 K) = 1 :=
-  rfl
-
-@[simp] lemma mk_zero : (⟨0, zero_mem _⟩ : 𝓞 K) = 0 :=
-  rfl
--- TODO: these lemmas don't seem to fire?
+-- -- TODO: these lemmas don't seem to fire?
 @[simp] lemma mk_add_mk (x y : K) (hx hy) : (⟨x, hx⟩ : 𝓞 K) + ⟨y, hy⟩ = ⟨x + y, add_mem hx hy⟩ :=
   rfl
 
@@ -174,15 +164,14 @@ lemma mk_eq_mk (x y : K) (hx hy) : (⟨x, hx⟩ : 𝓞 K) = ⟨y, hy⟩ ↔ x = 
 @[simp] lemma neg_mk (x : K) (hx) : (-⟨x, hx⟩ : 𝓞 K) = ⟨-x, neg_mem hx⟩ :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The ring homomorphism `(𝓞 K) →+* (𝓞 L)` given by restricting a ring homomorphism
   `f : K →+* L` to `𝓞 K`. -/
 def mapRingHom {K L : Type*} [Field K] [Field L] (f : K →+* L) : (𝓞 K) →+* (𝓞 L) where
   toFun k := ⟨f k.val, map_isIntegral_int f k.2⟩
-  map_zero' := by ext; simp only [map_mk, map_zero]
-  map_one' := by ext; simp only [map_mk, map_one]
-  map_add' x y := by ext; simp only [map_mk, map_add]
-  map_mul' x y := by ext; simp only [map_mk, map_mul]
+  map_zero' := by ext; simp
+  map_one' := by ext; simp
+  map_add' x y := by ext; simp [Subalgebra.coe_add _]
+  map_mul' x y := by ext; simp [Subalgebra.coe_mul _]
 
 @[simp]
 theorem mapRingHom_apply {K L : Type*} [Field K] [Field L] (f : K →+* L) (x : 𝓞 K) :
@@ -376,8 +365,7 @@ instance extension_isNoetherian [NumberField K] [NumberField L] : IsNoetherian (
 theorem ker_algebraMap_eq_bot : RingHom.ker (algebraMap (𝓞 K) (𝓞 L)) = ⊥ :=
   (RingHom.ker_eq_bot_iff_eq_zero (algebraMap (𝓞 K) (𝓞 L))).mpr <| fun x hx => by
   have h : (algebraMap K L) x = (algebraMap (𝓞 K) (𝓞 L)) x := rfl
-  simp only [hx, map_zero, map_eq_zero, RingOfIntegers.coe_eq_zero_iff] at h
-  exact h
+  simpa [hx, map_zero, RingOfIntegers.coe_eq_zero_iff] using h
 
 /-- The algebraMap between ring of integers is injective. -/
 theorem algebraMap.injective : Function.Injective (algebraMap (𝓞 K) (𝓞 L)) :=

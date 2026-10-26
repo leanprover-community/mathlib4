@@ -78,20 +78,19 @@ theorem Units.mem [NumberField K] [IsCyclotomicExtension {3} ℚ K] :
     · right; ext; exact h
   fin_cases hr <;> rcases hru with h | h <;> simp [h]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- We have that `λ ^ 2 = -3 * η`. -/
 private lemma lambda_sq : λ ^ 2 = -3 * η := by
   ext
   calc (λ ^ 2 : K) = η ^ 2 + η + 1 - 3 * η := by
-        simp only [IsUnit.unit_spec]; ring
-  _ = 0 - 3 * η := by simpa using hζ.isRoot_cyclotomic (by decide)
+        simp only [IsUnit.unit_spec, ← RingOfIntegers.coe_eq_algebraMap]; ring
+  _ = 0 - 3 * η := by simpa [← RingOfIntegers.coe_eq_algebraMap] using
+    hζ.isRoot_cyclotomic (by decide)
   _ = -3 * η := by ring
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- We have that `η ^ 2 = -η - 1`. -/
 lemma eta_sq : (η ^ 2 : 𝓞 K) = -η - 1 := by
   rw [← neg_add', ← add_eq_zero_iff_eq_neg, ← add_assoc]
-  ext; simpa using hζ.isRoot_cyclotomic (by decide)
+  ext; simpa [Subalgebra.coe_add _, Subalgebra.coe_pow _] using hζ.isRoot_cyclotomic (by decide)
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- If a unit `u` is congruent to an integer modulo `λ ^ 2`, then `u = 1` or `u = -1`.
@@ -121,7 +120,8 @@ theorem eq_one_or_neg_one_of_unit_of_congruent
       (by decide)
     obtain ⟨n, x, hx⟩ := hcong
     refine ⟨-n, -x, sub_eq_iff_eq_add.2 ?_⟩
-    have : (hζ.pow_of_coprime 2 (by decide)).toInteger = hζ.toInteger ^ 2 := by ext; simp
+    have : (hζ.pow_of_coprime 2 (by decide)).toInteger = hζ.toInteger ^ 2 := by
+      ext; simp [Subalgebra.coe_pow _]
     simp only [this, Nat.cast_ofNat, mul_neg, Int.cast_neg, ← neg_add, ← sub_eq_iff_eq_add.1 hx,
       Units.val_neg, val_pow_eq_pow_val, IsUnit.unit_spec, neg_neg]
 
