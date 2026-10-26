@@ -113,7 +113,8 @@ theorem mem_polar_singleton {x : E} (y : F) : y ∈ B.polar {x} ↔ ‖B x y‖ 
   simp only [polar_singleton, Set.mem_ofPred_eq]
 
 theorem polar_zero : B.polar ({0} : Set E) = Set.univ := by
-  simp only [polar_singleton, map_zero, zero_apply, norm_zero, zero_le_one, Set.ofPred_true]
+  simp only [polar_singleton, map_zero, LinearMap.zero_apply, norm_zero, zero_le_one,
+    Set.ofPred_true]
 
 theorem subset_bipolar (s : Set E) : s ⊆ B.flip.polar (B.polar s) := fun x hx y hy => by
   rw [B.flip_apply]

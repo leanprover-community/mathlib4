@@ -301,7 +301,7 @@ theorem coe_finsupp_sum (t : ι →₀ γ) (g : ι → γ → M →ₛₗ[σ₁�
 @[simp]
 theorem finsupp_sum_apply (t : ι →₀ γ) (g : ι → γ → M →ₛₗ[σ₁₂] M₂) (b : M) :
     (t.sum g) b = t.sum fun i d => g i d b :=
-  sum_apply _ _ _
+  LinearMap.sum_apply _ _ _
 
 end Finsupp
 
