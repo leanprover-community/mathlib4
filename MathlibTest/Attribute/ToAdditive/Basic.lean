@@ -154,6 +154,7 @@ def foo4 {α : Type u} : Type v → Type (max u v) := @my_has_pow α
 lemma foo4_test {α β : Type u} : @foo4 α β = @my_has_pow α β := (rfl)
 
 set_option linter.defProp false in
+set_option linter.concreteInstances false in
 @[to_additive bar5]
 def foo5 {α} [my_has_pow α ℕ] [my_has_pow ℕ ℤ] : True := True.intro
 
@@ -692,22 +693,31 @@ def fooMul {α β : Type} (_ : (no_index Add) α) [Mul β] (x y : β) : β := x 
 def barMul {β : Type} [Mul β] (x y : β) : β := fooMul instAddNat x y
 
 /-! Test that additive docstrings work -/
+section doc
 
-/--
-warning: `to_additive` did not change the type of theorem `mulTrivial`. Please remove the attribute.
+set_option linter.translate.redundant false
 
-Note: This linter can be disabled with `set_option linter.translate.redundant false`
--/
-#guard_msgs in
+/-- I am a multiplicative docstring! -/
 @[to_additive /-- I am an additive docstring! -/]
 theorem mulTrivial : True := trivial
 
-/-- info: I am an additive docstring! -/
+@[to_additive (attr := inherit_doc mulTrivial)]
+theorem mulTrivial' : True := trivial
+
+/--
+info: some (I am an additive docstring!)
+---
+info: some (I am a multiplicative docstring!)
+---
+info: some (I am an additive docstring!)
+-/
 #guard_msgs in
 run_cmd
-  let some doc ← findDocString? (← getEnv) ``addTrivial
-    | throwError "no docstring found"
-  logInfo doc
+  logInfo m!"{← findDocString? (← getEnv) ``addTrivial}"
+  logInfo m!"{← findDocString? (← getEnv) ``mulTrivial'}"
+  logInfo m!"{← findDocString? (← getEnv) ``addTrivial'}"
+
+end doc
 
 /-! Test handling of noncomputability -/
 

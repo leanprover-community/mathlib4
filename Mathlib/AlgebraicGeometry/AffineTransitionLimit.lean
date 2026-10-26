@@ -954,8 +954,6 @@ include hc in
 lemma nonempty_isColimit_Γ_mapCocone [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
     [∀ i, CompactSpace (D.obj i)] [∀ i, QuasiSeparatedSpace (D.obj i)] :
     Nonempty (IsColimit (Scheme.Γ.mapCocone c.op)) := by
-  have : ReflectsFilteredColimits (forget CommRingCat) :=
-    ⟨fun _ ↦ reflectsColimitsOfShape_of_reflectsIsomorphisms⟩
   refine ReflectsColimit.reflects (F := forget _) (Types.FilteredColimit.isColimitOf' _ _ ?_ ?_)
   · exact fun s ↦ ⟨.op _, (exists_appTop_π_eq_of_isLimit D c hc s).choose_spec⟩
   · exact fun i s t e ↦ ⟨_, Quiver.Hom.op _,
