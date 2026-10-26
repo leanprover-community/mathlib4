@@ -53,13 +53,7 @@ public lemma convexOn_ringInverse :
     by_cases ha' : a = 0
     · have hb' : b = 1 := by grind
       simp only [ha', hb', one_mul, zero_add, gt_iff_lt]
-      #adaptation_note /-- Before nightly-2026-06-04, this was just `grind.
-      `spectrum_pos` is not activating in `grind` despite the
-      ```
-      grind_pattern IsStrictlyPositive.spectrum_pos => x ∈ spectrum 𝕜 a, IsStrictlyPositive a
-      ```
-      rule, because `grind` will not fill in the `𝕜 := ℝ`. -/
-      exact zpos.spectrum_pos hr
+      grind
     · grind [add_pos_of_pos_of_nonneg, mul_nonneg]
   have h₂ : (a • 1 + b • z ^ (-1 : ℝ)) = cfc (fun r => (a + b * r ^ (-1 : ℝ))) z := by
     rw [CFC.rpow_eq_cfc_real zpos.nonneg]

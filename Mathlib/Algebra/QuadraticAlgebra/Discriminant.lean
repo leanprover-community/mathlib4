@@ -173,9 +173,7 @@ theorem nonempty_algEquiv_int_iff {a b a' b' : ℤ} :
       discr a b = discr a' b' := by
   rw [nonempty_algEquiv_iff (IsRegular.of_ne_zero two_ne_zero)]
   refine ⟨fun ⟨u, hu, _⟩ ↦ by rwa [Int.isUnit_sq u.isUnit, one_mul] at hu, fun h ↦ ?_⟩
-  obtain _ | _ : 2 ∣ (b + b') ∨ 2 ∣ (b - b') := by
-    rw [← Prime.dvd_mul Int.prime_two, ← sq_sub_sq]
-    grind [discr]
+  obtain _ | _ : 2 ∣ (b + b') ∨ 2 ∣ (b - b') := Int.prime_two.dvd_mul.mp <| by grind [discr]
   · exact ⟨-1, by simpa, by simpa⟩
   · exact ⟨1, by simpa, by simpa⟩
 

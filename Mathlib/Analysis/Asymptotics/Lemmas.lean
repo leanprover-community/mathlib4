@@ -454,12 +454,9 @@ variable {𝕜 : Type*} [NormedField 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRi
   {l : Filter α} {f g : α → 𝕜}
 
 theorem IsLittleO.of_tendsto_div_atTop (h : Tendsto (fun x ↦ g x / f x) l atTop) : f =o[l] g := by
-  apply Asymptotics.isLittleO_of_tendsto'
-  · apply (Filter.Tendsto.eventually_ge_atTop h 1).mono
-    intro x h h0
-    grind
-  · convert! Tendsto.comp tendsto_inv_atTop_zero h
-    simp
+  refine isLittleO_of_tendsto' ((h.eventually_ge_atTop 1).mono (by grind)) ?_
+  convert tendsto_inv_atTop_zero.comp h
+  simp
 
 theorem IsLittleO.of_tendsto_div_atBot (h : Tendsto (fun x ↦ g x / f x) l atBot) : f =o[l] g := by
   refine IsLittleO.of_neg_left (IsLittleO.of_tendsto_div_atTop ?_)

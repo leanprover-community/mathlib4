@@ -84,11 +84,7 @@ variable {p} in
 @[simp, grind =]
 theorem find?_eq_none_iff {s : Multiset α} (hp) :
     s.find? p hp = none ↔ ∀ a ∈ s, ¬ p a := by
-  induction s using Multiset.induction_on with
-  | empty => simp
-  | cons x s ih =>
-    rw [find?_cons]
-    grind
+  induction s using Multiset.induction_on <;> grind [find?_zero, find?_cons]
 
 /-- If two predicates agree on all the elements, so does `find?`. -/
 @[congr]
