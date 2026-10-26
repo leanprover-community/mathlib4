@@ -53,8 +53,7 @@ def isLimitProdCone (X Y : Preord.{u}) : IsLimit (prodCone X Y) := by
   exacts [congr($h₁ _), congr($h₂ _)]
 
 /-- The category of preorders has `X × Y`, the usual Cartesian product,
-as the binary product of `X` and `Y`.
--/
+as the binary product of `X` and `Y`. -/
 def binaryProductLimitCone (X Y : Preord.{u}) : LimitCone (pair X Y) :=
   ⟨prodCone X Y, isLimitProdCone X Y⟩
 
