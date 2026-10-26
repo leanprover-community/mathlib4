@@ -624,8 +624,8 @@ lemma row_of (f : m → n → α) : (of f).row = f := rfl
 @[simp]
 theorem col_of (f : m → n → α) : (of f).col = Function.swap f := rfl
 
-@[deprecated "by simp" (since := "2026-10-23")]
-lemma of_col (f : m → n → α) : (of f)ᵀ.col = f := by simp
+@[deprecated "by dsimp" (since := "2026-10-23")]
+lemma of_col (f : m → n → α) : (of f)ᵀ.col = f := by dsimp
 
 lemma row_def (A : Matrix m n α) : A.row = fun i ↦ A i := rfl
 
@@ -693,8 +693,8 @@ theorem row_zero [Zero α] : (0 : Matrix m n α).row = 0 := rfl
 @[simp]
 theorem col_zero [Zero α] : (0 : Matrix m n α).col = 0 := rfl
 
-@[deprecated "by simp" (since := "2026-10-23")]
-theorem of_symm_zero [Zero α] : of.symm (0 : Matrix m n α) = (0 : m → n → α) := by simp
+@[deprecated "by dsimp" (since := "2026-10-23")]
+theorem of_symm_zero [Zero α] : of.symm (0 : Matrix m n α) = (0 : m → n → α) := by dsimp
 
 @[simp, push]
 theorem row_add [Add α] (A B : Matrix m n α) : (A + B).row = A.row + B.row := rfl
@@ -742,8 +742,8 @@ lemma row_transpose (A : Matrix m n α) : Aᵀ.row = A.col := rfl
 @[simp]
 lemma col_transpose (A : Matrix m n α) : Aᵀ.col = A.row := rfl
 
-@[deprecated "by simp" (since := "2026-10-23")]
-lemma col_eq_transpose (A : Matrix m n α) : A.col = of.symm Aᵀ := by simp
+@[deprecated "by dsimp" (since := "2026-10-23")]
+lemma col_eq_transpose (A : Matrix m n α) : A.col = of.symm Aᵀ := by dsimp
 
 end RowCol
 
