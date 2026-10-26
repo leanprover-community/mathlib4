@@ -26,31 +26,35 @@ namespace SimpleGraph
 variable {V W : Type*} {G : SimpleGraph V} {H : SimpleGraph W}
 
 /-- A graph is vertex-transitive if every two vertices are related by an automorphism. -/
+@[wikidata Q220997]
 def IsVertexTransitive (G : SimpleGraph V) : Prop :=
   ∀ v w, ∃ f : G ≃g G, f v = w
 
 /-- A graph is edge-transitive if every two edges are related by an automorphism. -/
+@[wikidata Q4391289]
 def IsEdgeTransitive (G : SimpleGraph V) : Prop :=
   ∀ ⦃e₁ e₂⦄, e₁ ∈ G.edgeSet → e₂ ∈ G.edgeSet → ∃ f : G ≃g G, e₁.map f = e₂
 
 /-- A graph is symmetric (aka arc-transitive or flag-transitive) if every two darts are related
 by an automorphism. -/
+@[wikidata Q1205074]
 def IsSymmetric (G : SimpleGraph V) : Prop :=
   ∀ d₁ d₂ : G.Dart, ∃ f : G ≃g G, f d₁.fst = d₂.fst ∧ f d₁.snd = d₂.snd
 
-lemma IsVertexTransitive.iso (vt : G.IsVertexTransitive) (f : G ≃g H) : H.IsVertexTransitive := by
-  intro v w
+protected lemma IsVertexTransitive.congr (vt : G.IsVertexTransitive) (f : G ≃g H) :
+    H.IsVertexTransitive := fun v w ↦ by
   obtain ⟨g, hg⟩ := vt (f.symm v) (f.symm w)
   exact ⟨(f.symm.trans g).trans f, by simp_all⟩
 
-lemma IsEdgeTransitive.iso (et : G.IsEdgeTransitive) (f : G ≃g H) : H.IsEdgeTransitive := by
-  intro e₁ e₂ me₁ me₂
+protected lemma IsEdgeTransitive.congr (et : G.IsEdgeTransitive) (f : G ≃g H) :
+    H.IsEdgeTransitive := fun e₁ e₂ me₁ me₂ ↦ by
   rw [← f.symm.map_mem_edgeSet_iff] at me₁ me₂
   obtain ⟨g, hg⟩ := et me₁ me₂
   apply_fun Sym2.map f at hg
   exact ⟨(f.symm.trans g).trans f, by simp_all [Sym2.map_map]⟩
 
-lemma IsSymmetric.iso (sym : G.IsSymmetric) (f : G ≃g H) : H.IsSymmetric := fun d₁ d₂ ↦ by
+protected lemma IsSymmetric.congr (sym : G.IsSymmetric) (f : G ≃g H) :
+    H.IsSymmetric := fun d₁ d₂ ↦ by
   obtain ⟨g, hg⟩ :=
     sym ⟨(_, _), f.symm.map_adj_iff.mpr d₁.adj⟩ ⟨(_, _), f.symm.map_adj_iff.mpr d₂.adj⟩
   exact ⟨(f.symm.trans g).trans f, ⟨by simp [congr(f $(hg.1))], by simp [congr(f $(hg.2))]⟩⟩
@@ -73,18 +77,19 @@ lemma IsSymmetric.isEdgeTransitive (sym : G.IsSymmetric) : G.IsEdgeTransitive :=
   exact ⟨f, by simp_all⟩
 
 variable (V) in
-lemma isSymmetric_bot : (⊥ : SimpleGraph V).IsSymmetric := fun d₁ d₂ ↦ by simpa using d₁.adj
+protected lemma IsSymmetric.bot : (⊥ : SimpleGraph V).IsSymmetric := fun d₁ d₂ ↦ by
+  simpa using d₁.adj
 
 variable (V) in
-lemma isVertexTransitive_bot : (⊥ : SimpleGraph V).IsVertexTransitive := fun v w ↦ by
+protected lemma IsVertexTransitive.bot : (⊥ : SimpleGraph V).IsVertexTransitive := fun v w ↦ by
   classical exact ⟨⟨Equiv.swap v w, by simp⟩, by simp⟩
 
 variable (V) in
-lemma isEdgeTransitive_bot : (⊥ : SimpleGraph V).IsEdgeTransitive :=
-  (isSymmetric_bot V).isEdgeTransitive
+protected lemma IsEdgeTransitive.bot : (⊥ : SimpleGraph V).IsEdgeTransitive :=
+  (IsSymmetric.bot V).isEdgeTransitive
 
 variable (V) in
-lemma isSymmetric_top : (⊤ : SimpleGraph V).IsSymmetric := fun d₁ d₂ ↦ by
+protected lemma IsSymmetric.top : (⊤ : SimpleGraph V).IsSymmetric := fun d₁ d₂ ↦ by
   classical
   by_cases h₁ : d₁.fst ≠ d₂.snd
   · exact ⟨⟨(Equiv.swap d₁.snd d₂.snd).trans (Equiv.swap d₁.fst d₂.fst), by simp⟩, by
@@ -95,14 +100,14 @@ lemma isSymmetric_top : (⊤ : SimpleGraph V).IsSymmetric := fun d₁ d₂ ↦ b
   exact ⟨⟨Equiv.swap d₁.fst d₂.fst, by simp⟩, by simp_all⟩
 
 variable (V) in
-lemma isVertexTransitive_top : (⊤ : SimpleGraph V).IsVertexTransitive := fun v w ↦ by
+protected lemma IsVertexTransitive.top : (⊤ : SimpleGraph V).IsVertexTransitive := fun v w ↦ by
   classical exact ⟨⟨Equiv.swap v w, by simp⟩, by simp⟩
 
 variable (V) in
-lemma isEdgeTransitive_top : (⊤ : SimpleGraph V).IsEdgeTransitive :=
-  (isSymmetric_top V).isEdgeTransitive
+protected lemma IsEdgeTransitive.top : (⊤ : SimpleGraph V).IsEdgeTransitive :=
+  (IsSymmetric.top V).isEdgeTransitive
 
-lemma isBipartiteWith_of_edge_not_vertex_transitive (et : G.IsEdgeTransitive)
+lemma IsEdgeTransitive.isBipartiteWith_of_not_isVertexTransitive (et : G.IsEdgeTransitive)
     (nvt : ¬G.IsVertexTransitive) (ni : ∀ v, ¬G.IsIsolated v) {v w : V} (ha : G.Adj v w) :
     G.IsBipartiteWith (.range fun f : G ≃g G ↦ f v) (.range fun f : G ≃g G ↦ f w) := by
   set Ov : Set V := .range fun f : G ≃g G ↦ f v
@@ -127,20 +132,21 @@ lemma isBipartiteWith_of_edge_not_vertex_transitive (et : G.IsEdgeTransitive)
   · exact ⟨fa.symm.trans fb, by simp_all [← RelIso.eq_symm_apply]⟩
 
 /-- An edge- but not vertex-transitive graph with no isolated vertices is bipartite. -/
-theorem isBipartite_of_edge_not_vertex_transitive
+theorem IsEdgeTransitive.isBipartite_of_not_IsVertexTransitive
     (et : G.IsEdgeTransitive) (nvt : ¬G.IsVertexTransitive) (ni : ∀ v, ¬G.IsIsolated v) :
     G.IsBipartite := by
   obtain _ | ⟨⟨e, me⟩⟩ := G.edgeSet.eq_empty_or_nonempty
   · simp_all [IsBipartite.bot]
   · cases e using Sym2.inductionOn
-    exact (isBipartiteWith_of_edge_not_vertex_transitive et nvt ni me).isBipartite
+    exact (et.isBipartiteWith_of_not_isVertexTransitive nvt ni me).isBipartite
 
 open Finset in
 /-- A finite vertex- and edge-transitive graph with an odd-degree vertex is symmetric.
-The finiteness condition is necessary [thomassenwatkins1989]. -/
-theorem isSymmetric_of_transitive_of_odd_degree [Fintype V] [DecidableRel G.Adj]
-    (vt : G.IsVertexTransitive) (et : G.IsEdgeTransitive) {v : V} (dv : Odd (G.degree v)) :
+The finiteness condition is necessary ([thomassenwatkins1989], p. 260). -/
+theorem IsEdgeTransitive.isSymmetric_of_exists_odd_degree [Finite V] (vt : G.IsVertexTransitive)
+    (et : G.IsEdgeTransitive) (dv : ∃ (v : V) (_ : Fintype (G.neighborSet v)), Odd (G.degree v)) :
     G.IsSymmetric := by
+  obtain ⟨v, _, dv⟩ := dv
   obtain ⟨w, hvw⟩ := (G.degree_pos_iff_exists_adj v).mp dv.pos
   contrapose dv with nsym
   -- If `G` is not symmetric, the orbit of the dart `v → w` under `G`'s automorphism group
@@ -165,6 +171,7 @@ theorem isSymmetric_of_transitive_of_odd_degree [Fintype V] [DecidableRel G.Adj]
     all_goals exact ⟨(f₁.symm.trans f).trans (g.symm.trans f₂), by
       simp [fv, fw, ← gv, ← gw, ← f₁v, ← f₁w, f₂v, f₂w]⟩
   classical
+  have _ : Fintype V := Fintype.ofFinite _
   -- By vertex-transitivity and the handshaking lemma, `v`'s indegree and outdegree are equal
   -- in the orientation, so it has even degree in `G`. Contradiction.
   let O (a) : Finset V := {x | R a x}
