@@ -75,9 +75,7 @@ theorem iInf_colon_iUnion (ι₁ : Sort*) (f : ι₁ → Submodule R M) (ι₂ :
 
 /-- If `S ⊆ N₂`, then intersecting with `N₂` does not change the colon ideal. -/
 lemma colon_inf_eq_left_of_subset (h : S ⊆ (N₂ : Set M)) : (N₁ ⊓ N₂).colon S = N₁.colon S := by
-  grind [membership,
-    (SetLike.ext_iff (p := (N₁ ⊓ N₂).colon S) (q := N₁.colon S)), mem_colon,
-    Submodule.mem_inf, SetLike.mem_coe]
+  aesop (add safe SMulMemClass.smul_mem, simp [mem_colon]) -- membership not used: code style
 
 @[simp]
 lemma colon_eq_top_iff_subset : N.colon S = ⊤ ↔ S ⊆ N := by
