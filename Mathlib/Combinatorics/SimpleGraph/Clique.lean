@@ -764,6 +764,13 @@ theorem Iso.image_map_cliqueSet {G' : SimpleGraph β} (f : G ≃g G') (n : ℕ) 
     exact ⟨by simpa using h.isClique.image f.toHom, by simpa using h.card_eq⟩
   · exact ⟨by simpa using h.isClique.image f.symm.toHom, by simpa using h.card_eq⟩
 
+theorem IsNClique.map_copy {G' : SimpleGraph β} (f : Copy G G') (h : G.IsNClique n s) :
+    G'.IsNClique n (s.map f.toEmbedding) := by
+  constructor
+  · rw [coe_map]
+    exact h.isClique.image f.toHom
+  · exact (card_map _).trans h.card_eq
+
 end CliqueSet
 
 /-! ### Clique number -/
