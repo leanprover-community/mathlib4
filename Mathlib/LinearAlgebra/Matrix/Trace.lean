@@ -183,7 +183,7 @@ theorem trace_mul_pow_comm [CommSemiring R] [DecidableEq n] (A B : Matrix n n R)
     trace ((A * B) ^ k) = trace ((B * A) ^ k) :=
   match k with
   | 0 => rfl
-  | k + 1 => trace_mul_pow_comm' A B k.succ_ne_zero
+  | k + 1 => trace_mul_pow_comm' A B k.add_one_ne_zero
 
 @[simp]
 theorem trace_replicateCol_mul_replicateRow {ι : Type*} [Unique ι] [NonUnitalNonAssocSemiring R]
