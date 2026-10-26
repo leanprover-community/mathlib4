@@ -39,7 +39,7 @@ def IsEdgeTransitive (G : SimpleGraph V) : Prop :=
 by an automorphism. -/
 @[wikidata Q1205074]
 def IsSymmetric (G : SimpleGraph V) : Prop :=
-  ∀ d₁ d₂ : G.Dart, ∃ f : G ≃g G, f d₁.fst = d₂.fst ∧ f d₁.snd = d₂.snd
+  ∀ d₁ d₂, ∃ f : G ≃g G, f.toHom.mapDart d₁ = d₂
 
 protected lemma IsVertexTransitive.congr (vt : G.IsVertexTransitive) (f : G ≃g H) :
     H.IsVertexTransitive := fun v w ↦ by
@@ -57,7 +57,7 @@ protected lemma IsSymmetric.congr (sym : G.IsSymmetric) (f : G ≃g H) :
     H.IsSymmetric := fun d₁ d₂ ↦ by
   obtain ⟨g, hg⟩ :=
     sym ⟨(_, _), f.symm.map_adj_iff.mpr d₁.adj⟩ ⟨(_, _), f.symm.map_adj_iff.mpr d₂.adj⟩
-  exact ⟨(f.symm.trans g).trans f, ⟨by simp [congr(f $(hg.1))], by simp [congr(f $(hg.2))]⟩⟩
+  exact ⟨(f.symm.trans g).trans f, by rw [Hom.mapDart_eq_iff]; simp_all⟩
 
 lemma IsVertexTransitive.isRegularOfDegree [G.LocallyFinite] (vt : G.IsVertexTransitive) (v : V) :
     G.IsRegularOfDegree (G.degree v) := fun w ↦ by
@@ -68,7 +68,9 @@ lemma IsSymmetric.isVertexTransitive (sym : G.IsSymmetric) (ni : ∀ v, ¬G.IsIs
     G.IsVertexTransitive := fun v w ↦ by
   obtain ⟨v', av⟩ := exists_adj_iff_not_isIsolated.mpr (ni v)
   obtain ⟨w', aw⟩ := exists_adj_iff_not_isIsolated.mpr (ni w)
-  grind [sym ⟨(v, v'), av⟩ ⟨(w, w'), aw⟩]
+  obtain ⟨f, hf⟩ := sym ⟨(v, v'), av⟩ ⟨(w, w'), aw⟩
+  rw [Hom.mapDart_eq_iff] at hf
+  exact ⟨f, hf.1⟩
 
 lemma IsSymmetric.isEdgeTransitive (sym : G.IsSymmetric) : G.IsEdgeTransitive := by
   intro e₁ e₂ me₁ me₂
@@ -93,11 +95,11 @@ protected lemma IsSymmetric.top : (⊤ : SimpleGraph V).IsSymmetric := fun d₁ 
   classical
   by_cases h₁ : d₁.fst ≠ d₂.snd
   · exact ⟨⟨(Equiv.swap d₁.snd d₂.snd).trans (Equiv.swap d₁.fst d₂.fst), by simp⟩, by
-      simp only [RelIso.coe_fn_mk]; grind [d₁.adj.ne, d₂.adj.ne]⟩
+      rw [Hom.mapDart_eq_iff, RelHom.coeFn_mk]; grind [d₁.adj.ne, d₂.adj.ne]⟩
   by_cases h₂ : d₁.snd ≠ d₂.fst
   · exact ⟨⟨(Equiv.swap d₁.fst d₂.fst).trans (Equiv.swap d₁.snd d₂.snd), by simp⟩, by
-      simp only [RelIso.coe_fn_mk]; grind [d₁.adj.ne, d₂.adj.ne]⟩
-  exact ⟨⟨Equiv.swap d₁.fst d₂.fst, by simp⟩, by simp_all⟩
+      rw [Hom.mapDart_eq_iff, RelHom.coeFn_mk]; grind [d₁.adj.ne, d₂.adj.ne]⟩
+  exact ⟨⟨Equiv.swap d₁.fst d₂.fst, by simp⟩, by rw [Hom.mapDart_eq_iff]; simp_all⟩
 
 variable (V) in
 protected lemma IsVertexTransitive.top : (⊤ : SimpleGraph V).IsVertexTransitive := fun v w ↦ by
@@ -167,9 +169,10 @@ theorem IsEdgeTransitive.isSymmetric_of_exists_odd_degree [Finite V] (vt : G.IsV
     refine nsym fun d₁ d₂ ↦ ?_
     obtain ⟨f₁, f₁v, f₁w⟩ | ⟨f₁, f₁v, f₁w⟩ := R_or d₁.adj <;>
     obtain ⟨f₂, f₂v, f₂w⟩ | ⟨f₂, f₂v, f₂w⟩ := R_or d₂.adj
-    case inl.inl | inr.inr => exact ⟨f₁.symm.trans f₂, by simp [← f₁v, ← f₁w, f₂v, f₂w]⟩
+    case inl.inl | inr.inr => exact ⟨f₁.symm.trans f₂, by
+      rw [Hom.mapDart_eq_iff]; simp [← f₁v, ← f₁w, f₂v, f₂w]⟩
     all_goals exact ⟨(f₁.symm.trans f).trans (g.symm.trans f₂), by
-      simp [fv, fw, ← gv, ← gw, ← f₁v, ← f₁w, f₂v, f₂w]⟩
+      rw [Hom.mapDart_eq_iff]; simp [fv, fw, ← gv, ← gw, ← f₁v, ← f₁w, f₂v, f₂w]⟩
   classical
   have _ : Fintype V := Fintype.ofFinite _
   -- By vertex-transitivity and the handshaking lemma, `v`'s indegree and outdegree are equal

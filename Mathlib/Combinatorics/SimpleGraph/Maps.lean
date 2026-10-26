@@ -377,6 +377,10 @@ def mapDart (d : G.Dart) : G'.Dart :=
 theorem mapDart_apply (d : G.Dart) : f.mapDart d = ⟨d.1.map f f, f.map_adj d.2⟩ :=
   rfl
 
+lemma mapDart_eq_iff (d : G.Dart) (d' : G'.Dart) :
+    f.mapDart d = d' ↔ f d.fst = d'.fst ∧ f d.snd = d'.snd := by
+  simp [Dart.ext_iff, Prod.ext_iff]
+
 /-- The graph homomorphism from a smaller graph to a bigger one. -/
 @[implicit_reducible]
 def ofLE (h : G₁ ≤ G₂) : G₁ →g G₂ := ⟨id, @h⟩
