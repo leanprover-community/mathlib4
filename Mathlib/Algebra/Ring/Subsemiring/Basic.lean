@@ -306,6 +306,20 @@ def _root_.Center.ringHom (R : Type*) [NonAssocSemiring R] :
   map_add' _ _ := by simp
   map_zero' := by simp
 
+/-- Lift a morphism through the inclusion `Center S →+* S`. -/
+@[simps!]
+def _root_.RingHom.liftCenter {R S : Type*} [NonAssocSemiring R] [NonAssocSemiring S]
+    {f : R →+* S} (hf : ∀ r, f r ∈ Set.center S) :
+    R →+* Center S where
+  toMonoidHom := f.toMonoidHom.liftCenter hf
+  map_zero' := by simp
+  map_add' _ _ := by simp
+
+@[simp]
+lemma _root_.RingHom.comp_liftCenter {R S : Type*} [NonAssocSemiring R] [NonAssocSemiring S]
+    {f : R →+* S} (hf : ∀ r, f r ∈ Set.center S) :
+    (Center.ringHom S).comp (f.liftCenter hf) = f := rfl
+
 end NonAssocSemiring
 
 section Semiring
