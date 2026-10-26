@@ -5,9 +5,10 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Abelian.Yoneda
-public import Mathlib.CategoryTheory.Generator.Abelian
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.EnoughInjectives
+public import Mathlib.CategoryTheory.Abelian.Yoneda
+
+import Mathlib.CategoryTheory.Generator.Abelian
 
 /-!
 # Embedding opposites of Grothendieck categories
@@ -87,6 +88,7 @@ instance faithful_embedding [Nonempty D] : (embedding F).Faithful :=
 instance full_embedding [Nonempty D] [F.Full] : (F ⋙ embedding F).Full :=
   full_comp_preadditiveCoyonedaObj _ (isSeparator F) (exists_epi F)
 
+set_option backward.isDefEq.respectTransparency false in
 instance preservesFiniteLimits_embedding : PreservesFiniteLimits (embedding F) := by
   rw [embedding]
   apply preservesFiniteLimits_of_preservesFiniteLimitsOfSize

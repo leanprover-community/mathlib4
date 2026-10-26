@@ -153,8 +153,8 @@ theorem coe_compl (a : Regular α) : (↑aᶜ : α) = (a : α)ᶜ :=
 instance : Inhabited (Regular α) :=
   ⟨⊥⟩
 
-instance : SemilatticeInf (Regular α) :=
-  coe_injective.semilatticeInf _ coe_inf
+instance : PartialOrder (Regular α) :=
+  PartialOrder.lift _ coe_injective
 
 instance boundedOrder : BoundedOrder (Regular α) :=
   BoundedOrder.lift ((↑) : Regular α → α) (fun _ _ => id) coe_top coe_bot
@@ -184,13 +184,13 @@ theorem toRegular_coe (a : Regular α) : toRegular (a : α) = a :=
 def gi : GaloisInsertion toRegular ((↑) : Regular α → α) where
   choice a ha := ⟨a, ha.antisymm le_compl_compl⟩
   gc _ b :=
-    coe_le_coe.symm.trans <|
+    coe_le_coe.symm.trans
       ⟨le_compl_compl.trans, fun h => (compl_anti <| compl_anti h).trans_eq b.2⟩
   le_l_u _ := le_compl_compl
   choice_eq _ ha := coe_injective <| le_compl_compl.antisymm ha
 
 instance lattice : Lattice (Regular α) :=
-  gi.liftLattice
+  { gi.liftLattice with inf := (· ⊓ ·) }
 
 @[simp, norm_cast]
 theorem coe_sup (a b : Regular α) : (↑(a ⊔ b) : α) = ((a : α) ⊔ b)ᶜᶜ :=
@@ -232,6 +232,6 @@ theorem isRegular_of_boolean : ∀ a : α, IsRegular a :=
 
 /-- A decidable proposition is intuitionistically Heyting-regular. -/
 theorem isRegular_of_decidable (p : Prop) [Decidable p] : IsRegular p :=
-  propext <| Decidable.not_not
+  propext Decidable.not_not
 
 end Heyting

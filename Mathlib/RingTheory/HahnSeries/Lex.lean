@@ -6,10 +6,11 @@ Authors: Weiyi Wang
 module
 
 public import Mathlib.Algebra.Order.Archimedean.Class
-public import Mathlib.Algebra.Order.Ring.Synonym
 public import Mathlib.Order.Hom.Lex
 public import Mathlib.Order.PiLex
 public import Mathlib.RingTheory.HahnSeries.Multiplication
+
+import Mathlib.Algebra.Order.GroupWithZero.Synonym
 
 /-!
 
@@ -57,9 +58,9 @@ instance : LinearOrder (Lex R⟦Γ⟧) where
       let v := {i : Γ | (ofLex a).coeff i ≠ (ofLex b).coeff i}
       have hvu : v ⊆ u := by
         intro i h
-        rw [Set.mem_union, Set.mem_setOf_eq, Set.mem_setOf_eq]
+        rw [Set.mem_union, Set.mem_ofPred_eq, Set.mem_ofPred_eq]
         contrapose! h
-        rw [Set.notMem_setOf_iff, not_not, h.1, h.2]
+        rw [Set.notMem_ofPred_iff, not_not, h.1, h.2]
       have hv : v.IsWF :=
         ((ofLex a).isPWO_support'.isWF.union (ofLex b).isPWO_support'.isWF).subset hvu
       let i := hv.min hab
@@ -171,6 +172,7 @@ theorem abs_lt_abs_of_orderTop_ofLex {x y : Lex R⟦Γ⟧}
   · simpa [-orderTop_abs, coeff_eq_zero_of_lt_orderTop, coeff_untop_eq_leadingCoeff, h]
       using h.ne_top
 
+set_option backward.isDefEq.respectTransparency false in
 theorem archimedeanClassMk_le_archimedeanClassMk_iff_of_orderTop_ofLex {x y : Lex R⟦Γ⟧}
     (h : (ofLex x).orderTop = (ofLex y).orderTop) :
     ArchimedeanClass.mk x ≤ .mk y ↔
@@ -221,6 +223,7 @@ theorem archimedeanClassMk_le_archimedeanClassMk_iff_of_orderTop_ofLex {x y : Le
     refine lt_of_le_of_lt hn <| nsmul_lt_nsmul_left ?_ (by simp)
     rwa [abs_pos, leadingCoeff_ne_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem archimedeanClassMk_le_archimedeanClassMk_iff {x y : Lex R⟦Γ⟧} :
     ArchimedeanClass.mk x ≤ .mk y ↔
       (ofLex x).orderTop < (ofLex y).orderTop ∨
@@ -277,19 +280,20 @@ noncomputable def finiteArchimedeanClassOrderHomInvLex :
     Γ ×ₗ FiniteArchimedeanClass R →o FiniteArchimedeanClass (Lex R⟦Γ⟧) where
   toFun x := (ofLex x).2.liftOrderHom
     (fun a ↦ FiniteArchimedeanClass.mk (toLex (single (ofLex x).1 a.val)) (by
-      simpa using a.prop))
+      simpa using! a.prop))
     fun ⟨a, ha⟩ ⟨b, hb⟩ h ↦ by
       rw [FiniteArchimedeanClass.mk_le_mk, archimedeanClassMk_le_archimedeanClassMk_iff]
-      simpa [ha, hb] using h
+      simpa [ha, hb] using! h
   monotone' a b := a.rec fun (ao, ac) ↦ b.rec fun (bo, bc) h ↦ by
     obtain h | ⟨rfl, hle⟩ := Prod.Lex.le_iff.mp h
     · induction ac using FiniteArchimedeanClass.ind with | mk a ha
       induction bc using FiniteArchimedeanClass.ind with | mk b hb
       simp only [ne_eq, ofLex_toLex, FiniteArchimedeanClass.liftOrderHom_mk]
       rw [FiniteArchimedeanClass.mk_le_mk, archimedeanClassMk_le_archimedeanClassMk_iff]
-      exact .inl (by simpa [ha, hb] using h)
+      exact .inl (by simpa [ha, hb] using! h)
     · exact OrderHom.monotone _ hle
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (Γ R) in
 /-- The correspondence between finite archimedean classes of `Lex R⟦Γ⟧`
 and lexicographical pairs of `HahnSeries.orderTop` and the finite archimedean class of
@@ -356,7 +360,7 @@ end Archimedean
 end OrderedGroup
 
 section OrderedRing
-variable [LinearOrder R] [Ring R] [AddCommMonoid Γ] [LinearOrder Γ]
+variable [LinearOrder R] [Ring R] [AddCommMonoid Γ]
   [IsOrderedCancelAddMonoid Γ]
 
 instance [IsOrderedRing R] [NoZeroDivisors R] : IsOrderedRing (Lex R⟦Γ⟧) where
@@ -374,7 +378,7 @@ instance [IsOrderedRing R] [NoZeroDivisors R] : IsOrderedRing (Lex R⟦Γ⟧) wh
     · rwa [leadingCoeff_nonneg_iff]
     · simpa
 
-instance [IsDomain R] [IsStrictOrderedRing R] : IsStrictOrderedRing (Lex R⟦Γ⟧) where
+instance [IsStrictOrderedRing R] : IsStrictOrderedRing (Lex R⟦Γ⟧) where
 
 end OrderedRing
 
@@ -393,8 +397,8 @@ def embDomainOrderEmbedding [Zero R] : Lex R⟦Γ⟧ ↪o Lex R⟦Γ'⟧ where
     constructor
     · rintro (⟨i, hj, hi⟩ | heq)
       · have himem : i ∈ Set.range f := by
-          contrapose! hi
-          simp [embDomain_notin_range hi]
+          contrapose hi
+          simp [embDomain_of_notMem_range hi]
         obtain ⟨k, rfl⟩ := himem
         refine Or.inl ⟨k, fun j hjk ↦ ?_, by simpa using hi⟩
         simpa using hj (f j) (f.lt_iff_lt.mpr hjk)
@@ -404,7 +408,7 @@ def embDomainOrderEmbedding [Zero R] : Lex R⟦Γ⟧ ↪o Lex R⟦Γ'⟧ where
         by_cases hkmem : k ∈ Set.range f
         · obtain ⟨j', rfl⟩ := hkmem
           simpa using hj _ <| f.lt_iff_lt.mp hki
-        · simp_rw [embDomain_notin_range hkmem]
+        · simp_rw [embDomain_of_notMem_range hkmem]
       · simp
 
 /-- `HahnSeries.embDomain` as an `OrderAddMonoidHom`. -/

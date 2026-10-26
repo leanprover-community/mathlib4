@@ -82,10 +82,11 @@ def combineCones (F : J ⥤ K ⥤ C) (c : ∀ k : K, LimitCone (F.flip.obj k)) :
     { app := fun j => { app := fun k => (c k).cone.π.app j }
       naturality := fun j₁ j₂ g => by ext k; exact (c k).cone.π.naturality g }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The stitched together cones each project down to the original given cones (up to iso). -/
 def evaluateCombinedCones (F : J ⥤ K ⥤ C) (c : ∀ k : K, LimitCone (F.flip.obj k)) (k : K) :
     ((evaluation K C).obj k).mapCone (combineCones F c) ≅ (c k).cone :=
-  Cones.ext (Iso.refl _)
+  Cone.ext (Iso.refl _)
 
 /-- Stitching together limiting cones gives a limiting cone. -/
 def combinedIsLimit (F : J ⥤ K ⥤ C) (c : ∀ k : K, LimitCone (F.flip.obj k)) :
@@ -132,10 +133,11 @@ def combineCocones (F : J ⥤ K ⥤ C) (c : ∀ k : K, ColimitCocone (F.flip.obj
     { app := fun j => { app := fun k => (c k).cocone.ι.app j }
       naturality := fun j₁ j₂ g => by ext k; exact (c k).cocone.ι.naturality g }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The stitched together cocones each project down to the original given cocones (up to iso). -/
 def evaluateCombinedCocones (F : J ⥤ K ⥤ C) (c : ∀ k : K, ColimitCocone (F.flip.obj k)) (k : K) :
     ((evaluation K C).obj k).mapCocone (combineCocones F c) ≅ (c k).cocone :=
-  Cocones.ext (Iso.refl _)
+  Cocone.ext (Iso.refl _)
 
 /-- Stitching together colimiting cocones gives a colimiting cocone. -/
 def combinedIsColimit (F : J ⥤ K ⥤ C) (c : ∀ k : K, ColimitCocone (F.flip.obj k)) :
@@ -159,12 +161,13 @@ noncomputable def pointwiseCocone [HasColimitsOfShape J C] (F : J ⥤ K ⥤ C) :
       change (F.flip.obj x).map f ≫ _ = _
       rw [colimit.w] }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `pointwiseCocone` is indeed a colimit cocone. -/
 noncomputable def pointwiseIsColimit [HasColimitsOfShape J C] (F : J ⥤ K ⥤ C) :
     IsColimit (pointwiseCocone F) := by
   apply IsColimit.ofIsoColimit (combinedIsColimit _
     (fun k ↦ ⟨colimit.cocone _, colimit.isColimit _⟩))
-  exact Cocones.ext (Iso.refl _)
+  exact Cocone.ext (Iso.refl _)
 
 noncomputable section
 
@@ -194,8 +197,8 @@ instance functorCategoryHasColimitsOfSize [HasColimitsOfSize.{v₁, u₁} C] :
     HasColimitsOfSize.{v₁, u₁} (K ⥤ C) where
   has_colimits_of_shape := inferInstance
 
-instance hasLimitCompEvaluation (F : J ⥤ K ⥤ C) (k : K) [HasLimit (F.flip.obj k)] :
-    HasLimit (F ⋙ (evaluation _ _).obj k) :=
+instance (priority := low) hasLimitCompEvaluation (F : J ⥤ K ⥤ C) (k : K)
+    [HasLimit (F.flip.obj k)] : HasLimit (F ⋙ (evaluation _ _).obj k) :=
   hasLimit_of_iso (F := F.flip.obj k) (Iso.refl _)
 
 instance evaluation_preservesLimit (F : J ⥤ K ⥤ C) [∀ k, HasLimit (F.flip.obj k)] (k : K) :
@@ -437,7 +440,8 @@ open CategoryTheory.prod
 the individual limits on objects. -/
 @[simps!]
 def limitIsoFlipCompLim [HasLimitsOfShape J C] (F : J ⥤ K ⥤ C) : limit F ≅ F.flip ⋙ lim :=
-  NatIso.ofComponents (limitObjIsoLimitCompEvaluation F)
+  NatIso.ofComponents (fun k =>
+    limitObjIsoLimitCompEvaluation F k ≪≫ HasLimit.isoOfNatIso (compEvaluation F k))
 
 /-- `limitIsoFlipCompLim` is natural with respect to diagrams. -/
 @[simps!]
@@ -478,7 +482,8 @@ def limitIsoSwapCompLim [HasLimitsOfShape J C] (G : J ⥤ K ⥤ C) :
 the individual colimits on objects. -/
 @[simps!]
 def colimitIsoFlipCompColim [HasColimitsOfShape J C] (F : J ⥤ K ⥤ C) : colimit F ≅ F.flip ⋙ colim :=
-  NatIso.ofComponents (colimitObjIsoColimitCompEvaluation F)
+  NatIso.ofComponents (fun k =>
+    colimitObjIsoColimitCompEvaluation F k ≪≫ HasColimit.isoOfNatIso (compEvaluation F k))
 
 /-- `colimitIsoFlipCompColim` is natural with respect to diagrams. -/
 @[simps!]

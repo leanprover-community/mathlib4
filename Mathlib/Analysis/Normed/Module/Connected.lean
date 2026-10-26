@@ -6,10 +6,11 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Convex.Contractible
-public import Mathlib.Analysis.Convex.Topology
-public import Mathlib.Analysis.Normed.Module.Convex
 public import Mathlib.LinearAlgebra.Dimension.DivisionRing
 public import Mathlib.Topology.Algebra.Module.Cardinality
+
+import Mathlib.Analysis.Convex.Topology
+import Mathlib.Analysis.Normed.Module.Convex
 
 /-!
 # Connectedness of subsets of vector spaces
@@ -31,7 +32,8 @@ public section
 assert_not_exists Subgroup.index Nat.divisors
 -- TODO assert_not_exists Cardinal
 
-open Convex Set Metric
+open Set Metric
+open scoped Convex ENNReal
 
 section TopologicalVectorSpace
 
@@ -70,7 +72,7 @@ theorem Set.Countable.isPathConnected_compl_of_one_lt_rank
   obtain ⟨y, hy⟩ : ∃ y, LinearIndependent ℝ ![x, y] :=
     exists_linearIndependent_pair_of_one_lt_rank h x_ne_zero
   have A : Set.Countable {t : ℝ | ([c + x -[ℝ] c + t • y] ∩ s).Nonempty} := by
-    apply countable_setOf_nonempty_of_disjoint _ (fun t ↦ inter_subset_right) hs
+    apply countable_ofPred_nonempty_of_disjoint _ (fun t ↦ inter_subset_right) hs
     intro t t' htt'
     apply disjoint_iff_inter_eq_empty.2
     have N : {c + x} ∩ s = ∅ := by
@@ -80,7 +82,7 @@ theorem Set.Countable.isPathConnected_compl_of_one_lt_rank
     apply Eq.subset
     apply segment_inter_eq_endpoint_of_linearIndependent_of_ne hy htt'.symm
   have B : Set.Countable {t : ℝ | ([c - x -[ℝ] c + t • y] ∩ s).Nonempty} := by
-    apply countable_setOf_nonempty_of_disjoint _ (fun t ↦ inter_subset_right) hs
+    apply countable_ofPred_nonempty_of_disjoint _ (fun t ↦ inter_subset_right) hs
     intro t t' htt'
     apply disjoint_iff_inter_eq_empty.2
     have N : {c - x} ∩ s = ∅ := by
@@ -95,7 +97,7 @@ theorem Set.Countable.isPathConnected_compl_of_one_lt_rank
   obtain ⟨t, ht⟩ : Set.Nonempty ({t : ℝ | ([c + x -[ℝ] c + t • y] ∩ s).Nonempty}
       ∪ {t : ℝ | ([c - x -[ℝ] c + t • y] ∩ s).Nonempty})ᶜ := ((A.union B).dense_compl ℝ).nonempty
   let z := c + t • y
-  simp only [compl_union, mem_inter_iff, mem_compl_iff, mem_setOf_eq, not_nonempty_iff_eq_empty]
+  simp only [compl_union, mem_inter_iff, mem_compl_iff, mem_ofPred_eq, not_nonempty_iff_eq_empty]
     at ht
   have JA : JoinedIn sᶜ a z := by
     apply JoinedIn.of_segment_subset
@@ -135,38 +137,63 @@ section Ball
 
 namespace Metric
 
-theorem ball_contractible {x : E} {r : ℝ} (hr : 0 < r) :
+theorem contractibleSpace_ball {x : E} {r : ℝ} (hr : 0 < r) :
     ContractibleSpace (ball x r) :=
-  Convex.contractibleSpace (convex_ball _ _) (by simpa)
+  (convex_ball _ _).contractibleSpace (by simpa)
 
-theorem eball_contractible {x : E} {r : ENNReal} (hr : 0 < r) :
-    ContractibleSpace (EMetric.ball x r) := by
-  cases r with
-  | top =>
-    rw [eball_top_eq_univ, (Homeomorph.Set.univ E).contractibleSpace_iff]
-    exact RealTopologicalVectorSpace.contractibleSpace
-  | coe r =>
-    rw [emetric_ball_nnreal]
-    apply ball_contractible
-    simpa using hr
+theorem contractibleSpace_eball {x : E} {r : ℝ≥0∞} (hr : 0 < r) :
+    ContractibleSpace (eball x r) :=
+  (convex_eball _ _).contractibleSpace ⟨x, by simpa⟩
+
+theorem contractibleSpace_closedBall {x : E} {r : ℝ} (hr : 0 ≤ r) :
+    ContractibleSpace (closedBall x r) :=
+  (convex_closedBall _ _).contractibleSpace (by simpa)
+
+instance contractibleSpace_closedEBall {x : E} {r : ℝ≥0∞} :
+    ContractibleSpace (closedEBall x r) :=
+  (convex_closedEBall _ _).contractibleSpace ⟨x, by simp⟩
 
 theorem isPathConnected_ball {x : E} {r : ℝ} (hr : 0 < r) :
-    IsPathConnected (ball x r) := by
-  rw [isPathConnected_iff_pathConnectedSpace]
-  exact @ContractibleSpace.instPathConnectedSpace _ _ (ball_contractible hr)
+    IsPathConnected (ball x r) :=
+  convex_ball _ _ |>.isPathConnected <| by simpa
 
-theorem isPathConnected_eball {x : E} {r : ENNReal} (hr : 0 < r) :
-    IsPathConnected (EMetric.ball x r) := by
-  rw [isPathConnected_iff_pathConnectedSpace]
-  exact @ContractibleSpace.instPathConnectedSpace _ _ (eball_contractible hr)
+theorem isPathConnected_eball {x : E} {r : ℝ≥0∞} (hr : 0 < r) :
+    IsPathConnected (eball x r) :=
+  convex_eball _ _ |>.isPathConnected ⟨x, by simpa⟩
+
+theorem isPathConnected_closedBall {x : E} {r : ℝ} (hr : 0 ≤ r) :
+    IsPathConnected (closedBall x r) :=
+  convex_closedBall _ _ |>.isPathConnected ⟨x, by simpa⟩
+
+theorem isPathConnected_closedEBall {x : E} {r : ℝ≥0∞} :
+    IsPathConnected (closedEBall x r) :=
+  isPathConnected_iff_pathConnectedSpace.mpr inferInstance
+
+theorem isPreconnected_ball {x : E} {r : ℝ} : IsPreconnected (ball x r) :=
+  (convex_ball _ _).isPreconnected
+
+theorem isPreconnected_eball {x : E} {r : ℝ≥0∞} : IsPreconnected (eball x r) :=
+  (convex_eball _ _).isPreconnected
+
+theorem isPreconnected_closedBall {x : E} {r : ℝ} : IsPreconnected (closedBall x r) :=
+  (convex_closedBall _ _).isPreconnected
+
+theorem isPreconnected_closedEBall {x : E} {r : ℝ≥0∞} : IsPreconnected (closedEBall x r) :=
+  (convex_closedEBall _ _).isPreconnected
 
 theorem isConnected_ball {x : E} {r : ℝ} (hr : 0 < r) :
     IsConnected (ball x r) :=
   (isPathConnected_ball hr).isConnected
 
-theorem isConnected_eball {x : E} {r : ENNReal} (hr : 0 < r) :
-    IsConnected (EMetric.ball x r) :=
+theorem isConnected_eball {x : E} {r : ℝ≥0∞} (hr : 0 < r) :
+    IsConnected (eball x r) :=
   (isPathConnected_eball hr).isConnected
+
+theorem isConnected_closedBall {x : E} {r : ℝ} (hr : 0 ≤ r) : IsConnected (closedBall x r) :=
+  ⟨⟨x, by simpa⟩, isPreconnected_closedBall⟩
+
+theorem isConnected_closedEBall {x : E} {r : ℝ≥0∞} : IsConnected (closedEBall x r) :=
+  ⟨⟨x, mem_closedEBall_self⟩, isPreconnected_closedEBall⟩
 
 end Metric
 

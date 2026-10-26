@@ -37,7 +37,7 @@ of total derived functors (and a refactor of the sequence of derived functors).
 @[expose] public section
 
 
-open CategoryTheory Abelian
+open CategoryTheory Abelian Limits
 
 variable {C : Type*} [Category* C] [Abelian C]
 
@@ -52,5 +52,20 @@ def degreewiseEpiWithInjectiveKernel : MorphismProperty (CochainComplex C ℤ) :
 instance : (degreewiseEpiWithInjectiveKernel (C := C)).IsMultiplicative where
   id_mem _ _ := MorphismProperty.id_mem _ _
   comp_mem _ _ hf hg n := MorphismProperty.comp_mem _ _ _ (hf n) (hg n)
+
+instance : (degreewiseEpiWithInjectiveKernel (C := C)).IsStableUnderRetracts where
+  of_retract r h i :=
+    MorphismProperty.of_retract (r.map (HomologicalComplex.eval _ _ i)) (h i)
+
+lemma degreewiseEpiWithInjectiveKernel_iff_of_isZero {K L : CochainComplex C ℤ}
+    (f : K ⟶ L) (hL : IsZero L) :
+    degreewiseEpiWithInjectiveKernel f ↔ ∀ (n : ℤ), Injective (K.X n) :=
+  forall_congr' (fun n ↦ by
+    rw [epiWithInjectiveKernel_iff_of_isZero]
+    exact (HomologicalComplex.eval _ _ n).map_isZero hL)
+
+lemma degreewiseEpiWithInjectiveKernel.epi {K L : CochainComplex C ℤ} {f : K ⟶ L}
+    (h : degreewiseEpiWithInjectiveKernel f) : Epi f :=
+  HomologicalComplex.epi_of_epi_f f (fun n ↦ (h n).1)
 
 end CochainComplex

@@ -5,8 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Products
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 public import Mathlib.AlgebraicTopology.RelativeCellComplex.AttachCells
 
 /-!
@@ -171,10 +169,11 @@ instance : Small.{t} (FunctorObjIndex f πX) := by
           ⟨eqToHom (by simp) ≫ x.t, eqToHom (by simp) ≫ x.b⟩⟩
   have hφ : Function.Injective φ := by
     rintro ⟨i₁, t₁, b₁, _⟩ ⟨i₂, t₂, b₂, _⟩ h
-    obtain rfl : i₁ = i₂ := by simpa [φ] using congr_arg Sigma.fst h
+    obtain rfl : i₁ = i₂ := by simpa [φ] using congr($(h).fst)
     simpa [cancel_epi, φ] using h
   exact small_of_injective hφ
 
+set_option backward.defeqAttrib.useBackward true in
 instance : Small.{t} (attachCellsιFunctorObj f πX).ι := by
   dsimp
   infer_instance
@@ -245,9 +244,7 @@ lemma functorMap_comm :
     functorObjLeft f πX ≫ functorMapTgt f τ =
       functorMapSrc f τ ≫ functorObjLeft f πY := by
   ext ⟨i, t, b, w⟩
-  simp only [ι_colimMap_assoc, Discrete.natTrans_app, ι_colimMap,
-    ι_functorMapTgt f τ i t b w _ rfl,
-    ι_functorMapSrc_assoc f τ i t b w _ rfl]
+  simp [ι_functorMapTgt f τ i t b w _ rfl, ι_functorMapSrc_assoc f τ i t b w _ rfl]
 
 variable [HasPushout (functorObjTop f πX) (functorObjLeft f πX)]
   [HasPushout (functorObjTop f πY) (functorObjLeft f πY)]
@@ -305,6 +302,7 @@ end
 variable [HasPushouts C]
   [∀ {X S : C} (πX : X ⟶ S), HasColimitsOfShape (Discrete (FunctorObjIndex f πX)) C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor `Arrow C ⥤ Arrow C` that is constructed in order to apply the small
 object argument to a family of morphisms `f i : A i ⟶ B i`, see the introduction
 of the file `Mathlib/CategoryTheory/SmallObject/Construction.lean` -/
@@ -329,6 +327,8 @@ noncomputable def functor : Arrow C ⥤ Arrow C where
             (t ≫ (τ ≫ τ').left) (by simp)]
     · dsimp
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The canonical natural transformation `𝟭 (Arrow C) ⟶ functor f`. -/
 @[simps app]
 noncomputable def ε : 𝟭 (Arrow C) ⟶ functor f where

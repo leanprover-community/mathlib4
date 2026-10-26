@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Functor.Derived.LeftDerived
-public import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
 public import Mathlib.CategoryTheory.Localization.StructuredArrow
 
 /-!
@@ -108,6 +107,7 @@ section
 
 variable {F L}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `L : C ⥤ D` is a localization functor for `W` and `e : F ≅ L ⋙ G` is an isomorphism,
 then `e.inv` makes `G` a pointwise right Kan extension of `F` along `L` at `L.obj Y`
 for any `Y : C`. -/

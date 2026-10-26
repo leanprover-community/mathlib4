@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Asymptotics.Theta
+public import Mathlib.Analysis.Asymptotics.Defs
 public import Mathlib.Analysis.Normed.Group.Completion
 
 /-!

@@ -5,10 +5,12 @@ Authors: Kenny Lau
 -/
 module
 
+public import Mathlib.Algebra.Ring.Hom.InjSurj
 public import Mathlib.FieldTheory.Extension
-public import Mathlib.FieldTheory.Normal.Defs
 public import Mathlib.FieldTheory.Perfect
 public import Mathlib.RingTheory.Localization.Integral
+
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 
 /-!
 # Algebraically Closed Field
@@ -19,7 +21,7 @@ and prove some of their properties.
 ## Main Definitions
 
 - `IsAlgClosed k` is the typeclass saying `k` is an algebraically closed field, i.e. every
-polynomial in `k` splits.
+  polynomial in `k` splits.
 
 - `IsAlgClosure R K` is the typeclass saying `K` is an algebraic closure of `R`, where `R` is a
   commutative ring. This means that the map from `R` to `K` is injective, and `K` is
@@ -40,7 +42,7 @@ algebraic closure, algebraically closed
 - `IsAlgClosure.of_splits`: if `K / k` is algebraic, and every monic irreducible polynomial over
   `k` splits in `K`, then `K` is algebraically closed (in fact an algebraic closure of `k`).
   For the stronger fact that only requires every such polynomial has a root in `K`,
-  see `IsAlgClosure.of_exist_roots`.
+  see `IsAlgClosure.of_exists_root`.
 
   Reference: <https://kconrad.math.uconn.edu/blurbs/galoistheory/algclosure.pdf>, Theorem 2
 
@@ -54,26 +56,12 @@ open Module Polynomial
 
 variable (k : Type u) [Field k]
 
-/-- Typeclass for algebraically closed fields.
-
-To show `Polynomial.Splits p f` for an arbitrary ring homomorphism `f`,
-see `IsAlgClosed.splits_domain`.
--/
+/-- An algebraically closed field is one where every polynomial splits. Equivalently, all
+non-constant polynomials have a root. See `IsAlgClosed.exists_root` and
+`IsAlgClosed.of_exists_root`. -/
 @[stacks 09GR "The definition of `IsAlgClosed` in mathlib is 09GR (4)"]
 class IsAlgClosed : Prop where
   splits : ∀ p : k[X], p.Splits
-
-@[deprecated (since := "2025-12-09")]
-alias IsAlgClosed.factors := IsAlgClosed.splits
-
-/-- Every polynomial splits in the field extension `f : K →+* k` if `k` is algebraically closed.
-
-See also `IsAlgClosed.splits_domain` for the case where `K` is algebraically closed.
--/
-@[deprecated "This is a special case of `IsAlgClosed.splits`." (since := "2025-12-09")]
-theorem IsAlgClosed.splits_codomain {k K : Type*} [Field k] [IsAlgClosed k] [CommRing K]
-    {f : K →+* k} (p : K[X]) : (p.map f).Splits :=
-  IsAlgClosed.splits (p.map f)
 
 /-- Every polynomial splits in the field extension `f : K →+* k` if `K` is algebraically closed. -/
 theorem IsAlgClosed.splits_domain {k K : Type*} [Field k] [IsAlgClosed k] [Field K] {f : k →+* K}
@@ -100,18 +88,18 @@ theorem exists_pow_nat_eq [IsAlgClosed k] (x : k) {n : ℕ} (hn : 0 < n) : ∃ z
   simp only [eval_C, eval_X, eval_pow, eval_sub, IsRoot.def] at hz
   exact sub_eq_zero.1 hz
 
-theorem exists_eq_mul_self [IsAlgClosed k] (x : k) : ∃ z, x = z * z := by
+theorem isSquare [IsAlgClosed k] (x : k) : IsSquare x := by
   rcases exists_pow_nat_eq x zero_lt_two with ⟨z, rfl⟩
   exact ⟨z, sq z⟩
 
+@[deprecated (since := "2026-09-28")] alias exists_eq_mul_self := isSquare
+
 theorem roots_eq_zero_iff [IsAlgClosed k] {p : k[X]} :
     p.roots = 0 ↔ p = Polynomial.C (p.coeff 0) := by
-  refine ⟨fun h => ?_, fun hp => by rw [hp, roots_C]⟩
-  rcases le_or_gt (degree p) 0 with hd | hd
-  · exact eq_C_of_degree_le_zero hd
-  · obtain ⟨z, hz⟩ := IsAlgClosed.exists_root p hd.ne'
-    rw [← mem_roots (ne_zero_of_degree_gt hd), h] at hz
-    simp at hz
+  refine ⟨fun h => eq_C_of_degree_le_zero ?_, fun hp => by rw [hp, roots_C]⟩
+  contrapose! h
+  rw [roots_ne_zero_iff_exists_isRoot (ne_zero_of_degree_gt h)]
+  exact IsAlgClosed.exists_root p h.ne'
 
 theorem roots_eq_zero_iff_natDegree_eq_zero [IsAlgClosed k] {p : k[X]} :
     p.roots = 0 ↔ p.natDegree = 0 :=
@@ -259,7 +247,7 @@ theorem IntermediateField.eq_bot_of_isAlgClosed_of_isAlgebraic {k K : Type*} [Fi
     [IsAlgClosed k] [Algebra k K] (L : IntermediateField k K) [Algebra.IsAlgebraic k L] :
     L = ⊥ := bot_unique fun x hx ↦ by
   obtain ⟨y, hy⟩ := (IsAlgClosed.algebraMap_bijective_of_isIntegral (k := k)).2 (⟨x, hx⟩ : L)
-  exact ⟨y, congr_arg (algebraMap L K) hy⟩
+  exact ⟨y, congr(algebraMap L K $hy)⟩
 
 lemma Polynomial.isCoprime_iff_aeval_ne_zero_of_isAlgClosed (K : Type v) [Field K] [IsAlgClosed K]
     [Algebra k K] (p q : k[X]) : IsCoprime p q ↔ ∀ a : K, aeval a p ≠ 0 ∨ aeval a q ≠ 0 := by
@@ -323,17 +311,19 @@ theorem eval_surjective {p : M[X]} (hp : p.natDegree ≠ 0) : Function.Surjectiv
 /-- If E/L/K is a tower of field extensions with E/L algebraic, and if M is an algebraically
   closed extension of K, then any embedding of L/K into M/K extends to an embedding of E/K.
   Known as the extension lemma in https://math.stackexchange.com/a/687914. -/
-theorem surjective_restrictDomain_of_isAlgebraic {E : Type*}
+theorem surjective_domRestrict_of_isAlgebraic {E : Type*}
     [Field E] [Algebra K E] [Algebra L E] [IsScalarTower K L E] [Algebra.IsAlgebraic L E] :
-    Function.Surjective fun φ : E →ₐ[K] M ↦ φ.restrictDomain L :=
+    Function.Surjective fun φ : E →ₐ[K] M ↦ φ.domRestrict L :=
   fun f ↦ IntermediateField.exists_algHom_of_splits'
     (E := E) f fun s ↦ ⟨Algebra.IsIntegral.isIntegral s, IsAlgClosed.splits _⟩
 
+@[deprecated (since := "2026-07-19")]
+alias surjective_restrictDomain_of_isAlgebraic := surjective_domRestrict_of_isAlgebraic
+
 variable [Algebra.IsAlgebraic K L] (K L M)
 
-set_option backward.privateInPublic true in
 /-- Less general version of `lift`. -/
-private noncomputable irreducible_def liftAux : L →ₐ[K] M :=
+private noncomputable def liftAux : L →ₐ[K] M :=
   Classical.choice <| IntermediateField.nonempty_algHom_of_adjoin_splits
     (fun x _ ↦ ⟨Algebra.IsIntegral.isIntegral x, splits _⟩)
     (IntermediateField.adjoin_univ K L)
@@ -344,27 +334,21 @@ variable {S : Type v} [CommRing S] [IsDomain S] [Algebra R S] [Algebra R M]
 
 variable {M}
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 private instance FractionRing.isAlgebraic :
     letI : IsDomain R := (FaithfulSMul.algebraMap_injective R S).isDomain _
     letI : Algebra (FractionRing R) (FractionRing S) := FractionRing.liftAlgebra R _
     Algebra.IsAlgebraic (FractionRing R) (FractionRing S) := by
-  letI : IsDomain R := (FaithfulSMul.algebraMap_injective R S).isDomain _
-  letI : Algebra (FractionRing R) (FractionRing S) := FractionRing.liftAlgebra R _
+  let : IsDomain R := (FaithfulSMul.algebraMap_injective R S).isDomain _
+  let : Algebra (FractionRing R) (FractionRing S) := FractionRing.liftAlgebra R _
   have := FractionRing.isScalarTower_liftAlgebra R (FractionRing S)
   have := (IsFractionRing.isAlgebraic_iff' R S (FractionRing S)).1 inferInstance
-  constructor
-  intro
-  exact (IsFractionRing.isAlgebraic_iff R (FractionRing R) (FractionRing S)).1
-      (Algebra.IsAlgebraic.isAlgebraic _)
+  exact ⟨fun _ ↦ (IsFractionRing.isAlgebraic_iff R (FractionRing R) (FractionRing S)).1
+    (Algebra.IsAlgebraic.isAlgebraic _)⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- A (random) homomorphism from an algebraic extension of R into an algebraically
   closed extension of R. -/
-@[stacks 09GU]
-noncomputable irreducible_def lift : S →ₐ[R] M := by
+@[stacks 09GU, no_expose]
+noncomputable def lift : S →ₐ[R] M := by
   letI : IsDomain R := (FaithfulSMul.algebraMap_injective R S).isDomain _
   letI := FractionRing.liftAlgebra R M
   letI := FractionRing.liftAlgebra R (FractionRing S)
@@ -477,7 +461,7 @@ noncomputable def equivOfEquivAux (hSR : S ≃+* R) :
   refine ⟨equivOfAlgebraic' R S L M, ?_⟩
   ext x
   simp only [RingEquiv.toRingHom_eq_coe, Function.comp_apply, RingHom.coe_comp,
-    AlgEquiv.coe_ringEquiv, RingEquiv.coe_toRingHom]
+    AlgEquiv.coe_toRingEquiv, RingEquiv.coe_toRingHom]
   conv_lhs => rw [← hSR.symm_apply_apply x]
   change equivOfAlgebraic' R S L M (algebraMap R L (hSR x)) = _
   rw [AlgEquiv.commutes]

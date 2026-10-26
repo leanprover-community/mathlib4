@@ -54,7 +54,7 @@ a Coxeter matrix and the standard geometric representation of a Coxeter group.
 
 ## References
 
-* [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 4--6*](bourbaki1968) chapter IV
+* [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 4--6*][bourbaki1968] chapter IV
   pages 4--5, 13--15
 
 * [J. Baez, *Coxeter and Dynkin Diagrams*](https://math.ucr.edu/home/baez/twf_dynkin.pdf)
@@ -104,7 +104,7 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o ⬝ ⬝ ⬝ ⬝ o --- o
 ```
 -/
-def Aₙ : CoxeterMatrix (Fin n) where
+protected def A : CoxeterMatrix (Fin n) where
   M := Matrix.of fun i j : Fin n ↦
     if i = j then 1
       else (if (j : ℕ) + 1 = i ∨ (i : ℕ) + 1 = j then 3 else 2)
@@ -120,7 +120,7 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o ⬝ ⬝ ⬝ ⬝ o --- o
 ```
 -/
-def Bₙ : CoxeterMatrix (Fin n) where
+protected def B : CoxeterMatrix (Fin n) where
   M := Matrix.of fun i j : Fin n ↦
     if i = j then 1
       else (if i = n - 1 ∧ j = n - 2 ∨ j = n - 1 ∧ i = n - 2 then 4
@@ -140,7 +140,7 @@ The corresponding Coxeter-Dynkin diagram is:
     o
 ```
 -/
-def Dₙ : CoxeterMatrix (Fin n) where
+protected def D : CoxeterMatrix (Fin n) where
   M := Matrix.of fun i j : Fin n ↦
     if i = j then 1
       else (if i = n - 1 ∧ j = n - 3 ∨ j = n - 1 ∧ i = n - 3 then 3
@@ -157,12 +157,13 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o
 ```
 -/
-def I₂ₘ (m : ℕ) : CoxeterMatrix (Fin 2) where
+protected def I (m : ℕ) : CoxeterMatrix (Fin 2) where
   M := Matrix.of fun i j => if i = j then 1 else m + 2
   isSymm := by unfold Matrix.IsSymm; aesop
   diagonal := by simp
   off_diagonal := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Coxeter matrix of type E₆.
 
 The corresponding Coxeter-Dynkin diagram is:
@@ -180,6 +181,7 @@ def E₆ : CoxeterMatrix (Fin 6) where
           2, 2, 2, 3, 1, 3;
           2, 2, 2, 2, 3, 1]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Coxeter matrix of type E₇.
 
 The corresponding Coxeter-Dynkin diagram is:
@@ -198,6 +200,7 @@ def E₇ : CoxeterMatrix (Fin 7) where
           2, 2, 2, 2, 3, 1, 3;
           2, 2, 2, 2, 2, 3, 1]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Coxeter matrix of type E₈.
 
 The corresponding Coxeter-Dynkin diagram is:
@@ -217,6 +220,7 @@ def E₈ : CoxeterMatrix (Fin 8) where
           2, 2, 2, 2, 2, 3, 1, 3;
           2, 2, 2, 2, 2, 2, 3, 1]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Coxeter matrix of type F₄.
 
 The corresponding Coxeter-Dynkin diagram is:
@@ -231,6 +235,7 @@ def F₄ : CoxeterMatrix (Fin 4) where
           2, 4, 1, 3;
           2, 2, 3, 1]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Coxeter matrix of type G₂.
 
 The corresponding Coxeter-Dynkin diagram is:
@@ -243,6 +248,7 @@ def G₂ : CoxeterMatrix (Fin 2) where
   M := !![1, 6;
           6, 1]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Coxeter matrix of type H₃.
 
 The corresponding Coxeter-Dynkin diagram is:
@@ -256,6 +262,7 @@ def H₃ : CoxeterMatrix (Fin 3) where
           3, 1, 5;
           2, 5, 1]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Coxeter matrix of type H₄.
 
 The corresponding Coxeter-Dynkin diagram is:

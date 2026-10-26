@@ -5,13 +5,12 @@ Authors: Markus Himmel, Jakob von Raumer
 -/
 module
 
-public import Mathlib.Algebra.Group.TransferInstance
-public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Algebra.Group.Action.Units
+public import Mathlib.Algebra.Group.TransferInstance
+public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.CategoryTheory.Endomorphism
 public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
-public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
-public import Mathlib.Algebra.Module.NatInt
 
 /-!
 # Preadditive categories
@@ -49,7 +48,7 @@ additive, preadditive, Hom group, Ab-category, Ab-enriched
 @[expose] public section
 
 
-universe v u
+universe w v u
 
 open CategoryTheory.Limits
 
@@ -69,7 +68,7 @@ class Preadditive where
 
 attribute [inherit_doc Preadditive] Preadditive.homGroup Preadditive.add_comp Preadditive.comp_add
 
-attribute [instance] Preadditive.homGroup
+attribute [instance_reducible, instance] Preadditive.homGroup
 
 -- simp can already prove reassoc version
 attribute [reassoc, simp] Preadditive.add_comp
@@ -77,6 +76,26 @@ attribute [reassoc, simp] Preadditive.add_comp
 attribute [reassoc] Preadditive.comp_add
 
 attribute [simp] Preadditive.comp_add
+
+namespace End
+
+@[simps!]
+instance [Preadditive C] (X : C) : AddCommGroup (End X) := (End.homEquiv (X := X)).addCommGroup
+
+variable {C} in
+/-- The additive bijection `End X ≃+ (X ⟶ X)`
+when `X` is an object in a preadditive category. -/
+@[implicit_reducible, simps!]
+def addEquiv [Preadditive C] {X : C} : End X ≃+ (X ⟶ X) where
+  toEquiv := homEquiv
+  map_add' := by cat_disch
+
+@[simp]
+lemma sum_asHom [Preadditive C] {X : C} {ι : Type*} (s : Finset ι) (f : ι → End X) :
+    (∑ i ∈ s, f i).asHom = ∑ i ∈ s, (f i).asHom :=
+  map_sum addEquiv _ _
+
+end End
 
 end CategoryTheory
 
@@ -115,12 +134,13 @@ def _root_.CategoryTheory.InducedCategory.homAddEquiv
 
 end InducedCategory
 
-instance fullSubcategory (Z : ObjectProperty C) : Preadditive Z.FullSubcategory :=
-  inferInstanceAs (Preadditive (InducedCategory _ ObjectProperty.FullSubcategory.obj))
-
-instance (X : C) : AddCommGroup (End X) := by
-  dsimp [End]
-  infer_instance
+instance fullSubcategory (Z : ObjectProperty C) : Preadditive Z.FullSubcategory where
+  homGroup P Q := {
+      -- Note: Add zero field explicitly for a better transparency of definitional properties
+      zero := Z.homMk 0
+      __ := InducedCategory.homEquiv.addCommGroup }
+  add_comp _ _ _ _ _ _ := by ext; apply add_comp
+  comp_add _ _ _ _ _ _ := by ext; apply comp_add
 
 /-- Composition by a fixed left argument as a group homomorphism -/
 def leftComp {P Q : C} (R : C) (f : P ⟶ Q) : (Q ⟶ R) →+ (P ⟶ R) :=
@@ -199,13 +219,21 @@ instance (priority := 100) preadditiveHasZeroMorphisms : HasZeroMorphisms C wher
   comp_zero f R := show leftComp R f 0 = 0 from map_zero _
   zero_comp P _ _ f := show rightComp P f 0 = 0 from map_zero _
 
+variable (C) in
+lemma hasZeroObject_of_hasCoproduct [HasCoproduct (PEmpty.elim : PEmpty.{w + 1} → C)] :
+    HasZeroObject C :=
+  ⟨∐ (PEmpty.elim : PEmpty.{w + 1} → C), by
+    rw [IsZero.iff_id_eq_zero]
+    cat_disch⟩
+
+attribute [local simp] End.mul_asHom in
 /-- This instance is split off from the `Ring (End X)` instance to speed up instance search. -/
 instance {X : C} : Semiring (End X) :=
   { End.monoid with
-    zero_mul := fun f => by dsimp [mul]; exact HasZeroMorphisms.comp_zero f _
-    mul_zero := fun f => by dsimp [mul]; exact HasZeroMorphisms.zero_comp _ f
-    left_distrib := fun f g h => Preadditive.add_comp X X X g h f
-    right_distrib := fun f g h => Preadditive.comp_add X X X h f g }
+    zero_mul := by cat_disch
+    mul_zero := by cat_disch
+    left_distrib := by cat_disch
+    right_distrib := by cat_disch }
 
 instance {X : C} : Ring (End X) :=
   { (inferInstance : Semiring (End X)),
@@ -334,6 +362,7 @@ theorem kernelForkOfFork_ofι {P : C} (ι : P ⟶ X) (w : ι ≫ f = ι ≫ g) :
     kernelForkOfFork (Fork.ofι ι w) = KernelFork.ofι ι (by simp [w]) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A kernel of `f - g` is an equalizer of `f` and `g`. -/
 def isLimitForkOfKernelFork {c : KernelFork (f - g)} (i : IsLimit c) :
     IsLimit (forkOfKernelFork c) :=
@@ -345,6 +374,7 @@ theorem isLimitForkOfKernelFork_lift {c : KernelFork (f - g)} (i : IsLimit c) (s
     (isLimitForkOfKernelFork i).lift s = i.lift (kernelForkOfFork s) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An equalizer of `f` and `g` is a kernel of `f - g`. -/
 def isLimitKernelForkOfFork {c : Fork f g} (i : IsLimit c) : IsLimit (kernelForkOfFork c) :=
   Fork.IsLimit.mk' _ fun s =>
@@ -389,6 +419,7 @@ theorem cokernelCoforkOfCofork_ofπ {P : C} (π : Y ⟶ P) (w : f ≫ π = g ≫
     cokernelCoforkOfCofork (Cofork.ofπ π w) = CokernelCofork.ofπ π (by simp [w]) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A cokernel of `f - g` is a coequalizer of `f` and `g`. -/
 def isColimitCoforkOfCokernelCofork {c : CokernelCofork (f - g)} (i : IsColimit c) :
     IsColimit (coforkOfCokernelCofork c) :=
@@ -402,6 +433,7 @@ theorem isColimitCoforkOfCokernelCofork_desc {c : CokernelCofork (f - g)} (i : I
     (isColimitCoforkOfCokernelCofork i).desc s = i.desc (cokernelCoforkOfCofork s) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A coequalizer of `f` and `g` is a cokernel of `f - g`. -/
 def isColimitCokernelCoforkOfCofork {c : Cofork f g} (i : IsColimit c) :
     IsColimit (cokernelCoforkOfCofork c) :=

@@ -5,9 +5,9 @@ Authors: Jiazhen Xia, Elliot Dean Young, Joël Riou
 -/
 module
 
+public import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
 public import Mathlib.Topology.Category.TopCat.Limits.Basic
 public import Mathlib.Topology.Category.TopCat.Sphere
-public import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
 
 /-!
 # CW-complexes
@@ -44,7 +44,7 @@ The two approaches are equivalent but serve different purposes:
   Currently there is no way to move between the two definitions.
 -/
 
-@[expose] public section
+public section
 
 open TopCat
 

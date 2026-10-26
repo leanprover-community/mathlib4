@@ -19,7 +19,7 @@ universe u
 public section
 
 
-open TopologicalSpace MeasureTheory Filter Metric Set
+open TopologicalSpace MeasureTheory Filter Set
 
 open scoped Topology Filter Interval
 
@@ -147,7 +147,8 @@ theorem hasFDerivAt_integral_of_contDiffOn [IsLocallyFiniteMeasure μ] {E : Type
       (∫ t in a..b, fderiv ℝ (fun x ↦ f x t) x₀ ∂μ) x₀ := by
   wlog hab : a < b with h
   · obtain hab | hab := lt_or_eq_of_le <| le_of_not_gt hab
-    · simpa only [integral_symm b a] using (h hu (uIcc_comm a b ▸ hF) hab).neg
+    · simp only [integral_symm b a]
+      exact (h hu (μ := μ) (uIcc_comm a b ▸ hF) hab).neg
     · simp [hab, hasFDerivAt_const]
   simp_rw [integral_of_le hab.le, ← uIoc_of_le hab.le]
   apply _root_.hasFDerivAt_integral_of_contDiffOn hu isCompact_uIcc ?_ uIoc_subset_uIcc hF

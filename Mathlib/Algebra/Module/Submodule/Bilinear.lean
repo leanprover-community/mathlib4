@@ -5,8 +5,8 @@ Authors: Kenny Lau, Eric Wieser
 -/
 module
 
-public import Mathlib.LinearAlgebra.Span.Basic
 public import Mathlib.LinearAlgebra.BilinearMap
+public import Mathlib.LinearAlgebra.Span.Basic
 
 /-!
 # Images of pairs of submodules under bilinear maps
@@ -30,12 +30,11 @@ Generalize this file to semilinear maps.
 
 @[expose] public section
 
-
 universe uι u v
 
 open Set
 
-open Pointwise
+open scoped Pointwise
 
 namespace Submodule
 

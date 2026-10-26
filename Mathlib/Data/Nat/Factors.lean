@@ -6,11 +6,11 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 module
 
 public import Mathlib.Algebra.BigOperators.Ring.List
-public import Mathlib.Data.Nat.GCD.Basic
-public import Mathlib.Data.Nat.Prime.Basic
+public import Mathlib.Data.List.Perm.Subperm
 public import Mathlib.Data.List.Prime
 public import Mathlib.Data.List.Sort
-public import Mathlib.Data.List.Perm.Subperm
+public import Mathlib.Data.Nat.GCD.Basic
+public import Mathlib.Data.Nat.Prime.Basic
 
 /-!
 # Prime numbers
@@ -35,6 +35,7 @@ open Nat
 namespace Nat
 
 /-- `primeFactorsList n` is the prime factorization of `n`, listed in increasing order. -/
+@[oeis A027746 "starting from the 2nd element"]
 def primeFactorsList : ℕ → List ℕ
   | 0 => []
   | 1 => []
@@ -101,20 +102,11 @@ theorem isChain_cons_primeFactorsList {n : ℕ} :
         ((le_minFac.2 h).resolve_left (by simp)) (isChain_cons_primeFactorsList ?_)
       exact fun p pp d => minFac_le_of_dvd pp.two_le (d.trans <| div_dvd_of_dvd <| minFac_dvd _)
 
-@[deprecated (since := "2025-09-21")]
-alias primeFactorsList_chain := isChain_cons_primeFactorsList
-
 theorem isChain_two_cons_primeFactorsList (n) : List.IsChain (· ≤ ·) (2 :: primeFactorsList n) :=
   isChain_cons_primeFactorsList fun _ pp _ => pp.two_le
 
 theorem isChain_primeFactorsList (n) : List.IsChain (· ≤ ·) (primeFactorsList n) :=
   (isChain_two_cons_primeFactorsList _).tail
-
-@[deprecated (since := "2025-09-24")]
-alias primeFactorsList_chain_2 := isChain_two_cons_primeFactorsList
-
-@[deprecated (since := "2025-09-24")]
-alias primeFactorsList_chain' := isChain_primeFactorsList
 
 theorem primeFactorsList_sorted (n : ℕ) : List.SortedLE (primeFactorsList n) :=
   (isChain_primeFactorsList _).sortedLE

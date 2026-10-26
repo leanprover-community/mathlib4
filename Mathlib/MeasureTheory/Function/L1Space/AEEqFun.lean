@@ -31,9 +31,9 @@ function space, l1
 
 noncomputable section
 
-open EMetric ENNReal Filter MeasureTheory NNReal Set
+open ENNReal Filter MeasureTheory Set
 
-variable {α β ε ε' : Type*} {m : MeasurableSpace α} {μ ν : Measure α}
+variable {α β ε ε' : Type*} {m : MeasurableSpace α} {μ : Measure α}
 variable [NormedAddCommGroup β] [TopologicalSpace ε] [ContinuousENorm ε]
   [TopologicalSpace ε'] [ESeminormedAddMonoid ε']
 
@@ -90,7 +90,7 @@ variable {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 β] [IsBoundedSMul 𝕜 �
 
 theorem Integrable.smul {c : 𝕜} {f : α →ₘ[μ] β} : Integrable f → Integrable (c • f) :=
   induction_on f fun _f hfm hfi => (integrable_mk _).2 <|
-    by simpa using ((integrable_mk hfm).1 hfi).smul c
+    by simpa using! ((integrable_mk hfm).1 hfi).smul c
 
 end IsBoundedSMul
 
@@ -100,7 +100,7 @@ end AEEqFun
 
 namespace L1
 
-
+@[fun_prop]
 theorem integrable_coeFn (f : α →₁[μ] β) : Integrable f μ := by
   rw [← memLp_one_iff_integrable]
   exact Lp.memLp f
@@ -125,15 +125,15 @@ theorem aemeasurable_coeFn [MeasurableSpace β] [BorelSpace β] (f : α →₁[�
   (Lp.stronglyMeasurable f).measurable.aemeasurable
 
 theorem edist_def (f g : α →₁[μ] β) : edist f g = ∫⁻ a, edist (f a) (g a) ∂μ := by
-  simp only [Lp.edist_def, eLpNorm, one_ne_zero, eLpNorm'_eq_lintegral_enorm, Pi.sub_apply,
-    toReal_one, ENNReal.rpow_one, ne_eq, not_false_eq_true, div_self, ite_false]
+  rw [Lp.edist_def, eLpNorm_one_eq_lintegral_enorm
+    ((Lp.aestronglyMeasurable f).sub (Lp.aestronglyMeasurable g))]
   simp [edist_eq_enorm_sub]
 
 theorem dist_def (f g : α →₁[μ] β) : dist f g = (∫⁻ a, edist (f a) (g a) ∂μ).toReal := by
   simp_rw [dist_edist, edist_def]
 
 theorem norm_def (f : α →₁[μ] β) : ‖f‖ = (∫⁻ a, ‖f a‖ₑ ∂μ).toReal := by
-  simp [Lp.norm_def, eLpNorm, eLpNorm'_eq_lintegral_enorm]
+  rw [Lp.norm_def, eLpNorm_one_eq_lintegral_enorm (Lp.aestronglyMeasurable f)]
 
 /-- Computing the norm of a difference between two L¹-functions. Note that this is not a
   special case of `norm_def` since `(f - g) x` and `f x - g x` are not equal
@@ -154,7 +154,7 @@ theorem ofReal_norm_eq_lintegral (f : α →₁[μ] β) : ENNReal.ofReal ‖f‖
   (but only a.e.-equal). -/
 theorem ofReal_norm_sub_eq_lintegral (f g : α →₁[μ] β) :
     ENNReal.ofReal ‖f - g‖ = ∫⁻ x, ‖f x - g x‖ₑ ∂μ := by
-  simp_rw [ofReal_norm_eq_lintegral, ← edist_zero_eq_enorm]
+  simp_rw [ofReal_norm_eq_lintegral, ← edist_zero_right]
   apply lintegral_congr_ae
   filter_upwards [Lp.coeFn_sub f g] with _ ha
   simp only [ha, Pi.sub_apply]
@@ -203,27 +203,34 @@ theorem toL1_sub (f g : α → β) (hf : Integrable f μ) (hg : Integrable g μ)
 
 theorem norm_toL1 (f : α → β) (hf : Integrable f μ) :
     ‖hf.toL1 f‖ = (∫⁻ a, edist (f a) 0 ∂μ).toReal := by
-  simp [toL1, Lp.norm_toLp, eLpNorm, eLpNorm'_eq_lintegral_enorm]
+  rw [toL1, Lp.norm_toLp, eLpNorm_one_eq_lintegral_enorm hf.aestronglyMeasurable]
+  simp only [edist_zero_right]
 
 theorem enorm_toL1 {f : α → β} (hf : Integrable f μ) : ‖hf.toL1 f‖ₑ = ∫⁻ a, ‖f a‖ₑ ∂μ := by
-  simp only [Lp.enorm_def, toL1_eq_mk, eLpNorm_aeeqFun]
-  simp [eLpNorm, eLpNorm']
+  rw [Lp.enorm_def, toL1_eq_mk, eLpNorm_aeeqFun hf.aestronglyMeasurable,
+    eLpNorm_one_eq_lintegral_enorm hf.aestronglyMeasurable]
 
 theorem norm_toL1_eq_lintegral_norm (f : α → β) (hf : Integrable f μ) :
     ‖hf.toL1 f‖ = ENNReal.toReal (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ) := by
   rw [norm_toL1, lintegral_norm_eq_lintegral_edist]
 
+theorem norm_toL1_eq_lintegral_enorm (f : α → β) (hf : Integrable f μ) :
+    ‖hf.toL1 f‖ = (∫⁻ a, ‖f a‖ₑ ∂μ).toReal := by
+  simp_rw [norm_toL1, edist_zero_right]
+
 @[simp]
 theorem edist_toL1_toL1 (f g : α → β) (hf : Integrable f μ) (hg : Integrable g μ) :
     edist (hf.toL1 f) (hg.toL1 g) = ∫⁻ a, edist (f a) (g a) ∂μ := by
-  simp only [toL1, Lp.edist_toLp_toLp, eLpNorm, one_ne_zero, eLpNorm'_eq_lintegral_enorm,
-    Pi.sub_apply, toReal_one, ENNReal.rpow_one, ne_eq, not_false_eq_true, div_self, ite_false]
+  change edist ((memLp_one_iff_integrable.2 hf).toLp f)
+    ((memLp_one_iff_integrable.2 hg).toLp g) = _
+  rw [Lp.edist_toLp_toLp,
+    eLpNorm_one_eq_lintegral_enorm (hf.aestronglyMeasurable.sub hg.aestronglyMeasurable)]
   simp [edist_eq_enorm_sub]
 
 theorem edist_toL1_zero (f : α → β) (hf : Integrable f μ) :
     edist (hf.toL1 f) 0 = ∫⁻ a, edist (f a) 0 ∂μ := by
   simp only [edist_zero_right, Lp.enorm_def, toL1_eq_mk, eLpNorm_aeeqFun]
-  apply eLpNorm_one_eq_lintegral_enorm
+  apply eLpNorm_one_eq_lintegral_enorm hf.aestronglyMeasurable
 
 variable {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 β] [IsBoundedSMul 𝕜 β]
 

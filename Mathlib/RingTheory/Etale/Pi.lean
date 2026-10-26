@@ -5,9 +5,10 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.RingTheory.Etale.Basic
+public import Mathlib.RingTheory.Finiteness.FinitePresentationLocal
 public import Mathlib.RingTheory.Smooth.Pi
 public import Mathlib.RingTheory.Unramified.Pi
-public import Mathlib.RingTheory.Etale.Basic
 
 /-!
 
@@ -20,7 +21,7 @@ public import Mathlib.RingTheory.Etale.Basic
 
 -/
 
-@[expose] public section
+public section
 
 namespace Algebra.FormallyEtale
 
@@ -34,5 +35,7 @@ theorem pi_iff [Finite I] :
 
 instance [Finite I] [∀ i, FormallyEtale R (A i)] : FormallyEtale R (Π i, A i) :=
   .of_formallyUnramified_and_formallySmooth
+
+instance [Finite I] [∀ i, Etale R (A i)] : Etale R (Π i, A i) where
 
 end Algebra.FormallyEtale

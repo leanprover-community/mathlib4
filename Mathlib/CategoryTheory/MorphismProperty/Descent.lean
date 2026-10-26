@@ -7,6 +7,8 @@ module
 
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
+
 /-!
 # Descent of morphism properties
 
@@ -15,7 +17,7 @@ if whenever `Q` holds for `X ⟶ Z`, `P` holds for `X ×[Z] Y ⟶ X` implies `P`
 Dually, we define `P.CodescendsAlong Q`.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.MorphismProperty
 
@@ -110,6 +112,36 @@ instance [HasPullbacks C] (P Q : MorphismProperty C) [P.DescendsAlong Q] [P.Resp
     iterate 4 rw [cancel_left_of_respectsIso (P := P)]
     rwa [cancel_right_of_respectsIso (P := P)]
 
+lemma eq_of_isomorphisms_descendsAlong [(MorphismProperty.isomorphisms C).DescendsAlong P]
+    [P.IsStableUnderBaseChange] [HasEqualizers C]
+    [HasPullbacks C] {X Y S T : C} {f g : X ⟶ Y} {s : X ⟶ S} {t : Y ⟶ S} (hf : f ≫ t = s)
+    (hg : g ≫ t = s) (v : T ⟶ S) (hv : P v)
+    (H :
+      pullback.map s v t v f (𝟙 T) (𝟙 S) (by simp [hf]) (by simp) =
+        pullback.map s v t v g (𝟙 T) (𝟙 S) (by simp [hg]) (by simp)) :
+    f = g := by
+  suffices IsIso (equalizer.ι f g) from Limits.eq_of_epi_equalizer
+  change MorphismProperty.isomorphisms C _
+  apply (MorphismProperty.isomorphisms C).of_isPullback_of_descendsAlong
+    (IsPullback.of_hasPullback _ _).flip (P.pullback_fst s v hv)
+  have : pullback.snd (equalizer.ι f g) (pullback.fst s v) =
+      (equalizerPullbackMapIso hf hg _).inv ≫ equalizer.ι _ _ := by
+    ext <;> simp [pullback.condition]
+  simpa [this] using equalizer.ι_of_eq H
+
+lemma faithful_overPullback_of_isomorphisms_descendsAlong
+    [(MorphismProperty.isomorphisms C).DescendsAlong P] [P.IsStableUnderBaseChange]
+    [HasPullbacks C] [HasEqualizers C] {S T : C} {f : T ⟶ S} (hf : P f) :
+    (Over.pullback f).Faithful := by
+  refine ⟨fun {X} Y a b hab ↦ ?_⟩
+  ext
+  apply P.eq_of_isomorphisms_descendsAlong (Over.w a) (Over.w b) f hf
+  convert! congr($(hab).left) <;> ext <;> simp
+
+@[deprecated (since := "2026-10-08")]
+alias faithful_overPullback_of_isomorphisms_descendAlong :=
+  faithful_overPullback_of_isomorphisms_descendsAlong
+
 end DescendsAlong
 
 /-- `P` codescends along `Q` if whenever `Q` holds for `Z ⟶ X`,
@@ -138,9 +170,12 @@ lemma pushout_inl_iff [P.IsStableUnderCobaseChange] [P.CodescendsAlong Q] [HasPu
     (hf : Q f) : P (pushout.inl f g) ↔ P g :=
   iff_of_isPushout (.of_hasPushout f g) hf
 
-lemma of_pushout_inr_of_descendsAlong [P.CodescendsAlong Q] [HasPushout f g] (hg : Q g)
+lemma of_pushout_inr_of_codescendsAlong [P.CodescendsAlong Q] [HasPushout f g] (hg : Q g)
     (hinr : P (pushout.inr f g)) : P f :=
   of_isPushout_of_codescendsAlong (IsPushout.of_hasPushout f g).flip hg hinr
+
+@[deprecated (since := "2026-10-08")]
+alias of_pushout_inr_of_descendsAlong := of_pushout_inr_of_codescendsAlong
 
 lemma pushout_inr_iff [P.IsStableUnderCobaseChange] [P.CodescendsAlong Q] [HasPushout f g]
     (hg : Q g) : P (pushout.inr f g) ↔ P f :=

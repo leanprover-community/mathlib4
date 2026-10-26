@@ -20,13 +20,17 @@ public meta section
 namespace Mathlib.Tactic.ToAdditive
 open Lean Elab Translate
 
-@[inherit_doc TranslateData.ignoreArgsAttr]
+/-- This attribute has been deprecated. -/
 syntax (name := to_additive_ignore_args) "to_additive_ignore_args" (ppSpace num)* : attr
 
-@[inherit_doc TranslateData.doTranslateAttr]
+deprecated_syntax to_additive_ignore_args "This attribute is now redundant. \
+  to specify which argument is relevant, you can use `to_additive self (relevant_arg := ...)`"
+  (since := "2026-09-27")
+
+@[inherit_doc TranslateData.dontTranslateAttr]
 syntax (name := to_additive_do_translate) "to_additive_do_translate" : attr
 
-@[inherit_doc TranslateData.doTranslateAttr]
+@[inherit_doc TranslateData.dontTranslateAttr]
 syntax (name := to_additive_dont_translate) "to_additive_dont_translate" : attr
 
 /-- The attribute `to_additive` can be used to automatically transport theorems
@@ -90,6 +94,10 @@ In the above example, the `simp` is added to all 3 lemmas. All other options to 
 (like the generated name or `(reorder := ...)`) are not passed down,
 and can be given manually to each individual `to_additive` call.
 
+The `(rename := ...)` syntax can be used for specifying the argument names of the generated
+declaration, overriding the automatic translation of names. For example, `(rename := x → a, y ↔ z)`
+will translate `lemma mul_foo (x y z : α) ...` to `lemma add_foo (a z y : α) ...`.
+
 ## Implementation notes
 
 The transport process generally works by taking all the names of
@@ -109,36 +117,29 @@ In the `mul_comm'` example above, `to_additive` maps:
 ### Heuristics
 
 `to_additive` uses heuristics to determine whether a particular identifier has to be
-mapped to its additive version. The basic heuristic is
+mapped to its additive version. The heuristic looks at the argument that is determined by its
+`relevant_arg` option:
 
-* Only map an identifier to its additive version if its first argument doesn't
+* Only map an identifier to its additive version if its `relevant_arg` argument doesn't
   contain any unapplied identifiers.
+* `relevant_arg` is automatically inferred by `to_additive`, and this can be seen in `to_additive?`.
+  It is usually the first argument.
 
 Examples:
 * `@Mul.mul Nat n m` (i.e. `(n * m : Nat)`) will not change to `+`, since its
-  first argument is `Nat`, an identifier not applied to any arguments.
-* `@Mul.mul (α × β) x y` will change to `+`. It's first argument contains only the identifier
-  `Prod`, but this is applied to arguments, `α` and `β`.
-* `@Mul.mul (α × Int) x y` will not change to `+`, since its first argument contains `Int`.
+  relevant argument is `Nat`, an identifier not applied to any arguments.
+* `@Mul.mul (α × β) x y` will change to `+`. Its relevant argument contains the identifier
+  `Prod`, but this is applied to `α` which is a free variable.
+* `@Mul.mul (α × Int) x y` will will change to `+`, since its relevant argument is `α × Int`,
+  and in `Prod`, `α` is the first argument. This would be bad, because we don't want to translate
+  the order on `Int`, so one should use `(dont_translate := α)` to ensure the `*` stays a `*`.
 
-The reasoning behind the heuristic is that the first argument is the type which is "additivized",
+The reasoning behind the heuristic is that the relevant argument is the type which is "additivized",
 and this usually doesn't make sense if this is on a fixed type.
 
-There are some exceptions to this heuristic:
-
-* Identifiers that have the `@[to_additive]` attribute are ignored.
-  For example, multiplication in `↥Semigroup` is replaced by addition in `↥AddSemigroup`.
-  You can turn this behavior off by *also* adding the `@[to_additive_dont_translate]` attribute.
-* If an identifier `d` has attribute `@[to_additive (relevant_arg := α)]` then the argument
-  `α` is checked for a fixed type, instead of checking the first argument.
-  `@[to_additive]` will automatically add the attribute `(relevant_arg := α)` to a
-  declaration when the first argument has no multiplicative type-class, but argument `α` does.
-* If an identifier has attribute `@[to_additive_ignore_args n1 n2 ...]` then all the arguments in
-  positions `n1`, `n2`, ... will not be checked for unapplied identifiers (start counting from 1).
-  For example, `ContMDiffMap` has attribute `@[to_additive_ignore_args 21]`, which means
-  that its 21st argument `(n : WithTop ℕ)` can contain `ℕ`
-  (usually in the form `Top.top ℕ ...`) and still be additivized.
-  So `@Mul.mul (C^∞⟮I, N; I', G⟯) _ f g` will be additivized.
+Identifiers that have the `@[to_additive]` attribute are ignored.
+For example, multiplication in `↥Semigroup` is replaced by addition in `↥AddSemigroup`.
+You can turn this behavior off by *also* adding the `@[to_additive_dont_translate]` attribute.
 
 ### Troubleshooting
 
@@ -159,12 +160,11 @@ mismatch error.
     attribute.
   * If the fixed type has nothing to do with algebraic operations (like `TopCat`), add the attribute
     `@[to_additive_do_translate]` to the fixed type `Foo`.
-  * If the fixed type occurs inside the `k`-th argument of a declaration `d`, and the
-    `k`-th argument is not connected to the multiplicative structure on `d`, consider adding
-    attribute `[to_additive_ignore_args k]` to `d`.
-    Example: `ContMDiffMap` ignores the argument `(n : WithTop ℕ)`
-  * If none of the arguments have a multiplicative structure, then the heuristic should not apply at
-    all. This can be achieved with the option `(relevant_arg := _)`.
+  * If the fixed type occurs inside the relevant argument of a declaration `d`,
+    but this argument is not connected to the multiplicative structure on `d`, consider adding
+    attribute `[to_additive self (relevant_arg := n)]` to `d`, where `n` is different from `k`.
+    If none of the arguments have a multiplicative structure, then the heuristic should not apply at
+    all. This can be achieved with `(relevant_arg := _)`.
 * Option 2: It additivized a declaration `d` that should remain multiplicative. Solution:
   * Make sure the first argument of `d` is a type with a multiplicative structure. If not, can you
     reorder the (implicit) arguments of `d` so that the first argument becomes a type with a
@@ -186,8 +186,8 @@ mismatch error.
   This likely only happens when the multiplicative declaration involves `pow`/`^`. Solutions:
   * Ensure that the order of arguments of all relevant declarations are the same for the
     multiplicative and additive version. This might mean that arguments have an "unnatural" order
-    (e.g. `Monoid.npow n x` corresponds to `x ^ n`, but it is convenient that `Monoid.npow` has this
-    argument order, since it matches `AddMonoid.nsmul n x`.
+    (e.g. `NPow.npow n x` corresponds to `x ^ n`, but it is convenient that `NPow.npow` has this
+    argument order, since it matches `NSMul.nsmul n x`.
   * If this is not possible, add `(reorder := ...)` argument to `to_additive`.
 
 If neither of these solutions work, and `to_additive` is unable to automatically generate the
@@ -249,39 +249,23 @@ syntax (name := to_additive) "to_additive" "?"? attrArgs : attr
 @[inherit_doc to_additive]
 macro "to_additive?" rest:attrArgs : attr => `(attr| to_additive ? $rest)
 
+@[inherit_doc TranslateData.dontTranslateAttr]
+initialize dontTranslateAttr : NameMapExtension Unit ← registerNameMapExtension _
 
-@[inherit_doc to_additive_ignore_args]
-initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
-  registerNameMapAttribute {
-    name := `to_additive_ignore_args
-    descr :=
-      "Auxiliary attribute for `to_additive` stating that certain arguments are not additivized."
-    add := fun _ stx ↦ do
-        let ids ← match stx with
-          | `(attr| to_additive_ignore_args $[$ids:num]*) => pure <| ids.map (·.1.isNatLit?.get!)
-          | _ => throwUnsupportedSyntax
-        return ids.toList }
-
-@[inherit_doc TranslateData.argInfoAttr]
-initialize argInfoAttr : NameMapExtension ArgInfo ← registerNameMapExtension _
-
-@[inherit_doc TranslateData.doTranslateAttr]
-initialize doTranslateAttr : NameMapExtension Bool ← registerNameMapExtension _
+/-- Maps multiplicative names to their additive counterparts. -/
+initialize translations : NameMapExtension TranslationInfo ← registerNameMapExtension _
 
 initialize
   registerBuiltinAttribute {
     name := `to_additive_do_translate
     descr := "Auxiliary attribute for `to_additive` stating \
       that the operations on this type should be translated."
-    add name _ _ := doTranslateAttr.add name true }
+    add name _ _ := translations.add name { translation := name, relevantArg := .noArg } }
   registerBuiltinAttribute {
     name := `to_additive_dont_translate
     descr := "Auxiliary attribute for `to_additive` stating \
       that the operations on this type should not be translated."
-    add name _ _ := doTranslateAttr.add name false }
-
-/-- Maps multiplicative names to their additive counterparts. -/
-initialize translations : NameMapExtension Name ← registerNameMapExtension _
+    add name _ _ := dontTranslateAttr.add name () }
 
 @[inherit_doc GuessName.GuessNameData.nameDict]
 def nameDict : Std.HashMap String (List String) := .ofList [
@@ -290,6 +274,7 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("smul", ["VAdd"]),
   ("inv", ["Neg"]),
   ("div", ["Sub"]),
+  ("sdiv", ["VSub"]),
   ("prod", ["Sum"]),
   ("hmul", ["HAdd"]),
   ("hsmul", ["HVAdd"]),
@@ -306,6 +291,7 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("group", ["Add", "Group"]),
   ("subgroup", ["Add", "Subgroup"]),
   ("semigroup", ["Add", "Semigroup"]),
+  ("torsor", ["Add", "Torsor"]),
   ("magma", ["Add", "Magma"]),
   ("haar", ["Add", "Haar"]),
   ("prehaar", ["Add", "Prehaar"]),
@@ -316,6 +302,9 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("grp", ["Add", "Grp"]),
   ("commute", ["Add", "Commute"]),
   ("semiconj", ["Add", "Semiconj"]),
+  ("conjugates", ["Add", "Conjugates"]),
+  ("conj", ["Add", "Conj"]),
+  ("commutator", ["Add", "Commutator"]),
   ("rootable", ["Divisible"]),
   ("zpowers", ["ZMultiples"]),
   ("powers", ["Multiples"]),
@@ -345,9 +334,12 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("le_zero", "Nonpos"),
   ("ltzero", "Neg"),
   ("lt_zero", "Neg"),
+  ("addAntidiagonal", "Antidiagonal"),
   ("addSingle", "Single"),
   ("addSupport", "Support"),
   ("addTSupport", "TSupport"),
+  ("addPointed", "Pointed"),
+  ("addSpanning", "Spanning"),
   ("addIndicator", "Indicator"),
   ("isEven", "Even"),
   -- "Regular" is well-used in mathlib with various meanings (e.g. in
@@ -356,6 +348,7 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("isRegular", "IsAddRegular"),
   ("isLeftRegular", "IsAddLeftRegular"),
   ("isRightRegular", "IsAddRightRegular"),
+  ("hasUniqueRoots", "hasUniqueDiv"),
   ("hasFundamentalDomain", "HasAddFundamentalDomain"),
   ("quotientMeasure", "AddQuotientMeasure"),
   ("negFun", "InvFun"),
@@ -371,22 +364,40 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("divisionAddMonoid", "SubtractionMonoid"),
   ("subNegZeroAddMonoid", "SubNegZeroMonoid"),
   ("modularCharacter", "AddModularCharacter"),
+  ("addShift", "Shift"),
+  ("addSubshift", "Subshift"),
   ("isQuotientCoveringMap", "IsAddQuotientCoveringMap"),
-  ("addExact", "exact")]
+  ("addExact", "Exact"),
+  ("isMonHom", "IsAddMonHom"),
+  ("isPGroup", "IsAddPGroup"),
+  ("mapMon", "MapAddMon"),
+  ("monObj", "AddMonObj"),
+  ("isModHom", "IsAddModHom"),
+  ("mapMod", "MapAddMod"),
+  ("modObj", "AddModObj"),
+  ("yonedaMon", "YonedaAddMon"),
+  ("conGen", "AddConGen"),
+  ("unoneD", "unzeroD"),
+  ("unone", "unzero")]
+
+@[inherit_doc GuessName.GuessNameExt]
+initialize guessNameExt : GuessName.GuessNameExt ←
+  GuessName.registerGuessNameExt { nameDict, abbreviationDict }
 
 /-- The bundle of environment extensions for `to_additive` -/
 def data : TranslateData where
-  ignoreArgsAttr; argInfoAttr; doTranslateAttr; translations
+  dontTranslateAttr; translations
   attrName := `to_additive
   changeNumeral := true
   isDual := false
-  guessNameData := { nameDict, abbreviationDict }
+  guessNameExt
 
 initialize registerBuiltinAttribute {
     name := `to_additive
     descr := "Transport multiplicative to additive"
     add := fun src stx kind ↦ discard do
-      addTranslationAttr data src (← elabTranslationAttr src stx) kind
+      profileitM Exception "to_additive" (← getOptions) do
+        addTranslationAttr data src (← elabTranslationAttr src stx) kind
     -- we (presumably) need to run after compilation to properly add the `simp` attribute
     applicationTime := .afterCompilation
   }
@@ -395,6 +406,11 @@ initialize registerBuiltinAttribute {
 into the `to_additive` dictionary. This is useful for translating namespaces that don't (yet)
 have a corresponding translated declaration. -/
 elab "insert_to_additive_translation" src:ident tgt:ident : command => do
-  translations.add src.getId tgt.getId
+  translations.add src.getId { translation := tgt.getId }
+
+/-- `to_additive_name_hint src tgt` lets `to_additive` translate the name segment `src` to `tgt`
+for the rest of the file current. `src` and `tgt` should both be capitalized. -/
+elab "to_additive_name_hint" src:ident tgt:ident : command => do
+  guessNameExt.addTranslation src tgt
 
 end Mathlib.Tactic.ToAdditive

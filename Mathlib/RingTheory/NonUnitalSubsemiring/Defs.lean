@@ -5,10 +5,9 @@ Authors: Jireh Loreaux
 -/
 module
 
+public import Mathlib.Algebra.Group.Submonoid.Defs
 public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Algebra.Ring.InjSurj
-public import Mathlib.Algebra.Group.Submonoid.Defs
-public import Mathlib.Tactic.FastInstance
 
 /-!
 # Bundled non-unital subsemirings
@@ -29,13 +28,13 @@ variable {R S : Type*} [Mul R] [HasDistribNeg R] [SetLike S R] [MulMemClass S R]
 
 /-- This lemma exists for `aesop`, as `aesop` simplifies `-x * y` to `-(x * y)` before applying
 unsafe rules like `mul_mem`, leading to a dead end in cases where `neg_mem` does not hold. -/
-@[aesop unsafe 80% (rule_sets := [SetLike])]
+@[aesop unsafe 80% (rule_sets := [SetLike]), membership .]
 theorem neg_mul_mem {x y : R} (hx : -x ∈ s) (hy : y ∈ s) : -(x * y) ∈ s := by
   simpa using mul_mem hx hy
 
 /-- This lemma exists for `aesop`, as `aesop` simplifies `x * -y` to `-(x * y)` before applying
 unsafe rules like `mul_mem`, leading to a dead end in cases where `neg_mem` does not hold. -/
-@[aesop unsafe 80% (rule_sets := [SetLike])]
+@[aesop unsafe 80% (rule_sets := [SetLike]), membership .]
 theorem mul_neg_mem {x y : R} (hx : x ∈ s) (hy : -y ∈ s) : -(x * y) ∈ s := by
   simpa using mul_mem hx hy
 
@@ -73,6 +72,16 @@ open AddSubmonoidClass
 instance (priority := 75) toNonUnitalNonAssocSemiring :
     NonUnitalNonAssocSemiring s := fast_instance%
   Subtype.coe_injective.nonUnitalNonAssocSemiring Subtype.val rfl (by simp) (fun _ _ => rfl)
+    fun _ _ => rfl
+
+/- Prefer subclasses of `NonUnitalNonAssocCommSemiring` over subclasses of
+`NonUnitalSubsemiringClass`. -/
+/-- A non-unital subsemiring of a `NonUnitalNonAssocCommSemiring` inherits a
+`NonUnitalNonAssocCommSemiring` structure -/
+instance (priority := 75) toNonUnitalNonAssocCommSemiring {R} [NonUnitalNonAssocCommSemiring R]
+    [SetLike S R] [NonUnitalSubsemiringClass S R] :
+    NonUnitalNonAssocCommSemiring s := fast_instance%
+  Subtype.coe_injective.nonUnitalNonAssocCommSemiring Subtype.val rfl (by simp) (fun _ _ => rfl)
     fun _ _ => rfl
 
 instance noZeroDivisors [NoZeroDivisors R] : NoZeroDivisors s :=
@@ -132,11 +141,13 @@ lemma toAddSubmonoid_injective :
 
 instance : SetLike (NonUnitalSubsemiring R) R where
   coe s := s.carrier
-  coe_injective' := SetLike.coe_injective.comp toAddSubmonoid_injective
+  coe_injective := SetLike.coe_injective.comp toAddSubmonoid_injective
 
 lemma toSubsemigroup_injective :
     Function.Injective (toSubsemigroup : NonUnitalSubsemiring R → Subsemigroup R)
   | _, _, h => SetLike.ext (SetLike.ext_iff.mp h :)
+
+instance : PartialOrder (NonUnitalSubsemiring R) := .ofSetLike (NonUnitalSubsemiring R)
 
 /-- The actual `NonUnitalSubsemiring` obtained from an element of a `NonUnitalSubsemiringClass`. -/
 @[simps]
@@ -218,7 +229,7 @@ end NonUnitalSubsemiring
 namespace NonUnitalSubsemiring
 
 variable [NonUnitalNonAssocSemiring S]
-variable {F : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S] (s : NonUnitalSubsemiring R)
+variable (s : NonUnitalSubsemiring R)
 
 @[simp, norm_cast]
 theorem coe_zero : ((0 : s) : R) = (0 : R) :=

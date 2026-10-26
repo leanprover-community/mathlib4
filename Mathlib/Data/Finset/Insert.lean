@@ -114,13 +114,16 @@ theorem empty_ssubset_singleton : (∅ : Finset α) ⊂ {a} :=
 theorem coe_singleton (a : α) : (({a} : Finset α) : Set α) = {a} := by grind
 
 @[simp, norm_cast]
-theorem coe_eq_singleton {s : Finset α} {a : α} : (s : Set α) = {a} ↔ s = {a} := by grind
+theorem coe_eq_singleton {s : Finset α} {a : α} : (s : Set α) = {a} ↔ s = {a} := by
+  rw [← coe_singleton, coe_inj]
 
 @[norm_cast]
-lemma coe_subset_singleton : (s : Set α) ⊆ {a} ↔ s ⊆ {a} := by grind
+lemma coe_subset_singleton : (s : Set α) ⊆ {a} ↔ s ⊆ {a} := by
+  rw [← coe_singleton, coe_subset]
 
 @[norm_cast]
-lemma singleton_subset_coe : {a} ⊆ (s : Set α) ↔ {a} ⊆ s := by grind
+lemma singleton_subset_coe : {a} ⊆ (s : Set α) ↔ {a} ⊆ s := by
+  rw [← coe_singleton, coe_subset]
 
 theorem eq_singleton_iff_unique_mem {s : Finset α} {a : α} : s = {a} ↔ a ∈ s ∧ ∀ x ∈ s, x = a := by
   grind
@@ -264,6 +267,10 @@ theorem mem_of_mem_cons_of_ne {s : Finset α} {a : α} {has} {i : α}
 
 theorem forall_mem_cons (h : a ∉ s) (p : α → Prop) :
     (∀ x, x ∈ cons a s h → p x) ↔ p a ∧ ∀ x, x ∈ s → p x := by
+  grind
+
+theorem exists_mem_cons (h : a ∉ s) (p : α → Prop) :
+    (∃ x, x ∈ cons a s h ∧ p x) ↔ p a ∨ ∃ x, x ∈ s ∧ p x := by
   grind
 
 /-- Useful in proofs by induction. -/
@@ -433,7 +440,7 @@ instance (i : α) (s : Finset α) : Nonempty ((insert i s : Finset α) : Set α)
   (Finset.coe_nonempty.mpr (s.insert_nonempty i)).to_subtype
 
 theorem ne_insert_of_notMem (s t : Finset α) {a : α} (h : a ∉ s) : s ≠ insert a t := by
-  contrapose! h
+  contrapose h
   simp [h]
 
 theorem insert_subset_iff : insert a s ⊆ t ↔ a ∈ t ∧ s ⊆ t := by grind
@@ -546,7 +553,7 @@ def prodPiInsert (f : α → Type*) {a : α} (x : f a × Π i ∈ s, f i) : (Π 
     if h : i = a then cast (congrArg f h.symm) x.1 else x.2 i (mem_of_mem_insert_of_ne hi h)
 
 /-- The equivalence between pi types on insert and the product. -/
-def insertPiProdEquiv [DecidableEq α] {s : Finset α} (f : α → Type*) {a : α} (has : a ∉ s) :
+def insertPiProdEquiv {s : Finset α} (f : α → Type*) {a : α} (has : a ∉ s) :
     (Π i ∈ insert a s, f i) ≃ f a × Π i ∈ s, f i where
   toFun := insertPiProd f
   invFun := prodPiInsert f

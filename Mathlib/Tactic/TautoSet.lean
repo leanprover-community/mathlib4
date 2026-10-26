@@ -5,9 +5,8 @@ Authors: Lenny Taelman
 -/
 module
 
-public import Mathlib.Data.Set.SymmDiff  -- shake: keep (Qq dependency)
-public meta import Aesop
 public meta import Mathlib.Tactic.ToDual
+public import Mathlib.Data.Set.SymmDiff  -- shake: keep (Qq dependency)
 
 /-!
 # The `tauto_set` tactic
@@ -24,16 +23,19 @@ open Lean Elab.Tactic
 /--
 `specialize_all x` runs `specialize h x` for all hypotheses `h` where this tactic succeeds.
 -/
-elab (name := specialize_all) "specialize_all" x:term : tactic => withMainContext do
+local elab (name := specialize_all) "specialize_all" x:term : tactic => withMainContext do
   for h in ← getLCtx do
-    evalTactic (← `(tactic|specialize $(mkIdent h.userName) $x)) <|> pure ()
+    unless h.isImplementationDetail do
+      evalTactic (← `(tactic|specialize $(mkIdent h.userName) $x)) <|> pure ()
 
 
 /--
-`tauto_set` attempts to prove tautologies involving hypotheses and goals of the form `X ⊆ Y`
-or `X = Y`, where `X`, `Y` are expressions built using ∪, ∩, \, and ᶜ from finitely many
+`tauto_set` proves tautologies involving hypotheses and goals of the form `X ⊆ Y`
+or `X = Y`, where `X`, `Y` are expressions built using `∪`, `∩`, `\`, and `ᶜ` from finitely many
 variables of type `Set α`. It also unfolds expressions of the form `Disjoint A B` and
 `symmDiff A B`.
+In other words, this tactic proves propositional tautologies, expressed in the language of sets.
+This is a finishing tactic: it either closes the goal or raises an error.
 
 Examples:
 ```lean
@@ -48,7 +50,7 @@ macro "tauto_set" : tactic => `(tactic|
   · simp_all -failIfUnchanged only [
       Set.ext_iff, Set.subset_def,
       Set.mem_union, Set.mem_compl_iff, Set.mem_inter_iff,
-      Set.symmDiff_def, Set.diff_eq, Set.disjoint_iff
+      Set.symmDiff_def, Set.sdiff_eq, Set.disjoint_iff
     ]
     try intro x
     try specialize_all x

@@ -6,7 +6,9 @@ Authors: Antoine Chambert-Loir, Anatole Dedecker
 module
 
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
-public import Mathlib.Order.OmegaCompletePartialOrder
+
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.SetLike
 
 /-!
 # Saddle points of a map
@@ -14,7 +16,7 @@ public import Mathlib.Order.OmegaCompletePartialOrder
 * `IsSaddlePointOn`.
   Let `f : E × F → β` be a map, where `β` is preordered.
   A pair `(a,b)` in `E × F` is a *saddle point* of `f` on `X × Y`
-  if `f a y ≤ f x b` for all `x ∈ X` and all `y `in Y`.
+  if `f a y ≤ f x b` for all `x ∈ X` and all `y` in `Y`.
 
 * `isSaddlePointOn_iff`: if `β` is a complete linear order,
   then `(a, b) ∈ X × Y` is a saddle point on `X × Y` iff
@@ -40,9 +42,9 @@ theorem iSup₂_iInf₂_le_iInf₂_iSup₂ [CompleteLinearOrder β] :
 
 -- [Hiriart-Urruty, (4.1.4)]
 /-- The pair `(a, b)` is a saddle point of `f` on `X × Y`
-if `f a y ≤ f x b` for all `x ∈ X` and all `y `in Y`.
+if `f a y ≤ f x b` for all `x ∈ X` and all `y` in `Y`.
 
-Note: we do not require that a ∈ X and b ∈ Y. -/
+Note: we do not require that `a ∈ X` and `b ∈ Y`. -/
 def IsSaddlePointOn [Preorder β] (a : E) (b : F) : Prop :=
   ∀ x ∈ X, ∀ y ∈ Y, f a y ≤ f x b
 

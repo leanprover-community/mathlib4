@@ -5,14 +5,15 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.Init
 public import Lean.ScopedEnvExtension
+
+import Mathlib.Init
 
 /-!
 # Helper function for environment extensions and attributes.
 -/
 
-@[expose] public section
+public section
 
 open Lean
 

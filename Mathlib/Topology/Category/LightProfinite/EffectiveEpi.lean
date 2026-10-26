@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Topology.Category.CompHausLike.EffectiveEpi
 public import Mathlib.Topology.Category.LightProfinite.Limits
+
 /-!
 
 # Effective epimorphisms in `LightProfinite`
@@ -17,7 +18,7 @@ As a consequence we deduce from the material in
 and `Precoherent`.
 -/
 
-@[expose] public section
+public section
 
 universe u
 

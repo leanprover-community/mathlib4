@@ -5,8 +5,11 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.Meta.Tactic.TryThis
+public meta import Lean.Meta.TryThis
+-- Import this linter explicitly to ensure that
+-- this file has a valid copyright header and module docstring.
+public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 
 /-!
 # Adaptation notes
@@ -32,7 +35,8 @@ def reportAdaptationNote (f : Syntax → Meta.Tactic.TryThis.Suggestion) : MetaM
     logError "Adaptation notes must be followed by a /-- comment -/"
     let trailing := if let .original (trailing := s) .. := stx[0].getTailInfo then s else default
     let doc : Syntax :=
-      Syntax.node2 .none ``Parser.Command.docComment (mkAtom "/--") (mkAtom "comment -/")
+      Syntax.node2 .none ``Parser.Command.docComment (mkAtom "/--")
+        (Syntax.node2 .none ``Parser.Command.commentBody (mkAtom "comment ") (mkAtom "-/"))
     -- Optional: copy the original whitespace after the `#adaptation_note` token
     -- to after the docstring comment
     let doc := doc.updateTrailing trailing
@@ -41,9 +45,13 @@ def reportAdaptationNote (f : Syntax → Meta.Tactic.TryThis.Suggestion) : MetaM
     let stx' := stx'.setArg 1 (mkNullNode #[doc])
     Meta.Tactic.TryThis.addSuggestion (← getRef) (f stx') (origSpan? := ← getRef)
 
-/-- Adaptation notes are comments that are used to indicate that a piece of code
+/-- `#adaptation_note /-- comment -/` adds an adaptation note to the current file.
+Adaptation notes are comments that are used to indicate that a piece of code
 has been changed to accommodate a change in Lean core.
-They typically require further action/maintenance to be taken in the future. -/
+They typically require further action/maintenance to be taken in the future.
+
+This syntax works as a command, or inline in tactic or term mode.
+-/
 elab (name := adaptationNoteCmd) "#adaptation_note " (docComment)? : command => do
   Elab.Command.liftTermElabM <| reportAdaptationNote (fun s => (⟨s⟩ : TSyntax `tactic))
 

@@ -29,7 +29,7 @@ class AddSubmonoidWithOneClass (S : Type*) (R : outParam Type*) [AddMonoidWithOn
 
 variable {S R : Type*} [AddMonoidWithOne R] [SetLike S R] (s : S)
 
-@[simp, aesop safe (rule_sets := [SetLike])]
+@[simp, aesop safe (rule_sets := [SetLike]), membership .]
 theorem natCast_mem [AddSubmonoidWithOneClass S R] (n : ℕ) : (n : R) ∈ s := by
   induction n <;> simp [zero_mem, add_mem, one_mem, *]
 
@@ -37,6 +37,9 @@ theorem natCast_mem [AddSubmonoidWithOneClass S R] (n : ℕ) : (n : R) ∈ s := 
 lemma ofNat_mem [AddSubmonoidWithOneClass S R] (s : S) (n : ℕ) [n.AtLeastTwo] :
     ofNat(n) ∈ s := by
   rw [← Nat.cast_ofNat]; exact natCast_mem s n
+
+/- `no_index` breaks the default pattern so we can't use the `grind` attribute -/
+grind_pattern [membership] ofNat_mem => OfNat.ofNat n ∈ s
 
 instance (priority := 74) AddSubmonoidWithOneClass.toAddMonoidWithOne
     [AddSubmonoidWithOneClass S R] : AddMonoidWithOne s :=
@@ -78,6 +81,12 @@ instance (priority := 75) toNonAssocSemiring : NonAssocSemiring s := fast_instan
   Subtype.coe_injective.nonAssocSemiring Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ => rfl
 
+/-- A subsemiring of a `NonAssocCommSemiring` inherits a `NonAssocCommSemiring` structure -/
+instance (priority := 75) toNonAssocCommSemiring {R} [NonAssocCommSemiring R] [SetLike S R]
+    [SubsemiringClass S R] : NonAssocCommSemiring s := fast_instance%
+  Subtype.coe_injective.nonAssocCommSemiring Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) fun _ => rfl
+
 instance nontrivial [Nontrivial R] : Nontrivial s :=
   nontrivial_of_ne 0 1 fun H => zero_ne_one (congr_arg Subtype.val H)
 
@@ -108,8 +117,6 @@ instance (priority := 75) toSemiring {R} [Semiring R] [SetLike S R] [Subsemiring
   Subtype.coe_injective.semiring Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 
-@[deprecated (since := "2025-07-29")] alias coe_pow := SubmonoidClass.coe_pow
-
 /-- A subsemiring of a `CommSemiring` is a `CommSemiring`. -/
 instance toCommSemiring {R} [CommSemiring R] [SetLike S R] [SubsemiringClass S R] :
     CommSemiring s := fast_instance%
@@ -136,7 +143,9 @@ namespace Subsemiring
 
 instance : SetLike (Subsemiring R) R where
   coe s := s.carrier
-  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
+  coe_injective p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
+
+instance : PartialOrder (Subsemiring R) := .ofSetLike (Subsemiring R)
 
 initialize_simps_projections Subsemiring (carrier → coe, as_prefix coe)
 
@@ -168,6 +177,7 @@ instance : SubsemiringClass (Subsemiring R) R where
   mul_mem {s} := Subsemigroup.mul_mem' s.toSubmonoid.toSubsemigroup
 
 /-- Turn a `Subsemiring` into a `NonUnitalSubsemiring` by forgetting that it contains `1`. -/
+@[reducible]
 def toNonUnitalSubsemiring (S : Subsemiring R) : NonUnitalSubsemiring R where __ := S
 
 @[simp]
@@ -218,7 +228,6 @@ lemma toNonUnitalSubsemiring_injective :
   fun S₁ S₂ h => SetLike.ext'_iff.2
     (show (S₁.toNonUnitalSubsemiring : Set R) = S₂ from SetLike.ext'_iff.1 h)
 
-@[simp]
 lemma toNonUnitalSubsemiring_inj {S₁ S₂ : Subsemiring R} :
     S₁.toNonUnitalSubsemiring = S₂.toNonUnitalSubsemiring ↔ S₁ = S₂ :=
   toNonUnitalSubsemiring_injective.eq_iff
@@ -234,8 +243,8 @@ protected def mk' (s : Set R) (sm : Submonoid R) (hm : ↑sm = s) (sa : AddSubmo
   carrier := s
   zero_mem' := by exact ha ▸ sa.zero_mem
   one_mem' := by exact hm ▸ sm.one_mem
-  add_mem' {x y} := by simpa only [← ha] using sa.add_mem
-  mul_mem' {x y} := by simpa only [← hm] using sm.mul_mem
+  add_mem' {x y} := by simpa only [← ha] using! sa.add_mem
+  mul_mem' {x y} := by simpa only [← hm] using! sm.mul_mem
 
 @[simp]
 theorem mem_mk' {s : Set R} {sm : Submonoid R} (hm : ↑sm = s) {sa : AddSubmonoid R} (ha : ↑sa = s)
@@ -292,6 +301,10 @@ theorem coe_add (x y : s) : ((x + y : s) : R) = (x + y : R) :=
 
 @[simp, norm_cast]
 theorem coe_mul (x y : s) : ((x * y : s) : R) = (x * y : R) :=
+  rfl
+
+@[simp, norm_cast]
+theorem coe_natCast (n : ℕ) : ((n : s) : R) = (n : R) :=
   rfl
 
 instance nontrivial [Nontrivial R] : Nontrivial s :=
@@ -394,8 +407,10 @@ def domRestrict (f : R →+* S) (s : σR) : s →+* S :=
   f.comp <| SubsemiringClass.subtype s
 
 @[simp]
-theorem restrict_apply (f : R →+* S) {s : σR} (x : s) : f.domRestrict s x = f x :=
+theorem domRestrict_apply (f : R →+* S) {s : σR} (x : s) : f.domRestrict s x = f x :=
   rfl
+
+@[deprecated (since := "2026-07-19")] alias restrict_apply := domRestrict_apply
 
 /-- The subsemiring of elements `x : R` such that `f x = g x` -/
 def eqLocusS (f g : R →+* S) : Subsemiring R :=

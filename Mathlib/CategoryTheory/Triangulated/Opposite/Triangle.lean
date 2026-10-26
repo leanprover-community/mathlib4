@@ -29,7 +29,7 @@ between `(Triangle C)ᵒᵖ` and `Triangle Cᵒᵖ`, called
 
 namespace CategoryTheory.Pretriangulated
 
-open Category Limits Preadditive ZeroObject Opposite
+open Category Limits Preadditive ZeroObject Pretriangulated.Opposite
 
 variable (C : Type*) [Category* C] [HasShift C ℤ]
 
@@ -72,6 +72,8 @@ noncomputable def inverse : Triangle Cᵒᵖ ⥤ (Triangle C)ᵒᵖ where
           ← op_comp_assoc, ← Functor.map_comp, ← unop_comp, ← φ.comm₃,
           unop_comp, Functor.map_comp, op_comp, assoc]) }
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The unit isomorphism of the
 equivalence `triangleOpEquivalence C : (Triangle C)ᵒᵖ ≌ Triangle Cᵒᵖ` . -/
 @[simps!]
@@ -82,6 +84,8 @@ noncomputable def unitIso : 𝟭 _ ≅ functor C ⋙ inverse C :=
         (by simp [shift_unop_opShiftFunctorEquivalence_counitIso_inv_app]))))
     (fun {T₁ T₂} f => Quiver.Hom.unop_inj (by cat_disch))
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The counit isomorphism of the
 equivalence `triangleOpEquivalence C : (Triangle C)ᵒᵖ ≌ Triangle Cᵒᵖ` . -/
 @[simps!]
@@ -100,6 +104,8 @@ noncomputable def counitIso : inverse C ⋙ functor C ≅ 𝟭 _ :=
 
 end TriangleOpEquivalence
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- An anti-equivalence between the categories of triangles in `C` and in `Cᵒᵖ`.
 A triangle in `Cᵒᵖ` shall be distinguished iff it corresponds to a distinguished
 triangle in `C` via this equivalence. -/

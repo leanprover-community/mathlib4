@@ -11,6 +11,7 @@ public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 public import Mathlib.Data.DFinsupp.BigOperators
 public import Mathlib.Data.DFinsupp.Small
 public import Mathlib.GroupTheory.QuotientGroup.Defs
+
 /-!
 # The category of additive commutative groups has all colimits.
 
@@ -88,6 +89,7 @@ lemma Quot.ι_desc [DecidableEq J] (j : J) (x : F.obj j) :
   erw [QuotientAddGroup.lift_mk']
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma Quot.map_ι [DecidableEq J] {j j' : J} {f : j ⟶ j'} (x : F.obj j) :
     Quot.ι F j' (F.map f x) = Quot.ι F j x := by
@@ -98,6 +100,8 @@ lemma Quot.map_ι [DecidableEq J] {j j' : J} {f : j ⟶ j'} (x : F.obj j) :
   simp only [DFinsupp.singleAddHom_apply]
   exact AddSubgroup.subset_closure ⟨j, j', f, x, rfl⟩
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /--
 The obvious additive map from `Quot F` to `Quot (F ⋙ uliftFunctor.{u'})`.
 -/
@@ -119,10 +123,11 @@ lemma quotToQuotUlift_ι [DecidableEq J] (j : J) (x : F.obj j) :
   dsimp [quotToQuotUlift, Quot.ι]
   conv_lhs => erw [AddMonoidHom.comp_apply (QuotientAddGroup.mk' (Relations F))
     (DFinsupp.singleAddHom _ j), QuotientAddGroup.lift_mk']
-  simp only [DFinsupp.singleAddHom_apply, DFinsupp.sumAddHom_single, AddMonoidHom.coe_comp,
-    AddMonoidHom.coe_coe, Function.comp_apply]
+  simp only [DFinsupp.singleAddHom_apply, DFinsupp.sumAddHom_single]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /--
 The obvious additive map from `Quot (F ⋙ uliftFunctor.{u'})` to `Quot F`.
 -/
@@ -139,10 +144,10 @@ lemma quotUliftToQuot_ι [DecidableEq J] (j : J) (x : (F ⋙ uliftFunctor.{u'}).
   dsimp [quotUliftToQuot, Quot.ι]
   conv_lhs => erw [AddMonoidHom.comp_apply (QuotientAddGroup.mk' (Relations (F ⋙ uliftFunctor)))
     (DFinsupp.singleAddHom _ j), QuotientAddGroup.lift_mk']
-  simp only [Functor.comp_obj, uliftFunctor_obj, DFinsupp.singleAddHom_apply,
-    DFinsupp.sumAddHom_single, AddMonoidHom.coe_comp, AddMonoidHom.coe_coe, Function.comp_apply]
+  simp only [DFinsupp.singleAddHom_apply, DFinsupp.sumAddHom_single]
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 The additive equivalence between `Quot F` and `Quot (F ⋙ uliftFunctor.{u'})`.
 -/
@@ -163,6 +168,8 @@ def quotQuotUliftAddEquiv [DecidableEq J] : Quot F ≃+ Quot (F ⋙ uliftFunctor
     rfl
   map_add' _ _ := by simp
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma Quot.desc_quotQuotUliftAddEquiv [DecidableEq J] (c : Cocone F) :
     (Quot.desc (F ⋙ uliftFunctor.{u'}) (uliftFunctor.{u'}.mapCocone c)).comp
     (quotQuotUliftAddEquiv F).toAddMonoidHom =
@@ -179,9 +186,11 @@ induces a cocone on `F` as long as the universes work out.
 -/
 @[simps]
 def toCocone [DecidableEq J] {A : Type w} [AddCommGroup A] (f : Quot F →+ A) : Cocone F where
-  pt := AddCommGrpCat.of A
+  pt := ↧A
   ι.app j := ofHom <| f.comp (Quot.ι F j)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma Quot.desc_toCocone_desc [DecidableEq J] {A : Type w} [AddCommGroup A] (f : Quot F →+ A)
     (hc : IsColimit c) : (hc.desc (toCocone F f)).hom.comp (Quot.desc F c) = f := by
   refine Quot.addMonoidHom_ext F (fun j x ↦ ?_)
@@ -190,6 +199,8 @@ lemma Quot.desc_toCocone_desc [DecidableEq J] {A : Type w} [AddCommGroup A] (f :
   rw [hc.fac]
   simp
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma Quot.desc_toCocone_desc_app [DecidableEq J] {A : Type w} [AddCommGroup A] (f : Quot F →+ A)
     (hc : IsColimit c) (x : Quot F) : hc.desc (toCocone F f) (Quot.desc F c x) = f x := by
   conv_rhs => rw [← Quot.desc_toCocone_desc F c f hc]
@@ -223,22 +234,18 @@ noncomputable def isColimit_of_bijective_desc [DecidableEq J]
 -/
 @[simps pt ι_app]
 noncomputable def colimitCocone [DecidableEq J] [Small.{w} (Quot.{w} F)] : Cocone F where
-  pt := AddCommGrpCat.of (Shrink (Quot F))
+  pt := ↧(Shrink (Quot F))
   ι :=
     { app j :=
         AddCommGrpCat.ofHom (Shrink.addEquiv.symm.toAddMonoidHom.comp (Quot.ι F j))
-      naturality _ _ _ := by
-        ext
-        dsimp
-        change Shrink.addEquiv.symm _ = _
-        rw [Quot.map_ι] }
+      naturality _ _ _ := by ext; simp }
 
 @[simp]
 theorem Quot.desc_colimitCocone [DecidableEq J] (F : J ⥤ AddCommGrpCat.{w}) [Small.{w} (Quot F)] :
     Quot.desc F (colimitCocone F) = (Shrink.addEquiv (α := Quot F)).symm.toAddMonoidHom := by
   refine Quot.addMonoidHom_ext F (fun j x ↦ ?_)
-  simpa only [colimitCocone_pt, AddEquiv.toAddMonoidHom_eq_coe, AddMonoidHom.coe_coe]
-    using Quot.ι_desc F (colimitCocone F) j x
+  simpa only [colimitCocone_pt, AddEquiv.toAddMonoidHom_eq_coe, AddMonoidHom.coe_ofClass]
+    using! Quot.ι_desc F (colimitCocone F) j x
 
 /-- (internal implementation) The fact that the candidate colimit cocone constructed in
 `colimitCocone` is the colimit.
@@ -280,11 +287,22 @@ namespace AddCommGrpCat
 
 open QuotientAddGroup
 
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/12179:
+
+This definition fails without `respectTransparency false`. Removing `lift_mk` from the `dsimp only`
+set in `inv_hom_id` would help. A more sustainable fix would probably be to revisit the `lift_mk`
+refl lemma: Its LHS and RHS are not defeq at implicit transparency. Either the lemma shouldn't be
+a refl lemma or more declarations need to be implicit-reducible.
+-/
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The categorical cokernel of a morphism in `AddCommGrpCat`
 agrees with the usual group-theoretical quotient.
 -/
 noncomputable def cokernelIsoQuotient {G H : AddCommGrpCat.{u}} (f : G ⟶ H) :
-    cokernel f ≅ AddCommGrpCat.of (H ⧸ AddMonoidHom.range f.hom) where
+    cokernel f ≅ ↧(H ⧸ AddMonoidHom.range f.hom) where
   hom := cokernel.desc f (ofHom (mk' _)) <| by
         ext x
         simp
@@ -298,8 +316,8 @@ noncomputable def cokernelIsoQuotient {G H : AddCommGrpCat.{u}} (f : G ⟶ H) :
     rfl
   inv_hom_id := by
     ext x
-    dsimp only [hom_comp, hom_ofHom, hom_zero, AddMonoidHom.coe_comp, coe_mk',
-      Function.comp_apply, AddMonoidHom.zero_apply, id_eq, lift_mk, hom_id, AddMonoidHom.coe_id]
+    dsimp only [hom_comp, hom_ofHom, hom_zero, AddMonoidHom.coe_comp, coe_mk', lift_mk,
+      Function.comp_apply, AddMonoidHom.zero_apply, id_eq, hom_id, AddMonoidHom.coe_id]
     exact QuotientAddGroup.induction_on (α := H) x <| cokernel.π_desc_apply f _ _
 
 end AddCommGrpCat

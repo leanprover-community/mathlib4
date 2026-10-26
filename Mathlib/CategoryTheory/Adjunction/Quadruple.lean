@@ -20,6 +20,7 @@ Currently the only two results are the following:
   are epimorphisms iff the components of the natural transformation `F ⟶ R` are monomorphisms.
 * When `L` and `G` are fully faithful, the components of the induced natural transformation `L ⟶ G`
   are epimorphisms iff the components of the natural transformation `R ⟶ F` are monomorphisms.
+
 This is in particular relevant for the adjoint quadruples `π₀ ⊣ disc ⊣ Γ ⊣ codisc` that appear in
 cohesive topoi, and can be found e.g. as proposition 2.7
 [here](https://ncatlab.org/nlab/show/cohesive+topos).

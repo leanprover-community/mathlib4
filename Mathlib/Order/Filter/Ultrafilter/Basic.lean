@@ -5,9 +5,8 @@ Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Order.Filter.Ultrafilter.Defs
 public import Mathlib.Order.Filter.Cofinite
-public import Mathlib.Order.ZornAtoms
+public import Mathlib.Order.Filter.Ultrafilter.Defs
 
 /-!
 # Ultrafilters
@@ -42,8 +41,8 @@ theorem finite_biUnion_mem_iff {is : Set β} {s : β → Set α} (his : is.Finit
 lemma eventually_exists_mem_iff {is : Set β} {P : β → α → Prop} (his : is.Finite) :
     (∀ᶠ i in f, ∃ a ∈ is, P a i) ↔ ∃ a ∈ is, ∀ᶠ i in f, P a i := by
   simp only [Filter.Eventually, Ultrafilter.mem_coe]
-  convert f.finite_biUnion_mem_iff his (s := P) with i
-  aesop
+  rw [show {i | ∃ a ∈ is, P a i} = ⋃ a ∈ is, {i | P a i} by ext; simp]
+  exact finite_biUnion_mem_iff his
 
 lemma eventually_exists_iff [Finite β] {P : β → α → Prop} :
     (∀ᶠ i in f, ∃ a, P a i) ↔ ∃ a, ∀ᶠ i in f, P a i := by
@@ -56,6 +55,9 @@ theorem eq_pure_of_finite_mem (h : s.Finite) (h' : s ∈ f) : ∃ x ∈ s, f = p
 
 theorem eq_pure_of_finite [Finite α] (f : Ultrafilter α) : ∃ a, f = pure a :=
   (eq_pure_of_finite_mem finite_univ univ_mem).imp fun _ ⟨_, ha⟩ => ha
+
+theorem pure_surjective [Finite α] : Function.Surjective (pure : α → Ultrafilter α) :=
+  fun f ↦ (eq_pure_of_finite f).imp fun _ ↦ .symm
 
 theorem le_cofinite_or_eq_pure (f : Ultrafilter α) : (f : Filter α) ≤ cofinite ∨ ∃ a, f = pure a :=
   or_iff_not_imp_left.2 fun h =>
@@ -77,13 +79,10 @@ namespace Filter
 
 open Ultrafilter
 
+@[to_dual]
 lemma atTop_eq_pure_of_isTop [PartialOrder α] {x : α} (hx : IsTop x) :
     (atTop : Filter α) = pure x :=
   { top := x, le_top := hx : OrderTop α }.atTop_eq
-
-lemma atBot_eq_pure_of_isBot [PartialOrder α] {x : α} (hx : IsBot x) :
-    (atBot : Filter α) = pure x :=
-  @atTop_eq_pure_of_isTop αᵒᵈ _ _ hx
 
 /-- The `tendsto` relation can be checked on ultrafilters. -/
 theorem tendsto_iff_ultrafilter (f : α → β) (l₁ : Filter α) (l₂ : Filter β) :

@@ -6,9 +6,6 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Category.Pairwise
-public import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
-public import Mathlib.CategoryTheory.Limits.Final
-public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 public import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
 
 /-!
@@ -226,9 +223,9 @@ after appropriate whiskering and postcomposition.
 -/
 def pairwiseCoconeIso :
     (Pairwise.cocone U).op ≅
-      (Cones.postcomposeEquivalence (NatIso.op (pairwiseDiagramIso U :) :)).functor.obj
+      (Cone.postcomposeEquivalence (NatIso.op (pairwiseDiagramIso U :) :)).functor.obj
         ((opensLeCoverCocone U).op.whisker (pairwiseToOpensLeCover U).op) :=
-  Cones.ext (Iso.refl _) (by cat_disch)
+  Cone.ext (Iso.refl _) (by cat_disch)
 
 end SheafCondition
 
@@ -248,17 +245,17 @@ def isLimitOpensLeCoverEquivPairwise :
       (IsLimit.equivIsoLimit F.mapConeWhisker.symm)
     _ ≃
         IsLimit
-          ((Cones.postcomposeEquivalence _).functor.obj
+          ((Cone.postcomposeEquivalence _).functor.obj
             (F.mapCone ((opensLeCoverCocone U).op.whisker (pairwiseToOpensLeCover U).op))) :=
       (IsLimit.postcomposeHomEquiv _ _).symm
     _ ≃
         IsLimit
           (F.mapCone
-            ((Cones.postcomposeEquivalence _).functor.obj
+            ((Cone.postcomposeEquivalence _).functor.obj
               ((opensLeCoverCocone U).op.whisker (pairwiseToOpensLeCover U).op))) :=
       (IsLimit.equivIsoLimit (Functor.mapConePostcomposeEquivalenceFunctor _).symm)
     _ ≃ IsLimit (F.mapCone (Pairwise.cocone U).op) :=
-      IsLimit.equivIsoLimit ((Cones.functoriality _ _).mapIso (pairwiseCoconeIso U :).symm)
+      IsLimit.equivIsoLimit ((Cone.functoriality _ _).mapIso (pairwiseCoconeIso U :).symm)
 
 /-- The sheaf condition
 in terms of a limit diagram over all `{ V : Opens X // ∃ i, V ≤ U i }`
@@ -294,7 +291,7 @@ theorem isSheaf_iff_isSheafPreservesLimitPairwiseIntersections :
     F.IsSheaf ↔ F.IsSheafPreservesLimitPairwiseIntersections := by
   refine ⟨fun h U ↦ h.isSheafPreservesLimitPairwiseIntersections,
     fun h ↦ F.isSheaf_iff_isSheafPairwiseIntersections.mpr fun ι U ↦ ?_⟩
-  haveI := h U
+  have := h U
   exact ⟨isLimitOfPreserves _ (Pairwise.coconeIsColimit U).op⟩
 
 end TopCat.Presheaf
@@ -332,6 +329,7 @@ variable
   (s :
     PullbackCone (F.1.map (homOfLE inf_le_left : U ⊓ V ⟶ _).op) (F.1.map (homOfLE inf_le_right).op))
 
+set_option backward.defeqAttrib.useBackward true in
 /-- (Implementation).
 Every cone over `F(U) ⟶ F(U ⊓ V)` and `F(V) ⟶ F(U ⊓ V)` factors through `F(U ⊔ V)`.
 -/
@@ -368,22 +366,24 @@ def interUnionPullbackConeLift : s.pt ⟶ F.1.obj (op (U ⊔ V)) := by
     Category.assoc, ← F.1.map_comp, ← F.1.map_comp]
   exact s.condition.symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem interUnionPullbackConeLift_left :
     interUnionPullbackConeLift F U V s ≫ F.1.map (homOfLE le_sup_left).op = s.fst := by
-  erw [Category.assoc]
-  simp_rw [← F.1.map_comp]
+  rw [interUnionPullbackConeLift, Category.assoc, ← F.1.map_comp]
   exact
     (F.presheaf.isSheaf_iff_isSheafPairwiseIntersections.mp F.2 _).some.fac _ <|
       op <| Pairwise.single <| ULift.up WalkingPair.left
 
+set_option backward.isDefEq.respectTransparency false in
 theorem interUnionPullbackConeLift_right :
     interUnionPullbackConeLift F U V s ≫ F.1.map (homOfLE le_sup_right).op = s.snd := by
-  erw [Category.assoc]
-  simp_rw [← F.1.map_comp]
+  rw [interUnionPullbackConeLift, Category.assoc, ← F.1.map_comp]
   exact
     (F.presheaf.isSheaf_iff_isSheafPairwiseIntersections.mp F.2 _).some.fac _ <|
       op <| Pairwise.single <| ULift.up WalkingPair.right
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- For a sheaf `F`, `F(U ⊔ V)` is the pullback of `F(U) ⟶ F(U ⊓ V)` and `F(V) ⟶ F(U ⊓ V)`. -/
 def isLimitPullbackCone : IsLimit (interUnionPullbackCone F U V) := by
   let ι : ULift.{w} WalkingPair → Opens X := fun ⟨j⟩ => WalkingPair.casesOn j U V
@@ -405,12 +405,10 @@ def isLimitPullbackCone : IsLimit (interUnionPullbackCone F U V) := by
     rw [← cancel_mono (F.1.map (eqToHom hι.symm).op)]
     apply (F.presheaf.isSheaf_iff_isSheafPairwiseIntersections.mp F.2 ι).some.hom_ext
     rintro ((_ | _) | (_ | _)) <;>
-    rw [Category.assoc, Category.assoc]
-    · erw [← F.1.map_comp]
-      convert h₁
+    rw [Category.assoc, Category.assoc, Functor.mapCone_π_app, ← F.1.map_comp]
+    · convert! h₁
       apply interUnionPullbackConeLift_left
-    · erw [← F.1.map_comp]
-      convert h₂
+    · convert! h₂
       apply interUnionPullbackConeLift_right
     all_goals
       dsimp only [Functor.op, Pairwise.cocone_ι_app, Functor.mapCone_π_app, Cocone.op,
@@ -418,9 +416,9 @@ def isLimitPullbackCone : IsLimit (interUnionPullbackCone F U V) := by
       simp_rw [F.1.map_comp, ← Category.assoc]
       congr 1
       simp_rw [Category.assoc, ← F.1.map_comp]
-    · convert h₁
+    · convert! h₁
       apply interUnionPullbackConeLift_left
-    · convert h₂
+    · convert! h₂
       apply interUnionPullbackConeLift_right
 
 /-- If `U, V` are disjoint, then `F(U ⊔ V) = F(U) × F(V)`. -/

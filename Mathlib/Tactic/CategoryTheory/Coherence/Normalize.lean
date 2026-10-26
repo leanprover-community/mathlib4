@@ -37,7 +37,7 @@ the concept of strict monoidal categories due to the feature of dependent type t
 normalization tactic can remove associators and unitors from the expression, extracting the
 necessary data for drawing string diagrams.
 
-The string diagrams widget is to use Penrose (https://github.com/penrose) via ProofWidget.
+The string diagrams widget is to use Penrose (https://github.com/penrose) via ProofWidgets.
 However, it should be noted that the normalization procedure in this file does not rely on specific
 settings, allowing for broader application. Future plans include the following. At least I (Yuma)
 would like to work on these in the future, but it might not be immediate. If anyone is interested,
@@ -56,8 +56,8 @@ I would be happy to discuss.
 
 ## Main definitions
 - `Tactic.BicategoryLike.eval`: Given a Lean expression `e` that represents a morphism in a monoidal
-category, this function returns a pair of `⟨e', pf⟩` where `e'` is the normalized expression of `e`
-and `pf` is a proof that `e = e'`.
+  category, this function returns a pair of `⟨e', pf⟩` where `e'` is the normalized expression of
+  `e` and `pf` is a proof that `e = e'`.
 
 -/
 
@@ -321,7 +321,7 @@ class MkEvalHorizontalComp (m : Type → Type) where
     (ηθ ηθ₁ ηθ₂ ηθ₃ : NormalExpr) (e_ηθ e_ηθ₁ e_ηθ₂ e_ηθ₃ : Expr) : m Expr
   /-- Evaluate `η ◫ (f ◁ θ)` -/
   mkEvalHorizontalCompAux'OfWhisker (f : Atom₁) (η : HorizontalComp) (θ : WhiskerLeft)
-    (η₁ ηθ ηθ₁ ηθ₂ : NormalExpr) (e_ηθ e_η₁ e_ηθ₁ e_ηθ₂ : Expr) : m Expr
+    (η₁ ηθ ηθ₁ ηθ₂ : NormalExpr) (e_η₁ e_ηθ e_ηθ₁ e_ηθ₂ : Expr) : m Expr
   /-- Evaluate `α ◫ β` -/
   mkEvalHorizontalCompNilNil (α β : Structural) : m Expr
   /-- Evaluate `α ◫ (β ≫ η ≫ ηs)` -/
@@ -370,7 +370,7 @@ def evalComp : NormalExpr → NormalExpr → CoherenceM ρ Eval.Result
 
 open MkEvalWhiskerLeft
 
-variable [MonadMor₁ (CoherenceM ρ)] [MonadMor₂Iso (CoherenceM ρ)]
+variable [MonadMor₁ (CoherenceM ρ)]
 
 /-- Evaluate the expression `f ◁ η` into a normalized form. -/
 def evalWhiskerLeft : Mor₁ → NormalExpr → CoherenceM ρ Eval.Result
@@ -478,7 +478,7 @@ partial def evalHorizontalCompAux' : WhiskerLeft → WhiskerLeft → CoherenceM 
     let ⟨ηθ, e_ηθ⟩ ← evalHorizontalComp η₁ (← NormalExpr.ofM θ)
     let ⟨ηθ₁, e_ηθ₁⟩ ← evalComp ηθ (← NormalExpr.associatorM (← η.tgtM) (.of f) (← θ.tgtM))
     let ⟨ηθ₂, e_ηθ₂⟩ ← evalComp (← NormalExpr.associatorInvM (← η.srcM) (.of f) (← θ.srcM)) ηθ₁
-    return ⟨ηθ₂, ← mkEvalHorizontalCompAux'OfWhisker f η θ ηθ η₁ ηθ₁ ηθ₂ e_η₁ e_ηθ e_ηθ₁ e_ηθ₂⟩
+    return ⟨ηθ₂, ← mkEvalHorizontalCompAux'OfWhisker f η θ η₁ ηθ ηθ₁ ηθ₂ e_η₁ e_ηθ e_ηθ₁ e_ηθ₂⟩
 
 /-- Evaluate the expression `η ⊗ θ` into a normalized form. -/
 partial def evalHorizontalComp : NormalExpr → NormalExpr → CoherenceM ρ Eval.Result
@@ -516,7 +516,7 @@ variable {ρ : Type}
 
 /-- Trace the proof of the normalization. -/
 def traceProof (nm : Name) (result : Expr) : CoherenceM ρ Unit := do
-  withTraceNode nm (fun _ => return m!"{checkEmoji} {← inferType result}") do
+  withTraceNode nm (fun _ => return m!"{← inferType result}") do
     if ← isTracingEnabledFor nm then addTrace nm m!"proof: {result}"
 
 -- TODO: It takes a while to compile. Find out why.
@@ -533,7 +533,7 @@ def eval (nm : Name) (e : Mor₂) : CoherenceM ρ Eval.Result := do
         return ⟨← NormalExpr.ofAtomM η, result⟩
       | _ => throwError "not implemented. try dsimp first."
     | .isoInv _ _ α => withTraceNode nm (fun _ => return m!"Iso.inv") do match α with
-      | .structuralAtom α => return ⟨← nilM <| (← symmM (.structuralAtom α)), ← mkEqRefl e.e⟩
+      | .structuralAtom α => return ⟨← nilM (← symmM (.structuralAtom α)), ← mkEqRefl e.e⟩
       | .of η =>
         let η ← MonadMor₂.atomInvM η
         let result ← mkEvalOf η

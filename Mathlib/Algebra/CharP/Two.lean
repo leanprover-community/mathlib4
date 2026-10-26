@@ -5,8 +5,9 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.CharP.Lemmas
-public import Mathlib.GroupTheory.OrderOfElement
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Algebra.Ring.Parity
 
 /-!
 # Lemmas about rings of characteristic two
@@ -19,7 +20,10 @@ elsewhere, with a shorter name for ease of discovery, and no need for a `[Fact (
 
 public section
 
-assert_not_exists Algebra LinearMap
+-- TODO: `assert_not_exists Field` is added because of `Mathlib.GroupTheory.OrderOfElement`.
+-- If you want to import fields here, please refactor the import hierarchy for
+-- `Mathlib.GroupTheory.OrderOfElement`.
+assert_not_exists Algebra LinearMap Field
 
 variable {R ι : Type*}
 
@@ -28,9 +32,6 @@ namespace CharTwo
 section AddMonoidWithOne
 
 variable [AddMonoidWithOne R]
-
-theorem two_eq_zero [CharP R 2] : (2 : R) = 0 := by
-  rw [← Nat.cast_two, CharP.cast_eq_zero]
 
 /-- The only hypotheses required to build a `CharP R 2` instance are `1 ≠ 0` and `2 = 0`. -/
 theorem of_one_ne_zero_of_two_eq_zero (h₁ : (1 : R) ≠ 0) (h₂ : (2 : R) = 0) : CharP R 2 where
@@ -41,32 +42,108 @@ theorem of_one_ne_zero_of_two_eq_zero (h₁ : (1 : R) ≠ 0) (h₂ : (2 : R) = 0
     · simp_rw [hn.not_two_dvd_nat, iff_false]
       rwa [natCast_eq_one_of_odd_of_two_eq_zero hn h₂]
 
+variable [CharP R 2]
+
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
+@[scoped simp]
+theorem two_eq_zero : (2 : R) = 0 := by
+  rw [← Nat.cast_two, CharP.cast_eq_zero]
+
+theorem natCast_eq_ite (n : ℕ) : (n : R) = if Even n then 0 else 1 := by
+  induction n <;> aesop (add simp [one_add_one_eq_two])
+
+@[simp]
+theorem range_natCast : Set.range ((↑) : ℕ → R) = {0, 1} := by
+  rw [funext natCast_eq_ite, Set.range_ite_const]
+  · use 0; simp
+  · use 1; simp
+
+variable (R) in
+theorem natCast_cases (n : ℕ) : (n : R) = 0 ∨ (n : R) = 1 :=
+  range_natCast.le (Set.mem_range_self _)
+
+theorem natCast_eq_mod (n : ℕ) : (n : R) = (n % 2 : ℕ) := by
+  simp [natCast_eq_ite, Nat.even_iff]
+
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
+@[scoped simp]
+theorem ofNat_eq_mod (n : ℕ) [n.AtLeastTwo] : (OfNat.ofNat n : R) = (ofNat(n) % 2 : ℕ) :=
+  natCast_eq_mod n
+
+example : (37 : R) = 1 := by simp
+
 end AddMonoidWithOne
 
-section Semiring
+section AddGroupWithOne
 
-variable [Semiring R] [CharP R 2]
-
-@[scoped simp]
-theorem add_self_eq_zero (x : R) : x + x = 0 := by rw [← two_smul R x, two_eq_zero, zero_smul]
+variable [AddGroupWithOne R] [CharP R 2]
 
 @[scoped simp]
-protected theorem two_nsmul (x : R) : 2 • x = 0 := by rw [two_smul, add_self_eq_zero]
+theorem neg_one_eq_one : (-1 : R) = 1 := by
+  rw [neg_eq_iff_add_eq_zero, one_add_one_eq_two, two_eq_zero]
 
+@[scoped simp]
+theorem neg_natCast_eq (n : ℕ) : -(n : R) = n := by
+  rw [← nsmul_one, ← neg_nsmul, neg_one_eq_one]
+
+theorem intCast_eq_ite (n : ℤ) : (n : R) = if Even n then 0 else 1 := by
+  obtain ⟨n, rfl | rfl⟩ := n.eq_nat_or_neg <;> simpa using natCast_eq_ite n
+
+@[simp]
+theorem range_intCast : Set.range ((↑) : ℤ → R) = {0, 1} := by
+  rw [funext intCast_eq_ite, Set.range_ite_const]
+  · use 0; simp
+  · use 1; simp
+
+variable (R) in
+theorem intCast_cases (n : ℤ) : (n : R) = 0 ∨ (n : R) = 1 :=
+  (Set.ext_iff.1 range_intCast _).1 (Set.mem_range_self _)
+
+theorem intCast_eq_mod (n : ℤ) : (n : R) = (n % 2 : ℤ) := by
+  simp [intCast_eq_ite, Int.even_iff]
+
+end AddGroupWithOne
+
+section NonAssocSemiring
+
+variable [NonAssocSemiring R] [CharP R 2]
+
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
+@[scoped simp]
+theorem add_self_eq_zero (x : R) : x + x = 0 := by rw [← two_mul x, two_eq_zero, zero_mul]
+
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
+@[scoped simp]
+protected theorem two_nsmul (x : R) : 2 • x = 0 := by rw [two_nsmul, add_self_eq_zero]
+
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 protected theorem add_cancel_left (a b : R) : a + (a + b) = b := by
   rw [← add_assoc, add_self_eq_zero, zero_add]
 
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 protected theorem add_cancel_right (a b : R) : a + b + b = a := by
   rw [add_assoc, add_self_eq_zero, add_zero]
 
-end Semiring
+protected theorem add_eq_zero {a b : R} : a + b = 0 ↔ a = b := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [← CharTwo.add_cancel_left a b, h, add_zero]
+  · rw [h, add_self_eq_zero]
 
-section Ring
+theorem add_eq_iff_eq_add {a b c : R} : a + b = c ↔ a = c + b := by
+  rw [← CharTwo.add_eq_zero, add_assoc, CharTwo.add_eq_zero, add_comm]
 
-variable [Ring R] [CharP R 2]
+theorem eq_add_iff_add_eq {a b c : R} : a = b + c ↔ a + c = b := by
+  rw [← CharTwo.add_eq_zero, ← add_assoc, add_right_comm, CharTwo.add_eq_zero]
 
+end NonAssocSemiring
+
+section NonAssocRing
+
+variable [NonAssocRing R] [CharP R 2]
+
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 theorem neg_eq (x : R) : -x = x := by
   rw [neg_eq_iff_add_eq_zero, add_self_eq_zero]
@@ -74,98 +151,91 @@ theorem neg_eq (x : R) : -x = x := by
 theorem neg_eq' : Neg.neg = (id : R → R) :=
   funext neg_eq
 
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 theorem sub_eq_add (x y : R) : x - y = x + y := by rw [sub_eq_add_neg, neg_eq]
 
-theorem add_eq_iff_eq_add {a b c : R} : a + b = c ↔ a = c + b := by
-  rw [← sub_eq_iff_eq_add, sub_eq_add]
-
-theorem eq_add_iff_add_eq {a b c : R} : a = b + c ↔ a + c = b := by
-  rw [← eq_sub_iff_add_eq, sub_eq_add]
-
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 protected theorem two_zsmul (x : R) : (2 : ℤ) • x = 0 := by
   rw [two_zsmul, add_self_eq_zero]
 
-protected theorem add_eq_zero {a b : R} : a + b = 0 ↔ a = b := by
-  rw [← CharTwo.sub_eq_add, sub_eq_iff_eq_add, zero_add]
+end NonAssocRing
 
-end Ring
+section NonAssocCommSemiring
+
+variable [NonAssocCommSemiring R] [CharP R 2]
+
+theorem add_mul_self (x y : R) : (x + y) * (x + y) = x * x + y * y := by
+  rw [mul_add, add_mul, add_mul, mul_comm y, add_assoc, CharTwo.add_cancel_left]
+
+/-- See `frobenius` for the Frobenius map. -/
+private def mulSelfAddMonoidHom : R →+ R where
+  toFun x := x * x
+  map_zero' := mul_zero 0
+  map_add' := add_mul_self
+
+theorem list_sum_mul_self (l : List R) : l.sum * l.sum = (List.map (fun x => x * x) l).sum :=
+  map_list_sum mulSelfAddMonoidHom _
+
+theorem multiset_sum_mul_self (l : Multiset R) :
+    l.sum * l.sum = (Multiset.map (fun x => x * x) l).sum :=
+  map_multiset_sum mulSelfAddMonoidHom _
+
+theorem sum_mul_self (s : Finset ι) (f : ι → R) :
+    ((∑ i ∈ s, f i) * ∑ i ∈ s, f i) = ∑ i ∈ s, f i * f i :=
+  map_sum mulSelfAddMonoidHom _ _
+
+theorem mul_self_injective [NoZeroDivisors R] : Function.Injective fun x : R ↦ x * x := by
+  intro x y h
+  rwa [← CharTwo.add_eq_zero, ← add_mul_self, mul_self_eq_zero, CharTwo.add_eq_zero] at h
+
+theorem mul_self_inj [NoZeroDivisors R] {x y : R} : x * x = y * y ↔ x = y :=
+  mul_self_injective.eq_iff
+
+end NonAssocCommSemiring
 
 section CommSemiring
 
 variable [CommSemiring R] [CharP R 2]
 
-theorem add_sq (x y : R) : (x + y) ^ 2 = x ^ 2 + y ^ 2 :=
-  add_pow_char _ _ _
+theorem add_sq (x y : R) : (x + y) ^ 2 = x ^ 2 + y ^ 2 := by
+  simp [add_pow_two]
 
-theorem add_mul_self (x y : R) : (x + y) * (x + y) = x * x + y * y := by
-  rw [← pow_two, ← pow_two, ← pow_two, add_sq]
+theorem list_sum_sq (l : List R) : l.sum ^ 2 = (l.map (· ^ 2)).sum := by
+  simpa only [sq] using list_sum_mul_self l
 
-theorem list_sum_sq (l : List R) : l.sum ^ 2 = (l.map (· ^ 2)).sum :=
-  list_sum_pow_char _ _
+theorem multiset_sum_sq (l : Multiset R) : l.sum ^ 2 = (l.map (· ^ 2)).sum := by
+  simpa only [sq] using multiset_sum_mul_self l
 
-theorem list_sum_mul_self (l : List R) : l.sum * l.sum = (List.map (fun x => x * x) l).sum := by
-  simp_rw [← pow_two, list_sum_sq]
+theorem sum_sq (s : Finset ι) (f : ι → R) : (∑ i ∈ s, f i) ^ 2 = ∑ i ∈ s, f i ^ 2 := by
+  simpa only [sq] using sum_mul_self s f
 
-theorem multiset_sum_sq (l : Multiset R) : l.sum ^ 2 = (l.map (· ^ 2)).sum :=
-  multiset_sum_pow_char _ _
-
-theorem multiset_sum_mul_self (l : Multiset R) :
-    l.sum * l.sum = (Multiset.map (fun x => x * x) l).sum := by simp_rw [← pow_two, multiset_sum_sq]
-
-theorem sum_sq (s : Finset ι) (f : ι → R) : (∑ i ∈ s, f i) ^ 2 = ∑ i ∈ s, f i ^ 2 :=
-  sum_pow_char _ _ _
-
-theorem sum_mul_self (s : Finset ι) (f : ι → R) :
-    ((∑ i ∈ s, f i) * ∑ i ∈ s, f i) = ∑ i ∈ s, f i * f i := by simp_rw [← pow_two, sum_sq]
-
-end CommSemiring
-
-namespace CommRing
-
-variable [CommRing R] [CharP R 2] [NoZeroDivisors R]
+variable [NoZeroDivisors R]
 
 theorem sq_injective : Function.Injective fun x : R ↦ x ^ 2 := by
-  intro x y h
-  rwa [← CharTwo.add_eq_zero, ← add_sq, pow_eq_zero_iff two_ne_zero, CharTwo.add_eq_zero] at h
+  simpa only [sq] using mul_self_injective
 
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 theorem sq_inj {x y : R} : x ^ 2 = y ^ 2 ↔ x = y :=
   sq_injective.eq_iff
 
-end CommRing
+end CommSemiring
 
 end CharTwo
 
+@[simp]
+protected theorem IsSelfNeg.one [AddGroupWithOne R] [CharP R 2] : IsSelfNeg (1 : R) :=
+  CharTwo.neg_one_eq_one
+
 section ringChar
 
-variable [Ring R]
+variable [NonAssocRing R]
 
 theorem neg_one_eq_one_iff [Nontrivial R] : (-1 : R) = 1 ↔ ringChar R = 2 := by
   refine ⟨fun h => ?_, fun h => @CharTwo.neg_eq _ _ (ringChar.of_eq h) 1⟩
   rw [eq_comm, ← sub_eq_zero, sub_neg_eq_add, ← Nat.cast_one, ← Nat.cast_add] at h
   exact ((Nat.dvd_prime Nat.prime_two).mp (ringChar.dvd h)).resolve_left CharP.ringChar_ne_one
 
-@[simp]
-theorem orderOf_neg_one [Nontrivial R] : orderOf (-1 : R) = if ringChar R = 2 then 1 else 2 := by
-  split_ifs with h
-  · rw [neg_one_eq_one_iff.2 h, orderOf_one]
-  apply orderOf_eq_prime
-  · simp
-  simpa [neg_one_eq_one_iff] using h
-
 end ringChar
-
-section CharP
-
-variable [Ring R]
-
-lemma CharP.orderOf_eq_two_iff [Nontrivial R] [NoZeroDivisors R] (p : ℕ)
-    (hp : p ≠ 2) [CharP R p] {x : R} : orderOf x = 2 ↔ x = -1 := by
-  simp only [orderOf_eq_prime_iff, sq_eq_one_iff, ne_eq, or_and_right, and_not_self, false_or,
-    and_iff_left_iff_imp]
-  rintro rfl
-  exact fun h ↦ hp ((ringChar.eq R p) ▸ (neg_one_eq_one_iff.1 h))
-
-end CharP

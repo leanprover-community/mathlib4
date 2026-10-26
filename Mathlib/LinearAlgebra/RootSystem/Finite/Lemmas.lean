@@ -5,10 +5,8 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
-public import Mathlib.LinearAlgebra.RootSystem.Reduced
 public import Mathlib.LinearAlgebra.RootSystem.Irreducible
-public import Mathlib.Algebra.Ring.Torsion
+public import Mathlib.LinearAlgebra.RootSystem.Reduced
 
 /-!
 # Structural lemmas about finite crystallographic root pairings
@@ -30,8 +28,6 @@ root pairings.
 -/
 
 public section
-
-noncomputable section
 
 open Function Set
 open Submodule (span)
@@ -65,12 +61,8 @@ lemma coxeterWeightIn_le_four (S : Type*)
   rw [hsj'] at hsj
   have cs : 4 * lij ^ 2 ≤ 4 * (li * lj) := by
     rw [mul_le_mul_iff_right₀ four_pos]
-    refine (P.posRootForm S).posForm.apply_sq_le_of_symm ?_ (P.posRootForm S).isSymm_posForm ri rj
-    intro x
-    obtain ⟨s, hs, hs'⟩ := P.exists_ge_zero_eq_rootForm S x x.property
-    change _ = (P.posRootForm S).form x x at hs'
-    rw [(P.posRootForm S).algebraMap_apply_eq_form_iff] at hs'
-    rwa [← hs']
+    exact (P.posRootForm S).posForm.apply_sq_le_of_symm (zero_le_posForm _ _ ·)
+      (P.posRootForm S).isSymm_posForm ri rj
   have key : 4 • lij ^ 2 = P.coxeterWeightIn S i j • (li * lj) := by
     apply algebraMap_injective S R
     simpa [map_ofNat, lij, posRootForm, ri, rj, li, lj] using
@@ -94,7 +86,7 @@ lemma coxeterWeightIn_mem_set_of_isCrystallographic :
   lia
 
 variable [IsDomain R]
--- This makes an `IsAddTorsionFree R` instance available, which `grind` needs below.
+-- This makes an `HasUniqueDiv R` instance available, which `grind` needs below.
 open scoped IsDomain
 
 lemma pairingIn_pairingIn_mem_set_of_isCrystallographic :
@@ -193,7 +185,7 @@ lemma root_sub_root_mem_of_pairingIn_pos (h : 0 < P.pairingIn ℤ i j) (h' : i �
     α i - α j ∈ Φ := by
   have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
   have : Module.IsReflexive R N := .of_isPerfPair P.flip.toLinearMap
-  have : IsAddTorsionFree M := .of_isTorsionFree R M
+  have : HasUniqueDiv M := .of_isTorsionFree R M
   by_cases hli : LinearIndependent R ![α i, α j]
   · -- The case where the two roots are linearly independent
     suffices P.pairingIn ℤ i j = 1 ∨ P.pairingIn ℤ j i = 1 by
@@ -234,7 +226,7 @@ lemma root_add_root_mem_of_pairingIn_neg (h : P.pairingIn ℤ i j < 0) (h' : α 
     α i + α j ∈ Φ := by
   let _i := P.indexNeg
   replace h : 0 < P.pairingIn ℤ i (-j) := by simpa
-  replace h' : i ≠ -j := by contrapose! h'; simp [h']
+  replace h' : i ≠ -j := by contrapose h'; simp [h']
   simpa using P.root_sub_root_mem_of_pairingIn_pos h h'
 
 lemma pairingIn_eq_zero_of_add_notMem_of_sub_notMem (hp : i ≠ j) (hn : α i ≠ -α j)
@@ -251,6 +243,55 @@ lemma pairing_eq_zero_of_add_notMem_of_sub_notMem (hp : i ≠ j) (hn : α i ≠ 
     P.pairing i j = 0 := by
   rw [← P.algebraMap_pairingIn ℤ, P.pairingIn_eq_zero_of_add_notMem_of_sub_notMem hp hn h_add h_sub,
     map_zero]
+
+lemma exists_coroot_sub_coroot_eq_zsmul {k : ι}
+    (hk : P.root k = P.root j - P.root i) (hij : P.pairingIn ℤ i j ≤ 0) :
+    ∃ n : ℤ, 2 ≤ n ∧ P.coroot j - P.coroot i = n • P.coroot k := by
+  have _i : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
+  have hne := (P.pairingIn_two_two_iff ℤ k j).not.mpr fun h ↦ P.ne_zero i <| by grind
+  have : 2 = P.pairingIn ℤ k j + P.pairingIn ℤ i j := by
+    simpa using pairingIn_eq_add_of_root_eq_add (S := ℤ) (j := j) <| sub_eq_iff_eq_add.mp hk.symm
+  have hjk : P.pairingIn ℤ j k = 1 := by
+    have := P.pairingIn_pairingIn_mem_set_of_isCrystallographic k j
+    simp only [mem_insert_iff, mem_singleton_iff, Prod.mk.injEq] at this
+    omega
+  replace hjk : P.reflectionPerm k j = i := P.root.injective <| by
+    simp [reflection_apply_root' ℤ, hjk, hk]
+  refine ⟨P.pairingIn ℤ k j, by lia, ?_⟩
+  simp [← hjk, coreflection_apply_coroot, ← P.algebraMap_pairingIn ℤ, Int.cast_smul_eq_zsmul]
+
+lemma root_sub_root_notMem_range' (f : Module.Dual ℤ (P.corootSpan ℤ))
+    (hf : f (P.corootSpanMem ℤ j) - f (P.corootSpanMem ℤ i) = 1) (hij : P.pairingIn ℤ i j ≤ 0) :
+    P.root j - P.root i ∉ Φ := by
+  rintro ⟨k, hk⟩
+  obtain ⟨n, hn', hn⟩ := P.exists_coroot_sub_coroot_eq_zsmul hk hij
+  replace hn : P.corootSpanMem ℤ j - P.corootSpanMem ℤ i = n • P.corootSpanMem ℤ k := Subtype.ext hn
+  rw [← map_sub, hn, map_zsmul, smul_eq_mul] at hf
+  exact (Int.le_of_dvd one_pos ⟨_, hf.symm⟩).not_gt hn'
+
+open Module Submodule in
+lemma root_sub_root_notMem_range {s : Finset ι} (h₀ : LinearIndepOn ℤ P.coroot s)
+    (h₃ : ∀ k, P.coroot k ∈ span ℤ (P.coroot '' s)) {i j : s} (hij : P.pairingIn ℤ i j ≤ 0) :
+    P.root j - P.root i ∉ Φ := by
+  have hji : j ≠ i := by rintro rfl; simp at hij
+  let b : Basis s ℤ (P.corootSpan ℤ) := (Basis.span h₀.linearIndependent).map <|
+    .ofEq _ (P.corootSpan ℤ) <| (span_mono (range_comp_subset_range _ _)).antisymm <|
+      span_le.mpr <| range_subset_iff.mpr <| by simpa [range_comp] using h₃
+  have hb (k : s) : P.corootSpanMem ℤ k = b k := by ext; simp [b]
+  exact P.root_sub_root_notMem_range' (b.coord j) (by simp [hb, hji]) hij
+
+lemma exists_pos_pairingIn {s : Finset ι} (h₀ : LinearIndepOn ℤ P.root s)
+    (h₁ : Set.Pairwise s fun i j ↦ P.pairingIn ℤ i j ≤ 0)
+    {c : s → ℤ} (hc : ∑ k, c k • P.root k = P.root i) (hc₀ : ¬ c ≤ 0) :
+    ∃ j, 0 < c j ∧ 0 < P.pairingIn ℤ i j := by
+  have := Fintype.ofFinite ι
+  let B := P.posRootForm ℤ
+  obtain ⟨j, hj, hij⟩ := B.posForm.exists_pos_and_pos_apply_sum_smul
+    (v := fun k : s ↦ P.rootSpanMem ℤ k) (fun _ ↦ P.posRootForm_posForm_pos_of_ne_zero ℤ)
+    (.of_comp (P.rootSpan ℤ).subtype h₀.linearIndependent)
+    (fun k l hkl ↦ (B.posForm_apply_root_root_le_zero_iff k l).mpr <| h₁ k.2 l.2 (by simpa)) hc₀
+  rw [show ∑ k, c k • P.rootSpanMem ℤ k = P.rootSpanMem ℤ i by aesop] at hij
+  exact ⟨j, hj, (B.zero_lt_apply_root_root_iff i j).mp hij⟩
 
 omit [Finite ι] in
 lemma root_mem_submodule_iff_of_add_mem_invtSubmodule
@@ -304,7 +345,7 @@ lemma apply_eq_or (i j : ι) :
     B.form (α j) (α j) = 3 * B.form (α i) (α i) := by
   obtain ⟨j', h₁, h₂⟩ := P.exists_form_eq_form_and_form_ne_zero B i j
   suffices P.pairingIn ℤ i j' ≠ 0 by simp only [← h₁, B.apply_eq_or_aux i j' this]
-  contrapose! h₂
+  contrapose h₂
   replace h₂ : P.pairing i j' = 0 := by rw [← P.algebraMap_pairingIn ℤ, h₂, map_zero]
   exact (B.apply_root_root_zero_iff i j').mpr h₂
 
@@ -313,7 +354,7 @@ lengths. -/
 lemma exists_apply_eq_or [Nonempty ι] : ∃ i j, ∀ k,
     B.form (α k) (α k) = B.form (α i) (α i) ∨
     B.form (α k) (α k) = B.form (α j) (α j) := by
-  obtain ⟨i⟩ := inferInstanceAs (Nonempty ι)
+  obtain ⟨i⟩ := (inferInstance : Nonempty ι)
   by_cases! h : (∀ j, B.form (α j) (α j) = B.form (α i) (α i))
   · refine ⟨i, i, fun j ↦ by simp [h j]⟩
   · obtain ⟨j, hji_ne⟩ := h

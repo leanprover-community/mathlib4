@@ -5,9 +5,10 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Preadditive.Indization
 public import Mathlib.CategoryTheory.Abelian.FunctorCategory
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.AbelianImages
+public import Mathlib.CategoryTheory.Preadditive.Indization
+
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.AbelianImages
 
 /-!
 # The category of ind-objects is abelian
@@ -18,7 +19,7 @@ In the file `Mathlib/CategoryTheory/Abelian/GrothendieckAxioms/Indization.lean`,
 this situation `Ind C` is in fact Grothendieck abelian.
 -/
 
-@[expose] public section
+public section
 
 universe v
 
@@ -28,6 +29,7 @@ namespace CategoryTheory
 
 variable {C : Type v} [SmallCategory C] [Abelian C]
 
+set_option backward.defeqAttrib.useBackward true in
 instance {X Y : Ind C} (f : X ⟶ Y) : IsIso (Abelian.coimageImageComparison f) := by
   obtain ⟨I, _, _, F, G, ϕ, ⟨i⟩⟩ := Ind.exists_nonempty_arrow_mk_iso_ind_lim (f := f)
   let i' := coimageImageComparisonFunctor.mapIso i

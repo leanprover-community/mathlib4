@@ -5,9 +5,11 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Preadditive.Biproducts
 public import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveSheaves
-public import Mathlib.CategoryTheory.Sites.Limits
+
+import Mathlib.CategoryTheory.Preadditive.Biproducts
+import Mathlib.CategoryTheory.Sites.Limits
+
 /-!
 
 # Colimits in categories of extensive sheaves
@@ -21,7 +23,7 @@ This can also easily be applied to filtered `J` in the case when `A` is a catego
 eventually to sifted `J` once that API is developed.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 
@@ -32,22 +34,22 @@ section
 variable {A C J : Type*} [Category* A] [Category* C] [Category* J]
   [FinitaryExtensive C] [HasColimitsOfShape J A]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isSheaf_pointwiseColimit [PreservesFiniteProducts (colim (J := J) (C := A))]
     (G : J ⥤ Sheaf (extensiveTopology C) A) :
     Presheaf.IsSheaf (extensiveTopology C) (pointwiseCocone (G ⋙ sheafToPresheaf _ A)).pt := by
   rw [Presheaf.isSheaf_iff_preservesFiniteProducts]
   dsimp only [pointwiseCocone_pt]
-  apply (config := { allowSynthFailures := true }) comp_preservesFiniteProducts
+  apply +allowSynthFailures comp_preservesFiniteProducts
   have : ∀ (i : J), PreservesFiniteProducts ((G ⋙ sheafToPresheaf _ A).obj i) := fun i ↦ by
     rw [← Presheaf.isSheaf_iff_preservesFiniteProducts]
-    exact Sheaf.cond _
+    exact (G.obj i).property
   exact ⟨fun _ ↦ preservesLimitsOfShape_of_evaluation _ _ fun d ↦
     inferInstanceAs (PreservesLimitsOfShape _ ((G ⋙ sheafToPresheaf _ _).obj d))⟩
 
 instance [Preadditive A] : PreservesFiniteProducts (colim (J := J) (C := A)) where
   preserves _ := by
-    apply (config := { allowSynthFailures := true })
-      preservesProductsOfShape_of_preservesBiproductsOfShape
+    apply +allowSynthFailures preservesProductsOfShape_of_preservesBiproductsOfShape
     apply preservesBiproductsOfShape_of_preservesCoproductsOfShape
 
 instance [PreservesFiniteProducts (colim (J := J) (C := A))] :

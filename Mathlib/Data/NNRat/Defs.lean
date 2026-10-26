@@ -5,11 +5,9 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Unbundled.Int
 public import Mathlib.Algebra.Order.Nonneg.Basic
 public import Mathlib.Algebra.Order.Ring.Unbundled.Rat
 public import Mathlib.Algebra.Ring.Rat
-public import Mathlib.Data.Set.Operations
 public import Mathlib.Order.Bounds.Defs
 public import Mathlib.Order.GaloisConnection.Defs
 
@@ -59,9 +57,13 @@ instance Rat.instPosMulMono : PosMulMono ℚ where
     simpa [mul_sub, sub_nonneg] using Rat.mul_nonneg hr (sub_nonneg.2 hpq)
 
 deriving instance CommSemiring for NNRat
+
 deriving instance AddCancelCommMonoid for NNRat
+
 deriving instance LinearOrder for NNRat
+
 deriving instance Sub for NNRat
+
 deriving instance Inhabited for NNRat
 
 namespace NNRat
@@ -76,7 +78,7 @@ instance instOrderBot : OrderBot ℚ≥0 where
 @[simp] lemma val_eq_cast (q : ℚ≥0) : q.1 = q := rfl
 
 instance instCharZero : CharZero ℚ≥0 where
-  cast_injective a b hab := by simpa using congr_arg num hab
+  cast_injective a b hab := by simpa using! congr(num $hab)
 
 instance canLift : CanLift ℚ ℚ≥0 (↑) fun q ↦ 0 ≤ q where
   prf q hq := ⟨⟨q, hq⟩, rfl⟩
@@ -140,7 +142,8 @@ theorem coe_mul (p q : ℚ≥0) : ((p * q : ℚ≥0) : ℚ) = p * q :=
 @[simp] lemma num_pow (q : ℚ≥0) (n : ℕ) : (q ^ n).num = q.num ^ n := by simp [num, Int.natAbs_pow]
 @[simp] lemma den_pow (q : ℚ≥0) (n : ℕ) : (q ^ n).den = q.den ^ n := rfl
 
-@[simp, norm_cast]
+-- We want this lemma to have higher priority than `NNRat.cast_sub`.
+@[simp high, norm_cast]
 theorem coe_sub (h : q ≤ p) : ((p - q : ℚ≥0) : ℚ) = p - q :=
   max_eq_left <| le_sub_comm.2 <| by rwa [sub_zero]
 
@@ -177,8 +180,10 @@ theorem toNNRat_coe (q : ℚ≥0) : toNNRat q = q :=
   ext <| max_eq_left q.2
 
 @[simp]
-theorem toNNRat_coe_nat (n : ℕ) : toNNRat n = n :=
+theorem toNNRat_natCast (n : ℕ) : toNNRat n = n :=
   ext <| by simp only [Nat.cast_nonneg', Rat.coe_toNNRat]; rfl
+
+@[deprecated (since := "2026-10-13")] alias toNNRat_coe_nat := toNNRat_natCast
 
 /-- `toNNRat` and `(↑) : ℚ≥0 → ℚ` form a Galois insertion. -/
 protected def gi : GaloisInsertion toNNRat (↑) :=
@@ -249,6 +254,7 @@ theorem toNNRat_zero : toNNRat 0 = 0 := rfl
 @[simp]
 theorem toNNRat_one : toNNRat 1 = 1 := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toNNRat_pos : 0 < toNNRat q ↔ 0 < q := by simp [toNNRat, ← coe_lt_coe]
 
@@ -258,10 +264,12 @@ theorem toNNRat_eq_zero : toNNRat q = 0 ↔ q ≤ 0 := by
 
 alias ⟨_, toNNRat_of_nonpos⟩ := toNNRat_eq_zero
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toNNRat_le_toNNRat_iff (hp : 0 ≤ p) : toNNRat q ≤ toNNRat p ↔ q ≤ p := by
   simp [← coe_le_coe, toNNRat, hp]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toNNRat_lt_toNNRat_iff' : toNNRat q < toNNRat p ↔ q < p ∧ 0 < p := by
   simp [← coe_lt_coe, toNNRat]
@@ -272,6 +280,7 @@ theorem toNNRat_lt_toNNRat_iff (h : 0 < p) : toNNRat q < toNNRat p ↔ q < p :=
 theorem toNNRat_lt_toNNRat_iff_of_nonneg (hq : 0 ≤ q) : toNNRat q < toNNRat p ↔ q < p :=
   toNNRat_lt_toNNRat_iff'.trans ⟨And.left, fun h ↦ ⟨h, hq.trans_lt h⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toNNRat_add (hq : 0 ≤ q) (hp : 0 ≤ p) : toNNRat (q + p) = toNNRat q + toNNRat p :=
   NNRat.ext <| by simp [toNNRat, hq, hp, add_nonneg]
@@ -295,6 +304,7 @@ theorem toNNRat_lt_iff_lt_coe {p : ℚ≥0} (hq : 0 ≤ q) : toNNRat q < p ↔ q
 theorem lt_toNNRat_iff_coe_lt {q : ℚ≥0} : q < toNNRat p ↔ ↑q < p :=
   NNRat.gi.gc.lt_iff_lt
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toNNRat_mul (hp : 0 ≤ p) : toNNRat (p * q) = toNNRat p * toNNRat q := by
   rcases le_total 0 q with hq | hq
   · ext; simp [toNNRat, hp, hq, mul_nonneg]
@@ -365,6 +375,7 @@ lemma mk_divInt (n d : ℕ) :
 lemma divNat_inj (h₁ : d₁ ≠ 0) (h₂ : d₂ ≠ 0) : divNat n₁ d₁ = divNat n₂ d₂ ↔ n₁ * d₂ = n₂ * d₁ := by
   rw [← coe_inj]; simp [Rat.mkRat_eq_iff, h₁, h₂]; norm_cast
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma divNat_zero (n : ℕ) : divNat n 0 = 0 := by simp [divNat]
 
 @[simp] lemma num_divNat_den (q : ℚ≥0) : divNat q.num q.den = q :=

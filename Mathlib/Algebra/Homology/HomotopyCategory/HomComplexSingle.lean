@@ -13,7 +13,7 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
 
 We introduce constructors `Cochain.fromSingleMk` and `Cocycle.fromSingleMk`
 for cochains and cocycles from a single complex. We also introduce similar
-definitions for cochains and cocyles to a single complex.
+definitions for cochains and cocycles to a single complex.
 
 -/
 
@@ -70,6 +70,7 @@ lemma δ_fromSingleMk {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} (h : p + n = q)
 
 /-- Cochains of degree `n` from `(singleFunctor C p).obj X` to `K` identify
 to `X ⟶ K.X q` when `p + n = q`. -/
+@[simps -isSimp]
 noncomputable def fromSingleEquiv {p q n : ℤ} (h : p + n = q) :
     Cochain ((singleFunctor C p).obj X) K n ≃+ (X ⟶ K.X q) where
   toFun α := (HomologicalComplex.singleObjXSelf (.up ℤ) p X).inv ≫ α.v p q h
@@ -88,6 +89,12 @@ lemma fromSingleEquiv_fromSingleMk {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} (h : 
   simp [fromSingleEquiv]
 
 @[simp]
+lemma fromSingleMk_fromSingleEquiv
+    {p q n : ℤ} (h : p + n = q) (f : Cochain ((singleFunctor C p).obj X) K n) :
+    fromSingleMk (fromSingleEquiv h f) h = f :=
+  (fromSingleEquiv h).left_inv f
+
+@[simp]
 lemma fromSingleMk_add {p q : ℤ} (f g : X ⟶ K.X q) {n : ℤ} (h : p + n = q) :
     fromSingleMk (f + g) h = fromSingleMk f h + fromSingleMk g h :=
   (fromSingleEquiv h).symm.map_add _ _
@@ -102,6 +109,26 @@ lemma fromSingleMk_neg {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} (h : p + n = q) :
     fromSingleMk (-f) h = -fromSingleMk f h :=
   (fromSingleEquiv h).symm.map_neg _
 
+@[simp]
+lemma fromSingleEquiv_smul {R : Type*} [Ring R] [Linear R C] (r : R)
+    {p q n : ℤ} (h : p + n = q) (f : Cochain ((singleFunctor C p).obj X) K n) :
+    fromSingleEquiv h (r • f) = r • fromSingleEquiv h f := by
+  simp [fromSingleEquiv]
+
+lemma fromSingleMk_smul {R : Type*} [Ring R] [Linear R C]
+    (r : R) {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} (h : p + n = q) :
+    fromSingleMk (r • f) h = r • fromSingleMk f h :=
+  (fromSingleEquiv h).injective (by simp)
+
+/-- Cochains of degree `n` from `(singleFunctor C p).obj X` to `K` identify
+to `X ⟶ K.X q` when `p + n = q`. -/
+@[simps]
+noncomputable def fromSingleLinearEquiv
+    {R : Type*} [Ring R] [Linear R C] {p q n : ℤ} (h : p + n = q) :
+    Cochain ((singleFunctor C p).obj X) K n ≃ₗ[R] (X ⟶ K.X q) where
+  toAddEquiv := fromSingleEquiv h
+  map_smul' := by simp
+
 lemma fromSingleMk_surjective {p n : ℤ} (α : Cochain ((singleFunctor C p).obj X) K n)
     (q : ℤ) (h : p + n = q) :
     ∃ (f : X ⟶ K.X q), fromSingleMk f h = α :=
@@ -112,13 +139,13 @@ lemma fromSingleMk_precomp
     fromSingleMk (g ≫ f) h =
       (Cochain.ofHom ((singleFunctor C p).map g)).comp (fromSingleMk f h) (zero_add n) := by
   apply (fromSingleEquiv h).injective
-  simp [fromSingleEquiv, singleFunctor, singleFunctors, HomologicalComplex.single_map_f_self]
+  simp [fromSingleEquiv, singleFunctor, HomologicalComplex.single_map_f_self]
 
 lemma fromSingleMk_postcomp {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} (h : p + n = q)
     {L : CochainComplex C ℤ} (g : K ⟶ L) :
     fromSingleMk (f ≫ g.f q) h =
       (fromSingleMk f h).comp (.ofHom g) (add_zero n) :=
-  (fromSingleEquiv h).injective (by simp [fromSingleEquiv, singleFunctor, singleFunctors])
+  (fromSingleEquiv h).injective (by simp [fromSingleEquiv, singleFunctor])
 
 /-- Constructor for cochains to a single complex. -/
 @[nolint unusedArguments]
@@ -154,6 +181,7 @@ lemma δ_toSingleMk {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (h : p + n = q)
 
 /-- Cochains of degree `n` from `(singleFunctor C q).obj X` to `K` identify
 to `K.X p ⟶ X` when `p + n = q`. -/
+@[simps -isSimp]
 noncomputable def toSingleEquiv {p q n : ℤ} (h : p + n = q) :
     Cochain K ((singleFunctor C q).obj X) n ≃+ (K.X p ⟶ X) where
   toFun α := α.v p q h ≫ (HomologicalComplex.singleObjXSelf (.up ℤ) q X).hom
@@ -172,6 +200,12 @@ lemma toSingleEquiv_toSingleMk {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (h : p + 
   simp [toSingleEquiv]
 
 @[simp]
+lemma toSingleMk_toSingleEquiv
+    {p q n : ℤ} (h : p + n = q) (f : Cochain K ((singleFunctor C q).obj X) n) :
+    toSingleMk (toSingleEquiv h f) h = f :=
+  (toSingleEquiv h).left_inv f
+
+@[simp]
 lemma toSingleMk_add {p q : ℤ} (f g : K.X p ⟶ X) {n : ℤ} (h : p + n = q) :
     toSingleMk (f + g) h = toSingleMk f h + toSingleMk g h :=
   (toSingleEquiv h).symm.map_add _ _
@@ -186,6 +220,26 @@ lemma toSingleMk_neg {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (h : p + n = q) :
     toSingleMk (-f) h = -toSingleMk f h :=
   (toSingleEquiv h).symm.map_neg _
 
+@[simp]
+lemma toSingleEquiv_smul {R : Type*} [Ring R] [Linear R C] (r : R)
+    {p q n : ℤ} (h : p + n = q) (f : Cochain K ((singleFunctor C q).obj X) n) :
+    toSingleEquiv h (r • f) = r • toSingleEquiv h f := by
+  simp [toSingleEquiv]
+
+lemma toSingleMk_smul {R : Type*} [Ring R] [Linear R C]
+    (r : R) {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (h : p + n = q) :
+    toSingleMk (r • f) h = r • toSingleMk f h :=
+  (toSingleEquiv h).injective (by simp)
+
+/-- Cochains of degree `n` from `(singleFunctor C q).obj X` to `K` identify
+to `K.X p ⟶ X` when `p + n = q`. -/
+@[simps]
+noncomputable def toSingleLinearEquiv
+    {R : Type*} [Ring R] [Linear R C] {p q n : ℤ} (h : p + n = q) :
+    Cochain K ((singleFunctor C q).obj X) n ≃ₗ[R] (K.X p ⟶ X) where
+  toAddEquiv := toSingleEquiv h
+  map_smul' := by simp
+
 lemma toSingleMk_surjective {q n : ℤ} (α : Cochain K ((singleFunctor C q).obj X) n)
     (p : ℤ) (h : p + n = q) :
     ∃ (f : K.X p ⟶ X), toSingleMk f h = α :=
@@ -196,14 +250,14 @@ lemma toSingleMk_postcomp
     toSingleMk (f ≫ g) h =
       (toSingleMk f h).comp (.ofHom ((singleFunctor C q).map g)) (add_zero n) := by
   apply (toSingleEquiv h).injective
-  simp [toSingleEquiv, singleFunctor, singleFunctors, HomologicalComplex.single_map_f_self]
+  simp [toSingleEquiv, singleFunctor, HomologicalComplex.single_map_f_self]
 
 lemma toSingleMk_precomp
     {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (h : p + n = q)
     {L : CochainComplex C ℤ} (g : L ⟶ K) :
     toSingleMk (g.f p ≫ f) h =
       (Cochain.ofHom g).comp (toSingleMk f h) (zero_add n) :=
-  (toSingleEquiv h).injective (by simp [toSingleEquiv, singleFunctor, singleFunctors])
+  (toSingleEquiv h).injective (by simp [toSingleEquiv, singleFunctor])
 
 end Cochain
 
@@ -258,6 +312,13 @@ lemma fromSingleMk_neg {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} (h : p + n = q)
     (q' : ℤ) (hq' : q + 1 = q') (hf : f ≫ K.d q q' = 0) :
     fromSingleMk (-f) h q' hq' (by simp [hf]) = - fromSingleMk f h q' hq' hf := by
   cat_disch
+
+lemma fromSingleMk_smul {R : Type*} [Ring R] [Linear R C]
+    (r : R) {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} (h : p + n = q)
+    (q' : ℤ) (hq' : q + 1 = q') (hf : f ≫ K.d q q' = 0) :
+    fromSingleMk (r • f) h q' hq' (by simp [hf]) = r • fromSingleMk f h q' hq' hf := by
+  ext : 1
+  simp [Cochain.fromSingleMk_smul]
 
 variable (X K) in
 @[simp]
@@ -314,7 +375,7 @@ lemma toSingleMk_surjective {q n : ℤ} (α : Cocycle K ((singleFunctor C q).obj
   rw [coe_units_smul, δ_units_smul, ← hf, Cochain.δ_toSingleMk _ _ _ p' (by lia),
     smul_smul, Int.units_mul_self, one_smul] at hα
   refine ⟨f, ?_, ?_⟩
-  · simpa [← cancel_mono (HomologicalComplex.singleObjXSelf (.up ℤ) q X).inv] using
+  · simpa [← cancel_mono (HomologicalComplex.singleObjXSelf (.up ℤ) q X).inv] using!
     Cochain.congr_v hα p' q (by lia)
   · ext : 1; assumption
 
@@ -335,6 +396,13 @@ lemma toSingleMk_neg {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (h : p + n = q)
     toSingleMk (-f) h p' hp' (by simp [hf]) =
       - toSingleMk f h p' hp' hf := by
   cat_disch
+
+lemma toSingleMk_smul {R : Type*} [Ring R] [Linear R C]
+    (r : R) {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (h : p + n = q)
+    (p' : ℤ) (hp' : p' + 1 = p) (hf : K.d p' p ≫ f = 0) :
+    toSingleMk (r • f) h p' hp' (by simp [hf]) = r • toSingleMk f h p' hp' hf := by
+  ext : 1
+  simp [Cochain.toSingleMk_smul]
 
 variable (X K) in
 @[simp]

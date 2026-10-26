@@ -6,9 +6,7 @@ Authors: Christian Merten
 module
 
 public import Mathlib.RingTheory.RingHom.Locally
-public import Mathlib.RingTheory.RingHom.Smooth
 public import Mathlib.RingTheory.RingHom.StandardSmooth
-public import Mathlib.RingTheory.Smooth.StandardSmoothOfFree
 
 /-!
 # Smooth is locally standard smooth
@@ -19,7 +17,7 @@ smooth.
 
 universe u
 
-@[expose] public section
+public section
 
 namespace RingHom
 
@@ -47,5 +45,11 @@ theorem smooth_iff_locally_isStandardSmooth : Smooth f ↔ Locally IsStandardSmo
   rw [← locally_iff_of_localizationSpanTarget Smooth.propertyIsLocal.respectsIso
     Smooth.ofLocalizationSpanTarget]
   exact locally_of_locally (fun hf ↦ hf.smooth) hf
+
+/-- A ring homomorphism is étale if and only if it is standard smooth of relative dimension `0`. -/
+lemma etale_iff_isStandardSmoothOfRelativeDimension_zero :
+    Etale f ↔ IsStandardSmoothOfRelativeDimension 0 f := by
+  algebraize [f]
+  exact Algebra.Etale.iff_isStandardSmoothOfRelativeDimension_zero
 
 end RingHom

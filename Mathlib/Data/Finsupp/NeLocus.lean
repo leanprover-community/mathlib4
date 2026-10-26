@@ -87,20 +87,20 @@ theorem zipWith_neLocus_eq_left [DecidableEq N] [Zero M] [DecidableEq P] [Zero P
     (hF : ∀ f, Function.Injective fun g => F f g) :
     (zipWith F F0 f g₁).neLocus (zipWith F F0 f g₂) = g₁.neLocus g₂ := by
   ext
-  simpa only [mem_neLocus] using (hF _).ne_iff
+  simpa only [mem_neLocus] using! (hF _).ne_iff
 
 theorem zipWith_neLocus_eq_right [DecidableEq M] [Zero M] [DecidableEq P] [Zero P] [Zero N]
     {F : M → N → P} (F0 : F 0 0 = 0) (f₁ f₂ : α →₀ M) (g : α →₀ N)
     (hF : ∀ g, Function.Injective fun f => F f g) :
     (zipWith F F0 f₁ g).neLocus (zipWith F F0 f₂ g) = f₁.neLocus f₂ := by
   ext
-  simpa only [mem_neLocus] using (hF _).ne_iff
+  simpa only [mem_neLocus] using! (hF _).ne_iff
 
 theorem mapRange_neLocus_eq [DecidableEq N] [DecidableEq M] [Zero M] [Zero N] (f g : α →₀ N)
     {F : N → M} (F0 : F 0 = 0) (hF : Function.Injective F) :
     (f.mapRange F F0).neLocus (g.mapRange F F0) = f.neLocus g := by
   ext
-  simpa only [mem_neLocus] using hF.ne_iff
+  simpa only [mem_neLocus] using! hF.ne_iff
 
 end NeLocusAndMaps
 

@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 public import Mathlib.Algebra.Regular.Basic
-public import Mathlib.Algebra.Regular.Opposite
 public import Mathlib.Algebra.Ring.Basic
+
+import Mathlib.Algebra.Regular.Opposite
 
 /-!
 # Non-zero divisors in a ring
@@ -42,14 +43,6 @@ theorem IsRightRegular.pow_injective {M : Type*} [Monoid M] [IsMulTorsionFree M]
     (hx : IsRightRegular x) (hx' : x ≠ 1) : Function.Injective (fun n ↦ x ^ n) :=
   MulOpposite.unop_injective.comp <| (isLeftRegular_op.mpr hx).pow_injective <|
     (MulOpposite.op_eq_one_iff x).not.mpr hx'
-
-theorem IsMulTorsionFree.pow_right_injective {M : Type*} [CancelMonoid M] [IsMulTorsionFree M]
-    {x : M} (hx : x ≠ 1) : Function.Injective (fun n ↦ x ^ n) :=
-  IsLeftRegular.pow_injective (IsLeftRegular.all x) hx
-
-@[simp]
-theorem IsMulTorsionFree.pow_right_inj {M : Type*} [CancelMonoid M] [IsMulTorsionFree M] {x : M}
-    (hx : x ≠ 1) {n m : ℕ} : x ^ n = x ^ m ↔ n = m := (pow_right_injective hx).eq_iff
 
 theorem IsMulTorsionFree.pow_right_injective₀ {M : Type*} [MonoidWithZero M] [IsLeftCancelMulZero M]
     [IsMulTorsionFree M] {x : M} (hx : x ≠ 1) (hx' : x ≠ 0) : Function.Injective (fun n ↦ x ^ n) :=
@@ -88,25 +81,16 @@ lemma isRegular_iff_mem_nonZeroDivisors : IsRegular r ↔ r ∈ R⁰ := isRegula
 
 lemma le_nonZeroDivisorsLeft_iff_isLeftRegular {S : Submonoid R} :
     S ≤ nonZeroDivisorsLeft R ↔ ∀ s : S, IsLeftRegular (s : R) := by
-  simp_rw [SetLike.le_def, isLeftRegular_iff_mem_nonZeroDivisorsLeft, Subtype.forall]
+  simp_rw [IsConcreteLE.le_iff, isLeftRegular_iff_mem_nonZeroDivisorsLeft, Subtype.forall]
 
 lemma le_nonZeroDivisorsRight_iff_isRightRegular {S : Submonoid R} :
     S ≤ nonZeroDivisorsRight R ↔ ∀ s : S, IsRightRegular (s : R) := by
-  simp_rw [SetLike.le_def, isRightRegular_iff_mem_nonZeroDivisorsRight, Subtype.forall]
+  simp_rw [IsConcreteLE.le_iff, isRightRegular_iff_mem_nonZeroDivisorsRight, Subtype.forall]
 
 lemma le_nonZeroDivisors_iff_isRegular {S : Submonoid R} :
     S ≤ R⁰ ↔ ∀ s : S, IsRegular (s : R) := by
   simp_rw [nonZeroDivisors, le_inf_iff, le_nonZeroDivisorsLeft_iff_isLeftRegular,
     le_nonZeroDivisorsRight_iff_isRightRegular, isRegular_iff, forall_and]
-
-@[deprecated (since := "2025-07-16")]
-alias isLeftRegular_iff_mem_nonZeroDivisorsRight := isLeftRegular_iff_mem_nonZeroDivisorsLeft
-
-@[deprecated (since := "2025-07-16")]
-alias isRightRegular_iff_mem_nonZeroDivisorsLeft := isRightRegular_iff_mem_nonZeroDivisorsRight
-
-@[deprecated (since := "2025-07-16")]
-alias le_nonZeroDivisors_iff_isRightRegular := le_nonZeroDivisorsRight_iff_isRightRegular
 
 lemma mul_cancel_left_mem_nonZeroDivisorsLeft (hr : r ∈ nonZeroDivisorsLeft R) :
     r * x = r * y ↔ x = y :=

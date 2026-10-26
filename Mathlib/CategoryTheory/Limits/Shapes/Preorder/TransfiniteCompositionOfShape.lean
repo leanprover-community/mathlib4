@@ -6,14 +6,11 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.ComposableArrows.Basic
-public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
-public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Fin
-public import Mathlib.CategoryTheory.Limits.Final
-public import Mathlib.CategoryTheory.Filtered.Final
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Preorder
-public import Mathlib.Data.Fin.SuccPredOrder
-public import Mathlib.Order.LatticeIntervals
+public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Fin
 public import Mathlib.Order.Interval.Set.Final
+public import Mathlib.Order.LatticeIntervals
+public import Mathlib.Order.SuccPred.Fin
 
 /-!
 # A structure to describe transfinite compositions
@@ -57,6 +54,9 @@ structure TransfiniteCompositionOfShape [SuccOrder J] [WellFoundedLT J] where
   isColimit : IsColimit (Cocone.mk Y incl)
   fac : isoBot.inv ≫ incl.app ⊥ = f := by cat_disch
 
+
+initialize_simps_projections TransfiniteCompositionOfShape (-isColimit)
+
 namespace TransfiniteCompositionOfShape
 
 attribute [reassoc (attr := simp)] fac
@@ -73,7 +73,7 @@ def ofArrowIso {X' Y' : C} {f' : X' ⟶ Y'} (e : Arrow.mk f ≅ Arrow.mk f') :
   isoBot := c.isoBot ≪≫ Arrow.leftFunc.mapIso e
   incl := c.incl ≫ (Functor.const J).map e.hom.right
   isColimit := IsColimit.ofIsoColimit c.isColimit
-    (Cocones.ext (Arrow.rightFunc.mapIso e))
+    (Cocone.ext (Arrow.rightFunc.mapIso e))
 
 /-- If `G : ComposableArrows C n`, then `G.hom : G.left ⟶ G.right` is a
 transfinite composition of shape `Fin (n + 1)`. -/
@@ -86,6 +86,7 @@ def ofComposableArrows {n : ℕ} (G : ComposableArrows C n) :
   isColimit := colimitOfDiagramTerminal (Fin.isTerminalLast n) G
   fac := Category.id_comp _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `f` is a transfinite composition of shape `J`, then it is
 also a transfinite composition of shape `J'` if `J' ≃o J`. -/
 @[simps]
@@ -108,9 +109,10 @@ noncomputable def map (F : C ⥤ D) [PreservesWellOrderContinuousOfShape J F]
   incl := Functor.whiskerRight c.incl F ≫ (Functor.constComp _ _ _).hom
   isColimit :=
     IsColimit.ofIsoColimit (isColimitOfPreserves F c.isColimit)
-      (Cocones.ext (Iso.refl _))
+      (Cocone.ext (Iso.refl _))
   fac := by simp [← Functor.map_comp]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A transfinite composition of shape `J` induces a transfinite composition
 of shape `Set.Iic j` for any `j : J`. -/
 @[simps]
@@ -126,17 +128,18 @@ noncomputable def iic (j : J) :
         rfl }
   isColimit := colimitOfDiagramTerminal isTerminalTop _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A transfinite composition of shape `J` induces a transfinite composition
 of shape `Set.Ici j` for any `j : J`. -/
 @[simps]
 noncomputable def ici (j : J) :
     TransfiniteCompositionOfShape (Set.Ici j) (c.incl.app j) where
-  F := (Subtype.mono_coe (Set.Ici j)).functor ⋙ c.F
+  F := (Subtype.mono_coe (· ∈ Set.Ici j)).functor ⋙ c.F
   isWellOrderContinuous := Functor.IsWellOrderContinuous.restriction_setIci _
   isoBot := Iso.refl _
   incl := Functor.whiskerLeft _ c.incl
   isColimit := (Functor.Final.isColimitWhiskerEquiv
-    ((Subtype.mono_coe (Set.Ici j)).functor) _).2 c.isColimit
+    (Subtype.mono_coe (· ∈ Set.Ici j)).functor _).2 c.isColimit
 
 end TransfiniteCompositionOfShape
 

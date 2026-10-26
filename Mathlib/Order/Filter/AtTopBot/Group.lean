@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Algebra.Order.Group.MinMax
 public import Mathlib.Order.Filter.AtTopBot.Basic
-public import Mathlib.Order.Filter.AtTopBot.Map
 public import Mathlib.Order.Filter.AtTopBot.Monoid
+
+import Mathlib.Order.Filter.AtTopBot.Map
 
 /-!
 # Convergence to ±infinity in ordered commutative groups
@@ -118,6 +119,16 @@ theorem tendsto_inv_atTop_iff : Tendsto (fun x => (f x)⁻¹) l atTop ↔ Tendst
 @[to_additive (attr := simp)]
 theorem tendsto_inv_atBot_iff : Tendsto (fun x => (f x)⁻¹) l atBot ↔ Tendsto f l atTop :=
   (OrderIso.inv G).tendsto_atTop_iff
+
+@[to_additive (attr := simp)]
+theorem tendsto_comp_inv_atTop_iff {f : G → α} :
+    Tendsto (fun x ↦ f (x⁻¹)) atTop l ↔ Tendsto f atBot l := by
+  simp [← Function.comp_def, Tendsto, ← map_map, map_inv_atTop]
+
+@[to_additive (attr := simp)]
+theorem tendsto_comp_inv_atBot_iff {f : G → α} :
+    Tendsto (fun x ↦ f (x⁻¹)) atBot l ↔ Tendsto f atTop l := by
+  simp [← Function.comp_def, Tendsto, ← map_map, map_inv_atBot]
 
 end OrderedCommGroup
 

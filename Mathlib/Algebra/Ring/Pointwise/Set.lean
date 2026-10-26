@@ -5,8 +5,8 @@ Authors: Johan Commelin, Floris van Doorn
 -/
 module
 
-public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+public import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Pointwise operations of sets in a ring
@@ -23,7 +23,6 @@ pointwise subtraction
 
 assert_not_exists MulAction IsOrderedMonoid Field
 
-open Function
 open scoped Pointwise
 
 variable {α : Type*}
@@ -31,6 +30,7 @@ variable {α : Type*}
 namespace Set
 
 /-- `Set α` has distributive negation if `α` has. -/
+@[instance_reducible]
 protected noncomputable def hasDistribNeg [Mul α] [HasDistribNeg α] : HasDistribNeg (Set α) where
   __ := Set.involutiveNeg
   neg_mul _ _ := by simp_rw [← image_neg_eq_neg]; exact image2_image_left_comm neg_mul

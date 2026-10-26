@@ -5,10 +5,10 @@ Authors: Adam Topaz
 -/
 module
 
-public import Mathlib.CategoryTheory.Whiskering
 public import Mathlib.CategoryTheory.Adjunction.Basic
 
 /-!
+# Whiskering of adjunctions
 
 Given categories `C D E`, functors `F : D ⥤ E` and `G : E ⥤ D` with an adjunction
 `F ⊣ G`, we provide the induced adjunction between the functor categories `C ⥤ D` and `C ⥤ E`,
@@ -21,7 +21,7 @@ and the functor categories `E ⥤ C` and `D ⥤ C`.
 
 namespace CategoryTheory.Adjunction
 
-open CategoryTheory Functor
+open CategoryTheory CategoryTheory.Functor
 
 variable (C : Type*) {D E : Type*} [Category* C] [Category* D] [Category* E] {F : D ⥤ E} {G : E ⥤ D}
 

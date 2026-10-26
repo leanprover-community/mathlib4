@@ -5,12 +5,12 @@ Authors: Yury Kudryashov, Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.ZPow
-public import Mathlib.Analysis.SpecialFunctions.Sqrt
 public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
-public import Mathlib.Analysis.Convex.Deriv
+
+import Mathlib.Analysis.Convex.Deriv
+import Mathlib.Analysis.SpecialFunctions.Sqrt
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 
 /-!
 # Collection of convex functions
@@ -31,6 +31,8 @@ of these could also be switched to elementary proofs, like in
 `Analysis.Convex.SpecificFunctions.Basic`.
 
 -/
+
+open scoped Finset
 
 public section
 
@@ -59,7 +61,7 @@ theorem Even.strictConvexOn_pow {n : ℕ} (hn : Even n) (h : n ≠ 0) :
 
 theorem Finset.prod_nonneg_of_card_nonpos_even {α β : Type*}
     [CommRing β] [LinearOrder β] [IsStrictOrderedRing β] {f : α → β}
-    [DecidablePred fun x => f x ≤ 0] {s : Finset α} (h0 : Even (s.filter fun x => f x ≤ 0).card) :
+    [DecidablePred fun x => f x ≤ 0] {s : Finset α} (h0 : Even #(s.filter fun x => f x ≤ 0)) :
     0 ≤ ∏ x ∈ s, f x :=
   calc
     0 ≤ ∏ x ∈ s, (if f x ≤ 0 then (-1 : β) else 1) * f x :=
@@ -84,7 +86,7 @@ theorem int_prod_range_nonneg (m : ℤ) (n : ℕ) (hn : Even n) :
     rcases le_or_gt m k with hmk | hmk
     · have : m ≤ k + 1 := hmk.trans (lt_add_one (k : ℤ)).le
       convert mul_nonneg_of_nonpos_of_nonpos (sub_nonpos_of_le hmk) _
-      convert sub_nonpos_of_le this
+      convert! sub_nonpos_of_le this
     · exact mul_nonneg (sub_nonneg_of_le hmk.le) (sub_nonneg_of_le hmk)
 
 theorem int_prod_range_pos {m : ℤ} {n : ℕ} (hn : Even n) (hm : m ∉ Ico (0 : ℤ) n) :
@@ -140,8 +142,9 @@ theorem deriv2_sqrt_mul_log (x : ℝ) :
     refine (hasDerivWithinAt_const _ _ 0).congr_of_mem (fun x hx => ?_) hx
     rw [sqrt_eq_zero_of_nonpos hx, mul_zero, div_zero]
   · have h₀ : √x ≠ 0 := sqrt_ne_zero'.2 hx
-    convert (((hasDerivAt_log hx.ne').const_add 2).div ((hasDerivAt_sqrt hx.ne').const_mul 2) <|
-      mul_ne_zero two_ne_zero h₀).deriv using 1
+    convert
+      (((hasDerivAt_log hx.ne').const_add 2).div ((hasDerivAt_sqrt hx.ne').const_mul 2) <|
+          mul_ne_zero two_ne_zero h₀).deriv using 1
     nth_rw 3 [← mul_self_sqrt hx.le]
     field
 

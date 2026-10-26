@@ -23,10 +23,10 @@ and prove some basic facts about minimal actions.
 group action, minimal
 -/
 
-@[expose] public section
+public section
 
 
-open Pointwise
+open scoped Pointwise
 
 /-- An action of an additive monoid `M` on a topological space is called *minimal* if the `M`-orbit
 of every point `x : α` is dense. -/

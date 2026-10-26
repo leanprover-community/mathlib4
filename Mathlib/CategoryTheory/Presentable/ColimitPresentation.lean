@@ -5,7 +5,6 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Presentation
 public import Mathlib.CategoryTheory.Presentable.Finite
 
 /-!
@@ -48,6 +47,7 @@ structure Total.Hom (k l : Total P) where
   hom : (P k.1).diag.obj k.2 ⟶ (P l.1).diag.obj l.2
   w : (P k.1).ι.app k.2 ≫ D.map base = hom ≫ (P l.1).ι.app l.2 := by cat_disch
 
+set_option backward.isDefEq.respectTransparency false in -- This is needed below
 attribute [reassoc] Total.Hom.w
 
 /-- Composition of morphisms in the `Total` category. -/
@@ -56,7 +56,7 @@ def Total.Hom.comp {k l m : Total P} (f : k.Hom l) (g : l.Hom m) : k.Hom m where
   base := f.base ≫ g.base
   hom := f.hom ≫ g.hom
   w := by
-    simp only [Functor.const_obj_obj, Functor.map_comp, Category.assoc]
+    simp only [Functor.map_comp, Category.assoc]
     rw [f.w_assoc, g.w]
 
 @[simps! id_base id_hom comp_base comp_hom]
@@ -88,6 +88,7 @@ instance [IsFiltered J] [∀ j, IsFiltered (I j)] : Nonempty (Total P) := by
   obtain ⟨i⟩ : Nonempty (I j) := IsFiltered.nonempty
   exact ⟨⟨j, i⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance [IsFiltered J] [∀ j, IsFiltered (I j)]
     [∀ j i, IsFinitelyPresentable.{w} ((P j).diag.obj i)] :
     IsFiltered (Total P) where
@@ -144,7 +145,7 @@ def bind {X : C} (P : ColimitPresentation J X) (Q : ∀ j, ColimitPresentation (
   isColimit.fac := fun c ⟨j, i⟩ ↦ by simp [P.isColimit.fac, (Q j).isColimit.fac]
   isColimit.uniq c m hm := by
     refine P.isColimit.hom_ext fun j ↦ ?_
-    simp only [Functor.const_obj_obj, P.isColimit.fac]
+    simp only [P.isColimit.fac]
     refine (Q j).isColimit.hom_ext fun i ↦ ?_
     simpa [(Q j).isColimit.fac] using hm (.mk _ j i)
 

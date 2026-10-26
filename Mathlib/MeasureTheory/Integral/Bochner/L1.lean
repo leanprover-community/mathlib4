@@ -5,7 +5,7 @@ Authors: Zhouhang Zhou, Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.SetToL1
+public import Mathlib.MeasureTheory.Integral.SetToL1.L1
 
 /-!
 # Bochner integral
@@ -139,7 +139,7 @@ theorem dominatedFinMeasAdditive_weightedSMul {_ : MeasurableSpace α} (μ : Mea
 
 theorem weightedSMul_nonneg [PartialOrder F] [IsOrderedModule ℝ F]
     (s : Set α) (x : F) (hx : 0 ≤ x) : 0 ≤ weightedSMul μ s x := by
-  simp only [weightedSMul, coe_smul', _root_.id, coe_id', Pi.smul_apply]
+  simp only [weightedSMul, _root_.id, coe_id', smul_apply]
   exact smul_nonneg toReal_nonneg hx
 
 end WeightedSMul
@@ -169,7 +169,7 @@ theorem negPart_map_norm (f : α →ₛ ℝ) : (negPart f).map norm = negPart f 
 theorem posPart_sub_negPart (f : α →ₛ ℝ) : f.posPart - f.negPart = f := by
   simp only [posPart, negPart]
   ext a
-  rw [coe_sub]
+  rw [FunLike.coe_sub]
   exact max_zero_sub_eq_self (f a)
 
 end PosPart
@@ -226,6 +226,7 @@ theorem integral_const {m : MeasurableSpace α} (μ : Measure α) (y : F) :
       integral_eq_sum_of_subset <| (filter_subset _ _).trans (range_const_subset _ _)
     _ = μ.real univ • y := by simp [Set.preimage]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem integral_piecewise_zero {m : MeasurableSpace α} (f : α →ₛ F) (μ : Measure α) {s : Set α}
     (hs : MeasurableSet s) : (piecewise s hs f 0).integral μ = f.integral (μ.restrict s) := by
@@ -233,13 +234,12 @@ theorem integral_piecewise_zero {m : MeasurableSpace α} (f : α →ₛ F) (μ :
   refine (integral_eq_sum_of_subset ?_).trans
       ((sum_congr rfl fun y hy => ?_).trans (integral_eq_sum_filter _ _).symm)
   · intro y hy
-    simp only [mem_filter, mem_range, coe_piecewise, coe_zero, piecewise_eq_indicator,
+    simp only [mem_filter, mem_range, coe_piecewise, FunLike.coe_zero, piecewise_eq_indicator,
       mem_range_indicator] at *
     rcases hy with ⟨⟨rfl, -⟩ | ⟨x, -, rfl⟩, h₀⟩
     exacts [(h₀ rfl).elim, ⟨Set.mem_range_self _, h₀⟩]
-  · dsimp
-    rw [Set.piecewise_eq_indicator, indicator_preimage_of_notMem,
-      measureReal_restrict_apply (f.measurableSet_preimage _)]
+  · simp only [coe_piecewise, FunLike.coe_zero, piecewise_eq_indicator]
+    rw [indicator_preimage_of_notMem, measureReal_restrict_apply (f.measurableSet_preimage _)]
     exact fun h₀ => (mem_filter.1 hy).2 (Eq.symm h₀)
 
 /-- Calculate the integral of `g ∘ f : α →ₛ F`, where `f` is an integrable function from `α` to `E`
@@ -333,7 +333,7 @@ lemma integral_nonneg {f : α →ₛ F} (hf : 0 ≤ᵐ[μ] f) :
   · suffices μ (f ⁻¹' {f y}) = 0 by simp [this, measureReal_def]
     rw [← nonpos_iff_eq_zero]
     refine le_of_le_of_eq (measure_mono fun x hx ↦ ?_) (ae_iff.mp hf)
-    simp only [Set.mem_preimage, mem_singleton_iff, mem_setOf_eq] at hx ⊢
+    simp only [Set.mem_preimage, mem_singleton_iff, mem_ofPred_eq] at hx ⊢
     exact hx ▸ hy
 
 lemma integral_mono {f g : α →ₛ F} (h : f ≤ᵐ[μ] g) (hf : Integrable f μ) (hg : Integrable g μ) :
@@ -353,8 +353,7 @@ lemma integral_mono_measure {ν} {f : α →ₛ F} (hf : 0 ≤ᵐ[ν] f) (hμν 
     · simp [← hx]
     simp only [measureReal_def]
     gcongr
-    · exact integrable_iff.mp hfν (f x) hx.ne' |>.ne
-    · exact hμν _
+    exact integrable_iff.mp hfν (f x) hx.ne' |>.ne
   · suffices ν (f ⁻¹' {f x}) = 0 by
       have A : μ (f ⁻¹' {f x}) = 0 := by simpa using (hμν _ |>.trans_eq this)
       simp [measureReal_def, A, this]
@@ -469,7 +468,7 @@ theorem posPart_toSimpleFunc (f : α →₁ₛ[μ] ℝ) :
   have ae_eq : ∀ᵐ a ∂μ, toSimpleFunc (posPart f) a = max ((toSimpleFunc f) a) 0 := by
     filter_upwards [toSimpleFunc_eq_toFun (posPart f), Lp.coeFn_posPart (f : α →₁[μ] ℝ),
       toSimpleFunc_eq_toFun f] with _ _ h₂ h₃
-    convert h₂ using 1
+    convert! h₂ using 1
     rw [h₃]
   refine ae_eq.mono fun a h => ?_
   rw [h, eq]
@@ -500,8 +499,8 @@ theorem integral_eq_norm_posPart_sub (f : α →₁ₛ[μ] ℝ) : integral f = �
       ((toSimpleFunc (posPart f)).map norm - (toSimpleFunc (negPart f)).map norm).integral μ
     apply MeasureTheory.SimpleFunc.integral_congr (SimpleFunc.integrable f)
     filter_upwards [ae_eq₁, ae_eq₂] with _ h₁ h₂
-    rw [SimpleFunc.sub_apply, ← h₁, ← h₂]
-    exact DFunLike.congr_fun (toSimpleFunc f).posPart_sub_negPart.symm _
+    rw [sub_apply, ← h₁, ← h₂]
+    congrm $((toSimpleFunc f).posPart_sub_negPart.symm) _
   · exact (SimpleFunc.integrable f).pos_part.congr ae_eq₁
   · exact (SimpleFunc.integrable f).neg_part.congr ae_eq₂
 
@@ -511,7 +510,7 @@ end SimpleFuncIntegral
 
 end SimpleFunc
 
-open SimpleFunc
+open L1.SimpleFunc
 
 local notation "Integral" => @integralCLM α E _ _ _ _ _ μ _
 

@@ -5,11 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Shift.CommShift
-public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
+public import Mathlib.CategoryTheory.Shift.CommShift
 
-/-! Shifted morphisms
+/-! # Shifted morphisms
 
 Given a category `C` endowed with a shift by an additive monoid `M` and two
 objects `X` and `Y` in `C`, we consider the types `ShiftedHom X Y m`
@@ -106,6 +105,32 @@ lemma mk₀_comp_mk₀_assoc (f : X ⟶ Y) (g : Y ⟶ Z) {a : M}
   rw [← comp_assoc, mk₀_comp_mk₀]
   all_goals simp
 
+/-- The bijection `ShiftedHom Y Z a ≃ ShiftedHom X Z a` induced by an
+isomorphism `X ≅ Y`. -/
+@[simps, implicit_reducible]
+noncomputable def precompIsoEquiv (e : X ≅ Y) {a : M} :
+    ShiftedHom Y Z a ≃ ShiftedHom X Z a where
+  toFun x := (mk₀ 0 rfl e.hom).comp x (add_zero a)
+  invFun x := (mk₀ 0 rfl e.inv).comp x (add_zero a)
+  left_inv _ := by simp
+  right_inv _ := by simp
+
+/-- The bijection `ShiftedHom X Y a ≃ ShiftedHom X Z a` induced by an
+isomorphism `Y ≅ Z`. -/
+@[simps, implicit_reducible]
+noncomputable def postcompIsoEquiv (e : Y ≅ Z) {a : M} :
+    ShiftedHom X Y a ≃ ShiftedHom X Z a where
+  toFun x := x.comp (mk₀ 0 rfl e.hom) (zero_add a)
+  invFun x := x.comp (mk₀ 0 rfl e.inv) (zero_add a)
+  left_inv _ := by
+    dsimp
+    rw [comp_assoc _ _ _ (by simp) (add_zero 0) (by simp)]
+    simp
+  right_inv _ := by
+    dsimp
+    rw [comp_assoc _ _ _ (by simp) (add_zero 0) (by simp)]
+    simp
+
 section Preadditive
 
 variable [Preadditive C]
@@ -113,6 +138,14 @@ variable [Preadditive C]
 variable (X Y) in
 @[simp]
 lemma mk₀_zero (m₀ : M) (hm₀ : m₀ = 0) : mk₀ m₀ hm₀ (0 : X ⟶ Y) = 0 := by simp [mk₀]
+
+@[simp]
+lemma mk₀_add (m₀ : M) (hm₀ : m₀ = 0) (f g : X ⟶ Y) :
+    mk₀ m₀ hm₀ (f + g) = mk₀ m₀ hm₀ f + mk₀ m₀ hm₀ g := by simp [mk₀]
+
+@[simp]
+lemma mk₀_neg (m₀ : M) (hm₀ : m₀ = 0) (f : X ⟶ Y) :
+    mk₀ m₀ hm₀ (-f) = -mk₀ m₀ hm₀ f := by simp [mk₀]
 
 @[simp]
 lemma comp_add [∀ (a : M), (shiftFunctor C a).Additive]
@@ -172,13 +205,35 @@ lemma comp_map {a : M} (f : ShiftedHom X Y a) (F : C ⥤ D) [F.CommShift M]
     (G : D ⥤ E) [G.CommShift M] : f.map (F ⋙ G) = (f.map F).map G := by
   simp [map, Functor.commShiftIso_comp_hom_app]
 
+lemma map_naturality {a : M} (f : ShiftedHom X Y a) {F G : C ⥤ D} (τ : F ⟶ G)
+    [F.CommShift M] [G.CommShift M] [NatTrans.CommShift τ M] :
+    (f.map F).comp (mk₀ 0 rfl (τ.app Y)) (zero_add _) =
+      (mk₀ 0 rfl (τ.app X)).comp (f.map G) (add_zero _) := by
+  rw [comp_mk₀, mk₀_comp, map, map, Category.assoc, ← τ.naturality_assoc,
+    τ.shift_app_comm a]
+
+@[simp]
+lemma map_naturality_1
+    {a : M} (f : ShiftedHom X Y a) {F G : C ⥤ D} (e : F ≅ G)
+    [F.CommShift M] [G.CommShift M] [NatTrans.CommShift e.hom M] :
+    (mk₀ 0 rfl (e.inv.app X)).comp ((f.map F).comp
+      (mk₀ 0 rfl (e.hom.app Y)) (zero_add _)) (add_zero _) = f.map G := by
+  simp [map_naturality]
+
+@[simp]
+lemma map_naturality_2
+    {a : M} (f : ShiftedHom X Y a) {F G : C ⥤ D} (e : F ≅ G)
+    [F.CommShift M] [G.CommShift M] [NatTrans.CommShift e.hom M] :
+    (mk₀ 0 rfl (e.hom.app X)).comp ((f.map G).comp
+      (mk₀ 0 rfl (e.inv.app Y)) (zero_add _)) (add_zero _) = f.map F :=
+  map_naturality_1 f e.symm
+
 lemma map_comp {a b c : M} (f : ShiftedHom X Y a) (g : ShiftedHom Y Z b)
     (h : b + a = c) (F : C ⥤ D) [F.CommShift M] :
     (f.comp g h).map F = (f.map F).comp (g.map F) h := by
   dsimp [comp, map]
-  simp only [Functor.map_comp, assoc]
-  erw [← NatTrans.naturality_assoc]
-  simp only [Functor.comp_map, F.commShiftIso_add' h, Functor.CommShift.isoAdd'_hom_app,
+  simp only [Functor.map_comp, assoc, ← Functor.commShiftIso_hom_naturality_assoc]
+  simp only [F.commShiftIso_add' h, Functor.CommShift.isoAdd'_hom_app,
     ← Functor.map_comp_assoc, Iso.inv_hom_id_app, Functor.comp_obj, comp_id]
 
 section Preadditive

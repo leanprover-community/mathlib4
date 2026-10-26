@@ -20,45 +20,28 @@ open CategoryTheory
 
 universe u
 
-/-- The category of linear orders. -/
-structure LinOrd where
-  /-- Construct a bundled `LinOrd` from the underlying type and typeclass. -/
-  of ::
-  /-- The underlying linearly ordered type. -/
-  (carrier : Type*)
-  [str : LinearOrder carrier]
-
-attribute [instance] LinOrd.str
-
-initialize_simps_projections LinOrd (carrier → coe, -str)
-
 namespace LinOrd
 
-instance : CoeSort LinOrd (Type _) :=
-  ⟨LinOrd.carrier⟩
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `LinOrd.of X` as `↧X`. -/
+@[app_delab LinOrd.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
 
-attribute [coe] LinOrd.carrier
-
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `LinOrd R`. -/
 @[ext]
 structure Hom (X Y : LinOrd.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying `OrderHom`. -/
   hom' : X →o Y
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Category LinOrd.{u} where
   Hom X Y := Hom X Y
   id _ := ⟨OrderHom.id⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory LinOrd (· →o ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `LinOrd` back into a `OrderHom`. -/
 abbrev Hom.hom {X Y : LinOrd.{u}} (f : Hom X Y) :=
@@ -79,15 +62,13 @@ initialize_simps_projections Hom (hom' → hom)
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
 -/
 
-@[simp]
 lemma coe_id {X : LinOrd} : (𝟙 X : X → X) = id := rfl
 
-@[simp]
 lemma coe_comp {X Y Z : LinOrd} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
 @[simp]
 lemma forget_map {X Y : LinOrd} (f : X ⟶ Y) :
-    (forget LinOrd).map f = f := rfl
+    (forget LinOrd).map f = (f : _ → _) := rfl
 
 @[ext]
 lemma ext {X Y : LinOrd} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -145,7 +126,7 @@ instance : Inhabited LinOrd :=
   ⟨of PUnit⟩
 
 instance hasForgetToLat : HasForget₂ LinOrd Lat where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := Lat.ofHom (OrderHomClass.toLatticeHom _ _ f.hom)
 
 /-- Constructs an equivalence between linear orders from an order isomorphism between them. -/

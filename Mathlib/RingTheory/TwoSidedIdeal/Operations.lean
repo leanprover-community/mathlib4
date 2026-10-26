@@ -5,13 +5,8 @@ Authors: Jujian Zhang, Jireh Loreaux, Yunzhou Xie
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Map
-public import Mathlib.Algebra.Module.Opposite
-public import Mathlib.Algebra.Module.Submodule.Lattice
-public import Mathlib.RingTheory.Congruence.Opposite
 public import Mathlib.RingTheory.Ideal.Defs
 public import Mathlib.RingTheory.TwoSidedIdeal.Lattice
-public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Operations on two-sided ideals
@@ -121,6 +116,7 @@ lemma map_mono {I J : TwoSidedIdeal R} (h : I ≤ J) :
 
 variable [NonUnitalRingHomClass F R S]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Preimage of a two-sided ideal, as a two-sided ideal. -/
 def comap : TwoSidedIdeal S →o TwoSidedIdeal R where
@@ -136,6 +132,7 @@ lemma comap_le_comap {I J : TwoSidedIdeal S} (h : I ≤ J) :
     comap f I ≤ comap f J :=
   (comap f).monotone h
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mem_comap {I : TwoSidedIdeal S} {x : R} :
     x ∈ I.comap f ↔ f x ∈ I := by
   simp [comap, RingCon.comap, mem_iff]
@@ -204,7 +201,8 @@ lemma mem_span_iff_mem_addSubgroup_closure_absorbing {s : Set R}
     | add x y _ _ hx hy => exact J.add_mem hx hy
     | neg x _ hx => exact J.neg_mem hx
 
-open Pointwise Set
+open scoped Pointwise
+open Set
 
 lemma set_mul_subset {s : Set R} {I : TwoSidedIdeal R} (h : s ⊆ I) (t : Set R) :
     t * s ⊆ I := by
@@ -227,17 +225,17 @@ lemma mem_span_iff_mem_addSubgroup_closure_nonunital {s : Set R} {z : R} :
   · refine mem_span_iff_mem_addSubgroup_closure_absorbing ?_ ?_
     · rintro x y (((hy | ⟨y, hy, r, -, rfl⟩) | ⟨r, -, y, hy, rfl⟩) |
         ⟨-, ⟨r', -, y, hy, rfl⟩, r, -, rfl⟩)
-      · exact .inl <| .inr <| ⟨x, mem_univ _, y, hy, rfl⟩
-      · exact .inr <| ⟨x * y, ⟨x, mem_univ _, y, hy, rfl⟩, r, mem_univ _, mul_assoc ..⟩
-      · exact .inl <| .inr <| ⟨x * r, mem_univ _, y, hy, mul_assoc ..⟩
-      · refine .inr <| ⟨x * r' * y, ⟨x * r', mem_univ _, y, hy, ?_⟩, ⟨r, mem_univ _, ?_⟩⟩
+      · exact .inl <| .inr ⟨x, mem_univ _, y, hy, rfl⟩
+      · exact .inr ⟨x * y, ⟨x, mem_univ _, y, hy, rfl⟩, r, mem_univ _, mul_assoc ..⟩
+      · exact .inl <| .inr ⟨x * r, mem_univ _, y, hy, mul_assoc ..⟩
+      · refine .inr ⟨x * r' * y, ⟨x * r', mem_univ _, y, hy, ?_⟩, ⟨r, mem_univ _, ?_⟩⟩
         all_goals simp [mul_assoc]
     · rintro y x (((hy | ⟨y, hy, r, -, rfl⟩) | ⟨r, -, y, hy, rfl⟩) |
         ⟨-, ⟨r', -, y, hy, rfl⟩, r, -, rfl⟩)
       · exact .inl <| .inl <| .inr ⟨y, hy, x, mem_univ _, rfl⟩
       · exact .inl <| .inl <| .inr ⟨y, hy, r * x, mem_univ _, (mul_assoc ..).symm⟩
-      · exact .inr <| ⟨r * y, ⟨r, mem_univ _, y, hy, rfl⟩, x, mem_univ _, rfl⟩
-      · refine .inr <| ⟨r' * y, ⟨r', mem_univ _, y, hy, rfl⟩, r * x, mem_univ _, ?_⟩
+      · exact .inr ⟨r * y, ⟨r, mem_univ _, y, hy, rfl⟩, x, mem_univ _, rfl⟩
+      · refine .inr ⟨r' * y, ⟨r', mem_univ _, y, hy, rfl⟩, r * x, mem_univ _, ?_⟩
         simp [mul_assoc]
 
 end NonUnitalRing
@@ -246,7 +244,8 @@ section Ring
 
 variable {R : Type*} [Ring R]
 
-open Pointwise Set in
+open scoped Pointwise in
+open Set in
 lemma mem_span_iff_mem_addSubgroup_closure {s : Set R} {z : R} :
     z ∈ span s ↔ z ∈ AddSubgroup.closure (univ * s * univ) := by
   trans z ∈ span (univ * s * univ)
@@ -317,6 +316,7 @@ def fromIdeal : Ideal R →o TwoSidedIdeal R where
   toFun I := span I
   monotone' _ _ := span_mono
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mem_fromIdeal {I : Ideal R} {x : R} :
     x ∈ fromIdeal I ↔ x ∈ span I := by simp [fromIdeal]
 
@@ -329,10 +329,12 @@ def asIdeal : TwoSidedIdeal R →o Ideal R where
     smul_mem' := fun r x hx => I.mul_mem_left r x hx }
   monotone' _ _ h _ h' := h h'
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma mem_asIdeal {I : TwoSidedIdeal R} {x : R} :
     x ∈ asIdeal I ↔ x ∈ I := by simp [asIdeal]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma gc : GaloisConnection fromIdeal (asIdeal (R := R)) :=
   fun I J => ⟨fun h x hx ↦ h <| mem_span_iff.2 fun _ H ↦ H hx, fun h x hx ↦ by
     simp only [fromIdeal, OrderHom.coe_mk, mem_span_iff] at hx
@@ -400,8 +402,7 @@ lemma coe_toTwoSided (I : Ideal R) [I.IsTwoSided] : (I.toTwoSided : Set R) = I :
   simp [toTwoSided]
 
 @[simp]
-lemma toTwoSided_asIdeal (I : TwoSidedIdeal R) : I.asIdeal.toTwoSided = I :=
-  by ext; simp
+lemma toTwoSided_asIdeal (I : TwoSidedIdeal R) : I.asIdeal.toTwoSided = I := by ext; simp
 
 @[simp]
 lemma asIdeal_toTwoSided (I : Ideal R) [I.IsTwoSided] : I.toTwoSided.asIdeal = I := by
@@ -420,4 +421,4 @@ end Ideal
   invFun I := have := I.2; I.1.toTwoSided
   left_inv _ := by simp
   right_inv I := by simp
-  map_rel_iff' {I I'} := by simp [SetLike.le_def]
+  map_rel_iff' {I I'} := by simp [IsConcreteLE.le_iff]

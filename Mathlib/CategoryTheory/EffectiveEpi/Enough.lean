@@ -6,6 +6,7 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.CategoryTheory.EffectiveEpi.Basic
+
 /-!
 
 # Effectively enough objects in the image of a functor
@@ -17,8 +18,6 @@ in `D`, there exists an effective epi to it from an object in the image of `F`.
 @[expose] public section
 
 namespace CategoryTheory
-
-open Limits
 
 variable {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D)
 
@@ -37,7 +36,7 @@ structure EffectivePresentation (X : D) where
   effectiveEpi : EffectiveEpi f
 
 /--
-`D` has *effectively enough objects with respect to the functor `F` if every object has an
+`D` has *effectively enough objects* with respect to the functor `F` if every object has an
 effective presentation.
 -/
 class EffectivelyEnough : Prop where

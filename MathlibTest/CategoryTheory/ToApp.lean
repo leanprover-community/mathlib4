@@ -1,5 +1,7 @@
-import Mathlib.Tactic.CategoryTheory.ToApp
-import Mathlib.CategoryTheory.Bicategory.Functor.Prelax
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Functor.Prelax
+public import Mathlib.Tactic.CategoryTheory.ToApp
 
 universe w v u
 
@@ -19,6 +21,7 @@ example {a b c : Cat} (f : a ⟶ b) {g h : b ⟶ c} (η : g ≅ h) (X : a) :
       𝟙 ((f ≫ g).toFunctor.obj X) :=
   whiskerLeft_hom_inv_app f η X
 
+set_option backward.defeqAttrib.useBackward true in
 @[to_app]
 theorem pentagon_hom_hom_inv_inv_hom (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : d ⟶ e) :
     (α_ f (g ≫ h) i).hom ≫ f ◁ (α_ g h i).hom ≫ (α_ f g (h ≫ i)).inv =

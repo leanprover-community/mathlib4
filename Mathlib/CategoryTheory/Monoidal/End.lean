@@ -38,6 +38,7 @@ Note: due to the fact that composition of functors in mathlib is reversed compar
 one usually found in the literature, this monoidal structure is in fact the monoidal
 opposite of the one usually considered in the literature.
 -/
+@[instance_reducible]
 def endofunctorMonoidalCategory : MonoidalCategory (C ⥤ C) where
   tensorObj F G := F ⋙ G
   whiskerLeft X _ _ F := Functor.whiskerLeft X F
@@ -66,7 +67,7 @@ attribute [local instance] endofunctorMonoidalCategory
 
 @[simp] theorem endofunctorMonoidalCategory_tensorMap_app
     {F G H K : C ⥤ C} {α : F ⟶ G} {β : H ⟶ K} (X : C) :
-    (α ⊗ₘ β).app X = β.app (F.obj X) ≫ K.map (α.app X) := rfl
+    (α ⊗ₘ β).app X = β.app (F.obj X) ≫ K.map (α.app X) := NatTrans.hcomp_app _ _ _
 
 @[simp] theorem endofunctorMonoidalCategory_whiskerLeft_app
     {F H K : C ⥤ C} {β : H ⟶ K} (X : C) :
@@ -236,6 +237,7 @@ theorem η_app_obj (n : M) (X : C) [F.Monoidal] :
   dsimp
   simp only [Category.comp_id, μ_δ_app_assoc]
 
+set_option backward.isDefEq.respectTransparency false in -- Needed below
 @[reassoc]
 theorem associativity_app (m₁ m₂ m₃ : M) (X : C) [F.LaxMonoidal] :
     (F.obj m₃).map ((μ F m₁ m₂).app X) ≫
@@ -287,6 +289,7 @@ noncomputable def unitOfTensorIsoUnit (m n : M) (h : m ⊗ n ≅ 𝟙_ M) [F.Mon
     F.obj m ⋙ F.obj n ≅ 𝟭 C :=
   μIso F m n ≪≫ F.mapIso h ≪≫ (εIso F).symm
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `m ⊗ n ≅ 𝟙_M` and `n ⊗ m ≅ 𝟙_M` (subject to some commuting constraints),
   then `F.obj m` and `F.obj n` forms a self-equivalence of `C`. -/
 @[simps]

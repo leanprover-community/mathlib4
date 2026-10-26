@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Algebra.Group.Subgroup.Even
 public import Mathlib.Algebra.Order.Ring.Basic
-public import Mathlib.Algebra.Ring.Parity -- Algebra.Group.Even can't prove `IsSquare 0` by simp
 public import Mathlib.Algebra.Ring.Subsemiring.Basic
-public import Mathlib.Tactic.ApplyFun
+
+import Mathlib.Algebra.Ring.Parity -- Algebra.Group.Even can't prove `IsSquare 0` by simp
+import Mathlib.Tactic.ApplyFun
 
 /-!
 # Sums of squares
@@ -73,7 +74,7 @@ In an additive monoid with multiplication `R`, `AddSubmonoid.sumSq R` is the sub
 squares in `R`.
 -/
 @[simps]
-def sumSq [AddMonoid T] : AddSubmonoid T where
+def sumSq : AddSubmonoid T where
   carrier   := {s : T | IsSumSq s}
   zero_mem' := .zero
   add_mem'  := .add
