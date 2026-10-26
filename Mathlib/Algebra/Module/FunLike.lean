@@ -42,10 +42,6 @@ theorem coeₗ_apply (f : F) : coeₗ R F f = f := rfl
 @[norm_cast]
 theorem coe_coeₗ : (coeₗ R F : F → α → β) = DFunLike.coe := rfl
 
-theorem coeₗ_injective : Function.Injective (coeₗ R F) := by
-  rw [coe_coeₗ]
-  exact DFunLike.coe_injective
-
 variable (R F) in
 /-- Evaluation as a linear map. -/
 @[expose]
