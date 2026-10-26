@@ -54,7 +54,7 @@ instance instAdd : Add (ι →₀ M) where add := zipWith (· + ·) (add_zero 0)
 
 @[simp, norm_cast] lemma coe_add (f g : ι →₀ M) : ⇑(f + g) = f + g := rfl
 
-lemma add_apply (g₁ g₂ : ι →₀ M) (a : ι) : (g₁ + g₂) a = g₁ a + g₂ a := rfl
+protected lemma add_apply (g₁ g₂ : ι →₀ M) (a : ι) : (g₁ + g₂) a = g₁ a + g₂ a := rfl
 
 lemma support_add [DecidableEq ι] : (g₁ + g₂).support ⊆ g₁.support ∪ g₂.support := support_zipWith
 
@@ -110,8 +110,8 @@ linear map. -/
 @[simps apply]
 def applyAddHom (a : ι) : (ι →₀ M) →+ M where
   toFun g := g a
-  map_zero' := zero_apply
-  map_add' _ _ := add_apply _ _ _
+  map_zero' := Finsupp.zero_apply
+  map_add' _ _ := Finsupp.add_apply _ _ _
 
 /-- Coercion from a `Finsupp` to a function type is an `AddMonoidHom`. -/
 @[simps]
@@ -122,7 +122,7 @@ noncomputable def coeFnAddHom : (ι →₀ M) →+ ι → M where
 
 lemma mapRange_add {hf : f 0 = 0} (hf' : ∀ x y, f (x + y) = f x + f y) (v₁ v₂ : ι →₀ M) :
     mapRange f hf (v₁ + v₂) = mapRange f hf v₁ + mapRange f hf v₂ :=
-  ext fun _ => by simp only [hf', add_apply, mapRange_apply]
+  ext fun _ => by simp only [hf', Finsupp.add_apply, mapRange_apply]
 
 lemma mapRange_add' [FunLike F M N] [AddMonoidHomClass F M N] {f : F} (g₁ g₂ : ι →₀ M) :
     mapRange f (map_zero f) (g₁ + g₂) = mapRange f (map_zero f) g₁ + mapRange f (map_zero f) g₂ :=
@@ -240,8 +240,8 @@ lemma erase_add_single (a : ι) (f : ι →₀ M) : f.erase a + single a (f a) =
 @[simp]
 lemma erase_add (a : ι) (f f' : ι →₀ M) : erase a (f + f') = erase a f + erase a f' := by
   ext s; by_cases hs : s = a
-  · rw [hs, add_apply, erase_same, erase_same, erase_same, add_zero]
-  rw [add_apply, erase_ne hs, erase_ne hs, erase_ne hs, add_apply]
+  · rw [hs, Finsupp.add_apply, erase_same, erase_same, erase_same, add_zero]
+  rw [Finsupp.add_apply, erase_ne hs, erase_ne hs, erase_ne hs, Finsupp.add_apply]
 
 /-- `Finsupp.erase` as an `AddMonoidHom`. -/
 @[simps]
@@ -422,24 +422,25 @@ instance instNeg [NegZeroClass G] : Neg (ι →₀ G) where neg := mapRange Neg.
 
 @[simp, norm_cast] lemma coe_neg [NegZeroClass G] (g : ι →₀ G) : ⇑(-g) = -g := rfl
 
-lemma neg_apply [NegZeroClass G] (g : ι →₀ G) (a : ι) : (-g) a = -g a :=
+protected lemma neg_apply [NegZeroClass G] (g : ι →₀ G) (a : ι) : (-g) a = -g a :=
   rfl
 
 lemma mapRange_neg [NegZeroClass G] [NegZeroClass H] {f : G → H} {hf : f 0 = 0}
     (hf' : ∀ x, f (-x) = -f x) (v : ι →₀ G) : mapRange f hf (-v) = -mapRange f hf v :=
-  ext fun _ => by simp only [hf', neg_apply, mapRange_apply]
+  ext fun _ => by simp only [hf', Finsupp.neg_apply, mapRange_apply]
 
 instance instSub [SubNegZeroMonoid G] : Sub (ι →₀ G) :=
   ⟨zipWith Sub.sub (sub_zero _)⟩
 
 @[simp, norm_cast] lemma coe_sub [SubNegZeroMonoid G] (g₁ g₂ : ι →₀ G) : ⇑(g₁ - g₂) = g₁ - g₂ := rfl
 
-lemma sub_apply [SubNegZeroMonoid G] (g₁ g₂ : ι →₀ G) (a : ι) : (g₁ - g₂) a = g₁ a - g₂ a := rfl
+protected lemma sub_apply [SubNegZeroMonoid G] (g₁ g₂ : ι →₀ G) (a : ι) :
+    (g₁ - g₂) a = g₁ a - g₂ a := rfl
 
 lemma mapRange_sub [SubNegZeroMonoid G] [SubNegZeroMonoid H] {f : G → H} {hf : f 0 = 0}
     (hf' : ∀ x y, f (x - y) = f x - f y) (v₁ v₂ : ι →₀ G) :
     mapRange f hf (v₁ - v₂) = mapRange f hf v₁ - mapRange f hf v₂ :=
-  ext fun _ => by simp only [hf', sub_apply, mapRange_apply]
+  ext fun _ => by simp only [hf', Finsupp.sub_apply, mapRange_apply]
 
 section AddGroup
 variable [AddGroup G] {v : ι →₀ G}

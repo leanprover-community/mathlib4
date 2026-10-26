@@ -56,7 +56,7 @@ Throughout this section, some `Monoid` and `Semiring` arguments are specified wi
 theorem coe_smul [Zero M] [SMulZeroClass R M] (b : R) (v : α →₀ M) : ⇑(b • v) = b • ⇑v :=
   rfl
 
-theorem smul_apply [Zero M] [SMulZeroClass R M] (b : R) (v : α →₀ M) (a : α) :
+protected theorem smul_apply [Zero M] [SMulZeroClass R M] (b : R) (v : α →₀ M) (a : α) :
     (b • v) a = b • v a :=
   rfl
 
@@ -85,7 +85,7 @@ variable {α M}
 
 theorem support_smul [Zero M] [SMulZeroClass R M] {b : R} {g : α →₀ M} :
     (b • g).support ⊆ g.support := fun a => by
-  simp only [smul_apply, mem_support_iff, Ne]
+  simp only [Finsupp.smul_apply, mem_support_iff, Ne]
   exact mt fun h => h.symm ▸ smul_zero _
 
 @[simp]

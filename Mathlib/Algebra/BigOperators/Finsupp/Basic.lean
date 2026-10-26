@@ -269,7 +269,7 @@ theorem finsetSum_apply [AddCommMonoid N] (S : Finset ι) (f : ι → α →₀ 
   map_sum (applyAddHom a) _ _
 
 @[simp]
-theorem sum_apply [Zero M] [AddCommMonoid N] {f : α →₀ M} {g : α → M → β →₀ N} {a₂ : β} :
+protected theorem sum_apply [Zero M] [AddCommMonoid N] {f : α →₀ M} {g : α → M → β →₀ N} {a₂ : β} :
     (f.sum g) a₂ = f.sum fun a₁ b => g a₁ b a₂ :=
   finsetSum_apply _ _ _
 
@@ -286,7 +286,8 @@ theorem support_sum [DecidableEq β] [Zero M] [AddCommMonoid N] {f : α →₀ M
   have : ∀ c, (f.sum fun a b => g a b c) ≠ 0 → ∃ a, f a ≠ 0 ∧ ¬(g a (f a)) c = 0 := fun a₁ h =>
     let ⟨a, ha, ne⟩ := Finset.exists_ne_zero_of_sum_ne_zero h
     ⟨a, mem_support_iff.mp ha, ne⟩
-  simpa only [Finset.subset_iff, mem_support_iff, Finset.mem_biUnion, sum_apply, exists_prop]
+  simpa only [Finset.subset_iff, mem_support_iff, Finset.mem_biUnion, Finsupp.sum_apply,
+    exists_prop]
 
 theorem support_finsetSum [DecidableEq β] [AddCommMonoid M] {s : Finset α} {f : α → β →₀ M} :
     (Finset.sum s f).support ⊆ s.biUnion fun x => (f x).support := by
@@ -539,7 +540,7 @@ theorem prod_add_index_of_disjoint [AddCommMonoid M] {f1 f2 : α →₀ M}
     Finset.prod_congr rfl fun x hx => by
       simp only [notMem_support_iff.mp (disjoint_left.mp hd hx), add_zero]
   classical simp_rw [← this hd, ← this hd.symm, add_comm (f2 _), Finsupp.prod, support_add_eq hd,
-      prod_union hd, add_apply]
+      prod_union hd, Finsupp.add_apply]
 
 theorem prod_dvd_prod_of_subset_of_dvd [Zero M] [CommMonoid N] {f1 f2 : α →₀ M}
     {g1 g2 : α → M → N} (h1 : f1.support ⊆ f2.support)
