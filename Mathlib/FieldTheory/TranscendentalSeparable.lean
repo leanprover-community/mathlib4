@@ -509,9 +509,9 @@ lemma isReduced_of_perfectField [PerfectField k] [IsReduced S]
 lemma isTranscendentalSeparable_iff_isGeometricallyReduced_field (K : Type*) [Field K]
     [Algebra k K] : Algebra.IsTranscendentalSeparable k K ↔ Algebra.IsGeometricallyReduced k K := by
   rcases CharP.exists' k with zero|⟨p, hp, char⟩
-  · apply iff_of_true (Algebra.isTranscendentalSeparable_of_charZero k K)
-    rw [Algebra.isGeometricallyReduced_field_iff]
-    apply isReduced_of_perfectField
+  · refine iff_of_true ?_ ((Algebra.isGeometricallyReduced_field_iff _ _).mpr ?_)
+    · infer_instance
+    · exact isReduced_of_perfectField _ _ _
   · exact (Algebra.isTranscendentalSeparable_tfae k K p hp.out).out 1 4
 
 lemma tensorProduct_isReduced_of_localization_of_finiteType [IsReduced S] [Algebra.FiniteType k S]
