@@ -13,11 +13,23 @@ import Mathlib.Algebra.Order.Group.PartialSups
 import Mathlib.Algebra.Order.Ring.Star
 import Mathlib.Analysis.InnerProductSpace.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Maximal ergodic theorem.
 
-We prove the maximal ergodic theorem for a measure-preserving map `f` and an integrable function
-`g`.
+In this file we prove two closely related versions of maximal ergodic theorem for a
+measure-preserving map `f`.
+
+The first version deals with integrable real-valued functions `g`, and states that the integral of
+`g` over the set $`\left\{ x : \sup_{n ≥ 0} \sum_{i = 0}^{n - 1} (g ∘ f ^ i)(x) >0\right\}` is
+nonnegative.
+
+The second version, a corollary of the first, states that for integrable normed-space valued `g`,
+the operator $`g ↦ \sup_{n ≥ 0} \frac{1}{n}\sum_{i=0}^{n-1}g ∘ f^i` satisfies a weak-type
+inequality. In other words, its comulative distribution function
+`a ↦ a * μ.real {x | a < birkhoffAverageSup f g x}` is bounded above by the `L1` norm of `g`.
 
 ## Main definitions
 
@@ -29,12 +41,16 @@ We prove the maximal ergodic theorem for a measure-preserving map `f` and an int
 ## Main results
 
 * `setIntegral_birkhoffSumSup_nonneg`: for a measure-preserving `f`, the integral of an integrable
-  `g` over the set where `birkhoffSumSup f g` is positive is non-negative.
+  real-valued `g` over the set where `birkhoffSumSup f g` is positive is non-negative.
 * `mul_measureReal_lt_birkhoffAverageSup_le_integral`: the cumulative distribution function of
   `birkhoffAverageSup` at `a` is less than or equal to the integral of `g` on the set where
   `a < birkhoffAverageSup f g x`.
 * `mul_measureReal_lt_birkhoffAverageSup_le_norm`: the operator `birkhoffAverageSup` satisfies a
    weak-type inequality.
+
+## Implementation
+
+
 -/
 
 @[expose] public section
@@ -210,11 +226,9 @@ theorem setIntegral_birkhoffSumSup_nonneg
   apply ge_of_tendsto' (tendsto_setIntegral_support_birkhoffMax μ hf.quasiMeasurePreserving hg)
   grind [setIntegral_support_birkhoffMax_nonneg]
 
-variable [IsFiniteMeasure μ]
-
 /-- The cumulative distribution function of `birkhoffAverageSup` at `a` is less than or equal to the
 integral of `g` on the set where `a < birkhoffAverageSup f g x`. -/
-theorem mul_measureReal_lt_birkhoffAverageSup_le_integral
+theorem mul_measureReal_lt_birkhoffAverageSup_le_integral [IsFiniteMeasure μ]
     (hf : MeasurePreserving f μ μ) (hg : Integrable g μ) (a : ℝ) (ha : 0 ≤ a) :
     a * μ.real {x | a < birkhoffAverageSup f g x}
     ≤ ∫ x in {x | a < birkhoffAverageSup f g x}, g x ∂μ := by
