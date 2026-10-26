@@ -109,6 +109,14 @@ set. -/
 theorem range_resolventLM (hz : z ∈ f.resolventSet) :
     (f.resolventLM z).range = f.domain := by
   simp [resolventLM, hz, range_inverseLM hz]
+  
+theorem resolventLM_apply_mem_domain (hz : z ∈ f.resolventSet) (y : E) :
+    f.resolventLM z y ∈ f.domain :=
+  range_resolventLM hz ▸ LinearMap.mem_range_self _ y
+
+theorem smul_resolventLM_apply_sub_apply (hz : z ∈ f.resolventSet) (y : E) :
+    z • f.resolventLM z y - f ⟨f.resolventLM z y, resolventLM_apply_mem_domain hz y⟩ = y := by
+  simpa [resolventLM, hz, vadd_apply, sub_eq_add_neg] using inverseLM_apply_apply_cancel hz y
 
 /-- The first resolvent identity. -/
 theorem resolventLM_sub_resolventLM {z₁ z₂ : R} (hz₁ : z₁ ∈ f.resolventSet)
