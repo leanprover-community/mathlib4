@@ -317,6 +317,10 @@ theorem invOf_mem_center {a : M} [Invertible a] (ha : a ∈ Set.center M) : ⅟a
   rw [Semigroup.mem_center_iff] at *
   exact (Commute.invOf_right <| ha ·)
 
+@[to_additive (attr := simp) nsmul_mem_addCenter]
+theorem npow_mem_center {a : M} (n : ℕ) (ha : a ∈ Set.center M) : a ^ n ∈ Set.center M :=
+  Semigroup.mem_center_iff.mpr fun m => ((ha.comm m).pow_left n).eq.symm
+
 end Monoid
 
 section DivisionMonoid
@@ -332,6 +336,10 @@ theorem inv_mem_center (ha : a ∈ Set.center M) : a⁻¹ ∈ Set.center M := by
 theorem div_mem_center (ha : a ∈ Set.center M) (hb : b ∈ Set.center M) : a / b ∈ Set.center M := by
   rw [div_eq_mul_inv]
   exact mul_mem_center ha (inv_mem_center hb)
+
+@[to_additive (attr := simp) zsmul_mem_addCenter]
+theorem zpow_mem_center (n : ℤ) (ha : a ∈ Set.center M) : a ^ n ∈ Set.center M := by
+  cases n <;> simp [ha]
 
 end DivisionMonoid
 
