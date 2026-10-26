@@ -24,8 +24,9 @@ import Mathlib.Init
 #min_imports in
 #min_imports
 
--- `#min_imports` reports at the end of the file, outside `#guard_msgs`:
--- report its request here and clear it
+-- The bare `#min_imports` above only records a request. A module linter reports the request at
+-- the end of the file, where `#guard_msgs` cannot capture the warning: report it here and clear it.
+/-- warning: Imports can be reduced -/
 #guard_msgs (substring := true) in
 run_cmd ImportGraph.Shake.logAllMinImports #[]; ImportGraph.Shake.resetMinImports
 
