@@ -43,8 +43,8 @@ theorem norm_eq_of_le {x y : k} (γ : v.ValueGroup₀) (hxy : v.restrict (x - y)
 
 def coeff (x : k) (γ : v.ValueGroup₀) : IsLocalRing.ResidueField v.valuationSubring :=
   IsLocalRing.residue _ ⟨(x - norm v x γ) / (v.restrict_surjective γ).choose, by
-    have hv := (v.restrict_surjective γ).choose_spec
-    rw [v.mem_valuationSubring_iff, ← v.restrict_le_one_iff, map_div₀, hv]
+    rw [v.mem_valuationSubring_iff, ← v.restrict_le_one_iff, map_div₀,
+      (v.restrict_surjective γ).choose_spec]
     exact div_le_one_of_le₀ (norm_spec v x γ) zero_le⟩
 
 theorem coeff_injective : Function.Injective (coeff v) := by
