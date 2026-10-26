@@ -142,7 +142,7 @@ theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
   rw [Finsupp.mem_span_image_iff_linearCombination] at ha; rcases ha with ⟨l, hl, hla⟩
   rw [Finsupp.linearCombination_apply_of_mem_supported F hl] at hla
   suffices ∀ i ∈ s, l i ∈ FixedPoints.subfield G F by
-    replace hla := (sum_apply _ _ fun i => l i • toFun G F i).symm.trans congr($hla 1)
+    replace hla := (Finset.sum_apply _ _ fun i => l i • toFun G F i).symm.trans congr($hla 1)
     simp_rw [Pi.smul_apply, toFun_apply, one_smul] at hla
     refine hs.2 (hla ▸ Submodule.sum_mem _ fun c hcs => ?_)
     change (⟨l c, this c hcs⟩ : FixedPoints.subfield G F) • c ∈ _
@@ -170,8 +170,8 @@ theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
   change
     (∑ x ∈ s, g • (fun y => l y • MulAction.toFun G F y) x (g⁻¹ * g')) =
       ∑ x ∈ s, (fun y => l y • MulAction.toFun G F y) x g'
-  rw [← smul_sum, ← sum_apply _ _ fun y => l y • toFun G F y, ←
-    sum_apply _ _ fun y => l y • toFun G F y]
+  rw [← smul_sum, ← Finset.sum_apply _ _ fun y => l y • toFun G F y,
+    ← Finset.sum_apply _ _ fun y => l y • toFun G F y]
   rw [hla, toFun_apply, toFun_apply, smul_smul, mul_inv_cancel_left]
 
 section Fintype
