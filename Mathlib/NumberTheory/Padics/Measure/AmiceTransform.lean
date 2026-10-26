@@ -180,12 +180,11 @@ variable {R : Type*} [CommRing R] [TopologicalSpace R] [Algebra ℤ_[p] R] [Cont
 @[expose, simps -isSimp]
 def mulMahler (n : ℕ) : C(Multiplicative ℤ_[p], R) where
   toFun x := mahler n (Multiplicative.toAdd x) • 1
-  continuous_toFun := (mahler n).continuous.comp continuous_toAdd |>.smul continuous_const
+  continuous_toFun := by fun_prop
 
 lemma mulMahler_mul (n : ℕ) (x y : Multiplicative ℤ_[p]) :
     (mulMahler n (x * y) : R) = ∑ i ∈ .antidiagonal n, mulMahler i.1 x * mulMahler i.2 y := by
-  simp only [mulMahler_apply, toAdd_mul, smul_one_mul, ← mul_smul,
-    ← Finset.sum_smul]
+  simp only [mulMahler_apply, toAdd_mul, smul_one_mul, ← mul_smul, ← Finset.sum_smul]
   simp [mahler_apply, Ring.add_choose_eq n (Commute.all x.toAdd y.toAdd)]
 
 private lemma mulMahler_mul' (n : ℕ) (x y : Multiplicative ℤ_[p]) :
@@ -204,17 +203,17 @@ private def ofAddFunEquiv : C(Multiplicative ℤ_[p], R) ≃L[R] C(ℤ_[p], R) w
   map_add' f g := rfl
   map_smul' r g := rfl
 
-private def ofAddDistEquiv : D(Multiplicative ℤ_[p], R) ≃ₗ[R] D(ℤ_[p], R) :=
+private def ofAddMeasureEquiv : D(Multiplicative ℤ_[p], R) ≃ₗ[R] D(ℤ_[p], R) :=
   AbstractMeasure.arrowCongrLeft Homeomorph.ofAdd.symm
 
 end MultiplicativeEquivs
 
 private def amiceTransformₘ : D(Multiplicative ℤ_[p], R) →ₗ[R] PowerSeries R :=
-  amiceTransform.comp ofAddDistEquiv.toLinearMap
+  amiceTransform.comp ofAddMeasureEquiv.toLinearMap
 
 private lemma coeff_amiceTransformₘ (μ : D(Multiplicative ℤ_[p], R)) (n : ℕ) :
     (amiceTransformₘ μ).coeff n = μ (mulMahler n) := by
-  simp [amiceTransformₘ, coeff_amiceTransform, ofAddDistEquiv, mulMahler, ContinuousMap.comp,
+  simp [amiceTransformₘ, coeff_amiceTransform, ofAddMeasureEquiv, mulMahler, ContinuousMap.comp,
     Function.comp_def]
 
 private lemma amiceTransformₘ_mul (μ ν : D(Multiplicative ℤ_[p], R)) :
@@ -251,25 +250,28 @@ lemma coeff_amiceTransformₐ (μ : D(Multiplicative ℤ_[p], R)) (n : ℕ) :
   coeff_amiceTransformₘ ..
 
 /--
-The Amice transform `D(Multiplicative ℤ_[p], R) → R[X]`, as an isomorphism of `R`-algebras.
+The Amice transform `D(Multiplicative ℤ_[p], ℤ_[p]) → ℤ_[p][X]`, as an isomorphism of
+`ℤ_[p]`-algebras.
+
+(TODO: Define this more generally -- this will need a definition for bounded power series over a
+normed ring, as in `amiceTransformEquiv`.)
 -/
 def amiceTransformEquivₐ : D(Multiplicative ℤ_[p], ℤ_[p]) ≃ₐ[ℤ_[p]] PowerSeries ℤ_[p] :=
   { amiceTransformₐ with
-    invFun := (ofAddDistEquiv.trans amiceTransformEquiv).invFun
+    invFun := (ofAddMeasureEquiv.trans amiceTransformEquiv).invFun
     left_inv μ := by
-      suffices amiceTransformₐ μ = amiceTransformEquiv (ofAddDistEquiv μ) by
+      suffices amiceTransformₐ μ = amiceTransformEquiv (ofAddMeasureEquiv μ) by
         simpa [LinearEquiv.symm_apply_eq]
       ext
-      simp only [coeff_amiceTransformₐ, ofAddDistEquiv, AbstractMeasure.coe_arrowCongrLeft,
-        amiceTransformEquiv_apply, coeff_amiceTransform, smul_eq_mul, mul_one,
-        AbstractMeasure.map_apply]
+      simp only [coeff_amiceTransformₐ, ofAddMeasureEquiv, coe_arrowCongrLeft,
+        amiceTransformEquiv_apply, coeff_amiceTransform, smul_eq_mul, mul_one, map_apply]
       congr with x
       simp [mulMahler_apply]
     right_inv F := by
-      suffices amiceTransformₐ (ofAddDistEquiv.symm (amiceTransformEquiv.symm F)) = F by simpa
+      suffices amiceTransformₐ (ofAddMeasureEquiv.symm (amiceTransformEquiv.symm F)) = F by simpa
       ext
-      simp only [ofAddDistEquiv, AbstractMeasure.arrowCongrLeft_symm, Homeomorph.symm_symm,
-        AbstractMeasure.coe_arrowCongrLeft, coeff_amiceTransformₐ, AbstractMeasure.map_apply]
+      simp only [ofAddMeasureEquiv, arrowCongrLeft_symm, Homeomorph.symm_symm, coe_arrowCongrLeft,
+        coeff_amiceTransformₐ, map_apply]
       rw [show F = amiceTransformEquiv (amiceTransformEquiv.symm F) by simp]
       generalize amiceTransformEquiv.symm F = μ
       simp only [coeff_amiceTransformEquiv, LinearEquiv.symm_apply_apply]
