@@ -46,8 +46,8 @@ quotient by it is the vertex set of the Bruhat-Tits tree of `GL 2 K`.
 
 For `R = ℤ` and `K` a normed field, `IsZLattice K L` instead asks that `L` be discrete and span
 `K`, making it the topological analogue of `Submodule.IsFullLattice`; it is used for instance for
-complex tori. The two definitions do not seem to admit a common generalization, but API relating
-them is still missing.
+complex tori. The two notions agree in common cases, e.g. when `K = ℝ` and `V` is
+finite-dimensional, but API relating them is still missing.
 
 ## References
 
