@@ -564,6 +564,14 @@ theorem coe_equivIco_mk_apply (x : 𝕜) :
     (equivIco p 0 <| QuotientAddGroup.mk x : 𝕜) = Int.fract (x / p) * p :=
   toIcoMod_eq_fract_mul _ x
 
+instance : IsDivisibleBy (AddCircle p) ℕ where
+  exists_div x n hn := by
+    use (n : 𝕜)⁻¹ * (equivIco p 0 x : 𝕜)
+    change n • QuotientAddGroup.mk' _ _ = x
+    rw [← map_nsmul, ← smul_mul_assoc, nsmul_eq_mul, mul_inv_cancel₀ (mod_cast hn), one_mul]
+    exact (equivIco p 0).symm_apply_apply x
+
+@[deprecated AddCircle.instIsDivisibleByNat +typeChanged (since := "2026-10-26")]
 instance : DivisibleBy (AddCircle p) ℤ where
   div x n := (↑((n : 𝕜)⁻¹ * (equivIco p 0 x : 𝕜)) : AddCircle p)
   div_zero x := by simp

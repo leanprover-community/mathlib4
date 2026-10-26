@@ -32,6 +32,19 @@ universe u
 
 variable (A : Type u) [AddCommGroup A]
 
+theorem Module.Baer.of_isDivisibleBy [IsDivisibleBy A ℕ] : Module.Baer ℤ A := fun I g ↦ by
+  rcases IsPrincipalIdealRing.principal I with ⟨m, rfl⟩
+  obtain rfl | h0 := eq_or_ne m 0
+  · refine ⟨0, fun n hn ↦ ?_⟩
+    rw [Submodule.span_zero_singleton] at hn
+    subst hn
+    exact (map_zero g).symm
+  obtain ⟨d, hd⟩ := IsDivisibleBy.exists_div (g ⟨m, Submodule.subset_span (Set.mem_singleton _)⟩) h0
+  refine ⟨LinearMap.toSpanSingleton ℤ A d, fun n hn ↦ ?_⟩
+  rcases Submodule.mem_span_singleton.mp hn with ⟨n, rfl⟩
+  rw [map_zsmul, LinearMap.toSpanSingleton_apply, hd, ← map_zsmul g, SetLike.mk_smul_mk]
+
+@[deprecated Module.Baer.of_isDivisibleBy +typeChanged (since := "2026-10-26")]
 theorem Module.Baer.of_divisible [DivisibleBy A ℤ] : Module.Baer ℤ A := fun I g ↦ by
   rcases IsPrincipalIdealRing.principal I with ⟨m, rfl⟩
   obtain rfl | h0 := eq_or_ne m 0
@@ -51,6 +64,12 @@ theorem injective_as_module_iff : Injective (ModuleCat.of ℤ A) ↔
     Injective (C := AddCommGrpCat) ↧A :=
   ((forget₂ (ModuleCat ℤ) AddCommGrpCat).asEquivalence.map_injective_iff ↧A).symm
 
+instance injective_of_isDivisibleBy [IsDivisibleBy A ℕ] :
+    Injective (C := AddCommGrpCat) ↧A :=
+  (injective_as_module_iff A).mp <|
+    Module.injective_object_of_injective_module (inj := (Module.Baer.of_isDivisibleBy A).injective)
+
+@[deprecated injective_of_isDivisibleBy +typeChanged (since := "2026-10-26")]
 instance injective_of_divisible [DivisibleBy A ℤ] :
     Injective (C := AddCommGrpCat) ↧A :=
   (injective_as_module_iff A).mp <|

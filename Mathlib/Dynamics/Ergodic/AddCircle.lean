@@ -125,16 +125,15 @@ theorem ergodic_nsmul {n : ℕ} (hn : 1 < n) : Ergodic fun y : AddCircle T => n 
   ergodic_zsmul (by simp [hn] : 1 < |(n : ℤ)|)
 
 theorem ergodic_zsmul_add (x : AddCircle T) {n : ℤ} (h : 1 < |n|) : Ergodic fun y => n • y + x := by
+  have h' : n - 1 ≠ 0 := by grind
+  obtain ⟨d, hd⟩ := IsDivisibleBy.exists_div x h'
   set f : AddCircle T → AddCircle T := fun y => n • y + x
-  let e : AddCircle T ≃ᵐ AddCircle T := MeasurableEquiv.addLeft (DivisibleBy.div x <| n - 1)
-  have he : MeasurePreserving e volume volume :=
-    measurePreserving_add_left volume (DivisibleBy.div x <| n - 1)
+  let e : AddCircle T ≃ᵐ AddCircle T := MeasurableEquiv.addLeft d
+  have he : MeasurePreserving e volume volume := measurePreserving_add_left volume d
   suffices e ∘ f ∘ e.symm = fun y => n • y by
     rw [← he.ergodic_conjugate_iff, this]; exact ergodic_zsmul h
-  replace h : n - 1 ≠ 0 := by
-    rw [← abs_one] at h; rw [sub_ne_zero]; exact ne_of_apply_ne _ (ne_of_gt h)
-  have hnx : n • DivisibleBy.div x (n - 1) = x + DivisibleBy.div x (n - 1) := by
-    conv_rhs => congr; rw [← DivisibleBy.div_cancel x h]
+  have hnx : n • d = x + d := by
+    conv_rhs => congr; rw [← hd]
     rw [sub_smul, one_smul, sub_add_cancel]
   ext y
   simp only [f, e, hnx, MeasurableEquiv.coe_addLeft, MeasurableEquiv.symm_addLeft, comp_apply,
