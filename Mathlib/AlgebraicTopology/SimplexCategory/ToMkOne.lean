@@ -10,7 +10,7 @@ public import Mathlib.AlgebraicTopology.SimplexCategory.Basic
 /-!
 # Morphisms to `⦋1⦌`
 
-We define a bijective map `SimplexCategory.toMk₁ : Fin (n + 2) → `⦋n⦌ ⟶ ⦋1⦌`.
+We define a bijective map `SimplexCategory.toMk₁ : Fin (n + 2) → (⦋n⦌ ⟶ ⦋1⦌)`.
 This is used in the file `Mathlib.AlgebraicTopology.SimplicialSet.StdSimplexOne`
 in the study of simplices in the simplicial set `Δ[1]`.
 
