@@ -123,11 +123,11 @@ theorem isIntegral_inv_smul_of_dvd {d s : ℤ} (hs : d ∣ s)
   obtain ⟨v, hv⟩ := hs'
   refine isIntegral_iff.mpr ⟨⟨u, ?_⟩, ⟨v, ?_⟩⟩ <;> rw [algebraMap_int_eq, eq_intCast]
   · rw [map_smul, add_sub_cancel_right, Int.mul_ediv_cancel_left _ two_ne_zero,
-      ← Int.cast_smul_eq_zsmul ℚ, trace_smul_one_add_omega, smul_eq_mul, eq_inv_mul_iff_mul_eq₀ hd,
-      eq_comm]
+      smul_eq_mul, eq_inv_mul_iff_mul_eq₀ hd, eq_comm, map_add, trace_omega, zsmul_eq_mul, mul_one,
+      trace_intCast]
     exact_mod_cast hu
-  · rw [norm_smul, add_sub_cancel_right, Int.mul_ediv_cancel_left _ two_ne_zero, inv_pow,
-      eq_inv_mul_iff_mul_eq₀ (pow_ne_zero 2 hd), ← mul_right_inj' four_ne_zero,
+  · rw [norm_smul, smul_eq_mul, add_sub_cancel_right, Int.mul_ediv_cancel_left _ two_ne_zero,
+      inv_pow, eq_inv_mul_iff_mul_eq₀ (pow_ne_zero 2 hd), ← mul_right_inj' four_ne_zero,
       ← Int.cast_smul_eq_zsmul ℚ, four_mul_norm_smul_one_add_omega, discr_intCast, eq_comm,
       ← mul_assoc]
     exact_mod_cast hv

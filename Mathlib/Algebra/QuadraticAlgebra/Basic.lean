@@ -283,9 +283,10 @@ theorem norm_algebraMap (r : R) : norm (algebraMap R (QuadraticAlgebra R a b) r)
   simp [norm_def, pow_two]
 
 @[simp]
-theorem norm_smul (r : R) (z : QuadraticAlgebra R a b) :
-    norm (r • z) = r ^ 2 * norm z := by
-  rw [Algebra.smul_def, map_mul, norm_algebraMap]
+theorem norm_smul {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R]
+    [SMulCommClass S R R] (s : S) (z : QuadraticAlgebra R a b) :
+    norm (s • z) = s ^ 2 • norm z := by
+  simp [norm_def, mul_smul_comm, smul_sub, pow_two, mul_smul, smul_mul_assoc]
 
 @[simp]
 theorem norm_natCast (n : ℕ) : norm (n : QuadraticAlgebra R a b) = n ^ 2 := by
@@ -419,11 +420,6 @@ theorem trace_omega : trace (ω : QuadraticAlgebra R a b) = b := by
 
 @[simp]
 theorem trace_one : trace (1 : QuadraticAlgebra R a b) = 2 := by
-  simp [trace_def]
-
-/-- The trace of `t • 1 + ω` is `2 * t + b`. -/
-theorem trace_smul_one_add_omega (t : R) :
-    trace (t • 1 + ω : QuadraticAlgebra R a b) = 2 * t + b := by
   simp [trace_def]
 
 @[simp]
