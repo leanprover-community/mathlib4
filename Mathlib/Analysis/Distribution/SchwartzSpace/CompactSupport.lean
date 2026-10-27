@@ -39,7 +39,7 @@ variable {F} [NormedAddCommGroup F] [NormedSpace ℝ F]
 /-- Multiplying a Schwartz function `f` by the rescaled cutoff `fun x ↦ φ (R⁻¹ • x)` converges to
 `f` in each Schwartz seminorm as `R → ∞`, when `φ` is smooth, compactly supported, and equal to
 `1` on `ball 0 r`. -/
-private lemma tendsto_seminorm_smulLeftCLM_comp_smul_sub {φ : E → ℝ} (hφ : ContDiff ℝ ∞ φ)
+lemma tendsto_seminorm_smulLeftCLM_comp_smul_sub {φ : E → ℝ} (hφ : ContDiff ℝ ∞ φ)
     (hφc : HasCompactSupport φ) {r : ℝ} (hr : 0 < r) (hφr : ∀ y ∈ ball (0 : E) r, φ y = 1)
     (f : 𝓢(E, F)) (k n : ℕ) :
     Tendsto (fun R : ℝ ↦ (smulLeftCLM F (fun x ↦ φ (R⁻¹ • x)) f - f).seminorm ℝ k n) atTop
