@@ -407,7 +407,7 @@ theorem sup_eq_prod_inf_factors (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
     exacts [inf_le_left, inf_le_right]
   · rw [← dvd_iff_le, dvd_iff_normalizedFactors_le_normalizedFactors ?H this,
       normalizedFactors_prod_inter_eq_inter, le_iff_count]
-    case H => exact ne_bot_of_le_ne_bot hI le_sup_left
+    case H => grw [← le_sup_left]; exact hI
     intro a
     rw [Multiset.count_inter]
     exact le_min (count_le_of_ideal_ge le_sup_left hI a) (count_le_of_ideal_ge le_sup_right hJ a)

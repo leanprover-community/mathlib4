@@ -262,18 +262,13 @@ theorem iUnion_Iio_eq_univ_iff : ⋃ i, Iio (f i) = univ ↔ (¬ BddAbove (range
   simp [not_bddAbove_iff, Set.eq_univ_iff_forall]
 
 theorem iUnion_Iic_of_not_bddAbove_range (hf : ¬ BddAbove (range f)) : ⋃ i, Iic (f i) = univ := by
-  refine Set.eq_univ_of_subset ?_ (iUnion_Iio_eq_univ_iff.mpr hf)
-  gcongr
-  exact Iio_subset_Iic_self
+  grw [← Iio_subset_Iic_self, iUnion_Iio_eq_univ_iff.mpr hf]
 
 theorem iInter_Iic_eq_empty_iff : ⋂ i, Iic (f i) = ∅ ↔ ¬ BddBelow (range f) := by
   simp [not_bddBelow_iff, Set.eq_empty_iff_forall_notMem]
 
 theorem iInter_Iio_of_not_bddBelow_range (hf : ¬ BddBelow (range f)) : ⋂ i, Iio (f i) = ∅ := by
-  refine eq_empty_of_subset_empty ?_
-  rw [← iInter_Iic_eq_empty_iff.mpr hf]
-  gcongr
-  exact Iio_subset_Iic_self
+  grw [Iio_subset_Iic_self, iInter_Iic_eq_empty_iff.mpr hf]
 
 end LinearOrder
 

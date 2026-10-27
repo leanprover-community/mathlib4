@@ -185,8 +185,8 @@ theorem exposed_point_def :
 theorem exposedPoints_subset : A.exposedPoints 𝕜 ⊆ A := fun _ hx => hx.1
 
 @[simp]
-theorem exposedPoints_empty : (∅ : Set E).exposedPoints 𝕜 = ∅ :=
-  subset_empty_iff.1 exposedPoints_subset
+theorem exposedPoints_empty : (∅ : Set E).exposedPoints 𝕜 = ∅ := by
+  grw [exposedPoints_subset]
 
 /-- Exposed points exactly correspond to exposed singletons. -/
 theorem mem_exposedPoints_iff_exposed_singleton : x ∈ A.exposedPoints 𝕜 ↔ IsExposed 𝕜 A {x} := by

@@ -102,7 +102,7 @@ theorem nhdsKer_sInter_subset {s : Set (Set X)} : nhdsKer (⋂₀ s) ⊆ ⋂ x �
 @[simp] lemma nhdsKer_univ : nhdsKer (univ : Set X) = univ := isOpen_univ.nhdsKer_eq
 
 @[simp] lemma nhdsKer_eq_empty : nhdsKer s = ∅ ↔ s = ∅ :=
-  ⟨eq_bot_mono subset_nhdsKer, by rintro rfl; exact nhdsKer_empty⟩
+  ⟨by grw [← subset_nhdsKer]; exact id, by rintro rfl; exact nhdsKer_empty⟩
 
 @[simp] lemma nhdsSet_nhdsKer (s : Set X) : 𝓝ˢ (nhdsKer s) = 𝓝ˢ s := by
   refine le_antisymm ((hasBasis_nhdsSet _).ge_iff.2 ?_) (nhdsSet_mono subset_nhdsKer)
