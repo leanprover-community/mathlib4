@@ -108,18 +108,13 @@ instance instIsRightCancelAdd [IsRightCancelAdd M] : IsRightCancelAdd (ι →₀
 
 instance instIsCancelAdd [IsCancelAdd M] : IsCancelAdd (ι →₀ M) where
 
-/-- Evaluation of a function `f : ι →₀ M` at a point as an additive monoid homomorphism.
-
-See `Finsupp.lapply` in `Mathlib/LinearAlgebra/Finsupp/Defs.lean` for the stronger version as a
-linear map. -/
-@[simps apply]
+@[deprecated FunLike.evalAddMonoidHom +typeChanged (since := "2026-10-27")]
 def applyAddHom (a : ι) : (ι →₀ M) →+ M where
   toFun g := g a
   map_zero' := Finsupp.zero_apply
   map_add' _ _ := Finsupp.add_apply _ _ _
 
-/-- Coercion from a `Finsupp` to a function type is an `AddMonoidHom`. -/
-@[simps]
+@[deprecated FunLike.coeAddMonoidHom +typeChanged (since := "2026-10-27")]
 noncomputable def coeFnAddHom : (ι →₀ M) →+ ι → M where
   toFun := (⇑)
   map_zero' := coe_zero
@@ -143,7 +138,7 @@ def embDomain.addMonoidHom (f : ι ↪ F) : (ι →₀ M) →+ F →₀ M where
     by_cases h : b ∈ Set.range f
     · rcases h with ⟨a, rfl⟩
       simp
-    · simp only [coe_add, Pi.add_apply, embDomain_of_notMem_range _ _ _ h, add_zero]
+    · simp [embDomain_of_notMem_range _ _ _ h]
 
 @[simp]
 lemma embDomain_add (f : ι ↪ F) (v w : ι →₀ M) :
@@ -245,8 +240,8 @@ lemma erase_add_single (a : ι) (f : ι →₀ M) : f.erase a + single a (f a) =
 @[simp]
 lemma erase_add (a : ι) (f f' : ι →₀ M) : erase a (f + f') = erase a f + erase a f' := by
   ext s; by_cases hs : s = a
-  · rw [hs, Finsupp.add_apply, erase_same, erase_same, erase_same, add_zero]
-  rw [Finsupp.add_apply, erase_ne hs, erase_ne hs, erase_ne hs, Finsupp.add_apply]
+  · rw [hs, add_apply, erase_same, erase_same, erase_same, add_zero]
+  rw [add_apply, erase_ne hs, erase_ne hs, erase_ne hs, add_apply]
 
 /-- `Finsupp.erase` as an `AddMonoidHom`. -/
 @[simps]
@@ -346,18 +341,22 @@ variable [AddMonoid M]
 unless `F i`'s addition is commutative. -/
 instance instNatSMul : SMul ℕ (ι →₀ M) where smul n v := v.mapRange (n • ·) (nsmul_zero _)
 
-@[simp, norm_cast] lemma coe_nsmul (n : ℕ) (f : ι →₀ M) : ⇑(n • f) = n • ⇑f := rfl
+instance : IsSMulApply ℕ (ι →₀ M) where
 
+@[deprecated FunLike.coe_smul +typeChanged (since := "2026-10-27")]
+lemma coe_nsmul (n : ℕ) (f : ι →₀ M) : ⇑(n • f) = n • ⇑f := rfl
+
+@[deprecated smul_apply +typeChanged (since := "2026-10-27")]
 lemma nsmul_apply (n : ℕ) (f : ι →₀ M) (x : ι) : (n • f) x = n • f x := rfl
 
 instance instAddMonoid : AddMonoid (ι →₀ M) :=
-  fast_instance% DFunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ => rfl
+  fast_instance% FunLike.addMonoid
 
 instance instIsAddTorsionFree [IsAddTorsionFree M] : IsAddTorsionFree (ι →₀ M) :=
-  DFunLike.coe_injective.isAddTorsionFree coeFnAddHom
+  FunLike.isAddTorsionFree
 
 instance [HasUniqueDiv M] : HasUniqueDiv (ι →₀ M) :=
-  DFunLike.coe_injective.hasUniqueDiv coeFnAddHom
+  FunLike.hasUniqueDiv
 
 end AddMonoid
 
@@ -365,14 +364,13 @@ section AddCommMonoid
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid O]
 
 instance instAddCommMonoid : AddCommMonoid (ι →₀ M) :=
-  fast_instance% DFunLike.coe_injective.addCommMonoid
-    DFunLike.coe coe_zero coe_add (fun _ _ => rfl)
+  fast_instance% FunLike.addCommMonoid
 
 lemma single_add_single_eq_single_add_single {k l m n : ι} {u v : M} (hu : u ≠ 0) (hv : v ≠ 0) :
     single k u + single l v = single m u + single n v ↔
       (k = m ∧ l = n) ∨ (u = v ∧ k = n ∧ l = m) ∨ (u + v = 0 ∧ k = l ∧ m = n) := by
   classical
-    simp_rw [DFunLike.ext_iff, coe_add, single_eq_pi_single, ← funext_iff]
+    simp_rw [DFunLike.ext_iff, FunLike.coe_add, single_eq_pi_single, ← funext_iff]
     exact Pi.single_add_single_eq_single_add_single hu hv
 
 /-- Composition with a fixed additive homomorphism is itself an additive homomorphism on functions.
@@ -425,27 +423,35 @@ end AddCommMonoid
 
 instance instNeg [NegZeroClass G] : Neg (ι →₀ G) where neg := mapRange Neg.neg neg_zero
 
-@[simp, norm_cast] lemma coe_neg [NegZeroClass G] (g : ι →₀ G) : ⇑(-g) = -g := rfl
+instance [NegZeroClass G] : IsNegApply (ι →₀ G) where
 
+@[deprecated FunLike.coe_neg +typeChanged (since := "2026-10-27")]
+lemma coe_neg [NegZeroClass G] (g : ι →₀ G) : ⇑(-g) = -g := rfl
+
+@[deprecated neg_apply +typeChanged (since := "2026-10-27")]
 protected lemma neg_apply [NegZeroClass G] (g : ι →₀ G) (a : ι) : (-g) a = -g a :=
   rfl
 
 lemma mapRange_neg [NegZeroClass G] [NegZeroClass H] {f : G → H} {hf : f 0 = 0}
     (hf' : ∀ x, f (-x) = -f x) (v : ι →₀ G) : mapRange f hf (-v) = -mapRange f hf v :=
-  ext fun _ => by simp only [hf', Finsupp.neg_apply, mapRange_apply]
+  ext fun _ => by simp [hf']
 
 instance instSub [SubNegZeroMonoid G] : Sub (ι →₀ G) :=
   ⟨zipWith Sub.sub (sub_zero _)⟩
 
-@[simp, norm_cast] lemma coe_sub [SubNegZeroMonoid G] (g₁ g₂ : ι →₀ G) : ⇑(g₁ - g₂) = g₁ - g₂ := rfl
+instance [SubNegZeroMonoid G] : IsSubApply (ι →₀ G) where
 
+@[deprecated FunLike.coe_sub +typeChanged (since := "2026-10-27")]
+lemma coe_sub [SubNegZeroMonoid G] (g₁ g₂ : ι →₀ G) : ⇑(g₁ - g₂) = g₁ - g₂ := rfl
+
+@[deprecated sub_apply +typeChanged (since := "2026-10-27")]
 protected lemma sub_apply [SubNegZeroMonoid G] (g₁ g₂ : ι →₀ G) (a : ι) :
     (g₁ - g₂) a = g₁ a - g₂ a := rfl
 
 lemma mapRange_sub [SubNegZeroMonoid G] [SubNegZeroMonoid H] {f : G → H} {hf : f 0 = 0}
     (hf' : ∀ x y, f (x - y) = f x - f y) (v₁ v₂ : ι →₀ G) :
     mapRange f hf (v₁ - v₂) = mapRange f hf v₁ - mapRange f hf v₂ :=
-  ext fun _ => by simp only [hf', Finsupp.sub_apply, mapRange_apply]
+  ext fun _ => by simp [hf']
 
 section AddGroup
 variable [AddGroup G] {v : ι →₀ G}
@@ -465,9 +471,10 @@ unless `F i`'s addition is commutative. -/
 instance instIntSMul : SMul ℤ (ι →₀ G) :=
   ⟨fun n v => v.mapRange (n • ·) (zsmul_zero _)⟩
 
+instance : IsSMulApply ℤ (ι →₀ G) where
+
 instance instAddGroup : AddGroup (ι →₀ G) :=
-  fast_instance% DFunLike.coe_injective.addGroup DFunLike.coe coe_zero coe_add coe_neg coe_sub
-    (fun _ _ => rfl) fun _ _ => rfl
+  fast_instance% FunLike.addGroup
 
 @[simp]
 lemma support_neg (f : ι →₀ G) : support (-f) = support f :=
@@ -509,7 +516,6 @@ lemma erase_sub (a : ι) (f₁ f₂ : ι →₀ G) : erase a (f₁ - f₂) = era
 end AddGroup
 
 instance instAddCommGroup [AddCommGroup G] : AddCommGroup (ι →₀ G) :=
-  fast_instance% DFunLike.coe_injective.addCommGroup DFunLike.coe coe_zero coe_add coe_neg coe_sub
-    (fun _ _ => rfl) fun _ _ => rfl
+  fast_instance% FunLike.addCommGroup
 
 end Finsupp

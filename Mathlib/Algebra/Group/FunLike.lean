@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Group.InjSurj
 public import Mathlib.Algebra.Group.IsApply
 public import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.Algebra.Group.Pi.Torsion
+public import Mathlib.Tactic.TermCongr
 
 /-! # Group instances for `FunLike` types
 In this file we define various instances related to groups for `FunLike` types.
@@ -106,6 +107,17 @@ end MonoidHom
 end CoercionHom
 
 section GroupInstances
+
+/-- A `FunLike` type that satisfies `(f ^ n) x = f x ^ n` has unique roots
+if `β` has unique roots. -/
+@[to_additive /-- A `FunLike` type that satisfies `(n • f) x = n • f x` has unique div
+if `β` has unique div. -/]
+protected abbrev hasUniqueRoots [Monoid F] [Monoid β] [HasUniqueRoots β] [IsPowApply ℕ F] :
+    HasUniqueRoots F where
+  pow_left_injective n hn a b h := by
+    refine DFunLike.ext _ _ fun x ↦ ?_
+    apply pow_left_injective hn
+    simp_rw [← pow_apply, h]
 
 variable [Mul F]
 
