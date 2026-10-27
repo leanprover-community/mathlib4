@@ -202,9 +202,10 @@ theorem transpose_transpose (μ : YoungDiagram) : μ.transpose.transpose = μ :=
   simp
 
 theorem transpose_eq_iff_eq_transpose {μ ν : YoungDiagram} : μ.transpose = ν ↔ μ = ν.transpose := by
-  constructor <;>
-    · rintro rfl
-      simp
+  constructor
+  all_goals
+    rintro rfl
+    simp
 
 @[simp]
 theorem transpose_eq_iff {μ ν : YoungDiagram} : μ.transpose = ν.transpose ↔ μ = ν := by

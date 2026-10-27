@@ -83,7 +83,7 @@ theorem betaIntegral_convergent {u v : ℂ} (hu : 0 < re u) (hv : 0 < re v) :
   convert ((betaIntegral_convergent_left hv u).comp_add_right 1).symm using 1
   · ext1 x
     conv_lhs => rw [mul_comm]
-    congr 2 <;> · push_cast; ring
+    congr 2 <;> push_cast <;> ring
   · norm_num
   · simp
 

@@ -88,7 +88,7 @@ theorem cos_eq_cos_iff {x y : ℂ} : cos x = cos y ↔ ∃ k : ℤ, y = 2 * k * 
       apply or_congr <;>
         simp only [field, sin_eq_zero_iff, eq_sub_iff_add_eq',
           sub_eq_iff_eq_add, mul_comm (2 : ℂ), mul_right_comm _ (2 : ℂ)]
-      constructor <;> · rintro ⟨k, rfl⟩; use -k; simp
+      constructor <;> rintro ⟨k, rfl⟩ <;> use -k <;> simp
     _ ↔ ∃ k : ℤ, y = 2 * k * π + x ∨ y = 2 * k * π - x := exists_or.symm
 
 theorem sin_eq_sin_iff {x y : ℂ} :

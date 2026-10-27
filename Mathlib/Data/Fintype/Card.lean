@@ -403,8 +403,9 @@ theorem Fintype.card_subtype_compl [Fintype α] (p : α → Prop) [Fintype { x /
     Fintype.card { x // ¬p x } = Fintype.card α - Fintype.card { x // p x } := by
   classical
     rw [Fintype.card_of_subtype (Set.toFinset { x | p x }ᶜ), Set.toFinset_compl,
-      Finset.card_compl, Fintype.card_of_subtype] <;>
-    · intro
+      Finset.card_compl, Fintype.card_of_subtype]
+    all_goals
+      intro
       simp only [Set.mem_toFinset, Set.mem_compl_iff, Set.mem_ofPred]
 
 theorem Fintype.card_subtype_mono (p q : α → Prop) (h : p ≤ q) [Fintype { x // p x }]

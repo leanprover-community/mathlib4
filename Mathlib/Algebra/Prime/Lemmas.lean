@@ -51,9 +51,10 @@ theorem comap_prime (hinv : ∀ a, g (f a : N) = a) (hp : Prime (f p)) : Prime p
         (hp.2.2 (f a) (f b) <| by
               convert map_dvd f h
               simp).imp
-          ?_ ?_ <;>
-      · intro h
-        convert ← map_dvd g h <;> apply hinv⟩
+          ?_ ?_
+    all_goals
+      intro h
+      convert ← map_dvd g h <;> apply hinv⟩
 
 theorem MulEquiv.prime_iff {E : Type*} [EquivLike E M N] [MulEquivClass E M N] (e : E) :
     Prime (e p) ↔ Prime p := by

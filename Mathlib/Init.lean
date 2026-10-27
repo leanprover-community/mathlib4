@@ -29,6 +29,7 @@ public meta import Mathlib.Tactic.Linter.OldObtain
 public meta import Mathlib.Tactic.Linter.PrivateModule
 public meta import Mathlib.Tactic.Linter.Style
 public meta import Mathlib.Tactic.Linter.TacticDocumentation
+public meta import Mathlib.Tactic.Linter.TerminalCDot
 public meta import Mathlib.Tactic.Linter.UnusedTactic
 public meta import Mathlib.Tactic.Linter.Whitespace
 -- This import makes the `#min_imports in` command available globally.

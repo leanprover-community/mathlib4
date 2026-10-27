@@ -167,8 +167,9 @@ set_option backward.defeqAttrib.useBackward true in
 /-- The tensor product of `R`-bialgebras is commutative, up to bialgebra isomorphism. -/
 @[expose] def comm : A ⊗[R] B ≃ₐc[R] B ⊗[R] A :=
   .ofAlgEquiv (Algebra.TensorProduct.comm R A B) (by ext <;> simp) <| by
-    ext a <;>
-    · dsimp
+    ext a
+    all_goals
+      dsimp
       rw [← (ℛ R a).eq]
       simp [TensorProduct.tmul_sum, TensorProduct.sum_tmul, Algebra.TensorProduct.one_def]
 

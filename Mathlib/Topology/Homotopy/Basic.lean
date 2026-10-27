@@ -242,9 +242,10 @@ theorem trans_apply {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Hom
       else
         G (⟨2 * x.1 - 1, unitInterval.two_mul_sub_one_mem_iff.2 ⟨(not_le.1 h).le, x.1.2.2⟩⟩, x.2) :=
   show ite _ _ _ = _ by
-    split_ifs <;>
-      · rw [extend, ContinuousMap.coe_IccExtend, Set.IccExtend_of_mem]
-        rfl
+    split_ifs
+    all_goals
+      rw [extend, ContinuousMap.coe_IccExtend, Set.IccExtend_of_mem]
+      rfl
 
 set_option backward.isDefEq.respectTransparency false in
 theorem symm_trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homotopy f₁ f₂) :

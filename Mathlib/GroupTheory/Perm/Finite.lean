@@ -150,9 +150,10 @@ theorem Disjoint.extendDomain {p : β → Prop} [DecidablePred p] (f : α ≃ Su
     {σ τ : Perm α} (h : Disjoint σ τ) : Disjoint (σ.extendDomain f) (τ.extendDomain f) := by
   intro b
   by_cases pb : p b
-  · refine (h (f.symm ⟨b, pb⟩)).imp ?_ ?_ <;>
-      · intro h
-        rw [extendDomain_apply_subtype _ _ pb, h, apply_symm_apply, Subtype.coe_mk]
+  · refine (h (f.symm ⟨b, pb⟩)).imp ?_ ?_
+    all_goals
+      intro h
+      rw [extendDomain_apply_subtype _ _ pb, h, apply_symm_apply, Subtype.coe_mk]
   · left
     rw [extendDomain_apply_not_subtype _ _ pb]
 

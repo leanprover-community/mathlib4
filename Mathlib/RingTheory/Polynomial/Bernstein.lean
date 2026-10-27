@@ -384,7 +384,7 @@ theorem variance (n : ℕ) :
     _ = _ := p
     _ = _ := ?_
   · congr 1; simp only [← natCast_mul, push_cast]
-    cases k <;> · simp; ring
+    cases k <;> simp <;> ring
   · simp only [← natCast_mul, push_cast]
     cases n
     · simp

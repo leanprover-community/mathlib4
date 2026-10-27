@@ -220,14 +220,15 @@ by `𝒢` and `-1`. -/
 def adjoinNegOne (𝒢 : Subgroup G) : Subgroup G where
   carrier := {g | g ∈ 𝒢 ∨ -g ∈ 𝒢}
   mul_mem' ha hb := by
-    rcases ha with ha | ha <;>
-      rcases hb with hb | hb <;>
-      · have := mul_mem ha hb
-        aesop
+    rcases ha with ha | ha <;> rcases hb with hb | hb
+    all_goals
+      have := mul_mem ha hb
+      aesop
   one_mem' := by simp
   inv_mem' ha := by
-    rcases ha with (ha | ha) <;>
-    · have := inv_mem ha
+    rcases ha with (ha | ha)
+    all_goals
+      have := inv_mem ha
       aesop
 
 @[simp] lemma mem_adjoinNegOne_iff {𝒢 : Subgroup G} {g : G} :

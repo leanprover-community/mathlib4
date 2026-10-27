@@ -693,25 +693,28 @@ theorem epimorphisms.infer_property [hf : Epi f] : (epimorphisms C) f :=
 end
 
 instance RespectsIso.monomorphisms : RespectsIso (monomorphisms C) := by
-  apply RespectsIso.mk <;>
-    · intro X Y Z e f
-      simp only [monomorphisms.iff]
-      intro
-      apply mono_comp
+  apply RespectsIso.mk
+  all_goals
+    intro X Y Z e f
+    simp only [monomorphisms.iff]
+    intro
+    apply mono_comp
 
 instance RespectsIso.epimorphisms : RespectsIso (epimorphisms C) := by
-  apply RespectsIso.mk <;>
-    · intro X Y Z e f
-      simp only [epimorphisms.iff]
-      intro
-      apply epi_comp
+  apply RespectsIso.mk
+  all_goals
+    intro X Y Z e f
+    simp only [epimorphisms.iff]
+    intro
+    apply epi_comp
 
 instance RespectsIso.isomorphisms : RespectsIso (isomorphisms C) := by
-  apply RespectsIso.mk <;>
-    · intro X Y Z e f
-      simp only [isomorphisms.iff]
-      intro
-      exact IsIso.comp_isIso
+  apply RespectsIso.mk
+  all_goals
+    intro X Y Z e f
+    simp only [isomorphisms.iff]
+    intro
+    exact IsIso.comp_isIso
 
 end
 
