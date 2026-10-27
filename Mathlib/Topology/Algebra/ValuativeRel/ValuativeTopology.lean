@@ -513,13 +513,4 @@ theorem of_integers {K R : Type*} [Field K] [ValuativeRel K] [TopologicalSpace K
     exact ⟨(hasBasis_nhds_zero K).mem_of_mem (i := Units.mk0 (embedding δ.val) (by simp)) trivial,
       fun z hz ↦ hδ <| v.restrict_lt_iff_lt_embedding.mpr hz⟩
 
-@[deprecated (since := "2026-03-17")] alias isOpen_ball := Valuation.isOpen_ball
-@[deprecated (since := "2026-03-17")] alias isClosed_ball := Valuation.isClosed_ball
-@[deprecated (since := "2026-03-17")] alias isClopen_ball := Valuation.isClopen_ball
-@[deprecated (since := "2026-03-17")] alias isOpen_closedBall := Valuation.isOpen_closedBall
-@[deprecated (since := "2026-03-17")] alias isClosed_closedBall := Valuation.isClosed_closedBall
-@[deprecated (since := "2026-03-17")] alias isClopen_closedBall := Valuation.isClopen_closedBall
-@[deprecated (since := "2026-03-17")] alias isClopen_sphere := Valuation.isClopen_sphere
-@[deprecated (since := "2026-03-17")] alias isOpen_sphere := Valuation.isOpen_sphere
-
 end IsValuativeTopology
