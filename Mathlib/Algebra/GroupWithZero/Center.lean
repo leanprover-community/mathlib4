@@ -29,14 +29,6 @@ variable [MulZeroClass M₀] {s : Set M₀}
 
 @[simp] lemma zero_mem_centralizer : (0 : M₀) ∈ centralizer s := by simp [mem_centralizer_iff]
 
-instance : MulZeroClass (Center M₀) where
-  zero := Center.mk (0 : M₀) zero_mem_center
-  zero_mul m := Subtype.ext (zero_mul m.val)
-  mul_zero m := Subtype.ext (mul_zero m.val)
-
-@[simp]
-lemma _root_.Center.coe_zero :  (0 : Center M₀).val = 0 := rfl
-
 end MulZeroClass
 
 section GroupWithZero
@@ -63,12 +55,6 @@ lemma center_units_eq : center G₀ˣ = ((↑) : G₀ˣ → G₀) ⁻¹' center 
 @[simp] lemma div_mem_centralizer₀ (ha : a ∈ centralizer s) (hb : b ∈ centralizer s) :
     a / b ∈ centralizer s := by
   simpa only [div_eq_mul_inv] using mul_mem_centralizer ha (inv_mem_centralizer₀ hb)
-
-
-instance : CommGroupWithZero (Center G₀) where
-  exists_pair_ne := ⟨0, 1, by rw [ne_eq, Center.eq_iff]; exact zero_ne_one⟩
-  inv_zero := by simp
-  mul_inv_cancel := by simp_all
 
 end GroupWithZero
 end Set

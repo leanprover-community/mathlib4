@@ -393,46 +393,23 @@ theorem map_center_eq {F} [EquivLike F R S] [RingEquivClass F R S] (f : F) :
 theorem center_eq_top (R) [CommRing R] : center R = ⊤ :=
   SetLike.coe_injective (Set.center_eq_univ R)
 
-/-- The center is commutative. -/
-instance {R} [Ring R] : CommRing (center R) where
-  __ := (center R).toRing
-  __ : CommSemiring (center R) := inferInstanceAs <| CommSemiring (Subsemiring.center R)
+instance {R : Type*} [Ring R] : CommRing (center R) where
+  mul_comm x y := Subtype.ext (x.prop.comm y.val)
 
-/-- The center of isomorphic (not necessarily associative) rings are isomorphic. -/
-@[simps!] def centerCongr (e : R ≃+* S) : center R ≃+* center S :=
-  NonUnitalSubsemiring.centerCongr e
-
-/-- The center of a (not necessarily associative) ring
-is isomorphic to the center of its opposite. -/
-@[simps!] def centerToMulOpposite : center R ≃+* center Rᵐᵒᵖ :=
-  NonUnitalSubsemiring.centerToMulOpposite
-
-instance {R : Type*} [Ring R] : CommRing (Center R) where
-  neg a := Center.mk (-a.val) (Set.neg_mem_center a.prop)
-  intCast n := Center.mk n (by simp)
-  intCast_ofNat n := by simp
-  intCast_negSucc n := by simp
-  sub a b := Center.mk (a.val - b.val) (by simp [sub_eq_add_neg, a.prop, b.prop])
-  sub_eq_add_neg a b := Subtype.ext (sub_eq_add_neg a.val b.val)
-  zsmul n a := Center.mk (n • a.val) (by simp [a.prop])
-  neg_add_cancel a := Subtype.ext (neg_add_cancel a.val)
-  zsmul_zero' a := Subtype.ext (SubNegMonoid.zsmul_zero' a.val)
-  zsmul_succ' n a := Subtype.ext (SubNegMonoid.zsmul_succ' n a.val)
-  zsmul_neg' n a := Subtype.ext (SubNegMonoid.zsmul_neg' n a.val)
-
-@[simp]
-lemma _root_.Center.coe_zsmul {R : Type*} [Ring R] (n : ℤ) (z : Center R) :
-    (n • z).val = n • z.val := rfl
+instance {R : Type*} [Ring R] : CommRing (Center R) :=
+  { toRing := inferInstanceAs <| Ring (center R), mul_comm}
 
 @[simp]
 lemma _root_.Center.coe_intCast {R : Type*} [Ring R] (n : ℤ) : (n : Center R).val = n := rfl
 
-@[simp]
-lemma _root_.Center.coe_sub {R : Type*} [Ring R] (a b : Center R) :
-    (a - b).val = a.val - b.val := rfl
+/-- The center of isomorphic (not necessarily associative) rings are isomorphic. -/
+@[simps!, deprecated "use `RingEquiv.toCenter` instead" (since := "2026-10-27")]
+def centerCongr (e : R ≃+* S) : center R ≃+* center S := e.toCenter
 
-@[simp]
-lemma _root_.Center.coe_neg {R : Type*} [Ring R] (z : Center R) : (-z).val = -z.val := rfl
+/-- The center of a (not necessarily associative) ring
+is isomorphic to the center of its opposite. -/
+@[simps!, deprecated "use `Center.toMulOppositeRingEquiv` instead" (since := "2026-10-27")]
+def centerToMulOpposite : center R ≃+* center Rᵐᵒᵖ := Center.toMulOppositeRingEquiv
 
 end
 
@@ -458,6 +435,16 @@ theorem center.coe_inv (a : center K) : ((a⁻¹ : center K) : K) = (a : K)⁻¹
 
 @[simp]
 theorem center.coe_div (a b : center K) : ((a / b : center K) : K) = (a : K) / (b : K) :=
+  rfl
+
+instance : Field (Center K) := inferInstanceAs <| Field (center K)
+
+@[simp]
+theorem _root_.Center.coe_inv' (a : Center K) : ((a⁻¹ : Center K) : K) = (a : K)⁻¹ :=
+  rfl
+
+@[simp]
+theorem _root_.Center.coe_div (a b : Center K) : ((a / b : Center K) : K) = (a : K) / (b : K) :=
   rfl
 
 end DivisionRing
@@ -1139,23 +1126,13 @@ example {R} [Ring R] [AddCommMonoid α] [Module R α] (S : Subring R) :
 example {R} [Ring R] [Semiring α] [MulSemiringAction R α] (S : Subring R) :
     MulSemiringAction S α := by infer_instance
 
-/-- The center of a semiring acts commutatively on that semiring. -/
-instance center.smulCommClass_left {R} [Ring R] : SMulCommClass (center R) R R :=
-  Subsemiring.center.smulCommClass_left
-
-/-- The center of a semiring acts commutatively on that semiring. -/
-instance center.smulCommClass_right {R} [Ring R] : SMulCommClass R (center R) R :=
-  Subsemiring.center.smulCommClass_right
+/-- The center of a semiring acts commutatively on any `R`-module -/
+instance {R M : Type*} [Ring R] [MulAction R M] : SMulCommClass R (center R) M where
+  smul_comm x z _ := by rw[smul_def, smul_smul, smul_def, smul_smul, z.prop.comm x]
 
 /-- The center of a semiring acts commutatively on any `R`-module -/
-instance {R M : Type*} [Ring R] [MulAction R M] :
-    SMulCommClass R (Subring.center R) M :=
-  inferInstanceAs <| SMulCommClass R (Submonoid.center R) M
-
-/-- The center of a semiring acts commutatively on any `R`-module -/
-instance {R M : Type*} [Ring R] [MulAction R M] :
-    SMulCommClass (Subring.center R) R M :=
-  inferInstanceAs <| SMulCommClass (Submonoid.center R) R M
+instance {R M : Type*} [Ring R] [MulAction R M] : SMulCommClass (center R) R M :=
+  SMulCommClass.symm _ _ _
 
 end Subring
 

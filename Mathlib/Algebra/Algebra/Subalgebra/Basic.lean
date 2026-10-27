@@ -913,11 +913,9 @@ theorem center_toSubring (R A : Type*) [CommRing R] [Ring A] [Algebra R A] :
 
 variable {R A}
 
-instance : CommSemiring (center R A) :=
-  inferInstanceAs (CommSemiring (Subsemiring.center A))
+example : CommSemiring (Center A):= inferInstance
 
-instance {A : Type*} [Ring A] [Algebra R A] : CommRing (center R A) :=
-  inferInstanceAs (CommRing (Subring.center A))
+example {A : Type*} [Ring A] : CommRing (Center A) := inferInstance
 
 theorem mem_center_iff {a : A} : a ∈ center R A ↔ ∀ b : A, b * a = a * b :=
   Subsemigroup.mem_center_iff
@@ -934,21 +932,10 @@ theorem comap_center_le_center {f : A →ₐ[R] B} (hf : Function.Injective f) :
 theorem map_center_eq (f : A ≃ₐ[R] B) : map f (center R A) = center R B :=
   SetLike.coe_injective (Set.image_center_eq f)
 
-instance : Algebra R (Center A) where
-  smul r a := Center.mk (r • a.val) (by
-    rw [Algebra.smul_def]
-    exact Set.mul_mem_center (Set.algebraMap_mem_center r) a.prop)
-  algebraMap :=
-    {toFun r := Center.mk (algebraMap R A r) (Set.algebraMap_mem_center r)
-     map_one' := by simp
-     map_mul' _ _ := by simp
-     map_zero' := by simp
-     map_add' x y := by simp}
-  commutes' r x := Subtype.ext (Algebra.commutes r x.val)
-  smul_def' r x := Subtype.ext (Algebra.smul_def r x.val)
+instance : Algebra R (Center A) := inferInstanceAs <| Algebra R (center R A)
 
 @[simp]
-lemma _root_.Center.coe_smul (r : R) (z : Center A) :
+lemma _root_.Center.coe_smul_self (r : R) (z : Center A) :
     (r • z).val = r • z.val := rfl
 
 @[simp]
@@ -985,10 +972,6 @@ def _root_.AlgHom.liftCenter {f : A →ₐ[R] B} (hf : ∀ r, f r ∈ Set.center
     A →ₐ[R] Center B where
   toRingHom := f.toRingHom.liftCenter hf
   commutes' := by simp
-
-@[simp]
-lemma _root_.AlgHom.comp_liftCenter {f : A →ₐ[R] B} (hf : ∀ r, f r ∈ Set.center B) :
-    (Center.algHom R B).comp (f.liftCenter hf) = f := rfl
 
 end Center
 

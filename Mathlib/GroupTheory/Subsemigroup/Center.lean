@@ -44,13 +44,22 @@ def center : Subsemigroup M where
   carrier := Set.center M
   mul_mem' := Set.mul_mem_center
 
-variable {M}
+@[to_additive]
+instance {M} [Semigroup M] : CommSemigroup (Center M) where
+  mul_assoc := Center.mul_assoc'
 
-/-- The center of a magma is commutative and associative. -/
-@[to_additive /-- The center of an additive magma is commutative and associative. -/]
-instance center.commSemigroup : CommSemigroup (center M) where
-  mul_assoc _ b _ := Subtype.ext <| b.2.mid_assoc _ _
-  mul_comm a _ := Subtype.ext <| a.2.comm _
+@[to_additive]
+instance (priority := low) : CommSemigroup (Center M) where
+  mul_assoc := Center.mul_assoc'
+
+@[to_additive]
+lemma _root_.Center.subtype_surjective {M} [CommSemigroup M] :
+    Function.Surjective (Center.subtype (M := M)) :=
+  fun m => ⟨Center.mk m (by simp), by simp⟩
+
+@[to_additive]
+lemma _root_.Center.range_subtype_eq_top {M} [CommSemigroup M] :
+    Set.range (Center.subtype (M := M)) = ⊤ := by simp
 
 end Mul
 

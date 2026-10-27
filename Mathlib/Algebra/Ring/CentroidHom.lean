@@ -449,26 +449,26 @@ lemma centroid_eq_centralizer_mulLeftRight :
 
 /-- The canonical homomorphism from the center into the center of the centroid -/
 def centerToCentroidCenter :
-    NonUnitalSubsemiring.center α →ₙ+* Subsemiring.center (CentroidHom α) where
+    Center α →ₙ+* Center (CentroidHom α) where
   toFun z :=
     { L (z : α) with
       val := ⟨L z, z.prop.left_comm, z.prop.left_assoc ⟩
       property := by
-        rw [Subsemiring.mem_center_iff]
+        rw [Semigroup.mem_center_iff]
         intro g
         ext a
         exact map_mul_left g (↑z) a }
   map_zero' := by
-    simp only [ZeroMemClass.coe_zero, map_zero]
+    simp only [Center.coe_zero, map_zero]
     exact rfl
   map_add' := fun _ _ => by
     dsimp
     simp only [map_add]
     rfl
-  map_mul' z₁ z₂ := by ext a; exact (z₁.prop.left_assoc z₂ a).symm
+  map_mul' z₁ z₂ := Subtype.ext (by ext a; exact (z₁.prop.left_assoc z₂ a).symm)
 
 @[macro_inline]
-instance : FunLike (Subsemiring.center (CentroidHom α)) α α where
+instance : FunLike (Center (CentroidHom α)) α α where
   coe f := f.val.toFun
   coe_injective f g h := by
     cases f
@@ -476,16 +476,14 @@ instance : FunLike (Subsemiring.center (CentroidHom α)) α α where
     congr with x
     congrm $h x
 
-lemma centerToCentroidCenter_apply (z : NonUnitalSubsemiring.center α) (a : α) :
+lemma centerToCentroidCenter_apply (z : Center α) (a : α) :
     (centerToCentroidCenter z) a = z * a := rfl
 
 /-- The canonical homomorphism from the center into the centroid -/
-def centerToCentroid : NonUnitalSubsemiring.center α →ₙ+* CentroidHom α :=
-  NonUnitalRingHom.comp
-    (SubsemiringClass.subtype (Subsemiring.center (CentroidHom α))).toNonUnitalRingHom
-    centerToCentroidCenter
+def centerToCentroid : Center α →ₙ+* CentroidHom α :=
+  (Center.nonUnitalRingHom (CentroidHom α)).comp centerToCentroidCenter
 
-lemma centerToCentroid_apply (z : NonUnitalSubsemiring.center α) (a : α) :
+lemma centerToCentroid_apply (z : Center α) (a : α) :
     (centerToCentroid z) a = z * a := rfl
 
 lemma _root_.NonUnitalNonAssocSemiring.mem_center_iff (a : α) :

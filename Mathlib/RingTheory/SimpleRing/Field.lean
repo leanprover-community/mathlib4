@@ -25,7 +25,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 open TwoSidedIdeal in
 lemma isField_center (A : Type*) [Ring A] [IsSimpleRing A] : IsField (Subring.center A) where
   exists_pair_ne := ⟨0, 1, zero_ne_one⟩
-  mul_comm := mul_comm
+  mul_comm x y := Subtype.ext (x.prop.comm y.val)
   mul_inv_cancel := by
     rintro ⟨x, hx1⟩ hx2
     rw [Subring.mem_center_iff] at hx1

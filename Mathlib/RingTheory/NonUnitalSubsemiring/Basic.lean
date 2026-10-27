@@ -233,10 +233,48 @@ theorem center_toSubsemigroup :
     (center R).toSubsemigroup = Subsemigroup.center R :=
   rfl
 
+instance : NonUnitalNonAssocCommSemiring (Center R) :=
+  {toNonUnitalNonAssocSemiring := inferInstanceAs <| NonUnitalNonAssocSemiring (center R), mul_comm}
+
 /-- The center is commutative and associative. -/
-instance center.instNonUnitalCommSemiring : NonUnitalCommSemiring (center R) :=
-  { Subsemigroup.center.commSemigroup,
-    NonUnitalSubsemiringClass.toNonUnitalNonAssocSemiring (center R) with }
+instance (priority := low) center.instNonUnitalCommSemiring : NonUnitalCommSemiring (Center R) where
+  mul_assoc := Center.mul_assoc'
+
+@[simp]
+lemma _root_.Center.coe_zero : (0 : Center R).val = 0 := rfl
+
+@[simp]
+lemma _root_.Center.coe_add (a b : Center R) : (a + b).val = a.val + b.val := rfl
+
+@[simp]
+lemma _root_.Center.coe_nsmul (n : ℕ) (z : Center R) : (n • z).val = n • z.val := rfl
+
+
+@[simps!]
+def _root_.Center.nonUnitalRingHom : Center R →ₙ+* R where
+  toFun z := z.val
+  map_mul' := by simp
+  map_zero' := by simp
+  map_add' := by simp
+
+variable {R} [NonUnitalNonAssocSemiring S] {f : R →ₙ+* S}
+
+/-- A surjective morphism between (not necessarily unital or associative) rings induces a momorhpism
+between their centers. -/
+@[simps!]
+def _root_.NonUnitalRingHom.toCenter (hf : Function.Surjective f) : Center R →ₙ+* Center S where
+  toFun z := Center.mk (f z.val) (IsMulCentral.map z.prop hf)
+  map_mul' := by simp
+  map_zero' := by simp
+  map_add' := by simp
+
+/-- Lift a morphism through the inclusion `Center R →ₙ+* R`. -/
+@[simps!]
+def _root_.NonUnitalRingHom.liftCenter (hf : ∀ m, f m ∈ Set.center S) : R →ₙ+* Center S where
+  toFun m := Center.mk (f m) (hf m)
+  map_mul' := by simp
+  map_zero' := by simp
+  map_add' := by simp
 
 /-- A point-free means of proving membership in the center, for a non-associative ring.
 
@@ -249,44 +287,29 @@ lemma _root_.Set.mem_center_iff_addMonoidHom (a : R) :
   rw [Set.mem_center_iff, isMulCentral_iff]
   simp [DFunLike.ext_iff, commute_iff_eq]
 
-variable {R}
-
-/-- The center of isomorphic (not necessarily unital or associative) semirings are isomorphic. -/
-@[simps!] def centerCongr [NonUnitalNonAssocSemiring S] (e : R ≃+* S) : center R ≃+* center S where
-  __ := Subsemigroup.centerCongr e
-  map_add' _ _ := Subtype.ext <| by exact map_add e ..
-
-/-- The center of a (not necessarily unital or associative) semiring
-is isomorphic to the center of its opposite. -/
-@[simps!] def centerToMulOpposite : center R ≃+* center Rᵐᵒᵖ where
-  __ := Subsemigroup.centerToMulOpposite
-  map_add' _ _ := rfl
-
-instance : NonUnitalNonAssocCommSemiring (Center R) where
-  add a b := Center.mk (a.val + b.val) (Set.add_mem_center a.prop b.prop)
-  add_assoc a b c := Subtype.ext <| add_assoc a.val b c
-  zero_add a := Subtype.ext <|  zero_add a.val
-  add_zero a := Subtype.ext <|  add_zero a.val
-  nsmul n a := Center.mk (n • a.val) (by induction n <;> simp_all [succ_nsmul, a.prop])
-  add_comm a b := Subtype.ext <| add_comm a.val b.val
-  left_distrib a b c := Subtype.ext <| left_distrib a.val b c
-  right_distrib a b c := Subtype.ext <|  right_distrib a.val b c
-  nsmul_zero a := Subtype.ext (zero_nsmul a.val)
-  nsmul_succ n a := Subtype.ext (succ_nsmul a.val n)
-
-@[simp]
-lemma _root_.Center.coe_add (a b : Center R) : (a + b).val = a.val + b.val := rfl
-
-@[simp]
-lemma _root_.Center.coe_nsmul (n : ℕ) (z : Center R) : (n • z).val = n • z.val := rfl
-
-/-- An isomorphism morphism between (not necessarily associative) semirings induces a semiring
-isomorphism between their centers. -/
+/-- An isomorphism morphism between (not necessarily unital or associative) semirings induces a
+semiring isomorphism between their centers. -/
 @[simps!]
-def _root_.RingEquiv.toCenter {S : Type*} [NonUnitalNonAssocSemiring S] (e : R ≃+* S) :
+def _root_.RingEquiv.toCenter (e : R ≃+* S) :
     Center R ≃+* Center S where
   toMulEquiv := e.toMulEquiv.toCenter
   map_add' _ _ := by simp
+
+/-- The center of a (not necessarily unital or associative) semiring is isomorphic to the center of
+its opposite. -/
+@[simps!]
+def _root_.Center.toMulOppositeRingEquiv : Center R ≃+* Center Rᵐᵒᵖ where
+  toMulEquiv := Center.toMulOpposite
+  map_add' _ _ := rfl
+
+/-- The center of isomorphic (not necessarily unital or associative) semirings are isomorphic. -/
+@[simps!, deprecated "use `RingEquiv.toCenter` instead" (since := "2026-10-27")]
+def centerCongr (e : R ≃+* S) : center R ≃+* center S := e.toCenter
+
+/-- The center of a (not necessarily unital or associative) semiring
+is isomorphic to the center of its opposite. -/
+@[simps!, deprecated "use `Center.toMulOppositeRingEquiv` instead" (since := "2026-10-27")]
+def centerToMulOpposite : center R ≃+* center Rᵐᵒᵖ := Center.toMulOppositeRingEquiv
 
 end NonUnitalNonAssocSemiring
 
