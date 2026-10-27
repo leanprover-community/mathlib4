@@ -310,6 +310,18 @@ theorem totient_eq_div_primeFactors_mul (n : ℕ) :
     Nat.mul_div_assoc _ (prod_primeFactors_dvd n), mul_comm]
   exact prod_pos (fun p => pos_of_mem_primeFactors)
 
+/-- Euler's product formula for a product of distinct primes. -/
+theorem totient_prod_primes {s : Finset ℕ} (hs : ∀ p ∈ s, p.Prime) :
+    φ (∏ p ∈ s, p) = ∏ p ∈ s, (p - 1) := by
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert q s hq ih =>
+    have hq' := hs q (mem_insert_self q s)
+    have hs' (p) (hp : p ∈ s) := hs p (mem_insert_of_mem hp)
+    rw [prod_insert hq, prod_insert hq, totient_mul, totient_prime hq', ih hs']
+    exact prod_induction _ (Coprime q) (fun _ _ ↦ Coprime.mul_right) (coprime_one_right q)
+      fun p hp ↦ (coprime_primes hq' (hs' p hp)).2 <| by rintro rfl; exact hq hp
+
 /-- Euler's product formula for the totient function. -/
 theorem totient_eq_mul_prod_factors (n : ℕ) :
     (φ n : ℚ) = n * ∏ p ∈ n.primeFactors, (1 - (p : ℚ)⁻¹) := by
