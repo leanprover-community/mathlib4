@@ -86,9 +86,8 @@ variable (M : Submodule R V)
 /-- Any `R`-independent family of vectors in a lattice is `A`-linearly independent. -/
 theorem linearIndependent [IsLattice A M] {ι : Type*} {v : ι → V}
     (hv : ∀ i, v i ∈ M) (h : LinearIndependent R v) : LinearIndependent A v := by
-  cases subsingleton_or_nontrivial R
-  · have := (algebraMap R A).codomain_trivial
-    exact linearIndependent_of_subsingleton
+  nontriviality A
+  nontriviality R using Algebra.subsingleton R A
   exact (linearIndepOn_id_range_iff h.injective).mp <|
     linearIndepOn _ (Set.range_subset_iff.mpr hv) h.linearIndepOn_id
 
