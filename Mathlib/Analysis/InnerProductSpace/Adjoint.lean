@@ -58,6 +58,8 @@ variable [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 F] [InnerProductSpac
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
+attribute [local instance] isModuleTopologyOfFiniteDimensional
+
 /-! ### Adjoint operator -/
 
 

@@ -168,6 +168,7 @@ theorem addHaar_eq_zero_of_disjoint_translates {E : Type*} [NormedAddCommGroup E
   refine pairwise_disjoint_mono hs fun n => ?_
   exact add_subset_add Subset.rfl inter_subset_left
 
+attribute [local instance] isModuleTopologyOfFiniteDimensional in
 /-- A strict vector subspace has measure zero. -/
 theorem addHaar_submodule {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E]
     [BorelSpace E] [FiniteDimensional ℝ E] (μ : Measure E) [IsAddHaarMeasure μ] (s : Submodule ℝ E)
