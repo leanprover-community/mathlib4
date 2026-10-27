@@ -18,11 +18,11 @@ public import Mathlib.RingTheory.LocalProperties.ProjectiveDimension
 /-!
 # The Global Dimension of a Ring
 
-In this file, we define the global dimension of ring and proved some of its basic properties.
+In this file, we define the (left) global dimension of ring and proved some of its basic properties.
 
 # Main definition and results
 
-* `globalDimension` : The (left) global (homological) dimension of a (commutative) ring defined as
+* `globalDimension` : The (left) global (homological) dimension of a ring defined as
   the supremum of projective dimension over all modules.
 
 * `globalDimension_le_tfae` : For natrual number `n`, `globalDimension R ≤ n` iff all
@@ -31,6 +31,9 @@ In this file, we define the global dimension of ring and proved some of its basi
 
 * `globalDimension_eq_sup_projectiveDimension_finite` : The (left) Global dimension is equal to
   the supremum of projective dimension over finitely generated modules.
+
+* `globalDimension_eq_sup_injectiveDimension` : The (left) global dimension of a ring is equal to
+  the supremum of injective dimension over all modules.
 
 -/
 
@@ -52,6 +55,7 @@ the supremum of projective dimension over all modules. -/
 noncomputable def globalDimension : WithBot ℕ∞ :=
   ⨆ (M : ModuleCat.{v} R), projectiveDimension.{v} M
 
+@[simp]
 lemma globalDimension_eq_bot_iff [Small.{v} R] : globalDimension.{v} R = ⊥ ↔ Subsingleton R := by
   simp only [globalDimension, iSup_eq_bot, projectiveDimension_eq_bot_iff,
     ModuleCat.isZero_iff_subsingleton]
@@ -79,11 +83,9 @@ lemma globalDimension_le_tfae [Small.{v} R] (n : ℕ) :
     exact fun M ↦ hasProjectiveDimensionLT_of_enoughInjectives M _ (h M)
   tfae_finish
 
-lemma globalDimension_eq_sup_projectiveDimension_finite [Small.{v} R] : globalDimension.{v} R =
-    ⨆ (M : ModuleCat.{v} R), ⨆ (_ : Module.Finite R M), projectiveDimension.{v} M := by
-  have aux (n : ℕ): globalDimension.{v} R ≤ n ↔
-    ⨆ (M : ModuleCat.{v} R), ⨆ (_ : Module.Finite R M), projectiveDimension.{v} M ≤ n := by
-    simpa only [iSup_le_iff, projectiveDimension_le_iff] using (globalDimension_le_tfae R n).out 1 2
+lemma globalDimension_eq_sup_module_finite_projectiveDimension [Small.{v} R] :
+    globalDimension.{v} R =
+      ⨆ (M : ModuleCat.{v} R), ⨆ (_ : Module.Finite R M), projectiveDimension.{v} M := by
   refine eq_of_forall_ge_iff (fun N ↦ ?_)
   induction N with
   | bot =>
@@ -94,13 +96,10 @@ lemma globalDimension_eq_sup_projectiveDimension_finite [Small.{v} R] : globalDi
   | coe N =>
     induction N with
     | top => simp
-    | coe n => simpa using aux n
+    | coe n => simp [projectiveDimension_le_iff, (globalDimension_le_tfae R n).out 1 2]
 
 lemma globalDimension_eq_sup_injectiveDimension [Small.{v} R] : globalDimension.{v} R =
     ⨆ (M : ModuleCat.{v} R), injectiveDimension.{v} M := by
-  have aux (n : ℕ): globalDimension.{v} R ≤ n ↔
-    ⨆ (M : ModuleCat.{v} R), injectiveDimension.{v} M ≤ n := by
-    simpa only [iSup_le_iff, injectiveDimension_le_iff] using (globalDimension_le_tfae R n).out 1 4
   refine eq_of_forall_ge_iff (fun N ↦ ?_)
   induction N with
   | bot =>
@@ -111,7 +110,7 @@ lemma globalDimension_eq_sup_injectiveDimension [Small.{v} R] : globalDimension.
   | coe N =>
     induction N with
     | top => simp
-    | coe n => simpa using aux n
+    | coe n => simp [injectiveDimension_le_iff, (globalDimension_le_tfae R n).out 1 4]
 
 /-- Global dimension is invariant of universe level when assume ring itself small. -/
 lemma globalDimension_eq_of_small [Small.{v} R] :

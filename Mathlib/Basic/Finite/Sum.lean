@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Data.Fintype.Sum
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Finiteness of sum types
 -/

@@ -10,9 +10,6 @@ public import Mathlib.Order.Filter.AtTopBot.Tendsto
 
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Convergence to ±infinity in ordered commutative monoids
 -/

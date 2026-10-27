@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Logic.Equiv.List
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Equivalences involving `Array`
 -/

@@ -8,9 +8,6 @@ module
 public import Mathlib.LinearAlgebra.Finsupp.LSum
 public import Mathlib.LinearAlgebra.Span.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Finitely supported functions and spans
 

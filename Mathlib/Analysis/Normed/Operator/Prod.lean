@@ -8,9 +8,6 @@ module
 public import Mathlib.Analysis.Normed.Operator.Bilinear
 public import Mathlib.Topology.Algebra.Module.Equiv.Prod
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Operator norm: Cartesian products
 
