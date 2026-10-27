@@ -1,4 +1,4 @@
-name: Synchronise WIP label
+name: Synchronize WIP label
 
 on:
   pull_request_target:
