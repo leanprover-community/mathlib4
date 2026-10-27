@@ -114,14 +114,8 @@ theorem toList_one : toList (1 : FreeMonoid α) = [] := rfl
 @[to_additive (attr := simp)]
 theorem ofList_nil : ofList ([] : List α) = 1 := rfl
 
-@[to_additive (attr := deprecated toList_one +typeChanged (since := "2026-03-26"))]
-theorem toList_nil : toList ([] : FreeMonoid α) = [] := rfl
-
 @[to_additive (attr := simp)]
 theorem toList_mul (xs ys : FreeMonoid α) : toList (xs * ys) = toList xs ++ toList ys := rfl
-
-@[to_additive (attr := deprecated toList_mul +typeChanged (since := "2026-03-26"))]
-theorem toList_cons (x : α) (xs : FreeMonoid α) : toList (x :: xs) = x :: toList xs := rfl
 
 @[to_additive (attr := simp)]
 theorem ofList_append (xs ys : List α) : ofList (xs ++ ys) = ofList xs * ofList ys := rfl
@@ -497,8 +491,11 @@ def freeMonoidCongr (e : α ≃ β) : FreeMonoid α ≃* FreeMonoid β where
 theorem freeMonoidCongr_of (e : α ≃ β) (a : α) : freeMonoidCongr e (of a) = of (e a) := rfl
 
 @[to_additive (attr := simp)]
+lemma symm_freeMonoidCongr (e : α ≃ β) : (freeMonoidCongr e).symm = freeMonoidCongr e.symm := rfl
+
+@[to_additive (attr := deprecated freeMonoidCongr_of +typeChanged (since := "2026-10-21"))]
 theorem freeMonoidCongr_symm_of (e : α ≃ β) (b : β) :
-    freeMonoidCongr e.symm (of b) = of (e.symm b) := rfl
+    freeMonoidCongr e.symm (of b) = of (e.symm b) := by simp
 
 end IsomorphicTypes
 

@@ -199,13 +199,13 @@ variable [PseudoEMetricSpace E]
 variable {f : ℕ → α → E} {g : α → E}
 
 theorem tendstoInMeasure_of_tendsto_ae_of_measurable_edist [IsFiniteMeasure μ]
-    (hf : ∀ n, Measurable (fun a ↦ edist (f n a) (g a)))
+    (hf : ∀ n, AEMeasurable (fun a ↦ edist (f n a) (g a)) μ)
     (hfg : ∀ᵐ x ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (g x))) : TendstoInMeasure μ f atTop g := by
   refine fun ε hε => ENNReal.tendsto_atTop_zero.mpr fun δ hδ => ?_
   by_cases hδi : δ = ∞
   · simp only [hδi, imp_true_iff, le_top, exists_const]
   obtain ⟨t, _, ht, hunif⟩ :=
-    tendstoUniformlyOn_of_ae_tendsto_of_measurable_edist' hf hfg hδ
+    tendstoUniformlyOn_of_ae_tendsto_of_aemeasurable_edist' hf hfg hδ
   rw [EMetric.tendstoUniformlyOn_iff] at hunif
   obtain ⟨N, hN⟩ := eventually_atTop.1 (hunif ε hε)
   refine ⟨N, fun n hn => ?_⟩
@@ -217,16 +217,9 @@ theorem tendstoInMeasure_of_tendsto_ae_of_measurable_edist [IsFiniteMeasure μ]
 
 /-- Convergence a.e. implies convergence in measure in a finite measure space. -/
 theorem tendstoInMeasure_of_tendsto_ae [IsFiniteMeasure μ] (hf : ∀ n, AEStronglyMeasurable (f n) μ)
-    (hfg : ∀ᵐ x ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (g x))) : TendstoInMeasure μ f atTop g := by
+    (hfg : ∀ᵐ x ∂μ, Tendsto (fun n ↦ f n x) atTop (𝓝 (g x))) : TendstoInMeasure μ f atTop g := by
   have hg : AEStronglyMeasurable g μ := aestronglyMeasurable_of_tendsto_ae _ hf hfg
-  refine TendstoInMeasure.congr (fun i => (hf i).ae_eq_mk.symm) hg.ae_eq_mk.symm ?_
-  refine tendstoInMeasure_of_tendsto_ae_of_measurable_edist
-    (fun n ↦ ((hf n).stronglyMeasurable_mk.edist hg.stronglyMeasurable_mk).measurable) ?_
-  have hf_eq_ae : ∀ᵐ x ∂μ, ∀ n, (hf n).mk (f n) x = f n x :=
-    ae_all_iff.mpr fun n => (hf n).ae_eq_mk.symm
-  filter_upwards [hf_eq_ae, hg.ae_eq_mk, hfg] with x hxf hxg hxfg
-  rw [← hxg, funext fun n => hxf n]
-  exact hxfg
+  exact tendstoInMeasure_of_tendsto_ae_of_measurable_edist (fun n ↦ (hf n).edist hg) hfg
 
 namespace ExistsSeqTendstoAe
 

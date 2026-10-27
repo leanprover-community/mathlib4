@@ -273,15 +273,9 @@ variable {k : Type*} [Field k]
 
 open IsDiscreteValuationRing
 
-theorem hasUnitMulPowIrreducibleFactorization :
-    HasUnitMulPowIrreducibleFactorization k⟦X⟧ :=
-  ⟨X, And.intro X_irreducible
-      (by
-        intro f hf
-        use f.order.toNat
-        use Unit_of_divided_by_X_pow_order f
-        simp only [Unit_of_divided_by_X_pow_order_nonzero hf]
-        exact X_pow_order_mul_divXPowOrder)⟩
+theorem hasUnitMulPowIrreducibleFactorization : HasUnitMulPowIrreducibleFactorization k⟦X⟧ := by
+  refine ⟨X, irreducible_X, fun {f} hf ↦ ⟨f.order.toNat, Unit_of_divided_by_X_pow_order f, ?_⟩⟩
+  rw [Unit_of_divided_by_X_pow_order_nonzero hf, X_pow_order_mul_divXPowOrder]
 
 instance : UniqueFactorizationMonoid k⟦X⟧ :=
   hasUnitMulPowIrreducibleFactorization.toUniqueFactorizationMonoid
@@ -297,7 +291,7 @@ theorem maximalIdeal_eq_span_X : IsLocalRing.maximalIdeal (k⟦X⟧) = Ideal.spa
     rw [Ideal.isMaximal_iff]
     constructor
     · rw [Ideal.mem_span_singleton]
-      exact Prime.not_dvd_one X_prime
+      exact prime_X.not_dvd_one
     · intro I f hI hfX hfI
       rw [Ideal.mem_span_singleton, X_dvd_iff] at hfX
       have hfI0 : C (f 0) ∈ I := by
@@ -341,7 +335,7 @@ theorem normalized_count_X_eq_of_coe {P : k[X]} (hP : P ≠ 0) :
   apply eq_of_forall_le_iff
   simp only [← Nat.cast_le (α := ℕ∞)]
   rw [X_eq_normalize, PowerSeries.X_eq_normalizeX, ← emultiplicity_eq_count_normalizedFactors
-    irreducible_X hP, ← emultiplicity_eq_count_normalizedFactors X_irreducible] <;>
+    Polynomial.irreducible_X hP, ← emultiplicity_eq_count_normalizedFactors irreducible_X] <;>
   simp only [← pow_dvd_iff_le_emultiplicity, Polynomial.X_pow_dvd_iff,
     PowerSeries.X_pow_dvd_iff, Polynomial.coeff_coe P, implies_true, ne_eq, coe_eq_zero_iff, hP,
     not_false_eq_true]

@@ -454,7 +454,7 @@ def ofMulDistribMulAction : Representation ℤ M (Additive G) :=
     ofMulDistribMulAction M G g a = Additive.ofMul (g • a.toMul) := rfl
 
 @[simp]
-theorem norm_ofMulDistribMulAction_eq {G M : Type} [Group G] [Fintype G]
+theorem norm_ofMulDistribMulAction_eq {G M : Type*} [Group G] [Fintype G]
     [CommGroup M] [MulDistribMulAction G M] (x : Additive M) :
     Additive.toMul ((ofMulDistribMulAction G M).norm x) =
       ∏ g : G, g • Additive.toMul x := by

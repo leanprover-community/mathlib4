@@ -58,6 +58,8 @@ in general), and `ι` is countable.
 
 -/
 
+open scoped Finset
+
 @[expose] public section
 
 noncomputable section
@@ -853,7 +855,7 @@ protected def pseudoEMetricSpace : PseudoEMetricSpace (∀ i, F i) where
         ((tendsto_order.1 <| ENNReal.tendsto_tsum_compl_atTop_zero
           (tsum_geometric_encode_lt_top ENNReal.one_half_lt_one).ne).2 _
             <| by simpa using hε.ne').exists
-      obtain ⟨δ, δpos, hδ⟩ : ∃ δ, 0 < δ ∧ δ * K.card < ε / 2 :=
+      obtain ⟨δ, δpos, hδ⟩ : ∃ δ, 0 < δ ∧ δ * #K < ε / 2 :=
         ENNReal.exists_pos_mul_lt (by simp) (by simpa using hε.ne')
       apply @mem_iInf_of_iInter _ _ _ _ _ K.finite_toSet fun i =>
           {p : (∀ i : ι, F i) × ∀ i : ι, F i | edist (p.fst i) (p.snd i) < δ}

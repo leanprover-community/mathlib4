@@ -217,8 +217,9 @@ lemma lie_snd_eq_zero_of_mem_prodCartan
     mem_image_of_mem (prodSymmEquiv eι b₁ b₂).symm hy
   rw [prodCartan, map_lieSpan] at hy
   rw [prodCartan]
-  convert hy
-  ext; simp; grind
+  convert hy with x
+  simp
+  grind
 
 end CommRing
 
@@ -233,7 +234,7 @@ include hA
 lemma prod_lt_top [Nontrivial L₂] :
     b₁.prod eι b₂ < ⊤ := by
   /- This innocent-looking result is the key. The informal literature seems only to contain
-  somewhat heavy-weight proofs (e.g., [Chapter IV, Theorem 14.2](humphreys1972) makes an
+  somewhat heavy-weight proofs (e.g., [Chapter IV, Theorem 14.2][humphreys1972] makes an
   inductive argument using highest weights) but in fact it follows very easily from
   `LieAlgebra.Basis.isCartanSubalgebra`. The argument is essentially: if `b₁.prod eι b₂` is not
   proper then it's Cartan subalgebra contains `H₁ × H₂` which is absurd since it
