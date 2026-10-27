@@ -113,11 +113,6 @@ theorem sInf_of_not_bddBelow [InfSet α] {s : Set (WithTop α)} (h : ¬BddBelow 
     sInf s = ⊤ :=
   sInf_eq_top_iff.2 <| .inr h
 
-@[to_dual]
-theorem sInf_of_subset_top [InfSet α] {s : Set (WithTop α)} (h : s ⊆ {⊤}) :
-    sInf s = ⊤ :=
-  sInf_eq_top_iff.2 <| .inl h
-
 @[to_dual (attr := norm_cast)]
 theorem coe_sSup' [SupSet α] {s : Set α} (hs : BddAbove s) :
     ↑(sSup s) = (sSup ((fun (a : α) ↦ ↑a) '' s) : WithTop α) := by
@@ -172,7 +167,7 @@ noncomputable instance instOrderInfSet [OrderInfSet α] :
     OrderInfSet (WithTop α) where
   isGLB_sInf_of_isGLB s a h := by
     cases a with
-    | top => rwa [sInf_of_subset_top (isGLB_top_iff.1 h)]
+    | top => rwa [sInf_eq_top_iff.2 (.inl (isGLB_top_iff.1 h))]
     | coe a =>
       obtain ⟨hs, h'⟩ := isGLB_coe_iff.mp h
       rw [sInf_eq hs ⟨_, h.1⟩, isGLB_coe_iff]
@@ -257,7 +252,7 @@ theorem exists_isLUB_cond (hn : s.Nonempty) (hb : BddAbove s := by bddDefault) :
 
 @[to_dual]
 theorem isLUB_csSup (hn : s.Nonempty) (hb : BddAbove s := by bddDefault) : IsLUB s (sSup s) :=
-  (exists_isLUB_cond hn hb).rec fun _ h ↦ h.isLUB_sSup
+  exists_isLUB_iff_isLUB_sSup.mp (exists_isLUB_cond hn hb)
 
 @[to_dual csInf_le]
 theorem le_csSup (h₁ : BddAbove s) (h₂ : a ∈ s) : a ≤ sSup s :=
@@ -559,7 +554,7 @@ In this case we have `Sup ∅ = ⊥`, so we can drop some `Nonempty`/`Set.Nonemp
 
 section ConditionallyCompleteLinearOrderBot
 
-@[deprecated (since := "2026-10-27")] alias csInf_univ := sInf_univ
+@[to_dual (attr := deprecated (since := "2026-10-27"))] alias csInf_univ := sInf_univ
 
 variable [ConditionallyCompleteLinearOrderBot α] {s : Set α} {a : α}
 
@@ -659,7 +654,7 @@ complete lattice with a top. -/
 theorem isGLB_sInf' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (WithTop β)}
     (hs : BddBelow s) : IsGLB s (sInf s) := by
   by_cases h : s ⊆ {⊤}
-  · rw [sInf_of_subset_top h]
+  · rw [sInf_eq_top_iff.2 (.inl h)]
     exact isGLB_top_iff.2 h
   rw [sInf_eq h hs, isGLB_coe_iff]
   refine ⟨h, isGLB_csInf ?_ ?_⟩
@@ -854,7 +849,7 @@ noncomputable instance WithTop.conditionallyCompleteLattice {α : Type*}
 @[to_dual]
 noncomputable instance [CompleteLattice α] : CompleteLattice (WithTop α) where
   isLUB_sSup s := ⟨fun _ ↦ le_csSup (OrderTop.bddAbove _), fun _ has ↦
-    s.eq_empty_or_nonempty.elim (by simp [·, sSup_empty]) (csSup_le · has)⟩
+    s.eq_empty_or_nonempty.elim (by simp [·]) (csSup_le · has)⟩
   isGLB_sInf s := ⟨fun _ ↦ csInf_le (OrderBot.bddBelow _), fun _ hsa ↦
     s.eq_empty_or_nonempty.elim (by simp [·]) (le_csInf · hsa)⟩
 
