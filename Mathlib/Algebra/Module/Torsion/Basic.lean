@@ -133,7 +133,7 @@ theorem iSupIndep.linearIndependent' {ι R M : Type*} {v : ι → M} [Ring R]
   have : r • v i ∈ (⊥ : Submodule R M) := by
     rw [← hv, Submodule.mem_inf]
     refine ⟨Submodule.mem_span_singleton.mpr ⟨r, rfl⟩, ?_⟩
-    convert! hi
+    convert hi
     ext
     simp
   rw [← Submodule.mem_bot R, ← h_ne_zero i]
@@ -458,7 +458,6 @@ theorem sup_torsionBySet_ideal_eq_torsionBySet_inf (P Q : Ideal R) {hc : P ⊔ Q
     simpa [Finset.top_eq_univ, Fin.univ_succ, Fin.isValue, coe_iInf, this] using heq
   · simp_all [Set.pairwise_pair, Fin.univ_succ, map, sup_comm]
 
-set_option backward.defeqAttrib.useBackward true in
 theorem supIndep_torsionBySet_ideal (hp : (S : Set ι).Pairwise fun i j => p i ⊔ p j = ⊤) :
     S.SupIndep fun i => torsionBySet R M <| p i :=
   fun T hT i hi hiT => by
@@ -1023,7 +1022,7 @@ lemma infinite_range_add_smul_iff [Ring R] [IsDomain R] [Infinite R] [AddCommGro
   exact smul_left_injective _ h hrs
 
 @[simp]
-lemma infinite_range_add_nsmul_iff [AddCommGroup M] [IsAddTorsionFree M] (x y : M) :
+lemma infinite_range_add_nsmul_iff [AddCommGroup M] [HasUniqueDiv M] (x y : M) :
     (Set.range <| fun n : ℕ ↦ x + n • y).Infinite ↔ y ≠ 0 := by
   refine ⟨fun h hy ↦ by simp [hy] at h, fun h ↦ Set.infinite_range_of_injective fun r s hrs ↦ ?_⟩
   rw [add_right_inj, ← natCast_zsmul, ← natCast_zsmul] at hrs

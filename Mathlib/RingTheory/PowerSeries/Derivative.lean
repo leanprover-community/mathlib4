@@ -5,9 +5,10 @@ Authors: Richard M. Hill, Ralf Stephan
 -/
 module
 
-import Mathlib.Algebra.Polynomial.Derivation
 public import Mathlib.RingTheory.MvPowerSeries.Derivative
 public import Mathlib.RingTheory.PowerSeries.Substitution
+
+import Mathlib.Algebra.Polynomial.Derivation
 
 /-!
 # Formal derivatives of univariate power series
@@ -108,7 +109,7 @@ theorem derivative_pow (g : R⟦X⟧) (n : ℕ) :
 end CommutativeSemiring
 
 /-- If `f` and `g` have the same constant term and derivative, then they are equal. -/
-theorem derivative.ext [CommRing R] [IsAddTorsionFree R] {f g : R⟦X⟧} (hD : d⁄dX f = d⁄dX g)
+theorem derivative.ext [CommRing R] [HasUniqueDiv R] {f g : R⟦X⟧} (hD : d⁄dX f = d⁄dX g)
     (hc : constantCoeff f = constantCoeff g) : f = g :=
   MvPowerSeries.pderiv.ext (fun _ => hD) hc
 

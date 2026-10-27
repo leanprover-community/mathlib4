@@ -10,7 +10,9 @@ import Mathlib.GroupTheory.Perm.Fin
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.LinearAlgebra.Matrix.Determinant.Bird.Defs
 import Mathlib.LinearAlgebra.Matrix.Notation
+import Mathlib.NumberTheory.Zsqrtd.GaussianInt
 import Mathlib.RingTheory.Polynomial.Basic
+import Mathlib.Tactic.Echelon.Zsqrtd
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.NormDet
 meta import Mathlib.Data.Fin.VecNotation
@@ -253,6 +255,22 @@ example {K : Type*} [Field K] (x i j k : K) (hx : x ≠ 0) : Matrix.det
     !![x ^ 3, 0, 0; i, 1 / x, 0; j, k, 1 / x ^ 2] = 1 := by
   eval_det
   field_simp [hx]
+
+example : Matrix.det !![0, 1; 1, 0] = (-1 : Polynomial ℚ) := by
+  eval_det
+
+example : Matrix.det
+    !![1 / 2, 3 / 4,  5 / 6;
+       2 / 3, 1 / 6,  4 / 9;
+       3 / 4, 7 / 10, 1 / 6] = (223 / 720 : ℚ) := by
+  eval_det
+
+example : Matrix.det !![1, 2; 3, 4] = (-2 : ℤ × ℤ) := by
+  eval_det
+
+-- Through the registered `ℤ√d` model, an integer value comes back as a numeral.
+example : Matrix.det (!![1, 2; 3, 4] : Matrix (Fin 2) (Fin 2) GaussianInt) = -2 := by
+  eval_det
 
 end NormDet
 

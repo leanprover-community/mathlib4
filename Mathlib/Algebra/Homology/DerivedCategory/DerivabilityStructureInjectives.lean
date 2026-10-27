@@ -9,10 +9,11 @@ public import Mathlib.Algebra.Homology.DerivedCategory.Plus
 public import Mathlib.Algebra.Homology.FullSubcategory
 public import Mathlib.Algebra.Homology.ModelCategory.Injective
 public import Mathlib.AlgebraicTopology.ModelCategory.DerivabilityStructureFibrant
-import Mathlib.CategoryTheory.GuitartExact.Quotient
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Derives
-import Mathlib.CategoryTheory.Localization.DerivabilityStructure.OfLocalizedEquivalences
 public import Mathlib.CategoryTheory.Preadditive.Injective.InjectiveObject
+
+import Mathlib.CategoryTheory.GuitartExact.Quotient
+import Mathlib.CategoryTheory.Localization.DerivabilityStructure.OfLocalizedEquivalences
 
 /-!
 # The injective derivability structure
@@ -195,7 +196,6 @@ abbrev localizerMorphism : LocalizerMorphism
     intro n
     infer_instance
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isIso_quotient_map_iff
     {K L : CochainComplex.Plus (InjectiveObject C)} (f : K ⟶ L) :
     IsIso ((quotient _).map f) ↔
@@ -207,7 +207,6 @@ lemma isIso_quotient_map_iff
     ← CochainComplex.IsKInjective.quasiIso_iff]
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 open HomologicalComplex in
 lemma inverseImage_quasiIso_mapCochainComplexPlus_injectiveObjectι :
     (CochainComplex.Plus.quasiIso C).inverseImage (InjectiveObject.ι C).mapCochainComplexPlus =

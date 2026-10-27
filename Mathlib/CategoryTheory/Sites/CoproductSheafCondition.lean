@@ -5,9 +5,10 @@ Authors: Christian Merten
 -/
 module
 
-import Mathlib.CategoryTheory.Limits.Final
 public import Mathlib.CategoryTheory.Limits.VanKampen
 public import Mathlib.CategoryTheory.Sites.Hypercover.SheafOfTypes
+
+import Mathlib.CategoryTheory.Limits.Final
 
 /-!
 # The sheaf condition and universal coproducts
@@ -95,7 +96,7 @@ lemma Presieve.isSheafFor_sigmaDesc_iff {ι : Type*} {X : ι → C} (f : ∀ i, 
   have : PreservesLimit (Discrete.functor fun i ↦ op (E.toPreOneHypercover.X i)) F := by
     dsimp [E]; infer_instance
   have : PreservesLimit (Discrete.functor fun i ↦ op (E.toPreOneHypercover.Y' i)) F := by
-    convert! Functor.Initial.preservesLimit_of_comp (Discrete.equivalence <| .sigmaPUnit _).inverse
+    convert Functor.Initial.preservesLimit_of_comp (Discrete.equivalence <| .sigmaPUnit _).inverse
     · infer_instance
     · assumption
   let equiv := (E.isLimitSigmaOfIsColimitEquiv hc hc' F).nonempty_congr

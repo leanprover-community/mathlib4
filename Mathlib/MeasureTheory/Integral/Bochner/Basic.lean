@@ -250,8 +250,6 @@ theorem integral_finsetSum {ι} (s : Finset ι) {f : ι → α → G} (hf : ∀ 
   simp only [integral_eq_setToFun]
   exact setToFun_finsetSum (dominatedFinMeasAdditive_weightedSMul _) s hf
 
-@[deprecated (since := "2026-04-08")] alias integral_finset_sum := integral_finsetSum
-
 @[integral_simps]
 theorem integral_neg (f : α → G) : ∫ a, -f a ∂μ = -∫ a, f a ∂μ := by
   simp only [integral_eq_setToFun]
@@ -1039,9 +1037,6 @@ theorem integral_finsetSum_measure {ι} {m : MeasurableSpace α} {f : α → G} 
     rw [Finset.sum_cons, Finset.sum_cons, ← ih hf.2]
     exact integral_add_measure hf.1 (integrable_finsetSum_measure.2 hf.2)
 
-@[deprecated (since := "2026-04-08")]
-alias integral_finset_sum_measure := integral_finsetSum_measure
-
 theorem nndist_integral_add_measure_le_lintegral
     {f : α → G} (h₁ : Integrable f μ) (h₂ : Integrable f ν) :
     (nndist (∫ x, f x ∂μ) (∫ x, f x ∂(μ + ν)) : ℝ≥0∞) ≤ ∫⁻ x, ‖f x‖ₑ ∂ν := by
@@ -1163,6 +1158,13 @@ theorem setIntegral_dirac [MeasurableSpace α] [MeasurableSingletonClass α] (f 
   · exact integral_dirac _ _
   · exact integral_zero_measure _
 
+lemma withDensity_real_apply_eq_integral {f : α → ℝ≥0∞} {s : Set α}
+    (hf : AEMeasurable f (μ.restrict s)) (hf_lt_top : ∀ᵐ x ∂μ, x ∈ s → f x < ∞)
+    (hs : NullMeasurableSet s μ) :
+    (μ.withDensity f).real s = ∫ a in s, (f a).toReal ∂μ := by
+  rw [withDensity_real_apply₀ f hs, ← integral_toReal hf]
+  rwa [ae_restrict_iff'₀ hs]
+
 /-- **Markov's inequality** also known as **Chebyshev's first inequality**. -/
 theorem mul_meas_ge_le_integral_of_nonneg {f : α → ℝ} (hf_nonneg : 0 ≤ᵐ[μ] f)
     (hf_int : Integrable f μ) (ε : ℝ) : ε * μ.real { x | ε ≤ f x } ≤ ∫ x, f x ∂μ := by
@@ -1208,13 +1210,13 @@ theorem integral_mul_norm_le_Lp_mul_Lq {E} [NormedAddCommGroup E] {f g : α → 
   -- we can now apply `ENNReal.lintegral_mul_le_Lp_mul_Lq` (up to the `toReal` application)
   refine ENNReal.toReal_mono ?_ ?_
   · refine ENNReal.mul_ne_top ?_ ?_
-    · convert! hf.eLpNorm_ne_top
+    · convert hf.eLpNorm_ne_top
       rw [eLpNorm_eq_lintegral_rpow_enorm_toReal _ _ hf.aestronglyMeasurable]
       · rw [ENNReal.toReal_ofReal hpq.nonneg]
       · rw [Ne, ENNReal.ofReal_eq_zero, not_le]
         exact hpq.pos
       · finiteness
-    · convert! hg.eLpNorm_ne_top
+    · convert hg.eLpNorm_ne_top
       rw [eLpNorm_eq_lintegral_rpow_enorm_toReal _ _ hg.aestronglyMeasurable]
       · rw [ENNReal.toReal_ofReal hpq.symm.nonneg]
       · rw [Ne, ENNReal.ofReal_eq_zero, not_le]
@@ -1260,11 +1262,14 @@ theorem integral_unique [Unique α] (f : α → E) : ∫ x, f x ∂μ = μ.real 
     ∫ x, f x ∂μ = ∫ _, f default ∂μ := by congr with x; congr; exact Unique.uniq _ x
     _ = μ.real univ • f default := by rw [integral_const]
 
-theorem integral_pos_of_integrable_nonneg_nonzero [TopologicalSpace α] [Measure.IsOpenPosMeasure μ]
+theorem integral_pos_of_integrable_nonneg_ne_zero [TopologicalSpace α] [Measure.IsOpenPosMeasure μ]
     {f : α → ℝ} {x : α} (f_cont : Continuous f) (f_int : Integrable f μ) (f_nonneg : 0 ≤ f)
     (f_x : f x ≠ 0) : 0 < ∫ x, f x ∂μ :=
   (integral_pos_iff_support_of_nonneg f_nonneg f_int).2
     (IsOpen.measure_pos μ f_cont.isOpen_support ⟨x, f_x⟩)
+
+@[deprecated (since := "2026-10-13")]
+alias integral_pos_of_integrable_nonneg_nonzero := integral_pos_of_integrable_nonneg_ne_zero
 
 end Properties
 

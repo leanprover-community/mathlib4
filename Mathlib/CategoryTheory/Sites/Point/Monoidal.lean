@@ -6,9 +6,10 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Localization.Monoidal.Functor
-import Mathlib.CategoryTheory.Monoidal.Limits.Colimits
 public import Mathlib.CategoryTheory.Sites.Monoidal
 public import Mathlib.CategoryTheory.Sites.Point.Skyscraper
+
+import Mathlib.CategoryTheory.Monoidal.Limits.Colimits
 
 /-!
 # Fiber functors are monoidal

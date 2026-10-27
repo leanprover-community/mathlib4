@@ -6,6 +6,7 @@ Authors: Patrick Massot
 module
 
 public import Mathlib.Analysis.Normed.Group.Hom
+
 import Mathlib.Analysis.SpecificLimits.Normed
 
 /-! # Extending a backward bound on a normed group homomorphism from a dense set
