@@ -74,7 +74,7 @@ while in a finite group every element has order at most the cardinality. -/
 instance : Infinite ratAddCircle := by
   refine not_finite_iff_infinite.1 fun _ ↦ ?_
   let n := Nat.card ratAddCircle + 1
-  let x : ratAddCircle := ⟨((1 / n : ℚ) : ℝ), ⟨_, ⟨1 / n, rfl⟩, rfl⟩⟩
+  let x : ratAddCircle := ⟨1 / n, ⟨_, ⟨1 / n, rfl⟩, by simp⟩⟩
   have hx : addOrderOf x = n := by
     rw [← AddSubgroup.addOrderOf_coe]
     simpa [x, n] using
