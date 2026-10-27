@@ -268,6 +268,8 @@ lemma _root_.Set.mem_center_iff_addMonoidHom (a : R) :
   rw [Set.mem_center_iff, isMulCentral_iff]
   simp [DFunLike.ext_iff, commute_iff_eq]
 
+variable {R} [NonUnitalNonAssocSemiring S] {f : R →ₙ+* S}
+
 /-- An isomorphism morphism between (not necessarily unital or associative) semirings induces a
 semiring isomorphism between their centers. -/
 @[simps!]
