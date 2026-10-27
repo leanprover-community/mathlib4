@@ -165,8 +165,7 @@ is finitely generated, and its `R`-rank equals the `K`-dimension of its `K`-span
 theorem iff_fg_and_finrank_span_eq_finrank :
     IsLattice K M ↔ M.FG ∧ finrank K (span K (M : Set V)) = finrank R M := by
   have : Nontrivial R := (algebraMap R K).domain_nontrivial
-  rw [isLattice_iff]
-  exact and_congr_right fun hfg ↦ (finrank_span_eq_finrank_iff M hfg).symm
+  simp +contextual [isLattice_iff, finrank_span_eq_finrank_iff]
 
 section IsPrincipalIdealRing
 
