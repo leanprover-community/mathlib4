@@ -72,18 +72,18 @@ namespace Nat
 
 variable {p : ℕ}
 
-@[deprecated (since := "2026-10-27")] alias multiplicity_eq_zero_of_not_dvd :=
-  multiplicity_eq_zero_of_not_dvd
+@[deprecated (since := "2026-10-27")]
+protected alias multiplicity_eq_zero_of_not_dvd := multiplicity_eq_zero_of_not_dvd
 
 theorem multiplicity_dvd_of_ne_zero {n : ℕ} (h : multiplicity p n ≠ 0) : p ∣ n :=
-  not_not.mp (mt _root_.multiplicity_eq_zero_of_not_dvd h)
+  not_not.mp (mt multiplicity_eq_zero_of_not_dvd h)
 
 end Nat
 
 @[deprecated (since := "2026-09-12")] alias padicValNat.self := Nat.multiplicity_self
 
 @[deprecated (since := "2026-09-11")] alias padicValNat.eq_zero_of_not_dvd :=
-  _root_.multiplicity_eq_zero_of_not_dvd
+  multiplicity_eq_zero_of_not_dvd
 
 @[deprecated (since := "2026-09-11")] alias padicValNat.dvd_of_ne_zero :=
   Nat.multiplicity_dvd_of_ne_zero
@@ -200,7 +200,7 @@ theorem one_le_multiplicity_of_dvd {n : ℕ} [hp : Fact p.Prime] (hn : n ≠ 0) 
 theorem dvd_iff_multiplicity_ne_zero {p n : ℕ} [Fact p.Prime] (hn0 : n ≠ 0) :
     p ∣ n ↔ multiplicity p n ≠ 0 :=
   ⟨fun h => one_le_iff_ne_zero.mp (one_le_multiplicity_of_dvd hn0 h), fun h =>
-    Classical.not_not.1 (mt Nat.multiplicity_eq_zero_of_not_dvd h)⟩
+    Classical.not_not.1 (mt multiplicity_eq_zero_of_not_dvd h)⟩
 
 @[deprecated (since := "2026-09-11")] alias dvd_iff_padicValNat_ne_zero :=
   dvd_iff_multiplicity_ne_zero
@@ -519,7 +519,7 @@ theorem pow_succ_multiplicity_not_dvd {n : ℕ} [hp : Fact p.Prime] (hn : n ≠ 
 
 theorem multiplicity_primes {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime] (ne : p ≠ q) :
     multiplicity p q = 0 :=
-  @Nat.multiplicity_eq_zero_of_not_dvd p q <|
+  _root_.multiplicity_eq_zero_of_not_dvd <|
     (not_congr (Iff.symm (prime_dvd_prime_iff_eq hp.1 hq.1))).mp ne
 
 @[deprecated (since := "2026-09-11")] alias padicValNat_primes := multiplicity_primes
@@ -569,7 +569,7 @@ lemma multiplicity_add_le_self {a : ℕ} [hp : Fact p.Prime] (ha : p < a) :
     calc
       _ ≤ p + k := by lia
       _ ≤ _ := Nat.add_le_mul hp.out.two_le (by lia)
-  · rw [Nat.multiplicity_eq_zero_of_not_dvd dvd]
+  · rw [multiplicity_eq_zero_of_not_dvd dvd]
     lia
 
 @[deprecated (since := "2026-09-11")] alias padicValNat_add_le_self := multiplicity_add_le_self
@@ -651,7 +651,7 @@ theorem multiplicity_factorial_mul (n : ℕ) [hp : Fact p.Prime] :
 some `k`. -/
 theorem multiplicity_eq_zero_of_mem_Ioo {m k : ℕ}
     (hm : m ∈ Set.Ioo (p * k) (p * (k + 1))) : multiplicity p m = 0 :=
-  Nat.multiplicity_eq_zero_of_not_dvd <| not_dvd_of_lt_of_lt_mul_succ hm.1 hm.2
+  multiplicity_eq_zero_of_not_dvd <| not_dvd_of_lt_of_lt_mul_succ hm.1 hm.2
 
 @[deprecated (since := "2026-09-11")] alias padicValNat_eq_zero_of_mem_Ioo :=
   multiplicity_eq_zero_of_mem_Ioo
