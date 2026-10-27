@@ -49,7 +49,7 @@ expectation.
 
 ## Main statements
 
-* `map_traj_succ_self`: the pushforward of `traj κ a` along the the point at time `a + 1` is the
+* `map_traj_succ_self`: the pushforward of `traj κ a` along the point at time `a + 1` is the
   kernel `κ a`.
 * `eq_traj`: Uniqueness of `traj`: to check that `η = traj κ a` it is enough to show that
   the restriction of `η` to variables `≤ b` is `partialTraj κ a b`.
@@ -542,7 +542,7 @@ lemma traj_map_frestrictLe_of_le {a b : ℕ} (hab : a ≤ b) :
       deterministic (frestrictLe₂ hab) (measurable_frestrictLe₂ _) := by
   rw [traj_map_frestrictLe, partialTraj_le]
 
-/-- The pushforward of `traj κ a` along the the point at time `a + 1` is the kernel `κ a`. -/
+/-- The pushforward of `traj κ a` along the point at time `a + 1` is the kernel `κ a`. -/
 lemma map_traj_succ_self {a : ℕ} : (traj κ a).map (fun x ↦ x (a + 1)) = κ a := by
   have hf : (fun x : Π n, X n ↦ x (a + 1)) =
       (fun x ↦ x ⟨a + 1, mem_Iic.2 le_rfl⟩) ∘ frestrictLe (a + 1) := rfl
