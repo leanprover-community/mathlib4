@@ -40,12 +40,6 @@ variable {μ : Measure α} [IsZeroOneMeasure μ]
 instance : IsZeroOrProbabilityMeasure μ where
   measure_univ := μ.zero_one univ
 
-instance [ne : NeZero μ] : IsProbabilityMeasure μ where
-  measure_univ := by
-    contrapose! ne
-    rw [neZero_iff, not_ne_iff, ← Measure.measure_univ_eq_zero]
-    exact (μ.zero_one _).resolve_right ne
-
 namespace IsZeroOneMeasure
 
 lemma exists_measure_eq_one_iff_measure_univ_eq_one : (∃ s, μ s = 1) ↔ μ univ = 1 := by
