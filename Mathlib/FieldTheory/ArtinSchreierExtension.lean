@@ -188,49 +188,44 @@ theorem isCyclic_charP_tfae :
     have h_ord := (hgal.card_aut_eq_finrank F K).trans hrank
     obtain ⟨g, h_gen⟩ := isCyclic_iff_exists_zpowers_eq_top.mp (isCyclic_of_prime_card h_ord)
     obtain ⟨z, hgz⟩ := generator_of_charP hrank g h_gen
-    refine ⟨z, ⟨?_, (hgal.mem_range_algebraMap_iff_fixed _).mpr fun γ ↦ ?_,
-        (primitive_element_iff_minpoly_natDegree_eq F z).mpr (Eq.symm ?_)⟩⟩
-    · contrapose hgz
-      rw [← coe_bot, SetLike.mem_coe, hgal.mem_bot_iff_fixed] at hgz
-      grind [hgz g]
+    have hz := (hgal.mem_range_algebraMap_iff_fixed z).mp.mt (by grind)
+    refine ⟨z, ⟨hz, ?_⟩⟩
+    rw [hgal.mem_range_algebraMap_iff_fixed, primitive_element_iff_minpoly_natDegree_eq F z]
+    refine ⟨fun γ ↦ ?_, Eq.symm ?_⟩
     · obtain ⟨n, rfl⟩ : ∃ n, g ^ n = γ := Subgroup.mem_zpowers_iff.mp (by simp [h_gen])
       rw [← AlgEquiv.smul_def, ← MulAction.mem_fixedBy]
       exact MulAction.mem_fixedBy_zpow (by simp [hgz, sub_pow_char]) n
-    · have hz := (hgal.mem_range_algebraMap_iff_fixed z).mp.mt (by grind)
-      rw [hrank, ← hp.elim.dvd_iff_eq (natDegree_eq_one_iff.mp.mt hz)]
+    · rw [hrank, ← hp.elim.dvd_iff_eq (natDegree_eq_one_iff.mp.mt hz)]
       simpa [hrank] using degree_dvd (Algebra.IsIntegral.isIntegral z (R := F))
   tfae_have 3 → 4 := by
     refine fun ⟨z, hz, ⟨a, _⟩, htop⟩ ↦ ⟨a, z, ?_, htop⟩
     set f := artinSchreierPoly a with hf
     have heval : f.aeval z = 0 := by rw [hf, artinSchreierPoly_def p]; aesop
     refine (eq_of_irreducible_of_monic ?_ heval (ha a).2).symm
-    contrapose hz
     rw [← mem_rootSet_of_ne (ha a).ne_zero] at heval
+    contrapose hz
     have splits := (artinSchreierPoly_irreducible_or_splits a).resolve_left hz
     rw [← Splits.image_rootSet_algebraMap (A := F) (by simpa using splits)] at heval
-    obtain ⟨x, _, hx⟩ := heval
-    exact ⟨x, hx⟩
+    aesop
   tfae_have 4 → 5 := by
     refine fun ⟨a, z, h, htop⟩ ↦ ⟨a, Nonempty.intro ?_⟩
     have h_int : IsIntegral F z := ne_zero_iff.mp (by rw [h]; exact (ha a).ne_zero)
     have : FiniteDimensional F K := by
       refine Module.finite_def.mpr ?_
       rw [adjoin_simple_eq_top_iff_of_isAlgebraic (IsIntegral.isAlgebraic h_int)] at htop
-      rw [← Algebra.top_toSubmodule, ← htop]
-      exact IsIntegral.fg_adjoin_singleton h_int
+      simpa [← Algebra.top_toSubmodule, ← htop] using IsIntegral.fg_adjoin_singleton h_int
     simpa [← h] using IsAdjoinRootMonic.mkOfPrimitiveElement h_int htop
   tfae_have 5 → 2 := by
-    refine fun ⟨a, ⟨h, h1⟩⟩ ↦ ⟨a, IsAdjoinRoot.irreducible h, ?_⟩
-    have heval := IsAdjoinRoot.aeval_root_self h
-    refine isSplittingField_iff_intermediateField.mpr ⟨?_, ?_⟩
-    · rw [artinSchreierPoly_map p a]
-      apply artinSchreierPoly_splits (c := h.root)
-      rw [← eval_map_algebraMap, artinSchreierPoly_map p a] at heval
-      simp [heval]
-    · refine (adjoin_eq_top_iff_of_isAlgebraic (fun _ hx ↦ isAlgebraic_of_mem_rootSet hx)).mpr ?_
-      rw [eq_top_iff, ← IsAdjoinRoot.adjoin_root_eq_top h, Algebra.adjoin_le_iff,
+    refine fun ⟨a, ⟨h⟩⟩ ↦ ⟨a, ?_⟩
+    have heval := IsAdjoinRoot.aeval_root_self h.1
+    refine ⟨IsAdjoinRoot.irreducible h.1, isSplittingField_iff_intermediateField.mpr ⟨?_, ?_⟩⟩
+    · rw [← eval_map_algebraMap] at heval
+      rw [artinSchreierPoly_map p a] at heval ⊢
+      exact artinSchreierPoly_splits (c := h.root) (by simp [heval])
+    · refine (adjoin_eq_top_iff_of_isAlgebraic (fun _ ↦ isAlgebraic_of_mem_rootSet)).mpr ?_
+      rw [eq_top_iff, ← IsAdjoinRoot.adjoin_root_eq_top h.1, Algebra.adjoin_le_iff,
         Set.singleton_subset_iff, SetLike.mem_coe]
-      exact Algebra.mem_adjoin_of_mem (h1.mem_rootSet.mpr heval)
+      exact Algebra.mem_adjoin_of_mem (h.2.mem_rootSet.mpr heval)
   tfae_have 2 → 1 := by
     refine fun ⟨a, h1, h2⟩ ↦ ⟨Eq.symm ?_, IsGalois.of_separable_splitting_field
       ((separable_iff_derivative_ne_zero h1).mpr
@@ -251,8 +246,7 @@ theorem isCyclic_charP_tfae :
         rw [IntermediateField.algebraMap_apply, eval₂_eq_eval_map, ← artinSchreierPoly_map p a,
           Polynomial.map_map, ← IsScalarTower.algebraMap_eq]
         simpa using heval
-      rw [eq_top_iff, ← (isSplittingField_iff_intermediateField.mp h2).2,
-        adjoin_le_iff, Set.subset_def]
+      rw [eq_top_iff, ← (isSplittingField_iff_intermediateField.mp h2).2, adjoin_le_iff]
       intro x hx
       rw [← splits'.image_rootSet_algebraMap (B := K)] at hx
       aesop
