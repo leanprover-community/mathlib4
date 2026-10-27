@@ -129,9 +129,12 @@ theorem resolventLM_sub_resolventLM {z₁ z₂ : R} (hz₁ : z₁ ∈ f.resolven
   rw [LinearMap.smul_apply, compLinearMap_apply (by simp [range_inverseLM hz₂, sub_domain])]
   simp [sub_apply, vadd_apply, vadd_apply, ← sub_smul]
 
-theorem resolventLM_comm [IsCancelMulZero R] [Module.IsTorsionFree R E]
-    {z₁ z₂ : R} (hz₁ : z₁ ∈ f.resolventSet) (hz₂ : z₂ ∈ f.resolventSet) :
+theorem resolventLM_comm [IsCancelMulZero R] [Module.IsTorsionFree R E] (z₁ z₂ : R) :
     f.resolventLM z₁ ∘ₗ f.resolventLM z₂ = f.resolventLM z₂ ∘ₗ f.resolventLM z₁ := by
+  -- Note that this can be proved without `[IsCancelMulZero R] [Module.IsTorsionFree R E]` but at
+  -- the cost of a way more involved proof, see the discussion of #29624
+  obtain hz | ⟨hz₁, hz₂⟩ := em (z₁ ∈ f.resolventSet ∧ z₂ ∈ f.resolventSet) |>.symm
+  · grind [LinearMap.zero_comp, LinearMap.comp_zero]
   by_cases hz : z₁ = z₂
   · rw [hz]
   have h₁ := resolventLM_sub_resolventLM hz₁ hz₂
