@@ -1,11 +1,14 @@
 /-
 Copyright (c) 2024 Ching-Tsun Chou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Ching-Tsun Chou, Violeta Hernández Palacios
+Authors: Ching-Tsun Chou, Violeta Hernández Palacios, Lua Viana Reis
 -/
+module
 
-import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-import Mathlib.MeasureTheory.Measure.NullMeasurable
+public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+public import Mathlib.MeasureTheory.Measure.NullMeasurable
+public import Mathlib.Topology.Instances.AddCircle.Real
+public import Mathlib.GroupTheory.Torsion
 
 /-!
 # Vitali set and its non-measurability
@@ -18,26 +21,27 @@ The proof is essentially the one in Wikipedia:
 * <https://en.wikipedia.org/wiki/Vitali_set>
 -/
 
+@[expose] public section
+
 open Set Filter Real MeasureTheory
 
 noncomputable section
 
-/-- In the setoid `vitaliSetoid`, two reals in the interval `[0, 1]` are equivalent iff their
-difference is rational. -/
-instance vitaliSetoid : Setoid (Icc (0 : ℝ) 1) where
-  r := fun x y ↦ y.val - x ∈ range ((↑) : ℚ → ℝ)
-  iseqv := {
-    refl {x} := by simp
-    symm {x y}:= fun ⟨t, h⟩ ↦ ⟨-t, by simp [h]⟩
-    trans {x y z} := fun ⟨t1, h1⟩ ⟨t2, h2⟩ ↦ ⟨t1 + t2, by simp [h1, h2]⟩
-  }
+/-- The additive subgroup of `UnitAddCircle` consisting of the images of the rational numbers. -/
+def ratAddCircle : AddSubgroup UnitAddCircle :=
+  (Rat.castHom ℝ : ℚ →+ ℝ).range.map (QuotientAddGroup.mk' _)
 
-/-- The quotient type given by `vitaliSetoid`. -/
-def vitaliType : Type := Quotient vitaliSetoid
+/-- The quotient type of the unit circle by the subgroup of rational numbers. -/
+def vitaliType : Type := UnitAddCircle ⧸ ratAddCircle
 
 /-- The Vitali set is the range of `Quotient.out` on `vitaliType`, i.e. the range of some
 arbitrary choice function. -/
-def vitaliSet : Set ℝ := Set.range fun x : vitaliType ↦ x.out.val
+def vitaliSet : Set UnitAddCircle := Set.range fun x : vitaliType ↦ x.out
+
+example : AddSubgroup.IsComplement vitaliSet ratAddCircle :=
+  AddSubgroup.isComplement_range_left Quotient.out_eq'
+
+#exit
 
 /-- The Vitali set, shifted by `i`. -/
 def vitaliShift (i : ℝ) : Set ℝ := (fun x ↦ x + i) '' vitaliSet
