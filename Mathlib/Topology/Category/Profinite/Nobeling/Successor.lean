@@ -436,7 +436,7 @@ theorem GoodProducts.head!_eq_o_of_maxProducts [Inhabited I] (l : ↑(MaxProduct
   simp only [Order.lt_succ_iff] at this
   refine eq_of_le_of_not_lt this (not_lt.mpr ?_)
   have h : ord I (term I ho) ≤ ord I l.val.val.head! := by
-    simp only [ord, Ordinal.typein_le_typein, not_lt]
+    simp only [ord, PrincipalSeg.le_iff_le]
     exact Products.rel_head!_of_mem hm
   rwa [ord_term_aux] at h
 
@@ -523,7 +523,7 @@ theorem good_lt_maxProducts (q : GoodProducts (π C (ord I · < o)))
     exact List.Lex.nil
   · rw [← List.cons_head!_tail h, max_eq_o_cons_tail C hsC ho l]
     apply List.Lex.rel
-    rw [← Ordinal.typein_lt_typein (· < ·)]
+    rw [← Ordinal.typein.lt_iff_lt]
     simp only [term, Ordinal.typein_enum]
     exact Products.prop_of_isGood C _ q.prop q.val.val.head! (List.head!_mem_self h)
 
