@@ -159,6 +159,9 @@ theorem ennReal_coeFn_eq_coeFn_toMeasure (ν : FiniteMeasure Ω) (s : Set Ω) :
     (ν s : ℝ≥0∞) = (ν : Measure Ω) s :=
   ENNReal.coe_toNNReal (measure_lt_top (↑ν) s).ne
 
+@[deprecated (since := "2026-10-27")]
+alias ennreal_coeFn_eq_coeFn_toMeasure := ennReal_coeFn_eq_coeFn_toMeasure
+
 @[simp]
 theorem null_iff_toMeasure_null (ν : FiniteMeasure Ω) (s : Set Ω) :
     ν s = 0 ↔ (ν : Measure Ω) s = 0 :=
@@ -198,6 +201,8 @@ def mass (μ : FiniteMeasure Ω) : ℝ≥0 := μ univ
 @[simp]
 theorem ennReal_mass {μ : FiniteMeasure Ω} : (μ.mass : ℝ≥0∞) = (μ : Measure Ω) univ :=
   ennReal_coeFn_eq_coeFn_toMeasure μ Set.univ
+
+@[deprecated (since := "2026-10-27")] alias ennreal_mass := ennReal_mass
 
 instance instZero : Zero (FiniteMeasure Ω) where zero := ⟨0, MeasureTheory.isFiniteMeasureZero⟩
 

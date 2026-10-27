@@ -262,13 +262,19 @@ theorem coe_toNNReal_le_self : ∀ {a : ℝ≥0∞}, ↑a.toNNReal ≤ a
 theorem coe_nnReal_eq (r : ℝ≥0) : (r : ℝ≥0∞) = ENNReal.ofReal r := by
   rw [ENNReal.ofReal, Real.toNNReal_coe]
 
+@[deprecated (since := "2026-10-27")] alias coe_nnreal_eq := coe_nnReal_eq
+
 theorem ofReal_eq_coe_nnReal {x : ℝ} (h : 0 ≤ x) :
     ENNReal.ofReal x = ofNNReal (NNReal.mk x h) :=
   (coe_nnReal_eq ⟨x, h⟩).symm
 
+@[deprecated (since := "2026-10-27")] alias ofReal_eq_coe_nnreal := ofReal_eq_coe_nnReal
+
 theorem ofNNReal_toNNReal (x : ℝ) : (Real.toNNReal x : ℝ≥0∞) = ENNReal.ofReal x := rfl
 
 @[simp] theorem ofReal_coe_nnReal : ENNReal.ofReal p = p := (coe_nnReal_eq p).symm
+
+@[deprecated (since := "2026-10-27")] alias ofReal_coe_nnreal := ofReal_coe_nnReal
 
 @[simp, norm_cast, basify_op ←] theorem coe_zero : ↑(0 : ℝ≥0) = (0 : ℝ≥0∞) := rfl
 
@@ -304,6 +310,8 @@ theorem ofReal_toReal_le {a : ℝ≥0∞} : ENNReal.ofReal a.toReal ≤ a :=
 
 theorem forall_ennReal {p : ℝ≥0∞ → Prop} : (∀ a, p a) ↔ (∀ r : ℝ≥0, p r) ∧ p ∞ :=
   WithTop.forall.trans and_comm
+
+@[deprecated (since := "2026-10-27")] alias forall_ennreal := forall_ennReal
 
 theorem forall_ne_top {p : ℝ≥0∞ → Prop} : (∀ x ≠ ∞, p x) ↔ ∀ x : ℝ≥0, p x :=
   WithTop.forall_ne_top
@@ -471,9 +479,13 @@ theorem iInf_ennReal {α : Type*} [CompleteLattice α] {f : ℝ≥0∞ → α} :
     ⨅ n, f n = (⨅ n : ℝ≥0, f n) ⊓ f ∞ :=
   (iInf_option f).trans (inf_comm _ _)
 
+@[deprecated (since := "2026-10-27")] alias iInf_ennreal := iInf_ennReal
+
 theorem iSup_ennReal {α : Type*} [CompleteLattice α] {f : ℝ≥0∞ → α} :
     ⨆ n, f n = (⨆ n : ℝ≥0, f n) ⊔ f ∞ :=
   @iInf_ennReal αᵒᵈ _ _
+
+@[deprecated (since := "2026-10-27")] alias iSup_ennreal := iSup_ennReal
 
 /-- Coercion `ℝ≥0 → ℝ≥0∞` as a `RingHom`. -/
 noncomputable def ofNNRealHom : ℝ≥0 →+* ℝ≥0∞ where
@@ -602,6 +614,8 @@ theorem lt_iff_exists_real_btwn :
 
 theorem lt_iff_exists_nnReal_btwn : a < b ↔ ∃ r : ℝ≥0, a < r ∧ (r : ℝ≥0∞) < b :=
   WithTop.lt_iff_exists_coe_btwn
+
+@[deprecated (since := "2026-10-27")] alias lt_iff_exists_nnreal_btwn := lt_iff_exists_nnReal_btwn
 
 theorem lt_iff_exists_add_pos_lt : a < b ↔ ∃ r : ℝ≥0, 0 < r ∧ a + r < b := by
   refine ⟨fun hab => ?_, fun ⟨r, _, hr⟩ => lt_of_le_of_lt le_self_add hr⟩
@@ -738,17 +752,26 @@ variable {s : Set ℝ} {t : Set ℝ≥0} {u : Set ℝ≥0∞}
 theorem preimage_coe_nnReal_ennReal (h : u.OrdConnected) : ((↑) ⁻¹' u : Set ℝ≥0).OrdConnected :=
   h.preimage_mono ENNReal.coe_mono
 
+@[deprecated (since := "2026-10-27")]
+alias preimage_coe_nnreal_ennreal := preimage_coe_nnReal_ennReal
+
 -- TODO: generalize to `WithTop`
 theorem image_coe_nnReal_ennReal (h : t.OrdConnected) : ((↑) '' t : Set ℝ≥0∞).OrdConnected := by
   refine ⟨forall_mem_image.2 fun x hx => forall_mem_image.2 fun y hy z hz => ?_⟩
   rcases ENNReal.le_coe_iff.1 hz.2 with ⟨z, rfl, -⟩
   exact mem_image_of_mem _ (h.out hx hy ⟨ENNReal.coe_le_coe.1 hz.1, ENNReal.coe_le_coe.1 hz.2⟩)
 
+@[deprecated (since := "2026-10-27")] alias image_coe_nnreal_ennreal := image_coe_nnReal_ennReal
+
 theorem preimage_ennReal_ofReal (h : u.OrdConnected) : (ENNReal.ofReal ⁻¹' u).OrdConnected :=
   h.preimage_coe_nnReal_ennReal.preimage_real_toNNReal
 
+@[deprecated (since := "2026-10-27")] alias preimage_ennreal_ofReal := preimage_ennReal_ofReal
+
 theorem image_ennReal_ofReal (h : s.OrdConnected) : (ENNReal.ofReal '' s).OrdConnected := by
   simpa only [image_image] using! h.image_real_toNNReal.image_coe_nnReal_ennReal
+
+@[deprecated (since := "2026-10-27")] alias image_ennreal_ofReal := image_ennReal_ofReal
 
 end OrdConnected
 

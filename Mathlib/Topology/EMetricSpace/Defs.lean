@@ -342,11 +342,17 @@ theorem uniformity_basis_edist_nnReal :
     let ⟨δ, hδ⟩ := ENNReal.lt_iff_exists_nnReal_btwn.1 ε₀
     ⟨δ, ENNReal.coe_pos.1 hδ.1, le_of_lt hδ.2⟩
 
+@[deprecated (since := "2026-10-27")]
+alias uniformity_basis_edist_nnreal := uniformity_basis_edist_nnReal
+
 theorem uniformity_basis_edist_nnReal_le :
     (𝓤 α).HasBasis (fun ε : ℝ≥0 => 0 < ε) fun ε => { p : α × α | edist p.1 p.2 ≤ ε } :=
   EMetric.mk_uniformity_basis_le (fun _ => ENNReal.coe_pos.2) fun _ε ε₀ =>
     let ⟨δ, hδ⟩ := ENNReal.lt_iff_exists_nnReal_btwn.1 ε₀
     ⟨δ, ENNReal.coe_pos.1 hδ.1, le_of_lt hδ.2⟩
+
+@[deprecated (since := "2026-10-27")]
+alias uniformity_basis_edist_nnreal_le := uniformity_basis_edist_nnReal_le
 
 theorem uniformity_basis_edist_inv_nat :
     (𝓤 α).HasBasis (fun _ => True) fun n : ℕ => { p : α × α | edist p.1 p.2 < (↑n)⁻¹ } :=

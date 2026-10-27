@@ -236,6 +236,8 @@ variable [StarModule ℝ A]
 lemma abs_algebraMap_nnReal (x : ℝ≥0) : abs (algebraMap ℝ≥0 A x) = algebraMap ℝ≥0 A x := by
   simp [Algebra.algebraMap_eq_smul_one]
 
+@[deprecated (since := "2026-10-27")] alias abs_algebraMap_nnreal := abs_algebraMap_nnReal
+
 @[simp]
 lemma abs_natCast (n : ℕ) : abs (n : A) = n := by
   simpa only [map_natCast, Nat.abs_cast] using abs_algebraMap_nnReal (n : ℝ≥0)

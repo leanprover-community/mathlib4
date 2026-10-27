@@ -805,6 +805,8 @@ lemma IsHaarMeasure.nnReal_smul [MeasurableConstSMul G G] {c : ℝ≥0} (hc : c 
     IsHaarMeasure (c • μ) :=
   .smul _ (by simp [hc]) (Option.some_ne_none _)
 
+@[deprecated (since := "2026-10-27")] alias IsHaarMeasure.nnreal_smul := IsHaarMeasure.nnReal_smul
+
 /-- If a left-invariant measure gives positive mass to some compact set with nonempty interior, then
 it is a Haar measure. -/
 @[to_additive

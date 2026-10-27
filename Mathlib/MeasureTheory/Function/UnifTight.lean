@@ -66,6 +66,8 @@ theorem unifTight_iff_ennReal {_ : MeasurableSpace α} (f : ι → α → β) (p
       μ s ≠ ∞ ∧ ∀ i, eLpNorm (sᶜ.indicator (f i)) p μ ≤ ε := by
   rfl
 
+@[deprecated (since := "2026-10-27")] alias unifTight_iff_ennreal := unifTight_iff_ennReal
+
 theorem unifTight_iff_real {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) :
     UnifTight f p μ ↔ ∀ (ε : ℝ), 0 < ε → ∃ s : Set α,
       μ s ≠ ∞ ∧ ∀ i, eLpNorm (sᶜ.indicator (f i)) p μ ≤ .ofReal ε := by
@@ -83,6 +85,8 @@ theorem unifTight_iff_nnReal {_ : MeasurableSpace α} (f : ι → α → β) (p 
   · exact ⟨∅, by simp⟩
   obtain ⟨s, hμs, hfε⟩ := hut (toNNReal_pos hε.ne' hε_top.ne)
   exact ⟨s, hμs, fun i ↦ (hfε i).trans coe_toNNReal_le_self⟩
+
+@[deprecated (since := "2026-10-27")] alias unifTight_iff_nnreal := unifTight_iff_nnReal
 
 namespace UnifTight
 

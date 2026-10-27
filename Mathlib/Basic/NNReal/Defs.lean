@@ -877,9 +877,13 @@ variable {s : Set ℝ} {t : Set ℝ≥0}
 theorem preimage_coe_nnReal_real (h : s.OrdConnected) : ((↑) ⁻¹' s : Set ℝ≥0).OrdConnected :=
   h.preimage_mono NNReal.coe_mono
 
+@[deprecated (since := "2026-10-27")] alias preimage_coe_nnreal_real := preimage_coe_nnReal_real
+
 theorem image_coe_nnReal_real (h : t.OrdConnected) : ((↑) '' t : Set ℝ).OrdConnected :=
   ⟨forall_mem_image.2 fun x hx =>
       forall_mem_image.2 fun _y hy z hz => ⟨⟨z, x.2.trans hz.1⟩, h.out hx hy hz, rfl⟩⟩
+
+@[deprecated (since := "2026-10-27")] alias image_coe_nnreal_real := image_coe_nnReal_real
 
 -- TODO: does it generalize to a `GaloisInsertion`?
 theorem image_real_toNNReal (h : s.OrdConnected) : (Real.toNNReal '' s).OrdConnected := by
@@ -942,11 +946,15 @@ lemma nnReal_dichotomy (r : ℝ) : ∃ x : ℝ≥0, r = x ∨ r = -x := by
     lift (_ : ℝ) to ℝ≥0 using hr with r
     aesop
 
+@[deprecated (since := "2026-10-27")] alias nnreal_dichotomy := nnReal_dichotomy
+
 /-- Every real number is either zero, positive or negative, phrased using `ℝ≥0`. -/
 lemma nnReal_trichotomy (r : ℝ) : r = 0 ∨ ∃ x : ℝ≥0, 0 < x ∧ (r = x ∨ r = -x) := by
   obtain ⟨x, hx⟩ := nnReal_dichotomy r
   rw [or_iff_not_imp_left]
   aesop (add simp pos_iff_ne_zero)
+
+@[deprecated (since := "2026-10-27")] alias nnreal_trichotomy := nnReal_trichotomy
 
 /-- To prove a property holds for real numbers it suffices to show that it holds for `x : ℝ≥0`,
 and if it holds for `x : ℝ≥0`, then it does also for `(-↑x : ℝ)`. -/
@@ -956,6 +964,8 @@ lemma nnReal_induction_on {motive : ℝ → Prop} (nonneg : ∀ x : ℝ≥0, mot
   obtain ⟨r, (rfl | rfl)⟩ := r.nnReal_dichotomy
   all_goals simp_all
 
+@[deprecated (since := "2026-10-27")] alias nnreal_induction_on := nnReal_induction_on
+
 /-- A version of `nnReal_induction_on` which splits into three cases (zero, positive and negative)
 instead of two. -/
 @[elab_as_elim]
@@ -963,6 +973,8 @@ lemma nnReal_induction_on' {motive : ℝ → Prop} (zero : motive 0) (pos : ∀ 
     (neg : ∀ x : ℝ≥0, 0 < x → motive x → motive (-x)) (r : ℝ) : motive r := by
   obtain rfl | ⟨r, hr, (rfl | rfl)⟩ := r.nnReal_trichotomy
   all_goals simp_all
+
+@[deprecated (since := "2026-10-27")] alias nnreal_induction_on' := nnReal_induction_on'
 
 end Real
 

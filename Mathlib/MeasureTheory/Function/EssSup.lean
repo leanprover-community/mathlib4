@@ -94,6 +94,9 @@ lemma essSup_ennReal_smul_measure {c : ℝ≥0∞} (hc : c ≠ 0) (f : α → β
     essSup f (c • μ) = essSup f μ := by
   simp_rw [essSup, Measure.ae_ennReal_smul_measure_eq hc]
 
+@[deprecated (since := "2026-10-27")]
+alias essSup_ennreal_smul_measure := essSup_ennReal_smul_measure
+
 theorem essSup_mono_ae {f g : α → β} (hfg : f ≤ᵐ[μ] g)
     (hf : IsCoboundedUnder (· ≤ ·) (ae μ) f := by isBoundedDefault)
     (hg : IsBoundedUnder (· ≤ ·) (ae μ) g := by isBoundedDefault) :

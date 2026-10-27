@@ -1062,6 +1062,9 @@ theorem integral_smul_nnReal_measure (f : α → G) (c : ℝ≥0) :
     ∫ x, f x ∂(c • μ) = c • ∫ x, f x ∂μ :=
   integral_smul_measure f (c : ℝ≥0∞)
 
+@[deprecated (since := "2026-10-27")]
+alias integral_smul_nnreal_measure := integral_smul_nnReal_measure
+
 theorem integral_map_of_stronglyMeasurable {β} [MeasurableSpace β] {φ : α → β} (hφ : Measurable φ)
     {f : β → G} (hfm : StronglyMeasurable f) : ∫ y, f y ∂Measure.map φ μ = ∫ x, f (φ x) ∂μ := by
   by_cases hfi : Integrable f (Measure.map φ μ); swap

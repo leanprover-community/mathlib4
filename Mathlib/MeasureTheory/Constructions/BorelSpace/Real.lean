@@ -154,57 +154,89 @@ theorem AEMeasurable.real_toNNReal {f : α → ℝ} {μ : Measure α} (hf : AEMe
 theorem measurable_coe_nnReal_real : Measurable ((↑) : ℝ≥0 → ℝ) :=
   NNReal.continuous_coe.measurable
 
+@[deprecated (since := "2026-10-27")] alias measurable_coe_nnreal_real := measurable_coe_nnReal_real
+
 @[fun_prop]
 theorem Measurable.coe_nnReal_real {f : α → ℝ≥0} (hf : Measurable f) :
     Measurable fun x => (f x : ℝ) :=
   measurable_coe_nnReal_real.comp hf
+
+@[deprecated (since := "2026-10-27")] alias Measurable.coe_nnreal_real := Measurable.coe_nnReal_real
 
 @[fun_prop]
 theorem AEMeasurable.coe_nnReal_real {f : α → ℝ≥0} {μ : Measure α} (hf : AEMeasurable f μ) :
     AEMeasurable (fun x => (f x : ℝ)) μ :=
   measurable_coe_nnReal_real.comp_aemeasurable hf
 
+@[deprecated (since := "2026-10-27")]
+alias AEMeasurable.coe_nnreal_real := AEMeasurable.coe_nnReal_real
+
 theorem measurable_coe_nnReal_ennReal : Measurable ((↑) : ℝ≥0 → ℝ≥0∞) :=
   ENNReal.continuous_coe.measurable
+
+@[deprecated (since := "2026-10-27")]
+alias measurable_coe_nnreal_ennreal := measurable_coe_nnReal_ennReal
 
 @[fun_prop]
 theorem Measurable.coe_nnReal_ennReal {f : α → ℝ≥0} (hf : Measurable f) :
     Measurable fun x => (f x : ℝ≥0∞) :=
   ENNReal.continuous_coe.measurable.comp hf
 
+@[deprecated (since := "2026-10-27")]
+alias Measurable.coe_nnreal_ennreal := Measurable.coe_nnReal_ennReal
+
 @[fun_prop]
 theorem AEMeasurable.coe_nnReal_ennReal {f : α → ℝ≥0} {μ : Measure α} (hf : AEMeasurable f μ) :
     AEMeasurable (fun x => (f x : ℝ≥0∞)) μ :=
   ENNReal.continuous_coe.measurable.comp_aemeasurable hf
+
+@[deprecated (since := "2026-10-27")]
+alias AEMeasurable.coe_nnreal_ennreal := AEMeasurable.coe_nnReal_ennReal
 
 @[fun_prop]
 theorem Measurable.ennReal_ofReal {f : α → ℝ} (hf : Measurable f) :
     Measurable fun x => ENNReal.ofReal (f x) :=
   ENNReal.continuous_ofReal.measurable.comp hf
 
+@[deprecated (since := "2026-10-27")] alias Measurable.ennreal_ofReal := Measurable.ennReal_ofReal
+
 @[fun_prop]
 lemma AEMeasurable.ennReal_ofReal {f : α → ℝ} {μ : Measure α} (hf : AEMeasurable f μ) :
     AEMeasurable (fun x ↦ ENNReal.ofReal (f x)) μ :=
   ENNReal.continuous_ofReal.measurable.comp_aemeasurable hf
+
+@[deprecated (since := "2026-10-27")]
+alias AEMeasurable.ennreal_ofReal := AEMeasurable.ennReal_ofReal
 
 @[simp, norm_cast]
 theorem measurable_coe_nnReal_real_iff {f : α → ℝ≥0} :
     Measurable (fun x => f x : α → ℝ) ↔ Measurable f :=
   ⟨fun h => by simpa only [Real.toNNReal_coe] using h.real_toNNReal, Measurable.coe_nnReal_real⟩
 
+@[deprecated (since := "2026-10-27")]
+alias measurable_coe_nnreal_real_iff := measurable_coe_nnReal_real_iff
+
 @[fun_prop]
 theorem Measurable.nnReal_mk {f : α → ℝ} (hf : Measurable f) {h'f : ∀ x, 0 ≤ f x} :
     Measurable (fun x ↦ NNReal.mk (f x) (h'f x)) :=
   measurable_coe_nnReal_real_iff.mp hf
+
+@[deprecated (since := "2026-10-27")] alias Measurable.nnreal_mk := Measurable.nnReal_mk
 
 @[simp, norm_cast]
 theorem aemeasurable_coe_nnReal_real_iff {f : α → ℝ≥0} {μ : Measure α} :
     AEMeasurable (fun x => f x : α → ℝ) μ ↔ AEMeasurable f μ :=
   ⟨fun h ↦ by simpa only [Real.toNNReal_coe] using h.real_toNNReal, AEMeasurable.coe_nnReal_real⟩
 
+@[deprecated (since := "2026-10-27")]
+alias aemeasurable_coe_nnreal_real_iff := aemeasurable_coe_nnReal_real_iff
+
 /-- The set of finite `ℝ≥0∞` numbers is `MeasurableEquiv` to `ℝ≥0`. -/
 def MeasurableEquiv.ennRealEquivNNReal : { r : ℝ≥0∞ | r ≠ ∞ } ≃ᵐ ℝ≥0 :=
   ENNReal.neTopHomeomorphNNReal.toMeasurableEquiv
+
+@[deprecated (since := "2026-10-27")]
+alias MeasurableEquiv.ennrealEquivNNReal := MeasurableEquiv.ennRealEquivNNReal
 
 namespace ENNReal
 
@@ -213,12 +245,17 @@ theorem measurable_of_measurable_nnReal {f : ℝ≥0∞ → α} (h : Measurable 
   measurable_of_measurable_on_compl_singleton ∞
     (MeasurableEquiv.ennRealEquivNNReal.symm.measurable_comp_iff.1 h)
 
+@[deprecated (since := "2026-10-27")]
+alias measurable_of_measurable_nnreal := measurable_of_measurable_nnReal
+
 /-- `ℝ≥0∞` is `MeasurableEquiv` to `ℝ≥0 ⊕ Unit`. -/
 def ennRealEquivSum : ℝ≥0∞ ≃ᵐ ℝ≥0 ⊕ Unit :=
   { Equiv.optionEquivSumPUnit ℝ≥0 with
     measurable_toFun := measurable_of_measurable_nnReal measurable_inl
     measurable_invFun :=
       measurable_fun_sum measurable_coe_nnReal_ennReal (@measurable_const ℝ≥0∞ Unit _ _ ∞) }
+
+@[deprecated (since := "2026-10-27")] alias ennrealEquivSum := ennRealEquivSum
 
 open Function (uncurry)
 
@@ -230,12 +267,18 @@ theorem measurable_of_measurable_nnReal_prod {_ : MeasurableSpace β} {_ : Measu
       (MeasurableEquiv.sumProdDistrib _ _ _)
   e.symm.measurable_comp_iff.1 <| measurable_fun_sum H₁ (H₂.comp measurable_id.snd)
 
+@[deprecated (since := "2026-10-27")]
+alias measurable_of_measurable_nnreal_prod := measurable_of_measurable_nnReal_prod
+
 theorem measurable_of_measurable_nnReal_nnReal {_ : MeasurableSpace β} {f : ℝ≥0∞ × ℝ≥0∞ → β}
     (h₁ : Measurable fun p : ℝ≥0 × ℝ≥0 => f (p.1, p.2)) (h₂ : Measurable fun r : ℝ≥0 => f (∞, r))
     (h₃ : Measurable fun r : ℝ≥0 => f (r, ∞)) : Measurable f :=
   measurable_of_measurable_nnReal_prod
     (measurable_swap_iff.1 <| measurable_of_measurable_nnReal_prod (h₁.comp measurable_swap) h₃)
     (measurable_of_measurable_nnReal h₂)
+
+@[deprecated (since := "2026-10-27")]
+alias measurable_of_measurable_nnreal_nnreal := measurable_of_measurable_nnReal_nnReal
 
 theorem measurable_ofReal : Measurable ENNReal.ofReal :=
   ENNReal.continuous_ofReal.measurable
@@ -321,30 +364,47 @@ theorem Measurable.ennReal_toNNReal {f : α → ℝ≥0∞} (hf : Measurable f) 
     Measurable fun x => (f x).toNNReal :=
   ENNReal.measurable_toNNReal.comp hf
 
+@[deprecated (since := "2026-10-27")]
+alias Measurable.ennreal_toNNReal := Measurable.ennReal_toNNReal
+
 @[fun_prop]
 theorem AEMeasurable.ennReal_toNNReal {f : α → ℝ≥0∞} {μ : Measure α} (hf : AEMeasurable f μ) :
     AEMeasurable (fun x => (f x).toNNReal) μ :=
   ENNReal.measurable_toNNReal.comp_aemeasurable hf
+
+@[deprecated (since := "2026-10-27")]
+alias AEMeasurable.ennreal_toNNReal := AEMeasurable.ennReal_toNNReal
 
 @[simp, norm_cast]
 theorem measurable_coe_nnReal_ennReal_iff {f : α → ℝ≥0} :
     (Measurable fun x => (f x : ℝ≥0∞)) ↔ Measurable f :=
   ⟨fun h => h.ennReal_toNNReal, fun h => h.coe_nnReal_ennReal⟩
 
+@[deprecated (since := "2026-10-27")]
+alias measurable_coe_nnreal_ennreal_iff := measurable_coe_nnReal_ennReal_iff
+
 @[simp, norm_cast]
 theorem aemeasurable_coe_nnReal_ennReal_iff {f : α → ℝ≥0} {μ : Measure α} :
     AEMeasurable (fun x => (f x : ℝ≥0∞)) μ ↔ AEMeasurable f μ :=
   ⟨fun h => h.ennReal_toNNReal, fun h => h.coe_nnReal_ennReal⟩
+
+@[deprecated (since := "2026-10-27")]
+alias aemeasurable_coe_nnreal_ennreal_iff := aemeasurable_coe_nnReal_ennReal_iff
 
 @[fun_prop]
 theorem Measurable.ennReal_toReal {f : α → ℝ≥0∞} (hf : Measurable f) :
     Measurable fun x => ENNReal.toReal (f x) :=
   ENNReal.measurable_toReal.comp hf
 
+@[deprecated (since := "2026-10-27")] alias Measurable.ennreal_toReal := Measurable.ennReal_toReal
+
 @[fun_prop]
 theorem AEMeasurable.ennReal_toReal {f : α → ℝ≥0∞} {μ : Measure α} (hf : AEMeasurable f μ) :
     AEMeasurable (fun x => ENNReal.toReal (f x)) μ :=
   ENNReal.measurable_toReal.comp_aemeasurable hf
+
+@[deprecated (since := "2026-10-27")]
+alias AEMeasurable.ennreal_toReal := AEMeasurable.ennReal_toReal
 
 @[fun_prop, deprecated
   "Use `Measurable.tsum` from `Mathlib.MeasureTheory.Constructions.Polish.Basic` instead"
@@ -354,6 +414,8 @@ theorem Measurable.ennReal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0�
   simp_rw [tsum_eq_iSup_sum]
   exact .iSup fun s ↦ s.measurable_fun_sum fun i _ => h i
 
+@[deprecated (since := "2026-10-27")] alias Measurable.ennreal_tsum := Measurable.ennReal_tsum
+
 @[fun_prop, deprecated
   "Use `Measurable.tsum'` from `Mathlib.MeasureTheory.Constructions.Polish.Basic` instead"
   (since := "2026-04-30")]
@@ -361,6 +423,8 @@ theorem Measurable.ennReal_tsum' {ι} [Countable ι] {f : ι → α → ℝ≥0�
     Measurable (∑' i, f i) := by
   convert! Measurable.ennReal_tsum h with x
   exact Pi.tsum_apply (Pi.summable.2 fun _ => CompleteLattice.summable)
+
+@[deprecated (since := "2026-10-27")] alias Measurable.ennreal_tsum' := Measurable.ennReal_tsum'
 
 @[fun_prop, deprecated
   "Use `Measurable.tsum` from `Mathlib.MeasureTheory.Constructions.Polish.Basic` instead"
@@ -370,6 +434,8 @@ theorem Measurable.nnReal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0} (
   simp_rw [NNReal.tsum_eq_toNNReal_tsum]
   exact (Measurable.ennReal_tsum fun i => (h i).coe_nnReal_ennReal).ennReal_toNNReal
 
+@[deprecated (since := "2026-10-27")] alias Measurable.nnreal_tsum := Measurable.nnReal_tsum
+
 @[fun_prop, deprecated
   "Use `AEMeasurable.tsum` from `Mathlib.MeasureTheory.Constructions.Polish.Basic` instead"
   (since := "2026-04-30")]
@@ -377,6 +443,8 @@ theorem AEMeasurable.ennReal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0
     (h : ∀ i, AEMeasurable (f i) μ) : AEMeasurable (fun x => ∑' i, f i x) μ := by
   simp_rw [tsum_eq_iSup_sum]
   exact .iSup fun s ↦ Finset.aemeasurable_fun_sum s fun i _ => h i
+
+@[deprecated (since := "2026-10-27")] alias AEMeasurable.ennreal_tsum := AEMeasurable.ennReal_tsum
 
 @[fun_prop, deprecated
   "Use `AEMeasurable.tsum` from `Mathlib.MeasureTheory.Constructions.Polish.Basic` instead"
@@ -386,6 +454,8 @@ theorem AEMeasurable.nnReal_tsum {α : Type*} {_ : MeasurableSpace α} {ι : Typ
     AEMeasurable (fun x : α => ∑' i : ι, f i x) μ := by
   simp_rw [NNReal.tsum_eq_toNNReal_tsum]
   exact (AEMeasurable.ennReal_tsum fun i => (h i).coe_nnReal_ennReal).ennReal_toNNReal
+
+@[deprecated (since := "2026-10-27")] alias AEMeasurable.nnreal_tsum := AEMeasurable.nnReal_tsum
 
 @[fun_prop]
 theorem measurable_coe_real_ereal : Measurable ((↑) : ℝ → EReal) :=
@@ -425,15 +495,24 @@ theorem AEMeasurable.ereal_toReal {f : α → EReal} {μ : Measure α} (hf : AEM
 theorem measurable_coe_ennReal_ereal : Measurable ((↑) : ℝ≥0∞ → EReal) :=
   continuous_coe_ennReal_ereal.measurable
 
+@[deprecated (since := "2026-10-27")]
+alias measurable_coe_ennreal_ereal := measurable_coe_ennReal_ereal
+
 @[fun_prop]
 theorem Measurable.coe_ereal_ennReal {f : α → ℝ≥0∞} (hf : Measurable f) :
     Measurable fun x => (f x : EReal) :=
   measurable_coe_ennReal_ereal.comp hf
 
+@[deprecated (since := "2026-10-27")]
+alias Measurable.coe_ereal_ennreal := Measurable.coe_ereal_ennReal
+
 @[fun_prop]
 theorem AEMeasurable.coe_ereal_ennReal {f : α → ℝ≥0∞} {μ : Measure α} (hf : AEMeasurable f μ) :
     AEMeasurable (fun x => (f x : EReal)) μ :=
   measurable_coe_ennReal_ereal.comp_aemeasurable hf
+
+@[deprecated (since := "2026-10-27")]
+alias AEMeasurable.coe_ereal_ennreal := AEMeasurable.coe_ereal_ennReal
 
 theorem measurable_ereal_toENNReal : Measurable EReal.toENNReal :=
   EReal.measurable_of_measurable_real (by simpa using ENNReal.measurable_ofReal)

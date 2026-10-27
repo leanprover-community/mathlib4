@@ -371,6 +371,8 @@ theorem mkMetric_nnReal_smul (m : ℝ≥0∞ → ℝ≥0∞) {c : ℝ≥0} (hc :
   rw [ENNReal.smul_def, ENNReal.smul_def,
     mkMetric_smul m ENNReal.coe_ne_top (ENNReal.coe_ne_zero.mpr hc)]
 
+@[deprecated (since := "2026-10-27")] alias mkMetric_nnreal_smul := mkMetric_nnReal_smul
+
 theorem isometry_map_mkMetric (m : ℝ≥0∞ → ℝ≥0∞) {f : X → Y} (hf : Isometry f)
     (H : Monotone m ∨ Surjective f) : map f (mkMetric m) = restrict (range f) (mkMetric m) := by
   rw [← isometry_comap_mkMetric _ hf H, map_comap]

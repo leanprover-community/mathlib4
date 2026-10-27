@@ -41,6 +41,9 @@ theorem eLpNorm'_le_nnReal_smul_eLpNorm'_of_ae_le_mul {f : α → F} {g : α →
   rw [← NNReal.mul_rpow]
   gcongr
 
+@[deprecated (since := "2026-10-27")]
+alias eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul := eLpNorm'_le_nnReal_smul_eLpNorm'_of_ae_le_mul
+
 -- TODO: eventually, deprecate and remove the nnnorm version
 theorem eLpNorm'_le_nnReal_smul_eLpNorm'_of_ae_le_mul' {f : α → ε} {g : α → ε'} {c : ℝ≥0}
     (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) {p : ℝ} (hp : 0 < p) :
@@ -55,6 +58,10 @@ theorem eLpNorm'_le_nnReal_smul_eLpNorm'_of_ae_le_mul' {f : α → ε} {g : α �
     have : ¬(p < 0) := by linarith
     simp [ENNReal.mul_rpow_eq_ite, this]
   simpa [ENNReal.coe_rpow_of_nonneg _ hp.le, aux, ENNReal.rpow_le_rpow_iff hp]
+
+@[deprecated (since := "2026-10-27")]
+alias eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul' :=
+  eLpNorm'_le_nnReal_smul_eLpNorm'_of_ae_le_mul'
 
 section ESeminormedAddMonoid
 
@@ -109,6 +116,10 @@ theorem eLpNormEssSup_le_nnReal_smul_eLpNormEssSup_of_ae_le_mul' {f : α → ε}
     essSup (‖f ·‖ₑ) μ ≤ essSup (c * ‖g ·‖ₑ) μ := essSup_mono_ae h
     _ = c • essSup (‖g ·‖ₑ) μ := ENNReal.essSup_const_mul
 
+@[deprecated (since := "2026-10-27")]
+alias eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul' :=
+  eLpNormEssSup_le_nnReal_smul_eLpNormEssSup_of_ae_le_mul'
+
 theorem eLpNormEssSup_le_nnReal_smul_eLpNormEssSup_of_ae_le_mul {f : α → F} {g : α → G} {c : ℝ≥0}
     (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) : eLpNormEssSup f μ ≤ c • eLpNormEssSup g μ :=
   calc
@@ -116,6 +127,10 @@ theorem eLpNormEssSup_le_nnReal_smul_eLpNormEssSup_of_ae_le_mul {f : α → F} {
       essSup_mono_ae <| h.mono fun _ hx => ENNReal.coe_le_coe.mpr hx
     _ = essSup (c * ‖g ·‖ₑ) μ := by simp_rw [ENNReal.coe_mul, enorm]
     _ = c • essSup (‖g ·‖ₑ) μ := ENNReal.essSup_const_mul
+
+@[deprecated (since := "2026-10-27")]
+alias eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul :=
+  eLpNormEssSup_le_nnReal_smul_eLpNormEssSup_of_ae_le_mul
 
 -- TODO: eventually, deprecate and remove the nnnorm version
 theorem eLpNorm_le_nnReal_smul_eLpNorm_of_ae_le_mul' {f : α → ε} {g : α → ε'} {c : ℝ≥0}
@@ -136,6 +151,9 @@ theorem eLpNorm_le_nnReal_smul_eLpNorm_of_ae_le_mul' {f : α → ε} {g : α →
   rw [eLpNorm_eq_eLpNorm' h0 h_top hf, eLpNorm_eq_eLpNorm' h0 h_top hg]
   exact eLpNorm'_le_nnReal_smul_eLpNorm'_of_ae_le_mul' h (ENNReal.toReal_pos h0 h_top)
 
+@[deprecated (since := "2026-10-27")]
+alias eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul' := eLpNorm_le_nnReal_smul_eLpNorm_of_ae_le_mul'
+
 theorem eLpNorm_le_nnReal_smul_eLpNorm_of_ae_le_mul {f : α → F} {g : α → G} {c : ℝ≥0}
     (hf : AEStronglyMeasurable f μ) (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) (p : ℝ≥0∞) :
     eLpNorm f p μ ≤ c • eLpNorm g p μ := by
@@ -153,6 +171,9 @@ theorem eLpNorm_le_nnReal_smul_eLpNorm_of_ae_le_mul {f : α → F} {g : α → G
       eLpNormEssSup_le_nnReal_smul_eLpNormEssSup_of_ae_le_mul h
   rw [eLpNorm_eq_eLpNorm' h0 h_top hf, eLpNorm_eq_eLpNorm' h0 h_top hg]
   exact eLpNorm'_le_nnReal_smul_eLpNorm'_of_ae_le_mul h (ENNReal.toReal_pos h0 h_top)
+
+@[deprecated (since := "2026-10-27")]
+alias eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul := eLpNorm_le_nnReal_smul_eLpNorm_of_ae_le_mul
 
 -- TODO: add the whole family of lemmas?
 private theorem le_mul_iff_eq_zero_of_nonneg_of_neg_of_nonneg {α}

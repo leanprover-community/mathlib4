@@ -98,6 +98,9 @@ lemma tilted_eq_withDensity_nnReal (μ : Measure α) (f : α → ℝ) :
   congr with x
   rw [ENNReal.ofReal_eq_coe_nnReal]
 
+@[deprecated (since := "2026-10-27")]
+alias tilted_eq_withDensity_nnreal := tilted_eq_withDensity_nnReal
+
 lemma tilted_apply' (μ : Measure α) (f : α → ℝ) {s : Set α} (hs : MeasurableSet s) :
     μ.tilted f s = ∫⁻ a in s, ENNReal.ofReal (exp (f a) / ∫ x, exp (f x) ∂μ) ∂μ := by
   rw [Measure.tilted, withDensity_apply _ hs]

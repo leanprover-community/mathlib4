@@ -154,6 +154,9 @@ theorem IsLittleOTVS.exists_eventuallyLE_mul_ennReal (h : f =o[𝕜; l] g) {U : 
   | top => exact (hV 1 one_ne_zero).trans <| .of_forall fun _ ↦ by dsimp; grw [← le_top]
   | coe ε => exact hV ε (mod_cast hε)
 
+@[deprecated (since := "2026-10-27")]
+alias IsLittleOTVS.exists_eventuallyLE_mul_ennreal := IsLittleOTVS.exists_eventuallyLE_mul_ennReal
+
 theorem isLittleOTVS_congr (hf : f₁ =ᶠ[l] f₂) (hg : g₁ =ᶠ[l] g₂) :
     f₁ =o[𝕜; l] g₁ ↔ f₂ =o[𝕜; l] g₂ := by
   simp only [isLittleOTVS_iff_tendsto_div]

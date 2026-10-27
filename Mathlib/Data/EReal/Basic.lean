@@ -588,77 +588,123 @@ theorem toReal_coe_ennReal : ∀ {x : ℝ≥0∞}, toReal (x : EReal) = ENNReal.
   | ⊤ => rfl
   | .some _ => rfl
 
+@[deprecated (since := "2026-10-27")] alias toReal_coe_ennreal := toReal_coe_ennReal
+
 @[simp]
 theorem coe_ennReal_ofReal {x : ℝ} : (ENNReal.ofReal x : EReal) = max x 0 :=
   rfl
+
+@[deprecated (since := "2026-10-27")] alias coe_ennreal_ofReal := coe_ennReal_ofReal
 
 lemma coe_ennReal_toReal {x : ℝ≥0∞} (hx : x ≠ ∞) : (x.toReal : EReal) = x := by
   lift x to ℝ≥0 using hx
   rfl
 
+@[deprecated (since := "2026-10-27")] alias coe_ennreal_toReal := coe_ennReal_toReal
+
 theorem coe_nnReal_eq_coe_real (x : ℝ≥0) : ((x : ℝ≥0∞) : EReal) = (x : ℝ) :=
   rfl
+
+@[deprecated (since := "2026-10-27")] alias coe_nnreal_eq_coe_real := coe_nnReal_eq_coe_real
 
 @[simp, norm_cast]
 theorem coe_ennReal_zero : ((0 : ℝ≥0∞) : EReal) = 0 :=
   rfl
 
+@[deprecated (since := "2026-10-27")] alias coe_ennreal_zero := coe_ennReal_zero
+
 @[simp, norm_cast]
 theorem coe_ennReal_one : ((1 : ℝ≥0∞) : EReal) = 1 :=
   rfl
+
+@[deprecated (since := "2026-10-27")] alias coe_ennreal_one := coe_ennReal_one
 
 @[simp, norm_cast]
 theorem coe_ennReal_top : ((⊤ : ℝ≥0∞) : EReal) = ⊤ :=
   rfl
 
+@[deprecated (since := "2026-10-27")] alias coe_ennreal_top := coe_ennReal_top
+
 theorem coe_ennReal_strictMono : StrictMono ((↑) : ℝ≥0∞ → EReal) :=
   WithTop.strictMono_iff.2 ⟨fun _ _ => EReal.coe_lt_coe_iff.2, fun _ => coe_lt_top _⟩
 
+@[deprecated (since := "2026-10-27")] alias coe_ennreal_strictMono := coe_ennReal_strictMono
+
 theorem coe_ennReal_injective : Injective ((↑) : ℝ≥0∞ → EReal) :=
   coe_ennReal_strictMono.injective
+
+@[deprecated (since := "2026-10-27")] alias coe_ennreal_injective := coe_ennReal_injective
 
 @[simp]
 theorem coe_ennReal_eq_top_iff {x : ℝ≥0∞} : (x : EReal) = ⊤ ↔ x = ⊤ :=
   coe_ennReal_injective.eq_iff' rfl
 
+@[deprecated (since := "2026-10-27")] alias coe_ennreal_eq_top_iff := coe_ennReal_eq_top_iff
+
 theorem coe_nnReal_ne_top (x : ℝ≥0) : ((x : ℝ≥0∞) : EReal) ≠ ⊤ := coe_ne_top x
+
+@[deprecated (since := "2026-10-27")] alias coe_nnreal_ne_top := coe_nnReal_ne_top
 
 @[simp]
 theorem coe_nnReal_lt_top (x : ℝ≥0) : ((x : ℝ≥0∞) : EReal) < ⊤ := coe_lt_top x
+
+@[deprecated (since := "2026-10-27")] alias coe_nnreal_lt_top := coe_nnReal_lt_top
 
 @[simp, norm_cast]
 theorem coe_ennReal_le_coe_ennReal_iff {x y : ℝ≥0∞} : (x : EReal) ≤ (y : EReal) ↔ x ≤ y :=
   coe_ennReal_strictMono.le_iff_le
 
+@[deprecated (since := "2026-10-27")]
+alias coe_ennreal_le_coe_ennreal_iff := coe_ennReal_le_coe_ennReal_iff
+
 @[simp, norm_cast]
 theorem coe_ennReal_lt_coe_ennReal_iff {x y : ℝ≥0∞} : (x : EReal) < (y : EReal) ↔ x < y :=
   coe_ennReal_strictMono.lt_iff_lt
+
+@[deprecated (since := "2026-10-27")]
+alias coe_ennreal_lt_coe_ennreal_iff := coe_ennReal_lt_coe_ennReal_iff
 
 @[simp, norm_cast]
 theorem coe_ennReal_eq_coe_ennReal_iff {x y : ℝ≥0∞} : (x : EReal) = (y : EReal) ↔ x = y :=
   coe_ennReal_injective.eq_iff
 
+@[deprecated (since := "2026-10-27")]
+alias coe_ennreal_eq_coe_ennreal_iff := coe_ennReal_eq_coe_ennReal_iff
+
 theorem coe_ennReal_ne_coe_ennReal_iff {x y : ℝ≥0∞} : (x : EReal) ≠ (y : EReal) ↔ x ≠ y :=
   coe_ennReal_injective.ne_iff
+
+@[deprecated (since := "2026-10-27")]
+alias coe_ennreal_ne_coe_ennreal_iff := coe_ennReal_ne_coe_ennReal_iff
 
 @[simp, norm_cast]
 theorem coe_ennReal_eq_zero {x : ℝ≥0∞} : (x : EReal) = 0 ↔ x = 0 := by
   rw [← coe_ennReal_eq_coe_ennReal_iff, coe_ennReal_zero]
 
+@[deprecated (since := "2026-10-27")] alias coe_ennreal_eq_zero := coe_ennReal_eq_zero
+
 @[simp, norm_cast]
 theorem coe_ennReal_eq_one {x : ℝ≥0∞} : (x : EReal) = 1 ↔ x = 1 := by
   rw [← coe_ennReal_eq_coe_ennReal_iff, coe_ennReal_one]
+
+@[deprecated (since := "2026-10-27")] alias coe_ennreal_eq_one := coe_ennReal_eq_one
 
 @[norm_cast]
 theorem coe_ennReal_ne_zero {x : ℝ≥0∞} : (x : EReal) ≠ 0 ↔ x ≠ 0 :=
   coe_ennReal_eq_zero.not
 
+@[deprecated (since := "2026-10-27")] alias coe_ennreal_ne_zero := coe_ennReal_ne_zero
+
 @[norm_cast]
 theorem coe_ennReal_ne_one {x : ℝ≥0∞} : (x : EReal) ≠ 1 ↔ x ≠ 1 :=
   coe_ennReal_eq_one.not
 
+@[deprecated (since := "2026-10-27")] alias coe_ennreal_ne_one := coe_ennReal_ne_one
+
 theorem coe_ennReal_nonneg (x : ℝ≥0∞) : (0 : EReal) ≤ x :=
   coe_ennReal_le_coe_ennReal_iff.2 zero_le
+
+@[deprecated (since := "2026-10-27")] alias coe_ennreal_nonneg := coe_ennReal_nonneg
 
 @[simp] theorem range_coe_ennReal : range ((↑) : ℝ≥0∞ → EReal) = Set.Ici 0 :=
   Subset.antisymm (range_subset_iff.2 coe_ennReal_nonneg) fun x => match x with
@@ -666,32 +712,47 @@ theorem coe_ennReal_nonneg (x : ℝ≥0∞) : (0 : EReal) ≤ x :=
     | ⊤ => fun _ => ⟨⊤, rfl⟩
     | (x : ℝ) => fun h => ⟨.some ⟨x, EReal.coe_nonneg.1 h⟩, rfl⟩
 
+@[deprecated (since := "2026-10-27")] alias range_coe_ennreal := range_coe_ennReal
+
 instance : CanLift EReal ℝ≥0∞ (↑) (0 ≤ ·) := ⟨range_coe_ennReal.ge⟩
 
 @[simp, norm_cast]
 theorem coe_ennReal_pos {x : ℝ≥0∞} : (0 : EReal) < x ↔ 0 < x := by
   rw [← coe_ennReal_zero, coe_ennReal_lt_coe_ennReal_iff]
 
+@[deprecated (since := "2026-10-27")] alias coe_ennreal_pos := coe_ennReal_pos
+
 theorem coe_ennReal_pos_iff_ne_zero {x : ℝ≥0∞} : (0 : EReal) < x ↔ x ≠ 0 := by
   rw [coe_ennReal_pos, pos_iff_ne_zero]
+
+@[deprecated (since := "2026-10-27")]
+alias coe_ennreal_pos_iff_ne_zero := coe_ennReal_pos_iff_ne_zero
 
 @[simp]
 theorem bot_lt_coe_ennReal (x : ℝ≥0∞) : (⊥ : EReal) < x :=
   (bot_lt_coe 0).trans_le (coe_ennReal_nonneg _)
 
+@[deprecated (since := "2026-10-27")] alias bot_lt_coe_ennreal := bot_lt_coe_ennReal
+
 @[simp]
 theorem coe_ennReal_ne_bot (x : ℝ≥0∞) : (x : EReal) ≠ ⊥ :=
   (bot_lt_coe_ennReal x).ne'
 
+@[deprecated (since := "2026-10-27")] alias coe_ennreal_ne_bot := coe_ennReal_ne_bot
+
 @[simp, norm_cast]
 theorem coe_ennReal_add (x y : ENNReal) : ((x + y : ℝ≥0∞) : EReal) = x + y := by
   cases x <;> cases y <;> rfl
+
+@[deprecated (since := "2026-10-27")] alias coe_ennreal_add := coe_ennReal_add
 
 private theorem coe_ennReal_top_mul (x : ℝ≥0) : ((⊤ * x : ℝ≥0∞) : EReal) = ⊤ * x := by
   rcases eq_or_ne x 0 with (rfl | h0)
   · simp
   · rw [ENNReal.top_mul (ENNReal.coe_ne_zero.2 h0)]
     exact Eq.symm <| ite_eq_left <| NNReal.coe_pos.2 h0.bot_lt
+
+@[deprecated (since := "2026-10-27")] alias coe_ennreal_top_mul := coe_ennReal_top_mul
 
 @[simp, norm_cast]
 theorem coe_ennReal_mul : ∀ x y : ℝ≥0∞, ((x * y : ℝ≥0∞) : EReal) = (x : EReal) * y
@@ -702,9 +763,13 @@ theorem coe_ennReal_mul : ∀ x y : ℝ≥0∞, ((x * y : ℝ≥0∞) : EReal) =
   | (x : ℝ≥0), (y : ℝ≥0) => by
     simp only [← ENNReal.coe_mul, coe_nnReal_eq_coe_real, NNReal.coe_mul, EReal.coe_mul]
 
+@[deprecated (since := "2026-10-27")] alias coe_ennreal_mul := coe_ennReal_mul
+
 @[norm_cast]
 theorem coe_ennReal_nsmul (n : ℕ) (x : ℝ≥0∞) : (↑(n • x) : EReal) = n • (x : EReal) :=
   map_nsmul (⟨⟨(↑), coe_ennReal_zero⟩, coe_ennReal_add⟩ : ℝ≥0∞ →+ EReal) _ _
+
+@[deprecated (since := "2026-10-27")] alias coe_ennreal_nsmul := coe_ennReal_nsmul
 
 /-! ### toENNReal -/
 
@@ -828,17 +893,25 @@ theorem natCast_mul (m n : ℕ) :
 lemma ennRealToEReal_le_natCast {r : ℝ≥0∞} {n : ℕ} : (r : EReal) ≤ n ↔ r ≤ n := by
   rw [← EReal.coe_ennReal_le_coe_ennReal_iff, ENNReal.toEReal_natCast]
 
+@[deprecated (since := "2026-10-27")] alias ennrealToEReal_le_natCast := ennRealToEReal_le_natCast
+
 @[simp, norm_cast]
 lemma natCast_le_ennRealToEReal {r : ℝ≥0∞} {n : ℕ} : n ≤ (r : EReal) ↔ n ≤ r := by
   rw [← EReal.coe_ennReal_le_coe_ennReal_iff, ENNReal.toEReal_natCast]
+
+@[deprecated (since := "2026-10-27")] alias natCast_le_ennrealToEReal := natCast_le_ennRealToEReal
 
 @[simp, norm_cast]
 lemma ennRealToEReal_lt_natCast {r : ℝ≥0∞} {n : ℕ} : (r : EReal) < n ↔ r < n := by
   rw [← EReal.coe_ennReal_lt_coe_ennReal_iff, ENNReal.toEReal_natCast]
 
+@[deprecated (since := "2026-10-27")] alias ennrealToEReal_lt_natCast := ennRealToEReal_lt_natCast
+
 @[simp, norm_cast]
 lemma natCast_lt_ennRealToEReal {r : ℝ≥0∞} {n : ℕ} : n < (r : EReal) ↔ n < r := by
   rw [← EReal.coe_ennReal_lt_coe_ennReal_iff, ENNReal.toEReal_natCast]
+
+@[deprecated (since := "2026-10-27")] alias natCast_lt_ennrealToEReal := natCast_lt_ennRealToEReal
 
 /-! ### Miscellaneous lemmas -/
 

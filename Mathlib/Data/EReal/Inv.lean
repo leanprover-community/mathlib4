@@ -177,6 +177,8 @@ theorem coe_pow (x : ℝ) (n : ℕ) : (↑(x ^ n) : EReal) = (x : EReal) ^ n :=
 theorem coe_ennReal_pow (x : ℝ≥0∞) (n : ℕ) : (↑(x ^ n) : EReal) = (x : EReal) ^ n :=
   map_pow (⟨⟨(↑), coe_ennReal_one⟩, coe_ennReal_mul⟩ : ℝ≥0∞ →* EReal) _ _
 
+@[deprecated (since := "2026-10-27")] alias coe_ennreal_pow := coe_ennReal_pow
+
 lemma exists_nat_ge_mul {a : EReal} (ha : a ≠ ⊤) (n : ℕ) :
     ∃ m : ℕ, a * n ≤ m :=
   match a with

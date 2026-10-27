@@ -72,9 +72,15 @@ theorem nonempty_of_measureReal_ne_zero (h : μ.real s ≠ 0) : s.Nonempty :=
     (c • μ).real s = c.toReal * μ.real s := by
   simp [Measure.real]
 
+@[deprecated (since := "2026-10-27")]
+alias measureReal_ennreal_smul_apply := measureReal_ennReal_smul_apply
+
 @[simp] theorem measureReal_nnReal_smul_apply (c : ℝ≥0) :
     (c • μ).real s = c * μ.real s := by
   simp [measureReal_def]
+
+@[deprecated (since := "2026-10-27")]
+alias measureReal_nnreal_smul_apply := measureReal_nnReal_smul_apply
 
 theorem map_measureReal_apply_of_aemeasurable [MeasurableSpace β] {f : α → β}
     (hf : AEMeasurable f μ) {s : Set β} (hs : MeasurableSet s) :

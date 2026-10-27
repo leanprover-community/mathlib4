@@ -179,6 +179,9 @@ lemma _root_.Measurable.ennReal_log {α : Type*} {_ : MeasurableSpace α}
     {f : α → ℝ≥0∞} (hf : Measurable f) :
     Measurable fun x ↦ log (f x) := measurable_log.comp hf
 
+@[deprecated (since := "2026-10-27")]
+alias _root_.Measurable.ennreal_log := _root_.Measurable.ennReal_log
+
 @[fun_prop]
 lemma _root_.Measurable.ereal_exp {α : Type*} {_ : MeasurableSpace α}
     {f : α → EReal} (hf : Measurable f) :

@@ -219,6 +219,8 @@ theorem isCompact_nnReal {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
   rw [isCompact_iff_compactSpace]
   infer_instance
 
+@[deprecated (since := "2026-10-27")] alias isCompact_nnreal := isCompact_nnReal
+
 grind_pattern isCompact_nnReal => IsCompact (spectrum ℝ≥0 a)
 
 theorem exists_nnnorm_eq_spectralRadius_of_nonempty [ProperSpace 𝕜] {a : A}
@@ -467,6 +469,8 @@ theorem isCompact_nnReal {A : Type*} [NonUnitalNormedRing A] [NormedSpace ℝ A]
     IsCompact (quasispectrum ℝ≥0 a) := by
   rw [isCompact_iff_compactSpace]
   infer_instance
+
+@[deprecated (since := "2026-10-27")] alias isCompact_nnreal := isCompact_nnReal
 
 grind_pattern isCompact_nnReal => IsCompact (quasispectrum ℝ≥0 a)
 
@@ -766,6 +770,9 @@ lemma nnReal_iff_spectralRadius_le [Algebra ℝ A] {a : A} {t : ℝ≥0} (ht : s
     rw [← NNReal.coe_le_coe, coe_nnnorm, Real.norm_eq_abs, abs_le] at h_le
     linarith [h_le.2]
 
+@[deprecated (since := "2026-10-27")]
+alias nnreal_iff_spectralRadius_le := nnReal_iff_spectralRadius_le
+
 lemma _root_.NNReal.spectralRadius_mem_spectrum {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
     [CompleteSpace A] {a : A} (ha : (spectrum ℝ a).Nonempty)
     (ha' : SpectrumRestricts a ContinuousMap.realToNNReal) :
@@ -842,6 +849,9 @@ theorem upperHemicontinuous_spectrum_nnReal [NormedRing A] [NormedAlgebra ℝ A]
   obtain ⟨⟨h₁, -⟩, h₂⟩ : IsClosedEmbedding ((↑) : ℝ≥0 → ℝ) := NNReal.isClosedEmbedding_coe
   exact upperHemicontinuous_spectrum ℝ A |>.isInducing_comp h₁ h₂
 
+@[deprecated (since := "2026-10-27")]
+alias upperHemicontinuous_spectrum_nnreal := upperHemicontinuous_spectrum_nnReal
+
 open WithLp in
 /-- The map `a ↦ quasispectrum 𝕜 a` is upper hemicontinuous. -/
 theorem upperHemicontinuous_quasispectrum [NontriviallyNormedField 𝕜] [ProperSpace 𝕜]
@@ -862,5 +872,8 @@ theorem upperHemicontinuous_quasispectrum_nnReal [NonUnitalNormedRing A]
   obtain ⟨⟨h₁, -⟩, h₂⟩ := NNReal.isClosedEmbedding_coe
   simpa [← NNReal.algebraMap_eq_coe] using
     upperHemicontinuous_quasispectrum ℝ A |>.isInducing_comp h₁ h₂
+
+@[deprecated (since := "2026-10-27")]
+alias upperHemicontinuous_quasispectrum_nnreal := upperHemicontinuous_quasispectrum_nnReal
 
 end UpperHemicontinuous

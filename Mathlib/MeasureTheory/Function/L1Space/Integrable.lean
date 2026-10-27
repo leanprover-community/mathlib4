@@ -322,6 +322,9 @@ theorem Integrable.smul_measure_nnReal {f : α → ε} (h : Integrable f μ) {c 
   apply h.smul_measure
   simp
 
+@[deprecated (since := "2026-10-27")]
+alias Integrable.smul_measure_nnreal := Integrable.smul_measure_nnReal
+
 theorem integrable_smul_measure {f : α → ε} {c : ℝ≥0∞} (h₁ : c ≠ 0) (h₂ : c ≠ ∞) :
     Integrable f (c • μ) ↔ Integrable f μ :=
   ⟨fun h => by

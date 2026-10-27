@@ -146,13 +146,19 @@ section
 def ennRealToMeasure {_ : MeasurableSpace α} (v : VectorMeasure α ℝ≥0∞) : Measure α :=
   ofMeasurable (fun s _ => v s) v.empty fun _ hf₁ hf₂ => v.of_disjoint_iUnion hf₁ hf₂
 
+@[deprecated (since := "2026-10-27")] alias ennrealToMeasure := ennRealToMeasure
+
 theorem ennRealToMeasure_apply {m : MeasurableSpace α} {v : VectorMeasure α ℝ≥0∞} {s : Set α}
     (hs : MeasurableSet s) : ennRealToMeasure v s = v s := by
   rw [ennRealToMeasure, ofMeasurable_apply _ hs]
 
+@[deprecated (since := "2026-10-27")] alias ennrealToMeasure_apply := ennRealToMeasure_apply
+
 @[simp]
 theorem ennRealToMeasure_zero : ennRealToMeasure (0 : VectorMeasure α ℝ≥0∞) = 0 := by
   simp [ennRealToMeasure]
+
+@[deprecated (since := "2026-10-27")] alias ennrealToMeasure_zero := ennRealToMeasure_zero
 
 @[simp]
 theorem _root_.MeasureTheory.Measure.toENNRealVectorMeasure_ennRealToMeasure
@@ -164,6 +170,9 @@ theorem _root_.MeasureTheory.Measure.toENNRealVectorMeasure_ennRealToMeasure
 theorem ennRealToMeasure_toENNRealVectorMeasure (μ : Measure α) :
     ennRealToMeasure (toENNRealVectorMeasure μ) = μ := Measure.ext fun s hs => by
   rw [ennRealToMeasure_apply hs, toENNRealVectorMeasure_apply_measurable hs]
+
+@[deprecated (since := "2026-10-27")]
+alias ennrealToMeasure_toENNRealVectorMeasure := ennRealToMeasure_toENNRealVectorMeasure
 
 /-- The equiv between `VectorMeasure α ℝ≥0∞` and `Measure α` formed by
 `MeasureTheory.VectorMeasure.ennRealToMeasure` and

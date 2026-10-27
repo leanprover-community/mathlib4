@@ -55,6 +55,9 @@ lemma lpNorm_nnReal_eq_integral_norm_rpow {p : ℝ≥0} (hp : p ≠ 0) (hf : AES
     lpNorm f p μ = (∫ x, ‖f x‖ ^ (p : ℝ) ∂μ) ^ (p⁻¹ : ℝ) := by
   rw [lpNorm_eq_integral_norm_rpow_toReal (by positivity) (by simp) hf]; simp
 
+@[deprecated (since := "2026-10-27")]
+alias lpNorm_nnreal_eq_integral_norm_rpow := lpNorm_nnReal_eq_integral_norm_rpow
+
 lemma lpNorm_one_eq_integral_norm (hf : AEStronglyMeasurable f μ) :
     lpNorm f 1 μ = ∫ x, ‖f x‖ ∂μ := by
   simp [lpNorm_eq_integral_norm_rpow_toReal one_ne_zero ENNReal.coe_ne_top hf]

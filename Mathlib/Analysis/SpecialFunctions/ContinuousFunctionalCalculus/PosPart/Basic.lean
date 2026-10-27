@@ -338,6 +338,8 @@ lemma posPart_algebraMap_nnReal (r : ℝ≥0) : (algebraMap ℝ≥0 A r)⁺ = al
   rw [CFC.posPart_def, cfcₙ_eq_cfc, IsScalarTower.algebraMap_apply ℝ≥0 ℝ A]
   simp
 
+@[deprecated (since := "2026-10-27")] alias posPart_algebraMap_nnreal := posPart_algebraMap_nnReal
+
 open NNReal in
 @[simp]
 lemma posPart_natCast (n : ℕ) : (n : A)⁺ = n := by

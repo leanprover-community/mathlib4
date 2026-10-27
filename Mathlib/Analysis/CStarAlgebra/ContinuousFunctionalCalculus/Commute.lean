@@ -117,6 +117,8 @@ protected theorem Commute.cfc_nnReal {a b : A} (hb : Commute a b) (f : ℝ≥0 �
     exact hb.cfc_real _
   · simp [cfc_apply_of_not_predicate a ha]
 
+@[deprecated (since := "2026-10-27")] alias Commute.cfc_nnreal := Commute.cfc_nnReal
+
 end NNReal
 
 end Unital
@@ -203,6 +205,8 @@ protected theorem Commute.cfcₙ_nnReal {a b : A} (hb : Commute a b) (f : ℝ≥
   · rw [cfcₙ_nnReal_eq_real ..]
     exact hb.cfcₙ_real _
   · simp [cfcₙ_apply_of_not_predicate a ha]
+
+@[deprecated (since := "2026-10-27")] alias Commute.cfcₙ_nnreal := Commute.cfcₙ_nnReal
 
 end NNReal
 

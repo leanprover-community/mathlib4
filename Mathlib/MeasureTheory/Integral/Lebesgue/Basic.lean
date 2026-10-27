@@ -87,6 +87,8 @@ theorem lintegral_mono ⦃f g : α → ℝ≥0∞⦄ (hfg : f ≤ g) : ∫⁻ a,
 theorem lintegral_mono_nnReal {f g : α → ℝ≥0} (h : f ≤ g) : ∫⁻ a, f a ∂μ ≤ ∫⁻ a, g a ∂μ :=
   lintegral_mono fun a => ENNReal.coe_le_coe.2 (h a)
 
+@[deprecated (since := "2026-10-27")] alias lintegral_mono_nnreal := lintegral_mono_nnReal
+
 theorem iSup_lintegral_measurable_le_eq_lintegral (f : α → ℝ≥0∞) :
     ⨆ (g : α → ℝ≥0∞) (_ : Measurable g) (_ : g ≤ f), ∫⁻ a, g a ∂μ = ∫⁻ a, f a ∂μ := by
   apply le_antisymm
@@ -176,6 +178,8 @@ theorem lintegral_eq_nnReal {m : MeasurableSpace α} (f : α → ℝ≥0∞) (μ
     refine ⟨indicator_le fun x hx => le_trans ?_ (hφ _), hn⟩
     simp only [mem_preimage, mem_singleton_iff] at hx
     simp only [hx, le_top]
+
+@[deprecated (since := "2026-10-27")] alias lintegral_eq_nnreal := lintegral_eq_nnReal
 
 theorem exists_simpleFunc_forall_lintegral_sub_lt_of_pos {f : α → ℝ≥0∞} (h : ∫⁻ x, f x ∂μ ≠ ∞)
     {ε : ℝ≥0∞} (hε : ε ≠ 0) :
@@ -695,6 +699,9 @@ theorem setLIntegral_lt_top_of_le_nnReal {s : Set α} (hs : μ s ≠ ∞) {f : �
   obtain ⟨M, hM⟩ := hbdd
   refine lt_of_le_of_lt (setLIntegral_mono measurable_const hM) ?_
   simp [ENNReal.mul_lt_top, hs.lt_top]
+
+@[deprecated (since := "2026-10-27")]
+alias setLIntegral_lt_top_of_le_nnreal := setLIntegral_lt_top_of_le_nnReal
 
 /-- Lebesgue integral of a bounded function over a set of finite measure is finite.
 Note that this lemma assumes no regularity of either `f` or `s`. -/

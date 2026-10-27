@@ -383,6 +383,8 @@ theorem addHaar_nnReal_smul (r : ℝ≥0) (s : Set E) :
     μ (r • s) = r ^ Module.finrank ℝ E * μ s := by
   simp [NNReal.smul_def]
 
+@[deprecated (since := "2026-10-27")] alias addHaar_nnreal_smul := addHaar_nnReal_smul
+
 variable {μ} {s : Set E}
 
 -- Note: We might want to rename this once we acquire the lemma corresponding to

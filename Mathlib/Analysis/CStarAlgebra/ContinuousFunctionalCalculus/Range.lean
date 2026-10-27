@@ -118,6 +118,9 @@ lemma range_cfc_nnReal_eq_image_cfc_real [ContinuousFunctionalCalculus ℝ A IsS
     simp only [cfc_real_eq_nnReal a hf]
     exact ⟨_, rfl⟩
 
+@[deprecated (since := "2026-10-27")]
+alias range_cfc_nnreal_eq_image_cfc_real := range_cfc_nnReal_eq_image_cfc_real
+
 variable [ContinuousStar A] [StarModule ℝ A]
 
 lemma range_cfc_nnReal_subset
@@ -147,6 +150,8 @@ theorem cfc_nnReal_mem {𝕜 : Type*} [RCLike 𝕜] [ContinuousFunctionalCalculu
   · rw [cfc_nnReal_eq_real ..]
     exact cfc_mem _ has
   · simp [cfc_apply_of_not_predicate _ ha]
+
+@[deprecated (since := "2026-10-27")] alias cfc_nnreal_mem := cfc_nnReal_mem
 
 end Unital
 
@@ -258,6 +263,8 @@ lemma range_cfcₙ_nnReal [NonUnitalClosedEmbeddingContinuousFunctionalCalculus 
     rwa [cfcₙ_nonneg_iff f a] at hf
   · exact ⟨0, by simp, by grind [cfcₙ_zero]⟩
 
+@[deprecated (since := "2026-10-27")] alias range_cfcₙ_nnreal := range_cfcₙ_nnReal
+
 open NNReal in
 theorem cfcₙ_nnReal_mem {𝕜 : Type*} [RCLike 𝕜]
     [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
@@ -270,6 +277,8 @@ theorem cfcₙ_nnReal_mem {𝕜 : Type*} [RCLike 𝕜]
   · rw [cfcₙ_nnReal_eq_real ..]
     exact cfcₙ_mem _ has
   · simp [cfcₙ_apply_of_not_predicate _ ha]
+
+@[deprecated (since := "2026-10-27")] alias cfcₙ_nnreal_mem := cfcₙ_nnReal_mem
 
 end NonUnital
 

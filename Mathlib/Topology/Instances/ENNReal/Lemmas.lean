@@ -132,6 +132,9 @@ theorem tendsto_nhds_top_iff_nnReal {m : α → ℝ≥0∞} {f : Filter α} :
     Tendsto m f (𝓝 ∞) ↔ ∀ x : ℝ≥0, ∀ᶠ a in f, ↑x < m a := by
   simp only [nhds_top', tendsto_iInf, tendsto_principal, mem_Ioi]
 
+@[deprecated (since := "2026-10-27")]
+alias tendsto_nhds_top_iff_nnreal := tendsto_nhds_top_iff_nnReal
+
 theorem tendsto_nhds_top_iff_nat {m : α → ℝ≥0∞} {f : Filter α} :
     Tendsto m f (𝓝 ∞) ↔ ∀ n : ℕ, ∀ᶠ a in f, ↑n < m a :=
   tendsto_nhds_top_iff_nnReal.trans
@@ -345,11 +348,17 @@ theorem _root_.ContinuousOn.ennReal_mul [TopologicalSpace α] {f g : α → ℝ�
     (h₂ : ∀ x ∈ s, g x ≠ 0 ∨ f x ≠ ∞) : ContinuousOn (fun x => f x * g x) s := fun x hx =>
   ENNReal.Tendsto.mul (hf x hx) (h₁ x hx) (hg x hx) (h₂ x hx)
 
+@[deprecated (since := "2026-10-27")]
+alias _root_.ContinuousOn.ennreal_mul := _root_.ContinuousOn.ennReal_mul
+
 theorem _root_.Continuous.ennReal_mul [TopologicalSpace α] {f g : α → ℝ≥0∞} (hf : Continuous f)
     (hg : Continuous g) (h₁ : ∀ x, f x ≠ 0 ∨ g x ≠ ∞) (h₂ : ∀ x, g x ≠ 0 ∨ f x ≠ ∞) :
     Continuous fun x => f x * g x :=
   continuous_iff_continuousAt.2 fun x =>
     ENNReal.Tendsto.mul hf.continuousAt (h₁ x) hg.continuousAt (h₂ x)
+
+@[deprecated (since := "2026-10-27")]
+alias _root_.Continuous.ennreal_mul := _root_.Continuous.ennReal_mul
 
 protected theorem Tendsto.const_mul {f : Filter α} {m : α → ℝ≥0∞} {a b : ℝ≥0∞}
     (hm : Tendsto m f (𝓝 b)) (hb : b ≠ 0 ∨ a ≠ ∞) : Tendsto (fun b => a * m b) f (𝓝 (a * b)) :=
@@ -427,6 +436,8 @@ theorem continuous_sub_left {a : ℝ≥0∞} (a_ne_top : a ≠ ∞) : Continuous
 
 theorem continuous_nnReal_sub {a : ℝ≥0} : Continuous fun x : ℝ≥0∞ => (a : ℝ≥0∞) - x :=
   continuous_sub_left coe_ne_top
+
+@[deprecated (since := "2026-10-27")] alias continuous_nnreal_sub := continuous_nnReal_sub
 
 theorem continuousOn_sub_left (a : ℝ≥0∞) : ContinuousOn (a - ·) { x : ℝ≥0∞ | x ≠ ∞ } := by
   rw [show (fun x => a - x) = (fun p : ℝ≥0∞ × ℝ≥0∞ => p.fst - p.snd) ∘ fun x => ⟨a, x⟩ by rfl]

@@ -132,6 +132,8 @@ lemma nnReal_cfcₙ_eq_cfc_inr (a : A) (f : ℝ≥0 → ℝ≥0)
     (hf₀ : f 0 = 0 := by cfc_zero_tac) : cfcₙ f a = cfc f (a : A⁺¹) :=
   cfcₙ_eq_cfc_inr inr_nonneg_iff ..
 
+@[deprecated (since := "2026-10-27")] alias nnreal_cfcₙ_eq_cfc_inr := nnReal_cfcₙ_eq_cfc_inr
+
 lemma sqrt_inr (a : A) : CFC.sqrt (a : A⁺¹) = (↑(CFC.sqrt a) : A⁺¹) := by
   by_cases ha : 0 ≤ a <;> have ha' := by rwa [← Unitization.inr_nonneg_iff] at ha
   · rw [CFC.sqrt_eq_iff .., ← inr_mul, CFC.sqrt_mul_sqrt_self a]
@@ -154,6 +156,8 @@ lemma cfc_nnReal_le_iff {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [
   have hg' := hg.ofReal_map_toNNReal <| ha_spec.image ▸ Set.mapsTo_image ..
   rw [cfc_nnReal_eq_real .., cfc_nnReal_eq_real .., cfc_le_iff ..]
   simp [NNReal.coe_le_coe, ← ha_spec.image]
+
+@[deprecated (since := "2026-10-27")] alias cfc_nnreal_le_iff := cfc_nnReal_le_iff
 
 open ContinuousFunctionalCalculus in
 /-- In a unital `ℝ`-algebra `A` with a continuous functional calculus, an element `a : A` is larger

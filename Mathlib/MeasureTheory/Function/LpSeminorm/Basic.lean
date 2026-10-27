@@ -725,6 +725,9 @@ end SMul
     eLpNormEssSup f (c • μ) = eLpNormEssSup f μ := by
   simp_rw [eLpNormEssSup]; exact essSup_ennReal_smul_measure hc _
 
+@[deprecated (since := "2026-10-27")]
+alias eLpNormEssSup_ennreal_smul_measure := eLpNormEssSup_ennReal_smul_measure
+
 theorem eLpNorm_smul_measure_of_ne_zero_of_ne_top {p : ℝ≥0∞} (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) {f : α → ε} (c : ℝ≥0∞) :
     eLpNorm f p (c • μ) = c ^ (1 / p).toReal • eLpNorm f p μ := by
@@ -814,6 +817,8 @@ theorem MemLp.smul_measure {f : α → ε} {c : ℝ≥0∞} (hf : MemLp f p μ) 
 theorem MemLp.smul_measure_nnReal {f : α → ε} {c : ℝ≥0} (hf : MemLp f p μ) :
     MemLp f p (c • μ) :=
   hf.of_measure_le_smul (by simp) le_rfl
+
+@[deprecated (since := "2026-10-27")] alias MemLp.smul_measure_nnreal := MemLp.smul_measure_nnReal
 
 variable {ε : Type*} [TopologicalSpace ε] [ENorm ε] [PseudoMetrizableSpace ε] in
 theorem eLpNorm_one_add_measure (f : α → ε) (μ ν : Measure α) :

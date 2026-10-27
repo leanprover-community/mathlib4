@@ -494,12 +494,17 @@ lemma IsGreatest.nnnorm_cfc_nnReal [Nontrivial A] (f : ℝ≥0 → ℝ≥0) (a :
     ContinuousOn.comp ‹_› continuous_real_toNNReal.continuousOn <| ha'.image ▸ Set.mapsTo_image ..
   simp [Set.image_image, ← ha'.image]
 
+@[deprecated (since := "2026-10-27")]
+alias IsGreatest.nnnorm_cfc_nnreal := IsGreatest.nnnorm_cfc_nnReal
+
 lemma apply_le_nnnorm_cfc_nnReal (f : ℝ≥0 → ℝ≥0) (a : A) ⦃x : ℝ≥0⦄ (hx : x ∈ σ ℝ≥0 a)
     (hf : ContinuousOn f (σ ℝ≥0 a) := by cfc_cont_tac) (ha : 0 ≤ a := by cfc_tac) :
     f x ≤ ‖cfc f a‖₊ := by
   revert hx
   nontriviality A
   exact (IsGreatest.nnnorm_cfc_nnReal f a hf ha |>.2 ⟨x, ·, rfl⟩)
+
+@[deprecated (since := "2026-10-27")] alias apply_le_nnnorm_cfc_nnreal := apply_le_nnnorm_cfc_nnReal
 
 lemma nnnorm_cfc_nnReal_le {f : ℝ≥0 → ℝ≥0} {a : A} {c : ℝ≥0} (h : ∀ x ∈ σ ℝ≥0 a, f x ≤ c) :
     ‖cfc f a‖₊ ≤ c := by
@@ -511,10 +516,14 @@ lemma nnnorm_cfc_nnReal_le {f : ℝ≥0 → ℝ≥0} {a : A} {c : ℝ≥0} (h : 
     rintro - ⟨x, hx, rfl⟩
     exact h x hx
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_cfc_nnreal_le := nnnorm_cfc_nnReal_le
+
 lemma nnnorm_cfc_nnReal_le_iff (f : ℝ≥0 → ℝ≥0) (a : A) (c : ℝ≥0)
     (hf : ContinuousOn f (σ ℝ≥0 a) := by cfc_cont_tac)
     (ha : 0 ≤ a := by cfc_tac) : ‖cfc f a‖₊ ≤ c ↔ ∀ x ∈ σ ℝ≥0 a, f x ≤ c :=
   ⟨fun h _ hx ↦ apply_le_nnnorm_cfc_nnReal f a hx hf ha |>.trans h, nnnorm_cfc_nnReal_le⟩
+
+@[deprecated (since := "2026-10-27")] alias nnnorm_cfc_nnreal_le_iff := nnnorm_cfc_nnReal_le_iff
 
 lemma nnnorm_cfc_nnReal_lt {f : ℝ≥0 → ℝ≥0} {a : A} {c : ℝ≥0} (hc : 0 < c)
     (h : ∀ x ∈ σ ℝ≥0 a, f x < c) : ‖cfc f a‖₊ < c := by
@@ -526,10 +535,14 @@ lemma nnnorm_cfc_nnReal_lt {f : ℝ≥0 → ℝ≥0} {a : A} {c : ℝ≥0} (hc :
     rintro - ⟨x, hx, rfl⟩
     exact h x hx
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_cfc_nnreal_lt := nnnorm_cfc_nnReal_lt
+
 lemma nnnorm_cfc_nnReal_lt_iff (f : ℝ≥0 → ℝ≥0) (a : A) {c : ℝ≥0} (hc : 0 < c)
     (hf : ContinuousOn f (σ ℝ≥0 a) := by cfc_cont_tac)
     (ha : 0 ≤ a := by cfc_tac) : ‖cfc f a‖₊ < c ↔ ∀ x ∈ σ ℝ≥0 a, f x < c :=
   ⟨fun h _ hx ↦ apply_le_nnnorm_cfc_nnReal f a hx hf ha |>.trans_lt h, nnnorm_cfc_nnReal_lt hc⟩
+
+@[deprecated (since := "2026-10-27")] alias nnnorm_cfc_nnreal_lt_iff := nnnorm_cfc_nnReal_lt_iff
 
 namespace IsometricContinuousFunctionalCalculus
 
@@ -568,11 +581,17 @@ lemma IsGreatest.nnnorm_cfcₙ_nnReal (f : ℝ≥0 → ℝ≥0) (a : A)
     ContinuousOn.comp ‹_› continuous_real_toNNReal.continuousOn <| ha'.image ▸ Set.mapsTo_image ..
   simp [Set.image_image, ← ha'.image]
 
+@[deprecated (since := "2026-10-27")]
+alias IsGreatest.nnnorm_cfcₙ_nnreal := IsGreatest.nnnorm_cfcₙ_nnReal
+
 lemma apply_le_nnnorm_cfcₙ_nnReal (f : ℝ≥0 → ℝ≥0) (a : A) ⦃x : ℝ≥0⦄ (hx : x ∈ σₙ ℝ≥0 a)
     (hf : ContinuousOn f (σₙ ℝ≥0 a) := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac)
     (ha : 0 ≤ a := by cfc_tac) : f x ≤ ‖cfcₙ f a‖₊ := by
   revert hx
   exact (IsGreatest.nnnorm_cfcₙ_nnReal f a hf hf0 ha |>.2 ⟨x, ·, rfl⟩)
+
+@[deprecated (since := "2026-10-27")]
+alias apply_le_nnnorm_cfcₙ_nnreal := apply_le_nnnorm_cfcₙ_nnReal
 
 lemma nnnorm_cfcₙ_nnReal_le {f : ℝ≥0 → ℝ≥0} {a : A} {c : ℝ≥0} (h : ∀ x ∈ σₙ ℝ≥0 a, f x ≤ c) :
     ‖cfcₙ f a‖₊ ≤ c := by
@@ -581,10 +600,14 @@ lemma nnnorm_cfcₙ_nnReal_le {f : ℝ≥0 → ℝ≥0} {a : A} {c : ℝ≥0} (h
   rintro - ⟨x, hx, rfl⟩
   exact h x hx
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_cfcₙ_nnreal_le := nnnorm_cfcₙ_nnReal_le
+
 lemma nnnorm_cfcₙ_nnReal_le_iff (f : ℝ≥0 → ℝ≥0) (a : A) (c : ℝ≥0)
     (hf : ContinuousOn f (σₙ ℝ≥0 a) := by cfc_cont_tac) (hf₀ : f 0 = 0 := by cfc_zero_tac)
     (ha : 0 ≤ a := by cfc_tac) : ‖cfcₙ f a‖₊ ≤ c ↔ ∀ x ∈ σₙ ℝ≥0 a, f x ≤ c :=
   ⟨fun h _ hx ↦ apply_le_nnnorm_cfcₙ_nnReal f a hx hf hf₀ ha |>.trans h, nnnorm_cfcₙ_nnReal_le⟩
+
+@[deprecated (since := "2026-10-27")] alias nnnorm_cfcₙ_nnreal_le_iff := nnnorm_cfcₙ_nnReal_le_iff
 
 lemma nnnorm_cfcₙ_nnReal_lt {f : ℝ≥0 → ℝ≥0} {a : A} {c : ℝ≥0} (h : ∀ x ∈ σₙ ℝ≥0 a, f x < c) :
     ‖cfcₙ f a‖₊ < c := by
@@ -594,10 +617,14 @@ lemma nnnorm_cfcₙ_nnReal_lt {f : ℝ≥0 → ℝ≥0} {a : A} {c : ℝ≥0} (h
     rintro - ⟨x, hx, rfl⟩
     exact h x hx
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_cfcₙ_nnreal_lt := nnnorm_cfcₙ_nnReal_lt
+
 lemma nnnorm_cfcₙ_nnReal_lt_iff (f : ℝ≥0 → ℝ≥0) (a : A) (c : ℝ≥0)
     (hf : ContinuousOn f (σₙ ℝ≥0 a) := by cfc_cont_tac) (hf₀ : f 0 = 0 := by cfc_zero_tac)
     (ha : 0 ≤ a := by cfc_tac) : ‖cfcₙ f a‖₊ < c ↔ ∀ x ∈ σₙ ℝ≥0 a, f x < c :=
   ⟨fun h _ hx ↦ apply_le_nnnorm_cfcₙ_nnReal f a hx hf hf₀ ha |>.trans_lt h, nnnorm_cfcₙ_nnReal_lt⟩
+
+@[deprecated (since := "2026-10-27")] alias nnnorm_cfcₙ_nnreal_lt_iff := nnnorm_cfcₙ_nnReal_lt_iff
 
 namespace NonUnitalIsometricContinuousFunctionalCalculus
 

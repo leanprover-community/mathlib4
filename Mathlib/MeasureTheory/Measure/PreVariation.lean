@@ -251,13 +251,19 @@ noncomputable def ennRealPreVariation (hf : IsSigmaSubadditiveSetFun f) (hf' : f
   not_measurable' _ h := by simp [preVariationFun, h]
   m_iUnion' := preVariation.iUnion hf hf'
 
+@[deprecated (since := "2026-10-27")] alias ennrealPreVariation := ennRealPreVariation
+
 lemma ennRealPreVariation_apply (hf : IsSigmaSubadditiveSetFun f) (hf' : f ∅ = 0) (s : Set X) :
   ennRealPreVariation f hf hf' s = preVariationFun f s := rfl
+
+@[deprecated (since := "2026-10-27")] alias ennrealPreVariation_apply := ennRealPreVariation_apply
 
 @[simp]
 lemma ennRealPreVariation_zero :
     ennRealPreVariation (0 : Set X → ℝ≥0∞) isSigmaSubadditiveSetFun_zero (by simp) = 0 := by
   ext; simp [ennRealPreVariation_apply]
+
+@[deprecated (since := "2026-10-27")] alias ennrealPreVariation_zero := ennRealPreVariation_zero
 
 /-- The `Measure X` built from a σ-subadditive function. -/
 noncomputable def preVariation (hf : IsSigmaSubadditiveSetFun f) (hf' : f ∅ = 0) : Measure X :=

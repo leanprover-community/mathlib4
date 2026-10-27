@@ -298,6 +298,10 @@ theorem exists_lt_lowerSemicontinuous_integral_gt_nnReal [SigmaFinite μ] (f : �
     · apply Filter.Eventually.of_forall fun x => _; simp
     · apply gcont.measurable.ennReal_toReal.aemeasurable.aestronglyMeasurable
 
+@[deprecated (since := "2026-10-27")]
+alias exists_lt_lowerSemicontinuous_integral_gt_nnreal :=
+  exists_lt_lowerSemicontinuous_integral_gt_nnReal
+
 /-! ### Upper semicontinuous lower bound for nonnegative functions -/
 
 

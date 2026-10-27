@@ -533,6 +533,9 @@ theorem integral_smul_nnReal_vectorMeasure (f : X → E) (c : ℝ≥0) :
     ∫ᵛ x, f x ∂[B; c • μ] = c • ∫ᵛ x, f x ∂[B; μ] :=
   integral_smul_vectorMeasure f (c : ℝ)
 
+@[deprecated (since := "2026-10-27")]
+alias integral_smul_nnreal_vectorMeasure := integral_smul_nnReal_vectorMeasure
+
 set_option backward.isDefEq.respectTransparency.types false in
 theorem integral_add_vectorMeasure (hμ : μ.Integrable f) (hν : ν.Integrable f) :
     ∫ᵛ x, f x ∂[B; μ + ν] = ∫ᵛ x, f x ∂[B; μ] + ∫ᵛ x, f x ∂[B; ν] :=

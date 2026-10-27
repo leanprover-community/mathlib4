@@ -328,9 +328,13 @@ variable [NormOneClass 𝕜'] [NormedAlgebra ℝ 𝕜']
 theorem norm_algebraMap_nnReal (x : ℝ≥0) : ‖algebraMap ℝ≥0 𝕜' x‖ = x :=
   (norm_algebraMap' 𝕜' (x : ℝ)).symm ▸ Real.norm_of_nonneg x.prop
 
+@[deprecated (since := "2026-10-27")] alias norm_algebraMap_nnreal := norm_algebraMap_nnReal
+
 @[simp]
 theorem nnnorm_algebraMap_nnReal (x : ℝ≥0) : ‖algebraMap ℝ≥0 𝕜' x‖₊ = x :=
   Subtype.ext <| norm_algebraMap_nnReal 𝕜' x
+
+@[deprecated (since := "2026-10-27")] alias nnnorm_algebraMap_nnreal := nnnorm_algebraMap_nnReal
 
 end NNReal
 

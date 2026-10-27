@@ -83,20 +83,32 @@ theorem isEmbedding_coe_ennReal : IsEmbedding ((↑) : ℝ≥0∞ → EReal) :=
   coe_ennReal_strictMono.isEmbedding_of_ordConnected <| by
     rw [range_coe_ennReal]; exact ordConnected_Ici
 
+@[deprecated (since := "2026-10-27")] alias isEmbedding_coe_ennreal := isEmbedding_coe_ennReal
+
 theorem isClosedEmbedding_coe_ennReal : IsClosedEmbedding ((↑) : ℝ≥0∞ → EReal) :=
   ⟨isEmbedding_coe_ennReal, by rw [range_coe_ennReal]; exact isClosed_Ici⟩
+
+@[deprecated (since := "2026-10-27")]
+alias isClosedEmbedding_coe_ennreal := isClosedEmbedding_coe_ennReal
 
 @[norm_cast]
 theorem tendsto_coe_ennReal {α : Type*} {f : Filter α} {m : α → ℝ≥0∞} {a : ℝ≥0∞} :
     Tendsto (fun a => (m a : EReal)) f (𝓝 ↑a) ↔ Tendsto m f (𝓝 a) :=
   isEmbedding_coe_ennReal.tendsto_nhds_iff.symm
 
+@[deprecated (since := "2026-10-27")] alias tendsto_coe_ennreal := tendsto_coe_ennReal
+
 theorem _root_.continuous_coe_ennReal_ereal : Continuous ((↑) : ℝ≥0∞ → EReal) :=
   isEmbedding_coe_ennReal.continuous
+
+@[deprecated (since := "2026-10-27")]
+alias _root_.continuous_coe_ennreal_ereal := _root_.continuous_coe_ennReal_ereal
 
 theorem continuous_coe_ennReal_iff {f : α → ℝ≥0∞} :
     (Continuous fun a => (f a : EReal)) ↔ Continuous f :=
   isEmbedding_coe_ennReal.continuous_iff.symm
+
+@[deprecated (since := "2026-10-27")] alias continuous_coe_ennreal_iff := continuous_coe_ennReal_iff
 
 /-! ### Neighborhoods of infinity -/
 

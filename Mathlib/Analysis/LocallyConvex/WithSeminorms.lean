@@ -1132,6 +1132,9 @@ theorem SeminormFamily.comp_smul_nnReal (q : SeminormFamily 𝕜₂ F ι) (c : N
   ext
   simp [SeminormFamily.comp_apply, Seminorm.comp_apply]
 
+@[deprecated (since := "2026-10-27")]
+alias SeminormFamily.comp_smul_nnreal := SeminormFamily.comp_smul_nnReal
+
 theorem SeminormFamily.finset_sup_comp (q : SeminormFamily 𝕜₂ F ι) (s : Finset ι)
     (f : E →ₛₗ[σ₁₂] F) : (s.sup q).comp f = s.sup (q.comp f) := by
   ext x

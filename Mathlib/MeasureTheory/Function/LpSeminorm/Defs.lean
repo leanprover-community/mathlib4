@@ -117,6 +117,8 @@ lemma eLpNorm_nnReal_eq_eLpNorm' [TopologicalSpace ε] {f : α → ε} {p : ℝ�
     eLpNorm f p μ = eLpNorm' f p μ :=
   eLpNorm_eq_eLpNorm' (by exact_mod_cast hp) ENNReal.coe_ne_top hf
 
+@[deprecated (since := "2026-10-27")] alias eLpNorm_nnreal_eq_eLpNorm' := eLpNorm_nnReal_eq_eLpNorm'
+
 lemma eLpNorm_eq_lintegral_rpow_enorm_toReal [TopologicalSpace ε]
     (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) {f : α → ε} (hf : AEStronglyMeasurable f μ) :
     eLpNorm f p μ = (∫⁻ x, ‖f x‖ₑ ^ p.toReal ∂μ) ^ (1 / p.toReal) := by
@@ -126,6 +128,9 @@ lemma eLpNorm_nnReal_eq_lintegral [TopologicalSpace ε] {f : α → ε} {p : ℝ
     (hp : p ≠ 0) (hf : AEStronglyMeasurable f μ) :
     eLpNorm f p μ = (∫⁻ x, ‖f x‖ₑ ^ (p : ℝ) ∂μ) ^ (1 / (p : ℝ)) :=
   eLpNorm_nnReal_eq_eLpNorm' hp hf
+
+@[deprecated (since := "2026-10-27")]
+alias eLpNorm_nnreal_eq_lintegral := eLpNorm_nnReal_eq_lintegral
 
 theorem eLpNorm_one_eq_lintegral_enorm [TopologicalSpace ε] {f : α → ε}
     (hf : AEStronglyMeasurable f μ) :
@@ -176,6 +181,9 @@ lemma eLpNorm_nnReal_pow_eq_lintegral [TopologicalSpace ε] {f : α → ε} {p :
     eLpNorm f p μ ^ (p : ℝ) = ∫⁻ x, ‖f x‖ₑ ^ (p : ℝ) ∂μ := by
   simp [eLpNorm_eq_eLpNorm' (by exact_mod_cast hp) ENNReal.coe_ne_top hf,
     lintegral_rpow_enorm_eq_rpow_eLpNorm' ((NNReal.coe_pos.trans pos_iff_ne_zero).mpr hp)]
+
+@[deprecated (since := "2026-10-27")]
+alias eLpNorm_nnreal_pow_eq_lintegral := eLpNorm_nnReal_pow_eq_lintegral
 
 /-- Real-valued `ℒp` seminorm, equal to `0` for `p = 0`, to `(∫ ‖f a‖^p ∂μ) ^ p⁻¹` for `0 < p < ∞`
 and to `essSup ‖f‖ μ` for `p = ∞`.

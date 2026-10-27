@@ -302,6 +302,8 @@ theorem nndist_edist (x y : α) : nndist x y = (edist x y).toNNReal := by
 theorem coe_nnReal_ennReal_nndist (x y : α) : ↑(nndist x y) = edist x y :=
   (edist_nndist x y).symm
 
+@[deprecated (since := "2026-10-27")] alias coe_nnreal_ennreal_nndist := coe_nnReal_ennReal_nndist
+
 @[simp, norm_cast]
 theorem edist_lt_coe {x y : α} {c : ℝ≥0} : edist x y < c ↔ nndist x y < c := by
   rw [edist_nndist, ENNReal.coe_lt_coe]

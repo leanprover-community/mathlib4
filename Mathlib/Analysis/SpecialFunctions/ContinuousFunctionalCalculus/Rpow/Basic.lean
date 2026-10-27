@@ -690,6 +690,8 @@ lemma sqrt_rpow_nnReal {a : A} {x : ℝ≥0} : sqrt (a ^ (x : ℝ)) = a ^ (x / 2
       have h₃ : 0 < x / 2 := by positivity
       rw [← nnrpow_eq_rpow h₁, h₂, ← nnrpow_eq_rpow h₃, sqrt_nnrpow (A := A)]
 
+@[deprecated (since := "2026-10-27")] alias sqrt_rpow_nnreal := sqrt_rpow_nnReal
+
 lemma rpow_sqrt_nnReal {a : A} {x : ℝ≥0}
     (ha : 0 ≤ a := by cfc_tac) : (sqrt a) ^ (x : ℝ) = a ^ (x / 2 : ℝ) := by
   by_cases hx : x = 0
@@ -699,6 +701,8 @@ lemma rpow_sqrt_nnReal {a : A} {x : ℝ≥0}
   case neg =>
     have h₁ : 0 ≤ (x : ℝ) := NNReal.zero_le_coe
     rw [sqrt_eq_rpow, rpow_rpow_of_exponent_nonneg _ _ _ (by simp) h₁, one_div_mul_eq_div]
+
+@[deprecated (since := "2026-10-27")] alias rpow_sqrt_nnreal := rpow_sqrt_nnReal
 
 @[grind =]
 lemma isUnit_nnrpow_iff (a : A) (y : ℝ≥0) (hy : y ≠ 0) (ha : 0 ≤ a := by cfc_tac) :

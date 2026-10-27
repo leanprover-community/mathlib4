@@ -154,6 +154,8 @@ theorem eLpNorm'_const_mul_ennReal {f : α → ℝ≥0∞} {c : ℝ≥0∞}
     ENNReal.mul_rpow_of_nonneg _ _ (by positivity), ← ENNReal.rpow_mul,
     hq_pos.ne']
 
+@[deprecated (since := "2026-10-27")] alias eLpNorm'_const_mul_ennreal := eLpNorm'_const_mul_ennReal
+
 theorem eLpNorm_const_mul_ennReal {f : α → ℝ≥0∞} {c : ℝ≥0∞} (hf : AEStronglyMeasurable f μ) :
     eLpNorm (fun x ↦ c * f x) p μ = c * eLpNorm f p μ := by
   have hcf := (hf.aemeasurable.const_mul c).aestronglyMeasurable
@@ -163,6 +165,8 @@ theorem eLpNorm_const_mul_ennReal {f : α → ℝ≥0∞} {c : ℝ≥0∞} (hf :
   · simp only [eLpNorm_exponent_top, hf, hcf, eLpNormEssSup, enorm_eq_self, c.essSup_const_mul]
   simp only [eLpNorm_eq_eLpNorm' hp hp', hf, (hf.aemeasurable.const_mul c).aestronglyMeasurable]
   exact eLpNorm'_const_mul_ennReal (ENNReal.toReal_pos hp hp') hf
+
+@[deprecated (since := "2026-10-27")] alias eLpNorm_const_mul_ennreal := eLpNorm_const_mul_ennReal
 
 theorem eLpNorm_const_mul_ennReal_of_pos {f : α → ℝ≥0∞} {c : ℝ≥0∞} (hp : 0 < p) :
     eLpNorm (fun x ↦ c * f x) p μ = c * eLpNorm f p μ := by
@@ -190,6 +194,9 @@ theorem eLpNorm_const_mul_ennReal_of_pos {f : α → ℝ≥0∞} {c : ℝ≥0∞
   simp at hx
   simp [hx]
 
+@[deprecated (since := "2026-10-27")]
+alias eLpNorm_const_mul_ennreal_of_pos := eLpNorm_const_mul_ennReal_of_pos
+
 end ENNReal
 
 section NNReal
@@ -208,6 +215,8 @@ lemma eLpNorm_const_smul_nnReal {f : α → ε} {c : ℝ≥0} :
     ne_eq, ENNReal.coe_eq_zero, hc, ENNReal.mul_top]
   apply eLpNorm_of_not_aestronglyMeasurable
   rwa [aestronglyMeasurable_const_smul_iff₀ hc (f := f)]
+
+@[deprecated (since := "2026-10-27")] alias eLpNorm_const_smul_nnreal := eLpNorm_const_smul_nnReal
 
 end NNReal
 

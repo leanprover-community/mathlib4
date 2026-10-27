@@ -72,6 +72,8 @@ theorem log_pos_real' {x : ℝ≥0∞} (h : 0 < x.toReal) :
 theorem log_of_nnReal {x : ℝ≥0} (h : x ≠ 0) :
     log (x : ℝ≥0∞) = Real.log x := by simp [log, h]
 
+@[deprecated (since := "2026-10-27")] alias log_of_nnreal := log_of_nnReal
+
 end Definition
 
 /-! ### Monotonicity -/

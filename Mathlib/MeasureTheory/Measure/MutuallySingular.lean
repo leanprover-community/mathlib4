@@ -153,6 +153,8 @@ theorem smul (r : ℝ≥0∞) (h : ν ⟂ₘ μ) : r • ν ⟂ₘ μ :=
 theorem smul_nnReal (r : ℝ≥0) (h : ν ⟂ₘ μ) : r • ν ⟂ₘ μ :=
   h.smul r
 
+@[deprecated (since := "2026-10-27")] alias smul_nnreal := smul_nnReal
+
 lemma restrict (h : μ ⟂ₘ ν) (s : Set α) : μ.restrict s ⟂ₘ ν := by
   refine ⟨h.nullSet, h.measurableSet_nullSet, ?_, h.measure_compl_nullSet⟩
   rw [Measure.restrict_apply h.measurableSet_nullSet]

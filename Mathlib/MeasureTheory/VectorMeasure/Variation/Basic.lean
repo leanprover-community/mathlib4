@@ -61,6 +61,8 @@ lemma variation_apply (μ : VectorMeasure X V) (s : Set X) :
 lemma ennRealVariation_apply (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s) :
     μ.ennRealVariation s = μ.variation s := Measure.toENNRealVectorMeasure_apply_measurable hs
 
+@[deprecated (since := "2026-10-27")] alias ennrealVariation_apply := ennRealVariation_apply
+
 /-- Measure version of `sum_le_preVariationFun_of_subset`. -/
 lemma le_variation (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s) {P : Finset (Set X)}
     (hP₁ : ∀ t ∈ P, t ⊆ s) (hP₂ : (P : Set (Set X)).PairwiseDisjoint id) :
@@ -438,14 +440,22 @@ lemma preVariationFun_apply_of_ennReal (s : Set X) : preVariationFun μ s = μ s
     exact iSup_sum_finpartition_parts μ h
   · rw [preVariationFun_of_not_measurableSet μ h, not_measurable μ h]
 
+@[deprecated (since := "2026-10-27")]
+alias preVariationFun_apply_of_ennreal := preVariationFun_apply_of_ennReal
+
 theorem variation_eq_ennRealToMeasure : μ.variation = μ.ennRealToMeasure := by
   ext _ hs
   simp [preVariationFun_apply_of_ennReal, variation_apply, preVariation_apply,
     ennRealPreVariation_apply, ennRealToMeasure_apply hs]
 
+@[deprecated (since := "2026-10-27")]
+alias variation_eq_ennrealToMeasure := variation_eq_ennRealToMeasure
+
 @[simp]
 theorem ennRealVariation_eq_self : μ.ennRealVariation = μ := by
   simp [variation_eq_ennRealToMeasure, ennRealVariation]
+
+@[deprecated (since := "2026-10-27")] alias ennrealVariation_eq_self := ennRealVariation_eq_self
 
 end ENNReal
 

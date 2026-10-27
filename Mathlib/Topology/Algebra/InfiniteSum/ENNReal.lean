@@ -398,6 +398,9 @@ theorem _root_.Summable.countable_support_nnReal (f : α → ℝ≥0) (h : Summa
   rw [← NNReal.summable_coe] at h
   simpa [support] using h.countable_support
 
+@[deprecated (since := "2026-10-27")]
+alias _root_.Summable.countable_support_nnreal := _root_.Summable.countable_support_nnReal
+
 /-- A series of non-negative real numbers converges to `r` in the sense of `HasSum` if and only if
 the sequence of partial sum converges to `r`. -/
 theorem hasSum_iff_tendsto_nat {f : ℕ → ℝ≥0} {r : ℝ≥0} :
@@ -569,6 +572,9 @@ theorem Summable.countable_support_ennReal {f : α → ℝ≥0∞} (h : ∑' (i 
     f.support.Countable := by
   lift f to α → ℝ≥0 using ne_top_of_tsum_ne_top h
   simpa [support] using (ENNReal.tsum_coe_ne_top_iff_summable.1 h).countable_support_nnReal
+
+@[deprecated (since := "2026-10-27")]
+alias Summable.countable_support_ennreal := Summable.countable_support_ennReal
 
 /-- A series of non-negative real numbers converges to `r` in the sense of `HasSum` if and only if
 the sequence of partial sum converges to `r`. -/

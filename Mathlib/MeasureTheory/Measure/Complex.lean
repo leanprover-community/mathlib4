@@ -118,6 +118,9 @@ theorem absolutelyContinuous_ennReal_iff (c : ComplexMeasure α) (μ : VectorMea
     rw [← Complex.re_add_im (c i), (_ : (c i).re = 0), (_ : (c i).im = 0)]
     exacts [by simp, h.2 hi, h.1 hi]
 
+@[deprecated (since := "2026-10-27")]
+alias absolutelyContinuous_ennreal_iff := absolutelyContinuous_ennReal_iff
+
 end ComplexMeasure
 
 end MeasureTheory

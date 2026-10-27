@@ -1216,9 +1216,15 @@ theorem IsNat.nnReal_rpow_eq_nnReal_pow {b : ℝ} {n : ℕ} (h : IsNat b n) (a :
     a ^ b = a ^ n := by
   rw [h.1, NNReal.rpow_natCast]
 
+@[deprecated (since := "2026-10-27")]
+alias IsNat.nnreal_rpow_eq_nnreal_pow := IsNat.nnReal_rpow_eq_nnReal_pow
+
 theorem IsInt.nnReal_rpow_eq_inv_nnReal_pow {b : ℝ} {n : ℕ} (h : IsInt b (.negOfNat n)) (a : ℝ≥0) :
     a ^ b = (a ^ n)⁻¹ := by
   rw [h.1, NNReal.rpow_intCast, Int.negOfNat_eq, zpow_neg, Int.ofNat_eq_natCast, zpow_natCast]
+
+@[deprecated (since := "2026-10-27")]
+alias IsInt.nnreal_rpow_eq_inv_nnreal_pow := IsInt.nnReal_rpow_eq_inv_nnReal_pow
 
 theorem IsNat.nnReal_rpow_isNNRat {a : ℝ≥0} {b : ℝ} {m n d r : ℕ} (ha : IsNat a m)
     (hb : IsNNRat b n d) (k : ℕ) (hr : r ^ d = k) (l : ℕ) (hm : m ^ n = l) (hkl : k = l) :
@@ -1230,6 +1236,8 @@ theorem IsNat.nnReal_rpow_isNNRat {a : ℝ≥0} {b : ℝ} {m n d r : ℕ} (ha : 
     Nat.cast_pow, NNReal.pow_rpow_inv_natCast]
   positivity
 
+@[deprecated (since := "2026-10-27")] alias IsNat.nnreal_rpow_isNNRat := IsNat.nnReal_rpow_isNNRat
+
 theorem IsNNRat.nnReal_rpow_isNNRat (a : ℝ≥0) (b : ℝ) (na da : ℕ) (ha : IsNNRat a na da)
     (nr dr : ℕ) (hnum : IsNat ((na : ℝ≥0) ^ b) nr) (hden : IsNat ((da : ℝ≥0) ^ b) dr) :
     IsNNRat (a ^ b) nr dr := by
@@ -1238,9 +1246,15 @@ theorem IsNNRat.nnReal_rpow_isNNRat (a : ℝ≥0) (b : ℝ) (na da : ℕ) (ha : 
   apply IsNNRat.of_raw
   simp [← hden.1, ha.den_nz]
 
+@[deprecated (since := "2026-10-27")]
+alias IsNNRat.nnreal_rpow_isNNRat := IsNNRat.nnReal_rpow_isNNRat
+
 theorem nnReal_rpow_isRat_eq_inv_nnReal_rpow (a : ℝ≥0) (b : ℝ) (n d : ℕ)
     (hb : IsRat b (Int.negOfNat n) d) : a ^ b = (a⁻¹) ^ (n / d : ℝ) := by
   rw [NNReal.inv_rpow, ← NNReal.rpow_neg, hb.neg_to_eq rfl rfl]
+
+@[deprecated (since := "2026-10-27")]
+alias nnreal_rpow_isRat_eq_inv_nnreal_rpow := nnReal_rpow_isRat_eq_inv_nnReal_rpow
 
 open Lean
 

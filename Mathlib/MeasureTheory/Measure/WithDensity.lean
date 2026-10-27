@@ -367,10 +367,16 @@ theorem aemeasurable_withDensity_ennReal_iff' {f : α → ℝ≥0}
     rw [hff'a] at hfga h'a
     rw [← hfga, ← mul_assoc, ENNReal.inv_mul_cancel h'a ENNReal.coe_ne_top, one_mul]
 
+@[deprecated (since := "2026-10-27")]
+alias aemeasurable_withDensity_ennreal_iff' := aemeasurable_withDensity_ennReal_iff'
+
 theorem aemeasurable_withDensity_ennReal_iff {f : α → ℝ≥0} (hf : Measurable f) {g : α → ℝ≥0∞} :
     AEMeasurable g (μ.withDensity fun x => (f x : ℝ≥0∞)) ↔
       AEMeasurable (fun x => (f x : ℝ≥0∞) * g x) μ :=
   aemeasurable_withDensity_ennReal_iff' hf.aemeasurable
+
+@[deprecated (since := "2026-10-27")]
+alias aemeasurable_withDensity_ennreal_iff := aemeasurable_withDensity_ennReal_iff
 
 theorem dirac_withDensity' {f : α → ℝ≥0∞} (hf : Measurable f) (a : α) :
     (dirac a).withDensity f = f a • dirac a := by

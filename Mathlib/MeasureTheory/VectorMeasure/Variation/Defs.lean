@@ -55,4 +55,6 @@ noncomputable def variation (μ : VectorMeasure X V) : Measure X :=
 noncomputable def ennRealVariation (μ : VectorMeasure X V) : VectorMeasure X ℝ≥0∞ :=
   μ.variation.toENNRealVectorMeasure
 
+@[deprecated (since := "2026-10-27")] alias ennrealVariation := ennRealVariation
+
 end MeasureTheory.VectorMeasure

@@ -204,6 +204,9 @@ theorem ennReal_coeFn_eq_coeFn_toMeasure (ν : ProbabilityMeasure Ω) (s : Set �
   rw [← coeFn_comp_toFiniteMeasure_eq_coeFn, FiniteMeasure.ennReal_coeFn_eq_coeFn_toMeasure,
     toMeasure_comp_toFiniteMeasure_eq_toMeasure]
 
+@[deprecated (since := "2026-10-27")]
+alias ennreal_coeFn_eq_coeFn_toMeasure := ennReal_coeFn_eq_coeFn_toMeasure
+
 @[simp]
 theorem null_iff_toMeasure_null (ν : ProbabilityMeasure Ω) (s : Set Ω) :
     ν s = 0 ↔ (ν : Measure Ω) s = 0 :=

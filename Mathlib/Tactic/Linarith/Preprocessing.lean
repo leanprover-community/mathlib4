@@ -378,6 +378,8 @@ def nnRealToReal : GlobalPreprocessor where
   description := "move nnReals to reals"
   transform l := do (← nnRealToRealTransform.get) l
 
+@[deprecated (since := "2026-10-27")] alias nnrealToReal := nnRealToReal
+
 /--
 The default list of preprocessors, in the order they should typically run.
 -/

@@ -326,6 +326,8 @@ theorem recENNReal_coe_ennReal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0
   rw! [toENNReal_coe]
   rfl
 
+@[deprecated (since := "2026-10-27")] alias recENNReal_coe_ennreal := recENNReal_coe_ennReal
+
 @[simp]
 theorem recENNReal_neg_coe_ennReal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0∞, motive x)
     (neg_coe : ∀ x : ℝ≥0∞, 0 < x → motive (-x)) {x : ℝ≥0∞} (hx : 0 < x) :
@@ -334,6 +336,8 @@ theorem recENNReal_neg_coe_ennReal {motive : EReal → Sort*} (coe : ∀ x : ℝ
   rw [dite_eq_right (not_le.2 (EReal.neg_lt_zero.2 (coe_ennReal_pos.2 hx)))]
   rw! [neg_neg, toENNReal_coe]
   rfl
+
+@[deprecated (since := "2026-10-27")] alias recENNReal_neg_coe_ennreal := recENNReal_neg_coe_ennReal
 
 /-!
 ### Subtraction
@@ -609,8 +613,12 @@ lemma top_mul_of_neg {x : EReal} (h : x < 0) : ⊤ * x = ⊥ := by
 lemma top_mul_coe_ennReal {x : ℝ≥0∞} (hx : x ≠ 0) : ⊤ * (x : EReal) = ⊤ :=
   top_mul_of_pos <| coe_ennReal_pos.mpr <| pos_iff_ne_zero.mpr hx
 
+@[deprecated (since := "2026-10-27")] alias top_mul_coe_ennreal := top_mul_coe_ennReal
+
 lemma coe_ennReal_mul_top {x : ℝ≥0∞} (hx : x ≠ 0) : (x : EReal) * ⊤ = ⊤ := by
   rw [EReal.mul_comm, top_mul_coe_ennReal hx]
+
+@[deprecated (since := "2026-10-27")] alias coe_ennreal_mul_top := coe_ennReal_mul_top
 
 lemma coe_mul_bot_of_pos {x : ℝ} (h : 0 < x) : (x : EReal) * ⊥ = ⊥ :=
   ite_eq_left h

@@ -176,6 +176,8 @@ theorem inv_add_inv_ennReal : (ENNReal.ofReal p)⁻¹ + (ENNReal.ofReal q)⁻¹ 
     ← ENNReal.ofReal_inv_of_pos h.symm.pos, ← ENNReal.ofReal_add h.inv_nonneg h.symm.inv_nonneg,
     h.inv_add_inv_eq_one]
 
+@[deprecated (since := "2026-10-27")] alias inv_add_inv_ennreal := inv_add_inv_ennReal
+
 end
 
 lemma _root_.Real.holderConjugate_iff : p.HolderConjugate q ↔ 1 < p ∧ p⁻¹ + q⁻¹ = 1 := by
@@ -355,6 +357,8 @@ theorem div_conj_eq_sub_one : p / q = p - 1 := by
 
 lemma inv_add_inv_ennReal : (p⁻¹ + q⁻¹ : ℝ≥0∞) = 1 := by norm_cast; exact h.inv_add_inv_eq_one
 
+@[deprecated (since := "2026-10-27")] alias inv_add_inv_ennreal := inv_add_inv_ennReal
+
 end
 
 lemma _root_.NNReal.holderConjugate_iff : p.HolderConjugate q ↔ 1 < p ∧ p⁻¹ + q⁻¹ = 1 := by
@@ -446,9 +450,15 @@ lemma _root_.Real.HolderTriple.ennRealOfReal {p q r : ℝ} (h : p.HolderTriple q
   simpa [holderTriple_iff, ofReal_inv_of_pos, h.pos, h.symm.pos, h.pos', ofReal_add, h.nonneg,
     h.symm.nonneg] using congr(ENNReal.ofReal $h.inv_add_inv_eq_inv)
 
+@[deprecated (since := "2026-10-27")]
+alias _root_.Real.HolderTriple.ennrealOfReal := _root_.Real.HolderTriple.ennRealOfReal
+
 lemma _root_.Real.HolderConjugate.ennRealOfReal {p q : ℝ} (h : p.HolderConjugate q) :
     HolderConjugate (ENNReal.ofReal p) (ENNReal.ofReal q) := by
   simpa using Real.HolderTriple.ennRealOfReal h
+
+@[deprecated (since := "2026-10-27")]
+alias _root_.Real.HolderConjugate.ennrealOfReal := _root_.Real.HolderConjugate.ennRealOfReal
 
 lemma of_toReal (h : Real.HolderTriple p.toReal q.toReal r.toReal) : HolderTriple p q r := by
   have hp := h.pos

@@ -391,16 +391,22 @@ lemma cfcHom_nnReal_eq_restrict {a : A} (ha : 0 ≤ a) :
       (cfcHom (IsSelfAdjoint.of_nonneg ha)) := by
   apply (SpectrumRestricts.nnReal_of_nonneg ha).cfcHom_eq_restrict _
 
+@[deprecated (since := "2026-10-27")] alias cfcHom_nnreal_eq_restrict := cfcHom_nnReal_eq_restrict
+
 lemma cfc_nnReal_eq_real (f : ℝ≥0 → ℝ≥0) (a : A) (ha : 0 ≤ a := by cfc_tac) :
     cfc f a = cfc (fun x ↦ f x.toNNReal : ℝ → ℝ) a := by
   apply (SpectrumRestricts.nnReal_of_nonneg ha).cfc_eq_restrict _
     NNReal.isClosedEmbedding_coe ha (.of_nonneg ha)
+
+@[deprecated (since := "2026-10-27")] alias cfc_nnreal_eq_real := cfc_nnReal_eq_real
 
 lemma cfc_real_eq_nnReal {f : ℝ → ℝ} (a : A) (hf_nonneg : ∀ x ∈ spectrum ℝ a, 0 ≤ f x)
     (ha : 0 ≤ a := by cfc_tac) : cfc f a = cfc (fun x : ℝ≥0 ↦ (f x).toNNReal) a := by
   rw [cfc_nnReal_eq_real ..]
   congr! 1 with x hx
   rw [x.coe_toNNReal (spectrum_nonneg_of_nonneg ha hx), (f x).coe_toNNReal (hf_nonneg x hx)]
+
+@[deprecated (since := "2026-10-27")] alias cfc_real_eq_nnreal := cfc_real_eq_nnReal
 
 end NNRealEqReal
 
@@ -418,10 +424,14 @@ lemma cfcₙHom_nnReal_eq_restrict {a : A} (ha : 0 ≤ a) :
       (cfcₙHom (IsSelfAdjoint.of_nonneg ha)) := by
   apply (QuasispectrumRestricts.nnReal_of_nonneg ha).cfcₙHom_eq_restrict _
 
+@[deprecated (since := "2026-10-27")] alias cfcₙHom_nnreal_eq_restrict := cfcₙHom_nnReal_eq_restrict
+
 lemma cfcₙ_nnReal_eq_real (f : ℝ≥0 → ℝ≥0) (a : A) (ha : 0 ≤ a := by cfc_tac) :
     cfcₙ f a = cfcₙ (fun x ↦ f x.toNNReal : ℝ → ℝ) a := by
   apply (QuasispectrumRestricts.nnReal_of_nonneg ha).cfcₙ_eq_restrict _
     NNReal.isClosedEmbedding_coe ha (.of_nonneg ha)
+
+@[deprecated (since := "2026-10-27")] alias cfcₙ_nnreal_eq_real := cfcₙ_nnReal_eq_real
 
 lemma cfcₙ_real_eq_nnReal {f : ℝ → ℝ} (a : A) (hf_nonneg : ∀ x ∈ σₙ ℝ a, 0 ≤ f x)
     (ha : 0 ≤ a := by cfc_tac) : cfcₙ f a = cfcₙ (fun x : ℝ≥0 ↦ (f x).toNNReal) a := by
@@ -429,6 +439,8 @@ lemma cfcₙ_real_eq_nnReal {f : ℝ → ℝ} (a : A) (hf_nonneg : ∀ x ∈ σ�
   congr! 1 with x hx
   rw [x.coe_toNNReal (quasispectrum_nonneg_of_nonneg _ ha _ hx),
     (f x).coe_toNNReal (hf_nonneg x hx)]
+
+@[deprecated (since := "2026-10-27")] alias cfcₙ_real_eq_nnreal := cfcₙ_real_eq_nnReal
 
 end NNRealEqRealNonUnital
 

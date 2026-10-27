@@ -24,6 +24,8 @@ lemma isNat_realSqrt {x : ℝ} {nx ny : ℕ} (h : IsNat x nx) (hy : ny * ny = nx
 lemma isNat_nnRealSqrt {x : ℝ≥0} {nx ny : ℕ} (h : IsNat x nx) (hy : ny * ny = nx) :
     IsNat (NNReal.sqrt x) ny := ⟨by simp [h.out, ← hy]⟩
 
+@[deprecated (since := "2026-10-27")] alias isNat_nnrealSqrt := isNat_nnRealSqrt
+
 lemma isNNRat_nnRealSqrt_of_isNNRat {x : ℝ≥0} {n sn : ℕ} {d sd : ℕ} (hn : sn * sn = n)
     (hd : sd * sd = d) (h : IsNNRat x n d) :
     IsNNRat (NNReal.sqrt x) sn sd := by
@@ -33,6 +35,9 @@ lemma isNNRat_nnRealSqrt_of_isNNRat {x : ℝ≥0} {n sn : ℕ} {d sd : ℕ} (hn 
     rw [← mul_self_ne_zero, ← Nat.cast_mul, hd]
     exact Invertible.ne_zero _
   · simp [← hn, ← hd, NNReal.sqrt_mul]
+
+@[deprecated (since := "2026-10-27")]
+alias isNNRat_nnrealSqrt_of_isNNRat := isNNRat_nnRealSqrt_of_isNNRat
 
 lemma isNat_realSqrt_neg {x : ℝ} {nx : ℕ} (h : IsInt x (Int.negOfNat nx)) :
     IsNat √x (nat_lit 0) := ⟨by simp [Real.sqrt_eq_zero', h.out]⟩

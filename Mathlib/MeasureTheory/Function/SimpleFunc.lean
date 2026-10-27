@@ -22,6 +22,9 @@ characteristic functions and is closed under addition and supremum of increasing
 functions.
 -/
 
+@[deprecated (since := "2026-10-27")]
+alias `Measurable.ennreal_induction` := `Measurable.ennReal_induction`
+
 @[expose] public section
 
 
@@ -752,9 +755,13 @@ theorem map_coe_ennReal_restrict (f : α →ₛ ℝ≥0) (s : Set α) :
     (f.restrict s).map ((↑) : ℝ≥0 → ℝ≥0∞) = (f.map (↑)).restrict s :=
   map_restrict_of_zero ENNReal.coe_zero _ _
 
+@[deprecated (since := "2026-10-27")] alias map_coe_ennreal_restrict := map_coe_ennReal_restrict
+
 theorem map_coe_nnReal_restrict (f : α →ₛ ℝ≥0) (s : Set α) :
     (f.restrict s).map ((↑) : ℝ≥0 → ℝ) = (f.map (↑)).restrict s :=
   map_restrict_of_zero NNReal.coe_zero _ _
+
+@[deprecated (since := "2026-10-27")] alias map_coe_nnreal_restrict := map_coe_nnReal_restrict
 
 theorem restrict_apply (f : α →ₛ β) {s : Set α} (hs : MeasurableSet s) (a) :
     restrict f s a = indicator s f a := by simp only [f.coe_restrict hs]
@@ -848,9 +855,13 @@ variable {f : α → ℝ≥0∞}
 def ennRealRatEmbed (n : ℕ) : ℝ≥0∞ :=
   ENNReal.ofReal ((Encodable.decode (α := ℚ) n).getD (0 : ℚ))
 
+@[deprecated (since := "2026-10-27")] alias ennrealRatEmbed := ennRealRatEmbed
+
 theorem ennRealRatEmbed_encode (q : ℚ) :
     ennRealRatEmbed (Encodable.encode q) = Real.toNNReal q := by
   rw [ennRealRatEmbed, Encodable.encodek]; rfl
+
+@[deprecated (since := "2026-10-27")] alias ennrealRatEmbed_encode := ennRealRatEmbed_encode
 
 /-- Approximate a function `α → ℝ≥0∞` by a sequence of simple functions. -/
 def eapprox : (α → ℝ≥0∞) → ℕ → α →ₛ ℝ≥0∞ :=
@@ -1353,6 +1364,9 @@ theorem Measurable.ennReal_induction {motive : (α → ℝ≥0∞) → Prop}
       SimpleFunc.induction (fun c s hs => indicator c hs)
         (fun f g hfg hf hg => add hfg f.measurable g.measurable hf hg) (eapprox f n)
 
+@[deprecated (since := "2026-10-27")]
+alias Measurable.ennreal_induction := Measurable.ennReal_induction
+
 /-- To prove something for an arbitrary measurable function into `ℝ≥0∞`, it suffices to show
 that the property holds for (multiples of) characteristic functions with finite mass according to
 some sigma-finite measure and is closed under addition and supremum of increasing sequences of
@@ -1380,3 +1394,6 @@ lemma Measurable.ennReal_sigmaFinite_induction [SigmaFinite μ] {motive : (α �
           (measure_inter_lt_top_of_right_ne_top (measure_spanningSets_lt_top ..).ne)) with
     a
   simp [← Set.indicator_iUnion_apply (M := ℝ≥0∞) rfl, ← Set.inter_iUnion]
+
+@[deprecated (since := "2026-10-27")]
+alias Measurable.ennreal_sigmaFinite_induction := Measurable.ennReal_sigmaFinite_induction

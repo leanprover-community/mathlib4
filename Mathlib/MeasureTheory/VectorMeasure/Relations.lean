@@ -121,6 +121,8 @@ theorem ennRealToMeasure {μ : VectorMeasure α ℝ≥0∞} :
       exact h hs
     · exact not_measurable v hmeas
 
+@[deprecated (since := "2026-10-27")] alias ennrealToMeasure := ennRealToMeasure
+
 end AbsolutelyContinuous
 
 /-- Two vector measures `v` and `w` are said to be mutually singular if there exists a measurable

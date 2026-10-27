@@ -497,6 +497,9 @@ theorem absolutelyContinuous_ennReal_iff (s : SignedMeasure α) (μ : VectorMeas
     rw [← VectorMeasure.ennRealToMeasure_apply hS₁] at hS₂
     exact null_of_totalVariation_zero s (h hS₂)
 
+@[deprecated (since := "2026-10-27")]
+alias absolutelyContinuous_ennreal_iff := absolutelyContinuous_ennReal_iff
+
 theorem totalVariation_absolutelyContinuous_iff (s : SignedMeasure α) (μ : Measure α) :
     s.totalVariation ≪ μ ↔
       s.toJordanDecomposition.posPart ≪ μ ∧ s.toJordanDecomposition.negPart ≪ μ := by
@@ -548,6 +551,9 @@ theorem mutuallySingular_ennReal_iff (s : SignedMeasure α) (μ : VectorMeasure 
         ?_
     rw [← VectorMeasure.ennRealToMeasure_apply hmt]
     exact measure_mono_null htv hu₂
+
+@[deprecated (since := "2026-10-27")]
+alias mutuallySingular_ennreal_iff := mutuallySingular_ennReal_iff
 
 theorem totalVariation_mutuallySingular_iff (s : SignedMeasure α) (μ : Measure α) :
     s.totalVariation ⟂ₘ μ ↔

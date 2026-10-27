@@ -500,6 +500,8 @@ theorem comp_summable_nnReal (q : FormalMultilinearSeries 𝕜 F G) (p : FormalM
   rw [(this _).tsum_eq, add_tsub_cancel_right]
   simp [field, pow_succ, mul_pow, show (4 : ℝ≥0) = 2 * 2 by norm_num]
 
+@[deprecated (since := "2026-10-27")] alias comp_summable_nnreal := comp_summable_nnReal
+
 end
 
 /-- Bounding below the radius of the composition of two formal multilinear series assuming

@@ -48,6 +48,9 @@ theorem measurable_coe_ennReal_comp [OpensMeasurableSpace X] (f : X →ᵇ ℝ�
     Measurable fun x ↦ (f x : ℝ≥0∞) :=
   measurable_coe_nnReal_ennReal.comp f.continuous.measurable
 
+@[deprecated (since := "2026-10-27")]
+alias measurable_coe_ennreal_comp := measurable_coe_ennReal_comp
+
 variable (μ : Measure X) [IsFiniteMeasure μ]
 
 theorem lintegral_lt_top_of_nnReal (f : X →ᵇ ℝ≥0) : ∫⁻ x, f x ∂μ < ∞ := by
@@ -56,17 +59,24 @@ theorem lintegral_lt_top_of_nnReal (f : X →ᵇ ℝ≥0) : ∫⁻ x, f x ∂μ 
   have key := BoundedContinuousFunction.NNReal.upper_bound f x
   rwa [ENNReal.coe_le_coe]
 
+@[deprecated (since := "2026-10-27")] alias lintegral_lt_top_of_nnreal := lintegral_lt_top_of_nnReal
+
 theorem integrable_of_nnReal [OpensMeasurableSpace X] (f : X →ᵇ ℝ≥0) :
     Integrable (((↑) : ℝ≥0 → ℝ) ∘ ⇑f) μ := by
   refine ⟨(NNReal.continuous_coe.comp f.continuous).measurable.aestronglyMeasurable, ?_⟩
   simp only [hasFiniteIntegral_iff_enorm, Function.comp_apply, NNReal.enorm_eq]
   exact lintegral_lt_top_of_nnReal _ f
 
+@[deprecated (since := "2026-10-27")] alias integrable_of_nnreal := integrable_of_nnReal
+
 theorem integral_eq_integral_nnRealPart_sub [OpensMeasurableSpace X] (f : X →ᵇ ℝ) :
     ∫ x, f x ∂μ = (∫ x, (f.nnRealPart x : ℝ) ∂μ) - ∫ x, ((-f).nnRealPart x : ℝ) ∂μ := by
   simp only [f.self_eq_nnRealPart_sub_nnRealPart_neg, Pi.sub_apply, integral_sub,
              integrable_of_nnReal]
   simp only [Function.comp_apply]
+
+@[deprecated (since := "2026-10-27")]
+alias integral_eq_integral_nnrealPart_sub := integral_eq_integral_nnRealPart_sub
 
 theorem lintegral_of_real_lt_top (f : X →ᵇ ℝ) :
     ∫⁻ x, ENNReal.ofReal (f x) ∂μ < ∞ := lintegral_lt_top_of_nnReal _ f.nnRealPart

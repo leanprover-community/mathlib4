@@ -121,7 +121,11 @@ lemma one_lt_absNorm : 1 < absNorm v.asIdeal := by
 /-- The norm of a maximal ideal as an element of `ℝ≥0` is `> 1` -/
 lemma one_lt_absNorm_nnReal : 1 < (absNorm v.asIdeal : ℝ≥0) := mod_cast one_lt_absNorm v
 
+@[deprecated (since := "2026-10-27")] alias one_lt_absNorm_nnreal := one_lt_absNorm_nnReal
+
 lemma two_le_absNorm_nnReal : 2 ≤ (absNorm v.asIdeal : ℝ≥0) := mod_cast one_lt_absNorm v
+
+@[deprecated (since := "2026-10-27")] alias two_le_absNorm_nnreal := two_le_absNorm_nnReal
 
 /-- The norm of a maximal ideal as an element of `ℝ≥0` is `≠ 0` -/
 lemma absNorm_ne_zero : (absNorm v.asIdeal : ℝ≥0) ≠ 0 :=

@@ -52,6 +52,10 @@ lemma CompactlySupportedContinuousMap.monotone_of_nnReal : Monotone Λ := by
   rw [← hg]
   simp
 
+@[deprecated (since := "2026-10-27")]
+alias CompactlySupportedContinuousMap.monotone_of_nnreal :=
+  CompactlySupportedContinuousMap.monotone_of_nnReal
+
 end Monotone
 
 /-- Given a positive linear functional `Λ` on continuous compactly supported functions on `X`

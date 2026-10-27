@@ -318,6 +318,8 @@ theorem singularPart_smul_nnReal (s : SignedMeasure α) (μ : Measure α) (r : �
     · congr
       rw [toJordanDecomposition_smul, JordanDecomposition.smul_negPart, singularPart_smul]
 
+@[deprecated (since := "2026-10-27")] alias singularPart_smul_nnreal := singularPart_smul_nnReal
+
 nonrec theorem singularPart_smul (s : SignedMeasure α) (μ : Measure α) (r : ℝ) :
     (r • s).singularPart μ = r • s.singularPart μ := by
   cases le_or_gt 0 r with

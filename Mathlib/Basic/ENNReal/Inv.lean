@@ -490,18 +490,28 @@ theorem le_of_forall_nnReal_lt {x y : ℝ≥0∞} (h : ∀ r : ℝ≥0, ↑r < x
   lift r to ℝ≥0 using ne_top_of_lt hr
   exact h r hr
 
+@[deprecated (since := "2026-10-27")] alias le_of_forall_nnreal_lt := le_of_forall_nnReal_lt
+
 lemma eq_of_forall_nnReal_le_iff {x y : ℝ≥0∞} : (∀ r : ℝ≥0, ↑r ≤ x ↔ ↑r ≤ y) → x = y :=
   WithTop.eq_of_forall_coe_le_iff
 
+@[deprecated (since := "2026-10-27")] alias eq_of_forall_nnreal_le_iff := eq_of_forall_nnReal_le_iff
+
 lemma eq_of_forall_le_nnReal_iff {x y : ℝ≥0∞} : (∀ r : ℝ≥0, x ≤ r ↔ y ≤ r) → x = y :=
   WithTop.eq_of_forall_le_coe_iff
+
+@[deprecated (since := "2026-10-27")] alias eq_of_forall_le_nnreal_iff := eq_of_forall_le_nnReal_iff
 
 theorem le_of_forall_pos_nnReal_lt {x y : ℝ≥0∞} (h : ∀ r : ℝ≥0, 0 < r → ↑r < x → ↑r ≤ y) : x ≤ y :=
   le_of_forall_nnReal_lt fun r hr =>
     (eq_zero_or_pos r).elim (fun h => h ▸ zero_le) fun h0 => h r h0 hr
 
+@[deprecated (since := "2026-10-27")] alias le_of_forall_pos_nnreal_lt := le_of_forall_pos_nnReal_lt
+
 theorem eq_top_of_forall_nnReal_le {x : ℝ≥0∞} (h : ∀ r : ℝ≥0, ↑r ≤ x) : x = ∞ :=
   top_unique <| le_of_forall_nnReal_lt fun r _ => h r
+
+@[deprecated (since := "2026-10-27")] alias eq_top_of_forall_nnreal_le := eq_top_of_forall_nnReal_le
 
 protected theorem add_div : (a + b) / c = a / c + b / c :=
   right_distrib a b c⁻¹
@@ -670,6 +680,8 @@ theorem exists_nnReal_pos_mul_lt (ha : a ≠ ∞) (hb : b ≠ 0) : ∃ n > 0, �
   rcases exists_nat_pos_inv_mul_lt ha hb with ⟨n, npos : 0 < n, hn⟩
   use (n : ℝ≥0)⁻¹
   simp [*, npos.ne']
+
+@[deprecated (since := "2026-10-27")] alias exists_nnreal_pos_mul_lt := exists_nnReal_pos_mul_lt
 
 theorem exists_inv_two_pow_lt (ha : a ≠ 0) : ∃ n : ℕ, 2⁻¹ ^ n < a := by
   rcases exists_inv_nat_lt ha with ⟨n, hn⟩

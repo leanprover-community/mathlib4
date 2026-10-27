@@ -119,6 +119,8 @@ theorem le_radius_of_bound_nnReal (C : ℝ≥0) {r : ℝ≥0} (h : ∀ n : ℕ, 
     (r : ℝ≥0∞) ≤ p.radius :=
   p.le_radius_of_bound C fun n => mod_cast h n
 
+@[deprecated (since := "2026-10-27")] alias le_radius_of_bound_nnreal := le_radius_of_bound_nnReal
+
 /-- If `‖pₙ‖ rⁿ = O(1)`, as `n → ∞`, then the radius of `p` is at least `r`. -/
 theorem le_radius_of_isBigO (h : (fun n => ‖p n‖ * (r : ℝ) ^ n) =O[atTop] fun _ => (1 : ℝ)) :
     ↑r ≤ p.radius :=

@@ -178,6 +178,9 @@ lemma IsEverywherePos.smul_measure_nnReal (hs : IsEverywherePos μ s) {c : ℝ�
     IsEverywherePos (c • μ) s :=
   hs.smul_measure (by simpa using hc)
 
+@[deprecated (since := "2026-10-27")]
+alias IsEverywherePos.smul_measure_nnreal := IsEverywherePos.smul_measure_nnReal
+
 /-- If two measures coincide locally, then a set which is everywhere positive for the former is
 also everywhere positive for the latter. -/
 lemma IsEverywherePos.of_forall_exists_nhds_eq (hs : IsEverywherePos μ s)
