@@ -284,8 +284,8 @@ lemma surjective :
 
 variable (t : J) in
 /-- Given a `F.WellOrderInductionData`, and a non-limit element, construct a
-`WellOrderInductionData` on the restriction of `F` to elemets `≥ t`.
-This is used as a way to construct sections of `F` from non-bot elements. -/
+`WellOrderInductionData` on the restriction of `F` to elements `≥ t`.
+This is used as a way to construct sections of `F` from non-minimal elements. -/
 private noncomputable def restrictIci (d : F.WellOrderInductionData)
     (t : J) (ht : ¬ Order.IsSuccLimit t) :
     ((Set.Ici t).mono_coe.functor.op ⋙ F).WellOrderInductionData where
