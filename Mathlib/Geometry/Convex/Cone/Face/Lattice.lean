@@ -46,7 +46,7 @@ namespace Face
 
 variable {C C₁ C₂ : PointedCone R M} {F F₁ F₂ : Face C}
 
--- TODO: This whould not be required if Lean allowed us to write:
+-- TODO: This would not be required if Lean allowed us to write:
 -- `structure Face (C : PointedCone R M) extends toPointedCone : PointedCone R M where`
 -- but as of August 2026 it does not. See:
 -- see https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/Structure.20extensions.20vs.20abbrev.20difference.20in.20dot.20notation/with/581169071

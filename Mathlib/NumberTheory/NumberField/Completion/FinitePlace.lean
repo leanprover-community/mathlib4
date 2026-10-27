@@ -115,7 +115,7 @@ namespace HeightOneSpectrum
 
 /-- The norm of a maximal ideal is `> 1` -/
 lemma one_lt_absNorm : 1 < absNorm v.asIdeal := by
-  rw [Nat.one_lt_iff_ne_zero_and_ne_one, ne_eq, absNorm_eq_zero_iff', ne_eq, absNorm_eq_one_iff]
+  rw [Nat.one_lt_iff_ne_zero_and_ne_one, ne_eq, absNorm_eq_zero_iff, ne_eq, absNorm_eq_one_iff]
   exact ⟨v.ne_bot, v.isPrime.ne_top⟩
 
 /-- The norm of a maximal ideal as an element of `ℝ≥0` is `> 1` -/

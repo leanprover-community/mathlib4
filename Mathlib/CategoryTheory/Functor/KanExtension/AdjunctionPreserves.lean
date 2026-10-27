@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.Functor.KanExtension.Preserves
 
 In this file, it is shown that left adjoint functors preserve left Kan extensions,
 and that right adjoint functors preserve right Kan extensions.
-In particuliar, this applies to equivalences of categories.
+In particular, this applies to equivalences of categories.
 
 -/
 
