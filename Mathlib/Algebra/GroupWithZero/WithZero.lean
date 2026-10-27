@@ -79,7 +79,7 @@ instance instNoZeroDivisors : NoZeroDivisors (WithZero α) := ⟨Option.map₂_e
 
 /-- `WithZero.coe` as a mul hom. -/
 @[simps apply]
-def coeMulHom : MulHom α (WithZero α) where
+def coeMulHom : α →ₙ* WithZero α where
   toFun := (↑)
   map_mul' _ _ := rfl
 
