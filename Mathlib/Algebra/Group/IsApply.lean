@@ -268,7 +268,6 @@ theorem coe_one_eq_id_iff [One F'] [IsOneApplyEqSelf F'] (f : F') : (f : α → 
 theorem coe_mul_eq_comp [Mul F'] [IsMulApplyEqComp F'] (f g : F') : ↑(f * g) = f ∘ g := by
   ext; simp
 
-@[norm_cast]
 lemma coe_pow_eq_iterate [Monoid F'] [IsMulApplyEqComp F'] [IsOneApplyEqSelf F']
     (f : F') (n : ℕ) : ⇑(f ^ n) = f^[n] :=
   funext <| pow_apply_eq_iterate f n
