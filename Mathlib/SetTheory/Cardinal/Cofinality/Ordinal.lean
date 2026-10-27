@@ -228,7 +228,7 @@ theorem sSup_add_one_lt_of_lt_cof {s : Set Ordinal.{u}} {a : Ordinal.{u}}
     (ha : #s < (lift.{u + 1} a).cof) (hs : ∀ i ∈ s, i < a) : sSup ((· + 1) '' s) < a := by
   let f := (enum (α := s))
   have : Small.{u} (Iio (typeLT s)) := by
-    refine small_of_injective (β := Iio a) (f := fun x ↦ ⟨f x, show _ from hs _ (f x).2⟩) fun _ ↦ ?_
+    refine small_of_injective (β := Iio a) (f := fun x ↦ ⟨_, mem_Iio.2 <| hs _ (f x).2⟩) fun _ ↦ ?_
     simp [Subtype.val_inj]
   have : range (fun i ↦ (f i).1 + 1) = (· + 1) '' s := by
     convert! range_comp (· + 1) (fun i ↦ (f i).1)
