@@ -698,20 +698,21 @@ lemma IsDedekindDomain.exists_add_spanSingleton_mul_eq
 ideal `J`. -/
 theorem ClassGroup.exists_mk0_eq_and_isCoprime (C : ClassGroup R) {J : Ideal R} (hJ : J ≠ ⊥) :
     ∃ I : (Ideal R)⁰, mk0 I = C ∧ IsCoprime (I : Ideal R) J := by
+  simp only [Ideal.isCoprime_iff_sup_eq]
   obtain rfl | hJ_ne := eq_or_ne J ⊤
   · obtain ⟨I, rfl⟩ := mk0_surjective C
-    exact ⟨I, rfl, by simp [Ideal.isCoprime_iff_sup_eq]⟩
+    exact ⟨I, rfl, by simp⟩
   obtain ⟨I₀, hI₀⟩ := mk0_surjective C⁻¹
   have hI₀_nz := nonZeroDivisors.coe_ne_zero I₀
   obtain ⟨a, ha⟩ := exists_sup_span_eq (Ideal.mul_le_left : I₀.1 * J ≤ I₀) (mul_ne_zero hI₀_nz hJ)
   have ha₀ : a ≠ 0 := by
     intro rfl
     exact hJ_ne (mul_left_cancel₀ hI₀_nz (by simpa using ha))
-  obtain ⟨I, hI⟩ := Ideal.dvd_iff_le.mpr (ha ▸ le_sup_right : Ideal.span {a} ≤ I₀)
-  rw [hI, ← Ideal.mul_sup, mul_eq_left₀ hI₀_nz, Ideal.one_eq_top] at ha
-  refine ⟨⟨I, mem_nonZeroDivisors_of_ne_zero ?_⟩, ?_, by rwa [Ideal.isCoprime_iff_sup_eq, sup_comm]⟩
+  obtain ⟨I, hI⟩ := Ideal.dvd_iff_le.mpr (le_sup_right.trans_eq ha)
+  rw [hI, ← Ideal.mul_sup, mul_eq_left₀ hI₀_nz, Ideal.one_eq_top, sup_comm] at ha
+  refine ⟨⟨I, mem_nonZeroDivisors_of_ne_zero ?_⟩, ?_, ha⟩
   · contrapose! ha
-    rwa [ha, sup_zero]
+    rwa [ha, zero_sup]
   · rw [← inv_inv C, ← hI₀]
     exact mk0_eq_mk0_inv_iff.mpr ⟨a, ha₀, by rw [mul_comm, ← hI]⟩
 
