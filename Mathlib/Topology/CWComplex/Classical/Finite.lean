@@ -358,26 +358,6 @@ lemma RelCWComplex.finite_cells_of_finite [finite : Finite C] : _root_.Finite (�
 lemma RelCWComplex.finite_iff_finite_cells : Finite C ↔ _root_.Finite (Σ n, cell C n) :=
   ⟨fun h ↦ finite_cells_of_finite (finite := h), finite_of_finite_cells⟩
 
-/-- For every `m ∈ ℕ`, the carrier of a relative CW complex is equal to the union of the
-  (m-1)-skeleton together with all open cells of dimension `m` or higher. -/
-@[alias_in CWComplex]
-lemma RelCWComplex.carrier_eq_union_skeletonLT_cell [T2Space X] (C : Set X) {D : Set X}
-    [RelCWComplex C D] (m : ℕ) : C = ↑(skeletonLT C m) ∪ (⋃ n ≥ m, ⋃ (j : cell C n), openCell n j)
-    := by
-  simp only [← union_iUnion_openCell_eq_complex (C := C) ]
-  have : {x | x < m} ∪ {x | m ≤ x} = Set.univ := by grind
-  rw [← Set.biUnion_univ,← this, Set.biUnion_union, ← Set.union_assoc]
-  congr
-  simp only [mem_ofPred_eq]
-  convert iUnion_openCell_eq_skeletonLT m
-  rw [Nat.cast_lt]
-
-/-- For every `m ∈ ℕ`, the carrier of a relative CW complex is equal to the union of the
-  m-skeleton together with all open cells of dimension `m` or higher. -/
-lemma RelCWComplex.carrier_eq_union_skeleton_cell [T2Space X] (C : Set X) {D : Set X}
-    [RelCWComplex C D] (m : ℕ) : C = ↑(skeleton C m) ∪ (⋃ n > m, ⋃ (j : cell C n),
-    openCell n j) := carrier_eq_union_skeletonLT_cell C (m + 1)
-
 /-- For a finite dimensional relative CW-complex (C,D) we can find a natural number `m` such that
  `C` equals the `skeletonLT m` of C. -/
 @[alias_in CWComplex]

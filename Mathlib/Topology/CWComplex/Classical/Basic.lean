@@ -995,6 +995,26 @@ lemma RelCWComplex.iUnion_skeleton_eq_complex [RelCWComplex C D] :
   exact ⟨subset_iUnion_of_subset 0 (skeleton C 0).base_subset,
     fun n i ↦ subset_iUnion_of_subset _ (openCell_subset_skeleton n i)⟩
 
+/-- For every `m ∈ ℕ`, the carrier of a relative CW complex is equal to the union of the
+  `(m-1)-skeleton` together with all open cells of dimension `m` or higher. -/
+@[alias_in CWComplex]
+lemma RelCWComplex.carrier_eq_union_skeletonLT_cell (C : Set X) {D : Set X}
+    [RelCWComplex C D] (m : ℕ) : C = ↑(skeletonLT C m) ∪ (⋃ n ≥ m, ⋃ (j : cell C n), openCell n j)
+    := by
+  simp only [← union_iUnion_openCell_eq_complex (C := C) ]
+  have : {x | x < m} ∪ {x | m ≤ x} = Set.univ := by grind
+  rw [← Set.biUnion_univ,← this, Set.biUnion_union, ← Set.union_assoc]
+  congr
+  simp only [mem_ofPred_eq]
+  convert iUnion_openCell_eq_skeletonLT m
+  rw [Nat.cast_lt]
+
+/-- For every `m ∈ ℕ`, the carrier of a relative CW complex is equal to the union of the
+  `m-skeleton` together with all open cells of dimension `m` or higher. -/
+lemma RelCWComplex.carrier_eq_union_skeleton_cell (C : Set X) {D : Set X}
+    [RelCWComplex C D] (m : ℕ) : C = ↑(skeleton C m) ∪ (⋃ n > m, ⋃ (j : cell C n),
+    openCell n j) := carrier_eq_union_skeletonLT_cell C (m + 1)
+
 lemma RelCWComplex.mem_skeletonLT_iff [RelCWComplex C D] {n : ℕ∞} {x : X} :
     x ∈ skeletonLT C n ↔ x ∈ D ∨ ∃ (m : ℕ) (_ : m < n) (j : cell C m), x ∈ openCell m j := by
   simp [← SetLike.mem_coe, ← iUnion_openCell_eq_skeletonLT]
