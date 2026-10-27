@@ -40,8 +40,10 @@ section mul
 
 /-- If `α` is an infinite type, then `α × α` and `α` have the same cardinality. -/
 theorem mul_eq_self {c : Cardinal} (hc : ℵ₀ ≤ c) : c * c = c := by
+  -- The only nontrivial part is `c * c ≤ c`. We prove it inductively.
   induction c using WellFoundedLT.induction with | ind c IH
   refine le_antisymm ?_ (by simpa using mul_le_mul_right (one_le_aleph0.trans hc) c)
+  -- Consider the minimal well-order on `α` (a type with cardinality `c`).
   induction c using Cardinal.inductionOn with | mk α
   obtain ⟨_, _, hα⟩ := exists_ord_eq_type_lt α
   have : NoMaxOrder α := by
