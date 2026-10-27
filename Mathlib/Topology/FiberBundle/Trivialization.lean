@@ -760,6 +760,13 @@ theorem continuousOn_symm (e : Trivialization F (π F E)) :
   rw [← e.target_eq]
   exact e.toOpenPartialHomeomorph.continuousOn_symm
 
+lemma eq_of {x : B} {v v' : E x}
+    (e : Trivialization F (π F E)) (hx : x ∈ e.baseSet) (hvv' : (e v).2 = (e v').2) :
+    v = v' := by
+  have := e.symm_proj_apply v hx
+  rw [hvv'] at this
+  grind [e.symm_proj_apply v' hx]
+
 end Nonempty
 
 /-- If `e` is a `Trivialization` of `proj : Z → B` with fiber `F` and `h` is a homeomorphism

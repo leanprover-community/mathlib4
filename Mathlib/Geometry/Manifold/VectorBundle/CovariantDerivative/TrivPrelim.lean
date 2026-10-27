@@ -41,20 +41,6 @@ lemma proj_invFun_eventuallyEq
 
 end fiber_bundle
 
-section
-variable {B F : Type*} {E : B → Type*} [TopologicalSpace B]
-  [TopologicalSpace F] [TopologicalSpace (TotalSpace F E)]
-  [(x : B) → Nonempty (E x)]
-  (e : Trivialization F (π F E))
-
-lemma eq_of {x : B} {v v' : E x} (hx : x ∈ e.baseSet) (hvv' : (e v).2 = (e v').2) :
-    v = v' := by
-  have := e.symm_proj_apply v hx
-  rw [hvv'] at this
-  grind [e.symm_proj_apply v' hx]
-
-end
-
 end trivilization_topology
 
 section topological_vector_bundle
