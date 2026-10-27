@@ -52,12 +52,10 @@ lemma tendsto_seminorm_smulLeftCLM_comp_smul_sub {φ : E → ℝ} (hφ : ContDif
   · filter_upwards with _ using apply_nonneg _ _
   filter_upwards [eventually_ge_atTop 1] with R hR
   have hR0 : 0 < R := by linarith
-  have hRr : 0 < R * r := by positivity
   have hcd : ContDiff ℝ ∞ (fun x : E ↦ φ (R⁻¹ • x)) := hφ.comp (contDiff_const_smul _)
   have hcs : HasCompactSupport (fun x : E ↦ φ (R⁻¹ • x)) := hφc.comp_smul (by positivity)
-  have htg := hcs.hasTemperateGrowth hcd
   refine seminorm_le_bound ℝ k n _ (by positivity) fun x ↦ ?_
-  rw [(by funext x; simp [smulLeftCLM_apply_apply htg, sub_smul] :
+  rw [(by funext x; simp [smulLeftCLM_apply_apply (hcs.hasTemperateGrowth hcd), sub_smul] :
     ⇑(smulLeftCLM F (fun x ↦ φ (R⁻¹ • x)) f - f) = fun x ↦ (φ (R⁻¹ • x) - 1) • f x)]
   rcases lt_or_ge ‖x‖ (R * r) with hxR | hxR
   · suffices iteratedFDeriv ℝ n (fun y ↦ (φ (R⁻¹ • y) - 1) • f y) x = 0 by
@@ -65,11 +63,11 @@ lemma tendsto_seminorm_smulLeftCLM_comp_smul_sub {φ : E → ℝ} (hφ : ContDif
     suffices (fun y ↦ (φ (R⁻¹ • y) - 1) • f y) =ᶠ[𝓝 x] 0 by
       simp [(EventuallyEq.iteratedFDeriv ℝ this n).eq_of_nhds]
     filter_upwards [(isOpen_lt continuous_norm continuous_const).mem_nhds hxR] with y hy
-    have hyr : R⁻¹ • y ∈ ball (0 : E) r := by
+    have : R⁻¹ • y ∈ ball (0 : E) r := by
       rw [mem_ball_zero_iff, norm_smul, norm_inv, Real.norm_eq_abs, abs_of_pos hR0,
         inv_mul_lt_iff₀ hR0]
       simpa [mul_comm] using hy
-    simp [hφr _ hyr]
+    simp [hφr _ this]
   · have hx0 : 0 < ‖x‖ := by nlinarith
     calc
       _ ≤ ∑ i ∈ range (n + 1), (n.choose i : ℝ) *
@@ -82,28 +80,28 @@ lemma tendsto_seminorm_smulLeftCLM_comp_smul_sub {φ : E → ℝ} (hφ : ContDif
             (f.seminorm ℝ (k + 1) (n - i) / (R * r)) := by
           refine sum_le_sum fun i hmem ↦ ?_
           have hin : i ≤ n := Nat.lt_succ_iff.mp (Finset.mem_range.mp hmem)
-          have hbump : ‖iteratedFDeriv ℝ i (fun y ↦ φ (R⁻¹ • y) - 1) x‖ ≤ A + 1 := by
+          have : ‖iteratedFDeriv ℝ i (fun y ↦ φ (R⁻¹ • y) - 1) x‖ ≤ A + 1 := by
             rcases i.eq_zero_or_pos with rfl | hi
             · rw [norm_iteratedFDeriv_zero]
-              have h0 := hA 0 (by omega) (R⁻¹ • x)
-              rw [norm_iteratedFDeriv_zero] at h0
+              have := hA 0 (by omega) (R⁻¹ • x)
+              rw [norm_iteratedFDeriv_zero] at this
               calc ‖φ (R⁻¹ • x) - 1‖ ≤ ‖φ (R⁻¹ • x)‖ + ‖(1 : ℝ)‖ := norm_sub_le _ _
                 _ ≤ A + 1 := by simp only [norm_one]; linarith
-            · have heq : iteratedFDeriv ℝ i (fun y ↦ φ (R⁻¹ • y) - 1) x
+            · have : iteratedFDeriv ℝ i (fun y ↦ φ (R⁻¹ • y) - 1) x
                   = iteratedFDeriv ℝ i (fun y ↦ φ (R⁻¹ • y)) x := by
                 rw [(by rfl : (fun y ↦ φ (R⁻¹ • y) - 1) = (fun y ↦ φ (R⁻¹ • y)) - fun _ ↦ 1),
                   iteratedFDeriv_sub_apply (hcd.contDiffAt.of_le (mod_cast le_top))
                     contDiffAt_const,
                   iteratedFDeriv_const_of_ne (by omega)]
                 simp
-              rw [heq, iteratedFDeriv_comp_const_smul _ (hφ.of_le (mod_cast le_top)), norm_smul,
+              rw [this, iteratedFDeriv_comp_const_smul _ (hφ.of_le (mod_cast le_top)), norm_smul,
                 norm_pow, Real.norm_eq_abs, abs_of_pos (by positivity)]
-              have hinv : R⁻¹ ≤ 1 := by rwa [inv_le_one₀ hR0]
-              grw [hA i hin (R⁻¹ • x), pow_le_one₀ (by positivity) hinv]
+              have : R⁻¹ ≤ 1 := by rwa [inv_le_one₀ hR0]
+              grw [hA i hin (R⁻¹ • x), pow_le_one₀ (by positivity) this]
               linarith
-          grw [hbump]
+          grw [this]
           gcongr
-          rw [le_div_iff₀ hRr]
+          rw [le_div_iff₀ (by positivity)]
           calc ‖x‖ ^ k * ‖iteratedFDeriv ℝ (n - i) f x‖ * (R * r)
               ≤ ‖x‖ ^ k * ‖iteratedFDeriv ℝ (n - i) f x‖ * ‖x‖ :=
                 mul_le_mul_of_nonneg_left hxR (by positivity)
