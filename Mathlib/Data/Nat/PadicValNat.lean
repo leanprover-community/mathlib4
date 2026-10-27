@@ -186,10 +186,10 @@ theorem maxPowDvdDiv_self {p : ℕ} (hp : 1 < p) : p.maxPowDvdDiv p = (1, 1) := 
   simpa using maxPowDvdDiv_base_pow hp 1
 
 @[simp]
-theorem _root_.multiplicity_base {p : ℕ} (hp : 1 < p) : multiplicity p p = 1 := by
+theorem multiplicity_self {p : ℕ} (hp : 1 < p) : multiplicity p p = 1 := by
   simpa using multiplicity_base_pow hp 1
 
-@[deprecated (since := "2026-09-11")] alias _root_.padicValNat_base := multiplicity_base
+@[deprecated (since := "2026-09-11")] alias _root_.padicValNat_base := multiplicity_self
 
 @[simp]
 theorem divMaxPow_self {p : ℕ} (hp : p ≠ 0) : p.divMaxPow p = 1 := by

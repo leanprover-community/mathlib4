@@ -37,7 +37,7 @@ by taking `[Fact p.Prime]` as a type class argument.
   greater than `log p n`. See `Nat.Prime.multiplicity_factorial` for the same result but stated in
   the language of prime multiplicity.
 
-* `sub_one_mul_multiplicity_factorial`: Legendre's Theorem.  Taking (`p - 1`) times
+* `Nat.Prime.sub_one_mul_multiplicity_factorial`: Legendre's Theorem.  Taking (`p - 1`) times
   the `p`-adic valuation of `n!` equals `n` minus the sum of base `p` digits of `n`.
 
 * `multiplicity_choose`: Kummer's Theorem. The `p`-adic valuation of `n.choose k` is the number
@@ -72,21 +72,18 @@ namespace Nat
 
 variable {p : ℕ}
 
-/-- If `p ≠ 0` and `p ≠ 1`, then `multiplicity p p` is `1`. -/
-alias multiplicity_self := multiplicity_base
-
-theorem multiplicity_eq_zero_of_not_dvd {n : ℕ} (h : ¬p ∣ n) : multiplicity p n = 0 :=
-  multiplicity_eq_zero_iff.2 <| Or.inr <| Or.inr h
+@[deprecated (since := "2026-10-27")] alias multiplicity_eq_zero_of_not_dvd :=
+  multiplicity_eq_zero_of_not_dvd
 
 theorem multiplicity_dvd_of_ne_zero {n : ℕ} (h : multiplicity p n ≠ 0) : p ∣ n :=
-  not_not.mp (mt multiplicity_eq_zero_of_not_dvd h)
+  not_not.mp (mt _root_.multiplicity_eq_zero_of_not_dvd h)
 
 end Nat
 
 @[deprecated (since := "2026-09-12")] alias padicValNat.self := Nat.multiplicity_self
 
 @[deprecated (since := "2026-09-11")] alias padicValNat.eq_zero_of_not_dvd :=
-  Nat.multiplicity_eq_zero_of_not_dvd
+  _root_.multiplicity_eq_zero_of_not_dvd
 
 @[deprecated (since := "2026-09-11")] alias padicValNat.dvd_of_ne_zero :=
   Nat.multiplicity_dvd_of_ne_zero
@@ -481,14 +478,11 @@ variable {p : ℕ}
 
 theorem dvd_of_one_le_multiplicity {n : ℕ} (hp : 1 ≤ multiplicity p n) : p ∣ n := by
   by_contra h
-  rw [Nat.multiplicity_eq_zero_of_not_dvd h] at hp
+  rw [_root_.multiplicity_eq_zero_of_not_dvd h] at hp
   exact lt_irrefl 0 (lt_of_lt_of_le zero_lt_one hp)
 
 @[deprecated (since := "2026-09-11")] alias dvd_of_one_le_padicValNat :=
   dvd_of_one_le_multiplicity
-
-@[deprecated (since := "2026-10-26")] alias multiplicity_dvd_iff_le_of_ne_one :=
-  Nat.pow_dvd_iff_le_multiplicity
 
 @[deprecated (since := "2026-09-11")] alias padicValNat_dvd_iff_le_of_ne_one :=
   Nat.pow_dvd_iff_le_multiplicity
@@ -697,13 +691,6 @@ theorem multiplicity_factorial {n b : ℕ} [hp : Fact p.Prime] (hnb : log p n < 
       Prime.emultiplicity_factorial hp.out hnb)
 
 @[deprecated (since := "2026-09-11")] alias padicValNat_factorial := multiplicity_factorial
-
-/-- **Legendre's Theorem**
-
-Taking (`p - 1`) times the `p`-adic valuation of `n!` equals `n` minus the sum of base `p` digits
-of `n`. -/
-@[deprecated (since := "2026-10-26")] alias sub_one_mul_multiplicity_factorial :=
-  Nat.Prime.sub_one_mul_multiplicity_factorial
 
 @[deprecated (since := "2026-09-11")] alias sub_one_mul_padicValNat_factorial :=
   Nat.Prime.sub_one_mul_multiplicity_factorial
