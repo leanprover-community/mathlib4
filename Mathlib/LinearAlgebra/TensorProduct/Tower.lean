@@ -844,19 +844,42 @@ lemma baseChange_eq_span : p.baseChange A = span A (p.map (TensorProduct.mk R A 
     exact smul_mem _ a (subset_span ⟨m, m.2, rfl⟩)
   · refine span_le.2 fun _ ⟨m, hm, h⟩ ↦ h ▸ ⟨1 ⊗ₜ[R] ⟨m, hm⟩, rfl⟩
 
+variable {A p} in
+theorem baseChange_le_iff_le_comap {q : Submodule A (A ⊗[R] M)} :
+    p.baseChange A ≤ q ↔ p ≤ (q.restrictScalars R).comap (TensorProduct.mk R A M 1) := by
+  rw [baseChange_eq_span, span_le, ← q.coe_restrictScalars R, SetLike.coe_subset_coe,
+    map_le_iff_le_comap]
+
+variable (R M) in
+theorem baseChange_gc : GaloisConnection (baseChange A)
+    fun q ↦ (q.restrictScalars R).comap (TensorProduct.mk R A M 1) :=
+  fun _ _ ↦ baseChange_le_iff_le_comap
+
 @[simp]
-lemma baseChange_bot : (⊥ : Submodule R M).baseChange A = ⊥ := by simp [baseChange_eq_span]
+lemma baseChange_bot : (⊥ : Submodule R M).baseChange A = ⊥ := (baseChange_gc R M A).l_bot
 
 @[simp]
 lemma baseChange_top : (⊤ : Submodule R M).baseChange A = ⊤ := by
   rw [eq_top_iff, ← span_eq_top_of_span_eq_top R A _ (span_tmul_eq_top R ..)]
   exact span_le.2 fun _ ⟨a, m, h⟩ ↦ h ▸ tmul_mem_baseChange_of_mem _ trivial
 
+@[simp]
+lemma baseChange_sup : (p ⊔ q).baseChange A = p.baseChange A ⊔ q.baseChange A :=
+  (baseChange_gc R M A).l_sup
+
+@[simp]
+lemma baseChange_iSup {ι : Sort*} (p : ι → Submodule R M) :
+    (⨆ i, p i).baseChange A = ⨆ i, (p i).baseChange A :=
+  (baseChange_gc R M A).l_iSup
+
+@[simp]
+lemma baseChange_sSup (S : Set (Submodule R M)) :
+    (sSup S).baseChange A = ⨆ p ∈ S, p.baseChange A :=
+  (baseChange_gc R M A).l_sSup
+
 variable {p q} in
-theorem baseChange_mono (h : p ≤ q) : p.baseChange A ≤ q.baseChange A := by
-  rw [baseChange, LinearMap.baseChange, ← subtype_comp_inclusion p q h,
-    ← LinearMap.id_comp LinearMap.id, AlgebraTensorModule.map_comp]
-  apply LinearMap.range_comp_le_range
+theorem baseChange_mono (h : p ≤ q) : p.baseChange A ≤ q.baseChange A :=
+  (baseChange_gc R M A).monotone_l h
 
 @[simp]
 lemma baseChange_span (s : Set M) :
