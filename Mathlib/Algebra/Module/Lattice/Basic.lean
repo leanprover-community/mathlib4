@@ -97,8 +97,7 @@ theorem linearIndependent [IsLattice A M] {ι : Type*} {v : ι → V}
 /-- Any basis of an `R`-lattice in `V` is `A`-linearly independent. -/
 theorem basis_linearIndependent [IsLattice A M] {ι : Type*} (b : Basis ι R M) :
     LinearIndependent A (fun i ↦ (b i).val) :=
-  linearIndependent A M (fun i ↦ (b i).2)
-    (b.linearIndependent.map' M.subtype (Submodule.ker_subtype _))
+  linearIndependent A M (fun i ↦ (b i).2) (b.linearIndependent.map' M.subtype M.ker_subtype)
 
 /-- Any `R`-lattice is finite. Not an instance, since `A` cannot be inferred. -/
 theorem finite [IsLattice A M] : Module.Finite R M := by
