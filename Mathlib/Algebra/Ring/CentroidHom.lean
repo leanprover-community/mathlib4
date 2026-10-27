@@ -448,8 +448,7 @@ lemma centroid_eq_centralizer_mulLeftRight :
     · exact congr($(h (R b) (.inr ⟨b, rfl⟩)) a).symm
 
 /-- The canonical homomorphism from the center into the center of the centroid -/
-def centerToCentroidCenter :
-    Center α →ₙ+* Center (CentroidHom α) where
+def centerToCentroidCenter : Center α →ₙ+* Center (CentroidHom α) where
   toFun z :=
     { L (z : α) with
       val := ⟨L z, z.prop.left_comm, z.prop.left_assoc ⟩
