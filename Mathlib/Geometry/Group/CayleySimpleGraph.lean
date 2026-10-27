@@ -28,7 +28,6 @@ We use this to show that the graph distance in the Cayley graph is given by the 
 
 * `Group.Generators.dist_cayleySimpleGraph`: the distance from `g` to `h` in the Cayley graph is
   the word length of `g⁻¹ * h`.
-* `AddGroup.Generators.dist_cayleySimpleGraph`: the additive version of the above.
 
 ## Implementation notes
 
