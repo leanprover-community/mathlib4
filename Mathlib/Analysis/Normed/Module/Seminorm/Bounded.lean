@@ -46,6 +46,7 @@ def approx [LES α β] [LES β α] (a : α) (b : β) : Prop := a ≲ b ∧ b ≲
 section refl
 
 variable (α) in
+/-- The relation `≲` is reflexive: `a ≲ a`. -/
 class LESRefl [LES α α] where
   protected les_refl : ∀ a : α, a ≲ a
 
@@ -69,6 +70,7 @@ end refl
 section trans
 
 variable (α β γ) in
+/-- The relation `≲` is transitive: `a ≲ b` and `b ≲ c` implies `a ≲ c`. -/
 class LESTrans [LES α β] [LES β γ] [LES α γ] where
   protected les_trans : ∀ (a : α) (b : β) (c : γ), a ≲ b → b ≲ c → a ≲ c
 
