@@ -205,7 +205,7 @@ protected lemma one_apply (a : A) : (1 : AddChar A M) a = 1 := rfl
 
 lemma one_eq_zero : (1 : AddChar A M) = (0 : AddChar A M) := rfl
 
-@[simp, norm_cast] lemma coe_eq_one : ⇑ψ = 1 ↔ ψ = 0 := by rw [← coe_zero, DFunLike.coe_fn_eq]
+@[norm_cast] lemma coe_eq_one : ⇑ψ = 1 ↔ ψ = 0 := by rw [← coe_zero, DFunLike.coe_fn_eq]
 
 @[simp] lemma toMonoidHomEquiv_zero : toMonoidHomEquiv (0 : AddChar A M) = 1 := rfl
 @[simp] lemma toMonoidHomEquiv_symm_one :
