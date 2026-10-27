@@ -290,9 +290,9 @@ Q256303:
 Q257387:
   title: Vitali theorem
   # i.e. existence of the Vitali set
-  authors: Ching-Tsun Chou
+  authors: Ching-Tsun Chou and Lua Viana Reis
   date: "2024-12-25"
-  decl: vitaliSet_not_measurable
+  decl: not_measurableSet_vitaliSet
 
 Q258374:
   title: Carathéodory's theorem (measure theory)
