@@ -33,8 +33,7 @@ def Matrix.dualNumberEquiv : Matrix n n (DualNumber R) ≃ₐ[R] DualNumber (Mat
       simp_rw [fst_sum]
       rfl
     · simp_rw [snd_mul, smul_eq_mul, op_smul_eq_mul]
-      simp only [Matrix.mul_apply, snd_sum, DualNumber.snd_mul, snd_mk, of_apply, fst_mk,
-        Matrix.add_apply]
+      simp only [Matrix.mul_apply, snd_sum, DualNumber.snd_mul, of_apply, Matrix.add_apply]
       rw [← Finset.sum_add_distrib]
   map_add' _ _ := TrivSqZeroExt.ext rfl rfl
   commutes' r := by

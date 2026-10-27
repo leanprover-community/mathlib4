@@ -46,28 +46,36 @@ variable [TopologicalSpace R] [TopologicalSpace M]
 instance : TopologicalSpace (tsze R M) :=
   TopologicalSpace.induced (·.fst) ‹_› ⊓ TopologicalSpace.induced (·.snd) ‹_›
 
-instance [T2Space R] [T2Space M] : T2Space (tsze R M) :=
-  inferInstanceAs <| T2Space (R × M)
+lemma isEmbedding_equiv : IsEmbedding (equiv : tsze R M → R × M) where
+  eq_induced := by simp only [instTopologicalSpaceProd, induced_inf, induced_compose]; rfl
+  injective := equiv.injective
 
-theorem nhds_def (x : tsze R M) : 𝓝 x = 𝓝 x.fst ×ˢ 𝓝 x.snd := nhds_prod_eq
+instance [T2Space R] [T2Space M] : T2Space (tsze R M) := isEmbedding_equiv.t2Space
 
-theorem nhds_inl [Zero M] (x : R) : 𝓝 (inl x : tsze R M) = 𝓝 x ×ˢ 𝓝 0 :=
+theorem nhds_def (x : tsze R M) : 𝓝 x = (𝓝 x.fst ×ˢ 𝓝 x.snd).map mk := by
+  have h := (equiv.toHomeomorphOfIsInducing isEmbedding_equiv.isInducing).symm_map_nhds_eq x
+  rwa [nhds_prod_eq, eq_comm] at h
+
+theorem nhds_inl [Zero M] (x : R) : 𝓝 (inl x : tsze R M) = (𝓝 x ×ˢ 𝓝 0).map mk :=
   nhds_def _
 
-theorem nhds_inr [Zero R] (m : M) : 𝓝 (inr m : tsze R M) = 𝓝 0 ×ˢ 𝓝 m :=
+theorem nhds_inr [Zero R] (m : M) : 𝓝 (inr m : tsze R M) = (𝓝 0 ×ˢ 𝓝 m).map mk :=
   nhds_def _
 
-nonrec theorem continuous_fst : Continuous ((·.fst) : tsze R M → R) :=
-  continuous_fst
+lemma continuous_mk : Continuous (mk : R × M → tsze R M) :=
+  (equiv.toHomeomorphOfIsInducing isEmbedding_equiv.isInducing).symm.continuous
 
-nonrec theorem continuous_snd : Continuous ((·.snd) : tsze R M → M) :=
-  continuous_snd
+theorem continuous_fst : Continuous ((·.fst) : tsze R M → R) :=
+  continuous_iff_le_induced.2 inf_le_left
+
+theorem continuous_snd : Continuous ((·.snd) : tsze R M → M) :=
+  continuous_iff_le_induced.2 inf_le_right
 
 theorem continuous_inl [Zero M] : Continuous (inl : R → tsze R M) :=
-  continuous_id.prodMk continuous_const
+  continuous_mk.comp (continuous_id.prodMk continuous_const)
 
 theorem continuous_inr [Zero R] : Continuous (inr : M → tsze R M) :=
-  continuous_const.prodMk continuous_id
+  continuous_mk.comp (continuous_const.prodMk continuous_id)
 
 theorem IsEmbedding.inl [Zero M] : IsEmbedding (inl : R → tsze R M) :=
   .of_comp continuous_inl continuous_fst .id
@@ -79,38 +87,56 @@ variable (R M)
 
 /-- `TrivSqZeroExt.fst` as a continuous linear map. -/
 @[simps]
-def fstCLM [CommSemiring R] [AddCommMonoid M] [Module R M] : StrongDual R (tsze R M) :=
-  { ContinuousLinearMap.fst R R M with toFun := fst }
+def fstCLM [CommSemiring R] [AddCommMonoid M] [Module R M] : StrongDual R (tsze R M) where
+  toFun x := x.toProd.1
+  cont := continuous_fst
+  map_add' := fst_add
+  map_smul' := fst_smul
 
 /-- `TrivSqZeroExt.snd` as a continuous linear map. -/
 @[simps]
-def sndCLM [CommSemiring R] [AddCommMonoid M] [Module R M] : tsze R M →L[R] M :=
-  { ContinuousLinearMap.snd R R M with toFun := snd }
+def sndCLM [CommSemiring R] [AddCommMonoid M] [Module R M] : tsze R M →L[R] M where
+  toFun x := x.toProd.2
+  cont := continuous_snd
+  map_add' := snd_add
+  map_smul' := snd_smul
 
 /-- `TrivSqZeroExt.inl` as a continuous linear map. -/
 @[simps]
-def inlCLM [CommSemiring R] [AddCommMonoid M] [Module R M] : R →L[R] tsze R M :=
-  { ContinuousLinearMap.inl R R M with toFun := inl }
+def inlCLM [CommSemiring R] [AddCommMonoid M] [Module R M] : R →L[R] tsze R M where
+  toFun r := .inl r
+  cont := continuous_inl
+  map_add' := inl_add _
+  map_smul' := inl_smul _
 
 /-- `TrivSqZeroExt.inr` as a continuous linear map. -/
 @[simps]
-def inrCLM [CommSemiring R] [AddCommMonoid M] [Module R M] : M →L[R] tsze R M :=
-  { ContinuousLinearMap.inr R R M with toFun := inr }
+def inrCLM [CommSemiring R] [AddCommMonoid M] [Module R M] : M →L[R] tsze R M where
+  toFun m := .inr m
+  cont := continuous_inr
+  map_add' := inr_add _
+  map_smul' := inr_smul _
 
 variable {R M}
 
 instance [Add R] [Add M] [ContinuousAdd R] [ContinuousAdd M] : ContinuousAdd (tsze R M) :=
-  Prod.continuousAdd
+  ⟨continuous_mk.comp (((continuous_fst.comp _root_.continuous_fst).add
+    (continuous_fst.comp _root_.continuous_snd)).prodMk
+      ((continuous_snd.comp _root_.continuous_fst).add
+        (continuous_snd.comp _root_.continuous_snd)))⟩
 
 instance [Mul R] [Add M] [SMul R M] [SMul Rᵐᵒᵖ M] [ContinuousMul R] [ContinuousSMul R M]
     [ContinuousSMul Rᵐᵒᵖ M] [ContinuousAdd M] : ContinuousMul (tsze R M) :=
-  ⟨((continuous_fst.comp continuous_fst).mul (continuous_fst.comp continuous_snd)).prodMk <|
-      ((continuous_fst.comp continuous_fst).smul (continuous_snd.comp continuous_snd)).add
-        ((MulOpposite.continuous_op.comp <| continuous_fst.comp continuous_snd).smul
-          (continuous_snd.comp continuous_fst))⟩
+  ⟨continuous_mk.comp (((continuous_fst.comp _root_.continuous_fst).mul
+    (continuous_fst.comp _root_.continuous_snd)).prodMk
+      (((continuous_fst.comp _root_.continuous_fst).smul
+        (continuous_snd.comp _root_.continuous_snd)).add
+        ((MulOpposite.continuous_op.comp
+          (continuous_fst.comp _root_.continuous_snd)).smul
+            (continuous_snd.comp _root_.continuous_fst))))⟩
 
 instance [Neg R] [Neg M] [ContinuousNeg R] [ContinuousNeg M] : ContinuousNeg (tsze R M) :=
-  Prod.continuousNeg
+  ⟨continuous_mk.comp (continuous_fst.neg.prodMk continuous_snd.neg)⟩
 
 /-- This is not an instance due to complaints by the `fails_quickly` linter. At any rate, we only
 really care about the `IsTopologicalRing` instance below. -/
@@ -124,11 +150,13 @@ instance [Ring R] [AddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M] [IsTopolog
 
 instance [SMul S R] [SMul S M] [ContinuousConstSMul S R] [ContinuousConstSMul S M] :
     ContinuousConstSMul S (tsze R M) :=
-  Prod.continuousConstSMul
+  ⟨fun s ↦ continuous_mk.comp ((continuous_fst.const_smul s).prodMk (continuous_snd.const_smul s))⟩
 
 instance [TopologicalSpace S] [SMul S R] [SMul S M] [ContinuousSMul S R] [ContinuousSMul S M] :
     ContinuousSMul S (tsze R M) :=
-  Prod.continuousSMul
+  ⟨continuous_mk.comp ((_root_.continuous_fst.smul
+    (continuous_fst.comp _root_.continuous_snd)).prodMk
+      (_root_.continuous_fst.smul (continuous_snd.comp _root_.continuous_snd)))⟩
 
 variable (M)
 
@@ -170,7 +198,8 @@ open scoped Uniformity
 
 theorem uniformity_def :
     𝓤 (tsze R M) =
-      ((𝓤 R).comap fun p => (p.1.fst, p.2.fst)) ⊓ ((𝓤 M).comap fun p => (p.1.snd, p.2.snd)) :=
+      ((𝓤 R).comap fun p => (p.1.fst, p.2.fst)) ⊓ ((𝓤 M).comap fun p => (p.1.snd, p.2.snd)) := by
+  rw [uniformity_comap, uniformity_prod, Filter.comap_inf, Filter.comap_comap, Filter.comap_comap]
   rfl
 
 nonrec theorem uniformContinuous_fst : UniformContinuous ((·.fst) : tsze R M → R) :=
