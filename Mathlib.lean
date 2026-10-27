@@ -3873,6 +3873,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Subgraph
 public import Mathlib.Combinatorics.SimpleGraph.Sum
 public import Mathlib.Combinatorics.SimpleGraph.Trails
 public import Mathlib.Combinatorics.SimpleGraph.Transitive
+public import Mathlib.Combinatorics.SimpleGraph.Transitive.Folkman
 public import Mathlib.Combinatorics.SimpleGraph.Triangle.Basic
 public import Mathlib.Combinatorics.SimpleGraph.Triangle.Counting
 public import Mathlib.Combinatorics.SimpleGraph.Triangle.Removal
