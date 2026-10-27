@@ -232,16 +232,17 @@ theorem isCyclic_charP_tfae :
         Set.singleton_subset_iff, SetLike.mem_coe]
       exact Algebra.mem_adjoin_of_mem (h1.mem_rootSet.mpr heval)
   tfae_have 2 → 1 := by
-    refine fun ⟨a, h1, h2⟩ ↦ ⟨?_, IsGalois.of_separable_splitting_field
+    refine fun ⟨a, h1, h2⟩ ↦ ⟨Eq.symm ?_, IsGalois.of_separable_splitting_field
       ((separable_iff_derivative_ne_zero h1).mpr
       (by simp [artinSchreierPoly_def p, derivative_pow]))⟩
     set f := artinSchreierPoly a with hf
     have hd : (f.map (algebraMap F K)).degree ≠ 0 := by
-      rw [degree_map f (algebraMap F K), degree_eq_natDegree (ha a).ne_zero, (ha a).1,
-        Nat.cast_ne_zero]
+      rw [degree_map, degree_eq_natDegree (ha a).ne_zero, (ha a).1, Nat.cast_ne_zero]
       exact hp.elim.ne_zero
     have splits : (f.map (algebraMap F K)).Splits := IsSplittingField.splits K f
     set z := Polynomial.rootOfSplits splits hd with hz
+    have heval : (Polynomial.aeval z) f = 0 := by
+      simpa using Polynomial.eval_rootOfSplits splits hd
     have htop : F⟮z⟯ = ⊤ := by
       have splits' : (f.map (algebraMap F F⟮z⟯)).Splits := by
         rw [artinSchreierPoly_map p a]
@@ -249,18 +250,15 @@ theorem isCyclic_charP_tfae :
         apply Polynomial.isRoot_of_eval₂_map_eq_zero (FaithfulSMul.algebraMap_injective (↥F⟮z⟯) K)
         rw [IntermediateField.algebraMap_apply, eval₂_eq_eval_map, ← artinSchreierPoly_map p a,
           Polynomial.map_map, ← IsScalarTower.algebraMap_eq]
-        simpa [hz, hf] using Polynomial.eval_rootOfSplits splits hd
+        simpa using heval
       rw [eq_top_iff, ← (isSplittingField_iff_intermediateField.mp h2).2,
         adjoin_le_iff, Set.subset_def]
       intro x hx
       rw [← splits'.image_rootSet_algebraMap (B := K)] at hx
       aesop
     have : FiniteDimensional F K := IsSplittingField.finiteDimensional K f
-    have hmin : minpoly F z = f := by
-      refine (eq_of_irreducible_of_monic h1 ?_ (ha a).2).symm
-      simpa [eval_map_algebraMap f z] using Polynomial.eval_rootOfSplits splits hd
-    rw [← (ha a).1, ← hf, ← hmin]
-    exact ((primitive_element_iff_minpoly_natDegree_eq F z).mp htop).symm
+    rw [← (ha a).1, ← hf, eq_of_irreducible_of_monic h1 heval (ha a).2]
+    exact (primitive_element_iff_minpoly_natDegree_eq F z).mp htop
   tfae_finish
 
 /- This is the first step towards the Artin-Schreier-Witt construction.
