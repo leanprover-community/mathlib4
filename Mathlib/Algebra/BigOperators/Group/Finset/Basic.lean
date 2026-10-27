@@ -1026,7 +1026,7 @@ end Nat
 end Finset
 
 namespace Fintype
-variable {ι κ ι : Type*} [Fintype ι] [Fintype κ]
+variable {ι κ : Type*} [Fintype ι] [Fintype κ]
 
 open Finset
 

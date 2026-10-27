@@ -50,6 +50,8 @@ When the space is locally compact, `μ.measure` is also regular.
 * <https://en.wikipedia.org/wiki/Content_(measure_theory)>
 -/
 
+open scoped Finset
+
 @[expose] public section
 
 
@@ -212,7 +214,7 @@ theorem innerContent_pos_of_is_mul_left_invariant [Group G] [IsTopologicalGroup 
     (hK : μ K ≠ 0) (U : Opens G) (hU : (U : Set G).Nonempty) : 0 < μ.innerContent U := by
   have : (interior (U : Set G)).Nonempty := by rwa [U.isOpen.interior_eq]
   rcases compact_covered_by_mul_left_translates K.2 this with ⟨s, hs⟩
-  suffices μ K ≤ s.card * μ.innerContent U by
+  suffices μ K ≤ #s * μ.innerContent U by
     exact (ENNReal.mul_pos_iff.mp <| hK.bot_lt.trans_le this).2
   have : (K : Set G) ⊆ ↑(⨆ g ∈ s, Opens.comap (Homeomorph.mulLeft g : C(G, G)) U) := by
     simpa only [Opens.iSup_def, Opens.coe_comap, Subtype.coe_mk]

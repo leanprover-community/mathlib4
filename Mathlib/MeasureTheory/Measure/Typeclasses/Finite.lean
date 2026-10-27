@@ -115,7 +115,7 @@ instance isFiniteMeasureSMulOfNNRealTower {R} [SMul R ℝ≥0] [SMul R ℝ≥0�
 theorem isFiniteMeasure_of_le (μ : Measure α) [IsFiniteMeasure μ] (h : ν ≤ μ) : IsFiniteMeasure ν :=
   { measure_univ_lt_top := (h Set.univ).trans_lt (measure_lt_top _ _) }
 
-/-- This is not an instance as it is superseded by the fact that is is a probability measure. -/
+/-- This is not an instance as it is superseded by the fact that it is a probability measure. -/
 theorem isFiniteMeasure_dirac {a : α} : IsFiniteMeasure (dirac a) where
   measure_univ_lt_top := by
     simp [dirac_apply_of_mem <| mem_univ a]
@@ -192,8 +192,9 @@ lemma tendsto_measure_biUnion_Ici_zero_of_pairwise_disjoint
     {Es : ℕ → Set X} (Es_mble : ∀ i, NullMeasurableSet (Es i) μ)
     (Es_disj : Pairwise fun n m ↦ Disjoint (Es n) (Es m)) :
     Tendsto (μ ∘ fun n ↦ ⋃ i ≥ n, Es i) atTop (𝓝 0) := by
-  have decr : Antitone fun n ↦ ⋃ i ≥ n, Es i :=
-    fun n m hnm ↦ biUnion_mono (fun _ hi ↦ le_trans hnm hi) (fun _ _ ↦ subset_rfl)
+  have decr : Antitone fun n ↦ ⋃ i ≥ n, Es i := fun n m hnm ↦
+    biUnion_mono (s := {i | i ≥ n}) (s' := {i | i ≥ m})
+      (fun _ hi ↦ le_trans hnm hi) (fun _ _ ↦ subset_rfl)
   have nothing : ⋂ n, ⋃ i ≥ n, Es i = ∅ := by
     apply subset_antisymm _ (empty_subset _)
     intro x hx

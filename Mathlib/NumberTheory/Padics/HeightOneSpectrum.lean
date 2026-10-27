@@ -6,7 +6,7 @@ Authors: Salvatore Mercuri
 module
 
 public import Mathlib.NumberTheory.Padics.WithVal
-public import Mathlib.RingTheory.DedekindDomain.AdicValuation
+public import Mathlib.RingTheory.DedekindDomain.AdicValuation.Completion
 public import Mathlib.Topology.Algebra.Algebra.Equiv
 
 /-!

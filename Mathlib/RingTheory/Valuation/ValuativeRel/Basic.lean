@@ -704,7 +704,7 @@ def ofValuation
   not_vle_one_zero := by simp
   vle_mul_comm := by simp [map_mul, mul_comm]
 
-lemma _root_.Valuation.Compatible.ofValuation
+instance _root_.Valuation.Compatible.ofValuation
     {S Γ : Type*} [Ring S]
     [LinearOrderedCommGroupWithZero Γ]
     (v : Valuation S Γ) :
@@ -724,6 +724,11 @@ variable {v₁ v₂} in
 lemma _root_.Valuation.IsEquiv.compatible (h : v₁.IsEquiv v₂) : v₂.Compatible where
   vle_iff_le x y := by
     rw [Valuation.Compatible.vle_iff_le (v := v₁), h]
+
+lemma isEquiv_ofValuation {S Γ : Type*} [Ring S] [LinearOrderedCommGroupWithZero Γ]
+    (v : Valuation S Γ) : v.IsEquiv (ofValuation v).valuation := by
+  let := ofValuation v
+  exact isEquiv v (ofValuation v).valuation
 
 end Valuation
 
@@ -750,6 +755,10 @@ lemma vle_one_iff : x ≤ᵥ 1 ↔ v x ≤ 1 := by simp [v.vle_iff_le]
 lemma vlt_one_iff : x <ᵥ 1 ↔ v x < 1 := by simp [v.vlt_iff_lt]
 lemma one_vle_iff : 1 ≤ᵥ x ↔ 1 ≤ v x := by simp [v.vle_iff_le]
 lemma one_vlt_iff : 1 <ᵥ x ↔ 1 < v x := by simp [v.vlt_iff_lt]
+
+theorem _root_.Valuation.compatible_iff_isEquiv (v : Valuation R Γ₀) :
+    v.Compatible ↔ v.IsEquiv (valuation R) :=
+  ⟨fun _ ↦ isEquiv _ _, fun h ↦ h.symm.compatible⟩
 
 @[simp]
 lemma apply_posSubmonoid_ne_zero (x : posSubmonoid R) : v (x : R) ≠ 0 := by
@@ -1161,20 +1170,21 @@ ValueGroupWithZero R   | h.orderMonoidIso
 ```
 -/
 @[simp]
-theorem orderMonoidIso_embed [v.Compatible] {Γ' : Type*} [LinearOrderedCommGroupWithZero Γ']
+theorem orderMonoidIso₀_embed [v.Compatible] {Γ' : Type*} [LinearOrderedCommGroupWithZero Γ']
     (w : Valuation R Γ') [w.Compatible] (x : ValueGroupWithZero R) (h : w.IsEquiv v) :
-    h.orderMonoidIso
-    (embed w x) = embed v x := by
+    h.orderMonoidIso₀ (embed w x) = embed v x := by
   simp only [embed, coe_mk, ZeroHom.coe_mk]
   induction x using ValueGroupWithZero.ind with
-  | mk r s => simp [Valuation.IsEquiv.orderMonoidIso_spec₀]
+  | mk r s => simp [Valuation.IsEquiv.orderMonoidIso₀_spec₀]
+
+@[deprecated (since := "2026-10-08")] alias orderMonoidIso_embed := orderMonoidIso₀_embed
 
 /-- If a valuation `v` is compatible with the valuative relation, then `ValueGroupWithZero R`
 is isomorphic to the image group (with zero) of `v` as an ordered group with zero. -/
 noncomputable
 def orderMonoidIso [v.Compatible] : ValueGroupWithZero R ≃*o v.ValueGroup₀ where
   __ := embed v
-  invFun x := embedding ((isEquiv v (valuation R)).orderMonoidIso x)
+  invFun x := embedding ((isEquiv v (valuation R)).orderMonoidIso₀ x)
   left_inv x := by simp
   right_inv := Function.rightInverse_of_injective_of_leftInverse
       (by rw [← Function.comp_def, EquivLike.injective_comp]

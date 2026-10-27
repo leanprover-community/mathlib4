@@ -173,7 +173,7 @@ theorem reflect_mul_induction (cf cg : ℕ) (N O : ℕ) (f g : R[X]) (Cf : #f.su
 @[simp]
 theorem reflect_mul (f g : R[X]) {F G : ℕ} (Ff : f.natDegree ≤ F) (Gg : g.natDegree ≤ G) :
     reflect (F + G) (f * g) = reflect F f * reflect G g :=
-  reflect_mul_induction _ _ F G f g f.support.card.le_succ g.support.card.le_succ Ff Gg
+  reflect_mul_induction _ _ F G f g (#f.support).le_succ (#g.support).le_succ Ff Gg
 
 set_option backward.isDefEq.respectTransparency false in
 lemma natDegree_reflect_le {N : ℕ} {p : R[X]} :
@@ -245,7 +245,7 @@ theorem natDegree_eq_reverse_natDegree_add_natTrailingDegree (f : R[X]) :
   · refine tsub_le_iff_right.mp ?_
     apply le_natDegree_of_ne_zero
     rw [reverse, coeff_reflect, ← revAt_le f.natTrailingDegree_le_natDegree, revAt_invol]
-    exact trailingCoeff_nonzero_iff_nonzero.mpr hf
+    exact trailingCoeff_ne_zero.mpr hf
   · rw [← le_tsub_iff_left f.reverse_natDegree_le]
     apply natTrailingDegree_le_of_ne_zero
     have key := mt leadingCoeff_eq_zero.mp (mt reverse_eq_zero.mp hf)

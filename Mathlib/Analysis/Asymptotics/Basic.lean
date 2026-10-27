@@ -22,7 +22,7 @@ assert_not_exists IsBoundedSMul Summable OpenPartialHomeomorph BoundedLENhdsClas
 
 open Filter
 
-open scoped Topology
+open scoped Topology NNReal
 
 namespace Asymptotics
 
@@ -33,6 +33,24 @@ variable [SeminormedAddCommGroup E'] [SeminormedAddCommGroup F'] [SeminormedAddC
   [NormedAddCommGroup E''] [SeminormedAddGroup E''']
 variable {c c' c₁ c₂ : ℝ} {f : α → E} {g : α → F} {k : α → G}
 variable {f' : α → E'} {g' : α → F'} {f'' : α → E''} {l l' : Filter α}
+
+/-! ### NNNorm -/
+
+/-- `IsBigO` in terms of the non-negative norm. -/
+theorem isBigO_iff_nnnorm :
+    f' =O[l] g' ↔ ∃ c : ℝ≥0, ∀ᶠ x in l, ‖f' x‖₊ ≤ c * ‖g' x‖₊ := by
+  simp only [IsBigO_def, IsBigOWith, ← NNReal.coe_le_coe, coe_nnnorm, NNReal.coe_mul]
+  constructor <;> intro ⟨c, H⟩
+  · use c.toNNReal
+    filter_upwards [H] with x h
+    grw [h, Real.le_coe_toNNReal c]
+  · use c
+
+/-- `IsLittleO` in terms of the non-negative norm. -/
+theorem isLittleO_iff_nnnorm :
+    f' =o[l] g' ↔ ∀ ⦃c : ℝ≥0⦄, c ≠ 0 → ∀ᶠ x in l, ‖f' x‖₊ ≤ c * ‖g' x‖₊ := by
+  simpa [-NNReal.image_coe_Ioi, isLittleO_iff_forall_isBigOWith, zero_lt_iff, ← NNReal.coe_le_coe,
+    isBigOWith_iff] using congr(∀ c ∈ $(NNReal.image_coe_Ioi 0), ∀ᶠ x in l, _).symm
 
 /-! ### Conversions -/
 
