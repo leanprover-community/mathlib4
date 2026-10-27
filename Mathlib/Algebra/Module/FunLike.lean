@@ -14,17 +14,50 @@ In this file we define various instances related to modules for `FunLike` types.
 Note that currently, these are not registered as instances, but only `abbrev`s to avoid long
 typeclass searches.
 
-## TODO:
-Add definitions and API for the coercion being a linear map, similar to `FunLike.coeMonoidHom`,
-and related definitions.
-
 -/
 
 public section
 
-variable {M M' F α β : Type*} [i : FunLike F α β]
+variable {R M M' F α β : Type*} [i : FunLike F α β]
 
 namespace FunLike
+
+section LinearMap
+
+variable [Semiring R] [AddCommMonoid F] [AddCommMonoid β] [IsAddApply F] [Module R F] [Module R β]
+  [IsSMulApply R F]
+
+variable (R F) in
+/-- Coercion as a linear map. -/
+@[expose]
+def coeₗ : F →ₗ[R] α → β where
+  toFun f := f
+  map_add' := by simp
+  map_smul' := by simp
+
+@[simp]
+theorem coeₗ_apply (f : F) : coeₗ R F f = f := rfl
+
+@[norm_cast]
+theorem coe_coeₗ : (coeₗ R F : F → α → β) = DFunLike.coe := rfl
+
+@[simp]
+theorem toAddMonoidHom_coeₗ [IsZeroApply F] : (coeₗ R F).toAddMonoidHom = coeAddMonoidHom F α β :=
+  rfl
+
+variable (R F) in
+/-- Evaluation as a linear map. -/
+@[expose]
+def evalₗ (x : α) : F →ₗ[R] β := (LinearMap.proj x).comp (coeₗ R F)
+
+@[simp]
+theorem evalₗ_apply (x : α) (f : F) : evalₗ R F x f = f x := rfl
+
+@[simp]
+theorem toAddMonoidHom_evalₗ [IsZeroApply F] (x : α) :
+    (evalₗ R F x).toAddMonoidHom = evalAddMonoidHom F x := rfl
+
+end LinearMap
 
 section SMulInstances
 
