@@ -429,10 +429,10 @@ private theorem liftFun_inf_bot_parti (i j k : α) (xi xj xk ybot ytop : Bool) :
       simp [inf_def, inf]
     rw [ii₂, liftFun_inf_bot, ← ii₁, ih, ← inf_assoc, ← liftFun_inf_bot, ii₃]
   rcases h with ⟨rfl, rfl, rfl⟩
-  cases ybot <;> cases ytop <;> (
-    simp only [inf_def, inf, Bool.true_and, liftFun]
-    rw [sup_inf_assoc_of_le (j ⊓ k) (by order)]
-    order)
+  cases ybot <;> cases ytop <;>
+    · simp only [inf_def, inf, Bool.true_and, liftFun]
+      rw [sup_inf_assoc_of_le (j ⊓ k) (by order)]
+      order
 
 private theorem liftFun_inf_top_parti (i j k : α) (xi xj xk ybot ytop : Bool) :
     liftFun i j k (top xi xj xk ⊓ parti ybot ytop) =
@@ -465,17 +465,17 @@ private theorem liftFun_inf_parti_partj (i j k : α) (xbot xtop ybot ytop : Bool
   | true =>
     cases ybot with
     | false =>
-      cases xtop <;> cases ytop <;> (
-        simp only [inf_def, inf, liftFun]
-        conv_rhs => rw [← sup_comm (j ⊓ k), sup_inf_assoc_of_le _ (by order)]
-        order)
+      cases xtop <;> cases ytop <;>
+        · simp only [inf_def, inf, liftFun]
+          conv_rhs => rw [← sup_comm (j ⊓ k), sup_inf_assoc_of_le _ (by order)]
+          order
     | true =>
-      cases xtop <;> cases ytop <;> (
-        simp only [inf_def, inf, liftFun]
-        conv_rhs =>
-          rw [← inf_sup_assoc_of_le _ (by order), ← sup_comm (j ⊓ k),
-            sup_inf_assoc_of_le _ (by order)]
-        order)
+      cases xtop <;> cases ytop <;>
+        · simp only [inf_def, inf, liftFun]
+          conv_rhs =>
+            rw [← inf_sup_assoc_of_le _ (by order), ← sup_comm (j ⊓ k),
+              sup_inf_assoc_of_le _ (by order)]
+          order
 
 private theorem liftFun_inf (i j k : α) (x y : FreeModLatThree) :
     liftFun i j k (x ⊓ y) = liftFun i j k x ⊓ liftFun i j k y := by
@@ -548,10 +548,10 @@ def liftEquiv : α × α × α ≃ LatticeHom FreeModLatThree α where
   right_inv := by
     intro f
     ext x
-    casesm* FreeModLatThree, Bool <;> (
-      simp only [coe_lift, liftFun, ← map_sup, ← map_inf]
-      refine congrArg f ?_
-      rfl)
+    casesm* FreeModLatThree, Bool <;>
+      · simp only [coe_lift, liftFun, ← map_sup, ← map_inf]
+        refine congrArg f ?_
+        rfl
 
 theorem coe_liftEquiv (x : α × α × α) :
     liftEquiv x = lift x.1 x.2.1 x.2.2 := rfl
