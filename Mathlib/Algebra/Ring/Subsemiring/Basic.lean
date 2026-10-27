@@ -262,10 +262,17 @@ def center : Subsemiring R :=
   { NonUnitalSubsemiring.center R with
     one_mem' := Set.one_mem_center }
 
+/-- The center is commutative and associative.
 instance : NonAssocCommSemiring (Center R) :=
   {toNonAssocSemiring := inferInstanceAs <| NonAssocSemiring (center R), mul_comm}
 
-instance (priority := low) center.commSemiring' : CommSemiring (Center R) where
+This is not an instance as it forms a non-defeq diamond with
+`NonUnitalSubringClass.toNonUnitalRing` in the `npow` field. -/
+abbrev center.commSemiring' : CommSemiring (center R) :=
+  { Submonoid.center.commMonoid', (center R).toNonAssocSemiring with }
+
+instance : NonAssocCommSemiring (Center R) :=
+  {toNonAssocSemiring := inferInstanceAs <| NonAssocSemiring (center R), mul_comm}
 
 variable {R}
 
@@ -294,7 +301,16 @@ end NonAssocSemiring
 section Semiring
 
 /-- The center is commutative. -/
-instance center.commSemiring {R} [Semiring R] : CommSemiring (Center R) :=
+instance center.commSemiring {R} [Semiring R] : CommSemiring (center R) where
+  __ := (center R).toSemiring
+  __ : CommMonoid (center R) := inferInstanceAs <| CommMonoid (Submonoid.center R)
+
+-- no instance diamond, unlike the primed version
+example {R} [Semiring R] :
+    center.commSemiring.toSemiring = Subsemiring.toSemiring (center R) := by
+  with_reducible_and_instances rfl
+
+instance {R} [Semiring R] : CommSemiring (Center R) :=
   { toSemiring := inferInstanceAs <| Semiring (center R), mul_comm}
 
 theorem mem_center_iff {R} [Semiring R] {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g :=
@@ -948,6 +964,14 @@ instance smulCommClass_left [SMul R' β] [SMul α β] [SMulCommClass R' α β] (
 instance smulCommClass_right [SMul α β] [SMul R' β] [SMulCommClass α R' β] (S : Subsemiring R') :
     SMulCommClass α S β :=
   inferInstance
+
+instance {R M : Type*} [Semiring R] [MulAction R M] :
+    SMulCommClass R (Subsemiring.center R) M :=
+  inferInstanceAs <| SMulCommClass R (Submonoid.center R) M
+
+instance {R M : Type*} [Semiring R] [MulAction R M] :
+    SMulCommClass (Subsemiring.center R) R M :=
+  inferInstanceAs <| SMulCommClass (Submonoid.center R) R M
 
 /-- Note that this provides `IsScalarTower S R R` which is needed by `smul_mul_assoc`. -/
 instance isScalarTower [SMul α β] [SMul R' α] [SMul R' β] [IsScalarTower R' α β]

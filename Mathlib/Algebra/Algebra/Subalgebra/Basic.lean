@@ -913,6 +913,12 @@ theorem center_toSubring (R A : Type*) [CommRing R] [Ring A] [Algebra R A] :
 
 variable {R A}
 
+instance : CommSemiring (center R A) :=
+  inferInstanceAs (CommSemiring (Subsemiring.center A))
+
+instance {A : Type*} [Ring A] [Algebra R A] : CommRing (center R A) :=
+  inferInstanceAs (CommRing (Subring.center A))
+
 theorem mem_center_iff {a : A} : a ∈ center R A ↔ ∀ b : A, b * a = a * b :=
   Subsemigroup.mem_center_iff
 

@@ -233,12 +233,12 @@ theorem center_toSubsemigroup :
     (center R).toSubsemigroup = Subsemigroup.center R :=
   rfl
 
+instance center.instNonUnitalCommSemiring : NonUnitalCommSemiring (center R) :=
+  { Subsemigroup.center.commSemigroup,
+    NonUnitalSubsemiringClass.toNonUnitalNonAssocSemiring (center R) with }
+
 instance : NonUnitalNonAssocCommSemiring (Center R) :=
   {toNonUnitalNonAssocSemiring := inferInstanceAs <| NonUnitalNonAssocSemiring (center R), mul_comm}
-
-/-- The center is commutative and associative. -/
-instance (priority := low) center.instNonUnitalCommSemiring : NonUnitalCommSemiring (Center R) where
-  mul_assoc := Center.mul_assoc'
 
 @[simp]
 lemma _root_.Center.coe_zero : (0 : Center R).val = 0 := rfl
