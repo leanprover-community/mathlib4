@@ -53,9 +53,9 @@ lemma tendsto_seminorm_smulLeftCLM_comp_smul_sub {φ : E → ℝ} (hφ : ContDif
   filter_upwards [eventually_ge_atTop 1] with R hR
   have hR0 : 0 < R := by linarith
   have hcd : ContDiff ℝ ∞ (fun x : E ↦ φ (R⁻¹ • x)) := hφ.comp (contDiff_const_smul _)
-  have hcs : HasCompactSupport (fun x : E ↦ φ (R⁻¹ • x)) := hφc.comp_smul (by positivity)
   refine seminorm_le_bound ℝ k n _ (by positivity) fun x ↦ ?_
-  rw [(by funext x; simp [smulLeftCLM_apply_apply (hcs.hasTemperateGrowth hcd), sub_smul] :
+  rw [(by funext; simp [smulLeftCLM_apply_apply
+    ((hφc.comp_smul (by positivity)).hasTemperateGrowth hcd), sub_smul] :
     ⇑(smulLeftCLM F (fun x ↦ φ (R⁻¹ • x)) f - f) = fun x ↦ (φ (R⁻¹ • x) - 1) • f x)]
   rcases lt_or_ge ‖x‖ (R * r) with hxR | hxR
   · suffices iteratedFDeriv ℝ n (fun y ↦ (φ (R⁻¹ • y) - 1) • f y) x = 0 by
@@ -63,30 +63,25 @@ lemma tendsto_seminorm_smulLeftCLM_comp_smul_sub {φ : E → ℝ} (hφ : ContDif
     suffices (fun y ↦ (φ (R⁻¹ • y) - 1) • f y) =ᶠ[𝓝 x] 0 by
       simp [(EventuallyEq.iteratedFDeriv ℝ this n).eq_of_nhds]
     filter_upwards [(isOpen_lt continuous_norm continuous_const).mem_nhds hxR] with y hy
-    have : R⁻¹ • y ∈ ball (0 : E) r := by
-      rw [mem_ball_zero_iff, norm_smul, norm_inv, Real.norm_eq_abs, abs_of_pos hR0,
+    have : R⁻¹ • y ∈ ball 0 r := by
+      rw [mem_ball_zero_iff, norm_smul, norm_inv, norm_eq_abs, abs_of_pos hR0,
         inv_mul_lt_iff₀ hR0]
-      simpa [mul_comm] using hy
+      grind
     simp [hφr _ this]
-  · have hx0 : 0 < ‖x‖ := by nlinarith
-    calc
-      _ ≤ ∑ i ∈ range (n + 1), (n.choose i : ℝ) *
+  · calc
+      _ ≤ ∑ i ∈ range (n + 1), (n.choose i) *
             ‖iteratedFDeriv ℝ i (fun y ↦ φ (R⁻¹ • y) - 1) x‖ *
             (‖x‖ ^ k * ‖iteratedFDeriv ℝ (n - i) f x‖) := by
           grw [norm_iteratedFDeriv_smul_le (hcd.sub contDiff_const) (f.smooth ⊤) x
             (mod_cast le_top)]
           grind [mul_sum]
-      _ ≤ ∑ i ∈ range (n + 1), (n.choose i : ℝ) * (A + 1) *
+      _ ≤ ∑ i ∈ range (n + 1), (n.choose i) * (A + 1) *
             (f.seminorm ℝ (k + 1) (n - i) / (R * r)) := by
           refine sum_le_sum fun i hmem ↦ ?_
-          have hin : i ≤ n := Nat.lt_succ_iff.mp (Finset.mem_range.mp hmem)
           have : ‖iteratedFDeriv ℝ i (fun y ↦ φ (R⁻¹ • y) - 1) x‖ ≤ A + 1 := by
             rcases i.eq_zero_or_pos with rfl | hi
-            · rw [norm_iteratedFDeriv_zero]
-              have := hA 0 (by omega) (R⁻¹ • x)
-              rw [norm_iteratedFDeriv_zero] at this
-              calc ‖φ (R⁻¹ • x) - 1‖ ≤ ‖φ (R⁻¹ • x)‖ + ‖(1 : ℝ)‖ := norm_sub_le _ _
-                _ ≤ A + 1 := by simp only [norm_one]; linarith
+            · have := hA 0 (by omega) (R⁻¹ • x)
+              grind [norm_iteratedFDeriv_zero, norm_sub_le, norm_one]
             · have : iteratedFDeriv ℝ i (fun y ↦ φ (R⁻¹ • y) - 1) x
                   = iteratedFDeriv ℝ i (fun y ↦ φ (R⁻¹ • y)) x := by
                 rw [(by rfl : (fun y ↦ φ (R⁻¹ • y) - 1) = (fun y ↦ φ (R⁻¹ • y)) - fun _ ↦ 1),
@@ -95,31 +90,24 @@ lemma tendsto_seminorm_smulLeftCLM_comp_smul_sub {φ : E → ℝ} (hφ : ContDif
                   iteratedFDeriv_const_of_ne (by omega)]
                 simp
               rw [this, iteratedFDeriv_comp_const_smul _ (hφ.of_le (mod_cast le_top)), norm_smul,
-                norm_pow, Real.norm_eq_abs, abs_of_pos (by positivity)]
+                norm_pow, norm_eq_abs, abs_of_pos (by positivity)]
               have : R⁻¹ ≤ 1 := by rwa [inv_le_one₀ hR0]
-              grw [hA i hin (R⁻¹ • x), pow_le_one₀ (by positivity) this]
+              grw [hA i (Nat.lt_succ_iff.mp (mem_range.mp hmem)) (R⁻¹ • x),
+                pow_le_one₀ (by positivity) this]
               linarith
           grw [this]
           gcongr
-          rw [le_div_iff₀ (by positivity)]
-          calc ‖x‖ ^ k * ‖iteratedFDeriv ℝ (n - i) f x‖ * (R * r)
-              ≤ ‖x‖ ^ k * ‖iteratedFDeriv ℝ (n - i) f x‖ * ‖x‖ :=
-                mul_le_mul_of_nonneg_left hxR (by positivity)
-            _ = ‖x‖ ^ (k + 1) * ‖iteratedFDeriv ℝ (n - i) f x‖ := by rw [pow_succ]; ring
-            _ ≤ f.seminorm ℝ (k + 1) (n - i) := le_seminorm ℝ (k + 1) (n - i) f x
-      _ = C * R⁻¹ := by
-          rw [hCdef, Finset.mul_sum, Finset.sum_mul]
-          refine Finset.sum_congr rfl fun i _ ↦ ?_
-          field_simp
+          grw [le_div_iff₀ (by positivity), hxR]
+          grind [le_seminorm ℝ (k + 1) (n - i) f x]
+      _ = _ := by rw [hCdef, mul_sum, sum_mul]; grind
 
 /-- As `R → ∞`, multiplying `f` by the rescaled cutoff `fun x ↦ φ (R⁻¹ • x)` converges to `f` in
 the Schwartz topology, for any smooth, compactly supported `φ` equal to `1` near the origin. -/
 theorem tendsto_smulLeftCLM_comp_smul {φ : E → ℝ} (hφ : ContDiff ℝ ∞ φ)
     (hφc : HasCompactSupport φ) (hφ1 : φ =ᶠ[𝓝 0] 1) (f : 𝓢(E, F)) :
     Tendsto (fun R : ℝ ↦ smulLeftCLM F (fun x ↦ φ (R⁻¹ • x)) f) atTop (𝓝 f) := by
-  obtain ⟨r, hr, hφr⟩ : ∃ r > 0, ∀ y ∈ ball (0 : E) r, φ y = 1 := by
-    obtain ⟨r, hr, hr'⟩ := Metric.eventually_nhds_iff_ball.mp hφ1
-    exact ⟨r, hr, fun y hy ↦ by simpa using hr' y hy⟩
+  obtain ⟨r, hr, hr'⟩ := Metric.eventually_nhds_iff_ball.mp hφ1
+  have hφr (y) (hy : y ∈ ball 0 r) : φ y = 1 := by simpa using hr' y hy
   rw [(schwartz_withSeminorms ℝ E F).tendsto_nhds]
   rintro ⟨k, n⟩ ε hε
   simpa using (tendsto_seminorm_smulLeftCLM_comp_smul_sub hφ hφc hr hφr f k n).eventually
@@ -131,10 +119,10 @@ variable [FiniteDimensional ℝ E]
 theorem dense_hasCompactSupport : Dense {f : 𝓢(E, F) | HasCompactSupport (f : E → F)} := by
   intro f
   set b : ContDiffBump (0 : E) := ⟨1, 2, one_pos, one_lt_two⟩ with hb
-  have hφcd : ContDiff ℝ ∞ (⇑b) := b.contDiff
-  have hφcs : HasCompactSupport (⇑b) := b.hasCompactSupport
-  have hφ1 : (⇑b) =ᶠ[𝓝 0] 1 := by
-    filter_upwards [ball_mem_nhds (0 : E) one_pos] with y hy
+  have hφcd : ContDiff ℝ ∞ ⇑b := b.contDiff
+  have hφcs : HasCompactSupport ⇑b := b.hasCompactSupport
+  have hφ1 : ⇑b =ᶠ[𝓝 0] 1 := by
+    filter_upwards [ball_mem_nhds 0 one_pos] with y hy
     exact b.one_of_mem_closedBall (ball_subset_closedBall hy)
   refine mem_closure_of_tendsto (tendsto_smulLeftCLM_comp_smul hφcd hφcs hφ1 f) ?_
   filter_upwards [eventually_gt_atTop 0] with R hR
