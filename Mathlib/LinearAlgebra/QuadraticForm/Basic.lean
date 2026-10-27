@@ -818,10 +818,14 @@ instance [Invertible (2 : R)] : Invertible (2 : Module.End R M) where
     (1 : Module.End R M)
   invOf_mul_self := by
     ext m
-    simp [Submonoid.smul_def, ← ofNat_smul_eq_nsmul R]
+    simp only [smul_one_mul, LinearMap.smul_apply, Module.End.ofNat_apply, Submonoid.smul_def,
+      one_apply_eq_self]
+    rw [← ofNat_smul_eq_nsmul R, invOf_smul_smul (2 : R) m]
   mul_invOf_self := by
     ext m
-    simp [Submonoid.smul_def, ← ofNat_smul_eq_nsmul R]
+    simp only [mul_smul_one, LinearMap.smul_apply, Module.End.ofNat_apply, Submonoid.smul_def,
+      one_apply_eq_self]
+    rw [← ofNat_smul_eq_nsmul R, invOf_smul_smul (2 : R) m]
 
 /-- If `2` is invertible in `R`, then applying the inverse of `2` in `End R M` to an element
 of `M` is the same as multiplying by the inverse of `2` in `R`. -/
