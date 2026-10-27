@@ -8,8 +8,8 @@ module
 public import Mathlib.GroupTheory.Complement
 public import Mathlib.LinearAlgebra.Basis.VectorSpace
 
-import Mathlib.Algebra.Order.Ring.Rat
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.Ring.Rat
 
 /-! # Lemma of B. H. Neumann on coverings of a group by cosets.
 

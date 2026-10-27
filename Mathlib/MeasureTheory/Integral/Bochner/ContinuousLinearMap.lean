@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Analysis.Normed.Operator.CompleteCodomain
 public import Mathlib.MeasureTheory.Integral.Bochner.Set
-public import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 public import Mathlib.Topology.Algebra.Module.Equiv.Prod
+public import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 
 /-!
 # Continuous linear maps composed with integration

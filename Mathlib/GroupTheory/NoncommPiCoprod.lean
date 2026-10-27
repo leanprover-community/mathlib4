@@ -5,8 +5,8 @@ Authors: Joachim Breitner
 -/
 module
 
-public import Mathlib.GroupTheory.OrderOfElement
 public import Mathlib.Data.Nat.GCD.BigOperators
+public import Mathlib.GroupTheory.OrderOfElement
 public import Mathlib.Order.SupIndep
 
 /-!

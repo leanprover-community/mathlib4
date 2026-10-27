@@ -5,8 +5,8 @@ Authors: Anatole Dedecker
 -/
 module
 
-public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.Asymptotics.Defs
+public import Mathlib.Analysis.Normed.Module.Basic
 
 import Mathlib.Analysis.Asymptotics.Theta
 

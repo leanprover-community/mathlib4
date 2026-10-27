@@ -34,6 +34,3 @@ lemma FiniteDimensional.of_isCompactOperator_id (h : IsCompactOperator (id : E �
     FiniteDimensional 𝕜 E := by
   have := LocallyCompactSpace.of_isCompactOperator_id h
   exact FiniteDimensional.of_locallyCompactSpace 𝕜
-
-@[deprecated (since := "2026-03-05")] alias IsCompactOperator.finiteDimensional :=
-  FiniteDimensional.of_isCompactOperator_id

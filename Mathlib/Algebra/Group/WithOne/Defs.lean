@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.Group.DivInvMonoid
 public import Mathlib.Data.Option.Basic
-public import Mathlib.Tactic.Common
 public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.Common
 
 import Mathlib.Basic.Nontrivial.Basic
 

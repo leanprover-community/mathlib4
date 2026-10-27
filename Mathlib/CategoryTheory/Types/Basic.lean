@@ -93,7 +93,6 @@ end TypeCat
 
 open TypeCat CategoryTheory
 
-@[to_additive_do_translate] -- Expressions involving this instance can still be additivized.
 instance CategoryTheory.types : Category.{u} (Type u) where
   Hom := Hom
   id X := ⟨.id X⟩
@@ -248,19 +247,6 @@ variable (σ : F ⟶ G) (τ : G ⟶ H)
 
 attribute [elementwise nosimp] Functor.map_comp Functor.map_id NatTrans.comp_app
 
-@[deprecated Functor.map_comp_apply +typeChanged (since := "2026-03-09")]
-theorem map_comp_apply (f : X ⟶ Y) (g : Y ⟶ Z) (a : F.obj X) :
-    (F.map (f ≫ g)) a = (F.map g) ((F.map f) a) :=
-  F.map_comp_apply f g a
-
-@[deprecated Functor.map_id_apply +typeChanged (since := "2026-03-09")]
-theorem map_id_apply (a : F.obj X) : (F.map (𝟙 X)) a = a :=
-  F.map_id_apply X a
-
-@[deprecated NatTrans.comp_app_apply +typeChanged (since := "2026-03-09")]
-theorem comp (x : F.obj X) : (σ ≫ τ).app X x = τ.app X (σ.app X x) :=
-  σ.comp_app_apply τ X x
-
 attribute [elementwise (attr := simp)] eqToHom_map_comp
 
 variable {D : Type u'} [𝒟 : Category.{u'} D] (I J : D ⥤ C) (ρ : I ⟶ J) {W : D}
@@ -398,9 +384,6 @@ a categorical isomorphism between those types.
 def toIso (e : X ≃ Y) : X ≅ Y where
   hom := ofHom fun x ↦ e x
   inv := ofHom fun x ↦ e.symm x
-
-@[deprecated (since := "2026-03-20")] alias toIso_hom := toIso_hom_hom_apply
-@[deprecated (since := "2026-03-20")] alias toIso_inv := toIso_inv_hom_apply
 
 end Equiv
 

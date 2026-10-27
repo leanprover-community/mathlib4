@@ -8,8 +8,8 @@ module
 public import Mathlib.Data.Finsupp.Order
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
-import Mathlib.Data.Finsupp.Antidiagonal
 import Mathlib.Algebra.Group.TypeTags.Pointwise
+import Mathlib.Data.Finsupp.Antidiagonal
 
 /-! # weights of Finsupp functions
 

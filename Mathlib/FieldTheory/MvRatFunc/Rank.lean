@@ -18,8 +18,6 @@ import Mathlib.RingTheory.Algebraic.MvPolynomial
 
 public section
 
-noncomputable section
-
 universe u v
 
 open Cardinal in

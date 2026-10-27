@@ -5,8 +5,8 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Data.Nat.Cast.WithTop
 public import Mathlib.Algebra.Ring.Nat
+public import Mathlib.Data.Nat.Cast.WithTop
 
 import Mathlib.Order.Nat
 

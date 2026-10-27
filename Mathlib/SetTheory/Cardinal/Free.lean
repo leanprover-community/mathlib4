@@ -6,8 +6,8 @@ Authors: Eric Wieser, Daniel Weber
 module
 
 public import Mathlib.Algebra.FreeAbelianGroup.Finsupp
-public import Mathlib.RingTheory.FreeCommRing
 public import Mathlib.Algebra.MonoidAlgebra.Cardinal
+public import Mathlib.RingTheory.FreeCommRing
 
 import Mathlib.Algebra.Ring.TransferInstance
 import Mathlib.Data.Finsupp.Fintype

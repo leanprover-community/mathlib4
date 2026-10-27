@@ -311,7 +311,7 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_measure_n
           _ ≤ ∫ y in s, c y ^ n ∂μ :=
             setIntegral_mono_set (I n) (J n) (Eventually.of_forall inter_subset_right)
       simp_rw [φ, ← div_eq_inv_mul, div_pow, div_div]
-      have := ENNReal.toReal_pos (hμ v v_open x₀_v).ne'
+      have : 0 < μ.real (v ∩ s) := ENNReal.toReal_pos (hμ v v_open x₀_v).ne'
         ((measure_mono inter_subset_right).trans_lt hs.measure_lt_top).ne
       gcongr
       · exact hnc _ hx.1
