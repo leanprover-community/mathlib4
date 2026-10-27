@@ -183,8 +183,8 @@ theorem zero_le_padicValRat_of_nat (n : ℕ) : 0 ≤ padicValRat p n := by simp
 theorem padicValRat_of_nat (n : ℕ) : ↑(multiplicity p n) = padicValRat p n := by simp
 
 @[simp]
-theorem Nat.Prime.multiplicity_self (hp : p.Prime) : multiplicity p p = 1 :=
-  Nat.multiplicity_self hp.one_lt
+theorem Nat.Prime.multiplicity_self [hp : Fact p.Prime] : multiplicity p p = 1 :=
+  Nat.multiplicity_self hp.out.one_lt
 
 @[deprecated (since := "2026-09-11")] alias padicValNat_self := Nat.Prime.multiplicity_self
 
@@ -441,7 +441,7 @@ theorem multiplicity_div_of_dvd (h : b ∣ a) :
 
 /-- Dividing out by a prime factor reduces the `multiplicity` by `1`. -/
 theorem multiplicity_div (dvd : p ∣ b) : multiplicity p (b / p) = multiplicity p b - 1 := by
-  rw [Nat.multiplicity_div_of_dvd dvd, hp.out.multiplicity_self]
+  rw [Nat.multiplicity_div_of_dvd dvd, Nat.Prime.multiplicity_self]
 
 /-- A version of `padicValRat.pow` for `multiplicity`. -/
 @[simp]
@@ -449,7 +449,7 @@ theorem multiplicity_pow (a n : ℕ) : multiplicity p (a ^ n) = n * multiplicity
   simpa only [← @Nat.cast_inj ℤ, push_cast] using padicValRat.pow a
 
 theorem multiplicity_prime_pow (n : ℕ) : multiplicity p (p ^ n) = n := by
-  rw [multiplicity_pow p, hp.out.multiplicity_self, mul_one]
+  rw [multiplicity_pow p, Nat.Prime.multiplicity_self, mul_one]
 
 theorem multiplicity_div_pow (dvd : p ^ a ∣ b) :
     multiplicity p (b / p ^ a) = multiplicity p b - a := by
@@ -563,7 +563,7 @@ lemma multiplicity_add_le_self {a : ℕ} [hp : Fact p.Prime] (ha : p < a) :
     have : multiplicity p k < k := by calc
       _ ≤ log p k := multiplicity_le_nat_log k
       _ < _ := log_lt_self p (by lia)
-    rw [hk, Nat.multiplicity_mul (by lia) (by lia), hp.out.multiplicity_self]
+    rw [hk, Nat.multiplicity_mul (by lia) (by lia), Nat.Prime.multiplicity_self]
     calc
       _ ≤ p + k := by lia
       _ ≤ _ := Nat.add_le_mul hp.out.two_le (by lia)
@@ -814,6 +814,6 @@ theorem padicValInt.mul [hp : Fact p.Prime] {a b : ℤ} (ha : a ≠ 0) (hb : b �
 theorem padicValInt_mul_eq_succ [hp : Fact p.Prime] (a : ℤ) (ha : a ≠ 0) :
     padicValInt p (a * p) = padicValInt p a + 1 := by
   rw [padicValInt.mul ha (Int.natCast_ne_zero.mpr hp.out.ne_zero)]
-  simp only [padicValInt.of_nat, hp.out.multiplicity_self]
+  simp only [padicValInt.of_nat, Nat.Prime.multiplicity_self]
 
 end padicValInt
