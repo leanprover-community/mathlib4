@@ -10,9 +10,6 @@ public meta import Lean.Elab.Tactic.BuiltinTactic
 public meta import Lean.Meta.Tactic.TryThis
 public import Mathlib.Init
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Success If Fail With Message
 

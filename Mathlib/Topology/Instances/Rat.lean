@@ -13,9 +13,6 @@ public import Mathlib.Topology.Instances.Nat
 
 import Mathlib.Algebra.Order.Ring.NNRat
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Topology on the rational numbers
 

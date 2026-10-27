@@ -10,9 +10,6 @@ public import Mathlib.Order.PartialSups
 
 import Mathlib.Order.SuccPred.LinearLocallyFinite
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # `PartialSups` in a `SuccAddOrder`
 

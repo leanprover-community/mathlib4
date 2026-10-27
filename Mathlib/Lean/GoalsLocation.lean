@@ -10,9 +10,6 @@ public import Lean.SubExpr
 
 import Mathlib.Init
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Utilities for `SubExpr.GoalsLocation`
 

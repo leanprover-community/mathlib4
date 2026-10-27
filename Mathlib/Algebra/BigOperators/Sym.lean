@@ -9,9 +9,6 @@ public import Mathlib.Data.Finset.Sym
 
 import Mathlib.Order.Sym2
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Lemmas on `Finset.sum` and `Finset.prod` involving `Finset.sym2` or `Finset.sym`.
 -/

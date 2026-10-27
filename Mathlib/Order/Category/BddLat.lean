@@ -11,9 +11,6 @@ public import Mathlib.Order.Category.Lat
 public import Mathlib.Order.Category.Semilat
 public import Mathlib.Order.Hom.WithTopBot
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # The category of bounded lattices
 
