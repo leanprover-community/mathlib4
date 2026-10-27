@@ -170,8 +170,7 @@ theorem Module.End.eventually_disjoint_ker_pow_range_pow (f : End R M) :
   rw [← hn _ hm, Submodule.eq_bot_iff]
   rintro - ⟨hx, ⟨x, rfl⟩⟩
   apply pow_map_zero_of_le hm
-  replace hx : x ∈ LinearMap.ker (f ^ (n + m)) := by
-    simpa [f.pow_apply n, f.pow_apply m, ← f.pow_apply (n + m), ← iterate_add_apply] using hx
+  replace hx : x ∈ LinearMap.ker (f ^ (n + m)) := by simpa [← iterate_add_apply] using hx
   rwa [← hn _ (n.le_add_right m)] at hx
 
 lemma LinearMap.eventually_iSup_ker_pow_eq (f : M →ₗ[R] M) :

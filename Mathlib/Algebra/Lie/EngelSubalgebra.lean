@@ -89,7 +89,7 @@ lemma normalizer_engel (x : L) : normalizer (engel R x) = engel R x := by
   rcases hy with ⟨n, hn⟩
   rw [mem_engel_iff]
   use n + 1
-  rw [pow_succ, Module.End.mul_apply]
+  rw [pow_succ, mul_apply_eq_comp]
   exact hn
 
 variable {R}
@@ -128,14 +128,14 @@ lemma normalizer_eq_self_of_engel_le [IsArtinian R L]
     generalize k + 1 = k
     induction k generalizing y with
     | zero =>
-      cases y; intro hy; simp only [pow_zero, Module.End.one_apply]
+      cases y; intro hy; simp only [pow_zero, one_apply_eq_self]
       exact (AddSubmonoid.mk_eq_zero N.toAddSubmonoid).mp hy
     | succ k ih => solve_by_elim
   · rw [← Submodule.map_le_iff_le_comap]
     apply le_sup_of_le_right
     rw [Submodule.map_le_iff_le_comap]
     rintro _ ⟨y, rfl⟩
-    simp only [pow_succ', Module.End.mul_apply, Submodule.mem_comap, mem_toSubmodule]
+    simp only [pow_succ', mul_apply_eq_comp, Submodule.mem_comap, mem_toSubmodule]
     apply aux₁
     simp only [Submodule.coe_subtype, SetLike.coe_mem]
 
@@ -162,7 +162,9 @@ lemma isNilpotent_of_forall_le_engel [IsNoetherian R L]
   obtain ⟨m, hm⟩ := h
   obtain (hmn | hmn) : m ≤ n ∨ n ≤ m := le_total m n
   · exact Module.End.pow_map_zero_of_le hmn hm
-  · have : ∀ k : ℕ, ((ad R L) x ^ k) y = 0 ↔ y ∈ K k := by simp [K, Subtype.ext_iff, coe_ad_pow]
+  · have : ∀ k : ℕ, ((ad R L) x ^ k) y = 0 ↔ y ∈ K k := by
+      simp only [OrderHom.coe_mk, LinearMap.mem_ker, Subtype.ext_iff, coe_ad_pow,
+        ZeroMemClass.coe_zero, implies_true, K]
     rwa [this, ← hn m hmn, ← this] at hm
 
 end LieSubalgebra
