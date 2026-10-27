@@ -172,7 +172,7 @@ alias pow_apply := IsPowApply.pow_apply
 class IsNPowApplyEqIterate (F : Type*) {α : outParam Type*} [FunLike F α α] [NPow F] where
   pow_apply_eq_iterate (f : F) (n : ℕ) (x : α) : (f ^ n) x = f^[n] x := by intros; rfl
 
-@[simp, grind =]
+@[grind =]
 alias pow_apply_eq_iterate := IsNPowApplyEqIterate.pow_apply_eq_iterate
 
 instance {F α : Type*} [FunLike F α α] [Monoid F] [IsOneApplyEqSelf F] [IsMulApplyEqComp F] :
@@ -274,7 +274,6 @@ theorem coe_one_eq_id_iff [One F'] [IsOneApplyEqSelf F'] (f : F') : (f : α → 
 theorem coe_mul_eq_comp [Mul F'] [IsMulApplyEqComp F'] (f g : F') : ↑(f * g) = f ∘ g := by
   ext; simp
 
-@[simp, norm_cast]
 lemma coe_pow_eq_iterate [NPow F'] [IsNPowApplyEqIterate F']
     (f : F') (n : ℕ) : ⇑(f ^ n) = f^[n] :=
   funext <| pow_apply_eq_iterate f n
