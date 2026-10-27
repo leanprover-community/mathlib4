@@ -176,6 +176,7 @@ theorem trace_mul_pow_comm_of_ne_zero [CommSemiring R] [DecidableEq m] [Decidabl
   | k + 1 =>
     rw [pow_succ, ← Matrix.mul_assoc, trace_mul_cycle, ← Matrix.mul_pow_mul, Matrix.mul_assoc,
       ← pow_succ]
+
 /-- For square matrices, the trace of any power of `A * B` is unchanged when the factors
 are reversed.
 
