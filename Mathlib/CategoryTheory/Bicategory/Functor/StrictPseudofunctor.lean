@@ -18,8 +18,7 @@ underlying categories, see `StrictPseudofunctor.toFunctor`.
 
 ## TODO
 
-Once the deprecated `Mathlib/CategoryTheory/Bicategory/Functor/Strict.lean` is removed we should
-rename this file to `Mathlib/CategoryTheory/Bicategory/Functor/Strict.lean`.
+Rename this file to `Mathlib/CategoryTheory/Bicategory/Functor/Strict.lean`.
 
 -/
 

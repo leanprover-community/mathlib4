@@ -42,7 +42,7 @@ is normed) that `‖f x‖` is bounded by a multiple of `‖x‖`. Hence the "bo
 ## Notes
 
 The main use of this file is `IsBoundedBilinearMap`.
-The file `Mathlib/Analysis/NormedSpace/Multilinear/Basic.lean`
+The file `Mathlib/Analysis/Normed/Module/Multilinear/Basic.lean`
 already expounds the theory of multilinear maps,
 but the `2`-variables case is sufficiently simpler to currently deserve its own treatment.
 

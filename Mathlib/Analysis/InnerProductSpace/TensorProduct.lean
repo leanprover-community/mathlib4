@@ -44,7 +44,7 @@ inner product spaces.
 ## TODO:
 
 * Define the normed space without needing inner products, this should be analogous to
-  `Mathlib/Analysis/NormedSpace/PiTensorProduct/InjectiveSeminorm.lean`.
+  `Mathlib/Analysis/Normed/Module/PiTensorProduct/InjectiveSeminorm.lean`.
 
 -/
 

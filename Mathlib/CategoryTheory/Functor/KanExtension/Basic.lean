@@ -759,7 +759,7 @@ section postcompose₂
 variable (F' : D ⥤ H) {L : C ⥤ D} {F : C ⥤ H}
 
 -- Note: the forward direction of this lemma becomes an instance if we import
--- the file `Mathlib/CategoryTheory/Functor/KanExtension/PreservesAdjunction.lean`
+-- the file `Mathlib/CategoryTheory/Functor/KanExtension/AdjunctionPreserves.lean`
 set_option backward.isDefEq.respectTransparency false in
 lemma isLeftKanExtension_postcompose₂_iff
     (α : F ⟶ L ⋙ F') (G : H ⥤ H') [G.IsEquivalence] :
@@ -771,7 +771,7 @@ lemma isLeftKanExtension_postcompose₂_iff
   exact StructuredArrow.isoMk (Iso.refl _)
 
 -- Note: the forward direction of this lemma becomes an instance if we import
--- the file `Mathlib/CategoryTheory/Functor/KanExtension/PreservesAdjunction.lean`
+-- the file `Mathlib/CategoryTheory/Functor/KanExtension/AdjunctionPreserves.lean`
 set_option backward.isDefEq.respectTransparency false in
 lemma isRightKanExtension_postcompose₂_iff
     (β : L ⋙ F' ⟶ F) (G : H ⥤ H') [G.IsEquivalence] :
