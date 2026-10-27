@@ -245,7 +245,7 @@ instance instNeg [NegZeroClass R] [ContinuousNeg R] : Neg C(X, R)₀ where
 
 instance [NegZeroClass R] [ContinuousNeg R] : IsNegApply C(X, R)₀ where
 
-@[deprecated FunLike.coe_zero +typeChanged (since := "2026-10-26")]
+@[deprecated FunLike.coe_neg +typeChanged (since := "2026-10-26")]
 protected lemma coe_neg [NegZeroClass R] [ContinuousNeg R] (f : C(X, R)₀) : ⇑(-f) = -f := rfl
 
 instance instSub [SubNegZeroMonoid R] [ContinuousSub R] : Sub C(X, R)₀ where
@@ -253,7 +253,7 @@ instance instSub [SubNegZeroMonoid R] [ContinuousSub R] : Sub C(X, R)₀ where
 
 instance [SubNegZeroMonoid R] [ContinuousSub R] : IsSubApply C(X, R)₀ where
 
-@[deprecated FunLike.coe_zero +typeChanged (since := "2026-10-26")]
+@[deprecated FunLike.coe_sub +typeChanged (since := "2026-10-26")]
 protected lemma coe_sub [SubNegZeroMonoid R] [ContinuousSub R] (f g : C(X, R)₀) :
     ⇑(f - g) = f - g := rfl
 
@@ -262,7 +262,7 @@ instance instMul [MulZeroClass R] [ContinuousMul R] : Mul C(X, R)₀ where
 
 instance [MulZeroClass R] [ContinuousMul R] : IsMulApply C(X, R)₀ where
 
-@[deprecated FunLike.coe_zero +typeChanged (since := "2026-10-26")]
+@[deprecated FunLike.coe_mul +typeChanged (since := "2026-10-26")]
 protected lemma coe_mul [MulZeroClass R] [ContinuousMul R] (f g : C(X, R)₀) :
     ⇑(f * g) = f * g := rfl
 
@@ -273,7 +273,7 @@ instance instSMul {M : Type*} [Zero R] [SMulZeroClass M R] [ContinuousConstSMul 
 instance {M : Type*} [Zero R] [SMulZeroClass M R] [ContinuousConstSMul M R] :
     IsSMulApply M C(X, R)₀ where
 
-@[deprecated FunLike.coe_zero +typeChanged (since := "2026-10-26")]
+@[deprecated FunLike.coe_smul +typeChanged (since := "2026-10-26")]
 protected lemma coe_smul {M : Type*} [Zero R] [SMulZeroClass M R] [ContinuousConstSMul M R]
     (m : M) (f : C(X, R)₀) : ⇑(m • f) = m • f := rfl
 
