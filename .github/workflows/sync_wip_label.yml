@@ -8,15 +8,15 @@ on:
       - converted_to_draft
       - ready_for_review
 
-# Limit permissions for GH_TOKEN for the entire workflow
+# Limit permissions for `GH_TOKEN` for the entire workflow
 permissions:
   pull-requests: write
   # All other permissions are implicitly 'none'
 
 env:
-  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  REPO: ${{ github.repository }}
   PR_NUMBER: ${{ github.event.pull_request.number }}
+  REPO: ${{ github.repository }}
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   sync-wip-label:
@@ -30,9 +30,9 @@ jobs:
       - name: remove label WIP
         if: github.event.action == 'ready_for_review'
         run: gh pr edit "${PR_NUMBER}" --repo "${REPO}" --remove-label 'WIP'
-      - name: mark as draft
-        if: github.event.action == 'labeled' && github.event.label.name == 'WIP' && github.event.pull_request.draft != true
+      - name: convert to draft
+        if: github.event.action == 'labeled' && github.event.label.name == 'WIP' && !github.event.pull_request.draft
         run: gh pr ready "${PR_NUMBER}" --repo "${REPO}" --undo
-      - name: mark ready to review
-        if: github.event.action == 'unlabeled' && github.event.label.name == 'WIP' && github.event.pull_request.draft == true
+      - name: mark ready for review
+        if: github.event.action == 'unlabeled' && github.event.label.name == 'WIP' && github.event.pull_request.draft
         run: gh pr ready "${PR_NUMBER}" --repo "${REPO}"
