@@ -168,7 +168,7 @@ theorem trace_mul_cycle' [NonUnitalCommSemiring R] (A : Matrix m n R) (B : Matri
 theorem trace_replicateCol_mul_replicateRow {ι : Type*} [Unique ι] [NonUnitalNonAssocSemiring R]
     (a b : n → R) : trace (replicateCol ι a * replicateRow ι b) = a ⬝ᵥ b := by
   apply Finset.sum_congr rfl
-  simp [mul_apply]
+  simp [Matrix.mul_apply]
 
 @[simp]
 theorem trace_vecMulVec [NonUnitalNonAssocSemiring R] (a b : n → R) :
@@ -253,12 +253,12 @@ theorem trace_single_eq_same : trace (single i i c) = c := by
 theorem trace_single_mul [NonUnitalNonAssocSemiring R] [Fintype m]
     (i : n) (j : m) (a : R) (x : Matrix m n R) :
     (single i j a * x).trace = a • x j i := by
-  simp [trace, mul_apply, single, ite_and]
+  simp [trace, Matrix.mul_apply, single, ite_and]
 
 theorem trace_mul_single [NonUnitalNonAssocSemiring R] [Fintype m]
     (x : Matrix m n R) (i : n) (j : m) (a : R) :
     (x * single i j a).trace = MulOpposite.op a • x j i := by
-  simp [trace, mul_apply, single, ite_and]
+  simp [trace, Matrix.mul_apply, single, ite_and]
 
 end single
 

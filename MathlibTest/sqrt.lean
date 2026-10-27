@@ -1,6 +1,8 @@
-import Mathlib.Tactic.Eval
-import Mathlib.Tactic.NormNum.NatSqrt
-import Mathlib.Analysis.Rat.NatSqrt.Real
+module
+
+public import Mathlib.Analysis.Rat.NatSqrt.Real
+public import Mathlib.Tactic.Eval
+public import Mathlib.Tactic.NormNum.NatSqrt
 
 open Nat
 

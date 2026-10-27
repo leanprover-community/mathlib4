@@ -207,7 +207,6 @@ section
 
 variable (J : Type*) [Category* J]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `FunctorialFactorizationData.functorCategory`. -/
 @[simps]
 def functorCategory.Z : Arrow (J ⥤ C) ⥤ J ⥤ C where
@@ -271,7 +270,6 @@ instance [HasFunctorialFactorization W₁ W₂] (J : Type*) [Category* J] :
     HasFunctorialFactorization (W₁.functorCategory J) (W₂.functorCategory J) :=
   ⟨⟨(functorialFactorizationData W₁ W₂).functorCategory J⟩⟩
 
-set_option backward.defeqAttrib.useBackward true in
 variable {W₁ W₂} in
 /-- The term in `MapFactorizationData (W₁.inverseImage F) (W₂.inverseImage F) f`
 deduced from `h : MapFactorizationData W₁ W₂ (F.map f)` when `F` is an equivalence
