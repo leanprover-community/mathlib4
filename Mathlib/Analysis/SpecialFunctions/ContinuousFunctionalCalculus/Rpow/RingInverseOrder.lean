@@ -5,10 +5,15 @@ Authors: Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
-import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.ConjSqrt
+public import Mathlib.Algebra.Algebra.StrictPositivity
+public import Mathlib.Analysis.CStarAlgebra.Classes
+public import Mathlib.Analysis.SpecialFunctions.Bernstein
+
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 import Mathlib.Analysis.Convex.Mul
+import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.ConjSqrt
+import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+import Mathlib.Tactic.NormNum.GCD
 
 /-!
 # Order properties of `Ring.inverse` in C⋆-algebras
@@ -48,7 +53,7 @@ public lemma convexOn_ringInverse :
     by_cases ha' : a = 0
     · have hb' : b = 1 := by grind
       simp only [ha', hb', one_mul, zero_add, gt_iff_lt]
-      #adaptation_note /-- Before nightly-2026-06-04, this was just `grind.
+      #adaptation_note /-- Before nightly-2026-06-04, this was just `grind`.
       `spectrum_pos` is not activating in `grind` despite the
       ```
       grind_pattern IsStrictlyPositive.spectrum_pos => x ∈ spectrum 𝕜 a, IsStrictlyPositive a
@@ -60,13 +65,12 @@ public lemma convexOn_ringInverse :
     rw [CFC.rpow_eq_cfc_real zpos.nonneg]
     have hcont : ContinuousOn (fun r : ℝ => (r ^ (-1 : ℝ))) (spectrum ℝ z) :=
       ContinuousOn.rpow_const (f := id) (by fun_prop) (by
-        #adaptation_note /-- Before nightly-2026-06-04, this was just `grind. -/
+        #adaptation_note /-- Before nightly-2026-06-04, this was just `grind`. -/
         intro x h
         have := IsStrictlyPositive.spectrum_pos (𝕜 := ℝ) zpos h
         grind)
     rw [← cfc_smul b _ z hcont, ← Algebra.algebraMap_eq_smul_one, ← cfc_const_add a _ z]
-    refine cfc_congr fun r hr => ?_
-    simp
+    congr! 1
   calc _ = (a • conjSqrt x 1 + b • conjSqrt x z)⁻¹ʳ := by
         rw [conjSqrt_conjSqrt_ringInverse _ _ xpos, conjSqrt_one x xpos.nonneg]
       _ = (conjSqrt x (a • 1 + b • z))⁻¹ʳ := by simp
@@ -83,7 +87,7 @@ public lemma convexOn_ringInverse :
           cases lt_or_eq_of_le ha <;> grind
         · refine ContinuousOn.const_add (ContinuousOn.const_mul ?_ _) _
           exact ContinuousOn.rpow_const (by fun_prop) (by
-            #adaptation_note /-- Before nightly-2026-06-04, this was just `grind. -/
+            #adaptation_note /-- Before nightly-2026-06-04, this was just `grind`. -/
             intro x h
             have := IsStrictlyPositive.spectrum_pos (𝕜 := ℝ) zpos h
             grind)

@@ -255,7 +255,6 @@ variable (H : ∀ (x y : C) (f₁ f₂ : x ⟶ y), r f₁ f₂ → F.map f₁ = 
 theorem lift_spec : functor r ⋙ lift r F H = F := by
   tauto
 
-set_option backward.isDefEq.respectTransparency false in
 theorem lift_unique (Φ : Quotient r ⥤ D) (hΦ : functor r ⋙ Φ = F) : Φ = lift r F H := by
   subst_vars
   fapply Functor.hext
@@ -277,7 +276,6 @@ lemma lift_unique' (F₁ F₂ : Quotient r ⥤ D) (h : functor r ⋙ F₁ = func
   apply lift_unique
   rw [h]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The original functor factors through the induced functor. -/
 def lift.isLift : functor r ⋙ lift r F H ≅ F :=
   NatIso.ofComponents fun _ ↦ Iso.refl _
@@ -301,7 +299,7 @@ variable {r}
 
 lemma natTrans_ext {F G : Quotient r ⥤ D} (τ₁ τ₂ : F ⟶ G)
     (h : whiskerLeft (Quotient.functor r) τ₁ = whiskerLeft (Quotient.functor r) τ₂) : τ₁ = τ₂ :=
-  NatTrans.ext (by ext1 ⟨X⟩; exact NatTrans.congr_app h X)
+  NatTrans.ext (by ext1 ⟨X⟩; congrm $(h).app X)
 
 variable (r)
 

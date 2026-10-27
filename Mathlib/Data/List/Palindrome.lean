@@ -5,7 +5,7 @@ Authors: Chris Wong
 -/
 module
 
-public import Mathlib.Data.List.Induction
+import Mathlib.Data.List.Induction
 
 /-!
 # Palindromes

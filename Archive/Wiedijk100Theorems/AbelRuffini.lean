@@ -3,12 +3,14 @@ Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Analysis.Calculus.LocalExtr.Polynomial
-import Mathlib.Analysis.Complex.Polynomial.Basic
-import Mathlib.FieldTheory.AbelRuffini
-import Mathlib.RingTheory.Polynomial.Eisenstein.Criterion
-import Mathlib.RingTheory.Int.Basic
-import Mathlib.RingTheory.RootsOfUnity.Minpoly
+module
+
+public import Mathlib.Analysis.Calculus.LocalExtr.Polynomial
+public import Mathlib.Analysis.Complex.Polynomial.Basic
+public import Mathlib.FieldTheory.AbelRuffini
+public import Mathlib.RingTheory.Polynomial.Eisenstein.Criterion
+public import Mathlib.RingTheory.Int.Basic
+public import Mathlib.RingTheory.RootsOfUnity.Minpoly
 
 /-!
 # Construction of an algebraic number that is not solvable by radicals
@@ -25,6 +27,8 @@ The main ingredients are:
 Then all that remains is the construction of a specific polynomial satisfying the conditions of
 `galActionHom_bijective_of_prime_degree'`, which is done in this file.
 -/
+
+@[expose] public section
 
 namespace AbelRuffini
 
@@ -81,7 +85,7 @@ theorem irreducible_Phi (p : ℕ) (hp : p.Prime) (hpa : p ∣ a) (hpb : p ∣ b)
       rw [degree_Phi] at hn; norm_cast at hn
       interval_cases n <;>
       simp +decide only [Φ, coeff_X_pow, coeff_C, Int.natCast_dvd_natCast.mpr,
-        hpb, if_true, coeff_C_mul, if_false, coeff_X_zero, hpa, coeff_add, zero_add, mul_zero,
+        hpb, ite_true, coeff_C_mul, ite_false, coeff_X_zero, hpa, coeff_add, zero_add, mul_zero,
         coeff_sub, add_zero, zero_sub, dvd_neg, neg_zero, dvd_mul_of_dvd_left]
     · simp only [degree_Phi, ← WithBot.coe_zero]
       decide

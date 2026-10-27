@@ -5,7 +5,7 @@ Authors: Oliver Butterley, Yoh Tanimoto
 -/
 module
 
-public import Mathlib.MeasureTheory.VectorMeasure.Basic
+public import Mathlib.MeasureTheory.VectorMeasure.Operations
 public import Mathlib.Order.Partition.Finpartition
 
 /-!

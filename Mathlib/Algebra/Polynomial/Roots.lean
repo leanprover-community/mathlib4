@@ -8,11 +8,9 @@ module
 public import Mathlib.Algebra.Polynomial.BigOperators
 public import Mathlib.Algebra.Polynomial.RingDivision
 public import Mathlib.Data.Set.Card
-public import Mathlib.Data.Set.Finite.Lemmas
+public import Mathlib.Order.Filter.TendstoCofinite
 public import Mathlib.RingTheory.Coprime.Lemmas
 public import Mathlib.RingTheory.Localization.FractionRing
-public import Mathlib.SetTheory.Cardinal.Order
-public import Mathlib.Order.Filter.TendstoCofinite
 
 /-!
 # Theory of univariate polynomials
@@ -69,12 +67,12 @@ theorem roots_def [DecidableEq R] (p : R[X]) [Decidable (p = 0)] :
 
 @[simp]
 theorem roots_zero : (0 : R[X]).roots = 0 :=
-  dif_pos rfl
+  dite_eq_left rfl
 
 theorem card_roots (hp0 : p ≠ 0) : (Multiset.card (roots p) : WithBot ℕ) ≤ degree p := by
   classical
   unfold roots
-  rw [dif_neg hp0]
+  rw [dite_eq_right hp0]
   exact (Classical.choose_spec (exists_multiset_roots hp0)).1
 
 theorem card_roots' (p : R[X]) : Multiset.card p.roots ≤ natDegree p := by
@@ -99,7 +97,7 @@ theorem card_roots_sub_C' {p : R[X]} {a : R} (hp0 : 0 < degree p) :
 theorem count_roots [DecidableEq R] (p : R[X]) : p.roots.count a = rootMultiplicity a p := by
   by_cases hp : p = 0
   · simp [hp]
-  rw [roots_def, dif_neg hp]
+  rw [roots_def, dite_eq_right hp]
   exact (Classical.choose_spec (exists_multiset_roots hp)).2 a
 
 @[simp]
@@ -116,14 +114,30 @@ theorem ne_zero_of_mem_roots (h : a ∈ p.roots) : p ≠ 0 :=
 theorem isRoot_of_mem_roots (h : a ∈ p.roots) : IsRoot p a :=
   (mem_roots'.1 h).2
 
-theorem roots_eq_zero_iff_isRoot_eq_bot (hp0 : p ≠ 0) : p.roots = 0 ↔ p.IsRoot = ⊥ := by
-  refine ⟨fun h ↦ ?_, fun h ↦ eq_zero_of_forall_notMem fun x hx ↦ h ▸ mem_roots hp0 |>.mp hx⟩
-  ext a
-  simp only [Pi.bot_apply, Prop.bot_eq_false, mem_roots hp0 |>.not.mp <| by simp [h]]
+theorem roots_eq_zero_iff_not_isRoot (hp0 : p ≠ 0) : p.roots = 0 ↔ ∀ x, ¬ p.IsRoot x := by
+  simp_rw [eq_zero_iff_forall_notMem, mem_roots hp0]
 
-theorem roots_eq_zero_iff_eq_zero_or_isRoot_eq_bot : p.roots = 0 ↔ p = 0 ∨ p.IsRoot = ⊥ := by
+@[deprecated Polynomial.roots_eq_zero_iff_not_isRoot +typeChanged (since := "2026-09-27")]
+theorem roots_eq_zero_iff_isRoot_eq_bot (hp0 : p ≠ 0) : p.roots = 0 ↔ p.IsRoot = ⊥ := by
+  simp [roots_eq_zero_iff_not_isRoot hp0, funext_iff]
+
+theorem roots_eq_zero_iff_eq_zero_or_not_isRoot : p.roots = 0 ↔ p = 0 ∨ ∀ x, ¬ p.IsRoot x := by
   rcases eq_or_ne p 0 with rfl | hp0; · simp
-  simp [roots_eq_zero_iff_isRoot_eq_bot hp0, hp0]
+  simp [roots_eq_zero_iff_not_isRoot hp0, hp0]
+
+@[deprecated
+Polynomial.roots_eq_zero_iff_eq_zero_or_not_isRoot +typeChanged (since := "2026-09-27")]
+theorem roots_eq_zero_iff_eq_zero_or_isRoot_eq_bot : p.roots = 0 ↔ p = 0 ∨ p.IsRoot = ⊥ := by
+  simp [roots_eq_zero_iff_eq_zero_or_not_isRoot, funext_iff]
+
+theorem roots_ne_zero_iff_ne_zero_and_exists_isRoot : p.roots ≠ 0 ↔ p ≠ 0 ∧ ∃ x, p.IsRoot x := by
+  grind [roots_eq_zero_iff_eq_zero_or_not_isRoot]
+
+theorem exists_isRoot_of_roots_ne_zero (h : p.roots ≠ 0) : ∃ x, p.IsRoot x :=
+  (roots_ne_zero_iff_ne_zero_and_exists_isRoot.mp h).2
+
+theorem roots_ne_zero_iff_exists_isRoot (hp0 : p ≠ 0) : p.roots ≠ 0 ↔ ∃ x, p.IsRoot x := by
+  grind [roots_ne_zero_iff_ne_zero_and_exists_isRoot]
 
 theorem mem_roots_map_of_injective [Semiring S] {p : S[X]} {f : S →+* R}
     (hf : Function.Injective f) {x : R} (hp : p ≠ 0) : x ∈ (p.map f).roots ↔ p.eval₂ f x = 0 := by
@@ -143,6 +157,16 @@ theorem finite_setOfPred_isRoot {p : R[X]} (hp : p ≠ 0) : Set.Finite { x | IsR
     using p.roots.toFinset.finite_toSet
 
 @[deprecated (since := "2026-07-09")] alias finite_setOf_isRoot := finite_setOfPred_isRoot
+
+/-- Nonzero polynomials have no roots away from a finite set. -/
+lemma eventually_cofinite_not_isRoot {p : R[X]} (hp : p ≠ 0) :
+    ∀ᶠ x in Filter.cofinite, ¬p.IsRoot x :=
+  (finite_setOfPred_isRoot hp).compl_mem_cofinite
+
+/-- Nonzero polynomials are nonzero away from a finite set. -/
+lemma eventually_eval_ne_zero_cofinite {p : R[X]} (hp : p ≠ 0) :
+    ∀ᶠ x in Filter.cofinite, p.eval x ≠ 0 :=
+  eventually_cofinite_not_isRoot hp
 
 theorem eq_zero_of_infinite_isRoot (p : R[X]) (h : Set.Infinite { x | IsRoot p x }) : p = 0 :=
   not_imp_comm.mp finite_setOfPred_isRoot h
@@ -220,12 +244,14 @@ theorem _root_.Associated.roots_eq {p q : R[X]} (h : Associated p q) : p.roots =
     roots_C_mul _ <| coeff_coe_units_zero_ne_zero u]
 
 @[simp]
-theorem roots_smul_nonzero (p : R[X]) (ha : a ≠ 0) : (a • p).roots = p.roots := by
+theorem roots_smul_of_ne_zero (p : R[X]) (ha : a ≠ 0) : (a • p).roots = p.roots := by
   rw [smul_eq_C_mul, roots_C_mul _ ha]
+
+@[deprecated (since := "2026-10-13")] alias roots_smul_nonzero := roots_smul_of_ne_zero
 
 @[simp]
 lemma roots_neg (p : R[X]) : (-p).roots = p.roots := by
-  rw [← neg_one_smul R p, roots_smul_nonzero p (neg_ne_zero.mpr one_ne_zero)]
+  rw [← neg_one_smul R p, roots_smul_of_ne_zero p (neg_ne_zero.mpr one_ne_zero)]
 
 @[simp]
 theorem map_roots_comp_C_mul_X_add_C (p : R[X]) (a b : R) (ha : IsUnit a) :
@@ -396,7 +422,7 @@ def nthRootsFinset (n : ℕ) {R : Type*} (a : R) [CommRing R] [IsDomain R] : Fin
 lemma nthRootsFinset_def (n : ℕ) {R : Type*} (a : R) [CommRing R] [IsDomain R] [DecidableEq R] :
     nthRootsFinset n a = Multiset.toFinset (nthRoots n a) := by
   unfold nthRootsFinset
-  convert! rfl
+  convert rfl
 
 @[simp]
 theorem mem_nthRootsFinset {n : ℕ} (h : 0 < n) (a : R) {x : R} :
@@ -529,10 +555,12 @@ theorem aroots_C_mul [IsDomain T] [CommRing S] [IsDomain S] [Algebra T S]
   exact FaithfulSMul.algebraMap_injective T S
 
 @[simp]
-theorem aroots_smul_nonzero [IsDomain T] [CommRing S] [IsDomain S] [Algebra T S]
+theorem aroots_smul_of_ne_zero [IsDomain T] [CommRing S] [IsDomain S] [Algebra T S]
     [Module.IsTorsionFree T S] {a : T} (p : T[X]) (ha : a ≠ 0) :
     (a • p).aroots S = p.aroots S := by
   rw [smul_eq_C_mul, aroots_C_mul _ ha]
+
+@[deprecated (since := "2026-10-13")] alias aroots_smul_nonzero := aroots_smul_of_ne_zero
 
 @[simp]
 theorem aroots_pow [CommRing S] [IsDomain S] [Algebra T S] (p : T[X]) (n : ℕ) :
@@ -572,7 +600,7 @@ def rootSet (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] : Set S :=
 theorem rootSet_def (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] [DecidableEq S] :
     p.rootSet S = (p.aroots S).toFinset := by
   rw [rootSet]
-  convert! rfl
+  convert rfl
 
 @[simp]
 theorem rootSet_C [CommRing S] [IsDomain S] [Algebra T S] (a : T) : (C a).rootSet S = ∅ := by
@@ -600,6 +628,13 @@ theorem rootSet_finite (p : T[X]) (S : Type*) [CommRing S] [IsDomain S] [Algebra
     (p.rootSet S).Finite :=
   Set.toFinite _
 
+variable (T R) in
+@[simp]
+theorem rootSet_map [CommRing S] (p : S[X]) [Algebra S T] [Algebra T R] [Algebra S R]
+    [IsScalarTower S T R] : (p.map (algebraMap S T)).rootSet R = p.rootSet R := by
+  classical
+  rw [rootSet_def, rootSet_def, aroots_map]
+
 /-- The set of roots of all polynomials of bounded degree and having coefficients in a finite set
 is finite. -/
 theorem bUnion_roots_finite {R S : Type*} [Semiring R] [CommRing S] [IsDomain S] [DecidableEq S]
@@ -607,6 +642,7 @@ theorem bUnion_roots_finite {R S : Type*} [Semiring R] [CommRing S] [IsDomain S]
     (⋃ (f : R[X]) (_ : f.natDegree ≤ d ∧ ∀ i, f.coeff i ∈ U),
         ((f.map m).roots.toFinset : Set S)).Finite :=
   Set.Finite.biUnion
+    (s := {f : R[X] | f.natDegree ≤ d ∧ ∀ i, f.coeff i ∈ U})
     (by
       -- We prove that the set of polynomials under consideration is finite because its
       -- image by the injective map `π` is finite
@@ -614,11 +650,11 @@ theorem bUnion_roots_finite {R S : Type*} [Semiring R] [CommRing S] [IsDomain S]
       refine ((Set.Finite.pi fun _ => h).subset <| ?_).of_finite_image (?_ : Set.InjOn π _)
       · exact Set.image_subset_iff.2 fun f hf i _ => hf.2 i
       · refine fun x hx y hy hxy => (ext_iff_natDegree_le hx.1 hy.1).2 fun i hi => ?_
-        exact id congr_fun hxy ⟨i, Nat.lt_succ_of_le hi⟩)
+        exact id congr($hxy ⟨i, Nat.lt_succ_of_le hi⟩))
     fun _ _ => Finset.finite_toSet _
 
 /-- A version of `mem_rootSet` that requires the polynomial to be non-zero after mapping
-instead of requiring it to be non-zero and `NoZeroSMulDivisors`. -/
+instead of requiring it to be non-zero and `Module.IsTorsionFree`. -/
 theorem mem_rootSet' {p : T[X]} {S : Type*} [CommRing S] [IsDomain S] [Algebra T S] {a : S} :
     a ∈ p.rootSet S ↔ p.map (algebraMap T S) ≠ 0 ∧ aeval a p = 0 := by
   classical
@@ -832,7 +868,7 @@ theorem exists_prod_multiset_X_sub_C_mul (p : R[X]) :
   · conv_rhs => rw [he]
     rw [(monic_multisetProd_X_sub_C p.roots).natDegree_mul' hq,
       natDegree_multiset_prod_X_sub_C_eq_card]
-  · replace he := congr_arg roots he.symm
+  · replace he := congr(roots $he.symm)
     rw [roots_mul, roots_multiset_prod_X_sub_C] at he
     exacts [add_eq_left.1 he, mul_ne_zero (monic_multisetProd_X_sub_C p.roots).ne_zero hq]
 
@@ -848,7 +884,7 @@ theorem C_leadingCoeff_mul_prod_multiset_X_sub_C (hroots : Multiset.card p.roots
 can be written `p = ∏(X - a)`, for `a` in `p.roots`. -/
 theorem prod_multiset_X_sub_C_of_monic_of_roots_card_eq (hp : p.Monic)
     (hroots : Multiset.card p.roots = p.natDegree) : (p.roots.map fun a => X - C a).prod = p := by
-  convert! C_leadingCoeff_mul_prod_multiset_X_sub_C hroots
+  convert C_leadingCoeff_mul_prod_multiset_X_sub_C hroots
   rw [hp.leadingCoeff, C_1, one_mul]
 
 theorem Monic.isUnit_leadingCoeff_of_dvd {a p : R[X]} (hp : Monic p) (hap : a ∣ p) :
@@ -858,16 +894,15 @@ theorem Monic.isUnit_leadingCoeff_of_dvd {a p : R[X]} (hp : Monic p) (hap : a �
 theorem card_roots_le_one_of_irreducible (hirr : Irreducible p) : p.roots.card ≤ 1 := by
   obtain hp | ⟨x, hx⟩ := p.roots.empty_or_exists_mem
   · simp [hp]
-  convert! p.card_roots'
+  convert p.card_roots'
   exact (natDegree_eq_of_degree_eq_some <| degree_eq_one_of_irreducible_of_root hirr <|
     isRoot_of_mem_roots hx).symm
 
 theorem roots_eq_zero_of_irreducible_of_natDegree_ne_one (hirr : Irreducible p)
-    (hdeg : p.natDegree ≠ 1) : p.roots = 0 := by
-  by_contra hroots
-  have ⟨x, hx⟩ := exists_mem_of_ne_zero hroots
-  exact hdeg <| natDegree_eq_of_degree_eq_some <|
-    degree_eq_one_of_irreducible_of_root hirr (mem_roots'.mp hx).right
+    (h : p.natDegree ≠ 1) : p.roots = 0 := by
+  contrapose! h
+  have ⟨x, hx⟩ := exists_isRoot_of_roots_ne_zero h
+  exact natDegree_eq_of_degree_eq_some <| degree_eq_one_of_irreducible_of_root hirr hx
 
 /-- To check a monic polynomial is irreducible, it suffices to check only for
 divisors that have smaller degree.
@@ -884,8 +919,8 @@ theorem Monic.irreducible_iff_degree_lt (p_monic : Monic p) (p_1 : p ≠ 1) :
     have := degree_pos_of_not_isUnit_of_dvd_monic p_monic q_unit dvd
     have hu := p_monic.isUnit_leadingCoeff_of_dvd dvd
     refine (h _ (monic_of_isUnit_leadingCoeff_inv_smul hu) ?_ ?_ (dvd_trans ?_ dvd)).elim
-    · rwa [degree_smul_of_smul_regular _ (isSMulRegular_of_group _)]
-    · rwa [degree_smul_of_smul_regular _ (isSMulRegular_of_group _)]
+    · rwa [degree_smul_of_smul_regular _ (IsSMulRegular.all _)]
+    · rwa [degree_smul_of_smul_regular _ (IsSMulRegular.all _)]
     · rw [Units.smul_def, Polynomial.smul_eq_C_mul, (isUnit_C.mpr (Units.isUnit _)).mul_left_dvd]
   · rintro h q _ deg_pos deg_le dvd
     exact deg_pos.ne' <| degree_eq_zero_of_isUnit (h q deg_le dvd)
@@ -918,7 +953,7 @@ theorem count_map_roots [IsDomain A] [DecidableEq B] {p : A[X]} {f : A →+* B} 
   rw [← Multiset.filter_eq]
   refine
     (Multiset.prod_dvd_prod_of_le <| Multiset.map_le_map <| Multiset.filter_le (Eq b) _).trans ?_
-  convert! Polynomial.map_dvd f p.prod_multiset_X_sub_C_dvd
+  convert Polynomial.map_dvd f p.prod_multiset_X_sub_C_dvd
   simp only [Polynomial.map_multiset_prod, Multiset.map_map, Function.comp_apply,
     Polynomial.map_sub, map_X, map_C]
 

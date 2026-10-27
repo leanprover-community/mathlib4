@@ -5,8 +5,9 @@ Authors: Bolton Bailey
 -/
 module
 
-public import Mathlib.Algebra.Field.ZMod
 public import Mathlib.RingTheory.IntegralDomain
+
+import Mathlib.Algebra.Field.ZMod
 
 /-!
 # The Lucas test for primes

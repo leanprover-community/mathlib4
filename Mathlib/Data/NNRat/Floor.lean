@@ -5,10 +5,9 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.Order.Floor.Semiring
-public import Mathlib.Data.NNRat.Order
-public import Mathlib.Data.Rat.Floor
 public meta import Mathlib.Data.Rat.Floor
+public import Mathlib.Algebra.Order.Ring.NNRat
+public import Mathlib.Data.Rat.Floor
 
 /-!
 # Floor Function for Non-negative Rational Numbers
@@ -103,7 +102,7 @@ open Qq
 ### `norm_num` extension for `Nat.ceil`
 -/
 
-theorem IsNat.natCeil {R : Type*} [Semiring R] [LinearOrder R] [IsStrictOrderedRing R]
+theorem IsNat.natCeil {R : Type*} [Semiring R] [LinearOrder R]
     [FloorSemiring R] (r : R) (m : ℕ) : IsNat r m → IsNat (⌈r⌉₊) m := by
   rintro ⟨⟨⟩⟩
   exact ⟨by simp⟩
@@ -135,7 +134,6 @@ meta def evalNatCeil : NormNumExt where eval {u αZ} e := do
     | .isBool .. => failure
     | .isNat sα nb pb => do
       let instLinearOrder ← synthInstanceQ q(LinearOrder $α)
-      let instIsStrictOrderedRing ← synthInstanceQ q(IsStrictOrderedRing $α)
       assertInstancesCommute
       return .isNat q(inferInstance) nb q(IsNat.natCeil $x _ $pb)
     | .isNegNat sα nb pb => do

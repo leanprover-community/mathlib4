@@ -5,8 +5,9 @@ Authors: Jeremy Avigad, Leonardo de Moura
 -/
 module
 
-public import Aesop
+public meta import Aesop
 public import Mathlib.Data.Set.Disjoint
+public import Mathlib.Tactic.GrindAttrs
 public import Mathlib.Tactic.Simproc.ExistsAndEq
 
 /-!
@@ -66,7 +67,7 @@ theorem mem_of_mem_insert_of_ne : b ∈ insert a s → b ≠ a → b ∈ s :=
 theorem eq_of_mem_insert_of_notMem : b ∈ insert a s → b ∉ s → b = a :=
   Or.resolve_right
 
-@[simp, grind =, push]
+@[simp, grind =, membership =, push]
 theorem mem_insert_iff {x a : α} {s : Set α} : x ∈ insert a s ↔ x = a ∨ x ∈ s :=
   Iff.rfl
 
@@ -156,7 +157,7 @@ instance : LawfulSingleton α (Set α) :=
 theorem singleton_def (a : α) : ({a} : Set α) = insert a ∅ :=
   (insert_empty_eq a).symm
 
-@[simp, grind =, push]
+@[simp, grind =, membership =, push]
 theorem mem_singleton_iff {a b : α} : a ∈ ({b} : Set α) ↔ a = b :=
   Iff.rfl
 
@@ -228,6 +229,12 @@ theorem singleton_union : {a} ∪ s = insert a s :=
 @[simp]
 theorem union_singleton : s ∪ {a} = insert a s :=
   union_comm _ _
+
+theorem exists_mem_singleton {P : α → Prop} {a : α} :
+    (∃ x ∈ ({a} : Set α), P x) ↔ P a := by grind
+
+theorem forall_mem_singleton {P : α → Prop} {a : α} :
+    (∀ x ∈ ({a} : Set α), P x) ↔ P a := by grind
 
 @[simp]
 theorem singleton_inter_nonempty : ({a} ∩ s).Nonempty ↔ a ∈ s := by
@@ -364,10 +371,10 @@ theorem insert_inter_of_notMem (h : a ∉ t) : insert a s ∩ t = s ∩ t := by 
 /-! ### Lemmas about pairs -/
 
 theorem pair_eq_singleton (a : α) : ({a, a} : Set α) = {a} :=
-  union_self _
+  union_self {a}
 
 theorem pair_comm (a b : α) : ({a, b} : Set α) = {b, a} :=
-  union_comm _ _
+  union_comm {a} {b}
 
 theorem pair_eq_pair_iff {x y z w : α} :
     ({x, y} : Set α) = {z, w} ↔ x = z ∧ y = w ∨ x = w ∧ y = z := by
@@ -413,7 +420,7 @@ end
 
 /-! ### Decidability instances for sets -/
 
-variable (s t : Set α) (a b : α)
+variable (a b : α)
 
 instance decidableSingleton [Decidable (a = b)] : Decidable (a ∈ ({b} : Set α)) :=
   inferInstanceAs (Decidable (a = b))

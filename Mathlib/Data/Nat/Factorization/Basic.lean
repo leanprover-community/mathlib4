@@ -5,9 +5,10 @@ Authors: Stuart Presnell
 -/
 module
 
-public import Mathlib.Algebra.Order.Interval.Finset.SuccPred
 public import Mathlib.Data.Nat.Factorization.Defs
 public import Mathlib.Order.Interval.Finset.Nat
+
+import Mathlib.Algebra.Order.Interval.Finset.SuccPred
 
 /-!
 # Basic lemmas on prime factorizations
@@ -82,12 +83,6 @@ theorem Prime.eq_of_factorization_pos {p q : ℕ} (hp : Prime p) (h : p.factoriz
 
 /-! ### Equivalence between `ℕ+` and `ℕ →₀ ℕ` with support in the primes. -/
 
-
-@[deprecated factorizationEquiv_symm_apply_coe (since := "2026-03-18")]
-theorem factorizationEquiv_inv_apply {f : ℕ →₀ ℕ} (hf : ∀ p ∈ f.support, Prime p) :
-    (factorizationEquiv.symm ⟨f, hf⟩).1 = f.prod (· ^ ·) :=
-  factorizationEquiv_symm_apply_coe ⟨f, hf⟩
-
 theorem ordProj_of_not_prime (n p : ℕ) (hp : ¬p.Prime) : ordProj[p] n = 1 := by
   simp [hp]
 
@@ -133,6 +128,10 @@ theorem factorization_lt {n : ℕ} (p : ℕ) (hn : n ≠ 0) : n.factorization p 
   · exact (Nat.pow_lt_pow_iff_right pp.one_lt).1 <| (ordProj_le p hn).trans_lt <|
       Nat.lt_pow_self pp.one_lt
   · simpa only [factorization_eq_zero_of_not_prime n pp] using! hn.bot_lt
+
+/-- A weak upper bound on `n.factorization p` -/
+theorem mul_factorization_le {n p : ℕ} : p * n.factorization p ≤ n := by
+  grw [factorization_le_padicValNat, mul_padicValNat_le]
 
 /-- An upper bound on `n.factorization p` -/
 theorem factorization_le_of_le_pow {n p b : ℕ} (hb : n ≤ p ^ b) : n.factorization p ≤ b := by
@@ -569,7 +568,7 @@ theorem exists_eq_pow_of_exponent_coprime_of_pow_eq_pow
   intro p
   have foo (p) (hp : p ∈ factors.support) : Prime p :=
     prime_of_mem_primeFactors (Finsupp.support_mapRange hp)
-  rw [factorization_pow, hc, prod_pow_factorization_eq_self foo]
+  rw [factorization_pow, hc, factorization_prod_pow_eq_self foo]
   suffices n ∣ a.factorization p by
     simp [factors, Nat.mul_div_cancel' this]
   refine hmn.symm.dvd_of_dvd_mul_left ⟨b.factorization p, ?_⟩

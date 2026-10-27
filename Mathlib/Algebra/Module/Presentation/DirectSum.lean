@@ -5,9 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Module.Presentation.Basic
 public import Mathlib.Algebra.DirectSum.Module
-public import Mathlib.Data.Finsupp.ToDFinsupp
+public import Mathlib.Algebra.Module.Presentation.Basic
 
 /-!
 # Presentation of a direct sum

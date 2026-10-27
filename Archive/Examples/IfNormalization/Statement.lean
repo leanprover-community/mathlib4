@@ -3,6 +3,7 @@ Copyright (c) 2023 Lean FRO LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+module
 
 /-!
 # If normalization
@@ -15,6 +16,8 @@ Their first suggestion was "if-normalization".
 
 This file contains a Lean formulation of the problem. See `Result.lean` for a Lean solution.
 -/
+
+@[expose] public section
 
 /-- An if-expression is either Boolean literal, a numbered variable,
 or an if-then-else expression where each subexpression is an if-expression. -/

@@ -17,7 +17,9 @@ they are obtained as the `i`th iteration of `δ 0` or `σ 0`.
 
 @[expose] public section
 
-open CategoryTheory Simplicial
+open CategoryTheory
+
+open scoped Simplicial
 
 namespace SimplexCategory
 
@@ -124,14 +126,14 @@ def σ₀Iter (i : ℕ) {n m : ℕ} (hi : n + i = m := by lia) : ⦋m⦌ ⟶ ⦋
 lemma σ₀Iter_coe_eq_of_lt (i : ℕ) {n m : ℕ}
     (j : Fin (m + 1)) (hi : n + i = m := by lia) (hj : j.val < i := by grind) :
     dsimp% (σ₀Iter i hi j).val = 0 := by
-  simp [σ₀Iter, Hom.mk, ConcreteCategory.hom, Hom.toOrderHom, if_pos hj]
+  simp [σ₀Iter, Hom.mk, ConcreteCategory.hom, Hom.toOrderHom, ite_eq_left hj]
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma σ₀Iter_coe_eq_of_ge (i : ℕ) {n m : ℕ}
     (j : Fin (m + 1)) (hi : n + i = m := by lia) (hj : i ≤ j.val := by grind) :
     dsimp% (σ₀Iter i hi j).val = j.val - i := by
   dsimp [σ₀Iter, Hom.mk, ConcreteCategory.hom, Hom.toOrderHom]
-  rw [if_neg (by lia)]
+  rw [ite_eq_right (by lia)]
 
 lemma σ₀Iter_coe_eq_of_le (i : ℕ) {n m : ℕ}
     (j : Fin (m + 1)) (hi : n + i = m := by lia) (hj : j.val ≤ i := by grind) :
@@ -166,9 +168,17 @@ lemma σ₀Iter_succ (i : ℕ) {n m : ℕ} (h : n + (i + 1) = m) :
   rw [dsimp% ConcreteCategory.comp_apply (σ₀Iter i) (σ 0)]
   by_cases! hk : k.val ≤ i
   · rw [σ₀Iter_coe_eq_of_lt .., coe_σ]
+    #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/14727 (replacing
+    grind's `ToInt` machinery with homomorphism-based translation), the `= Fin.le_def` hints
+    were not needed. `grind` has both instances it needs — `Fin.predAbove_of_le_castSucc` as
+    `∀ h, (σ₀Iter i _) k ≤ Fin.castSucc 0 → predAbove 0 … = ….castPred _`, and
+    `σ₀Iter_coe_eq_of_lt` giving `↑((σ₀Iter i _) k) = 0` — but will not derive the
+    `Fin`-level antecedent `(σ₀Iter i _) k ≤ Fin.castSucc 0` from those `val` facts. Note
+    `= Fin.lt_def` does *not* help here, and neither does `(splitImp := true)`. -/
     obtain hk | rfl := hk.lt_or_eq
-    · grind [Fin.predAbove_of_le_castSucc, Fin.coe_castPred, σ₀Iter_coe_eq_of_lt]
-    · grind [Fin.predAbove_of_le_castSucc, Fin.coe_castPred, σ₀Iter_coe_eq_of_ge, tsub_self]
+    · grind [Fin.predAbove_of_le_castSucc, Fin.coe_castPred, σ₀Iter_coe_eq_of_lt, = Fin.le_def]
+    · grind [Fin.predAbove_of_le_castSucc, Fin.coe_castPred, σ₀Iter_coe_eq_of_ge, tsub_self,
+        = Fin.le_def]
   · rw [σ₀Iter_coe_eq_of_ge .., coe_σ,
       Fin.predAbove_of_castSucc_lt _ _ ?_, Fin.val_pred,
       σ₀Iter_coe_eq_of_ge .., Nat.sub_add_eq]

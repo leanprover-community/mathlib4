@@ -6,8 +6,6 @@ Authors: Adam Topaz, Junyan Xu
 module
 
 public import Mathlib.RingTheory.Localization.LocalizationLocalization
-public import Mathlib.LinearAlgebra.FreeModule.Basic
-public import Mathlib.Algebra.Algebra.Subalgebra.Tower
 
 /-!
 

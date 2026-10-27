@@ -5,9 +5,7 @@ Authors: Jeremy Avigad, Mario Carneiro, Simon Hudon
 -/
 module
 
-public import Mathlib.Data.Fin.Fin2
 public import Mathlib.Data.TypeVec
-public import Mathlib.Logic.Equiv.Defs
 
 /-!
 
@@ -40,7 +38,7 @@ variable {n : ℕ}
 
 namespace MvFunctor
 
-variable {α β : TypeVec.{u} n} {F : TypeVec.{u} n → Type v} [MvFunctor F]
+variable {α : TypeVec.{u} n} {F : TypeVec.{u} n → Type v} [MvFunctor F]
 
 /-- predicate lifting over multivariate functors -/
 def LiftP {α : TypeVec n} (P : ∀ i, α i → Prop) (x : F α) : Prop :=

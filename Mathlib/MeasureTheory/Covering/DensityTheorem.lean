@@ -5,8 +5,8 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.MeasureTheory.Covering.Vitali
 public import Mathlib.MeasureTheory.Covering.Differentiation
+public import Mathlib.MeasureTheory.Covering.Vitali
 
 /-!
 # Uniformly locally doubling measures and Lebesgue's density theorem
@@ -32,7 +32,7 @@ form of Lebesgue's density theorem.
 
 noncomputable section
 
-open Set Filter Metric MeasureTheory TopologicalSpace
+open Set Filter Metric MeasureTheory
 
 open scoped NNReal Topology
 

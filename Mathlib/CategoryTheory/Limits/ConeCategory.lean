@@ -56,7 +56,6 @@ def Cone.toStructuredArrowIsoToStructuredArrow {F : J ⥤ C} (c : Cone F) :
     c.toStructuredArrow ≅ (𝟭 J).toStructuredArrow c.pt F c.π.app (by simp) :=
   Iso.refl _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- `Functor.toStructuredArrow` can be expressed in terms of `Cone.toStructuredArrow`. -/
 def _root_.CategoryTheory.Functor.toStructuredArrowIsoToStructuredArrow (G : J ⥤ K) (X : C)
     (F : K ⥤ C) (f : (Y : J) → X ⟶ F.obj (G.obj Y))
@@ -108,13 +107,11 @@ noncomputable def limit.toUnder (F : J ⥤ C) [HasLimit F] :
   pt := Under.mk (𝟙 (limit F))
   π := { app := fun j => Under.homMk (limit.π F j) (by simp) }
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- `c.toUnder` is a lift of `c` under the forgetful functor. -/
 @[simps!]
 def Cone.mapConeToUnder {F : J ⥤ C} (c : Cone F) : (Under.forget c.pt).mapCone c.toUnder ≅ c :=
   Iso.refl _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a diagram of `StructuredArrow X F`s, we may obtain a cone with cone point `X`. -/
 @[simps!]
 def Cone.fromStructuredArrow (F : C ⥤ D) {X : D} (G : J ⥤ StructuredArrow X F) :
@@ -122,8 +119,6 @@ def Cone.fromStructuredArrow (F : C ⥤ D) {X : D} (G : J ⥤ StructuredArrow X 
   pt := X
   π := { app := fun j => (G.obj j).hom }
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a cone `c : Cone K` and a map `f : X ⟶ F.obj c.X`, we can construct a cone of structured
 arrows over `X` with `f` as the cone point.
 -/
@@ -133,7 +128,6 @@ def Cone.toStructuredArrowCone {K : J ⥤ C} (c : Cone K) (F : C ⥤ D) {X : D} 
   pt := StructuredArrow.mk f
   π := { app := fun j => StructuredArrow.homMk (c.π.app j) rfl }
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Construct an object of the category `(Δ ↓ F)` from a cone on `F`. This is part of an
     equivalence, see `Cone.equivCostructuredArrow`. -/
 @[simps]
@@ -141,7 +135,6 @@ def Cone.toCostructuredArrow (F : J ⥤ C) : Cone F ⥤ CostructuredArrow (const
   obj c := CostructuredArrow.mk c.π
   map f := CostructuredArrow.homMk f.hom
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Construct a cone on `F` from an object of the category `(Δ ↓ F)`. This is part of an
     equivalence, see `Cone.equivCostructuredArrow`. -/
 @[simps]
@@ -149,9 +142,7 @@ def Cone.fromCostructuredArrow (F : J ⥤ C) : CostructuredArrow (const J) F ⥤
   obj c := ⟨c.left, c.hom⟩
   map f :=
     { hom := f.left
-      w := fun j => by
-        convert! congr_fun (congr_arg NatTrans.app f.w) j
-        simp }
+      w j := congr($(f.w).app j) }
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
@@ -222,14 +213,11 @@ noncomputable def colimit.toCostructuredArrow (F : J ⥤ C) [HasColimit F] :
   obj j := CostructuredArrow.mk (colimit.ι F j)
   map f := CostructuredArrow.homMk f
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- `Cocone.toCostructuredArrow` can be expressed in terms of `Functor.toCostructuredArrow`. -/
 def Cocone.toCostructuredArrowIsoToCostructuredArrow {F : J ⥤ C} (c : Cocone F) :
     c.toCostructuredArrow ≅ (𝟭 J).toCostructuredArrow F c.pt c.ι.app (by simp) :=
   Iso.refl _
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- `Functor.toCostructuredArrow` can be expressed in terms of `Cocone.toCostructuredArrow`. -/
 def _root_.CategoryTheory.Functor.toCostructuredArrowIsoToCostructuredArrow (G : J ⥤ K)
     (F : K ⥤ C) (X : C) (f : (Y : J) → F.obj (G.obj Y) ⟶ X)
@@ -238,7 +226,6 @@ def _root_.CategoryTheory.Functor.toCostructuredArrowIsoToCostructuredArrow (G :
       (Cocone.mk X ⟨f, by simp [h]⟩).toCostructuredArrow ⋙ CostructuredArrow.pre _ _ _ :=
   Iso.refl _
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Interpreting the legs of a cocone as a costructured arrow and then forgetting the arrow again
     does nothing. -/
 @[simps!]
@@ -246,13 +233,11 @@ def Cocone.toCostructuredArrowCompProj {F : J ⥤ C} (c : Cocone F) :
     c.toCostructuredArrow ⋙ CostructuredArrow.proj _ _ ≅ 𝟭 J :=
   Iso.refl _
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma Cocone.toCostructuredArrow_comp_proj {F : J ⥤ C} (c : Cocone F) :
     c.toCostructuredArrow ⋙ CostructuredArrow.proj _ _ = 𝟭 J :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Interpreting the legs of a cocone as a costructured arrow, interpreting this arrow as an arrow
     over the cocone point, and finally forgetting the arrow is the same as just applying the
     functor the cocone was over. -/
@@ -261,7 +246,6 @@ def Cocone.toCostructuredArrowCompToOverCompForget {F : J ⥤ C} (c : Cocone F) 
     c.toCostructuredArrow ⋙ CostructuredArrow.toOver _ _ ⋙ Over.forget _ ≅ F :=
   Iso.refl _
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma Cocone.toCostructuredArrow_comp_toOver_comp_forget {F : J ⥤ C} (c : Cocone F) :
     c.toCostructuredArrow ⋙ CostructuredArrow.toOver _ _ ⋙ Over.forget _ = F :=
@@ -286,14 +270,11 @@ noncomputable def colimit.toOver (F : J ⥤ C) [HasColimit F] :
   pt := Over.mk (𝟙 (colimit F))
   ι := { app := fun j => Over.homMk (colimit.ι F j) (by simp) }
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- `c.toOver` is a lift of `c` under the forgetful functor. -/
 @[simps!]
 def Cocone.mapCoconeToOver {F : J ⥤ C} (c : Cocone F) : (Over.forget c.pt).mapCocone c.toOver ≅ c :=
   Iso.refl _
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a diagram `CostructuredArrow F X`s, we may obtain a cocone with cone point `X`. -/
 @[simps!]
 def Cocone.fromCostructuredArrow (F : C ⥤ D) {X : D} (G : J ⥤ CostructuredArrow F X) :
@@ -312,7 +293,6 @@ def Cocone.toCostructuredArrowCocone {K : J ⥤ C} (c : Cocone K) (F : C ⥤ D) 
   pt := CostructuredArrow.mk f
   ι := { app := fun j => CostructuredArrow.homMk (c.ι.app j) rfl }
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Construct an object of the category `(F ↓ Δ)` from a cocone on `F`. This is part of an
     equivalence, see `Cocone.equivStructuredArrow`. -/
 @[simps]
@@ -320,7 +300,6 @@ def Cocone.toStructuredArrow (F : J ⥤ C) : Cocone F ⥤ StructuredArrow F (con
   obj c := StructuredArrow.mk c.ι
   map f := StructuredArrow.homMk f.hom
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Construct a cocone on `F` from an object of the category `(F ↓ Δ)`. This is part of an
     equivalence, see `Cocone.equivStructuredArrow`. -/
 @[simps]

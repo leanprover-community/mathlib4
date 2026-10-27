@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Eugster, Damiano Testa
 -/
 import Lean.Elab.Command
+import Cli.Basic
 
 /-!
 # Automatic labelling of PRs
@@ -27,9 +28,7 @@ needs to be updated here if necessary:
 files have been modified and then finds all labels which should be added based on these changes.
 These are printed for testing purposes.
 
-`lake exe autolabel [NUMBER]` will further try to add the applicable labels
-to the PR specified. This requires the **GitHub CLI** `gh` to be installed!
-Example: `lake exe autolabel 10402` for PR https://github.com/leanprover-community/mathlib4/pull/10402.
+See `lake exe autolabel --help` for all arguments available.
 
 The script can add up to `MAX_LABELS` labels (defined below).
 If more than `MAX_LABELS` labels would be applicable, nothing happens.
@@ -201,6 +200,7 @@ def mathlibLabelData : (l : Label) → LabelData l
     dependencies := #[.«t-algebra»] }
   | .«t-data» => {
     dirs := #[
+      "Mathlib" / "Basic",
       "Mathlib" / "Control",
       "Mathlib" / "Data"] }
   | .«t-differential-geometry» => {
@@ -222,7 +222,6 @@ def mathlibLabelData : (l : Label) → LabelData l
       "Mathlib" / "Tactic" / "Linter",
       "MathlibTest" / "Linter",
       "scripts" / "lint-style.lean",
-      "scripts" / "lint-style.py",
     ] }
   | .«t-logic» => {
     dirs := #[
@@ -257,11 +256,10 @@ def mathlibLabelData : (l : Label) → LabelData l
       "scripts" / "nolints.json",
       "scripts" / "nolints-style.txt",
       "scripts" / "nolints_prime_decls.txt",
+      "bors.toml",
     ],
     exclusions := #[
       "scripts" / "lint-style.lean",
-      "scripts" / "lint-style.py",
-      "scripts" / "noshake.json",
       "scripts" / "nolints.json",
       "scripts" / "nolints-style.txt",
       "scripts" / "nolints_prime_decls.txt",
@@ -340,8 +338,7 @@ section Tests
 #guard getMatchingLabels #["scripts" / "add_deprecations.sh"] == #[.«CI»]
 #guard getMatchingLabels #["scripts" / "lint-style.lean"] == #[.«t-linter»]
 #guard getMatchingLabels #["Mathlib" / "Tactic" / "Linter" / "TextBased.lean",
-  "scripts" / "lint-style.lean", "scripts" / "lint-style.py"] == #[.«t-linter»]
-#guard getMatchingLabels #["scripts" / "noshake.json"] == #[]
+  "scripts" / "lint-style.lean"] == #[.«t-linter»]
 
 /-- Testing function to ensure the labels defined in `mathlibLabels` cover all
 subfolders of `Mathlib/`. -/
@@ -381,101 +378,131 @@ Note: `file` is duplicated below so that it is also visible in the plain text ou
 def githubAnnotation (type file title message : String) : String :=
   s!"::{type} file={file},title={title}::{file}: {message}"
 
-end AutoLabel
+/-- Available implementations about how to communicate with Github -/
+inductive GithubInteraction where
+/-- no interaction with github -/
+| none
+/-- use `gh` -/
+| gh (pr : Nat)
+/-- use `curl` with an access token -/
+| curl (pr : Nat) (token : String)
 
-open IO AutoLabel in
-
-/-- `args` is expected to have length 0 or 1, where the first argument is the PR number.
-
-If a PR number is provided, the script requires GitHub CLI `gh` to be installed in order
-to add the label to the PR.
-
-## Exit codes:
-
-- `0`: success
-- `1`: invalid arguments provided
-- `2`: invalid labels defined
-- `3`: ~labels do not cover all of `Mathlib/`~ (unused; only emitting warning)
--/
-unsafe def main (args : List String): IO UInt32 := do
-  if args.length > 1 then
-    println s!"::error:: autolabel: invalid number of arguments ({args.length}), \
-    expected at most 1. Please run without arguments or provide the target PR's \
-    number as a single argument!"
-    return 1
-  let prNumber? := args[0]?
+open IO in
+def autoLabelCli (args : Cli.Parsed) : IO UInt32 := do
+  let mut exitCode : UInt32 := 0
+  let force := args.hasFlag "force"
+  let tool: GithubInteraction :=
+    match ((args.flag? "pr").map (·.as! Nat)), args.hasFlag "gh", args.flag? "curl" with
+    | none,    _,     _             => .none
+    | some _,  false, none          => .none
+    | some pr, true,  _             => .gh pr
+    | some pr, false, some curlFlag => .curl pr (curlFlag.as! String)
 
   -- test: validate that all paths in `mathlibLabelData` actually exist
-  let mut valid := true
   for label in mathlibLabels do
     let data := mathlibLabelData label
     for dir in data.dirs do
       unless ← FilePath.pathExists dir do
-        -- print github annotation error
-        println <| AutoLabel.githubAnnotation "error" "scripts/autolabel.lean"
+        println <| AutoLabel.githubAnnotation "warning" "scripts/autolabel.lean"
           s!"Misformatted `{ ``AutoLabel.mathlibLabelData }`"
           s!"directory '{dir}' does not exist but is included by label '{label}'. \
           Please update `{ ``AutoLabel.mathlibLabelData }`!"
-        valid := false
+        exitCode := 2
     for dir in data.exclusions do
       unless ← FilePath.pathExists dir do
-        -- print github annotation error
-        println <| AutoLabel.githubAnnotation "error" "scripts/autolabel.lean"
+        println <| AutoLabel.githubAnnotation "warning" "scripts/autolabel.lean"
           s!"Misformatted `{ ``AutoLabel.mathlibLabelData }`"
           s!"directory '{dir}' does not exist but is excluded by label '{label}'. \
           Please update `{ ``AutoLabel.mathlibLabelData }`!"
-        valid := false
-  unless valid do
-    return 2
+        exitCode := 2
 
   -- test: validate that the labels cover all of the `Mathlib/` folder
   let notMatchedPaths ← findUncoveredPaths "Mathlib" (exceptions := mathlibUnlabelled)
   if notMatchedPaths.size > 0 then
-    -- print github annotation warning
     -- note: only emitting a warning because the workflow is only triggered on the first commit
     -- of a PR and could therefore lead to unexpected behaviour if a folder was created later.
     println <| AutoLabel.githubAnnotation "warning" "scripts/autolabel.lean"
       s!"Incomplete `{ ``AutoLabel.mathlibLabelData }`"
       s!"the following paths inside `Mathlib/` are not covered \
       by any label: {notMatchedPaths} Please modify `AutoLabel.mathlibLabels` accordingly!"
-    -- return 3
+    exitCode := 3
 
   -- get the modified files
-  println "Computing 'git diff --name-only origin/master...HEAD'"
   let gitDiff ← IO.Process.run {
     cmd := "git",
     args := #["diff", "--name-only", "origin/master...HEAD"] }
-  println s!"---\n{gitDiff}\n---"
   let modifiedFiles : Array FilePath := (gitDiff.splitOn "\n").toArray.map (⟨·⟩)
 
   -- find labels covering the modified files
-  let labels := dropDependentLabels <| getMatchingLabels modifiedFiles
-  println s!"::notice::Applicable labels: {labels}"
+  let newLabels := dropDependentLabels <| getMatchingLabels modifiedFiles
+  println s!"::notice::Applicable labels: {newLabels}"
 
-  match labels with
+  match newLabels with
   | #[] =>
-    println s!"::warning::no label to add"
+    println s!"::warning::no labels to add"
   | newLabels =>
-    match prNumber? with
-    | some n =>
-      if newLabels.size > MAX_LABELS then
-        println s!"::notice::not adding more than {MAX_LABELS} labels: {newLabels}"
-        return 0
-      let labelsPresent ← IO.Process.run {
+    if newLabels.size > MAX_LABELS then
+      println s!"::notice::not adding more than {MAX_LABELS} labels: {newLabels}"
+      return 0
+    match tool with
+    | .gh prNr =>
+      let labelsPresent ← if force then pure "" else IO.Process.run {
         cmd := "gh"
-        args := #["pr", "view", n, "--json", "labels", "--jq", ".labels .[] .name"]}
-      let labels := labelsPresent.splitToList (· == '\n')
+        args := #["pr", "view", s!"{prNr}", "--json", "labels", "--jq", ".labels .[] .name"]}
+      let existingLabels := labelsPresent.splitToList (· == '\n')
       let autoLabels := mathlibLabels.map (·.toString)
-      match labels.filter autoLabels.contains with
-      | [] => -- if the PR does not have a label that this script could add, then we add a label
+      match existingLabels.filter autoLabels.contains with
+      | [] =>
         let _ ← IO.Process.run {
           cmd := "gh",
-          args := #["pr", "edit", n, "--add-label", s!"\"{",".intercalate <| newLabels.toList.map (·.toString)}\""] }
-        println s!"::notice::added labels: {newLabels}"
-      | t_labels_already_present =>
-        println s!"::notice::Did not add labels '{newLabels}', \
-                  since {t_labels_already_present} were already present"
-    | none =>
-      println s!"::warning::no PR-number provided, not adding labels. \
-      (call `lake exe autolabel 150602` to add the labels to PR `150602`)"
-  return 0
+          args := #["pr", "edit", s!"{prNr}", "--add-label", ",".intercalate <| newLabels.toList.map (·.toString)] }
+        println s!"::notice::added label: {newLabels}"
+      | t_labels_already_present  =>
+        println s!"::notice::did not add labels '{newLabels}', since {t_labels_already_present} \
+                  were already present"
+    | .curl prNr token =>
+      -- TODO: take existing labels on the PR into account
+      let _ ← IO.Process.run {
+        cmd := "curl",
+        args :=  #[
+          "--request", "POST",
+          "--header", "Accept: application/vnd.github+json",
+          "--header", s!"authorization: Bearer {token}",
+          "--header", "X-GitHub-Api-Version: 2022-11-28",
+          "--url", s!"https://api.github.com/repos/leanprover-community/mathlib4/issues/{prNr}/labels",
+          "--data", "{\"labels\":[\"" ++ s!"{"\",\"".intercalate <| newLabels.toList.map (·.toString)}" ++ "\"]}"
+          ]}
+      println s!"::notice::added label: {newLabels}"
+    | .none =>
+      println s!"::notice::github interaction disabled, not adding labels."
+  return exitCode
+
+end AutoLabel
+
+/-- Setting up command line options and help text for `lake exe autolabel` -/
+def autolabel : Cli.Cmd := `[Cli|
+  autolabel VIA AutoLabel.autoLabelCli; ["0.1.0"]
+  "
+  Determine a list of applicable mathlib labels comparing current changes to `origin/master`.
+
+  This tool is mathlib-specific and has no application in downstream projects.
+  "
+  FLAGS:
+    "pr" : Nat;      "the mathlib PR number. Must be combined with `--gh` or `--curl`."
+    "gh";            "apply label(s) using `gh`. Usage: `lake exe autolabel --pr 20156 --gh`"
+    "curl" : String; "apply label(s) using `curl`. \
+                      Usage: `lake exe autolabel --pr 20156 --curl <ACCESS_TOKEN>`. \
+                      (currently, this implies `--force`)"
+    "force";         "apply labels even if there are already labels on the PR."
+]
+
+/-- lake exe autolabel
+
+## Exit codes:
+
+- `0`: success
+- `2`: invalid labels defined
+- `3`: labels do not cover all of `Mathlib/`
+-/
+public def main (args : List String) : IO UInt32 :=
+  autolabel.validate args

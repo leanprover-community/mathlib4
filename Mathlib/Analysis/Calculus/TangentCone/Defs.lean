@@ -5,9 +5,9 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Order.Filter.Pointwise
 public import Mathlib.Analysis.Normed.Group.Basic
 public import Mathlib.LinearAlgebra.Span.Defs
+public import Mathlib.Order.Filter.Pointwise
 
 /-!
 # Tangent cone
@@ -35,7 +35,7 @@ prove here.
 
 @[expose] public section
 
-open Filter Set Metric
+open Filter Set
 open scoped Topology Pointwise
 
 universe u v

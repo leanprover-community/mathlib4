@@ -6,8 +6,8 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.Analysis.Complex.Polynomial.UnitTrinomial
-public import Mathlib.RingTheory.Polynomial.GaussLemma
-public import Mathlib.Tactic.LinearCombination
+
+import Mathlib.RingTheory.Polynomial.GaussLemma
 
 /-!
 # Irreducibility of Selmer Polynomials

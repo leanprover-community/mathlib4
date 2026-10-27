@@ -64,7 +64,7 @@ lemma Module.FaithfullyFlat.of_flat_of_isLocalHom [IsLocalRing A] [IsLocalRing B
   by_contra eqt
   have : Submodule.restrictScalars A (Ideal.map (algebraMap A B) (IsLocalRing.maximalIdeal A)) ≤
       Submodule.restrictScalars A (IsLocalRing.maximalIdeal B) :=
-    ((IsLocalRing.local_hom_TFAE (algebraMap A B)).out 0 2).mp ‹_›
+    ((IsLocalRing.local_hom_TFAE (algebraMap A B)).out 1 3).mp ‹_›
   rw [eqt, top_le_iff, Submodule.restrictScalars_eq_top_iff] at this
   exact Ideal.IsPrime.ne_top' this
 
@@ -132,7 +132,7 @@ lemma Ideal.comap_surjective_of_faithfullyFlat :
 lemma Ideal.map_injective_of_faithfullyFlat :
     Function.Injective (map (algebraMap A B)) :=
   fun _ _ h ↦ by simpa [comap_map_eq_self_of_faithfullyFlat]
-    using congr_arg (Ideal.comap (algebraMap A B) ·) h
+    using congr(Ideal.comap (algebraMap A B) $h)
 
 /-- If `B` is faithfully flat over `A`, every prime of `A` comes from a prime of `B`. -/
 lemma Ideal.exists_isPrime_liesOver_of_faithfullyFlat (p : Ideal A) [p.IsPrime] :

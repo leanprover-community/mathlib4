@@ -5,8 +5,6 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Intervals
-public import Mathlib.Topology.Algebra.InfiniteSum.Order
 public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 
 /-!
@@ -18,7 +16,9 @@ in the reals.
 
 public section
 
-open Filter Finset NNReal Topology
+open Filter Finset NNReal
+
+open scoped Topology
 
 variable {α β : Type*} [PseudoMetricSpace α] {f : ℕ → α} {a : α}
 

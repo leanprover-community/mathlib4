@@ -48,7 +48,7 @@ open Module
 
 open LinearMap
 
-open Matrix Polynomial
+open Matrix
 
 open scoped Matrix
 

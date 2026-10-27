@@ -1,6 +1,8 @@
-import Mathlib.Geometry.Manifold.Notation
-import Mathlib.Geometry.Manifold.VectorBundle.Tangent
-import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
+module
+
+public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
+public import Mathlib.Geometry.Manifold.Notation
+public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 
 /-!
 # Tests for the differential geometry delaborators
@@ -230,7 +232,6 @@ variable {g : E × E → E × E}
 #check MDifferentiable 𝓘(ℝ, E × E) ((𝓘(ℝ, E)).prod (𝓘(ℝ, E))) g
 
 -- This can yield rather confusing errors
-set_option pp.mvars.anonymous false in
 /--
 error: Tactic `apply` failed: could not unify the conclusion of `@mdifferentiable_id`
   MDiff id

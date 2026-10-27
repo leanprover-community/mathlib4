@@ -99,33 +99,4 @@ theorem contDiffAt_implicitFunction
 
 end ContDiffAt
 
-/-- A predicate stating the sufficient conditions on an implicit equation `f : E₁ × E₂ → F` that
-will lead to a $C^n$ implicit function `ψ : E₁ → E₂`. -/
-@[deprecated "ContDiffAt.implicitFunction does not require this" (since := "2026-01-27")]
-structure IsContDiffImplicitAt (n : ℕ∞ω) (f : E₁ × E₂ → F) (f' : E₁ × E₂ →L[𝕜] F)
-    (u : E₁ × E₂) : Prop where
-  hasFDerivAt : HasFDerivAt f f' u
-  contDiffAt : ContDiffAt 𝕜 n f u
-  bijective : Function.Bijective (f'.comp (ContinuousLinearMap.inr 𝕜 E₁ E₂))
-  ne_zero : n ≠ 0
-
-namespace IsContDiffImplicitAt
-
-@[deprecated (since := "2026-01-27")]
-alias implicitFunction := ContDiffAt.implicitFunction
-
-@[deprecated (since := "2026-01-27")]
-alias implicitFunction_def := ContDiffAt.implicitFunction_def
-
-@[deprecated (since := "2026-01-27")]
-alias apply_implicitFunction := ContDiffAt.eventually_apply_implicitFunction
-
-@[deprecated (since := "2026-01-27")]
-alias eventually_implicitFunction_apply_eq := ContDiffAt.eventually_apply_eq_iff_implicitFunction
-
-@[deprecated (since := "2026-01-27")]
-alias contDiffAt_implicitFunction := ContDiffAt.contDiffAt_implicitFunction
-
-end IsContDiffImplicitAt
-
 end

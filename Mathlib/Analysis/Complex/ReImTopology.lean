@@ -37,8 +37,6 @@ public section
 
 open Set Topology
 
-noncomputable section
-
 namespace Complex
 
 /-- `Complex.re` turns `ℂ` into a trivial topological fiber bundle over `ℝ`. -/
@@ -218,7 +216,7 @@ alias frontier_setOf_le_re_and_im_le := frontier_setOfPred_le_re_and_im_le
 
 end Complex
 
-open Complex Metric
+open Complex
 
 variable {s t : Set ℝ}
 
