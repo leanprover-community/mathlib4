@@ -5,11 +5,12 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.Analysis.Calculus.ParametricIntegral
-public import Mathlib.Analysis.Complex.CauchyIntegral
 public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
 public import Mathlib.Probability.Moments.Basic
 public import Mathlib.Probability.Moments.IntegrableExpMul
+
+import Mathlib.Analysis.Calculus.ParametricIntegral
+import Mathlib.Analysis.Complex.CauchyIntegral
 
 /-!
 # The complex-valued moment-generating function
@@ -161,7 +162,7 @@ lemma hasDerivAt_integral_pow_mul_exp (hz : z.re ∈ interior (integrableExpSet 
     simp_rw [pow_succ, mul_assoc]
     refine HasDerivAt.const_mul _ ?_
     simp_rw [← smul_eq_mul, Complex.exp_eq_exp_ℂ]
-    convert! hasDerivAt_exp_smul_const (X ω : ℂ) ε using 1
+    convert hasDerivAt_exp_smul_const (X ω : ℂ) ε using 1
     rw [smul_eq_mul, mul_comm]
 
 /-- For all `z : ℂ` with `z.re ∈ interior (integrableExpSet X μ)`,
@@ -211,7 +212,8 @@ lemma hasDerivAt_iteratedDeriv_complexMGF (hz : z.re ∈ interior (integrableExp
     have : deriv (iteratedDeriv n (complexMGF X μ))
         =ᶠ[𝓝 z] fun z ↦ μ[fun ω ↦ X ω ^ (n + 1) * cexp (z * X ω)] := by
       have h_mem : ∀ᶠ y in 𝓝 z, y.re ∈ interior (integrableExpSet X μ) := by
-        refine IsOpen.eventually_mem ?_ hz
+        refine IsOpen.eventually_mem (s := Complex.re ⁻¹' interior (integrableExpSet X μ))
+          ?_ hz
         exact isOpen_interior.preimage Complex.continuous_re
       filter_upwards [h_mem] with y hy using HasDerivAt.deriv (hn hy)
     rw [EventuallyEq.hasDerivAt_iff this]

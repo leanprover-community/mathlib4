@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Normed.Group.Defs
 public import Mathlib.Basic.NNReal.Basic
 public import Mathlib.Topology.Algebra.Support
 public import Mathlib.Topology.MetricSpace.Basic
+
 import Mathlib.Tactic.Basify.Attr
 
 /-!
@@ -349,7 +350,7 @@ theorem NormedGroup.nhds_basis_norm_lt (x : E) :
 @[to_additive]
 theorem NormedGroup.nhds_one_basis_norm_lt :
     (𝓝 (1 : E)).HasBasis (fun ε : ℝ => 0 < ε) fun ε => { y | ‖y‖ < ε } := by
-  convert! NormedGroup.nhds_basis_norm_lt (1 : E) using 1
+  convert NormedGroup.nhds_basis_norm_lt (1 : E) using 1
   simp
 
 @[to_additive]
@@ -504,19 +505,19 @@ theorem nnnorm_le_mul_nnnorm_add' (a b : E) : ‖b‖₊ ≤ ‖a * b‖₊ + �
 
 @[to_additive]
 lemma nnnorm_mul_eq_nnnorm_right {x : E} (y : E) (h : ‖x‖₊ = 0) : ‖x * y‖₊ = ‖y‖₊ :=
-  NNReal.eq <| norm_mul_eq_norm_right _ <| congr_arg NNReal.toReal h
+  NNReal.eq <| norm_mul_eq_norm_right _ congr($(h).toReal)
 
 @[to_additive]
 lemma nnnorm_mul_eq_nnnorm_left (x : E) {y : E} (h : ‖y‖₊ = 0) : ‖x * y‖₊ = ‖x‖₊ :=
-  NNReal.eq <| norm_mul_eq_norm_left _ <| congr_arg NNReal.toReal h
+  NNReal.eq <| norm_mul_eq_norm_left _ congr($(h).toReal)
 
 @[to_additive]
 lemma nnnorm_div_eq_nnnorm_right {x : E} (y : E) (h : ‖x‖₊ = 0) : ‖x / y‖₊ = ‖y‖₊ :=
-  NNReal.eq <| norm_div_eq_norm_right _ <| congr_arg NNReal.toReal h
+  NNReal.eq <| norm_div_eq_norm_right _ congr($(h).toReal)
 
 @[to_additive]
 lemma nnnorm_div_eq_nnnorm_left (x : E) {y : E} (h : ‖y‖₊ = 0) : ‖x / y‖₊ = ‖x‖₊ :=
-  NNReal.eq <| norm_div_eq_norm_left _ <| congr_arg NNReal.toReal h
+  NNReal.eq <| norm_div_eq_norm_left _ congr($(h).toReal)
 
 /-- The nonnegative norm seen as an `ENNReal` and then as a `Real` is equal to the norm. -/
 @[to_additive toReal_coe_nnnorm /-- The nonnegative norm seen as an `ENNReal` and
@@ -550,19 +551,13 @@ theorem exists_nnnorm_ne_zero' [NontrivialTopology E] : ∃ x : E, ‖x‖₊ �
 theorem IndiscreteTopology.nnnorm_eq_zero' [IndiscreteTopology E] : ∀ x : E, ‖x‖₊ = 0 :=
   indiscreteTopology_iff_forall_nnnorm_eq_zero'.1 ‹_›
 
+@[to_additive of_exists_nnnorm_ne_zero]
 alias ⟨_, NontrivialTopology.of_exists_nnnorm_ne_zero'⟩ :=
   nontrivialTopology_iff_exists_nnnorm_ne_zero'
-alias ⟨_, NontrivialTopology.of_exists_nnnorm_ne_zero⟩ :=
-  nontrivialTopology_iff_exists_nnnorm_ne_zero
-attribute [to_additive existing NontrivialTopology.of_exists_nnnorm_ne_zero]
-  NontrivialTopology.of_exists_nnnorm_ne_zero'
 
+@[to_additive of_forall_nnnorm_eq_zero]
 alias ⟨_, IndiscreteTopology.of_forall_nnnorm_eq_zero'⟩ :=
   indiscreteTopology_iff_forall_nnnorm_eq_zero'
-alias ⟨_, IndiscreteTopology.of_forall_nnnorm_eq_zero⟩ :=
-  indiscreteTopology_iff_forall_nnnorm_eq_zero
-attribute [to_additive existing IndiscreteTopology.of_forall_nnnorm_eq_zero]
-  IndiscreteTopology.of_forall_nnnorm_eq_zero'
 
 @[to_additive nontrivialTopology_iff_exists_norm_ne_zero]
 theorem nontrivialTopology_iff_exists_norm_ne_zero' :
@@ -583,19 +578,13 @@ theorem exists_norm_ne_zero' [NontrivialTopology E] : ∃ x : E, ‖x‖ ≠ 0 :
 theorem IndiscreteTopology.norm_eq_zero' [IndiscreteTopology E] : ∀ x : E, ‖x‖ = 0 :=
   indiscreteTopology_iff_forall_norm_eq_zero'.1 ‹_›
 
+@[to_additive of_exists_norm_ne_zero]
 alias ⟨_, NontrivialTopology.of_exists_norm_ne_zero'⟩ :=
   nontrivialTopology_iff_exists_norm_ne_zero'
-alias ⟨_, NontrivialTopology.of_exists_norm_ne_zero⟩ :=
-  nontrivialTopology_iff_exists_norm_ne_zero
-attribute [to_additive existing NontrivialTopology.of_exists_norm_ne_zero]
-  NontrivialTopology.of_exists_norm_ne_zero'
 
+@[to_additive of_forall_norm_eq_zero]
 alias ⟨_, IndiscreteTopology.of_forall_norm_eq_zero'⟩ :=
   indiscreteTopology_iff_forall_norm_eq_zero'
-alias ⟨_, IndiscreteTopology.of_forall_norm_eq_zero⟩ :=
-  indiscreteTopology_iff_forall_norm_eq_zero
-attribute [to_additive existing IndiscreteTopology.of_forall_norm_eq_zero]
-  IndiscreteTopology.of_forall_norm_eq_zero'
 
 end NNNorm
 

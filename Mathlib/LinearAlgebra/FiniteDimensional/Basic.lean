@@ -5,12 +5,12 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Algebra.Module.Projective
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 public import Mathlib.LinearAlgebra.Dimension.Finite
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 public import Mathlib.LinearAlgebra.Matrix.ToLin
+
 import Mathlib.RingTheory.Finiteness.Lattice
-public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Finite-dimensional vector spaces
@@ -421,12 +421,12 @@ theorem coe_ofInjectiveEndo (f : V →ₗ[K] V) (h_inj : Injective f) :
 @[simp]
 theorem ofInjectiveEndo_right_inv (f : V →ₗ[K] V) (h_inj : Injective f) :
     f * (ofInjectiveEndo f h_inj).symm = 1 :=
-  LinearMap.ext <| (ofInjectiveEndo f h_inj).apply_symm_apply
+  LinearMap.ext (ofInjectiveEndo f h_inj).apply_symm_apply
 
 @[simp]
 theorem ofInjectiveEndo_left_inv (f : V →ₗ[K] V) (h_inj : Injective f) :
     ((ofInjectiveEndo f h_inj).symm : V →ₗ[K] V) * f = 1 :=
-  LinearMap.ext <| (ofInjectiveEndo f h_inj).symm_apply_apply
+  LinearMap.ext (ofInjectiveEndo f h_inj).symm_apply_apply
 
 variable {V' : Type*} [AddCommGroup V'] [Module K V'] [FiniteDimensional K V']
 omit [FiniteDimensional K V]
@@ -592,29 +592,38 @@ section finrank_eq_one
 
 /-- A vector space with a nonzero vector `v` has dimension 1 iff `v` spans.
 -/
-theorem finrank_eq_one_iff_of_nonzero (v : V) (nz : v ≠ 0) :
+theorem finrank_eq_one_iff_of_ne_zero (v : V) (nz : v ≠ 0) :
     finrank K V = 1 ↔ span K ({v} : Set V) = ⊤ where
   mp h := by simpa using (basisSingleton Unit h v nz).span_eq
   mpr s := finrank_eq_card_basis <| .mk (.of_subsingleton (v := ![v]) 0 nz) <| by simp [← s]
 
+@[deprecated (since := "2026-10-13")]
+alias finrank_eq_one_iff_of_nonzero := finrank_eq_one_iff_of_ne_zero
+
 /-- A module with a nonzero vector `v` has dimension 1 iff every vector is a multiple of `v`.
 -/
-theorem finrank_eq_one_iff_of_nonzero' (v : V) (nz : v ≠ 0) :
+theorem finrank_eq_one_iff_of_ne_zero' (v : V) (nz : v ≠ 0) :
     finrank K V = 1 ↔ ∀ w : V, ∃ c : K, c • v = w := by
-  rw [finrank_eq_one_iff_of_nonzero v nz]
+  rw [finrank_eq_one_iff_of_ne_zero v nz]
   apply span_singleton_eq_top_iff
+
+@[deprecated (since := "2026-10-13")]
+alias finrank_eq_one_iff_of_nonzero' := finrank_eq_one_iff_of_ne_zero'
 
 -- We use the `LinearMap.CompatibleSMul` typeclass here, to encompass two situations:
 -- * `A = K`
 -- * `[Field K] [Algebra K A] [IsScalarTower K A V] [IsScalarTower K A W]`
-theorem surjective_of_nonzero_of_finrank_eq_one {W A : Type*} [Semiring A] [Module A V]
+theorem surjective_of_ne_zero_of_finrank_eq_one {W A : Type*} [Semiring A] [Module A V]
     [AddCommGroup W] [Module K W] [Module A W] [LinearMap.CompatibleSMul V W K A]
     (h : finrank K W = 1) {f : V →ₗ[A] W} (w : f ≠ 0) : Surjective f := by
   change Surjective (f.restrictScalars K)
   obtain ⟨v, n⟩ := DFunLike.ne_iff.mp w
   intro z
-  obtain ⟨c, rfl⟩ := (finrank_eq_one_iff_of_nonzero' (f v) n).mp h z
+  obtain ⟨c, rfl⟩ := (finrank_eq_one_iff_of_ne_zero' (f v) n).mp h z
   exact ⟨c • v, by simp⟩
+
+@[deprecated (since := "2026-10-13")]
+alias surjective_of_nonzero_of_finrank_eq_one := surjective_of_ne_zero_of_finrank_eq_one
 
 end finrank_eq_one
 

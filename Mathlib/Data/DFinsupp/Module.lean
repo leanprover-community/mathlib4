@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Action.Pi
 public import Mathlib.Algebra.Module.LinearMap.Defs
 public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Data.DFinsupp.Defs

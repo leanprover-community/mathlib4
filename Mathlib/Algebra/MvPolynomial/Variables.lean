@@ -5,8 +5,8 @@ Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Finsupp.Lex
 public import Mathlib.Algebra.MvPolynomial.Degrees
+public import Mathlib.Data.Finsupp.Lex
 
 /-!
 # Variables of polynomials
@@ -155,7 +155,7 @@ theorem mem_support_notMem_vars_zero {f : MvPolynomial σ R} {x : σ →₀ ℕ}
 
 theorem support_subset_vars_of_mem_support {s : σ →₀ ℕ} (h : s ∈ p.support) :
     s.support ⊆ p.vars := fun i hi ↦ by
-  contrapose! hi
+  contrapose hi
   simp [mem_support_notMem_vars_zero h hi]
 
 theorem vars_eq_empty_iff_eq_C : p.vars = ∅ ↔ p = C (p.coeff 0) := by
@@ -240,7 +240,7 @@ theorem vars_sum_subset [DecidableEq σ] :
       (vars_add_subset _ _) (Finset.union_subset_union (Finset.Subset.refl _) ?_)
     assumption
 
-theorem vars_sum_of_disjoint [DecidableEq σ] (h : Pairwise <| (Disjoint on fun i => (φ i).vars)) :
+theorem vars_sum_of_disjoint [DecidableEq σ] (h : Pairwise (Disjoint on fun i => (φ i).vars)) :
     (∑ i ∈ t, φ i).vars = Finset.biUnion t fun i => (φ i).vars := by
   classical
   induction t using Finset.induction_on with
@@ -293,7 +293,7 @@ theorem eval₂Hom_congr' {f₁ f₂ : R →+* S} {g₁ g₂ : σ → S} {p₁ p
   rintro rfl h rfl
   obtain ⟨p, hp⟩ := exists_rename_coe_vars_eq p₁
   rw [← hp, eval₂Hom_rename, eval₂Hom_rename]
-  exact congr(eval₂Hom f₁ (fun x : p₁.vars => $(h x.1 x.2 x.2)) p)
+  congrm eval₂Hom f₁ (fun x : p₁.vars => $(h x.1 x.2 x.2)) p
 
 theorem eval₂Hom_eq_constantCoeff_of_vars (f : R →+* S) {g : σ → S} {p : MvPolynomial σ R}
     (hp : ∀ i ∈ p.vars, g i = 0) : eval₂Hom f g p = f (constantCoeff p) := by
@@ -315,14 +315,29 @@ theorem hom_congr_vars {f₁ f₂ : MvPolynomial σ R →+* S} {p₁ p₂ : MvPo
     _ = eval₂Hom (f₂.comp C) (f₂ ∘ X) p₂ := eval₂Hom_congr' hC hv hp
     _ = f₂ p₂ := RingHom.congr_fun (by ext <;> simp) _
 
+lemma aeval_ite_mem_eq (q : MvPolynomial σ R) (s : Set σ) [DecidablePred (· ∈ s)]
+    [DecidablePred (fun (x : σ →₀ ℕ) ↦ (x.support : Set σ) ⊆ s)] :
+    MvPolynomial.aeval (fun i ↦ if i ∈ s then .X i else 0) q =
+      ∑ x ∈ q.support, if (x.support : Set σ) ⊆ s then monomial x (coeff q x) else 0 := by
+  rw [MvPolynomial.as_sum q, MvPolynomial.aeval_sum]
+  refine Finset.sum_congr (by simp) fun u hu ↦ ?_
+  split_ifs with hh
+  · rw [aeval_monomial, monomial_eq]
+    simp only [algebraMap_eq, support_sum_monomial_coeff]
+    congr 1
+    exact Finsupp.prod_congr (fun _ _ ↦ by grind)
+  · rw [aeval_monomial]
+    obtain ⟨y, hy₁, hy₂⟩ := not_subset.mp hh
+    refine mul_eq_zero_of_right _ <| Finset.prod_eq_zero hy₁ ?_
+    simp [Finsupp.mem_support_iff.mp hy₁, hy₂]
+
 lemma aeval_ite_mem_eq_self (q : MvPolynomial σ R) {s : Set σ} (hs : (q.vars : Set σ) ⊆ s)
     [∀ i, Decidable (i ∈ s)] :
     MvPolynomial.aeval (fun i ↦ if i ∈ s then .X i else 0) q = q := by
-  rw [MvPolynomial.as_sum q, MvPolynomial.aeval_sum]
-  refine Finset.sum_congr rfl fun u hu ↦ ?_
-  rw [MvPolynomial.aeval_monomial, MvPolynomial.monomial_eq]
-  congr 1
-  exact Finsupp.prod_congr (fun i hi ↦ by simp [hs ((mem_vars_iff_mem_support _).mpr ⟨u, hu, hi⟩)])
+  classical
+  rw [aeval_ite_mem_eq]
+  conv_rhs => rw [MvPolynomial.as_sum q]
+  exact Finset.sum_congr rfl (by grind [mem_vars_iff_mem_support])
 
 end EvalVars
 

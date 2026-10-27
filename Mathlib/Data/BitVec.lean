@@ -5,10 +5,9 @@ Authors: Simon Hudon, Harun Khan, Alex Keizer
 -/
 module
 
-public import Mathlib.Algebra.Ring.InjSurj
 public import Mathlib.Algebra.Ring.Equiv
-public import Mathlib.Data.ZMod.Defs
 public import Mathlib.Data.Int.Cast.Lemmas
+public import Mathlib.Data.ZMod.Defs
 
 /-!
 # Basic Theorems About Bitvectors
@@ -71,7 +70,6 @@ lemma toFin_zsmul (z : ℤ) (x : BitVec w) : toFin (z • x) = z • x.toFin :=
     open scoped Fin.CommRing in
     simp only [zsmul_eq_mul, toFin_intCast]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma toFin_pow (x : BitVec w) (n : ℕ) : toFin (x ^ n) = x.toFin ^ n := by
   induction n with
   | zero => simp

@@ -5,14 +5,15 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir
 -/
 module
 
-public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.Order.CauSeq.BigOperators
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Analysis.Complex.Norm
-public import Mathlib.Basic.Complex.BigOperators
-public import Mathlib.Data.Nat.Choose.Sum
 public import Mathlib.Tactic.NormNum.BigOperators
 public import Mathlib.Tactic.NormNum.NatFactorial
+
+import Mathlib.Algebra.CharP.Defs
+import Mathlib.Basic.Complex.BigOperators
+import Mathlib.Data.Nat.Choose.Sum
 
 /-!
 # Exponential Function
@@ -177,7 +178,7 @@ theorem exp_int_mul (z : ℂ) (n : ℤ) : Complex.exp (n * z) = Complex.exp z ^ 
 theorem exp_conj : exp (conj x) = conj (exp x) := by
   simp only [exp]
   rw [← lim_conj]
-  refine congr_arg CauSeq.lim (CauSeq.ext fun _ => ?_)
+  congrm CauSeq.lim $(CauSeq.ext fun _ => ?_)
   dsimp [exp', Function.comp_def, cauSeqConj]
   rw [map_sum (starRingEnd _)]
   refine sum_congr rfl fun n _ => ?_
@@ -387,7 +388,7 @@ theorem exp_bound {x : ℂ} (hx : ‖x‖ ≤ 1) {n : ℕ} (hn : 0 < n) :
   calc
     ‖∑ m ∈ range j with n ≤ m, (x ^ m / m.factorial : ℂ)‖
       = ‖∑ m ∈ range j with n ≤ m, (x ^ n * (x ^ (m - n) / m.factorial) : ℂ)‖ := by
-      refine congr_arg norm (sum_congr rfl fun m hm => ?_)
+      congrm norm $(sum_congr rfl fun m hm => ?_)
       rw [mem_filter, mem_range] at hm
       rw [← mul_div_assoc, ← pow_add, add_tsub_cancel_of_le hm.2]
     _ ≤ ∑ m ∈ range j with n ≤ m, ‖x ^ n * (x ^ (m - n) / m.factorial)‖ :=
@@ -490,7 +491,7 @@ lemma norm_exp_sub_sum_le_norm_mul_exp (x : ℂ) (n : ℕ) :
   calc
     ‖∑ m ∈ Ico n j, (x ^ m / m.factorial : ℂ)‖
       = ‖∑ m ∈ Ico n j, (x ^ n * (x ^ (m - n) / m.factorial) : ℂ)‖ := by
-      refine congr_arg norm (sum_congr rfl fun m hm => ?_)
+      congrm norm $(sum_congr rfl fun m hm => ?_)
       rw [mem_Ico] at hm
       rw [← mul_div_assoc, ← pow_add, add_tsub_cancel_of_le hm.1]
     _ ≤ ∑ m ∈ Ico n j, ‖x ^ n * (x ^ (m - n) / m.factorial)‖ :=
@@ -562,7 +563,7 @@ theorem expNear_sub (n x r₁ r₂) : expNear n x r₁ -
 theorem exp_approx_end (n m : ℕ) (x : ℝ) (e₁ : n + 1 = m) (h : |x| ≤ 1) :
     |exp x - expNear m x 0| ≤ |x| ^ m / m.factorial * ((m + 1) / m) := by
   simp only [expNear, mul_zero, add_zero]
-  convert! exp_bound (n := m) h ?_ using 1
+  convert exp_bound (n := m) h ?_ using 1
   · simp [field]
   · lia
 
@@ -572,7 +573,7 @@ theorem exp_approx_succ {n} {x a₁ b₁ : ℝ} (m : ℕ) (e₁ : n + 1 = m) (a�
     |exp x - expNear n x a₁| ≤ |x| ^ n / n.factorial * b₁ := by
   grw [abs_sub_le, h]
   subst e₁; rw [expNear_succ, expNear_sub, abs_mul]
-  convert!
+  convert
     mul_le_mul_of_nonneg_left (a := |x| ^ n / ↑(Nat.factorial n)) (le_sub_iff_add_le'.1 e) ?_
       using 1
   · simp [mul_add, pow_succ', div_eq_mul_inv, abs_mul, abs_inv, Nat.factorial]
@@ -610,7 +611,7 @@ theorem exp_bound_div_one_sub_of_interval' {x : ℝ} (h1 : 0 < x) (h2 : x < 1) :
       -- (It may also need the positivity extensions in https://github.com/leanprover-community/mathlib4/pull/3907.)
       rw [show 3 = 1 + 1 + 1 from rfl]
       repeat rw [Finset.sum_range_succ]
-      norm_num [Nat.factorial]
+      simp [Nat.factorial]
       nlinarith
     _ < 1 / (1 - x) := by rw [lt_div_iff₀] <;> nlinarith
 

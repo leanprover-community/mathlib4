@@ -5,7 +5,6 @@ Authors: Christopher Hoskin
 -/
 module
 
-public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Algebra.Star.Basic
 
 /-!
@@ -333,10 +332,6 @@ end
 
 instance : CoeOut (A ≃⋆+* B) (A ≃+* B) where coe := toRingEquiv
 
-@[deprecated "Now a syntactic equality" (since := "2026-04-09"), nolint synTaut]
-theorem toRingEquiv_eq_coe (e : A ≃⋆+* B) : e.toRingEquiv = e :=
-  rfl
-
 @[ext]
 theorem ext {f g : A ≃⋆+* B} (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext f g h
@@ -360,7 +355,7 @@ nonrec def symm (e : A ≃⋆+* B) : B ≃⋆+* A :=
   { e.symm with
     map_star' := fun b => by
       simpa only [apply_inv_apply, inv_apply_apply] using!
-        congr_arg (inv e) (map_star e (inv e b)).symm }
+        congr(inv e $((map_star e (inv e b)).symm)) }
 
 @[simp]
 theorem toRingEquiv_symm (e : A ≃⋆+* B) :

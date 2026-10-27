@@ -6,9 +6,9 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.Analysis.Convex.Topology
-public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Topology.Connected.LocallyPathConnected
-public import Mathlib.Analysis.Convex.PathConnected
+
+import Mathlib.Analysis.Convex.PathConnected
 
 /-!
 # Locally convex topological modules
@@ -152,7 +152,7 @@ theorem Disjoint.exists_open_convexes (disj : Disjoint s t)
   refine ⟨s + V, t + V, hVopen.add_left, hVopen.add_left, hs₁.add hVconvex, ht₁.add hVconvex,
     subset_add_left _ hV0, subset_add_left _ hV0, ?_⟩
   simp_rw [← iUnion_add_left_image, image_add_left]
-  simp_rw [UniformSpace.ball, ← preimage_comp, sub_eq_neg_add] at hV
+  simp_rw [UniformSpace.ball, SetRel.ball, SetRel.inv, ← preimage_comp, sub_eq_neg_add] at hV
   exact hV
 
 /-- In a locally convex space, every point `x` and closed convex set `s ∌ x` admit disjoint convex

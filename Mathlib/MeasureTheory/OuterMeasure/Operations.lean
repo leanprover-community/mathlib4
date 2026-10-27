@@ -5,9 +5,9 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
+public import Mathlib.Algebra.Module.FunLike
 public import Mathlib.Algebra.Order.Group.Indicator
 public import Mathlib.MeasureTheory.OuterMeasure.Basic
-public import Mathlib.Data.FunLike.Module
 
 /-!
 # Operations on outer measures
@@ -46,8 +46,7 @@ instance instZero : Zero (OuterMeasure α) :=
       mono _ := le_rfl
       iUnion_nat _ _ := zero_le }⟩
 
-instance : IsZeroApply (OuterMeasure α) (Set α) ℝ≥0∞ where
-  zero_apply _ := rfl
+instance : IsZeroApply (OuterMeasure α) where
 
 @[deprecated (since := "2026-06-23")] alias coe_zero := FunLike.coe_zero
 
@@ -65,8 +64,7 @@ instance instAdd : Add (OuterMeasure α) :=
             add_le_add (measure_iUnion_le s) (measure_iUnion_le s)
           _ = _ := ENNReal.tsum_add.symm }⟩
 
-instance : IsAddApply (OuterMeasure α) (Set α) ℝ≥0∞ where
-  add_apply _ _ _ := rfl
+instance : IsAddApply (OuterMeasure α) where
 
 @[deprecated (since := "2026-06-23")] alias coe_add := FunLike.coe_add
 
@@ -88,8 +86,7 @@ instance instSMul : SMul R (OuterMeasure α) :=
         simp_rw [← smul_one_mul c (m _), ENNReal.tsum_mul_left]
         exact mul_right_mono (measure_iUnion_le _) }⟩
 
-instance : IsSMulApply R (OuterMeasure α) (Set α) ℝ≥0∞ where
-  smul_apply _ _ _ := rfl
+instance : IsSMulApply R (OuterMeasure α) where
 
 @[deprecated (since := "2026-06-23")] alias coe_smul := FunLike.coe_smul
 
@@ -311,7 +308,7 @@ theorem restrict_iSup {ι} (s : Set α) (m : ι → OuterMeasure α) :
     restrict s (⨆ i, m i) = ⨆ i, restrict s (m i) := by simp [restrict]
 
 theorem map_comap {β} (f : α → β) (m : OuterMeasure β) : map f (comap f m) = restrict (range f) m :=
-  ext fun s => congr_arg m <| by simp only [image_preimage_eq_inter_range, Subtype.range_coe]
+  ext fun s => congr(m $(by simp only [image_preimage_eq_inter_range, Subtype.range_coe]))
 
 theorem map_comap_le {β} (f : α → β) (m : OuterMeasure β) : map f (comap f m) ≤ m := fun _ =>
   m.mono <| image_preimage_subset _ _

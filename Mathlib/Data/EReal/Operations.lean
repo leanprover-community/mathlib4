@@ -206,7 +206,7 @@ protected def neg : EReal → EReal
 instance : Neg EReal := ⟨EReal.neg⟩
 
 instance : SubNegZeroMonoid EReal where
-  neg_zero := congr_arg Real.toEReal neg_zero
+  neg_zero := congr(Real.toEReal $neg_zero)
   zsmul := zsmulRec
 
 @[simp]
@@ -230,7 +230,7 @@ instance : InvolutiveNeg EReal where
     match a with
     | ⊥ => rfl
     | ⊤ => rfl
-    | (a : ℝ) => congr_arg Real.toEReal (neg_neg a)
+    | (a : ℝ) => congr($(neg_neg a).toEReal)
 
 @[simp]
 theorem toReal_neg_eq : ∀ {a : EReal}, toReal (-a) = -toReal a
@@ -309,7 +309,7 @@ lemma neg_sub {x y : EReal} (h1 : x ≠ ⊥ ∨ y ≠ ⊥) (h2 : x ≠ ⊤ ∨ y
 
 /-- Induction principle for `EReal`s splitting into cases `↑(x : ℝ≥0∞)` and `-↑(x : ℝ≥0∞)`.
 In the latter case, we additionally assume `0 < x`. -/
-@[elab_as_elim]
+@[elab_as_elim, no_expose]
 def recENNReal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0∞, motive x)
     (neg_coe : ∀ x : ℝ≥0∞, 0 < x → motive (-x)) (x : EReal) : motive x :=
   if hx : 0 ≤ x then coe_toENNReal hx ▸ coe _
@@ -321,12 +321,19 @@ def recENNReal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0∞, motive x)
 @[simp]
 theorem recENNReal_coe_ennreal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0∞, motive x)
     (neg_coe : ∀ x : ℝ≥0∞, 0 < x → motive (-x)) (x : ℝ≥0∞) : recENNReal coe neg_coe x = coe x := by
-  suffices ∀ y : EReal, x = y → (recENNReal coe neg_coe y : motive y) ≍ coe x from
-    heq_iff_eq.mp (this x rfl)
-  intro y hy
-  have H₁ : 0 ≤ y := hy ▸ coe_ennreal_nonneg x
-  obtain rfl : y.toENNReal = x := by simp [← hy]
-  simp [recENNReal, H₁]
+  unfold recENNReal
+  rw [dite_eq_left (coe_ennreal_nonneg x)]
+  rw! [toENNReal_coe]
+  rfl
+
+@[simp]
+theorem recENNReal_neg_coe_ennreal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0∞, motive x)
+    (neg_coe : ∀ x : ℝ≥0∞, 0 < x → motive (-x)) {x : ℝ≥0∞} (hx : 0 < x) :
+    recENNReal coe neg_coe (-x) = neg_coe x hx := by
+  unfold recENNReal
+  rw [dite_eq_right (not_le.2 (EReal.neg_lt_zero.2 (coe_ennreal_pos.2 hx)))]
+  rw! [neg_neg, toENNReal_coe]
+  rfl
 
 /-!
 ### Subtraction
@@ -855,7 +862,7 @@ lemma nsmul_eq_mul (n : ℕ) (x : EReal) : n • x = n * x := by
   | zero => rw [zero_smul, Nat.cast_zero, zero_mul]
   | succ n ih =>
     rw [succ_nsmul, ih, Nat.cast_succ]
-    convert! (EReal.right_distrib_of_nonneg _ _).symm <;> simp
+    convert (EReal.right_distrib_of_nonneg _ _).symm <;> simp
 
 end EReal
 

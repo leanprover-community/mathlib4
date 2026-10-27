@@ -40,7 +40,6 @@ abbrev subcategoryAcyclic :
     ObjectProperty (HomotopyCategory.Plus C) :=
   (HomotopyCategory.subcategoryAcyclic C).inverseImage (HomotopyCategory.Plus.ι C)
 
-set_option backward.defeqAttrib.useBackward true in
 lemma quasiIso_eq_subcategoryAcyclic_trW :
     HomotopyCategory.Plus.quasiIso C = (subcategoryAcyclic C).trW := by
   ext K L f
@@ -237,6 +236,10 @@ induced by `DerivedCategory.Q : CochainComplex C ℤ ⥤ DerivedCategory C`. -/
 noncomputable def QCompιIso :
     DerivedCategory.Plus.Q ⋙ Plus.ι ≅ CochainComplex.Plus.ι C ⋙ DerivedCategory.Q :=
   ObjectProperty.liftCompιIso ..
+
+instance : (Q (C := C)).Additive :=
+  have := Functor.additive_of_iso (QCompιIso C).symm
+  Functor.additive_of_comp_faithful _ Plus.ι
 
 instance : NatTrans.CommShift (QCompιIso C).hom ℤ :=
   ObjectProperty.commShift_liftCompιIso_hom ..

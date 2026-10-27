@@ -6,7 +6,6 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Lie.Abelian
-public import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 /-!
 # Tensor products of Lie modules

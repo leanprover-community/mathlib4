@@ -194,7 +194,7 @@ theorem range_eq_bot {f : M →ₛₗ[τ₁₂] M₂} : range f = ⊥ ↔ f = 0 
 
 theorem range_le_ker_iff {f : M →ₛₗ[τ₁₂] M₂} {g : M₂ →ₛₗ[τ₂₃] M₃} :
     range f ≤ ker g ↔ (g.comp f : M →ₛₗ[τ₁₃] M₃) = 0 :=
-  ⟨fun h => ker_eq_top.1 <| eq_top_iff'.2 fun _ => h <| ⟨_, rfl⟩, fun h x hx =>
+  ⟨fun h => ker_eq_top.1 <| eq_top_iff'.2 fun _ => h ⟨_, rfl⟩, fun h x hx =>
     mem_ker.2 <| Exists.elim hx fun y hy => by rw [← hy, ← comp_apply, h, zero_apply]⟩
 
 theorem comap_le_comap_iff {f : M →ₛₗ[τ₁₂] M₂} (hf : range f = ⊤) {p p'} :
@@ -351,6 +351,10 @@ theorem map_subtype_range_inclusion {p p' : Submodule R M} (h : p ≤ p') :
 lemma restrictScalars_map [SMul R R₂] [Module R₂ M] [Module R M₂] [IsScalarTower R R₂ M]
     [IsScalarTower R R₂ M₂] (f : M →ₗ[R₂] M₂) (M' : Submodule R₂ M) :
     (M'.map f).restrictScalars R = (M'.restrictScalars R).map (f.restrictScalars R) := rfl
+
+theorem restrictScalars_comap [SMul R R₂] [Module R₂ M] [Module R M₂] [IsScalarTower R R₂ M]
+    [IsScalarTower R R₂ M₂] (f : M →ₗ[R₂] M₂) (M' : Submodule R₂ M₂) :
+    (M'.comap f).restrictScalars R = (M'.restrictScalars R).comap (f.restrictScalars R) := rfl
 
 /-- If `N ⊆ M` then submodules of `N` are the same as submodules of `M` contained in `N`.
 

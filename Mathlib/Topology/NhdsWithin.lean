@@ -156,6 +156,9 @@ theorem eventually_mem_nhdsWithin {a : α} {s : Set α} : ∀ᶠ x in 𝓝[s] a,
 theorem inter_mem_nhdsWithin (s : Set α) {t : Set α} {a : α} (h : t ∈ 𝓝 a) : s ∩ t ∈ 𝓝[s] a :=
   inter_mem self_mem_nhdsWithin (mem_inf_of_left h)
 
+lemma sdiff_mem_nhdsWithin (s : Set α) {t : Set α} {a : α} (h : tᶜ ∈ 𝓝 a) : s \ t ∈ 𝓝[s] a :=
+  inter_mem_nhdsWithin _ h
+
 theorem pure_le_nhdsWithin {a : α} {s : Set α} (ha : a ∈ s) : pure a ≤ 𝓝[s] a :=
   le_inf (pure_le_nhds a) (le_principal_iff.2 ha)
 
@@ -597,7 +600,7 @@ lemma nhdsSetWithin_empty' {s : Set α} : 𝓝ˢ[s] ∅ = ⊥ := by
   simp [nhdsSetWithin]
 
 lemma principal_inter_le_nhdsSetWithin {s t : Set α} : 𝓟 (s ∩ t) ≤ 𝓝ˢ[t] s := by
-  simpa [nhdsSetWithin] using inf_le_of_left_le (b := 𝓟 t) <| principal_le_nhdsSet
+  simpa [nhdsSetWithin] using inf_le_of_left_le (b := 𝓟 t) principal_le_nhdsSet
 
 lemma nhdsSetWithin_prod_le {s s' : Set α} {t t' : Set β} :
     𝓝ˢ[s' ×ˢ t'] (s ×ˢ t) ≤ 𝓝ˢ[s'] s ×ˢ 𝓝ˢ[t'] t := by
