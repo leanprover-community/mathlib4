@@ -52,6 +52,7 @@ the supremum of projective dimension over all modules. -/
 noncomputable def globalDimension : WithBot ℕ∞ :=
   ⨆ (M : ModuleCat.{v} R), projectiveDimension.{v} M
 
+@[simp]
 lemma globalDimension_eq_bot_iff [Small.{v} R] : globalDimension.{v} R = ⊥ ↔ Subsingleton R := by
   simp only [globalDimension, iSup_eq_bot, projectiveDimension_eq_bot_iff,
     ModuleCat.isZero_iff_subsingleton]
