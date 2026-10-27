@@ -377,7 +377,8 @@ protected theorem NormedSpace.equicontinuous_tfae : List.TFAE
       exact (hC i x).trans (mul_le_mul_of_nonneg_right (C.le_coe_toNNReal) (norm_nonneg x))
   tfae_finish
 
-@[deprecated (since := "2026-10-27")] alias equicontinuous_TFAE := equicontinuous_tfae
+@[deprecated (since := "2026-10-27")]
+protected alias NormedSpace.equicontinuous_TFAE := NormedSpace.equicontinuous_tfae
 
 end Equicontinuous
 
