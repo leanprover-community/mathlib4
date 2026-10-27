@@ -43,7 +43,6 @@ lemma nonempty_kernels {X₁ X₂ : C} (f : X₁ ⟶ X₂) (hf : W f) [HasKernel
     W.kernels.Nonempty :=
   ObjectProperty.nonempty_of_prop (kernels.of_isLimit f _ (kernelIsKernel f) hf)
 
-set_option backward.defeqAttrib.useBackward true in
 instance : W.kernels.IsClosedUnderIsomorphisms where
   of_iso := by
     rintro _ _ i ⟨f, k, hk, hf⟩
@@ -95,7 +94,6 @@ lemma hasLimit_parallelPair_comp_ι {X Y : P.FullSubcategory} (f : X ⟶ Y) [Has
     HasLimit (parallelPair f 0 ⋙ P.ι) :=
   hasLimit_of_iso (F := parallelPair f.hom 0) (Iso.symm (diagramIsoParallelPair _))
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If an object property `P` is closed under kernels, then `P.ι` creates kernels.
 In particular, this implies `P.ι` preserves kernels. -/
 @[reducible]
@@ -143,7 +141,6 @@ lemma hasColimit_parallelPair_comp_ι {X Y : P.FullSubcategory} (f : X ⟶ Y) [H
     HasColimit (parallelPair f 0 ⋙ P.ι) :=
   hasColimit_of_iso (F := parallelPair f.hom 0) (diagramIsoParallelPair _)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If an object property `P` is closed under cokernels, then `P.ι` creates cokernels.
 In particular, this implies `P.ι` preserves cokernels. -/
 @[reducible]

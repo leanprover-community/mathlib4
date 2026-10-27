@@ -127,7 +127,6 @@ section Inf
 
 variable [HasPullbacks C]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- When `[HasPullbacks C]`, `MonoOver A` has "intersections", functorial in both arguments.
 
 As `MonoOver A` is only a preorder, this doesn't satisfy the axioms of `SemilatticeInf`,
@@ -182,7 +181,6 @@ def leSupRight {A : C} (f g : MonoOver A) : g ⟶ (sup.obj f).obj g := by
   erw [Category.assoc, image.fac, coprod.inr_desc]
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 /-- A morphism version of `sup_le`. -/
 def supLe {A : C} (f g h : MonoOver A) : (f ⟶ h) → (g ⟶ h) → ((sup.obj f).obj g ⟶ h) := by
   intro k₁ k₂

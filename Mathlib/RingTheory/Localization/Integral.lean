@@ -98,6 +98,46 @@ theorem integerNormalization_eq_zero_iff {p : K[X]} :
     integerNormalization (nonZeroDivisors A) p = 0 ↔ p = 0 :=
   IsLocalization.integerNormalization_eq_zero_iff le_rfl p
 
+@[simp] theorem coeff_integerNormalization_eq_zero_iff (p : K[X]) (n : ℕ) :
+    (integerNormalization (nonZeroDivisors A) p).coeff n = 0 ↔ p.coeff n = 0 := by
+  obtain ⟨b, hb, hbp⟩ := integerNormalization_spec (nonZeroDivisors A) p
+  rw [← (IsFractionRing.injective A K).eq_iff, map_zero, ← coeff_map, hbp, coeff_smul,
+    Algebra.smul_def, mul_eq_zero,
+    or_iff_right (IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors hb)]
+
+/-- Clearing the denominators of a polynomial does not change its roots. -/
+@[simp] theorem aroots_integerNormalization {L : Type*} [CommRing L] [IsDomain L] [Algebra A L]
+    [Algebra K L] [IsScalarTower A K L] (p : K[X]) :
+    (integerNormalization (nonZeroDivisors A) p).aroots L = p.aroots L := by
+  obtain ⟨b, hb, hbp⟩ := integerNormalization_spec (nonZeroDivisors A) p
+  rw [← aroots_map L K, hbp, ← algebraMap_smul K, aroots_smul_of_ne_zero]
+  exact IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors hb
+
+omit [IsDomain A] in
+variable (A) in
+theorem exists_linearCombination_eq_zero {V ι : Type*} [AddCommMonoid V] [Module A V]
+    [Module K V] [IsScalarTower A K V] (f : ι → V) (v : ι →₀ K)
+    (h : Finsupp.linearCombination K f v = 0) :
+    ∃ b ∈ nonZeroDivisors A, ∃ v' : ι →₀ A, (∀ i, algebraMap A K (v' i) = b • v i) ∧
+      Finsupp.linearCombination A f v' = 0 := by
+  classical
+  obtain ⟨⟨b, hb⟩, hv⟩ := exist_integer_multiples (nonZeroDivisors A) v.support v
+  simp only [IsInteger, RingHom.mem_rangeS] at hv
+  choose a ha using hv
+  let v' : ι →₀ A := Finsupp.onFinset v.support
+    (fun i ↦ if hi : i ∈ v.support then a i hi else 0) fun i h ↦ by by_contra hi; simp [hi] at h
+  have hv' (i : ι) : algebraMap A K (v' i) = b • v i := by
+    by_cases hi : i ∈ v.support
+    · simp [v', Finsupp.mem_support_iff.mp hi, ha]
+    · simp [v', Finsupp.notMem_support_iff.mp hi]
+  refine ⟨b, hb, v', hv', ?_⟩
+  rw [Finsupp.linearCombination_apply] at h ⊢
+  rw [Finsupp.sum_of_support_subset _ (Finsupp.support_onFinset_subset) _ (by simp)]
+  calc ∑ i ∈ v.support, v' i • f i = b • ∑ i ∈ v.support, v i • f i := by
+        rw [Finset.smul_sum]
+        exact Finset.sum_congr rfl fun i _ ↦ by rw [← algebraMap_smul K (v' i), hv', smul_assoc]
+    _ = 0 := (congrArg (b • ·) h).trans (smul_zero b)
+
 variable (A K C)
 
 /-- An element of a ring is algebraic over the ring `A` iff it is algebraic

@@ -461,7 +461,7 @@ theorem prod_apply₀ {s : Set (α × β)} (hs : NullMeasurableSet s (μ.prod ν
   rw [measure_congr hst, prod_apply htm]
   refine lintegral_congr_ae ?_
   filter_upwards [ae_ae_of_ae_prod hst] with x hx
-  exact (measure_congr hx).symm
+  exact measure_congr <| Filter.eventuallyEqSet_iff.2 <| by simpa [iff_comm] using hx
 
 omit hν in
 @[fun_prop]

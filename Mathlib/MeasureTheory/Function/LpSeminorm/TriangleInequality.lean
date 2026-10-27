@@ -187,15 +187,11 @@ theorem memLp_finsetSum [ContinuousAdd ε']
     simp only [his, Finset.sum_insert, not_false_iff]
     exact (hf i (s.mem_insert_self i)).add (ih fun j hj => hf j (Finset.mem_insert_of_mem hj))
 
-@[deprecated (since := "2026-04-08")] alias memLp_finset_sum := memLp_finsetSum
-
 theorem memLp_finsetSum' [ContinuousAdd ε']
     {ι} (s : Finset ι) {f : ι → α → ε'} (hf : ∀ i ∈ s, MemLp (f i) p μ) :
     MemLp (∑ i ∈ s, f i) p μ := by
   convert memLp_finsetSum s hf using 1
   ext x
   simp
-
-@[deprecated (since := "2026-04-08")] alias memLp_finset_sum' := memLp_finsetSum'
 
 end MeasureTheory
