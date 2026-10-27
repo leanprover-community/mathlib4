@@ -329,8 +329,8 @@ variable {S} in
 open Classical in
 lemma mk_inertiaIdempotent (Q : Ideal S) [Q.IsPrime] (g : G) :
     Ideal.Quotient.mk Q (inertiaIdempotent R S g) = if g ∈ Q.inertia G then 1 else 0 := by
-  have h := ((isIdempotentElem_inertiaIdempotent R S g).map (Ideal.Quotient.mk Q)).eq_zero_or_one
-  grind [mk_inertiaIdempotent_eq_one_iff]
+  grind [mk_inertiaIdempotent_eq_one_iff,
+    ((isIdempotentElem_inertiaIdempotent R S g).map (Ideal.Quotient.mk Q)).eq_zero_or_one]
 
 end inertia
 
