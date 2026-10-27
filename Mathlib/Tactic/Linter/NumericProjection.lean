@@ -42,14 +42,6 @@ public register_option linter.style.numericProjection : Bool := {
   descr := "Lints against numeric projections such as `foo.42`."
 }
 
-/-- Whether syntax is of the form `foo.42`. -/
-@[inline] def isNumericProj (stx : Lean.Syntax) : Bool :=
-  stx.isOfKind ``Lean.Parser.Term.proj && stx[2].isOfKind fieldIdxKind
-
-/-- If syntax is of the form `foo.42`, returns the syntax for `42`. -/
-@[inline] def numericProj? (stx : Lean.Syntax) : Option Lean.Syntax :=
-  if isNumericProj stx then stx[2] else none
-
 -- TODO: rewrite
 /-- If `stx` is the `identProj`-wrapped field index of a numeric projection which the elaborator
 resolved to the projection function `projFn`, returns the field index syntax and `projFn`.
@@ -61,6 +53,10 @@ already been found by reducing the type, we don't need to reduce it again. -/
   guard <| i.stx.isOfKind Parser.Term.identProjKind
   let idxStx := i.stx[0]
   guard <| idxStx.isOfKind fieldIdxKind
+  -- Note: we do not need to worry about metavariables and mdata/annotations here, because
+  -- the info nodes in question are always created through `addProjTermInfo` and `Term.mkConst`.
+  -- If core changes and tests break, though, consider `.cleanupAnnotations` and/or
+  -- `i.runMetaM ctx (instantiateMVars i.expr)`.
   return (idxStx, ← i.expr.constName?)
 
 open Meta in
@@ -69,7 +65,7 @@ def numericProjection : Linter where
   run stx := stx |> withSetOptionIn fun _ => do
     unless Linter.getLinterValue linter.style.numericProjection (← Linter.getLinterOptions) do
       return
-    if (stx.find? isNumericProj).isSome then
+    if (stx.find? (·.isOfKind fieldIdxKind)).isSome then
       for t in ← getInfoTrees do
         -- Collect the warnings separately from logging them, since (compiled) `foldInfo` is faster
         -- than (interpreted, specialized) `foldInfoM`.
@@ -78,25 +74,31 @@ def numericProjection : Linter where
             if let some proj := numericProjFn? i then
               return w.push proj
           return w
-        for (stx, projFn) in warnings do
-          let env ← getEnv
-          let some { ctorName, i, .. } := env.getProjectionFnInfo? projFn | continue
-          let some (.ctorInfo { induct := structName, .. }) := env.find? ctorName | continue
-          if upstreamAllowed.contains structName || allowNumericProjExt.hasTag env structName then
-            continue
-          let some fieldName := (getStructureInfo? env structName).bind (·.fieldNames[i]?)
-            | continue
-          let msg ← liftCoreM <|
-            Hint.mkSuggestionsMessage
-              #[{
-                suggestion := toString fieldName,
-                preInfo? := "Instead, use `.",
-                postInfo? := "`.", diffGranularity := .none }]
-              stx none false
-          Linter.logLint linter.style.numericProjection stx
-            m!"Numeric projections are disallowed.\n\
-              {msg}\n\n\
-              To exempt terms of type `{.ofConstName structName}`, add \
-              `@[allow_numeric_proj]` at the declaration site of `{.ofConstName structName}`."
+        unless warnings.isEmpty do
+          -- Deduplicate by range; likely only a small number of warnings, so an `Array` is fast
+          let mut ranges := Array.emptyWithCapacity warnings.size
+          for (stx, projFn) in warnings do
+            if let some range := stx.getRange? (canonicalOnly := true) then
+              if ranges.contains range then continue else ranges := ranges.push range
+            else continue
+            let env ← getEnv
+            let some { ctorName, i, .. } := env.getProjectionFnInfo? projFn | continue
+            let some (.ctorInfo { induct := structName, .. }) := env.find? ctorName | continue
+            if upstreamAllowed.contains structName || allowNumericProjExt.hasTag env structName then
+              continue
+            let some fieldName := (getStructureInfo? env structName).bind (·.fieldNames[i]?)
+              | continue
+            let msg ← liftCoreM <|
+              Hint.mkSuggestionsMessage
+                #[{
+                  suggestion := toString fieldName,
+                  preInfo? := "Instead, use `.",
+                  postInfo? := "`.", diffGranularity := .none }]
+                stx none false
+            Linter.logLint linter.style.numericProjection stx
+              m!"Numeric projections are disallowed.\n\
+                {msg}\n\n\
+                To exempt terms of type `{.ofConstName structName}`, add \
+                `@[allow_numeric_proj]` at the declaration site of `{.ofConstName structName}`."
 
 initialize addLinter numericProjection
