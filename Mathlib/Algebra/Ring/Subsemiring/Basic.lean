@@ -1064,6 +1064,14 @@ instance module [AddCommMonoid α] [Module R' α] (S : Subsemiring R') : Module 
 instance [Semiring α] [MulSemiringAction R' α] (S : Subsemiring R') : MulSemiringAction S α :=
   inferInstance
 
+/-- The center of a semiring acts commutatively on that semiring. -/
+instance center.smulCommClass_left : SMulCommClass (center R') R' R' :=
+  Submonoid.center.smulCommClass_left
+
+/-- The center of a semiring acts commutatively on that semiring. -/
+instance center.smulCommClass_right : SMulCommClass R' (center R') R' :=
+  Submonoid.center.smulCommClass_right
+
 instance [Semiring α] [MulSemiringAction R' α] : MulSemiringAction (Center R') α :=
   inferInstanceAs <| MulSemiringAction (center R') α
 

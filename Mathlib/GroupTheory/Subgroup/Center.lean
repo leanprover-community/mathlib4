@@ -39,6 +39,9 @@ theorem coe_center : ↑(center G) = Set.center G :=
 theorem center_toSubmonoid : (center G).toSubmonoid = Submonoid.center G :=
   rfl
 
+instance center.isMulCommutative : IsMulCommutative (center G) :=
+  ⟨⟨fun a b => Subtype.ext (b.2.comm a).symm⟩⟩
+
 @[to_additive]
 instance : CommGroup (center G) where
   mul_comm x y := Subtype.ext (x.prop.comm y)
