@@ -83,8 +83,9 @@ lemma globalDimension_le_tfae [Small.{v} R] (n : ℕ) :
     exact fun M ↦ hasProjectiveDimensionLT_of_enoughInjectives M _ (h M)
   tfae_finish
 
-lemma globalDimension_eq_sup_projectiveDimension_finite [Small.{v} R] : globalDimension.{v} R =
-    ⨆ (M : ModuleCat.{v} R), ⨆ (_ : Module.Finite R M), projectiveDimension.{v} M := by
+lemma globalDimension_eq_sup_module_finite_projectiveDimension [Small.{v} R] :
+    globalDimension.{v} R =
+      ⨆ (M : ModuleCat.{v} R), ⨆ (_ : Module.Finite R M), projectiveDimension.{v} M := by
   refine eq_of_forall_ge_iff (fun N ↦ ?_)
   induction N with
   | bot =>
