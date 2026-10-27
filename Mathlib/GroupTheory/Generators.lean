@@ -14,7 +14,6 @@ public import Mathlib.GroupTheory.Finiteness
 
 * `Group.Generators G ι`: The generators of a group are given by a generating family indexed by `ι`
 and an assignment `val : ι → G` such that `Subgroup.closure (Set.range val) = ⊤`.
-* `AddGroup.Generators G ι`: the additive version of `Group.Generators`.
 
 ## Main results
 
@@ -28,8 +27,6 @@ and an assignment `val : ι → G` such that `Subgroup.closure (Set.range val) =
 * The index type `ι` is a parameter, not a field, following the pattern of `Algebra.Generators`.
 * Unlike `Algebra.Generators`, this structure bundles no section of `FreeGroup.lift val`,
   it just bundles a proof of surjectivity.
-* `to_additive` cannot generate structures, so `AddGroup.Generators` is written out by hand and
-  `Group.Generators` is tagged with `@[to_additive]` to link the two.
 
 ## References
 

@@ -24,8 +24,6 @@ family given by `Group.Generators`. The word length defines a norm on `G` induci
 * `Group.Generators.wordNorm`: the word length as a norm on `G`.
 * `Group.Generators.normedGroup`: the normed group structure on `G` induced by `wordNorm`.
   This gives rise to a word metric on `G`.
-* `AddGroup.Generators.wordLength`, `AddGroup.Generators.addGroupNorm`,
-  `AddGroup.Generators.normedAddGroup`: the additive versions of the above.
 
 ## Main results
 
