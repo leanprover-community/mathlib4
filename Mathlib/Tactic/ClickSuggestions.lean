@@ -166,10 +166,12 @@ public def clickSuggestionsComponent : Component PanelWidgetProps :=
 
 /--
 `#click_suggestions` enables a widget in the infoview that gives tactic suggestions for
-the expression in the tactic state that was (most recently) selected with shift-click.
-Each suggestion has an insert button for pasting it into the editor, at the position of the cursor.
+the (most recently) selected expression in the tactic state.
+To select an expression, use `shift`+click in VS Code, and `ctrl`+click or `gK` in Neovim.
+Each suggestion starts with a button for pasting the tactic into the editor
+at the position of the cursor.
 
-Theorems are searched for use in `apply`, `apply at`, `rw` and `grw`.
+Theorems are searched for the `apply`, `apply at`, `rw` and `grw` tactics.
 These suggestions are grouped and sorted by the pattern that the lemmas match with.
 Rewrites that don't change the goal and rewrites that create the same goal as another rewrite
 are filtered out, as well as suggestions that create new goal(s) with metavariables in them.

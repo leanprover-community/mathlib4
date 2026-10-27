@@ -54,7 +54,6 @@ the morphism induced by the `1`-cocycle `-mappingCone.fst φ`. -/
 noncomputable def triangle : Triangle (CochainComplex C ℤ) :=
   Triangle.mk φ (inr φ) (Cocycle.homOf ((-fst φ).rightShift 1 0 (zero_add 1)))
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma inl_v_triangle_mor₃_f (p q : ℤ) (hpq : p + (-1) = q) :
     (inl φ).v p q hpq ≫ (triangle φ).mor₃.f q =
@@ -125,7 +124,6 @@ lemma triangleMapOfHomotopy_comm₃ :
     assoc, inl_v_fst_v, inr_f_fst_v, comp_zero, add_zero, inl_v_fst_v_assoc, inr_f_desc_f_assoc,
     HomologicalComplex.comp_f, neg_zero, inr_f_fst_v_assoc, zero_comp, and_self]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The morphism `triangleh φ₁ ⟶ triangleh φ₂` that is induced by a square that
 is commutative up to homotopy. -/
 @[simps]
@@ -171,7 +169,6 @@ lemma map_comp (comm' : φ₂ ≫ b' = a' ≫ φ₃) :
   ext n
   simp [ext_from_iff _ (n + 1) n rfl, map]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The morphism `triangle φ₁ ⟶ triangle φ₂` that is induced by a commutative square. -/
 @[simps]
 noncomputable def triangleMap :
@@ -191,7 +188,6 @@ end map
 
 section Rotate
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given `φ : K ⟶ L`, `K⟦(1 : ℤ)⟧` is homotopy equivalent to
 the mapping cone of `inr φ : L ⟶ mappingCone φ`. -/
 noncomputable def rotateHomotopyEquiv :
@@ -220,7 +216,6 @@ noncomputable def rotateHomotopyEquiv :
         (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) n (n + 1) rfl (n + 1) (by lia),
         Cochain.comp_v _ _ (add_neg_cancel 1) n (n + 1) n rfl (by lia)]⟩
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `rotateTrianglehIso`. -/
 noncomputable def rotateHomotopyEquivComm₂Homotopy :
     Homotopy ((triangle φ).mor₃ ≫ (rotateHomotopyEquiv φ).hom)
@@ -355,7 +350,6 @@ lemma map_δ :
   simp [Cochain.neg_v, shiftFunctorObjXIso,
     HomologicalComplex.XIsoOfEq_rfl, Iso.refl_inv, comp_id, Functor.map_neg]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `φ : K ⟶ L` is a morphism of cochain complexes in `C` and `G : C ⥤ D` is an
 additive functor, then the image by `G` of the triangle `triangle φ` identifies to
 the triangle associated to the image of `φ` by `G`. -/

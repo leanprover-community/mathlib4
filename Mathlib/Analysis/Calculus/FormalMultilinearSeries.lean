@@ -387,10 +387,13 @@ theorem constFormalMultilinearSeries_apply_succ [NontriviallyNormedField 𝕜] [
     constFormalMultilinearSeries 𝕜 E c (n + 1) = 0 :=
   rfl
 
-theorem constFormalMultilinearSeries_apply_of_nonzero [NontriviallyNormedField 𝕜]
+theorem constFormalMultilinearSeries_apply_of_ne_zero [NontriviallyNormedField 𝕜]
     [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] {c : F}
     {n : ℕ} (hn : n ≠ 0) : constFormalMultilinearSeries 𝕜 E c n = 0 :=
   Nat.casesOn n (fun hn => (hn rfl).elim) (fun _ _ => rfl) hn
+
+@[deprecated (since := "2026-10-13")]
+alias constFormalMultilinearSeries_apply_of_nonzero := constFormalMultilinearSeries_apply_of_ne_zero
 
 @[simp]
 lemma constFormalMultilinearSeries_zero [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
