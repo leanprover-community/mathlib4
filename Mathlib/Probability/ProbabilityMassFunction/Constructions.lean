@@ -292,8 +292,7 @@ theorem filter_apply_ne_zero_iff (a : α) : (p.filter s h) a ≠ 0 ↔ a ∈ s �
 
 end Filter
 
-@[deprecated "type changed" (since := "2026-05-29")]
-alias support_bernoulli := ProbabilityTheory.bernoulliMeasure_apply_of_notMem_of_notMem
+section bernoulli
 
 /-- A `PMF` which assigns probability `p` to `true` and `1 - p` to `false`. -/
 @[deprecated ProbabilityTheory.bernoulliMeasure +typeChanged (since := "2026-05-31")]
