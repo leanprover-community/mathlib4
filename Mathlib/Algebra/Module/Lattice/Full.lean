@@ -48,12 +48,11 @@ variable {V : Type*} [AddCommGroup V] [Module R V] [Module A V] [IsScalarTower R
 /-- Any basis of a full `R`-lattice in `V` defines a `A`-basis of `V`. -/
 noncomputable def _root_.Module.Basis.extendOfIsFullLattice {M : Submodule R V}
     [IsFullLattice A M] {ι : Type*} (b : Basis ι R M) : Basis ι A V :=
-  have hsp : ⊤ ≤ span A (Set.range fun i ↦ (M.subtype ∘ b) i) := by
-    rw [← Submodule.span_span_of_tower R, Set.range_comp, ← Submodule.map_span]
-    simp [b.span_eq, Submodule.map_top, IsFullLattice.span_eq_top]
+  have hsp : ⊤ ≤ span A (Set.range fun i ↦ (b i : V)) := by
+    rw [← Submodule.span_span_of_tower R, Set.range_comp', ← M.coe_subtype, ← Submodule.map_span]
+    simp [span_eq_top]
   Basis.mk (IsLattice.basis_linearIndependent A M b) hsp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma _root_.Module.Basis.extendOfIsFullLattice_apply {M : Submodule R V} [IsFullLattice A M]
     {ι : Type*} (b : Basis ι R M) (k : ι) : b.extendOfIsFullLattice A k = (b k).val := by
