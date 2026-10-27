@@ -9,9 +9,6 @@ public import Mathlib.Algebra.Category.Grp.Basic
 public import Mathlib.CategoryTheory.Monoidal.Grp
 public import Mathlib.CategoryTheory.Monoidal.Internal.Types.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # `Grp (Type u) ≌ GrpCat.{u}`
 

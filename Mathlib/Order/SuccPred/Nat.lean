@@ -14,9 +14,6 @@ public import Mathlib.Order.Nat
 import Mathlib.Algebra.Order.Sub.Unbundled.Basic
 import Mathlib.Data.Fin.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Successors and predecessors of naturals
 

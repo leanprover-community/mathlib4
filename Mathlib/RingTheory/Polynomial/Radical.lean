@@ -11,9 +11,6 @@ public import Mathlib.RingTheory.Radical.Basic
 
 import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicative
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Radical of a polynomial
 

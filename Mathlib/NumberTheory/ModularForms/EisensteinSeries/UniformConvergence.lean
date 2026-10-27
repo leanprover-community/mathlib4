@@ -10,9 +10,6 @@ public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
 
 import Mathlib.Analysis.Normed.Group.FunctionSeries
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Uniform convergence of Eisenstein series
 

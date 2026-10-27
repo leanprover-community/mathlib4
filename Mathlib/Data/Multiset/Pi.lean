@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Data.Multiset.Bind
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # The Cartesian product of multisets
 

@@ -7,9 +7,6 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Horn
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Paths in simplicial sets
 

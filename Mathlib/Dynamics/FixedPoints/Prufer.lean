@@ -9,9 +9,6 @@ public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 
 import Mathlib.Dynamics.FixedPoints.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Results about pointwise operations on sets with iteration.
 -/

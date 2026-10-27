@@ -8,9 +8,6 @@ module
 public import Mathlib.Order.Category.BddDistLat
 public import Mathlib.Order.Heyting.Hom
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # The category of Heyting algebras
 

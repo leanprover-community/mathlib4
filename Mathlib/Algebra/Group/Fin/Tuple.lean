@@ -9,9 +9,6 @@ public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Notation.Pi.Basic
 public import Mathlib.Data.Fin.VecNotation
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Algebraic properties of tuples
 -/

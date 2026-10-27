@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Logic.Encodable.Pi
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # W types
 

@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Order.Notation
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Order-related type synonyms
 

@@ -8,9 +8,6 @@ module
 public import Mathlib.Algebra.Algebra.Operations
 public import Mathlib.Algebra.Algebra.Subalgebra.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Complete lattice structure of subalgebras
 
@@ -519,7 +516,7 @@ variable {s t : Set A}
 theorem subset_adjoin : s ⊆ adjoin R s :=
   Algebra.gc.le_u_l s
 
-@[aesop 80% (rule_sets := [SetLike])]
+@[aesop 80% (rule_sets := [SetLike]), membership .]
 theorem mem_adjoin_of_mem {s : Set A} {x : A} (hx : x ∈ s) : x ∈ adjoin R s := subset_adjoin hx
 
 /-

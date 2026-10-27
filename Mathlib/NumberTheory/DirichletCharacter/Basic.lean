@@ -408,6 +408,11 @@ theorem conductor_inv (χ : DirichletCharacter R n) :
   nth_rewrite 1 [← inv_inv χ, ← zpow_neg_one, ← zpow_neg_one]
   exact conductor_zpow_dvd ..
 
+variable {χ} in
+/-- The inverse of a primitive Dirichlet character is primitive. -/
+theorem IsPrimitive.inv (hχ : χ.IsPrimitive) : χ⁻¹.IsPrimitive := by
+  grind [isPrimitive_def, conductor_inv]
+
 /-- Dirichlet character associated to multiplication of Dirichlet characters,
 after changing both levels to the same -/
 noncomputable def mul {m : ℕ} (χ₁ : DirichletCharacter R n) (χ₂ : DirichletCharacter R m) :
@@ -537,6 +542,9 @@ def Even : Prop := ψ (-1) = 1
 lemma even_or_odd [NoZeroDivisors S] : ψ.Even ∨ ψ.Odd := by
   suffices ψ (-1) ^ 2 = 1 by convert! sq_eq_one_iff.mp this
   rw [← map_pow _, neg_one_sq, map_one]
+
+/-- The trivial Dirichlet character is even. -/
+@[simp] lemma even_one : (1 : DirichletCharacter S m).Even := MulChar.one_apply (by simp)
 
 lemma not_even_and_odd [NeZero (2 : S)] : ¬(ψ.Even ∧ ψ.Odd) := by
   rintro ⟨(h : _ = 1), (h' : _ = -1)⟩

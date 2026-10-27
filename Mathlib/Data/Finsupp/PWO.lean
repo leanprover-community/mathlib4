@@ -8,9 +8,6 @@ module
 public import Mathlib.Order.Preorder.Finsupp
 public import Mathlib.Order.WellQuasiOrder
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Partial well ordering on finsupps
 

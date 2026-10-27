@@ -8,9 +8,6 @@ module
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.GroupTheory.GroupAction.Defs
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # The subgroup of fixed points of an action
 -/

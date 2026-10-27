@@ -11,9 +11,6 @@ public import Mathlib.Algebra.Order.Archimedean.Basic
 
 import Mathlib.Algebra.Order.Group.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Archimedean groups
 

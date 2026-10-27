@@ -316,7 +316,9 @@ theorem conj_ofReal (r : ℝ) : conj (r : K) = (r : K) := by
   rw [ext_iff]
   simp only [ofReal_im, conj_im, conj_re, and_self_iff, neg_zero]
 
-theorem conj_nat_cast (n : ℕ) : conj (n : K) = n := map_natCast _ _
+theorem conj_natCast (n : ℕ) : conj (n : K) = n := map_natCast _ _
+
+@[deprecated (since := "2026-10-13")] alias conj_nat_cast := conj_natCast
 
 theorem conj_ofNat (n : ℕ) [n.AtLeastTwo] : conj (ofNat(n) : K) = ofNat(n) :=
   map_ofNat _ _

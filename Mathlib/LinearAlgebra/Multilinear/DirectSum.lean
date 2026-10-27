@@ -8,9 +8,6 @@ module
 public import Mathlib.Algebra.DirectSum.Module
 public import Mathlib.LinearAlgebra.Multilinear.DFinsupp
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Multilinear maps from direct sums
 

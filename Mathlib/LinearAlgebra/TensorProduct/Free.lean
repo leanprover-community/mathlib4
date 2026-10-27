@@ -8,9 +8,6 @@ module
 public import Mathlib.LinearAlgebra.DirectSum.Finsupp
 public import Mathlib.LinearAlgebra.TensorProduct.Pi
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Tensor product with free modules.
 

@@ -9,9 +9,6 @@ public import Mathlib.Data.Int.Notation
 public import Mathlib.Data.Nat.BinaryRec
 public import Mathlib.Data.Nat.Notation
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Binary representation of integers using inductive types
 
