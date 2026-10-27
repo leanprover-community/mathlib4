@@ -98,8 +98,8 @@ lemma ofSet_val {S : Set G} (hS : Subgroup.closure S = ⊤) :
     (Generators.ofSet hS).val = Subtype.val :=
   rfl
 
-/-- The generating family given by a the canonical surjection from `FreeGroup ι`. -/
-@[to_additive /-- The generating family given by a the canonical surjection from
+/-- The generating family given by the canonical surjection from `FreeGroup ι`. -/
+@[to_additive /-- The generating family given by the canonical surjection from
 `FreeAddGroup ι`. -/]
 def ofFreeGroupHom (φ : FreeGroup ι →* G) (hφ : Function.Surjective φ) :
     Generators G ι where

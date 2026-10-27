@@ -140,10 +140,10 @@ noncomputable def groupNorm : GroupNorm G where
 
 /-! ### Word metric -/
 
-/-- The `wordLength` with respect to a generating family `P` gives `G` the structure of a normed group. -/
-@[to_additive (attr := instance_reducible) /-- `G` as a metric space `NormedAddGroup G` with respect
-to a generating family `P`. The metric is given by `dist g h = ‖-g + h‖`, where the norm is given by
-`addGroupNorm`. -/]
+/-- The `wordLength` with respect to a generating family `P` gives `G` the structure of a normed
+group. -/
+@[to_additive (attr := instance_reducible) /-- The `wordLength` with respect to a generating family
+`P` gives `G` the structure of a normed additive group. -/]
 noncomputable def normedGroup : NormedGroup G := P.groupNorm.toNormedGroup
 
 end Group.Generators
