@@ -328,9 +328,9 @@ variable {ι : Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormedField �
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] (f : ι → E →SL[σ₁₂] F)
 
 /-- Equivalent characterizations for equicontinuity of a family of continuous linear maps
-between normed spaces. See also `WithSeminorms.equicontinuous_TFAE` for similar characterizations
+between normed spaces. See also `WithSeminorms.equicontinuous_tfae` for similar characterizations
 between spaces satisfying `WithSeminorms`. -/
-protected theorem NormedSpace.equicontinuous_TFAE : List.TFAE
+protected theorem NormedSpace.equicontinuous_tfae : List.TFAE
     [ EquicontinuousAt ((↑) ∘ f) 0,
       Equicontinuous ((↑) ∘ f),
       UniformEquicontinuous ((↑) ∘ f),
@@ -376,6 +376,8 @@ protected theorem NormedSpace.equicontinuous_TFAE : List.TFAE
         ((norm_withSeminorms 𝕜 E).continuous_seminorm 0).const_smul C.toNNReal, fun i x ↦ ?_⟩
       exact (hC i x).trans (mul_le_mul_of_nonneg_right (C.le_coe_toNNReal) (norm_nonneg x))
   tfae_finish
+
+@[deprecated (since := "2026-10-27")] alias equicontinuous_TFAE := equicontinuous_tfae
 
 end Equicontinuous
 

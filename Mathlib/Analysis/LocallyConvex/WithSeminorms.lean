@@ -415,7 +415,7 @@ theorem WithSeminorms.T1_of_separating (hp : WithSeminorms p)
 /-- A family of seminorms inducing a T₁ topology is separating. -/
 theorem WithSeminorms.separating_of_T1 [T1Space E] (hp : WithSeminorms p) (x : E) (hx : x ≠ 0) :
     ∃ i, p i x ≠ 0 := by
-  have := ((t1Space_TFAE E).out 1 10).mp (inferInstance : T1Space E)
+  have := ((t1Space_tfae E).out 1 10).mp (inferInstance : T1Space E)
   by_contra! h
   refine hx (this ?_)
   rw [hp.hasBasis_zero_ball.specializes_iff]
@@ -826,8 +826,8 @@ maps from `E` to `F`, the following are equivalent:
 
 In particular, if you can determine all continuous seminorms on `E`, that gives you a complete
 characterization of equicontinuity for linear maps from `E` to `F`. For example `E` and `F` are
-both normed spaces, you get `NormedSpace.equicontinuous_TFAE`. -/
-protected theorem equicontinuous_TFAE {κ : Type*}
+both normed spaces, you get `NormedSpace.equicontinuous_tfae`. -/
+protected theorem equicontinuous_tfae {κ : Type*}
     {q : SeminormFamily 𝕜₂ F ι'} [UniformSpace E] [IsUniformAddGroup E] [u : UniformSpace F]
     [hu : IsUniformAddGroup F] (hq : WithSeminorms q) [ContinuousSMul 𝕜 E]
     (f : κ → E →ₛₗ[σ₁₂] F) : TFAE
@@ -867,13 +867,15 @@ protected theorem equicontinuous_TFAE {κ : Type*}
       Eventually.of_forall fun x k ↦ by simpa using! hfp k x
   tfae_finish
 
+@[deprecated (since := "2026-10-27")] alias equicontinuous_TFAE := equicontinuous_tfae
+
 theorem uniformEquicontinuous_iff_exists_continuous_seminorm {κ : Type*}
     {q : SeminormFamily 𝕜₂ F ι'} [UniformSpace E] [IsUniformAddGroup E] [u : UniformSpace F]
     [IsUniformAddGroup F] (hq : WithSeminorms q) [ContinuousSMul 𝕜 E]
     (f : κ → E →ₛₗ[σ₁₂] F) :
     UniformEquicontinuous ((↑) ∘ f) ↔
     ∀ i, ∃ p : Seminorm 𝕜 E, Continuous p ∧ ∀ k, (q i).comp (f k) ≤ p :=
-  (hq.equicontinuous_TFAE f).out 3 4
+  (hq.equicontinuous_tfae f).out 3 4
 
 theorem uniformEquicontinuous_iff_bddAbove_and_continuous_iSup {κ : Type*}
     {q : SeminormFamily 𝕜₂ F ι'} [UniformSpace E] [IsUniformAddGroup E] [u : UniformSpace F]
@@ -882,7 +884,7 @@ theorem uniformEquicontinuous_iff_bddAbove_and_continuous_iSup {κ : Type*}
     UniformEquicontinuous ((↑) ∘ f) ↔ ∀ i,
     BddAbove (range fun k ↦ (q i).comp (f k)) ∧
       Continuous (⨆ k, (q i).comp (f k)) :=
-  (hq.equicontinuous_TFAE f).out 3 5
+  (hq.equicontinuous_tfae f).out 3 5
 
 end WithSeminorms
 
