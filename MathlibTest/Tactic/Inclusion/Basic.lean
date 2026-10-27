@@ -160,6 +160,28 @@ example {x y : ℝ} (hx : x ∈ Set.Icc (-0.5) 1.5) (hy₀ : -2 ≤ y) (hy₁ : 
 
 end Arithmetic
 
+section Exponential
+
+example : IntervalDyadicReal.expBounds 1 4 =
+    (Dyadic.ofIntWithPrec 43 4, Dyadic.ofIntWithPrec 11 2) := by decide +kernel
+
+example : Real.exp 0 = 1 := by dyadic_interval
+
+example {x : ℝ} (hx₀ : 0 ≤ x) (hx₁ : x ≤ 1) :
+    Real.exp x ∈ Set.Icc 1 2.719 := by dyadic_interval [prec := 16]
+
+example {x : ℝ} (hx : x ∈ Set.Icc (-1) 0) :
+    Real.exp x ∈ Set.Icc 0.367 1 := by dyadic_interval [prec := 16]
+
+example (x : ℝ) : 0 ≤ Real.exp x := by dyadic_interval
+
+example {x : ℝ} (hx : x ≤ 0) : Real.exp x ≤ 1 := by dyadic_interval
+
+example {x y : ℝ} (hx : x ∈ Set.Icc 0 1) (hy : y ∈ Set.Icc (-1) 0) :
+    Real.exp x * (1 + Real.exp y) ^ 2 < 11 := by dyadic_interval [prec := 16]
+
+end Exponential
+
 section Splitting
 
 example {x : ℝ} (hx : x ∈ Set.Icc (-4) 4) :
@@ -178,6 +200,9 @@ end Splitting
 
 section Kernel
 
+example {x : ℝ} (hx : x ∈ Set.Icc 0 1) :
+    Real.exp (Real.exp x) < 16 := by dyadic_interval +kernel [prec := 16]
+
 example {x y : ℝ} (hx : x ∈ Set.Icc (-2) 3) (hy : y ∈ Set.Icc 1 2) :
     x + y - x ∈ Set.Icc (-4) 7 := by dyadic_interval +kernel
 
@@ -189,6 +214,8 @@ end Kernel
 section Native
 
 set_option linter.style.native false
+
+example : Real.exp (-1000) < 1e-20 := by dyadic_interval +native [prec := 80]
 
 example {x y : ℝ} (hx : x ∈ Set.Icc 2 3) (hy : y ∈ Set.Icc 0 1) :
     x - y + 1 ∈ Set.Icc 2 4 := by dyadic_interval +native
