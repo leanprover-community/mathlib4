@@ -84,12 +84,8 @@ theorem prod_of_support_subset [∀ i, Zero (β i)]
     [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMonoid γ]
     {f : Π₀ i, β i} {g : (i : ι) → β i → γ} {s : Finset ι}
     (hs : f.support ⊆ s) (map_zero : ∀ i ∈ s, g i 0 = 1) :
-    f.prod g = ∏ i ∈ s, g i (f i) := by
-  apply Finset.prod_subset hs
-  intro i hi hi'
-  simp only [mem_support_toFun, not_not] at hi'
-  rw [hi', map_zero]
-  exact hi
+    f.prod g = ∏ i ∈ s, g i (f i) :=
+  Finset.prod_subset hs <| by simp_all
 
 /-- The product over two dfinsupps agree if the functions agree and are well-behaved within the
 shared support. -/
@@ -118,13 +114,8 @@ theorem _root_.map_dfinsuppProd
 theorem prod_mapRange_index {β₁ : ι → Type v₁} {β₂ : ι → Type v₂} [∀ i, Zero (β₁ i)]
     [∀ i, Zero (β₂ i)] [∀ (i) (x : β₁ i), Decidable (x ≠ 0)] [∀ (i) (x : β₂ i), Decidable (x ≠ 0)]
     [CommMonoid γ] {f : ∀ i, β₁ i → β₂ i} {hf : ∀ i, f i 0 = 0} {g : Π₀ i, β₁ i} {h : ∀ i, β₂ i → γ}
-    (h0 : ∀ i, h i 0 = 1) : (mapRange f hf g).prod h = g.prod fun i b => h i (f i b) := by
-  rw [mapRange_def]
-  refine (Finset.prod_subset support_mk_subset fun _ _ h ↦ ?_).trans ?_
-  · simp only [Finset.coe_sort_coe, mem_support_toFun, not_not] at h
-    simp [h, h0]
-  · refine Finset.prod_congr rfl fun _ h ↦ ?_
-    simp [(mem_support_toFun _ _).mp h]
+    (h0 : ∀ i, h i 0 = 1) : (mapRange f hf g).prod h = g.prod fun i b => h i (f i b) :=
+  Finset.prod_subset support_mapRange fun _ _ H ↦ by rw [notMem_support_iff.mp H, h0]
 
 @[to_additive]
 theorem prod_zero_index [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
@@ -134,7 +125,7 @@ theorem prod_zero_index [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decid
 @[to_additive]
 theorem prod_single_index [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMonoid γ]
     {i : ι} {b : β i} {h : ∀ i, β i → γ} (h_zero : h i 0 = 1) : (single i b).prod h = h i b := by
-  by_cases h : b = 0 <;> simp [prod, h_zero, h]
+  by_cases hb : b = 0 <;> simp [prod, h_zero, hb]
 
 @[to_additive]
 theorem prod_neg_index [∀ i, AddGroup (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMonoid γ]
@@ -218,12 +209,8 @@ theorem prod_add_index [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decida
 @[to_additive (attr := simp)]
 theorem prod_eq_prod_fintype [Fintype ι] [∀ i, Zero (β i)] [∀ (i : ι) (x : β i), Decidable (x ≠ 0)]
     [CommMonoid γ] (v : Π₀ i, β i) {f : ∀ i, β i → γ} (hf : ∀ i, f i 0 = 1) :
-    v.prod f = ∏ i, f i (equivFunOnFintype v i) := by
-  suffices (∏ i ∈ v.support, f i (v i)) = ∏ i, f i (v i) by simp [prod, this]
-  apply Finset.prod_subset v.support.subset_univ
-  intro i _ hi
-  rw [mem_support_iff, not_not] at hi
-  rw [hi, hf]
+    v.prod f = ∏ i, f i (equivFunOnFintype v i) :=
+  prod_of_support_subset (Finset.subset_univ _) fun i _ ↦ hf i
 
 section CommMonoidWithZero
 variable [Π i, Zero (β i)] [CommMonoidWithZero γ] [Nontrivial γ] [NoZeroDivisors γ]
@@ -245,13 +232,7 @@ def sumZeroHom [∀ i, Zero (β i)] [AddCommMonoid γ] (φ : ∀ i, ZeroHom (β 
     (f.support'.lift fun s => ∑ i ∈ Multiset.toFinset s.1, φ i (f i)) <| by
       rintro ⟨sx, hx⟩ ⟨sy, hy⟩
       dsimp only [Subtype.coe_mk, toFun_eq_coe] at *
-      refine (Finset.sum_subset Finset.inter_subset_left ?_).symm.trans
-          ((Finset.sum_congr rfl fun _ _ ↦ rfl).trans
-          (Finset.sum_subset Finset.inter_subset_right ?_)) <;>
-        intro i H1 H2 <;> rw [Finset.mem_inter] at H2 <;>
-        simp only [Multiset.mem_toFinset] at H1 H2 <;> convert map_zero (φ i)
-      · exact (hy i).resolve_left (H2 ⟨H1, ·⟩)
-      · exact (hx i).resolve_left (H2 ⟨·, H1⟩)
+      refine Finset.sum_congr_of_eq_on_inter ?_ ?_ fun _ _ _ ↦ rfl <;> simp_all <;> grind
   map_zero' := by
     simp only [toFun_eq_coe, coe_zero, Pi.zero_apply, map_zero, Finset.sum_const_zero]; rfl
 
