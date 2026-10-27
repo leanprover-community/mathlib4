@@ -1088,10 +1088,10 @@ theorem Integrable.simpleFunc_mul (g : SimpleFunc X ℝ) (hf : Integrable f μ) 
   refine
     SimpleFunc.induction (fun c s hs => ?_)
       (fun g₁ g₂ _ h_int₁ h_int₂ =>
-        (h_int₁.add h_int₂).congr (by rw [SimpleFunc.coe_add, add_mul]))
+        (h_int₁.add h_int₂).congr (by rw [FunLike.coe_add, add_mul]))
       g
   simp only [SimpleFunc.const_zero, SimpleFunc.coe_piecewise, SimpleFunc.coe_const,
-    SimpleFunc.coe_zero, Set.piecewise_eq_indicator]
+    FunLike.coe_zero, Set.piecewise_eq_indicator]
   have : Set.indicator s (Function.const X c) * f = s.indicator (c • f) := by
     ext1 x
     by_cases hx : x ∈ s

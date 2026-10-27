@@ -298,7 +298,7 @@ theorem lintegral_add_aux {f g : α → ℝ≥0∞} (hf : Measurable f) (hg : Me
       · congr
         funext n
         rw [← SimpleFunc.add_lintegral, ← SimpleFunc.lintegral_eq_lintegral]
-        simp only [Pi.add_apply, SimpleFunc.coe_add]
+        simp only [Pi.add_apply, FunLike.coe_add]
       · fun_prop
       · intro i j h a
         dsimp
@@ -352,13 +352,9 @@ theorem lintegral_finsetSum' (s : Finset β) {f : β → α → ℝ≥0∞}
     rw [Finset.forall_mem_insert] at hf
     rw [lintegral_add_left' hf.1, ih hf.2]
 
-@[deprecated (since := "2026-04-08")] alias lintegral_finset_sum' := lintegral_finsetSum'
-
 theorem lintegral_finsetSum (s : Finset β) {f : β → α → ℝ≥0∞} (hf : ∀ b ∈ s, Measurable (f b)) :
     ∫⁻ a, ∑ b ∈ s, f b a ∂μ = ∑ b ∈ s, ∫⁻ a, f b a ∂μ :=
   lintegral_finsetSum' s fun b hb => (hf b hb).aemeasurable
-
-@[deprecated (since := "2026-04-08")] alias lintegral_finset_sum := lintegral_finsetSum
 
 theorem lintegral_tsum [Countable β] {f : β → α → ℝ≥0∞} (hf : ∀ i, AEMeasurable (f i) μ) :
     ∫⁻ a, ∑' i, f i a ∂μ = ∑' i, ∫⁻ a, f i a ∂μ := by
@@ -395,7 +391,7 @@ theorem lintegral_const_mul (r : ℝ≥0∞) {f : α → ℝ≥0∞} (hf : Measu
       · intro n
         exact SimpleFunc.measurable _
       · intro i j h a
-        dsimp
+        simp only [mul_apply, coe_const, Function.const_apply]
         gcongr
         exact monotone_eapprox _ h _
     _ = r * ∫⁻ a, f a ∂μ := by rw [← ENNReal.mul_iSup, lintegral_eq_iSup_eapprox_lintegral hf]
@@ -415,7 +411,7 @@ theorem lintegral_const_mul_le (r : ℝ≥0∞) (f : α → ℝ≥0∞) :
   intro hs
   rw [← SimpleFunc.const_mul_lintegral, lintegral]
   refine le_iSup_of_le (const α r * s) (le_iSup_of_le (fun x => ?_) le_rfl)
-  dsimp
+  simp only [mul_apply, coe_const, Function.const_apply]
   grw [hs x]
 
 theorem lintegral_const_mul' (r : ℝ≥0∞) (f : α → ℝ≥0∞) (hr : r ≠ ∞) :

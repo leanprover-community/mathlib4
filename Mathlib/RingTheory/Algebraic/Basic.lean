@@ -554,7 +554,7 @@ theorem IsAlgebraic.exists_nonzero_coeff_and_aeval_eq_zero
   exact ⟨q, hq, (S⁰.pow_mem hs (rootMultiplicity 0 p)).2 (aeval s q) hp⟩
 
 theorem IsAlgebraic.exists_nonzero_eq_adjoin_mul {s : S} (hRs : IsAlgebraic R s) (hs : s ∈ S⁰) :
-    ∃ᵉ (t ∈ R[s]) (r ≠ (0 : R)), s * t = algebraMap R S r := by
+    ∃ t ∈ R[s], ∃ r ≠ (0 : R), s * t = algebraMap R S r := by
   have ⟨q, hq0, hq⟩ := hRs.exists_nonzero_coeff_and_aeval_eq_zero hs
   have ⟨p, hp⟩ := X_dvd_sub_C (p := q)
   refine ⟨aeval s p, aeval_mem_adjoin_singleton _ _, _, neg_ne_zero.mpr hq0, ?_⟩
@@ -572,7 +572,7 @@ theorem IsAlgebraic.exists_nonzero_dvd {s : S} (hRs : IsAlgebraic R s) (hs : s �
 if `b` is algebraic over `R`. -/
 theorem IsAlgebraic.exists_smul_eq_mul
     (a : S) {b : S} (hRb : IsAlgebraic R b) (hb : b ∈ S⁰) :
-    ∃ᵉ (c : S) (d ≠ (0 : R)), d • a = b * c :=
+    ∃ c : S, ∃ d ≠ (0 : R), d • a = b * c :=
   have ⟨r, hr, s, h⟩ := hRb.exists_nonzero_dvd hb
   ⟨s * a, r, hr, by rw [smul_def, h, mul_assoc]⟩
 
@@ -582,7 +582,7 @@ variable (R)
 if `b` is algebraic over `R`. -/
 theorem Algebra.IsAlgebraic.exists_smul_eq_mul [NoZeroDivisors S] [Algebra.IsAlgebraic R S]
     (a : S) {b : S} (hb : b ≠ 0) :
-    ∃ᵉ (c : S) (d ≠ (0 : R)), d • a = b * c :=
+    ∃ c : S, ∃ d ≠ (0 : R), d • a = b * c :=
   (isAlgebraic b).exists_smul_eq_mul a (mem_nonZeroDivisors_of_ne_zero hb)
 
 end

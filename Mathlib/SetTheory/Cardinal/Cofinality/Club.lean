@@ -21,6 +21,10 @@ A **stationary set** is a set which intersects all club sets.
 To avoid importing topology in the ordinals, we spell out the closure property using `DirSupClosed`.
 For any type equipped with the Scott-Hausdorff topology (which includes well-orders with the order
 topology), `DirSupClosed s` and `IsClosed s` are equivalent predicates.
+
+## Tags
+
+Fodor, pressing down, pressing-down
 -/
 
 public section
@@ -194,6 +198,16 @@ protected theorem diag [IsRegularCardinalOrder α] {f : α → Set α} (hα : co
 theorem _root_.Order.IsNormal.isClub_range {f : α → α} (hf : IsNormal f) : IsClub (.range f) :=
   ⟨hf.dirSupClosed_range, fun x ↦ ⟨_, ⟨x, rfl⟩, hf.strictMono.le_apply⟩⟩
 
+theorem _root_.Order.isNormal_iff_isClub_range {f : α → α} (hf : StrictMono f) :
+    IsNormal f ↔ IsClub (.range f) :=
+  ⟨IsNormal.isClub_range, fun hf' ↦ IsNormal.of_dirSupClosed_range hf hf'.dirSupClosed⟩
+
+theorem isNormal_subtypeVal {s : Set α} (hs : IsClub s) :
+    IsNormal (Subtype.val (p := (· ∈ s))) := by
+  apply IsNormal.of_dirSupClosed_range s.strictMono_coe
+  rw [Subtype.range_coe_subtype]
+  exact hs.dirSupClosed
+
 theorem _root_.Order.IsNormal.isClub_fixedPoints {f : α → α} (hα : cof α ≠ ℵ₀) (hf : IsNormal f) :
     IsClub f.fixedPoints := by
   cases isEmpty_or_nonempty α; · simp
@@ -209,7 +223,7 @@ theorem _root_.Order.IsNormal.isClub_fixedPoints {f : α → α} (hα : cof α �
         ((aleph0_le_cof.lt_of_ne' hα).trans_le' ?_)
       simpa using mk_range_le_lift (f := fun n : ℕ ↦ f^[n] a)
 
-/-- Club sets in regular cardinals correspond one to one with normal functions. -/
+/-- Club sets in regular cardinals correspond one to one with normal enumerator functions. -/
 theorem _root_.Order.isNormal_enum_iff_isClub [IsRegularCardinalOrder α]
     {s : Set α} {hs : IsCofinal s} : IsNormal (Subtype.val ∘ enum s hs) ↔ IsClub s := by
   simp_rw [isClub_iff, hs, and_true, isNormal_enum_iff_dirSupClosed]
@@ -217,6 +231,25 @@ theorem _root_.Order.isNormal_enum_iff_isClub [IsRegularCardinalOrder α]
 theorem isNormal_enum [IsRegularCardinalOrder α] {s : Set α} (hs : IsClub s) :
     IsNormal (Subtype.val ∘ enum s hs.isCofinal) :=
   isNormal_enum_iff_isClub.2 hs
+
+theorem exists_between [NoMaxOrder α] {s : Set α} (hs : IsClub s) {x : α} (hx : ∃ y ∈ s, y ≤ x) :
+    ∃ l ∈ s, ∃ r ∈ s, l ≤ x ∧ x < r ∧ ∀ z ∈ s, l < z → r ≤ z := by
+  have : Nonempty α := ⟨x⟩
+  have := hs.nonempty.to_subtype
+  have := WellFoundedLT.toOrderBot s
+  have := SuccOrder.ofLinearWellFoundedLT s
+  have := hs.isCofinal.noMaxOrder
+  have hbx : (⊥ : s) ≤ x := by
+    obtain ⟨y, hy, hyx⟩ := hx
+    apply hyx.trans'
+    exact bot_le (α := s) (a := ⟨y, hy⟩)
+  have ⟨⟨l, hl⟩, hlx, hxr⟩ :=
+    Order.IsNormal.exists_map_le_lt_map_succ_of_exists_ge hs.isNormal_subtypeVal ?_ hbx
+  · refine ⟨l, hl, _, Subtype.prop _, hlx, hxr, fun z hz hlz ↦ ?_⟩
+    change _ ≤ (⟨z, hz⟩ : s)
+    rwa [Order.succ_le_iff]
+  · obtain ⟨y, hy, hxy⟩ := hs.isCofinal x
+    exact ⟨⟨y, hy⟩, hxy⟩
 
 end WellFoundedLT
 end IsClub
@@ -331,9 +364,9 @@ theorem isStationary_union_iff (hα : cof α ≠ ℵ₀) :
     IsStationary (s ∪ t) ↔ IsStationary s ∨ IsStationary t := by
   simpa using isStationary_sUnion_iff_of_countable (s := {s, t}) hα
 
-/-- **Fodor's lemma**, or the **pressing down lemma**: if `α` has the order type of a regular
-cardinal, `s` is a stationary set, and `f : α → α` is a regressive function on `s`, there exists
-some stationary subset of `s` on which `f` is constant. -/
+/-- **Fodor's lemma**, or the **pressing down lemma**: if `α` has the order type of an uncountable
+regular cardinal, `s` is a stationary set, and `f : α → α` is a regressive function on `s`, there
+exists some stationary subset of `s` on which `f` is constant. -/
 @[wikidata Q1119050]
 theorem exists_isStationary_preimage_singleton [IsRegularCardinalOrder α] {f : α → α}
     (hα : cof α ≠ ℵ₀) (hs : IsStationary s) (hf : ∀ x ∈ s, f x < x) :
