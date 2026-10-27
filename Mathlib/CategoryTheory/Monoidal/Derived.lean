@@ -5,11 +5,11 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Pentagon
 public import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedBifunctorComp
-public import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedTrifunctorComp
 public import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedFour
+public import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedTrifunctorComp
 public import Mathlib.CategoryTheory.Monoidal.Functor
+public import Mathlib.CategoryTheory.Monoidal.Pentagon
 
 /-!
 # The derived monoidal category structure

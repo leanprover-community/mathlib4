@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.HomotopyCategory.Monoidal
 public import Mathlib.Algebra.Homology.BifunctorTriangulated
+public import Mathlib.Algebra.Homology.HomotopyCategory.Monoidal
 
 /-!
 # The tensor product is triangulated

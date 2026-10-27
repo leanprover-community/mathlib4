@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.HomotopyCategory.Monoidal
 public import Mathlib.Algebra.Homology.DerivedCategory.Basic
+public import Mathlib.Algebra.Homology.HomotopyCategory.Monoidal
 public import Mathlib.CategoryTheory.Monoidal.KFlat
 
 /-!
