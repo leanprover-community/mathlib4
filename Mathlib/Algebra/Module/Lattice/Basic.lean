@@ -74,7 +74,7 @@ Note: for `R = ℤ` and `A` a normed field there is also `IsZLattice`, the analo
 @[mk_iff]
 class IsLattice (A : Type*) [CommRing A] [Algebra R A] {V : Type v} [AddCommGroup V]
     [Module R V] [Module A V] [IsScalarTower R A V] (M : Submodule R V) : Prop where
-  fg : M.FG
+  fg (M) : M.FG
   linearIndepOn : ∀ s ⊆ (M : Set V), LinearIndepOn R id s → LinearIndepOn A id s
 
 namespace IsLattice
@@ -103,7 +103,7 @@ theorem basis_linearIndependent [IsLattice A M] {ι : Type*} (b : Basis ι R M) 
 /-- Any `R`-lattice is finite. Not an instance, since `A` cannot be inferred. -/
 theorem finite [IsLattice A M] : Module.Finite R M := by
   rw [Module.Finite.iff_fg]
-  exact IsLattice.fg A
+  exact IsLattice.fg A M
 
 /-- A finitely generated submodule of a lattice is a lattice. -/
 theorem mono_of_fg {M N : Submodule R V} (hle : M ≤ N) (hfg : M.FG) [IsLattice A N] :
@@ -133,7 +133,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The action of `Aˣ` on `R`-submodules of `V` preserves `IsLattice`. -/
 instance smul [IsLattice A M] (a : Aˣ) : IsLattice A (a • M : Submodule R V) where
   fg := by
-    obtain ⟨s, rfl⟩ := IsLattice.fg A (M := M)
+    obtain ⟨s, rfl⟩ := IsLattice.fg A M
     rw [Submodule.smul_span]
     have : Finite (a • (s : Set V) : Set V) := Finite.Set.finite_image _ _
     exact Submodule.fg_span (Set.toFinite (a • (s : Set V)))
@@ -203,11 +203,11 @@ theorem of_fg {M : Submodule R V} (hM : M.FG) : IsLattice K M where
 /-- If `K` is the field of fractions of `R`, then a submodule of `V` is a lattice if and
 only if it is finitely generated. -/
 theorem iff_fg {M : Submodule R V} : IsLattice K M ↔ M.FG :=
-  ⟨fun _ ↦ fg K, of_fg K⟩
+  ⟨fun _ ↦ fg K M, of_fg K⟩
 
 /-- If `K` is the field of fractions of `R`, the supremum of two lattices is a lattice. -/
 instance sup (M N : Submodule R V) [IsLattice K M] [IsLattice K N] : IsLattice K (M ⊔ N) :=
-  of_fg _ ((fg K).sup (fg K))
+  of_fg _ ((fg K M).sup (fg K N))
 
 end IsFractionRing
 
