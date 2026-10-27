@@ -145,8 +145,15 @@ jobs:
           fi
 
       - name: validate lake-manifest.json inputRevs
-        # Only enforce this on the main mathlib4 repository, not on nightly-testing
-        if: github.repository == 'leanprover-community/mathlib4' && github.ref_name != 'nightly-testing'
+        # Only enforce this on the main mathlib4 repository, not on nightly-testing.
+        # `bump/*` branches, and PRs into them, track the dependencies' `nightly-testing`
+        # branches, so they are exempt too. A PR's base branch is `github.base_ref`:
+        # `pull_request_target` sets `github.ref_name` to the default branch, not the base.
+        if: >-
+          github.repository == 'leanprover-community/mathlib4'
+          && github.ref_name != 'nightly-testing'
+          && !startsWith(github.ref_name, 'bump/')
+          && !startsWith(github.base_ref, 'bump/')
         shell: bash
         run: |
           cd pr-branch
