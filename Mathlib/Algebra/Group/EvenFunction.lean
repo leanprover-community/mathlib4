@@ -138,7 +138,7 @@ end mul
 section torsionfree
 
 -- need to redeclare variables since `InvolutiveNeg α` conflicts with `Neg α`
-variable {α β : Type*} [AddCommGroup β] [IsAddTorsionFree β] {f : α → β}
+variable {α β : Type*} [AddCommGroup β] [HasUniqueDiv β] {f : α → β}
 
 /--
 If `f` is both even and odd, and its target is a torsion-free commutative additive group,
@@ -153,8 +153,6 @@ lemma Odd.finsetSum_eq_zero [InvolutiveNeg α] {f : α → β} (hf : f.Odd) {s :
     (hs : Finset.map (Equiv.neg α).toEmbedding s = s) :
     s.sum f = 0 := by
   simpa [neg_eq_self, funext hf, hs] using (Finset.sum_map s (Equiv.neg α).toEmbedding f).symm
-
-@[deprecated (since := "2026-04-08")] alias Odd.finset_sum_eq_zero := Odd.finsetSum_eq_zero
 
 /-- The sum of the values of an odd function is 0. -/
 lemma Odd.sum_eq_zero [Fintype α] [InvolutiveNeg α] {f : α → β} (hf : f.Odd) : ∑ a, f a = 0 :=

@@ -6,6 +6,7 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 module
 
 public import Mathlib.Algebra.Polynomial.Degree.Defs
+
 import Mathlib.Algebra.Polynomial.Monomial
 
 /-!
@@ -13,8 +14,6 @@ import Mathlib.Algebra.Polynomial.Monomial
 -/
 
 public section
-
-noncomputable section
 
 open Finset Polynomial
 

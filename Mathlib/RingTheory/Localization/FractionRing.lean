@@ -241,6 +241,12 @@ lemma surjective_iff_isField [IsDomain R] : Function.Surjective (algebraMap R K)
     (IsLocalization.atUnits R _ (S := K)
       (fun _ hx ↦ Ne.isUnit (mem_nonZeroDivisors_iff_ne_zero.mp hx))).surjective
 
+/-- The ring `R` is an integral domain iff its fraction ring `K` is a field. -/
+theorem isDomain_iff_isField : IsDomain R ↔ IsField K := by
+  refine ⟨fun h ↦ (IsFractionRing.toField R).toIsField K, fun h ↦ ?_⟩
+  let := h.toField
+  exact IsDomain.of_faithfulSMul _ K
+
 end CommRing
 
 variable {B : Type*} [CommRing B] [IsDomain B] [Field K] {L : Type*} [Field L] [Algebra A K]
@@ -628,7 +634,7 @@ theorem isFractionRing_iff_of_base_ringEquiv (h : R ≃+* P) :
     IsFractionRing R S ↔
       @IsFractionRing P _ S _ ((algebraMap R S).comp h.symm.toRingHom).toAlgebra := by
   delta IsFractionRing
-  convert! isLocalization_iff_of_base_ringEquiv (nonZeroDivisors R) S h
+  convert isLocalization_iff_of_base_ringEquiv (nonZeroDivisors R) S h
   exact (MulEquivClass.map_nonZeroDivisors h).symm
 
 variable (R S : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S] [h : IsFractionRing R S]

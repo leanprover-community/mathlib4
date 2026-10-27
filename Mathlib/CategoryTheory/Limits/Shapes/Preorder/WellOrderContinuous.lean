@@ -5,14 +5,15 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.PrincipalSeg
 public import Mathlib.CategoryTheory.Filtered.Final
-public import Mathlib.Data.Nat.SuccPred
-import Mathlib.Data.Fin.SuccPredOrder
+public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.PrincipalSeg
 public import Mathlib.Order.Interval.Set.InitialSeg
 public import Mathlib.Order.Interval.Set.Limit
-import Mathlib.Order.SuccPred.InitialSeg
 public import Mathlib.Order.SuccPred.LinearLocallyFinite
+public import Mathlib.Order.SuccPred.Nat
+
+import Mathlib.Order.SuccPred.Fin
+import Mathlib.Order.SuccPred.InitialSeg
 
 /-!
 # Continuity of functors from well-ordered types
@@ -62,7 +63,6 @@ instance (F : ℕ ⥤ C) : F.IsWellOrderContinuous where
 instance {n : ℕ} (F : Fin n ⥤ C) : F.IsWellOrderContinuous where
   nonempty_isColimit _ hj := (Order.not_isSuccLimit_of_isSuccArchimedean hj).elim
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isWellOrderContinuous_of_iso {F G : J ⥤ C} (e : F ≅ G) [F.IsWellOrderContinuous] :
     G.IsWellOrderContinuous where
   nonempty_isColimit (m : J) (hm : Order.IsSuccLimit m) :=

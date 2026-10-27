@@ -5,10 +5,11 @@ Authors: Rémy Degenne
 -/
 module
 
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 public import Mathlib.MeasureTheory.Measure.GiryMonad
 public import Mathlib.MeasureTheory.Measure.Stieltjes
+
 import Mathlib.Analysis.Normed.Order.Lattice
-public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 
 /-!
 # Measurable parametric Stieltjes functions
@@ -322,7 +323,7 @@ lemma IsMeasurableRatCDF.monotone_stieltjesFunctionAux (a : α) :
 lemma IsMeasurableRatCDF.continuousWithinAt_stieltjesFunctionAux_Ici (a : α) (x : ℝ) :
     ContinuousWithinAt (IsMeasurableRatCDF.stieltjesFunctionAux f a) (Ici x) x := by
   rw [← continuousWithinAt_Ioi_iff_Ici]
-  convert! Monotone.tendsto_nhdsGT (monotone_stieltjesFunctionAux hf a) x
+  convert Monotone.tendsto_nhdsGT (monotone_stieltjesFunctionAux hf a) x
   rw [sInf_image']
   have h' : ⨅ r : Ioi x, stieltjesFunctionAux f a r
       = ⨅ r : { r' : ℚ // x < r' }, stieltjesFunctionAux f a r := by

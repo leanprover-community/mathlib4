@@ -8,10 +8,11 @@ module
 public import Mathlib.Analysis.Calculus.DiffContOnCl
 public import Mathlib.Analysis.Calculus.ParametricIntervalIntegral
 public import Mathlib.Analysis.Complex.ReImTopology
-import Mathlib.Analysis.Real.Cardinality
 public import Mathlib.MeasureTheory.Integral.CircleIntegral
 public import Mathlib.MeasureTheory.Integral.DivergenceTheorem
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
+
+import Mathlib.Analysis.Real.Cardinality
 
 /-!
 # Cauchy integral formula
@@ -161,8 +162,6 @@ public section
 open TopologicalSpace Set MeasureTheory intervalIntegral Metric Filter Function
 
 open scoped Interval Real NNReal ENNReal Topology
-
-noncomputable section
 
 universe u
 
@@ -405,8 +404,10 @@ theorem circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable_of
       have hc' : ContinuousOn (fun z => (z - c)⁻¹) (sphere c r) :=
         (continuousOn_id.sub continuousOn_const).inv₀ fun z hz => sub_ne_zero.2 <| hzne _ hz
       rw [circleIntegral.integral_sub] <;> refine (hc'.smul ?_).circleIntegrable hr0.le
-      · exact hc.mono <| subset_inter
-          (sphere_subset_closedBall.trans <| closedBall_subset_closedBall hrR) hzne
+      · refine hc.mono ?_
+        grw [subset_sdiff, disjoint_left]
+        refine ⟨?_, hzne⟩
+        grw [sphere_subset_closedBall, hrR]
       · exact continuousOn_const
     _ ≤ 2 * π * r * (r⁻¹ * (ε / (2 * π))) := by
       refine circleIntegral.norm_integral_le_of_norm_le_const hr0.le fun z hz => ?_

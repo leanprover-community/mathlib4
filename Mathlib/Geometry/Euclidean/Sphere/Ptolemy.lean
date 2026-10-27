@@ -6,6 +6,7 @@ Authors: Manuel Candales, Benjamin Davidson
 module
 
 public import Mathlib.Geometry.Euclidean.Sphere.Power
+
 import Mathlib.Geometry.Euclidean.Triangle
 
 /-!

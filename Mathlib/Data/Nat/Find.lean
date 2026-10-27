@@ -6,6 +6,7 @@ Authors: Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.Data.Nat.Basic
+
 import Mathlib.Tactic.Push
 
 /-!

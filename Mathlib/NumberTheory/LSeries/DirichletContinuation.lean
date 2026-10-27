@@ -5,8 +5,8 @@ Authors: David Loeffler, Michael Stoll
 -/
 module
 
-public import Mathlib.NumberTheory.LSeries.ZMod
 public import Mathlib.NumberTheory.EulerProduct.DirichletLSeries
+public import Mathlib.NumberTheory.LSeries.ZMod
 
 /-!
 # Analytic continuation of Dirichlet L-functions
@@ -138,7 +138,7 @@ private lemma LFunction_changeLevel_aux {M N : ℕ} [NeZero M] [NeZero N] (hMN :
     refine .fun_finsetProd fun i h ↦ ?_
     have : NeZero i := ⟨(Nat.pos_of_mem_primeFactors h).ne'⟩
     fun_prop
-  · refine eventually_of_mem ?_ (fun t (ht : 1 < t.re) ↦ ?_)
+  · refine eventually_of_mem ?_ (fun t (ht : t ∈ {z : ℂ | 1 < z.re}) ↦ ?_)
     · exact (continuous_re.isOpen_preimage _ isOpen_Ioi).mem_nhds (by simp : 1 < (2 : ℂ).re)
     · simpa [LFunction_eq_LSeries _ ht] using LSeries_changeLevel hMN χ ht
 
@@ -213,6 +213,14 @@ lemma Even.gammaFactor_def {χ : DirichletCharacter ℂ N} (hχ : χ.Even) (s : 
 lemma Odd.gammaFactor_def {χ : DirichletCharacter ℂ N} (hχ : χ.Odd) (s : ℂ) :
     gammaFactor χ s = Gammaℝ (s + 1) := by
   simp [gammaFactor, hχ.not_even]
+
+lemma gammaFactor_eq_zero_iff_of_even {χ : DirichletCharacter ℂ N} (hχ : χ.Even) {s : ℂ} :
+    gammaFactor χ s = 0 ↔ ∃ n : ℕ, s = -(2 * n) := by
+  rw [hχ.gammaFactor_def, Gammaℝ_eq_zero_iff]
+
+lemma gammaFactor_eq_zero_iff_of_odd {χ : DirichletCharacter ℂ N} (hχ : χ.Odd) {s : ℂ} :
+    gammaFactor χ s = 0 ↔ ∃ n : ℕ, s + 1 = -(2 * n) := by
+  rw [hχ.gammaFactor_def, Gammaℝ_eq_zero_iff]
 
 end gammaFactor
 
@@ -388,8 +396,8 @@ is continuous away from the zeros of the L-function. -/
 lemma continuousOn_neg_logDeriv_LFunction_of_nontriv (hχ : χ ≠ 1) :
     ContinuousOn (fun s ↦ -deriv (LFunction χ) s / LFunction χ s) {s | LFunction χ s ≠ 0} := by
   have h := differentiable_LFunction hχ
-  simpa [neg_div] using! ((h.contDiff.continuous_deriv le_rfl).continuousOn.div
-    h.continuous.continuousOn fun _ hw ↦ hw).fun_neg
+  simpa [Pi.div_def, neg_div] using! ((h.contDiff.continuous_deriv le_rfl).continuousOn.div
+    h.continuous.continuousOn fun _ hw ↦ hw)
 
 end nontrivial
 

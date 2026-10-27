@@ -661,13 +661,15 @@ def baseChange (f : M →ₗ[R] N) : A ⊗[R] M →ₗ[A] A ⊗[R] N :=
 theorem baseChange_tmul (a : A) (x : M) : f.baseChange A (a ⊗ₜ x) = a ⊗ₜ f x :=
   rfl
 
-theorem baseChange_eq_ltensor : (f.baseChange A : A ⊗ M → A ⊗ N) = f.lTensor A :=
+theorem baseChange_eq_lTensor : (f.baseChange A : A ⊗ M → A ⊗ N) = f.lTensor A :=
   rfl
+
+@[deprecated (since := "2026-09-28")] alias baseChange_eq_ltensor := baseChange_eq_lTensor
 
 @[simp]
 theorem baseChange_add : (f + g).baseChange A = f.baseChange A + g.baseChange A := by
   ext
-  simp [baseChange_eq_ltensor, -baseChange_tmul]
+  simp [baseChange_eq_lTensor, -baseChange_tmul]
 
 @[simp]
 theorem baseChange_zero : baseChange A (0 : M →ₗ[R] N) = 0 := by
@@ -751,7 +753,7 @@ theorem _root_.LinearEquiv.baseChange_trans (e : M ≃ₗ[R] N) (f : N ≃ₗ[R]
     (e.trans f).baseChange R A M P = (e.baseChange R A M N).trans (f.baseChange R A N P) := by
   ext x
   simp only [← LinearEquiv.coe_toLinearMap, LinearEquiv.coe_baseChange, LinearEquiv.trans_apply,
-    LinearEquiv.coe_trans, baseChange_eq_ltensor, lTensor_comp_apply]
+    LinearEquiv.coe_trans, baseChange_eq_lTensor, lTensor_comp_apply]
 
 theorem _root_.LinearEquiv.baseChange_mul (e : M ≃ₗ[R] M) (f : M ≃ₗ[R] M) :
     (e * f).baseChange R A M M = (e.baseChange R A M M) * (f.baseChange R A M M) := by
@@ -762,7 +764,7 @@ theorem _root_.LinearEquiv.baseChange_symm (e : M ≃ₗ[R] N) :
   ext x
   rw [LinearEquiv.eq_symm_apply]
   simp [← LinearEquiv.coe_toLinearMap, LinearEquiv.coe_baseChange,
-    baseChange_eq_ltensor, ← lTensor_comp_apply]
+    baseChange_eq_lTensor, ← lTensor_comp_apply]
 
 theorem _root_.LinearEquiv.baseChange_inv (e : M ≃ₗ[R] M) :
     (e⁻¹).baseChange R A M M = (e.baseChange R A M M)⁻¹ :=
@@ -788,7 +790,7 @@ variable {R A M N} in
 theorem rTensor_baseChange (φ : A →ₐ[R] B) (t : A ⊗[R] M) (f : M →ₗ[R] N) :
     (φ.toLinearMap.rTensor N) (f.baseChange A t) =
       (f.baseChange B) (φ.toLinearMap.rTensor M t) := by
-  simp [LinearMap.baseChange_eq_ltensor, ← LinearMap.comp_apply]
+  simp [LinearMap.baseChange_eq_lTensor, ← LinearMap.comp_apply]
 
 end Semiring
 
@@ -842,19 +844,42 @@ lemma baseChange_eq_span : p.baseChange A = span A (p.map (TensorProduct.mk R A 
     exact smul_mem _ a (subset_span ⟨m, m.2, rfl⟩)
   · refine span_le.2 fun _ ⟨m, hm, h⟩ ↦ h ▸ ⟨1 ⊗ₜ[R] ⟨m, hm⟩, rfl⟩
 
+variable {A p} in
+theorem baseChange_le_iff_le_comap {q : Submodule A (A ⊗[R] M)} :
+    p.baseChange A ≤ q ↔ p ≤ (q.restrictScalars R).comap (TensorProduct.mk R A M 1) := by
+  rw [baseChange_eq_span, span_le, ← q.coe_restrictScalars R, SetLike.coe_subset_coe,
+    map_le_iff_le_comap]
+
+variable (R M) in
+theorem baseChange_gc : GaloisConnection (baseChange A)
+    fun q ↦ (q.restrictScalars R).comap (TensorProduct.mk R A M 1) :=
+  fun _ _ ↦ baseChange_le_iff_le_comap
+
 @[simp]
-lemma baseChange_bot : (⊥ : Submodule R M).baseChange A = ⊥ := by simp [baseChange_eq_span]
+lemma baseChange_bot : (⊥ : Submodule R M).baseChange A = ⊥ := (baseChange_gc R M A).l_bot
 
 @[simp]
 lemma baseChange_top : (⊤ : Submodule R M).baseChange A = ⊤ := by
   rw [eq_top_iff, ← span_eq_top_of_span_eq_top R A _ (span_tmul_eq_top R ..)]
   exact span_le.2 fun _ ⟨a, m, h⟩ ↦ h ▸ tmul_mem_baseChange_of_mem _ trivial
 
+@[simp]
+lemma baseChange_sup : (p ⊔ q).baseChange A = p.baseChange A ⊔ q.baseChange A :=
+  (baseChange_gc R M A).l_sup
+
+@[simp]
+lemma baseChange_iSup {ι : Sort*} (p : ι → Submodule R M) :
+    (⨆ i, p i).baseChange A = ⨆ i, (p i).baseChange A :=
+  (baseChange_gc R M A).l_iSup
+
+@[simp]
+lemma baseChange_sSup (S : Set (Submodule R M)) :
+    (sSup S).baseChange A = ⨆ p ∈ S, p.baseChange A :=
+  (baseChange_gc R M A).l_sSup
+
 variable {p q} in
-theorem baseChange_mono (h : p ≤ q) : p.baseChange A ≤ q.baseChange A := by
-  rw [baseChange, LinearMap.baseChange, ← subtype_comp_inclusion p q h,
-    ← LinearMap.id_comp LinearMap.id, AlgebraTensorModule.map_comp]
-  apply LinearMap.range_comp_le_range
+theorem baseChange_mono (h : p ≤ q) : p.baseChange A ≤ q.baseChange A :=
+  (baseChange_gc R M A).monotone_l h
 
 @[simp]
 lemma baseChange_span (s : Set M) :

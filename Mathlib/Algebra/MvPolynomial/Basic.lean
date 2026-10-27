@@ -7,12 +7,13 @@ module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 public import Mathlib.Algebra.MonoidAlgebra.Basic
-import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
-import Mathlib.Algebra.MonoidAlgebra.Support
 public import Mathlib.Algebra.Regular.Pow
 public import Mathlib.Data.Finsupp.Antidiagonal
 public import Mathlib.Data.Finsupp.Order
 public import Mathlib.Tactic.Polynomial.Core
+
+import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
+import Mathlib.Algebra.MonoidAlgebra.Support
 
 /-!
 # Multivariate polynomials
@@ -199,8 +200,10 @@ instance [IsCancelAdd R] [IsCancelMulZero R] : IsCancelMulZero (MvPolynomial σ 
 /-- The multivariate polynomial ring over an integral domain is an integral domain. -/
 instance [IsCancelAdd R] [IsDomain R] : IsDomain (MvPolynomial σ R) where
 
-theorem C_eq_coe_nat (n : ℕ) : (C ↑n : MvPolynomial σ R) = n := by
+theorem C_eq_natCast (n : ℕ) : (C ↑n : MvPolynomial σ R) = n := by
   induction n <;> simp [*]
+
+@[deprecated (since := "2026-10-13")] alias C_eq_coe_nat := C_eq_natCast
 
 theorem C_mul' : MvPolynomial.C a * p = a • p :=
   (Algebra.smul_def a p).symm
@@ -550,8 +553,6 @@ theorem coeff_zero_X (i : σ) : (X i : MvPolynomial σ R).coeff 0 = 0 :=
 @[simp]
 lemma coeff_addMonoidAlgebraMap (g : S₁ →+ R) (φ : MvPolynomial σ S₁) (m) :
     (φ.map g).coeff m = g (φ.coeff m) := rfl
-
-@[deprecated (since := "2026-03-27")] alias coeff_mapRange := coeff_addMonoidAlgebraMap
 
 /-- `AddMonoidAlgebra.coeff · m` but promoted to an `AddMonoidHom`. -/
 @[simps]
@@ -1037,7 +1038,7 @@ lemma mem_coeffsIn_iff_coeffs_subset : p ∈ coeffsIn σ M ↔ (p.coeffs : Set S
   refine ⟨fun h x _ ↦ h x, fun h i ↦ ?_⟩
   by_cases hp : i ∈ p.support
   · exact h hp
-  · convert! M.zero_mem
+  · convert M.zero_mem
     simpa using hp
 
 end Module

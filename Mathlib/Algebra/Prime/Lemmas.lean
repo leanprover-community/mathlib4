@@ -5,10 +5,11 @@ Authors: Johannes Hölzl, Jens Wagemaker
 -/
 module
 
-import Mathlib.Algebra.Divisibility.Hom
 public import Mathlib.Algebra.Group.Irreducible.Lemmas
 public import Mathlib.Algebra.GroupWithZero.Equiv
 public import Mathlib.Algebra.Prime.Defs
+
+import Mathlib.Algebra.Divisibility.Hom
 import Mathlib.Order.Monotone.Defs
 
 /-!
@@ -48,11 +49,11 @@ theorem comap_prime (hinv : ∀ a, g (f a : N) = a) (hp : Prime (f p)) : Prime p
   ⟨fun h => hp.1 <| by simp [h], fun h => hp.2.1 <| h.map f, fun a b h => by
     refine
         (hp.2.2 (f a) (f b) <| by
-              convert! map_dvd f h
+              convert map_dvd f h
               simp).imp
           ?_ ?_ <;>
       · intro h
-        convert! ← map_dvd g h <;> apply hinv⟩
+        convert ← map_dvd g h <;> apply hinv⟩
 
 theorem MulEquiv.prime_iff {E : Type*} [EquivLike E M N] [MulEquivClass E M N] (e : E) :
     Prime (e p) ↔ Prime p := by

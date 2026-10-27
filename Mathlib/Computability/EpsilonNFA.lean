@@ -6,6 +6,7 @@ Authors: Fox Thomson, Yaël Dillies, Anthony DeRossi
 module
 
 public import Mathlib.Computability.NFA
+
 import Mathlib.Data.List.ReduceOption
 
 /-!

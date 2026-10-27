@@ -5,13 +5,13 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 -/
 module
 
+public import Batteries.Data.List.Lemmas
 public import Mathlib.Basic.Unique
 public import Mathlib.Data.List.Defs
 public import Mathlib.Data.List.Monad
-public import Mathlib.Tactic.Common
-public import Batteries.Data.List.Lemmas
 public import Mathlib.Data.Subtype
 public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.Common
 
 /-!
 # Basic properties of lists
@@ -687,7 +687,7 @@ theorem get_reverse' (l : List α) (n) (hn') :
   simp
 
 theorem eq_cons_of_length_one {l : List α} (h : l.length = 1) : l = [l.get ⟨0, by lia⟩] := by
-  refine ext_get (by convert! h) (by grind)
+  refine ext_get (by convert h) (by grind)
 
 end deprecated
 

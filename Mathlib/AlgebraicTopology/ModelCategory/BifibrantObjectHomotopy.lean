@@ -7,6 +7,7 @@ module
 
 public import Mathlib.AlgebraicTopology.ModelCategory.CofibrantObjectHomotopy
 public import Mathlib.AlgebraicTopology.ModelCategory.FibrantObjectHomotopy
+
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions.OfAdjunction
 import Mathlib.CategoryTheory.Quotient.LocallySmall
 
@@ -173,11 +174,11 @@ lemma HoCat.homEquivLeft_apply (f : X ⟶ Y) :
 
 @[simp]
 lemma HoCat.homEquivLeft_symm_apply (f : X ⟶ Y) :
-    HoCat.homEquivRight.symm (toHoCat.map (homMk f)) = .mk f := rfl
+    HoCat.homEquivLeft.symm (toHoCat.map (homMk f)) = .mk f := by
+  simp [homEquivLeft]
 
 end
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The inclusion functor `BifibrantObject.HoCat C ⥤ FibrantObject.HoCat C`. -/
 def HoCat.ιFibrantObject : HoCat C ⥤ FibrantObject.HoCat C :=
   CategoryTheory.Quotient.lift _
@@ -203,7 +204,6 @@ def toHoCatCompιFibrantObject :
     toHoCat (C := C) ⋙ HoCat.ιFibrantObject ≅
       ιFibrantObject ⋙ FibrantObject.toHoCat := Iso.refl _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The inclusion functor `BifibrantObject.HoCat C ⥤ CofibrantObject.HoCat C`. -/
 @[implicit_reducible]
 def HoCat.ιCofibrantObject : HoCat C ⥤ CofibrantObject.HoCat C :=
@@ -347,7 +347,6 @@ noncomputable def HoCat.bifibrantResolution' : CofibrantObject C ⥤ BifibrantOb
   map_id X := bifibrantResolutionObj_hom_ext (by simp)
   map_comp {X₁ X₂ X₃} f g := bifibrantResolutionObj_hom_ext (by simp)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The bifibrant resolution functor from the homotopy category of
 cofibrant objects to the homotopy category of bifibrant objects. -/
 @[implicit_reducible]

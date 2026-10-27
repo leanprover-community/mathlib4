@@ -9,8 +9,8 @@ public import Mathlib.Algebra.NeZero
 public import Mathlib.Data.Finset.Attach
 public import Mathlib.Data.Finset.Disjoint
 public import Mathlib.Data.Finset.Erase
-public import Mathlib.Data.Finset.Range
 public import Mathlib.Data.Finset.Lattice.Lemmas
+public import Mathlib.Data.Finset.Range
 public import Mathlib.Data.Finset.SDiff
 public import Mathlib.Data.Fintype.Defs
 
@@ -689,7 +689,7 @@ subtype. -/
 theorem map_subtype_subset {t : Set α} (s : Finset t) : ↑(s.map (Embedding.subtype _)) ⊆ t := by
   intro a ha
   rw [mem_coe] at ha
-  convert! property_of_mem_map_subtype s ha
+  convert property_of_mem_map_subtype s ha
 
 end Subtype
 

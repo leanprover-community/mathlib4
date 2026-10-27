@@ -44,7 +44,7 @@ open Set Function
 variable {α β γ δ : Type*} {ι : Sort*} {s t u : Set α}
 
 /-- A measurable space is a space equipped with a σ-algebra. -/
-@[class] structure MeasurableSpace (α : Type*) where
+@[class, wikidata Q3058218] structure MeasurableSpace (α : Type*) where
   /-- Predicate saying that a given set is measurable. Use `MeasurableSet` in the root namespace
   instead. -/
   MeasurableSet' : Set α → Prop
@@ -59,6 +59,7 @@ variable {α β γ δ : Type*} {ι : Sort*} {s t u : Set α}
 instance [h : MeasurableSpace α] : MeasurableSpace αᵒᵈ := h
 
 /-- `MeasurableSet s` means that `s` is measurable (in the ambient measure space on `α`) -/
+@[wikidata Q3054889]
 def MeasurableSet [MeasurableSpace α] (s : Set α) : Prop :=
   ‹MeasurableSpace α›.MeasurableSet' s
 
@@ -108,15 +109,15 @@ protected theorem MeasurableSet.iUnion [Countable ι] ⦃f : ι → Set α⦄
     rw [← iUnion_congr_of_surjective _ he (fun _ => rfl)]
     exact m.measurableSet_iUnion _ fun _ => h _
 
-protected theorem MeasurableSet.biUnion {f : β → Set α} {s : Set β} (hs : s.Countable)
-    (h : ∀ b ∈ s, MeasurableSet (f b)) : MeasurableSet (⋃ b ∈ s, f b) := by
-  rw [biUnion_eq_iUnion]
-  have := hs.to_subtype
+protected theorem MeasurableSet.biUnion {f : β → Set α} {p : β → Prop} (hp : {b | p b}.Countable)
+    (h : ∀ b, p b → MeasurableSet (f b)) : MeasurableSet (⋃ (b : β) (_ : p b), f b) := by
+  rw [← iUnion_subtype (p := p) (s := fun b ↦ f b)]
+  have := hp.to_subtype
   exact MeasurableSet.iUnion (by simpa using h)
 
-theorem Set.Finite.measurableSet_biUnion {f : β → Set α} {s : Set β} (hs : s.Finite)
-    (h : ∀ b ∈ s, MeasurableSet (f b)) : MeasurableSet (⋃ b ∈ s, f b) :=
-  .biUnion hs.countable h
+theorem Set.Finite.measurableSet_biUnion {f : β → Set α} {p : β → Prop} (hp : {b | p b}.Finite)
+    (h : ∀ b, p b → MeasurableSet (f b)) : MeasurableSet (⋃ (b : β) (_ : p b), f b) :=
+  .biUnion hp.countable h
 
 theorem Finset.measurableSet_biUnion {f : β → Set α} (s : Finset β)
     (h : ∀ b ∈ s, MeasurableSet (f b)) : MeasurableSet (⋃ b ∈ s, f b) :=
@@ -136,13 +137,13 @@ theorem MeasurableSet.iInter [Countable ι] {f : ι → Set α} (h : ∀ b, Meas
     MeasurableSet (⋂ b, f b) :=
   .of_compl <| by rw [compl_iInter]; exact .iUnion fun b => (h b).compl
 
-theorem MeasurableSet.biInter {f : β → Set α} {s : Set β} (hs : s.Countable)
-    (h : ∀ b ∈ s, MeasurableSet (f b)) : MeasurableSet (⋂ b ∈ s, f b) :=
-  .of_compl <| by rw [compl_iInter₂]; exact .biUnion hs fun b hb => (h b hb).compl
+theorem MeasurableSet.biInter {f : β → Set α} {p : β → Prop} (hp : {b | p b}.Countable)
+    (h : ∀ b, p b → MeasurableSet (f b)) : MeasurableSet (⋂ (b : β) (_ : p b), f b) :=
+  .of_compl <| by rw [compl_iInter₂]; exact .biUnion hp fun b hb => (h b hb).compl
 
-theorem Set.Finite.measurableSet_biInter {f : β → Set α} {s : Set β} (hs : s.Finite)
-    (h : ∀ b ∈ s, MeasurableSet (f b)) : MeasurableSet (⋂ b ∈ s, f b) :=
-  .biInter hs.countable h
+theorem Set.Finite.measurableSet_biInter {f : β → Set α} {p : β → Prop} (hp : {b | p b}.Finite)
+    (h : ∀ b, p b → MeasurableSet (f b)) : MeasurableSet (⋂ (b : β) (_ : p b), f b) :=
+  .biInter hp.countable h
 
 theorem Finset.measurableSet_biInter {f : β → Set α} (s : Finset β)
     (h : ∀ b ∈ s, MeasurableSet (f b)) : MeasurableSet (⋂ b ∈ s, f b) :=

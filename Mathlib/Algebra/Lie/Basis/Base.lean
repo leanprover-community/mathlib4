@@ -105,7 +105,7 @@ def baseSupportEquiv : ι ≃ b.base.support :=
     coroot (b.baseSupportEquiv i) = b.h' i := by
   let := b.isCartanSubalgebra
   suffices b.h' i ∈ corootSpace (b.baseSupp' i) by
-    have _i : IsAddTorsionFree L := .of_isTorsionFree K L
+    have _i : HasUniqueDiv L := .of_isTorsionFree K L
     exact (eq_coroot_of_mem_corootSpace_of_two (b.baseSupp' i).val this (by simp [baseSupp'])).symm
   have h_mem : ⁅b.e i, b.f i⁆ ∈ H := by
     nth_rw 1 [(b.sl2 i).lie_e_f, b.cartan_eq_lieSpan]

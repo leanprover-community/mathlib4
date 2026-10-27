@@ -712,7 +712,7 @@ theorem comp_symm (f : M ≃[L] N) (g : N ≃[L] P) : (g.comp f).symm = f.symm.c
 theorem comp_right_injective (h : M ≃[L] N) :
     Function.Injective (fun f ↦ f.comp h : (N ≃[L] P) → (M ≃[L] P)) := by
   intro f g hfg
-  convert! (congr_arg (fun r : (M ≃[L] P) ↦ r.comp h.symm) hfg) <;>
+  convert (congr_arg (fun r : (M ≃[L] P) ↦ r.comp h.symm) hfg) <;>
     rw [comp_assoc, self_comp_symm, comp_refl]
 
 @[simp]

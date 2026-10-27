@@ -396,7 +396,7 @@ private theorem invtSubmoduleToLieIdeal_aux (hm_α : m_α ∈ sl2SubmoduleOfRoot
       have hx_χ_neg : x_χ ∈ genWeightSpace L (-α.toLinear) := by
         rw [← (add_eq_zero_iff_eq_neg.mp w_plus)]
         exact hx_χ
-      obtain ⟨c, hc⟩ := (finrank_eq_one_iff_of_nonzero' ⟨f, hf⟩ (by simp [ht.f_ne_zero])).mp
+      obtain ⟨c, hc⟩ := (finrank_eq_one_iff_of_ne_zero' ⟨f, hf⟩ (by simp [ht.f_ne_zero])).mp
         (finrank_rootSpace_eq_one (-α) (by simpa using hα₀)) ⟨x_χ, hx_χ_neg⟩
       exact ⟨0, c, 0, by simpa using hc.symm⟩
     apply LieSubalgebra.lie_mem <;> [exact hx_χ_in_sl2; exact hm_α_original]
@@ -408,14 +408,14 @@ private theorem invtSubmoduleToLieIdeal_aux (hm_α : m_α ∈ sl2SubmoduleOfRoot
       have hx_χ_pos : x_χ ∈ genWeightSpace L α.toLinear := by
         rw [← (sub_eq_zero.mp w_minus)]
         exact hx_χ
-      obtain ⟨c, hc⟩ := (finrank_eq_one_iff_of_nonzero' ⟨e, he⟩ (by simp [ht.e_ne_zero])).mp
+      obtain ⟨c, hc⟩ := (finrank_eq_one_iff_of_ne_zero' ⟨e, he⟩ (by simp [ht.e_ne_zero])).mp
         (finrank_rootSpace_eq_one α hα₀) ⟨x_χ, hx_χ_pos⟩
       exact ⟨c, 0, 0, by simpa using hc.symm⟩
     apply LieSubalgebra.lie_mem <;> [exact hx_χ_in_sl2; exact hm_α_original]
   by_cases w_chi : χ.toLinear = 0
   · have hx_χ_in_H : x_χ ∈ H.toLieSubmodule := by
       rw [← rootSpace_zero_eq K L H]
-      convert! hx_χ; ext h; simp only [Pi.zero_apply]
+      convert hx_χ; ext h; simp only [Pi.zero_apply]
       have h_apply : (χ.toLinear : H → K) h = 0 := by rw [w_chi, LinearMap.zero_apply]
       exact h_apply.symm
     apply LieSubmodule.mem_iSup_of_mem ⟨α, hαq, hα₀⟩

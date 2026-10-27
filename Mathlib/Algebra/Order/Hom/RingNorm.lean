@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.GroupWithZero.Hom
 public import Mathlib.Algebra.Order.Hom.GroupNorm
-public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Algebra.Order.Ring.Defs
 
 
 /-!
@@ -94,3 +94,7 @@ instance (priority := 100) MulRingSeminormClass.toRingSeminormClass [NonAssocRin
 instance (priority := 100) MulRingNormClass.toRingNormClass [NonAssocRing α]
     [Semiring β] [PartialOrder β] [MulRingNormClass F α β] : RingNormClass F α β :=
   { ‹MulRingNormClass F α β›, MulRingSeminormClass.toRingSeminormClass with }
+
+theorem one_le_map_one [NonAssocRing α] [Nontrivial α] [Semiring β] [LinearOrder β]
+    [IsStrictOrderedRing β] [RingNormClass F α β] (f : F) : 1 ≤ f 1 := by
+  simpa [map_pos_of_ne_zero f one_ne_zero] using map_mul_le_mul f 1 1

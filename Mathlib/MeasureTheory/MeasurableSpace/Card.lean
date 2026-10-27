@@ -6,9 +6,10 @@ Authors: Sébastien Gouëzel, Violeta Hernández Palacios
 module
 
 public import Mathlib.MeasureTheory.MeasurableSpace.Defs
-import Mathlib.SetTheory.Cardinal.Regular
 public import Mathlib.SetTheory.Cardinal.Continuum
+
 import Mathlib.SetTheory.Cardinal.Ordinal
+import Mathlib.SetTheory.Cardinal.Regular
 
 /-!
 # Cardinal of sigma-algebras
@@ -77,7 +78,7 @@ theorem generateMeasurableRec_mono (s : Set (Set α)) : Monotone (generateMeasur
   intro i j h x hx
   rcases h.eq_or_lt with (rfl | h)
   · exact hx
-  · convert! iUnion_mem_generateMeasurableRec fun _ => ⟨i, h, hx⟩
+  · convert iUnion_mem_generateMeasurableRec fun _ => ⟨i, h, hx⟩
     exact (iUnion_const x).symm
 
 /-- An inductive principle for the elements of `generateMeasurableRec`. -/

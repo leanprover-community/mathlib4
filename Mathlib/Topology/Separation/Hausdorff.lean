@@ -174,7 +174,7 @@ theorem t2Space_iff_of_isOpenQuotientMap [TopologicalSpace Y] {π : X → Y}
   replace h := IsOpenQuotientMap.prodMap h h
   refine ⟨fun H ↦ H.preimage h.continuous, fun H ↦ ?_⟩
   simp_rw [← isOpen_compl_iff] at H ⊢
-  convert! h.isOpenMap _ H
+  convert h.isOpenMap _ H
   exact (h.surjective.image_preimage _).symm
 
 theorem tendsto_nhds_unique [T2Space X] {f : Y → X} {l : Filter Y} {a b : X} [NeBot l]
@@ -524,7 +524,7 @@ theorem eqOn_closure₂' [T2Space Z] {s : Set X} {t : Set Y} {f g : X → Y → 
     (hf₂ : ∀ y, Continuous fun x => f x y) (hg₁ : ∀ x, Continuous (g x))
     (hg₂ : ∀ y, Continuous fun x => g x y) : ∀ x ∈ closure s, ∀ y ∈ closure t, f x y = g x y :=
   suffices closure s ⊆ ⋂ y ∈ closure t, { x | f x y = g x y } by simpa only [subset_def, mem_iInter]
-  (closure_minimal fun x hx => mem_iInter₂.2 <| Set.EqOn.closure (h x hx) (hf₁ _) (hg₁ _)) <|
+  (closure_minimal fun x hx => by simpa [EqOn] using Set.EqOn.closure (h x hx) (hf₁ _) (hg₁ _)) <|
     isClosed_biInter fun _ _ => isClosed_eq (hf₂ _) (hg₂ _)
 
 theorem eqOn_closure₂ [T2Space Z] {s : Set X} {t : Set Y} {f g : X → Y → Z}

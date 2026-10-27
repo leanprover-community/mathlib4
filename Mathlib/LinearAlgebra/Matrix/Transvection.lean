@@ -6,8 +6,9 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.LinearAlgebra.Matrix.Reindex
-import Mathlib.Tactic.Field
+
 import Mathlib.GroupTheory.GroupAction.Ring
+import Mathlib.Tactic.Field
 
 /-!
 # Transvections
@@ -94,14 +95,13 @@ theorem updateRow_eq_transvection [Finite n] (c : R) :
   ext a b
   by_cases ha : i = a
   · by_cases hb : j = b
-    · simp only [ha, updateRow_self, Pi.add_apply, one_apply, Pi.smul_apply, hb, ↓reduceIte,
-        smul_eq_mul, mul_one, transvection, add_apply, single_apply_same]
-    · simp only [ha, updateRow_self, Pi.add_apply, one_apply, Pi.smul_apply, hb, ↓reduceIte,
-        smul_eq_mul, mul_zero, add_zero, transvection, add_apply, and_false, not_false_eq_true,
-        single_apply_of_ne]
+    · simp only [ha, updateRow_self, Pi.add_apply, Matrix.one_apply, Pi.smul_apply, hb, ↓reduceIte,
+        smul_eq_mul, mul_one, transvection, Matrix.add_apply, single_apply_same]
+    · simp only [ha, updateRow_self, Pi.add_apply, Matrix.one_apply, Pi.smul_apply, hb, ↓reduceIte,
+        smul_eq_mul, mul_zero, add_zero, transvection, Matrix.add_apply, and_false,
+        not_false_eq_true, single_apply_of_ne]
   · simp only [updateRow_ne, transvection, ha, Ne.symm ha, single_apply_of_ne, add_zero,
-      Ne, not_false_iff,
-      false_and, add_apply]
+      Ne, not_false_iff, false_and, Matrix.add_apply]
 
 variable [Fintype n]
 
@@ -235,7 +235,7 @@ theorem _root_.Matrix.mem_range_scalar_iff_commute_transvectionStruct {M : Matri
   refine ⟨fun h t => ?_, mem_range_scalar_of_commute_transvectionStruct⟩
   rw [mem_range_scalar_iff_commute_single] at h
   refine (Commute.one_left M).add_left ?_
-  convert! (h _ _ t.hij).smul_left t.c using 1
+  convert (h _ _ t.hij).smul_left t.c using 1
   rw [smul_single, smul_eq_mul, mul_one]
 
 end

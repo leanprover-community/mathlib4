@@ -195,8 +195,6 @@ theorem hasFiniteSupport (f : α →₀ M) : HasFiniteSupport f := by
   rw [HasFiniteSupport]
   exact f.fun_support_eq.symm ▸ f.support.finite_toSet
 
-@[deprecated (since := "2026-03-03")] alias finite_support := hasFiniteSupport
-
 theorem support_subset_iff {s : Set α} {f : α →₀ M} :
     ↑f.support ⊆ s ↔ ∀ a ∉ s, f a = 0 := by
   grind

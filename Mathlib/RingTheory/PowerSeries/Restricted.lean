@@ -12,7 +12,7 @@ public import Mathlib.RingTheory.PowerSeries.Basic
 # Univariate restricted power series
 
 `IsRestricted` : We say a univariate power series over a normed ring `R` is restricted for a
-real number `c` if `‖coeff t f‖ * c i ^ t i → 0` under the cofinite filter.
+real number `c` if `‖coeff t f‖ * c ^ t → 0` under the cofinite filter.
 
 -/
 
@@ -63,17 +63,20 @@ lemma isRestricted_C (a : R) : IsRestricted c (C a) :=
   MvPowerSeries.isRestricted_C (fun _ ↦ c) a
 
 variable {f} in
+@[deprecated MvPowerSeries.IsRestricted.add +typeChanged (since := "2026-09-28")]
 lemma isRestricted.add {g : PowerSeries R} (hf : IsRestricted c f) (hg : IsRestricted c g) :
     IsRestricted c (f + g) :=
-  MvPowerSeries.isRestricted.add (fun _ ↦ c) hf hg
+  hf.add hg
 
 variable {f} in
+@[deprecated MvPowerSeries.IsRestricted.neg +typeChanged (since := "2026-09-28")]
 lemma isRestricted.neg (hf : IsRestricted c f) : IsRestricted c (-f) :=
-  MvPowerSeries.isRestricted.neg (fun _ ↦ c) hf
+  hf.neg
 
+@[deprecated MvPowerSeries.IsRestricted.mul +typeChanged (since := "2026-09-28")]
 lemma isRestricted.mul [IsUltrametricDist R] (c : ℝ) {f g : PowerSeries R}
     (hf : IsRestricted c f) (hg : IsRestricted c g) : IsRestricted c (f * g) :=
-  MvPowerSeries.isRestricted.mul (fun _ ↦ c) hf hg
+  hf.mul hg
 
 namespace IsRestricted
 

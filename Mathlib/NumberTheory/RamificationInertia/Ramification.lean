@@ -5,9 +5,10 @@ Authors: Anne Baanen
 -/
 module
 
-import Mathlib.Algebra.GroupWithZero.Torsion
-public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 public import Mathlib.CategoryTheory.Category.Init
+public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
+
+import Mathlib.Algebra.GroupWithZero.Torsion
 import Mathlib.Data.Nat.Totient
 import Mathlib.Data.Rat.Floor
 import Mathlib.RingTheory.Nakayama
@@ -75,7 +76,7 @@ variable {p P}
 theorem ramificationIdx'_eq_find [DecidablePred fun n ↦ ∀ (k : ℕ), map f p ≤ P ^ k → k ≤ n]
     (h : ∃ n, ∀ k, map f p ≤ P ^ k → k ≤ n) :
     ramificationIdx' p P = Nat.find h := by
-  convert! Nat.sSup_def h
+  convert! Nat.sSup_def (s := {n | map f p ≤ P ^ n}) h
 
 @[deprecated (since := "2026-07-01")] alias ramificationIdx_eq_find := ramificationIdx'_eq_find
 
@@ -320,7 +321,7 @@ lemma ramificationIdx'_eq_one_iff
   have ha' : ¬ a ≤ P := fun h ↦ H₁ (ha.trans_le (Ideal.mul_mono_right h))
   rw [IsScalarTower.algebraMap_eq _ S, ← Ideal.map_map, ha, Ideal.map_mul,
     Localization.AtPrime.map_eq_maximalIdeal]
-  convert! Ideal.mul_top _
+  convert Ideal.mul_top _
   on_goal 2 => infer_instance
   rw [← not_ne_iff, IsLocalization.map_algebraMap_ne_top_iff_disjoint P.primeCompl]
   simpa [primeCompl, Set.disjoint_compl_left_iff_subset]

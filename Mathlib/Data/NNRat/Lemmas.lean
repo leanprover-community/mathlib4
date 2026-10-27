@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Indicator
 public import Mathlib.Algebra.Order.Field.Rat
+
 import Mathlib.Data.Rat.Lemmas
 import Mathlib.Tactic.Zify
 

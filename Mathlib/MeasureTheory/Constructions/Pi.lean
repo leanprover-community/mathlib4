@@ -5,10 +5,11 @@ Authors: Floris van Doorn
 -/
 module
 
-import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Logic.Encodable.Pi
 public import Mathlib.MeasureTheory.Group.Measure
 public import Mathlib.MeasureTheory.MeasurableSpace.Pi
+
+import Mathlib.Algebra.BigOperators.Fin
 
 /-!
 # Indexed product measures
@@ -511,7 +512,7 @@ theorem univ_pi_Ico_ae_eq_Icc {f g : ∀ i, α i} :
 
 end Intervals
 
-/-- If one of the measures `μ i` has value zero on singeltons, them `Measure.pi µ`
+/-- If one of the measures `μ i` has value zero on singletons, then `Measure.pi µ`
 has value zero on singletons. The instance below assumes that all `μ i` have value zero on
 singletons. -/
 theorem pi_nullSingletonClass (i : ι) [NullSingletonClass (μ i)] :
@@ -931,7 +932,7 @@ theorem measurePreserving_arrowCongr' {α₁ β₁ α₂ β₂ : Type*} [Fintype
     (hm : ∀ i, MeasurePreserving eβ (μ i) (ν (eα i))) :
     MeasurePreserving (MeasurableEquiv.arrowCongr' eα eβ) (Measure.pi fun i ↦ μ i)
       (Measure.pi fun i ↦ ν i) := by
-  convert!
+  convert
     (measurePreserving_piCongrLeft (fun i : α₂ ↦ ν i) eα).comp
       (measurePreserving_pi μ (fun i : α₁ ↦ ν (eα i)) hm)
   simp only [MeasurableEquiv.arrowCongr', Equiv.arrowCongr', Equiv.arrowCongr, EquivLike.coe_coe,

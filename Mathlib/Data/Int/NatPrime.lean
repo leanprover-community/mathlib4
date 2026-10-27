@@ -6,6 +6,7 @@ Authors: Kevin Lacker, Bryan Gin-ge Chen
 module
 
 public import Mathlib.Data.Nat.Prime.Basic
+
 import Mathlib.Data.Int.Basic
 
 /-!

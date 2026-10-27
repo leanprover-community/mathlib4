@@ -6,8 +6,8 @@ Authors: Christian Merten
 module
 
 public import Mathlib.LinearAlgebra.Basis.Exact
-public import Mathlib.RingTheory.Smooth.StandardSmooth
 public import Mathlib.RingTheory.Etale.Basic
+public import Mathlib.RingTheory.Smooth.StandardSmooth
 
 /-!
 # Cotangent complex of a submersive presentation
@@ -204,7 +204,7 @@ noncomputable def basisKaehlerOfIsCompl {κ : Type*} {f : κ → ι}
     simp [← hcompl.compl_eq]
   · simp only [sectionCotangent, LinearMap.coe_comp, Function.comp_assoc, LinearEquiv.coe_coe]
     apply LinearIndependent.map' _ _ P.cotangentEquiv.symm.ker
-    convert! (Pi.basisFun S σ).linearIndependent
+    convert (Pi.basisFun S σ).linearIndependent
     classical
     ext i j
     simp only [Function.comp_apply, Basis.repr_self, Finsupp.linearEquivFunOnFinite_apply,

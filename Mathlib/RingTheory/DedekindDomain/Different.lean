@@ -7,10 +7,11 @@ module
 
 public import Mathlib.NumberTheory.RamificationInertia.Unramified
 public import Mathlib.RingTheory.Conductor
+public import Mathlib.RingTheory.Flat.TorsionFree
 public import Mathlib.RingTheory.FractionalIdeal.Extended
 public import Mathlib.RingTheory.Trace.Quotient
+
 import Mathlib.RingTheory.Finiteness.Quotient
-public import Mathlib.RingTheory.Flat.TorsionFree
 
 /-!
 # The different ideal
@@ -130,7 +131,7 @@ variable [IsDomain A] [IsFractionRing A K] [FiniteDimensional K L] [Algebra.IsSe
 
 lemma traceDual_top [Decidable (IsField A)] :
     (⊤ : Submodule B L)ᵛ = if IsField A then ⊤ else ⊥ := by
-  convert! traceDual_top'
+  convert traceDual_top'
   rw [← IsFractionRing.surjective_iff_isField (R := A) (K := K),
     LinearMap.range_eq_top.mpr (Algebra.trace_surjective K L),
     ← RingHom.range_eq_top, _root_.eq_top_iff]
@@ -921,7 +922,7 @@ theorem not_dvd_differentIdeal_iff
     let K := FractionRing A
     let L := FractionRing B
     have : IsLocalization B⁰ (Localization.AtPrime (⊥ : Ideal B)) := by
-      convert!
+      convert
         (inferInstance :
           IsLocalization (⊥ : Ideal B).primeCompl (Localization.AtPrime (⊥ : Ideal B)))
       ext; simp [Ideal.primeCompl]
@@ -937,18 +938,18 @@ theorem not_dvd_differentIdeal_iff
   let := Localization.AtPrime.algebraOfLiesOver (P.under A) P
   constructor
   · intro H
-    · rw [Algebra.isUnramifiedAt_iff_map_eq (p := P.under A)]
-      constructor
-      · suffices Algebra.IsSeparable (A ⧸ P.under A) (B ⧸ P) by infer_instance
-        contrapose H
-        exact dvd_differentIdeal_of_not_isSeparable A hp P H
-      · rw [← Ideal.IsDedekindDomain.ramificationIdx'_eq_one_iff hPbot Ideal.map_comap_le]
-        apply Ideal.ramificationIdx'_spec
-        · simp [Ideal.map_le_iff_le_comap]
-        · contrapose H
-          rw [← pow_one P, show 1 = 2 - 1 by simp]
-          apply pow_sub_one_dvd_differentIdeal _ _ _ hp
-          simpa [Ideal.dvd_iff_le] using H
+    rw [Algebra.isUnramifiedAt_iff_map_eq (p := P.under A)]
+    constructor
+    · suffices Algebra.IsSeparable (A ⧸ P.under A) (B ⧸ P) by infer_instance
+      contrapose H
+      exact dvd_differentIdeal_of_not_isSeparable A hp P H
+    · rw [← Ideal.IsDedekindDomain.ramificationIdx'_eq_one_iff hPbot Ideal.map_comap_le]
+      apply Ideal.ramificationIdx'_spec
+      · simp [Ideal.map_le_iff_le_comap]
+      · contrapose H
+        rw [← pow_one P, show 1 = 2 - 1 by simp]
+        apply pow_sub_one_dvd_differentIdeal _ _ _ hp
+        simpa [Ideal.dvd_iff_le] using H
   · intro H
     obtain ⟨Q, h₁, h₂⟩ := Ideal.eq_prime_pow_mul_coprime hp' P
     rw [← Ideal.IsDedekindDomain.ramificationIdx_eq_normalizedFactors_count _ _ hp',

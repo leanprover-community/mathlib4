@@ -5,10 +5,10 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Logic.Function.Iterate
-import Mathlib.Tactic.Inhabit
-
 public meta import Lean.PrettyPrinter.Delaborator.Builtins
+public import Mathlib.Logic.Function.Iterate
+
+import Mathlib.Tactic.Inhabit
 
 /-!
 # Extra facts about `Prod`

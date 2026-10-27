@@ -90,7 +90,6 @@ theorem mk' (h : ∀ A B : C, ∃ (c : BinaryCofan A B) (_ : IsColimit c), Mono 
     obtain ⟨c, hc₁, hc₂⟩ := h A B
     simpa only [mono_inl_iff hc' hc₁] using hc₂⟩
 
-set_option backward.defeqAttrib.useBackward true in
 instance monoCoprodType : MonoCoprod (Type u) :=
   MonoCoprod.mk' fun A B => by
     refine ⟨BinaryCofan.mk (↾(Sum.inl : A → A ⊕ B))
@@ -197,7 +196,7 @@ lemma mono_of_injective' [HasCoproduct (X ∘ ι)] [HasCoproduct X]
 lemma mono_map'_of_injective [HasCoproduct (X ∘ ι)] [HasCoproduct X]
     [HasCoproduct (fun (k : ((Set.range ι)ᶜ : Set I)) => X k.1)] :
     Mono (Sigma.map' ι (fun j => 𝟙 ((X ∘ ι) j))) := by
-  convert! mono_of_injective' X ι hι
+  convert mono_of_injective' X ι hι
   apply Sigma.hom_ext
   intro j
   rw [Sigma.ι_comp_map', id_comp, colimit.ι_desc]
@@ -209,7 +208,6 @@ section
 
 variable [MonoCoprod C] {I : Type*} (X : I → C)
 
-set_option backward.defeqAttrib.useBackward true in
 lemma mono_inj (c : Cofan X) (h : IsColimit c) (i : I)
     [HasCoproduct (fun (k : ((Set.range (fun _ : Unit ↦ i))ᶜ : Set I)) => X k.1)] :
     Mono (Cofan.inj c i) := by

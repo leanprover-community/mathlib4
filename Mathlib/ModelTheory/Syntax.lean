@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Logic.Equiv.Fin.Basic
 public import Mathlib.ModelTheory.LanguageMap
+
 import Mathlib.Algebra.Order.Group.Nat
 
 /-!

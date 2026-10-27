@@ -45,11 +45,7 @@ def eqToHom {C : Type u₁} [CategoryStruct.{v₁} C] {X Y : C} (p : X = Y) :
   rw [p]
   exact 𝟙 _
 
-/-- `eqToHom'` is the dual of `eqToHom`, which we need for `to_dual`.
-Please avoid using this directly. -/
-@[to_dual existing eqToHom]
-abbrev eqToHom' {C : Type u₁} [CategoryStruct.{v₁} C] {X Y : C} (p : X = Y) : Y ⟶ X :=
-  eqToHom p.symm
+to_dual_for eqToHom := eqToHom p.symm
 
 @[simp]
 theorem eqToHom_refl {C : Type u₁} [CategoryStruct.{v₁} C] (X : C) (p : X = X) :
@@ -214,12 +210,8 @@ which usually leads to dependent type theory hell.
 def eqToIso {X Y : C} (p : X = Y) : X ≅ Y :=
   ⟨eqToHom p, eqToHom p.symm, by simp, by simp⟩
 
-@[simp]
+@[to_dual (attr := simp) inv]
 theorem eqToIso.hom {X Y : C} (p : X = Y) : (eqToIso p).hom = eqToHom p :=
-  rfl
-
-@[simp, to_dual existing hom]
-theorem eqToIso.inv {X Y : C} (p : X = Y) : (eqToIso p).inv = eqToHom p.symm :=
   rfl
 
 @[simp]

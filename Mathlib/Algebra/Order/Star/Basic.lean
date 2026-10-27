@@ -6,12 +6,12 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Algebra.Group.Submonoid.Membership
-public import Mathlib.Algebra.Order.Module.Defs
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Algebra.Order.Group.Opposite
+public import Mathlib.Algebra.Order.Module.Defs
+public import Mathlib.Algebra.Star.StarProjection
 public import Mathlib.Algebra.Star.StarRingHom
 public import Mathlib.Tactic.ContinuousFunctionalCalculus
-public import Mathlib.Algebra.Star.StarProjection
 
 /-! # Star ordered rings
 
@@ -232,7 +232,7 @@ theorem star_left_conjugate_nonneg {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ star c
   refine AddSubmonoid.closure_induction (fun x hx => ?_)
     (by rw [mul_zero, zero_mul]) (fun x y _ _ hx hy => ?_) ha
   · obtain ⟨x, rfl⟩ := hx
-    convert! star_mul_self_nonneg (x * c) using 1
+    convert star_mul_self_nonneg (x * c) using 1
     rw [star_mul, ← mul_assoc, mul_assoc _ _ c]
   · calc
       0 ≤ star c * x * c + 0 := by rw [add_zero]; exact hx
@@ -332,6 +332,12 @@ theorem star_mul_self_pos [Nontrivial R] {x : R} (hx : IsRegular x) : 0 < star x
 
 theorem mul_star_self_pos [Nontrivial R] {x : R} (hx : IsRegular x) : 0 < x * star x := by
   simpa using star_mul_self_pos hx.star
+
+@[simp] theorem star_mul_self_pos_iff [IsProperStar R] {x : R} : 0 < star x * x ↔ x ≠ 0 := by
+  simp [lt_iff_le_and_ne']
+
+@[simp] theorem mul_star_self_pos_iff [IsProperStar R] {x : R} : 0 < x * star x ↔ x ≠ 0 := by
+  simp [lt_iff_le_and_ne']
 
 end NonUnitalSemiring
 

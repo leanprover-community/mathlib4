@@ -59,7 +59,7 @@ lemma isUltrametricDist_of_isNonarchimedean_norm {S' : Type*} [SeminormedAddGrou
 lemma isNonarchimedean_norm {R} [SeminormedAddCommGroup R] [IsUltrametricDist R] :
     IsNonarchimedean (‖·‖ : R → ℝ) := by
   intro x y
-  convert! dist_triangle_max 0 x (x + y) using 1
+  convert dist_triangle_max 0 x (x + y) using 1
   · simp
   · congr <;> simp [SeminormedAddGroup.dist_eq]
 
@@ -267,12 +267,6 @@ theorem exists_norm_finsetProd_le_of_nonempty {t : Finset ι} (ht : t.Nonempty) 
   match t.exists_mem_eq_sup' ht (‖f ·‖) with
   | ⟨j, hj, hj'⟩ => ⟨j, hj, (ht.norm_prod_le_sup'_norm f).trans (le_of_eq hj')⟩
 
-@[deprecated (since := "2026-04-08")]
-alias exists_norm_finset_sum_le_of_nonempty := exists_norm_finsetSum_le_of_nonempty
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias exists_norm_finset_prod_le_of_nonempty := exists_norm_finsetProd_le_of_nonempty
-
 /--
 Given a function `f : ι → M` and a finite set `t ⊆ ι`, we can always find `i : ι`, belonging to `t`
 if `t` is nonempty, such that `‖∏ j ∈ t, f j‖ ≤ ‖f i‖`.
@@ -284,11 +278,6 @@ theorem exists_norm_finsetProd_le (t : Finset ι) [Nonempty ι] (f : ι → M) :
   rcases t.eq_empty_or_nonempty with rfl | ht
   · simp
   exact (fun ⟨i, h, h'⟩ => ⟨i, fun _ ↦ h, h'⟩) <| exists_norm_finsetProd_le_of_nonempty ht f
-
-@[deprecated (since := "2026-04-08")] alias exists_norm_finset_sum_le := exists_norm_finsetSum_le
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias exists_norm_finset_prod_le := exists_norm_finsetProd_le
 
 /--
 Given a function `f : ι → M` and a multiset `t : Multiset ι`, we can always find `i : ι`, belonging
@@ -305,8 +294,8 @@ theorem exists_norm_multiset_prod_le (s : Multiset ι) [Nonempty ι] {f : ι →
       obtain ⟨M, hMs, hM⟩ := hM
       by_cases! hMa : ‖f M‖ ≤ ‖f a‖
       · refine ⟨a, by simp, ?_⟩
-        · rw [Multiset.map_cons, Multiset.prod_cons]
-          exact le_trans (norm_mul_le_max _ _) (max_le (le_refl _) (le_trans hM hMa))
+        rw [Multiset.map_cons, Multiset.prod_cons]
+        exact le_trans (norm_mul_le_max _ _) (max_le (le_refl _) (le_trans hM hMa))
       · rcases eq_or_ne t 0 with rfl | ht
         · exact ⟨a, by simp, by simp⟩
         · refine ⟨M, ?_, ?_⟩

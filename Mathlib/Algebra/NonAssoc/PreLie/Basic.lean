@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Module.Opposite
 public import Mathlib.Algebra.Ring.Associator
+
 /-!
 # Pre-Lie rings and algebras
 

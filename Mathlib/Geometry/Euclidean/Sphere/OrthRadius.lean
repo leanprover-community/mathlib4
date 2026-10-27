@@ -119,7 +119,7 @@ lemma orthRadius_injective (s : Sphere P) : Injective s.orthRadius :=
 lemma finrank_orthRadius [FiniteDimensional ℝ V] {s : Sphere P} {p : P} (hp : p ≠ s.center) :
     Module.finrank ℝ (s.orthRadius p).direction + 1 = Module.finrank ℝ V := by
   rw [orthRadius, add_comm, direction_mk']
-  convert! (ℝ ∙ (p -ᵥ s.center)).finrank_add_finrank_orthogonal
+  convert (ℝ ∙ (p -ᵥ s.center)).finrank_add_finrank_orthogonal
   exact (finrank_span_singleton (vsub_ne_zero.2 hp)).symm
 
 lemma orthRadius_map {s : Sphere P} (p : P) {f : P ≃ᵃⁱ[ℝ] P} (h : f s.center = s.center) :
@@ -315,7 +315,7 @@ lemma inter_orthRadius_eq_of_dist_le_radius_of_norm_eq_one [hf2 : Fact (Module.f
   have hf := finrank_orthRadius hpc
   rw [direction_orthRadius] at hf
   simp only [hf2.out, Nat.reduceEqDiff] at hf
-  rw [finrank_eq_one_iff_of_nonzero' ⟨v, hv⟩ (by simpa using hv0)] at hf
+  rw [finrank_eq_one_iff_of_ne_zero' ⟨v, hv⟩ (by simpa using hv0)] at hf
   have hvc : ∀ w ∈ (ℝ ∙ (p -ᵥ s.center))ᗮ, ∃ c : ℝ, c • v = w := by
     intro w hw
     simpa using hf ⟨w, hw⟩
@@ -350,7 +350,7 @@ lemma inter_orthRadius_eq_of_dist_le_radius [hf2 : Fact (Module.finrank ℝ V = 
     (hv : v ∈ (ℝ ∙ (p -ᵥ s.center))ᗮ) (hv0 : v ≠ 0) :
     (s ∩ s.orthRadius p : Set P) = {(√(s.radius ^ 2 - (dist p s.center) ^ 2) / ‖v‖) • v +ᵥ p,
       -(√(s.radius ^ 2 - (dist p s.center) ^ 2) / ‖v‖) • v +ᵥ p} := by
-  convert!
+  convert
     inter_orthRadius_eq_of_dist_le_radius_of_norm_eq_one hp hpc (v := ‖v‖⁻¹ • v)
       (Submodule.smul_mem _ _ hv) ?_ using 2
   · simp [div_eq_mul_inv, smul_smul]

@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Topology.ContinuousMap.Compact
 public import Mathlib.Topology.ContinuousMap.Ordered
+
 import Mathlib.Topology.ContinuousMap.Units
 
 /-! # Mapping `C(X, ℝ)` to `C(X, 𝕜)` and back

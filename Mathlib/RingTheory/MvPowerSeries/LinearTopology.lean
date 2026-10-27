@@ -5,8 +5,9 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 module
 
-import Mathlib.RingTheory.Ideal.Quotient.Defs
 public import Mathlib.RingTheory.MvPowerSeries.PiTopology
+
+import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 /-! # Linear topology on the ring of multivariate power series
 

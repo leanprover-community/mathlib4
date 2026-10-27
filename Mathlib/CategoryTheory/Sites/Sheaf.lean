@@ -5,12 +5,12 @@ Authors: Kevin Buzzard, Bhavik Mehta
 -/
 module
 
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Terminal
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
-public import Mathlib.CategoryTheory.Sites.SheafOfTypes
 public import Mathlib.CategoryTheory.Sites.EqualizerSheafCondition
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Terminal
+public import Mathlib.CategoryTheory.Sites.SheafOfTypes
 
 /-!
 # Sheaves taking values in a category
@@ -89,7 +89,6 @@ open Presieve Presieve.FamilyOfElements Limits
 
 variable (P : Cᵒᵖ ⥤ A) {X : C} (S : Sieve X) (R : Presieve X) (E : Aᵒᵖ)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a sieve `S` on `X : C`, a presheaf `P : Cᵒᵖ ⥤ A`, and an object `E` of `A`,
     the cones over the natural diagram `S.arrows.diagram.op ⋙ P` associated to `S` and `P`
     with cone point `E` are in 1-1 correspondence with `SieveCompatible` family of elements
@@ -108,7 +107,7 @@ def conesEquivSieveCompatibleFamily :
         have := x.2 f.unop.1.hom g.unop.hom.left f.unop.2
         dsimp at this ⊢
         rw [id_comp, ← this]
-        convert! rfl
+        convert rfl
         simp only [Over.w] }
 
 variable {P S E}
@@ -302,16 +301,6 @@ section
 
 variable {J A}
 
-/-- The underlying presheaf of a sheaf. -/
-@[deprecated "Use ObjectProperty.obj" (since := "2026-03-03")]
-abbrev Sheaf.val (F : Sheaf J A) : Cᵒᵖ ⥤ A := F.obj
-
-@[deprecated "Use ObjectProperty.FullSubcategory.property" (since := "2026-03-03")]
-lemma Sheaf.cond (F : Sheaf J A) : Presheaf.IsSheaf J F.obj := F.property
-
-@[deprecated (since := "2026-03-03")]
-alias Sheaf.Hom.mk := ObjectProperty.homMk
-
 lemma Sheaf.hom_ext_iff {F G : Sheaf J A} {f g : F ⟶ G} :
     f = g ↔ f.hom = g.hom := by
   cat_disch
@@ -392,7 +381,6 @@ instance Sheaf.Hom.epi_of_presheaf_epi {F G : Sheaf J A} (f : F ⟶ G) [h : Epi 
   (sheafToPresheaf J A).epi_of_epi_map h
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 theorem isSheaf_iff_isSheaf_of_type (P : Cᵒᵖ ⥤ Type w) :
     Presheaf.IsSheaf J P ↔ Presieve.IsSheaf J P := by
   constructor

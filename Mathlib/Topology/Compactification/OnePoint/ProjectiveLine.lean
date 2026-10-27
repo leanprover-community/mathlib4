@@ -5,10 +5,11 @@ Authors: Bjørn Kjos-Hanssen, Oliver Nash
 -/
 module
 
-import Mathlib.Algebra.QuadraticDiscriminant
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.FinTwo
 public import Mathlib.LinearAlgebra.Projectivization.Action
 public import Mathlib.Topology.Compactification.OnePoint.Basic
+
+import Mathlib.Algebra.QuadraticDiscriminant
 
 /-!
 # One-point compactification and projectivization
