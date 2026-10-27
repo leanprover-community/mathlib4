@@ -341,7 +341,9 @@ then `x` has order `n` in `G`. -/
 all prime factors `p` of `n`, then `x` has order `n` in `G`. -/]
 theorem orderOf_eq_of_pow_and_pow_div_prime (hx : x ^ n = 1)
     (hd : ∀ p : ℕ, p.Prime → p ∣ n → x ^ (n / p) ≠ 1) : orderOf x = n := by
-  by_contra h
+  contrapose! hd
+  simpa [orderOf_dvd_iff_pow_eq_one] using
+    Nat.exists_prime_and_dvd_and_dvd_div (orderOf_dvd_of_pow_eq_one hx) hd
   obtain ⟨p, hp, hpn, hdvd⟩ := Nat.exists_prime_and_dvd_and_dvd_div (orderOf_dvd_of_pow_eq_one hx) h
   exact hd p hp hpn (orderOf_dvd_iff_pow_eq_one.1 hdvd)
 
