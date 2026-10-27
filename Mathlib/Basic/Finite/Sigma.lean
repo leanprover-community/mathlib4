@@ -5,9 +5,10 @@ Authors: Kyle Miller
 -/
 module
 
-import Mathlib.Data.Fintype.EquivFin
 public import Mathlib.Data.Fintype.Sigma
 public import Mathlib.Logic.Equiv.Sigma
+
+import Mathlib.Data.Fintype.EquivFin
 
 /-!
 # Finiteness of sigma types

@@ -46,8 +46,6 @@ structure IsRegular (c : Cardinal) : Prop where
 theorem IsRegular.cof_ord (H : c.IsRegular) : c.ord.cof = c :=
   (cof_ord_le c).antisymm H.2
 
-@[deprecated (since := "2026-03-22")] alias IsRegular.cof_eq := IsRegular.cof_ord
-
 theorem IsRegular.cof_omega_eq {o : Ordinal} (H : (ℵ_ o).IsRegular) : (ω_ o).cof = ℵ_ o := by
   rw [← ord_aleph, H.cof_ord]
 
@@ -100,16 +98,9 @@ theorem _root_.Ordinal.iSup_lt_omega_one {α : Type*} [Countable α] {f : α →
     (∀ i, f i < ω₁) → ⨆ i, f i < ω₁ :=
   Ordinal.lift_iSup_lt_of_lt_cof (by simp)
 
-@[deprecated (since := "2026-03-23")]
-alias iSup_sequence_lt_omega_one := Ordinal.iSup_lt_omega_one
-
 theorem isRegular_preAleph_add_one {o : Ordinal} (h : ω ≤ o) : IsRegular (preAleph (o + 1)) := by
   rw [← succ_preAleph]
   exact isRegular_succ (aleph0_le_preAleph.2 h)
-
-@[deprecated isRegular_preAleph_add_one +typeChanged (since := "2026-03-23")]
-theorem isRegular_preAleph_succ {o : Ordinal} (h : ω ≤ o) : IsRegular (preAleph (succ o)) :=
-  isRegular_preAleph_add_one h
 
 theorem cof_preOmega_add_one {o : Ordinal} (h : ω ≤ o) :
     (preOmega (o + 1)).cof = preAleph (o + 1) := by
@@ -118,10 +109,6 @@ theorem cof_preOmega_add_one {o : Ordinal} (h : ω ≤ o) :
 theorem isRegular_aleph_add_one (o : Ordinal) : IsRegular (ℵ_ (o + 1)) := by
   rw [← succ_aleph]
   exact isRegular_succ (aleph0_le_aleph o)
-
-@[deprecated isRegular_aleph_add_one +typeChanged (since := "2026-03-23")]
-theorem isRegular_aleph_succ (o : Ordinal) : IsRegular (ℵ_ (succ o)) :=
-  isRegular_aleph_add_one o
 
 @[simp]
 theorem cof_omega_add_one (o : Ordinal) : (ω_ (o + 1)).cof = ℵ_ (o + 1) :=
@@ -138,61 +125,6 @@ lemma IsRegular.lift {κ : Cardinal.{v}} (h : κ.IsRegular) :
 lemma isRegular_lift_iff {κ : Cardinal.{v}} :
     (Cardinal.lift.{u} κ).IsRegular ↔ κ.IsRegular :=
   ⟨fun ⟨h₁, h₂⟩ ↦ ⟨by simpa using h₁, by simpa [← lift_le.{u, v}]⟩, fun h ↦ h.lift⟩
-
-@[deprecated lift_iSup_add_one_lt_of_lt_cof +typeChanged (since := "2026-03-22")]
-theorem lsub_lt_ord_lift_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c)
-    (hι : Cardinal.lift.{v, u} #ι < c) (hf : ∀ i, f i < c.ord) : Ordinal.lsub.{u, v} f < c.ord := by
-  apply lift_iSup_add_one_lt_of_lt_cof _ hf
-  rwa [lift_umax, c.ord.lift_id', hc.cof_ord]
-
-@[deprecated iSup_add_one_lt_of_lt_cof +typeChanged (since := "2026-03-22")]
-theorem lsub_lt_ord_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c) (hι : #ι < c) :
-    (∀ i, f i < c.ord) → Ordinal.lsub f < c.ord :=
-  iSup_add_one_lt_of_lt_cof (by rwa [hc.cof_ord])
-
-@[deprecated lift_iSup_lt_of_lt_cof +typeChanged (since := "2026-03-22")]
-theorem iSup_lt_ord_lift_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c)
-    (hι : Cardinal.lift.{v, u} #ι < c) (hf : ∀ i, f i < c.ord) : iSup f < c.ord := by
-  apply Ordinal.lift_iSup_lt_of_lt_cof _ hf
-  rwa [lift_umax, Ordinal.lift_id', hc.cof_ord]
-
-@[deprecated iSup_lt_of_lt_cof +typeChanged (since := "2026-03-22")]
-theorem iSup_lt_ord_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c) (hι : #ι < c) :
-    (∀ i, f i < c.ord) → iSup f < c.ord :=
-  Ordinal.iSup_lt_of_lt_cof (by rwa [hc.cof_ord])
-
-@[deprecated lift_iSup_add_one_lt_of_lt_cof +typeChanged (since := "2026-03-22")]
-theorem blsub_lt_ord_lift_of_isRegular {o : Ordinal} {f : ∀ a < o, Ordinal} {c} (hc : IsRegular c)
-    (ho : Cardinal.lift.{v, u} o.card < c) :
-    (∀ i hi, f i hi < c.ord) → Ordinal.blsub.{u, v} o f < c.ord :=
-  blsub_lt_ord_lift (by rwa [hc.cof_ord])
-
-@[deprecated lift_iSup_add_one_lt_of_lt_cof +typeChanged (since := "2026-03-22")]
-theorem blsub_lt_ord_of_isRegular {o : Ordinal} {f : ∀ a < o, Ordinal} {c} (hc : IsRegular c)
-    (ho : o.card < c) : (∀ i hi, f i hi < c.ord) → Ordinal.blsub o f < c.ord :=
-  blsub_lt_ord (by rwa [hc.cof_ord])
-
-@[deprecated Ordinal.lift_iSup_lt_of_lt_cof +typeChanged (since := "2026-03-22")]
-theorem bsup_lt_ord_lift_of_isRegular {o : Ordinal} {f : ∀ a < o, Ordinal} {c} (hc : IsRegular c)
-    (hι : Cardinal.lift.{v, u} o.card < c) :
-    (∀ i hi, f i hi < c.ord) → Ordinal.bsup.{u, v} o f < c.ord :=
-  bsup_lt_ord_lift (by rwa [hc.cof_ord])
-
-@[deprecated lift_iSup_lt_of_lt_cof +typeChanged (since := "2026-03-22")]
-theorem bsup_lt_ord_of_isRegular {o : Ordinal} {f : ∀ a < o, Ordinal} {c} (hc : IsRegular c)
-    (hι : o.card < c) : (∀ i hi, f i hi < c.ord) → Ordinal.bsup o f < c.ord :=
-  bsup_lt_ord (by rwa [hc.cof_ord])
-
-@[deprecated lift_iSup_lt_of_lt_cof_ord +typeChanged (since := "2026-03-22")]
-theorem iSup_lt_lift_of_isRegular {ι} {f : ι → Cardinal} {c} (hc : IsRegular c)
-    (hι : Cardinal.lift.{v, u} #ι < c) (hf : ∀ i, f i < c) : iSup f < c := by
-  apply lift_iSup_lt_of_lt_cof_ord _ hf
-  rwa [lift_umax, c.lift_id', hc.cof_ord]
-
-@[deprecated iSup_lt_of_lt_cof +typeChanged (since := "2026-03-22")]
-theorem iSup_lt_of_isRegular {ι} {f : ι → Cardinal} {c} (hc : IsRegular c) (hι : #ι < c) :
-    (∀ i, f i < c) → iSup f < c :=
-  iSup_lt_of_lt_cof_ord (by rwa [hc.cof_ord])
 
 theorem sum_lt_lift_of_isRegular {ι : Type u} {f : ι → Cardinal} (hc : IsRegular c)
     (hι : Cardinal.lift.{v, u} #ι < c) (hf : ∀ i, f i < c) : sum f < c := by

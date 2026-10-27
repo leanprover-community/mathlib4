@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Topology.ContinuousMap.Bounded.Star
 public import Mathlib.Topology.Sets.Compacts
+
 import Mathlib.Analysis.Normed.Group.InfiniteSum
 
 /-!

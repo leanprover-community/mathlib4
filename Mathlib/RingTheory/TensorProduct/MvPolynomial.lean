@@ -5,8 +5,8 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.RingTheory.TensorProduct.MonoidAlgebra
 public import Mathlib.Algebra.MvPolynomial.Equiv
+public import Mathlib.RingTheory.TensorProduct.MonoidAlgebra
 
 /-!
 

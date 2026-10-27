@@ -5,7 +5,6 @@ Authors: Matthew Robert Ballard, Yury Kudryashov
 -/
 module
 
-
 import Mathlib.Data.Nat.Notation
 
 /-!

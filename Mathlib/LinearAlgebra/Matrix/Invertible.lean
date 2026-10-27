@@ -6,6 +6,7 @@ Authors: Eric Wieser, Ahmad Alkhalawi
 module
 
 public import Mathlib.LinearAlgebra.Matrix.ConjTranspose
+
 import Mathlib.Tactic.Abel
 
 /-! # Extra lemmas about invertible matrices

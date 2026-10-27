@@ -6,6 +6,7 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Dynamics.Ergodic.AddCircle
+
 import Mathlib.MeasureTheory.Covering.LiminfLimsup
 
 /-!
@@ -301,7 +302,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
   · replace h : ∀ p : Nat.Primes, u p +ᵥ E =ᵐ[μ] E := by
       intro p
       replace hE₂ : E =ᵐ[μ] C p := hE₂ p (h p)
-      have h_qmp : Measure.QuasiMeasurePreserving (-u p +ᵥ ·) μ μ :=
+      have h_qmp : QuasiMeasurePreserving (-u p +ᵥ ·) μ μ :=
         (measurePreserving_vadd _ μ).quasiMeasurePreserving
       refine (h_qmp.vadd_ae_eq_of_ae_eq (u p) hE₂).trans (ae_eq_trans ?_ hE₂.symm)
       rw [hC]

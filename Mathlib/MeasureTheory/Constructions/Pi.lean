@@ -5,10 +5,11 @@ Authors: Floris van Doorn
 -/
 module
 
-import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Logic.Encodable.Pi
 public import Mathlib.MeasureTheory.Group.Measure
 public import Mathlib.MeasureTheory.MeasurableSpace.Pi
+
+import Mathlib.Algebra.BigOperators.Fin
 
 /-!
 # Indexed product measures

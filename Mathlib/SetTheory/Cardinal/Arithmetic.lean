@@ -29,8 +29,6 @@ public section
 
 assert_not_exists Module Finsupp Ordinal.log
 
-noncomputable section
-
 open Function Set Cardinal Equiv Order Ordinal
 
 universe u v w
@@ -40,7 +38,6 @@ namespace Cardinal
 /-! ### Properties of `mul` -/
 section mul
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `α` is an infinite type, then `α × α` and `α` have the same cardinality. -/
 theorem mul_eq_self {c : Cardinal} (hc : ℵ₀ ≤ c) : c * c = c := by
   -- The only nontrivial part is `c * c ≤ c`. We prove it inductively.
@@ -806,7 +803,7 @@ theorem mk_bounded_set_le (α : Type u) (c : Cardinal) :
 theorem mk_bounded_subset_le {α : Type u} (s : Set α) (c : Cardinal.{u}) :
     #{ t : Set α // t ⊆ s ∧ #t ≤ c } ≤ max #s ℵ₀ ^ c := by
   refine le_trans ?_ (mk_bounded_set_le s c)
-  refine ⟨Embedding.codRestrict _ ?_ ?_⟩
+  refine ⟨.codRestrict {t : Set s | #t ≤ c} ?_ ?_⟩
   · use fun t => (↑) ⁻¹' t.1
     rintro ⟨t, ht1, ht2⟩ ⟨t', h1t', h2t'⟩ h
     apply Subtype.ext

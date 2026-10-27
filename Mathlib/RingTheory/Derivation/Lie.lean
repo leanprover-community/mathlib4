@@ -6,8 +6,8 @@ Authors: Nicolò Cavalleri, Andrew Yang
 module
 
 public import Mathlib.Algebra.Lie.OfAssociative
-public import Mathlib.RingTheory.Derivation.Basic
 public import Mathlib.Algebra.Lie.Prod
+public import Mathlib.RingTheory.Derivation.Basic
 
 /-!
 # Lie Algebra Structure on Derivations
@@ -60,8 +60,8 @@ instance instLieAlgebra : LieAlgebra R (Derivation R A A) :=
 
 instance : LieRingModule (Derivation R A A) A where
   bracket X a := X a
-  add_lie _ _ m := add_apply m
-  lie_add _ _ _ := Derivation.map_add _ _ _
+  add_lie := add_apply
+  lie_add := map_add
   leibniz_lie _ _ _ := by rw [commutator_apply]; abel
 
 instance : LieModule R (Derivation R A A) A where

@@ -5,8 +5,9 @@ Authors: Wanyi He, Huanyu Zheng
 -/
 module
 
-import Mathlib.Algebra.CharP.Algebra
 public import Mathlib.Algebra.Module.Torsion.Basic
+
+import Mathlib.Algebra.CharP.Algebra
 
 /-!
 # Characteristic of the ring of linear Maps

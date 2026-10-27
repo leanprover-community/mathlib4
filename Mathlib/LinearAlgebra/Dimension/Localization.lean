@@ -5,12 +5,13 @@ Authors: Andrew Yang
 -/
 module
 
-import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 public import Mathlib.Algebra.Module.LocalizedModule.Submodule
 public import Mathlib.LinearAlgebra.Dimension.DivisionRing
 public import Mathlib.LinearAlgebra.LinearIndependent.Algebra
 public import Mathlib.RingTheory.Localization.BaseChange
 public import Mathlib.RingTheory.OreLocalization.OreSet
+
+import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 
 /-!
 # Rank of localization

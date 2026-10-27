@@ -5,10 +5,11 @@ Authors: Johan Commelin
 -/
 module
 
-import Mathlib.Data.Multiset.Sort
-import Mathlib.Data.PNat.Basic
 public import Mathlib.Data.PNat.Interval
 public import Mathlib.Tactic.NormNum
+
+import Mathlib.Data.Multiset.Sort
+import Mathlib.Data.PNat.Basic
 import Mathlib.Tactic.FinCases
 
 /-!

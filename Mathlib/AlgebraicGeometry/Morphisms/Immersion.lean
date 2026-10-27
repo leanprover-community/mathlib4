@@ -6,6 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.Separated
+
 import Mathlib.AlgebraicGeometry.IdealSheaf.Functorial
 
 /-!

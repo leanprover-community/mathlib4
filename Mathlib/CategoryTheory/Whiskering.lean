@@ -5,8 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Tactic.CategoryTheory.IsoReassoc
 public import Mathlib.CategoryTheory.Functor.FullyFaithful
+public import Mathlib.Tactic.CategoryTheory.IsoReassoc
 
 /-!
 # Whiskering
@@ -67,7 +67,6 @@ lemma hcomp_id {G H : C ⥤ D} (α : G ⟶ H) (F : D ⥤ E) : α ◫ 𝟙 F = wh
 
 variable (C D E)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Left-composition gives a functor `(C ⥤ D) ⥤ ((D ⥤ E) ⥤ (C ⥤ E))`.
 
 `(whiskeringLeft.obj F).obj G` is `F ⋙ G`, and
@@ -84,7 +83,6 @@ def whiskeringLeft : (C ⥤ D) ⥤ (D ⥤ E) ⥤ C ⥤ E where
           naturality := fun X Y f => by dsimp; rw [← H.map_comp, ← H.map_comp, ← τ.naturality] }
       naturality := fun X Y f => by ext; dsimp; rw [f.naturality] }
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Right-composition gives a functor `(D ⥤ E) ⥤ ((C ⥤ D) ⥤ (C ⥤ E))`.
 
 `(whiskeringRight.obj H).obj F` is `F ⋙ H`, and
@@ -204,7 +202,6 @@ theorem whiskerLeft_comp_whiskerRight {F G : C ⥤ D} {H K : D ⥤ E} (α : F �
   ext
   simp
 
-set_option backward.defeqAttrib.useBackward true in
 @[to_dual hcomp_eq_whiskerRight_comp_whiskerLeft]
 lemma NatTrans.hcomp_eq_whiskerLeft_comp_whiskerRight {F G : C ⥤ D} {H K : D ⥤ E}
     (α : F ⟶ G) (β : H ⟶ K) : α ◫ β = whiskerLeft F β ≫ whiskerRight α K := by

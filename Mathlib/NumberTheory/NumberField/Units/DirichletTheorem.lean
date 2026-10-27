@@ -5,9 +5,10 @@ Authors: Xavier Roblot
 -/
 module
 
+public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
+
 import Mathlib.LinearAlgebra.Dimension.Torsion.Basic
 import Mathlib.LinearAlgebra.Matrix.Gershgorin
-public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
 
 /-!
 # Dirichlet theorem on the group of units of a number field

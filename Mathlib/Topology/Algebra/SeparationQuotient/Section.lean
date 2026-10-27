@@ -6,8 +6,9 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Module.Projective
-import Mathlib.LinearAlgebra.Basis.VectorSpace
 public import Mathlib.Topology.Algebra.SeparationQuotient.Basic
+
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
 # Algebraic operations on `SeparationQuotient`

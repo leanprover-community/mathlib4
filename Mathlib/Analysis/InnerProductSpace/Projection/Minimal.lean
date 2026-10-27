@@ -6,6 +6,7 @@ Authors: Zhouhang Zhou, Frédéric Dupuis, Heather Macbeth
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Basic
+
 import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!

@@ -7,10 +7,11 @@ module
 
 public import Mathlib.Algebra.Module.FinitePresentation
 public import Mathlib.Algebra.Module.Torsion.Basic
-import Mathlib.RingTheory.Ideal.Finsupp
 public import Mathlib.RingTheory.Nakayama
 public import Mathlib.RingTheory.QuotSMulTop
+
 import Mathlib.Algebra.GroupWithZero.Action.Regular
+import Mathlib.RingTheory.Ideal.Finsupp
 
 /-!
 

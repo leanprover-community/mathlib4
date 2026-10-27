@@ -6,6 +6,7 @@ Authors: Robert Y. Lewis, Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Normed.Field.Basic
+
 import Mathlib.Topology.MetricSpace.Cauchy
 
 /-!

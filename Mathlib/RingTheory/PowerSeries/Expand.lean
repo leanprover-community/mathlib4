@@ -5,8 +5,8 @@ Authors: Wenrong Zou
 -/
 module
 
-public import Mathlib.RingTheory.PowerSeries.Substitution
 public import Mathlib.RingTheory.MvPowerSeries.Expand
+public import Mathlib.RingTheory.PowerSeries.Substitution
 
 /-!
 ## Expand power series

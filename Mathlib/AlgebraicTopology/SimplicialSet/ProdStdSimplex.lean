@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
+
 import Mathlib.Order.Fin.InsertNth
 import Mathlib.Order.Fin.Prod
 import Mathlib.Order.Preorder.Finite

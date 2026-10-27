@@ -5,8 +5,9 @@ Authors: Johan Commelin
 -/
 module
 
-import Mathlib.Algebra.Group.TypeTags.Finite
 public import Mathlib.RingTheory.RootsOfUnity.Basic
+
+import Mathlib.Algebra.Group.TypeTags.Finite
 
 /-!
 # Primitive roots of unity
@@ -488,10 +489,13 @@ theorem zmodEquivZPowers_apply_coe_int (i : ℤ) :
   exact AddMonoidHom.liftOfRightInverse_comp_apply _ _ ZMod.intCast_rightInverse _ _
 
 @[simp]
-theorem zmodEquivZPowers_apply_coe_nat (i : ℕ) :
+theorem zmodEquivZPowers_apply_natCast (i : ℕ) :
     h.zmodEquivZPowers i = Additive.ofMul (⟨ζ ^ i, i, rfl⟩ : Subgroup.zpowers ζ) := by
   have : (i : ZMod k) = (i : ℤ) := by norm_cast
   simp only [this, zmodEquivZPowers_apply_coe_int, zpow_natCast]
+
+@[deprecated (since := "2026-10-13")]
+alias zmodEquivZPowers_apply_coe_nat := zmodEquivZPowers_apply_natCast
 
 @[simp]
 theorem zmodEquivZPowers_symm_apply_zpow (i : ℤ) :
@@ -505,7 +509,7 @@ theorem zmodEquivZPowers_symm_apply_zpow' (i : ℤ) : h.zmodEquivZPowers.symm �
 @[simp]
 theorem zmodEquivZPowers_symm_apply_pow (i : ℕ) :
     h.zmodEquivZPowers.symm (Additive.ofMul (⟨ζ ^ i, i, rfl⟩ : Subgroup.zpowers ζ)) = i := by
-  rw [← h.zmodEquivZPowers.symm_apply_apply i, zmodEquivZPowers_apply_coe_nat]
+  rw [← h.zmodEquivZPowers.symm_apply_apply i, zmodEquivZPowers_apply_natCast]
 
 @[simp]
 theorem zmodEquivZPowers_symm_apply_pow' (i : ℕ) : h.zmodEquivZPowers.symm ⟨ζ ^ i, i, rfl⟩ = i :=

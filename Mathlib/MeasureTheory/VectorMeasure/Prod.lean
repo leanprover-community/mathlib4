@@ -7,6 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Integral.Prod
 public import Mathlib.MeasureTheory.VectorMeasure.SetIntegral
+
 import Mathlib.MeasureTheory.VectorMeasure.Variation.Semivariation
 
 /-!

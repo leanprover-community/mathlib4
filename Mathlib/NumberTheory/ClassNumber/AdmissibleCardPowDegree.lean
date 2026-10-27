@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Polynomial.Degree.CardPowDegree
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
+
 import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
@@ -127,7 +128,7 @@ theorem exists_approx_polynomial {b : Fq[X]} (hb : b ≠ 0) {ε : ℝ} (hε : 0 
   -- In particular, we'll show the degree is less than the following:
   suffices (natDegree (A i₁ % b - A i₀ % b) : ℝ) < b.natDegree + log ε / log (Fintype.card Fq) by
     rwa [← Real.log_lt_log_iff (Int.cast_pos.mpr (cardPowDegree.pos h')) hbε,
-      cardPowDegree_nonzero _ h', cardPowDegree_nonzero _ hb, Algebra.smul_def, eq_intCast,
+      cardPowDegree_of_ne_zero _ h', cardPowDegree_of_ne_zero _ hb, Algebra.smul_def, eq_intCast,
       Int.cast_pow, Int.cast_natCast, Int.cast_pow, Int.cast_natCast,
       log_mul (pow_ne_zero _ q_pos'.ne') hε.ne', ← rpow_natCast, ← rpow_natCast, log_rpow q_pos',
       log_rpow q_pos', ← lt_div_iff₀ (log_pos one_lt_q'), add_div,
@@ -153,8 +154,8 @@ theorem cardPowDegree_anti_archimedean {x y z : Fq[X]} {a : ℤ} (hxy : cardPowD
   · rwa [hxz', sub_self, map_zero]
   rw [← Ne, ← sub_ne_zero] at hxy' hyz' hxz'
   refine lt_of_le_of_lt ?_ (max_lt hxy hyz)
-  rw [cardPowDegree_nonzero _ hxz', cardPowDegree_nonzero _ hxy',
-    cardPowDegree_nonzero _ hyz']
+  rw [cardPowDegree_of_ne_zero _ hxz', cardPowDegree_of_ne_zero _ hxy',
+    cardPowDegree_of_ne_zero _ hyz']
   have : (1 : ℤ) ≤ Fintype.card Fq := mod_cast (@Fintype.one_lt_card Fq _ _).le
   simp only [le_max_iff]
   refine Or.imp (pow_le_pow_right₀ this) (pow_le_pow_right₀ this) ?_

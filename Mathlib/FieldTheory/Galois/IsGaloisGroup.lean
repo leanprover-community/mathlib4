@@ -5,9 +5,10 @@ Authors: Thomas Browning
 -/
 module
 
-import Mathlib.FieldTheory.Galois.Infinite
 public import Mathlib.NumberTheory.NumberField.Basic
 public import Mathlib.RingTheory.IsGaloisGroup.Basic
+
+import Mathlib.FieldTheory.Galois.Infinite
 
 /-!
 # Galois Groups of Fields

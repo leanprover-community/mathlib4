@@ -8,11 +8,12 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Localization
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Quasicoherent
-import Mathlib.Algebra.Module.LocalizedModule.Away
 public import Mathlib.AlgebraicGeometry.AffineScheme
 public import Mathlib.AlgebraicGeometry.Modules.Sheaf
-import Mathlib.Data.Fintype.Order
+
 import Mathlib.Algebra.GroupWithZero.Action.Regular
+import Mathlib.Algebra.Module.LocalizedModule.Away
+import Mathlib.Data.Fintype.Order
 
 /-!
 
@@ -249,7 +250,6 @@ alias isUnit_algebraMap_end_basicOpen := Scheme.Modules.isUnit_algebraMap_end_of
 
 end tilde
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- This is the counit of the tilde-Gamma adjunction. -/
 noncomputable def Scheme.Modules.fromTildeΓ (M : (Spec R).Modules) :
@@ -303,7 +303,6 @@ lemma Scheme.Modules.toOpen_fromTildeΓ_app (M : (Spec R).Modules) (U) :
     (tilde.toOpen _ (PrimeSpectrum.basicOpen (R := R) 1)).hom
     ((modulesSpecToSheaf.obj M).obj.map (homOfLE le_top).op).hom (by simp) x)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- This is the counit of the tilde-Gamma adjunction. -/
 noncomputable def Scheme.Modules.fromTildeΓNatTrans :
@@ -835,7 +834,6 @@ private lemma aux_basicOpen_of_aux_restrict (M : (Spec R).Modules) (g : R)
 end QuasicoherentTilde
 
 open QuasicoherentTilde in
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `M` is a quasi-coherent `𝒪_{Spec R}` module, it is isomorphic to `Γ(M)^~`. -/
 instance Scheme.Modules.isIso_fromTildeΓ_of_isQuasicoherent (M : (Spec R).Modules)
@@ -881,7 +879,6 @@ lemma essImage_tilde : (tilde.functor R).essImage =
   · intro M (h : M.IsQuasicoherent)
     exact ⟨((modulesSpecToSheaf.obj M).presheaf.obj (.op ⊤)), ⟨asIso M.fromTildeΓ⟩⟩
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `M ↦ M^~` is an equivalence of categories from `ModuleCat R` to the full subcategory
 of quasi-coherent `𝒪_{Spec R}`-modules. -/

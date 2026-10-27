@@ -6,8 +6,9 @@ Authors: Michael Stoll
 module
 
 public import Mathlib.NumberTheory.DirichletCharacter.Orthogonality
-import Mathlib.NumberTheory.LSeries.Linearity
 public import Mathlib.NumberTheory.LSeries.Nonvanishing
+
+import Mathlib.NumberTheory.LSeries.Linearity
 
 /-!
 # Dirichlet's Theorem on primes in arithmetic progression

@@ -7,8 +7,9 @@ module
 
 public import Mathlib.AlgebraicTopology.DoldKan.FunctorGamma
 public import Mathlib.AlgebraicTopology.DoldKan.SplitSimplicialObject
-import Mathlib.CategoryTheory.Idempotents.HomologicalComplex
 public import Mathlib.Tactic.SuppressCompilation
+
+import Mathlib.CategoryTheory.Idempotents.HomologicalComplex
 
 /-! # The counit isomorphism of the Dold-Kan equivalence
 

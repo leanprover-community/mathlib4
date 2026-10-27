@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Complex.Cardinality
 public import Mathlib.LinearAlgebra.Complex.Module
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+
 import Mathlib.Order.Interval.Set.Infinite
 
 /-!

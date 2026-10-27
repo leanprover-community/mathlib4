@@ -6,8 +6,9 @@ Authors: Antoine Chambert-Loir
 
 module
 
-import Mathlib.LinearAlgebra.Center
 public import Mathlib.LinearAlgebra.Transvection.Basic
+
+import Mathlib.LinearAlgebra.Center
 
 /-!
 # Dilatransvections generate the special linear group

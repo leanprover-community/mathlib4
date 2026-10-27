@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.WittVector.Frobenius
 public import Mathlib.RingTheory.WittVector.Verschiebung
+
 import Mathlib.RingTheory.WittVector.MulP
 
 /-!
@@ -36,8 +37,6 @@ variable {p : ℕ} {R : Type*} [hp : Fact p.Prime] [CommRing R]
 
 -- type as `\bbW`
 local notation "𝕎" => WittVector p
-
-noncomputable section
 
 -- Porting note: `ghost_calc` failure: the manual instances had to be added.
 /-- The composition of Frobenius and Verschiebung is multiplication by `p`. -/
@@ -85,12 +84,16 @@ theorem coeff_p_zero [CharP R p] : (p : 𝕎 R).coeff 0 = 0 := by
 @[simp]
 theorem coeff_p_one [CharP R p] : (p : 𝕎 R).coeff 1 = 1 := by rw [coeff_p, ite_eq_left rfl]
 
-theorem p_nonzero [Nontrivial R] [CharP R p] : (p : 𝕎 R) ≠ 0 := by
+theorem p_ne_zero [Nontrivial R] [CharP R p] : (p : 𝕎 R) ≠ 0 := by
   intro h
   simpa only [h, zero_coeff, zero_ne_one] using coeff_p_one p R
 
-theorem FractionRing.p_nonzero [Nontrivial R] [CharP R p] : (p : FractionRing (𝕎 R)) ≠ 0 := by
-  simpa using (IsFractionRing.injective (𝕎 R) (FractionRing (𝕎 R))).ne (WittVector.p_nonzero _ _)
+@[deprecated (since := "2026-10-13")] alias p_nonzero := p_ne_zero
+
+theorem FractionRing.p_ne_zero [Nontrivial R] [CharP R p] : (p : FractionRing (𝕎 R)) ≠ 0 := by
+  simpa using (IsFractionRing.injective (𝕎 R) (FractionRing (𝕎 R))).ne (WittVector.p_ne_zero _ _)
+
+@[deprecated (since := "2026-10-13")] alias FractionRing.p_nonzero := FractionRing.p_ne_zero
 
 variable {p R}
 
@@ -229,7 +232,5 @@ theorem iterate_verschiebung_iterate_frobenius (x : 𝕎 R) (n : ℕ) :
     rw [iterate_succ_apply', ih, pow_succ, comp_apply, verschiebung_frobenius, mul_assoc]
 
 end CharP
-
-end
 
 end WittVector

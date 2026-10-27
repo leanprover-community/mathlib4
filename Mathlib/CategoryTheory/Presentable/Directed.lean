@@ -5,10 +5,11 @@ Authors: Joël Riou
 -/
 module
 
-import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 public import Mathlib.CategoryTheory.MorphismProperty.HasCardinalLT
 public import Mathlib.CategoryTheory.ObjectProperty.HasCardinalLT
 public import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
+
+import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 
 /-!
 # `κ`-filtered categories and `κ`-directed poset

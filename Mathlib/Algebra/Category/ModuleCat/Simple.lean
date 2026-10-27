@@ -6,10 +6,11 @@ Authors: Pierre-Alexandre Bazin, Kim Morrison
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Algebra
-import Mathlib.Algebra.Category.ModuleCat.Subobject
 public import Mathlib.CategoryTheory.Simple
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.RingTheory.SimpleModule.Basic
+
+import Mathlib.Algebra.Category.ModuleCat.Subobject
 
 /-!
 # Simple objects in the category of `R`-modules

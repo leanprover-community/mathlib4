@@ -6,6 +6,7 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.Analysis.LocallyConvex.Bounded
+
 import Mathlib.Analysis.SpecificLimits.Normed
 
 /-!
