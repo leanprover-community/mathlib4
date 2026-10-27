@@ -1,6 +1,7 @@
 module
 
 public import Mathlib.Tactic.TacticAnalysis.Replacements
+public import Mathlib.Algebra.BigOperators.Group.List.Basic
 
 /-! Tests for the always-on tactic replacement analysis passes. -/
 
@@ -40,6 +41,13 @@ example (P Q R : Prop) (hP : P) (hPQ : P → Q) (hQR : Q → R) : True ∧ R := 
 #guard_msgs in
 example (P Q R : Prop) (hP : P) (hPQ : P → Q) (hQR : Q → R) : True ∧ R := by
   constructor <;> simp_all
+
+-- Generated induction cases are not necessarily part of a tactic sequence, but every execution
+-- of the source-level `simp_all` must still be checked.
+#guard_msgs in
+example {M N : Type*} [Monoid M] [Monoid N] {l : List M} {F : Type*} [FunLike F M N]
+    [MulHomClass F M N] (f : F) (hl : l ≠ []) : (l.map f).prod = f l.prod :=
+  match l, hl with | x :: xs, hl => by induction xs generalizing x <;> simp_all
 
 /--
 info: `simp` can replace `simp_all`

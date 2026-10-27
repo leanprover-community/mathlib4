@@ -34,9 +34,9 @@ private def terminalReplacementAtAllOccurrences (newTacticName : String)
     (newTactic : ContextInfo → TacticInfo → Syntax → CommandElabM (TSyntax `tactic)) :
     TacticAnalysis.Config where
   run _ := pure ()
-  runAll := some fun seqs => do
+  runAll := some fun nodes => do
     let mut seen : Array (String.Pos.Raw × String.Pos.Raw) := #[]
-    for seq in seqs do for i in seq do
+    for i in nodes do
       if i.tacI.stx.getKind != oldTacticKind then
         continue
       let some start := i.tacI.stx.getPos? | continue
@@ -47,7 +47,7 @@ private def terminalReplacementAtAllOccurrences (newTacticName : String)
       seen := seen.push span
       let suggestion ← newTactic i.ctxI i.tacI i.tacI.stx
       let mut succeedsEverywhere := true
-      for seq' in seqs do for j in seq' do
+      for j in nodes do
         if j.tacI.stx.getKind == oldTacticKind && j.tacI.stx.getPos? == some start &&
             j.tacI.stx.getTailPos? == some stop then
           if let [goal] := j.tacI.goalsBefore then
@@ -143,9 +143,9 @@ private def tacticReplacement (newTacticName : String)
     (oldTacticKind : SyntaxNodeKind)
     (newTactic : Syntax → CommandElabM (TSyntax `tactic)) : TacticAnalysis.Config where
   run _ := pure ()
-  runAll := some fun seqs => do
+  runAll := some fun nodes => do
     let mut seen : Array (String.Pos.Raw × String.Pos.Raw) := #[]
-    for seq in seqs do for i in seq do
+    for i in nodes do
       if i.tacI.stx.getKind != oldTacticKind then
         continue
       let some start := i.tacI.stx.getPos? | continue
@@ -156,7 +156,7 @@ private def tacticReplacement (newTacticName : String)
       seen := seen.push span
       let suggestion ← newTactic i.tacI.stx
       let mut matchesEverywhere := true
-      for seq' in seqs do for j in seq' do
+      for j in nodes do
         if j.tacI.stx.getKind == oldTacticKind && j.tacI.stx.getPos? == some start &&
             j.tacI.stx.getTailPos? == some stop then
           if let [goal] := j.tacI.goalsBefore then
