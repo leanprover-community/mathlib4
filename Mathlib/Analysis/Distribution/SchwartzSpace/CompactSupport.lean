@@ -119,18 +119,15 @@ variable [FiniteDimensional ℝ E]
 theorem dense_hasCompactSupport : Dense {f : 𝓢(E, F) | HasCompactSupport (f : E → F)} := by
   intro f
   set b : ContDiffBump (0 : E) := ⟨1, 2, one_pos, one_lt_two⟩ with hb
-  have hφcd : ContDiff ℝ ∞ ⇑b := b.contDiff
   have hφcs : HasCompactSupport ⇑b := b.hasCompactSupport
-  have hφ1 : ⇑b =ᶠ[𝓝 0] 1 := by
-    filter_upwards [ball_mem_nhds 0 one_pos] with y hy
-    exact b.one_of_mem_closedBall (ball_subset_closedBall hy)
-  refine mem_closure_of_tendsto (tendsto_smulLeftCLM_comp_smul hφcd hφcs hφ1 f) ?_
+  apply mem_closure_of_tendsto (tendsto_smulLeftCLM_comp_smul b.contDiff hφcs ?_ f) ?_
+  · filter_upwards [ball_mem_nhds 0 one_pos] with y hy
+      using b.one_of_mem_closedBall (ball_subset_closedBall hy)
   filter_upwards [eventually_gt_atTop 0] with R hR
-  have hcd : ContDiff ℝ ∞ (fun x ↦ b (R⁻¹ • x)) := hφcd.comp (contDiff_const_smul _)
   have hcs : HasCompactSupport (fun x ↦ b (R⁻¹ • x)) := hφcs.comp_smul (by positivity)
   suffices (smulLeftCLM F (fun x ↦ b (R⁻¹ • x)) f : E → F) = (fun x ↦ b (R⁻¹ • x)) • f by
     simpa [this] using hcs.smul_right
   funext
-  simp [smulLeftCLM_apply_apply (hcs.hasTemperateGrowth hcd)]
+  simp [smulLeftCLM_apply_apply (hcs.hasTemperateGrowth (b.contDiff.comp (contDiff_const_smul _)))]
 
 end SchwartzMap
