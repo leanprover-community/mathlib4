@@ -373,7 +373,7 @@ def coeFnAddMonoidHom : C(X, R)₀ →+ X → R where
   map_zero' := FunLike.coe_zero
   map_add' f g := by simp
 
-@[deprecated FunLike.coeAddMonoidHom +typeChanged (since := "2026-10-27")]
+@[deprecated FunLike.coeAddMonoidHom_apply +typeChanged (since := "2026-10-27")]
 lemma coeFnAddMonoidHom_apply (f : C(X, R)₀) : coeFnAddMonoidHom f = f := rfl
 
 @[deprecated FunLike.coe_sum +typeChanged (since := "2026-10-26")]
