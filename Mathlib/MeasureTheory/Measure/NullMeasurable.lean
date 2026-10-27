@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 module
 
+public import Mathlib.MeasureTheory.MeasurableSpace.Embedding
 public import Mathlib.MeasureTheory.MeasurableSpace.EventuallyMeasurable
 public import Mathlib.MeasureTheory.Measure.AEDisjoint
 
@@ -312,9 +313,9 @@ theorem nullMeasurableSet_image_of_measure_eq {f : α → α}
     (hf : MeasurableEmbedding f) (H : ∀ s, μ s = 0 → μ (f '' s) = 0) (hs : NullMeasurableSet s μ) :
     NullMeasurableSet (f '' s) μ := by
   obtain ⟨t, hts, ht, hts'⟩ := exists_measurable_subset_ae_eq hs
-  rw [← union_diff_cancel hts, image_union]
-  apply (hf.measurableSet_image' ht).nullMeasurableSet.union (.of_null <| H _ _)
-  rwa [← union_ae_eq_right, union_eq_self_of_subset_right hts, ae_eq_comm]
+  rw [← union_sdiff_cancel hts, image_union]
+  apply (hf.measurableSet_image' ht).nullMeasurableSet.union
+  exact .of_null <| H _ (ae_eq_set.mp hts').right
 
 section MeasurableSingletonClass
 
