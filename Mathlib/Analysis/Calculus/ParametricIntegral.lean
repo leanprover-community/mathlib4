@@ -325,6 +325,51 @@ theorem hasFDerivAt_integral_of_continuousOn_fderiv_of_t2Space [TopologicalSpace
   rw [measure_toMeasurable]
   exact hs'.lt_top
 
+/-- Continuous differentiability of the partial derivative of a function `E × F → H` (given by its
+curried form `f : E → F → H`) with respect to the left factor `E`. If `f` is Cⁿ⁺¹ on `u ×ˢ s` and
+`u` is open, `fun x : E × F ↦ fderiv 𝕜 (fun y ↦ f y x.2) x.1` is at least Cⁿ on `u ×ˢ s`. -/
+lemma ContDiffOn.fderiv_left {E F H : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup H] [NormedSpace 𝕜 H]
+    {f : E → F → H} {u : Set E} (hu : IsOpen u) {s : Set F} {n : ℕ}
+    (hf : ContDiffOn 𝕜 (n + 1) f.uncurry (u ×ˢ s)) :
+    ContDiffOn 𝕜 n (fun x : E × F ↦ fderiv 𝕜 (fun y ↦ f y x.2) x.1) (u ×ˢ s) := by
+  intro x hx
+  rcases contDiffWithinAt_nat.1 (hf x hx) with ⟨w, hw, p, hp⟩
+  rw [insert_eq_of_mem hx] at hw
+  obtain ⟨o, o', o_open, xoo', oo'w, hoo'w⟩ :
+      ∃ o p, IsOpen o ∧ x ∈ o ×ˢ p ∧ o ×ˢ p ⊆ w ∧ o ×ˢ p ∈ 𝓝[u ×ˢ s] x := by
+    obtain ⟨w', w'_open, xw', hw'⟩ : ∃ w', IsOpen w' ∧ x ∈ w' ∧ w' ∩ u ×ˢ s ⊆ w :=
+      mem_nhdsWithin.1 hw
+    obtain ⟨o, p, o_open, p_open, xo, xp, opw'⟩ : ∃ o p, IsOpen o ∧ IsOpen p ∧ x.1 ∈ o ∧ x.2 ∈ p
+      ∧ o ×ˢ p ⊆ w' :=  isOpen_prod_iff.1 w'_open x.1 x.2 xw'
+    refine ⟨o ∩ u, p ∩ s, o_open.inter hu, by grind, by grind, ?_⟩
+    exact mem_nhdsWithin.2 ⟨o ×ˢ p, o_open.prod p_open, ⟨xo, xp⟩, by grind⟩
+  apply ContDiffWithinAt.mono_of_mem_nhdsWithin _ hoo'w
+  have : EqOn (fun x : E × F ↦ fderiv 𝕜 (fun y ↦ f y x.2) x.1)
+      (fun x ↦ (continuousMultilinearCurryFin1 𝕜 (E × F) H (p x 1)) ∘L (.inl 𝕜 E F)) (o ×ˢ o') := by
+    intro y hy
+    apply (HasFDerivWithinAt.hasFDerivAt ?_ (o_open.mem_nhds hy.1)).fderiv
+    apply (hp.hasFDerivWithinAt (x := y) (by simp) (oo'w hy)).comp (f := fun z ↦ (z, y.2))
+    · exact (hasFDerivAt_prodMk_left y.1 y.2).hasFDerivWithinAt
+    · intro z hz
+      exact oo'w ⟨hz, hy.2⟩
+  apply ContDiffWithinAt.congr_of_mem ?_ this xoo'
+  have := (hp.shift_of_succ.mono oo'w).contDiffOn x xoo'
+  fun_prop
+
+/-- Continuous differentiability of the partial derivative of a function `E × F → H` (given by its
+curried form `f : E → F → H`) with respect to the right factor `F`. If `f` is Cⁿ⁺¹ on `s ×ˢ u` and
+`u` is open, `fun x : E × F ↦ fderiv 𝕜 (f x.1) x.2` is at least Cⁿ on `u ×ˢ s`. -/
+lemma ContDiffOn.fderiv_right {E F H : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup H] [NormedSpace 𝕜 H]
+    {f : E → F → H} {s : Set E} {u : Set F} (hu : IsOpen u) {n : ℕ}
+    (hf : ContDiffOn 𝕜 (n + 1) f.uncurry (s ×ˢ u)) :
+    ContDiffOn 𝕜 n (fun x : E × F ↦ fderiv 𝕜 (f x.1) x.2) (s ×ˢ u) := by
+  have hf' : ContDiffOn 𝕜 (n + 1) (fun x y ↦ f y x).uncurry (u ×ˢ s) := by
+    exact hf.comp (ContinuousLinearEquiv.prodComm _ _ _).contDiff.contDiffOn <| mapsTo_swap_prod _ _
+  exact (hf'.fderiv_left hu).comp (ContinuousLinearEquiv.prodComm _ _ _).contDiff.contDiffOn <|
+    mapsTo_swap_prod _ _
+
 /-- A convenient special case of `hasFDerivAt_integral_of_continuousOn_fderiv`:
 if `f.uncurry : H × H' → E` is continuously differentiable on `u ×ˢ k` for a neighbourhood `u`
 of `x₀` and a compact set `k`, then for any finite-measure set `s ⊆ k` a derivative of
@@ -341,30 +386,7 @@ theorem hasFDerivAt_integral_of_contDiffOn {μ : Measure H'} {f : H → H' → E
   refine hasFDerivAt_integral_of_continuousOn_fderiv_of_t2Space hu hk hs' hsk hF.continuousOn
     (fun a ha ↦ hF.differentiableOn_one.comp (by fun_prop)
       fun x hx ↦ (⟨hx, ha⟩ : (x, a) ∈ _ ×ˢ _)) ?_
-  intro x hx
-  rcases contDiffWithinAt_nat.1 (hF x hx) with ⟨w, hw, p, hp⟩
-  rw [insert_eq_of_mem hx] at hw
-  obtain ⟨o, o', o_open, xoo', oo'w, hoo'w⟩ :
-      ∃ o p, IsOpen o ∧ x ∈ o ×ˢ p ∧ o ×ˢ p ⊆ w ∧ o ×ˢ p ∈ 𝓝[u ×ˢ k] x := by
-    obtain ⟨w', w'_open, xw', hw'⟩ : ∃ w', IsOpen w' ∧ x ∈ w' ∧ w' ∩ u ×ˢ k ⊆ w :=
-      mem_nhdsWithin.1 hw
-    obtain ⟨o, p, o_open, p_open, xo, xp, opw'⟩ : ∃ o p, IsOpen o ∧ IsOpen p ∧ x.1 ∈ o ∧ x.2 ∈ p
-      ∧ o ×ˢ p ⊆ w' :=  isOpen_prod_iff.1 w'_open x.1 x.2 xw'
-    refine ⟨o ∩ u, p ∩ k, o_open.inter hu', by grind, by grind, ?_⟩
-    exact mem_nhdsWithin.2 ⟨o ×ˢ p, o_open.prod p_open, ⟨xo, xp⟩, by grind⟩
-  apply ContinuousWithinAt.mono_of_mem_nhdsWithin _ hoo'w
-  have : EqOn (fun (x : H × H') ↦ fderiv 𝕜 (fun y ↦ f y x.2) x.1)
-      (fun x ↦ (continuousMultilinearCurryFin1 𝕜 (H × H') E (p x 1)) ∘L (.inl 𝕜 H H'))
-      (o ×ˢ o') := by
-    intro y hy
-    apply (HasFDerivWithinAt.hasFDerivAt ?_ (o_open.mem_nhds hy.1)).fderiv
-    apply (hp.hasFDerivWithinAt (x := y) one_ne_zero (oo'w hy)).comp (f := fun z ↦ (z, y.2))
-    · exact (hasFDerivAt_prodMk_left y.1 y.2).hasFDerivWithinAt
-    · intro z hz
-      exact oo'w ⟨hz, hy.2⟩
-  apply ContinuousWithinAt.congr_of_mem ?_ this xoo'
-  have := (hp.cont 1 le_rfl).mono oo'w x xoo'
-  fun_prop
+  exact (hF.fderiv_left hu').continuousOn
 
 /-- Iterated differentiation under integral of `x ↦ ∫ F x a` on an open set `s`, assuming that each
 function `x ↦ F x a` has a Taylor series of order `n`, with uniform integrability conditions on
