@@ -1,25 +1,30 @@
 /-
 Copyright (c) 2026 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
+Authors: David Loeffler
 -/
 
 module
 
 public meta import Lean.Elab.Command
+public import Lean.Linter.Init
+-- Import this linter explicitly to ensure that
+-- this file has a valid copyright header and module docstring.
+public import Mathlib.Tactic.Linter.Header  -- shake: keep
+
 meta import Lean.Elab.InfoTree.Util
 meta import Lean.Linter.Basic
-public import Lean.Linter.Init
 
 /-!
 # A linter for long proofs
 
-The `linter.longProof` linter is enabled by the Mathlib standard linter set. It warns when a
-proof term contains more than 200 non-comment source lines. The bound is configurable with
-`linter.longProof.maxLines`.
+The `linter.longProof` linter warns when a proof term contains more than 200 non-comment source
+lines. The bound is configurable with `linter.longProof.maxLines`.
 
 Length is the inclusive span from the proof's first token (usually `by`) to its last token.
 Lines consisting entirely of comments are excluded. Blank lines still count, except inside block
 comments. Declaration headers and trailing comments do not count.
+
 Both tactic and term proofs are checked, including proofs in definitions, instances and examples.
 Elaborated types distinguish proofs from computations returning data.
 
@@ -32,8 +37,8 @@ meta section
 
 /-- Enable warnings for proofs exceeding the non-comment source-line limit. -/
 public register_option linter.longProof : Bool := {
-  defValue := false
-  descr := "warn when a proof exceeds the source-line limit"
+  defValue := true
+  descr := "enable the `longProof` linter"
 }
 
 /-- Maximum number of non-comment source lines allowed in a proof. -/
@@ -42,7 +47,7 @@ public register_option linter.longProof.maxLines : Nat := {
   descr := "maximum number of non-comment source lines in a proof"
 }
 
-namespace KN.Linter
+namespace Mathlib.Linter.LongProof
 
 open Lean Elab Command
 
@@ -181,6 +186,6 @@ private def checkLongProofs : Syntax → CommandElabM Unit := withSetOptionIn fu
         Consider extracting intermediate results into separate lemmas."
 
 -- Register the callback when this module is imported; its option controls whether it runs.
-initialize addLinter { name := `KN.Linter.longProof, run := checkLongProofs }
+initialize addLinter { name := `Mathlib.Linter.longProof, run := checkLongProofs }
 
-end KN.Linter
+end Mathlib.Linter.LongProof
